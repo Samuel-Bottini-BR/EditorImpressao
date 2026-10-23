@@ -1,0 +1,152 @@
+<!doctype html>
+<html lang="pt-BR">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Fase 2: as 7 ferramentas</title>
+<style>
+:root { color-scheme: light dark; }
+* { box-sizing: border-box; }
+body {
+  font: 17px/1.65 "Segoe UI", system-ui, sans-serif;
+  max-width: 46rem; margin: 0 auto; padding: 2.5rem 1.5rem 6rem;
+  color: #1c1c1e; background: #fdfdfc;
+}
+h1 { font-size: 2rem; line-height: 1.2; margin: 0 0 .3em; letter-spacing: -.02em; }
+h2 { font-size: 1.35rem; margin: 2.4em 0 .6em; padding-top: .8em;
+     border-top: 1px solid #e6e4e0; letter-spacing: -.01em; }
+h3 { font-size: 1.1rem; margin: 1.8em 0 .4em; }
+h1 + p, h2 + p { margin-top: .4em; }
+p, li { margin: 0 0 .9em; }
+ul, ol { padding-left: 1.3em; }
+strong { font-weight: 640; }
+code {
+  font: .88em ui-monospace, "Cascadia Code", Consolas, monospace;
+  background: #f1efec; padding: .12em .35em; border-radius: 4px;
+}
+pre {
+  background: #f1efec; padding: 1em 1.1em; border-radius: 8px;
+  overflow-x: auto; line-height: 1.5;
+}
+pre code { background: none; padding: 0; }
+blockquote {
+  margin: 1.2em 0; padding: .1em 0 .1em 1.1em;
+  border-left: 3px solid #c9c5be; color: #55524d;
+}
+table {
+  border-collapse: collapse; width: 100%; margin: 1.2em 0;
+  font-size: .95rem; display: block; overflow-x: auto;
+}
+th, td { padding: .5em .8em; text-align: left; border-bottom: 1px solid #e6e4e0; }
+th { font-weight: 620; background: #f7f5f2; white-space: nowrap; }
+tr:last-child td { border-bottom: none; }
+img { max-width: 100%; height: auto; border-radius: 6px; margin: 1em 0;
+      border: 1px solid #e6e4e0; }
+hr { border: none; border-top: 1px solid #e6e4e0; margin: 2.5em 0; }
+.rodape { margin-top: 4em; padding-top: 1.2em; border-top: 1px solid #e6e4e0;
+          font-size: .85rem; color: #86827c; }
+@media (prefers-color-scheme: dark) {
+  body { color: #e8e6e3; background: #1a1917; }
+  h2 { border-top-color: #35332f; }
+  code, pre, th { background: #262421; }
+  th, td { border-bottom-color: #35332f; }
+  blockquote { border-left-color: #4a4741; color: #b0aca6; }
+  img { border-color: #35332f; }
+  .rodape { border-top-color: #35332f; color: #7d7973; }
+}
+@media print {
+  body { max-width: none; padding: 0; color: #000; background: #fff; }
+  h2 { page-break-after: avoid; }
+  table, img { page-break-inside: avoid; }
+}
+</style>
+</head>
+<body>
+<h1>Fase 2: as 7 ferramentas que faltavam (entrega do Implementador B, 22/10/2026)</h1>
+<p>Ramo <code>fase2-ferramentas-2026-10-22</code> (não juntado ao <code>fase-1</code>). Situação de todos: <strong>PRONTO PARA CONFERIR</strong>
+(falta o verificador e o Samuel). Teste de máquina em todos; os de imagem também precisam de olho.</p>
+<h2>Em uma frase cada</h2>
+<ul>
+<li><strong>2.4 Margens iguais:</strong> com a caixinha nova, todas as páginas do PDF saem do tamanho da maior, com a margem em volta
+  e o texto no meio, como no ScanTailor. Desmarcada de fábrica. A tabela dobrável fica de fora e ganha aviso.</li>
+<li><strong>2.6 Arquivo para impressão:</strong> botão "montar para imprimir..." na tela "Ficou pronto!": livreto em A4 com as
+  margens da encadernação, escala por lado e de uma página só, página inteira, várias por folha, pôster, e mandar
+  direto para a impressora. O último caderno agora sai menor (23 páginas em cadernos de 20 = 1 branca, não 17).</li>
+<li><strong>2.16 Todos os núcleos:</strong> o programa faz várias folhas ao mesmo tempo; o PDF sai igual, ponto por ponto.</li>
+<li><strong>2.17 Igualar a luz e suavizar:</strong> três controles novos por página na aba Filtro, desligados: igualar a luz,
+  suavizar as letras (só Preto e branco) e tirar o chuvisco. Código do ScanTailor.</li>
+<li><strong>2.18 Mudar à mão as áreas:</strong> ferramenta nova (tecla A) para escolher, mover, mudar o tamanho, apagar, pintar de
+  branco, copiar e colar uma área; mostrar as áreas achadas em laranja; e três jeitos novos de marcar (pintar por
+  cima, tinta com a cor e papel branco, tinta preta e fundo original).</li>
+<li><strong>2.19 Unidades e receitas:</strong> medidas em cm, mm ou polegadas; receitas com as caixinhas do livro.</li>
+<li><strong>2.10 + 1.6 Duas camadas:</strong> caixinha "Gravar em duas camadas" no "Confirmar e processar": o arquivo fica bem menor.</li>
+</ul>
+<h2>A prova de que nada muda de fábrica</h2>
+<p>Cada uma das 32 páginas-gabarito virou um livro novo e passou pelo caminho inteiro do programa (dividir, endireitar,
+cortar, filtro), em Original, Preto e branco e Melhorar: <strong>96 de 96 páginas idênticas</strong> ao <code>fase-1</code> de partida
+(<code>9804b98</code>), tanto no meio (<code>c31489c</code>, 2.4 e 2.6) quanto no fim (<code>c9f3335</code>, os 7 itens). Arquivos:
+<code>relatorios/fase2-novas/somas-antigo-9804b98.json</code>, <code>2.4/somas-novo-c31489c.json</code>, <code>final/somas-novo-c9f3335.json</code>.</p>
+<h2>Os antes/depois (fora do git, neste PC: <code>relatorios/conferir/fase2-novas/</code>)</h2>
+<p>Cada imagem diz por onde a página passou e com quais opções. Abri todas.</p>
+<table>
+<thead>
+<tr>
+<th>Item</th>
+<th>O que olhar</th>
+<th>Minha opinião</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>2.4 (<code>2.4/*-contato.png</code>, 5 livros)</td>
+<td>antes cada página de um tamanho; depois todas iguais, conteúdo no meio</td>
+<td>Funciona. No Opus Majus a tabela (p. 5) ficou fora da conta e sai do tamanho dela, como decidido. No Graduale, a página mais estreita fica centralizada com sobra dos lados.</td>
+</tr>
+<tr>
+<td>2.6 (<code>2.6/*.png</code>)</td>
+<td>livreto A4: ordem 8·1 / 2·7..., a página dentro das linhas vermelhas (1,3 cm / 1 cm)</td>
+<td>Funciona. A exceção "página 3 a 80%" diminuiu só a página 3, no meio da metade dela.</td>
+</tr>
+<tr>
+<td>2.10 (<code>2.10/*</code>)</td>
+<td>uma camada x duas: tamanho e nitidez</td>
+<td>Horas 11 (Preto e branco com iluminura): 23,1 → 4,1 MB; Graduale 221 (Melhorar): 10,4 → 2,4 MB; Escola 7: 4,5 → 1,1 MB; Horas 47 (Mágico pro): 5,7 → 4,7 MB. As letras ampliadas ficam iguais a olho.</td>
+</tr>
+<tr>
+<td>2.17 (<code>2.17/*</code>)</td>
+<td>página inteira e recorte ampliado</td>
+<td>Suavizar as letras: bom (bordas mais lisas, Marial 7 e Boécio 7). <strong>Igualar a luz</strong> no Melhorar (Graduale 221, Horas 47) deixa a tinta mais clara e lavada: pior. No Preto e branco do Marial 7 quase não muda (a mancha cinza do canto continua). <strong>Tirar o chuvisco 50</strong> borra a letra (Escola 35): forte demais; valores pequenos (10 a 20) são os úteis.</td>
+</tr>
+<tr>
+<td>2.18 (<code>2.18/*</code>)</td>
+<td>a área marcada à mão por cima do filtro</td>
+<td>Funciona como foi pedido: Escola 7, a tinta da área sai com a cor do original (cinza) e o papel branco; Horas 13, a tinta preta e o fundo creme; Marial 7, a mancha pintada de branco. O corte da área é reto (corta palavra ao meio se a área cortar).</td>
+</tr>
+</tbody>
+</table>
+<h2>Ressalvas (escritas, não escondidas)</h2>
+<ol>
+<li><strong>2.17, igualar a luz no Melhorar e no Mágico pro:</strong> o nosso filtro já divide pelo fundo; igualar antes faz a
+   conta duas vezes e lava a tinta. No ScanTailor isso não acontece porque ele não tem o Melhorar. Sugestão: deixar
+   o "igualar" só no Preto e branco e no Original. Pergunta para o Samuel.</li>
+<li><strong>2.17, tirar o chuvisco:</strong> a escala 0-100 vai até o coeficiente 1 do ScanTailor, que borra muito.</li>
+<li><strong>2.16:</strong> a prova de "sai igual" no PC rodou com pouca memória livre (o Samuel jogava), então o programa usou um
+   trabalhador só; a igualdade com 4 trabalhadores foi provada no teste de máquina (livro sintético). A velocidade
+   no GitHub é que mostra o ganho.</li>
+<li><strong>2.6, imprimir direto:</strong> testei mandando para um PDF; na impressora de verdade não. Neste PC o Windows leva
+   ~50 s só para "falar" com a impressora de fábrica (a da rede).</li>
+<li><strong>2.6, "Imprimir como imagem" ligado de fábrica</strong> (imp-6) deixa o arquivo de impressão grande.</li>
+<li><strong>2.4</strong> usa como conteúdo a página já cortada pelo programa (a caixa do conteúdo do ScanTailor, 2.5, está em outro
+   ramo); custa uma passada a mais no livro quando ligada. A tela de conferir não mostra as margens.</li>
+<li><strong>2.10:</strong> a camada de cima tem perda pequena (JPEG 92). Desmarcado, nada muda.</li>
+<li><strong>DLL versão 8:</strong> outros ramos (caixa do conteúdo, itens 2.8 a 2.12) também mudam a DLL; quem juntar recompila.</li>
+<li>Bug velho visto de passagem (não é deste trabalho): "são 1 cadernos prontos" (Lista de bugs, 02/10/2026).</li>
+</ol>
+<h2>Testes</h2>
+<p>GitHub: rodada <code>39787683890</code> (no <code>fa269d9</code>): 2150 passaram, 0 falharam; botões 222 ações, 0 falhas. Rodada
+<code>39791078658</code> (no <code>4990e13</code>): 2171 passaram, 2 falharam (o teste da trilha antiga contava 9 ferramentas; consertado
+em <code>d652248</code>, rodada <code>39794419960</code>). Velocidade: rodadas <code>39787700625</code> (<code>9804b98</code> → <code>fa269d9</code>) e <code>39791117352</code>
+(<code>9804b98</code> → <code>4990e13</code>).</p>
+<p class="rodape">Editor de Impressão &middot; gerado em 22/10/2026 às 10:18</p>
+</body>
+</html>

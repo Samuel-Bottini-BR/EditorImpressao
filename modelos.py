@@ -74,9 +74,17 @@ class ConfigFolha:
     # analise; nao ha como mexer a mao (ainda). Seguro mudar: nada aqui.
     sobra: tuple[float, float] | None = None
 
+    # "Está bom" num motivo so (ver o mesmo campo em ConfigPagina).
+    alertas_aceitos: list[str] = field(default_factory=list)
+
+    @property
+    def alertas_pendentes(self) -> list[str]:
+        """Os alertas que ainda pedem um olhar (ver ConfigPagina.alertas_pendentes)."""
+        return _alertas_pendentes(self)
+
     @property
     def precisa_revisao(self) -> bool:
-        return bool(self.alertas) and not self.revisada
+        return bool(self.alertas_pendentes)
 
 
 @dataclass
@@ -103,6 +111,16 @@ class ConfigPagina:
     # Seguro mudar: nada aqui.
     endireitar_como: str | None = None
 
+    # Item 2.5, decisao g9-pagina-muito-maior do Samuel (13/10/2026): "O
+    # programa deixa essa folha de fora sozinho, e avisa". So vale com o
+    # livro em Projeto.cortar_pelo_conteudo. None = o programa decide (a
+    # pagina muito maior que as outras fica fora da conta do tamanho do
+    # livro; core/corte_pelo_conteudo.muito_maiores); True = o Kaique pos de
+    # volta na conta ("do tamanho das outras"); False = ele tirou (o "nao
+    # alinhar com as outras" do ScanTailor). Projeto antigo nao tem o campo:
+    # volta None, e com a opcao desligada nada muda. Seguro mudar: nada aqui.
+    alinhar_com_as_outras: bool | None = None
+
     # Problema 2 do plano (redesenho do fluxo): a página nasce em Original,
     # nunca com um filtro já aplicado sozinho - o Samuel decide quando
     # aplicar algo. TelaOpcoes ainda deixa escolher outro filtro padrão para
@@ -116,6 +134,42 @@ class ConfigPagina:
     # valores vêm de ALGORITMOS_PB (sauvola/otsu/wolf), escolha manual ou
     # "usar em todas". Só importa quando `filtro` é Preto e branco.
     algoritmo_preto_branco: str = "auto"
+    # Item 2.9 (Samuel P9 (a), 05/10/2026): a caixinha "Letra clara em fundo
+    # escuro" desta pagina, marcada a mao (core.claro_no_escuro). Desmarcada de
+    # fabrica; projeto salvo antes abre desmarcado (campo que falta ganha o
+    # padrao). Arriscado: vir marcada (a pagina sairia com as cores trocadas
+    # no tratamento).
+    claro_no_escuro: bool = False
+    # Item 2.11 (Samuel P10 (a), 05/10/2026: "Trazer como opcao, desligada de
+    # fabrica"): "Letras com a cor delas" (so no Preto e branco) e "Reduzir
+    # cores" desta pagina (core.cores_scantailor). Desmarcadas de fabrica;
+    # projeto salvo antes abre desmarcado.
+    letras_com_a_cor: bool = False
+    reduzir_cores: bool = False
+    # Item 2.12 (regra da Fase 2, 13/10/2026: igual ao ScanTailor, desligado
+    # de fabrica): desentortar a pagina curva perto da lombada, SO desta
+    # pagina. Valores: os codigos de core/desentortar_scantailor.MODOS
+    # ("desligado", "automatico", "pelas_margens"; nunca o texto da tela).
+    # Projeto salvo antes abre "desligado" (campo que falta ganha o padrao).
+    # Arriscado: outro padrao (todo livro mudaria de imagem).
+    desentortar: str = "desligado"
+    # Item 2.12, opcao C SO nesta pagina (Samuel, 22/10/2026, pergunta P1:
+    # "Ainda vou poder selecionar a opção c para as paginas que entrarem para
+    # revisão?" - sim): com o desentortar ligado, a pagina CRESCE ate caber o
+    # que ele esticou, em vez de sair sem desentortar pela protecao. Posto pelo
+    # botao "Desentortar aumentando a página" do aviso
+    # analise.DESENTORTAR_SAIU_SEM. Falso de fabrica; projeto salvo antes abre
+    # falso. Sem efeito com o desentortar desligado.
+    desentortar_aumentar: bool = False
+    # Item 2.17 (regra da Fase 2: igual ao ScanTailor, desligado de fabrica):
+    # as tres opcoes de luz desta pagina (core.luz_scantailor). luz_igualar =
+    # "Igualar a luz da pagina"; luz_suavizar = "Suavizar as letras" (so no
+    # Preto e branco); luz_chuvisco = "Tirar o chuvisco" (Wiener), 0 a 100, 0 =
+    # desligado. Projeto salvo antes abre com tudo desligado (campo que falta
+    # ganha o padrao). Arriscado: vir ligado (a pagina mudaria sozinha).
+    luz_igualar: bool = False
+    luz_suavizar: bool = False
+    luz_chuvisco: int = 0
 
     # "Limpar pontinhos" SO desta pagina, por cima do livro
     # (Projeto.limpar_pontinhos); None = segue o livro. Decisao do Samuel
@@ -147,6 +201,55 @@ class ConfigPagina:
     alertas: list[str] = field(default_factory=list)
     revisada: bool = False
 
+    # Regra ajustada do "Para revisar" (12/10/2026): a ultima vez que esta
+    # pagina foi desenhada no "So as letras", sobrou faixa escura na beirada?
+    # None = ainda nao medida (ou a pagina nao esta no "So as letras"). Nao e
+    # escolha de ninguem: e o que deixa core.pipeline.acertar_faixa_do_livro
+    # contar em quantas paginas MEDIDAS a faixa aparece, para ela virar um
+    # aviso so do livro em 70% ou mais (Samuel, rodada 4, Camoes 66: "São as
+    # linhas pretas: aviso no livro basta"). O aviso da pagina
+    # (analise.FAIXA_NA_BEIRADA) some quando a faixa e do livro; este campo
+    # fica, para o aviso voltar se deixar de ser. Projeto antigo, sem o campo:
+    # None. Seguro mudar: nada aqui (e interno).
+    faixa_na_beirada: bool | None = None
+
+    # "Está bom" num MOTIVO so desta pagina (Samuel, rodada 4 do "Para
+    # revisar", 08/10/2026, `rv4-aviso-so-texto`: "Eu tenho que conseguir fazer
+    # isso com uma pagina individual, com um motivo individual de uma pagina e
+    # com todas as paginas ou com todos os motivos de todas as paginas"). Os
+    # codigos de alerta (core/analise.py) que a pessoa ja aceitou nesta
+    # pagina: saem da lista "Para revisar", os outros motivos dela continuam.
+    # `revisada` continua sendo "a pagina inteira esta boa". Quando o aviso
+    # some sozinho (o problema foi resolvido), core.pipeline tira o codigo
+    # daqui tambem: se o problema voltar, o aviso volta a pedir um olhar.
+    # Projeto antigo, sem o campo: lista vazia (nada aceito por motivo).
+    # Seguro mudar: nada aqui. Arriscado: guardar aqui outra coisa que nao
+    # codigo de alerta (a lista vai para o projeto.json).
+    alertas_aceitos: list[str] = field(default_factory=list)
+
+    # "Deixar em branco" (Samuel, rodada 5, 09/10/2026, `rv5-erro-5-sem-
+    # conteudo`: os dois botoes do aviso, "Deixar em branco" e "Tirar do
+    # livro"; e 07/10: "quando é apagada uma folha, tem que ser colocada uma no
+    # lugar dele né, pois se não a encadernação vai ficar errada"). True = a
+    # pagina FICA no livro, no mesmo lugar e do mesmo tamanho, mas sai toda
+    # branca (core.pipeline._filtrar). "Tirar do livro" e o `apagada` de
+    # sempre. Por enquanto so os avisos "Parece em branco" e "Página sem
+    # conteúdo" oferecem o botao; os dois botoes em qualquer pagina estao na
+    # Lista de espera (Fase 6). Projeto antigo, sem o campo: False.
+    em_branco: bool = False
+
+    # "Forca do preto sozinha" (Samuel, rodada 4, `rv4-erro-4-texto-falhado`:
+    # "Força sozinha"): quando o texto sai falhado, o programa escurece a
+    # forca do preto SO nesta pagina e avisa, com "Desfazer"
+    # (core.pipeline._reforcar_se_o_texto_falhou).
+    #   forca_antes_do_reforco: a forca que a pagina tinha antes de o programa
+    #       escurecer (para o "Desfazer"); None = o programa nao mexeu.
+    #   reforco_desfeito: a pessoa desfez o reforco, ou mexeu na forca depois
+    #       dele: o programa nao reforca esta pagina de novo.
+    # Projeto antigo, sem os campos: None e False. Seguro mudar: nada aqui.
+    forca_antes_do_reforco: int | None = None
+    reforco_desfeito: bool = False
+
     # Onde cada tratamento vale nesta pagina: gravura aqui, letra ali, papel no
     # resto. Guardado como lista de formas, e nao como imagem, para o arquivo
     # de projeto continuar pequeno e a mesma marcacao valer em qualquer DPI.
@@ -171,6 +274,20 @@ class ConfigPagina:
     # interno. Projeto antigo sem os dois campos abre com os padroes.
     gravura_forma: str | None = None
     gravura_feita_com: str = ""
+
+    # A marcacao que a MAQUINA fez nesta pagina e a PROVISORIA, achada na
+    # previa da tela (imagem pequena)? (13/10/2026) O detector acha areas
+    # diferentes na previa e na pagina do tamanho do PDF; a que vale e a do
+    # PDF. True = a pagina foi marcada na previa e ainda falta trocar pela do
+    # tamanho do PDF (a tela pede por tras para a pagina da vez; o PDF troca
+    # ao gerar). False = definitiva, ou pagina de projeto antigo (fica como
+    # esta), ou sem marcacao. A regra do "Para revisar" so mede com a
+    # definitiva. Nao e escolha de ninguem. Quem poe e tira: guardar_selecao,
+    # chamado por core.pipeline.garantir_selecao e pela aba Marcar. Projeto
+    # antigo, sem o campo: False.
+    # Seguro mudar: nada aqui. Arriscado: por True sem haver marcacao
+    # automatica (a do tamanho do PDF apagaria o que a maquina marcou antes).
+    marcacao_provisoria: bool = False
 
     # Decisao D2 do Samuel (02/10/2026): "Sim, pode mudar (com copia de
     # seguranca dos projetos)" - as zonas ficam presas a FOLHA ORIGINAL.
@@ -220,8 +337,17 @@ class ConfigPagina:
     tamanho_folha_cm: tuple[float, float] | None = None
 
     @property
+    def alertas_pendentes(self) -> list[str]:
+        """Os alertas desta pagina que ainda pedem um olhar: nenhum se a
+        pagina inteira ja foi dada como boa (`revisada`); senao, os que a
+        pessoa ainda nao aceitou um a um (`alertas_aceitos`). E o que a faixa
+        de aviso, o painel "Para revisar" e a janela "Antes de processar"
+        mostram. O primeiro e o que a faixa mostra."""
+        return _alertas_pendentes(self)
+
+    @property
     def precisa_revisao(self) -> bool:
-        return bool(self.alertas) and not self.revisada
+        return bool(self.alertas_pendentes)
 
     def obter_selecao(self):
         """A selecao desta pagina, ja como objeto."""
@@ -229,7 +355,26 @@ class ConfigPagina:
 
         return Selecao.de_lista(self.selecao)
 
-    def guardar_selecao(self, selecao) -> None:
+    def guardar_selecao(self, selecao, provisoria: bool | None = None) -> None:
+        """Guarda a marcacao da pagina (sempre uma lista NOVA: quem procura a
+        marcacao por tras ve que ela mudou; core.pipeline.garantir_selecao).
+
+        provisoria (13/10/2026): o que a MAQUINA marcou nesta selecao veio da
+        previa (True) ou da pagina do tamanho do PDF (False)? None = como a
+        pagina ja estava (quem so acrescenta uma area a mao). Quem passa:
+        garantir_selecao e a aba Marcar (ui/tela_conferir._selecao_mudou, com
+        o que o editor tinha carregado).
+        Marcacao sem nenhuma area da maquina nunca e provisoria: e so o que a
+        pessoa fez ("Esta folha vai sair em branco", ou tudo tirado), e
+        procurar de novo por tras poria de volta areas que ela nao quer.
+        O campo e gravado ANTES da lista de proposito: o outro fio que le a
+        lista nova ja encontra o campo certo."""
+        from core.selecao import MAO
+
+        if provisoria is not None:
+            self.marcacao_provisoria = bool(provisoria)
+        if self.marcacao_provisoria and not any(r.origem != MAO for r in selecao.regioes):
+            self.marcacao_provisoria = False
         self.selecao = selecao.para_lista()
 
 
@@ -279,6 +424,42 @@ class Projeto:
     # beirada da folha vizinha que entrou na foto), DESLIGADO de fabrica. So
     # nas folhas que nao sao divididas. Ver ConfigFolha.sobra.
     cortar_sobra: bool = False
+    # Item 2.5, decisao G8 (a) do Samuel (05/10/2026): "Trazer como opcao
+    # 'seguir a moldura / o papel', desligada - eu quero pode escolher dentro
+    # do programa". Ligado, o corte AUTOMATICO de cada pagina passa a ser o
+    # do ScanTailor: a caixa do conteudo, do tamanho do livro (G9: "Todas as
+    # paginas do tamanho da maior: Sim"), com o aviso do que ficou de fora
+    # (g8-moldura-tinta-fora) e a folha muito maior fora da conta
+    # (g9-pagina-muito-maior). Ver core/corte_pelo_conteudo.py. DESLIGADO de
+    # fabrica: livro novo e projeto antigo saem como hoje. O corte a mao
+    # (ConfigPagina.recorte) vale como esta, ligado ou nao.
+    cortar_pelo_conteudo: bool = False
+    # Item 2.5, decisao g8-guias do Samuel (13/10/2026): "As duas" + "Mas ele
+    # vai poder tirar a automatica a hora que ele quiser." As linhas de apoio
+    # do "Mover conteudo" (core/guias.py): guias = as do Kaique, valendo no
+    # livro todo, como dicionarios {"orientacao": "de_pe"|"deitada", "mm":
+    # distancia do meio da folha} (o jeito do ScanTailor); guias_automaticas =
+    # o ima no meio e nas beiradas da folha (ligado de fabrica = como sempre).
+    # Projeto antigo nao tem os campos: volta sem linhas e com as automaticas.
+    guias: list = field(default_factory=list)
+    guias_automaticas: bool = True
+    # Item 2.13, decisoes G7 (a) do Samuel (05/10/2026: "Sim, desligada de
+    # fabrica") e g7-borda-ate-onde (20/10/2026: "O Kaique escolhe por livro:
+    # so o preto, ou ate a moldura"). borda_preta = achar a pagina dentro da
+    # borda preta do scanner e sugerir o corte (False de fabrica: livro novo e
+    # projeto antigo saem como hoje). borda_preta_ate = ate onde vai o corte
+    # sugerido: "ate_a_moldura" (o impresso, conta do ScanTailor; o que vem
+    # escolhido) ou "so_o_preto" (conta nossa). Ver core/borda_preta.py. O
+    # corte a mao (ConfigPagina.recorte) e a excecao por pagina, como sempre.
+    borda_preta: bool = False
+    borda_preta_ate: str = "ate_a_moldura"
+    # Item 2.14 (rodada 5, 09/10/2026, rv5-pag-egenloff-047: "O Kaique escolhe
+    # por livro" entre cortar fora e pintar de branco): o que fazer com o que
+    # fica fora da pagina achada, so com borda_preta ligada. "cortar" (de
+    # fabrica: o 2.13) ou "pintar" (o corte fica o de sempre e o resto vira
+    # branco). Projeto antigo volta "cortar" (e com a borda desligada nada
+    # muda). Ver core/borda_preta.py.
+    borda_preta_fazer: str = "cortar"
     limpar: bool = True
     filtro_padrao: str = ORIGINAL
     endireitar: bool = True
@@ -411,6 +592,41 @@ class Projeto:
     # de fabrica mora em core/pontinhos_scantailor.PADRAO).
     limpar_pontinhos: str = PONTINHOS_PADRAO
 
+    # "Forca do preto sozinha" (Samuel, rodada 4 do "Para revisar", 08/10/2026,
+    # `rv4-erro-4-texto-falhado`: "Força sozinha" + "mas temos que melhorar o
+    # reconhecimento de tintas, para não sair falhado assim, não precisar usar
+    # sempre o reforço."; rodada 5: "Fica no plano; até lá, a força sozinha").
+    # Ligado: na pagina em "So as letras" cujo texto sai falhado, o programa
+    # escurece a forca do preto so nela e avisa, com "Desfazer"
+    # (core.pipeline._reforcar_se_o_texto_falhou; ConfigPagina.
+    # forca_antes_do_reforco). E o botao de ligar e desligar da regra 8 do
+    # plano ("toda funcao automatica tem botao de ligar e desligar"); quem
+    # mostra: ui/tela_opcoes.py (grupo dos filtros). Livro NOVO: ligado.
+    # Projeto salvo antes do campo: desligado (de_dicionario) - um livro ja
+    # conferido nao muda de forca sem a pessoa pedir. Seguro mudar: o padrao
+    # do livro novo. Arriscado: trocar o setdefault de de_dicionario.
+    reforcar_texto_falhado: bool = True
+    # Item 2.4 (regra da Fase 2, 13/10/2026: igual ao ScanTailor, desligado de
+    # fabrica): margens iguais em todas as paginas, a etapa "Margens" do
+    # ScanTailor (core/margens_scantailor.py). margens_iguais False = o PDF sai
+    # como sempre (o processar nem mede as paginas). margens_mm = (esquerda,
+    # cima, direita, baixo) em mm, de fabrica as do ScanTailor (10, 5, 10, 5;
+    # G9 (a), 05/10/2026: "As do ScanTailor [...] Mas eu vou conseguir alterar
+    # isso né?"). margens_alinhamento = (vertical, horizontal), de fabrica no
+    # meio e no meio. Projeto antigo, sem os campos, abre com tudo desligado
+    # (os padroes). Quem usa: core/pipeline.processar; quem mostra:
+    # ui/tela_opcoes.py. Arriscado: trocar o padrao de margens_iguais (livro
+    # ja comecado mudaria de tamanho).
+    margens_iguais: bool = False
+    # Itens 2.10 e 1.6 (conferencia 5, P3, 01/10/2026: "Eu quero ter a opcao
+    # 1.6, mas eu quero poder deixar como esta tambem"): o PDF de saida em
+    # duas camadas, a letra em cima e o fundo embaixo (core/duas_camadas.py).
+    # Desmarcado de fabrica; projeto antigo abre desmarcado. Quem mostra:
+    # ui/janela_confirmar.py ("Confirmar e processar").
+    pdf_em_duas_camadas: bool = False
+    margens_mm: list = field(default_factory=lambda: [10.0, 5.0, 10.0, 5.0])
+    margens_alinhamento: list = field(default_factory=lambda: ["meio", "meio"])
+
     folhas: list[ConfigFolha] = field(default_factory=list)
     paginas: list[ConfigPagina] = field(default_factory=list)
     criado_em: str = ""
@@ -489,6 +705,8 @@ class Projeto:
             and not self.endireitar
             and not self.cortar_bordas
             and self.total_apagadas == 0
+            # item 2.4: as margens iguais mudam a imagem (desligadas, nada muda)
+            and not getattr(self, "margens_iguais", False)
         )
 
     @property
@@ -584,6 +802,10 @@ class Projeto:
         # Item 2.2 (07/10/2026): o projeto gravado antes do endireitar do
         # ScanTailor endireitava pela conta do programa - continua com ela.
         dados.setdefault("endireitar_como", ENDIREITAR_DO_PROJETO_ANTIGO)
+        # "Forca do preto sozinha" (12/10/2026): o projeto gravado antes nao
+        # tinha o reforco - continua sem ele (a pessoa liga na tela "O que
+        # fazer" se quiser).
+        dados.setdefault("reforcar_texto_falhado", False)
         # Item 2.2, G6 (09/10/2026): o projeto gravado antes da ordem nova
         # cortava antes de endireitar - continua assim, ponto por ponto.
         dados.setdefault("ordem_do_preparo", ORDEM_DO_PROJETO_ANTIGO)
@@ -591,6 +813,16 @@ class Projeto:
         projeto.folhas = folhas
         projeto.paginas = paginas
         return projeto
+
+
+def _alertas_pendentes(item) -> list[str]:
+    """Os alertas de uma folha ou pagina que ainda pedem um olhar (ver
+    ConfigPagina.alertas_pendentes). Item de versao antiga, sem
+    `alertas_aceitos`: todos os alertas, como sempre foi."""
+    if item.revisada or not item.alertas:
+        return []
+    aceitos = getattr(item, "alertas_aceitos", None) or ()
+    return [a for a in item.alertas if a not in aceitos]
 
 
 def _so_campos_conhecidos(classe, dados: dict[str, Any]) -> dict[str, Any]:

@@ -1,0 +1,32 @@
+{
+ "marial_p007": {
+  "tamanho": [
+   2897,
+   3905
+  ],
+  "dpi": 300,
+  "recorte_xy_lado": [
+   2173,
+   3181,
+   724
+  ],
+  "pontos_pretos": {
+   "Hoje: Automático": 1895191,
+   "Otsu do ScanTailor": 1708758,
+   "Sauvola do ScanTailor": 1515946,
+   "Wolf do ScanTailor": 1793098
+  },
+  "pontos_diferentes_de_hoje": {
+   "Otsu do ScanTailor": 277617,
+   "Sauvola do ScanTailor": 392140,
+   "Wolf do ScanTailor": 227071
+  },
+  "segundos": {
+   "Hoje: Automático": 1.24,
+   "Otsu do ScanTailor": 1.83,
+   "Sauvola do ScanTailor": 2.12,
+   "Wolf do ScanTailor": 2.07
+  },
+  "nao_rodou": {}
+ }
+}

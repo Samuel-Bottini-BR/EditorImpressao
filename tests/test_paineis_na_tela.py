@@ -243,8 +243,15 @@ def test_os_botoes_do_cortar_sairam_da_fila_e_moram_no_propriedades(janela, past
     assert any(t.startswith("Cortar a beirada da folha vizinha:") for t in partes)
 
 
-def test_os_botoes_do_cortar_fazem_o_mesmo_de_antes(janela, pasta):
+def test_os_botoes_do_cortar_fazem_o_mesmo_de_antes(janela, pasta, monkeypatch):
+    """Item 2.13 (20/10/2026): o "usar em todas" passou a abrir a janela "Em
+    quais páginas?" (as exceções vêm desmarcadas); aqui ela responde com as
+    páginas de fábrica, que neste livro são todas (nenhuma tem corte próprio)."""
+    from ui import dialogo_escolher_paginas as dep
+
     tela = _aberta(janela, pasta)
+    monkeypatch.setattr(type(tela), "_escolher_paginas_do_corte",
+                        lambda self: dep.paginas_de_fabrica(self.projeto, self.indice_pagina))
     tela.trilha.escolher(FERRAMENTA_CORTAR)
     tela.paineis.abrir("props")
     botoes = _botoes(tela.propriedades_das_abas["bordas"])
@@ -327,7 +334,8 @@ def test_os_textos_da_rodada_13(janela, pasta):
     tela = _aberta(janela, pasta)
     if "filtro" not in tela._abas_ativas:
         pytest.skip("este livro abriu sem os filtros")
-    botoes = _botoes(tela.linhas_de_botoes["filtro"])
+    # etapa 4 do layout: o "Aplicar em" mora no pé do painel Filtro
+    botoes = _botoes(tela.paineis.filtro_da_pagina.pe)
     assert "daqui em diante" in botoes and "só nas próximas" not in botoes
 
 

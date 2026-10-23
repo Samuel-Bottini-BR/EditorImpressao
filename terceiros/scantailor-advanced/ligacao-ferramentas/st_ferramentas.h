@@ -7,7 +7,7 @@
 // Funcoes em C puro (sem classes C++ na fronteira) para a DLL nao depender da
 // versao do Python. Quem chama: core/st_ferramentas.py (carrega a DLL) e um
 // modulo por ferramenta (core/pontinhos_scantailor.py, core/dividir_scantailor.py,
-// core/endireitar_scantailor.py).
+// core/endireitar_scantailor.py, core/caixas_scantailor.py).
 //
 // COMO ACRESCENTAR UMA FERRAMENTA (dividir, endireitar, caixa do conteudo,
 // binarizadores, segmentacao de cor...)
@@ -39,7 +39,29 @@
 // 2 = 06/10/2026: + dividir (st_ferramentas_dividir); os pontinhos nao mudaram.
 // 3 = 06/10/2026: + endireitar (st_ferramentas_endireitar, item 2.2); os
 //     pontinhos e o dividir nao mudaram.
-#define ST_FERRAMENTAS_VERSAO_API 3
+// 4 = 12/10/2026: + as caixas da pagina e do conteudo (st_ferramentas_caixas,
+//     itens 2.13 e 2.5, ramo fase2-caixa-conteudo); as tres de antes nao mudaram.
+// 5 = 20/10/2026: + o preto e branco do ScanTailor (st_ferramentas_preto_e_branco,
+//     item 2.8, em saida.cpp); o que ja existia nao mudou.
+// 6 = 20/10/2026: + as cores do ScanTailor (st_ferramentas_cores, item 2.11, em
+//     saida.cpp); o que ja existia nao mudou.
+// 7 = 21/10/2026: + o desentortar do ScanTailor (st_ferramentas_desentortar,
+//     item 2.12, em desentortar.cpp); o que ja existia nao mudou.
+// 8 = 22/10/2026: o desentortar recebe a pagina com o papel do scan em volta e
+//     o corte como medida (corteX..corteAltura); a saida tem o tamanho do corte
+//     (escolha do Samuel na Central, 22/10: "cortar uma vez so, no fim", como o
+//     ScanTailor). O resto nao mudou. (O ramo das ferramentas tambem usou o
+//     numero 8, para + igualar a luz, suavizar o cinza, suavizar o preto e
+//     branco e o filtro de Wiener: item 2.17, em luz.cpp.)
+// 9 = 22/10/2026: o desentortar ganha `crescer` (a mesma pagina desentortada
+//     numa pagina maior) e a `marca` (uma imagem cinza redesenhada com o mesmo
+//     modelo, para o Python medir para onde a tinta foi): a protecao e o
+//     "desentortar aumentando a pagina" (respostas P1 e P2 do Samuel, 22/10).
+//     Com crescer 0 e sem marca, a saida e a da versao 8. O resto nao mudou.
+// 10 = 23/10/2026, juncao da Fase 2 (ramo juncao-fase2-2026-10-23): uma DLL so
+//     com tudo dos ramos (caixas v4, saida v5-v6, desentortar v7-v9 do ramo dos
+//     itens, luz v8 do ramo das ferramentas). Nenhuma funcao mudou; so a soma.
+#define ST_FERRAMENTAS_VERSAO_API 10
 
 // De onde veio o codigo (o compilar_st_ferramentas.py passa a versao e o commit).
 #ifndef ST_FERRAMENTAS_ORIGEM
@@ -155,6 +177,275 @@ ST_FERRAMENTAS_API int st_ferramentas_endireitar(const unsigned char* pixels,
                                                  int* pretoNoBranco,
                                                  char* erro,
                                                  int tamanhoErro);
+
+// PRETO E BRANCO DO SCANTAILOR (a saida "Black and white" dele, item 2.8; a cola
+// esta em saida.cpp, com as funcoes de OutputGenerator.cpp copiadas sem mudanca
+// e os dez jeitos de src/imageproc/Binarize.cpp).
+//
+// pixels, largura, altura, passo, canais: a pagina ja preparada pelo programa
+//   (girada, cortada), como no dividir (1 = cinza; 3 = azul, verde, vermelho).
+// dpiX, dpiY: o DPI da imagem (muda a suavizacao Savitzky-Golay).
+// metodo: o BinarizationMethod do ScanTailor: 0 Otsu, 1 Sauvola, 2 Wolf,
+//   3 Fox, 4 Window, 5 Bradley, 6 Grad, 7 EdgePlus, 8 BlurDiv, 9 EdgeDiv.
+// ajusteDoLimiar: o "thresholdAdjustment" (-100 a 100 na tela dele; 0 de
+//   fabrica). Mais = mais preto.
+// janela: windowSize (200 de fabrica). coefSauvola: 0,34 de fabrica.
+//   coefWolf: 0,3. wolfMinimo, wolfMaximo: 1 e 254.
+// normalizar, savitzkyGolay, morfologica: 1 = ligado (os tres ligados de fabrica).
+// saida, passoSaida: o preto e branco, 1 byte por ponto: 0 = preto, 255 = branco.
+// erro, tamanhoErro: texto do erro, se houver.
+//
+// So le a pagina. Devolve ST_FERRAMENTAS_OK ou um codigo de erro.
+// Nunca deixa excecao escapar.
+ST_FERRAMENTAS_API int st_ferramentas_preto_e_branco(const unsigned char* pixels,
+                                                     int largura,
+                                                     int altura,
+                                                     int passo,
+                                                     int canais,
+                                                     int dpiX,
+                                                     int dpiY,
+                                                     int metodo,
+                                                     int ajusteDoLimiar,
+                                                     int janela,
+                                                     double coefSauvola,
+                                                     double coefWolf,
+                                                     int wolfMinimo,
+                                                     int wolfMaximo,
+                                                     int normalizar,
+                                                     int savitzkyGolay,
+                                                     int morfologica,
+                                                     unsigned char* saida,
+                                                     int passoSaida,
+                                                     char* erro,
+                                                     int tamanhoErro);
+
+// AS CORES DO SCANTAILOR (item 2.11; cola em saida.cpp): "letras com a cor delas"
+// (Color segmentation, src/imageproc/ColorSegmenter.cpp) e "reduzir cores"
+// (Posterize, src/imageproc/Posterizer.cpp), sem mudanca.
+//
+// pixels, largura, altura, passo, canais: a pagina (1 = cinza; 3 = azul, verde,
+//   vermelho). Com segmentar = 1, a pagina preparada ANTES do filtro (a cor das
+//   letras sai dela); com segmentar = 0, a pagina ja filtrada, a posterizar.
+// pretoEBranco, passoPretoEBranco: so com segmentar = 1: o preto e branco da
+//   pagina, 1 byte por ponto (menor que 128 = preto). Cada peca preta e pintada
+//   com a cor dela; o resto sai branco.
+// dpiX, dpiY: o DPI (o tamanho do ruido que a segmentacao tira acompanha o DPI).
+// normalizar: 1 = iguala a luz da pagina antes de tirar as cores (o de fabrica do
+//   preto e branco do ScanTailor).
+// ruido: "Reduce noise" (7 de fabrica). ajusteVermelho/Verde/Azul: 0 de fabrica.
+// posterizar, nivel (4 de fabrica), normalizarCores (0), forcarPretoEBranco (1):
+//   as opcoes do "Posterize".
+// saida, passoSaida: o resultado em cor, 3 bytes por ponto (azul, verde, vermelho).
+// Devolve ST_FERRAMENTAS_OK ou um codigo de erro. Nunca deixa excecao escapar.
+ST_FERRAMENTAS_API int st_ferramentas_cores(const unsigned char* pixels,
+                                            int largura,
+                                            int altura,
+                                            int passo,
+                                            int canais,
+                                            const unsigned char* pretoEBranco,
+                                            int passoPretoEBranco,
+                                            int dpiX,
+                                            int dpiY,
+                                            int normalizar,
+                                            int segmentar,
+                                            int ruido,
+                                            int ajusteVermelho,
+                                            int ajusteVerde,
+                                            int ajusteAzul,
+                                            int posterizar,
+                                            int nivel,
+                                            int normalizarCores,
+                                            int forcarPretoEBranco,
+                                            unsigned char* saida,
+                                            int passoSaida,
+                                            char* erro,
+                                            int tamanhoErro);
+// A CAIXA DA PAGINA E A CAIXA DO CONTEUDO (a etapa "Select Content" do
+// ScanTailor: PageFinder e ContentBoxFinder de src/core/filters/select_content/,
+// sem mudanca; a cola esta em caixas.cpp). Itens 2.13 e 2.5 do plano.
+//
+// pixels, largura, altura, passo, canais: a pagina, como no dividir (1 = cinza,
+//   3 = azul, verde, vermelho, a ordem do OpenCV), JA girada e endireitada.
+// dpiX, dpiY: o DPI da imagem. Os dois achadores levam a pagina a 150 DPI por
+//   ele: DPI errado muda as caixas (e DPI baixo demais amplia a pagina e deixa
+//   a conta varias vezes mais lenta).
+// modoPagina: 0 = desligada (a "pagina" e a folha inteira; o de fabrica do
+//   ScanTailor), 1 = automatica (PageFinder: tira a faixa preta do scanner).
+// ajustarCantos: 1 = o "Fine Tune Page Corners" do ScanTailor (so vale com
+//   modoPagina 1; de fabrica 0).
+// larguraEsperadaMm, alturaEsperadaMm, tolerancia: o tamanho esperado da
+//   pagina (so vale com modoPagina 1). De fabrica 0, 0 e 0,1 (sem tamanho
+//   esperado). A tolerancia vai de 0 a 1.
+// modoConteudo: 0 = desligada (o "conteudo" e a caixa da pagina), 1 =
+//   automatica (ContentBoxFinder, o de fabrica do ScanTailor).
+// claroNoEscuro: -1 = o ScanTailor decide (BlackOnWhiteEstimator, o de fabrica
+//   dele), 0 = tratar como preto no branco, 1 = tratar como claro no escuro
+//   (a conta e feita na pagina invertida).
+// pagina (saida, 4 numeros): x0, y0, x1, y1 da caixa da pagina, em pontos da
+//   imagem (x1, y1 = a beirada de fora: largura = x1 - x0).
+// conteudo (saida, 4 numeros): a caixa do conteudo ja cortada pela caixa da
+//   pagina (o que o ScanTailor guarda). Tudo 0 quando nao ha conteudo.
+// conteudoBruto (saida, 4 numeros): o que o ContentBoxFinder devolveu, ANTES
+//   do corte pela caixa da pagina (pode passar dela; ver caixas.cpp).
+// tamanhoConteudoMm (saida, 2 numeros): largura e altura do conteudo em mm
+//   (PhysSizeCalc do ScanTailor). 0 e 0 quando nao ha conteudo.
+// achouConteudo (saida): 1 se ha caixa do conteudo, 0 se a pagina nao tem
+//   conteudo (em branco).
+// pretoNoBranco (saida): 1 se a pagina foi tratada como preto no branco.
+// milissegundos (saida, 3 numeros): o tempo do preparo (cinza, claro no
+//   escuro, limiar), o da caixa da pagina e o da caixa do conteudo.
+// erro, tamanhoErro: texto do erro, se houver.
+//
+// So le a imagem. Devolve ST_FERRAMENTAS_OK ou um codigo de erro.
+// Nunca deixa excecao escapar.
+ST_FERRAMENTAS_API int st_ferramentas_caixas(const unsigned char* pixels,
+                                             int largura,
+                                             int altura,
+                                             int passo,
+                                             int canais,
+                                             int dpiX,
+                                             int dpiY,
+                                             int modoPagina,
+                                             int ajustarCantos,
+                                             double larguraEsperadaMm,
+                                             double alturaEsperadaMm,
+                                             double tolerancia,
+                                             int modoConteudo,
+                                             int claroNoEscuro,
+                                             double* pagina,
+                                             double* conteudo,
+                                             double* conteudoBruto,
+                                             double* tamanhoConteudoMm,
+                                             int* achouConteudo,
+                                             int* pretoNoBranco,
+                                             double* milissegundos,
+                                             char* erro,
+                                             int tamanhoErro);
+
+// DESENTORTAR A PAGINA CURVA PERTO DA LOMBADA (item 2.12): o "Dewarping" do
+// ScanTailor (src/dewarping, sem mudanca; a ordem em desentortar.cpp).
+//
+// pixels, largura, altura, passo, canais: a pagina ja dividida e endireitada,
+//   AINDA SEM O CORTE, com o papel do proprio scan em volta (canais 1 = cinza;
+//   3 = azul, verde, vermelho, como o OpenCV). Versao 8, 22/10/2026.
+// dpiX, dpiY: o DPI da imagem (o TextLineTracer reduz para 200 DPI por ele).
+// modo: 1 = automatico (AUTO, pelas linhas do texto); 3 = pelas margens
+//   (MARGINAL). Os numeros sao os de output::DewarpingMode. 0 (desligado, o de
+//   fabrica) nao chega aqui: o Python nem chama.
+// lado: 0 = pagina unica, 1 = esquerda, 2 = direita (PageId::SubPage).
+// profundidade: a "Depth perception" do ScanTailor, de 1,0 a 3,0 (2,0 de fabrica).
+// endireitarDepois: o "post deskew" (1 de fabrica; so vale no "pelas margens").
+// corteX, corteY, corteLargura, corteAltura: o corte medido pelo programa, em
+//   pontos da pagina recebida: e a pagina de saida do ScanTailor (m_outRect).
+//   Largura ou altura 0 = a pagina inteira (sem corte). Tem de caber na pagina.
+// conteudoX, conteudoY, conteudoLargura, conteudoAltura: a caixa do conteudo
+//   (m_contentRect), em pontos da pagina recebida; largura ou altura 0 = o corte.
+// crescer (versao 9): pontos a mais de cada lado da pagina de saida (0 = o
+//   corte, como na versao 8). E a MESMA pagina desentortada, so maior.
+// marca, passoMarca (versao 9): NULL, ou uma imagem cinza (1 canal) do tamanho
+//   da pagina recebida, redesenhada com o mesmo modelo e o mesmo giro em
+//   marcaSaida (fora da pagina recebida entra branco, 255).
+// saida, passoSaida: a pagina desentortada JA RECORTADA pelo corte (corteLargura
+//   + 2 x crescer, corteAltura + 2 x crescer), com os mesmos canais. O corte e
+//   feito uma vez, aqui, como no ScanTailor: o desentortar le os pontos da
+//   pagina inteira.
+// marcaSaida, passoMarcaSaida (versao 9): a marca redesenhada, do tamanho da
+//   saida, 1 canal (ignorados com marca NULL).
+// achouCurvas: 1 se as curvas achadas nao sao as do modelo "sem curva".
+// anguloDepois: o angulo do endireitar depois, em graus (0 se nao endireitou).
+// Devolve ST_FERRAMENTAS_OK ou um codigo de erro. Nunca deixa excecao escapar.
+ST_FERRAMENTAS_API int st_ferramentas_desentortar(const unsigned char* pixels,
+                                                  int largura,
+                                                  int altura,
+                                                  int passo,
+                                                  int canais,
+                                                  int dpiX,
+                                                  int dpiY,
+                                                  int modo,
+                                                  int lado,
+                                                  double profundidade,
+                                                  int endireitarDepois,
+                                                  int corteX,
+                                                  int corteY,
+                                                  int corteLargura,
+                                                  int corteAltura,
+                                                  int conteudoX,
+                                                  int conteudoY,
+                                                  int conteudoLargura,
+                                                  int conteudoAltura,
+                                                  int crescer,
+                                                  const unsigned char* marca,
+                                                  int passoMarca,
+                                                  unsigned char* saida,
+                                                  int passoSaida,
+                                                  unsigned char* marcaSaida,
+                                                  int passoMarcaSaida,
+                                                  int* achouCurvas,
+                                                  double* anguloDepois,
+                                                  char* erro,
+                                                  int tamanhoErro);
+
+// IGUALAR A LUZ, SUAVIZAR E WIENER (item 2.17; a cola esta em luz.cpp, com as
+// funcoes de src/core/filters/output/OutputGenerator.cpp copiadas sem mudanca,
+// e src/imageproc/SavGolFilter.cpp, SavGolKernel.cpp e WienerFilter.cpp sem
+// mudanca).
+//
+// pixels, largura, altura, passo, canais: a pagina, como no dividir (1 = cinza,
+//   3 = azul, verde, vermelho, a ordem do OpenCV).
+// saida, passoSaida: o resultado, no mesmo formato da entrada (canais), menos
+//   em st_ferramentas_suavizar_cinza, que devolve sempre cinza (1 byte por
+//   ponto), como o smoothToGrayscale do ScanTailor.
+// dpiX, dpiY (suavizar_cinza): escolhem a janela e o grau do Savitzky-Golay
+//   como o ScanTailor (ate 200 DPI: 5 e 3; ate 400: 7 e 4; ate 800: 11 e 4).
+// janela, coeficiente (wiener): o "Wiener filter" do ScanTailor (de fabrica
+//   janela 5 e coeficiente 0, que nao faz nada; de 0 a 1).
+// st_ferramentas_suavizar_preto_e_branco: entrada e saida em preto e branco, 1
+//   byte por ponto (menor que 128 = preto), como o limpar pontinhos.
+// erro, tamanhoErro: texto do erro, se houver.
+//
+// Devolvem ST_FERRAMENTAS_OK ou um codigo de erro. Nunca deixam excecao escapar.
+ST_FERRAMENTAS_API int st_ferramentas_igualar_luz(const unsigned char* pixels,
+                                                  int largura,
+                                                  int altura,
+                                                  int passo,
+                                                  int canais,
+                                                  unsigned char* saida,
+                                                  int passoSaida,
+                                                  char* erro,
+                                                  int tamanhoErro);
+
+ST_FERRAMENTAS_API int st_ferramentas_suavizar_cinza(const unsigned char* pixels,
+                                                     int largura,
+                                                     int altura,
+                                                     int passo,
+                                                     int canais,
+                                                     int dpiX,
+                                                     int dpiY,
+                                                     unsigned char* saida,
+                                                     int passoSaida,
+                                                     char* erro,
+                                                     int tamanhoErro);
+
+ST_FERRAMENTAS_API int st_ferramentas_suavizar_preto_e_branco(const unsigned char* entrada,
+                                                              int largura,
+                                                              int altura,
+                                                              int passoEntrada,
+                                                              unsigned char* saida,
+                                                              int passoSaida,
+                                                              char* erro,
+                                                              int tamanhoErro);
+
+ST_FERRAMENTAS_API int st_ferramentas_wiener(const unsigned char* pixels,
+                                             int largura,
+                                             int altura,
+                                             int passo,
+                                             int canais,
+                                             int janela,
+                                             double coeficiente,
+                                             unsigned char* saida,
+                                             int passoSaida,
+                                             char* erro,
+                                             int tamanhoErro);
 
 #ifdef __cplusplus
 }

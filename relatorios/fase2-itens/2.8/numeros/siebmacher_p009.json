@@ -1,0 +1,32 @@
+{
+ "siebmacher_p009": {
+  "tamanho": [
+   1654,
+   1250
+  ],
+  "dpi": 300,
+  "recorte_xy_lado": [
+   1342,
+   938,
+   312
+  ],
+  "pontos_pretos": {
+   "Hoje: Automático": 263386,
+   "Otsu do ScanTailor": 292740,
+   "Sauvola do ScanTailor": 311324,
+   "Wolf do ScanTailor": 334823
+  },
+  "pontos_diferentes_de_hoje": {
+   "Otsu do ScanTailor": 45715,
+   "Sauvola do ScanTailor": 54725,
+   "Wolf do ScanTailor": 73731
+  },
+  "segundos": {
+   "Hoje: Automático": 0.8,
+   "Otsu do ScanTailor": 0.93,
+   "Sauvola do ScanTailor": 0.99,
+   "Wolf do ScanTailor": 0.99
+  },
+  "nao_rodou": {}
+ }
+}

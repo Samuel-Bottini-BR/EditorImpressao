@@ -1,0 +1,5 @@
+ok   arrastar a alça (Windows) põe as miniaturas à esquerda (esquerda)
+ok   'Ver em pares' ligado
+ok   o outro livro abre com as miniaturas como ficaram: lugar esquerda, abertas, em pares
+ok   a seta (clique do Windows) fechou as miniaturas
+ok   abre de novo fechadas, à esquerda: lugar esquerda, fechadas, em pares

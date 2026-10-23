@@ -1,4 +1,13 @@
-"""A barra de menu da janela: Arquivo · Editar · Marcar · Filtro · Página · Ver · Ajuda.
+"""A barra de menu da janela: Arquivo · Editar · Marcar · Filtro · Página · Ver · Painéis · Ajuda.
+
+Rodada 14 do layout (Samuel, 20/10/2026): 903 "B — Um menu novo, “Painéis”"
+(os cinco painéis da direita, "Fechar o painel" e os ícones da direita, como o
+"Janela" do Photoshop; os quatro "Painel: ..." que o menu Ver tinha, e que
+nunca fizeram nada, saíram) e 904 "A — Sim, no menu Ver" (as peças novas da
+tela ganham item no menu Ver: por enquanto "Miniaturas" e "Ícones da
+direita", "Todas as páginas" (etapa 5) e "Filtros em tela cheia" (etapa
+6); "Ver lado a lado" entra quando essa tela existir - item que não
+faz nada não entra).
 
 Ela existe para tirar botao solto da tela. Antes, "limpar tudo", "procurar de
 novo" e "deixar a folha em branco" eram tres botoes largos atravessando a
@@ -50,6 +59,7 @@ class BarraDeMenu(QMenuBar):
         self._montar_filtro()
         self._montar_pagina()
         self._montar_ver()
+        self._montar_paineis()
         self._montar_ajuda()
 
     # --- montagem ---------------------------------------------------------
@@ -177,13 +187,13 @@ class BarraDeMenu(QMenuBar):
         self._acao(menu, "menos_zoom", "Afastar", "Ctrl+-")
         self._acao(menu, "ajustar", "Ajustar à tela", "Ctrl+0")
         menu.addSeparator()
-        for chave, texto in (("painel_revisar", "Painel: Para revisar"),
-                             ("painel_marcar", "Painel: Marcar como"),
-                             ("painel_filtro", "Painel: Filtro da página"),
-                             ("painel_historico", "Painel: Histórico")):
+        # rodada 14, 904 A: as peças da tela que se escondem e mostram
+        for chave, texto in (("miniaturas", "Miniaturas"), ("icones", "Ícones da direita")):
             item = self._acao(menu, chave, texto)
             item.setCheckable(True)
             item.setChecked(True)
+        self._acao(menu, "todas_as_paginas", "Todas as páginas")
+        self._acao(menu, "filtros_tela_cheia", "Filtros em tela cheia")
         menu.addSeparator()
         item = self._acao(menu, "comparar", "Modo comparar")
         item.setCheckable(True)
@@ -201,6 +211,34 @@ class BarraDeMenu(QMenuBar):
             item = self._acao(submenu, f"tema_{nome}", NOMES_DOS_TEMAS[nome])
             item.setCheckable(True)
             self.grupo_de_temas.addAction(item)
+
+    # Os painéis do menu "Painéis" (rodada 14, 903 B): a chave da ação e a
+    # chave do painel (ui/widgets/paineis.py), na ordem do desenho.
+    PAINEIS_DO_MENU = (("painel_props", "props", "Propriedades"),
+                       ("painel_filtro", "filtro", "Filtro da página"),
+                       ("painel_revisar", "revisar", "Para revisar"),
+                       ("painel_automatico", "automatico", "Automático"),
+                       ("painel_historico", "historico", "Histórico"))
+
+    def _montar_paineis(self) -> None:
+        """Menu Painéis (rodada 14 do layout, 903 B): os cinco painéis da
+        direita (marcado o aberto; abre um por vez), "Fechar o painel" e o
+        "Ícones da direita" (a mesma ação do menu Ver)."""
+        menu = self._menu("Painéis")
+        for chave, _painel, texto in self.PAINEIS_DO_MENU:
+            item = self._acao(menu, chave, texto)
+            item.setCheckable(True)
+        menu.addSeparator()
+        self._acao(menu, "painel_fechar", "Fechar o painel")
+        menu.addAction(self.acoes["icones"])
+
+    def marcar_painel(self, aberto: str | None) -> None:
+        """Deixa marcado, no menu Painéis, só o painel que está aberto."""
+        for chave, painel, _texto in self.PAINEIS_DO_MENU:
+            item = self.acoes[chave]
+            item.blockSignals(True)
+            item.setChecked(painel == aberto)
+            item.blockSignals(False)
 
     def marcar_tema(self, nome: str) -> None:
         """Deixa marcado, no menu Ver > Tema, o tema que está valendo."""

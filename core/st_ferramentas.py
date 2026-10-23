@@ -13,7 +13,8 @@ O QUE FAZ
     outras ferramentas sem refazer nada: cada ferramenta é um módulo em core/
     que pede a função aqui (core/pontinhos_scantailor.py, limpar
     pontinhos; core/dividir_scantailor.py, dividir a folha;
-    core/endireitar_scantailor.py, endireitar a página). Ver "Duas
+    core/endireitar_scantailor.py, endireitar a página;
+    core/caixas_scantailor.py, a caixa da página e a do conteúdo). Ver "Duas
     DLLs" em terceiros/scantailor-advanced/LEIA-ME.md.
 
     Recompilar: .venv\\Scripts\\python.exe compilar_st_ferramentas.py
@@ -55,7 +56,25 @@ CAMINHO_DLL = Path(__file__).resolve().parent / "nativo" / "st_ferramentas.dll"
 # Tem de bater com ST_FERRAMENTAS_VERSAO_API em st_ferramentas.h.
 # 1 = so os pontinhos; 2 (06/10/2026) = + dividir (st_ferramentas_dividir);
 # 3 (06/10/2026) = + endireitar (st_ferramentas_endireitar, item 2.2).
-VERSAO_API = 3
+# 4 (12/10/2026) = + as caixas da página e do conteúdo (st_ferramentas_caixas,
+#     itens 2.13 e 2.5; core/caixas_scantailor.py).
+# 5 (20/10/2026) = + preto e branco do ScanTailor (st_ferramentas_preto_e_branco,
+#     item 2.8; core/preto_e_branco_scantailor.py).
+# 6 (20/10/2026) = + as cores do ScanTailor (st_ferramentas_cores, item 2.11;
+#     core/cores_scantailor.py).
+# 7 (21/10/2026) = + o desentortar do ScanTailor (st_ferramentas_desentortar,
+#     item 2.12; core/desentortar_scantailor.py).
+# 8 (22/10/2026) = o desentortar recebe a pagina com o papel do scan em volta e
+#     o corte como medida (escolha do Samuel na Central: "cortar uma vez so, no
+#     fim", como o ScanTailor); a saida tem o tamanho do corte. (O ramo das
+#     ferramentas tambem usou o 8: + igualar a luz, suavizar e Wiener, item
+#     2.17, core/luz_scantailor.py.)
+# 9 (22/10/2026) = o desentortar ganha o `crescer` (a mesma pagina desentortada
+#     numa pagina maior) e a `marca` redesenhada com o mesmo modelo: a protecao
+#     e o "desentortar aumentando a pagina" (respostas P1 e P2 do Samuel).
+# 10 (23/10/2026) = juncao da Fase 2: uma DLL so com tudo dos ramos (ver
+#     st_ferramentas.h). Nenhuma funcao mudou.
+VERSAO_API = 10
 
 # Códigos de st_ferramentas.h (iguais para todas as funções).
 OK, ERRO_PARAMETRO, ERRO_MEMORIA, ERRO_INTERNO = 0, 1, 2, 3
@@ -88,6 +107,32 @@ ASSINATURAS = {
         ctypes.c_char_p, ctypes.c_int,                               # erro
     ]),
     # Item 2.2 (06/10/2026): endireitar a pagina (core/endireitar_scantailor.py).
+    # item 2.17 (core/luz_scantailor.py)
+    "st_ferramentas_igualar_luz": (ctypes.c_int, [
+        ctypes.c_void_p, ctypes.c_int, ctypes.c_int, ctypes.c_int,   # pixels, largura, altura, passo
+        ctypes.c_int,                                                # canais (1 ou 3)
+        ctypes.c_void_p, ctypes.c_int,                               # saida, passo
+        ctypes.c_char_p, ctypes.c_int,                               # erro
+    ]),
+    "st_ferramentas_suavizar_cinza": (ctypes.c_int, [
+        ctypes.c_void_p, ctypes.c_int, ctypes.c_int, ctypes.c_int,   # pixels, largura, altura, passo
+        ctypes.c_int,                                                # canais (1 ou 3)
+        ctypes.c_int, ctypes.c_int,                                  # dpi x, y
+        ctypes.c_void_p, ctypes.c_int,                               # saida (cinza), passo
+        ctypes.c_char_p, ctypes.c_int,                               # erro
+    ]),
+    "st_ferramentas_suavizar_preto_e_branco": (ctypes.c_int, [
+        ctypes.c_void_p, ctypes.c_int, ctypes.c_int, ctypes.c_int,   # entrada, largura, altura, passo
+        ctypes.c_void_p, ctypes.c_int,                               # saida, passo
+        ctypes.c_char_p, ctypes.c_int,                               # erro
+    ]),
+    "st_ferramentas_wiener": (ctypes.c_int, [
+        ctypes.c_void_p, ctypes.c_int, ctypes.c_int, ctypes.c_int,   # pixels, largura, altura, passo
+        ctypes.c_int,                                                # canais (1 ou 3)
+        ctypes.c_int, ctypes.c_double,                               # janela, coeficiente
+        ctypes.c_void_p, ctypes.c_int,                               # saida, passo
+        ctypes.c_char_p, ctypes.c_int,                               # erro
+    ]),
     "st_ferramentas_endireitar": (ctypes.c_int, [
         ctypes.c_void_p, ctypes.c_int, ctypes.c_int, ctypes.c_int,   # pixels, largura, altura, passo
         ctypes.c_int,                                                # canais (1 ou 3)
@@ -96,6 +141,67 @@ ASSINATURAS = {
         ctypes.POINTER(ctypes.c_double),                             # angulo bruto
         ctypes.POINTER(ctypes.c_double),                             # confianca
         ctypes.POINTER(ctypes.c_int),                                # preto no branco (1/0)
+        ctypes.c_char_p, ctypes.c_int,                               # erro
+    ]),
+    # Item 2.8 (20/10/2026): o preto e branco do ScanTailor, com os dez jeitos
+    # (core/preto_e_branco_scantailor.py).
+    "st_ferramentas_preto_e_branco": (ctypes.c_int, [
+        ctypes.c_void_p, ctypes.c_int, ctypes.c_int, ctypes.c_int,   # pixels, largura, altura, passo
+        ctypes.c_int,                                                # canais (1 ou 3)
+        ctypes.c_int, ctypes.c_int,                                  # dpi x, y
+        ctypes.c_int, ctypes.c_int,                                  # metodo, ajuste do limiar
+        ctypes.c_int,                                                # janela
+        ctypes.c_double, ctypes.c_double,                            # coef. Sauvola, coef. Wolf
+        ctypes.c_int, ctypes.c_int,                                  # Wolf minimo, maximo
+        ctypes.c_int, ctypes.c_int, ctypes.c_int,                    # normalizar, Savitzky-Golay, morfologica
+        ctypes.c_void_p, ctypes.c_int,                               # saida, passo
+        ctypes.c_char_p, ctypes.c_int,                               # erro
+    ]),
+    # Item 2.11 (20/10/2026): as cores do ScanTailor (core/cores_scantailor.py).
+    "st_ferramentas_cores": (ctypes.c_int, [
+        ctypes.c_void_p, ctypes.c_int, ctypes.c_int, ctypes.c_int,   # pixels, largura, altura, passo
+        ctypes.c_int,                                                # canais (1 ou 3)
+        ctypes.c_void_p, ctypes.c_int,                               # preto e branco, passo
+        ctypes.c_int, ctypes.c_int,                                  # dpi x, y
+        ctypes.c_int, ctypes.c_int,                                  # normalizar, segmentar
+        ctypes.c_int, ctypes.c_int, ctypes.c_int, ctypes.c_int,      # ruido, ajustes R, G, B
+        ctypes.c_int, ctypes.c_int, ctypes.c_int, ctypes.c_int,      # posterizar, nivel, normalizar cores, forcar P&B
+        ctypes.c_void_p, ctypes.c_int,                               # saida, passo
+        ctypes.c_char_p, ctypes.c_int,                               # erro
+    ]),
+    # Itens 2.13 e 2.5 (12/10/2026): a caixa da pagina e a do conteudo
+    # (core/caixas_scantailor.py).
+    "st_ferramentas_caixas": (ctypes.c_int, [
+        ctypes.c_void_p, ctypes.c_int, ctypes.c_int, ctypes.c_int,   # pixels, largura, altura, passo
+        ctypes.c_int,                                                # canais (1 ou 3)
+        ctypes.c_int, ctypes.c_int,                                  # dpi x, y
+        ctypes.c_int, ctypes.c_int,                                  # modo da pagina, ajustar os cantos
+        ctypes.c_double, ctypes.c_double, ctypes.c_double,           # largura e altura esperadas (mm), tolerancia
+        ctypes.c_int,                                                # modo do conteudo
+        ctypes.c_int,                                                # claro no escuro (-1, 0, 1)
+        ctypes.POINTER(ctypes.c_double),                             # pagina (4 numeros)
+        ctypes.POINTER(ctypes.c_double),                             # conteudo (4)
+        ctypes.POINTER(ctypes.c_double),                             # conteudo bruto (4)
+        ctypes.POINTER(ctypes.c_double),                             # tamanho do conteudo em mm (2)
+        ctypes.POINTER(ctypes.c_int),                                # achou conteudo (1/0)
+        ctypes.POINTER(ctypes.c_int),                                # preto no branco (1/0)
+        ctypes.POINTER(ctypes.c_double),                             # milissegundos (3)
+        ctypes.c_char_p, ctypes.c_int,                               # erro
+    ]),
+    # Item 2.12 (21/10/2026): o desentortar do ScanTailor (core/desentortar_scantailor.py).
+    "st_ferramentas_desentortar": (ctypes.c_int, [
+        ctypes.c_void_p, ctypes.c_int, ctypes.c_int, ctypes.c_int,   # pixels, largura, altura, passo
+        ctypes.c_int,                                                # canais (1 ou 3)
+        ctypes.c_int, ctypes.c_int,                                  # dpi x, y
+        ctypes.c_int, ctypes.c_int,                                  # modo, lado
+        ctypes.c_double, ctypes.c_int,                               # profundidade, endireitar depois
+        ctypes.c_int, ctypes.c_int, ctypes.c_int, ctypes.c_int,      # corte x, y, largura, altura (versao 8)
+        ctypes.c_int, ctypes.c_int, ctypes.c_int, ctypes.c_int,      # caixa do conteudo (x, y, larg., alt.)
+        ctypes.c_int,                                                # crescer (versao 9)
+        ctypes.c_void_p, ctypes.c_int,                               # marca, passo (versao 9; None = sem)
+        ctypes.c_void_p, ctypes.c_int,                               # saida, passo
+        ctypes.c_void_p, ctypes.c_int,                               # marca desentortada, passo (versao 9)
+        ctypes.POINTER(ctypes.c_int), ctypes.POINTER(ctypes.c_double),  # achou curvas, angulo depois
         ctypes.c_char_p, ctypes.c_int,                               # erro
     ]),
 }
@@ -126,6 +232,21 @@ def indisponivel(motivo: str, detalhe: str | None = None) -> Resultado:
     if detalhe:
         _log.warning("st_ferramentas: %s (%s)", motivo, detalhe)
     return Resultado(None, motivo, detalhe)
+
+
+def anotar_no_erros_log(origem: str, motivo: str | None, detalhe: str | None) -> None:
+    """Grava no erros.log (registro.registrar_erro, como o resto do programa)
+    que uma ferramenta do ScanTailor não rodou e a página saiu pelo caminho de
+    reserva. Conserto de 20/10/2026 (verificador do 2.8): antes ia só para o
+    `logging` do Python, que o programa não grava em arquivo - a queda não
+    deixava rastro. Nunca levanta exceção (anotar não pode derrubar a página).
+    Quem chama já faz isso uma vez por sessão (senão seria uma linha por página)."""
+    try:
+        from registro import registrar_erro
+
+        registrar_erro(origem, (motivo or "") + (f"\ndetalhe: {detalhe}" if detalhe else ""))
+    except Exception:  # noqa: BLE001
+        pass
 
 
 def dpi_inteiro(dpi) -> tuple[int, int]:

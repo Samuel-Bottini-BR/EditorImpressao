@@ -1,0 +1,8 @@
+ok   painel Filtro, Preto e branco: o jeito do preto e branco e as três caixinhas em Mais ajustes
+ok   clique nativo no ícone do título abriu a tela cheia
+ok   tela cheia no Preto e branco: Só as letras, Limpar a sujeira e Mais ajustes à direita
+ok   clique nativo em 'Reduzir cores' na tela cheia: guardado, a página não mudou
+ok   com opções mexidas, a página grande refeita e a frase do 'Mexido aqui'
+ok   clique nativo em 'Usar Preto e branco': as opções gravadas na página
+ok   desfazer volta as opções
+ok   no Melhorar: só o ajuste, Letra clara em fundo escuro e Reduzir cores

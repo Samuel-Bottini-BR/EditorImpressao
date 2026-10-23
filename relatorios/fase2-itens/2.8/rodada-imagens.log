@@ -1,0 +1,37 @@
+== boecio_p003 04:59:51
+== boecio_p007 04:59:55
+== boecio_p008 05:00:01
+== boecio_p022 05:00:07
+== escola_p007 05:00:12
+== escola_p035 05:00:22
+== graduale_p221 05:00:32
+== graduale_p222 05:00:55
+== graduale_p223 05:01:15
+== horas_p011 05:01:39
+== horas_p013 05:02:10
+FALHOU horas_p013
+    return um.clip(a, min, max, out=out, **kwargs)
+           ~~~~~~~^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+numpy._core._exceptions._ArrayMemoryError: Unable to allocate 93.6 MiB for an array with shape (5919, 4146) and data type float32
+== horas_p014 05:02:38
+== horas_p026 05:03:03
+== horas_p027 05:03:33
+== horas_p047 05:03:55
+== marial_p007 05:04:18
+== opusmajus_p003 05:04:30
+== opusmajus_p011 05:04:41
+== opusmajus_p020 05:04:54
+== opusmajus_p165 05:05:04
+== opusmajus_p256 05:05:13
+== palatino_p005 05:05:23
+== palatino_p007 05:05:31
+== palatino_p009 05:05:38
+== palatino_p010 05:05:46
+== palatino_p057 05:05:53
+== palatino_p066 05:06:00
+== palatino_p067 05:06:07
+== rhetorica_p018 05:06:14
+== rhetorica_p073 05:06:22
+== siebmacher_p007 05:06:31
+== siebmacher_p009 05:06:41
+fim 05:06:50

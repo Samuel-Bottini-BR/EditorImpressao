@@ -1,0 +1,1541 @@
+{
+ "sobre": "As caixas que o programa de teste do pesquisador (scripts/caixas.cpp, o PageFinder e o ContentBoxFinder originais do ScanTailor Advanced v1.2.1 ligados na st_tudo.lib de 01/10) mediu em 12/10/2026. Copiado de relatorios/conferir/geometria-g7-g10-2026-10-12/dados/caixas.json, ramo fase2-geometria-perguntas, commit 403eda1. Caixas em pontos da imagem (x0, y0, x1, y1), impressas com UMA casa decimal. Sempre tratadas como preto no branco. 'conteudo_na_pagina' e o que o achador devolveu, ANTES do corte pela caixa da pagina. NAO mude os numeros para o teste passar: sao a referencia de fora (tests/test_caixas_scantailor.py).",
+ "fontes": {
+  "gabarito": "gabarito/paginas/<png> (fora do git; juncao nas worktrees)",
+  "faixa": "D:/programas/EditorImpressao-arquivos/revisar-decisoes-trabalho/faixa/<png> (somente leitura; folhas a 150 DPI da rodada 4 do Para revisar)",
+  "livro": "pagina do PDF do acervo desenhada com fitz get_pixmap(dpi=dpi_do_desenho, alpha=False); livro sem pasta = em LIVROS PARA TESTE"
+ },
+ "paginas": {
+  "siebmacher_p007": {
+   "fonte": {
+    "tipo": "gabarito",
+    "png": "siebmacher_p007.png"
+   },
+   "largura": 2217,
+   "altura": 1712,
+   "dpi": 400,
+   "pagina": [
+    0.0,
+    26.7,
+    2194.7,
+    1696.0
+   ],
+   "pagina_cantos": [
+    0.0,
+    98.7,
+    2072.0,
+    1645.3
+   ],
+   "conteudo_folha": [
+    109.3,
+    66.7,
+    1746.7,
+    1434.7
+   ],
+   "conteudo_na_pagina": [
+    109.3,
+    66.7,
+    1746.7,
+    1434.7
+   ],
+   "conteudo_na_pagina_cantos": [
+    397.3,
+    146.7,
+    1386.7,
+    1277.3
+   ]
+  },
+  "siebmacher_p009": {
+   "fonte": {
+    "tipo": "gabarito",
+    "png": "siebmacher_p009.png"
+   },
+   "largura": 2212,
+   "altura": 1712,
+   "dpi": 400,
+   "pagina": [
+    0.0,
+    18.7,
+    2184.0,
+    1685.3
+   ],
+   "pagina_cantos": [
+    2.7,
+    82.7,
+    2072.0,
+    1634.7
+   ],
+   "conteudo_folha": [
+    69.3,
+    34.7,
+    1802.7,
+    1626.7
+   ],
+   "conteudo_na_pagina": [
+    69.3,
+    34.7,
+    1802.7,
+    1626.7
+   ],
+   "conteudo_na_pagina_cantos": [
+    360.0,
+    122.7,
+    1362.7,
+    1226.7
+   ]
+  },
+  "horas_p011": {
+   "fonte": {
+    "tipo": "gabarito",
+    "png": "horas_p011.png"
+   },
+   "largura": 1024,
+   "altura": 1446,
+   "dpi": 72,
+   "pagina": [
+    0.0,
+    0.0,
+    1023.8,
+    1446.2
+   ],
+   "pagina_cantos": [
+    1.0,
+    0.5,
+    1023.8,
+    1445.8
+   ],
+   "conteudo_folha": [
+    100.8,
+    17.8,
+    887.0,
+    1357.0
+   ],
+   "conteudo_na_pagina": [
+    100.8,
+    17.8,
+    887.0,
+    1357.0
+   ],
+   "conteudo_na_pagina_cantos": [
+    12.5,
+    17.8,
+    887.0,
+    1409.8
+   ]
+  },
+  "horas_p013": {
+   "fonte": {
+    "tipo": "gabarito",
+    "png": "horas_p013.png"
+   },
+   "largura": 1024,
+   "altura": 1453,
+   "dpi": 72,
+   "pagina": [
+    0.0,
+    0.0,
+    1023.8,
+    1453.0
+   ],
+   "pagina_cantos": [
+    18.2,
+    1.9,
+    1023.8,
+    1436.6
+   ],
+   "conteudo_folha": [
+    104.2,
+    37.4,
+    1005.6,
+    1435.2
+   ],
+   "conteudo_na_pagina": [
+    104.2,
+    37.4,
+    1005.6,
+    1435.2
+   ],
+   "conteudo_na_pagina_cantos": [
+    104.2,
+    37.4,
+    1005.6,
+    1435.2
+   ]
+  },
+  "horas_p014": {
+   "fonte": {
+    "tipo": "gabarito",
+    "png": "horas_p014.png"
+   },
+   "largura": 1024,
+   "altura": 1501,
+   "dpi": 72,
+   "pagina": [
+    0.0,
+    0.0,
+    1023.8,
+    1501.0
+   ],
+   "pagina_cantos": [
+    0.5,
+    0.5,
+    1023.8,
+    1501.0
+   ],
+   "conteudo_folha": [
+    248.6,
+    171.8,
+    955.2,
+    1230.7
+   ],
+   "conteudo_na_pagina": [
+    248.6,
+    171.8,
+    955.2,
+    1230.7
+   ],
+   "conteudo_na_pagina_cantos": [
+    248.6,
+    171.8,
+    955.2,
+    1230.7
+   ]
+  },
+  "horas_p026": {
+   "fonte": {
+    "tipo": "gabarito",
+    "png": "horas_p026.png"
+   },
+   "largura": 1024,
+   "altura": 1533,
+   "dpi": 72,
+   "pagina": [
+    0.0,
+    0.0,
+    1023.8,
+    1533.1
+   ],
+   "pagina_cantos": [
+    0.5,
+    0.5,
+    1023.4,
+    1532.6
+   ],
+   "conteudo_folha": [
+    227.5,
+    161.8,
+    967.2,
+    1262.4
+   ],
+   "conteudo_na_pagina": [
+    227.5,
+    161.8,
+    967.2,
+    1262.4
+   ],
+   "conteudo_na_pagina_cantos": [
+    227.5,
+    161.8,
+    967.2,
+    1262.4
+   ]
+  },
+  "horas_p027": {
+   "fonte": {
+    "tipo": "gabarito",
+    "png": "horas_p027.png"
+   },
+   "largura": 1024,
+   "altura": 1471,
+   "dpi": 72,
+   "pagina": [
+    0.0,
+    0.0,
+    1023.8,
+    1471.2
+   ],
+   "pagina_cantos": [
+    12.0,
+    0.5,
+    1023.8,
+    1459.7
+   ],
+   "conteudo_folha": [
+    85.4,
+    159.4,
+    861.6,
+    1214.4
+   ],
+   "conteudo_na_pagina": [
+    85.4,
+    159.4,
+    861.6,
+    1214.4
+   ],
+   "conteudo_na_pagina_cantos": [
+    85.4,
+    159.4,
+    861.6,
+    1214.4
+   ]
+  },
+  "horas_p047": {
+   "fonte": {
+    "tipo": "gabarito",
+    "png": "horas_p047.png"
+   },
+   "largura": 1024,
+   "altura": 1504,
+   "dpi": 72,
+   "pagina": [
+    0.0,
+    0.0,
+    1023.8,
+    1503.8
+   ],
+   "pagina_cantos": [
+    1.4,
+    0.5,
+    1023.8,
+    1502.9
+   ],
+   "conteudo_folha": [
+    10.1,
+    13.9,
+    892.3,
+    1416.0
+   ],
+   "conteudo_na_pagina": [
+    10.1,
+    13.9,
+    892.3,
+    1416.0
+   ],
+   "conteudo_na_pagina_cantos": [
+    10.1,
+    13.9,
+    892.3,
+    1416.0
+   ]
+  },
+  "graduale_p221": {
+   "fonte": {
+    "tipo": "gabarito",
+    "png": "graduale_p221.png"
+   },
+   "largura": 961,
+   "altura": 1352,
+   "dpi": 72,
+   "pagina": [
+    0.0,
+    0.0,
+    961.0,
+    1352.2
+   ],
+   "pagina_cantos": [
+    1.0,
+    0.5,
+    961.0,
+    1351.7
+   ],
+   "conteudo_folha": [
+    77.8,
+    71.5,
+    877.4,
+    1350.2
+   ],
+   "conteudo_na_pagina": [
+    77.8,
+    71.5,
+    877.4,
+    1350.2
+   ],
+   "conteudo_na_pagina_cantos": [
+    12.5,
+    71.5,
+    877.4,
+    1350.2
+   ]
+  },
+  "graduale_p222": {
+   "fonte": {
+    "tipo": "gabarito",
+    "png": "graduale_p222.png"
+   },
+   "largura": 961,
+   "altura": 1396,
+   "dpi": 72,
+   "pagina": [
+    0.0,
+    0.0,
+    961.0,
+    1395.8
+   ],
+   "pagina_cantos": [
+    0.5,
+    0.5,
+    961.0,
+    1395.8
+   ],
+   "conteudo_folha": [
+    187.7,
+    92.6,
+    950.4,
+    1197.6
+   ],
+   "conteudo_na_pagina": [
+    187.7,
+    92.6,
+    950.4,
+    1197.6
+   ],
+   "conteudo_na_pagina_cantos": [
+    187.7,
+    92.6,
+    950.4,
+    1197.6
+   ]
+  },
+  "graduale_p223": {
+   "fonte": {
+    "tipo": "gabarito",
+    "png": "graduale_p223.png"
+   },
+   "largura": 961,
+   "altura": 1352,
+   "dpi": 72,
+   "pagina": [
+    0.0,
+    0.0,
+    961.0,
+    1352.2
+   ],
+   "pagina_cantos": [
+    1.4,
+    0.5,
+    961.0,
+    1351.2
+   ],
+   "conteudo_folha": [
+    41.8,
+    38.9,
+    872.6,
+    1286.4
+   ],
+   "conteudo_na_pagina": [
+    41.8,
+    38.9,
+    872.6,
+    1286.4
+   ],
+   "conteudo_na_pagina_cantos": [
+    72.0,
+    10.6,
+    872.6,
+    1286.4
+   ]
+  },
+  "palatino_p005": {
+   "fonte": {
+    "tipo": "gabarito",
+    "png": "palatino_p005.png"
+   },
+   "largura": 1929,
+   "altura": 2943,
+   "dpi": 400,
+   "pagina": [
+    0.0,
+    0.0,
+    1928.0,
+    2944.0
+   ],
+   "pagina_cantos": [
+    13.3,
+    13.3,
+    1928.0,
+    2944.0
+   ],
+   "conteudo_folha": [
+    152.0,
+    106.7,
+    1688.0,
+    2858.7
+   ],
+   "conteudo_na_pagina": [
+    152.0,
+    106.7,
+    1688.0,
+    2858.7
+   ],
+   "conteudo_na_pagina_cantos": [
+    152.0,
+    106.7,
+    1688.0,
+    2858.7
+   ]
+  },
+  "palatino_p007": {
+   "fonte": {
+    "tipo": "gabarito",
+    "png": "palatino_p007.png"
+   },
+   "largura": 1929,
+   "altura": 2943,
+   "dpi": 400,
+   "pagina": [
+    0.0,
+    0.0,
+    1928.0,
+    2944.0
+   ],
+   "pagina_cantos": [
+    2.7,
+    0.0,
+    1928.0,
+    2941.3
+   ],
+   "conteudo_folha": [
+    77.3,
+    184.0,
+    1738.7,
+    2514.7
+   ],
+   "conteudo_na_pagina": [
+    77.3,
+    184.0,
+    1738.7,
+    2514.7
+   ],
+   "conteudo_na_pagina_cantos": [
+    77.3,
+    184.0,
+    1738.7,
+    2514.7
+   ]
+  },
+  "palatino_p009": {
+   "fonte": {
+    "tipo": "gabarito",
+    "png": "palatino_p009.png"
+   },
+   "largura": 1929,
+   "altura": 2943,
+   "dpi": 400,
+   "pagina": [
+    0.0,
+    0.0,
+    1928.0,
+    2944.0
+   ],
+   "pagina_cantos": [
+    2.7,
+    0.0,
+    1928.0,
+    2941.3
+   ],
+   "conteudo_folha": [
+    66.7,
+    90.7,
+    1813.3,
+    2530.7
+   ],
+   "conteudo_na_pagina": [
+    66.7,
+    90.7,
+    1813.3,
+    2530.7
+   ],
+   "conteudo_na_pagina_cantos": [
+    66.7,
+    90.7,
+    1813.3,
+    2530.7
+   ]
+  },
+  "palatino_p010": {
+   "fonte": {
+    "tipo": "gabarito",
+    "png": "palatino_p010.png"
+   },
+   "largura": 1929,
+   "altura": 2943,
+   "dpi": 400,
+   "pagina": [
+    0.0,
+    0.0,
+    1928.0,
+    2944.0
+   ],
+   "pagina_cantos": [
+    2.7,
+    0.0,
+    1928.0,
+    2941.3
+   ],
+   "conteudo_folha": [
+    104.0,
+    56.0,
+    1826.7,
+    2493.3
+   ],
+   "conteudo_na_pagina": [
+    104.0,
+    56.0,
+    1826.7,
+    2493.3
+   ],
+   "conteudo_na_pagina_cantos": [
+    104.0,
+    56.0,
+    1826.7,
+    2493.3
+   ]
+  },
+  "palatino_p057": {
+   "fonte": {
+    "tipo": "gabarito",
+    "png": "palatino_p057.png"
+   },
+   "largura": 1929,
+   "altura": 2943,
+   "dpi": 400,
+   "pagina": [
+    0.0,
+    0.0,
+    1928.0,
+    2944.0
+   ],
+   "pagina_cantos": [
+    2.7,
+    0.0,
+    1928.0,
+    2941.3
+   ],
+   "conteudo_folha": [
+    74.7,
+    88.0,
+    1741.3,
+    2605.3
+   ],
+   "conteudo_na_pagina": [
+    74.7,
+    88.0,
+    1741.3,
+    2605.3
+   ],
+   "conteudo_na_pagina_cantos": [
+    74.7,
+    88.0,
+    1741.3,
+    2605.3
+   ]
+  },
+  "palatino_p066": {
+   "fonte": {
+    "tipo": "gabarito",
+    "png": "palatino_p066.png"
+   },
+   "largura": 1929,
+   "altura": 2943,
+   "dpi": 400,
+   "pagina": [
+    0.0,
+    0.0,
+    1928.0,
+    2944.0
+   ],
+   "pagina_cantos": [
+    2.7,
+    0.0,
+    1909.3,
+    2922.7
+   ],
+   "conteudo_folha": [
+    149.3,
+    93.3,
+    1808.0,
+    2528.0
+   ],
+   "conteudo_na_pagina": [
+    149.3,
+    93.3,
+    1808.0,
+    2528.0
+   ],
+   "conteudo_na_pagina_cantos": [
+    149.3,
+    93.3,
+    1808.0,
+    2528.0
+   ]
+  },
+  "palatino_p067": {
+   "fonte": {
+    "tipo": "gabarito",
+    "png": "palatino_p067.png"
+   },
+   "largura": 1929,
+   "altura": 2943,
+   "dpi": 400,
+   "pagina": [
+    0.0,
+    0.0,
+    1928.0,
+    2944.0
+   ],
+   "pagina_cantos": [
+    2.7,
+    0.0,
+    1928.0,
+    2941.3
+   ],
+   "conteudo_folha": [
+    42.7,
+    96.0,
+    1709.3,
+    2560.0
+   ],
+   "conteudo_na_pagina": [
+    42.7,
+    96.0,
+    1709.3,
+    2560.0
+   ],
+   "conteudo_na_pagina_cantos": [
+    42.7,
+    96.0,
+    1709.3,
+    2560.0
+   ]
+  },
+  "escola_p007": {
+   "fonte": {
+    "tipo": "gabarito",
+    "png": "escola_p007.png"
+   },
+   "largura": 1420,
+   "altura": 2089,
+   "dpi": 200,
+   "pagina": [
+    0.0,
+    0.0,
+    1420.0,
+    2089.3
+   ],
+   "pagina_cantos": [
+    0.0,
+    0.0,
+    1420.0,
+    2089.3
+   ],
+   "conteudo_folha": [
+    50.7,
+    161.3,
+    1338.7,
+    1992.0
+   ],
+   "conteudo_na_pagina": [
+    50.7,
+    161.3,
+    1338.7,
+    1992.0
+   ],
+   "conteudo_na_pagina_cantos": [
+    50.7,
+    161.3,
+    1338.7,
+    1992.0
+   ]
+  },
+  "escola_p035": {
+   "fonte": {
+    "tipo": "gabarito",
+    "png": "escola_p035.png"
+   },
+   "largura": 1517,
+   "altura": 2098,
+   "dpi": 200,
+   "pagina": [
+    0.0,
+    0.0,
+    1517.3,
+    2098.7
+   ],
+   "pagina_cantos": [
+    1.3,
+    0.0,
+    1517.3,
+    2097.3
+   ],
+   "conteudo_folha": [
+    90.7,
+    114.7,
+    1378.7,
+    2089.3
+   ],
+   "conteudo_na_pagina": [
+    90.7,
+    114.7,
+    1378.7,
+    2089.3
+   ],
+   "conteudo_na_pagina_cantos": [
+    90.7,
+    114.7,
+    1378.7,
+    2089.3
+   ]
+  },
+  "marial_p007": {
+   "fonte": {
+    "tipo": "gabarito",
+    "png": "marial_p007.png"
+   },
+   "largura": 714,
+   "altura": 937,
+   "dpi": 72,
+   "pagina": [
+    0.0,
+    2.4,
+    711.4,
+    933.6
+   ],
+   "pagina_cantos": [
+    0.5,
+    11.0,
+    692.2,
+    922.6
+   ],
+   "conteudo_folha": [
+    73.0,
+    61.4,
+    629.8,
+    868.3
+   ],
+   "conteudo_na_pagina": [
+    73.0,
+    61.4,
+    629.8,
+    868.3
+   ],
+   "conteudo_na_pagina_cantos": [
+    73.0,
+    61.4,
+    629.8,
+    868.3
+   ]
+  },
+  "opusmajus_p003": {
+   "fonte": {
+    "tipo": "gabarito",
+    "png": "opusmajus_p003.png"
+   },
+   "largura": 2300,
+   "altura": 3699,
+   "dpi": 400,
+   "pagina": [
+    0.0,
+    0.0,
+    2301.3,
+    3698.7
+   ],
+   "pagina_cantos": [
+    0.0,
+    2.7,
+    2298.7,
+    3698.7
+   ],
+   "conteudo_folha": [
+    333.3,
+    328.0,
+    1706.7,
+    3146.7
+   ],
+   "conteudo_na_pagina": [
+    333.3,
+    328.0,
+    1706.7,
+    3146.7
+   ],
+   "conteudo_na_pagina_cantos": [
+    333.3,
+    328.0,
+    1706.7,
+    3146.7
+   ]
+  },
+  "opusmajus_p011": {
+   "fonte": {
+    "tipo": "gabarito",
+    "png": "opusmajus_p011.png"
+   },
+   "largura": 2300,
+   "altura": 3699,
+   "dpi": 400,
+   "pagina": [
+    0.0,
+    0.0,
+    2301.3,
+    3698.7
+   ],
+   "pagina_cantos": [
+    0.0,
+    2.7,
+    2298.7,
+    3698.7
+   ],
+   "conteudo_folha": [
+    269.3,
+    456.0,
+    1928.0,
+    3240.0
+   ],
+   "conteudo_na_pagina": [
+    269.3,
+    456.0,
+    1928.0,
+    3240.0
+   ],
+   "conteudo_na_pagina_cantos": [
+    269.3,
+    456.0,
+    1928.0,
+    3240.0
+   ]
+  },
+  "opusmajus_p020": {
+   "fonte": {
+    "tipo": "gabarito",
+    "png": "opusmajus_p020.png"
+   },
+   "largura": 2212,
+   "altura": 3620,
+   "dpi": 400,
+   "pagina": [
+    0.0,
+    0.0,
+    2213.3,
+    3621.3
+   ],
+   "pagina_cantos": [
+    2.7,
+    2.7,
+    2210.7,
+    3618.7
+   ],
+   "conteudo_folha": [
+    402.7,
+    344.0,
+    1973.3,
+    3048.0
+   ],
+   "conteudo_na_pagina": [
+    402.7,
+    344.0,
+    1973.3,
+    3048.0
+   ],
+   "conteudo_na_pagina_cantos": [
+    402.7,
+    344.0,
+    1973.3,
+    3048.0
+   ]
+  },
+  "opusmajus_p165": {
+   "fonte": {
+    "tipo": "gabarito",
+    "png": "opusmajus_p165.png"
+   },
+   "largura": 2160,
+   "altura": 3576,
+   "dpi": 400,
+   "pagina": [
+    0.0,
+    0.0,
+    2160.0,
+    3576.0
+   ],
+   "pagina_cantos": [
+    0.0,
+    0.0,
+    2160.0,
+    3576.0
+   ],
+   "conteudo_folha": [
+    125.3,
+    216.0,
+    1789.3,
+    3176.0
+   ],
+   "conteudo_na_pagina": [
+    125.3,
+    216.0,
+    1789.3,
+    3176.0
+   ],
+   "conteudo_na_pagina_cantos": [
+    125.3,
+    216.0,
+    1789.3,
+    3176.0
+   ]
+  },
+  "opusmajus_p256": {
+   "fonte": {
+    "tipo": "gabarito",
+    "png": "opusmajus_p256.png"
+   },
+   "largura": 3283,
+   "altura": 2767,
+   "dpi": 400,
+   "pagina": [
+    0.0,
+    0.0,
+    3282.7,
+    2768.0
+   ],
+   "pagina_cantos": [
+    2.7,
+    0.0,
+    3282.7,
+    2765.3
+   ],
+   "conteudo_folha": [
+    216.0,
+    232.0,
+    3253.3,
+    2522.7
+   ],
+   "conteudo_na_pagina": [
+    216.0,
+    232.0,
+    3253.3,
+    2522.7
+   ],
+   "conteudo_na_pagina_cantos": [
+    216.0,
+    232.0,
+    3253.3,
+    2522.7
+   ]
+  },
+  "egenloff_p047": {
+   "fonte": {
+    "tipo": "faixa",
+    "png": "egenloff_p047.png"
+   },
+   "largura": 2084,
+   "altura": 2744,
+   "dpi": 150,
+   "pagina": [
+    39.0,
+    80.0,
+    2046.0,
+    2741.0
+   ],
+   "pagina_cantos": [
+    60.0,
+    92.0,
+    2018.0,
+    2704.0
+   ],
+   "conteudo_folha": [
+    159.0,
+    526.0,
+    1681.0,
+    2397.0
+   ],
+   "conteudo_na_pagina": [
+    159.0,
+    526.0,
+    1681.0,
+    2397.0
+   ],
+   "conteudo_na_pagina_cantos": [
+    159.0,
+    526.0,
+    1681.0,
+    2397.0
+   ]
+  },
+  "egenloff_p003": {
+   "fonte": {
+    "tipo": "faixa",
+    "png": "egenloff_p003.png"
+   },
+   "largura": 2084,
+   "altura": 2682,
+   "dpi": 150,
+   "pagina": [
+    26.0,
+    16.0,
+    2056.0,
+    2682.0
+   ],
+   "pagina_cantos": [
+    31.0,
+    58.0,
+    2019.0,
+    2682.0
+   ],
+   "conteudo_folha": [
+    420.0,
+    345.0,
+    1954.0,
+    2635.0
+   ],
+   "conteudo_na_pagina": [
+    420.0,
+    345.0,
+    1954.0,
+    2635.0
+   ],
+   "conteudo_na_pagina_cantos": [
+    420.0,
+    345.0,
+    1954.0,
+    2635.0
+   ]
+  },
+  "matematica_p032": {
+   "fonte": {
+    "tipo": "faixa",
+    "png": "matematica_p032.png"
+   },
+   "largura": 1240,
+   "altura": 1753,
+   "dpi": 150,
+   "pagina": [
+    0.0,
+    42.0,
+    1024.0,
+    1475.0
+   ],
+   "pagina_cantos": [
+    7.0,
+    49.0,
+    1011.0,
+    1462.0
+   ],
+   "conteudo_folha": [
+    134.0,
+    345.0,
+    946.0,
+    1381.0
+   ],
+   "conteudo_na_pagina": [
+    134.0,
+    345.0,
+    946.0,
+    1381.0
+   ],
+   "conteudo_na_pagina_cantos": [
+    134.0,
+    345.0,
+    946.0,
+    1381.0
+   ]
+  },
+  "camoes_p066": {
+   "fonte": {
+    "tipo": "faixa",
+    "png": "camoes_p066.png"
+   },
+   "largura": 543,
+   "altura": 791,
+   "dpi": 150,
+   "pagina": [
+    7.0,
+    8.0,
+    543.0,
+    781.0
+   ],
+   "pagina_cantos": [
+    32.0,
+    29.0,
+    536.0,
+    770.0
+   ],
+   "conteudo_folha": [
+    128.0,
+    71.0,
+    517.0,
+    694.0
+   ],
+   "conteudo_na_pagina": [
+    128.0,
+    71.0,
+    517.0,
+    694.0
+   ],
+   "conteudo_na_pagina_cantos": [
+    128.0,
+    71.0,
+    517.0,
+    694.0
+   ]
+  },
+  "cursus_p314": {
+   "fonte": {
+    "tipo": "faixa",
+    "png": "cursus_p314.png"
+   },
+   "largura": 1275,
+   "altura": 1650,
+   "dpi": 150,
+   "pagina": [
+    46.0,
+    0.0,
+    1275.0,
+    1631.0
+   ],
+   "pagina_cantos": [
+    60.0,
+    1.0,
+    1275.0,
+    1618.0
+   ],
+   "conteudo_folha": [
+    161.0,
+    46.0,
+    1121.0,
+    1594.0
+   ],
+   "conteudo_na_pagina": [
+    161.0,
+    46.0,
+    1121.0,
+    1594.0
+   ],
+   "conteudo_na_pagina_cantos": [
+    161.0,
+    46.0,
+    1121.0,
+    1594.0
+   ]
+  },
+  "antiphon_p088": {
+   "fonte": {
+    "tipo": "faixa",
+    "png": "antiphon_p088.png"
+   },
+   "largura": 2742,
+   "altura": 3750,
+   "dpi": 150,
+   "pagina": [
+    0.0,
+    123.0,
+    2585.0,
+    3636.0
+   ],
+   "pagina_cantos": [
+    8.0,
+    152.0,
+    2535.0,
+    3607.0
+   ],
+   "conteudo_folha": [
+    402.0,
+    291.0,
+    2570.0,
+    3065.0
+   ],
+   "conteudo_na_pagina": [
+    402.0,
+    291.0,
+    2570.0,
+    3065.0
+   ],
+   "conteudo_na_pagina_cantos": [
+    402.0,
+    291.0,
+    2359.0,
+    3065.0
+   ]
+  },
+  "ljs47_p046": {
+   "fonte": {
+    "tipo": "livro",
+    "livro": "ljs47.pdf",
+    "pagina": 46,
+    "dpi_do_desenho": 150
+   },
+   "largura": 2155,
+   "altura": 2813,
+   "dpi": 150,
+   "pagina": [
+    137.0,
+    113.0,
+    2155.0,
+    2649.0
+   ],
+   "pagina_cantos": [
+    206.0,
+    165.0,
+    2132.0,
+    2609.0
+   ],
+   "conteudo_folha": [
+    324.0,
+    135.0,
+    1966.0,
+    2743.0
+   ],
+   "conteudo_na_pagina": [
+    139.0,
+    135.0,
+    1966.0,
+    2757.0
+   ],
+   "conteudo_na_pagina_cantos": [
+    208.0,
+    181.0,
+    1966.0,
+    2770.0
+   ]
+  },
+  "ljs47_p068": {
+   "fonte": {
+    "tipo": "livro",
+    "livro": "ljs47.pdf",
+    "pagina": 68,
+    "dpi_do_desenho": 150
+   },
+   "largura": 2155,
+   "altura": 2813,
+   "dpi": 150,
+   "pagina": [
+    107.0,
+    170.0,
+    2155.0,
+    2681.0
+   ],
+   "pagina_cantos": [
+    146.0,
+    197.0,
+    2144.0,
+    2658.0
+   ],
+   "conteudo_folha": [
+    537.0,
+    243.0,
+    2071.0,
+    2689.0
+   ],
+   "conteudo_na_pagina": [
+    116.0,
+    243.0,
+    2071.0,
+    2697.0
+   ],
+   "conteudo_na_pagina_cantos": [
+    148.0,
+    243.0,
+    2071.0,
+    2689.0
+   ]
+  },
+  "righetti_p055": {
+   "fonte": {
+    "tipo": "livro",
+    "livro": "Mario Righetti - Historia de la Liturgia 02-2 (da_página_262_à_531).pdf",
+    "pagina": 55,
+    "dpi_do_desenho": 150
+   },
+   "largura": 1275,
+   "altura": 1650,
+   "dpi": 150,
+   "pagina": [
+    0.0,
+    0.0,
+    1275.0,
+    1650.0
+   ],
+   "pagina_cantos": [
+    0.0,
+    0.0,
+    1275.0,
+    1650.0
+   ],
+   "conteudo_folha": [
+    11.0,
+    350.0,
+    999.0,
+    1569.0
+   ],
+   "conteudo_na_pagina": [
+    11.0,
+    350.0,
+    999.0,
+    1569.0
+   ],
+   "conteudo_na_pagina_cantos": [
+    11.0,
+    350.0,
+    999.0,
+    1569.0
+   ]
+  },
+  "antiphon_p123": {
+   "fonte": {
+    "tipo": "livro",
+    "livro": "Antiphon_25.pdf",
+    "pagina": 123,
+    "dpi_do_desenho": 150
+   },
+   "largura": 2717,
+   "altura": 3750,
+   "dpi": 150,
+   "pagina": [
+    108.0,
+    43.0,
+    2717.0,
+    3628.0
+   ],
+   "pagina_cantos": [
+    266.0,
+    176.0,
+    2693.0,
+    3579.0
+   ],
+   "conteudo_folha": [
+    150.0,
+    138.0,
+    2483.0,
+    3586.0
+   ],
+   "conteudo_na_pagina": [
+    150.0,
+    138.0,
+    2483.0,
+    3586.0
+   ],
+   "conteudo_na_pagina_cantos": [
+    298.0,
+    183.0,
+    2400.0,
+    3586.0
+   ]
+  },
+  "opusmajus_p137": {
+   "fonte": {
+    "tipo": "livro",
+    "livro": "C:\\Users\\fotog\\Desktop\\opusmajustransla01baco.pdf",
+    "pagina": 137,
+    "dpi_do_desenho": 400
+   },
+   "largura": 2160,
+   "altura": 3576,
+   "dpi": 400,
+   "pagina": [
+    0.0,
+    0.0,
+    2160.0,
+    3576.0
+   ],
+   "pagina_cantos": [
+    0.0,
+    0.0,
+    2160.0,
+    3576.0
+   ],
+   "conteudo_folha": [
+    146.7,
+    221.3,
+    1802.7,
+    1850.7
+   ],
+   "conteudo_na_pagina": [
+    146.7,
+    221.3,
+    1802.7,
+    1850.7
+   ],
+   "conteudo_na_pagina_cantos": [
+    146.7,
+    221.3,
+    1802.7,
+    1850.7
+   ]
+  },
+  "horas_p013@150": {
+   "fonte": {
+    "tipo": "gabarito",
+    "png": "horas_p013.png"
+   },
+   "largura": 1024,
+   "altura": 1453,
+   "dpi": 150,
+   "pagina": [
+    0.0,
+    0.0,
+    1024.0,
+    1453.0
+   ],
+   "pagina_cantos": [
+    18.0,
+    2.0,
+    1024.0,
+    1437.0
+   ],
+   "conteudo_folha": [
+    121.0,
+    221.0,
+    775.0,
+    1149.0
+   ],
+   "conteudo_na_pagina": [
+    121.0,
+    221.0,
+    775.0,
+    1149.0
+   ],
+   "conteudo_na_pagina_cantos": [
+    121.0,
+    221.0,
+    775.0,
+    1149.0
+   ]
+  },
+  "graduale_p222@150": {
+   "fonte": {
+    "tipo": "gabarito",
+    "png": "graduale_p222.png"
+   },
+   "largura": 961,
+   "altura": 1396,
+   "dpi": 150,
+   "pagina": [
+    0.0,
+    0.0,
+    961.0,
+    1396.0
+   ],
+   "pagina_cantos": [
+    0.0,
+    0.0,
+    961.0,
+    1396.0
+   ],
+   "conteudo_folha": [
+    187.0,
+    96.0,
+    931.0,
+    1203.0
+   ],
+   "conteudo_na_pagina": [
+    187.0,
+    96.0,
+    931.0,
+    1203.0
+   ],
+   "conteudo_na_pagina_cantos": [
+    187.0,
+    96.0,
+    931.0,
+    1203.0
+   ]
+  }
+ }
+}

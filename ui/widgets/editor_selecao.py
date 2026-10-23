@@ -14,8 +14,14 @@ provavelmente já viu isso em algum lugar:
     varinha     clicar e pegar a mancha inteira daquela cor
     cor         clicar numa cor e pegar TUDO daquela cor na pagina
 
+    ajustar     (item 2.18) clicar numa área para escolher; arrastar move, os
+                quadradinhos mudam o tamanho; Delete apaga, Ctrl+C e Ctrl+V
+                copiam e colam
+
 Cada uma pode SOMAR ou SUBTRAIR, e cada marcação tem um tipo - gravura, letra
-ou papel. Tudo vai para a mesma lista de regiões que o detector automático e a
+ou papel, e desde o item 2.18 também "pintar por cima", "manter a cor da
+tinta" (era "tinta com a cor original, papel branco"; nome novo do Samuel,
+23/10/2026, só o rótulo) e "tinta preta, fundo original". Tudo vai para a mesma lista de regiões que o detector automático e a
 rede neural usam, e por isso as três se somam em vez de competir: a máquina
 propõe, a pessoa corrige por cima, e rodar a detecção de novo não apaga a
 correção.
@@ -26,6 +32,8 @@ sem abrir o programa inteiro.
 """
 
 from __future__ import annotations
+
+import copy
 
 import cv2
 import numpy as np
@@ -43,12 +51,16 @@ from PySide6.QtGui import (
 )
 from PySide6.QtWidgets import QSizePolicy, QWidget
 
+from core import editar_zonas
 from core.selecao import (
     ELIPSE,
     GRAVURA,
     LETRA,
     MAO,
     PAPEL,
+    PINTAR,
+    TINTA_COR,
+    TINTA_PRETA,
     POLIGONO,
     RETANGULO,
     SOMAR,
@@ -68,6 +80,10 @@ FERRAMENTA_POLIGONO = "poligono"
 FERRAMENTA_PINCEL = "pincel"
 FERRAMENTA_VARINHA = "varinha"
 FERRAMENTA_COR = "cor"
+# Item 2.18 (rodada 5 do "Para revisar", 09/10/2026: "Os dois" - puxar pelos
+# quadradinhos e pincel somar/tirar; P11 (a): copiar, colar e mover zona;
+# P11b: clicar na area e apagar ou pintar de branco).
+FERRAMENTA_AJUSTAR = "ajustar"
 
 # As duas de NAVEGACAO, novas. Elas nao marcam nada: mudam o que se ve. Antes
 # nao havia como olhar a pagina de perto sem sair da tela, e conferir marcacao
@@ -85,6 +101,7 @@ FERRAMENTAS = (
     FERRAMENTA_PINCEL,
     FERRAMENTA_VARINHA,
     FERRAMENTA_COR,
+    FERRAMENTA_AJUSTAR,
     FERRAMENTA_ZOOM,
     FERRAMENTA_MAO,
 )
@@ -97,6 +114,7 @@ NOMES_DAS_FERRAMENTAS = {
     FERRAMENTA_PINCEL: "Pincel",
     FERRAMENTA_VARINHA: "Varinha mágica",
     FERRAMENTA_COR: "Pegar tudo desta cor",
+    FERRAMENTA_AJUSTAR: "Mover e mudar o tamanho da área",
     FERRAMENTA_ZOOM: "Zoom",
     FERRAMENTA_MAO: "Mão",
 }
@@ -111,6 +129,7 @@ ATALHOS_DAS_FERRAMENTAS = {
     FERRAMENTA_PINCEL: "B",
     FERRAMENTA_VARINHA: "V",
     FERRAMENTA_COR: "C",
+    FERRAMENTA_AJUSTAR: "A",
     FERRAMENTA_ZOOM: "Z",
     FERRAMENTA_MAO: "E",
 }
@@ -142,7 +161,7 @@ def ferramenta_da_tecla(tecla: str) -> str | None:
 ORDEM_DA_TRILHA = (
     FERRAMENTA_RETANGULO, FERRAMENTA_ELIPSE, FERRAMENTA_LACO,
     FERRAMENTA_POLIGONO, FERRAMENTA_PINCEL, FERRAMENTA_VARINHA,
-    FERRAMENTA_COR,
+    FERRAMENTA_COR, FERRAMENTA_AJUSTAR,
     FERRAMENTA_ZOOM, FERRAMENTA_MAO,
 )
 
@@ -155,6 +174,8 @@ AJUDA_DAS_FERRAMENTAS = {
     FERRAMENTA_VARINHA: "Clique numa cor e ela pega a mancha inteira.",
     FERRAMENTA_COR: "Clique numa cor e ela pega TUDO daquela cor na página. "
                     "A roda do mouse muda o quanto a cor pode variar.",
+    FERRAMENTA_AJUSTAR: "Clique numa área para escolher. Arraste para mover; os quadradinhos "
+                        "mudam o tamanho. Delete apaga; Ctrl+C e Ctrl+V copiam e colam.",
     FERRAMENTA_ZOOM: "Clique para aproximar. Com Alt, afasta. "
                      "A roda do mouse também aproxima e afasta.",
     FERRAMENTA_MAO: "Arraste para andar pela página aproximada.",
@@ -171,12 +192,24 @@ CORES = {
     GRAVURA: QColor(255, 60, 0, 90),
     LETRA: QColor(0, 120, 255, 90),
     PAPEL: QColor(120, 200, 120, 70),
+    # item 2.18: os tres jeitos novos (cores que nao se confundem com as tres)
+    PINTAR: QColor(150, 60, 200, 80),
+    TINTA_COR: QColor(230, 180, 0, 80),
+    TINTA_PRETA: QColor(60, 60, 60, 80),
 }
 CORES_BORDA = {
     GRAVURA: QColor(255, 60, 0),
     LETRA: QColor(0, 120, 255),
     PAPEL: QColor(90, 170, 90),
+    PINTAR: QColor(150, 60, 200),
+    TINTA_COR: QColor(200, 150, 0),
+    TINTA_PRETA: QColor(40, 40, 40),
 }
+# As areas achadas pela maquina, delineadas (rodada 4 do "Para revisar": "no
+# para revisar, elas ja vao aparecer laranjas"), e a area escolhida.
+COR_DAS_ACHADAS = QColor(255, 140, 0)
+COR_DA_ESCOLHIDA = QColor(255, 255, 255)
+LADO_DO_QUADRADINHO = 8
 
 # Escolher por cor trabalha em resolucao alta e com pouca simplificacao: o
 # alvo dela e coisa fina - pauta de partitura, contorno de letra rubricada.
@@ -224,6 +257,20 @@ class EditorSelecao(QWidget):
         # dizer "use o filtro da pagina", que e o comportamento de sempre.
         self.filtro_da_regiao = ""
         self.mostrar_marcacao = True
+        # Item 2.18: a cor do "Pintar por cima", as areas achadas delineadas,
+        # a area escolhida pela ferramenta Ajustar e a copiada.
+        self.cor_de_pintar = "#ffffff"
+        # Item 2.18 (Samuel, 22/10/2026, "As duas: A e B"): a proxima "tinta
+        # com a cor" sai escurecida (B)? De fabrica nao (A, como sempre).
+        self.tinta_escurecida = False
+        # Item 2.18 (Samuel, 22/10/2026, tc23-1 "As duas"): o papel da proxima
+        # "tinta com a cor" fica como o resto da pagina? De fabrica nao
+        # ("papel branco", como sempre).
+        self.papel_da_pagina = False
+        self.mostrar_achadas = False
+        self.escolhida: int | None = None
+        self._copiada: Regiao | None = None
+        self._arrasto_da_area: tuple | None = None   # (alca, ponto inicial, regiao original)
 
         self._desenhando = False
         self._pontos: list[tuple[float, float]] = []
@@ -284,7 +331,21 @@ class EditorSelecao(QWidget):
         limpa o historico de desfazer, que so vale para a selecao anterior."""
         self.selecao = selecao
         self._marcos.clear()
+        self.escolhida = None
         self.update()
+
+    def definir_marcas_do_aviso(self, caixas) -> None:
+        """As marcas do aviso do "Para revisar" (12/10/2026): retangulos
+        laranja tracejados mostrando ONDE esta o problema (Samuel, rodada 5,
+        `rv5-erro-1-desenho`: "onde sumiu, tem que aparecer selecionado
+        automaticamente, como na opção 3" - a opcao 3 era o retangulo desta
+        aba). Sao so um desenho por cima da pagina: NAO entram na marcacao
+        (nao mudam o PDF, nao vao para o desfazer). caixas: (x0, y0, x1, y1)
+        em fracao da pagina; vazia tira."""
+        novas = [tuple(c) for c in (caixas or [])]
+        if novas != getattr(self, "_marcas_do_aviso", []):
+            self._marcas_do_aviso = novas
+            self.update()
 
     def definir_ferramenta(self, ferramenta: str) -> None:
         """Troca a ferramenta ativa: muda o cursor e a dica na barra de status."""
@@ -302,10 +363,30 @@ class EditorSelecao(QWidget):
         self.update()
 
     def definir_tipo(self, tipo: str) -> None:
-        """Que tipo (gravura/letra/papel) a proxima marcacao vai receber."""
-        if tipo in (GRAVURA, LETRA, PAPEL):
+        """Que tipo (gravura/letra/papel e, desde o item 2.18, os tres de por
+        cima) a proxima marcacao vai receber."""
+        if tipo in (GRAVURA, LETRA, PAPEL, PINTAR, TINTA_COR, TINTA_PRETA):
             self.tipo = tipo
             self.update()
+
+    def definir_cor_de_pintar(self, cor: str) -> None:
+        """Item 2.18: a cor ("#rrggbb") do proximo "Pintar por cima"."""
+        self.cor_de_pintar = cor or "#ffffff"
+
+    def definir_tinta_escurecida(self, escurecer: bool) -> None:
+        """Item 2.18: a proxima "Tinta com a cor original" sai como no livro
+        (False, A) ou escurecida (True, B)."""
+        self.tinta_escurecida = bool(escurecer)
+
+    def definir_papel_da_pagina(self, da_pagina: bool) -> None:
+        """Item 2.18: o papel da proxima "Tinta com a cor original" sai branco
+        (False, o de fabrica) ou como o resto da pagina (True)."""
+        self.papel_da_pagina = bool(da_pagina)
+
+    def definir_mostrar_achadas(self, mostrar: bool) -> None:
+        """Item 2.18: delinear (em laranja) as areas que a maquina achou."""
+        self.mostrar_achadas = bool(mostrar)
+        self.update()
 
     def definir_operacao(self, operacao: str) -> None:
         """Somar ou subtrair - o modo que a proxima marcacao vai usar."""
@@ -328,8 +409,8 @@ class EditorSelecao(QWidget):
         """Volta a marcação ao estado anterior à última ação."""
         if not self._marcos:
             return
-        ate = self._marcos.pop()
-        self.selecao.regioes = self.selecao.regioes[:ate]
+        self.selecao.regioes = self._marcos.pop()
+        self.escolhida = None
         self.selecao_mudou.emit()
         self.update()
 
@@ -345,10 +426,13 @@ class EditorSelecao(QWidget):
         return quantas
 
     def _marcar(self) -> None:
-        """Guarda um marco de desfazer (tamanho da lista de regiões ANTES da
-        proxima acao). Toda acao so ACRESCENTA regiões, entao guardar so o
-        tamanho basta - nao precisa copiar a lista inteira."""
-        self._marcos.append(len(self.selecao.regioes))
+        """Guarda um marco de desfazer: a lista de regiões ANTES da proxima
+        acao. Ate o item 2.18 guardava so o tamanho (toda acao so
+        acrescentava); mover, mudar o tamanho e apagar uma area mexem no
+        meio da lista, entao agora guarda a lista (uma copia rasa: as acoes
+        nunca mudam uma Regiao no lugar, sempre trocam por outra - ver
+        core/editar_zonas.py). Para quem so acrescenta, da no mesmo."""
+        self._marcos.append(list(self.selecao.regioes))
         if len(self._marcos) > 200:
             self._marcos.pop(0)
 
@@ -358,6 +442,11 @@ class EditorSelecao(QWidget):
         if not regiao.valida():
             return
         regiao.filtro = self.filtro_da_regiao
+        if regiao.tipo == PINTAR:
+            regiao.cor = self.cor_de_pintar       # item 2.18
+        if regiao.tipo == TINTA_COR:
+            regiao.tinta_escurecida = self.tinta_escurecida   # item 2.18, A ou B
+            regiao.papel_da_pagina = self.papel_da_pagina     # item 2.18, o papel
         self._marcar()
         self.selecao.acrescentar(regiao)
         self.selecao_mudou.emit()
@@ -426,6 +515,13 @@ class EditorSelecao(QWidget):
 
         if self.mostrar_marcacao:
             self._pintar_marcacao(pintor)
+        # as marcas do aviso ("onde sumiu"), por cima da marcacao
+        marcas = getattr(self, "_marcas_do_aviso", None)
+        if marcas:
+            from ui.widgets.cartao_filtro import pintar_marcas
+
+            pintar_marcas(pintor, marcas, self._area.left(), self._area.top(),
+                          self._area.width(), self._area.height())
         self._pintar_o_que_esta_sendo_desenhado(pintor)
 
     def _pintar_marcacao(self, pintor: QPainter) -> None:
@@ -439,7 +535,7 @@ class EditorSelecao(QWidget):
         if largura <= 0 or altura <= 0 or self.selecao.vazia:
             return
 
-        for tipo in (PAPEL, GRAVURA, LETRA):
+        for tipo in (PAPEL, GRAVURA, LETRA, TINTA_COR, TINTA_PRETA, PINTAR):
             mascara = self.selecao.mascara(altura, largura, tipo)
             if not mascara.any():
                 continue
@@ -449,6 +545,172 @@ class EditorSelecao(QWidget):
             imagem = QImage(capa.data, largura, altura, 4 * largura,
                             QImage.Format_RGBA8888).copy()
             pintor.drawImage(self._area.topLeft(), imagem)
+        self._pintar_achadas_e_escolhida(pintor)
+
+    def _pintar_achadas_e_escolhida(self, pintor: QPainter) -> None:
+        """Item 2.18: o contorno laranja das areas achadas pela maquina (com
+        "mostrar as areas achadas") e a caixa com os quadradinhos da area
+        escolhida pela ferramenta Ajustar."""
+        largura, altura = self._area.width(), self._area.height()
+        if self.mostrar_achadas and largura > 0 and altura > 0:
+            pintor.setPen(QPen(COR_DAS_ACHADAS, 2))
+            pintor.setBrush(Qt.NoBrush)
+            for contorno in editar_zonas.contornos(self.selecao, altura, largura):
+                pontos = [QPoint(self._area.left() + int(x), self._area.top() + int(y))
+                          for x, y in contorno.reshape(-1, 2)]
+                if len(pontos) >= 2:
+                    pintor.drawPolygon(pontos)
+        if self.escolhida is None or not 0 <= self.escolhida < len(self.selecao.regioes):
+            return
+        caixa = self._caixa_na_tela(self.selecao.regioes[self.escolhida])
+        pintor.setPen(QPen(QColor(0, 0, 0), 3))
+        pintor.drawRect(caixa)
+        pintor.setPen(QPen(COR_DA_ESCOLHIDA, 1, Qt.DashLine))
+        pintor.drawRect(caixa)
+        pintor.setPen(QPen(QColor(0, 0, 0), 1))
+        pintor.setBrush(COR_DA_ESCOLHIDA)
+        for alca in self._alcas(caixa).values():
+            pintor.drawRect(alca)
+        pintor.setBrush(Qt.NoBrush)
+
+    # --- item 2.18: escolher, mover, mudar o tamanho, apagar, copiar ------
+
+    def _caixa_na_tela(self, regiao: Regiao) -> QRect:
+        x0, y0, x1, y1 = editar_zonas.caixa_da_area(regiao)
+        return QRect(self._para_tela(x0, y0), self._para_tela(x1, y1)).normalized()
+
+    @staticmethod
+    def _alcas(caixa: QRect) -> dict[str, QRect]:
+        """Os oito quadradinhos (cantos e meios dos lados) da caixa."""
+        meio = LADO_DO_QUADRADINHO // 2
+        xs = {"e": caixa.left(), "c": caixa.center().x(), "d": caixa.right()}
+        ys = {"t": caixa.top(), "m": caixa.center().y(), "b": caixa.bottom()}
+        alcas = {}
+        for nome_y, y in ys.items():
+            for nome_x, x in xs.items():
+                if nome_x == "c" and nome_y == "m":
+                    continue
+                alcas[nome_y + nome_x] = QRect(x - meio, y - meio, LADO_DO_QUADRADINHO,
+                                               LADO_DO_QUADRADINHO)
+        return alcas
+
+    def escolher_area(self, ponto: tuple[float, float]) -> int | None:
+        """Escolhe a area que esta no ponto (fracao), a de cima primeiro."""
+        proporcao = (self._pixmap.width() / max(1, self._pixmap.height())
+                     if self._pixmap is not None else 0.75)
+        self.escolhida = editar_zonas.area_no_ponto(self.selecao, ponto, proporcao)
+        if self.escolhida is not None:
+            from core.selecao import NOMES_AMIGAVEIS
+            tipo = self.selecao.regioes[self.escolhida].tipo
+            self.aviso.emit(f"Área escolhida: {NOMES_AMIGAVEIS.get(tipo, tipo).lower()}. "
+                            "Arraste para mover; os quadradinhos mudam o tamanho.")
+        self.update()
+        return self.escolhida
+
+    def _trocar_a_escolhida(self, nova: Regiao) -> None:
+        if self.escolhida is None:
+            return
+        self.selecao.regioes = list(self.selecao.regioes)
+        self.selecao.regioes[self.escolhida] = nova
+        self.selecao_mudou.emit()
+        self.update()
+
+    def apagar_area_escolhida(self) -> bool:
+        """P11b "apagar": tira a area escolhida (volta com desfazer)."""
+        if self.escolhida is None or not 0 <= self.escolhida < len(self.selecao.regioes):
+            return False
+        self._marcar()
+        self.selecao.regioes = [r for i, r in enumerate(self.selecao.regioes)
+                                if i != self.escolhida]
+        self.escolhida = None
+        self.selecao_mudou.emit()
+        self.update()
+        return True
+
+    def pintar_de_branco_area_escolhida(self) -> bool:
+        """P11b "pintar de branco": a area escolhida vira papel."""
+        if self.escolhida is None or not 0 <= self.escolhida < len(self.selecao.regioes):
+            return False
+        self._marcar()
+        self._trocar_a_escolhida(editar_zonas.pintada_de_branco(
+            self.selecao.regioes[self.escolhida]))
+        return True
+
+    def copiar_area_escolhida(self) -> bool:
+        """P11 (a) "copiar": guarda a area escolhida para colar (nesta ou noutra
+        pagina)."""
+        if self.escolhida is None or not 0 <= self.escolhida < len(self.selecao.regioes):
+            return False
+        self._copiada = copy.deepcopy(self.selecao.regioes[self.escolhida])
+        self.aviso.emit("Área copiada. Ctrl+V cola um pouco ao lado.")
+        return True
+
+    @property
+    def tem_copiada(self) -> bool:
+        return self._copiada is not None
+
+    def colar(self) -> bool:
+        """P11 (a) "colar": a area copiada, um pouco ao lado, ja escolhida
+        (para arrastar para o lugar)."""
+        if self._copiada is None:
+            return False
+        nova = editar_zonas.copia(self._copiada)
+        self._marcar()
+        self.selecao.regioes = list(self.selecao.regioes) + [nova]
+        self.escolhida = len(self.selecao.regioes) - 1
+        self._copiada = copy.deepcopy(nova)      # colar de novo anda mais um pouco
+        self.selecao_mudou.emit()
+        self.update()
+        return True
+
+    def _comecar_a_ajustar(self, posicao: QPoint) -> None:
+        """Clique da ferramenta Ajustar: num quadradinho da escolhida, muda o
+        tamanho; dentro dela, move; fora, escolhe outra."""
+        if self.escolhida is not None and 0 <= self.escolhida < len(self.selecao.regioes):
+            regiao = self.selecao.regioes[self.escolhida]
+            caixa = self._caixa_na_tela(regiao)
+            for nome, alca in self._alcas(caixa).items():
+                if alca.adjusted(-3, -3, 3, 3).contains(posicao):
+                    self._arrasto_da_area = (nome, posicao, regiao)
+                    return
+            if caixa.contains(posicao):
+                self._arrasto_da_area = ("mover", posicao, regiao)
+                return
+        if self.escolher_area(self._para_fracao(posicao)) is not None:
+            self._arrasto_da_area = ("mover", posicao, self.selecao.regioes[self.escolhida])
+
+    def _arrastar_a_area(self, posicao: QPoint, soltou: bool = False) -> None:
+        """Move ou muda o tamanho da escolhida enquanto arrasta (sem marco de
+        desfazer a cada passo: o marco e um so, ao soltar)."""
+        if self._arrasto_da_area is None or self.escolhida is None:
+            return
+        alca, inicio, original = self._arrasto_da_area
+        a = self._area
+        dx = (posicao.x() - inicio.x()) / max(1, a.width())
+        dy = (posicao.y() - inicio.y()) / max(1, a.height())
+        if alca == "mover":
+            nova = editar_zonas.movida(original, dx, dy)
+        else:
+            x0, y0, x1, y1 = editar_zonas.caixa_da_area(original)
+            if alca[1] == "e":
+                x0 += dx
+            elif alca[1] == "d":
+                x1 += dx
+            if alca[0] == "t":
+                y0 += dy
+            elif alca[0] == "b":
+                y1 += dy
+            nova = editar_zonas.redimensionada(original, (x0, y0, x1, y1))
+        self.selecao.regioes = list(self.selecao.regioes)
+        self.selecao.regioes[self.escolhida] = nova
+        if soltou:
+            self._arrasto_da_area = None
+            if nova.pontos != original.pontos:
+                antes = list(self.selecao.regioes)
+                antes[self.escolhida] = original
+                self._marcos.append(antes)
+                self.selecao_mudou.emit()
+        self.update()
 
     def _pintar_o_que_esta_sendo_desenhado(self, pintor: QPainter) -> None:
         """A forma em andamento (retangulo/elipse/laço/pincel sendo arrastado,
@@ -511,6 +773,10 @@ class EditorSelecao(QWidget):
             self.setCursor(Qt.ClosedHandCursor)
             return
 
+        if self.ferramenta == FERRAMENTA_AJUSTAR:          # item 2.18
+            self._comecar_a_ajustar(evento.position().toPoint())
+            return
+
         ponto = self._para_fracao(evento.position().toPoint())
 
         if self.ferramenta == FERRAMENTA_VARINHA:
@@ -536,6 +802,9 @@ class EditorSelecao(QWidget):
             self.deslocamento = self._deslocamento_inicial + andou
             self.update()
             return
+        if self._arrasto_da_area is not None:              # item 2.18
+            self._arrastar_a_area(evento.position().toPoint())
+            return
         if not self._desenhando:
             return
         ponto = self._para_fracao(evento.position().toPoint())
@@ -555,6 +824,9 @@ class EditorSelecao(QWidget):
         if self._arrastando_vista:
             self._arrastando_vista = False
             self.setCursor(Qt.OpenHandCursor)
+            return
+        if self._arrasto_da_area is not None:              # item 2.18
+            self._arrastar_a_area(evento.position().toPoint(), soltou=True)
             return
         if not self._desenhando or evento.button() != Qt.LeftButton:
             return
@@ -605,6 +877,16 @@ class EditorSelecao(QWidget):
             self._pontos_poligono.clear()
             self.update()
             return
+        # item 2.18: com uma area escolhida pela ferramenta Ajustar
+        if self.ferramenta == FERRAMENTA_AJUSTAR:
+            if evento.key() in (Qt.Key_Delete, Qt.Key_Backspace) and self.apagar_area_escolhida():
+                return
+            if evento.modifiers() & Qt.ControlModifier and evento.key() == Qt.Key_C:
+                self.copiar_area_escolhida()
+                return
+            if evento.modifiers() & Qt.ControlModifier and evento.key() == Qt.Key_V:
+                self.colar()
+                return
         if evento.matches(Qt.Key_Z) or (
                 evento.key() == Qt.Key_Z and evento.modifiers() & Qt.ControlModifier):
             self.desfazer()

@@ -134,7 +134,10 @@ def conferir(app, pasta):
 def test_a_caixinha_antiga_saiu(conferir):
     assert not hasattr(conferir, "caixa_despeckle")
     assert _itens(conferir.seletor_pontinhos) == NA_TELA
-    assert conferir.rotulo_pontinhos.text() == "Limpar a sujeira:"
+    # etapa 4 do layout: o nome é o título da parte no painel Filtro, e o
+    # rótulo virou a frase de explicação embaixo dele
+    assert conferir.paineis.filtro_da_pagina.partes["limpar"].cabeca.titulo.text() == "Limpar a sujeira"
+    assert conferir.rotulo_pontinhos.text().startswith("Limpa a sujeira do papel")
 
 
 def test_so_aparece_no_preto_e_branco(conferir):

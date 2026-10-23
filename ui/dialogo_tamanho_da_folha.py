@@ -28,6 +28,7 @@ from PySide6.QtWidgets import (
     QVBoxLayout,
 )
 
+from core import unidades
 from core.folha import TAMANHOS_DE_PAPEL_CM, tamanho_da_folha_cabe
 from ui import estilo
 
@@ -67,19 +68,19 @@ class DialogoTamanhoDaFolha(QDialog):
 
         camadas.addWidget(QLabel("Tamanho final da folha impressa:"))
 
+        # Item 2.19: os campos na unidade escolhida em Configurações (de
+        # fabrica cm, como sempre); por dentro continua tudo em cm.
+        self.unidade = unidades.da_maquina()
         formulario = QFormLayout()
         self.campo_largura = QDoubleSpinBox()
-        self.campo_largura.setRange(1.0, 200.0)
-        self.campo_largura.setDecimals(2)
-        self.campo_largura.setSuffix(" cm")
-        self.campo_largura.setValue(largura_inicial)
-        formulario.addRow("Largura:", self.campo_largura)
-
         self.campo_altura = QDoubleSpinBox()
-        self.campo_altura.setRange(1.0, 200.0)
-        self.campo_altura.setDecimals(2)
-        self.campo_altura.setSuffix(" cm")
-        self.campo_altura.setValue(altura_inicial)
+        for campo, valor in ((self.campo_largura, largura_inicial),
+                             (self.campo_altura, altura_inicial)):
+            campo.setRange(unidades.de_cm(1.0, self.unidade), unidades.de_cm(200.0, self.unidade))
+            campo.setDecimals(unidades.CASAS[self.unidade])
+            campo.setSuffix(unidades.SUFIXOS[self.unidade])
+            campo.setValue(unidades.de_cm(valor, self.unidade))
+        formulario.addRow("Largura:", self.campo_largura)
         formulario.addRow("Altura:", self.campo_altura)
         camadas.addLayout(formulario)
 
@@ -115,11 +116,14 @@ class DialogoTamanhoDaFolha(QDialog):
         self._conferir_se_cabe()
 
     def _usar_tamanho(self, largura: float, altura: float) -> None:
-        self.campo_largura.setValue(largura)
-        self.campo_altura.setValue(altura)
+        """Os botões de papel (em cm), mostrados na unidade da tela."""
+        self.campo_largura.setValue(unidades.de_cm(largura, self.unidade))
+        self.campo_altura.setValue(unidades.de_cm(altura, self.unidade))
 
     def tamanho_escolhido(self) -> tuple[float, float]:
-        return self.campo_largura.value(), self.campo_altura.value()
+        """Sempre em cm (o que vai para ConfigPagina.tamanho_folha_cm)."""
+        return (unidades.para_cm(self.campo_largura.value(), self.unidade),
+                unidades.para_cm(self.campo_altura.value(), self.unidade))
 
     def _conferir_se_cabe(self) -> None:
         cabe = tamanho_da_folha_cabe(
@@ -129,6 +133,8 @@ class DialogoTamanhoDaFolha(QDialog):
         self.aviso.setText(
             "" if cabe else
             f"Esse tamanho é menor que o corte que você já fez "
-            f"({self._largura_recorte_cm:.1f} × {self._altura_recorte_cm:.1f} cm) - "
+            f"({unidades.de_cm(self._largura_recorte_cm, self.unidade):.1f} × "
+            f"{unidades.de_cm(self._altura_recorte_cm, self.unidade):.1f}"
+            f"{unidades.SUFIXOS[self.unidade]}) - "
             "não vou mudar o seu corte, mas ele não vai caber inteiro na folha."
         )

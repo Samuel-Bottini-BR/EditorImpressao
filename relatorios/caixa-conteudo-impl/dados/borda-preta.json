@@ -1,0 +1,408 @@
+{
+ "siebmacher_p007": {
+  "HOJE (desligada)": {
+   "recorte": [
+    0.0157,
+    0.0016,
+    0.9843,
+    0.9922
+   ],
+   "angulo": 0.0
+  },
+  "SÓ O PRETO": {
+   "recorte": [
+    0.0,
+    0.0171,
+    0.982,
+    0.9673
+   ],
+   "angulo": 0.0
+  },
+  "ATÉ A MOLDURA": {
+   "recorte": [
+    0.0434,
+    0.0297,
+    0.751,
+    0.8175
+   ],
+   "angulo": 0.0
+  }
+ },
+ "siebmacher_p009": {
+  "HOJE (desligada)": {
+   "recorte": [
+    0.0001,
+    0.0109,
+    0.9999,
+    0.9782
+   ],
+   "angulo": 0.12
+  },
+  "SÓ O PRETO": {
+   "recorte": [
+    0.0,
+    0.014,
+    0.9819,
+    0.9673
+   ],
+   "angulo": 0.12
+  },
+  "ATÉ A MOLDURA": {
+   "recorte": [
+    0.0254,
+    0.0126,
+    0.7962,
+    0.8439
+   ],
+   "angulo": 0.12
+  }
+ },
+ "ljs47_p046": {
+  "HOJE (desligada)": {
+   "recorte": [
+    0.0278,
+    0.0238,
+    0.9722,
+    0.9225
+   ],
+   "angulo": 0.0
+  },
+  "SÓ O PRETO": {
+   "recorte": [
+    0.0617,
+    0.0395,
+    0.9383,
+    0.9058
+   ],
+   "angulo": 0.0
+  },
+  "ATÉ A MOLDURA": {
+   "recorte": [
+    0.2901,
+    0.1045,
+    0.6109,
+    0.6882
+   ],
+   "angulo": 0.0
+  }
+ },
+ "ljs47_p068": {
+  "HOJE (desligada)": {
+   "recorte": [
+    0.0033,
+    0.045,
+    0.9739,
+    0.9287
+   ],
+   "angulo": 0.0
+  },
+  "SÓ O PRETO": {
+   "recorte": [
+    0.0478,
+    0.0501,
+    0.9522,
+    0.904
+   ],
+   "angulo": 0.0
+  },
+  "ATÉ A MOLDURA": {
+   "recorte": [
+    0.284,
+    0.0926,
+    0.6178,
+    0.6968
+   ],
+   "angulo": 0.0
+  }
+ },
+ "antiphon_p088": {
+  "HOJE (desligada)": {
+   "recorte": [
+    0.0,
+    0.0025,
+    0.9435,
+    0.9975
+   ],
+   "angulo": -0.25
+  },
+  "SÓ O PRETO": {
+   "recorte": [
+    0.0,
+    0.0413,
+    0.9416,
+    0.9221
+   ],
+   "angulo": -0.25
+  },
+  "ATÉ A MOLDURA": {
+   "recorte": [
+    0.1533,
+    0.0732,
+    0.7901,
+    0.7013
+   ],
+   "angulo": -0.25
+  }
+ },
+ "antiphon_p260": {
+  "HOJE (desligada)": {
+   "recorte": [
+    0.0017,
+    0.0,
+    0.9983,
+    0.9575
+   ],
+   "angulo": 0.44
+  },
+  "SÓ O PRETO": {
+   "recorte": [
+    0.0,
+    0.0,
+    1.0,
+    0.9219
+   ],
+   "angulo": 0.44
+  },
+  "ATÉ A MOLDURA": {
+   "recorte": [
+    0.0254,
+    0.0,
+    0.9723,
+    0.8517
+   ],
+   "angulo": 0.44
+  }
+ },
+ "egenloff_p003": {
+  "HOJE (desligada)": {
+   "recorte": [
+    0.0177,
+    0.0013,
+    0.9646,
+    0.9988
+   ],
+   "angulo": -0.19
+  },
+  "SÓ O PRETO": {
+   "recorte": [
+    0.0211,
+    0.0063,
+    0.9592,
+    0.9937
+   ],
+   "angulo": -0.19
+  },
+  "ATÉ A MOLDURA": {
+   "recorte": [
+    0.241,
+    0.1233,
+    0.6248,
+    0.6334
+   ],
+   "angulo": -0.19
+  }
+ },
+ "egenloff_p047": {
+  "HOJE (desligada)": {
+   "recorte": [
+    0.0,
+    0.015,
+    0.9852,
+    0.985
+   ],
+   "angulo": 0.0
+  },
+  "SÓ O PRETO": {
+   "recorte": [
+    0.0192,
+    0.0292,
+    0.9621,
+    0.9708
+   ],
+   "angulo": 0.0
+  },
+  "ATÉ A MOLDURA": {
+   "recorte": [
+    0.0712,
+    0.1877,
+    0.7176,
+    0.6899
+   ],
+   "angulo": 0.0
+  }
+ },
+ "cursus_p003": {
+  "HOJE (desligada)": {
+   "recorte": [
+    0.0019,
+    0.0387,
+    0.933,
+    0.9613
+   ],
+   "angulo": -0.62
+  },
+  "SÓ O PRETO": {
+   "recorte": [
+    0.0,
+    0.0,
+    0.9286,
+    0.9988
+   ],
+   "angulo": -0.62
+  },
+  "ATÉ A MOLDURA": {
+   "recorte": [
+    0.115,
+    0.0392,
+    0.7416,
+    0.9355
+   ],
+   "angulo": -0.62
+  }
+ },
+ "cursus_p314": {
+  "HOJE (desligada)": {
+   "recorte": [
+    0.0553,
+    0.0238,
+    0.9447,
+    0.9684
+   ],
+   "angulo": 0.12
+  },
+  "SÓ O PRETO": {
+   "recorte": [
+    0.0361,
+    0.0,
+    0.9639,
+    0.9861
+   ],
+   "angulo": 0.12
+  },
+  "ATÉ A MOLDURA": {
+   "recorte": [
+    0.121,
+    0.0239,
+    0.7639,
+    0.9468
+   ],
+   "angulo": 0.12
+  }
+ },
+ "matematica_p032": {
+  "HOJE (desligada)": {
+   "recorte": [
+    0.029,
+    0.0588,
+    0.7952,
+    0.9413
+   ],
+   "angulo": 0.75
+  },
+  "SÓ O PRETO": {
+   "recorte": [
+    0.0,
+    0.0251,
+    0.821,
+    0.814
+   ],
+   "angulo": 0.75
+  },
+  "ATÉ A MOLDURA": {
+   "recorte": [
+    0.1033,
+    0.049,
+    0.6606,
+    0.7461
+   ],
+   "angulo": 0.75
+  }
+ },
+ "righetti_p055": {
+  "HOJE (desligada)": {
+   "recorte": [
+    0.0035,
+    0.0,
+    0.9153,
+    1.0
+   ],
+   "angulo": 0.25
+  },
+  "SÓ O PRETO": {
+   "recorte": [
+    0.0,
+    0.1618,
+    1.0,
+    0.8382
+   ],
+   "angulo": 0.25
+  },
+  "ATÉ A MOLDURA": {
+   "recorte": [
+    0.0044,
+    0.2095,
+    0.7828,
+    0.7467
+   ],
+   "angulo": 0.25
+  }
+ },
+ "camoes_p066": {
+  "HOJE (desligada)": {
+   "recorte": [
+    0.0,
+    0.0126,
+    1.0,
+    0.9697
+   ],
+   "angulo": 1.5
+  },
+  "SÓ O PRETO": {
+   "recorte": [
+    0.011,
+    0.0126,
+    0.989,
+    0.9735
+   ],
+   "angulo": 1.5
+  },
+  "ATÉ A MOLDURA": {
+   "recorte": [
+    0.2359,
+    0.081,
+    0.7345,
+    0.8025
+   ],
+   "angulo": 1.5
+  }
+ },
+ "camoes_p104": {
+  "HOJE (desligada)": {
+   "recorte": [
+    0.0177,
+    0.0076,
+    0.9823,
+    0.9746
+   ],
+   "angulo": -0.69
+  },
+  "SÓ O PRETO": {
+   "recorte": [
+    0.0195,
+    0.0102,
+    0.9717,
+    0.981
+   ],
+   "angulo": -0.69
+  },
+  "ATÉ A MOLDURA": {
+   "recorte": [
+    0.1329,
+    0.0788,
+    0.8492,
+    0.8399
+   ],
+   "angulo": -0.69
+  }
+ }
+}

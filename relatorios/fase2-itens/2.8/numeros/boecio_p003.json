@@ -1,0 +1,32 @@
+{
+ "boecio_p003": {
+  "tamanho": [
+   1037,
+   1517
+  ],
+  "dpi": 300,
+  "recorte_xy_lado": [
+   778,
+   352,
+   259
+  ],
+  "pontos_pretos": {
+   "Hoje: Automático": 236903,
+   "Otsu do ScanTailor": 288836,
+   "Sauvola do ScanTailor": 256300,
+   "Wolf do ScanTailor": 324827
+  },
+  "pontos_diferentes_de_hoje": {
+   "Otsu do ScanTailor": 61376,
+   "Sauvola do ScanTailor": 42698,
+   "Wolf do ScanTailor": 89605
+  },
+  "segundos": {
+   "Hoje: Automático": 0.1,
+   "Otsu do ScanTailor": 0.27,
+   "Sauvola do ScanTailor": 0.3,
+   "Wolf do ScanTailor": 0.3
+  },
+  "nao_rodou": {}
+ }
+}

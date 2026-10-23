@@ -1,0 +1,62 @@
+FFF                                                                      [100%]
+================================== FAILURES ===================================
+_________ test_bug_20_10_a_lista_antes_de_processar_so_fala_em_pagina _________
+
+    def test_bug_20_10_a_lista_antes_de_processar_so_fala_em_pagina():
+        """Bug de 20/10/2026 (verificador): a lista "Antes de processar" misturava
+        "Folha N" e "Página N". Agora toda linha diz a(s) PÁGINA(S) do livro, e o
+        aviso da folha leva o número das páginas que saíram dela."""
+        pytest.importorskip("PySide6")
+        from PySide6.QtWidgets import QApplication
+    
+        from ui.janela_dos_avisos import JanelaDosAvisos
+    
+        QApplication.instance() or QApplication([])
+        p = _livro_com_uma_folha_dividida()
+        janela = JanelaDosAvisos(avisos.pendentes_do_livro(p), antes_de_processar=True, projeto=p)
+        linhas = janela.linhas()
+>       assert linhas == [
+            "Páginas 1 e 2  -  " + analise.descrever(analise.RESOLUCAO_BAIXA).titulo,
+            "Página 3  -  " + analise.descrever(analise.MUITO_TORTA).titulo,
+            "Página 4  -  " + analise.descrever(analise.DESENHO_APAGADO).titulo,
+        ], linhas
+E       AssertionError: ['Folha 1  -  Qualidade baixa', 'Folha 2  -  Muito torta', 'Página 4  -  Desenho apagado']
+E       assert ['Folha 1  - ...enho apagado'] == ['Páginas 1 e...enho apagado']
+E         
+E         At index 0 diff: 'Folha 1  -  Qualidade baixa' != 'Páginas 1 e 2  -  Qualidade baixa'
+E         Use -v to get more diff
+
+tests\test_reversao_para_revisar.py:63: AssertionError
+_____________ test_bug_20_10_o_aviso_da_folha_diz_as_paginas_dela _____________
+
+    def test_bug_20_10_o_aviso_da_folha_diz_as_paginas_dela():
+        """A conta por trás da linha (core.avisos.onde_no_livro): folha com uma
+        página, com duas, e folha sem página nenhuma no livro (todas tiradas):
+        só então sobra "Folha N", porque não há página para nomear."""
+        p = _livro_com_uma_folha_dividida()
+        folha = avisos.FOLHA
+>       assert avisos.onde_no_livro(avisos.Aviso(folha, 0, analise.RESOLUCAO_BAIXA), p) == "Páginas 1 e 2"
+               ^^^^^^^^^^^^^^^^^^^^
+E       AttributeError: module 'core.avisos' has no attribute 'onde_no_livro'
+
+tests\test_reversao_para_revisar.py:78: AttributeError
+____________ test_bug_20_10_os_textos_dos_avisos_nao_falam_de_aba _____________
+
+    def test_bug_20_10_os_textos_dos_avisos_nao_falam_de_aba():
+        """Bug de 20/10/2026 (verificador): os textos dos avisos diziam "Confira na
+        aba Marcar" e "Confira o corte na aba Bordas", e o layout aprovado não tem
+        abas. Nenhum aviso pode mandar a pessoa a uma aba."""
+        for codigo, alerta in analise.ALERTAS.items():
+            texto = f"{alerta.titulo} {alerta.mensagem}".lower()
+>           assert not re.search(r"\baba\b", texto), (codigo, alerta.mensagem)
+E           AssertionError: ('desenho_ou_escrita', 'Não tenho certeza se esta página é desenho ou escrita. Confira na aba Marcar - se for escrita, marque como letra.')
+E           assert not <re.Match object; span=(86, 89), match='aba'>
+E            +  where <re.Match object; span=(86, 89), match='aba'> = <function search at 0x0000022BAC547690>('\\baba\\b', 'desenho ou escrita? não tenho certeza se esta página é desenho ou escrita. confira na aba marcar - se for escrita, marque como letra.')
+E            +    where <function search at 0x0000022BAC547690> = re.search
+
+tests\test_reversao_para_revisar.py:91: AssertionError
+=========================== short test summary info ===========================
+FAILED tests/test_reversao_para_revisar.py::test_bug_20_10_a_lista_antes_de_processar_so_fala_em_pagina
+FAILED tests/test_reversao_para_revisar.py::test_bug_20_10_o_aviso_da_folha_diz_as_paginas_dela
+FAILED tests/test_reversao_para_revisar.py::test_bug_20_10_os_textos_dos_avisos_nao_falam_de_aba
+3 failed in 0.38s

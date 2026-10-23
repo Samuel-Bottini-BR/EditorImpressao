@@ -114,13 +114,79 @@ class Bloco(QWidget):
     """
 
 
-class _Envelope(Bloco):
+class NaoEspreme(Bloco):
+    """Uma caixa que nunca deixa o Qt espremer as peças na altura (etapa 4 do
+    layout, 20/10/2026): o mínimo dela é a altura que as peças pedem na
+    largura de verdade, contando as frases que quebram de linha. Usada no
+    corpo dos painéis e no que vai dentro da rolagem: um painel mais alto que
+    a janela (o das ferramentas de marcar, com o "Pedaço" aberto) espremia os
+    botões até a metade da altura, com o texto cortado, em vez de rolar."""
+
+    def _altura_de_verdade(self, altura: int) -> int:
+        """A altura pedida, ou mais, se as frases que quebram de linha pedem
+        mais na largura que a caixa tem agora (o sizeHint do Qt conta as
+        frases numa largura folgada, com menos linhas)."""
+        caixa = self.layout()
+        if caixa is not None and caixa.hasHeightForWidth() and self.width() > 0:
+            altura = max(altura, caixa.totalHeightForWidth(self.width()))
+        return altura
+
+    def sizeHint(self) -> QSize:  # noqa: N802 - nome do Qt
+        pedido = super().sizeHint()
+        return QSize(pedido.width(), self._altura_de_verdade(pedido.height()))
+
+    def minimumSizeHint(self) -> QSize:  # noqa: N802 - nome do Qt
+        return QSize(super().minimumSizeHint().width(), self.sizeHint().height())
+
+    def event(self, evento) -> bool:  # noqa: D401 - nome do Qt
+        """Quando as peças de dentro mudam (uma parte aparece ou some), a
+        caixa de fora mede de novo. Sem isto ela continuava com a altura de
+        antes, e as peças novas eram espremidas."""
+        resposta = super().event(evento)
+        if evento.type() in (QEvent.LayoutRequest, QEvent.Resize):
+            self._acertar_o_minimo()
+        return resposta
+
+    def acertar_tudo(self) -> None:
+        """Mede de novo esta caixa e todas as NaoEspreme de dentro, das mais
+        fundas para fora. Usado quando o conteúdo trocou enquanto o painel
+        estava fechado (escondido, o Qt não mede nada) ou trocou de
+        ferramenta: sem isto, na janela de verdade, os botões do Propriedades
+        de marcar saíam com 22 pontos de altura para 30 (texto cortado)."""
+        caixas = [c for c in self.findChildren(NaoEspreme) if c.isVisibleTo(self)]
+        caixas.sort(key=_profundidade, reverse=True)
+        for caixa in caixas + [self]:
+            if caixa.layout() is not None:
+                caixa.layout().invalidate()
+                caixa.layout().activate()
+            caixa._acertar_o_minimo()
+
+    def _acertar_o_minimo(self) -> None:
+        """Põe como altura mínima explícita a que as peças pedem agora. É o
+        único mínimo que o Qt respeita em todo caso (a caixa de fora guarda
+        as medidas de antes e não as pede de novo)."""
+        altura = self._altura_de_verdade(super().sizeHint().height())
+        if self.minimumHeight() != altura:
+            self.setMinimumHeight(altura)
+
+
+def _profundidade(widget) -> int:
+    """Quantos pais o widget tem (para medir das caixas mais fundas para fora)."""
+    n = 0
+    while widget is not None:
+        widget = widget.parentWidget()
+        n += 1
+    return n
+
+
+class _Envelope(NaoEspreme):
     """O que vai dentro da rolagem de um painel. Diz ao Qt que pode ser tão
     estreito quanto o painel: sem isto, uma peça um pouco mais larga (uma
     lista com uma palavra comprida, uma escala de tela maior) deixava o
     conteúdo todo mais largo que o painel, e a ponta direita de cada botão
     ficava escondida, sem barra para chegar até ela. Assim as peças se
-    apertam dentro da largura do painel."""
+    apertam dentro da largura do painel. Na altura, nunca espreme (ver
+    NaoEspreme)."""
 
     def minimumSizeHint(self) -> QSize:  # noqa: N802 - nome do Qt
         return QSize(0, super().minimumSizeHint().height())
@@ -136,6 +202,15 @@ def lista_estreita(lista) -> None:
     lista.setMinimumContentsLength(8)
     lista.view().setMinimumWidth(lista.view().sizeHintForColumn(0) + 28)
     lista.view().setTextElideMode(Qt.ElideNone)
+
+
+def _nome_da_borda(projeto) -> str:
+    """Item 2.13: o nome de ate onde vai o corte da borda preta do livro."""
+    from core import borda_preta
+
+    return (borda_preta.NOMES[borda_preta.jeito_valido(getattr(projeto, "borda_preta_ate", None))]
+            + ", " + borda_preta.NOMES_DO_FAZER[                      # item 2.14
+                borda_preta.fazer_valido(getattr(projeto, "borda_preta_fazer", None))])
 
 
 def nome_da_conta(jeito: str) -> str:
@@ -157,6 +232,22 @@ def nome_da_conta(jeito: str) -> str:
     if jeito == es.JEITO_PROGRAMA:
         return "a do Editor"
     return es.NOMES_DOS_JEITOS.get(jeito, str(jeito))
+
+
+def nome_do_jeito_de_dividir(jeito: str) -> str:
+    """O nome de um jeito de dividir a folha COMO APARECE NA TELA.
+
+    Rodada 14 do layout, 907 (Samuel, 20/10/2026: "B — “o do Editor”"): o
+    jeito antigo chama-se "o do Editor", como a conta do Endireitar ("a do
+    Editor", 805 C). Vale na lista "jeito:" do Dividir, na parte "Para o
+    livro todo", no painel Automático, no Histórico e na tela "O que fazer".
+    Só muda o texto na tela: o código gravado no projeto continua "programa"
+    (core/dividir_scantailor.JEITO_PROGRAMA). Seguro mudar: a palavra."""
+    from core import dividir_scantailor as ds
+
+    if jeito == ds.JEITO_PROGRAMA:
+        return "o do Editor"
+    return ds.NOMES_DOS_JEITOS.get(jeito, str(jeito))
 
 
 def titulo_de_parte(texto: str) -> QLabel:
@@ -209,6 +300,20 @@ def _icone_de_fechar() -> QIcon:
     p.end()
     imagem.setDevicePixelRatio(escala)
     return QIcon(imagem)
+
+
+def icone_de_tela_cheia() -> QIcon:
+    """Quatro cantinhos para fora (abrir em tela cheia), na cor do tema."""
+    pix = QPixmap(32, 32)
+    pix.fill(Qt.transparent)
+    pintor = QPainter(pix)
+    pintor.setRenderHint(QPainter.Antialiasing)
+    pintor.setPen(_caneta(estilo.cor("icone"), 3))
+    for (x, y), (dx, dy) in (((5, 5), (1, 1)), ((27, 5), (-1, 1)), ((5, 27), (1, -1)), ((27, 27), (-1, -1))):
+        pintor.drawLine(QPointF(x, y), QPointF(x + 8 * dx, y))
+        pintor.drawLine(QPointF(x, y), QPointF(x, y + 8 * dy))
+    pintor.end()
+    return QIcon(pix)
 
 
 def _quadradinho(cor: QColor) -> QIcon:
@@ -330,6 +435,20 @@ class CabecalhoDoPainel(QFrame):
         # o "x" desenhado à mão acompanha a troca de tema
         estilo.estilizar(self.botao_fechar, self._desenhar_o_fechar)
 
+    def por_botao(self, icone, dica: str) -> QPushButton:
+        """Um botão pequeno de ícone, antes do "x" (o da tela cheia dos filtros,
+        rodada 10, 503: "ícone no título do painel")."""
+        botao = QPushButton()
+        botao.setObjectName("fecharPainel")          # o mesmo desenho do "x"
+        botao.setFixedSize(26, 26)
+        botao.setIconSize(QSize(15, 15))
+        botao.setCursor(Qt.PointingHandCursor)
+        botao.setFocusPolicy(Qt.NoFocus)
+        botao.setToolTip(dica)
+        self.layout().insertWidget(self.layout().indexOf(self.botao_fechar), botao)
+        estilo.estilizar(botao, lambda: (botao.setIcon(icone()), "")[1])
+        return botao
+
     def _desenhar_o_fechar(self) -> str:
         """(Re)desenha o "x" na cor do tema; devolve a folha (vazia) para
         estilo.estilizar, que chama isto de novo a cada troca de tema."""
@@ -382,7 +501,7 @@ class Painel(QFrame):
         self.cabecalho.fechar.connect(self.fechar_pedido)
         camadas.addWidget(self.cabecalho)
 
-        self.corpo = Bloco()
+        self.corpo = NaoEspreme() if rolagem else Bloco()
         self.corpo.setObjectName("corpoDoPainel")
         self.dentro = QVBoxLayout(self.corpo)
         self.dentro.setContentsMargins(12, 12, 10, 12)
@@ -411,6 +530,17 @@ class Painel(QFrame):
         self.no_pe.setSpacing(6)
         self.pe.setVisible(False)
         camadas.addWidget(self.pe)
+
+    def showEvent(self, evento) -> None:  # noqa: N802 - nome do Qt
+        """Ao aparecer, mede de novo o corpo (ver NaoEspreme.acertar_tudo)."""
+        super().showEvent(evento)
+        self.medir_de_novo()
+
+    def medir_de_novo(self) -> None:
+        """Mede de novo o corpo logo depois que o Qt arrumar a tela (o
+        conteúdo pode ter mudado com o painel escondido)."""
+        if isinstance(self.corpo, NaoEspreme):
+            QTimer.singleShot(0, self.corpo.acertar_tudo)
 
     def paintEvent(self, evento) -> None:  # noqa: N802 - nome do Qt
         """O risco fino da esquerda, que separa o painel da página."""
@@ -561,10 +691,28 @@ class PainelParaRevisar(Painel):
 
     O texto de cada aviso (título e frase) vem de core/analise.descrever: este
     painel só decide onde e como eles aparecem.
+
+    "Está bom" de uma vez (12/10/2026; Samuel, rodada 4 do "Para revisar",
+    `rv4-aviso-so-texto`: "com todas as paginas ou com todos os motivos de
+    todas as paginas, e eu devo conseguir abrir um selecionador em aba grande"):
+    na aba "Por motivo", embaixo de cada motivo, um botão "está bom: todas"
+    (aceitar_motivo); no pé do painel, sempre à vista nas duas abas, "ver a
+    lista…" (abrir_lista: o seletor grande, ui/janela_dos_avisos.py) e "está
+    bom em tudo" (aceitar_tudo). O painel só AVISA quem escuta
+    (ui/tela_conferir.py aplica, pelo histórico: o Ctrl+Z desfaz). Os botões
+    só mudam quem está na lista, nunca a página. Só entram os avisos que ainda
+    pedem um olhar (ConfigPagina.alertas_pendentes). A aparência é provisória
+    (junção com o layout de 14/10, 20/10/2026: o pé foi o lugar escolhido pelo
+    implementador; fica com o agente de layout). Seguro mudar: os textos.
+    Arriscado: pôr o "está bom: todas" ANTES do botão do motivo em
+    self.itens (self.itens são só os botões que levam à página).
     """
 
     ir_para = Signal(int)
     contagem_mudou = Signal(int)
+    aceitar_motivo = Signal(str)     # o código do alerta
+    aceitar_tudo = Signal()
+    abrir_lista = Signal()
 
     def __init__(self, parent=None) -> None:
         super().__init__(NOMES_DOS_PAINEIS[PAINEL_REVISAR], parent, rolagem=False)
@@ -598,6 +746,13 @@ class PainelParaRevisar(Painel):
 
         self.frase = frase_do_painel("")
         self.dentro.addWidget(self.frase)
+        # O aviso do LIVRO da faixa escura na beirada (12/10/2026; Samuel,
+        # rodada 4, Camões 66: "aviso no livro basta"): quando a faixa está em
+        # quase todas as páginas, ela sai das páginas e é dita uma vez, aqui
+        # (core.pipeline.acertar_faixa_do_livro). Escondida quando não vale.
+        self.frase_do_livro = frase_do_painel("")
+        self.frase_do_livro.setVisible(False)
+        self.dentro.addWidget(self.frase_do_livro)
 
         self.pilha = QStackedWidget()
         self.pilha.setObjectName("pilhaDoPainel")
@@ -632,6 +787,22 @@ class PainelParaRevisar(Painel):
         self.pilha.addWidget(self.rolagem_dos_motivos)
 
         self.dentro.addWidget(self.pilha, 1)
+
+        # o pé: "ver a lista…" e "está bom em tudo", sempre à vista (antes
+        # ficavam no fim da lista e só apareciam rolando; verificador, 13/10)
+        self.botao_ver_a_lista = botao_de_lista("ver a lista…")
+        self.botao_ver_a_lista.setToolTip(
+            "Abre a lista de todas as páginas com aviso e os motivos, "
+            "para escolher em quais dar \"está bom\".")
+        self.botao_ver_a_lista.clicked.connect(lambda _c=False: self.abrir_lista.emit())
+        self.botao_esta_bom_em_tudo = botao_de_lista("está bom em tudo")
+        self.botao_esta_bom_em_tudo.setToolTip(
+            "Tira da lista todos os avisos de todas as páginas. "
+            "Não muda nada nas páginas; o Desfazer traz de volta.")
+        self.botao_esta_bom_em_tudo.clicked.connect(lambda _c=False: self.aceitar_tudo.emit())
+        self.no_pe.addWidget(self.botao_ver_a_lista)
+        self.no_pe.addWidget(self.botao_esta_bom_em_tudo)
+        self.pe.setVisible(False)          # só com aviso pendente (atualizar)
         self.mostrar_aba(ABA_POR_PAGINA)
 
     # --- as abas ----------------------------------------------------------
@@ -667,18 +838,31 @@ class PainelParaRevisar(Painel):
     def atualizar(self, projeto) -> None:
         """Refaz as duas listas a partir do projeto. Só refaz de verdade
         quando os avisos mudaram (a tela chama isto a cada troca de página)."""
+        from core import analise
+
+        # Só os avisos que ainda pedem um olhar (ConfigPagina.alertas_pendentes:
+        # nem a página inteira foi dada como boa, nem aquele motivo dela).
         pendentes: list[tuple[int, tuple]] = []
         if projeto is not None:
             for pagina in projeto.paginas:
-                if pagina.revisada or pagina.apagada or not pagina.alertas:
+                if pagina.apagada:
                     continue
-                pendentes.append((pagina.indice, tuple(pagina.alertas)))
-        assinatura = tuple(pendentes)
+                alertas = tuple(pagina.alertas_pendentes)
+                if alertas:
+                    pendentes.append((pagina.indice, alertas))
+        frase_da_faixa = analise.OBSERVACOES[analise.FAIXA_NA_BEIRADA]
+        faixa_no_livro = projeto is not None and frase_da_faixa in (
+            getattr(projeto, "observacoes", None) or [])
+        assinatura = (tuple(pendentes), faixa_no_livro)
         if assinatura == self._assinatura:
             return
         self._assinatura = assinatura
         self._paginas = len(pendentes)
         self.cabecalho.definir_contagem(self._paginas)
+        self.frase_do_livro.setText("No livro inteiro: " + frase_da_faixa + "."
+                                    if faixa_no_livro else "")
+        self.frase_do_livro.setVisible(faixa_no_livro)
+        self.pe.setVisible(bool(pendentes))
         self._montar_por_pagina(pendentes)
         self._montar_por_motivo(pendentes)
         self._escrever_a_frase()
@@ -726,7 +910,15 @@ class PainelParaRevisar(Painel):
                 + ("…" if len(indices) > 20 else ""))
             self.motivos.addWidget(botao)
             self.itens.append(botao)
-        self.motivos.addWidget(frase_do_painel("clicar leva à primeira"))
+            # "está bom" neste motivo em todas as páginas (12/10/2026)
+            todas = botao_de_lista("está bom: todas" if len(indices) > 1 else "está bom")
+            todas.clicked.connect(
+                lambda _c=False, codigo=alerta: self.aceitar_motivo.emit(codigo))
+            todas.setToolTip(
+                f"Tira da lista {'as ' + str(len(indices)) + ' páginas' if len(indices) > 1 else 'a página'} "
+                f"com o aviso \"{nome}\". Não muda nada nas páginas; o Desfazer traz de volta.")
+            self.motivos.addWidget(todas)
+        self.motivos.addWidget(frase_do_painel("clicar no motivo leva à primeira página"))
 
     def definir_pagina_atual(self, indice: int) -> None:
         """Destaca, na lista "Por página", a página que está na tela (se ela
@@ -818,17 +1010,21 @@ class PainelAutomatico(Painel):
         return [
             (bool(projeto.dividir_folhas), "Dividir folhas ao meio",
              "quando a folha tem 2 páginas do livro",
-             f"jeito: {dividir_scantailor.NOMES_DOS_JEITOS[jeito]}"),
+             f"jeito: {nome_do_jeito_de_dividir(jeito)}"),
             (bool(projeto.endireitar), "Endireitar folhas tortas",
              "corrige páginas inclinadas",
              f"conta: {nome_da_conta(conta)}"),
             (bool(projeto.cortar_bordas), "Cortar as bordas",
              "tira a borda preta e a sombra do scanner",
              "beirada da folha vizinha: "
-             + ("sim" if getattr(projeto, "cortar_sobra", False) else "não")),
+             + ("sim" if getattr(projeto, "cortar_sobra", False) else "não")
+             + "; seguindo o conteúdo: "                       # item 2.5
+             + ("sim" if getattr(projeto, "cortar_pelo_conteudo", False) else "não")
+             + "; borda preta: "                               # item 2.13
+             + (_nome_da_borda(projeto) if getattr(projeto, "borda_preta", False) else "não")),
             (bool(projeto.limpar), "Limpar a folha", "tira o amarelado",
              f"filtro do livro: {NOMES_AMIGAVEIS.get(filtro, filtro)}"),
-            (bool(projeto.montar_cadernos), "Montar cadernos para impressão",
+            (bool(projeto.montar_cadernos), "Montar cadernos no tamanho do scan (sem A4, sem margem)",
              "para imprimir, dobrar ao meio e costurar", ""),
         ]
 
@@ -921,15 +1117,30 @@ class PainelMarcarComo(Bloco):
         _esvaziar(self.dentro)
 
     def _montar(self) -> None:
-        """(Re)desenha os três botões de tipo, destacando o escolhido."""
-        from core.selecao import GRAVURA, LETRA, PAPEL
+        """(Re)desenha os botões de tipo, destacando o escolhido.
+
+        Item 2.18 (P11 (a) e TINTA3 do Samuel, 05/10/2026): mais três, que
+        valem POR CIMA do filtro dentro da área - "pintar por cima" (com a cor
+        do botão "cor de pintar..."), "manter a cor da tinta" e "tinta
+        preta, fundo original". CONTROLE MÍNIMO, provisório até o layout.
+
+        "manter a cor da tinta" (era "tinta com a cor, papel branco"): nome
+        escolhido pelo Samuel na pergunta 11 (Central, 23/10/2026). Só o
+        rótulo mudou; o código gravado no projeto.json continua TINTA_COR
+        ("tinta_cor"), então projeto antigo abre igual. ARRISCADO trocar o
+        código: projetos já gravados perderiam a área."""
+        from core.selecao import GRAVURA, LETRA, PAPEL, PINTAR, TINTA_COR, TINTA_PRETA
         from ui.widgets.editor_selecao import CORES_BORDA
 
         self.limpar()
         self.botoes = {}
+        self.botoes_do_papel = {}        # só existem com a "tinta com a cor"
         for tipo, texto in ((GRAVURA, "gravura ou foto"),
                             (LETRA, "letra e traço"),
-                            (PAPEL, "papel")):
+                            (PAPEL, "papel"),
+                            (PINTAR, "pintar por cima"),
+                            (TINTA_COR, "manter a cor da tinta"),
+                            (TINTA_PRETA, "tinta preta, fundo original")):
             botao = botao_de_lista(texto, escolhido=(tipo == (self.tipo or GRAVURA)))
             # a cor com que a marcação aparece na página (pista visual)
             botao.setIcon(_quadradinho(CORES_BORDA[tipo]))
@@ -937,7 +1148,101 @@ class PainelMarcarComo(Bloco):
             botao.clicked.connect(lambda _c=False, t=tipo: self.definir_tipo(t))
             self.dentro.addWidget(botao)
             self.botoes[tipo] = botao
+            if tipo == TINTA_COR and self.tipo == TINTA_COR:
+                self._montar_jeitos_da_cor()
         self.tipo = self.tipo or GRAVURA
+        # item 2.18: a cor do "pintar por cima" (abre a caixa de cores do Qt)
+        self.botao_cor = botao_de_lista(f"cor de pintar: {self.cor}", escolhido=False)
+        self.botao_cor.setIcon(_quadradinho(QColor(self.cor)))
+        self.botao_cor.setIconSize(QSize(12, 12))
+        self.botao_cor.clicked.connect(self._escolher_cor)
+        self.dentro.addWidget(self.botao_cor)
+
+    cor_escolhida = Signal(str)
+    cor = "#ffffff"
+
+    # Item 2.18, resposta do Samuel de 22/10/2026 à pergunta b-8-tinta-com-cor:
+    # "As duas: A e B como opções separadas". Os dois jeitos aparecem logo
+    # abaixo de "manter a cor da tinta", só quando ela é a escolhida;
+    # valem para a próxima área marcada (a já marcada guarda o dela).
+    # De fábrica a A (False), igual ao de antes: ARRISCADO trocar.
+    escurecer_escolhido = Signal(bool)
+    escurecer = False
+    JEITOS_DA_COR = ((False, "cor como no livro"), (True, "cor escurecida"))
+
+    # Item 2.18, resposta do Samuel de 22/10/2026 à pergunta tc23-1 (o
+    # retângulo branco no papel creme do Original): "As duas: escolher o papel
+    # em cada área ('papel branco' ou 'papel como o resto da página')". Mesma
+    # regra dos dois jeitos da cor: aparecem com o "manter a cor da tinta", em
+    # qualquer filtro (b-9), e valem para a próxima área marcada.
+    # De fábrica "papel branco" (False), igual ao de antes: ARRISCADO trocar.
+    papel_escolhido = Signal(bool)
+    papel_da_pagina = False
+    JEITOS_DO_PAPEL = ((False, "papel branco"), (True, "papel como o resto da página"))
+
+    def _montar_jeitos_da_cor(self) -> None:
+        """Embaixo do botão "manter a cor da tinta", um pouco recuados: "cor como
+        no livro" (A) e "cor escurecida" (B) lado a lado; embaixo, "papel
+        branco" e "papel como o resto da página" um sob o outro (lado a lado o
+        segundo não cabe nos 300 px do painel e sai cortado). Tudo num bloco
+        só (um item a mais no `dentro`, como antes do papel).
+        CONTROLE MÍNIMO, provisório até o layout (sem emoji, §3)."""
+        bloco = Bloco()                  # sem fundo proprio (ver Bloco)
+        coluna = QVBoxLayout(bloco)
+        coluna.setContentsMargins(18, 0, 0, 0)
+        coluna.setSpacing(5)
+        self.botoes_da_cor = {}
+        self.botoes_do_papel = {}
+        for jeitos, escolhido, definir, botoes, Caixa in (
+                (self.JEITOS_DA_COR, self.escurecer, self.definir_escurecer, self.botoes_da_cor,
+                 QHBoxLayout),
+                (self.JEITOS_DO_PAPEL, self.papel_da_pagina, self.definir_papel_da_pagina,
+                 self.botoes_do_papel, QVBoxLayout)):
+            caixa = Caixa()
+            caixa.setContentsMargins(0, 0, 0, 0)
+            caixa.setSpacing(5)
+            for valor, texto in jeitos:
+                botao = botao_de_lista(texto, escolhido=(valor == escolhido))
+                botao.clicked.connect(lambda _c=False, v=valor, f=definir: f(v))
+                caixa.addWidget(botao)
+                botoes[valor] = botao
+            coluna.addLayout(caixa)
+        self.dentro.addWidget(bloco)
+
+    def definir_papel_da_pagina(self, da_pagina: bool) -> None:
+        """Troca entre "papel branco" (False) e "papel como o resto da
+        página" (True)."""
+        da_pagina = bool(da_pagina)
+        if da_pagina == self.papel_da_pagina:
+            return
+        self.papel_da_pagina = da_pagina
+        self._montar()
+        self.papel_escolhido.emit(da_pagina)
+
+    def definir_escurecer(self, escurecer: bool) -> None:
+        """Troca entre A ("cor como no livro") e B ("cor escurecida")."""
+        escurecer = bool(escurecer)
+        if escurecer == self.escurecer:
+            return
+        self.escurecer = escurecer
+        self._montar()
+        self.escurecer_escolhido.emit(escurecer)
+
+    def _escolher_cor(self) -> None:
+        """Abre a caixa de cores; a cor vale para o próximo "pintar por cima"."""
+        from PySide6.QtWidgets import QColorDialog
+
+        # aberta sem travar o programa (open, nao exec): o teste_botoes.py
+        # clica em todos os botoes e uma caixa que espera resposta o pararia
+        self.caixa_de_cor = QColorDialog(QColor(self.cor), self)
+        self.caixa_de_cor.setWindowTitle("Cor para pintar por cima")
+        self.caixa_de_cor.colorSelected.connect(lambda cor: self.definir_cor(cor.name()))
+        self.caixa_de_cor.open()
+
+    def definir_cor(self, cor: str) -> None:
+        self.cor = cor or "#ffffff"
+        self._montar()
+        self.cor_escolhida.emit(self.cor)
 
     def definir_tipo(self, tipo: str) -> None:
         """Troca o tipo escolhido (gravura/letra/papel) e emite `escolheu`."""
@@ -954,8 +1259,15 @@ class PainelPropriedades(Painel):
 
     O painel só GUARDA e MOSTRA: o conteúdo de Cortar, Endireitar e Dividir é
     montado pela tela de conferir (que tem as ações) e entregue em
-    `definir_conteudo`. Os fixos são o "Marcar como" (ferramentas de marcar)
-    e a frase de quem não tem propriedades (Zoom, Mão).
+    `definir_conteudo`. Os fixos são o das ferramentas de marcar e a frase
+    de quem não tem propriedades (Zoom, Mão).
+
+    O das ferramentas de marcar (etapa 4 do layout, 20/10/2026; protótipo da
+    rodada 13, `propsMarcarA`) é o "Marcar como" e, embaixo dele, as partes
+    que eram filas de botões embaixo da página ("Marcação desta página",
+    "Foto", "Pedaço"), montadas pela tela de conferir e entregues em
+    `definir_extra_de_marcar`. O "Na área marcada" do protótipo (pintar por
+    cima, copiar, colar, mover) ainda não existe no programa e não entrou.
     """
 
     CONTEUDO_DE_MARCAR = "marcar"
@@ -964,9 +1276,18 @@ class PainelPropriedades(Painel):
     def __init__(self, parent=None) -> None:
         super().__init__(NOMES_DOS_PAINEIS[PAINEL_PROPRIEDADES], parent)
         self.marcar_como = PainelMarcarComo()
+        # o conteúdo das ferramentas de marcar: o "Marcar como" e, embaixo,
+        # o que a tela entrega em definir_extra_de_marcar
+        self.conteudo_de_marcar = NaoEspreme()
+        coluna = QVBoxLayout(self.conteudo_de_marcar)
+        coluna.setContentsMargins(0, 0, 0, 0)
+        coluna.setSpacing(7)
+        coluna.addWidget(self.marcar_como)
+        self._coluna_de_marcar = coluna
+        self.extra_de_marcar: QWidget | None = None
         self.sem_propriedades = frase_do_painel("")
         self._fixos: dict[str, QWidget] = {
-            self.CONTEUDO_DE_MARCAR: self.marcar_como,
+            self.CONTEUDO_DE_MARCAR: self.conteudo_de_marcar,
             self.SEM_PROPRIEDADES: self.sem_propriedades,
         }
         self._da_tela: dict[str, QWidget] = {}
@@ -992,12 +1313,28 @@ class PainelPropriedades(Painel):
         self.dentro.addWidget(widget)
         widget.setVisible(False)
 
+    def definir_extra_de_marcar(self, widget: QWidget) -> None:
+        """Põe, embaixo do "Marcar como", as partes das ferramentas de marcar
+        que a tela montou ("Marcação desta página", "Foto", "Pedaço"). Troca
+        a anterior (outro livro): a peça antiga é destruída."""
+        self._tirar_o_extra_de_marcar()
+        self.extra_de_marcar = widget
+        self._coluna_de_marcar.addWidget(widget)
+
+    def _tirar_o_extra_de_marcar(self) -> None:
+        if self.extra_de_marcar is not None:
+            self.extra_de_marcar.setParent(None)
+            self.extra_de_marcar.deleteLater()
+            self.extra_de_marcar = None
+
     def tirar_conteudos(self) -> None:
-        """Joga fora os conteúdos da tela (ao abrir outro livro); os fixos ficam."""
+        """Joga fora os conteúdos da tela (ao abrir outro livro), inclusive as
+        partes de marcar; os fixos ficam."""
         for widget in self._da_tela.values():
             widget.setParent(None)
             widget.deleteLater()
         self._da_tela.clear()
+        self._tirar_o_extra_de_marcar()
 
     def tem_conteudo(self, chave: str) -> bool:
         """Há conteúdo (da tela ou fixo) guardado com esta chave?"""
@@ -1016,101 +1353,402 @@ class PainelPropriedades(Painel):
         for nome, widget in {**self._fixos, **self._da_tela}.items():
             widget.setVisible(nome == chave)
         self.cabecalho.definir_subtitulo(ferramenta)
+        self.medir_de_novo()
 
 
 # ---------------------------------------------------------------------------
 # Filtro da página
 # ---------------------------------------------------------------------------
 
-class PainelFiltroDaPagina(Painel):
-    """Qual filtro está valendo, o deslizante dele, e "só neste pedaço".
+class ParteQueAbre(QFrame):
+    """Uma parte do painel que abre e fecha (rodada 9, 403 B: "Filtros numa
+    fila + partes que abrem e fecham"; desenho das rodadas 10 e 11).
 
-    É o conteúdo de antes, no painel novo. O painel Filtro decidido na rodada
-    9 (403 B: os filtros numa fila e partes que abrem e fecham) é a etapa
-    seguinte do layout.
+    Fechada, mostra só a seta, o título e, à direita, um resumo do que está
+    escolhido ("Força do preto: 52", "Sem limpeza"). Aberta, mostra o corpo.
+    A pista visual de que dá para clicar: a seta, a mãozinha do mouse e o
+    fundo que acende com o mouse em cima. O que fica aberto é lembrado pelo
+    nome da parte enquanto o programa está aberto (ABERTAS), para não fechar
+    a cada troca de página. Seguro mudar: as margens."""
+
+    ABERTAS: dict[str, bool] = {}
+
+    def __init__(self, titulo: str, corpo: QWidget, aberta: bool = False, parent=None) -> None:
+        super().__init__(parent)
+        self.setObjectName("parteQueAbre")
+        self.setAttribute(Qt.WA_StyledBackground, True)
+        estilo.estilizar(self, lambda: (
+            f"QFrame#parteQueAbre {{ border: 1px solid {estilo.cor('sep')}; border-radius: 6px; "
+            f"background: transparent; }}"))
+        self.nome = titulo
+        fora = QVBoxLayout(self)
+        fora.setContentsMargins(0, 0, 0, 0)
+        fora.setSpacing(0)
+        self.cabeca = _CabecaDaParte(titulo)
+        self.cabeca.clicada.connect(self.alternar)
+        fora.addWidget(self.cabeca)
+        self.caixa_do_corpo = NaoEspreme()
+        dentro = QVBoxLayout(self.caixa_do_corpo)
+        dentro.setContentsMargins(10, 2, 10, 10)
+        dentro.setSpacing(6)
+        dentro.addWidget(corpo)
+        fora.addWidget(self.caixa_do_corpo)
+        self.corpo = corpo
+        self.aberta = self.ABERTAS.get(titulo, aberta)
+        self._acertar()
+
+    def alternar(self) -> None:
+        """Clique no cabeçalho: abre ou fecha."""
+        self.abrir(not self.aberta)
+
+    def abrir(self, aberta: bool = True) -> None:
+        """Abre (ou fecha, com False) e lembra para a próxima página."""
+        self.aberta = bool(aberta)
+        ParteQueAbre.ABERTAS[self.nome] = self.aberta
+        self._acertar()
+
+    def definir_resumo(self, texto: str) -> None:
+        """O que está escolhido, à direita do título."""
+        self.cabeca.resumo.setText(texto)
+        self.cabeca.resumo.setToolTip(texto)
+
+    def _acertar(self) -> None:
+        self.caixa_do_corpo.setVisible(self.aberta)
+        self.cabeca.aberta = self.aberta
+        self.cabeca.update()
+
+
+class _CabecaDaParte(QWidget):
+    """O cabeçalho clicável de uma ParteQueAbre: seta desenhada, título, resumo."""
+
+    clicada = Signal()
+
+    def __init__(self, titulo: str, parent=None) -> None:
+        super().__init__(parent)
+        self.aberta = False
+        self.setCursor(Qt.PointingHandCursor)
+        self.setAttribute(Qt.WA_Hover, True)
+        linha = QHBoxLayout(self)
+        linha.setContentsMargins(26, 7, 10, 7)
+        linha.setSpacing(8)
+        self.titulo = QLabel(titulo)
+        self.titulo.setObjectName("secaoDoPainel")
+        linha.addWidget(self.titulo)
+        self.resumo = QLabel("")
+        self.resumo.setObjectName("fraseDoPainel")
+        self.resumo.setSizePolicy(QSizePolicy.Ignored, QSizePolicy.Preferred)
+        self.resumo.setAlignment(Qt.AlignRight | Qt.AlignVCenter)
+        linha.addWidget(self.resumo, 1)
+
+    def mousePressEvent(self, evento) -> None:  # noqa: N802 - nome do Qt
+        if evento.button() == Qt.LeftButton:
+            self.clicada.emit()
+
+    def event(self, evento) -> bool:  # noqa: D401 - nome do Qt
+        """O mouse entrou ou saiu: redesenha (o fundo aceso)."""
+        if evento.type() in (QEvent.HoverEnter, QEvent.HoverLeave):
+            self.update()
+        return super().event(evento)
+
+    def paintEvent(self, evento) -> None:  # noqa: N802 - nome do Qt
+        """A seta: para a direita fechada, para baixo aberta (traço, sem símbolo de texto)."""
+        super().paintEvent(evento)
+        pintor = QPainter(self)
+        pintor.setRenderHint(QPainter.Antialiasing)
+        if self.underMouse():
+            pintor.setPen(Qt.NoPen)
+            cor = QColor(estilo.cor("forte"))
+            cor.setAlpha(16)
+            pintor.setBrush(cor)
+            pintor.drawRoundedRect(QRectF(self.rect()).adjusted(1, 1, -1, -1), 5, 5)
+        pintor.setBrush(Qt.NoBrush)
+        pintor.setPen(_caneta(estilo.cor("texto"), 1.6))
+        cx, cy = 13, self.height() / 2
+        if self.aberta:
+            pontos = [QPointF(cx - 4, cy - 2), QPointF(cx, cy + 2), QPointF(cx + 4, cy - 2)]
+        else:
+            pontos = [QPointF(cx - 2, cy - 4), QPointF(cx + 2, cy), QPointF(cx - 2, cy + 4)]
+        pintor.drawPolyline(pontos)
+        pintor.end()
+
+
+class _PaginaPequena(QWidget):
+    """A página pequena de um CartaozinhoDoFiltro (ou um quadro cinza sem ela)."""
+
+    LADO = QSize(50, 66)
+
+    def __init__(self, parent=None) -> None:
+        super().__init__(parent)
+        self.setFixedSize(self.LADO)
+        self.pixmap: QPixmap | None = None
+
+    def paintEvent(self, _evento) -> None:  # noqa: N802 - nome do Qt
+        pintor = QPainter(self)
+        ret = QRectF(0.5, 0.5, self.LADO.width() - 1, self.LADO.height() - 1)
+        if self.pixmap is not None and not self.pixmap.isNull():
+            escala = min(self.LADO.width() / self.pixmap.width(),
+                         self.LADO.height() / self.pixmap.height())
+            w, h = self.pixmap.width() * escala, self.pixmap.height() * escala
+            alvo = QRectF((self.LADO.width() - w) / 2, (self.LADO.height() - h) / 2, w, h)
+            pintor.setRenderHint(QPainter.SmoothPixmapTransform)
+            pintor.drawPixmap(alvo, self.pixmap, QRectF(self.pixmap.rect()))
+            ret = alvo.adjusted(0.5, 0.5, -0.5, -0.5)
+        else:
+            pintor.fillRect(ret, QColor(estilo.cor("botao")))
+        pintor.setPen(_caneta(estilo.cor("sep"), 1))
+        pintor.drawRect(ret)
+        pintor.end()
+
+
+class CartaozinhoDoFiltro(QFrame):
+    """Um filtro na fila do painel Filtro: a página pequena naquele filtro, o
+    nome e a tecla. Clicar escolhe o filtro para a página (rodada 9, 403 B).
+    A página pequena é a mesma amostra dos cartões grandes (a tela a manda
+    em `definir_amostra`); sem ela, um quadro cinza."""
+
+    escolhido = Signal(str)
+
+    def __init__(self, chave: str, nome: str, tecla: str, parent=None) -> None:
+        super().__init__(parent)
+        self.chave = chave
+        self.selecionado = False
+        self.setCursor(Qt.PointingHandCursor)
+        self.setObjectName("cartaozinhoDoFiltro")
+        self.setAttribute(Qt.WA_StyledBackground, True)
+        self.setToolTip(nome + (f" (tecla {tecla})" if tecla else ""))
+        fora = QVBoxLayout(self)
+        # margens pequenas: em 300 pontos de painel, quatro filtros lado a
+        # lado; com 3 de cada lado o "Melhorar" saía cortado (verificador, 21/10)
+        fora.setContentsMargins(1, 5, 1, 4)
+        fora.setSpacing(2)
+        self.desenho = _PaginaPequena()
+        fora.addWidget(self.desenho, 0, Qt.AlignHCenter)
+        self.rotulo = QLabel(nome)
+        self.rotulo.setAlignment(Qt.AlignHCenter)
+        self.rotulo.setWordWrap(True)
+        fora.addWidget(self.rotulo)
+        self.rotulo_tecla = QLabel(f"tecla {tecla}" if tecla else "")
+        self.rotulo_tecla.setAlignment(Qt.AlignHCenter)
+        self.rotulo_tecla.setObjectName("teclaDoFiltro")
+        fora.addWidget(self.rotulo_tecla)
+        fora.addStretch()
+        self._acertar_estilo()
+
+    def definir_amostra(self, img) -> None:
+        """A página pequena neste filtro (array do OpenCV), ou None."""
+        if img is None:
+            self.desenho.pixmap = None
+        else:
+            from ui.widgets.visualizador import numpy_para_qimage
+            self.desenho.pixmap = QPixmap.fromImage(numpy_para_qimage(img))
+        self.desenho.update()
+
+    def definir_selecionado(self, selecionado: bool) -> None:
+        """Acende (borda azul) o filtro da página."""
+        if selecionado != self.selecionado:
+            self.selecionado = selecionado
+            self._acertar_estilo()
+
+    def _acertar_estilo(self) -> None:
+        sel = self.selecionado
+        estilo.estilizar(self, lambda: (
+            f"QFrame#cartaozinhoDoFiltro {{ border: 2px solid "
+            f"{estilo.cor('azul') if sel else 'transparent'}; border-radius: 6px; "
+            f"background: {estilo.cor('sel') if sel else 'transparent'}; }}"
+            f"QFrame#cartaozinhoDoFiltro:hover {{ border-color: {estilo.cor('azul')}; }}"
+            f"QLabel {{ color: {estilo.cor('forte') if sel else estilo.cor('texto')}; font-size: 11px;"
+            f" font-weight: {600 if sel else 400}; background: transparent; border: none; }}"
+            f"QLabel#teclaDoFiltro {{ color: {estilo.cor('fraco')}; font-size: 10px; font-weight: 400; }}"))
+
+    def mousePressEvent(self, evento) -> None:  # noqa: N802 - nome do Qt
+        if evento.button() == Qt.LeftButton:
+            self.escolhido.emit(self.chave)
+
+
+class PainelFiltroDaPagina(Painel):
+    """O painel "Filtro da página" decidido (etapa 4 do layout, 20/10/2026).
+
+    Rodada 9, 403 B ("Filtros numa fila + partes que abrem e fecham"), com os
+    nomes da rodada 10 (conjunto 2: "Limpar a sujeira", "Guardar a tinta
+    forte"...) e as escolhas em "menu com amostra" (502 B), no desenho das
+    rodadas 10 e 11:
+
+        fila dos filtros (a página pequena em cada um, nome, tecla)
+        Ajuste            o deslizante do filtro da vez
+        Só as letras      só no Preto e branco
+        Limpar a sujeira  só no Preto e branco
+        Mais ajustes      só no Preto e branco: o jeito do preto e branco
+        Só neste pedaço   o filtro do que for marcado daqui em diante
+        ----
+        Tirar esta página do PDF final   [apagar página]
+        pé: Aplicar em: só nesta · todas · daqui em diante
+
+    O painel só ARRUMA as peças: o deslizante, as listas, o "Só as letras",
+    os botões do "Aplicar em" e o "apagar página" são criados pela tela de
+    conferir (que tem as ações, o desfazer e os testes que os usam pelo
+    nome: seletor_algoritmo_pb, seletor_pontinhos, escolhas_misto...) e
+    entregues em `montar`. O que o painel faz sozinho: a fila (sinal
+    `filtro_escolhido`) e o "só neste pedaço" (sinal `filtro_do_pedaco`).
+
+    O ícone no título abre a tela cheia dos filtros (etapa 6,
+    ui/widgets/filtros_tela_cheia.py). Ainda não estão aqui: em "Mais ajustes", "Letra clara em fundo escuro" e "Letras com a
+    cor delas" (não existem no programa). No "Só neste pedaço" (rodada 14b,
+    909: "B — Sem o botão de cima, nenhum aceso") não há mais o botão "o
+    mesmo da página": nenhum filtro vem aceso, e o pedaço só ganha filtro
+    próprio se a pessoa clicar num; clicar de novo no aceso volta a nenhum.
+    Seguro mudar: a ordem e os títulos das partes. Arriscado: criar aqui as
+    peças da tela (perdem a ligação com o desfazer).
     """
 
     filtro_escolhido = Signal(str)
     filtro_do_pedaco = Signal(str)
-    medidor_mudou = Signal(int)
+    tela_cheia_pedida = Signal()
 
     def __init__(self, parent=None) -> None:
         super().__init__(NOMES_DOS_PAINEIS[PAINEL_FILTRO], parent)
+        # etapa 6 do layout (rodada 10, 503; rodada 11, 601 A): o ícone no
+        # título abre a tela cheia dos filtros
+        self.botao_tela_cheia = self.cabecalho.por_botao(
+            icone_de_tela_cheia, "Ver os filtros em tela cheia (a página grande em cada filtro)")
+        self.botao_tela_cheia.clicked.connect(lambda: self.tela_cheia_pedida.emit())
         self.filtro = ""
         self.filtro_pedaco = ""
+        self.cartoes: dict[str, CartaozinhoDoFiltro] = {}
+        self.partes: dict[str, ParteQueAbre] = {}
+        self.botoes_do_pedaco: dict[str, QPushButton] = {}
+        self.montado = False
+        self._fila = self._apagar = self._aplicar = self._espaco = self._risco = None
+        self.sem_filtro = frase_do_painel(
+            "Este livro não passa pelos filtros: a etapa “Limpar a folha” está desligada.")
+        self.dentro.addWidget(self.sem_filtro)
+
+    def montar(self, filtros: list[tuple[str, str, str]], pecas: dict[str, QWidget]) -> None:
+        """Arruma as peças da tela no painel (uma vez por livro).
+
+        filtros: (chave, nome, tecla) de cada filtro do livro, na ordem da fila.
+        pecas: "ajuste", "letras", "limpar", "mais" (os corpos das partes),
+        "aplicar" (vai para o pé) e "apagar" (o botão "apagar página")."""
+        from core.filtros import NOMES_AMIGAVEIS
+
+        self.desmontar()
+        self.sem_filtro.setVisible(False)
+        fila = Bloco()
+        linha = QHBoxLayout(fila)
+        linha.setContentsMargins(0, 0, 0, 2)
+        linha.setSpacing(2)
+        for chave, nome, tecla in filtros:
+            cartao = CartaozinhoDoFiltro(chave, nome, tecla)
+            cartao.escolhido.connect(self.filtro_escolhido)
+            self.cartoes[chave] = cartao
+            linha.addWidget(cartao, 1)
+        self.dentro.addWidget(fila)
+        self._fila = fila
+
+        for chave, titulo, aberta in (("ajuste", "Ajuste", False), ("letras", "Só as letras", True),
+                                      ("limpar", "Limpar a sujeira", False),
+                                      ("mais", "Mais ajustes", False)):
+            parte = ParteQueAbre(titulo, pecas[chave], aberta)
+            self.partes[chave] = parte
+            self.dentro.addWidget(parte)
+
+        # "Só neste pedaço": o filtro do que for marcado daqui em diante
+        pedaco = Bloco()
+        coluna = QVBoxLayout(pedaco)
+        coluna.setContentsMargins(0, 0, 0, 0)
+        coluna.setSpacing(5)
+        for chave, texto in [(f, NOMES_AMIGAVEIS.get(f, n)) for f, n, _t in filtros]:
+            botao = botao_de_lista(texto)
+            botao.clicked.connect(lambda _c=False, k=chave: self._escolher_pedaco(k))
+            coluna.addWidget(botao)
+            self.botoes_do_pedaco[chave] = botao
+        coluna.addWidget(frase_do_painel("vale para o que você marcar daqui em diante"))
+        parte = ParteQueAbre("Só neste pedaço", pedaco, False)
+        self.partes["pedaco"] = parte
+        self.dentro.addWidget(parte)
+
+        # apagar: destrutivo, longe dos outros, depois de um risco
+        self._espaco = Bloco()          # Bloco: um QWidget puro pintaria uma faixa escura
+        self._espaco.setFixedHeight(4)
+        self.dentro.addWidget(self._espaco)
+        self._risco = risco_do_painel()
+        self.dentro.addWidget(self._risco)
+        apagar = Bloco()
+        linha = QHBoxLayout(apagar)
+        linha.setContentsMargins(0, 2, 0, 0)
+        linha.setSpacing(8)
+        linha.addWidget(frase_do_painel("Tirar esta página do PDF final"), 1)
+        linha.addWidget(pecas["apagar"])
+        self.dentro.addWidget(apagar)
+        self._apagar = apagar
+
+        self.no_pe.addWidget(pecas["aplicar"])
+        self._aplicar = pecas["aplicar"]
+        self.pe.setVisible(True)
+        self.montado = True
+        self._acertar_pedaco()
+
+    def desmontar(self) -> None:
+        """Tira as peças do livro anterior (as da tela são destruídas com ele)."""
+        for widget in (self._fila, self._espaco, self._risco, self._apagar, self._aplicar,
+                       *self.partes.values()):
+            if widget is not None:
+                widget.setParent(None)
+                widget.deleteLater()
+        self._fila = self._apagar = self._aplicar = self._espaco = self._risco = None
+        self.cartoes.clear()
+        self.partes.clear()
+        self.botoes_do_pedaco.clear()
+        self.pe.setVisible(False)
+        self.montado = False
+        self.sem_filtro.setVisible(True)
 
     def atualizar(self, pagina) -> None:
-        """Reconstroi o painel para a página atual: nome do filtro + tecla, o
-        medidor do ajuste daquele filtro (cada filtro guarda o seu - ver o
-        comentario abaixo) e os botões de "só neste pedaço"."""
-        from core.filtros import (
-            MAGICO_PRO,
-            MELHORAR,
-            NOMES_AMIGAVEIS,
-            ORIGINAL,
-            PRETO_E_BRANCO,
-        )
-        from PySide6.QtWidgets import QSlider
-
-        self.limpar()
+        """A página da vez: o subtítulo, o filtro aceso na fila e o pedaço."""
         if pagina is None:
             self.cabecalho.definir_subtitulo("")
             return
-
         self.cabecalho.definir_subtitulo(f"página {pagina.indice + 1}")
         self.filtro = pagina.filtro
-        teclas = {ORIGINAL: 1, PRETO_E_BRANCO: 2, MELHORAR: 3, MAGICO_PRO: 4}
+        for chave, cartao in self.cartoes.items():
+            cartao.definir_selecionado(chave == pagina.filtro)
+        self._acertar_pedaco()
 
-        linha = Bloco()
-        dentro = QHBoxLayout(linha)
-        dentro.setContentsMargins(0, 0, 0, 2)
-        nome = QLabel(NOMES_AMIGAVEIS.get(pagina.filtro, pagina.filtro))
-        nome.setWordWrap(True)
-        nome.setObjectName("etapaLigada")
-        dentro.addWidget(nome)
-        dentro.addStretch()
-        # Item 1.1: o filtro "Tirar o fundo" nao tem tecla (1 a 4 sao os
-        # quatro de sempre); sem tecla, o rotulo nao aparece (antes sairia
-        # "tecla " sozinho).
-        if pagina.filtro in teclas:
-            tecla = QLabel(f"tecla {teclas[pagina.filtro]}")
-            tecla.setWordWrap(True)
-            estilo.estilizar(tecla, lambda: (
-                f"color: {estilo.TEXTO_FRACO}; font-size: 11px; background: transparent; "
-                "border: none;"))
-            dentro.addWidget(tecla)
-        self.dentro.addWidget(linha)
+    def definir_amostra(self, chave: str, img) -> None:
+        """A página pequena do filtro `chave` (a mesma do cartão grande)."""
+        cartao = self.cartoes.get(chave)
+        if cartao is not None:
+            cartao.definir_amostra(img)
 
-        # O deslizante daquele filtro. Cada um tem o seu, e trocar de filtro e
-        # voltar devolve o ajuste que AQUELE filtro tinha.
-        campos = {
-            PRETO_E_BRANCO: ("forca_preto", "força do preto"),
-            MELHORAR: ("clareza_melhorar", "clareza do fundo"),
-            MAGICO_PRO: ("intensidade_magico", "intensidade"),
-        }
-        if pagina.filtro in campos:
-            campo, rotulo = campos[pagina.filtro]
-            self._texto(rotulo, tamanho=11)
-            barra = QSlider(Qt.Horizontal)
-            barra.setRange(0, 100)
-            barra.setValue(getattr(pagina, campo))
-            barra.setFocusPolicy(Qt.NoFocus)    # as setas do teclado trocam de página
-            barra.valueChanged.connect(self.medidor_mudou.emit)
-            self.dentro.addWidget(barra)
+    def definir_parte(self, chave: str, visivel: bool, resumo: str = "") -> None:
+        """Mostra ou esconde uma parte e escreve o resumo dela."""
+        parte = self.partes.get(chave)
+        if parte is not None:
+            parte.setVisible(visivel)
+            parte.definir_resumo(resumo)
 
-        self._texto("só neste pedaço", tamanho=11)
-        for chave, texto in (("", "o mesmo da página"),
-                             (ORIGINAL, NOMES_AMIGAVEIS[ORIGINAL]),
-                             (PRETO_E_BRANCO, NOMES_AMIGAVEIS[PRETO_E_BRANCO]),
-                             (MELHORAR, NOMES_AMIGAVEIS[MELHORAR]),
-                             (MAGICO_PRO, NOMES_AMIGAVEIS[MAGICO_PRO])):
-            self._botao(texto,
-                        lambda _c=False, k=chave: self._escolher_pedaco(k),
-                        escolhido=(chave == self.filtro_pedaco))
+    def _acertar_pedaco(self) -> None:
+        from core.filtros import NOMES_AMIGAVEIS
+
+        for chave, botao in self.botoes_do_pedaco.items():
+            escolhido = chave == self.filtro_pedaco
+            estilo.estilizar(botao, lambda e=escolhido: BOTAO_DO_PAINEL.format(
+                borda=estilo.cor("azul") if e else estilo.cor("sep"),
+                fundo=estilo.cor("sel") if e else estilo.cor("botao"),
+                cor=estilo.cor("forte") if e else estilo.cor("texto"),
+                azul=estilo.cor("azul")))
+        parte = self.partes.get("pedaco")
+        if parte is not None:
+            parte.definir_resumo("nenhum" if not self.filtro_pedaco
+                                 else NOMES_AMIGAVEIS.get(self.filtro_pedaco, self.filtro_pedaco))
 
     def _escolher_pedaco(self, chave: str) -> None:
-        """Marca qual filtro vale "só neste pedaço" (chave vazia = o mesmo da página)."""
+        """Marca qual filtro vale "só neste pedaço" (chave vazia = nenhum: o
+        pedaço sai como o resto da página). Clicar no que já está aceso
+        apaga (volta a nenhum)."""
+        if chave == self.filtro_pedaco:
+            chave = ""
         self.filtro_pedaco = chave
+        self._acertar_pedaco()
         self.filtro_do_pedaco.emit(chave)
 
 
@@ -1502,6 +2140,7 @@ class ColunaDePaineis(QWidget):
     """
 
     abriu = Signal(str)        # a chave do painel aberto, ou "" quando fechou
+    icones_mudaram = Signal(bool)   # a coluna de ícones apareceu (True) ou sumiu
 
     def __init__(self, parent=None) -> None:
         super().__init__(parent)
@@ -1548,7 +2187,9 @@ class ColunaDePaineis(QWidget):
         """Abre o painel `chave` (fecha o que estava aberto: um por vez)."""
         if chave not in self.paineis:
             return
-        self.icones_a_vista = True           # painel aberto sem ícones não existe
+        if not self.icones_a_vista:          # painel aberto sem ícones não existe
+            self.icones_a_vista = True
+            self.icones_mudaram.emit(True)
         self.aberto = chave
         self.area.setCurrentWidget(self.paineis[chave])
         if chave == PAINEL_REVISAR:
@@ -1580,6 +2221,7 @@ class ColunaDePaineis(QWidget):
         """Mostra ou esconde a coluna de ícones."""
         self.icones_a_vista = bool(a_vista)
         self._acertar()
+        self.icones_mudaram.emit(self.icones_a_vista)
 
     def mostrar_painel(self, chave: str, visivel: bool) -> None:
         """Do menu Ver (nome de antes): abrir ou fechar um painel. A chave

@@ -1,0 +1,50 @@
+
+1. ferramentas de marcar
+  ok      Retângulo: a fila embaixo da página está vazia
+  1-marcar-fechado.png  (tela inteira)
+  ok      clique nativo no ícone: o Propriedades mostra as partes de marcar
+  1-marcar-propriedades.png  (tela inteira)
+  ok      nenhum botão do Propriedades de marcar espremido ([])
+  1-marcar-propriedades-rolado.png  (tela inteira)
+  ok      clique nativo em 'detectar automaticamente' (aviso: 'Marcado: 4 de letra e traço e 7 de papel.')
+  ok      clique nativo marcou 'Esta página tem foto'
+
+2. o painel Filtro
+  ok      clique nativo abriu o painel Filtro montado
+     páginas pequenas na fila: 4 de 4
+  ok      a fila mostra a página nos filtros (com a ferramenta Cortar)
+  2-filtro-original.png  (tela inteira)
+  ok      clique nativo na fila escolheu o Preto e branco
+  ok      no Preto e branco aparecem 'Só as letras', 'Limpar a sujeira' e 'Mais ajustes'
+  2-filtro-preto-e-branco.png  (tela inteira)
+  ok      clique nativo no cabeçalho abriu a parte 'ajuste'
+  ok      clique nativo no cabeçalho abriu a parte 'limpar'
+  ok      clique nativo no cabeçalho abriu a parte 'mais'
+  3-filtro-partes-abertas.png  (tela inteira)
+  ok      nenhum botão do painel Filtro espremido ([])
+  3-filtro-partes-abertas-rolado.png  (tela inteira)
+  4-lista-limpar-aberta.png  (tela inteira)
+  4-lista-limpar-aberta-ampliado.png  (ampliado: A lista com amostra, aberta)
+  4-lista-letras-aberta.png  (tela inteira)
+  4-lista-letras-aberta-ampliado.png  (ampliado: A lista com amostra, aberta)
+  ok      a lista 'Limpar a sujeira' grava na página
+  ok      o pé tem 'Aplicar em' com os três
+  ok      de volta ao Original, as partes do P&B somem
+
+5. janela mínima, maximizada e temas
+  5-minima-filtro.png  (tela inteira)
+  5-maximizada-filtro.png  (tela inteira)
+  5-filtro-escuro.png  (tela inteira)
+  5-filtro-claro.png  (tela inteira)
+  5-marcar-escuro.png  (tela inteira)
+  5-marcar-claro.png  (tela inteira)
+
+6. menus
+  ok      Ver > Aproximar aproximou a página
+  ok      Ver > Ajustar à tela voltou a 100%
+  ok      Editar > Mostrar o histórico abriu o Histórico
+  6-menu-livros-recentes.png  (tela inteira)
+     livros recentes: ['Boecio (copia)']
+
+conferências: 19 de 19 certas
+FIM

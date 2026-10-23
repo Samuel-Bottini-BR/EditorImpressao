@@ -1,0 +1,4 @@
+=========================== short test summary info ===========================
+FAILED tests/test_desentortar_conferir_de_novo.py::test_reversao_previa_em_resolucao_baixa_nao_tira_os_avisos
+FAILED tests/test_desentortar_conferir_de_novo.py::test_reversao_destino_18_o_aviso_fica_depois_da_previa_rapida
+2 failed, 12 deselected in 33.71s

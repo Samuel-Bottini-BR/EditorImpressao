@@ -49,6 +49,17 @@
   #error Falta _internal\core\nativo\st_gravura.txt (origem e licenca do detector de gravura). Gere o instalador pelo empacotar.py.
 #endif
 
+; A DLL COMUM DAS FERRAMENTAS DO SCANTAILOR (limpar pontinhos, dividir,
+; endireitar, caixas): core\nativo\st_ferramentas.dll e o .txt dela. Entrou em
+; 21/10/2026 (bug da Lista de bugs de 20/10, "Instalador sem a
+; st_ferramentas.dll"): sem ela o programa cairia nas contas antigas sem avisar.
+#if !FileExists(PastaDoPrograma + "_internal\core\nativo\st_ferramentas.dll")
+  #error Falta _internal\core\nativo\st_ferramentas.dll (ferramentas do ScanTailor). Gere o instalador pelo empacotar.py.
+#endif
+#if !FileExists(PastaDoPrograma + "_internal\core\nativo\st_ferramentas.txt")
+  #error Falta _internal\core\nativo\st_ferramentas.txt (origem e licenca das ferramentas do ScanTailor). Gere o instalador pelo empacotar.py.
+#endif
+
 ; OS DETECTORES DE TEXTO (item 1.3, 29/09/2026: "todos os OCRs instalados").
 ; O empacotar.py poe ao lado do .exe o motor do Kraken (motor-kraken\) e o
 ; Tesseract com os seis idiomas (tesseract\), e deixa o instalador oficial do

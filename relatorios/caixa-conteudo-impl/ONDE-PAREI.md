@@ -1,0 +1,287 @@
+# Caixa da página e caixa do conteúdo do ScanTailor: onde parei
+
+## 20/10/2026 — Parte 1 (ligar a caixa do conteúdo, 2.5) — EM ANDAMENTO
+
+Pedido da gerente (20/10): olhar os livros de folha grande; ligar a caixa do conteúdo e as
+linhas de apoio conforme `g8-guias`, `g8-moldura-tinta-fora`, `g9-pagina-muito-maior`. A borda
+preta (2.13, Parte 2) só quando a gerente mandar (depende da `g7-borda-ate-onde`).
+
+Passos (marque ao terminar):
+- [x] `origin/fase-1` (b8e9af7) juntado ao ramo, sem conflito (`a67e1f0`; o fase-1 só mexeu em
+      `core/analise.py`, que este ramo não toca).
+- [x] Folha grande olhada: `scripts/olhar_folha_grande.py`, imagens em `img/folha-grande/`
+      (9 páginas: ljs47 10/46/68, Antiphon 88/123/260, Egenloff 3/12/47, com as quatro beiradas
+      ampliadas), números em `dados/folha-grande.json`. Resumo e causa: seção "Folha grande" abaixo.
+- [x] Contas no núcleo: `core/corte_pelo_conteudo.py` (`8c3994c`), 21 testes.
+- [x] Ligado no núcleo, desligado de fábrica (`Projeto.cortar_pelo_conteudo`), corte = caixa +
+      1 mm alargada até o tamanho do livro (G9), folha muito maior de fora com aviso (g9,
+      `ConfigPagina.alinhar_com_as_outras`), aviso de tinta de fora + corte alargado (g8),
+      passada no processar (`2f1cd43`, `5621ca7`, `5ea33f5`); 14 testes no programa.
+- [x] Tela mínima, commit separado (`da306e8`): caixinha em "O que fazer", linhas em "Para o
+      livro todo" e no Automático, botões dos 2 avisos, passada por trás (TarefaMedirOLivro).
+- [x] Linhas de apoio (g8-guias): núcleo `5fbc731`, tela `9861e4f`.
+- [x] Antes/depois em 41 páginas, todas abertas (`b7c3d2c`); relatório `parte1-2026-10-20.*`.
+- [x] GitHub: suíte rodada 39470960244: 2168 passaram, 0 falharam, 86 pulados; botões ok.
+- [ ] Filtro de velocidade 39471048026 (b8e9af7 -> 9861e4f): em andamento ao entregar; ler.
+- [x] Parte 1 entregue à gerente (20/10).
+- [x] PARTE 2 (2.13), 20/10: conserto-corte-g6 juntado (`35f724f`, conflito resolvido em
+      _geometria_endireitando_antes); núcleo `6bbd233` (core/borda_preta.py, campos
+      Projeto.borda_preta/borda_preta_ate); tela `6be46d4` (caixinha + lista em "O que fazer",
+      "Em quais páginas?" no "usar em todas"); cunha escura `7729096`; imagens `b60abd5`.
+      Relatório `parte2-2026-10-20.*`. Linhas do §6 coladas no "Botoes e funcoes para o layout.md".
+- [x] 21/10: acerto contra o alvo do Samuel (5 páginas + Pesel 21), medida em mm
+      (`medir_borda_preta.py`, `tests/test_borda_preta_paginas_do_samuel.py`): preto = escuro E
+      neutro; "até a moldura" sem o PageFinder e só na página recortada; beirada linha a linha
+      (`71cc77d`, `86295dc`). Suíte GitHub 39554260784: 2195 passaram, 0 falharam. Velocidade
+      da Parte 1 (39471048026): igual.
+- [x] Parte 2 entregue à gerente (21/10).
+
+### Decisões técnicas (20/10)
+
+- 2.5 usa a caixa do conteúdo com a busca de página DESLIGADA (de fábrica do ScanTailor; nas 9
+  páginas grandes dá o mesmo; a busca de página é o 2.13, Parte 2, espera a g7).
+- Margem = só a folga de 1 mm (14/10: margens só na impressão). Tamanho do livro =
+  `getAggregateHardSizeMM`; alargar = `calcSoftMarginsMM` com HCENTER/VCENTER (de fábrica).
+- Folha muito maior: conteúdo > 1,25 x a mediana do livro. Medido em 10 livros
+  (`dados/tamanhos-do-livro.json`, `img/folha-grande/muito-maiores.jpg`): pega a tabela do Opus
+  256, a capa do Marial 907, as fotos de lombada/beirada (Horas 191, Antiphon 305, ljs47 113);
+  avisa à toa no ljs47 89 (página comum, 1,26) e no Camões 40 (a caixa pegou o papel inteiro).
+- O corte não sai da imagem: o corte do tamanho do livro anda para dentro (pintar de branco é o
+  2.14). Medidas só na memória da sessão; o PDF mede antes (passada).
+
+### Folha grande (20/10): o que vi, a causa, a proposta
+
+**O que vi (abri as 18 imagens):** no ljs47 e no Antiphon a caixa "encolhida" (DPI do programa)
+é a certa: abraça o texto e as notas, deixa de fora a beirada do livro, a folha vizinha e o
+papel vazio. A caixa "grande" (DPI que o PDF diz, a das imagens de 12/10) é que estava errada:
+pega quase a folha inteira. Nas beiradas ampliadas, nenhuma letra do ljs47 nem do Antiphon 88 e
+123 é partida (algumas encostam na linha; a folga de 1 mm resolve). **Problemas reais:**
+(1) Antiphon 260: no alto, a caixa corta o enfeite da esquerda e as notas da pauta de cima, que
+o próprio scan já cortou; à direita, letras que vão até a beirada da imagem ficam de fora (as
+duas contas, de DPI do programa e do PDF, fazem isso). (2) Egenloff 3 e 47: a caixa passa no
+meio dos carimbos da biblioteca e da anotação "3865"; no 3 deixa de fora a etiqueta vermelha
+impressa de 1880 ("1880 neu aufgelegt von George Gilbers"). (3) **Egenloff 12** (verso quase em
+branco, só o carimbo): a caixa vira uma tira de 231 x 22 pontos em cima do risco de caneta do
+carimbo. Usada como corte, a página viraria uma tira.
+
+**A causa:** esses PDFs dizem 72 ou 96 DPI, então "a folha" teria 35 x 46 a 46 x 63 cm; mas a
+imagem de verdade tem só 1.000 a 1.800 pontos de altura (Antiphon 1316 x 1800, ljs47 1379 x
+1800, Egenloff 1000 x 1300). O programa diz à DLL o mesmo DPI das outras ferramentas do
+ScanTailor (`dpi_para_as_caixas`, que põe a página grande em no máximo 7 milhões de pontos a
+300 DPI): a DLL vê uma página de uns 19 x 26 cm, perto da resolução de verdade do scan. As
+regras do ScanTailor para "sujeira" e "lixo da beirada" são em milímetros; com o DPI do PDF a
+beirada do livro e a folha vizinha ficam "grandes" e entram como conteúdo. A 300 DPI (como o
+programa desenha) a caixa é a mesma (diferença de até 4 pontos).
+
+**Proposta:** manter o DPI do programa (é o certo). Ao usar a caixa como corte: (a) página com
+conteúdo pequeno demais (Egenloff 12: 0,1% da página; a menor página boa medida tem 35%) não usa
+a caixa, fica o corte comum, e avisa; (b) o aviso de tinta partida/de fora (`g8`) pega o
+Antiphon 260 e os carimbos do Egenloff. Ressalva: carimbo de biblioteca vai disparar o aviso.
+
+**Quem:** agente implementador · **Datas:** 12 e 13/10/2026 · **Ramo:** `fase2-caixa-conteudo` (saiu do `fase-1` em `4b19a9b`; **não juntado**) · **Pedido:** gerente (a base dos itens 2.13 e 2.5, que serve para qualquer resposta do Samuel às seis perguntas de 12/10).
+
+## Em uma frase
+
+O programa passou a ter, guardada e testada, a conta original do ScanTailor que acha a página dentro da borda preta e o retângulo do conteúdo; ela dá as mesmas caixas que o pesquisador mediu nas 37 páginas dele, e **ninguém no programa a chama ainda**.
+
+**PRONTO PARA CONFERIR** (teste de máquina; eu não olhei imagem nenhuma). Não é "aprovado": quem aprova é o Samuel.
+
+## O que está feito
+
+| O quê | Onde | Commit |
+|---|---|---|
+| 18 arquivos do ScanTailor Advanced v1.2.1, sem mudança, com a soma conferida | `terceiros/scantailor-advanced/src/` e `somas-v1.2.1.txt` | `330da14` |
+| A "cola" em C: `st_ferramentas_caixas` (a interface da DLL subiu para a versão 4) | `terceiros/scantailor-advanced/ligacao-ferramentas/caixas.cpp`, `st_ferramentas.h` | `330da14` |
+| A DLL recompilada (298 KB; era 215 KB) | `core/nativo/st_ferramentas.dll` e `.txt` | `330da14` |
+| A porta em Python: `achar(img, dpi)` e `achar_na_pagina(base, dpi_do_desenho, dpi_do_scan)` | `core/caixas_scantailor.py` | `330da14` |
+| Os testes (76 casos) e os números do pesquisador | `tests/test_caixas_scantailor.py`, `tests/dados/caixas_scantailor_pesquisador.json` | `330da14`, `1c20d58` |
+| As medidas (caixas, tempos, memória, DLL anterior) e os scripts | `relatorios/caixa-conteudo-impl/dados/`, `scripts/` | `330da14`, `1c20d58` |
+| O LEIA-ME de `terceiros/` com a seção "As caixas" | `terceiros/scantailor-advanced/LEIA-ME.md` | `1c20d58` |
+| Este arquivo | `relatorios/caixa-conteudo-impl/ONDE-PAREI.md` | `28fabf0` e o seguinte |
+
+**O que a função devolve:** a caixa da página e a caixa do conteúdo em pontos da imagem e em milímetros, o tamanho do conteúdo em mm como o ScanTailor guarda (é o número que as margens do 2.4 usam), se a página tem conteúdo (página em branco: não tem), se a conta foi feita na página invertida ("claro no escuro"), e o tempo de cada parte. Sem a DLL, ou com entrada errada, devolve "indisponível" com o motivo em português, sem exceção.
+
+**O que NÃO foi mexido:** `core/pipeline.py`, `core/analise.py`, `modelos.py`, `ui/`. O teste `test_ninguem_no_programa_chama_as_caixas_ainda` falha se alguém ligar sem querer. A `st_gravura.dll` não foi tocada.
+
+## Os testes (de máquina)
+
+- `tests/test_caixas_scantailor.py`: **76 de 76** (1 min 50 s). O que prende:
+  - **as mesmas caixas do pesquisador** nas 37 páginas dele, mais a Horas 13 e o Graduale 222 a 150 DPI (39 medidas): página, conteúdo dentro da página, e, em 5 páginas, conteúdo na folha inteira e as duas com "ajustar os cantos". **Tolerância 0,06 ponto**: o programa dele imprimiu com uma casa decimal, então o número dele pode estar até 0,05 longe do valor exato; a maior diferença medida foi 0,04. Não é folga para a conta: é só o arredondamento da impressão.
+  - **o DPI muda a caixa**: Horas 13 a 72 DPI dá quase a folha inteira (104 a 1006 de 1024); a 150 fica por dentro da moldura (121 a 775).
+  - **página sem borda preta** (Palatino 66, Escola 35): a caixa da página é a folha inteira (folga de 3 pontos, o tamanho de um ponto de 150 DPI nessas páginas) e a caixa do conteúdo não parte nem deixa de fora nenhuma peça de tinta.
+  - **Siebmacher 7 e 9**: a caixa da página ainda vai até o preto, a do conteúdo para antes dele, e nenhuma peça de tinta é partida.
+  - folhas de mentira: faixa preta sai da página; texto a 10 pontos da faixa não é cortado; página em branco; colorida igual a cinza; "claro no escuro"; parâmetro errado não derruba; trava de memória; cópia fiel do trecho copiado.
+- As três ferramentas que já estavam na DLL (limpar pontinhos, dividir, endireitar) dão **o mesmo** com a DLL nova e com a anterior nas 32 páginas do gabarito: 96 de 96, 96 de 96 e 32 de 32 (`dados/dll-anterior.json`).
+- Um arquivo por vez: `test_st_ferramentas` 10, `test_dividir_scantailor` 13, `test_endireitar_scantailor` 17, `test_pontinhos_scantailor` 30, `test_gravura_scantailor` 24, todos passam.
+- **A bateria inteira:** 2081 passaram, nenhum falhou, 59 pulados (ver "A bateria", no fim).
+
+## Os tempos (item 5 do pedido; para o 2.16)
+
+Medido no PC do Samuel em 12/10, com outros agentes rodando (os números sobem e descem com a carga: a mesma página do Antiphon levou de 2,5 a 5,5 s). Uma chamada = as duas caixas. Números em `dados/medidas.json`.
+
+| Livro (DPI dito) | Tamanho a 150 DPI | Tempo por página | Caixa da página | Caixa do conteúdo |
+|---|---|---|---|---|
+| Siebmacher (400) | 0,5 milhão de pontos | 0,2 s | 20% | 60% |
+| Palatino, Opus Majus (400) | 0,8 a 1,3 | 0,4 a 0,7 s | 22% | 56% |
+| Escola (200) | 1,7 a 1,8 | 0,6 a 0,7 s | 19% | 74% |
+| Camões, Cursus, Matemática, Righetti (150) | 0,4 a 2,2 | 0,3 a 0,9 s | 24% | 71% |
+| Marial (72) | 2,9 | 1,2 s | 25% | 75% |
+| Graduale (72) | 5,6 a 5,8 | 2,6 a 3,3 s | 20% | 79% |
+| Livro de Horas (72) | 6,4 a 6,8 | 2,4 a 2,9 s | 24% | 75% |
+| Egenloff, ljs47 (150) | 5,6 a 6,1 | 2,9 a 3,7 s | 17% | 80% |
+| Antiphon (150) | 10,2 a 10,3 | 4,3 a 5,5 s | 18% | 78% |
+
+**Onde está lento:**
+
+1. **O tempo segue o tamanho da página depois de levada a 150 DPI**: cerca de meio segundo por milhão de pontos. Página comum de livro: menos de 1 s. Folha grande de verdade (Antiphon, 46 x 63 cm): 4 a 5 s.
+2. **DPI errado para baixo amplia a página e triplica o tempo.** O Horas e o Graduale dizem 72 DPI, que não é a resolução de verdade. Com o DPI que as outras ferramentas do ScanTailor já usam no programa (`achar_na_pagina`: uns 130 a 140), o Horas cai de 2,4-2,9 s para 0,8-1,2 s e o Graduale de 2,6-3,3 s para 0,6-1,2 s.
+3. **A caixa do conteúdo é 3/4 do tempo** nas páginas grandes; a da página, 1/5.
+4. **Desperdício no código original** (não mexi: a regra é o código original): o `PageFinder` calcula cinco preto e branco e usa um; cada uma das duas contas leva a página a 150 DPI de novo (a mesma imagem, duas vezes).
+5. **Um caso estranho:** numa folha de mentira com uma grade de retângulos iguais ao lado de uma faixa preta, a conta levou 5 s numa página de 1,4 milhão de pontos (dez vezes o normal) e jogou fora as colunas vizinhas da faixa. Com texto escrito de verdade não acontece. Pode acontecer com tabela de colunas ao lado de borda preta: **não testei em página de verdade**.
+
+**Memória:** cerca de 20 MB por milhão de pontos a 150 DPI (Antiphon: 200 MB a mais). A função recusa página com mais de 16 milhões (uns 320 MB) antes de ir à DLL (`PONTOS_MAXIMOS_A_150`), para um DPI errado não ampliar a página até acabar a memória.
+
+**Para o 2.16:** a chamada solta o Python enquanto a DLL trabalha (como as outras), então dá para rodar várias páginas ao mesmo tempo. **Não testei** duas chamadas ao mesmo tempo; antes de usar todos os núcleos, isso precisa de teste (resultado igual e sem travar).
+
+## O que falta para ligar no programa, por resposta do Samuel
+
+Comum a todas: o botão por livro (desligado de fábrica; regra 8 do plano), o campo no projeto e no `modelos.py`, onde chamar no `core/pipeline.py` (depois do endireitar, que é a ordem do ScanTailor e a do livro novo; **no projeto começado antes de 09/10 a ordem é cortar e depois endireitar, e a conta não foi pensada para isso**), guardar a caixa para não refazer a cada desenho, o teste de velocidade e a conferência a olho.
+
+| Pergunta | Resposta | O que falta |
+|---|---|---|
+| `g7-borda-ate-onde` | "só o preto" | **A função não basta.** A caixa da página do ScanTailor só tira faixa preta reta que cobre 95% do lado: serve no ljs47, Egenloff, Cursus, Camões; no Siebmacher quase não corta. A opção mostrada ao Samuel foi uma conta do pesquisador ("anda da beirada enquanto o meio do lado é escuro"), que é conta nossa, a escrever e testar. |
+| | "até a moldura" | A função basta: a sugestão é `conteudo` (mais a folga de 1 mm que o Samuel já decidiu). Falta ligar à sugestão de corte, ao "aceitar / mudar / mandar para todas" e ao seletor de páginas. |
+| `g8-moldura-tinta-fora` | "avisa" | Falta a conta que diz "ficou tinta de fora" (peças de tinta partidas pela caixa ou sozinhas do lado de fora; a ideia está em `_partidas_e_de_fora` do teste) e o aviso no "Para revisar". |
+| | "alarga" | Falta a conta "alarga sozinho" (do pesquisador, testada por ele só em 3 páginas): juntar à caixa as peças de tinta partidas ou sozinhas de fora. É conta nossa por cima do ScanTailor; precisa rodar no gabarito inteiro. |
+| | "volta ao corte comum" | Falta a mesma conta de "ficou tinta de fora" e, quando der sim, usar `core.recortar.detectar_bordas` (o corte de hoje). |
+| `g8-guias` | qualquer uma | É de tela (`ui/widgets/visualizador.py`). Desta função só usa `conteudo_mm`. |
+| `g9-pagina-muito-maior` | "fica de fora" ou "entra" | Falta o 2.4 inteiro: as contas de margens do ScanTailor (`page_layout/Utils.cpp`, **não trazidas**) e uma passada no livro todo para saber o maior conteúdo (soma dos tempos acima: um livro de 300 páginas comuns, uns 2 a 4 minutos em um núcleo). Entrada pronta: `tamanho_do_conteudo_mm` de cada página. "Fica de fora" pede mais uma regra nossa (quando uma folha é "muito maior"). |
+| `g10-papel-ou-pagina`, `g10-ajustar-todas` | qualquer uma | É de `core/folha.py` e `core/cadernos.py`; não depende desta função. |
+
+## Ressalvas
+
+1. **Não olhei imagem nenhuma.** Os testes dizem que a DLL dá as caixas do pesquisador; se essas caixas são boas quem viu foi ele (Horas 14 perde a barra dourada; Opus Majus 137 perde o número do pé).
+2. **O DPI muda muito a caixa, e as imagens das perguntas de 12/10 foram feitas a 72 DPI no Horas, no Graduale e no Marial.** Com o DPI que o programa diria (o das outras ferramentas), as caixas são outras. Exemplos (em pontos): Horas 14, de 249-955 x 172-1231 para 253-932 x 225-1211; Horas 13, de 104-1006 x 37-1435 para 119-775 x 221-1149; Graduale 221, de 78-877 x 72-1350 para 84-961 x 43-1196 (e a caixa da página passa a começar em 8). Antes de ligar, alguém precisa olhar essas páginas com o DPI que o programa vai usar. Os números estão em `dados/medidas.json` (`com_o_dpi_do_programa`).
+3. **Qual imagem vai à DLL** (a da prévia ou a do PDF final) não foi decidido nem medido; a caixa pode mudar alguns pontos entre uma e outra.
+4. **Página endireitada:** no ScanTailor os cantos que aparecem com o giro são pintados de escuro antes desta conta. Não testei com páginas giradas pelo endireitar do programa.
+5. **"Claro no escuro":** de fábrica a função deixa o ScanTailor decidir (como o endireitar). Nas 37 páginas ele decidiu "preto no branco" em todas, então dá igual ao do pesquisador; em página que ele decidir o contrário, a caixa é feita na página invertida.
+6. **`conteudo` e `conteudo_bruto`:** no código original, a procura do conteúdo passa da caixa da página à direita e embaixo quando a página não começa no canto (no ljs47, 16 a 108 pontos dentro do preto). O ScanTailor corta depois pela página, e a função devolve as duas; **vale `conteudo`**.
+7. **A `st_gravura.dll` do 1.2 não foi recompilada** com os 18 arquivos novos em `src/` (os de `core/` e `imageproc/` entram na biblioteca dela). A DLL guardada é a mesma (o teste confere a soma); o risco é só o de a próxima recompilação dela precisar de ajuste.
+8. **O teste de velocidade (`teste_velocidade.py`) não foi rodado:** nada do programa chama a função, e as três ferramentas antigas dão o mesmo ponto a ponto. A DLL ficou 83 KB maior.
+9. **Os milímetros** são pontos x 25,4 / DPI dito: se o DPI dito não é o de verdade (Horas), os mm também não são.
+10. As páginas de verdade ficam fora do git: num PC sem `gabarito/paginas` e sem o acervo, 51 dos 76 testes são pulados.
+
+## Como compilar de novo
+
+Da raiz da worktree, com a `.venv` da pasta principal e `TEMP`/`TMP` dentro da worktree:
+
+    D:\programas\EditorImpressao\.venv\Scripts\python.exe compilar_st_ferramentas.py --rascunho D:\programas\EditorImpressao\.claude\worktrees\caixa-conteudo\saida_teste\caixa-conteudo\build-st-ferramentas
+
+Levou 166 s (a biblioteca inteira do ScanTailor é recompilada). Precisa do que já estava instalado: CMake, Visual Studio 2022 Build Tools, e o Qt 6.11.1 e o Boost 1.78 de `D:\programas\EditorImpressao-arquivos\ferramentas\` (nada foi instalado nem baixado). O caminho completo em `--rascunho` deixa o rascunho dentro da worktree.
+
+Refazer as medidas: `relatorios\caixa-conteudo-impl\scripts\medir.py` (caixas e tempos), `medir_memoria.py` (memória) e `comparar_dll_anterior.py` (as três ferramentas antigas).
+
+## Na minha worktree, fora do git
+
+`saida_teste\caixa-conteudo\` (rascunho da compilação, a DLL anterior tirada do git e logs; 17 MB). Junções criadas por mim: `modelos`, `gabarito\paginas`, `gabarito\scantailor-24-09` (apontam para a pasta principal; **não apagar com `Remove-Item -Recurse`**). Fora de `D:\programas\EditorImpressao` não criei nem apaguei nada.
+
+## Ideias para a Lista de espera
+
+- A função já diz "página sem conteúdo" (`tem_conteudo` falso): pode servir ao aviso "Página sem conteúdo" do "Para revisar".
+- O tamanho esperado da página em mm (`tamanho_esperado_mm`, opção do ScanTailor) pode ajudar onde a borda preta é irregular; não medi.
+
+## Bugs para a Lista de bugs
+
+Nenhum do programa. Do código original do ScanTailor (não consertados, só anotados em `caixas.cpp`): o retângulo da página montado com direita/baixo no lugar de largura/altura (`ContentBoxFinder.cpp`, linhas 102-103) e os cinco preto e branco do `PageFinder`.
+
+## A bateria
+
+Rodada em 13/10/2026, de 01:52 a 02:08, **um arquivo de pytest por vez** (113 arquivos de `tests/`, cada um no seu processo, esperando 3 GB de memória livre antes de cada um): **2081 passaram, nenhum falhou, 59 pulados**, no commit `28fabf0` (o código é o de `1c20d58`). Os pulados são de arquivos que não toquei (nenhum de `test_caixas_scantailor.py`, que passou os 76); não comparei a lista de pulados com a do `fase-1`.
+
+## 21/10/2026 — Item 2.14 (pintar de branco) — pedido da gerente
+
+- [x] Linhas da Parte 2 e do 2.14 coladas no "Botoes e funcoes para o layout.md" (só acréscimo).
+- [x] Núcleo `5e09cfa` (Projeto.borda_preta_fazer, core/borda_preta.pintar_fora, pipeline
+      _so_pinta/_area_que_fica); tela `49c0dcf` (lista "cortar fora / pintar de branco").
+- [x] Medida em mm nas 7 páginas (5 do alvo + Pesel 21 + Egenloff 47), imagens `*__cinco.jpg`
+      abertas. Relatório `item214-2026-10-21.*`.
+- [ ] GitHub: suíte 39555805412; filtro de velocidade 39555809454 (fase-1 31a9253 -> 49c0dcf). Ler e
+      entregar.
+
+## 21/10/2026 — Conserto do tamanho do livro (achado do verificador, `verif-caixa-2026-10-21`)
+
+Gerando o Egenloff 1-14 de verdade (300 DPI, `scripts/gerar_livro_egenloff.py`), as causas e os consertos:
+1. Os mm do tamanho do livro eram pelo DPI "dito" à DLL, que muda por página → agora pelo DPI do desenho.
+2. A página "muito maior" saía no tamanho DELA (pág. 6 virava tira 253 x 139) → fica fora da conta, mas
+   nunca menor que o livro (só a que o Kaique tirar sai sozinha).
+3. A passada media a 150 DPI e a geometria a 300 (a DLL dá caixas diferentes) e a medida nova trocava o
+   tamanho no meio da geração → a passada mede na resolução do PDF e o tamanho medido não é trocado.
+4. Página sem conteúdo (verso só com carimbo) saía maior → do tamanho do livro, no meio (adaptContentRect
+   do ScanTailor).
+5. Barra cinza "SLUB" da digitalização entrava → "só o preto"/"até a moldura" contam como fundo a linha
+   cinza neutra que atravessa >= 70% do lado (uma 1a versão, qualquer cinza neutro escuro, cortou as
+   notas do Antiphon 260: descartada).
+6. A frase da tela "O que fazer" agora diz as opções do corte.
+Resultado (imagens `img/livro-egenloff/`): só a 2.5 → páginas comuns 253 x 360 mm; as duas → 253 x 379 mm;
+capas no tamanho delas (muito maiores, com aviso). Teste de reversão `tests/test_corte_pelo_conteudo_livro.py`
+(4 falham no `4120c68`) e `test_regressao_a_frase_da_tela_diz_as_opcoes_novas`.
+
+## 21/10/2026 — PARADO a pedido do Samuel. O que falta, exatamente
+
+- **Etiqueta de 1880 do Egenloff 3 cortada ao meio com as duas opções (verificador, `f10b2df`) — NÃO
+  CONSERTADA.** Feito: `core/corte_pelo_conteudo.sem_partir` (o corte do tamanho do livro anda, sem mudar de
+  tamanho, para não partir uma peça impressa; poeira < 1 mm não conta), chamado em
+  `pipeline._caixa_do_livro`; testes `test_regressao_corte_do_livro_nao_parte_peca_ao_meio` (falha sem o
+  código novo) e `test_sem_partir_sem_jeito_fica_como_esta`. **Mas na página de verdade não anda**
+  (`scripts/eg3.py as_duas`: corte 849,208–3832,4683; a etiqueta é a peça 792,4431–3389,4807). Próximo:
+  achar qual peça prende o deslocamento (imprimir as peças atravessadas no topo depois de andar 136
+  pontos para baixo). O aviso: na minha medida direta a página 3 TEM o aviso nos dois jeitos; não reproduzi
+  o "sem aviso" da janela — conferir na janela.
+- **Velocidade da passada que mede o livro** (opções ligadas, `scripts/tempo_passada.py`, PC com outros
+  agentes): Egenloff 14 folhas 18,8–19,6 s antes (`4120c68`, 150 DPI) × 51,6–59,0 s depois (`57de8af`,
+  300 DPI), ~2,8x; Marial 100 folhas 137–143 s × 276–319 s, ~2,1x. Custo do conserto 3 (passada na
+  resolução do PDF). Ideia para baixar: medir a passada a 150 e a geometria também a 150 (as duas iguais).
+- **Filtro de velocidade do GitHub** (rodada 39623840809, `31a9253` × `57de8af`, opções DESLIGADAS, que é
+  o que o filtro mede): estava rodando ao parar; ler `gh run view 39623840809`.
+- **Horas 11** (ramo `consertos-2026-10-21`): consertado em `2ff16e7` (ver o ONDE-PAREI de lá). Falta só a
+  suíte do GitHub daquele ramo depois desse commit.
+
+## 22/10/2026 — Implementador A retoma (pedido da gerente): etiqueta do Egenloff 3 e velocidade da passada
+
+- [x] `origin/fase-1` (`9804b98`) juntado (`c66f28d`), sem conflito (só documentos).
+- [x] Rodada de velocidade 39623840809 (`31a9253` x `57de8af`, opções DESLIGADAS) lida: **"igual (dentro do vai-e-vem)"**.
+- [x] **Etiqueta do Egenloff 3** (`6566a01`): a causa era o passo que deixava a etiqueta inteira (136 pontos
+      para baixo) fazer a beirada de cima partir duas peças de um carimbo (y 295-382); `sem_partir` só
+      experimentava passos tirados das peças partidas na posição de saída. Agora experimenta pôr cada beirada
+      rente (ou com a folga de 1 mm) a cada peça da faixa do corte. Página real (`scripts/eg3.py as_duas`):
+      corte 849,208-3832,4683 → 761,409-3744,4884; a etiqueta (y 4431-4807) fica inteira. Imagem:
+      `saida_teste/livro/eg3_as_duas.jpg` (aberta). Teste de reversão
+      `test_regressao_egenloff3_o_passo_que_salva_a_etiqueta_nao_pode_partir_o_carimbo` (falha no `c66f28d`).
+      Ressalva: os carimbos da biblioteca (oval em cima, "Fachschule..." à direita) continuam partidos pelo
+      corte, como antes: a tinta deles é clara e não entra nas peças; é a pergunta aberta do carimbo.
+- [x] **Velocidade, passo 1** (`04bcda2`): cProfile da passada (Egenloff 1-14, 300 DPI): 24 de 47 s eram a
+      conta "só o preto" (`borda_preta.so_o_preto`). Reescrita com as mesmas contas (np.maximum/minimum canal a
+      canal, contagem/tamanho, soma da janela em Python na ordem do numpy): **0 diferenças em 201 contas** (67
+      páginas reais a 300 DPI x cor/girada/cinza), 114 s → 25 s. Teste `test_so_o_preto_rapido_da_o_mesmo_que_o_de_antes`.
+- [x] **Velocidade, passo 2** (`8e237ef`): a passada guarda a geometria inteira (`_guardar_geometria`, a mesma
+      da geração do PDF) em vez de medir à parte e jogar fora; a geração não recalcula. Teste de reversão
+      `test_regressao_a_passada_guarda_a_geometria_e_a_geracao_nao_refaz` (falha no `04bcda2`).
+      **Números** (PC, opções ligadas, 300 DPI, Original, antes = `c66f28d`, alternado; passada / geração / total, s):
+      | Livro | antes | depois |
+      |---|---|---|
+      | Egenloff 14 folhas | 59,5/77,3/136,8 e 55,6/72,7/128,2 | 38,1/14,0/52,1 e 39,0/12,4/51,3 |
+      | Marial 100 folhas | 256,6/304,4/560,9 e 187,9/279,4/467,4 | 132,2/51,3/183,6 e 154,4/64,6/219,1 |
+      A passada do Marial volta a ~130-155 s (era ~140 s antes de `57de8af`); o total cai ~2,5x.
+      Tamanho do livro igual. O PDF do Marial com `04bcda2` e com `8e237ef`: 100 de 100 páginas iguais.
+- **Ressalva do conserto da etiqueta:** no Marial ele muda o corte de 32 de 100 páginas (o corte anda alguns mm
+  na vertical, sempre do tamanho do livro, com o conteúdo dentro). Ampliei o alto e o pé das págs. 7, 23, 64 e
+  85 (`saida_teste/vel/mz_*.png`): nada partido nem perdido; a pág. 7 ganhou o aviso "ficou tinta de fora".
+  Precisa ir à conferência a olho.
+- [x] Antes (`c66f28d`) | depois (`5bc5b33`), todas abertas: `img/2026-10-22/egenloff-03.jpg` (a etiqueta
+      sai inteira; em cima, o carimbo oval e a anotação "Af 10" ficam mais de fora) e `marial-007/023/064/085.jpg`
+      (o corte anda alguns mm; nada partido). Caminho: dividida, endireitada, cortada (conteúdo + borda preta até
+      a moldura), filtro Original, 300 DPI, PDF gerado pelo programa.
+- [x] GitHub: suíte 39788341137 (ramo em `5bc5b33`): as 5 partes e os botões passaram (verde). Filtro de
+      velocidade 39788346337 (`c66f28d` x `5bc5b33`, opções desligadas): **"igual (dentro do vai-e-vem)"**.
+- **PRONTO PARA CONFERIR** (22/10): etiqueta do Egenloff 3 e velocidade da passada. Falta a conferência a olho
+  (a gerente/verificador), com a ressalva das 32 páginas do Marial que mudam de corte e dos carimbos de biblioteca.

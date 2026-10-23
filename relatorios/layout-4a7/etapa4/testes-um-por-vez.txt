@@ -1,0 +1,37 @@
+tests/test_antigo_aberto_vira_pronto.py :: 5 passed in 8.09s
+tests/test_barra_de_menu.py :: 20 passed in 2.23s
+tests/test_botoes_em_portugues.py :: 5 passed in 0.48s
+tests/test_cancelar_e_conferir_rapido.py :: 1 passed in 13.91s
+tests/test_cartao_pdf_gerado.py :: 4 passed in 6.35s
+tests/test_cartoes_e_previas.py :: 2 passed in 2.08s
+tests/test_converter_zonas_ao_abrir.py :: 14 passed in 29.84s
+tests/test_dialogo_tamanho_da_folha.py :: 5 passed in 0.22s
+tests/test_dividir_no_programa.py :: 19 passed in 16.46s
+tests/test_editor_selecao.py :: 17 passed, 85 warnings in 0.70s
+tests/test_endireitar_g5.py :: 13 passed in 4.07s
+tests/test_endireitar_na_tela.py :: 5 passed in 3.75s
+tests/test_folhear_pdf.py :: 8 passed in 1.58s
+tests/test_gerar_o_mesmo_livro_de_novo.py :: 5 passed, 1 error in 0.66s
+tests/test_girar_cartoes_e_previas.py :: 4 passed, 19 errors in 4.28s
+tests/test_gravura_na_aba_marcar.py :: 8 passed in 2.67s
+tests/test_gravura_no_processamento.py :: 43 passed in 17.90s
+tests/test_ja_existe_arquivo_com_esse_nome.py :: 4 passed in 6.39s
+tests/test_janela_cabe_na_tela.py :: 2 passed in 0.54s
+tests/test_limpar_pontinhos_na_tela.py :: 19 passed in 8.28s
+tests/test_marcacao_em_todas.py :: 4 passed in 1.47s
+tests/test_mesmo_livro_outro_caminho.py :: 17 passed in 17.37s
+tests/test_misto_consertos.py :: 25 passed in 13.62s
+tests/test_misto_na_tela.py :: 14 passed in 8.08s
+tests/test_paineis.py :: 34 passed in 0.82s
+tests/test_paineis_na_tela.py :: 22 passed in 47.11s
+tests/test_previa_composta.py :: 12 passed in 3.91s
+tests/test_salva_sozinho.py :: 11 passed in 2.34s
+tests/test_substituir_e_cancelar.py :: 21 passed in 2.35s
+tests/test_tela_inicio.py :: 14 passed in 1.26s
+tests/test_tirar_da_lista_nao_volta.py :: 10 passed in 17.25s
+tests/test_tirar_fundo_no_programa.py :: 54 passed in 15.12s
+tests/test_trabalho_nao_se_perde.py :: 82 passed in 159.65s (0:02:39)
+tests/test_trilha_agrupada.py :: 18 passed in 24.68s
+tests/test_trilha_e_opcoes.py :: 29 passed, 1 warning in 0.51s
+tests/test_visualizador.py :: 70 passed, 9 warnings in 0.61s
+FIM

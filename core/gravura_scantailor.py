@@ -114,6 +114,16 @@ class ResultadoGravura:
         return self.mascara is not None
 
 
+# O começo do motivo quando a DLL responde que faltou memória (ver detectar).
+_MOTIVO_FALTOU_MEMORIA = "Faltou memória para achar as gravuras desta página."
+
+
+def faltou_memoria(resultado: ResultadoGravura) -> bool:
+    """A página ficou sem gravura só porque faltou memória (vale tentar de
+    novo, core/detectar_regioes._gravura_pelo_scantailor; conserto de 21/10/2026)."""
+    return resultado.mascara is None and resultado.motivo == _MOTIVO_FALTOU_MEMORIA
+
+
 def _indisponivel(motivo: str, detalhe: str | None = None) -> ResultadoGravura:
     if detalhe:
         _log.warning("gravura_scantailor: %s (%s)", motivo, detalhe)
@@ -270,7 +280,7 @@ class DetectorGravuraScanTailor:
         if codigo != _OK:
             detalhe = f"código {codigo}: {erro.value.decode('utf-8', 'replace')}"
             if codigo == _ERRO_MEMORIA:
-                return _indisponivel("Faltou memória para achar as gravuras desta página.", detalhe)
+                return _indisponivel(_MOTIVO_FALTOU_MEMORIA, detalhe)
             return _indisponivel("O detector de gravura do ScanTailor falhou nesta página.", detalhe)
         return ResultadoGravura(mascara > 0, None, None, segundos)
 

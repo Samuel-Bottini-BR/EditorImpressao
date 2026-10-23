@@ -368,7 +368,7 @@ def _desenho_colado_a_tinta_forte(fora: np.ndarray, forte: np.ndarray,
 
 def _fora_do_texto(binaria: np.ndarray, cinza: np.ndarray, linhas: np.ndarray,
                    altura_linha: float, modo: str, fora_da_imagem: np.ndarray,
-                   medidas: dict | None = None) -> np.ndarray:
+                   medidas: dict | None = None, pecas: dict | None = None) -> np.ndarray:
     """O preto e branco da pagina com a opcao `modo` aplicada a tinta fora das
     linhas e fora da imagem (ver o comentario de FORA_TUDO). binaria: 0 =
     tinta. Nunca muda a tinta de dentro das linhas. medidas recebe:
@@ -379,8 +379,11 @@ def _fora_do_texto(binaria: np.ndarray, cinza: np.ndarray, linhas: np.ndarray,
     fora: forte_fora + desenho_fora no A, 0 no C), desenho_fora (a tinta
     clara ou pequena que ficou por ser parte de um desenho colado a tinta
     forte, so no A: _desenho_colado_a_tinta_forte, conserto de 06/10) e
-    escuro_da_letra. O aviso "Para revisar" continua olhando so forte_fora
-    (o conserto nao muda quem vai para revisar)."""
+    escuro_da_letra. Desde 12/10/2026 o "Para revisar" e decidido pela regra
+    ajustada (core/revisar.py), que olha o resultado de verdade; forte_fora
+    so decide no "Guardar só o texto" (C). pecas (dict, opcional) recebe
+    "forte": a mascara da tinta forte de fora (a que o C apaga), para o aviso
+    marcar onde ela sumiu."""
     tinta = binaria == 0
     total = int(np.count_nonzero(tinta)) or 1
     fora = tinta & ~linhas & fora_da_imagem
@@ -414,6 +417,8 @@ def _fora_do_texto(binaria: np.ndarray, cinza: np.ndarray, linhas: np.ndarray,
                         "guardada_fora": float(np.count_nonzero(guardar)) / total,
                         "desenho_fora": float(np.count_nonzero(desenho)) / total,
                         "escuro_da_letra": escuro})
+    if pecas is not None:
+        pecas["forte"] = forte
     return saida
 
 
@@ -524,8 +529,19 @@ def aplicar_misto(
     linhas: np.ndarray | None = None,
     altura_linha: float = 0.0,
     medidas: dict | None = None,
+    pecas: dict | None = None,
 ) -> tuple[np.ndarray, bool]:
     """O Preto e branco so nas letras; o resto como no original (ver o topo).
+
+    pecas (dict, opcional; 12/10/2026): recebe as pecas do meio da conta que a
+    regra do "Para revisar" (core/revisar.py) precisa, para ela nao refazer o
+    filtro: "cinza" (o cinza usado para binarizar), "base_tinta" (a tinta do
+    preto e branco de base, ANTES de apagar o que esta fora das linhas),
+    "imagem" (onde a pagina fica como imagem) e, so quando ha linhas (A ou
+    C), "forte" (a tinta forte de fora). Quem chama so passa o dict quando
+    vai medir (custa uma conversao para cinza a mais na pagina sem linhas).
+    Nao muda a imagem que sai. Arriscado: mudar uma
+    dessas mascaras depois de entregue (sao as mesmas da conta, nao copias).
 
     EXPERIMENTAL (parte C, 05/10/2026; ver _fora_do_texto): fora_do_texto diz
     o que acontece com a tinta FORA das linhas do leitor de texto e fora das
@@ -559,8 +575,15 @@ def aplicar_misto(
     """
     usa_linhas = fora_do_texto != FORA_TUDO and linhas is not None and bool(np.any(linhas))
     if (selecao is None or getattr(selecao, "vazia", True)) and not usa_linhas:
-        return F.aplicar_filtro(img, F.PRETO_E_BRANCO, forca_preto, clareza, intensidade,
-                                algoritmo_pb=algoritmo_pb, despeckle=despeckle)
+        saida = F.aplicar_filtro(img, F.PRETO_E_BRANCO, forca_preto, clareza, intensidade,
+                                 algoritmo_pb=algoritmo_pb, despeckle=despeckle)
+        if pecas is not None:
+            # pagina sem marcacao e sem linha nenhuma (a pagina em branco): o
+            # que saiu E o preto e branco de base, e nao ha imagem
+            pronta = saida[0] if saida[0].ndim == 2 else saida[0][:, :, 0]
+            pecas.update(cinza=F._cinza_para_binarizar(img), base_tinta=pronta < 128,
+                         imagem=np.zeros(pronta.shape, bool))
+        return saida
     if selecao is None:
         from core.selecao import Selecao
 
@@ -569,7 +592,7 @@ def aplicar_misto(
         return _misto(img, selecao, forca_preto, algoritmo_pb, despeckle, clareza, intensidade,
                       papel_da_gravura_branco, foto_em_cinza,
                       fora_do_texto if usa_linhas else FORA_TUDO, linhas, altura_linha, medidas,
-                      letras_na_moldura)
+                      letras_na_moldura, pecas)
     except cv2.error as exc:
         raise F.ErroFiltro("Não consegui limpar esta página.") from exc
 
@@ -577,7 +600,7 @@ def aplicar_misto(
 def _misto(img, selecao, forca_preto, algoritmo_pb, despeckle, clareza, intensidade,
            papel_da_gravura_branco, foto_em_cinza, fora_do_texto=None, linhas=None,
            altura_linha=0.0, medidas=None,
-           letras_na_moldura=LETRAS_NA_MOLDURA_PADRAO) -> tuple[np.ndarray, bool]:
+           letras_na_moldura=LETRAS_NA_MOLDURA_PADRAO, pecas=None) -> tuple[np.ndarray, bool]:
     altura, largura = img.shape[:2]
     peso_imagem = _peso_da_imagem(selecao, altura, largura)
     peso_papel = selecao.peso(altura, largura, PAPEL)
@@ -589,9 +612,17 @@ def _misto(img, selecao, forca_preto, algoritmo_pb, despeckle, clareza, intensid
 
     binaria = F.filtro_preto_e_branco(img, forca=forca_preto, algoritmo=algoritmo_pb,
                                       despeckle=despeckle)
-    if fora_do_texto not in (None, FORA_TUDO):
-        binaria = _fora_do_texto(binaria, F._cinza_para_binarizar(img), linhas, altura_linha,
-                                 fora_do_texto, ~(peso_imagem > 0), medidas)
+    com_linhas = fora_do_texto not in (None, FORA_TUDO)
+    if pecas is not None or com_linhas:
+        cinza = F._cinza_para_binarizar(img)
+    if pecas is not None:
+        # para a regra do "Para revisar" (core/revisar.py): a tinta de base
+        # ANTES de apagar o que esta fora das linhas (tambem quando o leitor
+        # nao achou linha nenhuma: a pagina em branco tem de ser medida)
+        pecas.update(cinza=cinza, base_tinta=binaria == 0, imagem=peso_imagem > 0)
+    if com_linhas:
+        binaria = _fora_do_texto(binaria, cinza, linhas, altura_linha,
+                                 fora_do_texto, ~(peso_imagem > 0), medidas, pecas)
     pedidos = [f for f in selecao.filtros_pedidos()
                if f in F.FILTROS_COMUNS and f != F.PRETO_E_BRANCO]
 

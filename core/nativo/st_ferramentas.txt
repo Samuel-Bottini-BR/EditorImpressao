@@ -1,6 +1,11 @@
 st_ferramentas.dll - ferramentas de imagem do ScanTailor Advanced (item M9 da Fase 2)
-Tem: limpar pontinhos (Despeckle), dividir a folha (PageLayoutEstimator, item 2.1)
-e endireitar a pagina (SkewFinder + limpeza das sombras do deskew::Task, item 2.2).
+Tem: limpar pontinhos (Despeckle), dividir a folha (PageLayoutEstimator, item 2.1),
+endireitar a pagina (SkewFinder + limpeza das sombras do deskew::Task, item 2.2),
+as caixas da pagina e do conteudo (PageFinder e ContentBoxFinder, itens 2.13 e 2.5),
+o preto e branco da saida com os dez jeitos de Binarize.cpp (item 2.8),
+as cores da saida: segmentacao e posterizacao (item 2.11),
+o desentortar (Dewarping, item 2.12)
+e igualar a luz, suavizar e Wiener (OutputGenerator, SavGolFilter, WienerFilter; item 2.17).
 
 Código:      https://github.com/ScanTailor-Advanced/scantailor-advanced
 Versão:      v1.2.1 (commit 5eaac1884cdcabb6514bd632114f688631bd8dbc)
@@ -8,6 +13,6 @@ Fontes:      terceiros/scantailor-advanced/src (licença GPL-3, ver LEIA-ME.md l
 Ligação:     terceiros/scantailor-advanced/ligacao-ferramentas
 Qt:          6.11.1 (o do PySide6; a DLL usa as DLLs do Qt da pasta do PySide6)
 Compilador:  MSVC 19.44.35229.0
-Compilada:   06/10/2026 23:35 por compilar_st_ferramentas.py
-Tamanho:     215040 bytes
-SHA-256:     9c5a492089549bbd1b0f8ed2dd4449cd708a7bc503913f07241fb62a2ad74477
+Compilada:   23/10/2026 11:12 por compilar_st_ferramentas.py
+Tamanho:     675840 bytes
+SHA-256:     95a0748bd4cba0d9b28c1c37945af4c44842f49a94ba6ffc1f03c2e1bf72beb2

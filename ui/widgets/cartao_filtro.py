@@ -8,7 +8,7 @@ from __future__ import annotations
 
 import numpy as np
 from PySide6.QtCore import Qt, Signal
-from PySide6.QtGui import QColor, QPainter, QPixmap
+from PySide6.QtGui import QColor, QPainter, QPen, QPixmap
 from PySide6.QtWidgets import QFrame, QLabel, QVBoxLayout, QWidget
 
 from ui import estilo
@@ -22,12 +22,16 @@ class CartaoFiltro(QFrame):
 
     escolhido = Signal(str)
     ampliar_pedido = Signal(str)   # clicar no cartão abre a página ampliada
+    # Etapa 4 do layout (20/10/2026): a mesma amostra vai também para a fila
+    # de filtros do painel "Filtro da página" (o filtro e a imagem, ou None)
+    amostra_mudou = Signal(str, object)
 
     def __init__(self, filtro: str, nome: str, explicacao: str, parent=None) -> None:
         super().__init__(parent)
         self.filtro = filtro
         self.selecionado = False
         self._pixmap: QPixmap | None = None
+        self.ultima_amostra = None
 
         self.setObjectName("cartao")
         self.setCursor(Qt.PointingHandCursor)
@@ -55,8 +59,18 @@ class CartaoFiltro(QFrame):
 
     def definir_amostra(self, img: np.ndarray | None) -> None:
         """Poe (ou tira, com None) a imagem mostrada no cartao. None mostra
-        "preparando..." - ver _Amostra.paintEvent."""
+        "preparando..." - ver _Amostra.paintEvent. Avisa a fila do painel
+        Filtro (amostra_mudou)."""
         self.amostra.definir(img)
+        self.ultima_amostra = img           # a tela cheia dos filtros começa com ela
+        self.amostra_mudou.emit(self.filtro, img)
+
+    def definir_marcas(self, caixas) -> None:
+        """As marcas do aviso (12/10/2026): retângulos laranja por cima da
+        amostra, mostrando ONDE está o problema ("onde sumiu, tem que aparecer
+        selecionado automaticamente", Samuel, rodada 5 do "Para revisar").
+        caixas: lista de (x0, y0, x1, y1) em fração da página; vazia tira."""
+        self.amostra.definir_marcas(caixas)
 
     def definir_selecionado(self, selecionado: bool) -> None:
         """Liga/desliga a borda azul de destaque. Nao redesenha a toa se o
@@ -97,11 +111,20 @@ class _Amostra(QWidget):
         super().__init__(parent)
         self.setMinimumHeight(ALTURA_AMOSTRA)
         self._pixmap: QPixmap | None = None
+        self._marcas: list = []
 
     def definir(self, img: np.ndarray | None) -> None:
         """Guarda o array numpy como QPixmap e pede um redesenho."""
         self._pixmap = None if img is None else QPixmap.fromImage(numpy_para_qimage(img))
         self.update()
+
+    def definir_marcas(self, caixas) -> None:
+        """Guarda as marcas do aviso (ver CartaoFiltro.definir_marcas); só
+        redesenha se mudaram."""
+        novas = [tuple(c) for c in (caixas or [])]
+        if novas != self._marcas:
+            self._marcas = novas
+            self.update()
 
     def paintEvent(self, evento) -> None:  # noqa: N802
         """Desenha a amostra centralizada e proporcional, ou "preparando..." se
@@ -115,11 +138,41 @@ class _Amostra(QWidget):
             pintor.drawText(self.rect(), Qt.AlignCenter, "preparando...")
             return
 
+        # nos pixels de verdade (escala do Windows), para não sair mole
+        from ui.widgets.todas_as_paginas import razao_do_pintor
+        razao = razao_do_pintor(pintor)
         escalado = self._pixmap.scaled(
-            self.size(), Qt.KeepAspectRatio, Qt.SmoothTransformation
+            self.size() * razao, Qt.KeepAspectRatio, Qt.SmoothTransformation
         )
-        pintor.drawPixmap(
-            (self.width() - escalado.width()) // 2,
-            (self.height() - escalado.height()) // 2,
-            escalado,
-        )
+        escalado.setDevicePixelRatio(razao)
+        # juncao de 23/10/2026: o desenho nitido do layout (pixels de verdade)
+        # e as marcas do aviso do "Para revisar", em pontos de tela
+        largura = round(escalado.width() / razao)
+        altura = round(escalado.height() / razao)
+        x = round((self.width() - largura) / 2)
+        y = round((self.height() - altura) / 2)
+        pintor.drawPixmap(x, y, escalado)
+        pintar_marcas(pintor, self._marcas, x, y, largura, altura)
+
+
+# A cor das marcas do aviso: o laranja dos avisos ("elas já vão aparecer
+# laranjas", Samuel, rodada 4 do "Para revisar"). Provisória: a aparência é
+# do agente de layout.
+COR_DA_MARCA = QColor(230, 126, 34)
+
+
+def pintar_marcas(pintor: QPainter, caixas, x: int, y: int, largura: int, altura: int) -> None:
+    """Desenha as marcas do aviso (caixas em fração da página) por cima de uma
+    imagem que está em (x, y) com `largura` x `altura` pontos de tela:
+    contorno laranja tracejado, sem preencher (o que está embaixo tem de
+    continuar à vista). Usada pelos cartões de filtro e pela aba Marcar."""
+    if not caixas or largura <= 0 or altura <= 0:
+        return
+    pintor.save()
+    caneta = QPen(COR_DA_MARCA, 2, Qt.DashLine)
+    pintor.setPen(caneta)
+    pintor.setBrush(Qt.NoBrush)
+    for x0, y0, x1, y1 in caixas:
+        pintor.drawRect(int(x + x0 * largura), int(y + y0 * altura),
+                        max(3, int((x1 - x0) * largura)), max(3, int((y1 - y0) * altura)))
+    pintor.restore()

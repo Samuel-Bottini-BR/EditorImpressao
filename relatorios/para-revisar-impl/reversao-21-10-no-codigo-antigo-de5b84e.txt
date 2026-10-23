@@ -1,0 +1,70 @@
+...FFF                                                                   [100%]
+================================== FAILURES ===================================
+_________ test_aviso_desenho_ou_escrita_diz_onde_fica_o_letra_e_traco _________
+
+    def test_aviso_desenho_ou_escrita_diz_onde_fica_o_letra_e_traco():
+        """Decisão do Samuel na `r14-aviso-marcar` (rodada 14 do layout): "C — Diz
+        onde fica o “letra e traço”". Até 20/10 a frase era neutra (não dizia
+        onde)."""
+>       assert analise.descrever(analise.DESENHO_OU_ESCRITA).mensagem == (
+            "Não tenho certeza se esta página é desenho ou escrita. Confira: se for "
+            "escrita, marque a área e escolha “letra e traço” no painel Propriedades.")
+E       AssertionError: assert 'Não tenho ce...e como letra.' == 'Não tenho ce...Propriedades.'
+E         
+E         Skipping 77 identical leading characters in diff, use -v to show
+E         - a, marque a área e escolha “letra e traço” no painel Propriedades.
+E         + a, marque como letra.
+
+tests\test_reversao_para_revisar.py:102: AssertionError
+______________ test_bug_esta_bom_em_tudo_se_desfaz_com_um_ctrl_z ______________
+
+tela = <ui.tela_conferir.TelaConferir(0x25d2f9fe2b0) at 0x0000025D32357740>
+
+    def test_bug_esta_bom_em_tudo_se_desfaz_com_um_ctrl_z(tela):
+        """Bug do verificador (20/10/2026, aba 4): "está bom em tudo" com avisos de
+        folha E de página gravava duas ações, e o Ctrl+Z precisava de dois toques."""
+        projeto = tela.projeto
+        projeto.folhas[0].alertas = [analise.RESOLUCAO_BAIXA]
+        projeto.folhas[0].revisada = False
+        projeto.paginas[1].alertas = [analise.DESENHO_APAGADO]
+        projeto.paginas[1].revisada = False
+        tela.atualizar()
+        assert len(avisos.pendentes_do_livro(projeto)) >= 2
+        tela._aceitar_tudo()
+        assert avisos.pendentes_do_livro(projeto) == []
+        tela.desfazer()                                   # UM Ctrl+Z
+        pendentes = {(a.alvo, a.indice, a.codigo) for a in avisos.pendentes_do_livro(projeto)}
+>       assert (avisos.FOLHA, 0, analise.RESOLUCAO_BAIXA) in pendentes
+E       AssertionError: assert ('folha', 0, 'resolucao_baixa') in {('pagina', 1, 'desenho_apagado')}
+
+tests\test_reversao_para_revisar.py:130: AssertionError
+___________ test_bug_rodape_com_duvida_acerta_quando_o_aviso_chega ____________
+
+tela = <ui.tela_conferir.TelaConferir(0x25d300ac500) at 0x0000025D3387E740>
+
+    def test_bug_rodape_com_duvida_acerta_quando_o_aviso_chega(tela):
+        """Bug do verificador (20/10/2026, aba 4): o rodapé "N com dúvida" ficava um
+        passo atrasado - o aviso que chegava com a medida por trás mudava o
+        contador de cima, e o rodapé só acertava ao trocar de página."""
+        projeto = tela.projeto
+        for pagina in projeto.paginas:
+            pagina.alertas, pagina.revisada = [], False
+        tela.ir_para_pagina(0)
+        tela.atualizar()
+        assert "0 com dúvida" in tela.rotulo_do_livro.text()
+        # chega um aviso na página da vez (o que _previa_chegou faz com a medida)
+        projeto.paginas[0].alertas = [analise.DESENHO_APAGADO]
+        tela._alertas_da_previa()
+>       assert "1 com dúvida" in tela.rotulo_do_livro.text(), tela.rotulo_do_livro.text()
+E       AssertionError: Livro de Teste · 0 de 4 conferidas · 0 com dúvida
+E       assert '1 com dúvida' in 'Livro de Teste · 0 de 4 conferidas · 0 com dúvida'
+E        +  where 'Livro de Teste · 0 de 4 conferidas · 0 com dúvida' = <built-in method text of PySide6.QtWidgets.QLabel object at 0x0000025D346A5E00>()
+E        +    where <built-in method text of PySide6.QtWidgets.QLabel object at 0x0000025D346A5E00> = <PySide6.QtWidgets.QLabel(0x25d30313710, name="rotuloDaBarraDeBaixo") at 0x0000025D346A5E00>.text
+E        +      where <PySide6.QtWidgets.QLabel(0x25d30313710, name="rotuloDaBarraDeBaixo") at 0x0000025D346A5E00> = <ui.tela_conferir.TelaConferir(0x25d300ac500) at 0x0000025D3387E740>.rotulo_do_livro
+
+tests\test_reversao_para_revisar.py:147: AssertionError
+=========================== short test summary info ===========================
+FAILED tests/test_reversao_para_revisar.py::test_aviso_desenho_ou_escrita_diz_onde_fica_o_letra_e_traco
+FAILED tests/test_reversao_para_revisar.py::test_bug_esta_bom_em_tudo_se_desfaz_com_um_ctrl_z
+FAILED tests/test_reversao_para_revisar.py::test_bug_rodape_com_duvida_acerta_quando_o_aviso_chega
+3 failed, 3 passed in 4.65s

@@ -7,26 +7,32 @@ um cancelar que funciona de verdade.
 
 from __future__ import annotations
 
+import copy
+
 import traceback
 from pathlib import Path
 
 import numpy as np
 import shiboken6
-from PySide6.QtCore import QObject, QRunnable, QThread, QThreadPool, Signal
+from PySide6.QtCore import QObject, QRunnable, QThread, QThreadPool, QTimer, Signal
 
+from core import luz_scantailor
 from core.misto import escolhas_da_pagina as escolhas_do_misto
 from core.pontinhos_scantailor import escolha_da_pagina as pontinhos_da_pagina
-from core.pipeline import faixa_da_sobra
+from core.pipeline import acertar_no_tamanho_do_pdf, faixa_da_sobra, precisa_do_desenho_do_pdf
 from core.pdf_io import ErroPDF, abrir_pdf
 from core.pipeline import (
     Cancelou,
     ErroPDFSalvoComOutroNome,
     analisar_projeto,
+    desentortar_por_medir,
+    estado_do_desentortar,
+    medir_o_desentortar,
     processar,
     renderizar_com_filtro,
     renderizar_pagina,
 )
-from modelos import Projeto
+from modelos import ConfigPagina, Projeto
 from registro import registrar_erro
 
 # Ordem da fila de previas (QThreadPool.start: maior sai primeiro). D4,
@@ -36,6 +42,15 @@ from registro import registrar_erro
 # Seguro mudar: os numeros, mantendo a da vez maior.
 PRIORIDADE_DA_VEZ = 1
 PRIORIDADE_ADIANTADA = 0
+
+# O que marca, na chave, o pedido da MEDIDA do "Para revisar" (ver
+# GerenciadorPrevias.pedir_medida): "<indice>:medida:<chave da previa na
+# resolucao do PDF>". Nao muda nada no disco: e so nome de pedido desta sessao.
+MARCA_DA_MEDIDA = ":medida:"
+# O que a tarefa do acerto devolve no lugar da imagem: um ponto so. A forma
+# diz se a marcacao da pagina mudou (a previa guardada dela ficou velha).
+FORMA_SEM_MUDANCA = (1, 1)
+FORMA_MARCACAO_MUDOU = (1, 2)
 
 # Quantas previas ficam guardadas na memoria. Cada uma tem ~900 px de altura;
 # 30 delas cabem folgado e cobrem a navegacao para frente e para tras.
@@ -172,6 +187,41 @@ class TarefaProcessar(QThread):
             self.falhou.emit(_mensagem_amigavel(erro))
 
 
+class TarefaMedirAsMargens(QThread):
+    """Item 2.4 (decisao do Samuel, 22/10/2026: "Sim, a tela mostra igual ao
+    que sai"): mede por tras o tamanho de cada pagina pronta, para a tela
+    poder mostrar as margens iguais como no PDF
+    (core.pipeline.medir_o_livro_para_as_margens; uma folha por vez, so
+    numeros ficam guardados). Nunca deixa excecao escapar."""
+
+    pronta = Signal()
+
+    def __init__(self, projeto: Projeto) -> None:
+        super().__init__()
+        self.projeto = projeto
+        self._cancelar = False
+
+    def cancelar(self) -> None:
+        self._cancelar = True
+
+    def run(self) -> None:
+        from core.pdf_io import abrir_pdf
+        from core.pipeline import medir_o_livro_para_as_margens
+
+        try:
+            doc = abrir_pdf(self.projeto.caminho_entrada)
+            try:
+                medir_o_livro_para_as_margens(self.projeto, doc, self.projeto.paginas_ativas,
+                                              cancelado=lambda: self._cancelar)
+            finally:
+                doc.close()
+            self.pronta.emit()
+        except Cancelou:
+            pass
+        except Exception:  # noqa: BLE001
+            registrar_erro("medir as margens iguais", traceback.format_exc())
+
+
 class TarefaConverterZonas(QThread):
     """Converte as zonas do livro inteiro para o formato novo, por tras, ao
     abrir (decisao Z1 (b) do Samuel, 05/10/2026: "O livro inteiro, por tras,
@@ -231,6 +281,45 @@ class TarefaConverterZonas(QThread):
         self.terminou.emit(self, convertidas)
 
 
+class TarefaMedirOLivro(QThread):
+    """Item 2.5 (corte que segue o conteudo, G9 "todas as paginas do tamanho
+    da maior"): mede por tras, ao abrir, o tamanho do conteudo das paginas do
+    livro (core.pipeline.medir_conteudo_do_livro), para a previa ja mostrar
+    cada pagina do tamanho do livro. So roda com a opcao do livro ligada
+    (Projeto.cortar_pelo_conteudo); desligada, nao e criada. Aqui so o fio e
+    o cancelar; o que ela mede fica guardado na memoria do core (nao muda o
+    projeto, so poe ou tira o aviso "Pagina muito maior").
+
+    Prioridade normal pelo mesmo motivo da TarefaConverterZonas (inversao de
+    prioridade com o GIL). Arriscado: esquecer de parar ao trocar de livro e
+    ao fechar (a janela para junto com a conversao das zonas)."""
+
+    terminou = Signal(object, int)          # tarefa, quantas paginas mediu
+
+    def __init__(self, projeto: Projeto) -> None:
+        super().__init__()
+        self.projeto = projeto
+        self._cancelar = False
+
+    def cancelar(self) -> None:
+        """Pede para parar antes da proxima pagina. O que ja foi medido fica."""
+        self._cancelar = True
+
+    def run(self) -> None:
+        """Ponto de entrada da QThread. Nunca deixa excecao escapar (cancelar
+        e qualquer erro so param a passada; o PDF mede o que faltar)."""
+        from core.pipeline import Cancelou, medir_conteudo_do_livro
+
+        medidas = 0
+        try:
+            medidas = medir_conteudo_do_livro(self.projeto, cancelado=lambda: self._cancelar)
+        except Cancelou:
+            pass
+        except Exception:  # noqa: BLE001 - nada pode derrubar o programa
+            registrar_erro("medir_o_livro", traceback.format_exc())
+        self.terminou.emit(self, medidas)
+
+
 class _SinaisPrevia(QObject):
     """Sinais de uma tarefa de prévia. Existe separado de _TarefaPrevia porque
     QRunnable nao e QObject e nao pode emitir sinal Qt sozinho."""
@@ -258,8 +347,19 @@ class _TarefaCartoes(QRunnable):
 
     def __init__(self, indice_pagina: int, base: np.ndarray, filtros: list[str],
                  forca_preto: int, clareza: int, intensidade: int,
-                 sinais: _SinaisCartoes, chave: object = None) -> None:
+                 sinais: _SinaisCartoes, chave: object = None,
+                 pagina: ConfigPagina | None = None, dpi: float = 70,
+                 despeckle=True) -> None:
         super().__init__()
+        # O "Limpar pontinhos" que vale na pagina (core.pipeline.
+        # pontinhos_da_pagina), resolvido na hora do pedido. True = o de antes
+        # do conserto de 21/10 (o nosso, sempre).
+        self.despeckle = despeckle
+        # As caixinhas da pagina (2.9 e 2.11), copiadas na hora do pedido para
+        # o outro fio nao ler a pagina enquanto a pessoa mexe nela. None =
+        # nenhuma marcada (o cartao de sempre). dpi: o da amostra.
+        self.pagina = copy.copy(pagina) if pagina is not None else None
+        self.dpi = dpi
         self.chave = chave             # volta como veio (GerenciadorPrevias.pedir_cartoes)
         self.indice_pagina = indice_pagina
         self.base = base
@@ -274,18 +374,69 @@ class _TarefaCartoes(QRunnable):
         Falha silenciosa (so vira log): o cartao so fica "preparando..." e a
         tela continua funcionando."""
         from core.filtros import aplicar_filtro
+        from core.pipeline import filtro_com_as_caixinhas
 
         resultados: dict[str, np.ndarray] = {}
         try:
             for chave in self.filtros:
-                amostra, _ = aplicar_filtro(
-                    self.base, chave, self.forca_preto, self.clareza, self.intensidade,
-                )
+                if self.pagina is None:
+                    amostra, _ = aplicar_filtro(
+                        self.base, chave, self.forca_preto, self.clareza, self.intensidade,
+                    )
+                else:
+                    # bug do verificador do 2.9 (21/10): o cartao = o filtro
+                    # na pagina, com as caixinhas dela
+                    amostra = filtro_com_as_caixinhas(
+                        self.base, self.pagina, chave, self.dpi,
+                        self.forca_preto, self.clareza, self.intensidade,
+                        algoritmo_pb=self.pagina.algoritmo_preto_branco,
+                        despeckle=self.despeckle)
                 resultados[chave] = amostra
         except Exception:  # noqa: BLE001 - cartao que falha so fica "preparando..."
             registrar_erro("cartoes", traceback.format_exc())
         _emitir_se_vivo(self.sinais, self.sinais.prontos, self.indice_pagina, resultados,
                         self.chave)
+
+
+class _SinaisDesentortar(QObject):
+    """Sinais da tarefa do desentortar (QRunnable nao emite sinal sozinho)."""
+
+    medido = Signal(int)          # indice da pagina (deu certo ou falhou)
+
+
+class _TarefaMedirDesentortar(QRunnable):
+    """A medida do desentortar de UMA pagina, na resolucao do livro (item
+    2.12, resposta P6 do Samuel, 23/10/2026, opcao (b): "numa tarefa por
+    tras (uns 3 a 8 s por pagina, so nas paginas com ele ligado)").
+
+    Chama core.pipeline.medir_o_desentortar, que guarda a pagina
+    desentortada e poe ou tira os avisos da protecao. Quando termina, emite
+    `medido(indice)`: a chave das previas daquela pagina muda sozinha
+    (estado_do_desentortar) e a tela desenha de novo. Falha nunca sobe: vai
+    para o erros.log e a pagina fica sem desentortar na tela (como antes).
+    Arriscado: chamar medir_o_desentortar no fio da tela (trava 3 a 8 s)."""
+
+    def __init__(self, caminho_pdf: str, projeto: Projeto, indice_pagina: int,
+                 sinais: _SinaisDesentortar) -> None:
+        super().__init__()
+        self.caminho_pdf = caminho_pdf
+        self.projeto = projeto
+        self.indice_pagina = indice_pagina
+        self.sinais = sinais
+
+    def run(self) -> None:
+        try:
+            if 0 <= self.indice_pagina < len(self.projeto.paginas):
+                pagina = self.projeto.paginas[self.indice_pagina]
+                if desentortar_por_medir(self.projeto, pagina):
+                    doc = abrir_pdf(self.caminho_pdf)
+                    try:
+                        medir_o_desentortar(doc, self.projeto, pagina)
+                    finally:
+                        doc.close()
+        except Exception:  # noqa: BLE001 - a medida que falha nao derruba a tela
+            registrar_erro("desentortar_por_tras", traceback.format_exc())
+        _emitir_se_vivo(self.sinais, self.sinais.medido, self.indice_pagina)
 
 
 class _TarefaPrevia(QRunnable):
@@ -328,6 +479,10 @@ class _TarefaPrevia(QRunnable):
                 self._folha_crua()
                 return
             if not 0 <= self.indice_pagina < len(self.projeto.paginas):
+                if MARCA_DA_MEDIDA in self.chave:
+                    # a pagina deixou de existir: avisa, para a fila dos
+                    # desenhos do tamanho do PDF nao ficar parada atras deste
+                    _emitir_se_vivo(self.sinais, self.sinais.falhou, self.chave, self.geracao)
                 return
             if ":recorte:" in self.chave:
                 self._para_recorte()
@@ -337,7 +492,17 @@ class _TarefaPrevia(QRunnable):
             # pode ser usado por duas threads ao mesmo tempo.
             doc = abrir_pdf(self.caminho_pdf)
             try:
-                if self.filtro is None:
+                if MARCA_DA_MEDIDA in self.chave:
+                    # O acerto no tamanho do PDF (12 e 13/10/2026): por
+                    # tras, a marcacao provisoria (a da previa) e trocada pela
+                    # achada na pagina do tamanho do PDF e, onde a regra do
+                    # "Para revisar" vale, a pagina e medida (os avisos e a
+                    # forca sozinha sao acertados la dentro). Nenhuma imagem
+                    # grande volta: so um aviso de "pronto", que diz se a
+                    # marcacao mudou (ai a previa tem de ser desenhada de novo).
+                    mudou = acertar_no_tamanho_do_pdf(doc, self.projeto, pagina)
+                    img = np.zeros(FORMA_MARCACAO_MUDOU if mudou else FORMA_SEM_MUDANCA, np.uint8)
+                elif self.filtro is None:
                     img, _ = renderizar_pagina(doc, self.projeto, pagina, dpi=self.dpi)
                 else:
                     img, _ = renderizar_com_filtro(doc, self.projeto, pagina,
@@ -401,6 +566,8 @@ class GerenciadorPrevias(QObject):
 
     pronta = Signal(str, object)
     cartoes_prontos = Signal(int, dict, object)   # indice, {filtro: imagem}, chave do pedido
+    # item 2.12 (resposta P6): a medida do desentortar da pagina terminou
+    desentortar_medido = Signal(int)
 
     def __init__(self, caminho_pdf: str, projeto: Projeto, parent=None) -> None:
         """Cria os dois pools (prévias e cartões, separados de propósito -
@@ -421,6 +588,30 @@ class GerenciadorPrevias(QObject):
         # passou nao entra no cache nem na tela (_guardar).
         self._geracoes: dict[int, int] = {}
         self._geracao_do_livro = 0
+        # 13/10/2026: quantas vezes a marcacao de cada pagina foi trocada por
+        # tras (a provisoria pela do tamanho do PDF), e como cada chave
+        # guardada ou pedida foi pedida (indice, dpi, filtro), para pedir de
+        # novo sem tirar do cache: ver refazer_previas.
+        self._trocas: dict[int, int] = {}
+        self._como_pedir: dict[str, tuple[int, int, str | None]] = {}
+        # Os desenhos do tamanho do PDF (pedir_medida) esperam aqui, (chave,
+        # indice), e so comecam quando o pool de previas esta PARADO, um de
+        # cada vez. Sao pesados (de 1 a 4 s, as vezes mais), e desde
+        # 13/10/2026 toda pagina visitada pede um (para trocar a marcacao
+        # provisoria). Medido na tela de verdade, num pedaco do Antiphonal
+        # 1547 (relatorios/para-revisar-impl/tempo_de_trocar_de_pagina.py):
+        # comecando logo, eles disputavam os fios e o processador com as
+        # previas adiantadas das paginas seguintes, e trocar de pagina ficava
+        # 0,3 s mais lento (regra 6 do plano: nao pode). Assim as previas vem
+        # sempre primeiro, e este trabalho so usa o tempo em que a pessoa esta
+        # olhando a pagina. Quem folheia sem parar so tem as paginas acertadas
+        # quando parar (ou ao gerar o PDF, que acerta todas).
+        # Arriscado: comecar um destes com previa na fila, ou dois juntos.
+        self._medidas_a_espera: list[tuple[str, int]] = []
+        self._relogio_das_medidas = QTimer(self)
+        self._relogio_das_medidas.setSingleShot(True)
+        self._relogio_das_medidas.setInterval(150)
+        self._relogio_das_medidas.timeout.connect(self._soltar_a_medida_a_espera)
 
         self._pool = QThreadPool(self)
         # Duas ao mesmo tempo: uma para a pagina que o usuario esta olhando e
@@ -445,6 +636,16 @@ class GerenciadorPrevias(QObject):
 
         self._sinais_cartoes = _SinaisCartoes()
         self._sinais_cartoes.prontos.connect(self.cartoes_prontos.emit)
+
+        # Item 2.12 (resposta P6 do Samuel, 23/10/2026): a medida do
+        # desentortar na resolucao do livro, por tras, num pool proprio de UM
+        # fio (3 a 8 s por pagina: nao pode segurar as previas nem os cartoes,
+        # e duas ao mesmo tempo so brigariam por CPU e memoria).
+        self._pool_desentortar = QThreadPool(self)
+        self._pool_desentortar.setMaxThreadCount(1)
+        self._medindo: set[int] = set()
+        self._sinais_desentortar = _SinaisDesentortar()
+        self._sinais_desentortar.medido.connect(self._desentortar_chegou)
 
     # --- chave ------------------------------------------------------------
 
@@ -473,6 +674,24 @@ class GerenciadorPrevias(QObject):
             f"{pontinhos_da_pagina(self.projeto, p)}:"
             # item 2.1: o corte da sobra muda a pagina desenhada
             f"{faixa_da_sobra(f, p, self.projeto)}"
+            # "Deixar em branco" (12/10/2026) muda a pagina desenhada
+            f":{'branca' if getattr(p, 'em_branco', False) else ''}:"
+            # itens 2.9 e 2.11 (bug do verificador do 2.9, 21/10): as
+            # caixinhas da pagina mudam a previa e os cartoes
+            f"{bool(getattr(p, 'claro_no_escuro', False))}:"
+            f"{bool(getattr(p, 'letras_com_a_cor', False))}:"
+            f"{bool(getattr(p, 'reduzir_cores', False))}:"
+            # item 2.12: o desentortar muda a pagina preparada
+            f"{getattr(p, 'desentortar', 'desligado')}"
+            # item 2.12 (22/10): "Desentortar aumentando a página" muda o
+            # tamanho da pagina; so entra na chave quando ligado
+            f"{':aumentar' if getattr(p, 'desentortar_aumentar', False) else ''}"
+            # item 2.12 (resposta P6, 23/10): a medida do desentortar ja feita
+            # ou nao ("" desligado): quando ela chega, a chave muda e a previa
+            # e os cartoes sao desenhados de novo com a pagina desentortada
+            f"{':' + estado_do_desentortar(self.projeto, p) if getattr(p, 'desentortar', 'desligado') != 'desligado' else ''}"
+            # item 2.17: igualar a luz, suavizar, chuvisco ("-" desligados)
+            f":{luz_scantailor.assinatura(p)}"
         )
 
     # --- uso --------------------------------------------------------------
@@ -499,12 +718,133 @@ class GerenciadorPrevias(QObject):
         self._comecar(chave, indice, dpi,
                       PRIORIDADE_DA_VEZ if prioridade is None else prioridade)
 
+    # --- a medida do "Para revisar" (12/10/2026) -----------------------------
+    #
+    # A regra ajustada do "Para revisar" so vale na resolucao do PDF (medido
+    # nas 89 paginas do estudo: a 110 DPI, a previa, 13 decidem diferente; ver
+    # core.pipeline._da_para_medir). A previa nao mede. Para o Kaique ver os
+    # avisos na conferencia, a tela pede aqui, por tras, um desenho da pagina
+    # DA VEZ na resolucao do PDF, so para medir: os avisos (e a forca do preto
+    # sozinha) sao acertados dentro do desenho, e a imagem grande e jogada
+    # fora. Custa um desenho do tamanho do PDF por pagina visitada (e por
+    # mudanca de filtro, forca ou corte nela), em fila atras da previa da
+    # vez; so em pagina no "So as letras" que usa o leitor de texto
+    # (precisa_medir_para_revisar). As paginas nao visitadas sao medidas ao
+    # gerar o PDF. Arriscado: pedir a medida das paginas vizinhas tambem (o
+    # pre-carregamento ficaria varias vezes mais pesado).
+
+    def chave_da_medida(self, indice: int) -> str:
+        """A chave da medida da pagina no estado de agora (a mesma da previa
+        na resolucao do PDF: mudou o filtro, a forca ou o corte, mede de
+        novo). Comeca com f"{indice}:", para invalidar(indice) limpa-la."""
+        return f"{indice}{MARCA_DA_MEDIDA}{self.chave(indice, self.projeto.qualidade_dpi)}"
+
+    def pedir_medida(self, indice: int) -> bool:
+        """Pede, por tras, a medida do "Para revisar" da pagina `indice`, se
+        a regra vale nela e este estado ainda nao foi medido nem pedido.
+        Devolve True se pediu. Quando fica pronta, sai o sinal `pronta` com
+        chave_da_medida (a imagem que vem junto e um ponto so)."""
+        if not 0 <= indice < len(self.projeto.paginas):
+            return False
+        if not precisa_do_desenho_do_pdf(self.projeto, self.projeto.paginas[indice]):
+            return False
+        chave = self.chave_da_medida(indice)
+        if chave in self._cache or chave in self._pedidas:
+            return False
+        if any(c == chave for c, _i in self._medidas_a_espera):
+            return False
+        # entra na fila e so comeca com o pool parado (ver _medidas_a_espera)
+        self._medidas_a_espera.append((chave, indice))
+        self._soltar_a_medida_a_espera()
+        return True
+
+    def _soltar_a_medida_a_espera(self) -> None:
+        """Comeca o proximo desenho do tamanho do PDF da fila, se o pool de
+        previas esta PARADO (nenhuma previa sendo desenhada nem outro desenho
+        destes); senao, olha de novo daqui a pouco (_relogio_das_medidas).
+        O pedido MAIS NOVO primeiro: e o da pagina que esta na tela, ou perto
+        dela. Pula o que nao serve mais: a pagina mudou de estado (a chave e
+        outra; a tela pede de novo quando a previa nova chegar), ja foi feito,
+        ou a pagina nao precisa mais. Chamado a cada pedido, a cada previa que
+        chega e pelo relogio."""
+        if not self._medidas_a_espera:
+            return
+        if self._pool.activeThreadCount() > 0:
+            if not self._relogio_das_medidas.isActive():
+                self._relogio_das_medidas.start()
+            return
+        while self._medidas_a_espera:
+            chave, indice = self._medidas_a_espera.pop()
+            if not 0 <= indice < len(self.projeto.paginas):
+                continue
+            if chave in self._cache or chave in self._pedidas:
+                continue
+            if chave != self.chave_da_medida(indice):
+                continue
+            if not precisa_do_desenho_do_pdf(self.projeto, self.projeto.paginas[indice]):
+                continue
+            self._comecar(chave, indice, self.projeto.qualidade_dpi, PRIORIDADE_ADIANTADA)
+            break
+        if self._medidas_a_espera and not self._relogio_das_medidas.isActive():
+            self._relogio_das_medidas.start()
+
+    def refazer_previas(self, indice: int) -> None:
+        """A marcacao da pagina `indice` foi trocada por tras (a provisoria,
+        da previa, pela do tamanho do PDF): as previas e os cartoes dela foram
+        desenhados com a marcacao de antes. Manda desenhar de novo os do
+        estado de agora, SEM tirar do cache os que ja estao la: a tela
+        continua mostrando a imagem de antes ate a nova chegar (nada pisca
+        nem volta para "preparando..."), e ai sai o sinal `pronta` com a
+        mesma chave e a tela redesenha.
+
+        O que ainda esta sendo desenhado foi pedido antes da troca e pode ter
+        lido a marcacao de antes: e pedido de novo, e o que chegar do pedido
+        velho e jogado fora (a geracao da pagina anda; _guardar). Previa de um
+        estado que ja passou (outra forca, outro filtro) so sai do cache.
+        A imagem da aba Bordas (":recorte:") nao depende da marcacao: a que
+        esta guardada fica.
+        Diferente de invalidar(indice): nao esquece que o acerto no tamanho do
+        PDF ja foi feito (chave_da_medida) - a tela o pediria de novo, sem fim.
+        Arriscado: tirar do cache a previa do estado de agora (a tela piscaria
+        a cada pagina visitada)."""
+        self._trocas[indice] = self._trocas.get(indice, 0) + 1
+        prefixo = f"{indice}:"
+        chaves = [c for c in dict.fromkeys(list(self._ordem) + list(self._pedidas))
+                  if c.startswith(prefixo) and MARCA_DA_MEDIDA not in c]
+        for chave in chaves:
+            pendente = chave in self._pedidas
+            if ":recorte:" in chave and not pendente:
+                continue
+            como = self._como_pedir.get(chave)
+            if como is None or not self._e_do_estado_de_agora(chave, *como):
+                self._pedidas.pop(chave, None)
+                if chave in self._cache:
+                    del self._cache[chave]
+                    self._ordem.remove(chave)
+                continue
+            _indice, dpi, filtro = como
+            self._comecar(chave, indice, dpi,
+                          PRIORIDADE_DA_VEZ if filtro is None else PRIORIDADE_ADIANTADA,
+                          filtro=filtro)
+
+    def _e_do_estado_de_agora(self, chave: str, indice: int, dpi: int,
+                              filtro: str | None) -> bool:
+        """A chave (de previa, de cartao ou da aba Bordas) ainda e a que a
+        pagina teria agora, pedida do mesmo jeito?"""
+        if ":recorte:" in chave:
+            return chave == self.chave_para_recorte(indice, dpi)
+        if filtro is not None:
+            return chave == self.chave_com_filtro(indice, dpi, filtro)
+        return chave == self.chave(indice, dpi)
+
     # --- pedidos e geracoes (D4) ---------------------------------------------
 
     def _geracao_de(self, indice: int) -> tuple:
         """A geracao de agora da pagina `indice`: muda a cada invalidar dela
-        ou do livro todo."""
-        return (indice, self._geracao_do_livro, self._geracoes.get(indice, 0))
+        ou do livro todo, e a cada troca da marcacao dela por tras
+        (refazer_previas)."""
+        return (indice, self._geracao_do_livro, self._geracoes.get(indice, 0),
+                self._trocas.get(indice, 0))
 
     def _comecar(self, chave: str, indice: int, dpi: int, prioridade: int,
                  filtro: str | None = None, rotacao: int | None = None,
@@ -513,7 +853,14 @@ class GerenciadorPrevias(QObject):
         nao leva geracao: o giro dela vai no pedido e na chave, e nada mais
         a muda. Prioridade maior sai primeiro (QThreadPool.start)."""
         geracao = None if folha else self._geracao_de(indice)
+        if MARCA_DA_MEDIDA in chave:
+            # o acerto no tamanho do PDF nao fica velho com a troca da
+            # marcacao (e ele que a faz): a geracao dele vai sem essa parte
+            geracao = geracao[:3]
         self._pedidas[chave] = geracao
+        if not folha and MARCA_DA_MEDIDA not in chave:
+            # como pedir de novo esta mesma chave (refazer_previas)
+            self._como_pedir[chave] = (indice, dpi, filtro)
         self._pool.start(
             _TarefaPrevia(chave, self.caminho_pdf, self.projeto, indice, dpi, self._sinais,
                           filtro=filtro, rotacao=rotacao, geracao=geracao),
@@ -569,17 +916,56 @@ class GerenciadorPrevias(QObject):
 
     def pedir_cartoes(self, indice: int, base: np.ndarray, filtros: list[str],
                        forca_preto: int, clareza: int, intensidade: int,
-                       chave: object = None) -> None:
+                       chave: object = None, dpi: float = 70) -> None:
         """Pede os cartoes que faltam para uma pagina, fora da thread da tela.
 
         chave: volta junto no sinal cartoes_prontos, para quem pediu saber de
         que estado da pagina e o resultado. A tela de conferir passa a chave
         dos cartoes (giro, corte, ajustes...) e descarta o que chegar de um
         estado que ja passou (D1, 06/10/2026)."""
+        from core.pipeline import pontinhos_da_pagina as pontinhos_prontos
+
+        pagina = (self.projeto.paginas[indice]
+                  if 0 <= indice < len(self.projeto.paginas) else None)
+        # 21/10 (bug do verificador do 2.9): o cartao = a pagina com o filtro,
+        # entao com o algoritmo e o "Limpar pontinhos" dela (antes: sempre
+        # "auto" e o nosso, e o cartao apagava pontos que a pagina mantem)
+        despeckle = (pontinhos_prontos(self.projeto, pagina, base, dpi)
+                     if pagina is not None else True)
         self._pool_cartoes.start(
             _TarefaCartoes(indice, base, filtros, forca_preto, clareza, intensidade,
-                            self._sinais_cartoes, chave=chave)
+                            self._sinais_cartoes, chave=chave, pagina=pagina, dpi=dpi,
+                            despeckle=despeckle)
         )
+
+    # --- a medida do desentortar por tras (item 2.12, resposta P6) ---------
+
+    def desentortar_pendente(self, indice: int) -> bool:
+        """A pagina tem o desentortar ligado e a medida dele ainda nao chegou?
+        (o sinal "Desentortando esta pagina" da tela)."""
+        if not 0 <= indice < len(self.projeto.paginas):
+            return False
+        return desentortar_por_medir(self.projeto, self.projeto.paginas[indice])
+
+    def pedir_desentortar(self, indice: int) -> bool:
+        """Pede a medida do desentortar da pagina, por tras, se ela ainda nao
+        foi feita nem pedida. Devolve True se a medida esta pendente (pedida
+        agora ou antes). Barato no fio da tela (sem desenho)."""
+        if not self.desentortar_pendente(indice):
+            return False
+        if indice not in self._medindo:
+            self._medindo.add(indice)
+            self._pool_desentortar.start(
+                _TarefaMedirDesentortar(self.caminho_pdf, self.projeto, indice,
+                                        self._sinais_desentortar))
+        return True
+
+    def _desentortar_chegou(self, indice: int) -> None:
+        """A medida terminou (ou falhou). Se a pagina ainda esta por medir
+        (a pessoa mudou o corte ou o modo enquanto media), a tela pede de
+        novo na proxima atualizacao."""
+        self._medindo.discard(indice)
+        self.desentortar_medido.emit(indice)
 
     # --- folha crua (aba "Onde cortar") -----------------------------------
 
@@ -664,16 +1050,35 @@ class GerenciadorPrevias(QObject):
         geracao: a do pedido (_comecar). Se a pagina foi invalidada depois do
         pedido, a imagem e de um estado que ja passou: nao entra no cache nem
         e anunciada (D4, 06/10/2026)."""
-        if geracao is not None and tuple(geracao) != self._geracao_de(geracao[0]):
+        # o acerto por tras trocou a marcacao da pagina? (ver _TarefaPrevia.run)
+        trocou = MARCA_DA_MEDIDA in chave and tuple(img.shape[:2]) == FORMA_MARCACAO_MUDOU
+        if (geracao is not None
+                and tuple(geracao) != self._geracao_de(geracao[0])[:len(geracao)]):
             if self._pedidas.get(chave) == geracao:
                 del self._pedidas[chave]
+            if trocou:
+                # o pedido ficou velho (a pessoa mexeu na pagina no meio), mas
+                # a marcacao da pagina FOI trocada: o que foi desenhado com a
+                # de antes tambem tem de ser refeito
+                self.refazer_previas(geracao[0])
+            self._soltar_a_medida_a_espera()
             return
         self._pedidas.pop(chave, None)
+        if trocou:
+            # as previas guardadas da pagina foram desenhadas com a marcacao
+            # de antes: desenha de novo, sem tirar da tela a que esta la
+            self.refazer_previas(int(chave.split(":", 1)[0]))
         self._cache[chave] = img
+        if chave in self._ordem:       # previa refeita: a chave ja estava guardada
+            self._ordem.remove(chave)
         self._ordem.append(chave)
         while len(self._ordem) > TAMANHO_CACHE:
             velha = self._ordem.pop(0)
             self._cache.pop(velha, None)
+        # so se lembra de como pedir o que ainda esta guardado ou a caminho
+        self._como_pedir = {c: como for c, como in self._como_pedir.items()
+                            if c in self._cache or c in self._pedidas}
+        self._soltar_a_medida_a_espera()
         self.pronta.emit(chave, img)
 
     def _esquecer_pedido(self, chave: str, geracao: tuple | None = None) -> None:
@@ -681,6 +1086,7 @@ class GerenciadorPrevias(QObject):
         pedir de novo (so se o pedido anotado e o mesmo que falhou)."""
         if chave in self._pedidas and (geracao is None or self._pedidas[chave] == geracao):
             del self._pedidas[chave]
+        self._soltar_a_medida_a_espera()
 
     def _promover(self, chave: str) -> None:
         """Move a chave para o fim da fila de LRU (foi usada agora, entao e a
@@ -693,10 +1099,14 @@ class GerenciadorPrevias(QObject):
         """Esvazia as filas e espera as tarefas em andamento (ate 3s cada).
         Chamar ao trocar de livro ou fechar, para nao deixar thread orfa
         escrevendo num projeto que ja foi trocado."""
+        self._relogio_das_medidas.stop()
+        self._medidas_a_espera.clear()
         self._pool.clear()
         self._pool_cartoes.clear()
+        self._pool_desentortar.clear()
         self._pool.waitForDone(3000)
         self._pool_cartoes.waitForDone(3000)
+        self._pool_desentortar.waitForDone(10000)
         # O servidor de paginas fecha este livro na hora (senao, em meio
         # segundo): a pessoa pode mover ou renomear o PDF logo depois de
         # fechar ou trocar de livro (core/paginas_em_outro_processo.py).

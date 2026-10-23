@@ -16,8 +16,14 @@ peças (ferramentas, Qt, Boost, somas oficiais):
 4. copia a DLL para core/nativo/st_ferramentas.dll e grava, ao lado,
    core/nativo/st_ferramentas.txt (origem e soma SHA-256);
 5. abre a DLL pelo core/st_ferramentas.py, limpa uma imagem sintética e
-   pede o dividir de uma folha em branco, para garantir que ela abre com o Qt
-   do PySide6.
+   pede o dividir, o endireitar e as caixas (página e conteúdo) de uma folha
+   de mentira, para garantir que ela abre com o Qt do PySide6.
+
+Numa cópia de trabalho (git worktree), para o rascunho da compilação não se
+misturar com o das outras cópias nem ficar fora dela, passe um caminho
+completo em --rascunho (um caminho completo vale sozinho, sem a pasta de
+--ferramentas na frente):
+    ... compilar_st_ferramentas.py --rascunho D:\\caminho\\da\\worktree\\saida_teste\\build-st
 
 NADA AQUI PEDE ADMINISTRADOR. Nada é instalado no Windows nem no .venv.
 O Kaique não precisa rodar isto: a DLL pronta vai no programa.
@@ -101,8 +107,13 @@ def instalar_no_programa(dll: Path) -> Path:
     compilador = base.versao_do_compilador(dll.parent.parent)
     (PASTA_NATIVO / "st_ferramentas.txt").write_text(
         "st_ferramentas.dll - ferramentas de imagem do ScanTailor Advanced (item M9 da Fase 2)\n"
-        "Tem: limpar pontinhos (Despeckle), dividir a folha (PageLayoutEstimator, item 2.1)\n"
-        "e endireitar a pagina (SkewFinder + limpeza das sombras do deskew::Task, item 2.2).\n"
+        "Tem: limpar pontinhos (Despeckle), dividir a folha (PageLayoutEstimator, item 2.1),\n"
+        "endireitar a pagina (SkewFinder + limpeza das sombras do deskew::Task, item 2.2),\n"
+        "as caixas da pagina e do conteudo (PageFinder e ContentBoxFinder, itens 2.13 e 2.5),\n"
+        "o preto e branco da saida com os dez jeitos de Binarize.cpp (item 2.8),\n"
+        "as cores da saida: segmentacao e posterizacao (item 2.11),\n"
+        "o desentortar (Dewarping, item 2.12)\n"
+        "e igualar a luz, suavizar e Wiener (OutputGenerator, SavGolFilter, WienerFilter; item 2.17).\n"
         "\n"
         f"Código:      {base.REPOSITORIO}\n"
         f"Versão:      {base.VERSAO_SCANTAILOR} (commit {base.COMMIT_SCANTAILOR})\n"
@@ -150,6 +161,34 @@ def testar_a_dll() -> str:
     if not medido.disponivel:
         raise ErroDeCompilacao(f"A DLL abriu, mas o endireitar falhou: {medido.motivo} "
                                f"({medido.detalhe_tecnico})")
+    # Item 2.8: o preto e branco responde (a peca escura fica preta, o papel branco).
+    from core import preto_e_branco_scantailor as pbst
+
+    pagina = np.full((300, 400), 230, np.uint8)
+    pagina[100:200, 100:300] = 30
+    pb = pbst.binarizar(pagina, 300, "st_otsu", biblioteca=biblioteca)
+    if not pb.disponivel:
+        raise ErroDeCompilacao(f"A DLL abriu, mas o preto e branco falhou: {pb.motivo} "
+                               f"({pb.detalhe_tecnico})")
+    if pb.imagem[150, 200] != 0 or pb.imagem[20, 20] != 255:
+        raise ErroDeCompilacao("A DLL abriu, mas o preto e branco da imagem de prova está errado.")
+    # Itens 2.13 e 2.5: as caixas respondem (folha clara com um bloco de
+    # "texto" e uma faixa preta à direita: a caixa do conteúdo fica no bloco).
+    from core import caixas_scantailor as cs
+
+    folha = np.full((1000, 800), 235, np.uint8)
+    for y in range(200, 800, 30):
+        for x in range(150, 600, 50):       # "palavras" de 36 x 12 pontos
+            folha[y:y + 12, x:x + 36] = 30
+    folha[:, 740:] = 0
+    caixas = cs.achar(folha, 150, biblioteca=biblioteca)
+    if not caixas.disponivel:
+        raise ErroDeCompilacao(f"A DLL abriu, mas as caixas falharam: {caixas.motivo} "
+                               f"({caixas.detalhe_tecnico})")
+    if not caixas.tem_conteudo or not (100 <= caixas.conteudo.x0 <= 200
+                                       and 550 <= caixas.conteudo.x1 <= 650):
+        raise ErroDeCompilacao("A DLL abriu, mas a caixa do conteúdo da folha de prova está "
+                               f"errada: {caixas}")
     return biblioteca.origem or "?"
 
 

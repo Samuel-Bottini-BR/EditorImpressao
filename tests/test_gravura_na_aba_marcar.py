@@ -191,9 +191,11 @@ def test_as_duas_linhas_dizem_a_que_se_referem(conferir):
     quando desmarcada."""
     from PySide6.QtWidgets import QLabel, QPushButton
 
-    painel = conferir.linhas_de_botoes[__import__("ui.tela_conferir", fromlist=["x"]).ABA_MARCAR]
+    # etapa 4 do layout (20/10/2026): as duas linhas viraram partes do painel
+    # Propriedades das ferramentas de marcar, cada uma com o seu titulo
+    painel = conferir.paineis.propriedades.extra_de_marcar
     rotulos = [r.text() for r in painel.findChildren(QLabel)]
-    assert "Marcação:" in rotulos and "Foto:" in rotulos
+    assert "Marcação desta página" in rotulos and "Foto" in rotulos
     dicas = [b.toolTip() for b in painel.findChildren(QPushButton)
              if b.text() in ("usar em todas", "daqui em diante")]   # rodada 13, 806 B
     assert len(dicas) == 4 and all(dicas)

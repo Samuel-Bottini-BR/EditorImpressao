@@ -30,6 +30,7 @@ from __future__ import annotations
 
 import cv2
 import numpy as np
+from core import luz_scantailor  # item 2.17 (so le a escolha da pagina da vez)
 
 # --- nomes dos filtros (usados em ConfigPagina.filtro) -----------------------
 ORIGINAL = "original"
@@ -1127,8 +1128,22 @@ def filtro_preto_e_branco(
     de verdade; core.pipeline.pontinhos_da_pagina), ou o codigo de uma das
     escolhas (core.pontinhos_scantailor.ESCOLHAS: "desligado", "nosso",
     "st_pouco", "st_normal", "st_muito"). Ver _limpar_os_pontinhos.
+
+    Item 2.8 (20/10/2026, Samuel P8: "Trazer os dez do ScanTailor como
+    opções a mais"): `algoritmo` também pode ser um dos dez jeitos do
+    ScanTailor (core.preto_e_branco_scantailor.CODIGOS, "st_otsu" ...);
+    ver _preto_e_branco_do_scantailor. "auto" continua o de fábrica.
     """
+    if algoritmo in _CODIGOS_DO_SCANTAILOR:
+        saida = _preto_e_branco_do_scantailor(img, forca, algoritmo, despeckle)
+        if saida is not None:
+            return saida
+        algoritmo = "auto"       # sem a DLL: o de fábrica (o motivo foi para o log)
     cinza = _cinza_para_binarizar(img)
+    # Item 2.17 (desligado de fabrica): o Savitzky-Golay do ScanTailor no
+    # cinza, antes de binarizar, quando a pagina da vez pediu "Suavizar as
+    # letras" (core.luz_scantailor; sem pedido devolve o mesmo cinza).
+    cinza = luz_scantailor.cinza_para_binarizar(cinza)
     janela = janela_para_altura(cinza.shape[0])
     algoritmo_de_verdade = (
         escolher_algoritmo_automatico(cinza) if algoritmo == "auto" else algoritmo
@@ -1149,7 +1164,47 @@ def filtro_preto_e_branco(
     if algoritmo == "auto" and algoritmo_de_verdade == ALGORITMO_OTSU:
         meio = _otsu_com_a_borda_do_sauvola(cinza, binaria, janela, k_meio)
         binaria = _a_borda_no_medidor(cinza, binaria, meio, janela, k_meio, forca)
+    # Item 2.17: a suavizacao morfologica do ScanTailor, depois de binarizar e
+    # ANTES de limpar os pontinhos ("It's important to keep despeckling the
+    # very last operation", OutputGenerator.cpp). Sem pedido, nada muda.
+    binaria = luz_scantailor.preto_e_branco_suavizado(binaria)
     return _limpar_os_pontinhos(binaria, despeckle, cinza.shape[0])
+
+
+# Os dez jeitos do ScanTailor (item 2.8): os mesmos códigos de
+# core.preto_e_branco_scantailor.METODOS, repetidos aqui para o filtro não
+# carregar o módulo (nem a DLL) quando ninguém os escolheu. O teste
+# tests/test_preto_e_branco_scantailor.py confere que as duas listas batem.
+_CODIGOS_DO_SCANTAILOR = frozenset((
+    "st_otsu", "st_sauvola", "st_wolf", "st_fox", "st_window", "st_bradley",
+    "st_grad", "st_edgeplus", "st_blurdiv", "st_edgediv"))
+
+
+def _preto_e_branco_do_scantailor(img: np.ndarray, forca, algoritmo: str,
+                                  despeckle) -> np.ndarray | None:
+    """O Preto e branco com um dos dez jeitos do ScanTailor (item 2.8).
+
+    O jeito de binarizar é o do ScanTailor, com o código e os ajustes de
+    fábrica dele (igualar a luz, Savitzky-Golay, o jeito escolhido,
+    suavização morfológica; core.preto_e_branco_scantailor). O medidor
+    "Força do preto" vira o ajuste do limiar dele (50 = 0, o de fábrica).
+    As regras do Preto e branco que não são o jeito de binarizar continuam
+    por cima, como nos outros jeitos da lista: a letra colorida sai preta
+    (_com_a_tinta_colorida, V1/A1) e o "Limpar a sujeira" da página
+    (_limpar_os_pontinhos). O DPI é o do "Limpar a sujeira" (o Pontinhos
+    que o programa passa em `despeckle`); sem ele, sai pela altura.
+
+    Devolve None se a DLL não puder rodar: quem chama faz o "Automático".
+    Arriscado: tirar o _com_a_tinta_colorida (o título vermelho e a letra
+    dourada podem sumir: o ScanTailor binariza o cinza, onde o dourado fica
+    quase da cor do papel)."""
+    from core import preto_e_branco_scantailor as pbst
+
+    binaria = pbst.preto_e_branco(img, algoritmo, forca, getattr(despeckle, "dpi", None))
+    if binaria is None:
+        return None
+    binaria = _com_a_tinta_colorida(img, binaria)
+    return _limpar_os_pontinhos(binaria, despeckle, binaria.shape[0])
 
 
 def _limpar_os_pontinhos(binaria: np.ndarray, despeckle, altura: int) -> np.ndarray:

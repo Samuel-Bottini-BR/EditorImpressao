@@ -1,0 +1,21 @@
+  1-icone-no-titulo-do-painel.png  (tela inteira)
+  ok      clique nativo no ícone do título abriu a tela cheia dos filtros
+  2-tela-cheia-ao-abrir.png  (tela inteira)
+  ok      clique nativo no Preto e branco da fila: mostra, sem mudar a página
+  3-preto-e-branco-escolhido.png  (tela inteira)
+  ok      clique nativo na chave 'Comparar com o Original': antes e depois
+  4-comparando.png  (tela inteira)
+  ok      arrasto nativo da linha do antes e depois (posição 0.25)
+  5-linha-arrastada.png  (tela inteira)
+  ok      com o Original e a chave ligada, o aviso pede outro filtro
+  6-original-comparando-aviso.png  (tela inteira)
+     escolhido depois do clique no Mágico pro: magico_pro
+  7-magico-pro-ajuste-mexido.png  (tela inteira)
+  ok      clique nativo em 'Usar Mágico pro': filtro e ajuste gravados na página
+  ok      dois Ctrl+Z voltam a página ao filtro de antes
+  ok      menu Ver > Filtros em tela cheia abre a tela cheia
+  8-janela-minima.png  (tela inteira)
+  9-claro.png  (tela inteira)
+
+conferências: 8 de 8 certas
+FIM

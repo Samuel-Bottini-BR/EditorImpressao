@@ -1,0 +1,2010 @@
+{
+ "antiphon_p088__inteira": {
+  "alertas": [
+   "faixa_na_beirada",
+   "cor"
+  ],
+  "faixa_na_beirada": true,
+  "sinais": {
+   "apagado_a": 0.0145,
+   "apagado_junto": 0.0,
+   "maior_pedaco": 0.0,
+   "vazou_da_gravura": 0.0597,
+   "beirada_a": 0.0433,
+   "falhadas": 0,
+   "linhas_contadas": 5,
+   "sem_conteudo": 0.0989,
+   "linhas_fortes": 10,
+   "linhas_fracas": 1,
+   "caixas": 0
+  },
+  "marcas": [],
+  "segundos_do_desenho": 20.4
+ },
+ "antiphon_p260__inteira": {
+  "alertas": [
+   "figura_alem_da_gravura",
+   "cor"
+  ],
+  "faixa_na_beirada": false,
+  "sinais": {
+   "apagado_a": 0.001,
+   "apagado_junto": 0.0,
+   "maior_pedaco": 0.0,
+   "vazou_da_gravura": 0.155,
+   "beirada_a": 0.0202,
+   "falhadas": 0,
+   "linhas_contadas": 6,
+   "sem_conteudo": 0.1545,
+   "linhas_fortes": 8,
+   "linhas_fracas": 0,
+   "caixas": 0
+  },
+  "marcas": [],
+  "segundos_do_desenho": 24.9
+ },
+ "antiphonal1547_p006__inteira": {
+  "alertas": [
+   "cor"
+  ],
+  "faixa_na_beirada": false,
+  "sinais": {
+   "apagado_a": 0.0138,
+   "apagado_junto": 0.0,
+   "maior_pedaco": 0.0,
+   "vazou_da_gravura": 0.0,
+   "beirada_a": 0.0029,
+   "falhadas": 0,
+   "linhas_contadas": 16,
+   "sem_conteudo": 0.2242,
+   "linhas_fortes": 24,
+   "linhas_fracas": 1,
+   "caixas": 0
+  },
+  "marcas": [],
+  "segundos_do_desenho": 2.2
+ },
+ "antiphonal1547_p031__inteira": {
+  "alertas": [
+   "cor"
+  ],
+  "faixa_na_beirada": false,
+  "sinais": {
+   "apagado_a": 0.0101,
+   "apagado_junto": 0.0,
+   "maior_pedaco": 0.0,
+   "vazou_da_gravura": 0.0,
+   "beirada_a": 0.0,
+   "falhadas": 0,
+   "linhas_contadas": 11,
+   "sem_conteudo": 0.1798,
+   "linhas_fortes": 16,
+   "linhas_fracas": 0,
+   "caixas": 0
+  },
+  "marcas": [],
+  "segundos_do_desenho": 2.0
+ },
+ "antiphonal1547_p046__inteira": {
+  "alertas": [
+   "desenho_apagado",
+   "cor"
+  ],
+  "faixa_na_beirada": false,
+  "sinais": {
+   "apagado_a": 0.017,
+   "apagado_junto": 0.0,
+   "maior_pedaco": 1.5718,
+   "vazou_da_gravura": 0.0,
+   "beirada_a": 0.0,
+   "falhadas": 0,
+   "linhas_contadas": 19,
+   "sem_conteudo": 0.2353,
+   "linhas_fortes": 29,
+   "linhas_fracas": 0,
+   "caixas": 1
+  },
+  "marcas": [
+   [
+    0.058011049723756904,
+    0.242,
+    0.2361878453038674,
+    0.342
+   ]
+  ],
+  "segundos_do_desenho": 2.3
+ },
+ "antiphonal1547_p076__inteira": {
+  "alertas": [
+   "desenho_apagado",
+   "cor"
+  ],
+  "faixa_na_beirada": false,
+  "sinais": {
+   "apagado_a": 0.0251,
+   "apagado_junto": 0.0152,
+   "maior_pedaco": 2.0367,
+   "vazou_da_gravura": 0.0,
+   "beirada_a": 0.0032,
+   "falhadas": 0,
+   "linhas_contadas": 18,
+   "sem_conteudo": 0.1934,
+   "linhas_fortes": 27,
+   "linhas_fracas": 1,
+   "caixas": 3
+  },
+  "marcas": [
+   [
+    0.07368421052631578,
+    0.5,
+    0.22406015037593985,
+    0.598
+   ],
+   [
+    0.10225563909774436,
+    0.886,
+    0.20300751879699247,
+    0.918
+   ],
+   [
+    0.10977443609022557,
+    0.119,
+    0.20150375939849624,
+    0.178
+   ]
+  ],
+  "segundos_do_desenho": 2.1
+ },
+ "antiphonal1547_p192__inteira": {
+  "alertas": [
+   "cor"
+  ],
+  "faixa_na_beirada": false,
+  "sinais": {
+   "apagado_a": 0.0073,
+   "apagado_junto": 0.0,
+   "maior_pedaco": 0.0,
+   "vazou_da_gravura": 0.0,
+   "beirada_a": 0.0003,
+   "falhadas": 0,
+   "linhas_contadas": 9,
+   "sem_conteudo": 0.2373,
+   "linhas_fortes": 27,
+   "linhas_fracas": 0,
+   "caixas": 0
+  },
+  "marcas": [],
+  "segundos_do_desenho": 2.3
+ },
+ "antiphonal1547_p252__inteira": {
+  "alertas": [
+   "desenho_apagado",
+   "texto_falhado",
+   "cor"
+  ],
+  "faixa_na_beirada": false,
+  "sinais": {
+   "apagado_a": 0.0353,
+   "apagado_junto": 0.0255,
+   "maior_pedaco": 0.0,
+   "vazou_da_gravura": 0.0,
+   "beirada_a": 0.0,
+   "falhadas": 2,
+   "linhas_contadas": 14,
+   "sem_conteudo": 0.2265,
+   "linhas_fortes": 18,
+   "linhas_fracas": 0,
+   "caixas": 1
+  },
+  "marcas": [
+   [
+    0.891970802919708,
+    0.019,
+    0.9722627737226277,
+    0.67
+   ],
+   [
+    0.6313065976714101,
+    0.4136403897254207,
+    0.9029754204398448,
+    0.45704162976085033
+   ],
+   [
+    0.6597671410090556,
+    0.4561558901682905,
+    0.8939197930142303,
+    0.48892825509300264
+   ]
+  ],
+  "segundos_do_desenho": 2.3
+ },
+ "boecio_p003__inteira": {
+  "alertas": [],
+  "faixa_na_beirada": false,
+  "sinais": {
+   "apagado_a": 0.0038,
+   "apagado_junto": 0.0,
+   "maior_pedaco": 0.0,
+   "vazou_da_gravura": 0.0,
+   "beirada_a": 0.0,
+   "falhadas": 0,
+   "linhas_contadas": 7,
+   "sem_conteudo": 0.1492,
+   "linhas_fortes": 10,
+   "linhas_fracas": 0,
+   "caixas": 0
+  },
+  "marcas": [],
+  "segundos_do_desenho": 2.3
+ },
+ "boecio_p007__inteira": {
+  "alertas": [],
+  "faixa_na_beirada": false,
+  "sinais": {
+   "apagado_a": 0.0227,
+   "apagado_junto": 0.0009,
+   "maior_pedaco": 0.0,
+   "vazou_da_gravura": 0.0,
+   "beirada_a": 0.0,
+   "falhadas": 0,
+   "linhas_contadas": 25,
+   "sem_conteudo": 0.1061,
+   "linhas_fortes": 30,
+   "linhas_fracas": 2,
+   "caixas": 0
+  },
+  "marcas": [],
+  "segundos_do_desenho": 2.0
+ },
+ "boecio_p008__inteira": {
+  "alertas": [],
+  "faixa_na_beirada": false,
+  "sinais": {
+   "apagado_a": 0.0028,
+   "apagado_junto": 0.0,
+   "maior_pedaco": 0.0,
+   "vazou_da_gravura": 0.0,
+   "beirada_a": 0.0,
+   "falhadas": 0,
+   "linhas_contadas": 25,
+   "sem_conteudo": 0.119,
+   "linhas_fortes": 30,
+   "linhas_fracas": 0,
+   "caixas": 0
+  },
+  "marcas": [],
+  "segundos_do_desenho": 2.0
+ },
+ "boecio_p022__inteira": {
+  "alertas": [],
+  "faixa_na_beirada": false,
+  "sinais": {
+   "apagado_a": 0.0185,
+   "apagado_junto": 0.0,
+   "maior_pedaco": 0.0,
+   "vazou_da_gravura": 0.0,
+   "beirada_a": 0.0,
+   "falhadas": 0,
+   "linhas_contadas": 24,
+   "sem_conteudo": 0.1005,
+   "linhas_fortes": 31,
+   "linhas_fracas": 8,
+   "caixas": 0
+  },
+  "marcas": [],
+  "segundos_do_desenho": 2.2
+ },
+ "camoes_p006__inteira": {
+  "alertas": [
+   "desenho_apagado"
+  ],
+  "faixa_na_beirada": false,
+  "sinais": {
+   "apagado_a": 0.0392,
+   "apagado_junto": 0.0039,
+   "maior_pedaco": 0.0,
+   "vazou_da_gravura": 0.0,
+   "beirada_a": 0.0042,
+   "falhadas": 0,
+   "linhas_contadas": 1,
+   "sem_conteudo": 0.0202,
+   "linhas_fortes": 2,
+   "linhas_fracas": 0,
+   "caixas": 4
+  },
+  "marcas": [
+   [
+    0.016901408450704224,
+    0.958,
+    0.06901408450704226,
+    0.988
+   ],
+   [
+    0.4591549295774648,
+    0.678,
+    0.5126760563380282,
+    0.717
+   ],
+   [
+    0.6422535211267606,
+    0.653,
+    0.6971830985915493,
+    0.708
+   ],
+   [
+    0.4211267605633803,
+    0.351,
+    0.45774647887323944,
+    0.386
+   ]
+  ],
+  "segundos_do_desenho": 2.1
+ },
+ "camoes_p009__inteira": {
+  "alertas": [
+   "cor"
+  ],
+  "faixa_na_beirada": false,
+  "sinais": {
+   "apagado_a": 0.002,
+   "apagado_junto": 0.0,
+   "maior_pedaco": 0.0,
+   "vazou_da_gravura": 0.0,
+   "beirada_a": 0.0065,
+   "falhadas": 0,
+   "linhas_contadas": 23,
+   "sem_conteudo": 0.0692,
+   "linhas_fortes": 23,
+   "linhas_fracas": 0,
+   "caixas": 0
+  },
+  "marcas": [],
+  "segundos_do_desenho": 2.2
+ },
+ "camoes_p011__inteira": {
+  "alertas": [
+   "texto_falhado",
+   "cor"
+  ],
+  "faixa_na_beirada": false,
+  "sinais": {
+   "apagado_a": 0.0033,
+   "apagado_junto": 0.0,
+   "maior_pedaco": 0.0,
+   "vazou_da_gravura": 0.0,
+   "beirada_a": 0.0098,
+   "falhadas": 3,
+   "linhas_contadas": 22,
+   "sem_conteudo": 0.0535,
+   "linhas_fortes": 23,
+   "linhas_fracas": 0,
+   "caixas": 0
+  },
+  "marcas": [
+   [
+    0.24806949806949807,
+    0.3516483516483517,
+    0.694980694980695,
+    0.37879767291531996
+   ],
+   [
+    0.25096525096525096,
+    0.44020685197155784,
+    0.6003861003861004,
+    0.4608920491273432
+   ],
+   [
+    0.2519305019305019,
+    0.48157724628312865,
+    0.7403474903474904,
+    0.5067873303167421
+   ]
+  ],
+  "segundos_do_desenho": 2.0
+ },
+ "camoes_p027__inteira": {
+  "alertas": [
+   "texto_falhado",
+   "cor"
+  ],
+  "faixa_na_beirada": false,
+  "sinais": {
+   "apagado_a": 0.0056,
+   "apagado_junto": 0.0,
+   "maior_pedaco": 0.0,
+   "vazou_da_gravura": 0.0,
+   "beirada_a": 0.0073,
+   "falhadas": 5,
+   "linhas_contadas": 28,
+   "sem_conteudo": 0.0662,
+   "linhas_fortes": 29,
+   "linhas_fracas": 0,
+   "caixas": 0
+  },
+  "marcas": [
+   [
+    0.07775590551181102,
+    0.5339805825242718,
+    0.84251968503937,
+    0.5644012944983818
+   ],
+   [
+    0.08070866141732283,
+    0.5598705501618123,
+    0.8385826771653543,
+    0.5838187702265372
+   ],
+   [
+    0.08267716535433071,
+    0.7203883495145631,
+    0.8385826771653543,
+    0.7469255663430421
+   ],
+   [
+    0.08366141732283465,
+    0.7663430420711974,
+    0.844488188976378,
+    0.7928802588996764
+   ],
+   [
+    0.08366141732283465,
+    0.7889967637540453,
+    0.8415354330708661,
+    0.8161812297734627
+   ]
+  ],
+  "segundos_do_desenho": 1.9
+ },
+ "camoes_p066__inteira": {
+  "alertas": [
+   "cor"
+  ],
+  "faixa_na_beirada": false,
+  "sinais": {
+   "apagado_a": 0.0074,
+   "apagado_junto": 0.0,
+   "maior_pedaco": 0.0,
+   "vazou_da_gravura": 0.0,
+   "beirada_a": 0.0008,
+   "falhadas": 0,
+   "linhas_contadas": 24,
+   "sem_conteudo": 0.076,
+   "linhas_fortes": 25,
+   "linhas_fracas": 0,
+   "caixas": 0
+  },
+  "marcas": [],
+  "segundos_do_desenho": 2.0
+ },
+ "camoes_p104__inteira": {
+  "alertas": [
+   "texto_falhado",
+   "figura_alem_da_gravura",
+   "cor"
+  ],
+  "faixa_na_beirada": false,
+  "sinais": {
+   "apagado_a": 0.0145,
+   "apagado_junto": 0.0,
+   "maior_pedaco": 0.0,
+   "vazou_da_gravura": 0.2788,
+   "beirada_a": 0.0162,
+   "falhadas": 1,
+   "linhas_contadas": 1,
+   "sem_conteudo": 0.0984,
+   "linhas_fortes": 1,
+   "linhas_fracas": 0,
+   "caixas": 0
+  },
+  "marcas": [
+   [
+    0.43245693563009974,
+    0.796023091725465,
+    0.6554850407978241,
+    0.8152661962796665
+   ]
+  ],
+  "segundos_do_desenho": 2.7
+ },
+ "cursus_p003__inteira": {
+  "alertas": [],
+  "faixa_na_beirada": false,
+  "sinais": {
+   "apagado_a": 0.0125,
+   "apagado_junto": 0.0,
+   "maior_pedaco": 0.0,
+   "vazou_da_gravura": 0.0,
+   "beirada_a": 0.0048,
+   "falhadas": 0,
+   "linhas_contadas": 61,
+   "sem_conteudo": 0.2307,
+   "linhas_fortes": 70,
+   "linhas_fracas": 0,
+   "caixas": 0
+  },
+  "marcas": [],
+  "segundos_do_desenho": 4.0
+ },
+ "cursus_p314__inteira": {
+  "alertas": [],
+  "faixa_na_beirada": false,
+  "sinais": {
+   "apagado_a": 0.0004,
+   "apagado_junto": 0.0,
+   "maior_pedaco": 0.0,
+   "vazou_da_gravura": 0.0,
+   "beirada_a": 0.0092,
+   "falhadas": 0,
+   "linhas_contadas": 136,
+   "sem_conteudo": 0.162,
+   "linhas_fortes": 175,
+   "linhas_fracas": 0,
+   "caixas": 0
+  },
+  "marcas": [],
+  "segundos_do_desenho": 3.9
+ },
+ "egenloff_p003__inteira": {
+  "alertas": [
+   "texto_falhado",
+   "faixa_na_beirada"
+  ],
+  "faixa_na_beirada": true,
+  "sinais": {
+   "apagado_a": 0.0135,
+   "apagado_junto": 0.0,
+   "maior_pedaco": 0.0,
+   "vazou_da_gravura": 0.0,
+   "beirada_a": 0.0427,
+   "falhadas": 2,
+   "linhas_contadas": 14,
+   "sem_conteudo": 0.1535,
+   "linhas_fortes": 12,
+   "linhas_fracas": 17,
+   "caixas": 0
+  },
+  "marcas": [
+   [
+    0.40787863958894055,
+    0.08400224005973493,
+    0.6053339858086616,
+    0.13104349449318647
+   ],
+   [
+    0.24272082211891363,
+    0.8573828635430278,
+    0.7717151945192072,
+    0.8850102669404517
+   ]
+  ],
+  "segundos_do_desenho": 6.5
+ },
+ "egenloff_p007__inteira": {
+  "alertas": [
+   "faixa_na_beirada"
+  ],
+  "faixa_na_beirada": true,
+  "sinais": {
+   "apagado_a": 0.0013,
+   "apagado_junto": 0.0,
+   "maior_pedaco": 0.0,
+   "vazou_da_gravura": 0.0,
+   "beirada_a": 0.033,
+   "falhadas": 0,
+   "linhas_contadas": 3,
+   "sem_conteudo": 0.0707,
+   "linhas_fortes": 3,
+   "linhas_fracas": 10,
+   "caixas": 0
+  },
+  "marcas": [],
+  "segundos_do_desenho": 5.8
+ },
+ "egenloff_p012__inteira": {
+  "alertas": [
+   "pagina_sem_conteudo",
+   "faixa_na_beirada"
+  ],
+  "faixa_na_beirada": true,
+  "sinais": {
+   "apagado_a": 0.0006,
+   "apagado_junto": 0.0,
+   "maior_pedaco": 0.0,
+   "vazou_da_gravura": 0.0,
+   "beirada_a": 0.0793,
+   "falhadas": 0,
+   "linhas_contadas": 2,
+   "sem_conteudo": 0.0001,
+   "linhas_fortes": 0,
+   "linhas_fracas": 9,
+   "caixas": 0
+  },
+  "marcas": [],
+  "segundos_do_desenho": 5.2
+ },
+ "egenloff_p047__inteira": {
+  "alertas": [
+   "faixa_na_beirada"
+  ],
+  "faixa_na_beirada": true,
+  "sinais": {
+   "apagado_a": 0.0032,
+   "apagado_junto": 0.0,
+   "maior_pedaco": 0.0,
+   "vazou_da_gravura": 0.0,
+   "beirada_a": 0.0819,
+   "falhadas": 0,
+   "linhas_contadas": 3,
+   "sem_conteudo": 0.0596,
+   "linhas_fortes": 4,
+   "linhas_fracas": 11,
+   "caixas": 0
+  },
+  "marcas": [],
+  "segundos_do_desenho": 5.7
+ },
+ "egenloff_p121__inteira": {
+  "alertas": [
+   "faixa_na_beirada"
+  ],
+  "faixa_na_beirada": true,
+  "sinais": {
+   "apagado_a": 0.0005,
+   "apagado_junto": 0.0,
+   "maior_pedaco": 0.0,
+   "vazou_da_gravura": 0.0,
+   "beirada_a": 0.0664,
+   "falhadas": 0,
+   "linhas_contadas": 3,
+   "sem_conteudo": 0.0862,
+   "linhas_fortes": 4,
+   "linhas_fracas": 11,
+   "caixas": 0
+  },
+  "marcas": [],
+  "segundos_do_desenho": 5.6
+ },
+ "egenloff_p131__inteira": {
+  "alertas": [
+   "faixa_na_beirada"
+  ],
+  "faixa_na_beirada": true,
+  "sinais": {
+   "apagado_a": 0.0009,
+   "apagado_junto": 0.0,
+   "maior_pedaco": 0.0,
+   "vazou_da_gravura": 0.0,
+   "beirada_a": 0.0689,
+   "falhadas": 1,
+   "linhas_contadas": 4,
+   "sem_conteudo": 0.1559,
+   "linhas_fortes": 3,
+   "linhas_fracas": 12,
+   "caixas": 0
+  },
+  "marcas": [],
+  "segundos_do_desenho": 6.1
+ },
+ "escola_p007__inteira": {
+  "alertas": [
+   "cor"
+  ],
+  "faixa_na_beirada": false,
+  "sinais": {
+   "apagado_a": 0.0001,
+   "apagado_junto": 0.0,
+   "maior_pedaco": 0.0,
+   "vazou_da_gravura": 0.0,
+   "beirada_a": 0.0,
+   "falhadas": 0,
+   "linhas_contadas": 42,
+   "sem_conteudo": 0.173,
+   "linhas_fortes": 45,
+   "linhas_fracas": 5,
+   "caixas": 0
+  },
+  "marcas": [],
+  "segundos_do_desenho": 3.8
+ },
+ "escola_p035__inteira": {
+  "alertas": [
+   "cor"
+  ],
+  "faixa_na_beirada": false,
+  "sinais": {
+   "apagado_a": 0.0001,
+   "apagado_junto": 0.0,
+   "maior_pedaco": 0.0,
+   "vazou_da_gravura": 0.0,
+   "beirada_a": 0.0,
+   "falhadas": 0,
+   "linhas_contadas": 20,
+   "sem_conteudo": 0.1944,
+   "linhas_fortes": 23,
+   "linhas_fracas": 2,
+   "caixas": 0
+  },
+  "marcas": [],
+  "segundos_do_desenho": 3.9
+ },
+ "escola_p113__inteira": {
+  "alertas": [
+   "cor"
+  ],
+  "faixa_na_beirada": false,
+  "sinais": {
+   "apagado_a": 0.0,
+   "apagado_junto": 0.0,
+   "maior_pedaco": 0.0,
+   "vazou_da_gravura": 0.0,
+   "beirada_a": 0.0,
+   "falhadas": 0,
+   "linhas_contadas": 20,
+   "sem_conteudo": 0.2943,
+   "linhas_fortes": 24,
+   "linhas_fracas": 3,
+   "caixas": 0
+  },
+  "marcas": [],
+  "segundos_do_desenho": 3.6
+ },
+ "escola_p197__inteira": {
+  "alertas": [],
+  "faixa_na_beirada": false,
+  "sinais": {
+   "apagado_a": 0.0001,
+   "apagado_junto": 0.0,
+   "maior_pedaco": 0.0,
+   "vazou_da_gravura": 0.0,
+   "beirada_a": 0.0,
+   "falhadas": 0,
+   "linhas_contadas": 25,
+   "sem_conteudo": 0.0356,
+   "linhas_fortes": 31,
+   "linhas_fracas": 0,
+   "caixas": 0
+  },
+  "marcas": [],
+  "segundos_do_desenho": 2.7
+ },
+ "gladstone_p005__inteira": {
+  "alertas": [],
+  "faixa_na_beirada": false,
+  "sinais": {
+   "apagado_a": 0.0,
+   "apagado_junto": 0.0,
+   "maior_pedaco": 0.0,
+   "vazou_da_gravura": 0.0,
+   "beirada_a": 0.0,
+   "falhadas": 0,
+   "linhas_contadas": 26,
+   "sem_conteudo": 0.1054,
+   "linhas_fortes": 32,
+   "linhas_fracas": 0,
+   "caixas": 0
+  },
+  "marcas": [],
+  "segundos_do_desenho": 3.0
+ },
+ "gladstone_p018__inteira": {
+  "alertas": [
+   "em_branco"
+  ],
+  "faixa_na_beirada": false,
+  "sinais": {
+   "apagado_a": 0.0,
+   "apagado_junto": 0.0,
+   "maior_pedaco": 0.0,
+   "vazou_da_gravura": 0.0,
+   "beirada_a": 0.0,
+   "falhadas": 0,
+   "linhas_contadas": 1,
+   "sem_conteudo": 0.0014,
+   "linhas_fortes": 1,
+   "linhas_fracas": 0,
+   "caixas": 0
+  },
+  "marcas": [],
+  "segundos_do_desenho": 1.4
+ },
+ "gladstone_p055__inteira": {
+  "alertas": [],
+  "faixa_na_beirada": false,
+  "sinais": {
+   "apagado_a": 0.0,
+   "apagado_junto": 0.0,
+   "maior_pedaco": 0.0,
+   "vazou_da_gravura": 0.0,
+   "beirada_a": 0.0,
+   "falhadas": 0,
+   "linhas_contadas": 18,
+   "sem_conteudo": 0.0878,
+   "linhas_fortes": 21,
+   "linhas_fracas": 0,
+   "caixas": 0
+  },
+  "marcas": [],
+  "segundos_do_desenho": 2.8
+ },
+ "gladstone_p096__inteira": {
+  "alertas": [],
+  "faixa_na_beirada": false,
+  "sinais": {
+   "apagado_a": 0.0005,
+   "apagado_junto": 0.0,
+   "maior_pedaco": 0.0,
+   "vazou_da_gravura": 0.0,
+   "beirada_a": 0.0,
+   "falhadas": 0,
+   "linhas_contadas": 12,
+   "sem_conteudo": 0.0315,
+   "linhas_fortes": 35,
+   "linhas_fracas": 0,
+   "caixas": 0
+  },
+  "marcas": [],
+  "segundos_do_desenho": 4.3
+ },
+ "gladstone_p116__inteira": {
+  "alertas": [],
+  "faixa_na_beirada": false,
+  "sinais": {
+   "apagado_a": 0.0,
+   "apagado_junto": 0.0,
+   "maior_pedaco": 0.0,
+   "vazou_da_gravura": 0.0,
+   "beirada_a": 0.0,
+   "falhadas": 0,
+   "linhas_contadas": 17,
+   "sem_conteudo": 0.0819,
+   "linhas_fortes": 24,
+   "linhas_fracas": 0,
+   "caixas": 0
+  },
+  "marcas": [],
+  "segundos_do_desenho": 2.7
+ },
+ "gladstone_p136__inteira": {
+  "alertas": [],
+  "faixa_na_beirada": false,
+  "sinais": {
+   "apagado_a": 0.0,
+   "apagado_junto": 0.0,
+   "maior_pedaco": 0.0,
+   "vazou_da_gravura": 0.0,
+   "beirada_a": 0.0,
+   "falhadas": 0,
+   "linhas_contadas": 33,
+   "sem_conteudo": 0.0857,
+   "linhas_fortes": 50,
+   "linhas_fracas": 0,
+   "caixas": 0
+  },
+  "marcas": [],
+  "segundos_do_desenho": 2.7
+ },
+ "graduale_p221__inteira": {
+  "alertas": [
+   "cor"
+  ],
+  "faixa_na_beirada": false,
+  "sinais": {
+   "apagado_a": 0.0123,
+   "apagado_junto": 0.0,
+   "maior_pedaco": 0.0,
+   "vazou_da_gravura": 0.0,
+   "beirada_a": 0.0209,
+   "falhadas": 0,
+   "linhas_contadas": 10,
+   "sem_conteudo": 0.0615,
+   "linhas_fortes": 5,
+   "linhas_fracas": 10,
+   "caixas": 0
+  },
+  "marcas": [],
+  "segundos_do_desenho": 7.3
+ },
+ "graduale_p222__inteira": {
+  "alertas": [],
+  "faixa_na_beirada": false,
+  "sinais": {
+   "apagado_a": 0.0061,
+   "apagado_junto": 0.0,
+   "maior_pedaco": 0.0,
+   "vazou_da_gravura": 0.0,
+   "beirada_a": 0.006,
+   "falhadas": 0,
+   "linhas_contadas": 11,
+   "sem_conteudo": 0.0609,
+   "linhas_fortes": 11,
+   "linhas_fracas": 9,
+   "caixas": 0
+  },
+  "marcas": [],
+  "segundos_do_desenho": 6.1
+ },
+ "graduale_p223__inteira": {
+  "alertas": [],
+  "faixa_na_beirada": false,
+  "sinais": {
+   "apagado_a": 0.0181,
+   "apagado_junto": 0.0,
+   "maior_pedaco": 0.0,
+   "vazou_da_gravura": 0.0,
+   "beirada_a": 0.021,
+   "falhadas": 0,
+   "linhas_contadas": 8,
+   "sem_conteudo": 0.0706,
+   "linhas_fortes": 6,
+   "linhas_fracas": 8,
+   "caixas": 0
+  },
+  "marcas": [],
+  "segundos_do_desenho": 6.8
+ },
+ "graduale_p269__inteira": {
+  "alertas": [
+   "figura_alem_da_gravura",
+   "cor"
+  ],
+  "faixa_na_beirada": false,
+  "sinais": {
+   "apagado_a": 0.0029,
+   "apagado_junto": 0.0,
+   "maior_pedaco": 0.0,
+   "vazou_da_gravura": 0.2562,
+   "beirada_a": 0.0142,
+   "falhadas": 0,
+   "linhas_contadas": 8,
+   "sem_conteudo": 0.124,
+   "linhas_fortes": 2,
+   "linhas_fracas": 11,
+   "caixas": 0
+  },
+  "marcas": [],
+  "segundos_do_desenho": 11.0
+ },
+ "graduale_p588__inteira": {
+  "alertas": [
+   "cor"
+  ],
+  "faixa_na_beirada": false,
+  "sinais": {
+   "apagado_a": 0.0203,
+   "apagado_junto": 0.0038,
+   "maior_pedaco": 0.0,
+   "vazou_da_gravura": 0.0,
+   "beirada_a": 0.0056,
+   "falhadas": 0,
+   "linhas_contadas": 9,
+   "sem_conteudo": 0.0527,
+   "linhas_fortes": 4,
+   "linhas_fracas": 10,
+   "caixas": 0
+  },
+  "marcas": [],
+  "segundos_do_desenho": 6.8
+ },
+ "horas_p011__inteira": {
+  "alertas": [
+   "cor"
+  ],
+  "faixa_na_beirada": false,
+  "sinais": {
+   "apagado_a": 0.0005,
+   "apagado_junto": 0.0,
+   "maior_pedaco": 0.0,
+   "vazou_da_gravura": 0.0,
+   "beirada_a": 0.0,
+   "falhadas": 0,
+   "linhas_contadas": 8,
+   "sem_conteudo": 0.0721,
+   "linhas_fortes": 0,
+   "linhas_fracas": 10,
+   "caixas": 0
+  },
+  "marcas": [],
+  "segundos_do_desenho": 9.6
+ },
+ "horas_p013__inteira": {
+  "alertas": [
+   "cor"
+  ],
+  "faixa_na_beirada": false,
+  "sinais": {
+   "apagado_a": 0.0009,
+   "apagado_junto": 0.0,
+   "maior_pedaco": 0.0,
+   "vazou_da_gravura": 0.0,
+   "beirada_a": 0.0001,
+   "falhadas": 0,
+   "linhas_contadas": 16,
+   "sem_conteudo": 0.0546,
+   "linhas_fortes": 23,
+   "linhas_fracas": 2,
+   "caixas": 0
+  },
+  "marcas": [],
+  "segundos_do_desenho": 8.4
+ },
+ "horas_p014__inteira": {
+  "alertas": [
+   "cor"
+  ],
+  "faixa_na_beirada": false,
+  "sinais": {
+   "apagado_a": 0.0011,
+   "apagado_junto": 0.0,
+   "maior_pedaco": 0.0,
+   "vazou_da_gravura": 0.0,
+   "beirada_a": 0.0,
+   "falhadas": 0,
+   "linhas_contadas": 33,
+   "sem_conteudo": 0.0485,
+   "linhas_fortes": 97,
+   "linhas_fracas": 36,
+   "caixas": 0
+  },
+  "marcas": [],
+  "segundos_do_desenho": 8.0
+ },
+ "horas_p016__inteira": {
+  "alertas": [
+   "cor"
+  ],
+  "faixa_na_beirada": false,
+  "sinais": {
+   "apagado_a": 0.0009,
+   "apagado_junto": 0.0,
+   "maior_pedaco": 0.0,
+   "vazou_da_gravura": 0.0,
+   "beirada_a": 0.0001,
+   "falhadas": 0,
+   "linhas_contadas": 32,
+   "sem_conteudo": 0.0497,
+   "linhas_fortes": 40,
+   "linhas_fracas": 1,
+   "caixas": 0
+  },
+  "marcas": [],
+  "segundos_do_desenho": 8.0
+ },
+ "horas_p026__inteira": {
+  "alertas": [
+   "cor"
+  ],
+  "faixa_na_beirada": false,
+  "sinais": {
+   "apagado_a": 0.0008,
+   "apagado_junto": 0.0,
+   "maior_pedaco": 0.0,
+   "vazou_da_gravura": 0.0,
+   "beirada_a": 0.0,
+   "falhadas": 0,
+   "linhas_contadas": 31,
+   "sem_conteudo": 0.0298,
+   "linhas_fortes": 35,
+   "linhas_fracas": 3,
+   "caixas": 0
+  },
+  "marcas": [],
+  "segundos_do_desenho": 6.5
+ },
+ "horas_p027__inteira": {
+  "alertas": [
+   "cor"
+  ],
+  "faixa_na_beirada": false,
+  "sinais": {
+   "apagado_a": 0.0014,
+   "apagado_junto": 0.0,
+   "maior_pedaco": 0.0,
+   "vazou_da_gravura": 0.0,
+   "beirada_a": 0.0,
+   "falhadas": 0,
+   "linhas_contadas": 32,
+   "sem_conteudo": 0.0312,
+   "linhas_fortes": 34,
+   "linhas_fracas": 2,
+   "caixas": 0
+  },
+  "marcas": [],
+  "segundos_do_desenho": 6.2
+ },
+ "horas_p047__inteira": {
+  "alertas": [
+   "cor"
+  ],
+  "faixa_na_beirada": false,
+  "sinais": {
+   "apagado_a": 0.0,
+   "apagado_junto": 0.0,
+   "maior_pedaco": 0.0,
+   "vazou_da_gravura": 0.0,
+   "beirada_a": 0.0,
+   "falhadas": 0,
+   "linhas_contadas": 19,
+   "sem_conteudo": 0.2803,
+   "linhas_fortes": 17,
+   "linhas_fracas": 4,
+   "caixas": 0
+  },
+  "marcas": [],
+  "segundos_do_desenho": 6.5
+ },
+ "horas_p175__inteira": {
+  "alertas": [
+   "cor"
+  ],
+  "faixa_na_beirada": false,
+  "sinais": {
+   "apagado_a": 0.0001,
+   "apagado_junto": 0.0,
+   "maior_pedaco": 0.0,
+   "vazou_da_gravura": 0.0115,
+   "beirada_a": 0.0,
+   "falhadas": 0,
+   "linhas_contadas": 11,
+   "sem_conteudo": 0.2244,
+   "linhas_fortes": 11,
+   "linhas_fracas": 1,
+   "caixas": 0
+  },
+  "marcas": [],
+  "segundos_do_desenho": 6.9
+ },
+ "ljs47_p026__inteira": {
+  "alertas": [
+   "figura_alem_da_gravura",
+   "faixa_na_beirada"
+  ],
+  "faixa_na_beirada": true,
+  "sinais": {
+   "apagado_a": 0.0084,
+   "apagado_junto": 0.0,
+   "maior_pedaco": 0.0,
+   "vazou_da_gravura": 0.4917,
+   "beirada_a": 0.0592,
+   "falhadas": 0,
+   "linhas_contadas": 70,
+   "sem_conteudo": 0.0226,
+   "linhas_fortes": 26,
+   "linhas_fracas": 64,
+   "caixas": 0
+  },
+  "marcas": [],
+  "segundos_do_desenho": 6.7
+ },
+ "ljs47_p049__inteira": {
+  "alertas": [],
+  "faixa_na_beirada": false,
+  "sinais": {
+   "apagado_a": 0.0,
+   "apagado_junto": 0.0,
+   "maior_pedaco": 0.0,
+   "vazou_da_gravura": 0.0,
+   "beirada_a": 0.0,
+   "falhadas": 0,
+   "linhas_contadas": 4,
+   "sem_conteudo": 0.0141,
+   "linhas_fortes": 71,
+   "linhas_fracas": 3,
+   "caixas": 0
+  },
+  "marcas": [],
+  "segundos_do_desenho": 7.4
+ },
+ "ljs47_p064__inteira": {
+  "alertas": [],
+  "faixa_na_beirada": false,
+  "sinais": {
+   "apagado_a": 0.0001,
+   "apagado_junto": 0.0,
+   "maior_pedaco": 0.0,
+   "vazou_da_gravura": 0.0093,
+   "beirada_a": 0.0,
+   "falhadas": 0,
+   "linhas_contadas": 63,
+   "sem_conteudo": 0.0305,
+   "linhas_fortes": 67,
+   "linhas_fracas": 12,
+   "caixas": 0
+  },
+  "marcas": [],
+  "segundos_do_desenho": 8.3
+ },
+ "ljs47_p103__inteira": {
+  "alertas": [
+   "texto_falhado",
+   "faixa_na_beirada"
+  ],
+  "faixa_na_beirada": true,
+  "sinais": {
+   "apagado_a": 0.0165,
+   "apagado_junto": 0.0,
+   "maior_pedaco": 0.0,
+   "vazou_da_gravura": 0.0,
+   "beirada_a": 0.0744,
+   "falhadas": 3,
+   "linhas_contadas": 47,
+   "sem_conteudo": 0.0294,
+   "linhas_fortes": 57,
+   "linhas_fracas": 3,
+   "caixas": 0
+  },
+  "marcas": [
+   [
+    0.08725,
+    0.09185213127121841,
+    0.385,
+    0.11241041116559788
+   ],
+   [
+    0.0885,
+    0.1112787627310449,
+    0.38125,
+    0.13108261033572238
+   ],
+   [
+    0.086,
+    0.23330818559034328,
+    0.24925,
+    0.25311203319502074
+   ]
+  ],
+  "segundos_do_desenho": 5.3
+ },
+ "marial_p007__inteira": {
+  "alertas": [],
+  "faixa_na_beirada": false,
+  "sinais": {
+   "apagado_a": 0.0162,
+   "apagado_junto": 0.0,
+   "maior_pedaco": 0.0,
+   "vazou_da_gravura": 0.0118,
+   "beirada_a": 0.0004,
+   "falhadas": 1,
+   "linhas_contadas": 39,
+   "sem_conteudo": 0.1233,
+   "linhas_fortes": 41,
+   "linhas_fracas": 3,
+   "caixas": 0
+  },
+  "marcas": [],
+  "segundos_do_desenho": 4.6
+ },
+ "marial_p454__inteira": {
+  "alertas": [
+   "figura_alem_da_gravura"
+  ],
+  "faixa_na_beirada": false,
+  "sinais": {
+   "apagado_a": 0.0062,
+   "apagado_junto": 0.0,
+   "maior_pedaco": 0.0,
+   "vazou_da_gravura": 0.1299,
+   "beirada_a": 0.0009,
+   "falhadas": 0,
+   "linhas_contadas": 72,
+   "sem_conteudo": 0.0873,
+   "linhas_fortes": 75,
+   "linhas_fracas": 1,
+   "caixas": 0
+  },
+  "marcas": [],
+  "segundos_do_desenho": 5.2
+ },
+ "marial_p840__inteira": {
+  "alertas": [],
+  "faixa_na_beirada": false,
+  "sinais": {
+   "apagado_a": 0.0211,
+   "apagado_junto": 0.0,
+   "maior_pedaco": 0.0,
+   "vazou_da_gravura": 0.0,
+   "beirada_a": 0.0031,
+   "falhadas": 0,
+   "linhas_contadas": 33,
+   "sem_conteudo": 0.079,
+   "linhas_fortes": 43,
+   "linhas_fracas": 1,
+   "caixas": 0
+  },
+  "marcas": [],
+  "segundos_do_desenho": 4.2
+ },
+ "matematica_p032__inteira": {
+  "alertas": [
+   "figura_alem_da_gravura",
+   "faixa_na_beirada",
+   "cor"
+  ],
+  "faixa_na_beirada": true,
+  "sinais": {
+   "apagado_a": 0.0006,
+   "apagado_junto": 0.0,
+   "maior_pedaco": 0.0,
+   "vazou_da_gravura": 0.1516,
+   "beirada_a": 0.0776,
+   "falhadas": 0,
+   "linhas_contadas": 28,
+   "sem_conteudo": 0.2726,
+   "linhas_fortes": 34,
+   "linhas_fracas": 0,
+   "caixas": 0
+  },
+  "marcas": [],
+  "segundos_do_desenho": 3.7
+ },
+ "matematica_p072__inteira": {
+  "alertas": [
+   "desenho_apagado",
+   "figura_alem_da_gravura",
+   "faixa_na_beirada",
+   "cor"
+  ],
+  "faixa_na_beirada": true,
+  "sinais": {
+   "apagado_a": 0.1655,
+   "apagado_junto": 0.1654,
+   "maior_pedaco": 0.0,
+   "vazou_da_gravura": 0.3415,
+   "beirada_a": 0.0522,
+   "falhadas": 0,
+   "linhas_contadas": 19,
+   "sem_conteudo": 0.2352,
+   "linhas_fortes": 91,
+   "linhas_fracas": 0,
+   "caixas": 1
+  },
+  "marcas": [
+   [
+    0.768361581920904,
+    0.016,
+    0.9887005649717514,
+    0.898
+   ]
+  ],
+  "segundos_do_desenho": 5.5
+ },
+ "opusmajus_p003__inteira": {
+  "alertas": [],
+  "faixa_na_beirada": false,
+  "sinais": {
+   "apagado_a": 0.0009,
+   "apagado_junto": 0.0,
+   "maior_pedaco": 0.0,
+   "vazou_da_gravura": 0.0,
+   "beirada_a": 0.0,
+   "falhadas": 0,
+   "linhas_contadas": 12,
+   "sem_conteudo": 0.0241,
+   "linhas_fortes": 18,
+   "linhas_fracas": 1,
+   "caixas": 0
+  },
+  "marcas": [],
+  "segundos_do_desenho": 2.3
+ },
+ "opusmajus_p011__inteira": {
+  "alertas": [],
+  "faixa_na_beirada": false,
+  "sinais": {
+   "apagado_a": 0.0003,
+   "apagado_junto": 0.0,
+   "maior_pedaco": 0.0,
+   "vazou_da_gravura": 0.0,
+   "beirada_a": 0.0,
+   "falhadas": 0,
+   "linhas_contadas": 36,
+   "sem_conteudo": 0.112,
+   "linhas_fortes": 40,
+   "linhas_fracas": 0,
+   "caixas": 0
+  },
+  "marcas": [],
+  "segundos_do_desenho": 2.5
+ },
+ "opusmajus_p020__inteira": {
+  "alertas": [],
+  "faixa_na_beirada": false,
+  "sinais": {
+   "apagado_a": 0.0011,
+   "apagado_junto": 0.0,
+   "maior_pedaco": 0.0,
+   "vazou_da_gravura": 0.0824,
+   "beirada_a": 0.0,
+   "falhadas": 0,
+   "linhas_contadas": 0,
+   "sem_conteudo": 0.2687,
+   "linhas_fortes": 2,
+   "linhas_fracas": 0,
+   "caixas": 0
+  },
+  "marcas": [],
+  "segundos_do_desenho": 3.0
+ },
+ "opusmajus_p165__inteira": {
+  "alertas": [],
+  "faixa_na_beirada": false,
+  "sinais": {
+   "apagado_a": 0.0002,
+   "apagado_junto": 0.0,
+   "maior_pedaco": 0.0,
+   "vazou_da_gravura": 0.0,
+   "beirada_a": 0.0,
+   "falhadas": 0,
+   "linhas_contadas": 35,
+   "sem_conteudo": 0.0863,
+   "linhas_fortes": 45,
+   "linhas_fracas": 0,
+   "caixas": 0
+  },
+  "marcas": [],
+  "segundos_do_desenho": 2.9
+ },
+ "opusmajus_p256__inteira": {
+  "alertas": [],
+  "faixa_na_beirada": false,
+  "sinais": {
+   "apagado_a": 0.009,
+   "apagado_junto": 0.0,
+   "maior_pedaco": 0.0,
+   "vazou_da_gravura": 0.0,
+   "beirada_a": 0.0,
+   "falhadas": 0,
+   "linhas_contadas": 71,
+   "sem_conteudo": 0.0528,
+   "linhas_fortes": 269,
+   "linhas_fracas": 7,
+   "caixas": 0
+  },
+  "marcas": [],
+  "segundos_do_desenho": 3.7
+ },
+ "palatino_p005__inteira": {
+  "alertas": [
+   "cor"
+  ],
+  "faixa_na_beirada": false,
+  "sinais": {
+   "apagado_a": 0.0001,
+   "apagado_junto": 0.0,
+   "maior_pedaco": 0.0,
+   "vazou_da_gravura": 0.0,
+   "beirada_a": 0.0,
+   "falhadas": 0,
+   "linhas_contadas": 10,
+   "sem_conteudo": 0.1645,
+   "linhas_fortes": 23,
+   "linhas_fracas": 0,
+   "caixas": 0
+  },
+  "marcas": [],
+  "segundos_do_desenho": 3.0
+ },
+ "palatino_p007__inteira": {
+  "alertas": [],
+  "faixa_na_beirada": false,
+  "sinais": {
+   "apagado_a": 0.0013,
+   "apagado_junto": 0.0,
+   "maior_pedaco": 0.0,
+   "vazou_da_gravura": 0.0,
+   "beirada_a": 0.0,
+   "falhadas": 0,
+   "linhas_contadas": 34,
+   "sem_conteudo": 0.1309,
+   "linhas_fortes": 43,
+   "linhas_fracas": 3,
+   "caixas": 0
+  },
+  "marcas": [],
+  "segundos_do_desenho": 2.5
+ },
+ "palatino_p009__inteira": {
+  "alertas": [
+   "cor"
+  ],
+  "faixa_na_beirada": false,
+  "sinais": {
+   "apagado_a": 0.0006,
+   "apagado_junto": 0.0,
+   "maior_pedaco": 0.0,
+   "vazou_da_gravura": 0.0,
+   "beirada_a": 0.0,
+   "falhadas": 0,
+   "linhas_contadas": 26,
+   "sem_conteudo": 0.1472,
+   "linhas_fortes": 31,
+   "linhas_fracas": 3,
+   "caixas": 0
+  },
+  "marcas": [],
+  "segundos_do_desenho": 2.8
+ },
+ "palatino_p010__inteira": {
+  "alertas": [
+   "cor"
+  ],
+  "faixa_na_beirada": false,
+  "sinais": {
+   "apagado_a": 0.0011,
+   "apagado_junto": 0.0,
+   "maior_pedaco": 0.0,
+   "vazou_da_gravura": 0.0,
+   "beirada_a": 0.0,
+   "falhadas": 0,
+   "linhas_contadas": 28,
+   "sem_conteudo": 0.1342,
+   "linhas_fortes": 28,
+   "linhas_fracas": 0,
+   "caixas": 0
+  },
+  "marcas": [],
+  "segundos_do_desenho": 2.7
+ },
+ "palatino_p057__inteira": {
+  "alertas": [
+   "cor"
+  ],
+  "faixa_na_beirada": false,
+  "sinais": {
+   "apagado_a": 0.0066,
+   "apagado_junto": 0.0,
+   "maior_pedaco": 0.0,
+   "vazou_da_gravura": 0.0,
+   "beirada_a": 0.0,
+   "falhadas": 0,
+   "linhas_contadas": 13,
+   "sem_conteudo": 0.0816,
+   "linhas_fortes": 24,
+   "linhas_fracas": 3,
+   "caixas": 0
+  },
+  "marcas": [],
+  "segundos_do_desenho": 2.5
+ },
+ "palatino_p066__inteira": {
+  "alertas": [
+   "cor"
+  ],
+  "faixa_na_beirada": false,
+  "sinais": {
+   "apagado_a": 0.0019,
+   "apagado_junto": 0.0,
+   "maior_pedaco": 0.0,
+   "vazou_da_gravura": 0.0,
+   "beirada_a": 0.0,
+   "falhadas": 1,
+   "linhas_contadas": 11,
+   "sem_conteudo": 0.1165,
+   "linhas_fortes": 21,
+   "linhas_fracas": 1,
+   "caixas": 0
+  },
+  "marcas": [],
+  "segundos_do_desenho": 2.4
+ },
+ "palatino_p067__inteira": {
+  "alertas": [],
+  "faixa_na_beirada": false,
+  "sinais": {
+   "apagado_a": 0.0091,
+   "apagado_junto": 0.0,
+   "maior_pedaco": 0.0,
+   "vazou_da_gravura": 0.0,
+   "beirada_a": 0.0,
+   "falhadas": 0,
+   "linhas_contadas": 14,
+   "sem_conteudo": 0.0992,
+   "linhas_fortes": 18,
+   "linhas_fracas": 3,
+   "caixas": 0
+  },
+  "marcas": [],
+  "segundos_do_desenho": 2.5
+ },
+ "palatino_p076__inteira": {
+  "alertas": [],
+  "faixa_na_beirada": false,
+  "sinais": {
+   "apagado_a": 0.0008,
+   "apagado_junto": 0.0,
+   "maior_pedaco": 0.0,
+   "vazou_da_gravura": 0.0,
+   "beirada_a": 0.0,
+   "falhadas": 0,
+   "linhas_contadas": 19,
+   "sem_conteudo": 0.1001,
+   "linhas_fortes": 21,
+   "linhas_fracas": 0,
+   "caixas": 0
+  },
+  "marcas": [],
+  "segundos_do_desenho": 2.5
+ },
+ "palatino_p104__inteira": {
+  "alertas": [
+   "cor"
+  ],
+  "faixa_na_beirada": false,
+  "sinais": {
+   "apagado_a": 0.004,
+   "apagado_junto": 0.0,
+   "maior_pedaco": 0.0,
+   "vazou_da_gravura": 0.0,
+   "beirada_a": 0.0,
+   "falhadas": 0,
+   "linhas_contadas": 9,
+   "sem_conteudo": 0.1331,
+   "linhas_fortes": 179,
+   "linhas_fracas": 0,
+   "caixas": 0
+  },
+  "marcas": [],
+  "segundos_do_desenho": 2.3
+ },
+ "palatino_p113__inteira": {
+  "alertas": [],
+  "faixa_na_beirada": false,
+  "sinais": {
+   "apagado_a": 0.005,
+   "apagado_junto": 0.0,
+   "maior_pedaco": 0.0,
+   "vazou_da_gravura": 0.0,
+   "beirada_a": 0.0,
+   "falhadas": 0,
+   "linhas_contadas": 11,
+   "sem_conteudo": 0.0767,
+   "linhas_fortes": 85,
+   "linhas_fracas": 4,
+   "caixas": 0
+  },
+  "marcas": [],
+  "segundos_do_desenho": 2.6
+ },
+ "pesel_p021__inteira": {
+  "alertas": [
+   "desenho_apagado",
+   "figura_alem_da_gravura",
+   "cor"
+  ],
+  "faixa_na_beirada": false,
+  "sinais": {
+   "apagado_a": 0.2035,
+   "apagado_junto": 0.2033,
+   "maior_pedaco": 0.0,
+   "vazou_da_gravura": 0.2611,
+   "beirada_a": 0.0003,
+   "falhadas": 0,
+   "linhas_contadas": 6,
+   "sem_conteudo": 0.299,
+   "linhas_fortes": 12,
+   "linhas_fracas": 0,
+   "caixas": 1
+  },
+  "marcas": [
+   [
+    0.01225114854517611,
+    0.008,
+    0.9877488514548239,
+    0.992
+   ]
+  ],
+  "segundos_do_desenho": 6.5
+ },
+ "rariora_p008__inteira": {
+  "alertas": [
+   "pagina_sem_conteudo"
+  ],
+  "faixa_na_beirada": false,
+  "sinais": {
+   "apagado_a": 0.0,
+   "apagado_junto": 0.0,
+   "maior_pedaco": 0.0,
+   "vazou_da_gravura": 0.0,
+   "beirada_a": 0.0,
+   "falhadas": 0,
+   "linhas_contadas": 19,
+   "sem_conteudo": 0.0027,
+   "linhas_fortes": 1,
+   "linhas_fracas": 29,
+   "caixas": 0
+  },
+  "marcas": [],
+  "segundos_do_desenho": 2.4
+ },
+ "rariora_p099__inteira": {
+  "alertas": [],
+  "faixa_na_beirada": false,
+  "sinais": {
+   "apagado_a": 0.0002,
+   "apagado_junto": 0.0,
+   "maior_pedaco": 0.0,
+   "vazou_da_gravura": 0.0,
+   "beirada_a": 0.0,
+   "falhadas": 0,
+   "linhas_contadas": 46,
+   "sem_conteudo": 0.1078,
+   "linhas_fortes": 60,
+   "linhas_fracas": 0,
+   "caixas": 0
+  },
+  "marcas": [],
+  "segundos_do_desenho": 2.5
+ },
+ "rariora_p155__inteira": {
+  "alertas": [],
+  "faixa_na_beirada": false,
+  "sinais": {
+   "apagado_a": 0.0017,
+   "apagado_junto": 0.0,
+   "maior_pedaco": 0.0,
+   "vazou_da_gravura": 0.0089,
+   "beirada_a": 0.0,
+   "falhadas": 0,
+   "linhas_contadas": 6,
+   "sem_conteudo": 0.2011,
+   "linhas_fortes": 16,
+   "linhas_fracas": 0,
+   "caixas": 0
+  },
+  "marcas": [],
+  "segundos_do_desenho": 3.6
+ },
+ "rariora_p169__inteira": {
+  "alertas": [],
+  "faixa_na_beirada": false,
+  "sinais": {
+   "apagado_a": 0.0014,
+   "apagado_junto": 0.0,
+   "maior_pedaco": 0.0,
+   "vazou_da_gravura": 0.0185,
+   "beirada_a": 0.0,
+   "falhadas": 0,
+   "linhas_contadas": 0,
+   "sem_conteudo": 0.171,
+   "linhas_fortes": 12,
+   "linhas_fracas": 0,
+   "caixas": 0
+  },
+  "marcas": [],
+  "segundos_do_desenho": 4.2
+ },
+ "rariora_p211__inteira": {
+  "alertas": [],
+  "faixa_na_beirada": false,
+  "sinais": {
+   "apagado_a": 0.0046,
+   "apagado_junto": 0.0,
+   "maior_pedaco": 0.0,
+   "vazou_da_gravura": 0.0159,
+   "beirada_a": 0.0,
+   "falhadas": 0,
+   "linhas_contadas": 9,
+   "sem_conteudo": 0.2302,
+   "linhas_fortes": 21,
+   "linhas_fracas": 0,
+   "caixas": 0
+  },
+  "marcas": [],
+  "segundos_do_desenho": 3.7
+ },
+ "rariora_p365__inteira": {
+  "alertas": [],
+  "faixa_na_beirada": false,
+  "sinais": {
+   "apagado_a": 0.0105,
+   "apagado_junto": 0.0,
+   "maior_pedaco": 0.0,
+   "vazou_da_gravura": 0.0,
+   "beirada_a": 0.0001,
+   "falhadas": 0,
+   "linhas_contadas": 17,
+   "sem_conteudo": 0.0258,
+   "linhas_fortes": 38,
+   "linhas_fracas": 0,
+   "caixas": 0
+  },
+  "marcas": [],
+  "segundos_do_desenho": 2.8
+ },
+ "rhetorica_p018__inteira": {
+  "alertas": [],
+  "faixa_na_beirada": false,
+  "sinais": {
+   "apagado_a": 0.008,
+   "apagado_junto": 0.0,
+   "maior_pedaco": 0.0,
+   "vazou_da_gravura": 0.0,
+   "beirada_a": 0.0,
+   "falhadas": 0,
+   "linhas_contadas": 34,
+   "sem_conteudo": 0.1289,
+   "linhas_fortes": 40,
+   "linhas_fracas": 0,
+   "caixas": 0
+  },
+  "marcas": [],
+  "segundos_do_desenho": 3.1
+ },
+ "rhetorica_p034__inteira": {
+  "alertas": [
+   "cor"
+  ],
+  "faixa_na_beirada": false,
+  "sinais": {
+   "apagado_a": 0.0036,
+   "apagado_junto": 0.0,
+   "maior_pedaco": 0.0,
+   "vazou_da_gravura": 0.0068,
+   "beirada_a": 0.0,
+   "falhadas": 0,
+   "linhas_contadas": 15,
+   "sem_conteudo": 0.2241,
+   "linhas_fortes": 25,
+   "linhas_fracas": 0,
+   "caixas": 0
+  },
+  "marcas": [],
+  "segundos_do_desenho": 3.5
+ },
+ "rhetorica_p073__inteira": {
+  "alertas": [
+   "cor"
+  ],
+  "faixa_na_beirada": false,
+  "sinais": {
+   "apagado_a": 0.0077,
+   "apagado_junto": 0.0,
+   "maior_pedaco": 0.0,
+   "vazou_da_gravura": 0.0,
+   "beirada_a": 0.0006,
+   "falhadas": 0,
+   "linhas_contadas": 39,
+   "sem_conteudo": 0.0945,
+   "linhas_fortes": 95,
+   "linhas_fracas": 0,
+   "caixas": 0
+  },
+  "marcas": [],
+  "segundos_do_desenho": 3.0
+ },
+ "rhetorica_p129__inteira": {
+  "alertas": [
+   "cor"
+  ],
+  "faixa_na_beirada": false,
+  "sinais": {
+   "apagado_a": 0.0025,
+   "apagado_junto": 0.0,
+   "maior_pedaco": 0.0,
+   "vazou_da_gravura": 0.0,
+   "beirada_a": 0.0,
+   "falhadas": 0,
+   "linhas_contadas": 0,
+   "sem_conteudo": 0.2198,
+   "linhas_fortes": 9,
+   "linhas_fracas": 0,
+   "caixas": 0
+  },
+  "marcas": [],
+  "segundos_do_desenho": 3.0
+ },
+ "rhetorica_p160__inteira": {
+  "alertas": [
+   "cor"
+  ],
+  "faixa_na_beirada": false,
+  "sinais": {
+   "apagado_a": 0.0026,
+   "apagado_junto": 0.0,
+   "maior_pedaco": 0.0,
+   "vazou_da_gravura": 0.0,
+   "beirada_a": 0.0,
+   "falhadas": 0,
+   "linhas_contadas": 39,
+   "sem_conteudo": 0.1281,
+   "linhas_fortes": 50,
+   "linhas_fracas": 1,
+   "caixas": 0
+  },
+  "marcas": [],
+  "segundos_do_desenho": 2.9
+ },
+ "siebmacher_p007__esquerda": {
+  "alertas": [],
+  "faixa_na_beirada": false,
+  "sinais": {
+   "apagado_a": 0.0088,
+   "apagado_junto": 0.0,
+   "maior_pedaco": 0.0,
+   "vazou_da_gravura": 0.0,
+   "beirada_a": 0.0101,
+   "falhadas": 0,
+   "linhas_contadas": 20,
+   "sem_conteudo": 0.1671,
+   "linhas_fortes": 23,
+   "linhas_fracas": 0,
+   "caixas": 0
+  },
+  "marcas": [],
+  "segundos_do_desenho": 2.3
+ },
+ "siebmacher_p007__direita": {
+  "alertas": [
+   "desenho_apagado"
+  ],
+  "faixa_na_beirada": false,
+  "sinais": {
+   "apagado_a": 0.0759,
+   "apagado_junto": 0.0669,
+   "maior_pedaco": 0.0,
+   "vazou_da_gravura": 0.0,
+   "beirada_a": 0.0052,
+   "falhadas": 0,
+   "linhas_contadas": 0,
+   "sem_conteudo": 0.0825,
+   "linhas_fortes": 1,
+   "linhas_fracas": 0,
+   "caixas": 1
+  },
+  "marcas": [
+   [
+    0.8371278458844134,
+    0.069,
+    0.968476357267951,
+    0.976
+   ]
+  ],
+  "segundos_do_desenho": 2.1
+ },
+ "siebmacher_p009__esquerda": {
+  "alertas": [],
+  "faixa_na_beirada": false,
+  "sinais": {
+   "apagado_a": 0.0102,
+   "apagado_junto": 0.0,
+   "maior_pedaco": 0.0,
+   "vazou_da_gravura": 0.0,
+   "beirada_a": 0.0022,
+   "falhadas": 0,
+   "linhas_contadas": 18,
+   "sem_conteudo": 0.1495,
+   "linhas_fortes": 19,
+   "linhas_fracas": 0,
+   "caixas": 0
+  },
+  "marcas": [],
+  "segundos_do_desenho": 2.5
+ },
+ "siebmacher_p009__direita": {
+  "alertas": [
+   "desenho_apagado"
+  ],
+  "faixa_na_beirada": false,
+  "sinais": {
+   "apagado_a": 0.0443,
+   "apagado_junto": 0.0185,
+   "maior_pedaco": 0.0,
+   "vazou_da_gravura": 0.0,
+   "beirada_a": 0.0259,
+   "falhadas": 0,
+   "linhas_contadas": 0,
+   "sem_conteudo": 0.0808,
+   "linhas_fortes": 1,
+   "linhas_fracas": 0,
+   "caixas": 1
+  },
+  "marcas": [
+   [
+    0.8134991119005328,
+    0.193,
+    0.9378330373001776,
+    0.463
+   ]
+  ],
+  "segundos_do_desenho": 2.2
+ }
+}

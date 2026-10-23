@@ -87,10 +87,12 @@ from PySide6.QtWidgets import (
     QButtonGroup,
     QCheckBox,
     QComboBox,
+    QDoubleSpinBox,
     QFrame,
     QGridLayout,
     QHBoxLayout,
     QLabel,
+    QLineEdit,
     QPushButton,
     QRadioButton,
     QScrollArea,
@@ -99,8 +101,10 @@ from PySide6.QtWidgets import (
     QWidget,
 )
 
+from core import borda_preta
 from core import dividir_scantailor
 from core import endireitar_scantailor
+from core import margens_scantailor
 from core import misto
 from core import pontinhos_scantailor as pontinhos
 from core.cadernos import paginas_por_caderno_valido
@@ -113,12 +117,25 @@ from core.filtros import (
     filtros_do_livro,
 )
 from core.pipeline import resumo_em_portugues
+
+
+def _com_o_nome_do_editor(resumo: str) -> str:
+    """Rodada 14 do layout, 907 B ("o do Editor"): a linha-resumo diz o jeito
+    de dividir pelo nome da tela, como a lista logo acima. O texto vem de
+    core/pipeline.resumo_em_portugues (que usa core/dividir_scantailor.
+    NOMES_DOS_JEITOS, fora da área do layout): a troca é feita aqui, só na
+    tela. Para a gerente: trocar lá também deixaria esta função sem efeito, e
+    ela pode sair."""
+    from core import dividir_scantailor as ds
+
+    antigo = ds.NOMES_DOS_JEITOS[ds.JEITO_PROGRAMA]
+    return resumo.replace(f"(jeito: {antigo})", f"(jeito: {nome_do_jeito_de_dividir(ds.JEITO_PROGRAMA)})")
 from modelos import Projeto
 from ui import estilo
 from ui.estilo import estilo_da_caixinha_com_quadrado
 from ui.widgets.escolhas_do_misto import EscolhasDoMisto
 from ui.widgets.folhear_pdf import FolhearPDF
-from ui.widgets.paineis import nome_da_conta
+from ui.widgets.paineis import nome_da_conta, nome_do_jeito_de_dividir
 
 FILTROS_NA_TELA = [
     (ORIGINAL, "Original", "não mexe na página"),
@@ -177,6 +194,34 @@ class TelaOpcoes(QWidget):
         opcoes.setContentsMargins(20, 16, 20, 16)
         opcoes.setSpacing(6)
 
+        # Item 2.19 (CONTROLE MINIMO, provisorio ate o layout; anotado em
+        # relatorios/fase2-novas/ONDE-PAREI.md): as receitas do livro, como os
+        # perfis do ScanTailor (core/perfis.py). Por uma receita no livro
+        # marca as caixinhas abaixo; guardar leva as caixinhas de agora.
+        linha_receita = QHBoxLayout()
+        linha_receita.setSpacing(6)
+        linha_receita.addWidget(QLabel("Receita:"))
+        self.combo_receitas = QComboBox()
+        self.combo_receitas.setToolTip(
+            "Um jeito de trabalhar guardado com um nome: as caixinhas desta tela. "
+            "\"De fábrica\" é o de um livro novo sem nada mudado.")
+        linha_receita.addWidget(self.combo_receitas, 1)
+        self.botao_por_receita = QPushButton("pôr neste livro")
+        self.botao_por_receita.clicked.connect(self._por_receita)
+        linha_receita.addWidget(self.botao_por_receita)
+        self.nome_da_receita = QLineEdit()
+        self.nome_da_receita.setPlaceholderText("nome da receita")
+        linha_receita.addWidget(self.nome_da_receita, 1)
+        self.botao_guardar_receita = QPushButton("guardar")
+        self.botao_guardar_receita.clicked.connect(self._guardar_receita)
+        linha_receita.addWidget(self.botao_guardar_receita)
+        self.botao_apagar_receita = QPushButton("apagar")
+        self.botao_apagar_receita.clicked.connect(self._apagar_receita)
+        linha_receita.addWidget(self.botao_apagar_receita)
+        opcoes.addLayout(linha_receita)
+        self._encher_receitas()
+        opcoes.addWidget(_separador())
+
         self.cx_dividir = self._caixa(
             "Dividir folhas ao meio", "esta folha tem 2 páginas do livro", opcoes
         )
@@ -189,9 +234,10 @@ class TelaOpcoes(QWidget):
         self.rotulo_jeito_dividir = QLabel("Jeito de dividir:")
         self.combo_jeito_dividir = QComboBox()
         for jeito in dividir_scantailor.JEITOS:
-            self.combo_jeito_dividir.addItem(dividir_scantailor.NOMES_DOS_JEITOS[jeito], jeito)
+            # rodada 14 do layout, 907 B: "o do Editor" (ui/widgets/paineis.py)
+            self.combo_jeito_dividir.addItem(nome_do_jeito_de_dividir(jeito), jeito)
         self.combo_jeito_dividir.setToolTip(
-            "Onde a folha é dividida: o do programa procura a lombada no meio das "
+            "Onde a folha é dividida: o do Editor procura a lombada no meio das "
             "folhas deitadas; o do ScanTailor divide toda folha mais larga que alta, "
             "na dobra que ele acha. Dá para trocar numa folha só, com a ferramenta Dividir a folha.")
         self.combo_jeito_dividir.currentIndexChanged.connect(lambda _i: self._mudou())
@@ -242,10 +288,68 @@ class TelaOpcoes(QWidget):
         self.cx_cortar = self._caixa(
             "Cortar as bordas", "tira a borda preta e a sombra do scanner", opcoes
         )
+        # Item 2.5 (G8 (a) do Samuel, 05/10/2026: "Trazer como opcao 'seguir a
+        # moldura / o papel', desligada"): o corte do ScanTailor, desligado de
+        # fabrica. So vale com "Cortar as bordas" marcada. Controle minimo
+        # (lugar provisorio, listado para o agente de layout).
+        self.cx_cortar_pelo_conteudo = self._caixa(
+            "Cortar seguindo o conteúdo (como o ScanTailor)",
+            "o corte abraça o que está impresso, e todas as páginas ficam do tamanho da maior",
+            opcoes,
+        )
+        # Item 2.13 (G7 (a): "Sim, desligada de fabrica"; g7-borda-ate-onde,
+        # 20/10/2026: "O Kaique escolhe por livro: so o preto, ou ate a
+        # moldura"). Desmarcada de fabrica; ao marcar, "ate a moldura" vem
+        # escolhido (core/borda_preta.JEITO_PADRAO). A lista so aparece com a
+        # caixinha marcada (ver _mudou). Controle minimo, lugar provisorio
+        # (para o agente de layout).
+        self.cx_borda_preta = self._caixa(
+            "Achar a página dentro da borda preta do scanner",
+            "o programa sugere o corte; dá para mudar o corte numa página só", opcoes,
+        )
+        self.linha_borda_preta = QWidget()
+        linha = QHBoxLayout(self.linha_borda_preta)
+        linha.setContentsMargins(26, 2, 0, 0)
+        linha.setSpacing(8)
+        self.rotulo_borda_preta = QLabel("Cortar:")
+        self.combo_borda_preta = QComboBox()
+        for jeito in borda_preta.JEITOS:
+            self.combo_borda_preta.addItem(borda_preta.NOMES[jeito], jeito)
+        self.combo_borda_preta.setToolTip(
+            "Até a moldura: o corte vai até o que está impresso, e somem o preto, a beirada "
+            "das outras folhas e a lombada. Só o preto: tira só a faixa preta do scanner.")
+        self.combo_borda_preta.currentIndexChanged.connect(lambda _i: self._mudou())
+        linha.addWidget(self.rotulo_borda_preta)
+        linha.addWidget(self.combo_borda_preta)
+        # Item 2.14 (rodada 5, rv5-pag-egenloff-047: "O Kaique escolhe por
+        # livro" entre cortar fora e pintar de branco). Vem "cortar fora".
+        self.combo_borda_fazer = QComboBox()
+        for fazer in borda_preta.FAZERES:
+            self.combo_borda_fazer.addItem(borda_preta.NOMES_DO_FAZER[fazer], fazer)
+        self.combo_borda_fazer.setToolTip(
+            "Cortar fora: a página fica menor, sem o preto. Pintar de branco: a página fica "
+            "do tamanho de sempre e o que está fora dela vira branco.")
+        self.combo_borda_fazer.currentIndexChanged.connect(lambda _i: self._mudou())
+        linha.addWidget(self.combo_borda_fazer)
+        linha.addStretch()
+        opcoes.addWidget(self.linha_borda_preta)
+        # Item 2.4 (regra da Fase 2, 13/10/2026: igual ao ScanTailor, desligado
+        # de fabrica). CONTROLE MINIMO e PROVISORIO: o lugar e a aparencia sao
+        # do agente de layout (anotado em relatorios/fase2-novas/ONDE-PAREI.md).
+        self.cx_margens = self._caixa(
+            "Margens iguais em todas as páginas",
+            "como o ScanTailor: todas do tamanho da maior, com a margem em volta", opcoes
+        )
+        self.cx_margens.setChecked(False)
+        self.painel_margens = self._montar_margens()
+        opcoes.addWidget(self.painel_margens)
         opcoes.addWidget(_separador())
 
         self.cx_cadernos = self._caixa(
-            "Montar cadernos para impressão",
+            # Pergunta 3 do Samuel (22/10/2026): "Deixar os dois" - este, o de
+            # sempre, ao lado da montagem nova em A4 da tela "Ficou pronto!"; o
+            # nome diz a diferenca para o Kaique.
+            "Montar cadernos no tamanho do scan (sem A4, sem margem)",
             "para imprimir, dobrar ao meio e costurar", opcoes,
         )
         self.painel_caderno = self._montar_caderno()
@@ -308,7 +412,8 @@ class TelaOpcoes(QWidget):
         camadas.addLayout(rodape)
 
         for caixa in (self.cx_dividir, self.cx_cortar_sobra, self.cx_limpar,
-                      self.cx_endireitar, self.cx_cortar, self.cx_cadernos):
+                      self.cx_endireitar, self.cx_cortar, self.cx_cortar_pelo_conteudo,
+                      self.cx_borda_preta, self.cx_margens, self.cx_cadernos):
             caixa.toggled.connect(self._mudou)
 
     # --- montagem ---------------------------------------------------------
@@ -429,10 +534,29 @@ class TelaOpcoes(QWidget):
         linha.addWidget(self.combo_pontinhos)
         linha.addStretch()
 
+        # "Força do preto sozinha" (Samuel, rodada 4 do "Para revisar",
+        # 08/10/2026: "Força sozinha"): o botão de ligar e desligar que a
+        # regra 8 do plano pede para toda função automática
+        # (Projeto.reforcar_texto_falhado). Só vale com o Preto e branco e
+        # "Só as letras" (é ali que o programa sabe onde está o texto):
+        # aparece e some junto com o "Só as letras" (ver _mudou). Provisória
+        # até o layout; seguro mudar: os textos.
+        self.cx_forca_sozinha = QCheckBox(
+            "Escurecer sozinho a força do preto quando o texto sair falhado")
+        estilo.estilizar(self.cx_forca_sozinha, lambda: (
+            estilo_da_caixinha_com_quadrado(14)
+            + f" QCheckBox:disabled {{ color: {estilo.cor('desligado')}; }}"))
+        self.cx_forca_sozinha.setChecked(True)
+        self.cx_forca_sozinha.setToolTip(
+            "Com \"Só as letras\": na página em que o texto sai falhado (letra clara ou "
+            "gasta), o programa escurece a força do preto só nela e avisa, com \"Desfazer\".")
+        self.cx_forca_sozinha.toggled.connect(self._mudou)
+
         linhas = (len(FILTROS_NA_TELA) + 1) // 2
         grade.addWidget(self.escolhas_misto, linhas, 0, 1, 4)
-        grade.addLayout(bloco, linhas + 1, 0, 1, 4)
-        grade.addWidget(self.linha_pontinhos, linhas + 2, 0, 1, 4)
+        grade.addWidget(self.cx_forca_sozinha, linhas + 1, 0, 1, 4)
+        grade.addLayout(bloco, linhas + 2, 0, 1, 4)
+        grade.addWidget(self.linha_pontinhos, linhas + 3, 0, 1, 4)
         return painel
 
     def _montar_gravuras(self) -> QWidget:
@@ -594,6 +718,80 @@ class TelaOpcoes(QWidget):
         self.botao_mais_opcoes.setText("Menos opções" if aberto else "Mais opções")
         self._acertar_altura_da_rolagem()
 
+    def _montar_margens(self) -> QWidget:
+        """Item 2.4: as quatro margens em mm (de fabrica as do ScanTailor:
+        10, 5, 10, 5) e onde a pagina menor fica (de fabrica no meio). So
+        aparece com "Margens iguais" marcada - ver _mudou."""
+        painel = QWidget()
+        grade = QGridLayout(painel)
+        grade.setContentsMargins(34, 4, 0, 4)
+        grade.setHorizontalSpacing(8)
+        grade.setVerticalSpacing(4)
+        self.margens_mm: dict[str, QDoubleSpinBox] = {}
+        rotulos = (("esquerda", "esquerda"), ("cima", "em cima"),
+                   ("direita", "direita"), ("baixo", "embaixo"))
+        for i, (chave, rotulo) in enumerate(rotulos):
+            caixa = QDoubleSpinBox()
+            caixa.setRange(0.0, 100.0)
+            caixa.setDecimals(1)
+            caixa.setSingleStep(1.0)
+            caixa.setSuffix(" mm")
+            caixa.valueChanged.connect(lambda _v: self._mudou())
+            self.margens_mm[chave] = caixa
+            grade.addWidget(QLabel(f"margem {rotulo}:"), i // 2, (i % 2) * 2)
+            grade.addWidget(caixa, i // 2, (i % 2) * 2 + 1)
+        self.combo_alinhar_vertical = QComboBox()
+        for codigo in margens_scantailor.VERTICAIS:
+            self.combo_alinhar_vertical.addItem(margens_scantailor.NOMES_VERTICAIS[codigo], codigo)
+        self.combo_alinhar_horizontal = QComboBox()
+        for codigo in margens_scantailor.HORIZONTAIS:
+            self.combo_alinhar_horizontal.addItem(margens_scantailor.NOMES_HORIZONTAIS[codigo], codigo)
+        for combo in (self.combo_alinhar_vertical, self.combo_alinhar_horizontal):
+            combo.setToolTip("Onde a página menor fica dentro do tamanho da maior "
+                             "(o alinhamento do ScanTailor).")
+            combo.currentIndexChanged.connect(lambda _i: self._mudou())
+        grade.addWidget(QLabel("página menor, de cima a baixo:"), 2, 0)
+        grade.addWidget(self.combo_alinhar_vertical, 2, 1)
+        grade.addWidget(QLabel("de um lado ao outro:"), 2, 2)
+        grade.addWidget(self.combo_alinhar_horizontal, 2, 3)
+        return painel
+
+    # --- item 2.19: as receitas -------------------------------------------
+
+    def _encher_receitas(self, escolher: str = "") -> None:
+        from core import perfis
+
+        self.combo_receitas.clear()
+        for nome in perfis.nomes():
+            self.combo_receitas.addItem(nome, nome)
+        if escolher:
+            self.combo_receitas.setCurrentIndex(max(0, self.combo_receitas.findData(escolher)))
+
+    def _por_receita(self) -> None:
+        """Põe a receita escolhida neste livro e mostra as caixinhas."""
+        from core import perfis
+
+        if self.projeto is None:
+            return
+        if perfis.aplicar(self.combo_receitas.currentData(), self.projeto):
+            self.mostrar_opcoes()
+
+    def _guardar_receita(self) -> None:
+        """Guarda as caixinhas de agora com o nome digitado."""
+        from core import perfis
+
+        if self.projeto is None:
+            return
+        nome = perfis.guardar(self.nome_da_receita.text(), self.projeto)
+        self.nome_da_receita.clear()
+        self._encher_receitas(escolher=nome)
+
+    def _apagar_receita(self) -> None:
+        from core import perfis
+
+        if perfis.apagar(self.combo_receitas.currentData()):
+            self._encher_receitas()
+
     def _montar_caderno(self) -> QWidget:
         """Combo de "páginas por caderno". So aparece quando "Montar cadernos"
         esta marcada - ver _mudou."""
@@ -667,6 +865,23 @@ class TelaOpcoes(QWidget):
         self.combo_conta_endireitar.setCurrentIndex(self.combo_conta_endireitar.findData(
             endireitar_scantailor.jeito_do_livro(projeto)))
         self.cx_cortar.setChecked(projeto.cortar_bordas)
+        self.cx_cortar_pelo_conteudo.setChecked(bool(getattr(projeto, "cortar_pelo_conteudo", False)))
+        # item 2.13: a borda preta e ate onde vai o corte
+        self.combo_borda_preta.setCurrentIndex(self.combo_borda_preta.findData(
+            borda_preta.jeito_valido(getattr(projeto, "borda_preta_ate", None))))
+        self.combo_borda_fazer.setCurrentIndex(self.combo_borda_fazer.findData(
+            borda_preta.fazer_valido(getattr(projeto, "borda_preta_fazer", None))))   # item 2.14
+        self.cx_borda_preta.setChecked(bool(getattr(projeto, "borda_preta", False)))
+        # item 2.4 (projeto em memoria sem os campos: os de fabrica)
+        self.cx_margens.setChecked(bool(getattr(projeto, "margens_iguais", False)))
+        margens = margens_scantailor.Margens.de(getattr(projeto, "margens_mm", None))
+        for chave, valor in zip(("esquerda", "cima", "direita", "baixo"), margens.como_lista()):
+            self.margens_mm[chave].setValue(valor)
+        vertical, horizontal = margens_scantailor.alinhamento_valido(
+            getattr(projeto, "margens_alinhamento", None))
+        self.combo_alinhar_vertical.setCurrentIndex(self.combo_alinhar_vertical.findData(vertical))
+        self.combo_alinhar_horizontal.setCurrentIndex(
+            self.combo_alinhar_horizontal.findData(horizontal))
         self.cx_cadernos.setChecked(projeto.montar_cadernos)
         self.combo_caderno.setCurrentText(str(projeto.paginas_por_caderno))
 
@@ -687,6 +902,11 @@ class TelaOpcoes(QWidget):
         self.cx_igualar_luz.setChecked(bool(projeto.gravura_normalizar))
         self.cx_decoracao_pb.setChecked(
             bool(getattr(projeto, "pb_decoracao_em_preto_e_branco", False)))
+        # "Força do preto sozinha" (12/10/2026). Sem sinal: quem grava no
+        # projeto é o _mudou logo abaixo, já com self.projeto certo.
+        self.cx_forca_sozinha.blockSignals(True)
+        self.cx_forca_sozinha.setChecked(bool(getattr(projeto, "reforcar_texto_falhado", False)))
+        self.cx_forca_sozinha.blockSignals(False)
         # modo Misto (projeto antigo em memoria, sem os campos: os padroes)
         self.escolhas_misto.mostrar(
             bool(getattr(projeto, "misto_so_as_letras", False)),
@@ -763,6 +983,21 @@ class TelaOpcoes(QWidget):
             self.combo_conta_endireitar.currentData())
         self.linha_conta_endireitar.setVisible(self.projeto.endireitar)
         self.projeto.cortar_bordas = self.cx_cortar.isChecked()
+        self.projeto.cortar_pelo_conteudo = self.cx_cortar_pelo_conteudo.isChecked()   # item 2.5
+        # item 2.13: a lista so aparece com a caixinha marcada (escondida, fica guardada)
+        self.projeto.borda_preta = self.cx_borda_preta.isChecked()
+        self.projeto.borda_preta_ate = borda_preta.jeito_valido(self.combo_borda_preta.currentData())
+        self.projeto.borda_preta_fazer = borda_preta.fazer_valido(           # item 2.14
+            self.combo_borda_fazer.currentData())
+        self.linha_borda_preta.setVisible(self.projeto.borda_preta)
+        # item 2.4: as margens so aparecem com a caixinha marcada (escondidas,
+        # ficam guardadas)
+        self.projeto.margens_iguais = self.cx_margens.isChecked()
+        self.projeto.margens_mm = [float(self.margens_mm[c].value())
+                                   for c in ("esquerda", "cima", "direita", "baixo")]
+        self.projeto.margens_alinhamento = list(margens_scantailor.alinhamento_valido(
+            (self.combo_alinhar_vertical.currentData(), self.combo_alinhar_horizontal.currentData())))
+        self.painel_margens.setVisible(self.projeto.margens_iguais)
         self.projeto.montar_cadernos = self.cx_cadernos.isChecked()
         self.projeto.filtro_padrao = self._filtro_escolhido()
         self.projeto.paginas_por_caderno = paginas_por_caderno_valido(
@@ -797,6 +1032,12 @@ class TelaOpcoes(QWidget):
         # a escolha fica guardada e volta ao escolher o Preto e branco de novo.
         no_preto_e_branco = self.projeto.filtro_padrao == PRETO_E_BRANCO
         self.escolhas_misto.setVisible(no_preto_e_branco)
+        # "Força do preto sozinha" (12/10): à vista com o Preto e branco;
+        # apagada (cinza) sem "Só as letras", onde ela não age. Escondida ou
+        # apagada, a escolha fica guardada.
+        self.projeto.reforcar_texto_falhado = self.cx_forca_sozinha.isChecked()
+        self.cx_forca_sozinha.setVisible(no_preto_e_branco)
+        self.cx_forca_sozinha.setEnabled(so_as_letras)
         # "Limpar pontinhos" do livro (06/10): como o "So as letras", so a
         # vista com o Preto e branco; escondida, a escolha fica guardada
         self.projeto.limpar_pontinhos = pontinhos.escolha_valida(
@@ -828,7 +1069,7 @@ class TelaOpcoes(QWidget):
         self._rotulos_de_filtro[TIRAR_FUNDO].setVisible(mostrar_fundo)
         self.painel_caderno.setVisible(self.projeto.montar_cadernos)
 
-        self.resumo.setText(resumo_em_portugues(self.projeto, self.total_folhas))
+        self.resumo.setText(_com_o_nome_do_editor(resumo_em_portugues(self.projeto, self.total_folhas)))
         self._acertar_altura_da_rolagem()
         self.botao_conferir.setEnabled(self.projeto.alguma_funcao_marcada)
 
