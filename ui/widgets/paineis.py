@@ -932,6 +932,7 @@ class PainelMarcarComo(Bloco):
 
         self.limpar()
         self.botoes = {}
+        self.botoes_do_papel = {}        # só existem com a "tinta com a cor"
         for tipo, texto in ((GRAVURA, "gravura ou foto"),
                             (LETRA, "letra e traço"),
                             (PAPEL, "papel"),
@@ -967,21 +968,52 @@ class PainelMarcarComo(Bloco):
     escurecer = False
     JEITOS_DA_COR = ((False, "cor como no livro"), (True, "cor escurecida"))
 
+    # Item 2.18, resposta do Samuel de 22/10/2026 à pergunta tc23-1 (o
+    # retângulo branco no papel creme do Original): "As duas: escolher o papel
+    # em cada área ('papel branco' ou 'papel como o resto da página')". Mesma
+    # regra dos dois jeitos da cor: aparecem com a "tinta com a cor", em
+    # qualquer filtro (b-9), e valem para a próxima área marcada.
+    # De fábrica "papel branco" (False), igual ao de antes: ARRISCADO trocar.
+    papel_escolhido = Signal(bool)
+    papel_da_pagina = False
+    JEITOS_DO_PAPEL = ((False, "papel branco"), (True, "papel como o resto da página"))
+
     def _montar_jeitos_da_cor(self) -> None:
-        """Os dois botões "cor como no livro" (A) e "cor escurecida" (B), um
-        ao lado do outro e um pouco recuados, embaixo do botão da tinta com a
-        cor. CONTROLE MÍNIMO, provisório até o layout (sem emoji, §3)."""
-        linha = Bloco()                  # sem fundo proprio (ver Bloco)
-        caixa = QHBoxLayout(linha)
-        caixa.setContentsMargins(18, 0, 0, 0)
-        caixa.setSpacing(5)
+        """Embaixo do botão da tinta com a cor, um pouco recuadas, duas linhas
+        de dois botões: "cor como no livro" (A) / "cor escurecida" (B) e
+        "papel branco" / "papel como o resto da página". As duas linhas moram
+        num bloco só (um item a mais no `dentro`, como antes do papel).
+        CONTROLE MÍNIMO, provisório até o layout (sem emoji, §3)."""
+        bloco = Bloco()                  # sem fundo proprio (ver Bloco)
+        coluna = QVBoxLayout(bloco)
+        coluna.setContentsMargins(18, 0, 0, 0)
+        coluna.setSpacing(5)
         self.botoes_da_cor = {}
-        for escura, texto in self.JEITOS_DA_COR:
-            botao = botao_de_lista(texto, escolhido=(escura == self.escurecer))
-            botao.clicked.connect(lambda _c=False, e=escura: self.definir_escurecer(e))
-            caixa.addWidget(botao)
-            self.botoes_da_cor[escura] = botao
-        self.dentro.addWidget(linha)
+        self.botoes_do_papel = {}
+        for jeitos, escolhido, definir, botoes in (
+                (self.JEITOS_DA_COR, self.escurecer, self.definir_escurecer, self.botoes_da_cor),
+                (self.JEITOS_DO_PAPEL, self.papel_da_pagina, self.definir_papel_da_pagina,
+                 self.botoes_do_papel)):
+            caixa = QHBoxLayout()
+            caixa.setContentsMargins(0, 0, 0, 0)
+            caixa.setSpacing(5)
+            for valor, texto in jeitos:
+                botao = botao_de_lista(texto, escolhido=(valor == escolhido))
+                botao.clicked.connect(lambda _c=False, v=valor, f=definir: f(v))
+                caixa.addWidget(botao)
+                botoes[valor] = botao
+            coluna.addLayout(caixa)
+        self.dentro.addWidget(bloco)
+
+    def definir_papel_da_pagina(self, da_pagina: bool) -> None:
+        """Troca entre "papel branco" (False) e "papel como o resto da
+        página" (True)."""
+        da_pagina = bool(da_pagina)
+        if da_pagina == self.papel_da_pagina:
+            return
+        self.papel_da_pagina = da_pagina
+        self._montar()
+        self.papel_escolhido.emit(da_pagina)
 
     def definir_escurecer(self, escurecer: bool) -> None:
         """Troca entre A ("cor como no livro") e B ("cor escurecida")."""

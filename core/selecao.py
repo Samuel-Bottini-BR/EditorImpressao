@@ -136,6 +136,19 @@ class Regiao:
     # abrir um projeto novo descarta a chave e mostra A.
     tinta_escurecida: bool = False
 
+    # Item 2.18, resposta do Samuel de 22/10/2026 a pergunta tc23-1 (o
+    # retangulo branco no papel creme do Original): "As duas: escolher o papel
+    # em cada area ('papel branco' ou 'papel como o resto da pagina')". So para
+    # TINTA_COR. False = "papel branco" (o papel da area sai branco, o de
+    # fabrica e o que o programa sempre fez); True = "papel como o resto da
+    # pagina" (o papel da area fica como o filtro da pagina o deixou; so a
+    # tinta segue o A ou o B; core/editar_zonas.aplicar_por_cima).
+    # ARRISCADO: o padrao tem de continuar False. Projeto gravado antes disto
+    # nao tem a chave e abre com o padrao, entao sai papel branco, igual ponto
+    # por ponto (tests/test_tinta_papel_da_pagina.py); programa de antes que
+    # abrir um projeto novo descarta a chave e mostra papel branco.
+    papel_da_pagina: bool = False
+
     def valida(self) -> bool:
         """Tipo e forma reconhecidos, e pontos suficientes para desenhar a forma?"""
         if self.tipo not in TIPOS or self.forma not in FORMAS:

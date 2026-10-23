@@ -262,6 +262,10 @@ class EditorSelecao(QWidget):
         # Item 2.18 (Samuel, 22/10/2026, "As duas: A e B"): a proxima "tinta
         # com a cor" sai escurecida (B)? De fabrica nao (A, como sempre).
         self.tinta_escurecida = False
+        # Item 2.18 (Samuel, 22/10/2026, tc23-1 "As duas"): o papel da proxima
+        # "tinta com a cor" fica como o resto da pagina? De fabrica nao
+        # ("papel branco", como sempre).
+        self.papel_da_pagina = False
         self.mostrar_achadas = False
         self.escolhida: int | None = None
         self._copiada: Regiao | None = None
@@ -360,6 +364,11 @@ class EditorSelecao(QWidget):
         (False, A) ou escurecida (True, B)."""
         self.tinta_escurecida = bool(escurecer)
 
+    def definir_papel_da_pagina(self, da_pagina: bool) -> None:
+        """Item 2.18: o papel da proxima "Tinta com a cor original" sai branco
+        (False, o de fabrica) ou como o resto da pagina (True)."""
+        self.papel_da_pagina = bool(da_pagina)
+
     def definir_mostrar_achadas(self, mostrar: bool) -> None:
         """Item 2.18: delinear (em laranja) as areas que a maquina achou."""
         self.mostrar_achadas = bool(mostrar)
@@ -423,6 +432,7 @@ class EditorSelecao(QWidget):
             regiao.cor = self.cor_de_pintar       # item 2.18
         if regiao.tipo == TINTA_COR:
             regiao.tinta_escurecida = self.tinta_escurecida   # item 2.18, A ou B
+            regiao.papel_da_pagina = self.papel_da_pagina     # item 2.18, o papel
         self._marcar()
         self.selecao.acrescentar(regiao)
         self.selecao_mudou.emit()

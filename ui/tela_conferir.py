@@ -742,6 +742,8 @@ class TelaConferir(QWidget):
             lambda cor: self.editor_selecao.definir_cor_de_pintar(cor))
         painel.marcar_como.escurecer_escolhido.connect(        # item 2.18, A ou B
             lambda escura: self.editor_selecao.definir_tinta_escurecida(escura))
+        painel.marcar_como.papel_escolhido.connect(            # item 2.18, o papel
+            lambda da_pagina: self.editor_selecao.definir_papel_da_pagina(da_pagina))
         painel.filtro_da_pagina.filtro_do_pedaco.connect(
             self._escolher_filtro_da_regiao)
         painel.filtro_da_pagina.medidor_mudou.connect(self._medidor_soltou)

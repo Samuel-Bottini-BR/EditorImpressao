@@ -24,7 +24,12 @@ O QUE FAZ (as decisões do Samuel, literais na ficha memoria/itens/2.18.md)
                      pergunta b-8-tinta-com-cor, "As duas: A e B como opções
                      separadas": A "cor como no livro", o de fábrica, e B
                      "cor escurecida", Regiao.tinta_escurecida; ver
-                     `escurecida`);
+                     `escurecida`); e, desde 22/10/2026, o papel da área
+                     também em dois jeitos (resposta do Samuel à pergunta
+                     tc23-1, "As duas: escolher o papel em cada área"):
+                     "papel branco", o de fábrica, e "papel como o resto da
+                     página", Regiao.papel_da_pagina (o papel fica como o
+                     filtro da página o deixou; só a tinta muda);
         TINTA_PRETA  a tinta em preto, o resto como no original.
     A "tinta" é o preto do Preto e branco da página (o mesmo binarizador, com a
     força da página), medido só no retângulo da área.
@@ -36,7 +41,9 @@ SEGURO MUDAR: DESLOCAMENTO_DA_COPIA, LADO_DA_BUSCA, e (só mudam a opção B)
 BRILHO_DA_ESCURECIDA e FORCA_DA_COR_ESCURECIDA. ARRISCADO: a ordem em
 `aplicar_por_cima` (PINTAR por último: a pessoa pintou por cima de tudo); e o
 caminho da opção A dentro dela, que tem de sair igual ponto por ponto ao de
-antes de 22/10/2026 (tests/test_tinta_escurecida.py confere).
+antes de 22/10/2026 (tests/test_tinta_escurecida.py confere); e o "papel
+branco" de fábrica, que também tem de sair igual ao de antes
+(tests/test_tinta_papel_da_pagina.py confere).
 """
 
 from __future__ import annotations
@@ -212,6 +219,9 @@ def aplicar_por_cima(original: np.ndarray, saida: np.ndarray, monocromatica: boo
     original = original if original.shape[:2] == (altura, largura) else cv2.resize(
         original, (largura, altura), interpolation=cv2.INTER_AREA)
     resultado = saida if saida.ndim == 3 else cv2.cvtColor(saida, cv2.COLOR_GRAY2BGR)
+    # `filtrada` é a saída do filtro da página, intocada (o papel do "papel
+    # como o resto da página" vem dela); `resultado` é a cópia que se pinta.
+    filtrada = resultado
     resultado = resultado.copy()
     original3 = original if original.ndim == 3 else cv2.cvtColor(original, cv2.COLOR_GRAY2BGR)
 
@@ -230,6 +240,15 @@ def aplicar_por_cima(original: np.ndarray, saida: np.ndarray, monocromatica: boo
             escura = _mascara_escurecida(selecao, altura, largura) & mascara & tinta
             if escura.any():
                 resultado[escura] = escurecida(original3, escura)[escura]
+            # "papel como o resto da página" (22/10/2026, tc23-1): o papel
+            # (o que não é tinta) da área volta a ser o do filtro da página.
+            # Só mexe no que não é tinta, então a tinta A ou B fica como
+            # acima. Sem área assim: nada é desenhado (o de fábrica, "papel
+            # branco", sai igual ao de antes ponto por ponto).
+            papel = _mascara_do_jeito(selecao, altura, largura, "papel_da_pagina")
+            if papel.any():
+                papel &= mascara & ~tinta
+                resultado[papel] = filtrada[papel]
         else:
             resultado[mascara & tinta] = 0
             resultado[mascara & ~tinta] = original3[mascara & ~tinta]
@@ -246,19 +265,28 @@ def aplicar_por_cima(original: np.ndarray, saida: np.ndarray, monocromatica: boo
 
 
 def _mascara_escurecida(selecao, altura: int, largura: int) -> np.ndarray:
-    """Onde a "Tinta com a cor" é a opção B ("cor escurecida"). A última área
-    desenhada manda no pedaço em que duas se cruzam (como em toda a marcação);
-    o "tirar" do pincel já está fora da máscara do tipo, que a chamadora junta
-    com esta. Sem área B: tudo False, sem desenhar nada (caminho de fábrica)."""
-    escura = np.zeros((altura, largura), bool)
+    """Onde a "Tinta com a cor" é a opção B ("cor escurecida"). Ver
+    `_mascara_do_jeito` (a mesma conta, com o campo tinta_escurecida)."""
+    return _mascara_do_jeito(selecao, altura, largura, "tinta_escurecida")
+
+
+def _mascara_do_jeito(selecao, altura: int, largura: int, campo: str) -> np.ndarray:
+    """Onde as áreas "Tinta com a cor" têm o `campo` ligado
+    ("tinta_escurecida" = cor escurecida; "papel_da_pagina" = papel como o
+    resto da página). A última área desenhada manda no pedaço em que duas se
+    cruzam (como em toda a marcação); o "tirar" do pincel já está fora da
+    máscara do tipo, que a chamadora junta com esta. Sem área com o campo
+    ligado: tudo False, sem desenhar nada (caminho de fábrica). ARRISCADO:
+    trocar a ordem (a última manda) muda áreas já marcadas nos projetos."""
+    marcada = np.zeros((altura, largura), bool)
     regioes = [r for r in getattr(selecao, "regioes", [])
                if r.tipo == TINTA_COR and r.operacao == SOMAR and r.valida()]
-    if not any(r.tinta_escurecida for r in regioes):
-        return escura
+    if not any(getattr(r, campo, False) for r in regioes):
+        return marcada
     for regiao in regioes:
         dela = Selecao([regiao]).mascara(altura, largura, TINTA_COR)
-        escura[dela] = bool(regiao.tinta_escurecida)
-    return escura
+        marcada[dela] = bool(getattr(regiao, campo, False))
+    return marcada
 
 
 def escurecida(original3: np.ndarray, onde: np.ndarray) -> np.ndarray:
