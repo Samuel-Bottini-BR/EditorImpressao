@@ -623,3 +623,34 @@ não mede de novo); **reversão (§4.7)** Righetti 96 com o botão: a prévia r�
 (no `2a42cfb`: 0,3175 em vez de 0,367 — falhou lá, `2.12/reversao-p6-no-2a42cfb.txt`; passa aqui). No PC, um arquivo por
 vez: `test_desentortar_medida_por_tras` 6; `test_desentortar_conferir_de_novo` 14; `test_desentortar_protecao` 15;
 `test_desentortar_na_tela` 5.
+
+**Desligado de fábrica: idêntico.** 96 de 96 somas (32 páginas do gabarito x 3 filtros) iguais às do `b8e9af7`
+(`2.12/somas-p6.json` = `2.8/somas-antigo.json`, rodado no `6be1dbe`).
+
+### Fotos antes/depois, prévia "Rápida" (todas abertas)
+
+Janela de verdade, fora da tela (`relatorios/fase2-itens/scripts/janela_2_12_p6.py`, base do verificador vlm22; o "antes"
+é o mesmo roteiro numa worktree de rascunho do `2a42cfb`, já removida). Qualidade da prévia "Rápida" (a de fábrica);
+página da direita, "Dividir" ligado, livro novo de fábrica, aba Endireitar -> "Automático" -> aba Filtro. Originais em
+`relatorios/conferir/fase2-itens/2.12/p6/antes|depois/` (fora do git); cópias menores no git em
+`relatorios/fase2-itens/2.12/fotos-p6/` (`antes-*` e `depois-*`):
+- `-0-logo-depois-de-ligar`: depois, a barra de baixo mostra "Desentortando esta página, um momento..." e a página
+  sai sem desentortar; antes, nada.
+- `-1-depois-da-medida`: **depois, o aviso "Desentortar não usado" com o botão aparece na "Rápida"** (Destino 18 e
+  Righetti 96); antes, nunca aparecia (as conferências do roteiro: depois 12 de 12, antes 10 de 12 — as 2 que faltam
+  são exatamente "apareceu o aviso na Rápida").
+- `-2-depois-do-botao`: **Destino 18 depois: a página deformada na prévia e nos QUATRO cartões, com "A página ainda saiu
+  deformada" (Desfazer / Manter assim)**; antes, a página e os cartões continuavam retos, sem aviso. Righetti 96 depois:
+  a página aumentada, reta, sem pergunta, nos quatro cartões; antes, a página do tamanho de antes.
+- De quebra: o cartão "Preto e branco" do Righetti 96, que saía quase em branco (bug anotado em 23/10, antes desta
+  mudança, ver `antes-righetti96-2-depois-do-botao.jpg`), agora sai certo (o cartão é a página medida a 300 DPI,
+  reduzida). Só observado com o desentortar ligado; desligado, o cartão é o de sempre (o bug continua na lista).
+
+### Ressalvas
+
+- Página com o filtro "Tirar o fundo": fica no caminho de antes (a medida não é guardada nem pedida por trás; a página
+  desentortada lá é a folha sem o fundo). Na "Rápida" o desentortar continua sem aparecer nessas páginas.
+- A medida é só da página da vez (não adianta as próximas): cada página com o desentortar ligado espera 3 a 8 s na
+  primeira vez. Guardada só na memória, nesta sessão (fechar e abrir o livro mede de novo), até 400 MB.
+- Na qualidade "Alta" a própria prévia mede (como antes); o sinal aparece até ela chegar.
+- O rodapé "N com dúvida" continua atrasado (bug já anotado em 23/10; visto de novo em `depois-destino18-1`).
