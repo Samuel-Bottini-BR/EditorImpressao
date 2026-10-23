@@ -1920,26 +1920,20 @@ class TelaConferir(QWidget):
         self.linha_pedaco.setVisible(False)
         fora.addWidget(self.linha_pedaco)
 
-        self.paineis.propriedades.definir_extra_de_marcar(extra)
-
         # Item 2.18 (rodadas 4 e 5 do "Para revisar"; P11 (a) e P11b do
         # Samuel, 05/10/2026). CONTROLE MINIMO, provisorio ate o layout
         # (relatorios/fase2-novas/ONDE-PAREI.md): mostrar as areas achadas
         # delineadas (nas paginas do "Para revisar" ja vem ligado) e, para a
         # area escolhida com a ferramenta "Mover e mudar o tamanho da area"
         # (tecla A), apagar, pintar de branco, copiar e colar.
-        # Juncao de 23/10/2026: no ramo das ferramentas a linha "Área:" ficava
-        # embaixo da pagina, na aba Marcar; no layout (etapas 4 a 7) o lugar
-        # embaixo da pagina da ferramenta Marcar era uma pagina vazia. A linha
-        # foi para esse lugar, igual (o resto da Marcar esta no painel
-        # Propriedades; o resumo "aviso_marcacao" e o do layout). O lugar
+        # Juncao de 23/10/2026: no ramo das ferramentas era a linha "Área:"
+        # embaixo da pagina, na aba Marcar; no layout (etapas 4 a 7) tudo da
+        # Marcar mora no painel Propriedades e a fila embaixo da pagina fica
+        # vazia (tests/test_ajustar_pedaco_na_aba_marcar.py). Entao a "Área"
+        # virou uma parte do painel, com os mesmos controles e nomes. O lugar
         # final e do agente de layout.
-        embaixo_marcar = QWidget()
-        linha_area = QHBoxLayout(embaixo_marcar)
-        linha_area.setContentsMargins(0, 0, 0, 0)
-        rotulo_area = QLabel("Área:")
-        rotulo_area.setMinimumWidth(90)
-        linha_area.addWidget(rotulo_area)
+        fora.addWidget(risco_do_painel())
+        fora.addWidget(titulo_de_secao("Área"))
         self.caixa_mostrar_achadas = QCheckBox("Mostrar as áreas achadas")
         estilo.estilizar(self.caixa_mostrar_achadas, lambda: estilo_da_caixinha_com_quadrado(15))
         self.caixa_mostrar_achadas.setToolTip(
@@ -1947,20 +1941,24 @@ class TelaConferir(QWidget):
             "Nas páginas do \"Para revisar\" elas já aparecem.")
         self.caixa_mostrar_achadas.toggled.connect(
             lambda marcada: self._mostrar_as_achadas(bool(marcada)))
-        linha_area.addWidget(self.caixa_mostrar_achadas)
-        self.botao_apagar_area = _botao("apagar a área", linha_area,
+        fora.addWidget(self.caixa_mostrar_achadas)
+        par = self._par_de_botoes(fora)
+        self.botao_apagar_area = _botao("apagar a área", par,
                                         lambda: self._mexer_na_area("apagar"))
-        self.botao_branco_area = _botao("pintar de branco", linha_area,
+        self.botao_branco_area = _botao("pintar de branco", par,
                                         lambda: self._mexer_na_area("branco"))
-        self.botao_copiar_area = _botao("copiar", linha_area,
+        par = self._par_de_botoes(fora)
+        self.botao_copiar_area = _botao("copiar", par,
                                         lambda: self._mexer_na_area("copiar"))
-        self.botao_colar_area = _botao("colar", linha_area,
+        self.botao_colar_area = _botao("colar", par,
                                        lambda: self._mexer_na_area("colar"))
         for botao in (self.botao_apagar_area, self.botao_branco_area, self.botao_copiar_area):
             botao.setToolTip("Escolha a área antes, com a ferramenta \"Mover e mudar o "
                              "tamanho da área\" (tecla A).")
-        linha_area.addStretch()
-        self.linhas_de_botoes[ABA_MARCAR] = embaixo_marcar
+
+        self.paineis.propriedades.definir_extra_de_marcar(extra)
+        # embaixo da pagina, uma pagina vazia: a pilha precisa de uma por aba
+        self.linhas_de_botoes[ABA_MARCAR] = QWidget()
 
     # --- acoes da aba de marcar -------------------------------------------
 

@@ -85,8 +85,9 @@ def _filtrar(tmp_path, filtro, regioes, monkeypatch=None, guardar=None):
     if guardar is not None:
         filtro_de_verdade = pipeline._filtro_da_pagina
 
-        def espiao(projeto, pagina, img, selecao, dpi, dpi_do_scan):
-            saida = filtro_de_verdade(projeto, pagina, img, selecao, dpi, dpi_do_scan)
+        # *resto: o dpi_pedido e o no_pdf do "Para revisar" (juncao de 23/10/2026)
+        def espiao(projeto, pagina, img, selecao, dpi, dpi_do_scan, *resto):
+            saida = filtro_de_verdade(projeto, pagina, img, selecao, dpi, dpi_do_scan, *resto)
             guardar.append((img, saida[0]))
             return saida
         monkeypatch.setattr(pipeline, "_filtro_da_pagina", espiao)
@@ -128,7 +129,7 @@ def test_preto_e_branco_sem_o_contorno_preto(tmp_path, monkeypatch):
     from core import pipeline
     from core.filtros import PRETO_E_BRANCO
 
-    def filtro_com_contorno(projeto, pagina, img, selecao, dpi, dpi_do_scan):
+    def filtro_com_contorno(projeto, pagina, img, selecao, dpi, dpi_do_scan, *resto):
         altura, largura = img.shape[:2]
         tudo = np.ones((altura, largura), bool)
         tinta = ez._tinta_na_area(img, tudo, pagina.forca_preto, pagina.algoritmo_preto_branco)

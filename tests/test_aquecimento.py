@@ -45,4 +45,8 @@ def test_aquecer_tambem_carrega_o_modelo_de_layout():
 
     aquecer_dependencias_pesadas()
 
-    assert _detector._tentou, "o aquecimento devia ter tentado carregar o modelo"
+    # Juncao de 23/10/2026: desde o conserto de 21/10 (ramo consertos-2026-10-21,
+    # "o mesmo codigo nem sempre da a mesma imagem"), a carga que DA CERTO nao
+    # marca _tentou (so a que falha de vez); carregado = a sessao existe.
+    assert _detector._tentou or _detector._sessao is not None, (
+        "o aquecimento devia ter tentado carregar o modelo")
