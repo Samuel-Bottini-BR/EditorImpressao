@@ -1,0 +1,8 @@
+E       assert 0.049166666666666636 < 0.01
+E        +  where 0.049166666666666636 = abs((0.3175 - (110 / 300)))
+E        +    where 300 = Projeto(caminho_entrada='C:\\Users\\fotog\\AppData\\Local\\Temp\\pytest-of-fotog\\pytest-2530\\test_reversao_righetti_...ura=None, conteudo_escala=1.0, conteudo_deslocamento=(0.0, 0.0), tamanho_folha_cm=None)], criado_em='', observacoes=[]).qualidade_dpi
+
+tests\test_desentortar_medida_por_tras.py:231: AssertionError
+=========================== short test summary info ===========================
+FAILED tests/test_desentortar_medida_por_tras.py::test_reversao_righetti_96_a_previa_rapida_mostra_a_pagina_aumentada
+1 failed, 5 deselected in 8.92s

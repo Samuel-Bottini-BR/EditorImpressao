@@ -150,7 +150,7 @@ from core import endireitar_scantailor
 from core import pontinhos_scantailor as pontinhos
 from core import avisos as avisos_do_livro
 from core import preto_e_branco_scantailor
-from core import claro_no_escuro, cores_scantailor
+from core import claro_no_escuro, cores_scantailor, desentortar_scantailor
 from core.pipeline import (FORCA_DO_REFORCO, acertar_alertas_de_cor, acertar_alertas_do_fundo,
                            acertar_faixa_do_livro, angulo_aplicado,
                            angulo_da_pagina, angulos_medidos, corte_alargado, jeito_de_dividir,
@@ -794,6 +794,19 @@ class TelaConferir(QWidget):
         linha.addWidget(self.rotulo_da_pagina)
         self.botao_proxima = botao_pequeno("›", "próxima página (seta para a direita)",
                                            lambda: self._navegar(1))
+        # Item 2.12 (resposta P6 do Samuel, 23/10/2026): o sinal discreto
+        # enquanto o desentortar desta pagina e medido por tras (3 a 8 s). A
+        # pagina na tela fica sem desentortar ate a medida chegar. So aparece
+        # em pagina com o desentortar ligado. Seguro mudar: os textos
+        # (SINAL_DESENTORTANDO e a dica).
+        self.sinal_desentortando = QLabel(self.SINAL_DESENTORTANDO)
+        self.sinal_desentortando.setObjectName("rotuloDaBarraDeBaixo")
+        self.sinal_desentortando.setToolTip(
+            "A página na tela ainda está sem desentortar. Em alguns segundos ela "
+            "aparece desentortada, igual vai sair no PDF.")
+        self.sinal_desentortando.setVisible(False)
+        linha.addSpacing(8)
+        linha.addWidget(self.sinal_desentortando)
         linha.addSpacing(8)
         self.botao_desfazer_embaixo = botao_pequeno(
             "", "Desfazer (Ctrl+Z)", self.desfazer)
@@ -850,6 +863,43 @@ class TelaConferir(QWidget):
         no painel)."""
         self.paineis.alternar(PAINEL_HISTORICO)
         self.historico_pedido.emit()
+
+    # O sinal da barra de baixo enquanto o desentortar e medido (item 2.12,
+    # resposta P6). Portugues simples, sem jargao (quem le e o Kaique).
+    SINAL_DESENTORTANDO = "Desentortando esta página, um momento..."
+
+    def _acertar_o_desentortar(self) -> None:
+        """Item 2.12 (resposta P6 do Samuel, 23/10/2026, opcao (b)): se a
+        pagina da vez tem o desentortar ligado e a medida dele (na resolucao
+        do livro) ainda nao existe, pede a medida por tras e mostra o sinal
+        discreto; senao, esconde o sinal. Barato (sem desenho). A medida
+        pronta chega por _desentortar_medido."""
+        if not hasattr(self, "sinal_desentortando"):
+            return
+        pendente = False
+        if (self.previas is not None and self.projeto is not None
+                and not self.trabalha_com_folhas
+                and 0 <= self.indice_pagina < len(self.projeto.paginas)):
+            # na qualidade "Alta" (a resolucao do livro) a propria previa mede;
+            # pedir por tras tambem seria medir duas vezes ao mesmo tempo
+            if self._dpi_atual >= self.projeto.qualidade_dpi:
+                pendente = self.previas.desentortar_pendente(self.indice_pagina)
+            else:
+                pendente = self.previas.pedir_desentortar(self.indice_pagina)
+        self.sinal_desentortando.setVisible(pendente)
+
+    def _desentortar_medido(self, indice: int) -> None:
+        """A medida do desentortar de uma pagina chegou (tarefa por tras). Se
+        e a pagina da vez, desenha de novo (a chave da previa e dos cartoes ja
+        mudou sozinha: ui/tarefas.GerenciadorPrevias.chave) e acerta a faixa,
+        a tira e os paineis (os avisos da protecao podem ter entrado)."""
+        if not self._pronta() or self.projeto is None:
+            return
+        if indice == self.indice_pagina and not self.trabalha_com_folhas:
+            self._atualizar_previa()
+            self._alertas_da_previa()
+        else:
+            self._acertar_o_desentortar()
 
     def _atualizar_barra_de_baixo(self) -> None:
         """Pagina (ou folha, no Dividir), desfazer/refazer acesos so quando ha
@@ -1700,6 +1750,23 @@ class TelaConferir(QWidget):
         lista_estreita(self.combo_conta_do_endireitar)
         self.rotulo_angulos_medidos = frase_do_painel("")
         coluna.addWidget(self.rotulo_angulos_medidos)
+
+        # Item 2.12 (regra da Fase 2, 13/10/2026: igual ao ScanTailor,
+        # desligado de fabrica; controle minimo, a aparencia e do agente de
+        # layout): desentortar a pagina curva perto da lombada, SO desta
+        # pagina. Os textos moram em core/desentortar_scantailor.py.
+        ds = desentortar_scantailor
+        coluna.addWidget(risco_do_painel())
+        coluna.addWidget(titulo_de_secao(ds.ROTULO_NA_TELA))
+        self.combo_desentortar = QComboBox()
+        self.combo_desentortar.setFocusPolicy(Qt.NoFocus)
+        for modo in ds.MODOS:
+            self.combo_desentortar.addItem(ds.ROTULOS_NA_TELA[modo], modo)
+        self.combo_desentortar.setToolTip(ds.EXPLICACAO_NA_TELA)
+        self.combo_desentortar.currentIndexChanged.connect(
+            lambda _i: self._mudar_desentortar())
+        coluna.addWidget(self.combo_desentortar)
+        lista_estreita(self.combo_desentortar)
         coluna.addSpacing(6)
         conta_do_livro = endireitar_scantailor.jeito_do_livro(self.projeto)
         coluna.addWidget(self._parte_do_livro(
@@ -2336,6 +2403,8 @@ class TelaConferir(QWidget):
             self.previas = previas
             self.previas.pronta.connect(self._previa_chegou)
             self.previas.cartoes_prontos.connect(self._cartoes_prontos)
+            # item 2.12 (resposta P6): a medida do desentortar por tras
+            self.previas.desentortar_medido.connect(self._desentortar_medido)
             self._cartoes_cache = {}
             self._cartoes_cache_chave = None
             self._tira_assinatura = None
@@ -2697,8 +2766,12 @@ class TelaConferir(QWidget):
             if self._filtro_aberto():
                 for cartao in self.cartoes.values():
                     cartao.definir_amostra(None)
+            self._acertar_o_desentortar()      # item 2.12: aqui so esconde o sinal
             return
 
+        # item 2.12 (resposta P6): a medida do desentortar, por tras, antes de
+        # pedir a previa (a previa sai sem desentortar ate ela chegar)
+        self._acertar_o_desentortar()
         img = self.previas.pegar(self.indice_pagina, self._dpi_atual)
         self.previas.pre_carregar(self.indice_pagina, self._dpi_atual)
         pagina = self.projeto.paginas[self.indice_pagina]
@@ -4072,6 +4145,11 @@ class TelaConferir(QWidget):
             peca.setToolTip(frase or (
                 "Endireita esta página por outra conta: a do ScanTailor ou a do Editor. "
                 "Os números embaixo são os ângulos que cada uma achou."))
+        # item 2.12: o desentortar desta pagina (sem sinal: mostrar nao e trocar)
+        self.combo_desentortar.blockSignals(True)
+        self.combo_desentortar.setCurrentIndex(self.combo_desentortar.findData(
+            desentortar_scantailor.modo_da_pagina(pagina)))
+        self.combo_desentortar.blockSignals(False)
 
     @protegido
     def _trocar_conta_do_endireitar(self) -> None:
@@ -4091,6 +4169,26 @@ class TelaConferir(QWidget):
              "revisada": True},
             f"Página {self.indice_pagina + 1}: endireitar pela conta "
             f"“{nome_da_conta(jeito)}”",
+        )
+
+    @protegido
+    def _mudar_desentortar(self) -> None:
+        """Item 2.12: a lista "Desentortar perto da lombada" do Propriedades
+        do Endireitar. Troca o desentortar SO desta pagina, numa acao do
+        desfazer (a previa e refeita). Nada acontece se a pagina ja esta
+        assim (mostrar o valor nunca grava)."""
+        if not self._pronta() or self.projeto is None:
+            return
+        ds = desentortar_scantailor
+        pagina = self.projeto.paginas[self.indice_pagina]
+        modo = ds.modo_valido(self.combo_desentortar.currentData())
+        if modo == ds.modo_da_pagina(pagina):
+            return
+        self._registrar(
+            "mudar_desentortar", "pagina", [self.indice_pagina],
+            {"desentortar": modo},
+            ds.FRASE_DO_DESFAZER.format(pagina=self.indice_pagina + 1,
+                                        estado=ds.ROTULOS_NA_TELA[modo]),
         )
 
     @protegido
@@ -4861,6 +4959,10 @@ class TelaConferir(QWidget):
             self._usar_corte_alargado()
         elif correcao == "alinhar_com_as_outras":    # item 2.5, g9
             self._alinhar_com_as_outras()
+        elif correcao == "desentortar_aumentando":
+            self._desentortar_aumentando()
+        elif correcao == "desentortar_desfazer_aumento":
+            self._desfazer_aumento_do_desentortar()
 
     # --- os consertos dos avisos (12/10/2026) -----------------------------
 
@@ -5045,6 +5147,48 @@ class TelaConferir(QWidget):
         """"ver a lista…" do painel "Para revisar": o seletor grande."""
         if self._pronta() and self.projeto is not None:
             self._mostrar_a_lista_dos_avisos(antes_de_processar=False)
+
+
+    def _desentortar_aumentando(self) -> None:
+        """Item 2.12 (22/10/2026): o botão "Desentortar aumentando a página"
+        do aviso "Desentortar não usado" - a opção C do Samuel SÓ nesta página
+        (pergunta P1: "Ainda vou poder selecionar a opção c para as paginas que
+        entrarem para revisão?" - sim): a página cresce até caber o que o
+        desentortar esticou. Ação do desfazer; o aviso some sozinho quando a
+        prévia nova chega (core.pipeline._anotar_desentortar_saiu_sem)."""
+        if self.projeto is None or self.trabalha_com_folhas:
+            return
+        pagina = self.projeto.paginas[self.indice_pagina]
+        if getattr(pagina, "desentortar_aumentar", False):
+            return
+        self._registrar(
+            "mudar_desentortar", "pagina", [self.indice_pagina],
+            {"desentortar_aumentar": True},
+            f"Desentortar aumentando a página {self.indice_pagina + 1}",
+        )
+
+    def _desfazer_aumento_do_desentortar(self) -> None:
+        """Item 2.12 (23/10/2026, resposta P5 do Samuel: "o aviso deve
+        perguntar e não fazer automaticamente"): o botão "Desfazer" do aviso
+        "A página ainda saiu deformada". Volta a página sem desentortar, como
+        antes do clique em "Desentortar aumentando a página": tira o aumento
+        só desta página e a proteção volta a valer (a página sai sem
+        desentortar, com o aviso "Desentortar não usado" de antes). É uma
+        ação do desfazer como as outras: o Ctrl+Z traz o aumento de volta. O
+        aviso "ainda saiu deformada" some sozinho quando a prévia nova chega
+        (core.pipeline._anotar_desentortar_ainda_deformada).
+        Arriscado: mexer no modo do desentortar aqui (a pessoa só pediu para
+        desfazer o aumento; o desentortar do livro fica como estava)."""
+        if self.projeto is None or self.trabalha_com_folhas:
+            return
+        pagina = self.projeto.paginas[self.indice_pagina]
+        if not getattr(pagina, "desentortar_aumentar", False):
+            return
+        self._registrar(
+            "mudar_desentortar", "pagina", [self.indice_pagina],
+            {"desentortar_aumentar": False},
+            f"Voltar a página {self.indice_pagina + 1} sem desentortar",
+        )
 
     # --- desfazer / refazer -----------------------------------------------
 

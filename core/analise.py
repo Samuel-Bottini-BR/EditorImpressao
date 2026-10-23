@@ -102,6 +102,23 @@ CORTE_DEIXOU_TINTA_FORA = "corte_deixou_tinta_fora"
 # ficou fora da conta do tamanho do livro (sai no tamanho dela). Quem poe e
 # tira: core.pipeline (_corte_do_livro e medir_conteudo_do_livro).
 PAGINA_MUITO_MAIOR = "pagina_muito_maior"
+# Item 2.12 (respostas P1 e P2 do Samuel, 22/10/2026: "B — Proteção" e "B — A
+# mesma proteção da pergunta anterior"): o desentortar ligado nesta pagina
+# empurrava tinta para fora do corte (Righetti 96: o comeco das linhas sumia)
+# ou trazia para dentro o que estava fora do corte (fundo do scanner, sombra,
+# pagina vizinha: "pelas margens" no Cursus 176 e na Matematica 65); a pagina
+# saiu SEM desentortar. Quem poe e tira: core.pipeline, quando a pagina e
+# desenhada (como o CONFERIR_FUNDO_TIRADO). O botao e a opcao C so nesta
+# pagina (ConfigPagina.desentortar_aumentar).
+DESENTORTAR_SAIU_SEM = "desentortar_saiu_sem"
+# Item 2.12, resposta P5 do Samuel (23/10/2026): "C — Aparece sempre, mas
+# depois do clique o programa confere de novo...", com o ajuste "Mas o programa
+# vai saber sempre que estiver deformada, o aviso deve perguntar e não fazer
+# automaticamente." Depois do botao "Desentortar aumentando a página", a pagina
+# aumentada ainda saiu deformada pelas medidas da protecao
+# (core.desentortar_scantailor.ainda_deformada). A pagina NAO volta sozinha: o
+# aviso pergunta. Quem poe e tira: core.pipeline, como o DESENTORTAR_SAIU_SEM.
+DESENTORTAR_AINDA_DEFORMADA = "desentortar_ainda_deformada"
 
 
 @dataclass(frozen=True)
@@ -136,8 +153,9 @@ class Alerta:
         (_aplicar_correcao): "revisar" (esta bom assim: aceita SO este
         motivo), "em_branco" (deixar a pagina em branco), "apagar" (tirar do
         livro), "misto_fora:<jeito>" (trocar o jeito do "So as letras" nesta
-        pagina), "desfazer_reforco", e os de sempre ("filtro:", "forca:",
-        "nao_dividir", "angulo_zero", "sem_recorte")."""
+        pagina), "desfazer_reforco", "desentortar_aumentando" e
+        "desentortar_desfazer_aumento" (item 2.12), e os de sempre ("filtro:",
+        "forca:", "nao_dividir", "angulo_zero", "sem_recorte")."""
         pares = [(self.acao, self.correcao), (self.outra_acao, self.outra_correcao),
                  (self.terceira_acao, self.terceira_correcao)]
         return [(rotulo, correcao or "revisar") for rotulo, correcao in pares if rotulo]
@@ -340,6 +358,37 @@ ALERTAS: dict[str, Alerta] = {
         ANGULO_DIFERENTE_DAS_OUTRAS, "Inclinação diferente das outras",
         "Esta página foi endireitada num ângulo bem diferente do das outras. Veja se ficou certa.",
         "está bom assim", "revisar",
+    ),
+    # Item 2.12 (22/10/2026). O botao faz a opcao C so nesta pagina: o mesmo
+    # desentortar, com a pagina maior para caber o que ele esticou (le
+    # ui/tela_conferir._aplicar_sugestao: "desentortar_aumentando"). Seguro
+    # mudar: os textos. Arriscado: o codigo da correcao (a tela le).
+    DESENTORTAR_SAIU_SEM: Alerta(
+        DESENTORTAR_SAIU_SEM, "Desentortar não usado",
+        "O desentortar empurrava o texto para fora da página, ou trazia o fundo "
+        "de fora para dentro dela. Por isso a página saiu sem desentortar. Se "
+        "quiser, desentorte aumentando a página até caber o texto.",
+        "Desentortar aumentando a página", "desentortar_aumentando",
+        # juncao de 23/10/2026 (ONDE-PAREI do fase2-itens): o segundo botao,
+        # "está bom assim", como os outros avisos do "Para revisar"
+        outra_acao="está bom assim", outra_correcao="revisar",
+    ),
+    # Item 2.12, resposta P5 (23/10/2026). Rotulos provisorios (a gerente
+    # passou "A página ainda saiu deformada", "Desfazer" e "Manter assim").
+    # "Desfazer" volta a pagina sem desentortar, como antes do clique (le
+    # ui/tela_conferir._aplicar_correcao: "desentortar_desfazer_aumento");
+    # "Manter assim" e o segundo botao do aviso, no jeito do "Para revisar"
+    # (juncao de 23/10/2026): "revisar" = esta bom assim, aceita SO este
+    # motivo e a pagina fica aumentada (no ramo dos itens era o "está certo"
+    # da faixa com outro nome, campo Alerta.confirmar, que saiu na juncao).
+    # Seguro mudar: os textos. Arriscado: o codigo da correcao.
+    DESENTORTAR_AINDA_DEFORMADA: Alerta(
+        DESENTORTAR_AINDA_DEFORMADA, "A página ainda saiu deformada",
+        "Mesmo aumentando a página, o desentortar deixou esta página "
+        "deformada. Quer desfazer e voltar a página sem desentortar, como "
+        "estava antes, ou manter assim?",
+        "Desfazer", "desentortar_desfazer_aumento",
+        outra_acao="Manter assim", outra_correcao="revisar",
     ),
     TAMANHO_DIFERENTE: Alerta(
         TAMANHO_DIFERENTE, "Tamanho diferente",

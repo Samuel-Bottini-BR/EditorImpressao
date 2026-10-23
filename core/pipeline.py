@@ -49,7 +49,7 @@ from core.endireitar import (ANGULO_MINIMO, Inclinacao, detectar_angulo, girar_9
                              rotacionar_e_cortar)
 from core import dividir_scantailor, endireitar_scantailor, linhas_do_texto, misto, pontinhos_scantailor
 from core import revisar
-from core import claro_no_escuro, cores_scantailor
+from core import claro_no_escuro, cores_scantailor, desentortar_scantailor
 from core import corte_pelo_conteudo   # item 2.5 (so com Projeto.cortar_pelo_conteudo)
 from core import borda_preta           # item 2.13 (so com Projeto.borda_preta)
 from core.ordem_do_preparo import endireita_antes, ordem_do_livro
@@ -529,6 +529,22 @@ def _preparar_metade_e_geometria(
     desenho. Arriscado: separar as duas contas em funcoes diferentes (a
     geometria anotada ao abrir deixaria de ser a da previa e a do PDF).
 
+    Item 2.12 (21/10/2026; refeito em 22/10/2026): no fim, nas duas ordens,
+    o desentortar do ScanTailor, se a pagina o tiver ligado. O corte continua
+    MEDIDO como sempre (mesma conta, mesma caixa), mas e so uma medida: o
+    desentortar recebe a pagina endireitada SEM o corte, com o papel do scan
+    em volta, e a imagem e recortada uma vez, pela medida, dentro dele (a
+    escolha do Samuel na Central, 22/10: "A - Como o ScanTailor: cortar uma
+    vez so, no fim"; _desentortar_com_o_papel_em_volta). Desligado (o de
+    fabrica) o codigo e o de sempre, sem passo nenhum: nada muda. O desenho
+    (geometria das zonas) NAO inclui o desentortar: as zonas da aba Marcar
+    ficam onde estavam na pagina reta (ressalva do item).
+    Arriscado: (1) passar ao desentortar a pagina ja cortada (era o defeito
+    de 21/10: o cabecalho e o comeco das linhas sumiam no Righetti 96 e no
+    Cursus 151); (2) medir o corte na pagina desentortada (mudaria a ordem
+    aprovada em 09/10: endireitar -> cortar -> desentortar -> filtro); (3)
+    mexer no caminho do desligado (o livro tem de sair identico).
+
     As duas ordens (item 2.2, G6, core/ordem_do_preparo):
       "cortar_antes" (projeto de antes de 09/10/2026): o codigo de sempre,
         sem mudanca nenhuma (_preparar_cortando_antes);
@@ -551,10 +567,29 @@ def _preparar_metade_e_geometria(
     # preta ligada e "pintar de branco"); None = nada a pintar
     area = None if so_a_geometria else _area_que_fica(folha, pagina, projeto)
 
+    # item 2.12: so com o desentortar ligado o preparo vai pelo caminho do
+    # "papel em volta"; desligado (o de fabrica) e o codigo de sempre.
+    desentortar = desentortar_scantailor.ligado(pagina) and not so_a_geometria
+    if not desentortar and not so_a_geometria:
+        # os avisos da protecao (item 2.12) so valem com o desentortar ligado;
+        # desligado, so tira o aviso que tiver ficado (nao muda a imagem)
+        _anotar_desentortar_saiu_sem(pagina, False)
+        _anotar_desentortar_ainda_deformada(pagina, False)
+
     if endireita_antes(projeto):
-        img, cortou, girar = _preparar_endireitando_antes(inteira, recorte, angulo, projeto,
-                                                          so_a_geometria)
-        if area is not None and img is not None:
+        if desentortar:
+            img, cortou, girar = _desentortar_com_o_papel_em_volta(
+                inteira, recorte, angulo, projeto, pagina, dpi, endireita_antes=True, folha=folha)
+        else:
+            img, cortou, girar = _preparar_endireitando_antes(inteira, recorte, angulo, projeto,
+                                                              so_a_geometria)
+        # juncao de 23/10/2026 (2.14 com o 2.12, os dois desligados de
+        # fabrica): com o desentortar, a pagina sai do tamanho do corte, e o
+        # pintar de branco vale do mesmo jeito; com o "desentortar aumentando
+        # a pagina" ela sai maior que o corte e a conta da area nao vale: nao
+        # pinta (ressalva da juncao).
+        pode_pintar = not (desentortar and getattr(pagina, "desentortar_aumentar", False))
+        if area is not None and img is not None and pode_pintar:
             # a area foi medida na pagina RETA, e o recorte e fracao dela
             img = _pintar_na_cortada(img, area, tuple(recorte) if cortou else None)
         dividida = bool(folha.dividir) and pagina.metade != METADE_INTEIRA
@@ -564,6 +599,22 @@ def _preparar_metade_e_geometria(
             pagina.metade if dividida else METADE_INTEIRA,
             tuple(recorte) if cortou else None, float(angulo) if girar else 0.0,
             sobra=faixa_da_sobra(folha, pagina, projeto), ordem=ordem_do_livro(projeto))
+        return img, desenho
+
+    if desentortar:
+        if area is not None:
+            # juncao de 23/10/2026: item 2.14 na ordem antiga, como abaixo (a
+            # area foi medida na `inteira`), antes do desentortar
+            inteira = borda_preta.pintar_fora(inteira, area)
+        img, cortou, girar = _desentortar_com_o_papel_em_volta(
+            inteira, recorte, angulo, projeto, pagina, dpi, endireita_antes=False, folha=folha)
+        dividida = bool(folha.dividir) and pagina.metade != METADE_INTEIRA
+        desenho = geometria_do_desenho(
+            img_folha.shape[1] / max(1, img_folha.shape[0]), folha.rotacao,
+            folha.posicao_corte if dividida else None,
+            pagina.metade if dividida else METADE_INTEIRA,
+            tuple(recorte) if cortou else None, float(angulo) if girar else 0.0,
+            sobra=faixa_da_sobra(folha, pagina, projeto))
         return img, desenho
 
     # 2. cortar bordas (o recorte ja vem com a folga do giro, se houver giro)
@@ -595,6 +646,307 @@ def _preparar_metade_e_geometria(
         tuple(recorte) if cortou else None, float(angulo) if girar else 0.0,
         sobra=faixa_da_sobra(folha, pagina, projeto))
     return img, desenho
+
+
+def _desentortar_com_o_papel_em_volta(inteira: np.ndarray, recorte, angulo: float,
+                                      projeto: Projeto, pagina: ConfigPagina, dpi,
+                                      endireita_antes: bool, folha: ConfigFolha | None = None):
+    """O preparo da pagina com o desentortar LIGADO (item 2.12, 22/10/2026).
+    Devolve (imagem, cortou, girou), como _preparar_endireitando_antes.
+
+    A escolha do Samuel na Central (22/10/2026): "A - Como o ScanTailor:
+    cortar uma vez so, no fim". O corte e medido como sempre (o mesmo
+    `recorte`, a mesma caixa_em_pontos); a pagina e endireitada INTEIRA e
+    entregue ao desentortar com o papel do proprio scan em volta, junto com a
+    caixa do corte; o desentortar recorta uma vez, pela caixa
+    (core/desentortar_scantailor.aplicar_no_corte). Nao inventa papel branco
+    e nao corta duas vezes.
+
+    As duas ordens dao a MESMA caixa e o MESMO giro do caminho desligado:
+      livro novo ("endireitar_antes"): a pagina inteira girada em volta do
+        centro DELA (rotacionar), como _preparar_endireitando_antes; a caixa
+        e a do corte na pagina reta;
+      livro de antes de 09/10 ("cortar_antes"): la o giro e feito no pedaco
+        ja cortado, em volta do centro do CORTE. Aqui a pagina inteira e
+        girada em volta desse mesmo centro: dentro da caixa os pontos sao os
+        do caminho de sempre, e o que estava fora do corte (o papel de
+        verdade) fica no lugar do branco que o giro punha nos cantos.
+
+    Custo: o giro da pagina inteira (em vez de so a caixa) e a DLL lendo a
+    pagina inteira; so com o desentortar ligado (desligado nao passa aqui).
+    Arriscado: cortar antes de chamar o desentortar (o defeito de 21/10) ou
+    trocar a caixa/o centro do giro (a pagina deixaria de bater com a do
+    desentortar desligado nos pontos que nao mudam).
+
+    A MEDIDA NA RESOLUCAO DO LIVRO (resposta P6 do Samuel, 23/10/2026, opcao
+    (b), "Como o ScanTailor"): o desentortar so e feito de verdade na
+    resolucao do livro (projeto.qualidade_dpi); o resultado fica guardado
+    (_DESENTORTADAS) e qualquer desenho menor (previa rapida, cartoes,
+    miniaturas, tela ampliada) usa ESSA pagina, so reduzida - com os avisos
+    dela. Enquanto a medida nao existe, o desenho menor sai SEM desentortar
+    (a tela pede a medida numa tarefa por tras: medir_o_desentortar) e nao
+    mexe nos avisos. `folha` None (quem chama de fora) ou sem chave (arquivo
+    que nao existe no disco, filtro "Tirar o fundo"): o caminho de antes
+    (desentorta na resolucao que vier). Ver _desentortada_guardada.
+    """
+    girar = projeto.endireitar and abs(angulo) >= ANGULO_MINIMO
+    caixa = None if recorte is None else caixa_em_pontos(inteira.shape, recorte)
+    cortou = caixa is not None
+    if not girar:
+        reta = inteira
+    elif endireita_antes or caixa is None:
+        reta = rotacionar(inteira, angulo)  # em volta do centro da pagina
+    else:
+        reta = _rotacionar_em_volta_de(inteira, angulo, caixa)
+    na_resolucao_do_livro = _julga_os_avisos_do_desentortar(projeto, dpi)
+    chave = None if folha is None else _chave_do_desentortar(folha, pagina, projeto)
+    if chave is not None:
+        guardada = _desentortada_guardada(chave)
+        if guardada is not None:
+            # a medida ja feita na resolucao do livro: a mesma pagina, so
+            # reduzida (ou a mesma, se este desenho e o da resolucao do livro)
+            _anotar_desentortar_saiu_sem(pagina, guardada.saiu_sem)
+            _anotar_desentortar_ainda_deformada(pagina, guardada.ainda_deformada)
+            return _desentortada_no_tamanho(guardada, reta.shape, caixa, pagina), cortou, girar
+        if not na_resolucao_do_livro:
+            # ainda nao medida: a pagina sem desentortar (o corte de sempre),
+            # sem mexer nos avisos; a medida vem por tras (medir_o_desentortar)
+            x0, y0, x1, y1 = (0, 0, reta.shape[1], reta.shape[0]) if caixa is None else caixa
+            return reta[y0:y1, x0:x1].copy(), cortou, girar
+    preparo = desentortar_scantailor.preparar_no_corte(reta, caixa, pagina, dpi)
+    if na_resolucao_do_livro:
+        _anotar_desentortar_saiu_sem(pagina, preparo.saiu_sem)
+        _anotar_desentortar_ainda_deformada(pagina, preparo.ainda_deformada)
+        if chave is not None:
+            _guardar_desentortada(chave, preparo, reta.shape)
+    return preparo.imagem, cortou, girar
+
+
+# ---------------------------------------------------------------------------
+# A medida do desentortar (item 2.12, resposta P6 do Samuel, 23/10/2026, opcao
+# (b): "Como o ScanTailor: o desentortar sempre é medido na resolução do livro
+# (300 DPI), numa tarefa por trás (uns 3 a 8 s por página, só nas páginas com
+# ele ligado), e a prévia rápida e os cartões (Preto e branco, Melhorar,
+# Mágico pro, Original) usam essa medida, só reduzida. A página na tela fica
+# igual à do PDF, e os avisos [...] aparecem na hora.").
+#
+# Por que: o desentortar do ScanTailor nao acha as linhas curvas em resolucao
+# baixa (medido no Destino 18 e no Righetti 96: a 100, 150 e 200 DPI nao
+# mexe; a 300 mexe), entao a previa rapida (110 DPI) e os cartoes mostravam a
+# pagina como se ele nao existisse. No ScanTailor o modelo da curva e medido
+# uma vez, na imagem inteira, e guardado; a saida em qualquer tamanho usa ele.
+#
+# Aqui a "medida" guardada e a pagina ja desentortada na resolucao do livro
+# (a mesma que vai para o PDF), com o que a protecao decidiu (saiu_sem,
+# ainda_deformada). O desenho menor reduz essa pagina (INTER_AREA). Guardada
+# so na memoria, nesta sessao, com limite de tamanho (MAX_BYTES_DESENTORTADAS:
+# o pico nao cresce com o livro). A chave e a do corte (_chave_da_geometria:
+# arquivo, giro, divisao, corte, angulo, ordem...) mais o modo do desentortar
+# e o "aumentando a pagina": mudou qualquer um, mede de novo; o filtro e os
+# ajustes do filtro NAO entram (o desentortar vem antes do filtro).
+#
+# Desligado (o de fabrica) nada disto roda: o preparo nem chama
+# _desentortar_com_o_papel_em_volta.
+#
+# Seguro mudar: MAX_BYTES_DESENTORTADAS. Arriscado: guardar medida feita em
+# outra resolucao que nao projeto.qualidade_dpi (a tela deixaria de bater com
+# o PDF); tirar da chave algo de que a pagina depende (a tela mostraria a
+# pagina de antes da mudanca).
+# ---------------------------------------------------------------------------
+
+class _Desentortada:
+    """A medida guardada: a pagina desentortada na resolucao do livro e o
+    que a protecao decidiu. altura_reta/largura_reta: o tamanho da pagina
+    reta (sem corte) em que foi medida, para a conta da reducao."""
+
+    __slots__ = ("imagem", "saiu_sem", "ainda_deformada", "altura_reta", "largura_reta")
+
+    def __init__(self, imagem: np.ndarray, saiu_sem: bool, ainda_deformada: bool,
+                 forma_reta: tuple) -> None:
+        self.imagem = imagem
+        self.saiu_sem = bool(saiu_sem)
+        self.ainda_deformada = bool(ainda_deformada)
+        self.altura_reta, self.largura_reta = int(forma_reta[0]), int(forma_reta[1])
+
+
+_DESENTORTADAS: "OrderedDict[tuple, _Desentortada]" = OrderedDict()
+_TRANCA_DESENTORTADAS = threading.Lock()
+MAX_BYTES_DESENTORTADAS = 400 * 1024 * 1024   # ~15 a 30 paginas a 300 DPI
+
+
+def _chave_do_desentortar(folha: ConfigFolha, pagina: ConfigPagina, projeto: Projeto):
+    """A chave da medida do desentortar desta pagina, ou None (sem medida
+    guardada: arquivo que nao existe no disco, desentortar desligado, ou o
+    filtro "Tirar o fundo", em que a pagina desentortada e a folha sem o
+    fundo - essa fica no caminho de antes, ressalva do item)."""
+    if not desentortar_scantailor.ligado(pagina) or usa_tirar_fundo(projeto, pagina):
+        return None
+    base = _chave_da_geometria(folha, pagina, projeto)
+    if base is None:
+        return None
+    return base + (desentortar_scantailor.modo_da_pagina(pagina),
+                   bool(getattr(pagina, "desentortar_aumentar", False)))
+
+
+def _desentortada_guardada(chave) -> "_Desentortada | None":
+    """A medida guardada sob `chave`, ou None."""
+    with _TRANCA_DESENTORTADAS:
+        guardada = _DESENTORTADAS.get(chave)
+        if guardada is not None:
+            _DESENTORTADAS.move_to_end(chave)
+        return guardada
+
+
+def _guardar_desentortada(chave, preparo, forma_reta: tuple) -> None:
+    """Guarda a medida (uma copia da imagem: quem recebeu a de `preparo` pode
+    mexer nela). Joga fora as mais antigas acima de MAX_BYTES_DESENTORTADAS."""
+    guardada = _Desentortada(preparo.imagem.copy(), preparo.saiu_sem,
+                             preparo.ainda_deformada, forma_reta)
+    with _TRANCA_DESENTORTADAS:
+        _DESENTORTADAS[chave] = guardada
+        _DESENTORTADAS.move_to_end(chave)
+        total = sum(g.imagem.nbytes for g in _DESENTORTADAS.values())
+        while total > MAX_BYTES_DESENTORTADAS and len(_DESENTORTADAS) > 1:
+            _, velha = _DESENTORTADAS.popitem(last=False)
+            total -= velha.imagem.nbytes
+
+
+def _desentortada_no_tamanho(guardada: "_Desentortada", forma_reta: tuple, caixa,
+                             pagina: ConfigPagina) -> np.ndarray:
+    """A pagina guardada no tamanho deste desenho. Na resolucao do livro
+    (mesma pagina reta): uma copia, ponto por ponto. Menor: reduzida; sem o
+    "aumentando a pagina", exatamente do tamanho do corte deste desenho (o
+    mesmo tamanho do desenho com o desentortar desligado, e o que a geometria
+    das zonas supoe); com ele, pela proporcao das duas paginas retas."""
+    img = guardada.imagem
+    altura, largura = int(forma_reta[0]), int(forma_reta[1])
+    if (altura, largura) == (guardada.altura_reta, guardada.largura_reta):
+        return img.copy()
+    aumentar = bool(getattr(pagina, "desentortar_aumentar", False))
+    if not aumentar and caixa is not None:
+        x0, y0, x1, y1 = caixa
+        alvo = (max(1, x1 - x0), max(1, y1 - y0))
+    elif not aumentar:
+        alvo = (largura, altura)
+    else:
+        alvo = (max(1, int(round(img.shape[1] * largura / max(1, guardada.largura_reta)))),
+                max(1, int(round(img.shape[0] * altura / max(1, guardada.altura_reta)))))
+    if (img.shape[1], img.shape[0]) == alvo:
+        return img.copy()
+    reduz = alvo[0] <= img.shape[1] and alvo[1] <= img.shape[0]
+    return cv2.resize(img, alvo, interpolation=cv2.INTER_AREA if reduz else cv2.INTER_LINEAR)
+
+
+def desentortar_por_medir(projeto: Projeto, pagina: ConfigPagina) -> bool:
+    """A pagina tem o desentortar ligado e a medida dele (na resolucao do
+    livro) ainda nao foi feita? E o que a tela olha para pedir a medida por
+    tras (medir_o_desentortar) e mostrar o sinal "Desentortando esta
+    pagina". Desligado, sem chave (ver _chave_do_desentortar) ou ja medida:
+    False. Barato (sem desenho): pode ser chamado no fio da tela."""
+    try:
+        folha = projeto.folhas[pagina.folha]
+    except (IndexError, AttributeError, TypeError):
+        return False
+    chave = _chave_do_desentortar(folha, pagina, projeto)
+    return chave is not None and _desentortada_guardada(chave) is None
+
+
+def estado_do_desentortar(projeto: Projeto, pagina: ConfigPagina) -> str:
+    """Para a chave das previas da tela (ui/tarefas.GerenciadorPrevias.chave):
+    "" desligado; "medido" ou "por_medir". Quando a medida chega, a chave
+    muda e a tela desenha de novo (a previa e os cartoes) com ela."""
+    if not desentortar_scantailor.ligado(pagina):
+        return ""
+    return "por_medir" if desentortar_por_medir(projeto, pagina) else "medido"
+
+
+def medir_o_desentortar(doc, projeto: Projeto, pagina: ConfigPagina) -> bool:
+    """A medida do desentortar desta pagina, na resolucao do livro (resposta
+    P6, opcao (b)). Desenha a folha em projeto.qualidade_dpi e prepara a
+    pagina (o mesmo caminho do PDF): a pagina desentortada fica guardada e os
+    avisos da protecao sao postos ou tirados. Uns 3 a 8 s por pagina:
+    chamar SEMPRE fora do fio da tela (ui/tarefas.TarefaMedirDesentortar).
+    Devolve True se mediu agora; False se nao havia o que medir (desligado,
+    ja medida ou sem chave). Arriscado: medir em outra resolucao."""
+    if not desentortar_por_medir(projeto, pagina):
+        return False
+    folha = projeto.folhas[pagina.folha]
+    grande = pagina_para_array(doc, folha.indice, dpi=projeto.qualidade_dpi)
+    if _precisa_de_geometria(pagina, projeto):
+        _guardar_geometria(folha, pagina, projeto, grande, doc)
+    _preparar_metade_e_geometria(grande, folha, pagina, projeto, dpi=projeto.qualidade_dpi)
+    return True
+
+
+def _julga_os_avisos_do_desentortar(projeto: Projeto, dpi) -> bool:
+    """Item 2.12, conserto de 23/10/2026 (achado ao fazer os prints da janela
+    para a resposta P5): so o desenho da pagina na resolucao do livro
+    (projeto.qualidade_dpi, a do PDF final) poe ou tira os avisos do
+    desentortar. O desentortar do ScanTailor nao acha as curvas na resolucao
+    baixa (medido no Destino do socialismo 18 e no Righetti 96: a 100, 150 e
+    200 DPI nao mexe; a 300 mexe), entao a prévia rapida (110 DPI), as
+    miniaturas e os cartoes TIRAVAM o aviso que o desenho a 300 DPI tinha
+    posto: o "Desentortar não usado" e o "A página ainda saiu deformada"
+    sumiam da faixa antes do clique. dpi None (quem chama nao sabe) tambem
+    nao julga. Arriscado: julgar em qualquer resolucao (volta o aviso que
+    pisca e some)."""
+    try:
+        return dpi is not None and float(dpi) >= float(projeto.qualidade_dpi) - 0.5
+    except (TypeError, ValueError, AttributeError):
+        return False
+
+
+def _anotar_desentortar_saiu_sem(pagina: ConfigPagina, saiu_sem: bool) -> None:
+    """Poe ou tira o aviso analise.DESENTORTAR_SAIU_SEM (item 2.12, respostas
+    P1 e P2 do Samuel, 22/10/2026: a protecao recusou o desentortar e a pagina
+    saiu sem ele). Do mesmo jeito que _anotar_conferir: ao POR, a pagina volta
+    a "nao conferida" e o aviso vai para a frente; o "esta bom assim" depois
+    disso continua valendo. Tirado quando a pagina sai desentortada (o botao
+    "Desentortar aumentando a página") ou com o desentortar desligado.
+    Arriscado: por o aviso sem voltar `revisada` (nasceria escondido)."""
+    _anotar_aviso_da_pagina(pagina, analise.DESENTORTAR_SAIU_SEM, saiu_sem)
+
+
+def _anotar_desentortar_ainda_deformada(pagina: ConfigPagina, deformada: bool) -> None:
+    """Poe ou tira o aviso analise.DESENTORTAR_AINDA_DEFORMADA (item 2.12,
+    resposta P5 do Samuel, 23/10/2026: depois do botao "Desentortar aumentando
+    a página" o programa confere de novo e, se a pagina ainda saiu deformada,
+    o aviso PERGUNTA - "Desfazer" ou "Manter assim" -, sem voltar sozinho).
+    Mesmo jeito de _anotar_desentortar_saiu_sem: ao por, a pagina volta a "nao
+    conferida"; o "Manter assim" (que marca a pagina como conferida) continua
+    valendo nas proximas vezes que a pagina for desenhada. Tirado quando a
+    pagina aumentada sai boa, quando o aumento e desfeito ou com o desentortar
+    desligado."""
+    _anotar_aviso_da_pagina(pagina, analise.DESENTORTAR_AINDA_DEFORMADA, deformada)
+
+
+def _anotar_aviso_da_pagina(pagina: ConfigPagina, codigo: str, vale: bool) -> None:
+    """O jeito comum dos dois avisos do desentortar (item 2.12): ao POR, na
+    frente e a pagina volta a "nao conferida"; ja posto, nada muda (o "esta
+    bom assim" continua); ao TIRAR, so sai da lista. Arriscado: por sem voltar
+    `revisada` (o aviso nasceria escondido)."""
+    if not hasattr(pagina, "alertas"):
+        return
+    tem = codigo in pagina.alertas
+    if vale and not tem:
+        pagina.alertas.insert(0, codigo)
+        pagina.revisada = False
+    elif not vale and tem:
+        pagina.alertas = [a for a in pagina.alertas if a != codigo]
+
+
+def _rotacionar_em_volta_de(img: np.ndarray, angulo: float, caixa) -> np.ndarray:
+    """A pagina inteira girada como core.endireitar.rotacionar gira o pedaco
+    img[y0:y1, x0:x1] (em volta do centro DO PEDACO, mesma interpolacao), mas
+    com o papel de verdade em volta no lugar do branco. So para o desentortar
+    no livro "cortar_antes" (_desentortar_com_o_papel_em_volta)."""
+    x0, y0, x1, y1 = caixa
+    altura, largura = img.shape[:2]
+    centro = (x0 + (x1 - x0) / 2.0, y0 + (y1 - y0) / 2.0)
+    matriz = cv2.getRotationMatrix2D(centro, angulo, 1.0)
+    borda = 255 if img.ndim == 2 else (255, 255, 255)
+    return cv2.warpAffine(img, matriz, (largura, altura), flags=cv2.INTER_CUBIC,
+                          borderMode=cv2.BORDER_CONSTANT, borderValue=borda)
 
 
 def _preparar_endireitando_antes(inteira: np.ndarray, recorte, angulo: float,
@@ -1665,6 +2017,11 @@ def _assinatura_da_gravura_da_pagina(projeto: Projeto, pagina: ConfigPagina) -> 
     assinatura = assinatura_da_gravura(*escolha_da_gravura(projeto, pagina))
     if claro_no_escuro.ligado(pagina):
         assinatura += claro_no_escuro.SUFIXO_DA_GRAVURA
+    # item 2.12: a pagina desentortada e outra imagem para o detector; so com
+    # o desentortar ligado (desligado, a assinatura de sempre)
+    if desentortar_scantailor.ligado(pagina):
+        assinatura += (desentortar_scantailor.SUFIXO_DA_GRAVURA
+                       + desentortar_scantailor.modo_da_pagina(pagina))
     return assinatura
 
 

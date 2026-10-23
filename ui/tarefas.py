@@ -24,6 +24,9 @@ from core.pipeline import (
     Cancelou,
     ErroPDFSalvoComOutroNome,
     analisar_projeto,
+    desentortar_por_medir,
+    estado_do_desentortar,
+    medir_o_desentortar,
     processar,
     renderizar_com_filtro,
     renderizar_pagina,
@@ -359,6 +362,47 @@ class _TarefaCartoes(QRunnable):
                         self.chave)
 
 
+class _SinaisDesentortar(QObject):
+    """Sinais da tarefa do desentortar (QRunnable nao emite sinal sozinho)."""
+
+    medido = Signal(int)          # indice da pagina (deu certo ou falhou)
+
+
+class _TarefaMedirDesentortar(QRunnable):
+    """A medida do desentortar de UMA pagina, na resolucao do livro (item
+    2.12, resposta P6 do Samuel, 23/10/2026, opcao (b): "numa tarefa por
+    tras (uns 3 a 8 s por pagina, so nas paginas com ele ligado)").
+
+    Chama core.pipeline.medir_o_desentortar, que guarda a pagina
+    desentortada e poe ou tira os avisos da protecao. Quando termina, emite
+    `medido(indice)`: a chave das previas daquela pagina muda sozinha
+    (estado_do_desentortar) e a tela desenha de novo. Falha nunca sobe: vai
+    para o erros.log e a pagina fica sem desentortar na tela (como antes).
+    Arriscado: chamar medir_o_desentortar no fio da tela (trava 3 a 8 s)."""
+
+    def __init__(self, caminho_pdf: str, projeto: Projeto, indice_pagina: int,
+                 sinais: _SinaisDesentortar) -> None:
+        super().__init__()
+        self.caminho_pdf = caminho_pdf
+        self.projeto = projeto
+        self.indice_pagina = indice_pagina
+        self.sinais = sinais
+
+    def run(self) -> None:
+        try:
+            if 0 <= self.indice_pagina < len(self.projeto.paginas):
+                pagina = self.projeto.paginas[self.indice_pagina]
+                if desentortar_por_medir(self.projeto, pagina):
+                    doc = abrir_pdf(self.caminho_pdf)
+                    try:
+                        medir_o_desentortar(doc, self.projeto, pagina)
+                    finally:
+                        doc.close()
+        except Exception:  # noqa: BLE001 - a medida que falha nao derruba a tela
+            registrar_erro("desentortar_por_tras", traceback.format_exc())
+        _emitir_se_vivo(self.sinais, self.sinais.medido, self.indice_pagina)
+
+
 class _TarefaPrevia(QRunnable):
     """Gera UMA prévia. Descartavel: o pool cuida do ciclo de vida.
 
@@ -486,6 +530,8 @@ class GerenciadorPrevias(QObject):
 
     pronta = Signal(str, object)
     cartoes_prontos = Signal(int, dict, object)   # indice, {filtro: imagem}, chave do pedido
+    # item 2.12 (resposta P6): a medida do desentortar da pagina terminou
+    desentortar_medido = Signal(int)
 
     def __init__(self, caminho_pdf: str, projeto: Projeto, parent=None) -> None:
         """Cria os dois pools (prévias e cartões, separados de propósito -
@@ -555,6 +601,16 @@ class GerenciadorPrevias(QObject):
         self._sinais_cartoes = _SinaisCartoes()
         self._sinais_cartoes.prontos.connect(self.cartoes_prontos.emit)
 
+        # Item 2.12 (resposta P6 do Samuel, 23/10/2026): a medida do
+        # desentortar na resolucao do livro, por tras, num pool proprio de UM
+        # fio (3 a 8 s por pagina: nao pode segurar as previas nem os cartoes,
+        # e duas ao mesmo tempo so brigariam por CPU e memoria).
+        self._pool_desentortar = QThreadPool(self)
+        self._pool_desentortar.setMaxThreadCount(1)
+        self._medindo: set[int] = set()
+        self._sinais_desentortar = _SinaisDesentortar()
+        self._sinais_desentortar.medido.connect(self._desentortar_chegou)
+
     # --- chave ------------------------------------------------------------
 
     def chave(self, indice: int, dpi: int, filtro: str | None = None) -> str:
@@ -588,7 +644,16 @@ class GerenciadorPrevias(QObject):
             # caixinhas da pagina mudam a previa e os cartoes
             f"{bool(getattr(p, 'claro_no_escuro', False))}:"
             f"{bool(getattr(p, 'letras_com_a_cor', False))}:"
-            f"{bool(getattr(p, 'reduzir_cores', False))}"
+            f"{bool(getattr(p, 'reduzir_cores', False))}:"
+            # item 2.12: o desentortar muda a pagina preparada
+            f"{getattr(p, 'desentortar', 'desligado')}"
+            # item 2.12 (22/10): "Desentortar aumentando a página" muda o
+            # tamanho da pagina; so entra na chave quando ligado
+            f"{':aumentar' if getattr(p, 'desentortar_aumentar', False) else ''}"
+            # item 2.12 (resposta P6, 23/10): a medida do desentortar ja feita
+            # ou nao ("" desligado): quando ela chega, a chave muda e a previa
+            # e os cartoes sao desenhados de novo com a pagina desentortada
+            f"{':' + estado_do_desentortar(self.projeto, p) if getattr(p, 'desentortar', 'desligado') != 'desligado' else ''}"
         )
 
     # --- uso --------------------------------------------------------------
@@ -835,6 +900,35 @@ class GerenciadorPrevias(QObject):
                             despeckle=despeckle)
         )
 
+    # --- a medida do desentortar por tras (item 2.12, resposta P6) ---------
+
+    def desentortar_pendente(self, indice: int) -> bool:
+        """A pagina tem o desentortar ligado e a medida dele ainda nao chegou?
+        (o sinal "Desentortando esta pagina" da tela)."""
+        if not 0 <= indice < len(self.projeto.paginas):
+            return False
+        return desentortar_por_medir(self.projeto, self.projeto.paginas[indice])
+
+    def pedir_desentortar(self, indice: int) -> bool:
+        """Pede a medida do desentortar da pagina, por tras, se ela ainda nao
+        foi feita nem pedida. Devolve True se a medida esta pendente (pedida
+        agora ou antes). Barato no fio da tela (sem desenho)."""
+        if not self.desentortar_pendente(indice):
+            return False
+        if indice not in self._medindo:
+            self._medindo.add(indice)
+            self._pool_desentortar.start(
+                _TarefaMedirDesentortar(self.caminho_pdf, self.projeto, indice,
+                                        self._sinais_desentortar))
+        return True
+
+    def _desentortar_chegou(self, indice: int) -> None:
+        """A medida terminou (ou falhou). Se a pagina ainda esta por medir
+        (a pessoa mudou o corte ou o modo enquanto media), a tela pede de
+        novo na proxima atualizacao."""
+        self._medindo.discard(indice)
+        self.desentortar_medido.emit(indice)
+
     # --- folha crua (aba "Onde cortar") -----------------------------------
 
     def _giro_da_folha(self, indice: int) -> int:
@@ -971,8 +1065,10 @@ class GerenciadorPrevias(QObject):
         self._medidas_a_espera.clear()
         self._pool.clear()
         self._pool_cartoes.clear()
+        self._pool_desentortar.clear()
         self._pool.waitForDone(3000)
         self._pool_cartoes.waitForDone(3000)
+        self._pool_desentortar.waitForDone(10000)
         # O servidor de paginas fecha este livro na hora (senao, em meio
         # segundo): a pessoa pode mover ou renomear o PDF logo depois de
         # fechar ou trocar de livro (core/paginas_em_outro_processo.py).

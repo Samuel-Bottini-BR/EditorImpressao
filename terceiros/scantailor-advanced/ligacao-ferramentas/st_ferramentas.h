@@ -45,8 +45,20 @@
 //     item 2.8, em saida.cpp); o que ja existia nao mudou.
 // 6 = 20/10/2026: + as cores do ScanTailor (st_ferramentas_cores, item 2.11, em
 //     saida.cpp); o que ja existia nao mudou.
+// 7 = 21/10/2026: + o desentortar do ScanTailor (st_ferramentas_desentortar,
+//     item 2.12, em desentortar.cpp); o que ja existia nao mudou.
+// 8 = 22/10/2026: o desentortar recebe a pagina com o papel do scan em volta e
+//     o corte como medida (corteX..corteAltura); a saida tem o tamanho do corte
+//     (escolha do Samuel na Central, 22/10: "cortar uma vez so, no fim", como o
+//     ScanTailor). O resto nao mudou. (O ramo das ferramentas tambem usou o
+//     numero 8, para a luz: st_ferramentas_luz, item 2.17, em luz.cpp.)
+// 9 = 22/10/2026: o desentortar ganha `crescer` (a mesma pagina desentortada
+//     numa pagina maior) e a `marca` (uma imagem cinza redesenhada com o mesmo
+//     modelo, para o Python medir para onde a tinta foi): a protecao e o
+//     "desentortar aumentando a pagina" (respostas P1 e P2 do Samuel, 22/10).
+//     Com crescer 0 e sem marca, a saida e a da versao 8. O resto nao mudou.
 // 10 = 23/10/2026, juncao da Fase 2 (ramo juncao-fase2-2026-10-23): uma DLL so
-//     com tudo dos ramos (caixas v4, saida v5-v7, desentortar v8-v9 do ramo dos
+//     com tudo dos ramos (caixas v4, saida v5-v6, desentortar v7-v9 do ramo dos
 //     itens, luz v8 do ramo das ferramentas). Nenhuma funcao mudou; so a soma.
 #define ST_FERRAMENTAS_VERSAO_API 10
 
@@ -308,6 +320,69 @@ ST_FERRAMENTAS_API int st_ferramentas_caixas(const unsigned char* pixels,
                                              double* milissegundos,
                                              char* erro,
                                              int tamanhoErro);
+
+// DESENTORTAR A PAGINA CURVA PERTO DA LOMBADA (item 2.12): o "Dewarping" do
+// ScanTailor (src/dewarping, sem mudanca; a ordem em desentortar.cpp).
+//
+// pixels, largura, altura, passo, canais: a pagina ja dividida e endireitada,
+//   AINDA SEM O CORTE, com o papel do proprio scan em volta (canais 1 = cinza;
+//   3 = azul, verde, vermelho, como o OpenCV). Versao 8, 22/10/2026.
+// dpiX, dpiY: o DPI da imagem (o TextLineTracer reduz para 200 DPI por ele).
+// modo: 1 = automatico (AUTO, pelas linhas do texto); 3 = pelas margens
+//   (MARGINAL). Os numeros sao os de output::DewarpingMode. 0 (desligado, o de
+//   fabrica) nao chega aqui: o Python nem chama.
+// lado: 0 = pagina unica, 1 = esquerda, 2 = direita (PageId::SubPage).
+// profundidade: a "Depth perception" do ScanTailor, de 1,0 a 3,0 (2,0 de fabrica).
+// endireitarDepois: o "post deskew" (1 de fabrica; so vale no "pelas margens").
+// corteX, corteY, corteLargura, corteAltura: o corte medido pelo programa, em
+//   pontos da pagina recebida: e a pagina de saida do ScanTailor (m_outRect).
+//   Largura ou altura 0 = a pagina inteira (sem corte). Tem de caber na pagina.
+// conteudoX, conteudoY, conteudoLargura, conteudoAltura: a caixa do conteudo
+//   (m_contentRect), em pontos da pagina recebida; largura ou altura 0 = o corte.
+// crescer (versao 9): pontos a mais de cada lado da pagina de saida (0 = o
+//   corte, como na versao 8). E a MESMA pagina desentortada, so maior.
+// marca, passoMarca (versao 9): NULL, ou uma imagem cinza (1 canal) do tamanho
+//   da pagina recebida, redesenhada com o mesmo modelo e o mesmo giro em
+//   marcaSaida (fora da pagina recebida entra branco, 255).
+// saida, passoSaida: a pagina desentortada JA RECORTADA pelo corte (corteLargura
+//   + 2 x crescer, corteAltura + 2 x crescer), com os mesmos canais. O corte e
+//   feito uma vez, aqui, como no ScanTailor: o desentortar le os pontos da
+//   pagina inteira.
+// marcaSaida, passoMarcaSaida (versao 9): a marca redesenhada, do tamanho da
+//   saida, 1 canal (ignorados com marca NULL).
+// achouCurvas: 1 se as curvas achadas nao sao as do modelo "sem curva".
+// anguloDepois: o angulo do endireitar depois, em graus (0 se nao endireitou).
+// Devolve ST_FERRAMENTAS_OK ou um codigo de erro. Nunca deixa excecao escapar.
+ST_FERRAMENTAS_API int st_ferramentas_desentortar(const unsigned char* pixels,
+                                                  int largura,
+                                                  int altura,
+                                                  int passo,
+                                                  int canais,
+                                                  int dpiX,
+                                                  int dpiY,
+                                                  int modo,
+                                                  int lado,
+                                                  double profundidade,
+                                                  int endireitarDepois,
+                                                  int corteX,
+                                                  int corteY,
+                                                  int corteLargura,
+                                                  int corteAltura,
+                                                  int conteudoX,
+                                                  int conteudoY,
+                                                  int conteudoLargura,
+                                                  int conteudoAltura,
+                                                  int crescer,
+                                                  const unsigned char* marca,
+                                                  int passoMarca,
+                                                  unsigned char* saida,
+                                                  int passoSaida,
+                                                  unsigned char* marcaSaida,
+                                                  int passoMarcaSaida,
+                                                  int* achouCurvas,
+                                                  double* anguloDepois,
+                                                  char* erro,
+                                                  int tamanhoErro);
 
 #ifdef __cplusplus
 }

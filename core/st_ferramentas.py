@@ -62,6 +62,15 @@ CAMINHO_DLL = Path(__file__).resolve().parent / "nativo" / "st_ferramentas.dll"
 #     item 2.8; core/preto_e_branco_scantailor.py).
 # 6 (20/10/2026) = + as cores do ScanTailor (st_ferramentas_cores, item 2.11;
 #     core/cores_scantailor.py).
+# 7 (21/10/2026) = + o desentortar do ScanTailor (st_ferramentas_desentortar,
+#     item 2.12; core/desentortar_scantailor.py).
+# 8 (22/10/2026) = o desentortar recebe a pagina com o papel do scan em volta e
+#     o corte como medida (escolha do Samuel na Central: "cortar uma vez so, no
+#     fim", como o ScanTailor); a saida tem o tamanho do corte. (O ramo das
+#     ferramentas tambem usou o 8, para a luz do item 2.17.)
+# 9 (22/10/2026) = o desentortar ganha o `crescer` (a mesma pagina desentortada
+#     numa pagina maior) e a `marca` redesenhada com o mesmo modelo: a protecao
+#     e o "desentortar aumentando a pagina" (respostas P1 e P2 do Samuel).
 # 10 (23/10/2026) = juncao da Fase 2: uma DLL so com tudo dos ramos (ver
 #     st_ferramentas.h). Nenhuma funcao mudou.
 VERSAO_API = 10
@@ -150,6 +159,22 @@ ASSINATURAS = {
         ctypes.POINTER(ctypes.c_int),                                # achou conteudo (1/0)
         ctypes.POINTER(ctypes.c_int),                                # preto no branco (1/0)
         ctypes.POINTER(ctypes.c_double),                             # milissegundos (3)
+        ctypes.c_char_p, ctypes.c_int,                               # erro
+    ]),
+    # Item 2.12 (21/10/2026): o desentortar do ScanTailor (core/desentortar_scantailor.py).
+    "st_ferramentas_desentortar": (ctypes.c_int, [
+        ctypes.c_void_p, ctypes.c_int, ctypes.c_int, ctypes.c_int,   # pixels, largura, altura, passo
+        ctypes.c_int,                                                # canais (1 ou 3)
+        ctypes.c_int, ctypes.c_int,                                  # dpi x, y
+        ctypes.c_int, ctypes.c_int,                                  # modo, lado
+        ctypes.c_double, ctypes.c_int,                               # profundidade, endireitar depois
+        ctypes.c_int, ctypes.c_int, ctypes.c_int, ctypes.c_int,      # corte x, y, largura, altura (versao 8)
+        ctypes.c_int, ctypes.c_int, ctypes.c_int, ctypes.c_int,      # caixa do conteudo (x, y, larg., alt.)
+        ctypes.c_int,                                                # crescer (versao 9)
+        ctypes.c_void_p, ctypes.c_int,                               # marca, passo (versao 9; None = sem)
+        ctypes.c_void_p, ctypes.c_int,                               # saida, passo
+        ctypes.c_void_p, ctypes.c_int,                               # marca desentortada, passo (versao 9)
+        ctypes.POINTER(ctypes.c_int), ctypes.POINTER(ctypes.c_double),  # achou curvas, angulo depois
         ctypes.c_char_p, ctypes.c_int,                               # erro
     ]),
 }
