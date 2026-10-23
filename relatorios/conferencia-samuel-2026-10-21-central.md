@@ -177,3 +177,5 @@ Ordens "Pôr no programa como está" (22/10, 00:51-00:52 UTC) para 2.8, 2.9, 2.1
 - `tc23-janela` (2ª volta): **Está bom** — "entendi agora, só temos que deixar anotado para melhorar esse painel." (já na Lista de espera, 22/10)
 - `tc23-1` (2ª volta, sem opção marcada): "eu posso ter as duas opções?" — respondido: pode; opção nova "As duas: escolher o papel em cada área".
 - `tc23-1` (3ª volta): **As duas: escolher o papel em cada área ("papel branco" ou "papel como o resto da página")**
+- `a-212-p5`: **C — Aparece sempre, mas depois do clique o programa confere de novo e volta sozinho se a página ainda sair deformada** — "Mas o programa vai saber sempre que estiver deformada, o aviso deve perguntar e não fazer automaticamente."
+- `a-212-p4`: **Ainda não entendi** — "não entendi." (refeita)

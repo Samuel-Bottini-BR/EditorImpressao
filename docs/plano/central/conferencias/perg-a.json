@@ -333,10 +333,11 @@
    "id": "a-212-p4",
    "titulo": "Livros fotografados com o celular: o desentortar não mexe. O que fazer?",
    "explicacao": [
-    "O que o implementador achou: em \"Livros para editar\", quase todos os livros com as linhas bem curvas são fotos de celular (Razões do Integralismo, Ramírez, Haegy, Atanásio). Nessas páginas o desentortar não faz nada: as linhas continuam curvas contra a régua.",
-    "Por quê: o desentortar do ScanTailor precisa saber o tamanho de verdade da página (quantos pontos por centímetro). O PDF de uma foto de celular não diz isso, então ele acha as letras \"grandes demais\" e não reconhece as linhas. Quando o implementador informou o tamanho certo (última coluna do Razões 57, \"só para mostrar a causa\"), as linhas saíram retas sob a régua.",
-    "No ScanTailor isso existe: a etapa \"Fix DPI\", onde a pessoa diz o tamanho da página.",
-    "Caminho: livro novo, de fábrica → (dividir quando o livro pede) → endireitar → cortar → desentortar → filtro. A linha vermelha é uma régua reta. Colunas: Hoje · Antes da proteção · Agora · Agora, com o botão · \"pelas margens\" antes e agora · Preto e branco."
+    "Explicando de outro jeito.",
+    "Quando um livro é passado no scanner, o PDF guarda junto o tamanho de verdade da página (por exemplo, \"esta página tem 14 cm de largura\"). Uma foto de celular não guarda isso: o PDF só sabe que a foto tem tantos pontos, e o programa acha que a página é enorme, do tamanho de um cartaz.",
+    "O desentortar do ScanTailor procura as linhas do texto contando com letras de tamanho normal de livro. Numa página que ele pensa ser um cartaz, as letras parecem gigantes, ele não reconhece as linhas e desiste. Por isso, nas fotos de celular, nada acontece: as linhas continuam curvas.",
+    "A prova está na foto do Razões do Integralismo 57: nas colunas \"Agora\" as linhas continuam curvas contra a régua vermelha. Na última coluna (\"só para mostrar a causa\"), o implementador disse ao programa o tamanho certo da página, e as linhas saíram retas.",
+    "A pergunta é: como o programa fica sabendo o tamanho de verdade da página de uma foto de celular?"
    ],
    "exemplos": [
     {
@@ -355,26 +356,44 @@
    "opcoes": [
     {
      "id": "a",
-     "nome": "A — Deixar como está",
-     "texto": "Nas fotos de celular o desentortar não faz nada (não estraga, mas não ajuda).",
+     "nome": "A — Não fica sabendo (deixar como está)",
+     "texto": "Nas fotos de celular o desentortar não faz nada. Não estraga, mas não ajuda.",
      "imgs": []
     },
     {
      "id": "b",
-     "nome": "B — Um campo no livro: \"largura de verdade da página, em cm\", como o \"Fix DPI\" do ScanTailor (recomendo)",
-     "texto": "O Kaique mede a página do livro com a régua e digita a largura. Vazio de fábrica = igual a hoje. Muda a tela (um campo novo) e o arquivo do projeto.",
+     "nome": "B — O Kaique diz: um campo no livro \"largura de verdade da página, em cm\" (recomendo)",
+     "texto": "Ele mede uma página do livro com a régua e digita a largura (ex.: 14 cm). Vazio de fábrica = igual a hoje. É o que o ScanTailor faz (a etapa \"Fix DPI\"). Muda a tela (um campo novo).",
      "imgs": [
       {
        "src": "pa3/razoes_p057-pagina.jpg",
-       "legenda": "Com o tamanho certo (última coluna), as linhas saem retas."
+       "legenda": "Última coluna: com o tamanho certo, as linhas saem retas sob a régua."
       }
      ]
     },
     {
      "id": "c",
-     "nome": "C — O programa adivinha o tamanho pela altura das letras",
+     "nome": "C — O programa adivinha pelo tamanho das letras",
      "texto": "Sem perguntar nada. É conta nossa, não do ScanTailor, e pode errar em livro de letra muito grande ou muito pequena.",
      "imgs": []
+    },
+    {
+     "id": "nao-entendi",
+     "nome": "Ainda não entendi",
+     "texto": "",
+     "imgs": []
+    }
+   ],
+   "historico": [
+    {
+     "quem": "samuel",
+     "em": "2026-10-23T00:50:44Z",
+     "texto": "não entendi."
+    },
+    {
+     "quem": "gerente",
+     "em": "2026-10-23T05:30:00Z",
+     "texto": "Refiz a explicação logo abaixo, sem palavras técnicas."
     }
    ]
   },
@@ -418,6 +437,18 @@
      "nome": "C — Aparece sempre, mas depois do clique o programa confere de novo e volta sozinho se a página ainda sair deformada",
      "texto": "Com um aviso dizendo que não deu certo.",
      "imgs": []
+    }
+   ],
+   "historico": [
+    {
+     "quem": "samuel",
+     "em": "2026-10-23T00:49:26Z",
+     "texto": "Mas o programa vai saber sempre que estiver deformada, o aviso deve perguntar e não fazer automaticamente."
+    },
+    {
+     "quem": "gerente",
+     "em": "2026-10-23T05:30:00Z",
+     "texto": "Registrado: a C, mas perguntando. Depois do clique no botão, o programa confere de novo; se a página ainda sair estragada, ele NÃO volta sozinho: mostra o aviso \"A página ainda saiu deformada\" com \"Desfazer\" e \"Manter assim\", e você escolhe. Sobre \"vai saber sempre?\": não sempre. Ele percebe com certeza dois casos: letra saindo da página e fundo de fora entrando nela (os do Destino 18 e do Cursus 176). Uma página que entorta sem fazer nenhuma das duas coisas ele não percebe; por isso a página fica no \"Para revisar\" para o Kaique olhar."
     }
    ]
   }
