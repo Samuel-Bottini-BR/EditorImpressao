@@ -201,3 +201,20 @@ Resposta do Samuel à `b-8-tinta-com-cor` (Central, 22/10): **"As duas: A e B co
 
 GitHub da tinta A e B: suíte `39850503362` (`41fa7bc`): 2185 passaram, 0 falharam; botões 234 ações, 0 falhas.
 Velocidade `39849559789` (`f26407c` → `8226f33`): **"igual (dentro do vai-e-vem)"** - abrir 36,5 → 36,6 s (+0,4%); trocar de página 4,26 → 4,32 s (+1,3%); Mágico pro 45,3 → 45,0 s (−0,7%); Preto e branco 29,0 → 29,0 s (+0,1%). O caminho de fábrica não passa pela conta nova.
+
+## Papel da "tinta com a cor" em dois jeitos (tc23-1, 22/10/2026, em andamento)
+
+Resposta do Samuel à `tc23-1` (o retângulo branco no papel creme do Original): "eu posso ter as duas opções?" e
+**"As duas: escolher o papel em cada área ('papel branco' ou 'papel como o resto da página')"**.
+
+- **O que mudou:** embaixo dos dois botões da cor aparecem mais dois, para o papel: **"papel branco"** (o de fábrica,
+  igual ao de hoje) e **"papel como o resto da página"** (o papel dentro da área fica como o filtro da página o deixou;
+  só a tinta segue o A ou o B). Em qualquer filtro, como os da cor (b-9). Provisório até o layout.
+- **Dados:** campo novo e opcional `Regiao.papel_da_pagina` (padrão `False` = papel branco). Projeto antigo sai papel branco.
+- **Código:** `core/selecao.py`, `core/editar_zonas.py` (`_mascara_do_jeito`), `ui/widgets/paineis.py`,
+  `ui/widgets/editor_selecao.py`, `ui/tela_conferir.py`. Commit `b0af839`.
+- **Testes:** `tests/test_tinta_papel_da_pagina.py` (10 passaram; os 10 falham no código antigo, que não tem o campo).
+  Também passaram `test_tinta_escurecida.py` (8), `test_editar_zonas.py` (10), `test_selecao.py` (24),
+  `test_paineis.py` (33), `test_editor_selecao.py` (17).
+- **Velocidade:** filtro do GitHub `39876068685` (`639136a` → `b0af839`), rodando.
+- Falta: somas (antigo `639136a` x novo), antes/depois, print da janela, suíte do GitHub.
