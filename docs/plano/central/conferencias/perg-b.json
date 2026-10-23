@@ -1,6 +1,6 @@
 {
  "id": "perg-b",
- "nome": "Perguntas do Implementador B (9)",
+ "nome": "Perguntas do Implementador B (11)",
  "trabalho": "2.4",
  "ordem": 7,
  "origem": "ONDE-PAREI do ramo fase2-ferramentas-2026-10-22",
@@ -381,6 +381,71 @@
      "id": "so-pb",
      "nome": "Só quando a página está em Preto e branco",
      "texto": "Nos outros filtros os botões ficam escondidos e vale a A.",
+     "imgs": []
+    }
+   ]
+  },
+  {
+   "id": "b-10-contorno",
+   "titulo": "No Preto e branco, \"papel como o resto da página\" deixa um contorno preto fino na letra colorida. Fica assim?",
+   "explicacao": [
+    "A sua escolha do papel (\"As duas\") está feita: ao marcar \"tinta com a cor\", agora aparecem também \"papel branco\" (de fábrica, igual a hoje) e \"papel como o resto da página\". No Original o retângulo branco some, como você queria (primeira foto).",
+    "O que apareceu: no Preto e branco, com \"papel como o resto da página\", a letra colorida fica com um contorno preto fino em volta. É o contorno que o filtro Preto e branco põe na beirada da letra; com \"papel branco\" ele some. Na foto ampliada da Escola 7: em cima com \"papel branco\", embaixo com \"papel como o resto da página\" (repare na beirada das letras de \"PRINCIPAIS\").",
+    "Caminho das fotos: livro novo, de fábrica → girar 0° → não dividiu → endireitar → cortar as bordas → filtro (Original ou Preto e branco) → área \"tinta com a cor\"."
+   ],
+   "exemplos": [
+    {
+     "src": "pb3/horas_p013-original-pagina.jpg",
+     "legenda": "Livro de Horas 13 no Original: com \"papel como o resto da página\" o retângulo branco some."
+    },
+    {
+     "src": "pb3/escola_p007-preto_e_branco-letra-de-perto.jpg",
+     "legenda": "Escola 7 no Preto e branco, bem de perto: em cima \"papel branco\"; embaixo \"papel como o resto da página\", com o contorno preto fino."
+    },
+    {
+     "src": "pb3/escola_p007-preto_e_branco-titulo-ampliado.jpg",
+     "legenda": "O título inteiro da Escola 7 nos jeitos."
+    }
+   ],
+   "opcoes": [
+    {
+     "id": "a",
+     "nome": "A — Fica assim",
+     "texto": "No Preto e branco, \"papel como o resto da página\" mantém o contorno do filtro.",
+     "imgs": []
+    },
+    {
+     "id": "b",
+     "nome": "B — No Preto e branco, \"papel como o resto da página\" sai igual a \"papel branco\" (recomendo)",
+     "texto": "No Preto e branco o papel já é branco, então as duas opções dariam o mesmo resultado, sem o contorno. No Original e no Melhorar continua como você escolheu.",
+     "imgs": []
+    }
+   ]
+  },
+  {
+   "id": "b-11-nome",
+   "titulo": "Trocar o nome \"tinta com a cor, papel branco\" para só \"tinta com a cor\"?",
+   "explicacao": [
+    "Agora o papel é escolhido nos botões de baixo (\"papel branco\" ou \"papel como o resto da página\"), então o nome do tipo, \"tinta com a cor, papel branco\", ficou dizendo uma coisa que nem sempre vale.",
+    "O implementador não mudou sozinho porque é nome de controle (precisa da sua decisão). Lembrete: os nomes de todos os botões ainda vão ser revistos pelo agente novo que você pediu."
+   ],
+   "exemplos": [
+    {
+     "src": "pb3/depois_painel_papel_da_pagina.png",
+     "legenda": "O painel \"Marcar como\" com os quatro botões novos (cor e papel)."
+    }
+   ],
+   "opcoes": [
+    {
+     "id": "a",
+     "nome": "A — Trocar para \"tinta com a cor\" (recomendo)",
+     "texto": "",
+     "imgs": []
+    },
+    {
+     "id": "b",
+     "nome": "B — Deixar como está até a revisão dos nomes de botão",
+     "texto": "",
      "imgs": []
     }
    ]

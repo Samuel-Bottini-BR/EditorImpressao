@@ -9,6 +9,10 @@
     "layout": "https://claude.ai/artifact/QuzVaghq2tz2WVwJ1AyMWu",
     "novidades": [
       {
+        "em": "2026-10-23T07:00:00Z",
+        "texto": "O papel da área da tinta com a cor está feito. Duas perguntas pequenas para você (Conferência > Para responder agora)."
+      },
+      {
         "em": "2026-10-23T06:00:00Z",
         "texto": "Suas respostas do desentortar foram registradas. O Implementador A está fazendo o ajuste do botão. Nada para responder agora."
       },
@@ -694,7 +698,7 @@
       "titulo": "Mudar à mão as áreas de gravura",
       "item": "2.18",
       "fase": "2",
-      "coluna": "andamento",
+      "coluna": "decidir",
       "oque": "Mostrar as áreas achadas delineadas e mudar o tamanho delas (quadradinhos e pincel somar/tirar).",
       "situacao": "Aprovado por você em 22/10. Entra no programa na junção, com o desentortar (testes no GitHub e no PC antes).",
       "selos": {
@@ -703,10 +707,10 @@
       },
       "fotos": [],
       "testar": [],
-      "falta": "O Implementador B está fazendo a sua escolha do papel da área (as duas opções); depois o verificador e você. Depois da junção: o aviso do \"Pintar por cima\".",
+      "falta": "O papel da área (as duas opções) está feito (Implementador B, 23/10; testes do GitHub: 2195 passaram, 0 falharam). Faltam duas perguntas pequenas, o verificador e a sua conferência.",
       "ramo": "fase2-ferramentas-2026-10-22",
       "commit": "f26407c",
-      "mudouEm": "2026-10-23T04:00:00Z"
+      "mudouEm": "2026-10-23T07:00:00Z"
     },
     {
       "id": "2.10",
@@ -815,21 +819,21 @@
       "id": "implementador-b",
       "nome": "Implementador B",
       "papel": "As 7 ferramentas não começadas",
-      "estado": "trabalhando",
+      "estado": "terminou",
       "tarefa": "Papel da área \"tinta com a cor\": \"papel branco\" ou \"papel como o resto da página\"",
-      "ultimo": "Começou a sua escolha do papel da área (as duas opções).",
+      "ultimo": "Fez o papel da área da tinta com a cor (as duas opções) e deixou duas perguntas pequenas para você.",
       "ramo": "fase2-ferramentas-2026-10-22",
-      "quando": "2026-10-23T04:00:00Z"
+      "quando": "2026-10-23T07:00:00Z"
     },
     {
       "id": "verificador",
       "nome": "Verificador",
       "papel": "Confere antes de chegar a você",
-      "estado": "terminou",
-      "tarefa": "Conferir a tinta com a cor A e B (2.18); depois o desentortar, quando você responder as três perguntas",
-      "ultimo": "Entregou a tinta com a cor A e B (aba Conferência): a A sai igual a antes, a B escurece só dentro da área. Próximo: o desentortar, quando o Implementador A entregar.",
-      "ramo": "verif-tinta-2026-10-23",
-      "quando": "2026-10-23T02:20:00Z"
+      "estado": "trabalhando",
+      "tarefa": "Conferir o papel da área da tinta com a cor; depois o desentortar",
+      "ultimo": "Começou a conferir o papel da área.",
+      "ramo": "verif-tinta-papel-2026-10-23",
+      "quando": "2026-10-23T07:00:00Z"
     },
     {
       "id": "layout",
