@@ -14,6 +14,14 @@ Samuel aprovar. Hoje (20/10) há agentes em oito ramos próprios: os seis que o 
 corte, conferência do "Para revisar", itens da Fase 2 iguais ao ScanTailor, layout etapas 4 a 7, caixa do conteúdo e
 pesquisa da impressão), mais o filtro de velocidade no GitHub e esta memória.
 
+## Atualização de 23/10/2026 ([PARTE -19](../historico/Editor%20de%20Impressao%20-%20resumo%20para%20o%20Claude.md) §2): vale mais que as tabelas abaixo
+
+- `fase2-scantailor-itens-2026-10-19` (worktree `fase2-itens`): ponta `f60067a` (2.12 com proteção, botão e P5; parado na P6).
+- `fase2-ferramentas-2026-10-22` (worktree `fase2-novas`): ponta `d4c820b` (7 ferramentas + tinta A/B + papel da área + 10/11).
+- Verificações novas: `verif-caixa-2026-10-22` `65857a4`; `verif-ferramentas-2026-10-22` `eda69bb` (`vfr22-novo`, `vfr22-antes`); `verif-layout-melhorias-2026-10-22` `2f2d791` (`vlm22`, `vlm22-antes`, `vlm22-av`, `vlm22-av-antes`); `verif-tinta-2026-10-23` `a92e6ca` (`vtc23`, `vtc23-antes`); `verif-tinta-papel-2026-10-23` `097f887` (`vtp23`, pausada).
+- Novo: `layout-antes-de-processar-2026-10-22` `138e425` (worktree `layout-avisos`, sai de `f54428e`).
+- Todas as worktrees de verificação têm junções `modelos` e `gabarito\paginas`: tirar a junção com `(Get-Item <junção>).Delete()` antes de `git worktree remove --force`.
+
 ## Atualização de 22/10/2026 ([PARTE -18](../historico/Editor%20de%20Impressao%20-%20resumo%20para%20o%20Claude.md)): vale mais que as tabelas abaixo
 
 | Ramo (último commit) | Situação em 22/10/2026 |

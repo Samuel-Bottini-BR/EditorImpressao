@@ -1,6 +1,6 @@
 # Editor de Impressão — documento para colar no Claude
 
-Atualizado em 22/10/2026 (PARTE -18; a anterior, PARTE -17, é de 19 a 21/10). Desde 19/10 a memória por assunto fica em `memoria/` (índice `memoria/INDICE.md`). Versão **máxima**: reúne o histórico institucional, o
+Atualizado em 23/10/2026 (PARTE -19; a anterior, PARTE -18, é de 21 e 22/10). Desde 19/10 a memória por assunto fica em `memoria/` (índice `memoria/INDICE.md`). Versão **máxima**: reúne o histórico institucional, o
 que o programa é, todas as funcionalidades pedidas, os 68 pedidos feitos até
 hoje **palavra por palavra**, o que foi feito, o que falta, e os dois
 documentos-fonte inteiros (a especificação original e o prompt de testes) em
@@ -14,7 +14,124 @@ o backup). Repositório git ligado a
 
 ---
 
-# PARTE -18 — Checkpoint de 21 e 22/10/2026: a Central de decisões (leia isto primeiro, é o mais novo)
+# PARTE -19 — Checkpoint de 22 e 23/10/2026: quase tudo aprovado, faltam o 2.12 e o papel da área para a junção (leia isto primeiro, é o mais novo)
+
+Sessão no PC do Samuel, aberta com `/projeto` e fechada com `/checkpoint` (pausa pedida por ele: "eu quero pausar e dar
+check point"). **O que manda continua sendo `docs/plano/`** (Registro de mudanças de 22 e 23/10, com as palavras dele;
+as duas cópias do plano estão iguais) e a memória `memoria/`. Respostas dele palavra por palavra:
+`relatorios/conferencia-samuel-2026-10-21-central.md`. **Agentes: todos pausados** (ver §2). Só documentos mudaram no
+`fase-1` nesta sessão; nenhum código do programa.
+
+## 0. Para recomeçar
+1. `git -C D:\programas\EditorImpressao fetch origin` e `status -sb`.
+2. Ler a Central (https://claude.ai/artifact/XNFrsdVR7q4K8cBcxNftZy) como na PARTE -18 §0, **e fazer a varredura
+   completa dos comentários** (todo `respostas` com `comentario` não vazio precisa ter resposta no `historico` da
+   pergunta, ver §4). A única pergunta aberta é a `a-212-p6` (§6).
+3. Ler "Perguntas para o Samuel" dos ONDE-PAREI de `fase2-itens` e `vtp23` (§2).
+
+## 1. Aprovado pelo Samuel nesta sessão (entra na junção)
+- **Caixa do conteúdo, borda preta, pintar de branco (2.5, 2.13, 2.14)** — `cx22` "Aprovado" + "vai para o programa
+  assim, mas vai ser investigado no futuro, esse problema." (aviso de corte, Egenloff 3).
+- **Livro aberto como no UPDF + tela cheia (layout 6-7)** — `lyupdf` "Aprovado".
+- **As 7 ferramentas do Implementador B (2.4, 2.6, 2.10+1.6, 2.16, 2.17, 2.18, 2.19)** — `fr22` "Aprovado"; chuvisco
+  "Deixar como está (aviso só acima de 20)".
+- **Tinta com a cor A e B (2.18)** — `tc23` "Aprovado"; botões "Em qualquer filtro".
+- **Três melhorias do layout** (quadro azul, "Antes de processar", miniaturas lembradas) — `lm22` "Aprovado" (entram na
+  rodada **depois** da junção, com o conserto do campo "Mostrar" cortado).
+- Já aprovados antes (PARTE -18): "Para revisar", 2.8, 2.9, 2.11+2.15, layout 4-5, consertos.
+
+**O que entra na junção (Samuel: "vamos manter o plano"):** todos os aprovados + 2.12 refeito + as 7 ferramentas
+(2.18 com a tinta A/B e o papel da área). Ficam para a rodada logo depois: aviso "Corte deixou algo de fora" (contar só
+o impresso), corte do Egenloff 3 na 1ª vez e o carimbo, tela cheia/PDF iguais (`lu-tc-igual`: "precisamos que o pdf
+saia que nem está na tela"), aviso do "Pintar por cima" sobre letras (`fr-218-aviso` "sim"), janela "Montar para
+imprimir" bagunçada (print `relatorios/prints-samuel/2026-10-22-montar-para-imprimir-baguncado.png`) e "são 1
+cadernos", caixa da receita (2.19), "Mostrar" cortado, as três melhorias do layout.
+
+## 2. Onde está cada trabalho (nada de código entrou no `fase-1`)
+
+| Ramo (ponta) | O que é | Situação |
+|---|---|---|
+| `fase2-scantailor-itens-2026-10-19` (worktree `fase2-itens`, ponta `f60067a`, código `2a42cfb`) | 2.8, 2.9, 2.11, 2.15 (aprovados) + **2.12** | 2.12 refeito: corte uma vez só, no fim (DLL v8 `177f711`); proteção + botão "Desentortar aumentando a página" (DLL v9 `5e361ce`); P5 "confere de novo e pergunta" (`a220c2d`, `2a42cfb`). GitHub suíte 39889712829: 2199/0, botões 221/0; filtro de velocidade 39889702446 (`7d71b15` x `2a42cfb`) ainda rodava — falta ler. **Implementador A pausado em `f60067a`.** Parado na pergunta **P6** |
+| `fase2-ferramentas-2026-10-22` (worktree `fase2-novas`, ponta `d4c820b`) | 7 ferramentas (aprovadas) + tinta A/B (`8226f33`) + papel da área (`b0af839`, `3e95076`) + respostas 10/11 (`f8691be`, `c95ba9e`) | GitHub 39889891066: 2206/0. Pronto |
+| `verif-tinta-papel-2026-10-23` (worktree `vtp23`, `097f887`) | conferência `tp23` do papel da área | Pronta até `3e95076`; **pausado** em `097f887`: leu o diff dos ajustes 10/11 (`d4c820b`) mas não rodou nada; o passo a passo no ONDE-PAREI dela. Ao terminar: publicar `tp23` na Central |
+| `fase2-caixa-conteudo` (`49d1ed3`) | 2.5, 2.13, 2.14 | aprovado; verificação `verif-caixa-2026-10-22` `65857a4` |
+| `layout-etapas4a7-2026-10-19` (`a3f7240`) + `layout-antes-de-processar-2026-10-22` (`138e425`, sai de `f54428e`) | layout 4-7 (aprovado) + melhorias (aprovadas, rodada seguinte) | verificação `verif-layout-melhorias-2026-10-22` `2f2d791` |
+| `fase2-para-revisar` (`f54428e`), `consertos-2026-10-21` (`2ff16e7`) | aprovados | esperam a junção |
+
+Verificações desta sessão (todas "PRONTO PARA CONFERIR, com ressalvas"): caixa `65857a4` (`cx22`), 7 ferramentas
+`eda69bb` (`fr22`), melhorias do layout `2f2d791` (`lm22`), tinta A/B `a92e6ca` (`tc23`), papel da área `bd6f73f`
+(`tp23`, não publicada ainda).
+
+**Na junção:** a DLL `st_ferramentas` tem versões diferentes por ramo (caixa, itens v9 com o desentortar, ferramentas)
+— recompilar com tudo (o Implementador A compilou na pasta `build-st-ferramentas-fase2-itens`). O "Para revisar" e o
+2.12 se encaixam como está no ONDE-PAREI do `fase2-itens` (botão `DESENTORTAR_SAIU_SEM`, `_aplicar_correcao`).
+
+## 3. Decisões do Samuel nesta sessão (todas no Registro de 22 e 23/10)
+- **2.12:** opção A "Como o ScanTailor: cortar uma vez só, no fim" (depois de perguntar "porque fazer o trabalho duas
+  vezes? como é feito no scantailor"); P1 e P2 "B — proteção" (+ "Ainda vou poder selecionar a opção c para as paginas
+  que entrarem para revisão?" → botão "Desentortar aumentando a página"); P3 páginas curvas em `D:\Livros para editar`
+  (só leitura); P4 fotos de celular "A — deixar como está" (+ "a opção não vai sumir?" → não some); P5 "C" + "o aviso
+  deve perguntar e não fazer automaticamente" ("Desfazer" / "Manter assim").
+- **Os 8 lugares que podem comer a página** (`a-comer-pagina`): "B — Só o desentortar agora; o resto para o começo da
+  próxima fase" + "quando for feito o teste de bug, ele tem que fazer a C — Primeiro provar em páginas de verdade,
+  depois decidir" (8 linhas novas na Lista de bugs, 22/10).
+- **Aviso de corte** (`cx-avisos`): "O aviso só conta o que parece impresso" + "melhorar a acuracidade"; "ok, deixe isso
+  anotado pois vai precisar ser resolvido" (Lista de bugs; Implementador A depois do 2.12).
+- **Tinta com a cor:** "As duas: A e B"; botões em qualquer filtro; papel da área "As duas" ("eu posso ter as duas
+  opções?"); no Preto e branco sem a linha preta ("Isso vai alterar alguma coisa?" → só essa página); nome **"manter a
+  cor da tinta"** + "esse botão ainda é bem confuso, mas por enquanto pode ficar assim."
+- **Lista de espera nova:** agente para revisar os nomes de todos os botões ("a nomeação dos botões é horrivel");
+  painel da aba Marcar "muito bagunçado"; **ferramenta primeiro, forma depois, como no Photoshop** (Fase 3).
+- **Lista de bugs nova:** o rodapé "N com dúvida" atrasado quando o aviso do desentortar entra ou sai pela prévia; o cartão Preto e branco do Righetti 96 quase em branco (com ou sem desentortar); quatro botões que piscam como janelinhas soltas ao abrir; "Mostrar" cortado na "Antes de
+  processar"; mancha preta da sombra da mão nas fotos de celular no Preto e branco.
+
+## 4. Tentado e descartado / lições
+- **Responder comentário dele só no Registro ou no chat:** falhou duas vezes ("teve questionamentos [...] que não foram
+  respondidos"; "foram só essas questões [...]?" → achei mais 8). Agora: varredura de **todos** os `respostas` com
+  comentário a cada "respondi"; resposta no `historico` da pergunta (fixado) ou na aba `duvidas`. Memória do Claude
+  `feedback_central_perguntas_na_hora` atualizada.
+- **Pergunta sem foto** ("Tem coisa sem foto lá"): toda pergunta com imagem; quando não há foto, desenho SVG
+  (`docs/plano/central/desenhos/`, publicados em `img/`). Foto sem legenda também falha ("não entendi nada, não tem
+  exemplos") — fazer foto legendada (PIL) e dizer coluna por coluna o que é.
+- **Explicação errada da foto** (eu escrevi "em cima/embaixo" numa foto antes/depois lado a lado) — conferir a imagem
+  antes de explicar.
+- **2.12 "papel branco em volta e cortar de novo":** era remendo; o certo é o jeito do ScanTailor (o corte é só medida).
+- **Publicar conferência com decisão já tomada pendente** (tp23 com b-10/b-11): segurei até os ajustes; publicar junto.
+
+## 5. Descobertas de comportamento real
+- **Central:** `rel.pergunta` (decisão final) não mostra `historico`; comentário dele nela vai para `resumo.paragrafos`.
+  Para reabrir uma pergunta, apagar o documento `respostas/<id>` (o comentário vai antes para o `historico`). A aba
+  "Conferência" abre com `#conferencia` no endereço; a sub-aba primeira é a de menor `ordem` (`agora`, ordem -1 =
+  "Para responder agora (N)", cópia das perguntas abertas com os mesmos ids). Publicar a página exige ter lido a versão
+  viva: a primeira tentativa é recusada e já conta como leitura.
+- **Desentortar do ScanTailor:** precisa do DPI de verdade (foto de celular não tem → não acha as linhas); a 100-200 DPI
+  não mexe, só a 300 (por isso a prévia "Rápida" e os cartões não mostram — pergunta P6).
+- **Qt:** `QMenu.popup` e diálogos puxam a janela para a tela do Samuel mesmo com o programa em -32000; os roteiros do
+  verificador (`vlm22/roteiros/base.py`) põem toda janela nova fora da tela antes.
+- `D:\Livros para editar` tem ~10.550 PDFs; os bem curvos são quase todos fotos de celular.
+
+## 6. Pergunta em aberto (exata, na Central, aba "Para responder agora (1)")
+- `a-212-p6`: "Desentortar: na tela ele não aparece (só no PDF). Mostrar na tela igual ao PDF?" — A "Deixar como
+  está"; **B "Como o ScanTailor: medir sempre na imagem grande, por trás, e a tela e os cartões mostrarem isso
+  (recomendo)"** (3-8 s por página, só com ele ligado); C "Ao ligar o desentortar, a prévia passa sozinha para 'Alta'
+  naquela página"; "Ainda não entendi".
+
+## 7. Próximo passo recomendado
+Ler a resposta da P6 → mandar ao Implementador A (worktree `fase2-itens`, ONDE-PAREI dele) → retomar o verificador do
+papel da área (ONDE-PAREI do `vtp23`) e publicar `tp23` → verificador do 2.12 inteiro → Samuel aprova os dois → **junção**:
+ramo de junção com todos os aprovados, DLL recompilada, suíte + `teste_botoes.py` no GitHub, depois no PC com os agentes
+parados, e só então `fase-1`. Depois, a rodada de melhorias (§1).
+
+## 8. Como rodar e conferir
+Igual à PARTE -17 §7. Nesta sessão só documentos mudaram no `fase-1`; `memoria\conferir_memoria.py` → "Tudo certo".
+Suítes do GitHub dos ramos: ferramentas 39889891066 (2206/0, botões 234/0), itens 39889712829 (verde), layout 39843764387
+(2196/0) e 39843769308 (2188/0). Gerar o banco da Central: `.venv\Scripts\python.exe docs\plano\para_a_central.py
+D:\programas\EditorImpressao-arquivos\central-banco`, gravar só os documentos mudados com ArtifactData `batch`
+(`if_version` de cada um, lido antes — a pasta do banco pode estar velha em relação ao banco vivo).
+
+---
+
+# PARTE -18 — Checkpoint de 21 e 22/10/2026: a Central de decisões
 
 Sessão no PC do Samuel, aberta com `/projeto` e fechada com `/checkpoint`. **O que manda continua sendo `docs/plano/`**
 (o Registro de mudanças de 21 e 22/10 tem tudo, com as palavras dele) e a memória `memoria/`. **Novidade principal: a

@@ -117,3 +117,12 @@ Leia-me das fontes no git: [docs/plano/paginas-claude-ai/LEIA-ME.md](../../docs/
 - **Página de andamento** (https://claude.ai/artifact/XNFrsdVR7q4K8cBcxNftZy): **não atualizada nesta sessão**.
 - **Página da memória:** https://claude.ai/artifact/TmMnggDtL2wtyeXVs1RvcE (publicada em 20/10/2026, "opção 2").
 - Ainda por apagar, sem resposta dele: a página vazia https://claude.ai/artifact/NwYyesZwRmQGvKnToYJLfW.
+
+## Central: novidades de 22-23/10/2026
+
+- Sub-aba **"Para responder agora (N)"** (`conferencias/agora`, `ordem` -1): cópia das perguntas abertas com os mesmos ids (responder ali vale para a aba original). Abrir a página em `https://claude.ai/artifact/XNFrsdVR7q4K8cBcxNftZy#conferencia`.
+- Sub-aba **"Suas dúvidas sem resposta"** (`conferencias/duvidas`): perguntas que vieram em comentários, cada uma com o comentário fixado (`historico`) e a resposta.
+- **Varredura obrigatória** a cada "respondi": todo `respostas` com `comentario` não vazio tem de ter resposta no `historico` (ou na aba de dúvidas). Para reabrir uma pergunta: o comentário vai para o `historico` e apaga-se `respostas/<id>`.
+- `rel.pergunta` (decisão final) não mostra `historico`: comentário nela vai para `resumo.paragrafos`.
+- Desenhos SVG próprios em `docs/plano/central/desenhos/` (publicados em `img/`). Foto sem legenda confunde: escrever a legenda na imagem.
+- Fotos publicadas por pasta: `cx22/`, `fr22/`, `lm22/`, `tc23/`, `pa2/`, `pa3/`, `pa4/`, `pb2/`, `pb3/`.

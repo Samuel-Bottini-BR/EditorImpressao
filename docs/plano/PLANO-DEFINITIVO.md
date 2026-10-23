@@ -412,6 +412,7 @@ Feito pelo agente de layout, a partir do plano discutido na conversa separada (v
 | 22/10 | **Quatro botões aparecem por um instante como janelinhas soltas ao abrir o programa** ("Guardar a tinta forte", "Guardar tudo", "Guardar só o texto" e "ver todas"); já existia no `7843503`; não visto se pisca na tela. Achado pelo verificador das melhorias do layout; o verificador da tinta viu o mesmo ao escolher um tipo no "Marcar como" (23/10). | `ui/widgets/escolhas_do_misto.py` 169, `ui/widgets/miniaturas.py` 219 | — |
 | 22/10 | **"Antes de processar" nova: o campo "Mostrar" corta o motivo mais comprido** ("Endireitar: as contas discordam (12)" sem o "(12)"); defeito da melhoria `138e425`, para o agente de layout. | `ui/janela_dos_avisos.py` (ramo `layout-antes-de-processar-2026-10-22`) | `lm22/img/2_depois_mostrar_comprido.jpg` na Central |
 | 23/10 | **Páginas fotografadas (celular): o Preto e branco transforma a sombra da mão ou da página numa grande mancha preta** (Razões do Integralismo 57, Atanásio 8, de "Livros para editar"); acontece também com o desentortar desligado. Achado pelo Implementador A no 2.12. | filtros (Preto e branco) | `pa3/razoes_p057-pagina.jpg` na Central |
+| 23/10 | **O rodapé "N com dúvida" fica atrasado** quando o aviso do desentortar entra ou sai pela prévia; e **o cartão Preto e branco do Righetti 96 sai quase em branco** (com ou sem o desentortar). Achados pelo Implementador A no ajuste da P5 do 2.12. | tela de conferir / cartões | — |
 
 ## 6. Lista de espera (ideias novas)
 

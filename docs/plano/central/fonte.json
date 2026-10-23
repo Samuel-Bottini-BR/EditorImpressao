@@ -9,6 +9,10 @@
     "layout": "https://claude.ai/artifact/QuzVaghq2tz2WVwJ1AyMWu",
     "novidades": [
       {
+        "em": "2026-10-23T11:00:00Z",
+        "texto": "Pausa e checkpoint pedidos por você: todos os agentes parados, com tudo salvo. Falta para a junção: a sua resposta da P6 do desentortar, terminar a conferência do papel da área e conferir o desentortar."
+      },
+      {
         "em": "2026-10-23T09:30:00Z",
         "texto": "Uma pergunta nova do desentortar: a tela mostrar o desentortar igual ao PDF (Conferência > Para responder agora)."
       },
@@ -817,11 +821,11 @@
       "id": "implementador-a",
       "nome": "Implementador A",
       "papel": "As 4 ferramentas começadas",
-      "estado": "trabalhando",
+      "estado": "parado",
       "tarefa": "2.12: depois do botão, perguntar se a página ainda sair deformada (sua resposta P5)",
-      "ultimo": "Começou o ajuste do botão do desentortar.",
+      "ultimo": "Pausado a seu pedido (23/10), com tudo salvo para continuar: o ajuste do botão está feito; espera a sua resposta da pergunta P6.",
       "ramo": "fase2-scantailor-itens-2026-10-19",
-      "quando": "2026-10-23T06:00:00Z"
+      "quando": "2026-10-23T11:00:00Z"
     },
     {
       "id": "implementador-b",
@@ -837,11 +841,11 @@
       "id": "verificador",
       "nome": "Verificador",
       "papel": "Confere antes de chegar a você",
-      "estado": "trabalhando",
+      "estado": "parado",
       "tarefa": "Conferir os ajustes 10 e 11 da tinta e fechar a conferência do papel da área",
-      "ultimo": "Conferindo os ajustes 10 e 11.",
+      "ultimo": "Pausado a seu pedido (23/10) no meio da conferência dos ajustes 10 e 11 da tinta; tudo salvo para continuar do mesmo lugar.",
       "ramo": "verif-tinta-papel-2026-10-23",
-      "quando": "2026-10-23T10:00:00Z"
+      "quando": "2026-10-23T11:00:00Z"
     },
     {
       "id": "layout",

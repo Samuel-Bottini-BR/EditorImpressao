@@ -9,6 +9,10 @@ Como manter: quando ele responder, registre no plano (as duas cópias) e na fich
 daqui** (ou mova para "Respondidas recentemente" com a data). O `conferir_memoria.py` avisa quando uma pergunta desta
 lista com nome entre crases já aparece como decidida no Registro.
 
+## 0. Atualização de 23/10/2026 (vale sobre o resto)
+
+A única pergunta aberta está na Central, aba Conferência > "Para responder agora (1)": **`a-212-p6`** "Desentortar: na tela ele não aparece (só no PDF). Mostrar na tela igual ao PDF?" (A deixar; **B como o ScanTailor, medir na imagem grande por trás (recomendado)**; C prévia "Alta" sozinha). Todas as outras de 21 a 23/10 foram respondidas (Registro do plano e `relatorios/conferencia-samuel-2026-10-21-central.md`).
+
 ## 1. Na página de escolhas (https://claude.ai/artifact/EJoJq5mocxi3vbNxU8ZecV)
 
 Seis perguntas da impressão, publicadas em 20/10/2026 e **sem resposta** (conferido na [PARTE -17](../../historico/Editor%20de%20Impressao%20-%20resumo%20para%20o%20Claude.md) §5). Vêm da

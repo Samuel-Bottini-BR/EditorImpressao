@@ -7,6 +7,8 @@ inteira do layout: o plano feito com o Samuel, as 13 rodadas de escolhas e as et
 
 ## Situação
 
+- **Atualização de 22-23/10/2026 ([PARTE -19](../../historico/Editor%20de%20Impressao%20-%20resumo%20para%20o%20Claude.md)); vale sobre os pontos abaixo:** livro aberto como no UPDF e tela cheia **APROVADOS** (`lyupdf`); três melhorias (quadro azul `eae91cb`, "Antes de processar" `138e425` no ramo `layout-antes-de-processar-2026-10-22`, miniaturas lembradas `edc6143`) **APROVADAS** (`lm22`), entram depois da junção com o conserto do "Mostrar" cortado. Lista de espera: revisar os nomes de todos os botões com um agente novo; painel da aba Marcar bagunçado; ferramenta primeiro, forma depois (como no Photoshop).
+
 - **Atualização de 22/10/2026 (tarde):** layout 6 e 7 aprovado; o agente de layout refaz o livro aberto como no UPDF e completa a tela cheia dos filtros (ver Registro 22/10/2026).
 
 - **Atualização de 22/10/2026:** Etapas 4 e 5 aprovadas pelo Samuel em 21/10/2026; 22/10/2026: conferência das etapas 6 e 7 publicada na Central (aba Conferência > Layout 6 e 7). O layout 4 a 7 entra no programa na junção final.
