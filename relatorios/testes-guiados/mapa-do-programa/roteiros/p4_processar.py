@@ -43,7 +43,7 @@ SAIDA_PDF.mkdir(exist_ok=True)
 
 
 def na_confirmar(w):
-    anota(f"janela de confirmar: título '{w.windowTitle()}', destino sugerido {w.caminho()}")
+    anota(f"janela de confirmar: título '{w.windowTitle()}', destino sugerido {w.caminho}")
     w.destino.definir(SAIDA_PDF, "La vida eterna (pronto).pdf")
     base.esperar(0.8)
     base.print_window(w, SAIDA / "p4-03-confirmar-com-destino.png", so_cliente=False)
