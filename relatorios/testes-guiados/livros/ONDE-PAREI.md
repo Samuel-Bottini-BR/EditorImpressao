@@ -22,7 +22,8 @@ Ramo `testes-livros-2026-10-23` (a partir do `fase-1` em `1ba93cf`). Nenhuma lin
 | Cursus | até o fim — `cursus.md` |
 | Marial (folhas 1–200) | até o fim — `marial.md` |
 | Horas (folhas 1–100) | até o fim — `horas.md` |
-| Graduale (folhas 200–300) | em andamento |
+| Graduale (folhas 200–300) | até o fim — `graduale.md` |
+| Antiphon (folhas 1–120) | em andamento |
 
 ## Aviso sobre a tela do Samuel (23/10, 17:48–18:11)
 
