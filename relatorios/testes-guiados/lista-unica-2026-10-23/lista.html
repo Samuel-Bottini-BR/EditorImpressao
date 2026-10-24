@@ -1,0 +1,884 @@
+<!doctype html>
+<html lang="pt-BR">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Lista única dos problemas — 23/10/2026</title>
+<style>
+:root { color-scheme: light dark; }
+* { box-sizing: border-box; }
+body {
+  font: 17px/1.65 "Segoe UI", system-ui, sans-serif;
+  max-width: 46rem; margin: 0 auto; padding: 2.5rem 1.5rem 6rem;
+  color: #1c1c1e; background: #fdfdfc;
+}
+h1 { font-size: 2rem; line-height: 1.2; margin: 0 0 .3em; letter-spacing: -.02em; }
+h2 { font-size: 1.35rem; margin: 2.4em 0 .6em; padding-top: .8em;
+     border-top: 1px solid #e6e4e0; letter-spacing: -.01em; }
+h3 { font-size: 1.1rem; margin: 1.8em 0 .4em; }
+h1 + p, h2 + p { margin-top: .4em; }
+p, li { margin: 0 0 .9em; }
+ul, ol { padding-left: 1.3em; }
+strong { font-weight: 640; }
+code {
+  font: .88em ui-monospace, "Cascadia Code", Consolas, monospace;
+  background: #f1efec; padding: .12em .35em; border-radius: 4px;
+}
+pre {
+  background: #f1efec; padding: 1em 1.1em; border-radius: 8px;
+  overflow-x: auto; line-height: 1.5;
+}
+pre code { background: none; padding: 0; }
+blockquote {
+  margin: 1.2em 0; padding: .1em 0 .1em 1.1em;
+  border-left: 3px solid #c9c5be; color: #55524d;
+}
+table {
+  border-collapse: collapse; width: 100%; margin: 1.2em 0;
+  font-size: .95rem; display: block; overflow-x: auto;
+}
+th, td { padding: .5em .8em; text-align: left; border-bottom: 1px solid #e6e4e0; }
+th { font-weight: 620; background: #f7f5f2; white-space: nowrap; }
+tr:last-child td { border-bottom: none; }
+img { max-width: 100%; height: auto; border-radius: 6px; margin: 1em 0;
+      border: 1px solid #e6e4e0; }
+hr { border: none; border-top: 1px solid #e6e4e0; margin: 2.5em 0; }
+.rodape { margin-top: 4em; padding-top: 1.2em; border-top: 1px solid #e6e4e0;
+          font-size: .85rem; color: #86827c; }
+@media (prefers-color-scheme: dark) {
+  body { color: #e8e6e3; background: #1a1917; }
+  h2 { border-top-color: #35332f; }
+  code, pre, th { background: #262421; }
+  th, td { border-bottom-color: #35332f; }
+  blockquote { border-left-color: #4a4741; color: #b0aca6; }
+  img { border-color: #35332f; }
+  .rodape { border-top-color: #35332f; color: #7d7973; }
+}
+@media print {
+  body { max-width: none; padding: 0; color: #000; background: #fff; }
+  h2 { page-break-after: avoid; }
+  table, img { page-break-inside: avoid; }
+}
+</style>
+</head>
+<body>
+<h1>Lista única dos problemas — 23/10/2026</h1>
+<p>Junta numa lista só tudo o que foi achado em 23/10/2026, que estava em três lugares:</p>
+<ul>
+<li><strong>Samuel (sessão 0)</strong>: os achados 0-1 a 0-10 e as "Respostas do mapa" — <code>relatorios/testes-guiados/2026-10-23-sessao-0/sessao-0.md</code>.</li>
+<li><strong>mapa</strong>: o mapa do programa, com 22 pontos confusos — <code>relatorios/testes-guiados/mapa-do-programa/mapa.md</code> (ramo <code>mapa-do-programa-2026-10-23</code>).</li>
+<li><strong>livros</strong>: os testes com os 14 livros, 18 problemas distintos em 64 linhas — <code>relatorios/testes-guiados/livros/resumo.md</code> e um <code>.md</code> por livro (ramo <code>testes-livros-2026-10-23</code>).</li>
+</ul>
+<p>Cada problema aparece <strong>uma vez só</strong>, mesmo quando foi achado por mais de um. A coluna "Quem achou" diz de onde veio
+(Samuel 0-x / mapa nº x / livros: código da linha no relatório do livro). Está organizada pelo que importa para quem
+vai usar o programa: primeiro os botões, depois as ferramentas, as funções que faltam, a imagem final e, por último,
+os nomes e números. Nada foi inventado: só o que está nos três documentos. Nenhuma linha do programa mudou.</p>
+<p><strong>Gravidade:</strong> <strong>trava o trabalho</strong> (não dá para terminar o livro como precisa) · <strong>atrapalha</strong> (o livro sai com
+defeito ou o Kaique se perde) · <strong>detalhe</strong>.</p>
+<p><strong>Livros (códigos):</strong> B = Boécio · P = Palatino · R = Righetti · S = Siebmacher · PE = Pesel · M = Matemática ·
+L = ljs47 · V = Valadés · E = Escola de Jesus · C = Cursus · MA = Marial · H = Livro de Horas · G = Graduale ·
+A = Antiphon_25. "La vida eterna" é o livro da sessão 0 e do mapa.</p>
+<hr />
+<blockquote>
+<h2>SEGURANÇA — ler primeiro</h2>
+<p><strong>"imprimir agora" manda o livro inteiro para a impressora sem perguntar nada</strong> (item 5.1). Na tela "Ficou
+pronto!", um clique nesse botão manda o PDF direto para a impressora padrão do Windows: sem escolher impressora,
+sem número de cópias, sem "tem certeza?". No La vida eterna seriam <strong>360 páginas</strong> de uma vez. Até ser mudado:
+<strong>não clicar em "imprimir agora"</strong>; usar "montar para imprimir em A4" ou abrir o PDF e imprimir pelo leitor.
+(O mapa não testou o botão, de propósito.)</p>
+</blockquote>
+<hr />
+<h2>Quadro</h2>
+<table>
+<thead>
+<tr>
+<th>Seção</th>
+<th>Itens</th>
+<th>Trava o trabalho</th>
+<th>Atrapalha</th>
+<th>Detalhe</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>1. Botões que não funcionam ou não dão resposta</td>
+<td>13</td>
+<td>0</td>
+<td>8</td>
+<td>5</td>
+</tr>
+<tr>
+<td>2. Ferramentas que somem ou ficam escondidas</td>
+<td>7</td>
+<td>1</td>
+<td>4</td>
+<td>2</td>
+</tr>
+<tr>
+<td>3. Funções que faltam</td>
+<td>2</td>
+<td>1</td>
+<td>1</td>
+<td>0</td>
+</tr>
+<tr>
+<td>4. Defeitos na imagem final</td>
+<td>12</td>
+<td>0</td>
+<td>10</td>
+<td>2</td>
+</tr>
+<tr>
+<td>5. Nomes, textos e números que confundem</td>
+<td>16</td>
+<td>1</td>
+<td>10</td>
+<td>5</td>
+</tr>
+<tr>
+<td><strong>Total</strong></td>
+<td><strong>50</strong></td>
+<td><strong>3</strong></td>
+<td><strong>33</strong></td>
+<td><strong>14</strong></td>
+</tr>
+</tbody>
+</table>
+<p>O "imprimir agora" (5.1) está contado como "trava o trabalho" por ser de segurança.</p>
+<h3>As 5 coisas mais graves</h3>
+<ol>
+<li><strong>"imprimir agora" imprime o livro inteiro sem perguntar</strong> (5.1) — segurança.</li>
+<li><strong>Livro escaneado de lado não divide, e não há como girar antes</strong> (3.1) — no Righetti não há caminho na janela; o
+   livro saiu com as duas páginas juntas em cada folha.</li>
+<li><strong>Mudar as caixinhas num livro já conferido não vale</strong> (2.5) — quem esqueceu de marcar "Cortar" ou "Endireitar" não
+   consegue acrescentar depois sem começar de novo (defeito aberto desde 29/09). Junto com o 2.1, é o "nem tem botão
+   para cortar ou dividir".</li>
+<li><strong>O desfazer não tira o Retângulo, e a marca sai impressa no PDF</strong> (1.3 e 4.6) — em 11 de 11 livros onde se
+   marcou; no Antiphon virou um retângulo cinza atrás do texto.</li>
+<li><strong>Os avisos ficam escondidos e cada lugar dá um número de dúvidas</strong> (5.5) — na Escola o rodapé dizia "1 com
+   dúvida" e no fim a janela cobrou 166 páginas; o Kaique acha que terminou e não terminou.</li>
+</ol>
+<hr />
+<h2>1. Botões que não funcionam ou não dão resposta</h2>
+<table>
+<thead>
+<tr>
+<th>Nº</th>
+<th>Problema</th>
+<th>Gravidade</th>
+<th>Quem achou</th>
+<th>Onde aparece</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>1.1</td>
+<td>"está certo" não muda nada na tela</td>
+<td>atrapalha</td>
+<td>Samuel 0-3 · mapa nº 7 e 8</td>
+<td>La vida eterna, folha 1, "Dividir a folha"</td>
+</tr>
+<tr>
+<td>1.2</td>
+<td>"usar mais fraco" não faz nada</td>
+<td>atrapalha</td>
+<td>livros: E-2, H-3 (problema 10)</td>
+<td>E p. 1; H p. 4</td>
+</tr>
+<tr>
+<td>1.3</td>
+<td>O desfazer não tira a marcação do Retângulo</td>
+<td>atrapalha</td>
+<td>livros: P-2, R-6, S-5, PE-5, L-5, V-5, E-4, MA-3, H-6, G-4, A-1 (problema 2)</td>
+<td>11 livros: P 74, R 99, S 37, PE 51, L 52, V 41, E 19, MA 166, H 53, G 22, A 56</td>
+</tr>
+<tr>
+<td>1.4</td>
+<td>"usar o corte alargado" deixou a página <strong>menor</strong></td>
+<td>atrapalha</td>
+<td>livros: A-2 (problema 8)</td>
+<td>A p. 2</td>
+</tr>
+<tr>
+<td>1.5</td>
+<td>"Confirmar e processar" às vezes não abre nada (a conferir)</td>
+<td>atrapalha</td>
+<td>livros: "A conferir" (todos os 14)</td>
+<td>os 14 livros, depois de muito uso da tela</td>
+</tr>
+<tr>
+<td>1.6</td>
+<td>O desfazer não traz o aviso de volta (ou traz um a mais)</td>
+<td>atrapalha</td>
+<td>livros: B-1, PE-3, B-4 (problemas 11 e 18)</td>
+<td>B p. 2 e p. 1; PE p. 1</td>
+</tr>
+<tr>
+<td>1.7</td>
+<td>O desfazer desfaz uma coisa que não está à vista</td>
+<td>atrapalha</td>
+<td>livros: R-5 (problema 15)</td>
+<td>R folha 99 (desfez o giro das 135 folhas)</td>
+</tr>
+<tr>
+<td>1.8</td>
+<td>O cartão do aviso no "Para revisar" não tem botão, e no "Dividir a folha" não há como resolver o aviso</td>
+<td>atrapalha</td>
+<td>Samuel 0-7 e 0-8</td>
+<td>La vida eterna, páginas 2, 7 e 9 (folha 4)</td>
+</tr>
+<tr>
+<td>1.9</td>
+<td>O Retângulo novo não aparece na tela</td>
+<td>detalhe</td>
+<td>livros: P-3 (problema 18)</td>
+<td>P p. 74</td>
+</tr>
+<tr>
+<td>1.10</td>
+<td>Tab ("ir para a próxima dúvida") não andou (a conferir)</td>
+<td>detalhe</td>
+<td>mapa nº 14</td>
+<td>La vida eterna, folha 2</td>
+</tr>
+<tr>
+<td>1.11</td>
+<td>Esc não fecha o "ver todas"</td>
+<td>detalhe</td>
+<td>mapa nº 13</td>
+<td>tela de conferir</td>
+</tr>
+<tr>
+<td>1.12</td>
+<td>Menus Editar, Marcar, Filtro, Página e Painéis cinza na tela das caixinhas</td>
+<td>detalhe</td>
+<td>mapa nº 19</td>
+<td>"Marque o que você quer fazer"</td>
+</tr>
+<tr>
+<td>1.13</td>
+<td>A tela fica vazia ou em "Preparando a prévia..." por uns segundos</td>
+<td>detalhe</td>
+<td>mapa nº 21 · livros: M-4 (problema 18)</td>
+<td>La vida eterna (Endireitar, painel Filtro); M (Cortar)</td>
+</tr>
+</tbody>
+</table>
+<h3>1.1 "está certo" não muda nada na tela — atrapalha</h3>
+<p>Clico em "está certo" e não acontece nada: a frase é a mesma, a folha é a mesma, a miniatura não ganha marca e o
+rodapé continua "0 de 360 conferidas". Só a <strong>barra de espaço</strong> marca e vai para a próxima.</p>
+<p>Detalhe: o clique grava a folha como conferida, mas não mostra (<code>ui/tela_conferir.py:666-670</code>, <code>_marcar_revisada</code>
+<code>:5065-5070</code>). No Dividir se confere <strong>folha</strong> e o rodapé conta <strong>página</strong>, por isso a contagem não mexe (mapa nº 8;
+ver 5.4). <strong>Diferença entre os documentos:</strong> no Boécio (p. 15, página <strong>com aviso</strong>) o "está certo" funcionou e a
+conta de dúvidas baixou. O que não dá resposta é o "está certo" no "Dividir a folha" (sessão 0 e mapa).</p>
+<p><img alt="" src="prints/samuel-image3.png" /></p>
+<h3>1.2 "usar mais fraco" não faz nada — atrapalha</h3>
+<p>Na página com o aviso "Ficou muito escura. Tente mais fraco na força do preto", clico "usar mais fraco": a página não
+muda, o aviso fica na faixa, só o botão some, e a contagem de dúvidas fica igual (E: 2 → 2; H: 23 → 23).</p>
+<p>Detalhe: aparece em páginas de Mágico pro (Escola) e Melhorar (Horas), e em quase toda página iluminada do Livro de
+Horas (as pinturas são escuras de propósito). O nome "força do preto" está errado nesses filtros: ver 5.9.</p>
+<p>Print: não há (está no <code>log.txt</code> do livro).</p>
+<h3>1.3 O desfazer não tira a marcação do Retângulo — atrapalha</h3>
+<p>Marco um retângulo com a ferramenta Retângulo, clico no desfazer de baixo, e a marcação <strong>continua lá</strong>, sem aviso.
+Em todos os 11 livros onde se marcou, o número de áreas foi N → N+1 → <strong>N+1</strong> (ex.: Palatino 74, "Marcado: 4 de
+gravura" → 5 → <strong>5</strong>).</p>
+<p>Detalhe: a marca que ficou <strong>vai para o PDF</strong> (item 4.6).</p>
+<p><img alt="" src="prints/livros-palatino-b-marcar-retangulo-p74.jpg" /></p>
+<h3>1.4 "usar o corte alargado" deixou a página menor — atrapalha</h3>
+<p>No aviso "O corte ... deixou de fora um pedaço impresso", o botão "usar o corte alargado" deveria pegar <strong>mais</strong>
+página. No Antiphon p. 2 fez o contrário: a página virou uma tira estreita e perdeu a metade esquerda.</p>
+<p>Detalhe: recorte de 40 % → 92 % da largura (do meio para a direita). No Righetti, Matemática, Marial e Graduale o mesmo
+botão tirou a dúvida sem estragar.</p>
+<p><img alt="" src="prints/livros-antiphon-a-p2-corte-alargado.jpg" /></p>
+<h3>1.5 "Confirmar e processar" às vezes não abre nada — atrapalha (a conferir)</h3>
+<p>Nos 14 livros, depois de muito uso da tela de conferir, o clique no botão azul "Confirmar e processar" não abriu nada
+em 30 s (botão à vista, ligado, nada por cima). Num percurso curto (abrir, conferir e clicar logo) abriu na hora, três
+vezes.</p>
+<p>Detalhe: o clique pelo próprio Qt abriu sempre. O relatório dos livros <strong>não contou como problema</strong>: pode ser do jeito
+de pilotar a janela. Pedido: o Samuel reparar se o botão às vezes precisa de um segundo clique.</p>
+<p>Print: não há.</p>
+<h3>1.6 O desfazer não traz o aviso de volta (ou traz um a mais) — atrapalha</h3>
+<p>Mexo numa página que tinha aviso e desfaço: a página volta, mas <strong>o aviso some</strong> e a dúvida sai da lista sem eu ter
+resolvido nada (B p. 2 no Endireitar: 15 → 14 dúvidas e a miniatura perde o "!"; PE p. 1 no "usar mais escuro": 37 →
+36 → 36). No caminho contrário, na B p. 1, desfazer o "usar Mágico pro nesta" trouxe <strong>um aviso a mais</strong> que não
+existia ("Texto quase sumiu", "aviso 1 de 2").</p>
+<p><img alt="" src="prints/livros-boecio-c-depois-do-desfazer.jpg" /></p>
+<h3>1.7 O desfazer desfaz uma coisa que não está à vista — atrapalha</h3>
+<p>No Righetti, arrastei a linha de dividir numa folha que não divide (não mexeu nada) e cliquei no desfazer achando que
+desfazia o arrasto. O desfazer desfez <strong>o giro das 135 folhas</strong> (a última coisa feita de verdade), sem aviso, e o PDF
+saiu todo de lado.</p>
+<p>Detalhe: o desfazer faz o que promete (desfaz a última ação), mas para o Kaique é uma armadilha (<code>log.txt</code>: corte 0,5
+→ 0,5; giro 270 → 0).</p>
+<p>Print: não há.</p>
+<h3>1.8 O cartão do aviso não tem botão — atrapalha</h3>
+<p>No painel "Para revisar" há avisos ("Parece em branco", páginas 2, 7 e 9), mas não há botão para resolver nem dica de
+como fazer o aviso sumir. Clicando no cartão da página 7, o programa foi para a folha 4, mas a faixa continuou com
+"Achei a lombada..." e <strong>sem os botões do aviso</strong>.</p>
+<p>Detalhe: clicar no cartão leva até a página; os botões ("Deixar em branco", "Tirar do livro", "está bom assim")
+aparecem na faixa embaixo da página — mas <strong>não na ferramenta "Dividir a folha"</strong> (<code>core/analise.py</code> 140-152,
+<code>ui/tela_conferir.py</code> 500-510). No pé do painel há "está bom em tudo". Nada no cartão diz isso. Conferir na sessão 1.</p>
+<p><img alt="" src="prints/samuel-image6.png" /></p>
+<h3>1.9 O Retângulo novo não aparece na tela — detalhe</h3>
+<p>Numa página que o programa já marcou quase inteira como gravura (em salmão), o retângulo que eu marco some dentro do
+salmão; só o número "Marcado: 5 de gravura" mostra que houve algo. Print: o mesmo do 1.3.</p>
+<h3>1.10 Tab não andou — detalhe (a conferir)</h3>
+<p>A tecla Tab ("Ir para a próxima dúvida") não andou no teste do mapa (ficou na folha 2). Pode ser o lugar do foco;
+conferir com o Samuel. Print: não há.</p>
+<h3>1.11 Esc não fecha o "ver todas" — detalhe</h3>
+<p>Na grade "ver todas" da tela de conferir, o Esc não volta; só o botão "voltar ao trabalho".</p>
+<p><img alt="" src="prints/mapa-22-ver-todas-na-conferencia.jpg" /></p>
+<h3>1.12 Menus cinza na tela das caixinhas — detalhe</h3>
+<p>Na tela "Marque o que você quer fazer" os menus do alto aparecem, mas Editar, Marcar, Filtro, Página e Painéis ficam
+cinza (não abrem). Print: o do 5.11 (os menus cinza no alto).</p>
+<h3>1.13 A tela fica vazia ou "Preparando a prévia..." — detalhe</h3>
+<p>O painel "Filtro da página" abriu na primeira vez com os quatro quadradinhos dos filtros vazios (cinza); no
+Endireitar, e no Cortar do livro de fotos (Matemática), a página mostrou só "Preparando a prévia..." por alguns
+segundos. Print: não há.</p>
+<hr />
+<h2>2. Ferramentas que somem ou ficam escondidas</h2>
+<table>
+<thead>
+<tr>
+<th>Nº</th>
+<th>Problema</th>
+<th>Gravidade</th>
+<th>Quem achou</th>
+<th>Onde aparece</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>2.1</td>
+<td>Cortar, dividir e as outras ferramentas somem conforme as caixinhas, sem aviso</td>
+<td>atrapalha</td>
+<td>Samuel 0-4 e 0-9 · mapa nº 3 e 11 · mapa resposta (b)</td>
+<td>La vida eterna (só 2 ícones na coluna da esquerda)</td>
+</tr>
+<tr>
+<td>2.2</td>
+<td>Caixinha marcada aparece só como um tique, sem quadrado: fácil desmarcar sem querer</td>
+<td>atrapalha</td>
+<td>mapa nº 3 · Samuel 0-4 (causa provável)</td>
+<td>"Marque o que você quer fazer"</td>
+</tr>
+<tr>
+<td>2.3</td>
+<td>Os painéis da direita começam fechados e a coluna da esquerda não tem nomes</td>
+<td>atrapalha</td>
+<td>Samuel 0-4 · mapa nº 11</td>
+<td>tela de conferir</td>
+</tr>
+<tr>
+<td>2.4</td>
+<td>O "automático" não é um botão</td>
+<td>atrapalha</td>
+<td>Samuel 0-6 · mapa nº 1 · mapa resposta (a)</td>
+<td>tela inicial ("Rodar o automático...") e painel "Automático"</td>
+</tr>
+<tr>
+<td>2.5</td>
+<td>Mudar as caixinhas depois de conferir não vale (defeito de 29/09)</td>
+<td><strong>trava o trabalho</strong></td>
+<td>mapa nº 2 · Samuel 0-9 (resposta do mapa) · livros: R-3</td>
+<td>La vida eterna; R (Conferir de novo não dividiu)</td>
+</tr>
+<tr>
+<td>2.6</td>
+<td>A Luz some no filtro Original; a "Área" fica no fim do painel Propriedades</td>
+<td>detalhe</td>
+<td>mapa nº 18</td>
+<td>painel "Filtro da página" &gt; "Mais ajustes"; painel Propriedades</td>
+</tr>
+<tr>
+<td>2.7</td>
+<td>"Margens iguais" e "Montar cadernos" só aparecem rolando</td>
+<td>detalhe</td>
+<td>mapa (parte 2) · livros: L-3</td>
+<td>"Marque o que você quer fazer"</td>
+</tr>
+</tbody>
+</table>
+<h3>2.1 As ferramentas somem conforme as caixinhas — atrapalha</h3>
+<p>"Tá, eu quero cortar as folhas e agora como eu faço??" — a ferramenta de cortar não está na coluna da esquerda. Só
+aparecem as ferramentas das caixinhas marcadas na primeira tela, e nada na tela diz isso.</p>
+<p>Detalhe: "Dividir folhas ao meio" liga o Dividir; "Cortar as bordas" liga o Cortar; "Endireitar folhas tortas" liga o
+Endireitar; "Limpar a folha" liga Retângulo, Laço, Pincel, Varinha, Mover a área, Zoom, Mão e "Os quatro filtros" —
+desmarcada, <strong>todas somem</strong>. O caminho para voltar (Arquivo &gt; "Voltar para as opções") não vale num livro já conferido
+(2.5).</p>
+<p><strong>Diferença entre os documentos:</strong> a sessão 0 diz que o Samuel marcou "Dividir" e "Limpar a folha"; o mapa reproduziu
+e concluiu que o print dele (2 ícones: Dividir e Endireitar; rodapé "58 com dúvida") bate com <strong>Dividir + Endireitar,
+com "Limpar a folha" e "Cortar" desmarcadas</strong> — com Dividir + Limpar apareceriam 9 ícones. A própria sessão 0, em
+"Respostas do mapa", já aceita a versão do mapa. Causa provável: item 2.2.</p>
+<p><img alt="" src="prints/samuel-image4.png" /></p>
+<h3>2.2 Caixinha marcada sem quadrado — atrapalha</h3>
+<p>Na primeira tela, a caixinha <strong>marcada</strong> aparece só como um tique, sem quadrado; a <strong>desmarcada</strong> tem quadrado vazio.
+Parece que as marcadas "não têm caixa". De fábrica, "Limpar a folha", "Endireitar" e "Cortar as bordas" já vêm
+marcadas: quem clica nelas achando que marca, desmarca — e somem as ferramentas (2.1).</p>
+<p><img alt="" src="prints/mapa-b-opcoes-dividir-e-endireitar.jpg" /></p>
+<h3>2.3 Painéis fechados e coluna sem nomes — atrapalha</h3>
+<p>"As opções do lado sumiram": os painéis (Para revisar, Automático, Propriedades, Filtro da página, Histórico) moram na
+coluna de ícones da <strong>direita</strong> e começam <strong>todos fechados</strong> ao abrir um livro; nada diz que estão lá. Na coluna da
+esquerda não há palavras: o nome da ferramenta só aparece com o mouse parado em cima.</p>
+<p><img alt="" src="prints/mapa-18-paineis-da-direita.jpg" /></p>
+<h3>2.4 O "automático" não é um botão — atrapalha</h3>
+<p>"Não consegui nem achar o modo automático." Não existe botão que rode o automático. O programa trabalha sozinho
+quando se clica <strong>"Conferir"</strong> na tela "Marque o que você quer fazer".</p>
+<p>Detalhe: há três "automáticos" e nenhum roda nada — "Rodar o automático..." (tela inicial, livro aberto) só leva à
+tela das caixinhas; o painel "Automático" (2º ícone da direita) só mostra as etapas ligadas; "Jeito do preto e branco:
+Automático" é outra coisa, dentro de "Mais ajustes" (<code>PainelAutomatico</code> em <code>ui/widgets/paineis.py</code>;
+<code>ui/tela_inicio.py:687</code>).</p>
+<p><img alt="" src="prints/mapa-a-rodar-o-automatico-leva-aqui.jpg" /></p>
+<h3>2.5 Mudar as caixinhas depois de conferir não vale — trava o trabalho</h3>
+<p>Num livro que já passou pelo "Conferir", voltar às opções (Arquivo &gt; "Voltar para as opções" ou "Rodar o
+automático..."), marcar mais caixinhas (ex.: Endireitar e Cortar) e clicar "Conferir" <strong>não muda nada</strong>: a frase de
+baixo diz que vai endireitar e cortar, mas a tela de conferir volta igual, sem as ferramentas novas.</p>
+<p>Detalhe: defeito registrado em 29/09 na Lista de bugs, ainda aberto. Só muda se o número de páginas mudar. No Righetti
+(R-3), "Conferir" de novo também não dividiu. Até ser consertado: usar um livro novo ou "começar de novo" no menu do
+cartão (perde o que já foi conferido). Contei como "trava" porque é o único caminho na tela para acrescentar o cortar
+ou o dividir que faltou.</p>
+<p><img alt="" src="prints/mapa-a-mudou-e-nao-valeu.jpg" /></p>
+<h3>2.6 A Luz e a "Área" escondidas — detalhe</h3>
+<p>A Luz ("Igualar a luz da página", "Suavizar as letras", "Tirar o chuvisco") fica em painel "Filtro da página" &gt; "Mais
+ajustes" e <strong>só existe</strong> com Preto e branco, Melhorar ou Mágico pro — no Original (o de fábrica) não aparece. A "Área"
+fica no fim do painel Propriedades, só com ferramenta de marcar, e precisa rolar.</p>
+<p><img alt="" src="prints/mapa-35-area-propriedades.jpg" /></p>
+<h3>2.7 Caixinhas que só aparecem rolando — detalhe</h3>
+<p>As caixinhas não cabem na tela: "Margens iguais em todas as páginas" e "Montar cadernos" só aparecem rolando. No ljs47
+(L-3) faltou justamente a "Margens iguais" (ver 4.8).</p>
+<p><img alt="" src="prints/mapa-07-opcoes-inteira-de-fabrica.jpg" /></p>
+<hr />
+<h2>3. Funções que faltam</h2>
+<table>
+<thead>
+<tr>
+<th>Nº</th>
+<th>Problema</th>
+<th>Gravidade</th>
+<th>Quem achou</th>
+<th>Onde aparece</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>3.1</td>
+<td>Não dá para girar o livro antes de dividir: livro escaneado de lado não divide</td>
+<td><strong>trava o trabalho</strong></td>
+<td>livros: R-1, R-2, R-3, R-4 (problema 1)</td>
+<td>R, todas as 135 folhas</td>
+</tr>
+<tr>
+<td>3.2</td>
+<td>Girar a página vendo-a inteira, como no Photoshop</td>
+<td>atrapalha</td>
+<td>Samuel 0-10</td>
+<td>La vida eterna p. 55, Endireitar a 45°</td>
+</tr>
+</tbody>
+</table>
+<h3>3.1 Girar o livro antes de dividir — trava o trabalho</h3>
+<p>O Righetti está escaneado de lado (livro aberto, duas páginas por folha). A tela das caixinhas <strong>não tem como girar</strong>
+o livro. Marquei "Dividir" e a frase prometeu "135 folhas em 270 páginas" — saíram 135. Girando as folhas depois, na
+conferência, o "dividir esta" fica cinza em todas. Voltar às opções e "Conferir" de novo também não divide. Não há
+caminho na janela: o livro saiu com as duas páginas juntas.</p>
+<p>Detalhe: a conta de dividir não acha a lombada com o livro de lado; depois do "Conferir" cada folha "entrou como uma
+página só... aqui não dá para dividi-la".</p>
+<p><img alt="" src="prints/livros-righetti-b-girada-sem-dividir.jpg" /></p>
+<h3>3.2 Girar vendo a página inteira — atrapalha</h3>
+<p>"Quando eu vou girando a folha era para ela aparecer como no Photoshop, para fora do quadrado, mas ela corta." No
+Endireitar, girando a página, a imagem fica presa dentro do retângulo da página e os cantos somem.</p>
+<p>Detalhe: a investigar se é só a tela ou se o PDF também perde os cantos.</p>
+<p><img alt="" src="prints/samuel-image8.png" /></p>
+<hr />
+<h2>4. Defeitos na imagem final</h2>
+<table>
+<thead>
+<tr>
+<th>Nº</th>
+<th>Problema</th>
+<th>Gravidade</th>
+<th>Quem achou</th>
+<th>Onde aparece</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>4.1</td>
+<td>Gravura estragada no Preto e branco, mesmo com "Achar gravuras"</td>
+<td>atrapalha</td>
+<td>livros: P-1, V-1, S-2 (problema 5)</td>
+<td>P 74; V 41; S 110</td>
+</tr>
+<tr>
+<td>4.2</td>
+<td>Texto comido</td>
+<td>atrapalha</td>
+<td>livros: M-1, M-2, C-1 (problema 6)</td>
+<td>M 66, 92, 40, 118; C 3</td>
+</tr>
+<tr>
+<td>4.3</td>
+<td>Folha branca sai cinza e manchada no Preto e branco</td>
+<td>atrapalha</td>
+<td>livros: B-2, MA-1, S-1 (problema 7)</td>
+<td>B 49; MA 2; S 74 e 86</td>
+</tr>
+<tr>
+<td>4.4</td>
+<td>O corte tirou um lado da moldura</td>
+<td>atrapalha</td>
+<td>livros: H-2 (problema 9)</td>
+<td>H 18</td>
+</tr>
+<tr>
+<td>4.5</td>
+<td>PDF pronto gigante</td>
+<td>atrapalha</td>
+<td>livros: PE-2, L-1, E-3, H-1, G-1, A-3 (problema 3) · mapa nº 22</td>
+<td>PE 208 MB; L 707 MB; E 907 MB; H 1.186 MB; G 1.040 MB; A 1.590 MB; La vida eterna 287 MB</td>
+</tr>
+<tr>
+<td>4.6</td>
+<td>A marca do Retângulo que o desfazer não tirou sai impressa</td>
+<td>atrapalha</td>
+<td>livros: A-1, P-1 (problema 2)</td>
+<td>A 56; P 74</td>
+</tr>
+<tr>
+<td>4.7</td>
+<td>Retângulos brancos por cima do cartão das pranchas</td>
+<td>atrapalha</td>
+<td>livros: PE-1 (problema 12)</td>
+<td>PE 51, 59, 67, 75</td>
+</tr>
+<tr>
+<td>4.8</td>
+<td>Corte "até o que está impresso": cada página de um tamanho, sem margem</td>
+<td>atrapalha</td>
+<td>livros: L-3, G-3 (problema 17)</td>
+<td>L 2, 11, 52; G (todas do trecho)</td>
+</tr>
+<tr>
+<td>4.9</td>
+<td>Montar em A4 um livro deitado vira as páginas de lado</td>
+<td>atrapalha</td>
+<td>livros: S-3 (problema 16)</td>
+<td>S (o livro todo)</td>
+</tr>
+<tr>
+<td>4.10</td>
+<td>A sombra da lombada fica como faixa preta na beirada</td>
+<td>atrapalha</td>
+<td>livros: B-6, S-1 (problemas 7 e 18)</td>
+<td>B 2; S 74 e 86</td>
+</tr>
+<tr>
+<td>4.11</td>
+<td>Mancha pequena vira ponto preto em cima da palavra</td>
+<td>detalhe</td>
+<td>livros: V-2 (problema 18)</td>
+<td>V 203</td>
+</tr>
+<tr>
+<td>4.12</td>
+<td>Pontinhos laranja na margem</td>
+<td>detalhe</td>
+<td>livros: A-5 (problema 18)</td>
+<td>A 56</td>
+</tr>
+</tbody>
+</table>
+<h3>4.1 Gravura estragada no Preto e branco — atrapalha</h3>
+<p>A gravura sai pior que o original. No Palatino 74 (gravura em madeira, letras brancas em fundo escuro) o fundo virou
+chuvisco preto e branco com manchas pretas grandes; no Valadés 41 (gravura em metal) o traço fino virou áreas pretas
+chapadas e os rostos perderam detalhe; no Siebmacher 110, parte do risco de bordado virou mancha preta e parte sumiu.</p>
+<p>Detalhe: aconteceu com "Achar gravuras e fotos" ligada; no Palatino o programa marcou a página como gravura e ela saiu
+estragada mesmo assim. Nenhum aviso apareceu (ver 5.7).</p>
+<p><img alt="" src="prints/livros-palatino-a-p74-gravura.jpg" /></p>
+<h3>4.2 Texto comido — atrapalha</h3>
+<p>Partes do texto somem no PDF pronto. Matemática 66 (e 92): cada número de questão com sombreado cinza virou borrão
+preto. Matemática 40 (e 118): as primeiras letras de cada linha, perto da lombada, sumiram ("Suponha que" → "~cha
+que"). Cursus 3: o corte da esquerda comeu a primeira letra ou duas das linhas de baixo.</p>
+<p>Detalhe: nenhuma dessas páginas teve aviso de "texto sumiu".</p>
+<p><img alt="" src="prints/livros-matematica-b-p66.jpg" /></p>
+<h3>4.3 Folha branca sai cinza e manchada — atrapalha</h3>
+<p>Uma folha de guarda branca sai <strong>cinza e toda manchada</strong>: a textura e as rugas do papel viram desenho (Boécio 49,
+Marial 2). No Siebmacher 74 e 86, borrões pretos espalhados. Quem imprime gasta tinta numa página feia.</p>
+<p><img alt="" src="prints/livros-boecio-b-pagina-49-original-e-saida.jpg" /></p>
+<h3>4.4 O corte tirou um lado da moldura — atrapalha</h3>
+<p>Livro de Horas 18 (calendário com moldura dourada): o corte tirou o lado esquerdo da moldura e deixou sobra branca do
+lado direito; a página ficou torta no papel.</p>
+<p><img alt="" src="prints/livros-horas-a-p18.jpg" /></p>
+<h3>4.5 PDF pronto gigante — atrapalha</h3>
+<p>Com Mágico pro e Melhorar o PDF sai de 15 a 20 vezes maior que o original: Pesel 208 MB (92 páginas), ljs47 707 MB,
+Escola 907 MB, Livro de Horas 1.186 MB (100 páginas), Graduale 1.040 MB (101 páginas), Antiphon 1.590 MB (120 páginas).
+O Graduale inteiro passaria de 7 GB. Difícil de guardar, copiar e mandar para a gráfica.</p>
+<p>Detalhe: no Preto e branco ficam leves (livros). O mapa achou 287,4 MB para 360 páginas com o filtro <strong>Original</strong>
+(La vida eterna).</p>
+<p><img alt="" src="prints/mapa-29-ficou-pronto.jpg" /></p>
+<h3>4.6 A marca do Retângulo sai impressa — atrapalha</h3>
+<p>A marcação que o desfazer não tirou (1.3) vai para o PDF. No Antiphon 56 ficou um <strong>retângulo cinza</strong> atrás de duas
+linhas de texto, exatamente onde marquei. No Palatino 74 o <strong>bloco preto</strong> entre o D e o G também está onde marquei.</p>
+<p>Detalhe: mesma causa do 1.3; está aqui também porque é o que aparece na página impressa.</p>
+<p><img alt="" src="prints/livros-antiphon-b-p56.jpg" /></p>
+<h3>4.7 Retângulos brancos nas pranchas do Pesel — atrapalha</h3>
+<p>O bordado ficou bom, mas o cartão marrom em volta virou um remendo: o título e cada bloco de texto ganharam um
+retângulo branco por cima, com a letra engrossada, e sobrou uma tira branca torta na beirada esquerda (Mágico pro).</p>
+<p><img alt="" src="prints/livros-pesel-a-p51.jpg" /></p>
+<h3>4.8 Cada página de um tamanho, sem margem — atrapalha</h3>
+<p>Com o corte "até o que está impresso", cada página sai de um tamanho e sem margem: no ljs47 a página 2 virou uma tira
+de 21 × 11 cm, a 11 tem 25 × 34 cm, a 52 tem 22 × 36 cm; no Graduale as pautas encostam na beirada. No A4, a letra
+muda de tamanho de página para página. Nada avisa; a caixinha "Margens iguais" fica escondida (2.7).</p>
+<p><img alt="" src="prints/livros-ljs47-a-p52.jpg" /></p>
+<h3>4.9 Livro deitado montado em A4 vira de lado — atrapalha</h3>
+<p>No Siebmacher (livro mais largo que alto), "montar para imprimir em A4" com o Livreto de fábrica põe todas as páginas
+<strong>de lado e diminuídas</strong> na meia folha (lê-se girando 90°), e a caixa de avisos lista <strong>mais de 120 linhas iguais</strong>
+"Página N: era deitada e foi girada de pé e diminuída para caber na página". O programa não sugere outro jeito.</p>
+<p><img alt="" src="prints/livros-siebmacher-c-para-imprimir-folha-10.jpg" /></p>
+<h3>4.10 Faixa preta da lombada na beirada — atrapalha</h3>
+<p>A sombra da lombada não é cortada: no Boécio 2 ficou um risco preto fino em toda a beirada esquerda; no Siebmacher 74
+e 86, uma faixa preta grossa, mesmo com "Achar a página dentro da borda preta" marcada.</p>
+<p><img alt="" src="prints/livros-boecio-f-pagina-2-faixa-preta.jpg" /></p>
+<h3>4.11 Mancha vira ponto preto — detalhe</h3>
+<p>Valadés 203: uma mancha marrom pequena em cima de uma palavra virou um ponto preto em cima de "Idiomate". Print: não
+há.</p>
+<h3>4.12 Pontinhos laranja na margem — detalhe</h3>
+<p>Antiphon 56: sobraram pontinhos laranja das manchas do pergaminho na margem da direita. Print: o mesmo do 4.6.</p>
+<hr />
+<h2>5. Nomes, textos e números que confundem</h2>
+<table>
+<thead>
+<tr>
+<th>Nº</th>
+<th>Problema</th>
+<th>Gravidade</th>
+<th>Quem achou</th>
+<th>Onde aparece</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>5.1</td>
+<td><strong>SEGURANÇA:</strong> <strong>"imprimir agora" manda o livro inteiro para a impressora sem perguntar</strong></td>
+<td><strong>trava o trabalho</strong> (segurança)</td>
+<td>mapa nº 15 · sessão 0 (Respostas do mapa)</td>
+<td>tela "Ficou pronto!"</td>
+</tr>
+<tr>
+<td>5.2</td>
+<td>A fila "Receita" no topo, sem explicação</td>
+<td>atrapalha</td>
+<td>Samuel 0-1 · mapa nº 5 e parte 5</td>
+<td>"Marque o que você quer fazer"; Configurações &gt; Medidas e receitas</td>
+</tr>
+<tr>
+<td>5.3</td>
+<td>Caixinha cinza e marcada ("Escurecer sozinho a força do preto...")</td>
+<td>atrapalha</td>
+<td>Samuel 0-2 · mapa nº 6</td>
+<td>"Marque o que você quer fazer", com Preto e branco</td>
+</tr>
+<tr>
+<td>5.4</td>
+<td>Folha e página misturadas</td>
+<td>atrapalha</td>
+<td>mapa nº 8 e 10 · Samuel 0-3 (rodapé)</td>
+<td>livro aberto; tela de conferir (Dividir x outras ferramentas)</td>
+</tr>
+<tr>
+<td>5.5</td>
+<td>Três contagens de dúvidas diferentes, e os avisos de folha escondidos</td>
+<td>atrapalha</td>
+<td>mapa nº 9 · livros: E-1, H-5, C-2, R-7 (problema 4) e "Já conhecido" de B, P, S, PE</td>
+<td>todos: ex. E rodapé 1 / fim 166; R 206 / 71 / 135</td>
+</tr>
+<tr>
+<td>5.6</td>
+<td>O número de dúvidas muda sozinho ao folhear</td>
+<td>atrapalha</td>
+<td>livros: B-3, L-4, MA-2, G-5, A-6 (problema 14)</td>
+<td>B 17 → 15; L 44 → 57; MA 47 → 57; G 19 → 30; A 66 → 75</td>
+</tr>
+<tr>
+<td>5.7</td>
+<td>Avisos demais e avisos falsos</td>
+<td>atrapalha</td>
+<td>livros: B-5, P-4, S-4, M-3, R-8, V-4, A-6 (problema 13)</td>
+<td>S 128 de 134; M 126 de 144; V 201 de 446; P 4 (3 avisos numa folha branca)</td>
+</tr>
+<tr>
+<td>5.8</td>
+<td>Nomes "ScanTailor", "Editor" e "contas" na tela e nos avisos</td>
+<td>atrapalha</td>
+<td>mapa nº 20 · livros: B-5, R-8</td>
+<td>"Marque o que você quer fazer"; avisos em B (9 de 50), R (69 de 135), V, A, PE</td>
+</tr>
+<tr>
+<td>5.9</td>
+<td>O aviso fala de "força do preto" em página Mágico pro ou Melhorar</td>
+<td>atrapalha</td>
+<td>livros: PE-4, E-2, H-3 (problema 10)</td>
+<td>PE 51; E 1; H 4</td>
+</tr>
+<tr>
+<td>5.10</td>
+<td>Atalhos em inglês e a lista atrás de "Show Details..."</td>
+<td>atrapalha</td>
+<td>mapa nº 17 · sessão 0 (Respostas do mapa)</td>
+<td>Ajuda (F1); menus ("Ctrl+Return", "Ctrl+Left", "Ctrl+Right")</td>
+</tr>
+<tr>
+<td>5.11</td>
+<td>"Limpar a folha" vem marcada com o Original, que não limpa nada</td>
+<td>atrapalha</td>
+<td>mapa nº 4</td>
+<td>"Marque o que você quer fazer"</td>
+</tr>
+<tr>
+<td>5.12</td>
+<td>Dois "montar cadernos" com nomes parecidos</td>
+<td>detalhe</td>
+<td>mapa nº 16</td>
+<td>caixinhas e "Ficou pronto!"</td>
+</tr>
+<tr>
+<td>5.13</td>
+<td>"Os quatro filtros" (esquerda) e "Filtro da página" (direita) com o mesmo desenho</td>
+<td>detalhe</td>
+<td>mapa nº 12</td>
+<td>tela de conferir</td>
+</tr>
+<tr>
+<td>5.14</td>
+<td>Nomes da Luz cortados ("Igual", "Suav", "Tirar o ch")</td>
+<td>detalhe</td>
+<td>mapa nº 18</td>
+<td>painel "Filtro da página" &gt; "Mais ajustes"</td>
+</tr>
+<tr>
+<td>5.15</td>
+<td>Nome do PDF sugerido com acento ("mágico pro")</td>
+<td>detalhe</td>
+<td>livros: A-4 (problema 18)</td>
+<td>A, PE, L, E, G</td>
+</tr>
+<tr>
+<td>5.16</td>
+<td>Nome comprido do livro cortado no cartão</td>
+<td>detalhe</td>
+<td>mapa (parte 1)</td>
+<td>tela inicial</td>
+</tr>
+</tbody>
+</table>
+<h3>5.1 "imprimir agora" imprime sem perguntar — trava o trabalho (segurança)</h3>
+<p>Na tela "Ficou pronto!", o botão "imprimir agora" manda o PDF <strong>direto para a impressora padrão do Windows</strong>, sem
+janela de impressão: não escolhe impressora nem número de cópias e não pergunta "tem certeza?". O livro inteiro sai
+com um clique (no La vida eterna, 360 páginas).</p>
+<p>Detalhe: o mapa <strong>não testou</strong> o botão, de propósito; a descrição vem do que o botão faz no programa. Fica ao lado de
+"montar para imprimir em A4", fácil de clicar por engano.</p>
+<p><img alt="" src="prints/mapa-29-ficou-pronto.jpg" /></p>
+<h3>5.2 A fila "Receita" — atrapalha</h3>
+<p>"Receita automática está muito confuso, esse painel." A fila "Receita" (com "De fábrica", "pôr neste livro", "nome da
+receita", "guardar", "apagar") fica no topo da tela das caixinhas, antes de tudo, e não explica o que é.</p>
+<p>Detalhe: só guarda e repõe as caixinhas desta tela com um nome, como os perfis do ScanTailor; nada nela é automático
+(<code>ui/tela_opcoes.py:197-223</code>, <code>core/perfis.py</code>, item 2.19; o código já diz "provisório até o layout"). A mesma coisa
+aparece de novo nas Configurações ("Receita de todo livro novo").</p>
+<p><img alt="" src="prints/samuel-image1.png" /></p>
+<h3>5.3 Caixinha cinza e marcada — atrapalha</h3>
+<p>"Essa opção não dá para desativar": "Escurecer sozinho a força do preto quando o texto sair falhado" aparece
+<strong>marcada e cinza</strong> — parece ligada e travada.</p>
+<p>Detalhe: só vale com "Só as letras" ligado; sem ele fica cinza mas continua marcada (vem marcada de fábrica)
+(<code>ui/tela_opcoes.py:544-553</code>, <code>:1039-1040</code>).</p>
+<p><img alt="" src="prints/samuel-image2.png" /></p>
+<h3>5.4 Folha e página misturadas — atrapalha</h3>
+<p>O livro aberto diz "360 páginas" em cima e "página 1 de 180" embaixo. Na conferência, no Dividir as miniaturas são
+"FOLHAS" ("folha 1 de 180"); nas outras ferramentas viram "PÁGINAS" ("página 1 de 360"); o "Para revisar" fala sempre
+em página. O rodapé conta páginas (360) enquanto o Dividir confere folhas (180): "está certo" e a barra de espaço no
+Dividir não mudam "0 de 360 conferidas" (1.1).</p>
+<p><img alt="" src="prints/mapa-04-livro-aberto.jpg" /></p>
+<h3>5.5 Três contagens de dúvidas e avisos escondidos — atrapalha</h3>
+<p>Cada lugar dá um número de dúvidas diferente. No La vida eterna: rodapé e "Para revisar" <strong>56</strong>, a janela "Antes de
+processar" <strong>67 páginas (69 avisos)</strong>, o "Ver todas as páginas" do livro aberto <strong>(0)</strong>. Na Escola o rodapé dizia <strong>"1
+com dúvida"</strong>, o painel 2, e no fim a janela cobrou <strong>166 páginas</strong>. No Righetti: alto 206, rodapé 71, fim 135 páginas
+/ 225 avisos.</p>
+<p>Detalhe (explicação dos livros): o rodapé e o "Para revisar" <strong>não mostram os avisos de folha</strong> ("Alinhamento
+duvidoso"); só o número do alto ("N páginas para você olhar") e a janela do fim contam esses. O Kaique acha que está
+tudo conferido e é surpreendido no fim.</p>
+<p><img alt="" src="prints/livros-escola-b-antes-de-processar-166.jpg" /></p>
+<h3>5.6 O número de dúvidas muda sozinho — atrapalha</h3>
+<p>Só folheando, sem resolver nada, o número de dúvidas muda: Boécio 17 → 15, ljs47 44 → 57, Marial 47 → 57, Graduale
+19 → 30, Antiphon 66 → 75. Print: não há.</p>
+<h3>5.7 Avisos demais e avisos falsos — atrapalha</h3>
+<p>Há aviso em quase todas as páginas: de 126 a 201 páginas com dúvida (Siebmacher 128 de 134; Matemática 126 de 144;
+Valadés 201 de 446). "Esta página tem cor - o preto e branco vai perder a ilustração" em 72 páginas de papel marrom
+(Siebmacher) e em quase todo o livro de fotos de celular (Matemática). No Palatino 4, uma folha branca com três
+avisos. "Inclinações diferentes" em folhas <strong>sem texto</strong> (capas, guardas). Com tanto aviso, os defeitos reais (4.1,
+4.2, 4.3) passam sem aviso nenhum. Print: não há.</p>
+<h3>5.8 "ScanTailor", "Editor" e "contas" — atrapalha</h3>
+<p>Nomes que não dizem nada ao Kaique: "Jeito de dividir: o do ScanTailor / o do Editor", "Conta do endireitar: a do
+ScanTailor", "Cortar seguindo o conteúdo (como o ScanTailor)". E o aviso "A conta do ScanTailor e a do Editor acharam
+inclinações diferentes" (ou "as contas discordam") aparece em 9 das 50 páginas do Boécio e em 69 das 135 folhas do
+Righetti, inclusive em folhas sem texto.</p>
+<p><img alt="" src="prints/livros-boecio-a-endireitar-p2-aviso-das-contas.jpg" /></p>
+<h3>5.9 "Força do preto" em página Mágico pro — atrapalha</h3>
+<p>O aviso "Ficou muito escura. Tente mais fraco na força do preto" aparece em páginas Mágico pro e Melhorar, onde esse
+controle não existe (no Mágico pro ele se chama "Intensidade"). O Kaique vai procurar um controle que não está ali. O
+botão do mesmo aviso não faz nada (1.2). Print: não há.</p>
+<h3>5.10 Atalhos em inglês e a lista escondida — atrapalha</h3>
+<p>A "Ajuda" (F1) mostra só "O que dá para fazer, e por qual tecla:"; a lista fica atrás de um botão em inglês, <strong>"Show
+Details..."</strong>. Nos menus, atalhos escritos "Ctrl+Return", "Ctrl+Left", "Ctrl+Right".</p>
+<p><img alt="" src="prints/mapa-33-ajuda.jpg" /></p>
+<h3>5.11 "Limpar a folha" que não limpa — atrapalha</h3>
+<p>"Limpar a folha" vem marcada, com o subtítulo "tira o amarelado", mas com o filtro <strong>Original</strong> ("não mexe na
+página"): de fábrica não tira nada. A frase de baixo nem menciona a limpeza.</p>
+<p><img alt="" src="prints/mapa-06-opcoes.jpg" /></p>
+<h3>5.12 Dois "montar cadernos" — detalhe</h3>
+<p>A caixinha "Montar cadernos no tamanho do scan (sem A4, sem margem)" (antes) e o botão "montar para imprimir em A4 (com
+margens)..." (depois) têm nomes parecidos; a "Ficou pronto!" não diz qual usar.</p>
+<p><img alt="" src="prints/mapa-30-montar-para-imprimir.jpg" /></p>
+<h3>5.13 Duas portas para os filtros — detalhe</h3>
+<p>"Os quatro filtros" (ícone da esquerda, meia lua) e o painel "Filtro da página" (direita) têm o mesmo desenho e fazem
+quase a mesma coisa.</p>
+<p><img alt="" src="prints/mapa-17-11-os-quatro-filtros.jpg" /></p>
+<h3>5.14 Nomes da Luz cortados — detalhe</h3>
+<p>No painel, os nomes aparecem cortados: "Igual", "Suav", "Tirar o ch".</p>
+<p><img alt="" src="prints/mapa-34-luz-mais-ajustes.jpg" /></p>
+<h3>5.15 Nome do PDF com acento — detalhe</h3>
+<p>Nome sugerido "antiphon-trecho - mágico pro.pdf"; o mesmo "mágico pro" com acento no Pesel, ljs47, Escola e Graduale.
+A regra do projeto é caminho de disco sem acento (<code>CLAUDE.md</code> §3). Print: não há.</p>
+<h3>5.16 Nome do livro cortado no cartão — detalhe</h3>
+<p>O nome comprido aparece cortado no cartão da tela inicial ("La vida eterna y La profu...").</p>
+<p><img alt="" src="prints/mapa-02-inicio-com-livro.jpg" /></p>
+<hr />
+<h2>Onde os documentos não batem</h2>
+<ul>
+<li><strong>Ícones do Samuel (0-4):</strong> a sessão 0 diz que ele marcou "Dividir" e "Limpar a folha"; o mapa diz que o print dele
+  só pode ser <strong>Dividir + Endireitar</strong> (com "Limpar" e "Cortar" desmarcadas). A própria sessão 0 já adotou a resposta
+  do mapa. Ver 2.1.</li>
+<li><strong>"está certo" (0-3):</strong> a sessão 0 e o mapa dizem que não dá resposta (no Dividir); nos livros, no Boécio p. 15 com
+  aviso, ele baixou a conta. Ver 1.1.</li>
+<li><strong>Tempo do processar:</strong> o mapa (nº 22) diz que não há tempo estimado; os livros corrigem: <strong>há</strong>, depois das
+  primeiras páginas ("Página 110 de 120 - faltam cerca de 3 minutos"). Por isso o tempo não entrou na lista (a
+  velocidade é da Fase 5). A parte do PDF grande do nº 22 está no 4.5.</li>
+<li><strong>Folha 5 do La vida eterna (0-5):</strong> no print do Samuel a linha azul de dividir estava no meio; no mapa ela ficou
+  quase na beirada esquerda, com o aviso "Não tenho certeza de onde cortar. Confira a linha."</li>
+</ul>
+<h2>Fora da lista (não contados)</h2>
+<ul>
+<li><strong>0-5, a folha 5 "jogada para cima": não é do programa.</strong> O PDF original já tem a folha assim (conferido pela
+  sessão 0 e pelo mapa).</li>
+<li><strong>Já conhecidos, só confirmados de novo pelos livros:</strong> a mancha do verso escurece no Preto e branco (<code>CLAUDE.md</code> §9;
+  muito forte no Cursus 37 e 402, também B 10 e 23, MA 166, G 1); o Boécio tem resolução baixa (§9); o endereço do site
+  no pé de todas as páginas da Escola (R8: "apagar em todas as páginas um texto repetido" — ainda não existe).</li>
+<li><strong>ljs47 minimizado durante o processar:</strong> os livros acham que não é do programa (talvez um Windows+D no PC).</li>
+</ul>
+<h2>Onde estão as coisas</h2>
+<ul>
+<li>Esta lista: <code>relatorios/testes-guiados/lista-unica-2026-10-23/lista.md</code> (e <code>.html</code>; o <code>.pdf</code> fica fora do git, com
+  uma cópia em <code>D:\programas\EditorImpressao-arquivos\testes-guiados-lista-unica\</code>).</li>
+<li>Prints usados: <code>prints/</code> nesta pasta, com o nome de onde vieram (<code>samuel-</code>, <code>mapa-</code>, <code>livros-&lt;livro&gt;-</code>).</li>
+<li>Os três documentos de origem estão listados no começo.</li>
+</ul>
+<p class="rodape">Editor de Impressão &middot; gerado em 23/10/2026 às 23:58</p>
+</body>
+</html>
