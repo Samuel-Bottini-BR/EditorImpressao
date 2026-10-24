@@ -1,6 +1,6 @@
 # Editor de Impressão — documento para colar no Claude
 
-Atualizado em 23/10/2026 (PARTE -19; a anterior, PARTE -18, é de 21 e 22/10). Desde 19/10 a memória por assunto fica em `memoria/` (índice `memoria/INDICE.md`). Versão **máxima**: reúne o histórico institucional, o
+Atualizado em 24/10/2026 (PARTE -20; a anterior, PARTE -19, é de 22 e 23/10). Desde 19/10 a memória por assunto fica em `memoria/` (índice `memoria/INDICE.md`). Versão **máxima**: reúne o histórico institucional, o
 que o programa é, todas as funcionalidades pedidas, os 68 pedidos feitos até
 hoje **palavra por palavra**, o que foi feito, o que falta, e os dois
 documentos-fonte inteiros (a especificação original e o prompt de testes) em
@@ -14,7 +14,135 @@ o backup). Repositório git ligado a
 
 ---
 
-# PARTE -19 — Checkpoint de 22 e 23/10/2026: quase tudo aprovado, faltam o 2.12 e o papel da área para a junção (leia isto primeiro, é o mais novo)
+# PARTE -20 — Checkpoint de 23 e 24/10/2026: a junção da Fase 2 entrou no programa; começaram os testes guiados (leia isto primeiro, é o mais novo)
+
+Sessão no PC do Samuel, aberta com `/projeto` e fechada com `/checkpoint`. **O que manda continua sendo `docs/plano/`**
+(Registro de mudanças de 23/10, com as palavras dele; as duas cópias do plano estão iguais) e a memória `memoria/`.
+Respostas dele palavra por palavra: `relatorios/conferencia-samuel-2026-10-21-central.md` (seção "23/10/2026 (tarde)")
+e `relatorios/testes-guiados/`. **Nenhum agente rodando** no fechamento.
+
+## 0. Para recomeçar
+1. `git -C D:\programas\EditorImpressao fetch origin` e `status -sb` (o `fase-1` estava em dia com o GitHub).
+2. Ler a Central (https://claude.ai/artifact/XNFrsdVR7q4K8cBcxNftZy): coleções `ordens`, `testes`, `ideias` e todo
+   `respostas` com `lida != true` (varrer os comentários, PARTE -19 §4). No fechamento não havia nada novo.
+3. Abrir `relatorios/testes-guiados/lista-unica-2026-10-23/lista.html` — é a base do que vem agora.
+4. Responder primeiro a pergunta em aberto (§6).
+
+## 1. O que entrou no programa (`fase-1` `718454b`, junção de 23/10) — rodando de verdade
+- Todos os aprovados: consertos de 21/10, "Para revisar", layout 4 a 7 (com as miniaturas lembradas), caixa do
+  conteúdo 2.5/2.13/2.14, 2.8, 2.9, 2.11, 2.15, **desentortar 2.12** (aprovado nesta sessão, `d212`), ferramentas
+  2.4, 2.6, 2.10+1.6, 2.16, 2.17, **2.18 com tinta A/B e papel da área** (aprovado nesta sessão, `tp23`), 2.19.
+  DLL `st_ferramentas` **v10** (SHA `95a0748b…`, igual em `core/nativo/` da pasta principal e da junção).
+- **Testes que passaram:** GitHub suíte 39980124099 (2690/0, botões 233/0); velocidade 39978310467 "parece mais
+  rápido" (abrir 61→37 s, Mágico pro 10 páginas 70→45 s, Preto e branco 39→29 s); **PC com agentes parados: 2744/0,
+  `teste_botoes` 233/0** (depois do conserto do §4). Desligado de fábrica: 96 de 96 somas iguais ao `fase-1` anterior.
+- Lugares de tela **provisórios** (até o agente de layout): Luz em "Mais ajustes" do painel Filtro; "Área" no fim do
+  painel Propriedades (aba Marcar); Velocidade, Medidas e receitas, Impressão no fim das Configurações.
+- Ficou de fora (rodada seguinte): `layout-antes-de-processar-2026-10-22` ("Antes de processar" mais clara, quadro
+  azul, "Mostrar" cortado).
+- O Samuel abriu o programa pelo atalho "Editor de Impressao (desenvolvimento)" (Área de Trabalho:
+  `.venv\Scripts\pythonw.exe main.py`, pasta `D:\programas\EditorImpressao`); abriu maximizado, sem erro.
+
+## 2. Decisões do Samuel nesta sessão (todas no Registro de 23/10)
+- **2.12 P6: B** — "sim" para a tela mostrar o desentortar igual ao PDF (medida na resolução do livro, por trás).
+  Feito pelo Implementador A (`50a2826`…`c3b66fb`), conferido (`d212`), **aprovado**.
+- **`d212-1` (moldura escura do scanner): "C — Deixar como está"** + "Mas fica anotado para depois da junção isso ser
+  resolvido [...] o primeiro passo em uma pagina dessas seria tirar essa moldura preta [...] não é?" (respondido na
+  Central: sim; Lista de bugs). **`d212-2` (Righetti 96 com o botão, sem pergunta): "A"** + "Eu quero o aviso, mas
+  isso fica para depois." (Lista de bugs).
+- **`tp23` (papel da área + respostas 10/11): Aprovado.**
+- **Testes guiados** (pedido: "será que podemos fazer testes conjuntos, no caso você me guiando para irmos editando
+  livros e vendo problemas?"; "o programa não é intuitivo, não consegui nem achar o modo automatico"; "preciso saber
+  usar ela para poder ensinar o kaique"). Plano aprovado (arquivo `C:\Users\fotog\.claude\plans\d-programas-editorimpressao-arquivos-tes-majestic-teacup.md`):
+  a gerente guia uma instrução por vez seguindo o caminho do Kaique; cada problema anotado na hora (erro / confuso /
+  falta) em `relatorios/testes-guiados/`; nenhum código muda durante as sessões; o que ele aprender vira um guia para o
+  Kaique. **Decisão 1: "A — Tudo junto no fim"** (consertos numa rodada só, depois das sessões). **Decisão 2: "A —
+  Esperar"** (a rodada de melhorias de depois da junção espera os testes guiados).
+- **Agente que testa livro por livro dentro do programa**: "Depois disso, você poderia botar um agente para pegar os
+  livros de testes e ir testando um por um, passando dentro do programa realmente" → "pode ser". Feito (§3).
+- Não quis que a gerente visse a tela dele (computer use): "não". Segue mandando print e frase pelo chat.
+- **Regra nova (memória do Claude `feedback_testes_guiados_anotar_e_mostrar`):** "por favor esses prints e coisas que
+  eu estou falando aqui, tem que anotar e colocar em algum lugar, no nosso historico" — todo print/frase dele vai na
+  hora para o relatório da sessão, e a gerente diz onde ficou.
+
+## 3. Testes guiados: o que existe (tudo no `fase-1`, menos os dois ramos indicados)
+- **Sessão 0** (ele sozinho, "La vida eterna y La profundidad del alma", `D:\Livros para editar\2 - TEOLOGIA\Escatologia\`):
+  10 achados 0-1 a 0-10 com prints e as palavras dele, `relatorios/testes-guiados/2026-10-23-sessao-0/sessao-0.html`
+  (documento dele copiado: `ressalvas-iniciais.docx`; original em `D:\programas\EditorImpressao-arquivos\TESTES MANUAIS DO SAMUEL\`).
+- **Mapa do programa** (verificador, janela de verdade fora da tela): ramo `mapa-do-programa-2026-10-23` (`df322a7`),
+  `relatorios/testes-guiados/mapa-do-programa/mapa.html`, 42 prints; 22 pontos confusos; roteiros que pilotam a janela.
+  **Ainda não juntado ao `fase-1`** (só documentos e roteiros; pela exceção de 20/10 basta a rodada do GitHub).
+- **14 livros de teste** (verificador): ramo `testes-livros-2026-10-23` (até `2f5dc46`),
+  `relatorios/testes-guiados/livros/resumo.html` + um `.md` por livro; saídas e logs em
+  `D:\programas\EditorImpressao-arquivos\testes-livros-saida\`. 12 até o fim; 64 linhas, 18 problemas distintos;
+  nunca fechou nem perdeu página. **Não juntado ao `fase-1`.**
+- **Lista única** (junta os três): `relatorios/testes-guiados/lista-unica-2026-10-23/lista.html` — **50 itens** (3
+  travam, 33 atrapalham, 14 detalhe) em 5 seções: botões sem resposta (13), ferramentas que somem (7), funções que
+  faltam (2), defeitos na imagem (12), nomes/números que confundem (16). As 5 mais graves: **"imprimir agora" manda o
+  livro inteiro para a impressora sem perguntar** (segurança; o Samuel foi avisado para não clicar); livro escaneado de
+  lado não divide (Righetti); mudar as caixinhas depois de conferir não vale (defeito de 29/09); o desfazer não tira o
+  Retângulo e ele sai no PDF; três contagens de dúvidas e avisos de folha escondidos.
+- Na Central: cartão "Testes guiados" (coluna andamento).
+
+## 4. Tentado e descartado / lições
+- **Suíte inteira no PC falhava por ordem dos testes** (erro no teardown "caixa modal 'Gravuras e fotos'"): testes que
+  fazem o detector de gravura cair no antigo (DLL de mentira, página sem DPI: `test_mesma_imagem_com_pouca_memoria`,
+  `test_tinta_papel_*`) deixavam o aviso pendente e a janela de outro teste o abria. Primeiro conserto por arquivo não
+  bastou (apareceu em outro teste); o certo foi uma fixture autouse em `tests/conftest.py` (`_aviso_da_gravura_limpo`,
+  `ff1f6cd`). Achado com uma sonda que espiona `core.detectar_regioes._avisar_uma_vez` (plugin `-p` com `PYTHONPATH`).
+  **O detector nunca falhou de verdade.** O GitHub não pegava (ordem/ambiente diferente).
+- **Agente que já sabe usar o programa não acha o que confunde o Kaique:** o verificador dos 14 livros marcou as
+  caixinhas certas desde o começo e não reencontrou os achados do Samuel (ferramentas que somem, "está certo" mudo). O
+  Samuel cobrou: "ele não achou nem os problemas que eu mesmo disse que achei?". A lista única foi a resposta. Para
+  achar confusão, só o Samuel (ou um roteiro que imite o leigo).
+- **Agentes matando `python.exe` em geral:** o do mapa fechou processos sem conferir de quem eram. Agora todo brief
+  manda guardar o PID e fechar só os seus. O dos livros deixou a janela "Antes de processar" aparecer na tela do
+  Samuel (17:48–18:11 de 23/10); consertado no `roteiros/base.py` dele.
+- **Escrever caminhos Windows em Python dentro de heredoc no Bash:** `\\2`, `\\p` viraram caracteres de controle
+  (caminho quebrado no `sessao-0.md` e no `fonte.json`). Usar barras normais (`D:/...`) ou o Write.
+- Um `tests/test_livro_aberto.py` vazio (0 bytes, 22/10), fora do git, travava o merge: movido para o rascunho da
+  sessão, não apagado.
+
+## 5. Descobertas de comportamento real
+- **Não existe botão de "automático":** o programa decide sozinho ao clicar "Conferir" na tela "Marque o que você quer
+  fazer". "Rodar o automático..." só leva a essa tela; o painel "Automático" só lista as etapas.
+- Caixinha marcada aparece só como tique (sem quadrado): fácil desmarcar "Limpar a folha" sem querer — e aí somem as
+  ferramentas de marcar, Zoom, Mão e "Os quatro filtros" (achado 0-4 reproduzido: Dividir + Endireitar = 2 ícones,
+  58 com dúvida).
+- "está certo" no Dividir grava a folha mas não muda nada na tela; o rodapé conta páginas, o Dividir confere folhas.
+- A folha 5 do "La vida eterna" já vem deslocada no PDF original (não é do programa).
+- PDF de saída com Mágico pro/Melhorar fica 15-20× o original (Antiphon 120 páginas: 1,6 GB).
+- Central: publicar a página exige ter lido a versão viva (a 1ª tentativa é recusada e já conta como leitura); fotos de
+  conferência vão por `files` com `root` na pasta da conferência; o vigia ("watch") da Central caiu por falha de rede
+  e não volta sozinho (não faz falta).
+
+## 6. Pergunta em aberto (exata, feita no chat)
+"A lista ficou separada por tipo (botão, nome, número), então os avisos ficaram espalhados, e você teve razão em não
+achar. **Quer que eu acrescente no topo um bloco só "Avisos", juntando esses 7?**" (os 7: 1.1, 1.2, 1.6, 1.8, 5.5,
+5.7, 5.9 da lista única). Contexto: ele perguntou "a questão dos avisos que quando clica não aparece como resolver e
+essas questões dos avisos que eu tinha falado?". Também em aberto, sem resposta: seguir para a **sessão 1** (guiada)
+ou ler a lista primeiro.
+
+## 7. Próximo passo recomendado
+Responder a pergunta do §6 (se "sim", acrescentar o bloco "Avisos" à lista única e regerar os três formatos) → sessão
+1 guiada com o "La vida eterna" (livro novo/"começar de novo", por causa do defeito de 29/09), anotando em
+`relatorios/testes-guiados/<data>-sessao-1/` → ao fim das sessões, a rodada única de consertos + melhorias (a lista
+única é a base). Juntar ao `fase-1` os ramos de documentos `mapa-do-programa-2026-10-23` e `testes-livros-2026-10-23`
+(rodada do GitHub antes, exceção de 20/10).
+
+## 8. Como rodar e conferir
+- Programa: atalho "Editor de Impressao (desenvolvimento)" ou `.venv\Scripts\python.exe main.py`.
+- Suíte no PC (~20 min, com os agentes parados): `.venv\Scripts\python.exe -m pytest tests -q -p no:cacheprovider`
+  → em 23/10: **2744 passaram, 59 pulados, 0 falharam**. Botões: `.venv\Scripts\python.exe teste_botoes.py` → 233
+  ações, 0 falhas.
+- GitHub: `gh workflow run "Testes no Windows" -R Samuel-Bottini-BR/EditorImpressao --ref claude/list-server-files-gkos8v -f ramo=<ramo>` (CLAUDE.md §4.6).
+- Central: `.venv\Scripts\python.exe docs\plano\para_a_central.py D:\programas\EditorImpressao-arquivos\central-banco`,
+  depois ArtifactData `batch` só dos documentos mudados, com `if_version` lido antes.
+- Memória: `.venv\Scripts\python.exe memoria\conferir_memoria.py`.
+
+---
+
+# PARTE -19 — Checkpoint de 22 e 23/10/2026: quase tudo aprovado, faltam o 2.12 e o papel da área para a junção
 
 Sessão no PC do Samuel, aberta com `/projeto` e fechada com `/checkpoint` (pausa pedida por ele: "eu quero pausar e dar
 check point"). **O que manda continua sendo `docs/plano/`** (Registro de mudanças de 22 e 23/10, com as palavras dele;
@@ -136,7 +264,8 @@ D:\programas\EditorImpressao-arquivos\central-banco`, gravar só os documentos m
 Sessão no PC do Samuel, aberta com `/projeto` e fechada com `/checkpoint`. **O que manda continua sendo `docs/plano/`**
 (o Registro de mudanças de 21 e 22/10 tem tudo, com as palavras dele) e a memória `memoria/`. **Novidade principal: a
 Central de decisões** (https://claude.ai/artifact/XNFrsdVR7q4K8cBcxNftZy), que substituiu a página de Andamento no mesmo
-endereço. **Agentes: todos parados.** O verificador da caixa do conteúdo foi **pausado a pedido do Samuel** ("pausa o agente e salva o que ele estava fazendo para continuar do mesmo lugar") no commit `c03f24b` do ramo `verif-caixa-2026-10-22`; o passo a passo do que falta está em `.claude\worktreescx22-novoelatorios\conferir\caixa-2026-10-22\ONDE-PAREI.md`. Já confirmou por máquina: GitHub 39788341137 (2234/0) vale para o código; testes de reversão provados; velocidade no PC Marial 100 307-313 s → 139-145 s; 32 de 100 páginas do Marial e as p. 3 e 12 do Egenloff mudaram o corte. **Achado novo:** o aviso "Corte deixou algo de fora" aparece em 82 de 100 páginas do Marial e 12 de 14 do Egenloff (antes e depois) — falta ver nas imagens antes de virar pergunta. Falta: imagens, janela de verdade, `conferencia.json`. Worktrees dele (com junções): `vcx22-novo`, `vcx22-antes`, `vcx22-04b`. Para retomar: chamar um verificador novo apontando esse ONDE-PAREI.
+endereço. **Agentes: todos parados.** O verificador da caixa do conteúdo foi **pausado a pedido do Samuel** ("pausa o agente e salva o que ele estava fazendo para continuar do mesmo lugar") no commit `c03f24b` do ramo `verif-caixa-2026-10-22`; o passo a passo do que falta está em `.claude\worktreescx22-novo
+elatorios\conferir\caixa-2026-10-22\ONDE-PAREI.md`. Já confirmou por máquina: GitHub 39788341137 (2234/0) vale para o código; testes de reversão provados; velocidade no PC Marial 100 307-313 s → 139-145 s; 32 de 100 páginas do Marial e as p. 3 e 12 do Egenloff mudaram o corte. **Achado novo:** o aviso "Corte deixou algo de fora" aparece em 82 de 100 páginas do Marial e 12 de 14 do Egenloff (antes e depois) — falta ver nas imagens antes de virar pergunta. Falta: imagens, janela de verdade, `conferencia.json`. Worktrees dele (com junções): `vcx22-novo`, `vcx22-antes`, `vcx22-04b`. Para retomar: chamar um verificador novo apontando esse ONDE-PAREI.
 
 ## 0. Para recomeçar
 1. `git -C D:\programas\EditorImpressao fetch origin` e `status -sb`. O `fase-1` está no commit deste checkpoint (só

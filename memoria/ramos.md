@@ -9,6 +9,8 @@ Conferido em 20/10/2026, de manhã (ramos remotos lidos com `git branch -r` depo
 
 ## Em uma frase
 
+> **Atualização de 24/10/2026 ([PARTE -20](../historico/Editor%20de%20Impressao%20-%20resumo%20para%20o%20Claude.md) §1 e §3; vale sobre as atualizações abaixo):** todos os aprovados foram juntados no `fase-1` em `718454b` (ramo `juncao-fase2-2026-10-23`, worktree `juncao-23`, ponta `ff1f6cd`): `consertos-2026-10-21`, `fase2-para-revisar`, `layout-etapas4a7-2026-10-19`, `fase2-caixa-conteudo`, `fase2-scantailor-itens-2026-10-19` (`c3b66fb`), `fase2-ferramentas-2026-10-22` (`d4c820b`). **Ficou fora:** `layout-antes-de-processar-2026-10-22` (`138e425`). Ramos novos, só documentos/roteiros, **ainda fora do `fase-1`:** `mapa-do-programa-2026-10-23` (`df322a7`, worktree `mapa`) e `testes-livros-2026-10-23` (`2f5dc46`, worktree `livros`). Verificações novas: `verif-tinta-papel-2026-10-23` (`vtp23`, `vtp23-antes`), `verif-2.12-2026-10-23` (`v212`, `v212-antes`, `v212-p5`). Todas com junções: `(Get-Item <junção>).Delete()` antes de remover.
+
 O programa de verdade é o ramo `fase-1` (pasta principal). O `master` está parado desde 28/09/2026 e só recebe o que o
 Samuel aprovar. Hoje (20/10) há agentes em oito ramos próprios: os seis que o Samuel liberou em 19/10 (Pesel 21 no
 corte, conferência do "Para revisar", itens da Fase 2 iguais ao ScanTailor, layout etapas 4 a 7, caixa do conteúdo e

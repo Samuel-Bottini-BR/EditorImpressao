@@ -521,3 +521,11 @@ O detalhe de cada um está em `relatorios/melhorias.md` e nas seções "Tentado 
 - Hipóteses de travamento já descartadas: modelo ONNX carregando devagar; "glitch de repintura" (H, PARTE -2).
 - Mexer em pywinauto com o Samuel usando o PC; roda do mouse por mensagem sem foco; área de trabalho
   virtual nova (H, PARTE -4 §4).
+
+## Acrescentadas em 24/10/2026 ([PARTE -20](../historico/Editor%20de%20Impressao%20-%20resumo%20para%20o%20Claude.md) §4)
+
+- **Agente que já sabe usar o programa não acha o que confunde o leigo.** O verificador dos 14 livros marcou as caixinhas certas e não reencontrou os achados do Samuel; ele cobrou: "ele não achou nem os problemas que eu mesmo disse que achei?". Regra: confusão de uso se acha com o Samuel (testes guiados) ou com roteiro que imite o leigo; relatório de agente sempre cruzado com os achados dele.
+- **Nunca fechar `python.exe` em geral.** Guardar o PID de tudo o que o agente abre e fechar só esses (o agente do mapa fechou processos sem conferir). Toda janela nova fora da tela, inclusive "Antes de processar" (apareceu na tela do Samuel em 23/10).
+- **Suíte que passa no GitHub pode falhar no PC pela ordem dos testes.** Estado global de "uma vez por sessão" (aviso da gravura) vazava entre testes; o conserto é limpar no `tests/conftest.py`, não arquivo por arquivo. Achar a origem com uma sonda (`-p` plugin espiando a função), não com palpite.
+- **Caminho Windows em Python dentro de heredoc do Bash quebra** (`\2`, `\p`). Usar `D:/...` ou o Write.
+

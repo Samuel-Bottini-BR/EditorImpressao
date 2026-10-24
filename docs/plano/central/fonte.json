@@ -1,13 +1,17 @@
 {
   "_leia": "Fonte da Central de decisões (https://claude.ai/artifact/XNFrsdVR7q4K8cBcxNftZy). A gerente mantém este arquivo; docs/plano/para_a_central.py junta com o plano, a Lista de bugs e o git e gera o banco da página. Coluna: decidir | melhorar | sem-aprovado | andamento | programa | fila. Selos: sim | nao | falta | parte.",
   "geral": {
-    "frase": "Fase 2: tudo o que você aprovou está no programa (junção de 23/10). Próximo: a rodada de melhorias (as três do layout e o que ficou anotado para depois da junção).",
+    "frase": "Fase 2 no programa (junção de 23/10). Agora: testes guiados. Já há uma lista de 50 problemas (você, o mapa e os 14 livros); os consertos vêm numa rodada só, depois das sessões.",
     "faseAtual": "2",
     "conferencia": "https://claude.ai/artifact/J8AwcyyUwrZ2n7kSevyGvX",
     "escolhas": "https://claude.ai/artifact/EJoJq5mocxi3vbNxU8ZecV",
     "memoria": "https://claude.ai/artifact/TmMnggDtL2wtyeXVs1RvcE",
     "layout": "https://claude.ai/artifact/QuzVaghq2tz2WVwJ1AyMWu",
     "novidades": [
+      {
+        "em": "2026-10-24T03:00:00Z",
+        "texto": "Checkpoint: tudo salvo. A lista única com os 50 problemas achados está em relatorios/testes-guiados/lista-unica-2026-10-23/lista.html. Falta você dizer se quer o bloco \"Avisos\" no topo e quando fazemos a sessão 1."
+      },
       {
         "em": "2026-10-23T20:30:00Z",
         "texto": "Testes guiados: tudo o que você mostra e fala no chat vai para o relatório da sessão (D:/programas/EditorImpressao/relatorios/testes-guiados/), com os prints. Cartão novo em \"Em andamento\"."

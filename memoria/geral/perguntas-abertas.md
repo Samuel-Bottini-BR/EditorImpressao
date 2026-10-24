@@ -9,7 +9,11 @@ Como manter: quando ele responder, registre no plano (as duas cópias) e na fich
 daqui** (ou mova para "Respondidas recentemente" com a data). O `conferir_memoria.py` avisa quando uma pergunta desta
 lista com nome entre crases já aparece como decidida no Registro.
 
-## 0. Atualização de 23/10/2026 (vale sobre o resto)
+## 0. Atualização de 24/10/2026 (vale sobre o resto; [PARTE -20](../../historico/Editor%20de%20Impressao%20-%20resumo%20para%20o%20Claude.md) §6)
+
+Respondidas em 23/10: `a-212-p6` (B), `d212`, `d212-1` (C + anotar), `d212-2` (A + aviso depois), `tp23` (aprovado), testes guiados (decisões 1 e 2: "A" e "A"; agente dos livros: "pode ser"; ver a tela dele: "não"). **Abertas, no chat:** (1) "Quer que eu acrescente no topo um bloco só 'Avisos', juntando esses 7?" (itens 1.1, 1.2, 1.6, 1.8, 5.5, 5.7, 5.9 da lista única); (2) seguir para a sessão 1 guiada ou ler a lista primeiro.
+
+## 0a. Atualização de 23/10/2026
 
 A única pergunta aberta está na Central, aba Conferência > "Para responder agora (1)": **`a-212-p6`** "Desentortar: na tela ele não aparece (só no PDF). Mostrar na tela igual ao PDF?" (A deixar; **B como o ScanTailor, medir na imagem grande por trás (recomendado)**; C prévia "Alta" sozinha). Todas as outras de 21 a 23/10 foram respondidas (Registro do plano e `relatorios/conferencia-samuel-2026-10-21-central.md`).
 

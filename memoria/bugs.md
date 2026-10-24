@@ -398,3 +398,10 @@ Fonte: Lista de bugs do [plano](../docs/plano/PLANO-DEFINITIVO.md) (linhas de 20
 | 19/10 | Mágico pro +1,1% do "Para revisar" | [5.1](itens/5.1.md) | **Fase 5** ("vamos deixar esse concerto de lentidão para o final, para a fase de desempenho.") |
 
 Bug de 13/10 "G6 deixa faixa preta larga" (tabela "Em ramo, não juntados" acima) deixou de estar em ramo: juntado em 20/10/2026. Os três consertos de `consertos-2026-10-21` seguem a regra do teste de reversão (o verificador prova antes de juntar).
+
+## Atualização de 24/10/2026 ([PARTE -20](../historico/Editor%20de%20Impressao%20-%20resumo%20para%20o%20Claude.md) §3 e §4)
+
+- **Lista única de 23/10** (`relatorios/testes-guiados/lista-unica-2026-10-23/lista.html`): 50 problemas de uso e de imagem achados pelo Samuel (sessão 0), pelo mapa e pelos 14 livros. É a base da rodada de consertos que vem **depois** dos testes guiados (decisão "A — Tudo junto no fim"). Na Lista de bugs do plano entraram, por ora: "está certo" sem resposta na tela; moldura escura no desentortar; Righetti 96 sem pergunta.
+- **Consertado na junção (23/10, `ff1f6cd`):** testes dependentes da ordem pelo aviso "Gravuras e fotos" (fixture `_aviso_da_gravura_limpo` em `tests/conftest.py`). Não é bug do programa.
+- **Aberto desde 29/09, reencontrado:** mudar as caixinhas de um livro já conferido não vale (a tela volta igual).
+
