@@ -16,7 +16,8 @@ Ramo `testes-livros-2026-10-23` (a partir do `fase-1` em `1ba93cf`). Nenhuma lin
 | Siebmacher | até o fim — `siebmacher.md` |
 | Pesel | até o fim — `pesel.md` |
 | Matemática | até o fim — `matematica.md` |
-| ljs47 | em andamento |
+| ljs47 | processado (montar não feito: janela minimizada por fora) — `ljs47.md` |
+| Valadés | em andamento |
 
 ## Aviso sobre a tela do Samuel (23/10, 17:48–18:11)
 

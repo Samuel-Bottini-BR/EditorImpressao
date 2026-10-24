@@ -52,7 +52,14 @@ def anota(texto):
 
 def foto(janela, nome):
     N_PRINT[0] += 1
-    return base.print_window(janela, BRUTOS / f"{N_PRINT[0]:03d}-{nome}.png")
+    try:
+        if janela.isMinimized():                 # alguém minimizou (ex.: Windows+D): volta, fora da tela
+            anota("(a janela estava minimizada; devolvo ao normal, fora da tela)")
+            janela.showNormal(); janela.move(-32000, -32000); base.esperar(1.5)
+        return base.print_window(janela, BRUTOS / f"{N_PRINT[0]:03d}-{nome}.png")
+    except Exception as erro:  # noqa: BLE001 - o print nunca derruba o percurso
+        anota(f"(sem print {nome}: {erro})")
+        return None
 
 
 def gravar_estado():
