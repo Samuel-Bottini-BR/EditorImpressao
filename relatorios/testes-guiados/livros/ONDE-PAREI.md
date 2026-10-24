@@ -23,7 +23,9 @@ Ramo `testes-livros-2026-10-23` (a partir do `fase-1` em `1ba93cf`). Nenhuma lin
 | Marial (folhas 1–200) | até o fim — `marial.md` |
 | Horas (folhas 1–100) | até o fim — `horas.md` |
 | Graduale (folhas 200–300) | até o fim — `graduale.md` |
-| Antiphon (folhas 1–120) | em andamento |
+| Antiphon (folhas 1–120) | até o fim — `antiphon.md` |
+
+**Tudo feito.** Resumo: `resumo.md` (e `.html`, `.pdf`; cópia em `D:programasditorImpressao-arquivos	estes-livros-relatorio`).
 
 ## Aviso sobre a tela do Samuel (23/10, 17:48–18:11)
 

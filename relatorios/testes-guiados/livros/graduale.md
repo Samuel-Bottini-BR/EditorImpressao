@@ -19,10 +19,11 @@ certo" → processar (**19 min 30 s**) → 101 páginas, **1.040 MB** → montar
 | # | O que fiz | O que esperava | O que aconteceu | Tipo | Print | Gravidade |
 |---|---|---|---|---|---|---|
 | G-1 | Olhei o PDF pronto | Algo perto do original | **1.040 MB para 101 páginas**; o livro inteiro passaria de 7 GB | erro | — | atrapalha |
-| G-2 | Processei | — | **19 min 30 s** para 101 páginas; o livro inteiro (750) levaria umas 2 h 20 min, sem tempo estimado | confuso | — | atrapalha |
 | G-3 | Comparei as páginas prontas com o original | A página com a margem do pergaminho | O corte vai **até a tinta**: as pautas encostam na beirada da página (sem margem nenhuma) e cada página sai de um tamanho (L-3 do ljs47 de novo) | confuso | — | atrapalha |
 | G-4 | Página 22: Retângulo e desfazer | A marcação some | Áreas 5 → 6 → **6** (P-2 de novo) | erro | — | atrapalha |
 | G-5 | Abri a conferência e folheei | Dúvidas paradas | **19 → 30** dúvidas só de folhear; "Antes de processar" 32 páginas / 35 avisos (B-3 e ponto 9 do mapa) | confuso | — | atrapalha |
+
+**Tempo (não conto como problema; velocidade é da Fase 5):** 19 min 30 s para 101 páginas no Mágico pro; o livro inteiro (750) levaria umas 2 h 20 min. A tela mostra "faltam cerca de N minutos".
 
 **A conferir (de novo):** o clique do Windows em "Confirmar e processar" não abriu nada em 30 s.
 

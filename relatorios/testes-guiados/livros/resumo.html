@@ -1,0 +1,303 @@
+<!doctype html>
+<html lang="pt-BR">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Testes com os livros - resumo</title>
+<style>
+:root { color-scheme: light dark; }
+* { box-sizing: border-box; }
+body {
+  font: 17px/1.65 "Segoe UI", system-ui, sans-serif;
+  max-width: 46rem; margin: 0 auto; padding: 2.5rem 1.5rem 6rem;
+  color: #1c1c1e; background: #fdfdfc;
+}
+h1 { font-size: 2rem; line-height: 1.2; margin: 0 0 .3em; letter-spacing: -.02em; }
+h2 { font-size: 1.35rem; margin: 2.4em 0 .6em; padding-top: .8em;
+     border-top: 1px solid #e6e4e0; letter-spacing: -.01em; }
+h3 { font-size: 1.1rem; margin: 1.8em 0 .4em; }
+h1 + p, h2 + p { margin-top: .4em; }
+p, li { margin: 0 0 .9em; }
+ul, ol { padding-left: 1.3em; }
+strong { font-weight: 640; }
+code {
+  font: .88em ui-monospace, "Cascadia Code", Consolas, monospace;
+  background: #f1efec; padding: .12em .35em; border-radius: 4px;
+}
+pre {
+  background: #f1efec; padding: 1em 1.1em; border-radius: 8px;
+  overflow-x: auto; line-height: 1.5;
+}
+pre code { background: none; padding: 0; }
+blockquote {
+  margin: 1.2em 0; padding: .1em 0 .1em 1.1em;
+  border-left: 3px solid #c9c5be; color: #55524d;
+}
+table {
+  border-collapse: collapse; width: 100%; margin: 1.2em 0;
+  font-size: .95rem; display: block; overflow-x: auto;
+}
+th, td { padding: .5em .8em; text-align: left; border-bottom: 1px solid #e6e4e0; }
+th { font-weight: 620; background: #f7f5f2; white-space: nowrap; }
+tr:last-child td { border-bottom: none; }
+img { max-width: 100%; height: auto; border-radius: 6px; margin: 1em 0;
+      border: 1px solid #e6e4e0; }
+hr { border: none; border-top: 1px solid #e6e4e0; margin: 2.5em 0; }
+.rodape { margin-top: 4em; padding-top: 1.2em; border-top: 1px solid #e6e4e0;
+          font-size: .85rem; color: #86827c; }
+@media (prefers-color-scheme: dark) {
+  body { color: #e8e6e3; background: #1a1917; }
+  h2 { border-top-color: #35332f; }
+  code, pre, th { background: #262421; }
+  th, td { border-bottom-color: #35332f; }
+  blockquote { border-left-color: #4a4741; color: #b0aca6; }
+  img { border-color: #35332f; }
+  .rodape { border-top-color: #35332f; color: #7d7973; }
+}
+@media print {
+  body { max-width: none; padding: 0; color: #000; background: #fff; }
+  h2 { page-break-after: avoid; }
+  table, img { page-break-inside: avoid; }
+}
+</style>
+</head>
+<body>
+<h1>Testes com os livros — resumo (23/10/2026)</h1>
+<p>Pedido do Samuel: "pegar os livros de testes e ir testando um por um, passando dentro do programa realmente".
+Feito pelo verificador com a <strong>janela de verdade</strong> (<code>fase-1</code> em <code>1ba93cf</code>), fora da tela do Samuel, com uma pasta de
+dados própria e uma <strong>cópia nova</strong> de cada PDF. Em cada livro, o caminho inteiro do Kaique: abrir pelo "Abrir um PDF" →
+escolher as caixinhas que fazem sentido para aquele livro → conferir (Dividir, Cortar, Endireitar, filtros, Retângulo
+quando há gravura, painel "Para revisar", botões laranja da faixa, "está certo", arrastar, desfazer) → "Confirmar e
+processar" → abrir o PDF pronto e olhar páginas → "montar para imprimir em A4" (sem imprimir). Nenhuma linha do programa
+mudou; nada foi consertado.</p>
+<h2>Os 14 livros</h2>
+<table>
+<thead>
+<tr>
+<th>Livro</th>
+<th>Folhas usadas</th>
+<th>Filtro</th>
+<th>Foi até o fim?</th>
+<th>Processar</th>
+<th>PDF pronto</th>
+<th>Problemas</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><a href="boecio.md">Boécio</a></td>
+<td>50 (todas)</td>
+<td>Preto e branco</td>
+<td>sim</td>
+<td>42 s</td>
+<td>4,6 MB</td>
+<td>6</td>
+</tr>
+<tr>
+<td><a href="palatino.md">Palatino</a></td>
+<td>134 (todas)</td>
+<td>Preto e branco</td>
+<td>sim</td>
+<td>3 min 31 s</td>
+<td>24 MB</td>
+<td>4</td>
+</tr>
+<tr>
+<td><a href="righetti.md">Righetti</a></td>
+<td>135 (todas)</td>
+<td>Preto e branco</td>
+<td><strong>sim, mas não dividiu</strong> (trava)</td>
+<td>4 min 16 s</td>
+<td>22 MB</td>
+<td>8</td>
+</tr>
+<tr>
+<td><a href="siebmacher.md">Siebmacher</a></td>
+<td>134 (todas)</td>
+<td>Preto e branco</td>
+<td>sim</td>
+<td>3 min 39 s</td>
+<td>7 MB</td>
+<td>5</td>
+</tr>
+<tr>
+<td><a href="pesel.md">Pesel</a></td>
+<td>92 (todas)</td>
+<td>Mágico pro</td>
+<td>sim</td>
+<td>6 min 50 s</td>
+<td>208 MB</td>
+<td>5</td>
+</tr>
+<tr>
+<td><a href="matematica.md">Matemática</a></td>
+<td>144 (todas)</td>
+<td>Preto e branco</td>
+<td>sim</td>
+<td>5 min 58 s</td>
+<td>9 MB</td>
+<td>4</td>
+</tr>
+<tr>
+<td><a href="ljs47.md">ljs47</a></td>
+<td>113 (todas)</td>
+<td>Mágico pro</td>
+<td>processou; montar não feito (*)</td>
+<td>18 min</td>
+<td>707 MB</td>
+<td>4</td>
+</tr>
+<tr>
+<td><a href="valades.md">Valadés</a></td>
+<td>446 (todas)</td>
+<td>Preto e branco</td>
+<td>sim</td>
+<td>13 min 47 s</td>
+<td>47 MB</td>
+<td>4</td>
+</tr>
+<tr>
+<td><a href="escola.md">Escola de Jesus</a></td>
+<td>199 (todas)</td>
+<td>Mágico pro</td>
+<td>sim</td>
+<td>11 min 7 s</td>
+<td>907 MB</td>
+<td>4</td>
+</tr>
+<tr>
+<td><a href="cursus.md">Cursus</a></td>
+<td>402 (todas)</td>
+<td>Preto e branco</td>
+<td>sim</td>
+<td>17 min</td>
+<td>113 MB</td>
+<td>2</td>
+</tr>
+<tr>
+<td><a href="marial.md">Marial</a></td>
+<td><strong>1 a 200</strong> de 907</td>
+<td>Preto e branco</td>
+<td>sim</td>
+<td>5 min 38 s</td>
+<td>21 MB</td>
+<td>3</td>
+</tr>
+<tr>
+<td><a href="horas.md">Livro de Horas</a></td>
+<td><strong>1 a 100</strong> de 191</td>
+<td>Melhorar</td>
+<td>sim</td>
+<td>20 min 27 s</td>
+<td>1.186 MB</td>
+<td>5</td>
+</tr>
+<tr>
+<td><a href="graduale.md">Graduale</a></td>
+<td><strong>200 a 300</strong> de 750</td>
+<td>Mágico pro</td>
+<td>sim</td>
+<td>19 min 30 s</td>
+<td>1.040 MB</td>
+<td>4</td>
+</tr>
+<tr>
+<td><a href="antiphon.md">Antiphon_25</a></td>
+<td><strong>1 a 120</strong> de 305</td>
+<td>Mágico pro</td>
+<td>sim</td>
+<td>33 min 29 s</td>
+<td>1.590 MB</td>
+<td>6</td>
+</tr>
+</tbody>
+</table>
+<p><strong>14 livros passaram pelo caminho inteiro; 13 chegaram ao fim, com o PDF pronto e os cadernos montados.</strong> O Righetti
+foi até o fim mas o livro saiu sem dividir (problema 1). (*) No ljs47 a janela de teste apareceu minimizada durante o
+processar (não sei por quê, talvez um Windows+D no PC; não parece do programa) e o meu roteiro parou antes de montar; o
+PDF saiu completo. Os quatro livros grandes foram feitos num trecho, como o pedido permitia. Em todos, <strong>nenhuma página
+faltou nem repetiu</strong> (contagem de entrada = contagem de saída) e <strong>o programa nunca fechou nem travou</strong>.</p>
+<p><strong>Contagem por tipo (linhas das tabelas dos 14 livros): 64 — 41 erro, 22 confuso, 1 falta.</strong> Muitas linhas são o mesmo
+defeito em livros diferentes; juntando, são <strong>18 problemas distintos</strong>, abaixo do mais grave ao menos grave.</p>
+<h2>Os problemas, do mais grave ao menos grave</h2>
+<h3>Trava o trabalho</h3>
+<p><strong>1. Livro escaneado de lado não divide (Righetti R-1 a R-4; erro + falta).</strong> A tela das caixinhas não tem como girar
+o livro; o "Conferir" não divide as folhas de lado (a frase prometia "135 folhas em 270 páginas", saíram 135); girando
+depois na conferência, "dividir esta" fica cinza; voltar às opções e "Conferir" de novo também não divide. Não achei
+caminho na janela. <img alt="" src="prints/righetti/b-girada-sem-dividir.jpg" /></p>
+<h3>Atrapalha (o livro sai com defeito ou o Kaique se perde)</h3>
+<p><strong>2. O desfazer não tira a marcação do Retângulo — e ela vai para o PDF (11 livros: P-2, R-6, S-5, PE-5, L-5, V-5,
+E-4, MA-3, H-6, G-4, A-1; erro).</strong> Em todos os livros em que marquei, as áreas foram N → N+1 → <strong>N+1</strong> depois do
+desfazer, sem aviso. No Antiphon a marca que ficou saiu no PDF como um <strong>retângulo cinza</strong> atrás do texto; no Palatino
+74, um bloco preto no mesmo lugar. <img alt="" src="prints/antiphon/b-p56.jpg" /></p>
+<p><strong>3. PDF pronto gigante com Mágico pro e Melhorar (Pesel, ljs47, Escola, Horas, Graduale, Antiphon; erro).</strong> 208 MB,
+707 MB, 907 MB, 1.186 MB (100 páginas), 1.040 MB (101 páginas), 1.590 MB (120 páginas) — de 15 a 20 vezes o original.
+No Preto e branco ficam leves.</p>
+<p><strong>4. Avisos escondidos e números que não batem (E-1, H-5, C-2, R-7 e outros; erro/confuso).</strong> O rodapé e o painel "Para
+revisar" não mostram os avisos de <strong>folha</strong> ("Alinhamento duvidoso"): na Escola o rodapé dizia <strong>"1 com dúvida"</strong>, o
+painel 2, e no fim a janela "Antes de processar" cobrou <strong>166 páginas</strong>. É a explicação do ponto 9 do mapa (o número do
+alto conta os avisos de folha; o rodapé e o painel, não). <img alt="" src="prints/escola/b-antes-de-processar-166.jpg" /></p>
+<p><strong>5. Gravura estragada no Preto e branco, mesmo com "Achar gravuras" ligada (Palatino 74, Valadés 41, Siebmacher 110;
+erro).</strong> O fundo escuro da gravura em madeira virou chuvisco com manchas pretas; o traço fino da gravura em metal virou
+áreas pretas chapadas. <img alt="" src="prints/palatino/a-p74-gravura.jpg" /></p>
+<p><strong>6. Texto comido (Matemática 66 e 40, Cursus 3; erro).</strong> O sombreado atrás dos números das questões virou borrão
+preto; o começo das linhas perto da lombada sumiu; o corte comeu a primeira letra das linhas. <img alt="" src="prints/matematica/b-p66.jpg" /></p>
+<p><strong>7. Folha branca sai cinza e manchada no Preto e branco (Boécio 49, Marial 2, Siebmacher 74 e 86; erro).</strong> A textura
+e as rugas do papel viram desenho; na Siebmacher, com faixa preta grossa da lombada. <img alt="" src="prints/boecio/b-pagina-49-original-e-saida.jpg" /></p>
+<p><strong>8. "usar o corte alargado" deixou a página menor (Antiphon 2; erro).</strong> A guarda virou uma tira estreita.
+<img alt="" src="prints/antiphon/a-p2-corte-alargado.jpg" /></p>
+<p><strong>9. Corte errado (Horas 18; erro).</strong> Tirou o lado esquerdo da moldura dourada e deixou sobra do outro lado.
+<img alt="" src="prints/horas/a-p18.jpg" /></p>
+<p><strong>10. O botão "usar mais fraco" não faz nada, e o aviso fala de "força do preto" em página Mágico pro/Melhorar (E-2,
+H-3, PE-4; erro/confuso).</strong> O aviso "Ficou muito escura" fica, só o botão some; aparece em quase toda página iluminada.</p>
+<p><strong>11. O desfazer não traz o aviso de volta (Boécio B-1 no Endireitar, Pesel PE-3 no "usar mais escuro"; erro).</strong> A
+página volta, a dúvida some da lista.</p>
+<p><strong>12. Pranchas do Pesel com retângulos brancos por cima do cartão (PE-1; erro).</strong> <img alt="" src="prints/pesel/a-p51.jpg" /></p>
+<p><strong>13. Avisos demais e avisos falsos (B-5, P-4, S-4, M-3, R-8, V-4, A-6; confuso).</strong> "A conta do ScanTailor e a do
+Editor acharam inclinações diferentes" em folhas <strong>sem texto</strong> (capas, guardas) e em metade das folhas de alguns livros;
+"Esta página tem cor" em 72 páginas de papel marrom (Siebmacher) e em quase todo o livro de fotos de celular
+(Matemática); de 126 a 201 páginas com dúvida. Com tanto aviso, os defeitos reais (5, 6, 7) passam sem aviso nenhum.</p>
+<p><strong>14. O número de dúvidas muda sozinho ao folhear (B-3, L-4, MA-2, G-5, A-6; confuso).</strong> Sem resolver nada: 17 → 15,
+44 → 57, 47 → 57, 19 → 30, 66 → 75.</p>
+<p><strong>15. O desfazer desfaz o que o Kaique não está vendo (Righetti R-5; confuso).</strong> Arrastar a linha numa folha que não
+divide não faz nada; o desfazer seguinte desfez o giro das 135 folhas, e o PDF saiu todo de lado.</p>
+<p><strong>16. Montar em A4 um livro deitado vira as páginas de lado, com mais de 120 linhas iguais de aviso (Siebmacher S-3;
+confuso).</strong> <img alt="" src="prints/siebmacher/c-para-imprimir-folha-10.jpg" /></p>
+<p><strong>17. Corte "até o que está impresso" deixa cada página de um tamanho, sem margem (ljs47 L-3, Graduale G-3; confuso).</strong>
+A letra muda de tamanho de página para página no A4.</p>
+<h3>Detalhe</h3>
+<p><strong>18. Pequenos (erro/confuso):</strong> nome do PDF sugerido com acento ("mágico pro"; A-4; <code>CLAUDE.md</code> §3); risco preto na
+beirada (B-6); mancha pequena vira ponto preto (V-2); pontinhos laranja na margem (A-5); um aviso a mais depois de
+desfazer (B-4); "Preparando a prévia..." demorado no livro de fotos (M-4); no Palatino, o retângulo marcado some dentro
+do salmão e só o número muda (P-3).</p>
+<h2>A conferir (não contei como problema)</h2>
+<p><strong>O clique do Windows em "Confirmar e processar" não abriu nada em 30 s em todos os 14 livros</strong>, com o botão à vista,
+ligado e sem nada por cima; o clique pelo próprio Qt no mesmo botão abriu na hora. Num percurso curto (abrir, conferir e
+clicar logo) o mesmo clique do Windows funcionou, três vezes. Pode ser do meu jeito de pilotar a janela, ou o botão "não
+pega" depois de muito uso da tela. Vale o Samuel reparar se o botão às vezes precisa de um segundo clique.</p>
+<h2>Correção ao mapa</h2>
+<p>O mapa (ponto 22) diz que o processar não tem tempo estimado. <strong>Tem:</strong> depois das primeiras páginas a tela mostra
+"Página 110 de 120 - faltam cerca de 3 minutos". Por isso não contei o tempo como problema; os tempos estão em cada
+livro (velocidade é da Fase 5).</p>
+<h2>Já conhecido, só confirmado (não contei)</h2>
+<p>Mancha do verso escurecida no Preto e branco (<code>CLAUDE.md</code> §9; muito forte no Cursus 37); Boécio de resolução baixa
+(§9); texto repetido do site no pé de todas as páginas da Escola (R8, ainda não existe); três números de dúvidas (ponto 9
+do mapa — o item 4 acima explica de onde vem).</p>
+<h2>O que funcionou bem</h2>
+<p>Nenhum livro fechou o programa; contagem de páginas sempre certa; cadernos montados com instruções de dobra certas;
+papel branco e texto limpo no Preto e branco em Palatino, Valadés, Marial, Cursus (fora da mancha do verso); <strong>cores
+fiéis e papel branco</strong> no Livro de Horas, Graduale, Antiphon, ljs47 e Escola (R6); fundo preto, página vizinha e sombra
+da lombada tirados; "Deixar em branco" e os botões de corte funcionando.</p>
+<h2>Onde estão as coisas</h2>
+<ul>
+<li>Um relatório por livro nesta pasta (<code>&lt;livro&gt;.md</code>), com uma tabela por problema e os prints.</li>
+<li>Prints recortados (no git): <code>prints/&lt;livro&gt;/</code>. Prints inteiros, o registro de cada clique (<code>log.txt</code>), os PDFs prontos
+  e os arquivos para imprimir (fora do git): <code>D:\programas\EditorImpressao-arquivos\testes-livros-saida\&lt;livro&gt;\</code>.</li>
+<li>Roteiros: <code>roteiros/percurso.py</code> (o caminho inteiro), <code>roteiros/configs/</code> (as caixinhas de cada livro),
+  <code>roteiros/contorno_righetti.py</code>, <code>roteiros/base.py</code> (agora com todas as janelas sempre fora da tela).</li>
+<li><strong>Aviso:</strong> nas primeiras rodadas do Boécio (17:48–18:11) a janela "Antes de processar" apareceu na tela do Samuel
+  (ver <code>ONDE-PAREI.md</code>); corrigido no roteiro e testado.</li>
+</ul>
+<p class="rodape">Editor de Impressão &middot; gerado em 23/10/2026 às 23:40</p>
+</body>
+</html>

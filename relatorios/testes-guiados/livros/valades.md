@@ -18,9 +18,10 @@ páginas, 112 folhas, 23 cadernos). **Foi até o fim**; 446 entraram, 446 saíra
 |---|---|---|---|---|---|---|
 | V-1 | Processei a gravura da página 41 no Preto e branco, com "Achar gravuras" ligada | "O desenho também sair perfeito" | O sombreado de traço fino virou **áreas pretas chapadas**: os fundos dos medalhões e as dobras das roupas escureceram, rostos e mãos perderam detalhe; o desenho ficou muito mais pesado que o original | erro | ![](prints/valades/a-p41.jpg) *Página 41: original e pronta* | atrapalha |
 | V-2 | Página 203: mancha marrom pequena em cima de uma palavra | Mancha some, palavra fica | A mancha virou um **ponto preto** em cima da palavra ("Idiomate") | erro | — | detalhe |
-| V-3 | Cliquei "Conferir" | Esperar pouco | **4 min 35 s** olhando o livro, só com "Olhando o livro..." (446 folhas) | confuso | — | detalhe |
 | V-4 | Abri a conferência | Avisos que ajudam | **201 de 446** com dúvida (alto **218**; "Antes de processar" **199 / 241 avisos**); "as contas discordam" de novo nas primeiras folhas (guardas sem texto) | confuso | — | atrapalha |
 | V-5 | Página 41: Retângulo e desfazer | A marcação some | Áreas 16 → 17 → **17** (P-2 do Palatino de novo) | erro | — | atrapalha |
+
+**Tempo (não conto como problema; velocidade é da Fase 5):** "Conferir" levou 4 min 35 s (446 folhas) e o processar 13 min 47 s.
 
 **A conferir (de novo):** o clique do Windows em "Confirmar e processar" não abriu nada em 30 s.
 

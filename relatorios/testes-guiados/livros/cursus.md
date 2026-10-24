@@ -17,7 +17,8 @@ desfazer → "Para revisar" ("usar o corte alargado" e desfazer, mais dois) → 
 |---|---|---|---|---|---|---|
 | C-1 | Página 3 pronta | O texto inteiro | O corte da esquerda **comeu a primeira letra ou duas** das linhas do bloco de baixo ("ex ingenuitate" virou "o ingenuitate"), e ficou um canto cinza manchado embaixo à direita | erro | ![](prints/cursus/a-p3.jpg) *Página 3: original e pronta* | atrapalha |
 | C-2 | Abri a conferência e fui processar | Um número de dúvidas | Rodapé **20**, alto **41**, "Antes de processar" **52 páginas / 54 avisos** (ponto 9 do mapa; ver E-1 da Escola) | confuso | — | atrapalha |
-| C-3 | Processei | — | **17 min** para 402 páginas no Preto e branco, sem tempo estimado (ponto 22 do mapa) | confuso | — | detalhe |
+
+**Tempo (não conto como problema; velocidade é da Fase 5):** 17 min para 402 páginas no Preto e branco; depois das primeiras páginas a tela mostra "faltam cerca de N minutos".
 
 **A conferir (de novo):** o clique do Windows em "Confirmar e processar" não abriu nada em 30 s.
 
