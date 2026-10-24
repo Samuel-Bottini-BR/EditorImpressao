@@ -20,7 +20,8 @@ Ramo `testes-livros-2026-10-23` (a partir do `fase-1` em `1ba93cf`). Nenhuma lin
 | Valadés | até o fim — `valades.md` |
 | Escola de Jesus | até o fim — `escola.md` |
 | Cursus | até o fim — `cursus.md` |
-| Marial (folhas 1–200) | em andamento |
+| Marial (folhas 1–200) | até o fim — `marial.md` |
+| Horas (folhas 1–100) | em andamento |
 
 ## Aviso sobre a tela do Samuel (23/10, 17:48–18:11)
 
