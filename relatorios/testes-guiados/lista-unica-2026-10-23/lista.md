@@ -30,6 +30,24 @@ A = Antiphon_25. "La vida eterna" é o livro da sessão 0 e do mapa.
 
 ---
 
+## Avisos — tudo junto (acrescentado em 26/10/2026)
+
+Pedido do Samuel em 24/10 ("a questão dos avisos que quando clica não aparece como resolver e essas questões dos
+avisos que eu tinha falado?"), resposta "oK" em 26/10. Os problemas de aviso estavam espalhados pelas seções 1 e 5;
+aqui ficam juntos. **Não são itens novos**: cada um continua na sua seção, com a explicação completa e os prints.
+
+| Nº | O que acontece com o aviso | Gravidade | Quem achou |
+|---|---|---|---|
+| 1.1 | Clicar "está certo" no aviso não muda nada na tela — parece que o clique não pegou | atrapalha | Samuel 0-3 · mapa |
+| 1.2 | O aviso oferece "usar mais fraco", e o botão não faz nada | atrapalha | livros |
+| 1.6 | Depois de desfazer, o aviso não volta (ou volta um a mais) | atrapalha | livros |
+| 1.8 | O cartão do aviso no "Para revisar" não tem botão; no "Dividir a folha" não há como resolver o aviso | atrapalha | Samuel 0-7 e 0-8 |
+| 5.5 | Três lugares contam as dúvidas, cada um dá um número, e os avisos de folha ficam escondidos (Escola: rodapé "1", no fim 166) | atrapalha | mapa · livros |
+| 5.7 | Avisos demais e avisos falsos (Siebmacher: 128 de 134 páginas com aviso; 3 avisos numa folha branca) | atrapalha | livros |
+| 5.9 | O aviso fala de "força do preto" em página feita com Mágico pro ou Melhorar, onde isso não existe | atrapalha | livros |
+
+---
+
 ## Quadro
 
 | Seção | Itens | Trava o trabalho | Atrapalha | Detalhe |
