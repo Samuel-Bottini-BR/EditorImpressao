@@ -3,6 +3,7 @@
 Para comparar dois códigos (antes/depois) sem gerar o PDF: só a geometria
 (core.pipeline._geometria), na resolução do PDF (300 DPI), como o processar.
 USO: python cortes_do_gabarito.py <raiz do código> <saida.json> [pid ...]
+ORDEM=cortar_antes no ambiente: o projeto de antes de 09/10 (ordem antiga).
 """
 import json
 import os
@@ -25,7 +26,10 @@ def main():
     saida = {}
     for pid in pids:
         pdf = GAB / "paginas" / f"{pid}.pdf"
-        projeto = pipeline.analisar_projeto(Projeto(caminho_entrada=str(pdf), nome=pid))
+        projeto = Projeto(caminho_entrada=str(pdf), nome=pid)
+        if os.environ.get("ORDEM"):
+            projeto.ordem_do_preparo = os.environ["ORDEM"]
+        projeto = pipeline.analisar_projeto(projeto)
         doc = abrir_pdf(str(pdf))
         for pagina in projeto.paginas_ativas:
             folha = projeto.folhas[pagina.folha]

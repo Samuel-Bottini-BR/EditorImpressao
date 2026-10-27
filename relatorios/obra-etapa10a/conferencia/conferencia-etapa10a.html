@@ -1,0 +1,185 @@
+<!doctype html>
+<html lang="pt-BR">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Conferência da etapa 10a</title>
+<style>
+:root { color-scheme: light dark; }
+* { box-sizing: border-box; }
+body {
+  font: 17px/1.65 "Segoe UI", system-ui, sans-serif;
+  max-width: 46rem; margin: 0 auto; padding: 2.5rem 1.5rem 6rem;
+  color: #1c1c1e; background: #fdfdfc;
+}
+h1 { font-size: 2rem; line-height: 1.2; margin: 0 0 .3em; letter-spacing: -.02em; }
+h2 { font-size: 1.35rem; margin: 2.4em 0 .6em; padding-top: .8em;
+     border-top: 1px solid #e6e4e0; letter-spacing: -.01em; }
+h3 { font-size: 1.1rem; margin: 1.8em 0 .4em; }
+h1 + p, h2 + p { margin-top: .4em; }
+p, li { margin: 0 0 .9em; }
+ul, ol { padding-left: 1.3em; }
+strong { font-weight: 640; }
+code {
+  font: .88em ui-monospace, "Cascadia Code", Consolas, monospace;
+  background: #f1efec; padding: .12em .35em; border-radius: 4px;
+}
+pre {
+  background: #f1efec; padding: 1em 1.1em; border-radius: 8px;
+  overflow-x: auto; line-height: 1.5;
+}
+pre code { background: none; padding: 0; }
+blockquote {
+  margin: 1.2em 0; padding: .1em 0 .1em 1.1em;
+  border-left: 3px solid #c9c5be; color: #55524d;
+}
+table {
+  border-collapse: collapse; width: 100%; margin: 1.2em 0;
+  font-size: .95rem; display: block; overflow-x: auto;
+}
+th, td { padding: .5em .8em; text-align: left; border-bottom: 1px solid #e6e4e0; }
+th { font-weight: 620; background: #f7f5f2; white-space: nowrap; }
+tr:last-child td { border-bottom: none; }
+img { max-width: 100%; height: auto; border-radius: 6px; margin: 1em 0;
+      border: 1px solid #e6e4e0; }
+hr { border: none; border-top: 1px solid #e6e4e0; margin: 2.5em 0; }
+.rodape { margin-top: 4em; padding-top: 1.2em; border-top: 1px solid #e6e4e0;
+          font-size: .85rem; color: #86827c; }
+@media (prefers-color-scheme: dark) {
+  body { color: #e8e6e3; background: #1a1917; }
+  h2 { border-top-color: #35332f; }
+  code, pre, th { background: #262421; }
+  th, td { border-bottom-color: #35332f; }
+  blockquote { border-left-color: #4a4741; color: #b0aca6; }
+  img { border-color: #35332f; }
+  .rodape { border-top-color: #35332f; color: #7d7973; }
+}
+@media print {
+  body { max-width: none; padding: 0; color: #000; background: #fff; }
+  h2 { page-break-after: avoid; }
+  table, img { page-break-inside: avoid; }
+}
+</style>
+</head>
+<body>
+<h1>Conferência da etapa 10a — o corte não come a página</h1>
+<p>Obra de 26/10/2026 (D-014: feita até o fim, você confere tudo no fim). Implementador, ramo <code>obra-etapa10a-2026-10-26</code>. Em cada quadro: o scan, ANTES (o código de 26/10, <code>11f9ed3</code>) e DEPOIS, na mesma escala. Caminho: o programa inteiro (análise do livro, dividir, endireitar, cortar, filtro), como o botão "Confirmar e processar"; imagem tirada da página pronta.</p>
+<p><strong>O que muda no livro de fábrica:</strong> 17 das 32 páginas do gabarito mudam (somas: 45 de 96 iguais). Em 5 só a cunha do giro, até 1,3 mm da beirada (Boécio 3, Escola 7 e 35, Graduale 222, Siebmacher 9: medido ponto a ponto); em 12 o corte (Boécio 8 e 22, Graduale 221 e 223, Horas 13, 14, 26 e 27, Marial 7, Rhetorica 18 e 73, Siebmacher 7), as maiores mostradas aqui. O projeto começado antes de 09/10/2026 não muda nada (32 de 32 cortes iguais).</p>
+<p><strong>Opinião:</strong> PRONTO PARA CONFERIR (não aprovado: só você aprova). O mais grave era a borda preta "até a moldura" comendo páginas inteiras (Cursus 3, Siebmacher 74, ljs47 2, Antiphon 2); está consertado. As ressalvas estão escritas em cada quadro.</p>
+<h2>Cursus 3 — o corte comia o começo das linhas (lista única 4.2)</h2>
+<p><strong>De onde veio:</strong> Lista única 4.2 / C-1 (23/10): "o corte da esquerda comeu a primeira letra ou duas das linhas do bloco de baixo". D-104 (22/10): "Tem mais alguma função que pode fazer essa mesma coisa de comer parte da pagina sem que a gente queira no nosso programa?"</p>
+<p><strong>Por onde a página passou:</strong> Projeto do teste dos 14 livros: livro novo, "Cortar a beirada da folha vizinha", "Achar a página dentro da borda preta" (até a moldura), endireitar, cortar; filtro Original (para ver só o corte).</p>
+<p><strong>O que olhar:</strong> Na esquerda do ANTES falta um quarto da página (o corte da beirada da vizinha ficou colado no texto, o giro levou o canto, e a caixa do ScanTailor jogou fora o resto). No DEPOIS o texto está inteiro.</p>
+<p>Tamanho da página pronta: antes 11,6 x 25,3 cm; depois 15,9 x 25,5 cm,</p>
+<p><strong>Ressalva / nota:</strong> Ressalva: no alto à esquerda continua um fio preto da lombada ao lado do "A" de "AD" (existe também sem o corte da beirada da vizinha; tirar ele cortaria o "A"). Projeto já analisado guarda o corte da beirada antigo: a folga nova vale numa análise nova do livro.</p>
+<p><img alt="Cursus 3 — o corte comia o começo das linhas (lista única 4.2)" src="img/cursus3.jpg" /></p>
+<h2>Siebmacher 74 — folha quase em branco virava uma tira (4.10 / 4.8)</h2>
+<p><strong>De onde veio:</strong> Lista única 4.10 / S-1: "Faixa preta grossa na beirada esquerda (a lombada não foi cortada mesmo com 'borda preta' marcada) e borrões pretos espalhados". A tira era o corte: 2,6 x 8,6 cm.</p>
+<p><strong>Por onde a página passou:</strong> Projeto do teste: borda preta até a moldura, endireitar, cortar; filtro Preto e branco (o do livro).</p>
+<p><strong>O que olhar:</strong> ANTES: só uma tira da beirada da folha, que no Preto e branco virou faixa preta. DEPOIS: a folha inteira, sem o preto do scanner.</p>
+<p>Tamanho da página pronta: antes 2,6 x 8,6 cm; depois 13,1 x 10,6 cm,</p>
+<p><strong>Ressalva / nota:</strong> Ressalva: a lombada do lado direito (a beirada das outras folhas, castanha) ainda aparece fininha; e esta folha sai cinza no Preto e branco (é o filtro com uma folha quase sem tinta, não o corte).</p>
+<p><img alt="Siebmacher 74 — folha quase em branco virava uma tira (4.10 / 4.8)" src="img/siebmacher74.jpg" /></p>
+<h2>ljs47 2 — a guarda virava uma tira só com a etiqueta (4.8)</h2>
+<p><strong>De onde veio:</strong> Lista única 4.8 / L-3: "a 2 virou uma tira deitada de 21 × 11 cm só com a etiqueta da biblioteca".</p>
+<p><strong>Por onde a página passou:</strong> Projeto do teste: borda preta até a moldura; filtro Original.</p>
+<p><strong>O que olhar:</strong> ANTES: só a etiqueta. DEPOIS: a guarda inteira, dentro da borda preta.</p>
+<p>Tamanho da página pronta: antes 20,9 x 10,7 cm; depois 32,4 x 42,7 cm,</p>
+<p><strong>Ressalva / nota:</strong> Ressalva: a beirada larga das outras folhas, à direita, fica (é larga demais para a regra segura).</p>
+<p><img alt="ljs47 2 — a guarda virava uma tira só com a etiqueta (4.8)" src="img/ljs47-2.jpg" /></p>
+<h2>Antiphon 2 — guarda manchada e o "usar o corte alargado" (1.4)</h2>
+<p><strong>De onde veio:</strong> Lista única 1.4 / A-2: "O corte ficou menor: a página virou uma tira estreita (do meio para a direita) e perdeu a metade esquerda". D-098 (13/10): "ele avisa e da opção e de mudar o corte e mostrar ele alargado com o que foi tirado."</p>
+<p><strong>Por onde a página passou:</strong> Projeto do teste: borda preta até a moldura, cortar a beirada da vizinha; filtro Original.</p>
+<p><strong>O que olhar:</strong> ANTES: a caixa do ScanTailor abraçava as manchas (do meio para a direita) e cortava o número "19" e o carimbo. DEPOIS: a folha inteira; não aparece mais o aviso "Corte deixou algo de fora", então o botão nem é preciso. E o corte alargado agora nunca fica menor que o corte que a página tem (teste de máquina).</p>
+<p>Tamanho da página pronta: antes 20,1 x 34,8 cm; depois 39,8 x 56,7 cm,</p>
+<p><strong>Ressalva / nota:</strong> Ressalva: o lado da tela (o que a prévia mostra antes de a medida chegar) é da etapa 9.</p>
+<p><img alt="Antiphon 2 — guarda manchada e o &quot;usar o corte alargado&quot; (1.4)" src="img/antiphon2.jpg" /></p>
+<h2>Boécio 2 — o fio preto na beirada (4.10)</h2>
+<p><strong>De onde veio:</strong> Lista única 4.10 / B-6: "Ficou um risco preto fino em toda a beirada esquerda".</p>
+<p><strong>Por onde a página passou:</strong> Projeto do teste: de fábrica (endireitar, cortar); filtro Preto e branco (o do livro).</p>
+<p><strong>O que olhar:</strong> Olhar a beirada esquerda: no ANTES o fio preto de cima a baixo; no DEPOIS, nada.</p>
+<p>Tamanho da página pronta: antes 8,9 x 12,9 cm; depois 8,9 x 12,9 cm,</p>
+<p><img alt="Boécio 2 — o fio preto na beirada (4.10)" src="img/boecio2.jpg" /></p>
+<h2>Escola 197 — o corte comia os números 1, 2 e 3 da margem</h2>
+<p><strong>De onde veio:</strong> Lista de bugs, 13/10 (verificador do corte): "Escola 197: na ordem nova o corte come os números 1, 2 e 3 dos itens, na margem esquerda".</p>
+<p><strong>Por onde a página passou:</strong> Livro novo de fábrica só com esta página; filtro Original.</p>
+<p><strong>O que olhar:</strong> Na esquerda: ANTES os itens começam no travessão; DEPOIS aparecem "1", "2" e "3".</p>
+<p>Tamanho da página pronta: antes 15,5 x 24,3 cm; depois 15,9 x 24,3 cm,</p>
+<p><strong>Ressalva / nota:</strong> Regra nova (a coluna de números da margem): peças do tamanho das letras da linha ao lado, em coluna (duas ou mais). Um número sozinho na margem continua de fora.</p>
+<p><img alt="Escola 197 — o corte comia os números 1, 2 e 3 da margem" src="img/escola197.jpg" /></p>
+<h2>Boécio 8 — cunhas brancas do giro (ressalva do G6)</h2>
+<p><strong>De onde veio:</strong> D-095 (12/10): "Se esse trabalho não mexe nele, porque estamos avaliando isso? o resultado aqui dessa pagina não seria cortar as bordas pretas?" — cunhas brancas com corte até a beirada (Boécio 8, Marial 7, Graduale 221).</p>
+<p><strong>Por onde a página passou:</strong> Livro novo de fábrica; filtro Original.</p>
+<p><strong>O que olhar:</strong> Nos cantos do ANTES, triângulos brancos (o giro de 1,1 grau); no DEPOIS, com a cor do papel.</p>
+<p>Tamanho da página pronta: antes 8,8 x 12,4 cm; depois 8,8 x 12,3 cm,</p>
+<p><strong>Ressalva / nota:</strong> Muda as somas de fábrica desta página (só os pontos da cunha, até 1,3 mm da beirada: medido).</p>
+<p><img alt="Boécio 8 — cunhas brancas do giro (ressalva do G6)" src="img/boecio8.jpg" /></p>
+<h2>Graduale 221 — beirada escura e cunha (ressalva do G6)</h2>
+<p><strong>De onde veio:</strong> D-095 (ver acima).</p>
+<p><strong>Por onde a página passou:</strong> Livro novo de fábrica; filtro Original.</p>
+<p><strong>O que olhar:</strong> Na esquerda, o ANTES vai até a beirada escura da folha; o DEPOIS para no papel. O "Cvij" do alto continua inteiro.</p>
+<p>Tamanho da página pronta: antes 33,7 x 46,3 cm; depois 32,6 x 46,0 cm,</p>
+<p><strong>Ressalva / nota:</strong> Muda as somas de fábrica desta página (de propósito).</p>
+<p><img alt="Graduale 221 — beirada escura e cunha (ressalva do G6)" src="img/graduale221.jpg" /></p>
+<h2>Marial 7 — cunhas e o fio escuro de cima e de baixo (ressalva do G6)</h2>
+<p><strong>De onde veio:</strong> D-095 (ver acima).</p>
+<p><strong>Por onde a página passou:</strong> Livro novo de fábrica; filtro Original.</p>
+<p><strong>O que olhar:</strong> Em cima e embaixo: o ANTES tinha o fio escuro da beirada e as cunhas brancas.</p>
+<p>Tamanho da página pronta: antes 24,5 x 33,1 cm; depois 24,5 x 32,8 cm,</p>
+<p><img alt="Marial 7 — cunhas e o fio escuro de cima e de baixo (ressalva do G6)" src="img/marial7.jpg" /></p>
+<h2>Siebmacher 7 — a faixa preta do scanner em cima e embaixo</h2>
+<p><strong>De onde veio:</strong> Lista única 4.10 ("A sombra da lombada fica como faixa preta na beirada") e D-097 ("tem que ficar rente a folha de papel, não pode ter preto ali.").</p>
+<p><strong>Por onde a página passou:</strong> Livro novo de fábrica; filtro Original.</p>
+<p><strong>O que olhar:</strong> Em cima e embaixo do ANTES, a faixa preta do scanner; no DEPOIS, o papel. A moldura de riscos fica inteira.</p>
+<p>Tamanho da página pronta: antes 13,8 x 10,7 cm; depois 13,8 x 10,5 cm,</p>
+<p><strong>Ressalva / nota:</strong> Muda as somas de fábrica desta página (de propósito).</p>
+<p><img alt="Siebmacher 7 — a faixa preta do scanner em cima e embaixo" src="img/siebmacher7.jpg" /></p>
+<h2>Horas 18 — sobra branca do lado direito (4.4)</h2>
+<p><strong>De onde veio:</strong> Lista única 4.4 / H-2: "O corte tirou o lado esquerdo da moldura e deixou sobra branca do lado direito: a página ficou torta no papel".</p>
+<p><strong>Por onde a página passou:</strong> Projeto do teste: de fábrica (endireitar, cortar); filtro Melhorar (o do livro).</p>
+<p><strong>O que olhar:</strong> ANTES: a moldura colada na esquerda e 2 a 3 cm de sobra (com a beirada da folha) na direita. DEPOIS: a moldura no meio, com folga dos dois lados.</p>
+<p>Tamanho da página pronta: antes 27,9 x 42,7 cm; depois 26,1 x 38,7 cm,</p>
+<p><strong>Ressalva / nota:</strong> Achado: a moldura NÃO era cortada (está inteira no PDF do teste, conferido ponto por ponto); o defeito era a sobra da direita. Muda o corte de fábrica de 4 páginas do Livro de Horas do gabarito (13, 14, 26, 27): ver as três abaixo.</p>
+<p><img alt="Horas 18 — sobra branca do lado direito (4.4)" src="img/horas18.jpg" /></p>
+<h2>Horas 13 (gabarito) — o mesmo conserto</h2>
+<p><strong>De onde veio:</strong> Lista única 4.4 (ver acima).</p>
+<p><strong>Por onde a página passou:</strong> Livro novo de fábrica; filtro Original.</p>
+<p><strong>O que olhar:</strong> A direita perde a sobra; a moldura fica inteira.</p>
+<p>Tamanho da página pronta: antes 35,1 x 50,1 cm; depois 28,1 x 50,0 cm,</p>
+<p><strong>Ressalva / nota:</strong> Ressalva: a esquerda ainda guarda a sobra (há manchas do tamanho de letra perto da beirada).</p>
+<p><img alt="Horas 13 (gabarito) — o mesmo conserto" src="img/horas13.jpg" /></p>
+<h2>Horas 14 (gabarito) — o mesmo conserto</h2>
+<p><strong>De onde veio:</strong> Lista única 4.4 (ver acima).</p>
+<p><strong>Por onde a página passou:</strong> Livro novo de fábrica; filtro Original.</p>
+<p><strong>O que olhar:</strong> A tabela fica no meio; a moldura inteira.</p>
+<p>Tamanho da página pronta: antes 35,3 x 47,3 cm; depois 27,9 x 42,1 cm,</p>
+<p><img alt="Horas 14 (gabarito) — o mesmo conserto" src="img/horas14.jpg" /></p>
+<h2>Horas 27 (gabarito) — o mesmo conserto</h2>
+<p><strong>De onde veio:</strong> Lista única 4.4 (ver acima).</p>
+<p><strong>Por onde a página passou:</strong> Livro novo de fábrica; filtro Original.</p>
+<p><strong>O que olhar:</strong> Embaixo perde a sobra; a moldura inteira.</p>
+<p>Tamanho da página pronta: antes 27,9 x 49,1 cm; depois 27,9 x 45,6 cm,</p>
+<p><img alt="Horas 27 (gabarito) — o mesmo conserto" src="img/horas27.jpg" /></p>
+<h2>Righetti 96 (folha dupla girada e dividida) — o dividir reto</h2>
+<p><strong>De onde veio:</strong> D-104, quinto lugar: "Dividir as duas páginas é uma linha reta em pé: numa folha dupla torta, a ponta das letras perto do meio pode ir para a outra página (suspeita)".</p>
+<p><strong>Por onde a página passou:</strong> Livro novo de fábrica com dividir; a folha girada e dividida como na tela; filtro Original; página da direita.</p>
+<p><strong>O que olhar:</strong> Perto da dobra (esquerda da página) nenhuma letra cortada nem levada para a outra página (provado em três folhas: 96, 100 e 123). Antes e depois iguais no meio.</p>
+<p>Tamanho da página pronta: antes 16,2 x 19,8 cm; depois 16,2 x 19,8 cm,</p>
+<p><strong>Ressalva / nota:</strong> Ressalva: a faixa preta do scanner em cima (a tampa branca do scanner vem antes dela) continua. A regra que a tiraria confundiria uma moldura impressa preta: ficou anotada para a etapa do Righetti.</p>
+<p><img alt="Righetti 96 (folha dupla girada e dividida) — o dividir reto" src="img/righetti96.jpg" /></p>
+<h2>Imprimir aumentado: agora avisa que CORTA (oitavo lugar da D-104)</h2>
+<p><strong>De onde veio:</strong> Lista de bugs, 22/10: "Imprimir com escala acima de 100% corta o que passa da metade da folha; avisa só pela margem pequena". D-017 (13/10): aumentar "não corta nada escondido".</p>
+<p><strong>O que olhar:</strong> a folha montada em A4 (livreto) com as duas páginas da Escola 7 e 8 a 140%: o que passa da metade da folha não sai. O aviso novo, palavra por palavra:</p>
+<blockquote>
+<p>Página 1: aumentada além do lugar dela na folha - o que está impresso fica CORTADO (à esquerda 0,6 cm; à direita 0,2 cm; em cima 2,2 cm; embaixo 2,4 cm). Diminua a escala desta página ou do lado dela.</p>
+<p>Página 2: aumentada além do lugar dela na folha - o que está impresso fica CORTADO (em cima 0,8 cm; embaixo 1,7 cm). Diminua a escala desta página ou do lado dela.</p>
+</blockquote>
+<p><img alt="Folha montada a 140%" src="img/imprimir140.jpg" /></p>
+<h2>Moldura escura antes de desentortar (D-113, <code>d212-1</code>)</h2>
+<p><strong>De onde veio:</strong> "Mas fica anotado para depois da junção isso ser resolvido, porque na verdade, eu acho que o primeiro passo em uma pagina dessas seria tirar essa moldura preta transformando a pagina em totalmente branca sem mexer nas letras, ai o desentortador não iria confundir as letras com moldura preta. não é?"</p>
+<p><strong>O que foi feito:</strong> o desentortar mede a caixa do texto numa cópia da página com a moldura escura do scanner pintada de branco (as letras não mudam; a página que sai é a de sempre).</p>
+<p><strong>Resposta honesta à sua pergunta ("não é?"):</strong> em parte. Na página de teste (Marial 41 encurvada, com a moldura) a curva ainda NÃO é achada, e a foto abaixo mostra igual desligado (esquerda) e ligado (direita). Medi a causa: com a caixa só do bloco do texto, o desentortar acha a curva; com a caixa que pega também as notas da margem ("Prou. 8", "Mat. 5. 8"), não acha - com ou sem a moldura. Ficou como pergunta para você (no ONDE-PAREI): deixar as notas da margem de fora da caixa que o desentortar segue.</p>
+<p><img alt="Marial 41 encurvada, desligado e ligado" src="img/d212-curvada2.jpg" /></p>
+<p class="rodape">Editor de Impressão &middot; gerado em 27/10/2026 às 00:05</p>
+</body>
+</html>

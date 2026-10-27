@@ -3250,3 +3250,30 @@ ordem antiga); `core/pipeline.py` só passa a página em cinza que já tinha. Cu
 DPI) só troca de imagem. Resultado nas 89 páginas: contra o `d97b937` muda só o Pesel 21, que sai idêntico ao
 `fase-1` ponto por ponto; as cinco melhorias e as outras 83 ficam idênticas. Projeto antigo 40 de 40. Detalhe:
 `relatorios/conferir/conserto-corte-g6-pesel21-2026-10-20/pesel21.md`.
+
+### Obra de 26/10/2026, etapa 10a: o corte não come a página (implementador)
+
+Pedido: os "8 lugares que podem comer a página" (D-104/D-466), lista única 4.2, 4.4, 4.8, 4.10, 1.4, ressalvas do G6
+(D-095), Escola 197, moldura escura antes de desentortar (D-113). Detalhe e provas:
+`relatorios/obra-etapa10a/ONDE-PAREI.md` e a conferência em `relatorios/obra-etapa10a/conferencia/`.
+
+**Adotado** (cada um com teste de reversão): folga do giro no corte da sobra (Cursus 3); caixa do ScanTailor sem
+comer (folha quase em branco fica a página achada; a borda não parte peça de tinta); faixa escura colada na
+beirada sai (Boécio 2); coluna de números da margem volta para o corte (Escola 197); tracejado e ciscos da beirada
+fora da massa da tinta (Horas 18); cunha do giro com a mediana do papel; "Corte encostou no texto" medido no corte
+de verdade; "usar o corte alargado" nunca menor; impressão aumentada avisa que CORTA; caixa do conteúdo do
+desentortar medida sem a moldura do scanner.
+
+**Tentado e descartado (não repetir):**
+- Cunha do giro com a cor da BEIRADA (`BORDER_REPLICATE`): onde a beirada é o fundo preto do scanner a cunha saía
+  preta (Antiphon 260 com borda preta "até a moldura": 3,8 mm de preto em cima; o teste do Samuel de 21/10
+  pegou). Trocada pela mediana do papel do corte.
+- Números da margem sem exigir "do tamanho da letra da linha": puxava a borda direita do Palatino 7 3 mm para os
+  pontinhos da margem (o mesmo caso de 01/10). Agora a peça tem de ter metade da altura da linha ao lado.
+- Faixa preta depois de uma tira clara na beirada (a tampa branca do scanner do Righetti 96, faixa de 12% em cima):
+  pular a tira clara faria uma moldura impressa preta com 1 mm de papel antes dela ser tomada por fundo do scanner
+  (Palatino 80). Revertido; o Righetti 96 fica como ressalva (o corte comum começa no preto).
+- Pintar a moldura do scanner de branco na IMAGEM que vai ao desentortar: mudou a Marial 41 reta (0,98 da tinta
+  no lugar, e a beirada de baixo puxada de branco). Ficou só para medir a caixa do conteúdo. Na página de teste
+  curva com moldura (Marial 41 encurvada) a curva continua não achada: a causa medida é a caixa pegar as notas da
+  margem (com a caixa só do bloco do texto a DLL acha a curva; com a caixa do programa ou a do ScanTailor, não).

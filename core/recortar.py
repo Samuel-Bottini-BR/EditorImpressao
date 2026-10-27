@@ -493,7 +493,8 @@ def _apagar_bordas_solidas_fora_da_cunha(tinta: np.ndarray, cunha: np.ndarray) -
 
 def detectar_bordas(img: np.ndarray, dpi: float | None = None,
                     girada: float | None = None,
-                    como_veio: np.ndarray | None = None) -> Recorte:
+                    como_veio: np.ndarray | None = None,
+                    livro_novo: bool = False) -> Recorte:
     """Acha o retangulo que contem o conteúdo da página.
 
     Ideia: binarizar de forma bem tolerante, achar as linhas e colunas que tem
@@ -520,6 +521,13 @@ def detectar_bordas(img: np.ndarray, dpi: float | None = None,
     passar um angulo que nao e o do giro de verdade (a cunha cairia no lugar
     errado e borda de verdade deixaria de ser reconhecida).
 
+    `livro_novo` (obra 26/10, etapa 10a): so o livro novo ("endireitar_antes",
+    core/pipeline._geometria_endireitando_antes) ganha os consertos da etapa
+    10a no corte comum (a faixa escura da beirada, os numeros da margem, o
+    tracejado e os ciscos da beirada). False (o projeto de antes de 09/10 e a
+    analise): a conta de sempre, identica ponto por ponto. Arriscado: ligar
+    no projeto antigo (o PDF de um livro ja conferido mudaria).
+
     `como_veio` (conserto de 20/10/2026, Pesel 21): a pagina ANTES do giro
     (a que foi girada `girada` graus para virar `img`), de preferencia em
     cinza. So e usada com `girada`, e so para a pergunta "ha o que
@@ -543,7 +551,7 @@ def detectar_bordas(img: np.ndarray, dpi: float | None = None,
         # preto fino em toda a beirada esquerda"): a folha sem o que recortar
         # continua inteira, menos a faixa escura colada na beirada (ver
         # beiradas_escuras). Sem faixa: a folha inteira, como sempre.
-        return beiradas_escuras(img, girada) or Recorte.inteiro()
+        return (beiradas_escuras(img, girada) if livro_novo else None) or Recorte.inteiro()
 
     cinza = img if img.ndim == 2 else cv2.cvtColor(img, cv2.COLOR_BGR2GRAY)
     altura_orig, largura_orig = cinza.shape[:2]
@@ -611,7 +619,8 @@ def detectar_bordas(img: np.ndarray, dpi: float | None = None,
     # Obra 26/10, etapa 10a (lista unica 4.4, Horas 18: "deixou sobra branca
     # do lado direito; a pagina ficou torta no papel"): o tracejado da beirada
     # da folha nao conta na massa da tinta (ver _sem_o_tracejado_da_beirada).
-    tinta = _sem_o_tracejado_da_beirada(tinta)
+    if livro_novo:
+        tinta = _sem_o_tracejado_da_beirada(tinta)
 
     # Onde esta a MASSA da tinta, e nao onde ha algum pixel dela.
     #
@@ -682,8 +691,9 @@ def detectar_bordas(img: np.ndarray, dpi: float | None = None,
     # Obra 26/10, etapa 10a: a coluna de numeros da margem (Escola 197, Lista
     # de bugs de 13/10: "o corte come os numeros 1, 2 e 3 dos itens, na
     # margem esquerda") volta para dentro do corte. Ver _numeros_da_margem.
-    x0e, x1e = _numeros_da_margem(respeitar_fracao, _de_letra(respeitar), x0e, y0e, x1e, y1e,
-                                  folga_x)
+    if livro_novo:
+        x0e, x1e = _numeros_da_margem(respeitar_fracao, _de_letra(respeitar), x0e, y0e, x1e, y1e,
+                                      folga_x)
 
     # limite de seguranca: nunca comer mais que CORTE_MAXIMO de um lado
     x0e, y0e = min(x0e, CORTE_MAXIMO), min(y0e, CORTE_MAXIMO)
@@ -728,7 +738,7 @@ def detectar_bordas(img: np.ndarray, dpi: float | None = None,
     # Obra 26/10, etapa 10a (lista unica 4.10): o lado que foi ate a beirada
     # da imagem perde a faixa escura colada nela (beiradas_escuras), se houver.
     # Os outros lados ficam como estao.
-    if x0e <= 0.0 or y0e <= 0.0 or x1e >= 1.0 or y1e >= 1.0:
+    if livro_novo and (x0e <= 0.0 or y0e <= 0.0 or x1e >= 1.0 or y1e >= 1.0):
         sem_faixa = beiradas_escuras(img, girada)
         if sem_faixa is not None:
             fx0, fy0, fw, fh = sem_faixa.tupla

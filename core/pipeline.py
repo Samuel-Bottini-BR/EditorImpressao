@@ -1252,7 +1252,7 @@ def _geometria_endireitando_antes(base: np.ndarray, pagina: ConfigPagina, projet
             # recortar?" e feita na pagina antes do giro, como na ordem
             # antiga. Arriscado: tirar (o Pesel 21 volta a sair cortado rente).
             comum = detectar_bordas(reta, dpi=dpi, girada=angulo if girar else None,
-                                    como_veio=em_cinza() if girar else None)
+                                    como_veio=em_cinza() if girar else None, livro_novo=True)
             recorte = comum.tupla
             if extras is not None:
                 # etapa 10a (D-104): o "Corte encostou no texto" medido no

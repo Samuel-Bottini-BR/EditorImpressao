@@ -35,6 +35,9 @@ CASOS = {
     "marial7": ("fab-marial:7", {}, "original", False),
     "siebmacher7": ("fab-siebmacher:7", {}, "original", False),
     "horas18": ("horas:18", {}, "melhorar", False),
+    "horas13": ("fab-horas:13", {}, "original", False),
+    "horas14": ("fab-horas:14", {}, "original", False),
+    "horas27": ("fab-horas:27", {}, "original", False),
     "righetti96": ("fab-righetti:96", {"_girar_e_dividir": 270}, "original", False),
 }
 
@@ -104,9 +107,9 @@ def montar(id_: str) -> None:
         fundo[: img.shape[0]] = img
         cv2.imwrite(str(TMP / f"_{id_}_{nome}.png"), fundo)
     junto = TMP / f"_{id_}.jpg"
-    juntar(str(junto), altura, [("original (o scan)", str(TMP / f"_{id_}_o.png")),
-                                ("ANTES (código de 26/10, 11f9ed3)", str(TMP / f"_{id_}_a.png")),
-                                ("DEPOIS (etapa 10a)", str(TMP / f"_{id_}_d.png"))], 92)
+    juntar(str(junto), altura, [("o scan", str(TMP / f"_{id_}_o.png")),
+                                ("ANTES", str(TMP / f"_{id_}_a.png")),
+                                ("DEPOIS", str(TMP / f"_{id_}_d.png"))], 92)
     IMG.mkdir(parents=True, exist_ok=True)
     _jpg_pequeno(cv2.imread(str(junto)), IMG / f"{id_}.jpg")
     dpi = 300
@@ -116,6 +119,24 @@ def montar(id_: str) -> None:
     print(id_, info, flush=True)
 
 
+def so_juntar(id_: str) -> None:
+    """Refaz só a montagem (as imagens já feitas ficam em TMP)."""
+    import cv2
+
+    sys.path.insert(0, str(AQUI))
+    from lado_a_lado import juntar
+
+    junto = TMP / f"_{id_}.jpg"
+    juntar(str(junto), 1100, [("o scan", str(TMP / f"_{id_}_o.png")),
+                              ("ANTES", str(TMP / f"_{id_}_a.png")),
+                              ("DEPOIS", str(TMP / f"_{id_}_d.png"))], 92)
+    _jpg_pequeno(cv2.imread(str(junto)), IMG / f"{id_}.jpg")
+
+
 if __name__ == "__main__":
-    for i in (sys.argv[1:] or list(CASOS)):
-        montar(i)
+    if sys.argv[1:2] == ["--so-juntar"]:
+        for i in (sys.argv[2:] or list(CASOS)):
+            so_juntar(i)
+    else:
+        for i in (sys.argv[1:] or list(CASOS)):
+            montar(i)
