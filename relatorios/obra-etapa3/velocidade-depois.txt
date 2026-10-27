@@ -1,0 +1,5 @@
+codigo: D:\programas\EditorImpressao\.claude\worktrees\obra-etapa3
+livro: Marial de sermoens - Frei Balthasar Paez. (1).pdf; 3 vezes; mediana em segundos
+livro novo ate a area de trabalho  mediana    0.66 s  (todas: 0.61, 0.74, 0.66)
+medida por tras (depois de abrir)  mediana   70.37 s  (todas: 60.90, 73.72, 70.37)
+livro salvo (continuar)            mediana    0.88 s  (todas: 0.88, 1.08, 0.87)

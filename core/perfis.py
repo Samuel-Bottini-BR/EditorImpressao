@@ -43,7 +43,18 @@ CAMPOS = (
     "misto_so_as_letras", "misto_fora_do_texto", "misto_papel_da_gravura",
     "misto_letras_na_moldura", "limpar_pontinhos",
     "margens_iguais", "margens_mm", "margens_alinhamento",
+    # obra de 26/10/2026, etapa 3: as opcoes do Automatico que a receita nao
+    # levava (estavam na tela "O que fazer" e ficaram de fora da receita)
+    "cortar_pelo_conteudo", "borda_preta", "borda_preta_ate", "borda_preta_fazer",
+    "reforcar_texto_falhado", "retangulo_do_corte",
 )
+
+# Obra de 26/10/2026, etapa 3 (D-071, `fr-219`: "Mas ainda pode melhorar a caixa
+# de como escolhemos o que vai dentro da receita."): a receita guarda tambem
+# QUAIS etapas do Automatico ela roda (codigos de core/automatico.ETAPAS), na
+# chave CHAVE_DAS_ETAPAS. Receita antiga, sem a chave: as etapas saem das
+# caixinhas que ela tem (etapas_da_receita).
+CHAVE_DAS_ETAPAS = "_etapas"
 
 CHAVE_DOS_PERFIS = "perfis"
 CHAVE_DO_LIVRO_NOVO = "perfil_do_livro_novo"
@@ -148,3 +159,58 @@ def aplicar_no_livro_novo(projeto) -> str:
     if nome:
         aplicar(nome, projeto)
     return nome
+
+
+# --- obra de 26/10/2026, etapa 3: a receita do Automatico ----------------------
+
+def etapas_da_receita(dados: dict | None) -> list[str]:
+    """As etapas do Automatico que a receita roda: as guardadas nela
+    (CHAVE_DAS_ETAPAS) ou, na receita antiga, as caixinhas ligadas dela
+    (dividir_folhas, endireitar, cortar_bordas, limpar, montar_cadernos,
+    margens_iguais; e as gravuras com "limpar" e a forma nao "desligada")."""
+    from core import automatico as A
+
+    if not isinstance(dados, dict):
+        return []
+    guardadas = dados.get(CHAVE_DAS_ETAPAS)
+    if isinstance(guardadas, list):
+        return [e for e in guardadas if e in A.ETAPAS]
+    etapas = [e for e, campo in A.CAMPO_DO_LIVRO.items() if dados.get(campo)]
+    if (dados.get("limpar") and dados.get("detectar_regioes", True)
+            and dados.get("gravura_forma", "livre") != "desligada"):
+        etapas.append(A.GRAVURAS)
+    return [e for e in A.ORDEM_DE_FABRICA if e in etapas]
+
+
+def guardar_receita(nome: str, opcoes: dict, etapas: list[str]) -> str:
+    """Guarda uma receita do Automatico: as `etapas` que ela roda e as opcoes
+    delas (`opcoes`: campos de CAMPOS; so os das etapas escolhidas ficam). As
+    caixinhas do livro (dividir_folhas...) saem das etapas. Devolve o nome
+    usado ("De fábrica" nao pode ser trocado: ganha "(minha)")."""
+    from core import automatico as A
+
+    nome = (nome or "").strip() or "Minha receita"
+    if nome == NOME_DE_FABRICA:
+        nome = f"{NOME_DE_FABRICA} (minha)"
+    dados: dict[str, Any] = {}
+    for etapa in A.ETAPAS:
+        campo = A.CAMPO_DO_LIVRO.get(etapa)
+        if campo:
+            dados[campo] = etapa in etapas
+        if etapa in etapas:
+            for opcao in A.OPCOES[etapa]:
+                if opcao in opcoes and opcao in CAMPOS:
+                    dados[opcao] = copy.deepcopy(opcoes[opcao])
+    if A.GRAVURAS in etapas:
+        dados["detectar_regioes"] = True
+    dados[CHAVE_DAS_ETAPAS] = [e for e in etapas if e in A.ETAPAS]
+    perfis = dict(_ler(CHAVE_DOS_PERFIS, {}))
+    perfis[nome] = dados
+    _escrever(CHAVE_DOS_PERFIS, perfis)
+    return nome
+
+
+def receita_de_sempre() -> str:
+    """O nome da receita que o aviso do livro novo marca (D-018): a escolhida
+    nas Configuracoes para todo livro novo, ou "De fábrica"."""
+    return do_livro_novo() or NOME_DE_FABRICA

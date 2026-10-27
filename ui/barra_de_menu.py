@@ -130,7 +130,11 @@ class BarraDeMenu(QMenuBar):
         menu.addSeparator()
         self._acao(menu, "processar", "Confirmar e processar", "Ctrl+Return")
         menu.addSeparator()
-        self._acao(menu, "voltar", "Voltar para as opções")
+        # Etapa 3 da obra (D-002): a tela "O que fazer" saiu do caminho. O
+        # Automático (a janela grande) mora aqui e no painel da direita; o
+        # "voltar" leva aos livros.
+        self._acao(menu, "automatico", "Automático...")
+        self._acao(menu, "voltar", "Voltar para os livros")
         menu.addSeparator()
         self._acao(menu, "configuracoes", "Configurações...")
         self._acao(menu, "sair", "Sair", "Ctrl+Q")
@@ -351,14 +355,14 @@ class BarraDeMenu(QMenuBar):
         """
         for titulo, menu in self.menus.items():
             menu.menuAction().setEnabled(titulo in MENUS_DA_TELA_INICIAL)
-        for chave in ("pasta_de_saida", "nome_do_arquivo", "processar", "voltar"):
+        for chave in ("pasta_de_saida", "nome_do_arquivo", "processar", "voltar", "automatico"):
             self.acoes[chave].setEnabled(False)
 
     def mostrar_tela_de_trabalho(self) -> None:
         """Reacende todos os menus, ao entrar na tela de trabalho."""
         for menu in self.menus.values():
             menu.menuAction().setEnabled(True)
-        for chave in ("pasta_de_saida", "nome_do_arquivo", "processar", "voltar"):
+        for chave in ("pasta_de_saida", "nome_do_arquivo", "processar", "voltar", "automatico"):
             self.acoes[chave].setEnabled(True)
 
     def mostrar_tela_das_opcoes(self) -> None:

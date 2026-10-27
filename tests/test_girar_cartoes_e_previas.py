@@ -18,6 +18,8 @@ baixo a direita; 270: em baixo a esquerda).
 
 from __future__ import annotations
 
+from tests.ajudante_do_automatico import rodar_como_o_conferir  # etapa 3 da obra
+
 import time
 from pathlib import Path
 
@@ -83,11 +85,7 @@ def _aberta_na_aba_filtro(janela, pasta, folhas: int = 3):
     previa e a folha inteira, so girada), na aba Filtro."""
     janela.abrir_livro(str(_pdf_com_canto(pasta, folhas)))
     projeto = janela.projeto
-    projeto.dividir_folhas = False
-    projeto.cortar_bordas = False
-    projeto.endireitar = False
-    projeto.detectar_regioes = False
-    janela._analise_pronta(pipeline.analisar_projeto(projeto))
+    rodar_como_o_conferir(janela, sempre=True, dividir_folhas=False, cortar_bordas=False, endireitar=False, detectar_regioes=False)
     tela = janela.tela_conferir
     janela.resize(1280, 657)
     janela.show()
@@ -281,9 +279,7 @@ def test_d4_trocar_de_pagina_nao_deixa_a_imagem_da_outra_pagina(janela, pasta, a
     outra pagina, mostra "Preparando a previa..." ate a certa chegar."""
     janela.abrir_livro(str(_pdf_com_canto(pasta, 4)))
     projeto = janela.projeto
-    projeto.dividir_folhas = False
-    projeto.detectar_regioes = False
-    janela._analise_pronta(pipeline.analisar_projeto(projeto))
+    rodar_como_o_conferir(janela, sempre=True, dividir_folhas=False, detectar_regioes=False)
     tela = janela.tela_conferir
     tela.barra_abas.setCurrentIndex(tela._abas_ativas.index(aba))
     vis = tela.visualizadores[aba]
@@ -454,8 +450,7 @@ def _livro_com_zona_antiga(janela, pasta, monkeypatch):
     # a previa (outro fio) nao converte a pagina no meio do teste
     monkeypatch.setattr(zf, "acompanhar", lambda pagina, geometria: False)
     janela.abrir_livro(str(_pdf_com_canto(pasta, 4)))
-    janela.projeto.detectar_regioes = False
-    janela._analise_pronta(pipeline.analisar_projeto(janela.projeto))
+    rodar_como_o_conferir(janela, sempre=True, detectar_regioes=False)
     tela = janela.tela_conferir
     pagina = janela.projeto.paginas[0]
     pagina.selecao = [Regiao(tipo=GRAVURA, forma=RETANGULO, pontos=[(0.1, 0.1), (0.4, 0.3)],
@@ -604,8 +599,7 @@ def test_voltar_pelas_opcoes_mostra_a_capa_nova_no_cartao(janela, pasta, app):
 
     tela.ir_para_pagina(0)
     tela.barra_girar.botoes_de_giro[girar.GIRO_DIREITA].click()
-    janela._sair_da_conferencia()               # o "voltar" da conferencia: opcoes
-    janela.tela_opcoes._sair()                  # o "voltar" das opcoes: inicio
+    janela._sair_da_conferencia()               # o "voltar": os livros (etapa 3 da obra)
     app.processEvents()
     assert janela.telas.currentIndex() == INICIO
     assert projetos.esperar_gravacoes(10)

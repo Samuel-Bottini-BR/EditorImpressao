@@ -16,7 +16,7 @@ import numpy as np
 import shiboken6
 from PySide6.QtCore import QObject, QRunnable, QThread, QThreadPool, QTimer, Signal
 
-from core import luz_scantailor
+from core import etapas, luz_scantailor
 from core.misto import escolhas_da_pagina as escolhas_do_misto
 from core.pontinhos_scantailor import escolha_da_pagina as pontinhos_da_pagina
 from core.pipeline import acertar_no_tamanho_do_pdf, faixa_da_sobra, precisa_do_desenho_do_pdf
@@ -132,6 +132,84 @@ class TarefaAnalise(QThread):
         except Exception as erro:  # noqa: BLE001 - nada pode derrubar o programa
             registrar_erro("analise", traceback.format_exc())
             self.falhou.emit(_mensagem_amigavel(erro))
+
+
+class TarefaAutomatico(QThread):
+    """Obra de 26/10/2026, etapa 3: a parte do Automatico que olha as paginas
+    (core/automatico.medir: onde dividir, os avisos de torta, de corte, de cor
+    e de pagina em branco), num fio de fundo - a interface nunca congela
+    (regra 3), com andamento e cancelar. So LE o PDF e a fotografia do
+    projeto (core/automatico.fotografar, tirada no fio da janela); quem muda
+    o projeto e a janela, no fim (core/automatico.aplicar). Cancelar nao muda
+    nada no livro."""
+
+    progresso = Signal(int, int, str)
+    concluida = Signal(object)        # dict folha -> MedidaDaFolha
+    falhou = Signal(str)
+
+    def __init__(self, fotografia) -> None:
+        super().__init__()
+        self.fotografia = fotografia
+        self._cancelar = False
+
+    def cancelar(self) -> None:
+        self._cancelar = True
+
+    @property
+    def foi_cancelada(self) -> bool:
+        return self._cancelar
+
+    def run(self) -> None:
+        """Nunca deixa excecao escapar (regra 3.3)."""
+        from core import automatico
+
+        try:
+            medidas = automatico.medir(
+                self.fotografia,
+                progresso=lambda f, t, txt: self.progresso.emit(f, t, txt),
+                cancelado=lambda: self._cancelar)
+            if not self._cancelar:
+                self.concluida.emit(medidas)
+        except Cancelou:
+            pass
+        except Exception as erro:  # noqa: BLE001 - nada pode derrubar o programa
+            registrar_erro("automatico", traceback.format_exc())
+            self.falhou.emit(_mensagem_amigavel(erro))
+
+
+class TarefaMedirAoAbrir(QThread):
+    """Obra de 26/10/2026, etapa 3 (D-284, `pr-medir-o-livro`, 21/10: "Medir o
+    livro inteiro por trás, depois de abrir"): depois que o livro novo abre
+    na area de trabalho (a passada leve, sem desenhar nada), mede por tras
+    todas as folhas (core/automatico.medir_o_livro_ao_abrir) - os avisos de
+    pagina em branco, de cor, de resolucao baixa e de tamanho diferente. So
+    GUARDA: a janela poe os avisos no fim (core/automatico.avisos_do_livro);
+    nenhuma pagina muda (a pagina "sempre abre em Original, sem mexer").
+    Prioridade normal (como a TarefaConverterZonas). Parar ao trocar de livro
+    e ao fechar."""
+
+    terminou = Signal(object, object)          # tarefa, medidas
+
+    def __init__(self, fotografia) -> None:
+        super().__init__()
+        self.fotografia = fotografia
+        self._cancelar = False
+
+    def cancelar(self) -> None:
+        self._cancelar = True
+
+    def run(self) -> None:
+        from core import automatico
+
+        medidas = {}
+        try:
+            medidas = automatico.medir(self.fotografia, cancelado=lambda: self._cancelar)
+        except Cancelou:
+            medidas = {}
+        except Exception:  # noqa: BLE001 - nada pode derrubar o programa
+            registrar_erro("medir ao abrir", traceback.format_exc())
+            medidas = {}
+        self.terminou.emit(self, medidas)
 
 
 class TarefaProcessar(QThread):
@@ -669,8 +747,10 @@ class GerenciadorPrevias(QObject):
             f"{p.clareza_melhorar}:{p.intensidade_magico}:{p.metade}:"
             f"{p.angulo_manual}:{p.recorte}:"
             f"{f.posicao_corte:.4f}:{f.rotacao}:{f.dividir}:"
-            f"{self.projeto.limpar}:{self.projeto.endireitar}:"
-            f"{self.projeto.cortar_bordas}:{mist}:"
+            # obra 26/10, etapa 3: o automatico que vale NESTA pagina (o do
+            # livro, ou o rodado so nela: core/etapas)
+            f"{etapas.limpa_sozinho(self.projeto, p)}:{etapas.endireita_sozinho(self.projeto, p)}:"
+            f"{etapas.corta_sozinho(self.projeto, p)}:{mist}:"
             f"{pontinhos_da_pagina(self.projeto, p)}:"
             # item 2.1: o corte da sobra muda a pagina desenhada
             f"{faixa_da_sobra(f, p, self.projeto)}"

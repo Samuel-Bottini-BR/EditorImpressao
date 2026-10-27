@@ -997,136 +997,12 @@ class PainelParaRevisar(Painel):
 # Automático
 # ---------------------------------------------------------------------------
 
-def _marca_de_etapa(ligada: bool) -> QPixmap:
-    """O quadradinho de uma etapa do Automático: azul com o tique quando ela
-    está ligada, vazio quando não. Só mostra (não é de clicar)."""
-    escala, lado = 3, 16
-    imagem = QPixmap(lado * escala, lado * escala)
-    imagem.fill(Qt.transparent)
-    p = QPainter(imagem)
-    p.setRenderHint(QPainter.Antialiasing)
-    p.scale(escala, escala)
-    caixa = QRectF(1.5, 1.5, lado - 3, lado - 3)
-    if ligada:
-        p.setPen(Qt.NoPen)
-        p.setBrush(QColor(estilo.cor("azul")))
-        p.drawRoundedRect(caixa, 3.5, 3.5)
-        p.setPen(_caneta("#FFFFFF", 1.8))
-        p.drawPolyline([QPointF(4.5, 8.3), QPointF(7.1, 10.8), QPointF(11.6, 5.4)])
-    else:
-        p.setPen(QPen(QColor(estilo.cor("apagado")), 1.3))
-        p.setBrush(Qt.NoBrush)
-        p.drawRoundedRect(caixa, 3.5, 3.5)
-    p.end()
-    imagem.setDevicePixelRatio(escala)
-    return imagem
-
-
-class PainelAutomatico(Painel):
-    """O que o programa faz sozinho neste livro: as etapas escolhidas na tela
-    "O que fazer", ligadas ou não, com a escolha do livro de cada uma.
-
-    É SÓ O QUE EXISTE HOJE. As receitas, a ordem arrastando, "Rodar N
-    etapas", "escolher páginas…" e a janela grande do desenho ainda não
-    existem no programa e não foram inventadas aqui. Para mudar uma etapa, o
-    botão do pé leva à tela "O que fazer" (o mesmo "Voltar para as opções"
-    do menu Arquivo), onde elas se ligam e desligam.
-    """
-
-    mudar_pedido = Signal()
-
-    def __init__(self, parent=None) -> None:
-        super().__init__(NOMES_DOS_PAINEIS[PAINEL_AUTOMATICO], parent)
-        self._assinatura: tuple | None = None
-        self.linhas: list[tuple[bool, str, str, str]] = []   # o que está à vista (testes)
-        self.botao_mudar = QPushButton("Voltar para as opções")
-        self.botao_mudar.setCursor(Qt.PointingHandCursor)
-        self.botao_mudar.setFocusPolicy(Qt.NoFocus)
-        self.botao_mudar.setToolTip(
-            "Volta à tela \"O que fazer\", onde cada etapa se liga e desliga. "
-            "O trabalho deste livro fica gravado.")
-        self.botao_mudar.clicked.connect(lambda *_: self.mudar_pedido.emit())
-        self.no_pe.addWidget(self.botao_mudar)
-        self.pe.setVisible(True)
-
-    @staticmethod
-    def etapas_do_livro(projeto) -> list[tuple[bool, str, str, str]]:
-        """(ligada, nome, o que faz, a escolha do livro) de cada etapa, com
-        os nomes da tela "O que fazer" (ui/tela_opcoes.py)."""
-        from core import dividir_scantailor, endireitar_scantailor
-        from core.filtros import NOMES_AMIGAVEIS
-
-        jeito = dividir_scantailor.jeito_valido(getattr(projeto, "dividir_como", None))
-        conta = endireitar_scantailor.jeito_do_livro(projeto)
-        filtro = getattr(projeto, "filtro_padrao", "")
-        return [
-            (bool(projeto.dividir_folhas), "Dividir folhas ao meio",
-             "quando a folha tem 2 páginas do livro",
-             f"jeito: {nome_do_jeito_de_dividir(jeito)}"),
-            (bool(projeto.endireitar), "Endireitar folhas tortas",
-             "corrige páginas inclinadas",
-             f"conta: {nome_da_conta(conta)}"),
-            (bool(projeto.cortar_bordas), "Cortar as bordas",
-             "tira a borda preta e a sombra do scanner",
-             "beirada da folha vizinha: "
-             + ("sim" if getattr(projeto, "cortar_sobra", False) else "não")
-             + "; seguindo o conteúdo: "                       # item 2.5
-             + ("sim" if getattr(projeto, "cortar_pelo_conteudo", False) else "não")
-             + "; borda preta: "                               # item 2.13
-             + (_nome_da_borda(projeto) if getattr(projeto, "borda_preta", False) else "não")),
-            (bool(projeto.limpar), "Limpar a folha", "tira o amarelado",
-             f"filtro do livro: {NOMES_AMIGAVEIS.get(filtro, filtro)}"),
-            (bool(projeto.montar_cadernos), "Montar cadernos no tamanho do scan (sem A4, sem margem)",
-             "para imprimir, dobrar ao meio e costurar", ""),
-        ]
-
-    def atualizar(self, projeto) -> None:
-        """Mostra as etapas do livro aberto (só refaz se alguma mudou)."""
-        etapas = self.etapas_do_livro(projeto) if projeto is not None else []
-        assinatura = tuple(etapas)
-        if assinatura == self._assinatura:
-            return
-        self._assinatura = assinatura
-        self.linhas = etapas
-        self.limpar()
-        if not etapas:
-            return
-        self.dentro.addWidget(frase_do_painel(
-            "O que o programa faz sozinho neste livro. As etapas foram escolhidas "
-            "na tela \"O que fazer\"."))
-        for ligada, nome, explicacao, escolha in etapas:
-            self.dentro.addWidget(self._linha_da_etapa(ligada, nome, explicacao, escolha))
-
-    def _linha_da_etapa(self, ligada: bool, nome: str, explicacao: str, escolha: str) -> QFrame:
-        """Uma etapa: a marca (ligada ou não), o nome, o que faz e a escolha
-        do livro. Não é de clicar (quem liga e desliga é a tela "O que fazer")."""
-        caixa = QFrame()
-        caixa.setObjectName("etapaDoPainel")
-        caixa.setAttribute(Qt.WA_StyledBackground, True)
-        linha = QHBoxLayout(caixa)
-        linha.setContentsMargins(9, 7, 9, 7)
-        linha.setSpacing(9)
-        marca = QLabel()
-        marca.setFixedSize(16, 16)
-        # a marca desenhada à mão acompanha a troca de tema
-        estilo.estilizar(marca, lambda m=marca, sim=ligada: (
-            m.setPixmap(_marca_de_etapa(sim)), "")[1])
-        linha.addWidget(marca, 0, Qt.AlignTop)
-        textos = QVBoxLayout()
-        textos.setContentsMargins(0, 0, 0, 0)
-        textos.setSpacing(1)
-        titulo = QLabel(nome)
-        titulo.setObjectName("etapaLigada" if ligada else "etapaDesligada")
-        titulo.setWordWrap(True)
-        textos.addWidget(titulo)
-        textos.addWidget(frase_do_painel(explicacao if ligada else "desligada neste livro"))
-        if ligada and escolha:
-            detalhe = frase_do_painel(escolha)
-            detalhe.setObjectName("escolhaDoLivro")
-            textos.addWidget(detalhe)
-        linha.addLayout(textos, 1)
-        caixa.setToolTip(f"{nome}: " + ("ligada" if ligada else "desligada") + " neste livro")
-        return caixa
+# O painel Automatico mora em ui/automatico.py desde a obra de 26/10/2026,
+# etapa 3 (D-002: receita, etapas que se marcam e se arrastam, "Rodar N
+# etapas", janela grande, "escolher páginas..."). Antes aqui havia so uma
+# lista de tiques "travados" (achado 1-12 da sessao 1 de testes guiados:
+# "aqui as opções estão travadas , não consigo desmarcar ou mudar"). O nome
+# continua importavel daqui (ver __getattr__ no fim do arquivo).
 
 
 # ---------------------------------------------------------------------------
@@ -2330,7 +2206,11 @@ class ColunaDePaineis(QWidget):
         self.area.setFixedWidth(LARGURA)
 
         self.para_revisar = PainelParaRevisar()
-        self.automatico = PainelAutomatico()
+        # etapa 3 da obra: o painel Automatico de verdade (ui/automatico.py;
+        # importado aqui dentro: ele importa este arquivo)
+        from ui.automatico import PainelAutomatico
+
+        self.automatico = PainelAutomatico(NOMES_DOS_PAINEIS[PAINEL_AUTOMATICO])
         self.propriedades = PainelPropriedades()
         self.marcar_como = self.propriedades.marcar_como
         self.filtro_da_pagina = PainelFiltroDaPagina()
@@ -2502,3 +2382,13 @@ class ColunaDePaineis(QWidget):
         if self.sanfona.isVisibleTo(self):
             return self.sanfona.width()
         return self.icones.width() + (LARGURA if self.area.isVisibleTo(self) else 0)
+
+
+def __getattr__(nome: str):
+    """`PainelAutomatico` continua importavel daqui (mora em ui/automatico.py
+    desde a etapa 3 da obra; import tardio para nao ser circular)."""
+    if nome == "PainelAutomatico":
+        from ui.automatico import PainelAutomatico
+
+        return PainelAutomatico
+    raise AttributeError(nome)

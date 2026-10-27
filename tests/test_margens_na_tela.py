@@ -21,41 +21,53 @@ from tests.test_mesmo_livro_outro_caminho import (  # noqa: F401, E402 - fixture
 )
 
 
+# Desde a etapa 3 da obra (26/10/2026) as margens iguais são a etapa "Margens iguais"
+# do Automático (grupo Saída); a tela "O que fazer" saiu do caminho.
+
 def test_vem_desmarcada_com_as_margens_do_scantailor(janela, pasta):
+    from core import automatico as A
+
     janela.abrir_livro(str(_pdf(pasta)))
-    tela, projeto = janela.tela_opcoes, janela.projeto
-    assert not tela.cx_margens.isChecked()
-    assert projeto.margens_iguais is False
-    assert [tela.margens_mm[c].value() for c in ("esquerda", "cima", "direita", "baixo")] == \
+    jan = janela.abrir_o_automatico("margens")
+    assert A.MARGENS not in janela.estado_do_automatico.marcadas
+    assert janela.projeto.margens_iguais is False
+    assert [jan.margens_mm[c].value() for c in ("esquerda", "cima", "direita", "baixo")] == \
         [10.0, 5.0, 10.0, 5.0]
-    assert tela.painel_margens.isHidden()
+    janela._fechar_a_janela_do_automatico()
 
 
 def test_marcar_grava_no_projeto_e_mostra_as_margens(janela, pasta):
+    from core import automatico as A
+
     janela.abrir_livro(str(_pdf(pasta)))
-    tela, projeto = janela.tela_opcoes, janela.projeto
-    tela.cx_margens.setChecked(True)
-    tela.margens_mm["esquerda"].setValue(15.0)
-    tela.combo_alinhar_vertical.setCurrentIndex(tela.combo_alinhar_vertical.findData("cima"))
+    jan = janela.abrir_o_automatico("margens")
+    estado = janela.estado_do_automatico
+    jan.lista.item_da_etapa(A.MARGENS).setCheckState(__import__("PySide6.QtCore", fromlist=["Qt"]).Qt.Checked)
+    jan.margens_mm["esquerda"].setValue(15.0)
+    jan.combo_vertical.setCurrentIndex(jan.combo_vertical.findData("cima"))
+    assert A.MARGENS in estado.marcadas
+    assert "margens iguais" in jan.frase.text()
+    janela._fechar_a_janela_do_automatico()
+    assert janela.rodar_o_automatico(esperar=True)
+    projeto = janela.projeto
     assert projeto.margens_iguais is True
     assert projeto.margens_mm == [15.0, 5.0, 10.0, 5.0]
     assert projeto.margens_alinhamento == ["cima", "meio"]
-    assert not tela.painel_margens.isHidden()
-    assert "margens iguais" in tela.resumo.text()
 
 
 def test_mostrar_opcoes_traz_o_que_esta_no_projeto(janela, pasta):
     janela.abrir_livro(str(_pdf(pasta)))
-    tela, projeto = janela.tela_opcoes, janela.projeto
+    projeto = janela.projeto
     projeto.margens_iguais = True
     projeto.margens_mm = [1.0, 2.0, 3.0, 4.0]
     projeto.margens_alinhamento = ["baixo", "direita"]
-    tela.mostrar_opcoes()
-    assert tela.cx_margens.isChecked()
-    assert [tela.margens_mm[c].value() for c in ("esquerda", "cima", "direita", "baixo")] == \
+    janela.estado_do_automatico.do_projeto(projeto)
+    jan = janela.abrir_o_automatico("margens")
+    assert [jan.margens_mm[c].value() for c in ("esquerda", "cima", "direita", "baixo")] == \
         [1.0, 2.0, 3.0, 4.0]
-    assert tela.combo_alinhar_horizontal.currentData() == "direita"
+    assert jan.combo_horizontal.currentData() == "direita"
     assert projeto.margens_mm == [1.0, 2.0, 3.0, 4.0]
+    janela._fechar_a_janela_do_automatico()
 
 
 def test_os_cartoes_mostram_as_margens_depois_de_medir(app, pasta):

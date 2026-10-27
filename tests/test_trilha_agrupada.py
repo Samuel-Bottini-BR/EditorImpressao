@@ -44,9 +44,10 @@ from ui.widgets.trilha_agrupada import (  # noqa: E402
 
 def _aberta(janela, pasta, dividir=True):
     janela.abrir_livro(str(_pdf(pasta, folhas=5)))
-    if dividir:
-        janela.tela_opcoes.cx_dividir.setChecked(True)
-    _analisar(janela)
+    # etapa 3 da obra: o antigo "Conferir" pelo Automatico
+    from tests.ajudante_do_automatico import rodar_como_o_conferir
+
+    rodar_como_o_conferir(janela, sempre=True, dividir_folhas=dividir)
     janela.resize(1280, 657)
     janela.show()
     return janela.tela_conferir
@@ -82,8 +83,10 @@ def test_o_balao_mostra_a_letra_tambem_das_escondidas(app):
     assert "Laço" in texto and "[L]" in texto
     assert "Ponto a ponto [P]" in texto
     assert "segure o botão" in texto
-    # as de página não têm letra, e o balão não inventa uma
-    assert "[" not in trilha.texto_da_dica(grupo_de(FERRAMENTA_CORTAR))
+    # etapa 3 da obra (pergunta da etapa 2, "como o Photoshop"; escolha da
+    # gerente): Dividir, Cortar e Endireitar ganharam letra (D, X, I), e o balão
+    # mostra a do Cortar
+    assert "[X]" in trilha.texto_da_dica(grupo_de(FERRAMENTA_CORTAR))
 
 
 def test_clicar_escolhe_a_que_esta_a_vista(app):
@@ -218,7 +221,7 @@ def test_a_barra_de_opcoes_mora_na_linha_dos_menus(janela, pasta):
     assert tela.barra_opcoes.parentWidget() is janela.linha_dos_menus
     assert janela.menuWidget() is janela.linha_dos_menus
     assert tela.barra_opcoes.isVisible()
-    janela._voltar_das_opcoes()
+    janela._sair_da_conferencia()          # etapa 3 da obra: o "voltar" vai aos livros
     assert not tela.barra_opcoes.isVisible(), "fora da tela de trabalho ela some"
 
 
@@ -230,7 +233,8 @@ def test_a_barra_de_baixo_navega_e_desfaz(janela, pasta):
     tela.botao_proxima.click()
     assert tela.indice_pagina == 1
     assert "conferidas" in tela.rotulo_do_livro.text()
-    assert not tela.botao_desfazer_embaixo.isEnabled()
+    # etapa 3 da obra: o Automático que abriu o livro já é uma ação do desfazer
+    assert tela.botao_desfazer_embaixo.isEnabled() == bool(janela.acoes.feitas)
     tela._marcar_revisada()
     if janela.acoes.feitas:
         assert tela.botao_desfazer_embaixo.isEnabled()

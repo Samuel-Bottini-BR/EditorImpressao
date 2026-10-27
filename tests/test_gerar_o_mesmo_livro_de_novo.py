@@ -191,7 +191,7 @@ def _parar_o_que_segura_o_pdf(janela) -> None:
         janela.previas.parar()
         janela.previas = None
     janela.tela_conferir.tira.parar()
-    janela.tela_opcoes.folhear.fechar()
+    janela._fechar_a_janela_do_automatico()
 
 
 def test_gerar_reabrir_e_gerar_de_novo(janela, pasta, monkeypatch):

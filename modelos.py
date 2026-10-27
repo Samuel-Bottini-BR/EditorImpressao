@@ -357,6 +357,23 @@ class ConfigPagina:
     # Seguro mudar: nada aqui (interno, nunca texto de tela).
     mexida_a_mao: list[str] = field(default_factory=list)
 
+    # Obra de 26/10/2026, etapa 3 (D-002, 26/10: "eu quero poder sim fazer
+    # automatico para todo livro, mas também quero pode fazer uma a uma."):
+    # as etapas que o Automatico faz SO nesta pagina (codigos de
+    # core/etapas.py: "cortar", "endireitar", "filtro"), mesmo com a caixinha
+    # do livro desligada - e o "rodar em paginas escolhidas / nesta pagina".
+    # Quem grava: core/automatico.py; quem le: core/etapas (corta_sozinho,
+    # endireita_sozinho, limpa_sozinho com a pagina). Vazia = so o livro
+    # manda (projeto antigo nao tem o campo: vazia, nada muda).
+    automatico: list[str] = field(default_factory=list)
+    # D-093/D-094 (g6-retangulo, 09/10: "quero a b e c juntas."): o que o
+    # corte a mao desta pagina faz quando o angulo muda depois - "fica"
+    # (no mesmo lugar, como o ScanTailor) ou "acompanha" (o texto). None =
+    # segue o livro (Projeto.retangulo_do_corte), que segue as Configuracoes.
+    # Codigos de core/pipeline.RETANGULO_*. Quem usa: a ferramenta Endireitar
+    # (ui/tela_conferir), ao mudar o angulo.
+    retangulo_do_corte: str | None = None
+
     @property
     def alertas_pendentes(self) -> list[str]:
         """Os alertas desta pagina que ainda pedem um olhar: nenhum se a
@@ -661,6 +678,27 @@ class Projeto:
     # valer).
     feito_a_mao_sempre_vale: bool = True
 
+    # Obra de 26/10/2026, etapa 3 (o painel Automatico; D-002, D-003, D-005,
+    # D-016, D-071, D-094):
+    #   ordem_do_automatico: a ordem em que as etapas do Automatico RODAM
+    #       (codigos de core/automatico.ETAPAS; vazia = a de fabrica). D-003,
+    #       28/09: "muda arrastando com o mouse"; D-016: a montagem da pagina
+    #       segue sempre a ordem obrigatoria (core/ordem_do_preparo).
+    #   passou_pelo_automatico: o livro ja rodou o Automatico (ou a pessoa
+    #       disse "agora não" ao aviso)? False so no livro aberto pela primeira
+    #       vez pela janela (ui/janela_principal); e o que faz o aviso "Livro
+    #       novo: ainda não passou pelo automático" (D-005) aparecer. Projeto
+    #       antigo: True (ele passou pela tela "O que fazer").
+    #   receita_usada: o nome da ultima receita posta no livro ("" = nenhuma);
+    #       aparece no livro aberto da tela inicial ("Receita usada", R6).
+    #   retangulo_do_corte: "fica" / "acompanha" para o livro (D-094); None =
+    #       o das Configuracoes (de fabrica "fica", D-093).
+    # Nada daqui muda imagem sozinho. Seguro mudar: nada (interno).
+    ordem_do_automatico: list = field(default_factory=list)
+    passou_pelo_automatico: bool = True
+    receita_usada: str = ""
+    retangulo_do_corte: str | None = None
+
     folhas: list[ConfigFolha] = field(default_factory=list)
     paginas: list[ConfigPagina] = field(default_factory=list)
     criado_em: str = ""
@@ -746,6 +784,9 @@ class Projeto:
             # imagem - o caminho rapido o jogaria fora. Projeto antigo: so as
             # marcas (sai igual). core/etapas.tem_feito_a_mao_que_vale.
             and not _tem_feito_a_mao_que_vale(self)
+            # obra 26/10, etapa 3: o Automatico rodado so em algumas paginas
+            # (ConfigPagina.automatico) tambem muda a imagem delas
+            and not _tem_automatico_por_pagina(self)
         )
 
     @property
@@ -871,6 +912,13 @@ def _tem_feito_a_mao_que_vale(projeto: "Projeto") -> bool:
     return tem_feito_a_mao_que_vale(projeto)
 
 
+def _tem_automatico_por_pagina(projeto: "Projeto") -> bool:
+    """core.etapas.tem_automatico_por_pagina (import tardio, como acima)."""
+    from core.etapas import tem_automatico_por_pagina
+
+    return tem_automatico_por_pagina(projeto)
+
+
 def _alertas_pendentes(item) -> list[str]:
     """Os alertas de uma folha ou pagina que ainda pedem um olhar (ver
     ConfigPagina.alertas_pendentes). Item de versao antiga, sem
@@ -879,6 +927,24 @@ def _alertas_pendentes(item) -> list[str]:
         return []
     aceitos = getattr(item, "alertas_aceitos", None) or ()
     return [a for a in item.alertas if a not in aceitos]
+
+
+def folhas_da_lista(lista: list) -> list[ConfigFolha]:
+    """As folhas de volta de uma lista de dicionarios (dataclasses.asdict, como
+    o JSON grava). Usado pelo desfazer do Automatico que mudou a lista de
+    paginas (historico_acoes._trocar_a_lista; obra 26/10, etapa 3)."""
+    import copy as _copia
+
+    return [ConfigFolha(**_so_campos_conhecidos(ConfigFolha, _migrar_folha(_copia.deepcopy(f))))
+            for f in lista if isinstance(f, dict)]
+
+
+def paginas_da_lista(lista: list) -> list[ConfigPagina]:
+    """As paginas de volta de uma lista de dicionarios (ver folhas_da_lista)."""
+    import copy as _copia
+
+    return [ConfigPagina(**_so_campos_conhecidos(ConfigPagina, _migrar(_copia.deepcopy(p))))
+            for p in lista if isinstance(p, dict)]
 
 
 def _so_campos_conhecidos(classe, dados: dict[str, Any]) -> dict[str, Any]:

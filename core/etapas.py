@@ -62,6 +62,20 @@ O que nao da para saber pelo valor (ex.: a forca do preto mexida numa pagina
 que ficou no filtro do livro; a linha de divisao arrastada com o "Dividir"
 ligado) so conta pela MARCA que a tela grava.
 
+O AUTOMATICO POR PAGINA (obra de 26/10/2026, etapa 3; D-002, 26/10: "eu quero poder
+sim fazer automatico para todo livro, mas também quero pode fazer uma a uma.")
+
+O automatico de cada etapa mora na caixinha do livro (Projeto.cortar_bordas,
+.endireitar, .limpar) quando roda no livro todo. Quando o Automatico roda so em
+algumas paginas (ou numa so), a etapa fica ligada SO nelas:
+ConfigPagina.automatico = lista das etapas (CORTAR, ENDIREITAR, FILTRO) que o
+automatico faz naquela pagina mesmo com a caixinha do livro desligada. Quem
+grava: core/automatico.py (rodar em paginas escolhidas); quem le: as funcoes
+"sozinho" daqui (corta_sozinho(projeto, pagina), endireita_sozinho,
+limpa_sozinho, marca_sozinho), que o pipeline chama com a pagina. Sem a pagina
+(quem pergunta pelo livro), so a caixinha. Pagina de projeto antigo nao tem o
+campo: lista vazia, nada muda.
+
 Seguro mudar: acrescentar etapa nova (codigo + _tem_valor_a_mao + uma funcao
 "vale?"). Arriscado: (1) fazer uma funcao "vale?" devolver True num projeto
 antigo sem a marca (o PDF dele mudaria: prova em tests/test_decisoes.py e
@@ -183,16 +197,17 @@ def folhas_mexidas_a_mao(projeto, etapa: str | None = None) -> list:
             if any(mexida_a_mao(projeto, f, e) for e in etapas)]
 
 
-def _etapa_ligada(projeto, etapa: str) -> bool:
-    """O automatico desta etapa esta ligado no livro (a caixinha)?"""
+def _etapa_ligada(projeto, etapa: str, pagina=None) -> bool:
+    """O automatico desta etapa esta ligado no livro (a caixinha) ou, com a
+    `pagina`, so nela (ConfigPagina.automatico, etapa 3 da obra)?"""
     if etapa == CORTAR:
-        return bool(getattr(projeto, "cortar_bordas", False))
+        return corta_sozinho(projeto, pagina)
     if etapa == ENDIREITAR:
-        return bool(getattr(projeto, "endireitar", False))
+        return endireita_sozinho(projeto, pagina)
     if etapa == FILTRO:
-        return bool(getattr(projeto, "limpar", False))
+        return limpa_sozinho(projeto, pagina)
     if etapa == MARCAR:
-        return marca_sozinho(projeto)
+        return marca_sozinho(projeto, pagina)
     if etapa in (DIVIDIR, GIRAR):
         # dividir e girar a mao sempre valeram no pipeline; so o caminho rapido
         # "so cadernos" (Projeto.so_cadernos) os ignorava
@@ -215,7 +230,7 @@ def marcar_pelos_valores(projeto) -> int:
     novas = 0
     for pagina in getattr(projeto, "paginas", []):
         for etapa in ETAPAS_DA_PAGINA:
-            if not novo and (etapa == MOVER or not _etapa_ligada(projeto, etapa)):
+            if not novo and (etapa == MOVER or not _etapa_ligada(projeto, etapa, pagina)):
                 continue
             if _tem_valor_a_mao(projeto, pagina, etapa):
                 novas += marcar_mexida_a_mao(pagina, etapa)
@@ -241,7 +256,7 @@ def feito_a_mao_vale(projeto, item, etapa: str) -> bool:
 
 
 def _vale(projeto, item, etapa: str) -> bool:
-    return _etapa_ligada(projeto, etapa) or feito_a_mao_vale(projeto, item, etapa)
+    return _etapa_ligada(projeto, etapa, item) or feito_a_mao_vale(projeto, item, etapa)
 
 
 # --- cortar e endireitar -----------------------------------------------------
@@ -257,15 +272,26 @@ def recorte_a_mao(projeto, pagina):
     return tuple(recorte)
 
 
-def corta_sozinho(projeto) -> bool:
+def no_automatico_da_pagina(pagina, etapa: str) -> bool:
+    """A etapa esta ligada SO nesta pagina (ConfigPagina.automatico: o
+    Automatico rodou nela, etapa 3 da obra)? Pagina None ou sem o campo: nao."""
+    if pagina is None:
+        return False
+    automatico = getattr(pagina, "automatico", None)
+    return isinstance(automatico, list) and etapa in automatico
+
+
+def corta_sozinho(projeto, pagina=None) -> bool:
     """O AUTOMATICO do corte esta ligado (mede o corte das paginas sem corte a
-    mao)? E a caixinha "Cortar as bordas"."""
-    return bool(getattr(projeto, "cortar_bordas", False))
+    mao)? E a caixinha "Cortar as bordas" do livro OU, com a `pagina`, o
+    Automatico rodado so nela (etapa 3 da obra)."""
+    return (bool(getattr(projeto, "cortar_bordas", False))
+            or no_automatico_da_pagina(pagina, CORTAR))
 
 
 def corta(projeto, pagina) -> bool:
     """Esta pagina e cortada? Automatico ligado OU corte a mao que vale."""
-    return corta_sozinho(projeto) or recorte_a_mao(projeto, pagina) is not None
+    return corta_sozinho(projeto, pagina) or recorte_a_mao(projeto, pagina) is not None
 
 
 def angulo_a_mao(projeto, pagina) -> float | None:
@@ -276,16 +302,18 @@ def angulo_a_mao(projeto, pagina) -> float | None:
     return float(angulo)
 
 
-def endireita_sozinho(projeto) -> bool:
+def endireita_sozinho(projeto, pagina=None) -> bool:
     """O AUTOMATICO do endireitar esta ligado (mede o angulo das paginas sem
-    angulo a mao)? E a caixinha "Endireitar"."""
-    return bool(getattr(projeto, "endireitar", False))
+    angulo a mao)? E a caixinha "Endireitar" do livro OU, com a `pagina`, o
+    Automatico rodado so nela (etapa 3 da obra)."""
+    return (bool(getattr(projeto, "endireitar", False))
+            or no_automatico_da_pagina(pagina, ENDIREITAR))
 
 
 def endireita(projeto, pagina) -> bool:
     """Esta pagina e endireitada (girada pelo angulo)? Automatico ligado OU
     angulo a mao que vale. Quem gira ainda olha o ANGULO_MINIMO."""
-    return endireita_sozinho(projeto) or angulo_a_mao(projeto, pagina) is not None
+    return endireita_sozinho(projeto, pagina) or angulo_a_mao(projeto, pagina) is not None
 
 
 # --- filtro e marcacao -------------------------------------------------------
@@ -297,22 +325,30 @@ def filtro_a_mao(projeto, pagina) -> bool:
     return FILTRO in _marcas(pagina)
 
 
+def limpa_sozinho(projeto, pagina=None) -> bool:
+    """O AUTOMATICO do filtro ("Limpar a folha") esta ligado? A caixinha do
+    livro OU, com a `pagina`, o Automatico rodado so nela (etapa 3 da obra)."""
+    return (bool(getattr(projeto, "limpar", False))
+            or no_automatico_da_pagina(pagina, FILTRO))
+
+
 def filtro_que_vale(projeto, pagina) -> str:
     """O filtro com que a pagina sai: o dela, com "Limpar a folha" ligado (como
-    sempre) ou escolhido a mao; senao o Original (a pagina como veio). E o que
-    as contas que perguntavam "projeto.limpar and pagina.filtro == X" usam."""
+    sempre; no livro ou so nesta pagina) ou escolhido a mao; senao o Original
+    (a pagina como veio). E o que as contas que perguntavam "projeto.limpar
+    and pagina.filtro == X" usam."""
     from core.filtros import ORIGINAL
 
-    if getattr(projeto, "limpar", False) or filtro_a_mao(projeto, pagina):
+    if limpa_sozinho(projeto, pagina) or filtro_a_mao(projeto, pagina):
         return getattr(pagina, "filtro", ORIGINAL)
     return ORIGINAL
 
 
-def marca_sozinho(projeto) -> bool:
+def marca_sozinho(projeto, pagina=None) -> bool:
     """O AUTOMATICO da marcacao (procurar gravura, letra e papel) esta ligado?
-    "Limpar a folha" e "Procurar gravura e letra" (Projeto.detectar_regioes),
-    as duas caixinhas que fazem a tela mostrar a ferramenta Marcar."""
-    return bool(getattr(projeto, "limpar", False) and getattr(projeto, "detectar_regioes", False))
+    "Limpar a folha" (do livro, ou so nesta `pagina`: limpa_sozinho) e
+    "Procurar gravura e letra" (Projeto.detectar_regioes)."""
+    return bool(limpa_sozinho(projeto, pagina) and getattr(projeto, "detectar_regioes", False))
 
 
 def marcacao_a_mao_vale(projeto, pagina) -> bool:
@@ -344,7 +380,7 @@ def filtra(projeto, pagina) -> bool:
     sempre) OU o filtro escolhido a mao OU marcacao a mao (pedaco, "pintar por
     cima"...). Com so a marcacao, a pagina fica no Original e so o que foi
     marcado a mao muda (core.pipeline._filtrar_a_pagina)."""
-    return (bool(getattr(projeto, "limpar", False)) or filtro_a_mao(projeto, pagina)
+    return (limpa_sozinho(projeto, pagina) or filtro_a_mao(projeto, pagina)
             or marcacao_a_mao_vale(projeto, pagina))
 
 
@@ -407,11 +443,29 @@ def paginas_a_mao_fora_do_automatico(projeto) -> list:
     for pagina in getattr(projeto, "paginas", []):
         if getattr(pagina, "apagada", False):
             continue
-        if ((not corta_sozinho(projeto) and recorte_a_mao(projeto, pagina) is not None)
-                or (not endireita_sozinho(projeto) and angulo_a_mao(projeto, pagina) is not None)
-                or (not getattr(projeto, "limpar", False)
+        if ((not corta_sozinho(projeto, pagina) and recorte_a_mao(projeto, pagina) is not None)
+                or (not endireita_sozinho(projeto, pagina) and angulo_a_mao(projeto, pagina) is not None)
+                or (not limpa_sozinho(projeto, pagina)
                     and (filtro_a_mao(projeto, pagina) or marcacao_a_mao_vale(projeto, pagina)))
                 or (getattr(pagina, "tamanho_folha_cm", None) is None
                     and conteudo_mexido(projeto, pagina))):
             achadas.append(pagina)
     return achadas
+
+
+# --- o automatico por pagina, no livro inteiro (etapa 3 da obra) -------------
+
+def tem_automatico_por_pagina(projeto) -> bool:
+    """Alguma pagina (nao apagada) tem etapa do Automatico ligada so nela
+    (ConfigPagina.automatico)? Para o caminho rapido "so cadernos"
+    (modelos.Projeto.so_cadernos), que nao desenha pagina nenhuma."""
+    return any(getattr(p, "automatico", None) and not getattr(p, "apagada", False)
+               for p in getattr(projeto, "paginas", []))
+
+
+def algum_corta_sozinho(projeto) -> bool:
+    """O corte automatico vale em alguma pagina (no livro todo, ou so em
+    algumas)? Para as contas do livro inteiro (o tamanho do livro do corte
+    pelo conteudo, item 2.5)."""
+    return bool(getattr(projeto, "cortar_bordas", False)) or any(
+        no_automatico_da_pagina(p, CORTAR) for p in getattr(projeto, "paginas", []))

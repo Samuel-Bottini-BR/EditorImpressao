@@ -17,6 +17,8 @@ Testes de máquina (sem janela na tela, tests/conftest.py):
 
 from __future__ import annotations
 
+from tests.ajudante_do_automatico import rodar_como_o_conferir  # etapa 3 da obra
+
 import pytest
 
 fitz = pytest.importorskip("fitz")
@@ -37,11 +39,11 @@ from tests.test_mesmo_livro_outro_caminho import (  # noqa: F401, E402 - fixture
 
 def _aberta(janela, pasta, folhas=5, dividir=False):
     janela.abrir_livro(str(_pdf(pasta, folhas=folhas)))
-    if dividir:
-        # a aba "Onde cortar" so aparece com o livro dividido; desde o item
-        # 2.1 (G2 (a)) o livro novo nao divide sozinho
-        janela.tela_opcoes.cx_dividir.setChecked(True)
-    _analisar(janela)
+    # etapa 3 da obra: o antigo "Conferir" (com "Dividir" marcado, se pedido;
+    # desde o item 2.1 o livro novo nao divide sozinho) roda pelo Automatico
+    from tests.ajudante_do_automatico import rodar_como_o_conferir
+
+    rodar_como_o_conferir(janela, sempre=True, dividir_folhas=dividir)
     tela = janela.tela_conferir
     janela.resize(1280, 657)
     janela.show()
@@ -215,7 +217,7 @@ def test_a_tecla_do_menu_gira_de_verdade(janela, pasta, app):
 
 def test_a_tecla_r_ficou_so_para_o_retangulo(janela, pasta):
     janela.abrir_livro(str(_pdf(pasta, folhas=5)))
-    janela._analise_pronta(pipeline.analisar_projeto(janela.projeto))   # com a aba Marcar
+    rodar_como_o_conferir(janela, sempre=True, detectar_regioes=True)  # com a aba Marcar
     tela = janela.tela_conferir
     assert "marcar" in tela._abas_ativas
     tela.escolher_ferramenta("elipse")

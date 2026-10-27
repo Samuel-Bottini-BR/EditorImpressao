@@ -156,6 +156,12 @@ class Resumo:
     criado_em: str = ""
     mexido_em: str = ""
     miniatura: str = ""
+    # Obra de 26/10/2026, etapa 3 (livro aberto da tela inicial, R6 de 06/10:
+    # "Sim, fica assim" - "Para revisar" e "Receita usada" no painel do livro):
+    # quantas paginas/folhas pedem um olhar e o nome da ultima receita posta
+    # pelo Automatico. Resumo antigo nao tem os campos: 0 e "" (ler_resumo).
+    para_revisar: int = 0
+    receita_usada: str = ""
 
     @property
     def progresso(self) -> float:
@@ -404,6 +410,15 @@ def atualizar(resumo: Resumo, projeto, pagina_atual: int | None = None,
     resumo.caminho_saida = projeto.caminho_saida or resumo.caminho_saida
     resumo.total_paginas = len(projeto.paginas) or resumo.total_paginas
     resumo.conferidas = sum(1 for p in projeto.paginas if p.revisada)
+    # etapa 3 da obra: o "Para revisar" e a "Receita usada" do livro aberto
+    try:
+        # as mesmas paginas que o rodape ("K com duvida") e o icone do "Para
+        # revisar" contam (pendentes_de_revisao soma tambem as folhas: dava 18
+        # no livro aberto e 16 na area de trabalho, no Boecio)
+        resumo.para_revisar = sum(1 for p in projeto.paginas if p.precisa_revisao)
+    except Exception:  # noqa: BLE001 - o cartao nunca derruba a gravacao
+        resumo.para_revisar = 0
+    resumo.receita_usada = str(getattr(projeto, "receita_usada", "") or "")
     if pagina_atual is not None:
         resumo.pagina_atual = int(pagina_atual)
     gravar_resumo(resumo, por_tras=por_tras)
@@ -1027,6 +1042,36 @@ def combina_com(salvo, recem_analisado, assinatura: str = "") -> bool:
     if salvo is None or recem_analisado is None:
         return False
     return motivo_para_nao_combinar(salvo, recem_analisado, assinatura) == ""
+
+
+def motivo_sem_analise(salvo, aberto, assinatura: str = "") -> str:
+    """O trabalho salvo serve para o livro recem-aberto SEM analise? "" se
+    serve; senao o motivo (o texto do aviso, como motivo_para_nao_combinar).
+
+    Obra de 26/10/2026, etapa 3 (D-002: o livro abre direto na area de
+    trabalho, sem analisar de novo; defeito de 29/09: o salvo voltava por cima
+    de uma analise nova e jogava fora o que a pessoa tinha mudado). Agora o
+    trabalho salvo E o livro: serve se for o mesmo livro (mesmo arquivo ou
+    mesma assinatura, _mesmo_livro), com o mesmo numero de folhas e com
+    paginas. A divisao das folhas vem do proprio salvo (nao ha mais "o
+    analisado" para comparar). `aberto`: o projeto da passada leve (uma folha
+    por pagina do PDF)."""
+    if salvo is None:
+        return "o trabalho salvo não pôde ser lido"
+    if not _mesmo_livro(salvo, aberto, assinatura):
+        return "o arquivo aberto agora não é o mesmo livro do trabalho salvo"
+    antes, agora = len(salvo.folhas), len(aberto.folhas)
+    if antes != agora:
+        return (f"o arquivo tinha {_quantas(antes, 'folha', 'folhas')} quando o "
+                f"trabalho foi salvo e agora tem {agora}: ele foi trocado ou mudou")
+    if not salvo.paginas:
+        return "o trabalho salvo não tinha páginas"
+    if any(not 0 <= p.folha < agora for p in salvo.paginas):
+        return "o trabalho salvo tinha páginas de folhas que o arquivo não tem"
+    if {p.folha for p in salvo.paginas} != set(range(agora)):
+        return (f"o trabalho salvo tinha {_quantas(len(salvo.paginas), 'página', 'páginas')} "
+                f"e o livro tem {_quantas(agora, 'folha', 'folhas')}: falta página de alguma folha")
+    return ""
 
 
 def _quantas(numero: int, singular: str, plural: str) -> str:

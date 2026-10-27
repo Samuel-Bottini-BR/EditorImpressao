@@ -424,7 +424,7 @@ def janela(app, tmp_path, monkeypatch):
         janela.aviso_do_fundo.done(0)
     if janela.previas is not None:
         janela.previas.parar()
-    janela.tela_opcoes.folhear.fechar()
+    janela._fechar_a_janela_do_automatico()
     janela.close()
 
 
@@ -437,9 +437,22 @@ def _botao_do_aviso(janela, texto: str):
 
 
 def _analisar(janela) -> None:
-    """O que o "Conferir" faz, sem a tarefa em segundo plano."""
-    janela.projeto.detectar_regioes = False
-    janela._analise_pronta(pipeline.analisar_projeto(janela.projeto))
+    """O que o "Conferir" fazia, pelo caminho novo (obra de 26/10/2026, etapa 3: o livro
+    abre direto na área de trabalho e o Automático roda no livro todo, com as caixinhas de
+    fábrica; tests/ajudante_do_automatico.py)."""
+    from tests.ajudante_do_automatico import rodar_como_o_conferir
+
+    rodar_como_o_conferir(janela)
+
+
+def _radio_do_fundo_escondido(janela) -> bool:
+    """O filtro "Tirar o fundo" está escondido no Automático (etapa "Limpar a folha")?
+    Desde a etapa 3 da obra ele mora lá (antes, na tela "O que fazer")."""
+    jan = janela.abrir_o_automatico("limpar")
+    try:
+        return jan.radios_de_filtro[TIRAR_FUNDO].isHidden()
+    finally:
+        janela._fechar_a_janela_do_automatico()
 
 
 def test_aviso_aparece_ao_abrir_livro_com_camadas_pela_primeira_vez(janela, tmp_path):
@@ -458,7 +471,9 @@ def test_sim_poe_o_livro_inteiro_no_filtro(janela, tmp_path):
     _botao_do_aviso(janela, "Sim, tirar o fundo").click()
     assert janela.aviso_do_fundo is None
     assert janela.projeto.filtro_padrao == TIRAR_FUNDO
-    assert janela.tela_opcoes.radios_de_filtro[TIRAR_FUNDO].isChecked()
+    # etapa 3 da obra: o livro ja esta na area de trabalho; o "Sim" vale na hora
+    assert janela.projeto.limpar
+    assert [p.filtro for p in janela.projeto.paginas] == [TIRAR_FUNDO, TIRAR_FUNDO]
     _analisar(janela)
     assert [p.filtro for p in janela.projeto.paginas] == [TIRAR_FUNDO, TIRAR_FUNDO]
 
@@ -482,17 +497,17 @@ def test_fechar_o_aviso_vale_como_nao(janela, tmp_path):
 def test_livro_sem_camadas_nunca_pergunta(janela, tmp_path):
     janela.abrir_livro(_pdf_sem_camadas(tmp_path))
     assert janela.aviso_do_fundo is None
-    assert janela.tela_opcoes.radios_de_filtro[TIRAR_FUNDO].isHidden()
+    assert _radio_do_fundo_escondido(janela)
 
 
 def test_reabrir_livro_que_ja_tem_projeto_nao_pergunta(janela, tmp_path):
     caminho = _pdf_camadas(tmp_path)
     janela.abrir_livro(caminho)
     _botao_do_aviso(janela, "Não, deixar como está").click()
-    janela.tela_opcoes.folhear.fechar()
+    janela._fechar_a_janela_do_automatico()
     janela.abrir_livro(caminho)                     # o mesmo PDF, pelo "Abrir"
     assert janela.aviso_do_fundo is None
-    assert not janela.tela_opcoes.radios_de_filtro[TIRAR_FUNDO].isHidden()
+    assert not _radio_do_fundo_escondido(janela)
 
 
 def test_abrir_e_continuar_mantem_o_filtro_escolhido(janela, tmp_path, monkeypatch):
@@ -508,13 +523,12 @@ def test_abrir_e_continuar_mantem_o_filtro_escolhido(janela, tmp_path, monkeypat
     janela.projeto.paginas[1].filtro = TIRAR_FUNDO     # so a segunda pagina
     janela._salvar_agora()
 
-    janela.tela_opcoes.folhear.fechar()
+    janela._fechar_a_janela_do_automatico()
     janela.abrir_livro(caminho)                         # pelo "Abrir"
     _analisar(janela)
     assert [p.filtro for p in janela.projeto.paginas] == [ORIGINAL, TIRAR_FUNDO]
 
-    janela.tela_opcoes.folhear.fechar()
-    monkeypatch.setattr(janela, "analisar", lambda: None)
+    janela._fechar_a_janela_do_automatico()
     janela._continuar_projeto(projetos.achar_por_assinatura(caminho))   # pelo "continuar"
     assert janela.aviso_do_fundo is None
     _analisar(janela)

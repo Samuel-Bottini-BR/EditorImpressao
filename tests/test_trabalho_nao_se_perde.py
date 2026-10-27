@@ -216,7 +216,6 @@ def test_continuar_depois_de_religar_o_livro_movido_mantem_o_trabalho(janela, pa
     _trabalhar_e_fechar(janela, str(livro))
     novo = _mover(livro, pasta / "pasta nova")
     monkeypatch.setattr(projetos, "_pastas_conhecidas", lambda: [novo.parent])
-    monkeypatch.setattr(janela, "analisar", lambda: None)
 
     resumo = projetos.listar()[0]
     assert projetos.procurar_o_livro(resumo) == (projetos.RELIGADO, str(novo))
@@ -238,7 +237,6 @@ def test_livro_achado_a_mao_mantem_o_trabalho(janela, pasta, monkeypatch):
     monkeypatch.setattr(projetos, "_pastas_conhecidas", lambda: [])
     monkeypatch.setattr(QFileDialog, "getOpenFileName",
                         staticmethod(lambda *a, **k: (str(novo).replace("\\", "/"), "")))
-    monkeypatch.setattr(janela, "analisar", lambda: None)
 
     janela.tela_inicio.pedir_para_continuar(projetos.listar()[0])
     _analisar(janela)
@@ -529,17 +527,27 @@ def test_processar_grava_na_pasta_do_projeto_e_nao_pelo_nome(janela, pasta, monk
 # reproduz_fechar_no_o_que_fazer.py; prints p18-p20.
 
 
-def test_abrir_livro_salvo_e_fechar_no_o_que_fazer_nao_apaga_o_trabalho(janela, pasta):
+def _paginas_gravadas(estado: Path) -> list[tuple]:
+    """O trabalho das paginas no projeto.json (filtro, corte, conferida)."""
+    dados = json.loads(estado.read_text(encoding="utf-8"))
+    return [(p["filtro"], p.get("recorte"), p["revisada"], p.get("intensidade_magico"))
+            for p in dados["paginas"]]
+
+
+def test_abrir_livro_salvo_e_fechar_logo_nao_apaga_o_trabalho(janela, pasta):
+    """Bug 2 do verificador (29/09: abrir um livro salvo e fechar no "O que fazer"
+    gravava um projeto vazio por cima). Etapa 3 da obra: o livro abre direto na area
+    de trabalho com o trabalho; fechar logo grava o mesmo trabalho."""
     livro = _pdf(pasta)
     _trabalhar_e_fechar(janela, str(livro))
     estado = _estado(janela)
-    antes = estado.read_bytes()
+    antes = _paginas_gravadas(estado)
     resumo_antes = projetos.ler_resumo(janela.resumo.pasta)
 
-    janela.abrir_livro(str(livro))             # fica em "O que fazer"
+    janela.abrir_livro(str(livro))
     janela.close()
 
-    assert estado.read_bytes() == antes, "fechar no 'O que fazer' apagou o trabalho"
+    assert _paginas_gravadas(estado) == antes, "abrir e fechar mudou o trabalho"
     resumo = projetos.ler_resumo(janela.resumo.pasta)
     assert resumo.conferidas == resumo_antes.conferidas == 3, "o cartao perdeu as conferidas"
 
@@ -548,36 +556,40 @@ def test_abrir_livro_salvo_e_fechar_no_o_que_fazer_nao_apaga_o_trabalho(janela, 
     _conferir_que_o_trabalho_voltou(janela, str(livro))
 
 
-def test_fechar_durante_a_analise_do_continuar_nao_apaga_o_trabalho(janela, pasta,
-                                                                    monkeypatch):
-    """"continuar" e fechar em "Olhando o livro..." (a analise nao acabou)."""
+def test_fechar_com_o_automatico_olhando_as_paginas_nao_muda_o_trabalho(janela, pasta):
+    """O "Olhando o livro..." de antes, pelo caminho novo: o Automatico mede por tras
+    (TarefaAutomatico) e so grava no fim. Fechar no meio grava o trabalho como estava,
+    sem nada do Automatico pela metade."""
+    from core import automatico as A
+
     livro = _pdf(pasta)
     _trabalhar_e_fechar(janela, str(livro))
-    antes = _estado(janela).read_bytes()
-    monkeypatch.setattr(janela, "analisar", lambda: None)      # analise "rodando"
-
+    antes = _paginas_gravadas(_estado(janela))
     janela._continuar_projeto(projetos.achar_por_assinatura(str(livro)))
-    janela._salvar_agora()                     # o relogio de salvar dispara
+    janela.rodar_o_automatico(pedido=A.Pedido(etapas=[A.DIVIDIR, A.LIMPAR],
+                                              opcoes={"filtro_padrao": "melhorar"}),
+                              perguntar=False)
     janela.close()
+    salvo = projetos.carregar_estado(janela.resumo)
+    assert _paginas_gravadas(_estado(janela)) == antes
+    assert not salvo.dividir_folhas and salvo.filtro_padrao != "melhorar"
 
-    assert _estado(janela).read_bytes() == antes
 
-
-def test_fechar_no_meio_de_uma_nova_analise_nao_grava_o_projeto_pela_metade(janela, pasta,
-                                                                          monkeypatch):
-    """Voltou da conferencia para "O que fazer" e clicou "Conferir" de novo: a
-    analise refaz as paginas no proprio projeto. Fechar no meio nao grava."""
+def test_fechar_com_o_automatico_que_nao_acaba_nao_grava_pela_metade(janela, pasta, monkeypatch):
+    """O Automatico que nao termina (a medida "rodando"): fechar nao grava nada dele."""
     import ui.janela_principal as modulo
+    from core import automatico as A
 
     livro = _pdf(pasta)
     _trabalhar_e_fechar(janela, str(livro))
-    antes = _estado(janela).read_bytes()
+    antes = _paginas_gravadas(_estado(janela))
 
-    class AnaliseQueNaoAcaba:
-        def __init__(self, projeto):
+    class AutomaticoQueNaoAcaba:
+        foi_cancelada = False
+
+        def __init__(self, fotografia):
             from unittest.mock import MagicMock
             self.progresso = self.concluida = self.falhou = MagicMock()
-            projeto.paginas = []                # a analise mexeu no projeto
 
         def start(self):
             pass
@@ -585,31 +597,39 @@ def test_fechar_no_meio_de_uma_nova_analise_nao_grava_o_projeto_pela_metade(jane
         def isRunning(self):
             return False
 
-    monkeypatch.setattr(modulo, "TarefaAnalise", AnaliseQueNaoAcaba)
+        def cancelar(self):
+            pass
+
+    monkeypatch.setattr(modulo, "TarefaAutomatico", AutomaticoQueNaoAcaba)
     janela.abrir_livro(str(livro))
-    janela.analisar()
+    janela.rodar_o_automatico(pedido=A.Pedido(etapas=[A.ENDIREITAR, A.CORTAR]), perguntar=False)
     janela.close()
-    assert _estado(janela).read_bytes() == antes
+    assert _paginas_gravadas(_estado(janela)) == antes
 
 
-def test_livro_novo_fechado_no_o_que_fazer_guarda_as_opcoes_como_antes(janela, pasta):
-    """Livro sem trabalho salvo: fechar no "O que fazer" continua gravando o
-    projeto vazio com as opcoes escolhidas (o "continuar" as traz de volta)."""
+def test_livro_novo_fechado_logo_fica_como_veio(janela, pasta):
+    """Livro sem trabalho salvo, fechado logo depois de abrir: fica gravado como abriu
+    (a passada leve: uma pagina por folha, no Original, nada ligado) - o "continuar"
+    o traz de volta assim."""
     janela.abrir_livro(str(_pdf(pasta)))
-    janela.projeto.dividir_folhas = False
     janela.close()
     salvo = projetos.carregar_estado(janela.resumo)
-    assert salvo is not None and salvo.paginas == []
-    assert salvo.dividir_folhas is False
+    assert salvo is not None and len(salvo.paginas) == 4
+    assert all(p.filtro == "original" for p in salvo.paginas)
+    assert salvo.dividir_folhas is False and salvo.passou_pelo_automatico is False
 
 
-def test_projeto_ilegivel_nao_e_regravado_ao_fechar_antes_da_analise(janela, pasta):
+def test_projeto_ilegivel_e_guardado_antes_de_ser_regravado(janela, pasta):
+    """O projeto.json que nao da para ler nunca se perde: abrir o livro guarda a
+    copia dele ao lado (com o aviso) antes de gravar o livro de novo."""
     livro = _pdf(pasta)
     _trabalhar_e_fechar(janela, str(livro))
     _estado(janela).write_text("{ quebrado", encoding="utf-8")
     janela.abrir_livro(str(livro))
     janela.close()
-    assert _estado(janela).read_text(encoding="utf-8") == "{ quebrado"
+    copias = _copias(Path(janela.resumo.pasta), "projeto")
+    assert copias and copias[0].read_text(encoding="utf-8") == "{ quebrado"
+    assert janela.avisos and "Comecei a conferência" in janela.avisos[0]
 
 
 def test_depois_da_analise_fechar_grava_normalmente(janela, pasta):
@@ -650,19 +670,19 @@ def _pdf_deitado(pasta: Path) -> Path:
 
 
 def _conferir_deitado_sem_dividir(janela, caminho: str) -> None:
-    """Abre, desmarca "Dividir folhas ao meio" e escolhe Melhorar para o
-    livro, pela tela "O que fazer"; confere, mexe e fecha."""
+    """Abre, roda o Automatico sem "Dividir" e com Melhorar para o livro (o antigo
+    "O que fazer" + "Conferir", etapa 3 da obra); mexe e fecha."""
+    from tests.ajudante_do_automatico import rodar_como_o_conferir
+
     janela.abrir_livro(caminho)
-    janela.tela_opcoes.cx_dividir.setChecked(False)
-    janela.tela_opcoes.radios_de_filtro["melhorar"].setChecked(True)
-    _analisar(janela)
+    rodar_como_o_conferir(janela, sempre=True, dividir_folhas=False, filtro_padrao="melhorar")
     assert len(janela.projeto.paginas) == 3
     janela.projeto.paginas[1].filtro = MAGICO_PRO
     janela.projeto.paginas[1].revisada = True
     janela._salvar_agora()
     janela.previas.parar()
     janela.previas = None
-    janela.tela_opcoes.folhear.fechar()
+    janela._fechar_a_janela_do_automatico()
 
 
 def test_reabrir_pelo_abrir_traz_as_opcoes_salvas_e_nao_recomeca(janela, pasta):
@@ -670,11 +690,10 @@ def test_reabrir_pelo_abrir_traz_as_opcoes_salvas_e_nao_recomeca(janela, pasta):
     _conferir_deitado_sem_dividir(janela, str(livro))
 
     janela.abrir_livro(str(livro).replace("\\", "/"))       # pelo "Abrir"
-    opcoes = janela.tela_opcoes
-    assert not opcoes.cx_dividir.isChecked(), "'Dividir folhas ao meio' voltou marcada"
-    assert opcoes.radios_de_filtro["melhorar"].isChecked(), "o filtro do livro voltou a Original"
-    assert janela.projeto.dividir_folhas is False
-    assert janela.projeto.filtro_padrao == "melhorar"
+    escolhas = janela.estado_do_automatico.opcoes
+    assert janela.projeto.dividir_folhas is False, "'Dividir folhas ao meio' voltou ligado"
+    assert janela.projeto.filtro_padrao == "melhorar", "o filtro do livro voltou a Original"
+    assert escolhas["filtro_padrao"] == "melhorar"           # o Automatico mostra o do livro
 
     _analisar(janela)
     assert not janela.avisos, janela.avisos
@@ -684,41 +703,45 @@ def test_reabrir_pelo_abrir_traz_as_opcoes_salvas_e_nao_recomeca(janela, pasta):
 
 
 def test_as_caixinhas_do_livro_anterior_nao_contaminam_as_salvas(janela, pasta):
-    """Bug das caixinhas (Lista de bugs, 29/09), no caso que importa aqui: ao
-    carregar, cada caixinha que mudava gravava no projeto o estado das outras
-    ainda com o valor do livro anterior."""
+    """Bug das caixinhas (Lista de bugs, 29/09), pelo caminho novo: o que se marcou no
+    Automatico de outro livro (sem rodar) nao entra no livro reaberto."""
+    from core import automatico as A
+
     livro = _pdf_deitado(pasta)
-    _conferir_deitado_sem_dividir(janela, str(livro))     # salvo: limpar ligado
+    _conferir_deitado_sem_dividir(janela, str(livro))     # salvo: limpar e endireitar ligados
 
     janela.abrir_livro(str(_pdf(pasta)))                   # outro livro...
-    janela.tela_opcoes.cx_limpar.setChecked(False)         # ...com "Limpar" desligado
-    janela.tela_opcoes.cx_endireitar.setChecked(False)
-    janela.tela_opcoes.folhear.fechar()
+    estado = janela.estado_do_automatico
+    estado.marcar(A.LIMPAR, False)                         # ...com "Limpar" desmarcado
+    estado.marcar(A.ENDIREITAR, False)
+    estado.marcar(A.DIVIDIR, True)
+    janela._fechar_a_janela_do_automatico()
 
     janela.abrir_livro(str(livro))
-    opcoes = janela.tela_opcoes
-    assert opcoes.cx_limpar.isChecked() and janela.projeto.limpar
-    assert opcoes.cx_endireitar.isChecked() and janela.projeto.endireitar
-    assert not opcoes.cx_dividir.isChecked() and not janela.projeto.dividir_folhas
+    assert janela.projeto.limpar and janela.projeto.endireitar
+    assert not janela.projeto.dividir_folhas
     assert janela.projeto.filtro_padrao == "melhorar"
+    assert {A.LIMPAR, A.ENDIREITAR} <= janela.estado_do_automatico.marcadas
+    assert A.DIVIDIR not in janela.estado_do_automatico.marcadas
 
 
 def test_continuar_continua_trazendo_as_opcoes_salvas(janela, pasta, monkeypatch):
     livro = _pdf_deitado(pasta)
     _conferir_deitado_sem_dividir(janela, str(livro))
-    monkeypatch.setattr(janela, "analisar", lambda: None)
     janela._continuar_projeto(projetos.achar_por_assinatura(str(livro)))
-    assert not janela.tela_opcoes.cx_dividir.isChecked()
+    assert not janela.projeto.dividir_folhas
     _analisar(janela)
     assert not janela.avisos
     assert janela.projeto.paginas[1].filtro == MAGICO_PRO
 
 
 def test_livro_novo_abre_com_as_opcoes_de_fabrica(janela, pasta):
+    from core import automatico as A
+
     janela.abrir_livro(str(_pdf_deitado(pasta)))
     # Item 2.1, decisao G2 (a) do Samuel (05/10/2026): "So quando o Kaique
     # pedir, livro a livro" - o livro novo NAO divide (ate o 2.1, dividia).
-    assert not janela.tela_opcoes.cx_dividir.isChecked()
+    assert A.DIVIDIR not in janela.estado_do_automatico.marcadas
     assert not janela.projeto.dividir_folhas
     assert janela.projeto.filtro_padrao == "original"
 
@@ -794,9 +817,11 @@ def _esperar_a_tarefa(janela) -> None:
 
 
 def _voltar_conferir_e_cancelar(janela, monkeypatch=None) -> None:
-    """Da conferencia para "O que fazer", "Conferir" e "cancelar"."""
-    janela._sair_da_conferencia()
-    janela.analisar()
+    """O antigo "Conferir" e "cancelar", pelo caminho novo: rodar o Automatico (que
+    mede por tras) e "cancelar" na tela de andamento."""
+    from core import automatico as A
+
+    janela.rodar_o_automatico(pedido=A.Pedido(etapas=[A.DIVIDIR, A.ENDIREITAR]), perguntar=False)
     janela.cancelar()
 
 
@@ -824,31 +849,36 @@ def test_cancelar_a_analise_volta_a_conferencia_e_continua_gravando(janela, past
     _mexer_e_conferir_que_gravou(janela)
 
 
-def test_cancelar_quando_a_analise_ja_tinha_acabado_nao_poe_paginas_em_branco(janela, pasta):
-    """O cancelar chega depois de a analise terminar (resultado na fila): o
-    resultado e ignorado e o projeto da tela continua com o trabalho."""
+def test_cancelar_quando_o_automatico_ja_tinha_acabado_nao_muda_nada(janela, pasta):
+    """O cancelar chega depois de a medida terminar (resultado na fila): o resultado e
+    ignorado e o projeto da tela continua com o trabalho."""
+    from core import automatico as A
+
     livro = _pdf(pasta)
     _trabalhar_e_fechar(janela, str(livro))
-    janela._sair_da_conferencia()
-    janela.analisar()
+    janela.rodar_o_automatico(pedido=A.Pedido(etapas=[A.DIVIDIR, A.LIMPAR],
+                                              opcoes={"filtro_padrao": "melhorar"}),
+                              perguntar=False)
     janela.tarefa.wait(60000)                        # acabou; o resultado esta na fila
     janela.cancelar()
     _esperar_a_tarefa(janela)
     assert janela.projeto.paginas[1].filtro == MAGICO_PRO
+    assert janela.projeto.filtro_padrao != "melhorar"
     assert [p.revisada for p in janela.projeto.paginas] == [True, True, True, False]
     _mexer_e_conferir_que_gravou(janela)
 
 
-def test_erro_na_analise_nao_desliga_o_salvamento(janela, pasta, monkeypatch):
+def test_erro_no_automatico_nao_desliga_o_salvamento(janela, pasta, monkeypatch):
     import ui.janela_principal as modulo
+    from core import automatico as A
 
     livro = _pdf(pasta)
     _trabalhar_e_fechar(janela, str(livro))
 
-    class AnaliseQueFalha:
+    class AutomaticoQueFalha:
         foi_cancelada = False
 
-        def __init__(self, projeto):
+        def __init__(self, fotografia):
             from unittest.mock import MagicMock
             self.progresso = self.concluida = self.falhou = MagicMock()
 
@@ -861,38 +891,43 @@ def test_erro_na_analise_nao_desliga_o_salvamento(janela, pasta, monkeypatch):
         def cancelar(self):
             pass
 
-    monkeypatch.setattr(modulo, "TarefaAnalise", AnaliseQueFalha)
-    janela._sair_da_conferencia()
-    janela.analisar()
-    janela._falhou_na_analise("Não consegui ler o livro.")
+    monkeypatch.setattr(modulo, "TarefaAutomatico", AutomaticoQueFalha)
+    janela.rodar_o_automatico(pedido=A.Pedido(etapas=[A.ENDIREITAR]), perguntar=False)
+    janela._automatico_falhou("Não consegui ler o livro.")
     assert janela.avisos == ["Não consegui ler o livro."]
+    assert not janela.projeto.endireitar or janela.projeto.endireitar is True
     _mexer_e_conferir_que_gravou(janela)
 
 
-def test_cancelar_livro_recem_aberto_continua_sem_gravar_por_cima(janela, pasta):
-    """Livro com trabalho salvo recem-aberto (projeto vazio na tela): o
-    cancelar volta ao "O que fazer" e continua sem gravar por cima."""
+def test_cancelar_logo_depois_de_abrir_nao_muda_o_trabalho(janela, pasta):
+    """Livro com trabalho salvo recem-aberto: rodar o Automatico e cancelar nao muda
+    nada no que esta gravado."""
+    from core import automatico as A
+
     livro = _pdf(pasta)
     _trabalhar_e_fechar(janela, str(livro))
-    antes = _estado(janela).read_bytes()
+    antes = _paginas_gravadas(_estado(janela))
     janela.abrir_livro(str(livro))
-    janela.analisar()
+    janela.rodar_o_automatico(pedido=A.Pedido(etapas=[A.DIVIDIR]), perguntar=False)
     janela.cancelar()
     _esperar_a_tarefa(janela)
     janela.close()
-    assert _estado(janela).read_bytes() == antes
+    assert _paginas_gravadas(_estado(janela)) == antes
+    assert projetos.carregar_estado(janela.resumo).dividir_folhas is False
 
 
 @pytest.mark.usefixtures("livro_novo_divide")
-def test_trocar_de_livro_no_meio_da_analise_nao_mistura_os_livros(janela, pasta):
-    """O resultado da analise do livro de antes, que chega depois de abrir
-    outro livro, e ignorado."""
+def test_trocar_de_livro_no_meio_do_automatico_nao_mistura_os_livros(janela, pasta):
+    """O resultado do Automatico do livro de antes, que chega depois de abrir outro
+    livro, e ignorado."""
+    from core import automatico as A
+
     livro = _pdf(pasta)
     _trabalhar_e_fechar(janela, str(livro))
     pasta_um = Path(janela.resumo.pasta)
-    antes = (pasta_um / projetos.ARQUIVO_ESTADO).read_bytes()
-    janela._sair_da_conferencia()
-    janela.analisar()
+    antes = _paginas_gravadas(pasta_um / projetos.ARQUIVO_ESTADO)
+    janela.rodar_o_automatico(pedido=A.Pedido(etapas=[A.LIMPAR], opcoes={"filtro_padrao": "melhorar"}),
+                              perguntar=False)
     janela.tarefa.wait(60000)                        # resultado do livro 1 na fila
 
     outro = _outro_livro_de_mesmo_nome(pasta, livro)
@@ -900,9 +935,11 @@ def test_trocar_de_livro_no_meio_da_analise_nao_mistura_os_livros(janela, pasta)
     _esperar_a_tarefa(janela)                        # a fila anda
 
     assert projetos.mesmo_arquivo(janela.projeto.caminho_entrada, str(outro))
-    assert janela.projeto.paginas == [], "o resultado do livro 1 entrou no livro 2"
+    assert all(p.filtro == "original" for p in janela.projeto.paginas), \
+        "o resultado do livro 1 entrou no livro 2"
+    assert not janela.projeto.limpar
     janela.close()
-    assert (pasta_um / projetos.ARQUIVO_ESTADO).read_bytes() == antes
+    assert _paginas_gravadas(pasta_um / projetos.ARQUIVO_ESTADO) == antes
 
 
 # --- o "continuar" de um cartao abre exatamente aquele projeto (verificador, 2a rodada) ---
@@ -942,7 +979,6 @@ def test_continuar_o_cartao_mais_antigo_abre_ele_e_nao_o_mais_recente(janela, pa
                                                                     monkeypatch):
     _livro, resumo_a, resumo_b = _dois_projetos_do_mesmo_livro(janela, pasta)
     estado_b = (Path(resumo_b.pasta) / projetos.ARQUIVO_ESTADO).read_bytes()
-    monkeypatch.setattr(janela, "analisar", lambda: None)
 
     janela.tela_inicio.pedir_para_continuar(resumo_a)          # o cartao de A
     _analisar(janela)
@@ -957,7 +993,6 @@ def test_continuar_o_cartao_mais_antigo_abre_ele_e_nao_o_mais_recente(janela, pa
 
 def test_continuar_o_cartao_mais_recente_abre_ele(janela, pasta, monkeypatch):
     _livro, resumo_a, resumo_b = _dois_projetos_do_mesmo_livro(janela, pasta)
-    monkeypatch.setattr(janela, "analisar", lambda: None)
     janela.tela_inicio.pedir_para_continuar(resumo_b)
     _analisar(janela)
     assert janela.resumo.pasta == resumo_b.pasta
@@ -1013,7 +1048,7 @@ def _fechar_a_conferencia(janela) -> None:
     if janela.previas is not None:
         janela.previas.parar()
         janela.previas = None
-    janela.tela_opcoes.folhear.fechar()
+    janela._fechar_a_janela_do_automatico()
 
 
 def _projeto_antigo_com_trabalho(janela, livro: Path) -> Path:
@@ -1038,7 +1073,7 @@ def test_livro_novo_com_camadas_pergunta_uma_vez_so(janela, pasta):
     livro = _pdf_com_fundo(pasta)
     janela.abrir_livro(str(livro))
     _responder(janela, sim=False)
-    janela.tela_opcoes.folhear.fechar()
+    janela._fechar_a_janela_do_automatico()
     janela.abrir_livro(str(livro))                         # de novo, sem conferir
     assert janela.aviso_do_fundo is None, "perguntou de novo"
     _analisar(janela)
@@ -1068,11 +1103,10 @@ def test_projeto_antigo_pergunta_na_proxima_abertura_e_nao_mais(janela, pasta):
 def test_projeto_antigo_pelo_continuar_tambem_pergunta(janela, pasta, monkeypatch):
     livro = _pdf_com_fundo(pasta)
     _projeto_antigo_com_trabalho(janela, livro)
-    monkeypatch.setattr(janela, "analisar", lambda: None)
     janela._continuar_projeto(projetos.listar()[0])
     assert janela.aviso_do_fundo is not None
     _responder(janela, sim=False)
-    janela.tela_opcoes.folhear.fechar()
+    janela._fechar_a_janela_do_automatico()
     janela._continuar_projeto(projetos.listar()[0])
     assert janela.aviso_do_fundo is None
 
@@ -1152,7 +1186,6 @@ def test_sim_respondido_durante_a_analise_do_continuar_vale(janela, pasta, monke
 
     livro = _pdf_com_fundo(pasta)
     _projeto_antigo_com_trabalho(janela, livro)
-    monkeypatch.setattr(janela, "analisar", lambda: None)
     janela._continuar_projeto(projetos.listar()[0])
     _responder(janela, sim=True)
     _analisar(janela)
@@ -1172,7 +1205,6 @@ def test_resposta_depois_do_fim_da_analise_do_continuar_vale_e_fica_anotada(jane
 
     livro = _pdf_com_fundo(pasta)
     _projeto_antigo_com_trabalho(janela, livro)
-    monkeypatch.setattr(janela, "analisar", lambda: None)
     janela._continuar_projeto(projetos.listar()[0])
     _analisar(janela)                                      # a analise acaba antes
     _responder(janela, sim=sim)                            # da resposta (s19-s21)
@@ -1188,41 +1220,46 @@ def test_resposta_depois_do_fim_da_analise_do_continuar_vale_e_fica_anotada(jane
 
 
 @pytest.mark.parametrize("como", ["fechar", "voltar", "cancelar"])
-def test_sim_e_sair_antes_de_conferir_faz_a_pergunta_voltar(janela, pasta, como):
-    """Projeto antigo: "Sim" e depois fechar, voltar para o inicio ou
-    cancelar a analise, antes de o trabalho carregar. O "Sim" nao foi aplicado:
-    nada muda no trabalho e a pergunta volta na proxima abertura (s23)."""
+def test_sim_vale_na_hora_e_a_pergunta_nao_volta(janela, pasta, como):
+    """Projeto antigo: "Sim" e depois fechar, voltar para os livros ou rodar e cancelar o
+    Automatico. Etapa 3 da obra: o livro ja esta na area de trabalho quando a pergunta
+    aparece, entao o "Sim" vale NA HORA (so as paginas em Original vao para "Tirar o
+    fundo"; a pagina em Magico pro fica), fica gravado e a pergunta nao volta."""
+    from core import automatico as A
+    from core.filtros import TIRAR_FUNDO
+
     livro = _pdf_com_fundo(pasta)
     estado = _projeto_antigo_com_trabalho(janela, livro)
-    antes = json.loads(estado.read_text(encoding="utf-8"))
 
     janela.abrir_livro(str(livro))
     _responder(janela, sim=True)
     if como == "fechar":
         janela.close()
     elif como == "voltar":
-        janela.tela_opcoes.voltar.emit()
+        janela._sair_da_conferencia()
     else:
-        janela.analisar()
+        janela.rodar_o_automatico(pedido=A.Pedido(etapas=[A.ENDIREITAR]), perguntar=False)
         janela.cancelar()
         _esperar_a_tarefa(janela)
-    janela.tela_opcoes.folhear.fechar()
+        janela._salvar_agora()
+    janela._fechar_a_janela_do_automatico()
 
     depois = json.loads(estado.read_text(encoding="utf-8"))
-    assert depois["paginas"] == antes["paginas"]
-    assert not depois.get("perguntou_fundo"), "o Sim nao aplicado ficou como respondido"
+    assert [p["filtro"] for p in depois["paginas"]] == [TIRAR_FUNDO, MAGICO_PRO, TIRAR_FUNDO]
+    assert depois.get("perguntou_fundo") is True
     janela.abrir_livro(str(livro))
-    assert janela.aviso_do_fundo is not None, "a pergunta nao voltou"
+    assert janela.aviso_do_fundo is None, "perguntou de novo"
 
 
-def test_sim_e_cancelar_e_conferir_de_novo_aplica_o_sim(janela, pasta):
+def test_sim_e_cancelar_o_automatico_o_sim_continua(janela, pasta):
+    from core import automatico as A
     from core.filtros import TIRAR_FUNDO
 
     livro = _pdf_com_fundo(pasta)
     _projeto_antigo_com_trabalho(janela, livro)
     janela.abrir_livro(str(livro))
     _responder(janela, sim=True)
-    janela.analisar()
+    janela.rodar_o_automatico(pedido=A.Pedido(etapas=[A.ENDIREITAR]), perguntar=False)
     janela.cancelar()
     _esperar_a_tarefa(janela)
     _analisar(janela)
@@ -1238,7 +1275,7 @@ def test_livro_novo_sim_e_fechar_antes_de_conferir_guarda_o_sim(janela, pasta):
     janela.abrir_livro(str(livro))
     _responder(janela, sim=True)
     janela.close()
-    janela.tela_opcoes.folhear.fechar()
+    janela._fechar_a_janela_do_automatico()
 
     janela.abrir_livro(str(livro))
     assert janela.aviso_do_fundo is None
@@ -1290,43 +1327,46 @@ def _deitado_conferido(janela, pasta: Path) -> Path:
 
 
 @pytest.mark.usefixtures("livro_novo_divide")
-def test_cancelar_depois_de_mudar_uma_opcao_devolve_as_opcoes_de_antes(janela, pasta):
+def test_cancelar_o_automatico_nao_muda_as_opcoes_nem_o_trabalho(janela, pasta):
+    """O que o s34-s36 protegia (a opcao nova nao fica no livro se a pessoa desiste),
+    pelo caminho novo: mudar no Automatico, rodar e cancelar - nada muda."""
+    from core import automatico as A
     from ui.janela_principal import CONFERIR
 
     livro = _deitado_conferido(janela, pasta)
-    janela._sair_da_conferencia()
-    janela.tela_opcoes.cx_dividir.setChecked(False)          # a pessoa muda
-    assert janela.projeto.dividir_folhas is False
-    janela.analisar()
+    estado = janela.estado_do_automatico
+    estado.opcoes["filtro_padrao"] = "melhorar"
+    janela.rodar_o_automatico(pedido=A.Pedido(etapas=[A.DIVIDIR, A.LIMPAR],
+                                              opcoes={"filtro_padrao": "melhorar"}),
+                              perguntar=False)
     janela.cancelar()
     _esperar_a_tarefa(janela)
 
     assert janela.telas.currentIndex() == CONFERIR
-    assert janela.projeto.dividir_folhas is True, "a opcao nova ficou no projeto"
-    assert janela.tela_opcoes.cx_dividir.isChecked(), "a tela 'O que fazer' ficou com a nova"
+    assert janela.projeto.dividir_folhas is True
+    assert janela.projeto.filtro_padrao != "melhorar", "a opcao nova ficou no livro"
     janela.projeto.paginas[2].filtro = "melhorar"
     janela.close()
     assert projetos.carregar_estado(janela.resumo).dividir_folhas is True
 
     _fechar_a_conferencia(janela)
     janela.abrir_livro(str(livro))
-    _analisar(janela)
     assert not janela.avisos, janela.avisos                    # nao recomecou
     assert len(janela.projeto.paginas) == 6
     assert [janela.projeto.paginas[i].filtro for i in (1, 2)] == [MAGICO_PRO, "melhorar"]
 
 
 @pytest.mark.usefixtures("livro_novo_divide")
-def test_erro_na_analise_depois_de_mudar_uma_opcao_devolve_as_opcoes(janela, pasta,
-                                                                    monkeypatch):
+def test_erro_no_automatico_nao_muda_as_opcoes(janela, pasta, monkeypatch):
     import ui.janela_principal as modulo
+    from core import automatico as A
 
     _deitado_conferido(janela, pasta)
 
-    class AnaliseQueFalha:
+    class AutomaticoQueFalha:
         foi_cancelada = False
 
-        def __init__(self, projeto):
+        def __init__(self, fotografia):
             from unittest.mock import MagicMock
             self.progresso = self.concluida = self.falhou = MagicMock()
 
@@ -1339,25 +1379,26 @@ def test_erro_na_analise_depois_de_mudar_uma_opcao_devolve_as_opcoes(janela, pas
         def cancelar(self):
             pass
 
-    monkeypatch.setattr(modulo, "TarefaAnalise", AnaliseQueFalha)
-    janela._sair_da_conferencia()
-    janela.tela_opcoes.cx_dividir.setChecked(False)
-    janela.analisar()
-    janela._falhou_na_analise("Não consegui ler o livro.")
+    monkeypatch.setattr(modulo, "TarefaAutomatico", AutomaticoQueFalha)
+    janela.rodar_o_automatico(pedido=A.Pedido(etapas=[A.DIVIDIR], desligar=False), perguntar=False)
+    janela._automatico_falhou("Não consegui ler o livro.")
     assert janela.projeto.dividir_folhas is True
-    assert janela.tela_opcoes.cx_dividir.isChecked()
+    assert len(janela.projeto.paginas) == 6
 
 
 @pytest.mark.usefixtures("livro_novo_divide")
-def test_mudar_uma_opcao_e_conferir_ate_o_fim_continua_valendo(janela, pasta):
-    """Sem cancelar, a opcao nova vale (recomeco com copia e aviso, como antes)."""
+def test_mudar_uma_opcao_e_rodar_ate_o_fim_vale_sem_recomecar(janela, pasta):
+    """Sem cancelar, a opcao nova vale. Etapa 3 da obra (defeito de 29/09): desligar o
+    "Dividir" vale no livro aberto, sem recomecar e sem perder o trabalho."""
+    from core import automatico as A
+
     _deitado_conferido(janela, pasta)
-    janela._sair_da_conferencia()
-    janela.tela_opcoes.cx_dividir.setChecked(False)
-    _analisar(janela)
-    assert len(janela.projeto.paginas) == 3
+    assert janela.rodar_o_automatico(pedido=A.Pedido(etapas=[A.DIVIDIR], desligar=True),
+                                     esperar=True, perguntar=False)
     assert janela.projeto.dividir_folhas is False
-    assert janela.avisos and "Dividir folhas ao meio" in janela.avisos[0]
+    assert not janela.avisos
+    assert janela.projeto.paginas[1].filtro == MAGICO_PRO
+    assert len(janela.projeto.paginas_ativas) == 3
 
 
 # --- "Tirar da lista" nao apaga as copias de seguranca (decisao do Samuel, 29/09) --------
@@ -1487,68 +1528,76 @@ def test_comecar_de_novo_pergunta_em_portugues(janela, pasta, monkeypatch):
 
 @pytest.mark.usefixtures("livro_novo_divide")
 @pytest.mark.parametrize("como", ["fechar", "voltar_e_fechar", "voltar_e_relogio"])
-def test_opcao_mudada_sem_conferir_nao_vai_para_o_disco(janela, pasta, como):
+def test_opcao_mudada_sem_rodar_nao_vai_para_o_disco(janela, pasta, como):
+    from core import automatico as A
+
     livro = _deitado_conferido(janela, pasta)
-    janela._sair_da_conferencia()
-    janela.tela_opcoes.cx_dividir.setChecked(False)          # a pessoa muda...
-    janela.tela_opcoes.radios_de_filtro["melhorar"].setChecked(True)
+    estado = janela.estado_do_automatico
+    estado.marcar(A.DIVIDIR, False)                          # a pessoa muda no Automatico...
+    estado.definir_opcao("filtro_padrao", "melhorar")
     if como == "fechar":
-        janela.close()                                        # ...e fecha
+        janela.close()                                        # ...e fecha sem rodar
     elif como == "voltar_e_fechar":
-        janela.tela_opcoes.voltar.emit()                      # ...volta ao inicio
+        janela._sair_da_conferencia()                         # ...volta aos livros
         janela.close()
     else:
-        janela.tela_opcoes.voltar.emit()
+        janela._sair_da_conferencia()
         janela._salvar_agora()                                # o relogio de salvar dispara
 
     salvo = projetos.carregar_estado(janela.resumo)
-    assert salvo.dividir_folhas is True, "a opcao nao conferida foi para o disco"
+    assert salvo.dividir_folhas is True, "a opcao nao rodada foi para o disco"
     assert salvo.filtro_padrao == "original"
     assert len(salvo.paginas) == 6 and salvo.paginas[1].filtro == MAGICO_PRO
 
     _fechar_a_conferencia(janela)
     janela.abrir_livro(str(livro))
-    assert janela.tela_opcoes.cx_dividir.isChecked()
-    _analisar(janela)
+    assert janela.projeto.dividir_folhas
     assert not janela.avisos, janela.avisos                    # nao recomecou
     assert len(janela.projeto.paginas) == 6
 
 
 @pytest.mark.usefixtures("livro_novo_divide")
 def test_livro_recem_aberto_com_trabalho_opcao_mudada_e_voltar_nao_grava(janela, pasta):
+    from core import automatico as A
+
     livro = _deitado_conferido(janela, pasta)
     _fechar_a_conferencia(janela)
-    antes = _estado(janela).read_bytes()
+    antes = _paginas_gravadas(_estado(janela))
     janela.abrir_livro(str(livro))
-    janela.tela_opcoes.cx_dividir.setChecked(False)
-    janela.tela_opcoes.voltar.emit()
+    janela.estado_do_automatico.marcar(A.DIVIDIR, False)
+    janela._sair_da_conferencia()
     janela._salvar_agora()
     janela.close()
-    assert _estado(janela).read_bytes() == antes
+    assert _paginas_gravadas(_estado(janela)) == antes
+    assert projetos.carregar_estado(janela.resumo).dividir_folhas is True
 
 
 @pytest.mark.usefixtures("livro_novo_divide")
-def test_trabalho_feito_depois_de_voltar_da_conferencia_continua_sendo_gravado(janela, pasta):
-    """So as OPCOES nao conferidas ficam fora do disco: o trabalho das
-    paginas (feito antes de sair para "O que fazer") continua gravado."""
+def test_trabalho_feito_e_opcao_nao_rodada_so_o_trabalho_vai_para_o_disco(janela, pasta):
+    """So as OPCOES nao rodadas ficam fora do disco: o trabalho das paginas
+    continua gravado."""
+    from core import automatico as A
+
     _deitado_conferido(janela, pasta)
     janela.projeto.paginas[3].filtro = "preto_e_branco"
-    janela._sair_da_conferencia()
-    janela.tela_opcoes.cx_dividir.setChecked(False)
+    janela.estado_do_automatico.marcar(A.DIVIDIR, False)
     janela.close()
     salvo = projetos.carregar_estado(janela.resumo)
     assert salvo.paginas[3].filtro == "preto_e_branco"
     assert salvo.dividir_folhas is True
 
 
-def test_livro_novo_opcao_mudada_e_fechar_guarda_a_opcao(janela, pasta):
-    """Livro sem trabalho: as opcoes vao para o disco como antes (o
-    "continuar" as traz de volta)."""
+def test_livro_novo_opcao_mudada_sem_rodar_nao_muda_o_livro(janela, pasta):
+    """Livro sem trabalho: nada roda sozinho (D-284: "nenhuma página muda até rodar o
+    automático"). O que se marcou no Automatico sem rodar nao vai para o livro."""
+    from core import automatico as A
+
     livro = _pdf_deitado(pasta)
     janela.abrir_livro(str(livro))
-    janela.tela_opcoes.cx_dividir.setChecked(False)
+    janela.estado_do_automatico.marcar(A.DIVIDIR, True)
     janela.close()
-    assert projetos.carregar_estado(janela.resumo).dividir_folhas is False
+    salvo = projetos.carregar_estado(janela.resumo)
+    assert salvo.dividir_folhas is False and len(salvo.paginas) == 3
 
 
 # --- o aviso das opcoes de gravura tem o titulo e o texto certos (30/09) ---------------------
@@ -1575,9 +1624,12 @@ def test_aviso_das_opcoes_de_gravura_usa_o_titulo_e_o_texto_certos(janela, pasta
     janela.projeto.paginas[0].guardar_selecao(selecao)
     janela._salvar_agora()
 
-    janela._sair_da_conferencia()
-    janela.projeto.gravura_forma = "desligada"             # "nao procurar"
-    _analisar(janela)
+    # etapa 3 da obra: "nao procurar" e rodado no Automatico (era "O que fazer" + "Conferir")
+    from core import automatico as A
+
+    janela.rodar_o_automatico(pedido=A.Pedido(etapas=[A.GRAVURAS],
+                                              opcoes={"gravura_forma": "desligada"}),
+                              esperar=True, perguntar=False)
 
     assert vistos, "nao avisou"
     titulo, frase = vistos[-1]

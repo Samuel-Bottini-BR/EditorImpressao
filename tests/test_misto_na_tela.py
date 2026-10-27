@@ -47,11 +47,36 @@ def leitor_rapido(monkeypatch):
     return aquecidas
 
 
-# --- a tela "O que fazer" (o livro) ------------------------------------------
+# --- o livro: no Automático, etapa "Limpar a folha" (era a tela "O que fazer"
+# até a etapa 3 da obra, 26/10/2026). O livro só muda ao rodar; o que se escolhe
+# na janela fica nas escolhas do Automático (_Escolhas lê de lá).
+
+class _Escolhas:
+    """As escolhas do Automático lidas como os campos do livro (para os testes
+    de antes, que olhavam projeto.misto_...)."""
+
+    def __init__(self, janela):
+        self._estado = janela.estado_do_automatico
+
+    def __getattr__(self, nome):
+        return self._estado.opcoes.get(nome)
+
+
+def _no_limpar(janela):
+    """A janela do Automático na etapa "Limpar a folha" e as escolhas dela."""
+    return janela.abrir_o_automatico("limpar"), _Escolhas(janela)
+
+
+def _trazer(janela, salvo):
+    """O Automático começa das escolhas de `salvo` (o livro que reabre com o
+    trabalho) e a janela mostra."""
+    janela.estado_do_automatico.do_projeto(salvo)
+    return janela.abrir_o_automatico("limpar")
+
 
 def test_o_livro_comeca_sem_so_as_letras_e_com_a_de_fabrica(janela, pasta):
     janela.abrir_livro(str(_pdf(pasta)))
-    tela = janela.tela_opcoes
+    tela, _escolhas = _no_limpar(janela)
     e = tela.escolhas_misto
     assert not e.caixa.isChecked()
     assert e.painel.isHidden(), "os botoes so aparecem com a caixinha marcada"
@@ -64,7 +89,7 @@ def test_o_livro_comeca_sem_so_as_letras_e_com_a_de_fabrica(janela, pasta):
 
 def test_cada_controle_do_livro_grava_no_projeto(janela, pasta):
     janela.abrir_livro(str(_pdf(pasta)))
-    tela, projeto = janela.tela_opcoes, janela.projeto
+    tela, projeto = _no_limpar(janela)
     e = tela.escolhas_misto
     e.caixa.setChecked(True)
     assert projeto.misto_so_as_letras is True
@@ -89,7 +114,7 @@ def test_cada_controle_do_livro_grava_no_projeto(janela, pasta):
 @pytest.mark.parametrize("molduras_antes", [False, True])
 def test_a_caixinha_das_molduras_apaga_e_volta_como_estava(janela, pasta, molduras_antes):
     janela.abrir_livro(str(_pdf(pasta)))
-    tela, projeto = janela.tela_opcoes, janela.projeto
+    tela, projeto = _no_limpar(janela)
     # "So as letras" so aparece (e so apaga a caixinha) com o Preto e branco
     # escolhido no livro (conserto de 05/10, ressalva 3 do verificador)
     tela.radios_de_filtro[PRETO_E_BRANCO].setChecked(True)
@@ -109,12 +134,11 @@ def test_projeto_salvo_volta_para_a_tela(janela, pasta):
     salvo = Projeto(caminho_entrada=caminho, misto_so_as_letras=True,
                     misto_fora_do_texto=misto.FORA_APAGAR,
                     misto_letras_na_moldura=misto.LETRAS_COR_FUNDO_ORIGINAL)
-    janela._trazer_opcoes_salvas(salvo)
-    e = janela.tela_opcoes.escolhas_misto
+    e = _trazer(janela, salvo).escolhas_misto
     assert e.caixa.isChecked() and e.botoes[misto.FORA_APAGAR].isChecked()
     assert e.combo_letras.currentData() == misto.LETRAS_COR_FUNDO_ORIGINAL
     assert not e.painel_mais.isHidden(), "escolha fora do padrao abre o 'Mais opcoes'"
-    assert janela.projeto.misto_fora_do_texto == misto.FORA_APAGAR
+    assert _Escolhas(janela).misto_fora_do_texto == misto.FORA_APAGAR
 
 
 def test_projeto_antigo_volta_com_o_misto_desligado(janela, pasta):
@@ -122,17 +146,18 @@ def test_projeto_antigo_volta_com_o_misto_desligado(janela, pasta):
     conferencia 14: abrir arquivos de versoes anteriores)."""
     caminho = str(_pdf(pasta))
     janela.abrir_livro(caminho)
-    janela.tela_opcoes.escolhas_misto.caixa.setChecked(True)
+    _no_limpar(janela)[0].escolhas_misto.caixa.setChecked(True)
     salvo = Projeto(caminho_entrada=caminho)
     for campo in misto.CAMPOS_DO_MISTO:
         delattr(salvo, campo)            # sem o campo no objeto: vale o da classe
-    janela._trazer_opcoes_salvas(salvo)
-    assert janela.projeto.misto_so_as_letras is False
-    assert not janela.tela_opcoes.escolhas_misto.caixa.isChecked()
+    jan = _trazer(janela, salvo)
+    assert _Escolhas(janela).misto_so_as_letras is False
+    assert not jan.escolhas_misto.caixa.isChecked()
 
 
 def test_textos_sem_jargao_e_sem_emoji(janela, pasta):
-    e = janela.tela_opcoes.escolhas_misto
+    janela.abrir_livro(str(_pdf(pasta)))
+    e = _no_limpar(janela)[0].escolhas_misto
     textos = [e.caixa.text(), e.caixa.toolTip(), e.botao_mais.text(), e.frase_do_escolhido.text()]
     textos += [b.text() for b in e.botoes.values()] + [b.toolTip() for b in e.botoes.values()]
     textos += [e.combo_papel.itemText(i) for i in range(e.combo_papel.count())]
@@ -148,7 +173,8 @@ def test_textos_sem_jargao_e_sem_emoji(janela, pasta):
 
 def test_a_caixinha_tem_o_quadrado_a_vista(janela, pasta):
     """Regra O1: caixinha com o quadrado visivel (ui/estilo)."""
-    assert "QCheckBox::indicator" in janela.tela_opcoes.escolhas_misto.caixa.styleSheet()
+    janela.abrir_livro(str(_pdf(pasta)))
+    assert "QCheckBox::indicator" in _no_limpar(janela)[0].escolhas_misto.caixa.styleSheet()
 
 
 # --- a aba Filtro (a pagina) ---------------------------------------------------

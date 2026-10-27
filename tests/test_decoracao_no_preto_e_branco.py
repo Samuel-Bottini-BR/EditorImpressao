@@ -66,55 +66,67 @@ def test_o_processamento_passa_a_opcao_ao_filtro(monkeypatch, ligada):
     assert pedidos.get("decoracao_em_preto_e_branco") is ligada
 
 
+# Obra de 26/10/2026, etapa 3: a caixinha mora na janela do Automático, etapa
+# "Limpar a folha" (a tela "O que fazer" saiu do caminho). O livro só muda ao rodar.
+
+def _rodar_o_limpar(janela) -> None:
+    from core import automatico as A
+
+    janela.estado_do_automatico.marcadas = {A.LIMPAR}
+    janela._fechar_a_janela_do_automatico()
+    assert janela.rodar_o_automatico(esperar=True, perguntar=False)
+
+
 def test_a_caixinha_nasce_desmarcada_e_grava_no_projeto(janela, pasta):
     janela.abrir_livro(str(_pdf(pasta)))
-    tela, projeto = janela.tela_opcoes, janela.projeto
-    caixa = tela.cx_decoracao_pb
+    jan = janela.abrir_o_automatico("limpar")
+    estado, projeto = janela.estado_do_automatico, janela.projeto
+    caixa = jan.cx_decoracao_pb
     assert not caixa.isChecked() and projeto.pb_decoracao_em_preto_e_branco is False
     assert caixa.text() == "No Preto e branco, molduras e iluminuras também em preto e branco"
     caixa.setChecked(True)
-    assert projeto.pb_decoracao_em_preto_e_branco is True
+    assert estado.opcoes["pb_decoracao_em_preto_e_branco"] is True
     caixa.setChecked(False)
-    assert projeto.pb_decoracao_em_preto_e_branco is False
-    # so aparece com "Limpar a folha" (fica no grupo dos filtros)
-    tela.cx_limpar.setChecked(False)
-    assert caixa.isHidden() or not caixa.isVisibleTo(tela)
-    tela.cx_limpar.setChecked(True)
+    assert estado.opcoes["pb_decoracao_em_preto_e_branco"] is False
+    caixa.setChecked(True)
+    _rodar_o_limpar(janela)
+    assert projeto.pb_decoracao_em_preto_e_branco is True
 
 
 def test_reabrir_traz_a_opcao_salva(janela, pasta):
     livro = _pdf(pasta)
     janela.abrir_livro(str(livro))
-    janela.tela_opcoes.cx_decoracao_pb.setChecked(True)
-    _analisar(janela)
+    janela.abrir_o_automatico("limpar").cx_decoracao_pb.setChecked(True)
+    _rodar_o_limpar(janela)
     janela._salvar_agora()
     janela.previas.parar()
     janela.previas = None
-    janela.tela_opcoes.folhear.fechar()
 
     janela.abrir_livro(str(livro))
-    assert janela.tela_opcoes.cx_decoracao_pb.isChecked()
     assert janela.projeto.pb_decoracao_em_preto_e_branco is True
+    assert janela.abrir_o_automatico("limpar").cx_decoracao_pb.isChecked()
 
 
-def test_num_livro_com_trabalho_vale_ao_clicar_conferir(janela, pasta):
+def test_num_livro_com_trabalho_vale_ao_rodar_e_nada_se_perde(janela, pasta):
+    """Antes: valia ao clicar "Conferir" (e o trabalho salvo voltava por cima). Agora
+    (etapa 3; defeito de 29/09): mudar na janela e fechar sem rodar não vai para o disco;
+    rodar grava, e o trabalho da conferência fica."""
     livro = _pdf(pasta)
     _trabalhar_e_fechar(janela, str(livro))
     janela.abrir_livro(str(livro))
-    _analisar(janela)
     estado = Path(janela.resumo.pasta) / projetos.ARQUIVO_ESTADO
 
-    # mudar e sair sem "Conferir": nao vai para o disco (como as outras opcoes)
-    janela._sair_da_conferencia()
-    janela.tela_opcoes.cx_decoracao_pb.setChecked(True)
+    janela.abrir_o_automatico("limpar").cx_decoracao_pb.setChecked(True)
+    janela._fechar_a_janela_do_automatico()
     janela._salvar_agora()
     assert json.loads(estado.read_text(encoding="utf-8"))["pb_decoracao_em_preto_e_branco"] is False
 
-    # com "Conferir", vale - e o trabalho salvo volta por cima sem apagar a opcao
-    _analisar(janela)
+    _rodar_o_limpar(janela)
     assert janela.projeto.pb_decoracao_em_preto_e_branco is True
     janela._salvar_agora()
-    assert json.loads(estado.read_text(encoding="utf-8"))["pb_decoracao_em_preto_e_branco"] is True
+    dados = json.loads(estado.read_text(encoding="utf-8"))
+    assert dados["pb_decoracao_em_preto_e_branco"] is True
+    assert dados["paginas"][1]["filtro"] == "magico_pro"           # o trabalho ficou
 
 
 @pytest.mark.parametrize("largura, altura", [(1000, 600), (1152, 560), (1366, 600)])
@@ -122,14 +134,15 @@ def test_janela_baixa_nao_espreme_a_caixinha(janela, pasta, largura, altura):
     from PySide6.QtWidgets import QApplication
 
     janela.abrir_livro(str(_pdf(pasta)))
-    tela = janela.tela_opcoes
-    tela.escolher_filtro_do_livro("preto_e_branco")
     janela.resize(largura, altura)
     janela.show()
+    jan = janela.abrir_o_automatico("limpar")
+    jan.radios_de_filtro["preto_e_branco"].setChecked(True)
     for _ in range(5):
         QApplication.processEvents()
-    caixa = tela.cx_decoracao_pb
+    caixa = jan.cx_decoracao_pb
     assert caixa.height() >= caixa.minimumSizeHint().height()
+    janela._fechar_a_janela_do_automatico()
     janela.hide()
 
 

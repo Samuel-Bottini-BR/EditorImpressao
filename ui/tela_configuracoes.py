@@ -12,9 +12,10 @@ As partes de hoje:
     Medidas e receitas   cm/mm/polegadas e a receita do livro novo (item 2.19).
     Impressão            margem da encadernação e a beirada que a impressora não imprime (2.6).
 
-Ainda não entram (não existem no programa; não foram inventadas): "Para todos os livros" (a
-troca do retângulo do corte do G6 para todos os livros). Os nomes das partes foram
-sugestão do agente de layout na rodada 13.
+Desde a etapa 3 da obra (26/10/2026), "Medidas e receitas" tem também a troca do retângulo do
+corte para todos os livros (D-093/D-094, g6-retangulo, 09/10: "quero a b e c juntas." - nas
+Configurações, no livro (Automático, etapa Endireitar) e na página (ferramenta Endireitar)).
+Os nomes das partes foram sugestão do agente de layout na rodada 13.
 
 Cada atalho vem do registro único em `atalhos.py` - a mesma tabela que alimenta o menu e a
 "Ajuda -> Lista de atalhos", para nunca divergir. Seguro mudar: textos e tamanhos. Arriscado:
@@ -250,12 +251,29 @@ class TelaConfiguracoes(QDialog):
         atual = perfis.do_livro_novo() or perfis.NOME_DE_FABRICA
         self.combo_receita_nova.setCurrentIndex(max(0, self.combo_receita_nova.findData(atual)))
         self.combo_receita_nova.setToolTip(
-            "As caixinhas com que todo livro novo começa. As receitas se guardam na tela "
-            "\"O que fazer\".")
+            "A receita que o aviso do livro novo marca no Automático (nada roda sozinho: "
+            "o livro abre como veio). As receitas se guardam no Automático (\"Salvar receita...\").")
         self.combo_receita_nova.currentIndexChanged.connect(
             lambda _i: perfis.definir_do_livro_novo(self.combo_receita_nova.currentData()))
         linha_receita.addWidget(self.combo_receita_nova, 1)
         caixa.addLayout(linha_receita)
+        # D-093/D-094 (etapa 3 da obra): o retângulo do corte quando o ângulo
+        # muda, para todos os livros (o livro e a página podem trocar)
+        linha_retangulo = QHBoxLayout()
+        linha_retangulo.addWidget(QLabel("Quando o ângulo muda depois do corte à mão, o corte:"))
+        self.combo_retangulo = QComboBox()
+        for valor, nome in (("fica", "fica no mesmo lugar (como o ScanTailor)"),
+                            ("acompanha", "acompanha o texto")):
+            self.combo_retangulo.addItem(nome, valor)
+        self.combo_retangulo.setCurrentIndex(max(0, self.combo_retangulo.findData(
+            configuracoes.ler("retangulo_do_corte") or "fica")))
+        self.combo_retangulo.setToolTip(
+            "Para todos os livros. Cada livro pode trocar no Automático (etapa Endireitar) e cada "
+            "página na ferramenta Endireitar.")
+        self.combo_retangulo.currentIndexChanged.connect(
+            lambda _i: configuracoes.escrever("retangulo_do_corte", self.combo_retangulo.currentData()))
+        linha_retangulo.addWidget(self.combo_retangulo, 1)
+        caixa.addLayout(linha_retangulo)
         caixa.addStretch()
         return parte
 

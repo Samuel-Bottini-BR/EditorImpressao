@@ -246,3 +246,9 @@ def livro_novo_divide(monkeypatch):
         dividir_folhas: bool = True
 
     monkeypatch.setattr(jp, "Projeto", ProjetoQueDivide)
+    # Etapa 3 da obra (26/10/2026): o livro abre sem nada ligado e o antigo
+    # "Conferir" e o Automatico no livro todo (tests/ajudante_do_automatico);
+    # o ponto de partida "dividido" vai para la tambem
+    import tests.ajudante_do_automatico as ajudante
+
+    monkeypatch.setitem(ajudante.DE_FABRICA, "dividir_folhas", True)

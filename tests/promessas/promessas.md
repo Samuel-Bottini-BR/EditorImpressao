@@ -72,7 +72,6 @@ programa), a partir do **nome do botão**, da **dica** (o balão do mouse) e das
 - **na tela:** a área de trabalho do livro, com o que já tinha sido feito (o filtro escolhido numa página continua).
 - **no projeto:** o trabalho volta igual (nada se perde).
 - **no PDF:** o PDF gerado depois de continuar sai com o trabalho de antes.
-- **defeito:** QUEBRADA no programa de 26/10 (defeito A desta bateria). O filtro escolhido à mão numa página (painel, menu, teclas 1 a 4, botão do aviso, "todas") fica gravado no projeto, mas NÃO vale no PDF quando a caixinha "Limpar a folha" não foi marcada (o livro aberto sem marcar nada, D-009): a página sai amarelada, no Original. Causa: a tela não grava a marca "mexida à mão" do filtro (`core/etapas.marcar_mexida_a_mao` não é chamada por nenhum arquivo de `ui/`; o plano de 26/10 mandou "ligar nas etapas 2/3/5" e a etapa 2 entrou sem ligar). Mesmo defeito da tarefa 8 do teste do Kaique ("Preto e branco ignorado"). Sem dono certo: a gerente decide (etapa 3 ou 5).
 
 ### P-006 · "começar de novo" (menu do livro)
 - **chaves:** `início/menu do livro/começar de novo`, `início/livro aberto/Mais... começar de novo`,
@@ -110,18 +109,10 @@ programa), a partir do **nome do botão**, da **dica** (o balão do mouse) e das
 - **decisões:** D-340
 - **na tela:** volta aos cartões, com o cartão deste livro marcado.
 
-### P-011 · "Rodar o automático..." (livro aberto), como é hoje
-- **chaves:** `início/livro aberto/Rodar o automático...`
-- **dica:** "Abre a tela “O que fazer” deste livro, com as escolhas dele"
-- **sai na:** etapa 3 (D-002: a tela "O que fazer" sai)
-- **na tela:** abre as escolhas do automático deste livro, com as que ele já tinha.
-- **no projeto:** nada muda até confirmar.
-
 ### P-012 · "Rodar o automático..." abre o Automático de verdade
 - **chaves:** `início/livro aberto/Rodar o automático...`
 - **decisões:** D-002 ("Trabalho automático = painel 'Automático' [...] Funciona antes/ao abrir o livro e depois"),
   D-018 (abre a janela grande do Automático já com a receita marcada)
-- **aguarda:** etapa 3, D-002/D-018
 - **na tela:** abre o livro na área de trabalho com o Automático (painel ou janela grande), não a tela "O que fazer".
 
 ### P-013 · "Ver todas as páginas" (livro aberto)
@@ -177,38 +168,6 @@ programa), a partir do **nome do botão**, da **dica** (o balão do mouse) e das
 - **chaves:** `início/livro aberto/Mais...`
 - **na tela:** abre o menu do livro (continuar, começar de novo, renomear, abrir a pasta de saída, remover da lista).
 - **no projeto:** nada muda só por abrir o menu.
-
-## Tela "O que fazer" (sai na etapa 3, D-002)
-
-### P-021 · "Conferir"
-- **chaves:** `o que fazer/Conferir`
-- **sai na:** etapa 3
-- **decisões:** D-009 ("abrir o livro sem escolher nenhuma opção")
-- **na tela:** leva à área de trabalho, mesmo sem nenhuma caixinha marcada.
-- **no projeto:** as escolhas da tela ficam gravadas no projeto.
-
-### P-022 · "voltar" (tela "O que fazer")
-- **chaves:** `o que fazer/voltar`
-- **sai na:** etapa 3
-- **na tela:** volta para a tela dos livros, sem abrir a área de trabalho.
-
-### P-023 · receitas: "pôr neste livro" / "guardar" / "apagar"
-- **chaves:** `o que fazer/pôr neste livro`, `o que fazer/guardar`, `o que fazer/apagar`
-- **sai na:** etapa 3 (as receitas vão para o Automático, D-071)
-- **decisões:** D-355 ("receita salva → livro novo abre com ela"), D-071
-- **na tela:** "guardar" guarda as caixinhas de agora com o nome digitado (aparece na lista); "pôr neste livro" marca
-  as caixinhas da receita escolhida; "apagar" tira a receita da lista.
-- **no projeto:** a receita fica gravada nas configurações do programa.
-
-### P-024 · "Mais opções" (tela "O que fazer")
-- **chaves:** `o que fazer/Mais opções`
-- **sai na:** etapa 3
-- **na tela:** abre as opções a mais daquele grupo (abre e fecha).
-
-### P-025 · folhear o PDF: "<", ">", "tela cheia" (tela "O que fazer")
-- **chaves:** `o que fazer/<`, `o que fazer/>`, `o que fazer/tela cheia`
-- **sai na:** etapa 3
-- **na tela:** a página mostrada passa para a de antes / a de depois; "tela cheia" abre a página grande.
 
 ## Área de trabalho: ferramentas (trilha e menu Ferramentas)
 
@@ -361,13 +320,12 @@ programa), a partir do **nome do botão**, da **dica** (o balão do mouse) e das
 - **na tela:** abre a lista das folhas para escolher.
 - **no projeto:** só as folhas marcadas recebem a linha; a folha com linha própria (exceção) fica com a dela.
 
-### P-062 · "mudar nas opções do livro..." (Dividir, Cortar, Endireitar)
-- **chaves:** `área de trabalho/dividir/mudar nas opções do livro...`, `área de trabalho/cortar/mudar nas opções do livro...`,
-  `área de trabalho/endireitar/mudar nas opções do livro...`
-- **dica:** "Volta à tela "O que fazer", onde esta escolha vale para o livro todo."
-- **sai na:** etapa 3 (D-002: as escolhas do livro vão para o Automático)
-- **na tela:** leva às escolhas do livro inteiro, sem perder o trabalho feito.
-- **no projeto:** nada muda só por ir.
+### P-062 · "mudar no Automático..." (Dividir, Cortar, Endireitar)
+- **chaves:** `área de trabalho/dividir/mudar no Automático...`, `área de trabalho/cortar/mudar no Automático...`,
+  `área de trabalho/endireitar/mudar no Automático...`
+- **decisões:** D-002 (as escolhas do livro moram no Automático; a tela "O que fazer" saiu na etapa 3)
+- **na tela:** abre a janela grande do Automático já na etapa daquela ferramenta, sem sair da área de trabalho.
+- **no projeto:** nada muda só por ir (o trabalho feito fica).
 
 ### P-063 · "não cortar esta"
 - **chaves:** `área de trabalho/cortar/não cortar esta`, `aviso/sem_recorte`
@@ -497,7 +455,6 @@ programa), a partir do **nome do botão**, da **dica** (o balão do mouse) e das
 - **no projeto:** a página fica com o filtro gravado (uma ação no histórico); só ela.
 - **no PDF:** essa página sai no filtro (Preto e branco: só preto e branco, sem amarelo); as outras continuam como
   estavam (amareladas no Original).
-- **defeito:** QUEBRADA no programa de 26/10 (defeito A desta bateria). O filtro escolhido à mão numa página (painel, menu, teclas 1 a 4, botão do aviso, "todas") fica gravado no projeto, mas NÃO vale no PDF quando a caixinha "Limpar a folha" não foi marcada (o livro aberto sem marcar nada, D-009): a página sai amarelada, no Original. Causa: a tela não grava a marca "mexida à mão" do filtro (`core/etapas.marcar_mexida_a_mao` não é chamada por nenhum arquivo de `ui/`; o plano de 26/10 mandou "ligar nas etapas 2/3/5" e a etapa 2 entrou sem ligar). Mesmo defeito da tarefa 8 do teste do Kaique ("Preto e branco ignorado"). Sem dono certo: a gerente decide (etapa 3 ou 5).
 
 ### P-085 · o menu Filtro marca o filtro da página da vez
 - **chaves:** `menu/filtro_original`, `menu/filtro_preto_e_branco`, `menu/filtro_melhorar`, `menu/filtro_magico_pro`
@@ -525,7 +482,6 @@ programa), a partir do **nome do botão**, da **dica** (o balão do mouse) e das
 - **no projeto:** "todas" leva o filtro desta página a todas; "daqui em diante" a esta e às seguintes (as de antes
   ficam); "só nesta" deixa só esta e a dá por conferida.
 - **no PDF:** com "todas", todas as páginas saem em Preto e branco.
-- **defeito:** QUEBRADA no programa de 26/10 (defeito A desta bateria). O filtro escolhido à mão numa página (painel, menu, teclas 1 a 4, botão do aviso, "todas") fica gravado no projeto, mas NÃO vale no PDF quando a caixinha "Limpar a folha" não foi marcada (o livro aberto sem marcar nada, D-009): a página sai amarelada, no Original. Causa: a tela não grava a marca "mexida à mão" do filtro (`core/etapas.marcar_mexida_a_mao` não é chamada por nenhum arquivo de `ui/`; o plano de 26/10 mandou "ligar nas etapas 2/3/5" e a etapa 2 entrou sem ligar). Mesmo defeito da tarefa 8 do teste do Kaique ("Preto e branco ignorado"). Sem dono certo: a gerente decide (etapa 3 ou 5).
 
 ### P-082 · ícone "Ver os filtros em tela cheia" / menu Ver > "Filtros em tela cheia"
 - **chaves:** `área de trabalho/filtro da página/Ver os filtros em tela cheia`, `menu/filtros_tela_cheia`
@@ -533,12 +489,11 @@ programa), a partir do **nome do botão**, da **dica** (o balão do mouse) e das
 - **na tela:** abre os filtros em tela cheia, na página da vez. **no projeto:** nada muda até "Usar".
 
 ### P-083 · os jeitos do "Só as letras" (Guardar a tinta forte / Guardar tudo / Guardar só o texto) e "Mais opções"
-- **chaves:** `área de trabalho/filtro da página/Mais opções`, `área de trabalho/filtro da página/Menos opções`,
-  `o que fazer/Guardar a tinta forte`, `o que fazer/Guardar tudo`, `o que fazer/Guardar só o texto`
+- **chaves:** `área de trabalho/filtro da página/Mais opções`, `área de trabalho/filtro da página/Menos opções`
 - **decisões:** D-165 ("tem que ser algo bem visível para eu poder escolher"), D-163, D-366, D-185 ("Menu com
   amostra": na área de trabalho os três jeitos ficam numa lista com desenho, não em botões)
-- **no projeto:** o jeito escolhido (na lista da área de trabalho, ou nos botões da tela "O que fazer") fica gravado
-  nesta página. "Mais opções" abre as escolhas a mais e "Menos opções" fecha.
+- **no projeto:** o jeito escolhido (na lista da área de trabalho, ou nos botões da etapa "Limpar a folha" da janela
+  grande do Automático, que vale para o livro; até a etapa 3 eram os da tela "O que fazer") fica gravado. "Mais opções" abre as escolhas a mais e "Menos opções" fecha.
 
 ## Área de trabalho: "Para revisar"
 
@@ -640,7 +595,6 @@ programa), a partir do **nome do botão**, da **dica** (o balão do mouse) e das
 ### P-109 · aviso: "usar Mágico pro nesta"
 - **chaves:** `aviso/filtro:magico_pro`
 - **no projeto:** esta página fica no Mágico pro. **no PDF:** esta página sai no Mágico pro.
-- **defeito:** QUEBRADA no programa de 26/10 (defeito A desta bateria). O filtro escolhido à mão numa página (painel, menu, teclas 1 a 4, botão do aviso, "todas") fica gravado no projeto, mas NÃO vale no PDF quando a caixinha "Limpar a folha" não foi marcada (o livro aberto sem marcar nada, D-009): a página sai amarelada, no Original. Causa: a tela não grava a marca "mexida à mão" do filtro (`core/etapas.marcar_mexida_a_mao` não é chamada por nenhum arquivo de `ui/`; o plano de 26/10 mandou "ligar nas etapas 2/3/5" e a etapa 2 entrou sem ligar). Mesmo defeito da tarefa 8 do teste do Kaique ("Preto e branco ignorado"). Sem dono certo: a gerente decide (etapa 3 ou 5).
 
 ### P-110 · aviso: "usar o corte alargado"
 - **chaves:** `aviso/corte_alargado`
@@ -792,22 +746,129 @@ programa), a partir do **nome do botão**, da **dica** (o balão do mouse) e das
 ### P-137 · aviso de livro novo: "Rodar o automático…" / "agora não"
 - **chaves:** `área de trabalho/aviso de livro novo/Rodar o automático…`, `área de trabalho/aviso de livro novo/agora não`
 - **decisões:** D-005 ("B — Um aviso embaixo da página"), D-018
-- **aguarda:** etapa 3, D-005/D-018
 - **na tela:** livro novo mostra o aviso; "Rodar o automático…" abre a janela grande com a receita de sempre marcada;
   "agora não" fecha o aviso.
-
-### P-138 · painel Automático: "Voltar para as opções"
-- **chaves:** `área de trabalho/automático/Voltar para as opções`
-- **dica:** "Volta à tela "O que fazer", onde cada etapa se liga e desliga"
-- **sai na:** etapa 3 (D-002: o Automático vira painel de verdade)
-- **na tela:** leva às escolhas do automático do livro, sem perder o trabalho.
 
 ### P-139 · painel Automático de verdade (rodar em todas / escolhidas / numa página, uma etapa só, ordem arrastando)
 - **chaves:** `área de trabalho/automático/Rodar`
 - **decisões:** D-002 ("eu quero poder sim fazer automatico para todo livro, mas também quero pode fazer uma a uma"),
   D-003, D-004, D-016, D-068
-- **aguarda:** etapa 3, D-002/D-003/D-004
 - **no projeto / no PDF:** rodar só "endireitar" numa página muda só ela.
+
+## Área de trabalho: o Automático de verdade (etapa 3 da obra, D-002)
+
+### P-172 · Arquivo > "Automático..."
+- **chaves:** `menu/automatico`
+- **decisões:** D-002 ("Trabalho automático = painel 'Automático' [...] Funciona antes/ao abrir o livro e depois")
+- **na tela:** abre a janela grande do Automático do livro aberto.
+- **no projeto:** nada muda até apertar "Rodar".
+
+### P-173 · painel Automático: "abrir em janela grande" / "ajustar a etapa escolhida ›"
+- **chaves:** `área de trabalho/automático/abrir em janela grande`, `área de trabalho/automático/ajustar a etapa escolhida ›`
+- **decisões:** rodada 2 nº 5 ("painel (opção 1) com botão que abre a janela (opção 2)")
+- **na tela:** abre a janela grande; "ajustar" abre já nas opções da etapa escolhida na lista.
+- **no projeto:** nada muda.
+
+### P-174 · painel Automático: "Salvar..." (a receita)
+- **chaves:** `área de trabalho/automático/Salvar...`
+- **decisões:** D-071, D-355 ("Mas ainda pode melhorar a caixa de como escolhemos o que vai dentro da receita.")
+- **na tela:** abre a caixa da receita, com uma caixinha por etapa dizendo o que vai dentro; "guardar" põe a
+  receita na lista.
+- **no projeto:** nada muda (a receita fica nas configurações do programa).
+
+### P-175 · painel Automático: "escolher páginas..."
+- **chaves:** `área de trabalho/automático/escolher páginas...`
+- **decisões:** rodada 2 nº 5 ("Escolher folhas abrindo a tela de todas as páginas (marcar/desmarcar)"), D-334
+- **na tela:** abre Todas as páginas no jeito de escolher; "usar estas páginas" volta ao Automático com elas em
+  "nas páginas escolhidas".
+- **no projeto:** nada muda só por escolher.
+
+### P-176 · painel Automático: "desligar as marcadas"
+- **chaves:** `área de trabalho/automático/desligar as marcadas`
+- **decisões:** D-068 ("Toda função automática tem botão de ligar e desligar.")
+- **no projeto:** as etapas marcadas ficam desligadas onde o pedido disse (no livro todo: a caixinha do livro
+  desliga), numa ação do Histórico (o Ctrl+Z volta).
+
+## Área de trabalho: Todas as páginas com várias escolhidas (etapa 3 da obra, D-334)
+
+### P-177 · "marcar várias" / "todas" / "nenhuma"
+- **chaves:** `área de trabalho/todas as páginas/marcar várias`,
+  `área de trabalho/todas as páginas/todas — Marca todas as páginas que estão à vista.`,
+  `área de trabalho/todas as páginas/nenhuma`
+- **decisões:** D-334 ("seleção múltipla")
+- **na tela:** "marcar várias" liga a escolha (a caixinha no canto de cada página); "todas" marca as que estão à
+  vista; "nenhuma" desmarca.
+- **no projeto:** nada muda.
+
+### P-178 · "girar ¼ ←" / "girar ¼ →" (as escolhidas)
+- **chaves:** `área de trabalho/todas as páginas/girar ¼ ←`, `área de trabalho/todas as páginas/girar ¼ →`
+- **decisões:** D-334 ("girar")
+- **no projeto:** as folhas das páginas escolhidas giram um quarto, numa ação só do Histórico; as outras não.
+- **no PDF:** a página escolhida sai deitada.
+
+### P-179 · "deixar em branco" (as escolhidas)
+- **chaves:** `área de trabalho/todas as páginas/deixar em branco`
+- **decisões:** D-334
+- **no projeto:** as páginas escolhidas ficam "em branco", numa ação só do Histórico.
+
+### P-180 · "tirar do livro" / "trazer de volta" (as escolhidas)
+- **chaves:** `área de trabalho/todas as páginas/tirar do livro`, `área de trabalho/todas as páginas/trazer de volta`
+- **decisões:** D-334 ("apagar")
+- **no projeto:** "tirar" marca as escolhidas como fora do livro; "trazer de volta" devolve.
+- **no PDF:** a página tirada não sai; trazida de volta, sai.
+
+### P-181 · "extrair..." (as escolhidas)
+- **chaves:** `área de trabalho/todas as páginas/extrair...`
+- **decisões:** D-334 ("extrair", como o "Organizar páginas" do UPDF)
+- **na tela:** pergunta onde gravar.
+- **no projeto:** nada muda. **no PDF:** um PDF novo com as folhas escolhidas como estão no PDF de entrada.
+
+### P-182 · "rodar o automático nelas..." (as escolhidas)
+- **chaves:** `área de trabalho/todas as páginas/rodar o automático nelas...`
+- **decisões:** D-002 ("fazer automatico para todo livro, mas também [...] uma a uma"), D-334
+- **na tela:** volta ao trabalho com o Automático em "nas páginas escolhidas", com estas páginas.
+- **no projeto:** nada muda até "Rodar".
+
+## Janela grande do Automático (etapa 3 da obra)
+
+### P-183 · janela grande: "Rodar N etapas"
+- **chaves:** `automático (janela grande)/Rodar N etapas`
+- **decisões:** D-002, D-018 ("um clique em Rodar começa"), D-003
+- **na tela:** a janela fecha e as etapas marcadas rodam onde "Rodar" diz (o livro todo, esta página ou as escolhidas).
+- **no projeto:** as etapas ficam ligadas, numa ação só do Histórico (o Ctrl+Z volta).
+- **no PDF:** o livro sai com elas (ex.: "Limpar a folha" em Preto e branco tira o amarelado).
+
+### P-184 · janela grande: "Desligar as marcadas"
+- **chaves:** `automático (janela grande)/Desligar as marcadas`
+- **decisões:** D-068 ("Toda função automática tem botão de ligar e desligar.")
+- **no projeto:** as etapas marcadas ficam desligadas, numa ação do Histórico.
+
+### P-185 · janela grande: "Salvar receita..." / "Apagar a receita" e a caixa da receita ("guardar" / "cancelar")
+- **chaves:** `automático (janela grande)/Salvar receita...`, `automático (janela grande)/Apagar a receita`,
+  `caixa da receita/guardar`, `caixa da receita/cancelar`
+- **decisões:** D-071, D-355 ("Mas ainda pode melhorar a caixa de como escolhemos o que vai dentro da receita.")
+- **na tela:** "Salvar receita..." abre a caixa com o nome e uma caixinha por etapa (o que vai dentro, por
+  extenso); "guardar" põe a receita na lista; "cancelar" fecha sem guardar; "Apagar a receita" pergunta e tira a
+  receita escolhida da lista.
+- **no projeto:** nada muda (as receitas ficam nas configurações do programa).
+
+### P-186 · janela grande: "escolher páginas..."
+- **chaves:** `automático (janela grande)/escolher páginas...`
+- **decisões:** rodada 2 nº 5, D-334
+- **na tela:** abre Todas as páginas no jeito de escolher; "usar estas páginas" volta à janela grande com elas.
+- **no projeto:** nada muda.
+
+### P-187 · janela grande: folhear o livro ("<", ">", "tela cheia", "–", "+", "ajustar à tela")
+- **chaves:** `automático (janela grande)/<`, `automático (janela grande)/>`, `automático (janela grande)/tela cheia`,
+  `automático (janela grande)/–`, `automático (janela grande)/+`, `automático (janela grande)/ajustar à tela`
+- **decisões:** rodada 2 nº 5 ("Na janela, ver a página ao lado, folhear e dar zoom.")
+- **na tela:** a folha mostrada passa para a de antes / a de depois; "tela cheia" abre a folha grande; "–" e "+"
+  afastam e aproximam; "ajustar à tela" volta a caber. **no projeto:** nada muda.
+
+### P-188 · janela grande: "Fechar" e "Mais opções" (Gravuras e fotos)
+- **chaves:** `automático (janela grande)/Fechar`, `automático (janela grande)/Mais opções`
+- **na tela:** "Fechar" fecha a janela sem rodar; "Mais opções" mostra as escolhas a mais do achar gravuras.
+- **no projeto:** nada muda.
 
 ## Menus que só existem na barra de menus
 
@@ -826,10 +887,11 @@ programa), a partir do **nome do botão**, da **dica** (o balão do mouse) e das
 - **na tela:** pede o nome; OK guarda, Cancelar não muda.
 - **no projeto:** o nome escolhido fica no destino gravado. **no PDF:** o próximo PDF sai com esse nome.
 
-### P-143 · Arquivo > "Voltar para as opções"
+### P-143 · Arquivo > "Voltar para os livros"
 - **chaves:** `menu/voltar`
-- **sai na:** etapa 3 (D-002)
-- **na tela:** leva à tela "O que fazer" do livro, sem perder o trabalho.
+- **decisões:** D-002 (etapa 3: era "Voltar para as opções", a tela "O que fazer" saiu)
+- **na tela:** volta para a tela dos livros.
+- **no projeto:** o trabalho fica gravado (a página mexida continua mexida ao continuar).
 
 ### P-144 · Arquivo > "Sair"
 - **chaves:** `menu/sair`
