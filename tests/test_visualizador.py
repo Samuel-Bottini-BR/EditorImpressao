@@ -653,19 +653,26 @@ def test_arrastar_conteudo_move_x_e_y_mantendo_o_tamanho(visualizador_modo_conte
     assert (w1, h1) == (w0, h0)
 
 
-def test_arrastar_conteudo_nao_sai_do_canvas(visualizador_modo_conteudo):
+def test_arrastar_conteudo_passa_da_beirada_mas_o_meio_fica_na_folha(visualizador_modo_conteudo):
+    """Etapa 5 da obra (D-008, D-017; teste do Kaique de 26/10/2026, tarefa 5: "o
+    retângulo não passa da borda da folha"). Antes este teste exigia o contrário (o
+    conteúdo preso inteiro dentro da folha): era o defeito - com a folha do tamanho da
+    página, o conteúdo não andava. Agora ele passa da beirada (o que passar fica de fora,
+    marcado e avisado) e só o MEIO fica dentro da folha, para não se perder da vista."""
     v = visualizador_modo_conteudo
     arrastar_conteudo(v, 4000, 0)   # bem para fora da tela
     x1, y1, w1, h1 = v._retangulo_conteudo
-    assert x1 + w1 <= 1.0 + 1e-6
-    assert x1 >= 0.0 - 1e-6
+    assert x1 + w1 > 1.0 + 0.1, "o conteúdo continuou preso dentro da folha (o antigo)"
+    assert x1 + w1 / 2 == pytest.approx(1.0, abs=1e-6)
 
 
-def test_arrastar_conteudo_nao_sai_do_canvas_do_outro_lado(visualizador_modo_conteudo):
+def test_arrastar_conteudo_passa_da_beirada_do_outro_lado(visualizador_modo_conteudo):
+    """Etapa 5 da obra: o mesmo do lado de cima e da esquerda."""
     v = visualizador_modo_conteudo
     arrastar_conteudo(v, -4000, -4000)
     x1, y1, w1, h1 = v._retangulo_conteudo
-    assert x1 >= -1e-6 and y1 >= -1e-6
+    assert x1 < -0.1 and y1 < -0.1
+    assert (x1 + w1 / 2, y1 + h1 / 2) == pytest.approx((0.0, 0.0), abs=1e-6)
 
 
 def test_arrastar_conteudo_gruda_no_centro_pelo_ima(visualizador_modo_conteudo):
@@ -809,12 +816,21 @@ def test_redimensionar_conteudo_nao_encolhe_alem_do_minimo(visualizador_modo_con
     assert min(w1, h1) >= 0.05 - 1e-6
 
 
-def test_redimensionar_conteudo_nao_sai_do_canvas(visualizador_modo_conteudo):
+def test_redimensionar_conteudo_aumenta_alem_da_folha_ate_o_teto(visualizador_modo_conteudo):
+    """Etapa 5 da obra (D-008: "aumenta a hora que quiser"; teste do Kaique, 26/10: "o
+    texto não aumenta"). Antes este teste exigia o conteúdo dentro da folha ao aumentar:
+    era o defeito. Agora ele cresce além da folha, na mesma proporção e em volta do meio,
+    até o teto (MAIOR_CONTEUDO vezes a folha)."""
+    from ui.widgets.visualizador import MAIOR_CONTEUDO
+
     v = visualizador_modo_conteudo
+    x0, y0, w0, h0 = v._retangulo_conteudo
     arrastar_alca_conteudo(v, "se", 4000, 4000)   # bem exagerado pra fora
     x1, y1, w1, h1 = v._retangulo_conteudo
-    assert x1 >= -1e-6 and y1 >= -1e-6
-    assert x1 + w1 <= 1.0 + 1e-6 and y1 + h1 <= 1.0 + 1e-6
+    assert w1 > 1.0 and h1 > 1.0, "não passou do tamanho da folha (o antigo)"
+    assert max(w1, h1) == pytest.approx(MAIOR_CONTEUDO, abs=1e-6)
+    assert w1 / h1 == pytest.approx(w0 / h0, rel=1e-6)
+    assert (x1 + w1 / 2, y1 + h1 / 2) == pytest.approx((x0 + w0 / 2, y0 + h0 / 2), abs=1e-6)
 
 
 def test_clicar_na_alca_do_canto_inicia_redimensionar_nao_mover(visualizador_modo_conteudo):

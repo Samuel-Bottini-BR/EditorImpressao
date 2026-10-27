@@ -66,14 +66,23 @@ FERRAMENTA_DIVIDIR = "dividir"
 FERRAMENTA_CORTAR = "cortar"
 FERRAMENTA_ENDIREITAR = "endireitar"
 FERRAMENTA_FILTROS = "filtros"          # provisório até a etapa 4
+# Etapa 5 da obra de 26/10/2026 (D-008, Samuel na sessão 1: "a ferramenta de
+# mover não deveria estar vinculada ao corte de bordas, deveriam ser duas
+# coisas independentes"; "como é no photoshope, que você arrasta a hora que
+# quiser e aumenta a hora que quiser"): mover e redimensionar o conteúdo na
+# área branca é uma ferramenta própria, sempre na trilha, logo depois do
+# Endireitar. Antes era a caixinha "Mover conteúdo" dentro do Cortar, cinza
+# até escolher um tamanho de folha.
+FERRAMENTA_MOVER = "mover"
 FERRAMENTAS_DA_PAGINA = (FERRAMENTA_DIVIDIR, FERRAMENTA_CORTAR,
-                         FERRAMENTA_ENDIREITAR, FERRAMENTA_FILTROS)
+                         FERRAMENTA_ENDIREITAR, FERRAMENTA_MOVER, FERRAMENTA_FILTROS)
 
 NOMES = dict(NOMES_DAS_FERRAMENTAS)
 NOMES.update({
     FERRAMENTA_DIVIDIR: "Dividir a folha",
     FERRAMENTA_CORTAR: "Cortar as bordas",
     FERRAMENTA_ENDIREITAR: "Endireitar",
+    FERRAMENTA_MOVER: "Mover e redimensionar",
     FERRAMENTA_FILTROS: "Os quatro filtros",
 })
 
@@ -89,6 +98,8 @@ USOS = {
     # (alça) ou pela linha laranja (linha-guia), no visualizador.
     FERRAMENTA_ENDIREITAR: ("Gire pela bolinha azul, ou desenhe a linha laranja em "
                             "cima de uma linha do texto."),
+    FERRAMENTA_MOVER: ("Arraste a página para mover dentro da área branca. Puxe um canto "
+                       "para aumentar ou diminuir."),
     FERRAMENTA_FILTROS: "A mesma página nos quatro filtros: clique no que preferir.",
     FERRAMENTA_RETANGULO: "Arraste de um canto ao outro.",
     FERRAMENTA_ELIPSE: "Arraste para desenhar um oval.",
@@ -109,7 +120,8 @@ USOS = {
 
 # "-" é o traço que separa os blocos.
 GRUPOS = (
-    (FERRAMENTA_DIVIDIR,), (FERRAMENTA_CORTAR,), (FERRAMENTA_ENDIREITAR,), "-",
+    (FERRAMENTA_DIVIDIR,), (FERRAMENTA_CORTAR,), (FERRAMENTA_ENDIREITAR,),
+    (FERRAMENTA_MOVER,), "-",
     (FERRAMENTA_RETANGULO, FERRAMENTA_ELIPSE), (FERRAMENTA_LACO, FERRAMENTA_POLIGONO),
     (FERRAMENTA_PINCEL,), (FERRAMENTA_VARINHA, FERRAMENTA_COR), (FERRAMENTA_AJUSTAR,), "-",
     (FERRAMENTA_ZOOM,), (FERRAMENTA_MAO,),
@@ -133,13 +145,19 @@ TEMPO_PARA_ABRIR_O_GRUPO_MS = 450
 # Livres em todo o programa: R O L P B V C A Z E (marcar), M e T (recorte
 # espelhado e proporção), 1 a 4 (filtros). Remapeaveis nas Configuracoes
 # (atalhos.py, chaves "ferramenta_dividir/cortar/endireitar").
-ATALHOS_DA_PAGINA = {FERRAMENTA_DIVIDIR: "D", FERRAMENTA_CORTAR: "X", FERRAMENTA_ENDIREITAR: "I"}
+# Etapa 5 da obra (escolha da gerente, D-014; anotada no Livro, D-540): F =
+# Mover e redimensionar ("F de folha": põe o conteúdo no lugar da folha). O V
+# do Photoshop já é a Varinha mágica aqui, e o M é o "Recorte: espelhado";
+# as letras livres eram F G H J K N Q S U W Y.
+ATALHOS_DA_PAGINA = {FERRAMENTA_DIVIDIR: "D", FERRAMENTA_CORTAR: "X", FERRAMENTA_ENDIREITAR: "I",
+                     FERRAMENTA_MOVER: "F"}
 for _ferramenta, _letra in ATALHOS_DA_PAGINA.items():
     atalhos.registrar(f"ferramenta_{_ferramenta}", NOMES[_ferramenta], _letra)
 
 
 def tecla_de(ferramenta: str) -> str:
-    """A letra do atalho de hoje (remapeavel). "Os quatro filtros" nao tem."""
+    """A letra do atalho de hoje (remapeavel). "Os quatro filtros" nao tem.
+    Dividir, Cortar, Endireitar e (desde a etapa 5) Mover: ATALHOS_DA_PAGINA."""
     if ferramenta in ATALHOS_DA_PAGINA:
         return atalhos.tecla_atual(f"ferramenta_{ferramenta}") or ATALHOS_DA_PAGINA[ferramenta]
     if ferramenta in FERRAMENTAS_DA_PAGINA:
@@ -184,6 +202,18 @@ def desenhar_icone(pintor: QPainter, ferramenta: str, x: int, y: int, lado: int)
         caminho.lineTo(x + lado * 0.69, y + lado * 0.87)
         caminho.closeSubpath()
         pintor.drawPath(caminho)
+    elif ferramenta == FERRAMENTA_MOVER:
+        # etapa 5: a cruz de quatro setas do "mover" (como no Photoshop)
+        pintor.drawLine(meio.x(), y + 1, meio.x(), y + lado - 1)
+        pintor.drawLine(x + 1, meio.y(), x + lado - 1, meio.y())
+        ponta = max(3, lado // 6)
+        for (px, py), (ax, ay), (bx, by) in (
+                ((meio.x(), y + 1), (-ponta, ponta), (ponta, ponta)),
+                ((meio.x(), y + lado - 1), (-ponta, -ponta), (ponta, -ponta)),
+                ((x + 1, meio.y()), (ponta, -ponta), (ponta, ponta)),
+                ((x + lado - 1, meio.y()), (-ponta, -ponta), (-ponta, ponta))):
+            pintor.drawLine(px, py, px + ax, py + ay)
+            pintor.drawLine(px, py, px + bx, py + by)
     elif ferramenta == FERRAMENTA_FILTROS:
         raio = lado // 2 - 1
         pintor.drawEllipse(meio, raio, raio)

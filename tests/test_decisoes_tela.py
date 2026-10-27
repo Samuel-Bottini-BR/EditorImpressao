@@ -63,7 +63,8 @@ from ui.widgets.trilha_agrupada import (  # noqa: E402
 )
 
 CAIXINHAS = ("cx_dividir", "cx_cortar", "cx_endireitar", "cx_limpar")
-TODAS_AS_ABAS = ["corte", "bordas", "angulo", "marcar", "filtro"]
+# etapa 5 da obra: a ferramenta Mover ("mover") nasce em todo livro também (D-008, D-001)
+TODAS_AS_ABAS = ["corte", "bordas", "angulo", "mover", "marcar", "filtro"]
 # todas as ferramentas da trilha (as de página e as de marcar e de olhar)
 TODAS_AS_FERRAMENTAS = [f for g in GRUPOS if g != "-" for f in g]
 

@@ -24,6 +24,33 @@ A ABA ENDIREITAR (MODO_ANGULO; provisório até o layout)
     O QPainter gira no sentido do relógio para ângulo positivo: por isso a
     imagem é desenhada girada de -(diferença). Arriscado: trocar esse sinal
     (a prévia ao vivo giraria para o lado contrário do PDF).
+
+A FERRAMENTA "MOVER E REDIMENSIONAR" (MODO_CONTEUDO com definir_mover; etapa
+5 da obra de 26/10/2026)
+    Decisões do Samuel: D-008 ("a ferramenta de mover não deveria estar
+    vinculada ao corte de bordas" e "como é no photoshope, que você arrasta a
+    hora que quiser e aumenta a hora que quiser"), D-017 (o que passa da
+    beirada fica de fora e aparece marcado; nada é diminuído sozinho) e D-473
+    (a tela mostra o que sai no PDF).
+    O que aparece: a ÁREA BRANCA (a folha escolhida, ou a própria página) em
+    branco, e a página por cima dela, no lugar e no tamanho de agora, como no
+    Photoshop (a camada sobre a tela). A página anda AO VIVO durante o
+    arrasto. A parte que passou da beirada continua à vista, apagada e com
+    listras vermelhas: é o que fica de fora do PDF. A vista se ajusta para
+    caber a área branca e a página inteira (o "mundo"), e fica parada durante
+    o arrasto (só se ajusta de novo ao soltar).
+      - arrastar em qualquer lugar da área branca ou da página: move;
+      - puxar um dos quatro cantos: aumenta ou diminui, sempre na mesma
+        proporção, em volta do centro; pode passar da beirada;
+      - o ímã (linhas automáticas do meio e das beiradas, e as linhas do
+        Kaique) gruda pelo que está IMPRESSO (a caixa do impresso), não pela
+        moldura da página - como o Photoshop gruda a camada pelos pontos que
+        têm desenho.
+    O retângulo do conteúdo é sempre fração da área branca (o formato de
+    core.folha.retangulo_na_folha); quem converte para ConfigPagina é a tela.
+    Arriscado: prender de novo o conteúdo dentro da área branca (era o defeito
+    do teste do Kaique: "o retângulo não passa da borda da folha e o texto não
+    aumenta").
 """
 
 from __future__ import annotations
@@ -78,6 +105,14 @@ MODO_ANGULO = "angulo"
 # existe quando há uma folha maior que o conteúdo (`compor_na_folha` sobrou
 # margem de verdade) - ver `ui/tela_conferir.py::_alternar_mover_conteudo`.
 MODO_CONTEUDO = "conteudo"
+
+# Etapa 5 da obra (ferramenta Mover): o maior tamanho do conteúdo, em vezes a
+# área branca (4 = quatro vezes a folha), e quanto do impresso pode sair (o
+# meio do conteúdo nunca sai da área branca, para ele não se perder da vista).
+# Seguro mudar: os dois números. Cores da parte que fica de fora (D-017).
+MAIOR_CONTEUDO = 4.0
+OPACIDADE_DE_FORA = 0.35
+COR_DE_FORA = QColor(214, 48, 49, 150)
 
 # Como arrastar uma alça do retângulo de recorte muda os outros lados.
 # LIVRE: cada lado se move sozinho (comportamento de sempre).
@@ -270,6 +305,16 @@ class Visualizador(QWidget):
         self.guias_do_livro: list[tuple[str, float]] = []
         self.guias_automaticas = True
 
+        # Etapa 5 da obra (ferramenta Mover, ver o topo): a área branca em
+        # pontos (na mesma escala da página mostrada), a caixa do impresso
+        # (fração da página, core.folha.caixa_do_impresso) e o "mundo" (a área
+        # branca mais a página, em fração da área branca) fixo durante o
+        # arrasto. _area_do_mundo: onde o mundo foi desenhado (a base do zoom).
+        self._folha_do_mover: tuple[int, int] | None = None
+        self._caixa_do_impresso: tuple[float, float, float, float] | None = None
+        self._mundo_fixo: tuple[float, float, float, float] | None = None
+        self._area_do_mundo = QRect()
+
         # Zoom e deslocamento. 1,0 quer dizer "do tamanho da janela"; acima
         # disso a imagem passa a ser maior que a área e o usuário arrasta para
         # andar por ela. Como toda a geometria dos controles e calculada a
@@ -288,10 +333,11 @@ class Visualizador(QWidget):
         if abs(novo - self.zoom) < 1e-4:
             return
 
-        if ancora is not None and self._area.width() > 0:
+        base = self._area_que_ajusta()
+        if ancora is not None and base.width() > 0 and base.height() > 0:
             # posicao do cursor dentro da imagem, de 0 a 1
-            rx = (ancora.x() - self._area.left()) / self._area.width()
-            ry = (ancora.y() - self._area.top()) / self._area.height()
+            rx = (ancora.x() - base.left()) / base.width()
+            ry = (ancora.y() - base.top()) / base.height()
             largura_nova = self._largura_base() * novo
             altura_nova = self._altura_base() * novo
             centro_x = self.width() / 2 + self.deslocamento.x()
@@ -323,23 +369,52 @@ class Visualizador(QWidget):
         self.deslocamento = QPoint(deslocamento)
         self.update()
 
+    def _em_modo_mover(self) -> bool:
+        """A ferramenta Mover (etapa 5): o modo do conteúdo com a área branca
+        dada por definir_mover. Fora dele, tudo como sempre."""
+        return self.modo == MODO_CONTEUDO and self._folha_do_mover is not None
+
+    def _mundo(self) -> tuple[float, float, float, float]:
+        """O que a vista precisa mostrar no modo Mover: a área branca (0-1) e
+        a página inteira, mesmo a parte que passou da beirada, em fração da
+        área branca (x0, y0, x1, y1). Fixo durante o arrasto (_mundo_fixo),
+        para a vista não pular a cada movimento do mouse."""
+        if self._mundo_fixo is not None:
+            return self._mundo_fixo
+        x, y, w, h = self._retangulo_conteudo
+        return (min(0.0, x), min(0.0, y), max(1.0, x + w), max(1.0, y + h))
+
+    def _tamanho_base_px(self) -> tuple[float, float]:
+        """O tamanho, em pontos da imagem, do que a vista ajusta à tela: o
+        mundo no modo Mover; a imagem nos outros."""
+        if self._em_modo_mover():
+            x0, y0, x1, y1 = self._mundo()
+            largura, altura = self._folha_do_mover
+            return (max(1.0, (x1 - x0) * largura), max(1.0, (y1 - y0) * altura))
+        return (float(self._pixmap.width()), float(self._pixmap.height()))
+
+    def _area_que_ajusta(self) -> QRect:
+        """Onde o que a vista ajusta foi desenhado (a base do zoom pelo
+        mouse): o mundo no modo Mover; a imagem nos outros."""
+        return self._area_do_mundo if self._em_modo_mover() else self._area
+
     def _escala_ajustada(self) -> float:
         """A escala de "ajustar à tela", já descontando a folga da moldura."""
         largura_util = max(1.0, self.width() - 2 * PADDING_MOLDURA)
         altura_util = max(1.0, self.height() - 2 * PADDING_MOLDURA)
-        return min(largura_util / self._pixmap.width(),
-                   altura_util / self._pixmap.height())
+        largura, altura = self._tamanho_base_px()
+        return min(largura_util / largura, altura_util / altura)
 
     def _largura_base(self) -> float:
         """Largura que a imagem teria ajustada a janela, antes do zoom."""
         if self._pixmap is None or self._pixmap.isNull():
             return 0.0
-        return self._pixmap.width() * self._escala_ajustada()
+        return self._tamanho_base_px()[0] * self._escala_ajustada()
 
     def _altura_base(self) -> float:
         if self._pixmap is None or self._pixmap.isNull():
             return 0.0
-        return self._pixmap.height() * self._escala_ajustada()
+        return self._tamanho_base_px()[1] * self._escala_ajustada()
 
     def wheelEvent(self, evento) -> None:  # noqa: N802
         if self._pixmap is None:
@@ -486,6 +561,41 @@ class Visualizador(QWidget):
         self._tamanho_conteudo_px = tuple(tamanho_conteudo_px)
         self.update()
 
+    def definir_mover(
+        self, conteudo: np.ndarray | None, folha_px: tuple[int, int] | None,
+        retangulo: tuple[float, float, float, float],
+        caixa_do_impresso: tuple[float, float, float, float] | None = None,
+        dono=None,
+    ) -> None:
+        """A ferramenta Mover (etapa 5 da obra; ver o topo): a página como vai
+        sair (`conteudo`, antes de ir para a área branca), a ÁREA BRANCA em
+        pontos na mesma escala (`folha_px`: a folha escolhida, ou o tamanho da
+        própria página - core.folha.tamanho_da_folha_px), onde a página fica
+        nela (`retangulo`, fração da área branca, core.folha.retangulo_na_folha)
+        e a caixa do impresso (para o ímã). `conteudo` None: ainda vem (como
+        definir_imagem: a de antes fica, se for do mesmo `dono`). Durante um
+        arrasto o retângulo do mouse manda (o que chegar não o desfaz)."""
+        self.definir_imagem(conteudo, dono=dono)
+        if conteudo is not None:
+            self._tamanho_conteudo_px = (int(conteudo.shape[1]), int(conteudo.shape[0]))
+        if folha_px is not None and folha_px[0] > 0 and folha_px[1] > 0:
+            self._folha_do_mover = (int(folha_px[0]), int(folha_px[1]))
+        if self._arrastando is None:
+            self._retangulo_conteudo = tuple(float(v) for v in retangulo)
+        self._caixa_do_impresso = (tuple(float(v) for v in caixa_do_impresso)
+                                   if caixa_do_impresso is not None else None)
+        self.update()
+
+    def _impresso_no_retangulo(self, retangulo) -> tuple[float, float, float, float] | None:
+        """A caixa do impresso dentro do `retangulo` do conteúdo, em fração da
+        área branca (x, y, w, h); None sem a caixa (página em branco ou fora
+        do modo Mover)."""
+        if self._caixa_do_impresso is None:
+            return None
+        x, y, w, h = retangulo
+        x0, y0, x1, y1 = self._caixa_do_impresso
+        return (x + x0 * w, y + y0 * h, (x1 - x0) * w, (y1 - y0) * h)
+
     def _area_do_conteudo(self) -> QRect:
         """A região de `self._area` (o pixmap inteiro, na tela) onde o
         CONTEÚDO (o recorte) está desenhado. Sem composição, é `self._area`
@@ -495,9 +605,12 @@ class Visualizador(QWidget):
         x, y, w, h = self._retangulo_conteudo
         if (x, y, w, h) == (0.0, 0.0, 1.0, 1.0):
             return self._area
+        # floor (e nao int) para o conteudo que passou da beirada esquerda ou
+        # de cima (x ou y negativo, ferramenta Mover): int arredondaria para
+        # o lado errado. Para x e y positivos e o mesmo de sempre.
         return QRect(
-            self._area.left() + int(x * self._area.width()),
-            self._area.top() + int(y * self._area.height()),
+            self._area.left() + math.floor(x * self._area.width()),
+            self._area.top() + math.floor(y * self._area.height()),
             int(w * self._area.width()),
             int(h * self._area.height()),
         )
@@ -522,6 +635,16 @@ class Visualizador(QWidget):
         x = (self.width() - largura) // 2 + self.deslocamento.x()
         y = (self.height() - altura) // 2 + self.deslocamento.y()
         self._area = QRect(x, y, largura, altura)
+        if self._em_modo_mover():
+            # etapa 5 (ferramenta Mover): o retangulo de cima e o MUNDO; a
+            # area branca (_area, o referencial de todo o resto) fica dentro
+            self._area_do_mundo = QRect(self._area)
+            self._area = self._area_branca_no_mundo(self._area_do_mundo)
+            self._desenhar_o_mover(pintor)
+            if self.carregando:
+                self._desenhar_aviso_de_espera(pintor)
+            self._desenhar_conteudo(pintor)
+            return
 
         # Com zoom alto, escalar o pixmap inteiro custaria caro; desenhamos
         # direto no retangulo e deixamos o Qt cuidar do recorte.
@@ -554,6 +677,43 @@ class Visualizador(QWidget):
             self._desenhar_guias(pintor)
         elif self.modo == MODO_CONTEUDO:
             self._desenhar_conteudo(pintor)
+
+    def _area_branca_no_mundo(self, mundo: QRect) -> QRect:
+        """Onde a área branca fica na tela, dado onde o mundo foi desenhado
+        (modo Mover)."""
+        x0, y0, x1, y1 = self._mundo()
+        por_x = mundo.width() / max(1e-9, x1 - x0)
+        por_y = mundo.height() / max(1e-9, y1 - y0)
+        return QRect(round(mundo.left() - x0 * por_x), round(mundo.top() - y0 * por_y),
+                     max(1, round(por_x)), max(1, round(por_y)))
+
+    def _desenhar_o_mover(self, pintor: QPainter) -> None:
+        """Modo Mover (etapa 5; D-017 e D-473): a área branca, a página por
+        cima dela no lugar e no tamanho de agora, e a parte que passou da
+        beirada à vista, apagada e com listras vermelhas - é o que fica de
+        fora do PDF. Nada é desenhado fora da área da página e do conteúdo
+        (D-019: nenhuma peça da interface por cima da página)."""
+        branca = self._area
+        pintor.fillRect(branca, QColor(255, 255, 255))
+        conteudo = self._area_do_conteudo()
+        pintor.setRenderHint(QPainter.SmoothPixmapTransform, self.zoom <= 4.0)
+        if not branca.contains(conteudo):
+            # a parte de fora: apagada e com listras (fica de fora do PDF)
+            pintor.save()
+            pintor.setOpacity(OPACIDADE_DE_FORA)
+            pintor.drawPixmap(conteudo, self._pixmap)
+            pintor.restore()
+            fora = QPainterPath()
+            fora.addRect(QRectF(conteudo))
+            dentro = QPainterPath()
+            dentro.addRect(QRectF(branca))
+            pintor.fillPath(fora.subtracted(dentro), _listras_de_fora())
+        pintor.save()
+        pintor.setClipRect(branca)
+        pintor.drawPixmap(conteudo, self._pixmap)
+        pintor.restore()
+        pintor.setPen(QPen(QColor(estilo.cor("linha")), 1))
+        pintor.drawRect(branca.adjusted(0, 0, -1, -1))
 
     def _desenhar_aviso_de_espera(self, pintor: QPainter) -> None:
         """Selo discreto no canto enquanto a nova imagem não chega.
@@ -868,7 +1028,8 @@ class Visualizador(QWidget):
                 # o conteudo tambem") - arrastar um canto redimensiona.
                 self._arrastando = f"conteudo_{alca}"
                 self._retangulo_conteudo_inicial = self._retangulo_conteudo
-            elif self._area.contains(ponto):
+                self._mundo_fixo = self._mundo() if self._em_modo_mover() else None
+            elif self._pega_o_conteudo(ponto):
                 # BUG REAL achado ao vivo (22/09/2026, reprodução com mouse
                 # de verdade): antes só iniciava o arrasto clicando EXATAMENTE
                 # em cima do conteúdo, sem nenhuma pista visual (sem alça, sem
@@ -880,6 +1041,14 @@ class Visualizador(QWidget):
                 # dentro de uma moldura.
                 self._arrastando = "conteudo"
                 self._retangulo_conteudo_inicial = self._retangulo_conteudo
+                self._mundo_fixo = self._mundo() if self._em_modo_mover() else None
+
+    def _pega_o_conteudo(self, ponto: QPoint) -> bool:
+        """O clique pega o conteúdo para arrastar? Em qualquer lugar da área
+        branca (a folha) e, desde a etapa 5 (o conteúdo pode passar da
+        beirada), também na parte da página que ficou de fora."""
+        return self._area.contains(ponto) or (
+            self._em_modo_mover() and self._area_do_conteudo().contains(ponto))
 
     def mouseMoveEvent(self, evento: QMouseEvent) -> None:  # noqa: N802
         ponto = evento.position().toPoint()
@@ -997,6 +1166,8 @@ class Visualizador(QWidget):
             self.angulo_movido.emit(self.angulo)
         elif arrastava == "conteudo" or arrastava.startswith("conteudo_"):
             self._guias_ativas_agora = []
+            self._mundo_fixo = None           # a vista se ajusta de novo ao soltar
+            self.update()
             self.conteudo_movido.emit(self._retangulo_conteudo)
         else:
             self.recorte_movido.emit(self.recorte)
@@ -1049,7 +1220,7 @@ class Visualizador(QWidget):
         }
         if alca is not None:
             self.setCursor(QCursor(formatos[alca]))
-        elif self._area.contains(ponto):
+        elif self._pega_o_conteudo(ponto):
             self.setCursor(QCursor(Qt.SizeAllCursor))
         else:
             self.setCursor(QCursor(Qt.ArrowCursor))
@@ -1173,12 +1344,20 @@ class Visualizador(QWidget):
         de soltar o mouse (`conteudo_movido`) é que
         `ui/tela_conferir.py::_mover_conteudo` converte para (escala,
         deslocamento), o formato salvo em `ConfigPagina`. `w`/`h` nunca mudam
-        aqui - só x/y, sempre mantendo o conteúdo inteiro dentro do canvas
-        [0,1]. Redimensionar (mudar w/h arrastando um canto) é
+        aqui - só x/y. Redimensionar (mudar w/h arrastando um canto) é
         `_redimensionar_conteudo`, logo abaixo - Fase 3.
 
-        Linhas-guia + ímã: `guias_ativas`/`encaixar_no_ima` já existiam,
-        testadas, mas nunca tinham sido ligadas a nenhuma tela até agora.
+        Etapa 5 da obra (D-008, D-017; o teste do Kaique, 26/10: "o retângulo
+        não passa da borda da folha"): o conteúdo PODE passar da beirada da
+        área branca (o que passar fica de fora do PDF, marcado na tela e com
+        aviso). Só o MEIO dele fica dentro da área branca, para nunca se
+        perder da vista. Antes ele ficava preso inteiro dentro dela: com a
+        folha do tamanho da página, não andava nada.
+
+        Linhas-guia + ímã: `guias_ativas`/`encaixar_no_ima`. Desde a etapa 5
+        o ímã olha o IMPRESSO (_impresso_no_retangulo), quando a caixa dele é
+        conhecida: é o texto que gruda no meio e nas linhas, não a moldura da
+        página (que tem margens diferentes dos dois lados).
         """
         if self._area.width() <= 0 or self._area.height() <= 0:
             return
@@ -1186,14 +1365,16 @@ class Visualizador(QWidget):
         dy = (ponto.y() - self._ponto_inicial.y()) / self._area.height()
         x0, y0, w, h = self._retangulo_conteudo_inicial
 
-        x = min(max(0.0, x0 + dx), 1.0 - w)
-        y = min(max(0.0, y0 + dy), 1.0 - h)
+        x = min(max(0.0, x0 + dx + w / 2), 1.0) - w / 2
+        y = min(max(0.0, y0 + dy + h / 2), 1.0) - h / 2
         candidato = (x, y, w, h)
 
-        self._guias_ativas_agora = guias_ativas(candidato, linhas=self.guias_do_livro,
+        alvo = self._impresso_no_retangulo(candidato) or candidato
+        encaixado = encaixar_no_ima(alvo, linhas=self.guias_do_livro,
+                                    automaticas=self.guias_automaticas)
+        self._guias_ativas_agora = guias_ativas(encaixado, linhas=self.guias_do_livro,
                                                 automaticas=self.guias_automaticas)
-        self._retangulo_conteudo = encaixar_no_ima(candidato, linhas=self.guias_do_livro,
-                                                   automaticas=self.guias_automaticas)
+        self._retangulo_conteudo = (x + encaixado[0] - alvo[0], y + encaixado[1] - alvo[1], w, h)
         self.update()
 
     def _redimensionar_conteudo(self, ponto: QPoint, lado: str) -> None:
@@ -1231,17 +1412,30 @@ class Visualizador(QWidget):
             fatores.append(1.0 + (sinal * 2 * dy) / h if h else 1.0)
         fator = sum(fatores) / len(fatores) if fatores else 1.0
 
+        # Etapa 5 da obra (D-008: "aumenta a hora que quiser"; teste do
+        # Kaique, 26/10: "o texto não aumenta"): o conteúdo pode crescer além
+        # da área branca (o que passar fica de fora, marcado e avisado,
+        # D-017), até MAIOR_CONTEUDO vezes ela. Antes o maior era o que
+        # cabia dentro da folha em volta do centro de agora.
         minimo = 0.05
         menor_lado = min(w, h)
         fator_minimo = (minimo / menor_lado) if menor_lado else 0.0
-        fator_max_x = (2 * min(centro_x, 1.0 - centro_x)) / w if w else fator
-        fator_max_y = (2 * min(centro_y, 1.0 - centro_y)) / h if h else fator
-        fator = min(max(fator, fator_minimo), min(fator_max_x, fator_max_y))
+        maior_lado = max(w, h)
+        fator_maximo = (MAIOR_CONTEUDO / maior_lado) if maior_lado else fator
+        fator = min(max(fator, fator_minimo), fator_maximo)
 
         novo_w, novo_h = w * fator, h * fator
         self._retangulo_conteudo = (
             centro_x - novo_w / 2, centro_y - novo_h / 2, novo_w, novo_h)
         self.update()
+
+
+def _listras_de_fora():
+    """O pincel da parte que fica de fora do PDF (ferramenta Mover, D-017):
+    listras vermelhas em diagonal."""
+    from PySide6.QtGui import QBrush
+
+    return QBrush(COR_DE_FORA, Qt.BDiagPattern)
 
 
 def correcao_da_linha_guia(a: QPointF, b: QPointF) -> float | None:

@@ -185,7 +185,8 @@ def compor_na_folha(
       - sem tamanho de folha, a folha é a PRÓPRIA página (o tamanho de
         `conteudo`): o conteúdo anda dentro dela e o que sair pela beirada
         fica de fora (a página não muda de tamanho - escolha da gerente
-        D-017; o aviso do que passou da beirada é da etapa 5 da obra);
+        D-017; o aviso do que passou da beirada é analise.IMPRESSO_DE_FORA,
+        medido por parte_impressa_de_fora, etapa 5 da obra);
       - com a folha escolhida um pouco menor que o conteúdo (a janela
         "tamanho..." mostra o corte arredondado a 0,01 cm: 21,01 cm a 300 DPI
         são 2481 pontos, e o conteúdo tinha 2482 - era o "Mover conteúdo"
@@ -255,8 +256,8 @@ def compor_na_folha(
 
 
 # ---------------------------------------------------------------------------
-# Conversao escala+deslocamento <-> retangulo (preparacao para o item 4:
-# arrastar o conteudo com guias/ima, fora desta entrega - ver o plano)
+# Conversao escala+deslocamento <-> retangulo (a ferramenta "Mover e
+# redimensionar" da tela e o PDF usam a mesma conta; etapa 5 da obra)
 # ---------------------------------------------------------------------------
 
 def conteudo_como_retangulo(
@@ -269,19 +270,10 @@ def conteudo_como_retangulo(
     """Converte (escala, deslocamento) - o formato salvo em `ConfigPagina` -
     para um retângulo (x, y, w, h) em fração da folha, o formato que
     `guias_ativas`/`encaixar_no_ima` (em `ui/widgets/visualizador.py`)
-    entendem. Ainda não é chamada por nenhuma tela - é o terreno preparado
-    para o item 4 do plano (arrastar o conteúdo), implementado depois."""
-    largura_folha_px, altura_folha_px = _para_pixels(tamanho_folha_cm, dpi)
-    if largura_folha_px <= 0 or altura_folha_px <= 0:
-        return (0.0, 0.0, 1.0, 1.0)
-
-    largura_conteudo_px, altura_conteudo_px = tamanho_conteudo_px
-    w = (largura_conteudo_px * escala) / largura_folha_px
-    h = (altura_conteudo_px * escala) / altura_folha_px
-    dx, dy = deslocamento
-    x = 0.5 - w / 2 + dx
-    y = 0.5 - h / 2 + dy
-    return (x, y, w, h)
+    entendem. A conta é a de `retangulo_na_folha` (etapa 5 da obra), com a
+    folha dada em cm."""
+    return retangulo_na_folha(escala, deslocamento, _para_pixels(tamanho_folha_cm, dpi),
+                              tamanho_conteudo_px)
 
 
 def deslocamento_do_retangulo(
@@ -292,19 +284,242 @@ def deslocamento_do_retangulo(
 ) -> tuple[float, tuple[float, float]]:
     """O inverso de `conteudo_como_retangulo`: devolve (escala, deslocamento)
     a partir de um retângulo em fração da folha."""
+    return escala_e_deslocamento(retangulo, _para_pixels(tamanho_folha_cm, dpi),
+                                 tamanho_conteudo_px)
+
+
+# ---------------------------------------------------------------------------
+# Etapa 5 da obra de 26/10/2026: a ferramenta "Mover e redimensionar"
+# ---------------------------------------------------------------------------
+#
+# Decisões do Samuel que estas contas seguem (docs/plano/DECISOES.md):
+#   D-008 (22/09 e 26/10/2026): "quero conseguir redimensionar o conteudo
+#       tambem" e "a ferramenta de mover não deveria estar vinculada ao corte
+#       de bordas" - mover e aumentar sem escolher tamanho de folha. Sem folha,
+#       a ÁREA BRANCA é a própria página (o tamanho do conteúdo): o conteúdo
+#       anda dentro dela, como em compor_na_folha com mexido_a_mao.
+#   D-017 (escolha da gerente sobre o G10 de 05/10: "Avisar e não reduzir -
+#       avisar para eu reduzir manualmente"): o que passa da beirada fica de
+#       fora, nada é diminuído sozinho, e a página ganha o aviso
+#       analise.IMPRESSO_DE_FORA quando parte do que está IMPRESSO (não o papel
+#       em branco da margem) sai da área branca. A medida é
+#       `parte_impressa_de_fora`.
+#   D-303 (12/09/2026): "precisamos centralizar" - `deslocamento_para_centralizar`
+#       põe o IMPRESSO (não o retângulo da página, que tem margens diferentes
+#       dos dois lados: era o 15 x 53 do teste do Kaique) no meio da área branca.
+#   D-473: a tela e o PDF usam estas mesmas contas (a tela desenha a página no
+#       retângulo de `retangulo_na_folha`; o PDF cola com compor_na_folha).
+#
+# Seguro mudar: LADO_DA_CONTA, FRACAO_DO_PAPEL, MENOR_PECA_PX,
+# PARTE_DE_FORA_QUE_AVISA (só mudam a sensibilidade da medida e do aviso).
+# Arriscado: o referencial (deslocamento = fração da ÁREA BRANCA a partir do
+# CENTRO): é o mesmo de ConfigPagina.conteudo_deslocamento e de
+# compor_na_folha; projeto salvo mudaria de lugar.
+
+# Lado maior, em pontos, da cópia reduzida em que o impresso é medido. A
+# medida é em fração, então o tamanho só muda o tempo (~5 ms nesta medida).
+LADO_DA_CONTA = 1200
+# Ponto mais escuro que esta fração do nível do papel conta como impresso.
+FRACAO_DO_PAPEL = 0.75
+# Pecinha de tinta menor que isto (pontos da cópia reduzida) é poeira.
+MENOR_PECA_PX = 6
+# Aviso do D-017: a partir desta fração do impresso fora da área branca
+# (0,05%: um pedaço de letra numa página de texto). Abaixo disso é o
+# arredondamento da beirada.
+PARTE_DE_FORA_QUE_AVISA = 0.0005
+
+
+def tamanho_da_folha_px(
+    tamanho_folha_cm: tuple[float, float] | None,
+    dpi: float,
+    tamanho_conteudo_px: tuple[int, int],
+) -> tuple[int, int]:
+    """A ÁREA BRANCA em pontos: a folha escolhida (na resolução `dpi`) ou,
+    sem folha escolhida, a própria página - o tamanho do conteúdo (D-008).
+    É a mesma área que compor_na_folha usa como canvas."""
+    if tamanho_folha_cm is None:
+        return (int(tamanho_conteudo_px[0]), int(tamanho_conteudo_px[1]))
+    return _para_pixels(tamanho_folha_cm, dpi)
+
+
+def area_branca_que_vale(
+    conteudo_px: tuple[int, int],
+    tamanho_folha_cm: tuple[float, float] | None,
+    dpi: float,
+    escala: float = 1.0,
+    mexido_a_mao: bool = False,
+) -> tuple[tuple[int, int], bool]:
+    """A área branca que compor_na_folha vai usar DE VERDADE, em pontos, e se
+    o mover/tamanho vale nela: (área, vale). `vale` False quando
+    compor_na_folha devolve o conteúdo como está - sem folha escolhida e sem a
+    marca de mexido (o de sempre), ou o conteúdo que não cabe na folha sem a
+    marca (a rede de segurança): aí a área é o próprio conteúdo e ele fica
+    onde está. É o que a ferramenta Mover mostra (D-473: a tela igual ao PDF)
+    e o que parte_impressa_de_fora mede. Arriscado: mudar sem mudar
+    compor_na_folha junto (a tela deixaria de mostrar o que sai)."""
+    largura, altura = int(conteudo_px[0]), int(conteudo_px[1])
+    if dpi <= 0 or largura <= 0 or altura <= 0:
+        return ((largura, altura), False)
+    if tamanho_folha_cm is None and not mexido_a_mao:
+        return ((largura, altura), False)
+    folha_px = tamanho_da_folha_px(tamanho_folha_cm, dpi, (largura, altura))
+    if folha_px[0] <= 0 or folha_px[1] <= 0:
+        return ((largura, altura), False)
+    if not mexido_a_mao and (largura * escala > folha_px[0] or altura * escala > folha_px[1]):
+        return ((largura, altura), False)
+    return (folha_px, True)
+
+
+def retangulo_na_folha(
+    escala: float,
+    deslocamento: tuple[float, float],
+    folha_px: tuple[int, int],
+    conteudo_px: tuple[int, int],
+) -> tuple[float, float, float, float]:
+    """Onde o conteúdo fica na área branca: (x, y, w, h) em fração dela,
+    podendo passar de 0-1 (o conteúdo que passou da beirada, D-017). A conta
+    é a de compor_na_folha: o conteúdo escalado, centrado, mais o
+    deslocamento (fração da área branca a partir do centro)."""
+    largura_folha, altura_folha = folha_px
+    largura_conteudo, altura_conteudo = conteudo_px
+    if largura_folha <= 0 or altura_folha <= 0:
+        return (0.0, 0.0, 1.0, 1.0)
+    w = (largura_conteudo * float(escala)) / largura_folha
+    h = (altura_conteudo * float(escala)) / altura_folha
+    dx, dy = (tuple(deslocamento) + (0.0, 0.0))[:2]
+    return (0.5 - w / 2 + float(dx), 0.5 - h / 2 + float(dy), w, h)
+
+
+def escala_e_deslocamento(
+    retangulo: tuple[float, float, float, float],
+    folha_px: tuple[int, int],
+    conteudo_px: tuple[int, int],
+) -> tuple[float, tuple[float, float]]:
+    """O inverso de `retangulo_na_folha`: (escala, deslocamento) do
+    retângulo (x, y, w, h) em fração da área branca."""
     x, y, w, h = retangulo
-    largura_folha_px, altura_folha_px = _para_pixels(tamanho_folha_cm, dpi)
-    largura_conteudo_px, altura_conteudo_px = tamanho_conteudo_px
-
-    if (largura_folha_px <= 0 or altura_folha_px <= 0
-            or largura_conteudo_px <= 0 or altura_conteudo_px <= 0):
+    largura_folha, altura_folha = folha_px
+    largura_conteudo, altura_conteudo = conteudo_px
+    if (largura_folha <= 0 or altura_folha <= 0
+            or largura_conteudo <= 0 or altura_conteudo <= 0):
         return (1.0, (0.0, 0.0))
-
-    escala_w = (w * largura_folha_px) / largura_conteudo_px
-    escala_h = (h * altura_folha_px) / altura_conteudo_px
+    escala_w = (w * largura_folha) / largura_conteudo
+    escala_h = (h * altura_folha) / altura_conteudo
     # os dois eixos escalam junto (mesma proporcao) quando o retangulo vem de
-    # conteudo_como_retangulo; a media absorve qualquer arredondamento de px.
+    # retangulo_na_folha; a media absorve qualquer arredondamento de px.
     escala = (escala_w + escala_h) / 2
-    dx = (x + w / 2) - 0.5
-    dy = (y + h / 2) - 0.5
-    return (escala, (dx, dy))
+    return (escala, ((x + w / 2) - 0.5, (y + h / 2) - 0.5))
+
+
+def _cinza_reduzido(img: np.ndarray) -> np.ndarray:
+    """A página em cinza, reduzida a LADO_DA_CONTA no lado maior."""
+    cinza = img if img.ndim == 2 else cv2.cvtColor(img[..., :3], cv2.COLOR_BGR2GRAY)
+    lado = max(cinza.shape[:2])
+    if lado > LADO_DA_CONTA:
+        fator = LADO_DA_CONTA / lado
+        cinza = cv2.resize(cinza, (max(1, round(cinza.shape[1] * fator)),
+                                   max(1, round(cinza.shape[0] * fator))),
+                           interpolation=cv2.INTER_AREA)
+    return cinza
+
+
+def mascara_do_impresso(img: np.ndarray) -> np.ndarray | None:
+    """O que está IMPRESSO na página (texto, desenho, número), numa cópia
+    reduzida: True onde há tinta. O papel em branco da margem fica de fora,
+    e também o fundo do scanner - a peça escura que encosta na beirada da
+    página e é comprida (um quarto do lado) ou grande (um décimo da página),
+    como a faixa preta do scanner e a sombra da lombada: não é o que se
+    imprime. Poeira (peça menor que MENOR_PECA_PX) também sai.
+    None: sem imagem, ou sem cv2."""
+    if img is None or getattr(img, "size", 0) == 0 or cv2 is None:
+        return None
+    cinza = _cinza_reduzido(img)
+    altura, largura = cinza.shape[:2]
+    papel = float(np.percentile(cinza, 90))
+    tinta = (cinza < papel * FRACAO_DO_PAPEL).astype(np.uint8)
+    if not tinta.any():
+        return tinta.astype(bool)
+    quantas, rotulos, medidas, _centros = cv2.connectedComponentsWithStats(tinta, connectivity=8)
+    x, y, w, h, area = (medidas[:, i] for i in range(5))
+    encosta = (x == 0) | (y == 0) | (x + w >= largura) | (y + h >= altura)
+    fundo = encosta & ((w >= 0.25 * largura) | (h >= 0.25 * altura) | (area >= 0.10 * largura * altura))
+    fica = ~fundo & (area >= MENOR_PECA_PX)
+    fica[0] = False                                   # o rótulo 0 é o papel
+    return fica[rotulos]
+
+
+def caixa_do_impresso(img: np.ndarray) -> tuple[float, float, float, float] | None:
+    """A caixa do que está impresso, (x0, y0, x1, y1) em fração da página
+    (0 = beirada de cima/esquerda). None quando a página não tem impresso
+    (em branco) ou não dá para medir. É a base do "Centralizar" e do ímã
+    das linhas de apoio, como no Photoshop (a camada gruda pelos pontos que
+    têm desenho, não pela moldura transparente)."""
+    mascara = mascara_do_impresso(img)
+    if mascara is None or not mascara.any():
+        return None
+    altura, largura = mascara.shape[:2]
+    colunas = np.flatnonzero(mascara.any(axis=0))
+    linhas = np.flatnonzero(mascara.any(axis=1))
+    return (float(colunas[0] / largura), float(linhas[0] / altura),
+            float((colunas[-1] + 1) / largura), float((linhas[-1] + 1) / altura))
+
+
+def deslocamento_para_centralizar(
+    caixa_do_impresso_: tuple[float, float, float, float] | None,
+    escala: float,
+    folha_px: tuple[int, int],
+    conteudo_px: tuple[int, int],
+) -> tuple[float, float]:
+    """O deslocamento (o formato de ConfigPagina.conteudo_deslocamento) que
+    põe o meio do IMPRESSO no meio da área branca, nas duas direções, com o
+    tamanho `escala` de agora (D-303: "precisamos centralizar"). Página sem
+    impresso: o meio da página no meio da área branca (0, 0)."""
+    if caixa_do_impresso_ is None:
+        return (0.0, 0.0)
+    _x, _y, w, h = retangulo_na_folha(escala, (0.0, 0.0), folha_px, conteudo_px)
+    x0, y0, x1, y1 = caixa_do_impresso_
+    return (float(w * (0.5 - (x0 + x1) / 2)), float(h * (0.5 - (y0 + y1) / 2)))
+
+
+def parte_impressa_de_fora(
+    conteudo: np.ndarray,
+    tamanho_folha_cm: tuple[float, float] | None,
+    dpi: float,
+    escala: float = 1.0,
+    deslocamento: tuple[float, float] = (0.0, 0.0),
+    mexido_a_mao: bool = False,
+) -> float:
+    """Que parte do que está impresso fica FORA da área branca quando o
+    conteúdo é colado por compor_na_folha com estes mesmos números (0 a 1;
+    D-017). Segue as mesmas saídas de compor_na_folha: sem folha e sem a
+    marca de mexido, ou o conteúdo que não cabe numa folha sem a marca (a
+    rede de segurança devolve o conteúdo inteiro), nada fica de fora.
+    Conteúdo que fica inteiro dentro da área branca: 0 sem medir nada (é o
+    caso de quase toda página: a medida não custa nada nelas)."""
+    if conteudo is None or getattr(conteudo, "size", 0) == 0 or dpi <= 0:
+        return 0.0
+    conteudo_px = (conteudo.shape[1], conteudo.shape[0])
+    folha_px, vale = area_branca_que_vale(conteudo_px, tamanho_folha_cm, dpi, escala,
+                                          mexido_a_mao)
+    if not vale:
+        return 0.0
+    x, y, w, h = retangulo_na_folha(escala, deslocamento, folha_px, conteudo_px)
+    # meio ponto da área branca de folga: o arredondamento da colagem
+    folga_x, folga_y = 0.5 / folha_px[0], 0.5 / folha_px[1]
+    if x >= -folga_x and y >= -folga_y and x + w <= 1 + folga_x and y + h <= 1 + folga_y:
+        return 0.0
+    mascara = mascara_do_impresso(conteudo)
+    if mascara is None or not mascara.any():
+        return 0.0
+    linhas, colunas = np.nonzero(mascara)
+    altura, largura = mascara.shape[:2]
+    na_folha_x = x + (colunas + 0.5) / largura * w
+    na_folha_y = y + (linhas + 0.5) / altura * h
+    fora = ((na_folha_x < -folga_x) | (na_folha_x > 1 + folga_x)
+            | (na_folha_y < -folga_y) | (na_folha_y > 1 + folga_y))
+    return float(fora.mean())
+
+
+def impresso_fica_de_fora(fracao: float) -> bool:
+    """A medida de `parte_impressa_de_fora` pede o aviso do D-017?"""
+    return fracao > PARTE_DE_FORA_QUE_AVISA

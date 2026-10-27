@@ -124,6 +124,15 @@ DESENTORTAR_AINDA_DEFORMADA = "desentortar_ainda_deformada"
 # muito maior que as outras (tabela dobravel) ficou fora da conta do tamanho
 # do livro. Quem poe e tira: core.pipeline.medir_o_livro_para_as_margens.
 FOLHA_MAIOR_FORA_DAS_MARGENS = "folha_maior_fora_das_margens"
+# Etapa 5 da obra de 26/10/2026, D-017 (escolha da gerente sobre o G10 do
+# Samuel, 05/10/2026: "(b) Avisar e não reduzir - avisar para eu reduzir
+# manualmente"): o conteúdo movido ou aumentado na ferramenta "Mover e
+# redimensionar" passou da beirada da área branca e PARTE DO QUE ESTÁ
+# IMPRESSO fica de fora (o papel em branco da margem não conta). Nada é
+# diminuído sozinho. Quem poe e tira: a tela (ferramenta Mover, ao mexer e ao
+# chegar a prévia), a conferência por trás do "usar em todas" e o PDF
+# (core.pipeline.anotar_o_impresso_de_fora, com core.folha.parte_impressa_de_fora).
+IMPRESSO_DE_FORA = "impresso_de_fora"
 
 
 @dataclass(frozen=True)
@@ -307,6 +316,19 @@ ALERTAS: dict[str, Alerta] = {
         "exemplo). Ela ficou fora da conta do tamanho do livro e sai no tamanho dela, "
         "para não deixar todas as outras grandes demais.",
         "deixar do tamanho das outras", "alinhar_com_as_outras",
+    ),
+    # Etapa 5 da obra (D-017). "ver no Mover" leva à ferramenta, onde a parte
+    # de fora aparece marcada; o programa nunca diminui sozinho ("avisar para eu
+    # reduzir manualmente"). Seguro mudar: os textos. Arriscado: o codigo da
+    # correcao (lido por ui/tela_conferir._aplicar_correcao).
+    IMPRESSO_DE_FORA: Alerta(
+        IMPRESSO_DE_FORA, "Parte do impresso fica de fora",
+        "Parte do que está impresso vai ficar de fora da folha: o conteúdo passou da "
+        "beirada da área branca. Na ferramenta Mover a parte de fora aparece marcada em "
+        "vermelho. O programa não diminui sozinho: diminua ou mova o conteúdo, ou deixe "
+        "assim se for de propósito.",
+        "ver no Mover", "ver_no_mover",
+        outra_acao="está bom assim", outra_correcao="revisar",
     ),
     # Item 2.4. Seguro mudar: os textos.
     FOLHA_MAIOR_FORA_DAS_MARGENS: Alerta(

@@ -15,6 +15,13 @@ da vez sempre marcada. O Kaique muda o que quiser e confirma.
 
 paginas_de_fabrica() é a regra (sem tela, testada); a janela só mostra.
 Controle mínimo: o desenho é do agente de layout.
+
+Etapa 5 da obra de 26/10/2026: a mesma janela serve ao "usar em todas..." da
+ferramenta Mover (G10 do Samuel, 05/10/2026: "ter uma opção para passar isso
+para todas as folhas"), com a mesma regra de D-090 ("nunca apaga exceção"): as
+páginas que já têm tamanho ou lugar próprio do conteúdo vêm desmarcadas. Quem
+chama passa `tem_proprio` (a regra da exceção), a `explicacao` e a `marca` que
+aparece ao lado da página. Sem eles, é a janela do Cortar, como sempre.
 """
 
 from __future__ import annotations
@@ -24,13 +31,19 @@ from PySide6.QtWidgets import (QDialog, QDialogButtonBox, QHBoxLayout, QLabel, Q
                                QListWidgetItem, QPushButton, QVBoxLayout)
 
 
-def paginas_de_fabrica(projeto, indice_da_vez: int) -> list[int]:
-    """As páginas que vêm marcadas: a da vez e todas as que não têm corte
-    próprio (recorte None). As que têm corte próprio (exceções) e as apagadas
-    ficam desmarcadas."""
+def _corte_proprio(pagina) -> bool:
+    """A exceção do Cortar: a página tem corte próprio."""
+    return pagina.recorte is not None
+
+
+def paginas_de_fabrica(projeto, indice_da_vez: int, tem_proprio=None) -> list[int]:
+    """As páginas que vêm marcadas: a da vez e todas as que não têm o seu
+    próprio (`tem_proprio`; de fábrica, o corte próprio: recorte não None).
+    As que têm o seu (exceções) e as apagadas ficam desmarcadas."""
+    tem_proprio = tem_proprio or _corte_proprio
     marcadas = []
     for p in projeto.paginas:
-        if p.indice == indice_da_vez or (p.recorte is None and not p.apagada):
+        if p.indice == indice_da_vez or (not tem_proprio(p) and not p.apagada):
             marcadas.append(p.indice)
     return marcadas
 
@@ -39,21 +52,23 @@ class DialogoEscolherPaginas(QDialog):
     """A lista das páginas com caixinha, "Selecionar todas", "Nenhuma",
     "Aplicar" e "Cancelar". escolhidas() devolve os índices marcados."""
 
-    def __init__(self, projeto, indice_da_vez: int, parent=None) -> None:
+    def __init__(self, projeto, indice_da_vez: int, parent=None, *, tem_proprio=None,
+                 explicacao: str | None = None, marca: str = "corte próprio") -> None:
         super().__init__(parent)
         self.setWindowTitle("Em quais páginas?")
         coluna = QVBoxLayout(self)
-        explicacao = QLabel(
+        explicacao = QLabel(explicacao or (
             "O corte desta página vai para as páginas marcadas. As páginas em que você "
-            "já mudou o corte vêm desmarcadas, para não perder o que fez nelas.")
+            "já mudou o corte vêm desmarcadas, para não perder o que fez nelas."))
         explicacao.setWordWrap(True)
         coluna.addWidget(explicacao)
         self.lista = QListWidget()
-        marcadas = set(paginas_de_fabrica(projeto, indice_da_vez))
+        tem_proprio = tem_proprio or _corte_proprio
+        marcadas = set(paginas_de_fabrica(projeto, indice_da_vez, tem_proprio))
         for p in projeto.paginas:
             texto = f"Página {p.indice + 1}"
-            if p.recorte is not None and p.indice != indice_da_vez:
-                texto += "  (corte próprio)"
+            if tem_proprio(p) and p.indice != indice_da_vez:
+                texto += f"  ({marca})"
             if p.apagada:
                 texto += "  (apagada)"
             item = QListWidgetItem(texto)

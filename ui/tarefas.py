@@ -301,6 +301,72 @@ class TarefaMedirAsMargens(QThread):
             registrar_erro("medir as margens iguais", traceback.format_exc())
 
 
+class TarefaConferirOImpressoDeFora(QThread):
+    """Etapa 5 da obra de 26/10/2026, D-017 ("nada é cortado sem a pessoa
+    ver"): depois do "usar em todas..." da ferramenta Mover, confere por trás,
+    página por página, se parte do que está impresso fica fora da área branca
+    com o tamanho e o lugar novos. Para cada página emite `conferida(indice,
+    fracao)` (core.folha.parte_impressa_de_fora) e a tela põe ou tira o aviso
+    com a mesma função do PDF (core.pipeline.anotar_o_impresso_de_fora).
+
+    A página é desenhada pequena (DPI) e SEM filtro (o impresso aparece igual,
+    e o filtro custaria segundos por página): girada, dividida, endireitada e
+    cortada pelo mesmo preparo do PDF (core.pipeline.preparar_metade_e_geometria,
+    que não mexe na página), com as margens iguais quando ligadas e já
+    medidas. Uma folha por vez na memória. Não mexe no projeto: só lê.
+    Nunca deixa exceção escapar. Seguro mudar: DPI (só a precisão da conta)."""
+
+    DPI = 75
+    conferida = Signal(int, float)
+    terminou = Signal()
+
+    def __init__(self, projeto: Projeto, indices: list[int]) -> None:
+        super().__init__()
+        self.projeto = projeto
+        self.indices = list(indices)
+        self._cancelar = False
+
+    def cancelar(self) -> None:
+        self._cancelar = True
+
+    def run(self) -> None:
+        from core.folha import parte_impressa_de_fora
+        from core.pdf_io import pagina_para_array
+        from core.pipeline import (conta_das_margens_para_a_tela, margens_na_tela,
+                                   preparar_metade_e_geometria)
+
+        try:
+            doc = abrir_pdf(self.projeto.caminho_entrada)
+            try:
+                conta = conta_das_margens_para_a_tela(self.projeto)
+                for indice in self.indices:
+                    if self._cancelar:
+                        break
+                    if not 0 <= indice < len(self.projeto.paginas):
+                        continue
+                    pagina = self.projeto.paginas[indice]
+                    if pagina.apagada:
+                        continue
+                    folha = self.projeto.folhas[pagina.folha]
+                    bruta = pagina_para_array(doc, folha.indice, dpi=self.DPI)
+                    img, _desenho = preparar_metade_e_geometria(
+                        bruta, folha, pagina, self.projeto, dpi=self.DPI)
+                    del bruta
+                    if conta is not None:
+                        img = margens_na_tela(img, self.projeto, pagina, conta)
+                    fracao = parte_impressa_de_fora(
+                        img, pagina.tamanho_folha_cm, self.DPI,
+                        escala=pagina.conteudo_escala,
+                        deslocamento=pagina.conteudo_deslocamento,
+                        mexido_a_mao=etapas.conteudo_mexido(self.projeto, pagina))
+                    self.conferida.emit(indice, fracao)
+            finally:
+                doc.close()
+        except Exception:  # noqa: BLE001
+            registrar_erro("conferir o impresso de fora", traceback.format_exc())
+        self.terminou.emit()
+
+
 class TarefaConverterZonas(QThread):
     """Converte as zonas do livro inteiro para o formato novo, por tras, ao
     abrir (decisao Z1 (b) do Samuel, 05/10/2026: "O livro inteiro, por tras,
