@@ -397,30 +397,24 @@
   },
   {
    "id": "ac-grade-inserir",
-   "titulo": "Grade \"Todas as páginas\": \"Inserir\" e \"dividir\" podem esperar para depois da obra?",
+   "titulo": "Grade \"Todas as páginas\": \"inserir página\" pode ficar para depois?",
    "explicacao": [
-    "O que ficou de fora: na grade com várias páginas escolhidas, \"inserir página\" não foi feito (muda o jeito de guardar o livro) e \"dividir\" foi para depois da obra.",
-    "O que você tinha decidido (24/09): a grade como o \"Organizar páginas\" do UPDF: \"seleção múltipla, girar, apagar, extrair, inserir, dividir\".",
-    "Dúvida: no UPDF, \"dividir\" é partir o PDF em vários arquivos, não dividir a folha em duas páginas. O que você quis dizer?"
+    "\"Obra\" é o nome que eu dei, sem explicar, para a rodada grande de consertos que você mandou fazer em 26/10 (depois da sessão de testes: abrir direto na área de trabalho, todas as ferramentas à vista, Automático de verdade, dividir à mão, mover e redimensionar, lado a lado...). Desculpe a palavra. Daqui para a frente escrevo \"esta rodada de consertos\".",
+    "Anotado da sua resposta: o \"dividir\" da grade é dividir a página com a função do ScanTailor que já está no programa. Vai ser feito agora, nesta rodada de consertos.",
+    "Falta só o \"inserir\": colocar no livro uma página que não está no PDF escaneado (por exemplo, uma folha em branco ou uma página de outro PDF). Isso muda o jeito de o programa guardar o livro, por isso ficou de fora. Pode ficar para depois desta rodada de consertos?"
    ],
    "exemplos": [],
    "opcoes": [
     {
-     "id": "esperar",
-     "nome": "Pode esperar para depois da obra",
+     "id": "depois",
+     "nome": "Pode ficar para depois desta rodada de consertos",
      "texto": "",
      "imgs": []
     },
     {
-     "id": "na-obra",
-     "nome": "Quero na obra agora",
+     "id": "agora",
+     "nome": "Quero agora, nesta rodada",
      "texto": "",
-     "imgs": []
-    },
-    {
-     "id": "dividir-arquivos",
-     "nome": "\"Dividir\" = partir o PDF em arquivos, como o UPDF",
-     "texto": "Responda junto com uma das outras no comentário, se quiser.",
      "imgs": []
     },
     {
@@ -428,32 +422,39 @@
      "nome": "Ainda não entendi",
      "texto": "Explique de outro jeito.",
      "imgs": []
+    }
+   ],
+   "historico": [
+    {
+     "quem": "samuel",
+     "em": "2026-10-27T21:53:40.474Z",
+     "texto": "Ainda não entendi. \"Não sei de que obra está falando, quando falei dividir é dividir a pagina, usando a funcionalidade do scantailor que colocamos no aplicativo, é isso que deveria ser feito.\""
+    },
+    {
+     "quem": "gerente",
+     "em": "2026-10-27T22:30:00.000Z",
+     "texto": "Entendido: \"dividir\" na grade é dividir a página com a função do ScanTailor que já está no programa. Isso vai ser feito agora, nesta rodada de consertos. \"Obra\" é o nome que eu dei, sem explicar, para a rodada grande de consertos que você mandou fazer em 26/10 (depois da sessão de testes: abrir direto na área de trabalho, todas as ferramentas à vista, Automático de verdade, dividir à mão, mover e redimensionar, lado a lado...). Desculpe a palavra. Daqui para a frente escrevo \"esta rodada de consertos\". Ficou só a pergunta do \"inserir\"."
     }
    ]
   },
   {
    "id": "ac-fase-marcar-como",
-   "titulo": "Em que fase entra o \"Marcar como: iluminura ou pintura / moldura\"?",
+   "titulo": "Quando fazer o \"Marcar como: iluminura ou pintura / moldura\"?",
    "explicacao": [
-    "Você aprovou em 12/10 (705): \"A — Sim, os dois\". A fase ficou para você escolher, e a gerente pôs na Fase 1.5 (depois da obra) sem perguntar."
+    "\"Obra\" é o nome que eu dei, sem explicar, para a rodada grande de consertos que você mandou fazer em 26/10 (depois da sessão de testes: abrir direto na área de trabalho, todas as ferramentas à vista, Automático de verdade, dividir à mão, mover e redimensionar, lado a lado...). Desculpe a palavra. Daqui para a frente escrevo \"esta rodada de consertos\".",
+    "A pergunta: em 12/10 (705) você aprovou \"Marcar como\" com \"iluminura ou pintura\" e \"moldura\" (\"A — Sim, os dois\"), mas não disse quando fazer. Eu pus para depois desta rodada de consertos, sem perguntar."
    ],
    "exemplos": [],
    "opcoes": [
     {
-     "id": "fase-1-5",
-     "nome": "Fase 1.5, depois da obra",
+     "id": "depois",
+     "nome": "Depois desta rodada de consertos",
      "texto": "",
      "imgs": []
     },
     {
-     "id": "na-obra",
-     "nome": "Na obra, agora",
-     "texto": "",
-     "imgs": []
-    },
-    {
-     "id": "outra",
-     "nome": "Outra fase (escreva no comentário)",
+     "id": "agora",
+     "nome": "Agora, junto desta rodada de consertos",
      "texto": "",
      "imgs": []
     },
@@ -463,31 +464,45 @@
      "texto": "Explique de outro jeito.",
      "imgs": []
     }
+   ],
+   "historico": [
+    {
+     "quem": "samuel",
+     "em": "2026-10-27T21:52:09.618Z",
+     "texto": "Ainda não entendi. \"Que Obra?\""
+    },
+    {
+     "quem": "gerente",
+     "em": "2026-10-27T22:30:00.000Z",
+     "texto": "\"Obra\" é o nome que eu dei, sem explicar, para a rodada grande de consertos que você mandou fazer em 26/10 (depois da sessão de testes: abrir direto na área de trabalho, todas as ferramentas à vista, Automático de verdade, dividir à mão, mover e redimensionar, lado a lado...). Desculpe a palavra. Daqui para a frente escrevo \"esta rodada de consertos\"."
+    }
    ]
   },
   {
    "id": "ac-fase-espacos",
-   "titulo": "Espaços \"Limpo / Completo\": como arranjos salvos com nome, na Fase 4?",
+   "titulo": "Os botões \"Limpo\" e \"Completo\" da área de trabalho",
    "explicacao": [
-    "A gerente escolheu (sem perguntar) que os espaços Limpo/Completo (28/09, \"a confirmar\") virem arranjos dos painéis que a pessoa salva com nome, dentro do \"tudo livre como o Photoshop\" (05/10). Nada mudou no programa ainda."
+    "Em 28/09 apareceu no desenho da tela a ideia de dois botões: \"Limpo\" (só a página e poucas ferramentas à vista) e \"Completo\" (todos os painéis abertos). Ficou \"a confirmar\" por você.",
+    "Em 05/10 você escolheu \"C — tudo livre, como o Photoshop\": a pessoa abre, fecha e arrasta os painéis como quiser.",
+    "O que eu escolhi sem perguntar: em vez de dois botões fixos, a pessoa arruma os painéis do jeito dela e salva esse jeito com um nome — por exemplo \"Para conferir\" ou \"Para limpar\" — e depois volta a ele com um clique. É o que o Photoshop chama de \"espaço de trabalho\". Nada disso foi feito ainda; seria depois desta rodada de consertos."
    ],
    "exemplos": [],
    "opcoes": [
     {
-     "id": "sim",
-     "nome": "Sim, arranjos salvos com nome, na Fase 4",
+     "id": "salvar-jeito",
+     "nome": "Salvar o jeito dos painéis com um nome, como no Photoshop",
      "texto": "",
      "imgs": []
     },
     {
      "id": "dois-botoes",
-     "nome": "Não: dois botões fixos Limpo / Completo",
+     "nome": "Dois botões fixos: Limpo e Completo",
      "texto": "",
      "imgs": []
     },
     {
-     "id": "depois",
-     "nome": "Decidir quando chegar a Fase 4",
+     "id": "nenhum",
+     "nome": "Nenhum dos dois; só o \"tudo livre\"",
      "texto": "",
      "imgs": []
     },
@@ -496,6 +511,18 @@
      "nome": "Ainda não entendi",
      "texto": "Explique de outro jeito.",
      "imgs": []
+    }
+   ],
+   "historico": [
+    {
+     "quem": "samuel",
+     "em": "2026-10-27T21:51:46.658Z",
+     "texto": "Ainda não entendi. \"Não sei de que arranjos está falando.\""
+    },
+    {
+     "quem": "gerente",
+     "em": "2026-10-27T22:30:00.000Z",
+     "texto": "Expliquei de novo abaixo, com exemplo."
     }
    ]
   },
