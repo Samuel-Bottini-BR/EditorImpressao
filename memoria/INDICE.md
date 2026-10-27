@@ -18,6 +18,8 @@ Memória do projeto **organizada por assunto**, decidida pelo Samuel em 19/10/20
 2. [geral/regras-de-trabalho.md](geral/regras-de-trabalho.md) — como gerente e agentes trabalham (com as regras de 19/10/2026).
 3. A ficha do seu item em [itens/](#os-itens-do-plano) e as fichas que ela aponta.
 4. [geral/perguntas-abertas.md](geral/perguntas-abertas.md) — o que ainda espera o Samuel (não decida no lugar dele).
+5. [docs/plano/DECISOES.md](../docs/plano/DECISOES.md) — **Livro de decisões** (desde 26/10/2026, `CLAUDE.md` §11):
+   todas as decisões do Samuel, uma por linha, com situação e dono. As decisões que tocam o seu trabalho vão no pedido.
 5. [licoes.md](licoes.md) — erros que já custaram caro; não repetir.
 6. Palavra que não entendeu: [geral/glossario.md](geral/glossario.md).
 
