@@ -493,7 +493,8 @@ def _apagar_bordas_solidas_fora_da_cunha(tinta: np.ndarray, cunha: np.ndarray) -
 
 def detectar_bordas(img: np.ndarray, dpi: float | None = None,
                     girada: float | None = None,
-                    como_veio: np.ndarray | None = None) -> Recorte:
+                    como_veio: np.ndarray | None = None,
+                    livro_novo: bool = False) -> Recorte:
     """Acha o retangulo que contem o conteúdo da página.
 
     Ideia: binarizar de forma bem tolerante, achar as linhas e colunas que tem
@@ -520,6 +521,13 @@ def detectar_bordas(img: np.ndarray, dpi: float | None = None,
     passar um angulo que nao e o do giro de verdade (a cunha cairia no lugar
     errado e borda de verdade deixaria de ser reconhecida).
 
+    `livro_novo` (obra 26/10, etapa 10a): so o livro novo ("endireitar_antes",
+    core/pipeline._geometria_endireitando_antes) ganha os consertos da etapa
+    10a no corte comum (a faixa escura da beirada, os numeros da margem, o
+    tracejado e os ciscos da beirada). False (o projeto de antes de 09/10 e a
+    analise): a conta de sempre, identica ponto por ponto. Arriscado: ligar
+    no projeto antigo (o PDF de um livro ja conferido mudaria).
+
     `como_veio` (conserto de 20/10/2026, Pesel 21): a pagina ANTES do giro
     (a que foi girada `girada` graus para virar `img`), de preferencia em
     cinza. So e usada com `girada`, e so para a pergunta "ha o que
@@ -539,7 +547,11 @@ def detectar_bordas(img: np.ndarray, dpi: float | None = None,
     if girada is None or abs(girada) < ANGULO_MINIMO:
         como_veio = None
     if _sem_conteudo_para_recortar(img if como_veio is None else como_veio):
-        return Recorte.inteiro()
+        # obra 26/10, etapa 10a (lista unica 4.10, Boecio 2: "Ficou um risco
+        # preto fino em toda a beirada esquerda"): a folha sem o que recortar
+        # continua inteira, menos a faixa escura colada na beirada (ver
+        # beiradas_escuras). Sem faixa: a folha inteira, como sempre.
+        return (beiradas_escuras(img, girada) if livro_novo else None) or Recorte.inteiro()
 
     cinza = img if img.ndim == 2 else cv2.cvtColor(img, cv2.COLOR_BGR2GRAY)
     altura_orig, largura_orig = cinza.shape[:2]
@@ -603,6 +615,12 @@ def detectar_bordas(img: np.ndarray, dpi: float | None = None,
         tinta[sem_borda_na_imagem == 0] = 0
     if sem_tinta_falsa is not None:
         tinta[sem_tinta_falsa == 0] = 0
+
+    # Obra 26/10, etapa 10a (lista unica 4.4, Horas 18: "deixou sobra branca
+    # do lado direito; a pagina ficou torta no papel"): o tracejado da beirada
+    # da folha nao conta na massa da tinta (ver _sem_o_tracejado_da_beirada).
+    if livro_novo:
+        tinta = _sem_o_tracejado_da_beirada(tinta)
 
     # Onde esta a MASSA da tinta, e nao onde ha algum pixel dela.
     #
@@ -670,6 +688,13 @@ def detectar_bordas(img: np.ndarray, dpi: float | None = None,
         x0e, y0e, x1e, y1e = _parar_no_escuro(
             img, _recorte_da_caixa(_com_folga(justa, antes_x, antes_y)), x0e, y0e, x1e, y1e)
 
+    # Obra 26/10, etapa 10a: a coluna de numeros da margem (Escola 197, Lista
+    # de bugs de 13/10: "o corte come os numeros 1, 2 e 3 dos itens, na
+    # margem esquerda") volta para dentro do corte. Ver _numeros_da_margem.
+    if livro_novo:
+        x0e, x1e = _numeros_da_margem(respeitar_fracao, _de_letra(respeitar), x0e, y0e, x1e, y1e,
+                                      folga_x)
+
     # limite de seguranca: nunca comer mais que CORTE_MAXIMO de um lado
     x0e, y0e = min(x0e, CORTE_MAXIMO), min(y0e, CORTE_MAXIMO)
     x1e, y1e = max(x1e, 1.0 - CORTE_MAXIMO), max(y1e, 1.0 - CORTE_MAXIMO)
@@ -710,6 +735,18 @@ def detectar_bordas(img: np.ndarray, dpi: float | None = None,
             break
         x0e, y0e, x1e, y1e = _parar_no_escuro(img, _recorte_da_caixa(atual), x0e, y0e, x1e, y1e)
 
+    # Obra 26/10, etapa 10a (lista unica 4.10): o lado que foi ate a beirada
+    # da imagem perde a faixa escura colada nela (beiradas_escuras), se houver.
+    # Os outros lados ficam como estao.
+    if livro_novo and (x0e <= 0.0 or y0e <= 0.0 or x1e >= 1.0 or y1e >= 1.0):
+        sem_faixa = beiradas_escuras(img, girada)
+        if sem_faixa is not None:
+            fx0, fy0, fw, fh = sem_faixa.tupla
+            x0e = fx0 if x0e <= 0.0 else x0e
+            y0e = fy0 if y0e <= 0.0 else y0e
+            x1e = fx0 + fw if x1e >= 1.0 else x1e
+            y1e = fy0 + fh if y1e >= 1.0 else y1e
+
     # o que sobrou fora, olhado na mascara (pontos inteiros, para fora)
     encostou = _sobrou_conteudo_fora(
         tinta, int(math.floor(x0e * largura)), int(math.floor(y0e * altura)),
@@ -723,6 +760,197 @@ def detectar_bordas(img: np.ndarray, dpi: float | None = None,
         encostou_no_conteudo=bool(encostou),
         pecas=pecas_fracao,
     )
+
+
+# ---------------------------------------------------------------------------
+# A coluna de numeros da margem (obra de 26/10/2026, etapa 10a; Lista de bugs
+# de 13/10, verificador do corte: "Escola 197: na ordem nova o corte come os
+# numeros 1, 2 e 3 dos itens, na margem esquerda. A causa e a regra que
+# descarta de cada lado os primeiros 0,2% da tinta (SOBRA_DE_TINTA)"; D-104,
+# "o corte automatico deixa de fora pecas pequenas e soltas").
+#
+# O descarte da tinta de fora (SOBRA_DE_TINTA) existe para a sujeira da margem
+# nao segurar o corte, e ele nao sabe distinguir sujeira de um "1" sozinho na
+# margem. O que distingue: os numeros dos itens (e as letras de chamada, os
+# numeros de versiculo) ficam EM COLUNA, cada um na altura de uma linha de
+# texto que esta dentro do corte, logo ao lado dela, e tem tamanho de letra.
+# Sujeira nao faz isso. Regra: do lado esquerdo e do direito, as pecas do
+# tamanho de letra (_de_letra) inteiras do lado de fora, a ate
+# MARGEM_DOS_NUMEROS do lado, cada uma na altura (metade ou mais dela) de uma
+# peca de dentro do corte que esteja a ate MARGEM_DOS_NUMEROS dela; com
+# NUMEROS_EM_COLUNA ou mais assim, o lado vai ate elas, com a folga.
+# Arriscado: baixar NUMEROS_EM_COLUNA para 1 (um cisco do tamanho de letra na
+# altura de uma linha puxaria o corte); subir MARGEM_DOS_NUMEROS (as notas de
+# margem longe do texto e a beirada da vizinha voltariam para dentro).
+MARGEM_DOS_NUMEROS = 0.05
+NUMEROS_EM_COLUNA = 2
+
+
+def _numeros_da_margem(pecas: np.ndarray, letra: np.ndarray, x0: float, y0: float,
+                       x1: float, y1: float, folga_x: float) -> tuple[float, float]:
+    """(x0, x1) do corte com a coluna de numeros da margem dentro (ver o
+    comentario acima). `pecas`: caixas (x0, y0, x1, y1) em fracao, as de
+    _quem_empurra; `letra`: quais delas tem tamanho de letra. O resto do corte
+    (y0, y1) so limita quem conta. Sem coluna, devolve x0, x1 como estao."""
+    if len(pecas) == 0:
+        return x0, x1
+    a0, b0, a1, b1 = pecas[:, 0], pecas[:, 1], pecas[:, 2], pecas[:, 3]
+    na_altura = (b0 >= y0) & (b1 <= y1)
+    dentro = na_altura & (a0 >= x0) & (a1 <= x1)
+    if not dentro.any():
+        return x0, x1
+
+    def ao_lado(i: int, esquerda: bool) -> bool:
+        """A peca de fora `i` esta na altura de uma peca de dentro, perto dela."""
+        h = b1[i] - b0[i]
+        sobrepoe = np.minimum(b1, b1[i]) - np.maximum(b0, b0[i])
+        perto = (a0 - a1[i]) if esquerda else (a0[i] - a1)
+        # e do tamanho das letras da linha (metade da altura dela ou mais): o
+        # cisco da margem do Palatino 7 tem tamanho de "letra" pequena, mas e
+        # bem mais baixo que a linha ao lado
+        do_tamanho = h >= 0.5 * (b1 - b0)
+        ok = dentro & do_tamanho & (sobrepoe >= 0.5 * h) & (perto >= 0) & (perto <= MARGEM_DOS_NUMEROS)
+        return bool(ok.any())
+
+    fora_esq = np.flatnonzero(letra & na_altura & (a1 <= x0) & (a0 >= x0 - MARGEM_DOS_NUMEROS))
+    coluna = [i for i in fora_esq if ao_lado(i, True)]
+    if len(coluna) >= NUMEROS_EM_COLUNA:
+        x0 = max(0.0, float(a0[coluna].min()) - folga_x)
+    fora_dir = np.flatnonzero(letra & na_altura & (a0 >= x1) & (a1 <= x1 + MARGEM_DOS_NUMEROS))
+    coluna = [i for i in fora_dir if ao_lado(i, False)]
+    if len(coluna) >= NUMEROS_EM_COLUNA:
+        x1 = min(1.0, float(a1[coluna].max()) + folga_x)
+    return x0, x1
+
+
+# ---------------------------------------------------------------------------
+# A faixa escura colada na beirada da folha sem o que recortar (obra de
+# 26/10/2026, etapa 10a; lista unica 4.10, "A sombra da lombada fica como faixa
+# preta na beirada": Boecio 2, "um risco preto fino em toda a beirada
+# esquerda"; Siebmacher 74, a lombada do livro do lado direito).
+#
+# A folha sem o que recortar (capa, guarda, pagina so com um decalque claro:
+# _sem_conteudo_para_recortar) nao era cortada em nada, e a beirada do scan
+# (o fio preto do Boecio 2) ou a lombada (Siebmacher 74) ficavam na pagina; no
+# Preto e branco viram faixa preta. Aqui so sai a faixa da BEIRADA: de cada
+# lado, anda-se para dentro enquanto a coluna (ou linha; a mediana do meio do
+# lado, para letra solta nao contar) nao for papel limpo (abaixo de
+# PAPEL_LIMPO do tom do papel), e a faixa so sai se (1) tiver alguma coluna
+# escura de verdade (abaixo de BEIRADA_ESCURA do papel: amarelado da borda nao
+# conta) e (2) terminar em papel limpo antes de BEIRADA_NO_MAXIMO do lado. Uma
+# faixa escura larga (o cartao marrom do Pesel 21, que tem de sair inteiro; uma
+# capa) chega ao limite sem achar papel e nao sai.
+# A cunha branca do giro (livro novo) e preenchida com a vizinha antes da
+# conta (_preencher_a_cunha), senao o branco dela parecia papel limpo.
+# Arriscado: subir BEIRADA_NO_MAXIMO (um fio de moldura perto da beirada numa
+# folha quase vazia sairia); baixar PAPEL_LIMPO (o papel amarelado da beirada
+# viraria "papel" e a faixa nao seria achada).
+PAPEL_LIMPO = 0.85
+BEIRADA_ESCURA = 0.65
+BEIRADA_NO_MAXIMO = 0.06
+
+
+def beiradas_escuras(img: np.ndarray, girada: float | None = None) -> Recorte | None:
+    """O corte da folha `img` sem a faixa escura colada em cada beirada (ver o
+    comentario acima), em fracao; None quando nenhum lado tem faixa.
+    `girada`: como em detectar_bordas (a cunha do giro nao conta).
+
+    O corte fica logo depois da ULTIMA coluna escura de verdade da faixa (o
+    papel amarelado que vem depois dela fica: e papel)."""
+    cinza = img if img.ndim == 2 else cv2.cvtColor(img, cv2.COLOR_BGR2GRAY)
+    alt0, larg0 = cinza.shape[:2]
+    if alt0 > ALTURA_ANALISE:
+        escala = ALTURA_ANALISE / alt0
+        cinza = cv2.resize(cinza, (max(8, int(larg0 * escala)), ALTURA_ANALISE),
+                           interpolation=cv2.INTER_AREA)
+    alt, larg = cinza.shape[:2]
+    if alt < 16 or larg < 16:
+        return None
+    if girada is not None and abs(girada) >= ANGULO_MINIMO:
+        cunha = _cunha_do_giro(cinza.shape, girada)
+        if cunha.any() and not cunha.all():
+            cinza = _preencher_a_cunha(cinza, cunha)
+    papel = float(np.percentile(cinza[alt // 4: 3 * alt // 4, larg // 4: 3 * larg // 4], 60))
+    if papel <= 0:
+        return None
+    por_coluna = np.median(cinza[alt // 4: 3 * alt // 4, :], axis=0)
+    por_linha = np.median(cinza[:, larg // 4: 3 * larg // 4], axis=1)
+
+    def anda(perfil: np.ndarray) -> int:
+        limite = max(1, int(len(perfil) * BEIRADA_NO_MAXIMO))
+        i = 0
+        while i < limite and perfil[i] < PAPEL_LIMPO * papel:
+            i += 1
+        if i == 0 or i >= limite:
+            return 0                       # sem faixa, ou faixa larga (cartao, capa)
+        escuras = np.flatnonzero(perfil[:i] < BEIRADA_ESCURA * papel)
+        return int(escuras[-1]) + 1 if escuras.size else 0
+
+    x0 = anda(por_coluna)
+    x1 = larg - anda(por_coluna[::-1])
+    y0 = anda(por_linha)
+    y1 = alt - anda(por_linha[::-1])
+    if (x0, y0, x1, y1) == (0, 0, larg, alt):
+        return None
+    return Recorte(x0 / larg, y0 / alt, (x1 - x0) / larg, (y1 - y0) / alt)
+
+
+# O tracejado da beirada da folha (obra de 26/10/2026, etapa 10a; lista unica
+# 4.4, Horas 18). A beirada da folha (ou da vizinha) aparece na mascara como uma
+# fila de tracinhos soltos, colada no lado da imagem: cada um pequeno, todos na
+# mesma coluna estreita, cobrindo boa parte do lado. Juntos passam da sobra de
+# tinta descartada (SOBRA_DE_TINTA) e seguravam o corte 2 a 3 cm alem da moldura
+# (Horas 18: 0,23% da tinta nos 5% da direita). Saem da mascara os pedacos
+# INTEIROS dentro de TRACEJADO_FAIXA do lado, cada um menor que
+# TRACEJADO_PEDACO, todos dentro de uma coluna (ou linha) de TRACEJADO_LARGURA
+# e cobrindo TRACEJADO_COBRE do lado, em TRACEJADO_MINIMO pedacos ou mais.
+# Nota de margem nao entra: as palavras (letras juntas pelo fechamento) sao
+# mais largas que a coluna. Arriscado: alargar TRACEJADO_FAIXA (coluna de
+# numeros de versiculo colada na beirada sairia); baixar TRACEJADO_COBRE.
+TRACEJADO_FAIXA = 0.04
+TRACEJADO_PEDACO = 0.05
+TRACEJADO_LARGURA = 0.02
+TRACEJADO_COBRE = 0.4
+TRACEJADO_MINIMO = 5
+
+
+def _sem_o_tracejado_da_beirada(tinta: np.ndarray) -> np.ndarray:
+    """A mascara sem o tracejado da beirada (ver o comentario acima); a mesma
+    mascara quando nao ha tracejado."""
+    altura, largura = tinta.shape[:2]
+    n, rotulos, caixas, _ = cv2.connectedComponentsWithStats(tinta.astype(np.uint8), connectivity=8)
+    if n <= 1:
+        return tinta
+    x, y, w, h = (caixas[1:, i] for i in range(4))
+    tirar = np.zeros(n, bool)
+    # os ciscos (menores que uma letra: _de_letra) na faixa da beirada tambem
+    # nao contam na massa da tinta (Horas 18: riscos de 1 ponto e pontinhos a
+    # 2% da beirada direita, 0,23% da tinta de uma pagina de calendario)
+    cisco = ~_de_letra(np.stack([x, y, x + w, y + h], axis=1))
+    fx, fy = int(largura * TRACEJADO_FAIXA), int(altura * TRACEJADO_FAIXA)
+    na_faixa = (x + w <= fx) | (x >= largura - fx) | (y + h <= fy) | (y >= altura - fy)
+    tirar[1:] |= cisco & na_faixa
+    for eixo in ("x", "y"):
+        lado, comp = (largura, altura) if eixo == "x" else (altura, largura)
+        a0, a1 = (x, x + w) if eixo == "x" else (y, y + h)       # no eixo do lado
+        b0, b1 = (y, y + h) if eixo == "x" else (x, x + w)       # ao longo do lado
+        pequeno = ((a1 - a0) <= TRACEJADO_PEDACO * lado) & ((b1 - b0) <= TRACEJADO_PEDACO * comp)
+        faixa = int(lado * TRACEJADO_FAIXA)
+        for perto in (a1 <= faixa, a0 >= lado - faixa):
+            sel = np.flatnonzero(pequeno & perto)
+            if len(sel) < TRACEJADO_MINIMO:
+                continue
+            if a1[sel].max() - a0[sel].min() > TRACEJADO_LARGURA * lado:
+                continue
+            cobre = np.zeros(comp, bool)
+            for i in sel:
+                cobre[b0[i]:b1[i]] = True
+            if cobre.mean() >= TRACEJADO_COBRE:
+                tirar[sel + 1] = True
+    tirar[0] = False
+    if not tirar.any():
+        return tinta
+    return np.where(tirar[rotulos], 0, tinta).astype(tinta.dtype)
 
 
 def _com_folga(caixa, folga_x: float, folga_y: float):

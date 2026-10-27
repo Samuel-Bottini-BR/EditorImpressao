@@ -549,6 +549,21 @@ def _recorte_aumentado(imagem: np.ndarray, marca: np.ndarray, crescer: int, dpi)
     return imagem[y0:y1, x0:x1].copy()
 
 
+def sem_a_moldura_do_scanner(reta: np.ndarray) -> np.ndarray:
+    """`reta` com a moldura escura do scanner pintada de branco (o que fica
+    fora da pagina achada pela conta "so o preto" de core/borda_preta, a que o
+    Samuel viu em 12/10). Sem moldura: a propria `reta` (sem copiar). So para
+    o desentortar (D-113). Arriscado: usar a conta "ate a moldura" aqui (ela
+    aperta no impresso e pintaria papel com letra)."""
+    from core import borda_preta
+
+    altura, largura = reta.shape[:2]
+    x0, y0, x1, y1 = (int(round(v)) for v in borda_preta.so_o_preto(reta))
+    if (x0, y0, x1, y1) == (0, 0, largura, altura) or x1 - x0 < 8 or y1 - y0 < 8:
+        return reta
+    return borda_preta.pintar_fora(reta, (x0 / largura, y0 / altura, x1 / largura, y1 / altura))
+
+
 def preparar_no_corte(reta: np.ndarray, caixa: tuple[int, int, int, int] | None, pagina,
                       dpi=None, *, biblioteca: st.BibliotecaScanTailor | None = None) -> Preparo:
     """O passo do preparo (22/10/2026, "cortar uma vez só, no fim"), com a
@@ -581,8 +596,21 @@ def preparar_no_corte(reta: np.ndarray, caixa: tuple[int, int, int, int] | None,
     if modo == DESLIGADO:
         return Preparo(sem.copy())
     dpi = _dpi_ou_pela_altura(dpi, altura)
-    conteudo = caixa_do_conteudo(reta, (x0, y0, x1, y1), dpi)
-    marca = marca_da_pagina(reta, (x0, y0, x1, y1), conteudo)
+    # Obra 26/10, etapa 10a (D-113, Samuel em d212-1, 23/10/2026: "o primeiro
+    # passo em uma pagina dessas seria tirar essa moldura preta transformando a
+    # pagina em totalmente branca sem mexer nas letras, ai o desentortador nao
+    # iria confundir as letras com moldura preta"): a caixa do conteudo (o que
+    # o desentortar segue: as linhas do texto) e a marca da protecao sao
+    # medidas numa copia com a moldura escura do scanner (a conta "so o
+    # preto", core/borda_preta) pintada de branco. Foi a causa achada pelo
+    # verificador do 2.12 (img/causa-curvada2-moldura.jpg, 23/10): com a caixa
+    # pegando a moldura nada mudava; com a caixa so do texto, a curva era
+    # achada. A pagina que vai ao desentortar e a que sai sao as de sempre
+    # (pintar a imagem tambem mudava a Marial 41 reta: 0,98 da tinta no
+    # lugar). Sem moldura: nada muda.
+    sem_moldura = sem_a_moldura_do_scanner(reta)
+    conteudo = caixa_do_conteudo(sem_moldura, (x0, y0, x1, y1), dpi)
+    marca = marca_da_pagina(sem_moldura, (x0, y0, x1, y1), conteudo)
     aumentar = bool(getattr(pagina, "desentortar_aumentar", False))
     crescer = int(round((AUMENTO_MAXIMO_MM if aumentar else CRESCER_MM) * _pontos_por_mm(dpi)))
     resultado = desentortar(reta, dpi, modo, lado=lado_da_pagina(pagina),

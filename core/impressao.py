@@ -661,6 +661,57 @@ def _avisos_de_margem(origem, colocadas: list[Colocada], opcoes: OpcoesDeImpress
     return avisos
 
 
+def _tinta_na_folha(tinta, c: Colocada) -> tuple[float, float, float, float]:
+    """A caixa da tinta da página (fração da página) levada para a folha, no
+    lugar onde ela foi posta (`c.destino`), com o giro de _colocar."""
+    fx0, fy0, fx1, fy1 = tinta
+    d = c.destino
+    if c.girada:
+        return (d.x0 + fy0 * d.width, d.y0 + (1 - fx1) * d.height,
+                d.x0 + fy1 * d.width, d.y0 + (1 - fx0) * d.height)
+    return (d.x0 + fx0 * d.width, d.y0 + fy0 * d.height,
+            d.x0 + fx1 * d.width, d.y0 + fy1 * d.height)
+
+
+# Obra 26/10/2026, etapa 10a (D-104, o oitavo dos "lugares que podem comer a
+# página": "Imprimir com escala acima de 100% corta o que passa da metade da
+# folha; avisa só pela margem pequena"). _colocar não desenha o que passa da
+# vaga (a metade da folha, no livreto), de propósito (senão cobriria a página
+# vizinha); agora isso vira um aviso que diz que CORTA, quanto e de que lado.
+# D-017 (13/10): "aumentar [...] não corta nada escondido". Só conta o impresso
+# (caixa_da_tinta), com CORTE_TOLERADO_MM de arredondamento. Pôster fica de
+# fora: lá a página é de propósito maior que a folha.
+CORTE_TOLERADO_MM = 0.5
+
+
+def _avisos_de_corte(origem, colocadas: list[Colocada], opcoes: OpcoesDeImpressao) -> list[Aviso]:
+    """Aviso de impresso cortado na folha (ver o comentário acima)."""
+    if opcoes.formato == POSTER:
+        return []
+    avisos: list[Aviso] = []
+    tintas: dict[int, tuple | None] = {}
+    ja: set[int] = set()
+    for c in colocadas:
+        if c.numero not in tintas:
+            tintas[c.numero] = caixa_da_tinta(origem, c.numero - 1)
+        tinta = tintas[c.numero]
+        if tinta is None or c.numero in ja:
+            continue
+        x0, y0, x1, y1 = _tinta_na_folha(tinta, c)
+        v = c.vaga
+        fora = {"à esquerda": v.x0 - x0, "à direita": x1 - v.x1,
+                "em cima": v.y0 - y0, "embaixo": y1 - v.y1}
+        cortes = [f"{lado} {pt * MM_POR_PONTO / 10:.1f} cm".replace(".", ",")
+                  for lado, pt in fora.items() if pt * MM_POR_PONTO > CORTE_TOLERADO_MM]
+        if cortes:
+            ja.add(c.numero)
+            avisos.append(Aviso(c.numero, f"Página {c.numero}: aumentada além do lugar dela na folha - "
+                                          "o que está impresso fica CORTADO ("
+                                          + "; ".join(cortes)
+                                          + "). Diminua a escala desta página ou do lado dela."))
+    return avisos
+
+
 def _avisos_de_giro(colocadas: list[Colocada]) -> list[Aviso]:
     """g9-folha-maior-impressao (20/10/2026): "Quero que o programa avise
     quando isso estiver acontecendo" (a página que gira de pé e diminui)."""
@@ -708,7 +759,8 @@ def montar_para_impressao(entrada: str | Path, saida: str | Path,
 
         largura, altura = tamanho_do_papel_pt(opcoes)
         papel = fitz.Rect(0, 0, largura, altura)
-        resultado.avisos = _avisos_de_giro(colocadas) + _avisos_de_margem(origem, colocadas, opcoes, papel)
+        resultado.avisos = (_avisos_de_giro(colocadas) + _avisos_de_corte(origem, colocadas, opcoes)
+                            + _avisos_de_margem(origem, colocadas, opcoes, papel))
         if opcoes.formato == LIVRETO:
             quantas = len(escolhidas)
             resultado.cadernos = len(cadernos.tamanhos_dos_cadernos(quantas, opcoes.paginas_por_caderno))
