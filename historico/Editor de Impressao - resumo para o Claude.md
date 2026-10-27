@@ -1,6 +1,6 @@
 # Editor de Impressão — documento para colar no Claude
 
-Atualizado em 24/10/2026 (PARTE -20; a anterior, PARTE -19, é de 22 e 23/10). Desde 19/10 a memória por assunto fica em `memoria/` (índice `memoria/INDICE.md`). Versão **máxima**: reúne o histórico institucional, o
+Atualizado em 27/10/2026 (PARTE -21; a anterior, PARTE -20, é de 23 e 24/10). Desde 19/10 a memória por assunto fica em `memoria/` (índice `memoria/INDICE.md`). Versão **máxima**: reúne o histórico institucional, o
 que o programa é, todas as funcionalidades pedidas, os 68 pedidos feitos até
 hoje **palavra por palavra**, o que foi feito, o que falta, e os dois
 documentos-fonte inteiros (a especificação original e o prompt de testes) em
@@ -14,7 +14,109 @@ o backup). Repositório git ligado a
 
 ---
 
-# PARTE -20 — Checkpoint de 23 e 24/10/2026: a junção da Fase 2 entrou no programa; começaram os testes guiados (leia isto primeiro, é o mais novo)
+# PARTE -21 — Checkpoint de 26 e 27/10/2026: sessão guiada 1, Livro de decisões e a OBRA (leia isto primeiro, é o mais novo)
+
+Sessão no PC, aberta com `/projeto`, fechada com `/checkpoint` (a sessão ia acabar). **O que manda agora:**
+`docs/plano/DECISOES.md` (Livro de decisões, D-001 a D-492, `CLAUDE.md` §11) e o plano da obra
+`C:\Users\fotog\.claude\plans\ent-o-vamos-fazer-um-cozy-brooks.md` (seção **EXECUÇÃO** = onde está cada etapa).
+
+## 0. Para recomeçar
+1. `git -C D:\programas\EditorImpressao fetch origin`. Ler a Central (https://claude.ai/artifact/XNFrsdVR7q4K8cBcxNftZy)
+   como na PARTE -20 §0 — há 8 perguntas pendentes dele (aba de 26/10, `docs/plano/central/conferencias/pendentes-26-10.json`).
+2. Ler a seção EXECUÇÃO do plano da obra e os `relatorios/obra-*/ONDE-PAREI.md` de cada worktree abaixo.
+3. **Ordem dele em vigor (D-014, 26/10):** "Use as respostas mais recentes, coloque as perguntas sem resposta para
+   responder na central. E inicie o trabalho de fazer os concertos pedidos, faça tudo e no final eu confiro, pode
+   escolher sem minha conferência [...] Faça até o final sem pausas, os testes e a execução". A gerente escolhe sozinha
+   (anota no Livro como "escolha da gerente, D-014") e segue sem parar. **Nada entra no `fase-1` antes da conferência
+   final dele.**
+
+## 1. O que aconteceu (26/10)
+- **Sessão guiada 1** (`relatorios/testes-guiados/2026-10-26-sessao-1/sessao-1.md`, achados 1-1 a 1-18, prints s1-01
+  a s1-10): ele mostrou que decisões antigas nunca foram construídas — o livro não abre direto na área de trabalho
+  (decisão 2, 25/09), ferramentas somem com caixinha desmarcada (decisão 1, "como o Photoshop"), Automático só lista
+  etapas, mover/redimensionar preso ao corte, "está certo" mudo, caixinhas marcadas voltam (defeito de 29/09).
+  Palavras: "os agente alucinaram e fizeram o programa errado".
+- **Investigação** `o-que-deu-errado.md`: a caixinha valia ao mesmo tempo "mostrar ferramenta" e "o automático faz";
+  decisões espalhadas em vários lugares; agentes recebiam etapas, não decisões; quem construiu conferiu o próprio
+  trabalho com caixinhas já marcadas. **Auditoria dos documentos** `auditoria-documentos.md` (o que faltava no plano).
+- **6 regras aprovadas** ("Sim"): `CLAUDE.md` §11 e `.claude/agents/*.md` — Livro de decisões único; nenhuma decisão
+  sem dono; o pedido ao agente leva as decisões; prova de comportamento em `tests/test_decisoes*.py`; quem confere não
+  é quem construiu e confere do zero; na dúvida, parar e perguntar pela Central.
+- **Nova bateria de testes aprovada** (seção no plano da obra): teste do Kaique (agente leigo pilotando a janela de
+  verdade só com a tarefa), tarefas em vez de botões, teste das decisões, **cada botão prova a promessa inteira na tela,
+  no projeto e no PDF** ("eu acho que o botão tem que ser provado que ele faz o que se diz que se faz"), conferência
+  como caminho.
+- **Teste do Kaique** (ramo `teste-kaique-2026-10-26` `5d703f3`, só documentos, não juntado): 9/11 tarefas; novos
+  achados (mover não chega ao PDF, rodinha muda números, janelas de arquivo em inglês etc.) já distribuídos nas etapas.
+- Correção: agentes ao mesmo tempo = **3** (Central `config/agentes`), não 1.
+
+## 2. A obra (D-014) — ramos e situação no fechamento (27/10)
+Ramo base **`obra-2026-10-26`** (no GitHub, `1a69cde`). Junções na worktree `.claude/worktrees/obra-juncao`. Cada
+etapa: ramo `obra-<etapa>-2026-10-26`, worktree `.claude/worktrees/obra-<etapa>`.
+- **Juntadas:** etapa 1 (o feito à mão sempre vale no PDF; `core/etapas.py`, marca `mexida_a_mao`,
+  `feito_a_mao_sempre_vale` False em projeto antigo; somas 96/96 e 24/24 iguais), etapa 2 (todas as ferramentas sempre
+  à vista, menu Ferramentas, lado direito no Ver e Configurações, Delete = deixar em branco, Shift+Del = tirar),
+  etapa 9a (impressão pergunta antes; "Montar para imprimir" refeita; rodinha; janelas de arquivo em português) +
+  trocas da 9a na junção (`fdabf0d`), **bateria de promessas** (`tests/test_promessas.py`, `tests/promessas/`;
+  129 promessas: 110 cumprem, 8 quebram = 4 defeitos, 11 aguardam etapa; rodada 17 min).
+- **Parados no fechamento pelo limite de uso** (429, "resets 3:50am America/Cuiaba"); o trabalho está commitado. Na
+  mesma sessão: SendMessage para cada agente continuar. Em sessão nova: relançar a partir do ONDE-PAREI e do git log.
+  A 10a parou esperando o filtro de velocidade do GitHub (`gh run list -R Samuel-Bottini-BR/EditorImpressao`); a 9c
+  parou no item 5 ("contas discordam"); a etapa 3 parou rodando os testes dela.
+  - **Etapa 3** (abrir direto na área de trabalho + Automático de verdade, janela grande, receitas, grade com várias
+    escolhidas, pular mexidas, aviso de livro novo, fim do defeito de 29/09, **ligar `marcar_mexida_a_mao` na tela** —
+    defeito A das promessas P-005/080/081/109): ramo `obra-etapa3-2026-10-26` `f8e05c2`. Ela trouxe
+    `tests/test_promessas.py` para a worktree (ainda não commitado). Escreveu D-481 a D-491 no DECISOES.
+  - **Etapa 10a** (geometria: 8 lugares que comem a página, d212-1, G6, Escola 197): `obra-etapa10a-2026-10-26`
+    `3335d33`, ONDE-PAREI final escrito — **parece pronta, falta juntar**.
+  - **Etapa 9c** (núcleo: defeito B "deixar em branco"/"pintar de branco" em Original; nome de saída sem acento;
+    `projeto.json` ilegível com aviso — feito; "parece em branco" falso — feito; "contas discordam" em página reta;
+    plurais/"aba Marcar"; "Menor que o corte"): `obra-etapa9c-2026-10-26` `0227496`.
+- **Atenção na junção da etapa 3:** o DECISOES dela tem D-481 a D-491; a gerente já renumerou a sua escolha do tique do
+  menu Filtro para **D-492** (P-085) na obra. Depois de juntar, recopiar o DECISOES para
+  `D:\programas\EditorImpressao-arquivos\plano-24-09-2026\DECISOES.md` (as duas cópias iguais).
+- **Donos dos defeitos das promessas:** A → etapa 3; B → 9c; C (menu "Confirmar e processar"/Ctrl+Return pula "Antes
+  de processar", P-127) → 9b; D (tique do Filtro, D-492) → 9b. Depois da etapa 3: ajustar
+  `abrir_livro_para_teste()` em `tests/promessas/ajudantes.py` ao novo jeito de abrir.
+
+## 3. Próximo passo recomendado
+Retomar cada agente: ler o ONDE-PAREI da worktree e relançar o agente do ponto onde parou (tipo `general-purpose`
+seguindo `.claude/agents/<papel>.md`; os tipos do projeto não existem a partir de `C:\Users\fotog`). Juntar 10a,
+depois 3, depois 9c na `obra-juncao`, rodando as provas de cada uma + `tests/test_trabalho_nao_se_perde.py`. Seguir:
+4 (dividir à mão) → 5 (mover/redimensionar próprio) → 6 (lado a lado, uma página por vez) → 7 ("está certo", avisos,
+contagem única) → 9b (resto, incl. `138e425` "Antes de processar") → 10b (filtros/imagem) → 11 (nomes). No fim:
+suíte GitHub + PC com agentes parados, teste do Kaique de novo, verificador contra o Livro, página de conferência
+final na Central (cada item com as palavras dele, os ~40 consertos "esperando o olho do Samuel", roteiro de uma folha
+na EPSON).
+
+## 4. Pergunta dele no fim (respondida)
+"como assim só achou isso? e todos os erros que já tinhamos achado?" — Respondido: a bateria de promessas só testa se
+cada botão cumpre a promessa; todos os erros antigos (lista única, sessão 1, teste do Kaique, auditoria, consertos
+esperando o olho dele) continuam distribuídos nas etapas do plano da obra, e a conferência final vai listar cada um.
+
+## 5. Lições / tentado e descartado
+- **Antes de oferecer opção ou dizer "não existe": grep no Livro de decisões** (memória do Claude
+  `feedback_conferir_decisoes_antes`). A gerente ofereceu como "opção A" algo decidido em 25/09 e disse que
+  redimensionar não existia — errado duas vezes.
+- Não chamar de "perguntas" o que são consertos esperando o olho dele ("que 50 perguntas são essas?").
+- Frase que soa como se ele não tivesse feito algo que fez ("marque Limpar") — ele tinha marcado; o programa é que
+  descartou (achado 1-11).
+- Limite de uso (429) para os agentes: retomar com SendMessage quando ele avisar que o limite voltou.
+- Aviso no celular (PushNotification) está desligado no /config dele.
+- Testes: TEMP/`--basetemp` dentro da worktree; pytest um arquivo por vez com agentes rodando; suíte inteira (~20 min)
+  só com agentes parados; GitHub: `gh workflow run "Testes no Windows" -R Samuel-Bottini-BR/EditorImpressao --ref
+  claude/list-server-files-gkos8v -f ramo=obra-2026-10-26`.
+- Heredoc com aspas simples no Bash desta máquina às vezes quebra com texto longo: escrever o arquivo com o Write.
+
+## 6. Testes no fechamento
+Não rodei a suíte inteira (3 agentes rodando). Rodadas confirmadas: etapa 1 `tests/test_decisoes.py` 18 ok; etapa 2
+`tests/test_decisoes_tela.py` 35; etapa 9a `tests/test_decisoes_impressao.py` 22; promessas 239 casos = 217 ok, 11
+falham de propósito (4 defeitos com dono), 11 xfail. Como validar a obra:
+`cd D:\programas\EditorImpressao\.claude\worktrees\obra-juncao; ..\..\..\.venv\Scripts\python.exe -m pytest tests\test_decisoes.py tests\test_decisoes_tela.py tests\test_decisoes_impressao.py tests\test_trabalho_nao_se_perde.py -q --basetemp _tmp\pt`.
+
+---
+
+# PARTE -20 — Checkpoint de 23 e 24/10/2026: a junção da Fase 2 entrou no programa; começaram os testes guiados
 
 Sessão no PC do Samuel, aberta com `/projeto` e fechada com `/checkpoint`. **O que manda continua sendo `docs/plano/`**
 (Registro de mudanças de 23/10, com as palavras dele; as duas cópias do plano estão iguais) e a memória `memoria/`.
