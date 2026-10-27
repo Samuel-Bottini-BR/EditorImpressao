@@ -280,3 +280,15 @@ o item 1 só em página com papel marcado à mão.
 
 `_tmp/` (na worktree, fora do git) tem os scripts de medida e as imagens do "La vida eterna"; criado por mim, pode ser
 apagado.
+
+## Resultado no Windows do GitHub
+
+- Rodada **40525179198** (antes do último commit): 3 falhas minhas, consertadas no commit seguinte —
+  `test_dividir_no_programa::test_aviso_diz_o_que_mudou_na_divisao` esperava "o do programa" (agora "o do Editor",
+  D-479) e `test_so_neste_pedaco_no_original` (papel) pedia que o papel marcado à mão NÃO mudasse o Original — o
+  comportamento antigo que a D-027/D-227 substitui (regra 4 do §11: a prova agora confere que o antigo saiu; o papel do
+  detector continua sem mudar o Original, e há um teste novo do papel à mão saindo branco no Original e no Tirar o fundo).
+- Rodada **40528106792** (código final): partes 2, 3, 4, 5 e "Botões e prints" passaram. Parte 1: só falhas que **já
+  existem na base** `obra-2026-10-26` (39b7d8a) — conferido no PC rodando as mesmas provas numa cópia da base:
+  P-005 (continuar, 4 casos), P-080 (painel Preto e branco), P-085 (tique do menu Filtro, D-481), P-081 (todas),
+  P-109 (usar Mágico pro), P-127 (Antes de processar). Os mesmos 9 falham na base e aqui; nenhum é desta etapa.
