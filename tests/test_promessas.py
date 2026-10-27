@@ -1516,8 +1516,11 @@ def test_p190_tamanho_da_folha_no_mover(janela, tela, monkeypatch, pasta):
 @prova("P-191")
 def test_p191_centralizar(janela, tela, monkeypatch, pasta):
     _no_mover(janela, tela)
+    # o texto da página 2 do livro de teste fica alto (margem de cima menor que a de baixo);
+    # e um mover à mão o tira também do meio na largura
+    tela._gravar_o_conteudo(1.0, (0.08, 0.04), "fora do meio")
     antes = _caixa_escura(_gerar(janela, monkeypatch, pasta, "antes")[1])
-    assert abs(antes[0] - (1 - antes[2])) > 0.04, "o livro de teste já tinha o impresso no meio"
+    assert abs(antes[0] - (1 - antes[2])) > 0.08 and abs(antes[1] - (1 - antes[3])) > 0.04, antes
     _voltar_ao_trabalho(janela)
     apertar(janela, "área de trabalho/mover/Centralizar")
     gravada = aj.pagina_gravada(janela, 1)
