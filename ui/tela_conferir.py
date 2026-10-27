@@ -676,6 +676,9 @@ class TelaConferir(QWidget):
         self.vista_da_pagina.addWidget(self.lado_a_lado)
         from ui.widgets.filtros_tela_cheia import VistaAntesDepois
         self.vista_antes_depois = VistaAntesDepois()
+        # o minimo e o da area da pagina (112, para a janela minima caber)
+        self.vista_antes_depois.setMinimumSize(QSize(0, 0))
+        self.lado_a_lado.setMinimumSize(QSize(0, 0))
         self.vista_da_pagina.addWidget(self.vista_antes_depois)
         self.mostrar = UMA            # "Uma página" de fabrica (D-007)
         self.comparando = False       # "antes / depois" desligado de fabrica

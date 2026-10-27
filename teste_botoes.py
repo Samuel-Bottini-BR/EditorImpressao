@@ -914,6 +914,9 @@ def testar_conferir_e_ampliada(janela) -> tuple[int, int]:
     o, f = testar_o_lado_direito(janela)
     ok += o
     falhas += f
+    o, f = testar_o_ver_da_barra_de_baixo(conferir)       # etapa 6 da obra
+    ok += o
+    falhas += f
 
     dizer_as_paginas(conferir, "depois do menu")
     print("\n--- tela ampliada ---")
@@ -952,6 +955,50 @@ def testar_os_dois_botoes_da_pagina(conferir) -> tuple[int, int]:
         else:
             falhas += 1
             print(f"  FALHA '{rotulo}' nao mudou {campo}")
+    return ok, falhas
+
+
+def testar_o_ver_da_barra_de_baixo(conferir) -> tuple[int, int]:
+    """Obra 26/10/2026, etapa 6 (D-015: "Uma página / Duas lado a lado" na
+    barra de baixo; desenho decidido: "antes / depois", "– N% +", "ajustar à
+    tela"). Clica cada botão e confere a PROMESSA: o que fica no lugar da
+    página e o número do zoom. Volta como estava ("Uma página", sem zoom)."""
+    if not hasattr(conferir, "botoes_mostrar") or conferir.projeto is None:
+        return 0, 0
+    print("
+--- o ver da barra de baixo (etapa 6) ---")
+    from ui.widgets.paginas_rolando import DUAS, UMA
+
+    ok = falhas = 0
+    conferir.trilha.escolher("mao")             # uma ferramenta de pagina (nao o Dividir)
+    esperar(0.4)
+
+    def conferir_promessa(botao, rotulo, condicao, frase) -> None:
+        nonlocal ok, falhas
+        if acionar(botao, rotulo) and condicao():
+            ok += 1
+            print(f"  ok    '{rotulo}': {frase}")
+        else:
+            falhas += 1
+            print(f"  FALHA '{rotulo}' nao fez: {frase}")
+
+    vista = conferir.vista_da_pagina
+    conferir_promessa(conferir.botoes_mostrar[DUAS], "Duas lado a lado",
+                      lambda: vista.currentWidget() is conferir.lado_a_lado, "os pares no lugar da pagina")
+    conferir_promessa(conferir.botoes_mostrar[UMA], "Uma página",
+                      lambda: vista.currentWidget() is conferir.area_imagem, "a pagina da ferramenta volta")
+    conferir_promessa(conferir.botao_antes_depois, "antes / depois",
+                      lambda: vista.currentWidget() is conferir.vista_antes_depois, "o antes e depois")
+    conferir_promessa(conferir.botao_antes_depois, "antes / depois (desligar)",
+                      lambda: vista.currentWidget() is conferir.area_imagem, "a pagina da ferramenta volta")
+    conferir_promessa(conferir.botao_mais_zoom, "+",
+                      lambda: conferir.rotulo_do_zoom.text() == "125%", "zoom 125%")
+    conferir_promessa(conferir.botao_menos_zoom, "–",
+                      lambda: conferir.rotulo_do_zoom.text() == "100%", "zoom 100%")
+    conferir_promessa(conferir.botao_mais_zoom, "+ (de novo)",
+                      lambda: conferir.rotulo_do_zoom.text() == "125%", "zoom 125%")
+    conferir_promessa(conferir.botao_ajustar_a_tela, "ajustar à tela",
+                      lambda: conferir.rotulo_do_zoom.text() == "100%", "a pagina inteira (100%)")
     return ok, falhas
 
 
