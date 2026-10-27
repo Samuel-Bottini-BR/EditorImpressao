@@ -101,9 +101,10 @@ MODO_ANGULO = "angulo"
 # Fase 2 (item 1.3/1.4 do handoff antigo, aprovada pelo Samuel em 22/09/2026
 # depois de ficar de fora da entrega original do plano): arrastar o
 # CONTEÚDO (a página já recortada) dentro da folha maior - distinto de
-# MODO_RECORTE, que edita o RECORTE (a fração da imagem ORIGINAL). Só
-# existe quando há uma folha maior que o conteúdo (`compor_na_folha` sobrou
-# margem de verdade) - ver `ui/tela_conferir.py::_alternar_mover_conteudo`.
+# MODO_RECORTE, que edita o RECORTE (a fração da imagem ORIGINAL). Desde a
+# etapa 5 da obra (D-008) é o modo da ferramenta própria "Mover e
+# redimensionar" (ui/tela_conferir.py::_montar_aba_mover), com ou sem folha
+# escolhida - antes era a caixinha "Mover conteúdo" do Cortar, só com folha.
 MODO_CONTEUDO = "conteudo"
 
 # Etapa 5 da obra (ferramenta Mover): o maior tamanho do conteúdo, em vezes a
@@ -707,7 +708,10 @@ class Visualizador(QWidget):
             fora.addRect(QRectF(conteudo))
             dentro = QPainterPath()
             dentro.addRect(QRectF(branca))
-            pintor.fillPath(fora.subtracted(dentro), _listras_de_fora())
+            de_fora = fora.subtracted(dentro)
+            pintor.fillPath(de_fora, QColor(COR_DE_FORA.red(), COR_DE_FORA.green(),
+                                            COR_DE_FORA.blue(), 90))
+            pintor.fillPath(de_fora, _listras_de_fora())
         pintor.save()
         pintor.setClipRect(branca)
         pintor.drawPixmap(conteudo, self._pixmap)

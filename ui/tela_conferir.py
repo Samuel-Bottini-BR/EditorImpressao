@@ -1551,7 +1551,7 @@ class TelaConferir(QWidget):
         Bug real achado ao vivo (23/09/2026, Samuel: "quando eu diminuo a
         linha verde ele corta a própria folha e o corte vai pra frente
         sozinho"): antes, esta aba mostrava a prévia JÁ cortada por
-        `pagina.recorte` (a mesma que `_atualizar_previa_composta` usa) - o
+        `pagina.recorte` (a mesma das outras ferramentas) - o
         retângulo do recorte era desenhado como fração de uma imagem que já
         era um recorte, e cada atualização (ao soltar o mouse) reaplicava a
         fração em cima do resultado anterior, comprimindo o corte sozinho a

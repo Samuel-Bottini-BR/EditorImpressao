@@ -205,6 +205,15 @@ programa), a partir do **nome do botão**, da **dica** (o balão do mouse) e das
 - **na tela:** a ferramenta fica escolhida; o Propriedades diz que ela só serve para olhar.
 - **no projeto:** nada muda. **no PDF:** nada muda.
 
+### P-035 · Mover e redimensionar (etapa 5 da obra)
+- **chaves:** `trilha/mover`, `menu/usar_mover`
+- **dica:** "Arraste a página para mover dentro da área branca. Puxe um canto para aumentar ou diminuir." (tecla F)
+- **decisões:** D-008 ("a ferramenta de mover não deveria estar vinculada ao corte de bordas, deveriam ser duas coisas
+  independentes"), D-001, D-052, D-540 (a letra F)
+- **na tela:** a ferramenta fica escolhida (trilha e menu Ferramentas); a página aparece na área branca (sem tamanho
+  de folha, a própria página), com os quatro cantos para puxar; o Propriedades abre com os botões dela.
+- **no projeto:** nada muda só por escolher. **no PDF:** nada muda.
+
 ## Área de trabalho: painéis da direita
 
 ### P-040 · ícone de cada painel / menu Painéis
@@ -376,6 +385,41 @@ programa), a partir do **nome do botão**, da **dica** (o balão do mouse) e das
 - **dica:** "Desfaz o seu ajuste: volta a valer o ângulo que o programa achou"
 - **decisões:** D-368
 - **no projeto:** o ângulo à mão sai. **no PDF:** a página sai com o ângulo do programa.
+
+### P-190 · "tamanho da folha..." (Mover)
+- **chaves:** `área de trabalho/mover/tamanho da folha...`
+- **dica:** "Escolhe o tamanho da folha em que esta página vai sair. Sem escolher, a área branca é a própria página."
+- **decisões:** D-008, D-314 (o tamanho final de verdade é decidido no "Montar para imprimir"; este é o da folha da
+  página), P-066 (a mesma janela do Cortar)
+- **na tela:** abre a janela "Tamanho da folha" com o tamanho da página de agora; OK aceita, Cancelar não muda nada;
+  a área branca da ferramenta passa a ser a folha escolhida.
+- **no projeto:** com OK, a página fica com o tamanho de folha escolhido; o corte e o lugar do conteúdo não mudam.
+- **no PDF:** a página sai no tamanho de folha escolhido (ex.: A5 = 148 × 210 mm).
+
+### P-191 · "Centralizar" (Mover)
+- **chaves:** `área de trabalho/mover/Centralizar`
+- **dica:** "Põe o que está impresso no meio da área branca, nas duas direções."
+- **decisões:** D-303 ("precisamos centralizar"), teste do Kaique de 26/10 (tarefa 5: "mover ele para o meio da
+  folha"; as margens saíram 15 × 53), D-473
+- **no projeto:** o lugar do conteúdo da página muda (uma ação do desfazer), com a marca "mexida à mão" (mover).
+- **no PDF:** o impresso da página sai no meio: margem da esquerda igual à da direita, e a de cima igual à de baixo.
+
+### P-192 · "voltar como veio" (Mover)
+- **chaves:** `área de trabalho/mover/voltar como veio`
+- **dica:** "Desfaz o mover e o tamanho desta página: o conteúdo volta como veio."
+- **decisões:** D-008, D-020
+- **no projeto:** tamanho 100% e sem mover (o tamanho de folha, se havia, fica). **no PDF:** a página sai como antes
+  de mexer.
+
+### P-193 · "usar em todas..." (Mover)
+- **chaves:** `área de trabalho/mover/usar em todas...`
+- **dica:** "Põe o tamanho e o lugar do conteúdo desta página nas páginas que você escolher."
+- **decisões:** G10 de 05/10 ("ter uma opção para passar isso para todas as folhas"), D-090 (as exceções vêm
+  desmarcadas e nunca são apagadas), D-091, D-017 (o aviso nas que ficarem com parte do impresso de fora)
+- **na tela:** abre a lista "Em quais páginas?" com as páginas já mexidas desmarcadas.
+- **no projeto:** as marcadas ficam com o tamanho e o lugar desta página, numa ação do desfazer; a já mexida
+  (exceção) fica com o dela.
+- **no PDF:** as páginas marcadas saem com o conteúdo do mesmo tamanho desta.
 
 ## Área de trabalho: ferramentas de marcar (Propriedades)
 
@@ -614,6 +658,13 @@ programa), a partir do **nome do botão**, da **dica** (o balão do mouse) e das
 - **chaves:** `aviso/alinhar_com_as_outras`
 - **decisões:** D-294 ("Inclinação diferente das outras")
 - **no projeto:** o ângulo desta página passa a ser o das outras.
+
+### P-194 · "ver no Mover" (aviso "Parte do impresso fica de fora")
+- **chaves:** `aviso/ver_no_mover`
+- **dica:** o aviso "Parte do que está impresso vai ficar de fora da folha [...] O programa não diminui sozinho"
+- **decisões:** D-017 ("Avisar e não reduzir - avisar para eu reduzir manualmente"), D-008
+- **na tela:** leva à ferramenta Mover na página do aviso (onde a parte de fora aparece marcada em vermelho).
+- **no projeto:** nada muda (o programa não diminui sozinho). **no PDF:** nada muda.
 
 ## Área de trabalho: miniaturas e barra de baixo
 
