@@ -629,8 +629,17 @@ class TelaConferir(QWidget):
         # que ela abre ao lado da pagina (de fabrica, tudo fechado). Os
         # paineis recebem o que eram linhas de botoes atravessando a tela.
         self.paineis = ColunaDePaineis()
-        # o bloco "Girar a folha" no alto do Propriedades, em todas as ferramentas
-        self.paineis.propriedades.por_no_alto(self.barra_girar)
+        # o bloco "Girar a folha" no alto do Propriedades, em todas as
+        # ferramentas, e embaixo dele os dois botões de "Esta página" (etapa 2
+        # da obra, _montar_os_botoes_da_pagina)
+        alto = NaoEspreme()          # sem fundo proprio: o do painel aparece
+        coluna_do_alto = QVBoxLayout(alto)
+        coluna_do_alto.setContentsMargins(0, 0, 0, 0)
+        coluna_do_alto.setSpacing(7)
+        coluna_do_alto.addWidget(self.barra_girar)
+        coluna_do_alto.addWidget(risco_do_painel())
+        coluna_do_alto.addWidget(self._montar_os_botoes_da_pagina())
+        self.paineis.propriedades.por_no_alto(alto)
 
         self._ligar_paineis()
 
@@ -2509,17 +2518,27 @@ class TelaConferir(QWidget):
         _botao("daqui em diante", linha_botoes, self._filtro_nas_proximas)
         coluna_aplicar.addLayout(linha_botoes)
 
-        # Apagar e destrutivo: fica longe dos outros, no fim do corpo do
-        # painel, depois de um risco (o painel arruma).
-        self.botao_apagar = QPushButton("apagar página")
+        # Os dois botoes de "Esta pagina" (etapa 2 da obra, 26/10/2026; eram
+        # so o "apagar página"): "deixar em branco" (a pagina fica, branca) e
+        # "tirar do livro" (sai de vez). Destrutivos: ficam longe dos outros,
+        # no fim do corpo do painel, depois de um risco (o painel arruma). Os
+        # mesmos do alto do Propriedades (_montar_os_botoes_da_pagina).
+        pagina_toda = Bloco()
+        par_da_pagina = QHBoxLayout(pagina_toda)
+        par_da_pagina.setContentsMargins(0, 0, 0, 0)
+        par_da_pagina.setSpacing(6)
+        self.botao_em_branco_do_filtro = _botao(
+            "deixar em branco", par_da_pagina, self.deixar_em_branco_ou_voltar)
+        self.botao_apagar = QPushButton("tirar do livro")
         self.botao_apagar.setObjectName("destrutivo")
         _ligar(self.botao_apagar, self.apagar_pagina)
+        par_da_pagina.addWidget(self.botao_apagar)
 
         self.paineis.filtro_da_pagina.montar(
             [(chave, nome, TECLAS_DOS_FILTROS.get(chave, ""))
              for chave, nome, _explica in CARTOES if chave in filtros],
             {"ajuste": corpo_ajuste, "letras": self.escolhas_misto, "limpar": corpo_limpar,
-             "mais": corpo_mais, "aplicar": aplicar, "apagar": self.botao_apagar})
+             "mais": corpo_mais, "aplicar": aplicar, "apagar": pagina_toda})
         # a amostra de cada cartao grande vai tambem para a fila do painel
         for cartao in self.cartoes.values():
             cartao.amostra_mudou.connect(self.paineis.filtro_da_pagina.definir_amostra)
@@ -3647,11 +3666,10 @@ class TelaConferir(QWidget):
             self._atualizar_conta_do_endireitar()
 
         if ABA_FILTRO in self._abas_ativas:
-            pagina = self.projeto.paginas[self.indice_pagina]
             self._configurar_medidor()
-            self.botao_apagar.setText(
-                "restaurar página" if pagina.apagada else "apagar página"
-            )
+        # "deixar em branco" / "tirar do livro" (os de "Esta página" e os do
+        # painel Filtro), em toda ferramenta (etapa 2 da obra)
+        self._atualizar_os_botoes_da_pagina()
 
     def _atualizar_tira(self) -> None:
         assert self.projeto is not None
@@ -5129,14 +5147,95 @@ class TelaConferir(QWidget):
 
     @protegido
     def apagar_pagina(self) -> None:
-        assert self.projeto is not None
+        """"Tirar do livro" (ou "trazer de volta", se ela já foi tirada): a
+        página sai do PDF final de vez - é para o que não é página do livro
+        (Samuel, 07/10/2026). Para pôr uma folha branca no lugar, e a
+        encadernação não mudar, é o "Deixar em branco" (deixar_em_branco_ou_voltar).
+        O nome do método ficou de quando era "apagar página"."""
+        if not self._pronta() or self.projeto is None:
+            return
         pagina = self.projeto.paginas[self.indice_pagina]
         acao = "restaurar" if pagina.apagada else "apagar"
         self._registrar(
             acao, "pagina", [self.indice_pagina],
             {"apagada": not pagina.apagada, "revisada": True},
-            f"{acao.capitalize()} a página {self.indice_pagina + 1}",
+            (f"Trazer de volta a página {self.indice_pagina + 1}" if pagina.apagada
+             else f"Tirar do livro a página {self.indice_pagina + 1}"),
         )
+
+    @protegido
+    def deixar_em_branco_ou_voltar(self) -> None:
+        """A tecla Delete, o menu Página e o botão "deixar em branco" de
+        "Esta página" (Samuel, 07/10/2026: "Deixar em branco" (tecla Delete;
+        página branca no lugar, encadernação não muda); 09/10: "Essa opção de
+        tirar do livro ou deixar folha em branco eu quero ter em outras
+        paginas"). Página que já vai sair em branco volta a ser ela mesma (o
+        mesmo que o "voltar a página" da faixa). No Dividir (que mostra a
+        folha inteira) não faz nada: a página da vez não está à vista.
+        Até a etapa 2 da obra (26/10/2026) a Delete apagava a página."""
+        if not self._pronta() or self.projeto is None or self.trabalha_com_folhas:
+            return
+        pagina = self.projeto.paginas[self.indice_pagina]
+        self._deixar_em_branco(not getattr(pagina, "em_branco", False))
+
+    def _montar_os_botoes_da_pagina(self) -> QWidget:
+        """O bloco "Esta página" do alto do painel Propriedades, em todas as
+        ferramentas: "deixar em branco" e "tirar do livro" (etapa 2 da obra,
+        26/10/2026; Samuel, 09/10: "Essa opção de tirar do livro ou deixar
+        folha em branco eu quero ter em outras paginas"). Os mesmos dois botões
+        do aviso "Página sem conteúdo", em qualquer página. Os textos trocam
+        para "voltar a página" e "trazer de volta" quando a página já está
+        assim (_atualizar_os_botoes_da_pagina). Seguro mudar: os textos."""
+        bloco = NaoEspreme()
+        coluna = QVBoxLayout(bloco)
+        coluna.setContentsMargins(0, 0, 0, 0)
+        coluna.setSpacing(6)
+        coluna.addWidget(titulo_de_secao("Esta página"))
+        par = self._par_de_botoes(coluna)
+        self.botao_em_branco = _botao("deixar em branco", par, self.deixar_em_branco_ou_voltar)
+        self.botao_tirar_do_livro = _botao("tirar do livro", par, self.apagar_pagina)
+        self.botao_tirar_do_livro.setObjectName("destrutivo")
+        par.setStretch(0, 1)
+        par.setStretch(1, 1)
+        self._atualizar_os_botoes_da_pagina()
+        return bloco
+
+    # As dicas dos dois botoes de "Esta pagina" (e dos do painel Filtro).
+    DICA_EM_BRANCO = ("A página fica no livro, no mesmo lugar, e sai toda branca: a "
+                      "encadernação não muda. Tecla Delete. Dá para desfazer.")
+    DICA_VOLTAR_DO_BRANCO = "A página volta a sair como era, com o que tem nela."
+    DICA_TIRAR = ("A página sai do livro de vez (para o que não é página do livro). "
+                  "As páginas depois dela andam uma casa. Dá para desfazer.")
+    DICA_TRAZER_DE_VOLTA = "A página volta para o livro, no lugar dela."
+
+    def _atualizar_os_botoes_da_pagina(self) -> None:
+        """Acerta os textos e o aceso dos botões "deixar em branco" e "tirar
+        do livro" (os de "Esta página" e os do painel Filtro) pela página da
+        vez. Sem livro, ou no Dividir (folha inteira), ficam apagados com a
+        explicação na dica. Nunca levanta exceção por faltar um botão."""
+        pagina = None
+        if (self.projeto is not None and not self.trabalha_com_folhas
+                and 0 <= self.indice_pagina < len(self.projeto.paginas)):
+            pagina = self.projeto.paginas[self.indice_pagina]
+        em_branco = bool(getattr(pagina, "em_branco", False))
+        tirada = bool(getattr(pagina, "apagada", False))
+        pares = [(getattr(self, "botao_em_branco", None), getattr(self, "botao_tirar_do_livro", None)),
+                 (getattr(self, "botao_em_branco_do_filtro", None), getattr(self, "botao_apagar", None))]
+        for branco, tirar in pares:
+            if branco is not None:
+                branco.setText("voltar a página" if em_branco else "deixar em branco")
+                branco.setToolTip(self.DICA_VOLTAR_DO_BRANCO if em_branco else self.DICA_EM_BRANCO)
+                branco.setEnabled(pagina is not None and not tirada)
+            if tirar is not None:
+                tirar.setText("trazer de volta" if tirada else "tirar do livro")
+                tirar.setToolTip(self.DICA_TRAZER_DE_VOLTA if tirada else self.DICA_TIRAR)
+                tirar.setEnabled(pagina is not None)
+        if pagina is None:
+            for branco, tirar in pares:
+                for botao in (branco, tirar):
+                    if botao is not None:
+                        botao.setToolTip("Escolha uma página: no Dividir a tela mostra a folha "
+                                         "inteira. Os dois botões valem nas outras ferramentas.")
 
     @protegido
     def _marcar_revisada(self) -> None:
@@ -5546,8 +5645,9 @@ class TelaConferir(QWidget):
             self._ir_para_proximo_alerta()
             return True
         if tecla == Qt.Key_Delete:
-            if not self.trabalha_com_folhas:
-                self.apagar_pagina()
+            # Samuel, 07/10/2026: "Deixar em branco" (tecla Delete). Ate a
+            # etapa 2 da obra a Delete apagava (tirava do livro) a pagina.
+            self.deixar_em_branco_ou_voltar()
             return True
         # A tecla R de "girar" (fixa aqui, fora das Configuracoes) nunca era
         # alcancada: a R do Retangulo ganha antes (Lista de bugs, 02/10).

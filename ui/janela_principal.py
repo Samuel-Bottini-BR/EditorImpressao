@@ -229,23 +229,35 @@ class JanelaPrincipal(QMainWindow):
         self.menu.ligar("voltar", self._sair_da_conferencia)
         self.menu.ligar("sair", self.close)
 
-        self.menu.ligar("desfazer", conferir.desfazer)
-        self.menu.ligar("refazer", conferir.refazer)
+        # Etapa 2 da obra (26/10/2026): o que mexe no trabalho passa por
+        # _no_trabalho, que so deixa agir no trabalho DESTE livro, aberto na
+        # area de trabalho (os menus agora ficam acesos tambem na tela "O que
+        # fazer", lista unica 1.12; e as teclas ja valiam em qualquer tela).
+        trabalho = self._no_trabalho
+        self.menu.ligar("desfazer", trabalho(conferir.desfazer))
+        self.menu.ligar("refazer", trabalho(conferir.refazer))
 
-        self.menu.ligar("procurar_de_novo", conferir._detectar_de_novo)
-        self.menu.ligar("limpar_marcacao", conferir._limpar_marcacao)
-        self.menu.ligar("folha_em_branco", conferir._folha_em_branco)
+        self.menu.ligar("procurar_de_novo", trabalho(conferir._detectar_de_novo))
+        self.menu.ligar("limpar_marcacao", trabalho(conferir._limpar_marcacao))
+        self.menu.ligar("folha_em_branco", trabalho(conferir._folha_em_branco))
 
         for chave in (ORIGINAL, PRETO_E_BRANCO, MELHORAR, MAGICO_PRO):
             self.menu.ligar(f"filtro_{chave}",
-                            lambda _marcado=False, f=chave: conferir._escolher_filtro(f))
+                            trabalho(lambda f=chave: conferir._escolher_filtro(f)))
 
-        self.menu.ligar("ir_para_pagina", self._perguntar_a_pagina)
+        # Etapa 2 da obra: o menu Ferramentas (as da trilha, pelo mesmo ponto
+        # unico de troca da tela) e a marca acompanha a trilha
+        for ferramenta in self.menu.ferramentas_do_menu:
+            self.menu.ligar(f"usar_{ferramenta}",
+                            trabalho(lambda f=ferramenta: conferir.escolher_ferramenta(f)))
+        conferir.trilha.ferramenta_mudou.connect(self.menu.marcar_ferramenta)
+
+        self.menu.ligar("ir_para_pagina", trabalho(self._perguntar_a_pagina))
         # Item 2.3 (girar): os tres giros e o "Aplicar o giro em", que e o
         # mesmo da barrinha em cima da pagina - os dois ficam sempre iguais.
-        self.menu.ligar("girar", conferir._girar)
-        self.menu.ligar("girar_esquerda", conferir._girar_esquerda)
-        self.menu.ligar("girar_meia_volta", conferir._girar_meia_volta)
+        self.menu.ligar("girar", trabalho(conferir._girar))
+        self.menu.ligar("girar_esquerda", trabalho(conferir._girar_esquerda))
+        self.menu.ligar("girar_meia_volta", trabalho(conferir._girar_meia_volta))
         from core.girar import ALCANCES
 
         for alcance in ALCANCES:
@@ -254,11 +266,14 @@ class JanelaPrincipal(QMainWindow):
         conferir.barra_girar.alcance_mudou.connect(self._alcance_do_giro_mudou)
         conferir.marcacoes_por_converter.connect(self._converter_as_zonas_se_parado)
         self.menu.atalhos_mudaram.connect(self._mostrar_teclas_do_giro)
-        self.menu.ligar("apagar", conferir.apagar_pagina)
+        # Etapa 2 da obra (Samuel, 07/10/2026): Delete = "Deixar em branco";
+        # "Tirar do livro" e o que antes se chamava "Apagar esta página"
+        self.menu.ligar("deixar_em_branco", trabalho(conferir.deixar_em_branco_ou_voltar))
+        self.menu.ligar("tirar_do_livro", trabalho(conferir.apagar_pagina))
         # Etapa 4 do layout (20/10/2026): os itens que estavam no menu e nao
         # faziam nada (inventario de 02/10, "11 itens de menu mortos"). Os
         # quatro "Painel: ..." do menu Ver viraram o menu Painéis (rodada 14).
-        self.menu.ligar("restaurar", conferir.restaurar_pagina)
+        self.menu.ligar("restaurar", trabalho(conferir.restaurar_pagina))
         self.menu.ligar("historico", conferir._mostrar_o_historico)
         self.menu.ligar("mais_zoom", lambda: conferir.mudar_o_zoom(conferir.PASSO_DO_ZOOM))
         self.menu.ligar("menos_zoom", lambda: conferir.mudar_o_zoom(1 / conferir.PASSO_DO_ZOOM))
@@ -289,6 +304,53 @@ class JanelaPrincipal(QMainWindow):
         for nome in estilo.TEMAS:
             self.menu.ligar(f"tema_{nome}", lambda _marcado=False, t=nome: self._trocar_tema(t))
         self.menu.marcar_tema(estilo.tema_atual())
+
+        # Etapa 2 da obra: o lado direito (R7 203 D, "Mas eu também quero ter
+        # a opção da area de trabalho 1"; R14 902 C, menu Ver e Configurações)
+        from ui.widgets.paineis import JEITOS_DO_LADO_DIREITO, jeito_guardado
+
+        for jeito in JEITOS_DO_LADO_DIREITO:
+            self.menu.ligar(f"lado_{jeito}",
+                            lambda _marcado=False, j=jeito: self._trocar_lado_direito(j))
+        paineis.jeito_mudou.connect(self.menu.marcar_lado_direito)
+        paineis.definir_jeito(jeito_guardado())
+        self.menu.marcar_lado_direito(paineis.jeito)
+
+    def _no_trabalho(self, acao):
+        """Embrulha uma ação de menu (e a tecla dela) que mexe no trabalho do
+        livro (etapa 2 da obra, 26/10/2026). Ela só age quando o trabalho
+        aberto na área de trabalho é o DESTE livro (já conferido), e só na tela
+        de trabalho ou na "O que fazer" (onde o Desfazer sempre valeu: o
+        verificador, 30/09, r15). Na "O que fazer" de um livro que ainda não
+        foi para a área de trabalho, avisa o que fazer em vez de mexer no livro
+        de antes (as teclas já valiam ali, e iam para o trabalho do livro
+        anterior); nas outras telas não faz nada. Arriscado: ligar um item que
+        mexe no trabalho sem passar por aqui."""
+        def feito(*_argumentos) -> None:
+            tela = self.telas.currentIndex()
+            if tela not in (CONFERIR, OPCOES):
+                return
+            deste_livro = (self.trabalho_carregado and self.projeto is not None
+                           and self.tela_conferir.projeto is self.projeto)
+            if deste_livro:
+                acao()
+            elif tela == OPCOES:
+                self.avisar("Isto vale na área de trabalho, com as páginas do livro. "
+                            "Clique em “Conferir” para abrir o livro nela.",
+                            titulo="Na área de trabalho")
+        return feito
+
+    def _trocar_lado_direito(self, jeito: str) -> None:
+        """Menu Ver > "Lado direito" e Configurações > Aparência (R14 902 C):
+        põe o jeito para valer na hora, guarda para a próxima vez e marca o
+        menu (etapa 2 da obra; R7 203 D: "Mas eu também quero ter a opção da
+        area de trabalho 1")."""
+        from ui.widgets.paineis import guardar_jeito
+
+        paineis = self.tela_conferir.paineis
+        paineis.definir_jeito(jeito)
+        guardar_jeito(paineis.jeito)
+        self.menu.marcar_lado_direito(paineis.jeito)
 
     def _miniaturas_mudaram(self, abertas: bool) -> None:
         """As miniaturas abriram ou fecharam (pela seta ou pelos três
@@ -393,7 +455,11 @@ class JanelaPrincipal(QMainWindow):
         na tela de trabalho."""
         if not hasattr(self, "menu"):
             return
-        if indice == CONFERIR:
+        # Lista unica 1.12 (23/10/2026: menus Editar, Marcar, Filtro, Pagina e
+        # Paineis cinza na tela das caixinhas): com um livro aberto (a tela de
+        # trabalho, ou a "O que fazer" dele) todos os menus ficam acesos; o
+        # que mexe no trabalho passa por _no_trabalho (etapa 2 da obra).
+        if indice == CONFERIR or (indice == OPCOES and self.projeto is not None):
             self.menu.mostrar_tela_de_trabalho()
         else:
             self.menu.mostrar_tela_inicial()

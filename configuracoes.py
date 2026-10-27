@@ -52,6 +52,13 @@ PADROES: dict[str, Any] = {
     "unidade": "cm",
     "perfis": {},
     "perfil_do_livro_novo": "",
+    # O jeito do lado direito da tela de trabalho (etapa 2 da obra, 26/10/2026;
+    # Samuel, rodada 7, 203 D: "Ícones na borda, tudo fechado" + "Mas eu também
+    # quero ter a opção da area de trabalho 1"; rodada 14, 902 C: escolhe-se no
+    # menu Ver e nas Configurações): "icones" (de fábrica) ou "sanfona" (a área
+    # de trabalho 1). Lido e gravado por ui/widgets/paineis.jeito_guardado e
+    # guardar_jeito; valor estranho volta ao de fábrica. Seguro mudar: nada.
+    "lado_direito": "icones",
 }
 
 

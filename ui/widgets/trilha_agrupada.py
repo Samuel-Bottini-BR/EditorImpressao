@@ -257,6 +257,9 @@ class TrilhaAgrupada(QWidget):
     escolhida (sinal `escolhida`); quem troca de modo é a tela."""
 
     escolhida = Signal(str)
+    # a ferramenta marcada mudou, por clique ou por fora (o menu Ferramentas
+    # da janela acompanha; etapa 2 da obra). Leva "" quando nenhuma.
+    ferramenta_mudou = Signal(str)
 
     def __init__(self, parent=None) -> None:
         """Começa com o Retângulo à vista no grupo Formas e tudo disponível."""
@@ -299,12 +302,16 @@ class TrilhaAgrupada(QWidget):
 
     def definir_ferramenta(self, ferramenta: str | None) -> None:
         """Marca a ferramenta escolhida (por fora: tecla, menu, troca de modo)
-        e põe ela à vista no grupo dela. Não avisa ninguém."""
+        e põe ela à vista no grupo dela. Não avisa a tela (não emite
+        `escolhida`); só `ferramenta_mudou`, para a marca do menu acompanhar."""
         indice = grupo_de(ferramenta) if ferramenta else -1
         if indice >= 0:
             self._a_vista[indice] = ferramenta
+        mudou = ferramenta != self.ferramenta
         self.ferramenta = ferramenta
         self.update()
+        if mudou:
+            self.ferramenta_mudou.emit(ferramenta or "")
 
     def a_vista(self, indice: int) -> str:
         """A ferramenta que o botão do grupo mostra agora."""

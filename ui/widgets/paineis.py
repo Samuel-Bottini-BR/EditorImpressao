@@ -16,7 +16,17 @@ Impressão"; as palavras dele estão no "Plano de layout (rascunho).md"):
   - rodada 9, 405 C: Histórico "Os dois" -> desfazer e refazer sempre à mão
     na barra de baixo (ui/tela_conferir.py) e a lista no painel;
   - rodada 10, 504 A, e rodada 11, 602 A: "Para revisar" com as abas "Por
-    página | Por motivo", abrindo "Sempre 'Por página'".
+    página | Por motivo", abrindo "Sempre 'Por página'";
+  - rodada 7, 203 D, o resto do comentário: "Mas eu também quero ter a opção
+    da area de trabalho 1." + rodada 14, 902 C ("Nos dois lugares": menu Ver
+    e Configurações) -> etapa 2 da obra (26/10/2026): o lado direito tem dois
+    jeitos, ColunaDePaineis.definir_jeito: "icones" (de fábrica, o de
+    sempre) e "sanfona", a área de trabalho 1 do desenho
+    `1-area-de-trabalho-opcao-1.png` / `13-rodada7-padrao-a-area1-automatico-
+    aberto.png`: os painéis empilhados numa coluna, cada um com a sua linha
+    de título; clicar na linha abre o painel ali mesmo (um por vez) e os
+    outros ficam fechados, só com a linha. A escolha fica guardada
+    (configuracoes "lado_direito"; jeito_guardado / guardar_jeito).
 
 Os cinco painéis, na ordem dos ícones (a do protótipo 21-rodada13-base):
 
@@ -80,6 +90,44 @@ NOMES_DOS_PAINEIS = {
     PAINEL_FILTRO: "Filtro da página",
     PAINEL_HISTORICO: "Histórico",
 }
+
+# Os jeitos do lado direito (etapa 2 da obra; R7 203 D e R14 902 C). Os nomes
+# são os que o agente de layout pôs na pergunta 902 da rodada 14 ("Ícones na
+# borda", "Sanfona (a área de trabalho 1)"); "abas no alto" e "painel solto",
+# que a pergunta também listava, não foram pedidos pelo Samuel e não existem.
+LADO_ICONES = "icones"
+LADO_SANFONA = "sanfona"
+JEITOS_DO_LADO_DIREITO = (LADO_ICONES, LADO_SANFONA)
+LADO_DE_FABRICA = LADO_ICONES
+NOMES_DOS_JEITOS = {
+    LADO_ICONES: "Ícones na borda (de fábrica)",
+    LADO_SANFONA: "Sanfona (a área de trabalho 1)",
+}
+ALTURA_DA_LINHA_DA_SANFONA = 34
+
+
+def jeito_guardado() -> str:
+    """O jeito do lado direito que a pessoa escolheu da última vez
+    (configuracoes.json, "lado_direito"); valor estranho ou sumido = o de
+    fábrica. Nunca levanta exceção."""
+    try:
+        import configuracoes
+
+        jeito = configuracoes.ler("lado_direito")
+    except Exception:  # noqa: BLE001 - a preferência nunca impede a tela de abrir
+        return LADO_DE_FABRICA
+    return jeito if jeito in JEITOS_DO_LADO_DIREITO else LADO_DE_FABRICA
+
+
+def guardar_jeito(jeito: str) -> None:
+    """Guarda o jeito do lado direito para a próxima vez (falha em silêncio)."""
+    try:
+        import configuracoes
+
+        configuracoes.escrever("lado_direito", jeito)
+    except Exception:  # noqa: BLE001 - preferência não é essencial
+        pass
+
 
 # As duas abas do "Para revisar" (rodada 10, 504 A).
 ABA_POR_PAGINA = "pagina"
@@ -393,6 +441,8 @@ class CabecalhoDoPainel(QFrame):
     e, com páginas pendentes, o nome seguido do número)."""
 
     fechar = Signal()
+    # a contagem ou o subtítulo mudaram (a linha da sanfona repete os dois)
+    mudou = Signal()
 
     def __init__(self, titulo: str, parent=None) -> None:
         super().__init__(parent)
@@ -460,11 +510,13 @@ class CabecalhoDoPainel(QFrame):
         self._contagem = max(0, int(quantas))
         self.contagem.setText(str(self._contagem))
         self.contagem.setVisible(self._contagem > 0)
+        self.mudou.emit()
 
     def definir_subtitulo(self, texto: str) -> None:
         """O texto fraco ao lado do nome ("Cortar as bordas", "página 5")."""
         self.subtitulo.setText(texto)
         self.subtitulo.setToolTip(texto)
+        self.mudou.emit()
 
     def text(self) -> str:  # noqa: D401 - como o botão de título de antes
         """O nome do painel e, se houver, a contagem."""
@@ -1580,7 +1632,7 @@ class PainelFiltroDaPagina(Painel):
         Mais ajustes      só no Preto e branco: o jeito do preto e branco
         Só neste pedaço   o filtro do que for marcado daqui em diante
         ----
-        Tirar esta página do PDF final   [apagar página]
+        Esta página   [deixar em branco] [tirar do livro]   (etapa 2 da obra)
         pé: Aplicar em: só nesta · todas · daqui em diante
 
     O painel só ARRUMA as peças: o deslizante, as listas, o "Só as letras",
@@ -1627,7 +1679,9 @@ class PainelFiltroDaPagina(Painel):
 
         filtros: (chave, nome, tecla) de cada filtro do livro, na ordem da fila.
         pecas: "ajuste", "letras", "limpar", "mais" (os corpos das partes),
-        "aplicar" (vai para o pé) e "apagar" (o botão "apagar página")."""
+        "aplicar" (vai para o pé) e "apagar" (desde a etapa 2 da obra de
+        26/10/2026, os dois botões "deixar em branco" e "tirar do livro"; era
+        só o "apagar página")."""
         from core.filtros import NOMES_AMIGAVEIS
 
         self.desmontar()
@@ -1676,8 +1730,8 @@ class PainelFiltroDaPagina(Painel):
         linha = QHBoxLayout(apagar)
         linha.setContentsMargins(0, 2, 0, 0)
         linha.setSpacing(8)
-        linha.addWidget(frase_do_painel("Tirar esta página do PDF final"), 1)
-        linha.addWidget(pecas["apagar"])
+        linha.addWidget(frase_do_painel("Esta página"))
+        linha.addWidget(pecas["apagar"], 1)
         self.dentro.addWidget(apagar)
         self._apagar = apagar
 
@@ -2126,21 +2180,143 @@ class ColunaDeIcones(QWidget):
 
 
 # ---------------------------------------------------------------------------
+# a área de trabalho 1: os painéis em sanfona (etapa 2 da obra, 26/10/2026)
+# ---------------------------------------------------------------------------
+
+class LinhaDaSanfona(QWidget):
+    """A linha de título de um painel FECHADO na sanfona (a área de trabalho
+    1): a setinha ">", o ícone e o nome do painel e, à direita, o que o
+    cabeçalho dele diria (a contagem do "Para revisar", o nome da ferramenta
+    do Propriedades...). Clicar abre o painel ali. Pintada à mão, como a
+    coluna de ícones; o mouse vira mãozinha (pista visual de que se clica).
+    O painel ABERTO não usa esta linha: o cabeçalho dele (com o "x" que
+    fecha) fica no lugar dela."""
+
+    clicada = Signal(str)
+
+    def __init__(self, painel: str, cabecalho: "CabecalhoDoPainel", parent=None) -> None:
+        super().__init__(parent)
+        self.painel = painel
+        self.cabecalho = cabecalho
+        self.setFixedHeight(ALTURA_DA_LINHA_DA_SANFONA)
+        self.setCursor(Qt.PointingHandCursor)
+        self.setAttribute(Qt.WA_Hover, True)
+        self.setMouseTracking(True)
+        self._sob_o_mouse = False
+        self.setToolTip(f"abrir o painel {NOMES_DOS_PAINEIS.get(painel, '')}")
+        cabecalho.mudou.connect(self.update)
+
+    def texto_da_direita(self) -> str:
+        """A contagem (se houver) ou o subtítulo do cabeçalho do painel."""
+        quantas = getattr(self.cabecalho, "_contagem", 0)
+        if quantas:
+            return str(quantas)
+        return self.cabecalho.subtitulo.text()
+
+    def paintEvent(self, _evento) -> None:  # noqa: N802 - nome do Qt
+        """Fundo (mais claro com o mouse em cima), riscos, a setinha, o ícone,
+        o nome e o texto da direita."""
+        pintor = QPainter(self)
+        pintor.setRenderHint(QPainter.Antialiasing)
+        pintor.fillRect(self.rect(), QColor(estilo.cor("botao_h" if self._sob_o_mouse else "painel")))
+        pintor.setPen(QPen(QColor(estilo.cor("linha")), 1))
+        pintor.drawLine(0, self.height() - 1, self.width(), self.height() - 1)
+        meio = self.height() / 2
+        # a setinha ">" (fechado)
+        pintor.setPen(_caneta(estilo.cor("fraco"), 1.5))
+        pintor.drawLine(QPointF(13, meio - 4), QPointF(17, meio))
+        pintor.drawLine(QPointF(17, meio), QPointF(13, meio + 4))
+        # o ícone do painel, o mesmo da coluna de ícones
+        pintor.setPen(_caneta(estilo.cor("icone"), 1.4))
+        desenhar_icone_do_painel(pintor, self.painel, 26, meio - 8, 16)
+        fonte = QFont(self.font())
+        fonte.setPixelSize(13)
+        fonte.setBold(True)
+        pintor.setFont(fonte)
+        pintor.setPen(QColor(estilo.cor("texto")))
+        pintor.drawText(QRectF(50, 0, self.width() - 130, self.height()),
+                        Qt.AlignVCenter | Qt.AlignLeft, NOMES_DOS_PAINEIS.get(self.painel, ""))
+        direita = self.texto_da_direita()
+        if direita:
+            fonte.setBold(False)
+            fonte.setPixelSize(12)
+            pintor.setFont(fonte)
+            com_contagem = bool(getattr(self.cabecalho, "_contagem", 0))
+            pintor.setPen(QColor(estilo.cor("aviso" if com_contagem else "apagado")))
+            caixa = QRectF(self.width() - 120, 0, 108, self.height())
+            texto = pintor.fontMetrics().elidedText(direita, Qt.ElideRight, int(caixa.width()))
+            pintor.drawText(caixa, Qt.AlignVCenter | Qt.AlignRight, texto)
+
+    def mouseReleaseEvent(self, evento) -> None:  # noqa: N802 - nome do Qt
+        """Soltou o botão esquerdo em cima: abre o painel."""
+        if evento.button() == Qt.LeftButton and self.rect().contains(evento.position().toPoint()):
+            self.clicada.emit(self.painel)
+
+    def enterEvent(self, evento) -> None:  # noqa: N802 - nome do Qt
+        self._sob_o_mouse = True
+        self.update()
+
+    def leaveEvent(self, evento) -> None:  # noqa: N802 - nome do Qt
+        self._sob_o_mouse = False
+        self.update()
+
+
+class _BotaoEsconderASanfona(QPushButton):
+    """A seta ">>" no alto da sanfona: esconde os painéis (a página ganha o
+    lugar; sobra a faixa fina com a seta de mostrar, como nos ícones)."""
+
+    def __init__(self, parent=None) -> None:
+        super().__init__(parent)
+        self.setObjectName("fecharPainel")          # o mesmo desenho do "x"
+        self.setFixedSize(26, 22)
+        self.setCursor(Qt.PointingHandCursor)
+        self.setFocusPolicy(Qt.NoFocus)
+        self.setToolTip("esconder os painéis")
+
+    def paintEvent(self, evento) -> None:  # noqa: N802 - nome do Qt
+        """O fundo do botão e as duas setinhas para a direita."""
+        super().paintEvent(evento)
+        pintor = QPainter(self)
+        pintor.setRenderHint(QPainter.Antialiasing)
+        pintor.setPen(_caneta(estilo.cor("fraco"), 1.5))
+        centro = QPointF(self.width() / 2 + 0.5, self.height() / 2 + 0.5)
+        for desloca in (-2.5, 2.5):
+            ponta = QPointF(centro.x() + desloca + 1.8, centro.y())
+            pintor.drawLine(QPointF(ponta.x() - 3.4, ponta.y() - 3.6), ponta)
+            pintor.drawLine(QPointF(ponta.x() - 3.4, ponta.y() + 3.6), ponta)
+
+
+# ---------------------------------------------------------------------------
 # tudo junto: o painel aberto e, na borda, a coluna de ícones
 # ---------------------------------------------------------------------------
 
 class ColunaDePaineis(QWidget):
-    """O lado direito da tela de trabalho: o painel aberto (se houver) e a
-    coluna de ícones na borda.
+    """O lado direito da tela de trabalho, em um de dois jeitos (etapa 2 da
+    obra; R7 203 D e R14 902 C):
 
-    De fábrica: os ícones à vista e NENHUM painel aberto (rodada 7, 203 D).
-    Clicar num ícone abre o painel dele ao lado da página (ela encolhe: 401
-    A); clicar de novo, ou no "x" do painel, fecha. Um painel por vez. A seta
-    no alto esconde os ícones (e o painel aberto junto) e mostra de novo.
+    "icones" (de fábrica): o painel aberto (se houver) e a coluna de ícones
+    na borda. De fábrica os ícones à vista e NENHUM painel aberto (rodada 7,
+    203 D). Clicar num ícone abre o painel dele ao lado da página (ela
+    encolhe: 401 A); clicar de novo, ou no "x" do painel, fecha. Um painel
+    por vez. A seta no alto esconde os ícones (e o painel aberto junto) e
+    mostra de novo.
+
+    "sanfona" (a área de trabalho 1): uma coluna de 300 px com os cinco
+    painéis empilhados; o aberto mostra o cabeçalho e o corpo, os outros só a
+    linha de título (LinhaDaSanfona), que abre o painel ali mesmo. Um por vez,
+    como nos ícones; ao entrar na sanfona sem painel aberto, abre o
+    Automático (como no desenho da área de trabalho 1). A seta ">>" no alto
+    esconde a coluna; sobra a faixa fina com a seta de mostrar.
+
+    Os dois jeitos usam os MESMOS painéis (nada é montado duas vezes): trocar
+    de jeito só muda onde a pilha dos painéis (`area`) fica. Arriscado: montar
+    um segundo conjunto de painéis para a sanfona (a tela liga os sinais de um
+    conjunto só).
     """
 
     abriu = Signal(str)        # a chave do painel aberto, ou "" quando fechou
     icones_mudaram = Signal(bool)   # a coluna de ícones apareceu (True) ou sumiu
+    jeito_mudou = Signal(str)       # "icones" ou "sanfona"
 
     def __init__(self, parent=None) -> None:
         super().__init__(parent)
@@ -2148,6 +2324,7 @@ class ColunaDePaineis(QWidget):
         linha = QHBoxLayout(self)
         linha.setContentsMargins(0, 0, 0, 0)
         linha.setSpacing(0)
+        self._linha = linha
 
         self.area = QStackedWidget()
         self.area.setFixedWidth(LARGURA)
@@ -2171,6 +2348,40 @@ class ColunaDePaineis(QWidget):
             painel.fechar_pedido.connect(self.fechar)
         linha.addWidget(self.area)
 
+        # a sanfona (área de trabalho 1): a seta de esconder, uma linha por
+        # painel e, no lugar da linha do aberto, a pilha dos painéis
+        self.sanfona = QFrame()
+        self.sanfona.setObjectName("sanfonaDosPaineis")
+        self.sanfona.setAttribute(Qt.WA_StyledBackground, True)
+        # a borda da esquerda (1 px) mais os 300 do painel
+        self.sanfona.setFixedWidth(LARGURA + 1)
+        estilo.estilizar(self.sanfona, lambda: (
+            f"QFrame#sanfonaDosPaineis {{ background: {estilo.cor('painel')};"
+            f" border: none; border-left: 1px solid {estilo.cor('linha')}; }}"))
+        self._coluna_da_sanfona = QVBoxLayout(self.sanfona)
+        self._coluna_da_sanfona.setContentsMargins(0, 0, 0, 0)
+        self._coluna_da_sanfona.setSpacing(0)
+        topo = Bloco()
+        linha_do_topo = QHBoxLayout(topo)
+        linha_do_topo.setContentsMargins(12, 3, 6, 3)
+        rotulo = QLabel("PAINÉIS")
+        rotulo.setObjectName("parteDoPainel")
+        linha_do_topo.addWidget(rotulo)
+        linha_do_topo.addStretch(1)
+        self.botao_esconder_a_sanfona = _BotaoEsconderASanfona()
+        self.botao_esconder_a_sanfona.clicked.connect(lambda *_: self.alternar_os_icones())
+        linha_do_topo.addWidget(self.botao_esconder_a_sanfona)
+        self._coluna_da_sanfona.addWidget(topo)
+        self.linhas_da_sanfona: dict[str, LinhaDaSanfona] = {}
+        for chave in ORDEM_DOS_PAINEIS:
+            linha_da_sanfona = LinhaDaSanfona(chave, self.paineis[chave].cabecalho)
+            linha_da_sanfona.clicada.connect(self.abrir)
+            self.linhas_da_sanfona[chave] = linha_da_sanfona
+            self._coluna_da_sanfona.addWidget(linha_da_sanfona)
+        self._coluna_da_sanfona.addStretch(1)
+        self.sanfona.setVisible(False)
+        linha.addWidget(self.sanfona)
+
         self.icones = ColunaDeIcones()
         self.icones.escolhido.connect(self.alternar)
         self.icones.seta.connect(self.alternar_os_icones)
@@ -2179,7 +2390,28 @@ class ColunaDePaineis(QWidget):
 
         self.aberto: str | None = None
         self.icones_a_vista = True
+        self.jeito = LADO_DE_FABRICA
         self._acertar()
+
+    # --- o jeito do lado direito (etapa 2 da obra) -------------------------
+
+    def definir_jeito(self, jeito: str) -> None:
+        """Troca o jeito do lado direito: "icones" ou "sanfona" (valor
+        estranho vira o de fábrica). Na sanfona sem painel aberto, o
+        Automático abre (desenho da área de trabalho 1). Avisa (jeito_mudou)
+        só se mudou. Quem guarda a escolha é quem chama (guardar_jeito)."""
+        jeito = jeito if jeito in JEITOS_DO_LADO_DIREITO else LADO_DE_FABRICA
+        if jeito == self.jeito:
+            return
+        self.jeito = jeito
+        if jeito == LADO_SANFONA and self.aberto is None:
+            self.abrir(PAINEL_AUTOMATICO)
+        self._acertar()
+        self.jeito_mudou.emit(jeito)
+
+    def em_sanfona(self) -> bool:
+        """O lado direito está na área de trabalho 1 (sanfona)?"""
+        return self.jeito == LADO_SANFONA
 
     # --- abrir e fechar ---------------------------------------------------
 
@@ -2198,7 +2430,8 @@ class ColunaDePaineis(QWidget):
         self.abriu.emit(chave)
 
     def fechar(self) -> None:
-        """Fecha o painel aberto (a página volta a ocupar o lugar dele)."""
+        """Fecha o painel aberto (a página volta a ocupar o lugar dele; na
+        sanfona, ele volta a ser só a linha de título)."""
         if self.aberto is None:
             return
         self.aberto = None
@@ -2214,11 +2447,13 @@ class ColunaDePaineis(QWidget):
 
     def alternar_os_icones(self) -> None:
         """A seta do alto: esconde os ícones (e o painel aberto com eles) ou
-        mostra de novo (o painel que estava aberto volta)."""
+        mostra de novo (o painel que estava aberto volta). Na sanfona,
+        esconde e mostra a coluna inteira."""
         self.mostrar_icones(not self.icones_a_vista)
 
     def mostrar_icones(self, a_vista: bool) -> None:
-        """Mostra ou esconde a coluna de ícones."""
+        """Mostra ou esconde a coluna de ícones (na sanfona, a coluna dos
+        painéis)."""
         self.icones_a_vista = bool(a_vista)
         self._acertar()
         self.icones_mudaram.emit(self.icones_a_vista)
@@ -2233,12 +2468,37 @@ class ColunaDePaineis(QWidget):
             self.fechar()
 
     def _acertar(self) -> None:
-        """Põe à vista o que o estado manda (painel, ícones, o ícone azul)."""
+        """Põe à vista o que o estado manda (o jeito, o painel, os ícones, o
+        ícone azul). Na sanfona a pilha dos painéis vai para o lugar da linha
+        do painel aberto; nos ícones, volta para o lado da coluna de ícones."""
+        sanfona = self.jeito == LADO_SANFONA and self.icones_a_vista
+        coluna = self._coluna_da_sanfona
+        if sanfona:
+            if self._linha.indexOf(self.area) >= 0:
+                self._linha.removeWidget(self.area)
+            if coluna.indexOf(self.area) >= 0:
+                coluna.removeWidget(self.area)
+            if self.aberto is not None:
+                lugar = coluna.indexOf(self.linhas_da_sanfona[self.aberto])
+                coluna.insertWidget(lugar + 1, self.area, 1)
+            # sem painel aberto, as linhas ficam no alto e a mola embaixo
+            coluna.setStretch(coluna.count() - 1, 0 if self.aberto is not None else 1)
+            for chave, linha in self.linhas_da_sanfona.items():
+                linha.setVisible(chave != self.aberto)
+        elif coluna.indexOf(self.area) >= 0:
+            coluna.removeWidget(self.area)
+            self._linha.insertWidget(0, self.area)
+        self.sanfona.setVisible(sanfona)
         self.area.setVisible(self.aberto is not None and self.icones_a_vista)
+        # na sanfona os ícones somem; com a coluna escondida, sobra a faixa
+        # fina com a seta de mostrar (nos dois jeitos)
+        self.icones.setVisible(not sanfona)
         self.icones.definir_recolhida(not self.icones_a_vista)
         self.icones.definir_aberto(self.aberto)
         self.updateGeometry()
 
     def largura_ocupada(self) -> int:
         """Quantos pontos de largura o lado direito toma agora (testes)."""
+        if self.sanfona.isVisibleTo(self):
+            return self.sanfona.width()
         return self.icones.width() + (LARGURA if self.area.isVisibleTo(self) else 0)

@@ -313,7 +313,11 @@ def test_o_bloco_girar_a_folha_fica_no_alto_do_propriedades(janela, pasta):
     """Rodada 12, 703 B: em todas as ferramentas, acima do que é da ferramenta."""
     tela = _aberta(janela, pasta)
     painel = tela.paineis.propriedades
-    assert painel.dentro.itemAt(0).widget() is tela.barra_girar
+    # o primeiro do painel e o bloco do alto, com o girar no comeco (etapa 2
+    # da obra: embaixo dele, os botoes de "Esta pagina")
+    alto = painel.dentro.itemAt(0).widget()
+    assert alto.isAncestorOf(tela.barra_girar)
+    assert alto.layout().itemAt(0).widget() is tela.barra_girar
     for ferramenta in (FERRAMENTA_CORTAR, FERRAMENTA_ENDIREITAR, FERRAMENTA_DIVIDIR):
         tela.trilha.escolher(ferramenta)
         _assentar()
@@ -332,8 +336,8 @@ def test_os_textos_da_rodada_13(janela, pasta):
     assert texto_dos_angulos_medidos(
         {"programa": -0.2, "scantailor": 0.0, "discordam": False}) ==         "ScanTailor +0,0° · Editor -0,2°"
     tela = _aberta(janela, pasta)
-    if "filtro" not in tela._abas_ativas:
-        pytest.skip("este livro abriu sem os filtros")
+    # D-001 (etapa 2 da obra): o Filtro existe em todo livro; faltar e falha
+    assert "filtro" in tela._abas_ativas
     # etapa 4 do layout: o "Aplicar em" mora no pé do painel Filtro
     botoes = _botoes(tela.paineis.filtro_da_pagina.pe)
     assert "daqui em diante" in botoes and "só nas próximas" not in botoes
@@ -432,8 +436,8 @@ def test_com_as_ferramentas_de_marcar_o_propriedades_mostra_o_marcar_como(janela
     janela.abrir_livro(str(_pdf(pasta, folhas=3)))
     janela._analise_pronta(pipeline.analisar_projeto(janela.projeto))   # com o Marcar
     tela = janela.tela_conferir
-    if "marcar" not in tela._abas_ativas:
-        pytest.skip("este livro abriu sem as ferramentas de marcar")
+    # D-001 (etapa 2 da obra): as de marcar existem em todo livro
+    assert "marcar" in tela._abas_ativas
     janela.resize(1280, 657)
     janela.show()
     tela.escolher_ferramenta("laco")
