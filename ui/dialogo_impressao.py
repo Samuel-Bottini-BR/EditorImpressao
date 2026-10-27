@@ -949,7 +949,7 @@ class ConfirmarImpressao(QDialog):
         self.combo_lados = _lista([c for c, _n in self.LADOS], dict(self.LADOS))
         if frente_e_verso_de_fabrica:
             self.combo_lados.setCurrentIndex(2 if borda_curta else 1)
-        form.addRow("Papel:", self.combo_lados)
+        form.addRow("Lados do papel:", self.combo_lados)
         coluna.addLayout(form)
 
         self.frase = QLabel("")

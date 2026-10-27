@@ -192,9 +192,8 @@ class TelaFinal(QWidget):
         self.botao_imprimir.clicked.connect(self.imprimir_agora)
         linha.addWidget(self.botao_imprimir)
 
-        # Item 2.6 (CONTROLE MINIMO, provisorio ate o layout; anotado em
-        # relatorios/fase2-novas/ONDE-PAREI.md): a janela de imprimir dentro
-        # do programa (livreto A4 com margens e escala, pagina inteira,
+        # Item 2.6 (refeita na etapa 9a, D-333; ui/dialogo_impressao.py):
+        # a janela de imprimir dentro do programa (livreto A4 com margens e escala, pagina inteira,
         # varias por folha, poster, mandar para a impressora). Trabalha sobre
         # o PDF que acabou de sair, sem mexer nele.
         # nome que diz a diferenca do "Montar cadernos" antigo (pergunta 3

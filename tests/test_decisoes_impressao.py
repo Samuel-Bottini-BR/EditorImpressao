@@ -80,7 +80,8 @@ def sem_impressora_de_verdade(monkeypatch):
 
     monkeypatch.setattr(impressora, "imprimir", imprimir_falso)
     monkeypatch.setattr(historico, "imprimir", lambda *a, **k: mandados.append({"historico": a}))
-    monkeypatch.setattr(dialogo_impressao, "listar_impressoras", lambda: list(IMPRESSORAS))
+    monkeypatch.setattr(dialogo_impressao, "listar_impressoras", lambda: list(IMPRESSORAS),
+                        raising=False)          # raising=False: roda também no código antigo
     return mandados
 
 
@@ -141,6 +142,13 @@ def _rodinha(widget: QWidget, para_baixo: bool = True) -> None:
                          Qt.KeyboardModifier.NoModifier, Qt.ScrollPhase.NoScrollPhase, False)
     QApplication.sendEvent(widget, evento)
     QApplication.processEvents()
+
+
+def _area_das_opcoes(dialogo):
+    """A rolagem das opções (no código antigo, a única da janela)."""
+    from PySide6.QtWidgets import QScrollArea
+
+    return getattr(dialogo, "area_das_opcoes", None) or dialogo.findChild(QScrollArea)
 
 
 def _textos_visiveis(raiz: QWidget) -> list[QWidget]:
@@ -296,13 +304,14 @@ def test_d333_resultado_a_parte_nao_espreme_as_opcoes(app, pasta):
     dialogo = DialogoImpressao(str(_livro(pasta / "l.pdf", 23)))
     dialogo.show()
     dialogo.resize(dialogo.minimumSize())
-    QApplication.processEvents()
-    altura_antes = dialogo.area_das_opcoes.viewport().height()
+    _assentar()
+    opcoes = _area_das_opcoes(dialogo)
+    altura_antes = opcoes.viewport().height()
     dialogo.comecar(destino=str(pasta / "s.pdf"))
     assert dialogo.tarefa.wait(60000)
-    QApplication.processEvents()
-    assert not dialogo.area_das_opcoes.isAncestorOf(dialogo.estado)
-    assert dialogo.area_das_opcoes.viewport().height() == altura_antes
+    _assentar()
+    assert not opcoes.isAncestorOf(dialogo.estado)
+    assert opcoes.viewport().height() == altura_antes
     assert "último grupo tem 1 folha" in dialogo.passos.text()
     dialogo.reject()
 
@@ -363,11 +372,12 @@ def test_rodinha_nao_muda_numero_nem_lista_sem_clique(app, pasta):
     dialogo.show()
     dialogo.resize(dialogo.minimumSize())
     QApplication.processEvents()
-    dialogo.botao_fechar.setFocus()
+    fechar = next(b for b in dialogo.findChildren(QPushButton) if b.text() == "fechar")
+    fechar.setFocus()
     caixas = dialogo.findChildren(QAbstractSpinBox) + dialogo.findChildren(QComboBox)
     antes = {id(c): (c.value() if isinstance(c, QAbstractSpinBox) else c.currentIndex())
              for c in caixas}
-    rolagem = dialogo.area_das_opcoes.verticalScrollBar()
+    rolagem = _area_das_opcoes(dialogo).verticalScrollBar()
     rolagem.setValue(0)
     for caixa in caixas:
         _rodinha(caixa)

@@ -10,7 +10,13 @@ O QUE FAZ
     dados real do Samuel). O livro de teste é um PDF desenhado aqui.
 
 USO
-    .venv\\Scripts\\python.exe relatorios\\obra-etapa9a\\fazer_prints.py <prefixo>
+    .venv\\Scripts\\python.exe relatorios\\obra-etapa9a\\fazer_prints.py <prefixo> [--windows]
+
+    --windows: a janela de verdade do Windows (não a "fora da tela"), posta
+    longe da área visível (x = -4000) para não aparecer na tela do Samuel.
+    QT_SCALE_FACTOR=1.2 porque a tela deste PC já é 125% (1920x1080): 1,25 x
+    1,2 = 1,5, e a tela fica com 1280x720 "pontos" (680 livres), igual ao
+    notebook 1920x1080 com 150%. O print sai em pixels reais (1,5 x).
 """
 
 from __future__ import annotations
@@ -23,7 +29,11 @@ RAIZ = Path(__file__).resolve().parents[2]
 TRABALHO = RAIZ / "tmp-agente" / "prints"
 TRABALHO.mkdir(parents=True, exist_ok=True)
 os.environ["LOCALAPPDATA"] = str(TRABALHO / "dados")
-os.environ.setdefault("QT_QPA_PLATFORM", "offscreen")
+NA_JANELA_DE_VERDADE = "--windows" in sys.argv
+if NA_JANELA_DE_VERDADE:
+    os.environ["QT_SCALE_FACTOR"] = "1.2"
+else:
+    os.environ.setdefault("QT_QPA_PLATFORM", "offscreen")
 os.environ.setdefault("QT_QPA_FONTDIR", "C:/Windows/Fonts")
 sys.path.insert(0, str(RAIZ))
 
@@ -47,13 +57,16 @@ def livro(caminho: Path, n: int) -> Path:
 
 
 def guardar(widget, nome: str) -> None:
-    QApplication.processEvents()
+    for _ in range(5):
+        QApplication.processEvents()
     widget.grab().save(str(PRINTS / f"{nome}.png"))
     print("gravado", PRINTS / f"{nome}.png")
 
 
 def main() -> None:
-    prefixo = sys.argv[1] if len(sys.argv) > 1 else "depois"
+    prefixo = sys.argv[1] if len(sys.argv) > 1 and not sys.argv[1].startswith("--") else "depois"
+    if NA_JANELA_DE_VERDADE:
+        prefixo += "-windows150"
     app = QApplication.instance() or QApplication([])
     from ui import estilo
 
@@ -68,8 +81,14 @@ def main() -> None:
 
     # 1) do tamanho que abre num notebook 1280x657 (150%)
     d = DialogoImpressao(str(entrada))
+    d.move(-4000, 0)
     d.show()
+    # o tamanho que _tamanho_ao_abrir dá numa tela de 1280x657 livres (a
+    # janela do programa no notebook com 150%): 1000 x 617
+    if not NA_JANELA_DE_VERDADE:
+        d.resize(min(1000, 1280 - 40), min(640, 657 - 40))
     tamanho = d.size()
+    print("escala da tela:", d.devicePixelRatio())
     print("tamanho ao abrir:", tamanho.width(), tamanho.height(),
           "mínimo:", d.minimumWidth(), d.minimumHeight())
     guardar(d, f"{prefixo}-montar-ao-abrir")
@@ -96,11 +115,26 @@ def main() -> None:
         return
     c = ConfirmarImpressao(str(entrada), impressoras=["EPSON L3250 Series", "Microsoft Print to PDF"],
                            frente_e_verso_de_fabrica=False)
+    c.move(-4000, 0)
     c.show()
     guardar(c, f"{prefixo}-imprimir-agora-confirmar")
     c.resize(c.minimumSize())
     guardar(c, f"{prefixo}-imprimir-agora-confirmar-minima")
     c.reject()
+
+    # 5) a tela "Ficou pronto!" na janela do programa (1280x657)
+    from modelos import Projeto
+    from ui.tela_final import TelaFinal
+
+    tela = TelaFinal()
+    estilo.estilizar(tela, lambda: estilo.FOLHA_DE_ESTILO)
+    projeto = Projeto(caminho_entrada=str(entrada), caminho_saida=str(entrada))
+    tela.mostrar(projeto, str(entrada), 37)
+    tela.resize(1280, 657)
+    tela.move(-4000, 0)
+    tela.show()
+    guardar(tela, f"{prefixo}-ficou-pronto")
+    tela.close()
 
 
 if __name__ == "__main__":
