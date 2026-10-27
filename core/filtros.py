@@ -2404,6 +2404,19 @@ DESENHO_CONTRASTE = 0.20            # preto se o ponto < (1 - isto) x fundo em v
 DESENHO_AREA_ESCURA = 0.80
 DESENHO_MANCHA_PEQUENA = 1 / 12
 DESENHO_CROMA_DE_TINTA = 22.0
+# Etapa 10b da obra (lista unica 4.1, 27/10/2026: "a gravura sai pior que o
+# original" - Palatino 74, Valades 41): a mancha escura pequena enchia de preto
+# a mancha INTEIRA. Na nota do Graduale isso esta certo (ela e tinta de ponta
+# a ponta), mas a hachura fechada (rostos e roupas do Valades 41) e o fundo
+# manchado da gravura em madeira (Palatino 70 e 74) tambem sao "manchas
+# escuras pequenas", e viravam BLOCOS PRETOS chapados. Agora so entram os
+# pontos da mancha mais escuros que DESENHO_TINTA_CHEIA do nivel do papel: a
+# nota (tinta de 45 a 90 contra papel de ~190) continua cheia; o espaco claro
+# entre os riscos da hachura continua branco. Medido: o Palatino 5 (retrato
+# aprovado) e a jarra do Marial 78 quase nao mudam; os blocos do Palatino 74,
+# 70 e do Valades 41 somem (tests/test_etapa10b_imagem.py). Arriscado: subir
+# muito (a hachura volta a virar bloco) ou baixar muito (a nota volta oca).
+DESENHO_TINTA_CHEIA = 0.55
 
 # Foto e pintura de tom continuo (a estatua do Opus Majus 20, o anjo da Escola
 # 35): no Preto e branco saem em TONS DE CINZA (decisao do Samuel, conferencia
@@ -2667,7 +2680,10 @@ def _desenho_em_preto_e_branco(img3: np.ndarray, nivel_papel: float,
                      / np.maximum(medidas[:, cv2.CC_STAT_AREA], 1))
             tinta = pequenas & (media < DESENHO_CROMA_DE_TINTA)
             if tinta.any():
-                preto |= tinta[rotulos]
+                # so os pontos ESCUROS DE VERDADE da mancha (ver
+                # DESENHO_TINTA_CHEIA): a nota cheia volta cheia; a hachura e o
+                # fundo manchado da gravura nao viram bloco preto (4.1)
+                preto |= tinta[rotulos] & (cinza < DESENHO_TINTA_CHEIA * nivel_papel)
     saida = np.full(cinza.shape, 255, np.uint8)
     saida[preto] = 0
     return saida
