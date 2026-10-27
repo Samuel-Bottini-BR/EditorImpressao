@@ -39,7 +39,7 @@ pytest.importorskip("PySide6")
 from PySide6.QtWidgets import QApplication  # noqa: E402
 
 import projetos  # noqa: E402
-from core.filtros import MAGICO_PRO  # noqa: E402
+from core.filtros import MAGICO_PRO, ORIGINAL  # noqa: E402
 from tests.test_mesmo_livro_outro_caminho import (  # noqa: F401, E402 - fixtures
     _analisar,
     app,
@@ -92,6 +92,19 @@ def _filtro_no_disco(resumo: projetos.Resumo, pagina: int = 1) -> str:
     return dados["paginas"][pagina]["filtro"]
 
 
+def _limpo_no_disco(resumo: projetos.Resumo) -> bool:
+    """O trabalho foi jogado fora: ou nao ha projeto.json, ou (desde a etapa 3 da
+    obra, 26/10/2026, D-002: o livro limpo abre direto na area de trabalho e se
+    grava) o que esta la e o livro limpo - nenhuma pagina mexida, e o livro
+    ainda nao passou pelo automatico."""
+    estado = Path(resumo.pasta) / projetos.ARQUIVO_ESTADO
+    if not estado.exists():
+        return True
+    dados = json.loads(estado.read_text(encoding="utf-8"))
+    return (all(p.get("filtro", ORIGINAL) == ORIGINAL for p in dados.get("paginas", []))
+            and dados.get("passou_pelo_automatico") is False)
+
+
 def test_abrir_outro_livro_logo_depois_de_mudar_guarda_a_mudanca(janela, pasta):
     """O caso do verificador: Ctrl+O (ou menu Arquivo > Abrir, ou arrastar)
     0,05 s depois da mudanca. Todos chegam em abrir_livro."""
@@ -127,9 +140,8 @@ def test_comecar_de_novo_outro_livro_guarda_a_mudanca_do_aberto(janela, pasta):
     assert _filtro_no_disco(primeiro) == MAGICO_PRO
     _deixar_o_relogio_disparar()
     assert _filtro_no_disco(primeiro) == MAGICO_PRO
-    # o segundo, sim, foi limpo: nada de paginas gravadas
-    estado = Path(segundo.pasta) / projetos.ARQUIVO_ESTADO
-    assert not estado.exists() or not json.loads(estado.read_text(encoding="utf-8")).get("paginas")
+    # o segundo, sim, foi limpo
+    assert _limpo_no_disco(segundo)
 
 
 def test_comecar_de_novo_o_proprio_livro_aberto_joga_o_trabalho_fora(janela, pasta):
@@ -141,9 +153,12 @@ def test_comecar_de_novo_o_proprio_livro_aberto_joga_o_trabalho_fora(janela, pas
     if janela.aviso_do_fundo is not None:
         janela.aviso_do_fundo.done(0)
     _deixar_o_relogio_disparar()
-    estado = Path(primeiro.pasta) / projetos.ARQUIVO_ESTADO
-    assert not estado.exists() or not json.loads(estado.read_text(encoding="utf-8")).get("paginas")
-    assert janela.resumo.pasta == primeiro.pasta and not janela.trabalho_carregado
+    assert _limpo_no_disco(primeiro)
+    # etapa 3 da obra: o livro limpo esta aberto na area de trabalho (antes:
+    # parado na tela "O que fazer", sem trabalho carregado)
+    assert janela.resumo.pasta == primeiro.pasta
+    assert janela.projeto.paginas[1].filtro != MAGICO_PRO
+    assert janela.projeto.passou_pelo_automatico is False
 
 
 def test_voltar_logo_depois_de_mudar_guarda_a_mudanca(janela, pasta):

@@ -327,36 +327,42 @@ def test_a_contagem_avisa_a_coluna_de_icones(app):
     assert coluna.icones.contagem == 2
 
 
-# --- Automático: o que existe hoje -------------------------------------------
+# --- Automático (etapa 3 da obra, 26/10/2026: o painel de verdade) ----------
 
 
 def test_o_automatico_mostra_as_etapas_do_livro(app):
+    """O painel mostra as etapas do livro, na ordem, e onde cada uma está
+    ligada (antes: a lista só de leitura da tela "O que fazer")."""
+    from core import automatico as A
+
     projeto = _projeto(3)
     projeto.dividir_folhas = True
     projeto.endireitar = False
     painel = PainelAutomatico()
     painel.atualizar(projeto)
-    nomes = [nome for _ligada, nome, _faz, _escolha in painel.linhas]
-    assert nomes == ["Dividir folhas ao meio", "Endireitar folhas tortas", "Cortar as bordas",
-                     "Limpar a folha", "Montar cadernos no tamanho do scan (sem A4, sem margem)"]   # nome novo: pergunta 3, 22/10
-    ligadas = {nome: ligada for ligada, nome, _faz, _escolha in painel.linhas}
-    assert ligadas["Dividir folhas ao meio"] is True
-    assert ligadas["Endireitar folhas tortas"] is False
-    textos = " ".join(r.text() for r in painel.findChildren(QLabel))
-    assert "Dividir folhas ao meio" in textos and "desligada neste livro" in textos
-    assert "jeito:" in textos
+    lista = painel.lista
+    etapas = [lista.item(i).data(Qt.UserRole) for i in range(lista.count())]
+    assert etapas == A.ordem(projeto)
+    assert [A.NOMES[e] for e in etapas][:4] == ["Dividir folhas ao meio", "Endireitar folhas tortas",
+                                                "Cortar as bordas", "Limpar a folha"]
+    textos = {e: lista.item_da_etapa(e).text() for e in etapas}
+    assert "Dividir folhas ao meio" in textos[A.DIVIDIR] and "ligada no livro todo" in textos[A.DIVIDIR]
+    assert "desligada" in textos[A.ENDIREITAR]
 
 
 def test_o_automatico_leva_as_opcoes_do_livro(app):
-    """Mudar uma etapa é na tela "O que fazer" (receitas e ordem das etapas
-    ainda não existem no programa)."""
+    """Mudar uma etapa é no Automático: "abrir em janela grande" e "ajustar a
+    etapa escolhida ›" pedem a janela grande (antes: "Voltar para as opções")."""
+    from core import automatico as A
+
     painel = PainelAutomatico()
     painel.atualizar(_projeto(2))
     pedidos = []
-    painel.mudar_pedido.connect(lambda: pedidos.append(1))
-    assert painel.botao_mudar.text() == "Voltar para as opções"
-    painel.botao_mudar.click()
-    assert pedidos == [1]
+    painel.janela_pedida.connect(pedidos.append)
+    painel.botao_janela.click()
+    painel.lista.escolher(A.LIMPAR)
+    painel.botao_ajustar.click()
+    assert pedidos == ["", A.LIMPAR]
 
 
 # --- Propriedades: muda conforme a ferramenta --------------------------------
