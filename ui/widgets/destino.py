@@ -11,7 +11,6 @@ from pathlib import Path
 
 from PySide6.QtCore import Qt, Signal
 from PySide6.QtWidgets import (
-    QFileDialog,
     QFrame,
     QHBoxLayout,
     QLabel,
@@ -111,12 +110,12 @@ class SeletorDestino(QFrame):
 
     def escolher_pasta(self) -> None:
         """Abre o seletor nativo de pastas e valida se da para gravar ali."""
-        # Sem DontUseNativeDialog: queremos o seletor de pastas do proprio
-        # Windows, que e o que o usuario ja conhece.
-        escolhida = QFileDialog.getExistingDirectory(
-            self, "Escolha a pasta onde salvar o PDF", str(self._pasta),
-            QFileDialog.ShowDirsOnly,
-        )
+        # O seletor de pastas do proprio Windows, que e o que o usuario ja
+        # conhece; quando ele nao pode ser usado, o do Qt em portugues (etapa
+        # 9a, 26/10/2026: ui/dialogos_de_arquivo.py).
+        from ui.dialogos_de_arquivo import escolher_pasta
+
+        escolhida = escolher_pasta(self, "Escolha a pasta onde salvar o PDF", str(self._pasta))
         if not escolhida:
             return
 
