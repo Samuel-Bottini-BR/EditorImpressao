@@ -269,6 +269,38 @@ def test_d012_so_o_botao_imprimir_da_confirmacao_manda(app, pasta, sem_impressor
     confirmar.reject()
 
 
+def test_d012_mandar_da_janela_montar_tambem_pergunta(app, pasta, sem_impressora_de_verdade,
+                                                      monkeypatch):
+    """REVERSÃO. D-012 (o clique nunca imprime sem confirmação) vale também
+    para o "mandar para a impressora" da janela "Montar para imprimir"
+    (imp-5): antes, o clique já mandava as folhas. Agora pergunta, dizendo a
+    impressora, os lados, as cópias e quantas folhas saem."""
+    from ui import perguntas
+    from ui.dialogo_impressao import DialogoImpressao
+
+    perguntas_feitas: list[str] = []
+    resposta = {"sim": False}
+
+    def perguntar(pai, titulo, texto, *a, **k):
+        perguntas_feitas.append(texto)
+        return resposta["sim"]
+
+    monkeypatch.setattr(perguntas, "perguntar", perguntar)
+    dialogo = DialogoImpressao(str(_livro(pasta / "l.pdf", 8)))
+    QTest.mouseClick(dialogo.botao_imprimir, Qt.MouseButton.LeftButton)
+    assert dialogo.tarefa is None and sem_impressora_de_verdade == []
+    assert perguntas_feitas and "EPSON L3250 Series" in perguntas_feitas[0]
+    assert "1 cópia" in perguntas_feitas[0] and "2 folhas de papel" in perguntas_feitas[0]
+
+    resposta["sim"] = True
+    QTest.mouseClick(dialogo.botao_imprimir, Qt.MouseButton.LeftButton)
+    assert dialogo.tarefa is not None and dialogo.tarefa.wait(60000)
+    QApplication.processEvents()
+    assert len(sem_impressora_de_verdade) == 1
+    assert sem_impressora_de_verdade[0]["impressora"] == "EPSON L3250 Series"
+    dialogo.reject()
+
+
 # --------------------------------------------------------------- D-333 janela refeita
 
 @pytest.mark.parametrize("tamanho", ["ao_abrir", "minima"])

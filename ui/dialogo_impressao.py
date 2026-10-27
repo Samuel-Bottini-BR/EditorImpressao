@@ -631,10 +631,17 @@ class DialogoImpressao(QDialog):
         self.resize(max(largura, self.minimumWidth()), max(altura, self.minimumHeight()))
 
     def _carregar_impressoras(self) -> None:
-        if self.combo_impressora.count() > 1:
+        """Põe as impressoras do Windows na lista (a de sempre primeiro, como
+        na confirmação do "imprimir agora"); uma vez só."""
+        if getattr(self, "_impressoras_carregadas", False):
             return
-        for nome in listar_impressoras():
-            self.combo_impressora.addItem(nome, nome)
+        self._impressoras_carregadas = True
+        nomes = listar_impressoras()
+        if not nomes:
+            return                  # fica "a de sempre do Windows"
+        self.combo_impressora.clear()
+        for i, nome in enumerate(nomes):
+            self.combo_impressora.addItem(f"{nome} (a de sempre)" if i == 0 else nome, nome)
 
     def _acertar_grupos(self) -> None:
         formato = self.combo_formato.currentData()
@@ -784,16 +791,20 @@ class DialogoImpressao(QDialog):
         from ui import perguntas
 
         self._carregar_impressoras()
-        nome = self.combo_impressora.currentText()
+        nome = self.combo_impressora.currentData() or "a de sempre do Windows"
         opcoes = self.opcoes()
         copias = self.copias.value()
         lados = ("frente e verso" if opcoes.lados == imp.AMBOS else
                  "só a frente" if opcoes.lados == imp.SO_FRENTE else "só o verso")
+        # o miolo do resumo (sem a primeira linha, que repete o formato, e sem
+        # a última, "Ao gravar...")
+        partes = self.resumo_antes().split("\n\n")
+        miolo = "\n\n".join(partes[1:-1]) if len(partes) > 2 else ""
         if not perguntas.perguntar(
                 self, "Mandar para a impressora?",
                 f"Vai para a impressora \"{nome}\": {NOMES_CURTOS.get(opcoes.formato, '')}, "
                 f"{lados}, {contar(copias, 'cópia', 'cópias')}.\n\n"
-                + self.resumo_antes().split("\n\n")[-2] + "\n\nMandar agora?",
+                + (miolo + "\n\n" if miolo else "") + "Mandar agora?",
                 sim="mandar", nao="cancelar"):
             return
         self.comecar(impressora=self.combo_impressora.currentData() or "")
