@@ -121,7 +121,15 @@ os avisos do livro inteiro aparecem numa linha no alto do "Para revisar" e no li
 
 ## GitHub
 
-GITHUB_AQUI
+- **40600933204** (commit `b3dd854`/`42cd738`): cancelada no meio, porque eu já tinha mandado mais dois commits (a prova
+  da janela de salvar reescrita para a D-285).
+- **40601574220** (commit `45e6633`, a final): **partes 2, 3, 4 e 5 e "Botões e prints da janela real"
+  (`teste_botoes.py`) passam**. Parte 1: `test_promessas.py` com **253 passaram, 2 falharam, 4 xfail**: P-085 (o menu
+  Filtro) e P-127 pelo menu ("Antes de processar") — **as duas falham igual no código antigo** (conferido no PC no
+  `7859b97`: `-k "p07 or p08 or p127"` dá P-070, P-085 e P-127 vermelhas lá; P-070 só no PC, sem os modelos), e já
+  apareciam na rodada da etapa 6 (40592137706). Na primeira tentativa da parte 1 vieram também 2 "erros" em P-083 (uma
+  prévia de um teste anterior procurando o PDF já apagado, `ui/tarefas.py:683`); **na segunda tentativa da mesma rodada
+  (rerun da parte 1) eles não voltaram** — instabilidade de fim de teste, não desta etapa.
 
 ## Prints da janela de verdade (1280×657 lógicos, a 125% deste PC = 1600×821; fora da tela; `relatorios/obra-etapa7/prints/`)
 
@@ -198,7 +206,13 @@ aberto foi aberto pela função da tela inicial (`abrir_o_livro`), não pelo cli
 
 ## Commits (ramo `obra-etapa7-2026-10-26`)
 
-COMMITS_AQUI
+- `ced5138` ONDE-PAREI com as decisões que a tarefa precisa cumprir
+- `b3dd854` "está certo" com resposta, botões no cartão, um número só, "ver as N em tela cheia", D-521, D-497 pronta;
+  provas (13) e reversão
+- `42cd738` botões do cartão em filas inteiras; avisos da página antes dos da folha; o nome encolhe no rodapé; prints
+- `deb44d3` Livro de decisões: situação das decisões tocadas
+- `91a6a18` a prova da janela de salvar segue a D-285
+- `45e6633` ONDE-PAREI quase final · (este ONDE-PAREI final, em três formatos)
 
 ## Escolhas novas no Livro
 

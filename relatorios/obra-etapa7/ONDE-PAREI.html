@@ -1,0 +1,434 @@
+<!doctype html>
+<html lang="pt-BR">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Obra, etapa 7: está certo e os avisos</title>
+<style>
+:root { color-scheme: light dark; }
+* { box-sizing: border-box; }
+body {
+  font: 17px/1.65 "Segoe UI", system-ui, sans-serif;
+  max-width: 46rem; margin: 0 auto; padding: 2.5rem 1.5rem 6rem;
+  color: #1c1c1e; background: #fdfdfc;
+}
+h1 { font-size: 2rem; line-height: 1.2; margin: 0 0 .3em; letter-spacing: -.02em; }
+h2 { font-size: 1.35rem; margin: 2.4em 0 .6em; padding-top: .8em;
+     border-top: 1px solid #e6e4e0; letter-spacing: -.01em; }
+h3 { font-size: 1.1rem; margin: 1.8em 0 .4em; }
+h1 + p, h2 + p { margin-top: .4em; }
+p, li { margin: 0 0 .9em; }
+ul, ol { padding-left: 1.3em; }
+strong { font-weight: 640; }
+code {
+  font: .88em ui-monospace, "Cascadia Code", Consolas, monospace;
+  background: #f1efec; padding: .12em .35em; border-radius: 4px;
+}
+pre {
+  background: #f1efec; padding: 1em 1.1em; border-radius: 8px;
+  overflow-x: auto; line-height: 1.5;
+}
+pre code { background: none; padding: 0; }
+blockquote {
+  margin: 1.2em 0; padding: .1em 0 .1em 1.1em;
+  border-left: 3px solid #c9c5be; color: #55524d;
+}
+table {
+  border-collapse: collapse; width: 100%; margin: 1.2em 0;
+  font-size: .95rem; display: block; overflow-x: auto;
+}
+th, td { padding: .5em .8em; text-align: left; border-bottom: 1px solid #e6e4e0; }
+th { font-weight: 620; background: #f7f5f2; white-space: nowrap; }
+tr:last-child td { border-bottom: none; }
+img { max-width: 100%; height: auto; border-radius: 6px; margin: 1em 0;
+      border: 1px solid #e6e4e0; }
+hr { border: none; border-top: 1px solid #e6e4e0; margin: 2.5em 0; }
+.rodape { margin-top: 4em; padding-top: 1.2em; border-top: 1px solid #e6e4e0;
+          font-size: .85rem; color: #86827c; }
+@media (prefers-color-scheme: dark) {
+  body { color: #e8e6e3; background: #1a1917; }
+  h2 { border-top-color: #35332f; }
+  code, pre, th { background: #262421; }
+  th, td { border-bottom-color: #35332f; }
+  blockquote { border-left-color: #4a4741; color: #b0aca6; }
+  img { border-color: #35332f; }
+  .rodape { border-top-color: #35332f; color: #7d7973; }
+}
+@media print {
+  body { max-width: none; padding: 0; color: #000; background: #fff; }
+  h2 { page-break-after: avoid; }
+  table, img { page-break-inside: avoid; }
+}
+</style>
+</head>
+<body>
+<h1>Obra de 26/10/2026 — etapa 7 ("está certo" com resposta e os avisos): ONDE PAREI</h1>
+<p>Ramo <code>obra-etapa7-2026-10-26</code> (base <code>obra-2026-10-26</code> = <code>7859b97</code>, com as etapas 1-6, 9a, 9c, 10a, 10b), worktree
+<code>.claude/worktrees/obra-etapa7</code>. Agente: layout. Regra 7 (Samuel, 27/10/2026): "é só para fazer o que eu já tinha
+mandado, fazer as ferramentas que colocamos no programa funcionem como deveriam e como eu tinha escolhido."</p>
+<p><strong>Situação: PRONTO PARA CONFERIR</strong> (começada e terminada em 27/10/2026). Ramo enviado ao GitHub.</p>
+<h2>Em uma frase</h2>
+<p>Agora o "está certo" responde: a página (ou, no Dividir, a folha) fica conferida, a miniatura ganha um tique verde, o
+contador de conferidas sobe e a tela vai para a próxima dúvida; o cartão da página no "Para revisar" tem os mesmos
+botões do aviso; os avisos de folha ("Lombada incerta", "Qualidade baixa") deixaram de ficar escondidos e o número de
+dúvidas é um só em todo lugar (no "La vida eterna", 15 no rodapé, no painel, na "Antes de processar", na janela de
+salvar, na grade e no livro aberto — antes 9, 17, 359 e 0); "ver as N em tela cheia" abre só as páginas com dúvida;
+os avisos do livro inteiro aparecem numa linha no alto do "Para revisar" e no livro aberto.</p>
+<h2>Decisões que esta tarefa precisa cumprir (palavras do Samuel)</h2>
+<table>
+<thead>
+<tr>
+<th>Nº</th>
+<th>Palavras dele</th>
+<th>O que tem de ficar no programa</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>Plano de 26/10, etapa 7 (aprovado: "então vamos, fazer um plano para ajeitar isso.")</td>
+<td>"'está certo' com resposta + avisos baratos: tique, contador certo, próxima dúvida (1.1); botões no cartão do aviso (1.8); um número só de dúvidas (5.5)"</td>
+<td>O "está certo" responde; o cartão tem botões; um número só.</td>
+</tr>
+<tr>
+<td>D-010 / P-101 (26/10)</td>
+<td>"eu acho que o botão tem que ser provado que ele faz o que se diz que se faz" — o exemplo: "a folha fica conferida, tique na miniatura, contador sobe, vai para a próxima dúvida"</td>
+<td>"está certo": conferida, tique, contador sobe, próxima dúvida.</td>
+</tr>
+<tr>
+<td>Sessão 1, 1-5 (26/10)</td>
+<td>"eu clico no esta certo e não acontece nada."</td>
+<td>(o mesmo)</td>
+</tr>
+<tr>
+<td>Sessão 0, 0-7 e 0-8 (23/10)</td>
+<td>"tem os avisos mas não tem como apertar para fazer ele sumir ou alguma sugestão de como se livrar dele."</td>
+<td>Botões no cartão; no Dividir, o aviso da página tem como ser resolvido.</td>
+</tr>
+<tr>
+<td>D-268 (07-08/10)</td>
+<td><code>rv4-conserto-desenho</code>: "(a) Botão no aviso"</td>
+<td>O conserto rápido é botão no próprio aviso.</td>
+</tr>
+<tr>
+<td>D-255 (27/07)</td>
+<td>Kaique: "Colocar botão clicavel nas paginas que o programa não tem certeza"</td>
+<td>Página com dúvida clicável no "Para revisar", com botão de conserto.</td>
+</tr>
+<tr>
+<td>D-282 (21/10)</td>
+<td><code>pr</code>: "Aprovado"</td>
+<td>Página com aviso → cartão com o motivo e os botões.</td>
+</tr>
+<tr>
+<td>D-259 (05/10) / P-095</td>
+<td>"Opção 1 (faixa fina). Mais: abrir todas as páginas em tela cheia (como no UPDF) mostrando as que precisam de atenção." · Rodada 2: "Aprovado"</td>
+<td>Faixa com aviso, "está certo", "próxima dúvida"; "ver as N em tela cheia" (no desenho decidido, rodada 13, botão largo no pé do "Para revisar").</td>
+</tr>
+<tr>
+<td>D-343 (05/10)</td>
+<td>"todas / só as que precisam de atenção"</td>
+<td>O "ver as N" abre a grade nesse filtro.</td>
+</tr>
+<tr>
+<td>D-285 (21/10)</td>
+<td><code>pr-contagens</code>: "A janela de salvar passa a contar as páginas com aviso pendente"</td>
+<td>Painel, "Antes de processar" e janela de salvar com o mesmo número.</td>
+</tr>
+<tr>
+<td>Lista única 5.5 e 5.4; teste do Kaique</td>
+<td>os três números; "356 páginas que você não conferiu" depois de "nada pendente"</td>
+<td>Um número só; avisos de folha à vista.</td>
+</tr>
+<tr>
+<td>D-284 / D-483 (etapa 3)</td>
+<td><code>pr-medir-o-livro</code>: "Medir o livro inteiro por trás, depois de abrir"</td>
+<td>Feita na etapa 3; continua.</td>
+</tr>
+<tr>
+<td>D-500 / D-501 (etapa 4)</td>
+<td>(escolhas da gerente)</td>
+<td>"Lombada incerta" no "Para revisar"; "ver" em aviso da divisão leva ao Dividir, os outros à página.</td>
+</tr>
+<tr>
+<td>D-521 (27/10)</td>
+<td>Central <code>pd-avisos-do-livro</code>: "No alto do painel \"Para revisar\" e no livro aberto da tela inicial (recomendo)"</td>
+<td>Avisos do livro inteiro numa linha nos dois lugares.</td>
+</tr>
+<tr>
+<td>D-543 / D-548 (etapa 5)</td>
+<td>apoiada em D-017: "Avisar e não reduzir - avisar para eu reduzir manualmente"</td>
+<td>"Parte do impresso fica de fora" no "Para revisar" com "ver no Mover" e "está bom assim".</td>
+</tr>
+<tr>
+<td>D-522 (27/10)</td>
+<td>Central <code>pd-versos-em-branco</code>: "Juntar num aviso só do livro quando forem muitas"</td>
+<td>Conta da 9d; a tela fica pronta (linha da D-521).</td>
+</tr>
+<tr>
+<td>D-497 (27/10)</td>
+<td>(escolha da gerente)</td>
+<td>Conta da 9d; a tela fica pronta para ligar.</td>
+</tr>
+<tr>
+<td>D-265 / D-266 / D-272</td>
+<td>abas "Por página / Por motivo"; "Sempre 'Por página'"; "está bom" em quatro níveis</td>
+<td>Continuam.</td>
+</tr>
+<tr>
+<td>D-271, D-273, D-288, D-289, D-290</td>
+<td>avisos separados com os dois botões; o aviso some sozinho; título não é "em branco"; dois cliques no cartão do filtro; teclado depois do botão</td>
+<td>Continuam.</td>
+</tr>
+<tr>
+<td>D-254</td>
+<td>"menos de 10% das páginas são marcadas para revisão"</td>
+<td>É da etapa 9 (não desta).</td>
+</tr>
+<tr>
+<td>D-014</td>
+<td>"Use as respostas mais recentes"</td>
+<td>Quando duas se contradizem, vale a mais recente.</td>
+</tr>
+</tbody>
+</table>
+<h2>Contradições achadas (vale a mais recente, D-014) — qual venceu</h2>
+<ul>
+<li><strong>D-285 (21/10) × plano de 26/10 / lista única 5.5 ("um número só")</strong>: em 21/10 ele escolheu "A janela de salvar
+  passa a contar as páginas com aviso pendente" e não escolheu a opção "O painel passa a listar também os motivos de
+  folha". Em 26/10 aprovou o plano com "um número só de dúvidas (5.5)", e o 5.5 diz que "os avisos de folha ficam
+  escondidos". <strong>Venceu a mais recente (26/10):</strong> a janela de salvar conta as páginas com aviso pendente (D-285
+  cumprida) e o painel mostra também os avisos de folha, nas páginas da folha (uma linha por página, não por folha:
+  o painel não fica mais comprido que o número). A D-500 (27/10, "a folha vai para o 'Para revisar' como 'Lombada
+  incerta'") aponta para o mesmo lado.</li>
+<li><strong>Desenho da rodada 2 ("ver as 3 em tela cheia" dentro da faixa) × desenho decidido da rodada 13 (botão largo no pé
+  do "Para revisar")</strong>: venceu a rodada 13 (a mais recente), que também é a chave da promessa P-095.</li>
+</ul>
+<h2>Como cumpri cada uma</h2>
+<table>
+<thead>
+<tr>
+<th>Decisão</th>
+<th>O que ficou no programa</th>
+<th>Prova (<code>tests/test_decisoes_avisos.py</code>, salvo dito)</th>
+<th>Print</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>1.1 / D-010 / P-101 / 1-5</td>
+<td>"está certo" (<code>TelaConferir.esta_certo</code>): grava a página como conferida (uma ação do desfazer, como antes), a miniatura ganha um tique verde (desenhado em traços, sem símbolo), o rodapé "N de M conferidas" sobe, e a tela vai para a próxima página com dúvida. No Dividir: a folha, o tique na miniatura da folha, o contador em folhas ("1 de 180 conferidas", como o "folha 1 de 180" ao lado) e a próxima folha com dúvida. Sem outra dúvida, fica onde está. A barra de espaço não mudou ("marca e vai para a próxima").</td>
+<td><code>test_p101_esta_certo_na_pagina_*</code>, <code>test_esta_certo_no_dividir_*</code>, <code>test_esta_certo_sem_outra_duvida_*</code>; P-101 sem "aguarda" (<code>tests/test_promessas.py</code>)</td>
+<td><code>depois-04-esta-certo-1/2/3</code> × <code>antes-04-esta-certo-1/2/3</code> (antes: a mesma página, sem tique, o contador parado)</td>
+</tr>
+<tr>
+<td>5.5 / D-285 / Kaique "356"</td>
+<td>Uma conta só, <code>core/avisos.quantas_com_duvida</code>: as páginas que vão para o PDF com algum aviso pendente, o dela ou o da folha dela. Usada no rodapé, no "Para revisar" (e no ícone), na "Antes de processar", na janela de salvar (D-285: antes contava toda página sem "está certo"), na grade "só as que precisam de atenção" e no livro aberto ("Para revisar: N" e o "Ver todas as páginas"). O aviso de folha aparece na faixa das páginas dela, com o botão; o "está certo" de cada página responde por ele ali; quando as páginas da folha estão todas conferidas, o aviso sai também da "Antes de processar".</td>
+<td><code>test_5_5_um_numero_so_*</code> (os sete lugares dão 3), <code>test_kaique_356_*</code> ("está bom em tudo" → 0 em todo lugar, a janela de salvar sem aviso), <code>test_aviso_da_folha_aparece_na_pagina_*</code>; <code>tests/test_barra_de_menu.py</code> (a prova antiga da janela de salvar, reescrita para a D-285)</td>
+<td><code>depois-05</code>, <code>-06</code>, <code>-07</code>, <code>-08</code>, <code>-09</code>: 15 em todos × <code>antes-06</code> (17 páginas), <code>antes-07</code> (359 páginas), <code>antes-04</code> (9 no painel), <code>antes-09</code> ((0))</td>
+</tr>
+<tr>
+<td>1.8 / D-268 / D-255 / D-282 / 0-7</td>
+<td>O cartão da página da vez no "Para revisar" ganha os mesmos botões da faixa (laranja), em filas com o nome inteiro; o clique faz o mesmo que o da faixa.</td>
+<td><code>test_1_8_cartao_do_aviso_*</code> ("ver no Mover" leva ao Mover; "está bom assim" tira o aviso)</td>
+<td><code>depois-03</code> (página 2: "Deixar em branco", "Tirar do livro", "está bom assim"), <code>depois-04-esta-certo-1</code> (página 7: "aceitar o corte") × <code>antes-03</code> (cartão sem botões)</td>
+</tr>
+<tr>
+<td>0-8 / D-501</td>
+<td>O clique num cartão estando no Dividir sai do Dividir para a página (a ferramenta de marcar, como o Automático faz, D-007) e o aviso aparece com os botões; se o primeiro aviso da página é da divisão ("Lombada incerta"), vai ao Dividir na folha.</td>
+<td><code>test_0_8_clicar_no_cartao_*</code>, <code>test_d501_cartao_com_aviso_da_divisao_vai_ao_dividir</code></td>
+<td><code>depois-03</code> (o clique no cartão: página 2, fora do Dividir)</td>
+</tr>
+<tr>
+<td>D-259 / D-343 / P-095</td>
+<td>"ver as N em tela cheia" no pé do "Para revisar" (o desenho da rodada 13); abre a grade "Todas as páginas" já em "só as que precisam de atenção"; o N é o número de todo lugar.</td>
+<td><code>test_d259_*</code>; P-095 sem "aguarda", com prova de verdade (clica e confere quais páginas)</td>
+<td><code>depois-02</code> (o botão), <code>depois-05</code> (a grade com as 15)</td>
+</tr>
+<tr>
+<td>D-521</td>
+<td>A linha "No livro inteiro: …" no alto do "Para revisar" mostra todos os avisos do livro (antes só a faixa escura; os outros moravam num rótulo escondido); a mesma linha no livro aberto da tela inicial (via <code>projetos.Resumo.avisos_do_livro</code>).</td>
+<td><code>test_d521_*</code></td>
+<td>— (o "La vida eterna" não tem aviso de livro inteiro; a prova usa dois)</td>
+</tr>
+<tr>
+<td>D-543 / D-548</td>
+<td>O aviso "Parte do impresso fica de fora" aparece no "Para revisar" e o cartão traz "ver no Mover" e "está bom assim".</td>
+<td><code>test_1_8_cartao_do_aviso_*</code></td>
+<td>—</td>
+</tr>
+<tr>
+<td>D-522</td>
+<td>A linha da D-521 mostra qualquer aviso do livro: quando a conta da 9d (40%, desligada) for ligada, a frase entra ali sem mexer na tela.</td>
+<td>(a da D-521)</td>
+<td>—</td>
+</tr>
+<tr>
+<td>D-497</td>
+<td>Depois de dividir, juntar ou mover a linha de uma folha, a tela chama por trás (QThread, <code>ui/tarefas.TarefaMedirOEmBranco</code>) a conta da 9d, <code>core.pipeline.medir_o_em_branco(doc, projeto, pagina)</code>, nas páginas da folha, e redesenha a faixa, a tira, o contador e o painel. <strong>Enquanto a 9d não estiver na obra, a função não existe e nada acontece.</strong></td>
+<td><code>test_d497_*</code> (com uma conta de mentira no lugar da da 9d)</td>
+<td>—</td>
+</tr>
+<tr>
+<td>D-265, D-266, D-272, D-271, D-273, D-288, D-289, D-290</td>
+<td>Sem mudança.</td>
+<td><code>test_paineis.py</code> 34, <code>test_para_revisar_na_tela.py</code> 25, <code>test_avisos.py</code> 34, <code>test_revisar.py</code> 28, <code>test_reversao_para_revisar.py</code> 6, <code>test_em_branco.py</code> 6</td>
+<td>—</td>
+</tr>
+<tr>
+<td>D-284</td>
+<td>Sem mudança (etapa 3); os avisos de folha que ela põe agora contam e aparecem.</td>
+<td><code>test_decisoes_automatico.py</code> 24</td>
+<td>—</td>
+</tr>
+</tbody>
+</table>
+<h2>Causa (por que não funcionava)</h2>
+<ul>
+<li><strong>"está certo" mudo:</strong> o botão só gravava <code>revisada</code> (<code>_marcar_revisada</code>); não andava, a miniatura não tinha marca
+  de conferida, e no Dividir o rodapé contava páginas enquanto o botão conferia a folha.</li>
+<li><strong>Três números:</strong> o rodapé e o painel contavam só os avisos de página; a "Antes de processar" juntava os de folha
+  (<code>core/avisos.paginas_com_aviso</code>); o botão escondido contava folhas e páginas separadas; a janela de salvar contava
+  toda página sem "está certo"; a grade só olhava <code>alertas</code> sem os aceitos; o livro aberto passava a grade sem motivos.
+  Os avisos de folha só apareciam na faixa do Dividir.</li>
+</ul>
+<h2>O que mudou (por arquivo)</h2>
+<ul>
+<li><code>core/avisos.py</code> (núcleo, o mínimo, avisado): <code>avisos_da_pagina</code>, <code>avisos_da_folha</code>, <code>linhas_do_para_revisar</code>,
+  <code>quantas_com_duvida</code>, <code>DA_DIVISAO</code>; <code>pendentes_do_livro</code> deixa de fora o aviso da folha cujas páginas já foram todas
+  conferidas; <code>paginas_com_aviso</code> conta o aviso da folha só nas páginas dela ainda não conferidas.</li>
+<li><code>ui/tela_conferir.py</code>: <code>esta_certo</code>, <code>_avisos_da_vez</code>/<code>_avisos_do_item</code>/<code>_itens_com_duvida</code>, <code>_ir_do_para_revisar</code>,
+  <code>abrir_so_as_que_precisam</code>, <code>_medir_o_em_branco_por_tras</code>; a faixa, os botões do aviso, a tira, o rodapé (o nome do
+  livro encolhe antes da conta, <code>_RotuloDoLivro</code>), o contador e a grade usam a mesma dúvida.</li>
+<li><code>ui/widgets/paineis.py</code>: o "Para revisar" com as linhas de <code>linhas_do_para_revisar</code>, os botões no cartão da vez
+  (<code>definir_botoes_da_vez</code>, sinal <code>botao_do_aviso</code>), "ver as N em tela cheia" (sinal <code>ver_em_tela_cheia</code>), a linha dos
+  avisos do livro (<code>frase_dos_avisos_do_livro</code>).</li>
+<li><code>ui/widgets/tira_miniaturas.py</code>: o tique de conferida. <code>ui/widgets/todas_as_paginas.py</code>: <code>ItemDaGrade.duvidas</code>.</li>
+<li><code>ui/janela_confirmar.py</code>: D-285. <code>ui/tela_inicio.py</code>: a linha da D-521 e a grade com as dúvidas.
+  <code>projetos.py</code>: <code>Resumo.avisos_do_livro</code>, <code>Resumo.duvidas_por_folha</code>, <code>para_revisar</code> = o número de todo lugar.
+  <code>ui/tarefas.py</code>: <code>TarefaMedirOEmBranco</code>.</li>
+<li>Testes: <code>tests/test_decisoes_avisos.py</code> (novo, 13), <code>tests/test_promessas.py</code> (P-095, P-101),
+  <code>tests/promessas/promessas.md</code> (P-095 e P-101 sem "aguarda"; as chaves dos botões no cartão em P-103, P-104, P-105),
+  <code>tests/test_paineis_na_tela.py</code>, <code>tests/test_tirar_fundo_no_programa.py</code>, <code>tests/test_barra_de_menu.py</code> (o aviso de
+  folha agora aparece na página; a janela de salvar segue a D-285).</li>
+<li><code>docs/plano/DECISOES.md</code>: só a coluna de situação de D-255, D-259, D-268, D-284, D-285, D-497, D-521, D-522, D-543.</li>
+</ul>
+<h2>Testes (no PC, um arquivo por vez, TEMP e --basetemp em <code>_tmp/</code>)</h2>
+<ul>
+<li><code>tests/test_decisoes_avisos.py</code>: <strong>13 passaram</strong>. <strong>Reversão</strong> no código antigo (<code>7859b97</code>, worktree <code>_tmp/antigo</code>):
+  <strong>os 13 falham</strong> (<code>relatorios/obra-etapa7/reversao-no-codigo-antigo.txt</code>). Ressalva honesta: 5 falham porque a peça
+  não existe lá (o tique, os botões do cartão, o "ver as N"); os outros 8 por asserção (os números diferentes, ficou no
+  Dividir, o aviso da folha fora da faixa, a "Lombada incerta" fora do painel, a linha do livro, o livro aberto, a D-497).</li>
+<li><code>test_decisoes.py</code> 28 · <code>test_decisoes_automatico.py</code> 24 · <code>test_decisoes_dividir.py</code> 19 · <code>test_decisoes_impressao.py</code>
+  22 · <code>test_decisoes_mover.py</code> 13 · <code>test_decisoes_nucleo.py</code> 36 · <code>test_decisoes_tela.py</code> 35 · <code>test_decisoes_ver.py</code> 11
+  · <code>test_trabalho_nao_se_perde.py</code> 82 · <code>test_para_revisar_na_tela.py</code> 25 · <code>test_paineis_na_tela.py</code> 22 ·
+  <code>test_paineis.py</code> 34 · <code>test_avisos.py</code> 34 · <code>test_revisar.py</code> 28 · <code>test_reversao_para_revisar.py</code> 6 ·
+  <code>test_em_branco.py</code> 6 · <code>test_dividir_no_programa.py</code> 19 · <code>test_livro_aberto.py</code> 14 · <code>test_tela_inicio.py</code> 15 ·
+  <code>test_miniaturas_novas.py</code> 5 · <code>test_misto_na_tela.py</code> 14 · <code>test_misto_consertos.py</code> 25 · <code>test_projetos.py</code> 24 ·
+  <code>test_resumo_seguro.py</code> 7 · <code>test_tirar_fundo_no_programa.py</code> 54 · <code>test_barra_de_menu.py</code> 20 ·
+  <code>test_janela_cabe_na_tela.py</code> 2 · <code>test_menu_paineis.py</code> 3 · <code>test_marcacao_em_todas.py</code> 4 ·
+  <code>test_tirar_da_lista_nao_volta.py</code> 10 · <code>test_so_neste_pedaco_no_tirar_o_fundo.py</code> 8: <strong>todos passam</strong>.</li>
+<li><code>test_promessas.py -k "revisar or certo or aviso"</code>: 16 passaram, <strong>1 falha que já falha no código antigo</strong> (P-094,
+  conferido no <code>7859b97</code> com o mesmo <code>-k</code>: depende da ordem dos testes, já anotada na etapa 5). <code>-k "todo_botao or
+  toda_promessa or p095 or p10 or p194"</code>: 17 passaram (a varredura acha os botões novos e cada um tem promessa).</li>
+<li><code>teste_botoes.py</code>: na rodada do GitHub (abaixo); não rodei no PC (ele abre janelas).</li>
+</ul>
+<h2>GitHub</h2>
+<ul>
+<li><strong>40600933204</strong> (commit <code>b3dd854</code>/<code>42cd738</code>): cancelada no meio, porque eu já tinha mandado mais dois commits (a prova
+  da janela de salvar reescrita para a D-285).</li>
+<li><strong>40601574220</strong> (commit <code>45e6633</code>, a final): <strong>partes 2, 3, 4 e 5 e "Botões e prints da janela real"
+  (<code>teste_botoes.py</code>) passam</strong>. Parte 1: <code>test_promessas.py</code> com <strong>253 passaram, 2 falharam, 4 xfail</strong>: P-085 (o menu
+  Filtro) e P-127 pelo menu ("Antes de processar") — <strong>as duas falham igual no código antigo</strong> (conferido no PC no
+  <code>7859b97</code>: <code>-k "p07 or p08 or p127"</code> dá P-070, P-085 e P-127 vermelhas lá; P-070 só no PC, sem os modelos), e já
+  apareciam na rodada da etapa 6 (40592137706). Na primeira tentativa da parte 1 vieram também 2 "erros" em P-083 (uma
+  prévia de um teste anterior procurando o PDF já apagado, <code>ui/tarefas.py:683</code>); <strong>na segunda tentativa da mesma rodada
+  (rerun da parte 1) eles não voltaram</strong> — instabilidade de fim de teste, não desta etapa.</li>
+</ul>
+<h2>Prints da janela de verdade (1280×657 lógicos, a 125% deste PC = 1600×821; fora da tela; <code>relatorios/obra-etapa7/prints/</code>)</h2>
+<p>Roteiro <code>relatorios/obra-etapa7/roteiro/prints.py</code> (cliques por mensagens do Windows; a base é a da etapa 3), do zero e
+sem nada marcado: "La vida eterna" (cópia) → Automático só "Dividir" (clique na caixinha, "Rodar") → clique no ícone
+"Para revisar" → clique no primeiro cartão → "está certo" três vezes → "ver as N em tela cheia" → "Confirmar e
+processar": a "Antes de processar" ("continuar assim mesmo") e a janela de salvar (fechada em "voltar", <strong>sem
+processar</strong>) → voltar aos livros → livro aberto → "Ver todas as páginas" → "só as que precisam de atenção". O livro
+aberto foi aberto pela função da tela inicial (<code>abrir_o_livro</code>), não pelo clique no cartão; o resto por clique.</p>
+<ul>
+<li><strong>Depois (21 de 21 conferências):</strong> <code>depois-01</code> dividido ("0 de 360 conferidas · 18 com dúvida", ícone 18) · <code>-02</code>
+  "Para revisar" (18, com "Lombada incerta" das páginas 7 e 8, que antes não apareciam; "ver as 18 em tela cheia") ·
+  <code>-03</code> cartão da página 2 com "Deixar em branco", "Tirar do livro", "está bom assim" · <code>-04-esta-certo-1/2/3</code>: página
+  2 → 7 → 8 → 9, tique em 2, 7 e 8, contador 1, 2, 3, painel 17, 16, 15 · <code>-05</code> a grade com as 15 · <code>-06</code> "Antes de
+  processar": "Ainda tem 15 páginas [...] (14 avisos na lista)" · <code>-07</code> janela de salvar: "Ainda há 15 páginas" · <code>-08</code>
+  livro aberto "Para revisar: 15" · <code>-09</code> "só as que precisam de atenção (15)". Os números: <code>depois-numeros.txt</code>.</li>
+<li><strong>Antes (código <code>7859b97</code>):</strong> <code>antes-01</code> a <code>antes-09</code>: o "está certo" três vezes na página 2 sem nada mudar (sem
+  tique, ficou na página 2, contador parado em 1); painel 9; "Antes de processar" 17; janela de salvar <strong>359</strong>; livro
+  aberto 9 e a grade <strong>(0)</strong>. Os números: <code>antes-numeros.txt</code>.</li>
+<li>Abri e olhei todos. Visto nos prints e consertado: os três botões do cartão saíam cortados ("xar em bra") — agora em
+  filas com o nome inteiro; o contador do rodapé não se via (só "La vida ete") — agora o nome encolhe primeiro (ver
+  ressalva 1).</li>
+</ul>
+<h2>Ressalvas</h2>
+<ol>
+<li><strong>O contador do rodapé ainda sai cortado com um painel aberto a 1280</strong> ("3 de 36…"): a barra de baixo ficou cheia
+   com os botões da etapa 6 ("Uma página", "Duas lado a lado", "antes / depois", zoom). Antes sobrava só o começo do
+   nome do livro ("La vida ete"); agora o nome encolhe primeiro e a conta aparece até onde cabe; com o painel fechado
+   cabe inteira (<code>depois-01</code>); o texto inteiro fica no balão. O rascunho do layout (rodada 12b) já tinha anotado que,
+   com um painel aberto, "o nome do livro e a contagem [...] somem". Pergunta 4.</li>
+<li><strong>Mexi no núcleo, o mínimo</strong> (<code>core/avisos.py</code>, o módulo do "Para revisar"; a 9d mexe em <code>core/analise.py</code> e
+   <code>core/pipeline.py</code>, não neste): o aviso de uma folha cujas páginas foram todas conferidas sai da "Antes de
+   processar". Não muda imagem nem PDF.</li>
+<li><strong>Os avisos de folha agora contam e aparecem</strong>, então o número subiu onde eles existiam (no "La vida eterna", 10 →
+   18 ao abrir: "Lombada incerta" das folhas 4 e 5 e "Qualidade baixa" de algumas folhas). Eles já existiam e só apareciam no
+   fim, na "Antes de processar" — é o "356 depois de nada pendente".</li>
+<li><strong>O aviso da divisão ("Lombada incerta") aparece também na página</strong>, fora do Dividir, com o botão "aceitar o corte";
+   ali a linha não se vê (o clique no cartão dele leva ao Dividir, D-501). Pergunta 2.</li>
+<li><strong>Os botões só no cartão da página da vez</strong> (o clique num cartão leva até a página, e ali eles aparecem). Pergunta 3.</li>
+<li><strong>D-497 depende de a 9d entrar com <code>core.pipeline.medir_o_em_branco(doc, projeto, pagina) -&gt; bool</code></strong> (o nome e a
+   forma do ramo <code>obra-etapa9d-2026-10-26</code>); a tela chama a função se ela existir. Como a da 9d pede, a conta mexe no
+   projeto da tela por trás (só nos avisos da página).</li>
+<li><strong>Testes que falham sem ser desta etapa:</strong> P-094 (falha igual no código antigo com o mesmo <code>-k</code>).</li>
+</ol>
+<h2>Perguntas para o Samuel (com recomendação; nenhuma trava a etapa)</h2>
+<ol>
+<li><strong>O contador no Dividir conta folhas</strong> ("1 de 180 conferidas", ao lado de "folha 1 de 180"), porque ali se confere a
+   folha; nas outras ferramentas, páginas ("1 de 360"). Foi o jeito de o contador subir no Dividir sem dizer que as
+   páginas foram conferidas. <em>Recomendo deixar assim; a outra opção é contar como conferidas as duas páginas da folha.</em></li>
+<li><strong>"Lombada incerta" na página</strong> (fora do Dividir): hoje aparece na faixa da página com "aceitar o corte", e o
+   "está certo" da página dá aquela página por vista, sem ver a linha. Quer que, fora do Dividir, esse aviso só apareça
+   no Dividir (e não conte na página), ou que fique como está? <em>Recomendo como está: nada escondido, e o clique no
+   cartão leva ao Dividir.</em></li>
+<li><strong>Botões em todos os cartões ou só no da página da vez?</strong> Hoje só no da vez (o clique leva até a página e os botões
+   aparecem nela e no cartão). <em>Recomendo só no da vez (com centenas de páginas o painel ficaria enorme).</em></li>
+<li><strong>O contador cortado na barra de baixo com painel aberto</strong> (ressalva 1): quer que algo saia da barra de baixo, ou o
+   contador vá para outro lugar (por exemplo o cabeçalho "PÁGINAS" das miniaturas)? <em>Recomendo levar à etapa 11 (nomes
+   e textos) ou ao agente de layout com essa pergunta; nesta etapa só fiz o nome encolher primeiro.</em></li>
+<li><strong>A frase da janela de salvar</strong> continua "Ainda há N páginas que você não conferiu", agora contando as páginas com
+   aviso pendente (D-285). Quer trocar a frase (por exemplo "com aviso que você ainda não olhou")? <em>Recomendo deixar até
+   a etapa 11 (nomes e textos).</em></li>
+<li><strong>O protótipo da rodada 13 mostrava, ao "está certo", um aviso curto</strong> ("Página N: conferida. Saiu do 'Para
+   revisar'."). Não fiz (não está no Livro; regra 7). Quer? <em>Recomendo não: o tique, o contador e a troca de página já
+   respondem.</em></li>
+</ol>
+<h2>Trocas que outra área precisa</h2>
+<ul>
+<li><strong>Etapa 9d (D-497, D-522):</strong> ao juntar, conferir que a função da 9d se chama <code>medir_o_em_branco(doc, projeto,
+  pagina)</code> e devolve <code>True</code> quando o aviso mudou (é o que a tela chama); a D-522 aparece sozinha na linha da D-521 quando
+  <code>LIMIAR_DO_LIVRO_LIGADO</code> for ligado.</li>
+<li><strong>Etapa 11 (nomes):</strong> os botões parecidos ("aceitar o corte", "está certo", "está bom assim", "está bom: todas", "está
+  bom em tudo"), a frase da janela de salvar (pergunta 5), "folha" × "página" (5.4).</li>
+<li><strong>Agente de layout / gerente:</strong> a barra de baixo cheia a 1280 com painel aberto (pergunta 4).</li>
+</ul>
+<h2>Commits (ramo <code>obra-etapa7-2026-10-26</code>)</h2>
+<ul>
+<li><code>ced5138</code> ONDE-PAREI com as decisões que a tarefa precisa cumprir</li>
+<li><code>b3dd854</code> "está certo" com resposta, botões no cartão, um número só, "ver as N em tela cheia", D-521, D-497 pronta;
+  provas (13) e reversão</li>
+<li><code>42cd738</code> botões do cartão em filas inteiras; avisos da página antes dos da folha; o nome encolhe no rodapé; prints</li>
+<li><code>deb44d3</code> Livro de decisões: situação das decisões tocadas</li>
+<li><code>91a6a18</code> a prova da janela de salvar segue a D-285</li>
+<li><code>45e6633</code> ONDE-PAREI quase final · (este ONDE-PAREI final, em três formatos)</li>
+</ul>
+<h2>Escolhas novas no Livro</h2>
+<p>Nenhuma D-xxx nova (regra 7): onde o Livro não respondia fiz o mínimo para o pedido funcionar e pus cada ponto como
+pergunta (1 a 6). Atualizei só a situação de D-255, D-259, D-268, D-284, D-285, D-497, D-521, D-522 e D-543.</p>
+<p class="rodape">Editor de Impressão &middot; gerado em 27/10/2026 às 19:54</p>
+</body>
+</html>
