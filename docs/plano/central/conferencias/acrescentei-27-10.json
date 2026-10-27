@@ -5,7 +5,7 @@
  "ordem": 0,
  "origem": "auditoria de 27/10 (relatorios/obra-auditoria-escolhas/auditoria.html), pedida pela regra 7 do CLAUDE.md §11",
  "resumo": {
-  "titulo": "17 perguntas: o que eu e os agentes acrescentamos ou escolhemos sem você",
+  "titulo": "23 perguntas: o que eu e os agentes acrescentamos ou escolhemos sem você",
   "paragrafos": [
    "Você disse em 27/10: \"os agentes estão mudando coisas que eu já tinha definido, é só para fazer o que eu já tinha mandado\". Um conferente revisou as 78 escolhas e mudanças da obra contra as suas decisões.",
    "55 só fazem funcionar o que você mandou. 4 mudavam o que você tinha decidido e estão sendo desfeitas sem perguntar: o PDF volta a sair sem perda (sem JPEG), o aviso \"as contas discordam\" volta à sua regra de 0,3 grau, os nomes do \"Montar para imprimir\" voltam aos de antes (a disposição nova fica) e os dois jeitos que faltavam do lado direito (\"abas no alto\" e \"painel solto\") vão ser feitos.",
@@ -549,6 +549,177 @@
     {
      "id": "depois",
      "nome": "Decidir quando chegar a Fase 7",
+     "texto": "",
+     "imgs": []
+    },
+    {
+     "id": "nao-entendi",
+     "nome": "Ainda não entendi",
+     "texto": "Explique de outro jeito.",
+     "imgs": []
+    }
+   ]
+  },
+  {
+   "id": "v-roda",
+   "titulo": "Roda do mouse na página: trocar de página ou dar zoom?",
+   "explicacao": [
+    "Em 29/07 você pediu andar pelas páginas com a roda do mouse, Page Up/Down e Home/End. Num item de 24 e 28/09 (consertar o zoom) ficou escrito \"a roda do mouse sempre dá zoom\". As duas coisas não cabem juntas.",
+    "Como ficou agora (sem você escolher): sem zoom, a roda troca de página; com zoom, a roda continua dando zoom; Ctrl + roda dá zoom sempre. Page Up/Down pulam 10 páginas; Home/End vão ao começo e ao fim.",
+    "Prints: relatorios/obra-etapa6/prints/ (rodada de consertos, etapa \"ver o livro\")."
+   ],
+   "exemplos": [],
+   "opcoes": [
+    {
+     "id": "como-ficou",
+     "nome": "Como ficou: sem zoom troca de página; Ctrl + roda dá zoom",
+     "texto": "Com zoom, a roda anda pela página (como o UPDF) em vez de dar zoom.",
+     "imgs": []
+    },
+    {
+     "id": "sempre-zoom",
+     "nome": "A roda sempre dá zoom; troca de página só pelas teclas e setas",
+     "texto": "",
+     "imgs": []
+    },
+    {
+     "id": "nao-entendi",
+     "nome": "Ainda não entendi",
+     "texto": "Explique de outro jeito.",
+     "imgs": []
+    }
+   ]
+  },
+  {
+   "id": "v-lembrar",
+   "titulo": "\"Uma página / Duas lado a lado\": lembrar de um livro para o outro?",
+   "explicacao": [
+    "A barra de baixo tem \"Uma página / Duas lado a lado\". Hoje todo livro abre em \"Uma página\" (D-007)."
+   ],
+   "exemplos": [],
+   "opcoes": [
+    {
+     "id": "nao",
+     "nome": "Não lembrar: todo livro abre em \"Uma página\" (recomendo)",
+     "texto": "",
+     "imgs": []
+    },
+    {
+     "id": "sim",
+     "nome": "Lembrar o último jeito escolhido",
+     "texto": "",
+     "imgs": []
+    },
+    {
+     "id": "nao-entendi",
+     "nome": "Ainda não entendi",
+     "texto": "Explique de outro jeito.",
+     "imgs": []
+    }
+   ]
+  },
+  {
+   "id": "v-zoom-pares",
+   "titulo": "Zoom também no \"Duas lado a lado\"?",
+   "explicacao": [
+    "Hoje o zoom \"– N% +\" vale em \"Uma página\". No \"Duas lado a lado\" as duas páginas aparecem do tamanho que cabe."
+   ],
+   "exemplos": [],
+   "opcoes": [
+    {
+     "id": "depois",
+     "nome": "Não por agora (recomendo)",
+     "texto": "",
+     "imgs": []
+    },
+    {
+     "id": "sim",
+     "nome": "Sim, zoom também no lado a lado",
+     "texto": "",
+     "imgs": []
+    },
+    {
+     "id": "nao-entendi",
+     "nome": "Ainda não entendi",
+     "texto": "Explique de outro jeito.",
+     "imgs": []
+    }
+   ]
+  },
+  {
+   "id": "v-100",
+   "titulo": "O que é \"100%\" no zoom?",
+   "explicacao": [
+    "Exemplo: numa página A5, \"100%\" pode ser a página inteira cabendo na tela, ou o tamanho real do papel (como uma régua encostada na tela)."
+   ],
+   "exemplos": [],
+   "opcoes": [
+    {
+     "id": "cabe",
+     "nome": "A página inteira cabendo na tela (recomendo)",
+     "texto": "",
+     "imgs": []
+    },
+    {
+     "id": "real",
+     "nome": "O tamanho real do papel",
+     "texto": "",
+     "imgs": []
+    },
+    {
+     "id": "nao-entendi",
+     "nome": "Ainda não entendi",
+     "texto": "Explique de outro jeito.",
+     "imgs": []
+    }
+   ]
+  },
+  {
+   "id": "v-antes",
+   "titulo": "No \"antes / depois\", o \"antes\" é o quê?",
+   "explicacao": [
+    "\"depois\" é a página como vai sair. O \"antes\" pode ser a página em Original (já dividida, cortada e endireitada, sem filtro) ou a folha como veio do scanner (inteira, torta, sem nada)."
+   ],
+   "exemplos": [],
+   "opcoes": [
+    {
+     "id": "original",
+     "nome": "A página em Original (recomendo)",
+     "texto": "",
+     "imgs": []
+    },
+    {
+     "id": "scanner",
+     "nome": "A folha como veio do scanner",
+     "texto": "",
+     "imgs": []
+    },
+    {
+     "id": "nao-entendi",
+     "nome": "Ainda não entendi",
+     "texto": "Explique de outro jeito.",
+     "imgs": []
+    }
+   ]
+  },
+  {
+   "id": "v-capa",
+   "titulo": "Lado a lado: a página 1 sozinha ou junto da 2?",
+   "explicacao": [
+    "Ficou decidido \"a capa sozinha à direita\". No \"La vida eterna\" o PDF começa no meio da numeração, e por isso as páginas ímpares impressas caem à esquerda.",
+    "Daria para ter uma opção \"a 1 junto da 2\" para livros assim."
+   ],
+   "exemplos": [],
+   "opcoes": [
+    {
+     "id": "esperar",
+     "nome": "Esperar: deixar como está (recomendo)",
+     "texto": "",
+     "imgs": []
+    },
+    {
+     "id": "opcao",
+     "nome": "Fazer a opção \"a 1 junto da 2\"",
      "texto": "",
      "imgs": []
     },
