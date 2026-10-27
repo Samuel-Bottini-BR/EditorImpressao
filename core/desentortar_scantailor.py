@@ -365,6 +365,7 @@ def caixa_do_conteudo(img: np.ndarray, caixa: tuple[int, int, int, int], dpi) ->
         ficam.append((x, y, x + w, y + h))
     if len(ficam) < 5:
         return corte
+    ficam = _so_o_bloco_do_texto(ficam, largura)
     m = np.array(ficam)
     cx0, cy0 = int(m[:, 0].min() / escala), int(m[:, 1].min() / escala)
     cx1 = min(x1 - x0, int(np.ceil(m[:, 2].max() / escala)))
@@ -372,6 +373,58 @@ def caixa_do_conteudo(img: np.ndarray, caixa: tuple[int, int, int, int], dpi) ->
     if cx1 - cx0 < 8 or cy1 - cy0 < 8:
         return corte
     return (x0 + cx0, y0 + cy0, cx1 - cx0, cy1 - cy0)
+
+
+# --- só o bloco do texto (etapa 10b da obra, D-493, 27/10/2026) -------------
+#
+# Decisão D-493 (escolha da gerente, apoiada em D-113: "o primeiro passo em uma
+# pagina dessas seria tirar essa moldura preta [...] ai o desentortador não
+# iria confundir as letras com moldura preta. não é?"): "O desentortar segue
+# só o bloco do texto, sem as notas da margem". A etapa 10a mediu na página de
+# teste do D-113 (Marial 41 encurvada, com moldura): a causa de a curva não
+# ser achada não é a moldura, são as NOTAS DA MARGEM dentro da caixa do
+# conteúdo - com a caixa só do bloco do texto a DLL acha a curva.
+# Como acha o bloco: as manchas de tinta que ficam (as de caixa_do_conteudo)
+# são juntadas em FAIXAS DE LINHA (faixas da altura mediana das manchas, de
+# cima para baixo). Em cada faixa, a primeira e a última mancha dão onde a
+# linha começa e acaba; a beirada do bloco é onde a MAIORIA das linhas começa
+# (percentil BLOCO_PERCENTIL dos começos) e acaba (100 - BLOCO_PERCENTIL dos
+# fins). A nota da margem só aparece em poucas linhas, e a mancha que fica
+# que passa da beirada do bloco mais de NOTA_FOLGA_MM sai da caixa.
+# Se sairia demais (mais de NOTA_MANCHAS_MAXIMA das manchas), não é nota: a
+# caixa de sempre. Arriscado: subir BLOCO_PERCENTIL (a linha curta do fim do
+# parágrafo passaria a mandar na beirada) ou NOTA_MANCHAS_MAXIMA.
+BLOCO_PERCENTIL = 20
+NOTA_FOLGA_MM = 2.0
+NOTA_MANCHAS_MAXIMA = 0.15
+
+
+def _so_o_bloco_do_texto(manchas: list, largura: int, pontos_por_mm: float = 75.0 / 25.4) -> list:
+    """As manchas (x0, y0, x1, y1, a 75 DPI) sem as notas da margem (ver
+    BLOCO_PERCENTIL). Sem nota clara, devolve as mesmas manchas."""
+    if len(manchas) < 5 or largura < 4:
+        return manchas
+    m = np.array(manchas)
+    # faixas da altura de uma linha (a altura mediana das manchas): na página
+    # curva as linhas encostam umas nas outras e a projeção não as separa
+    passo = max(2, int(np.median(m[:, 3] - m[:, 1])))
+    centro = (m[:, 1] + m[:, 3]) / 2.0
+    comecos, fins = [], []
+    for a in range(int(m[:, 1].min()), int(m[:, 3].max()) + 1, passo):
+        nela = m[(centro >= a) & (centro < a + passo)]
+        if len(nela) >= 2:
+            comecos.append(int(nela[:, 0].min()))
+            fins.append(int(nela[:, 2].max()))
+    if len(comecos) < 5:
+        return manchas
+    esquerda = float(np.percentile(comecos, BLOCO_PERCENTIL))
+    direita = float(np.percentile(fins, 100 - BLOCO_PERCENTIL))
+    folga = NOTA_FOLGA_MM * pontos_por_mm
+    fora = (m[:, 0] < esquerda - folga) | (m[:, 2] > direita + folga)
+    if not fora.any() or fora.mean() > NOTA_MANCHAS_MAXIMA:
+        return manchas
+    ficam = [tuple(int(v) for v in x) for x, sai in zip(m, fora) if not sai]
+    return ficam if len(ficam) >= 5 else manchas
 
 
 # --- a proteção e o "aumentando a página" (22/10/2026) ----------------------

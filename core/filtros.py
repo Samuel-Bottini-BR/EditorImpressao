@@ -1317,23 +1317,74 @@ def _faixa_da_sombra_da_lombada(cinza: np.ndarray) -> tuple[np.ndarray, np.ndarr
     return luz_cheia, faixa_cheia
 
 
+# A sombra que nao e da lombada (folha FOTOGRAFADA com o celular: a sombra da
+# mao ou da propria folha; Lista de bugs 23/10/2026, "o Preto e branco
+# transforma a sombra da mao ou da pagina numa grande mancha preta", Razoes do
+# Integralismo 57 e Atanasio 8): a mesma conta, mas a luz e medida em
+# quadradinhos (SOMBRA_QUADROS por lado; o papel de cada um e o percentil 90)
+# e a sombra e onde a luz fica abaixo de LOMBADA_FAIXA do papel claro, sem
+# chegar a LOMBADA_SOMBRA_MINIMA, e onde o quadradinho tem POUCA tinta
+# (SOMBRA_TINTA_MAXIMA): a gravura, a foto e a pintura escuras tem muita
+# "tinta" contra o papel delas e ficam de fora (e, se o detector as marcou, o
+# Preto e branco delas e outro, por cima). So vale quando ha sombra forte
+# (algum quadradinho abaixo de LOMBADA_SOMBRA_MAXIMA).
+SOMBRA_QUADROS = 24
+SOMBRA_TINTA_MAXIMA = 0.25
+
+
+def _sombra_em_quadros(cinza: np.ndarray) -> tuple[np.ndarray, np.ndarray] | None:
+    """(luz de cada ponto, de 0 a 1 do papel claro; onde e sombra) da sombra
+    medida em quadradinhos (ver SOMBRA_QUADROS), ou None sem sombra forte."""
+    altura, largura = cinza.shape[:2]
+    lado_y, lado_x = altura // SOMBRA_QUADROS, largura // SOMBRA_QUADROS
+    if lado_y < 4 or lado_x < 4:
+        return None
+    gy, gx = altura // lado_y, largura // lado_x
+    quadros = (cinza[:gy * lado_y, :gx * lado_x].reshape(gy, lado_y, gx, lado_x)
+               .transpose(0, 2, 1, 3).reshape(gy, gx, -1))
+    papel = np.percentile(quadros, 90, axis=2).astype(np.float32)
+    tinta = (quadros < 0.6 * papel[..., None]).mean(axis=2)
+    papel = cv2.medianBlur(np.clip(papel, 0, 255).astype(np.uint8), 3).astype(np.float32)
+    topo = float(np.percentile(papel, 90))
+    if topo <= 1:
+        return None
+    luz = cv2.GaussianBlur(papel / topo, (0, 0), 1.0)
+    forte = (luz < LOMBADA_SOMBRA_MAXIMA) & (luz >= LOMBADA_SOMBRA_MINIMA) & (tinta < SOMBRA_TINTA_MAXIMA)
+    if not forte.any():
+        return None
+    sombra = (luz < LOMBADA_FAIXA) & (luz >= LOMBADA_SOMBRA_MINIMA) & (tinta < SOMBRA_TINTA_MAXIMA)
+    luz_cheia = cv2.resize(luz, (largura, altura), interpolation=cv2.INTER_CUBIC)
+    sombra_cheia = cv2.resize(sombra.astype(np.uint8), (largura, altura),
+                              interpolation=cv2.INTER_NEAREST) > 0
+    return luz_cheia, sombra_cheia
+
+
 def _sem_a_sombra_da_lombada(cinza: np.ndarray, binaria: np.ndarray) -> np.ndarray:
-    """binaria com a faixa da sombra da lombada refeita pela luz igualada
-    (ver LOMBADA_SOMBRA_MAXIMA). Sem sombra, devolve a MESMA binaria."""
+    """binaria com a sombra da lombada (faixa de colunas) e a sombra da foto
+    de celular (quadradinhos) refeitas pela luz igualada (ver
+    LOMBADA_SOMBRA_MAXIMA e SOMBRA_QUADROS). Sem sombra, devolve a MESMA
+    binaria."""
+    altura, largura = cinza.shape[:2]
+    luz = np.ones((altura, largura), np.float32)
+    onde = np.zeros((altura, largura), bool)
     achada = _faixa_da_sombra_da_lombada(cinza)
-    if achada is None:
+    if achada is not None:
+        luz_colunas, faixa = achada
+        luz[:, faixa] = luz_colunas[faixa][None, :]
+        onde[:, faixa] = True
+    quadros = _sombra_em_quadros(cinza)
+    if quadros is not None:
+        luz_quadros, sombra = quadros
+        so_quadros = sombra & ~onde
+        luz[so_quadros] = luz_quadros[so_quadros]
+        onde |= sombra
+    if not onde.any():
         return binaria
-    luz, faixa = achada
-    colunas = np.flatnonzero(faixa)
-    x0, x1 = int(colunas.min()), int(colunas.max()) + 1
-    igualada = np.clip(cinza.astype(np.float32) / np.maximum(luz, LOMBADA_SOMBRA_MINIMA)[None, :],
+    igualada = np.clip(cinza.astype(np.float32) / np.maximum(luz, LOMBADA_SOMBRA_MINIMA),
                        0, 255).astype(np.uint8)
     limiar, _ = cv2.threshold(igualada, 0, 255, cv2.THRESH_BINARY + cv2.THRESH_OTSU)
     saida = binaria.copy()
-    trecho = igualada[:, x0:x1]
-    nova = np.where(trecho < limiar, 0, 255).astype(np.uint8)
-    so_a_faixa = faixa[x0:x1][None, :]
-    saida[:, x0:x1] = np.where(so_a_faixa, nova, saida[:, x0:x1])
+    saida[onde] = np.where(igualada[onde] < limiar, 0, 255).astype(np.uint8)
     return saida
 
 

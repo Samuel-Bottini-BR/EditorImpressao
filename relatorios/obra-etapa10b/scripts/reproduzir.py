@@ -73,7 +73,14 @@ LIVROS_DO_ACERVO = {
 
 
 # Etapa 10b: livros de fora do acervo (D:\Livros para editar, só leitura)
-OUTROS = {"antiphonal1547": Path(r"D:\Livros para editar\Antiphonal 1547.pdf")}
+OUTROS = {
+    "antiphonal1547": Path("D:/Livros para editar/Antiphonal 1547.pdf"),
+    "razoes": Path("D:/Livros para editar/2 - TEOLOGIA/Doutrina Social da Igreja/Corporativismo, "
+                   "Integralismo, Distributismo e Municipalismo à luz da DSI/22 - Olbiano de Mello/"
+                   "Razões do Integralismo [1935] - Olbiano de Mello.pdf"),
+    "atanasio": Path("D:/Livros para editar/2 - TEOLOGIA/Patrologia/Patrística/"
+                     "aula_18_atanasio_de_alexandria_e_a_controversia_ar.pdf"),
+}
 
 
 def carregar_de_fabrica(livro: str, numero: int, campos: dict | None = None):
