@@ -635,6 +635,12 @@ Valem para a gerente, para todos os agentes (`.claude/agents/`) e para qualquer 
    contraditória ou pouco clara, o agente para e a pergunta vai ao Samuel pela Central (cartão em "Decidir agora").
    A gerente também: antes de oferecer uma opção ou dizer que algo "não existe", procura no Livro de decisões, no
    rascunho do layout e na Central; se já está decidido, cita data e onde está escrito em vez de perguntar de novo.
+7. **Só o que ele mandou (Samuel, 27/10/2026).** "os agentes estão mudando coisas que eu já tinha definido, é só para
+   fazer o que eu já tinha mandado, fazer as ferramentas que colocamos no programa funcionem como deveriam e como eu
+   tinha escolhido." Nem a gerente nem os agentes acrescentam comportamento, botão, aviso ou texto que ele não pediu,
+   nem mudam o que ele decidiu — nem por causa de um achado de agente (ex.: o "PDF gigante" dos testes não vale contra
+   a D-304, "o tamanho do arquivo depois não importa"). "Escolha da gerente" (D-014) só serve para detalhe técnico do
+   que ele mandou; o que o Livro não responde fica como está e vira pergunta na Central.
 
 **Obra de 26/10/2026 (D-014):** o Samuel mandou fazer a obra inteira (plano de 26/10, etapas 0 a 11) "até o final sem
 pausas" e conferir tudo no fim. Durante essa obra **não valem** as regras de conferir cada item antes do próximo e de
