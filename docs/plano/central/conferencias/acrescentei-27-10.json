@@ -1,0 +1,537 @@
+{
+ "id": "acrescentei-27-10",
+ "nome": "Coisas que eu acrescentei sem você pedir",
+ "trabalho": "acrescentei-27-10",
+ "ordem": 0,
+ "origem": "auditoria de 27/10 (relatorios/obra-auditoria-escolhas/auditoria.html), pedida pela regra 7 do CLAUDE.md §11",
+ "resumo": {
+  "titulo": "17 perguntas: o que eu e os agentes acrescentamos ou escolhemos sem você",
+  "paragrafos": [
+   "Você disse em 27/10: \"os agentes estão mudando coisas que eu já tinha definido, é só para fazer o que eu já tinha mandado\". Um conferente revisou as 78 escolhas e mudanças da obra contra as suas decisões.",
+   "55 só fazem funcionar o que você mandou. 4 mudavam o que você tinha decidido e estão sendo desfeitas sem perguntar: o PDF volta a sair sem perda (sem JPEG), o aviso \"as contas discordam\" volta à sua regra de 0,3 grau, os nomes do \"Montar para imprimir\" voltam aos de antes (a disposição nova fica) e os dois jeitos que faltavam do lado direito (\"abas no alto\" e \"painel solto\") vão ser feitos.",
+   "Estas perguntas são o resto: coisas que acrescentamos sem você pedir, ou fases que escolhemos no seu lugar. Até você responder, nada disso entra no programa principal. A relação completa está em relatorios/obra-auditoria-escolhas/auditoria.html."
+  ]
+ },
+ "quadros": 0,
+ "perguntas": [
+  {
+   "id": "ac-tampa",
+   "titulo": "Faixa preta da tampa do scanner (Righetti 96): quando ela sai?",
+   "explicacao": [
+    "O que foi feito sem você pedir (etapa 4): a faixa preta só sai quando a pessoa divide ou acerta a linha à mão; o Automático nunca tira; ela é pintada de branco, não cortada.",
+    "O que você tinha decidido: 13-21/10 \"É para sumir totalmente.\" e \"tem que ficar rente a folha de papel, não pode ter preto ali.\"; 09/10: tarja e moldura do scanner — \"O Kaique escolhe por livro\" entre cortar e pintar de branco.",
+    "Prints para comparar: relatorios/obra-etapa4/prints/depois-08 (sem a faixa) e depois-09 (com a faixa, pelo Automático)."
+   ],
+   "exemplos": [],
+   "opcoes": [
+    {
+     "id": "como-decidido",
+     "nome": "Como eu decidi: sumir em todo o livro, e o Kaique escolhe por livro cortar ou pintar de branco (recomendo)",
+     "texto": "O Automático também tira.",
+     "imgs": []
+    },
+    {
+     "id": "so-a-mao",
+     "nome": "Só quando dividir à mão, como o agente fez",
+     "texto": "",
+     "imgs": []
+    },
+    {
+     "id": "nao-entendi",
+     "nome": "Ainda não entendi",
+     "texto": "Explique de outro jeito.",
+     "imgs": []
+    }
+   ]
+  },
+  {
+   "id": "ac-lombada-sozinha",
+   "titulo": "Quando o ScanTailor corta a folha perto da beirada, o programa pode trocar sozinho para a conta do Editor?",
+   "explicacao": [
+    "O que foi feito sem você pedir (etapa 4): no \"La vida eterna\" o jeito do ScanTailor cortava as folhas 4 e 5 a 10% da largura. Agora, quando o corte cai fora do meio da folha (20% a 80%), o programa usa sozinho a conta do Editor naquela folha e marca \"Lombada incerta\".",
+    "O que você tinha decidido (05/10, G2): escolher \"o do programa\" ou \"o do ScanTailor\", \"e trocando numa folha se um ficar ruim\" — a troca era do Kaique; de fábrica, \"O do ScanTailor\"."
+   ],
+   "exemplos": [],
+   "opcoes": [
+    {
+     "id": "manter",
+     "nome": "Manter (recomendo)",
+     "texto": "O programa troca sozinho e avisa com \"Lombada incerta\".",
+     "imgs": []
+    },
+    {
+     "id": "tirar",
+     "nome": "Tirar, voltar como era antes",
+     "texto": "O ScanTailor corta onde cortar; o aviso \"Lombada incerta\" aparece e o Kaique troca à mão.",
+     "imgs": []
+    },
+    {
+     "id": "nao-entendi",
+     "nome": "Ainda não entendi",
+     "texto": "Explique de outro jeito.",
+     "imgs": []
+    }
+   ]
+  },
+  {
+   "id": "ac-letras",
+   "titulo": "Teclas novas: D Dividir, X Cortar, I Endireitar, F Mover, Shift+Del Tirar do livro",
+   "explicacao": [
+    "O que foi feito sem você pedir (etapas 2, 3 e 5): essas cinco teclas.",
+    "O que você tinha decidido: 06/10 (R8 302) \"quando eu passar em cima da agrupada tem que mostrar a letra dela de atalho\" — sem escolher as letras. 07 e 09/10: \"a tecla Delete deixa em branco\" (sem tecla para \"Tirar do livro\").",
+    "Trocar depois é fácil (as teclas são remapeáveis). Se quiser outras letras, escreva no comentário."
+   ],
+   "exemplos": [],
+   "opcoes": [
+    {
+     "id": "manter",
+     "nome": "Manter (recomendo)",
+     "texto": "Ficam as cinco teclas.",
+     "imgs": []
+    },
+    {
+     "id": "tirar",
+     "nome": "Tirar, voltar como era antes",
+     "texto": "Sem essas teclas (Delete continua deixando em branco).",
+     "imgs": []
+    },
+    {
+     "id": "nao-entendi",
+     "nome": "Ainda não entendi",
+     "texto": "Explique de outro jeito.",
+     "imgs": []
+    }
+   ]
+  },
+  {
+   "id": "ac-menu-ferramentas",
+   "titulo": "Menu novo \"Ferramentas\" na barra de cima",
+   "explicacao": [
+    "O que foi feito sem você pedir (etapa 2): um menu entre Editar e Marcar com Dividir, Cortar, Endireitar, as de marcar, Zoom e Mão (print relatorios/obra-etapa2/prints/depois-05-menu-ferramentas.png).",
+    "O que você tinha decidido: os menus das rodadas 12 a 14 (903 B: menu novo \"Painéis\"; 904 A: itens do Ver). O teste do Kaique achou que nenhum menu tinha Endireitar/Cortar/Dividir."
+   ],
+   "exemplos": [],
+   "opcoes": [
+    {
+     "id": "manter",
+     "nome": "Manter (recomendo)",
+     "texto": "Fica o menu \"Ferramentas\".",
+     "imgs": []
+    },
+    {
+     "id": "tirar",
+     "nome": "Tirar, voltar como era antes",
+     "texto": "Sem o menu; as ferramentas continuam na trilha da esquerda.",
+     "imgs": []
+    },
+    {
+     "id": "nao-entendi",
+     "nome": "Ainda não entendi",
+     "texto": "Explique de outro jeito.",
+     "imgs": []
+    }
+   ]
+  },
+  {
+   "id": "ac-desentortar-texto",
+   "titulo": "Opção nova no desentortar: \"seguir só o bloco do texto\"",
+   "explicacao": [
+    "O que foi feito sem você pedir (etapa 10b): uma conta que desentorta seguindo só as linhas do texto, sem as notas da margem. Ligada para todo livro, entortava a Marial 41 (reta); por isso virou opção da página, desligada.",
+    "O que você tinha decidido (23/10): \"o primeiro passo [...] seria tirar essa moldura preta [...] ai o desentortador não iria confundir as letras com moldura preta\" — isso já foi feito (etapa 10a)."
+   ],
+   "exemplos": [],
+   "opcoes": [
+    {
+     "id": "manter",
+     "nome": "Manter",
+     "texto": "Fica a opção na página, desligada de fábrica.",
+     "imgs": []
+    },
+    {
+     "id": "tirar",
+     "nome": "Tirar, voltar como era antes (recomendo)",
+     "texto": "Sem a opção; o desentortar fica como você aprovou.",
+     "imgs": []
+    },
+    {
+     "id": "nao-entendi",
+     "nome": "Ainda não entendi",
+     "texto": "Explique de outro jeito.",
+     "imgs": []
+    }
+   ]
+  },
+  {
+   "id": "ac-gravura-cinza",
+   "titulo": "Gravura de fundo escuro no Preto e branco: sair em tons de cinza?",
+   "explicacao": [
+    "O que foi proposto sem você pedir (etapa 10b; ainda não construído): gravura de fundo escuro (Palatino 70 e 74, fotos de retícula do Righetti) sairia em tons de cinza no Preto e branco, em vez de preto e branco puro.",
+    "O que você tinha decidido (30/09): para foto e pintura, \"Cinza (tons de cinza): BOM\" e pontilhados \"RUIM\". Para gravura de traço você nunca disse cinza.",
+    "Fotos: relatorios/obra-etapa10b/conferencia/conferencia-etapa10b.html (Palatino 74)."
+   ],
+   "exemplos": [],
+   "opcoes": [
+    {
+     "id": "nao",
+     "nome": "Não fazer: gravura continua em preto e branco (recomendo)",
+     "texto": "",
+     "imgs": []
+    },
+    {
+     "id": "cinza",
+     "nome": "Fazer: gravura de fundo escuro em cinza",
+     "texto": "",
+     "imgs": []
+    },
+    {
+     "id": "nao-entendi",
+     "nome": "Ainda não entendi",
+     "texto": "Explique de outro jeito.",
+     "imgs": []
+    }
+   ]
+  },
+  {
+   "id": "ac-margens-iguais",
+   "titulo": "Caixinha \"Margens iguais\" também na tela do corte?",
+   "explicacao": [
+    "O que foi proposto sem você pedir (ainda não construído): a caixinha \"Margens iguais\", que hoje mora no Automático (Saída), também apareceria na tela do Cortar.",
+    "O que você tinha decidido (05/10, G9): caixinha desmarcada de fábrica, \"Mas eu vou conseguir alterar isso né?\" — o lugar na tela você não escolheu."
+   ],
+   "exemplos": [],
+   "opcoes": [
+    {
+     "id": "so-automatico",
+     "nome": "Só no Automático, como está (recomendo)",
+     "texto": "",
+     "imgs": []
+    },
+    {
+     "id": "tambem-corte",
+     "nome": "Também na tela do corte",
+     "texto": "",
+     "imgs": []
+    },
+    {
+     "id": "nao-entendi",
+     "nome": "Ainda não entendi",
+     "texto": "Explique de outro jeito.",
+     "imgs": []
+    }
+   ]
+  },
+  {
+   "id": "ac-impressora-pergunta",
+   "titulo": "\"mandar para a impressora\" do \"Montar para imprimir\" pergunta antes",
+   "explicacao": [
+    "O que foi feito sem você pedir (etapa 9a): antes de mandar para a impressora, uma janela mostra impressora, lados, cópias e folhas e pede confirmação.",
+    "O que você tinha decidido: 21/10 (imp-5) \"Também manda direto para a impressora\"; a confirmação você pediu só para o \"imprimir agora\" (26/10, \"2\")."
+   ],
+   "exemplos": [],
+   "opcoes": [
+    {
+     "id": "manter",
+     "nome": "Manter (recomendo)",
+     "texto": "Pergunta antes de mandar (segurança, como no \"imprimir agora\").",
+     "imgs": []
+    },
+    {
+     "id": "tirar",
+     "nome": "Tirar, voltar como era antes",
+     "texto": "Manda direto, como você decidiu em 21/10.",
+     "imgs": []
+    },
+    {
+     "id": "nao-entendi",
+     "nome": "Ainda não entendi",
+     "texto": "Explique de outro jeito.",
+     "imgs": []
+    }
+   ]
+  },
+  {
+   "id": "ac-frase-pronto",
+   "titulo": "Frase nova na tela \"Ficou pronto!\"",
+   "explicacao": [
+    "O que foi feito sem você pedir (etapa 9a): embaixo dos botões apareceu \"Para imprimir em cadernos, use 'montar para imprimir em A4' [...]\".",
+    "O que você tinha decidido (22/10): \"Deixar os dois\" (os dois botões, sem frase)."
+   ],
+   "exemplos": [],
+   "opcoes": [
+    {
+     "id": "manter",
+     "nome": "Manter",
+     "texto": "Fica a frase.",
+     "imgs": []
+    },
+    {
+     "id": "tirar",
+     "nome": "Tirar, voltar como era antes (recomendo)",
+     "texto": "Só os dois botões, sem frase.",
+     "imgs": []
+    },
+    {
+     "id": "nao-entendi",
+     "nome": "Ainda não entendi",
+     "texto": "Explique de outro jeito.",
+     "imgs": []
+    }
+   ]
+  },
+  {
+   "id": "ac-aviso-cortado",
+   "titulo": "Aviso \"o que está impresso fica CORTADO\" ao imprimir acima de 100%",
+   "explicacao": [
+    "O que foi feito sem você pedir (etapa 10a): ao imprimir com mais de 100%, aparece esse aviso na janela de imprimir.",
+    "O que você tinha decidido (22/10): \"Primeiro provar em páginas de verdade, depois decidir\". Já existia o aviso de margem.",
+    "Foto: relatorios/obra-etapa10a/conferencia/img/imprimir140.jpg (Escola 7 a 140%)."
+   ],
+   "exemplos": [],
+   "opcoes": [
+    {
+     "id": "manter",
+     "nome": "Manter (recomendo)",
+     "texto": "Fica o aviso.",
+     "imgs": []
+    },
+    {
+     "id": "tirar",
+     "nome": "Tirar, voltar como era antes",
+     "texto": "Sem o aviso novo; fica só o aviso de margem de antes.",
+     "imgs": []
+    },
+    {
+     "id": "nao-entendi",
+     "nome": "Ainda não entendi",
+     "texto": "Explique de outro jeito.",
+     "imgs": []
+    }
+   ]
+  },
+  {
+   "id": "ac-receita-padrao",
+   "titulo": "Caixinha \"Usar esta receita no aviso de todo livro novo\"",
+   "explicacao": [
+    "O que foi feito sem você pedir (etapa 3): na caixa de salvar receita, uma opção para escolher qual receita aparece marcada no aviso de livro novo.",
+    "O que você tinha decidido: 25/09 \"salvar como receita com nome e reusar\"; fr-219 \"pode melhorar a caixa de como escolhemos o que vai dentro da receita\"."
+   ],
+   "exemplos": [],
+   "opcoes": [
+    {
+     "id": "manter",
+     "nome": "Manter (recomendo)",
+     "texto": "Fica a caixinha.",
+     "imgs": []
+    },
+    {
+     "id": "tirar",
+     "nome": "Tirar, voltar como era antes",
+     "texto": "Sem a caixinha; o aviso usa sempre a receita de fábrica.",
+     "imgs": []
+    },
+    {
+     "id": "nao-entendi",
+     "nome": "Ainda não entendi",
+     "texto": "Explique de outro jeito.",
+     "imgs": []
+    }
+   ]
+  },
+  {
+   "id": "ac-nome-sem-acento",
+   "titulo": "Nome sugerido do PDF pronto: com ou sem acento?",
+   "explicacao": [
+    "O que foi feito sem você pedir (etapas 9a e 9c): \"Ofício da Imaculada Conceição - mágico pro.pdf\" passou a ser sugerido como \"Oficio da Imaculada Conceicao - magico pro.pdf\".",
+    "O que você tinha decidido (18/07): \"Corrija TODOS os textos da interface para português correto\". A regra \"caminho sem acento\" é técnica, do código; o nome do livro é do Kaique."
+   ],
+   "exemplos": [],
+   "opcoes": [
+    {
+     "id": "com-acento",
+     "nome": "Voltar com acento (recomendo)",
+     "texto": "",
+     "imgs": []
+    },
+    {
+     "id": "sem-acento",
+     "nome": "Sem acento",
+     "texto": "",
+     "imgs": []
+    },
+    {
+     "id": "nao-entendi",
+     "nome": "Ainda não entendi",
+     "texto": "Explique de outro jeito.",
+     "imgs": []
+    }
+   ]
+  },
+  {
+   "id": "ac-texto-pares",
+   "titulo": "Texto do aviso \"girar só as folhas pares\"",
+   "explicacao": [
+    "O que foi proposto sem você pedir (não construído): texto novo para livro dividido: \"A página 2 fica na folha 1, que é ímpar. Para girar só as folhas pares, vá para a folha 2 (páginas 3 e 4).\"",
+    "O que você aprovou (06/10): \"Você está numa folha ímpar. Para girar só as pares, vá a uma folha par e gire de lá.\""
+   ],
+   "exemplos": [],
+   "opcoes": [
+    {
+     "id": "aprovado",
+     "nome": "Fica o texto que eu aprovei (recomendo)",
+     "texto": "",
+     "imgs": []
+    },
+    {
+     "id": "novo",
+     "nome": "Usar o texto novo",
+     "texto": "",
+     "imgs": []
+    },
+    {
+     "id": "nao-entendi",
+     "nome": "Ainda não entendi",
+     "texto": "Explique de outro jeito.",
+     "imgs": []
+    }
+   ]
+  },
+  {
+   "id": "ac-grade-inserir",
+   "titulo": "Grade \"Todas as páginas\": \"Inserir\" e \"dividir\" podem esperar para depois da obra?",
+   "explicacao": [
+    "O que ficou de fora: na grade com várias páginas escolhidas, \"inserir página\" não foi feito (muda o jeito de guardar o livro) e \"dividir\" foi para depois da obra.",
+    "O que você tinha decidido (24/09): a grade como o \"Organizar páginas\" do UPDF: \"seleção múltipla, girar, apagar, extrair, inserir, dividir\".",
+    "Dúvida: no UPDF, \"dividir\" é partir o PDF em vários arquivos, não dividir a folha em duas páginas. O que você quis dizer?"
+   ],
+   "exemplos": [],
+   "opcoes": [
+    {
+     "id": "esperar",
+     "nome": "Pode esperar para depois da obra",
+     "texto": "",
+     "imgs": []
+    },
+    {
+     "id": "na-obra",
+     "nome": "Quero na obra agora",
+     "texto": "",
+     "imgs": []
+    },
+    {
+     "id": "dividir-arquivos",
+     "nome": "\"Dividir\" = partir o PDF em arquivos, como o UPDF",
+     "texto": "Responda junto com uma das outras no comentário, se quiser.",
+     "imgs": []
+    },
+    {
+     "id": "nao-entendi",
+     "nome": "Ainda não entendi",
+     "texto": "Explique de outro jeito.",
+     "imgs": []
+    }
+   ]
+  },
+  {
+   "id": "ac-fase-marcar-como",
+   "titulo": "Em que fase entra o \"Marcar como: iluminura ou pintura / moldura\"?",
+   "explicacao": [
+    "Você aprovou em 12/10 (705): \"A — Sim, os dois\". A fase ficou para você escolher, e a gerente pôs na Fase 1.5 (depois da obra) sem perguntar."
+   ],
+   "exemplos": [],
+   "opcoes": [
+    {
+     "id": "fase-1-5",
+     "nome": "Fase 1.5, depois da obra",
+     "texto": "",
+     "imgs": []
+    },
+    {
+     "id": "na-obra",
+     "nome": "Na obra, agora",
+     "texto": "",
+     "imgs": []
+    },
+    {
+     "id": "outra",
+     "nome": "Outra fase (escreva no comentário)",
+     "texto": "",
+     "imgs": []
+    },
+    {
+     "id": "nao-entendi",
+     "nome": "Ainda não entendi",
+     "texto": "Explique de outro jeito.",
+     "imgs": []
+    }
+   ]
+  },
+  {
+   "id": "ac-fase-espacos",
+   "titulo": "Espaços \"Limpo / Completo\": como arranjos salvos com nome, na Fase 4?",
+   "explicacao": [
+    "A gerente escolheu (sem perguntar) que os espaços Limpo/Completo (28/09, \"a confirmar\") virem arranjos dos painéis que a pessoa salva com nome, dentro do \"tudo livre como o Photoshop\" (05/10). Nada mudou no programa ainda."
+   ],
+   "exemplos": [],
+   "opcoes": [
+    {
+     "id": "sim",
+     "nome": "Sim, arranjos salvos com nome, na Fase 4",
+     "texto": "",
+     "imgs": []
+    },
+    {
+     "id": "dois-botoes",
+     "nome": "Não: dois botões fixos Limpo / Completo",
+     "texto": "",
+     "imgs": []
+    },
+    {
+     "id": "depois",
+     "nome": "Decidir quando chegar a Fase 4",
+     "texto": "",
+     "imgs": []
+    },
+    {
+     "id": "nao-entendi",
+     "nome": "Ainda não entendi",
+     "texto": "Explique de outro jeito.",
+     "imgs": []
+    }
+   ]
+  },
+  {
+   "id": "ac-fase-manuscritos",
+   "titulo": "Manuscritos (Graduale, Palatino) entram na leitura do texto da Fase 7?",
+   "explicacao": [
+    "A gerente escolheu (sem perguntar) que os manuscritos entram na Fase 7.3, com o Kraken e modelos de manuscrito. O plano dizia \"decidir se os manuscritos entram\". Nada mudou no programa."
+   ],
+   "exemplos": [],
+   "opcoes": [
+    {
+     "id": "sim",
+     "nome": "Sim, entram na Fase 7",
+     "texto": "",
+     "imgs": []
+    },
+    {
+     "id": "nao",
+     "nome": "Não entram",
+     "texto": "",
+     "imgs": []
+    },
+    {
+     "id": "depois",
+     "nome": "Decidir quando chegar a Fase 7",
+     "texto": "",
+     "imgs": []
+    },
+    {
+     "id": "nao-entendi",
+     "nome": "Ainda não entendi",
+     "texto": "Explique de outro jeito.",
+     "imgs": []
+    }
+   ]
+  }
+ ]
+}

@@ -1,0 +1,709 @@
+<!doctype html>
+<html lang="pt-BR">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Auditoria das escolhas da obra</title>
+<style>
+:root { color-scheme: light dark; }
+* { box-sizing: border-box; }
+body {
+  font: 17px/1.65 "Segoe UI", system-ui, sans-serif;
+  max-width: 46rem; margin: 0 auto; padding: 2.5rem 1.5rem 6rem;
+  color: #1c1c1e; background: #fdfdfc;
+}
+h1 { font-size: 2rem; line-height: 1.2; margin: 0 0 .3em; letter-spacing: -.02em; }
+h2 { font-size: 1.35rem; margin: 2.4em 0 .6em; padding-top: .8em;
+     border-top: 1px solid #e6e4e0; letter-spacing: -.01em; }
+h3 { font-size: 1.1rem; margin: 1.8em 0 .4em; }
+h1 + p, h2 + p { margin-top: .4em; }
+p, li { margin: 0 0 .9em; }
+ul, ol { padding-left: 1.3em; }
+strong { font-weight: 640; }
+code {
+  font: .88em ui-monospace, "Cascadia Code", Consolas, monospace;
+  background: #f1efec; padding: .12em .35em; border-radius: 4px;
+}
+pre {
+  background: #f1efec; padding: 1em 1.1em; border-radius: 8px;
+  overflow-x: auto; line-height: 1.5;
+}
+pre code { background: none; padding: 0; }
+blockquote {
+  margin: 1.2em 0; padding: .1em 0 .1em 1.1em;
+  border-left: 3px solid #c9c5be; color: #55524d;
+}
+table {
+  border-collapse: collapse; width: 100%; margin: 1.2em 0;
+  font-size: .95rem; display: block; overflow-x: auto;
+}
+th, td { padding: .5em .8em; text-align: left; border-bottom: 1px solid #e6e4e0; }
+th { font-weight: 620; background: #f7f5f2; white-space: nowrap; }
+tr:last-child td { border-bottom: none; }
+img { max-width: 100%; height: auto; border-radius: 6px; margin: 1em 0;
+      border: 1px solid #e6e4e0; }
+hr { border: none; border-top: 1px solid #e6e4e0; margin: 2.5em 0; }
+.rodape { margin-top: 4em; padding-top: 1.2em; border-top: 1px solid #e6e4e0;
+          font-size: .85rem; color: #86827c; }
+@media (prefers-color-scheme: dark) {
+  body { color: #e8e6e3; background: #1a1917; }
+  h2 { border-top-color: #35332f; }
+  code, pre, th { background: #262421; }
+  th, td { border-bottom-color: #35332f; }
+  blockquote { border-left-color: #4a4741; color: #b0aca6; }
+  img { border-color: #35332f; }
+  .rodape { border-top-color: #35332f; color: #7d7973; }
+}
+@media print {
+  body { max-width: none; padding: 0; color: #000; background: #fff; }
+  h2 { page-break-after: avoid; }
+  table, img { page-break-inside: avoid; }
+}
+</style>
+</head>
+<body>
+<h1>Auditoria das escolhas da gerente e das mudanças da obra (27/10/2026)</h1>
+<p><strong>Em uma frase:</strong> das 78 escolhas e mudanças da obra conferidas, <strong>6 mudam ou deixam de fazer algo que o Samuel já
+tinha decidido (C)</strong>, <strong>17 acrescentam coisas que ele não pediu (B)</strong> e <strong>55 só fazem funcionar o que ele mandou (A)</strong>.</p>
+<p>Por que esta auditoria existe: Samuel, 27/10/2026 (D-549, <code>CLAUDE.md</code> §11 regra 7): "os agentes estão mudando coisas
+que eu já tinha definido, é só para fazer o que eu já tinha mandado, fazer as ferramentas que colocamos no programa
+funcionem como deveriam e como eu tinha escolhido."</p>
+<p><strong>Como conferi (só leitura, nada mudado):</strong> Livro de decisões (<code>docs/plano/DECISOES.md</code>, ramo <code>obra-2026-10-26</code>
+<code>1e9abb7</code>), os 10 <code>relatorios/obra-*/ONDE-PAREI.md</code>, o plano da obra aprovado (D-471), o rascunho do layout
+(<code>EditorImpressao-arquivos/plano-24-09-2026/layout/Plano de layout (rascunho).md</code>), a lista única de 23/10 e o código
+da obra quando o relatório não bastava (grep e <code>git log fase-1..obra-2026-10-26</code>). <strong>Conferido por leitura, não por
+máquina nem por olho:</strong> não rodei testes, não abri o programa, não tirei prints.</p>
+<p><strong>Legenda:</strong> <strong>A</strong> cumpre o que ele mandou (detalhe técnico) · <strong>B</strong> acrescenta o que ele não pediu · <strong>C</strong> muda ou
+contradiz (ou deixa de fazer) o que ele decidiu. Recomendação: manter / desfazer / perguntar. Pela regra 7, todo B vai
+como <strong>perguntar</strong> (o Livro não responde, então fica como pergunta na Central); quando acho que manter é seguro, digo.</p>
+<hr />
+<h2>C — muda ou contradiz o que ele decidiu (6)</h2>
+<table>
+<thead>
+<tr>
+<th>Decisão / mudança</th>
+<th>O que foi feito</th>
+<th>Classe</th>
+<th>Decisão dele que toca (data e palavras)</th>
+<th>Recomendação</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><strong>D-531 + JPEG 92 da etapa 10b</strong> (achado 4.5 "PDF gigante", da lista única de 23/10)</td>
+<td>Página de cor e de cinza passou a ir ao PDF em JPEG 92 (com perda: 1 a 14 tons de diferença da tela); a D-531 ainda ia guardar a página com no máximo 2× a resolução do scan.</td>
+<td><strong>C</strong></td>
+<td><strong>D-304</strong>, 01/10 (P3): "Eu quero ter a opção 1.6, mas eu quero poder deixar como está também, <strong>o tamanho do arquivo depois não importa</strong>". O 4.5 é achado de agente.</td>
+<td><strong>desfazer</strong> — já mandado na D-549. Atenção: o código da obra <strong>ainda</strong> tem <code>core/pdf_io.py:379 QUALIDADE_DO_JPEG = 92</code>, e 4 testes foram afrouxados para "PDF = prévia a poucos tons" (<code>test_gravar_pdf_sem_parar_a_janela</code>, <code>test_tirar_fundo_no_programa::test_pdf_final_sai_igual_a_previa</code>, <code>test_so_neste_pedaco_no_tirar_o_fundo::test_pdf_com_pedaco_sai_igual_a_previa</code>, <code>test_ajustar_pedaco_na_folha_girada::test_tirar_o_fundo_com_pedaco_na_folha_girada</code>): têm de voltar a "igual ponto a ponto".</td>
+</tr>
+<tr>
+<td><strong>Lado direito com 2 dos 4 jeitos</strong> (etapa 2, escolha 5 do agente)</td>
+<td>Ver &gt; "Lado direito" e Configurações &gt; Aparência só têm "Ícones na borda" e "Sanfona (a área de trabalho 1)". O agente escreveu que "abas no alto" e "painel solto" "não foram pedidos" (<code>ui/barra_de_menu.py:274</code>, <code>ui/widgets/paineis.py:96</code>).</td>
+<td><strong>C</strong></td>
+<td><strong>D-033</strong>, 05/10 (R2 nº 9): "Quer <strong>os quatro jeitos</strong> no app, escolhendo dentro dele: sanfona, abas no alto, ícones na borda, painel flutuante" · 20/10, 902: "<strong>C — Nos dois lugares</strong>"; o rascunho registra "a troca do lado direito (ícones na borda, sanfona/área de trabalho 1, abas no alto, painel solto) fica no menu Ver e nas Configurações".</td>
+<td><strong>desfazer a omissão</strong>: construir "abas no alto" e "painel solto" (D-033 tem dono: etapa 2).</td>
+</tr>
+<tr>
+<td><strong>Nomes da janela "Montar para imprimir" trocados</strong> (etapa 9a, "rótulos encurtados")</td>
+<td>"Ordem de páginas"→"Imprimir", "Páginas por caderno"→"Cada caderno", "Rotação automática"→"Girar sozinho a página deitada", "Centralizar automático"→"Centralizar sozinho", "Reverter páginas"→"Ordem invertida", "Agrupar"→"Agrupar as cópias", "Esquerda/Direita"→"costura à esquerda/à direita", "cancelar"→"parar" (<code>ui/dialogo_impressao.py</code>, conferido contra o <code>fase-1</code>).</td>
+<td><strong>C</strong></td>
+<td><code>fr-26</code>, 22/10: "Está bom" + "<strong>Só tem que melhorar esse layout</strong>, cheio de letras uma em cima da outra" (pediu arrumar, não renomear) · <strong>D-315</strong>, 14/10: as opções "que aparecem nos prints do PDF que mandei" (UPDF) · <strong>D-374</strong>, 22/10: "revisarmos todos os nomes de botão com um novo agente" — ele decide um por um.</td>
+<td><strong>desfazer os nomes</strong> e levar as sugestões à revisão de nomes (etapa 11). A nova disposição em duas colunas fica (é o pedido do <code>fr-26</code>, ver A).</td>
+</tr>
+<tr>
+<td><strong>D-496</strong> (etapa 9c)</td>
+<td>"Endireitar: as contas discordam" não avisa mais quando as duas contas dão a página a até 0,3° do reto, <strong>mesmo discordando mais de 0,3°</strong> (ex.: +0,25 e −0,1). Boécio: 12 avisos → 8 (<code>core/endireitar_scantailor.ANGULO_QUASE_ZERO</code>). Construída.</td>
+<td><strong>C</strong></td>
+<td><strong>D-082</strong>, 05/10 (G4): "O do ScanTailor de fábrica; <strong>quando os dois discordarem mais de 0,3 grau, a página fica marcada 'conferir'</strong>".</td>
+<td><strong>desfazer e perguntar</strong> (mostrar as 4 páginas do Boécio que perderam o aviso).</td>
+</tr>
+<tr>
+<td><strong>D-476</strong> (fase de "Marcar como: iluminura / moldura")</td>
+<td>A gerente pôs o "Marcar como" com "iluminura ou pintura" e "moldura" na Fase 1.5, depois da obra. Nada no programa mudou.</td>
+<td><strong>C</strong></td>
+<td><strong>D-242</strong>, 12/10 (705): "A — Sim, os dois" — no Livro, dono "Lista de espera (12/10), <strong>fase a definir por ele</strong>" · <strong>D-388</strong>: "O Samuel decide em que fase ela entra."</td>
+<td><strong>perguntar</strong> a fase.</td>
+</tr>
+<tr>
+<td><strong>D-529 + "Inserir" fora da grade</strong> (etapas 3 e 4)</td>
+<td>"Dividir" na grade "Todas as páginas" foi para a Lista de espera (depois da obra) e "Inserir página" não foi feito (D-487: muda o modelo de dados). A grade só "roda o automático nelas".</td>
+<td><strong>C</strong> (deixa de fazer)</td>
+<td><strong>D-334</strong>, 24/09 (paráfrase): "como o 'Organizar páginas' do UPDF: seleção múltipla, girar, apagar, extrair, <strong>inserir, dividir</strong>." O plano aprovado (D-471) pôs "inserir" na etapa 3.</td>
+<td><strong>perguntar</strong> se pode esperar. E perguntar o que é "dividir": no UPDF é <strong>partir o PDF em arquivos</strong>, não dividir a folha (o agente entendeu dividir a folha).</td>
+</tr>
+</tbody>
+</table>
+<hr />
+<h2>B — acrescenta o que ele não pediu (17)</h2>
+<table>
+<thead>
+<tr>
+<th>Decisão / mudança</th>
+<th>O que foi feito</th>
+<th>Classe</th>
+<th>Decisão dele que toca (data e palavras)</th>
+<th>Recomendação</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><strong>D-532</strong> (não construída, etapa 9d)</td>
+<td>Gravura de fundo escuro (Palatino 70 e 74, fotos de retícula do Righetti) no Preto e branco sairia em tons de cinza, não em 1 bit.</td>
+<td><strong>B</strong></td>
+<td><strong>D-147</strong>, 30/09: P1a "Cinza (tons de cinza): BOM" · pontilhados "RUIM" (fala de <strong>foto e pintura</strong>, não de gravura). Ele nunca disse que gravura de traço vai em cinza.</td>
+<td><strong>perguntar</strong> (com as fotos da conferência da 10b); não construir antes.</td>
+</tr>
+<tr>
+<td><strong>D-530</strong> (com a D-493)</td>
+<td>O desentortar "seguindo só o bloco do texto" vira <strong>opção nova da página</strong> no painel do desentortar (desligada). A D-493 (ligar para todo livro) não foi ligada: entortava a Marial 41.</td>
+<td><strong>B</strong></td>
+<td><strong>D-113</strong>, 23/10: "o primeiro passo [...] seria <strong>tirar essa moldura preta</strong> [...] ai o desentortador não iria confundir as letras com moldura preta" (isso foi feito na 10a; a conta "só o bloco" é ideia do agente).</td>
+<td><strong>perguntar</strong> (é botão novo).</td>
+</tr>
+<tr>
+<td><strong>D-495 + D-499</strong> (etapa 4)</td>
+<td>A faixa preta da tampa do scanner (Righetti 96) só é tirada quando a pessoa divide ou acerta a linha <strong>à mão</strong>; o Automático nunca tira; a faixa é <strong>pintada de branco</strong>, não cortada (regra nova de 8 mm / 97% da folha).</td>
+<td><strong>B</strong></td>
+<td><strong>D-097</strong>, 13-21/10: "É para sumir totalmente." · "tem que ficar rente a folha de papel, não pode ter preto ali." · <strong>D-092</strong>, 09/10: tarja e moldura do scanner — "<strong>O Kaique escolhe por livro</strong>" entre cortar e pintar de branco.</td>
+<td><strong>perguntar</strong> (já vai à conferência final como pergunta 2 da etapa 4, prints <code>depois-08</code>/<code>depois-09</code>).</td>
+</tr>
+<tr>
+<td><strong>D-500</strong> (etapa 4)</td>
+<td>Quando o ScanTailor corta a folha fora de 20%–80% da largura, o programa <strong>troca sozinho</strong> para a conta do Editor naquela folha e põe "Lombada incerta".</td>
+<td><strong>B</strong></td>
+<td><strong>D-080</strong>, 05/10 (G2): "escolhendo 'o do programa' ou 'o do ScanTailor', e <strong>trocando numa folha se um ficar ruim</strong>" (a troca era do Kaique) · <strong>D-089</strong>: "O do ScanTailor".</td>
+<td><strong>perguntar</strong> (o "La vida eterna" folhas 4 e 5 é o exemplo; recomendo manter — é a regra do próprio ScanTailor — mas ele decide).</td>
+</tr>
+<tr>
+<td><strong>D-494</strong> (pela metade)</td>
+<td>A caixinha "Margens iguais" ficaria à vista <strong>também na tela do corte</strong> (ela já mora no Automático, Saída).</td>
+<td><strong>B</strong></td>
+<td><strong>D-075</strong>, 05/10 (G9): caixinha "Margens iguais" desmarcada de fábrica, "Mas eu vou conseguir alterar isso né?" (o lugar na tela nunca foi escolhido por ele).</td>
+<td><strong>perguntar</strong> o lugar (a parte "não forçar o mesmo tamanho" é A: é como já era).</td>
+</tr>
+<tr>
+<td><strong>D-481</strong> (etapa 3)</td>
+<td>Letras novas: <strong>D</strong> = Dividir, <strong>X</strong> = Cortar, <strong>I</strong> = Endireitar.</td>
+<td><strong>B</strong></td>
+<td>R8 302, 06/10: "quando eu passar em cima da agrupada tem que mostrar a letra dela de atalho" (não escolheu letras). O agente da etapa 2 tinha perguntado e escrito: "Não inventei: fica como está até ele dizer."</td>
+<td><strong>perguntar</strong> (mostrar as letras; trocar é barato, são remapeáveis).</td>
+</tr>
+<tr>
+<td><strong>D-540</strong> (etapa 5)</td>
+<td>Letra <strong>F</strong> = "Mover e redimensionar" (o V do Photoshop já é a Varinha aqui).</td>
+<td><strong>B</strong></td>
+<td>idem (R8 302).</td>
+<td><strong>perguntar</strong> junto com a D-481.</td>
+</tr>
+<tr>
+<td><strong>Shift+Del = "Tirar esta página do livro"</strong> (etapa 2, escolha 3)</td>
+<td>Tecla nova no menu Página.</td>
+<td><strong>B</strong></td>
+<td><strong>D-046</strong>, 07 e 09/10: "Dois botões; <strong>a tecla Delete deixa em branco</strong>" (não deu tecla ao "Tirar do livro").</td>
+<td><strong>perguntar</strong> junto com as letras.</td>
+</tr>
+<tr>
+<td><strong>Menu novo "Ferramentas"</strong> (etapa 2, escolha 2)</td>
+<td>Menu entre Editar e Marcar com Dividir, Cortar, Endireitar, as de marcar, Zoom e Mão.</td>
+<td><strong>B</strong></td>
+<td>Ele escolheu os menus nas rodadas 12-14 (903 B: menu novo "Painéis"; 904 A: itens do Ver). O plano aprovado (D-471) pedia "menus com Endireitar/Cortar/Dividir" (achado do teste do Kaique feito por agente), não um menu novo.</td>
+<td><strong>perguntar</strong> (mostrar o print <code>relatorios/obra-etapa2/prints/depois-05-menu-ferramentas.png</code>).</td>
+</tr>
+<tr>
+<td><strong>D-475</strong> (não construída, etapa 11)</td>
+<td>Texto novo do aviso "só as pares" num livro dividido: "A página 2 fica na folha 1, que é ímpar. Para girar só as folhas pares, vá para a folha 2 (páginas 3 e 4)."</td>
+<td><strong>B</strong></td>
+<td><strong>D-036</strong>, 06/10: "O programa avisa: 'vá a uma folha par'" (aviso aprovado: "Você está numa folha ímpar. Para girar só as pares, vá a uma folha par e gire de lá.").</td>
+<td><strong>perguntar</strong> na revisão de nomes (D-374).</td>
+</tr>
+<tr>
+<td><strong>"mandar para a impressora" do "Montar para imprimir" agora pergunta antes</strong> (etapa 9a)</td>
+<td>Janela de confirmação a mais (impressora, lados, cópias, folhas) antes de mandar.</td>
+<td><strong>B</strong></td>
+<td><strong>D-325</strong>, 21/10 (<code>imp-5</code>): "Também manda direto para a impressora". (A D-012 pede confirmação só no "imprimir agora".)</td>
+<td><strong>perguntar</strong> (recomendo manter: é segurança, como a D-012).</td>
+</tr>
+<tr>
+<td><strong>Frase nova na "Ficou pronto!"</strong> (etapa 9a, lista única 5.12)</td>
+<td>"Para imprimir em cadernos, use 'montar para imprimir em A4' [...]" embaixo dos botões.</td>
+<td><strong>B</strong></td>
+<td><strong>D-330</strong>, 22/10: "Deixar os dois" (os dois botões, sem frase). 5.12 é achado de agente.</td>
+<td><strong>perguntar</strong>.</td>
+</tr>
+<tr>
+<td><strong>Aviso "o que está impresso fica CORTADO"</strong> na impressão acima de 100% (etapa 10a, lugar 8 da D-104)</td>
+<td>Aviso novo na janela de imprimir.</td>
+<td><strong>B</strong></td>
+<td><strong>D-466</strong>, 22/10: "Primeiro provar em páginas de verdade, <strong>depois decidir</strong>" — ele decide vendo. Já havia o aviso de margem (D-319).</td>
+<td><strong>perguntar</strong> (mostrar Escola 7 a 140%, <code>relatorios/obra-etapa10a/conferencia/img/imprimir140.jpg</code>).</td>
+</tr>
+<tr>
+<td><strong>Caixinha "Usar esta receita no aviso de todo livro novo"</strong> (etapa 3, caixa da receita)</td>
+<td>Opção nova na caixa de salvar receita (escolhe a "receita de sempre" do aviso do livro novo).</td>
+<td><strong>B</strong></td>
+<td>Decisão 2, 25/09: "salvar como <strong>receita</strong> com nome e reusar" · <code>fr-219</code>: "pode melhorar a caixa de como escolhemos o que vai dentro da receita". A "receita de sempre" vem da D-018 (escolha da gerente).</td>
+<td><strong>perguntar</strong>.</td>
+</tr>
+<tr>
+<td><strong>Nome do PDF sugerido sem acento</strong> (etapa 9a, lista 5.15; etapa 9c, item 2)</td>
+<td>"Ofício da Imaculada Conceição - mágico pro.pdf" passa a ser sugerido como "Oficio da Imaculada Conceicao - magico pro.pdf" (também o "- para imprimir").</td>
+<td><strong>B</strong></td>
+<td><strong>D-365</strong>, 18/07: "Corrija TODOS os textos da interface para <strong>português correto</strong>". A regra citada pelo agente (<code>CLAUDE.md</code> §3, "caminhos de disco sem acento") é técnica, do código; o nome do livro é do Kaique. 5.15 é achado de agente.</td>
+<td><strong>perguntar</strong> (recomendo voltar ao nome com acento até ele dizer).</td>
+</tr>
+<tr>
+<td><strong>D-478</strong> (fase; nada no programa)</td>
+<td>Espaços "Limpo / Completo" viram arranjos salvos com nome dentro do "tudo livre", na Fase 4.</td>
+<td><strong>B</strong></td>
+<td>Decisão 4, 28/09 (rascunho): "Espaços de trabalho Limpo / Completo mostrados [...]. <strong>Aprovação: a confirmar</strong>" — "a decidir pelo Samuel".</td>
+<td><strong>perguntar</strong> quando chegar a Fase 4.</td>
+</tr>
+<tr>
+<td><strong>D-480</strong> (fase; nada no programa)</td>
+<td>Item 7.3: os manuscritos entram na transcrição da Fase 7 (Kraken, CREMMA).</td>
+<td><strong>B</strong></td>
+<td>Plano 7.3 (D-208): "<strong>decidir</strong> se os manuscritos entram" (decisão dele); apoio: D-132, "OCR de manuscrito desde o começo".</td>
+<td><strong>perguntar</strong> quando chegar a Fase 7 (a própria linha já diz "ele confirma").</td>
+</tr>
+</tbody>
+</table>
+<hr />
+<h2>A — só faz funcionar o que ele mandou (55)</h2>
+<h3>Escolhas da gerente anotadas no Livro</h3>
+<table>
+<thead>
+<tr>
+<th>Decisão</th>
+<th>O que foi feito</th>
+<th>Classe</th>
+<th>Decisão dele que cumpre</th>
+<th>Recomendação</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>D-016</td>
+<td>Arrastar as etapas do Automático muda a ordem em que <strong>rodam</strong>; a montagem da página fica na ordem obrigatória.</td>
+<td>A</td>
+<td>D-003 "Ordem das etapas: livre [...] Sem cadeados" × mais recentes dele: <code>g6-endireitar-antes</code> "Pode começar" (09/10) e <code>a-212-desentortar</code> "A — cortar uma vez só, no fim" (22/10).</td>
+<td>manter; <strong>avisar</strong> que arrastar não muda o PDF (a prova é "a página sai igual").</td>
+</tr>
+<tr>
+<td>D-017</td>
+<td>Aumentar além da beirada: página do mesmo tamanho, parte de fora marcada, aviso no "Para revisar", nada reduzido sozinho.</td>
+<td>A</td>
+<td>G10, 05/10: "(b) Avisar e não reduzir - avisar para eu reduzir manualmente".</td>
+<td>manter</td>
+</tr>
+<tr>
+<td>D-018</td>
+<td>"Rodar o automático…" do aviso abre a janela grande com a receita marcada; nada roda antes de "Rodar".</td>
+<td>A</td>
+<td>D-005 (R13 804 B): o aviso com "Rodar o automático…" (o "…" abre janela).</td>
+<td>manter</td>
+</tr>
+<tr>
+<td>D-473</td>
+<td>Tela e PDF da mesma conta; enquanto não fica pronta, prévia com bolinha.</td>
+<td>A</td>
+<td>D-066, 23/10: "precisamos que o pdf saia que nem está na tela" · D-064, 22/10: "é só colocar uma bolinha de carregamento".</td>
+<td>manter</td>
+</tr>
+<tr>
+<td>D-474</td>
+<td>A meta "menos de 10% das páginas no Para revisar" continua.</td>
+<td>A</td>
+<td>D-254, 18/07 (a meta é dele).</td>
+<td>manter</td>
+</tr>
+<tr>
+<td>D-477</td>
+<td>Ferrugem rosada da Pesel 2 deve sumir (Fase 6.2).</td>
+<td>A</td>
+<td>R4 do plano (manchas somem) · D-123 (manchas vermelhas e marrons).</td>
+<td>manter</td>
+</tr>
+<tr>
+<td>D-479</td>
+<td>"o do Editor" / "a do Editor" em todo lugar.</td>
+<td>A</td>
+<td>907 B (20/10) "o do Editor" · <code>ly-editor</code> "Está bom".</td>
+<td>manter</td>
+</tr>
+<tr>
+<td>D-482</td>
+<td>"agora não" fecha o aviso do livro novo para aquele livro.</td>
+<td>A</td>
+<td>D-005 (o nome "agora não" foi do agente de layout; o que o botão faz não estava escrito).</td>
+<td>manter</td>
+</tr>
+<tr>
+<td>D-483</td>
+<td>A medida por trás só roda no livro novo; livro salvo volta como estava.</td>
+<td>A</td>
+<td>D-284 "Medir o livro inteiro por trás, depois de abrir" (o livro salvo já foi medido na conferência).</td>
+<td>manter</td>
+</tr>
+<tr>
+<td>D-484</td>
+<td>Gravuras, Margens iguais e Cadernos valem sempre no livro todo; "desligar" nas escolhidas deixa a etapa nas outras.</td>
+<td>A</td>
+<td>D-002 (livro todo / escolhidas / uma página) · D-068 (ligar e desligar).</td>
+<td>manter</td>
+</tr>
+<tr>
+<td>D-485</td>
+<td>Página antiga com filtro diferente do livro conta como "mexida à mão" na pergunta.</td>
+<td>A</td>
+<td>D-004 "o programa pergunta se quer pular as páginas mexidas".</td>
+<td>manter</td>
+</tr>
+<tr>
+<td>D-486</td>
+<td>A página ao lado na janela grande é a original; o antes/depois ao vivo fica para a Lista de espera.</td>
+<td>A</td>
+<td>D-002 "Na janela, ver a página ao lado, folhear e dar zoom" · D-070 (laboratório) já estava na Lista de espera.</td>
+<td>manter</td>
+</tr>
+<tr>
+<td>D-487</td>
+<td>Grade com várias escolhidas: girar, em branco, tirar, trazer de volta, extrair (as folhas como estão no PDF de entrada), rodar o automático. ("Inserir": ver C.)</td>
+<td>A</td>
+<td>D-334.</td>
+<td>manter; o "extrair sem os ajustes" é detalhe a mostrar a ele.</td>
+</tr>
+<tr>
+<td>D-488</td>
+<td><code>ui/tela_opcoes.py</code> fica no repositório, fora do caminho.</td>
+<td>A</td>
+<td>D-002 · regra de apagar (D-420).</td>
+<td>manter</td>
+</tr>
+<tr>
+<td>D-489</td>
+<td>Recomeço só quando o PDF mudou, o projeto não lê ou falta página; mudar etapa nunca recomeça.</td>
+<td>A</td>
+<td>Defeito de 29/09 · D-342 ("o mesmo trabalho").</td>
+<td>manter</td>
+</tr>
+<tr>
+<td>D-490</td>
+<td>O "Sim" do fundo vale na hora (só nas páginas em Original; código conferido, <code>ui/janela_principal.py:807</code>).</td>
+<td>A</td>
+<td>D-135 · D-136 "só as de 'Original'".</td>
+<td>manter</td>
+</tr>
+<tr>
+<td>D-491</td>
+<td>Retângulo do corte em Configurações, livro e página.</td>
+<td>A</td>
+<td>D-094 "quero a b e c juntas" · D-093.</td>
+<td>manter</td>
+</tr>
+<tr>
+<td>D-492 (não construída)</td>
+<td>O tique do menu Filtro acompanha a página.</td>
+<td>A</td>
+<td>O tique já existe e engana; D-010 "o botão tem que ser provado que ele faz o que se diz".</td>
+<td>manter</td>
+</tr>
+<tr>
+<td>D-497 (não construída)</td>
+<td>Página que fica branca depois de mudar a divisão ganha "Parece em branco" (salvo "está certo" dado antes).</td>
+<td>A</td>
+<td>D-271 (aviso próprio) · D-273 (o aviso acompanha o problema).</td>
+<td>manter</td>
+</tr>
+<tr>
+<td>D-498</td>
+<td>"não dividir esta" junta e guarda as duas páginas; "dividir esta" as devolve como estavam.</td>
+<td>A</td>
+<td>Pedido da etapa 4 (sessão 1, 26/10) · D-046 · D-009.</td>
+<td>manter</td>
+</tr>
+<tr>
+<td>D-501</td>
+<td>O livro nunca abre no Dividir; depois de dividir, uma página por vez.</td>
+<td>A</td>
+<td>D-007, 26/10: "o livro tem que aparecer em uma pagina por vez para mim".</td>
+<td>manter</td>
+</tr>
+<tr>
+<td>D-522 (o número)</td>
+<td>"Muitas" páginas em branco = 40% ou mais.</td>
+<td>A</td>
+<td><code>pd-versos-em-branco</code>: "Juntar num aviso só do livro quando forem muitas" (o número é detalhe).</td>
+<td>manter</td>
+</tr>
+<tr>
+<td>D-528 (não construída)</td>
+<td>Marcações da folha inteira vão para a metade em que estão ao dividir.</td>
+<td>A</td>
+<td>D-009 (o feito à mão vale) · "o trabalho não se perde".</td>
+<td>manter</td>
+</tr>
+<tr>
+<td>D-541</td>
+<td>Como o Mover mexe (arrasta ao vivo, canto proporcional, 5% a 4×, o meio fica na área branca).</td>
+<td>A</td>
+<td>D-008 "como é no photoshope, que você arrasta a hora que quiser e aumenta a hora que quiser".</td>
+<td>manter</td>
+</tr>
+<tr>
+<td>D-542</td>
+<td>"Centralizar" e ímã pelo que está impresso.</td>
+<td>A</td>
+<td>D-303 "precisamos centralizar" · teste do Kaique "mover ele para o meio da folha".</td>
+<td>manter</td>
+</tr>
+<tr>
+<td>D-543</td>
+<td>Aviso "Parte do impresso fica de fora" (0,05%), parte de fora em vermelho, "ver no Mover" / "está bom assim".</td>
+<td>A</td>
+<td>G10 "Avisar e não reduzir".</td>
+<td>manter</td>
+</tr>
+<tr>
+<td>D-544</td>
+<td>"Mover conteúdo" sai do Cortar (o Cortar ganhou uma frase que manda para o Mover).</td>
+<td>A</td>
+<td>D-008 "deveriam ser duas coisas independentes".</td>
+<td>manter (a frase no Cortar é pequena; pode ir à revisão de nomes)</td>
+</tr>
+<tr>
+<td>D-545</td>
+<td>"usar em todas..." no Mover, com as já mexidas desmarcadas.</td>
+<td>A</td>
+<td>G10 "ter uma opção para passar isso para todas as folhas" · D-090 · D-091.</td>
+<td>manter</td>
+</tr>
+<tr>
+<td>D-546</td>
+<td>Só o Mover mostra a página na área branca (até a D-547).</td>
+<td>A</td>
+<td>D-473/D-066.</td>
+<td>manter</td>
+</tr>
+<tr>
+<td>D-547 (não construída)</td>
+<td>Todas as telas e miniaturas mostram a página movida.</td>
+<td>A</td>
+<td>D-066 "precisamos que o pdf saia que nem está na tela".</td>
+<td>manter</td>
+</tr>
+<tr>
+<td>D-548</td>
+<td>O aviso não ignora o que já estava perto da beirada.</td>
+<td>A</td>
+<td>G10/D-017 (nada cortado sem ver).</td>
+<td>manter</td>
+</tr>
+</tbody>
+</table>
+<h3>Mudanças de comportamento descritas nos relatórios das etapas</h3>
+<table>
+<thead>
+<tr>
+<th>Etapa</th>
+<th>O que mudou</th>
+<th>Classe</th>
+<th>Decisão dele que cumpre</th>
+<th>Recomendação</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>1</td>
+<td>O feito à mão (corte, ângulo, filtro, marcação, mover) vale no PDF com a etapa desligada; marca "mexida à mão"; projeto antigo sai igual (96/96 e 24/24 somas).</td>
+<td>A</td>
+<td>D-009 · D-004 · D-342.</td>
+<td>manter</td>
+</tr>
+<tr>
+<td>1</td>
+<td>Mover chega ao PDF sem tamanho de folha e com a folha arredondada (defeito do Kaique 15 × 53).</td>
+<td>A</td>
+<td>D-008.</td>
+<td>manter</td>
+</tr>
+<tr>
+<td>2</td>
+<td>Todas as ferramentas sempre montadas, menus acesos, sem caixinha nenhuma o livro abre (na Mão).</td>
+<td>A</td>
+<td>D-001 "Uma única tela com todas as ferramentas" · D-009.</td>
+<td>manter</td>
+</tr>
+<tr>
+<td>2</td>
+<td>Delete = "Deixar em branco"; bloco "Esta página" com "deixar em branco" / "tirar do livro" em toda ferramenta.</td>
+<td>A</td>
+<td>D-046. Lugar provisório permitido pela D-442.</td>
+<td>manter</td>
+</tr>
+<tr>
+<td>2</td>
+<td>"Os quatro filtros" saiu da trilha (o painel Filtro faz o mesmo).</td>
+<td>A</td>
+<td>R9 403 B · D-181.</td>
+<td>manter</td>
+</tr>
+<tr>
+<td>2</td>
+<td>Caixinhas com quadrado à vista, marcadas e desmarcadas.</td>
+<td>A</td>
+<td>D-028 (O1).</td>
+<td>manter</td>
+</tr>
+<tr>
+<td>3</td>
+<td>Abre direto na área de trabalho (0,7 s em vez de 139 s); painel Automático e janela grande; opções da tela "O que fazer" no Automático; receitas; "Receita usada" no livro aberto; pergunta das mexidas.</td>
+<td>A</td>
+<td>D-002 · D-003 · D-004 · D-005 · D-068 · D-069 · D-284 · decisão 2 (receitas) · rascunho R5/R6 ("Para revisar", "Receita usada").</td>
+<td>manter</td>
+</tr>
+<tr>
+<td>4</td>
+<td>Dividir, não dividir e mover a linha de UMA folha, sem recomeçar; Righetti girado divide.</td>
+<td>A</td>
+<td>Pedido da sessão 1 (26/10) · D-080 · D-074 · lista 3.1.</td>
+<td>manter</td>
+</tr>
+<tr>
+<td>9a</td>
+<td>"imprimir agora..." pede impressora, páginas, cópias e confirmação.</td>
+<td>A</td>
+<td>D-012 "2" (consertar na etapa 9).</td>
+<td>manter</td>
+</tr>
+<tr>
+<td>9a</td>
+<td>"Montar para imprimir" em duas colunas, sem nada por cima; nenhuma opção saiu. (Os <strong>nomes</strong> trocados estão em C.)</td>
+<td>A</td>
+<td><code>fr-26</code> "Só tem que melhorar esse layout" · D-333 · D-315.</td>
+<td>manter (ele confere de olho)</td>
+</tr>
+<tr>
+<td>9a</td>
+<td>A rodinha só muda número e lista depois de clicar (programa todo).</td>
+<td>A</td>
+<td>Teste do Kaique: o campo passou de 100% para 60% sozinho (defeito).</td>
+<td>manter</td>
+</tr>
+<tr>
+<td>9a</td>
+<td>Janelas de abrir/salvar em português (a do Windows; a do Qt traduzida quando a do Windows não pode).</td>
+<td>A</td>
+<td>D-301 (lembrar a última pasta, avisar em português).</td>
+<td>manter</td>
+</tr>
+<tr>
+<td>9c</td>
+<td>"Deixar a folha em branco" e "pintar de branco" saem brancos no Original.</td>
+<td>A</td>
+<td>D-027 · D-227.</td>
+<td>manter</td>
+</tr>
+<tr>
+<td>9c</td>
+<td><code>projeto.json</code> que não dá para ler: cópia guardada e aviso.</td>
+<td>A</td>
+<td>D-342.</td>
+<td>manter</td>
+</tr>
+<tr>
+<td>9c</td>
+<td>"Parece em branco" falso some quando a página tem texto; beirada do livro não conta.</td>
+<td>A</td>
+<td>D-271 · D-288 · D-254.</td>
+<td>manter</td>
+</tr>
+<tr>
+<td>9c</td>
+<td>"Menor que o corte" com os dois números iguais não aparece mais.</td>
+<td>A</td>
+<td>Lista de bugs 02/10 (defeito).</td>
+<td>manter</td>
+</tr>
+<tr>
+<td>9c</td>
+<td>Textos do núcleo: "o do Editor", singular/plural, acentos.</td>
+<td>A</td>
+<td>D-479/907 · D-365.</td>
+<td>manter</td>
+</tr>
+<tr>
+<td>10a</td>
+<td>O corte não come a página: Cursus 3, Escola 197 (números da margem), folha quase em branco não vira tira, a caixa não parte letra, corte alargado nunca menor, "Corte encostou" medido no corte de verdade.</td>
+<td>A</td>
+<td>D-077 "não comer conteúdo" · D-104/D-466 · D-098.</td>
+<td>manter (ele vê na conferência da 10a: <code>relatorios/obra-etapa10a/conferencia/conferencia-etapa10a.html</code>)</td>
+</tr>
+<tr>
+<td>10a</td>
+<td>Fio e faixa escura da beirada saem; cunhas do giro com a cor do papel; tracejado da beirada (Horas 18) não conta.</td>
+<td>A</td>
+<td>D-095 (cunhas, ressalvas do G6) · D-097 "não pode ter preto ali".</td>
+<td>manter</td>
+</tr>
+<tr>
+<td>10a</td>
+<td>Moldura do scanner pintada de branco só na conta do desentortar.</td>
+<td>A</td>
+<td>D-113 "tirar essa moldura preta [...] ai o desentortador não iria confundir".</td>
+<td>manter</td>
+</tr>
+<tr>
+<td>10b</td>
+<td>4.1 gravura sem blocos pretos; 4.3 folha de guarda sai branca; 4.11 mancha redonda não vira bola preta; 4.12 grão laranja some (e os pontinhos atrás da estátua do Opus 20).</td>
+<td>A</td>
+<td>D-118 "o papel saia branco, e o desenho também saia perfeito" · D-126 · X2 (02/10) "esses pontos estão horriveis atras da estatua".</td>
+<td>manter</td>
+</tr>
+<tr>
+<td>10b</td>
+<td>Sombra da lombada (Matemática 40 e 66) e sombra de foto de celular não viram mancha preta no Preto e branco.</td>
+<td>A</td>
+<td>D-154 "nenhuma letra some" · D-107 (fotos).</td>
+<td>manter</td>
+</tr>
+<tr>
+<td>10b</td>
+<td>4.7 Pesel: o cartão em volta da gravura sai como escaneado (sem retângulos brancos).</td>
+<td>A</td>
+<td>Defeito (lista 4.7). Ressalva: D-126 pede "todo o papel totalmente branco"; o cartão escuro não é o papel da página.</td>
+<td>manter; mostrar a ele de olho</td>
+</tr>
+<tr>
+<td>10b</td>
+<td>T do Antiphonal 46 igual na tela e no PDF; tela cheia com a grossura do PDF; "Reduzir cores" não apaga letra.</td>
+<td>A</td>
+<td>D-278 · D-193/D-066 "precisamos que o pdf saia que nem está na tela" · D-189 "Ele está apagando as letras".</td>
+<td>manter</td>
+</tr>
+</tbody>
+</table>
+<hr />
+<h2>Fora da tabela (processo, não muda o programa)</h2>
+<ul>
+<li><strong>Donos das 37 decisões "sem dono"</strong> (Livro, seção "Sem dono antes desta revisão", escolha da gerente na etapa 0):
+  várias foram para "depois da obra" (ex.: D-034, D-122, D-138, D-164, D-224, D-235, D-438). A maioria segue o que o
+  plano já dizia, mas a D-388 diz que <strong>só ele escolhe a fase</strong>. Recomendo mostrar a lista a ele de uma vez, sem uma
+  pergunta por item.</li>
+<li><strong>D-466 no conjunto da 10a/10b:</strong> ele pediu "primeiro provar em páginas de verdade, depois decidir". Os agentes
+  provaram e já consertaram (com a D-014 autorizando fazer e conferir no fim). Os consertos estão em A porque fazem o
+  "não comer" funcionar; só o aviso novo da impressão ficou em B. A conferência da 10a e da 10b mostra as fotos.</li>
+</ul>
+<h2>Ressalvas</h2>
+<ol>
+<li>Nada foi conferido por máquina nem por olho: é leitura do Livro, dos relatórios e do código. Itens A podem ainda
+   estar <strong>mal feitos</strong> (isso é o verificador de cada etapa); aqui só se diz se a escolha <strong>respeita</strong> o que ele decidiu.</li>
+<li>Várias decisões dele estão no Livro como paráfrase da fonte (ex.: D-033, D-334). Onde a paráfrase decide a classe
+   (C do lado direito e da grade), conferi a fonte: o rascunho do layout (linhas 187, 783, 806, 814) confirma os quatro
+   jeitos; a D-334 não tem as palavras literais dele.</li>
+<li>As decisões D-502 a D-519 e D-533 a D-539 não existem no Livro (números pulados). A etapa 6 (D-580+) e a 9d
+   (D-560+) estão em andamento e não entraram nesta auditoria.</li>
+<li>O JPEG 92 da D-531 ainda está no código da obra (<code>core/pdf_io.py:379</code>); a D-549 manda desfazer na etapa 9d.</li>
+</ol>
+<p class="rodape">Editor de Impressão &middot; gerado em 27/10/2026 às 17:35</p>
+</body>
+</html>
