@@ -12,7 +12,8 @@ Itens:
   3. projeto.json ilegível: a cópia estragada fica guardada e a tela recebe um
      sinal para avisar (projetos.py).
   4. "Parece em branco" falso em página com texto (core/analise.py).
-  5. "Endireitar: as contas discordam" em página reta (core/analise.py).
+  5. "Endireitar: as contas discordam" em página reta (core/analise.py) -
+     desfeito na etapa 9d (auditoria de 27/10: vale a D-082).
   6. textos do núcleo que aparecem na tela (plural, acento, "aba", D-479).
   7. "Menor que o corte" com os dois números iguais.
 
@@ -379,26 +380,33 @@ def test_parece_em_branco_nao_conta_a_beirada_do_livro_como_conteudo():
     assert not parece_em_branco(titulo), "página com título não é 'em branco' (D-288)"
 
 
-# --- item 5: "as contas discordam" em página reta -----------------------------
+# --- item 5: "as contas discordam" (D-082; a exceção D-496 saiu na etapa 9d) ---
 
-@pytest.mark.parametrize("nosso, do_scantailor", [(-0.1, 0.25), (0.1, -0.25), (0.3, 0.0), (-0.15, 0.2)])
-def test_d082_pagina_reta_nas_duas_contas_nao_avisa(nosso, do_scantailor):
+@pytest.mark.parametrize("nosso, do_scantailor", [(-0.1, 0.25), (0.1, -0.25), (-0.15, 0.2)])
+def test_d082_perto_do_reto_tambem_avisa_quando_discordam_mais_de_0_3(nosso, do_scantailor):
     """D-082 (05/10/2026): "quando os dois discordarem mais de 0,3 grau, a
-    página fica marcada 'conferir'". Etapa 9c (Lista de bugs de 09/10:
-    "Endireitar: as contas discordam" em página reta): quando as duas contas
-    dão a página quase reta - cada uma a no máximo 0,3 grau do reto, a mesma
-    tolerância da decisão -, não há o que conferir. No Boécio (50 páginas),
-    eram 4 dos 12 avisos: -0,1 x +0,25, +0,1 x -0,25..."""
+    página fica marcada 'conferir'". Auditoria de 27/10/2026 (etapa 9d): a
+    exceção da etapa 9c (D-496, escolha da gerente: com as duas contas a até
+    0,3 grau do reto, não avisar) contrariava a D-082 e saiu - prova que o
+    comportamento da D-496 não está mais lá (diferenças de 0,35 a 0,4 grau,
+    as duas perto do reto: avisa). Falha no código da 9c."""
+    from core.endireitar_scantailor import discordam
+
+    assert discordam(nosso, do_scantailor)
+
+
+@pytest.mark.parametrize("nosso, do_scantailor", [(0.3, 0.0), (0.1, 0.25), (-0.2, 0.1)])
+def test_d082_ate_0_3_grau_de_diferenca_nao_avisa(nosso, do_scantailor):
+    """D-082: até 0,3 grau de diferença (inclusive) não é discordância."""
     from core.endireitar_scantailor import discordam
 
     assert not discordam(nosso, do_scantailor)
 
 
 @pytest.mark.parametrize("nosso, do_scantailor", [(-2.2, -0.25), (-0.1, 0.56), (0.5, 0.12), (-0.0, -1.0)])
-def test_d082_contas_que_discordam_de_verdade_continuam_avisando(nosso, do_scantailor):
-    """O outro lado: com uma das contas longe do reto e a diferença acima de
-    0,3 grau, o aviso continua (Boécio p. 2: -2,2 x -0,4, o print da lista
-    única 5.8)."""
+def test_d082_contas_que_discordam_longe_do_reto_avisam(nosso, do_scantailor):
+    """Com uma das contas longe do reto e a diferença acima de 0,3 grau, o
+    aviso continua (Boécio p. 2: -2,2 x -0,4, o print da lista única 5.8)."""
     from core.endireitar_scantailor import discordam
 
     assert discordam(nosso, do_scantailor)
