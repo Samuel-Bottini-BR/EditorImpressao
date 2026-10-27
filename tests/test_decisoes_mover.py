@@ -470,3 +470,25 @@ def test_g10_usar_em_todas_nas_escolhidas_e_avisa_por_tras(janela, tmp_path, mon
     assert len(janela.acoes.feitas) == feitas + 1
     assert _esperar(lambda: analise.IMPRESSO_DE_FORA in projeto.paginas[1].alertas, 30)
     assert etapas.MOVER in projeto.paginas[1].mexida_a_mao
+
+
+def test_letra_f_com_o_foco_na_pagina_de_marcar_chega_a_ferramenta(janela, tmp_path):
+    """Defeito achado ao provar a tecla F na janela de verdade (27/10/2026): com o foco na
+    página da ferramenta de marcar (um clique nela, com a Mão), QUALQUER letra dava
+    "Aconteceu um problema inesperado" - o editor de marcar chamava
+    evento.matches(Qt.Key_Z), que o PySide6 6.11 recusa -, e a letra da ferramenta (D, X,
+    I, F...) não chegava à tela. Teste de reversão (CLAUDE.md §4.7): no código de antes a
+    tela não sai da ferramenta de marcar."""
+    from PySide6.QtTest import QTest
+
+    janela.abrir_livro(_pdf(tmp_path / "livro.pdf"))
+    janela.show()
+    tela = janela.tela_conferir
+    tela.escolher_ferramenta("mao")
+    _assentar()
+    editor = tela.editor_selecao
+    editor.setFocus()
+    _assentar()
+    QTest.keyClick(editor, Qt.Key_F, Qt.NoModifier)
+    _assentar()
+    assert tela.aba_atual == "mover", "a letra F não chegou à tela (o editor de marcar a perdeu)"

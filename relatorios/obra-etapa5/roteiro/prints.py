@@ -54,6 +54,15 @@ def _letra(janela, letra: str) -> None:
     base.tecla(janela, vk)
 
 
+def _clique_na_trilha(janela, tela, ferramenta: str) -> bool:
+    trilha = tela.trilha
+    for indice, ret in trilha.retangulos().items():
+        if trilha.a_vista(indice) == ferramenta:
+            base.clique(janela, trilha, ret.center())
+            return True
+    return False
+
+
 def _dividir_pelo_automatico(janela, tela, projeto):
     """O Automático só com "Dividir", no livro todo, pelo clique (como na etapa 4)."""
     from PySide6.QtCore import QPoint
@@ -64,8 +73,11 @@ def _dividir_pelo_automatico(janela, tela, projeto):
     base.esperar(0.8)
     painel = tela.paineis.automatico
     lista = painel.lista
-    item = next(lista.item(i) for i in range(lista.count())
-                if lista.item(i).text().startswith(A.NOMES[A.DIVIDIR]))
+    item = next((lista.item(i) for i in range(lista.count())
+                 if lista.item(i).data(0x0100) == A.DIVIDIR), None)
+    if item is None:            # a lista guarda a etapa em outro papel: pelo texto
+        item = next(lista.item(i) for i in range(lista.count())
+                    if lista.item(i).text().startswith(A.NOMES[A.DIVIDIR]))
     ret = lista.visualItemRect(item)
     base.clique(janela, lista.viewport(), QPoint(ret.left() + 14, ret.center().y()))
     base.esperar(0.8)
@@ -126,18 +138,29 @@ def main() -> None:
         base.gravar_resultados(TRAB)
         return
 
-    # a ferramenta Mover pela tecla F
-    _letra(janela, "f")
+    # a ferramenta Mover: o botão da trilha (com o foco na lista do Automático, as letras vão
+    # para a lista; depois, já na página, a tecla F também é provada)
+    _clique_na_trilha(janela, tela, "mover")
     base.esperar(4.0)
     vis = tela.visualizadores["mover"]
     _esperar_ate(lambda: vis._pixmap is not None and getattr(tela, "_mover_da_vez", None), 60)
     base.esperar(1.0)
     base.conferir(tela.aba_atual == "mover" and tela.paineis.propriedades.conteudo == "mover",
-                  "tecla F: a ferramenta Mover, com o Propriedades dela aberto")
+                  "botão da trilha: a ferramenta Mover, com o Propriedades dela aberto")
     base.conferir(projeto.paginas[PAGINA].tamanho_folha_cm is None
                   and vis._folha_do_mover == vis.tamanho_da_pagina_px(),
                   "sem tamanho de folha: a área branca é a própria página")
     _p(janela, "03-ferramenta-mover")
+    # a tecla F, com o foco na página: sai para a Mão e volta pela letra
+    tela.escolher_ferramenta("mao")
+    base.esperar(1.0)
+    base.clique(janela, tela.editor_selecao)          # a Mão: o clique só põe o foco na página
+    _letra(janela, "f")
+    base.esperar(3.0)
+    base.conferir(tela.aba_atual == "mover", "tecla F (com o foco na página): a ferramenta Mover")
+    vis = tela.visualizadores["mover"]
+    _esperar_ate(lambda: vis._pixmap is not None, 30)
+    base.esperar(1.0)
 
     # arrastar a página para a esquerda e para cima (o texto estava à direita e embaixo)
     from PySide6.QtCore import QPoint
