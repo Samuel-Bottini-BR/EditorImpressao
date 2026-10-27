@@ -1,0 +1,186 @@
+<!doctype html>
+<html lang="pt-BR">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Etapa 10b — defeitos na imagem final</title>
+<style>
+:root { color-scheme: light dark; }
+* { box-sizing: border-box; }
+body {
+  font: 17px/1.65 "Segoe UI", system-ui, sans-serif;
+  max-width: 46rem; margin: 0 auto; padding: 2.5rem 1.5rem 6rem;
+  color: #1c1c1e; background: #fdfdfc;
+}
+h1 { font-size: 2rem; line-height: 1.2; margin: 0 0 .3em; letter-spacing: -.02em; }
+h2 { font-size: 1.35rem; margin: 2.4em 0 .6em; padding-top: .8em;
+     border-top: 1px solid #e6e4e0; letter-spacing: -.01em; }
+h3 { font-size: 1.1rem; margin: 1.8em 0 .4em; }
+h1 + p, h2 + p { margin-top: .4em; }
+p, li { margin: 0 0 .9em; }
+ul, ol { padding-left: 1.3em; }
+strong { font-weight: 640; }
+code {
+  font: .88em ui-monospace, "Cascadia Code", Consolas, monospace;
+  background: #f1efec; padding: .12em .35em; border-radius: 4px;
+}
+pre {
+  background: #f1efec; padding: 1em 1.1em; border-radius: 8px;
+  overflow-x: auto; line-height: 1.5;
+}
+pre code { background: none; padding: 0; }
+blockquote {
+  margin: 1.2em 0; padding: .1em 0 .1em 1.1em;
+  border-left: 3px solid #c9c5be; color: #55524d;
+}
+table {
+  border-collapse: collapse; width: 100%; margin: 1.2em 0;
+  font-size: .95rem; display: block; overflow-x: auto;
+}
+th, td { padding: .5em .8em; text-align: left; border-bottom: 1px solid #e6e4e0; }
+th { font-weight: 620; background: #f7f5f2; white-space: nowrap; }
+tr:last-child td { border-bottom: none; }
+img { max-width: 100%; height: auto; border-radius: 6px; margin: 1em 0;
+      border: 1px solid #e6e4e0; }
+hr { border: none; border-top: 1px solid #e6e4e0; margin: 2.5em 0; }
+.rodape { margin-top: 4em; padding-top: 1.2em; border-top: 1px solid #e6e4e0;
+          font-size: .85rem; color: #86827c; }
+@media (prefers-color-scheme: dark) {
+  body { color: #e8e6e3; background: #1a1917; }
+  h2 { border-top-color: #35332f; }
+  code, pre, th { background: #262421; }
+  th, td { border-bottom-color: #35332f; }
+  blockquote { border-left-color: #4a4741; color: #b0aca6; }
+  img { border-color: #35332f; }
+  .rodape { border-top-color: #35332f; color: #7d7973; }
+}
+@media print {
+  body { max-width: none; padding: 0; color: #000; background: #fff; }
+  h2 { page-break-after: avoid; }
+  table, img { page-break-inside: avoid; }
+}
+</style>
+</head>
+<body>
+<h1>Etapa 10b da obra: defeitos na imagem final — antes × agora</h1>
+<p><strong>PRONTO PARA CONFERIR</strong> (27/10/2026). Ramo <code>obra-etapa10b-2026-10-26</code>. Teste de <strong>olho</strong> (as fotos) e de <strong>máquina</strong>
+(<code>tests/test_etapa10b_imagem.py</code>: cada defeito tem uma medida que falha no código de antes e passa no de agora).</p>
+<p>O critério do Samuel: <em>"Eu quero que o papel saia branco, e o desenho também saia perfeito."</em></p>
+<p>Cada foto diz por onde a página passou e com quais opções. "Antes" = o programa de hoje (<code>ab38208</code>); "Agora" = esta
+etapa. Só páginas que vão ser impressas.</p>
+<hr />
+<h2>1. Gravura estragada no Preto e branco (lista única 4.1)</h2>
+<p>Palavras do teste dos livros: <em>"No Palatino 74 [...] o fundo virou chuvisco preto e branco com manchas pretas grandes;
+no Valadés 41 [...] o traço fino virou áreas pretas chapadas e os rostos perderam detalhe."</em></p>
+<p><strong>O que olhar:</strong> as manchas e áreas pretas chapadas sumiram. <strong>O que mudou:</strong> a mancha escura pequena da gravura era
+enchida de preto inteira; agora só o que é tinta de verdade fica preto.
+Medida: bloco preto onde o original não é tinta cheia — Palatino 74: 1,4% da página → 0,003%; Valadés 41: 2,0% → 0,05%.</p>
+<p><img alt="" src="img/4-1-palatino74.jpg" /></p>
+<p><img alt="" src="img/4-1-valades41.jpg" /></p>
+<p><img alt="" src="img/4-1-siebmacher110.jpg" /></p>
+<p><strong>Ressalva:</strong> no Siebmacher 110 (projeto do teste) a faixa de bordado de cima não estava marcada como gravura e
+continua um bloco preto (é a marcação, não esta conta; num livro novo o programa acha a faixa). o fundo manchado da gravura em madeira (Palatino 74) continua "chuviscado": em preto e branco puro ele só
+sai assim. Em tons de cinza (como as fotos) ele fica igual ao original — <strong>pergunta 3</strong> abaixo.</p>
+<hr />
+<h2>2. Folha branca sai cinza e manchada (lista única 4.3)</h2>
+<p>Palavras: <em>"Uma folha de guarda branca sai cinza e toda manchada: a textura e as rugas do papel viram desenho
+(Boécio 49, Marial 2)."</em></p>
+<p><strong>O que olhar:</strong> o papel da folha de guarda sai branco; o carimbo do Marial 2 continua. Medida (Boécio 49): mediana
+189 → 238; parte da página abaixo de 200: 65% → 6%.</p>
+<p><img alt="" src="img/4-3-boecio49.jpg" /></p>
+<p><img alt="" src="img/4-3-marial2.jpg" /></p>
+<p><img alt="" src="img/4-3-siebmacher74.jpg" /></p>
+<p><strong>Ressalva:</strong> o Marial 2 é um papel amassado de verdade: as rugas ficam claras, mas aparecem. O Siebmacher 74 quase
+não muda: é uma folha com bordados muito fracos, e o desenho fraco continua à vista. No Siebmacher 86 o
+desenho muito fraco some no Preto e branco (já era assim; o borrão preto não volta).</p>
+<hr />
+<h2>3. Matemática 40 e 66: o Preto e branco apagava o texto perto da lombada</h2>
+<p>Palavras: <em>"Matemática 66 (e 92): cada número de questão com sombreado cinza virou borrão preto. Matemática 40 (e
+118): as primeiras letras de cada linha, perto da lombada, sumiram ('Suponha que' → '~cha que')."</em> A etapa 10a provou
+que o corte estava certo; o defeito era do Preto e branco na sombra da lombada.</p>
+<p><strong>O que olhar:</strong> na 66 a faixa preta da esquerda sumiu e os números voltaram; na 40 as primeiras palavras voltam (como
+borrões escuros, porque no original elas também estão borradas). Medidas: 66, faixa da esquerda preta 4,7% → 0,3%;
+40, tinta na faixa da sombra 7,1% → 13%.</p>
+<p><img alt="" src="img/4-2-matematica66.jpg" /></p>
+<p><img alt="" src="img/4-2-matematica40.jpg" /></p>
+<hr />
+<h2>4. Foto de celular: a sombra virava mancha preta (Lista de bugs, 23/10)</h2>
+<p><em>"Páginas fotografadas (celular): o Preto e branco transforma a sombra da mão ou da página numa grande mancha preta."</em></p>
+<p><strong>O que olhar:</strong> a sombra da esquerda (Razões) e a da mão (Atanásio) não viram mais mancha preta.</p>
+<p><img alt="" src="img/celular.jpg" /></p>
+<hr />
+<h2>5. Retângulos brancos no cartão das pranchas da Pesel (lista única 4.7)</h2>
+<p><em>"O bordado ficou bom, mas o cartão marrom em volta virou um remendo: o título e cada bloco de texto ganharam um
+retângulo branco por cima, com a letra engrossada, e sobrou uma tira branca torta na beirada esquerda."</em></p>
+<p><strong>O que olhar:</strong> o cartão fica marrom inteiro, com o título e o texto como no original (como foram escaneados); a
+prancha clara continua branca. Medida (Pesel 51): parte do
+cartão que saía branca 32% → 5%.</p>
+<p><img alt="" src="img/4-7-pesel51.jpg" /></p>
+<p><img alt="" src="img/4-7-pesel67.jpg" /></p>
+<p><strong>Ressalva:</strong> no Pesel 51 sobra uma cunha clara fina entre o título e a prancha.</p>
+<hr />
+<h2>6. Mancha vira ponto preto (4.11) e pontinhos laranja (4.12)</h2>
+<p><em>"Valadés 203: uma mancha marrom pequena em cima de uma palavra virou um ponto preto em cima de 'Idiomate'."</em> ·
+<em>"Antiphon 56: sobraram pontinhos laranja das manchas do pergaminho na margem da direita."</em></p>
+<p><strong>O que olhar:</strong> o ponto preto saiu (fica um pedacinho onde a mancha é tão escura quanto a tinta); os pontinhos
+laranja da margem saíram (2.656 → 183). O retângulo cinza do Antiphon é o 4.6 (outra etapa).</p>
+<p><img alt="" src="img/4-11-valades203.jpg" /></p>
+<p><img alt="" src="img/4-12-antiphon56.jpg" /></p>
+<hr />
+<h2>7. A letra T do Antiphonal 46: a tela mostrava, o PDF não tinha (Lista de bugs 13/10, grave)</h2>
+<p><em>"No 'Só as letras', a tela mostra o que o PDF não tem."</em> Decisões: <em>"precisamos que o pdf saia que nem está na tela"</em>
+(D-066) e "Tela e PDF saem da mesma conta" (D-473).</p>
+<p><strong>O que olhar:</strong> a T aparece na tela e no PDF. A conta que decide o que fica passou a ser a mesma nos dois tamanhos.</p>
+<p><img alt="" src="img/t-antiphonal46.jpg" /></p>
+<hr />
+<h2>8. Tela cheia com a letra mais grossa que o PDF (<code>lu-tc-igual</code>, D-193)</h2>
+<p><em>"O pdf está saindo diferente da tela gerada, na tela gerada a letra está mais grossa, isso é um perigo [...]"</em></p>
+<p><strong>O que olhar:</strong> na tela cheia a letra tem agora a grossura do PDF (antes 10 a 17% mais grossa; agora 4 a 9% mais fina,
+porque a tela é preto e branco em 150 DPI). Para ficar igual de verdade falta a tela trocar sozinha pela imagem do PDF
+(a parte de tela, com as duas bolinhas, fica com a gerente).</p>
+<p><img alt="" src="img/tela-cheia-boecio22.jpg" /></p>
+<hr />
+<h2>9. "Reduzir cores" apagava a letra (D-189)</h2>
+<p><em>"Ele está apagando as letras [...]"</em> · <em>"aprovado, mas ainda tem que melhorar, em alguns casos, ele acaba apagando a letra."</em></p>
+<p><strong>O que olhar:</strong> com "Reduzir cores", cada palavra fica inteira numa cor só (antes, metade preta e metade clara).
+Medida: letras que viravam preto 20% → 0,1%.</p>
+<p><img alt="" src="img/reduzir-cores-horas26.jpg" /></p>
+<hr />
+<h2>10. PDF gigante (lista única 4.5)</h2>
+<p><em>"Com Mágico pro e Melhorar o PDF sai de 15 a 20 vezes maior que o original [...] Difícil de guardar, copiar e mandar
+para a gráfica."</em></p>
+<p>A causa: o programa guardava cada página de cor sem perda nenhuma, com todo o grão do scan. Agora vai em JPEG de
+qualidade alta (92). O PDF fica <strong>1,4 a 10 vezes menor</strong> (Antiphon 56: 20 MB → 4 MB por página; o livro de 1.590 MB
+iria para ~330 MB). A diferença para a imagem de antes é de 1 a 3 tons de 255 (não se vê). O Preto e branco puro
+continua sem perda. Tabela completa no ONDE-PAREI. <strong>Pergunta 2</strong> abaixo (dá para ficar 2 a 4 vezes menor ainda).</p>
+<hr />
+<h2>11. Desentortar só no bloco do texto (D-493)</h2>
+<p><strong>O que olhar:</strong> com "Desentortar aumentando a página", seguindo só o bloco do texto, a página curva sai com as linhas
+mais retas (à direita). <strong>Mas não liguei</strong> para todo livro: ligado, entortava uma página reta (Marial 41) e cortava o
+começo das linhas do Righetti 96. <strong>Pergunta 1</strong> abaixo.</p>
+<p><img alt="" src="img/d493-desentortar.jpg" /></p>
+<hr />
+<h2>12. O que mudou nas páginas-gabarito (somas)</h2>
+<p>Original: nada mudou (32 de 32). Preto e branco: mudam as páginas com sombra na beirada ou com gravura (diferenças
+pequenas). Melhorar: mudam todas, pouco (o grão do papel); o Opus 20 muda mais: o vão escuro atrás da estátua deixou
+de ter os pontinhos brancos (a queixa <em>"esses pontos estão horríveis atrás da estátua"</em>, conferência 6).</p>
+<p><img alt="" src="img/somas-opus20-melhorar.jpg" /></p>
+<p><img alt="" src="img/somas-graduale222-pb.jpg" /></p>
+<p><img alt="" src="img/somas-marial7-melhorar.jpg" /></p>
+<hr />
+<h2>Perguntas para o Samuel</h2>
+<ol>
+<li><strong>Desentortar só no texto:</strong> recomendo <strong>não ligar para todo livro</strong> e oferecer como opção da página ("Desentortar
+   seguindo só o texto, sem as notas da margem"), para as páginas curvas com notas na margem.</li>
+<li><strong>PDF menor:</strong> recomendo <strong>ficar com o JPEG 92</strong> e, nos livros de página grande escaneada em resolução baixa (Horas,
+   Antiphon, Graduale, ljs47), <strong>guardar a página com no máximo 2 vezes a resolução do scan</strong> (nada do scan se perde; o
+   PDF fica mais 2 a 4 vezes menor).</li>
+<li><strong>Gravura de fundo escuro no Preto e branco:</strong> sai em <strong>tons de cinza</strong> (como as fotos, igual ao original) ou continua
+   em preto e branco puro (com chuvisco no fundo manchado)? Recomendo tons de cinza para ela.</li>
+</ol>
+<h2>Opinião do implementador</h2>
+<p>Os defeitos da lista saíram nas páginas apontadas, com medida antes e agora e teste que pega a volta. O que não ficou
+perfeito está nas ressalvas e nas três perguntas. Quem confere é o Samuel.</p>
+<p class="rodape">Editor de Impressão &middot; gerado em 27/10/2026 às 13:14</p>
+</body>
+</html>

@@ -80,17 +80,17 @@ pontos que o scan em cada lado. Guardar até 2 vezes o scan (o resto é só ampl
 ## Somas "Desligado de fábrica" (32 páginas do gabarito × Original / Preto e branco / Melhorar, livro novo)
 
 `scripts/somas_da_imagem.py` (soma da imagem que vai ao escritor do PDF, antes da compressão: o JPEG mudaria toda
-página de cor mesmo sem o filtro mudar). Base `ab38208` × ramo. **SOMAS_AQUI**
+página de cor mesmo sem o filtro mudar). Base `ab38208` × ramo (antes da junção do `obra-2026-10-26`), 96 somas: **53 iguais, 43 mudam** (lista em `_tmp/difs.txt`, fora do git; números abaixo).
 
 - **Original: 32 de 32 iguais.**
-- **Preto e branco: mudam P_PB** — só páginas com sombra na beirada (Graduale 221 e 222, Rhetorica 73, Siebmacher 7 e
+- **Preto e branco: mudam 11 de 32** — só páginas com sombra na beirada (Graduale 221 e 222, Rhetorica 73, Siebmacher 7 e
   9), ou com gravura/decoração (Escola 7 e 35, Horas 11 e 47, Opus 20, Palatino 5: a regra nova da mancha cheia e a
   sombra em quadradinhos; diferenças de 0,005% a 0,7% dos pontos). Olhadas todas; as maiores na conferência
   (Graduale 222: a faixa preta da beirada da direita afinou).
 - **Melhorar: mudam as 32** — o grão do papel (4.12) na limpeza do papel muda poucos pontos em cada página (0,002% a
   1% dos pontos com mais de 20 tons; olhadas; Marial 7 na conferência); o **Opus 20** muda mais (5,7%): o vão escuro
   atrás da estátua deixou de ter os pontinhos brancos (era a queixa "esses pontos estão horríveis atrás da estátua",
-  conferência 6, X2) — na conferência.
+  conferência 6, X2; 6% dos pontos) — na conferência.
 - **Projeto começado antes de 09/10:** os consertos são do filtro e do PDF, então também valem nele (é a mesma conta
   para todo livro); o que muda é só o que está acima. Motivo escrito: cada mudança é conserto de defeito da lista.
 
