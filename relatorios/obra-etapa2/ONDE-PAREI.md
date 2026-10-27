@@ -124,7 +124,12 @@ agentes, ou o filtro do GitHub.
 
 ## Commits (ramo `obra-etapa2-2026-10-26`, com push)
 
-(preencher)
+- `ce88dd1` ONDE-PAREI com as decisões e a velocidade antes
+- `3be204a` D-001: todas as ferramentas sempre montadas; "Os quatro filtros" fora da trilha
+- `82cdada` menu Ferramentas, menus acesos, Delete = em branco, os dois botões, área de trabalho 1, caixinhas com quadrado
+- `02ca71e` Conferir aceso sem caixinhas, menus da tela das caixinhas, Delete da área, provas, prints
+- `f4a1f38` velocidade, testes por arquivo, teste_botoes, ONDE-PAREI
+- (este ONDE-PAREI final)
 
 ## Ressalvas
 
