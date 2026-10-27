@@ -135,7 +135,7 @@ def rotacionar(img: np.ndarray, angulo: float, fundo: int = 255) -> np.ndarray:
 
 
 def rotacionar_e_cortar(img: np.ndarray, angulo: float, caixa: tuple[int, int, int, int],
-                        fundo: int = 255) -> np.ndarray:
+                        fundo: int = 255, cunha_com_o_papel: bool = False) -> np.ndarray:
     """O mesmo que rotacionar(img, angulo)[y0:y1, x0:x1], sem girar a pagina
     inteira: so os pontos da caixa (x0, y0, x1, y1) sao calculados.
 
@@ -149,6 +149,16 @@ def rotacionar_e_cortar(img: np.ndarray, angulo: float, caixa: tuple[int, int, i
 
     Arriscado: girar em volta do centro da CAIXA (seria a ordem antiga) ou
     mudar a interpolacao/borda (a imagem deixaria de ser a do rotacionar).
+
+    cunha_com_o_papel (obra 26/10, etapa 10a; ressalva do G6 de 12/10/2026,
+    D-095: "cunhas brancas com corte ate a beirada", Boecio 8, Marial 7,
+    Graduale 221): a cunha que o giro abre nas beiradas ganha a cor da
+    beirada da pagina (o ponto mais perto dela, BORDER_REPLICATE) em vez de
+    branco: no Original e no Melhorar o triangulo branco aparecia ao lado do
+    papel amarelado. Os pontos da pagina sao os mesmos; so a cunha muda. A
+    faixa escura da beirada ja foi tirada pelo corte (recortar.beiradas_escuras,
+    que tambem enche a cunha com o ponto mais perto). False (o de antes, e a
+    conta da tela que mede o corte): branco.
     """
     x0, y0, x1, y1 = caixa
     if abs(angulo) < ANGULO_MINIMO:
@@ -160,7 +170,9 @@ def rotacionar_e_cortar(img: np.ndarray, angulo: float, caixa: tuple[int, int, i
     borda = fundo if img.ndim == 2 else (fundo, fundo, fundo)
     return cv2.warpAffine(
         img, matriz, (x1 - x0, y1 - y0),
-        flags=cv2.INTER_CUBIC, borderMode=cv2.BORDER_CONSTANT, borderValue=borda,
+        flags=cv2.INTER_CUBIC,
+        borderMode=cv2.BORDER_REPLICATE if cunha_com_o_papel else cv2.BORDER_CONSTANT,
+        borderValue=borda,
     )
 
 

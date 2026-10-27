@@ -674,6 +674,12 @@ def detectar_bordas(img: np.ndarray, dpi: float | None = None,
         x0e, y0e, x1e, y1e = _parar_no_escuro(
             img, _recorte_da_caixa(_com_folga(justa, antes_x, antes_y)), x0e, y0e, x1e, y1e)
 
+    # Obra 26/10, etapa 10a: a coluna de numeros da margem (Escola 197, Lista
+    # de bugs de 13/10: "o corte come os numeros 1, 2 e 3 dos itens, na
+    # margem esquerda") volta para dentro do corte. Ver _numeros_da_margem.
+    x0e, x1e = _numeros_da_margem(respeitar_fracao, _de_letra(respeitar), x0e, y0e, x1e, y1e,
+                                  folga_x)
+
     # limite de seguranca: nunca comer mais que CORTE_MAXIMO de um lado
     x0e, y0e = min(x0e, CORTE_MAXIMO), min(y0e, CORTE_MAXIMO)
     x1e, y1e = max(x1e, 1.0 - CORTE_MAXIMO), max(y1e, 1.0 - CORTE_MAXIMO)
@@ -739,6 +745,67 @@ def detectar_bordas(img: np.ndarray, dpi: float | None = None,
         encostou_no_conteudo=bool(encostou),
         pecas=pecas_fracao,
     )
+
+
+# ---------------------------------------------------------------------------
+# A coluna de numeros da margem (obra de 26/10/2026, etapa 10a; Lista de bugs
+# de 13/10, verificador do corte: "Escola 197: na ordem nova o corte come os
+# numeros 1, 2 e 3 dos itens, na margem esquerda. A causa e a regra que
+# descarta de cada lado os primeiros 0,2% da tinta (SOBRA_DE_TINTA)"; D-104,
+# "o corte automatico deixa de fora pecas pequenas e soltas").
+#
+# O descarte da tinta de fora (SOBRA_DE_TINTA) existe para a sujeira da margem
+# nao segurar o corte, e ele nao sabe distinguir sujeira de um "1" sozinho na
+# margem. O que distingue: os numeros dos itens (e as letras de chamada, os
+# numeros de versiculo) ficam EM COLUNA, cada um na altura de uma linha de
+# texto que esta dentro do corte, logo ao lado dela, e tem tamanho de letra.
+# Sujeira nao faz isso. Regra: do lado esquerdo e do direito, as pecas do
+# tamanho de letra (_de_letra) inteiras do lado de fora, a ate
+# MARGEM_DOS_NUMEROS do lado, cada uma na altura (metade ou mais dela) de uma
+# peca de dentro do corte que esteja a ate MARGEM_DOS_NUMEROS dela; com
+# NUMEROS_EM_COLUNA ou mais assim, o lado vai ate elas, com a folga.
+# Arriscado: baixar NUMEROS_EM_COLUNA para 1 (um cisco do tamanho de letra na
+# altura de uma linha puxaria o corte); subir MARGEM_DOS_NUMEROS (as notas de
+# margem longe do texto e a beirada da vizinha voltariam para dentro).
+MARGEM_DOS_NUMEROS = 0.05
+NUMEROS_EM_COLUNA = 2
+
+
+def _numeros_da_margem(pecas: np.ndarray, letra: np.ndarray, x0: float, y0: float,
+                       x1: float, y1: float, folga_x: float) -> tuple[float, float]:
+    """(x0, x1) do corte com a coluna de numeros da margem dentro (ver o
+    comentario acima). `pecas`: caixas (x0, y0, x1, y1) em fracao, as de
+    _quem_empurra; `letra`: quais delas tem tamanho de letra. O resto do corte
+    (y0, y1) so limita quem conta. Sem coluna, devolve x0, x1 como estao."""
+    if len(pecas) == 0:
+        return x0, x1
+    a0, b0, a1, b1 = pecas[:, 0], pecas[:, 1], pecas[:, 2], pecas[:, 3]
+    na_altura = (b0 >= y0) & (b1 <= y1)
+    dentro = na_altura & (a0 >= x0) & (a1 <= x1)
+    if not dentro.any():
+        return x0, x1
+
+    def ao_lado(i: int, esquerda: bool) -> bool:
+        """A peca de fora `i` esta na altura de uma peca de dentro, perto dela."""
+        h = b1[i] - b0[i]
+        sobrepoe = np.minimum(b1, b1[i]) - np.maximum(b0, b0[i])
+        perto = (a0 - a1[i]) if esquerda else (a0[i] - a1)
+        # e do tamanho das letras da linha (metade da altura dela ou mais): o
+        # cisco da margem do Palatino 7 tem tamanho de "letra" pequena, mas e
+        # bem mais baixo que a linha ao lado
+        do_tamanho = h >= 0.5 * (b1 - b0)
+        ok = dentro & do_tamanho & (sobrepoe >= 0.5 * h) & (perto >= 0) & (perto <= MARGEM_DOS_NUMEROS)
+        return bool(ok.any())
+
+    fora_esq = np.flatnonzero(letra & na_altura & (a1 <= x0) & (a0 >= x0 - MARGEM_DOS_NUMEROS))
+    coluna = [i for i in fora_esq if ao_lado(i, True)]
+    if len(coluna) >= NUMEROS_EM_COLUNA:
+        x0 = max(0.0, float(a0[coluna].min()) - folga_x)
+    fora_dir = np.flatnonzero(letra & na_altura & (a0 >= x1) & (a1 <= x1 + MARGEM_DOS_NUMEROS))
+    coluna = [i for i in fora_dir if ao_lado(i, False)]
+    if len(coluna) >= NUMEROS_EM_COLUNA:
+        x1 = min(1.0, float(a1[coluna].max()) + folga_x)
+    return x0, x1
 
 
 # ---------------------------------------------------------------------------

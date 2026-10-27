@@ -415,3 +415,119 @@ def test_d009_resumo_diz_que_o_feito_a_mao_vai_junto():
     assert resumo_em_portugues(projeto, 1) == "Marque pelo menos uma coisa para eu fazer."
     projeto.paginas[0].recorte = (0.1, 0.1, 0.8, 0.8)
     assert resumo_em_portugues(projeto, 1) == "Vou manter o que você fez à mão em 1 página."
+
+
+# --- Obra de 26/10/2026, etapa 10a: o corte não come a página -----------------
+#
+# D-104 / D-466 (22/10/2026, `a-comer-pagina`): "Tem mais alguma função que pode
+# fazer essa mesma coisa de comer parte da pagina sem que a gente queira no nosso
+# programa?" -> os lugares que comem a página, provados em páginas de verdade
+# (tests/test_etapa10a_nao_comer.py) e consertados. D-077 (28/09): "não comer
+# conteúdo". D-098 (13/10, `g8-moldura-tinta-fora`): "Só avisa" (a peça inteira
+# de fora continua fora, com o aviso). D-113 (23/10, `d212-1`): "o primeiro passo
+# em uma pagina dessas seria tirar essa moldura preta transformando a pagina em
+# totalmente branca sem mexer nas letras". D-095 (12/10, ressalvas do G6):
+# "cunhas brancas com corte até a beirada".
+
+def _projeto_borda_ate_a_moldura(tmp_path, img) -> Projeto:
+    """Livro com só a borda preta "até a moldura" e o cortar ligados (o resto
+    desligado, para a medida ser só do corte)."""
+    projeto = _projeto_tudo_desligado(tmp_path, img=img)
+    projeto.cortar_bordas = True
+    projeto.borda_preta = True
+    projeto.borda_preta_ate = "ate_a_moldura"
+    return projeto
+
+
+def _medida_fixa(caixa):
+    """corte_pelo_conteudo.medir trocado por uma caixa fixa (a do ScanTailor),
+    em pontos da imagem medida; o limite (a página achada) é ela inteira."""
+    from core import corte_pelo_conteudo as cc
+
+    def medir(img, dpi_do_desenho=None, dpi_do_scan=None, **_):
+        alt, larg = img.shape[:2]
+        mm = 25.4 / DPI
+        x0, y0, x1, y1 = caixa
+        return cc.MedidaDoConteudo(larg, alt, caixa, ((x1 - x0) * mm, (y1 - y0) * mm), (mm, mm),
+                                   None, (0.0, 0.0, float(larg), float(alt)))
+    return medir
+
+
+def test_d104_d077_a_caixa_do_scantailor_nao_parte_uma_letra(tmp_path, monkeypatch):
+    """D-104 / D-077: a caixa do conteúdo do ScanTailor ("até a moldura") passava
+    no meio de uma letra e a cortava. Agora a borda vai até o fim da peça (o
+    mesmo limite do corte comum). Prova: a "letra" (20 x 30 pontos) sai inteira."""
+    from core import corte_pelo_conteudo as cc
+
+    img = np.full((ALTURA_PX, LARGURA_PX, 3), 245, np.uint8)
+    img[300:330, 140:160] = 0                         # a letra que a caixa parte
+    for x in range(200, 500, 40):                      # o resto do "texto"
+        img[300:330, x:x + 20] = 0
+        img[400:430, x:x + 20] = 0
+    monkeypatch.setattr(cc, "medir", _medida_fixa((150.0, 290.0, 520.0, 440.0)))
+    saida = _gerar(_projeto_borda_ate_a_moldura(tmp_path, img))
+    pretos = int((saida.min(axis=2) < 60).sum())
+    assert pretos >= 17 * 20 * 30, pretos             # 16 letras do texto + a partida, inteiras
+
+
+def test_d104_folha_quase_em_branco_nao_vira_tira(tmp_path, monkeypatch):
+    """D-104 (lista única 4.8/4.10: Siebmacher 74 e ljs47 2 viravam tiras de
+    2,6 x 8,6 cm e 21 x 11 cm): com a caixa do ScanTailor abraçando só uma
+    etiqueta pequena, a página fica a página achada. Prova: a página sai com
+    pelo menos 90% da largura e da altura da folha."""
+    from core import corte_pelo_conteudo as cc
+
+    img = np.full((ALTURA_PX, LARGURA_PX, 3), 235, np.uint8)
+    img[700:760, 60:140] = 40                          # a etiqueta no canto
+    monkeypatch.setattr(cc, "medir", _medida_fixa((60.0, 700.0, 140.0, 760.0)))
+    saida = _gerar(_projeto_borda_ate_a_moldura(tmp_path, img))
+    assert saida.shape[1] >= 0.9 * LARGURA_PX and saida.shape[0] >= 0.9 * ALTURA_PX, saida.shape
+
+
+def test_d113_moldura_escura_sai_antes_do_desentortar_sem_mexer_nas_letras():
+    """D-113 (`d212-1`): a moldura escura do scanner é tirada (fica branca) na
+    página que o desentortar mede, e as letras ficam. Prova: a cópia sem a
+    moldura tem a beirada branca e a mesma tinta dentro da página."""
+    from core import desentortar_scantailor as ds
+
+    img = np.full((ALTURA_PX, LARGURA_PX, 3), 220, np.uint8)
+    img[:, :40] = 30                                   # moldura escura (scanner)
+    img[:30, :] = 30
+    for y in range(120, 700, 50):                      # as linhas de texto
+        img[y:y + 20, 100:500] = 20
+    sem = ds.sem_a_moldura_do_scanner(img)
+    assert sem[:, :35].min() >= 250 and sem[:25, :].min() >= 250
+    assert np.array_equal(sem[120:700, 100:500], img[120:700, 100:500])
+
+
+def test_d113_o_desentortar_mede_a_caixa_do_conteudo_sem_a_moldura(monkeypatch):
+    """D-113: a caixa do conteúdo que vai ao desentortar é medida sem a moldura
+    escura (a causa achada no d212: "com a caixa do programa (pega a moldura
+    escura) nada muda")."""
+    from core import desentortar_scantailor as ds
+
+    img = np.full((ALTURA_PX, LARGURA_PX, 3), 220, np.uint8)
+    img[:, :40] = 30
+    vistas = []
+    monkeypatch.setattr(ds, "caixa_do_conteudo", lambda im, caixa, dpi: vistas.append(im) or (0, 0, 8, 8))
+    monkeypatch.setattr(ds, "desentortar", lambda *a, **k: ds.Resultado(None, motivo="teste"))
+    pagina = ConfigPagina(indice=0, folha=0)
+    pagina.desentortar = ds.AUTOMATICO
+    ds.preparar_no_corte(img, (0, 0, LARGURA_PX, ALTURA_PX), pagina, 150)
+    assert vistas and vistas[0][:, :35].min() >= 250
+
+
+def test_d095_cunha_do_giro_nao_fica_branca_na_beirada(tmp_path):
+    """D-095 (ressalvas do G6, 12/10): "cunhas brancas com corte até a beirada".
+    Página de papel amarelado girada a mão 1,5 grau, corte a mão até a beirada:
+    a cunha do giro sai com a cor do papel, não branca. Prova: quase nenhum
+    ponto branco puro nas beiradas da página do PDF."""
+    img = np.full((ALTURA_PX, LARGURA_PX, 3), AMARELADO, np.uint8)
+    img[300:500, 150:450] = 0
+    projeto = _projeto_tudo_desligado(tmp_path, img=img)
+    projeto.paginas[0].angulo_manual = 1.5
+    projeto.paginas[0].recorte = (0.0, 0.0, 1.0, 1.0)
+    saida = _gerar(projeto)
+    beiradas = np.concatenate([saida[:, :8].reshape(-1, 3), saida[:, -8:].reshape(-1, 3),
+                               saida[:8].reshape(-1, 3), saida[-8:].reshape(-1, 3)])
+    assert float((beiradas.min(axis=1) >= 254).mean()) < 0.01

@@ -1054,7 +1054,8 @@ def _preparar_endireitando_antes(inteira: np.ndarray, recorte, angulo: float,
     if so_a_geometria:
         return None, cortou, girar
     if caixa is not None:
-        img = rotacionar_e_cortar(inteira, angulo if girar else 0.0, caixa)
+        # etapa 10a: a cunha do giro com a cor da beirada (D-095, cunhas brancas)
+        img = rotacionar_e_cortar(inteira, angulo if girar else 0.0, caixa, cunha_com_o_papel=True)
     else:
         img = rotacionar(inteira, angulo) if girar else inteira
     return img, cortou, girar
@@ -1774,7 +1775,9 @@ def _caixa_sem_comer(medida: "corte_pelo_conteudo.MedidaDoConteudo", pecas,
                 cx, cy, cw, ch = comum.tupla
                 c0, c1 = max(lx0, cx * larg), min(lx1, (cx + cw) * larg)
                 d0, d1 = max(ly0, cy * alt), min(ly1, (cy + ch) * alt)
-                if c1 - c0 >= 8 and d1 - d0 >= 8:
+                # so se o corte comum nao for ele mesmo a tira (folha limpa so
+                # com uma etiqueta: o comum aperta nela)
+                if c1 - c0 >= 8 and d1 - d0 >= 8 and (c1 - c0) * (d1 - d0) >= 0.5 * area_pagina:
                     lx0, lx1, ly0, ly1 = c0, c1, d0, d1
             # e sem a faixa escura colada na beirada da pagina achada (a
             # lombada do Siebmacher 74, que a conta do "so o preto" deixa)
