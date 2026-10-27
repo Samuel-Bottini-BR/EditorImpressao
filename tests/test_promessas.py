@@ -115,7 +115,7 @@ def janela(app, pasta, monkeypatch):
         janela.tela_conferir.tira.parar()
     except Exception:  # noqa: BLE001
         pass
-    janela.tela_opcoes.folhear.fechar()
+    janela._fechar_a_janela_do_automatico()          # etapa 3: a tela "O que fazer" saiu (D-002)
     janela.close()
     aj.assentar()
     # as tarefas de fundo deste teste (prévias, miniaturas) terminam aqui, antes de a pasta de
@@ -198,6 +198,10 @@ def _especiais_do_revisar(tela) -> dict:
         especiais[botao] = "ação feita (volta até aqui)"
     for botao in getattr(tela.paineis.historico, "itens_desfeitos", []):
         especiais[botao] = "ação desfeita (refaz até aqui)"
+    # o "Rodar N etapas" do painel Automático (o número muda com as marcadas; etapa 3)
+    rodar = getattr(tela.paineis.automatico, "botao_rodar", None)
+    if rodar is not None:
+        especiais[rodar] = "Rodar"
     return especiais
 
 
@@ -331,6 +335,21 @@ def _varrer_janelas(janela, tela) -> dict:
         chaves.update(_mostrar_e_anotar(TelaConfiguracoes(janela, parte=parte), f"configurações/{parte}"))
     chaves.update(_mostrar_e_anotar(FiltrosEmTelaCheia(tela, janela), "filtros em tela cheia"))
     chaves.update(_mostrar_e_anotar(TelaAmpliada(tela, parent=janela), "página ampliada"))
+    # a janela grande do Automático (etapa 3 da obra), com as opções de cada etapa, e a caixa da receita
+    from core import automatico as A
+    from ui.automatico import CaixaDaReceita, JanelaDoAutomatico
+
+    grande = JanelaDoAutomatico(janela.estado_do_automatico, projeto.caminho_entrada, janela)
+    grande.show()
+    aj.assentar()
+    for etapa in A.ETAPAS:
+        grande.mostrar_etapa(etapa)
+        aj.assentar()
+        chaves.update(aj.chaves_dos_botoes(grande, "automático (janela grande)"))
+    grande.done(0)
+    grande.deleteLater()
+    aj.assentar()
+    chaves.update(_mostrar_e_anotar(CaixaDaReceita(janela.estado_do_automatico, janela), "caixa da receita"))
     # as caixas de perguntar e de digitar que os menus abrem
     vistas = []
     for chave in ("ir_para_pagina", "nome_do_arquivo", "atalhos"):
@@ -815,18 +834,6 @@ def test_p010_voltar_para_os_livros(janela, pasta, monkeypatch):
     assert novo and novo[0].marcado, "o cartão do livro não ficou marcado"
 
 
-@prova("P-011")
-def test_p011_rodar_o_automatico_abre_as_escolhas_do_livro(janela, pasta, monkeypatch):
-    from ui.janela_principal import OPCOES
-
-    cartao = _livro_trabalhado(janela, pasta, monkeypatch)
-    janela.tela_inicio.abrir_o_livro(cartao.resumo)
-    aj.assentar()
-    apertar(janela, "início/livro aberto/Rodar o automático...")
-    assert janela.telas.currentIndex() == OPCOES
-    assert Path(janela.projeto.caminho_entrada) == Path(cartao.resumo.caminho_entrada)
-
-
 @prova("P-012")
 def test_p012_rodar_o_automatico_abre_o_automatico(janela, pasta, monkeypatch):
     """D-002/D-018: o livro abre na área de trabalho com o Automático, sem a tela "O que fazer"."""
@@ -838,7 +845,9 @@ def test_p012_rodar_o_automatico_abre_o_automatico(janela, pasta, monkeypatch):
     apertar(janela, "início/livro aberto/Rodar o automático...")
     aj.assentar()
     assert janela.telas.currentIndex() == CONFERIR, "abriu a tela 'O que fazer'"
-    assert janela.tela_conferir.paineis.automatico.isVisible(), "o Automático não abriu"
+    grande = janela.janela_do_automatico                 # D-018: a janela grande, com a receita
+    assert janela.tela_conferir.paineis.automatico.isVisible() or (
+        grande is not None and grande.isVisible()), "o Automático não abriu"
 
 
 @prova("P-026")
@@ -985,89 +994,6 @@ def test_p020_voltar_da_grade_na_mesma_pagina(janela, pasta):
     apertar(janela, "área de trabalho/todas as páginas/voltar ao trabalho")
     assert not tela.todas.isVisibleTo(tela)
     assert tela.indice_pagina == 1
-
-
-# --- tela "O que fazer" (sai na etapa 3) -------------------------------------------------------
-
-def _na_tela_o_que_fazer(janela, pasta):
-    from ui.janela_principal import OPCOES
-
-    janela.resize(1280, 760)
-    janela.show()
-    janela.abrir_livro(str(aj.criar_livro(pasta)))
-    aj.assentar()
-    if janela.telas.currentIndex() != OPCOES:
-        pytest.skip("a tela 'O que fazer' já saiu (etapa 3)")
-    return janela.tela_opcoes
-
-
-@prova("P-021")
-def test_p021_conferir_leva_a_area_de_trabalho_sem_caixinhas(janela, pasta):
-    opcoes = _na_tela_o_que_fazer(janela, pasta)
-    for nome in aj.CAIXINHAS_DA_TELA_O_QUE_FAZER:
-        getattr(opcoes, nome).setChecked(False)
-    janela.projeto.detectar_regioes = False
-    apertar(janela, "o que fazer/Conferir")
-    _esperar_a_area_de_trabalho(janela)
-    gravado = aj.projeto_gravado(janela)
-    assert gravado.get("cortar_bordas") is False and gravado.get("dividir_folhas") is False
-
-
-@prova("P-022")
-def test_p022_voltar_da_tela_o_que_fazer(janela, pasta):
-    from ui.janela_principal import INICIO
-
-    _na_tela_o_que_fazer(janela, pasta)
-    apertar(janela, "o que fazer/voltar")
-    assert janela.telas.currentIndex() == INICIO
-
-
-@prova("P-023")
-def test_p023_receitas(janela, pasta):
-    opcoes = _na_tela_o_que_fazer(janela, pasta)
-    opcoes.cx_dividir.setChecked(True)
-    opcoes.nome_da_receita.setText("Minha receita")
-    apertar(janela, "o que fazer/guardar")
-    nomes = [opcoes.combo_receitas.itemText(i) for i in range(opcoes.combo_receitas.count())]
-    assert "Minha receita" in nomes
-    opcoes.cx_dividir.setChecked(False)
-    opcoes.combo_receitas.setCurrentIndex(nomes.index("Minha receita"))
-    apertar(janela, "o que fazer/pôr neste livro")
-    assert opcoes.cx_dividir.isChecked(), "pôr a receita não marcou a caixinha dela"
-    opcoes.combo_receitas.setCurrentIndex(nomes.index("Minha receita"))
-    aj.caixas_durante(lambda: apertar(janela, "o que fazer/apagar"), clicar="Sim")
-    nomes = [opcoes.combo_receitas.itemText(i) for i in range(opcoes.combo_receitas.count())]
-    assert "Minha receita" not in nomes
-
-
-@prova("P-024")
-def test_p024_mais_opcoes_abre_e_fecha(janela, pasta):
-    opcoes = _na_tela_o_que_fazer(janela, pasta)
-    alvo = botao(janela, "o que fazer/Mais opções")
-    from PySide6.QtWidgets import QCheckBox
-
-    visiveis_antes = sum(c.isVisibleTo(opcoes) for c in opcoes.findChildren(QCheckBox))
-    alvo.click()
-    aj.assentar()
-    visiveis_depois = sum(c.isVisibleTo(opcoes) for c in opcoes.findChildren(QCheckBox))
-    assert visiveis_depois > visiveis_antes, "'Mais opções' não abriu nada"
-
-
-@prova("P-025")
-def test_p025_folhear_o_pdf(janela, pasta, monkeypatch):
-    opcoes = _na_tela_o_que_fazer(janela, pasta)
-    folhear = opcoes.folhear
-    antes = folhear._indice
-    apertar(janela, "o que fazer/>")
-    assert folhear._indice == antes + 1
-    apertar(janela, "o que fazer/<")
-    assert folhear._indice == antes
-    abertas = []
-    monkeypatch.setattr(QDialog, "exec", lambda self: abertas.append(type(self).__name__) or 0)
-    monkeypatch.setattr(QDialog, "open", lambda self: abertas.append(type(self).__name__))
-    monkeypatch.setattr(QDialog, "show", lambda self: abertas.append(type(self).__name__))
-    apertar(janela, "o que fazer/tela cheia")
-    assert abertas, "'tela cheia' não abriu nada"
 
 
 # --- ferramentas ---------------------------------------------------------------------------------
@@ -1423,17 +1349,21 @@ def test_p061_usar_em_todas_do_dividir_abre_a_lista(janela, pasta, monkeypatch):
 @prova("P-062")
 @pytest.mark.parametrize("ferramenta,lugar", [("dividir", "dividir"), ("cortar", "cortar"),
                                               ("endireitar", "endireitar")])
-def test_p062_mudar_nas_opcoes_do_livro(janela, tela, ferramenta, lugar):
-    from ui.janela_principal import OPCOES
-
-    tela.ir_para_pagina(1)
+def test_p062_mudar_no_automatico(janela, tela, ferramenta, lugar):
+    from core import automatico as A
     from core.filtros import PRETO_E_BRANCO
+    from ui.janela_principal import CONFERIR
 
+    etapa = {"dividir": A.DIVIDIR, "cortar": A.CORTAR, "endireitar": A.ENDIREITAR}[ferramenta]
+    tela.ir_para_pagina(1)
     tela._escolher_filtro(PRETO_E_BRANCO)
     tela.escolher_ferramenta(ferramenta)
     tela.paineis.abrir("props")
-    apertar(janela, f"área de trabalho/{lugar}/mudar nas opções do livro...")
-    assert janela.telas.currentIndex() == OPCOES
+    apertar(janela, f"área de trabalho/{lugar}/mudar no Automático...")
+    grande = janela.janela_do_automatico
+    assert janela.telas.currentIndex() == CONFERIR
+    assert grande is not None and grande.isVisible(), "a janela grande do Automático não abriu"
+    assert grande.pilha.currentWidget() is grande.paginas_das_etapas[etapa], "não abriu na etapa"
     assert janela.projeto.paginas[1].filtro == PRETO_E_BRANCO, "o trabalho se perdeu"
 
 
@@ -1697,6 +1627,9 @@ def test_p075_apagar_pintar_copiar_colar(janela, tela, monkeypatch, pasta):
     _voltar_ao_trabalho(janela)
     tela.ir_para_pagina(1)
     tela.escolher_ferramenta("ajustar")
+    # etapa 9c: esperar a página chegar ao editor, como no clique de cima (sem isto o clique
+    # caía antes da imagem e não escolhia nada; o defeito do PDF escondia esta falta da prova)
+    aj.esperar(lambda: editor._pixmap is not None, motivo="a página no editor")
     editor.mousePressEvent(clicar(editor, 0.3, 0.2))
     editor.mouseReleaseEvent(soltar(editor, 0.3, 0.2))
     aj.assentar()
@@ -1916,17 +1849,18 @@ def test_p083_jeitos_do_so_as_letras(janela, tela, jeito):
 @prova("P-083")
 @pytest.mark.parametrize("nome,valor", [("Guardar tudo", "tudo"), ("Guardar só o texto", "apagar"),
                                         ("Guardar a tinta forte", "rede")])
-def test_p083_jeitos_na_tela_o_que_fazer(janela, pasta, nome, valor):
-    opcoes = _na_tela_o_que_fazer(janela, pasta)
-    from core.filtros import PRETO_E_BRANCO
+def test_p083_jeitos_no_automatico(janela, tela, nome, valor):
+    """Etapa 3 da obra: os jeitos do "Só as letras" do livro moram no Automático (janela grande,
+    etapa Limpar a folha); antes, na tela "O que fazer"."""
+    from core import automatico as A
 
+    opcoes = janela.abrir_o_automatico(A.LIMPAR)
     opcoes.escolhas_misto.mostrar(True, "tudo" if valor == "rede" else "rede", None, None)
     aj.assentar()
     alvo = opcoes.escolhas_misto.botoes[valor]
     alvo.click()
     aj.assentar()
     assert opcoes.escolhas_misto.fora_do_texto() == valor
-    assert PRETO_E_BRANCO
 
 # --- "Para revisar" -------------------------------------------------------------------------------
 
@@ -2565,26 +2499,367 @@ def test_p136_ver_lado_a_lado_na_area_de_trabalho(janela, tela):
 
 @prova("P-137")
 def test_p137_aviso_de_livro_novo(janela, tela):
-    botao(janela, "área de trabalho/aviso de livro novo/Rodar o automático…")
-    botao(janela, "área de trabalho/aviso de livro novo/agora não")
+    from core import automatico as A
+    from core import perfis
 
-
-@prova("P-138")
-def test_p138_voltar_para_as_opcoes_do_automatico(janela, tela):
-    from core.filtros import PRETO_E_BRANCO
-    from ui.janela_principal import OPCOES
-
-    tela._escolher_filtro(PRETO_E_BRANCO)
-    tela.paineis.abrir("automatico")
-    apertar(janela, "área de trabalho/automático/Voltar para as opções")
-    assert janela.telas.currentIndex() == OPCOES
-    assert janela.projeto.paginas[0].filtro == PRETO_E_BRANCO
+    apertar(janela, "área de trabalho/aviso de livro novo/Rodar o automático…")
+    aj.assentar()
+    grande = janela.janela_do_automatico
+    assert grande is not None and grande.isVisible(), "a janela grande não abriu"
+    de_sempre = set(perfis.etapas_da_receita(perfis.ler(perfis.receita_de_sempre())))
+    assert janela.estado_do_automatico.marcadas == de_sempre, "a receita de sempre não veio marcada"
+    assert not janela.projeto.endireitar, "o livro mudou antes de Rodar"
+    janela._fechar_a_janela_do_automatico()
+    apertar(janela, "área de trabalho/aviso de livro novo/agora não")
+    aj.assentar()
+    assert not tela.aviso_do_livro_novo.isVisible(), "'agora não' não fechou o aviso"
+    assert A.situacao(janela.projeto, A.ENDIREITAR) == "desligada"
 
 
 @prova("P-139")
-def test_p139_automatico_de_verdade(janela, tela):
+def test_p139_automatico_de_verdade(janela, tela, monkeypatch):
+    """Rodar só "endireitar" numa página muda só ela (no projeto e no PDF)."""
+    from core import automatico as A
+    from ui.automatico import NA_PAGINA
+
     tela.paineis.abrir("automatico")
-    botao(janela, "área de trabalho/automático/Rodar")
+    estado = janela.estado_do_automatico
+    estado.marcadas = {A.ENDIREITAR}
+    tela.ir_para_pagina(1)
+    estado.definir_alcance(NA_PAGINA)
+    monkeypatch.setattr(janela, "rodar_o_automatico",
+                        lambda _rodar=janela.rodar_o_automatico, **k: _rodar(esperar=True, **k))
+    apertar(janela, "área de trabalho/automático/Rodar")
+    aj.assentar()
+    paginas = janela.projeto.paginas
+    codigo = A.NA_PAGINA[A.ENDIREITAR]
+    assert codigo in paginas[1].automatico, "a página 2 não ficou com o Endireitar"
+    assert not janela.projeto.endireitar and all(codigo not in p.automatico
+                                                  for i, p in enumerate(paginas) if i != 1)
+
+
+# --- o Automático de verdade e a grade com várias escolhidas (etapa 3 da obra) -------------------
+
+def _trabalho_gravado(janela) -> dict:
+    """O projeto gravado sem a `geometria_das_zonas` das páginas: é a anotação que a conversão das
+    zonas grava por trás logo depois de abrir (não é trabalho da pessoa), e chega em hora variável."""
+    gravado = aj.projeto_gravado(janela)
+    gravado["paginas"] = [{k: v for k, v in p.items() if k != "geometria_das_zonas"}
+                          for p in gravado.get("paginas", [])]
+    return gravado
+
+@prova("P-172")
+def test_p172_menu_automatico(janela, tela):
+    antes = _trabalho_gravado(janela)
+    apertar(janela, "menu/automatico")
+    grande = janela.janela_do_automatico
+    assert grande is not None and grande.isVisible(), "o menu não abriu o Automático"
+    assert _trabalho_gravado(janela) == antes
+
+
+@prova("P-173")
+def test_p173_abrir_em_janela_grande_e_ajustar(janela, tela):
+    from core import automatico as A
+
+    tela.paineis.abrir("automatico")
+    antes = _trabalho_gravado(janela)
+    apertar(janela, "área de trabalho/automático/abrir em janela grande")
+    assert janela.janela_do_automatico is not None and janela.janela_do_automatico.isVisible()
+    janela._fechar_a_janela_do_automatico()
+    tela.paineis.automatico.lista.escolher(A.LIMPAR)
+    apertar(janela, "área de trabalho/automático/ajustar a etapa escolhida ›")
+    grande = janela.janela_do_automatico
+    assert grande is not None and grande.pilha.currentWidget() is grande.paginas_das_etapas[A.LIMPAR]
+    assert _trabalho_gravado(janela) == antes
+
+
+@prova("P-174")
+def test_p174_salvar_a_receita(janela, tela):
+    from core import perfis
+
+    tela.paineis.abrir("automatico")
+    antes = _trabalho_gravado(janela)
+    apertar(janela, "área de trabalho/automático/Salvar...")
+    caixa = janela.caixa_da_receita
+    assert caixa is not None and caixa.isVisible(), "a caixa da receita não abriu"
+    assert caixa.caixas, "a caixa não diz o que vai dentro"
+    caixa.nome.setText("Receita da promessa")
+    caixa.botao_guardar.click()
+    aj.assentar()
+    try:
+        assert perfis.ler("Receita da promessa") is not None
+        assert tela.paineis.automatico.combo_receitas.findData("Receita da promessa") >= 0
+    finally:
+        perfis.apagar("Receita da promessa")
+    assert _trabalho_gravado(janela) == antes
+
+
+@prova("P-175")
+def test_p175_escolher_paginas(janela, tela):
+    tela.paineis.abrir("automatico")
+    antes = _trabalho_gravado(janela)
+    apertar(janela, "área de trabalho/automático/escolher páginas...")
+    assert tela.pilha_da_tela.currentWidget() is tela.todas and tela.todas.para_o_automatico
+    tela.todas.marcar(0)
+    tela.todas.marcar(2)
+    tela.todas.botao_usar.click()
+    aj.assentar()
+    estado = janela.estado_do_automatico
+    assert estado.alcance == "escolhidas" and estado.escolhidas == [0, 2]
+    assert _trabalho_gravado(janela) == antes
+
+
+@prova("P-176")
+def test_p176_desligar_as_marcadas(janela, tela, monkeypatch):
+    from core import automatico as A
+
+    assert janela.rodar_o_automatico(pedido=A.Pedido(etapas=[A.ENDIREITAR]), esperar=True, perguntar=False)
+    assert janela.projeto.endireitar
+    tela.paineis.abrir("automatico")
+    janela.estado_do_automatico.marcadas = {A.ENDIREITAR}
+    janela.estado_do_automatico.definir_alcance("livro")
+    monkeypatch.setattr(janela, "rodar_o_automatico",
+                        lambda _rodar=janela.rodar_o_automatico, **k: _rodar(esperar=True, **k))
+    apertar(janela, "área de trabalho/automático/desligar as marcadas")
+    aj.assentar()
+    assert not janela.projeto.endireitar, "a etapa não desligou"
+    assert aj.projeto_gravado(janela).get("endireitar") is False
+    janela.acoes.desfazer(janela.projeto)
+    assert janela.projeto.endireitar, "o Ctrl+Z não voltou"
+
+
+def _grade_escolhendo(tela, *indices):
+    tela.abrir_todas_as_paginas()
+    aj.assentar()
+    if not tela.todas.escolhendo:
+        apertar(tela.window(), "área de trabalho/todas as páginas/marcar várias")
+    tela.todas.escolher_nenhuma()
+    for indice in indices:
+        tela.todas.marcar(indice)
+    aj.assentar()
+    return tela.todas
+
+
+@prova("P-177")
+def test_p177_marcar_varias_todas_nenhuma(janela, tela):
+    antes = _trabalho_gravado(janela)
+    grade = _grade_escolhendo(tela, 1)
+    assert grade.escolhendo and sorted(grade.escolhidas) == [1]
+    apertar(janela, "área de trabalho/todas as páginas/todas — Marca todas as páginas que estão à vista.")
+    assert sorted(grade.escolhidas) == list(range(len(janela.projeto.paginas)))
+    apertar(janela, "área de trabalho/todas as páginas/nenhuma")
+    assert not grade.escolhidas
+    assert _trabalho_gravado(janela) == antes
+
+
+@prova("P-178")
+def test_p178_girar_as_escolhidas(janela, tela, monkeypatch, pasta):
+    _grade_escolhendo(tela, 1)
+    feitas = len(janela.acoes.feitas)
+    apertar(janela, "área de trabalho/todas as páginas/girar ¼ →")
+    assert janela.projeto.folhas[1].rotacao == 90 and janela.projeto.folhas[0].rotacao == 0
+    assert len(janela.acoes.feitas) == feitas + 1
+    _grade_escolhendo(tela, 2)
+    apertar(janela, "área de trabalho/todas as páginas/girar ¼ ←")
+    assert janela.projeto.folhas[2].rotacao == 270
+    _voltar_ao_trabalho(janela)
+    paginas = _gerar(janela, monkeypatch, pasta)
+    assert paginas[1].deitada and paginas[2].deitada, "a página girada não saiu deitada"
+    assert not paginas[0].deitada and not paginas[3].deitada
+
+
+@prova("P-179")
+def test_p179_deixar_em_branco_as_escolhidas(janela, tela):
+    _grade_escolhendo(tela, 0, 3)
+    apertar(janela, "área de trabalho/todas as páginas/deixar em branco")
+    gravado = aj.projeto_gravado(janela)
+    assert [bool(p.get("em_branco")) for p in gravado["paginas"]] == [True, False, False, True]
+
+
+@prova("P-180")
+def test_p180_tirar_e_trazer_de_volta(janela, tela, monkeypatch, pasta):
+    _grade_escolhendo(tela, 2)
+    apertar(janela, "área de trabalho/todas as páginas/tirar do livro")
+    assert janela.projeto.paginas[2].apagada
+    _voltar_ao_trabalho(janela)
+    paginas = _gerar(janela, monkeypatch, pasta, "sem")
+    assert [aj.qual_pagina(p) for p in paginas] == [0, 1, 3]
+    _grade_escolhendo(tela, 2)
+    apertar(janela, "área de trabalho/todas as páginas/trazer de volta")
+    assert not janela.projeto.paginas[2].apagada
+    _voltar_ao_trabalho(janela)
+    paginas = _gerar(janela, monkeypatch, pasta, "com")
+    assert [aj.qual_pagina(p) for p in paginas] == [0, 1, 2, 3]
+
+
+@prova("P-181")
+def test_p181_extrair_as_escolhidas(janela, tela, monkeypatch, pasta):
+    import ui.dialogos_de_arquivo as dialogos
+
+    destino = pasta / "extraidas.pdf"
+    monkeypatch.setattr(dialogos, "escolher_onde_salvar_pdf", lambda *a, **k: str(destino))
+    antes = _trabalho_gravado(janela)
+    _grade_escolhendo(tela, 1, 3)
+    apertar(janela, "área de trabalho/todas as páginas/extrair...")
+    paginas = aj.paginas_do_pdf(destino)
+    assert [aj.qual_pagina(p) for p in paginas] == [1, 3]
+    assert all(aj.papel_amarelado(p) for p in paginas), "não saíram como estão no PDF de entrada"
+    assert _trabalho_gravado(janela) == antes
+
+
+@prova("P-182")
+def test_p182_rodar_o_automatico_nelas(janela, tela):
+    antes = _trabalho_gravado(janela)
+    _grade_escolhendo(tela, 0, 2)
+    apertar(janela, "área de trabalho/todas as páginas/rodar o automático nelas...")
+    estado = janela.estado_do_automatico
+    assert estado.alcance == "escolhidas" and estado.escolhidas == [0, 2]
+    assert tela.pilha_da_tela.currentWidget() is not tela.todas
+    assert _trabalho_gravado(janela) == antes
+
+
+def _janela_grande(janela, etapa=""):
+    """Abre a janela grande do Automático e devolve (janela grande, chave -> botão à vista)."""
+    grande = janela.abrir_o_automatico(etapa)
+    aj.assentar()
+    return grande, aj.chaves_dos_botoes(grande, "automático (janela grande)")
+
+
+def _apertar_na_janela_grande(janela, chave: str, etapa: str = ""):
+    grande, achados = _janela_grande(janela, etapa)
+    assert chave in achados, f"o botão '{chave}' não está à vista. À vista: {sorted(achados)}"
+    achados[chave].click()
+    aj.assentar()
+    return grande
+
+
+def _rodar_esperando(janela, monkeypatch):
+    monkeypatch.setattr(janela, "rodar_o_automatico",
+                        lambda _rodar=janela.rodar_o_automatico, **k: _rodar(esperar=True, **k))
+
+
+@prova("P-183")
+def test_p183_rodar_da_janela_grande(janela, tela, monkeypatch, pasta):
+    from core import automatico as A
+    from core.filtros import PRETO_E_BRANCO
+
+    estado = janela.estado_do_automatico
+    estado.marcadas = {A.LIMPAR, A.ENDIREITAR}     # duas: o botão diz "Rodar 2 etapas"
+    estado.definir_opcao("filtro_padrao", PRETO_E_BRANCO)
+    estado.definir_alcance("livro")
+    _rodar_esperando(janela, monkeypatch)
+    feitas = len(janela.acoes.feitas)
+    _apertar_na_janela_grande(janela, "automático (janela grande)/Rodar N etapas")
+    assert janela.janela_do_automatico is None, "a janela não fechou"
+    gravado = aj.projeto_gravado(janela)
+    assert gravado["limpar"] is True and gravado["endireitar"] is True
+    assert gravado["filtro_padrao"] == PRETO_E_BRANCO
+    assert len(janela.acoes.feitas) == feitas + 1, "não virou uma ação do Histórico"
+    paginas = _gerar(janela, monkeypatch, pasta)
+    assert not any(aj.papel_amarelado(p) for p in paginas), "o PDF saiu amarelado"
+
+
+@prova("P-184")
+def test_p184_desligar_da_janela_grande(janela, tela, monkeypatch):
+    from core import automatico as A
+
+    assert janela.rodar_o_automatico(pedido=A.Pedido(etapas=[A.CORTAR]), esperar=True, perguntar=False)
+    estado = janela.estado_do_automatico
+    estado.marcadas = {A.CORTAR}
+    estado.definir_alcance("livro")
+    _rodar_esperando(janela, monkeypatch)
+    _apertar_na_janela_grande(janela, "automático (janela grande)/Desligar as marcadas")
+    assert aj.projeto_gravado(janela)["cortar_bordas"] is False
+
+
+@prova("P-185")
+def test_p185_salvar_e_apagar_a_receita(janela, tela):
+    from core import perfis
+
+    antes = _trabalho_gravado(janela)
+    grande = _apertar_na_janela_grande(janela, "automático (janela grande)/Salvar receita...")
+    caixa = janela.caixa_da_receita
+    assert caixa is not None and caixa.isVisible() and caixa.caixas
+    achados = aj.chaves_dos_botoes(caixa, "caixa da receita")
+    achados["caixa da receita/cancelar"].click()
+    aj.assentar()
+    assert perfis.ler("Receita da P-185") is None and not caixa.isVisible()
+    grande.botao_salvar.click()
+    aj.assentar()
+    caixa = janela.caixa_da_receita
+    caixa.nome.setText("Receita da P-185")
+    aj.chaves_dos_botoes(caixa, "caixa da receita")["caixa da receita/guardar"].click()
+    aj.assentar()
+    try:
+        assert perfis.ler("Receita da P-185") is not None, "'guardar' não guardou"
+        janela.estado_do_automatico.por_receita("Receita da P-185")
+        grande.encher_receitas()
+        aj.caixas_durante(grande.botao_apagar.click, clicar="apagar")
+        assert perfis.ler("Receita da P-185") is None, "'Apagar a receita' não apagou"
+    finally:
+        perfis.apagar("Receita da P-185")
+    assert _trabalho_gravado(janela) == antes
+
+
+@prova("P-186")
+def test_p186_escolher_paginas_da_janela_grande(janela, tela):
+    antes = _trabalho_gravado(janela)
+    _apertar_na_janela_grande(janela, "automático (janela grande)/escolher páginas...")
+    assert tela.pilha_da_tela.currentWidget() is tela.todas and tela.todas.para_o_automatico
+    tela.todas.marcar(1)
+    tela.todas.botao_usar.click()
+    aj.assentar()
+    assert janela.estado_do_automatico.escolhidas == [1]
+    assert janela.janela_do_automatico is not None and janela.janela_do_automatico.isVisible()
+    assert _trabalho_gravado(janela) == antes
+
+
+@prova("P-187")
+def test_p187_folhear_na_janela_grande(janela, tela, monkeypatch):
+    antes = _trabalho_gravado(janela)
+    grande, achados = _janela_grande(janela)
+    folhear = grande.folhear
+    inicio = folhear._indice
+    achados["automático (janela grande)/>"].click()
+    aj.assentar()
+    assert folhear._indice == inicio + 1
+    achados["automático (janela grande)/<"].click()
+    aj.assentar()
+    assert folhear._indice == inicio
+    visor = folhear.visor
+    zoom = getattr(visor, "zoom", 1.0)
+    achados["automático (janela grande)/+"].click()
+    assert getattr(visor, "zoom", 1.0) > zoom, "'+' não aproximou"
+    achados["automático (janela grande)/–"].click()
+    achados["automático (janela grande)/–"].click()
+    assert getattr(visor, "zoom", 1.0) < zoom * 1.25, "'–' não afastou"
+    achados["automático (janela grande)/ajustar à tela"].click()
+    aj.assentar()
+    abertas = []
+    monkeypatch.setattr(QDialog, "exec", lambda self: abertas.append(type(self).__name__) or 0)
+    monkeypatch.setattr(QDialog, "open", lambda self: abertas.append(type(self).__name__))
+    monkeypatch.setattr(QDialog, "show", lambda self: abertas.append(type(self).__name__))
+    achados["automático (janela grande)/tela cheia"].click()
+    aj.assentar()
+    assert abertas, "'tela cheia' não abriu a folha grande"
+    assert _trabalho_gravado(janela) == antes
+
+
+@prova("P-188")
+def test_p188_fechar_e_mais_opcoes(janela, tela):
+    from core import automatico as A
+
+    antes = _trabalho_gravado(janela)
+    grande, achados = _janela_grande(janela, A.GRAVURAS)
+    painel = grande.painel_mais_opcoes
+    aberto = painel.isVisibleTo(grande)
+    achados["automático (janela grande)/Mais opções"].click()
+    aj.assentar()
+    assert painel.isVisibleTo(grande) != aberto, "'Mais opções' não abriu nem fechou nada"
+    achados["automático (janela grande)/Fechar"].click()
+    aj.assentar()
+    assert not grande.isVisible(), "'Fechar' não fechou"
+    assert _trabalho_gravado(janela) == antes
 
 
 # --- menus -----------------------------------------------------------------------------------------
@@ -2626,13 +2901,17 @@ def test_p142_nome_do_arquivo(janela, tela):
 
 
 @prova("P-143")
-def test_p143_voltar_para_as_opcoes(janela, tela):
+def test_p143_voltar_para_os_livros(janela, tela):
+    import projetos as pr
     from core.filtros import PRETO_E_BRANCO
-    from ui.janela_principal import OPCOES
+    from ui.janela_principal import INICIO
 
     tela._escolher_filtro(PRETO_E_BRANCO)
+    resumo = janela.resumo
     apertar(janela, "menu/voltar")
-    assert janela.telas.currentIndex() == OPCOES and janela.projeto.paginas[0].filtro == PRETO_E_BRANCO
+    pr.esperar_gravacoes()
+    assert janela.telas.currentIndex() == INICIO
+    assert pr.carregar_estado(resumo).paginas[0].filtro == PRETO_E_BRANCO, "o trabalho não ficou gravado"
 
 
 @prova("P-144")

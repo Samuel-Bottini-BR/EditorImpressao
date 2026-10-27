@@ -60,7 +60,7 @@ def main(caminho_pdf: str) -> int:
     SAIDA.mkdir(parents=True, exist_ok=True)
     app = QApplication(sys.argv)
 
-    from ui.janela_principal import CONFERIR, FINAL, OPCOES, JanelaPrincipal
+    from ui.janela_principal import CONFERIR, FINAL, JanelaPrincipal
 
     janela = JanelaPrincipal()
     janela.show()
@@ -70,20 +70,19 @@ def main(caminho_pdf: str) -> int:
     print("Abrindo o livro...")
     janela.abrir_livro(caminho_pdf)
     esperar(0.3)
-    assert janela.telas.currentIndex() == OPCOES, "não chegou na tela de opções"
-    capturar(janela, "tela2_opcoes")
+    # etapa 3 da obra (26/10/2026, D-002): o livro abre DIRETO na area de
+    # trabalho (a tela "O que fazer" saiu do caminho), com o aviso do livro novo
+    assert janela.telas.currentIndex() == CONFERIR, "não abriu direto na área de trabalho"
+    capturar(janela, "tela2_livro_novo")
 
-    # marca tambem "montar cadernos", para a tela final mostrar as instrucoes
-    janela.tela_opcoes.cx_cadernos.setChecked(True)
-    esperar(0.2)
-    capturar(janela, "tela2_com_cadernos")
+    # o antigo "Conferir": o Automatico no livro todo, com "montar cadernos"
+    # tambem, para a tela final mostrar as instrucoes
+    from tests.ajudante_do_automatico import rodar_como_o_conferir
 
-    print("Analisando (isso leva alguns segundos)...")
-    janela.analisar()
-    esperar(1.0)
-    capturar(janela, "progresso_analise")
+    print("Rodando o Automático (isso leva alguns segundos)...")
+    assert rodar_como_o_conferir(janela, montar_cadernos=True), "o Automático não rodou"
     pronto = esperar(120, lambda: janela.telas.currentIndex() == CONFERIR)
-    assert pronto, "a análise não terminou"
+    assert pronto, "o Automático não terminou"
 
     projeto = janela.projeto
     print(f"  {len(projeto.folhas)} folhas -> {len(projeto.paginas)} páginas")

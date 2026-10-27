@@ -31,7 +31,8 @@ Cobre (desde 06/10/2026 também as escolhas do dividir, item 2.1: "Dividir folha
 ao meio" marcada para a aba Onde cortar aparecer, a lista "Jeito de dividir:",
 a caixinha do corte da sobra e a lista "jeito:" da aba Onde cortar):
 tela_inicio (busca, área de arrastar, cartão de projeto e seu menu de
-contexto), tela_opcoes (checkboxes, filtros, combo de caderno), tela_conferir
+contexto), o Automatico (painel e janela grande - desde a etapa 3 da obra,
+26/10/2026, no lugar da tela_opcoes, que saiu do caminho), tela_conferir
 (como antes: layout e botões de cada aba, cabeçalho/rodapé, redimensionar),
 tela_ampliada (zoom, navegação, comparar, filtros), janela_confirmar (escolher
 pasta, nome, processar), tela_final (abrir pasta, imprimir, fazer outro), e o
@@ -452,7 +453,7 @@ def testar_tela_inicial(janela, caminho_pdf: str) -> tuple[int, int]:
     """Testa a busca, o clique na área de arrastar (abre o PDF de teste via
     o QFileDialog mockado), o menu no estado "tela inicial" e o
     redimensionamento. Devolve (quantos passaram, quantos falharam)."""
-    from ui.janela_principal import OPCOES
+    from ui.janela_principal import CONFERIR
 
     print("\n--- tela inicial ---")
     ok = falhas = 0
@@ -468,38 +469,38 @@ def testar_tela_inicial(janela, caminho_pdf: str) -> tuple[int, int]:
     print("  ok    busca (digitar e limpar)")
     ok += 1
 
-    # a area de arrastar - abre o dialogo (mockado para devolver o PDF de teste)
+    # menu, no estado "tela inicial" (so Arquivo/Ver/Ajuda valem), ANTES de
+    # abrir o livro: desde a etapa 3 da obra o livro abre direto na area de
+    # trabalho, e os menus de la sao conferidos em testar_conferir_e_ampliada.
+    # "miniaturas" e "icones" (menu Ver, rodada 14 do layout) escondem a tira
+    # e os icones da direita: acionados aqui, os passos seguintes nao os
+    # achariam. Sao conferidos em tests/test_menu_paineis.py.
+    o, f = acionar_menu_habilitado(janela, excluir={"abrir", "sair", "miniaturas", "icones",
+                                                    "filtros_tela_cheia", "lado_icones",
+                                                    "lado_sanfona", "automatico"})
+    ok += o
+    falhas += f
+
+    # a area de arrastar - abre o dialogo (mockado para devolver o PDF de teste).
+    # Etapa 3 da obra (D-002, Kaique 22/09: "nós tínhamos que abrir direto na
+    # área de trabalho"): a promessa e o livro ir DIRETO para a area de trabalho.
     _contexto_atual = "clique na área de arrastar"
     antes = len(_falhas)
     QTest.mouseClick(inicio.area, Qt.LeftButton)
-    if not esperar(20, lambda: janela.telas.currentIndex() == OPCOES):
+    if not esperar(20, lambda: janela.telas.currentIndex() == CONFERIR):
         falhas += 1
-        print("  FALHA área de arrastar não levou à tela de opções")
+        print("  FALHA área de arrastar não levou o livro à área de trabalho")
     elif len(_falhas) != antes:
         falhas += 1
     else:
         ok += 1
-        print("  ok    área de arrastar abriu o PDF de teste")
+        print("  ok    área de arrastar abriu o PDF de teste direto na área de trabalho")
 
     # Item 1.1: livro com camadas aberto pela primeira vez -> o aviso "Este
     # livro tem fundo separado. Quer tirar o fundo?". Responde "Sim" clicando
     # o botao de verdade, e confere que o filtro do livro virou "Tirar o
     # fundo" (o resto do teste, entao, confere com o filtro novo).
     o, f = responder_aviso_do_fundo(janela)
-    ok += o
-    falhas += f
-
-    # menu, no estado "tela inicial" (so Arquivo/Ver/Ajuda valem)
-    # "miniaturas" e "icones" (menu Ver, rodada 14 do layout) escondem a tira
-    # e os icones da direita: acionados aqui, os passos seguintes nao os
-    # achariam. Sao conferidos em tests/test_menu_paineis.py.
-    # (etapa 2 da obra: com o livro aberto os menus ficam acesos tambem aqui -
-    # lista unica 1.12; o que mexe no trabalho so avisa, porque o livro ainda
-    # nao foi para a area de trabalho. O "Lado direito" fica de fora: e
-    # conferido na tela de trabalho, ida e volta, em testar_o_lado_direito.)
-    o, f = acionar_menu_habilitado(janela, excluir={"abrir", "sair", "miniaturas", "icones",
-                                                    "filtros_tela_cheia", "lado_icones",
-                                                    "lado_sanfona"})
     ok += o
     falhas += f
 
@@ -541,9 +542,10 @@ def responder_aviso_do_fundo(janela) -> tuple[int, int]:
         return 0, 1
     if not acionar(sim, "Sim, tirar o fundo"):
         return 0, 1
+    # etapa 3 da obra: o livro ja esta na area de trabalho; o "Sim" vale na hora
     certo = (janela.aviso_do_fundo is None
-             and janela.projeto.filtro_padrao == TIRAR_FUNDO
-             and janela.tela_opcoes.radios_de_filtro[TIRAR_FUNDO].isChecked())
+             and janela.projeto.filtro_padrao == TIRAR_FUNDO and janela.projeto.limpar
+             and any(p.filtro == TIRAR_FUNDO for p in janela.projeto.paginas))
     if certo:
         print("  ok    'Sim' deixou o livro inteiro em 'Tirar o fundo'")
         return 2, 0
@@ -551,117 +553,162 @@ def responder_aviso_do_fundo(janela) -> tuple[int, int]:
     return 1, 1
 
 
-def testar_tela_opcoes(janela, caminho_pdf: str) -> tuple[int, int]:
-    """Clica cada caixinha (e volta ao estado original, senao "Conferir" fica
-    desabilitado com nenhuma função marcada), cada radio de filtro, troca o
-    combo de páginas por caderno, redimensiona, e confere que "voltar" volta
-    para a tela inicial (reabrindo o PDF depois, para os testes seguintes
-    poderem continuar)."""
-    from ui.janela_principal import INICIO, OPCOES
-
-    print("\n--- tela de opções ---")
-    ok = falhas = 0
-    opcoes = janela.tela_opcoes
-
-    caixas = [opcoes.cx_dividir, opcoes.cx_limpar, opcoes.cx_endireitar,
-              opcoes.cx_cortar, opcoes.cx_cadernos]
-    for caixa in caixas:
-        if acionar(caixa, caixa.text()):
-            ok += 1
-        else:
-            falhas += 1
-        # deixa como estava antes de seguir, senao desliga tudo e o botao
-        # "Conferir" fica desabilitado (nenhuma funcao marcada)
-        if acionar(caixa, caixa.text() + " (de volta)"):
-            ok += 1
-        else:
-            falhas += 1
-
-    # Item 2.1 (06/10/2026, decisao G2 (a)): o livro novo nao divide mais
-    # sozinho. Marca "Dividir folhas ao meio" (assim a aba Onde cortar aparece
-    # na conferencia, como antes) e mexe nas escolhas novas: a lista "Jeito
-    # de dividir:" (ida e volta) e a caixinha do corte da sobra (ida e volta).
-    if not opcoes.cx_dividir.isChecked():
-        if acionar(opcoes.cx_dividir, opcoes.cx_dividir.text() + " (para a aba Onde cortar)"):
-            ok += 1
-        else:
-            falhas += 1
-    for _ in range(opcoes.combo_jeito_dividir.count()):
-        if trocar_combo(opcoes.combo_jeito_dividir, "Jeito de dividir"):
-            ok += 1
-        else:
-            falhas += 1
-    for sufixo in ("", " (de volta)"):
-        if acionar(opcoes.cx_cortar_sobra, opcoes.cx_cortar_sobra.text() + sufixo):
-            ok += 1
-        else:
-            falhas += 1
-
-    # Item 1.1: o filtro "Tirar o fundo" so aparece em PDF com camadas (o PDF
-    # gerado por este script nao tem; rode com um PDF do Internet Archive,
-    # COPIADO para fora do acervo, para cobri-lo - ver o topo do arquivo). O
-    # radio escondido nao e clicado: a pessoa nao o ve. O ultimo clicado e o
-    # filtro com que o livro segue para a conferencia ("Tirar o fundo" com
-    # camadas, "Mágico pro" sem).
-    from core.filtros import TIRAR_FUNDO
-
-    if opcoes.radios_de_filtro[TIRAR_FUNDO].isHidden():
-        print("  (o filtro 'Tirar o fundo' não aparece: este PDF não tem camadas)")
-    for radio in opcoes.grupo_filtros.buttons():
-        if radio.isHidden():
-            continue
-        if acionar(radio, radio.text()):
-            ok += 1
-        else:
-            falhas += 1
+def testar_automatico(janela, caminho_pdf: str) -> tuple[int, int]:
+    """Etapa 3 da obra (26/10/2026; D-002, D-003, D-005, D-018, D-068, D-071, D-334): o
+    livro abriu direto na area de trabalho; aqui o painel Automatico e a janela grande,
+    clicados de verdade, com a PROMESSA de cada coisa conferida (D-010: "o botão tem que
+    ser provado que ele faz o que se diz que se faz"): a caixinha marca a etapa, o
+    arrastar muda a ordem, cada opcao muda a escolha, "escolher páginas..." escolhe na
+    grade, "Salvar receita..." guarda, e "Rodar" liga as etapas no livro (numa acao do
+    desfazer). O "Rodar" e o antigo "Conferir" da bateria."""
+    from core import automatico as A
+    from core import perfis
+    from PySide6.QtCore import QModelIndex
+    from PySide6.QtWidgets import QCheckBox, QComboBox, QRadioButton
+    from ui.janela_principal import CONFERIR
 
     global _contexto_atual
-    _contexto_atual = "trocar o combo de páginas por caderno"
-    antes = len(_falhas)
-    indice_novo = (opcoes.combo_caderno.currentIndex() + 1) % opcoes.combo_caderno.count()
-    opcoes.combo_caderno.setCurrentIndex(indice_novo)
-    QApplication.processEvents()
-    esperar(0.2)
-    if len(_falhas) == antes:
+    print("\n--- Automático (painel e janela grande) ---")
+    ok = falhas = 0
+
+    def promessa(certo: bool, texto: str) -> None:
+        nonlocal ok, falhas
+        if certo:
+            ok += 1
+            print(f"  ok    {texto}")
+        else:
+            falhas += 1
+            print(f"  FALHA {texto}")
+            _falhas.append(f"promessa: {texto}")
+
+    tela = janela.tela_conferir
+    promessa(janela.telas.currentIndex() == CONFERIR, "o livro está na área de trabalho")
+    promessa(not hasattr(janela, "tela_opcoes"), "a tela 'O que fazer' não existe mais")
+    promessa(tela.aviso_do_livro_novo.isVisible(), "aviso 'Livro novo: ainda não passou pelo automático'")
+
+    # o painel
+    tela.paineis.mostrar_painel("automatico", True)
+    esperar(0.3)
+    painel = tela.paineis.automatico
+    estado = painel.estado
+    lista = painel.lista
+    for linha in range(lista.count()):
+        item = lista.item(linha)
+        etapa = item.data(Qt.UserRole)
+        for vez in range(2):
+            _contexto_atual = f"caixinha da etapa '{A.NOMES[etapa]}' ({vez + 1}a vez)"
+            antes = etapa in estado.marcadas
+            item = lista.item_da_etapa(etapa)
+            item.setCheckState(Qt.Unchecked if antes else Qt.Checked)
+            esperar(0.1)
+            promessa((etapa in estado.marcadas) != antes, f"a caixinha liga e desliga '{A.NOMES[etapa]}'")
+    _contexto_atual = "arrastar a etapa 3 para o primeiro lugar"
+    antes = list(estado.ordem)
+    lista.model().moveRow(QModelIndex(), 2, QModelIndex(), 0)
+    esperar(0.3)
+    promessa(estado.ordem[0] == antes[2], "arrastar muda a ordem em que as etapas rodam (D-003)")
+    lista.model().moveRow(QModelIndex(), 0, QModelIndex(), 3)
+    esperar(0.3)
+    promessa(estado.ordem == antes, "arrastar de volta devolve a ordem")
+    for _ in range(painel.combo_alcance.count()):
+        if trocar_combo(painel.combo_alcance, "Rodar em"):
+            ok += 1
+        else:
+            falhas += 1
+    estado.definir_alcance("livro")
+
+    # o aviso do livro novo abre a janela grande com a receita de sempre (D-018)
+    if acionar(tela.botao_rodar_do_aviso, "Rodar o automático… (aviso do livro novo)"):
         ok += 1
-        print(f"  ok    {_contexto_atual}")
     else:
         falhas += 1
+    jan = janela.janela_do_automatico
+    promessa(jan is not None and jan.isVisible(), "o aviso abriu a janela grande do Automático")
+    if jan is None:
+        return ok, falhas
+    de_sempre = set(perfis.etapas_da_receita(perfis.ler(perfis.receita_de_sempre())))
+    promessa(estado.marcadas == de_sempre, "a receita de sempre veio marcada (D-018)")
+    promessa(not janela.projeto.endireitar, "nada mudou no livro antes de Rodar")
 
-    o, f = redimensionar_sem_quebrar(janela, TAMANHOS_PEQUENOS)
-    ok += o
-    falhas += f
-
-    # "voltar" - confere que volta para o inicio, e reabre para poder seguir
-    achou_voltar = None
-    for botao in botoes_de(opcoes):
-        if botao is opcoes.botao_conferir:
+    # cada etapa e cada opção da janela
+    for etapa in A.ETAPAS:
+        jan.mostrar_etapa(etapa)
+        esperar(0.1)
+        promessa(jan.pilha.currentWidget() is jan.paginas_das_etapas[etapa],
+                 f"'{A.NOMES[etapa]}' mostra as opções dela")
+    for campo, controle in sorted(jan.controles.items()):
+        if campo.startswith("misto_") or campo == "filtro_padrao":
             continue
-        if "voltar" in (botao.text() or "").lower():
-            achou_voltar = botao
-            break
-    if achou_voltar is not None:
-        antes = len(_falhas)
-        if acionar(achou_voltar, "voltar") and esperar(
-                5, lambda: janela.telas.currentIndex() == INICIO):
-            ok += 1
-            QTest.mouseClick(janela.tela_inicio.area, Qt.LeftButton)
-            if not esperar(20, lambda: janela.telas.currentIndex() == OPCOES):
-                falhas += 1
-                print("  FALHA reabrir o PDF depois de 'voltar'")
-            elif not janela.tela_opcoes.cx_dividir.isChecked():
-                # item 2.1: reaberto sem ter conferido, o livro volta com as
-                # opcoes de fabrica (sem dividir); marca de novo, para a aba
-                # Onde cortar ser clicada na conferencia, como antes
-                if acionar(janela.tela_opcoes.cx_dividir,
-                           "Dividir folhas ao meio (de novo, depois de reabrir)"):
+        if isinstance(controle, QCheckBox):
+            for vez in range(2):
+                if acionar(controle, f"{controle.text()} ({vez + 1}a vez)"):
                     ok += 1
                 else:
                     falhas += 1
+        elif isinstance(controle, QComboBox):
+            for _ in range(controle.count()):
+                if trocar_combo(controle, campo):
+                    ok += 1
+                else:
+                    falhas += 1
+    for chave, radio in jan.radios_de_filtro.items():
+        if radio.isHidden():
+            continue
+        if acionar(radio, f"filtro do livro: {radio.text()}"):
+            ok += 1
         else:
             falhas += 1
-            print("  FALHA 'voltar' não retornou à tela inicial")
+        promessa(estado.opcoes.get("filtro_padrao") == chave, f"o filtro do livro vira {radio.text()}")
+    jan.radios_de_filtro["preto_e_branco"].setChecked(True)
+    if acionar(jan.escolhas_misto.caixa, "Só as letras"):
+        ok += 1
+    promessa("só as letras" in jan.frase.text() or "Só as letras" in jan.frase.text()
+             or "letras" in jan.frase.text(), "a frase de baixo diz o que o 'Só as letras' faz")
+    jan.escolhas_misto.caixa.setChecked(False)
 
+    # "escolher páginas..." -> a grade escolhe -> a janela volta (rodada 2, D-334)
+    if acionar(jan.botao_escolher, "escolher páginas..."):
+        ok += 1
+    grade = tela.todas
+    promessa(tela.pilha_da_tela.currentWidget() is grade and grade.para_o_automatico,
+             "'escolher páginas...' abriu a grade no jeito de escolher")
+    grade.marcar(0)
+    if acionar(grade.botao_usar, "usar esta página (grade)"):
+        ok += 1
+    promessa(estado.alcance == "escolhidas" and estado.escolhidas == [0],
+             "a grade devolveu a página escolhida ao Automático")
+    jan = janela.janela_do_automatico
+    promessa(jan is not None and jan.isVisible(), "a janela grande voltou")
+    estado.definir_alcance("livro")
+
+    # "Salvar receita..." (D-071): a caixa diz o que vai dentro e guarda
+    if acionar(jan.botao_salvar, "Salvar receita..."):
+        ok += 1
+    caixa = getattr(janela, "caixa_da_receita", None)
+    promessa(caixa is not None and caixa.isVisible(), "a caixa da receita abriu")
+    if caixa is not None:
+        caixa.nome.setText("Receita do teste de botões")
+        if acionar(caixa.botao_guardar, "guardar (caixa da receita)"):
+            ok += 1
+        promessa(perfis.ler("Receita do teste de botões") is not None, "a receita foi guardada")
+        perfis.apagar("Receita do teste de botões")
+
+    # Rodar: Endireitar, Cortar e Limpar em Mágico pro, no livro todo
+    estado.marcadas = {A.ENDIREITAR, A.CORTAR, A.LIMPAR}
+    jan.radios_de_filtro["magico_pro"].setChecked(True)
+    feitas = len(janela.acoes.feitas)
+    if acionar(jan.botao_rodar, jan.botao_rodar.text()):
+        ok += 1
+    else:
+        falhas += 1
+    esperar(180, lambda: janela.telas.currentIndex() == CONFERIR and (
+        janela.tarefa is None or not janela.tarefa.isRunning()))
+    esperar(0.5)
+    p = janela.projeto
+    promessa(p.endireitar and p.cortar_bordas and p.limpar and p.filtro_padrao == "magico_pro",
+             "Rodar ligou as etapas marcadas no livro (Mágico pro)")
+    promessa(len(janela.acoes.feitas) == feitas + 1, "o Automático virou uma ação do desfazer")
+    promessa(not tela.aviso_do_livro_novo.isVisible(), "o aviso do livro novo sumiu depois de rodar")
     return ok, falhas
 
 
@@ -861,7 +908,7 @@ def testar_conferir_e_ampliada(janela) -> tuple[int, int]:
     o, f = acionar_menu_habilitado(janela, excluir={"processar", "sair", "voltar", "abrir",
                                                     "comparar", "miniaturas", "icones",
                                                     "filtros_tela_cheia", "lado_icones",
-                                                    "lado_sanfona"})
+                                                    "lado_sanfona", "automatico"})
     ok += o
     falhas += f
     o, f = testar_o_lado_direito(janela)
@@ -996,7 +1043,12 @@ def testar_paineis_da_direita(conferir) -> tuple[int, int]:
             texto = botao.text() or botao.toolTip() or "(sem texto)"
             if botao is fechar or botao in itens_do_historico:
                 continue
-            if texto.startswith(("Voltar para as opções", "mudar nas opções")):
+            # etapa 3 da obra: os botoes do painel Automatico que rodam, abrem a
+            # janela grande ou a grade sao conferidos com a promessa em
+            # testar_automatico (aqui mudariam o que o resto da bateria ve)
+            if texto.startswith(("Voltar para as opções", "mudar nas opções", "mudar no Automático",
+                                 "Rodar", "abrir em janela grande", "escolher páginas",
+                                 "desligar as marcadas", "Salvar", "ajustar a etapa")):
                 continue
             if acionar(botao, f"{texto} (painel {chave})"):
                 ok += 1
@@ -1426,8 +1478,8 @@ def testar_cartao_e_limpar(janela, caminho_pdf: str) -> tuple[int, int]:
     # duplo clique no cartao, so se ele nao estiver "perdido"
     if not cartao.perdido:
         _contexto_atual = "duplo clique no cartão"
-        # "continuar" pula direto para a analise (nao para de novo em OPCOES -
-        # ver JanelaPrincipal._continuar_projeto), entao esperamos CONFERIR.
+        # "continuar" abre o trabalho salvo direto na area de trabalho (etapa 3
+        # da obra - ver JanelaPrincipal._continuar_projeto), entao esperamos CONFERIR.
         from ui.janela_principal import CONFERIR
         antes = len(_falhas)
         QTest.mouseDClick(cartao, Qt.LeftButton)
@@ -1556,17 +1608,17 @@ def main(caminho_pdf: str) -> int:
 
     for nome, funcao, args in (
         ("tela inicial", testar_tela_inicial, (janela, caminho_pdf)),
-        ("tela de opções", testar_tela_opcoes, (janela, caminho_pdf)),
+        # etapa 3 da obra: a tela "O que fazer" saiu do caminho; o Automatico
+        # (painel e janela grande) roda no lugar do antigo "Conferir"
+        ("Automático", testar_automatico, (janela, caminho_pdf)),
     ):
         ok, falhas = funcao(*args)
         total_ok += ok
         total_falhas += falhas
 
-    print("\nAnalisando...")
-    janela.analisar()
     from ui.janela_principal import CONFERIR
     if not esperar(180, lambda: janela.telas.currentIndex() == CONFERIR):
-        print("a análise não terminou")
+        print("o Automático não terminou")
         return 1
 
     ok, falhas = testar_conferir_e_ampliada(janela)

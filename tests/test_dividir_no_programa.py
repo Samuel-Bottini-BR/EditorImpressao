@@ -379,7 +379,7 @@ def test_janela_confirmar_conta_o_mesmo_que_vai_para_o_pdf(tmp_path):
     projeto.paginas[5].apagada = True
     janela = JanelaConfirmar(projeto, "x.pdf")
     try:
-        assert janela._frase_do_livro() == "4 páginas vão para o PDF, e 1 foram apagadas."
+        assert janela._frase_do_livro() == "4 páginas vão para o PDF, e 1 foi apagada."
         assert len(projeto.paginas_ativas) == 4
     finally:
         janela.close()
@@ -394,7 +394,8 @@ def test_aviso_diz_o_que_mudou_na_divisao():
     fresco = _projeto_com_folhas(ds.JEITO_SCANTAILOR, [True, False, False], [0.5, 0.5, 0.5])
     motivo = projetos.motivo_para_nao_combinar(salvo, fresco)
     assert "o jeito de dividir do livro" in motivo
-    assert "“o do programa” para “o do ScanTailor”" in motivo
+    # D-479 (etapa 9c): o jeito do proprio programa se chama "o do Editor" tambem no aviso
+    assert "“o do Editor” para “o do ScanTailor”" in motivo
     assert "Dividir folhas ao meio" not in motivo
     # o jeito mudou, o total bate mas as folhas divididas nao
     fresco = _projeto_com_folhas(ds.JEITO_SCANTAILOR, [False, True, True], [0.5, 0.5, 0.5])

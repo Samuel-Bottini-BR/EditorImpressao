@@ -26,6 +26,15 @@ O que se cobra aqui (teste de maquina):
   - sem a copia do trabalho, o historico antigo e guardado sozinho
     (acoes.antigo-historico-*), e sem nem isso nada e apagado.
 
+Obra de 26/10/2026, etapa 3 (D-002; defeito de 29/09): o livro abre direto
+na area de trabalho e o trabalho salvo volta como esta, sem analise nova. Mudar
+"Dividir folhas ao meio" agora e rodar (ou desligar) o Dividir no Automatico,
+que grava no trabalho aberto, numa acao do desfazer: a conferencia NAO
+recomeca, e o Ctrl+Z desfaz o Automatico e depois as acoes de antes, cada uma
+na pagina certa (o defeito de 06/10 nao tem mais como acontecer por ai). O
+recomeco (com o Ctrl+Z vazio e o historico antigo guardado) fica para quando o
+PDF mudou ou o projeto.json nao da para ler - seção 2.
+
 Pasta de dados propria em saida_teste\\ (fixture `pasta`, LOCALAPPDATA
 trocado): nada e criado na pasta de dados real do Samuel.
 """
@@ -45,13 +54,19 @@ from historico_acoes import (  # noqa: E402
     ARQUIVO_ACOES, ARQUIVO_POSICAO, HistoricoAcoes, aplicar, montar_acao)
 from modelos import ConfigFolha, ConfigPagina, Projeto  # noqa: E402
 from tests.test_mesmo_livro_outro_caminho import (  # noqa: F401, E402 - fixtures
-    _analisar,
     _pdf,
     _trabalhar_e_fechar,
     app,
     janela,
     pasta,
 )
+
+
+def _analisar(janela) -> None:
+    """O antigo "Conferir" depois de reabrir: desde a etapa 3 da obra o livro
+    reaberto ja esta na area de trabalho com o trabalho (ou recomecado), e nada
+    mais roda - aqui rodar o Automatico poria uma acao no historico que estes
+    testes conferem vazio."""
 
 
 def _pdf_de_folhas_duplas(pasta: Path, folhas: int = 6) -> Path:
@@ -94,40 +109,77 @@ def _conferir_com_o_livro_dividido_e_mexer(janela, livro: Path) -> None:
     pagina 1 em Preto e branco e depois em Melhorar."""
     janela.abrir_livro(str(livro))
     # Desde o item 2.1 (decisao G2 (a) do Samuel, 05/10/2026: "So quando o
-    # Kaique pedir, livro a livro") o livro novo NAO divide de fabrica
-    # (modelos.Projeto.dividir_folhas = False). Marca "Dividir folhas ao
-    # meio" como o Kaique faria (conserto sugerido pelo verificador na
-    # junção com o fase-1, 07/10/2026).
-    janela.tela_opcoes.cx_dividir.setChecked(True)
+    # Kaique pedir, livro a livro") o livro novo NAO divide de fabrica. Roda
+    # o "Dividir" do Automatico como o Kaique faria (etapa 3 da obra; antes,
+    # a caixinha "Dividir folhas ao meio" e o "Conferir").
+    from tests.ajudante_do_automatico import rodar_como_o_conferir
+
+    rodar_como_o_conferir(janela, sempre=True, dividir_folhas=True)
     assert janela.projeto.dividir_folhas
-    _analisar(janela)
     assert len(janela.projeto.paginas) == 12
     conferir = janela.tela_conferir
     conferir._ir_para(0)
     conferir._girar_folhas(90)
     conferir._escolher_filtro(PRETO_E_BRANCO)
     conferir._escolher_filtro(MELHORAR)
-    assert len(janela.acoes.feitas) == 3
+    assert len(janela.acoes.feitas) == 4          # o Automatico e as tres acoes
     assert janela.projeto.folhas[0].rotacao == 90
     assert janela.projeto.paginas[0].filtro == MELHORAR
 
 
-def _desmarcar_dividir_e_conferir(janela) -> None:
-    """Passos 2 e 3: volta as opcoes, desmarca "Dividir folhas ao meio" e
-    clica Conferir (sem a tarefa em segundo plano)."""
-    janela._sair_da_conferencia()
-    janela.tela_opcoes.cx_dividir.setChecked(False)
+def _desligar_o_dividir(janela) -> None:
+    """Passos 2 e 3 pelo caminho novo: no Automatico, "Desligar as marcadas"
+    com o Dividir marcado, no livro todo (sem a tarefa em segundo plano)."""
+    from core import automatico as A
+
+    assert janela.rodar_o_automatico(pedido=A.Pedido(etapas=[A.DIVIDIR], desligar=True),
+                                      esperar=True, perguntar=False)
     assert janela.projeto.dividir_folhas is False
-    _analisar(janela)
+
+
+def _recomecar_pelo_projeto_ilegivel(janela, livro: Path) -> None:
+    """O recomeco de verdade (etapa 3): o projeto.json nao da para ler."""
+    janela._salvar_agora()
+    projetos.esperar_gravacoes(10)
+    estado = Path(janela.resumo.pasta) / projetos.ARQUIVO_ESTADO
+    resumo = janela.resumo
+    janela._relogio_de_salvar.stop()
+    janela.resumo = None                       # solta o livro sem gravar por cima
+    estado.write_text("{ isto nao e json", encoding="utf-8")
+    janela.abrir_livro(str(livro), resumo=resumo)
 
 
 # --- 1. na janela, pelo caminho do verificador -----------------------------------------
 
 
-def test_mudar_dividir_recomeca_o_ctrl_z_vazio(janela, pasta):
+def test_desligar_o_dividir_nao_recomeca_e_o_ctrl_z_continua_certo(janela, pasta):
+    """Etapa 3 da obra: o caminho do verificador (desligar o "Dividir") nao
+    recomeca mais a conferencia - o trabalho fica - e o Ctrl+Z desfaz primeiro
+    o Automatico e depois, na pagina CERTA, o que foi feito antes."""
     livro = _pdf_de_folhas_duplas(pasta)
     _conferir_com_o_livro_dividido_e_mexer(janela, livro)
-    _desmarcar_dividir_e_conferir(janela)
+    _desligar_o_dividir(janela)
+
+    assert not any("Comecei a conferência" in a for a in janela.avisos)
+    assert janela.projeto.folhas[0].rotacao == 90                # o trabalho ficou
+    assert janela.projeto.paginas[0].filtro == MELHORAR
+    assert not list(Path(janela.resumo.pasta).glob("projeto.antigo-*.json"))
+
+    _ctrl_z(janela)                         # desfaz o desligar: a folha volta dividida
+    assert janela.projeto.dividir_folhas and janela.projeto.folhas[0].dividir
+    _ctrl_z(janela)                         # e o Melhorar da pagina 1, na pagina 1
+    assert janela.projeto.paginas[0].filtro == PRETO_E_BRANCO
+    assert all(p.filtro == ORIGINAL for p in janela.projeto.paginas[1:])
+    _refazer(janela)
+    assert janela.projeto.paginas[0].filtro == MELHORAR
+
+
+def test_recomecar_pelo_projeto_ilegivel_deixa_o_ctrl_z_vazio(janela, pasta):
+    """O recomeco que ainda existe (o projeto.json nao da para ler): o
+    Ctrl+Z comeca vazio (o defeito de 06/10 era o Ctrl+Z de outra conferencia)."""
+    livro = _pdf_de_folhas_duplas(pasta)
+    _conferir_com_o_livro_dividido_e_mexer(janela, livro)
+    _recomecar_pelo_projeto_ilegivel(janela, livro)
 
     assert janela.avisos and "Comecei a conferência" in janela.avisos[-1]
     paginas = janela.projeto.paginas
@@ -139,11 +191,7 @@ def test_mudar_dividir_recomeca_o_ctrl_z_vazio(janela, pasta):
         "o Ctrl+Z do livro recomecado ainda tem acoes da conferencia anterior: "
         + janela.acoes.descricao_desfazer())
     assert not janela.acoes.pode_refazer
-
-    # O que o verificador viu: o primeiro Ctrl+Z pos a pagina 1 em Preto e
-    # branco. Agora nada muda.
     _ctrl_z(janela)
-    assert janela.projeto.paginas[0].filtro == ORIGINAL
     assert all(p.filtro == ORIGINAL for p in janela.projeto.paginas)
     assert janela.projeto.folhas[0].rotacao == 0
     _refazer(janela)
@@ -154,10 +202,12 @@ def test_o_historico_antigo_fica_junto_da_copia_do_trabalho(janela, pasta):
     livro = _pdf_de_folhas_duplas(pasta)
     _conferir_com_o_livro_dividido_e_mexer(janela, livro)
     pasta_do_projeto = Path(janela.resumo.pasta)
+    janela._salvar_agora()
+    projetos.esperar_gravacoes(10)
     acoes_antes = (pasta_do_projeto / ARQUIVO_ACOES).read_bytes()
     posicao_antes = (pasta_do_projeto / ARQUIVO_POSICAO).read_bytes()
 
-    _desmarcar_dividir_e_conferir(janela)
+    _recomecar_pelo_projeto_ilegivel(janela, livro)
 
     copia = janela.copia_do_trabalho
     assert copia is not None and copia.is_file()
@@ -166,7 +216,7 @@ def test_o_historico_antigo_fica_junto_da_copia_do_trabalho(janela, pasta):
     posicao_da_copia = pasta_do_projeto / f"posicao.antigo-{sufixo}.json"
     assert acoes_da_copia.read_bytes() == acoes_antes, "o historico antigo se perdeu"
     assert posicao_da_copia.read_bytes() == posicao_antes
-    assert len(_linhas(acoes_da_copia)) == 3
+    assert len(_linhas(acoes_da_copia)) == 4
     # e saiu do historico da conferencia nova
     assert _linhas(pasta_do_projeto / ARQUIVO_ACOES) == []
     # nenhuma copia a mais (a do historico ja esta junto da do trabalho)
@@ -176,7 +226,7 @@ def test_o_historico_antigo_fica_junto_da_copia_do_trabalho(janela, pasta):
 def test_depois_do_recomeco_o_historico_novo_funciona_e_volta_ao_reabrir(janela, pasta):
     livro = _pdf_de_folhas_duplas(pasta)
     _conferir_com_o_livro_dividido_e_mexer(janela, livro)
-    _desmarcar_dividir_e_conferir(janela)
+    _recomecar_pelo_projeto_ilegivel(janela, livro)
 
     conferir = janela.tela_conferir
     conferir._ir_para(2)
@@ -251,17 +301,18 @@ def test_quando_o_trabalho_combina_o_historico_continua_voltando(janela, pasta):
     assert not _copias(Path(janela.resumo.pasta), "acoes")
 
 
-def test_mudar_dividir_e_voltar_como_estava_nao_recomeca(janela, pasta):
-    """Desmarcar e marcar de novo antes do Conferir: o trabalho combina, e o
-    historico fica (inclusive o que estava so na memoria)."""
+def test_marcar_e_desmarcar_no_automatico_sem_rodar_nao_muda_nada(janela, pasta):
+    """Mexer nas etapas do Automatico sem rodar nao muda o livro nem o
+    historico (como desmarcar e marcar de novo antes do "Conferir")."""
+    from core import automatico as A
+
     livro = _pdf_de_folhas_duplas(pasta)
     _conferir_com_o_livro_dividido_e_mexer(janela, livro)
-    janela._sair_da_conferencia()
-    janela.tela_opcoes.cx_dividir.setChecked(False)
-    janela.tela_opcoes.cx_dividir.setChecked(True)
-    _analisar(janela)
+    estado = janela.estado_do_automatico
+    estado.marcar(A.DIVIDIR, False)
+    estado.marcar(A.DIVIDIR, True)
     assert not janela.avisos
-    assert len(janela.acoes.feitas) == 3
+    assert len(janela.acoes.feitas) == 4
     _ctrl_z(janela)
     assert janela.projeto.paginas[0].filtro == PRETO_E_BRANCO
 

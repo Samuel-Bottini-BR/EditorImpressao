@@ -414,24 +414,33 @@ def aplicar(projeto: Projeto, acao: Acao, valores: dict[str, Any]) -> None:
     de acoes antigo nao tem esses campos: nada muda para ele. Arriscado: por
     "livro." em campo que nao existe no Projeto (o setattr criaria um).
     """
-    itens = projeto.folhas if acao.alvo == "folha" else projeto.paginas
     if acao.alvo == "pagina" and "despeckle" in valores:
         valores = _despeckle_antigo_traduzido(valores)
 
     for campo, valor in valores.items():
         if campo.startswith("livro."):
             nome = campo[len("livro."):]
-            if hasattr(projeto, nome):
-                setattr(projeto, nome, valor)
+            if nome in ("folhas", "paginas"):
+                # obra 26/10, etapa 3: o Automatico que mudou a lista de
+                # paginas (dividir uma folha que tinha uma pagina so) guarda
+                # as listas inteiras, de antes e de depois
+                _trocar_a_lista(projeto, nome, valor)
+            elif hasattr(projeto, nome):
+                setattr(projeto, nome, _restaurar_tipo(nome, valor))
         elif campo.startswith(PREFIXO_PAGINA):
             _aplicar_numa_pagina(projeto, campo, valor)
+        elif campo.startswith(PREFIXO_FOLHA):
+            _aplicar_numa_folha(projeto, campo, valor)
 
+    # a lista certa so depois de uma troca de lista inteira (livro.paginas)
+    itens = projeto.folhas if acao.alvo == "folha" else projeto.paginas
     for indice in acao.indices:
         if not 0 <= indice < len(itens):
             continue
         item = itens[indice]
         for campo, valor in valores.items():
-            if campo.startswith("livro.") or campo.startswith(PREFIXO_PAGINA):
+            if (campo.startswith("livro.") or campo.startswith(PREFIXO_PAGINA)
+                    or campo.startswith(PREFIXO_FOLHA)):
                 continue
             if isinstance(valor, dict):
                 if str(indice) in valor:
@@ -471,6 +480,36 @@ def _aplicar_numa_pagina(projeto: Projeto, campo: str, valor: Any) -> None:
         setattr(projeto.paginas[indice], nome, _restaurar_tipo(nome, valor))
 
 
+# Campo "folha:<indice>.<campo>" numa acao de PAGINA: muda uma folha junto
+# (obra 26/10, etapa 3: o Automatico muda paginas e folhas numa acao so - o
+# dividir, os avisos de cada folha). Arquivo de acoes antigo nao tem esses
+# campos. Arriscado: usar com campo que a folha nao tem.
+PREFIXO_FOLHA = "folha:"
+
+
+def _aplicar_numa_folha(projeto: Projeto, campo: str, valor: Any) -> None:
+    try:
+        indice, nome = campo[len(PREFIXO_FOLHA):].split(".", 1)
+        indice = int(indice)
+    except ValueError:
+        return
+    if 0 <= indice < len(projeto.folhas) and hasattr(projeto.folhas[indice], nome):
+        setattr(projeto.folhas[indice], nome, _restaurar_tipo(nome, valor))
+
+
+def _trocar_a_lista(projeto: Projeto, nome: str, valor: Any) -> None:
+    """Poe de volta a lista inteira de folhas ou de paginas (dicionarios, como
+    o JSON grava) - ver modelos.folhas_da_lista / paginas_da_lista."""
+    from modelos import folhas_da_lista, paginas_da_lista
+
+    if not isinstance(valor, list):
+        return
+    if nome == "folhas":
+        projeto.folhas = folhas_da_lista(valor)
+    else:
+        projeto.paginas = paginas_da_lista(valor)
+
+
 def _despeckle_antigo_traduzido(valores: dict[str, Any]) -> dict[str, Any]:
     """Acao gravada antes de 06/10/2026 com a caixinha "limpar poeirinha"
     (campo `despeckle` da pagina, True/False), desfeita ou refeita depois que
@@ -498,7 +537,8 @@ def _despeckle_antigo_traduzido(valores: dict[str, Any]) -> dict[str, Any]:
 # bugs do teste do Boecio", secao 3a: `conteudo_deslocamento` ja tinha esse
 # problema, nunca pego por nunca ter sido lido antes de `tamanho_folha_cm`
 # existir).
-_CAMPOS_TUPLA = ("recorte", "recorte_detectado", "tamanho_folha_cm", "conteudo_deslocamento")
+_CAMPOS_TUPLA = ("recorte", "recorte_detectado", "tamanho_folha_cm", "conteudo_deslocamento",
+                 "sobra")       # a sobra da folha (item 2.1; o Automatico a muda, etapa 3)
 
 
 def _restaurar_tipo(campo: str, valor: Any) -> Any:

@@ -73,10 +73,15 @@ def main(caminho_pdf: str) -> int:
     janela.abrir_livro(caminho_pdf)
     esperar(0.3)
 
-    print("Analisando...")
-    janela.analisar()
+    # etapa 3 da obra (26/10/2026, D-002): o livro abre direto na area de
+    # trabalho; o antigo "Conferir" (janela.analisar) virou rodar o Automatico
+    # no livro todo com as etapas de fabrica
+    from tests.ajudante_do_automatico import rodar_como_o_conferir
+
+    print("Rodando o Automático...")
+    rodar_como_o_conferir(janela)
     if not esperar(180, lambda: janela.telas.currentIndex() == CONFERIR):
-        print("a análise não terminou")
+        print("o Automático não terminou")
         return 1
 
     conferir = janela.tela_conferir

@@ -156,6 +156,12 @@ class Resumo:
     criado_em: str = ""
     mexido_em: str = ""
     miniatura: str = ""
+    # Obra de 26/10/2026, etapa 3 (livro aberto da tela inicial, R6 de 06/10:
+    # "Sim, fica assim" - "Para revisar" e "Receita usada" no painel do livro):
+    # quantas paginas/folhas pedem um olhar e o nome da ultima receita posta
+    # pelo Automatico. Resumo antigo nao tem os campos: 0 e "" (ler_resumo).
+    para_revisar: int = 0
+    receita_usada: str = ""
 
     @property
     def progresso(self) -> float:
@@ -404,6 +410,15 @@ def atualizar(resumo: Resumo, projeto, pagina_atual: int | None = None,
     resumo.caminho_saida = projeto.caminho_saida or resumo.caminho_saida
     resumo.total_paginas = len(projeto.paginas) or resumo.total_paginas
     resumo.conferidas = sum(1 for p in projeto.paginas if p.revisada)
+    # etapa 3 da obra: o "Para revisar" e a "Receita usada" do livro aberto
+    try:
+        # as mesmas paginas que o rodape ("K com duvida") e o icone do "Para
+        # revisar" contam (pendentes_de_revisao soma tambem as folhas: dava 18
+        # no livro aberto e 16 na area de trabalho, no Boecio)
+        resumo.para_revisar = sum(1 for p in projeto.paginas if p.precisa_revisao)
+    except Exception:  # noqa: BLE001 - o cartao nunca derruba a gravacao
+        resumo.para_revisar = 0
+    resumo.receita_usada = str(getattr(projeto, "receita_usada", "") or "")
     if pagina_atual is not None:
         resumo.pagina_atual = int(pagina_atual)
     gravar_resumo(resumo, por_tras=por_tras)
@@ -816,17 +831,116 @@ def anotar_no_estado(resumo: Resumo, **campos) -> bool:
 
 def carregar_estado(resumo: Resumo):
     """Devolve o Projeto gravado, ou None se nao houver ou nao der para ler.
-    Espera antes as gravacoes por tras (salvar_estado_por_tras)."""
+    Espera antes as gravacoes por tras (salvar_estado_por_tras).
+
+    Etapa 9c da obra (26/10/2026): passa por ler_estado, entao o projeto.json
+    ilegivel ganha a copia guardada ao lado tambem por aqui. Quem precisa
+    AVISAR a pessoa usa ler_estado (o sinal e a frase)."""
+    return ler_estado(resumo).projeto
+
+
+# Nome da copia do projeto.json que nao deu para ler (etapa 9c). Diferente do
+# "projeto.antigo-<data>.json" de guardar_copia_do_trabalho de proposito: a
+# copia "antigo" e o trabalho legivel de antes de um recomeco (e o
+# historico_acoes acha o acoes.antigo-<data>.jsonl pelo nome dela); esta e o
+# arquivo estragado, para recuperar a mao.
+PREFIXO_DA_COPIA_ESTRAGADA = "projeto.estragado-"
+
+
+@dataclass
+class EstadoLido:
+    """O que ler_estado achou no projeto.json (etapa 9c da obra).
+
+    projeto:  o Projeto gravado, ou None (nao ha arquivo, ou nao deu para ler)
+    ilegivel: havia projeto.json e nao deu para ler - a conferencia vai
+              recomecar, e a pessoa precisa saber (antes era calado)
+    copia:    onde ficou guardada a copia do arquivo estragado (None se nao
+              deu para copiar, ou se nao era ilegivel)
+    """
+
+    projeto: object = None
+    ilegivel: bool = False
+    copia: Path | None = None
+
+    @property
+    def aviso(self) -> str:
+        """A frase para a tela ("" quando nao ha o que avisar). A tela so
+        mostra: ui/janela_principal liga (troca anotada no ONDE-PAREI da etapa
+        9c). O caminho leva o WORD JOINER depois de "D:", como a frase do
+        recomeco (_frase_do_recomeco): a linha nao quebra logo depois da
+        letra da unidade."""
+        if not self.ilegivel:
+            return ""
+        frase = "Não consegui ler o trabalho salvo deste livro"
+        if self.copia is None:
+            return frase + ", e não consegui guardar uma cópia dele."
+        caminho = str(self.copia)
+        if len(caminho) > 2 and caminho[1] == ":":
+            caminho = caminho[:2] + "⁠" + caminho[2:]
+        return frase + f"; guardei uma cópia em:\n{caminho}"
+
+
+def ler_estado(resumo: Resumo) -> EstadoLido:
+    """Le o projeto.json e diz o que achou (EstadoLido). Nunca levanta.
+
+    Defeito consertado na etapa 9c da obra (26/10/2026; D-342, "o programa
+    [...] vai ter que ser capaz de abrir arquivos de versões anteriores"): o
+    projeto.json ilegivel fazia carregar_estado devolver None, igual a "nao
+    ha trabalho", e a conferencia recomecava SEM AVISO. Agora:
+      - o arquivo estragado e copiado ao lado (projeto.estragado-<data>.json),
+        sem nunca apagar nem mudar o original (guardar_copia_estragada);
+      - o EstadoLido diz que estava ilegivel e traz a frase para a tela.
+    Ilegivel = nao e JSON, nao e um dicionario, ou Projeto.de_dicionario nao
+    o entende (TypeError/ValueError), ou o disco nao deixou ler (OSError).
+    Arriscado: tratar como "sem trabalho" o arquivo que existe e nao foi lido
+    (a perda calada volta), ou apagar/mover o estragado."""
     from modelos import Projeto
 
     esperar_gravacoes()
     caminho = Path(resumo.pasta) / ARQUIVO_ESTADO
     if not caminho.is_file():
+        return EstadoLido()
+    try:
+        dados = json.loads(caminho.read_text(encoding="utf-8"))
+        if not isinstance(dados, dict):
+            raise ValueError("o projeto.json nao e um dicionario")
+        return EstadoLido(projeto=Projeto.de_dicionario(dados))
+    except (OSError, ValueError, TypeError, AttributeError, KeyError):
+        return EstadoLido(ilegivel=True, copia=guardar_copia_estragada(caminho))
+
+
+def guardar_copia_estragada(caminho: Path, agora: datetime | None = None) -> Path | None:
+    """Copia o projeto.json que nao deu para ler para o lado, com data e hora
+    no nome (projeto.estragado-2026-10-26-1930.json). Nunca apaga nem muda o
+    original. Se ja ha uma copia com os MESMOS bytes, devolve ela (a janela le
+    o arquivo varias vezes ao abrir um livro: uma copia so). Nunca
+    sobrescreve: copia nova no mesmo minuto ganha "-2", "-3"... (modo "x").
+    Devolve None se nao deu para ler ou gravar. Nunca levanta."""
+    caminho = Path(caminho)
+    try:
+        conteudo = caminho.read_bytes()
+    except OSError:
         return None
     try:
-        return Projeto.de_dicionario(json.loads(caminho.read_text(encoding="utf-8")))
-    except (OSError, ValueError, TypeError):
-        return None
+        for antiga in sorted(caminho.parent.glob(PREFIXO_DA_COPIA_ESTRAGADA + "*.json")):
+            if antiga.read_bytes() == conteudo:
+                return antiga
+    except OSError:
+        pass
+    carimbo = (agora or datetime.now()).strftime("%Y-%m-%d-%H%M")
+    for numero in range(1, 1000):
+        sufixo = carimbo if numero == 1 else f"{carimbo}-{numero}"
+        destino = caminho.with_name(f"{PREFIXO_DA_COPIA_ESTRAGADA}{sufixo}.json")
+        try:
+            with destino.open("xb") as copia:
+                copia.write(conteudo)
+                _forcar_ao_disco(copia)
+            return destino
+        except FileExistsError:
+            continue
+        except OSError:
+            return None
+    return None
 
 
 def _forma_comum(caminho: str | Path) -> str:
@@ -928,6 +1042,36 @@ def combina_com(salvo, recem_analisado, assinatura: str = "") -> bool:
     if salvo is None or recem_analisado is None:
         return False
     return motivo_para_nao_combinar(salvo, recem_analisado, assinatura) == ""
+
+
+def motivo_sem_analise(salvo, aberto, assinatura: str = "") -> str:
+    """O trabalho salvo serve para o livro recem-aberto SEM analise? "" se
+    serve; senao o motivo (o texto do aviso, como motivo_para_nao_combinar).
+
+    Obra de 26/10/2026, etapa 3 (D-002: o livro abre direto na area de
+    trabalho, sem analisar de novo; defeito de 29/09: o salvo voltava por cima
+    de uma analise nova e jogava fora o que a pessoa tinha mudado). Agora o
+    trabalho salvo E o livro: serve se for o mesmo livro (mesmo arquivo ou
+    mesma assinatura, _mesmo_livro), com o mesmo numero de folhas e com
+    paginas. A divisao das folhas vem do proprio salvo (nao ha mais "o
+    analisado" para comparar). `aberto`: o projeto da passada leve (uma folha
+    por pagina do PDF)."""
+    if salvo is None:
+        return "o trabalho salvo não pôde ser lido"
+    if not _mesmo_livro(salvo, aberto, assinatura):
+        return "o arquivo aberto agora não é o mesmo livro do trabalho salvo"
+    antes, agora = len(salvo.folhas), len(aberto.folhas)
+    if antes != agora:
+        return (f"o arquivo tinha {_quantas(antes, 'folha', 'folhas')} quando o "
+                f"trabalho foi salvo e agora tem {agora}: ele foi trocado ou mudou")
+    if not salvo.paginas:
+        return "o trabalho salvo não tinha páginas"
+    if any(not 0 <= p.folha < agora for p in salvo.paginas):
+        return "o trabalho salvo tinha páginas de folhas que o arquivo não tem"
+    if {p.folha for p in salvo.paginas} != set(range(agora)):
+        return (f"o trabalho salvo tinha {_quantas(len(salvo.paginas), 'página', 'páginas')} "
+                f"e o livro tem {_quantas(agora, 'folha', 'folhas')}: falta página de alguma folha")
+    return ""
 
 
 def _quantas(numero: int, singular: str, plural: str) -> str:

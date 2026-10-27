@@ -510,21 +510,29 @@ def test_a_tela_pede_a_medida_da_pagina_da_vez_na_resolucao_do_pdf(tela):
 
 # --- o botao de ligar e desligar a forca sozinha (regra 8 do plano) ----------------
 
-def test_a_tela_o_que_fazer_liga_e_desliga_a_forca_sozinha(app):  # noqa: F811
-    from ui.tela_opcoes import TelaOpcoes
+def test_o_automatico_liga_e_desliga_a_forca_sozinha(app):  # noqa: F811
+    """D-186/D-277: a caixinha "força sozinha" saiu da tela "O que fazer" e mora no
+    Automático, etapa "Limpar a folha" (etapa 3 da obra, 26/10/2026); rodar grava."""
+    from core import automatico as A
+    from core.filtros import PRETO_E_BRANCO
+    from ui.automatico import EstadoDoAutomatico, JanelaDoAutomatico
 
     projeto = _projeto_com_cor()
     projeto.misto_so_as_letras = True
-    opcoes = TelaOpcoes()
-    opcoes.projeto = projeto
-    opcoes.mostrar_opcoes()
-    assert opcoes.cx_forca_sozinha.isChecked() and projeto.reforcar_texto_falhado is True
-    assert "força do preto" in opcoes.cx_forca_sozinha.text()
-    opcoes.cx_forca_sozinha.setChecked(False)
+    projeto.filtro_padrao = PRETO_E_BRANCO
+    estado = EstadoDoAutomatico()
+    estado.do_projeto(projeto)
+    janela = JanelaDoAutomatico(estado)
+    caixa = janela.cx_forca_sozinha
+    assert caixa.isChecked() and projeto.reforcar_texto_falhado is True
+    assert "força do preto" in caixa.text()
+    caixa.setChecked(False)
+    assert estado.opcoes["reforcar_texto_falhado"] is False
+    A.aplicar(projeto, A.Pedido(etapas=[A.LIMPAR], opcoes=estado.opcoes))
     assert projeto.reforcar_texto_falhado is False
     # projeto que veio desligado (o salvo antes de 12/10) abre desmarcado
     antigo = _projeto_com_cor()
     antigo.reforcar_texto_falhado = False
-    opcoes.projeto = antigo
-    opcoes.mostrar_opcoes()
-    assert not opcoes.cx_forca_sozinha.isChecked() and antigo.reforcar_texto_falhado is False
+    estado.do_projeto(antigo)
+    assert not janela.cx_forca_sozinha.isChecked() and antigo.reforcar_texto_falhado is False
+    janela.done(0)

@@ -83,20 +83,37 @@ def test_a_receita_vale_ao_abrir_um_livro_novo(janela, pasta):
     nome = perfis.guardar("Sem cortar", Projeto(caminho_entrada="a", cortar_bordas=False))
     perfis.definir_do_livro_novo(nome)
     janela.abrir_livro(str(_pdf(pasta)))
+    # etapa 3 da obra (D-018): a receita do livro novo vem MARCADA no Automático
+    # (o aviso do livro novo a abre); a página abre como veio ("sempre abre em
+    # Original, sem mexer") e nada roda sozinho
     assert janela.projeto.cortar_bordas is False
-    assert not janela.tela_opcoes.cx_cortar.isChecked()
+    janela.tela_conferir.botao_rodar_do_aviso.click()
+    from core import automatico as A
+
+    assert A.CORTAR not in janela.estado_do_automatico.marcadas
+    assert A.ENDIREITAR in janela.estado_do_automatico.marcadas
+    janela._fechar_a_janela_do_automatico()
 
 
-def test_na_tela_o_que_fazer(janela, pasta):
+def test_no_automatico(janela, pasta):
+    """As receitas moram no Automático (etapa 3 da obra; era a tela "O que fazer")."""
+    from core import automatico as A
+    from ui.automatico import CaixaDaReceita
+
     janela.abrir_livro(str(_pdf(pasta)))
-    tela = janela.tela_opcoes
-    tela.cx_endireitar.setChecked(False)
-    tela.nome_da_receita.setText("Minha")
-    tela._guardar_receita()
-    assert tela.combo_receitas.currentData() == "Minha"
-    tela.combo_receitas.setCurrentIndex(tela.combo_receitas.findData(perfis.NOME_DE_FABRICA))
-    tela._por_receita()
-    assert tela.cx_endireitar.isChecked() and janela.projeto.endireitar is True
+    painel = janela.tela_conferir.paineis.automatico
+    estado = painel.estado
+    estado.marcadas = {A.LIMPAR, A.CORTAR}
+    caixa = CaixaDaReceita(estado)
+    caixa.nome.setText("Minha")
+    caixa.guardar()
+    painel.encher_receitas()
+    assert painel.combo_receitas.findData("Minha") >= 0
+    painel.combo_receitas.setCurrentIndex(painel.combo_receitas.findData(perfis.NOME_DE_FABRICA))
+    painel._escolheu_receita()
+    assert A.ENDIREITAR in estado.marcadas
+    assert janela.rodar_o_automatico(esperar=True)
+    assert janela.projeto.endireitar is True
 
 
 def test_configuracoes_tem_as_medidas_da_impressao(app, pasta):

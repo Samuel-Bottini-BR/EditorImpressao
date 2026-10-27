@@ -75,7 +75,12 @@ def gerar(app, escala_150: bool = False) -> None:
     janela.show()
     janela.abrir_livro(str(LIVRO))
     _esperar(app, 2)
-    janela.analisar()
+    # etapa 3 da obra (26/10/2026, D-002): o livro abre direto na area de
+    # trabalho; o antigo "Conferir" (janela.analisar) virou rodar o Automatico
+    # no livro todo com as etapas de fabrica
+    from tests.ajudante_do_automatico import rodar_como_o_conferir
+
+    rodar_como_o_conferir(janela)
     _esperar(app, 50)
 
     tela = janela.tela_conferir
@@ -166,8 +171,7 @@ def gerar(app, escala_150: bool = False) -> None:
     outra.resize(1366, 768)
     outra.show()
     outra.abrir_livro(str(LIVRO))
-    _esperar(app, 2)
-    outra.analisar()
+    # etapa 3 da obra: o trabalho salvo volta como estava, sem rodar nada
     _esperar(app, 50)
     outra.tela_conferir.barra_abas.setCurrentIndex(
         outra.tela_conferir._abas_ativas.index("marcar"))

@@ -59,6 +59,13 @@ PADROES: dict[str, Any] = {
     # de trabalho 1). Lido e gravado por ui/widgets/paineis.jeito_guardado e
     # guardar_jeito; valor estranho volta ao de fábrica. Seguro mudar: nada.
     "lado_direito": "icones",
+    # Obra de 26/10/2026, etapa 3 (D-093/D-094, g6-retangulo, 09/10: "Fica no
+    # mesmo lugar da página (como no ScanTailor)" de fabrica, e "quero a b e c
+    # juntas."): o que o corte a mao faz quando o angulo muda depois, para
+    # todos os livros: "fica" (de fabrica) ou "acompanha". O livro
+    # (Projeto.retangulo_do_corte) e a pagina podem trocar. Lido por
+    # ui/tela_conferir._jeito_do_retangulo. Seguro mudar: nada.
+    "retangulo_do_corte": "fica",
 }
 
 

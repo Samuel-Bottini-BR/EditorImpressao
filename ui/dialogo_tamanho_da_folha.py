@@ -133,8 +133,7 @@ class DialogoTamanhoDaFolha(QDialog):
         self.aviso.setText(
             "" if cabe else
             f"Esse tamanho é menor que o corte que você já fez "
-            f"({unidades.de_cm(self._largura_recorte_cm, self.unidade):.1f} × "
-            f"{unidades.de_cm(self._altura_recorte_cm, self.unidade):.1f}"
-            f"{unidades.SUFIXOS[self.unidade]}) - "
+            f"({unidades.texto(self._largura_recorte_cm, self.unidade)} × "
+            f"{unidades.texto(self._altura_recorte_cm, self.unidade)}) - "
             "não vou mudar o seu corte, mas ele não vai caber inteiro na folha."
         )

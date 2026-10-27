@@ -201,29 +201,29 @@ def abrir_livro_para_teste(janela, caminho: Path | str, marcadas: tuple[str, ...
     """Leva o livro até a área de trabalho e devolve a TelaConferir.
 
     O ÚNICO lugar do teste que sabe o caminho de abrir (pedido da gerente, 26/10: a etapa 3 muda
-    tudo aqui). Hoje: `abrir_livro` vai à tela "O que fazer"; desmarca tudo (menos `marcadas`) e
-    faz o que o "Conferir" faz, sem a tarefa de fundo (o detector de gravura desligado: precisa
-    dos modelos, que não estão no GitHub). Depois da etapa 3 o livro abre direto na área de
-    trabalho e este ajudante só espera."""
-    from core import pipeline
-    from ui.janela_principal import CONFERIR, OPCOES
+    tudo aqui). Desde a etapa 3 (D-002) o livro abre DIRETO na área de trabalho, sem nada ligado
+    (o "abrir sem marcar nada" da D-009). `marcadas` (os nomes das caixinhas da antiga tela "O que
+    fazer") vira rodar essas etapas do Automático no livro todo, sem a pergunta das páginas
+    mexidas e sem o detector de gravura (precisa dos modelos, que não estão no GitHub)."""
+    from ui.janela_principal import CONFERIR
 
     janela.abrir_livro(str(caminho))
     if janela.aviso_do_fundo is not None:          # "Este livro tem fundo separado?" (PDF com camadas)
         janela.aviso_do_fundo.done(0)
-    if janela.telas.currentIndex() == OPCOES:
-        opcoes = janela.tela_opcoes
-        for nome in CAIXINHAS_DA_TELA_O_QUE_FAZER:
-            caixa = getattr(opcoes, nome, None)
-            if caixa is not None:
-                caixa.setChecked(nome in marcadas)
-        janela.projeto.detectar_regioes = False
-        janela._analise_pronta(pipeline.analisar_projeto(janela.projeto))
     fim = time.monotonic() + 60
     while janela.telas.currentIndex() != CONFERIR and time.monotonic() < fim:
         assentar(2)
         time.sleep(0.02)
     assert janela.telas.currentIndex() == CONFERIR, "o livro não chegou à área de trabalho"
+    if marcadas:
+        from core import automatico as A
+
+        etapa_da_caixinha = {"cx_dividir": A.DIVIDIR, "cx_cortar": A.CORTAR,
+                             "cx_endireitar": A.ENDIREITAR, "cx_limpar": A.LIMPAR,
+                             "cx_cadernos": A.CADERNOS}
+        janela.projeto.detectar_regioes = False
+        etapas = [etapa_da_caixinha[nome] for nome in CAIXINHAS_DA_TELA_O_QUE_FAZER if nome in marcadas]
+        assert janela.rodar_o_automatico(pedido=A.Pedido(etapas=etapas), esperar=True, perguntar=False)
     janela.resize(1280, 760)
     janela.show()
     assentar()
@@ -561,6 +561,7 @@ def lugares_da_area_de_trabalho(tela) -> list[tuple[str, object]]:
     return [
         ("processar", getattr(tela, "botao_processar", None)),
         ("faixa do aviso", getattr(tela, "faixa", None)),
+        ("aviso de livro novo", getattr(tela, "aviso_do_livro_novo", None)),   # etapa 3, D-005
         ("girar do canto", getattr(tela, "girar_do_canto", None)),
         ("girar a folha", getattr(tela, "barra_girar", None)),
         ("esta página", pagina),

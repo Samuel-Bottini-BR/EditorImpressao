@@ -208,7 +208,7 @@ def conferir_sequencia(total_paginas: int, paginas_por_caderno: int) -> tuple[bo
     Devolve (esta certo, frase em portugues para a tela).
     """
     if total_paginas <= 0:
-        return True, "Nao ha paginas para conferir."
+        return True, "Não há páginas para conferir."
 
     vistas: list[int] = []
     inicio = 0

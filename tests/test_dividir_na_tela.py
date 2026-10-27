@@ -53,10 +53,10 @@ def _pdf_deitado(pasta, dobra=0.6, folhas=3):
 
 def _conferir_dividido(janela, pasta, jeito=ds.JEITO_PROGRAMA):
     janela.abrir_livro(_pdf_deitado(pasta))
-    opcoes = janela.tela_opcoes
-    opcoes.cx_dividir.setChecked(True)
-    opcoes.combo_jeito_dividir.setCurrentIndex(opcoes.combo_jeito_dividir.findData(jeito))
-    _analisar(janela)
+    # etapa 3 da obra: "Dividir" e o jeito, pelo Automatico (era a tela "O que fazer")
+    from tests.ajudante_do_automatico import rodar_como_o_conferir
+
+    rodar_como_o_conferir(janela, sempre=True, dividir_folhas=True, dividir_como=jeito)
     tela = janela.tela_conferir
     tela.barra_abas.setCurrentIndex(tela._abas_ativas.index("corte"))
     return tela
@@ -64,30 +64,34 @@ def _conferir_dividido(janela, pasta, jeito=ds.JEITO_PROGRAMA):
 
 # ------------------------------------------------------------------ "O que fazer"
 
-def test_livro_novo_nao_divide_e_o_jeito_so_aparece_marcado(janela, pasta):
+def test_livro_novo_nao_divide_e_o_jeito_esta_no_automatico(janela, pasta):
+    """G2 (a) (05/10): "Só quando o Kaique pedir, livro a livro". Desde a etapa 3 da obra o
+    jeito de dividir e o corte da sobra moram na janela do Automático (etapas "Dividir folhas
+    ao meio" e "Cortar as bordas"); o livro novo abre sem dividir e sem a etapa marcada."""
+    from core import automatico as A
+
     janela.abrir_livro(_pdf_deitado(pasta))
-    opcoes = janela.tela_opcoes
-    assert not opcoes.cx_dividir.isChecked() and not janela.projeto.dividir_folhas
-    assert opcoes.linha_jeito_dividir.isHidden()
-    assert not opcoes.cx_cortar_sobra.isChecked() and not janela.projeto.cortar_sobra
-    opcoes.cx_dividir.setChecked(True)
-    assert not opcoes.linha_jeito_dividir.isHidden()
-    assert [opcoes.combo_jeito_dividir.itemText(i) for i in range(opcoes.combo_jeito_dividir.count())] \
+    assert not janela.projeto.dividir_folhas and not janela.projeto.cortar_sobra
+    jan = janela.abrir_o_automatico("dividir")
+    estado = janela.estado_do_automatico
+    assert A.DIVIDIR not in estado.marcadas
+    combo = jan.controles["dividir_como"]
+    assert [combo.itemText(i) for i in range(combo.count())] \
         == ["o do Editor", "o do ScanTailor"]      # rodada 14 do layout, 907 B
-    # decisao do Samuel, 07/10/2026: ao marcar, vem escolhido "o do ScanTailor"
-    assert opcoes.combo_jeito_dividir.currentData() == ds.JEITO_SCANTAILOR
-    assert janela.projeto.dividir_como == ds.JEITO_SCANTAILOR
-    opcoes.combo_jeito_dividir.setCurrentIndex(opcoes.combo_jeito_dividir.findData(ds.JEITO_PROGRAMA))
-    assert janela.projeto.dividir_como == ds.JEITO_PROGRAMA     # o do programa continua opção
-    # verificador, 21/10/2026: a linha-resumo dizia "(jeito: o do programa)"
-    # com a lista logo acima dizendo "o do Editor" (rodada 14, 907 B)
-    assert "(jeito: o do Editor)" in opcoes.resumo.text()
-    assert "o do programa" not in opcoes.resumo.text()
-    opcoes.combo_jeito_dividir.setCurrentIndex(opcoes.combo_jeito_dividir.findData(ds.JEITO_SCANTAILOR))
-    opcoes.cx_cortar_sobra.setChecked(True)
-    assert janela.projeto.dividir_como == ds.JEITO_SCANTAILOR
+    # decisao do Samuel, 07/10/2026: vem escolhido "o do ScanTailor"
+    assert combo.currentData() == ds.JEITO_SCANTAILOR
+    combo.setCurrentIndex(combo.findData(ds.JEITO_PROGRAMA))
+    assert estado.opcoes["dividir_como"] == ds.JEITO_PROGRAMA     # o do programa continua opção
+    # verificador, 21/10/2026: a linha dizia "o do programa" com a lista dizendo "o do Editor"
+    texto = jan.lista.item_da_etapa(A.DIVIDIR).text()
+    assert "o do Editor" in texto and "o do programa" not in texto
+    combo.setCurrentIndex(combo.findData(ds.JEITO_SCANTAILOR))
+    jan.controles["cortar_sobra"].setChecked(True)
+    estado.marcadas = {A.DIVIDIR, A.CORTAR}
+    janela._fechar_a_janela_do_automatico()
+    assert janela.rodar_o_automatico(esperar=True)
+    assert janela.projeto.dividir_folhas and janela.projeto.dividir_como == ds.JEITO_SCANTAILOR
     assert janela.projeto.cortar_sobra
-    assert "ScanTailor" in opcoes.resumo.text()
 
 
 @precisa_da_dll
@@ -98,11 +102,13 @@ def test_as_escolhas_voltam_ao_reabrir(janela, pasta):
     caminho = janela.projeto.caminho_entrada
     janela.previas.parar()
     janela.previas = None
-    janela.tela_opcoes.folhear.fechar()
+    janela._fechar_a_janela_do_automatico()
     janela.abrir_livro(caminho)
     assert janela.projeto.dividir_folhas
     assert janela.projeto.dividir_como == ds.JEITO_SCANTAILOR
-    assert janela.tela_opcoes.combo_jeito_dividir.currentData() == ds.JEITO_SCANTAILOR
+    jan = janela.abrir_o_automatico("dividir")
+    assert jan.controles["dividir_como"].currentData() == ds.JEITO_SCANTAILOR
+    janela._fechar_a_janela_do_automatico()
 
 
 def test_projeto_antigo_reaberto_continua_com_o_do_programa(janela, pasta):
@@ -125,14 +131,13 @@ def test_projeto_antigo_reaberto_continua_com_o_do_programa(janela, pasta):
     estado.write_text(json.dumps(dados, ensure_ascii=False), encoding="utf-8")
     janela.previas.parar()
     janela.previas = None
-    janela.tela_opcoes.folhear.fechar()
+    janela._fechar_a_janela_do_automatico()
 
     janela.abrir_livro(caminho)
-    opcoes = janela.tela_opcoes
     assert janela.projeto.dividir_como == ds.JEITO_PROGRAMA
-    assert opcoes.combo_jeito_dividir.currentData() == ds.JEITO_PROGRAMA
-    opcoes.cx_dividir.setChecked(True)
-    assert opcoes.combo_jeito_dividir.currentData() == ds.JEITO_PROGRAMA
+    jan = janela.abrir_o_automatico("dividir")          # etapa 3: o jeito mora no Automático
+    assert jan.controles["dividir_como"].currentData() == ds.JEITO_PROGRAMA
+    janela._fechar_a_janela_do_automatico()
     assert janela.projeto.dividir_como == ds.JEITO_PROGRAMA
 
 

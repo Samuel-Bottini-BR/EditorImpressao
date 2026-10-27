@@ -9,6 +9,11 @@ destruia o QThread ainda rodando e derrubava o processo inteiro, sem
 mensagem e sem nada no erros.log (queda nativa: nenhuma excecao Python).
 Contra a regra "nenhuma excecao fecha a janela".
 
+Obra de 26/10/2026, etapa 3: o "Conferir" (a analise do livro inteiro) virou o
+"Rodar" do Automatico, que tambem mede num fio de fundo (TarefaAutomatico) com
+o mesmo cancelar. O cenario e o mesmo, pelo caminho novo: rodar, cancelar e
+rodar de novo logo depois.
+
 A queda mata o processo, entao o cenario roda num processo a parte e o teste
 confere que ele terminou normalmente. Pasta de dados: a do conftest.py
 (LOCALAPPDATA de mentira), herdada pelo processo filho.
@@ -50,15 +55,17 @@ CENARIO = textwrap.dedent(r'''
     if j.aviso_do_fundo is not None:
         j.aviso_do_fundo.done(0)
     j.projeto.detectar_regioes = False
-    j._analise_pronta(pipeline.analisar_projeto(j.projeto))
+    from core import automatico as A
+    def rodar():
+        pedido = A.Pedido(etapas=[A.DIVIDIR, A.ENDIREITAR, A.CORTAR, A.LIMPAR])
+        j.rodar_o_automatico(pedido=pedido, perguntar=False)
 
     for vez in range(int(sys.argv[4])):
-        j._sair_da_conferencia()
-        j.analisar()
+        rodar()
         time.sleep(0.25)
         app.processEvents()
         j.cancelar()
-        j.analisar()                  # "Conferir" logo depois do "cancelar"
+        rodar()                       # "Rodar" logo depois do "cancelar"
         j.cancelar()
         import gc; gc.collect()
     for _ in range(300):

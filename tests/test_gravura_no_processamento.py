@@ -651,7 +651,7 @@ def test_a_janela_mostra_o_aviso_da_gravura_uma_vez(monkeypatch, avisos_limpos):
         janela._avisar_da_gravura()
         assert vistos == [dr.AVISO_DA_GRAVURA_NA_TELA]
     finally:
-        janela.tela_opcoes.folhear.fechar()
+        janela._fechar_a_janela_do_automatico()
         janela.close()
 
 

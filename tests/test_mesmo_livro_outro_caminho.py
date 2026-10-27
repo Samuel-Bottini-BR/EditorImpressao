@@ -223,14 +223,17 @@ def janela(app, pasta, monkeypatch):
         janela.aviso_do_fundo.done(0)
     if janela.previas is not None:
         janela.previas.parar()
-    janela.tela_opcoes.folhear.fechar()
+    janela._fechar_a_janela_do_automatico()
     janela.close()
 
 
 def _analisar(janela) -> None:
-    """O que o "Conferir" faz, sem a tarefa em segundo plano."""
-    janela.projeto.detectar_regioes = False
-    janela._analise_pronta(pipeline.analisar_projeto(janela.projeto))
+    """O que o "Conferir" fazia, pelo caminho novo (obra de 26/10/2026, etapa 3: o livro
+    abre direto na area de trabalho; o trabalho salvo volta como esta, e o livro novo roda
+    o Automatico no livro todo com as caixinhas de fabrica - tests/ajudante_do_automatico.py)."""
+    from tests.ajudante_do_automatico import rodar_como_o_conferir
+
+    rodar_como_o_conferir(janela)
 
 
 def _trabalhar_e_fechar(janela, caminho: str) -> None:
@@ -255,7 +258,7 @@ def _trabalhar_e_fechar(janela, caminho: str) -> None:
     # Como ao fechar o programa (closeEvent): a tira de miniaturas para, e
     # nada mais fica com o PDF aberto (o teste move e copia o arquivo).
     janela.tela_conferir.tira.parar()
-    janela.tela_opcoes.folhear.fechar()
+    janela._fechar_a_janela_do_automatico()
 
 
 def _conferir_que_o_trabalho_voltou(janela, caminho_aberto: str) -> None:
@@ -312,9 +315,8 @@ def test_continuar_depois_de_abrir_de_outro_jeito_mantem_o_trabalho(janela, past
     janela._salvar_agora()
     janela.previas.parar()
     janela.previas = None
-    janela.tela_opcoes.folhear.fechar()
+    janela._fechar_a_janela_do_automatico()
 
-    monkeypatch.setattr(janela, "analisar", lambda: None)
     janela._continuar_projeto(projetos.achar_por_assinatura(str(livro)))
     _analisar(janela)
     _conferir_que_o_trabalho_voltou(janela, _com_barra(livro))

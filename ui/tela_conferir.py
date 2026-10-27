@@ -155,6 +155,7 @@ from core import avisos as avisos_do_livro
 from core import preto_e_branco_scantailor
 from core import claro_no_escuro, cores_scantailor, desentortar_scantailor
 from core import luz_scantailor
+from core import etapas as etapas_core       # obra 26/10, etapa 3: a marca "mexida a mao"
 from core.pipeline import (FORCA_DO_REFORCO, acertar_alertas_de_cor, acertar_alertas_do_fundo,
                            acertar_faixa_do_livro, angulo_aplicado,
                            angulo_da_pagina, angulos_medidos, corte_alargado, jeito_de_dividir,
@@ -216,6 +217,7 @@ from ui.widgets.trilha_agrupada import (
 from ui.widgets.medidor import Medidor
 from ui.widgets.miniaturas import EMBAIXO, ESQUERDA, DIREITA, PainelDeMiniaturas
 from ui.widgets.todas_as_paginas import ItemDaGrade, TodasAsPaginas
+from ui.widgets.trilha_agrupada import ferramenta_da_pagina_da_tecla
 from ui.widgets.visualizador import (
     MODO_ANGULO,
     MODO_CORTE,
@@ -447,6 +449,20 @@ class TelaConferir(QWidget):
     # etapa 5 do layout: as miniaturas abriram (True) ou fecharam; a janela
     # acompanha no menu Ver > "Miniaturas"
     miniaturas_mudaram = Signal(bool)
+
+    # Obra de 26/10/2026, etapa 3 (o Automatico; quem atende e a janela
+    # principal, ui/janela_principal.py):
+    #   automatico_pedido: abrir a janela grande do Automatico nesta etapa
+    #       (codigo de core/automatico; "" = a primeira marcada). E o que o
+    #       "mudar no Automático..." do Propriedades pede.
+    #   rodar_do_aviso_pedido: o "Rodar o automático..." do aviso do livro novo
+    #       (D-005, R13 804 B; D-018: abre a janela com a receita de sempre).
+    #   escolhidas_para_o_automatico: a grade "Todas as páginas" devolveu as
+    #       paginas escolhidas para o Automatico rodar (D-334, rodada 2: "Escolher
+    #       folhas abrindo a tela de todas as páginas (marcar/desmarcar)").
+    automatico_pedido = Signal(str)
+    rodar_do_aviso_pedido = Signal()
+    escolhidas_para_o_automatico = Signal(list)
 
     def __init__(self, parent=None) -> None:
         super().__init__(parent)
@@ -693,6 +709,7 @@ class TelaConferir(QWidget):
             faixa_camadas.addWidget(botao)
         for botao in (self.botao_sugestao, self.botao_sugestao_2, self.botao_sugestao_3):
             botao.setVisible(False)
+        centro.addWidget(self._montar_aviso_do_livro_novo())
         centro.addWidget(self.faixa)
 
         # A fila de botoes de cada aba. O QStackedWidget reserva, por padrao, a
@@ -763,9 +780,13 @@ class TelaConferir(QWidget):
         # dividem o lugar; a barra de menus fica.
         self.trabalho = QWidget()
         self.trabalho.setLayout(corpo)
-        self.todas = TodasAsPaginas()
+        self.todas = TodasAsPaginas(com_escolha=True)
         self.todas.ir_para.connect(self._voltar_das_todas)
         self.todas.voltar.connect(lambda: self._voltar_das_todas(None))
+        # D-334 (etapa 3 da obra): as acoes nas paginas escolhidas e o
+        # "escolher páginas..." do Automatico
+        self.todas.acao_nas_escolhidas.connect(self._acao_nas_escolhidas)
+        self.todas.escolha_pronta.connect(self._escolha_pronta)
         self.pilha_da_tela = QStackedWidget()
         self.pilha_da_tela.addWidget(self.trabalho)
         self.pilha_da_tela.addWidget(self.todas)
@@ -982,7 +1003,11 @@ class TelaConferir(QWidget):
         painel.historico.voltar_para.connect(self._voltar_no_historico)
         painel.historico.desfazer_pedido.connect(self.desfazer)
         painel.historico.refazer_pedido.connect(self.refazer)
-        painel.automatico.mudar_pedido.connect(lambda: self.voltar.emit())
+        # etapa 3 da obra: o painel Automatico de verdade. "abrir em janela
+        # grande"/"ajustar" viram o pedido da janela grande; o resto (rodar,
+        # desligar, escolher paginas, receita) a janela principal liga direto
+        # nos sinais do painel (ui/janela_principal._ligar_o_automatico).
+        painel.automatico.janela_pedida.connect(self.automatico_pedido.emit)
 
     def _painel_abriu(self, chave: str) -> None:
         """Abriu o painel Filtro: as páginas pequenas da fila (as amostras
@@ -1297,14 +1322,13 @@ class TelaConferir(QWidget):
         coluna.addWidget(caixinha)
         return caixinha
 
-    def _parte_do_livro(self, linhas: list[str]) -> QFrame:
+    def _parte_do_livro(self, linhas: list[str], etapa: str = "") -> QFrame:
         """A parte "Para o livro todo" do Propriedades (rodada 12, 706 B).
 
-        Mostra o que vale para o livro inteiro e leva a tela "O que fazer",
-        que e onde isso se muda HOJE (o mesmo "Voltar para as opções" do menu
-        Arquivo; o trabalho fica gravado). Mudar daqui mesmo, sem sair da
-        pagina, ainda nao existe no programa: pede refazer a conferencia do
-        livro, e nao foi inventado aqui."""
+        Mostra o que vale para o livro inteiro e, desde a etapa 3 da obra
+        (26/10/2026), abre o Automatico na etapa (`etapa`, codigo de
+        core/automatico), que e onde o livro todo se muda (a tela "O que
+        fazer" saiu do caminho: D-002)."""
         caixa = QFrame()
         caixa.setObjectName("parteDoLivro")
         caixa.setAttribute(Qt.WA_StyledBackground, True)
@@ -1317,10 +1341,11 @@ class TelaConferir(QWidget):
             rotulo.setObjectName("rotuloDoPainel")
             rotulo.setWordWrap(True)
             coluna.addWidget(rotulo)
-        botao = _botao("mudar nas opções do livro...", coluna, lambda: self.voltar.emit())
+        botao = _botao("mudar no Automático...", coluna,
+                       lambda: self.automatico_pedido.emit(etapa))
         botao.setToolTip(
-            "Volta à tela \"O que fazer\", onde esta escolha vale para o livro inteiro. "
-            "O trabalho deste livro fica gravado.")
+            "Abre o Automático nesta etapa: lá ela muda para o livro inteiro (ou para as "
+            "páginas escolhidas). O trabalho deste livro continua.")
         return caixa
 
     def _montar_aba_corte(self) -> None:
@@ -1364,7 +1389,7 @@ class TelaConferir(QWidget):
         jeito_do_livro = dividir_scantailor.jeito_valido(
             getattr(self.projeto, "dividir_como", None))
         coluna.addWidget(self._parte_do_livro(
-            [f"Jeito de dividir: {nome_do_jeito_de_dividir(jeito_do_livro)}"]))
+            [f"Jeito de dividir: {nome_do_jeito_de_dividir(jeito_do_livro)}"], "dividir"))
 
     def _montar_aba_bordas(self) -> None:
         """A ferramenta Cortar as bordas: a pagina com o retangulo verde e,
@@ -1458,7 +1483,7 @@ class TelaConferir(QWidget):
              # item 2.13 (g7): a borda preta do scanner
              "Página dentro da borda preta: "
              + (_nome_da_borda(self.projeto) if getattr(self.projeto, "borda_preta", False)
-                else "não")]))
+                else "não")], "cortar"))
 
     def _escolher_tamanho_da_folha(self) -> None:
         """Problema 1, opção A: digitar o tamanho final em vez de arrastar.
@@ -1821,8 +1846,26 @@ class TelaConferir(QWidget):
         lista_estreita(self.combo_desentortar)
         coluna.addSpacing(6)
         conta_do_livro = endireitar_scantailor.jeito_do_livro(self.projeto)
+        # D-093/D-094 (g6-retangulo, 09/10/2026: "quero a b e c juntas."): o que
+        # o corte a mao DESTA pagina faz quando o angulo muda depois (a mesma
+        # escolha existe no Automatico, para o livro, e nas Configuracoes)
+        coluna.addWidget(titulo_de_secao("Quando o ângulo muda, o corte desta página"))
+        self.combo_retangulo_da_pagina = QComboBox()
+        for valor, nome in ((None, "segue o livro"), ("fica", "fica no mesmo lugar"),
+                            ("acompanha", "acompanha o texto")):
+            self.combo_retangulo_da_pagina.addItem(nome, valor)
+        self.combo_retangulo_da_pagina.setToolTip(
+            "Só vale se esta página tem o corte feito à mão. \"Fica no mesmo lugar\" é como o "
+            "ScanTailor; \"acompanha o texto\" faz o retângulo crescer para o texto continuar "
+            "dentro. \"Segue o livro\" usa a escolha do Automático (ou das Configurações).")
+        self.combo_retangulo_da_pagina.currentIndexChanged.connect(
+            lambda _i: self._mudar_retangulo_da_pagina())
+        coluna.addWidget(self.combo_retangulo_da_pagina)
+        lista_estreita(self.combo_retangulo_da_pagina)
+        coluna.addSpacing(6)
         coluna.addWidget(self._parte_do_livro(
-            ["Conta do endireitar: " + nome_da_conta(conta_do_livro)]))
+            ["Conta do endireitar: " + nome_da_conta(conta_do_livro),
+             "Corte quando o ângulo muda: " + _nome_do_retangulo(self.projeto)], "endireitar"))
 
     def _montar_aba_marcar(self) -> None:
         """A aba de marcar a mao onde estao gravura, letra e papel.
@@ -2079,6 +2122,9 @@ class TelaConferir(QWidget):
         # troca de novo - com tudo o que a pessoa marcou à mão por cima.
         pagina.guardar_selecao(self.editor_selecao.selecao,
                                provisoria=getattr(self, "_editor_com_a_provisoria", None))
+        # etapa 3 da obra: a marcacao feita aqui e "mexida a mao" (core/etapas)
+        if any(r.origem == "mao" for r in self.editor_selecao.selecao.regioes):
+            etapas_core.marcar_mexida_a_mao(pagina, etapas_core.MARCAR)
         self._mostrar_aviso_da_marcacao(
             self.editor_selecao.selecao.resumo_em_portugues())
         self._avaliar_os_pedacos(pagina)        # conferencia 13, S3
@@ -2251,7 +2297,8 @@ class TelaConferir(QWidget):
         self.caixa_tem_foto.blockSignals(False)
         self.caixa_tem_foto.setEnabled(not desligado)
         self.caixa_tem_foto.setToolTip(
-            "O livro está em \"não procurar\" gravuras e fotos (tela \"O que fazer\")."
+            "O livro está em \"não procurar\" gravuras e fotos (painel Automático, "
+            "etapa Gravuras e fotos)."
             if desligado else
             "Procura a gravura desta página em retângulo, que pega a foto inteira. "
             "Desmarcada, segue o contorno do desenho. O que você marcou à mão continua.")
@@ -2944,7 +2991,10 @@ class TelaConferir(QWidget):
             return
         self.paineis.para_revisar.atualizar(self.projeto)
         self.paineis.para_revisar.definir_pagina_atual(self.indice_pagina)
+        # etapa 3 da obra: o "só nesta página" do Automatico e a da vez
+        self.paineis.automatico.estado.pagina_atual = self.indice_pagina
         self.paineis.automatico.atualizar(self.projeto)
+        self._mostrar_o_aviso_do_livro_novo()
         self.paineis.historico.atualizar(self.acoes)
         pagina = (self.projeto.paginas[self.indice_pagina]
                   if 0 <= self.indice_pagina < len(self.projeto.paginas) else None)
@@ -3814,6 +3864,7 @@ class TelaConferir(QWidget):
         assert self.projeto is not None and self.acoes is not None
         if self._espera_pelas_marcacoes(alvo, indices, campos):
             return
+        campos = self._com_a_marca_mexida_a_mao(alvo, indices, campos)
         acao = montar_acao(self.projeto, tipo, alvo, indices, campos, descricao)
         aplicar(self.projeto, acao, acao.depois)
         self.acoes.registrar(acao)
@@ -3823,6 +3874,43 @@ class TelaConferir(QWidget):
             for indice in afetadas:
                 self.previas.invalidar(indice)
         self.atualizar()
+
+    def _com_a_marca_mexida_a_mao(self, alvo: str, indices: list[int], campos: dict) -> dict:
+        """Os campos da acao com a marca "mexida a mao" (core/etapas) de cada
+        pagina ou folha, na MESMA acao (o desfazer devolve a marca junto).
+
+        Obra de 26/10/2026, etapa 3 (pendencia da etapa 1; D-004: "Automático
+        em livro já mexido à mão: o programa pergunta se quer pular as páginas
+        mexidas."; D-009: o feito a mao vale no PDF com a etapa desligada).
+        Mexer no corte, no angulo, no filtro da pagina (e nos ajustes dele), no
+        mover/tamanho, na divisao/linha ou no giro grava a marca da etapa;
+        "usar o corte/angulo do programa" (o valor volta a None) a tira.
+        Arriscado: tirar isto (o filtro escolhido a mao com "Limpar" desligado
+        nao chegaria ao PDF, e a pergunta do Automatico nao veria a pagina)."""
+        assert self.projeto is not None
+        itens = self.projeto.folhas if alvo == "folha" else self.projeto.paginas
+        tabela = MARCAS_DA_FOLHA if alvo == "folha" else MARCAS_DA_PAGINA
+        mexidas = {etapa for campo, etapa in tabela.items() if campo in campos}
+        if not mexidas:
+            return campos
+        marcas = {}
+        for indice in indices:
+            if not 0 <= indice < len(itens):
+                continue
+            item = itens[indice]
+            lista = list(getattr(item, "mexida_a_mao", []) or [])
+            for campo, etapa in tabela.items():
+                if campo not in campos:
+                    continue
+                valor = campos[campo]
+                if isinstance(valor, dict):
+                    valor = valor.get(str(indice), getattr(item, campo, None))
+                if campo in DEVOLVEM_AO_AUTOMATICO and valor is None:
+                    lista = [m for m in lista if m != etapa]
+                elif etapa not in lista:
+                    lista.append(etapa)
+            marcas[str(indice)] = lista
+        return {**campos, "mexida_a_mao": marcas}
 
     def _paginas_das_folhas(self, folhas: list[int]) -> list[int]:
         assert self.projeto is not None
@@ -4253,12 +4341,238 @@ class TelaConferir(QWidget):
         indices = self._paginas_do_alcance_do_angulo(atual)
         if not indices:
             return
+        campos = self._com_o_retangulo_do_corte(indices, campos)
         if indices == [atual]:
             self._registrar("ajustar_angulo", "pagina", indices,
                             {**campos, "revisada": True}, descricao_de_uma)
         else:
             self._registrar("ajustar_angulo", "pagina", indices, campos,
                             descricao_de_varias.format(n=len(indices)))
+
+    def _jeito_do_retangulo(self, pagina) -> str:
+        """D-094: "fica" ou "acompanha" para esta pagina - a dela, a do livro
+        (Automatico) ou a das Configuracoes (de fabrica "fica", D-093)."""
+        from core.pipeline import RETANGULO_ACOMPANHA, RETANGULO_PADRAO
+
+        jeito = getattr(pagina, "retangulo_do_corte", None) or getattr(
+            self.projeto, "retangulo_do_corte", None)
+        if not jeito:
+            import configuracoes
+
+            jeito = configuracoes.ler("retangulo_do_corte") or RETANGULO_PADRAO
+        return jeito if jeito == RETANGULO_ACOMPANHA else RETANGULO_PADRAO
+
+    def _proporcao_da_pagina(self, pagina) -> float | None:
+        """Largura / altura da pagina girada de 90 e dividida, antes do corte
+        (o que recorte_depois_de_mudar_o_angulo precisa), pelo tamanho da
+        folha no PDF (lido uma vez por livro). None se nao der para saber."""
+        assert self.projeto is not None
+        caminho = self.projeto.caminho_entrada
+        if getattr(self, "_tamanhos_das_folhas", (None,))[0] != caminho:
+            try:
+                from core.pdf_io import abrir_pdf, info_paginas
+
+                doc = abrir_pdf(caminho)
+                try:
+                    tamanhos = [(i.largura_pt, i.altura_pt) for i in info_paginas(doc)]
+                finally:
+                    doc.close()
+            except Exception:  # noqa: BLE001 - sem o tamanho, o corte fica como esta
+                registrar_erro("proporcao da pagina", traceback.format_exc())
+                return None
+            self._tamanhos_das_folhas = (caminho, tamanhos)
+        tamanhos = self._tamanhos_das_folhas[1]
+        if not 0 <= pagina.folha < len(tamanhos):
+            return None
+        largura, altura = tamanhos[pagina.folha]
+        folha = self.projeto.folhas[pagina.folha]
+        if int(folha.rotacao) % 180 == 90:
+            largura, altura = altura, largura
+        if folha.dividir and pagina.metade in ("esquerda", "direita"):
+            parte = folha.posicao_corte if pagina.metade == "esquerda" else 1 - folha.posicao_corte
+            largura *= max(0.05, float(parte))
+        return float(largura) / max(1.0, float(altura))
+
+    def _com_o_retangulo_do_corte(self, indices: list[int], campos: dict) -> dict:
+        """D-093/D-094: com o angulo mudando, o corte a mao de cada pagina vai
+        junto na MESMA acao, se a escolha for "acompanha o texto" (core/
+        pipeline.recorte_depois_de_mudar_o_angulo); "fica no mesmo lugar" (de
+        fabrica) nao muda os numeros do corte."""
+        from core.pipeline import RETANGULO_ACOMPANHA, angulo_da_pagina, recorte_depois_de_mudar_o_angulo
+
+        if "angulo_manual" not in campos or self.projeto is None:
+            return campos
+        novos = {}
+        for indice in indices:
+            pagina = self.projeto.paginas[indice]
+            if pagina.recorte is None or self._jeito_do_retangulo(pagina) != RETANGULO_ACOMPANHA:
+                continue
+            antes = pagina.angulo_manual if pagina.angulo_manual is not None else (
+                angulo_da_pagina(self.projeto, pagina) or 0.0)
+            depois = campos["angulo_manual"]
+            if isinstance(depois, dict):
+                depois = depois.get(str(indice))
+            recorte = recorte_depois_de_mudar_o_angulo(
+                self.projeto, pagina, antes, depois, RETANGULO_ACOMPANHA,
+                self._proporcao_da_pagina(pagina))
+            if recorte is not None and tuple(recorte) != tuple(pagina.recorte):
+                novos[str(indice)] = [round(float(v), 6) for v in recorte]
+        if not novos:
+            return campos
+        return {**campos, "recorte": novos}
+
+    def _mudar_retangulo_da_pagina(self) -> None:
+        """A lista "Quando o ângulo muda, o corte desta página" (D-094, a
+        escolha "na página"). Uma acao do desfazer."""
+        if self._carregando or not self._pronta() or self.projeto is None:
+            return
+        pagina = self.projeto.paginas[self.indice_pagina]
+        valor = self.combo_retangulo_da_pagina.currentData()
+        if getattr(pagina, "retangulo_do_corte", None) == valor:
+            return
+        nomes = {None: "segue o livro", "fica": "fica no mesmo lugar",
+                 "acompanha": "acompanha o texto"}
+        self._registrar("retangulo_do_corte", "pagina", [self.indice_pagina],
+                        {"retangulo_do_corte": valor},
+                        f"Página {self.indice_pagina + 1}: o corte {nomes.get(valor, valor)} "
+                        "quando o ângulo muda")
+
+    # --- etapa 3 da obra: o aviso do livro novo (D-005) e a grade (D-334) ---
+
+    def _montar_aviso_do_livro_novo(self) -> QWidget:
+        """A faixa embaixo da pagina do livro que ainda nao passou pelo
+        automatico. Decisao do Samuel (R13 804, 12/10/2026): "B — Um aviso
+        embaixo da página", com "Rodar o automático…" e "agora não". O
+        "Rodar..." abre a janela grande com a receita de sempre marcada (D-018,
+        escolha da gerente); "agora não" some com o aviso deste livro."""
+        faixa = QFrame()
+        faixa.setObjectName("avisoDoLivroNovo")
+        faixa.setAttribute(Qt.WA_StyledBackground, True)
+        faixa.setSizePolicy(QSizePolicy.Preferred, QSizePolicy.Maximum)
+        linha = QHBoxLayout(faixa)
+        linha.setContentsMargins(14, 5, 10, 5)
+        linha.setSpacing(8)
+        self.texto_do_livro_novo = QLabel("Livro novo: ainda não passou pelo automático.")
+        self.texto_do_livro_novo.setWordWrap(True)
+        linha.addWidget(self.texto_do_livro_novo, 1)
+        self.botao_rodar_do_aviso = QPushButton("Rodar o automático…")
+        self.botao_rodar_do_aviso.setObjectName("acaoPrimaria")
+        self.botao_rodar_do_aviso.setToolTip(
+            "Abre o Automático com a receita de sempre marcada. Nada muda até você clicar em Rodar.")
+        _ligar(self.botao_rodar_do_aviso, lambda: self.rodar_do_aviso_pedido.emit())
+        self.botao_agora_nao = QPushButton("agora não")
+        self.botao_agora_nao.setToolTip("Some com este aviso. O Automático continua no ícone da direita.")
+        _ligar(self.botao_agora_nao, self._agora_nao)
+        for botao in (self.botao_rodar_do_aviso, self.botao_agora_nao):
+            botao.setCursor(Qt.PointingHandCursor)
+            botao.setFocusPolicy(Qt.NoFocus)
+            linha.addWidget(botao)
+        estilo.estilizar(faixa, lambda: (
+            f"QFrame#avisoDoLivroNovo {{ background: {estilo.cor('sel')};"
+            f" border-top: 1px solid {estilo.cor('azul')}; }}"))
+        faixa.setVisible(False)
+        self.aviso_do_livro_novo = faixa
+        return faixa
+
+    def _mostrar_o_aviso_do_livro_novo(self) -> None:
+        """O aviso aparece enquanto o livro nao passou pelo automatico."""
+        mostrar = bool(self.projeto is not None
+                       and not getattr(self.projeto, "passou_pelo_automatico", True))
+        if self.aviso_do_livro_novo.isVisible() != mostrar:
+            self.aviso_do_livro_novo.setVisible(mostrar)
+
+    def _agora_nao(self) -> None:
+        """"agora não": o aviso some deste livro (fica gravado; o Automatico
+        continua no icone da direita). Escolha da gerente (D-014): nao volta a
+        cada abertura, para nao incomodar."""
+        if self.projeto is None:
+            return
+        self.projeto.passou_pelo_automatico = True
+        self._mostrar_o_aviso_do_livro_novo()
+        self.trabalho_mudou.emit()
+
+    def abrir_para_escolher(self, escolhidas: list[int]) -> None:
+        """O "escolher páginas..." do Automatico: a grade "Todas as páginas"
+        no jeito de escolher (rodada 2: "Escolher folhas abrindo a tela de
+        todas as páginas (marcar/desmarcar)"). A volta e escolha_pronta."""
+        self.abrir_todas_as_paginas()
+        if self.pilha_da_tela.currentWidget() is self.todas:
+            self.todas.comecar_a_escolher(escolhidas, para_o_automatico=True)
+
+    def _escolha_pronta(self, escolhidas: list) -> None:
+        """A grade devolveu as paginas escolhidas para o Automatico."""
+        self.pilha_da_tela.setCurrentWidget(self.trabalho)
+        self.escolhidas_para_o_automatico.emit(list(escolhidas))
+
+    def _acao_nas_escolhidas(self, acao: str, indices: list) -> None:
+        """As acoes da grade nas paginas escolhidas (D-334, como o "Organizar
+        páginas" do UPDF): girar, deixar em branco, tirar do livro, trazer de
+        volta, extrair e rodar o automatico. Cada uma numa acao so do desfazer."""
+        from core.girar import GIRO_DIREITA, GIRO_ESQUERDA
+
+        if self.projeto is None or not indices:
+            return
+        indices = sorted(i for i in set(int(i) for i in indices)
+                         if 0 <= i < len(self.projeto.paginas))
+        n = len(indices)
+        plural = "página" if n == 1 else "páginas"
+        if acao in ("girar_esquerda", "girar_direita"):
+            giro = GIRO_ESQUERDA if acao == "girar_esquerda" else GIRO_DIREITA
+            folhas = sorted({self.projeto.paginas[i].folha for i in indices})
+            novos = {str(f): (int(self.projeto.folhas[f].rotacao) + giro) % 360 for f in folhas}
+            self._registrar("girar", "folha", folhas, {"rotacao": novos},
+                            f"Girar {len(folhas)} folha" + ("" if len(folhas) == 1 else "s")
+                            + " (escolhidas em Todas as páginas)")
+        elif acao == "em_branco":
+            self._registrar("em_branco", "pagina", indices, {"em_branco": True, "revisada": True},
+                            f"Deixar em branco {n} {plural}")
+        elif acao == "tirar":
+            self._registrar("apagar", "pagina", indices, {"apagada": True, "revisada": True},
+                            f"Tirar do livro {n} {plural}")
+        elif acao == "trazer":
+            self._registrar("restaurar", "pagina", indices, {"apagada": False, "em_branco": False},
+                            f"Trazer de volta {n} {plural}")
+        elif acao == "extrair":
+            self._extrair(indices)
+            return
+        elif acao == "automatico":
+            self.pilha_da_tela.setCurrentWidget(self.trabalho)
+            self.escolhidas_para_o_automatico.emit(indices)
+            return
+        self.abrir_todas_as_paginas()
+        self.todas.comecar_a_escolher(indices)
+
+    def _extrair(self, indices: list[int]) -> None:
+        """"Extrair": as folhas das paginas escolhidas, como estao no PDF de
+        entrada (sem os ajustes), num PDF novo (o "Extrair" do UPDF)."""
+        from ui.dialogos_de_arquivo import escolher_onde_salvar_pdf
+
+        assert self.projeto is not None
+        folhas = sorted({self.projeto.paginas[i].folha for i in indices})
+        sugestao = str(Path(self.projeto.caminho_entrada).with_name(
+            Path(self.projeto.caminho_entrada).stem + " - páginas escolhidas.pdf"))
+        destino = escolher_onde_salvar_pdf(self, "Extrair as páginas escolhidas", sugestao)
+        if not destino:
+            return
+        try:
+            import fitz
+
+            with fitz.open(self.projeto.caminho_entrada) as doc, fitz.open() as novo:
+                for folha in folhas:
+                    novo.insert_pdf(doc, from_page=folha, to_page=folha)
+                novo.save(str(destino))
+        except Exception:  # noqa: BLE001 - erro vira aviso, nunca fecha a janela
+            registrar_erro("extrair paginas", traceback.format_exc())
+            self._avisar("Não consegui gravar o PDF com as páginas escolhidas. "
+                         "Confira se a pasta aceita gravação.")
+            return
+        self._avisar(f"Gravei {len(folhas)} folha" + ("" if len(folhas) == 1 else "s")
+                     + f" do livro, como estão no PDF de entrada, em:\n{destino}")
+
+    def _avisar(self, texto: str) -> None:
+        janela = self.window()
+        if janela is not self and hasattr(janela, "avisar"):
+            janela.avisar(texto)
 
     @protegido
     def _mover_angulo(self, angulo: float) -> None:
@@ -4345,7 +4659,13 @@ class TelaConferir(QWidget):
         assert self.projeto is not None
         pagina = self.projeto.paginas[self.indice_pagina]
         es = endireitar_scantailor
-        automatico = bool(self.projeto.endireitar) and pagina.angulo_manual is None
+        # etapa 3 da obra: o automatico do livro OU so desta pagina (core/etapas)
+        automatico = etapas_core.endireita_sozinho(self.projeto, pagina) and pagina.angulo_manual is None
+        if hasattr(self, "combo_retangulo_da_pagina"):        # D-094, a escolha da pagina
+            self.combo_retangulo_da_pagina.blockSignals(True)
+            self.combo_retangulo_da_pagina.setCurrentIndex(max(0, self.combo_retangulo_da_pagina.findData(
+                getattr(pagina, "retangulo_do_corte", None))))
+            self.combo_retangulo_da_pagina.blockSignals(False)
         self.combo_conta_do_endireitar.blockSignals(True)
         self.combo_conta_do_endireitar.setCurrentIndex(self.combo_conta_do_endireitar.findData(
             es.jeito_da_pagina(self.projeto, pagina)))
@@ -5547,6 +5867,22 @@ class TelaConferir(QWidget):
     # --- desfazer / refazer -----------------------------------------------
 
     @protegido
+    def lista_de_paginas_mudou(self) -> None:
+        """A lista de paginas (ou de folhas) pode ter mudado por baixo da tela
+        (o Automatico dividiu folhas que tinham uma pagina so, ou o desfazer
+        disso): a pagina da vez fica dentro do livro, a tira e remontada (so
+        se o conjunto mudou: _montar_tira) e a tela se redesenha. Etapa 3 da
+        obra. Barato quando nada mudou."""
+        if self.projeto is None:
+            return
+        total = len(self.projeto.paginas)
+        if total and not 0 <= self.indice_pagina < total:
+            self.indice_pagina = total - 1
+        if total:
+            self.indice_folha = self.projeto.paginas[self.indice_pagina].folha
+        self._montar_tira()
+        self.atualizar()
+
     def desfazer(self) -> None:
         if self.acoes is None or self.projeto is None:
             return
@@ -5556,7 +5892,7 @@ class TelaConferir(QWidget):
         if self.acoes.desfazer(self.projeto) is not None:
             if self.previas is not None:
                 self.previas.invalidar()
-            self.atualizar()
+            self.lista_de_paginas_mudou()      # etapa 3: o Automatico muda a lista
             self._reacertar_as_opcoes()
 
     @protegido
@@ -5569,7 +5905,7 @@ class TelaConferir(QWidget):
         if self.acoes.refazer(self.projeto) is not None:
             if self.previas is not None:
                 self.previas.invalidar()
-            self.atualizar()
+            self.lista_de_paginas_mudou()      # etapa 3: o Automatico muda a lista
             self._reacertar_as_opcoes()
 
     def _reacertar_as_opcoes(self) -> None:
@@ -5579,15 +5915,17 @@ class TelaConferir(QWidget):
         "Tirar o fundo"). O menu Editar desfaz em qualquer tela, inclusive com
         "O que fazer" a vista; escondida, ela se reacerta sozinha ao aparecer
         (ui/tela_opcoes.showEvent). Nunca levanta excecao."""
+        # Etapa 3 da obra: a tela "O que fazer" saiu do caminho; o que mostra
+        # as escolhas do livro e o painel Automatico, que a atualizacao
+        # (atualizar -> _atualizar_paineis) ja acerta. Fica so o aviso do
+        # livro novo, que depende do projeto.
         try:
-            from ui.tela_opcoes import TelaOpcoes
-
-            janela = self.window()
-            if janela is None or janela is self:
-                return
-            for tela in janela.findChildren(TelaOpcoes):
-                if tela.projeto is self.projeto and tela.isVisible():
-                    tela.mostrar_opcoes()
+            self._mostrar_o_aviso_do_livro_novo()
+            # o Automatico mostra o que o livro tem depois do desfazer (as
+            # etapas ligadas, o filtro do livro...): como a tela "O que fazer"
+            # acompanhava o desfazer (verificador, 30/09, r15)
+            if self.projeto is not None:
+                self.paineis.automatico.estado.do_projeto(self.projeto)
         except Exception:  # noqa: BLE001 - reacertar a tela nunca derruba o desfazer
             registrar_erro("reacertar as opcoes", traceback.format_exc())
 
@@ -5618,7 +5956,7 @@ class TelaConferir(QWidget):
         # senao roubariam Ctrl+O e Ctrl+Z de quem espera abrir e desfazer.
         if not ctrl:
             letra = evento.text().upper()
-            ferramenta = ferramenta_da_tecla(letra)
+            ferramenta = ferramenta_da_tecla(letra) or ferramenta_da_pagina_da_tecla(letra)
             if ferramenta is not None:
                 self.escolher_ferramenta(ferramenta)
                 return True
@@ -5861,3 +6199,44 @@ def texto_dos_angulos_medidos(medidas: dict | None) -> str:
     if medidas.get("discordam"):
         texto += "  (discordam)"
     return texto
+
+
+# --- obra de 26/10/2026, etapa 3: a marca "mexida a mao" (core/etapas) --------
+# Qual campo da pagina (ou da folha), mexido pela tela, marca qual etapa. Ver
+# TelaConferir._com_a_marca_mexida_a_mao. Seguro mudar: acrescentar campo novo
+# que a pessoa muda a mao. Arriscado: tirar um (a edicao deixaria de valer com
+# a etapa desligada, D-009, e a pergunta do Automatico, D-004, nao a veria).
+MARCAS_DA_PAGINA = {
+    "recorte": etapas_core.CORTAR,
+    "angulo_manual": etapas_core.ENDIREITAR,
+    "filtro": etapas_core.FILTRO, "forca_preto": etapas_core.FILTRO,
+    "clareza_melhorar": etapas_core.FILTRO, "intensidade_magico": etapas_core.FILTRO,
+    "algoritmo_preto_branco": etapas_core.FILTRO, "limpar_pontinhos": etapas_core.FILTRO,
+    "misto_so_as_letras": etapas_core.FILTRO, "misto_fora_do_texto": etapas_core.FILTRO,
+    "misto_papel_da_gravura": etapas_core.FILTRO, "misto_letras_na_moldura": etapas_core.FILTRO,
+    "luz_igualar": etapas_core.FILTRO, "luz_suavizar": etapas_core.FILTRO,
+    "luz_chuvisco": etapas_core.FILTRO, "claro_no_escuro": etapas_core.FILTRO,
+    "letras_com_a_cor": etapas_core.FILTRO, "reduzir_cores": etapas_core.FILTRO,
+    "selecao": etapas_core.MARCAR,
+    "conteudo_escala": etapas_core.MOVER, "conteudo_deslocamento": etapas_core.MOVER,
+    "tamanho_folha_cm": etapas_core.MOVER,
+}
+MARCAS_DA_FOLHA = {
+    "dividir": etapas_core.DIVIDIR, "posicao_corte": etapas_core.DIVIDIR,
+    "dividir_como": etapas_core.DIVIDIR,
+    "rotacao": etapas_core.GIRAR,
+}
+# Campos que, voltando a None, devolvem a etapa ao automatico ("usar o corte do
+# programa", "usar o ângulo do programa"): a marca sai.
+DEVOLVEM_AO_AUTOMATICO = ("recorte", "angulo_manual")
+
+
+def _nome_do_retangulo(projeto) -> str:
+    """D-094: a escolha do livro para o corte quando o angulo muda, em
+    portugues (a parte "Para o livro todo" do Endireitar)."""
+    jeito = getattr(projeto, "retangulo_do_corte", None)
+    if jeito == "acompanha":
+        return "acompanha o texto"
+    if jeito == "fica":
+        return "fica no mesmo lugar"
+    return "o das Configurações"

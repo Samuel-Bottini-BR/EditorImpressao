@@ -18,6 +18,20 @@ O QUE FAZ
     tem uns 60 KB, umas 18 MB num livro de 300 folhas. A tela nunca espera por elas (quadro cinza
     até chegar).
 
+VÁRIAS ESCOLHIDAS (obra de 26/10/2026, etapa 3; D-334, 24/09: "Ver todas as páginas do livro em
+    grade, como o 'Organizar páginas' do UPDF: seleção múltipla, girar, apagar, extrair, inserir,
+    dividir."; rodada 2: "Escolher folhas abrindo a tela de todas as páginas (marcar/desmarcar)")
+    Na área de trabalho (com_escolha=True) cada quadro tem o quadradinho de marcar no canto (a
+    pista visual de que se marca ali). Clicar no quadradinho, ou Ctrl+clique, marca e desmarca;
+    Shift+clique marca do último marcado até ali; "marcar várias" faz o clique comum marcar. A
+    faixa de cima diz quantas estão escolhidas e faz nelas: girar, deixar em branco, tirar do
+    livro, trazer de volta, extrair (as folhas como estão no PDF de entrada, num PDF novo) e
+    "rodar o automático nelas". Quem faz é a tela de trabalho (acao_nas_escolhidas), cada ação
+    numa só do desfazer. O "escolher páginas..." do Automático abre a grade no jeito de escolher
+    (comecar_a_escolher(para_o_automatico=True)): o clique comum marca, e "usar estas N páginas"
+    devolve a escolha (escolha_pronta). "Inserir" página de outro PDF e "dividir" daqui não
+    existem: o livro é feito de um PDF só (ressalva no ONDE-PAREI da etapa 3).
+
 Seguro mudar: tamanhos e textos. Arriscado: desenhar as páginas no fio da tela (trava a janela
 num livro grande).
 """
@@ -140,14 +154,21 @@ def _reduzir_para_a_tela(pix: QPixmap, tamanho: QSize, pintor: QPainter) -> QPix
     return escalado
 
 
+# o quadradinho de marcar, no canto de cima à esquerda do desenho (pontos)
+LADO_DA_MARCA = 18
+
+
 class _Quadro(QFrame):
     """Uma página (ou um par) na grade: o desenho e a legenda."""
 
     clicado = Signal(int)
+    marcado = Signal(int, bool)     # índice, com Shift (marcar do último até aqui)
 
     def __init__(self, itens: list[ItemDaGrade], atual: bool, em_pares: bool = False,
-                 parent=None) -> None:
+                 parent=None, com_escolha: bool = False, escolhida: bool = False) -> None:
         super().__init__(parent)
+        self.com_escolha = com_escolha
+        self.escolhida = escolhida
         self.itens = itens
         self.pixmaps: list[QPixmap | None] = [None] * len(itens)
         self.atual = atual
@@ -226,7 +247,34 @@ class _Quadro(QFrame):
                 pintor.fillRect(alvo, QColor(255, 255, 255, 170))
                 pintor.setPen(QColor("#B91C1C"))
                 pintor.drawText(alvo, Qt.AlignCenter, "apagada")
-        if self.motivo:
+        if self.com_escolha:
+            # etapa 3 da obra: o quadradinho de marcar (a pista de que se marca
+            # aqui) e, escolhida, o véu azul por cima da página
+            marca = QRect(6, 6, LADO_DA_MARCA, LADO_DA_MARCA)
+            if self.escolhida:
+                azul = QColor(estilo.cor("azul"))
+                veu = QColor(azul)
+                veu.setAlpha(45)
+                pintor.fillRect(self.desenho.rect().adjusted(3, 3, -4, -4), veu)
+                pintor.fillRect(marca, azul)
+                caneta = pintor.pen()
+                caneta.setColor(QColor("#FFFFFF"))
+                caneta.setWidth(2)
+                pintor.setPen(caneta)
+                pintor.drawLine(marca.left() + 4, marca.center().y(), marca.center().x() - 1,
+                                marca.bottom() - 4)
+                pintor.drawLine(marca.center().x() - 1, marca.bottom() - 4, marca.right() - 3,
+                                marca.top() + 4)
+            else:
+                pintor.fillRect(marca, QColor(255, 255, 255, 200))
+                caneta = pintor.pen()
+                caneta.setColor(QColor(estilo.cor("fraco")))
+                caneta.setWidth(1)
+                pintor.setPen(caneta)
+                pintor.drawRect(marca)
+        if self.escolhida:
+            cor, grossura = QColor(estilo.cor("azul")), 3
+        elif self.motivo:
             cor, grossura = QColor(estilo.cor("aviso")), 3
         elif self.atual:
             cor, grossura = QColor(estilo.cor("azul")), 3
@@ -240,7 +288,16 @@ class _Quadro(QFrame):
         pintor.end()
 
     def mousePressEvent(self, evento) -> None:  # noqa: N802 - nome do Qt
-        if evento.button() == Qt.LeftButton:
+        if evento.button() != Qt.LeftButton:
+            return
+        teclas = evento.modifiers()
+        no_quadradinho = False
+        if self.com_escolha:
+            ponto = self.desenho.mapFrom(self, evento.position().toPoint())
+            no_quadradinho = QRect(2, 2, LADO_DA_MARCA + 8, LADO_DA_MARCA + 8).contains(ponto)
+        if self.com_escolha and (no_quadradinho or teclas & (Qt.ControlModifier | Qt.ShiftModifier)):
+            self.marcado.emit(self.itens[0].indice, bool(teclas & Qt.ShiftModifier))
+        else:
             self.clicado.emit(self.itens[0].indice)
 
 
@@ -249,9 +306,19 @@ class TodasAsPaginas(QWidget):
 
     ir_para = Signal(int)          # o índice da página clicada
     voltar = Signal()
+    # etapa 3 da obra (D-334): ação nas escolhidas ("girar_esquerda", "girar_direita",
+    # "em_branco", "tirar", "trazer", "extrair", "automatico") e a escolha pronta do
+    # "escolher páginas..." do Automático
+    acao_nas_escolhidas = Signal(str, list)
+    escolha_pronta = Signal(list)
 
-    def __init__(self, parent=None) -> None:
+    def __init__(self, parent=None, com_escolha: bool = False) -> None:
         super().__init__(parent)
+        self.com_escolha = com_escolha
+        self.escolhidas: set[int] = set()
+        self.escolhendo = False            # o clique comum marca (em vez de ir à página)
+        self.para_o_automatico = False
+        self._ultima_marcada: int | None = None
         self.setObjectName("todasAsPaginas")
         self.setAttribute(Qt.WA_StyledBackground, True)
         self.vista = UMA_A_UMA
@@ -297,6 +364,8 @@ class TodasAsPaginas(QWidget):
         self.botao_voltar.clicked.connect(lambda: self.voltar.emit())
         linha.addWidget(self.botao_voltar)
         fora.addWidget(alto)
+        if com_escolha:
+            fora.addWidget(self._montar_faixa_da_escolha())
 
         self.rolagem = QScrollArea()
         self.rolagem.setWidgetResizable(True)
@@ -320,6 +389,136 @@ class TodasAsPaginas(QWidget):
         self._colunas = 0
         self._acertar_as_chaves()
 
+    # --- etapa 3 da obra: várias escolhidas (D-334) -----------------------------
+
+    def _montar_faixa_da_escolha(self) -> QFrame:
+        """A faixa de cima com quantas estão escolhidas e o que fazer nelas."""
+        faixa = QFrame()
+        faixa.setObjectName("faixaDaEscolha")
+        faixa.setAttribute(Qt.WA_StyledBackground, True)
+        linha = QHBoxLayout(faixa)
+        linha.setContentsMargins(14, 5, 14, 5)
+        linha.setSpacing(6)
+        self.botao_marcar_varias = QPushButton("marcar várias")
+        self.botao_marcar_varias.setObjectName("chaveDasTodas")
+        self.botao_marcar_varias.setCheckable(True)
+        self.botao_marcar_varias.setToolTip("Ligado, o clique numa página marca ou desmarca "
+                                            "(sem ele: o quadradinho do canto, ou Ctrl+clique).")
+        self.botao_marcar_varias.toggled.connect(self._marcar_varias)
+        linha.addWidget(self.botao_marcar_varias)
+        self.rotulo_escolhidas = QLabel("")
+        linha.addWidget(self.rotulo_escolhidas)
+        self.botoes_da_escolha: dict[str, QPushButton] = {}
+
+        def botao(chave: str, texto: str, dica: str, acao) -> QPushButton:
+            b = QPushButton(texto)
+            b.setToolTip(dica)
+            b.setCursor(Qt.PointingHandCursor)
+            b.clicked.connect(lambda _c=False: acao())
+            linha.addWidget(b)
+            self.botoes_da_escolha[chave] = b
+            return b
+
+        botao("todas", "todas", "Marca todas as páginas que estão à vista.", self.escolher_todas)
+        botao("nenhuma", "nenhuma", "Desmarca todas.", self.escolher_nenhuma)
+        for chave, texto, dica in (
+                ("girar_esquerda", "girar ¼ ←", "Gira as folhas das páginas escolhidas ¼ à esquerda."),
+                ("girar_direita", "girar ¼ →", "Gira as folhas das páginas escolhidas ¼ à direita."),
+                ("em_branco", "deixar em branco", "As escolhidas saem como folha branca (a "
+                 "encadernação não muda)."),
+                ("tirar", "tirar do livro", "As escolhidas saem do PDF final."),
+                ("trazer", "trazer de volta", "Traz de volta as escolhidas (tiradas ou em branco)."),
+                ("extrair", "extrair...", "Grava as folhas das escolhidas, como estão no PDF de "
+                 "entrada, num PDF novo."),
+                ("automatico", "rodar o automático nelas...", "Abre o Automático para rodar só "
+                 "nas páginas escolhidas.")):
+            botao(chave, texto, dica, lambda c=chave: self._pedir(c))
+        self.rotulo_para_o_automatico = QLabel("Marque as páginas em que o automático vai rodar.")
+        linha.addWidget(self.rotulo_para_o_automatico)
+        linha.addStretch()
+        self.botao_usar = botao("usar", "usar estas páginas", "Volta ao Automático com estas páginas.",
+                                self._usar_as_escolhidas)
+        self.botao_usar.setObjectName("primario")
+        self.botao_cancelar_escolha = botao("cancelar", "cancelar", "Volta sem mudar a escolha.",
+                                            lambda: self.voltar.emit())
+        self.faixa_da_escolha = faixa
+        return faixa
+
+    def comecar_a_escolher(self, escolhidas, para_o_automatico: bool = False) -> None:
+        """Abre no jeito de escolher, com `escolhidas` já marcadas.
+        para_o_automatico: o "escolher páginas..." do Automático (o clique
+        comum marca; "usar estas páginas" devolve a escolha)."""
+        self.escolhidas = set(int(i) for i in escolhidas)
+        self.para_o_automatico = bool(para_o_automatico)
+        self.escolhendo = self.para_o_automatico or self.escolhendo
+        self._montar()
+
+    def _marcar_varias(self, ligado: bool) -> None:
+        self.escolhendo = bool(ligado) or self.para_o_automatico
+        self._acertar_a_escolha()
+
+    def marcar(self, indice: int, com_shift: bool = False) -> None:
+        """Marca ou desmarca a página (e o par dela, em pares). Com Shift,
+        marca do último marcado até ela."""
+        grupo = next((g for g in self._grupos() if any(i.indice == indice for i in g)), None)
+        indices = [i.indice for i in grupo] if grupo else [indice]
+        if com_shift and self._ultima_marcada is not None:
+            de, ate = sorted((self._ultima_marcada, indice))
+            self.escolhidas.update(i.indice for i in self.itens if de <= i.indice <= ate)
+        elif all(i in self.escolhidas for i in indices):
+            self.escolhidas.difference_update(indices)
+        else:
+            self.escolhidas.update(indices)
+        self._ultima_marcada = indice
+        for quadro in self.quadros:
+            quadro.escolhida = any(i.indice in self.escolhidas for i in quadro.itens)
+            quadro.desenho.update()
+        self._acertar_a_escolha()
+
+    def escolher_todas(self) -> None:
+        for grupo in self._grupos():
+            self.escolhidas.update(i.indice for i in grupo)
+        self._montar()
+
+    def escolher_nenhuma(self) -> None:
+        self.escolhidas.clear()
+        self._montar()
+
+    def _pedir(self, acao: str) -> None:
+        if self.escolhidas:
+            self.acao_nas_escolhidas.emit(acao, sorted(self.escolhidas))
+
+    def _usar_as_escolhidas(self) -> None:
+        self.para_o_automatico = False
+        self.escolhendo = self.botao_marcar_varias.isChecked() if self.com_escolha else False
+        self.escolha_pronta.emit(sorted(self.escolhidas))
+
+    def _clicou(self, indice: int) -> None:
+        """Clique comum: no jeito de escolher, marca; senão, vai à página."""
+        if self.com_escolha and self.escolhendo:
+            self.marcar(indice)
+        else:
+            self.ir_para.emit(indice)
+
+    def _acertar_a_escolha(self) -> None:
+        if not self.com_escolha:
+            return
+        n = len(self.escolhidas)
+        self.rotulo_escolhidas.setText(f"{n} escolhida" + ("" if n == 1 else "s"))
+        auto = self.para_o_automatico
+        for chave, b in self.botoes_da_escolha.items():
+            if chave in ("usar", "cancelar"):
+                b.setVisible(auto)
+            elif chave in ("todas", "nenhuma"):
+                b.setVisible(True)
+            else:
+                b.setVisible(not auto)
+                b.setEnabled(n > 0)
+        self.botao_usar.setText(f"usar estas {n} páginas" if n != 1 else "usar esta página")
+        self.botao_usar.setEnabled(n > 0)
+        self.rotulo_para_o_automatico.setVisible(auto)
+        self.botao_marcar_varias.setVisible(not auto)
+
     # --- desenho -------------------------------------------------------------
 
     def _folha(self) -> str:
@@ -331,7 +530,8 @@ class TodasAsPaginas(QWidget):
                 f" border-top: 1px solid {c('linha')}; font-size: 12px; }}"
                 f"QPushButton#chaveDasTodas {{ padding: 4px 12px; }}"
                 f"QPushButton#chaveDasTodas:checked {{ background: {c('sel')}; border: 1px solid {c('azul')};"
-                f" color: {c('forte')}; }}")
+                f" color: {c('forte')}; }}"
+                f"QFrame#faixaDaEscolha {{ background: {c('cabeca')}; border-bottom: 1px solid {c('linha')}; }}")
 
     def _chave(self, texto: str, acao) -> QPushButton:
         botao = QPushButton(texto)
@@ -372,6 +572,10 @@ class TodasAsPaginas(QWidget):
         self.metade = metade
         self.vista = UMA_A_UMA
         self.so_atencao = False
+        # a grade abre sem nada escolhido e no jeito de ir à página (etapa 3)
+        self.escolhidas = {i for i in self.escolhidas if 0 <= i < len(self.itens)} \
+            if self.escolhendo else set()
+        self.para_o_automatico = False
         self._montar()
         # primeiro as folhas perto da página da vez (num livro de 750 folhas, as de
         # perto da 300 esperavam as 299 de antes, 22/10/2026), depois as outras
@@ -427,8 +631,10 @@ class TodasAsPaginas(QWidget):
         self.quadros = []
         for grupo in self._grupos():
             quadro = _Quadro(grupo, any(i.indice == self.atual for i in grupo),
-                             em_pares=self.vista == EM_PARES)
-            quadro.clicado.connect(self.ir_para)
+                             em_pares=self.vista == EM_PARES, com_escolha=self.com_escolha,
+                             escolhida=any(i.indice in self.escolhidas for i in grupo))
+            quadro.clicado.connect(self._clicou)
+            quadro.marcado.connect(self.marcar)
             self.quadros.append(quadro)
             for n, item in enumerate(grupo):
                 pix = self._pixmap_da_pagina(item)
@@ -438,6 +644,7 @@ class TodasAsPaginas(QWidget):
         self._colunas = 0
         self._arrumar()
         self._acertar_as_chaves()
+        self._acertar_a_escolha()
 
     def _arrumar(self) -> None:
         """Põe os quadros na grade, com quantas colunas couberem na largura."""

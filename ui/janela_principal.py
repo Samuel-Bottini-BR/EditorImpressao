@@ -1,6 +1,21 @@
 """A janela e o fluxo entre as telas.
 
-Inicio -> Opcoes -> (análise) -> Conferir -> (processamento) -> Pronto
+Inicio -> Conferir (a area de trabalho) -> (processamento) -> Pronto
+
+OBRA DE 26/10/2026, ETAPA 3 (decisoes do Samuel; ONDE-PAREI em relatorios/obra-etapa3/):
+  D-002 (25/09) + Kaique (22/09): "Essa pagina não era mais para aparecer – nós tínhamos que
+  abrir direto na área de trabalho". O livro abre DIRETO na area de trabalho: a tela "Marque o
+  que você quer fazer" (ui/tela_opcoes.py) saiu do caminho. Livro novo: a passada leve (uma
+  folha por pagina do PDF, nada medido, a pagina como veio: "sempre abre em Original, sem
+  mexer", 29/09) e a medida do livro por tras, que so guarda os avisos (D-284). Livro com
+  trabalho salvo: o trabalho volta COMO ESTA, sem analise nova por cima (era o defeito de 29/09:
+  o salvo voltava por cima da analise e as opcoes mudadas se perdiam; teste do Kaique de 26/10,
+  tarefas 7 e 8).
+  O automatico roda quando a pessoa pede, pelo painel Automatico ou pela janela grande
+  (ui/automatico.py): rodar_o_automatico mede por tras (ui/tarefas.TarefaAutomatico) e grava no
+  projeto aberto, numa acao do Historico (core/automatico.aplicar), depois de perguntar se pula
+  as paginas mexidas a mao (D-004). Livro novo mostra o aviso "Livro novo: ainda não passou pelo
+  automático" (D-005), cujo "Rodar o automático…" abre a janela com a receita de sempre (D-018).
 
 Item 1.1 (29/09/2026): ao abrir pela primeira vez um livro com camadas
 (Internet Archive), a janela pergunta "Este livro tem fundo separado. Quer
@@ -20,27 +35,24 @@ import configuracoes
 import historico
 import projetos
 from core.camadas import pdf_tem_camadas
-from core.misto import CAMPOS_DO_MISTO
+from core.filtros import TIRAR_FUNDO
 from core.pdf_io import ErroPDF, abrir_pdf, info_paginas
-from core.pipeline import (
-    CAMPOS_DA_GRAVURA,
-    acertar_alertas_do_fundo,
-    aviso_das_opcoes_da_gravura,
-    trazer_divisao_da_analise,
-    trocar_opcoes_da_gravura,
-)
+from core.pipeline import acertar_alertas_do_fundo, aviso_das_opcoes_da_gravura
 from historico_acoes import HistoricoAcoes
 from modelos import Projeto
 from registro import registrar_erro
 from ui import estilo
-from ui.tarefas import (GerenciadorPrevias, TarefaAnalise, TarefaConverterZonas, TarefaMedirOLivro,
-                        TarefaProcessar)
+from ui.tarefas import (GerenciadorPrevias, TarefaAutomatico, TarefaConverterZonas,
+                        TarefaMedirAoAbrir, TarefaMedirOLivro, TarefaProcessar)
 from ui.tela_conferir import TelaConferir
 from ui.tela_final import TelaFinal, TelaProgresso
 from ui.tela_inicio import TelaInicio
-from ui.tela_opcoes import TelaOpcoes
 
-INICIO, OPCOES, PROGRESSO, CONFERIR, FINAL = range(5)
+INICIO, PROGRESSO, CONFERIR, FINAL = range(4)
+# A tela "O que fazer" saiu do caminho na etapa 3 da obra (D-002): o indice
+# nao existe mais. O nome fica para quem ainda o importa (nenhuma tela tem
+# este indice). Arriscado: voltar a por a tela no meio do abrir.
+OPCOES = -1
 
 # Quantos livros o menu Arquivo > "Livros recentes" mostra (os mais mexidos
 # por ultimo). Seguro mudar.
@@ -98,24 +110,20 @@ class JanelaPrincipal(QMainWindow):
         # recomecou por cima de um projeto salvo (projetos.
         # guardar_copia_do_trabalho); None se nao houve copia.
         self.copia_do_trabalho = None
-        # O projeto em memoria e o trabalho de verdade (voltou de
-        # _analise_pronta)? False entre abrir o livro (ou disparar uma nova
-        # analise) e o fim da analise: nesse intervalo o projeto em memoria
-        # esta vazio ou pela metade, e gravar por cima de um trabalho salvo o
-        # apagaria (bug grave de 29/09/2026; ver _salvar_agora).
+        # O projeto em memoria e o trabalho de verdade (abriu na area de
+        # trabalho, _abrir_o_trabalho)? False so no instante entre comecar a
+        # abrir um livro e ele abrir: gravar nesse intervalo por cima de um
+        # trabalho salvo o apagaria (bug grave de 29/09/2026; ver _salvar_agora).
         self.trabalho_carregado = False
-        # O valor de trabalho_carregado quando a analise em curso comecou: e
-        # o que volta se ela for cancelada ou der erro (_parar_a_analise).
-        self._carregado_antes_da_analise = False
-        # As opcoes da tela "O que fazer" do trabalho carregado, guardadas ao
-        # sair da conferencia para "O que fazer" (_sair_da_conferencia). Se a
-        # pessoa mudar uma opcao, clicar "Conferir" e cancelar, sao elas que
-        # voltam (_parar_a_analise). None quando nao ha o que devolver.
-        self._opcoes_do_trabalho: dict | None = None
-        # Item 1.1: "Sim, tirar o fundo" respondido antes de o trabalho salvo
-        # carregar (projeto antigo, ou pelo "continuar"): a pasta do projeto
-        # que espera o livro inteiro ir para o filtro em _analise_pronta.
+        # Item 1.1: o "Sim, tirar o fundo" de um projeto antigo gravado so com
+        # as opcoes (antes da etapa 3 da obra): a pasta do projeto que espera o
+        # livro inteiro ir para o filtro em _abrir_o_trabalho.
         self._fundo_pendente: str | None = None
+        # Etapa 3 da obra: a medida do livro por tras ao abrir (D-284), a
+        # janela grande do Automatico aberta e o pedido da vez.
+        self.medida_ao_abrir: TarefaMedirAoAbrir | None = None
+        self.janela_do_automatico = None
+        self._pedido_da_vez = None
         # Decisao Z1 (b) do Samuel (05/10/2026): a tarefa que converte por
         # tras as zonas do livro aberto para o formato novo (zonas na folha
         # original). None quando nao ha. Ver _comecar_a_converter_as_zonas.
@@ -157,34 +165,25 @@ class JanelaPrincipal(QMainWindow):
         self.tela_inicio.continuar_projeto.connect(self._continuar_projeto)
         self.tela_inicio.recomecar_projeto.connect(self._recomecar_projeto)
         self.tela_inicio.vai_tirar_da_lista.connect(self._soltar_o_livro_tirado_da_lista)
-        # etapa 7 do layout: os botões do livro aberto e do alto da tela dos livros
-        self.tela_inicio.abrir_o_automatico.connect(
-            lambda resumo: self.abrir_livro(resumo.caminho_entrada, resumo=resumo))
+        # etapa 7 do layout: os botões do livro aberto e do alto da tela dos livros.
+        # Etapa 3 da obra: "Rodar o automático..." abre o livro e o Automático de verdade.
+        self.tela_inicio.abrir_o_automatico.connect(self._abrir_e_mostrar_o_automatico)
         self.tela_inicio.processar_pedido.connect(self._continuar_e_processar)
         self.tela_inicio.configuracoes_pedidas.connect(lambda: self._abrir_configuracoes())
         self.tela_inicio.ajuda_pedida.connect(lambda: self._mostrar_atalhos())
         self._processar_ao_abrir = False
         self.telas.addWidget(self.tela_inicio)
 
-        self.tela_opcoes = TelaOpcoes()
-        # o voltar das opcoes remonta os cartoes (_voltar_das_opcoes). Ligado
-        # por lambda DE PROPOSITO: ligado direto ao metodo, o
-        # tests/test_misto_na_tela.py caia com "access violation" em 5 de 6
-        # rodadas (06/10/2026, PySide6 6.11; com lambda, 0 de 6). Causa nao
-        # achada. Arriscado: trocar pelo metodo sem repetir aquele teste.
-        self.tela_opcoes.voltar.connect(lambda: self._voltar_das_opcoes())
-        self.tela_opcoes.conferir.connect(self.analisar)
-        self.telas.addWidget(self.tela_opcoes)
-
         self.tela_progresso = TelaProgresso()
         self.tela_progresso.cancelar.connect(self.cancelar)
         self.telas.addWidget(self.tela_progresso)
 
         self.tela_conferir = TelaConferir()
-        self.tela_conferir.voltar.connect(self._sair_da_conferencia)
+        self.tela_conferir.voltar.connect(lambda: self._sair_da_conferencia())
         self.tela_conferir.processar.connect(self.processar)
         self.tela_conferir.trabalho_mudou.connect(self._marcar_para_salvar)
         self.telas.addWidget(self.tela_conferir)
+        self._ligar_o_automatico()
 
         self.tela_final = TelaFinal()
         self.tela_final.fazer_outro.connect(self._recomecar)
@@ -226,7 +225,9 @@ class JanelaPrincipal(QMainWindow):
         self.menu.ligar("pasta_de_saida", self._escolher_pasta_de_saida)
         self.menu.ligar("nome_do_arquivo", self._escolher_nome_do_arquivo)
         self.menu.ligar("processar", self.processar)
-        self.menu.ligar("voltar", self._sair_da_conferencia)
+        self.menu.ligar("voltar", lambda: self._sair_da_conferencia())
+        # etapa 3 da obra: o Automático no menu Arquivo (a janela grande)
+        self.menu.ligar("automatico", self._no_trabalho(lambda: self.abrir_o_automatico()))
         self.menu.ligar("sair", self.close)
 
         # Etapa 2 da obra (26/10/2026): o que mexe no trabalho passa por
@@ -327,17 +328,13 @@ class JanelaPrincipal(QMainWindow):
         anterior); nas outras telas não faz nada. Arriscado: ligar um item que
         mexe no trabalho sem passar por aqui."""
         def feito(*_argumentos) -> None:
-            tela = self.telas.currentIndex()
-            if tela not in (CONFERIR, OPCOES):
+            # etapa 3 da obra: so existe a area de trabalho (a tela "O que
+            # fazer" saiu do caminho)
+            if self.telas.currentIndex() != CONFERIR:
                 return
-            deste_livro = (self.trabalho_carregado and self.projeto is not None
-                           and self.tela_conferir.projeto is self.projeto)
-            if deste_livro:
+            if (self.trabalho_carregado and self.projeto is not None
+                    and self.tela_conferir.projeto is self.projeto):
                 acao()
-            elif tela == OPCOES:
-                self.avisar("Isto vale na área de trabalho, com as páginas do livro. "
-                            "Clique em “Conferir” para abrir o livro nela.",
-                            titulo="Na área de trabalho")
         return feito
 
     def _trocar_lado_direito(self, jeito: str) -> None:
@@ -461,8 +458,6 @@ class JanelaPrincipal(QMainWindow):
         # que mexe no trabalho passa por _no_trabalho (etapa 2 da obra).
         if indice == CONFERIR:
             self.menu.mostrar_tela_de_trabalho()
-        elif indice == OPCOES and self.projeto is not None:
-            self.menu.mostrar_tela_das_opcoes()
         else:
             self.menu.mostrar_tela_inicial()
         # Etapa 7 do layout (rodadas 4 a 6): a tela dos livros não tem barra
@@ -613,36 +608,41 @@ class JanelaPrincipal(QMainWindow):
     # ------------------------------------------------------------------
 
     def abrir_livro(self, caminho: str, resumo: projetos.Resumo | None = None) -> None:
-        """Ponto de entrada de "abrir um livro novo": valida o PDF, cria (ou
-        recupera) o Projeto e o resumo em disco, e vai para a tela de Opções.
-        Chamada tambem por _continuar_projeto/_recomecar_projeto, que so
-        preenchem o Projeto com o que ja estava salvo depois desta abertura.
+        """Ponto de entrada de "abrir um livro": valida o PDF, cria (ou
+        recupera) o Projeto e o resumo em disco, e abre DIRETO na area de
+        trabalho (etapa 3 da obra; D-002, Kaique 22/09: "nós tínhamos que
+        abrir direto na área de trabalho").
+
+        Livro novo: a passada leve (core/automatico.livro_leve: uma folha por
+        pagina do PDF, nada ligado, a pagina como veio) e a medida por tras
+        (D-284). Livro com trabalho salvo: o trabalho volta como esta
+        (_abrir_o_trabalho), sem analise nova. Se o salvo nao serve (outro
+        livro, outro numero de folhas, arquivo ilegivel), o trabalho antigo e
+        guardado ao lado (projetos.guardar_copia_do_trabalho) e o livro abre
+        leve, com o aviso do motivo.
 
         `resumo`: o projeto EXATO a abrir (o do cartao da tela inicial, pelo
         "continuar" ou pelo "comecar de novo"). Sem ele ("Abrir", arrastar,
         Windows), o projeto e achado pela assinatura do arquivo - o mais
-        recente, se houver mais de um do mesmo PDF. Antes o cartao tambem
-        passava pela assinatura, e o "continuar" do cartao mais antigo abria
-        o mais recente (verificador, 29/09, q24-q25). Arriscado: voltar a
-        procurar pela assinatura quando o cartao ja disse qual e.
+        recente, se houver mais de um do mesmo PDF (verificador, 29/09,
+        q24-q25). Arriscado: voltar a procurar pela assinatura quando o cartao
+        ja disse qual e.
 
         Antes de tudo, a mudanca do livro aberto que ainda esperava o relogio
         de salvar vai para o disco NA HORA (_guardar_o_livro_aberto; R-A do
-        verificador-2, 06/10/2026): trocar de livro pelo Ctrl+O menos de
-        0,6 s depois de uma mudanca a perdia.
-        Arriscado: mover essa gravacao para depois de self.projeto/self.resumo
-        mudarem (gravaria o livro novo, ou nada).
+        verificador-2, 06/10/2026). Arriscado: mover essa gravacao para depois
+        de self.projeto/self.resumo mudarem.
         """
+        from core import automatico
+
         self._guardar_o_livro_aberto()
         try:
             doc = abrir_pdf(caminho)
             try:
                 self.total_folhas = doc.page_count
-                info_paginas(doc)
-                # Item 1.1: o PDF vem com camadas (Internet Archive)? Só a
-                # estrutura de até 12 páginas, sem desenhar nenhuma
-                # (milissegundos). Decide se o filtro "Tirar o fundo" aparece
-                # e se a janela pergunta se quer tirar o fundo.
+                tamanhos = [(i.largura_pt, i.altura_pt) for i in info_paginas(doc)]
+                # Item 1.1: o PDF vem com camadas (Internet Archive)? So a
+                # estrutura de ate 12 paginas, sem desenhar nenhuma.
                 tem_camadas = pdf_tem_camadas(doc)
             finally:
                 doc.close()
@@ -655,61 +655,65 @@ class JanelaPrincipal(QMainWindow):
             return
 
         nome = Path(caminho).stem
-        # Uma analise do livro de antes (trocar de livro no meio) e marcada
-        # como cancelada, rodando ou ja terminada com o resultado na fila: o
-        # resultado dela nao pode chegar no livro novo (_analise_pronta
-        # ignora resultado de analise cancelada).
-        if isinstance(self.tarefa, TarefaAnalise):
+        if isinstance(self.tarefa, TarefaAutomatico):
             self.tarefa.cancelar()
-        # A conversao das zonas do livro de antes para: o que ela ja fez foi
-        # gravado com o trabalho dele; o resto continua da proxima vez.
+        # A conversao das zonas e a medida do livro de antes param: o que ja
+        # fizeram foi gravado com o trabalho dele.
         self._parar_a_conversao_das_zonas(gravar=True)
-        self.trabalho_carregado = False       # ate a analise acabar (_salvar_agora)
+        self._parar_a_medida_ao_abrir()
+        self.trabalho_carregado = False       # ate o trabalho abrir (_salvar_agora)
         self._fundo_pendente = None
-        self._opcoes_do_trabalho = None
-        self.projeto = Projeto(caminho_entrada=caminho, nome=nome)
-        self.projeto.tem_camadas = tem_camadas
+        aberto = Projeto(caminho_entrada=caminho, nome=nome)
+        aberto.tem_camadas = tem_camadas
+        automatico.livro_leve(aberto, tamanhos)
+        self.projeto = aberto
 
         # Abrir o MESMO livro de novo continua o projeto de antes, em vez de
-        # criar um ao lado: quem for reabrir de propósito passa pela tela
-        # inicial, que tem "começar de novo" no menu do cartão.
+        # criar um ao lado: quem for reabrir de proposito passa pela tela
+        # inicial, que tem "comecar de novo" no menu do cartao.
         self.resumo = resumo if resumo is not None else projetos.achar_por_assinatura(caminho)
-        livro_novo = self.resumo is None
         salvo = None
-        if livro_novo:
-            # Item 2.19: a receita escolhida em Configuracoes para todo livro
-            # novo (core/perfis.py; de fabrica nenhuma: nada muda)
-            from core import perfis
-
-            perfis.aplicar_no_livro_novo(self.projeto)
-            self.resumo = projetos.criar(self.projeto, self.total_folhas)
+        motivo = ""
+        recomecou = False
+        self.copia_do_trabalho = None
+        if self.resumo is None:
+            # Item 2.19: a receita de todo livro novo NAO e posta aqui (a pagina
+            # abre como veio): ela vem marcada no Automatico (D-018).
+            self.resumo = projetos.criar(aberto, self.total_folhas)
         else:
             self.resumo.caminho_entrada = caminho   # pode ter mudado de pasta
-            # Livro com projeto salvo, aberto por QUALQUER caminho ("Abrir",
-            # arrastar, Windows, "continuar"): a tela "O que fazer" vem com as
-            # opcoes salvas. Antes so o "continuar" as trazia; pelo "Abrir",
-            # "Dividir folhas ao meio" desmarcada voltava marcada e a
-            # conferencia recomecava sem a pessoa mudar nada (parecer do
-            # verificador de 29/09, p25-p26), e o filtro do livro aparecia em
-            # Original (print t10 da rodada de 18:26).
+            tinha_trabalho = projetos.tem_trabalho_salvo(self.resumo)
             salvo = projetos.carregar_estado(self.resumo)
-            self._trazer_opcoes_salvas(salvo)
+            if salvo is not None and salvo.paginas:
+                motivo = projetos.motivo_sem_analise(salvo, aberto, self.resumo.assinatura)
+                if not motivo:
+                    # o trabalho de antes volta inteiro; o tem_camadas e fato do
+                    # PDF (acabou de ser visto) e o caminho e o de agora
+                    salvo.tem_camadas = tem_camadas
+                    salvo.caminho_entrada = caminho
+                    self.projeto = salvo
+                else:
+                    recomecou = True
+            elif tinha_trabalho:
+                recomecou = True
+                motivo = "o trabalho salvo não pôde ser lido"
+            if salvo is not None and not salvo.paginas:
+                # projeto so com as opcoes (de antes da etapa 3: a resposta a
+                # pergunta do fundo gravava assim): o "ja perguntou" e o "Sim"
+                # do fundo voltam; o resto fica de fabrica
+                aberto.perguntou_fundo = bool(salvo.perguntou_fundo)
+                if salvo.filtro_padrao == TIRAR_FUNDO and salvo.perguntou_fundo:
+                    self._fundo_pendente = self.resumo.pasta
+            if recomecou and tinha_trabalho:
+                self.copia_do_trabalho = projetos.guardar_copia_do_trabalho(self.resumo)
         self.acoes = HistoricoAcoes(Path(self.resumo.pasta))
         self._giro_da_capa = 0           # a capa nasce como veio no PDF (D2)
+        self._abrir_o_trabalho(recomecou, motivo, len(salvo.paginas) if recomecou and salvo else 0)
 
-        self.tela_opcoes.carregar(self.projeto, self.total_folhas)
-        self.telas.setCurrentIndex(OPCOES)
-
-        # Item 1.1, decisao do Samuel (29/09, Registro de mudancas): a
-        # pergunta aparece "uma vez por livro, inclusive nos que ele ja tem:
-        # na proxima vez que abrir, e depois nao pergunta mais". Por qualquer
-        # caminho (Abrir, arrastar, Windows, "continuar"). Ja perguntou =
-        # Projeto.perguntou_fundo no projeto salvo (projeto antigo sem o
-        # campo: ainda nao). Substitui a decisao da gerente de perguntar so em
-        # projeto novo. Livro sem camadas: nunca pergunta. Depois do "comecar
-        # de novo" (o projeto salvo e apagado) pergunta de novo.
-        ja_perguntou = salvo is not None and salvo.perguntou_fundo
-        if tem_camadas and not ja_perguntou:
+        # Item 1.1, decisao do Samuel (29/09): a pergunta do fundo aparece "uma
+        # vez por livro, inclusive nos que ele ja tem". Agora com o livro ja
+        # na area de trabalho (D-135: nao se perde ao abrir direto).
+        if tem_camadas and not self.projeto.perguntou_fundo:
             self._perguntar_se_tira_o_fundo()
 
     def _perguntar_se_tira_o_fundo(self) -> None:
@@ -758,72 +762,40 @@ class JanelaPrincipal(QMainWindow):
         """Aplica a resposta do aviso do item 1.1, a QUALQUER momento.
 
         A resposta vale para o projeto que perguntou (`pasta`), enquanto ele
-        estiver aberto - antes, durante ou depois da analise (pelo
-        "continuar" a analise roda atras da pergunta). Outro livro aberto no
-        meio: a resposta nao vale (so pelo teste; a caixa e modal).
+        estiver aberto. Outro livro aberto no meio: a resposta nao vale.
 
         Nao (e Esc, e X): fica anotado "ja perguntou" (Projeto.perguntou_fundo)
-        na hora, e nada mais muda. Projeto antigo nunca vem com o fundo
-        tirado sem o "Sim".
-
-        Sim - depende de haver trabalho na tela:
-          - trabalho carregado (conferencia aberta): aplica ja
-            (_tirar_o_fundo_do_livro_inteiro) e grava;
-          - livro sem trabalho salvo (novo, ou so com as opcoes): o filtro do
-            livro vira "Tirar o fundo" e e gravado com as opcoes, junto com o
-            "ja perguntou". As paginas nascem nele na analise. Fechar antes de
-            "Conferir" nao perde nada: o filtro do livro ja esta no disco;
-          - projeto com trabalho salvo, ainda nao carregado ("O que fazer", ou
-            "Olhando o livro..." do "continuar"): o "Sim" espera o trabalho
-            carregar (_fundo_pendente, em _analise_pronta) e so entao conta
-            como respondido. Se o programa fechar, a pessoa voltar ou cancelar
-            antes, nada foi aplicado e NADA fica anotado: a pergunta volta na
-            proxima abertura (verificador, s23). Escolhido por ser o mais
-            simples e seguro: mexer no projeto.json do trabalho sem o carregar
-            (trocar filtros direto no disco) pularia o Historico e a trava
-            que nao grava por cima do trabalho antes da analise.
-
-        Seguro mudar: os textos. Arriscado: anotar "ja perguntou" para um
-        "Sim" que ainda nao foi aplicado (o "Sim" se perdia calado).
+        e nada mais muda. Sim: desde a etapa 3 da obra o livro ja esta na area
+        de trabalho quando a pergunta aparece, entao o fundo sai na hora, numa
+        acao do Historico (_tirar_o_fundo_do_livro_inteiro), e grava.
+        Arriscado: anotar "ja perguntou" para um "Sim" que nao foi aplicado.
         """
-        from core.filtros import TIRAR_FUNDO
-
         if pasta is None or self.resumo is None or self.resumo.pasta != pasta:
             return
         if self.projeto is None:
             return
-        na_tela_o_que_fazer = (self.telas.currentIndex() == OPCOES
-                               and self.tela_opcoes.projeto is self.projeto)
         if not tirar:
             self.projeto.perguntou_fundo = True
             if not projetos.anotar_no_estado(self.resumo, perguntou_fundo=True):
                 self._salvar_agora()
             return
-
-        if self.trabalho_carregado:
-            self.projeto.perguntou_fundo = True
-            self._tirar_o_fundo_do_livro_inteiro()
-            self._salvar_agora()
-            return
-        if na_tela_o_que_fazer:
-            self.tela_opcoes.escolher_filtro_do_livro(TIRAR_FUNDO)
-        else:
-            self.projeto.filtro_padrao = TIRAR_FUNDO
-        self._fundo_pendente = pasta
-        if not projetos.tem_trabalho_salvo(self.resumo):
-            self.projeto.perguntou_fundo = True
-            self._salvar_agora()          # opcoes, com o filtro do livro
+        self.projeto.perguntou_fundo = True
+        self._tirar_o_fundo_do_livro_inteiro()
+        self._salvar_agora()
 
     def _tirar_o_fundo_do_livro_inteiro(self) -> None:
-        """O "Sim" da pergunta do fundo num livro com paginas carregadas.
+        """O "Sim" da pergunta do fundo (e o "Sim" guardado de um projeto so
+        com as opcoes): o livro inteiro vai para o filtro "Tirar o fundo".
 
         Decisao do Samuel (29/09, f94f69b): troca SO as paginas que estao em
-        "Original"; as que ele pos em outro filtro ficam. E o filtro do livro
-        vira "Tirar o fundo". Tudo numa acao so do Historico ("Tirar o fundo
-        em N paginas"), e o desfazer devolve tambem o filtro do livro (campo
-        "livro.filtro_padrao" da acao, historico_acoes.aplicar; verificador,
-        s17). So o filtro muda: corte, conferidas e alertas ficam.
-        Marca o projeto como "ja perguntou" (o "Sim" foi aplicado).
+        "Original"; as que ele pos em outro filtro ficam. O filtro do livro
+        vira "Tirar o fundo" e, desde a etapa 3 da obra (o livro abre sem nada
+        ligado), o "Limpar a folha" do livro liga junto (sem ele nenhum filtro
+        vale). Tudo numa acao so do Historico ("Tirar o fundo em N paginas"); o
+        desfazer devolve tambem o filtro e o "Limpar" do livro (campos
+        "livro." da acao, historico_acoes.aplicar). D-069 (30/09): depois de
+        aberto, o mesmo da pelo Automatico, etapa "Limpar a folha", filtro
+        "Tirar o fundo" (e "Original" volta ao como veio).
         """
         from core.filtros import ORIGINAL, TIRAR_FUNDO
         from historico_acoes import aplicar, montar_acao
@@ -834,17 +806,21 @@ class JanelaPrincipal(QMainWindow):
         self.projeto.perguntou_fundo = True
         indices = [p.indice for p in self.projeto.paginas if p.filtro == ORIGINAL]
         filtro_do_livro = self.projeto.filtro_padrao
+        limpar_do_livro = bool(self.projeto.limpar)
         conferir = self.tela_conferir
         if conferir.projeto is not self.projeto or self.acoes is None:
             self.projeto.filtro_padrao = TIRAR_FUNDO
+            self.projeto.limpar = True
             return
-        if not indices and filtro_do_livro == TIRAR_FUNDO:
+        if not indices and filtro_do_livro == TIRAR_FUNDO and limpar_do_livro:
             return
         acao = montar_acao(
             self.projeto, "aplicar_em_todas", "pagina", indices, {"filtro": TIRAR_FUNDO},
             f"Tirar o fundo em {len(indices)} páginas (resposta à pergunta do fundo)")
         acao.antes["livro.filtro_padrao"] = filtro_do_livro
         acao.depois["livro.filtro_padrao"] = TIRAR_FUNDO
+        acao.antes["livro.limpar"] = limpar_do_livro
+        acao.depois["livro.limpar"] = True
         aplicar(self.projeto, acao, acao.depois)
         self.acoes.registrar(acao)
         if conferir.previas is not None:
@@ -853,86 +829,11 @@ class JanelaPrincipal(QMainWindow):
         conferir.atualizar()
 
     def _continuar_projeto(self, resumo: projetos.Resumo) -> None:
-        """Retoma um projeto exatamente onde parou.
-
-        A tela inicial ja conferiu que o livro esta la e que e ELE - o cartao
-        so oferece "continuar" quando a assinatura bate. Aqui a analise roda de
-        novo (e barata perto de perder o trabalho) e o estado salvo volta por
-        cima dela, em `_analise_pronta`.
-        """
+        """Retoma um projeto exatamente onde parou: o trabalho salvo volta
+        como esta, direto na area de trabalho (etapa 3 da obra: sem analise
+        nova; antes ela rodava e o salvo voltava por cima). A tela inicial ja
+        conferiu que o livro esta la e que e ELE."""
         self.abrir_livro(resumo.caminho_entrada, resumo=resumo)   # ESTE projeto
-        if self.projeto is None:
-            return
-
-        # As opcoes salvas ja vieram em abrir_livro (do projeto do cartao).
-        # Aqui vem de novo, do mesmo projeto: nao muda nada, e fica por
-        # garantia caso abrir_livro deixe de traze-las.
-        self._trazer_opcoes_salvas(projetos.carregar_estado(resumo))
-        self.analisar()
-
-    def _trazer_opcoes_salvas(self, salvo: Projeto | None) -> None:
-        """Poe no projeto recem-aberto as opcoes da tela "O que fazer" do
-        projeto salvo (dividir, limpar, filtro do livro, endireitar, cortar,
-        cadernos) e redesenha a tela. Sem salvo, nada muda (opcoes de fabrica).
-
-        Usado por abrir_livro (qualquer caminho de abertura) e por
-        _continuar_projeto. O tem_camadas nao volta do salvo (item 1.1: e fato
-        do PDF, acabou de ser detectado em abrir_livro); o "Tirar o fundo"
-        volta com o filtro do livro, aqui, e com o das paginas, em
-        _analise_pronta. Seguro mudar: acrescentar opcao nova da tela.
-        Arriscado: trazer folhas/paginas daqui (quem traz e _analise_pronta,
-        depois de conferir que combinam).
-        """
-        if salvo is None or self.projeto is None:
-            return
-        self.projeto.dividir_folhas = salvo.dividir_folhas
-        # item 2.1: o jeito de dividir e o corte da sobra (o salvo de antes
-        # do 2.1 ja volta "programa" e sem sobra: modelos.Projeto.de_dicionario)
-        self.projeto.dividir_como = getattr(salvo, "dividir_como", self.projeto.dividir_como)
-        self.projeto.cortar_sobra = bool(getattr(salvo, "cortar_sobra", False))
-        # item 2.5: o corte pelo conteudo (o salvo de antes volta desligado)
-        self.projeto.cortar_pelo_conteudo = bool(getattr(salvo, "cortar_pelo_conteudo", False))
-        # item 2.13: a borda preta (o salvo de antes volta desligado)
-        self.projeto.borda_preta = bool(getattr(salvo, "borda_preta", False))
-        self.projeto.borda_preta_ate = getattr(salvo, "borda_preta_ate", self.projeto.borda_preta_ate)
-        # item 2.14: cortar fora ou pintar de branco (o salvo de antes volta "cortar")
-        self.projeto.borda_preta_fazer = getattr(salvo, "borda_preta_fazer", "cortar")
-        self.projeto.limpar = salvo.limpar
-        self.projeto.filtro_padrao = salvo.filtro_padrao
-        self.projeto.endireitar = salvo.endireitar
-        # item 2.2: a conta do endireitar (o salvo de antes do 2.2 ja volta
-        # "programa": modelos.Projeto.de_dicionario)
-        self.projeto.endireitar_como = getattr(salvo, "endireitar_como", self.projeto.endireitar_como)
-        # item 2.2, G6 (09/10/2026): a ordem do preparo acompanha o projeto
-        # (o salvo de antes do G6 ja volta "cortar_antes": modelos.Projeto.
-        # de_dicionario). Nao e opcao da tela. Arriscado: tirar esta linha -
-        # o projeto antigo reaberto nasceria "endireitar_antes" e mudaria de
-        # corte (as zonas da aba Marcar andariam).
-        self.projeto.ordem_do_preparo = getattr(salvo, "ordem_do_preparo",
-                                                self.projeto.ordem_do_preparo)
-        self.projeto.cortar_bordas = salvo.cortar_bordas
-        self.projeto.montar_cadernos = salvo.montar_cadernos
-        self.projeto.paginas_por_caderno = salvo.paginas_por_caderno
-        self.projeto.perguntou_fundo = salvo.perguntou_fundo      # item 1.1
-        # item 1.2: o grupo "Gravuras e fotos"
-        for campo in CAMPOS_DA_GRAVURA:
-            setattr(self.projeto, campo, getattr(salvo, campo))
-        # emenda N2 do Samuel (30/09): moldura e iluminura tambem no P&B
-        self.projeto.pb_decoracao_em_preto_e_branco = bool(
-            getattr(salvo, "pb_decoracao_em_preto_e_branco", False))
-        # modo Misto (05/10): "So as letras" e as escolhas do livro (projeto
-        # antigo, sem os campos, volta com os padroes: Misto desligado)
-        for campo in CAMPOS_DO_MISTO:
-            setattr(self.projeto, campo, getattr(salvo, campo, getattr(self.projeto, campo)))
-        # "Limpar pontinhos" do livro (06/10): o projeto.json antigo ja volta
-        # "nosso" (modelos.Projeto.de_dicionario); objeto sem o campo, o de agora
-        self.projeto.limpar_pontinhos = getattr(salvo, "limpar_pontinhos",
-                                                self.projeto.limpar_pontinhos)
-        # "Forca do preto sozinha" (12/10): o projeto.json antigo ja volta
-        # desligado (modelos.Projeto.de_dicionario); objeto sem o campo, idem
-        self.projeto.reforcar_texto_falhado = bool(
-            getattr(salvo, "reforcar_texto_falhado", False))
-        self.tela_opcoes.carregar(self.projeto, self.total_folhas)
 
     def _recomecar_projeto(self, resumo: projetos.Resumo) -> None:
         """Joga fora os ajustes e abre o livro limpo. O PDF nao e tocado.
@@ -1002,169 +903,27 @@ class JanelaPrincipal(QMainWindow):
         self.resumo = None
         self.trabalho_carregado = False
         self._fundo_pendente = None
-        self._opcoes_do_trabalho = None
 
-    # --- analise ----------------------------------------------------------
+    # --- o trabalho na area de trabalho -------------------------------------
 
-    def analisar(self) -> None:
-        """Dispara a análise (dividir/endireitar/recorte/alertas) numa
-        TarefaAnalise em QThread - a interface nunca congela (regra 3)."""
-        if self.projeto is None:
-            return
-        # Ate a analise acabar, nada e gravado por cima do trabalho salvo
-        # (_salvar_agora). Se ela for cancelada ou der erro, o marcador volta
-        # ao valor de antes (_parar_a_analise): senao, depois de "cancelar"
-        # em "Olhando o livro..." nada mais era gravado ate fechar, sem aviso
-        # (bug grave do verificador, 29/09, prints q21-q23).
-        self._carregado_antes_da_analise = self.trabalho_carregado
-        self.trabalho_carregado = False
-        self.tela_progresso.comecar("Olhando o livro...")
-        self.telas.setCurrentIndex(PROGRESSO)
+    def _abrir_o_trabalho(self, recomecou: bool = False, motivo: str = "",
+                          paginas_perdidas: int = 0) -> None:
+        """Poe o projeto aberto (self.projeto) na area de trabalho: o
+        Historico, as previas, a tela, a gravacao, a conversao das zonas e a
+        medida por tras. Etapa 3 da obra: era a segunda metade do antigo
+        _analise_pronta (o fim da analise); agora o livro abre sem analise.
 
-        # A analise trabalha numa COPIA rasa do projeto: ela so troca
-        # tem_camadas, observacoes, folhas e paginas (atribui listas novas,
-        # nao mexe nas de antes - core.pipeline.analisar_projeto), entao o
-        # projeto da tela (com o trabalho) fica intacto ate _analise_pronta.
-        # E isso que torna seguro voltar o marcador ao cancelar: antes, um
-        # cancelar no instante em que a analise terminava podia deixar as
-        # paginas novas, em branco, no projeto da tela. Arriscado: passar
-        # self.projeto direto, ou analisar_projeto passar a mexer DENTRO das
-        # listas do projeto recebido.
-        import copy
+        recomecou: o trabalho salvo nao serviu (motivo = por que) - o desfazer
+        recomeca vazio e o historico antigo fica junto da copia do trabalho
+        (HistoricoAcoes.recomecar; Lista de bugs, 06/10/2026). Arriscado:
+        carregar o historico antigo num trabalho que recomecou (o Ctrl+Z
+        mexeria em paginas de outra conferencia)."""
+        from core import automatico
 
-        self._trocar_tarefa(TarefaAnalise(copy.copy(self.projeto)))
-        self.tarefa.progresso.connect(self.tela_progresso.avancar)
-        self.tarefa.concluida.connect(self._analise_pronta)
-        self.tarefa.falhou.connect(self._falhou_na_analise)
-        self.tarefa.start()
-
-    def _analise_pronta(self, projeto: Projeto) -> None:
-        assert self.acoes is not None
-        # Resultado de uma analise que nao e mais a da vez (cancelada, ou de
-        # um livro de antes: trocar de livro no meio) nao entra: traria as
-        # paginas de outro livro, ou de uma analise que a pessoa desistiu,
-        # para o projeto aberto. Chamada direta (testes) nao tem remetente.
-        origem = self.sender()
-        if isinstance(origem, TarefaAnalise) and (
-                origem is not self.tarefa or origem.foi_cancelada):
-            return
-
-        # O trabalho da sessao passada volta AQUI, depois da analise: filtro de
-        # cada pagina, corte, angulo, marcacao, apagadas, conferidas. Sem isto,
-        # quem conferiu 80 paginas e fechou o programa reabria do zero.
-        #
-        # So volta se combinar com o livro recem-analisado - mesmo arquivo,
-        # mesma contagem de folhas e de paginas. Se a pessoa mudou "dividir
-        # folhas ao meio" entre uma sessao e outra, a pagina 40 salva nao e a
-        # pagina 40 de agora, e devolver o corte de uma na outra estragaria o
-        # trabalho em silencio. Ver projetos.combina_com.
-        paginas_perdidas = 0
-        motivo = ""
-        gravuras_refeitas = 0
-        recomecou = False         # o trabalho salvo nao serviu (ver o else abaixo)
-        self.copia_do_trabalho = None
-        if self.resumo is not None:
-            salvo = projetos.carregar_estado(self.resumo)
-            # A assinatura do projeto entra na comparacao: livro que mudou de
-            # pasta, ou copia do mesmo PDF em outra pasta, e o mesmo livro
-            # (bug grave de 29/09; ver projetos._mesmo_livro).
-            if projetos.combina_com(salvo, projeto, assinatura=self.resumo.assinatura):
-                # Item 1.1: o salvo volta por cima, menos o tem_camadas, que e
-                # fato do PDF (a analise acabou de detectar; um projeto salvo
-                # antes de 29/09 nem tem o campo). O filtro "Tirar o fundo" de
-                # cada pagina volta com o salvo, como qualquer filtro - pelo
-                # "Abrir" ou pelo "continuar", do mesmo jeito.
-                salvo.tem_camadas = projeto.tem_camadas
-                # O mesmo arquivo pode ter chegado escrito de outro jeito
-                # (`\` pelo Windows, `/` pela caixa "Abrir"; bug grave de
-                # 29/09, projetos.mesmo_arquivo). Fica o caminho que acabou
-                # de ser aberto - existe e funciona agora -, e nao a forma
-                # antiga gravada no projeto (as previas e o PDF final abrem
-                # por ele). Vale tambem para o livro que mudou de pasta e para
-                # a copia em outra pasta: o caminho novo passa a ser o gravado
-                # (aqui no projeto.json; no resumo, em abrir_livro).
-                salvo.caminho_entrada = projeto.caminho_entrada
-                # Item 1.2: as opcoes do grupo "Gravuras e fotos" vem da tela
-                # (as que a pessoa acabou de escolher), e nao do salvo. Se
-                # mudaram, a gravura achada sozinha das paginas ja marcadas
-                # vai ser refeita (a marcacao a mao fica: ver
-                # core.pipeline.garantir_selecao). ANTES, uma copia do
-                # trabalho (um ajuste feito numa regiao automatica se perde) e,
-                # depois, o aviso. Arriscado: refazer sem a copia, ou sem
-                # avisar (pedido da gerente, 30/09).
-                gravuras_refeitas = trocar_opcoes_da_gravura(salvo, projeto)
-                # A caixinha "No Preto e branco, molduras e iluminuras tambem
-                # em preto e branco" (emenda N2 do Samuel, 30/09) tambem vem da
-                # tela: so muda a imagem do filtro, nao a marcacao, e as previas
-                # sao refeitas (GerenciadorPrevias novo, logo abaixo).
-                salvo.pb_decoracao_em_preto_e_branco = bool(
-                    getattr(projeto, "pb_decoracao_em_preto_e_branco", False))
-                # Modo Misto (05/10): as escolhas do livro tambem vem da tela
-                # (so mudam a imagem do filtro; as da pagina ficam no salvo)
-                for campo in CAMPOS_DO_MISTO:
-                    setattr(salvo, campo, getattr(projeto, campo))
-                # "Limpar pontinhos" do livro (06/10): tambem vem da tela
-                salvo.limpar_pontinhos = projeto.limpar_pontinhos
-                # "Forca do preto sozinha" (12/10): tambem vem da tela
-                salvo.reforcar_texto_falhado = bool(
-                    getattr(projeto, "reforcar_texto_falhado", False))
-                # Item 2.1: o jeito de dividir e o corte da sobra vem da tela;
-                # com o jeito trocado, as folhas que seguem o livro ganham a
-                # divisao da analise nova (a que a pessoa mexeu fica)
-                trazer_divisao_da_analise(salvo, projeto)
-                if gravuras_refeitas:
-                    self.copia_do_trabalho = projetos.guardar_copia_do_trabalho(self.resumo)
-                projeto = salvo
-            else:
-                # Rede de seguranca (29/09/2026, bug grave "livro que mudou de
-                # pasta perde o trabalho de vez"): o _salvar_agora, logo
-                # abaixo, regrava o projeto.json com a conferencia nova. Antes
-                # disso, o trabalho antigo e guardado ao lado, com data e hora
-                # no nome (projetos.guardar_copia_do_trabalho). Vale tambem
-                # para o projeto.json que nao deu para ler (salvo None): ele
-                # seria regravado igual. Sem projeto salvo, nao faz nada.
-                # Arriscado: tirar isto, ou mover para depois do _salvar_agora.
-                # So ha o que guardar se havia trabalho (paginas, ou um
-                # projeto.json ilegivel): um projeto so com as opcoes (livro
-                # novo; a resposta a pergunta do fundo grava assim) ganhava
-                # uma copia vazia inutil a cada livro novo com camadas
-                # (verificador, 30/09).
-                recomecou = True
-                if projetos.tem_trabalho_salvo(self.resumo):
-                    self.copia_do_trabalho = projetos.guardar_copia_do_trabalho(self.resumo)
-                if salvo is not None:
-                    paginas_perdidas = len(salvo.paginas)
-                    motivo = projetos.motivo_para_nao_combinar(
-                        salvo, projeto, assinatura=self.resumo.assinatura)
-
-        self.projeto = projeto
+        assert self.acoes is not None and self.projeto is not None
+        projeto = self.projeto
         self.trabalho_carregado = True        # agora pode gravar (_salvar_agora)
-        self._opcoes_do_trabalho = None       # as opcoes deste trabalho valem
-        # A tela "O que fazer" passa a mexer NESTE projeto (o que vai para a
-        # conferencia e para o disco). Antes ela ficava com o objeto de antes
-        # da analise, e o que se marcava la, na volta, se perdia. Achado ao
-        # ligar o item 1.1. (As caixinhas continuam perdendo o que se muda na
-        # volta quando o projeto salvo volta por cima: bug registrado em
-        # 29/09, para depois.)
-        self.tela_opcoes.projeto = projeto
-        # Item 1.1: pagina fora do filtro "Tirar o fundo" (ou livro sem
-        # camadas) nao fica com o alerta "conferir o fundo tirado" de uma
-        # sessao anterior; as que estao nele sao acertadas pela tela de
-        # conferir, pagina a pagina.
         acertar_alertas_do_fundo(projeto)
-
-        # O desfazer de um projeto ja trabalhado tambem volta do disco - so
-        # quando o trabalho voltou. Se a conferencia recomecou (o else acima:
-        # trabalho que nao combina, projeto.json ilegivel, livro novo), o
-        # desfazer recomeca vazio, e o historico antigo fica junto da copia
-        # do trabalho (HistoricoAcoes.recomecar). Lista de bugs, 06/10/2026
-        # (parecer do verificador, item 5): antes carregava sempre, e depois
-        # de mudar "Dividir folhas ao meio" o primeiro Ctrl+Z pos a pagina 1
-        # do livro recomecado em Preto e branco, uma acao da conferencia
-        # anterior feita em outra pagina. Na mesma sessao, o historico da
-        # memoria nem era trocado (sem acoes.jsonl, carregar() nao mexe).
-        # Arriscado: voltar a carregar() no recomeco, ou chamar recomecar()
-        # antes de guardar a copia do trabalho (logo acima).
         if recomecou:
             self.acoes.recomecar(self.copia_do_trabalho)
         else:
@@ -1178,12 +937,12 @@ class JanelaPrincipal(QMainWindow):
         self.previas.pronta.connect(lambda *_: self._avisar_da_gravura())
 
         self.tela_conferir.carregar(projeto, self.acoes, self.previas)
-        if self.resumo is not None:
-            self.tela_conferir.ir_para_pagina(self.resumo.pagina_atual)
-        # Item 1.1: "Sim, tirar o fundo" respondido antes de o trabalho
-        # carregar (projeto antigo, "continuar", ou com um cancelar no meio):
-        # vale agora, e so agora conta como respondido (_salvar_agora, logo
-        # abaixo, grava o "ja perguntou" junto com o trabalho).
+        if self.resumo is not None and not recomecou:
+            self.tela_conferir.ir_para_pagina(
+                min(self.resumo.pagina_atual, max(0, len(projeto.paginas) - 1)))
+        # o Automatico comeca do que o livro tem (etapas ligadas, opcoes, ordem)
+        self.tela_conferir.paineis.automatico.estado.do_projeto(projeto)
+        self.tela_conferir.paineis.automatico.encher_receitas()
         if self.resumo is not None and self._fundo_pendente == self.resumo.pasta:
             self._tirar_o_fundo_do_livro_inteiro()
         self.telas.setCurrentIndex(CONFERIR)
@@ -1196,21 +955,311 @@ class JanelaPrincipal(QMainWindow):
         # Decisao Z1 (b): as zonas de projeto antigo sao convertidas por
         # tras, o livro inteiro, enquanto o Kaique ja trabalha.
         self._comecar_a_converter_as_zonas()
+        # D-284: o livro novo e medido por tras (so os avisos)
+        if not getattr(projeto, "passou_pelo_automatico", True):
+            self._comecar_a_medir_ao_abrir()
 
         if self.acoes.linhas_perdidas:
+            perdidas = self.acoes.linhas_perdidas
             self.avisar(
-                f"O computador foi desligado no meio da última gravação, e "
-                f"{self.acoes.linhas_perdidas} ação(ões) do fim se perderam. "
-                "O resto do trabalho está aqui.")
-        elif paginas_perdidas:
+                "O computador foi desligado no meio da última gravação, e "
+                + ("1 ação do fim se perdeu. " if perdidas == 1
+                   else f"{perdidas} ações do fim se perderam. ")
+                + "O resto do trabalho está aqui.")
+        elif recomecou:
             self.avisar(self._frase_do_recomeco(motivo, self.copia_do_trabalho))
-        elif gravuras_refeitas:
-            # O titulo e o texto de cada caso ("procurar de novo" ou "nao
-            # procurar mais") vem de core.pipeline.aviso_das_opcoes_da_gravura
-            # (parecer do verificador, 30/09, r09: o texto dizia "procuradas de
-            # novo" tambem no "nao procurar", numa caixa "Um momento").
-            titulo, frase = aviso_das_opcoes_da_gravura(
-                self.projeto, gravuras_refeitas, self.copia_do_trabalho)
+        del automatico
+
+    # --- etapa 3 da obra: a medida do livro por tras (D-284) ---------------
+
+    def _comecar_a_medir_ao_abrir(self) -> None:
+        """D-284 (`pr-medir-o-livro`, 21/10: "Medir o livro inteiro por trás,
+        depois de abrir"): mede todas as folhas por tras e, no fim, poe so os
+        avisos (nenhuma pagina muda). Livro com trabalho salvo ja tem os
+        avisos da conferencia de antes: so o livro novo e medido (escolha da
+        gerente, D-014; anotada no ONDE-PAREI)."""
+        from core import automatico
+
+        self._parar_a_medida_ao_abrir()
+        if self.projeto is None or not self.projeto.folhas:
+            return
+        foto = automatico.fotografar(self.projeto, automatico.Pedido(etapas=[]))
+        tarefa = TarefaMedirAoAbrir(foto)
+        tarefa.terminou.connect(self._medida_ao_abrir_terminou)
+        self.medida_ao_abrir = tarefa
+        self._projeto_medido = self.projeto
+        tarefa.start()
+
+    def _parar_a_medida_ao_abrir(self) -> None:
+        tarefa = getattr(self, "medida_ao_abrir", None)
+        self.medida_ao_abrir = None
+        if tarefa is None:
+            return
+        tarefa.cancelar()
+        if tarefa.isRunning():
+            self._tarefas_saindo.append(tarefa)
+
+    def _medida_ao_abrir_terminou(self, tarefa, medidas) -> None:
+        """Os avisos medidos entram no livro (so o da vez; um sinal atrasado
+        de outro livro nao entra). Nao entra no Historico: aviso nao e
+        trabalho."""
+        from core import automatico
+
+        if tarefa is None or tarefa is not getattr(self, "medida_ao_abrir", None):
+            return
+        self.medida_ao_abrir = None
+        if tarefa.isRunning():
+            self._tarefas_saindo.append(tarefa)
+        projeto = self.projeto
+        if (projeto is None or projeto is not getattr(self, "_projeto_medido", None)
+                or not medidas):
+            return
+        automatico.avisos_do_livro(projeto, medidas)
+        if self.tela_conferir.projeto is projeto:
+            self.tela_conferir.atualizar()
+        self._marcar_para_salvar()
+
+    # --- etapa 3 da obra: o Automatico (D-002, D-003, D-004, D-005, D-018) --
+
+    def _ligar_o_automatico(self) -> None:
+        """Liga o painel Automatico, o aviso do livro novo e a grade de
+        "Todas as páginas" ao que roda o automatico (rodar_o_automatico)."""
+        painel = self.tela_conferir.paineis.automatico
+        painel.rodar_pedido.connect(lambda: self.rodar_o_automatico())
+        painel.desligar_pedido.connect(lambda: self.rodar_o_automatico(desligar=True))
+        painel.escolher_pedido.connect(lambda: self.escolher_paginas_para_o_automatico())
+        painel.receita_guardar_pedida.connect(lambda: self.guardar_receita())
+        self.tela_conferir.automatico_pedido.connect(lambda etapa: self.abrir_o_automatico(etapa))
+        self.tela_conferir.rodar_do_aviso_pedido.connect(lambda: self._rodar_do_aviso())
+        self.tela_conferir.escolhidas_para_o_automatico.connect(self._escolhidas_chegaram)
+        self.janela_do_automatico = None
+
+    @property
+    def estado_do_automatico(self):
+        """O que esta escolhido no Automatico (o mesmo do painel e da janela)."""
+        return self.tela_conferir.paineis.automatico.estado
+
+    def abrir_o_automatico(self, etapa: str = "", receita: str | None = None):
+        """Abre a janela grande do Automatico (rodada 2: "painel (opção 1) com
+        botão que abre a janela (opção 2)"), na `etapa` (o "ajustar ›"). Com
+        `receita`, ela vem marcada (D-018). Devolve a janela (testes)."""
+        from ui.automatico import JanelaDoAutomatico
+
+        if self.projeto is None or self.telas.currentIndex() != CONFERIR:
+            return None
+        estado = self.estado_do_automatico
+        estado.pagina_atual = self.tela_conferir.indice_pagina
+        if receita:
+            estado.por_receita(receita)
+        self._fechar_a_janela_do_automatico()
+        janela = JanelaDoAutomatico(estado, self.projeto.caminho_entrada, self)
+        janela.rodar_pedido.connect(lambda: self._da_janela(janela, desligar=False))
+        janela.desligar_pedido.connect(lambda: self._da_janela(janela, desligar=True))
+        janela.escolher_pedido.connect(lambda: self._escolher_da_janela(janela))
+        janela.receita_guardar_pedida.connect(lambda: self.guardar_receita(janela))
+        if etapa:
+            janela.mostrar_etapa(etapa)
+        self.janela_do_automatico = janela
+        janela.open()
+        return janela
+
+    def _fechar_a_janela_do_automatico(self) -> None:
+        janela = getattr(self, "janela_do_automatico", None)
+        self.janela_do_automatico = None
+        if janela is not None:
+            try:
+                janela.done(0)
+                janela.deleteLater()
+            except RuntimeError:
+                pass
+
+    def _da_janela(self, janela, desligar: bool) -> None:
+        """"Rodar" (ou "Desligar as marcadas") da janela grande: ela fecha e
+        o automatico roda."""
+        self._fechar_a_janela_do_automatico()
+        self.rodar_o_automatico(desligar=desligar)
+
+    def _escolher_da_janela(self, janela) -> None:
+        self._fechar_a_janela_do_automatico()
+        self._voltar_para_a_janela = True
+        self.escolher_paginas_para_o_automatico()
+
+    def escolher_paginas_para_o_automatico(self) -> None:
+        """"escolher páginas...": a grade "Todas as páginas" no jeito de
+        escolher (rodada 2 nº 5, "Aprovado": "Escolher folhas abrindo a tela
+        de todas as páginas (marcar/desmarcar)")."""
+        if self.projeto is None:
+            return
+        self.tela_conferir.abrir_para_escolher(self.estado_do_automatico.escolhidas)
+
+    def _escolhidas_chegaram(self, escolhidas: list) -> None:
+        """A grade devolveu as paginas escolhidas: o Automatico passa a rodar
+        nelas, e a janela grande volta (se foi dela que se pediu)."""
+        from ui.automatico import NAS_ESCOLHIDAS
+
+        self.estado_do_automatico.definir_alcance(NAS_ESCOLHIDAS, escolhidas)
+        if getattr(self, "_voltar_para_a_janela", False) or not self.tela_conferir.paineis.automatico.isVisible():
+            self._voltar_para_a_janela = False
+            self.abrir_o_automatico()
+        else:
+            self.tela_conferir.paineis.mostrar_painel("automatico", True)
+
+    def _rodar_do_aviso(self) -> None:
+        """"Rodar o automático…" do aviso do livro novo (D-005): a janela
+        grande com a receita de sempre marcada (D-018, escolha da gerente:
+        nada roda antes do "Rodar")."""
+        from core import perfis
+
+        if self.projeto is None:
+            return
+        self.estado_do_automatico.do_projeto(self.projeto)
+        self.abrir_o_automatico(receita=perfis.receita_de_sempre())
+
+    def _abrir_e_mostrar_o_automatico(self, resumo) -> None:
+        """"Rodar o automático..." do livro aberto da tela inicial (R6): abre
+        o livro (o "continuar") e a janela grande do Automatico."""
+        self.abrir_livro(resumo.caminho_entrada, resumo=resumo)
+        if self.telas.currentIndex() == CONFERIR and self.projeto is not None:
+            self.abrir_o_automatico()
+
+    def guardar_receita(self, pai=None) -> None:
+        """"Salvar receita...": a caixa nova (D-071: diz o que vai dentro)."""
+        from ui.automatico import CaixaDaReceita
+
+        caixa = CaixaDaReceita(self.estado_do_automatico, pai or self)
+        self.caixa_da_receita = caixa
+
+        def fechou(_codigo: int) -> None:
+            self.tela_conferir.paineis.automatico.encher_receitas()
+            janela = getattr(self, "janela_do_automatico", None)
+            if janela is not None:
+                janela.encher_receitas()
+            self.estado_do_automatico.mudou.emit()
+
+        caixa.finished.connect(fechou)
+        caixa.open()
+
+    def _perguntar_mexidas(self, quantas: int) -> bool | None:
+        """D-004 (28/09): "Automático em livro já mexido à mão: o programa
+        pergunta se quer pular as páginas mexidas." Devolve True (pular),
+        False (rodar nelas tambem) ou None (desistir)."""
+        caixa = QMessageBox(self)
+        caixa.setWindowTitle("Páginas mexidas à mão")
+        caixa.setIcon(QMessageBox.Question)
+        palavra = "página foi mexida" if quantas == 1 else "páginas foram mexidas"
+        caixa.setText(f"{quantas} {palavra} à mão nas etapas que vão rodar. "
+                      "Pular essas páginas?")
+        caixa.setInformativeText(
+            "Pular: elas ficam como você deixou nessas etapas. Rodar nelas também: o "
+            "automático passa por cima do que você fez à mão nelas (o Desfazer traz de volta).")
+        pular = caixa.addButton(f"Pular as {quantas}" if quantas > 1 else "Pular esta",
+                                QMessageBox.AcceptRole)
+        rodar = caixa.addButton("Rodar nelas também", QMessageBox.DestructiveRole)
+        caixa.addButton("cancelar", QMessageBox.RejectRole)
+        caixa.setDefaultButton(pular)
+        caixa.exec()
+        escolhido = caixa.clickedButton()
+        if escolhido is pular:
+            return True
+        if escolhido is rodar:
+            return False
+        return None
+
+    def rodar_o_automatico(self, desligar: bool = False, pedido=None, esperar: bool = False,
+                           perguntar: bool = True) -> bool:
+        """Roda o Automatico no livro aberto (D-002): o pedido do painel/janela
+        (ou `pedido`), com a pergunta das paginas mexidas (D-004). O que olha
+        as paginas roda num fio de fundo (TarefaAutomatico), com andamento e
+        cancelar; no fim, _aplicar_o_automatico grava no projeto aberto.
+        `esperar` (testes e linha de comando): mede no mesmo fio.
+        `perguntar=False` (testes): nao pergunta das mexidas; vale o
+        pedido.pular_mexidas. Devolve False quando nada foi pedido ou a pessoa
+        desistiu."""
+        from core import automatico
+
+        if self.projeto is None or self.acoes is None or not self.trabalho_carregado:
+            return False
+        if pedido is None:
+            self.estado_do_automatico.pagina_atual = self.tela_conferir.indice_pagina
+            pedido = self.estado_do_automatico.pedido(desligar=desligar)
+        if not pedido.etapas:
+            self.avisar("Marque pelo menos uma etapa no Automático.", titulo="Automático")
+            return False
+        if pedido.paginas is not None and not pedido.paginas:
+            self.avisar("Nenhuma página escolhida. Use \"escolher páginas...\" ou rode no livro todo.",
+                        titulo="Automático")
+            return False
+        mexidas = automatico.paginas_mexidas(self.projeto, pedido) if perguntar else []
+        if mexidas:
+            resposta = self._perguntar_mexidas(len(mexidas))
+            if resposta is None:
+                return False
+            pedido.pular_mexidas = bool(resposta)
+        if not automatico.precisa_medir(pedido):
+            self._aplicar_o_automatico(pedido, {})
+            return True
+        foto = automatico.fotografar(self.projeto, pedido)
+        if esperar:
+            self._aplicar_o_automatico(pedido, automatico.medir(foto))
+            return True
+        self._pedido_da_vez = pedido
+        self._projeto_do_pedido = self.projeto
+        self.tela_progresso.comecar("O automático está olhando as páginas...")
+        self.telas.setCurrentIndex(PROGRESSO)
+        self._trocar_tarefa(TarefaAutomatico(foto))
+        self.tarefa.progresso.connect(self.tela_progresso.avancar)
+        self.tarefa.concluida.connect(self._automatico_mediu)
+        self.tarefa.falhou.connect(self._automatico_falhou)
+        self.tarefa.start()
+        return True
+
+    def _automatico_mediu(self, medidas) -> None:
+        """A medida do Automatico chegou (so a da vez e do livro de agora)."""
+        origem = self.sender()
+        if isinstance(origem, TarefaAutomatico) and (origem is not self.tarefa or origem.foi_cancelada):
+            return
+        self.telas.setCurrentIndex(CONFERIR)
+        if self.projeto is None or self.projeto is not getattr(self, "_projeto_do_pedido", None):
+            return
+        self._aplicar_o_automatico(self._pedido_da_vez, medidas)
+
+    def _automatico_falhou(self, mensagem: str) -> None:
+        origem = self.sender()
+        if isinstance(origem, TarefaAutomatico) and origem is not self.tarefa:
+            return
+        self.telas.setCurrentIndex(CONFERIR)
+        self.avisar(mensagem)
+
+    def _aplicar_o_automatico(self, pedido, medidas) -> None:
+        """Grava o Automatico no projeto aberto, numa acao do Historico
+        (fica no acoes.jsonl: achado 1-11), e redesenha. Mudando as opcoes das
+        gravuras, guarda antes uma copia do trabalho e avisa (como o "Conferir"
+        fazia: core.pipeline.trocar_opcoes_da_gravura)."""
+        from core import automatico
+        from core.pipeline import aviso_das_opcoes_da_gravura
+
+        assert self.projeto is not None and self.acoes is not None
+        projeto = self.projeto
+        mudam_as_gravuras = (automatico.GRAVURAS in pedido.etapas and not pedido.desligar
+                             and any(pedido.opcoes.get(c, getattr(projeto, c)) != getattr(projeto, c)
+                                     for c in automatico.OPCOES[automatico.GRAVURAS]))
+        if mudam_as_gravuras and self.resumo is not None and projetos.tem_trabalho_salvo(self.resumo):
+            self.copia_do_trabalho = projetos.guardar_copia_do_trabalho(self.resumo)
+        resultado = automatico.aplicar(projeto, pedido, medidas)
+        if resultado.acao is not None:
+            self.acoes.registrar(resultado.acao)
+        conferir = self.tela_conferir
+        if conferir.previas is not None:
+            conferir.previas.invalidar()
+        conferir.lista_de_paginas_mudou()
+        # o painel passa a mostrar o que o livro tem agora (etapas ligadas,
+        # opcoes, ordem); onde rodar e as escolhidas ficam como a pessoa deixou
+        self.estado_do_automatico.do_projeto(projeto)
+        self._salvar_agora()
+        self._comecar_a_medir_o_livro()          # item 2.5, se o corte pelo conteudo ligou
+        if resultado.gravuras_refeitas:
+            titulo, frase = aviso_das_opcoes_da_gravura(projeto, resultado.gravuras_refeitas,
+                                                        self.copia_do_trabalho)
             self.avisar(frase, titulo)
 
     # --- zonas do livro inteiro, por tras (decisao Z1 (b), 05/10/2026) ----
@@ -1470,82 +1519,22 @@ class JanelaPrincipal(QMainWindow):
             self._salvar_agora()
 
     def _o_que_gravar(self) -> Projeto:
-        """O projeto como deve ir para o disco.
+        """O projeto como deve ir para o disco: o proprio projeto aberto.
 
-        Normalmente o proprio projeto aberto. Mas se a pessoa saiu da
-        conferencia para "O que fazer" e mudou uma opcao (ex.: desmarcou
-        "Dividir folhas ao meio") sem clicar "Conferir", a opcao nova NAO vai
-        para o disco: grava-se o projeto com as opcoes do trabalho
-        (self._opcoes_do_trabalho, guardadas em _sair_da_conferencia), e as
-        paginas de sempre. Antes, fechar ou voltar para o inicio gravava a
-        opcao nova com as paginas de antes, e a abertura seguinte recomecava a
-        conferencia (bug achado em 30/09; decisao da gerente). A opcao nova so
-        vale quando o "Conferir" termina (_analise_pronta limpa o guardado).
-
-        Copia rasa: as paginas e folhas sao as mesmas (nada e duplicado na
-        memoria); so as opcoes da copia sao trocadas. Arriscado: gravar
-        self.projeto direto enquanto _opcoes_do_trabalho estiver guardado.
-        """
-        if self.projeto is None or self._opcoes_do_trabalho is None:
-            return self.projeto
-        import copy
-
-        gravar = copy.copy(self.projeto)
-        for campo, valor in self._opcoes_do_trabalho.items():
-            setattr(gravar, campo, valor)
-        return gravar
-
-    # As opcoes da tela "O que fazer" que mudam quais paginas existem ou como
-    # nascem (ver _parar_a_analise).
-    OPCOES_DO_LIVRO = ("dividir_folhas", "limpar", "filtro_padrao", "endireitar",
-                       "cortar_bordas", "montar_cadernos", "paginas_por_caderno",
-                       *CAMPOS_DA_GRAVURA,      # item 1.2: "Gravuras e fotos"
-                       # emenda N2 do Samuel (30/09): moldura e iluminura no P&B
-                       "pb_decoracao_em_preto_e_branco",
-                       # modo Misto (05/10): "So as letras" e as escolhas dela
-                       *CAMPOS_DO_MISTO,
-                       # "Limpar pontinhos" do livro (06/10)
-                       "limpar_pontinhos",
-                       # "Forca do preto sozinha" (12/10)
-                       "reforcar_texto_falhado",
-                       # item 2.1: o jeito de dividir e o corte da sobra
-                       "dividir_como", "cortar_sobra",
-                       # item 2.5: o corte pelo conteudo
-                       "cortar_pelo_conteudo",
-                       # item 2.13: a borda preta do scanner
-                       "borda_preta", "borda_preta_ate",
-                       # item 2.14: cortar fora ou pintar de branco
-                       "borda_preta_fazer",
-                       # item 2.2: a conta do endireitar
-                       "endireitar_como")
+        (Ate a etapa 3 da obra havia aqui uma troca das opcoes da tela "O que
+        fazer" ainda nao conferidas; a tela saiu do caminho e o Automatico
+        grava direto no projeto aberto, numa acao do desfazer.)"""
+        return self.projeto
 
     def _sair_da_conferencia(self) -> None:
-        """Voltar para as opcoes grava antes: sair nao pode custar trabalho.
-
-        E guarda as opcoes do trabalho como estao agora: se a pessoa mudar uma
-        opcao la, clicar "Conferir" e cancelar, a conferencia volta com as
-        paginas de antes e tem de voltar com as opcoes de antes tambem
-        (_parar_a_analise; verificador, 30/09, s34-s36).
-        """
+        """"Voltar para os livros" (menu Arquivo e o "voltar" da tela): grava
+        antes (sair nao pode custar trabalho) e volta aos cartoes. Desde a
+        etapa 3 da obra nao ha mais a tela "O que fazer" no meio (D-002)."""
         self._salvar_agora()
-        if self.trabalho_carregado and self.projeto is not None:
-            self._opcoes_do_trabalho = {campo: getattr(self.projeto, campo)
-                                        for campo in self.OPCOES_DO_LIVRO}
-        self.telas.setCurrentIndex(OPCOES)
-
-    def _falhou_na_analise(self, mensagem: str) -> None:
-        """Analise deu erro: volta para Opções e mostra o aviso amigavel (regra 3.3).
-
-        O marcador trabalho_carregado volta ao valor de antes da analise
-        (_parar_a_analise): o projeto da tela nao foi tocado (a analise
-        trabalha numa copia), e o que se fizer depois tem de ser gravado.
-        """
-        origem = self.sender()
-        if isinstance(origem, TarefaAnalise) and origem is not self.tarefa:
-            return                        # erro de uma analise que nao e mais a da vez
-        self._parar_a_analise()
-        self.telas.setCurrentIndex(OPCOES)
-        self.avisar(mensagem)
+        self._fechar_a_janela_do_automatico()
+        projetos.esperar_gravacoes(2.0)
+        self.tela_inicio.recarregar()
+        self.telas.setCurrentIndex(INICIO)
 
     def _trocar_tarefa(self, nova) -> None:
         """Poe `nova` em self.tarefa sem soltar uma tarefa que ainda roda.
@@ -1566,32 +1555,6 @@ class JanelaPrincipal(QMainWindow):
         if antiga is not None and antiga.isRunning():
             self._tarefas_saindo.append(antiga)
         self.tarefa = nova
-
-    def _parar_a_analise(self) -> None:
-        """A analise da vez acabou sem resultado (cancelada ou com erro): o
-        marcador trabalho_carregado volta ao que era quando ela comecou.
-
-        Seguro porque a analise trabalha numa copia (analisar): o projeto da
-        tela e o mesmo de antes. Se antes ele era o trabalho carregado (veio
-        da conferencia), continua sendo, e volta a ser gravado; se nao era
-        (livro recem-aberto com trabalho salvo), continua sem gravar por
-        cima. Bug grave de 29/09 (verificador, q21-q23).
-        """
-        if isinstance(self.tarefa, TarefaAnalise):
-            self.trabalho_carregado = self._carregado_antes_da_analise
-        # As opcoes tambem voltam ao que eram quando se saiu da conferencia:
-        # a pessoa mudou uma opcao em "O que fazer" (ex.: desmarcou "Dividir
-        # folhas ao meio"), clicou "Conferir" e cancelou. A conferencia volta
-        # com as paginas de antes; se a opcao nova ficasse, seria gravada com
-        # elas, e na abertura seguinte a conferencia recomecava sem a pessoa
-        # querer (verificador, 30/09, s34-s36). Com o trabalho nao carregado
-        # (livro recem-aberto), nao ha paginas de antes: a opcao nova fica.
-        if (self.trabalho_carregado and self.projeto is not None
-                and self._opcoes_do_trabalho is not None):
-            for campo, valor in self._opcoes_do_trabalho.items():
-                setattr(self.projeto, campo, valor)
-            if self.tela_opcoes.projeto is self.projeto:
-                self.tela_opcoes.mostrar_opcoes()
 
     # --- processamento ----------------------------------------------------
 
@@ -1789,37 +1752,18 @@ class JanelaPrincipal(QMainWindow):
 
     def cancelar(self) -> None:
         """Botão "cancelar" da tela de progresso: pede pra thread parar e volta
-        para Conferir (se ja havia analise) ou Opções.
-
-        Cancelar a analise devolve o marcador trabalho_carregado ao valor de
-        antes (_parar_a_analise); sem isso, voltar a conferencia depois de
-        "cancelar" deixava de gravar tudo ate fechar (bug grave, 29/09).
-        """
-        if self.tarefa is not None and self.tarefa.isRunning():
+        para a area de trabalho. Cancelar o Automatico nao muda nada no livro
+        (ele so grava no fim: _aplicar_o_automatico). A medida que ja acabou,
+        com o resultado ainda na fila, tambem e marcada como cancelada: o
+        resultado e ignorado quando chegar (_automatico_mediu)."""
+        if isinstance(self.tarefa, TarefaAutomatico):
             self.tarefa.cancelar()
-        self._parar_a_analise()
-        destino = CONFERIR if self.projeto and self.projeto.paginas else OPCOES
-        self.telas.setCurrentIndex(destino)
+        elif self.tarefa is not None and self.tarefa.isRunning():
+            self.tarefa.cancelar()
+        self.telas.setCurrentIndex(CONFERIR if self.projeto is not None else INICIO)
 
     def _recomecar(self) -> None:
         """Botão "fazer outro" da tela final: volta para o inicio."""
-        self.tela_inicio.recarregar()
-        self.telas.setCurrentIndex(INICIO)
-
-    def _voltar_das_opcoes(self) -> None:
-        """Botao "voltar" da tela de opcoes: volta para o inicio com os
-        cartoes remontados.
-
-        Ressalva 1 do verificador-3 (06/10/2026): antes o voltar so trocava
-        de tela, e o cartao continuava com a capa (e o andamento) de quando a
-        tela inicial foi montada - um livro girado mostrava a capa sem o giro
-        ate o programa ser aberto de novo, embora a capa.png ja estivesse
-        certa no disco. A capa nova e gravada por tras
-        (projetos.refazer_miniatura_por_tras): espera-se ela chegar ao disco
-        (no maximo 2 s; costuma ser centesimos) antes de ler os resumos, como
-        o "fazer outro" (_recomecar) ja faz. Arriscado: tirar a espera (o
-        cartao poderia ler a capa velha de novo)."""
-        projetos.esperar_gravacoes(2.0)
         self.tela_inicio.recarregar()
         self.telas.setCurrentIndex(INICIO)
 
@@ -1861,6 +1805,8 @@ class JanelaPrincipal(QMainWindow):
         if self.tarefa is not None and self.tarefa.isRunning():
             self.tarefa.cancelar()
             self.tarefa.wait(3000)
+        # etapa 3 da obra: a medida do livro por tras (D-284) tambem para
+        self._parar_a_medida_ao_abrir()
         # As que ja estavam saindo (canceladas) tambem: fechar com uma thread
         # rodando derruba o processo na saida.
         for tarefa in self._tarefas_saindo:

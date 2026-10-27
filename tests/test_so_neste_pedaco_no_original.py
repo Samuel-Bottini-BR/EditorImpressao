@@ -40,7 +40,7 @@ from core.filtros import (
     aplicar_filtro,
     aplicar_filtro_com_selecao,
 )
-from core.selecao import GRAVURA, LETRA, MAO, PAPEL, RETANGULO, Regiao, Selecao, retangulo
+from core.selecao import AUTOMATICO, GRAVURA, LETRA, MAO, PAPEL, RETANGULO, Regiao, Selecao, retangulo
 
 ALTURA, LARGURA = 600, 400
 # o retangulo marcado: um bloco de texto com margem de papel em volta
@@ -110,16 +110,38 @@ def test_pedaco_em_preto_e_branco_deixa_o_texto_preto_e_branco():
     assert set(np.unique(dentro).tolist()) <= {0, 255}
 
 
-@pytest.mark.parametrize("marcacao", [GRAVURA, LETRA, PAPEL])
-def test_pagina_em_original_sem_pedaco_e_a_mesma_imagem(marcacao):
-    """Marcacao sem filtro proprio (a do detector, ou a mao sem "so neste
-    pedaco"): a pagina em Original continua saindo como veio, o MESMO objeto,
-    como antes do conserto."""
+# Etapa 9c da obra (26/10/2026; D-027 "virar uma folha branca", D-227 "pintar de
+# branco -> no PDF sai branca"; promessas P-075 e P-078): o PAPEL marcado A MAO
+# ("Deixar a folha em branco", "pintar de branco") vai a branco tambem no
+# Original - e o comportamento antigo que saiu (antes este teste pedia o mesmo
+# objeto tambem para ele). O papel do DETECTOR continua sem mudar o Original.
+MARCACOES_QUE_NAO_MUDAM = [(GRAVURA, MAO), (LETRA, MAO), (PAPEL, AUTOMATICO)]
+
+
+@pytest.mark.parametrize("marcacao, origem", MARCACOES_QUE_NAO_MUDAM)
+def test_pagina_em_original_sem_pedaco_e_a_mesma_imagem(marcacao, origem):
+    """Marcacao sem filtro proprio (a do detector, ou gravura/letra a mao sem
+    "so neste pedaco"): a pagina em Original continua saindo como veio, o
+    MESMO objeto, como antes do conserto."""
     img = _pagina()
     s = Selecao()
-    s.acrescentar(retangulo(0.1, 0.4, 0.9, 0.9, tipo=marcacao))
+    s.acrescentar(retangulo(0.1, 0.4, 0.9, 0.9, tipo=marcacao, origem=origem))
     saida, mono = aplicar_filtro_com_selecao(img, ORIGINAL, s)
     assert saida is img and mono is False
+
+
+@pytest.mark.parametrize("filtro", [ORIGINAL, TIRAR_FUNDO])
+def test_papel_a_mao_sai_branco_no_original_e_no_tirar_o_fundo(filtro):
+    """D-027 / D-227 (etapa 9c): o papel marcado a mao vai a branco so na
+    area dele; o resto da pagina fica como veio."""
+    img = _pagina()
+    s = Selecao()
+    s.acrescentar(retangulo(0.1, 0.4, 0.9, 0.9, tipo=PAPEL, origem=MAO))
+    saida, mono = aplicar_filtro_com_selecao(img.copy(), filtro, s)
+    assert mono is False
+    assert _tres(saida)[int(ALTURA * 0.45):int(ALTURA * 0.85),
+                        int(LARGURA * 0.15):int(LARGURA * 0.85)].min() == 255
+    assert np.array_equal(_tres(saida)[:int(ALTURA * 0.38)], _tres(img)[:int(ALTURA * 0.38)])
 
 
 def test_pedaco_em_original_numa_pagina_em_original_nao_muda_nada():
@@ -140,11 +162,11 @@ def test_tirar_o_fundo_obedece_ao_pedaco_do_mesmo_jeito(pedido):
     assert not np.array_equal(_tres(no_fundo), img)
 
 
-@pytest.mark.parametrize("marcacao", [GRAVURA, LETRA, PAPEL])
-def test_tirar_o_fundo_sem_pedaco_e_a_mesma_imagem(marcacao):
+@pytest.mark.parametrize("marcacao, origem", MARCACOES_QUE_NAO_MUDAM)
+def test_tirar_o_fundo_sem_pedaco_e_a_mesma_imagem(marcacao, origem):
     img = _pagina()
     s = Selecao()
-    s.acrescentar(retangulo(0.1, 0.4, 0.9, 0.9, tipo=marcacao))
+    s.acrescentar(retangulo(0.1, 0.4, 0.9, 0.9, tipo=marcacao, origem=origem))
     saida, mono = aplicar_filtro_com_selecao(img, TIRAR_FUNDO, s)
     assert saida is img and mono is False
 
