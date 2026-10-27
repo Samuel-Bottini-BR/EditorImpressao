@@ -253,6 +253,10 @@ NOMES_DA_QUALIDADE = {"rapida": "Rápida", "media": "Média", "alta": "Alta"}
 
 ABA_CORTE, ABA_BORDAS, ABA_ANGULO, ABA_FILTRO = "corte", "bordas", "angulo", "filtro"
 ABA_MARCAR = "marcar"
+# As "abas" de dentro, uma por ferramenta, na ordem em que nascem em TODO livro
+# (D-001; etapa 2 da obra, 26/10/2026). A ordem é a de sempre: quem procura uma
+# aba usa _abas_ativas.index(...), nunca a posição. Seguro mudar: a ordem.
+ORDEM_DAS_FERRAMENTAS = ("corte", "bordas", "angulo", "marcar", "filtro")
 
 TITULOS = {
     ABA_CORTE: "Onde cortar",
@@ -765,6 +769,9 @@ class TelaConferir(QWidget):
         self.miniaturas.definir_em_pares(guardadas["em_pares"])
         self._por_as_miniaturas(guardadas["lugar"])
         self.miniaturas.em_pares_mudou.connect(lambda _p: self._guardar_as_miniaturas())
+        # a barra de opções e o editor de marcar: ligados uma vez só (etapa 2
+        # da obra; antes era a cada livro, ver _ligar_ferramentas)
+        self._ligar_ferramentas()
 
     def _montar_barra_de_baixo(self) -> QWidget:
         """A barra fina de baixo, como no prototipo das rodadas 9 a 11:
@@ -946,12 +953,14 @@ class TelaConferir(QWidget):
         painel.para_revisar.aceitar_tudo.connect(self._aceitar_tudo)
         painel.para_revisar.abrir_lista.connect(self._abrir_a_lista_dos_avisos)
         painel.marcar_como.escolheu.connect(self._escolher_tipo_de_marcacao)
+        # (pelo _ao_editor: o editor nasce a cada livro; antes de o primeiro
+        # livro abrir ele nem existe)
         painel.marcar_como.cor_escolhida.connect(              # item 2.18
-            lambda cor: self.editor_selecao.definir_cor_de_pintar(cor))
+            lambda cor: self._ao_editor("definir_cor_de_pintar", cor))
         painel.marcar_como.escurecer_escolhido.connect(        # item 2.18, A ou B
-            lambda escura: self.editor_selecao.definir_tinta_escurecida(escura))
+            lambda escura: self._ao_editor("definir_tinta_escurecida", escura))
         painel.marcar_como.papel_escolhido.connect(            # item 2.18, o papel
-            lambda da_pagina: self.editor_selecao.definir_papel_da_pagina(da_pagina))
+            lambda da_pagina: self._ao_editor("definir_papel_da_pagina", da_pagina))
         painel.filtro_da_pagina.filtro_do_pedaco.connect(
             self._escolher_filtro_da_regiao)
         # etapa 4 do layout: a fila de filtros do painel escolhe o filtro da
@@ -998,23 +1007,45 @@ class TelaConferir(QWidget):
             self.previas.invalidar()
         self.atualizar()
 
+    def _ao_editor(self, metodo: str, *argumentos) -> None:
+        """Chama `metodo` no editor de marcar do livro aberto, se houver um.
+        O editor nasce de novo a cada livro (_montar_aba_marcar); quem liga
+        uma vez só (a barra de opções, os painéis) passa por aqui, e assim
+        nunca fala com o editor de um livro anterior, já destruído."""
+        editor = getattr(self, "editor_selecao", None)
+        if editor is not None:
+            getattr(editor, metodo)(*argumentos)
+
+    def _mudar_no_editor(self, campo: str, valor) -> None:
+        """Muda um ajuste do editor de marcar do livro aberto (tolerância,
+        espessura), se houver um."""
+        editor = getattr(self, "editor_selecao", None)
+        if editor is not None:
+            setattr(editor, campo, valor)
+
     def _ligar_ferramentas(self) -> None:
         """A trilha manda na barra de opcoes e no editor, nesta ordem.
 
         Um lugar so decide qual ferramenta esta na mao. Antes havia uma fila de
         botoes que sabia disso e o editor que sabia de novo, e os dois saiam do
         ar quando alguem esquecia de avisar o outro.
+
+        Etapa 2 da obra (26/10/2026): ligado UMA vez, no _montar. Antes era a
+        cada livro aberto com a ferramenta de marcar, e cada livro somava mais
+        uma ligacao da barra (as antigas apontavam para o editor do livro
+        anterior, ja destruido). Agora a barra fala com o editor da vez por
+        _ao_editor. Arriscado: voltar a ligar aqui direto no editor.
         """
         # Etapa 2 do layout: a trilha agrupada avisa a tela
         # (_ferramenta_da_trilha), e a tela avisa a barra e o editor.
-        opcoes, editor = self.barra_opcoes, self.editor_selecao
-        opcoes.operacao_mudou.connect(editor.definir_operacao)
+        opcoes = self.barra_opcoes
+        opcoes.operacao_mudou.connect(lambda operacao: self._ao_editor("definir_operacao", operacao))
         opcoes.tolerancia_mudou.connect(
-            lambda valor: setattr(editor, "tolerancia", int(valor)))
+            lambda valor: self._mudar_no_editor("tolerancia", int(valor)))
         opcoes.espessura_mudou.connect(
-            lambda valor: setattr(editor, "espessura", float(valor)))
-        opcoes.zoom_mudou.connect(editor.definir_zoom)
-        opcoes.ajustar_pedido.connect(editor.ajustar_a_tela)
+            lambda valor: self._mudar_no_editor("espessura", float(valor)))
+        opcoes.zoom_mudou.connect(lambda zoom: self._ao_editor("definir_zoom", zoom))
+        opcoes.ajustar_pedido.connect(lambda: self._ao_editor("ajustar_a_tela"))
 
         self.trilha.definir_ferramenta(FERRAMENTA_RETANGULO)
         self.barra_opcoes.definir_ferramenta(FERRAMENTA_RETANGULO)
@@ -1035,15 +1066,17 @@ class TelaConferir(QWidget):
             return
         self.trilha.definir_ferramenta(ferramenta)
         self.barra_opcoes.definir_ferramenta(ferramenta)
-        self.editor_selecao.definir_ferramenta(ferramenta)
+        self._ao_editor("definir_ferramenta", ferramenta)
         if ABA_MARCAR in self._abas_ativas and self.aba_atual != ABA_MARCAR:
             self.barra_abas.setCurrentIndex(self._abas_ativas.index(ABA_MARCAR))
         self._acertar_as_propriedades()     # o painel Propriedades segue a ferramenta
 
     def _ferramenta_da_trilha(self, ferramenta: str) -> None:
-        """Clique na trilha. As de pagina (Dividir, Cortar, Endireitar e, ate a
-        etapa 4, Os quatro filtros) escolhem a "aba" delas; as de marcar e de
-        navegar vao para a pagina de marcar."""
+        """Clique na trilha (ou no menu Ferramentas). As de pagina (Dividir,
+        Cortar, Endireitar) escolhem a "aba" delas; as de marcar e de navegar
+        vao para a pagina de marcar. ("Os quatro filtros" saiu da trilha na
+        etapa 2 da obra, R9 403 B; a "aba" dela continua por dentro, para os
+        cartoes do painel Filtro.)"""
         aba = ABA_DA_FERRAMENTA.get(ferramenta)
         if aba is not None:
             if aba in self._abas_ativas:
@@ -1061,12 +1094,12 @@ class TelaConferir(QWidget):
             self.escolher_ferramenta(ferramenta)
 
     def _acertar_a_trilha(self) -> None:
-        """A trilha mostra so as ferramentas deste livro e marca a da vez."""
-        disponiveis = {f for f, aba in ABA_DA_FERRAMENTA.items() if aba in self._abas_ativas}
-        if ABA_MARCAR in self._abas_ativas:
-            from ui.widgets.editor_selecao import ORDEM_DA_TRILHA
-            disponiveis.update(ORDEM_DA_TRILHA)
-        self.trilha.definir_disponiveis(disponiveis)
+        """A trilha mostra TODAS as ferramentas e marca a da vez.
+
+        Até a etapa 2 da obra (26/10/2026) ela mostrava só as do livro (as
+        das caixinhas marcadas na tela "O que fazer"); com nenhuma marcada,
+        só "Os quatro filtros". D-001: todas, sempre."""
+        self.trilha.definir_disponiveis(None)
         aba = self.aba_atual
         if aba == ABA_MARCAR and hasattr(self, "editor_selecao"):
             ferramenta = self.barra_opcoes.ferramenta
@@ -1964,7 +1997,7 @@ class TelaConferir(QWidget):
 
     def _escolher_tipo_de_marcacao(self, tipo: str) -> None:
         """Quem mostra o estado agora e o painel "Marcar como"."""
-        self.editor_selecao.definir_tipo(tipo)
+        self._ao_editor("definir_tipo", tipo)
         self.paineis.marcar_como.tipo = tipo
         self.paineis.marcar_como._montar()
 
@@ -1992,7 +2025,7 @@ class TelaConferir(QWidget):
 
     def _escolher_operacao(self, operacao: str) -> None:
         """Somar ou tirar. Quem mostra o estado agora e a barra de opcoes."""
-        self.editor_selecao.definir_operacao(operacao)
+        self._ao_editor("definir_operacao", operacao)
         self.barra_opcoes._escolher_modo(operacao, avisar=False)
 
     def _escolher_ferramenta(self, ferramenta: str) -> None:
@@ -2004,7 +2037,7 @@ class TelaConferir(QWidget):
 
         Quem mostra o estado agora e o painel "Filtro da pagina".
         """
-        self.editor_selecao.definir_filtro_da_regiao(filtro)
+        self._ao_editor("definir_filtro_da_regiao", filtro)
 
     def _mostrar_aviso_da_marcacao(self, texto: str) -> None:
         """Escreve o resumo do que está marcado (ou o aviso da última ação de
@@ -2518,24 +2551,27 @@ class TelaConferir(QWidget):
 
             self._limpar_abas()
 
-            if projeto.dividir_folhas:
-                self._montar_aba_corte()
-                self._abas_ativas.append(ABA_CORTE)
-            if projeto.cortar_bordas:
-                self._montar_aba_bordas()
-                self._abas_ativas.append(ABA_BORDAS)
-            if projeto.endireitar:
-                self._montar_aba_angulo()
-                self._abas_ativas.append(ABA_ANGULO)
-            if projeto.limpar and projeto.detectar_regioes:
-                self._montar_aba_marcar()
-                self._abas_ativas.append(ABA_MARCAR)
-                # A trilha e a barra so podem ser ligadas depois que o editor
-                # existe - ele nasce aqui, e nao no construtor da tela.
-                self._ligar_ferramentas()
-            if projeto.limpar or not self._abas_ativas:
-                self._montar_aba_filtro()
-                self._abas_ativas.append(ABA_FILTRO)
+            # D-001 (Samuel, 25/09/2026: "Estrutura: Photoshop puro, sem abas.
+            # Uma única tela com todas as ferramentas."), construída de verdade
+            # na etapa 2 da obra de 26/10/2026: TODAS as ferramentas nascem em
+            # todo livro, com qualquer combinação de caixinhas, inclusive
+            # nenhuma. Até aqui valia a regra de julho (commits d9fae8c,
+            # f15e469, d83bb03, do tempo das "abas por etapa"): cada ferramenta
+            # só existia se a caixinha dela estivesse marcada na tela "O que
+            # fazer". A caixinha agora só diz o que o automático faz; a
+            # ferramenta está sempre à mão. Arriscado: voltar a montar só
+            # algumas (tests/test_decisoes_tela.py reprova).
+            self._montar_aba_corte()
+            self._montar_aba_bordas()
+            self._montar_aba_angulo()
+            self._montar_aba_marcar()
+            self._montar_aba_filtro()
+            self._abas_ativas.extend(ORDEM_DAS_FERRAMENTAS)
+            # a ferramenta de marcar que fica na mão ao abrir (ver
+            # _ferramenta_de_partida); a trilha acende pela aba da vez
+            ferramenta = self._ferramenta_de_partida(projeto)
+            self.barra_opcoes.definir_ferramenta(ferramenta)
+            self.editor_selecao.definir_ferramenta(ferramenta)
 
             for aba in self._abas_ativas:
                 self.barra_abas.addTab(TITULOS[aba])
@@ -2555,7 +2591,12 @@ class TelaConferir(QWidget):
                 self.botoes_de_sugestao_3[aba] = self.botao_sugestao_3
                 self._botoes_do_aviso_sem_foco(aba)
 
-            self.barra_abas.setCurrentIndex(0)
+            # A ferramenta da vez ao abrir (_aba_de_partida). As três pilhas
+            # andam juntas: com _carregando, o _trocou_de_aba não as acerta.
+            partida = self._abas_ativas.index(self._aba_de_partida(projeto))
+            self.barra_abas.setCurrentIndex(partida)
+            self.area_imagem.setCurrentIndex(partida)
+            self.barra_botoes.setCurrentIndex(partida)
             self._encolher_a_barra_de_botoes()
             self._esconder_as_setas_dos_lados()
         finally:
@@ -2565,6 +2606,37 @@ class TelaConferir(QWidget):
         self._montar_tira()
         self._aquecer_o_leitor_se_precisar()
         self.atualizar()
+
+    @staticmethod
+    def _aba_de_partida(projeto: Projeto) -> str:
+        """Em qual ferramenta o livro abre (etapa 2 da obra, escolha do agente
+        de layout anotada no ONDE-PAREI; não há decisão do Samuel sobre isto).
+
+        A primeira etapa marcada, na ordem de sempre (Dividir, Cortar,
+        Endireitar), como antes, quando só as marcadas existiam. Sem nenhuma
+        delas, a página na ferramenta de marcar (a página como vai sair, com
+        Zoom e Mão), e não mais a tela provisória dos quatro filtros: ela não
+        tem mais botão na trilha (R9 403 B), e quem abrisse nela não teria
+        como voltar. Seguro mudar: a ordem."""
+        if projeto.dividir_folhas:
+            return ABA_CORTE
+        if projeto.cortar_bordas:
+            return ABA_BORDAS
+        if projeto.endireitar:
+            return ABA_ANGULO
+        return ABA_MARCAR
+
+    @staticmethod
+    def _ferramenta_de_partida(projeto: Projeto) -> str:
+        """A ferramenta de marcar que fica na mão ao abrir: o Retângulo com
+        "procurar gravuras" ligado (como sempre foi), a Mão sem ele - a Mão só
+        olha a página, então um clique sem querer não marca nada. Escolha do
+        agente de layout (etapa 2 da obra), anotada no ONDE-PAREI."""
+        from ui.widgets.editor_selecao import FERRAMENTA_MAO
+
+        if projeto.limpar and projeto.detectar_regioes:
+            return FERRAMENTA_RETANGULO
+        return FERRAMENTA_MAO
 
     def eventFilter(self, vigiado, evento) -> bool:  # noqa: N802 - nome do Qt
         """A area da pagina mudou de tamanho (a janela, ou um painel que abriu
@@ -2618,6 +2690,11 @@ class TelaConferir(QWidget):
         self.paineis.filtro_da_pagina.desmontar()
 
         self._abas_ativas.clear()
+        # o editor de marcar do livro anterior foi destruido junto com a
+        # pagina dele: o nome deixa de apontar para ele (quem o procura usa
+        # hasattr/_ao_editor e nao acha nada ate o novo nascer)
+        if hasattr(self, "editor_selecao"):
+            del self.editor_selecao
         self.visualizadores.clear()
         self.paginas_de_imagem.clear()
         self.linhas_de_botoes.clear()
