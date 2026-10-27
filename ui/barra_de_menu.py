@@ -1,4 +1,18 @@
-"""A barra de menu da janela: Arquivo · Editar · Marcar · Filtro · Página · Ver · Painéis · Ajuda.
+"""A barra de menu da janela: Arquivo · Editar · Ferramentas · Marcar · Filtro · Página · Ver · Painéis · Ajuda.
+
+Etapa 2 da obra (26/10/2026):
+  - menu novo "Ferramentas" (teste do Kaique, 26/10: "nenhum menu tem
+    Endireitar, Cortar ou Dividir"; as ferramentas só tinham ícone): todas
+    as da trilha, com o nome e a letra do atalho, a da vez marcada;
+  - menu Página: "Deixar esta página em branco" (tecla Delete) e "Tirar esta
+    página do livro" (Samuel, 07/10/2026: "Deixar em branco" (tecla Delete;
+    página branca no lugar, encadernação não muda) e "Tirar do livro"). A
+    Delete apagava a página;
+  - menu Ver > "Lado direito": ícones na borda (de fábrica) ou a área de
+    trabalho 1, em sanfona (R7 203 D: "Mas eu também quero ter a opção da
+    area de trabalho 1"; R14 902 C: no menu Ver e nas Configurações);
+  - com um livro aberto todos os menus ficam acesos (lista única 1.12; ver
+    janela_principal._tela_mudou).
 
 Rodada 14 do layout (Samuel, 20/10/2026): 903 "B — Um menu novo, “Painéis”"
 (os cinco painéis da direita, "Fechar o painel" e os ícones da direita, como o
@@ -55,6 +69,7 @@ class BarraDeMenu(QMenuBar):
 
         self._montar_arquivo()
         self._montar_editar()
+        self._montar_ferramentas()
         self._montar_marcar()
         self._montar_filtro()
         self._montar_pagina()
@@ -100,6 +115,9 @@ class BarraDeMenu(QMenuBar):
         for chave, item in self.acoes.items():
             tecla = atalhos.tecla_atual(chave)
             item.setShortcut(QKeySequence(tecla) if tecla else QKeySequence())
+        # a letra mostrada no menu Ferramentas acompanha a troca
+        for ferramenta in getattr(self, "ferramentas_do_menu", ()):
+            self.acoes[f"usar_{ferramenta}"].setText(self._texto_da_ferramenta(ferramenta))
         self.atalhos_mudaram.emit()
 
     def _montar_arquivo(self) -> None:
@@ -123,6 +141,52 @@ class BarraDeMenu(QMenuBar):
         self._acao(menu, "refazer", "Refazer", "Ctrl+Shift+Z")
         menu.addSeparator()
         self._acao(menu, "historico", "Mostrar o histórico")
+
+    def _montar_ferramentas(self) -> None:
+        """Menu Ferramentas (etapa 2 da obra, 26/10/2026; teste do Kaique:
+        nenhum menu tinha Endireitar, Cortar ou Dividir). As ferramentas da
+        trilha, na ordem dela, com o nome escrito e a letra do atalho na coluna
+        da direita (a letra é a de hoje: remapeada nas Configurações, muda aqui
+        também, em reaplicar_atalhos). Marcada, a ferramenta da vez
+        (marcar_ferramenta). A letra é só mostrada aqui: quem atende a tecla é
+        a tela (TelaConferir.tratar_tecla), como sempre - um atalho de uma
+        letra no menu roubaria a letra de quem digita num campo. Chaves
+        "usar_<ferramenta>"."""
+        from PySide6.QtGui import QActionGroup
+
+        from ui.widgets.trilha_agrupada import GRUPOS
+
+        menu = self._menu("Ferramentas")
+        self.grupo_de_ferramentas = QActionGroup(self.janela)
+        self.grupo_de_ferramentas.setExclusive(True)
+        self.ferramentas_do_menu: list[str] = []
+        for grupo in GRUPOS:
+            if grupo == "-":
+                menu.addSeparator()
+                continue
+            for ferramenta in grupo:
+                item = self._acao(menu, f"usar_{ferramenta}", self._texto_da_ferramenta(ferramenta))
+                item.setCheckable(True)
+                self.grupo_de_ferramentas.addAction(item)
+                self.ferramentas_do_menu.append(ferramenta)
+
+    @staticmethod
+    def _texto_da_ferramenta(ferramenta: str) -> str:
+        """O nome da ferramenta e, depois de um tab (a coluna da direita do
+        menu), a letra do atalho de hoje, se ela tiver uma."""
+        from ui.widgets.trilha_agrupada import NOMES, tecla_de
+
+        letra = tecla_de(ferramenta)
+        return NOMES[ferramenta] + (("\t" + letra) if letra else "")
+
+    def marcar_ferramenta(self, ferramenta: str | None) -> None:
+        """Deixa marcada, no menu Ferramentas, a ferramenta da vez (sem
+        virar clique)."""
+        for nome in getattr(self, "ferramentas_do_menu", ()):
+            item = self.acoes[f"usar_{nome}"]
+            item.blockSignals(True)
+            item.setChecked(nome == ferramenta)
+            item.blockSignals(False)
 
     def _montar_marcar(self) -> None:
         menu = self._menu("Marcar")
@@ -178,8 +242,11 @@ class BarraDeMenu(QMenuBar):
             grupo.addAction(item)
         self.acoes[f"giro_em_{ALCANCES[0]}"].setChecked(True)
         menu.addSeparator()
-        self._acao(menu, "apagar", "Apagar esta página", "Del")
-        self._acao(menu, "restaurar", "Restaurar página apagada")
+        # Etapa 2 da obra (Samuel, 07/10/2026): os dois botões, e a Delete
+        # deixa em branco (era "Apagar esta página", com a Delete).
+        self._acao(menu, "deixar_em_branco", "Deixar esta página em branco", "Del")
+        self._acao(menu, "tirar_do_livro", "Tirar esta página do livro", "Shift+Del")
+        self._acao(menu, "restaurar", "Trazer de volta a página tirada")
 
     def _montar_ver(self) -> None:
         menu = self._menu("Ver")
@@ -197,6 +264,22 @@ class BarraDeMenu(QMenuBar):
         menu.addSeparator()
         item = self._acao(menu, "comparar", "Modo comparar")
         item.setCheckable(True)
+        # Etapa 2 da obra: o jeito do lado direito (R7 203 D + R14 902 C).
+        # Os nomes são os da rodada 14 (sugestão do agente, aceitos com a 902).
+        # Só os dois que o Samuel pediu: os ícones na borda (de fábrica) e a
+        # área de trabalho 1; "abas no alto" e "painel solto" não entram (não
+        # foram pedidos e não existem no programa).
+        from PySide6.QtGui import QActionGroup as _Grupo
+
+        from ui.widgets.paineis import JEITOS_DO_LADO_DIREITO, NOMES_DOS_JEITOS
+        lado = menu.addMenu("Lado direito")
+        self.menu_do_lado_direito = lado
+        self.grupo_do_lado_direito = _Grupo(self.janela)
+        self.grupo_do_lado_direito.setExclusive(True)
+        for jeito in JEITOS_DO_LADO_DIREITO:
+            item = self._acao(lado, f"lado_{jeito}", NOMES_DOS_JEITOS[jeito])
+            item.setCheckable(True)
+            self.grupo_do_lado_direito.addAction(item)
         # Etapa 1 do layout (temas, rodada 7: os três ficam, cinza de
         # fábrica). Lugar provisório: onde a troca de tema mora ainda não foi
         # decidido (pode ir para as Configurações).
@@ -240,6 +323,14 @@ class BarraDeMenu(QMenuBar):
             item.setChecked(painel == aberto)
             item.blockSignals(False)
 
+    def marcar_lado_direito(self, jeito: str) -> None:
+        """Deixa marcado, no menu Ver > Lado direito, o jeito que vale."""
+        item = self.acoes.get(f"lado_{jeito}")
+        if item is not None:
+            item.blockSignals(True)
+            item.setChecked(True)
+            item.blockSignals(False)
+
     def marcar_tema(self, nome: str) -> None:
         """Deixa marcado, no menu Ver > Tema, o tema que está valendo."""
         item = self.acoes.get(f"tema_{nome}")
@@ -270,6 +361,16 @@ class BarraDeMenu(QMenuBar):
         for chave in ("pasta_de_saida", "nome_do_arquivo", "processar", "voltar"):
             self.acoes[chave].setEnabled(True)
 
+    def mostrar_tela_das_opcoes(self) -> None:
+        """A tela "O que fazer" de um livro aberto (lista única 1.12, etapa 2
+        da obra): todos os menus acesos, como na tela de trabalho, menos
+        "Confirmar e processar" (o livro ainda não passou pela conferência
+        com as opções desta tela) e "Voltar para as opções" (já está nelas).
+        O que mexe no trabalho passa pela janela (_no_trabalho)."""
+        self.mostrar_tela_de_trabalho()
+        for chave in ("processar", "voltar"):
+            self.acoes[chave].setEnabled(False)
+
     def ligar(self, chave: str, acao) -> None:
         """Liga uma acao ja montada. Levanta se o nome nao existir.
 
@@ -293,7 +394,7 @@ class BarraDeMenu(QMenuBar):
         linhas = []
         for titulo, menu in self.menus.items():
             do_menu = [
-                f"    {a.text().replace('&', '')}"
+                f"    {a.text().replace('&', '').replace(chr(9), '  —  ')}"
                 f"{'  —  ' + a.shortcut().toString() if not a.shortcut().isEmpty() else ''}"
                 for a in menu.actions()
                 if not a.isSeparator() and not a.menu()

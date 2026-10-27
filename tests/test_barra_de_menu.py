@@ -36,8 +36,11 @@ def janela(app, tmp_path, monkeypatch):
 
 
 def test_os_menus_do_desenho(janela):
-    """Os sete do desenho e o "Painéis" (rodada 14 do layout, 903 B)."""
-    esperados = ["Arquivo", "Editar", "Marcar", "Filtro", "Página", "Ver", "Painéis", "Ajuda"]
+    """Os sete do desenho, o "Painéis" (rodada 14 do layout, 903 B) e o
+    "Ferramentas" (etapa 2 da obra, 26/10/2026: o teste do Kaique não achou
+    Endireitar, Cortar nem Dividir em menu nenhum)."""
+    esperados = ["Arquivo", "Editar", "Ferramentas", "Marcar", "Filtro", "Página", "Ver",
+                 "Painéis", "Ajuda"]
     assert list(janela.menu.menus) == esperados
 
 

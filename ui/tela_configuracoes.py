@@ -5,15 +5,15 @@ as partes ficam numa lista à esquerda e, clicando numa, ela aparece à direita.
 ("C — Nos dois lugares"): o tema se troca aqui (parte "Aparência") e no menu Ver.
 
 As partes de hoje:
-    Aparência            o tema (escuro, cinza de fábrica, claro).
+    Aparência            o tema (escuro, cinza de fábrica, claro) e, desde a etapa 2 da obra
+                         (26/10/2026), o "Lado direito" (ícones na borda ou a área de trabalho 1).
     Atalhos de teclado   cada atalho, com captura de tecla e aviso de conflito (a tela de antes).
     Velocidade           páginas ao mesmo tempo (item 2.16; juntado em 23/10/2026).
     Medidas e receitas   cm/mm/polegadas e a receita do livro novo (item 2.19).
     Impressão            margem da encadernação e a beirada que a impressora não imprime (2.6).
 
 Ainda não entram (não existem no programa; não foram inventadas): "Para todos os livros" (a
-troca do retângulo do corte do G6 para todos os livros) e o "Lado direito" (rodada 14, 902 C:
-os outros jeitos do lado direito ainda não foram construídos). Os nomes das partes foram
+troca do retângulo do corte do G6 para todos os livros). Os nomes das partes foram
 sugestão do agente de layout na rodada 13.
 
 Cada atalho vem do registro único em `atalhos.py` - a mesma tabela que alimenta o menu e a
@@ -132,8 +132,43 @@ class TelaConfiguracoes(QDialog):
             linha.addWidget(botao)
         linha.addStretch()
         caixa.addLayout(linha)
+
+        # Etapa 2 da obra (26/10/2026): o lado direito da tela de trabalho,
+        # aqui e no menu Ver (Samuel, rodada 14, 902 C: "Nos dois lugares";
+        # rodada 7, 203 D: "Mas eu também quero ter a opção da area de
+        # trabalho 1"). O mesmo caminho do menu (janela._trocar_lado_direito).
+        from ui.widgets.paineis import JEITOS_DO_LADO_DIREITO, NOMES_DOS_JEITOS, jeito_guardado
+
+        caixa.addSpacing(14)
+        self._cabeca(caixa, "Lado direito", "Como os painéis (Para revisar, Automático, "
+                     "Propriedades, Filtro da página, Histórico) ficam na tela de trabalho.")
+        coluna = QVBoxLayout()
+        self.grupo_lado = QButtonGroup(self)
+        self.botoes_lado: dict[str, QRadioButton] = {}
+        atual = jeito_guardado()
+        for jeito in JEITOS_DO_LADO_DIREITO:
+            botao = QRadioButton(NOMES_DOS_JEITOS[jeito])
+            botao.setCursor(Qt.PointingHandCursor)
+            botao.setChecked(jeito == atual)
+            botao.toggled.connect(lambda marcado, j=jeito: marcado and self._trocar_lado(j))
+            self.grupo_lado.addButton(botao)
+            self.botoes_lado[jeito] = botao
+            coluna.addWidget(botao)
+        caixa.addLayout(coluna)
         caixa.addStretch()
         return parte
+
+    def _trocar_lado(self, jeito: str) -> None:
+        """Troca o jeito do lado direito pelo mesmo caminho do menu Ver >
+        "Lado direito" (a janela põe para valer, guarda e marca o menu); sem a
+        janela, só guarda."""
+        janela = self.parent()
+        if janela is not None and hasattr(janela, "_trocar_lado_direito"):
+            janela._trocar_lado_direito(jeito)
+        else:
+            from ui.widgets.paineis import guardar_jeito
+
+            guardar_jeito(jeito)
 
     def _trocar_tema(self, nome: str) -> None:
         """Troca o tema pelo mesmo caminho do menu Ver > Tema (a janela marca o

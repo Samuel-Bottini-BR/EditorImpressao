@@ -1,0 +1,5 @@
+livro: Marial de sermoens - Frei Balthasar Paez. (1).pdf (907 folhas); 5 vezes cada; mediana em segundos
+nenhuma              mediana 2.332 s  (todas: 3.046, 2.218, 2.392, 2.247, 2.332)
+so_limpar            mediana 2.204 s  (todas: 2.191, 2.445, 2.216, 2.204, 2.196)
+tudo                 mediana 2.612 s  (todas: 2.636, 2.748, 2.612, 2.334, 2.143)
+dividir_endireitar   mediana 2.296 s  (todas: 2.198, 2.296, 2.277, 2.320, 2.350)

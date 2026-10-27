@@ -39,7 +39,7 @@ import cv2
 import numpy as np
 
 import atalhos
-from PySide6.QtCore import QPoint, QRect, Qt, Signal
+from PySide6.QtCore import QEvent, QPoint, QRect, Qt, Signal
 from PySide6.QtGui import (
     QColor,
     QImage,
@@ -870,6 +870,24 @@ class EditorSelecao(QWidget):
                                            else 1 / PASSO_DO_ZOOM))
         else:
             super().wheelEvent(evento)
+
+    def event(self, evento) -> bool:  # noqa: D401 - nome do Qt
+        """Com uma área escolhida pela ferramenta Ajustar, a Delete (e a tecla
+        de apagar) é DESTE editor - apaga a área -, e não o atalho da janela
+        (menu Página > "Deixar esta página em branco", que tem a Delete desde a
+        etapa 2 da obra, 26/10/2026; antes era "Apagar esta página", e a Delete
+        aqui apagava a página inteira em vez da área). Aceitar o
+        ShortcutOverride é o jeito do Qt de dizer "esta tecla é minha"; o
+        keyPressEvent abaixo faz o resto. Sem área escolhida, a Delete
+        continua sendo da janela."""
+        if (evento.type() == QEvent.ShortcutOverride
+                and self.ferramenta == FERRAMENTA_AJUSTAR
+                and evento.key() in (Qt.Key_Delete, Qt.Key_Backspace)
+                and self.escolhida is not None
+                and 0 <= self.escolhida < len(self.selecao.regioes)):
+            evento.accept()
+            return True
+        return super().event(evento)
 
     def keyPressEvent(self, evento) -> None:  # noqa: N802
         """Esc cancela um poligono em andamento; Ctrl+Z desfaz a ultima marcacao."""

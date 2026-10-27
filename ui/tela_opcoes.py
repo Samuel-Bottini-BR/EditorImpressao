@@ -118,6 +118,13 @@ from core.filtros import (
 )
 from core.pipeline import resumo_em_portugues
 
+# A frase do resumo com NADA marcado (etapa 2 da obra, 26/10/2026; D-009). Antes
+# era "Marque pelo menos uma coisa para eu fazer." com o "Conferir" cinza.
+# Seguro mudar: o texto.
+FRASE_SEM_NADA_MARCADO = (
+    "Nada marcado: o livro abre como veio, na área de trabalho, com todas as "
+    "ferramentas para você fazer à mão.")
+
 
 def _com_o_nome_do_editor(resumo: str) -> str:
     """Rodada 14 do layout, 907 B ("o do Editor"): a linha-resumo diz o jeito
@@ -1069,9 +1076,21 @@ class TelaOpcoes(QWidget):
         self._rotulos_de_filtro[TIRAR_FUNDO].setVisible(mostrar_fundo)
         self.painel_caderno.setVisible(self.projeto.montar_cadernos)
 
-        self.resumo.setText(_com_o_nome_do_editor(resumo_em_portugues(self.projeto, self.total_folhas)))
+        # Etapa 2 da obra (26/10/2026): sem nenhuma caixinha marcada o livro
+        # TAMBEM abre (D-009, Samuel, 26/10: "eu deveria conseguir abrir o livro
+        # sem escolher nenhuma opção para fazer tudo manualmente"; D-001: todas
+        # as ferramentas na área de trabalho, com qualquer caixinha). Antes o
+        # "Conferir" ficava cinza com "Marque pelo menos uma coisa para eu
+        # fazer." - achado no print da janela de verdade, sem caixinhas. A frase
+        # de nada marcado mora aqui porque a do resumo é do processamento
+        # (core/pipeline.resumo_em_portugues, de outra frente).
+        if self.projeto.alguma_funcao_marcada:
+            resumo = resumo_em_portugues(self.projeto, self.total_folhas)
+        else:
+            resumo = FRASE_SEM_NADA_MARCADO
+        self.resumo.setText(_com_o_nome_do_editor(resumo))
         self._acertar_altura_da_rolagem()
-        self.botao_conferir.setEnabled(self.projeto.alguma_funcao_marcada)
+        self.botao_conferir.setEnabled(True)
 
 
 def _separador() -> QFrame:

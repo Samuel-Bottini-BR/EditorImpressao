@@ -18,10 +18,17 @@ lista do grupo. Laço magnético e Seleção rápida, que o protótipo mostrava
 apagados ("ainda não existe"), não entram: botão que não faz nada não vai
 para o programa.
 
-PROVISÓRIO até a etapa 4 do layout: o último botão, "Os quatro filtros", abre
-a tela dos quatro filtros da página (a antiga aba Filtro). Na etapa 4 o
-painel Filtro da página (já decidido: fila de filtros + partes) toma o lugar
-dela, e este botão sai.
+"Os quatro filtros" (o botão provisório que abria a tela dos quatro filtros
+da página, a antiga aba Filtro) SAIU da trilha na etapa 2 da obra de
+26/10/2026: o painel "Filtro da página" (R9 403 B, "Filtros numa fila + partes
+que abrem e fecham", com a tela cheia dos filtros) faz o mesmo e mais, e as
+duas portas com o mesmo desenho confundiam (lista única 5.13). O nome
+FERRAMENTA_FILTROS continua existindo por dentro (a tela ainda tem a "aba"
+dos cartões, de onde o painel tira as amostras), mas nenhum botão leva a ela.
+
+D-001 (25/09: "Uma única tela com todas as ferramentas"): desde a etapa 2 da
+obra a tela mostra SEMPRE todos os botões (definir_disponiveis(None)); o
+"disponíveis" continua aqui só para quem quiser esconder um de propósito.
 
 Os ícones são desenhados à mão (nada de emoji em rótulo, regra do projeto) e
 pintados com as cores do tema da vez (ui/estilo.py), lidas na hora.
@@ -104,8 +111,7 @@ GRUPOS = (
     (FERRAMENTA_DIVIDIR,), (FERRAMENTA_CORTAR,), (FERRAMENTA_ENDIREITAR,), "-",
     (FERRAMENTA_RETANGULO, FERRAMENTA_ELIPSE), (FERRAMENTA_LACO, FERRAMENTA_POLIGONO),
     (FERRAMENTA_PINCEL,), (FERRAMENTA_VARINHA, FERRAMENTA_COR), (FERRAMENTA_AJUSTAR,), "-",
-    (FERRAMENTA_ZOOM,), (FERRAMENTA_MAO,), "-",
-    (FERRAMENTA_FILTROS,),
+    (FERRAMENTA_ZOOM,), (FERRAMENTA_MAO,),
 )
 NOMES_DOS_GRUPOS = {FERRAMENTA_RETANGULO: "Formas", FERRAMENTA_LACO: "Contornar",
                     FERRAMENTA_VARINHA: "Pegar pela cor"}
@@ -251,6 +257,9 @@ class TrilhaAgrupada(QWidget):
     escolhida (sinal `escolhida`); quem troca de modo é a tela."""
 
     escolhida = Signal(str)
+    # a ferramenta marcada mudou, por clique ou por fora (o menu Ferramentas
+    # da janela acompanha; etapa 2 da obra). Leva "" quando nenhuma.
+    ferramenta_mudou = Signal(str)
 
     def __init__(self, parent=None) -> None:
         """Começa com o Retângulo à vista no grupo Formas e tudo disponível."""
@@ -293,12 +302,16 @@ class TrilhaAgrupada(QWidget):
 
     def definir_ferramenta(self, ferramenta: str | None) -> None:
         """Marca a ferramenta escolhida (por fora: tecla, menu, troca de modo)
-        e põe ela à vista no grupo dela. Não avisa ninguém."""
+        e põe ela à vista no grupo dela. Não avisa a tela (não emite
+        `escolhida`); só `ferramenta_mudou`, para a marca do menu acompanhar."""
         indice = grupo_de(ferramenta) if ferramenta else -1
         if indice >= 0:
             self._a_vista[indice] = ferramenta
+        mudou = ferramenta != self.ferramenta
         self.ferramenta = ferramenta
         self.update()
+        if mudou:
+            self.ferramenta_mudou.emit(ferramenta or "")
 
     def a_vista(self, indice: int) -> str:
         """A ferramenta que o botão do grupo mostra agora."""

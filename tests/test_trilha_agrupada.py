@@ -5,7 +5,11 @@ Decisões do Samuel conferidas aqui:
   - rodada 8, 302 C: trilha agrupada como no Photoshop, com a letra do atalho
     no balão do mouse, também nas ferramentas escondidas no mesmo botão;
   - rodada 8, 303 B: a barra de opções da ferramenta na linha dos menus;
-  - rodada 9, 405 C: desfazer e refazer sempre à mão (barra de baixo).
+  - rodada 9, 405 C: desfazer e refazer sempre à mão (barra de baixo);
+  - D-001 (25/09, "Uma única tela com todas as ferramentas"; etapa 2 da obra
+    de 26/10/2026): os testes de janela não pulam mais quando falta uma
+    ferramenta - todas existem em todo livro, e faltar uma é FALHA;
+  - R9 403 B: "Os quatro filtros" saiu da trilha (o painel Filtro faz o mesmo).
 
 Testes de máquina (sem janela na tela, tests/conftest.py).
 """
@@ -65,6 +69,9 @@ def test_a_trilha_tem_os_grupos_do_prototipo(app):
     assert ("varinha", "cor") in grupos
     assert grupos[:3] == [(FERRAMENTA_DIVIDIR,), (FERRAMENTA_CORTAR,), (FERRAMENTA_ENDIREITAR,)]
     assert TrilhaAgrupada().width() == LARGURA == 44
+    # R9 403 B (etapa 2 da obra): o botão provisório "Os quatro filtros" saiu
+    assert grupo_de(FERRAMENTA_FILTROS) == -1
+    assert all(FERRAMENTA_FILTROS not in g for g in grupos)
 
 
 def test_o_balao_mostra_a_letra_tambem_das_escondidas(app):
@@ -104,11 +111,24 @@ def test_o_botao_direito_abre_o_grupo_com_as_letras(app):
     menu.close()
 
 
-def test_so_aparecem_as_ferramentas_do_livro(app):
+def test_de_fabrica_a_trilha_mostra_todos_os_botoes(app):
+    """D-001: a trilha nasce com todos os grupos à vista. (Até a etapa 2 da
+    obra este teste era o contrário: "só aparecem as ferramentas do livro".)"""
     trilha = TrilhaAgrupada()
     trilha.resize(LARGURA, 600)
-    trilha.definir_disponiveis({FERRAMENTA_CORTAR, FERRAMENTA_FILTROS})
-    assert set(trilha.retangulos()) == {grupo_de(FERRAMENTA_CORTAR), grupo_de(FERRAMENTA_FILTROS)}
+    todos = {i for i, g in enumerate(GRUPOS) if g != "-"}
+    assert set(trilha.retangulos()) == todos
+    trilha.definir_disponiveis(None)
+    assert set(trilha.retangulos()) == todos
+
+
+def test_esconder_um_de_proposito_ainda_funciona(app):
+    """O "disponíveis" continua existindo para quem quiser esconder um botão
+    de propósito (a tela não usa mais: D-001)."""
+    trilha = TrilhaAgrupada()
+    trilha.resize(LARGURA, 600)
+    trilha.definir_disponiveis({FERRAMENTA_CORTAR, "zoom"})
+    assert set(trilha.retangulos()) == {grupo_de(FERRAMENTA_CORTAR), grupo_de("zoom")}
 
 
 @pytest.mark.parametrize("altura", [380, 600, 800])
@@ -126,25 +146,25 @@ def test_sem_abas_na_tela_e_a_trilha_troca_o_modo(janela, pasta):
     tela = _aberta(janela, pasta)
     assert not tela.barra_abas.isVisible(), "as abas sairam da tela (estilo Photoshop)"
     for ferramenta, aba in ((FERRAMENTA_DIVIDIR, "corte"), (FERRAMENTA_CORTAR, "bordas"),
-                            (FERRAMENTA_FILTROS, "filtro")):
-        if aba in tela._abas_ativas:
-            tela.trilha.escolher(ferramenta)
-            assert tela.aba_atual == aba
-            assert tela.trilha.ferramenta == ferramenta
-    if "marcar" in tela._abas_ativas:
-        tela.trilha.escolher("laco")
-        assert tela.aba_atual == "marcar"
-        assert tela.barra_opcoes.ferramenta == "laco"
+                            (FERRAMENTA_ENDIREITAR, "angulo")):
+        assert aba in tela._abas_ativas, f"D-001: falta a ferramenta {ferramenta}"
+        tela.trilha.escolher(ferramenta)
+        assert tela.aba_atual == aba
+        assert tela.trilha.ferramenta == ferramenta
+    assert "marcar" in tela._abas_ativas, "D-001: faltam as ferramentas de marcar"
+    tela.trilha.escolher("laco")
+    assert tela.aba_atual == "marcar"
+    assert tela.barra_opcoes.ferramenta == "laco"
 
 
 def test_trocar_de_aba_por_dentro_acerta_a_trilha(janela, pasta):
     """Quem ainda troca a "aba" por dentro (atalhos, testes antigos) deixa a
     trilha marcando a ferramenta certa."""
     tela = _aberta(janela, pasta)
-    if "bordas" in tela._abas_ativas:
-        tela.barra_abas.setCurrentIndex(tela._abas_ativas.index("bordas"))
-        assert tela.trilha.ferramenta == FERRAMENTA_CORTAR
-        assert tela.barra_opcoes.rotulo.text().startswith("Cortar as bordas")
+    assert "bordas" in tela._abas_ativas, "D-001: o Cortar existe em todo livro"
+    tela.barra_abas.setCurrentIndex(tela._abas_ativas.index("bordas"))
+    assert tela.trilha.ferramenta == FERRAMENTA_CORTAR
+    assert tela.barra_opcoes.rotulo.text().startswith("Cortar as bordas")
 
 
 def test_escolher_ferramenta_de_pagina_pelo_ponto_unico_troca_a_tela(janela, pasta):
@@ -153,13 +173,12 @@ def test_escolher_ferramenta_de_pagina_pelo_ponto_unico_troca_a_tela(janela, pas
     a trilha marcava Endireitar e a tela ficava na de marcar)."""
     tela = _aberta(janela, pasta)
     for ferramenta, aba in ((FERRAMENTA_ENDIREITAR, "angulo"), (FERRAMENTA_CORTAR, "bordas"),
-                            (FERRAMENTA_DIVIDIR, "corte"), (FERRAMENTA_FILTROS, "filtro")):
-        if "marcar" in tela._abas_ativas:
-            tela.escolher_ferramenta("laco")
-        if aba in tela._abas_ativas:
-            tela.escolher_ferramenta(ferramenta)
-            assert tela.aba_atual == aba
-            assert tela.trilha.ferramenta == ferramenta
+                            (FERRAMENTA_DIVIDIR, "corte")):
+        tela.escolher_ferramenta("laco")
+        assert tela.aba_atual == "marcar"
+        tela.escolher_ferramenta(ferramenta)
+        assert tela.aba_atual == aba
+        assert tela.trilha.ferramenta == ferramenta
 
 
 def test_os_controles_do_endireitar_g5_moram_na_ferramenta_endireitar(janela, pasta):
@@ -171,8 +190,7 @@ def test_os_controles_do_endireitar_g5_moram_na_ferramenta_endireitar(janela, pa
     from PySide6.QtWidgets import QApplication
 
     tela = _aberta(janela, pasta)
-    if "angulo" not in tela._abas_ativas:
-        pytest.skip("este livro nao endireita")
+    assert "angulo" in tela._abas_ativas, "D-001: o Endireitar existe em todo livro"
     tela.trilha.escolher(FERRAMENTA_ENDIREITAR)
     assert tela.aba_atual == "angulo"
     tela.paineis.abrir("props")
@@ -251,8 +269,7 @@ def test_as_setinhas_do_angulo_mudam_de_cor_com_o_tema(janela, pasta):
     from ui import estilo
 
     tela = _aberta(janela, pasta)
-    if "angulo" not in tela._abas_ativas:
-        pytest.skip("este livro nao endireita")
+    assert "angulo" in tela._abas_ativas, "D-001: o Endireitar existe em todo livro"
 
     def cor_da_seta():
         imagem = tela.botao_angulo_horario.icon().pixmap(48, 48).toImage()

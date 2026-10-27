@@ -1,0 +1,15 @@
+ok   nenhuma caixinha de etapa marcada
+ok   menus acesos na tela das caixinhas: ['Arquivo', 'Editar', 'Ferramentas', 'Marcar', 'Filtro', 'Página', 'Ver', 'Painéis', 'Ajuda']
+ok   abriu a área de trabalho
+ok   ferramentas montadas: ['corte', 'bordas', 'angulo', 'marcar', 'filtro']
+ok   botões na trilha: 10
+ok   menus acesos na área de trabalho: ['Arquivo', 'Editar', 'Ferramentas', 'Marcar', 'Filtro', 'Página', 'Ver', 'Painéis', 'Ajuda']
+ok   balão de endireitar: '<b>Endireitar</b><br>Gire pela bolinha azul, ou desenhe a linha laranja em cima de uma linha do texto.'
+ok   balão de retangulo: '<b>Retângulo</b>&nbsp;&nbsp;<b>[R]</b><br>Arraste de um canto ao outro.<br>No mesmo botão: Oval [O]<br><i>segure o botão ou clique com o direito para trocar</i>'
+ok   o clique na trilha escolheu endireitar
+ok   o clique na trilha escolheu retangulo
+ok   Delete na página 3: em_branco=True, tirada do livro=False
+ok   menu Ver > Lado direito > Sanfona
+ok   clique na linha "Para revisar" da sanfona abriu o painel
+ok   WM_CLOSE fechou a janela
+14 de 14

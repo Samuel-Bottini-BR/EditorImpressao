@@ -354,7 +354,9 @@ QPushButton#plano {{ border: none; background: transparent; color: {c["link"]}; 
 QPushButton#plano:hover {{ text-decoration: underline; background: transparent; }}
 
 QCheckBox {{ spacing: 10px; font-size: 16px; font-weight: 600; background: transparent; }}
-QCheckBox::indicator {{ width: 22px; height: 22px; }}
+/* a caixinha com quadrado, marcada e desmarcada (lista única 2.2; etapa 2 da
+   obra): ver _regras_da_caixinha */
+{_regras_da_caixinha(c)}
 QCheckBox:disabled {{ color: {c["desligado"]}; }}
 QLabel:disabled {{ color: {c["desligado"]}; }}
 
@@ -515,7 +517,9 @@ QLabel#rotuloDoPainel {{ color: {c["texto"]}; font-size: 13px; }}
 # da cor do tema desmarcada; azul com tique branco marcada. Usada, por
 # enquanto, so nas caixinhas do grupo "Gravuras e fotos" e na da aba Marcar;
 # as outras caixinhas do programa continuam como estao (mudar todas e decisao
-# de tela: Lista de bugs de 30/09).
+# de tela: Lista de bugs de 30/09). Etapa 2 da obra (26/10/2026): TODAS as
+# caixinhas ganharam o quadrado pela folha do programa (_regras_da_caixinha,
+# lista unica 2.2); esta continua para as que ja a usavam (tamanho da letra).
 #
 # O tique e desenhado uma vez, com o proprio Qt, num PNG na pasta temporaria
 # (a folha de estilo so aceita imagem por arquivo, e assim nada precisa ir
@@ -527,32 +531,57 @@ _CAIXINHA_COM_QUADRADO: str | None = None
 
 
 def _desenhar_o_tique() -> str | None:
-    """Grava o tique branco (24 x 24) num PNG temporario e devolve o caminho
-    com barras normais (o que a folha de estilo quer), ou None."""
+    """Grava o tique branco (48 x 48) num PNG temporario e devolve o caminho
+    com barras normais (o que a folha de estilo quer), ou None.
+
+    Etapa 2 da obra (26/10/2026): desenhado com o Pillow (já é dependência do
+    programa), e não mais com o Qt, porque agora a folha de estilo do programa
+    inteiro usa o tique (todas as caixinhas com quadrado, lista única 2.2) e
+    ela é montada ao importar este arquivo, antes de existir a QApplication
+    (o QPixmap do Qt precisa dela). Desenhado 4x maior e reduzido, para a
+    borda sair lisa. Seguro mudar: a grossura e os pontos."""
     try:
         import tempfile
         from pathlib import Path
 
-        from PySide6.QtCore import QPointF, Qt
-        from PySide6.QtGui import QColor, QPainter, QPen, QPixmap
-
         caminho = Path(tempfile.gettempdir()) / "editor_impressao_tique.png"
         if not caminho.is_file():
-            imagem = QPixmap(48, 48)
-            imagem.fill(Qt.transparent)
-            pintor = QPainter(imagem)
-            pintor.setRenderHint(QPainter.Antialiasing)
-            caneta = QPen(QColor("white"), 6.5)
-            caneta.setCapStyle(Qt.RoundCap)
-            caneta.setJoinStyle(Qt.RoundJoin)
-            pintor.setPen(caneta)
-            pintor.drawPolyline([QPointF(10.5, 25.5), QPointF(20, 35), QPointF(38, 14)])
-            pintor.end()
-            if not imagem.save(str(caminho), "PNG"):
-                return None
+            from PIL import Image, ImageDraw
+
+            escala = 4
+            imagem = Image.new("RGBA", (48 * escala, 48 * escala), (0, 0, 0, 0))
+            pintor = ImageDraw.Draw(imagem)
+            pontos = [(10.5 * escala, 25.5 * escala), (20 * escala, 35 * escala),
+                      (38 * escala, 14 * escala)]
+            grossura = int(6.5 * escala)
+            pintor.line(pontos, fill=(255, 255, 255, 255), width=grossura, joint="curve")
+            raio = grossura / 2
+            for x, y in (pontos[0], pontos[-1]):            # as pontas redondas
+                pintor.ellipse((x - raio, y - raio, x + raio, y + raio), fill=(255, 255, 255, 255))
+            imagem.resize((48, 48), Image.LANCZOS).save(str(caminho), "PNG")
         return caminho.as_posix()
     except Exception:  # noqa: BLE001 - sem o tique, a caixinha marcada fica azul cheia
         return None
+
+
+def _regras_da_caixinha(c: dict[str, str]) -> str:
+    """A caixinha COM QUADRADO para todas as caixinhas do programa (lista
+    única 2.2, 23/10/2026: "Caixinha marcada aparece só como um tique, sem
+    quadrado: fácil desmarcar sem querer"; etapa 2 da obra, 26/10/2026).
+    Desmarcada: quadrado com a borda da cor do tema; marcada: quadrado azul
+    cheio com o tique branco; apagada: quadrado cinza. Antes só algumas
+    caixinhas tinham isto (estilo_da_caixinha_com_quadrado, abaixo); as da
+    tela "O que fazer" saíam só com o tique. Seguro mudar: cores e tamanho."""
+    tique = _desenhar_o_tique()
+    imagem = f" image: url({tique});" if tique else ""
+    return (f"QCheckBox::indicator {{ width: 18px; height: 18px; border: 2px solid {c['fraco']};"
+            f" border-radius: 4px; background: {c['bar2']}; }}\n"
+            f"QCheckBox::indicator:hover {{ border-color: {c['azul']}; }}\n"
+            f"QCheckBox::indicator:checked {{ border-color: {c['azul']}; background: {c['azul']};"
+            f"{imagem} }}\n"
+            f"QCheckBox::indicator:disabled {{ border-color: {c['linha']}; background: {c['bar']}; }}\n"
+            f"QCheckBox::indicator:checked:disabled {{ border-color: {c['linha']};"
+            f" background: {c['desligado']};{imagem} }}\n")
 
 
 def estilo_da_caixinha_com_quadrado(tamanho_da_letra: int = 14) -> str:
