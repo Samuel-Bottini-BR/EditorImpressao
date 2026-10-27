@@ -146,3 +146,20 @@ def test_papel_que_a_maquina_marcou_nao_branqueia_o_original(tmp_path):
     img = _gerar(projeto)
     assert img[310:490, 90:270].max() < 60, "o bloco preto sumiu com papel da máquina"
     assert _amarelado(img[40:200, 350:550])
+
+
+# --- item 2: o nome do arquivo de saída sem acento ----------------------------
+
+def test_nome_de_saida_sugerido_sai_sem_acento():
+    """Lista única 5.15 (teste do Kaique, 23/10/2026): o nome sugerido saía
+    "antiphon-trecho - mágico pro.pdf". Regra do projeto (CLAUDE.md §3):
+    caminho de disco sem acento - o nome do livro e o do filtro. O mesmo
+    sem_acento do nome "para imprimir" (ui/dialogo_impressao.sem_acento)."""
+    from core.filtros import MAGICO_PRO
+    from modelos import nome_de_saida_sugerido
+
+    projeto = Projeto(caminho_entrada="x.pdf", caminho_saida="", nome="Ofício da Imaculada Conceição")
+    projeto.limpar, projeto.filtro_padrao, projeto.montar_cadernos = True, MAGICO_PRO, False
+    nome = nome_de_saida_sugerido(projeto)
+    assert nome == "Oficio da Imaculada Conceicao - magico pro.pdf"
+    assert nome.isascii()
