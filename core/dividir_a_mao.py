@@ -23,8 +23,9 @@ O QUE ESTE MÓDULO FAZ (só contas; a tela é ui/tela_conferir.py)
       de esconder a metade da direita, garantia; ver o histórico em
       modelos.Projeto.paginas_ativas).
     - metades_da_pagina: a página inteira partida em duas (as duas herdam o
-      filtro e os ajustes dela; corte, ângulo, marcação e mover, que eram da
-      folha inteira, não passam). O Automático usa a mesma conta
+      filtro e os ajustes dela; corte, ângulo e mover, que eram da folha
+      inteira, não passam; a marcação feita à mão vai para a metade em que
+      está, D-528, etapa 9d). O Automático usa a mesma conta
       (core/automatico._dividir).
     - achar_a_tampa (D-495): a faixa preta da tampa do scanner em volta do
       livro, na folha GIRADA, achada só quando a pessoa divide a folha à mão.
@@ -78,12 +79,47 @@ def _limpos(pagina: ConfigPagina) -> dict[str, Any]:
     return limpos
 
 
-def metades_da_pagina(inteira: ConfigPagina) -> list[ConfigPagina]:
+def metades_da_pagina(inteira: ConfigPagina, corte: float | None = None) -> list[ConfigPagina]:
     """A página inteira partida em [esquerda, direita] (o índice no livro é
-    posto por quem as põe na lista)."""
+    posto por quem as põe na lista).
+
+    Etapa 9d da obra (D-528, 27/10/2026: "Ao dividir uma folha pela primeira
+    vez, as marcações feitas na folha inteira vão para a metade em que
+    estão"): com `corte` (a linha da divisão, fração da largura da folha
+    girada), as marcações FEITAS À MÃO da página inteira (gravura, letra,
+    papel, "pintar de branco", "só neste pedaço", "Deixar a folha em branco")
+    vão para a metade onde está o centro de cada uma
+    (core/zonas_na_folha.repartir_nas_metades), no mesmo lugar do papel; a
+    metade que as recebe fica com a marca "mexida à mão" do Marcar. As que a
+    MÁQUINA achou não passam: a metade ganha a marcação provisória
+    (marcacao_provisoria), e o desenho do tamanho do PDF procura a gravura de
+    novo nela, com a feita à mão por cima (core.pipeline.garantir_selecao) -
+    o detector na página inteira de duas páginas não vale numa metade (a
+    "capa" da folha inteira cairia numa metade só). Sem `corte` (quem chama
+    não sabe a linha), nada passa, como antes.
+    Arriscado: passar as marcações da máquina (ver acima) ou sem a geometria
+    em que elas valem (cairiam fora do lugar)."""
+    from core import zonas_na_folha
+    from core.selecao import MAO
+
     limpos = _limpos(inteira)
-    return [dataclasses.replace(copy.deepcopy(inteira), metade=metade, **copy.deepcopy(limpos))
-            for metade in (METADE_ESQUERDA, METADE_DIREITA)]
+    metades = [dataclasses.replace(copy.deepcopy(inteira), metade=metade, **copy.deepcopy(limpos))
+               for metade in (METADE_ESQUERDA, METADE_DIREITA)]
+    a_mao = [r for r in (getattr(inteira, "selecao", None) or [])
+             if isinstance(r, dict) and str(r.get("origem", MAO)) == MAO]
+    if corte is None or not a_mao:
+        return metades
+    esquerda, direita, geometria = zonas_na_folha.repartir_nas_metades(
+        a_mao, getattr(inteira, "geometria_das_zonas", None), corte)
+    for metade, regioes in zip(metades, (esquerda, direita)):
+        if not regioes:
+            continue
+        metade.selecao = regioes
+        metade.geometria_das_zonas = copy.deepcopy(geometria)
+        metade.marcacao_provisoria = True
+        if E.MARCAR not in metade.mexida_a_mao:
+            metade.mexida_a_mao = [*metade.mexida_a_mao, E.MARCAR]
+    return metades
 
 
 def pagina_inteira_das(paginas: list[ConfigPagina]) -> ConfigPagina:
@@ -177,7 +213,10 @@ def campos_para_dividir(projeto, indice_folha: int, posicao: float | None = None
                 pagina.apagada = pagina.apagada or inteira.apagada
                 pagina.em_branco = pagina.em_branco or getattr(inteira, "em_branco", False)
         else:
-            novas = metades_da_pagina(inteira)
+            # D-528 (etapa 9d): as marcações à mão da página inteira vão para
+            # a metade em que estão, partidas na linha de agora
+            corte = folha.posicao_corte if posicao is None else round(float(posicao), 4)
+            novas = metades_da_pagina(inteira, corte=corte)
             if posicao is not None:
                 campos["posicao_corte"] = round(float(posicao), 4)
                 campos["confianca_corte"] = float(confianca)

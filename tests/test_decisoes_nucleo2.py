@@ -219,3 +219,205 @@ def test_papel_da_maquina_nao_branqueia_a_pagina_sem_o_fundo(tmp_path, _sem_figu
     _marcar_papel(projeto.paginas[0], 0.0, 0.0, 1.0, 1.0, origem=AUTOMATICO)
     pipeline.processar(projeto)
     assert _pagina_do_pdf(projeto.caminho_saida).min() < 80
+
+
+# =============================================================================
+# Item 3 - D-528: as marcações da folha inteira vão para a metade em que estão
+# =============================================================================
+
+def _folha_dupla() -> np.ndarray:
+    """Uma folha de livro aberto (duas páginas, 150 DPI), papel branco, com
+    três quadrados pretos: um na página da esquerda (A), dois na da direita (B,
+    que vai ser "pintado de branco", e C, que fica)."""
+    img = np.full((1400, 2000), 245, np.uint8)
+    img[:, 995:1005] = 200                                # a lombada
+    img[300:500, 300:500] = 10                            # A (esquerda)
+    img[300:500, 1500:1700] = 10                          # B (direita, marcado)
+    img[900:1100, 1300:1500] = 10                         # C (direita, não marcado)
+    for y in range(650, 820, 40):                         # "linhas de texto"
+        img[y:y + 12, 150:850] = 30
+        img[y:y + 12, 1150:1850] = 30
+    return img
+
+
+def _livro_da_folha_dupla(tmp_path):
+    """Livro novo de uma folha, sem dividir (livro novo não divide: D-080), sem
+    corte nem endireitar (o papel fica onde o teste espera), em Original."""
+    from core import pipeline
+    from core.filtros import ORIGINAL
+    from modelos import Projeto
+
+    caminho = _pdf_sintetico(tmp_path / "dupla.pdf", [_folha_dupla()])
+    projeto = Projeto(caminho_entrada=str(caminho), nome="dupla",
+                      caminho_saida=str(tmp_path / "saida.pdf"))
+    projeto.dividir_folhas = False
+    projeto.cortar_bordas = False
+    projeto.endireitar = False
+    projeto.detectar_regioes = False
+    projeto.montar_cadernos = False
+    projeto.filtro_padrao = ORIGINAL
+    projeto.qualidade_dpi = 150
+    projeto = pipeline.analisar_projeto(projeto)
+    assert len(projeto.paginas) == 1 and projeto.paginas[0].metade == "inteira"
+    return projeto
+
+
+def _desenhar(projeto, pagina, dpi=110):
+    """A prévia da página (como a tela): anota a geometria das zonas."""
+    from core import pipeline
+
+    doc = fitz.open(projeto.caminho_entrada)
+    try:
+        img, _ = pipeline.renderizar_pagina(doc, projeto, pagina, dpi=dpi)
+    finally:
+        doc.close()
+    return img
+
+
+def _pintar_de_branco_na_inteira(pagina, caixa, origem=None):
+    """Uma marcação "pintar de branco" (papel à mão) na página, em fração dela,
+    como a tela grava (core.editar_zonas.pintada_de_branco)."""
+    from core import etapas
+    from core.selecao import MAO, PAPEL, RETANGULO, Regiao, Selecao
+
+    x0, y0, x1, y1 = caixa
+    selecao = Selecao.de_lista(pagina.selecao or [])
+    selecao.acrescentar(Regiao(tipo=PAPEL, forma=RETANGULO, pontos=[(x0, y0), (x1, y1)],
+                               origem=origem or MAO))
+    pagina.guardar_selecao(selecao)
+    etapas.marcar_mexida_a_mao(pagina, etapas.MARCAR)
+
+
+def _dividir_a_mao(projeto, posicao=0.5):
+    """O que "dividir esta" faz (ui/tela_conferir._dividir_esta): UMA ação do
+    desfazer com os campos de core/dividir_a_mao.campos_para_dividir."""
+    from core import dividir_a_mao, etapas
+    from historico_acoes import aplicar, montar_acao
+
+    campos = dividir_a_mao.campos_para_dividir(projeto, 0, posicao=posicao)
+    acao = montar_acao(projeto, "dividir", "folha", [0], campos, "dividir esta")
+    aplicar(projeto, acao, acao.depois)
+    etapas.marcar_mexida_a_mao(projeto.folhas[0], etapas.DIVIDIR)
+    return acao
+
+
+def _paginas_do_pdf_cinza(caminho) -> list[np.ndarray]:
+    saida = []
+    with fitz.open(str(caminho)) as doc:
+        for pagina in doc:
+            pix = pagina.get_pixmap(dpi=150, colorspace=fitz.csGRAY)
+            saida.append(np.frombuffer(pix.samples, np.uint8).reshape(
+                pix.height, pix.stride)[:, :pix.width].copy())
+    return saida
+
+
+def _escuro(img: np.ndarray, x0, y0, x1, y1) -> float:
+    """Fração de pontos escuros (< 100) na caixa (fração da página)."""
+    a, larg = img.shape
+    trecho = img[int(y0 * a):int(y1 * a), int(x0 * larg):int(x1 * larg)]
+    return float((trecho < 100).mean())
+
+
+def test_reversao_d528_marcacao_a_mao_vai_para_a_metade_certa_ao_dividir_a_mao(tmp_path):
+    """D-528 (escolha da gerente, 27/10/2026, apoiada na pergunta 1 da etapa
+    4): "Ao dividir uma folha pela primeira vez, as marcações feitas na folha
+    inteira vão para a metade em que estão (hoje se perdem, como no
+    Automático)." Prova do Livro: "Marcar uma gravura na metade direita da
+    folha inteira, dividir → a marcação aparece na página da direita, no lugar
+    certo".
+
+    Folha de livro aberto, inteira; "pintar de branco" no quadrado B (metade
+    direita); "dividir esta" à mão. Medida no PDF: na página da DIREITA o
+    quadrado B sai branco (era preto: no código antigo a marcação se perdia) e
+    o C, fora da marcação, continua preto; a página da ESQUERDA não recebe
+    marcação nenhuma e o quadrado A continua preto."""
+    from core import pipeline
+
+    projeto = _livro_da_folha_dupla(tmp_path)
+    inteira = projeto.paginas[0]
+    _desenhar(projeto, inteira)                          # a página foi vista na tela
+    _pintar_de_branco_na_inteira(inteira, (0.73, 0.19, 0.87, 0.38))     # B
+    _dividir_a_mao(projeto, 0.5)
+    esquerda, direita = projeto.paginas
+    assert (esquerda.metade, direita.metade) == ("esquerda", "direita")
+    assert not esquerda.selecao, "a marcação da direita foi parar na esquerda"
+    assert direita.selecao, "a marcação se perdeu ao dividir"
+    pipeline.processar(projeto)
+    pag_esq, pag_dir = _paginas_do_pdf_cinza(projeto.caminho_saida)
+    # B na página da direita: x 1500..1700 da folha -> 0,5..0,7 da página
+    assert _escuro(pag_dir, 0.52, 0.23, 0.68, 0.34) < 0.01, "o quadrado B devia sair branco"
+    assert _escuro(pag_dir, 0.32, 0.66, 0.48, 0.77) > 0.9, "o quadrado C (fora) devia ficar"
+    assert _escuro(pag_esq, 0.32, 0.23, 0.48, 0.34) > 0.9, "o quadrado A (esquerda) devia ficar"
+
+
+def test_d528_a_marcacao_fica_no_lugar_na_previa_da_metade(tmp_path):
+    """A prévia da página da direita (a que a tela mostra) recebe a marcação
+    levada para a metade: o retângulo fica sobre o quadrado B (fração da
+    página da direita ~0,46..0,74 × ~0,19..0,38), não no lugar que ele tinha
+    na página inteira (0,73..0,87)."""
+    projeto = _livro_da_folha_dupla(tmp_path)
+    inteira = projeto.paginas[0]
+    _desenhar(projeto, inteira)
+    _pintar_de_branco_na_inteira(inteira, (0.73, 0.19, 0.87, 0.38))
+    _dividir_a_mao(projeto, 0.5)
+    direita = projeto.paginas[1]
+    _desenhar(projeto, direita)                          # a tela mostra a página
+    (x0, y0), (x1, y1) = [tuple(p) for p in direita.selecao[0]["pontos"]]
+    assert abs(x0 - 0.46) < 0.02 and abs(x1 - 0.74) < 0.02, (x0, x1)
+    assert abs(y0 - 0.19) < 0.02 and abs(y1 - 0.38) < 0.02, (y0, y1)
+
+
+def test_d528_folha_inteira_em_branco_vai_para_as_duas_e_a_da_maquina_nao_passa(tmp_path):
+    """"Deixar a folha em branco" na folha inteira vale nas duas metades; a
+    marcação que a MÁQUINA achou na folha inteira não passa (a metade procura
+    a dela de novo: marcação provisória)."""
+    from core.selecao import AUTOMATICO
+
+    projeto = _livro_da_folha_dupla(tmp_path)
+    inteira = projeto.paginas[0]
+    _desenhar(projeto, inteira)
+    _pintar_de_branco_na_inteira(inteira, (0.0, 0.0, 1.0, 1.0))
+    _pintar_de_branco_na_inteira(inteira, (0.1, 0.1, 0.2, 0.2), origem=AUTOMATICO)
+    _dividir_a_mao(projeto, 0.5)
+    for pagina in projeto.paginas:
+        assert len(pagina.selecao) == 1, pagina.selecao
+        assert [list(p) for p in pagina.selecao[0]["pontos"]] == [[0.0, 0.0], [1.0, 1.0]]
+        assert pagina.marcacao_provisoria
+
+
+def test_d528_sem_a_geometria_anotada_a_conta_aproximada_leva_para_a_metade():
+    """Página nunca desenhada (sem geometria anotada): a zona vai para a metade
+    pelo centro e a fração é levada para a metade (x da folha girada)."""
+    from core import zonas_na_folha
+
+    zona = {"tipo": "papel", "forma": "retangulo", "pontos": [[0.7, 0.2], [0.9, 0.4]],
+            "origem": "mao"}
+    esq, dir_, geo = zonas_na_folha.repartir_nas_metades([zona], None, 0.5)
+    assert esq == [] and geo is None
+    (x0, _), (x1, _) = dir_[0]["pontos"]
+    assert abs(x0 - 0.4) < 1e-9 and abs(x1 - 0.8) < 1e-9
+
+
+def test_reversao_d528_no_automatico_tambem(tmp_path):
+    """D-528 vale "à mão ou no Automático" (pedido da gerente): o Automático
+    com "Dividir" na folha inteira marcada leva a marcação à mão para a página
+    da direita."""
+    from core import automatico as A
+    from core import pipeline, st_ferramentas
+
+    if st_ferramentas.padrao().funcao("st_ferramentas_caixas") is None:
+        pytest.skip("sem a DLL do ScanTailor")
+    projeto = _livro_da_folha_dupla(tmp_path)
+    inteira = projeto.paginas[0]
+    _desenhar(projeto, inteira)
+    _pintar_de_branco_na_inteira(inteira, (0.73, 0.19, 0.87, 0.38))
+    A.rodar(projeto, A.Pedido(etapas=[A.DIVIDIR], pular_mexidas=False))
+    assert [p.metade for p in projeto.paginas] == ["esquerda", "direita"]
+    esquerda, direita = projeto.paginas
+    assert not esquerda.selecao and direita.selecao
+    pipeline.processar(projeto)
+    _pag_esq, pag_dir = _paginas_do_pdf_cinza(projeto.caminho_saida)
+    corte = projeto.folhas[0].posicao_corte
+    # B (x 0,75..0,85 da folha) na página da direita
+    bx0, bx1 = (0.75 - corte) / (1 - corte), (0.85 - corte) / (1 - corte)
+    assert _escuro(pag_dir, bx0 + 0.02, 0.23, bx1 - 0.02, 0.34) < 0.01

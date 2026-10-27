@@ -718,7 +718,9 @@ def _dividir(projeto, pedido: Pedido, medidas, pular: set, g: _Gravador) -> None
     dela; corte, angulo e marcacao, que eram da folha inteira, nao passam).
     Obra 26/10, etapa 4: a pagina partida e a do dividir a mao (core/
     dividir_a_mao.metades_da_pagina); a folha juntada a mao ("não dividir
-    esta": uma pagina so) entra aqui como qualquer folha de uma pagina."""
+    esta": uma pagina so) entra aqui como qualquer folha de uma pagina.
+    Etapa 9d (D-528): a marcacao feita A MAO na pagina inteira passa para a
+    metade em que esta (metades_da_pagina com o corte achado)."""
     from modelos import METADE_DIREITA
 
     if pedido.no_livro_todo:
@@ -751,7 +753,10 @@ def _dividir(projeto, pedido: Pedido, medidas, pular: set, g: _Gravador) -> None
             from core.dividir_a_mao import metades_da_pagina
 
             lugar = projeto.paginas.index(inteira)
-            projeto.paginas[lugar:lugar + 1] = metades_da_pagina(inteira)
+            # D-528 (etapa 9d): as marcacoes a mao da pagina inteira vao para
+            # a metade em que estao (partidas na linha achada agora)
+            projeto.paginas[lugar:lugar + 1] = metades_da_pagina(
+                inteira, corte=round(float(medida.posicao_corte), 4))
             for n, pagina in enumerate(projeto.paginas):
                 pagina.indice = n
         else:
