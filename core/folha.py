@@ -139,6 +139,7 @@ def compor_na_folha(
     dpi: float,
     escala: float = 1.0,
     deslocamento: tuple[float, float] = (0.0, 0.0),
+    mexido_a_mao: bool = False,
 ) -> np.ndarray:
     """Cola `conteudo` (o recorte já pronto) num canvas branco do tamanho de
     `tamanho_folha_cm`, na resolução `dpi` - a etapa que faltava no pipeline
@@ -155,22 +156,46 @@ def compor_na_folha(
     escondido. `tamanho_folha_cm=None`, ou o conteúdo (já escalado) não
     caber na folha, ou `dpi<=0` -> devolve `conteudo` sem nenhuma alteração,
     do tamanho que sempre teve.
+
+    mexido_a_mao (obra de 26/10/2026, etapa 1; decisão D-008 do Samuel:
+    "quero conseguir redimensionar o conteudo tambem", "a ferramenta de mover
+    não deveria estar vinculada ao corte de bordas"): True quando a PESSOA
+    moveu ou redimensionou o conteúdo desta página e isso vale
+    (core.etapas.conteudo_mexido). Aí o mover nunca é jogado fora:
+      - sem tamanho de folha, a folha é a PRÓPRIA página (o tamanho de
+        `conteudo`): o conteúdo anda dentro dela e o que sair pela beirada
+        fica de fora (a página não muda de tamanho - escolha da gerente
+        D-017; o aviso do que passou da beirada é da etapa 5 da obra);
+      - com a folha escolhida um pouco menor que o conteúdo (a janela
+        "tamanho..." mostra o corte arredondado a 0,01 cm: 21,01 cm a 300 DPI
+        são 2481 pontos, e o conteúdo tinha 2482 - era o "Mover conteúdo"
+        que não chegava ao PDF no teste do Kaique, 26/10/2026), a conta não
+        desiste: cola e corta só o que passa da folha.
+    False (o de sempre, e o projeto antigo sem a marca): a conta de antes,
+    linha por linha. Arriscado: passar True sem a pessoa ter mexido (a rede
+    de segurança deixaria de valer para quem nunca moveu nada).
     """
-    if tamanho_folha_cm is None or conteudo is None or conteudo.size == 0:
+    if conteudo is None or conteudo.size == 0 or dpi <= 0:
         return conteudo
-    if dpi <= 0:
+    if tamanho_folha_cm is None and not mexido_a_mao:
         return conteudo
 
     altura_conteudo, largura_conteudo = conteudo.shape[:2]
     largura_escalada = largura_conteudo * escala
     altura_escalada = altura_conteudo * escala
 
-    largura_folha_px, altura_folha_px = _para_pixels(tamanho_folha_cm, dpi)
+    if tamanho_folha_cm is None:
+        # D-008: sem folha escolhida, a folha e a propria pagina
+        largura_folha_px, altura_folha_px = largura_conteudo, altura_conteudo
+    else:
+        largura_folha_px, altura_folha_px = _para_pixels(tamanho_folha_cm, dpi)
     if largura_folha_px <= 0 or altura_folha_px <= 0:
         return conteudo
 
     # rede de seguranca: nao cabe -> devolve o conteudo original, intacto
-    if largura_escalada > largura_folha_px or altura_escalada > altura_folha_px:
+    # (so quando a pessoa NAO mexeu no conteudo; ver mexido_a_mao)
+    if not mexido_a_mao and (largura_escalada > largura_folha_px
+                             or altura_escalada > altura_folha_px):
         return conteudo
 
     if abs(escala - 1.0) > 1e-9 and cv2 is not None:
