@@ -149,7 +149,8 @@ DA_DIVISAO = frozenset({analise.NAO_PARECE_DUPLA, analise.LOMBADA_INCERTA})
 
 def avisos_da_pagina(projeto, indice: int) -> list[Aviso]:
     """Os avisos que a PAGINA `indice` mostra na faixa e no "Para revisar":
-    primeiro os da folha dela que ainda pedem um olhar, depois os dela. Nenhum
+    primeiro os dela (o que acabou de mudar nela aparece na hora na faixa),
+    depois os da folha dela que ainda pedem um olhar. Nenhum
     se a pagina foi tirada do livro ou ja foi dada como conferida (`revisada`:
     o "está certo" vale para tudo o que a faixa dela mostrou). Barato: so le
     campos. Etapa 7 da obra (um numero so de duvidas, lista unica 5.5)."""
@@ -158,12 +159,11 @@ def avisos_da_pagina(projeto, indice: int) -> list[Aviso]:
     pagina = projeto.paginas[indice]
     if pagina.apagada or pagina.revisada:
         return []
-    avisos: list[Aviso] = []
+    avisos: list[Aviso] = [Aviso(PAGINA, pagina.indice, c) for c in pagina.alertas_pendentes]
     if 0 <= pagina.folha < len(projeto.folhas):
         folha = projeto.folhas[pagina.folha]
         if not getattr(folha, "apagada", False):
             avisos.extend(Aviso(FOLHA, folha.indice, c) for c in folha.alertas_pendentes)
-    avisos.extend(Aviso(PAGINA, pagina.indice, c) for c in pagina.alertas_pendentes)
     return avisos
 
 
@@ -180,7 +180,7 @@ def avisos_da_folha(projeto, indice: int) -> list[Aviso]:
 
 def linhas_do_para_revisar(projeto) -> list[tuple[str, int, list[Aviso]]]:
     """Uma linha por PAGINA com duvida, na ordem do livro: (PAGINA, indice,
-    os avisos dela, os da folha primeiro). Uma folha que ainda pede um olhar
+    os avisos dela e os da folha dela - avisos_da_pagina). Uma folha que ainda pede um olhar
     mas nao tem pagina nenhuma conhecida (caso raro) vira a linha (FOLHA,
     indice, avisos). E a lista do painel "Para revisar" (ui/widgets/paineis);
     o numero de linhas e o quantas_com_duvida."""

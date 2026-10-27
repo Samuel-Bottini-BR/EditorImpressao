@@ -487,3 +487,4 @@ def test_d497_mexer_na_divisao_chama_por_tras_a_conta_do_em_branco(janela, tmp_p
     _esperar(lambda: tela.paineis.para_revisar._paginas == 1, motivo="o aviso não chegou ao painel")
     assert sorted(set(chamadas)) == [4, 5]
     assert tela.paineis.para_revisar.lista.item(0).text() == "Página 6"
+

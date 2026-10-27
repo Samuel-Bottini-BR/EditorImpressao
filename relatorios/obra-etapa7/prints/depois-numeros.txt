@@ -1,0 +1,12 @@
+rodapé depois de dividir: 0 de 360 conferidas · 18 com dúvida
+Para revisar (painel): 18
+ícone do Para revisar: 18
+botões no cartão da vez: Deixar em branco, Tirar do livro, está bom assim
+grade (só as que precisam): só as que precisam de atenção (15)
+rodapé antes de processar (texto inteiro, o do balão): La vida eterna · 3 de 360 conferidas · 15 com dúvida
+rodapé antes de processar (o que se vê, painel aberto): 3 de 36…
+Para revisar (painel), antes de processar: 15
+Antes de processar: Ainda tem 15 páginas que eu não tive certeza (14 avisos na lista). Quer ver antes ou continuar assim mesmo?
+janela de salvar: Ainda há <b>15 páginas</b> que você não conferiu. Dá para processar assim mesmo, mas o que não foi olhado sai do jeito que o programa decidiu sozinho.
+livro aberto: Para revisar: 15
+livro aberto: Ver todas as páginas: só as que precisam de atenção (15)

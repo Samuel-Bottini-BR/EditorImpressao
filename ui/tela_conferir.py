@@ -452,6 +452,57 @@ class _LugaresDeEncaixe(QWidget):
         pintor.end()
 
 
+class _RotuloDoLivro(QLabel):
+    """O "nome · N de M conferidas · K com dúvida" da barra de baixo.
+
+    Etapa 7 da obra (lista única 1.1: "o rodapé continua '0 de 360
+    conferidas'"; D-010: "contador sobe"): com a barra de baixo cheia (os
+    botões do ver, etapa 6) a 1280 de largura, o rótulo era cortado pela
+    direita e sobrava só "La vida ete" - o contador sumia. Agora quem encolhe
+    é o NOME do livro (com reticências); a conta fica à vista. O texto
+    inteiro continua no balão. Seguro mudar: o separador."""
+
+    def __init__(self) -> None:
+        super().__init__("")
+        self._nome = ""
+        self._conta = ""
+
+    def definir(self, nome: str, conta: str) -> None:
+        self._nome, self._conta = nome, conta
+        inteiro = f"{nome} · {conta}" if nome else conta
+        self.setToolTip(inteiro)
+        self._encaixar()
+
+    def texto_inteiro(self) -> str:
+        return f"{self._nome} · {self._conta}" if self._nome else self._conta
+
+    def _encaixar(self) -> None:
+        medida = self.fontMetrics()
+        cabe = max(0, self.width() - 4)
+        inteiro = self.texto_inteiro()
+        if not self.isVisible() or cabe <= 0:     # sem tela ainda: não há largura para medir
+            super().setText(inteiro)
+            return
+        if medida.horizontalAdvance(inteiro) <= cabe or not self._nome:
+            super().setText(inteiro if medida.horizontalAdvance(inteiro) <= cabe or not cabe
+                            else medida.elidedText(inteiro, Qt.ElideRight, cabe))
+            return
+        resto = f" · {self._conta}"
+        sobra = cabe - medida.horizontalAdvance(resto)
+        if sobra < medida.horizontalAdvance("M…"):
+            super().setText(medida.elidedText(self._conta, Qt.ElideRight, cabe))
+            return
+        super().setText(medida.elidedText(self._nome, Qt.ElideRight, sobra) + resto)
+
+    def resizeEvent(self, evento) -> None:  # noqa: N802 - nome do Qt
+        super().resizeEvent(evento)
+        self._encaixar()
+
+    def showEvent(self, evento) -> None:  # noqa: N802 - nome do Qt
+        super().showEvent(evento)
+        self._encaixar()
+
+
 class TelaConferir(QWidget):
     voltar = Signal()
     processar = Signal()
@@ -912,7 +963,7 @@ class TelaConferir(QWidget):
             self._mostrar_o_historico)
         self.botao_historico_embaixo.setIcon(_icone_da_barra("historico"))
         linha.addSpacing(8)
-        self.rotulo_do_livro = QLabel("")
+        self.rotulo_do_livro = _RotuloDoLivro()
         self.rotulo_do_livro.setObjectName("rotuloDaBarraDeBaixo")
         # cede lugar (etapa 3): com um painel aberto numa janela estreita, o
         # nome comprido do livro e cortado em vez de empurrar a coluna de
@@ -1092,10 +1143,10 @@ class TelaConferir(QWidget):
         conferidas = sum(1 for item in itens if item.revisada)
         duvidas = avisos_do_livro.quantas_com_duvida(self.projeto)
         nome = Path(self.projeto.caminho_entrada).stem if self.projeto.caminho_entrada else ""
-        texto = (f"{nome} · {conferidas} de {len(itens)} conferidas · "
-                 f"{duvidas} com dúvida")
-        self.rotulo_do_livro.setText(texto)
-        self.rotulo_do_livro.setToolTip(texto)     # inteiro, se a barra cortar
+        # o nome encolhe primeiro, a conta fica à vista (_RotuloDoLivro); o
+        # texto inteiro fica no balão
+        self.rotulo_do_livro.definir(
+            nome, f"{conferidas} de {len(itens)} conferidas · {duvidas} com dúvida")
 
     def _ligar_paineis(self) -> None:
         """Cada painel manda no mesmo lugar em que o botao antigo mandava.
@@ -3420,8 +3471,8 @@ class TelaConferir(QWidget):
 
     def _avisos_do_item(self, indice: int, de_folha: bool) -> list:
         """Os avisos (core.avisos.Aviso) que a folha `indice` (no Dividir) ou
-        a página `indice` mostra na faixa: na página, os da folha dela vêm
-        primeiro (lista única 5.5: "os avisos de folha ficam escondidos")."""
+        a página `indice` mostra na faixa: na página, os dela e depois os da
+        folha dela (lista única 5.5: "os avisos de folha ficam escondidos")."""
         if self.projeto is None:
             return []
         if de_folha:

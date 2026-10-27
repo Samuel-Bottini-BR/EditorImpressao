@@ -697,14 +697,14 @@ class _LinhaPorPagina(QStyledItemDelegate):
     dúvida, e a lista é refeita quando os avisos mudam."""
 
     ALTURA = 78
-    ALTURA_DOS_BOTOES = 34          # etapa 7: a fila de botões do aviso no cartão da vez
+    ALTURA_DOS_BOTOES = 34          # etapa 7: cada fila de botões do aviso no cartão da vez
     PAPEL_DO_MOTIVO = Qt.UserRole + 1
     PAPEL_DA_FRASE = Qt.UserRole + 2
     PAPEL_COM_BOTOES = Qt.UserRole + 3
 
     def sizeHint(self, opcao, indice) -> QSize:  # noqa: N802 - nome do Qt
         # a largura quem dá é a lista; o cartão da vez cresce para os botões
-        extra = self.ALTURA_DOS_BOTOES if indice.data(self.PAPEL_COM_BOTOES) else 0
+        extra = self.ALTURA_DOS_BOTOES * int(indice.data(self.PAPEL_COM_BOTOES) or 0)
         return QSize(120, self.ALTURA + extra)
 
     def paint(self, pintor: QPainter, opcao, indice) -> None:
@@ -743,8 +743,8 @@ class _LinhaPorPagina(QStyledItemDelegate):
         fonte.setBold(False)
         pintor.setFont(fonte)
         pintor.setPen(QColor(estilo.cor("fraco")))
-        embaixo = int(caixa.bottom()) - (self.ALTURA_DOS_BOTOES
-                                         if indice.data(self.PAPEL_COM_BOTOES) else 0)
+        embaixo = int(caixa.bottom()) - self.ALTURA_DOS_BOTOES * int(
+            indice.data(self.PAPEL_COM_BOTOES) or 0)
         pintor.drawText(QRect(x, y, largura, embaixo - y - 4),
                         Qt.AlignLeft | Qt.AlignTop | Qt.TextWordWrap,
                         str(indice.data(self.PAPEL_DA_FRASE) or ""))
@@ -1060,7 +1060,7 @@ class PainelParaRevisar(Painel):
         for linha in range(self.lista.count()):
             item = self.lista.item(linha)
             if item.data(_LinhaPorPagina.PAPEL_COM_BOTOES):
-                item.setData(_LinhaPorPagina.PAPEL_COM_BOTOES, False)
+                item.setData(_LinhaPorPagina.PAPEL_COM_BOTOES, 0)
                 self.lista.removeItemWidget(item)
         self._peca_dos_botoes = None
         self.botoes_do_cartao = []
@@ -1080,16 +1080,14 @@ class PainelParaRevisar(Painel):
                 break
         if alvo is None:
             return
-        alvo.setData(_LinhaPorPagina.PAPEL_COM_BOTOES, True)
         peca = QWidget()
         peca.setAttribute(Qt.WA_TranslucentBackground, True)
         peca.setAutoFillBackground(False)
         coluna = QVBoxLayout(peca)
         coluna.setContentsMargins(10, 0, 14, 9)
-        coluna.setSpacing(0)
+        coluna.setSpacing(4)
         coluna.addStretch(1)
-        fila = QHBoxLayout()
-        fila.setSpacing(5)
+        botoes = []
         for qual, rotulo in enumerate(rotulos):
             botao = QPushButton(rotulo)
             botao.setObjectName("sugestao")        # o mesmo laranja da faixa
@@ -1098,10 +1096,31 @@ class PainelParaRevisar(Painel):
             botao.setToolTip("Faz o que o aviso sugere, nesta página "
                              "(o mesmo botão da faixa embaixo da página).")
             botao.clicked.connect(lambda _c=False, q=qual: self.botao_do_aviso.emit(q))
-            fila.addWidget(botao)
+            botao.ensurePolished()
+            botoes.append(botao)
             self.botoes_do_cartao.append(botao)
-        fila.addStretch(1)
-        coluna.addLayout(fila)
+        # os botões em filas que cabem na largura do cartão, cada um com o
+        # nome inteiro (três na mesma fila saíam cortados: "xar em bra")
+        # (a largura do painel é fixa: LARGURA, menos as margens do corpo, a
+        # barra de rolar da lista, a borda do cartão e as margens desta peça)
+        cabe = LARGURA - 12 - 8 - 14 - 5 - 24
+        filas: list[list[QPushButton]] = [[]]
+        largura = 0
+        for botao in botoes:
+            precisa = botao.sizeHint().width()
+            if filas[-1] and largura + 5 + precisa > cabe:
+                filas.append([])
+                largura = 0
+            largura += (5 if filas[-1] else 0) + precisa
+            filas[-1].append(botao)
+        for da_fila in filas:
+            fila = QHBoxLayout()
+            fila.setSpacing(5)
+            for botao in da_fila:
+                fila.addWidget(botao)
+            fila.addStretch(1)
+            coluna.addLayout(fila)
+        alvo.setData(_LinhaPorPagina.PAPEL_COM_BOTOES, len(filas))
         self.lista.setItemWidget(alvo, peca)
         self._peca_dos_botoes = peca
         self.lista.doItemsLayout()
