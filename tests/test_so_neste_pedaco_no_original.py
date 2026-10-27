@@ -149,10 +149,31 @@ def test_tirar_o_fundo_sem_pedaco_e_a_mesma_imagem(marcacao):
     assert saida is img and mono is False
 
 
-def test_limpar_a_folha_desligado_continua_sem_pedaco(monkeypatch):
-    """"Limpar a folha" desligado e "nao mexer em pagina nenhuma"; as abas
-    Marcar e Filtro nem aparecem, entao o pedaco ficaria invisivel. Ver o
-    comentario em core/pipeline.py::_filtrar."""
+def test_limpar_a_folha_desligado_no_projeto_antigo_continua_sem_pedaco(monkeypatch):
+    """PROJETO ANTIGO (gravado antes da obra de 26/10/2026, etapa 1:
+    Projeto.feito_a_mao_sempre_vale False) sem a marca "mexida a mao":
+    "Limpar a folha" desligado continua sendo "nao mexer em pagina nenhuma",
+    como era (o PDF dele sai igual). Ver core/etapas.py e o comentario em
+    core/pipeline.py::_filtrar_a_pagina."""
+    from core import pipeline
+    from modelos import ConfigPagina, Projeto
+
+    img = _pagina()
+    projeto = Projeto(caminho_entrada="x.pdf", limpar=False, feito_a_mao_sempre_vale=False)
+    pagina = ConfigPagina(indice=0, folha=0, filtro=ORIGINAL)
+    pagina.guardar_selecao(_selecao(PRETO_E_BRANCO))
+    monkeypatch.setattr(pipeline, "garantir_selecao", lambda *a, **k: _selecao(PRETO_E_BRANCO))
+    saida, mono = pipeline._filtrar(projeto, pagina, img)
+    assert saida is img and mono is False
+
+
+def test_limpar_a_folha_desligado_no_livro_novo_usa_o_pedaco_feito_a_mao():
+    """Decisao D-009 do Samuel (26/10/2026): "eu deveria conseguir abrir o
+    livro sem escolher nenhuma opção para fazer tudo manualmente." No livro
+    novo, o pedaco marcado A MAO ("so neste pedaco") vale com "Limpar a folha"
+    desligado: a pagina fica no Original e so o pedaco muda. Substitui o
+    comportamento antigo (o teste de cima, que agora vale so no projeto
+    antigo)."""
     from core import pipeline
     from modelos import ConfigPagina, Projeto
 
@@ -160,9 +181,12 @@ def test_limpar_a_folha_desligado_continua_sem_pedaco(monkeypatch):
     projeto = Projeto(caminho_entrada="x.pdf", limpar=False)
     pagina = ConfigPagina(indice=0, folha=0, filtro=ORIGINAL)
     pagina.guardar_selecao(_selecao(PRETO_E_BRANCO))
-    monkeypatch.setattr(pipeline, "garantir_selecao", lambda *a, **k: _selecao(PRETO_E_BRANCO))
-    saida, mono = pipeline._filtrar(projeto, pagina, img)
-    assert saida is img and mono is False
+    saida, _ = pipeline._filtrar(projeto, pagina, img.copy())
+    x0, y0, x1, y1 = _caixa()
+    assert not np.array_equal(_tres(saida)[y0:y1, x0:x1], img[y0:y1, x0:x1])
+    fora = np.ones(img.shape[:2], bool)
+    fora[y0:y1 + 1, x0:x1 + 1] = False      # a borda da caixa e do pedaco
+    assert np.array_equal(_tres(saida)[fora], img[fora])
 
 
 def test_o_processamento_da_pagina_em_original_usa_o_pedaco(monkeypatch):

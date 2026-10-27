@@ -152,14 +152,29 @@ def test_d009_angulo_a_mao_com_endireitar_desligado_sai_no_pdf(tmp_path):
 def test_d009_filtro_da_pagina_com_limpar_a_folha_desligado_sai_no_pdf(tmp_path):
     """D-009. "Limpar a folha" desligado e a página posta em Preto e branco à
     mão: o papel amarelado sai branco no PDF. Antes o filtro da página era
-    ignorado (o papel continuava amarelo)."""
+    ignorado (o papel continuava amarelo). O filtro é o único que só conta pela
+    marca que a tela grava ao escolher (core/etapas.py explica por quê); aqui
+    o teste faz o que a tela vai fazer (etapa 2 da obra liga)."""
     projeto = _projeto_tudo_desligado(tmp_path)
     projeto.paginas[0].filtro = PRETO_E_BRANCO
+    etapas.marcar_mexida_a_mao(projeto.paginas[0], etapas.FILTRO)
     img = _gerar(projeto)
     papel = img[50:250, 350:550]
     assert papel.min() >= 250, "o papel devia sair branco (Preto e branco à mão)"
     sem = _gerar(_projeto_tudo_desligado(tmp_path, "sem"))
     assert np.abs(sem[50:250, 350:550].astype(int) - np.array(AMARELADO[::-1])).max() <= 6
+
+
+def test_d009_filtro_do_livro_trocado_depois_nao_filtra_com_limpar_desligado(tmp_path):
+    """O risco que fez o filtro contar só pela marca: as páginas em Preto e
+    branco (o filtro do livro de antes), o filtro do livro trocado depois na
+    tela "O que fazer" e "Limpar a folha" desligado. Ninguém escolheu filtro à
+    mão: o papel continua amarelado."""
+    projeto = _projeto_tudo_desligado(tmp_path)
+    projeto.paginas[0].filtro = PRETO_E_BRANCO
+    projeto.filtro_padrao = ORIGINAL
+    img = _gerar(projeto)
+    assert np.abs(img[50:250, 350:550].astype(int) - np.array(AMARELADO[::-1])).max() <= 6
 
 
 def test_d009_marcacao_a_mao_com_a_marcacao_desligada_sai_no_pdf(tmp_path):
@@ -331,8 +346,8 @@ def test_d004_marca_mexida_a_mao_por_pagina_folha_e_etapa():
 
 def test_d004_marca_nasce_dos_valores_a_mao_e_vai_para_o_projeto_gravado():
     """D-004. A marca nasce dos valores à mão que já existem (corte, ângulo,
-    filtro diferente do livro, marcação à mão, mover, folha girada) e vai e
-    volta pelo projeto.json."""
+    marcação à mão, mover, folha girada; o filtro só pela marca da tela) e vai
+    e volta pelo projeto.json."""
     projeto = Projeto(caminho_entrada="x.pdf")
     projeto.folhas = [ConfigFolha(indice=0, dividir=False, rotacao=90)]
     pagina = ConfigPagina(indice=0, folha=0, filtro=PRETO_E_BRANCO, recorte=(0, 0, 1, 1),
@@ -343,12 +358,13 @@ def test_d004_marca_nasce_dos_valores_a_mao_e_vai_para_o_projeto_gravado():
     pagina.guardar_selecao(pedaco)
     projeto.paginas = [pagina]
     assert etapas.etapas_mexidas_a_mao(projeto, pagina) == [
-        etapas.CORTAR, etapas.ENDIREITAR, etapas.FILTRO, etapas.MARCAR, etapas.MOVER]
+        etapas.CORTAR, etapas.ENDIREITAR, etapas.MARCAR, etapas.MOVER]
+    etapas.marcar_mexida_a_mao(pagina, etapas.FILTRO)       # o que a tela faz
     assert etapas.etapas_mexidas_a_mao(projeto, projeto.folhas[0]) == [etapas.GIRAR]
     volta = Projeto.de_dicionario(projeto.para_dicionario())
     assert volta.feito_a_mao_sempre_vale is True
-    assert volta.paginas[0].mexida_a_mao == [
-        etapas.CORTAR, etapas.ENDIREITAR, etapas.FILTRO, etapas.MARCAR, etapas.MOVER]
+    assert sorted(volta.paginas[0].mexida_a_mao) == sorted([
+        etapas.CORTAR, etapas.ENDIREITAR, etapas.FILTRO, etapas.MARCAR, etapas.MOVER])
     assert volta.folhas[0].mexida_a_mao == [etapas.GIRAR]
 
 
@@ -365,7 +381,7 @@ def test_d004_projeto_antigo_sem_os_campos_abre_e_funciona():
     }
     projeto = Projeto.de_dicionario(dados)
     assert projeto.feito_a_mao_sempre_vale is False
-    assert projeto.paginas[0].mexida_a_mao == [etapas.ENDIREITAR, etapas.FILTRO]
+    assert projeto.paginas[0].mexida_a_mao == [etapas.ENDIREITAR]
     assert etapas.recorte_a_mao(projeto, projeto.paginas[0]) is None      # era ignorado
     assert etapas.angulo_a_mao(projeto, projeto.paginas[0]) == 2.0
 
@@ -383,3 +399,19 @@ def test_caminho_rapido_so_cadernos_nao_joga_fora_o_feito_a_mao():
     projeto.folhas[0].rotacao = 90
     assert not projeto.so_cadernos
     assert _como_projeto_antigo(projeto).so_cadernos
+
+
+def test_d009_resumo_diz_que_o_feito_a_mao_vai_junto():
+    """D-009 na frase da tela "O que fazer" (core.pipeline.resumo_em_portugues):
+    com nada marcado e um corte à mão, ela não diz mais "Marque pelo menos uma
+    coisa para eu fazer." - diz que mantém o que foi feito à mão. Sem nada à
+    mão a frase é a de sempre."""
+    from core.pipeline import resumo_em_portugues
+
+    projeto = Projeto(caminho_entrada="x.pdf")
+    projeto.dividir_folhas = projeto.limpar = projeto.endireitar = projeto.cortar_bordas = False
+    projeto.folhas = [ConfigFolha(indice=0, dividir=False)]
+    projeto.paginas = [ConfigPagina(indice=0, folha=0)]
+    assert resumo_em_portugues(projeto, 1) == "Marque pelo menos uma coisa para eu fazer."
+    projeto.paginas[0].recorte = (0.1, 0.1, 0.8, 0.8)
+    assert resumo_em_portugues(projeto, 1) == "Vou manter o que você fez à mão em 1 página."

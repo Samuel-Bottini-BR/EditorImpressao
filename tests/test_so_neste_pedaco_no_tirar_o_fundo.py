@@ -210,16 +210,29 @@ def test_pagina_intacta_o_pedaco_vale_como_no_original(tmp_path, monkeypatch):
     assert set(np.unique(_dentro(no_fundo)).tolist()) <= {0, 255}
 
 
-def test_sem_procurar_gravura_e_letra_o_pedaco_nao_vale(tmp_path):
-    """Sem "Procurar gravura e letra" (projeto.detectar_regioes) a aba Marcar
-    nem aparece, e no Original o pedaco tambem nao vale (garantir_selecao
-    devolve a marcacao vazia): o mesmo aqui, para o pedaco nunca mudar o
-    PDF sem poder ser visto."""
+def test_sem_procurar_gravura_e_letra_o_pedaco_nao_vale_no_projeto_antigo(tmp_path):
+    """PROJETO ANTIGO (antes da obra de 26/10/2026, etapa 1:
+    feito_a_mao_sempre_vale False, sem a marca "mexida a mao"): sem "Procurar
+    gravura e letra" (projeto.detectar_regioes) o pedaco nao vale, como era -
+    o PDF dele sai igual."""
     projeto = _projeto(_pdf_camadas(tmp_path))
+    projeto.feito_a_mao_sempre_vale = False
     projeto.detectar_regioes = False
     antes = _previa(projeto)
     _com_pedaco(projeto.paginas[0], ORIGINAL)
     assert np.array_equal(_previa(projeto), antes)
+
+
+def test_sem_procurar_gravura_e_letra_o_pedaco_a_mao_vale_no_livro_novo(tmp_path):
+    """Decisao D-009 do Samuel (26/10/2026: "eu deveria conseguir abrir o
+    livro sem escolher nenhuma opção para fazer tudo manualmente."): no livro
+    novo o pedaco feito A MAO vale mesmo sem "Procurar gravura e letra" (o
+    automatico da marcacao). Substitui o comportamento antigo (teste de cima)."""
+    projeto = _projeto(_pdf_camadas(tmp_path))
+    projeto.detectar_regioes = False
+    antes = _previa(projeto)
+    _com_pedaco(projeto.paginas[0], ORIGINAL)
+    assert not np.array_equal(_previa(projeto), antes)
 
 
 def test_a_funcao_do_filtro_obedece_ao_pedaco():

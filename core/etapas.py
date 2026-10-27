@@ -39,18 +39,24 @@ dele sair identico, ali o valor a mao so vale com a etapa ligada (como sempre)
 ou quando a pagina tem a MARCA da etapa (isto e, foi mexida a mao depois desta
 versao, pela tela). A migracao so marca o que ja valia (a etapa estava ligada),
 entao nada muda no PDF do projeto antigo ao abrir. Livro novo: todo valor a mao
-vale, com marca ou sem.
+vale, com marca ou sem (o filtro e o dividir so pela marca: ver abaixo).
 
 O QUE CONTA COMO "VALOR A MAO" EM CADA ETAPA (_tem_valor_a_mao)
 
     cortar      ConfigPagina.recorte nao e None (o automatico nunca o grava)
     endireitar  ConfigPagina.angulo_manual nao e None
-    filtro      ConfigPagina.filtro diferente do filtro do livro (a pagina nasce
-                com Projeto.filtro_padrao; so a tela troca o de uma pagina)
+    filtro      NADA pelo valor: so a MARCA conta. A pagina nasce com o filtro do
+                livro, mas o filtro do livro pode mudar depois na tela "O que
+                fazer" (o radio continua escolhido mesmo com "Limpar a folha"
+                desligado) e as paginas ficam com o de antes: "filtro diferente
+                do livro" marcaria o livro inteiro como mexido a mao e o PDF
+                sairia filtrado com "Limpar" desligado. A tela grava a marca
+                FILTRO ao escolher o filtro (ou um ajuste dele) numa pagina.
     marcar      alguma regiao da marcacao feita a mao (core.selecao.MAO)
     mover       conteudo_escala diferente de 1, deslocamento diferente de (0, 0)
                 ou um tamanho de folha escolhido (tamanho_folha_cm)
-    dividir     (folha) dividida com o "Dividir folhas" do livro desligado
+    dividir     (folha) NADA pelo valor, como o filtro: a folha pode ter ficado
+                dividida de uma analise com "Dividir folhas" ligado; so a marca
     girar       (folha) girada de 90 em 90 (ConfigFolha.rotacao)
 O que nao da para saber pelo valor (ex.: a forca do preto mexida numa pagina
 que ficou no filtro do livro; a linha de divisao arrastada com o "Dividir"
@@ -134,15 +140,14 @@ def _tem_valor_a_mao(projeto, item, etapa: str) -> bool:
     if etapa == ENDIREITAR:
         return getattr(item, "angulo_manual", None) is not None
     if etapa == FILTRO:
-        filtro = getattr(item, "filtro", None)
-        return filtro is not None and filtro != getattr(projeto, "filtro_padrao", filtro)
+        return False        # so pela marca (ver o docstring do modulo)
     if etapa == MARCAR:
         return bool(_regioes_a_mao(item))
     if etapa == MOVER:
         return (_conteudo_fora_do_padrao(item)
                 or getattr(item, "tamanho_folha_cm", None) is not None)
     if etapa == DIVIDIR:
-        return bool(getattr(item, "dividir", False)) and not getattr(projeto, "dividir_folhas", False)
+        return False        # so pela marca (ver o docstring do modulo)
     if etapa == GIRAR:
         return int(getattr(item, "rotacao", 0) or 0) % 360 != 0
     return False
@@ -286,11 +291,10 @@ def endireita(projeto, pagina) -> bool:
 # --- filtro e marcacao -------------------------------------------------------
 
 def filtro_a_mao(projeto, pagina) -> bool:
-    """O filtro desta pagina foi escolhido a mao e vale (com "Limpar a folha"
-    desligado)? Marca FILTRO, ou o filtro diferente do do livro (livro novo)."""
-    if not feito_a_mao_vale(projeto, pagina, FILTRO):
-        return False
-    return FILTRO in _marcas(pagina) or _tem_valor_a_mao(projeto, pagina, FILTRO)
+    """O filtro desta pagina foi escolhido a mao (com "Limpar a folha"
+    desligado)? So pela marca FILTRO, que a tela grava (o valor nao diz: ver o
+    docstring do modulo). Vale no livro novo e no projeto antigo."""
+    return FILTRO in _marcas(pagina)
 
 
 def filtro_que_vale(projeto, pagina) -> str:
