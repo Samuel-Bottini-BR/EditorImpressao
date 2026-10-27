@@ -5,6 +5,17 @@ Duas telas neste arquivo porque uma so faz sentido depois da outra: primeiro
 interface nunca pode congelar, regra 3), depois `TelaFinal` mostra onde o PDF
 foi salvo, como imprimir - e, se o livro vai em cadernos, o resultado da
 conferencia de sequencia (ver core/cadernos.conferir_sequencia).
+
+Etapa 9a da obra de 26/10/2026:
+- "imprimir agora" (D-012, resposta "2"): antes mandava o PDF inteiro para a
+  impressora padrao num clique, sem perguntar (lista unica 5.1). Agora abre a
+  confirmacao (ui/dialogo_impressao.ConfirmarImpressao): impressora, paginas,
+  copias, frente e verso e a frase do que vai sair. So o "imprimir" de la
+  manda. ARRISCADO: ligar o botao direto a historico.imprimir de novo.
+- Uma frase embaixo dos botoes diz qual "montar" usar (lista unica 5.12: o
+  "Montar cadernos" das opcoes e o "montar para imprimir em A4" tinham nomes
+  parecidos e a tela nao dizia qual usar; D-330 "Deixar os dois").
+- Singular e plural certos ("1 caderno", "1 página").
 """
 
 from __future__ import annotations
@@ -175,8 +186,10 @@ class TelaFinal(QWidget):
         self.botao_pasta.clicked.connect(lambda: historico.abrir_pasta(self.caminho))
         linha.addWidget(self.botao_pasta)
 
-        self.botao_imprimir = QPushButton("imprimir agora")
-        self.botao_imprimir.clicked.connect(lambda: historico.imprimir(self.caminho))
+        # D-012: pergunta antes (impressora, paginas, copias); nunca manda
+        # direto. Os tres pontos dizem que abre uma janela antes.
+        self.botao_imprimir = QPushButton("imprimir agora...")
+        self.botao_imprimir.clicked.connect(self.imprimir_agora)
         linha.addWidget(self.botao_imprimir)
 
         # Item 2.6 (CONTROLE MINIMO, provisorio ate o layout; anotado em
@@ -196,6 +209,14 @@ class TelaFinal(QWidget):
         linha.addWidget(outro)
         linha.addStretch()
         camadas.addLayout(linha)
+
+        # 5.12: qual dos dois "montar" usar (o texto muda em mostrar)
+        self.qual_montar = QLabel("")
+        self.qual_montar.setObjectName("fraco")
+        self.qual_montar.setAlignment(Qt.AlignCenter)
+        self.qual_montar.setWordWrap(True)
+        camadas.addWidget(self.qual_montar)
+        self._ja_em_cadernos = False
 
     def mostrar(self, projeto: Projeto, caminho: str, num_paginas: int,
                 folhas_de_saida: int | None = None, antigo_preso: str = "") -> None:
@@ -226,12 +247,12 @@ class TelaFinal(QWidget):
         self.nome.setText(arquivo.name)
 
         mb = arquivo.stat().st_size / 1024 / 1024 if arquivo.exists() else 0.0
-        partes = [f"{num_paginas} páginas", f"{mb:.1f} MB".replace(".", ",")]
+        partes = [_contar(num_paginas, "página", "páginas"), f"{mb:.1f} MB".replace(".", ",")]
         if projeto.montar_cadernos:
             total = contar_cadernos(num_paginas, projeto.paginas_por_caderno)
-            partes.append(f"{total} cadernos")
+            partes.append(_contar(total, "caderno", "cadernos"))
             if folhas_de_saida:
-                partes.append(f"{folhas_de_saida} folhas para imprimir")
+                partes.append(_contar(folhas_de_saida, "folha", "folhas") + " para imprimir")
         self.detalhe.setText("  -  ".join(partes))
         self.local.setText(f"Salvo em: {arquivo.parent}")
 
@@ -242,7 +263,15 @@ class TelaFinal(QWidget):
 
         # item 2.6: o PDF ja em cadernos (o "Montar cadernos" de sempre) nao
         # pode ser montado de novo - sairia embaralhado duas vezes
+        self._ja_em_cadernos = bool(projeto.montar_cadernos)
         self.botao_montar.setEnabled(not projeto.montar_cadernos)
+        self.qual_montar.setText(
+            "Este PDF já saiu em cadernos, no tamanho do scan e sem margens (o \"Montar "
+            "cadernos\" das opções do livro). Para cadernos em A4 com as margens da "
+            "encadernação, desmarque essa opção e gere de novo."
+            if projeto.montar_cadernos else
+            "Para imprimir em cadernos, use \"montar para imprimir em A4\": arruma as folhas "
+            "com as margens da encadernação. O PDF do livro não muda.")
         self.botao_montar.setToolTip(
             "Este PDF já saiu montado em cadernos. Para usar a montagem nova (A4 com margens), "
             "desmarque \"Montar cadernos\" nas opções do livro e gere de novo."
@@ -269,6 +298,20 @@ class TelaFinal(QWidget):
             self.passos.addWidget(aviso)
 
 
+    def imprimir_agora(self) -> None:
+        """D-012: abre a confirmação; quem manda para a impressora é o botão
+        "imprimir" de lá, nunca este clique."""
+        from ui.dialogo_impressao import ConfirmarImpressao
+
+        if not self.caminho or not Path(self.caminho).exists():
+            return
+        # o PDF já em cadernos (o jeito antigo) imprime frente e verso, virando
+        # na borda curta (o mesmo do cartão "Como imprimir")
+        self.dialogo_imprimir = ConfirmarImpressao(
+            self.caminho, self, frente_e_verso_de_fabrica=self._ja_em_cadernos,
+            borda_curta=self._ja_em_cadernos)
+        self.dialogo_imprimir.open()
+
     def abrir_montar_para_imprimir(self) -> None:
         """Item 2.6: abre a janela "Montar para imprimir" sobre o PDF gerado."""
         from ui.dialogo_impressao import DialogoImpressao
@@ -277,6 +320,11 @@ class TelaFinal(QWidget):
             return
         self.dialogo_impressao = DialogoImpressao(self.caminho, self)
         self.dialogo_impressao.open()
+
+
+def _contar(n: int, singular: str, plural: str) -> str:
+    """'1 página', '2 páginas' (singular só no 1)."""
+    return f"{n} {singular if n == 1 else plural}"
 
 
 class _Certo(QWidget):

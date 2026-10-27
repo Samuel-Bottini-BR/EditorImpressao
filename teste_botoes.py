@@ -1280,6 +1280,17 @@ def testar_processar_e_final(janela) -> tuple[int, int]:
             ok += 1
         else:
             falhas += 1
+    # D-012 (etapa 9a, 26/10/2026): o "imprimir agora..." abre a confirmação
+    # (sem bloquear) e nada vai para a impressora; fecha sem imprimir
+    confirmar = getattr(final, "dialogo_imprimir", None)
+    if confirmar is not None:
+        if confirmar.isVisible() and confirmar.tarefa is None:
+            ok += 1
+            print("  ok    imprimir agora: abriu a confirmação, nada foi impresso")
+        else:
+            falhas += 1
+            print("  FALHA imprimir agora: a confirmação não abriu ou já mandou imprimir")
+        confirmar.reject()
     # item 2.6: a janela "Montar para imprimir" abre (sem bloquear) e fecha
     if final.botao_montar.isEnabled():
         if acionar(final.botao_montar, final.botao_montar.text()):

@@ -161,3 +161,12 @@ def instalar_no_programa(app: QApplication | None = None) -> FiltroDaRodinha:
     app.installEventFilter(filtro)
     _FILTRO_DO_PROGRAMA.append(filtro)
     return filtro
+
+
+def desinstalar_do_programa(app: QApplication | None = None) -> None:
+    """Desliga o filtro do programa inteiro (para os testes voltarem ao normal)."""
+    app = app or QApplication.instance()
+    while _FILTRO_DO_PROGRAMA:
+        filtro = _FILTRO_DO_PROGRAMA.pop()
+        if app is not None:
+            app.removeEventFilter(filtro)
