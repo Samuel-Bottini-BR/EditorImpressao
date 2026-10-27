@@ -40,9 +40,9 @@ Medida: bloco preto onde o original não é tinta cheia — Palatino 74: 1,4% da
 
 ![](img/4-1-siebmacher110.jpg)
 
-**Ressalva:** o fundo manchado da gravura em madeira (Palatino 74) continua "chuviscado": em preto e branco puro ele só
-sai assim. Em tons de cinza (como as fotos) ele fica igual ao original — **pergunta 3** abaixo. No Siebmacher 110 o
-detector acha só parte do bordado; o resto é tratado como texto.
+**Ressalva:** no Siebmacher 110 (projeto do teste) a faixa de bordado de cima não estava marcada como gravura e
+continua um bloco preto (é a marcação, não esta conta; num livro novo o programa acha a faixa). o fundo manchado da gravura em madeira (Palatino 74) continua "chuviscado": em preto e branco puro ele só
+sai assim. Em tons de cinza (como as fotos) ele fica igual ao original — **pergunta 3** abaixo.
 
 ---
 
@@ -60,7 +60,8 @@ Palavras: *"Uma folha de guarda branca sai cinza e toda manchada: a textura e as
 
 ![](img/4-3-siebmacher74.jpg)
 
-**Ressalva:** o Marial 2 é um papel amassado de verdade: as rugas ficam claras, mas aparecem. No Siebmacher 86 o
+**Ressalva:** o Marial 2 é um papel amassado de verdade: as rugas ficam claras, mas aparecem. O Siebmacher 74 quase
+não muda: é uma folha com bordados muito fracos, e o desenho fraco continua à vista. No Siebmacher 86 o
 desenho muito fraco some no Preto e branco (já era assim; o borrão preto não volta).
 
 ---
@@ -96,7 +97,8 @@ borrões escuros, porque no original elas também estão borradas). Medidas: 66,
 *"O bordado ficou bom, mas o cartão marrom em volta virou um remendo: o título e cada bloco de texto ganharam um
 retângulo branco por cima, com a letra engrossada, e sobrou uma tira branca torta na beirada esquerda."*
 
-**O que olhar:** o cartão fica marrom inteiro, com o título e o texto como no original. Medida (Pesel 51): parte do
+**O que olhar:** o cartão fica marrom inteiro, com o título e o texto como no original (como foram escaneados); a
+prancha clara continua branca. Medida (Pesel 51): parte do
 cartão que saía branca 32% → 5%.
 
 ![](img/4-7-pesel51.jpg)

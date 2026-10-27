@@ -49,7 +49,7 @@ agora" na mesma página.
 | **Matemática 40** (4.2/M-2) | Na sombra a letra fica BORRADA; o Sauvola (janela pequena) achava que o miolo da palavra era fundo e o apagava ("Suponha" → "~cha") | O mesmo conserto (a letra borrada volta como um borrão escuro, legível como no original) | `test_reversao_matematica_40...` (tinta na faixa da sombra: 7,1% → 13%) | `img/4-2-matematica40.jpg` |
 | **Foto de celular** (Lista de bugs 23/10; Razões 57, Atanásio 8) | A sombra da mão/da folha (2D, não só na beirada) virava mancha preta no Otsu | `filtros._sombra_em_quadros`: a mesma conta, com a luz medida em quadradinhos de pouca tinta (gravura, foto e pintura escuras têm muita "tinta" e ficam de fora) | `test_reversao_foto_de_celular...` (blocos pretos < 1% da página) | `img/celular.jpg` |
 | **4.5 PDF gigante** | Os livros vêm em JPEG de 72 a 200 DPI; o programa guardava cada página de tons SEM PERDA (zlib) a 300 DPI: o grão do scan ia inteiro (Antiphon 56: 20 MB numa página) | `pdf_io.QUALIDADE_DO_JPEG = 92`, 4:4:4: a página de cor/cinza vai em JPEG; o Preto e branco de 1 bit continua sem perda | `test_reversao_4_5_pagina_de_tons_vai_comprimida_e_fiel` (< 40% do sem perda, < 2 tons alisado); guarda `test_4_5_preto_e_branco_de_1_bit...` | tabela abaixo |
-| **4.7 Pesel** (51, 59, 67, 75) | Na prancha o detector marca o cartão como gravura (fica marrom), mas os blocos de texto como LETRA: o "papel do bloco" ia a branco (retângulo branco) e a letra ganhava a nitidez; a beirada sem marcação ficava com o Mágico pro da página (tira branca) | `filtros._o_cartao_vai_com_a_gravura`: o fundo escuro (abaixo de 0,6 do papel) que encosta no fundo escuro da gravura recebe o tratamento da gravura | `test_reversao_4_7...` (cartão que sai branco: 32% → 5%) | `img/4-7-pesel51.jpg`, `img/4-7-pesel67.jpg` |
+| **4.7 Pesel** (51, 59, 67, 75) | Na prancha o detector marca o cartão como gravura (fica marrom), mas os blocos de texto como LETRA: o "papel do bloco" ia a branco (retângulo branco) e a letra ganhava a nitidez; a beirada sem marcação ficava com o Mágico pro da página (tira branca) | `filtros._o_cartao_em_volta_da_gravura`: o fundo escuro (abaixo de 0,6 do papel) que encosta no fundo escuro da gravura e não é gravura (blocos de texto e beirada sobre o cartão) sai como foi escaneado; a gravura continua com o tratamento dela (a prancha clara continua branca — a primeira versão a deixava bege no Pesel 75, corrigido) | `test_reversao_4_7...` (cartão que sai branco: 32% → 5%) | `img/4-7-pesel51.jpg`, `img/4-7-pesel67.jpg` |
 | **4.11 Valadés 203** | A mancha de ferrugem pequena e redonda passava pela regra "letra colorida sai preta" (cor longe do papel, borda nítida) → disco preto | `filtros._sem_as_manchas_redondas`: a peça colorida que é BOLA (miolo ≥ 0,8% da altura, cheia, não comprida) é mancha: não vira preta, e dentro dela só fica o escuro de verdade | `test_reversao_4_11...` (preto no quadrado da mancha: 93% → 49%); `test_4_11_mancha_sintetica_e_letra_colorida` (a letra vermelha continua preta) | `img/4-11-valades203.jpg` |
 | **4.12 Antiphon 56** | O grão do pergaminho (matiz do papel, saturação 60 a 71, acima da trava 60) era pego como "traço" no bloco de letra e avivado em laranja, com um anel | `filtros._sem_o_grao_no_bloco` (peça pequena, clara, longe de letra → papel, com a orla) e `_graos_do_papel` (o mesmo na limpeza do papel) | `test_reversao_4_12...` (pontinhos laranja na margem: 2.656 → 183); `test_4_12_grao_sintetico...` | `img/4-12-antiphon56.jpg` |
 | **T do Antiphonal 46** (grave, 13/10; D-473) | No "Só as letras", a tinta de fora das linhas fica se for tão escura quanto a letra (a mediana da tinta das linhas). Essa mediana muda com a resolução: 61 na prévia (110 DPI) e 44 no PDF; o ponto mais escuro da T: 43 e 50 → ficava na tela e saía do PDF | `misto.SUAVE_DA_TINTA_FORTE`: as duas medidas são feitas no cinza alisado pela altura da linha (a mesma escala na prévia e no PDF) | `test_reversao_t_do_antiphonal_46...` (tinta da T: PDF 3% × tela 12% → 11% × 12%); `test_tinta_forte_e_medida_na_escala_da_linha`; `test_decisoes::test_d473_d066_...` | `img/t-antiphonal46.jpg` |
@@ -96,7 +96,7 @@ página de cor mesmo sem o filtro mudar). Base `ab38208` × ramo. **SOMAS_AQUI**
 
 ## Testes (um arquivo por vez, no PC)
 
-Novos: `tests/test_etapa10b_imagem.py` **23 passaram**; `tests/test_decisoes.py` **28 passaram** (6 provas novas: D-493 ×2,
+Novos: `tests/test_etapa10b_imagem.py` **23 passaram**; `tests/test_decisoes.py` **28 passaram** (5 provas novas: D-493 ×2,
 D-189, D-193, D-473/D-066). Rodados também (todos passando): test_trabalho_nao_se_perde 82, test_filtro_com_selecao 22,
 test_limpar_papel 5, test_core 62, test_conferencia_5 13, test_conferencia_6 9, test_decoracao_no_preto_e_branco 12,
 test_papel_dentro_da_gravura 12, test_melhorar_em_volta_da_gravura 12, test_alerta_pb 5, test_medidor_nas_paginas_otsu 6,
@@ -116,7 +116,10 @@ ponto a ponto; 1 bit continua idêntico), `test_tirar_fundo_no_programa::test_pd
 média < 2, 99,9% < 25).
 
 **Teste de reversão no código antigo** (`obra-etapa10b-antes`, `ab38208`, com os dois arquivos de teste copiados e
-apagados depois): REVERSAO_AQUI
+apagados depois): **26 testes falham lá e passam aqui**: 21 dos 23 de `test_etapa10b_imagem.py` (os 2 que passam lá são guardas de
+propósito: "a nota quadrada continua cheia" e "o 1 bit continua sem perda") e as 5 provas novas de `test_decisoes.py`
+(D-493 ×2, D-189, D-193, D-473/D-066; as do D-493 porque a conta não existe lá). Saída (`_tmp/reversao.txt`, fora do
+git): "26 failed, 25 passed" (os outros 23 que passam são as provas antigas do `test_decisoes.py`).
 
 **Falham no PC também no código antigo (não são desta etapa):**
 `test_desentortar_conferir_de_novo::test_destino_do_socialismo_18_...` (a página segurada difere da de hoje num canto
@@ -162,18 +165,22 @@ VELOCIDADE_AQUI
 ## Ressalvas (escritas, não escondidas)
 
 - **4.1:** o fundo manchado da gravura em madeira (Palatino 70, 74) continua chuviscado em 1 bit (pergunta 3); no
-  Valadés 41 os rostos dependem da nitidez do scan (borrado na origem). **Siebmacher 110:** o detector acha só parte do
-  bordado como gravura; o resto é binarizado como texto e os pontinhos claros somem (não é do conserto; a marcação à
-  mão resolve).
+  Valadés 41 os rostos dependem da nitidez do scan (borrado na origem). **Siebmacher 110 NÃO melhorou no projeto do
+  teste:** ali a faixa de bordado de cima não está marcada como gravura (só a flor de baixo) e sai como texto, um bloco
+  preto; num livro novo de fábrica o detector acha a faixa e ela sai em cinza. Não é desta conta (é a marcação/o
+  detector); a marcação à mão resolve.
 - **4.3:** Boécio 49 sai quase branco, com a textura bem leve; Marial 2 continua com as rugas claras do papel amassado
-  (é uma folha de papel amassada de verdade, com carimbo). Siebmacher 86: o desenho muito fraco some no Preto e branco
+  (é uma folha de papel amassada de verdade, com carimbo). **Siebmacher 74** quase não muda: é uma folha com bordados
+  muito fracos (não é branca); os borrões pretos do teste de 23/10 já não aparecem desde a etapa 10a, e ela continua
+  cinza-clara com o desenho fraco à vista. Siebmacher 86: o desenho muito fraco some no Preto e branco
   (era assim antes; o borrão preto não volta).
 - **Matemática 40/66:** as letras borradas na sombra saem como borrões escuros (o original também é borrado); no fim da
   Matemática 40 algumas primeiras letras ainda falham.
 - **4.5:** o PDF da página de tons não é mais idêntico ponto a ponto à tela (1 a 3 tons; 99,9% dos pontos até 14 tons
   numa página de Mágico pro) — diferença invisível, mas é diferença (D-473); pergunta 2.
-- **4.7:** sobra uma cunha clara fina entre o título e a prancha no Pesel 51 (onde o fundo em volta da prancha clara é
-  mais claro que 0,6 do papel).
+- **4.7:** sobra uma cunha clara fina entre o título e a prancha no Pesel 51; no Pesel 75 a beirada de baixo do cartão
+  fica um pouco mais clara; a letra do texto do cartão sai como no scan (não fica mais "engrossada", mas também não
+  ganha nitidez).
 - **4.11:** o miolo da mancha que é tão escuro quanto a tinta fica (um crescente pequeno junto do "a" de "Idiomate").
 - **4.12:** sobram manchas claras e cinzentas em retângulos na margem (o papel do bloco de letra) e o retângulo cinza
   do 4.6 (de outra etapa).
