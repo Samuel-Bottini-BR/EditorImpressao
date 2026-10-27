@@ -151,3 +151,7 @@ copiado para `D:\programas\EditorImpressao-arquivos\plano-24-09-2026\DECISOES.md
 | pd-chapas-vermelho-preto | "Não precisa: imprimimos na EPSON, que faz as duas cores juntas (recomendo)" | — | D-524 |
 | pd-ia-no-ocr | "Sem IA nenhuma: os dois leitores votam e, onde discordam, o Kaique revisa" | — | D-525 (Fase 7) |
 
+### Segunda volta (27/10/2026, 17:04-17:05)
+- pd-escala-kaique: "Só continuar desenhando para 150%" + comentário "Não está usando no photoshop, está usando em um programa que se propõe a fazer o que ele faz." → D-526 (a gerente corrigiu na página: o REA seria usado no PhotoCraft, que tem código aberto e pode ser lido direto).
+- pd-sequencia: "Só o aviso de número" → D-527 (Lista de espera).
+

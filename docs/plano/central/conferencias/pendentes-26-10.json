@@ -77,6 +77,16 @@
      "quem": "gerente",
      "em": "2026-10-27T18:00:00.000Z",
      "texto": "Olhei os dois. O PhotoCraft (clone do Photoshop em Rust) e o Photoshop fazem assim: cada botão e letra é desenhado numa medida \"em pontos\", e na hora de mostrar o programa multiplica pela escala do Windows (125% = 1,25×, 150% = 1,5×). Assim fica do mesmo tamanho e nítido em qualquer computador. O Editor já faz exatamente isso: a biblioteca de telas dele (Qt) multiplica sozinha pela escala do Windows. O que a escala muda é só quanto cabe na tela: em 150% sobra menos espaço, por isso desenhamos para o caso mais apertado. O REA é outra coisa: uma ferramenta para agentes estudarem por dentro programas já prontos (engenharia reversa); não ajuda na escala, e usar no Photoshop iria contra a licença da Adobe."
+    },
+    {
+     "quem": "samuel",
+     "em": "2026-10-27T17:04:51.027Z",
+     "texto": "Escolheu \"Só continuar desenhando para 150%\". Comentário: Não está usando no photoshop, está usando em um programa que se propõe a fazer o que ele faz."
+    },
+    {
+     "quem": "gerente",
+     "em": "2026-10-27T18:30:00.000Z",
+     "texto": "Entendi, obrigado pela correção: a ideia é usar o REA no PhotoCraft (o programa que faz o que o Photoshop faz), não no Photoshop. Como o PhotoCraft tem o código aberto (licença MIT), dá para ler o código dele direto, sem precisar do REA. Fica anotado: continuar desenhando para 150%."
     }
    ]
   },
