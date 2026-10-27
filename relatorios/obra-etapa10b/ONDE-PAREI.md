@@ -129,7 +129,17 @@ no PC também no `ab38208` (janela de verdade; ver GitHub).
 
 ## GitHub e velocidade
 
-GITHUB_AQUI
+- **Rodada inteira 1** `40540738467` (no `8b07089`, base `ab38208`): falharam os testes de "PDF = prévia ponto a ponto"
+  que o JPEG mudou (3 testes; ajustados no `34d2021`, com o motivo escrito) e 8 de `test_promessas.py`. Os 8 de
+  promessas **também falham no `ab38208`** (rodado no PC: 11 falham lá, `_tmp/prom-obra-etapa10b-antes.txt`) e foram
+  consertados pelas etapas 3 e 9c, que entraram no `obra-2026-10-26` depois da base desta etapa.
+- **Rodada 2** `40544957049` (no `34d2021`): só os mesmos `test_promessas` de antes da base nova.
+- **Juntei o `obra-2026-10-26` atual (`83d7ba2`, etapas 3 e 9c) ao ramo** (`a413d69`; um conflito só, em
+  `core/filtros.py`: os dois lados acrescentavam funções novas no mesmo lugar; ficaram as duas). Depois da junção, no PC:
+  `test_promessas` 3 falham (p085, p094, p127), as mesmas do `obra-2026-10-26` sozinho.
+- **Rodada 3** `40548644579` (no `a413d69`, com a junção): **falham só `test_promessas::test_p085` e `::test_p127`, que
+  já falham no `obra-2026-10-26` sem esta etapa** (rodada `40537146001`: p085, p090, p094, p127). O resto das 5 partes
+  da suíte e o `teste_botoes.py` passaram.
 
 VELOCIDADE_AQUI
 
@@ -207,4 +217,7 @@ VELOCIDADE_AQUI
 
 ## Commits (ramo `obra-etapa10b-2026-10-26`, com push)
 
-COMMITS_AQUI
+`93d2c3d` 4.1 · `1c0cd00` 4.5 JPEG, T do Antiphonal, D-193 · `50f0370` 4.3, sombra da lombada, Pesel, 4.11, 4.12 ·
+`c884467` D-189, celular, D-493 · `8b07089` testes · `7ffba04` limiar da sombra, D-493 só a conta · `34d2021` testes do
+JPEG · `c5a3991` ONDE-PAREI e DECISOES · `46c581e` cartão da Pesel refeito, fotos · `0b00c8d` · `a413d69` junção do
+`obra-2026-10-26` · `0c6ca3f` conferência · (o último) ONDE-PAREI final.
