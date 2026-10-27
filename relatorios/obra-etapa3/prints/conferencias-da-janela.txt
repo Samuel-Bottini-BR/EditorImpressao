@@ -1,0 +1,14 @@
+ok   D-002: o livro abriu direto na área de trabalho
+ok   D-005: o aviso do livro novo está na tela
+ok   D-018: o aviso abriu a janela grande
+ok   D-334: 'escolher páginas...' abriu a grade
+ok   a grade devolveu as 3 páginas ao Automático
+ok   Rodar ligou as etapas no livro
+ok   o aviso do livro novo sumiu
+ok   a grade abriu
+ok   D-094: a página tem o retângulo do corte
+ok   livro aberto: 'Receita usada'
+ok   livro aberto: 'Para revisar'
+ok   D-094: Configurações têm o retângulo do corte
+ok   WM_CLOSE fechou a janela
+13 de 13

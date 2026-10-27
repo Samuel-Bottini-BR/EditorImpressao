@@ -321,6 +321,7 @@ class ListaDeEtapas(QListWidget):
         self.setSelectionMode(QAbstractItemView.SingleSelection)
         self.setDragEnabled(True)
         self.setWordWrap(True)
+        self.setHorizontalScrollBarPolicy(Qt.ScrollBarAlwaysOff)   # o texto quebra; nada de rolar de lado
         self.setSpacing(2)
         self.viewport().setCursor(Qt.OpenHandCursor)
         self.setToolTip("Arraste uma etapa para mudar a ordem em que elas rodam. "
@@ -653,7 +654,7 @@ class JanelaDoAutomatico(QDialog):
             pagina = self._pagina_da_etapa(etapa)
             self.paginas_das_etapas[etapa] = pagina
             self.pilha.addWidget(pagina)
-        meio.addWidget(self.pilha, 1)
+        meio.addWidget(self.pilha, 3)     # as opções ganham mais largura que a página ao lado
         # direita: a página ao lado, para folhear e dar zoom
         from ui.widgets.folhear_pdf import FolhearPDF
 
@@ -668,7 +669,7 @@ class JanelaDoAutomatico(QDialog):
         zoom = QHBoxLayout()
         for texto, dica, fator in (("–", "afastar", 0.8), ("+", "aproximar", 1.25)):
             botao = QPushButton(texto)
-            botao.setFixedWidth(34)
+            botao.setMinimumWidth(44)          # largura fixa de 34 escondia o sinal (o enchimento do estilo)
             botao.setToolTip(dica)
             botao.clicked.connect(lambda _c=False, f=fator: self._zoom(f))
             zoom.addWidget(botao)
@@ -677,7 +678,7 @@ class JanelaDoAutomatico(QDialog):
         zoom.addWidget(caber)
         zoom.addStretch()
         cold.addLayout(zoom)
-        meio.addWidget(direita, 1)
+        meio.addWidget(direita, 2)
         fora.addLayout(meio, 1)
 
         # embaixo: a frase, onde rodar, escolher páginas, fechar, desligar, rodar
@@ -766,7 +767,9 @@ class JanelaDoAutomatico(QDialog):
         caixa_da_linha = QWidget()
         linha = QHBoxLayout(caixa_da_linha)
         linha.setContentsMargins(0, 0, 0, 0)
-        linha.addWidget(QLabel(rotulo))
+        nome_da_linha = QLabel(rotulo)
+        nome_da_linha.setWordWrap(True)        # rótulo longo quebra a linha em vez de rolar de lado
+        linha.addWidget(nome_da_linha, 1)
         combo = QComboBox()
         for valor, nome in escolhas:
             combo.addItem(nome, valor)
@@ -775,7 +778,7 @@ class JanelaDoAutomatico(QDialog):
         combo.currentIndexChanged.connect(
             lambda _i, c=campo, w=combo: self._mudou(c, w.currentData()))
         linha.addWidget(combo)
-        linha.addStretch()
+        linha.addStretch(1)
         col.addWidget(caixa_da_linha)
         self.controles[campo] = combo
         self.linhas[campo] = caixa_da_linha
@@ -835,6 +838,7 @@ class JanelaDoAutomatico(QDialog):
         col.addWidget(QLabel("Jeito de limpar"))
         self.grupo_filtros = QButtonGroup(self)
         self.radios_de_filtro: dict[str, QRadioButton] = {}
+        self.explicacoes_dos_filtros: dict[str, QLabel] = {}   # somem junto com o radio (Tirar o fundo)
         grade = QGridLayout()
         for n, (chave, nome, explicacao) in enumerate(FILTROS_DA_LIMPEZA):
             radio = QRadioButton(nome)
@@ -843,7 +847,9 @@ class JanelaDoAutomatico(QDialog):
             self.grupo_filtros.addButton(radio)
             self.radios_de_filtro[chave] = radio
             grade.addWidget(radio, n, 0)
-            grade.addWidget(self._fraco(explicacao), n, 1)
+            fraco = self._fraco(explicacao)
+            self.explicacoes_dos_filtros[chave] = fraco
+            grade.addWidget(fraco, n, 1)
         col.addLayout(grade)
         self.controles["filtro_padrao"] = self.radios_de_filtro[PRETO_E_BRANCO]
         self.escolhas_misto = EscolhasDoMisto()
@@ -1003,7 +1009,9 @@ class JanelaDoAutomatico(QDialog):
             filtro = o.get("filtro_padrao", ORIGINAL)
             if filtro in self.radios_de_filtro:
                 self.radios_de_filtro[filtro].setChecked(True)
-            self.radios_de_filtro[TIRAR_FUNDO].setVisible(self.estado.tem_camadas or filtro == TIRAR_FUNDO)
+            com_fundo = self.estado.tem_camadas or filtro == TIRAR_FUNDO
+            self.radios_de_filtro[TIRAR_FUNDO].setVisible(com_fundo)
+            self.explicacoes_dos_filtros[TIRAR_FUNDO].setVisible(com_fundo)
             self.escolhas_misto.mostrar(
                 bool(o.get("misto_so_as_letras", False)),
                 o.get("misto_fora_do_texto", misto.FORA_DO_TEXTO_PADRAO),

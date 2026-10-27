@@ -291,8 +291,11 @@ def resumo(pedido: Pedido, total_paginas: int, filtro_nome: str = "") -> str:
     branco, no livro todo (200 páginas)." (como no desenho aprovado)."""
     if not pedido.etapas:
         return "Nenhuma etapa marcada: nada vai mudar."
+    # "limpar em Original" nao diz nada (o Original nao mexe na pagina): diz isso
+    limpar = ("deixar a página em Original (sem filtro)" if filtro_nome.strip().lower() == "original"
+              else "limpar" + (f" em {filtro_nome}" if filtro_nome else ""))
     verbos = {DIVIDIR: "dividir as folhas", ENDIREITAR: "endireitar", CORTAR: "cortar as bordas",
-              LIMPAR: "limpar" + (f" em {filtro_nome}" if filtro_nome else ""),
+              LIMPAR: limpar,
               GRAVURAS: "achar gravuras e fotos", MARGENS: "deixar as margens iguais",
               CADERNOS: "montar os cadernos"}
     partes = [verbos[e] for e in pedido.etapas]

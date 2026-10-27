@@ -412,7 +412,10 @@ def atualizar(resumo: Resumo, projeto, pagina_atual: int | None = None,
     resumo.conferidas = sum(1 for p in projeto.paginas if p.revisada)
     # etapa 3 da obra: o "Para revisar" e a "Receita usada" do livro aberto
     try:
-        resumo.para_revisar = int(projeto.pendentes_de_revisao())
+        # as mesmas paginas que o rodape ("K com duvida") e o icone do "Para
+        # revisar" contam (pendentes_de_revisao soma tambem as folhas: dava 18
+        # no livro aberto e 16 na area de trabalho, no Boecio)
+        resumo.para_revisar = sum(1 for p in projeto.paginas if p.precisa_revisao)
     except Exception:  # noqa: BLE001 - o cartao nunca derruba a gravacao
         resumo.para_revisar = 0
     resumo.receita_usada = str(getattr(projeto, "receita_usada", "") or "")
