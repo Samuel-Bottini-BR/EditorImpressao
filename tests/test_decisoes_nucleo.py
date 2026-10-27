@@ -421,3 +421,44 @@ def test_folha_menor_de_verdade_continua_avisando():
 
     assert not tamanho_da_folha_cabe((13.8, 20.0), (13.944, 20.031))     # 1,4 mm menor
     assert not tamanho_da_folha_cabe((14.8, 20.9), (14.8, 21.0))         # 1 mm mais baixa
+
+
+# --- item 6: textos do núcleo que aparecem na tela ----------------------------
+
+def test_d479_o_jeito_do_proprio_programa_se_chama_o_do_editor():
+    """D-479 (26/10/2026): "o do Editor" / "a do Editor" em todo lugar onde
+    aparece o jeito ou a conta do próprio programa. Os nomes do núcleo (que
+    a frase-resumo de "O que fazer" e o Histórico usam) diziam "o do
+    programa" / "a do programa"."""
+    from core import dividir_scantailor as ds
+    from core import endireitar_scantailor as es
+
+    assert ds.NOMES_DOS_JEITOS[ds.JEITO_PROGRAMA] == "o do Editor"
+    assert es.NOMES_DOS_JEITOS[es.JEITO_PROGRAMA] == "a do Editor"
+    assert all("do programa" not in t for t in (*ds.NOMES_DOS_JEITOS.values(),
+                                                 *es.NOMES_DOS_JEITOS.values()))
+
+
+def test_d479_resumo_do_livro_diz_o_do_editor():
+    from core import dividir_scantailor as ds
+    from core.pipeline import resumo_em_portugues
+
+    projeto = Projeto(caminho_entrada="x.pdf", caminho_saida="", nome="x")
+    projeto.dividir_folhas, projeto.dividir_como = True, ds.JEITO_PROGRAMA
+    texto = resumo_em_portugues(projeto, 10)
+    assert "(jeito: o do Editor)" in texto and "do programa" not in texto
+
+
+def test_textos_com_singular_no_1_e_acento():
+    """D-365 ("Corrija TODOS os textos da interface para português correto")
+    e o teste do Kaique (auditoria de 26/10: "1 foram apagadas", "1
+    cadernos"): no núcleo, o Histórico do girar dizia "(1 folhas)", o "Tirar o
+    fundo" dizia "1 figura(s)" e a conferência dos cadernos "Nao ha
+    paginas"."""
+    from core import cadernos, girar
+
+    frase = girar.descricao_do_giro(90, girar.ALCANCE_DAQUI, 179, 1)
+    assert "(1 folha)" in frase and "1 folhas" not in frase and "virada como" in frase
+    assert "(3 folhas)" in girar.descricao_do_giro(90, girar.ALCANCE_DAQUI, 177, 3)
+    assert cadernos.conferir_sequencia(0, 16)[1] == "Não há páginas para conferir."
+    assert "1 caderno pronto" in cadernos.instrucoes_de_impressao(8, 16)[-1]

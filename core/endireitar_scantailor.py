@@ -87,7 +87,7 @@ JEITO_DO_PROJETO_ANTIGO = JEITO_PROGRAMA
 # ui/tela_conferir.py). Seguro mudar.
 NOMES_DOS_JEITOS = {
     JEITO_SCANTAILOR: "a do ScanTailor",
-    JEITO_PROGRAMA: "a do programa",
+    JEITO_PROGRAMA: "a do Editor",     # D-479 (etapa 9c): era "a do programa"
 }
 
 # Decisão do Samuel (G4 (b), C1): discordância MAIOR que isto manda a página

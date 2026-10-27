@@ -74,7 +74,7 @@ JEITO_DO_LIVRO_NOVO = JEITO_SCANTAILOR
 # Textos da tela (provisórios até o layout; ver ui/tela_opcoes.py e
 # ui/tela_conferir.py). Seguro mudar.
 NOMES_DOS_JEITOS = {
-    JEITO_PROGRAMA: "o do programa",
+    JEITO_PROGRAMA: "o do Editor",     # D-479 (etapa 9c): era "o do programa"
     JEITO_SCANTAILOR: "o do ScanTailor",
 }
 

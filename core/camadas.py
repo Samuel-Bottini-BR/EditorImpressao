@@ -1655,11 +1655,17 @@ def tirar_fundo(doc: fitz.Document, indice: int, dpi: float | None = None,
     _papel_de_cima_vira_branco(lidas, papel_local)
     imagem = compor(lidas, mantido if mantidas else None, limpo, papel_lab, branquear)
     if mantidas:
-        explicacao = (f"Fundo tirado; {mantidas} figura(s) com traço ou tom só no "
+        # singular e plural certos (etapa 9c; era "1 figura(s)", "2 delas é")
+        explicacao = ("Fundo tirado; 1 figura com traço ou tom só no fundo ficou "
+                      "como o PDF mostra." if mantidas == 1 else
+                      f"Fundo tirado; {mantidas} figuras com traço ou tom só no "
                       "fundo ficaram como o PDF mostra.")
         if fotos:
-            explicacao += (f" {fotos} delas é foto ou pintura: fica com o tom do "
-                           "original, e só o papel em volta vai a branco.")
+            explicacao += (" É foto ou pintura: fica com o tom do original, e só o "
+                           "papel em volta vai a branco." if mantidas == 1 else
+                           (" 1 delas é foto ou pintura" if fotos == 1 else
+                            f" {fotos} delas são foto ou pintura")
+                           + ": fica com o tom do original, e só o papel em volta vai a branco.")
     else:
         explicacao = "Fundo tirado: papel branco, letra e figuras da camada de cima."
     muito_do_fundo = perdida + trazida >= CONFERIR_TINTA_PERDIDA
