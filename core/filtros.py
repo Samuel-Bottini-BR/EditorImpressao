@@ -914,17 +914,30 @@ def _sem_as_manchas_redondas(tinta: np.ndarray) -> tuple[np.ndarray, np.ndarray 
         return tinta, None
     altura = tinta.shape[0]
     miolo_min = MANCHA_MIOLO_MINIMO * altura
-    # porta barata: so ha bola com miolo grande se a abertura por um disco do
-    # tamanho do miolo deixa alguma coisa
-    lado = max(3, int(miolo_min) | 1)
+    # porta barata (regra 6): so ha bola com miolo grande se a erosao por um
+    # disco de metade do miolo deixa alguma coisa - feita numa copia 4 vezes
+    # menor (a bola tem dezenas de pontos de miolo; a letra fina some)
+    pequena = cv2.resize(tinta, (max(1, tinta.shape[1] // 4), max(1, tinta.shape[0] // 4)),
+                         interpolation=cv2.INTER_AREA)
+    lado = max(3, int(miolo_min / 8) * 2 + 1)
     disco = cv2.getStructuringElement(cv2.MORPH_ELLIPSE, (lado, lado))
-    if not cv2.countNonZero(cv2.morphologyEx(tinta, cv2.MORPH_OPEN, disco)):
+    sobra = cv2.erode((pequena >= 128).view(np.uint8), disco)
+    if not cv2.countNonZero(sobra):
         return tinta, None
-    quantas, rotulos, medidas, _c = cv2.connectedComponentsWithStats(tinta, connectivity=8)
+    # so perto do que a erosao deixou (as candidatas a bola): a tinta a ate
+    # 3 miolos de distancia; a peca maior que isso nao e bola (MANCHA_COMPRIDA)
+    perto = cv2.resize(sobra, (tinta.shape[1], tinta.shape[0]), interpolation=cv2.INTER_NEAREST)
+    raio = max(3, int(3 * miolo_min) | 1)
+    perto = cv2.dilate(perto, cv2.getStructuringElement(cv2.MORPH_RECT, (raio, raio)))
+    quantas, rotulos, medidas, _c = cv2.connectedComponentsWithStats(
+        cv2.bitwise_and(tinta, tinta, mask=perto), connectivity=8)
+    ys, xs = np.nonzero(sobra)
+    candidatas = np.unique(rotulos[np.minimum(ys * 4 + 2, tinta.shape[0] - 1),
+                                   np.minimum(xs * 4 + 2, tinta.shape[1] - 1)])
     saida = tinta.copy()
     manchas = np.zeros_like(tinta)
     achou = False
-    for k in range(1, quantas):
+    for k in candidatas[candidatas > 0]:
         x, y, w, h = (int(v) for v in medidas[k, :4])
         if min(w, h) < miolo_min or max(w, h) > MANCHA_COMPRIDA * min(w, h):
             continue
@@ -1286,10 +1299,13 @@ def _faixa_da_sombra_da_lombada(cinza: np.ndarray) -> tuple[np.ndarray, np.ndarr
     altura, largura = cinza.shape[:2]
     if largura < 20 or altura < 20:
         return None
-    pequena = cv2.resize(cinza, (min(largura, 600), min(altura, 800)),
+    pequena = cv2.resize(cinza, (min(largura, 400), min(altura, 300)),
                          interpolation=cv2.INTER_AREA)
-    perfil = np.percentile(pequena, 75, axis=0).astype(np.float32)
-    perfil = cv2.GaussianBlur(perfil.reshape(1, -1), (0, 0), 3).ravel()
+    # o percentil 75 de cada coluna, pela ordenacao (mais rapido que
+    # np.percentile com eixo; regra 6)
+    k = int(0.75 * (pequena.shape[0] - 1))
+    perfil = np.partition(pequena, k, axis=0)[k].astype(np.float32)
+    perfil = cv2.GaussianBlur(perfil.reshape(1, -1), (0, 0), 2).ravel()
     topo = float(np.percentile(perfil, 90))
     if topo <= 1:
         return None
@@ -1350,7 +1366,8 @@ def _sombra_em_quadros(cinza: np.ndarray) -> tuple[np.ndarray, np.ndarray] | Non
     gy, gx = alt // lado_y, larg // lado_x
     quadros = (pequena[:gy * lado_y, :gx * lado_x].reshape(gy, lado_y, gx, lado_x)
                .transpose(0, 2, 1, 3).reshape(gy, gx, -1))
-    papel = np.percentile(quadros, 90, axis=2).astype(np.float32)
+    k = int(0.9 * (quadros.shape[2] - 1))
+    papel = np.partition(quadros, k, axis=2)[:, :, k].astype(np.float32)
     tinta = (quadros < 0.6 * papel[..., None]).mean(axis=2)
     papel = cv2.medianBlur(np.clip(papel, 0, 255).astype(np.uint8), 3).astype(np.float32)
     topo = float(np.percentile(papel, 90))
@@ -1366,7 +1383,7 @@ def _sombra_em_quadros(cinza: np.ndarray) -> tuple[np.ndarray, np.ndarray] | Non
 
 # A conta da sombra em quadradinhos e feita numa copia de no maximo este lado
 # (regra 6: a pagina inteira a 300 DPI custava ~0,1 s; a luz e lisa).
-SOMBRA_LADO_DA_CONTA = 1200
+SOMBRA_LADO_DA_CONTA = 480
 
 
 def _sem_a_sombra_da_lombada(cinza: np.ndarray, binaria: np.ndarray) -> np.ndarray:
@@ -1374,7 +1391,7 @@ def _sem_a_sombra_da_lombada(cinza: np.ndarray, binaria: np.ndarray) -> np.ndarr
     de celular (quadradinhos) refeitas pela luz igualada (ver
     LOMBADA_SOMBRA_MAXIMA e SOMBRA_QUADROS). Sem sombra, devolve a MESMA
     binaria. Regra 6: a luz e a conta so na caixa da sombra; o limiar do
-    Otsu numa amostra de 2 em 2 pontos da pagina igualada."""
+    Otsu numa amostra (de 2 em 2 ou 4 em 4 pontos) da pagina igualada."""
     altura, largura = cinza.shape[:2]
     faixa = _faixa_da_sombra_da_lombada(cinza)
     quadros = _sombra_em_quadros(cinza)
@@ -1410,10 +1427,11 @@ def _sem_a_sombra_da_lombada(cinza: np.ndarray, binaria: np.ndarray) -> np.ndarr
             onde |= sq
         return luz, onde
 
-    # o limiar: Otsu na pagina igualada vista de 2 em 2 pontos
-    luz_a, _onde_a = luz_e_onde(slice(0, altura), slice(0, largura), 2)
-    amostra = np.clip(cinza[::2, ::2].astype(np.float32) / np.maximum(luz_a, LOMBADA_SOMBRA_MINIMA),
-                      0, 255).astype(np.uint8)
+    # o limiar: Otsu na pagina igualada vista de PASSO em PASSO pontos
+    passo = 4 if min(altura, largura) >= 1200 else 2
+    luz_a, _onde_a = luz_e_onde(slice(0, altura), slice(0, largura), passo)
+    amostra = np.clip(cinza[::passo, ::passo].astype(np.float32)
+                      / np.maximum(luz_a, LOMBADA_SOMBRA_MINIMA), 0, 255).astype(np.uint8)
     if not _onde_a.any():
         return binaria
     limiar, _ = cv2.threshold(amostra, 0, 255, cv2.THRESH_BINARY + cv2.THRESH_OTSU)
@@ -1424,8 +1442,8 @@ def _sem_a_sombra_da_lombada(cinza: np.ndarray, binaria: np.ndarray) -> np.ndarr
         limiar = (float(escura.mean()) + float(clara.mean())) / 2.0
     # a caixa da sombra, na resolucao da pagina
     ys, xs = np.nonzero(_onde_a)
-    y0, y1 = max(0, int(ys.min()) * 2 - 2), min(altura, int(ys.max()) * 2 + 4)
-    x0, x1 = max(0, int(xs.min()) * 2 - 2), min(largura, int(xs.max()) * 2 + 4)
+    y0, y1 = max(0, int(ys.min()) * passo - passo), min(altura, int(ys.max()) * passo + 2 * passo)
+    x0, x1 = max(0, int(xs.min()) * passo - passo), min(largura, int(xs.max()) * passo + 2 * passo)
     luz, onde = luz_e_onde(slice(y0, y1), slice(x0, x1))
     igualada = cinza[y0:y1, x0:x1].astype(np.float32) / np.maximum(luz, LOMBADA_SOMBRA_MINIMA)
     saida = binaria.copy()
