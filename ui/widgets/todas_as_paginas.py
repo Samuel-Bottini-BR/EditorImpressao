@@ -79,6 +79,11 @@ class ItemDaGrade:
     folha: int
     motivo: str = ""              # o título do aviso, se houver ("Lombada incerta")
     apagada: bool = False
+    # Etapa 7 da obra: quantas PAGINAS com dúvida este quadro representa. No
+    # livro aberto da tela inicial o quadro é uma folha do PDF (pode ter duas
+    # páginas com dúvida); 0 = uma, se tem motivo. O "só as que precisam de
+    # atenção (N)" soma estas, para dar o número de todo lugar (lista única 5.5).
+    duvidas: int = 0
 
 
 class _Sinais(QObject):
@@ -546,7 +551,7 @@ class TodasAsPaginas(QWidget):
         self.botao_pares.setChecked(self.vista == EM_PARES)
         self.botao_todas.setChecked(not self.so_atencao)
         self.botao_atencao.setChecked(self.so_atencao)
-        quantas = sum(1 for i in self.itens if i.motivo)
+        quantas = sum((i.duvidas or 1) for i in self.itens if i.motivo)
         self.botao_atencao.setText(f"só as que precisam de atenção ({quantas})")
         # a largura acompanha o texto novo (a negrita do escolhido é mais larga)
         largura = self.botao_atencao.fontMetrics().horizontalAdvance(self.botao_atencao.text())

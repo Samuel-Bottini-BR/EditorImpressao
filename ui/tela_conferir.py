@@ -452,6 +452,57 @@ class _LugaresDeEncaixe(QWidget):
         pintor.end()
 
 
+class _RotuloDoLivro(QLabel):
+    """O "nome · N de M conferidas · K com dúvida" da barra de baixo.
+
+    Etapa 7 da obra (lista única 1.1: "o rodapé continua '0 de 360
+    conferidas'"; D-010: "contador sobe"): com a barra de baixo cheia (os
+    botões do ver, etapa 6) a 1280 de largura, o rótulo era cortado pela
+    direita e sobrava só "La vida ete" - o contador sumia. Agora quem encolhe
+    é o NOME do livro (com reticências); a conta fica à vista. O texto
+    inteiro continua no balão. Seguro mudar: o separador."""
+
+    def __init__(self) -> None:
+        super().__init__("")
+        self._nome = ""
+        self._conta = ""
+
+    def definir(self, nome: str, conta: str) -> None:
+        self._nome, self._conta = nome, conta
+        inteiro = f"{nome} · {conta}" if nome else conta
+        self.setToolTip(inteiro)
+        self._encaixar()
+
+    def texto_inteiro(self) -> str:
+        return f"{self._nome} · {self._conta}" if self._nome else self._conta
+
+    def _encaixar(self) -> None:
+        medida = self.fontMetrics()
+        cabe = max(0, self.width() - 4)
+        inteiro = self.texto_inteiro()
+        if not self.isVisible() or cabe <= 0:     # sem tela ainda: não há largura para medir
+            super().setText(inteiro)
+            return
+        if medida.horizontalAdvance(inteiro) <= cabe or not self._nome:
+            super().setText(inteiro if medida.horizontalAdvance(inteiro) <= cabe or not cabe
+                            else medida.elidedText(inteiro, Qt.ElideRight, cabe))
+            return
+        resto = f" · {self._conta}"
+        sobra = cabe - medida.horizontalAdvance(resto)
+        if sobra < medida.horizontalAdvance("M…"):
+            super().setText(medida.elidedText(self._conta, Qt.ElideRight, cabe))
+            return
+        super().setText(medida.elidedText(self._nome, Qt.ElideRight, sobra) + resto)
+
+    def resizeEvent(self, evento) -> None:  # noqa: N802 - nome do Qt
+        super().resizeEvent(evento)
+        self._encaixar()
+
+    def showEvent(self, evento) -> None:  # noqa: N802 - nome do Qt
+        super().showEvent(evento)
+        self._encaixar()
+
+
 class TelaConferir(QWidget):
     voltar = Signal()
     processar = Signal()
@@ -748,7 +799,9 @@ class TelaConferir(QWidget):
         self.botao_esta_certo.setObjectName("acaoPrimaria")
         self.botao_esta_certo.setToolTip(
             "Marca como conferida (a barra de espaço marca e já vai para a próxima).")
-        _ligar(self.botao_esta_certo, self._marcar_revisada)
+        # etapa 7 da obra (lista única 1.1, D-010): conferida, tique, contador
+        # e a próxima dúvida (esta_certo); antes só gravava, e nada mudava
+        _ligar(self.botao_esta_certo, self.esta_certo)
         self.botao_proxima_duvida = QPushButton("próxima dúvida")
         self.botao_proxima_duvida.setToolTip("Vai para a próxima com dúvida (tecla Tab).")
         _ligar(self.botao_proxima_duvida, self._ir_para_proximo_alerta)
@@ -910,7 +963,7 @@ class TelaConferir(QWidget):
             self._mostrar_o_historico)
         self.botao_historico_embaixo.setIcon(_icone_da_barra("historico"))
         linha.addSpacing(8)
-        self.rotulo_do_livro = QLabel("")
+        self.rotulo_do_livro = _RotuloDoLivro()
         self.rotulo_do_livro.setObjectName("rotuloDaBarraDeBaixo")
         # cede lugar (etapa 3): com um painel aberto numa janela estreita, o
         # nome comprido do livro e cortado em vez de empurrar a coluna de
@@ -1082,14 +1135,18 @@ class TelaConferir(QWidget):
         if feitas:
             self.botao_desfazer_embaixo.setToolTip(
                 f"Desfazer: {self.acoes.feitas[-1].descricao} (Ctrl+Z)")
-        paginas = self.projeto.paginas
-        conferidas = sum(1 for p in paginas if p.revisada)
-        duvidas = sum(1 for p in paginas if p.precisa_revisao)
+        # etapa 7 da obra (lista única 1.1 e 5.4): no Dividir se confere a
+        # FOLHA, e o contador conta folhas (antes contava páginas, e o "está
+        # certo" do Dividir não mexia nele: "0 de 360 conferidas"); nas outras
+        # ferramentas, páginas. As dúvidas: o número de todo lugar (5.5).
+        itens = self.projeto.folhas if self.trabalha_com_folhas else self.projeto.paginas
+        conferidas = sum(1 for item in itens if item.revisada)
+        duvidas = avisos_do_livro.quantas_com_duvida(self.projeto)
         nome = Path(self.projeto.caminho_entrada).stem if self.projeto.caminho_entrada else ""
-        texto = (f"{nome} · {conferidas} de {len(paginas)} conferidas · "
-                 f"{duvidas} com dúvida")
-        self.rotulo_do_livro.setText(texto)
-        self.rotulo_do_livro.setToolTip(texto)     # inteiro, se a barra cortar
+        # o nome encolhe primeiro, a conta fica à vista (_RotuloDoLivro); o
+        # texto inteiro fica no balão
+        self.rotulo_do_livro.definir(
+            nome, f"{conferidas} de {len(itens)} conferidas · {duvidas} com dúvida")
 
     def _ligar_paineis(self) -> None:
         """Cada painel manda no mesmo lugar em que o botao antigo mandava.
@@ -1099,7 +1156,13 @@ class TelaConferir(QWidget):
         fazer" pelo mesmo caminho do menu Arquivo > "Voltar para as opções"
         (o sinal `voltar`), que grava o trabalho antes de sair."""
         painel = self.paineis
-        painel.para_revisar.ir_para.connect(self.ir_para_pagina)
+        # etapa 7 da obra: o clique no cartão deixa o aviso à vista (sai do
+        # Dividir quando o aviso é da página; sessão 0, 0-8)
+        painel.para_revisar.ir_para.connect(self._ir_do_para_revisar)
+        # os botões do aviso no cartão da página da vez (lista única 1.8)
+        painel.para_revisar.botao_do_aviso.connect(self._aplicar_sugestao)
+        # "ver as N em tela cheia" (D-259)
+        painel.para_revisar.ver_em_tela_cheia.connect(self.abrir_so_as_que_precisam)
         # "está bom" de uma vez e o seletor grande (12/10/2026)
         painel.para_revisar.aceitar_motivo.connect(self._aceitar_o_motivo_em_todas)
         painel.para_revisar.aceitar_tudo.connect(self._aceitar_tudo)
@@ -2102,6 +2165,32 @@ class TelaConferir(QWidget):
         tarefa.terminou.connect(self._impresso_conferido_em_todas)
         self._tarefa_do_impresso = tarefa
         tarefa.start()
+
+    def _medir_o_em_branco_por_tras(self, paginas: list[int]) -> None:
+        """D-497 (etapa 7 da obra): depois de dividir, juntar ou mover a linha
+        de uma folha, mede por trás (QThread) se alguma página dela ficou
+        branca e põe o "Parece em branco" (o aviso que a pessoa já tirou não
+        volta). A conta é do núcleo, da etapa 9d (core.pipeline.
+        medir_o_em_branco); ENQUANTO ELA NÃO ESTIVER NA OBRA, nada acontece
+        aqui - a parte da tela fica pronta para ligar. Nunca levanta."""
+        try:
+            from core import pipeline
+
+            medir = getattr(pipeline, "medir_o_em_branco", None)
+            if medir is None or not paginas or self.projeto is None:
+                return
+            from ui.tarefas import TarefaMedirOEmBranco
+
+            anterior = getattr(self, "_tarefa_do_em_branco", None)
+            if anterior is not None and anterior.isRunning():
+                anterior.cancelar()
+                anterior.wait(2000)
+            tarefa = TarefaMedirOEmBranco(self.projeto, paginas, medir)
+            tarefa.terminou.connect(self._impresso_conferido_em_todas)
+            self._tarefa_do_em_branco = tarefa
+            tarefa.start()
+        except Exception:  # noqa: BLE001 - o aviso é ajuda; nunca derruba a tela
+            registrar_erro("medir o em branco por tras", traceback.format_exc())
 
     def _impresso_conferido(self, indice: int, fracao: float) -> None:
         """A conta de uma página chegou da conferência por trás: põe ou tira
@@ -3352,18 +3441,117 @@ class TelaConferir(QWidget):
         self.indice_folha = self.projeto.paginas[indice].folha
         self.atualizar()
 
-    def _ir_para_proximo_alerta(self) -> None:
+    def _ir_para_proximo_alerta(self) -> bool:
+        """"próxima dúvida" (e a tecla Tab): vai para a próxima folha (no
+        Dividir) ou página com um aviso que ainda pede um olhar, dando a volta
+        no fim do livro. Devolve True se andou. Etapa 7 da obra: "dúvida" é o
+        mesmo que a faixa mostra (_avisos_do_item), com os avisos da folha
+        nas páginas dela (antes ficavam de fora fora do Dividir)."""
         if not self._pronta():
-            return
+            return False
         assert self.projeto is not None
         total = self._total()
-        itens = (self.projeto.folhas if self.trabalha_com_folhas
-                 else self.projeto.paginas)
+        com_duvida = self._itens_com_duvida()
         for salto in range(1, total + 1):
             indice = (self.indice_atual + salto) % total
-            if itens[indice].precisa_revisao:
+            if indice in com_duvida and indice != self.indice_atual:
                 self._ir_para(indice)
-                return
+                return True
+        return False
+
+    # --- "está certo" com resposta e um número só de dúvidas (etapa 7) ---------
+    #
+    # Plano de 26/10 (aprovado), etapa 7: "'está certo' com resposta [...]:
+    # tique, contador certo, próxima dúvida (1.1); botões no cartão do aviso
+    # (1.8); um número só de dúvidas (5.5)". D-010, o exemplo do Samuel: "a
+    # folha fica conferida, tique na miniatura, contador sobe, vai para a
+    # próxima dúvida". Sessão 1, 1-5: "eu clico no esta certo e não acontece
+    # nada." O que conta como dúvida mora em core/avisos.py (avisos_da_pagina,
+    # avisos_da_folha, quantas_com_duvida): a tela só pergunta.
+
+    def _avisos_do_item(self, indice: int, de_folha: bool) -> list:
+        """Os avisos (core.avisos.Aviso) que a folha `indice` (no Dividir) ou
+        a página `indice` mostra na faixa: na página, os dela e depois os da
+        folha dela (lista única 5.5: "os avisos de folha ficam escondidos")."""
+        if self.projeto is None:
+            return []
+        if de_folha:
+            return avisos_do_livro.avisos_da_folha(self.projeto, indice)
+        return avisos_do_livro.avisos_da_pagina(self.projeto, indice)
+
+    def _avisos_da_vez(self) -> list:
+        """Os avisos da folha ou página que está na tela (o primeiro é o da faixa)."""
+        if self.projeto is None:
+            return []
+        return self._avisos_do_item(self.indice_atual, self.trabalha_com_folhas)
+
+    def _itens_com_duvida(self) -> set[int]:
+        """As folhas (no Dividir) ou as páginas com dúvida, de uma vez (a tira
+        e o "próxima dúvida" perguntam por todas)."""
+        if self.projeto is None:
+            return set()
+        pendentes = avisos_do_livro.pendentes_do_livro(self.projeto)
+        if self.trabalha_com_folhas:
+            return {a.indice for a in pendentes if a.alvo == avisos_do_livro.FOLHA}
+        return {indice for alvo, indice in avisos_do_livro._itens_com_aviso(pendentes, self.projeto)
+                if alvo == avisos_do_livro.PAGINA}
+
+    def _item_do_aviso(self, aviso):
+        """A folha ou a página de um aviso (para os botões que dependem dela)."""
+        assert self.projeto is not None
+        if aviso.alvo == avisos_do_livro.FOLHA:
+            return self.projeto.folhas[aviso.indice]
+        return self.projeto.paginas[aviso.indice]
+
+    @protegido
+    def esta_certo(self) -> None:
+        """O "está certo" da faixa: a folha (no Dividir) ou a página fica
+        conferida (numa ação do desfazer), a miniatura ganha o tique, o
+        contador de conferidas sobe, e a tela vai para a próxima dúvida. Sem
+        outra dúvida no livro, fica onde está (o tique e o contador mostram
+        que pegou). A barra de espaço continua "marca e vai para a próxima"."""
+        if not self._pronta():
+            return
+        self._marcar_revisada()
+        self._ir_para_proximo_alerta()
+
+    def _ir_do_para_revisar(self, indice: int) -> None:
+        """Clique num cartão do "Para revisar": vai até a página e deixa à
+        vista o aviso dela, com os botões. Se o primeiro aviso da página é da
+        divisão da folha ("Lombada incerta", "Não parece dupla"), vai ao
+        Dividir nessa folha (D-501); senão, se a tela está no Dividir, sai dele
+        para a página (D-007/D-501: no Dividir só se vê a folha inteira, e o
+        aviso da página não aparecia - sessão 0, 0-8: "o clique levou à folha
+        4 [...] sem os botões do aviso")."""
+        if not self._pronta() or self.projeto is None:
+            return
+        if not 0 <= indice < len(self.projeto.paginas):
+            return
+        avisos = avisos_do_livro.avisos_da_pagina(self.projeto, indice)
+        primeiro = avisos[0] if avisos else None
+        if (primeiro is not None and primeiro.alvo == avisos_do_livro.FOLHA
+                and primeiro.codigo in avisos_do_livro.DA_DIVISAO and ABA_CORTE in self._abas_ativas):
+            if self.aba_atual != ABA_CORTE:
+                self.barra_abas.setCurrentIndex(self._abas_ativas.index(ABA_CORTE))
+            self.indice_folha = self.projeto.paginas[indice].folha
+            self.indice_pagina = indice
+            self.atualizar()
+            return
+        if self.trabalha_com_folhas:
+            self.mostrar_paginas()
+        self.ir_para_pagina(indice)
+
+    @protegido
+    def abrir_so_as_que_precisam(self) -> None:
+        """"ver as N em tela cheia" do "Para revisar" (D-259, 05/10: "abrir
+        todas as páginas em tela cheia (como no UPDF) mostrando as que precisam
+        de atenção"; no desenho decidido, rodada 13, o botão largo no pé do
+        painel): a grade "Todas as páginas" já em "só as que precisam de
+        atenção" (D-343). O número do botão e o da grade são o mesmo
+        (core.avisos.quantas_com_duvida)."""
+        self.abrir_todas_as_paginas()
+        if self.pilha_da_tela.currentWidget() is self.todas:
+            self.todas.definir_so_atencao(True)
 
     # ------------------------------------------------------------------
     # desenho
@@ -3930,8 +4118,11 @@ class TelaConferir(QWidget):
         mostrado (_mostrar_marcas_do_aviso)."""
         item = self.item_atual
         aba = self.aba_atual
-        pendentes = item.alertas_pendentes
-        alerta = analise.descrever(pendentes[0]) if pendentes else None
+        # etapa 7 da obra: na página entram também os avisos da folha dela
+        # (core.avisos.avisos_da_pagina; antes só apareciam no Dividir)
+        pendentes = self._avisos_da_vez()
+        alerta = analise.descrever(pendentes[0].codigo) if pendentes else None
+        botoes_do_cartao: list[str] = []
 
         if alerta is not None:
             texto = alerta.mensagem
@@ -3939,9 +4130,10 @@ class TelaConferir(QWidget):
                 texto += f"  (aviso 1 de {len(pendentes)} desta página)"
             self.texto_faixa.setText(self._com_andamento(texto))
             self._pintar_faixa(alerta=True)
-            botoes = self._botoes_do_aviso(item, pendentes[0])
+            botoes = self._botoes_do_aviso(self._item_do_aviso(pendentes[0]), pendentes[0].codigo)
             for qual in range(3):
                 self._mostrar_sugestao(aba, botoes[qual][0] if len(botoes) > qual else None, qual)
+            botoes_do_cartao = [rotulo for rotulo, _c in botoes[:3]]
         elif getattr(item, "em_branco", False) and not self.trabalha_com_folhas:
             # "Deixar em branco": a página fica no livro, branca; o botão
             # devolve a página (o mesmo que o Desfazer faria)
@@ -3957,6 +4149,13 @@ class TelaConferir(QWidget):
             for qual in range(3):
                 self._mostrar_sugestao(aba, None, qual)
         self._mostrar_marcas_do_aviso()
+        # etapa 7 da obra (lista única 1.8; D-268 "(a) Botão no aviso"; sessão
+        # 0, 0-7: "tem os avisos mas não tem como apertar para fazer ele
+        # sumir"): o cartão da página da vez no "Para revisar" ganha os mesmos
+        # botões da faixa (o clique faz o mesmo: _aplicar_sugestao)
+        if hasattr(self, "paineis"):
+            self.paineis.para_revisar.definir_botoes_da_vez(
+                self.indice_pagina, botoes_do_cartao)
 
     def _mostrar_marcas_do_aviso(self) -> None:
         """Mostra ONDE está o problema do aviso da página da vez: retângulos
@@ -3969,8 +4168,11 @@ class TelaConferir(QWidget):
             caixas: list = []
             if self.projeto is not None and 0 <= self.indice_pagina < len(self.projeto.paginas):
                 pagina = self.projeto.paginas[self.indice_pagina]
-                if pagina.alertas_pendentes:
-                    caixas = marcas_do_aviso(pagina, pagina.alertas_pendentes[0])
+                # as marcas seguem o aviso que a faixa mostra (se for da
+                # página; o da folha não tem "onde sumiu")
+                avisos = avisos_do_livro.avisos_da_pagina(self.projeto, self.indice_pagina)
+                if avisos and avisos[0].alvo == avisos_do_livro.PAGINA:
+                    caixas = marcas_do_aviso(pagina, avisos[0].codigo)
             for cartao in self.cartoes.values():
                 cartao.definir_marcas(caixas)
             editor = getattr(self, "editor_selecao", None)
@@ -4135,15 +4337,21 @@ class TelaConferir(QWidget):
         assert self.projeto is not None
         itens = (self.projeto.folhas if self.trabalha_com_folhas
                  else self.projeto.paginas)
+        # etapa 7 da obra: o "!" é a mesma dúvida da faixa (com os avisos da
+        # folha nas páginas dela) e o tique é o "está certo" (D-010: "a folha
+        # fica conferida, tique na miniatura")
+        com_duvida = self._itens_com_duvida()
         for i, item in enumerate(itens):
-            self.tira.marcar(i, em_alerta=item.precisa_revisao,
-                             apagada=getattr(item, "apagada", False))
+            self.tira.marcar(i, em_alerta=i in com_duvida,
+                             apagada=getattr(item, "apagada", False),
+                             conferida=bool(item.revisada))
         self.tira.definir_giros(self._giros_das_folhas())      # D2: so as que mudaram
         self.tira.selecionar(self.indice_atual)
 
     def _atualizar_contador(self) -> None:
         assert self.projeto is not None
-        pendentes = self.projeto.pendentes_de_revisao()
+        # etapa 7 da obra: o número de dúvidas de todo lugar (lista única 5.5)
+        pendentes = avisos_do_livro.quantas_com_duvida(self.projeto)
         apagadas = self.projeto.total_apagadas
 
         if pendentes == 0:
@@ -4156,8 +4364,11 @@ class TelaConferir(QWidget):
             texto += f"  -  {apagadas} apagadas"
         self.botao_alertas.setText(texto)
         self.botao_alertas.setEnabled(pendentes > 0)
-        # o "próxima dúvida" da faixa (etapa 3 do layout) so acende com duvida
-        self.botao_proxima_duvida.setEnabled(pendentes > 0)
+        # o "próxima dúvida" da faixa (etapa 3 do layout) so acende quando ha
+        # outra folha/pagina com duvida para onde ir (etapa 7: antes acendia
+        # no Dividir com duvida so de pagina, e o clique nao fazia nada)
+        outras = self._itens_com_duvida() - {self.indice_atual}
+        self.botao_proxima_duvida.setEnabled(bool(outras))
 
         observacoes = getattr(self.projeto, "observacoes", [])
         self.rotulo_observacoes.setVisible(bool(observacoes))
@@ -4249,8 +4460,14 @@ class TelaConferir(QWidget):
         # prévia) e a força do preto (a "força do preto sozinha" pode tê-la
         # escurecido durante o desenho: o medidor tem de mostrar a nova)
         marcas = tuple(marcas_do_aviso(item)) if hasattr(item, "filtro") else ()
+        # etapa 7: os avisos da folha da página também (aparecem na faixa dela)
+        folha = (self.projeto.folhas[self.indice_folha]
+                 if self.projeto is not None and 0 <= self.indice_folha < len(self.projeto.folhas)
+                 else None)
+        da_folha = ((tuple(folha.alertas), folha.revisada, tuple(folha.alertas_aceitos))
+                    if folha is not None else ())
         estado = (self.indice_pagina, tuple(item.alertas), item.revisada, marcas,
-                  getattr(item, "forca_preto", None))
+                  getattr(item, "forca_preto", None), da_folha)
         if estado == getattr(self, "_alertas_vistos", None):
             return
         self._alertas_vistos = estado
@@ -4258,8 +4475,7 @@ class TelaConferir(QWidget):
             self._atualizar_tira()        # a faixa virou (ou deixou de ser) aviso do livro
         self._atualizar_faixa()
         self._atualizar_botoes()
-        self.tira.marcar(self.indice_pagina, em_alerta=item.precisa_revisao,
-                         apagada=getattr(item, "apagada", False))
+        self._atualizar_tira()       # etapa 7: o aviso de folha muda duas miniaturas
         self._atualizar_contador()
         self._atualizar_paineis()
 
@@ -4290,7 +4506,12 @@ class TelaConferir(QWidget):
             if self.previas is not None:
                 self.previas.invalidar()
             self.lista_de_paginas_mudou()
+            if alvo == "folha":            # D-497 (etapa 7): a página que ficou branca
+                self._medir_o_em_branco_por_tras(self._paginas_das_folhas(indices))
             return
+        if alvo == "folha" and "posicao_corte" in campos:
+            # D-497 (etapa 7): mover a linha pode deixar uma metade só margem
+            self._medir_o_em_branco_por_tras(self._paginas_das_folhas(indices))
         afetadas = indices if alvo == "pagina" else self._paginas_das_folhas(indices)
         if self.previas is not None and not set(campos) <= CAMPOS_SO_DO_MOVER:
             # etapa 5 da obra: mover/aumentar nao muda o desenho da pagina (a
@@ -5762,8 +5983,13 @@ class TelaConferir(QWidget):
         itens = []
         for pagina in self.projeto.paginas:
             motivo = ""
-            if pagina.alertas and not pagina.revisada:
-                alerta = analise.descrever(pagina.alertas[0])
+            # etapa 7 da obra: a mesma dúvida do "Para revisar" (os avisos que
+            # ainda pedem um olhar, com os da folha), para "só as que precisam
+            # de atenção (N)" dar o número de todo lugar (lista única 5.5);
+            # antes contava os avisos já dados por vistos
+            avisos = avisos_do_livro.avisos_da_pagina(self.projeto, pagina.indice)
+            if avisos:
+                alerta = analise.descrever(avisos[0].codigo)
                 motivo = alerta.titulo if alerta is not None else ""
             itens.append(ItemDaGrade(indice=pagina.indice, folha=pagina.folha, motivo=motivo,
                                      apagada=bool(pagina.apagada)))
@@ -6235,31 +6461,32 @@ class TelaConferir(QWidget):
         "em branco" sem aviso: o botão é o "voltar a página".
         """
         item = self.item_atual
-        pendentes = item.alertas_pendentes
+        pendentes = self._avisos_da_vez()
         if not pendentes:
             if getattr(item, "em_branco", False) and not self.trabalha_com_folhas and qual == 0:
                 self._deixar_em_branco(False)
             return
-        codigo = pendentes[0]
-        botoes = self._botoes_do_aviso(item, codigo)
+        aviso = pendentes[0]
+        botoes = self._botoes_do_aviso(self._item_do_aviso(aviso), aviso.codigo)
         if not 0 <= qual < len(botoes):
             if qual == 0:                       # aviso sem botão: "está bom" nele
-                self._aceitar_avisos([self._aviso_da_vez(codigo)])
+                self._aceitar_avisos([aviso])
             return
-        self._aplicar_correcao(codigo, botoes[qual][1])
+        self._aplicar_correcao(aviso.codigo, botoes[qual][1], aviso)
 
-    def _aplicar_correcao(self, codigo: str, correcao: str) -> None:
+    def _aplicar_correcao(self, codigo: str, correcao: str, aviso=None) -> None:
         """Faz o que um botão de aviso manda (os valores possíveis estão em
         core.analise.Alerta.botoes). "revisar" é o "está bom assim": aceita
         SÓ este motivo desta página; os outros motivos dela continuam na
-        lista (o "está certo" da aba aceita a página inteira)."""
+        lista (o "está certo" da aba aceita a página inteira). `aviso`: o
+        core.avisos.Aviso do botão (o da folha, na página, desde a etapa 7)."""
         if correcao == "revisar":
-            if len(self.item_atual.alertas_pendentes) <= 1:
+            if len(self._avisos_da_vez()) <= 1:
                 # o único motivo que faltava: a página inteira fica conferida,
                 # como este botão sempre fez
                 self._marcar_revisada()
             else:
-                self._aceitar_avisos([self._aviso_da_vez(codigo)])
+                self._aceitar_avisos([aviso if aviso is not None else self._aviso_da_vez(codigo)])
         elif correcao.startswith("filtro:"):
             self._escolher_filtro(correcao.split(":", 1)[1])
         elif correcao.startswith("forca:"):
@@ -6361,7 +6588,11 @@ class TelaConferir(QWidget):
     # Tudo passa por _aceitar_avisos, que grava no histórico (o Ctrl+Z desfaz).
 
     def _aviso_da_vez(self, codigo: str):
-        """O aviso `codigo` da folha ou página que está na tela."""
+        """O aviso `codigo` da folha ou página que está na tela (na página, o
+        da folha dela também conta, desde a etapa 7)."""
+        for aviso in self._avisos_da_vez():
+            if aviso.codigo == codigo:
+                return aviso
         alvo = avisos_do_livro.FOLHA if self.trabalha_com_folhas else avisos_do_livro.PAGINA
         return avisos_do_livro.Aviso(alvo, self.indice_atual, codigo)
 

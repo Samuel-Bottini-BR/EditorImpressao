@@ -105,6 +105,9 @@ class Miniatura(QFrame):
         self.selecionada = False
         self.em_alerta = False
         self.apagada = False
+        # etapa 7 da obra (D-010, o exemplo do Samuel: "a folha fica
+        # conferida, tique na miniatura"): o "está certo" deixa um tique verde
+        self.conferida = False
         self._pixmap: QPixmap | None = None
 
         self.setFixedSize(QSize(LARGURA_DO_QUADRO, ALTURA_MINIATURA + ALTURA_DO_NUMERO + 4))
@@ -146,6 +149,8 @@ class Miniatura(QFrame):
 
         if self.apagada:
             pintor.fillRect(area, QColor(255, 255, 255, 165))
+        if self.conferida and not self.apagada:
+            self._pintar_o_tique(pintor, area)
 
         # moldura: laranja quando ha alerta, azul quando selecionada
         if self.selecionada:
@@ -168,6 +173,33 @@ class Miniatura(QFrame):
         if self.apagada:
             rotulo = "apagada"
         pintor.drawText(rodape, Qt.AlignCenter, rotulo)
+
+    @staticmethod
+    def _pintar_o_tique(pintor: QPainter, area) -> None:
+        """O tique de "conferida" no canto de cima, à direita, do desenho:
+        uma bolinha verde com o sinal de certo desenhado em traços (sem
+        caractere especial: nenhum emoji ou símbolo em rótulo, CLAUDE.md §3)."""
+        from PySide6.QtCore import QPointF, QRectF
+        from PySide6.QtGui import QPen
+
+        lado = 13.0
+        caixa = QRectF(area.right() - lado - 1, area.top() + 1, lado, lado)
+        pintor.save()
+        pintor.setPen(Qt.NoPen)
+        verde = QColor(estilo.cor("ok"))
+        pintor.setBrush(verde)
+        pintor.drawEllipse(caixa)
+        # o traço escuro no verde claro dos temas escuros, branco no verde
+        # escuro do tema claro
+        caneta = QPen(QColor(20, 20, 20) if verde.lightness() > 128 else QColor(255, 255, 255))
+        caneta.setWidthF(1.8)
+        caneta.setCapStyle(Qt.RoundCap)
+        caneta.setJoinStyle(Qt.RoundJoin)
+        pintor.setPen(caneta)
+        x, y = caixa.left(), caixa.top()
+        pintor.drawPolyline([QPointF(x + 3.2, y + 6.8), QPointF(x + 5.6, y + 9.2),
+                             QPointF(x + 9.8, y + 4.0)])
+        pintor.restore()
 
     def _tira(self):
         """Sobe na arvore de widgets ate achar a TiraMiniaturas dona, para
@@ -396,12 +428,16 @@ class TiraMiniaturas(QWidget):
 
     # --- estado -----------------------------------------------------------
 
-    def marcar(self, indice: int, em_alerta: bool = False, apagada: bool = False) -> None:
-        """Liga/desliga a moldura de alerta e a marca de apagada de uma miniatura."""
+    def marcar(self, indice: int, em_alerta: bool = False, apagada: bool = False,
+               conferida: bool = False) -> None:
+        """Liga/desliga a moldura de alerta, a marca de apagada e o tique de
+        conferida (etapa 7 da obra) de uma miniatura. Só redesenha se mudou."""
         if 0 <= indice < len(self._miniaturas):
             mini = self._miniaturas[indice]
-            mini.em_alerta = em_alerta
-            mini.apagada = apagada
+            novo = (bool(em_alerta), bool(apagada), bool(conferida))
+            if (mini.em_alerta, mini.apagada, mini.conferida) == novo:
+                return
+            mini.em_alerta, mini.apagada, mini.conferida = novo
             mini.update()
 
     def selecionar(self, indice: int) -> None:

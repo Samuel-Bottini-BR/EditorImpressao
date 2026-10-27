@@ -162,6 +162,13 @@ class Resumo:
     # pelo Automatico. Resumo antigo nao tem os campos: 0 e "" (ler_resumo).
     para_revisar: int = 0
     receita_usada: str = ""
+    # Etapa 7 da obra: os avisos do livro inteiro (D-521: "No alto do painel
+    # \"Para revisar\" e no livro aberto da tela inicial") e, por folha do
+    # PDF, [motivo, quantas paginas com duvida] - para o "Ver todas as
+    # páginas" do livro aberto mostrar e contar as mesmas duvidas (lista
+    # unica 5.5: ali dava "(0)"). Resumo antigo: vazios.
+    avisos_do_livro: list = field(default_factory=list)
+    duvidas_por_folha: dict = field(default_factory=dict)
 
     @property
     def progresso(self) -> float:
@@ -412,10 +419,24 @@ def atualizar(resumo: Resumo, projeto, pagina_atual: int | None = None,
     resumo.conferidas = sum(1 for p in projeto.paginas if p.revisada)
     # etapa 3 da obra: o "Para revisar" e a "Receita usada" do livro aberto
     try:
-        # as mesmas paginas que o rodape ("K com duvida") e o icone do "Para
-        # revisar" contam (pendentes_de_revisao soma tambem as folhas: dava 18
-        # no livro aberto e 16 na area de trabalho, no Boecio)
-        resumo.para_revisar = sum(1 for p in projeto.paginas if p.precisa_revisao)
+        # o numero de duvidas de todo lugar (etapa 7 da obra, lista unica 5.5:
+        # core.avisos.quantas_com_duvida, o mesmo do rodape, do "Para revisar"
+        # e das janelas do fim)
+        from core import analise
+        from core import avisos as avisos_do_livro
+
+        linhas = avisos_do_livro.linhas_do_para_revisar(projeto)
+        resumo.para_revisar = len(linhas)
+        por_folha: dict = {}
+        for alvo, indice, avisos in linhas:
+            if alvo != avisos_do_livro.PAGINA or not avisos:
+                continue
+            folha = str(projeto.paginas[indice].folha)
+            if folha not in por_folha:
+                por_folha[folha] = [analise.descrever(avisos[0].codigo).titulo, 0]
+            por_folha[folha][1] += 1
+        resumo.duvidas_por_folha = por_folha
+        resumo.avisos_do_livro = list(getattr(projeto, "observacoes", None) or [])
     except Exception:  # noqa: BLE001 - o cartao nunca derruba a gravacao
         resumo.para_revisar = 0
     resumo.receita_usada = str(getattr(projeto, "receita_usada", "") or "")

@@ -2093,8 +2093,24 @@ def test_p094_lista_dos_avisos(janela, tela):
 
 @prova("P-095")
 def test_p095_ver_as_duvidas_em_tela_cheia(janela, tela):
+    from core import avisos
+
     _com_avisos(janela, tela)
-    botao(janela, "área de trabalho/para revisar/ver as N em tela cheia")
+    antes = _trabalho(aj.projeto_gravado(janela))
+    numero = avisos.quantas_com_duvida(tela.projeto)
+    alvo = botao(janela, "área de trabalho/para revisar/ver as N em tela cheia")
+    assert alvo.text() == f"ver as {numero} em tela cheia"
+    alvo.click()
+    aj.assentar()
+    assert tela.pilha_da_tela.currentWidget() is tela.todas, "a tela cheia (a grade) não abriu"
+    assert tela.todas.so_atencao, "não abriu em 'só as que precisam de atenção'"
+    mostradas = [i.indice for grupo in tela.todas._grupos() for i in grupo]
+    # as páginas com dúvida agora (o programa refaz sozinho alguns avisos que ele mesmo mede)
+    com_duvida = [i for alvo, i, _a in avisos.linhas_do_para_revisar(tela.projeto) if alvo == avisos.PAGINA]
+    assert mostradas and mostradas == com_duvida, f"mostrou {mostradas}, e não só as com dúvida {com_duvida}"
+    assert len(mostradas) < len(tela.projeto.paginas)
+    assert tela.todas.botao_atencao.text().endswith(f"({numero})")
+    assert _trabalho(aj.projeto_gravado(janela)) == antes
 
 
 # --- a faixa e os avisos ---------------------------------------------------------------------------
@@ -2162,8 +2178,13 @@ def test_p101_esta_certo_com_resposta(janela, tela):
         tela.projeto.paginas[i].alertas = [analise.CONTAS_DO_ENDIREITAR_DISCORDAM]
     tela.ir_para_pagina(1)
     tela.escolher_ferramenta("mao")
+    antes = sum(1 for p in tela.projeto.paginas if p.revisada)
+    assert f"{antes} de " in tela.rotulo_do_livro.text()
     apertar(janela, "área de trabalho/faixa do aviso/está certo")
     assert tela.indice_pagina == 3, "não foi para a próxima dúvida"
+    assert tela.tira._miniaturas[1].conferida, "a miniatura não ganhou o tique"
+    assert f"{antes + 1} de " in tela.rotulo_do_livro.text(), "o contador de conferidas não subiu"
+    assert aj.pagina_gravada(janela, 1)["revisada"] is True
 
 
 @prova("P-102")

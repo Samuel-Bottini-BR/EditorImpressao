@@ -175,9 +175,19 @@ class JanelaConfirmar(QDialog):
     # --- avisos -----------------------------------------------------------
 
     def _nao_conferidas(self) -> int:
-        """Quantas páginas que vão para o PDF (Projeto.paginas_ativas) a
-        pessoa ainda nao olhou na tela de conferir."""
-        return sum(1 for p in self.projeto.paginas_ativas if not p.revisada)
+        """Quantas páginas que vão para o PDF ainda têm um aviso que pede um
+        olhar: o número de todo lugar (core.avisos.quantas_com_duvida).
+
+        D-285 (Samuel, 21/10/2026, `pr-contagens`: "A janela de salvar passa a
+        contar as páginas com aviso pendente"), feita na etapa 7 da obra. O
+        defeito (teste do Kaique, 26/10: "Ainda há 356 página(s) que você não
+        conferiu" logo depois de "nada pendente" no "Para revisar"): contava
+        toda página sem "está certo", com aviso ou não; o "está bom em tudo"
+        tira os avisos sem marcar as páginas, e o número não descia nunca.
+        Arriscado: voltar a contar `not p.revisada`."""
+        from core.avisos import quantas_com_duvida
+
+        return quantas_com_duvida(self.projeto)
 
     def _reavaliar(self) -> None:
         """Reconstroi os dois avisos e liga/desliga o botão Processar.

@@ -83,17 +83,55 @@ def onde_no_livro(aviso: Aviso, projeto) -> str:
     return "Páginas " + ", ".join(str(n) for n in numeros[:-1]) + f" e {numeros[-1]}"
 
 
+def _paginas_vivas_por_folha(projeto) -> dict[int, list]:
+    """As paginas que vao para o PDF (nao apagadas), por folha."""
+    vivas: dict[int, list] = {}
+    for pagina in projeto.paginas:
+        if not pagina.apagada:
+            vivas.setdefault(pagina.folha, []).append(pagina)
+    return vivas
+
+
+def _folha_ainda_pede(projeto, folha, vivas: dict[int, list] | None = None) -> bool:
+    """Os avisos de uma FOLHA ainda pedem um olhar? Nao, se a folha foi
+    apagada, se todas as paginas dela foram tiradas do livro, ou se todas as
+    paginas dela que vao para o PDF ja foram dadas como conferidas ("está
+    certo" em cada uma). Folha sem pagina nenhuma conhecida: pede (como
+    sempre).
+
+    Etapa 7 da obra (26/10/2026; lista unica 5.5, "um numero so de duvidas";
+    teste do Kaique: "356 páginas que você não conferiu" depois de "nada
+    pendente"): o aviso de uma folha (o corte, o angulo, o tamanho) agora
+    aparece na faixa das paginas dela (avisos_da_pagina), e o "está certo" de
+    cada pagina responde por ele naquela pagina. Antes so o "está certo" do
+    Dividir o tirava, e nas outras ferramentas o aviso ficava escondido,
+    contado so no fim. Arriscado: voltar a contar a folha cujas paginas ja
+    foram todas conferidas (o numero do fim volta a ser maior que o do painel)."""
+    if getattr(folha, "apagada", False):
+        return False
+    if vivas is None:
+        vivas = _paginas_vivas_por_folha(projeto)
+    delas = vivas.get(folha.indice)
+    if not delas:
+        # nenhuma pagina viva: ou todas foram tiradas do livro (nao pede), ou
+        # a folha nao tem pagina nenhuma conhecida (pede, como sempre)
+        return not any(p.folha == folha.indice for p in projeto.paginas)
+    return any(not p.revisada for p in delas)
+
+
 def pendentes_do_livro(projeto) -> list[Aviso]:
     """Todos os avisos que ainda pedem um olhar, na ordem do livro: para cada
     folha, os dela (o corte, o angulo, o tamanho) e depois os das paginas que
-    sairam dela. Folha e pagina apagadas ficam de fora (nao vao para o PDF)."""
+    sairam dela. Folha e pagina apagadas ficam de fora (nao vao para o PDF);
+    a folha cujas paginas ja foram todas conferidas tambem (_folha_ainda_pede)."""
     paginas_da_folha: dict[int, list] = {}
     for pagina in projeto.paginas:
         paginas_da_folha.setdefault(pagina.folha, []).append(pagina)
+    vivas = _paginas_vivas_por_folha(projeto)
     avisos: list[Aviso] = []
     vistas: set[int] = set()
     for folha in projeto.folhas:
-        if not getattr(folha, "apagada", False):
+        if _folha_ainda_pede(projeto, folha, vivas):
             avisos.extend(Aviso(FOLHA, folha.indice, c) for c in folha.alertas_pendentes)
         for pagina in paginas_da_folha.get(folha.indice, []):
             vistas.add(pagina.indice)
@@ -103,6 +141,73 @@ def pendentes_do_livro(projeto) -> list[Aviso]:
         if pagina.indice not in vistas and not pagina.apagada:
             avisos.extend(Aviso(PAGINA, pagina.indice, c) for c in pagina.alertas_pendentes)
     return avisos
+
+
+# Os avisos de folha que sao da DIVISAO: "ver" leva ao Dividir (D-501, etapa 4).
+DA_DIVISAO = frozenset({analise.NAO_PARECE_DUPLA, analise.LOMBADA_INCERTA})
+
+
+def avisos_da_pagina(projeto, indice: int) -> list[Aviso]:
+    """Os avisos que a PAGINA `indice` mostra na faixa e no "Para revisar":
+    primeiro os dela (o que acabou de mudar nela aparece na hora na faixa),
+    depois os da folha dela que ainda pedem um olhar. Nenhum
+    se a pagina foi tirada do livro ou ja foi dada como conferida (`revisada`:
+    o "está certo" vale para tudo o que a faixa dela mostrou). Barato: so le
+    campos. Etapa 7 da obra (um numero so de duvidas, lista unica 5.5)."""
+    if projeto is None or not 0 <= indice < len(projeto.paginas):
+        return []
+    pagina = projeto.paginas[indice]
+    if pagina.apagada or pagina.revisada:
+        return []
+    avisos: list[Aviso] = [Aviso(PAGINA, pagina.indice, c) for c in pagina.alertas_pendentes]
+    if 0 <= pagina.folha < len(projeto.folhas):
+        folha = projeto.folhas[pagina.folha]
+        if not getattr(folha, "apagada", False):
+            avisos.extend(Aviso(FOLHA, folha.indice, c) for c in folha.alertas_pendentes)
+    return avisos
+
+
+def avisos_da_folha(projeto, indice: int) -> list[Aviso]:
+    """Os avisos que a FOLHA `indice` mostra no Dividir (onde se confere a
+    folha inteira): os dela que ainda pedem um olhar (_folha_ainda_pede)."""
+    if projeto is None or not 0 <= indice < len(projeto.folhas):
+        return []
+    folha = projeto.folhas[indice]
+    if not _folha_ainda_pede(projeto, folha):
+        return []
+    return [Aviso(FOLHA, indice, c) for c in folha.alertas_pendentes]
+
+
+def linhas_do_para_revisar(projeto) -> list[tuple[str, int, list[Aviso]]]:
+    """Uma linha por PAGINA com duvida, na ordem do livro: (PAGINA, indice,
+    os avisos dela e os da folha dela - avisos_da_pagina). Uma folha que ainda pede um olhar
+    mas nao tem pagina nenhuma conhecida (caso raro) vira a linha (FOLHA,
+    indice, avisos). E a lista do painel "Para revisar" (ui/widgets/paineis);
+    o numero de linhas e o quantas_com_duvida."""
+    if projeto is None:
+        return []
+    linhas: list[tuple[str, int, list[Aviso]]] = []
+    for alvo, indice in _itens_com_aviso(pendentes_do_livro(projeto), projeto):
+        if alvo == PAGINA:
+            avisos = avisos_da_pagina(projeto, indice)
+        else:
+            avisos = avisos_da_folha(projeto, indice)
+        linhas.append((alvo, indice, avisos))
+    return linhas
+
+
+def quantas_com_duvida(projeto) -> int:
+    """O NUMERO de duvidas do livro, o mesmo em todo lugar (etapa 7 da obra;
+    lista unica 5.5: "Três lugares contam as dúvidas, cada um dá um número";
+    D-285, `pr-contagens`: "A janela de salvar passa a contar as páginas com
+    aviso pendente"): as paginas que vao para o PDF com algum aviso que ainda
+    pede um olhar - o dela ou o da folha dela. O rodape, o painel "Para
+    revisar" e o icone dele, a janela "Antes de processar", a janela de
+    salvar, a grade "só as que precisam de atenção" e o livro aberto da tela
+    inicial usam este numero. Arriscado: contar de outro jeito num deles."""
+    if projeto is None:
+        return 0
+    return paginas_com_aviso(pendentes_do_livro(projeto), projeto)
 
 
 def por_motivo(avisos: list[Aviso]) -> dict[str, list[Aviso]]:
@@ -155,23 +260,37 @@ def paginas_com_aviso(avisos: list[Aviso], projeto=None) -> int:
     O defeito (verificador, 13/10/2026): a frase da janela contava folhas e
     paginas como coisas separadas - no Camoes dizia "100 páginas" num livro
     em que as paginas com aviso eram menos, porque a folha com "Qualidade
-    baixa" e a pagina dela com "Endireitar" entravam como duas."""
-    paginas_da_folha: dict[int, list[int]] = {}
+    baixa" e a pagina dela com "Endireitar" entravam como duas.
+
+    Etapa 7 da obra: o aviso da folha conta so para as paginas dela que ainda
+    nao foram conferidas (o "está certo" da pagina responde por ele ali)."""
+    return len(_itens_com_aviso(avisos, projeto))
+
+
+def _itens_com_aviso(avisos: list[Aviso], projeto=None) -> list[tuple[str, int]]:
+    """As paginas (PAGINA, indice) com algum dos `avisos`, na ordem do livro,
+    cada uma uma vez so. O aviso de uma folha conta para as paginas dela que
+    vao para o PDF e ainda nao foram conferidas; sem `projeto` (ou folha sem
+    pagina nenhuma no livro), a folha vira um item (FOLHA, indice)."""
+    paginas_da_folha: dict[int, list] = {}
     if projeto is not None:
         for pagina in projeto.paginas:
             if not pagina.apagada:
-                paginas_da_folha.setdefault(pagina.folha, []).append(pagina.indice)
-    vistas: set = set()
+                paginas_da_folha.setdefault(pagina.folha, []).append(pagina)
+    vistas: dict[tuple[str, int], tuple[int, int]] = {}
     for aviso in avisos:
         if aviso.alvo == PAGINA:
-            vistas.add((PAGINA, aviso.indice))
+            vistas.setdefault((PAGINA, aviso.indice), (aviso.indice, 1))
             continue
         delas = paginas_da_folha.get(aviso.indice)
         if delas:
-            vistas.update((PAGINA, indice) for indice in delas)
+            for pagina in delas:
+                if not pagina.revisada:
+                    vistas.setdefault((PAGINA, pagina.indice), (pagina.indice, 1))
         else:
-            vistas.add((FOLHA, aviso.indice))
-    return len(vistas)
+            vistas.setdefault((FOLHA, aviso.indice), (aviso.indice, 0))
+    # na ordem do livro (a folha sem pagina fica no lugar do numero dela)
+    return sorted(vistas, key=lambda item: vistas[item])
 
 
 def frase_de_quantos(avisos: list[Aviso], projeto=None) -> str:

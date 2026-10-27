@@ -367,6 +367,51 @@ class TarefaConferirOImpressoDeFora(QThread):
         self.terminou.emit()
 
 
+class TarefaMedirOEmBranco(QThread):
+    """Etapa 7 da obra, D-497 (escolha da gerente, 27/10/2026): "Página que
+    fica branca depois de mudar a divisão ganha o aviso 'Parece em branco', a
+    não ser que a pessoa já tenha dito 'está certo' nesse aviso daquela
+    página". A CONTA é do núcleo, feita na etapa 9d
+    (core.pipeline.medir_o_em_branco(doc, projeto, pagina) -> bool, "O que a
+    tela chama (etapa 7, D-497), por tras, depois de dividir, juntar ou mover
+    a linha de uma folha"); esta tarefa só a chama por trás, uma página por
+    vez, e avisa `mudou(indice)` quando o aviso de uma página mudou. Quem a
+    cria passa a função (`medir`): enquanto a etapa 9d não estiver na obra, a
+    função não existe e a tela não cria a tarefa (TelaConferir.
+    _medir_o_em_branco_por_tras). Como a da 9d manda, mexe no projeto da tela
+    (só nos avisos da página). Nunca deixa exceção escapar."""
+
+    mudou = Signal(int)
+    terminou = Signal()
+
+    def __init__(self, projeto: Projeto, indices: list[int], medir) -> None:
+        super().__init__()
+        self.projeto = projeto
+        self.indices = list(indices)
+        self.medir = medir
+        self._cancelar = False
+
+    def cancelar(self) -> None:
+        self._cancelar = True
+
+    def run(self) -> None:
+        try:
+            doc = abrir_pdf(self.projeto.caminho_entrada)
+            try:
+                for indice in self.indices:
+                    if self._cancelar:
+                        break
+                    if not 0 <= indice < len(self.projeto.paginas):
+                        continue
+                    if self.medir(doc, self.projeto, self.projeto.paginas[indice]):
+                        self.mudou.emit(indice)
+            finally:
+                doc.close()
+        except Exception:  # noqa: BLE001
+            registrar_erro("medir o em branco", traceback.format_exc())
+        self.terminou.emit()
+
+
 class TarefaConverterZonas(QThread):
     """Converte as zonas do livro inteiro para o formato novo, por tras, ao
     abrir (decisao Z1 (b) do Samuel, 05/10/2026: "O livro inteiro, por tras,

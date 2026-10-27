@@ -703,11 +703,20 @@ class LivroAberto(QWidget):
             estilo.estilizar(rotulo, lambda: f"color: {estilo.cor('fraco')}; font-size: 12px;")
             linha2.addWidget(rotulo)
             linha2.addSpacing(10)
+        # D-521 (27/10/2026, Central `pd-avisos-do-livro`: "No alto do painel
+        # \"Para revisar\" e no livro aberto da tela inicial (recomendo)"): os
+        # avisos que valem para o livro inteiro, numa linha (escondida sem
+        # aviso). O mesmo texto do painel (paineis.frase_dos_avisos_do_livro).
+        self.avisos_do_livro = QLabel("")
+        self.avisos_do_livro.setWordWrap(True)
+        self.avisos_do_livro.setVisible(False)
+        estilo.estilizar(self.avisos_do_livro, lambda: f"color: {estilo.cor('aviso')}; font-size: 12px;")
         self.onde_esta = QLabel("")
         self.onde_esta.setTextFormat(Qt.RichText)
         estilo.estilizar(self.onde_esta, lambda: f"color: {estilo.cor('fraco')}; font-size: 12px;")
         linha2.addWidget(self.onde_esta)
         caixa.addLayout(linha2)
+        caixa.addWidget(self.avisos_do_livro)
         fora.addWidget(alto)
 
         meio = QHBoxLayout()
@@ -921,6 +930,10 @@ class LivroAberto(QWidget):
         receita = getattr(resumo, "receita_usada", "") or "nenhuma"
         self.receita_usada.setText(f"Receita usada: {receita}")
         self.receita_usada.setToolTip("A última receita com que o Automático rodou neste livro.")
+        from ui.widgets.paineis import frase_dos_avisos_do_livro
+        frase = frase_dos_avisos_do_livro(getattr(resumo, "avisos_do_livro", None) or [])
+        self.avisos_do_livro.setText(frase)
+        self.avisos_do_livro.setVisible(bool(frase))
         for botao in (self.botao_continuar, self.botao_automatico, self.botao_processar, self.botao_todas):
             botao.setVisible(not self.perdido)
         self.pilha_do_meio.setCurrentWidget(self.paginas)
@@ -973,7 +986,14 @@ class LivroAberto(QWidget):
         from ui.widgets.todas_as_paginas import ItemDaGrade
         if self.resumo is None or self.perdido:
             return
-        itens = [ItemDaGrade(indice=i, folha=i) for i in range(self.paginas.total())]
+        # etapa 7 da obra (lista única 5.5: aqui dava "(0)"): cada folha do PDF
+        # leva o motivo e quantas páginas dela têm dúvida (projetos.Resumo)
+        duvidas = getattr(self.resumo, "duvidas_por_folha", None) or {}
+        itens = []
+        for i in range(self.paginas.total()):
+            motivo, quantas = (duvidas.get(str(i)) or ["", 0])[:2]
+            itens.append(ItemDaGrade(indice=i, folha=i, motivo=str(motivo or ""),
+                                     duvidas=int(quantas or 0)))
         self.todas.mostrar(itens, self.paginas.atual, self.resumo.caminho_entrada, None)
         self.pilha_do_meio.setCurrentWidget(self.todas)
 

@@ -844,7 +844,9 @@ def test_escolher_o_filtro_na_pagina_mostra_o_alerta(conferir):
     assert pagina.filtro == TIRAR_FUNDO
     assert _esperar(lambda: pagina.precisa_revisao)
     mensagem = analise.descrever(analise.CONFERIR_FUNDO_TIRADO).mensagem
-    assert _esperar(lambda: conferir.texto_faixa.text() == mensagem)
+    # etapa 7 da obra: o aviso da folha (aqui "Qualidade baixa" do livro de teste) também
+    # aparece na página, depois do dela: a faixa diz "(aviso 1 de 2 desta página)" no fim
+    assert _esperar(lambda: conferir.texto_faixa.text().startswith(mensagem))
     assert projeto.pendentes_de_revisao() >= 1
     conferir._escolher_filtro(ORIGINAL)
     assert analise.CONFERIR_FUNDO_TIRADO not in pagina.alertas
