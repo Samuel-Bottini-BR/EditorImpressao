@@ -148,14 +148,18 @@ def main() -> int:
         doc.close()
         janela.abrir_livro(str(livro))
         esperar(2.0)
-        opcoes = janela.tela_opcoes
-        if hasattr(opcoes, "cx_dividir"):
-            opcoes.cx_dividir.setChecked(True)
-            esperar(0.5)
-        fotografar("04-o-que-fazer-tema-cinza")
-
         from ui.janela_principal import CONFERIR
-        janela.analisar()
+        # Obra de 26/10 (etapa 3, D-002): o livro abre direto na area de
+        # trabalho, sem a tela "O que fazer". Ramos antigos ainda passam por ela.
+        opcoes = getattr(janela, "tela_opcoes", None)
+        if opcoes is not None:
+            if hasattr(opcoes, "cx_dividir"):
+                opcoes.cx_dividir.setChecked(True)
+                esperar(0.5)
+            fotografar("04-o-que-fazer-tema-cinza")
+            janela.analisar()
+        else:
+            anotar("sem a tela 'O que fazer' (abre direto na area de trabalho)")
         fim = time.time() + 180
         while time.time() < fim and janela.telas.currentIndex() != CONFERIR:
             esperar(0.5)
