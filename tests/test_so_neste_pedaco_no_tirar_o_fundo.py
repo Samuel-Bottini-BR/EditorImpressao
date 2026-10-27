@@ -182,10 +182,18 @@ def test_pdf_com_pedaco_sai_igual_a_previa(tmp_path):
     gravada = _paginas_do_pdf(projeto.caminho_saida)
     assert len(gravada) == 1
     assert gravada[0].shape == previa.shape
-    assert np.array_equal(gravada[0], previa)
-    assert not np.array_equal(_dentro(gravada[0]), _dentro(sem_pedaco)),         "o pedaco nao valeu no PDF"
+    # Etapa 10b (lista única 4.5): a página de tons vai em JPEG 92 no PDF - a
+    # mesma imagem a poucos tons (sem diferença visível), não ponto a ponto
+    assert _quase_igual(gravada[0], previa)
+    assert not _quase_igual(_dentro(gravada[0]), _dentro(sem_pedaco)), "o pedaco nao valeu no PDF"
     fora = _fora(gravada[0])
-    assert np.array_equal(gravada[0][fora], sem_pedaco[fora])
+    assert _quase_igual(gravada[0][fora], sem_pedaco[fora])
+
+
+def _quase_igual(a, b) -> bool:
+    """A mesma imagem a poucos tons (o JPEG do PDF, etapa 10b)."""
+    d = np.abs(a.astype(np.int16) - b.astype(np.int16))
+    return a.shape == b.shape and float(d.mean()) < 2.0 and float(np.percentile(d, 99.9)) < 25
 
 
 def test_pagina_intacta_o_pedaco_vale_como_no_original(tmp_path, monkeypatch):
