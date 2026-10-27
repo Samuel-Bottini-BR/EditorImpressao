@@ -36,6 +36,7 @@ import time
 import uuid
 from pathlib import Path
 
+import numpy as np
 import pytest
 
 fitz = pytest.importorskip("fitz")
@@ -1040,6 +1041,23 @@ def test_p032_endireitar(janela, tela, onde):
     assert aj.projeto_gravado(janela) == antes
 
 
+@prova("P-035")
+@pytest.mark.parametrize("onde", ["trilha/mover", "menu/usar_mover"])
+def test_p035_mover_e_redimensionar(janela, tela, onde):
+    """Etapa 5 da obra (D-008): a ferramenta própria, sem tamanho de folha escolhido."""
+    tela.escolher_ferramenta("mao")
+    tela.paineis.fechar()
+    antes = aj.projeto_gravado(janela)
+    apertar(janela, onde)
+    _ferramenta_escolhida(janela, tela, "mover")
+    assert tela.aba_atual == "mover"
+    assert tela.paineis.propriedades.isVisible() and tela.paineis.propriedades.conteudo == "mover"
+    vis = tela.visualizadores["mover"]
+    aj.esperar(lambda: vis._folha_do_mover is not None, motivo="a página na ferramenta Mover")
+    assert vis._folha_do_mover == vis.tamanho_da_pagina_px(), "sem folha, a área branca é a página"
+    assert aj.projeto_gravado(janela) == antes
+
+
 FERRAMENTAS_DE_MARCAR = ("retangulo", "elipse", "laco", "poligono", "pincel", "varinha", "cor", "ajustar")
 
 
@@ -1446,6 +1464,105 @@ def test_p066_tamanho_da_folha(janela, tela, monkeypatch, pasta):
     paginas = _gerar(janela, monkeypatch, pasta)
     mm = (paginas[1].largura_pt / 72 * 25.4, paginas[1].altura_pt / 72 * 25.4)
     assert abs(mm[0] - 148) < 2 and abs(mm[1] - 210) < 2, f"a página saiu com {mm} mm, não A5"
+
+
+def _no_mover(janela, tela, indice=1):
+    """A ferramenta Mover na página `indice`, com a página já chegada (etapa 5 da obra)."""
+    tela.ir_para_pagina(indice)
+    tela.escolher_ferramenta("mover")
+    tela.paineis.abrir("props")
+    vis = tela.visualizadores["mover"]
+    aj.esperar(lambda: vis._pixmap is not None and getattr(tela, "_mover_da_vez", None),
+               motivo="a página na ferramenta Mover")
+    return vis
+
+
+def _caixa_escura(pagina) -> tuple[float, float, float, float]:
+    """(esquerda, cima, direita, baixo) do que é escuro na página do PDF, em fração dela."""
+    ys, xs = np.nonzero(pagina.cinza < 100)
+    altura, largura = pagina.cinza.shape
+    return xs.min() / largura, ys.min() / altura, (xs.max() + 1) / largura, (ys.max() + 1) / altura
+
+
+@prova("P-190")
+def test_p190_tamanho_da_folha_no_mover(janela, tela, monkeypatch, pasta):
+    from ui.dialogo_tamanho_da_folha import DialogoTamanhoDaFolha
+
+    _no_mover(janela, tela)
+    vistas = []
+    aj.responder_caixa(monkeypatch, DialogoTamanhoDaFolha, "Cancelar", registro=vistas)
+    apertar(janela, "área de trabalho/mover/tamanho da folha...")
+    assert vistas, "a janela 'Tamanho da folha' não abriu"
+    assert aj.pagina_gravada(janela, 1).get("tamanho_folha_cm") is None, "Cancelar mudou a página"
+
+    def a5(caixa):
+        alvo = next(b for b in caixa.findChildren(type(tela.botao_esta_certo)) if b.text() == "A5")
+        alvo.click()
+
+    aj.responder_caixa(monkeypatch, DialogoTamanhoDaFolha, "OK", antes=a5)
+    apertar(janela, "área de trabalho/mover/tamanho da folha...")
+    gravada = aj.pagina_gravada(janela, 1)
+    tamanho = gravada.get("tamanho_folha_cm")
+    assert tamanho is not None and abs(tamanho[0] - 14.8) < 0.05 and abs(tamanho[1] - 21.0) < 0.05
+    assert gravada.get("recorte") is None and gravada.get("conteudo_escala", 1.0) == 1.0
+    aj.esperar(lambda: tela.visualizadores["mover"]._folha_do_mover
+               != tela.visualizadores["mover"].tamanho_da_pagina_px(),
+               motivo="a área branca da ferramenta virou a folha A5")
+    paginas = _gerar(janela, monkeypatch, pasta)
+    mm = (paginas[1].largura_pt / 72 * 25.4, paginas[1].altura_pt / 72 * 25.4)
+    assert abs(mm[0] - 148) < 2 and abs(mm[1] - 210) < 2, f"a página saiu com {mm} mm, não A5"
+
+
+@prova("P-191")
+def test_p191_centralizar(janela, tela, monkeypatch, pasta):
+    _no_mover(janela, tela)
+    # o texto da página 2 do livro de teste fica alto (margem de cima menor que a de baixo);
+    # e um mover à mão o tira também do meio na largura
+    tela._gravar_o_conteudo(1.0, (0.08, 0.04), "fora do meio")
+    antes = _caixa_escura(_gerar(janela, monkeypatch, pasta, "antes")[1])
+    assert abs(antes[0] - (1 - antes[2])) > 0.08 and abs(antes[1] - (1 - antes[3])) > 0.04, antes
+    _voltar_ao_trabalho(janela)
+    apertar(janela, "área de trabalho/mover/Centralizar")
+    gravada = aj.pagina_gravada(janela, 1)
+    assert gravada["conteudo_deslocamento"] != [0.0, 0.0]
+    assert "mover" in gravada.get("mexida_a_mao", [])
+    x0, y0, x1, y1 = _caixa_escura(_gerar(janela, monkeypatch, pasta, "depois")[1])
+    assert abs(x0 - (1 - x1)) <= 0.02 and abs(y0 - (1 - y1)) <= 0.02, (x0, 1 - x1, y0, 1 - y1)
+
+
+@prova("P-192")
+def test_p192_voltar_como_veio(janela, tela, monkeypatch, pasta):
+    _no_mover(janela, tela)
+    antes = _gerar(janela, monkeypatch, pasta, "antes")[1]
+    _voltar_ao_trabalho(janela)
+    tela.campo_tamanho_do_conteudo.setValue(120)
+    tela.botao_centralizar.click()
+    assert aj.pagina_gravada(janela, 1)["conteudo_escala"] == 1.2
+    apertar(janela, "área de trabalho/mover/voltar como veio")
+    gravada = aj.pagina_gravada(janela, 1)
+    assert gravada["conteudo_escala"] == 1.0 and gravada["conteudo_deslocamento"] == [0.0, 0.0]
+    depois = _gerar(janela, monkeypatch, pasta, "depois")[1]
+    assert np.array_equal(antes.imagem, depois.imagem)
+
+
+@prova("P-193")
+def test_p193_usar_em_todas_do_mover(janela, tela, monkeypatch, pasta):
+    from ui.dialogo_escolher_paginas import DialogoEscolherPaginas
+
+    _no_mover(janela, tela, indice=3)
+    tela.campo_tamanho_do_conteudo.setValue(80)            # a exceção, mexida à mão
+    _no_mover(janela, tela, indice=1)
+    tela.campo_tamanho_do_conteudo.setValue(70)
+    vistas = []
+    aj.responder_caixa(monkeypatch, DialogoEscolherPaginas, "Aplicar", registro=vistas)
+    apertar(janela, "área de trabalho/mover/usar em todas...")
+    assert vistas, "a lista 'Em quais páginas?' não abriu"
+    gravado = aj.projeto_gravado(janela)
+    escalas = [p.get("conteudo_escala", 1.0) for p in gravado["paginas"]]
+    assert escalas == [0.7, 0.7, 0.7, 0.8], f"a exceção foi apagada (D-090)? {escalas}"
+    paginas = _gerar(janela, monkeypatch, pasta)
+    larguras = [(lambda c: c[2] - c[0])(_caixa_escura(p)) for p in paginas]
+    assert abs(larguras[0] - larguras[1]) < 0.02 and abs(larguras[2] - larguras[1]) < 0.02
 
 
 def _no_endireitar(janela, tela):
@@ -2008,6 +2125,18 @@ def _apertar_aviso(janela, tela, indice, chave):
     alvo.click()
     aj.assentar()
     return pagina
+
+
+@prova("P-194")
+def test_p194_ver_no_mover(janela, tela):
+    """Etapa 5 da obra (D-017): o aviso leva à ferramenta Mover e não diminui nada sozinho."""
+    tela.escolher_ferramenta("retangulo")
+    antes = aj.projeto_gravado(janela)
+    _apertar_aviso(janela, tela, 1, "aviso/ver_no_mover")
+    assert tela.aba_atual == "mover" and tela.indice_pagina == 1
+    depois = aj.projeto_gravado(janela)
+    assert [p.get("conteudo_escala", 1.0) for p in depois["paginas"]] == \
+        [p.get("conteudo_escala", 1.0) for p in antes["paginas"]]
 
 
 @prova("P-100")

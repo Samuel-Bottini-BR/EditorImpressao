@@ -59,7 +59,7 @@ from core import dividir_a_mao         # obra 26/10 etapa 4: a tampa do scanner 
 from core.ordem_do_preparo import endireita_antes, ordem_do_livro
 from core.filtros import (ORIGINAL, PRETO_E_BRANCO, TIRAR_FUNDO, aplicar_filtro,
                           aplicar_filtro_com_selecao, aplicar_so_os_pedacos)
-from core.folha import compor_na_folha
+from core.folha import compor_na_folha, impresso_fica_de_fora, parte_impressa_de_fora
 from core import editar_zonas, luz_scantailor, margens_scantailor, nucleos
 from core.pdf_io import (
     DPI_PREVIA,
@@ -4391,13 +4391,41 @@ def _pagina_pronta(projeto: Projeto, doc, folha: ConfigFolha, pagina: ConfigPagi
     # sem a marca: a conta de sempre). Vem depois do filtro e das margens: a
     # pagina pronta e que anda (a montagem continua endireitar -> cortar ->
     # filtro, D-016).
+    #
+    # Etapa 5 da obra (D-017): antes de colar, mede pela MESMA conta se parte
+    # do que esta impresso fica fora da area branca, e poe ou tira o aviso
+    # (nada e diminuido sozinho). Pagina que fica inteira na area branca (quase
+    # todas) nao mede nada (core.folha.parte_impressa_de_fora).
+    mexido = etapas.conteudo_mexido(projeto, pagina)
+    anotar_o_impresso_de_fora(pagina, parte_impressa_de_fora(
+        img, pagina.tamanho_folha_cm, projeto.qualidade_dpi,
+        escala=pagina.conteudo_escala, deslocamento=pagina.conteudo_deslocamento,
+        mexido_a_mao=mexido))
     img = compor_na_folha(
         img, pagina.tamanho_folha_cm, projeto.qualidade_dpi,
         escala=pagina.conteudo_escala,
         deslocamento=pagina.conteudo_deslocamento,
-        mexido_a_mao=etapas.conteudo_mexido(projeto, pagina),
+        mexido_a_mao=mexido,
     )
     return img, mono
+
+
+def anotar_o_impresso_de_fora(pagina: ConfigPagina, fracao: float) -> bool:
+    """Poe ou tira o aviso analise.IMPRESSO_DE_FORA (etapa 5 da obra, D-017:
+    parte do que esta impresso ficou fora da area branca depois de mover ou
+    aumentar o conteudo). `fracao` e a medida de
+    core.folha.parte_impressa_de_fora. Do jeito dos outros avisos de desenho
+    (_anotar_aviso_da_pagina): ao POR, a pagina volta a "nao conferida"; ao
+    TIRAR, o "está bom assim" dado a este motivo e esquecido (se voltar a
+    passar da beirada, pede um olhar de novo). Usado pela tela (ferramenta
+    Mover), pela conferencia por tras do "usar em todas" e pelo PDF: a mesma
+    conta nos tres lugares (D-473). Devolve se o aviso vale."""
+    vale = impresso_fica_de_fora(fracao)
+    tinha = analise.IMPRESSO_DE_FORA in getattr(pagina, "alertas", [])
+    _anotar_aviso_da_pagina(pagina, analise.IMPRESSO_DE_FORA, vale)
+    if tinha and not vale:
+        _esquecer_aceitos(pagina, [analise.IMPRESSO_DE_FORA])
+    return vale
 
 
 def _escrever(escritor: EscritorPDF, img: np.ndarray, mono: bool, projeto: Projeto) -> None:

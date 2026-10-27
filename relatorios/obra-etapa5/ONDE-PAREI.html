@@ -1,0 +1,390 @@
+<!doctype html>
+<html lang="pt-BR">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Obra de 26/10/2026 — etapa 5 (Mover e redimensionar como ferramenta própria): ONDE PAREI</title>
+<style>
+:root { color-scheme: light dark; }
+* { box-sizing: border-box; }
+body {
+  font: 17px/1.65 "Segoe UI", system-ui, sans-serif;
+  max-width: 46rem; margin: 0 auto; padding: 2.5rem 1.5rem 6rem;
+  color: #1c1c1e; background: #fdfdfc;
+}
+h1 { font-size: 2rem; line-height: 1.2; margin: 0 0 .3em; letter-spacing: -.02em; }
+h2 { font-size: 1.35rem; margin: 2.4em 0 .6em; padding-top: .8em;
+     border-top: 1px solid #e6e4e0; letter-spacing: -.01em; }
+h3 { font-size: 1.1rem; margin: 1.8em 0 .4em; }
+h1 + p, h2 + p { margin-top: .4em; }
+p, li { margin: 0 0 .9em; }
+ul, ol { padding-left: 1.3em; }
+strong { font-weight: 640; }
+code {
+  font: .88em ui-monospace, "Cascadia Code", Consolas, monospace;
+  background: #f1efec; padding: .12em .35em; border-radius: 4px;
+}
+pre {
+  background: #f1efec; padding: 1em 1.1em; border-radius: 8px;
+  overflow-x: auto; line-height: 1.5;
+}
+pre code { background: none; padding: 0; }
+blockquote {
+  margin: 1.2em 0; padding: .1em 0 .1em 1.1em;
+  border-left: 3px solid #c9c5be; color: #55524d;
+}
+table {
+  border-collapse: collapse; width: 100%; margin: 1.2em 0;
+  font-size: .95rem; display: block; overflow-x: auto;
+}
+th, td { padding: .5em .8em; text-align: left; border-bottom: 1px solid #e6e4e0; }
+th { font-weight: 620; background: #f7f5f2; white-space: nowrap; }
+tr:last-child td { border-bottom: none; }
+img { max-width: 100%; height: auto; border-radius: 6px; margin: 1em 0;
+      border: 1px solid #e6e4e0; }
+hr { border: none; border-top: 1px solid #e6e4e0; margin: 2.5em 0; }
+.rodape { margin-top: 4em; padding-top: 1.2em; border-top: 1px solid #e6e4e0;
+          font-size: .85rem; color: #86827c; }
+@media (prefers-color-scheme: dark) {
+  body { color: #e8e6e3; background: #1a1917; }
+  h2 { border-top-color: #35332f; }
+  code, pre, th { background: #262421; }
+  th, td { border-bottom-color: #35332f; }
+  blockquote { border-left-color: #4a4741; color: #b0aca6; }
+  img { border-color: #35332f; }
+  .rodape { border-top-color: #35332f; color: #7d7973; }
+}
+@media print {
+  body { max-width: none; padding: 0; color: #000; background: #fff; }
+  h2 { page-break-after: avoid; }
+  table, img { page-break-inside: avoid; }
+}
+</style>
+</head>
+<body>
+<h1>Obra de 26/10/2026 — etapa 5 (Mover e redimensionar como ferramenta própria): ONDE PAREI</h1>
+<p>Ramo <code>obra-etapa5-2026-10-26</code> (base <code>obra-2026-10-26</code> = <code>7fb3e4a</code>), worktree <code>.claude/worktrees/obra-etapa5</code>. Agente:
+layout + implementador. Ordem do Samuel (D-014): fazer até o fim sem pausas; ele confere tudo no fim.</p>
+<p><strong>Situação: PRONTO PARA CONFERIR</strong> (começada em 27/10/2026; uma pausa pedida pela gerente no meio; terminada no mesmo
+dia). Ramo enviado ao GitHub.</p>
+<h2>Em uma frase</h2>
+<p>Agora o Kaique pega a página e a arrasta ou aumenta "como no Photoshop", numa ferramenta própria (botão da trilha, menu
+Ferramentas, tecla F), sem escolher tamanho de folha e sem passar pelo Cortar; o que a tela mostra é o que sai no PDF; o
+botão "Centralizar" põe o texto no meio; e quando parte do que está impresso passa da beirada, ela aparece em vermelho e
+a página ganha aviso, sem o programa diminuir nada sozinho.</p>
+<h2>Decisões que esta tarefa precisa cumprir (palavras do Samuel)</h2>
+<table>
+<thead>
+<tr>
+<th>Nº</th>
+<th>Palavras dele</th>
+<th>O que tem de ficar no programa</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>Pedido da etapa 5 (sessão 1, 26/10, 1-7 e 1-9)</td>
+<td>"essa folha eu não precisava endireitar ela, eu precisava conseguir mover ela dentro da area branca e redimensionar." · "mover deveria se poder fazer sem ter que ir em cortar bordas e poder ser feito como é no photoshope, que você arrasta a hora que quiser e aumenta a hora que quiser. a ferramenta de mover não deveria estar vinculada ao corte de bordas, deveriam ser duas coisas independentes"</td>
+<td>Ferramenta própria na trilha, sempre ativa; sem folha, a área branca é a própria página; arrastar move, canto aumenta/diminui na proporção; letra e menu Ferramentas; marca "mexida à mão".</td>
+</tr>
+<tr>
+<td>D-008 (22/09 e 26/10)</td>
+<td>"quero conseguir redimensionar o conteudo tambem" · <code>fr-24</code>: "Mas se eu quiser redimensionar isso dentro do programa eu vou conseguir né?"</td>
+<td>Mover e aumentar sem tamanho de folha → PDF com o conteúdo no lugar e no tamanho novos.</td>
+</tr>
+<tr>
+<td>Teste do Kaique (26/10, tarefa 5)</td>
+<td>"O texto dessa página está deslocado; quero mover ele para o meio da folha e aumentar um pouco." → o mover não chegou ao PDF (15 × 53), "o retângulo não passa da borda da folha e o texto não aumenta", sem "centralizar".</td>
+<td>Tela = PDF; aumentar aumenta; botão Centralizar; teste de reversão.</td>
+</tr>
+<tr>
+<td>D-473 (escolha da gerente sobre D-066: "precisamos que o pdf saia que nem está na tela")</td>
+<td>"Tela e PDF saem da mesma conta [...] Tela e PDF diferentes é defeito"</td>
+<td>A ferramenta Mover mostra a página pela mesma conta do PDF.</td>
+</tr>
+<tr>
+<td>D-017 (G10, 05/10: "(b) Avisar e não reduzir - avisar para eu reduzir manualmente, e ter uma opção para passar isso para todas as folhas [...]")</td>
+<td>—</td>
+<td>Além da beirada: nada cortado escondido, a parte de fora marcada, aviso no "Para revisar"; nada diminuído sozinho.</td>
+</tr>
+<tr>
+<td>D-303 (12/09)</td>
+<td>"precisamos centralizar"</td>
+<td>Botão "Centralizar".</td>
+</tr>
+<tr>
+<td>D-056 <code>g8-guias</code> (13/10) + D-025</td>
+<td>"As duas" + "Mas ele vai poder tirar a automatica a hora que ele quiser." · "a Etapa 5 leva as guias à ferramenta Mover"</td>
+<td>Linhas de apoio à mão e automáticas, com caixinha, na ferramenta Mover.</td>
+</tr>
+<tr>
+<td>D-314 (14/10)</td>
+<td>"1. Na edição — Cada página ocupa a folha inteira. [...] (Mexer na escala do conteúdo — aumentar/diminuir — também existe aqui dentro, mas na prática só vou me preocupar com isso na hora de imprimir.)"</td>
+<td>Sem folha, a página não muda de tamanho; formato e margens de encadernação continuam no "Montar para imprimir".</td>
+</tr>
+<tr>
+<td>G10 + D-090/D-091</td>
+<td>"ter uma opção para passar isso para todas as folhas" · "usar em todas" com exceções desmarcadas · "'Selecionar todas' e 'Nenhuma'"</td>
+<td>"usar em todas..." no Mover.</td>
+</tr>
+<tr>
+<td>D-016, D-001, D-041/42/48, D-044/51/52, D-481, D-004/D-485/D-009, D-019/D-043, D-068, D-329, D-010, D-020</td>
+<td>(ver o Livro)</td>
+<td>Montagem na ordem obrigatória; ferramenta sempre à vista; balão com letra; Propriedades abre sozinho; letra remapeável; marca mexida e vale no PDF; nada por cima da página; ímã desligável; margens iguais na tela; promessas; desfazer.</td>
+</tr>
+</tbody>
+</table>
+<h2>Como cumpri cada uma</h2>
+<table>
+<thead>
+<tr>
+<th>Decisão</th>
+<th>O que ficou no programa</th>
+<th>Prova (teste)</th>
+<th>Print</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>Pedido da etapa 5 / D-008 / D-001</td>
+<td>Ferramenta "Mover e redimensionar" (cruz de setas), logo depois do Endireitar na trilha e no menu Ferramentas, tecla <strong>F</strong> (D-540). Propriedades: área branca ("A própria página (15,7 × 21,0 cm)" ou a folha escolhida), "tamanho da folha...", "Tamanho do conteúdo" em %, "Centralizar", "voltar como veio", "usar em todas...", aviso vermelho, linhas de apoio. O "Mover conteúdo" saiu do Cortar (D-544).</td>
+<td><code>test_d008_ferramenta_mover_propria_na_trilha_no_menu_e_na_letra</code> (prova também que o antigo saiu), <code>test_d008_sem_tamanho_de_folha_a_area_branca_e_a_propria_pagina</code>; P-035</td>
+<td><code>depois-03-ferramenta-mover.png</code> × <code>antes-03-mover-conteudo-cinza-no-cortar.png</code></td>
+</tr>
+<tr>
+<td>D-008 arrastar e aumentar, no PDF</td>
+<td>Arrastar em qualquer lugar da página anda ao vivo; passa da beirada (o meio fica dentro); o canto aumenta na proporção, em volta do meio, até 4×. Cada arrasto = uma ação do desfazer, com a marca MOVER.</td>
+<td><code>test_d008_arrastar_com_o_mouse_sai_no_pdf_no_mesmo_lugar_da_tela</code> (impresso no PDF = o da tela até 1%), <code>test_d008_puxar_o_canto_aumenta_o_texto_no_pdf</code> (largura do texto no PDF × escala, até 2%)</td>
+<td><code>depois-04-arrastada.png</code>, <code>depois-05-aumentada-pelo-canto.png</code></td>
+</tr>
+<tr>
+<td>Teste do Kaique (reversão)</td>
+<td>Folha do tamanho do corte + arrastar → chega ao PDF.</td>
+<td><code>test_kaique_folha_do_tamanho_do_corte_arrastar_chega_ao_pdf</code>; no código antigo, pelo caminho antigo (Cortar &gt; "Mover conteúdo"), o PDF não muda e o deslocamento fica (0, 0) — <code>reversao-no-codigo-antigo.txt</code></td>
+<td><code>depois-02</code> (a página 7 de verdade)</td>
+</tr>
+<tr>
+<td>D-303 / D-542 Centralizar</td>
+<td>Põe o <strong>impresso</strong> (não a moldura da página) no meio, nas duas direções. O impresso: tinta, sem poeira, sem peças coladas na beirada; só blocos com ≥2% do impresso (sai a marca-d'água do site).</td>
+<td><code>test_d303_centralizar_poe_o_impresso_no_meio_no_pdf</code> (margens iguais até 1%); P-191. Janela de verdade, "La vida eterna" p. 7 a 104%: no PDF o bloco do texto fica 0,181 × 0,184 (esq. × dir.) e 0,129 × 0,127 (cima × baixo)</td>
+<td><code>depois-07-centralizada.png</code>, <code>depois-08-tela-e-pagina-do-pdf.png</code>, <code>depois-09-pagina-7-do-pdf.png</code></td>
+</tr>
+<tr>
+<td>D-473</td>
+<td>A ferramenta Mover desenha a área branca e a página no retângulo de <code>core.folha.retangulo_na_folha</code>, com a área de <code>core.folha.area_branca_que_vale</code> (a mesma regra de <code>compor_na_folha</code>) e as margens iguais quando ligadas. O resto das telas é da etapa 10 (D-546).</td>
+<td>os testes acima medem o PDF contra o retângulo da tela; <code>tests/test_previa_composta.py::test_retangulo_do_conteudo_bate_com_conteudo_como_retangulo</code></td>
+<td><code>depois-08</code> (tela e PDF lado a lado)</td>
+</tr>
+<tr>
+<td>D-017 / D-543</td>
+<td>Aviso "Parte do impresso fica de fora" (botões "ver no Mover" e "está bom assim") quando ≥0,05% do impresso sai; a parte de fora apagada, puxada para o vermelho e listrada; frase vermelha no painel. A mesma conta na tela, na conferência por trás e no PDF. Nada diminuído.</td>
+<td><code>test_d017_aumentar_alem_da_beirada_avisa_e_marca_a_parte_de_fora</code> (mede os pontos vermelhos pintados fora da área branca), <code>test_d017_so_o_papel_da_margem_saindo_nao_avisa</code>, <code>test_d017_o_pdf_tambem_poe_o_aviso</code>; P-194</td>
+<td><code>depois-06-alem-da-beirada-aviso.png</code></td>
+</tr>
+<tr>
+<td>D-056 / D-025</td>
+<td>Linhas de apoio no Mover, também sem folha (antes, sem folha, nada acontecia); o ímã gruda pelo impresso; caixinha das automáticas.</td>
+<td><code>test_d056_linhas_de_apoio_na_ferramenta_mover_sem_tamanho_de_folha</code>; <code>tests/test_corte_pelo_conteudo_na_tela.py</code> (as do livro)</td>
+<td><code>depois-03</code> (caixinha no painel)</td>
+</tr>
+<tr>
+<td>G10 + D-090/D-091 / D-545</td>
+<td>"usar em todas..." → janela "Em quais páginas?" com as já mexidas desmarcadas; uma ação; conferência por trás (QThread) põe o aviso nas que passaram da beirada.</td>
+<td><code>test_g10_usar_em_todas_nas_escolhidas_e_avisa_por_tras</code>; P-193</td>
+<td>—</td>
+</tr>
+<tr>
+<td>D-314</td>
+<td>Sem folha a página do PDF fica do mesmo tamanho (o conteúdo anda dentro dela).</td>
+<td><code>test_d008_arrastar_...</code> (mesma forma da página no PDF), <code>test_d017_aumentar_...</code></td>
+<td>—</td>
+</tr>
+<tr>
+<td>D-004/D-009/D-485</td>
+<td>Toda mudança passa pelo <code>_registrar</code> (marca MOVER) e vale com tudo desligado.</td>
+<td><code>test_d008_arrastar_...</code>, <code>test_d303_...</code></td>
+<td>—</td>
+</tr>
+<tr>
+<td>D-020</td>
+<td>Arrastar, %, Centralizar, voltar, usar em todas: cada um uma ação; Ctrl+Z volta.</td>
+<td><code>test_d008_arrastar_...</code> (desfazer), <code>tests/test_previa_composta.py::test_mover_conteudo_e_uma_acao_do_historico_desfazivel</code></td>
+<td>—</td>
+</tr>
+<tr>
+<td>D-481 / D-540</td>
+<td>F, remapeável (<code>ferramenta_mover</code>). Achado e consertado: com o foco na página de marcar, <strong>qualquer letra</strong> dava "Aconteceu um problema inesperado" (<code>editor_selecao</code> chamava <code>evento.matches(Qt.Key_Z)</code>, que o PySide6 6.11 recusa).</td>
+<td><code>test_letra_f_com_o_foco_na_pagina_de_marcar_chega_a_ferramenta</code> (reversão: no código antigo dá o TypeError)</td>
+<td>conferência "tecla F (com o foco na página)" do roteiro</td>
+</tr>
+<tr>
+<td>D-010</td>
+<td>Promessas P-035 e P-190 a P-194 com prova.</td>
+<td><code>tests/test_promessas.py</code></td>
+<td>—</td>
+</tr>
+</tbody>
+</table>
+<h2>Causas (por que não funcionava)</h2>
+<ol>
+<li><strong>O mover não chegava ao PDF no teste do Kaique:</strong> o retângulo do conteúdo ficava preso inteiro dentro da folha
+   (<code>Visualizador._mover_conteudo</code>: <code>x = min(max(0, x0+dx), 1-w)</code>); com a folha do tamanho do corte, <code>1-w ≈ 0</code>, o
+   conteúdo não andava e o deslocamento gravado ficava (0, 0). A prévia composta das Bordas também chamava
+   <code>compor_na_folha</code> sem a marca de mexido: com a folha 1 ponto menor que o conteúdo, desistia e mostrava a página sem
+   folha nenhuma.</li>
+<li><strong>"O texto não aumenta":</strong> o canto parava quando o conteúdo encostava na folha (<code>fator_max_x/y</code>).</li>
+<li><strong>Preso às Bordas:</strong> a caixinha morava no Cortar e ficava cinza sem tamanho de folha (<code>_mover_conteudo</code> da tela
+   saía se <code>tamanho_folha_cm is None</code>).</li>
+<li><strong>Sem "centralizar":</strong> não havia botão, e centralizar o retângulo da página não centraliza o texto (as margens da
+   página são diferentes dos dois lados).</li>
+<li><strong>Letra com o foco na página</strong> (achado nos prints): <code>evento.matches(Qt.Key_Z)</code> no <code>editor_selecao.keyPressEvent</code>.</li>
+</ol>
+<h2>O que mudou (por arquivo)</h2>
+<ul>
+<li><code>core/folha.py</code>: área branca em pontos (<code>tamanho_da_folha_px</code>, <code>area_branca_que_vale</code>), retângulo ⇄ escala e
+  deslocamento em pontos, a máscara e a caixa do impresso, <code>deslocamento_para_centralizar</code>, <code>parte_impressa_de_fora</code>.</li>
+<li><code>core/analise.py</code>: aviso <code>IMPRESSO_DE_FORA</code>. <code>core/pipeline.py</code>: <code>anotar_o_impresso_de_fora</code> no PDF (só mede quando o
+  conteúdo passa da área branca). <code>core/guias.py</code>: o ímã deixa o conteúdo maior que a folha grudar no meio.
+  <code>core/etapas.py</code>: <code>conteudo_fora_do_padrao</code>.</li>
+<li><code>ui/widgets/visualizador.py</code>: o modo Mover (mundo, área branca, página ao vivo, parte de fora marcada), arrastar e
+  canto sem prender na folha, ímã pelo impresso.</li>
+<li><code>ui/widgets/trilha_agrupada.py</code>: a ferramenta, o ícone, a letra F. <code>ui/tela_conferir.py</code>: <code>_montar_aba_mover</code> e as
+  ações; as Bordas sem o "Mover conteúdo"; mover não manda desenhar a página de novo (<code>CAMPOS_SO_DO_MOVER</code>); "ver no
+  Mover". <code>ui/tarefas.py</code>: <code>TarefaConferirOImpressoDeFora</code>. <code>ui/dialogo_escolher_paginas.py</code>: a regra da exceção vem
+  de quem chama. <code>ui/widgets/editor_selecao.py</code>: o conserto da letra.</li>
+<li>Testes: <code>tests/test_decisoes_mover.py</code> (novo, 13); reescritos para provar que o antigo saiu:
+  <code>tests/test_visualizador.py</code> (3), <code>tests/test_previa_composta.py</code> (7, agora na ferramenta Mover),
+  <code>tests/test_paineis_na_tela.py</code> (1), <code>tests/test_decisoes_tela.py</code> (a lista das ferramentas); promessas.</li>
+<li><code>docs/plano/DECISOES.md</code>: D-540 a D-546; situação de D-008, D-017, D-303.</li>
+</ul>
+<h2>Testes</h2>
+<ul>
+<li><strong>No PC, um arquivo por vez (TEMP e <code>--basetemp</code> em <code>_tmp/</code>), todos passam:</strong> test_decisoes_mover 13 ·
+  test_decisoes 23 · _automatico 24 · _dividir 19 · _impressao 22 · _nucleo 36 · _tela 35 · test_trabalho_nao_se_perde
+  82 · test_visualizador 70 · test_previa_composta 10 · test_paineis_na_tela 22 · test_corte_pelo_conteudo_na_tela 13 ·
+  test_guias 14 · test_folha 20 · test_trilha_agrupada 19 · test_trilha_e_opcoes 29 · test_pipeline_folha 7 ·
+  test_core 62 · test_substituir_e_cancelar 21 · test_dialogo_tamanho_da_folha 5 · test_menu_paineis 3 · test_paineis 34 ·
+  test_editor_selecao 17.</li>
+<li><strong>Promessas</strong> (<code>-k "mover or conteudo or centralizar or p035 or p19 or p065 or p066 or promessa"</code>): 245 passaram,
+  7 xfail; falharam só P-085 e P-127 (defeitos já conhecidos da base, D-492 e defeito C) e P-094 (passa sozinha; também
+  falhava na rodada da base 40537146001). Depois: P-035, P-190 a P-194 e as três de inventário passam (10).</li>
+<li><strong>teste_botoes.py:</strong> 331 ações, 0 falhas (passa pelo Mover: "tamanho da folha...", "Centralizar", "voltar como
+  veio", "usar em todas...", menu "usar_mover").</li>
+<li><strong>Reversão</strong> no código antigo (<code>7fb3e4a</code>, cópia em <code>_tmp/antigo</code>): os 13 de <code>test_decisoes_mover.py</code> e os 3
+  reescritos do visualizador falham; o caso do Kaique pelo caminho antigo "NAO ANDOU"; o da letra dá o TypeError
+  (<code>relatorios/obra-etapa5/reversao-no-codigo-antigo.txt</code>). Ressalva honesta: parte dos 13 falha porque a ferramenta
+  não existe no antigo; as medidas que pegam o defeito de verdade são o roteiro <code>scripts/kaique_antigo.py</code>, os 3 do
+  visualizador e o da letra.</li>
+</ul>
+<h2>Somas "Desligado de fábrica"</h2>
+<p><strong>96 de 96 iguais</strong> (32 páginas do gabarito × Original, Preto e branco, Melhorar; livro novo; <code>processar</code>):
+<code>somas-antes-7fb3e4a.json</code> × <code>somas-depois.json</code> (<code>scripts/somas.sh</code>, <code>scripts/rodada_processar.py</code>). Nenhuma muda: sem
+página mexida, <code>parte_impressa_de_fora</code> sai sem medir e <code>compor_na_folha</code> não muda.</p>
+<h2>GitHub</h2>
+<ul>
+<li><strong>40559025254</strong> (commit <code>709abac</code>): partes 2 a 5 e "Botões e prints da janela real" passam; parte 1 com 2 falhas, as
+  mesmas da base: P-085 e P-127.</li>
+<li><strong>40583163203</strong> (commit <code>88e04f8</code>, a final, com a caixa do impresso por blocos): partes 2, 3 e 5 e "Botões e prints
+  da janela real" passam; parte 1 com as mesmas 2 da base (P-085, P-127); parte 4 com
+  <code>tests/test_paginas_diferentes.py::test_na_analise_a_pagina_torta_ganha_o_aviso</code>, que <strong>falha às vezes também no
+  código antigo</strong>: no PC, 1 de 3 vezes no novo e 3 de 6 vezes no antigo (<code>7fb3e4a</code>), sem nada desta etapa no caminho
+  dela (é a análise do livro). Troca para a gerente (teste instável, Lista de bugs).</li>
+</ul>
+<h2>Prints da janela de verdade (1600×821, fora da tela; <code>relatorios/obra-etapa5/prints/</code>)</h2>
+<p>Roteiro <code>relatorios/obra-etapa5/roteiro/prints.py</code>, caminho do Kaique do zero, nada pré-marcado: "La vida eterna"
+(cópia) → Automático só "Dividir" (clique) → página 7 (a do teste do Kaique) → botão da trilha → tecla F com o foco na
+página → arrastar → puxar o canto → 125% → 104% e "Centralizar" → PDF.
+- <strong>Depois (10 de 10):</strong> <code>depois-00</code> livros · <code>-01</code> aberto · <code>-02</code> página 7 com o texto deslocado · <code>-03</code> a ferramenta
+  · <code>-04</code> arrastada · <code>-05</code> aumentada pelo canto · <code>-06</code> 125%, aviso e a parte de fora em vermelho · <code>-07</code> centralizada
+  · <code>-08</code> a tela e a página do PDF lado a lado · <code>-09</code> a página 7 do PDF.
+- <strong>Antes (código <code>7fb3e4a</code>, 5 de 5):</strong> <code>antes-00</code> a <code>-02</code>, e <code>antes-03-mover-conteudo-cinza-no-cortar.png</code> (a tecla F
+  não faz nada; "Mover conteúdo" cinza, "(só depois de escolher um tamanho de folha)").
+- Abri e olhei todos. Visto nos prints e consertado: a frase do aviso não cabia na faixa (encurtada); "Centralizar"
+  puxado pela marca-d'água do site e pelos restos escuros da beirada (caixa do impresso por blocos, sem peças coladas
+  na beirada).</p>
+<h2>Escolhas da gerente (D-014) feitas aqui — no Livro como D-540 a D-546</h2>
+<table>
+<thead>
+<tr>
+<th>Nº</th>
+<th>Escolha</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>D-540</td>
+<td>Letra F.</td>
+</tr>
+<tr>
+<td>D-541</td>
+<td>Como mexe: passa da beirada (meio dentro), canto proporcional em volta do meio, 5% a 4×, %, vista que mostra tudo e fica parada no arrasto.</td>
+</tr>
+<tr>
+<td>D-542</td>
+<td>"Centralizar" e ímã pelo impresso (blocos ≥2%, sem peças coladas na beirada).</td>
+</tr>
+<tr>
+<td>D-543</td>
+<td>O aviso do D-017: limiar 0,05%, três lugares, vermelho, "ver no Mover"/"está bom assim".</td>
+</tr>
+<tr>
+<td>D-544</td>
+<td>"Mover conteúdo" sai do Cortar; "tamanho..." fica no Cortar e também no Mover.</td>
+</tr>
+<tr>
+<td>D-545</td>
+<td>"usar em todas..." no Mover.</td>
+</tr>
+<tr>
+<td>D-546</td>
+<td>Só o Mover mostra a página na área branca (o resto da D-473 é da etapa 10); folha menor ainda não mexida aparece como sai.</td>
+</tr>
+</tbody>
+</table>
+<h2>Ressalvas</h2>
+<ol>
+<li><strong>As outras ferramentas mostram a página sem o mover</strong> (D-546): na Marcar, Endireitar, Cortar e Filtro a página
+   aparece como antes de mover (lá se marca e se corta sobre a página). Pode confundir ("mexi e voltou?"). É da etapa
+   10 (D-473).</li>
+<li><strong>Com o foco na lista do Automático, as letras vão para a lista</strong> (D, X, I, F — de todas as ferramentas, não só da
+   nova). Um clique na página devolve as letras.</li>
+<li><strong>A letra que já vinha cortada na beirada da página não conta</strong> para o aviso nem para o "Centralizar" (as peças
+   coladas na beirada saem da conta, para o fundo do scanner e a marca-d'água não enganarem).</li>
+<li><strong>Página real com cabeçalho na beirada</strong> ("La vida eterna" p. 7): qualquer mover para cima tira um pedaço do
+   cabeçalho e dá o aviso (é o que a D-017 pede, mas vai aparecer bastante em livro escaneado com o corte justo).</li>
+<li><strong>O "Centralizar" junta letras próximas em blocos e deixa de fora bloco com menos de 2% do impresso</strong>: um número de
+   página sozinho longe do texto também fica de fora da conta (a página fica centrada pelo texto).</li>
+<li><strong>"tamanho..." em dois lugares</strong> (Cortar e Mover), a mesma janela.</li>
+<li><strong>Velocidade:</strong> não medi (a medida é a do filtro do GitHub, pela gerente). O caminho de sempre não ganha conta: sem
+   mover, <code>parte_impressa_de_fora</code> volta sem medir; com mover, uns 45 ms por página a 300 DPI.</li>
+<li><strong>Conferência por trás do "usar em todas"</strong> usa a página sem filtro, a 75 DPI: o aviso dela pode diferir do PDF num
+   caso de borda (o PDF refaz a conta e acerta).</li>
+</ol>
+<h2>Perguntas para o Samuel (com recomendação; nenhuma trava a etapa)</h2>
+<ol>
+<li><strong>As outras telas devem mostrar a página já movida?</strong> Hoje só a ferramenta Mover mostra (D-546). <em>Recomendo levar à
+   etapa 10, junto da D-473 (tela = PDF), porque na Marcar a marcação é feita sobre a página e mudar isso mexe no
+   editor de marcar.</em></li>
+<li><strong>Página com cabeçalho colado na beirada:</strong> quer que o aviso do D-017 ignore o que já estava a menos de ~2 mm da
+   beirada? <em>Recomendo não: a D-017 diz "nada é cortado sem a pessoa ver", e o "está bom assim" resolve em um clique.</em></li>
+</ol>
+<h2>Trocas que outra área precisa</h2>
+<ul>
+<li><strong>Etapa 10 (D-473):</strong> mostrar a página movida também nas outras ferramentas e nas miniaturas.</li>
+<li><strong>Etapa 7 (avisos):</strong> novo aviso <code>impresso_de_fora</code> (pode entrar na lista de avisos do livro, D-521, se muitas
+  páginas o tiverem depois de "usar em todas").</li>
+<li><strong>Etapa 9b (promessas):</strong> P-094 depende da ordem dos testes (passa sozinha).</li>
+<li><strong>Gerente:</strong> o atalho F e o conserto da letra no <code>editor_selecao</code> mexem em <code>ui/widgets/editor_selecao.py</code> (uma linha).</li>
+</ul>
+<h2>Commits (ramo <code>obra-etapa5-2026-10-26</code>)</h2>
+<ul>
+<li><code>9e5a83d</code> ONDE-PAREI com as decisões</li>
+<li><code>de69f29</code> ferramenta Mover e redimensionar própria (núcleo e tela)</li>
+<li><code>1fc55f6</code> provas, testes antigos reescritos, promessas, Livro D-540 a D-546</li>
+<li><code>709abac</code> P-191 começa com o conteúdo fora do meio</li>
+<li>(letra com o foco na página; reversão; somas; roteiro) · <code>efa2b99</code> pausa · <code>88e04f8</code> prints e o PDF medido pelo
+  bloco do texto · (este ONDE-PAREI final)</li>
+</ul>
+<p class="rodape">Editor de Impressão &middot; gerado em 27/10/2026 às 17:15</p>
+</body>
+</html>

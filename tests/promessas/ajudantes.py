@@ -568,6 +568,7 @@ def lugares_da_area_de_trabalho(tela) -> list[tuple[str, object]]:
         ("dividir", props.get("corte")),
         ("cortar", props.get("bordas")),
         ("endireitar", props.get("angulo")),
+        ("mover", props.get("mover")),                                       # etapa 5 (D-008)
         ("marcar", paineis.propriedades.conteudo_de_marcar),
         ("propriedades", paineis.propriedades),
         ("filtro da página", paineis.filtro_da_pagina),

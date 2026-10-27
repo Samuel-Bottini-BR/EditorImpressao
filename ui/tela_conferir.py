@@ -217,6 +217,7 @@ from ui.widgets.trilha_agrupada import (
     FERRAMENTA_DIVIDIR,
     FERRAMENTA_ENDIREITAR,
     FERRAMENTA_FILTROS,
+    FERRAMENTA_MOVER,
     FERRAMENTAS_DA_PAGINA,
     NOMES as NOMES_DA_TRILHA,
     TrilhaAgrupada,
@@ -225,15 +226,23 @@ from ui.widgets.trilha_agrupada import (
 from ui.widgets.medidor import Medidor
 from ui.widgets.miniaturas import EMBAIXO, ESQUERDA, DIREITA, PainelDeMiniaturas
 from ui.widgets.todas_as_paginas import ItemDaGrade, TodasAsPaginas
-from ui.widgets.trilha_agrupada import ferramenta_da_pagina_da_tecla
+from ui.widgets.trilha_agrupada import ferramenta_da_pagina_da_tecla, tecla_de
 from ui.widgets.visualizador import (
     MODO_ANGULO,
+    MODO_CONTEUDO,
     MODO_CORTE,
     MODO_RECORTE,
     Visualizador,
 )
 
 DPI_PREVIA = 110          # baixo de proposito: a tela precisa abrir em segundos
+
+# Etapa 5 da obra (ferramenta Mover): o maior tamanho do conteúdo, em vezes o
+# de como veio (o mesmo teto do arrasto, ui/widgets/visualizador.MAIOR_CONTEUDO,
+# que é em vezes a área branca), e a cor da frase do aviso da parte de fora
+# (D-017). Seguro mudar.
+MAIOR_TAMANHO_DO_CONTEUDO = 4.0
+COR_DO_AVISO_DE_FORA = "#d63031"
 
 # O lado maior da pagina, em pontos, na conta do aviso e do botao "Ajustar o
 # pedaco a figura" (conferencia 13, S3). A conta e em fracoes, entao o tamanho
@@ -265,15 +274,19 @@ NOMES_DA_QUALIDADE = {"rapida": "Rápida", "media": "Média", "alta": "Alta"}
 
 ABA_CORTE, ABA_BORDAS, ABA_ANGULO, ABA_FILTRO = "corte", "bordas", "angulo", "filtro"
 ABA_MARCAR = "marcar"
+# Etapa 5 da obra (D-008): a ferramenta "Mover e redimensionar", própria,
+# separada do Cortar (_montar_aba_mover).
+ABA_MOVER = "mover"
 # As "abas" de dentro, uma por ferramenta, na ordem em que nascem em TODO livro
 # (D-001; etapa 2 da obra, 26/10/2026). A ordem é a de sempre: quem procura uma
 # aba usa _abas_ativas.index(...), nunca a posição. Seguro mudar: a ordem.
-ORDEM_DAS_FERRAMENTAS = ("corte", "bordas", "angulo", "marcar", "filtro")
+ORDEM_DAS_FERRAMENTAS = ("corte", "bordas", "angulo", "mover", "marcar", "filtro")
 
 TITULOS = {
     ABA_CORTE: "Onde cortar",
     ABA_BORDAS: "Bordas",
     ABA_ANGULO: "Endireitar",
+    ABA_MOVER: "Mover",
     ABA_MARCAR: "Marcar",
     ABA_FILTRO: "Filtro",
 }
@@ -1404,8 +1417,10 @@ class TelaConferir(QWidget):
         no painel Propriedades, os botoes dela (rodada 12, 701 A)."""
         vis = self._area_de_visualizador(ABA_BORDAS, MODO_RECORTE)
         vis.recorte_movido.connect(self._mover_recorte)
-        vis.conteudo_movido.connect(self._mover_conteudo)
-        vis.guias_mudaram.connect(self._mudar_as_linhas_de_apoio)    # item 2.5, g8-guias
+        # Etapa 5 da obra (D-008: "a ferramenta de mover não deveria estar
+        # vinculada ao corte de bordas, deveriam ser duas coisas
+        # independentes"): o "Mover conteúdo" e as linhas de apoio sairam
+        # daqui para a ferramenta Mover (_montar_aba_mover).
         assert self.projeto is not None
 
         coluna = self._conteudo_de_propriedades(ABA_BORDAS)
@@ -1438,31 +1453,9 @@ class TelaConferir(QWidget):
             f"Proporção travada   (tecla {tecla_t})",
             "O retângulo muda de tamanho sem mudar de formato.",
             self._alternar_proporcao_travada, coluna)
-
-        # Fase 2 (aprovada pelo Samuel em 22/09/2026): mover o conteúdo
-        # dentro da folha - só faz sentido quando há uma folha maior que o
-        # recorte escolhida (`_atualizar_previa` habilita/desabilita esta
-        # caixinha, ver `_conferir_tamanho_da_folha` / ABA_BORDAS).
-        self.botao_mover_conteudo = self._caixinha_do_painel(
-            "Mover conteúdo",
-            "Arrastar a página dentro da folha escolhida (botão \"tamanho...\"). "
-            "Só disponível quando a folha é maior que o recorte.",
-            self._alternar_mover_conteudo, coluna)
-        self.botao_mover_conteudo.setEnabled(False)
-        coluna.addWidget(frase_do_painel("(só depois de escolher um tamanho de folha)"))
-        # Item 2.5, g8-guias (Samuel, 13/10/2026: "As duas" + "Mas ele vai
-        # poder tirar a automatica a hora que ele quiser."): o ima do meio e
-        # das beiradas, para o livro todo. As linhas do Kaique: botao direito
-        # sobre a folha no "Mover conteudo". Controle minimo (lugar
-        # provisorio, listado para o agente de layout).
-        self.botao_linhas_automaticas = self._caixinha_do_painel(
-            "Linhas automáticas (meio e beiradas)",
-            "Ao mover o conteúdo, ele gruda no meio e nas beiradas da folha. "
-            "Vale para o livro todo. Para pôr suas próprias linhas, clique com o "
-            "botão direito sobre a folha no \"Mover conteúdo\".",
-            self._alternar_linhas_automaticas, coluna)
-        self.botao_linhas_automaticas.setChecked(
-            bool(getattr(self.projeto, "guias_automaticas", True)))
+        coluna.addWidget(frase_do_painel(
+            "Para mover ou mudar o tamanho do conteúdo na folha, use a ferramenta Mover "
+            f"(tecla {tecla_de(FERRAMENTA_MOVER)})."))
 
         coluna.addWidget(risco_do_painel())
         coluna.addWidget(titulo_de_secao("Qualidade da prévia"))
@@ -1504,21 +1497,29 @@ class TelaConferir(QWidget):
         DUAS coisas agora, sem se atropelar: recortar a imagem original, e
         (separadamente) posicionar-se dentro do tamanho de folha escolhido
         aqui - ver `core/folha.py::compor_na_folha`.
+
+        Etapa 5 da obra: o mesmo botão mora também na ferramenta Mover ("tamanho
+        da folha..."), onde a folha é a ÁREA BRANCA em que a página anda. Lá a
+        imagem já é a página cortada: o tamanho de agora é o dela.
         """
         from ui.dialogo_tamanho_da_folha import DialogoTamanhoDaFolha
         from core.folha import medidas_do_recorte_em_cm
 
         if not self._pronta() or self.projeto is None:
             return
-        vis = self.visualizadores[ABA_BORDAS]
+        pagina = self.projeto.paginas[self.indice_pagina]
+        if self.aba_atual == ABA_MOVER:
+            vis = self.visualizadores[ABA_MOVER]
+            recorte = (0.0, 0.0, 1.0, 1.0)
+        else:
+            vis = self.visualizadores[ABA_BORDAS]
+            recorte = pagina.recorte or (0.0, 0.0, 1.0, 1.0)
         largura_px, altura_px = vis.tamanho_da_pagina_px()
         if largura_px == 0:
             return
-        pagina = self.projeto.paginas[self.indice_pagina]
         dpi = vis.dpi_atual()
 
-        atual = medidas_do_recorte_em_cm(
-            pagina.recorte or (0.0, 0.0, 1.0, 1.0), largura_px, altura_px, dpi)
+        atual = medidas_do_recorte_em_cm(recorte, largura_px, altura_px, dpi)
 
         dialogo = DialogoTamanhoDaFolha(
             atual["largura_final"], atual["altura_final"],
@@ -1550,7 +1551,7 @@ class TelaConferir(QWidget):
         Bug real achado ao vivo (23/09/2026, Samuel: "quando eu diminuo a
         linha verde ele corta a própria folha e o corte vai pra frente
         sozinho"): antes, esta aba mostrava a prévia JÁ cortada por
-        `pagina.recorte` (a mesma que `_atualizar_previa_composta` usa) - o
+        `pagina.recorte` (a mesma das outras ferramentas) - o
         retângulo do recorte era desenhado como fração de uma imagem que já
         era um recorte, e cada atualização (ao soltar o mouse) reaplicava a
         fração em cima do resultado anterior, comprimindo o corte sozinho a
@@ -1560,45 +1561,6 @@ class TelaConferir(QWidget):
         vis.definir_imagem(img, dono=("pagina", self.indice_pagina))   # D4
         if img is not None:
             vis.definir_composicao((0.0, 0.0, 1.0, 1.0), (img.shape[1], img.shape[0]))
-
-    def _atualizar_previa_composta(self, vis, pagina, img) -> None:
-        """Decisão 3 do plano (passo 8, o item de maior risco): a aba Bordas
-        mostra a página JÁ COMPOSTA na folha escolhida (recorte + margem
-        branca de verdade), ao vivo - não só um contorno decorativo.
-
-        `img` é o conteúdo (o recorte, já processado - mesma imagem que
-        sempre foi mostrada aqui). `core.folha.compor_na_folha` é a MESMA
-        função que `core/pipeline.py::processar` usa na exportação final,
-        então a prévia sai idêntica ao que vai para o arquivo. Quando não
-        cabe (rede de segurança) ou não há folha escolhida, devolve `img`
-        sem alteração - detectado comparando o tamanho antes/depois, sem
-        duplicar a lógica de "cabe" que já mora em `compor_na_folha`.
-
-        `vis.definir_composicao(...)` ensina ao widget onde o conteúdo fica
-        dentro do canvas maior, para o retângulo do recorte e o arrasto do
-        mouse continuarem certos (`Visualizador._area_do_conteudo`).
-        """
-        from core.folha import compor_na_folha, conteudo_como_retangulo
-
-        if img is None:
-            vis.definir_imagem(None, dono=("pagina", self.indice_pagina))   # D4
-            return
-
-        composto = compor_na_folha(
-            img, pagina.tamanho_folha_cm, self._dpi_atual,
-            escala=pagina.conteudo_escala, deslocamento=pagina.conteudo_deslocamento,
-        )
-        vis.definir_imagem(composto, dono=("pagina", self.indice_pagina))
-
-        tamanho_conteudo_px = (img.shape[1], img.shape[0])
-        if composto.shape[:2] == img.shape[:2]:
-            retangulo_conteudo = (0.0, 0.0, 1.0, 1.0)
-        else:
-            retangulo_conteudo = conteudo_como_retangulo(
-                pagina.conteudo_escala, pagina.conteudo_deslocamento,
-                pagina.tamanho_folha_cm, tamanho_conteudo_px, self._dpi_atual,
-            )
-        vis.definir_composicao(retangulo_conteudo, tamanho_conteudo_px)
 
     def _conferir_tamanho_da_folha(self, pagina, vis) -> None:
         """Decisão 2 do plano: se o recorte crescer depois de já haver uma
@@ -1673,20 +1635,24 @@ class TelaConferir(QWidget):
 
     # --- item 2.5, g8-guias: as linhas de apoio do "Mover conteudo" -------
 
-    def _mostrar_as_linhas_de_apoio(self, vis, pagina) -> None:
+    def _mostrar_as_linhas_de_apoio(self, vis, pagina, folha_cm=None) -> None:
         """Passa ao visualizador as linhas do livro (guardadas em mm a partir
-        do meio da folha, core/guias) convertidas para a folha desta pagina,
-        e se as automaticas valem."""
+        do meio da folha, core/guias) convertidas para a área branca desta
+        página, e se as automaticas valem. Etapa 5 da obra: sem tamanho de
+        folha a área branca é a própria página (`folha_cm`, o tamanho dela em
+        cm); antes, sem folha escolhida, não havia linha nenhuma."""
         from core import guias
 
-        folha_cm = pagina.tamanho_folha_cm
+        folha_cm = pagina.tamanho_folha_cm or folha_cm
         linhas = []
         if folha_cm is not None:
             linhas = [(g.orientacao, guias.em_fracao(g, folha_cm))
                       for g in guias.do_projeto(getattr(self.projeto, "guias", []))]
         vis.definir_guias(linhas, bool(getattr(self.projeto, "guias_automaticas", True)))
+        self.botao_linhas_automaticas.blockSignals(True)
         self.botao_linhas_automaticas.setChecked(
             bool(getattr(self.projeto, "guias_automaticas", True)))
+        self.botao_linhas_automaticas.blockSignals(False)
 
     def _gravar_no_livro(self, campo: str, valor, descricao: str) -> None:
         """Uma mudanca que vale para o livro (campo "livro." da acao,
@@ -1701,13 +1667,15 @@ class TelaConferir(QWidget):
 
     @protegido
     def _mudar_as_linhas_de_apoio(self, linhas: list) -> None:
-        """O menu do botao direito mudou as linhas (fracao desta folha): grava
-        no livro em mm a partir do meio da folha (como o ScanTailor)."""
+        """O menu do botao direito mudou as linhas (fracao da area branca desta
+        pagina): grava no livro em mm a partir do meio da folha (como o
+        ScanTailor). Sem tamanho de folha, a area branca e a propria pagina
+        (etapa 5 da obra)."""
         from core import guias
 
         if self.projeto is None:
             return
-        folha_cm = self.projeto.paginas[self.indice_pagina].tamanho_folha_cm
+        folha_cm = self._area_branca_em_cm()
         if folha_cm is None:
             return
         novas = guias.para_salvar(guias.de_fracao(o, p, folha_cm) for o, p in linhas)
@@ -1726,22 +1694,331 @@ class TelaConferir(QWidget):
         self._gravar_no_livro("guias_automaticas", ligadas,
                               "Linhas automáticas " + ("ligadas" if ligadas else "desligadas"))
 
-    def _alternar_mover_conteudo(self) -> None:
-        """Fase 2: troca o visualizador entre editar o RECORTE (padrão) e
-        arrastar o CONTEÚDO dentro da folha - são exclusivos (o widget só
-        tem um `modo` por vez)."""
-        from ui.widgets.visualizador import MODO_CONTEUDO, MODO_RECORTE
+    # --- etapa 5 da obra: a ferramenta "Mover e redimensionar" --------------
+    #
+    # Decisões do Samuel (docs/plano/DECISOES.md): D-008 ("a ferramenta de
+    # mover não deveria estar vinculada ao corte de bordas, deveriam ser duas
+    # coisas independentes"; "como é no photoshope, que você arrasta a hora que
+    # quiser e aumenta a hora que quiser"), D-017 (aumentar além da beirada:
+    # aviso, a parte de fora marcada, nada diminuído sozinho), D-303
+    # ("precisamos centralizar"), D-056 (`g8-guias`: linhas à mão e
+    # automáticas, que se desligam), D-473 (a tela mostra o que sai no PDF),
+    # G10 + D-090 ("usar em todas" com as exceções desmarcadas).
+    # A ÁREA BRANCA é a folha escolhida ou, sem folha, a própria página
+    # (core.folha.area_branca_que_vale, a mesma conta de compor_na_folha).
+    # Tudo o que muda aqui é uma ação do desfazer e grava a marca "mexida à
+    # mão" (MOVER) pelo _registrar. Arriscado: gravar o retângulo em fração da
+    # área MOSTRADA sem passar pelos pontos (_gravar_o_retangulo): na página
+    # com a folha menor que o conteúdo (rede de segurança) o lugar mudaria.
 
-        vis = self.visualizadores[ABA_BORDAS]
-        if self.botao_mover_conteudo.isChecked():
-            vis.definir_modo(MODO_CONTEUDO)
+    def _montar_aba_mover(self) -> None:
+        """A ferramenta Mover e redimensionar: a página na área branca (o
+        visualizador no modo do conteúdo, ver ui/widgets/visualizador.py, "A
+        FERRAMENTA MOVER") e, no painel Propriedades, a área branca, o tamanho
+        em %, "Centralizar", "voltar como veio", "usar em todas..." e as
+        linhas de apoio."""
+        vis = self._area_de_visualizador(ABA_MOVER, MODO_CONTEUDO)
+        vis.conteudo_movido.connect(self._mover_conteudo)
+        vis.guias_mudaram.connect(self._mudar_as_linhas_de_apoio)    # item 2.5, g8-guias
+        assert self.projeto is not None
+
+        coluna = self._conteudo_de_propriedades(ABA_MOVER)
+        coluna.addWidget(titulo_de_parte("Só nesta página"))
+        coluna.addWidget(frase_do_painel(
+            "Arraste a página para mover. Puxe um canto para aumentar ou diminuir."))
+        coluna.addWidget(titulo_de_secao("Área branca"))
+        self.rotulo_area_branca = QLabel("")
+        self.rotulo_area_branca.setObjectName("rotuloDoPainel")
+        self.rotulo_area_branca.setWordWrap(True)
+        coluna.addWidget(self.rotulo_area_branca)
+        _botao("tamanho da folha...", coluna, self._escolher_tamanho_da_folha).setToolTip(
+            "Escolhe o tamanho da folha em que esta página vai sair. Sem escolher, a área "
+            "branca é a própria página.")
+
+        coluna.addWidget(risco_do_painel())
+        coluna.addWidget(titulo_de_secao("Tamanho do conteúdo"))
+        self.campo_tamanho_do_conteudo = QSpinBox()
+        self.campo_tamanho_do_conteudo.setRange(5, int(MAIOR_TAMANHO_DO_CONTEUDO * 100))
+        self.campo_tamanho_do_conteudo.setSuffix(" %")
+        self.campo_tamanho_do_conteudo.setKeyboardTracking(False)
+        self.campo_tamanho_do_conteudo.setValue(100)
+        self.campo_tamanho_do_conteudo.setToolTip(
+            "O tamanho do conteúdo: 100% é como veio. Mais que 100% aumenta (o que passar "
+            "da beirada fica de fora e aparece marcado em vermelho).")
+        self.campo_tamanho_do_conteudo.valueChanged.connect(self._mudar_tamanho_do_conteudo)
+        coluna.addWidget(self.campo_tamanho_do_conteudo)
+        par = self._par_de_botoes(coluna)
+        self.botao_centralizar = _botao("Centralizar", par, self._centralizar_conteudo)
+        self.botao_centralizar.setToolTip(
+            "Põe o que está impresso no meio da área branca, nas duas direções.")
+        _botao("voltar como veio", par, self._conteudo_como_veio).setToolTip(
+            "Desfaz o mover e o tamanho desta página: o conteúdo volta como veio.")
+        par.setStretch(0, 1)
+        par.setStretch(1, 1)
+        _botao("usar em todas...", coluna, self._mover_em_todas).setToolTip(
+            "Põe o tamanho e o lugar do conteúdo desta página nas páginas que você escolher.")
+        # D-017: o aviso da parte de fora fica no painel (e na faixa de baixo,
+        # como todo aviso), nunca por cima da página (D-019)
+        self.aviso_de_fora = QLabel(
+            "Parte do que está impresso vai ficar de fora (marcada em vermelho na página).")
+        self.aviso_de_fora.setObjectName("rotuloDoPainel")
+        self.aviso_de_fora.setWordWrap(True)
+        self.aviso_de_fora.setStyleSheet(f"color: {COR_DO_AVISO_DE_FORA}; font-weight: 600;")
+        self.aviso_de_fora.setVisible(False)
+        coluna.addWidget(self.aviso_de_fora)
+
+        coluna.addWidget(risco_do_painel())
+        coluna.addWidget(titulo_de_secao("Linhas de apoio"))
+        # Item 2.5, g8-guias (Samuel, 13/10/2026: "As duas" + "Mas ele vai
+        # poder tirar a automatica a hora que ele quiser."): o ima do meio e
+        # das beiradas, para o livro todo. As linhas do Kaique: botao direito
+        # sobre a pagina. Desde a etapa 5 moram aqui (antes, no "Mover
+        # conteudo" das Bordas).
+        self.botao_linhas_automaticas = self._caixinha_do_painel(
+            "Linhas automáticas (meio e beiradas)",
+            "Ao mover, o que está impresso gruda no meio e nas beiradas da área branca. "
+            "Vale para o livro todo.",
+            self._alternar_linhas_automaticas, coluna)
+        self.botao_linhas_automaticas.setChecked(
+            bool(getattr(self.projeto, "guias_automaticas", True)))
+        coluna.addWidget(frase_do_painel(
+            "Para pôr uma linha sua, clique com o botão direito na página."))
+
+    def _atualizar_o_mover(self, img, pagina) -> None:
+        """Põe a página da vez na ferramenta Mover: a página como vai sair (com
+        as margens iguais, se ligadas: D-329), a área branca de verdade, o
+        lugar e o tamanho de agora, a caixa do impresso e as linhas de apoio;
+        acerta o painel e o aviso do D-017 (mesma conta do PDF)."""
+        from core.folha import (area_branca_que_vale, caixa_do_impresso,
+                                parte_impressa_de_fora, retangulo_na_folha)
+        from core.pipeline import anotar_o_impresso_de_fora
+
+        vis = self.visualizadores[ABA_MOVER]
+        vis.definir_dpi(self._dpi_atual)
+        dono = ("pagina", self.indice_pagina)
+        if img is None:
+            vis.definir_mover(None, None, vis._retangulo_conteudo, vis._caixa_do_impresso,
+                              dono=dono)
+            return
+        conteudo = self._com_as_margens(img)
+        conteudo_px = (conteudo.shape[1], conteudo.shape[0])
+        mexido = etapas_core.conteudo_mexido(self.projeto, pagina)
+        area, vale = area_branca_que_vale(conteudo_px, pagina.tamanho_folha_cm,
+                                          self._dpi_atual, pagina.conteudo_escala, mexido)
+        if vale:
+            retangulo = retangulo_na_folha(pagina.conteudo_escala,
+                                           pagina.conteudo_deslocamento, area, conteudo_px)
         else:
-            vis.definir_modo(MODO_RECORTE)
-        # As duas telas usam prévias diferentes (composta vs. só girada/
-        # dividida, ver `_atualizar_previa_para_recorte`) - sem isto, a tela
-        # só troca na próxima atualização natural, mostrando por um instante
-        # o retângulo desenhado sobre a imagem errada.
-        self.atualizar()
+            retangulo = (0.0, 0.0, 1.0, 1.0)      # compor_na_folha deixa como esta
+        chave = (id(img), conteudo_px)
+        if getattr(self, "_caixa_do_mover", (None, None))[0] != chave:
+            self._caixa_do_mover = (chave, caixa_do_impresso(conteudo))
+        caixa = self._caixa_do_mover[1]
+        vis.definir_mover(conteudo, area, retangulo, caixa, dono=dono)
+        # o que as acoes da ferramenta precisam (em pontos desta previa)
+        self._mover_da_vez = {"area": area, "vale": vale, "conteudo": conteudo_px,
+                              "caixa": caixa, "dpi": self._dpi_atual}
+        self._mostrar_as_linhas_de_apoio(vis, pagina, self._area_branca_em_cm())
+
+        tinha = analise.IMPRESSO_DE_FORA in pagina.alertas
+        fora = anotar_o_impresso_de_fora(pagina, parte_impressa_de_fora(
+            conteudo, pagina.tamanho_folha_cm, self._dpi_atual,
+            escala=pagina.conteudo_escala, deslocamento=pagina.conteudo_deslocamento,
+            mexido_a_mao=mexido))
+        self._acertar_o_painel_do_mover(pagina, area, conteudo_px, vale, fora)
+        if tinha != fora:
+            self._atualizar_faixa()
+            self._atualizar_tira()
+            self._atualizar_contador()
+
+    def _acertar_o_painel_do_mover(self, pagina, area, conteudo_px, vale, fora) -> None:
+        """As palavras do painel da ferramenta Mover: o tamanho da área branca
+        (a página, ou a folha escolhida), o tamanho do conteúdo em % e o aviso
+        da parte de fora."""
+        dpi = self._dpi_atual or 1
+        largura_cm, altura_cm = area[0] / dpi * 2.54, area[1] / dpi * 2.54
+        medida = f"{largura_cm:.1f} × {altura_cm:.1f} cm".replace(".", ",")
+        if pagina.tamanho_folha_cm is None:
+            texto = f"A própria página ({medida})."
+        elif vale:
+            texto = f"A folha escolhida ({medida})."
+        else:
+            folha = pagina.tamanho_folha_cm
+            escolhida = f"{folha[0]:.1f} × {folha[1]:.1f} cm".replace(".", ",")
+            texto = (f"A folha escolhida ({escolhida}) é menor que o conteúdo: a página sai "
+                     f"do tamanho dele ({medida}) até você mover ou diminuir.")
+        self.rotulo_area_branca.setText(texto)
+        self.campo_tamanho_do_conteudo.blockSignals(True)
+        self.campo_tamanho_do_conteudo.setValue(int(round(float(pagina.conteudo_escala) * 100)))
+        self.campo_tamanho_do_conteudo.blockSignals(False)
+        self.aviso_de_fora.setVisible(bool(fora))
+
+    def _area_branca_em_cm(self) -> tuple[float, float] | None:
+        """A área branca da página da vez, em cm (para as linhas de apoio, que
+        o livro guarda em mm a partir do meio): a folha escolhida ou a própria
+        página. None antes de a página chegar à ferramenta Mover."""
+        assert self.projeto is not None
+        pagina = self.projeto.paginas[self.indice_pagina]
+        if pagina.tamanho_folha_cm is not None:
+            return tuple(pagina.tamanho_folha_cm)
+        da_vez = getattr(self, "_mover_da_vez", None)
+        if not da_vez:
+            return None
+        dpi = da_vez["dpi"] or 1
+        return (da_vez["area"][0] / dpi * 2.54, da_vez["area"][1] / dpi * 2.54)
+
+    def _gravar_o_retangulo(self, retangulo, descricao: str) -> None:
+        """O retângulo do conteúdo (fração da área branca MOSTRADA) vira o
+        tamanho e o lugar gravados na página. A conta é em pontos: o centro e
+        o tamanho na área mostrada, e o deslocamento em fração da área branca
+        que o PDF vai usar - as duas têm o mesmo meio. É a mesma área, menos na
+        página com a folha escolhida menor que o conteúdo, que ainda não foi
+        mexida: lá a tela mostra a página inteira (o PDF não a corta) e o
+        primeiro mover passa a valer na folha escolhida."""
+        from core.folha import tamanho_da_folha_px
+
+        da_vez = getattr(self, "_mover_da_vez", None)
+        if not da_vez or self.projeto is None:
+            return
+        pagina = self.projeto.paginas[self.indice_pagina]
+        mostrada, conteudo_px = da_vez["area"], da_vez["conteudo"]
+        x, y, w, h = retangulo
+        escala = (w * mostrada[0] / conteudo_px[0] + h * mostrada[1] / conteudo_px[1]) / 2
+        de_verdade = tamanho_da_folha_px(pagina.tamanho_folha_cm, da_vez["dpi"], conteudo_px)
+        deslocamento = ((x + w / 2 - 0.5) * mostrada[0] / de_verdade[0],
+                        (y + h / 2 - 0.5) * mostrada[1] / de_verdade[1])
+        self._gravar_o_conteudo(escala, deslocamento, descricao)
+
+    def _gravar_o_conteudo(self, escala: float, deslocamento, descricao: str,
+                           indices: list[int] | None = None) -> bool:
+        """Grava tamanho e lugar do conteúdo (numa ação do desfazer; a marca
+        "mexida à mão" vem do _registrar). Nada muda se já está assim.
+        Devolve se gravou."""
+        assert self.projeto is not None
+        indices = [self.indice_pagina] if indices is None else list(indices)
+        escala = round(max(0.05, min(MAIOR_TAMANHO_DO_CONTEUDO, float(escala))), 4)
+        deslocamento = (round(float(deslocamento[0]), 4), round(float(deslocamento[1]), 4))
+        if all(self.projeto.paginas[i].conteudo_escala == escala
+               and tuple(self.projeto.paginas[i].conteudo_deslocamento) == deslocamento
+               for i in indices):
+            return False
+        self._registrar(
+            "mover_conteudo", "pagina", indices,
+            {"conteudo_deslocamento": list(deslocamento), "conteudo_escala": escala},
+            descricao)
+        return True
+
+    @protegido
+    def _mudar_tamanho_do_conteudo(self, porcento: int) -> None:
+        """O número "Tamanho do conteúdo" (em %): aumenta ou diminui em volta
+        do meio de agora (o lugar não muda), como puxar um canto."""
+        if not self._pronta() or self.projeto is None:
+            return
+        pagina = self.projeto.paginas[self.indice_pagina]
+        self._gravar_o_conteudo(int(porcento) / 100.0, pagina.conteudo_deslocamento,
+                                f"Tamanho do conteúdo da página {self.indice_pagina + 1}: "
+                                f"{int(porcento)}%")
+
+    @protegido
+    def _centralizar_conteudo(self) -> None:
+        """D-303 ("precisamos centralizar"; teste do Kaique, 26/10: "mover ele
+        para o meio da folha"): o que está IMPRESSO vai para o meio da área
+        branca, nas duas direções, no tamanho de agora. Usa a caixa do
+        impresso (core.folha.caixa_do_impresso), não a moldura da página -
+        que tem margens diferentes dos dois lados (o 15 × 53 do Kaique)."""
+        from core.folha import deslocamento_para_centralizar, tamanho_da_folha_px
+
+        da_vez = getattr(self, "_mover_da_vez", None)
+        if not self._pronta() or self.projeto is None or not da_vez:
+            return
+        pagina = self.projeto.paginas[self.indice_pagina]
+        area = tamanho_da_folha_px(pagina.tamanho_folha_cm, da_vez["dpi"], da_vez["conteudo"])
+        deslocamento = deslocamento_para_centralizar(
+            da_vez["caixa"], pagina.conteudo_escala, area, da_vez["conteudo"])
+        self._gravar_o_conteudo(pagina.conteudo_escala, deslocamento,
+                                f"Conteúdo no meio da página {self.indice_pagina + 1}")
+
+    @protegido
+    def _conteudo_como_veio(self) -> None:
+        """"voltar como veio": tamanho 100% e sem mover (o tamanho de folha,
+        se escolhido, fica)."""
+        if not self._pronta() or self.projeto is None:
+            return
+        self._gravar_o_conteudo(1.0, (0.0, 0.0),
+                                f"Conteúdo como veio na página {self.indice_pagina + 1}")
+
+    @protegido
+    def _mover_em_todas(self) -> None:
+        """"usar em todas..." (G10, 05/10: "ter uma opção para passar isso para
+        todas as folhas"; D-090: as exceções vêm desmarcadas e nunca são
+        apagadas; D-091: "Selecionar todas" e "Nenhuma"): o tamanho e o lugar
+        do conteúdo desta página vão para as páginas escolhidas, numa ação do
+        desfazer. Depois, por trás, o programa confere em cada uma se parte do
+        impresso ficou de fora (D-017) e põe o aviso no "Para revisar"."""
+        if not self._pronta() or self.projeto is None:
+            return
+        pagina = self.projeto.paginas[self.indice_pagina]
+        indices = self._escolher_paginas_do_mover()
+        if not indices:
+            return
+        if self._gravar_o_conteudo(pagina.conteudo_escala, pagina.conteudo_deslocamento,
+                                   f"Tamanho e lugar do conteúdo em {len(indices)} páginas",
+                                   indices=indices):
+            self._conferir_o_impresso_por_tras([i for i in indices if i != self.indice_pagina])
+
+    def _escolher_paginas_do_mover(self) -> list[int]:
+        """A janela "Em quais páginas?" do "usar em todas..." da ferramenta
+        Mover (as páginas com tamanho ou lugar próprio vêm desmarcadas).
+        Separado para os testes trocarem a janela."""
+        from ui.dialogo_escolher_paginas import DialogoEscolherPaginas
+
+        dialogo = DialogoEscolherPaginas(
+            self.projeto, self.indice_pagina, self,
+            tem_proprio=etapas_core.conteudo_fora_do_padrao,
+            explicacao=("O tamanho e o lugar do conteúdo desta página vão para as páginas "
+                        "marcadas. As páginas em que você já mexeu vêm desmarcadas, para não "
+                        "perder o que fez nelas."),
+            marca="já mexida")
+        if dialogo.exec() != DialogoEscolherPaginas.Accepted:
+            return []
+        return dialogo.escolhidas()
+
+    def _conferir_o_impresso_por_tras(self, indices: list[int]) -> None:
+        """Confere por trás (QThread, a janela não para) se parte do impresso
+        fica de fora nas páginas `indices` (D-017: "nada é cortado sem a
+        pessoa ver"), e põe ou tira o aviso de cada uma quando a conta chega."""
+        from ui.tarefas import TarefaConferirOImpressoDeFora
+
+        if not indices or self.projeto is None:
+            return
+        anterior = getattr(self, "_tarefa_do_impresso", None)
+        if anterior is not None and anterior.isRunning():
+            anterior.cancelar()
+            anterior.wait(2000)
+        tarefa = TarefaConferirOImpressoDeFora(self.projeto, indices)
+        tarefa.conferida.connect(self._impresso_conferido)
+        tarefa.terminou.connect(self._impresso_conferido_em_todas)
+        self._tarefa_do_impresso = tarefa
+        tarefa.start()
+
+    def _impresso_conferido(self, indice: int, fracao: float) -> None:
+        """A conta de uma página chegou da conferência por trás: põe ou tira
+        o aviso (a mesma função do PDF e da tela)."""
+        from core.pipeline import anotar_o_impresso_de_fora
+
+        if self.projeto is None or not 0 <= indice < len(self.projeto.paginas):
+            return
+        anotar_o_impresso_de_fora(self.projeto.paginas[indice], fracao)
+
+    def _impresso_conferido_em_todas(self) -> None:
+        """A conferência por trás terminou: a faixa, a tira, o contador e os
+        painéis mostram os avisos novos."""
+        if not self._pronta():
+            return
+        self._atualizar_faixa()
+        self._atualizar_tira()
+        self._atualizar_contador()
+        self._atualizar_paineis()
 
     def _montar_aba_angulo(self) -> None:
         vis = self._area_de_visualizador(ABA_ANGULO, MODO_ANGULO)
@@ -2640,6 +2917,7 @@ class TelaConferir(QWidget):
             self._montar_aba_corte()
             self._montar_aba_bordas()
             self._montar_aba_angulo()
+            self._montar_aba_mover()            # etapa 5 da obra (D-008)
             self._montar_aba_marcar()
             self._montar_aba_filtro()
             self._abas_ativas.extend(ORDEM_DAS_FERRAMENTAS)
@@ -3064,24 +3342,12 @@ class TelaConferir(QWidget):
         if aba == ABA_BORDAS:
             vis = self.visualizadores[ABA_BORDAS]
             vis.definir_dpi(self._dpi_atual)
-            if self.botao_mover_conteudo.isChecked():
-                self._atualizar_previa_composta(vis, pagina, img)
-            else:
-                self._atualizar_previa_para_recorte(vis, pagina)
+            # etapa 5 da obra: as Bordas so cortam (o mover e a ferramenta Mover)
+            self._atualizar_previa_para_recorte(vis, pagina)
             vis.definir_recorte(pagina.recorte or (0.0, 0.0, 1.0, 1.0))
             self._conferir_tamanho_da_folha(pagina, vis)
-
-            # Fase 2: "Mover conteúdo" só faz sentido com uma folha escolhida.
-            # Sem ela, forçar de volta ao modo recorte - não deixar o botão
-            # marcado apontando para um modo que não existe mais na tela.
-            from ui.widgets.visualizador import MODO_RECORTE
-
-            tem_folha = pagina.tamanho_folha_cm is not None
-            self._mostrar_as_linhas_de_apoio(vis, pagina)            # item 2.5, g8-guias
-            self.botao_mover_conteudo.setEnabled(tem_folha)
-            if not tem_folha and self.botao_mover_conteudo.isChecked():
-                self.botao_mover_conteudo.setChecked(False)
-                vis.definir_modo(MODO_RECORTE)
+        elif aba == ABA_MOVER:
+            self._atualizar_o_mover(img, pagina)                     # etapa 5 (D-008)
         elif aba == ABA_ANGULO:
             vis = self.visualizadores[ABA_ANGULO]
             # item 2.2 (G5): o angulo de agora (o a mao ou o automatico ja
@@ -3897,7 +4163,9 @@ class TelaConferir(QWidget):
             self.lista_de_paginas_mudou()
             return
         afetadas = indices if alvo == "pagina" else self._paginas_das_folhas(indices)
-        if self.previas is not None:
+        if self.previas is not None and not set(campos) <= CAMPOS_SO_DO_MOVER:
+            # etapa 5 da obra: mover/aumentar nao muda o desenho da pagina (a
+            # tela a compoe ao vivo na area branca): nada a desenhar de novo
             for indice in afetadas:
                 self.previas.invalidar(indice)
         self.atualizar()
@@ -4350,45 +4618,18 @@ class TelaConferir(QWidget):
         redimensionar o CONTEÚDO dentro da folha - grava
         `conteudo_deslocamento` e `conteudo_escala` juntos, numa ação só.
 
-        `retangulo` vem do widget em fração do CANVAS
-        (`Visualizador.conteudo_movido` - tanto de `_mover_conteudo` quanto
-        de `_redimensionar_conteudo` no widget, o sinal é o mesmo); aqui é
-        convertido para o formato salvo em `ConfigPagina` via
-        `core.folha.deslocamento_do_retangulo` - o mesmo par de funções
-        (`conteudo_como_retangulo`/`deslocamento_do_retangulo`) que a prévia
-        composta (passo 8) já usa. Até a Fase 3, `_escala` vinha do
-        `deslocamento_do_retangulo` mas era descartado (`_escala, ... =`) -
-        só mover mudava x/y, nunca w/h, então `escala` nunca mudava de
-        verdade. Agora que redimensionar existe, `escala` também precisa
-        ser persistida.
+        Etapa 5 da obra (D-008): é o soltar do mouse na ferramenta Mover, com
+        ou sem tamanho de folha (sem folha, a área branca é a própria página).
+        `retangulo` vem do widget em fração da área branca MOSTRADA; a conta
+        para o formato salvo é feita em pontos (_gravar_o_retangulo), contra a
+        área branca que o PDF vai usar. Antes só valia com uma folha escolhida
+        (`if pagina.tamanho_folha_cm is None: return`) - era o "Mover
+        conteúdo" preso às Bordas.
         """
-        from core.folha import deslocamento_do_retangulo
-
         if not self._pronta() or self.projeto is None:
             return
-        pagina = self.projeto.paginas[self.indice_pagina]
-        if pagina.tamanho_folha_cm is None:
-            return
-        vis = self.visualizadores[ABA_BORDAS]
-        tamanho_conteudo_px = vis.tamanho_da_pagina_px()
-        if tamanho_conteudo_px == (0, 0):
-            return
-
-        escala, deslocamento = deslocamento_do_retangulo(
-            retangulo, pagina.tamanho_folha_cm, tamanho_conteudo_px, vis.dpi_atual())
-        escala_arredondada = round(escala, 4)
-        deslocamento_arredondado = (round(deslocamento[0], 4), round(deslocamento[1], 4))
-        if (escala_arredondada == pagina.conteudo_escala
-                and deslocamento_arredondado == pagina.conteudo_deslocamento):
-            return
-        self._registrar(
-            "mover_conteudo", "pagina", [self.indice_pagina],
-            {
-                "conteudo_deslocamento": list(deslocamento_arredondado),
-                "conteudo_escala": escala_arredondada,
-            },
-            f"Posição/tamanho do conteúdo na página {self.indice_pagina + 1}",
-        )
+        self._gravar_o_retangulo(retangulo, f"Posição/tamanho do conteúdo na página "
+                                            f"{self.indice_pagina + 1}")
 
     # --- angulo -----------------------------------------------------------
 
@@ -5712,6 +5953,8 @@ class TelaConferir(QWidget):
             self._desentortar_aumentando()
         elif correcao == "desentortar_desfazer_aumento":
             self._desfazer_aumento_do_desentortar()
+        elif correcao == "ver_no_mover":             # etapa 5 da obra (D-017)
+            self.escolher_ferramenta(FERRAMENTA_MOVER)
 
     # --- os consertos dos avisos (12/10/2026) -----------------------------
 
@@ -6206,8 +6449,17 @@ ABA_DA_FERRAMENTA = {
     FERRAMENTA_DIVIDIR: ABA_CORTE,
     FERRAMENTA_CORTAR: ABA_BORDAS,
     FERRAMENTA_ENDIREITAR: ABA_ANGULO,
+    FERRAMENTA_MOVER: ABA_MOVER,          # etapa 5 da obra (D-008)
     FERRAMENTA_FILTROS: ABA_FILTRO,
 }
+
+# Etapa 5 da obra: os campos da pagina que so mudam ONDE a pagina pronta fica
+# na area branca (ferramenta Mover). A previa da pagina nao depende deles (a
+# chave do GerenciadorPrevias nao os tem; a tela compoe ao vivo): mexer neles
+# nao precisa desenhar a pagina de novo. Arriscado: por aqui um campo que muda
+# o desenho da pagina (a previa ficaria velha).
+CAMPOS_SO_DO_MOVER = frozenset({"conteudo_escala", "conteudo_deslocamento",
+                                "tamanho_folha_cm", "mexida_a_mao"})
 FERRAMENTA_DA_ABA = {aba: ferramenta for ferramenta, aba in ABA_DA_FERRAMENTA.items()}
 
 # As margens (esquerda, cima, direita, baixo) da fila de botoes embaixo da

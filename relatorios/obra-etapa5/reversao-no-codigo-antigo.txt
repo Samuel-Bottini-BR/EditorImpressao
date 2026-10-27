@@ -1,0 +1,29 @@
+Reversão no código antigo (7fb3e4a, cópia em _tmp/antigo), 27/10/2026
+
+1) tests/test_decisoes_mover.py e os 3 testes reescritos de tests/test_visualizador.py:
+FAILED tests/test_decisoes_mover.py::test_d008_ferramenta_mover_propria_na_trilha_no_menu_e_na_letra
+FAILED tests/test_decisoes_mover.py::test_d008_sem_tamanho_de_folha_a_area_branca_e_a_propria_pagina
+FAILED tests/test_decisoes_mover.py::test_d008_arrastar_com_o_mouse_sai_no_pdf_no_mesmo_lugar_da_tela
+FAILED tests/test_decisoes_mover.py::test_d008_puxar_o_canto_aumenta_o_texto_no_pdf
+FAILED tests/test_decisoes_mover.py::test_kaique_folha_do_tamanho_do_corte_arrastar_chega_ao_pdf
+FAILED tests/test_decisoes_mover.py::test_d303_centralizar_poe_o_impresso_no_meio_no_pdf
+FAILED tests/test_decisoes_mover.py::test_tamanho_em_porcento_e_voltar_como_veio
+FAILED tests/test_decisoes_mover.py::test_d017_aumentar_alem_da_beirada_avisa_e_marca_a_parte_de_fora
+FAILED tests/test_decisoes_mover.py::test_d017_so_o_papel_da_margem_saindo_nao_avisa
+FAILED tests/test_decisoes_mover.py::test_d017_o_pdf_tambem_poe_o_aviso - Att...
+FAILED tests/test_decisoes_mover.py::test_d056_linhas_de_apoio_na_ferramenta_mover_sem_tamanho_de_folha
+FAILED tests/test_decisoes_mover.py::test_g10_usar_em_todas_nas_escolhidas_e_avisa_por_tras
+12 failed in 9.07s
+FAILED tests/test_visualizador_novo.py::test_arrastar_conteudo_passa_da_beirada_mas_o_meio_fica_na_folha
+FAILED tests/test_visualizador_novo.py::test_arrastar_conteudo_passa_da_beirada_do_outro_lado
+FAILED tests/test_visualizador_novo.py::test_redimensionar_conteudo_aumenta_alem_da_folha_ate_o_teto
+3 failed, 67 deselected in 0.80s
+
+2) O caso do teste do Kaique pelo caminho antigo (Cortar > 'Mover conteúdo', folha do tamanho do corte, arrastar 10% para a esquerda; relatorios/obra-etapa5/scripts/kaique_antigo.py):
+caixa do texto no PDF antes : 0.319 0.294 0.899 0.929
+caixa do texto no PDF depois: 0.319 0.294 0.899 0.929
+deslocamento gravado: (0.0, 0.0)
+NAO ANDOU (o defeito do teste do Kaique)
+
+3) test_letra_f_com_o_foco_na_pagina_de_marcar_chega_a_ferramenta (defeito achado nos prints: o editor de marcar chamava evento.matches(Qt.Key_Z)), no código antigo:
+FAILED - TypeError: ... QKeyEvent.matches(Key) ... Supported signatures: QKeyEvent.matches(key: QKeySequence.StandardKey)

@@ -139,7 +139,8 @@ def encaixar(conteudo: tuple[float, float, float, float], linhas=(), automaticas
              tolerancia: float = TOLERANCIA) -> tuple[float, float, float, float]:
     """Puxa o conteúdo para a linha mais perto de cada eixo, se estiver dentro
     da tolerância. Nunca muda largura e altura (o ímã posiciona, não
-    redimensiona) e nunca põe o conteúdo para fora da folha."""
+    redimensiona) e nunca põe para fora da folha o conteúdo que cabe nela
+    (o maior que a folha só gruda no meio: _pode_encaixar)."""
     x, y, w, h = conteudo
     linhas = list(linhas)
     cx = _candidatos(x, w, _do_eixo(linhas, DE_PE), automaticas,
@@ -147,14 +148,24 @@ def encaixar(conteudo: tuple[float, float, float, float], linhas=(), automaticas
     cy = _candidatos(y, h, _do_eixo(linhas, DEITADA), automaticas,
                      (CENTRO_V, BORDA_CIMA, BORDA_BAIXO))
     if cx:
-        d, _n, nova = min(cx, key=lambda c: c[0])
-        if d <= tolerancia and 0.0 <= nova <= 1.0 - w:
+        d, nome, nova = min(cx, key=lambda c: c[0])
+        if d <= tolerancia and _pode_encaixar(nova, w, nome, CENTRO_H):
             x = nova
     if cy:
-        d, _n, nova = min(cy, key=lambda c: c[0])
-        if d <= tolerancia and 0.0 <= nova <= 1.0 - h:
+        d, nome, nova = min(cy, key=lambda c: c[0])
+        if d <= tolerancia and _pode_encaixar(nova, h, nome, CENTRO_V):
             y = nova
     return (x, y, w, h)
+
+
+def _pode_encaixar(nova: float, tamanho: float, nome: str, centro: str) -> bool:
+    """O ímã nunca empurra para fora da folha o conteúdo que cabe nela. O
+    conteúdo MAIOR que a folha (aumentado na ferramenta Mover, etapa 5 da
+    obra; D-017: o que passa da beirada fica de fora e é avisado) ainda gruda
+    no meio, para ficar com a mesma sobra dos dois lados."""
+    if tamanho > 1.0:
+        return nome == centro
+    return 0.0 <= nova <= 1.0 - tamanho
 
 
 def mais_perto(linhas, orientacao_e_fracao: tuple[str, float] | None = None, *,

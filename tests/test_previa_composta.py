@@ -138,71 +138,51 @@ def test_recorte_nao_pula_de_posicao_ao_soltar_o_mouse(conferir_bordas):
         "provavelmente voltou a compor com o recorte já aplicado")
 
 
-def test_previa_fica_maior_que_o_conteudo_no_modo_mover_conteudo(conferir_bordas):
-    """Só DENTRO do modo "Mover conteúdo" a prévia mostra a folha composta
-    (recorte já aplicado + margem branca) - maior que o conteúdo, porque aí
-    sim é a posição/tamanho do conteúdo dentro da folha que está em jogo."""
-    tela, vis = conferir_bordas
-    tela.botao_mover_conteudo.setChecked(True)
-    tela._alternar_mover_conteudo()
-    assert _esperar_ate(lambda: vis._pixmap is not None and vis._pixmap.width() > vis.tamanho_da_pagina_px()[0])
-
-    largura_conteudo, altura_conteudo = vis.tamanho_da_pagina_px()
-    assert vis._pixmap.width() > largura_conteudo
-    assert vis._pixmap.height() > altura_conteudo
-
-
-# --- Fase 2 aprovada pelo Samuel (22/09/2026): mover o conteúdo dentro da
-# folha, ligado de ponta a ponta (botão -> modo do widget -> sinal ->
-# ConfigPagina.conteudo_deslocamento) --------------------------------------
-
-def test_botao_mover_conteudo_fica_habilitado_com_folha_escolhida(conferir_bordas):
-    tela, _vis = conferir_bordas
-    assert tela.botao_mover_conteudo.isEnabled()
-
-
-def test_sem_folha_escolhida_botao_mover_conteudo_fica_desabilitado(app, livro):
+@pytest.fixture
+def conferir_mover(app, livro):
+    """Etapa 5 da obra (D-008): o mover e o tamanho do conteúdo saíram das Bordas (a
+    caixinha "Mover conteúdo") para a ferramenta própria "Mover e redimensionar". Estes
+    testes, que protegiam o mover dentro da folha composta, passam a valer nela."""
     from ui.tarefas import GerenciadorPrevias
-    from ui.tela_conferir import ABA_BORDAS, TelaConferir
+    from ui.tela_conferir import ABA_MOVER, TelaConferir
 
-    projeto = _projeto(livro, recorte=(0.25, 0.25, 0.5, 0.5), tamanho_folha_cm=None)
+    projeto = _projeto(livro, recorte=(0.25, 0.25, 0.5, 0.5), tamanho_folha_cm=(20.0, 20.0))
     tela = TelaConferir()
     previas = GerenciadorPrevias(str(livro), projeto, tela)
     tela.carregar(projeto, HistoricoAcoes(), previas)
-    vis = tela.visualizadores[ABA_BORDAS]
-    assert _esperar_ate(lambda: vis.tamanho_da_pagina_px() != (0, 0))
-
-    assert not tela.botao_mover_conteudo.isEnabled()
+    tela.escolher_ferramenta("mover")
+    vis = tela.visualizadores[ABA_MOVER]
+    assert _esperar_ate(lambda: vis._pixmap is not None and vis._folha_do_mover is not None), (
+        "a página nunca chegou à ferramenta Mover")
+    yield tela, vis
     previas.parar()
 
 
-def test_alternar_mover_conteudo_troca_o_modo_do_visualizador(conferir_bordas):
+def test_ferramenta_mover_mostra_a_area_branca_maior_que_o_conteudo(conferir_mover):
+    """A ferramenta Mover mostra a área branca (a folha escolhida, 20 x 20 cm) maior que
+    o conteúdo (o recorte), com a página dentro dela."""
+    _tela, vis = conferir_mover
+    largura_conteudo, altura_conteudo = vis.tamanho_da_pagina_px()
+    assert vis._folha_do_mover[0] > largura_conteudo
+    assert vis._folha_do_mover[1] > altura_conteudo
+
+
+def test_as_bordas_so_cortam_e_o_mover_e_outra_ferramenta(conferir_bordas):
+    """Etapa 5 da obra (D-008: "deveriam ser duas coisas independentes"): a ferramenta
+    Cortar fica sempre no retângulo do corte (o antigo "Mover conteúdo" trocava o modo
+    dela); a ferramenta Mover tem o seu visualizador, no modo do conteúdo."""
     from ui.widgets.visualizador import MODO_CONTEUDO, MODO_RECORTE
 
     tela, vis = conferir_bordas
     assert vis.modo == MODO_RECORTE
-
-    tela.botao_mover_conteudo.setChecked(True)
-    tela._alternar_mover_conteudo()
-    assert vis.modo == MODO_CONTEUDO
-
-    tela.botao_mover_conteudo.setChecked(False)
-    tela._alternar_mover_conteudo()
-    assert vis.modo == MODO_RECORTE
+    assert not hasattr(tela, "botao_mover_conteudo")
+    assert tela.visualizadores["mover"].modo == MODO_CONTEUDO
 
 
-def test_mover_conteudo_grava_o_deslocamento_na_pagina(conferir_bordas):
-    from core.folha import deslocamento_do_retangulo
+def test_mover_conteudo_grava_o_deslocamento_na_pagina(conferir_mover):
+    from core.folha import escala_e_deslocamento
 
-    tela, vis = conferir_bordas
-    # a prévia composta (que este teste depende de `vis._retangulo_conteudo`/
-    # `tamanho_da_pagina_px()` refletirem) só existe no modo "Mover conteúdo"
-    # - fora dele a aba Bordas mostra a imagem não cortada, ver
-    # `_atualizar_previa_para_recorte`.
-    tela.botao_mover_conteudo.setChecked(True)
-    tela._alternar_mover_conteudo()
-    assert _esperar_ate(lambda: vis._retangulo_conteudo != (0.0, 0.0, 1.0, 1.0))
-
+    tela, vis = conferir_mover
     pagina = tela.projeto.paginas[0]
     assert pagina.conteudo_deslocamento == (0.0, 0.0)
 
@@ -212,24 +192,22 @@ def test_mover_conteudo_grava_o_deslocamento_na_pagina(conferir_bordas):
 
     tela._mover_conteudo(novo_retangulo)
 
-    _escala, esperado = deslocamento_do_retangulo(
-        novo_retangulo, pagina.tamanho_folha_cm, vis.tamanho_da_pagina_px(), vis.dpi_atual())
+    _escala, esperado = escala_e_deslocamento(
+        novo_retangulo, vis._folha_do_mover, vis.tamanho_da_pagina_px())
     assert pagina.conteudo_deslocamento == pytest.approx(
         (round(esperado[0], 4), round(esperado[1], 4)), abs=1e-6)
-    # conteudo_escala nao muda nesta entrega (so mover, nao redimensionar)
-    assert pagina.conteudo_escala == 1.0
+    assert pagina.conteudo_escala == pytest.approx(1.0, abs=1e-3)
 
 
-def test_redimensionar_conteudo_grava_a_escala_na_pagina(conferir_bordas):
+def test_redimensionar_conteudo_grava_a_escala_na_pagina(conferir_mover):
     """Fase 3 (confirmada pelo Samuel, 22/09/2026: "quero conseguir
     redimensionar o conteudo tambem"): quando o retângulo que chega de
     `Visualizador.conteudo_movido` tem w/h DIFERENTE do que a página já
     tinha (arrastou um canto, não só o meio), `conteudo_escala` também
-    precisa ser gravado - antes desta correção só `conteudo_deslocamento`
-    era persistido, `_escala` era descartado (`_escala, deslocamento = ...`)."""
-    from core.folha import deslocamento_do_retangulo
+    precisa ser gravado."""
+    from core.folha import escala_e_deslocamento
 
-    tela, vis = conferir_bordas
+    tela, vis = conferir_mover
     pagina = tela.projeto.paginas[0]
     assert pagina.conteudo_escala == 1.0
 
@@ -241,13 +219,13 @@ def test_redimensionar_conteudo_grava_a_escala_na_pagina(conferir_bordas):
 
     tela._mover_conteudo(novo_retangulo)
 
-    escala_esperada, _deslocamento = deslocamento_do_retangulo(
-        novo_retangulo, pagina.tamanho_folha_cm, vis.tamanho_da_pagina_px(), vis.dpi_atual())
+    escala_esperada, _deslocamento = escala_e_deslocamento(
+        novo_retangulo, vis._folha_do_mover, vis.tamanho_da_pagina_px())
     assert pagina.conteudo_escala == pytest.approx(round(escala_esperada, 4), abs=1e-6)
 
 
-def test_mover_conteudo_e_uma_acao_do_historico_desfazivel(conferir_bordas):
-    tela, vis = conferir_bordas
+def test_mover_conteudo_e_uma_acao_do_historico_desfazivel(conferir_mover):
+    tela, vis = conferir_mover
     pagina = tela.projeto.paginas[0]
 
     x, y, w, h = vis._retangulo_conteudo
@@ -255,37 +233,28 @@ def test_mover_conteudo_e_uma_acao_do_historico_desfazivel(conferir_bordas):
     assert pagina.conteudo_deslocamento != (0.0, 0.0)
 
     tela.acoes.desfazer(tela.projeto)
-    assert tela.projeto.paginas[0].conteudo_deslocamento == (0.0, 0.0)
+    assert tuple(tela.projeto.paginas[0].conteudo_deslocamento) == (0.0, 0.0)
 
 
-def test_tamanho_da_pagina_continua_sendo_o_do_recorte_nao_o_da_folha(conferir_bordas):
-    """`tamanho_da_pagina_px` alimenta o cálculo de cm do recorte
+def test_tamanho_da_pagina_continua_sendo_o_do_recorte_nao_o_da_folha(conferir_mover):
+    """`tamanho_da_pagina_px` alimenta o cálculo de cm do tamanho de folha
     (`_escolher_tamanho_da_folha`) - tem que continuar sendo o tamanho do
     CONTEÚDO, nunca o da folha maior."""
-    _tela, vis = conferir_bordas
+    _tela, vis = conferir_mover
     largura_px, altura_px = vis.tamanho_da_pagina_px()
     dpi = vis.dpi_atual()
-    # o conteudo e o recorte (0.25,0.25,0.5,0.5) da pagina 400x400pt a
-    # DPI_PREVIA - o importante e ser bem menor que os 20x20cm da folha
     largura_cm = largura_px / dpi * 2.54
     altura_cm = altura_px / dpi * 2.54
     assert largura_cm < 15.0, f"tamanho_da_pagina_px parece ser o da FOLHA: {largura_cm}cm"
     assert altura_cm < 15.0
 
 
-def test_retangulo_do_conteudo_bate_com_conteudo_como_retangulo(conferir_bordas):
-    """A área do conteúdo dentro do canvas que o widget usa para desenhar e
+def test_retangulo_do_conteudo_bate_com_conteudo_como_retangulo(conferir_mover):
+    """A área do conteúdo dentro da área branca que o widget usa para desenhar e
     mapear o mouse tem que ser EXATAMENTE a mesma que
     `core.folha.conteudo_como_retangulo` calcularia - a mesma fonte da
-    verdade usada por `compor_na_folha` na exportação final.
-
-    Só vale dentro do modo "Mover conteúdo" - fora dele a aba Bordas mostra a
-    imagem não cortada, ver `_atualizar_previa_para_recorte`."""
-    tela, vis = conferir_bordas
-    tela.botao_mover_conteudo.setChecked(True)
-    tela._alternar_mover_conteudo()
-    assert _esperar_ate(lambda: vis._retangulo_conteudo != (0.0, 0.0, 1.0, 1.0))
-
+    verdade usada por `compor_na_folha` na exportação final (D-473)."""
+    _tela, vis = conferir_mover
     tamanho_conteudo_px = vis.tamanho_da_pagina_px()
     esperado = conteudo_como_retangulo(
         1.0, (0.0, 0.0), (20.0, 20.0), tamanho_conteudo_px, vis.dpi_atual())

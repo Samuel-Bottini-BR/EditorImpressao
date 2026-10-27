@@ -43,6 +43,7 @@ from PySide6.QtCore import QEvent, QPoint, QRect, Qt, Signal
 from PySide6.QtGui import (
     QColor,
     QImage,
+    QKeySequence,
     QMouseEvent,
     QPainter,
     QPaintEvent,
@@ -905,7 +906,12 @@ class EditorSelecao(QWidget):
             if evento.modifiers() & Qt.ControlModifier and evento.key() == Qt.Key_V:
                 self.colar()
                 return
-        if evento.matches(Qt.Key_Z) or (
+        # Etapa 5 da obra (achado ao provar a tecla F na janela de verdade, 27/10/2026):
+        # era evento.matches(Qt.Key_Z), que o PySide6 6.11 recusa (matches só aceita
+        # um QKeySequence.StandardKey): QUALQUER tecla apertada com o foco na página
+        # de marcar dava "Aconteceu um problema inesperado" e a letra da ferramenta
+        # (D, X, I, F, R...) não chegava à tela. O desfazer do Windows é o Ctrl+Z.
+        if evento.matches(QKeySequence.Undo) or (
                 evento.key() == Qt.Key_Z and evento.modifiers() & Qt.ControlModifier):
             self.desfazer()
             return

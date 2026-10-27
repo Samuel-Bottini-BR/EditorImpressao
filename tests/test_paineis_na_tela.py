@@ -277,13 +277,13 @@ def test_os_botoes_do_cortar_fazem_o_mesmo_de_antes(janela, pasta, monkeypatch):
 def test_espelhado_e_proporcao_travada_sao_caixinhas_e_as_teclas_valem(janela, pasta):
     tela = _aberta(janela, pasta)
     tela.trilha.escolher(FERRAMENTA_CORTAR)
-    for caixinha in (tela.botao_espelhado, tela.botao_proporcao_travada,
-                     tela.botao_mover_conteudo):
+    for caixinha in (tela.botao_espelhado, tela.botao_proporcao_travada):
         assert isinstance(caixinha, QCheckBox)
         assert tela.paineis.propriedades.isAncestorOf(caixinha)
     assert "tecla M" in tela.botao_espelhado.text()
     assert "tecla T" in tela.botao_proporcao_travada.text()
-    assert not tela.botao_mover_conteudo.isEnabled(), "só com um tamanho de folha"
+    # etapa 5 da obra (D-008): o "Mover conteúdo" saiu do Cortar (é a ferramenta Mover)
+    assert not hasattr(tela, "botao_mover_conteudo")
     # as teclas valem também com o painel fechado
     tela.paineis.fechar()
     assert tela.paineis.aberto is None

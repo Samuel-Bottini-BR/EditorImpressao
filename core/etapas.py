@@ -393,6 +393,14 @@ def _conteudo_fora_do_padrao(pagina) -> bool:
             or any(abs(float(v)) > _TOLERANCIA for v in tuple(deslocamento)[:2]))
 
 
+def conteudo_fora_do_padrao(pagina) -> bool:
+    """A pagina tem tamanho ou posicao do conteudo diferentes do de fabrica
+    (escala 1, deslocamento 0)? Le so os campos, sem olhar se vale. Para o
+    "usar em todas" da ferramenta Mover (etapa 5 da obra) desmarcar as
+    paginas que ja tem o seu (D-090: "nunca apaga exceção")."""
+    return _conteudo_fora_do_padrao(pagina)
+
+
 def conteudo_mexido(projeto, pagina) -> bool:
     """O conteudo desta pagina foi movido ou redimensionado a mao, e isso vale?
     Com True, core/folha.compor_na_folha nunca joga o mover fora (sem tamanho
