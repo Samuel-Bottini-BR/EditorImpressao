@@ -275,7 +275,13 @@ def instrucoes_de_impressao(total_paginas: int, paginas_por_caderno: int) -> lis
     tamanhos = tamanhos_dos_cadernos(total_paginas, n)
     cadernos = max(1, len(tamanhos))
     grupos = f"Separe as folhas em grupos de {folhas}."
-    if tamanhos and tamanhos[-1] < n:
+    if len(tamanhos) == 1:
+        # um caderno só: "grupos de 5; o último grupo tem 1 folha" não faz
+        # sentido (D-333, print de 22/10/2026)
+        unico = tamanhos[0] // 4
+        grupos = ("A folha forma um grupo só." if unico == 1
+                  else f"As {unico} folhas formam um grupo só.")
+    elif tamanhos and tamanhos[-1] < n:
         # imp-4 (21/10/2026): o ultimo caderno tem so as folhas necessarias
         ultimo = tamanhos[-1] // 4
         grupos = (f"Separe as folhas em grupos de {folhas}; o último grupo tem "
@@ -283,5 +289,7 @@ def instrucoes_de_impressao(total_paginas: int, paginas_por_caderno: int) -> lis
     return [
         "Imprima frente e verso, virando na borda curta.",
         grupos,
-        f"Dobre cada grupo ao meio - são {cadernos} cadernos prontos.",
+        # singular no 1 (D-333, 22/10/2026: a janela dizia "são 1 cadernos")
+        ("Dobre o grupo ao meio - é 1 caderno pronto." if cadernos == 1
+         else f"Dobre cada grupo ao meio - são {cadernos} cadernos prontos."),
     ]

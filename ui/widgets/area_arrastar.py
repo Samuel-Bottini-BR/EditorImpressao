@@ -1,12 +1,14 @@
-"""A área de arrastar o PDF da tela de inicio."""
+"""A área de arrastar o PDF da tela de inicio.
+
+Clicar nela (ou Arquivo > Abrir) abre a janela de escolher o PDF, que mora em
+ui/dialogos_de_arquivo.py (em português, com atalhos; etapa 9a, 26/10/2026).
+"""
 
 from __future__ import annotations
 
-from pathlib import Path
-
 from PySide6.QtCore import Qt, Signal
 from PySide6.QtGui import QColor, QPainter, QPen
-from PySide6.QtWidgets import QFileDialog, QWidget
+from PySide6.QtWidgets import QWidget
 
 from ui import estilo
 
@@ -165,10 +167,16 @@ class AreaArrastar(QWidget):
         self.abrir_dialogo_de_arquivo()
 
     def abrir_dialogo_de_arquivo(self) -> None:
-        """Abre o seletor de PDF. Usado pelo clique na área e pelo menu Arquivo > Abrir."""
-        caminho, _ = QFileDialog.getOpenFileName(
-            self, "Escolha o PDF do livro", str(Path.home()), "Arquivos PDF (*.pdf)"
-        )
+        """Abre o seletor de PDF. Usado pelo clique na área e pelo menu Arquivo > Abrir.
+
+        Etapa 9a (26/10/2026, teste do Kaique: a janela saía em inglês, sem
+        Área de Trabalho/Downloads, e o caminho digitado errado não avisava):
+        a janela vem de ui/dialogos_de_arquivo.py - a do Windows quando dá, a
+        do Qt em português quando não dá - e abre na última pasta de onde se
+        abriu um livro."""
+        from ui.dialogos_de_arquivo import escolher_pdf_para_abrir
+
+        caminho = escolher_pdf_para_abrir(self, "Escolha o PDF do livro")
         if caminho:
             self.arquivo_escolhido.emit(caminho)
 
