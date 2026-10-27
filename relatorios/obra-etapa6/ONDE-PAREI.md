@@ -89,11 +89,33 @@ Up/Down e Home/End só existiam no livro aberto; na área de trabalho a roda só
 
 ## Testes (no PC, um arquivo por vez, TEMP e --basetemp em `_tmp/`)
 
-PREENCHER
+- `tests/test_decisoes_ver.py`: **11 passaram**. **Reversão** no código antigo (`3e112f9`, cópia em `_tmp/antigo`):
+  **os 11 falham** (`relatorios/obra-etapa6/reversao-no-codigo-antigo.txt`). Ressalva honesta: 9 falham porque o botão
+  ou o item não existe lá; os 2 da navegação (`test_d021_*`) falham por asserção (a roda só dava zoom; Page Down não
+  andava).
+- `test_decisoes.py` 28 · `test_decisoes_tela.py` 35 · `test_decisoes_dividir.py` 19 · `test_decisoes_automatico.py` 24
+  · `test_decisoes_mover.py` 13 · `test_decisoes_impressao.py` 22 · `test_decisoes_nucleo.py` 36 ·
+  `test_trabalho_nao_se_perde.py` 82 · `test_janela_cabe_na_tela.py` 2 · `test_barra_de_menu.py` 20 ·
+  `test_livro_aberto.py` 14 · `test_atalhos.py` 15 · `test_visualizador.py` 70 · `test_paineis_na_tela.py` 22 ·
+  `test_paineis.py` 34 · `test_miniaturas_novas.py` 5 · `test_dividir_na_tela.py` 9 · `test_girar_na_tela.py` 22 ·
+  `test_endireitar_na_tela.py` 5 · `test_tela_inicio.py` 15 · `test_misto_na_tela.py` 14: **todos passam**.
+- `test_promessas.py -k "lado or pares or zoom or ver or p12 or p13 or p14 or p195 or todo_botao or toda_promessa"`:
+  64 passaram, 3 xfail, **1 falha que já falha no código antigo** (P-127 pelo menu, conferido no `3e112f9`). Depois do
+  acerto do estilo: P-136 (2), P-146 (2), P-195 e as três da varredura (todo botão tem promessa, toda promessa tem botão
+  e prova): 8 passaram.
+- `teste_botoes.py`: **337 ações, 0 falhas** (com a parte nova "o ver da barra de baixo": cada botão e a promessa
+  dele).
 
 ## GitHub
 
-PREENCHER
+- **40588991790** (commit `3031157`): o `teste_botoes.py` tinha um erro de sintaxe meu (uma quebra de linha no meio de
+  um texto, ao escrever o arquivo) — quebrou o "Botões" e a coleta de `test_pasta_de_dados_dos_scripts.py`.
+  Consertado em `bd7ed19`.
+- **40592137706** (commit `bd7ed19`, a final): **partes 3, 4 e 5 e "Botões e prints da janela real" passam**; parte 1
+  com P-085, P-092 e P-127; parte 2 com `test_paginas_diferentes.py::test_na_analise_a_pagina_torta_ganha_o_aviso`.
+  Nenhuma é desta etapa: P-085 e P-127 são as da base (etapas 4 e 5); P-092 falha também no código antigo (no PC,
+  `3e112f9`; no PC, no código novo, passa); a das páginas diferentes é a instável que a etapa 5 já anotou (falha às
+  vezes no código antigo).
 
 ## Prints da janela de verdade (1280×657 lógicos, a 125% deste PC = 1600×821; fora da tela; `relatorios/obra-etapa6/prints/`)
 
@@ -162,4 +184,14 @@ tecla 2 (Preto e branco) → "antes / depois" → "+" duas vezes → "ajustar à
 
 ## Commits (ramo `obra-etapa6-2026-10-26`)
 
-PREENCHER
+- `15d8ec1` ONDE-PAREI com as decisões que a tarefa precisa cumprir
+- `4d147bc` Uma página / Duas lado a lado na barra de baixo e no menu Ver (pares das prévias), antes / depois, zoom,
+  roda, Page Up/Down, Home/End; provas e promessas
+- `3031157` teste_botoes confere o ver da barra de baixo; reversão; situação no Livro; roteiro dos prints
+- `bd7ed19` botões da barra de baixo no tamanho e no aceso do livro aberto; teste_botoes sem o erro de sintaxe; prints
+- (este ONDE-PAREI final)
+
+## Escolhas novas no Livro
+
+Nenhuma D-580+: pela regra nova da gerente, onde o Livro não respondia não criei escolha; fiz o mínimo para o pedido
+funcionar e pus cada ponto como pergunta (1 a 6). Atualizei só a situação de D-006, D-015, D-021, D-058 e D-343.
