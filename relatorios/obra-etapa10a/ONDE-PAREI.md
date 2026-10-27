@@ -202,3 +202,12 @@ projeto antigo): ver "Velocidade" abaixo.
 - `b9437db` tracejado e ciscos da beirada (Horas 18); cunha com a mediana do papel; extras.
 - `7f816b8` consertos do corte comum só no livro novo; conferência; provas.
 - (o último) ONDE-PAREI final.
+
+## Velocidade (filtro do GitHub, `11f9ed3` × ramo, mesma máquina, alternado)
+
+- 1ª rodada `40444881163` (no `b9437db`): "parece mais lento: Abrir o livro +9,1% (vai-e-vem 3,9%)"; Mágico pro 10
+  páginas -2,4%. Causa provável: no `b9437db` as contas novas do corte comum rodavam também na análise do livro (a folha
+  inteira). No `7f816b8` elas só rodam no corte do livro novo (a análise volta à conta de sempre). Medida no PC
+  (Boécio inteiro, 3 vezes alternado): antes 11,97 / 8,75 / 9,23 s, depois 9,87 / 9,32 / 9,09 s (dentro do vai-e-vem).
+- 2ª rodada `40451847875` (no `3335d33`, como manda a regra quando acusa lentidão): **nada mais lento**; "parece mais
+  rápido: Mágico pro, 10 páginas -2,5%; Preto e branco, 10 páginas -4,6%" (vai-e-vem ~2%; provavelmente ruído).
