@@ -305,7 +305,10 @@ class ListaDeEtapas(QListWidget):
         self.viewport().setCursor(Qt.OpenHandCursor)
         self.setToolTip("Arraste uma etapa para mudar a ordem em que elas rodam. "
                         "A caixinha liga ou desliga a etapa.")
-        self.model().rowsMoved.connect(lambda *_: QTimer.singleShot(0, self._arrastou))
+        # a ordem nova e lida NA HORA do movimento (uma atualizacao da tela antes
+        # do relogio remontaria a lista com a ordem velha) e entra no estado
+        # logo depois (remontar a lista dentro do proprio sinal do Qt nao pode)
+        self.model().rowsMoved.connect(lambda *_: self._arrastou())
         self.itemChanged.connect(self._marcou)
         self.currentItemChanged.connect(self._escolheu)
         self.itemDoubleClicked.connect(lambda item: self.ajustar_pedido.emit(item.data(Qt.UserRole)))
@@ -350,7 +353,8 @@ class ListaDeEtapas(QListWidget):
         return [self.item(i).data(Qt.UserRole) for i in range(self.count())]
 
     def _arrastou(self) -> None:
-        self.estado.definir_ordem(self.etapas_na_lista())
+        ordem = self.etapas_na_lista()
+        QTimer.singleShot(0, lambda: self.estado.definir_ordem(ordem))
 
     def _marcou(self, item: QListWidgetItem) -> None:
         self.estado.marcar(item.data(Qt.UserRole), item.checkState() == Qt.Checked)
