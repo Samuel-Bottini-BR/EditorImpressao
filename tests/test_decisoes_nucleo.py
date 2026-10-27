@@ -163,3 +163,66 @@ def test_nome_de_saida_sugerido_sai_sem_acento():
     nome = nome_de_saida_sugerido(projeto)
     assert nome == "Oficio da Imaculada Conceicao - magico pro.pdf"
     assert nome.isascii()
+
+
+# --- item 3: projeto.json ilegível não some calado ----------------------------
+
+def _pasta_do_projeto(tmp_path, conteudo: str | None):
+    import projetos
+
+    pasta = tmp_path / "proj"
+    pasta.mkdir()
+    if conteudo is not None:
+        (pasta / projetos.ARQUIVO_ESTADO).write_text(conteudo, encoding="utf-8")
+    return projetos.Resumo(pasta=str(pasta)), pasta
+
+
+@pytest.mark.parametrize("estragado", ["{ isto nao e json", '{"paginas": 5}', "[1, 2]"],
+                         ids=["json_quebrado", "campos_errados", "nao_e_um_projeto"])
+def test_d342_projeto_ilegivel_guarda_a_copia_e_avisa(tmp_path, estragado):
+    """D-342 (05/10/2026): "o programa quando estiver pronto, ele vai ter que
+    ser capaz de abrir arquivos de versões anteriores." Etapa 9c: um
+    projeto.json que não dá para ler fazia a conferência recomeçar SEM AVISO
+    (carregar_estado devolvia None calado, e o trabalho ia embora com a
+    próxima gravação). Agora a leitura guarda a cópia do arquivo estragado ao
+    lado (nunca apaga o original) e devolve o sinal com a frase para a tela."""
+    import projetos
+
+    resumo, pasta = _pasta_do_projeto(tmp_path, estragado)
+    lido = projetos.ler_estado(resumo)
+    assert lido.projeto is None
+    assert lido.ilegivel
+    assert lido.copia is not None and lido.copia.parent == pasta
+    assert lido.copia.read_text(encoding="utf-8") == estragado
+    assert (pasta / projetos.ARQUIVO_ESTADO).read_text(encoding="utf-8") == estragado
+    assert lido.aviso.startswith("Não consegui ler o trabalho salvo deste livro")
+    assert str(lido.copia) in lido.aviso.replace("⁠", "")
+    # o caminho antigo continua: None para quem só quer o Projeto
+    assert projetos.carregar_estado(resumo) is None
+
+
+def test_projeto_ilegivel_lido_varias_vezes_guarda_uma_copia_so(tmp_path):
+    """A janela lê o projeto.json várias vezes ao abrir (abrir_livro,
+    continuar, fim da análise): uma cópia só do mesmo arquivo estragado."""
+    import projetos
+
+    resumo, pasta = _pasta_do_projeto(tmp_path, "{ quebrado")
+    copias = {projetos.ler_estado(resumo).copia for _ in range(3)}
+    assert len(copias) == 1
+    assert len(list(pasta.glob("projeto.estragado-*"))) == 1
+
+
+def test_projeto_legivel_ou_ausente_nao_avisa(tmp_path):
+    import projetos
+    from modelos import Projeto as P
+
+    resumo, pasta = _pasta_do_projeto(tmp_path, None)
+    lido = projetos.ler_estado(resumo)
+    assert lido.projeto is None and not lido.ilegivel and lido.aviso == ""
+    import json
+    (pasta / projetos.ARQUIVO_ESTADO).write_text(
+        json.dumps(P(caminho_entrada="a.pdf", caminho_saida="", nome="a").para_dicionario()),
+        encoding="utf-8")
+    lido = projetos.ler_estado(resumo)
+    assert lido.projeto is not None and not lido.ilegivel and lido.aviso == ""
+    assert not list(pasta.glob("projeto.estragado-*"))
