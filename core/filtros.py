@@ -3555,6 +3555,40 @@ def aplicar_so_os_pedacos(
         raise ErroFiltro("Não consegui limpar esta página.") from exc
 
 
+def _papel_a_mao_em_branco(saida: np.ndarray, selecao) -> np.ndarray:
+    """O papel marcado A MAO vai a branco por cima de `saida` (Original e
+    Tirar o fundo intacto; etapa 9c da obra, 26/10/2026).
+
+    Decisoes: D-027 (30/09/2026, "essa é uma página que eu poderia
+    simplesmente escolher a opção para virar uma folha branca") e D-227
+    ("clicar numa área laranja e 'pintar de branco' → no PDF sai branca").
+    O menu Marcar > "Deixar a folha em branco" marca a folha inteira como
+    PAPEL a mao (ui/tela_conferir._folha_em_branco), e "pintar de branco"
+    troca a area por PAPEL a mao (core.editar_zonas.pintada_de_branco). Nos
+    filtros que limpam (Preto e branco, Melhorar, Magico pro) o papel ja ia a
+    branco; no Original ficava como veio (defeito B da bateria de promessas).
+
+    So vale o papel A MAO (origem MAO) e sem filtro proprio: o papel que a
+    MAQUINA marcou (a deteccao) e so "aqui e fundo" e nao muda o Original (a
+    pagina como veio, D-134); o papel com "so neste pedaco" obedece ao filtro
+    do pedaco (aplicar_so_os_pedacos). Sem esse papel devolve `saida`, o
+    MESMO objeto (a pagina sai exatamente como antes, sem conta a mais).
+    Arriscado: deixar o papel da maquina entrar aqui (o Original deixaria de
+    ser a pagina como veio) ou proteger a tinta (a folha "em branco" ficaria
+    com a etiqueta e a sujeira, ver FOLHA_INTEIRA_EM_BRANCO)."""
+    from core.selecao import MAO, PAPEL, Selecao
+
+    regioes = [r for r in getattr(selecao, "regioes", [])
+               if r.tipo == PAPEL and r.origem == MAO and not r.filtro]
+    if not regioes:
+        return saida
+    altura, largura = saida.shape[:2]
+    peso = Selecao(regioes=regioes).peso(altura, largura, PAPEL)
+    if not peso.any():
+        return saida
+    return _misturar(saida, np.full_like(saida, 255), peso)
+
+
 def aplicar_filtro_com_selecao(
     img: np.ndarray,
     filtro: str,
@@ -3632,9 +3666,16 @@ def aplicar_filtro_com_selecao(
     # Arriscado: passar pela marcacao de gravura/letra/papel daqui para
     # baixo (o Original e o Tirar o fundo nao mexem nelas) ou devolver uma
     # copia sem pedaco.
+    #
+    # Etapa 9c da obra (26/10/2026; D-027, D-227; promessas P-078 e P-075):
+    # o papel marcado A MAO ("Deixar a folha em branco" do menu Marcar,
+    # "pintar de branco") vai a branco tambem aqui - ver
+    # _papel_a_mao_em_branco. Antes o Original devolvia a pagina como veio
+    # e a folha "em branco" saia com tudo, amarelada, no PDF.
     if filtro in (ORIGINAL, TIRAR_FUNDO):
-        return aplicar_so_os_pedacos(img, img, selecao, filtro, forca_preto,
-                                     clareza, intensidade), False
+        saida = aplicar_so_os_pedacos(img, img, selecao, filtro, forca_preto,
+                                      clareza, intensidade)
+        return _papel_a_mao_em_branco(saida, selecao), False
 
     altura, largura = img.shape[:2]
     peso_gravura = selecao.peso(altura, largura, GRAVURA)

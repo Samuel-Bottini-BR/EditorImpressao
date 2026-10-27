@@ -462,7 +462,6 @@ programa), a partir do **nome do botão**, da **dica** (o balão do mouse) e das
 - **no projeto:** "apagar a área" tira a área; "pintar de branco" a troca por papel; "copiar" + "colar" (noutra
   página) põe a mesma área lá.
 - **no PDF:** a área pintada de branco sai branca.
-- **defeito:** QUEBRADA no programa de 26/10 (defeito B desta bateria). A folha inteira marcada como papel ("Deixar a folha em branco") e a área "pintada de branco" ficam gravadas no projeto, mas a página em Original (a de fábrica, D-134) sai no PDF com tudo, amarelada, sem o branco — mesmo com "Limpar a folha" marcada. Em Preto e branco (com "Limpar a folha") a página sai branca. D-027 está no Livro como "construída". Sem dono.
 
 ### P-076 · "Ajustar o pedaço à figura"
 - **chaves:** `área de trabalho/marcar/Ajustar o pedaço à figura`
@@ -485,7 +484,6 @@ programa), a partir do **nome do botão**, da **dica** (o balão do mouse) e das
 - **chaves:** `menu/folha_em_branco`
 - **decisões:** D-027 ("escolher a opção para virar uma folha branca"), D-200
 - **no projeto:** a folha inteira fica marcada como papel. **no PDF:** a página sai toda branca, no mesmo lugar.
-- **defeito:** QUEBRADA no programa de 26/10 (defeito B desta bateria). A folha inteira marcada como papel ("Deixar a folha em branco") e a área "pintada de branco" ficam gravadas no projeto, mas a página em Original (a de fábrica, D-134) sai no PDF com tudo, amarelada, sem o branco — mesmo com "Limpar a folha" marcada. Em Preto e branco (com "Limpar a folha") a página sai branca. D-027 está no Livro como "construída". Sem dono.
 
 ## Área de trabalho: painel "Filtro da página"
 
