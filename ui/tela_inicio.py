@@ -352,10 +352,11 @@ class TelaInicio(QWidget):
     def procurar_o_livro_a_mao(self, resumo: projetos.Resumo) -> None:
         """Pede pra pessoa apontar onde o PDF foi parar, e confere a assinatura
         antes de aceitar - mesma cautela de pedir_para_continuar."""
-        from PySide6.QtWidgets import QFileDialog
+        # Obra 26/10 (etapa 9a): janela do Windows em portugues, caminho
+        # conferido na volta (ui/dialogos_de_arquivo.py).
+        from ui.dialogos_de_arquivo import escolher_pdf_para_abrir
 
-        caminho, _filtro = QFileDialog.getOpenFileName(
-            self, f"Onde está o livro de {resumo.nome}?", "", "PDF (*.pdf)")
+        caminho = escolher_pdf_para_abrir(self, f"Onde está o livro de {resumo.nome}?")
         if not caminho:
             return
 

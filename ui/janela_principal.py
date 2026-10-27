@@ -527,11 +527,13 @@ class JanelaPrincipal(QMainWindow):
     def _escolher_pasta_de_saida(self) -> None:
         """Item de menu "Escolher a pasta de saída...": so lembra a pasta
         padrao, quem decide o destino de verdade e a janela de confirmacao."""
-        from PySide6.QtWidgets import QFileDialog
+        # Obra 26/10 (etapa 9a): janela do Windows em portugues, caminho
+        # conferido na volta (ui/dialogos_de_arquivo.py).
+        from ui.dialogos_de_arquivo import escolher_pasta
 
         if self.projeto is None:
             return
-        pasta = QFileDialog.getExistingDirectory(
+        pasta = escolher_pasta(
             self, "Onde salvar o livro pronto",
             self.projeto.caminho_saida or str(historico.pasta_de_saida_padrao()))
         if pasta:

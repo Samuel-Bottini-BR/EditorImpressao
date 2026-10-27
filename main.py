@@ -25,6 +25,15 @@ def main() -> int:
     app = QApplication(sys.argv)
     app.setApplicationName("Editor de Impressão")
 
+    # Obra 26/10 (etapa 9a, teste do Kaique): a rodinha do mouse so muda
+    # numero/lista depois de clicar nele; e os textos do proprio Qt em
+    # portugues (ui/rodinha.py, ui/dialogos_de_arquivo.py).
+    from ui import rodinha
+    from ui.dialogos_de_arquivo import traduzir_o_qt
+
+    rodinha.instalar_no_programa(app)
+    traduzir_o_qt(app)
+
     # Aquece em segundo plano o import pesado que o filtro Preto e branco
     # faria sob demanda - ver core/aquecimento.py para o motivo.
     from core.aquecimento import aquecer_em_segundo_plano
