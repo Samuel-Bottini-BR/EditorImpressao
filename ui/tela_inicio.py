@@ -26,14 +26,14 @@ ETAPA 7 DO LAYOUT (21/10/2026). O que o Samuel decidiu (rodadas 4 a 6 e a págin
 
 O QUE CADA BOTÃO DO LIVRO ABERTO FAZ HOJE (sem inventar caminho novo):
   Continuar               o "continuar" do cartão (confere se o livro é o mesmo, abre o trabalho).
-  Rodar o automático...   abre a tela "O que fazer" deste livro, com as escolhas dele (é onde o
-                          automático se escolhe e roda hoje; o painel Automático completo, com
-                          receitas, ainda não existe).
+  Rodar o automático...   abre o livro na área de trabalho e a janela grande do Automático
+                          (obra de 26/10/2026, etapa 3: a tela "O que fazer" saiu do caminho).
   Ver todas as páginas    a grade das folhas do PDF (ui/widgets/todas_as_paginas.py); clicar numa
                           folha leva a ela no folhear.
   Confirmar e processar   continua o trabalho e, quando ele abre, pede a confirmação de sempre.
-  "Para revisar" e "Receita usada", do desenho, não aparecem: a quantidade de páginas com dúvida não
-  fica guardada no resumo do livro, e receitas ainda não existem.
+  "Para revisar" e "Receita usada" (desenho da rodada 6, "Sim, fica assim"): desde a etapa 3 da
+  obra o resumo do livro guarda quantas páginas pedem um olhar e a última receita do Automático
+  (projetos.Resumo.para_revisar, receita_usada), e o livro aberto mostra os dois.
 
 A miniatura da primeira pagina e o que distingue livros de nome igual. Nada de botao apagado sem
 explicacao: quando o PDF sai do lugar, o cartao fica laranja e diz o que houve.
@@ -133,7 +133,7 @@ class TelaInicio(QWidget):
     # (mesmo fio): quando o emit volta, a janela ja soltou.
     vai_tirar_da_lista = Signal(object)     # projetos.Resumo
     # Etapa 7 do layout: os botões do livro aberto e do alto da tela
-    abrir_o_automatico = Signal(object)     # projetos.Resumo: a tela "O que fazer" deste livro
+    abrir_o_automatico = Signal(object)     # projetos.Resumo: o livro com o Automático aberto (etapa 3)
     processar_pedido = Signal(object)       # projetos.Resumo: continuar e confirmar
     configuracoes_pedidas = Signal()
     ajuda_pedida = Signal()
@@ -313,9 +313,9 @@ class TelaInicio(QWidget):
     # --- acoes dos cartoes ------------------------------------------------
 
     def pedir_o_automatico(self, resumo: projetos.Resumo) -> None:
-        """"Rodar o automático..." do livro aberto: a tela "O que fazer" deste
-        livro, depois da mesma conferência do "continuar" (o PDF existe e é o
-        mesmo livro)."""
+        """"Rodar o automático..." do livro aberto: o livro abre na área de
+        trabalho com a janela grande do Automático (etapa 3 da obra), depois da
+        mesma conferência do "continuar" (o PDF existe e é o mesmo livro)."""
         self.pedir_para_continuar(resumo, sinal=self.abrir_o_automatico)
 
     def pedir_para_processar(self, resumo: projetos.Resumo) -> None:
@@ -686,7 +686,7 @@ class LivroAberto(QWidget):
         self.botao_continuar = self._botao("Continuar", "Abre o trabalho deste livro onde parou",
                                            lambda: tela.pedir_para_continuar(self.resumo), primario=True)
         self.botao_automatico = self._botao(
-            "Rodar o automático...", "Abre a tela “O que fazer” deste livro, com as escolhas dele",
+            "Rodar o automático...", "Abre o livro e o Automático, para escolher as etapas e rodar",
             lambda: tela.pedir_o_automatico(self.resumo))
         self.botao_todas = self._botao("Ver todas as páginas", "Todas as folhas do livro, em grade",
                                        self._ver_todas)
@@ -696,6 +696,13 @@ class LivroAberto(QWidget):
         for botao in (self.botao_continuar, self.botao_automatico, self.botao_todas, self.botao_processar):
             linha2.addWidget(botao)
         linha2.addStretch()
+        # etapa 3 da obra (R6): "Para revisar" e "Receita usada"
+        self.para_revisar = QLabel("")
+        self.receita_usada = QLabel("")
+        for rotulo in (self.para_revisar, self.receita_usada):
+            estilo.estilizar(rotulo, lambda: f"color: {estilo.cor('fraco')}; font-size: 12px;")
+            linha2.addWidget(rotulo)
+            linha2.addSpacing(10)
         self.onde_esta = QLabel("")
         self.onde_esta.setTextFormat(Qt.RichText)
         estilo.estilizar(self.onde_esta, lambda: f"color: {estilo.cor('fraco')}; font-size: 12px;")
@@ -907,6 +914,13 @@ class LivroAberto(QWidget):
             resumo.caminho_entrada, Qt.ElideMiddle, 420)
         self.onde_esta.setText(f"Onde está: <b>{curto}</b>")
         self.onde_esta.setToolTip(resumo.caminho_entrada)
+        # etapa 3 da obra (R6): o que o resumo guarda do trabalho
+        revisar = int(getattr(resumo, "para_revisar", 0) or 0)
+        self.para_revisar.setText(f"Para revisar: {revisar}")
+        self.para_revisar.setToolTip("Páginas e folhas com um aviso que ainda pede um olhar.")
+        receita = getattr(resumo, "receita_usada", "") or "nenhuma"
+        self.receita_usada.setText(f"Receita usada: {receita}")
+        self.receita_usada.setToolTip("A última receita com que o Automático rodou neste livro.")
         for botao in (self.botao_continuar, self.botao_automatico, self.botao_processar, self.botao_todas):
             botao.setVisible(not self.perdido)
         self.pilha_do_meio.setCurrentWidget(self.paginas)

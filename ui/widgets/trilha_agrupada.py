@@ -43,6 +43,7 @@ from PySide6.QtCore import QEvent, QPoint, QRect, QSize, Qt, QTimer, Signal
 from PySide6.QtGui import QAction, QColor, QIcon, QPainter, QPainterPath, QPen, QPixmap
 from PySide6.QtWidgets import QMenu, QToolTip, QWidget
 
+import atalhos
 from ui import estilo
 from ui.widgets.editor_selecao import (
     FERRAMENTA_AJUSTAR,
@@ -124,11 +125,34 @@ ALTURA_DO_TRACO = 11
 TEMPO_PARA_ABRIR_O_GRUPO_MS = 450
 
 
+# Obra de 26/10/2026, etapa 3 (pergunta da etapa 2: "Letras para Dividir, Cortar e
+# Endireitar?"; o Samuel quer atalhos "como o Photoshop"). Escolha da gerente
+# (D-014), anotada no Livro de decisoes: D = Dividir, X = Cortar (o X de
+# "recortar", como o Ctrl+X; o C do Photoshop ja e "Pegar tudo desta cor"),
+# I = Endireitar (o I da regua de endireitar do Photoshop, e de "inclinação").
+# Livres em todo o programa: R O L P B V C A Z E (marcar), M e T (recorte
+# espelhado e proporção), 1 a 4 (filtros). Remapeaveis nas Configuracoes
+# (atalhos.py, chaves "ferramenta_dividir/cortar/endireitar").
+ATALHOS_DA_PAGINA = {FERRAMENTA_DIVIDIR: "D", FERRAMENTA_CORTAR: "X", FERRAMENTA_ENDIREITAR: "I"}
+for _ferramenta, _letra in ATALHOS_DA_PAGINA.items():
+    atalhos.registrar(f"ferramenta_{_ferramenta}", NOMES[_ferramenta], _letra)
+
+
 def tecla_de(ferramenta: str) -> str:
-    """A letra do atalho (as da página não têm letra)."""
+    """A letra do atalho de hoje (remapeavel). "Os quatro filtros" nao tem."""
+    if ferramenta in ATALHOS_DA_PAGINA:
+        return atalhos.tecla_atual(f"ferramenta_{ferramenta}") or ATALHOS_DA_PAGINA[ferramenta]
     if ferramenta in FERRAMENTAS_DA_PAGINA:
         return ""
     return tecla_da_ferramenta(ferramenta)
+
+
+def ferramenta_da_pagina_da_tecla(tecla: str) -> str | None:
+    """Dividir, Cortar ou Endireitar pela letra de hoje, ou None (etapa 3)."""
+    for ferramenta in ATALHOS_DA_PAGINA:
+        if tecla and tecla_de(ferramenta) == tecla:
+            return ferramenta
+    return None
 
 
 def grupo_de(ferramenta: str) -> int:

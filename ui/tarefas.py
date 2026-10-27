@@ -134,6 +134,84 @@ class TarefaAnalise(QThread):
             self.falhou.emit(_mensagem_amigavel(erro))
 
 
+class TarefaAutomatico(QThread):
+    """Obra de 26/10/2026, etapa 3: a parte do Automatico que olha as paginas
+    (core/automatico.medir: onde dividir, os avisos de torta, de corte, de cor
+    e de pagina em branco), num fio de fundo - a interface nunca congela
+    (regra 3), com andamento e cancelar. So LE o PDF e a fotografia do
+    projeto (core/automatico.fotografar, tirada no fio da janela); quem muda
+    o projeto e a janela, no fim (core/automatico.aplicar). Cancelar nao muda
+    nada no livro."""
+
+    progresso = Signal(int, int, str)
+    concluida = Signal(object)        # dict folha -> MedidaDaFolha
+    falhou = Signal(str)
+
+    def __init__(self, fotografia) -> None:
+        super().__init__()
+        self.fotografia = fotografia
+        self._cancelar = False
+
+    def cancelar(self) -> None:
+        self._cancelar = True
+
+    @property
+    def foi_cancelada(self) -> bool:
+        return self._cancelar
+
+    def run(self) -> None:
+        """Nunca deixa excecao escapar (regra 3.3)."""
+        from core import automatico
+
+        try:
+            medidas = automatico.medir(
+                self.fotografia,
+                progresso=lambda f, t, txt: self.progresso.emit(f, t, txt),
+                cancelado=lambda: self._cancelar)
+            if not self._cancelar:
+                self.concluida.emit(medidas)
+        except Cancelou:
+            pass
+        except Exception as erro:  # noqa: BLE001 - nada pode derrubar o programa
+            registrar_erro("automatico", traceback.format_exc())
+            self.falhou.emit(_mensagem_amigavel(erro))
+
+
+class TarefaMedirAoAbrir(QThread):
+    """Obra de 26/10/2026, etapa 3 (D-284, `pr-medir-o-livro`, 21/10: "Medir o
+    livro inteiro por trás, depois de abrir"): depois que o livro novo abre
+    na area de trabalho (a passada leve, sem desenhar nada), mede por tras
+    todas as folhas (core/automatico.medir_o_livro_ao_abrir) - os avisos de
+    pagina em branco, de cor, de resolucao baixa e de tamanho diferente. So
+    GUARDA: a janela poe os avisos no fim (core/automatico.avisos_do_livro);
+    nenhuma pagina muda (a pagina "sempre abre em Original, sem mexer").
+    Prioridade normal (como a TarefaConverterZonas). Parar ao trocar de livro
+    e ao fechar."""
+
+    terminou = Signal(object, object)          # tarefa, medidas
+
+    def __init__(self, fotografia) -> None:
+        super().__init__()
+        self.fotografia = fotografia
+        self._cancelar = False
+
+    def cancelar(self) -> None:
+        self._cancelar = True
+
+    def run(self) -> None:
+        from core import automatico
+
+        medidas = {}
+        try:
+            medidas = automatico.medir(self.fotografia, cancelado=lambda: self._cancelar)
+        except Cancelou:
+            medidas = {}
+        except Exception:  # noqa: BLE001 - nada pode derrubar o programa
+            registrar_erro("medir ao abrir", traceback.format_exc())
+            medidas = {}
+        self.terminou.emit(self, medidas)
+
+
 class TarefaProcessar(QThread):
     """Gera o PDF final.
 
