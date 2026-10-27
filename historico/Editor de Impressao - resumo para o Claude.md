@@ -79,6 +79,20 @@ etapa: ramo `obra-<etapa>-2026-10-26`, worktree `.claude/worktrees/obra-<etapa>`
   de processar", P-127) → 9b; D (tique do Filtro, D-492) → 9b. Depois da etapa 3: ajustar
   `abrir_livro_para_teste()` em `tests/promessas/ajudantes.py` ao novo jeito de abrir.
 
+### Atualização de 27/10 (fim da tarde) — antes de ler o resto desta PARTE
+- **Juntadas na obra desde o checkpoint:** etapa 10a (corte não come a página), 9c (núcleo), 3 (abrir direto +
+  Automático; defeito A das promessas resolvido), 4 (dividir à mão, Righetti, D-007, D-495). Obra `obra-2026-10-26` em
+  `7fb3e4a`, no GitHub. Promessas na obra: só P-085 e P-127 falham (donos: etapa 9b).
+- **Central:** as 8 pendentes respondidas (D-520 a D-527). Escolhas da gerente: D-492 a D-501, D-528, D-529. A
+  pergunta 2 da etapa 4 (tirar a faixa da tampa também no Automático) vai à conferência final.
+- **Pausadas pelo fim da sessão:** etapa 5 (mover/redimensionar; worktree `.claude/worktrees/obra-etapa5`, decisões a
+  partir de D-540) e etapa 10b (imagem final; worktree `.claude/worktrees/obra-etapa10b`). Cada uma deixou
+  `relatorios/obra-etapa*/ONDE-PAREI.md` com o próximo passo. Relançar as duas e seguir: 6 → 7 → 9b → 11 → fim.
+- Pendente para a 9b: P-085 (tique do Filtro, D-492), P-127 (menu "Confirmar e processar" pula "Antes de processar"),
+  D-494, D-528, aviso de margem negativo, "Deixar em branco" em "Tirar o fundo", `138e425`.
+- Ofereci ao Samuel um atalho "Editor de Impressao (obra)" com dados separados para ver a obra antes da conferência;
+  sem resposta.
+
 ## 3. Próximo passo recomendado
 Retomar cada agente: ler o ONDE-PAREI da worktree e relançar o agente do ponto onde parou (tipo `general-purpose`
 seguindo `.claude/agents/<papel>.md`; os tipos do projeto não existem a partir de `C:\Users\fotog`). Juntar 10a,
