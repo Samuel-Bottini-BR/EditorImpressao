@@ -9,9 +9,9 @@ O QUE O SAMUEL DECIDIU
 O QUE FAZ
     A grade das páginas pequenas, com o número e, nas que têm aviso, a borda laranja e o motivo.
     Clicar numa página volta ao trabalho NELA. "Em pares" junta as páginas como no livro aberto
-    (a 1 sozinha à direita, depois 2 e 3...); clicar num par vai para a primeira página dele. O
-    "abrir as duas lado a lado" de quando se clica num par depende do "Ver lado a lado", que
-    ainda não existe no programa: não foi inventado aqui.
+    (a 1 sozinha à direita, depois 2 e 3...); clicar num par vai para a primeira página dele, e
+    na área de trabalho a tela abre o "Duas lado a lado" nele (D-343, obra de 26/10/2026, etapa 6:
+    TelaConferir._voltar_das_todas).
 
     As páginas pequenas são desenhadas em segundo plano (uma folha por vez, a 30 DPI, abrindo e
     fechando o PDF a cada folha, como a tira) e guardadas enquanto o livro está aberto: cada uma

@@ -226,6 +226,9 @@ from ui.widgets.trilha_agrupada import (
 from ui.widgets.medidor import Medidor
 from ui.widgets.miniaturas import EMBAIXO, ESQUERDA, DIREITA, PainelDeMiniaturas
 from ui.widgets.todas_as_paginas import ItemDaGrade, TodasAsPaginas
+# obra 26/10, etapa 6 (D-015, D-006): o "Duas lado a lado" e o "antes / depois"
+from ui.widgets.paginas_lado_a_lado import PaginasLadoALado
+from ui.widgets.paginas_rolando import DUAS, UMA
 from ui.widgets.trilha_agrupada import ferramenta_da_pagina_da_tecla, tecla_de
 from ui.widgets.visualizador import (
     MODO_ANGULO,
@@ -485,6 +488,10 @@ class TelaConferir(QWidget):
     rodar_do_aviso_pedido = Signal()
     escolhidas_para_o_automatico = Signal(list)
 
+    # Obra 26/10, etapa 6 (D-015): o jeito de mostrar mudou ("uma" ou
+    # "duas"); a janela marca o "Ver lado a lado" do menu Ver
+    mostrar_mudou = Signal(str)
+
     def __init__(self, parent=None) -> None:
         super().__init__(parent)
         self.projeto: Projeto | None = None
@@ -655,7 +662,26 @@ class TelaConferir(QWidget):
         # Minimo pequeno para que a soma de todas as linhas caiba na janela
         # minima de 1000x680. Abaixo disso o Qt sobreporia as faixas.
         self.area_imagem.setMinimumHeight(112)
-        centro.addWidget(self.area_imagem, 1)
+        # Obra 26/10/2026, etapa 6: o lugar da pagina mostra a ferramenta da
+        # vez (uma pagina, como sempre), o "Duas lado a lado" (D-015, D-006:
+        # os pares rolando, as paginas como vao sair) ou o "antes / depois"
+        # (o desenho decidido da barra de baixo, rodada 13). Quem escolhe e a
+        # barra de baixo (e o menu Ver): _acertar_a_vista_da_pagina.
+        self.vista_da_pagina = QStackedWidget()
+        self.vista_da_pagina.setSizePolicy(QSizePolicy.Expanding, QSizePolicy.Expanding)
+        self.vista_da_pagina.addWidget(self.area_imagem)
+        self.lado_a_lado = PaginasLadoALado()
+        self.lado_a_lado.definir_fonte(self._previa_do_lado_a_lado)
+        self.lado_a_lado.pagina_da_vez_mudou.connect(self._pagina_do_lado_a_lado)
+        self.vista_da_pagina.addWidget(self.lado_a_lado)
+        from ui.widgets.filtros_tela_cheia import VistaAntesDepois
+        self.vista_antes_depois = VistaAntesDepois()
+        self.vista_da_pagina.addWidget(self.vista_antes_depois)
+        self.mostrar = UMA            # "Uma página" de fabrica (D-007)
+        self.comparando = False       # "antes / depois" desligado de fabrica
+        self._roda_acumulada = 0      # a roda do mouse que ainda nao virou pagina
+        self._tamanhos_das_folhas: tuple[str, list] = ("", [])
+        centro.addWidget(self.vista_da_pagina, 1)
         # os botoes de girar do canto: filhos da area da pagina, por cima dela
         self.girar_do_canto = GirarDoCanto(self.area_imagem)
         self.girar_do_canto.girar_pedido.connect(
@@ -888,6 +914,7 @@ class TelaConferir(QWidget):
         # icones para fora da janela (o nome inteiro fica no balao)
         self.rotulo_do_livro.setSizePolicy(QSizePolicy.Ignored, QSizePolicy.Preferred)
         linha.addWidget(self.rotulo_do_livro, 1)
+        self._montar_o_ver_da_barra_de_baixo(linha)
         # rodada 13, 801 A: o "Confirmar e processar" pequeno, no canto direito,
         # com as miniaturas fechadas ou de lado (_por_as_miniaturas)
         self.caixa_do_processar_na_barra = QHBoxLayout()
@@ -896,6 +923,72 @@ class TelaConferir(QWidget):
         # os icones desenhados a mao acompanham a troca de tema
         estilo.estilizar(barra, self._icones_da_barra_de_baixo)
         return barra
+
+    # Obra 26/10, etapa 6: os botoes do "ver" na barra de baixo, (jeito,
+    # texto, balao). Os nomes "Uma página" e "Duas lado a lado" sao os do
+    # livro aberto aprovado (D-015, lyupdf "Aprovado"); os baloes tambem.
+    JEITOS_DE_MOSTRAR = (
+        (UMA, "Uma página", "Uma página de cada vez"),
+        (DUAS, "Duas lado a lado",
+         "As páginas em pares, como no livro aberto (a 1 sozinha, à direita)"),
+    )
+
+    def _montar_o_ver_da_barra_de_baixo(self, linha: QHBoxLayout) -> None:
+        """Obra 26/10, etapa 6. Na barra de baixo, à direita (antes do
+        "Confirmar e processar" quando ele desce para ela):
+
+          "Uma página" / "Duas lado a lado"  (D-015: como na barra de baixo
+              do livro aberto aprovado; D-006: o lado a lado e opcao, nao
+              padrao; D-007: de fabrica, uma pagina por vez)
+          "antes / depois", "–  N%  +", "ajustar à tela"  (o desenho decidido
+              da barra de baixo, rodada 13: `21-rodada13-base.html`)
+
+        O "antes / depois" mostra a pagina da vez com o Original a esquerda
+        da linha e como vai sair a direita (o mesmo "Comparar com o Original"
+        da tela cheia dos filtros, R11 601 A, com a linha que se arrasta). O
+        zoom e o mesmo do menu Ver (Aproximar, Afastar, Ajustar à tela), e o
+        numero e o que a pagina da vez tem (100% = a pagina inteira cabendo,
+        como o "Zoom: N%" que a ferramenta de marcar ja mostrava).
+        Seguro mudar: textos e baloes. Arriscado: ligar o zoom ao lado a lado
+        (ele nao tem zoom: as paginas cabem na tela)."""
+        from PySide6.QtWidgets import QButtonGroup
+
+        def botao(texto: str, dica: str, acao, marcavel: bool = False) -> QPushButton:
+            b = QPushButton(texto)
+            b.setObjectName("botaoDaBarraDeBaixo")
+            b.setToolTip(dica)
+            b.setCursor(Qt.PointingHandCursor)
+            b.setFocusPolicy(Qt.NoFocus)
+            b.setCheckable(marcavel)
+            _ligar(b, acao)
+            linha.addWidget(b)
+            return b
+
+        self.botoes_mostrar: dict[str, QPushButton] = {}
+        self._grupo_mostrar = QButtonGroup(self)
+        self._grupo_mostrar.setExclusive(True)
+        for jeito, texto, dica in self.JEITOS_DE_MOSTRAR:
+            b = botao(texto, dica, functools.partial(self.definir_mostrar, jeito), marcavel=True)
+            self._grupo_mostrar.addButton(b)
+            self.botoes_mostrar[jeito] = b
+        self.botoes_mostrar[UMA].setChecked(True)
+        linha.addSpacing(8)
+        self.botao_antes_depois = botao(
+            "antes / depois",
+            "Mostra a página da vez com o Original à esquerda e como vai sair à direita. "
+            "Arraste a linha do meio para comparar.", self._alternar_antes_depois, marcavel=True)
+        linha.addSpacing(8)
+        self.botao_menos_zoom = botao("–", "Afastar (Ctrl+-)",
+                                      lambda: self.mudar_o_zoom(1 / self.PASSO_DO_ZOOM))
+        self.rotulo_do_zoom = QLabel("100%")
+        self.rotulo_do_zoom.setObjectName("rotuloDaBarraDeBaixo")
+        self.rotulo_do_zoom.setAlignment(Qt.AlignCenter)
+        self.rotulo_do_zoom.setMinimumWidth(40)
+        linha.addWidget(self.rotulo_do_zoom)
+        self.botao_mais_zoom = botao("+", "Aproximar (Ctrl++)",
+                                     lambda: self.mudar_o_zoom(self.PASSO_DO_ZOOM))
+        self.botao_ajustar_a_tela = botao("ajustar à tela", "A página inteira cabe na tela (Ctrl+0)",
+                                          lambda: self.mudar_o_zoom(None))
 
     def _icones_das_setas_do_angulo(self) -> str:
         """(Re)desenha as setinhas dos botoes de 0,1 grau da ferramenta
@@ -1293,6 +1386,9 @@ class TelaConferir(QWidget):
         linha.addWidget(proxima)
 
         visualizador.ampliar_pedido.connect(self.ampliar)
+        # etapa 6: a roda do mouse troca de pagina sem zoom (_roda_na_pagina)
+        visualizador.installEventFilter(self)
+        visualizador.vista_mudou.connect(lambda *_: self._acertar_o_zoom_da_barra())
         self.visualizadores[aba] = visualizador
         self.paginas_de_imagem[aba] = pagina
         return visualizador
@@ -2185,6 +2281,10 @@ class TelaConferir(QWidget):
         self.editor_selecao.setSizePolicy(QSizePolicy.Expanding, QSizePolicy.Expanding)
         self.editor_selecao.selecao_mudou.connect(self._selecao_mudou)
         self.editor_selecao.aviso.connect(self._mostrar_aviso_da_marcacao)
+        # etapa 6: a roda troca de pagina sem zoom, e o "N%" da barra de baixo
+        # acompanha o zoom da ferramenta de marcar (ela avisa "Zoom: N%")
+        self.editor_selecao.installEventFilter(self)
+        self.editor_selecao.aviso.connect(lambda *_: self._acertar_o_zoom_da_barra())
         linha.addWidget(self.editor_selecao, 1)
 
         proxima = QPushButton(">")
@@ -2901,6 +3001,12 @@ class TelaConferir(QWidget):
 
             self.indice_folha = 0
             self.indice_pagina = 0
+            # etapa 6: todo livro abre numa pagina por vez (D-007; o lado a
+            # lado e opcao, nao padrao, D-006) e sem o "antes / depois"
+            self.mostrar = UMA
+            self.comparando = False
+            self.lado_a_lado.limpar()
+            self.mostrar_mudou.emit(UMA)
 
             self._limpar_abas()
 
@@ -3011,6 +3117,16 @@ class TelaConferir(QWidget):
         ou fechou): os botoes de girar voltam para o canto dela."""
         if vigiado is self.area_imagem and evento.type() == QEvent.Resize:
             self._por_o_girar_no_canto()
+        # etapa 6: a roda do mouse na página (_roda_na_pagina)
+        if evento.type() == QEvent.Wheel and hasattr(vigiado, "zoom") and (
+                vigiado in self.visualizadores.values()
+                or vigiado is getattr(self, "editor_selecao", None)):
+            try:
+                if self._roda_na_pagina(vigiado, evento):
+                    evento.accept()
+                    return True
+            except Exception:  # noqa: BLE001 - a roda nunca fecha a janela
+                registrar_erro("roda na pagina", traceback.format_exc())
         return super().eventFilter(vigiado, evento)
 
     def _por_o_girar_no_canto(self) -> None:
@@ -3280,6 +3396,7 @@ class TelaConferir(QWidget):
         self._atualizar_contador()
         self._atualizar_paineis()
         self._atualizar_barra_de_baixo()
+        self._acertar_a_vista_da_pagina()       # etapa 6: lado a lado, antes / depois
         self.trabalho_mudou.emit()
 
     def _atualizar_paineis(self) -> None:
@@ -4053,6 +4170,12 @@ class TelaConferir(QWidget):
         if not self._pronta():
             return
         assert self.previas is not None
+        # etapa 6: o lado a lado e o "antes / depois" mostram prévias também
+        visivel = self.vista_da_pagina.currentWidget()
+        if visivel is self.lado_a_lado:
+            self.lado_a_lado.atualizar_imagens()
+        elif visivel is self.vista_antes_depois and chave.startswith(f"{self.indice_pagina}:"):
+            self._mostrar_antes_depois()
         esperadas = (
             self.previas.chave(self.indice_pagina, self._dpi_atual),
             self.previas.chave_folha(self.indice_folha, DPI_PREVIA),
@@ -5665,27 +5788,235 @@ class TelaConferir(QWidget):
         self.pilha_da_tela.setCurrentWidget(self.trabalho)
         if indice is not None:
             self.ir_para_pagina(int(indice))
+            # D-343 (05/10/2026: "Na opção 2 (pares), clicar abre as duas
+            # páginas lado a lado, como vai ser impresso."), etapa 6: o clique
+            # num par da grade abre o "Duas lado a lado" nele
+            from ui.widgets.todas_as_paginas import EM_PARES
+            if self.todas.vista == EM_PARES:
+                if self.trabalha_com_folhas and ABA_MARCAR in self._abas_ativas:
+                    self.mostrar_paginas()          # o lado a lado é de páginas
+                self.definir_mostrar(DUAS)
 
     PASSO_DO_ZOOM = 1.25        # quanto o Aproximar/Afastar do menu muda o zoom
+    PAGINAS_DO_PAGE_DOWN = 10   # etapa 6: Page Up/Down pulam 10 (PEDIDOS.md)
+
+    def _vista_com_zoom(self):
+        """A página com zoom que está à vista: a da ferramenta de marcar ou a
+        da ferramenta de página (Dividir, Cortar, Endireitar, Mover). None no
+        "Duas lado a lado" e no "antes / depois" (etapa 6: eles não têm zoom)."""
+        if not self._pronta():
+            return None
+        if self.vista_da_pagina.currentWidget() is not self.area_imagem:
+            return None
+        aba = self.aba_atual
+        if aba == ABA_MARCAR and hasattr(self, "editor_selecao"):
+            return self.editor_selecao
+        return self.visualizadores.get(aba)
 
     @protegido
     def mudar_o_zoom(self, fator: float | None) -> None:
         """Aproxima (fator > 1), afasta (fator < 1) ou ajusta à tela (None) a
         página que está à vista: a da ferramenta de marcar ou a da ferramenta
-        de página (Dividir, Cortar, Endireitar). Sem livro, não faz nada."""
-        if not self._pronta():
-            return
-        aba = self.aba_atual
-        if aba == ABA_MARCAR and hasattr(self, "editor_selecao"):
-            vista = self.editor_selecao
-        else:
-            vista = self.visualizadores.get(aba)
+        de página (Dividir, Cortar, Endireitar). Sem livro, não faz nada.
+        Etapa 6: o mesmo dos botões "–", "+" e "ajustar à tela" da barra de
+        baixo, que mostra o zoom novo."""
+        vista = self._vista_com_zoom()
         if vista is None:
             return
         if fator is None:
             vista.ajustar_a_tela()
         else:
             vista.definir_zoom(vista.zoom * fator)
+        self._acertar_o_zoom_da_barra()
+
+    def _acertar_o_zoom_da_barra(self) -> None:
+        """O "N%" da barra de baixo e os botões do zoom: acesos só quando a
+        página à vista tem zoom ("–" e "ajustar à tela" só com zoom: a página
+        nunca fica menor que inteira, ZOOM_MIN)."""
+        if not hasattr(self, "rotulo_do_zoom"):
+            return
+        vista = self._vista_com_zoom()
+        com_zoom = vista is not None
+        zoom = float(getattr(vista, "zoom", 1.0)) if com_zoom else 1.0
+        self.rotulo_do_zoom.setText(f"{round(zoom * 100)}%")
+        self.rotulo_do_zoom.setEnabled(com_zoom)
+        self.botao_mais_zoom.setEnabled(com_zoom)
+        self.botao_menos_zoom.setEnabled(com_zoom and zoom > 1.0 + 1e-3)
+        self.botao_ajustar_a_tela.setEnabled(com_zoom and zoom > 1.0 + 1e-3)
+        explicacao = ("" if com_zoom else
+                      "\nNo “Duas lado a lado” e no “antes / depois” a página cabe na tela; "
+                      "o zoom é na “Uma página”.")
+        self.rotulo_do_zoom.setToolTip(
+            "O zoom da página (100% = a página inteira cabendo na tela)" + explicacao)
+
+    # --- etapa 6 da obra: ver o livro (lado a lado, antes / depois) -------------
+
+    @protegido
+    def definir_mostrar(self, jeito: str) -> None:
+        """"Uma página" ou "Duas lado a lado" (barra de baixo e menu Ver > "Ver
+        lado a lado"; D-015, D-006). Fica na mesma página. Escolher um dos dois
+        desliga o "antes / depois" (ele mostra uma página só)."""
+        if jeito not in (UMA, DUAS):
+            return
+        self.mostrar = jeito
+        self.comparando = False
+        self._acertar_a_vista_da_pagina()
+        self.mostrar_mudou.emit(jeito)
+
+    @protegido
+    def _alternar_antes_depois(self) -> None:
+        """O botão "antes / depois" da barra de baixo (liga e desliga)."""
+        self.comparando = bool(self.botao_antes_depois.isChecked())
+        self._acertar_a_vista_da_pagina()
+
+    def _acertar_a_vista_da_pagina(self) -> None:
+        """Põe no lugar da página o que a barra de baixo pede: a ferramenta da
+        vez (uma página), os pares rolando ou o "antes / depois". No Dividir a
+        tela trabalha com a folha inteira (D-007: a folha com a linha só
+        dentro do Dividir): ali fica sempre a ferramenta, e os botões do ver
+        dizem por quê. Barato quando nada mudou."""
+        if not hasattr(self, "vista_da_pagina"):
+            return
+        pronta = self._pronta() and self.projeto is not None
+        no_dividir = pronta and self.trabalha_com_folhas
+        if pronta and not no_dividir and self.comparando:
+            self._mostrar_antes_depois()
+            self.vista_da_pagina.setCurrentWidget(self.vista_antes_depois)
+        elif pronta and not no_dividir and self.mostrar == DUAS:
+            self._acertar_o_lado_a_lado()
+            self.vista_da_pagina.setCurrentWidget(self.lado_a_lado)
+        else:
+            self.vista_da_pagina.setCurrentWidget(self.area_imagem)
+        # os botões mostram a escolha (mesmo no Dividir, onde ela espera)
+        self.botoes_mostrar[self.mostrar].setChecked(True)
+        self.botao_antes_depois.setChecked(self.comparando)
+        motivo = ("\nNo Dividir a tela mostra a folha inteira, com a linha; "
+                  "escolha outra ferramenta para ver as páginas.") if no_dividir else ""
+        for jeito, _texto, dica in self.JEITOS_DE_MOSTRAR:
+            self.botoes_mostrar[jeito].setEnabled(pronta and not no_dividir)
+            self.botoes_mostrar[jeito].setToolTip(dica + motivo)
+        self.botao_antes_depois.setEnabled(pronta and not no_dividir)
+        self._acertar_o_zoom_da_barra()
+
+    def _acertar_o_lado_a_lado(self) -> None:
+        """Os pares rolando com as páginas que vão sair (Projeto.paginas_ativas,
+        na ordem do PDF), na página da vez. A lista só é refeita quando muda
+        (dividir ou juntar uma folha, tirar do livro, desfazer: a página da vez
+        fica na mesma folha, lista_de_paginas_mudou)."""
+        assert self.projeto is not None
+        indices = [p.indice for p in self.projeto.paginas_ativas]
+        if indices != self.lado_a_lado.indices:
+            self.lado_a_lado.mostrar_paginas(indices, self._tamanhos_estimados(indices))
+        self.lado_a_lado.ir_para_pagina(self.indice_pagina)
+        self.lado_a_lado.atualizar_imagens()
+
+    def _tamanhos_estimados(self, indices: list[int]) -> list[tuple[float, float]]:
+        """O tamanho (pontos) de cada página antes de a prévia chegar: a folha
+        do PDF, girada como está e partida na linha (a metade da página). A
+        prévia acerta a proporção quando chega (PaginasLadoALado). As folhas
+        do PDF são lidas uma vez por livro (só o tamanho)."""
+        assert self.projeto is not None
+        caminho = self.projeto.caminho_entrada
+        if self._tamanhos_das_folhas[0] != caminho:
+            folhas: list[tuple[float, float]] = []
+            try:
+                from core.pdf_io import abrir_pdf
+                doc = abrir_pdf(caminho)
+                try:
+                    folhas = [(p.rect.width, p.rect.height) for p in doc]
+                finally:
+                    doc.close()
+            except Exception:  # noqa: BLE001 - sem o PDF, todas do mesmo tamanho
+                registrar_erro("lado a lado (tamanhos)", traceback.format_exc())
+            self._tamanhos_das_folhas = (caminho, folhas)
+        folhas = self._tamanhos_das_folhas[1]
+        tamanhos = []
+        for indice in indices:
+            pagina = self.projeto.paginas[indice]
+            folha = self.projeto.folhas[pagina.folha]
+            w, h = folhas[pagina.folha] if 0 <= pagina.folha < len(folhas) else (420.0, 595.0)
+            if folha.rotacao in (90, 270):
+                w, h = h, w
+            if folha.dividir and pagina.metade in ("esquerda", "direita"):
+                parte = folha.posicao_corte if pagina.metade == "esquerda" else 1 - folha.posicao_corte
+                w *= max(0.05, min(0.95, parte))
+            if pagina.recorte:
+                w *= max(0.05, pagina.recorte[2])
+                h *= max(0.05, pagina.recorte[3])
+            tamanhos.append((max(1.0, w), max(1.0, h)))
+        return tamanhos
+
+    def _previa_do_lado_a_lado(self, indice: int, da_vez: bool, so_olhar: bool = False):
+        """A fonte do lado a lado: (a prévia da página `indice` como vai sair,
+        ou None se ainda não está pronta, e a chave dela). A mesma prévia das
+        ferramentas (mesmo cache, mesma qualidade). so_olhar: só a chave, sem
+        pedir nada."""
+        if self.previas is None or self.projeto is None:
+            return None, ""
+        chave = self.previas.chave(indice, self._dpi_atual)
+        if so_olhar:
+            return None, chave
+        return self.previas.pegar(indice, self._dpi_atual), chave
+
+    @protegido
+    def _pagina_do_lado_a_lado(self, indice: int) -> None:
+        """Rolando (ou clicando) no lado a lado, a página da vez mudou: a tela
+        acompanha (a barra de baixo, as miniaturas, os painéis), sem mexer no
+        rolar (o lado a lado já está nela)."""
+        if not self._pronta() or self.projeto is None or indice == self.indice_pagina:
+            return
+        if not 0 <= indice < len(self.projeto.paginas):
+            return
+        self.ir_para_pagina(indice)
+
+    def _mostrar_antes_depois(self) -> None:
+        """O "antes / depois" da página da vez: o Original à esquerda da linha
+        e como vai sair à direita (as prévias; o mesmo jeito da tela cheia dos
+        filtros, R11 601 A, inclusive a frase quando a página já é Original)."""
+        assert self.projeto is not None and self.previas is not None
+        indice = self.indice_pagina
+        pagina = self.projeto.paginas[indice]
+        filtro = etapas_core.filtro_que_vale(self.projeto, pagina)
+        nome = NOMES_AMIGAVEIS.get(filtro, filtro)
+        depois = self.previas.pegar(indice, self._dpi_atual)
+        rotulos = ("antes: Original", f"depois: {nome}")
+        if filtro == ORIGINAL:
+            self.vista_antes_depois.definir(
+                None, depois, False, rotulos, "Escolha outro filtro para comparar com o Original.")
+            return
+        antes = self.previas.pegar_com_filtro(indice, self._dpi_atual, ORIGINAL)
+        self.vista_antes_depois.definir(antes, depois, True, rotulos)
+
+    def _roda_na_pagina(self, vista, evento) -> bool:
+        """D-021 e o pedido da etapa 6 (27/10: "roda do mouse troca de página
+        (quando não está com zoom)"). Na página da área de trabalho:
+          - sem zoom (a página inteira cabendo), a roda troca de página (de
+            folha, no Dividir): para baixo a próxima, para cima a anterior;
+          - com zoom, a roda continua dando zoom, como antes (D-026);
+          - Ctrl+roda dá zoom sempre (para o zoom pela roda não sumir);
+          - na ferramenta de marcar com o Pincel ou a Varinha, a roda continua
+            mudando a espessura ou a tolerância, como antes.
+        Devolve True se a roda foi usada aqui."""
+        passos = evento.angleDelta().y()
+        if not passos or not self._pronta():
+            return False
+        if evento.modifiers() & Qt.ControlModifier:
+            fator = self.PASSO_DO_ZOOM if passos > 0 else 1 / self.PASSO_DO_ZOOM
+            vista.definir_zoom(vista.zoom * fator)
+            self._acertar_o_zoom_da_barra()
+            return True
+        if vista is getattr(self, "editor_selecao", None) and (
+                vista.ferramenta not in FERRAMENTAS_DE_NAVEGACAO):
+            return False
+        if vista.zoom > 1.0 + 1e-3:
+            QTimer.singleShot(0, self._acertar_o_zoom_da_barra)    # a página dá o zoom
+            return False
+        self._roda_acumulada += passos
+        if abs(self._roda_acumulada) >= 120:
+            passo = -1 if self._roda_acumulada > 0 else 1
+            self._roda_acumulada = 0
+            self._navegar(passo)
+        return True
 
     @protegido
     def restaurar_pagina(self) -> None:
@@ -6307,6 +6638,18 @@ class TelaConferir(QWidget):
         if tecla == _QT_KEY_DAS_TECLAS_DE_NAVEGACAO.get(
                 atalhos.tecla_atual(CHAVE_NAVEGAR_PROXIMA), Qt.Key_Right):
             self._navegar(1)
+            return True
+        # Etapa 6 da obra (D-021: "Page Up/Down, Home/End"; PEDIDOS.md, "Page
+        # Up / Page Down pula 10 páginas": "Pula 10 páginas de cada vez"):
+        # Page Down/Up andam 10 páginas (10 folhas, no Dividir), Home vai à
+        # primeira e End à última. Sem Ctrl (Ctrl+Home/End ficam livres).
+        if not ctrl and tecla in (Qt.Key_PageDown, Qt.Key_PageUp, Qt.Key_Home, Qt.Key_End):
+            total = self._total()
+            destino = {Qt.Key_PageDown: self.indice_atual + self.PAGINAS_DO_PAGE_DOWN,
+                       Qt.Key_PageUp: self.indice_atual - self.PAGINAS_DO_PAGE_DOWN,
+                       Qt.Key_Home: 0, Qt.Key_End: total - 1}[tecla]
+            if total:
+                self._ir_para(max(0, min(total - 1, destino)))
             return True
         if tecla == _QT_KEY_DAS_TECLAS_DE_NAVEGACAO.get(
                 atalhos.tecla_atual(CHAVE_MARCAR_CERTO), Qt.Key_Space):

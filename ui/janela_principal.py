@@ -297,6 +297,11 @@ class JanelaPrincipal(QMainWindow):
         self._miniaturas_mudaram(conferir.miniaturas.aberta)
         self.menu.ligar("todas_as_paginas", conferir.abrir_todas_as_paginas)
         self.menu.ligar("filtros_tela_cheia", conferir.abrir_filtros_em_tela_cheia)
+        # etapa 6 da obra (D-015, D-058): Ver > "Ver lado a lado" e a barra de
+        # baixo ("Uma página / Duas lado a lado") andam juntos
+        self.menu.ligar("lado_a_lado", lambda marcado=False: self._ver_lado_a_lado(bool(marcado)))
+        conferir.mostrar_mudou.connect(self._mostrar_mudou)
+        self._mostrar_mudou(conferir.mostrar)
         paineis.icones_mudaram.connect(self._icones_mudaram)
 
         self.menu.ligar("atalhos", self._mostrar_atalhos)
@@ -355,6 +360,27 @@ class JanelaPrincipal(QMainWindow):
         item = self.menu.acoes["miniaturas"]
         item.blockSignals(True)
         item.setChecked(bool(abertas))
+        item.blockSignals(False)
+
+    def _ver_lado_a_lado(self, ligado: bool) -> None:
+        """Menu Ver > "Ver lado a lado" (D-015, D-058): marcado, a área de
+        trabalho mostra "Duas lado a lado"; desmarcado, "Uma página". Fora da
+        área de trabalho o item volta a mostrar o que a tela tem."""
+        from ui.widgets.paginas_rolando import DUAS, UMA
+
+        conferir = self.tela_conferir
+        if self.telas.currentIndex() == CONFERIR and conferir.projeto is not None:
+            conferir.definir_mostrar(DUAS if ligado else UMA)
+        self._mostrar_mudou(conferir.mostrar)
+
+    def _mostrar_mudou(self, jeito: str) -> None:
+        """A barra de baixo trocou entre "Uma página" e "Duas lado a lado": o
+        "Ver lado a lado" do menu Ver acompanha, sem virar clique."""
+        from ui.widgets.paginas_rolando import DUAS
+
+        item = self.menu.acoes["lado_a_lado"]
+        item.blockSignals(True)
+        item.setChecked(jeito == DUAS)
         item.blockSignals(False)
 
     def _icones_mudaram(self, a_vista: bool) -> None:

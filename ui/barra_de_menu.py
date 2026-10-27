@@ -263,6 +263,10 @@ class BarraDeMenu(QMenuBar):
             item = self._acao(menu, chave, texto)
             item.setCheckable(True)
             item.setChecked(True)
+        # etapa 6 da obra (D-015, D-058: o 5º item que faltava): marcado =
+        # "Duas lado a lado" na área de trabalho, o mesmo da barra de baixo
+        item = self._acao(menu, "lado_a_lado", "Ver lado a lado")
+        item.setCheckable(True)
         self._acao(menu, "todas_as_paginas", "Todas as páginas")
         self._acao(menu, "filtros_tela_cheia", "Filtros em tela cheia")
         menu.addSeparator()
