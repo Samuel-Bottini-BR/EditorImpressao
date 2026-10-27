@@ -1,84 +1,62 @@
 {
+ "atualizado": "2026-10-27T01:48:08Z",
  "id": "pendentes-26-10",
  "nome": "Perguntas que ficaram sem resposta",
- "trabalho": "pendentes-26-10",
  "ordem": 0,
  "origem": "auditoria dos documentos de 26/10 (relatorios/testes-guiados/2026-10-26-sessao-1/auditoria-documentos.md, seção 4), conferida uma por uma; segunda leva (26/10, noite): as perguntas sem resposta do Livro de decisões (docs/plano/DECISOES.md), conferidas uma por uma",
- "resumo": {
-  "titulo": "8 perguntas para responder quando puder",
-  "paragrafos": [
-   "Você pediu em 26/10: \"coloque as perguntas sem resposta para responder na central\". Revisei uma por uma todas as perguntas que a auditoria dos documentos achou penduradas, e procurei a resposta no plano, nas conferências, no Livro de decisões e nas suas respostas aqui na Central.",
-   "Ficaram só estas 8: as 6 primeiras saíram da revisão dos documentos; as 2 últimas (a prensa de duas cores e a inteligência artificial na leitura do texto) saíram da lista de perguntas do Livro de decisões. Nenhuma delas tem resposta sua em lugar nenhum. As que você já tinha respondido, ou que se resolvem pela sua regra \"vale a decisão mais recente\", não estão aqui (a lista do que tirei e por quê está em relatorios/central-pendentes-2026-10-26.md).",
-   "As de detalhe, que a obra precisava, eu escolhi e anotei no Livro de decisões como \"escolha da gerente\" (D-473 a D-480), para você conferir no fim junto com o resto.",
-   "A obra não espera por estas respostas. Enquanto você não responde, vale o que já está decidido e, onde falta, a opção que eu recomendo (a primeira de cada pergunta). Se alguma não ficar clara, marque \"Ainda não entendi\" e escreva o porquê."
-  ]
- },
- "quadros": [],
  "perguntas": [
   {
-   "id": "pd-aviso-kaique",
-   "titulo": "Qual é o aviso que o Kaique pediu em 24/09?",
+   "exemplos": [],
    "explicacao": [
     "Em 24/09 ficou anotado na Lista de espera do plano: \"Aviso que o Kaique pediu\". Só isso.",
     "O áudio que você mandou naquele dia não fala de aviso nenhum, e eu não achei a descrição em outro lugar: procurei no plano, no histórico, no PEDIDOS e nas anotações do Kaique.",
     "Por isso esse pedido está parado há um mês: ninguém sabe o que construir.",
     "Exemplo do tipo de coisa que pode ser: um aviso quando o PDF fica pronto, ou um aviso quando uma página sai cortada. Mas só o Kaique (ou você) sabe qual era."
    ],
-   "exemplos": [],
+   "id": "pd-aviso-kaique",
    "opcoes": [
     {
      "id": "perguntar",
+     "imgs": [],
      "nome": "Vou perguntar ao Kaique e escrevo aqui (recomendo)",
-     "texto": "Escreva no comentário qual é o aviso. Ele entra no Livro de decisões com as palavras dele.",
-     "imgs": []
+     "texto": "Escreva no comentário qual é o aviso. Ele entra no Livro de decisões com as palavras dele."
     },
     {
      "id": "tirar",
+     "imgs": [],
      "nome": "Pode tirar da lista",
-     "texto": "Se o Kaique lembrar depois, vira pedido novo.",
-     "imgs": []
+     "texto": "Se o Kaique lembrar depois, vira pedido novo."
     },
     {
      "id": "nao-entendi",
+     "imgs": [],
      "nome": "Ainda não entendi",
-     "texto": "Explique de outro jeito.",
-     "imgs": []
+     "texto": "Explique de outro jeito."
     }
-   ]
+   ],
+   "titulo": "Qual é o aviso que o Kaique pediu em 24/09?"
   },
   {
-   "id": "pd-escala-kaique",
-   "titulo": "Qual é a escala da tela do notebook do Kaique?",
-   "explicacao": [
-    "O programa precisa caber na tela do notebook do Kaique. Quanto cabe depende de um ajuste do Windows chamado \"escala\": ele deixa letras e botões maiores.",
-    "Ninguém nunca olhou qual é a escala dele: pode ser 125% ou 150%. Em 05/10 você disse: \"Isso pode ser resolvido depois\". Até hoje todas as telas são desenhadas para o caso mais apertado, 150% (sobra um espaço de 1280 por 657 pontos).",
-    "Como olhar no notebook dele (leva um minuto): botão Iniciar → Configurações → Sistema → Tela → \"Escala\".",
-    "Para que serve: se for 125%, as telas podem mostrar mais coisas de uma vez. Se for 150%, continua como está."
-   ],
    "exemplos": [],
+   "explicacao": [
+    "Respondendo ao seu comentário: o Photoshop (e o PhotoCraft, que você mandou) desenham tudo numa medida \"em pontos\" e multiplicam pela escala do Windows na hora de mostrar. Por isso ficam certos em qualquer computador.",
+    "O Editor já faz igual: a biblioteca de telas dele (Qt) multiplica sozinha pela escala do Windows. Botões e letras ficam do mesmo tamanho e nítidos em 100%, 125% ou 150%.",
+    "O que muda de um computador para outro é só quanto cabe na tela: num notebook pequeno em 150% sobra menos espaço. Por isso as telas são desenhadas para o caso mais apertado (1280 por 657 pontos).",
+    "O REA não serve para isso: é uma ferramenta para agentes estudarem por dentro programas já prontos. Usar no Photoshop iria contra a licença da Adobe.",
+    "O que proponho: na bateria final de testes, abrir o programa em 100%, 125% e 150% e mostrar os prints na sua conferência final."
+   ],
+   "id": "pd-escala-kaique",
    "opcoes": [
+    {
+     "id": "testar-3",
+     "nome": "Testar em 100%, 125% e 150% e me mostrar na conferência final (recomendo)",
+     "texto": "Continua desenhado para 150%; os prints das três escalas vão para a conferência final.",
+     "imgs": []
+    },
     {
      "id": "depois",
-     "nome": "Ainda não olhei: continuar desenhando para 150% (recomendo até lá)",
-     "texto": "É o caso mais apertado; se couber em 150%, cabe em qualquer escala menor.",
-     "imgs": []
-    },
-    {
-     "id": "150",
-     "nome": "150%",
-     "texto": "",
-     "imgs": []
-    },
-    {
-     "id": "125",
-     "nome": "125%",
-     "texto": "",
-     "imgs": []
-    },
-    {
-     "id": "outro",
-     "nome": "Outro número",
-     "texto": "Escreva no comentário o número que aparece.",
+     "nome": "Só continuar desenhando para 150%",
+     "texto": "Sem os prints das três escalas.",
      "imgs": []
     },
     {
@@ -87,29 +65,49 @@
      "texto": "Explique de outro jeito.",
      "imgs": []
     }
+   ],
+   "titulo": "Qual é a escala da tela do notebook do Kaique?",
+   "historico": [
+    {
+     "quem": "samuel",
+     "em": "2026-10-27T16:50:23.488Z",
+     "texto": "Escolheu \"Ainda não olhei: continuar desenhando para 150%\". Comentário: Como o photoshop faz para fazer isso? para que em todos os computadores fique certo? - https://github.com/storytold/photocraft acho que aqui tu pode dar uma olhada de como ele faz, é um clone do photoshop. e aqui tem o rea que pode ajudar nisso - https://github.com/morluto/rea"
+    },
+    {
+     "quem": "gerente",
+     "em": "2026-10-27T18:00:00.000Z",
+     "texto": "Olhei os dois. O PhotoCraft (clone do Photoshop em Rust) e o Photoshop fazem assim: cada botão e letra é desenhado numa medida \"em pontos\", e na hora de mostrar o programa multiplica pela escala do Windows (125% = 1,25×, 150% = 1,5×). Assim fica do mesmo tamanho e nítido em qualquer computador. O Editor já faz exatamente isso: a biblioteca de telas dele (Qt) multiplica sozinha pela escala do Windows. O que a escala muda é só quanto cabe na tela: em 150% sobra menos espaço, por isso desenhamos para o caso mais apertado. O REA é outra coisa: uma ferramenta para agentes estudarem por dentro programas já prontos (engenharia reversa); não ajuda na escala, e usar no Photoshop iria contra a licença da Adobe."
+    }
    ]
   },
   {
-   "id": "pd-sequencia",
-   "titulo": "Kaique: como ter certeza da ordem das páginas sem olhar folha por folha?",
-   "explicacao": [
-    "Pergunta do Kaique, de 27/07 (anotações dele): \"Como ter certeza que estão todas na sequência correta sem ter que olhar folha por folha?\". Ela nunca foi respondida.",
-    "O que já está decidido e ajuda: a tela \"Todas as páginas\", que mostra as páginas uma a uma ou em pares, e a tela \"Pronto\", que mostra a ordem dos cadernos antes de imprimir. Mas nas duas é preciso olhar com os olhos.",
-    "O que daria para fazer a mais: o programa ler o número impresso no pé ou no alto de cada página e avisar quando um número pula ou repete. Exemplo: depois da página 36 vem a 38 → aviso \"falta a 37?\". Não funciona em página sem número (capa, gravura de página inteira).",
-    "Não entra na obra de agora: iria para a Lista de espera, para depois."
-   ],
    "exemplos": [],
+   "explicacao": [
+    "Respondendo ao seu comentário (\"tem livros que não tem numero de pagina\"): é verdade, o aviso de número só serve onde há número.",
+    "Livros sem número têm outras duas pistas, e o programa pode usar as duas depois que aprender a ler o texto (fase 7, OCR):",
+    "1) O \"reclamo\": nos livros antigos, no pé de cada página vem impressa a primeira palavra da página seguinte. Se a palavra não bate, a ordem está errada.",
+    "2) A frase que continua: a última linha de uma página termina no meio de uma frase que segue na primeira linha da próxima.",
+    "Exemplo: página termina com reclamo \"Dominus\" e a seguinte começa com \"Gloria\" → aviso \"a página seguinte parece fora de ordem\".",
+    "Livro sem número, sem reclamo e com páginas soltas (gravuras) continua dependendo da grade de todas as páginas e da tela Pronto."
+   ],
+   "id": "pd-sequencia",
    "opcoes": [
     {
-     "id": "aviso-numero",
-     "nome": "Fazer o aviso de número fora de ordem, depois da obra (recomendo)",
-     "texto": "Vai para a Lista de espera com a data de hoje.",
+     "id": "tudo-depois-ocr",
+     "nome": "Depois do OCR, conferir sozinho pelo que houver: número, reclamo ou frase que continua (recomendo)",
+     "texto": "Vai para a Lista de espera, junto da fase 7. O aviso de número pode vir antes, sem esperar o OCR.",
+     "imgs": []
+    },
+    {
+     "id": "so-numero",
+     "nome": "Só o aviso de número",
+     "texto": "Livro sem número fica com a grade e a tela Pronto.",
      "imgs": []
     },
     {
      "id": "basta",
-     "nome": "Basta o que já está decidido",
-     "texto": "A grade de todas as páginas e a tela Pronto são suficientes.",
+     "nome": "Basta a grade e a tela Pronto",
+     "texto": "Nada novo no programa.",
      "imgs": []
     },
     {
@@ -118,102 +116,114 @@
      "texto": "Explique de outro jeito.",
      "imgs": []
     }
+   ],
+   "titulo": "Kaique: como ter certeza da ordem das páginas sem olhar folha por folha?",
+   "historico": [
+    {
+     "quem": "samuel",
+     "em": "2026-10-27T16:52:34.832Z",
+     "texto": "Escolheu \"Fazer o aviso de número fora de ordem, depois da obra\". Comentário: Mas tem livros que não tem numero de pagina."
+    },
+    {
+     "quem": "gerente",
+     "em": "2026-10-27T18:00:00.000Z",
+     "texto": "Verdade: o aviso de número só ajuda onde há número. Para livro sem número existem outras duas pistas, que dependem de o programa ler o texto (fase 7, OCR): o \"reclamo\" (nos livros antigos, a palavra no pé da página que é a primeira da página seguinte) e a frase que termina numa página e continua na outra."
+    }
    ]
   },
   {
-   "id": "pd-avisos-do-livro",
-   "titulo": "Onde mostrar os avisos que valem para o livro inteiro?",
+   "exemplos": [],
    "explicacao": [
     "Quando um aviso aparece em quase todas as páginas (70% ou mais), o programa não marca página por página: junta tudo num aviso só, do livro. É a sua regra da rodada 4 do \"Para revisar\" (Camões 66): \"aviso no livro basta\".",
     "Exemplos dos textos desses avisos: \"o livro inteiro é colorido\", \"o livro inteiro foi escaneado em qualidade baixa\", \"quase todas as páginas parecem estar em branco\".",
     "O defeito: esse aviso do livro fica num lugar escondido da tela, e o Kaique nunca o vê (achado em 02/10 e de novo em 12/10). Nunca foi decidido onde ele deve aparecer."
    ],
-   "exemplos": [],
+   "id": "pd-avisos-do-livro",
    "opcoes": [
     {
      "id": "para-revisar",
+     "imgs": [],
      "nome": "No alto do painel \"Para revisar\" e no livro aberto da tela inicial (recomendo)",
-     "texto": "Uma linha em cima da lista das páginas, e a mesma frase no painel do livro na tela inicial.",
-     "imgs": []
+     "texto": "Uma linha em cima da lista das páginas, e a mesma frase no painel do livro na tela inicial."
     },
     {
      "id": "faixa",
+     "imgs": [],
      "nome": "Numa faixa em cima da página, que dá para fechar",
-     "texto": "Aparece ao abrir o livro; um clique fecha.",
-     "imgs": []
+     "texto": "Aparece ao abrir o livro; um clique fecha."
     },
     {
      "id": "nao-entendi",
+     "imgs": [],
      "nome": "Ainda não entendi",
-     "texto": "Explique de outro jeito.",
-     "imgs": []
+     "texto": "Explique de outro jeito."
     }
-   ]
+   ],
+   "titulo": "Onde mostrar os avisos que valem para o livro inteiro?"
   },
   {
-   "id": "pd-versos-em-branco",
-   "titulo": "Livro com metade das páginas em branco: um aviso por página ou um só?",
+   "exemplos": [],
    "explicacao": [
     "No Egenloff, quase metade das páginas (49%) é verso sem nada impresso. Cada uma ganha o aviso \"Parece em branco\" na lista \"Para revisar\". Num livro de 300 páginas assim, seriam umas 150 linhas na lista.",
     "Pela regra de hoje, o aviso só vira um aviso do livro inteiro a partir de 70% das páginas (pergunta anterior). Com 49%, fica um por página.",
     "O que já existe para ajudar: o botão \"está bom: todas\" tira de uma vez esse aviso de todas as páginas do livro (você aprovou em 21/10).",
     "Por que não juntar sem perguntar: entre os versos em branco pode haver uma página que não deveria estar em branco (texto muito claro, por exemplo). Um aviso por página deixa o Kaique ver cada uma."
    ],
-   "exemplos": [],
+   "id": "pd-versos-em-branco",
    "opcoes": [
     {
      "id": "como-esta",
+     "imgs": [],
      "nome": "Deixar como está: um por página, e \"está bom: todas\" tira todos de uma vez (recomendo)",
-     "texto": "Nada muda no programa.",
-     "imgs": []
+     "texto": "Nada muda no programa."
     },
     {
      "id": "um-so",
+     "imgs": [],
      "nome": "Juntar num aviso só do livro quando forem muitas",
-     "texto": "Diga no comentário a partir de quantas (por exemplo, 40%).",
-     "imgs": []
+     "texto": "Diga no comentário a partir de quantas (por exemplo, 40%)."
     },
     {
      "id": "nao-entendi",
+     "imgs": [],
      "nome": "Ainda não entendi",
-     "texto": "Explique de outro jeito.",
-     "imgs": []
+     "texto": "Explique de outro jeito."
     }
-   ]
+   ],
+   "titulo": "Livro com metade das páginas em branco: um aviso por página ou um só?"
   },
   {
-   "id": "pd-idioma-ocr",
-   "titulo": "Ler o texto das páginas: quem escolhe a língua do livro?",
+   "exemplos": [],
    "explicacao": [
     "Na fase 7, o programa vai ler o texto das páginas (o \"OCR\"). Para ler bem, ele precisa saber a língua: latim, português, alemão etc.",
     "Já está decidido: a língua fica por livro, com troca numa página só, numa tela chamada \"Idiomas e modelos\". Falta decidir quem escolhe a língua.",
     "Não tem pressa: é da fase 7. Só está aqui para não ficar esquecida."
    ],
-   "exemplos": [],
+   "id": "pd-idioma-ocr",
    "opcoes": [
     {
      "id": "descobre",
+     "imgs": [],
      "nome": "O programa descobre sozinho e mostra o que achou; o Kaique corrige se estiver errado (recomendo)",
-     "texto": "Exemplo: ao abrir o Graduale, aparece \"Língua: latim (achei sozinho)\", com um botão para trocar.",
-     "imgs": []
+     "texto": "Exemplo: ao abrir o Graduale, aparece \"Língua: latim (achei sozinho)\", com um botão para trocar."
     },
     {
      "id": "pergunta",
+     "imgs": [],
      "nome": "O programa pergunta sempre, ao abrir o livro",
-     "texto": "",
-     "imgs": []
+     "texto": ""
     },
     {
      "id": "nao-entendi",
+     "imgs": [],
      "nome": "Ainda não entendi",
-     "texto": "Explique de outro jeito.",
-     "imgs": []
+     "texto": "Explique de outro jeito."
     }
-   ]
+   ],
+   "titulo": "Ler o texto das páginas: quem escolhe a língua do livro?"
   },
   {
-   "id": "pd-chapas-vermelho-preto",
-   "titulo": "Prensa de duas cores: separar o vermelho do preto?",
+   "exemplos": [],
    "explicacao": [
     "No plano de 24/09 ficou o item 6.6: \"Decidir: separar chapas vermelho/preto para as prensas de duas cores?\". Ele nunca foi perguntado, e não achei em lugar nenhum quem pediu nem com que prensa.",
     "O que quer dizer: numa prensa de duas cores, o vermelho e o preto são impressos separados, cada cor com a sua chapa. Para isso o programa teria de tirar de cada página dois arquivos: um só com o que é vermelho e outro só com o que é preto.",
@@ -221,64 +231,76 @@
     "Hoje vocês imprimem na EPSON WF-C5890, que é colorida e põe as duas cores de uma vez; nela não precisa separar.",
     "Não tem pressa: é da fase 6, depois da obra. Só está aqui para não ficar esquecida."
    ],
-   "exemplos": [],
+   "id": "pd-chapas-vermelho-preto",
    "opcoes": [
     {
      "id": "nao-precisa",
+     "imgs": [],
      "nome": "Não precisa: imprimimos na EPSON, que faz as duas cores juntas (recomendo)",
-     "texto": "O item fica guardado na Lista de espera, sem data. Se um dia vocês usarem uma prensa de duas cores, ele volta.",
-     "imgs": []
+     "texto": "O item fica guardado na Lista de espera, sem data. Se um dia vocês usarem uma prensa de duas cores, ele volta."
     },
     {
      "id": "separar",
+     "imgs": [],
      "nome": "Sim, quero o vermelho e o preto separados",
-     "texto": "Escreva no comentário com que prensa vão imprimir. Entra na fase 6.",
-     "imgs": []
+     "texto": "Escreva no comentário com que prensa vão imprimir. Entra na fase 6."
     },
     {
      "id": "nao-entendi",
+     "imgs": [],
      "nome": "Ainda não entendi",
-     "texto": "Explique de outro jeito.",
-     "imgs": []
+     "texto": "Explique de outro jeito."
     }
-   ]
+   ],
+   "titulo": "Prensa de duas cores: separar o vermelho do preto?"
   },
   {
-   "id": "pd-ia-no-ocr",
-   "titulo": "Ler o texto das páginas: a inteligência artificial pode corrigir o que foi lido?",
+   "exemplos": [],
    "explicacao": [
     "Na fase 7, o programa vai ler o texto das páginas (o \"OCR\") com dois leitores treinados, o Tesseract e o Calamari. Eles erram de um jeito previsível: trocam uma letra parecida, mas nunca inventam palavra.",
     "A sua regra do projeto é \"nenhum modelo generativo\": nenhuma inteligência artificial que cria coisa nova. Ela nasceu pensando nas imagens (uma IA pode inventar um detalhe numa gravura de 1579). Para o texto, a pesquisa de 24/09 deixou três jeitos de entender a regra, para você escolher antes da fase 7 (plano, item 7.1). Nunca foi perguntado.",
     "Exemplo: numa linha em latim, um leitor lê \"Domlnus\" e o outro lê \"Dominus\".",
     "Não tem pressa: é da fase 7, depois da obra. Só está aqui para não ficar esquecida."
    ],
-   "exemplos": [],
+   "id": "pd-ia-no-ocr",
    "opcoes": [
     {
      "id": "so-escolhe",
+     "imgs": [],
      "nome": "A IA só escolhe entre o que os leitores leram; quando nenhum convence, marca a linha para o Kaique (recomendo)",
-     "texto": "No exemplo, ela escolhe \"Dominus\". Se os dois tivessem lido errado, ela não escreve palavra nova: a linha fica marcada para revisar. É a recomendação da pesquisa.",
-     "imgs": []
+     "texto": "No exemplo, ela escolhe \"Dominus\". Se os dois tivessem lido errado, ela não escreve palavra nova: a linha fica marcada para revisar. É a recomendação da pesquisa."
     },
     {
      "id": "sem-ia",
+     "imgs": [],
      "nome": "Sem IA nenhuma: os dois leitores votam e, onde discordam, o Kaique revisa",
-     "texto": "É a regra como está escrita hoje. Sobram mais linhas para o Kaique conferir.",
-     "imgs": []
+     "texto": "É a regra como está escrita hoje. Sobram mais linhas para o Kaique conferir."
     },
     {
      "id": "ia-corrige",
+     "imgs": [],
      "nome": "A IA pode corrigir o texto à vontade",
-     "texto": "Acerta mais em página estragada, mas pode trocar uma palavra latina certa por outra, ou modernizar a ortografia, sem ninguém ver. Não recomendo.",
-     "imgs": []
+     "texto": "Acerta mais em página estragada, mas pode trocar uma palavra latina certa por outra, ou modernizar a ortografia, sem ninguém ver. Não recomendo."
     },
     {
      "id": "nao-entendi",
+     "imgs": [],
      "nome": "Ainda não entendi",
-     "texto": "Explique de outro jeito.",
-     "imgs": []
+     "texto": "Explique de outro jeito."
     }
-   ]
+   ],
+   "titulo": "Ler o texto das páginas: a inteligência artificial pode corrigir o que foi lido?"
   }
- ]
+ ],
+ "quadros": [],
+ "resumo": {
+  "paragrafos": [
+   "Você pediu em 26/10: \"coloque as perguntas sem resposta para responder na central\". Revisei uma por uma todas as perguntas que a auditoria dos documentos achou penduradas, e procurei a resposta no plano, nas conferências, no Livro de decisões e nas suas respostas aqui na Central.",
+   "Ficaram só estas 8: as 6 primeiras saíram da revisão dos documentos; as 2 últimas (a prensa de duas cores e a inteligência artificial na leitura do texto) saíram da lista de perguntas do Livro de decisões. Nenhuma delas tem resposta sua em lugar nenhum. As que você já tinha respondido, ou que se resolvem pela sua regra \"vale a decisão mais recente\", não estão aqui (a lista do que tirei e por quê está em relatorios/central-pendentes-2026-10-26.md).",
+   "As de detalhe, que a obra precisava, eu escolhi e anotei no Livro de decisões como \"escolha da gerente\" (D-473 a D-480), para você conferir no fim junto com o resto.",
+   "A obra não espera por estas respostas. Enquanto você não responde, vale o que já está decidido e, onde falta, a opção que eu recomendo (a primeira de cada pergunta). Se alguma não ficar clara, marque \"Ainda não entendi\" e escreva o porquê."
+  ],
+  "titulo": "8 perguntas para responder quando puder"
+ },
+ "trabalho": "pendentes-26-10"
 }

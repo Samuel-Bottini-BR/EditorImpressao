@@ -137,3 +137,17 @@ As duas são das fases 6 e 7 (depois da obra), como a `pd-idioma-ocr` da primeir
 Os outros documentos que o gerador refez só mudaram a hora de "atualizado"; não foram regravados. Fonte:
 `docs/plano/central/conferencias/pendentes-26-10.json` e `docs/plano/central/fonte.json`. O Livro de decisões foi
 copiado para `D:\programas\EditorImpressao-arquivos\plano-24-09-2026\DECISOES.md` (as duas cópias iguais).
+
+## Respostas do Samuel na Central (27/10/2026, 16:48 a 16:58)
+
+| Pergunta | Resposta (palavras da página) | Comentário dele | Onde ficou |
+|---|---|---|---|
+| pd-aviso-kaique | "Pode tirar da lista" | — | D-520 |
+| pd-escala-kaique | "Ainda não olhei: continuar desenhando para 150% (recomendo até lá)" | "Como o photoshop faz para fazer isso? para que em todos os computadores fique certo? - https://github.com/storytold/photocraft acho que aqui tu pode dar uma olhada de como ele faz, é um clone do photoshop. e aqui tem o rea que pode ajudar nisso - https://github.com/morluto/rea" | Respondido na página (regra de 07/10); pergunta voltou com opções novas (testar em 100/125/150%) |
+| pd-sequencia | "Fazer o aviso de número fora de ordem, depois da obra (recomendo)" | "Mas tem livros que não tem numero de pagina." | Respondido na página; pergunta voltou com opções novas (reclamo e frase que continua, depois do OCR) |
+| pd-avisos-do-livro | "No alto do painel \"Para revisar\" e no livro aberto da tela inicial (recomendo)" | — | D-521 (etapa 7) |
+| pd-versos-em-branco | "Juntar num aviso só do livro quando forem muitas" | — | D-522 (etapa 7; 40% escolhido pela gerente) |
+| pd-idioma-ocr | "O programa pergunta sempre, ao abrir o livro" | — | D-523 (Fase 7) |
+| pd-chapas-vermelho-preto | "Não precisa: imprimimos na EPSON, que faz as duas cores juntas (recomendo)" | — | D-524 |
+| pd-ia-no-ocr | "Sem IA nenhuma: os dois leitores votam e, onde discordam, o Kaique revisa" | — | D-525 (Fase 7) |
+
