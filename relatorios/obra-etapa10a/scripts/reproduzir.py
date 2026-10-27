@@ -92,9 +92,29 @@ def carregar_de_fabrica(livro: str, numero: int, campos: dict | None = None):
             um.close()
     projeto = Projeto(caminho_entrada=str(destino), caminho_saida=str(pasta / "saida.pdf"),
                       nome=destino.stem)
-    for chave, valor in (campos or {}).items():
+    campos = dict(campos or {})
+    girar = campos.pop("_girar_e_dividir", None)
+    for chave, valor in campos.items():
         setattr(projeto, chave, valor)
-    return analisar_projeto(projeto), 1
+    projeto = analisar_projeto(projeto)
+    if girar is not None:
+        # folha dupla escaneada deitada (Righetti): gira e divide como a pessoa
+        # faria na tela (o automático não gira sozinho, Lista de bugs 22/10)
+        from core import pipeline
+        from core.endireitar import girar_90
+        from core.pdf_io import abrir_pdf, pagina_para_array
+        from modelos import ConfigPagina
+
+        doc = abrir_pdf(str(destino))
+        img = girar_90(pagina_para_array(doc, 0, dpi=pipeline.DPI_ANALISE), int(girar))
+        doc.close()
+        folha = projeto.folhas[0]
+        folha.rotacao, folha.dividir = int(girar), True
+        folha.posicao_corte = pipeline.achar_divisao(img, projeto.dividir_como, pipeline.DPI_ANALISE).posicao
+        filtro = projeto.paginas[0].filtro
+        projeto.paginas = [ConfigPagina(indice=0, folha=0, metade="esquerda", filtro=filtro),
+                           ConfigPagina(indice=1, folha=0, metade="direita", filtro=filtro)]
+    return projeto, 1
 
 
 def refazer_a_sobra(projeto, numero: int) -> None:

@@ -152,13 +152,14 @@ def rotacionar_e_cortar(img: np.ndarray, angulo: float, caixa: tuple[int, int, i
 
     cunha_com_o_papel (obra 26/10, etapa 10a; ressalva do G6 de 12/10/2026,
     D-095: "cunhas brancas com corte ate a beirada", Boecio 8, Marial 7,
-    Graduale 221): a cunha que o giro abre nas beiradas ganha a cor da
-    beirada da pagina (o ponto mais perto dela, BORDER_REPLICATE) em vez de
-    branco: no Original e no Melhorar o triangulo branco aparecia ao lado do
-    papel amarelado. Os pontos da pagina sao os mesmos; so a cunha muda. A
-    faixa escura da beirada ja foi tirada pelo corte (recortar.beiradas_escuras,
-    que tambem enche a cunha com o ponto mais perto). False (o de antes, e a
-    conta da tela que mede o corte): branco.
+    Graduale 221): a cunha que o giro abre nas beiradas ganha a COR DO PAPEL
+    da pagina (a mediana dos pontos de dentro do corte, canal a canal) em vez
+    de branco: no Original e no Melhorar o triangulo branco aparecia ao lado
+    do papel amarelado. Os pontos da pagina sao os mesmos; so a cunha (e a
+    divisa dela, 1 ponto misturado com o branco) muda. Nao e a cor da beirada
+    (o ponto mais perto): onde a beirada e o fundo preto do scanner a cunha
+    sairia preta (Antiphon 260, verificado pelo teste da borda preta). False
+    (o de antes, e a conta da tela que mede o corte): branco.
     """
     x0, y0, x1, y1 = caixa
     if abs(angulo) < ANGULO_MINIMO:
@@ -168,12 +169,24 @@ def rotacionar_e_cortar(img: np.ndarray, angulo: float, caixa: tuple[int, int, i
     matriz[0, 2] -= x0
     matriz[1, 2] -= y0
     borda = fundo if img.ndim == 2 else (fundo, fundo, fundo)
-    return cv2.warpAffine(
+    saida = cv2.warpAffine(
         img, matriz, (x1 - x0, y1 - y0),
-        flags=cv2.INTER_CUBIC,
-        borderMode=cv2.BORDER_REPLICATE if cunha_com_o_papel else cv2.BORDER_CONSTANT,
-        borderValue=borda,
+        flags=cv2.INTER_CUBIC, borderMode=cv2.BORDER_CONSTANT, borderValue=borda,
     )
+    # a cunha so chega ate |seno| x o lado maior da beirada (+2 da divisa):
+    # corte longe das beiradas nao tem cunha e nao paga a conta (velocidade)
+    alcance = int(np.ceil(abs(np.sin(np.radians(angulo))) * max(altura, largura))) + 2
+    perto = (x0 < alcance or y0 < alcance or x1 > largura - alcance or y1 > altura - alcance)
+    if cunha_com_o_papel and perto:
+        # onde o giro nao trouxe a pagina inteira (a cunha e a divisa)
+        cobre = cv2.warpAffine(np.full(img.shape[:2], 255, np.uint8), matriz, (x1 - x0, y1 - y0),
+                               flags=cv2.INTER_LINEAR, borderMode=cv2.BORDER_CONSTANT, borderValue=0)
+        cunha = cobre < 255
+        if cunha.any() and not cunha.all():
+            amostra = saida[~cunha][::17]
+            papel = np.median(amostra, axis=0).astype(saida.dtype)
+            saida[cunha] = papel
+    return saida
 
 
 def endireitar(img: np.ndarray) -> tuple[np.ndarray, Inclinacao]:

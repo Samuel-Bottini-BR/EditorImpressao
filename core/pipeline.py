@@ -1063,7 +1063,8 @@ def _preparar_endireitando_antes(inteira: np.ndarray, recorte, angulo: float,
 
 def _geometria(base: np.ndarray, pagina: ConfigPagina, projeto: Projeto,
                dpi: float | None = None, dpi_do_scan: float | None = None,
-               medidas: dict | None = None, com_o_corte: bool = True):
+               medidas: dict | None = None, com_o_corte: bool = True,
+               extras: dict | None = None):
     """(recorte, angulo) da pagina, medidos em `base` (a pagina ja girada de
     90 em 90 e dividida, antes de cortar).
 
@@ -1088,10 +1089,12 @@ def _geometria(base: np.ndarray, pagina: ConfigPagina, projeto: Projeto,
     com_o_corte=False (so a analise, que quer as duas contas do angulo para
     o aviso C1): nessa ordem nao mede o corte (recorte None). Na ordem
     antiga e ignorado - a conta de sempre, sem mudanca nenhuma.
+    extras (obra 26/10, etapa 10a): se vier, recebe "encostou" (o corte comum
+    encostou no texto, medido na pagina reta) - so no livro novo.
     """
     if endireita_antes(projeto):
         return _geometria_endireitando_antes(base, pagina, projeto, dpi, dpi_do_scan,
-                                             medidas, com_o_corte)
+                                             medidas, com_o_corte, extras)
     recorte = None
     automatico = None
     # obra 26/10, etapa 1 (D-009): o corte a mao vale com "Cortar as bordas"
@@ -1177,7 +1180,8 @@ def _angulo_automatico(base: np.ndarray, cortada: np.ndarray, pagina: ConfigPagi
 
 def _geometria_endireitando_antes(base: np.ndarray, pagina: ConfigPagina, projeto: Projeto,
                                   dpi: float | None, dpi_do_scan: float | None,
-                                  medidas: dict | None, com_o_corte: bool = True):
+                                  medidas: dict | None, com_o_corte: bool = True,
+                                  extras: dict | None = None):
     """(recorte, angulo) na ordem nova (item 2.2, G6, decisao do Samuel de
     09/10/2026: "Endireitar antes de cortar (como o ScanTailor)" -> "Pode
     comecar"). `base`: a pagina girada de 90 e dividida, sem corte.
@@ -1250,10 +1254,10 @@ def _geometria_endireitando_antes(base: np.ndarray, pagina: ConfigPagina, projet
             comum = detectar_bordas(reta, dpi=dpi, girada=angulo if girar else None,
                                     como_veio=em_cinza() if girar else None)
             recorte = comum.tupla
-            if medidas is not None:
+            if extras is not None:
                 # etapa 10a (D-104): o "Corte encostou no texto" medido no
                 # corte de verdade (a pagina reta), nao na folha da analise
-                medidas["encostou"] = bool(comum.encostou_no_conteudo)
+                extras["encostou"] = bool(comum.encostou_no_conteudo)
             if _corte_sugerido(projeto, pagina):
                 # itens 2.5 e 2.13: o corte do ScanTailor (ou "so o preto"), na
                 # pagina ja reta (a ordem dele); sem caixa (pagina em branco,
@@ -1439,10 +1443,12 @@ def _guardar_geometria(folha: ConfigFolha, pagina: ConfigPagina, projeto: Projet
                    if doc is not None and (_usa_o_endireitar_do_scantailor(projeto, pagina)
                                            or _corte_sugerido(projeto, pagina)) else None)
     medidas: dict = {}
+    extras: dict = {}                                     # etapa 10a
     geometria = _geometria(preparar_para_recorte(img_folha_do_pdf, folha, pagina, projeto), pagina, projeto,
-                           dpi=projeto.qualidade_dpi, dpi_do_scan=dpi_do_scan, medidas=medidas)
+                           dpi=projeto.qualidade_dpi, dpi_do_scan=dpi_do_scan, medidas=medidas,
+                           extras=extras)
     conteudo = medidas.pop("conteudo", None)              # item 2.5
-    encostou = medidas.pop("encostou", None)              # etapa 10a
+    encostou = extras.get("encostou")
     with _TRANCA_GEOMETRIAS:
         _GEOMETRIAS[chave] = geometria
         while len(_GEOMETRIAS) > MAX_GEOMETRIAS:

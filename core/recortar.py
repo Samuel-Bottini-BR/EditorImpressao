@@ -608,6 +608,11 @@ def detectar_bordas(img: np.ndarray, dpi: float | None = None,
     if sem_tinta_falsa is not None:
         tinta[sem_tinta_falsa == 0] = 0
 
+    # Obra 26/10, etapa 10a (lista unica 4.4, Horas 18: "deixou sobra branca
+    # do lado direito; a pagina ficou torta no papel"): o tracejado da beirada
+    # da folha nao conta na massa da tinta (ver _sem_o_tracejado_da_beirada).
+    tinta = _sem_o_tracejado_da_beirada(tinta)
+
     # Onde esta a MASSA da tinta, e nao onde ha algum pixel dela.
     #
     # A versao anterior aceitava uma linha como "tem conteudo" se ela tivesse 1%
@@ -878,6 +883,64 @@ def beiradas_escuras(img: np.ndarray, girada: float | None = None) -> Recorte | 
     if (x0, y0, x1, y1) == (0, 0, larg, alt):
         return None
     return Recorte(x0 / larg, y0 / alt, (x1 - x0) / larg, (y1 - y0) / alt)
+
+
+# O tracejado da beirada da folha (obra de 26/10/2026, etapa 10a; lista unica
+# 4.4, Horas 18). A beirada da folha (ou da vizinha) aparece na mascara como uma
+# fila de tracinhos soltos, colada no lado da imagem: cada um pequeno, todos na
+# mesma coluna estreita, cobrindo boa parte do lado. Juntos passam da sobra de
+# tinta descartada (SOBRA_DE_TINTA) e seguravam o corte 2 a 3 cm alem da moldura
+# (Horas 18: 0,23% da tinta nos 5% da direita). Saem da mascara os pedacos
+# INTEIROS dentro de TRACEJADO_FAIXA do lado, cada um menor que
+# TRACEJADO_PEDACO, todos dentro de uma coluna (ou linha) de TRACEJADO_LARGURA
+# e cobrindo TRACEJADO_COBRE do lado, em TRACEJADO_MINIMO pedacos ou mais.
+# Nota de margem nao entra: as palavras (letras juntas pelo fechamento) sao
+# mais largas que a coluna. Arriscado: alargar TRACEJADO_FAIXA (coluna de
+# numeros de versiculo colada na beirada sairia); baixar TRACEJADO_COBRE.
+TRACEJADO_FAIXA = 0.04
+TRACEJADO_PEDACO = 0.05
+TRACEJADO_LARGURA = 0.02
+TRACEJADO_COBRE = 0.4
+TRACEJADO_MINIMO = 5
+
+
+def _sem_o_tracejado_da_beirada(tinta: np.ndarray) -> np.ndarray:
+    """A mascara sem o tracejado da beirada (ver o comentario acima); a mesma
+    mascara quando nao ha tracejado."""
+    altura, largura = tinta.shape[:2]
+    n, rotulos, caixas, _ = cv2.connectedComponentsWithStats(tinta.astype(np.uint8), connectivity=8)
+    if n <= 1:
+        return tinta
+    x, y, w, h = (caixas[1:, i] for i in range(4))
+    tirar = np.zeros(n, bool)
+    # os ciscos (menores que uma letra: _de_letra) na faixa da beirada tambem
+    # nao contam na massa da tinta (Horas 18: riscos de 1 ponto e pontinhos a
+    # 2% da beirada direita, 0,23% da tinta de uma pagina de calendario)
+    cisco = ~_de_letra(np.stack([x, y, x + w, y + h], axis=1))
+    fx, fy = int(largura * TRACEJADO_FAIXA), int(altura * TRACEJADO_FAIXA)
+    na_faixa = (x + w <= fx) | (x >= largura - fx) | (y + h <= fy) | (y >= altura - fy)
+    tirar[1:] |= cisco & na_faixa
+    for eixo in ("x", "y"):
+        lado, comp = (largura, altura) if eixo == "x" else (altura, largura)
+        a0, a1 = (x, x + w) if eixo == "x" else (y, y + h)       # no eixo do lado
+        b0, b1 = (y, y + h) if eixo == "x" else (x, x + w)       # ao longo do lado
+        pequeno = ((a1 - a0) <= TRACEJADO_PEDACO * lado) & ((b1 - b0) <= TRACEJADO_PEDACO * comp)
+        faixa = int(lado * TRACEJADO_FAIXA)
+        for perto in (a1 <= faixa, a0 >= lado - faixa):
+            sel = np.flatnonzero(pequeno & perto)
+            if len(sel) < TRACEJADO_MINIMO:
+                continue
+            if a1[sel].max() - a0[sel].min() > TRACEJADO_LARGURA * lado:
+                continue
+            cobre = np.zeros(comp, bool)
+            for i in sel:
+                cobre[b0[i]:b1[i]] = True
+            if cobre.mean() >= TRACEJADO_COBRE:
+                tirar[sel + 1] = True
+    tirar[0] = False
+    if not tirar.any():
+        return tinta
+    return np.where(tirar[rotulos], 0, tinta).astype(tinta.dtype)
 
 
 def _com_folga(caixa, folga_x: float, folga_y: float):
