@@ -144,6 +144,23 @@ def test_textos_sem_jargao_e_com_acento(janela, pasta):
     assert "também" in tela.controles["gravura_mais_sensivel"].text()
 
 
+def _esperar_as_previas(janela, segundos: float = 10.0) -> None:
+    """Deixa as prévias que estão sendo desenhadas terminarem (etapa 4: ver o uso)."""
+    import time
+
+    from PySide6.QtWidgets import QApplication
+
+    previas = janela.tela_conferir.previas
+    fim = time.time() + segundos
+    while time.time() < fim:
+        QApplication.processEvents()
+        if previas is None or not getattr(previas, "_pedidas", None):
+            break
+        time.sleep(0.05)
+    for _ in range(5):
+        QApplication.processEvents()
+
+
 def _marcar_paginas(janela):
     """Duas páginas com marcação: a 0 com uma região da máquina e uma à mão
     (assinatura das opções de fábrica); a 1 só à mão."""
@@ -167,6 +184,13 @@ def test_mudar_as_opcoes_num_livro_com_trabalho_refaz_so_a_gravura_automatica(ja
     livro = _pdf(pasta)
     _trabalhar_e_fechar(janela, str(livro))
     janela.abrir_livro(str(livro))
+    # Obra 26/10, etapa 4 (D-007): o livro dividido não abre mais no Dividir, e sim na
+    # página - que é desenhada, e o desenho leva as marcações postas aqui por fora (sem a
+    # geometria anotada) para o lugar da página. Este teste confere outra coisa (as
+    # opções da gravura); a tela vai para o Dividir, como abria antes, e a prévia da página
+    # que já estava sendo desenhada termina antes de as marcações entrarem.
+    janela.tela_conferir.escolher_ferramenta("dividir")
+    _esperar_as_previas(janela)
     antes_0, antes_1 = _marcar_paginas(janela)
     estado = Path(janela.resumo.pasta) / projetos.ARQUIVO_ESTADO
     gravado_antes = estado.read_bytes()
