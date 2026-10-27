@@ -28,19 +28,6 @@ Obra D-014: feita até o fim sem pausas; o Samuel confere tudo no fim. **PRONTO 
 - **Lista única, seção 4** (23/10): 4.1, 4.3 (+ Matemática 40 e 66), 4.5, 4.7, 4.11, 4.12; Lista de bugs: T do
   Antiphonal 46 (13/10, grave), "Reduzir cores" apaga letra (21/10), foto de celular (23/10).
 
-## PAUSA (27/10/2026, pedido da gerente) — onde parei
-
-- **Feito:** todos os itens (tabela abaixo), testes, conferência (`conferencia/`), somas, DECISOES (só a situação).
-- **Em andamento na pausa:** (a) rodada inteira do GitHub `40566825277` no `5fa738b` (conserto do
-  `test_misto_desenho_claro::test_sombra_da_lombada_na_borda_nao_volta`, que a rodada `40564366174` do `cb66bfa` pegou:
-  a luz das colunas voltou a ser medida em 600 pontos; no PC esse arquivo passa, 10 de 10); (b) filtro de velocidade
-  `40564361069` (`83d7ba2` × `cb66bfa`).
-- **Próximo passo exato:** ler as duas rodadas (`gh run view <id> -R Samuel-Bottini-BR/EditorImpressao --log-failed`
-  e o "Veredito" do filtro); esperado na suíte: só `test_promessas` p085/p090/p094/p127 (falham no `obra-2026-10-26`
-  sem esta etapa). Se o filtro ainda acusar "Trocar de página" mais lento, disparar de novo uma vez (regra) e, se
-  persistir, apresentar à gerente (custo medido: ~6 ms por página para achar a sombra, mais ~10 ms quando há sombra, na
-  prévia de 110 DPI). Depois: preencher a seção "Velocidade" e reler este arquivo do começo.
-
 ## Situação
 
 **PRONTO PARA CONFERIR** (27/10/2026). Conferência: `relatorios/obra-etapa10b/conferencia/conferencia-etapa10b.html`
@@ -153,7 +140,11 @@ no PC também no `ab38208` (janela de verdade; ver GitHub).
 - **Rodada 3** `40548644579` (no `a413d69`, com a junção): **falham só `test_promessas::test_p085` e `::test_p127`, que
   já falham no `obra-2026-10-26` sem esta etapa** (rodada `40537146001`: p085, p090, p094, p127). O resto das 5 partes
   da suíte e o `teste_botoes.py` passaram.
-- **Rodada 4 (a final)** `40553726768` (no `9fbde20`, com a conta da sombra barata): falham `test_promessas::test_p085`,
+- **Rodada 5 (a final)** `40566825277` (no `5fa738b`): **falham só `test_promessas::test_p085` e `::test_p127`**, as
+  mesmas do `obra-2026-10-26` sem esta etapa. (A rodada 4b `40564366174`, no `cb66bfa`, tinha pegado
+  `test_misto_desenho_claro::test_sombra_da_lombada_na_borda_nao_volta`: a luz das colunas medida em 400 pontos via a
+  faixa fina da beirada como sombra; voltou a 600 no `5fa738b`, passa.)
+- **Rodada 4** `40553726768` (no `9fbde20`, com a conta da sombra barata): falham `test_promessas::test_p085`,
   `::test_p092`, `::test_p094` e `::test_p127`. p085 e p127 falham no `obra-2026-10-26` sem esta etapa; p092 e p094
   são de janela e mudam de uma vez para outra (no PC, rodados duas vezes seguidas: na 1ª p094 falhou, na 2ª os dois
   passaram; o p094 também falha na rodada do `obra-2026-10-26`). Nenhum teste de imagem falhou.
@@ -162,7 +153,11 @@ no PC também no `ab38208` (janela de verdade; ver GitHub).
   pro -6,8% (o JPEG). → conta da sombra barateada (`9fbde20`).
 - 2ª `40553722386` (`83d7ba2` × `9fbde20`): Preto e branco +2,2% = **igual**; "parece mais lento: Trocar de página
   +4,1%" (vai-e-vem 2,0%); Mágico pro -7,5%. → contas novas do Preto e branco barateadas de novo (`cb66bfa`).
-- 3ª `40564361069` (`83d7ba2` × `cb66bfa`): **EM ANDAMENTO na pausa** — ler o veredito.
+- 3ª `40564361069` (`83d7ba2` × `cb66bfa`, a conta final; o `5fa738b` depois só muda a resolução da luz das colunas
+  de volta para a de antes): **nada mais lento** — "parece mais rápido: Mágico pro, 10 páginas -5,2%". Abrir o livro
+  -1,5%, Trocar de página +2,3% (igual; vai-e-vem 10,5%), Preto e branco +1,8% (igual).
+- Custo medido no PC, na prévia de 110 DPI: achar a sombra ~6 ms por página, mais ~10 ms nas páginas com sombra (11
+  de 32 do gabarito). O PDF de Mágico pro/Melhorar ficou mais rápido de gravar (JPEG em vez do zlib nível 9).
 
 ## Perguntas para o Samuel (a gerente leva à Central)
 
@@ -220,8 +215,9 @@ no PC também no `ab38208` (janela de verdade; ver GitHub).
 - **D-466 lugares 5 e 6:** provados em páginas de verdade só no Preto e branco (Matemática 40 e 66); "Melhorar e
   Mágico pro branqueiam o lápis fraco": não achei página onde acontecesse nas olhadas (Pesel, Antiphon, Horas, Escola,
   ljs47, Graduale).
-- **Velocidade:** contas novas (sombra por colunas e por quadradinhos em toda página de Preto e branco; cartão e grão no
-  Melhorar/Mágico pro) — ver o filtro do GitHub.
+- **Velocidade:** contas novas em toda página de Preto e branco (achar a sombra, a mancha redonda) e no Melhorar/Mágico
+  pro com marcação (cartão, grão). O filtro final não vê lentidão (abaixo do vai-e-vem); a prévia do Preto e branco
+  paga ~6 a 16 ms por página.
 
 ## Ideias para a Lista de espera
 
@@ -241,4 +237,4 @@ no PC também no `ab38208` (janela de verdade; ver GitHub).
 `93d2c3d` 4.1 · `1c0cd00` 4.5 JPEG, T do Antiphonal, D-193 · `50f0370` 4.3, sombra da lombada, Pesel, 4.11, 4.12 ·
 `c884467` D-189, celular, D-493 · `8b07089` testes · `7ffba04` limiar da sombra, D-493 só a conta · `34d2021` testes do
 JPEG · `c5a3991` ONDE-PAREI e DECISOES · `46c581e` cartão da Pesel refeito, fotos · `0b00c8d` · `a413d69` junção do
-`obra-2026-10-26` · `0c6ca3f` conferência · `9fbde20` conta da sombra barata (velocidade) · (o último) ONDE-PAREI final.
+`obra-2026-10-26` · `0c6ca3f` conferência · `9fbde20` e `cb66bfa` contas mais baratas (velocidade) · `5fa738b` luz das colunas em 600 pontos · `183de7e` pausa · (o último) ONDE-PAREI final.
