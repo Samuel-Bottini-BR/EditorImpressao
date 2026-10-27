@@ -13,8 +13,7 @@ hora de escrever a pagina, e entra no PDF ja comprimida; o save so grava.
 
 Testes de maquina:
     - a imagem ja esta comprimida no PDF antes do save;
-    - o PDF guarda exatamente os mesmos pixels de antes no 1 bit; na cor e
-      no cinza, desde a etapa 10b (JPEG 92, lista única 4.5), a poucos tons;
+    - o PDF guarda exatamente os mesmos pixels de antes (cor, cinza, 1 bit);
     - o fim (fechar) quase nao prende o GIL (um fio Python continua rodando).
 """
 
@@ -64,9 +63,7 @@ def test_a_imagem_entra_no_pdf_ja_comprimida(tmp_path):
     doc = escritor.doc
     (info,) = doc[0].get_images(full=True)
     xref = info[0]
-    # etapa 10b (lista única 4.5): a página de tons vai em JPEG (DCTDecode); já
-    # comprimida do mesmo jeito, antes do save
-    assert doc.xref_get_key(xref, "Filter") == ("name", "/DCTDecode")
+    assert doc.xref_get_key(xref, "Filter") == ("name", "/FlateDecode")
     bruto = doc.xref_stream_raw(xref)
     assert len(bruto) < 600 * 400 * 3 / 2, "a imagem ficou crua para o save comprimir"
     escritor.fechar()
@@ -93,24 +90,10 @@ def test_os_pixels_guardados_sao_os_mesmos_de_antes(tmp_path, tipo):
     doc.save(antigo, garbage=3, deflate=True)
     doc.close()
 
-    if mono:
-        assert _pixels_guardados(novo) == _pixels_guardados(antigo)
-        with fitz.open(novo) as a, fitz.open(antigo) as b:
-            assert a[0].rect == b[0].rect
-            assert a[0].get_pixmap(dpi=72).samples == b[0].get_pixmap(dpi=72).samples
-        return
-    # Etapa 10b da obra (lista única 4.5, PDF gigante): a página de tons (cor e
-    # cinza) passou a ir em JPEG de qualidade 92 (core.pdf_io.QUALIDADE_DO_JPEG):
-    # os pixels deixam de ser idênticos ponto a ponto, e ficam a poucos tons
-    # (sem diferença visível). O 1 bit continua idêntico (acima).
-    (largura, altura, canais, novos), = _pixels_guardados(novo)
-    (_l, _a, _c, velhos), = _pixels_guardados(antigo)
-    a = np.frombuffer(novos, np.uint8).astype(np.int16)
-    b = np.frombuffer(velhos, np.uint8).astype(np.int16)
-    assert (largura, altura, canais) == (_l, _a, _c) and a.size == b.size
-    assert float(np.abs(a - b).mean()) < 4.0
-    with fitz.open(novo) as d1, fitz.open(antigo) as d2:
-        assert d1[0].rect == d2[0].rect
+    assert _pixels_guardados(novo) == _pixels_guardados(antigo)
+    with fitz.open(novo) as a, fitz.open(antigo) as b:
+        assert a[0].rect == b[0].rect
+        assert a[0].get_pixmap(dpi=72).samples == b[0].get_pixmap(dpi=72).samples
 
 
 def test_o_fim_da_gravacao_quase_nao_prende_a_janela(tmp_path):

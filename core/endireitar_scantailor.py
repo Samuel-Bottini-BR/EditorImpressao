@@ -94,13 +94,12 @@ NOMES_DOS_JEITOS = {
 # para "Para revisar". Em graus.
 LIMITE_DA_DISCORDANCIA = 0.3
 
-# Página reta nas duas contas (etapa 9c da obra, 26/10/2026; Lista de bugs de
-# 09/10: "Endireitar: as contas discordam" em página reta): quando cada conta
-# dá a página a no máximo isto do reto, não há o que conferir, mesmo que uma
-# diga +0,25 e a outra -0,1 (diferença 0,35). A tolerância é a da própria
-# decisão (D-082, 0,3 grau). Medido no Boécio (50 páginas): 12 avisos -> 8.
-# Seguro mudar: o número (maior tira mais avisos de página quase reta).
-ANGULO_QUASE_ZERO = LIMITE_DA_DISCORDANCIA
+# Etapa 9d da obra (auditoria de 27/10/2026): a etapa 9c tinha posto aqui uma
+# exceção (D-496, escolha da gerente: "com as duas contas a até 0,3° do reto,
+# não avisa"), que contrariava a decisão do Samuel D-082 ("quando os dois
+# discordarem mais de 0,3 grau, a página fica marcada 'conferir'"). Desfeita:
+# vale a D-082, sempre que a diferença passar de 0,3 grau, mesmo perto do
+# reto. Arriscado: pôr exceção de novo sem decisão dele.
 
 # O ScanTailor gira no sentido do relógio para ângulo positivo; o programa
 # (OpenCV), no sentido contrário. Ver "O SENTIDO DO ÂNGULO" no topo.
@@ -132,13 +131,10 @@ def jeito_da_pagina(projeto, pagina) -> str:
 
 def discordam(nosso: float | None, do_scantailor: float | None) -> bool:
     """As duas contas discordam mais que LIMITE_DA_DISCORDANCIA? (C1). Sem uma
-    das duas (DLL indisponível), não há discordância a mostrar. Com as duas
-    dando a página reta (ANGULO_QUASE_ZERO, etapa 9c), também não."""
+    das duas (DLL indisponível), não há discordância a mostrar. D-082: vale
+    mesmo com as duas perto do reto (a exceção da etapa 9c saiu na 9d)."""
     if nosso is None or do_scantailor is None:
         return False
-    if (abs(float(nosso)) <= ANGULO_QUASE_ZERO + 1e-6
-            and abs(float(do_scantailor)) <= ANGULO_QUASE_ZERO + 1e-6):
-        return False          # as duas dão a página reta (ver ANGULO_QUASE_ZERO)
     # 1e-6: 0,3° exatos (0,4 - 0,1 em ponto flutuante) não contam como "mais".
     return abs(float(nosso) - float(do_scantailor)) > LIMITE_DA_DISCORDANCIA + 1e-6
 

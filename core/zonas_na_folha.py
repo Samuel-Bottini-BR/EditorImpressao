@@ -455,6 +455,76 @@ def trocar_de_geometria(regioes: list[dict], antes: dict, depois: dict) -> list[
 
 
 # ---------------------------------------------------------------------------
+# D-528: as zonas da folha inteira, repartidas entre as duas metades
+# ---------------------------------------------------------------------------
+#
+# Obra de 26/10/2026, etapa 9d (D-528, escolha da gerente apoiada na pergunta 1
+# da etapa 4): "Ao dividir uma folha pela primeira vez, as marcações feitas na
+# folha inteira vão para a metade em que estão (hoje se perdem, como no
+# Automático)." Cada zona vai para a metade onde fica o CENTRO dela (na folha
+# girada, comparado com a linha da divisao); a "folha inteira em branco"
+# (0,0)-(1,1) vai para as duas. As zonas continuam em fracao da pagina INTEIRA,
+# com a geometria dela anotada: no primeiro desenho de cada metade, acompanhar()
+# as leva para o preparo da metade (a zona fica sobre o MESMO pedaco do papel;
+# o pedaco que passa da linha fica de fora, cortado pela beirada da metade).
+# Sem geometria anotada (pagina nunca desenhada - nao acontece com zona feita
+# na tela, que e desenhada antes): as fracoes sao tomadas como da folha girada
+# (sem corte nem giro) e levadas a mao para a metade, sem geometria (uma
+# aproximacao; o corte e o giro da pagina inteira ficam de fora).
+# Seguro mudar: a regra do centro (ex.: zona nas duas metades). Arriscado:
+# levar as zonas sem a geometria de onde elas valem (cairiam fora do lugar).
+
+def repartir_nas_metades(regioes: list[dict], geometria: dict | None, corte: float
+                         ) -> tuple[list[dict], list[dict], dict | None]:
+    """(zonas da esquerda, zonas da direita, geometria em que elas valem): as
+    zonas `regioes` (dicionarios de core.selecao.Regiao, em fracao da pagina
+    INTEIRA preparada com `geometria`) repartidas pela linha da divisao `corte`
+    (fracao da largura da folha girada). Ver o comentario acima. Devolve
+    copias; nunca muda as de entrada."""
+    import copy
+
+    esquerda: list[dict] = []
+    direita: list[dict] = []
+    c = float(np.clip(float(corte), 0.02, 0.98))
+    validas = [r for r in (regioes or []) if isinstance(r, dict)]
+    if not validas:
+        return esquerda, direita, None
+    com_geometria = geometria_valida(geometria) and geometria.get("metade") == "inteira"
+    if com_geometria:
+        girada = geometria_do_desenho(float(geometria["proporcao"]), int(geometria["rotacao"]),
+                                      None, "inteira", None, 0.0)
+        para_a_girada = _matriz_folha_para_pagina(girada)
+    for regiao in validas:
+        if _e_pagina_inteira(regiao):
+            esquerda.append(copy.deepcopy(regiao))
+            direita.append(copy.deepcopy(regiao))
+            continue
+        if com_geometria:
+            na_folha = pagina_para_folha([regiao], geometria)
+            if not na_folha:
+                continue
+            pontos = _levar([tuple(p[:2]) for p in na_folha[0]["pontos"]], para_a_girada)
+        else:
+            pontos = [(float(p[0]), float(p[1])) for p in (regiao.get("pontos") or []) if len(p) >= 2]
+        if not pontos:
+            continue
+        centro_x = float(np.mean([x for x, _y in pontos]))
+        lado = esquerda if centro_x < c else direita
+        if com_geometria:
+            lado.append(copy.deepcopy(regiao))
+            continue
+        # sem geometria: a fracao da pagina inteira vira a da metade (so x)
+        nova = copy.deepcopy(regiao)
+        if lado is esquerda:
+            nova["pontos"] = [[float(p[0]) / c, float(p[1])] for p in nova.get("pontos") or []]
+        else:
+            nova["pontos"] = [[(float(p[0]) - c) / (1.0 - c), float(p[1])]
+                              for p in nova.get("pontos") or []]
+        lado.append(nova)
+    return esquerda, direita, (dict(geometria) if com_geometria else None)
+
+
+# ---------------------------------------------------------------------------
 # Na memoria: acompanhar a geometria de cada desenho
 # ---------------------------------------------------------------------------
 

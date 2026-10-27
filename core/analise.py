@@ -820,6 +820,9 @@ OBSERVACOES = {
     COR: "o livro inteiro é colorido",
     TAMANHO_DIFERENTE: "as folhas deste livro têm tamanhos variados",
     LOMBADA_INCERTA: "a lombada é difícil de achar neste livro",
+    # D-522: com a conta dos 40% ligada (LIMIAR_DO_LIVRO_LIGADO), "quase
+    # todas" deixa de ser verdade; a frase e o lugar dela sao da etapa 7
+    # (D-521) e de uma decisao do Samuel. Desligada (de fabrica), nada muda.
     EM_BRANCO: "quase todas as páginas parecem estar em branco",
     # Regra ajustada do "Para revisar" (12/10/2026): a faixa em 70% ou mais
     # das paginas vira um aviso so, do livro (Samuel, rodada 4, Camoes 66:
@@ -830,6 +833,30 @@ OBSERVACOES = {
 }
 
 
+# D-522 (Central, `pd-versos-em-branco`, 27/10/2026: "Juntar num aviso só do
+# livro quando forem muitas"; o NUMERO "muitas" = 40% e escolha da gerente,
+# D-014, ainda nao do Samuel): o livro de versos em branco (Egenloff, 49%)
+# ganharia UM aviso do livro, e nao um "Parece em branco" por pagina. Os
+# outros alertas seguem FRACAO_VIRA_OBSERVACAO. Vale so com o limiar de fabrica
+# (quem chama com outro limiar o usa para todos).
+# DESLIGADA DE FABRICA (LIMIAR_DO_LIVRO_LIGADO = False; ordem do Samuel de
+# 27/10/2026, pela gerente: "os agentes estão mudando coisas que eu já tinha
+# definido, é só para fazer o que eu já tinha mandado" - a conta fica pronta,
+# sem mudar o que sai hoje, e o numero vai como pergunta para ele). Desligada,
+# o "Parece em branco" continua virando aviso do livro so com 70%, como antes.
+# Seguro mudar: o numero. Arriscado: ligar sem o "sim" dele; baixar muito (um
+# livro com poucas paginas brancas perderia os avisos por pagina, e os botoes
+# "Deixar em branco" / "Tirar do livro" de cada uma).
+LIMIAR_DO_LIVRO = {EM_BRANCO: 0.40}
+LIMIAR_DO_LIVRO_LIGADO = False
+
+
+def e_observacao_do_livro(observacoes, codigo: str) -> bool:
+    """O alerta `codigo` ja e aviso do livro inteiro (a frase dele esta em
+    `observacoes`, as Projeto.observacoes)? Barato."""
+    return OBSERVACOES.get(codigo) in list(observacoes or [])
+
+
 def separar_observacoes(
     listas_de_alertas: list[list[str]], limiar: float = FRACAO_VIRA_OBSERVACAO
 ) -> tuple[list[str], set[str]]:
@@ -838,6 +865,10 @@ def separar_observacoes(
     Marcar 500 páginas porque TODAS são coloridas não ajuda ninguém: o usuário
     não vai conferir uma a uma, e o contador perde o sentido justamente onde
     deveria servir. Um fato do livro inteiro se diz uma vez só.
+
+    Com o limiar de fábrica e LIMIAR_DO_LIVRO_LIGADO, cada código pode ter o
+    seu (LIMIAR_DO_LIVRO; o "Parece em branco" a partir de 40%, D-522;
+    desligado de fábrica).
 
     Devolve (observações em português, códigos que devem sair das páginas).
     """
@@ -853,7 +884,10 @@ def separar_observacoes(
     observacoes: list[str] = []
     para_remover: set[str] = set()
     for codigo, quantas in sorted(contagem.items(), key=lambda kv: -kv[1]):
-        if quantas / total < limiar or codigo not in OBSERVACOES:
+        do_codigo = (LIMIAR_DO_LIVRO.get(codigo, limiar)
+                     if LIMIAR_DO_LIVRO_LIGADO and limiar == FRACAO_VIRA_OBSERVACAO
+                     else limiar)
+        if quantas / total < do_codigo or codigo not in OBSERVACOES:
             continue
         para_remover.add(codigo)
         observacoes.append(OBSERVACOES[codigo])
