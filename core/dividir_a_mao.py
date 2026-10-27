@@ -220,17 +220,20 @@ def muda_a_lista(campos: dict) -> bool:
 # A regra, feita para NÃO pegar moldura impressa (D-495: "não por regra geral"):
 #   - em cima e embaixo: pula uma tira clara de até TIRA_CLARA do lado; depois
 #     uma faixa NEUTRA bem escura (mais que ESCURO do tom do papel) em pelo
-#     menos FAIXA_CHEIA da largura da folha INTEIRA (a moldura de uma página
-#     de livro aberto não atravessa a lombada), com ESPESSURA_MM ou mais;
+#     menos LINHA_CHEIA da largura da folha INTEIRA (a moldura de uma página
+#     de livro aberto não atravessa a lombada nem chega às beiradas), com
+#     ESPESSURA_MM ou mais (a linha de moldura impressa tem 0,5 a 3 mm; a
+#     faixa da tampa do Righetti, 22 mm);
 #   - dos lados: só a faixa que começa na própria beirada da imagem (a moldura
-#     impressa tem papel em volta), FAIXA_CHEIA da altura entre as faixas de
-#     cima e de baixo, ESPESSURA_MM ou mais;
+#     impressa tem papel em volta), COLUNA_CHEIA da altura entre as faixas de
+#     cima e de baixo, ESPESSURA_MM ou mais (o fundo do Righetti, 46 mm);
 #   - nunca mais que ANDA_NO_MAXIMO do lado.
 ESCURO = 0.45               # mais escuro que isto vezes o tom do papel (como core/borda_preta)
 CROMA_MAXIMO = 40           # neutro: o fundo do scanner é cinza (como core/borda_preta)
 TIRA_CLARA = 0.15           # a tira clara da tampa, no máximo 15% do lado
-FAIXA_CHEIA = 0.90          # a faixa cobre 90% ou mais do comprimento
-ESPESSURA_MM = 4.0          # a faixa tem 4 mm ou mais
+LINHA_CHEIA = 0.97          # em cima/embaixo: a faixa cobre 97% ou mais da largura
+COLUNA_CHEIA = 0.85         # dos lados (começando na beirada): 85% ou mais da altura
+ESPESSURA_MM = 8.0          # a faixa tem 8 mm ou mais
 ANDA_NO_MAXIMO = 0.30       # nunca tira mais que 30% de um lado
 BORDA_CLARA = 0.5           # a beira da faixa (antisserrilhado) até cair abaixo disto
 
@@ -256,13 +259,13 @@ def achar_a_tampa(img: np.ndarray, rotacao: int, dpi: float) -> list | None:
     espessura = max(2, int(round(ESPESSURA_MM * float(dpi) / 25.4)))
 
     linhas = escuro[:, int(larg * 0.02): int(larg * 0.98)].mean(axis=1)
-    y0 = _faixa(linhas, espessura, com_tira_clara=True)
-    y1 = alt - _faixa(linhas[::-1], espessura, com_tira_clara=True)
+    y0 = _faixa(linhas, espessura, LINHA_CHEIA, com_tira_clara=True)
+    y1 = alt - _faixa(linhas[::-1], espessura, LINHA_CHEIA, com_tira_clara=True)
     if y1 - y0 < alt * 0.3:
         return None
     colunas = escuro[y0:y1, :].mean(axis=0)
-    x0 = _faixa(colunas, espessura, com_tira_clara=False)
-    x1 = larg - _faixa(colunas[::-1], espessura, com_tira_clara=False)
+    x0 = _faixa(colunas, espessura, COLUNA_CHEIA, com_tira_clara=False)
+    x1 = larg - _faixa(colunas[::-1], espessura, COLUNA_CHEIA, com_tira_clara=False)
     if x1 - x0 < larg * 0.3:
         return None
     if (x0, y0, x1, y1) == (0, 0, larg, alt):
@@ -271,9 +274,10 @@ def achar_a_tampa(img: np.ndarray, rotacao: int, dpi: float) -> list | None:
             round(x1 / larg, 6), round(y1 / alt, 6)]
 
 
-def _faixa(perfil: np.ndarray, espessura: int, com_tira_clara: bool) -> int:
+def _faixa(perfil: np.ndarray, espessura: int, cheia: float, com_tira_clara: bool) -> int:
     """Quantas linhas (ou colunas), da beirada para dentro, são tampa: a tira
-    clara (só se `com_tira_clara`) e a faixa escura cheia. 0 = nada."""
+    clara (só se `com_tira_clara`) e a faixa escura com `cheia` ou mais do
+    comprimento escuro, por `espessura` pontos ou mais. 0 = nada."""
     n = len(perfil)
     limite = int(n * ANDA_NO_MAXIMO)
     i = 0
@@ -281,10 +285,10 @@ def _faixa(perfil: np.ndarray, espessura: int, com_tira_clara: bool) -> int:
         while i < int(n * TIRA_CLARA) and perfil[i] < BORDA_CLARA:
             i += 1
         # a beira de cima da faixa (antisserrilhado) entre a tira e a faixa
-        while i < limite and BORDA_CLARA <= perfil[i] < FAIXA_CHEIA:
+        while i < limite and BORDA_CLARA <= perfil[i] < cheia:
             i += 1
     comeco = i
-    while i < limite and perfil[i] >= FAIXA_CHEIA:
+    while i < limite and perfil[i] >= cheia:
         i += 1
     if i - comeco < espessura:
         return 0

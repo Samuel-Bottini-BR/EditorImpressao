@@ -296,19 +296,19 @@ programa), a partir do **nome do botão**, da **dica** (o balão do mouse) e das
 
 ### P-059 · "dividir esta" numa folha que entrou como uma página só
 - **chaves:** `área de trabalho/dividir/dividir esta`
-- **dica (hoje):** "Esta folha entrou como uma página só: o jeito de dividir do livro não achou duas páginas nela, e
-  aqui não dá para dividi-la." (o botão fica apagado)
+- **dica:** "Divide esta folha em duas páginas, na lombada (as outras folhas não mudam)." (até a etapa 4 o botão
+  ficava apagado, com a dica "aqui não dá para dividi-la")
 - **decisões:** D-009 ("abrir o livro sem escolher nenhuma opção para fazer tudo manualmente"), D-080, plano de
   26/10, etapa 4 ("Dividir à mão folha por folha [...] 'dividir esta' sempre ativo")
-- **aguarda:** etapa 4 (dividir à mão folha por folha)
 - **na tela:** num livro aberto sem "Dividir", "dividir esta" fica aceso e põe a linha na folha.
-- **no projeto / no PDF:** a folha passa a sair como duas páginas.
+- **no projeto / no PDF:** a folha passa a sair como duas páginas (só ela; as outras não mudam).
 
 ### P-060 · "não dividir esta" / "dividir esta" (folha já dividida)
 - **chaves:** `área de trabalho/dividir/não dividir esta`, `área de trabalho/dividir/dividir esta`
 - **decisões:** D-080 ("trocando numa folha se um ficar ruim")
 - **na tela:** o botão troca de nome ("não dividir esta" ↔ "dividir esta").
-- **no projeto:** a folha deixa de ser dividida (e volta, com "dividir esta").
+- **no projeto:** a folha deixa de ser dividida (e volta, com "dividir esta"); desde a etapa 4 as duas páginas viram
+  uma só na lista e voltam como estavam com "dividir esta".
 - **no PDF:** a folha não dividida sai como UMA página (a folha inteira, deitada).
 
 ### P-061 · "usar em todas" (Dividir)
