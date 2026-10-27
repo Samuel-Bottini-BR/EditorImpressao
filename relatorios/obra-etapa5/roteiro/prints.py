@@ -87,6 +87,24 @@ def _dividir_pelo_automatico(janela, tela, projeto):
     base.esperar(3.0)
 
 
+def _bloco_do_texto(img):
+    """(x0, y0, x1, y1), em fração da página, do maior bloco do impresso (o texto)."""
+    import cv2
+    import numpy as np
+
+    from core.folha import BLOCO_DO_IMPRESSO, mascara_do_impresso
+
+    mascara = mascara_do_impresso(img)
+    altura, largura = mascara.shape
+    lado = max(3, round(BLOCO_DO_IMPRESSO * max(altura, largura)) | 1)
+    juntos = cv2.dilate(mascara.astype(np.uint8), cv2.getStructuringElement(cv2.MORPH_RECT, (lado, lado)))
+    _n, blocos = cv2.connectedComponents(juntos)
+    tinta = np.bincount(blocos[mascara], minlength=_n)
+    tinta[0] = 0
+    ys, xs = np.nonzero(mascara & (blocos == int(np.argmax(tinta))))
+    return xs.min() / largura, ys.min() / altura, (xs.max() + 1) / largura, (ys.max() + 1) / altura
+
+
 def _caixa_escura(img):
     import numpy as np
 
@@ -122,12 +140,12 @@ def main() -> None:
     base.esperar(4.0)
     _p(janela, "02-pagina-7-o-texto-deslocado")
 
-    if not (WORKTREE / "tests" / "test_decisoes_mover.py").exists():
+    if "FERRAMENTA_MOVER" not in (WORKTREE / "ui" / "widgets" / "trilha_agrupada.py").read_text(encoding="utf-8"):
         # o código antigo: a tecla F não faz nada; o "Mover conteúdo" mora no Cortar, cinza
         _letra(janela, "f")
         base.esperar(1.0)
         base.conferir(tela.aba_atual != "mover", "código antigo: não há ferramenta Mover (a tecla F não faz nada)")
-        _letra(janela, "x")
+        _clique_na_trilha(janela, tela, "cortar")
         base.esperar(3.0)
         tela.paineis.abrir("props")
         base.esperar(1.0)
@@ -219,13 +237,13 @@ def main() -> None:
         indice = sum(1 for p in projeto.paginas[:PAGINA] if not p.apagada)
         pix = doc[indice].get_pixmap(dpi=60, colorspace=fitz.csRGB)
         pdf = np.frombuffer(pix.samples, np.uint8).reshape(pix.height, pix.width, 3).copy()
-    # o impresso medido no PDF pela MESMA régua do "Centralizar" (core.folha.caixa_do_impresso:
-    # sem as peças coladas na beirada, como a marca-d'água do site)
-    from core.folha import caixa_do_impresso
-
-    x0, y0, x1, y1 = caixa_do_impresso(pdf[:, :, ::-1].copy())
+    # o BLOCO do texto medido no PDF (o maior bloco do impresso, pela régua de
+    # core.folha.mascara_do_impresso). Não a caixa inteira: depois de mover, as linhas escuras
+    # da beirada do livro escaneado (o "L" embaixo à esquerda) deixam de encostar na beirada da
+    # página e entrariam na conta do PDF, mas na página da tela elas encostam (e ficam de fora).
+    x0, y0, x1, y1 = _bloco_do_texto(pdf[:, :, ::-1].copy())
     base.conferir(abs(x0 - (1 - x1)) < 0.03 and abs(y0 - (1 - y1)) < 0.03,
-                  f"no PDF, o impresso no meio: esquerda {x0:.3f} direita {1 - x1:.3f}, "
+                  f"no PDF, o bloco do texto no meio: esquerda {x0:.3f} direita {1 - x1:.3f}, "
                   f"cima {y0:.3f} baixo {1 - y1:.3f}")
     tela_png = PRINTS / f"{PREFIXO}-07-centralizada.png"
     if tela_png.exists():
