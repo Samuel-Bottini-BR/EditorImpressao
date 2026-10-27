@@ -635,3 +635,9 @@ Valem para a gerente, para todos os agentes (`.claude/agents/`) e para qualquer 
    contraditória ou pouco clara, o agente para e a pergunta vai ao Samuel pela Central (cartão em "Decidir agora").
    A gerente também: antes de oferecer uma opção ou dizer que algo "não existe", procura no Livro de decisões, no
    rascunho do layout e na Central; se já está decidido, cita data e onde está escrito em vez de perguntar de novo.
+
+**Obra de 26/10/2026 (D-014):** o Samuel mandou fazer a obra inteira (plano de 26/10, etapas 0 a 11) "até o final sem
+pausas" e conferir tudo no fim. Durante essa obra **não valem** as regras de conferir cada item antes do próximo e de
+uma fase por vez (§10, item 2; regras de 19/10): cada etapa é feita, testada e juntada no ramo `obra-2026-10-26`; nada
+entra no `fase-1` antes da conferência final dele, item por item. Quando duas decisões dele se contradizem, vale a mais
+recente.
