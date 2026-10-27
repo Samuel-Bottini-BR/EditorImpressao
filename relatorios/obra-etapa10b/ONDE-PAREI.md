@@ -140,6 +140,10 @@ no PC também no `ab38208` (janela de verdade; ver GitHub).
 - **Rodada 3** `40548644579` (no `a413d69`, com a junção): **falham só `test_promessas::test_p085` e `::test_p127`, que
   já falham no `obra-2026-10-26` sem esta etapa** (rodada `40537146001`: p085, p090, p094, p127). O resto das 5 partes
   da suíte e o `teste_botoes.py` passaram.
+- **Rodada 4 (a final)** `40553726768` (no `9fbde20`, com a conta da sombra barata): falham `test_promessas::test_p085`,
+  `::test_p092`, `::test_p094` e `::test_p127`. p085 e p127 falham no `obra-2026-10-26` sem esta etapa; p092 e p094
+  são de janela e mudam de uma vez para outra (no PC, rodados duas vezes seguidas: na 1ª p094 falhou, na 2ª os dois
+  passaram; o p094 também falha na rodada do `obra-2026-10-26`). Nenhum teste de imagem falhou.
 
 VELOCIDADE_AQUI
 
@@ -220,4 +224,4 @@ VELOCIDADE_AQUI
 `93d2c3d` 4.1 · `1c0cd00` 4.5 JPEG, T do Antiphonal, D-193 · `50f0370` 4.3, sombra da lombada, Pesel, 4.11, 4.12 ·
 `c884467` D-189, celular, D-493 · `8b07089` testes · `7ffba04` limiar da sombra, D-493 só a conta · `34d2021` testes do
 JPEG · `c5a3991` ONDE-PAREI e DECISOES · `46c581e` cartão da Pesel refeito, fotos · `0b00c8d` · `a413d69` junção do
-`obra-2026-10-26` · `0c6ca3f` conferência · (o último) ONDE-PAREI final.
+`obra-2026-10-26` · `0c6ca3f` conferência · `9fbde20` conta da sombra barata (velocidade) · (o último) ONDE-PAREI final.
