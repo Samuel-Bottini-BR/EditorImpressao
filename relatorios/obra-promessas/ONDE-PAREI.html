@@ -1,0 +1,1078 @@
+<!doctype html>
+<html lang="pt-BR">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Promessas dos botões — ONDE PAREI</title>
+<style>
+:root { color-scheme: light dark; }
+* { box-sizing: border-box; }
+body {
+  font: 17px/1.65 "Segoe UI", system-ui, sans-serif;
+  max-width: 46rem; margin: 0 auto; padding: 2.5rem 1.5rem 6rem;
+  color: #1c1c1e; background: #fdfdfc;
+}
+h1 { font-size: 2rem; line-height: 1.2; margin: 0 0 .3em; letter-spacing: -.02em; }
+h2 { font-size: 1.35rem; margin: 2.4em 0 .6em; padding-top: .8em;
+     border-top: 1px solid #e6e4e0; letter-spacing: -.01em; }
+h3 { font-size: 1.1rem; margin: 1.8em 0 .4em; }
+h1 + p, h2 + p { margin-top: .4em; }
+p, li { margin: 0 0 .9em; }
+ul, ol { padding-left: 1.3em; }
+strong { font-weight: 640; }
+code {
+  font: .88em ui-monospace, "Cascadia Code", Consolas, monospace;
+  background: #f1efec; padding: .12em .35em; border-radius: 4px;
+}
+pre {
+  background: #f1efec; padding: 1em 1.1em; border-radius: 8px;
+  overflow-x: auto; line-height: 1.5;
+}
+pre code { background: none; padding: 0; }
+blockquote {
+  margin: 1.2em 0; padding: .1em 0 .1em 1.1em;
+  border-left: 3px solid #c9c5be; color: #55524d;
+}
+table {
+  border-collapse: collapse; width: 100%; margin: 1.2em 0;
+  font-size: .95rem; display: block; overflow-x: auto;
+}
+th, td { padding: .5em .8em; text-align: left; border-bottom: 1px solid #e6e4e0; }
+th { font-weight: 620; background: #f7f5f2; white-space: nowrap; }
+tr:last-child td { border-bottom: none; }
+img { max-width: 100%; height: auto; border-radius: 6px; margin: 1em 0;
+      border: 1px solid #e6e4e0; }
+hr { border: none; border-top: 1px solid #e6e4e0; margin: 2.5em 0; }
+.rodape { margin-top: 4em; padding-top: 1.2em; border-top: 1px solid #e6e4e0;
+          font-size: .85rem; color: #86827c; }
+@media (prefers-color-scheme: dark) {
+  body { color: #e8e6e3; background: #1a1917; }
+  h2 { border-top-color: #35332f; }
+  code, pre, th { background: #262421; }
+  th, td { border-bottom-color: #35332f; }
+  blockquote { border-left-color: #4a4741; color: #b0aca6; }
+  img { border-color: #35332f; }
+  .rodape { border-top-color: #35332f; color: #7d7973; }
+}
+@media print {
+  body { max-width: none; padding: 0; color: #000; background: #fff; }
+  h2 { page-break-after: avoid; }
+  table, img { page-break-inside: avoid; }
+}
+</style>
+</head>
+<body>
+<h1>Bateria nova, parte 4: "Cada botão prova que faz o que promete" — ONDE PAREI</h1>
+<p>Verificador (<code>.claude/agents/verificador.md</code>), ramo <code>obra-promessas-2026-10-26</code> (base <code>obra-2026-10-26</code> <code>fdabf0d</code>,
+com as etapas 1, 2 e 9a), worktree <code>.claude/worktrees/obra-promessas</code>. Não mexi em <code>ui/</code> nem <code>core/</code>: só testes, a lista
+de promessas e este relatório. Teste de <strong>máquina</strong> (nenhum teste de olho nesta tarefa).</p>
+<p><strong>Situação: PRONTO PARA CONFERIR</strong> (a lista e as provas). Nunca "aprovado": quem marca é o Samuel.</p>
+<h2>Em uma frase</h2>
+<p>Os 129 botões e ações do programa ganharam promessa escrita; o programa de hoje cumpre 110, quebra 8 (são 4 defeitos
+reais, achados por esta bateria) e 11 esperam a etapa que vai construí-los.</p>
+<h2>Decisões que esta tarefa precisa cumprir (palavras do Samuel)</h2>
+<table>
+<thead>
+<tr>
+<th>Nº</th>
+<th>Palavras dele</th>
+<th>O que esta tarefa faz</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>D-010 (26/10)</td>
+<td>"eu acho que o botão tem que ser provado que ele faz o que se diz que se faz, e não só se ele muda algo na tela."</td>
+<td>Uma promessa escrita por botão (<code>tests/promessas/promessas.md</code>), tirada do nome, da dica e do Livro; o teste (<code>tests/test_promessas.py</code>) clica e confere a promessa inteira: tela, projeto gravado e PDF gerado de verdade. Botão sem promessa reprova.</td>
+</tr>
+<tr>
+<td>D-011 (26/10)</td>
+<td>"Sim" (nova bateria de testes: teste do Kaique, tarefas, decisões, promessas, conferência em caminho)</td>
+<td>Esta é a parte "promessas" (item 4 da bateria, plano de 26/10).</td>
+</tr>
+<tr>
+<td>D-014 (26/10)</td>
+<td>"Faça até o final sem pausas [...] pode escolher sem minha conferência"</td>
+<td>Os detalhes foram decididos por mim (ver "Escolhas que fiz").</td>
+</tr>
+<tr>
+<td>Regra 4 do §11</td>
+<td>"Aparência não conta como prova."</td>
+<td>A prova mede o <code>projeto.json</code>, o <code>acoes.jsonl</code> e o PDF que sai, não só a tela.</td>
+</tr>
+</tbody>
+</table>
+<h2>Como cumpri cada uma</h2>
+<table>
+<thead>
+<tr>
+<th>Decisão</th>
+<th>Como ficou</th>
+<th>Prova</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>D-010 "provado que ele faz o que se diz"</td>
+<td>129 promessas, cada uma com chaves (onde o botão está), dica, decisões citadas e o que acontece <strong>na tela / no projeto / no PDF</strong>. Cada uma tem uma prova <code>@prova("P-NNN")</code> que aperta o botão de verdade (sinal <code>clicked</code>, <code>trigger</code> do menu, clique do mouse na trilha, nos ícones da direita e nos cartõezinhos do filtro) e confere. Onde a promessa fala do PDF, o PDF é gerado pelo "Confirmar e processar" e medido (número de páginas, qual página é qual pelo bloco preto de cada folha, página branca, deitada, preto e branco, papel amarelado, tamanho em mm).</td>
+<td><code>tests/test_promessas.py</code>: 239 casos; rodada final no PC: <strong>217 passaram, 11 falharam (os 4 defeitos), 11 xfail (aguardam etapa)</strong>, 17 min 42 s</td>
+</tr>
+<tr>
+<td>D-010 "Botão sem promessa reprova"</td>
+<td>A varredura abre o programa sem janela, passa por todas as telas e estados que sabe abrir (tela dos livros vazia e com livro, livro aberto, "Todas as páginas", "O que fazer", cada ferramenta com o Propriedades, cada painel, página com aviso, "Por motivo", sanfona, miniaturas fechadas, "Só neste pedaço", "Só as letras", 5 partes das Configurações, as janelas e as caixas de pergunta) e anota a chave de cada botão à vista.</td>
+<td><code>test_todo_botao_tem_promessa</code> (passa: nenhum botão sem promessa) e o contrário, <code>test_toda_promessa_tem_botao</code> (promessa de botão que sumiu reprova); <code>test_toda_promessa_tem_prova</code></td>
+</tr>
+<tr>
+<td>"aguarda etapa" (pedido da gerente)</td>
+<td>Promessa com o campo <strong>aguarda</strong> vira <code>xfail(strict=True)</code> com o motivo; quando a etapa fizer, o xfail estrito vira erro e obriga a tirar a marca.</td>
+<td>11 xfail, nenhum XPASS</td>
+</tr>
+<tr>
+<td>"Aparência não é prova"</td>
+<td>Nenhuma prova para no "mudou a tela": cada uma confere o projeto gravado (o <code>projeto_gravado()</code> força a gravação e lê o <code>projeto.json</code> do disco) e, quando a promessa diz, o PDF. Quando a promessa diz que o PDF não muda, confere que o projeto gravado não mudou (o PDF sai só do livro e do projeto). Um erro escondido de botão (o <code>erros.log</code>) também reprova.</td>
+<td>fixture <code>_nenhum_erro_escondido</code></td>
+</tr>
+</tbody>
+</table>
+<h2>Os defeitos reais achados (promessas quebradas)</h2>
+<p><strong>A. O filtro escolhido à mão não vale no PDF quando "Limpar a folha" não foi marcada.</strong> Livro aberto sem marcar nada
+(D-009: "eu deveria conseguir abrir o livro sem escolher nenhuma opção para fazer tudo manualmente"); escolho Preto e
+branco numa página (pelo cartãozinho do painel, pelo menu, pela tecla, pelo botão "usar Mágico pro nesta" do aviso, pelo
+"todas"): o projeto grava o filtro, mas a página sai no PDF amarelada, como no Original. Com "Limpar a folha" marcada, sai
+certo (conferi). Causa: a tela não grava a marca "mexida à mão" do filtro — <code>core/etapas.marcar_mexida_a_mao</code> não é
+chamada por nenhum arquivo de <code>ui/</code>; o plano de 26/10 mandou "ligar nas etapas 2/3/5" e a etapa 2 entrou sem ligar. É o
+mesmo defeito da tarefa 8 do teste do Kaique ("Preto e branco" ignorado). Promessas: P-005 (o PDF depois de
+"continuar"), P-080, P-081, P-109. <strong>Sem dono certo</strong> (etapa 3 ou 5: a gerente decide).</p>
+<p><strong>B. "Deixar a folha em branco" e "pintar de branco" não chegam ao PDF numa página em Original.</strong> A folha inteira
+marcada como papel (menu Marcar &gt; "Deixar a folha em branco") e a área "pintada de branco" ficam gravadas no projeto, mas
+a página em Original (a de fábrica, D-134) sai com tudo, amarelada — mesmo com "Limpar a folha" marcada. Em Preto e
+branco sai branca. D-027 está no Livro como "construída". Promessas: P-078, P-075. <strong>Sem dono.</strong></p>
+<p><strong>C. Pelo menu Arquivo &gt; "Confirmar e processar" (Ctrl+Enter) o programa não mostra a janela "Antes de processar".</strong>
+Com avisos pendentes, o botão da área de trabalho mostra a lista (D-274: "quando alguém tentar imprimir sem ver os
+alertas o programa para e mostra os alertas"); o menu e a tecla vão direto para o destino, porque chamam
+<code>JanelaPrincipal.processar</code> sem passar por <code>TelaConferir._pedir_processamento</code>. Promessa P-127 (só o caso do menu
+falha). <strong>Sem dono.</strong></p>
+<p><strong>D. O menu Filtro tem tique, mas o tique não acompanha a página.</strong> Escolhido o Preto e branco, o menu continua sem
+marca; e o tique de um clique no menu fica lá ao passar para uma página em Original. P-085. É uma promessa minha (tirada de
+os itens serem de marcar, como os do menu Painéis, em que "a marca acompanha", D-057) — <strong>a conferir com o Samuel</strong> se ele
+quer o tique ou itens sem tique. <strong>Sem dono.</strong></p>
+<p>As 8 promessas quebradas ficam vermelhas no teste de propósito, cada uma com o campo <strong>defeito</strong> na lista. Para o
+<code>obra-2026-10-26</code> juntar sem vermelho, a gerente dá dono a cada defeito e troca <strong>defeito</strong> por <strong>aguarda</strong> (a prova vira
+xfail estrito e passa a ser exigida quando a etapa consertar).</p>
+<h2>As que aguardam etapa (11, xfail estrito)</h2>
+<table>
+<thead>
+<tr>
+<th>Promessa</th>
+<th>Aguarda</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>P-012 "Rodar o automático..." abre o Automático, sem a tela "O que fazer"</td>
+<td>etapa 3 (D-002/D-018)</td>
+</tr>
+<tr>
+<td>P-137 aviso de livro novo ("Rodar o automático…" / "agora não")</td>
+<td>etapa 3 (D-005/D-018)</td>
+</tr>
+<tr>
+<td>P-139 painel Automático de verdade (rodar em todas/escolhidas/uma página, uma etapa só)</td>
+<td>etapa 3 (D-002/D-003/D-004)</td>
+</tr>
+<tr>
+<td>P-059 "dividir esta" numa folha que entrou como uma página só (livro aberto sem "Dividir": hoje o botão fica apagado)</td>
+<td>etapa 4</td>
+</tr>
+<tr>
+<td>P-136 "Ver lado a lado" na área de trabalho (barra de baixo e menu Ver)</td>
+<td>etapa 6 (D-015/D-058)</td>
+</tr>
+<tr>
+<td>P-095 "ver as N em tela cheia" no Para revisar</td>
+<td>etapa 7 (D-259)</td>
+</tr>
+<tr>
+<td>P-101 "está certo" com resposta (vai para a próxima dúvida)</td>
+<td>etapa 7 (lista única 1.1)</td>
+</tr>
+<tr>
+<td>P-061 "usar em todas" do Dividir abre a lista com as exceções</td>
+<td>etapa 9 (D-090)</td>
+</tr>
+<tr>
+<td>P-125 Desfazer apagado sem nada para desfazer (barra de baixo e menu)</td>
+<td>etapa 9</td>
+</tr>
+<tr>
+<td>P-129 o Desfazer desfaz também a marcação ("Limpar tudo", Retângulo)</td>
+<td>etapa 9 (lista única 1.3 e 4.6)</td>
+</tr>
+<tr>
+<td>P-027 a lista de atalhos em português (hoje "Ctrl+Return", "Left", "Del")</td>
+<td>etapa 11 (lista única 5.10)</td>
+</tr>
+</tbody>
+</table>
+<h2>Escolhas que fiz (D-014)</h2>
+<ul>
+<li><strong>Lista em <code>.md</code></strong> (<code>tests/promessas/promessas.md</code>), não <code>.yaml</code>: o PyYAML não está no <code>requirements.txt</code>; o formato
+  <code>### P-NNN · título</code> + <code>- **campo:** texto</code> é lido por <code>ler_promessas()</code>.</li>
+<li><strong>Uma entrada por botão, ou por ação que mora em vários lugares</strong> (ex.: "Girar ¼ à direita" no painel, no canto da
+  página e no menu é a P-050, com as três chaves; a prova aperta as três).</li>
+<li><strong>Chave = <code>tela/lugar/rótulo</code></strong>, com os números trocados por N; os lugares da área de trabalho saem de
+  <code>lugares_da_area_de_trabalho()</code> (um lugar desconhecido vira "?" e reprova até ganhar lugar e promessa).</li>
+<li><strong>Os botões dos avisos</strong> entram pelo catálogo <code>core/analise.ALERTAS</code>, pela correção (<code>aviso/em_branco</code>,
+  <code>aviso/apagar</code>…), porque cada um só aparece na página que tem aquele aviso.</li>
+<li><strong>Caixinhas (QCheckBox) e bolinhas (QRadioButton) ficaram fora da varredura</strong> desta leva: são opções, não botões.
+  As listas (combos) também. Fica para a próxima leva (ressalva abaixo).</li>
+<li><strong>O livro do teste abre sem nenhuma caixinha</strong> (como vai abrir depois da etapa 3, D-002/D-009). Tudo isso mora num
+  ajudante só, <code>abrir_livro_para_teste()</code> (<code>tests/promessas/ajudantes.py</code>), para a gerente ajustar quando a etapa 3 mudar
+  o caminho de abrir.</li>
+<li><strong>Livro sintético</strong> (papel amarelado, um bloco preto numa altura diferente em cada folha, para saber no PDF qual página
+  é qual), sem lombada nem capa (regra de 21/10). A medida é de lugar, cor e tamanho, não de qualidade de imagem.</li>
+<li><strong>A tela "O que fazer"</strong>: as promessas dos botões dela dizem "sai na: etapa 3"; as provas pulam sozinhas quando a tela
+  sair.</li>
+<li><strong>Achado no caminho:</strong> a caixa "Lista de atalhos" mostrava "Show Details..." nos testes porque o teste não carregava a
+  tradução do Qt que o <code>main.py</code> carrega (etapa 9a). O teste agora carrega igual ao programa (<code>traduzir_o_qt</code>) e lá
+  aparece "Mostrar detalhes...".</li>
+</ul>
+<h2>Ressalvas (o que não está provado)</h2>
+<ol>
+<li><strong>Clique simulado, não mouse de verdade.</strong> As provas usam <code>botao.click()</code>, <code>acao.trigger()</code> e <code>QTest.mouseClick</code> —
+   passam pelo sinal e pelo evento do Qt, mas não pelo mouse do Windows. O verificador já viu (22/09) o <code>QTest</code> passar
+   enquanto o uso real falhava em arrastar; para clique de botão o risco é menor, mas a prova com a janela de verdade é
+   o teste do Kaique.</li>
+<li><strong>Caixinhas, bolinhas e listas não estão na varredura</strong> (ex.: "Esta página tem foto", "Só as letras", "Limpar a
+   sujeira", "Mostrar as áreas achadas", as caixinhas da tela "O que fazer", a lista do jeito do "Só as letras"). Algumas
+   aparecem dentro de provas (P-074, P-083, P-084), mas não há promessa para cada uma.</li>
+<li><strong>A varredura só vê o que ela sabe abrir.</strong> Botão que só aparece num estado que ela não monta não reprova. Os conhecidos
+   "fora da varredura": "Ajustar o pedaço à figura" (P-076, a prova monta o caso). As caixas de pergunta entram pelas
+   ações que as abrem (Começar de novo?, Renomear, Tirar da lista?, Já existe um arquivo, Ir para a página, Nome do
+   arquivo, Lista de atalhos, Mandar para a impressora?); a "Este livro tem fundo separado?" (PDF com camadas) não.</li>
+<li><strong>Algumas provas são mais fracas que a promessa:</strong> P-110 ("usar o corte alargado": o livro sintético não tem corte
+   alargado medido; a prova só vê que o clique entrou no histórico), P-111 e P-113 (só o projeto), P-062/P-138/P-143
+   (vão para a tela "O que fazer", que sai na etapa 3), P-151 e P-161 (a impressora é trocada por uma que anota o que
+   recebeu: nada vai para a EPSON — D-332 continua pedindo a folha de verdade).</li>
+<li><strong>Avisos postos à mão.</strong> Para mostrar o botão de um aviso, a prova põe o aviso na página e redesenha a faixa; ao trocar
+   de página, o programa refaz os avisos que ele mesmo mede (o "contas discordam" de mentira sai), por isso a prova põe
+   o aviso depois de chegar na página.</li>
+<li><strong>Tempo:</strong> o arquivo leva ~15 a 18 min no PC (gera ~60 PDFs pequenos). Não rodei o conjunto inteiro nem o GitHub
+   (regra: um arquivo por vez no PC; o conjunto é da gerente). A rodada do GitHub vai mostrar os 11 vermelhos dos 4
+   defeitos até eles ganharem dono.</li>
+<li><strong>P-085 (tique do menu Filtro)</strong> é promessa minha, sem decisão do Samuel: pergunta abaixo.</li>
+</ol>
+<h2>Perguntas para o Samuel (a gerente leva à Central)</h2>
+<ol>
+<li><strong>Menu Filtro:</strong> os itens têm tique, mas o tique não mostra o filtro da página. Prefere (a) o tique acompanhando o
+   filtro da página da vez, ou (b) itens sem tique? (defeito D, P-085)</li>
+</ol>
+<h2>O que mudou (arquivos)</h2>
+<ul>
+<li><code>tests/promessas/promessas.md</code> — a lista das 129 promessas (novo).</li>
+<li><code>tests/promessas/ajudantes.py</code> — livro sintético, abrir/gravar/gerar, medidas do PDF, varredura (novo).</li>
+<li><code>tests/promessas/__init__.py</code> (novo).</li>
+<li><code>tests/test_promessas.py</code> — a varredura e as provas (novo).</li>
+<li><code>relatorios/obra-promessas/roteiro/explorar.py</code> (exploração inicial dos botões) e <code>tabela.py</code> (monta a tabela abaixo
+  a partir de uma rodada com <code>--junitxml</code>).</li>
+</ul>
+<h2>Commits</h2>
+<ul>
+<li><code>0412dd9</code> Promessas: provas ajustadas; 4 defeitos reais anotados na lista (filtro à mão fora do PDF, folha em branco no Original, menu processar sem 'Antes de processar', menu Filtro sem tique)</li>
+<li><code>ee146f2</code> Promessas: provas de todas as promessas (tela, projeto e PDF), primeira rodada de ajustes</li>
+<li><code>7fbe4a6</code> Promessas dos botões: lista, varredura de todos os botões e primeiras provas (D-010)</li>
+<li>(o último commit, com este relatório: ver <code>git log</code> do ramo)</li>
+</ul>
+<h2>Tabela: botão | promessa | cumpre / quebra / aguarda etapa</h2>
+<p>Rodada final no PC (27/10/2026): <code>pytest tests\test_promessas.py</code> → 217 passaram, 11 falharam, 11 xfail. "QUEBRA" = ao
+menos um caso da promessa falhou (ex.: P-080 falha só no PDF do Preto e branco pelo painel; menu e teclas gravam certo).</p>
+<table>
+<thead>
+<tr>
+<th>Promessa</th>
+<th>Botão (onde)</th>
+<th>O que promete (resumo)</th>
+<th>Situação</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>P-001</td>
+<td>"+" (abrir um PDF novo) — <code>início/livros/+ (abrir um PDF)</code>, <code>menu/abrir</code></td>
+<td>nada ainda. nasce o projeto do livro escolhido (pasta com <code>projeto.json</code>, <code>caminho_entrada</code> = o PDF). abre a janela de escolher o arquivo; e…</td>
+<td>cumpre</td>
+</tr>
+<tr>
+<td>P-002</td>
+<td>Configurações — <code>início/livros/Configurações</code>, <code>menu/configuracoes</code></td>
+<td>nada muda. <strong>no PDF:</strong> nada muda. abre a janela Configurações, com a lista das partes à esquerda.</td>
+<td>cumpre</td>
+</tr>
+<tr>
+<td>P-003</td>
+<td>Ajuda (a lista de atalhos) — <code>início/livros/Ajuda</code>, <code>menu/atalhos</code>, <code>caixa “Lista de atalhos”/fechar</code> …</td>
+<td>nada muda. <strong>no PDF:</strong> nada muda. abre "Lista de atalhos" com os atalhos tirados dos próprios menus (ex.: "Desfazer — Ctrl+Z"), em português…</td>
+<td>cumpre</td>
+</tr>
+<tr>
+<td>P-027</td>
+<td>a lista de atalhos em português — <code>menu/atalhos</code></td>
+<td>as teclas aparecem com nome em português ("Ctrl+Enter", "Ctrl+Seta para a esquerda", "Delete"), sem "Return", "Left", "Right", "Del".</td>
+<td>aguarda etapa 11 (revisão dos nomes: lista única 5.10)</td>
+</tr>
+<tr>
+<td>P-004</td>
+<td>clique no cartão do livro — <code>início/livros/(clique no cartão)</code></td>
+<td>nada muda. o livro abre na tela inteira (nome, páginas para folhear), sem os outros cartões.</td>
+<td>cumpre</td>
+</tr>
+<tr>
+<td>P-005</td>
+<td>"continuar" (cartão, livro aberto e menu do livro) — <code>início/livros/continuar</code>, <code>início/livro aberto/Continuar</code>, <code>início/menu do livro/continuar</code> …</td>
+<td>o PDF gerado depois de continuar sai com o trabalho de antes. o trabalho volta igual (nada se perde). a área de trabalho do livro, com o que…</td>
+<td><strong>QUEBRA</strong> (defeito A)</td>
+</tr>
+<tr>
+<td>P-006</td>
+<td>"começar de novo" (menu do livro) — <code>início/menu do livro/começar de novo</code>, <code>início/livro aberto/Mais... começar de novo</code>, <code>caixa “Começar de novo?”/Começar de novo</code> …</td>
+<td>depois de "Começar de novo", o PDF sai sem o trabalho antigo. com "Começar de novo" o trabalho de antes sai do projeto (a página em Preto e …</td>
+<td>cumpre</td>
+</tr>
+<tr>
+<td>P-007</td>
+<td>"renomear" (menu do livro) — <code>início/menu do livro/renomear</code>, <code>início/livro aberto/Mais... renomear</code>, <code>caixa “Renomear”/OK</code> …</td>
+<td>o nome novo fica gravado (aparece de novo ao reabrir a tela dos livros). O PDF do livro não muda. pede o nome; com OK o cartão passa a mostr…</td>
+<td>cumpre</td>
+</tr>
+<tr>
+<td>P-008</td>
+<td>"abrir a pasta de saída" / "abrir a pasta" — <code>início/menu do livro/abrir a pasta de saída</code>, <code>início/livro aberto/Mais... abrir a pasta de saída</code>, <code>início/livros/abrir a pasta</code> …</td>
+<td>nada muda. <strong>no PDF:</strong> nada muda. abre o Explorador do Windows na pasta onde o PDF pronto foi gravado.</td>
+<td>cumpre</td>
+</tr>
+<tr>
+<td>P-009</td>
+<td>"remover da lista" (Tirar da lista) — <code>início/menu do livro/remover da lista</code>, <code>início/livro aberto/Mais... remover da lista</code>, <code>caixa “Tirar da lista?”/Tirar da lista</code> …</td>
+<td>o PDF do livro (a entrada) continua onde estava, intacto. a pasta do projeto sai da lista (as cópias de segurança vão para `copias-de-segura…</td>
+<td>cumpre</td>
+</tr>
+<tr>
+<td>P-010</td>
+<td>"Voltar para os livros" (Esc) — <code>início/livro aberto/Voltar para os livros</code></td>
+<td>volta aos cartões, com o cartão deste livro marcado.</td>
+<td>cumpre</td>
+</tr>
+<tr>
+<td>P-011</td>
+<td>"Rodar o automático..." (livro aberto), como é hoje — <code>início/livro aberto/Rodar o automático...</code></td>
+<td>nada muda até confirmar. abre as escolhas do automático deste livro, com as que ele já tinha.</td>
+<td>cumpre</td>
+</tr>
+<tr>
+<td>P-012</td>
+<td>"Rodar o automático..." abre o Automático de verdade — <code>início/livro aberto/Rodar o automático...</code></td>
+<td>abre o livro na área de trabalho com o Automático (painel ou janela grande), não a tela "O que fazer".</td>
+<td>aguarda etapa 3, D-002/D-018</td>
+</tr>
+<tr>
+<td>P-013</td>
+<td>"Ver todas as páginas" (livro aberto) — <code>início/livro aberto/Ver todas as páginas</code></td>
+<td>a grade com todas as páginas, em "uma a uma". <strong>no projeto:</strong> nada muda.</td>
+<td>cumpre</td>
+</tr>
+<tr>
+<td>P-014</td>
+<td>"Confirmar e processar..." (livro aberto) — <code>início/livro aberto/Confirmar e processar...</code></td>
+<td>o PDF sai com todas as páginas do livro. abre o trabalho e mostra a janela de confirmar o destino; confirmado, gera.</td>
+<td>cumpre</td>
+</tr>
+<tr>
+<td>P-015</td>
+<td>"Uma página" / "Duas lado a lado" (livro aberto) — <code>início/livro aberto/Uma página</code>, <code>início/livro aberto/Duas lado a lado</code></td>
+<td>nada muda (a escolha vai para as configurações do programa). mostra uma página por vez, ou as páginas em pares; a escolha fica para o próxim…</td>
+<td>cumpre</td>
+</tr>
+<tr>
+<td>P-016</td>
+<td>"Rolar sem parar" (livro aberto) — <code>início/livro aberto/Rolar sem parar</code></td>
+<td>ligado, as páginas rolam uma atrás da outra; desligado, uma de cada vez. Lembrado.</td>
+<td>cumpre</td>
+</tr>
+<tr>
+<td>P-017</td>
+<td>"Caber a página" / "Caber a altura" / "Caber a largura" / "Tamanho real" (livro aberto) — <code>início/livro aberto/Caber a página</code>, <code>início/livro aberto/Caber a altura</code>, <code>início/livro aberto/Caber a largura</code> …</td>
+<td>o tamanho da página na tela muda como diz o nome; o botão escolhido fica aceso; lembrado.</td>
+<td>cumpre</td>
+</tr>
+<tr>
+<td>P-018</td>
+<td>"‹" / "›" (folha anterior / próxima, no livro aberto) — <code>início/livro aberto/‹</code>, <code>início/livro aberto/›</code></td>
+<td>vai para a folha de antes / a de depois.</td>
+<td>cumpre</td>
+</tr>
+<tr>
+<td>P-019</td>
+<td>"Todas as páginas": "uma a uma" / "em pares" / "todas" / "só as que precisam de atenção" — <code>início/todas as páginas/uma a uma</code>, <code>início/todas as páginas/em pares</code>, <code>início/todas as páginas/todas</code> …</td>
+<td>nada muda. a grade mostra uma a uma, em pares, todas ou só as que têm aviso (a contagem entre parênteses bate com as páginas com aviso).</td>
+<td>cumpre</td>
+</tr>
+<tr>
+<td>P-020</td>
+<td>"voltar ao livro" / "voltar ao trabalho" (Todas as páginas) — <code>início/todas as páginas/voltar ao livro</code>, <code>área de trabalho/todas as páginas/voltar ao trabalho</code></td>
+<td>sai da grade e volta na mesma página em que estava.</td>
+<td>cumpre</td>
+</tr>
+<tr>
+<td>P-026</td>
+<td>"Mais..." (livro aberto) — <code>início/livro aberto/Mais...</code></td>
+<td>nada muda só por abrir o menu. abre o menu do livro (continuar, começar de novo, renomear, abrir a pasta de saída, remover da lista).</td>
+<td>cumpre</td>
+</tr>
+<tr>
+<td>P-021</td>
+<td>"Conferir" — <code>o que fazer/Conferir</code></td>
+<td>as escolhas da tela ficam gravadas no projeto. leva à área de trabalho, mesmo sem nenhuma caixinha marcada.</td>
+<td>cumpre</td>
+</tr>
+<tr>
+<td>P-022</td>
+<td>"voltar" (tela "O que fazer") — <code>o que fazer/voltar</code></td>
+<td>volta para a tela dos livros, sem abrir a área de trabalho.</td>
+<td>cumpre</td>
+</tr>
+<tr>
+<td>P-023</td>
+<td>receitas: "pôr neste livro" / "guardar" / "apagar" — <code>o que fazer/pôr neste livro</code>, <code>o que fazer/guardar</code>, <code>o que fazer/apagar</code></td>
+<td>a receita fica gravada nas configurações do programa. "guardar" guarda as caixinhas de agora com o nome digitado (aparece na lista); "pôr ne…</td>
+<td>cumpre</td>
+</tr>
+<tr>
+<td>P-024</td>
+<td>"Mais opções" (tela "O que fazer") — <code>o que fazer/Mais opções</code></td>
+<td>abre as opções a mais daquele grupo (abre e fecha).</td>
+<td>cumpre</td>
+</tr>
+<tr>
+<td>P-025</td>
+<td>folhear o PDF: "&lt;", "&gt;", "tela cheia" (tela "O que fazer") — <code>o que fazer/&lt;</code>, <code>o que fazer/&gt;</code>, <code>o que fazer/tela cheia</code></td>
+<td>a página mostrada passa para a de antes / a de depois; "tela cheia" abre a página grande.</td>
+<td>cumpre</td>
+</tr>
+<tr>
+<td>P-030</td>
+<td>Dividir a folha — <code>trilha/dividir</code>, <code>menu/usar_dividir</code></td>
+<td>nada muda só por escolher a ferramenta. <strong>no PDF:</strong> nada muda. a ferramenta fica escolhida (marcada na trilha e no menu Ferramentas); a folh…</td>
+<td>cumpre</td>
+</tr>
+<tr>
+<td>P-031</td>
+<td>Cortar as bordas — <code>trilha/cortar</code>, <code>menu/usar_cortar</code></td>
+<td>nada muda. <strong>no PDF:</strong> nada muda. a ferramenta fica escolhida; o Propriedades abre com os botões do Cortar.</td>
+<td>cumpre</td>
+</tr>
+<tr>
+<td>P-032</td>
+<td>Endireitar — <code>trilha/endireitar</code>, <code>menu/usar_endireitar</code></td>
+<td>nada muda. <strong>no PDF:</strong> nada muda. a ferramenta fica escolhida; o Propriedades abre com os botões do Endireitar.</td>
+<td>cumpre</td>
+</tr>
+<tr>
+<td>P-033</td>
+<td>ferramentas de marcar (Retângulo, Oval, Laço, Ponto a ponto, Pincel, Varinha, Pegar tudo desta cor, Mover e mudar o tamanho da área) — <code>trilha/retangulo</code>, <code>menu/usar_retangulo</code>, <code>trilha/elipse</code> …</td>
+<td>nada muda só por escolher. <strong>no PDF:</strong> nada muda. a ferramenta fica escolhida (trilha, menu Ferramentas e o editor de marcar com ela); o Pro…</td>
+<td>cumpre</td>
+</tr>
+<tr>
+<td>P-034</td>
+<td>Zoom e Mão — <code>trilha/zoom</code>, <code>menu/usar_zoom</code>, <code>trilha/mao</code> …</td>
+<td>nada muda. <strong>no PDF:</strong> nada muda. a ferramenta fica escolhida; o Propriedades diz que ela só serve para olhar.</td>
+<td>cumpre</td>
+</tr>
+<tr>
+<td>P-040</td>
+<td>ícone de cada painel / menu Painéis — <code>ícones da direita/revisar</code>, <code>ícones da direita/automatico</code>, <code>ícones da direita/props</code> …</td>
+<td>nada muda. abre o painel (um por vez), ao lado da página, nunca por cima; o ícone e o menu Painéis marcam o aberto; clicar de novo no ícone …</td>
+<td>cumpre</td>
+</tr>
+<tr>
+<td>P-041</td>
+<td>seta dos ícones / "Ícones da direita" — <code>ícones da direita/seta</code>, <code>menu/icones</code></td>
+<td>esconde os ícones da direita (sobra a seta) e mostra de novo; o item do menu acompanha.</td>
+<td>cumpre</td>
+</tr>
+<tr>
+<td>P-042</td>
+<td>"fechar o painel" / "Fechar o painel" / "esconder os painéis" — <code>área de trabalho/para revisar/fechar o painel</code>, <code>área de trabalho/automático/fechar o painel</code>, <code>área de trabalho/propriedades/fechar o painel</code> …</td>
+<td>o painel aberto fecha e a página ganha o lugar dele.</td>
+<td>cumpre</td>
+</tr>
+<tr>
+<td>P-043</td>
+<td>"Lado direito": ícones na borda / sanfona (área de trabalho 1) — <code>menu/lado_icones</code>, <code>menu/lado_sanfona</code></td>
+<td>troca o jeito do lado direito; fica guardado para a próxima vez que o programa abrir.</td>
+<td>cumpre</td>
+</tr>
+<tr>
+<td>P-050</td>
+<td>Girar ¼ à direita — <code>área de trabalho/girar a folha/¼ à direita</code>, <code>área de trabalho/girar do canto/Girar ¼ à direita</code>, <code>menu/girar</code></td>
+<td>a página sai deitada (mais larga que alta) e o conteúdo girado. a folha fica com giro de 90° gravado (uma ação no histórico). a folha aparec…</td>
+<td>cumpre</td>
+</tr>
+<tr>
+<td>P-051</td>
+<td>Girar ¼ à esquerda — <code>área de trabalho/girar a folha/¼ à esquerda</code>, <code>área de trabalho/girar do canto/Girar ¼ à esquerda</code>, <code>menu/girar_esquerda</code></td>
+<td></td>
+<td>cumpre</td>
+</tr>
+<tr>
+<td>P-052</td>
+<td>Girar meia volta — <code>área de trabalho/girar a folha/meia volta</code>, <code>área de trabalho/girar do canto/Girar meia volta</code>, <code>menu/girar_meia_volta</code></td>
+<td>giro de 180° gravado. <strong>no PDF:</strong> a página sai de cabeça para baixo (em pé).</td>
+<td>cumpre</td>
+</tr>
+<tr>
+<td>P-053</td>
+<td>"Aplicar o giro em" (só esta / todas / daqui em diante / ímpares / pares) — <code>menu/giro_em_esta</code>, <code>menu/giro_em_todas</code>, <code>menu/giro_em_daqui_em_diante</code> …</td>
+<td>o próximo giro do menu e do painel vale para as folhas escolhidas.</td>
+<td>cumpre</td>
+</tr>
+<tr>
+<td>P-054</td>
+<td>"deixar em branco" (Esta página, painel Filtro, menu Página, tecla Delete) — <code>área de trabalho/esta página/deixar em branco</code>, <code>área de trabalho/filtro da página/deixar em branco</code>, <code>menu/deixar_em_branco</code></td>
+<td>o PDF tem o MESMO número de páginas, e essa página sai toda branca, no mesmo lugar. a página fica com <code>em_branco</code> gravado (uma ação no histó…</td>
+<td>cumpre</td>
+</tr>
+<tr>
+<td>P-055</td>
+<td>"voltar a página" (depois do "deixar em branco") — <code>área de trabalho/esta página/voltar a página</code>, <code>área de trabalho/faixa do aviso/voltar a página</code></td>
+<td>a página deixa de sair em branco. <strong>no PDF:</strong> a página sai com o conteúdo dela de novo.</td>
+<td>cumpre</td>
+</tr>
+<tr>
+<td>P-056</td>
+<td>"tirar do livro" (Esta página, painel Filtro, menu Página, Shift+Delete) — <code>área de trabalho/esta página/tirar do livro</code>, <code>área de trabalho/filtro da página/tirar do livro</code>, <code>menu/tirar_do_livro</code></td>
+<td>a página some do PDF: uma página a menos, e as outras saem na ordem, sem ela. a página fica <code>apagada</code> (uma ação no histórico).</td>
+<td>cumpre</td>
+</tr>
+<tr>
+<td>P-057</td>
+<td>"trazer de volta" / "Trazer de volta a página tirada" — <code>área de trabalho/esta página/trazer de volta</code>, <code>menu/restaurar</code></td>
+<td>a página tirada volta. <strong>no PDF:</strong> ela volta ao PDF, no lugar dela.</td>
+<td>cumpre</td>
+</tr>
+<tr>
+<td>P-059</td>
+<td>"dividir esta" numa folha que entrou como uma página só — <code>área de trabalho/dividir/dividir esta</code></td>
+<td>num livro aberto sem "Dividir", "dividir esta" fica aceso e põe a linha na folha.</td>
+<td>aguarda etapa 4 (dividir à mão folha por folha)</td>
+</tr>
+<tr>
+<td>P-060</td>
+<td>"não dividir esta" / "dividir esta" (folha já dividida) — <code>área de trabalho/dividir/não dividir esta</code>, <code>área de trabalho/dividir/dividir esta</code></td>
+<td>a folha não dividida sai como UMA página (a folha inteira, deitada). a folha deixa de ser dividida (e volta, com "dividir esta"). o botão tr…</td>
+<td>cumpre</td>
+</tr>
+<tr>
+<td>P-061</td>
+<td>"usar em todas" (Dividir) — <code>área de trabalho/dividir/usar em todas</code></td>
+<td>só as folhas marcadas recebem a linha; a folha com linha própria (exceção) fica com a dela. abre a lista das folhas para escolher.</td>
+<td>aguarda etapa 9, D-090 ("Usar em todas" que apaga exceções; no Dividir ainda aplica em todas sem seletor)</td>
+</tr>
+<tr>
+<td>P-062</td>
+<td>"mudar nas opções do livro..." (Dividir, Cortar, Endireitar) — <code>área de trabalho/dividir/mudar nas opções do livro...</code>, <code>área de trabalho/cortar/mudar nas opções do livro...</code>, <code>área de trabalho/endireitar/mudar nas opções do livro...</code></td>
+<td>nada muda só por ir. leva às escolhas do livro inteiro, sem perder o trabalho feito.</td>
+<td>cumpre</td>
+</tr>
+<tr>
+<td>P-063</td>
+<td>"não cortar esta" — <code>área de trabalho/cortar/não cortar esta</code>, <code>aviso/sem_recorte</code></td>
+<td>a página sai no tamanho inteiro do scan. a página fica sem corte (o corte dela é a página inteira).</td>
+<td>cumpre</td>
+</tr>
+<tr>
+<td>P-064</td>
+<td>"usar o corte do programa" — <code>área de trabalho/cortar/usar o corte do programa</code></td>
+<td>o corte à mão desta página sai; vale o do programa. <strong>no PDF:</strong> a página sai como antes do ajuste.</td>
+<td>cumpre</td>
+</tr>
+<tr>
+<td>P-065</td>
+<td>"usar em todas" (Cortar) — <code>área de trabalho/cortar/usar em todas</code></td>
+<td>as páginas marcadas saem com o tamanho do corte desta página. as páginas marcadas ficam com o corte desta; a que tem corte próprio (exceção)…</td>
+<td>cumpre</td>
+</tr>
+<tr>
+<td>P-066</td>
+<td>"tamanho..." (Cortar) — <code>área de trabalho/cortar/tamanho...</code>, <code>tamanho da folha/A4</code>, <code>tamanho da folha/A5</code> …</td>
+<td>a página sai no tamanho de folha escolhido (ex.: A5 = 148 × 210 mm). com OK, a página fica com o tamanho de folha escolhido; o corte dela nã…</td>
+<td>cumpre</td>
+</tr>
+<tr>
+<td>P-067</td>
+<td>"0,1°" anti-horário e horário (Endireitar) — <code>área de trabalho/endireitar/N,N° — Gira a página 0,1 grau no sentido anti-horário</code>, <code>área de trabalho/endireitar/N,N° — Gira a página 0,1 grau no sentido horário</code></td>
+<td>a página sai endireitada com esse ângulo. o ângulo da página muda 0,1° (para um lado ou para o outro), gravado como ângulo à mão.</td>
+<td>cumpre</td>
+</tr>
+<tr>
+<td>P-068</td>
+<td>"deixar como veio" (Endireitar) — <code>área de trabalho/endireitar/deixar como veio</code>, <code>aviso/angulo_zero</code></td>
+<td>ângulo 0 nesta página. <strong>no PDF:</strong> a página sai sem girar.</td>
+<td>cumpre</td>
+</tr>
+<tr>
+<td>P-069</td>
+<td>"usar o ângulo do programa" (Endireitar) — <code>área de trabalho/endireitar/usar o ângulo do programa</code></td>
+<td>o ângulo à mão sai. <strong>no PDF:</strong> a página sai com o ângulo do programa.</td>
+<td>cumpre</td>
+</tr>
+<tr>
+<td>P-070</td>
+<td>"Marcar como": gravura ou foto / letra e traço / papel / pintar por cima / manter a cor da tinta / tinta preta, fundo original — <code>área de trabalho/marcar/gravura ou foto</code>, <code>área de trabalho/marcar/letra e traço</code>, <code>área de trabalho/marcar/papel</code> …</td>
+<td>"papel" na página inteira deixa a página branca (D-200); "gravura ou foto" guarda a cor da área. a área desenhada depois fica gravada com es…</td>
+<td>cumpre</td>
+</tr>
+<tr>
+<td>P-071</td>
+<td>"cor de pintar" — <code>área de trabalho/marcar/cor de pintar</code></td>
+<td>abre a escolha da cor do "pintar por cima". <strong>no projeto:</strong> a área pintada usa a cor escolhida.</td>
+<td>cumpre</td>
+</tr>
+<tr>
+<td>P-072</td>
+<td>"detectar automaticamente" / menu "Procurar de novo" — <code>área de trabalho/marcar/detectar automaticamente</code>, <code>menu/procurar_de_novo</code></td>
+<td>o que foi marcado à mão continua na página.</td>
+<td>cumpre</td>
+</tr>
+<tr>
+<td>P-073</td>
+<td>"usar em todas" / "daqui em diante" (marcação desta página) — <code>área de trabalho/marcar/usar em todas — Copia a marcação desta página (gravura, letra, papel)</code>, <code>área de trabalho/marcar/daqui em diante — Copia a marcação desta página para esta e</code></td>
+<td>o mesmo que a marcação faz na página dela (a folha inteira como papel sai branca: P-078). a marcação desta página fica gravada em todas as p…</td>
+<td>cumpre</td>
+</tr>
+<tr>
+<td>P-074</td>
+<td>"usar em todas" / "daqui em diante" (Esta página tem foto) — <code>área de trabalho/marcar/usar em todas — Leva o "Esta página tem foto" desta página</code>, <code>área de trabalho/marcar/daqui em diante — Leva o "Esta página tem foto" desta página</code></td>
+<td>o "Esta página tem foto" desta página fica igual em todas (ou desta em diante).</td>
+<td>cumpre</td>
+</tr>
+<tr>
+<td>P-075</td>
+<td>"apagar a área" / "pintar de branco" / "copiar" / "colar" — <code>área de trabalho/marcar/apagar a área</code>, <code>área de trabalho/marcar/pintar de branco</code>, <code>área de trabalho/marcar/copiar</code> …</td>
+<td>a área pintada de branco sai branca. "apagar a área" tira a área; "pintar de branco" a troca por papel; "copiar" + "colar" (noutra página) p…</td>
+<td><strong>QUEBRA</strong> (defeito B)</td>
+</tr>
+<tr>
+<td>P-076</td>
+<td>"Ajustar o pedaço à figura" — <code>área de trabalho/marcar/Ajustar o pedaço à figura</code></td>
+<td>o retângulo do pedaço encolhe até a figura (uma ação no histórico); sem clicar, nada muda.</td>
+<td>cumpre</td>
+</tr>
+<tr>
+<td>P-077</td>
+<td>menu Marcar &gt; "Limpar tudo" — <code>menu/limpar_marcacao</code></td>
+<td>a marcação da página da vez sai (o desfazer dela é a P-129).</td>
+<td>cumpre</td>
+</tr>
+<tr>
+<td>P-129</td>
+<td>Desfazer (Ctrl+Z, menu Editar, barra de baixo) desfaz também a marcação — <code>menu/desfazer</code></td>
+<td>depois de "Limpar tudo" (ou de desenhar uma área), o Desfazer traz a marcação de antes.</td>
+<td>aguarda etapa 9 (desfazer e Retângulo: lista única 1.3 e 4.6)</td>
+</tr>
+<tr>
+<td>P-078</td>
+<td>menu Marcar &gt; "Deixar a folha em branco" — <code>menu/folha_em_branco</code></td>
+<td>a folha inteira fica marcada como papel. <strong>no PDF:</strong> a página sai toda branca, no mesmo lugar.</td>
+<td><strong>QUEBRA</strong> (defeito B)</td>
+</tr>
+<tr>
+<td>P-080</td>
+<td>os quatro filtros (painel, menu Filtro, teclas 1 a 4) — <code>área de trabalho/filtro da página/cartão Original</code>, <code>área de trabalho/filtro da página/cartão Preto e branco</code>, <code>área de trabalho/filtro da página/cartão Melhorar</code> …</td>
+<td>essa página sai no filtro (Preto e branco: só preto e branco, sem amarelo); as outras continuam como estavam (amareladas no Original). a pág…</td>
+<td><strong>QUEBRA</strong> (defeito A)</td>
+</tr>
+<tr>
+<td>P-085</td>
+<td>o menu Filtro marca o filtro da página da vez — <code>menu/filtro_original</code>, <code>menu/filtro_preto_e_branco</code>, <code>menu/filtro_melhorar</code> …</td>
+<td>o menu Filtro mostra marcado o filtro da página que está na tela, e acompanha ao trocar de página.</td>
+<td><strong>QUEBRA</strong> (defeito D)</td>
+</tr>
+<tr>
+<td>P-084</td>
+<td>"Só neste pedaço": os quatro filtros do pedaço — <code>área de trabalho/filtro da página/só neste pedaço: Original</code>, <code>área de trabalho/filtro da página/só neste pedaço: Preto e branco</code>, <code>área de trabalho/filtro da página/só neste pedaço: Melhorar</code> …</td>
+<td>o pedaço sai no filtro dele (Preto e branco numa página em Original: o papel do pedaço fica branco). a área desenhada depois fica gravada co…</td>
+<td>cumpre</td>
+</tr>
+<tr>
+<td>P-081</td>
+<td>"só nesta" / "todas" / "daqui em diante" (painel Filtro) — <code>área de trabalho/filtro da página/só nesta</code>, <code>área de trabalho/filtro da página/todas</code>, <code>área de trabalho/filtro da página/daqui em diante</code></td>
+<td>com "todas", todas as páginas saem em Preto e branco. "todas" leva o filtro desta página a todas; "daqui em diante" a esta e às seguintes (a…</td>
+<td><strong>QUEBRA</strong> (defeito A)</td>
+</tr>
+<tr>
+<td>P-082</td>
+<td>ícone "Ver os filtros em tela cheia" / menu Ver &gt; "Filtros em tela cheia" — <code>área de trabalho/filtro da página/Ver os filtros em tela cheia</code>, <code>menu/filtros_tela_cheia</code></td>
+<td>abre os filtros em tela cheia, na página da vez. <strong>no projeto:</strong> nada muda até "Usar".</td>
+<td>cumpre</td>
+</tr>
+<tr>
+<td>P-083</td>
+<td>os jeitos do "Só as letras" (Guardar a tinta forte / Guardar tudo / Guardar só o texto) e "Mais opções" — <code>área de trabalho/filtro da página/Mais opções</code>, <code>área de trabalho/filtro da página/Menos opções</code>, <code>o que fazer/Guardar a tinta forte</code> …</td>
+<td>o jeito escolhido (na lista da área de trabalho, ou nos botões da tela "O que fazer") fica gravado nesta página. "Mais opções" abre as escol…</td>
+<td>cumpre</td>
+</tr>
+<tr>
+<td>P-090</td>
+<td>"Por página" / "Por motivo" — <code>área de trabalho/para revisar/Por página</code>, <code>área de trabalho/para revisar/Por motivo</code></td>
+<td>troca a lista; a mesma dúvida aparece nas duas. <strong>no projeto:</strong> nada muda.</td>
+<td>cumpre</td>
+</tr>
+<tr>
+<td>P-091</td>
+<td>botão do motivo ("Por motivo") — <code>área de trabalho/para revisar/motivo (o botão do grupo)</code></td>
+<td>vai para a primeira página com aquele motivo. <strong>no projeto:</strong> nada muda.</td>
+<td>cumpre</td>
+</tr>
+<tr>
+<td>P-092</td>
+<td>"está bom: todas" (um motivo, em todas as páginas) — <code>área de trabalho/para revisar/está bom: todas</code></td>
+<td>as páginas saem iguais. o aviso fica dado por visto nessas páginas (gravado); nada mais muda nas páginas. o motivo sai da lista e o número d…</td>
+<td>cumpre</td>
+</tr>
+<tr>
+<td>P-093</td>
+<td>"está bom em tudo" — <code>área de trabalho/para revisar/está bom em tudo</code></td>
+<td>o painel fica em 0. <strong>no projeto:</strong> nenhum aviso pendente; um Ctrl+Z traz todos de volta.</td>
+<td>cumpre</td>
+</tr>
+<tr>
+<td>P-094</td>
+<td>"ver a lista…" e a lista dos avisos — <code>área de trabalho/para revisar/ver a lista…</code>, <code>lista dos avisos/ver</code>, <code>lista dos avisos/fechar</code> …</td>
+<td>só as marcadas ficam dadas por vistas. abre a lista grande; "ver" leva à página; "Selecionar todas"/"Nenhuma" marcam e desmarcam; "está bom …</td>
+<td>cumpre</td>
+</tr>
+<tr>
+<td>P-095</td>
+<td>"ver as N em tela cheia" (só as páginas com dúvida) — <code>área de trabalho/para revisar/ver as N em tela cheia</code></td>
+<td>abre a tela cheia só com as páginas com dúvida.</td>
+<td>aguarda etapa 7, D-259</td>
+</tr>
+<tr>
+<td>P-100</td>
+<td>"está certo" (o que já vale hoje) — <code>área de trabalho/faixa do aviso/está certo</code></td>
+<td>a página sai igual. a página fica conferida (<code>revisada</code>), numa ação do histórico; os avisos dela ficam dados por vistos. o aviso da página s…</td>
+<td>cumpre</td>
+</tr>
+<tr>
+<td>P-101</td>
+<td>"está certo" com resposta (tique, contador, próxima dúvida) — <code>área de trabalho/faixa do aviso/está certo</code></td>
+<td>a miniatura ganha o tique, o contador de conferidas sobe, e a tela vai para a próxima página com dúvida.</td>
+<td>aguarda etapa 7 (lista única 1.1)</td>
+</tr>
+<tr>
+<td>P-102</td>
+<td>"próxima dúvida" — <code>área de trabalho/faixa do aviso/próxima dúvida</code></td>
+<td>vai para a próxima página que ainda tem aviso. <strong>no projeto:</strong> nada muda.</td>
+<td>cumpre</td>
+</tr>
+<tr>
+<td>P-103</td>
+<td>aviso: "está bom assim" — <code>aviso/revisar</code>, <code>área de trabalho/faixa do aviso/está bom assim</code></td>
+<td>a página sai igual. só este motivo desta página fica dado por visto; a página não muda.</td>
+<td>cumpre</td>
+</tr>
+<tr>
+<td>P-104</td>
+<td>aviso: "Deixar em branco" — <code>aviso/em_branco</code>, <code>área de trabalho/faixa do aviso/Deixar em branco</code></td>
+<td></td>
+<td>cumpre</td>
+</tr>
+<tr>
+<td>P-105</td>
+<td>aviso: "Tirar do livro" — <code>aviso/apagar</code>, <code>área de trabalho/faixa do aviso/Tirar do livro</code></td>
+<td></td>
+<td>cumpre</td>
+</tr>
+<tr>
+<td>P-106</td>
+<td>aviso: "Trazer de volta nesta página" — <code>aviso/misto_fora:tudo</code>, <code>aviso/misto_fora:rede</code></td>
+<td>o jeito do "Só as letras" desta página passa a ser o que guarda o que sumiu ("Guardar tudo" ou "Guardar a tinta forte"); só nela.</td>
+<td>cumpre</td>
+</tr>
+<tr>
+<td>P-107</td>
+<td>aviso: "usar mais escuro" / "usar mais fraco" — <code>aviso/forca:mais_escuro</code>, <code>aviso/forca:mais_fraco</code></td>
+<td>a página em Preto e branco sai com mais (ou menos) tinta. a força do preto desta página fica mais escura (ou mais fraca), só nela.</td>
+<td>cumpre</td>
+</tr>
+<tr>
+<td>P-108</td>
+<td>aviso: "Desfazer" (força do preto escurecida) — <code>aviso/desfazer_reforco</code></td>
+<td>a força volta à que a página tinha antes de o programa escurecer.</td>
+<td>cumpre</td>
+</tr>
+<tr>
+<td>P-109</td>
+<td>aviso: "usar Mágico pro nesta" — <code>aviso/filtro:magico_pro</code></td>
+<td>esta página fica no Mágico pro. <strong>no PDF:</strong> esta página sai no Mágico pro.</td>
+<td><strong>QUEBRA</strong> (defeito A)</td>
+</tr>
+<tr>
+<td>P-110</td>
+<td>aviso: "usar o corte alargado" — <code>aviso/corte_alargado</code></td>
+<td>o corte desta página passa a ser o alargado (como corte à mão), com desfazer.</td>
+<td>cumpre</td>
+</tr>
+<tr>
+<td>P-111</td>
+<td>aviso: "Desentortar aumentando a página" / "Desfazer" do aumento — <code>aviso/desentortar_aumentando</code>, <code>aviso/desentortar_desfazer_aumento</code></td>
+<td>liga (ou desliga) o "desentortar aumentando" só nesta página.</td>
+<td>cumpre</td>
+</tr>
+<tr>
+<td>P-112</td>
+<td>aviso: "não dividir esta" — <code>aviso/nao_dividir</code></td>
+<td>a folha deixa de ser dividida. <strong>no PDF:</strong> a folha sai como uma página só.</td>
+<td>cumpre</td>
+</tr>
+<tr>
+<td>P-113</td>
+<td>aviso: "alinhar com as outras" — <code>aviso/alinhar_com_as_outras</code></td>
+<td>o ângulo desta página passa a ser o das outras.</td>
+<td>cumpre</td>
+</tr>
+<tr>
+<td>P-120</td>
+<td>seta das miniaturas ("Fechar as miniaturas" / "Abrir as miniaturas") e menu Ver &gt; "Miniaturas" — <code>área de trabalho/miniaturas/Fechar as miniaturas</code>, <code>área de trabalho/miniaturas/Abrir as miniaturas</code>, <code>área de trabalho/miniaturas/… Fechar as miniaturas</code> …</td>
+<td>nada muda (a escolha vai para as configurações do programa). a tira de miniaturas fecha (o cabeçalho fica) e abre; o menu Ver acompanha.</td>
+<td>cumpre</td>
+</tr>
+<tr>
+<td>P-121</td>
+<td>"Mais opções das miniaturas" (⋯): "Ver em pares" e "Lugar" — <code>área de trabalho/miniaturas/Mais opções das miniaturas</code>, <code>área de trabalho/miniaturas/… Ver em pares</code>, <code>área de trabalho/miniaturas/… Lugar &gt; embaixo</code> …</td>
+<td>"Ver em pares" junta as miniaturas em pares; "Lugar" põe a tira embaixo, à esquerda ou à direita.</td>
+<td>cumpre</td>
+</tr>
+<tr>
+<td>P-122</td>
+<td>"ver todas" / menu Ver &gt; "Todas as páginas" — <code>área de trabalho/miniaturas/ver todas</code>, <code>menu/todas_as_paginas</code></td>
+<td>abre a grade "Todas as páginas" em "uma a uma", com a página da vez marcada.</td>
+<td>cumpre</td>
+</tr>
+<tr>
+<td>P-123</td>
+<td>"‹" / "›" (página anterior / próxima, barra de baixo) — <code>área de trabalho/barra de baixo/‹</code>, <code>área de trabalho/barra de baixo/›</code></td>
+<td>vai para a página de antes / de depois; "página N de M" acompanha. <strong>no projeto:</strong> nada muda.</td>
+<td>cumpre</td>
+</tr>
+<tr>
+<td>P-124</td>
+<td>Desfazer / Refazer (barra de baixo, painel Histórico, menu Editar) — <code>área de trabalho/barra de baixo/Desfazer</code>, <code>área de trabalho/barra de baixo/Refazer</code>, <code>área de trabalho/histórico/Desfazer</code> …</td>
+<td>depois do desfazer, o PDF sai como antes da mudança. o projeto gravado volta a ser o de antes da mudança; o <code>acoes.jsonl</code> acompanha. volta a…</td>
+<td>cumpre</td>
+</tr>
+<tr>
+<td>P-125</td>
+<td>Desfazer aceso sem nada para desfazer — <code>área de trabalho/barra de baixo/Desfazer</code>, <code>menu/desfazer</code></td>
+<td>num livro recém-aberto, sem nada feito, o Desfazer fica apagado (barra de baixo e menu).</td>
+<td>aguarda etapa 9 (Desfazer ligado sem nada)</td>
+</tr>
+<tr>
+<td>P-126</td>
+<td>botão do Histórico (barra de baixo) / menu Editar &gt; "Mostrar o histórico" — <code>área de trabalho/barra de baixo/Abrir ou fechar o painel Histórico</code>, <code>menu/historico</code></td>
+<td>abre (e fecha) o painel Histórico, com a lista do que foi feito.</td>
+<td>cumpre</td>
+</tr>
+<tr>
+<td>P-128</td>
+<td>linhas do painel Histórico (cada ação feita ou desfeita) — <code>área de trabalho/histórico/ação feita (volta até aqui)</code>, <code>área de trabalho/histórico/ação desfeita (refaz até aqui)</code></td>
+<td>sai como o trabalho naquele ponto. clicar numa ação de antes desfaz tudo o que veio depois dela; clicar numa desfeita refaz até ela.</td>
+<td>cumpre</td>
+</tr>
+<tr>
+<td>P-127</td>
+<td>"Confirmar e processar" (área de trabalho e menu Arquivo) — <code>área de trabalho/processar/Confirmar e processar</code>, <code>menu/processar</code></td>
+<td>o PDF é gravado no destino, com uma página por página do livro, na ordem. o destino do PDF fica gravado. com avisos pendentes, mostra antes …</td>
+<td><strong>QUEBRA</strong> (defeito C)</td>
+</tr>
+<tr>
+<td>P-130</td>
+<td>"Antes de processar": "ver" / "continuar assim mesmo" / "está bom nas marcadas" / "Selecionar todas" / "Nenhuma" — <code>antes de processar/ver</code>, <code>antes de processar/continuar assim mesmo</code>, <code>antes de processar/está bom nas marcadas</code> …</td>
+<td>com "continuar assim mesmo" o PDF sai; com "ver", nenhum PDF. "ver" leva à página e NÃO processa; "continuar assim mesmo" processa; "está bo…</td>
+<td>cumpre</td>
+</tr>
+<tr>
+<td>P-131</td>
+<td>"Confirmar e processar" (a janela): "Escolher pasta" / "Processar" / "voltar" — <code>confirmar e processar/Escolher pasta</code>, <code>confirmar e processar/Processar</code>, <code>confirmar e processar/voltar</code></td>
+<td>"Processar" grava o PDF na pasta e com o nome mostrados; "voltar" não grava nada. "Escolher pasta" troca a pasta mostrada; "Processar" segue…</td>
+<td>cumpre</td>
+</tr>
+<tr>
+<td>P-132</td>
+<td>"Já existe um arquivo com esse nome": "substituir o antigo" / "salvar como (2)" / "cancelar" — <code>caixa “Já existe um arquivo com esse nome”/substituir o antigo</code>, <code>caixa “Já existe um arquivo com esse nome”/salvar como pronto (N).pdf</code>, <code>caixa “Já existe um arquivo com esse nome”/cancelar</code></td>
+<td>"substituir" troca o arquivo antigo pelo novo; "salvar como (2)" grava o novo ao lado e não toca no antigo; "cancelar" não grava nada e o an…</td>
+<td>cumpre</td>
+</tr>
+<tr>
+<td>P-133</td>
+<td>lista de páginas ("usar em todas" do Cortar): "Selecionar todas" / "Nenhuma" / "Aplicar" / "Cancelar" — <code>escolher as páginas/Selecionar todas</code>, <code>escolher as páginas/Nenhuma</code>, <code>escolher as páginas/Aplicar</code> …</td>
+<td>"Aplicar" leva o corte só às marcadas; "Cancelar" não muda nada. "Selecionar todas" marca todas, "Nenhuma" desmarca todas.</td>
+<td>cumpre</td>
+</tr>
+<tr>
+<td>P-134</td>
+<td>"Filtros em tela cheia": "‹" / "›" / "Fechar" / "Fechar sem mudar" / "Usar <filtro>" / "só nesta" / "todas" / "daqui em diante" — <code>filtros em tela cheia/‹</code>, <code>filtros em tela cheia/›</code>, <code>filtros em tela cheia/Fechar</code> …</td>
+<td>a página sai no filtro usado. "Usar <filtro>" grava o filtro nesta página (com "todas", em todas; "daqui em diante", desta em diante), com d…</td>
+<td>cumpre</td>
+</tr>
+<tr>
+<td>P-135</td>
+<td>menu Ver &gt; "Modo comparar" (abre a página ampliada comparando) — <code>menu/comparar</code></td>
+<td>abre a página grande com dois filtros lado a lado. <strong>no projeto:</strong> nada muda.</td>
+<td>cumpre</td>
+</tr>
+<tr>
+<td>P-148</td>
+<td>página ampliada: os filtros (Original / Preto e branco / Melhorar / Mágico pro) — <code>página ampliada/Original</code>, <code>página ampliada/Preto e branco</code>, <code>página ampliada/Melhorar</code> …</td>
+<td>a página sai nesse filtro. a página da vez fica com esse filtro (o mesmo caminho do painel Filtro, com desfazer). a página grande passa a mo…</td>
+<td>cumpre</td>
+</tr>
+<tr>
+<td>P-149</td>
+<td>página ampliada: "&lt;" / "&gt;" / "+" / "-" / "ajustar à tela" / "comparar" / "X" — <code>página ampliada/&lt;</code>, <code>página ampliada/&gt;</code>, <code>página ampliada/+</code> …</td>
+<td>nada muda. "&lt;"/"&gt;" passam de página (a área de trabalho acompanha); "+"/"-" aproximam e afastam; "ajustar à tela" volta a caber; "comparar" …</td>
+<td>cumpre</td>
+</tr>
+<tr>
+<td>P-136</td>
+<td>"Ver lado a lado" na área de trabalho — <code>menu/lado_a_lado</code>, <code>área de trabalho/barra de baixo/Duas lado a lado</code></td>
+<td>as páginas em pares rolando, na barra de baixo e no menu Ver.</td>
+<td>aguarda etapa 6, D-015/D-058</td>
+</tr>
+<tr>
+<td>P-137</td>
+<td>aviso de livro novo: "Rodar o automático…" / "agora não" — <code>área de trabalho/aviso de livro novo/Rodar o automático…</code>, <code>área de trabalho/aviso de livro novo/agora não</code></td>
+<td>livro novo mostra o aviso; "Rodar o automático…" abre a janela grande com a receita de sempre marcada; "agora não" fecha o aviso.</td>
+<td>aguarda etapa 3, D-005/D-018</td>
+</tr>
+<tr>
+<td>P-138</td>
+<td>painel Automático: "Voltar para as opções" — <code>área de trabalho/automático/Voltar para as opções</code></td>
+<td>leva às escolhas do automático do livro, sem perder o trabalho.</td>
+<td>cumpre</td>
+</tr>
+<tr>
+<td>P-139</td>
+<td>painel Automático de verdade (rodar em todas / escolhidas / numa página, uma etapa só, ordem arrastando) — <code>área de trabalho/automático/Rodar</code></td>
+<td></td>
+<td>aguarda etapa 3, D-002/D-003/D-004</td>
+</tr>
+<tr>
+<td>P-140</td>
+<td>Arquivo &gt; "Livros recentes" — <code>menu/livros recentes</code></td>
+<td>lista os livros abertos antes; clicar num abre aquele livro.</td>
+<td>cumpre</td>
+</tr>
+<tr>
+<td>P-141</td>
+<td>Arquivo &gt; "Escolher a pasta de saída..." — <code>menu/pasta_de_saida</code></td>
+<td>o próximo PDF vai para essa pasta. abre a escolha da pasta; a pasta escolhida aparece na próxima janela "Confirmar e processar".</td>
+<td>cumpre</td>
+</tr>
+<tr>
+<td>P-142</td>
+<td>Arquivo &gt; "Nome do arquivo..." — <code>menu/nome_do_arquivo</code>, <code>caixa “Nome do arquivo”/OK</code>, <code>caixa “Nome do arquivo”/Cancelar</code></td>
+<td>o nome escolhido fica no destino gravado. <strong>no PDF:</strong> o próximo PDF sai com esse nome. pede o nome; OK guarda, Cancelar não muda.</td>
+<td>cumpre</td>
+</tr>
+<tr>
+<td>P-143</td>
+<td>Arquivo &gt; "Voltar para as opções" — <code>menu/voltar</code></td>
+<td>leva à tela "O que fazer" do livro, sem perder o trabalho.</td>
+<td>cumpre</td>
+</tr>
+<tr>
+<td>P-144</td>
+<td>Arquivo &gt; "Sair" — <code>menu/sair</code></td>
+<td>fecha o programa. <strong>no projeto:</strong> o trabalho fica gravado antes de fechar (nada se perde).</td>
+<td>cumpre</td>
+</tr>
+<tr>
+<td>P-145</td>
+<td>Página &gt; "Ir para a página..." (Ctrl+G) — <code>menu/ir_para_pagina</code>, <code>caixa “Ir para a página”/OK</code>, <code>caixa “Ir para a página”/Cancelar</code></td>
+<td>pede o número; OK vai para a página; Cancelar fica onde está.</td>
+<td>cumpre</td>
+</tr>
+<tr>
+<td>P-146</td>
+<td>Ver &gt; "Aproximar" / "Afastar" / "Ajustar à tela" — <code>menu/mais_zoom</code>, <code>menu/menos_zoom</code>, <code>menu/ajustar</code></td>
+<td>a página aumenta / diminui / volta a caber na tela. <strong>no projeto:</strong> nada muda.</td>
+<td>cumpre</td>
+</tr>
+<tr>
+<td>P-147</td>
+<td>Ver &gt; "Tema": Escuro / Cinza / Claro — <code>menu/tema_escuro</code>, <code>menu/tema_cinza</code>, <code>menu/tema_claro</code></td>
+<td>as cores mudam na hora; fica guardado para a próxima vez. <strong>no projeto:</strong> nada muda.</td>
+<td>cumpre</td>
+</tr>
+<tr>
+<td>P-150</td>
+<td>"cancelar" (processando) — <code>processando/cancelar</code></td>
+<td>nenhum PDF pela metade fica no destino; se havia um antigo, fica igual. para o processamento e volta à área de trabalho.</td>
+<td>cumpre</td>
+</tr>
+<tr>
+<td>P-151</td>
+<td>"imprimir agora..." — <code>ficou pronto/imprimir agora...</code>, <code>imprimir agora/imprimir N páginas</code>, <code>imprimir agora/cancelar</code> …</td>
+<td>NÃO manda nada à impressora no clique: abre a confirmação (impressora, páginas, cópias).</td>
+<td>cumpre</td>
+</tr>
+<tr>
+<td>P-152</td>
+<td>"montar para imprimir em A4 (com margens)..." — <code>ficou pronto/montar para imprimir em A4 (com margens)...</code></td>
+<td>o PDF do livro não muda. abre a janela "Montar para imprimir" sobre o PDF que acabou de sair.</td>
+<td>cumpre</td>
+</tr>
+<tr>
+<td>P-153</td>
+<td>"fazer outro" — <code>ficou pronto/fazer outro</code></td>
+<td>volta para a tela dos livros, com o cartão deste livro dizendo que o PDF foi gerado.</td>
+<td>cumpre</td>
+</tr>
+<tr>
+<td>P-160</td>
+<td>"gravar o arquivo para imprimir" — <code>montar para imprimir/gravar o arquivo para imprimir</code></td>
+<td>grava um PDF novo para a impressora (no livreto: folhas A4 deitadas, cada uma com duas páginas A5, na ordem da dobra); o PDF do livro não mu…</td>
+<td>cumpre</td>
+</tr>
+<tr>
+<td>P-161</td>
+<td>"mandar para a impressora..." — <code>montar para imprimir/mandar para a impressora...</code>, <code>caixa “Mandar para a impressora?”/mandar</code>, <code>caixa “Mandar para a impressora?”/cancelar</code></td>
+<td>pergunta antes ("Mandar para a impressora?").</td>
+<td>cumpre</td>
+</tr>
+<tr>
+<td>P-162</td>
+<td>"parar" / "fechar" (Montar para imprimir) — <code>montar para imprimir/parar</code>, <code>montar para imprimir/fechar</code></td>
+<td>"parar" interrompe a montagem (nada fica pela metade); "fechar" fecha a janela sem gravar.</td>
+<td>cumpre</td>
+</tr>
+<tr>
+<td>P-170</td>
+<td>"Fechar" (Configurações) — <code>configurações/Aparência/Fechar</code>, <code>configurações/Atalhos de teclado/Fechar</code>, <code>configurações/Velocidade/Fechar</code> …</td>
+<td>fecha a janela; o que foi mudado continua valendo. <strong>no projeto:</strong> nada muda.</td>
+<td>cumpre</td>
+</tr>
+<tr>
+<td>P-171</td>
+<td>"Restaurar todos os padrões" (Atalhos de teclado) — <code>configurações/Atalhos de teclado/Restaurar todos os padrões</code></td>
+<td>nada muda; as configurações do programa ficam sem atalho mudado. todos os atalhos voltam aos de fábrica (e o menu mostra a tecla de fábrica)…</td>
+<td>cumpre</td>
+</tr>
+</tbody>
+</table>
+<p>Total: 129 · cumpre: 110 · quebra: 8 · aguarda etapa: 11 · não testada: 0</p>
+<p class="rodape">Editor de Impressão &middot; gerado em 27/10/2026 às 00:53</p>
+</body>
+</html>
