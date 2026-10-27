@@ -23,7 +23,8 @@ Implementador · ramo `obra-etapa1-2026-10-26` (base `obra-2026-10-26` = `fase-1
 
 ## Situação
 
-Em andamento (começado 26/10/2026).
+**PRONTO PARA CONFERIR** (26/10/2026, ~22h). Falta: suíte inteira e `teste_botoes.py` (a gerente roda), verificador,
+filtro de velocidade do GitHub, conferência do Samuel. Nada juntado.
 
 ## Escolhas técnicas (D-014: decido e anoto)
 
@@ -92,13 +93,74 @@ Em andamento (começado 26/10/2026).
 
 ## Passos
 
-- [ ] Prova "Desligado de fábrica" no código antigo (somas das 32 páginas × 3 filtros), por trás.
-- [ ] `core/etapas.py` (um lugar só) + marca "mexida à mão" no modelo, com migração.
-- [ ] `core/pipeline.py`: checagens de caixinha trocadas por `core/etapas.py`.
-- [ ] Mover/redimensionar chegando ao PDF (`core/folha.compor_na_folha`).
-- [ ] `tests/test_decisoes.py` (D-009, D-004/marca, D-008, projeto antigo igual).
-- [ ] Prova "Desligado de fábrica" no código novo + prova do projeto antigo com valores à mão.
-- [ ] Testes por arquivo; commits; push.
+- [x] Prova "Desligado de fábrica" no código antigo (somas das 32 páginas × 3 filtros).
+- [x] `core/etapas.py` (um lugar só) + marca "mexida à mão" no modelo, com migração.
+- [x] `core/pipeline.py`: checagens de caixinha trocadas por `core/etapas.py`.
+- [x] Mover/redimensionar chegando ao PDF (`core/folha.compor_na_folha`).
+- [x] `tests/test_decisoes.py` (18 provas).
+- [x] Prova "Desligado de fábrica" no código novo + prova do projeto antigo com valores à mão.
+- [x] Testes por arquivo; commits; push.
+
+## Como cumpri cada decisão (com o teste)
+
+| Decisão | Como | Prova (`tests/test_decisoes.py`, gera o PDF e mede) |
+|---|---|---|
+| **D-009** "abrir o livro sem escolher nenhuma opção para fazer tudo manualmente" | `core/etapas.py`; o pipeline pergunta "vale nesta página?" = automático OU feito à mão | `test_d009_corte_a_mao_...` (PDF com metade da largura), `test_d009_angulo_a_mao_...` (linha sai inclinada), `test_d009_filtro_da_pagina_...` (papel sai branco; com a marca da tela), `test_d009_marcacao_a_mao_...` (só o pedaço muda), `test_d009_resumo_...`, `test_caminho_rapido_so_cadernos_...`. **O antigo saiu:** os mesmos testes no `ddd4d74` falham por asserção (feito: 16 de 16 falharam lá) |
+| **D-004** marca "mexida à mão" | `mexida_a_mao` em página e folha, gravado no projeto, migração `marcar_pelos_valores`, funções para a tela e para a pergunta da etapa 3 | `test_d004_marca_mexida_a_mao_por_pagina_folha_e_etapa`, `test_d004_marca_nasce_dos_valores_...`, `test_d004_projeto_antigo_sem_os_campos_abre_e_funciona` |
+| **D-016** ordem obrigatória | o feito à mão entra nas mesmas contas (endireita a página inteira, corta uma vez no fim) | `test_d016_feito_a_mao_com_etapa_desligada_monta_igual_a_etapa_ligada` (PDF idêntico ponto a ponto) |
+| **D-008** (processamento) mover/redimensionar no PDF | `compor_na_folha(..., mexido_a_mao=)`: sem folha = a própria página; não desiste por 1 ponto de arredondamento | `test_d008_mover_sem_tamanho_...` (+20% = +120 pontos), `test_d008_mover_para_o_meio_mede_as_margens_iguais` (diferença ≤ 2 pontos; no Kaique era 15 × 53), `test_d008_aumentar_...` (120%), `test_d008_folha_do_tamanho_do_corte_arredondada_...` (teste de reversão do defeito do Kaique: falha no `ddd4d74`) |
+| Projeto antigo sai igual | `feito_a_mao_sempre_vale` False no `projeto.json` antigo | `test_projeto_antigo_com_valores_a_mao_e_etapas_desligadas_sai_igual` (PDF idêntico ao do livro sem nada à mão), `test_projeto_antigo_mexido_de_novo_pela_tela_vale`, `test_projeto_antigo_o_que_ja_valia_continua_e_ganha_a_marca` |
+
+## Prova de projetos antigos iguais (números)
+
+- **Desligado de fábrica** (32 páginas do gabarito × Original/Preto e branco/Melhorar, livro novo pelo
+  `core.pipeline.processar`, script da junção): `ddd4d74` × `8abd3e8` = **96 de 96 somas iguais**
+  (`somas-antes-ddd4d74.json`, `somas-depois-8abd3e8.json`; também 96/96 no `175addb`).
+- **Projeto antigo com valores à mão** (novo, `scripts/prova_projeto_antigo.py`): `projeto.json` sem os campos
+  novos, 6 páginas do gabarito (Escola 7, Horas 13, Marial 7, Opus Majus 11, Boécio 22, Graduale 221) com corte,
+  ângulo, filtro, pedaço "só neste pedaço" e mover à mão, em 4 combinações de caixinhas (tudo desligado nas duas
+  ordens, tudo ligado, só "Limpar"): `ddd4d74` × `8abd3e8` = **24 de 24 somas iguais**
+  (`projeto-antigo-antes-ddd4d74.json`, `projeto-antigo-depois-8abd3e8.json`).
+
+## Testes rodados (um arquivo por vez, no PC)
+
+Todos passando no fim: `test_decisoes` 18, `test_trabalho_nao_se_perde` 82, `test_mesmo_livro_outro_caminho` 17, os 7
+`test_corte_*` (76), `test_core` 62, `test_girar` 53, `test_zonas_na_folha` 25, `test_ordem_do_preparo` 56,
+`test_tirar_fundo_no_programa` 54, `test_so_neste_pedaco_no_original` 20, `test_so_neste_pedaco_no_tirar_o_fundo` 8,
+`test_misto_no_programa` 41, `test_limpar_pontinhos_no_programa` 42, e mais 50 arquivos que tocam as funções mudadas
+(lista e resultados em `relatorios/conferir/obra-etapa1/testes-1.txt` a `testes-4.txt`, fora do git).
+Na primeira rodada falharam 34 testes (zonas, girar, core, pontinhos, misto, trabalho): todos por causa da primeira
+versão da regra do filtro (ver escolha 4) — consertado no `core/etapas.py`, não nos testes. Mudados de propósito
+(D-009 substitui o comportamento antigo): `test_so_neste_pedaco_no_original.py` e
+`test_so_neste_pedaco_no_tirar_o_fundo.py` — o teste antigo continua, agora no projeto antigo, e ganhou o par no
+livro novo. **Não rodei** a suíte inteira nem o `teste_botoes.py` (pedido da gerente).
+
+## Commits (ramo `obra-etapa1-2026-10-26`, com push)
+
+- `175addb` core/etapas.py, modelo, pipeline, folha, test_decisoes, prova de fábrica antiga.
+- `8abd3e8` filtro e dividir só pela marca; testes do pedaço ajustados à D-009; provas.
+- (o último) ONDE-PAREI final e provas no `8abd3e8`.
+
+## Ressalvas
+
+- **Filtro à mão com "Limpar" desligado só chega ao PDF quando a tela gravar a marca** (etapa 2). Corte, ângulo,
+  marcação à mão e mover já chegam hoje no livro novo.
+- **No projeto antigo**, o feito à mão novo com a etapa desligada só vale com a marca da tela (etapa 2/3).
+- **Mover: a tela ainda não deixa** (prende o retângulo na folha e exige tamanho de folha) e a prévia não usa
+  `mexido_a_mao` — a prévia pode diferir do PDF num conteúdo movido até a etapa 5. O que passa da beirada fica de
+  fora sem aviso até a etapa 5 (D-017).
+- Livro novo com "Limpar" desligado e filtro escolhido à mão: o "Só as letras" do livro (caixinha escondida)
+  pode valer nessa página (`misto.opcoes_da_pagina` segue o livro). Não testado.
+- `ConfigFolha.apagada` continua ignorado no caminho rápido "só cadernos" (era assim; não é etapa desta tarefa).
+- Velocidade: não medi (regra de 19/10: filtro do GitHub / gerente). As funções novas só leem campos.
+- Worktree de apoio `.claude/worktrees/obra-etapa1-antes` (`ddd4d74`, solta) com junções `modelos` e
+  `gabarito\paginas`: para remover, primeiro `(Get-Item <junção>).Delete()`. A worktree `obra-etapa1` também tem as
+  duas junções (criadas por mim).
+
+## Ideias para a Lista de espera
+
+- A tela de opções guarda o filtro do livro escondido com "Limpar" desligado; quando ela sair (etapa 3), o filtro
+  "do livro" com "Limpar" desligado poderia virar Original de vez, simplificando `filtro_que_vale`.
 
 ## Perguntas para o Samuel
 
