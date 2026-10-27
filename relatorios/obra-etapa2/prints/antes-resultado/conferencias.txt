@@ -1,0 +1,6 @@
+ok   nenhuma caixinha de etapa marcada
+ok   menus acesos na tela das caixinhas: ['Arquivo', 'Ver', 'Ajuda']
+FALHOU abriu a área de trabalho
+FALHOU Conferir aceso: False; resumo: 'Marque pelo menos uma coisa para eu fazer.'
+ok   WM_CLOSE fechou a janela
+3 de 5

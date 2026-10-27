@@ -1,0 +1,38 @@
+
+===== área de trabalho sem caixinhas =====
+botão    (1120,  55 30x24)                    ''  · balão: 'Girar ¼ à esquerda (só esta folha)  (Ctrl+seta para a esquerda)'
+botão    (1153,  55 30x24)                    ''  · balão: 'Girar ¼ à direita (só esta folha)  (Ctrl+seta para a direita)'
+botão    (1186,  55 30x24)                    ''  · balão: 'Girar meia volta (só esta folha)'
+texto    (  59, 475 952x28)                    'Esta página vai sair em Original.'
+botão    (1019, 476 83x26)                    'está certo'  · balão: 'Marca como conferida (a barra de espaço marca e já vai para a próxima).'
+botão    (1110, 475 115x28)                    'próxima dúvida'  · balão: 'Vai para a próxima com dúvida (tecla Tab).'
+texto    (  70, 513 53x20)                    'PÁGINAS'
+botão    ( 127, 513 22x20)                    ''  · balão: 'Fechar as miniaturas'
+botão    ( 153, 513 22x20)                    ''  · balão: 'Mais opções das miniaturas'
+botão    ( 179, 513 77x20)                    'ver todas'  · balão: 'Abre todas as páginas do livro, em grade'
+botão    (1006, 554 220x48)                    'Confirmar e processar'
+botão    (  54, 630 22x24) CINZA              '‹'  · balão: 'página anterior (seta para a esquerda)'
+texto    (  82, 628 79x29)                    'página 1 de 50'
+botão    ( 167, 630 22x24)                    '›'  · balão: 'próxima página (seta para a direita)'
+botão    ( 211, 630 36x24) CINZA              ''  · balão: 'Desfazer (Ctrl+Z)'
+botão    ( 253, 630 36x24) CINZA              ''  · balão: 'Refazer (Ctrl+Shift+Z)'
+botão    ( 295, 630 36x24)                    ''  · balão: 'Abrir ou fechar o painel Histórico (a lista do que foi feito)'
+texto    ( 345, 628 881x29)                    'Boecio · 0 de 50 conferidas · 2 com dúvida'  · balão: 'Boecio · 0 de 50 conferidas · 2 com dúvida'
+texto    ( 583,   0 29x38)                    'Mão'
+
+===== menu depois-05-menu-ferramentas =====
+Dividir a folha   [desmarcado]
+Cortar as bordas   [desmarcado]
+Endireitar   [desmarcado]
+----
+Retângulo	R   [marcado]
+Oval	O   [desmarcado]
+Laço	L   [desmarcado]
+Ponto a ponto	P   [desmarcado]
+Pincel	B   [desmarcado]
+Varinha mágica	V   [desmarcado]
+Pegar tudo desta cor	C   [desmarcado]
+Mover e mudar o tamanho da área	A   [desmarcado]
+----
+Zoom	Z   [desmarcado]
+Mão	E   [desmarcado]

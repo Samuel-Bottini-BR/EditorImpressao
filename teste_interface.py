@@ -133,14 +133,19 @@ def main(caminho_pdf: str) -> int:
     assert diferentes > 0, "um Ctrl+Z tinha que desfazer o lote inteiro"
     print(f"  o lote voltou com um único Ctrl+Z ({diferentes} páginas restauradas)")
 
-    print("Apagando uma página (Delete)...")
+    # Etapa 2 da obra (26/10/2026; Samuel, 07/10: "Deixar em branco" (tecla
+    # Delete; página branca no lugar, encadernação não muda)): a Delete deixa
+    # a página em branco; tirar do livro é o menu Página > "Tirar esta página
+    # do livro". Antes a Delete apagava (tirava do livro) a página.
+    print("Deixando uma página em branco (Delete)...")
+    da_vez = projeto.paginas[conferir.indice_pagina]
     tecla(janela, Qt.Key_Delete)
     esperar(0.4)
-    assert projeto.total_apagadas == 1
-    capturar(janela, "pagina_apagada")
+    assert da_vez.em_branco and projeto.total_apagadas == 0
+    capturar(janela, "pagina_em_branco")
     tecla(janela, Qt.Key_Z, Qt.ControlModifier)
     esperar(0.3)
-    assert projeto.total_apagadas == 0
+    assert not da_vez.em_branco
 
     print("Navegando com as setas e com Tab...")
     tecla(janela, Qt.Key_Right)

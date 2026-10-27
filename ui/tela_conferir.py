@@ -19,8 +19,10 @@ botões, e o Qt acabava empilhando um por cima do outro.
 Por isso tambem usamos QTabBar (só a barra) com QStackedWidget, e não
 QTabWidget: assim a faixa e os botões ficam de fora, como irmaos.
 
-As abas aparecem conforme o que foi marcado na tela 2. Cada uma edita uma
-unidade diferente:
+As abas (por dentro; na tela são as ferramentas da trilha) existem TODAS em
+todo livro, com qualquer caixinha da tela 2 marcada ou nenhuma - D-001, etapa
+2 da obra de 26/10/2026 (antes só existiam as das caixinhas marcadas: a
+regra de julho do `carregar`). Cada uma edita uma unidade diferente:
 
     Onde cortar -> FOLHA do PDF de entrada (a linha da lombada)
     Bordas      -> PAGINA de saida (o retangulo do recorte)

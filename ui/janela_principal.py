@@ -459,8 +459,10 @@ class JanelaPrincipal(QMainWindow):
         # Paineis cinza na tela das caixinhas): com um livro aberto (a tela de
         # trabalho, ou a "O que fazer" dele) todos os menus ficam acesos; o
         # que mexe no trabalho passa por _no_trabalho (etapa 2 da obra).
-        if indice == CONFERIR or (indice == OPCOES and self.projeto is not None):
+        if indice == CONFERIR:
             self.menu.mostrar_tela_de_trabalho()
+        elif indice == OPCOES and self.projeto is not None:
+            self.menu.mostrar_tela_das_opcoes()
         else:
             self.menu.mostrar_tela_inicial()
         # Etapa 7 do layout (rodadas 4 a 6): a tela dos livros não tem barra

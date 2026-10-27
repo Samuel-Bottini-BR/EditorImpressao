@@ -361,6 +361,16 @@ class BarraDeMenu(QMenuBar):
         for chave in ("pasta_de_saida", "nome_do_arquivo", "processar", "voltar"):
             self.acoes[chave].setEnabled(True)
 
+    def mostrar_tela_das_opcoes(self) -> None:
+        """A tela "O que fazer" de um livro aberto (lista única 1.12, etapa 2
+        da obra): todos os menus acesos, como na tela de trabalho, menos
+        "Confirmar e processar" (o livro ainda não passou pela conferência
+        com as opções desta tela) e "Voltar para as opções" (já está nelas).
+        O que mexe no trabalho passa pela janela (_no_trabalho)."""
+        self.mostrar_tela_de_trabalho()
+        for chave in ("processar", "voltar"):
+            self.acoes[chave].setEnabled(False)
+
     def ligar(self, chave: str, acao) -> None:
         """Liga uma acao ja montada. Levanta se o nome nao existir.
 

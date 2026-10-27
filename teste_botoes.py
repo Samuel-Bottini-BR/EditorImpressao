@@ -493,8 +493,13 @@ def testar_tela_inicial(janela, caminho_pdf: str) -> tuple[int, int]:
     # "miniaturas" e "icones" (menu Ver, rodada 14 do layout) escondem a tira
     # e os icones da direita: acionados aqui, os passos seguintes nao os
     # achariam. Sao conferidos em tests/test_menu_paineis.py.
+    # (etapa 2 da obra: com o livro aberto os menus ficam acesos tambem aqui -
+    # lista unica 1.12; o que mexe no trabalho so avisa, porque o livro ainda
+    # nao foi para a area de trabalho. O "Lado direito" fica de fora: e
+    # conferido na tela de trabalho, ida e volta, em testar_o_lado_direito.)
     o, f = acionar_menu_habilitado(janela, excluir={"abrir", "sair", "miniaturas", "icones",
-                                                    "filtros_tela_cheia"})
+                                                    "filtros_tela_cheia", "lado_icones",
+                                                    "lado_sanfona"})
     ok += o
     falhas += f
 
@@ -699,8 +704,16 @@ def testar_conferir_e_ampliada(janela) -> tuple[int, int]:
             conferir.paineis.abrir("props")
             esperar(0.4)
             corpo = conferir.paineis.propriedades.corpo
+            # Etapa 2 da obra: os dois botoes de "Esta pagina" (no alto do
+            # Propriedades, em toda ferramenta) ficam de fora daqui - clicados
+            # em cada ferramenta, a pagina sumiria do livro de duas paginas.
+            # Sao conferidos uma vez, com a promessa, em
+            # testar_os_dois_botoes_da_pagina.
+            da_pagina = {getattr(conferir, "botao_em_branco", None),
+                         getattr(conferir, "botao_tirar_do_livro", None)}
             alvos += [b for b in botoes_de(corpo)
-                      if not (b.text() or "").startswith("mudar nas opções")]
+                      if not (b.text() or "").startswith("mudar nas opções")
+                      and b not in da_pagina]
             alvos += [c for c in corpo.findChildren(QCheckBox)
                       if c.isVisible() and c.isEnabled()]
         # O "está certo" e a sugestao laranja, que cada fila tinha, sao agora
@@ -788,11 +801,17 @@ def testar_conferir_e_ampliada(janela) -> tuple[int, int]:
     # apagava e este botao restaurava). Sem isto o livro de teste, de duas
     # paginas, chegava ao "Processar" sem nenhuma: o menu Pagina > Apagar,
     # mais adiante, apaga a outra.
-    if hasattr(conferir, "botao_apagar") and conferir.botao_apagar.text() == "restaurar página":
-        if acionar(conferir.botao_apagar, "restaurar página (desfaz o apagar da fila)"):
+    # Etapa 2 da obra: o botao virou "tirar do livro" / "trazer de volta".
+    if (hasattr(conferir, "botao_apagar") and conferir.projeto is not None
+            and conferir.projeto.paginas[conferir.indice_pagina].apagada):
+        if acionar(conferir.botao_apagar, "trazer de volta (desfaz o tirar do livro da fila)"):
             ok += 1
         else:
             falhas += 1
+
+    o, f = testar_os_dois_botoes_da_pagina(conferir)
+    ok += o
+    falhas += f
 
     o, f = testar_cartao_tirar_fundo(conferir)
     ok += o
@@ -837,9 +856,15 @@ def testar_conferir_e_ampliada(janela) -> tuple[int, int]:
     # "comparar" (Ver > "Modo comparar", ligado na etapa 4 do layout) abre a
     # tela grande, que é modal: ela é conferida em testar_tela_ampliada, com
     # o .exec() interceptado; aqui travaria a bateria.
+    # Etapa 2 da obra: o "Lado direito" do menu Ver troca o jeito dos paineis
+    # e o guarda; e conferido a parte (testar_o_lado_direito), ida e volta.
     o, f = acionar_menu_habilitado(janela, excluir={"processar", "sair", "voltar", "abrir",
                                                     "comparar", "miniaturas", "icones",
-                                                    "filtros_tela_cheia"})
+                                                    "filtros_tela_cheia", "lado_icones",
+                                                    "lado_sanfona"})
+    ok += o
+    falhas += f
+    o, f = testar_o_lado_direito(janela)
     ok += o
     falhas += f
 
@@ -849,6 +874,55 @@ def testar_conferir_e_ampliada(janela) -> tuple[int, int]:
     ok += o
     falhas += f
 
+    return ok, falhas
+
+
+def testar_os_dois_botoes_da_pagina(conferir) -> tuple[int, int]:
+    """Etapa 2 da obra (26/10/2026; Samuel, 09/10: "Essa opção de tirar do
+    livro ou deixar folha em branco eu quero ter em outras paginas"): os dois
+    botoes de "Esta pagina", no alto do painel Propriedades. Clica cada um e
+    confere a PROMESSA (a pagina fica em branco / sai do livro), e clica de
+    volta ("voltar a página" / "trazer de volta"), para o livro de teste nao
+    perder paginas."""
+    branco = getattr(conferir, "botao_em_branco", None)
+    tirar = getattr(conferir, "botao_tirar_do_livro", None)
+    if branco is None or tirar is None or conferir.projeto is None:
+        return 0, 0
+    print("\n--- os dois botoes de 'Esta pagina' ---")
+    ok = falhas = 0
+    conferir.trilha.escolher("mao")             # uma ferramenta de pagina (nao o Dividir)
+    conferir.paineis.abrir("props")
+    esperar(0.4)
+    pagina = conferir.projeto.paginas[conferir.indice_pagina]
+    for botao, campo, rotulo in ((branco, "em_branco", "deixar em branco"),
+                                 (branco, "em_branco", "voltar a página"),
+                                 (tirar, "apagada", "tirar do livro"),
+                                 (tirar, "apagada", "trazer de volta")):
+        antes = bool(getattr(pagina, campo))
+        if acionar(botao, rotulo) and bool(getattr(pagina, campo)) != antes:
+            ok += 1
+            print(f"  ok    '{rotulo}' fez o que diz ({campo}: {antes} -> {not antes})")
+        else:
+            falhas += 1
+            print(f"  FALHA '{rotulo}' nao mudou {campo}")
+    return ok, falhas
+
+
+def testar_o_lado_direito(janela) -> tuple[int, int]:
+    """Etapa 2 da obra (R7 203 D: "Mas eu também quero ter a opção da area de
+    trabalho 1"; R14 902 C: menu Ver e Configuracoes): Ver > Lado direito >
+    Sanfona poe os paineis em sanfona; Icones na borda volta ao de fabrica."""
+    acoes = janela.menu.acoes
+    if "lado_sanfona" not in acoes:
+        return 0, 0
+    paineis = janela.tela_conferir.paineis
+    ok = falhas = 0
+    for chave, jeito in (("lado_sanfona", "sanfona"), ("lado_icones", "icones")):
+        if acionar(acoes[chave], f"menu: {chave}") and paineis.jeito == jeito:
+            ok += 1
+        else:
+            falhas += 1
+            print(f"  FALHA menu {chave} nao pos o lado direito em {jeito}")
     return ok, falhas
 
 
