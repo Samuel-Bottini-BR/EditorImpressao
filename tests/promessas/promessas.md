@@ -50,6 +50,14 @@ programa), a partir do **nome do botão**, da **dica** (o balão do mouse) e das
   português ("Mostrar detalhes...", não "Show Details..."); "fechar" fecha.
 - **no projeto:** nada muda. **no PDF:** nada muda.
 
+### P-027 · a lista de atalhos em português
+- **chaves:** `menu/atalhos`
+- **decisões:** CLAUDE.md §1 ("Toda a interface é em português do Brasil, sem jargão"); lista única 5.10 ("Atalhos em
+  inglês e a lista atrás de 'Show Details...'")
+- **aguarda:** etapa 11 (revisão dos nomes: lista única 5.10)
+- **na tela:** as teclas aparecem com nome em português ("Ctrl+Enter", "Ctrl+Seta para a esquerda", "Delete"), sem
+  "Return", "Left", "Right", "Del".
+
 ### P-004 · clique no cartão do livro
 - **chaves:** `início/livros/(clique no cartão)`
 - **decisões:** D-340 ("queria que ele tomasse toda a tela [...] só visse os livros novamente quando eu fechasse")
@@ -64,15 +72,17 @@ programa), a partir do **nome do botão**, da **dica** (o balão do mouse) e das
 - **na tela:** a área de trabalho do livro, com o que já tinha sido feito (o filtro escolhido numa página continua).
 - **no projeto:** o trabalho volta igual (nada se perde).
 - **no PDF:** o PDF gerado depois de continuar sai com o trabalho de antes.
+- **defeito:** QUEBRADA no programa de 26/10 (defeito A desta bateria). O filtro escolhido à mão numa página (painel, menu, teclas 1 a 4, botão do aviso, "todas") fica gravado no projeto, mas NÃO vale no PDF quando a caixinha "Limpar a folha" não foi marcada (o livro aberto sem marcar nada, D-009): a página sai amarelada, no Original. Causa: a tela não grava a marca "mexida à mão" do filtro (`core/etapas.marcar_mexida_a_mao` não é chamada por nenhum arquivo de `ui/`; o plano de 26/10 mandou "ligar nas etapas 2/3/5" e a etapa 2 entrou sem ligar). Mesmo defeito da tarefa 8 do teste do Kaique ("Preto e branco ignorado"). Sem dono certo: a gerente decide (etapa 3 ou 5).
 
 ### P-006 · "começar de novo" (menu do livro)
 - **chaves:** `início/menu do livro/começar de novo`, `início/livro aberto/Mais... começar de novo`,
   `caixa “Começar de novo?”/Começar de novo`, `caixa “Começar de novo?”/Não, deixar`
-- **decisões:** D-335 (cópia de segurança guardada)
+- **dica (a pergunta):** "Isto joga fora todos os ajustes de <livro> e abre o livro limpo. O livro em si não é
+  tocado. O que se perde é a conferência já feita."
 - **na tela:** pergunta antes; "Não, deixar" não muda nada; "Começar de novo" abre o livro do zero.
-- **no projeto:** com "Começar de novo", o trabalho de antes sai do projeto (a página em Preto e branco volta ao Original) e uma
-  cópia de segurança do trabalho antigo fica guardada; com "Não", o projeto fica igual.
-- **no PDF:** depois do "Sim", o PDF sai sem o trabalho antigo.
+- **no projeto:** com "Começar de novo" o trabalho de antes sai do projeto (a página em Preto e branco volta ao
+  Original); com "Não, deixar", o projeto fica igual. O PDF do livro (a entrada) não é tocado.
+- **no PDF:** depois de "Começar de novo", o PDF sai sem o trabalho antigo.
 
 ### P-007 · "renomear" (menu do livro)
 - **chaves:** `início/menu do livro/renomear`, `início/livro aberto/Mais... renomear`, `caixa “Renomear”/OK`,
@@ -436,7 +446,7 @@ programa), a partir do **nome do botão**, da **dica** (o balão do mouse) e das
 - **dica:** "Copia a marcação desta página (gravura, letra, papel) para todas as páginas." / "para esta e as seguintes"
 - **decisões:** D-371
 - **no projeto:** a marcação desta página fica gravada em todas as páginas (ou desta em diante, não nas de antes).
-- **no PDF:** a página com a folha inteira marcada como papel faz todas (ou as seguintes) saírem brancas.
+- **no PDF:** o mesmo que a marcação faz na página dela (a folha inteira como papel sai branca: P-078).
 
 ### P-074 · "usar em todas" / "daqui em diante" (Esta página tem foto)
 - **chaves:** `área de trabalho/marcar/usar em todas — Leva o "Esta página tem foto" desta página`,
@@ -452,6 +462,7 @@ programa), a partir do **nome do botão**, da **dica** (o balão do mouse) e das
 - **no projeto:** "apagar a área" tira a área; "pintar de branco" a troca por papel; "copiar" + "colar" (noutra
   página) põe a mesma área lá.
 - **no PDF:** a área pintada de branco sai branca.
+- **defeito:** QUEBRADA no programa de 26/10 (defeito B desta bateria). A folha inteira marcada como papel ("Deixar a folha em branco") e a área "pintada de branco" ficam gravadas no projeto, mas a página em Original (a de fábrica, D-134) sai no PDF com tudo, amarelada, sem o branco — mesmo com "Limpar a folha" marcada. Em Preto e branco (com "Limpar a folha") a página sai branca. D-027 está no Livro como "construída". Sem dono.
 
 ### P-076 · "Ajustar o pedaço à figura"
 - **chaves:** `área de trabalho/marcar/Ajustar o pedaço à figura`
@@ -461,25 +472,53 @@ programa), a partir do **nome do botão**, da **dica** (o balão do mouse) e das
 
 ### P-077 · menu Marcar > "Limpar tudo"
 - **chaves:** `menu/limpar_marcacao`
-- **no projeto:** a marcação da página da vez sai (com desfazer).
+- **no projeto:** a marcação da página da vez sai (o desfazer dela é a P-129).
+
+### P-129 · Desfazer (Ctrl+Z, menu Editar, barra de baixo) desfaz também a marcação
+- **chaves:** `menu/desfazer`
+- **decisões:** D-020 ("Ctrl+Z desfaz qualquer alteração, sem limite de quantidade"); lista única 1.3 ("O desfazer
+  não tira a marcação do Retângulo"), 4.6 (a marca que o desfazer não tirou sai impressa)
+- **aguarda:** etapa 9 (desfazer e Retângulo: lista única 1.3 e 4.6)
+- **no projeto:** depois de "Limpar tudo" (ou de desenhar uma área), o Desfazer traz a marcação de antes.
 
 ### P-078 · menu Marcar > "Deixar a folha em branco"
 - **chaves:** `menu/folha_em_branco`
 - **decisões:** D-027 ("escolher a opção para virar uma folha branca"), D-200
 - **no projeto:** a folha inteira fica marcada como papel. **no PDF:** a página sai toda branca, no mesmo lugar.
+- **defeito:** QUEBRADA no programa de 26/10 (defeito B desta bateria). A folha inteira marcada como papel ("Deixar a folha em branco") e a área "pintada de branco" ficam gravadas no projeto, mas a página em Original (a de fábrica, D-134) sai no PDF com tudo, amarelada, sem o branco — mesmo com "Limpar a folha" marcada. Em Preto e branco (com "Limpar a folha") a página sai branca. D-027 está no Livro como "construída". Sem dono.
 
 ## Área de trabalho: painel "Filtro da página"
 
 ### P-080 · os quatro filtros (painel, menu Filtro, teclas 1 a 4)
-- **chaves:** `área de trabalho/filtro da página/Original`, `área de trabalho/filtro da página/Preto e branco`,
-  `área de trabalho/filtro da página/Melhorar`, `área de trabalho/filtro da página/Mágico pro`, `menu/filtro_original`,
+- **chaves:** `área de trabalho/filtro da página/cartão Original`, `área de trabalho/filtro da página/cartão Preto e branco`,
+  `área de trabalho/filtro da página/cartão Melhorar`, `área de trabalho/filtro da página/cartão Mágico pro`, `menu/filtro_original`,
   `menu/filtro_preto_e_branco`, `menu/filtro_melhorar`, `menu/filtro_magico_pro`
 - **decisões:** D-298 ("filtros diferentes em páginas diferentes do mesmo livro, gerando um PDF só"), D-134 (abre em
   Original), D-009
-- **na tela:** o filtro escolhido fica aceso no painel e marcado no menu Filtro.
+- **na tela:** o filtro escolhido fica aceso no painel (o menu Filtro é a P-085).
 - **no projeto:** a página fica com o filtro gravado (uma ação no histórico); só ela.
 - **no PDF:** essa página sai no filtro (Preto e branco: só preto e branco, sem amarelo); as outras continuam como
   estavam (amareladas no Original).
+- **defeito:** QUEBRADA no programa de 26/10 (defeito A desta bateria). O filtro escolhido à mão numa página (painel, menu, teclas 1 a 4, botão do aviso, "todas") fica gravado no projeto, mas NÃO vale no PDF quando a caixinha "Limpar a folha" não foi marcada (o livro aberto sem marcar nada, D-009): a página sai amarelada, no Original. Causa: a tela não grava a marca "mexida à mão" do filtro (`core/etapas.marcar_mexida_a_mao` não é chamada por nenhum arquivo de `ui/`; o plano de 26/10 mandou "ligar nas etapas 2/3/5" e a etapa 2 entrou sem ligar). Mesmo defeito da tarefa 8 do teste do Kaique ("Preto e branco ignorado"). Sem dono certo: a gerente decide (etapa 3 ou 5).
+
+### P-085 · o menu Filtro marca o filtro da página da vez
+- **chaves:** `menu/filtro_original`, `menu/filtro_preto_e_branco`, `menu/filtro_melhorar`, `menu/filtro_magico_pro`
+- **decisões:** os itens do menu Filtro são de marcar (têm o tique), como os do menu Painéis, em que "a marca acompanha"
+  (D-057); um tique que não acompanha a página diz o filtro errado.
+- **na tela:** o menu Filtro mostra marcado o filtro da página que está na tela, e acompanha ao trocar de página.
+- **defeito:** QUEBRADA no programa de 26/10 (defeito D desta bateria). Os itens do menu Filtro são de marcar, mas o tique nunca acompanha a página: escolhido o Preto e branco, o menu continua sem marca (e o tique de um clique no menu fica lá ao passar para uma página em Original). Sem dono (etapa 9, consertos de tela, ou 11).
+
+### P-084 · "Só neste pedaço": os quatro filtros do pedaço
+- **chaves:** `área de trabalho/filtro da página/só neste pedaço: Original`,
+  `área de trabalho/filtro da página/só neste pedaço: Preto e branco`,
+  `área de trabalho/filtro da página/só neste pedaço: Melhorar`,
+  `área de trabalho/filtro da página/só neste pedaço: Mágico pro`
+- **decisões:** D-188 ("B — Sem o botão de cima, nenhum aceso"), D-199 ("colocar o filtro só em um lugar"), D-173
+  ("Página em Original com pedaço em Preto e branco → o pedaço sai em Preto e branco"), D-233
+- **na tela:** nenhum aceso de fábrica; clicar acende o filtro do próximo pedaço; clicar de novo no aceso volta a
+  nenhum.
+- **no projeto:** a área desenhada depois fica gravada com o filtro dela.
+- **no PDF:** o pedaço sai no filtro dele (Preto e branco numa página em Original: o papel do pedaço fica branco).
 
 ### P-081 · "só nesta" / "todas" / "daqui em diante" (painel Filtro)
 - **chaves:** `área de trabalho/filtro da página/só nesta`, `área de trabalho/filtro da página/todas`,
@@ -488,6 +527,7 @@ programa), a partir do **nome do botão**, da **dica** (o balão do mouse) e das
 - **no projeto:** "todas" leva o filtro desta página a todas; "daqui em diante" a esta e às seguintes (as de antes
   ficam); "só nesta" deixa só esta e a dá por conferida.
 - **no PDF:** com "todas", todas as páginas saem em Preto e branco.
+- **defeito:** QUEBRADA no programa de 26/10 (defeito A desta bateria). O filtro escolhido à mão numa página (painel, menu, teclas 1 a 4, botão do aviso, "todas") fica gravado no projeto, mas NÃO vale no PDF quando a caixinha "Limpar a folha" não foi marcada (o livro aberto sem marcar nada, D-009): a página sai amarelada, no Original. Causa: a tela não grava a marca "mexida à mão" do filtro (`core/etapas.marcar_mexida_a_mao` não é chamada por nenhum arquivo de `ui/`; o plano de 26/10 mandou "ligar nas etapas 2/3/5" e a etapa 2 entrou sem ligar). Mesmo defeito da tarefa 8 do teste do Kaique ("Preto e branco ignorado"). Sem dono certo: a gerente decide (etapa 3 ou 5).
 
 ### P-082 · ícone "Ver os filtros em tela cheia" / menu Ver > "Filtros em tela cheia"
 - **chaves:** `área de trabalho/filtro da página/Ver os filtros em tela cheia`, `menu/filtros_tela_cheia`
@@ -495,12 +535,12 @@ programa), a partir do **nome do botão**, da **dica** (o balão do mouse) e das
 - **na tela:** abre os filtros em tela cheia, na página da vez. **no projeto:** nada muda até "Usar".
 
 ### P-083 · os jeitos do "Só as letras" (Guardar a tinta forte / Guardar tudo / Guardar só o texto) e "Mais opções"
-- **chaves:** `área de trabalho/filtro da página/Guardar a tinta forte`, `área de trabalho/filtro da página/Guardar tudo`,
-  `área de trabalho/filtro da página/Guardar só o texto`, `área de trabalho/filtro da página/Mais opções`,
-  `área de trabalho/filtro da página/Menos opções`,
+- **chaves:** `área de trabalho/filtro da página/Mais opções`, `área de trabalho/filtro da página/Menos opções`,
   `o que fazer/Guardar a tinta forte`, `o que fazer/Guardar tudo`, `o que fazer/Guardar só o texto`
-- **decisões:** D-165 ("tem que ser algo bem visível para eu poder escolher"), D-163, D-366
-- **no projeto:** o jeito escolhido fica gravado nesta página. "Mais opções" abre as escolhas a mais.
+- **decisões:** D-165 ("tem que ser algo bem visível para eu poder escolher"), D-163, D-366, D-185 ("Menu com
+  amostra": na área de trabalho os três jeitos ficam numa lista com desenho, não em botões)
+- **no projeto:** o jeito escolhido (na lista da área de trabalho, ou nos botões da tela "O que fazer") fica gravado
+  nesta página. "Mais opções" abre as escolhas a mais e "Menos opções" fecha.
 
 ## Área de trabalho: "Para revisar"
 
@@ -602,6 +642,7 @@ programa), a partir do **nome do botão**, da **dica** (o balão do mouse) e das
 ### P-109 · aviso: "usar Mágico pro nesta"
 - **chaves:** `aviso/filtro:magico_pro`
 - **no projeto:** esta página fica no Mágico pro. **no PDF:** esta página sai no Mágico pro.
+- **defeito:** QUEBRADA no programa de 26/10 (defeito A desta bateria). O filtro escolhido à mão numa página (painel, menu, teclas 1 a 4, botão do aviso, "todas") fica gravado no projeto, mas NÃO vale no PDF quando a caixinha "Limpar a folha" não foi marcada (o livro aberto sem marcar nada, D-009): a página sai amarelada, no Original. Causa: a tela não grava a marca "mexida à mão" do filtro (`core/etapas.marcar_mexida_a_mao` não é chamada por nenhum arquivo de `ui/`; o plano de 26/10 mandou "ligar nas etapas 2/3/5" e a etapa 2 entrou sem ligar). Mesmo defeito da tarefa 8 do teste do Kaique ("Preto e branco ignorado"). Sem dono certo: a gerente decide (etapa 3 ou 5).
 
 ### P-110 · aviso: "usar o corte alargado"
 - **chaves:** `aviso/corte_alargado`
@@ -683,6 +724,7 @@ programa), a partir do **nome do botão**, da **dica** (o balão do mouse) e das
   fim, "Ficou pronto!".
 - **no projeto:** o destino do PDF fica gravado.
 - **no PDF:** o PDF é gravado no destino, com uma página por página do livro, na ordem.
+- **defeito:** QUEBRADA no programa de 26/10 (defeito C desta bateria). Pelo menu Arquivo > "Confirmar e processar" (e a tecla Ctrl+Enter) o programa NÃO mostra a janela "Antes de processar" com os avisos pendentes (D-274: "quando alguém tentar imprimir sem ver os alertas o programa para e mostra os alertas"): o menu chama `JanelaPrincipal.processar` direto, sem passar por `TelaConferir._pedir_processamento`. O botão da área de trabalho mostra. Sem dono.
 
 ## Janelas da área de trabalho
 

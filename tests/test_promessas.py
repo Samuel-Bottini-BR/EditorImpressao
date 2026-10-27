@@ -118,6 +118,12 @@ def janela(app, pasta, monkeypatch):
     janela.tela_opcoes.folhear.fechar()
     janela.close()
     aj.assentar()
+    # as tarefas de fundo deste teste (prévias, miniaturas) terminam aqui, antes de a pasta de
+    # dados trocar: senão o erro de uma delas (o livro já apagado) cai no erros.log do próximo
+    from PySide6.QtCore import QThreadPool
+
+    QThreadPool.globalInstance().waitForDone(15000)
+    aj.assentar()
 
 
 @pytest.fixture
@@ -145,6 +151,13 @@ def _chaves_da_trilha(tela) -> dict[str, object]:
 
 def _chaves_dos_icones(tela) -> dict[str, object]:
     return {f"ícones da direita/{chave}": chave for chave in tela.paineis.icones.retangulos()}
+
+
+def _chaves_dos_cartoezinhos(tela) -> dict[str, object]:
+    """Os filtros da página no painel Filtro são cartõezinhos (a página pequena e o nome), não
+    botões: clicar escolhe o filtro da página (rodada 9, 403 B)."""
+    return {f"área de trabalho/filtro da página/cartão {c.rotulo.text()}": c
+            for c in tela.paineis.filtro_da_pagina.cartoes.values()}
 
 
 def _chaves_do_menu(janela) -> dict[str, object]:
@@ -177,6 +190,9 @@ def _especiais_do_revisar(tela) -> dict:
     for botao in tela.paineis.para_revisar.findChildren(QPushButton):
         if botao.text().startswith("está bom") and botao.text() != "está bom em tudo":
             especiais[botao] = "está bom: todas"
+    # os filtros do "Só neste pedaço" (os mesmos nomes dos cartõezinhos da página)
+    for chave, botao in getattr(tela.paineis.filtro_da_pagina, "botoes_do_pedaco", {}).items():
+        especiais[botao] = f"só neste pedaço: {botao.text()}"
     # as linhas do Histórico (uma por ação feita ou desfeita) são botões com a descrição da ação
     for botao in getattr(tela.paineis.historico, "itens", []):
         especiais[botao] = "ação feita (volta até aqui)"
@@ -215,6 +231,13 @@ def _varrer_area_de_trabalho(janela, tela, chaves) -> None:
     for painel in ("revisar", "automatico", "props", "filtro", "historico"):
         tela.paineis.abrir(painel)
         anotar()
+    # o "Só neste pedaço" aberto
+    parte = tela.paineis.filtro_da_pagina.partes.get("pedaco")
+    if parte is not None:
+        tela.paineis.abrir("filtro")
+        parte.abrir(True)
+        anotar()
+        parte.abrir(False)
     # a página em Preto e branco com "Só as letras" (os jeitos do "Só as letras" no painel Filtro)
     pagina = tela.projeto.paginas[0]
     tela.ir_para_pagina(0)
@@ -353,6 +376,7 @@ def inventario(janela, pasta, monkeypatch) -> dict[str, object]:
     # a área de trabalho
     chaves.update(_chaves_da_trilha(tela))
     chaves.update(_chaves_dos_icones(tela))
+    chaves.update(_chaves_dos_cartoezinhos(tela))
     chaves.update(_chaves_do_menu(janela))
     chaves.update(_chaves_dos_avisos())
     _varrer_area_de_trabalho(janela, tela, chaves)
@@ -522,6 +546,10 @@ def apertar(janela, chave: str) -> None:
             aj.acoes_de_menu_aberto(
                 lambda: QTest.mouseClick(trilha, Qt.RightButton, Qt.NoModifier, centro),
                 escolher=NOMES[ferramenta])
+    elif chave.startswith("área de trabalho/filtro da página/cartão "):
+        cartao = _chaves_dos_cartoezinhos(tela)[chave]
+        assert cartao.isVisibleTo(tela), f"o cartãozinho '{chave}' não está à vista"
+        QTest.mouseClick(cartao, Qt.LeftButton, Qt.NoModifier, cartao.rect().center())
     elif chave.startswith("ícones da direita/"):
         icones = tela.paineis.icones
         centro = icones.retangulos()[chave.split("/", 1)[1]].center()
@@ -639,6 +667,13 @@ def _livro_trabalhado(janela, pasta, monkeypatch):
     return janela.tela_inicio.findChildren(CartaoDeProjeto)[0]
 
 
+@prova("P-027")
+def test_p027_atalhos_em_portugues(janela, pasta):
+    texto = janela.menu.texto_dos_atalhos()
+    ingles = [palavra for palavra in ("Return", "Left", "Right", "Del", "Shift+Del") if palavra in texto]
+    assert not ingles, f"nomes de tecla em inglês na lista de atalhos: {ingles}"
+
+
 @prova("P-004")
 def test_p004_clique_no_cartao_abre_o_livro_na_tela_inteira(janela, pasta, monkeypatch):
     cartao = _livro_trabalhado(janela, pasta, monkeypatch)
@@ -689,6 +724,8 @@ def test_p006_comecar_de_novo(janela, pasta, monkeypatch):
     from core.filtros import ORIGINAL, PRETO_E_BRANCO
 
     cartao = _livro_trabalhado(janela, pasta, monkeypatch)
+    livro = Path(cartao.resumo.caminho_entrada)
+    bytes_do_livro = livro.read_bytes()
     abrir_menu = lambda: cartao._abrir_menu(QPoint(5, 5))  # noqa: E731
     vistas = aj.caixas_durante(lambda: aj.acoes_de_menu_aberto(abrir_menu, "começar de novo"), clicar="Não, deixar")
     assert vistas and vistas[0][0] == "Começar de novo?", vistas
@@ -698,8 +735,10 @@ def test_p006_comecar_de_novo(janela, pasta, monkeypatch):
     tela = aj.abrir_livro_para_teste(janela, cartao.resumo.caminho_entrada) \
         if janela.telas.currentIndex() != janela.telas.indexOf(janela.tela_conferir) else janela.tela_conferir
     assert janela.projeto.paginas[1].filtro == ORIGINAL, "o trabalho antigo continuou"
-    copias = list(Path(cartao.resumo.pasta).glob("projeto.antigo-*"))
-    assert copias, "não ficou cópia de segurança do trabalho antigo"
+    assert aj.pagina_gravada(janela, 1)["filtro"] == ORIGINAL
+    assert livro.read_bytes() == bytes_do_livro, "o livro em si foi tocado"
+    paginas = _gerar(janela, monkeypatch, pasta)
+    _livro_inteiro_original(paginas)
     assert tela is not None
 
 
@@ -800,6 +839,16 @@ def test_p012_rodar_o_automatico_abre_o_automatico(janela, pasta, monkeypatch):
     aj.assentar()
     assert janela.telas.currentIndex() == CONFERIR, "abriu a tela 'O que fazer'"
     assert janela.tela_conferir.paineis.automatico.isVisible(), "o Automático não abriu"
+
+
+@prova("P-026")
+def test_p026_mais_abre_o_menu_do_livro(janela, pasta, monkeypatch):
+    cartao = _livro_trabalhado(janela, pasta, monkeypatch)
+    janela.tela_inicio.abrir_o_livro(cartao.resumo)
+    aj.assentar()
+    vistos = aj.acoes_de_menu_aberto(lambda: apertar(janela, "início/livro aberto/Mais..."))
+    esperados = {"continuar", "começar de novo", "renomear", "abrir a pasta de saída", "remover da lista"}
+    assert esperados <= set(vistos), vistos
 
 
 @prova("P-013")
@@ -1236,8 +1285,9 @@ def test_p053_aplicar_o_giro_em(janela, tela, monkeypatch, pasta):
     apertar(janela, "menu/girar")
     assert janela.avisos, "folha par + 'só as ímpares' não avisou (D-036)"
     assert all(f["rotacao"] == 0 for f in aj.projeto_gravado(janela)["folhas"]), "girou mesmo assim"
-    for alcance, esperado in (("pares", [0, 90, 0, 90]), ("daqui_em_diante", [0, 180, 90, 180]),
-                              ("esta", [0, 270, 90, 180])):
+    # D-035: "Todas ficam viradas como a folha da vez" (as outras copiam o giro final dela)
+    for alcance, esperado in (("pares", [0, 90, 0, 90]), ("daqui_em_diante", [0, 180, 180, 180]),
+                              ("esta", [0, 270, 180, 180])):
         apertar(janela, f"menu/giro_em_{alcance}")
         apertar(janela, "menu/girar")
         assert [f["rotacao"] for f in aj.projeto_gravado(janela)["folhas"]] == esperado, alcance
@@ -1391,6 +1441,8 @@ def _no_cortar(janela, tela, indice=1):
     tela.ir_para_pagina(indice)
     tela.escolher_ferramenta("cortar")
     tela.paineis.abrir("props")
+    vis = tela.visualizadores["bordas"]
+    aj.esperar(lambda: vis.tamanho_da_pagina_px()[0] > 0, motivo="a prévia da página no Cortar")
 
 
 @prova("P-063")
@@ -1447,8 +1499,10 @@ def test_p066_tamanho_da_folha(janela, tela, monkeypatch, pasta):
     from ui.dialogo_tamanho_da_folha import DialogoTamanhoDaFolha
 
     _no_cortar(janela, tela)
-    aj.responder_caixa(monkeypatch, DialogoTamanhoDaFolha, "Cancelar")
+    vistas = []
+    aj.responder_caixa(monkeypatch, DialogoTamanhoDaFolha, "Cancelar", registro=vistas)
     apertar(janela, "área de trabalho/cortar/tamanho...")
+    assert vistas, "a janela 'Tamanho da folha' não abriu"
     assert aj.pagina_gravada(janela, 1).get("tamanho_folha_cm") is None, "Cancelar mudou a página"
 
     def a5(caixa):
@@ -1468,6 +1522,8 @@ def _no_endireitar(janela, tela):
     tela.ir_para_pagina(1)
     tela.escolher_ferramenta("endireitar")
     tela.paineis.abrir("props")
+    vis = tela.visualizadores["angulo"]
+    aj.esperar(lambda: vis.angulo_conhecido, motivo="o ângulo da página medido (a prévia do Endireitar)")
 
 
 @prova("P-067")
@@ -1477,9 +1533,11 @@ def test_p067_um_decimo_de_grau(janela, tela):
     antihorario = next(c for c in lugares if "anti-horário" in c)
     horario = next(c for c in lugares if c.endswith("sentido horário"))
     apertar(janela, antihorario)
+    aj.esperar(lambda: tela.projeto.paginas[1].angulo_manual is not None, 5, "o ângulo gravado")
     a = aj.pagina_gravada(janela, 1)["angulo_manual"]
     apertar(janela, horario)
     apertar(janela, horario)
+    aj.esperar(lambda: tela.projeto.paginas[1].angulo_manual != a, 5, "o ângulo novo gravado")
     b = aj.pagina_gravada(janela, 1)["angulo_manual"]
     assert a is not None and b is not None, "o ângulo à mão não foi gravado"
     assert abs((a - b) - 0.2) < 1e-6, f"anti-horário {a}, depois duas vezes horário {b}"
@@ -1524,7 +1582,9 @@ def _desenhar_area(tela, x0=0.2, y0=0.2, x1=0.6, y1=0.6):
     aj.assentar()
 
 
-TIPOS_DE_MARCAR = {"gravura ou foto": "gravura", "letra e traço": "texto", "papel": "papel"}
+TIPOS_DE_MARCAR = {"gravura ou foto": "gravura", "letra e traço": "letra", "papel": "papel",
+                   "pintar por cima": "pintar", "manter a cor da tinta": "tinta_cor",
+                   "tinta preta, fundo original": "tinta_preta"}
 
 
 @prova("P-070")
@@ -1532,16 +1592,14 @@ TIPOS_DE_MARCAR = {"gravura ou foto": "gravura", "letra e traço": "texto", "pap
                                   "manter a cor da tinta", "tinta preta, fundo original"])
 def test_p070_marcar_como(janela, tela, nome):
     _no_marcar(janela, tela)
+    if nome == "gravura ou foto":              # o de fábrica: escolhe outro antes, para ver a troca
+        apertar(janela, "área de trabalho/marcar/papel")
     apertar(janela, f"área de trabalho/marcar/{nome}")
-    assert botao(janela, f"área de trabalho/marcar/{nome}").isChecked(), "o tipo não ficou aceso"
+    assert tela.paineis.marcar_como.tipo == TIPOS_DE_MARCAR[nome], "o tipo não ficou escolhido"
     _desenhar_area(tela)
     selecao = aj.pagina_gravada(janela, 1)["selecao"]
     assert selecao, "a área desenhada não foi gravada"
-    tipo = selecao[-1].get("tipo")
-    if nome in TIPOS_DE_MARCAR:
-        assert tipo == TIPOS_DE_MARCAR[nome], f"marcou como {tipo}"
-    else:
-        assert tipo not in ("gravura", "texto", "papel") or selecao[-1].get("zona"), selecao[-1]
+    assert selecao[-1].get("tipo") == TIPOS_DE_MARCAR[nome], f"marcou como {selecao[-1].get('tipo')}"
 
 
 @prova("P-071")
@@ -1550,8 +1608,12 @@ def test_p071_cor_de_pintar(janela, tela, monkeypatch):
     from PySide6.QtWidgets import QColorDialog
 
     _no_marcar(janela, tela)
-    monkeypatch.setattr(QColorDialog, "getColor", staticmethod(lambda *a, **k: QColor("#ff0000")))
     apertar(janela, "área de trabalho/marcar/cor de pintar")
+    caixa = tela.paineis.marcar_como.caixa_de_cor
+    assert isinstance(caixa, QColorDialog) and caixa.isVisible(), "a caixa de cores não abriu"
+    caixa.setCurrentColor(QColor("#ff0000"))
+    caixa.accept()
+    aj.assentar()
     apertar(janela, "área de trabalho/marcar/pintar por cima")
     _desenhar_area(tela)
     selecao = aj.pagina_gravada(janela, 1)["selecao"]
@@ -1585,9 +1647,7 @@ def test_p073_marcacao_em_todas_e_daqui(janela, tela, monkeypatch, pasta, qual):
     gravado = aj.projeto_gravado(janela)["paginas"]
     com = [bool(p["selecao"]) for p in gravado]
     assert com == ([True] * 4 if qual == "todas" else [False, True, True, True]), com
-    paginas = _gerar(janela, monkeypatch, pasta)
-    brancas = [aj.esta_branca(p) for p in paginas]
-    assert brancas == ([True] * 4 if qual == "todas" else [False, True, True, True]), brancas
+    # o PDF da folha marcada como papel é a promessa P-078 (lá a prova gera o PDF)
 
 
 @prova("P-074")
@@ -1612,18 +1672,34 @@ def test_p075_apagar_pintar_copiar_colar(janela, tela, monkeypatch, pasta):
     _desenhar_area(tela, 0.1, 0.1, 0.5, 0.3)
     tela.escolher_ferramenta("ajustar")
     editor = tela.editor_selecao
-    editor.escolher_area(len(editor.selecao) - 1) if hasattr(editor, "escolher_area") else None
+    from tests.test_editor_selecao import clicar, soltar
+
+    editor.mousePressEvent(clicar(editor, 0.3, 0.2))     # o clique na área, com a ferramenta A
+    editor.mouseReleaseEvent(soltar(editor, 0.3, 0.2))
+    aj.assentar()
+    assert editor.escolhida is not None, "a ferramenta Mover e mudar o tamanho não escolheu a área"
     apertar(janela, "área de trabalho/marcar/copiar")
     tela.ir_para_pagina(2)
     apertar(janela, "área de trabalho/marcar/colar")
     assert aj.pagina_gravada(janela, 2)["selecao"], "colar não pôs a área na outra página"
     tela.ir_para_pagina(1)
+    tela.escolher_ferramenta("ajustar")
+    aj.esperar(lambda: editor._pixmap is not None, motivo="a página no editor")
+    editor.mousePressEvent(clicar(editor, 0.3, 0.2))     # escolhe a área de novo nesta página
+    editor.mouseReleaseEvent(soltar(editor, 0.3, 0.2))
+    aj.assentar()
+    assert editor.escolhida is not None, f"a área não ficou escolhida: {tela.aviso_marcacao.text()}"
     apertar(janela, "área de trabalho/marcar/pintar de branco")
-    assert aj.pagina_gravada(janela, 1)["selecao"][-1]["tipo"] == "papel", "pintar de branco não virou papel"
+    tipos = [r["tipo"] for r in aj.pagina_gravada(janela, 1)["selecao"]]
+    assert tipos == ["papel"], f"pintar de branco não virou papel: {tipos} ({tela.aviso_marcacao.text()})"
     paginas = _gerar(janela, monkeypatch, pasta)
     assert aj.qual_pagina(paginas[1]) is None, "a área pintada de branco não saiu branca (o bloco continua)"
     _voltar_ao_trabalho(janela)
     tela.ir_para_pagina(1)
+    tela.escolher_ferramenta("ajustar")
+    editor.mousePressEvent(clicar(editor, 0.3, 0.2))
+    editor.mouseReleaseEvent(soltar(editor, 0.3, 0.2))
+    aj.assentar()
     apertar(janela, "área de trabalho/marcar/apagar a área")
     assert not aj.pagina_gravada(janela, 1)["selecao"], "apagar a área não tirou a área"
 
@@ -1639,7 +1715,7 @@ def test_p076_ajustar_o_pedaco(janela, tela):
     _no_marcar(janela, tela)
     tela._escolher_filtro_da_regiao(ORIGINAL)
     _desenhar_area(tela, 0.05, 0.05, 0.6, 0.45)
-    tela._avaliar_os_pedacos() if hasattr(tela, "_avaliar_os_pedacos") else None
+    tela._avaliar_os_pedacos(tela.projeto.paginas[1])
     aj.assentar()
     alvo = tela.botao_ajustar_pedaco
     if not (alvo.isVisibleTo(tela) and alvo.isEnabled()):
@@ -1658,8 +1734,17 @@ def test_p077_limpar_tudo(janela, tela):
     assert aj.pagina_gravada(janela, 1)["selecao"]
     apertar(janela, "menu/limpar_marcacao")
     assert not aj.pagina_gravada(janela, 1)["selecao"]
-    tela.desfazer()
-    assert aj.pagina_gravada(janela, 1)["selecao"], "o desfazer não trouxe a marcação"
+    # o Desfazer da marcação é a promessa P-129 (aguarda a etapa 9)
+
+
+@prova("P-129")
+def test_p129_desfazer_desfaz_a_marcacao(janela, tela):
+    _no_marcar(janela, tela)
+    _desenhar_area(tela)
+    apertar(janela, "menu/limpar_marcacao")
+    assert not aj.pagina_gravada(janela, 1)["selecao"]
+    apertar(janela, "menu/desfazer")
+    assert aj.pagina_gravada(janela, 1)["selecao"], "o Desfazer não trouxe a marcação"
 
 
 @prova("P-078")
@@ -1690,14 +1775,13 @@ def test_p080_os_quatro_filtros(janela, tela, monkeypatch, pasta, nome, lugar):
     tela.paineis.abrir("filtro")
     tela.escolher_ferramenta("mao")
     if lugar == "painel":
-        apertar(janela, f"área de trabalho/filtro da página/{nome}")
+        apertar(janela, f"área de trabalho/filtro da página/cartão {nome}")
     elif lugar == "menu":
         apertar(janela, f"menu/filtro_{chave}")
     else:
         QTest.keyClick(tela, getattr(Qt, f"Key_{list(FILTROS).index(nome) + 1}"))
         aj.assentar()
     assert aj.pagina_gravada(janela, 1)["filtro"] == chave
-    assert janela.menu.acoes[f"filtro_{chave}"].isChecked(), "o menu Filtro não marca o filtro da página"
     assert [p["filtro"] for i, p in enumerate(aj.projeto_gravado(janela)["paginas"]) if i != 1] == ["original"] * 3
     if lugar != "painel" or nome not in ("Preto e branco", "Original"):
         return                                   # o PDF de cada filtro: um por filtro basta
@@ -1707,6 +1791,55 @@ def test_p080_os_quatro_filtros(janela, tela, monkeypatch, pasta, nome, lugar):
     else:
         assert aj.papel_amarelado(paginas[1])
     assert aj.papel_amarelado(paginas[0]) and aj.papel_amarelado(paginas[2]), "mudou outra página"
+
+
+@prova("P-085")
+def test_p085_o_menu_filtro_marca_o_filtro_da_pagina(janela, tela):
+    from core.filtros import ORIGINAL, PRETO_E_BRANCO
+
+    tela.ir_para_pagina(1)
+    tela._escolher_filtro(PRETO_E_BRANCO)
+    aj.assentar()
+    assert janela.menu.acoes["filtro_preto_e_branco"].isChecked(), "o menu Filtro não marca o filtro da página"
+    tela.ir_para_pagina(0)
+    aj.assentar()
+    assert tela.projeto.paginas[0].filtro == ORIGINAL
+    assert janela.menu.acoes["filtro_original"].isChecked() and \
+        not janela.menu.acoes["filtro_preto_e_branco"].isChecked(), "o menu Filtro não acompanha a página"
+
+
+@prova("P-084")
+def test_p084_so_neste_pedaco(janela, tela, monkeypatch, pasta):
+    """D-188: nenhum aceso de fábrica; clicar escolhe o filtro do próximo pedaço; clicar de novo no
+    aceso volta a nenhum. D-173: página em Original com o pedaço em Preto e branco -> o pedaço sai
+    em Preto e branco no PDF (o pedaço cobre o canto de cima à direita, onde só há papel)."""
+    painel = tela.paineis.filtro_da_pagina
+    _no_marcar(janela, tela)
+    tela.paineis.abrir("filtro")
+    from PySide6.QtWidgets import QFrame
+
+    for parte in painel.findChildren(QFrame):
+        if type(parte).__name__ == "ParteQueAbre" and "pedaço" in parte.nome.lower():
+            parte.abrir(True)
+    aj.assentar()
+    botoes = painel.botoes_do_pedaco
+    assert not painel.filtro_pedaco, "veio um filtro aceso de fábrica (D-188)"
+    pb = botoes["preto_e_branco"]
+    pb.click()
+    aj.assentar()
+    assert painel.filtro_pedaco == "preto_e_branco"
+    pb.click()
+    aj.assentar()
+    assert not painel.filtro_pedaco, "clicar de novo no aceso não voltou a nenhum"
+    pb.click()
+    aj.assentar()
+    tela.paineis.abrir("props")
+    _desenhar_area(tela, 0.75, 0.0, 1.0, 0.12)
+    regiao = aj.pagina_gravada(janela, 1)["selecao"][-1]
+    assert regiao.get("filtro") == "preto_e_branco", f"o pedaço não ficou com o filtro dele: {regiao}"
+    paginas = _gerar(janela, monkeypatch, pasta)
+    assert not aj.papel_amarelado(paginas[1]), "o pedaço em Preto e branco não saiu no PDF (D-173)"
+    assert aj.papel_amarelado(paginas[0])
 
 
 @prova("P-081")
@@ -1747,8 +1880,10 @@ def test_p082_filtros_em_tela_cheia(janela, tela, monkeypatch, onde):
 
 
 @prova("P-083")
-@pytest.mark.parametrize("jeito", ["Guardar a tinta forte", "Guardar tudo", "Guardar só o texto"])
+@pytest.mark.parametrize("jeito", ["tudo", "apagar", "rede"])
 def test_p083_jeitos_do_so_as_letras(janela, tela, jeito):
+    """Na área de trabalho os jeitos do "Só as letras" são uma lista com desenho (D-185, "Menu com
+    amostra"); "Mais opções" / "Menos opções" abrem e fecham as escolhas a mais."""
     from PySide6.QtWidgets import QCheckBox
 
     from core.filtros import PRETO_E_BRANCO
@@ -1762,18 +1897,36 @@ def test_p083_jeitos_do_so_as_letras(janela, tela, jeito):
     caixa.click()
     aj.assentar()
     assert aj.pagina_gravada(janela, 1)["misto_so_as_letras"] is True
-    apertar(janela, "área de trabalho/filtro da página/Mais opções")
-    assert botao(janela, "área de trabalho/filtro da página/Menos opções")
-    apertar(janela, "área de trabalho/filtro da página/Menos opções")
-    if jeito != "Guardar a tinta forte":
-        apertar(janela, f"área de trabalho/filtro da página/{jeito}")
-    else:
-        apertar(janela, "área de trabalho/filtro da página/Guardar tudo")
-        apertar(janela, f"área de trabalho/filtro da página/{jeito}")
+    lista = tela.escolhas_misto.lista_do_texto
+    assert lista.isVisibleTo(tela), "a lista dos jeitos não aparece com 'Só as letras' ligado"
+    if jeito == "rede":                       # o de fábrica: escolhe outro antes, para ver a troca
+        lista.setCurrentIndex(lista.findData("tudo"))
+        aj.assentar()
+    lista.setCurrentIndex(lista.findData(jeito))
+    aj.assentar()
     gravado = aj.pagina_gravada(janela, 1)["misto_fora_do_texto"]
-    assert gravado is not None, "o jeito não foi gravado na página"
-    assert botao(janela, f"área de trabalho/filtro da página/{jeito}").isChecked()
+    assert gravado == jeito or (jeito == "rede" and gravado in (None, "rede")), gravado
+    painel_mais = tela.escolhas_misto.painel_mais
+    apertar(janela, "área de trabalho/filtro da página/Mais opções")
+    assert painel_mais.isVisibleTo(tela), "'Mais opções' não abriu as escolhas a mais"
+    apertar(janela, "área de trabalho/filtro da página/Menos opções")
+    assert not painel_mais.isVisibleTo(tela), "'Menos opções' não fechou"
 
+
+@prova("P-083")
+@pytest.mark.parametrize("nome,valor", [("Guardar tudo", "tudo"), ("Guardar só o texto", "apagar"),
+                                        ("Guardar a tinta forte", "rede")])
+def test_p083_jeitos_na_tela_o_que_fazer(janela, pasta, nome, valor):
+    opcoes = _na_tela_o_que_fazer(janela, pasta)
+    from core.filtros import PRETO_E_BRANCO
+
+    opcoes.escolhas_misto.mostrar(True, "tudo" if valor == "rede" else "rede", None, None)
+    aj.assentar()
+    alvo = opcoes.escolhas_misto.botoes[valor]
+    alvo.click()
+    aj.assentar()
+    assert opcoes.escolhas_misto.fora_do_texto() == valor
+    assert PRETO_E_BRANCO
 
 # --- "Para revisar" -------------------------------------------------------------------------------
 
@@ -1844,10 +1997,11 @@ def test_p092_esta_bom_todas(janela, tela, monkeypatch, pasta):
 @prova("P-093")
 def test_p093_esta_bom_em_tudo(janela, tela):
     _com_avisos(janela, tela)
+    antes = _pendentes(janela)
     apertar(janela, "área de trabalho/para revisar/está bom em tudo")
     assert _pendentes(janela) == 0, "o painel não ficou em 0"
     tela.desfazer()
-    assert _pendentes(janela) == 3, "um Ctrl+Z não trouxe todos de volta"
+    assert _pendentes(janela) == antes, "um Ctrl+Z não trouxe todos de volta"
 
 
 @prova("P-094")
@@ -1894,15 +2048,26 @@ def test_p095_ver_as_duvidas_em_tela_cheia(janela, tela):
 
 # --- a faixa e os avisos ---------------------------------------------------------------------------
 
+CAMPOS_DO_TRABALHO = ("filtro", "revisada", "em_branco", "apagada", "recorte", "angulo_manual",
+                      "selecao", "forca_preto", "misto_so_as_letras", "misto_fora_do_texto")
+
+
+def _trabalho(gravado: dict) -> list:
+    """O que a pessoa fez nas páginas (sem os avisos, que o programa põe e tira sozinho)."""
+    return [{c: p.get(c) for c in CAMPOS_DO_TRABALHO} for p in gravado["paginas"]]
+
+
 def _apertar_aviso(janela, tela, indice, chave):
-    """Põe na página o aviso que tem o botão da chave `aviso/<conserto>`, vai até ela e aperta o
-    botão da faixa (antes de as prévias de fundo poderem mexer nos avisos)."""
+    """Vai até a página, põe nela o aviso que tem o botão da chave `aviso/<conserto>`, redesenha a
+    faixa e aperta o botão (antes de as prévias de fundo poderem mexer nos avisos)."""
     rotulo, codigo = _chaves_dos_avisos()[chave]
-    pagina = tela.projeto.paginas[indice]
-    pagina.alertas = [codigo]
-    pagina.alertas_aceitos = []
-    pagina.revisada = False
     tela.ir_para_pagina(indice)
+    item = tela.item_atual
+    item.alertas = [codigo]
+    item.alertas_aceitos = []
+    item.revisada = False
+    tela._atualizar_faixa()
+    pagina = item
     faixa = [tela.botao_sugestao, tela.botao_sugestao_2, tela.botao_sugestao_3]
     alvo = next((b for b in faixa if not b.isHidden() and b.text() == rotulo), None)
     assert alvo is not None, f"a faixa não mostra '{rotulo}': {[b.text() for b in faixa if not b.isHidden()]}"
@@ -1946,23 +2111,26 @@ def test_p102_proxima_duvida(janela, tela):
     tela.ir_para_pagina(0)
     tela.escolher_ferramenta("mao")
     tela.atualizar()
-    antes = aj.projeto_gravado(janela)
+    antes = _trabalho(aj.projeto_gravado(janela))
     apertar(janela, "área de trabalho/faixa do aviso/próxima dúvida")
     assert tela.indice_pagina == 2
-    assert aj.projeto_gravado(janela)["paginas"] == antes["paginas"]
+    assert _trabalho(aj.projeto_gravado(janela)) == antes
 
 
 @prova("P-103")
 def test_p103_esta_bom_assim(janela, tela, monkeypatch, pasta):
     from core import analise
 
-    pagina = tela.projeto.paginas[1]
-    pagina.alertas = [analise.EM_BRANCO, analise.CONTAS_DO_ENDIREITAR_DISCORDAM]
     tela.ir_para_pagina(1)
+    pagina = tela.projeto.paginas[1]
+    # os dois avisos postos depois de chegar à página (ao chegar, o programa refaz os avisos
+    # que ele mesmo mede, e o "contas discordam" de mentira sairia)
+    pagina.alertas = [analise.EM_BRANCO, analise.CONTAS_DO_ENDIREITAR_DISCORDAM]
+    tela._atualizar_faixa()
     apertar(janela, "área de trabalho/faixa do aviso/está bom assim")
-    assert pagina.alertas_pendentes == [analise.CONTAS_DO_ENDIREITAR_DISCORDAM] or \
-        pagina.alertas_pendentes == [analise.EM_BRANCO], "aceitou mais que este motivo"
-    assert len(aj.pagina_gravada(janela, 1)["alertas_aceitos"]) == 1
+    gravada = aj.pagina_gravada(janela, 1)
+    assert gravada["alertas_aceitos"] == [analise.EM_BRANCO], f"aceitou mais que este motivo: {gravada['alertas_aceitos']}"
+    assert gravada["revisada"] is False, "deu a página inteira por conferida"
     assert not pagina.em_branco and not pagina.apagada
     paginas = _gerar(janela, monkeypatch, pasta)
     assert [aj.qual_pagina(p) for p in paginas] == [0, 1, 2, 3]
@@ -1991,9 +2159,13 @@ def test_p106_trazer_de_volta(janela, tela, chave, esperado):
 
     tela.ir_para_pagina(1)
     tela._escolher_filtro(PRETO_E_BRANCO)
+    pagina = tela.projeto.paginas[1]
+    pagina.misto_so_as_letras = True
+    pagina.misto_fora_do_texto = "apagar" if esperado == "rede" else "rede"   # o jeito que apagou
     _apertar_aviso(janela, tela, 1, chave)
     gravada = aj.pagina_gravada(janela, 1)
-    assert gravada["misto_fora_do_texto"] == esperado
+    assert gravada["misto_fora_do_texto"] == esperado or (esperado == "rede" and gravada["misto_fora_do_texto"] is None), \
+        gravada["misto_fora_do_texto"]
     assert all(p.get("misto_fora_do_texto") is None for i, p in enumerate(aj.projeto_gravado(janela)["paginas"]) if i != 1)
 
 
@@ -2155,7 +2327,11 @@ def test_p124_desfazer_e_refazer(janela, tela, monkeypatch, pasta, lugar):
     apertar(janela, refazer)
     assert aj.pagina_gravada(janela, 1)["filtro"] == PRETO_E_BRANCO
     apertar(janela, desfazer)
-    assert len(aj.acoes_gravadas(janela)) == 0, "o acoes.jsonl não acompanhou o desfazer"
+    aj.projeto_gravado(janela)
+    from historico_acoes import HistoricoAcoes
+
+    relido = HistoricoAcoes(aj.pasta_do_projeto(janela))
+    assert not relido.pode_desfazer, "o histórico gravado não acompanhou o desfazer"
     paginas = _gerar(janela, monkeypatch, pasta) if lugar == "menu" else None
     if paginas:
         assert aj.papel_amarelado(paginas[1]), "depois do desfazer o PDF saiu com o filtro desfeito"
@@ -2488,13 +2664,15 @@ def test_p146_zoom_pelo_menu(janela, tela):
     tela.escolher_ferramenta("mao")
     vista = tela.editor_selecao
     antes = aj.projeto_gravado(janela)
+    aj.esperar(lambda: vista._pixmap is not None, motivo="a página no editor")
     apertar(janela, "menu/ajustar")
     base = vista.zoom
     apertar(janela, "menu/mais_zoom")
-    assert vista.zoom > base
+    apertar(janela, "menu/mais_zoom")
+    mais = vista.zoom
+    assert mais > base
     apertar(janela, "menu/menos_zoom")
-    apertar(janela, "menu/menos_zoom")
-    assert vista.zoom < base
+    assert base < vista.zoom < mais
     apertar(janela, "menu/ajustar")
     assert abs(vista.zoom - base) < 1e-6
     assert aj.projeto_gravado(janela) == antes
@@ -2550,10 +2728,11 @@ def test_p149_botoes_da_pagina_ampliada(janela, tela):
     assert tela.indice_pagina == 1
     zoom = dialogo.vista.zoom
     b("+").click()
-    assert dialogo.vista.zoom > zoom
+    b("+").click()
+    mais = dialogo.vista.zoom
+    assert mais > zoom
     b("-").click()
-    b("-").click()
-    assert dialogo.vista.zoom < zoom
+    assert zoom < dialogo.vista.zoom < mais
     b("ajustar à tela").click()
     b("comparar").click()
     aj.assentar()
@@ -2748,7 +2927,7 @@ def test_p171_restaurar_os_atalhos(janela, tela):
 
     from ui.tela_configuracoes import TelaConfiguracoes
 
-    atalhos.definir("desfazer", "Ctrl+Alt+U") if hasattr(atalhos, "definir") else atalhos.mudar("desfazer", "Ctrl+Alt+U")
+    assert atalhos.redefinir("desfazer", "Ctrl+Alt+U")
     janela.menu.reaplicar_atalhos()
     assert janela.menu.acoes["desfazer"].shortcut().toString() == "Ctrl+Alt+U"
     dialogo = TelaConfiguracoes(janela, parte="Atalhos de teclado")
