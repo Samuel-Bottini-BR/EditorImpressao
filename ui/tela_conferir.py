@@ -956,9 +956,10 @@ class TelaConferir(QWidget):
         (ele nao tem zoom: as paginas cabem na tela)."""
         from PySide6.QtWidgets import QButtonGroup
 
-        def botao(texto: str, dica: str, acao, marcavel: bool = False) -> QPushButton:
+        def botao(texto: str, dica: str, acao, marcavel: bool = False,
+                  objeto: str = "jeitoDaBarraDeBaixo") -> QPushButton:
             b = QPushButton(texto)
-            b.setObjectName("botaoDaBarraDeBaixo")
+            b.setObjectName(objeto)      # ui/estilo.py: o tamanho e o aceso
             b.setToolTip(dica)
             b.setCursor(Qt.PointingHandCursor)
             b.setFocusPolicy(Qt.NoFocus)
@@ -982,14 +983,16 @@ class TelaConferir(QWidget):
             "Arraste a linha do meio para comparar.", self._alternar_antes_depois, marcavel=True)
         linha.addSpacing(8)
         self.botao_menos_zoom = botao("–", "Afastar (Ctrl+-)",
-                                      lambda: self.mudar_o_zoom(1 / self.PASSO_DO_ZOOM))
+                                      lambda: self.mudar_o_zoom(1 / self.PASSO_DO_ZOOM),
+                                      objeto="botaoDaBarraDeBaixo")
         self.rotulo_do_zoom = QLabel("100%")
         self.rotulo_do_zoom.setObjectName("rotuloDaBarraDeBaixo")
         self.rotulo_do_zoom.setAlignment(Qt.AlignCenter)
         self.rotulo_do_zoom.setMinimumWidth(40)
         linha.addWidget(self.rotulo_do_zoom)
         self.botao_mais_zoom = botao("+", "Aproximar (Ctrl++)",
-                                     lambda: self.mudar_o_zoom(self.PASSO_DO_ZOOM))
+                                     lambda: self.mudar_o_zoom(self.PASSO_DO_ZOOM),
+                                     objeto="botaoDaBarraDeBaixo")
         self.botao_ajustar_a_tela = botao("ajustar à tela", "A página inteira cabe na tela (Ctrl+0)",
                                           lambda: self.mudar_o_zoom(None))
 

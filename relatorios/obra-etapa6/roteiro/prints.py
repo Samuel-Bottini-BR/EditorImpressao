@@ -141,7 +141,14 @@ def main() -> None:
     base.conferir(tela.vista_da_pagina.currentWidget() is vista, "clique em 'antes / depois'")
     base.conferir(bool(vista.aviso), f"página em Original: '{vista.aviso}'")
     _p(janela, "05-antes-depois-pagina-em-original")
-    base.tecla(janela, VK_2)                       # tecla 2: Preto e branco nesta página
+    # a tecla 2 (Preto e branco) com o foco na página, como o Kaique: desliga o antes e
+    # depois, clica na página (a Mão: o clique só põe o foco), tecla 2, liga de novo
+    base.clique(janela, tela.botao_antes_depois)
+    base.clique(janela, tela.editor_selecao)
+    base.tecla(janela, VK_2)
+    base.esperar(1.0)
+    base.conferir(projeto.paginas[6].filtro == "preto_e_branco", "tecla 2: a página 7 em Preto e branco")
+    base.clique(janela, tela.botao_antes_depois)
     _esperar_ate(lambda: vista.antes is not None and vista.depois is not None and vista.comparando, 120)
     base.esperar(1.0)
     base.conferir(vista.comparando and vista.rotulos[1] == "depois: Preto e branco",
@@ -159,7 +166,8 @@ def main() -> None:
     base.clique(janela, tela.botao_ajustar_a_tela)
     base.conferir(tela.rotulo_do_zoom.text() == "100%", "'ajustar à tela': 100%")
 
-    # Page Down: 10 páginas
+    # Page Down: 10 páginas (com o foco na página)
+    base.clique(janela, tela.editor_selecao)
     antes = tela.indice_pagina
     base.tecla(janela, VK_NEXT)
     base.esperar(2.0)

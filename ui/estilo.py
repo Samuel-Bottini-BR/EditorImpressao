@@ -445,6 +445,14 @@ QPushButton#botaoDaBarraDeBaixo {{ background: transparent; border: 1px solid tr
     border-radius: 4px; padding: 0px 7px; min-height: 22px; font-size: 16px; color: {c["fraco"]}; }}
 QPushButton#botaoDaBarraDeBaixo:hover {{ background: {c["botao_h"]}; }}
 QPushButton#botaoDaBarraDeBaixo:disabled {{ color: {c["desligado"]}; background: transparent; }}
+/* etapa 6 da obra: "Uma página", "Duas lado a lado", "antes / depois" e "ajustar à tela" na barra de
+   baixo, no tamanho e no aceso dos botões da barra de baixo do livro aberto (D-015, lyupdf) */
+QPushButton#jeitoDaBarraDeBaixo {{ background: transparent; border: 1px solid transparent;
+    border-radius: 4px; padding: 0px 8px; min-height: 22px; font-size: 12px; color: {c["texto"]}; }}
+QPushButton#jeitoDaBarraDeBaixo:hover {{ background: {c["botao_h"]}; }}
+QPushButton#jeitoDaBarraDeBaixo:checked {{ background: {c["sel"]}; border: 1px solid {c["azul"]};
+    color: {c["forte"]}; }}
+QPushButton#jeitoDaBarraDeBaixo:disabled {{ color: {c["desligado"]}; background: transparent; }}
 QStackedWidget#areaDaPagina {{ background: {c["tela"]}; }}
 /* os botões da ferramenta embaixo da página (provisório até a etapa 4): mais
    enxutos, para caber a fila inteira entre a trilha e os painéis */

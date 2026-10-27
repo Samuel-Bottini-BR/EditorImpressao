@@ -965,8 +965,7 @@ def testar_o_ver_da_barra_de_baixo(conferir) -> tuple[int, int]:
     página e o número do zoom. Volta como estava ("Uma página", sem zoom)."""
     if not hasattr(conferir, "botoes_mostrar") or conferir.projeto is None:
         return 0, 0
-    print("
---- o ver da barra de baixo (etapa 6) ---")
+    print("\n--- o ver da barra de baixo (etapa 6) ---")
     from ui.widgets.paginas_rolando import DUAS, UMA
 
     ok = falhas = 0
