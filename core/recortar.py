@@ -539,7 +539,11 @@ def detectar_bordas(img: np.ndarray, dpi: float | None = None,
     if girada is None or abs(girada) < ANGULO_MINIMO:
         como_veio = None
     if _sem_conteudo_para_recortar(img if como_veio is None else como_veio):
-        return Recorte.inteiro()
+        # obra 26/10, etapa 10a (lista unica 4.10, Boecio 2: "Ficou um risco
+        # preto fino em toda a beirada esquerda"): a folha sem o que recortar
+        # continua inteira, menos a faixa escura colada na beirada (ver
+        # beiradas_escuras). Sem faixa: a folha inteira, como sempre.
+        return beiradas_escuras(img, girada) or Recorte.inteiro()
 
     cinza = img if img.ndim == 2 else cv2.cvtColor(img, cv2.COLOR_BGR2GRAY)
     altura_orig, largura_orig = cinza.shape[:2]
@@ -710,6 +714,18 @@ def detectar_bordas(img: np.ndarray, dpi: float | None = None,
             break
         x0e, y0e, x1e, y1e = _parar_no_escuro(img, _recorte_da_caixa(atual), x0e, y0e, x1e, y1e)
 
+    # Obra 26/10, etapa 10a (lista unica 4.10): o lado que foi ate a beirada
+    # da imagem perde a faixa escura colada nela (beiradas_escuras), se houver.
+    # Os outros lados ficam como estao.
+    if x0e <= 0.0 or y0e <= 0.0 or x1e >= 1.0 or y1e >= 1.0:
+        sem_faixa = beiradas_escuras(img, girada)
+        if sem_faixa is not None:
+            fx0, fy0, fw, fh = sem_faixa.tupla
+            x0e = fx0 if x0e <= 0.0 else x0e
+            y0e = fy0 if y0e <= 0.0 else y0e
+            x1e = fx0 + fw if x1e >= 1.0 else x1e
+            y1e = fy0 + fh if y1e >= 1.0 else y1e
+
     # o que sobrou fora, olhado na mascara (pontos inteiros, para fora)
     encostou = _sobrou_conteudo_fora(
         tinta, int(math.floor(x0e * largura)), int(math.floor(y0e * altura)),
@@ -723,6 +739,78 @@ def detectar_bordas(img: np.ndarray, dpi: float | None = None,
         encostou_no_conteudo=bool(encostou),
         pecas=pecas_fracao,
     )
+
+
+# ---------------------------------------------------------------------------
+# A faixa escura colada na beirada da folha sem o que recortar (obra de
+# 26/10/2026, etapa 10a; lista unica 4.10, "A sombra da lombada fica como faixa
+# preta na beirada": Boecio 2, "um risco preto fino em toda a beirada
+# esquerda"; Siebmacher 74, a lombada do livro do lado direito).
+#
+# A folha sem o que recortar (capa, guarda, pagina so com um decalque claro:
+# _sem_conteudo_para_recortar) nao era cortada em nada, e a beirada do scan
+# (o fio preto do Boecio 2) ou a lombada (Siebmacher 74) ficavam na pagina; no
+# Preto e branco viram faixa preta. Aqui so sai a faixa da BEIRADA: de cada
+# lado, anda-se para dentro enquanto a coluna (ou linha; a mediana do meio do
+# lado, para letra solta nao contar) nao for papel limpo (abaixo de
+# PAPEL_LIMPO do tom do papel), e a faixa so sai se (1) tiver alguma coluna
+# escura de verdade (abaixo de BEIRADA_ESCURA do papel: amarelado da borda nao
+# conta) e (2) terminar em papel limpo antes de BEIRADA_NO_MAXIMO do lado. Uma
+# faixa escura larga (o cartao marrom do Pesel 21, que tem de sair inteiro; uma
+# capa) chega ao limite sem achar papel e nao sai.
+# A cunha branca do giro (livro novo) e preenchida com a vizinha antes da
+# conta (_preencher_a_cunha), senao o branco dela parecia papel limpo.
+# Arriscado: subir BEIRADA_NO_MAXIMO (um fio de moldura perto da beirada numa
+# folha quase vazia sairia); baixar PAPEL_LIMPO (o papel amarelado da beirada
+# viraria "papel" e a faixa nao seria achada).
+PAPEL_LIMPO = 0.85
+BEIRADA_ESCURA = 0.65
+BEIRADA_NO_MAXIMO = 0.06
+
+
+def beiradas_escuras(img: np.ndarray, girada: float | None = None) -> Recorte | None:
+    """O corte da folha `img` sem a faixa escura colada em cada beirada (ver o
+    comentario acima), em fracao; None quando nenhum lado tem faixa.
+    `girada`: como em detectar_bordas (a cunha do giro nao conta).
+
+    O corte fica logo depois da ULTIMA coluna escura de verdade da faixa (o
+    papel amarelado que vem depois dela fica: e papel)."""
+    cinza = img if img.ndim == 2 else cv2.cvtColor(img, cv2.COLOR_BGR2GRAY)
+    alt0, larg0 = cinza.shape[:2]
+    if alt0 > ALTURA_ANALISE:
+        escala = ALTURA_ANALISE / alt0
+        cinza = cv2.resize(cinza, (max(8, int(larg0 * escala)), ALTURA_ANALISE),
+                           interpolation=cv2.INTER_AREA)
+    alt, larg = cinza.shape[:2]
+    if alt < 16 or larg < 16:
+        return None
+    if girada is not None and abs(girada) >= ANGULO_MINIMO:
+        cunha = _cunha_do_giro(cinza.shape, girada)
+        if cunha.any() and not cunha.all():
+            cinza = _preencher_a_cunha(cinza, cunha)
+    papel = float(np.percentile(cinza[alt // 4: 3 * alt // 4, larg // 4: 3 * larg // 4], 60))
+    if papel <= 0:
+        return None
+    por_coluna = np.median(cinza[alt // 4: 3 * alt // 4, :], axis=0)
+    por_linha = np.median(cinza[:, larg // 4: 3 * larg // 4], axis=1)
+
+    def anda(perfil: np.ndarray) -> int:
+        limite = max(1, int(len(perfil) * BEIRADA_NO_MAXIMO))
+        i = 0
+        while i < limite and perfil[i] < PAPEL_LIMPO * papel:
+            i += 1
+        if i == 0 or i >= limite:
+            return 0                       # sem faixa, ou faixa larga (cartao, capa)
+        escuras = np.flatnonzero(perfil[:i] < BEIRADA_ESCURA * papel)
+        return int(escuras[-1]) + 1 if escuras.size else 0
+
+    x0 = anda(por_coluna)
+    x1 = larg - anda(por_coluna[::-1])
+    y0 = anda(por_linha)
+    y1 = alt - anda(por_linha[::-1])
+    if (x0, y0, x1, y1) == (0, 0, larg, alt):
+        return None
+    return Recorte(x0 / larg, y0 / alt, (x1 - x0) / larg, (y1 - y0) / alt)
 
 
 def _com_folga(caixa, folga_x: float, folga_y: float):

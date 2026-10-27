@@ -31,6 +31,7 @@ from __future__ import annotations
 
 from dataclasses import dataclass
 import logging
+import math
 import os
 import shutil
 import tempfile
@@ -52,6 +53,7 @@ from core import revisar
 from core import claro_no_escuro, cores_scantailor, desentortar_scantailor
 from core import corte_pelo_conteudo   # item 2.5 (so com Projeto.cortar_pelo_conteudo)
 from core import borda_preta           # item 2.13 (so com Projeto.borda_preta)
+from core import recortar              # etapa 10a: _caixa_sem_comer usa as contas do corte comum
 from core import etapas                # obra 26/10 etapa 1: "esta etapa vale nesta pagina?" (D-009)
 from core.ordem_do_preparo import endireita_antes, ordem_do_livro
 from core.filtros import (ORIGINAL, PRETO_E_BRANCO, TIRAR_FUNDO, aplicar_filtro,
@@ -217,10 +219,13 @@ def _analisar_a_folha(projeto: Projeto, doc, indice: int, fora_do_padrao: bool,
     lombada = (achar_divisao(img, projeto.dividir_como, DPI_ANALISE)
                if projeto.dividir_folhas else Lombada(0.5, 0.0, False))
     vai_dividir_esta = projeto.dividir_folhas and lombada.e_paisagem
+    inclinacao = detectar_angulo(img) if projeto.endireitar else Inclinacao(0.0, 0.0)
     sobra = (achar_sobra(img, DPI_ANALISE)
              if getattr(projeto, "cortar_sobra", False) and not vai_dividir_esta
              else None)
-    inclinacao = detectar_angulo(img) if projeto.endireitar else Inclinacao(0.0, 0.0)
+    # obra 26/10, etapa 10a: o corte da sobra deixa a folga que o endireitar
+    # vai precisar (Cursus 3: as primeiras letras das linhas de baixo sumiam)
+    sobra = folga_do_giro_na_sobra(sobra, img.shape, inclinacao.angulo, DPI_ANALISE)
     recorte = (detectar_bordas(img, dpi=DPI_ANALISE) if projeto.cortar_bordas
                else Recorte.inteiro())
 
@@ -348,6 +353,42 @@ def achar_sobra(img: np.ndarray, dpi: float) -> tuple[float, float] | None:
                      resultado.motivo, resultado.detalhe_tecnico)
         return None
     return dividir_scantailor.sobra_da_folha(resultado)
+
+
+# Obra de 26/10/2026, etapa 10a ("os lugares que podem comer a pagina", D-104;
+# lista unica 4.2, Cursus 3: "o corte da esquerda comeu a primeira letra ou duas
+# das linhas do bloco de baixo"). O corte da sobra e feito na folha COMO VEIO,
+# antes do endireitar; no livro novo a pagina cortada e depois girada inteira,
+# no mesmo tamanho (core/endireitar.rotacionar), e o que o giro empurra para
+# fora da imagem some. A linha do ScanTailor fica colada no texto (no Cursus 3,
+# 2 mm), e o giro de 0,75 grau levava os cantos do bloco de baixo para fora; a
+# letra encostada na beirada ainda fazia a caixa do conteudo do ScanTailor
+# (borda preta "ate a moldura") jogar fora um quarto da pagina.
+# O conserto: cada lado do corte da sobra anda para FORA o que o giro pode
+# empurrar (meia altura x seno do angulo, com GIRO_A_MAIS de sobra, porque o
+# angulo que vale no fim pode ser outro: o do ScanTailor, ou um a mao) mais 1
+# mm. O pedaco da beirada da vizinha que entra de volta e tirado depois, pelo
+# corte de sempre, na pagina ja reta.
+# Arriscado: tirar o GIRO_A_MAIS (o angulo final nao e o da analise); andar
+# para DENTRO (comeria mais). Seguro: o milimetro.
+GIRO_A_MAIS = 0.5
+
+
+def folga_do_giro_na_sobra(sobra: tuple[float, float] | None, forma, angulo: float | None,
+                           dpi: float) -> tuple[float, float] | None:
+    """O corte da sobra (esquerda, direita, em fracao da largura da folha
+    `forma` = img.shape) com a folga do giro de cada lado (ver o comentario
+    acima). None continua None. Nunca passa da folha (0 a 1)."""
+    if sobra is None:
+        return None
+    altura, largura = forma[0], forma[1]
+    graus = abs(float(angulo or 0.0)) + GIRO_A_MAIS
+    folga = (altura / 2.0) * math.sin(math.radians(graus)) + float(dpi) / 25.4
+    em_fracao = folga / max(1, largura)
+    a, b = sobra
+    a = 0.0 if a <= 0.0 else max(0.0, a - em_fracao)
+    b = 1.0 if b >= 1.0 else min(1.0, b + em_fracao)
+    return (round(a, 6), round(b, 6))
 
 
 def faixa_da_sobra(folha: ConfigFolha, pagina: ConfigPagina,
@@ -1068,7 +1109,9 @@ def _geometria(base: np.ndarray, pagina: ConfigPagina, projeto: Projeto,
             # medido na pagina ainda torta (nesta ordem o giro vem depois
             # do corte); a folga do giro entra abaixo, como no corte comum
             medido = _medir_o_conteudo(base, dpi, dpi_do_scan, automatico.pecas, projeto,
-                                       base if _corta_pela_borda(projeto, pagina) else None)
+                                       base if _corta_pela_borda(projeto, pagina) else None,
+                                       comum=automatico,
+                                       em_branco=analise.EM_BRANCO in pagina.alertas)
             if medidas is not None:
                 medidas["conteudo"] = medido
             proprio = medido.recorte_proprio() if _troca_o_corte(projeto, pagina) else None
@@ -1214,7 +1257,9 @@ def _geometria_endireitando_antes(base: np.ndarray, pagina: ConfigPagina, projet
                 # scanner, neutro, de cartao ou capa escura) com a cunha preta
                 cunha_preta = (((rotacionar(base, angulo, fundo=0) if girar else base))
                                if _corta_pela_borda(projeto, pagina) else None)
-                medido = _medir_o_conteudo(reta, dpi, dpi_do_scan, comum.pecas, projeto, cunha_preta)
+                medido = _medir_o_conteudo(reta, dpi, dpi_do_scan, comum.pecas, projeto, cunha_preta,
+                                           comum=comum,
+                                           em_branco=analise.EM_BRANCO in pagina.alertas)
                 if medidas is not None:
                     medidas["conteudo"] = medido
                 if _troca_o_corte(projeto, pagina):
@@ -1672,9 +1717,103 @@ def _medida_da_pagina(img: np.ndarray, dpi: float | None, dpi_do_scan: float | N
     return corte_pelo_conteudo.medir(img, dpi, dpi_do_scan), False
 
 
+# Obra de 26/10/2026, etapa 10a: a caixa do conteudo do ScanTailor (corte que
+# segue o impresso: borda preta "ate a moldura", item 2.13, e o 2.5) nao pode
+# comer a pagina (D-077, 28/09: "nao comer conteudo"; D-104, 22/10: os lugares
+# que comem a pagina sem a gente querer). Achado nas paginas do teste dos 14
+# livros (23/10), pelo projeto salvo de cada livro:
+#   - folha quase em branco: a caixa abraca o pouco que ha e a pagina vira uma
+#     tira. ljs47 2 (guarda com a etiqueta da biblioteca): 21 x 11 cm, "so com
+#     a etiqueta"; Siebmacher 74 (folha so com o decalque claro): 2,6 x 8,6 cm.
+#     Conserto: quando o corte comum ja achou que nao ha o que cortar (capa,
+#     guarda, pagina em branco: pecas None) ou a caixa cobre menos que
+#     CAIXA_QUASE_VAZIA da pagina achada, a pagina fica a pagina achada (o
+#     "so o preto"), sem apertar no impresso. So no "ate a moldura" sem o 2.5
+#     (com o 2.5 a pagina vazia ganha o tamanho do livro, aprovado em 21/10).
+#   - a borda da caixa passando no meio de uma peca de tinta (letra, numero,
+#     barra de moldura): a borda anda ate o fim da peca, com o mesmo limite do
+#     corte comum (recortar.ESTICAR_NO_MAXIMO, 2% do lado) e as mesmas regras
+#     de quem empurra (risco comprido e fino so empurra a borda paralela). A
+#     peca INTEIRA de fora continua fora, com o aviso "Corte deixou algo de
+#     fora" (D-098, 13/10: "Só avisa").
+# Arriscado: subir CAIXA_QUASE_VAZIA (pagina de rosto com pouco texto deixa de
+# seguir o impresso); tirar o limite de esticar (o risco tracejado da beirada
+# arrasta o corte, como no corte comum).
+CAIXA_QUASE_VAZIA = 0.20
+
+
+def _caixa_sem_comer(medida: "corte_pelo_conteudo.MedidaDoConteudo", pecas,
+                     projeto: Projeto, comum: Recorte | None = None,
+                     img: np.ndarray | None = None, em_branco: bool = False
+                     ) -> "corte_pelo_conteudo.MedidaDoConteudo":
+    """A medida do ScanTailor com as duas protecoes acima. `pecas`: as do corte
+    comum na MESMA imagem (recortar.Recorte.pecas, em fracao; None quando o
+    corte comum nao achou o que cortar). `comum`: o proprio corte comum (o
+    limite da pagina quase em branco; None = so a pagina achada). `img`: a
+    imagem medida (para tirar a faixa escura da beirada da pagina quase em
+    branco; None = nao tira). `em_branco`: a analise achou a pagina quase sem
+    tinta forte no miolo (aviso analise.EM_BRANCO; Antiphon 2, guarda manchada:
+    a caixa do ScanTailor abracava as manchas e cortava o numero "19" e o
+    carimbo). Sem caixa, devolve como esta."""
+    from dataclasses import replace
+
+    if not medida.tem_conteudo or not medida.largura or not medida.altura:
+        return medida
+    larg, alt = float(medida.largura), float(medida.altura)
+    lx0, ly0, lx1, ly1 = medida.limite or (0.0, 0.0, larg, alt)
+    x0, y0, x1, y1 = medida.caixa
+    so_a_moldura = (_jeito_da_borda(projeto) == borda_preta.ATE_A_MOLDURA
+                    and not getattr(projeto, "cortar_pelo_conteudo", False))
+    if so_a_moldura:
+        area_pagina = max(1.0, (lx1 - lx0) * (ly1 - ly0))
+        if (pecas is None or em_branco
+                or (x1 - x0) * (y1 - y0) / area_pagina < CAIXA_QUASE_VAZIA):
+            # a pagina achada, dentro do corte comum (que, na folha sem o que
+            # recortar, ja tira a faixa escura da beirada: recortar.beiradas_escuras)
+            if comum is not None:
+                cx, cy, cw, ch = comum.tupla
+                c0, c1 = max(lx0, cx * larg), min(lx1, (cx + cw) * larg)
+                d0, d1 = max(ly0, cy * alt), min(ly1, (cy + ch) * alt)
+                if c1 - c0 >= 8 and d1 - d0 >= 8:
+                    lx0, lx1, ly0, ly1 = c0, c1, d0, d1
+            # e sem a faixa escura colada na beirada da pagina achada (a
+            # lombada do Siebmacher 74, que a conta do "so o preto" deixa)
+            if img is not None:
+                pedaco = img[int(ly0):int(ly1), int(lx0):int(lx1)]
+                sem_faixa = recortar.beiradas_escuras(pedaco) if pedaco.size else None
+                if sem_faixa is not None:
+                    fx, fy, fw, fh = sem_faixa.tupla
+                    w, h = lx1 - lx0, ly1 - ly0
+                    lx0, ly0, lx1, ly1 = (lx0 + fx * w, ly0 + fy * h,
+                                          lx0 + (fx + fw) * w, ly0 + (fy + fh) * h)
+            return replace(medida, caixa=None, tamanho_mm=None, limite=(lx0, ly0, lx1, ly1),
+                           motivo="quase em branco: fica a pagina achada")
+    if pecas is None or len(pecas) == 0:
+        return medida
+    p = np.asarray(pecas, dtype=np.float64)
+    em_pontos = np.hstack([p[:, :4] * np.array([larg, alt, larg, alt]), p[:, 4:5]])
+    # as pecas vem da mascara reduzida (recortar.ALTURA_ANALISE pontos de
+    # altura): cada beirada delas erra ate 1,5 ponto de la. Encolhidas disso,
+    # a caixa do ScanTailor rente a peca nao conta como "partindo" a peca.
+    tol = 1.5 * alt / recortar.ALTURA_ANALISE
+    em_pontos[:, 0:2] += tol
+    em_pontos[:, 2:4] -= tol
+    respeitar, pode_x, pode_y = recortar._quem_empurra(em_pontos, larg, alt)
+    n0, m0, n1, m1 = recortar._nao_partir_pecas(
+        respeitar, x0, y0, x1, y1, larg * recortar.ESTICAR_NO_MAXIMO,
+        alt * recortar.ESTICAR_NO_MAXIMO, pode_x, pode_y)
+    n0, m0 = max(lx0, float(n0)), max(ly0, float(m0))
+    n1, m1 = min(lx1, float(n1)), min(ly1, float(m1))
+    if (n0, m0, n1, m1) == (x0, y0, x1, y1):
+        return medida
+    mx, my = medida.mm_por_ponto
+    return replace(medida, caixa=(n0, m0, n1, m1), tamanho_mm=((n1 - n0) * mx, (m1 - m0) * my))
+
+
 def _medir_o_conteudo(img: np.ndarray, dpi: float | None, dpi_do_scan: float | None,
                       pecas, projeto: Projeto | None = None,
-                      com_a_cunha_preta: np.ndarray | None = None) -> ConteudoMedido:
+                      com_a_cunha_preta: np.ndarray | None = None,
+                      comum: Recorte | None = None, em_branco: bool = False) -> ConteudoMedido:
     """A medida do conteudo de `img` (a pagina onde o corte vai ser feito) e as
     candidatas ao "ficou de fora". Nunca levanta excecao (sem a DLL: sem
     caixa, e quem chama fica com o corte comum). Sem `projeto`: so o 2.5."""
@@ -1682,6 +1821,8 @@ def _medir_o_conteudo(img: np.ndarray, dpi: float | None, dpi_do_scan: float | N
         medida, so_o_limite = corte_pelo_conteudo.medir(img, dpi, dpi_do_scan), False
     else:
         medida, so_o_limite = _medida_da_pagina(img, dpi, dpi_do_scan, projeto, com_a_cunha_preta)
+        if not so_o_limite:
+            medida = _caixa_sem_comer(medida, pecas, projeto, comum, img, em_branco)
     candidatas: tuple = ()
     caixa = None if so_o_limite else corte_pelo_conteudo.caixa_do_corte(medida)
     if caixa is not None and pecas is not None and len(pecas):
@@ -1880,6 +2021,16 @@ def corte_alargado(projeto: Projeto, pagina: ConfigPagina) -> tuple[float, float
         return None
     m = medido.medida
     alargada = corte_pelo_conteudo.alargar(caixa, tiradas, m.mm_por_ponto, m.largura, m.altura)
+    # Obra 26/10, etapa 10a (lista unica 1.4, Antiphon 2: "usar o corte
+    # alargado" deixou a pagina MENOR, "do meio para a direita"): o alargado
+    # nunca fica menor que o corte que a pagina tem agora (o guardado da
+    # geometria, que a tela mostra): contem os dois. Arriscado: tirar (o botao
+    # volta a poder encolher a pagina).
+    guardada = _geometria_guardada(projeto.folhas[pagina.folha], pagina, projeto)
+    if guardada is not None and guardada[0] is not None:
+        gx0, gy0, gx1, gy1 = corte_pelo_conteudo.de_fracao(guardada[0], m.largura, m.altura)
+        alargada = (min(alargada[0], gx0), min(alargada[1], gy0),
+                    max(alargada[2], gx1), max(alargada[3], gy1))
     return corte_pelo_conteudo.em_fracao(alargada, m.largura, m.altura)
 
 
