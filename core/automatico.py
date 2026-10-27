@@ -715,8 +715,11 @@ def _dividir(projeto, pedido: Pedido, medidas, pular: set, g: _Gravador) -> None
     dividir esta" da ferramenta, ui/tela_conferir._alternar_dividir). Folha
     com uma pagina so que passa a ser dividida: a lista de paginas muda (a
     pagina inteira vira esquerda e direita, cada uma com o filtro e os ajustes
-    dela; corte, angulo e marcacao, que eram da folha inteira, nao passam)."""
-    from modelos import METADE_DIREITA, METADE_ESQUERDA
+    dela; corte, angulo e marcacao, que eram da folha inteira, nao passam).
+    Obra 26/10, etapa 4: a pagina partida e a do dividir a mao (core/
+    dividir_a_mao.metades_da_pagina); a folha juntada a mao ("não dividir
+    esta": uma pagina so) entra aqui como qualquer folha de uma pagina."""
+    from modelos import METADE_DIREITA
 
     if pedido.no_livro_todo:
         g.no_livro("dividir_folhas", True)
@@ -740,16 +743,15 @@ def _dividir(projeto, pedido: Pedido, medidas, pular: set, g: _Gravador) -> None
         elif medida.dividir and pags:
             g.guardar_a_estrutura()
             folha.dividir = True
+            # etapa 4: as metades guardadas por um "não dividir esta" eram de
+            # outra linha; o Automatico parte a pagina inteira (a mesma conta
+            # do dividir a mao: core/dividir_a_mao.metades_da_pagina)
+            folha.metades_guardadas = None
             inteira = pags[0]
-            limpos = dict(recorte=None, angulo_manual=None, selecao=[], geometria_das_zonas=None,
-                          alertas=[], alertas_aceitos=[], revisada=False,
-                          mexida_a_mao=[m for m in inteira.mexida_a_mao if m == E.FILTRO],
-                          conteudo_escala=1.0, conteudo_deslocamento=(0.0, 0.0),
-                          tamanho_folha_cm=None, gravura_feita_com="", marcacao_provisoria=False)
-            esquerda = dataclasses.replace(copy.deepcopy(inteira), metade=METADE_ESQUERDA, **limpos)
-            direita = dataclasses.replace(copy.deepcopy(inteira), metade=METADE_DIREITA, **limpos)
+            from core.dividir_a_mao import metades_da_pagina
+
             lugar = projeto.paginas.index(inteira)
-            projeto.paginas[lugar:lugar + 1] = [esquerda, direita]
+            projeto.paginas[lugar:lugar + 1] = metades_da_pagina(inteira)
             for n, pagina in enumerate(projeto.paginas):
                 pagina.indice = n
         else:

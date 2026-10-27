@@ -86,6 +86,29 @@ class ConfigFolha:
     # migracao marca o que ja valia. Seguro mudar: nada aqui (interno).
     mexida_a_mao: list[str] = field(default_factory=list)
 
+    # Obra de 26/10/2026, etapa 4 (dividir a mao folha por folha; core/
+    # dividir_a_mao.py). As duas paginas que a folha tinha quando a pessoa
+    # apertou "não dividir esta" (dicionarios, como o projeto.json grava):
+    # "dividir esta" de novo devolve as duas como estavam (corte, angulo,
+    # filtro, "tirar do livro"...), em vez de partir a pagina inteira do zero.
+    # None = nada guardado. Quem grava: core/dividir_a_mao (numa acao do
+    # desfazer). Projeto antigo nao tem o campo: None. Seguro: nada aqui.
+    metades_guardadas: list | None = None
+
+    # Obra de 26/10/2026, etapa 4 (D-495, escolha da gerente: "Righetti 96: a
+    # faixa preta da tampa do scanner sai quando a folha é girada e dividida à
+    # mão [...], não por regra geral"): [rotacao, x0, y0, x1, y1] = a parte da
+    # folha GIRADA (em fracao) que fica; o resto (a tampa do scanner e a faixa
+    # preta em volta do livro) sai branco, na etapa "dividir"
+    # (core.pipeline.preparar_para_recorte). So vale com a folha na mesma
+    # rotacao em que foi medida. Achada so quando a pessoa divide a folha a
+    # mao (core/dividir_a_mao.achar_a_tampa) ou acerta a linha dela a mao.
+    # [rotacao] = procurada nessa rotacao e nada achado (nao procura de novo).
+    # None = nunca procurada, nada a pintar. Projeto antigo nao tem o campo:
+    # None (sai igual). Arriscado: achar por regra geral (moldura impressa
+    # preta sumiria).
+    tampa_do_scanner: list | None = None
+
     @property
     def alertas_pendentes(self) -> list[str]:
         """Os alertas que ainda pedem um olhar (ver ConfigPagina.alertas_pendentes)."""

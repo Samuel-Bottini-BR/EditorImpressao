@@ -214,6 +214,31 @@ def posicao_da_divisao(resultado: Resultado) -> float | None:
     return resultado.cortes[0].meio
 
 
+# A linha que divide em duas paginas nao pode estar na beirada da folha: a
+# MESMA regra que o ScanTailor usa para as linhas que ele acha
+# (PageLayoutEstimator.cpp, BadTwoPageSplitter: "In two page mode we ignore
+# the lines that are too close to the edge" - longe do meio mais que 0,6 da
+# meia largura, ou seja, fora de 20% a 80%). O ScanTailor nao a aplica ao
+# corte que ele tira do espaco em branco (cutAtWhitespace), e no "La vida
+# eterna" (folhas 4 e 5; bug achado pela etapa 9c, 27/10/2026) a linha
+# vertical escura da beirada do livro deixa uma faixa branca a 10% da largura,
+# e ele cortou ali: a pagina da esquerda virava uma tira de margem. Obra de
+# 26/10, etapa 4. Seguro mudar: nada (e o numero do ScanTailor). Arriscado:
+# estreitar a faixa (folha de livro aberto com a dobra fora do meio).
+BEIRADA_DA_FOLHA = 0.20
+
+
+def na_beirada(resultado: Resultado) -> bool:
+    """O corte de duas paginas caiu na beirada da folha (fora de 20% a 80% da
+    largura, em cima OU embaixo)? Entao nao e a lombada (ver
+    BEIRADA_DA_FOLHA); quem chama usa a conta do Editor."""
+    if not resultado.disponivel or resultado.tipo != TIPO_DUAS_PAGINAS or not resultado.cortes:
+        return False
+    corte = resultado.cortes[0]
+    return any(x < BEIRADA_DA_FOLHA or x > 1.0 - BEIRADA_DA_FOLHA
+               for x in (corte.x_cima, corte.x_baixo))
+
+
 def sobra_da_folha(resultado: Resultado) -> tuple[float, float] | None:
     """(esquerda, direita): a parte da folha que FICA depois do corte da sobra,
     em fração da largura; None se não há sobra a cortar.

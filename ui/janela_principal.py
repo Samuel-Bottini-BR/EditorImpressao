@@ -1252,6 +1252,11 @@ class JanelaPrincipal(QMainWindow):
         if conferir.previas is not None:
             conferir.previas.invalidar()
         conferir.lista_de_paginas_mudou()
+        if automatico.DIVIDIR in pedido.etapas and not pedido.desligar:
+            # D-007 (obra etapa 4): "quando eu escolher para começar no
+            # automatico e dividir as folhas o livro tem que aparecer em uma
+            # pagina por vez para mim" - sai do Dividir (a folha inteira)
+            conferir.mostrar_paginas()
         # o painel passa a mostrar o que o livro tem agora (etapas ligadas,
         # opcoes, ordem); onde rodar e as escolhidas ficam como a pessoa deixou
         self.estado_do_automatico.do_projeto(projeto)

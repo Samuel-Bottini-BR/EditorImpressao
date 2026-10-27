@@ -316,16 +316,24 @@ LA_VIDA_ETERNA = r"D:/Livros para editar/2 - TEOLOGIA/Escatologia/La vida eterna
 
 @pytest.mark.skipif(not __import__("os").path.isfile(LA_VIDA_ETERNA),
                     reason="o 'La vida eterna' não está neste computador")
-def test_la_vida_eterna_pagina_7_com_texto_perde_o_aviso_e_as_brancas_ficam(tmp_path):
+def test_la_vida_eterna_pagina_7_com_texto_perde_o_aviso_e_as_brancas_ficam(tmp_path, monkeypatch):
     """O caso do Kaique, no livro de verdade (só lido; as 6 primeiras folhas
-    copiadas para a pasta do teste). A análise de fábrica dá "Parece em
+    copiadas para a pasta do teste). A análise de fábrica dava "Parece em
     branco" às páginas 2, 7 e 9 (como no print dele). Com a divisão das folhas
     4 e 5 no meio (a linha azul do print s1-07, 0,55), a página 7 é a página de
     texto "8" e perde o aviso; a 2 (verso em branco da folha 1) e a 9 (verso
-    em branco da folha 5) continuam com ele."""
-    from core import analise
+    em branco da folha 5) continuam com ele.
+    Obra 26/10, etapa 4: a causa das páginas 7 e 9 da análise (o ScanTailor
+    dividindo a 10%, na linha da beirada) foi consertada no dividir
+    (dividir_scantailor.na_beirada; tests/test_decisoes_dividir.py). Para este
+    teste continuar provando o "Parece em branco" que sai quando a divisão
+    muda, a análise aqui usa o ScanTailor sem o conserto (na_beirada sempre
+    False), como era quando o Kaique viu."""
+    from core import analise, dividir_scantailor
     from core.pdf_io import abrir_pdf
     from core.pipeline import analisar_projeto, renderizar_pagina
+
+    monkeypatch.setattr(dividir_scantailor, "na_beirada", lambda resultado: False)
 
     copia = tmp_path / "vida6.pdf"
     with fitz.open(LA_VIDA_ETERNA) as livro, fitz.open() as novo:

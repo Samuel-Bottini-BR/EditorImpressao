@@ -1,0 +1,35 @@
+D:\programas\EditorImpressao\.claude\worktrees\obra-etapa4\_tmp\antigo\tests\test_decisoes_dividir.py:241: AssertionError: Esta folha entrou como uma página só: o jeito de dividir do livro não achou duas páginas nela, e aqui não dá para dividi-la.
+D:\programas\EditorImpressao\.claude\worktrees\obra-etapa4\_tmp\antigo\tests\test_decisoes_dividir.py:282: AssertionError: assert ['esquerda', 'direita'] == ['inteira']
+D:\programas\EditorImpressao\.claude\worktrees\obra-etapa4\_tmp\antigo\tests\test_decisoes_dividir.py:339: assert False
+D:\programas\EditorImpressao\.claude\worktrees\obra-etapa4\_tmp\antigo\tests\test_decisoes_dividir.py:360: AssertionError: assert ('corte' != 'corte')
+D:\programas\EditorImpressao\.claude\worktrees\obra-etapa4\_tmp\antigo\tests\test_decisoes_dividir.py:379: AssertionError: assert ('corte' != 'corte')
+D:\programas\EditorImpressao\.claude\worktrees\obra-etapa4\_tmp\antigo\tests\test_decisoes_dividir.py:395: assert False
+D:\programas\EditorImpressao\.claude\worktrees\obra-etapa4\_tmp\antigo\tests\test_decisoes_dividir.py:451: ModuleNotFoundError: No module named 'core.dividir_a_mao'
+D:\programas\EditorImpressao\.claude\worktrees\obra-etapa4\_tmp\antigo\tests\test_decisoes_dividir.py:474: AttributeError: 'ConfigFolha' object has no attribute 'tampa_do_scanner'
+D:\programas\EditorImpressao\.claude\worktrees\obra-etapa4\_tmp\antigo\tests\test_decisoes_dividir.py:499: AttributeError: 'ConfigFolha' object has no attribute 'tampa_do_scanner'
+D:\programas\EditorImpressao\.claude\worktrees\obra-etapa4\_tmp\antigo\tests\test_decisoes_dividir.py:516: assert (False)
+D:\programas\EditorImpressao\.claude\worktrees\obra-etapa4\_tmp\antigo\tests\test_decisoes_dividir.py:543: assert 3 == 4
+D:\programas\EditorImpressao\.claude\worktrees\obra-etapa4\_tmp\antigo\tests\test_decisoes_dividir.py:563: AssertionError: Lombada(posicao=0.10491175066514632, confianca=1.0, e_paisagem=True)
+D:\programas\EditorImpressao\.claude\worktrees\obra-etapa4\_tmp\antigo\tests\test_decisoes_dividir.py:585: AssertionError: (3, Lombada(posicao=0.10092003270794281, confianca=1.0, e_paisagem=True))
+D:\programas\EditorImpressao\.claude\worktrees\obra-etapa4\_tmp\antigo\tests\test_decisoes_dividir.py:610: assert False
+D:\programas\EditorImpressao\.claude\worktrees\obra-etapa4\_tmp\antigo\tests\test_decisoes_dividir.py:636: assert 3 == 4
+PASSED tests/test_decisoes_dividir.py::test_mover_a_linha_mexe_so_nesta_folha
+PASSED tests/test_decisoes_dividir.py::test_o_aviso_nao_parece_dupla_nunca_divide
+PASSED tests/test_decisoes_dividir.py::test_lista_3_1_girar_o_livro_e_dividir_no_automatico
+PASSED tests/test_decisoes_dividir.py::test_lista_3_1_righetti_de_verdade_girado_e_dividido
+FAILED tests/test_decisoes_dividir.py::test_dividir_esta_aceso_no_livro_sem_dividir_e_mexe_so_nesta_folha
+FAILED tests/test_decisoes_dividir.py::test_nao_dividir_e_dividir_de_novo_devolvem_as_paginas_como_estavam
+FAILED tests/test_decisoes_dividir.py::test_d489_a_divisao_a_mao_volta_ao_reabrir_sem_recomecar
+FAILED tests/test_decisoes_dividir.py::test_d007_dividido_pelo_automatico_aparece_uma_pagina_por_vez
+FAILED tests/test_decisoes_dividir.py::test_d007_livro_dividido_nunca_abre_no_dividir
+FAILED tests/test_decisoes_dividir.py::test_lista_3_1_girar_a_folha_e_dividir_a_mao
+FAILED tests/test_decisoes_dividir.py::test_d495_a_regra_da_tampa_na_folha_e_na_moldura
+FAILED tests/test_decisoes_dividir.py::test_d495_a_faixa_da_tampa_sai_ao_girar_e_dividir_a_mao
+FAILED tests/test_decisoes_dividir.py::test_d495_acertar_a_linha_a_mao_tambem_tira_a_tampa
+FAILED tests/test_decisoes_dividir.py::test_d495_a_moldura_impressa_preta_nao_some_ao_dividir_a_mao
+FAILED tests/test_decisoes_dividir.py::test_d495_righetti_96_de_verdade - ass...
+FAILED tests/test_decisoes_dividir.py::test_bug_9c_a_linha_escura_da_beirada_nao_e_lombada
+FAILED tests/test_decisoes_dividir.py::test_bug_9c_la_vida_eterna_folhas_4_e_5_de_verdade
+FAILED tests/test_decisoes_dividir.py::test_bug_9c_la_vida_eterna_a_analise_ja_nao_faz_a_tira_de_margem
+FAILED tests/test_decisoes_dividir.py::test_d016_dividida_a_mao_sai_igual_a_dividida_pelo_automatico
+15 failed, 4 passed in 29.37s
