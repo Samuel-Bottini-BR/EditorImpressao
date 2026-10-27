@@ -28,6 +28,19 @@ Obra D-014: feita até o fim sem pausas; o Samuel confere tudo no fim. **PRONTO 
 - **Lista única, seção 4** (23/10): 4.1, 4.3 (+ Matemática 40 e 66), 4.5, 4.7, 4.11, 4.12; Lista de bugs: T do
   Antiphonal 46 (13/10, grave), "Reduzir cores" apaga letra (21/10), foto de celular (23/10).
 
+## PAUSA (27/10/2026, pedido da gerente) — onde parei
+
+- **Feito:** todos os itens (tabela abaixo), testes, conferência (`conferencia/`), somas, DECISOES (só a situação).
+- **Em andamento na pausa:** (a) rodada inteira do GitHub `40566825277` no `5fa738b` (conserto do
+  `test_misto_desenho_claro::test_sombra_da_lombada_na_borda_nao_volta`, que a rodada `40564366174` do `cb66bfa` pegou:
+  a luz das colunas voltou a ser medida em 600 pontos; no PC esse arquivo passa, 10 de 10); (b) filtro de velocidade
+  `40564361069` (`83d7ba2` × `cb66bfa`).
+- **Próximo passo exato:** ler as duas rodadas (`gh run view <id> -R Samuel-Bottini-BR/EditorImpressao --log-failed`
+  e o "Veredito" do filtro); esperado na suíte: só `test_promessas` p085/p090/p094/p127 (falham no `obra-2026-10-26`
+  sem esta etapa). Se o filtro ainda acusar "Trocar de página" mais lento, disparar de novo uma vez (regra) e, se
+  persistir, apresentar à gerente (custo medido: ~6 ms por página para achar a sombra, mais ~10 ms quando há sombra, na
+  prévia de 110 DPI). Depois: preencher a seção "Velocidade" e reler este arquivo do começo.
+
 ## Situação
 
 **PRONTO PARA CONFERIR** (27/10/2026). Conferência: `relatorios/obra-etapa10b/conferencia/conferencia-etapa10b.html`
@@ -145,7 +158,11 @@ no PC também no `ab38208` (janela de verdade; ver GitHub).
   são de janela e mudam de uma vez para outra (no PC, rodados duas vezes seguidas: na 1ª p094 falhou, na 2ª os dois
   passaram; o p094 também falha na rodada do `obra-2026-10-26`). Nenhum teste de imagem falhou.
 
-VELOCIDADE_AQUI
+- 1ª `40540804774` (`ab38208` × ramo antes da junção): "parece mais lento: Preto e branco, 10 páginas +3,4%"; Mágico
+  pro -6,8% (o JPEG). → conta da sombra barateada (`9fbde20`).
+- 2ª `40553722386` (`83d7ba2` × `9fbde20`): Preto e branco +2,2% = **igual**; "parece mais lento: Trocar de página
+  +4,1%" (vai-e-vem 2,0%); Mágico pro -7,5%. → contas novas do Preto e branco barateadas de novo (`cb66bfa`).
+- 3ª `40564361069` (`83d7ba2` × `cb66bfa`): **EM ANDAMENTO na pausa** — ler o veredito.
 
 ## Perguntas para o Samuel (a gerente leva à Central)
 
