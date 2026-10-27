@@ -509,7 +509,8 @@ def test_d113_o_desentortar_mede_a_caixa_do_conteudo_sem_a_moldura(monkeypatch):
     img = np.full((ALTURA_PX, LARGURA_PX, 3), 220, np.uint8)
     img[:, :40] = 30
     vistas = []
-    monkeypatch.setattr(ds, "caixa_do_conteudo", lambda im, caixa, dpi: vistas.append(im) or (0, 0, 8, 8))
+    monkeypatch.setattr(ds, "caixa_do_conteudo",
+                        lambda im, caixa, dpi, so_o_bloco=False: vistas.append(im) or (0, 0, 8, 8))
     monkeypatch.setattr(ds, "desentortar", lambda *a, **k: ds.Resultado(None, motivo="teste"))
     pagina = ConfigPagina(indice=0, folha=0)
     pagina.desentortar = ds.AUTOMATICO
@@ -553,30 +554,33 @@ def _texto_com_notas_na_margem() -> np.ndarray:
     return img
 
 
-def test_d493_o_desentortar_segue_so_o_bloco_do_texto():
+def test_d493_a_conta_do_bloco_do_texto_deixa_as_notas_de_fora():
     """D-493 (27/10/2026, escolha da gerente apoiada em D-113): "O desentortar
-    segue só o bloco do texto, sem as notas da margem". Prova: a caixa do
-    conteúdo que vai ao desentortar começa no texto (não nas notas da
-    esquerda) e acaba no texto (não nas notas da direita). Antes ela ia de nota
-    a nota."""
+    segue só o bloco do texto, sem as notas da margem". SITUAÇÃO: pela metade -
+    a conta está pronta (caixa_do_conteudo(so_o_bloco=True)), mas NÃO foi
+    ligada ao desentortar: ligada, ela entortava a Marial 41 reta e fazia o
+    Righetti 96 perder o começo das linhas (pergunta no ONDE-PAREI da etapa
+    10b). Prova da conta: a caixa começa no texto (não nas notas da esquerda)
+    e acaba no texto (não nas notas da direita)."""
     from core import desentortar_scantailor as ds
 
     img = _texto_com_notas_na_margem()
     h, w = img.shape[:2]
-    x, _y, largura, _a = ds.caixa_do_conteudo(img, (0, 0, w, h), 300)
+    x, _y, largura, _a = ds.caixa_do_conteudo(img, (0, 0, w, h), 300, so_o_bloco=True)
     assert x >= 240, x
     assert x + largura <= 960, (x, largura)
 
 
 def test_d493_pagina_sem_notas_tem_a_caixa_de_sempre():
-    """D-493: sem nota da margem, a caixa é a de sempre (o texto inteiro)."""
+    """D-493 (a conta, não ligada): sem nota da margem, a caixa é a de sempre
+    (o texto inteiro)."""
     from core import desentortar_scantailor as ds
 
     img = _texto_com_notas_na_margem()
     img[:, :230] = 225
     img[:, 960:] = 225
     h, w = img.shape[:2]
-    x, _y, largura, _a = ds.caixa_do_conteudo(img, (0, 0, w, h), 300)
+    x, _y, largura, _a = ds.caixa_do_conteudo(img, (0, 0, w, h), 300, so_o_bloco=True)
     assert x <= 262 and x + largura >= 930
 
 

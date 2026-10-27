@@ -310,7 +310,8 @@ def aplicar(img: np.ndarray, pagina, dpi=None, *,
     return resultado.imagem
 
 
-def caixa_do_conteudo(img: np.ndarray, caixa: tuple[int, int, int, int], dpi) -> tuple[int, int, int, int]:
+def caixa_do_conteudo(img: np.ndarray, caixa: tuple[int, int, int, int], dpi,
+                      so_o_bloco: bool = False) -> tuple[int, int, int, int]:
     """A caixa do conteúdo (m_contentRect do ScanTailor), (x, y, largura,
     altura) em pontos de `img`: a caixa da tinta DENTRO do corte `caixa`
     ((x0, y0, x1, y1)), sem o que encosta na beirada do corte.
@@ -365,7 +366,10 @@ def caixa_do_conteudo(img: np.ndarray, caixa: tuple[int, int, int, int], dpi) ->
         ficam.append((x, y, x + w, y + h))
     if len(ficam) < 5:
         return corte
-    ficam = _so_o_bloco_do_texto(ficam, largura)
+    if so_o_bloco:
+        # D-493: só o bloco do texto, sem as notas da margem (ver
+        # BLOCO_PERCENTIL); para a caixa que vai à DLL
+        ficam = _so_o_bloco_do_texto(ficam, largura)
     m = np.array(ficam)
     cx0, cy0 = int(m[:, 0].min() / escala), int(m[:, 1].min() / escala)
     cx1 = min(x1 - x0, int(np.ceil(m[:, 2].max() / escala)))
@@ -390,7 +394,9 @@ def caixa_do_conteudo(img: np.ndarray, caixa: tuple[int, int, int, int], dpi) ->
 # linha começa e acaba; a beirada do bloco é onde a MAIORIA das linhas começa
 # (percentil BLOCO_PERCENTIL dos começos) e acaba (100 - BLOCO_PERCENTIL dos
 # fins). A nota da margem só aparece em poucas linhas, e a mancha que fica
-# que passa da beirada do bloco mais de NOTA_FOLGA_MM sai da caixa.
+# que passa da beirada do bloco mais de NOTA_FOLGA_MM sai da caixa. Só a caixa
+# que vai à DLL (o que ela segue) muda; a marca da proteção continua com a
+# caixa inteira (a nota da margem também não pode sair da página).
 # Se sairia demais (mais de NOTA_MANCHAS_MAXIMA das manchas), não é nota: a
 # caixa de sempre. Arriscado: subir BLOCO_PERCENTIL (a linha curta do fim do
 # parágrafo passaria a mandar na beirada) ou NOTA_MANCHAS_MAXIMA.
@@ -665,6 +671,13 @@ def preparar_no_corte(reta: np.ndarray, caixa: tuple[int, int, int, int] | None,
     conteudo = caixa_do_conteudo(sem_moldura, (x0, y0, x1, y1), dpi)
     marca = marca_da_pagina(sem_moldura, (x0, y0, x1, y1), conteudo)
     aumentar = bool(getattr(pagina, "desentortar_aumentar", False))
+    # D-493 (etapa 10b): seguir só o bloco do texto (caixa_do_conteudo com
+    # so_o_bloco=True) NÃO está ligado aqui. Medido em 27/10/2026: na página
+    # curva do D-113 a curva passa a ser achada, mas na Marial 41 RETA o
+    # automático passava a entortá-la (tinta no lugar abaixo de 0,95) e no
+    # Righetti 96 o "aumentando a página" voltava a comer o começo das linhas
+    # (tests/test_desentortar_scantailor.py e test_desentortar_protecao.py).
+    # Fica a pergunta no ONDE-PAREI da etapa 10b; a conta está pronta.
     crescer = int(round((AUMENTO_MAXIMO_MM if aumentar else CRESCER_MM) * _pontos_por_mm(dpi)))
     resultado = desentortar(reta, dpi, modo, lado=lado_da_pagina(pagina),
                             corte=(x0, y0, x1 - x0, y1 - y0), conteudo=conteudo,
