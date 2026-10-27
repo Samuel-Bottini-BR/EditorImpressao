@@ -216,7 +216,6 @@ def test_continuar_depois_de_religar_o_livro_movido_mantem_o_trabalho(janela, pa
     _trabalhar_e_fechar(janela, str(livro))
     novo = _mover(livro, pasta / "pasta nova")
     monkeypatch.setattr(projetos, "_pastas_conhecidas", lambda: [novo.parent])
-    monkeypatch.setattr(janela, "analisar", lambda: None)
 
     resumo = projetos.listar()[0]
     assert projetos.procurar_o_livro(resumo) == (projetos.RELIGADO, str(novo))
@@ -238,7 +237,6 @@ def test_livro_achado_a_mao_mantem_o_trabalho(janela, pasta, monkeypatch):
     monkeypatch.setattr(projetos, "_pastas_conhecidas", lambda: [])
     monkeypatch.setattr(QFileDialog, "getOpenFileName",
                         staticmethod(lambda *a, **k: (str(novo).replace("\\", "/"), "")))
-    monkeypatch.setattr(janela, "analisar", lambda: None)
 
     janela.tela_inicio.pedir_para_continuar(projetos.listar()[0])
     _analisar(janela)
@@ -662,7 +660,7 @@ def _conferir_deitado_sem_dividir(janela, caminho: str) -> None:
     janela._salvar_agora()
     janela.previas.parar()
     janela.previas = None
-    janela.tela_opcoes.folhear.fechar()
+    janela._fechar_a_janela_do_automatico()
 
 
 def test_reabrir_pelo_abrir_traz_as_opcoes_salvas_e_nao_recomeca(janela, pasta):
@@ -693,7 +691,7 @@ def test_as_caixinhas_do_livro_anterior_nao_contaminam_as_salvas(janela, pasta):
     janela.abrir_livro(str(_pdf(pasta)))                   # outro livro...
     janela.tela_opcoes.cx_limpar.setChecked(False)         # ...com "Limpar" desligado
     janela.tela_opcoes.cx_endireitar.setChecked(False)
-    janela.tela_opcoes.folhear.fechar()
+    janela._fechar_a_janela_do_automatico()
 
     janela.abrir_livro(str(livro))
     opcoes = janela.tela_opcoes
@@ -706,7 +704,6 @@ def test_as_caixinhas_do_livro_anterior_nao_contaminam_as_salvas(janela, pasta):
 def test_continuar_continua_trazendo_as_opcoes_salvas(janela, pasta, monkeypatch):
     livro = _pdf_deitado(pasta)
     _conferir_deitado_sem_dividir(janela, str(livro))
-    monkeypatch.setattr(janela, "analisar", lambda: None)
     janela._continuar_projeto(projetos.achar_por_assinatura(str(livro)))
     assert not janela.tela_opcoes.cx_dividir.isChecked()
     _analisar(janela)
@@ -942,7 +939,6 @@ def test_continuar_o_cartao_mais_antigo_abre_ele_e_nao_o_mais_recente(janela, pa
                                                                     monkeypatch):
     _livro, resumo_a, resumo_b = _dois_projetos_do_mesmo_livro(janela, pasta)
     estado_b = (Path(resumo_b.pasta) / projetos.ARQUIVO_ESTADO).read_bytes()
-    monkeypatch.setattr(janela, "analisar", lambda: None)
 
     janela.tela_inicio.pedir_para_continuar(resumo_a)          # o cartao de A
     _analisar(janela)
@@ -957,7 +953,6 @@ def test_continuar_o_cartao_mais_antigo_abre_ele_e_nao_o_mais_recente(janela, pa
 
 def test_continuar_o_cartao_mais_recente_abre_ele(janela, pasta, monkeypatch):
     _livro, resumo_a, resumo_b = _dois_projetos_do_mesmo_livro(janela, pasta)
-    monkeypatch.setattr(janela, "analisar", lambda: None)
     janela.tela_inicio.pedir_para_continuar(resumo_b)
     _analisar(janela)
     assert janela.resumo.pasta == resumo_b.pasta
@@ -1013,7 +1008,7 @@ def _fechar_a_conferencia(janela) -> None:
     if janela.previas is not None:
         janela.previas.parar()
         janela.previas = None
-    janela.tela_opcoes.folhear.fechar()
+    janela._fechar_a_janela_do_automatico()
 
 
 def _projeto_antigo_com_trabalho(janela, livro: Path) -> Path:
@@ -1038,7 +1033,7 @@ def test_livro_novo_com_camadas_pergunta_uma_vez_so(janela, pasta):
     livro = _pdf_com_fundo(pasta)
     janela.abrir_livro(str(livro))
     _responder(janela, sim=False)
-    janela.tela_opcoes.folhear.fechar()
+    janela._fechar_a_janela_do_automatico()
     janela.abrir_livro(str(livro))                         # de novo, sem conferir
     assert janela.aviso_do_fundo is None, "perguntou de novo"
     _analisar(janela)
@@ -1068,11 +1063,10 @@ def test_projeto_antigo_pergunta_na_proxima_abertura_e_nao_mais(janela, pasta):
 def test_projeto_antigo_pelo_continuar_tambem_pergunta(janela, pasta, monkeypatch):
     livro = _pdf_com_fundo(pasta)
     _projeto_antigo_com_trabalho(janela, livro)
-    monkeypatch.setattr(janela, "analisar", lambda: None)
     janela._continuar_projeto(projetos.listar()[0])
     assert janela.aviso_do_fundo is not None
     _responder(janela, sim=False)
-    janela.tela_opcoes.folhear.fechar()
+    janela._fechar_a_janela_do_automatico()
     janela._continuar_projeto(projetos.listar()[0])
     assert janela.aviso_do_fundo is None
 
@@ -1152,7 +1146,6 @@ def test_sim_respondido_durante_a_analise_do_continuar_vale(janela, pasta, monke
 
     livro = _pdf_com_fundo(pasta)
     _projeto_antigo_com_trabalho(janela, livro)
-    monkeypatch.setattr(janela, "analisar", lambda: None)
     janela._continuar_projeto(projetos.listar()[0])
     _responder(janela, sim=True)
     _analisar(janela)
@@ -1172,7 +1165,6 @@ def test_resposta_depois_do_fim_da_analise_do_continuar_vale_e_fica_anotada(jane
 
     livro = _pdf_com_fundo(pasta)
     _projeto_antigo_com_trabalho(janela, livro)
-    monkeypatch.setattr(janela, "analisar", lambda: None)
     janela._continuar_projeto(projetos.listar()[0])
     _analisar(janela)                                      # a analise acaba antes
     _responder(janela, sim=sim)                            # da resposta (s19-s21)
@@ -1206,7 +1198,7 @@ def test_sim_e_sair_antes_de_conferir_faz_a_pergunta_voltar(janela, pasta, como)
         janela.analisar()
         janela.cancelar()
         _esperar_a_tarefa(janela)
-    janela.tela_opcoes.folhear.fechar()
+    janela._fechar_a_janela_do_automatico()
 
     depois = json.loads(estado.read_text(encoding="utf-8"))
     assert depois["paginas"] == antes["paginas"]
@@ -1238,7 +1230,7 @@ def test_livro_novo_sim_e_fechar_antes_de_conferir_guarda_o_sim(janela, pasta):
     janela.abrir_livro(str(livro))
     _responder(janela, sim=True)
     janela.close()
-    janela.tela_opcoes.folhear.fechar()
+    janela._fechar_a_janela_do_automatico()
 
     janela.abrir_livro(str(livro))
     assert janela.aviso_do_fundo is None

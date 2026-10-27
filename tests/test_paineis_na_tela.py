@@ -22,6 +22,8 @@ janela real (relatorios/layout-impl/etapa3).
 
 from __future__ import annotations
 
+from tests.ajudante_do_automatico import rodar_como_o_conferir  # etapa 3 da obra
+
 import pytest
 
 fitz = pytest.importorskip("fitz")
@@ -50,11 +52,11 @@ from ui.widgets.trilha_agrupada import (  # noqa: E402
 def _aberta(janela, pasta, tamanho=(1280, 657)):
     """Um livro de 5 folhas com Dividir, Cortar e Endireitar ligados."""
     janela.abrir_livro(str(_pdf(pasta, folhas=5)))
-    opcoes = janela.tela_opcoes
-    opcoes.cx_dividir.setChecked(True)
-    opcoes.cx_cortar.setChecked(True)
-    opcoes.cx_endireitar.setChecked(True)
-    _analisar(janela)
+    # etapa 3 da obra: o antigo "Conferir" pelo Automatico
+    from tests.ajudante_do_automatico import rodar_como_o_conferir
+
+    rodar_como_o_conferir(janela, sempre=True, dividir_folhas=True, cortar_bordas=True,
+                          endireitar=True)
     janela.resize(*tamanho)
     janela.show()
     _assentar()
@@ -150,16 +152,23 @@ def test_para_revisar_leva_a_pagina_clicada(janela, pasta):
     assert painel.lista.currentRow() == indices.index(3), "a página da vez fica destacada"
 
 
-def test_o_automatico_volta_para_o_que_fazer(janela, pasta):
-    from ui.janela_principal import OPCOES
+def test_o_automatico_mostra_as_etapas_e_abre_a_janela_grande(janela, pasta):
+    """Etapa 3 da obra (D-002): o painel Automático deixou de ser só tiques com
+    "Voltar para as opções" (achado 1-12: "aqui as opções estão travadas"). Ele
+    mostra as etapas ligadas (marcadas) e "abrir em janela grande" abre a janela."""
+    from core import automatico as A
+    from ui.janela_principal import CONFERIR
 
     tela = _aberta(janela, pasta)
     tela.paineis.abrir("automatico")
     painel = tela.paineis.automatico
-    ligadas = {nome: ligada for ligada, nome, _f, _e in painel.linhas}
-    assert ligadas["Dividir folhas ao meio"] and ligadas["Cortar as bordas"]
-    painel.botao_mudar.click()
-    assert janela.telas.currentIndex() == OPCOES
+    assert {A.DIVIDIR, A.CORTAR} <= painel.estado.marcadas
+    assert "ligada no livro todo" in painel.lista.item_da_etapa(A.CORTAR).text()
+    assert not hasattr(painel, "botao_mudar")              # o "Voltar para as opções" saiu
+    painel.botao_janela.click()
+    assert janela.telas.currentIndex() == CONFERIR
+    assert janela.janela_do_automatico is not None and janela.janela_do_automatico.isVisible()
+    janela._fechar_a_janela_do_automatico()
 
 
 def test_o_historico_do_painel_desfaz_e_refaz(janela, pasta):
@@ -434,7 +443,7 @@ def test_com_as_ferramentas_de_marcar_o_propriedades_mostra_o_marcar_como(janela
     from core import pipeline
 
     janela.abrir_livro(str(_pdf(pasta, folhas=3)))
-    janela._analise_pronta(pipeline.analisar_projeto(janela.projeto))   # com o Marcar
+    rodar_como_o_conferir(janela, sempre=True, detectar_regioes=True)  # com o Marcar
     tela = janela.tela_conferir
     # D-001 (etapa 2 da obra): as de marcar existem em todo livro
     assert "marcar" in tela._abas_ativas
@@ -474,7 +483,7 @@ def test_trocar_de_livro_refaz_o_propriedades(janela, pasta):
     tela = _aberta(janela, pasta)
     antigo = tela.propriedades_das_abas["bordas"]
     tela.paineis.abrir("props")
-    _analisar(janela)                       # a conferência de novo: a tela recarrega
+    janela.abrir_livro(janela.projeto.caminho_entrada)   # o livro de novo: a tela recarrega
     _assentar()
     novo = tela.propriedades_das_abas["bordas"]
     assert novo is not antigo

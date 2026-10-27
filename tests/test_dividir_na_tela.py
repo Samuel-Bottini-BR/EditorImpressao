@@ -98,7 +98,7 @@ def test_as_escolhas_voltam_ao_reabrir(janela, pasta):
     caminho = janela.projeto.caminho_entrada
     janela.previas.parar()
     janela.previas = None
-    janela.tela_opcoes.folhear.fechar()
+    janela._fechar_a_janela_do_automatico()
     janela.abrir_livro(caminho)
     assert janela.projeto.dividir_folhas
     assert janela.projeto.dividir_como == ds.JEITO_SCANTAILOR
@@ -125,7 +125,7 @@ def test_projeto_antigo_reaberto_continua_com_o_do_programa(janela, pasta):
     estado.write_text(json.dumps(dados, ensure_ascii=False), encoding="utf-8")
     janela.previas.parar()
     janela.previas = None
-    janela.tela_opcoes.folhear.fechar()
+    janela._fechar_a_janela_do_automatico()
 
     janela.abrir_livro(caminho)
     opcoes = janela.tela_opcoes

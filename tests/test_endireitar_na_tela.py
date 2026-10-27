@@ -89,7 +89,7 @@ def test_a_escolha_volta_ao_reabrir_e_o_projeto_antigo_fica_com_a_do_programa(ja
         if janela.previas is not None:          # reaberto sem conferir: nao ha previas
             janela.previas.parar()
             janela.previas = None
-        janela.tela_opcoes.folhear.fechar()
+        janela._fechar_a_janela_do_automatico()
         janela.abrir_livro(caminho)
 
     reabrir()

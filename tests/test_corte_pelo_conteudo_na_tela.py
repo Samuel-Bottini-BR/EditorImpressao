@@ -33,19 +33,40 @@ from tests.test_mesmo_livro_outro_caminho import (  # noqa: F401, E402 - fixture
 )
 
 
-def test_a_caixinha_nasce_desmarcada_e_grava_no_livro(janela, pasta):
+def _automatico_no_cortar(janela, pasta):
+    """Obra de 26/10/2026, etapa 3: as opções do corte moram na janela do
+    Automático, etapa "Cortar as bordas" (a tela "O que fazer" saiu do caminho).
+    Devolve (a janela do Automático, o estado dela)."""
     janela.abrir_livro(str(_pdf(pasta)))
-    tela, projeto = janela.tela_opcoes, janela.projeto
-    assert not tela.cx_cortar_pelo_conteudo.isChecked()
-    assert projeto.cortar_pelo_conteudo is False
-    tela.cx_cortar_pelo_conteudo.setChecked(True)
-    assert projeto.cortar_pelo_conteudo is True
-    tela.cx_cortar_pelo_conteudo.setChecked(False)
-    assert projeto.cortar_pelo_conteudo is False
+    jan = janela.abrir_o_automatico("cortar")
+    return jan, janela.estado_do_automatico
+
+
+def _rodar_o_cortar(janela, jan) -> None:
+    """Marca só "Cortar as bordas" e clica em Rodar (mede no mesmo fio)."""
+    from core import automatico as A
+
+    janela.estado_do_automatico.marcadas = {A.CORTAR}
+    janela._fechar_a_janela_do_automatico()
+    assert janela.rodar_o_automatico(esperar=True)
+
+
+def test_a_caixinha_nasce_desmarcada_e_grava_no_livro(janela, pasta):
+    jan, estado = _automatico_no_cortar(janela, pasta)
+    caixa = jan.controles["cortar_pelo_conteudo"]
+    assert not caixa.isChecked()
+    assert janela.projeto.cortar_pelo_conteudo is False
+    caixa.setChecked(True)
+    assert estado.opcoes["cortar_pelo_conteudo"] is True
+    assert janela.projeto.cortar_pelo_conteudo is False        # o livro só muda ao rodar
+    _rodar_o_cortar(janela, jan)
+    assert janela.projeto.cortar_pelo_conteudo is True
 
 
 def test_a_opcao_esta_na_lista_das_opcoes_do_livro(janela):
-    assert "cortar_pelo_conteudo" in janela.OPCOES_DO_LIVRO
+    from core import automatico as A
+
+    assert "cortar_pelo_conteudo" in A.todas_as_opcoes()
 
 
 def _na_conferencia(janela, pasta):
@@ -129,17 +150,20 @@ def test_o_visualizador_usa_as_linhas_do_kaique(app):
 def test_a_caixinha_da_borda_preta_nasce_desmarcada_com_ate_a_moldura(janela, pasta):
     """G7 (a) "desligada de fábrica"; g7-borda-ate-onde: ao ligar, "até a
     moldura" vem escolhido; trocar grava no livro."""
+    from core import automatico as A
     from core import borda_preta as bp
 
-    janela.abrir_livro(str(_pdf(pasta)))
-    tela, projeto = janela.tela_opcoes, janela.projeto
-    assert not tela.cx_borda_preta.isChecked() and projeto.borda_preta is False
-    assert tela.combo_borda_preta.currentData() == bp.ATE_A_MOLDURA
-    tela.cx_borda_preta.setChecked(True)
-    assert projeto.borda_preta is True and projeto.borda_preta_ate == bp.ATE_A_MOLDURA
-    tela.combo_borda_preta.setCurrentIndex(tela.combo_borda_preta.findData(bp.SO_O_PRETO))
-    assert projeto.borda_preta_ate == bp.SO_O_PRETO
-    assert {"borda_preta", "borda_preta_ate"} <= set(janela.OPCOES_DO_LIVRO)
+    jan, estado = _automatico_no_cortar(janela, pasta)
+    caixa, lista = jan.controles["borda_preta"], jan.controles["borda_preta_ate"]
+    assert not caixa.isChecked() and janela.projeto.borda_preta is False
+    assert lista.currentData() == bp.ATE_A_MOLDURA
+    caixa.setChecked(True)
+    assert estado.opcoes["borda_preta"] is True and estado.opcoes["borda_preta_ate"] == bp.ATE_A_MOLDURA
+    lista.setCurrentIndex(lista.findData(bp.SO_O_PRETO))
+    assert estado.opcoes["borda_preta_ate"] == bp.SO_O_PRETO
+    _rodar_o_cortar(janela, jan)
+    assert janela.projeto.borda_preta is True and janela.projeto.borda_preta_ate == bp.SO_O_PRETO
+    assert {"borda_preta", "borda_preta_ate"} <= set(A.todas_as_opcoes())
 
 
 def test_regressao_usar_em_todas_nao_apaga_as_excecoes(janela, pasta, monkeypatch):
@@ -193,12 +217,14 @@ def test_cancelar_a_janela_nao_muda_nada(janela, pasta, monkeypatch):
 def test_2_14_lista_cortar_fora_ou_pintar(janela, pasta):
     """Item 2.14: "O Kaique escolhe por livro" entre cortar fora e pintar de
     branco; vem "cortar fora"; trocar grava no livro."""
+    from core import automatico as A
     from core import borda_preta as bp
 
-    janela.abrir_livro(str(_pdf(pasta)))
-    tela, projeto = janela.tela_opcoes, janela.projeto
-    assert tela.combo_borda_fazer.currentData() == bp.CORTAR_FORA
-    tela.cx_borda_preta.setChecked(True)
-    tela.combo_borda_fazer.setCurrentIndex(tela.combo_borda_fazer.findData(bp.PINTAR))
-    assert projeto.borda_preta_fazer == bp.PINTAR
-    assert "borda_preta_fazer" in janela.OPCOES_DO_LIVRO
+    jan, estado = _automatico_no_cortar(janela, pasta)
+    lista = jan.controles["borda_preta_fazer"]
+    assert lista.currentData() == bp.CORTAR_FORA
+    jan.controles["borda_preta"].setChecked(True)
+    lista.setCurrentIndex(lista.findData(bp.PINTAR))
+    _rodar_o_cortar(janela, jan)
+    assert janela.projeto.borda_preta_fazer == bp.PINTAR
+    assert "borda_preta_fazer" in A.todas_as_opcoes()

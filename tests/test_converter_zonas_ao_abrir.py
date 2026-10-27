@@ -419,10 +419,18 @@ def _abrir_projeto_antigo(janela, pdf):
     antigo = _dicionario_antigo(pdf)
     antigo["caminho_entrada"] = str(pdf)
     arquivo.write_text(json.dumps(antigo, ensure_ascii=False, indent=1), encoding="utf-8")
-    analisado = Projeto.de_dicionario(copy.deepcopy(antigo))
-    for pagina in analisado.paginas:
-        pagina.selecao = []
-    janela._analise_pronta(analisado)
+    # obra de 26/10/2026, etapa 3: sem analise - o livro reaberto traz o
+    # trabalho salvo como esta (o "continuar"); o livro aberto antes e solto
+    # sem gravar (senao o relogio de salvar gravaria por cima do antigo)
+    resumo = janela.resumo
+    # a primeira abertura (livro novo) ja gravou a pasta no formato novo; o
+    # projeto antigo de verdade chega numa sessao nova, em que a pasta ainda
+    # nao foi vista (projetos._copia_antes_das_zonas_na_folha)
+    projetos._JA_NO_FORMATO_NOVO.discard(str(__import__("pathlib").Path(resumo.pasta).resolve()))
+    janela._relogio_de_salvar.stop()
+    janela._parar_a_medida_ao_abrir()
+    janela.resumo = None
+    janela.abrir_livro(str(pdf), resumo=resumo)
     return arquivo
 
 
@@ -561,7 +569,14 @@ def test_trocar_de_livro_no_meio_para_a_conversao_e_grava_o_feito(janela, app, p
     arquivo = _abrir_projeto_antigo(janela, pdf)
     tarefa = janela.conversao_das_zonas
     _esperar(app, lambda: tarefa.feitas >= 1, limite_s=30)
-    janela.abrir_livro(str(pdf))                     # outro livro (aqui, o mesmo de novo)
+    # outro livro (etapa 3 da obra: um livro de verdade diferente - reabrir o
+    # mesmo agora abre direto na area de trabalho e comeca a conversao dele de novo)
+    outro = pdf.parent / "outro.pdf"
+    doc = fitz.open()
+    doc.new_page(width=300, height=400)
+    doc.save(str(outro))
+    doc.close()
+    janela.abrir_livro(str(outro))
     if janela.aviso_do_fundo is not None:
         janela.aviso_do_fundo.done(0)
     assert janela.conversao_das_zonas is None

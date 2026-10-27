@@ -111,7 +111,6 @@ def test_continuar_outro_projeto_pelo_cartao_guarda_a_mudanca(janela, pasta, mon
     segundo = _abrir_e_conferir(janela, _livro(pasta, "Segundo"))
     primeiro = _abrir_e_conferir(janela, _livro(pasta, "Primeiro"))
     _mudar_sem_esperar_o_relogio(janela)
-    monkeypatch.setattr(janela, "analisar", lambda: None)
     janela._continuar_projeto(projetos.ler_resumo(segundo.pasta))
     assert _filtro_no_disco(primeiro) == MAGICO_PRO
     _deixar_o_relogio_disparar()

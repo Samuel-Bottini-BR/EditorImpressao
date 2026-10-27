@@ -165,7 +165,7 @@ def test_reabrir_traz_as_opcoes_salvas(janela, pasta):
     janela._salvar_agora()
     janela.previas.parar()
     janela.previas = None
-    janela.tela_opcoes.folhear.fechar()
+    janela._fechar_a_janela_do_automatico()
 
     janela.abrir_livro(str(livro))
     assert _tela(janela).cx_tem_fotos.isChecked()

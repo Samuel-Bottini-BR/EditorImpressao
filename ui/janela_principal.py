@@ -1163,13 +1163,16 @@ class JanelaPrincipal(QMainWindow):
             return False
         return None
 
-    def rodar_o_automatico(self, desligar: bool = False, pedido=None, esperar: bool = False) -> bool:
+    def rodar_o_automatico(self, desligar: bool = False, pedido=None, esperar: bool = False,
+                           perguntar: bool = True) -> bool:
         """Roda o Automatico no livro aberto (D-002): o pedido do painel/janela
         (ou `pedido`), com a pergunta das paginas mexidas (D-004). O que olha
         as paginas roda num fio de fundo (TarefaAutomatico), com andamento e
         cancelar; no fim, _aplicar_o_automatico grava no projeto aberto.
-        `esperar` (testes e linha de comando): mede no mesmo fio. Devolve
-        False quando nada foi pedido ou a pessoa desistiu."""
+        `esperar` (testes e linha de comando): mede no mesmo fio.
+        `perguntar=False` (testes): nao pergunta das mexidas; vale o
+        pedido.pular_mexidas. Devolve False quando nada foi pedido ou a pessoa
+        desistiu."""
         from core import automatico
 
         if self.projeto is None or self.acoes is None or not self.trabalho_carregado:
@@ -1184,7 +1187,7 @@ class JanelaPrincipal(QMainWindow):
             self.avisar("Nenhuma página escolhida. Use \"escolher páginas...\" ou rode no livro todo.",
                         titulo="Automático")
             return False
-        mexidas = automatico.paginas_mexidas(self.projeto, pedido)
+        mexidas = automatico.paginas_mexidas(self.projeto, pedido) if perguntar else []
         if mexidas:
             resposta = self._perguntar_mexidas(len(mexidas))
             if resposta is None:
@@ -1247,7 +1250,9 @@ class JanelaPrincipal(QMainWindow):
         if conferir.previas is not None:
             conferir.previas.invalidar()
         conferir.lista_de_paginas_mudou()
-        self.estado_do_automatico.acertar_situacoes(projeto)
+        # o painel passa a mostrar o que o livro tem agora (etapas ligadas,
+        # opcoes, ordem); onde rodar e as escolhidas ficam como a pessoa deixou
+        self.estado_do_automatico.do_projeto(projeto)
         self._salvar_agora()
         self._comecar_a_medir_o_livro()          # item 2.5, se o corte pelo conteudo ligou
         if resultado.gravuras_refeitas:

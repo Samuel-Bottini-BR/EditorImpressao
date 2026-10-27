@@ -594,7 +594,7 @@ def test_janela_livro_novo_e_reabrir(janela, pasta):
         if janela.previas is not None:
             janela.previas.parar()
             janela.previas = None
-        janela.tela_opcoes.folhear.fechar()
+        janela._fechar_a_janela_do_automatico()
         janela.abrir_livro(caminho)
 
     reabrir()

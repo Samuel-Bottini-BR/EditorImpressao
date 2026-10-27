@@ -262,12 +262,28 @@ def paginas_mexidas(projeto, pedido: Pedido) -> list[int]:
     for pagina in _paginas_do_pedido(projeto, pedido):
         if any(E.mexida_a_mao(projeto, pagina, m) for m in marcas):
             achadas.add(pagina.indice)
+        elif LIMPAR in pedido.etapas and _filtro_trocado_na_pagina(projeto, pagina):
+            achadas.add(pagina.indice)
     if DIVIDIR in pedido.etapas:
         folhas = set(folhas_do_pedido(projeto, pedido))
         for folha in projeto.folhas:
             if folha.indice in folhas and E.mexida_a_mao(projeto, folha, E.DIVIDIR):
                 achadas.update(p.indice for p in projeto.paginas if p.folha == folha.indice)
     return sorted(achadas)
+
+
+def _filtro_trocado_na_pagina(projeto, pagina) -> bool:
+    """A pagina tem um filtro diferente do filtro do livro, com o "Limpar a
+    folha" valendo nela, e nao por o Automatico ter rodado so nela? Conta
+    como "mexida a mao" para a pergunta D-004 (e para o pular): no projeto
+    gravado antes da etapa 1 o filtro escolhido numa pagina nao tem a marca
+    (core/etapas: o filtro so conta pela marca), e rodar "Limpar a folha" no
+    livro todo o trocaria pelo do livro - o trabalho se perderia calado.
+    Escolha da gerente (D-014), etapa 3. So para a pergunta: o PDF continua
+    seguindo core/etapas.filtro_que_vale."""
+    return bool(E.limpa_sozinho(projeto, pagina)
+                and not E.no_automatico_da_pagina(pagina, E.FILTRO)
+                and getattr(pagina, "filtro", None) != getattr(projeto, "filtro_padrao", None))
 
 
 def resumo(pedido: Pedido, total_paginas: int, filtro_nome: str = "") -> str:
@@ -764,7 +780,7 @@ def _ligar_na_pagina(projeto, pedido: Pedido, etapa: str, escopo: list, pular: s
             continue
         if not pedido.no_livro_todo:
             g.na_pagina(pagina, "automatico", _com_o_codigo(pagina.automatico, codigo))
-        if mexida:
+        if mexida or (etapa == LIMPAR and _filtro_trocado_na_pagina(projeto, pagina)):
             g.na_pagina(pagina, "mexida_a_mao", _sem_o_codigo(pagina.mexida_a_mao, codigo))
             if etapa == ENDIREITAR and pagina.angulo_manual is not None:
                 g.na_pagina(pagina, "angulo_manual", None)

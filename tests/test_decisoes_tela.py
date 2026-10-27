@@ -31,6 +31,8 @@ caixinhas, fica em relatorios/obra-etapa2/prints/ (roteiro/print_sem_caixinhas.p
 
 from __future__ import annotations
 
+from tests.ajudante_do_automatico import rodar_como_o_conferir  # etapa 3 da obra
+
 import itertools
 
 import numpy as np
@@ -71,15 +73,19 @@ def _assentar() -> None:
         QApplication.processEvents()
 
 
+# as caixinhas de antes e o campo do livro que cada uma ligava (desde a etapa 3 da obra
+# elas são as etapas do Automático)
+CAMPO_DA_CAIXINHA = {"cx_dividir": "dividir_folhas", "cx_cortar": "cortar_bordas",
+                     "cx_endireitar": "endireitar", "cx_limpar": "limpar"}
+
+
 def _abrir(janela, pasta, marcadas=(), folhas=3):
-    """Abre um livro como o Kaique: na tela "O que fazer", marca SÓ as caixinhas pedidas
-    (desmarca as outras, inclusive as que vêm marcadas de fábrica) e confere."""
+    """Abre um livro como o Kaique e roda o Automático SÓ com as etapas pedidas (as outras
+    desligadas, inclusive as que vinham marcadas de fábrica). Etapa 3 da obra: antes era a
+    tela "O que fazer" com as caixinhas e o "Conferir"."""
     janela.abrir_livro(str(_pdf(pasta, folhas=folhas)))
-    opcoes = janela.tela_opcoes
-    for nome in CAIXINHAS:
-        getattr(opcoes, nome).setChecked(nome in marcadas)
-    janela.projeto.detectar_regioes = False
-    janela._analise_pronta(pipeline.analisar_projeto(janela.projeto))
+    rodar_como_o_conferir(janela, sempre=True, detectar_regioes=False,
+                          **{campo: nome in marcadas for nome, campo in CAMPO_DA_CAIXINHA.items()})
     janela.resize(1280, 657)
     janela.show()
     _assentar()
@@ -160,55 +166,50 @@ def test_d001_sem_caixinhas_marcar_zoom_mao_e_filtro_funcionam(janela, pasta):
     assert pagina.filtro == PRETO_E_BRANCO
 
 
-def test_d001_sem_caixinhas_o_conferir_fica_aceso(janela, pasta):
+def test_d001_sem_nada_marcado_o_livro_abre_na_area_de_trabalho(janela, pasta):
     """D-001 e D-009 (26/10: "eu deveria conseguir abrir o livro sem escolher nenhuma opção para
-    fazer tudo manualmente"): na tela "O que fazer", sem nenhuma caixinha, o "Conferir" fica aceso
-    e o resumo diz o que vai acontecer. Achado no print da janela de verdade (26/10): antes ele
-    ficava cinza com "Marque pelo menos uma coisa para eu fazer.", e o livro nem abria."""
+    fazer tudo manualmente"). Na etapa 2 o "Conferir" da tela "O que fazer" passou a ficar aceso
+    sem caixinha; desde a etapa 3 (D-002) não há mais tela no meio: o livro abre direto na área
+    de trabalho, sem nada ligado, com todas as ferramentas."""
+    from ui.janela_principal import CONFERIR
+
     janela.abrir_livro(str(_pdf(pasta, folhas=2)))
-    opcoes = janela.tela_opcoes
-    for nome in CAIXINHAS + ("cx_cadernos",):
-        getattr(opcoes, nome).setChecked(False)
+    assert janela.telas.currentIndex() == CONFERIR
     assert not janela.projeto.alguma_funcao_marcada
-    assert opcoes.botao_conferir.isEnabled(), "sem caixinhas o livro não abre (o antigo)"
-    assert "pelo menos" not in opcoes.resumo.text()
-    assert "à mão" in opcoes.resumo.text()
+    assert janela.tela_conferir._abas_ativas == TODAS_AS_ABAS
 
 
 def test_d001_sem_caixinhas_todos_os_menus_acesos(janela, pasta):
     """D-001 ("todos os menus ativos") e lista única 1.12: na tela de trabalho e na tela das
     caixinhas, com um livro aberto, nenhum menu fica cinza."""
+    from ui.janela_principal import CONFERIR
+
     janela.abrir_livro(str(_pdf(pasta, folhas=3)))
     _assentar()
-    assert janela.telas.currentIndex() == 1          # OPCOES, a tela das caixinhas
-    apagados = [t for t, m in janela.menu.menus.items() if not m.menuAction().isEnabled()]
-    assert apagados == [], f"menus cinza na tela das caixinhas: {apagados}"
-    for nome in CAIXINHAS:
-        getattr(janela.tela_opcoes, nome).setChecked(False)
-    janela.projeto.detectar_regioes = False
-    janela._analise_pronta(pipeline.analisar_projeto(janela.projeto))
-    _assentar()
+    assert janela.telas.currentIndex() == CONFERIR   # etapa 3: direto na área de trabalho
     apagados = [t for t, m in janela.menu.menus.items() if not m.menuAction().isEnabled()]
     assert apagados == [], f"menus cinza na tela de trabalho: {apagados}"
     # na tela inicial, sem livro à vista, continua como no desenho
-    janela._voltar_das_opcoes()
+    janela._sair_da_conferencia()
     ativos = [t for t, m in janela.menu.menus.items() if m.menuAction().isEnabled()]
     assert ativos == ["Arquivo", "Ver", "Ajuda"]
 
 
-def test_na_tela_das_caixinhas_de_livro_novo_o_menu_nao_mexe_no_livro_de_antes(janela, pasta):
-    """Os menus acesos na tela "O que fazer" de um livro que ainda não foi para a área de trabalho
-    não mexem no trabalho que está lá (o do livro de antes): avisam o que fazer."""
-    tela = _abrir(janela, pasta, marcadas=())
-    antes = [p.em_branco for p in janela.projeto.paginas]
+def test_o_menu_mexe_so_no_livro_aberto_e_nao_no_de_antes(janela, pasta):
+    """O que a etapa 2 protegia (o menu não mexer no trabalho do livro de antes), pelo caminho
+    novo (etapa 3): o outro livro abre direto na área de trabalho, e o menu mexe nele, nunca no
+    projeto do livro anterior."""
+    _abrir(janela, pasta, marcadas=())
+    primeiro = janela.projeto
+    antes = [p.em_branco for p in primeiro.paginas]
     outro = pasta / "outro"
     outro.mkdir()
     janela.abrir_livro(str(_pdf(outro, folhas=2)))
     _assentar()
-    janela.avisos.clear()
+    assert janela.projeto is not primeiro
     janela.menu.acoes["deixar_em_branco"].trigger()
-    assert [p.em_branco for p in tela.projeto.paginas] == antes
-    assert janela.avisos and "Conferir" in janela.avisos[-1]
+    assert [p.em_branco for p in primeiro.paginas] == antes
+    assert janela.projeto.paginas[janela.tela_conferir.indice_pagina].em_branco
 
 
 # --- Os quatro filtros fora da trilha (R9 403 B) -----------------------------------------------
@@ -442,7 +443,9 @@ def test_caixinha_marcada_tem_quadrado_azul_e_desmarcada_tem_quadrado(janela, pa
     janela.show()
     _assentar()
     azul = QColor(estilo.cor("azul"))
-    caixa = janela.tela_opcoes.cx_limpar             # uma das da tela "O que fazer"
+    # uma das caixinhas do Automático (era a tela "O que fazer" até a etapa 3)
+    caixa = janela.abrir_o_automatico("cortar").controles["cortar_sobra"]
+    _assentar()
     caixa.setChecked(True)
     marcada = _cores_do_quadrado(caixa)
     perto = [c for c in marcada if abs(c[0] - azul.red()) + abs(c[1] - azul.green())
