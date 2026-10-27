@@ -65,10 +65,14 @@ def foto(nome: str, caminho: str, partes: list, altura: int = 900, recorte=None)
         f = 2400 / junta.shape[1]
         junta = cv2.resize(junta, (2400, int(junta.shape[0] * f)), interpolation=cv2.INTER_AREA)
     SAIDA.mkdir(parents=True, exist_ok=True)
-    for q in (85, 78, 70, 62, 55, 48, 40):
-        _ok, dados = cv2.imencode(".jpg", junta, [cv2.IMWRITE_JPEG_QUALITY, q])
+    while True:
+        for q in (85, 78, 70, 62, 55):
+            _ok, dados = cv2.imencode(".jpg", junta, [cv2.IMWRITE_JPEG_QUALITY, q])
+            if len(dados) <= 300_000:
+                break
         if len(dados) <= 300_000:
             break
+        junta = cv2.resize(junta, None, fx=0.85, fy=0.85, interpolation=cv2.INTER_AREA)
     (SAIDA / f"{nome}.jpg").write_bytes(dados.tobytes())
     print(nome, junta.shape[1], "x", junta.shape[0], len(dados) // 1024, "KB", flush=True)
 

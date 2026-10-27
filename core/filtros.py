@@ -3939,8 +3939,9 @@ def aplicar_so_os_pedacos(
 # marcacao fica com o Magico pro da pagina, que tambem branqueia o cartao.
 # O conserto: o fundo escuro (a luz da folha, _estimar_fundo_cinza, abaixo de
 # CARTAO_ESCURO do nivel do papel) que encosta no fundo escuro DA GRAVURA e o
-# mesmo cartao: ali o texto, o papel e a beirada recebem o tratamento da
-# gravura (o tom do cartao fica, a letra fica como no original). Pagina sem
+# mesmo cartao: ali o texto, o papel e a beirada saem como foram escaneados
+# (o tom do cartao fica, a letra fica como no original), sem mexer no
+# tratamento da gravura (o papel claro da prancha continua indo a branco). Pagina sem
 # gravura sobre fundo escuro: nada muda. Medido no gabarito (Melhorar): so
 # muda pagina com cartao (ver o ONDE-PAREI da etapa 10b). Arriscado: subir
 # CARTAO_ESCURO (sombra de lombada e mancha encostadas numa gravura passariam
@@ -3948,11 +3949,12 @@ def aplicar_so_os_pedacos(
 CARTAO_ESCURO = 0.60
 
 
-def _o_cartao_vai_com_a_gravura(img: np.ndarray, peso_gravura: np.ndarray,
-                                peso_letra: np.ndarray, peso_papel: np.ndarray):
-    """(peso_gravura, peso_letra, peso_papel) com o cartao escuro que encosta
-    na gravura passado para a gravura (ver CARTAO_ESCURO), ou None quando a
-    pagina nao tem isso (nada muda)."""
+def _o_cartao_em_volta_da_gravura(img: np.ndarray, peso_gravura: np.ndarray) -> np.ndarray | None:
+    """Mascara (booleana) do cartao escuro que encosta na gravura e que NAO e
+    gravura (os blocos de texto e a beirada sobre o cartao) - ver
+    CARTAO_ESCURO -, ou None quando a pagina nao tem isso (nada muda). Ali o
+    texto e o cartao saem como foram escaneados; a gravura em si continua com
+    o tratamento dela (o papel claro da prancha vai a branco como antes)."""
     if not peso_gravura.any():
         return None
     cinza = _para_cinza(img)
@@ -3970,11 +3972,7 @@ def _o_cartao_vai_com_a_gravura(img: np.ndarray, peso_gravura: np.ndarray,
     vale[np.unique(rotulos[semente])] = True
     vale[0] = False
     junto = vale[rotulos] & ~gravura
-    if not junto.any():
-        return None
-    return (np.where(junto, 1.0, peso_gravura).astype(np.float32),
-            np.where(junto, 0.0, peso_letra).astype(np.float32),
-            np.where(junto, 0.0, peso_papel).astype(np.float32))
+    return junto if junto.any() else None
 
 
 def _e_a_capa_automatica(selecao) -> bool:
@@ -4127,9 +4125,10 @@ def aplicar_filtro_com_selecao(
         # --- Melhorar e Magico pro ------------------------------------------
         # O texto e o papel sobre o CARTAO escuro em volta da gravura (Pesel)
         # recebem o tratamento da gravura: etapa 10b, ver CARTAO_ESCURO.
-        com_cartao = _o_cartao_vai_com_a_gravura(img, peso_gravura, peso_letra, peso_papel)
-        if com_cartao is not None:
-            peso_gravura, peso_letra, peso_papel = com_cartao
+        cartao = _o_cartao_em_volta_da_gravura(img, peso_gravura)
+        if cartao is not None:
+            peso_letra = np.where(cartao, 0.0, peso_letra).astype(np.float32)
+            peso_papel = np.where(cartao, 0.0, peso_papel).astype(np.float32)
         base = filtro_melhorar(img, clareza=clareza) if filtro == MELHORAR \
             else filtro_magico_pro(img, intensidade=intensidade)
 
@@ -4196,6 +4195,13 @@ def aplicar_filtro_com_selecao(
         # No papel marcado, branco de verdade.
         if peso_papel.any():
             base = _misturar(base, np.full_like(base, 255), peso_papel)
+
+        # O cartao escuro em volta da gravura (Pesel): como foi escaneado,
+        # como o cartao que a gravura ja guarda (etapa 10b, ver CARTAO_ESCURO)
+        if cartao is not None:
+            peso_cartao = cv2.GaussianBlur(cartao.astype(np.float32), (0, 0), 1.0)
+            base = _misturar(_tres_canais(base), _tres_canais(img), peso_cartao)
+            peso_gravura = np.maximum(peso_gravura, peso_cartao)
 
         # A tinta velha e marrom, e a impressora imprime isso como cor.
         # Dentro da gravura nao se toca. Ver tirar_o_amarelado_da_tinta.
