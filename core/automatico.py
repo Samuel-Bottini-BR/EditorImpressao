@@ -673,10 +673,9 @@ def aplicar(projeto, pedido: Pedido, medidas: dict[int, MedidaDaFolha] | None = 
                 g.no_livro("detectar_regioes", True)
                 novas = copy.copy(projeto)
                 for campo in OPCOES[GRAVURAS]:
-                    valor = opcoes.get(campo, getattr(projeto, campo))
-                    if campo == "gravura_forma" and valor == "desligada":
-                        valor = "livre"
-                    setattr(novas, campo, valor)
+                    # "Achar gravuras e fotos" desmarcada vem como a forma
+                    # "desligada" (nao procurar: o desligar da regra 8, D-212)
+                    setattr(novas, campo, opcoes.get(campo, getattr(projeto, campo)))
                 for campo in OPCOES[GRAVURAS]:
                     g.no_livro(campo, getattr(projeto, campo))   # anota o antes
                 from core.pipeline import trocar_opcoes_da_gravura

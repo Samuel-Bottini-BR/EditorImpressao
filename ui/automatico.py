@@ -143,7 +143,9 @@ def texto_das_opcoes(etapa: str, opcoes: dict) -> str:
         return texto
     if etapa == A.GRAVURAS:
         forma = o.get("gravura_forma", "livre")
-        texto = "em retângulo (o livro tem fotos)" if forma == "retangular" else "seguindo o desenho"
+        if forma == "desligada":
+            return "não procurar gravuras"
+        texto = "fotos em retângulo" if forma == "retangular" else "seguindo o desenho"
         if o.get("gravura_mais_sensivel"):
             texto += ", também imagens claras"
         return texto
@@ -274,7 +276,25 @@ class EstadoDoAutomatico(QObject):
     def frase(self) -> str:
         """A frase de baixo da janela (como no desenho aprovado)."""
         filtro = self.opcoes.get("filtro_padrao", ORIGINAL)
-        return A.resumo(self.pedido(), self.total_paginas, NOMES_AMIGAVEIS.get(filtro, ""))
+        frase = A.resumo(self.pedido(), self.total_paginas, NOMES_AMIGAVEIS.get(filtro, ""))
+        if A.LIMPAR in self.marcadas and filtro == PRETO_E_BRANCO:
+            # o que o Preto e branco vai fazer de verdade (ressalva 4 do
+            # verificador do Misto, 05/10: com "Só as letras" a frase não pode
+            # dizer "deixar tudo em preto e branco"); o texto e o de sempre,
+            # core/pipeline._frase_do_so_as_letras
+            from core.pipeline import _frase_do_so_as_letras
+            from modelos import Projeto
+
+            if self.opcoes.get("misto_so_as_letras"):
+                livro = Projeto(caminho_entrada="")
+                for campo, valor in self.opcoes.items():
+                    if hasattr(livro, campo):
+                        setattr(livro, campo, valor)
+                livro.limpar = True
+                frase += " No Preto e branco: " + _frase_do_so_as_letras(livro) + "."
+            else:
+                frase += " No Preto e branco: deixar tudo em preto e branco."
+        return frase
 
 
 # ---------------------------------------------------------------------------
@@ -561,6 +581,7 @@ class JanelaDoAutomatico(QDialog):
         self.setObjectName("janelaDoAutomatico")
         self.estado = estado
         self.controles: dict[str, QWidget] = {}
+        self.linhas: dict[str, QWidget] = {}
         self._enchendo = False
         if parent is not None:
             area = parent.geometry()
@@ -725,7 +746,11 @@ class JanelaDoAutomatico(QDialog):
         return rotulo
 
     def _combo(self, campo: str, escolhas, col: QVBoxLayout, rotulo: str, dica: str = "") -> QComboBox:
-        linha = QHBoxLayout()
+        """Uma lista com o rotulo na frente, numa linha propria (self.linhas[campo]:
+        a linha inteira some quando a opcao nao vale, como na tela de antes)."""
+        caixa_da_linha = QWidget()
+        linha = QHBoxLayout(caixa_da_linha)
+        linha.setContentsMargins(0, 0, 0, 0)
         linha.addWidget(QLabel(rotulo))
         combo = QComboBox()
         for valor, nome in escolhas:
@@ -736,8 +761,9 @@ class JanelaDoAutomatico(QDialog):
             lambda _i, c=campo, w=combo: self._mudou(c, w.currentData()))
         linha.addWidget(combo)
         linha.addStretch()
-        col.addLayout(linha)
+        col.addWidget(caixa_da_linha)
         self.controles[campo] = combo
+        self.linhas[campo] = caixa_da_linha
         return combo
 
     def _caixa(self, campo: str, texto: str, explicacao: str, col: QVBoxLayout) -> QCheckBox:
@@ -825,14 +851,38 @@ class JanelaDoAutomatico(QDialog):
             pontinhos.ROTULO_NA_TELA, pontinhos.EXPLICACAO_NA_TELA)
 
     def _opcoes_gravuras(self, col) -> None:
+        """O grupo "Gravuras e fotos" (item 1.2, D-212 e D-213), como era na tela
+        "O que fazer": "Achar gravuras e fotos" (desmarcada = não procurar: o
+        desligar da regra 8), "Este livro tem fotos" e, atrás de "Mais opções",
+        a sensibilidade, as imagens claras e o igualar a luz."""
+        self.cx_achar_gravuras = QCheckBox("Achar gravuras e fotos")
+        estilo.estilizar(self.cx_achar_gravuras, lambda: estilo_da_caixinha_com_quadrado(14))
+        self.cx_achar_gravuras.toggled.connect(lambda _v: self._forma_mudou())
+        col.addWidget(self.cx_achar_gravuras)
+        col.addWidget(self._fraco("separa desenho, foto e moldura do texto, para cada um ser "
+                                  "tratado do seu jeito"))
+        self.painel_opcoes_gravura = QWidget()
+        dentro = QVBoxLayout(self.painel_opcoes_gravura)
+        dentro.setContentsMargins(22, 4, 0, 0)
         self.cx_tem_fotos = QCheckBox("Este livro tem fotos")
         estilo.estilizar(self.cx_tem_fotos, lambda: estilo_da_caixinha_com_quadrado(14))
-        self.cx_tem_fotos.toggled.connect(
-            lambda v: self._mudou("gravura_forma", "retangular" if v else "livre"))
-        col.addWidget(self.cx_tem_fotos)
-        col.addWidget(self._fraco("procura em retângulo, que pega a foto inteira; desmarcada, "
-                                  "segue o contorno do desenho"))
+        self.cx_tem_fotos.toggled.connect(lambda _v: self._forma_mudou())
+        dentro.addWidget(self.cx_tem_fotos)
+        dentro.addWidget(self._fraco("procura em retângulo, que pega a foto inteira; desmarcada, "
+                                     "segue o contorno do desenho"))
         self.controles["gravura_forma"] = self.cx_tem_fotos
+        self.botao_mais_opcoes = QPushButton("Mais opções")
+        self.botao_mais_opcoes.setObjectName("plano")
+        self.botao_mais_opcoes.setCheckable(True)
+        self.botao_mais_opcoes.toggled.connect(self._abrir_mais_opcoes)
+        dentro.addWidget(self.botao_mais_opcoes, 0, Qt.AlignLeft)
+        self.painel_mais_opcoes = QWidget()
+        mais = QVBoxLayout(self.painel_mais_opcoes)
+        mais.setContentsMargins(0, 0, 0, 0)
+        dentro.addWidget(self.painel_mais_opcoes)
+        self.painel_mais_opcoes.setVisible(False)
+        col.addWidget(self.painel_opcoes_gravura)
+        col = mais
         linha = QHBoxLayout()
         linha.addWidget(QLabel("Sensibilidade"))
         self.deslizante = QSlider(Qt.Horizontal)
@@ -850,8 +900,8 @@ class JanelaDoAutomatico(QDialog):
                     "acha desenho e foto bem apagados; pode pegar mancha junto", col)
         self._caixa("gravura_normalizar", "Igualar a luz da página antes",
                     "acerta a página mais escura de um lado antes de procurar", col)
-        col.addWidget(self._fraco("Para o programa parar de procurar gravuras: marque só esta "
-                                  "etapa e clique em \"Desligar as marcadas\"."))
+        col.addWidget(self._fraco("Estas opções valem no livro todo, nas páginas com "
+                                  "\"Limpar a folha\"."))
 
     def _opcoes_margens(self, col) -> None:
         grade = QGridLayout()
@@ -890,6 +940,19 @@ class JanelaDoAutomatico(QDialog):
                     "páginas por caderno:")
         col.addWidget(self._fraco("Monta os cadernos no tamanho do scan (sem A4, sem margem). "
                                   "A montagem em A4 fica em \"Ficou pronto!\"."))
+
+    def _forma_mudou(self) -> None:
+        """"Achar gravuras e fotos" e "Este livro tem fotos" viram a forma do
+        contorno do livro (Projeto.gravura_forma)."""
+        if not self.cx_achar_gravuras.isChecked():
+            forma = "desligada"
+        else:
+            forma = "retangular" if self.cx_tem_fotos.isChecked() else "livre"
+        self._mudou("gravura_forma", forma)
+
+    def _abrir_mais_opcoes(self, aberto: bool) -> None:
+        self.painel_mais_opcoes.setVisible(aberto)
+        self.botao_mais_opcoes.setText("Menos opções" if aberto else "Mais opções")
 
     def _margens_mudaram(self) -> None:
         self._mudou("margens_mm", [float(self.margens_mm[c].value())
@@ -936,11 +999,21 @@ class JanelaDoAutomatico(QDialog):
             self.escolhas_misto.setVisible(no_pb)
             self.cx_forca_sozinha.setVisible(no_pb)
             self.cx_forca_sozinha.setEnabled(so_letras)
-            self.combo_pontinhos.setEnabled(no_pb)
+            # "Limpar a sujeira" so aparece com o Preto e branco (escondida, a
+            # escolha fica guardada: como a tela "O que fazer" fazia)
+            self.linhas["limpar_pontinhos"].setVisible(no_pb)
             # D-168: a caixinha das molduras fica cinza com "Só as letras" e volta como estava
             self.cx_decoracao_pb.setEnabled(not (so_letras and no_pb))
             forma = o.get("gravura_forma", "livre")
-            self.cx_tem_fotos.setChecked(forma == "retangular")
+            self.cx_achar_gravuras.setChecked(forma != "desligada")
+            self.painel_opcoes_gravura.setVisible(forma != "desligada")
+            if forma != "desligada":          # desligada, "tem fotos" fica como estava
+                self.cx_tem_fotos.setChecked(forma == "retangular")
+            # "Mais opções" abre sozinho quando alguma avançada não está no padrão
+            avancada = (int(o.get("gravura_sensibilidade", 100) or 100) != 100
+                        or bool(o.get("gravura_mais_sensivel")) or not o.get("gravura_normalizar", True))
+            if avancada and not self.botao_mais_opcoes.isChecked():
+                self.botao_mais_opcoes.setChecked(True)
             try:
                 sens = max(0, min(100, int(o.get("gravura_sensibilidade", 100))))
             except (TypeError, ValueError):
@@ -954,8 +1027,9 @@ class JanelaDoAutomatico(QDialog):
             vertical, horizontal = margens_scantailor.alinhamento_valido(o.get("margens_alinhamento"))
             self.combo_vertical.setCurrentIndex(max(0, self.combo_vertical.findData(vertical)))
             self.combo_horizontal.setCurrentIndex(max(0, self.combo_horizontal.findData(horizontal)))
-            self.controles["borda_preta_ate"].setEnabled(bool(o.get("borda_preta")))
-            self.controles["borda_preta_fazer"].setEnabled(bool(o.get("borda_preta")))
+            # a lista da borda preta so aparece com a caixinha marcada (D-101)
+            self.linhas["borda_preta_ate"].setVisible(bool(o.get("borda_preta")))
+            self.linhas["borda_preta_fazer"].setVisible(bool(o.get("borda_preta")))
         finally:
             self._enchendo = False
 

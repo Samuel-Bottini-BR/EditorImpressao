@@ -54,32 +54,34 @@ def _aba_endireitar(janela, pasta):
 
 # ------------------------------------------------------------------ "O que fazer"
 
-def test_livro_novo_pela_conta_do_scantailor_e_a_lista_so_com_endireitar(janela, pasta):
+def test_livro_novo_pela_conta_do_scantailor_no_automatico(janela, pasta):
+    """Etapa 3 da obra: a conta do endireitar mora na janela do Automático, etapa
+    "Endireitar folhas tortas" (a tela "O que fazer" saiu do caminho)."""
+    from core import automatico as A
+
     janela.abrir_livro(_pdf(pasta))
-    opcoes = janela.tela_opcoes
-    assert opcoes.cx_endireitar.isChecked()
-    assert not opcoes.linha_conta_endireitar.isHidden()
-    assert [opcoes.combo_conta_endireitar.itemText(i)
-            for i in range(opcoes.combo_conta_endireitar.count())] \
+    jan = janela.abrir_o_automatico("endireitar")
+    combo = jan.controles["endireitar_como"]
+    assert [combo.itemText(i) for i in range(combo.count())] \
         == ["a do ScanTailor", "a do Editor"]      # layout, rodada 13, 805 C (so o texto)
-    assert opcoes.combo_conta_endireitar.currentData() == es.JEITO_SCANTAILOR
+    assert combo.currentData() == es.JEITO_SCANTAILOR
     assert janela.projeto.endireitar_como == es.JEITO_SCANTAILOR
-    opcoes.combo_conta_endireitar.setCurrentIndex(
-        opcoes.combo_conta_endireitar.findData(es.JEITO_PROGRAMA))
-    assert janela.projeto.endireitar_como == es.JEITO_PROGRAMA
-    opcoes.cx_endireitar.setChecked(False)
-    assert opcoes.linha_conta_endireitar.isHidden()
-    assert janela.projeto.endireitar_como == es.JEITO_PROGRAMA      # escondida, fica guardada
+    combo.setCurrentIndex(combo.findData(es.JEITO_PROGRAMA))
+    estado = janela.estado_do_automatico
+    assert estado.opcoes["endireitar_como"] == es.JEITO_PROGRAMA
+    estado.marcadas = {A.ENDIREITAR}
+    janela._fechar_a_janela_do_automatico()
+    assert janela.rodar_o_automatico(esperar=True)
+    assert janela.projeto.endireitar and janela.projeto.endireitar_como == es.JEITO_PROGRAMA
 
 
 def test_a_escolha_volta_ao_reabrir_e_o_projeto_antigo_fica_com_a_do_programa(janela, pasta):
     import projetos
 
     janela.abrir_livro(_pdf(pasta))
-    opcoes = janela.tela_opcoes
-    opcoes.combo_conta_endireitar.setCurrentIndex(
-        opcoes.combo_conta_endireitar.findData(es.JEITO_PROGRAMA))
-    _analisar(janela)
+    from tests.ajudante_do_automatico import rodar_como_o_conferir
+
+    rodar_como_o_conferir(janela, sempre=True, endireitar_como=es.JEITO_PROGRAMA)
     janela._salvar_agora()
     assert projetos.esperar_gravacoes(10)
     caminho = janela.projeto.caminho_entrada
@@ -94,7 +96,7 @@ def test_a_escolha_volta_ao_reabrir_e_o_projeto_antigo_fica_com_a_do_programa(ja
 
     reabrir()
     assert janela.projeto.endireitar_como == es.JEITO_PROGRAMA
-    assert janela.tela_opcoes.combo_conta_endireitar.currentData() == es.JEITO_PROGRAMA
+    assert janela.estado_do_automatico.opcoes["endireitar_como"] == es.JEITO_PROGRAMA
 
     # o programa de antes do 2.2 grava sem o campo: volta "a do programa",
     # mesmo que o de fabrica agora seja a do ScanTailor
@@ -106,7 +108,7 @@ def test_a_escolha_volta_ao_reabrir_e_o_projeto_antigo_fica_com_a_do_programa(ja
     estado.write_text(json.dumps(dados, ensure_ascii=False), encoding="utf-8")
     reabrir()
     assert janela.projeto.endireitar_como == es.JEITO_PROGRAMA
-    assert janela.tela_opcoes.combo_conta_endireitar.currentData() == es.JEITO_PROGRAMA
+    assert janela.estado_do_automatico.opcoes["endireitar_como"] == es.JEITO_PROGRAMA
 
 
 # ------------------------------------------------------------------ "Endireitar"

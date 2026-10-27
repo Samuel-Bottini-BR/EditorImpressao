@@ -5921,6 +5921,11 @@ class TelaConferir(QWidget):
         # livro novo, que depende do projeto.
         try:
             self._mostrar_o_aviso_do_livro_novo()
+            # o Automatico mostra o que o livro tem depois do desfazer (as
+            # etapas ligadas, o filtro do livro...): como a tela "O que fazer"
+            # acompanhava o desfazer (verificador, 30/09, r15)
+            if self.projeto is not None:
+                self.paineis.automatico.estado.do_projeto(self.projeto)
         except Exception:  # noqa: BLE001 - reacertar a tela nunca derruba o desfazer
             registrar_erro("reacertar as opcoes", traceback.format_exc())
 

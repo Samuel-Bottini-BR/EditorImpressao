@@ -41,72 +41,91 @@ def _itens(combo) -> list[str]:
     return [combo.itemText(i) for i in range(combo.count())]
 
 
-# --- a tela "O que fazer" (o livro) ------------------------------------------
+# --- o livro: no Automático, etapa "Limpar a folha" (era a tela "O que fazer"
+# até a etapa 3 da obra, 26/10/2026) ---------------------------------------------
+
+def _no_limpar(janela, pasta, projeto_salvo=None):
+    """O livro aberto e a janela do Automático na etapa "Limpar a folha". Com
+    `projeto_salvo`, o Automático começa das escolhas dele (como no livro que
+    reabre com o trabalho)."""
+    janela.abrir_livro(str(_pdf(pasta)))
+    if projeto_salvo is not None:
+        janela.estado_do_automatico.do_projeto(projeto_salvo)
+    return janela.abrir_o_automatico("limpar")
+
 
 def test_o_livro_comeca_no_de_fabrica_e_nunca_no_do_scantailor(janela, pasta):
     """Decisão do Samuel de 07/10/2026: o do ScanTailor "só deve ser usado se
     for selecionado junto, e não como automatico junto do preto e branco"."""
-    janela.abrir_livro(str(_pdf(pasta)))
-    tela = janela.tela_opcoes
-    assert _itens(tela.combo_pontinhos) == NA_TELA
-    assert tela.combo_pontinhos.currentData() == ps.PADRAO
-    assert tela.combo_pontinhos.currentData() not in ps.DO_SCANTAILOR
-    assert tela.rotulo_pontinhos.text() == "Limpar a sujeira:"
+    jan = _no_limpar(janela, pasta)
+    combo = jan.combo_pontinhos
+    assert _itens(combo) == NA_TELA
+    assert combo.currentData() == ps.PADRAO
+    assert combo.currentData() not in ps.DO_SCANTAILOR
+    assert "Limpar a sujeira:" in [r.text() for r in jan.linhas["limpar_pontinhos"].findChildren(
+        type(jan.frase))]
     assert janela.projeto.limpar_pontinhos == ps.PADRAO
+    janela._fechar_a_janela_do_automatico()
 
 
 def test_so_aparece_com_o_preto_e_branco_e_guarda_a_escolha(janela, pasta):
-    janela.abrir_livro(str(_pdf(pasta)))
-    tela, projeto = janela.tela_opcoes, janela.projeto
-    tela.radios_de_filtro[ORIGINAL].setChecked(True)
-    assert tela.linha_pontinhos.isHidden()
-    tela.radios_de_filtro[PRETO_E_BRANCO].setChecked(True)
-    assert not tela.linha_pontinhos.isHidden()
-    tela.combo_pontinhos.setCurrentIndex(tela.combo_pontinhos.findData(ps.MUITO))
-    tela.radios_de_filtro[MELHORAR].setChecked(True)
-    assert tela.linha_pontinhos.isHidden()
-    assert projeto.limpar_pontinhos == ps.MUITO, "esconder não esquece a escolha"
+    jan = _no_limpar(janela, pasta)
+    estado = janela.estado_do_automatico
+    linha = jan.linhas["limpar_pontinhos"]
+    jan.radios_de_filtro[ORIGINAL].setChecked(True)
+    assert linha.isHidden()
+    jan.radios_de_filtro[PRETO_E_BRANCO].setChecked(True)
+    assert not linha.isHidden()
+    jan.combo_pontinhos.setCurrentIndex(jan.combo_pontinhos.findData(ps.MUITO))
+    jan.radios_de_filtro[MELHORAR].setChecked(True)
+    assert linha.isHidden()
+    assert estado.opcoes["limpar_pontinhos"] == ps.MUITO, "esconder não esquece a escolha"
+    janela._fechar_a_janela_do_automatico()
 
 
 @pytest.mark.parametrize("escolha", ps.ESCOLHAS)
 def test_cada_valor_do_livro_grava_no_projeto(janela, pasta, escolha):
-    janela.abrir_livro(str(_pdf(pasta)))
-    tela = janela.tela_opcoes
-    tela.radios_de_filtro[PRETO_E_BRANCO].setChecked(True)
-    tela.combo_pontinhos.setCurrentIndex(tela.combo_pontinhos.findData(escolha))
+    from core import automatico as A
+
+    jan = _no_limpar(janela, pasta)
+    jan.radios_de_filtro[PRETO_E_BRANCO].setChecked(True)
+    jan.combo_pontinhos.setCurrentIndex(jan.combo_pontinhos.findData(escolha))
+    janela.estado_do_automatico.marcadas = {A.LIMPAR}
+    janela._fechar_a_janela_do_automatico()
+    assert janela.rodar_o_automatico(esperar=True)
     assert janela.projeto.limpar_pontinhos == escolha
 
 
 def test_projeto_salvo_volta_para_a_tela(janela, pasta):
     caminho = str(_pdf(pasta))
-    janela.abrir_livro(caminho)
-    janela._trazer_opcoes_salvas(Projeto(caminho_entrada=caminho, limpar_pontinhos=ps.NORMAL))
-    assert janela.tela_opcoes.combo_pontinhos.currentData() == ps.NORMAL
-    assert janela.projeto.limpar_pontinhos == ps.NORMAL
+    jan = _no_limpar(janela, pasta, Projeto(caminho_entrada=caminho, limpar_pontinhos=ps.NORMAL))
+    assert jan.combo_pontinhos.currentData() == ps.NORMAL
+    janela._fechar_a_janela_do_automatico()
 
 
 def test_projeto_antigo_aparece_a_limpeza_bruta(janela, pasta):
     """projeto.json de antes: modelos.Projeto.de_dicionario devolve "nosso"."""
     caminho = str(_pdf(pasta))
-    janela.abrir_livro(caminho)
     salvo = Projeto.de_dicionario({"caminho_entrada": caminho})
     assert salvo.limpar_pontinhos == "nosso"
-    janela._trazer_opcoes_salvas(salvo)
-    assert janela.tela_opcoes.combo_pontinhos.currentText() == "Limpeza bruta"
-    assert janela.projeto.limpar_pontinhos == "nosso"
+    jan = _no_limpar(janela, pasta, salvo)
+    assert jan.combo_pontinhos.currentText() == "Limpeza bruta"
+    janela._fechar_a_janela_do_automatico()
 
 
 def test_objeto_sem_o_campo_fica_com_o_de_agora(janela, pasta):
     caminho = str(_pdf(pasta))
-    janela.abrir_livro(caminho)
     salvo = Projeto(caminho_entrada=caminho)
     delattr(salvo, "limpar_pontinhos")          # vale o da classe
-    janela._trazer_opcoes_salvas(salvo)
-    assert janela.projeto.limpar_pontinhos == ps.PADRAO
+    jan = _no_limpar(janela, pasta, salvo)
+    assert jan.combo_pontinhos.currentData() == ps.PADRAO
+    janela._fechar_a_janela_do_automatico()
 
 
 def test_a_escolha_do_livro_esta_nas_opcoes_do_trabalho(janela):
-    assert "limpar_pontinhos" in janela.OPCOES_DO_LIVRO
+    from core import automatico as A
+
+    assert "limpar_pontinhos" in A.todas_as_opcoes()
 
 
 # --- a aba Filtro (a página) ---------------------------------------------------

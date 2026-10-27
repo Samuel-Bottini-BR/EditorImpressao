@@ -513,42 +513,54 @@ def test_ligar_so_as_letras_na_pagina_nao_espreme(conferir_original):
 # letras" aparecia mesmo com o Original escolhido, e o resumo dizia "deixar
 # tudo em preto e branco" com ela marcada.
 
-def _escolher_no_livro(tela, filtro):
-    tela.radios_de_filtro[filtro].setChecked(True)
-    tela._mudou()
+# Desde a etapa 3 da obra (26/10/2026) o "Só as letras" do livro mora na janela do
+# Automático, etapa "Limpar a folha" (a tela "O que fazer" saiu do caminho), com as
+# mesmas regras; "o resumo" é a frase de baixo da janela.
+
+def _escolher_no_livro(jan, filtro):
+    jan.radios_de_filtro[filtro].setChecked(True)
+
+
+def _no_limpar(janela, pasta):
+    from core import automatico as A
+
+    janela.abrir_livro(str(_pdf(pasta)))
+    janela.estado_do_automatico.marcadas = {A.LIMPAR}
+    return janela.abrir_o_automatico("limpar")
 
 
 def test_so_as_letras_so_aparece_com_o_preto_e_branco_no_livro(janela, pasta):
-    janela.abrir_livro(str(_pdf(pasta)))
-    tela, projeto = janela.tela_opcoes, janela.projeto
-    e = tela.escolhas_misto
-    _escolher_no_livro(tela, PRETO_E_BRANCO)
+    jan = _no_limpar(janela, pasta)
+    estado = janela.estado_do_automatico
+    e = jan.escolhas_misto
+    _escolher_no_livro(jan, PRETO_E_BRANCO)
     assert not e.isHidden()
     e.caixa.setChecked(True)
-    assert not tela.cx_decoracao_pb.isEnabled()
+    assert not jan.cx_decoracao_pb.isEnabled()
     for filtro in (ORIGINAL, MELHORAR, MAGICO_PRO):
-        _escolher_no_livro(tela, filtro)
+        _escolher_no_livro(jan, filtro)
         assert e.isHidden(), f"'So as letras' a vista com {filtro}"
         # a caixinha das molduras volta a valer (o Misto nao vale fora do P&B)
-        assert tela.cx_decoracao_pb.isEnabled()
-        assert projeto.misto_so_as_letras is True, "esconder nao esquece a escolha"
-    _escolher_no_livro(tela, PRETO_E_BRANCO)
+        assert jan.cx_decoracao_pb.isEnabled()
+        assert estado.opcoes["misto_so_as_letras"] is True, "esconder nao esquece a escolha"
+    _escolher_no_livro(jan, PRETO_E_BRANCO)
     assert not e.isHidden() and e.caixa.isChecked() and not e.painel.isHidden()
-    assert not tela.cx_decoracao_pb.isEnabled()
+    assert not jan.cx_decoracao_pb.isEnabled()
+    janela._fechar_a_janela_do_automatico()
 
 
 def test_o_resumo_da_tela_diz_o_que_o_so_as_letras_faz(janela, pasta):
-    janela.abrir_livro(str(_pdf(pasta)))
-    tela = janela.tela_opcoes
-    _escolher_no_livro(tela, PRETO_E_BRANCO)
-    assert "deixar tudo em preto e branco" in tela.resumo.text()
-    tela.escolhas_misto.caixa.setChecked(True)
-    texto = tela.resumo.text()
+    jan = _no_limpar(janela, pasta)
+    _escolher_no_livro(jan, PRETO_E_BRANCO)
+    assert "deixar tudo em preto e branco" in jan.frase.text()
+    jan.escolhas_misto.caixa.setChecked(True)
+    texto = jan.frase.text()
     assert "deixar tudo em preto e branco" not in texto
     assert "só as letras em preto e branco" in texto
     assert "gravuras, fotos, molduras e iluminuras ficam como no original" in texto
-    tela.escolhas_misto.caixa.setChecked(False)
-    assert "deixar tudo em preto e branco" in tela.resumo.text()
+    jan.escolhas_misto.caixa.setChecked(False)
+    assert "deixar tudo em preto e branco" in jan.frase.text()
+    janela._fechar_a_janela_do_automatico()
 
 
 def _resumo(**campos) -> str:
