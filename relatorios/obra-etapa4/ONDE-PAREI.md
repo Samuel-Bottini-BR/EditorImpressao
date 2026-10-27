@@ -95,13 +95,20 @@ ScanTailor não corta mais o "La vida eterna" na linha escura da beirada.
   `test_girar_cartoes_e_previas.py` 23 · `test_paineis_na_tela.py` 22 · `test_recomeco_limpa_o_historico.py` 13 ·
   `test_historico_depois_de_reabrir.py` 11 · `test_core.py` 62 · `test_ordem_do_preparo.py` 56 ·
   `test_zonas_na_folha.py` 25 · `test_mesmo_livro_outro_caminho.py` 17 · `test_trocar_de_livro_grava.py` 6 ·
-  `test_trabalho_nao_se_perde.py` 82 · `test_desentortar_protecao.py` 15 · `test_borda_preta.py` 29: **todos passam**.
+  `test_trabalho_nao_se_perde.py` 82 · `test_desentortar_protecao.py` 15 · `test_borda_preta.py` 29 ·
+  `test_opcoes_da_gravura_na_tela.py` 15: **todos passam**.
 - `test_promessas.py -k "dividir or p05 or p06 or p112"`: 38 passaram, 1 xfail (P-061 "usar em todas", etapa 9).
 - `test_desentortar_conferir_de_novo.py`: 13 passam, **1 falha que já falhava no código antigo**
   (`test_destino_do_socialismo_18_...`, conferido no `427e3ae`): não é desta etapa.
 - `teste_botoes.py`: **312 ações, 0 falhas**.
 
-### Dois testes antigos mudados (e por quê)
+### Três testes antigos mudados (e por quê)
+
+- `test_opcoes_da_gravura_na_tela.py::test_mudar_as_opcoes_num_livro_com_trabalho_refaz_so_a_gravura_automatica`
+  (achado no GitHub): com a D-007 o livro dividido abre na página e a prévia dela ainda estava sendo desenhada quando o
+  teste punha marcações "por fora" (sem a geometria anotada); o desenho as levava para o lugar da página. Conferi que
+  com o `_aba_de_partida` antigo ele passa. O teste agora vai para o Dividir (como abria antes) e espera a prévia
+  terminar antes de marcar; o que ele protege (as opções da gravura) não mudou. 15 passam, 3 vezes seguidas.
 
 - `test_decisoes_nucleo.py::test_la_vida_eterna_pagina_7_...` (etapa 9c) começava da análise de fábrica que dava "Parece
   em branco" nas páginas 2, 7 e 9 — justamente por causa do bug do ScanTailor consertado aqui. Para continuar provando
@@ -115,11 +122,24 @@ ScanTailor não corta mais o "La vida eterna" na linha escura da beirada.
 
 ## GitHub
 
-Rodada **40544282462** (`gh workflow run "Testes no Windows" ... -f ramo=obra-etapa4-2026-10-26`): RESULTADO_GH
+**40547713739** (a final; código `HEAD` do ramo): **suíte partes 2, 3, 4 e 5 passam inteiras; parte 1 com 2 falhas
+que já falham no ramo-base** (P-085 tique do menu Filtro, D-492, etapa 9b; P-127 "Antes de processar" pelo menu,
+defeito C) — a rodada do `obra-2026-10-26` (40537146001) tinha 4 falhas nesse arquivo (essas duas + P-090 e P-094).
+**`teste_botoes.py` passou** no GitHub; o passo seguinte do mesmo trabalho, "Prints da janela real", quebra no script
+do próprio fluxo (`.github/scripts/fotografar_janela.py` ainda usa `janela.tela_opcoes`, que a etapa 3 tirou) — quebra
+igual na rodada do ramo-base: **troca para a gerente** (atualizar o script do fluxo, no ramo
+`claude/list-server-files-gkos8v`).
+
+A primeira rodada (40544282462) achou um teste antigo que a D-007 mexeu (`test_opcoes_da_gravura_na_tela`, ver
+"Testes antigos mudados") e um ERRO de arrumação no P-177 (uma prévia abrindo o PDF de um teste que já tinha sido
+apagado; não voltou na rodada final).
 
 ## Somas "Desligado de fábrica" (32 páginas do gabarito × Original/Preto e branco/Melhorar, livro novo, `processar`)
 
-RESULTADO_SOMAS
+**96 de 96 somas iguais** entre o código antigo (`427e3ae`) e o novo (`relatorios/obra-etapa4/somas-antes-427e3ae.json`
+× `somas-depois.json`; script `relatorios/obra-etapa4/scripts/somas.sh`, o mesmo das etapas 1 e 10a, lendo o
+gabarito da pasta principal). Nenhuma muda: o livro novo não divide sozinho, a tampa só existe depois de dividir à
+mão, e a regra da beirada só age quando o ScanTailor corta fora de 20%–80%.
 
 ## Prints da janela de verdade (1600×821, fora da tela; `relatorios/obra-etapa4/prints/`)
 
@@ -194,4 +214,10 @@ esta" → "dividir esta" → Mão → a página.
 
 ## Commits (ramo `obra-etapa4-2026-10-26`)
 
-COMMITS
+- `081f1bf` ONDE-PAREI com as decisões que a tarefa precisa cumprir
+- `4d521de` dividir à mão folha por folha (núcleo e tela), linha da beirada não é lombada, tampa do scanner, D-007
+- `0ea7701` provas das decisões; P-059 sem "aguarda"; tampa só com faixa de 8 mm ou mais
+- `ee9f327` a tampa também ao acertar a linha à mão; prova do "La vida eterna" no caminho da análise; D-498 a D-501
+- `c66aa9f` test_trabalho_nao_se_perde sem a nota interna geometria_das_zonas
+- `a256853` test_opcoes_da_gravura_na_tela espera a prévia; evidências (varredura, reversão, prints)
+- (este ONDE-PAREI final, com as somas)
