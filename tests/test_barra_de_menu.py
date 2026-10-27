@@ -143,7 +143,7 @@ def test_a_janela_de_confirmar_avisa_das_paginas_nao_conferidas(app, tmp_path):
 
     janela = JanelaConfirmar(projeto, "saida.pdf")
     assert janela.aviso_conferir.isVisibleTo(janela)
-    assert "4 página(s)" in janela.aviso_conferir.rotulo.text()
+    assert "4 páginas" in janela.aviso_conferir.rotulo.text()
 
 
 def test_a_janela_de_confirmar_cala_quando_tudo_foi_conferido(app, tmp_path):

@@ -379,7 +379,7 @@ def test_janela_confirmar_conta_o_mesmo_que_vai_para_o_pdf(tmp_path):
     projeto.paginas[5].apagada = True
     janela = JanelaConfirmar(projeto, "x.pdf")
     try:
-        assert janela._frase_do_livro() == "4 páginas vão para o PDF, e 1 foram apagadas."
+        assert janela._frase_do_livro() == "4 páginas vão para o PDF, e 1 foi apagada."
         assert len(projeto.paginas_ativas) == 4
     finally:
         janela.close()

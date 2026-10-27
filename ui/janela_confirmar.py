@@ -166,9 +166,10 @@ class JanelaConfirmar(QDialog):
         06/10/2026: "139 páginas" e o PDF com 138)."""
         paginas = self.projeto.paginas_ativas
         apagadas = sum(1 for p in self.projeto.paginas if p.apagada)
-        frase = f"{len(paginas)} páginas vão para o PDF"
+        frase = ("1 página vai para o PDF" if len(paginas) == 1
+                 else f"{len(paginas)} páginas vão para o PDF")
         if apagadas:
-            frase += f", e {apagadas} foram apagadas"
+            frase += (", e 1 foi apagada" if apagadas == 1 else f", e {apagadas} foram apagadas")
         return frase + "."
 
     # --- avisos -----------------------------------------------------------
@@ -197,8 +198,9 @@ class JanelaConfirmar(QDialog):
         faltam = self._nao_conferidas()
         if faltam:
             self.aviso_conferir.rotulo.setText(
-                f"Ainda há <b>{faltam} página(s)</b> que você não conferiu. "
-                "Dá para processar assim mesmo, mas o que não foi olhado sai "
+                ("Ainda há <b>1 página</b> que você não conferiu. " if faltam == 1 else
+                 f"Ainda há <b>{faltam} páginas</b> que você não conferiu. ")
+                + "Dá para processar assim mesmo, mas o que não foi olhado sai "
                 "do jeito que o programa decidiu sozinho.")
             self.aviso_conferir.show()
         else:
