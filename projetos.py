@@ -966,6 +966,8 @@ def motivo_sem_analise(salvo, aberto, assinatura: str = "") -> str:
         return "o trabalho salvo não tinha páginas"
     if any(not 0 <= p.folha < agora for p in salvo.paginas):
         return "o trabalho salvo tinha páginas de folhas que o arquivo não tem"
+    if {p.folha for p in salvo.paginas} != set(range(agora)):
+        return "o trabalho salvo não tem as páginas de todas as folhas do livro"
     return ""
 
 
