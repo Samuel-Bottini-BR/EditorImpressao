@@ -327,6 +327,11 @@ MENOR_PECA_PX = 6
 # (0,05%: um pedaço de letra numa página de texto). Abaixo disso é o
 # arredondamento da beirada.
 PARTE_DE_FORA_QUE_AVISA = 0.0005
+# A caixa do "Centralizar" (caixa_do_impresso): letras a menos de 2% do lado
+# maior da página umas das outras são o mesmo bloco; bloco com menos de 2% do
+# impresso (marca-d'água, resto de cabeçalho cortado) não entra na caixa.
+BLOCO_DO_IMPRESSO = 0.02
+MENOR_BLOCO = 0.02
 
 
 def tamanho_da_folha_px(
@@ -423,13 +428,20 @@ def _cinza_reduzido(img: np.ndarray) -> np.ndarray:
     return cinza
 
 
-def mascara_do_impresso(img: np.ndarray) -> np.ndarray | None:
+def mascara_do_impresso(img: np.ndarray, sem_o_que_encosta: bool = True) -> np.ndarray | None:
     """O que está IMPRESSO na página (texto, desenho, número), numa cópia
     reduzida: True onde há tinta. O papel em branco da margem fica de fora,
     e também o fundo do scanner - a peça escura que encosta na beirada da
     página e é comprida (um quarto do lado) ou grande (um décimo da página),
     como a faixa preta do scanner e a sombra da lombada: não é o que se
     imprime. Poeira (peça menor que MENOR_PECA_PX) também sai.
+    sem_o_que_encosta=True (o de fábrica): sai também QUALQUER peça que
+    encosta na beirada da página - achado nos prints da etapa 5 no "La vida
+    eterna": a marca-d'água do site cortada na beirada puxava o meio do
+    "Centralizar" para o lado, e os restos escuros do scanner colados na
+    beirada davam o aviso do D-017 sem nada impresso sair. Ressalva: a letra
+    que JÁ estava cortada na beirada da página também fica de fora da conta.
+    False: só o fundo grande do scanner sai (o jeito do primeiro rascunho).
     None: sem imagem, ou sem cv2."""
     if img is None or getattr(img, "size", 0) == 0 or cv2 is None:
         return None
@@ -442,7 +454,8 @@ def mascara_do_impresso(img: np.ndarray) -> np.ndarray | None:
     quantas, rotulos, medidas, _centros = cv2.connectedComponentsWithStats(tinta, connectivity=8)
     x, y, w, h, area = (medidas[:, i] for i in range(5))
     encosta = (x == 0) | (y == 0) | (x + w >= largura) | (y + h >= altura)
-    fundo = encosta & ((w >= 0.25 * largura) | (h >= 0.25 * altura) | (area >= 0.10 * largura * altura))
+    fundo = encosta & ((w >= 0.25 * largura) | (h >= 0.25 * altura) | (area >= 0.10 * largura * altura)
+                       | bool(sem_o_que_encosta))
     fica = ~fundo & (area >= MENOR_PECA_PX)
     fica[0] = False                                   # o rótulo 0 é o papel
     return fica[rotulos]
@@ -453,13 +466,31 @@ def caixa_do_impresso(img: np.ndarray) -> tuple[float, float, float, float] | No
     (0 = beirada de cima/esquerda). None quando a página não tem impresso
     (em branco) ou não dá para medir. É a base do "Centralizar" e do ímã
     das linhas de apoio, como no Photoshop (a camada gruda pelos pontos que
-    têm desenho, não pela moldura transparente)."""
+    têm desenho, não pela moldura transparente).
+
+    Só os BLOCOS do impresso entram (achado nos prints da etapa 5, "La vida
+    eterna" página 7): as letras próximas são juntadas em blocos (uma
+    dilatação de BLOCO_DO_IMPRESSO do lado maior da página) e fica de fora o
+    bloco com menos de MENOR_BLOCO do impresso - as letrinhas soltas da
+    marca-d'água do site no pé da página, o resto do cabeçalho cortado na
+    beirada, poeira grande. O texto, o desenho, a nota de rodapé e o título
+    ficam. Seguro mudar: os dois números (mais ou menos rigor)."""
     mascara = mascara_do_impresso(img)
     if mascara is None or not mascara.any():
         return None
     altura, largura = mascara.shape[:2]
-    colunas = np.flatnonzero(mascara.any(axis=0))
-    linhas = np.flatnonzero(mascara.any(axis=1))
+    lado = max(3, round(BLOCO_DO_IMPRESSO * max(altura, largura)) | 1)
+    juntos = cv2.dilate(mascara.astype(np.uint8),
+                        cv2.getStructuringElement(cv2.MORPH_RECT, (lado, lado)))
+    _quantos, blocos = cv2.connectedComponents(juntos, connectivity=8)
+    tinta_por_bloco = np.bincount(blocos[mascara], minlength=_quantos)
+    fica = tinta_por_bloco >= max(1, MENOR_BLOCO * tinta_por_bloco.sum())
+    fica[0] = False
+    if not fica.any():
+        fica[int(np.argmax(tinta_por_bloco))] = True
+    principal = mascara & fica[blocos]
+    colunas = np.flatnonzero(principal.any(axis=0))
+    linhas = np.flatnonzero(principal.any(axis=1))
     return (float(colunas[0] / largura), float(linhas[0] / altura),
             float((colunas[-1] + 1) / largura), float((linhas[-1] + 1) / altura))
 

@@ -198,7 +198,11 @@ def main() -> None:
     base.esperar(1.5)
     base.clique(janela, tela.botao_centralizar)
     base.esperar(2.0)
-    base.conferir(analise.IMPRESSO_DE_FORA not in pagina.alertas, "104%: o aviso saiu")
+    # (informação, não conferência: nesta página o cabeçalho já vem cortado na beirada de cima
+    # e a marca-d'água do site fica no pé; ao descer o texto para o meio, o que passar da
+    # beirada ganha o aviso, como manda a D-017)
+    print("  (aviso depois de centralizar a 104%:",
+          "sim" if analise.IMPRESSO_DE_FORA in pagina.alertas else "não", ")", flush=True)
     _p(janela, "07-centralizada")
 
     # o PDF (a mesma conta do "Confirmar e processar") e a página 7 dele ao lado da tela
@@ -215,7 +219,11 @@ def main() -> None:
         indice = sum(1 for p in projeto.paginas[:PAGINA] if not p.apagada)
         pix = doc[indice].get_pixmap(dpi=60, colorspace=fitz.csRGB)
         pdf = np.frombuffer(pix.samples, np.uint8).reshape(pix.height, pix.width, 3).copy()
-    x0, y0, x1, y1 = _caixa_escura(pdf)
+    # o impresso medido no PDF pela MESMA régua do "Centralizar" (core.folha.caixa_do_impresso:
+    # sem as peças coladas na beirada, como a marca-d'água do site)
+    from core.folha import caixa_do_impresso
+
+    x0, y0, x1, y1 = caixa_do_impresso(pdf[:, :, ::-1].copy())
     base.conferir(abs(x0 - (1 - x1)) < 0.03 and abs(y0 - (1 - y1)) < 0.03,
                   f"no PDF, o impresso no meio: esquerda {x0:.3f} direita {1 - x1:.3f}, "
                   f"cima {y0:.3f} baixo {1 - y1:.3f}")

@@ -323,10 +323,8 @@ ALERTAS: dict[str, Alerta] = {
     # correcao (lido por ui/tela_conferir._aplicar_correcao).
     IMPRESSO_DE_FORA: Alerta(
         IMPRESSO_DE_FORA, "Parte do impresso fica de fora",
-        "Parte do que está impresso vai ficar de fora da folha: o conteúdo passou da "
-        "beirada da área branca. Na ferramenta Mover a parte de fora aparece marcada em "
-        "vermelho. O programa não diminui sozinho: diminua ou mova o conteúdo, ou deixe "
-        "assim se for de propósito.",
+        "Parte do que está impresso vai ficar de fora da folha. O programa não diminui "
+        "sozinho: diminua ou mova no Mover.",
         "ver no Mover", "ver_no_mover",
         outra_acao="está bom assim", outra_correcao="revisar",
     ),

@@ -661,7 +661,7 @@ programa), a partir do **nome do botão**, da **dica** (o balão do mouse) e das
 
 ### P-194 · "ver no Mover" (aviso "Parte do impresso fica de fora")
 - **chaves:** `aviso/ver_no_mover`
-- **dica:** o aviso "Parte do que está impresso vai ficar de fora da folha [...] O programa não diminui sozinho"
+- **dica:** o aviso "Parte do que está impresso vai ficar de fora da folha. O programa não diminui sozinho: diminua ou mova no Mover."
 - **decisões:** D-017 ("Avisar e não reduzir - avisar para eu reduzir manualmente"), D-008
 - **na tela:** leva à ferramenta Mover na página do aviso (onde a parte de fora aparece marcada em vermelho).
 - **no projeto:** nada muda (o programa não diminui sozinho). **no PDF:** nada muda.

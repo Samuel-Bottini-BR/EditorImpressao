@@ -4,7 +4,7 @@ Ramo `obra-etapa5-2026-10-26` (base `obra-2026-10-26` = `7fb3e4a`, com as etapas
 worktree `.claude/worktrees/obra-etapa5`. Agente: layout + implementador. Ordem do Samuel (D-014): fazer até o fim sem
 pausas; ele confere tudo no fim.
 
-**Situação: em andamento** (27/10/2026): núcleo, tela, provas e promessas feitos e enviados; faltam a rodada dos testes, a reversão, as somas, os prints e o GitHub.
+**Situação: PAUSADO** (27/10/2026) — ver a seção "PAUSA" abaixo.
 
 ## Decisões que esta tarefa precisa cumprir (palavras do Samuel)
 
@@ -30,6 +30,47 @@ pausas; ele confere tudo no fim.
 | D-329 (`b-2-margens-na-tela`) | "Sim, a tela mostra igual ao que sai (recomendado)" | Com as margens iguais ligadas, a área branca do Mover já mostra as margens, como no PDF. |
 | D-010 | "eu acho que o botão tem que ser provado que ele faz o que se diz que se faz, e não só se ele muda algo na tela." | Promessa escrita e prova de cada botão novo (`tests/promessas/promessas.md`). |
 | D-020 | "Ctrl+Z desfaz qualquer alteração" | Cada arrasto, cada "Centralizar" e cada "usar em todas" é uma ação do desfazer. |
+
+## PAUSA (27/10/2026, pedido da gerente) — onde parei
+
+**Situação: em andamento (pausado).** Nada de processo meu aberto (o roteiro dos prints fechou a janela com WM_CLOSE).
+
+### Feito (commits no ramo, enviados)
+- Ferramenta própria "Mover e redimensionar" (trilha, menu Ferramentas, tecla F, Propriedades: área branca, "tamanho da
+  folha...", Tamanho do conteúdo %, Centralizar, voltar como veio, usar em todas..., linhas de apoio). "Mover conteúdo"
+  saiu do Cortar. Sem folha, a área branca é a própria página. Arrastar passa da beirada (o meio fica dentro); canto
+  aumenta até 4x. Parte de fora marcada em vermelho (D-017), aviso `impresso_de_fora` na tela, na conferência por trás do
+  "usar em todas" e no PDF (`core/pipeline.anotar_o_impresso_de_fora`). Livro: D-540 a D-546.
+- Conserto achado nos prints: `ui/widgets/editor_selecao.py` chamava `evento.matches(Qt.Key_Z)` (PySide6 6.11 recusa):
+  qualquer letra com o foco na página de marcar dava "problema inesperado". Teste de reversão
+  `test_letra_f_com_o_foco_na_pagina_de_marcar_chega_a_ferramenta`.
+- Provas: `tests/test_decisoes_mover.py` 13 passam; reversão no código antigo (7fb3e4a): todos falham, e o caso do
+  Kaique pelo caminho antigo "NAO ANDOU" (`relatorios/obra-etapa5/reversao-no-codigo-antigo.txt`).
+- Testes no PC (um por vez), todos passam: test_decisoes 23, _automatico 24, _dividir 19, _impressao 22, _nucleo 36,
+  _tela 35, trabalho_nao_se_perde 82, visualizador 70, previa_composta 10, paineis_na_tela 22, corte_pelo_conteudo_na_tela
+  13, guias 14, folha 20, trilha_agrupada 19, trilha_e_opcoes 29, pipeline_folha 7, core 62, substituir_e_cancelar 21,
+  dialogo_tamanho_da_folha 5, menu_paineis 3, paineis 34, editor_selecao 17. Promessas (-k mover/conteudo/centralizar…):
+  falham só P-085 e P-127 (defeitos já conhecidos da base) e P-094 (passa sozinha; ordem). teste_botoes: 331 ações, 0
+  falhas. Somas "Desligado de fábrica": 96 de 96 iguais (`somas-antes-7fb3e4a.json` × `somas-depois.json`).
+- GitHub 40559025254 (commit 709abac): partes 2-5 e botões passam; parte 1 só P-085 e P-127 (as da base).
+
+### Falta (próximo passo exato)
+1. **O último ajuste da caixa do impresso (`core/folha.caixa_do_impresso` por blocos, `BLOCO_DO_IMPRESSO`/`MENOR_BLOCO`)
+   ainda NÃO foi commitado antes desta pausa — vai neste commit.** Os prints mostraram, na página 7 do "La vida eterna",
+   "Centralizar" a 104%: no PDF esquerda 0,035 × direita 0,151, cima 0,129 × baixo 0,044 (régua: a mesma
+   `caixa_do_impresso` na página do PDF). **Investigar**: a conta na tela (prévia 110 DPI, `_mover_da_vez["caixa"]`) dá
+   desloc. (-0,169; +0,106) e pelo PDF parece andar demais (desconfio do `_caixa_do_mover` guardado por `id(img)`:
+   pode ser a caixa de antes do ajuste, ou de outra prévia; ou o retângulo gravado contra outra área). Rodar
+   `_tmp/dbg.py` e o roteiro `relatorios/obra-etapa5/roteiro/prints.py <worktree> depois`; depois rodar de novo
+   `tests/test_decisoes_mover.py`, `tests/test_folha.py`, `tests/test_promessas.py -k "p19 or p035"`.
+2. Prints "antes" (código antigo: `prints.py <worktree>/_tmp/antigo antes`) e abrir todos os prints.
+3. Nova rodada do GitHub depois do item 1.
+4. ONDE-PAREI final ("Como cumpri cada uma", perguntas, ressalvas) em 3 formatos (`relatorio.gravar`).
+
+### Ressalvas já vistas
+- Com o foco na lista do Automático, as letras (D, X, I, F) vão para a lista (igual para todas as ferramentas).
+- As outras ferramentas mostram a página sem o mover (D-546); o resto da D-473 é da etapa 10.
+- A letra que já estava cortada na beirada da página não conta para o aviso do D-017 (peças coladas na beirada saem).
 
 ## Plano
 
