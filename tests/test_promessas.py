@@ -1697,6 +1697,9 @@ def test_p075_apagar_pintar_copiar_colar(janela, tela, monkeypatch, pasta):
     _voltar_ao_trabalho(janela)
     tela.ir_para_pagina(1)
     tela.escolher_ferramenta("ajustar")
+    # etapa 9c: esperar a página chegar ao editor, como no clique de cima (sem isto o clique
+    # caía antes da imagem e não escolhia nada; o defeito do PDF escondia esta falta da prova)
+    aj.esperar(lambda: editor._pixmap is not None, motivo="a página no editor")
     editor.mousePressEvent(clicar(editor, 0.3, 0.2))
     editor.mouseReleaseEvent(soltar(editor, 0.3, 0.2))
     aj.assentar()

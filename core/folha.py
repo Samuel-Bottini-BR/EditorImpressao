@@ -107,10 +107,30 @@ def recorte_cabe_na_pagina(recorte: tuple[float, float, float, float]) -> bool:
 # Tamanho da FOLHA vs. tamanho do RECORTE (novo, item 2/4 do plano)
 # ---------------------------------------------------------------------------
 
+def _folga_do_arredondamento_cm() -> float:
+    """Meio passo do campo mais grosso da janela "Tamanho da folha", em cm
+    (core.unidades.CASAS: 0,01 pol = 0,0254 cm -> 0,0127 cm), mais um fio."""
+    from core import unidades
+
+    return max(0.5 * 10 ** -unidades.CASAS[u] / unidades._POR_CM[u]
+               for u in unidades.UNIDADES) + 1e-6
+
+
+# Etapa 9c da obra (26/10/2026; Lista de bugs de 02/10, "'Tamanho da folha' abre
+# com o aviso 'menor que o corte' mesmo com tamanho igual ao corte"): a janela
+# abre com os campos no tamanho do corte ARREDONDADO às casas da unidade
+# (13,944 cm vira 13,94), e a folga de 0,001 cm fazia o arredondamento para
+# baixo virar "menor que o corte", com os dois números iguais na tela. A folga
+# agora é a do arredondamento (~0,13 mm, invisível na impressão; o corte nunca
+# é cortado escondido: core/folha.compor_na_folha). Arriscado: folga maior que
+# o passo dos campos (uma folha menor de verdade deixaria de avisar).
+FOLGA_DO_ARREDONDAMENTO_CM = _folga_do_arredondamento_cm()
+
+
 def tamanho_da_folha_cabe(
     tamanho_folha_cm: tuple[float, float] | None,
     tamanho_recorte_cm: tuple[float, float],
-    tolerancia_cm: float = 1e-3,
+    tolerancia_cm: float = FOLGA_DO_ARREDONDAMENTO_CM,
 ) -> bool:
     """A folha escolhida é grande o bastante para conter o recorte atual?
 

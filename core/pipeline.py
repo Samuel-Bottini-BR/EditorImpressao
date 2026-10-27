@@ -2748,9 +2748,49 @@ def renderizar_pagina(
     if _vai_detectar(projeto, pagina, dpi) or _vai_limpar_pelo_scantailor(projeto, pagina):
         dpi_desenho = _dpi_do_desenho(doc, folha.indice, img_folha)
         dpi_scan = _dpi_do_scan(doc, folha)
+    _tirar_o_em_branco_falso(projeto, folha, pagina, img_folha, dpi)   # etapa 9c
     img, desenho = _preparar_metade_e_geometria(img_folha, folha, pagina, projeto, dpi=dpi)
     _acompanhar_as_zonas(pagina, desenho)
     return _filtrar(projeto, pagina, img, dpi_desenho, dpi_scan, dpi_pedido=dpi)
+
+
+def _tirar_o_em_branco_falso(projeto: Projeto, folha: ConfigFolha, pagina: ConfigPagina,
+                             img_folha: np.ndarray, dpi: float) -> None:
+    """Tira o aviso "Parece em branco" da pagina que, como esta dividida
+    AGORA, tem conteudo (etapa 9c da obra, 26/10/2026; D-271, D-288; teste do
+    Kaique, "La vida eterna" pagina 7, lista unica 5.7).
+
+    O aviso e decidido uma vez, na analise (_analisar_a_folha), na metade da
+    folha que a analise dividiu. Quando a divisao muda depois (a pessoa
+    arrasta a linha; o ScanTailor tinha dividido a folha 4 do "La vida
+    eterna" a 10%, na linha escura da beirada, e a pagina 7 era uma tira de
+    margem), a pagina passa a ter o texto e o aviso ficava - falso.
+
+    Aqui a pagina e medida de novo pela MESMA conta da analise
+    (analise.parece_em_branco), na MESMA etapa (girada e dividida, sem corte
+    nem giro do endireitar: preparar_para_recorte) e na MESMA escala
+    (DPI_ANALISE: o desenho maior e reduzido antes). Pagina branca de verdade
+    mede igual a analise e fica com o aviso. So TIRA, nunca poe: o aviso
+    tirado pela pessoa ("esta bom assim", "tirar da lista") nao pode voltar.
+    Desenho menor que o da analise (o do arrasto, 55 DPI): nao mede (a letra
+    miuda some e a conta nao vale). Barato: so roda na pagina com o aviso.
+    Arriscado: medir na pagina cortada ou endireitada (os cantos do giro e a
+    borda mudam a conta) ou em outra escala (o limite foi medido a 150 DPI).
+    Nunca derruba a previa: um erro aqui deixa o aviso como estava."""
+    if analise.EM_BRANCO not in pagina.alertas or dpi < DPI_ANALISE * 0.95:
+        return
+    try:
+        metade = preparar_para_recorte(img_folha, folha, pagina, projeto)
+        if dpi > DPI_ANALISE * 1.05:
+            fator = DPI_ANALISE / float(dpi)
+            metade = cv2.resize(metade, (max(1, round(metade.shape[1] * fator)),
+                                         max(1, round(metade.shape[0] * fator))),
+                                interpolation=cv2.INTER_AREA)
+        if not analise.parece_em_branco(metade):
+            pagina.alertas = [a for a in pagina.alertas if a != analise.EM_BRANCO]
+    except Exception:  # noqa: BLE001 - o aviso fica como estava; a previa segue
+        _log.exception("nao consegui medir de novo o 'parece em branco' da pagina %s",
+                       pagina.indice + 1)
 
 
 def precisa_do_desenho_do_pdf(projeto: Projeto, pagina: ConfigPagina) -> bool:

@@ -201,16 +201,19 @@ def descricao_do_giro(giro: int, alcance: str, atual: int, quantas: int) -> str:
     copiam). Seguro mudar: o texto (aparece no Historico e no menu Editar).
     """
     nome = NOMES_DOS_GIROS.get(giro, f"{giro} graus")
+    # singular no 1 (etapa 9c: "da folha 180 em diante (1 folhas)")
+    folhas = "1 folha" if quantas == 1 else f"{quantas} folhas"
     if alcance == ALCANCE_TODAS:
-        onde = f"todas as {quantas} folhas"
+        onde = "a única folha" if quantas == 1 else f"todas as {quantas} folhas"
     elif alcance == ALCANCE_DAQUI:
-        onde = f"da folha {atual + 1} em diante ({quantas} folhas)"
+        onde = f"da folha {atual + 1} em diante ({folhas})"
     elif alcance == ALCANCE_PARES:
-        onde = f"as {quantas} folhas pares"
+        onde = "a única folha par" if quantas == 1 else f"as {quantas} folhas pares"
     elif alcance == ALCANCE_IMPARES:
-        onde = f"as {quantas} folhas ímpares"
+        onde = "a única folha ímpar" if quantas == 1 else f"as {quantas} folhas ímpares"
     else:
         return f"Girar {nome}: a folha {atual + 1}"
     # com mais de uma folha, a frase diz que elas copiam o giro da folha da
     # vez (decisao do Samuel, 06/10/2026)
-    return f"Girar {nome}: {onde}, viradas como a folha {atual + 1}"
+    viradas = "virada" if quantas == 1 else "viradas"
+    return f"Girar {nome}: {onde}, {viradas} como a folha {atual + 1}"
