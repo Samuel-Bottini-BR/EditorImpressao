@@ -102,11 +102,46 @@ acervo. `scripts/fazer_conferencia.py` monta os antes × depois; `scripts/cortes
 
 ## Somas de fábrica (32 páginas do gabarito × Original/Preto e branco/Melhorar, livro novo, `processar`)
 
-Ver o fim deste arquivo (preenchido no fim).
+Base: `relatorios/obra-etapa1/somas-depois-8abd3e8.json` (o código do `11f9ed3` é o mesmo do `8abd3e8` em `core/` e
+`modelos.py`). Depois: `somas-depois-b9437db.json` e `somas-depois-7f816b8.json` (o último: **96 de 96 iguais ao
+`b9437db`**).
+
+- **45 de 96 iguais; 17 páginas mudam DE PROPÓSITO** (as consertos mexem no livro de fábrica):
+  - 5 só na cunha do giro (Boécio 3, Escola 7, Escola 35, Graduale 222, Siebmacher 9): medido ponto a ponto contra
+    o código de antes, os pontos diferentes ficam a até 1,3 mm da beirada e os brancos puros da cunha somem;
+  - 12 no corte (`cortes-livro-novo-antes-11f9ed3.json` × `cortes-livro-novo-depois.json`): Boécio 8 e 22,
+    Graduale 221 e 223, Horas 13, 14, 26 e 27, Marial 7, Rhetorica 18 e 73, Siebmacher 7. Olhados todos: o que sai é
+    beirada escura do scan, cunha, sobra de papel; nenhuma letra, moldura ou número de folha (o "Cvij" do Graduale
+    221 continua). Os maiores estão na conferência.
+- **Projeto começado antes de 09/10/2026: nada muda** — os consertos do corte comum só valem no livro novo
+  (`detectar_bordas(livro_novo=True)`); cortes do gabarito na ordem antiga: **32 de 32 iguais**
+  (`cortes-ordem-antiga-*.json`). (A primeira versão mudava a ordem antiga; o GitHub pegou pelo
+  `test_ajustar_pedaco_so_figura`.)
 
 ## Testes rodados (um arquivo por vez, no PC)
 
-Ver o fim deste arquivo (preenchido no fim).
+Último passe (`relatorios/conferir/obra-etapa10a/testes-6.txt`, fora do git), todos passando: test_etapa10a_nao_comer
+8, test_decisoes 23, test_ajustar_pedaco_so_figura 11, test_borda_preta 29, test_borda_preta_paginas_do_samuel 17,
+test_corte_nao_come_conteudo 9, test_corte_folga_1mm 6, test_corte_pelo_conteudo 24, test_corte_pelo_conteudo_livro 4,
+test_corte_pelo_conteudo_no_programa 16, test_corte_previa_igual_pdf 4, test_ordem_do_preparo 56, test_core 62,
+test_corte_pelo_conteudo_na_tela 13, test_desentortar_scantailor 40, test_desentortar_protecao 15,
+test_desentortar_medida_por_tras 6, test_endireitar_no_programa 15, test_endireitar_g5 13, test_dividir_no_programa 19,
+test_trabalho_nao_se_perde 82, test_mesmo_livro_outro_caminho 17, test_zonas_na_folha 25, test_girar 53,
+test_impressao 17, test_dialogo_impressao 5, test_revisar 28.
+
+**Testes de reversão no código antigo** (worktree `obra-etapa10a-antes`, `11f9ed3`, com os arquivos de teste novos
+copiados): `test_etapa10a_nao_comer.py` **8 de 8 falham** lá (e passam aqui); as 5 provas novas de `test_decisoes.py`
+(`test_d104_*`, `test_d113_*`, `test_d095_*`) **5 de 5 falham** lá.
+
+Ajustes de testes antigos: nenhum (os testes que falharam no meio do caminho acusaram defeito meu e foram consertados
+no código: a tolerância de 1,5 ponto do "não partir peça", o "encostou" fora das medidas do ângulo, a cunha com a
+mediana do papel em vez da cor da beirada, e o livro_novo).
+
+**GitHub (rodada inteira):** 1ª rodada `40444878231` no `b9437db`: falhou 1 (`test_ajustar_pedaco_so_figura::
+test_escola7_a_pintura_continua_sendo_ajustada`, o projeto antigo mudava) → consertado no `7f816b8`. 2ª rodada
+`40447802745` no `7f816b8`: **passou inteira** (as 5 partes da suíte e o `teste_botoes.py` com os prints da janela).
+**Filtro de velocidade** `40444881163` (`11f9ed3` × ramo, rodou com o `b9437db`; o `7f816b8` só tira trabalho do
+projeto antigo): ver "Velocidade" abaixo.
 
 ## Perguntas para o Samuel
 
@@ -125,6 +160,45 @@ Ver o fim deste arquivo (preenchido no fim).
 - Siebmacher 74: a folha quase sem tinta sai cinza no Preto e branco.
 - Lugares 5 e 6 da D-104 (Melhorar/Mágico pro branqueando lápis fraco; área "papel" pintada de branco).
 
+## Ressalvas (escritas, não escondidas)
+
+- **Cursus 3:** continua um fio preto da lombada no alto à esquerda, ao lado do "A" de "AD" (já existia sem o corte da
+  beirada da vizinha; tirá-lo cortaria a letra). A folga nova do corte da sobra vale numa análise nova do livro: o
+  projeto já analisado guarda o corte da sobra antigo (o teste do Kaique de 23/10, por exemplo).
+- **Siebmacher 74 e ljs47 2:** a beirada larga das outras folhas (castanha) ainda aparece fininha na direita.
+- **Antiphon 2:** uma tira da folha vizinha na beirada direita.
+- **Horas 13:** a esquerda ainda guarda sobra (manchas do tamanho de letra perto da beirada); a direita ficou certa.
+- **Righetti 96:** a faixa preta do scanner em cima (depois da tira branca da tampa) continua (pergunta 3).
+- **D-113:** na página de teste a curva continua não achada; a causa medida é outra (pergunta 1).
+- **4.8:** o tamanho igual das páginas não foi mudado (pergunta 2).
+- **Lugares 1, 3, 4 e 7 da D-104:** não provados nas páginas olhadas (listadas acima); nada mudado neles. Lugares 5 e
+  6 são do filtro (etapa 10b).
+- **Tela = PDF (D-473):** os consertos estão na conta que a prévia usa, mas não pilotei a janela (não é da etapa; o
+  verificador confere). A prévia rápida (110 DPI) mede o corte na imagem pequena só enquanto o guardado não chega.
+- **Velocidade:** a cunha com a cor do papel faz mais um giro (só de uma máscara) nas páginas cujo corte chega perto da
+  beirada; o corte comum faz uma conta de pedaços a mais (tracejado/ciscos). Medida no filtro do GitHub (ver o fim).
+- **Aviso duplo na impressão:** a página aumentada ganha o aviso novo ("CORTADO") e continua com o de margem (o texto
+  do de margem fala em "-2,2 cm", que é confuso; é da etapa 9/11).
+
+## Ideias para a Lista de espera
+
+- O desentortar seguir só o bloco do texto (sem as notas da margem) — pergunta 1.
+- "Margens iguais" à vista na tela do livro (4.8) — pergunta 2.
+
+## Bugs para a Lista de bugs (achados, não consertados)
+
+- 27/10, aviso de margem da impressão com número negativo ("em cima -2,2 cm (precisa de 1,3 cm)") quando a página
+  passa da folha: confuso (`core/impressao.py`, `_avisos_de_margem`).
+- 27/10, Righetti (folha dupla deitada): faixa preta da tampa do scanner em cima de cada página, depois de girar e
+  dividir.
+
 ## Commits (ramo `obra-etapa10a-2026-10-26`, com push)
 
-Ver o fim deste arquivo.
+- `e634299` sobra com folga do giro; caixa do ScanTailor sem comer; faixa escura da beirada; alargado nunca menor;
+  roteiros de reprodução.
+- `72d1f58` D-113: caixa do conteúdo do desentortar sem a moldura do scanner.
+- `f5b915a` números da margem; cunha do giro; testes de reversão e provas das decisões.
+- `f8320ee` "Corte encostou no texto" no corte de verdade; imprimir aumentado avisa que corta.
+- `b9437db` tracejado e ciscos da beirada (Horas 18); cunha com a mediana do papel; extras.
+- `7f816b8` consertos do corte comum só no livro novo; conferência; provas.
+- (o último) ONDE-PAREI final.
