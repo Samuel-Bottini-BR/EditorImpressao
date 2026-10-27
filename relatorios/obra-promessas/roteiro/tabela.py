@@ -26,8 +26,9 @@ FONTE = (RAIZ / "tests" / "test_promessas.py").read_text(encoding="utf-8")
 def _testes_de_cada_promessa() -> dict[str, list[str]]:
     """Promessa -> nomes das funções de prova (pelo @prova("P-NNN") logo acima do def)."""
     saida: dict[str, list[str]] = {}
-    for m in re.finditer(r'@prova\("(P-\d{3})"\)\s*\n(?:@[^\n]*\n)*def (test_\w+)', FONTE):
-        saida.setdefault(m.group(1), []).append(m.group(2))
+    for m in re.finditer(r'@prova\("(P-\d{3})"\)', FONTE):
+        funcao = re.search(r"\ndef (test_\w+)", FONTE[m.end():])
+        saida.setdefault(m.group(1), []).append(funcao.group(1))
     return saida
 
 
