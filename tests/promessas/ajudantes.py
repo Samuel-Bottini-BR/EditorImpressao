@@ -82,6 +82,31 @@ def criar_livro(pasta: Path, folhas: int = 4, nome: str = "Livro de Teste") -> P
     return caminho
 
 
+def criar_livro_duplo(pasta: Path, folhas: int = 2, nome: str = "Livro Duplo") -> Path:
+    """Um livro de folhas DEITADAS com duas páginas cada (como um livro aberto no scanner): a folha
+    i tem à esquerda a página 2i e à direita a 2i+1 (cada uma com o seu bloco), e um vinco escuro
+    no meio (a lombada). No máximo 3 folhas (6 páginas)."""
+    import cv2
+    import fitz
+
+    assert 1 <= folhas <= 3
+    (pasta / "livros").mkdir(parents=True, exist_ok=True)
+    caminho = pasta / "livros" / f"{nome}.pdf"
+    doc = fitz.open()
+    largura_pt, altura_pt = 2 * LARGURA_PX / DPI_DO_LIVRO * 72, ALTURA_PX / DPI_DO_LIVRO * 72
+    for i in range(folhas):
+        img = np.concatenate([imagem_da_folha(2 * i), imagem_da_folha(2 * i + 1)], axis=1)
+        meio = LARGURA_PX
+        img[:, meio - 6:meio + 6] = (90, 110, 120)          # o vinco da lombada
+        ok, png = cv2.imencode(".png", img)
+        assert ok
+        pagina = doc.new_page(width=largura_pt, height=altura_pt)
+        pagina.insert_image(fitz.Rect(0, 0, largura_pt, altura_pt), stream=png.tobytes())
+    doc.save(str(caminho))
+    doc.close()
+    return caminho
+
+
 # --- 3. medir o PDF ---------------------------------------------------------------------------
 
 @dataclass
@@ -259,6 +284,23 @@ def gerar_pdf(janela, monkeypatch, destino: Path, segundos: float = 240) -> Path
     raise AssertionError(f"o PDF não ficou pronto em {segundos} s (tela {janela.telas.currentIndex()})")
 
 
+_EXEC_ORIGINAL: dict = {}
+
+
+def esperar(condicao, segundos: float = 30.0, motivo: str = "") -> None:
+    """Deixa o programa trabalhar (as prévias chegam por trás) até `condicao()` ser verdade."""
+    fim = time.monotonic() + segundos
+    while time.monotonic() < fim:
+        assentar(2)
+        try:
+            if condicao():
+                return
+        except Exception:  # noqa: BLE001 - a peça ainda não existe
+            pass
+        time.sleep(0.02)
+    raise AssertionError(f"esperei {segundos} s e não aconteceu: {motivo}")
+
+
 def responder_caixa(monkeypatch, classe, clicar: str, antes=None, registro: list | None = None):
     """Quando uma caixa da `classe` abrir (exec), aperta o botão cujo texto começa com `clicar`
     (pelo clique de verdade do botão), depois de chamar `antes(caixa)` se houver. Anota o título
@@ -266,7 +308,9 @@ def responder_caixa(monkeypatch, classe, clicar: str, antes=None, registro: list
     from PySide6.QtCore import QTimer
     from PySide6.QtWidgets import QAbstractButton
 
-    original = classe.exec
+    # o exec de verdade (sem as respostas de antes): responder duas vezes à mesma caixa no
+    # mesmo teste não pode empilhar as duas respostas
+    original = _EXEC_ORIGINAL.setdefault(classe, classe.exec)
 
     def _clicar(caixa) -> None:
         if antes is not None:

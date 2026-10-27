@@ -325,13 +325,22 @@ programa), a partir do **nome do botão**, da **dica** (o balão do mouse) e das
 
 ## Área de trabalho: Dividir, Cortar, Endireitar (Propriedades)
 
-### P-060 · "dividir esta" / "não dividir esta"
-- **chaves:** `área de trabalho/dividir/dividir esta`, `área de trabalho/dividir/não dividir esta`
-- **dica:** "Esta folha entrou como uma página só: o jeito de dividir do ScanTailor..." / o contrário
-- **decisões:** D-080 ("trocando numa folha se um ficar ruim"), D-009 (feito à mão vale no PDF)
-- **na tela:** a folha passa a ter a linha de divisão (ou deixa de ter).
-- **no projeto:** a folha fica dividida em duas páginas (ou volta a uma).
-- **no PDF:** a folha dividida sai como duas páginas.
+### P-059 · "dividir esta" numa folha que entrou como uma página só
+- **chaves:** `área de trabalho/dividir/dividir esta`
+- **dica (hoje):** "Esta folha entrou como uma página só: o jeito de dividir do livro não achou duas páginas nela, e
+  aqui não dá para dividi-la." (o botão fica apagado)
+- **decisões:** D-009 ("abrir o livro sem escolher nenhuma opção para fazer tudo manualmente"), D-080, plano de
+  26/10, etapa 4 ("Dividir à mão folha por folha [...] 'dividir esta' sempre ativo")
+- **aguarda:** etapa 4 (dividir à mão folha por folha)
+- **na tela:** num livro aberto sem "Dividir", "dividir esta" fica aceso e põe a linha na folha.
+- **no projeto / no PDF:** a folha passa a sair como duas páginas.
+
+### P-060 · "não dividir esta" / "dividir esta" (folha já dividida)
+- **chaves:** `área de trabalho/dividir/não dividir esta`, `área de trabalho/dividir/dividir esta`
+- **decisões:** D-080 ("trocando numa folha se um ficar ruim")
+- **na tela:** o botão troca de nome ("não dividir esta" ↔ "dividir esta").
+- **no projeto:** a folha deixa de ser dividida (e volta, com "dividir esta").
+- **no PDF:** a folha não dividida sai como UMA página (a folha inteira, deitada).
 
 ### P-061 · "usar em todas" (Dividir)
 - **chaves:** `área de trabalho/dividir/usar em todas`
