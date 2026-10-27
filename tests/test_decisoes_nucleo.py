@@ -226,3 +226,146 @@ def test_projeto_legivel_ou_ausente_nao_avisa(tmp_path):
     lido = projetos.ler_estado(resumo)
     assert lido.projeto is not None and not lido.ilegivel and lido.aviso == ""
     assert not list(pasta.glob("projeto.estragado-*"))
+
+
+# --- item 4: "Parece em branco" falso em página com texto ---------------------
+
+def _folha_dupla_texto_e_branco() -> np.ndarray:
+    """Folha deitada de livro aberto: a página da esquerda com linhas de
+    texto, a da direita em branco (só o papel)."""
+    img = np.full((800, 1200, 3), 245, np.uint8)
+    for y in range(120, 680, 28):                 # linhas de "texto" na esquerda
+        img[y:y + 8, 90:520] = 20
+    return img
+
+
+def _projeto_da_folha_dupla(tmp_path) -> Projeto:
+    entrada = tmp_path / "dupla.pdf"
+    _pdf(entrada, _folha_dupla_texto_e_branco())
+    projeto = Projeto(caminho_entrada=str(entrada), caminho_saida=str(tmp_path / "s.pdf"),
+                      nome="dupla")
+    projeto.dividir_folhas = True
+    projeto.endireitar = projeto.cortar_bordas = projeto.limpar = False
+    projeto.detectar_regioes = projeto.montar_cadernos = False
+    projeto.filtro_padrao = ORIGINAL
+    projeto.qualidade_dpi = DPI
+    # a análise dividiu errado (a 10%, como o ScanTailor na folha 4 do
+    # "La vida eterna"): a "página" da esquerda era uma tira de margem, sem
+    # texto, e ganhou "Parece em branco"; a da direita, com o texto, não
+    folha = ConfigFolha(indice=0, dividir=True, posicao_corte=0.10, e_paisagem=True)
+    projeto.folhas = [folha]
+    projeto.paginas = [ConfigPagina(indice=0, folha=0, metade="esquerda", filtro=ORIGINAL),
+                       ConfigPagina(indice=1, folha=0, metade="direita", filtro=ORIGINAL)]
+    return projeto
+
+
+def test_d271_parece_em_branco_sai_quando_a_divisao_muda_e_a_pagina_tem_texto(tmp_path):
+    """D-271 ("Tem que ter um tipo de aviso para cada coisa") e D-288 (página
+    com conteúdo não recebe "Parece em branco"). Teste do Kaique (sessão 1,
+    26/10/2026, print s1-06; lista única 5.7): "Esta página parece estar em
+    branco" na página 7 do "La vida eterna", que tem texto.
+
+    Causa: o aviso é decidido UMA vez, na análise, na metade da folha que a
+    análise dividiu (core.pipeline._analisar_a_folha). O ScanTailor dividiu
+    a folha 4 a 10% (a linha escura da beirada), a página 7 era uma tira de
+    margem e ganhou o aviso; com a divisão acertada (arrastando a linha), a
+    página 7 passou a ser a página de texto e o aviso ficou. Antes deste
+    conserto nada media o aviso de novo.
+
+    Agora a prévia (renderizar_pagina) mede de novo, na mesma escala da
+    análise, a página como ela está dividida agora: com texto, o aviso sai."""
+    from core import analise
+    from core.pdf_io import abrir_pdf
+    from core.pipeline import renderizar_pagina
+
+    projeto = _projeto_da_folha_dupla(tmp_path)
+    esquerda, direita = projeto.paginas
+    esquerda.alertas = [analise.EM_BRANCO]
+    projeto.folhas[0].posicao_corte = 0.5          # a pessoa acertou a divisão
+    doc = abrir_pdf(projeto.caminho_entrada)
+    try:
+        renderizar_pagina(doc, projeto, esquerda)
+    finally:
+        doc.close()
+    assert analise.EM_BRANCO not in esquerda.alertas, "página com texto continua 'Parece em branco'"
+
+
+def test_parece_em_branco_continua_na_pagina_branca_de_verdade(tmp_path):
+    """O outro lado: a página branca de verdade (a da direita, só papel)
+    continua com o aviso depois da prévia, na prévia de sempre (150 DPI) e na
+    do tamanho do PDF (300 DPI)."""
+    from core import analise
+    from core.pdf_io import abrir_pdf
+    from core.pipeline import renderizar_pagina
+
+    projeto = _projeto_da_folha_dupla(tmp_path)
+    projeto.folhas[0].posicao_corte = 0.5
+    direita = projeto.paginas[1]
+    direita.alertas = [analise.EM_BRANCO]
+    doc = abrir_pdf(projeto.caminho_entrada)
+    try:
+        for dpi in (150, 300, 55):
+            renderizar_pagina(doc, projeto, direita, dpi=dpi)
+            assert analise.EM_BRANCO in direita.alertas, f"a página branca perdeu o aviso ({dpi} DPI)"
+    finally:
+        doc.close()
+
+
+LA_VIDA_ETERNA = r"D:/Livros para editar/2 - TEOLOGIA/Escatologia/La vida eterna y La profundidad del alma.pdf"
+
+
+@pytest.mark.skipif(not __import__("os").path.isfile(LA_VIDA_ETERNA),
+                    reason="o 'La vida eterna' não está neste computador")
+def test_la_vida_eterna_pagina_7_com_texto_perde_o_aviso_e_as_brancas_ficam(tmp_path):
+    """O caso do Kaique, no livro de verdade (só lido; as 6 primeiras folhas
+    copiadas para a pasta do teste). A análise de fábrica dá "Parece em
+    branco" às páginas 2, 7 e 9 (como no print dele). Com a divisão das folhas
+    4 e 5 no meio (a linha azul do print s1-07, 0,55), a página 7 é a página de
+    texto "8" e perde o aviso; a 2 (verso em branco da folha 1) e a 9 (verso
+    em branco da folha 5) continuam com ele."""
+    from core import analise
+    from core.pdf_io import abrir_pdf
+    from core.pipeline import analisar_projeto, renderizar_pagina
+
+    copia = tmp_path / "vida6.pdf"
+    with fitz.open(LA_VIDA_ETERNA) as livro, fitz.open() as novo:
+        novo.insert_pdf(livro, from_page=0, to_page=5)
+        novo.save(str(copia))
+    projeto = Projeto(caminho_entrada=str(copia), caminho_saida=str(tmp_path / "s.pdf"),
+                      nome="vida")
+    projeto.dividir_folhas, projeto.endireitar = True, True
+    projeto.cortar_bordas = projeto.limpar = False
+    analisar_projeto(projeto)
+    com_aviso = [p.indice + 1 for p in projeto.paginas if analise.EM_BRANCO in p.alertas]
+    assert com_aviso == [2, 7, 9]
+    projeto.folhas[3].posicao_corte = 0.55
+    projeto.folhas[4].posicao_corte = 0.55
+    doc = abrir_pdf(projeto.caminho_entrada)
+    try:
+        for indice in (1, 6, 8):
+            renderizar_pagina(doc, projeto, projeto.paginas[indice])
+    finally:
+        doc.close()
+    com_aviso = [p.indice + 1 for p in projeto.paginas if analise.EM_BRANCO in p.alertas]
+    assert com_aviso == [2, 9]
+
+
+def test_parece_em_branco_nao_conta_a_beirada_do_livro_como_conteudo():
+    """A página branca de verdade com a beirada do livro escaneado (uma
+    linha escura comprida embaixo e outra do lado, um pouco tortas, como o
+    verso da folha 5 do "La vida eterna") continua "em branco": linha reta
+    comprida não é conteúdo. A mesma página com uma só palavra de texto, e
+    a página de texto com as mesmas linhas, não são."""
+    from core.analise import parece_em_branco
+
+    branca = np.full((1240, 900, 3), 250, np.uint8)
+    cv2.line(branca, (180, 1050), (890, 1046), (20, 20, 20), 3)     # beirada de baixo
+    cv2.line(branca, (180, 250), (183, 1050), (20, 20, 20), 3)      # beirada do lado
+    assert parece_em_branco(branca)
+    com_texto = branca.copy()
+    for y in range(300, 900, 28):
+        com_texto[y:y + 8, 260:760] = 20
+    assert not parece_em_branco(com_texto)
+    titulo = branca.copy()
+    cv2.putText(titulo, "DA ORACAO", (300, 500), cv2.FONT_HERSHEY_SIMPLEX, 1.2, (20, 20, 20), 3)
+    assert not parece_em_branco(titulo), "página com título não é 'em branco' (D-288)"

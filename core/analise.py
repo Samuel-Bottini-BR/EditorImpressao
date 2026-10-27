@@ -622,8 +622,45 @@ EM_BRANCO_TOM = 0.5
 EM_BRANCO_BEIRADA = 0.08
 
 
+# A BEIRADA DO LIVRO NÃO É CONTEÚDO (etapa 9c da obra, 26/10/2026; teste do
+# Kaique no "La vida eterna"): no livro escaneado aberto, a beirada das folhas
+# aparece como linha escura comprida embaixo e do lado da página (o verso em
+# branco da folha 5 tem 0,59% de tinta forte, toda nessas duas linhas, e não
+# ganhava o aviso). Linha reta comprida - mais de EM_BRANCO_LINHA_COMPRIDA da
+# altura ou da largura do miolo, um pouco torta (até EM_BRANCO_LINHA_TORTA da
+# menor medida, ~7 pontos a 150 DPI) - sai da conta. Só é procurada quando a
+# tinta forte está abaixo de EM_BRANCO_SO_LINHAS_ATE (as páginas com conteúdo
+# do estudo têm 0,99% ou mais; acima disso nem se procura: nenhuma conta a
+# mais na análise das páginas escritas). Seguro mudar: os três números, para
+# mais estreito. Arriscado: EM_BRANCO_LINHA_COMPRIDA pequeno (traço de letra
+# grande ou de desenho de traço sairia da conta).
+EM_BRANCO_SO_LINHAS_ATE = 0.01
+EM_BRANCO_LINHA_COMPRIDA = 0.15
+EM_BRANCO_LINHA_TORTA = 0.008
+
+
+def _sem_as_linhas_compridas(forte: np.ndarray) -> np.ndarray:
+    """A máscara da tinta forte sem as linhas retas compridas, deitadas ou em
+    pé (a beirada do livro). Cada linha é achada numa cópia engrossada na
+    outra direção (para aguentar a linha um pouco torta) e aberta com um
+    traço comprido; o que sobra da abertura, um pouco alargado, sai da
+    máscara."""
+    mascara = forte.astype(np.uint8)
+    altura, largura = mascara.shape[:2]
+    torta = max(3, int(round(min(altura, largura) * EM_BRANCO_LINHA_TORTA)))
+    deitada = cv2.dilate(mascara, np.ones((torta, 1), np.uint8))
+    deitada = cv2.morphologyEx(deitada, cv2.MORPH_OPEN, np.ones(
+        (1, max(3, int(largura * EM_BRANCO_LINHA_COMPRIDA))), np.uint8))
+    em_pe = cv2.dilate(mascara, np.ones((1, torta), np.uint8))
+    em_pe = cv2.morphologyEx(em_pe, cv2.MORPH_OPEN, np.ones(
+        (max(3, int(altura * EM_BRANCO_LINHA_COMPRIDA)), 1), np.uint8))
+    linhas = cv2.dilate(deitada | em_pe, np.ones((3, 3), np.uint8))
+    return (mascara > 0) & (linhas == 0)
+
+
 def parece_em_branco(img: np.ndarray) -> bool:
-    """A página quase não tem tinta forte no miolo (ver EM_BRANCO_TINTA_FORTE)."""
+    """A página quase não tem tinta forte no miolo (ver EM_BRANCO_TINTA_FORTE),
+    sem contar a beirada do livro (ver EM_BRANCO_SO_LINHAS_ATE)."""
     cinza = img if img.ndim == 2 else cv2.cvtColor(img, cv2.COLOR_BGR2GRAY)
     a, l = cinza.shape[:2]
     b = EM_BRANCO_BEIRADA
@@ -631,7 +668,13 @@ def parece_em_branco(img: np.ndarray) -> bool:
     if miolo.size == 0:
         return False
     papel = float(np.percentile(miolo, 90))
-    return float((miolo < EM_BRANCO_TOM * papel).mean()) < EM_BRANCO_TINTA_FORTE
+    forte = miolo < EM_BRANCO_TOM * papel
+    fracao = float(forte.mean())
+    if fracao < EM_BRANCO_TINTA_FORTE:
+        return True
+    if fracao >= EM_BRANCO_SO_LINHAS_ATE:
+        return False
+    return float(_sem_as_linhas_compridas(forte).mean()) < EM_BRANCO_TINTA_FORTE
 
 
 def dpi_estimado(largura_px: int, largura_pt: float) -> float:
