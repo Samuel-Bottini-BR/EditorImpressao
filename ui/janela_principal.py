@@ -1751,8 +1751,12 @@ class JanelaPrincipal(QMainWindow):
     def cancelar(self) -> None:
         """Botão "cancelar" da tela de progresso: pede pra thread parar e volta
         para a area de trabalho. Cancelar o Automatico nao muda nada no livro
-        (ele so grava no fim: _aplicar_o_automatico)."""
-        if self.tarefa is not None and self.tarefa.isRunning():
+        (ele so grava no fim: _aplicar_o_automatico). A medida que ja acabou,
+        com o resultado ainda na fila, tambem e marcada como cancelada: o
+        resultado e ignorado quando chegar (_automatico_mediu)."""
+        if isinstance(self.tarefa, TarefaAutomatico):
+            self.tarefa.cancelar()
+        elif self.tarefa is not None and self.tarefa.isRunning():
             self.tarefa.cancelar()
         self.telas.setCurrentIndex(CONFERIR if self.projeto is not None else INICIO)
 
