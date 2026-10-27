@@ -203,6 +203,10 @@ def test_a_faixa_tem_esta_certo_e_proxima_duvida(janela, pasta):
         assert botao.isVisible()
     for pagina in janela.projeto.paginas:
         pagina.alertas, pagina.revisada = [], False
+    # etapa 7 da obra: os avisos da folha aparecem na faixa das páginas dela
+    # (lista única 5.5); a página "sem aviso" precisa da folha sem aviso
+    for folha in janela.projeto.folhas:
+        folha.alertas, folha.revisada = [], False
     janela.projeto.paginas[3].alertas = [analise.COR]
     tela.ir_para_pagina(0)
     assert tela.botao_proxima_duvida.isEnabled()

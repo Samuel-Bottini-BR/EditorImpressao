@@ -577,9 +577,10 @@ programa), a partir do **nome do botão**, da **dica** (o balão do mouse) e das
 
 ### P-095 · "ver as N em tela cheia" (só as páginas com dúvida)
 - **chaves:** `área de trabalho/para revisar/ver as N em tela cheia`
-- **decisões:** D-259 ("abrir todas as páginas em tela cheia (como no UPDF) mostrando as que precisam de atenção")
-- **aguarda:** etapa 7, D-259
-- **na tela:** abre a tela cheia só com as páginas com dúvida.
+- **decisões:** D-259 ("abrir todas as páginas em tela cheia (como no UPDF) mostrando as que precisam de atenção"),
+  D-343 ("todas / só as que precisam de atenção"); desenho decidido da rodada 13 (botão largo no pé do painel)
+- **na tela:** abre a grade "Todas as páginas" já em "só as que precisam de atenção": só as páginas com dúvida; o N
+  do botão e o número da grade são o mesmo do "Para revisar" (etapa 7, lista única 5.5). **no projeto:** nada muda.
 
 ## Área de trabalho: a faixa embaixo da página e os botões dos avisos
 
@@ -595,8 +596,9 @@ programa), a partir do **nome do botão**, da **dica** (o balão do mouse) e das
 - **decisões:** plano de 26/10, etapa 7 ("'está certo' com resposta: tique, contador certo, próxima dúvida"; lista
   única 1.1; Samuel na sessão 1: o "está certo" mudo), D-010 (o exemplo dele: "a folha fica conferida, tique na
   miniatura, contador sobe, vai para a próxima dúvida")
-- **aguarda:** etapa 7 (lista única 1.1)
-- **na tela:** a miniatura ganha o tique, o contador de conferidas sobe, e a tela vai para a próxima página com dúvida.
+- **na tela:** a miniatura ganha o tique, o contador de conferidas sobe, e a tela vai para a próxima página com dúvida
+  (no Dividir: a folha, o tique na miniatura da folha, o contador de folhas conferidas, a próxima folha com dúvida).
+  Sem outra dúvida no livro, fica onde está (o tique e o contador mostram que pegou).
 
 ### P-102 · "próxima dúvida"
 - **chaves:** `área de trabalho/faixa do aviso/próxima dúvida`
@@ -604,18 +606,21 @@ programa), a partir do **nome do botão**, da **dica** (o balão do mouse) e das
 - **na tela:** vai para a próxima página que ainda tem aviso. **no projeto:** nada muda.
 
 ### P-103 · aviso: "está bom assim"
-- **chaves:** `aviso/revisar`, `área de trabalho/faixa do aviso/está bom assim`
+- **chaves:** `aviso/revisar`, `área de trabalho/faixa do aviso/está bom assim`,
+  `área de trabalho/para revisar/está bom assim` (o mesmo botão no cartão da página da vez; etapa 7, lista única 1.8)
 - **decisões:** D-272 ("com um motivo individual de uma pagina"), D-269
 - **no projeto:** só este motivo desta página fica dado por visto; a página não muda.
 - **no PDF:** a página sai igual.
 
 ### P-104 · aviso: "Deixar em branco"
-- **chaves:** `aviso/em_branco`, `área de trabalho/faixa do aviso/Deixar em branco`
+- **chaves:** `aviso/em_branco`, `área de trabalho/faixa do aviso/Deixar em branco`,
+  `área de trabalho/para revisar/Deixar em branco` (o mesmo botão no cartão da página da vez; etapa 7, lista única 1.8)
 - **decisões:** D-269, D-271 ("'Deixar em branco' mantém a página branca no lugar"), D-046
 - **no projeto / no PDF:** como P-054 (mesmo número de páginas, esta toda branca).
 
 ### P-105 · aviso: "Tirar do livro"
-- **chaves:** `aviso/apagar`, `área de trabalho/faixa do aviso/Tirar do livro`
+- **chaves:** `aviso/apagar`, `área de trabalho/faixa do aviso/Tirar do livro`,
+  `área de trabalho/para revisar/Tirar do livro` (o mesmo botão no cartão da página da vez; etapa 7, lista única 1.8)
 - **decisões:** D-269, D-271
 - **no projeto / no PDF:** como P-056 (a página some do PDF).
 

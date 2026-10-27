@@ -1,0 +1,73 @@
+FFFFFFFFFFFFF                                                            [100%]
+================================== FAILURES ===================================
+E   AttributeError: 'Miniatura' object has no attribute 'conferida'
+D:\programas\EditorImpressao\.claude\worktrees\obra-etapa7\_tmp\antigo\tests\test_decisoes_avisos.py:188: AttributeError: 'Miniatura' object has no attribute 'conferida'
+E   assert '0 de 5 conferidas' in 'livro · 0 de 10 conferidas · 0 com dúvida'
+     +  where 'livro · 0 de 10 conferidas · 0 com dúvida' = <built-in method text of PySide6.QtWidgets.QLabel object at 0x0000025301DE3B00>()
+     +    where <built-in method text of PySide6.QtWidgets.QLabel object at 0x0000025301DE3B00> = <PySide6.QtWidgets.QLabel(0x25304860240, name="rotuloDaBarraDeBaixo") at 0x0000025301DE3B00>.text
+     +      where <PySide6.QtWidgets.QLabel(0x25304860240, name="rotuloDaBarraDeBaixo") at 0x0000025301DE3B00> = <ui.tela_conferir.TelaConferir(0x253014ef910) at 0x0000025301C3F8C0>.rotulo_do_livro
+D:\programas\EditorImpressao\.claude\worktrees\obra-etapa7\_tmp\antigo\tests\test_decisoes_avisos.py:208: assert '0 de 5 conferidas' in 'livro · 0 de 10 conferidas · 0 com dúvida'
+E   AttributeError: 'Miniatura' object has no attribute 'conferida'
+D:\programas\EditorImpressao\.claude\worktrees\obra-etapa7\_tmp\antigo\tests\test_decisoes_avisos.py:227: AttributeError: 'Miniatura' object has no attribute 'conferida'
+E   AssertionError: {'rodapé': 1, 'Para revisar': 1, 'linhas do Para revisar': 1, 'Antes de processar': 3, ...}
+    assert {1, 3, 10} == {3}
+      
+      Extra items in the left set:
+      1
+      10
+      Use -v to get more diff
+D:\programas\EditorImpressao\.claude\worktrees\obra-etapa7\_tmp\antigo\tests\test_decisoes_avisos.py:277: AssertionError: {'rodapé': 1, 'Para revisar': 1, 'linhas do Para revisar': 1, 'Antes de processar': 3, ...}
+E   assert 10 == 0
+     +  where 10 = _nao_conferidas()
+     +    where _nao_conferidas = <ui.janela_confirmar.JanelaConfirmar(0x2530928f320) at 0x000002530246D780>._nao_conferidas
+D:\programas\EditorImpressao\.claude\worktrees\obra-etapa7\_tmp\antigo\tests\test_decisoes_avisos.py:294: assert 10 == 0
+E   AssertionError: o aviso da folha não aparece na página
+    assert 'Esta página foi escaneada em qualidade baixa. O resultado pode não ficar bom.' in 'Esta página vai sair em Original.'
+     +  where 'Esta página foi escaneada em qualidade baixa. O resultado pode não ficar bom.' = Alerta(codigo='resolucao_baixa', titulo='Qualidade baixa', mensagem='Esta página foi escaneada em qualidade baixa. O r...'está bom assim', correcao='revisar', outra_acao=None, outra_correcao=None, terceira_acao=None, terceira_correcao=None).mensagem
+     +  and   'Esta página vai sair em Original.' = <built-in method text of PySide6.QtWidgets.QLabel object at 0x000002530221A880>()
+     +    where <built-in method text of PySide6.QtWidgets.QLabel object at 0x000002530221A880> = <PySide6.QtWidgets.QLabel(0x25306ae2e30) at 0x000002530221A880>.text
+     +      where <PySide6.QtWidgets.QLabel(0x25306ae2e30) at 0x000002530221A880> = <ui.tela_conferir.TelaConferir(0x25308fd8fd0) at 0x00000253023E6580>.texto_faixa
+D:\programas\EditorImpressao\.claude\worktrees\obra-etapa7\_tmp\antigo\tests\test_decisoes_avisos.py:308: AssertionError: o aviso da folha não aparece na página
+E   AttributeError: 'PainelParaRevisar' object has no attribute 'botoes_do_cartao'. Did you mean: 'botoes_de_aba'?
+D:\programas\EditorImpressao\.claude\worktrees\obra-etapa7\_tmp\antigo\tests\test_decisoes_avisos.py:337: AttributeError: 'PainelParaRevisar' object has no attribute 'botoes_do_cartao'. Did you mean: 'botoes_de_aba'?
+E   AssertionError: ficou no Dividir
+    assert not True
+     +  where True = <ui.tela_conferir.TelaConferir(0x2530b4a6e40) at 0x00000253024C5B00>.trabalha_com_folhas
+D:\programas\EditorImpressao\.claude\worktrees\obra-etapa7\_tmp\antigo\tests\test_decisoes_avisos.py:373: AssertionError: ficou no Dividir
+E   AssertionError: []
+    assert [] == ['Página 5', 'Página 6']
+      
+      Right contains 2 more items, first extra item: 'Página 5'
+      Use -v to get more diff
+D:\programas\EditorImpressao\.claude\worktrees\obra-etapa7\_tmp\antigo\tests\test_decisoes_avisos.py:388: AssertionError: []
+E   AttributeError: 'PainelParaRevisar' object has no attribute 'botao_tela_cheia'
+D:\programas\EditorImpressao\.claude\worktrees\obra-etapa7\_tmp\antigo\tests\test_decisoes_avisos.py:407: AttributeError: 'PainelParaRevisar' object has no attribute 'botao_tela_cheia'
+E   assert False
+     +  where False = <built-in method isVisibleTo of PySide6.QtWidgets.QLabel object at 0x0000025303E39140>(<ui.widgets.paineis.PainelParaRevisar(0x2530f7e4170, name="painelDaDireita") at 0x0000025303DCDC00>)
+     +    where <built-in method isVisibleTo of PySide6.QtWidgets.QLabel object at 0x0000025303E39140> = <PySide6.QtWidgets.QLabel(0x2530f7e44d0, name="fraseDoPainel") at 0x0000025303E39140>.isVisibleTo
+     +      where <PySide6.QtWidgets.QLabel(0x2530f7e44d0, name="fraseDoPainel") at 0x0000025303E39140> = <ui.widgets.paineis.PainelParaRevisar(0x2530f7e4170, name="painelDaDireita") at 0x0000025303DCDC00>.frase_do_livro
+D:\programas\EditorImpressao\.claude\worktrees\obra-etapa7\_tmp\antigo\tests\test_decisoes_avisos.py:434: assert False
+E   AssertionError: assert 'Para revisar: 1' == 'Para revisar: 3'
+      
+      - Para revisar: 3
+      ?               ^
+      + Para revisar: 1
+      ?               ^
+D:\programas\EditorImpressao\.claude\worktrees\obra-etapa7\_tmp\antigo\tests\test_decisoes_avisos.py:457: AssertionError: assert 'Para revisar: 1' == 'Para revisar: 3'
+E   AssertionError: não aconteceu a tempo: o aviso não chegou ao painel
+D:\programas\EditorImpressao\.claude\worktrees\obra-etapa7\_tmp\antigo\tests\test_decisoes_avisos.py:119: AssertionError: não aconteceu a tempo: o aviso não chegou ao painel
+=========================== short test summary info ===========================
+FAILED tests/test_decisoes_avisos.py::test_p101_esta_certo_na_pagina_conferida_tique_contador_e_proxima_duvida
+FAILED tests/test_decisoes_avisos.py::test_esta_certo_no_dividir_conta_folhas_e_vai_para_a_proxima_folha_com_duvida
+FAILED tests/test_decisoes_avisos.py::test_esta_certo_sem_outra_duvida_fica_e_mostra_o_tique
+FAILED tests/test_decisoes_avisos.py::test_5_5_um_numero_so_em_todo_lugar_com_os_avisos_da_folha
+FAILED tests/test_decisoes_avisos.py::test_kaique_356_nao_conferidas_depois_de_nada_pendente
+FAILED tests/test_decisoes_avisos.py::test_aviso_da_folha_aparece_na_pagina_com_o_botao_e_o_esta_certo_responde
+FAILED tests/test_decisoes_avisos.py::test_1_8_cartao_do_aviso_tem_os_botoes_e_o_clique_faz_o_que_o_aviso_diz
+FAILED tests/test_decisoes_avisos.py::test_0_8_clicar_no_cartao_estando_no_dividir_mostra_o_aviso_da_pagina
+FAILED tests/test_decisoes_avisos.py::test_d501_cartao_com_aviso_da_divisao_vai_ao_dividir
+FAILED tests/test_decisoes_avisos.py::test_d259_ver_as_n_em_tela_cheia_abre_so_as_que_precisam
+FAILED tests/test_decisoes_avisos.py::test_d521_avisos_do_livro_no_alto_do_para_revisar_e_no_livro_aberto
+FAILED tests/test_decisoes_avisos.py::test_livro_aberto_ver_todas_conta_as_mesmas_duvidas
+FAILED tests/test_decisoes_avisos.py::test_d497_mexer_na_divisao_chama_por_tras_a_conta_do_em_branco
+13 failed in 41.70s

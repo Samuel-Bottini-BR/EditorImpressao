@@ -37,9 +37,9 @@ Os cinco painéis, na ordem dos ícones (a do protótipo 21-rodada13-base):
   Histórico           as ações da sessão; clicar volta o trabalho até ali
 
 O que NÃO existe ainda no programa e por isso não aparece (não inventado
-aqui): receitas e ordem das etapas no Automático; "ver as N em tela cheia" e
-as miniaturas no Para revisar; o painel Filtro novo (fila de filtros e partes
-que abrem e fecham), que é da etapa seguinte do layout.
+aqui): as miniaturas no Para revisar. ("ver as N em tela cheia" entrou na
+etapa 7 da obra, D-259; o Automático e o painel Filtro novos, nas etapas
+deles.)
 
 Seguro mudar: textos, cores, tamanhos, os desenhos dos ícones. Arriscado:
 tirar um painel ou um botão (tudo o que existia continua existindo, só mudou
@@ -319,6 +319,19 @@ def frase_do_painel(texto: str) -> QLabel:
     rotulo.setObjectName("fraseDoPainel")
     rotulo.setWordWrap(True)
     return rotulo
+
+
+def frase_dos_avisos_do_livro(observacoes) -> str:
+    """A linha dos avisos que valem para o livro inteiro (D-521, Central
+    `pd-avisos-do-livro`: "No alto do painel \"Para revisar\" e no livro
+    aberto da tela inicial"): "No livro inteiro: o livro inteiro é colorido;
+    as páginas deste livro têm uma faixa escura na beirada: confira o corte."
+    Vazia quando não há. O mesmo texto no painel e no livro aberto
+    (ui/tela_inicio.py). Seguro mudar: o começo da frase."""
+    frases = [str(o).strip().rstrip(".") for o in (observacoes or []) if str(o).strip()]
+    if not frases:
+        return ""
+    return "No livro inteiro: " + "; ".join(frases) + "."
 
 
 def risco_do_painel() -> QFrame:
@@ -684,11 +697,15 @@ class _LinhaPorPagina(QStyledItemDelegate):
     dúvida, e a lista é refeita quando os avisos mudam."""
 
     ALTURA = 78
+    ALTURA_DOS_BOTOES = 34          # etapa 7: a fila de botões do aviso no cartão da vez
     PAPEL_DO_MOTIVO = Qt.UserRole + 1
     PAPEL_DA_FRASE = Qt.UserRole + 2
+    PAPEL_COM_BOTOES = Qt.UserRole + 3
 
     def sizeHint(self, opcao, indice) -> QSize:  # noqa: N802 - nome do Qt
-        return QSize(120, self.ALTURA)      # a largura quem dá é a lista
+        # a largura quem dá é a lista; o cartão da vez cresce para os botões
+        extra = self.ALTURA_DOS_BOTOES if indice.data(self.PAPEL_COM_BOTOES) else 0
+        return QSize(120, self.ALTURA + extra)
 
     def paint(self, pintor: QPainter, opcao, indice) -> None:
         """A caixinha da linha: laranja quando é a página da vez."""
@@ -726,7 +743,9 @@ class _LinhaPorPagina(QStyledItemDelegate):
         fonte.setBold(False)
         pintor.setFont(fonte)
         pintor.setPen(QColor(estilo.cor("fraco")))
-        pintor.drawText(QRect(x, y, largura, int(caixa.bottom()) - y - 4),
+        embaixo = int(caixa.bottom()) - (self.ALTURA_DOS_BOTOES
+                                         if indice.data(self.PAPEL_COM_BOTOES) else 0)
+        pintor.drawText(QRect(x, y, largura, embaixo - y - 4),
                         Qt.AlignLeft | Qt.AlignTop | Qt.TextWordWrap,
                         str(indice.data(self.PAPEL_DA_FRASE) or ""))
         pintor.restore()
@@ -765,6 +784,10 @@ class PainelParaRevisar(Painel):
     aceitar_motivo = Signal(str)     # o código do alerta
     aceitar_tudo = Signal()
     abrir_lista = Signal()
+    # etapa 7 da obra: um botão do aviso no cartão da página da vez (qual: 0,
+    # 1 ou 2, os mesmos da faixa) e o "ver as N em tela cheia" (D-259)
+    botao_do_aviso = Signal(int)
+    ver_em_tela_cheia = Signal()
 
     def __init__(self, parent=None) -> None:
         super().__init__(NOMES_DOS_PAINEIS[PAINEL_REVISAR], parent, rolagem=False)
@@ -774,6 +797,11 @@ class PainelParaRevisar(Painel):
         self.itens: list[QPushButton] = []      # os botões da aba "Por motivo"
         self._assinatura: tuple | None = None
         self._paginas = 0
+        # etapa 7: (página da vez, rótulos dos botões do aviso dela) e a peça
+        # com os botões, posta no cartão dela (_por_os_botoes_no_cartao)
+        self._botoes_da_vez: tuple[int, tuple[str, ...]] = (-1, ())
+        self.botoes_do_cartao: list[QPushButton] = []
+        self._peca_dos_botoes: QWidget | None = None
 
         # as duas abas, uma ao lado da outra (a escolhida fica azul)
         linha = QHBoxLayout()
@@ -798,10 +826,14 @@ class PainelParaRevisar(Painel):
 
         self.frase = frase_do_painel("")
         self.dentro.addWidget(self.frase)
-        # O aviso do LIVRO da faixa escura na beirada (12/10/2026; Samuel,
-        # rodada 4, Camões 66: "aviso no livro basta"): quando a faixa está em
-        # quase todas as páginas, ela sai das páginas e é dita uma vez, aqui
-        # (core.pipeline.acertar_faixa_do_livro). Escondida quando não vale.
+        # Os avisos do LIVRO inteiro (D-521, 27/10/2026, Central
+        # `pd-avisos-do-livro`: "No alto do painel \"Para revisar\" e no livro
+        # aberto da tela inicial (recomendo)"): numa linha no alto, todos os
+        # fatos do livro (Projeto.observacoes: "o livro inteiro é colorido",
+        # a faixa escura na beirada - rodada 4, Camões 66: "aviso no livro
+        # basta" -, e o que mais a análise juntar; D-522 cai aqui quando a
+        # conta da etapa 9d for ligada). Antes só a faixa aparecia aqui; os
+        # outros moravam num rótulo escondido. Escondida quando não há.
         self.frase_do_livro = frase_do_painel("")
         self.frase_do_livro.setVisible(False)
         self.dentro.addWidget(self.frase_do_livro)
@@ -814,7 +846,8 @@ class PainelParaRevisar(Painel):
         self.lista.setObjectName("listaDoPainel")
         self.lista.setFrameShape(QFrame.NoFrame)
         self.lista.setItemDelegate(_LinhaPorPagina(self.lista))
-        self.lista.setUniformItemSizes(True)
+        # etapa 7: o cartão da vez é mais alto (os botões do aviso)
+        self.lista.setUniformItemSizes(False)
         self.lista.setHorizontalScrollBarPolicy(Qt.ScrollBarAlwaysOff)
         self.lista.setVerticalScrollMode(QAbstractItemView.ScrollPerPixel)
         self.lista.setSelectionMode(QAbstractItemView.SingleSelection)
@@ -840,6 +873,16 @@ class PainelParaRevisar(Painel):
 
         self.dentro.addWidget(self.pilha, 1)
 
+        # "ver as N em tela cheia" (D-259, 05/10: "abrir todas as páginas em
+        # tela cheia (como no UPDF) mostrando as que precisam de atenção";
+        # no desenho decidido, rodada 13, o botão largo no pé deste painel):
+        # abre a grade "Todas as páginas" em "só as que precisam de atenção"
+        self.botao_tela_cheia = botao_de_lista("ver as 0 em tela cheia")
+        self.botao_tela_cheia.setToolTip(
+            "Abre todas as páginas com dúvida em tela cheia, em grade, "
+            "para ver e ir a cada uma.")
+        self.botao_tela_cheia.clicked.connect(lambda _c=False: self.ver_em_tela_cheia.emit())
+        self.no_pe.addWidget(self.botao_tela_cheia)
         # o pé: "ver a lista…" e "está bom em tudo", sempre à vista (antes
         # ficavam no fim da lista e só apareciam rolando; verificador, 13/10)
         self.botao_ver_a_lista = botao_de_lista("ver a lista…")
@@ -889,52 +932,59 @@ class PainelParaRevisar(Painel):
 
     def atualizar(self, projeto) -> None:
         """Refaz as duas listas a partir do projeto. Só refaz de verdade
-        quando os avisos mudaram (a tela chama isto a cada troca de página)."""
-        from core import analise
+        quando os avisos mudaram (a tela chama isto a cada troca de página).
 
-        # Só os avisos que ainda pedem um olhar (ConfigPagina.alertas_pendentes:
-        # nem a página inteira foi dada como boa, nem aquele motivo dela).
+        Etapa 7 da obra (lista única 5.5, "Três lugares contam as dúvidas,
+        cada um dá um número, e os avisos de folha ficam escondidos"; D-285;
+        D-500: a folha com o corte duvidoso "vai para o 'Para revisar' como
+        'Lombada incerta'"): uma linha por PÁGINA com dúvida, com os avisos da
+        folha dela junto (core.avisos.linhas_do_para_revisar). O número é o de
+        todo lugar (core.avisos.quantas_com_duvida)."""
+        from core import avisos as avisos_do_livro
+
+        # (indice da pagina, codigos dos avisos): só os que ainda pedem um
+        # olhar (nem a página inteira foi dada como boa, nem aquele motivo).
+        # Uma folha sem página nenhuma no livro (caso raro) entra com o
+        # índice negativo -(folha + 1): conta, mas não leva a lugar nenhum.
         pendentes: list[tuple[int, tuple]] = []
         if projeto is not None:
-            for pagina in projeto.paginas:
-                if pagina.apagada:
-                    continue
-                alertas = tuple(pagina.alertas_pendentes)
-                if alertas:
-                    pendentes.append((pagina.indice, alertas))
-        frase_da_faixa = analise.OBSERVACOES[analise.FAIXA_NA_BEIRADA]
-        faixa_no_livro = projeto is not None and frase_da_faixa in (
-            getattr(projeto, "observacoes", None) or [])
-        assinatura = (tuple(pendentes), faixa_no_livro)
+            for alvo, indice, avisos in avisos_do_livro.linhas_do_para_revisar(projeto):
+                chave = indice if alvo == avisos_do_livro.PAGINA else -(indice + 1)
+                pendentes.append((chave, tuple(a.codigo for a in avisos)))
+        do_livro = tuple(getattr(projeto, "observacoes", None) or []) if projeto is not None else ()
+        assinatura = (tuple(pendentes), do_livro)
         if assinatura == self._assinatura:
             return
         self._assinatura = assinatura
         self._paginas = len(pendentes)
         self.cabecalho.definir_contagem(self._paginas)
-        self.frase_do_livro.setText("No livro inteiro: " + frase_da_faixa + "."
-                                    if faixa_no_livro else "")
-        self.frase_do_livro.setVisible(faixa_no_livro)
+        self.frase_do_livro.setText(frase_dos_avisos_do_livro(do_livro))
+        self.frase_do_livro.setVisible(bool(do_livro))
         self.pe.setVisible(bool(pendentes))
+        self.botao_tela_cheia.setText(f"ver as {self._paginas} em tela cheia")
         self._montar_por_pagina(pendentes)
         self._montar_por_motivo(pendentes)
         self._escrever_a_frase()
+        self._por_os_botoes_no_cartao()
         self.contagem_mudou.emit(self._paginas)
 
     def _montar_por_pagina(self, pendentes) -> None:
         """Uma linha por página com dúvida, na ordem do livro."""
         from core import analise
 
+        self._tirar_os_botoes_do_cartao()
         self.lista.clear()
         for indice, alertas in pendentes:
             descricoes = [analise.descrever(a) for a in alertas]
             motivo = " · ".join(
                 (getattr(d, "titulo", None) or str(a)) for d, a in zip(descricoes, alertas))
             frase = getattr(descricoes[0], "mensagem", "") or ""
-            item = QListWidgetItem(f"Página {indice + 1}")
+            nome = f"Página {indice + 1}" if indice >= 0 else f"Folha {-indice}"
+            item = QListWidgetItem(nome)
             item.setData(Qt.UserRole, indice)
             item.setData(_LinhaPorPagina.PAPEL_DO_MOTIVO, motivo)
             item.setData(_LinhaPorPagina.PAPEL_DA_FRASE, frase)
-            item.setToolTip(f"Página {indice + 1}: {motivo}\n{frase}\nclicar leva até ela")
+            item.setToolTip(f"{nome}: {motivo}\n{frase}\nclicar leva até ela")
             self.lista.addItem(item)
 
     def _montar_por_motivo(self, pendentes) -> None:
@@ -956,9 +1006,11 @@ class PainelParaRevisar(Painel):
             # usuario.
             nome = getattr(analise.descrever(alerta), "titulo", None) or alerta
             botao = botao_de_lista(f"{nome}   ({len(indices)})")
-            botao.clicked.connect(lambda _c=False, i=indices[0]: self.ir_para.emit(i))
+            primeira = next((i for i in indices if i >= 0), None)
+            if primeira is not None:
+                botao.clicked.connect(lambda _c=False, i=primeira: self.ir_para.emit(i))
             botao.setToolTip(
-                "páginas: " + ", ".join(str(i + 1) for i in indices[:20])
+                "páginas: " + ", ".join(str(i + 1) for i in indices[:20] if i >= 0)
                 + ("…" if len(indices) > 20 else ""))
             self.motivos.addWidget(botao)
             self.itens.append(botao)
@@ -986,10 +1038,78 @@ class PainelParaRevisar(Painel):
         elif self.lista.currentItem() is not escolhida:
             self.lista.setCurrentItem(escolhida)
 
+    # --- os botões do aviso no cartão da página da vez (etapa 7) -----------
+
+    def definir_botoes_da_vez(self, indice: int, rotulos) -> None:
+        """A tela diz quais botões a faixa mostra para a página `indice` (a
+        da vez); o cartão dela no "Por página" ganha os mesmos, e o clique
+        avisa `botao_do_aviso(qual)` - a tela faz o mesmo que o botão da faixa
+        (lista única 1.8; sessão 0, 0-7: "tem os avisos mas não tem como
+        apertar para fazer ele sumir"; D-268 "(a) Botão no aviso"). Só o
+        cartão da vez: o clique num cartão leva até a página, e ali os botões
+        aparecem."""
+        novo = (int(indice), tuple(rotulos or ()))
+        if novo == self._botoes_da_vez:
+            return
+        self._botoes_da_vez = novo
+        self._por_os_botoes_no_cartao()
+
+    def _tirar_os_botoes_do_cartao(self) -> None:
+        """Tira a fila de botões de qualquer cartão (antes de refazer a lista
+        ou de pôr no cartão da vez nova)."""
+        for linha in range(self.lista.count()):
+            item = self.lista.item(linha)
+            if item.data(_LinhaPorPagina.PAPEL_COM_BOTOES):
+                item.setData(_LinhaPorPagina.PAPEL_COM_BOTOES, False)
+                self.lista.removeItemWidget(item)
+        self._peca_dos_botoes = None
+        self.botoes_do_cartao = []
+
+    def _por_os_botoes_no_cartao(self) -> None:
+        """Põe a fila de botões embaixo do cartão da página da vez (tira de
+        qualquer outro). A peça é transparente: o cartão desenhado continua
+        aparecendo por baixo, e só os botões recebem o clique."""
+        self._tirar_os_botoes_do_cartao()
+        indice, rotulos = self._botoes_da_vez
+        if not rotulos:
+            return
+        alvo = None
+        for linha in range(self.lista.count()):
+            if self.lista.item(linha).data(Qt.UserRole) == indice:
+                alvo = self.lista.item(linha)
+                break
+        if alvo is None:
+            return
+        alvo.setData(_LinhaPorPagina.PAPEL_COM_BOTOES, True)
+        peca = QWidget()
+        peca.setAttribute(Qt.WA_TranslucentBackground, True)
+        peca.setAutoFillBackground(False)
+        coluna = QVBoxLayout(peca)
+        coluna.setContentsMargins(10, 0, 14, 9)
+        coluna.setSpacing(0)
+        coluna.addStretch(1)
+        fila = QHBoxLayout()
+        fila.setSpacing(5)
+        for qual, rotulo in enumerate(rotulos):
+            botao = QPushButton(rotulo)
+            botao.setObjectName("sugestao")        # o mesmo laranja da faixa
+            botao.setCursor(Qt.PointingHandCursor)
+            botao.setFocusPolicy(Qt.NoFocus)        # D-290: o teclado continua da página
+            botao.setToolTip("Faz o que o aviso sugere, nesta página "
+                             "(o mesmo botão da faixa embaixo da página).")
+            botao.clicked.connect(lambda _c=False, q=qual: self.botao_do_aviso.emit(q))
+            fila.addWidget(botao)
+            self.botoes_do_cartao.append(botao)
+        fila.addStretch(1)
+        coluna.addLayout(fila)
+        self.lista.setItemWidget(alvo, peca)
+        self._peca_dos_botoes = peca
+        self.lista.doItemsLayout()
+
     def _clicou_na_lista(self, item: QListWidgetItem) -> None:
         """Clique numa linha da lista "Por página": vai para a página."""
         indice = item.data(Qt.UserRole)
-        if indice is not None:
+        if indice is not None and int(indice) >= 0:
             self.ir_para.emit(int(indice))
 
 
