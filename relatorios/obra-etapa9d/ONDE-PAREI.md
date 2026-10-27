@@ -81,7 +81,16 @@ PDF lido de volta difere do `ad8df2b` em toda página de tons — é a volta ao 
 
 ## GitHub e velocidade
 
-GITHUB_AQUI
+- **Rodada inteira `40590248124`** (no `5be7f0f`): partes 2, 3, 4 e 5 da suíte e "Botões e prints da janela real"
+  **passaram**. Parte 1: **2 falhas, as mesmas que já falham no `obra-2026-10-26` sem esta etapa** (rodadas das etapas
+  4 e 10b): `test_promessas::test_p085` (tique do menu Filtro, D-492, etapa 9b) e `::test_p127[menu/processar]`
+  ("Antes de processar" pelo menu). 240 passaram, 7 xfail.
+- **Filtro de velocidade `40590288221`** (`ad8df2b` × ramo): **ainda rodando na entrega** (disparado às 21:52 UTC, ~1h55;
+  parei de acompanhar porque o limite de consultas da conta do GitHub estourou às 22:57 UTC). **A gerente lê o
+  veredito no topo da rodada.** O que esperar: o Mágico pro/Melhorar de 10 páginas pode sair "parece mais lento" uns 5%
+  — é a volta da gravação sem perda (zlib) que a ordem de 27/10 mandou (a etapa 10b tinha medido -5% a -7,5% com o
+  JPEG); não é conta nova. As contas novas desta etapa não rodam no caminho de fábrica (D-532 e D-522 desligadas; D-497,
+  D-528 e o item 4 só com divisão/marcação à mão).
 
 ## Perguntas para o Samuel (a gerente leva à Central)
 
