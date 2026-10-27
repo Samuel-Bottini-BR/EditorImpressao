@@ -1,13 +1,17 @@
 {
   "_leia": "Fonte da Central de decisões (https://claude.ai/artifact/XNFrsdVR7q4K8cBcxNftZy). A gerente mantém este arquivo; docs/plano/para_a_central.py junta com o plano, a Lista de bugs e o git e gera o banco da página. Coluna: decidir | melhorar | sem-aprovado | andamento | programa | fila. Selos: sim | nao | falta | parte.",
   "geral": {
-    "frase": "Fase 2 no programa (junção de 23/10). Agora: testes guiados. Já há uma lista de 50 problemas (você, o mapa e os 14 livros); os consertos vêm numa rodada só, depois das sessões.",
+    "frase": "Fase 2 no programa (junção de 23/10). Agora: a obra de 26/10 (área de trabalho como o Photoshop, automático de verdade e os consertos), feita até o fim sem pausas; você confere tudo no fim.",
     "faseAtual": "2",
     "conferencia": "https://claude.ai/artifact/J8AwcyyUwrZ2n7kSevyGvX",
     "escolhas": "https://claude.ai/artifact/EJoJq5mocxi3vbNxU8ZecV",
     "memoria": "https://claude.ai/artifact/TmMnggDtL2wtyeXVs1RvcE",
     "layout": "https://claude.ai/artifact/QuzVaghq2tz2WVwJ1AyMWu",
     "novidades": [
+      {
+        "em": "2026-10-27T01:16:00Z",
+        "texto": "Novas perguntas para você responder quando puder (Conferência > \"Perguntas que ficaram sem resposta\", 6 perguntas); a obra continua sem esperar."
+      },
       {
         "em": "2026-10-24T03:00:00Z",
         "texto": "Checkpoint: tudo salvo. A lista única com os 50 problemas achados está em relatorios/testes-guiados/lista-unica-2026-10-23/lista.html. Falta você dizer se quer o bloco \"Avisos\" no topo e quando fazemos a sessão 1."
@@ -875,6 +879,34 @@
       "ramo": "fase-1",
       "commit": "718454b",
       "mudouEm": "2026-10-23T20:00:00Z"
+    },
+    {
+      "id": "pendentes-26-10",
+      "titulo": "6 perguntas que ficaram sem resposta",
+      "item": "Perguntas",
+      "fase": "2",
+      "coluna": "decidir",
+      "oque": "Perguntas antigas que nunca tiveram resposta sua (o aviso que o Kaique pediu, a escala do notebook dele, a ordem das páginas, os avisos do livro inteiro, os versos em branco e a língua do OCR). Conferi uma por uma: nenhuma foi respondida antes.",
+      "situacao": "Abertas na Conferência, aba \"Perguntas que ficaram sem resposta\". Responda quando puder.",
+      "falta": "A obra não espera: enquanto isso vale a opção recomendada de cada uma.",
+      "selos": {},
+      "fotos": [],
+      "testar": [],
+      "mudouEm": "2026-10-27T01:16:00Z"
+    },
+    {
+      "id": "obra-26-10",
+      "titulo": "Obra de 26/10 (área de trabalho como o Photoshop + automático + consertos)",
+      "item": "Obra",
+      "fase": "2",
+      "coluna": "andamento",
+      "oque": "Fazer de verdade o que você decidiu em 25/09: o livro abre direto na área de trabalho com todas as ferramentas à vista, o Automático vira um painel que roda no livro todo, em páginas escolhidas, numa página ou numa etapa só, e os consertos da lista única entram junto.",
+      "situacao": "Em andamento, num ramo próprio, até o fim sem pausas (sua ordem de 26/10, D-014). Plano aprovado em 26/10: etapas 0 a 11 (Registro de mudanças do docs/plano/PLANO-DEFINITIVO.md, 26/10/2026; decisões em docs/plano/DECISOES.md).",
+      "falta": "Etapa 0 (Livro de decisões completo) e etapa 1 (o feito à mão sempre vale no PDF) começaram; depois as etapas 2 a 11. Nada entra no programa antes da sua conferência final.",
+      "selos": {},
+      "fotos": [],
+      "testar": [],
+      "mudouEm": "2026-10-27T01:16:00Z"
     }
   ],
   "agentes": [

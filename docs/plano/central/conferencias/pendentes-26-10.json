@@ -1,0 +1,214 @@
+{
+ "id": "pendentes-26-10",
+ "nome": "Perguntas que ficaram sem resposta",
+ "trabalho": "pendentes-26-10",
+ "ordem": 0,
+ "origem": "auditoria dos documentos de 26/10 (relatorios/testes-guiados/2026-10-26-sessao-1/auditoria-documentos.md, seção 4), conferida uma por uma",
+ "resumo": {
+  "titulo": "6 perguntas para responder quando puder",
+  "paragrafos": [
+   "Você pediu em 26/10: \"coloque as perguntas sem resposta para responder na central\". Revisei uma por uma todas as perguntas que a auditoria dos documentos achou penduradas, e procurei a resposta no plano, nas conferências, no Livro de decisões e nas suas respostas aqui na Central.",
+   "Ficaram só estas 6. Nenhuma delas tem resposta sua em lugar nenhum. As que você já tinha respondido, ou que se resolvem pela sua regra \"vale a decisão mais recente\", não estão aqui (a lista do que tirei e por quê está em relatorios/central-pendentes-2026-10-26.md).",
+   "A obra não espera por estas respostas. Enquanto você não responde, vale o que já está decidido e, onde falta, a opção que eu recomendo (a primeira de cada pergunta). Se alguma não ficar clara, marque \"Ainda não entendi\" e escreva o porquê."
+  ]
+ },
+ "quadros": [],
+ "perguntas": [
+  {
+   "id": "pd-aviso-kaique",
+   "titulo": "Qual é o aviso que o Kaique pediu em 24/09?",
+   "explicacao": [
+    "Em 24/09 ficou anotado na Lista de espera do plano: \"Aviso que o Kaique pediu\". Só isso.",
+    "O áudio que você mandou naquele dia não fala de aviso nenhum, e eu não achei a descrição em outro lugar: procurei no plano, no histórico, no PEDIDOS e nas anotações do Kaique.",
+    "Por isso esse pedido está parado há um mês: ninguém sabe o que construir.",
+    "Exemplo do tipo de coisa que pode ser: um aviso quando o PDF fica pronto, ou um aviso quando uma página sai cortada. Mas só o Kaique (ou você) sabe qual era."
+   ],
+   "exemplos": [],
+   "opcoes": [
+    {
+     "id": "perguntar",
+     "nome": "Vou perguntar ao Kaique e escrevo aqui (recomendo)",
+     "texto": "Escreva no comentário qual é o aviso. Ele entra no Livro de decisões com as palavras dele.",
+     "imgs": []
+    },
+    {
+     "id": "tirar",
+     "nome": "Pode tirar da lista",
+     "texto": "Se o Kaique lembrar depois, vira pedido novo.",
+     "imgs": []
+    },
+    {
+     "id": "nao-entendi",
+     "nome": "Ainda não entendi",
+     "texto": "Explique de outro jeito.",
+     "imgs": []
+    }
+   ]
+  },
+  {
+   "id": "pd-escala-kaique",
+   "titulo": "Qual é a escala da tela do notebook do Kaique?",
+   "explicacao": [
+    "O programa precisa caber na tela do notebook do Kaique. Quanto cabe depende de um ajuste do Windows chamado \"escala\": ele deixa letras e botões maiores.",
+    "Ninguém nunca olhou qual é a escala dele: pode ser 125% ou 150%. Em 05/10 você disse: \"Isso pode ser resolvido depois\". Até hoje todas as telas são desenhadas para o caso mais apertado, 150% (sobra um espaço de 1280 por 657 pontos).",
+    "Como olhar no notebook dele (leva um minuto): botão Iniciar → Configurações → Sistema → Tela → \"Escala\".",
+    "Para que serve: se for 125%, as telas podem mostrar mais coisas de uma vez. Se for 150%, continua como está."
+   ],
+   "exemplos": [],
+   "opcoes": [
+    {
+     "id": "depois",
+     "nome": "Ainda não olhei: continuar desenhando para 150% (recomendo até lá)",
+     "texto": "É o caso mais apertado; se couber em 150%, cabe em qualquer escala menor.",
+     "imgs": []
+    },
+    {
+     "id": "150",
+     "nome": "150%",
+     "texto": "",
+     "imgs": []
+    },
+    {
+     "id": "125",
+     "nome": "125%",
+     "texto": "",
+     "imgs": []
+    },
+    {
+     "id": "outro",
+     "nome": "Outro número",
+     "texto": "Escreva no comentário o número que aparece.",
+     "imgs": []
+    },
+    {
+     "id": "nao-entendi",
+     "nome": "Ainda não entendi",
+     "texto": "Explique de outro jeito.",
+     "imgs": []
+    }
+   ]
+  },
+  {
+   "id": "pd-sequencia",
+   "titulo": "Kaique: como ter certeza da ordem das páginas sem olhar folha por folha?",
+   "explicacao": [
+    "Pergunta do Kaique, de 27/07 (anotações dele): \"Como ter certeza que estão todas na sequência correta sem ter que olhar folha por folha?\". Ela nunca foi respondida.",
+    "O que já está decidido e ajuda: a tela \"Todas as páginas\", que mostra as páginas uma a uma ou em pares, e a tela \"Pronto\", que mostra a ordem dos cadernos antes de imprimir. Mas nas duas é preciso olhar com os olhos.",
+    "O que daria para fazer a mais: o programa ler o número impresso no pé ou no alto de cada página e avisar quando um número pula ou repete. Exemplo: depois da página 36 vem a 38 → aviso \"falta a 37?\". Não funciona em página sem número (capa, gravura de página inteira).",
+    "Não entra na obra de agora: iria para a Lista de espera, para depois."
+   ],
+   "exemplos": [],
+   "opcoes": [
+    {
+     "id": "aviso-numero",
+     "nome": "Fazer o aviso de número fora de ordem, depois da obra (recomendo)",
+     "texto": "Vai para a Lista de espera com a data de hoje.",
+     "imgs": []
+    },
+    {
+     "id": "basta",
+     "nome": "Basta o que já está decidido",
+     "texto": "A grade de todas as páginas e a tela Pronto são suficientes.",
+     "imgs": []
+    },
+    {
+     "id": "nao-entendi",
+     "nome": "Ainda não entendi",
+     "texto": "Explique de outro jeito.",
+     "imgs": []
+    }
+   ]
+  },
+  {
+   "id": "pd-avisos-do-livro",
+   "titulo": "Onde mostrar os avisos que valem para o livro inteiro?",
+   "explicacao": [
+    "Quando um aviso aparece em quase todas as páginas (70% ou mais), o programa não marca página por página: junta tudo num aviso só, do livro. É a sua regra da rodada 4 do \"Para revisar\" (Camões 66): \"aviso no livro basta\".",
+    "Exemplos dos textos desses avisos: \"o livro inteiro é colorido\", \"o livro inteiro foi escaneado em qualidade baixa\", \"quase todas as páginas parecem estar em branco\".",
+    "O defeito: esse aviso do livro fica num lugar escondido da tela, e o Kaique nunca o vê (achado em 02/10 e de novo em 12/10). Nunca foi decidido onde ele deve aparecer."
+   ],
+   "exemplos": [],
+   "opcoes": [
+    {
+     "id": "para-revisar",
+     "nome": "No alto do painel \"Para revisar\" e no livro aberto da tela inicial (recomendo)",
+     "texto": "Uma linha em cima da lista das páginas, e a mesma frase no painel do livro na tela inicial.",
+     "imgs": []
+    },
+    {
+     "id": "faixa",
+     "nome": "Numa faixa em cima da página, que dá para fechar",
+     "texto": "Aparece ao abrir o livro; um clique fecha.",
+     "imgs": []
+    },
+    {
+     "id": "nao-entendi",
+     "nome": "Ainda não entendi",
+     "texto": "Explique de outro jeito.",
+     "imgs": []
+    }
+   ]
+  },
+  {
+   "id": "pd-versos-em-branco",
+   "titulo": "Livro com metade das páginas em branco: um aviso por página ou um só?",
+   "explicacao": [
+    "No Egenloff, quase metade das páginas (49%) é verso sem nada impresso. Cada uma ganha o aviso \"Parece em branco\" na lista \"Para revisar\". Num livro de 300 páginas assim, seriam umas 150 linhas na lista.",
+    "Pela regra de hoje, o aviso só vira um aviso do livro inteiro a partir de 70% das páginas (pergunta anterior). Com 49%, fica um por página.",
+    "O que já existe para ajudar: o botão \"está bom: todas\" tira de uma vez esse aviso de todas as páginas do livro (você aprovou em 21/10).",
+    "Por que não juntar sem perguntar: entre os versos em branco pode haver uma página que não deveria estar em branco (texto muito claro, por exemplo). Um aviso por página deixa o Kaique ver cada uma."
+   ],
+   "exemplos": [],
+   "opcoes": [
+    {
+     "id": "como-esta",
+     "nome": "Deixar como está: um por página, e \"está bom: todas\" tira todos de uma vez (recomendo)",
+     "texto": "Nada muda no programa.",
+     "imgs": []
+    },
+    {
+     "id": "um-so",
+     "nome": "Juntar num aviso só do livro quando forem muitas",
+     "texto": "Diga no comentário a partir de quantas (por exemplo, 40%).",
+     "imgs": []
+    },
+    {
+     "id": "nao-entendi",
+     "nome": "Ainda não entendi",
+     "texto": "Explique de outro jeito.",
+     "imgs": []
+    }
+   ]
+  },
+  {
+   "id": "pd-idioma-ocr",
+   "titulo": "Ler o texto das páginas: quem escolhe a língua do livro?",
+   "explicacao": [
+    "Na fase 7, o programa vai ler o texto das páginas (o \"OCR\"). Para ler bem, ele precisa saber a língua: latim, português, alemão etc.",
+    "Já está decidido: a língua fica por livro, com troca numa página só, numa tela chamada \"Idiomas e modelos\". Falta decidir quem escolhe a língua.",
+    "Não tem pressa: é da fase 7. Só está aqui para não ficar esquecida."
+   ],
+   "exemplos": [],
+   "opcoes": [
+    {
+     "id": "descobre",
+     "nome": "O programa descobre sozinho e mostra o que achou; o Kaique corrige se estiver errado (recomendo)",
+     "texto": "Exemplo: ao abrir o Graduale, aparece \"Língua: latim (achei sozinho)\", com um botão para trocar.",
+     "imgs": []
+    },
+    {
+     "id": "pergunta",
+     "nome": "O programa pergunta sempre, ao abrir o livro",
+     "texto": "",
+     "imgs": []
+    },
+    {
+     "id": "nao-entendi",
+     "nome": "Ainda não entendi",
+     "texto": "Explique de outro jeito.",
+     "imgs": []
+    }
+   ]
+  }
+ ]
+}
