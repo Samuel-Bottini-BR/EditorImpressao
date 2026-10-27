@@ -800,11 +800,10 @@ OBSERVACOES = {
     COR: "o livro inteiro é colorido",
     TAMANHO_DIFERENTE: "as folhas deste livro têm tamanhos variados",
     LOMBADA_INCERTA: "a lombada é difícil de achar neste livro",
-    # D-522 (27/10/2026): vira aviso do livro a partir de 40% das paginas
-    # (LIMIAR_DO_LIVRO), entao "quase todas" deixou de ser verdade. A frase
-    # final e o lugar dela sao da etapa 7 (D-521); a de antes continua
-    # reconhecida (OBSERVACOES_ANTIGAS: ela esta gravada em projetos.json).
-    EM_BRANCO: "muitas páginas deste livro parecem estar em branco",
+    # D-522: com a conta dos 40% ligada (LIMIAR_DO_LIVRO_LIGADO), "quase
+    # todas" deixa de ser verdade; a frase e o lugar dela sao da etapa 7
+    # (D-521) e de uma decisao do Samuel. Desligada (de fabrica), nada muda.
+    EM_BRANCO: "quase todas as páginas parecem estar em branco",
     # Regra ajustada do "Para revisar" (12/10/2026): a faixa em 70% ou mais
     # das paginas vira um aviso so, do livro (Samuel, rodada 4, Camoes 66:
     # "São as linhas pretas: aviso no livro basta"). Esta nao passa por
@@ -815,27 +814,27 @@ OBSERVACOES = {
 
 
 # D-522 (Central, `pd-versos-em-branco`, 27/10/2026: "Juntar num aviso só do
-# livro quando forem muitas"; "muitas" = 40% ou mais das paginas, escolha da
-# gerente, D-014): o livro de versos em branco (Egenloff, 49%) ganha UM aviso
-# do livro, e nao um "Parece em branco" por pagina. Os outros alertas seguem
-# FRACAO_VIRA_OBSERVACAO. Vale so com o limiar de fabrica (quem chama com outro
-# limiar o usa para todos). Seguro mudar: o numero. Arriscado: baixar muito
-# (um livro com poucas paginas brancas perderia os avisos por pagina, e os
-# botoes "Deixar em branco" / "Tirar do livro" de cada uma).
+# livro quando forem muitas"; o NUMERO "muitas" = 40% e escolha da gerente,
+# D-014, ainda nao do Samuel): o livro de versos em branco (Egenloff, 49%)
+# ganharia UM aviso do livro, e nao um "Parece em branco" por pagina. Os
+# outros alertas seguem FRACAO_VIRA_OBSERVACAO. Vale so com o limiar de fabrica
+# (quem chama com outro limiar o usa para todos).
+# DESLIGADA DE FABRICA (LIMIAR_DO_LIVRO_LIGADO = False; ordem do Samuel de
+# 27/10/2026, pela gerente: "os agentes estão mudando coisas que eu já tinha
+# definido, é só para fazer o que eu já tinha mandado" - a conta fica pronta,
+# sem mudar o que sai hoje, e o numero vai como pergunta para ele). Desligada,
+# o "Parece em branco" continua virando aviso do livro so com 70%, como antes.
+# Seguro mudar: o numero. Arriscado: ligar sem o "sim" dele; baixar muito (um
+# livro com poucas paginas brancas perderia os avisos por pagina, e os botoes
+# "Deixar em branco" / "Tirar do livro" de cada uma).
 LIMIAR_DO_LIVRO = {EM_BRANCO: 0.40}
-
-# Frases de observacao que ja foram gravadas em projetos (Projeto.observacoes
-# vai para o projeto.json) e mudaram: continuam querendo dizer o mesmo codigo.
-OBSERVACOES_ANTIGAS = {EM_BRANCO: ("quase todas as páginas parecem estar em branco",)}
+LIMIAR_DO_LIVRO_LIGADO = False
 
 
 def e_observacao_do_livro(observacoes, codigo: str) -> bool:
-    """O alerta `codigo` ja e aviso do livro inteiro (a frase dele, a de hoje
-    ou uma antiga, esta em `observacoes`, as Projeto.observacoes)? Barato."""
-    lista = list(observacoes or [])
-    if OBSERVACOES.get(codigo) in lista:
-        return True
-    return any(frase in lista for frase in OBSERVACOES_ANTIGAS.get(codigo, ()))
+    """O alerta `codigo` ja e aviso do livro inteiro (a frase dele esta em
+    `observacoes`, as Projeto.observacoes)? Barato."""
+    return OBSERVACOES.get(codigo) in list(observacoes or [])
 
 
 def separar_observacoes(
@@ -847,8 +846,9 @@ def separar_observacoes(
     não vai conferir uma a uma, e o contador perde o sentido justamente onde
     deveria servir. Um fato do livro inteiro se diz uma vez só.
 
-    Com o limiar de fábrica, cada código pode ter o seu (LIMIAR_DO_LIVRO; o
-    "Parece em branco" a partir de 40%, D-522).
+    Com o limiar de fábrica e LIMIAR_DO_LIVRO_LIGADO, cada código pode ter o
+    seu (LIMIAR_DO_LIVRO; o "Parece em branco" a partir de 40%, D-522;
+    desligado de fábrica).
 
     Devolve (observações em português, códigos que devem sair das páginas).
     """
@@ -864,7 +864,8 @@ def separar_observacoes(
     observacoes: list[str] = []
     para_remover: set[str] = set()
     for codigo, quantas in sorted(contagem.items(), key=lambda kv: -kv[1]):
-        do_codigo = (LIMIAR_DO_LIVRO.get(codigo, limiar) if limiar == FRACAO_VIRA_OBSERVACAO
+        do_codigo = (LIMIAR_DO_LIVRO.get(codigo, limiar)
+                     if LIMIAR_DO_LIVRO_LIGADO and limiar == FRACAO_VIRA_OBSERVACAO
                      else limiar)
         if quantas / total < do_codigo or codigo not in OBSERVACOES:
             continue

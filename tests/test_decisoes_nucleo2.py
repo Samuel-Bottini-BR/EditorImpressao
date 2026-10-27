@@ -460,12 +460,34 @@ def _livro_de_paginas(tmp_path, brancas: int, total: int = 10):
     return pipeline.analisar_projeto(projeto)
 
 
-def test_reversao_d522_metade_das_paginas_brancas_vira_um_aviso_do_livro(tmp_path):
+@pytest.fixture
+def _d522_ligada(monkeypatch):
+    """A conta da D-522 ligada (de fábrica está desligada: o número 40% é
+    escolha da gerente e vai como pergunta ao Samuel)."""
+    from core import analise
+
+    monkeypatch.setattr(analise, "LIMIAR_DO_LIVRO_LIGADO", True)
+
+
+def test_d522_desligada_de_fabrica_nada_muda(tmp_path):
+    """Ordem do Samuel de 27/10/2026 (pela gerente): "é só para fazer o que eu
+    já tinha mandado" - a conta da D-522 fica pronta e DESLIGADA. De fábrica,
+    um livro com metade das páginas brancas continua como hoje: um aviso
+    "Parece em branco" por página (o aviso do livro só com 70%)."""
+    from core import analise
+
+    assert analise.LIMIAR_DO_LIVRO_LIGADO is False
+    projeto = _livro_de_paginas(tmp_path, brancas=5)
+    por_pagina = [p.indice for p in projeto.paginas if analise.EM_BRANCO in p.alertas]
+    assert len(por_pagina) == 5, por_pagina
+    assert not analise.e_observacao_do_livro(projeto.observacoes, analise.EM_BRANCO)
+
+
+def test_d522_ligada_metade_das_paginas_brancas_vira_um_aviso_do_livro(tmp_path, _d522_ligada):
     """D-522 (Central, `pd-versos-em-branco`, 27/10/2026: "Juntar num aviso só
-    do livro quando forem muitas"; "muitas" = 40% ou mais das páginas). Prova
-    do Livro: "Livro com metade das páginas brancas → 1 aviso do livro e nenhum
-    por página". No código antigo o aviso do livro só vinha com 70%: com 5 de
-    10 brancas, eram 5 avisos "Parece em branco" (um por página)."""
+    do livro quando forem muitas"; "muitas" = 40%, escolha da gerente). Prova
+    do Livro, com a conta ligada: "Livro com metade das páginas brancas → 1
+    aviso do livro e nenhum por página"."""
     from core import analise
 
     projeto = _livro_de_paginas(tmp_path, brancas=5)
@@ -475,7 +497,8 @@ def test_reversao_d522_metade_das_paginas_brancas_vira_um_aviso_do_livro(tmp_pat
         projeto.observacoes
 
 
-def test_d522_poucas_paginas_brancas_continuam_com_o_aviso_de_cada_uma(tmp_path):
+def test_d522_ligada_poucas_paginas_brancas_continuam_com_o_aviso_de_cada_uma(tmp_path,
+                                                                              _d522_ligada):
     """O outro lado da prova do Livro: "livro com 3 brancas → 3 avisos" (3 de
     10 = 30%, abaixo de 40%)."""
     from core import analise
@@ -486,7 +509,7 @@ def test_d522_poucas_paginas_brancas_continuam_com_o_aviso_de_cada_uma(tmp_path)
     assert not analise.e_observacao_do_livro(projeto.observacoes, analise.EM_BRANCO)
 
 
-def test_d522_a_conta_dos_40_por_cento_e_so_do_em_branco():
+def test_d522_ligada_a_conta_dos_40_por_cento_e_so_do_em_branco(_d522_ligada):
     """A conta (core.analise.separar_observacoes): 4 de 10 páginas brancas →
     aviso do livro; 3 de 10 → não; os outros alertas continuam com 70% (4 de
     10 coloridas não viram "o livro inteiro é colorido")."""
@@ -497,17 +520,6 @@ def test_d522_a_conta_dos_40_por_cento_e_so_do_em_branco():
     assert remover == {EM_BRANCO} and observacoes == [OBSERVACOES[EM_BRANCO]]
     assert separar_observacoes([[EM_BRANCO]] * 3 + [[]] * 7) == ([], set())
     assert separar_observacoes([[COR]] * 4 + [[]] * 6) == ([], set())
-
-
-def test_d522_a_frase_antiga_gravada_no_projeto_continua_valendo():
-    """Projeto gravado antes (Projeto.observacoes com a frase de antes, "quase
-    todas as páginas parecem estar em branco") continua sendo o aviso do livro
-    do "Parece em branco" (a frase mudou porque 40% não é "quase todas")."""
-    from core import analise
-
-    assert analise.e_observacao_do_livro(
-        ["quase todas as páginas parecem estar em branco"], analise.EM_BRANCO)
-    assert not analise.e_observacao_do_livro(["o livro inteiro é colorido"], analise.EM_BRANCO)
 
 
 # =============================================================================
