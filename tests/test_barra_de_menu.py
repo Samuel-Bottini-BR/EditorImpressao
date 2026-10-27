@@ -138,8 +138,15 @@ def test_a_janela_de_confirmar_avisa_das_paginas_nao_conferidas(app, tmp_path):
     projeto = Projeto(caminho_entrada=str(tmp_path / "x.pdf"), nome="x")
     projeto.folhas = [ConfigFolha(indice=i) for i in range(10)]
     projeto.paginas = [ConfigPagina(indice=i, folha=i) for i in range(10)]
-    for pagina in projeto.paginas[:6]:
+    # D-285 (Samuel, 21/10/2026, `pr-contagens`: "A janela de salvar passa a
+    # contar as páginas com aviso pendente"), feita na etapa 7 da obra: contam
+    # as 4 páginas com aviso; as 2 sem "está certo" e SEM aviso não contam
+    # (antes contavam: o teste do Kaique viu "356 páginas que você não
+    # conferiu" depois de "nada pendente")
+    for pagina in projeto.paginas[:4]:
         pagina.revisada = True
+    for pagina in projeto.paginas[6:]:
+        pagina.alertas = ["cor"]
 
     janela = JanelaConfirmar(projeto, "saida.pdf")
     assert janela.aviso_conferir.isVisibleTo(janela)
