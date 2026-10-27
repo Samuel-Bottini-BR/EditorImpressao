@@ -6,8 +6,10 @@ Escrito em 07/09/2026, ao retomar o projeto depois de um mês parado. Substitui
 a versão anterior — a versão anterior media tudo por número e nunca chegava a
 "aprovado pelo Samuel"; esta corrige isso (ver seção 4).
 
-> **Leia primeiro, nesta ordem (desde 24/09/2026):**
+> **Leia primeiro, nesta ordem (desde 24/09/2026; o item 0 desde 26/10/2026):**
 >
+> 0. `docs/plano/DECISOES.md` — **o Livro de decisões do Samuel.** Antes de mexer em qualquer tela, botão ou etapa,
+>    e antes de oferecer uma opção ao Samuel ou dizer que algo "não existe", procurar ali (regras na seção 11).
 > 1. `docs/plano/ESTADO-ATUAL.md` — onde o projeto está, e o que vale quando
 >    os documentos antigos se contradizem.
 > 2. `docs/plano/PLANO-DEFINITIVO.md` — **o plano. Ele manda.** Fases, Lista de
@@ -603,3 +605,33 @@ atualize esse arquivo (ou crie um novo) quando o Samuel pedir explicitamente.
     tivesse referencia do que foi colocado antes"): a gerente copia o comentário para o campo
     `historico` da pergunta (`[{quem: "samuel"|"gerente", em, texto}]`, mostrado no alto como
     "Comentários anteriores desta pergunta (fixados)") e esvazia o `comentario` da resposta.
+
+## 11. Livro de decisões: nenhuma decisão do Samuel fica de fora (regras do Samuel, 26/10/2026)
+
+Por que existe: na sessão 1 dos testes guiados (26/10/2026) apareceu que decisões dele de 25/09 nunca foram
+construídas — "Photoshop puro, sem abas. Uma única tela com todas as ferramentas" foi feita só na aparência (a regra de
+julho que esconde ferramentas continuou por baixo), e o painel Automático no lugar da tela "O que fazer" ficou "sem dono"
+desde 12/10. Investigação: `relatorios/testes-guiados/2026-10-26-sessao-1/o-que-deu-errado.md`. Palavras dele: "Isso
+tinha sido uma coisa falada expliccitamente [...] isso foi uma grande alucinação" e "já temos histórico planos, decisões
+minhas anotadas, várias páginas de conferências, que continuam sendo desobedecidas." Regras aprovadas por ele ("Sim").
+Valem para a gerente, para todos os agentes (`.claude/agents/`) e para qualquer conversa nova.
+
+1. **Um Livro de decisões único: `docs/plano/DECISOES.md`.** Cada decisão: número, data, **palavras exatas dele**, o
+   que quer dizer na prática, onde toca no programa, a prova de comportamento, a situação (construída / pela metade /
+   não construída / a conferir), o dono e a fonte. Toda decisão nova entra **na hora**, venha do chat, da Central ou de
+   uma conferência (e também no Registro de mudanças, como sempre). Ele tem duas cópias, como o plano (§10.4).
+2. **Nenhuma decisão sem dono.** Cada linha aponta para uma etapa, um agente ou a Lista de espera, com data. Em todo
+   `/checkpoint` a gerente procura linhas sem dono ou "pela metade" sem etapa e avisa o Samuel.
+3. **Todo pedido a um agente leva as decisões que tocam o que ele vai mexer**, copiadas do Livro (número + palavras
+   dele). Antes de começar, o agente escreve no ONDE-PAREI "Decisões que esta tarefa precisa cumprir"; ao entregar,
+   "Como cumpri cada uma" (com print ou teste). Sem essa seção, a entrega não é aceita.
+4. **Cada decisão tem uma prova de comportamento** em `tests/test_decisoes.py` (ex.: "abrir sem marcar nada → todas as
+   ferramentas à vista"). **Nada se junta ao `fase-1` se a prova de uma decisão tocada falhar ou não existir.** Quando a
+   decisão substitui um comportamento antigo, a prova confere também que o antigo saiu. Aparência não conta como prova.
+5. **Quem confere nunca é quem construiu, e confere do zero.** Antes de juntar, um verificador separado compara a
+   entrega com o Livro de decisões, e o teste do Kaique (agente que não sabe usar o programa) roda as tarefas sem nada
+   preparado antes. Na conferência do Samuel, cada print aparece ao lado das palavras dele da decisão.
+6. **Na dúvida, parar e perguntar — nunca fazer diferente em silêncio.** Se uma decisão parecer impossível,
+   contraditória ou pouco clara, o agente para e a pergunta vai ao Samuel pela Central (cartão em "Decidir agora").
+   A gerente também: antes de oferecer uma opção ou dizer que algo "não existe", procura no Livro de decisões, no
+   rascunho do layout e na Central; se já está decidido, cita data e onde está escrito em vez de perguntar de novo.

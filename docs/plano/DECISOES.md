@@ -1,0 +1,41 @@
+# Livro de decisões do Samuel — Editor de Impressão
+
+**Criado em 26/10/2026** (regra 1 do `CLAUDE.md` §11, aprovada pelo Samuel: "Sim"). É o lugar **único** das decisões do
+Samuel sobre como o programa deve funcionar. Antes dele, as decisões ficavam espalhadas (rascunho do layout fora do git,
+Central, páginas de conferência, Registro de mudanças, memória) e várias nunca foram construídas: a decisão 1 de 25/09
+("Photoshop puro") foi feita só na aparência, a decisão 2 (painel Automático) ficou "sem dono" desde 12/10 — ver
+`relatorios/testes-guiados/2026-10-26-sessao-1/o-que-deu-errado.md`.
+
+> **Situação: em montagem.** A etapa 0 do plano de 26/10 (conferência "decidido × construído") traz para cá todas as
+> decisões antigas. Até lá, as linhas abaixo são as já conferidas em 26/10; as demais continuam valendo nos lugares de
+> origem (rascunho do layout, Registro de mudanças, Central, `relatorios/conferencia-samuel-*.md`).
+
+## Como usar (todo agente e toda conversa)
+
+- **Antes de mexer** numa tela, botão ou etapa: procurar aqui as decisões que tocam o que vai mudar (pela coluna
+  "Toca em" e por palavra). Elas vão no pedido ao agente (regra 3).
+- **Decisão nova** do Samuel, venha de onde vier (chat, Central, conferência), entra aqui **na hora**, com as palavras
+  dele, e também no Registro de mudanças do plano.
+- **Nenhuma linha sem dono** (regra 2): a coluna "Dono" diz a etapa, o agente ou a Lista de espera, com data.
+- **"Prova"** (regra 4): o que o teste das decisões (`tests/test_decisoes.py`) confere. Sem prova escrita, a decisão não
+  pode ser dada como construída.
+- **Situação:** `construída` (com prova passando) · `pela metade` · `não construída` · `a conferir`.
+- Se uma decisão parecer impossível, contraditória ou pouco clara: **parar e perguntar ao Samuel pela Central** (regra 6).
+
+## Decisões
+
+| Nº | Data | Palavras do Samuel | O que quer dizer na prática | Toca em | Prova (comportamento) | Situação | Dono | Fonte |
+|---|---|---|---|---|---|---|---|---|
+| D-001 | 25/09/2026 | "Estrutura: Photoshop puro, sem abas. Uma única tela com todas as ferramentas." | Todas as ferramentas sempre à vista na área de trabalho, sem depender de caixinha. | `ui/tela_conferir.py` (`carregar`), trilha, painéis, menus | Abrir um livro sem nada marcado → todas as ferramentas na trilha e todos os menus ativos | pela metade (só a aparência) | Etapa 2 da obra (plano de 26/10) | Rascunho do layout, "Decisões tomadas" 1 |
+| D-002 | 25/09/2026 | "Trabalho automático = painel 'Automático' que abre e fecha (substitui a tela 7). [...] Funciona antes/ao abrir o livro e depois, na área de trabalho (ex.: abrir o PDF sem mexer e rodar as etapas depois)." · Kaique, 22/09: "Essa pagina não era mais para aparecer – nós tínhamos que abrir direto na área de trabalho" · 26/10: "eu quero poder sim fazer automatico para todo livro, mas também quero pode fazer uma a uma." | O livro abre direto na área de trabalho; a tela "Marque o que você quer fazer" sai; o automático é um painel (+ janela grande) que roda no livro todo, em páginas escolhidas, numa página ou uma etapa só, quando ele quiser. | `ui/janela_principal.py` (`abrir_livro`), `ui/tela_opcoes.py`, `PainelAutomatico` | Abrir livro → área de trabalho, sem a tela de opções; rodar só "endireitar" numa página muda só ela | não construída | Etapa 3 | Rascunho, decisão 2; R12 708 |
+| D-003 | 28/09/2026 | "Ordem das etapas: livre. [...] muda arrastando com o mouse. Sem cadeados." | Ordem das etapas do Automático arrastável. (Aberto: se muda a ordem de montar a página — pergunta P2 do plano.) | `PainelAutomatico` | Arrastar uma etapa muda a ordem gravada | não construída | Etapa 3 | Rascunho, decisão 2a |
+| D-004 | 28/09/2026 | "Automático em livro já mexido à mão: o programa pergunta se quer pular as páginas mexidas." | Marca "mexida à mão" por página; o Automático pergunta antes. | `core/pipeline.py`, `modelos.py`, Automático | Livro com uma página mexida → rodar o automático pergunta e, com "pular", a página fica igual | não construída | Etapas 1 e 3 | Rascunho, decisão 2b |
+| D-005 | 12/10/2026 | "B — Um aviso embaixo da página" ("Livro novo: ainda não passou pelo automático", "Rodar o automático…", "agora não") | Livro novo mostra o aviso convidando a rodar o automático. | área de trabalho | Abrir livro novo → aviso visível com os dois botões | não construída | Etapa 3 | Rascunho, R13 804 B |
+| D-006 | 06/10/2026 | "eu não quero padrão eu quero como opção um botão que eu clique e veja pagina lado a lado" · 201 B / 202 A · 26/10: "eu tinha escolhido para poder trocar de duas paginas para duas" | Botão "Ver lado a lado" em cima das páginas, canto direito, pares rolando — também na área de trabalho. | `ui/widgets/paginas_rolando.py`, `ui/tela_conferir.py` | Na área de trabalho, o botão existe e mostra pares | pela metade (só no livro aberto) | Etapa 6 | Rascunho, R7 201/202; sessão 1, 1-10 |
+| D-007 | 26/10/2026 | "quando eu escolher para começar no automatico e dividir as folhas o livro tem que aparecer em uma pagina por vez para mim." | A folha inteira com a linha fica só dentro da ferramenta Dividir; dividido, o livro aparece uma página por vez. | `ui/tela_conferir.py` | Depois de dividir, fora do Dividir a tela mostra uma página | não construída | Etapa 6 | Sessão 1, 1-14 |
+| D-008 | 22/09/2026 e 26/10/2026 | "quero conseguir redimensionar o conteudo tambem" · "a ferramenta de mover não deveria estar vinculada ao corte de bordas, deveriam ser duas coisas independentes" · "como é no photoshope, que você arrasta a hora que quiser e aumenta a hora que quiser" | Mover e redimensionar o conteúdo: ferramenta própria, sempre ativa, e o resultado sai no PDF. | `ui/widgets/visualizador.py` (`MODO_CONTEUDO`), `core/pipeline.py` (`compor_na_folha`) | Mover e aumentar sem escolher tamanho de folha → PDF com o conteúdo no lugar e no tamanho novos | pela metade (preso às Bordas; teste do Kaique: não chega ao PDF) | Etapa 5 | Sessão 1, 1-7 e 1-9; `fr-24` |
+| D-009 | 26/10/2026 | "eu deveria conseguir abrir o livro sem escolher nenhuma opção para fazer tudo manualmente." | Feito à mão sempre vale no PDF, com o automático ligado ou não. | `core/pipeline.py` | Edição à mão com a etapa do automático desligada aparece no PDF | não construída | Etapa 1 | Sessão 1, 1-2 |
+| D-010 | 26/10/2026 | "eu acho que o botão tem que ser provado que ele faz o que se diz que se faz, e não só se ele muda algo na tela." | Cada botão tem uma promessa escrita; o teste confere a promessa na tela, no projeto e no PDF. | testes | Botão sem promessa ou com promessa falhando reprova a junção | não construída | Bateria de testes nova | Sessão 1, 1-15; Registro 26/10 |
+| D-011 | 26/10/2026 | "Sim" (nova bateria de testes: teste do Kaique, tarefas, decisões, promessas, conferência em caminho) | Ver Registro de mudanças, 26/10/2026. | testes | — | em andamento (1ª rodada do teste do Kaique feita em 26/10) | Gerente | Registro 26/10 |
+| D-012 | 26/10/2026 | "2" (o "imprimir agora" fica para a etapa 9) | Conserto do "imprimir agora" (manda o livro inteiro à impressora sem perguntar) na rodada de consertos. | tela "Ficou pronto!" | Clicar "imprimir agora" pede impressora, cópias e confirmação | não construída | Etapa 9 | Sessão 1, 1-17 |
+| D-013 | 26/10/2026 | "Sim" (as 6 regras do Livro de decisões) | Regras do `CLAUDE.md` §11. | documentação | — | construída (26/10) | Gerente | `CLAUDE.md` §11 |

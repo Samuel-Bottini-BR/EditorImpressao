@@ -85,3 +85,17 @@ Detalhe em `CLAUDE.md` §4.6 a §4.9.
   se a pasta já existir no `fase-1` (está sendo montada a partir de 19/10).
 - **Commit e push a cada passo** no seu ramo, e mantenha um `ONDE-PAREI.md` na pasta de
   relatório do seu trabalho: o limite de uso da conta já derrubou agentes três vezes.
+
+## Regras de 26/10/2026 — Livro de decisões (decisões do Samuel; CLAUDE.md §11; valem sobre o que estiver diferente acima)
+
+- **Leia `docs/plano/DECISOES.md` antes de tudo.** Ali estão as decisões do Samuel, com as palavras dele. Decisões de
+  25/09 nunca foram construídas porque os agentes recebiam a etapa e não as decisões ("Photoshop puro" feito só na
+  aparência; painel Automático "sem dono"). Palavras dele: "decisões minhas anotadas, várias páginas de conferências,
+  que continuam sendo desobedecidas."
+- **No começo do ONDE-PAREI**, escreva "Decisões que esta tarefa precisa cumprir" (número + palavras dele), copiadas do
+  pedido da gerente e do que você achar no Livro sobre as telas/arquivos que vai mexer. **Na entrega**, "Como cumpri cada
+  uma", com print ou teste. Sem isso a entrega não é aceita.
+- **Aparência não é prova.** Cada decisão tocada precisa da sua prova de comportamento em `tests/test_decisoes.py`
+  passando; se ela substitui um comportamento antigo, prove também que o antigo saiu.
+- **Na dúvida, pare e pergunte** (seção "Perguntas para o Samuel" do ONDE-PAREI; a gerente leva à Central na hora).
+  Nunca faça diferente da decisão em silêncio, nem "por enquanto".
