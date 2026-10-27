@@ -236,7 +236,10 @@ Testes de tela (rodam sem janela, `tests/conftest.py`):
 
 ## Perguntas abertas
 
-- Rodada 14 (ainda não publicada em 20/10/2026): as quatro do fim do rascunho (vista de fábrica de "Todas as páginas";
+- **[Respondida em 20/10/2026 — atualização de 26/10/2026, etapa 0:]** as rodadas 14 e 14b foram publicadas e
+  respondidas em 20/10 (901 A, 902 C, 903 B, 904 A, 906 C, 907 B, 909 B, 910 A; rascunho do layout, "Rodada 14 —
+  respostas" e "Rodada 14b — respostas"; Livro de decisões `docs/plano/DECISOES.md`). Texto antigo:
+  Rodada 14 (ainda não publicada em 20/10/2026): as quatro do fim do rascunho (vista de fábrica de "Todas as páginas";
   área de trabalho 1 e os quatro jeitos do menu da direita; menus e lista dos painéis no menu Ver; palavra do Dividir).
 - Para a gerente decidir: em que etapa entram "antes / depois", o zoom e "ajustar à tela" na barra de baixo.
 - Escala do notebook do Kaique (125% ou 150%): "Isso pode ser resolvido depois" (Samuel, 05/10/2026; Registro 05/10/2026).

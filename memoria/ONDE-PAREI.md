@@ -3,6 +3,10 @@
 Ramo `memoria-2026-10-19`, worktree `.claude/worktrees/memoria`, a partir de `origin/fase-1` (`b8e9af7`).
 Pedido: gerente, 19-20/10/2026 (CLAUDE.md §4.9; conjunto aprovado pelo Samuel: "Está certo").
 
+> **Atualização de 26/10/2026 (etapa 0 da obra):** a memória **já foi juntada** ao `fase-1` (merge `ccc3d6d`, "Junta a
+> memoria por assunto (ramo memoria-2026-10-19) ao fase-1"). O texto abaixo é de 20/10 e fica como registro. As
+> decisões do Samuel agora moram no Livro de decisões, `docs/plano/DECISOES.md`.
+
 ## Situação em 20/10/2026: montagem terminada, NÃO juntada ao `fase-1`
 
 Todas as partes feitas, com commit e push no ramo. `conferir_memoria.py`: "Tudo certo." (0 links quebrados; 152 de

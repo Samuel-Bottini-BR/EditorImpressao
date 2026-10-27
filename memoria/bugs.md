@@ -405,3 +405,17 @@ Bug de 13/10 "G6 deixa faixa preta larga" (tabela "Em ramo, não juntados" acima
 - **Consertado na junção (23/10, `ff1f6cd`):** testes dependentes da ordem pelo aviso "Gravuras e fotos" (fixture `_aviso_da_gravura_limpo` em `tests/conftest.py`). Não é bug do programa.
 - **Aberto desde 29/09, reencontrado:** mudar as caixinhas de um livro já conferido não vale (a tela volta igual).
 
+## Atualização de 26/10/2026 (etapa 0 da obra: Livro de decisões)
+
+Conferido no `git` (só leitura), para a etapa 0 não confiar no que ficou velho:
+
+- **"Em ramo, não juntados" (§2) já estão todos no `fase-1`:** `b5b224f` (linha 238), `ce2b835` (`fase2-para-revisar`:
+  linhas 317/381, 344, 364 e o R de 13/10) e `d97b937` (linha 389, G6). A tabela continua como registro.
+- **Linha 317/381 (`_escolher_forca`):** a função existe no `fase-1` (`ui/tela_conferir.py:5145`, chamada na 5117). O
+  "No `fase-1` a chamada continua sem a função" ficou velho.
+- **Instalador sem a `st_ferramentas.dll` (20/10):** o conserto `2ff16e7` está no `fase-1` (`empacotar.py:151`). Os
+  outros dois consertos do ramo `consertos-2026-10-21` também. O instalador continua `[~]` até o Samuel instalar e
+  testar (linha 196).
+- Os consertos desta ficha que mudam o que o Samuel vê foram listados, em formato curto, em "Consertos esperando o
+  olho do Samuel" no fim do Livro de decisões (`docs/plano/DECISOES.md`): uma página de conferência só, no fim da obra.
+

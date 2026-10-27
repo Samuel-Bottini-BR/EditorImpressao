@@ -9,6 +9,22 @@ Como manter: quando ele responder, registre no plano (as duas cópias) e na fich
 daqui** (ou mova para "Respondidas recentemente" com a data). O `conferir_memoria.py` avisa quando uma pergunta desta
 lista com nome entre crases já aparece como decidida no Registro.
 
+## 00. Atualização de 26/10/2026 (etapa 0 da obra: Livro de decisões)
+
+As perguntas sem resposta passaram a ser listadas no fim do Livro de decisões, `docs/plano/DECISOES.md` ("Perguntas sem
+resposta"); pela regra D-014 vão para a Central sem parar a obra. **Já respondidas** (não perguntar de novo):
+
+- **§1, as seis da impressão (`imp-1` a `imp-6`): respondidas em 21/10/2026** — "Uma página só", "Já entra dentro das
+  margens", "No meio da sua metade", "Último caderno menor, só com as folhas necessárias", "Também manda direto para a
+  impressora", "Precisa: sem ela sai algo errado" (`relatorios/conferencia-samuel-2026-10-21-central.md` l.31-36;
+  Livro D-321 a D-326).
+- **§2, abas 4 a 8: respondidas em 21-22/10/2026** — `pr` "Aprovado" (D-282), `pr-medir-o-livro` "Medir o livro inteiro
+  por trás, depois de abrir" (D-284), `pr-contagens` "A janela de salvar passa a contar as páginas com aviso pendente"
+  (D-285), `pr-tela-igual-ao-pdf` "Ainda não entendi" e depois o chat de 22/10 (bolinhas, D-064), `ly-4a5` "Aprovado"
+  (D-059), `28` "Aprovado" (D-176), `29` "Aprovado" (D-177), `211-215` "Aprovado" (D-178). Fica aberto só o 2.15 e o
+  limite de 1° (sem resposta própria) e o custo de medir o livro por trás (13 a 15 min de PC).
+- **§3 Layout, rodada 14:** respondida em 20/10/2026 (ver a ficha [layout](../itens/layout.md)).
+
 ## 0. Atualização de 24/10/2026 (vale sobre o resto; [PARTE -20](../../historico/Editor%20de%20Impressao%20-%20resumo%20para%20o%20Claude.md) §6)
 
 Respondidas em 23/10: `a-212-p6` (B), `d212`, `d212-1` (C + anotar), `d212-2` (A + aviso depois), `tp23` (aprovado), testes guiados (decisões 1 e 2: "A" e "A"; agente dos livros: "pode ser"; ver a tela dele: "não"). **Abertas, no chat:** (1) "Quer que eu acrescente no topo um bloco só 'Avisos', juntando esses 7?" (itens 1.1, 1.2, 1.6, 1.8, 5.5, 5.7, 5.9 da lista única); (2) seguir para a sessão 1 guiada ou ler a lista primeiro.
