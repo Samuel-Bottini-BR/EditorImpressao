@@ -94,6 +94,14 @@ NOMES_DOS_JEITOS = {
 # para "Para revisar". Em graus.
 LIMITE_DA_DISCORDANCIA = 0.3
 
+# Página reta nas duas contas (etapa 9c da obra, 26/10/2026; Lista de bugs de
+# 09/10: "Endireitar: as contas discordam" em página reta): quando cada conta
+# dá a página a no máximo isto do reto, não há o que conferir, mesmo que uma
+# diga +0,25 e a outra -0,1 (diferença 0,35). A tolerância é a da própria
+# decisão (D-082, 0,3 grau). Medido no Boécio (50 páginas): 12 avisos -> 8.
+# Seguro mudar: o número (maior tira mais avisos de página quase reta).
+ANGULO_QUASE_ZERO = LIMITE_DA_DISCORDANCIA
+
 # O ScanTailor gira no sentido do relógio para ângulo positivo; o programa
 # (OpenCV), no sentido contrário. Ver "O SENTIDO DO ÂNGULO" no topo.
 SINAL_DO_SCANTAILOR = -1.0
@@ -124,9 +132,13 @@ def jeito_da_pagina(projeto, pagina) -> str:
 
 def discordam(nosso: float | None, do_scantailor: float | None) -> bool:
     """As duas contas discordam mais que LIMITE_DA_DISCORDANCIA? (C1). Sem uma
-    das duas (DLL indisponível), não há discordância a mostrar."""
+    das duas (DLL indisponível), não há discordância a mostrar. Com as duas
+    dando a página reta (ANGULO_QUASE_ZERO, etapa 9c), também não."""
     if nosso is None or do_scantailor is None:
         return False
+    if (abs(float(nosso)) <= ANGULO_QUASE_ZERO + 1e-6
+            and abs(float(do_scantailor)) <= ANGULO_QUASE_ZERO + 1e-6):
+        return False          # as duas dão a página reta (ver ANGULO_QUASE_ZERO)
     # 1e-6: 0,3° exatos (0,4 - 0,1 em ponto flutuante) não contam como "mais".
     return abs(float(nosso) - float(do_scantailor)) > LIMITE_DA_DISCORDANCIA + 1e-6
 

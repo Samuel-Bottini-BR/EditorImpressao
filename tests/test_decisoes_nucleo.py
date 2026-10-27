@@ -369,3 +369,28 @@ def test_parece_em_branco_nao_conta_a_beirada_do_livro_como_conteudo():
     titulo = branca.copy()
     cv2.putText(titulo, "DA ORACAO", (300, 500), cv2.FONT_HERSHEY_SIMPLEX, 1.2, (20, 20, 20), 3)
     assert not parece_em_branco(titulo), "página com título não é 'em branco' (D-288)"
+
+
+# --- item 5: "as contas discordam" em página reta -----------------------------
+
+@pytest.mark.parametrize("nosso, do_scantailor", [(-0.1, 0.25), (0.1, -0.25), (0.3, 0.0), (-0.15, 0.2)])
+def test_d082_pagina_reta_nas_duas_contas_nao_avisa(nosso, do_scantailor):
+    """D-082 (05/10/2026): "quando os dois discordarem mais de 0,3 grau, a
+    página fica marcada 'conferir'". Etapa 9c (Lista de bugs de 09/10:
+    "Endireitar: as contas discordam" em página reta): quando as duas contas
+    dão a página quase reta - cada uma a no máximo 0,3 grau do reto, a mesma
+    tolerância da decisão -, não há o que conferir. No Boécio (50 páginas),
+    eram 4 dos 12 avisos: -0,1 x +0,25, +0,1 x -0,25..."""
+    from core.endireitar_scantailor import discordam
+
+    assert not discordam(nosso, do_scantailor)
+
+
+@pytest.mark.parametrize("nosso, do_scantailor", [(-2.2, -0.25), (-0.1, 0.56), (0.5, 0.12), (-0.0, -1.0)])
+def test_d082_contas_que_discordam_de_verdade_continuam_avisando(nosso, do_scantailor):
+    """O outro lado: com uma das contas longe do reto e a diferença acima de
+    0,3 grau, o aviso continua (Boécio p. 2: -2,2 x -0,4, o print da lista
+    única 5.8)."""
+    from core.endireitar_scantailor import discordam
+
+    assert discordam(nosso, do_scantailor)
