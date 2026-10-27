@@ -101,6 +101,9 @@ pasta `D:\programas\EditorImpressao-arquivos\plano-24-09-2026\layout\`)
 - Decidido na rodada 13 e sem etapa: aviso de livro novo (804 B: só faz sentido quando o livro abrir direto na tela de
   trabalho, etapa 7); Configurações em partes com o tema (807 B + 707 C).
 - Sem etapa marcada (para a gerente decidir): na barra de baixo, "antes / depois", o zoom "– 78% +" e "ajustar à tela".
+  **Atualização de 27/10/2026:** feitos na etapa 6 da obra (ramo `obra-etapa6-2026-10-26`), junto do "Uma página /
+  Duas lado a lado" da barra de baixo e do menu Ver (D-015, D-058); PRONTO PARA CONFERIR
+  (`relatorios/obra-etapa6/ONDE-PAREI.md`).
 - **Rodada 14 (perguntas a fazer):** qual vista de "Todas as páginas" vem de fábrica; onde se escolhe a "área de
   trabalho 1" e os quatro jeitos do menu da direita; a lista dos painéis no menu Ver e o resto dos menus; se o Dividir
   ("o do programa / o do ScanTailor") muda de palavra como a conta do Endireitar. Da PARTE -15 §4 item 8: o nome "o

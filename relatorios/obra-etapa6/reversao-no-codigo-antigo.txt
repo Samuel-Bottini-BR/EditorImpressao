@@ -1,0 +1,32 @@
+E       AttributeError: 'TelaConferir' object has no attribute 'mostrar'
+tests\test_decisoes_ver.py:179: AttributeError
+E       KeyError: 'lado_a_lado'
+tests\test_decisoes_ver.py:217: KeyError
+E       AttributeError: 'TelaConferir' object has no attribute 'definir_mostrar'
+tests\test_decisoes_ver.py:232: AttributeError
+E       AttributeError: 'TelaConferir' object has no attribute 'definir_mostrar'
+tests\test_decisoes_ver.py:249: AttributeError
+E       AttributeError: 'TelaConferir' object has no attribute 'definir_mostrar'
+tests\test_decisoes_ver.py:269: AttributeError
+E       AttributeError: 'TelaConferir' object has no attribute 'definir_mostrar'
+tests\test_decisoes_ver.py:293: AttributeError
+E       AttributeError: 'TelaConferir' object has no attribute 'mostrar'
+tests\test_decisoes_ver.py:316: AttributeError
+E       AttributeError: 'TelaConferir' object has no attribute 'botao_antes_depois'
+tests\test_decisoes_ver.py:337: AttributeError
+E       AttributeError: 'TelaConferir' object has no attribute 'rotulo_do_zoom'. Did you mean: 'rotulo_do_livro'?
+tests\test_decisoes_ver.py:366: AttributeError
+tests\test_decisoes_ver.py:388: AssertionError
+tests\test_decisoes_ver.py:410: AssertionError
+FAILED tests/test_decisoes_ver.py::test_d015_duas_lado_a_lado_na_barra_de_baixo_com_os_pares_do_livro
+FAILED tests/test_decisoes_ver.py::test_d058_menu_ver_tem_ver_lado_a_lado_e_anda_com_a_barra
+FAILED tests/test_decisoes_ver.py::test_d007_todo_livro_abre_uma_pagina_por_vez
+FAILED tests/test_decisoes_ver.py::test_no_dividir_a_folha_inteira_continua
+FAILED tests/test_decisoes_ver.py::test_pares_sao_os_do_livro_que_vai_sair - ...
+FAILED tests/test_decisoes_ver.py::test_troca_da_etapa_4_lista_muda_e_o_lado_a_lado_fica_na_mesma_folha
+FAILED tests/test_decisoes_ver.py::test_d343_clicar_num_par_da_grade_abre_lado_a_lado
+FAILED tests/test_decisoes_ver.py::test_antes_depois_mostra_o_original_e_como_vai_sair
+FAILED tests/test_decisoes_ver.py::test_zoom_da_barra_de_baixo - AttributeErr...
+FAILED tests/test_decisoes_ver.py::test_d021_roda_troca_de_pagina_sem_zoom_e_da_zoom_com_zoom
+FAILED tests/test_decisoes_ver.py::test_d021_page_down_pula_10_e_home_end - a...
+11 failed in 21.72s

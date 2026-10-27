@@ -788,11 +788,15 @@ programa), a partir do **nome do botão**, da **dica** (o balão do mouse) e das
   tela" volta a caber; "comparar" mostra dois filtros lado a lado; "X" fecha.
 - **no projeto:** nada muda.
 
-### P-136 · "Ver lado a lado" na área de trabalho
-- **chaves:** `menu/lado_a_lado`, `área de trabalho/barra de baixo/Duas lado a lado`
-- **decisões:** D-015 ("Uma página / Duas lado a lado" na barra de baixo, e no menu Ver), D-006, D-058
-- **aguarda:** etapa 6, D-015/D-058
-- **na tela:** as páginas em pares rolando, na barra de baixo e no menu Ver.
+### P-136 · "Ver lado a lado" na área de trabalho ("Uma página" / "Duas lado a lado")
+- **chaves:** `menu/lado_a_lado`, `área de trabalho/barra de baixo/Duas lado a lado`, `área de trabalho/barra de baixo/Uma página`
+- **dica:** "As páginas em pares, como no livro aberto (a 1 sozinha, à direita)" · "Uma página de cada vez"
+- **decisões:** D-015 ("Uma página / Duas lado a lado" na barra de baixo, e no menu Ver), D-006 (opção, não padrão;
+  202 A: pares rolando), D-058, D-007 (de fábrica, uma página por vez), D-343 (o par da grade abre lado a lado)
+- **na tela:** "Duas lado a lado" (ou Ver > "Ver lado a lado" marcado) põe no lugar da página as páginas COMO VÃO
+  SAIR em pares rolando, a 1 sozinha à direita, na página da vez; o menu e a barra andam juntos. "Uma página" (ou o
+  menu desmarcado) volta à página da ferramenta. Todo livro abre em "Uma página".
+- **no projeto:** nada muda. **no PDF:** nada muda.
 
 ### P-137 · aviso de livro novo: "Rodar o automático…" / "agora não"
 - **chaves:** `área de trabalho/aviso de livro novo/Rodar o automático…`, `área de trabalho/aviso de livro novo/agora não`
@@ -953,10 +957,23 @@ programa), a partir do **nome do botão**, da **dica** (o balão do mouse) e das
 - **decisões:** D-021 ("Ctrl+G → pula para a página")
 - **na tela:** pede o número; OK vai para a página; Cancelar fica onde está.
 
-### P-146 · Ver > "Aproximar" / "Afastar" / "Ajustar à tela"
-- **chaves:** `menu/mais_zoom`, `menu/menos_zoom`, `menu/ajustar`
-- **decisões:** D-026 (zoom confiável)
-- **na tela:** a página aumenta / diminui / volta a caber na tela. **no projeto:** nada muda.
+### P-146 · Ver > "Aproximar" / "Afastar" / "Ajustar à tela" (e "–" / "+" / "ajustar à tela" da barra de baixo)
+- **chaves:** `menu/mais_zoom`, `menu/menos_zoom`, `menu/ajustar`, `área de trabalho/barra de baixo/+`, `área de trabalho/barra de baixo/–`, `área de trabalho/barra de baixo/ajustar à tela`
+- **dica:** "Aproximar (Ctrl++)" · "Afastar (Ctrl+-)" · "A página inteira cabe na tela (Ctrl+0)"
+- **decisões:** D-026 (zoom confiável); desenho decidido da barra de baixo (rodada 13: "– 78% +", "ajustar à tela";
+  etapa 6)
+- **na tela:** a página aumenta / diminui / volta a caber na tela; o número entre "–" e "+" mostra o zoom
+  (100% = a página inteira). **no projeto:** nada muda.
+
+### P-195 · "antes / depois" (barra de baixo)
+- **chaves:** `área de trabalho/barra de baixo/antes / depois`
+- **dica:** "Mostra a página da vez com o Original à esquerda e como vai sair à direita. Arraste a linha do meio
+  para comparar."
+- **decisões:** desenho decidido da barra de baixo (rodada 13: "antes / depois"; etapa 6); R11 601 A (o "Comparar
+  com o Original" com a linha que se arrasta)
+- **na tela:** ligado, a página da vez aparece com o Original à esquerda da linha e como vai sair (o filtro dela)
+  à direita; numa página em Original, diz "Escolha outro filtro para comparar com o Original."; desligado, volta à
+  página da ferramenta. **no projeto:** nada muda. **no PDF:** nada muda.
 
 ### P-147 · Ver > "Tema": Escuro / Cinza / Claro
 - **chaves:** `menu/tema_escuro`, `menu/tema_cinza`, `menu/tema_claro`

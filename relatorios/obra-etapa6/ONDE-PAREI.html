@@ -1,0 +1,377 @@
+<!doctype html>
+<html lang="pt-BR">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Obra, etapa 6: ver o livro na área de trabalho</title>
+<style>
+:root { color-scheme: light dark; }
+* { box-sizing: border-box; }
+body {
+  font: 17px/1.65 "Segoe UI", system-ui, sans-serif;
+  max-width: 46rem; margin: 0 auto; padding: 2.5rem 1.5rem 6rem;
+  color: #1c1c1e; background: #fdfdfc;
+}
+h1 { font-size: 2rem; line-height: 1.2; margin: 0 0 .3em; letter-spacing: -.02em; }
+h2 { font-size: 1.35rem; margin: 2.4em 0 .6em; padding-top: .8em;
+     border-top: 1px solid #e6e4e0; letter-spacing: -.01em; }
+h3 { font-size: 1.1rem; margin: 1.8em 0 .4em; }
+h1 + p, h2 + p { margin-top: .4em; }
+p, li { margin: 0 0 .9em; }
+ul, ol { padding-left: 1.3em; }
+strong { font-weight: 640; }
+code {
+  font: .88em ui-monospace, "Cascadia Code", Consolas, monospace;
+  background: #f1efec; padding: .12em .35em; border-radius: 4px;
+}
+pre {
+  background: #f1efec; padding: 1em 1.1em; border-radius: 8px;
+  overflow-x: auto; line-height: 1.5;
+}
+pre code { background: none; padding: 0; }
+blockquote {
+  margin: 1.2em 0; padding: .1em 0 .1em 1.1em;
+  border-left: 3px solid #c9c5be; color: #55524d;
+}
+table {
+  border-collapse: collapse; width: 100%; margin: 1.2em 0;
+  font-size: .95rem; display: block; overflow-x: auto;
+}
+th, td { padding: .5em .8em; text-align: left; border-bottom: 1px solid #e6e4e0; }
+th { font-weight: 620; background: #f7f5f2; white-space: nowrap; }
+tr:last-child td { border-bottom: none; }
+img { max-width: 100%; height: auto; border-radius: 6px; margin: 1em 0;
+      border: 1px solid #e6e4e0; }
+hr { border: none; border-top: 1px solid #e6e4e0; margin: 2.5em 0; }
+.rodape { margin-top: 4em; padding-top: 1.2em; border-top: 1px solid #e6e4e0;
+          font-size: .85rem; color: #86827c; }
+@media (prefers-color-scheme: dark) {
+  body { color: #e8e6e3; background: #1a1917; }
+  h2 { border-top-color: #35332f; }
+  code, pre, th { background: #262421; }
+  th, td { border-bottom-color: #35332f; }
+  blockquote { border-left-color: #4a4741; color: #b0aca6; }
+  img { border-color: #35332f; }
+  .rodape { border-top-color: #35332f; color: #7d7973; }
+}
+@media print {
+  body { max-width: none; padding: 0; color: #000; background: #fff; }
+  h2 { page-break-after: avoid; }
+  table, img { page-break-inside: avoid; }
+}
+</style>
+</head>
+<body>
+<h1>Obra de 26/10/2026 — etapa 6 (ver o livro na área de trabalho): ONDE PAREI</h1>
+<p>Ramo <code>obra-etapa6-2026-10-26</code> (base <code>obra-2026-10-26</code> = <code>3e112f9</code>, com as etapas 1-5, 9a, 9c, 10a, 10b), worktree
+<code>.claude/worktrees/obra-etapa6</code>. Agente: layout. Ordem do Samuel (D-014): fazer até o fim sem pausas; ele confere tudo
+no fim. Regra nova da gerente (27/10, palavras do Samuel: "é só para fazer o que eu já tinha mandado, fazer as
+ferramentas que colocamos no programa funcionem como deveriam e como eu tinha escolhido"): só o que está no Livro e no
+pedido; onde o Livro não responde, perguntar (seção "Perguntas").</p>
+<p><strong>Situação: PRONTO PARA CONFERIR</strong> (começada e terminada em 27/10/2026). Ramo enviado ao GitHub.</p>
+<h2>Em uma frase</h2>
+<p>Agora, na área de trabalho, a barra de baixo tem "Uma página / Duas lado a lado" (como no livro aberto aprovado) e o
+menu Ver tem "Ver lado a lado": o livro aparece em pares rolando, com as páginas já divididas e como vão sair, a capa
+sozinha à direita; o livro abre sempre uma página por vez; a barra de baixo ganhou "antes / depois", o zoom "– 100% +"
+e "ajustar à tela"; e a roda do mouse troca de página (sem zoom), Page Up/Down pulam 10 páginas e Home/End vão ao
+começo e ao fim.</p>
+<h2>Decisões que esta tarefa precisa cumprir (palavras do Samuel)</h2>
+<table>
+<thead>
+<tr>
+<th>Nº</th>
+<th>Palavras dele</th>
+<th>O que tem de ficar no programa</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>D-015 (22/10, mais recente que 06/10)</td>
+<td>Livro aberto como no UPDF aprovado: "Uma página / Duas lado a lado" na barra de baixo · 20/10, 904 A: "A — Sim, no menu Ver"</td>
+<td>Na área de trabalho, a barra de baixo tem "Uma página / Duas lado a lado" e o menu Ver também.</td>
+</tr>
+<tr>
+<td>D-006 (06/10)</td>
+<td>"eu não quero padrão eu quero como opção um botão que eu clique e veja pagina lado a lado" · 201 B / 202 A · 26/10: "eu tinha escolhido para poder trocar de duas paginas para duas"</td>
+<td>Opção (não padrão); pares rolando (202 A), também na área de trabalho. O lugar (201 B) foi trocado pela D-015.</td>
+</tr>
+<tr>
+<td>D-058 (20/10)</td>
+<td><code>r14-menus-novas</code>: "A — Sim, no menu Ver" · <code>ly-ver</code>: "Está bom"</td>
+<td>O menu Ver ganha "Ver lado a lado" (o 5º item que faltava).</td>
+</tr>
+<tr>
+<td>D-007 (26/10)</td>
+<td>"quando eu escolher para começar no automatico e dividir as folhas o livro tem que aparecer em uma pagina por vez para mim."</td>
+<td>Dividido, o livro aparece uma página por vez (de fábrica "Uma página"); a folha inteira só no Dividir.</td>
+</tr>
+<tr>
+<td>D-501 (etapa 4)</td>
+<td>(escolha da gerente) como a D-007 fica na tela</td>
+<td>Continua valendo.</td>
+</tr>
+<tr>
+<td>D-343 (05/10)</td>
+<td>"Na opção 2 (pares), clicar abre as duas páginas lado a lado, como vai ser impresso."</td>
+<td>Na grade "Todas as páginas" em pares, clicar num par abre as duas lado a lado.</td>
+</tr>
+<tr>
+<td>D-347 (22/10, <code>lyupdf</code>, <code>lu-par</code>)</td>
+<td>"da uma na internet como o updf faz. Tem uma pagina maior que outra ali"</td>
+<td>No par as duas ficam da mesma altura; a 1 (capa) sozinha à direita (o mesmo <code>paginas_rolando.py</code>).</td>
+</tr>
+<tr>
+<td>D-021 (29/07, paráfrase)</td>
+<td>navegação: roda do mouse, Page Up/Down, Home/End</td>
+<td>Na área de trabalho: roda troca de página (sem zoom); Page Up/Down pulam 10 (PEDIDOS.md l.290: "Pula 10 páginas de cada vez"); Home/End vão ao começo e ao fim.</td>
+</tr>
+<tr>
+<td>D-026 (24/09 e 28/09, paráfrase)</td>
+<td>3.8: consertar o zoom que às vezes não funciona</td>
+<td>Não piorar o zoom; a roda no zoom é da etapa 6 (ver "Contradições").</td>
+</tr>
+<tr>
+<td>Desenho decidido (rodada 13, <code>21-rodada13-base.html</code>)</td>
+<td>barra de baixo à direita: "antes / depois", "– 78% +", "ajustar à tela"</td>
+<td>Os três na barra de baixo. "antes / depois" = o Original × como vai sair (o "Comparar com o Original" da tela cheia, R11 601 A).</td>
+</tr>
+<tr>
+<td>Troca da etapa 4</td>
+<td>"a página da vez agora fica na mesma folha quando a lista muda (<code>lista_de_paginas_mudou</code>); quem fizer o 'Ver lado a lado' deve usar o mesmo cuidado."</td>
+<td>O lado a lado acompanha a lista nova e fica na mesma folha.</td>
+</tr>
+<tr>
+<td>D-010</td>
+<td>"o botão tem que ser provado que ele faz o que se diz que se faz"</td>
+<td>Promessas dos botões novos, com prova; P-136 sem "aguarda".</td>
+</tr>
+<tr>
+<td>Regra fixa da gerente</td>
+<td>não trocar o que vem do ScanTailor nem módulos inteiros que funcionam (reaproveitar <code>ui/widgets/paginas_rolando.py</code>)</td>
+<td>O lado a lado é o mesmo <code>PaginasRolando</code>, com a página que vem das prévias.</td>
+</tr>
+</tbody>
+</table>
+<h2>Contradições achadas (vale a mais recente, D-014) — qual venceu</h2>
+<ul>
+<li><strong>D-015 (22/10) × D-006/201 B (06/10)</strong>, o lugar do botão: <strong>venceu a D-015</strong> (barra de baixo e menu Ver). Nada "em
+  cima das páginas, canto direito". Os pares rolando de 202 A continuam (a D-015 não os muda).</li>
+<li><strong>Roda do mouse: a prova anotada na D-026 ("a roda do mouse sempre dá zoom") × D-021 e o pedido desta etapa (27/10:
+  "roda do mouse troca de página (quando não está com zoom)")</strong>: <strong>venceu o pedido de 27/10</strong> (o mais recente). As
+  palavras do Samuel na D-026 são só "consertar o zoom que às vezes não funciona"; a frase da roda é a prova escrita
+  pela gerente. Ficou: sem zoom a roda troca de página; com zoom a roda continua dando zoom como antes; Ctrl+roda dá
+  zoom sempre (senão o zoom pela roda sumiria). Pergunta 2.</li>
+</ul>
+<h2>Como cumpri cada uma</h2>
+<table>
+<thead>
+<tr>
+<th>Decisão</th>
+<th>O que ficou no programa</th>
+<th>Prova (<code>tests/test_decisoes_ver.py</code>, salvo dito)</th>
+<th>Print</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>D-015</td>
+<td>Barra de baixo, à direita: "Uma página" / "Duas lado a lado" (os nomes e os balões do livro aberto aprovado), aceso no azul como lá. "Duas lado a lado" põe no lugar da página os pares rolando; "Uma página" volta à ferramenta, na mesma página.</td>
+<td><code>test_d015_duas_lado_a_lado_na_barra_de_baixo_com_os_pares_do_livro</code>; P-136</td>
+<td><code>depois-02</code> (Uma página), <code>depois-03</code> (Duas lado a lado) × <code>antes-02</code> (barra sem os botões)</td>
+</tr>
+<tr>
+<td>D-006 / 202 A / D-347</td>
+<td>É o <code>PaginasRolando</code> do livro aberto (não reescrito), com uma troca só: a página vem da PRÉVIA da área de trabalho (girada, dividida, endireitada, cortada, com o filtro), em <code>ui/widgets/paginas_lado_a_lado.py</code>. Os pares são os do PDF que vai sair (<code>Projeto.paginas_ativas</code>): a 1 sozinha à direita, depois 2-3, 4-5...; as duas do par na mesma altura. A página da vez tem o quadro azul; rolar ou clicar numa página muda a página da vez (a barra de baixo e as miniaturas acompanham).</td>
+<td>o teste acima mede os pares, a capa na metade da direita, a mesma altura, e que cada lugar recebe a prévia da SUA página (em pé = dividida; o número de quadradinhos de cada página); <code>test_pares_sao_os_do_livro_que_vai_sair</code></td>
+<td><code>depois-03</code>, <code>depois-04</code> (rolando)</td>
+</tr>
+<tr>
+<td>D-058</td>
+<td>Ver &gt; "Ver lado a lado" (marcável, entre "Ícones da direita" e "Todas as páginas", a ordem da 904); anda junto com a barra de baixo.</td>
+<td><code>test_d058_menu_ver_tem_ver_lado_a_lado_e_anda_com_a_barra</code>; P-136 (pelo menu)</td>
+<td><code>depois-09-menu-ver</code></td>
+</tr>
+<tr>
+<td>D-007 / D-501</td>
+<td>Todo livro abre em "Uma página" (o lado a lado é opção, não padrão; D-006). Depois do Automático com "Dividir", uma página por vez (a etapa 4 já fazia; continua). No Dividir a folha inteira fica (para consertar): ali os botões do ver ficam apagados, com o balão "No Dividir a tela mostra a folha inteira, com a linha; escolha outra ferramenta para ver as páginas."</td>
+<td><code>test_d007_todo_livro_abre_uma_pagina_por_vez</code>, <code>test_no_dividir_a_folha_inteira_continua</code>; as da etapa 4 (<code>test_d007_*</code> em <code>test_decisoes_dividir.py</code>) continuam passando</td>
+<td><code>depois-02</code></td>
+</tr>
+<tr>
+<td>D-343</td>
+<td>Na grade "Todas as páginas" em pares, o clique num par volta ao trabalho com "Duas lado a lado" nele (uma a uma, como sempre, uma página).</td>
+<td><code>test_d343_clicar_num_par_da_grade_abre_lado_a_lado</code></td>
+<td>—</td>
+</tr>
+<tr>
+<td>Troca da etapa 4</td>
+<td>Quando a lista muda (dividir/juntar uma folha, tirar do livro, desfazer), os pares são refeitos e ficam na página da vez, que a etapa 4 já mantém na mesma folha.</td>
+<td><code>test_troca_da_etapa_4_lista_muda_e_o_lado_a_lado_fica_na_mesma_folha</code></td>
+<td>—</td>
+</tr>
+<tr>
+<td>Desenho: "antes / depois"</td>
+<td>Botão marcável: a página da vez com o Original à esquerda da linha e como vai sair à direita, a linha arrasta (a mesma peça <code>VistaAntesDepois</code> da tela cheia dos filtros). Página em Original: "Escolha outro filtro para comparar com o Original." (a frase da tela cheia).</td>
+<td><code>test_antes_depois_mostra_o_original_e_como_vai_sair</code> (mede o papel: amarelado no antes, branco no depois); P-195</td>
+<td><code>depois-05</code> (página em Original), <code>depois-06</code> (Preto e branco)</td>
+</tr>
+<tr>
+<td>Desenho: "– N% +" e "ajustar à tela"</td>
+<td>O mesmo zoom do menu Ver (Aproximar, Afastar, Ajustar à tela); o número mostra o zoom da página (100% = a página inteira cabendo, como o "Zoom: N%" que a ferramenta de marcar já dizia). No lado a lado e no antes/depois ficam apagados (ali a página cabe na tela).</td>
+<td><code>test_zoom_da_barra_de_baixo</code>; P-146 (menu e barra)</td>
+<td><code>depois-07-zoom-156</code></td>
+</tr>
+<tr>
+<td>D-021 roda</td>
+<td>Sem zoom, a roda em cima da página troca de página (no Dividir, de folha); com zoom dá zoom, como antes; Ctrl+roda dá zoom sempre. Na ferramenta de marcar com o Pincel ou a Varinha a roda continua mudando espessura/tolerância (como antes). Nos pares, a roda rola.</td>
+<td><code>test_d021_roda_troca_de_pagina_sem_zoom_e_da_zoom_com_zoom</code> (falha no antigo por asserção: a roda só dava zoom)</td>
+<td>— (a roda não chega pela mensagem do Windows com a janela fora da tela: ressalva 4)</td>
+</tr>
+<tr>
+<td>D-021 Page Up/Down, Home/End</td>
+<td>Page Down/Up andam 10 páginas (10 folhas no Dividir), Home à primeira, End à última.</td>
+<td><code>test_d021_page_down_pula_10_e_home_end</code> (falha no antigo por asserção)</td>
+<td><code>depois-08</code> (Page Down: da página 7 para a 17)</td>
+</tr>
+<tr>
+<td>D-010</td>
+<td>P-136 sem "aguarda" e com prova de verdade (barra e menu); P-146 com as chaves da barra; P-195 nova ("antes / depois").</td>
+<td><code>tests/test_promessas.py</code></td>
+<td>—</td>
+</tr>
+</tbody>
+</table>
+<h2>Causa (por que não existia)</h2>
+<p>O "Ver lado a lado" só tinha sido construído no livro aberto (<code>ui/tela_inicio.py</code>, a barra de baixo do UPDF) e na grade
+"Todas as páginas" ("em pares"); a área de trabalho só sabia mostrar a página da ferramenta. A barra de baixo da área de
+trabalho estava "sem 'antes / depois' e zoom", à espera de etapa (rascunho do layout, rodada 13). As teclas Page
+Up/Down e Home/End só existiam no livro aberto; na área de trabalho a roda só dava zoom.</p>
+<h2>O que mudou (por arquivo)</h2>
+<ul>
+<li><code>ui/widgets/paginas_lado_a_lado.py</code> (novo): <code>PaginasLadoALado</code>, filha do <code>PaginasRolando</code> (que não mudou): a fonte
+  das páginas são as prévias, os pares das páginas que saem, a proporção acertada quando a prévia chega sem a tela
+  pular, o clique que escolhe a página da vez.</li>
+<li><code>ui/tela_conferir.py</code>: o lugar da página virou uma pilha (a ferramenta, os pares, o antes e depois:
+  <code>vista_da_pagina</code>, <code>_acertar_a_vista_da_pagina</code>); a barra de baixo ganhou os botões (<code>_montar_o_ver_da_barra_de_baixo</code>);
+  <code>definir_mostrar</code>, <code>_alternar_antes_depois</code>, <code>_mostrar_antes_depois</code>, <code>_acertar_o_lado_a_lado</code>, <code>_tamanhos_estimados</code>,
+  <code>_previa_do_lado_a_lado</code>, <code>_pagina_do_lado_a_lado</code>; o zoom (<code>_vista_com_zoom</code>, <code>_acertar_o_zoom_da_barra</code>); a roda
+  (<code>_roda_na_pagina</code>, pelo <code>eventFilter</code>); Page Up/Down, Home/End em <code>tratar_tecla</code>; D-343 em <code>_voltar_das_todas</code>; todo
+  livro abre em "Uma página" (<code>carregar</code>).</li>
+<li><code>ui/barra_de_menu.py</code>: Ver &gt; "Ver lado a lado" (<code>lado_a_lado</code>). <code>ui/janela_principal.py</code>: liga o item e o mantém
+  igual à barra. <code>ui/estilo.py</code>: o tamanho e o aceso dos botões novos (<code>jeitoDaBarraDeBaixo</code>).
+  <code>ui/widgets/todas_as_paginas.py</code>: só o comentário (o "abrir lado a lado" do par agora existe).</li>
+<li>Testes: <code>tests/test_decisoes_ver.py</code> (novo, 11), <code>tests/test_promessas.py</code> (P-136, P-146, P-195),
+  <code>tests/promessas/promessas.md</code>, <code>teste_botoes.py</code> (<code>testar_o_ver_da_barra_de_baixo</code>: clica os botões e confere a
+  promessa).</li>
+<li><code>docs/plano/DECISOES.md</code>: situação de D-006, D-015, D-021, D-058, D-343. <code>memoria/itens/layout.md</code>: a barra de baixo.</li>
+<li><code>core/</code>: nada.</li>
+</ul>
+<h2>Testes (no PC, um arquivo por vez, TEMP e --basetemp em <code>_tmp/</code>)</h2>
+<ul>
+<li><code>tests/test_decisoes_ver.py</code>: <strong>11 passaram</strong>. <strong>Reversão</strong> no código antigo (<code>3e112f9</code>, cópia em <code>_tmp/antigo</code>):
+  <strong>os 11 falham</strong> (<code>relatorios/obra-etapa6/reversao-no-codigo-antigo.txt</code>). Ressalva honesta: 9 falham porque o botão
+  ou o item não existe lá; os 2 da navegação (<code>test_d021_*</code>) falham por asserção (a roda só dava zoom; Page Down não
+  andava).</li>
+<li><code>test_decisoes.py</code> 28 · <code>test_decisoes_tela.py</code> 35 · <code>test_decisoes_dividir.py</code> 19 · <code>test_decisoes_automatico.py</code> 24
+  · <code>test_decisoes_mover.py</code> 13 · <code>test_decisoes_impressao.py</code> 22 · <code>test_decisoes_nucleo.py</code> 36 ·
+  <code>test_trabalho_nao_se_perde.py</code> 82 · <code>test_janela_cabe_na_tela.py</code> 2 · <code>test_barra_de_menu.py</code> 20 ·
+  <code>test_livro_aberto.py</code> 14 · <code>test_atalhos.py</code> 15 · <code>test_visualizador.py</code> 70 · <code>test_paineis_na_tela.py</code> 22 ·
+  <code>test_paineis.py</code> 34 · <code>test_miniaturas_novas.py</code> 5 · <code>test_dividir_na_tela.py</code> 9 · <code>test_girar_na_tela.py</code> 22 ·
+  <code>test_endireitar_na_tela.py</code> 5 · <code>test_tela_inicio.py</code> 15 · <code>test_misto_na_tela.py</code> 14: <strong>todos passam</strong>.</li>
+<li><code>test_promessas.py -k "lado or pares or zoom or ver or p12 or p13 or p14 or p195 or todo_botao or toda_promessa"</code>:
+  64 passaram, 3 xfail, <strong>1 falha que já falha no código antigo</strong> (P-127 pelo menu, conferido no <code>3e112f9</code>). Depois do
+  acerto do estilo: P-136 (2), P-146 (2), P-195 e as três da varredura (todo botão tem promessa, toda promessa tem botão
+  e prova): 8 passaram.</li>
+<li><code>teste_botoes.py</code>: <strong>337 ações, 0 falhas</strong> (com a parte nova "o ver da barra de baixo": cada botão e a promessa
+  dele).</li>
+</ul>
+<h2>GitHub</h2>
+<ul>
+<li><strong>40588991790</strong> (commit <code>3031157</code>): o <code>teste_botoes.py</code> tinha um erro de sintaxe meu (uma quebra de linha no meio de
+  um texto, ao escrever o arquivo) — quebrou o "Botões" e a coleta de <code>test_pasta_de_dados_dos_scripts.py</code>.
+  Consertado em <code>bd7ed19</code>.</li>
+<li><strong>40592137706</strong> (commit <code>bd7ed19</code>, a final): <strong>partes 3, 4 e 5 e "Botões e prints da janela real" passam</strong>; parte 1
+  com P-085, P-092 e P-127; parte 2 com <code>test_paginas_diferentes.py::test_na_analise_a_pagina_torta_ganha_o_aviso</code>.
+  Nenhuma é desta etapa: P-085 e P-127 são as da base (etapas 4 e 5); P-092 falha também no código antigo (no PC,
+  <code>3e112f9</code>; no PC, no código novo, passa); a das páginas diferentes é a instável que a etapa 5 já anotou (falha às
+  vezes no código antigo).</li>
+</ul>
+<h2>Prints da janela de verdade (1280×657 lógicos, a 125% deste PC = 1600×821; fora da tela; <code>relatorios/obra-etapa6/prints/</code>)</h2>
+<p>Roteiro <code>relatorios/obra-etapa6/roteiro/prints.py</code> (cliques e teclas por mensagens do Windows; a base é a da etapa 3),
+caminho do Kaique do zero, sem nada marcado: "La vida eterna" (cópia) → Automático só "Dividir" (clique na caixinha) →
+Rodar → página 7 → "Duas lado a lado" → rolar → "Uma página" → "antes / depois" (página em Original) → clique na página,
+tecla 2 (Preto e branco) → "antes / depois" → "+" duas vezes → "ajustar à tela" → Page Down → menu Ver.</p>
+<ul>
+<li><strong>Depois (16 de 16 conferências):</strong> <code>depois-00</code> livros · <code>-01</code> aberto, nada marcado · <code>-02</code> dividido, uma página
+  por vez, a barra de baixo com "Uma página" aceso · <code>-03</code> "Duas lado a lado": as páginas 6 e 7 do livro (o quadro azul
+  na 7), a mesma altura · <code>-04</code> rolando os pares · <code>-05</code> antes/depois numa página em Original (a frase) · <code>-06</code>
+  antes Original × depois Preto e branco, com a linha · <code>-07</code> zoom 156% · <code>-08</code> Page Down: página 17 · <code>-09</code> menu Ver
+  com "Ver lado a lado".</li>
+<li><strong>Antes (código <code>3e112f9</code>, 5 de 5):</strong> <code>antes-00</code> a <code>antes-02</code>: a barra de baixo sem nenhum dos botões; o menu Ver sem
+  "Ver lado a lado".</li>
+<li>Abri e olhei todos. Visto nos prints e consertado: os botões novos saíam com a letra grande dos "‹ ›" e sem o aceso
+  da escolha (passaram para o tamanho e o azul do livro aberto); na primeira rodada a tecla 2 e o Page Down não
+  chegavam porque o foco estava na lista do Automático (o roteiro agora clica na página antes, como o Kaique; ressalva 3).</li>
+</ul>
+<h2>Ressalvas</h2>
+<ol>
+<li><strong>Os pares seguem a ordem do PDF, com a 1 sozinha à direita (D-347).</strong> No "La vida eterna" a numeração impressa do
+   livro faz a página ímpar impressa cair à esquerda (o PDF começa na folha de rosto, que é a "5"). É a regra
+   decidida; vai na pergunta 6.</li>
+<li><strong>O lado a lado mostra a prévia (a qualidade da prévia escolhida nas Configurações, "Rápida" de fábrica), não o
+   PDF final.</strong> Cada página aparece primeiro como um quadro cinza com o número e, em seguida, a prévia (desenhada por
+   trás, a mesma das ferramentas). Página tirada do livro não aparece nos pares (não está no PDF). Página movida na
+   ferramenta Mover aparece sem o movimento (é a D-547, etapa 9b).</li>
+<li><strong>As teclas vão para quem tem o foco.</strong> Depois de usar o painel Automático, o foco fica na lista dele e as teclas
+   (Page Down, os números dos filtros) vão para ela até o Kaique clicar na página. Já era assim (etapa 5 viu o mesmo
+   com a tecla F); não mexi.</li>
+<li><strong>A roda do mouse de verdade não foi provada na janela fora da tela</strong> (o Qt não aceita a roda por mensagem do
+   Windows com a janela inativa: ficha 3.8, "Tentado e descartado"). A prova é o evento da roda do Qt
+   (<code>test_d021_roda_*</code>); vale o Samuel conferir com o mouse.</li>
+<li><strong>"antes / depois" e zoom não valem no lado a lado</strong> (ali a página cabe na tela) e o antes/depois mostra uma página
+   só (a da vez). Pergunta 3.</li>
+<li><strong>Testes que falham sem ser desta etapa:</strong> P-127 ("Antes de processar" pelo menu) falha igual no código antigo
+   (conferido no <code>3e112f9</code>); P-092 falha no antigo também (no PC); P-085 e P-090 aparecem nas rodadas do GitHub do
+   ramo-base (etapas 4 e 5).</li>
+</ol>
+<h2>Perguntas para o Samuel (com recomendação; nenhuma trava a etapa)</h2>
+<ol>
+<li><strong>Lembrar "Uma página / Duas lado a lado" de um livro para o outro?</strong> Hoje todo livro abre em "Uma página" (D-007 e
+   D-006 "não quero padrão"); o livro aberto lembra a escolha (D-347). <em>Recomendo deixar como está: abrir sempre em
+   "Uma página".</em></li>
+<li><strong>A roda do mouse com zoom:</strong> hoje, com a página aumentada, a roda continua aumentando/diminuindo (como antes), e
+   Ctrl+roda dá zoom sempre. Quer, com zoom, que a roda <strong>ande pela página</strong> (para cima e para baixo, como no UPDF e
+   no Acrobat)? <em>Recomendo sim (como o UPDF); fica para a etapa que o Samuel escolher.</em></li>
+<li><strong>Zoom e "antes / depois" no lado a lado:</strong> hoje ficam apagados ali (as páginas cabem na tela; "antes / depois" é
+   de uma página). Quer zoom também nos pares (como o "Caber a altura / largura" do livro aberto)? <em>Recomendo não por
+   agora.</em></li>
+<li><strong>O número do zoom:</strong> o desenho mostra "78%"; o programa mostra 100% quando a página inteira cabe na tela (como a
+   ferramenta de marcar já dizia "Zoom: 100%"). Quer que 100% seja o "tamanho real" da página (como o "Tamanho real"
+   do livro aberto)? <em>Recomendo deixar 100% = a página inteira (o Kaique entende "voltar a 100%" = ver a página toda).</em></li>
+<li><strong>"antes" = o Original da página</strong> (girada, dividida, endireitada e cortada, só sem o filtro), como a tela cheia dos
+   filtros. Ou quer o "antes" = a folha como veio do scanner? <em>Recomendo o de agora (é o que a tela cheia já mostra).</em></li>
+<li><strong>Os pares:</strong> a 1 sozinha à direita e depois 2-3, 4-5 (D-347). Num livro cujo PDF começa no meio da numeração
+   (o "La vida eterna"), a página ímpar impressa cai à esquerda. Quer um jeito de escolher "a 1 junto da 2"? <em>Recomendo
+   esperar: o "Montar cadernos" é que manda na impressão.</em></li>
+</ol>
+<h2>Trocas que outra área precisa</h2>
+<ul>
+<li><strong>Etapa 9b (D-547):</strong> quando as telas mostrarem a página movida, o lado a lado e o antes/depois mostram junto (eles
+  usam a mesma prévia, <code>GerenciadorPrevias.pegar</code>).</li>
+<li><strong>Gerente (Lista de bugs):</strong> o foco preso na lista do Automático (ressalva 3).</li>
+</ul>
+<h2>Commits (ramo <code>obra-etapa6-2026-10-26</code>)</h2>
+<ul>
+<li><code>15d8ec1</code> ONDE-PAREI com as decisões que a tarefa precisa cumprir</li>
+<li><code>4d147bc</code> Uma página / Duas lado a lado na barra de baixo e no menu Ver (pares das prévias), antes / depois, zoom,
+  roda, Page Up/Down, Home/End; provas e promessas</li>
+<li><code>3031157</code> teste_botoes confere o ver da barra de baixo; reversão; situação no Livro; roteiro dos prints</li>
+<li><code>bd7ed19</code> botões da barra de baixo no tamanho e no aceso do livro aberto; teste_botoes sem o erro de sintaxe; prints</li>
+<li>(este ONDE-PAREI final)</li>
+</ul>
+<h2>Escolhas novas no Livro</h2>
+<p>Nenhuma D-580+: pela regra nova da gerente, onde o Livro não respondia não criei escolha; fiz o mínimo para o pedido
+funcionar e pus cada ponto como pergunta (1 a 6). Atualizei só a situação de D-006, D-015, D-021, D-058 e D-343.</p>
+<p class="rodape">Editor de Impressão &middot; gerado em 27/10/2026 às 18:18</p>
+</body>
+</html>

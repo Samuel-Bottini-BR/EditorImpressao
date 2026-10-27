@@ -2621,9 +2621,30 @@ def test_p135_modo_comparar(janela, tela, monkeypatch):
 
 
 @prova("P-136")
-def test_p136_ver_lado_a_lado_na_area_de_trabalho(janela, tela):
+@pytest.mark.parametrize("onde", ["área de trabalho/barra de baixo/Duas lado a lado", "menu/lado_a_lado"])
+def test_p136_ver_lado_a_lado_na_area_de_trabalho(janela, tela, onde):
     assert "lado_a_lado" in janela.menu.acoes, "o menu Ver não tem 'Ver lado a lado'"
-    botao(janela, "área de trabalho/barra de baixo/Duas lado a lado")
+    assert tela.vista_da_pagina.currentWidget() is tela.area_imagem, "não abriu em 'Uma página' (D-007)"
+    tela.escolher_ferramenta("mao")
+    tela.ir_para_pagina(2)
+    antes = aj.projeto_gravado(janela)
+    apertar(janela, onde)
+    aj.assentar()
+    assert tela.vista_da_pagina.currentWidget() is tela.lado_a_lado, "os pares não apareceram"
+    assert janela.menu.acoes["lado_a_lado"].isChecked(), "o menu Ver não acompanha"
+    assert botao(janela, "área de trabalho/barra de baixo/Duas lado a lado").isChecked()
+    pares = tela.lado_a_lado
+    assert pares.indices == [p.indice for p in janela.projeto.paginas_ativas]
+    assert pares._linhas()[0] == [None, 0], "a 1 não ficou sozinha à direita"
+    assert pares.indice_da_vez() == 2, "não ficou na página da vez"
+    if onde.startswith("menu/"):
+        apertar(janela, onde)                           # desmarcar
+    else:
+        apertar(janela, "área de trabalho/barra de baixo/Uma página")
+    assert tela.vista_da_pagina.currentWidget() is tela.area_imagem
+    assert not janela.menu.acoes["lado_a_lado"].isChecked()
+    assert tela.indice_pagina == 2
+    assert aj.projeto_gravado(janela)["paginas"] == antes["paginas"]
 
 
 @prova("P-137")
@@ -3068,22 +3089,50 @@ def test_p145_ir_para_a_pagina(janela, tela):
 
 
 @prova("P-146")
-def test_p146_zoom_pelo_menu(janela, tela):
+@pytest.mark.parametrize("lugar", ["menu", "barra de baixo"])
+def test_p146_zoom_pelo_menu(janela, tela, lugar):
     tela.escolher_ferramenta("mao")
     vista = tela.editor_selecao
     antes = aj.projeto_gravado(janela)
     aj.esperar(lambda: vista._pixmap is not None, motivo="a página no editor")
-    apertar(janela, "menu/ajustar")
+    if lugar == "menu":
+        mais_, menos_, ajustar_ = "menu/mais_zoom", "menu/menos_zoom", "menu/ajustar"
+    else:
+        base_ = "área de trabalho/barra de baixo/"
+        mais_, menos_, ajustar_ = base_ + "+", base_ + "–", base_ + "ajustar à tela"
+    tela.mudar_o_zoom(None)
     base = vista.zoom
-    apertar(janela, "menu/mais_zoom")
-    apertar(janela, "menu/mais_zoom")
+    apertar(janela, mais_)
+    apertar(janela, mais_)
     mais = vista.zoom
     assert mais > base
-    apertar(janela, "menu/menos_zoom")
+    assert tela.rotulo_do_zoom.text() == f"{round(mais * 100)}%", "o número do zoom não acompanha"
+    apertar(janela, menos_)
     assert base < vista.zoom < mais
-    apertar(janela, "menu/ajustar")
+    apertar(janela, ajustar_)
     assert abs(vista.zoom - base) < 1e-6
+    assert tela.rotulo_do_zoom.text() == "100%"
     assert aj.projeto_gravado(janela) == antes
+
+
+@prova("P-195")
+def test_p195_antes_depois(janela, tela):
+    from core.filtros import PRETO_E_BRANCO
+
+    tela.escolher_ferramenta("mao")
+    tela.ir_para_pagina(1)
+    tela._escolher_filtro(PRETO_E_BRANCO)
+    antes = aj.projeto_gravado(janela)
+    apertar(janela, "área de trabalho/barra de baixo/antes / depois")
+    vista = tela.vista_antes_depois
+    assert tela.vista_da_pagina.currentWidget() is vista, "o antes e depois não apareceu"
+    aj.esperar(lambda: vista.antes is not None and vista.depois is not None, motivo="as duas prévias")
+    assert vista.comparando and vista.rotulos == ("antes: Original", "depois: Preto e branco")
+    tela.ir_para_pagina(0)                                   # página em Original
+    assert vista.aviso == "Escolha outro filtro para comparar com o Original."
+    apertar(janela, "área de trabalho/barra de baixo/antes / depois")
+    assert tela.vista_da_pagina.currentWidget() is tela.area_imagem
+    assert aj.projeto_gravado(janela)["paginas"] == antes["paginas"]
 
 
 @prova("P-147")
