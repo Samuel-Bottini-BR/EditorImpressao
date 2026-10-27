@@ -208,6 +208,20 @@ def aplicar(preparada: np.ndarray, saida: np.ndarray, filtro: str, letras_com_a_
         if preparada.shape[:2] != cinza.shape:
             return None
         binaria = np.where(pretos, 0, 255).astype(np.uint8)
+        if reduzir_cores and opcoes.forcar_preto_e_branco:
+            # Etapa 10b (D-189; 21/10, `211-reduzir`: "Ele está apagando as
+            # letras"; "em alguns casos, ele acaba apagando a letra"): no Preto
+            # e branco com "Letras com a cor delas", o "forçar preto e branco"
+            # da posterização do ScanTailor joga a cor mais escura das letras
+            # no PRETO e deixa as outras claras - na Horas 26, metade de cada
+            # palavra saía preta e metade clara ("S. Leonard", "Theodore").
+            # Aqui as letras já são só as letras (o papel é branco): sem o
+            # "forçar", cada letra fica com uma das poucas cores, inteira.
+            # Nos outros filtros (a página toda posterizada) vale o de
+            # fábrica do ScanTailor. Arriscado: voltar a forçar aqui.
+            from dataclasses import replace
+
+            opcoes = replace(opcoes, forcar_preto_e_branco=False)
         resultado = cores(preparada, dpi, preto_e_branco=binaria, posterizar=reduzir_cores,
                           opcoes=opcoes, biblioteca=biblioteca)
         if not resultado.disponivel:

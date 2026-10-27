@@ -369,6 +369,41 @@ def _desenho_colado_a_tinta_forte(fora: np.ndarray, forte: np.ndarray,
     return volta
 
 
+# --- a mesma conta na previa e no PDF (etapa 10b da obra, 27/10/2026) -------
+#
+# Defeito grave da Lista de bugs (13/10/2026, verificador do "Para revisar";
+# 21/10, `pr-tela-engana`): no "So as letras" ("Guardar a tinta forte"), a
+# letra T vermelha grande do Antiphonal 1547, p. 46, aparece inteira na tela
+# (previa, 110 DPI) e SOME no PDF (300 DPI). A causa: a tinta de fora das
+# linhas fica quando algum ponto dela e tao escuro quanto a letra do texto (a
+# mediana da tinta dentro das linhas). Essa mediana muda com a resolucao - na
+# imagem pequena cada ponto e a media de varios, a letra fina clareia - e a
+# conta dava 61 na previa e 44 no PDF; o ponto mais escuro da T (vermelha,
+# grossa) e 43 na previa e 50 no PDF: ficava na tela e saia do PDF. Decisoes
+# D-473 ("Tela e PDF saem da mesma conta") e D-066 ("precisamos que o pdf saia
+# que nem esta na tela").
+# O conserto: as duas medidas (a da letra e a da peca) sao feitas no cinza
+# ALISADO por um desfoque do tamanho de SUAVE_DA_TINTA_FORTE vezes a altura da
+# linha - a altura da linha cresce com a resolucao, entao o desfoque tambem, e
+# a previa e o PDF passam a ver a pagina na mesma escala. Medido na p. 46:
+# previa 72/63 e PDF 66/62 com 0,03 (a T fica nos dois); 0,04 e o de agora.
+# So vale no "Guardar a tinta forte" e no "Guardar so o texto" (o "So as
+# letras" vem desligado de fabrica: livro de fabrica nao muda). O escuro da
+# letra que vai para as medidas e para LETRA_SEM_TONS continua o de antes.
+# Arriscado: subir muito (pedaco cinza de mancha passa a contar como tinta
+# forte) ou voltar a medir sem alisar (previa e PDF voltam a discordar).
+SUAVE_DA_TINTA_FORTE = 0.04
+
+
+def _cinza_na_escala_da_linha(cinza: np.ndarray, altura_linha: float) -> np.ndarray:
+    """O cinza alisado por um desfoque proporcional a altura da linha (ver
+    SUAVE_DA_TINTA_FORTE): a mesma pagina em duas resolucoes da a mesma
+    resposta. Sem altura de linha, o cinza como veio."""
+    if altura_linha <= 0:
+        return cinza
+    return cv2.GaussianBlur(cinza, (0, 0), max(0.5, SUAVE_DA_TINTA_FORTE * float(altura_linha)))
+
+
 def _fora_do_texto(binaria: np.ndarray, cinza: np.ndarray, linhas: np.ndarray,
                    altura_linha: float, modo: str, fora_da_imagem: np.ndarray,
                    medidas: dict | None = None, pecas: dict | None = None) -> np.ndarray:
@@ -399,8 +434,13 @@ def _fora_do_texto(binaria: np.ndarray, cinza: np.ndarray, linhas: np.ndarray,
         quantos, rotulos, stats, _c = cv2.connectedComponentsWithStats(
             fora.view(np.uint8), connectivity=8)
         if quantos > 1:
+            # "tao escuro quanto a letra" medido no cinza alisado pela altura
+            # da linha: a mesma resposta na previa e no PDF (ver
+            # SUAVE_DA_TINTA_FORTE; etapa 10b, a T do Antiphonal 46)
+            medida = _cinza_na_escala_da_linha(cinza, altura_linha)
+            escuro_medido = float(np.median(medida[dentro]))
             fica = np.zeros(quantos, bool)
-            fica[np.unique(rotulos[fora & (cinza <= escuro)])] = True
+            fica[np.unique(rotulos[fora & (medida <= escuro_medido)])] = True
             minimo = (max(altura_linha, 1.0) / PEDACO_MINIMO_DA_REDE) ** 2
             fica &= stats[:, cv2.CC_STAT_AREA] >= minimo
             fica[0] = False

@@ -333,6 +333,12 @@ class Pontinhos:
 
     escolha: str
     dpi: float | None = None
+    # Etapa 10b (D-193 / D-473, `lu-tc-igual`: "precisamos que o pdf saia que
+    # nem está na tela"): o DPI em que esta mesma página sai no PDF, quando a
+    # imagem é uma prévia menor (None = esta imagem JÁ é a do PDF). Os dez
+    # jeitos do ScanTailor fazem a conta nesse DPI e reduzem para a prévia
+    # (core.filtros._preto_e_branco_do_scantailor). Seguro mudar: nada.
+    dpi_do_pdf: float | None = None
 
 
 _AVISADOS: set[str] = set()

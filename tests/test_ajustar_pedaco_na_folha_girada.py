@@ -252,4 +252,7 @@ def test_tirar_o_fundo_com_pedaco_na_folha_girada(tmp_path, monkeypatch, rotacao
     projeto.caminho_saida = str(tmp_path / "saida.pdf")
     pipeline.processar(projeto)
     gravadas = _paginas_do_pdf(projeto.caminho_saida)
-    assert np.array_equal(gravadas[0], com_pedaco), "PDF diferente da prévia"
+    # Etapa 10b (lista única 4.5): o PDF guarda a página de tons em JPEG 92 -
+    # a mesma imagem a poucos tons (sem diferença visível)
+    d = np.abs(gravadas[0].astype(np.int16) - com_pedaco.astype(np.int16))
+    assert gravadas[0].shape == com_pedaco.shape and float(d.mean()) < 2.0         and float(np.percentile(d, 99.9)) < 25, "PDF diferente da prévia"

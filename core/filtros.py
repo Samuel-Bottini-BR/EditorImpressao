@@ -871,7 +871,93 @@ def _com_a_tinta_colorida(img: np.ndarray, binaria: np.ndarray) -> np.ndarray:
     soma = cv2.add(cv2.LUT(da, quarto), cv2.LUT(db, quarto))
     tinta = cv2.compare(soma, COR_DE_TINTA * COR_DE_TINTA / 4.0, cv2.CMP_GE)
     tinta = _so_a_tinta_de_borda_nitida(tinta, soma)
-    return cv2.bitwise_and(binaria, cv2.bitwise_not(tinta))
+    tinta, manchas = _sem_as_manchas_redondas(tinta)
+    saida = cv2.bitwise_and(binaria, cv2.bitwise_not(tinta))
+    if manchas is not None:
+        # dentro da mancha redonda so fica a tinta escura de verdade (a letra
+        # que a mancha cobre); a borda da mancha que o binarizador marcou sai
+        cinza = cv2.cvtColor(img, cv2.COLOR_BGR2GRAY)
+        nivel = _percentil(cinza[::4, ::4], BRANCO_PERCENTIL)
+        clara = (manchas > 0) & (cinza >= MANCHA_TINTA_DE_VERDADE * nivel)
+        saida[clara] = 255
+    return saida
+
+
+# Etapa 10b da obra (lista unica 4.11, 23/10/2026, Valades 203: "uma mancha
+# marrom pequena em cima de uma palavra virou um ponto preto em cima de
+# 'Idiomate'"). A mancha de ferrugem pequena e redonda tem cor longe do papel
+# e borda nitida o bastante para passar por "tinta colorida" (a regra da letra
+# vermelha e dourada, COR_DE_TINTA e BORDA_DE_TINTA), e virava um disco
+# preto por cima da letra. O que separa: a letra colorida e TRACO (o miolo
+# dela, a maior distancia ate a beirada, e do tamanho da grossura da letra); a
+# mancha e uma BOLA cheia e redonda. A peca colorida cujo miolo passa de
+# MANCHA_MIOLO_MINIMO da altura da pagina, cheia (area / fecho convexo acima
+# de MANCHA_CHEIA) e nao comprida (MANCHA_COMPRIDA) e mancha: nao vira preta,
+# e dentro dela so fica o que e escuro de verdade (abaixo de
+# MANCHA_TINTA_DE_VERDADE do nivel do papel - a letra preta que a mancha
+# cobre). Medido: a mancha do Valades 203 tem miolo de ~1,2% da altura; o
+# traco da letra vermelha e dourada fica abaixo de 0,6% (Horas 13, 27 e 47,
+# Graduale 223: nenhuma mudanca no gabarito; ONDE-PAREI da etapa 10b).
+# Arriscado: baixar MANCHA_MIOLO_MINIMO (o ponto vermelho grosso de uma
+# letra pintada passaria a ser mancha) ou MANCHA_CHEIA.
+MANCHA_MIOLO_MINIMO = 0.008
+MANCHA_CHEIA = 0.75
+MANCHA_COMPRIDA = 2.5
+MANCHA_TINTA_DE_VERDADE = 0.55
+MANCHA_BEIRADA = 0.8
+
+
+def _sem_as_manchas_redondas(tinta: np.ndarray) -> tuple[np.ndarray, np.ndarray | None]:
+    """(tinta sem as manchas redondas, mascara das manchas alargada 2 pontos
+    ou None) - ver MANCHA_MIOLO_MINIMO. tinta: uint8, 255 = cor de tinta."""
+    if not cv2.countNonZero(tinta):
+        return tinta, None
+    altura = tinta.shape[0]
+    miolo_min = MANCHA_MIOLO_MINIMO * altura
+    # porta barata (regra 6): so ha bola com miolo grande se a erosao por um
+    # disco de metade do miolo deixa alguma coisa - feita numa copia 4 vezes
+    # menor (a bola tem dezenas de pontos de miolo; a letra fina some)
+    pequena = cv2.resize(tinta, (max(1, tinta.shape[1] // 4), max(1, tinta.shape[0] // 4)),
+                         interpolation=cv2.INTER_AREA)
+    lado = max(3, int(miolo_min / 8) * 2 + 1)
+    disco = cv2.getStructuringElement(cv2.MORPH_ELLIPSE, (lado, lado))
+    sobra = cv2.erode((pequena >= 128).view(np.uint8), disco)
+    if not cv2.countNonZero(sobra):
+        return tinta, None
+    # so perto do que a erosao deixou (as candidatas a bola): a tinta a ate
+    # 3 miolos de distancia; a peca maior que isso nao e bola (MANCHA_COMPRIDA)
+    perto = cv2.resize(sobra, (tinta.shape[1], tinta.shape[0]), interpolation=cv2.INTER_NEAREST)
+    raio = max(3, int(3 * miolo_min) | 1)
+    perto = cv2.dilate(perto, cv2.getStructuringElement(cv2.MORPH_RECT, (raio, raio)))
+    quantas, rotulos, medidas, _c = cv2.connectedComponentsWithStats(
+        cv2.bitwise_and(tinta, tinta, mask=perto), connectivity=8)
+    ys, xs = np.nonzero(sobra)
+    candidatas = np.unique(rotulos[np.minimum(ys * 4 + 2, tinta.shape[0] - 1),
+                                   np.minimum(xs * 4 + 2, tinta.shape[1] - 1)])
+    saida = tinta.copy()
+    manchas = np.zeros_like(tinta)
+    achou = False
+    for k in candidatas[candidatas > 0]:
+        x, y, w, h = (int(v) for v in medidas[k, :4])
+        if min(w, h) < miolo_min or max(w, h) > MANCHA_COMPRIDA * min(w, h):
+            continue
+        peca = (rotulos[y:y + h, x:x + w] == k).astype(np.uint8)
+        miolo = 2.0 * float(cv2.distanceTransform(np.pad(peca, 1), cv2.DIST_L2, 5).max())
+        if miolo < miolo_min:
+            continue
+        contornos, _h = cv2.findContours(peca, cv2.RETR_EXTERNAL, cv2.CHAIN_APPROX_SIMPLE)
+        fecho = cv2.contourArea(cv2.convexHull(np.vstack(contornos))) if contornos else 0.0
+        if fecho <= 0 or medidas[k, cv2.CC_STAT_AREA] / fecho < MANCHA_CHEIA:
+            continue
+        saida[y:y + h, x:x + w][peca > 0] = 0
+        manchas[y:y + h, x:x + w][peca > 0] = 255
+        achou = True
+    if not achou:
+        return tinta, None
+    # a beirada da mancha, que esmaece para fora da cor, tambem e mancha:
+    # alarga MANCHA_BEIRADA do miolo minimo
+    borda = max(3, int(MANCHA_BEIRADA * miolo_min) | 1)
+    return saida, cv2.dilate(manchas, cv2.getStructuringElement(cv2.MORPH_ELLIPSE, (borda, borda)))
 
 
 # Letra colorida ou mancha colorida? (verificador, 01/10/2026: no Palatino 66 a
@@ -1155,6 +1241,9 @@ def filtro_preto_e_branco(
     k_meio = k_para_a_letra(cinza)
     k = k_do_sauvola(forca, k_meio)
     binaria = binarizar(cinza, janela=janela, k=k, algoritmo=algoritmo_de_verdade)
+    # etapa 10b: a faixa da sombra da lombada sai pela conta de luz igualada
+    # (ver LOMBADA_SOMBRA_MAXIMA); sem sombra, nada muda
+    binaria = _sem_a_sombra_da_lombada(cinza, binaria)
     binaria = _com_a_tinta_colorida(img, binaria)
     # a borda do Sauvola depois da letra colorida: o "JESUS" dourado da Horas
     # 47, que o Otsu quase nao ve, entra como semente pela cor. As pecas sao
@@ -1169,6 +1258,198 @@ def filtro_preto_e_branco(
     # very last operation", OutputGenerator.cpp). Sem pedido, nada muda.
     binaria = luz_scantailor.preto_e_branco_suavizado(binaria)
     return _limpar_os_pontinhos(binaria, despeckle, cinza.shape[0])
+
+
+# --- a sombra da lombada (etapa 10b da obra, 27/10/2026) --------------------
+#
+# Lista unica 4.2 (teste dos 14 livros, 23/10/2026), Matematica 40 e 66, e a
+# etapa 10a provou que ali o corte esta certo (lugares 5 e 6 da D-104/D-466):
+# "as primeiras letras de cada linha, perto da lombada, sumiram ('Suponha que'
+# -> '~cha que')" e "cada numero de questao ... virou borrao preto". A causa,
+# medida: a folha encurva na lombada, e ali o papel fica numa SOMBRA (o
+# papel cai de ~250 para ~160 a 180) e a letra fica BORRADA (fora de foco). O
+# Otsu (Matematica 66), que tem um limiar so para a pagina toda, pinta a
+# sombra inteira de preto; o Sauvola (Matematica 40), com a janela pequena,
+# acha que o miolo da palavra borrada e "fundo" e o apaga.
+# O conserto: acha a sombra pela luz de cada COLUNA da pagina (o papel, o
+# percentil 75 do cinza da coluna, alisado): se as colunas da beirada da
+# esquerda ou da direita ficam mais escuras que LOMBADA_SOMBRA_MAXIMA do papel
+# claro (e nao tao escuras quanto a moldura preta do scanner, que fica abaixo
+# de LOMBADA_SOMBRA_MINIMA), so nessa faixa (as colunas abaixo de
+# LOMBADA_FAIXA do papel, a partir da beirada, ate LOMBADA_LARGURA_MAXIMA da
+# largura) o cinza e dividido pela luz da coluna (a luz fica igual) e o preto
+# e o Otsu desse cinza igualado. Fora da faixa, e em pagina sem sombra, nada
+# muda (o preto e branco sai ponto a ponto igual). Medido no gabarito: so as
+# paginas com sombra na beirada mudam, e so na faixa (Graduale 221 e 222,
+# Rhetorica 73; ver o ONDE-PAREI da etapa 10b). Arriscado: subir
+# LOMBADA_SOMBRA_MAXIMA (pagina com a luz so um pouco torta passa a mudar) ou
+# baixar LOMBADA_SOMBRA_MINIMA (a moldura preta do scanner viraria "sombra" e
+# a divisao por quase zero estoura o cinza).
+LOMBADA_SOMBRA_MAXIMA = 0.80
+LOMBADA_SOMBRA_MINIMA = 0.50
+LOMBADA_FAIXA = 0.85
+LOMBADA_LARGURA_MAXIMA = 0.20
+
+
+def _faixa_da_sombra_da_lombada(cinza: np.ndarray) -> tuple[np.ndarray, np.ndarray] | None:
+    """(luz de cada coluna, de 0 a 1 do papel claro; colunas da faixa) da
+    sombra da lombada na beirada da esquerda ou da direita, ou None quando nao
+    ha (ver LOMBADA_SOMBRA_MAXIMA). A conta e numa copia pequena (no maximo
+    600 x 800): milissegundos."""
+    altura, largura = cinza.shape[:2]
+    if largura < 20 or altura < 20:
+        return None
+    pequena = cv2.resize(cinza, (min(largura, 600), min(altura, 400)),
+                         interpolation=cv2.INTER_AREA)
+    # o percentil 75 de cada coluna, pela ordenacao (mais rapido que
+    # np.percentile com eixo; regra 6)
+    k = int(0.75 * (pequena.shape[0] - 1))
+    perfil = np.partition(pequena, k, axis=0)[k].astype(np.float32)
+    perfil = cv2.GaussianBlur(perfil.reshape(1, -1), (0, 0), 3).ravel()
+    topo = float(np.percentile(perfil, 90))
+    if topo <= 1:
+        return None
+    luz = perfil / topo
+    n = luz.size
+    borda = max(1, int(LOMBADA_LARGURA_MAXIMA * n))
+    faixa = np.zeros(n, bool)
+    for indices in (range(0, borda), range(n - 1, n - 1 - borda, -1)):
+        lado = [i for i in indices]
+        dentro = []
+        for i in lado:
+            if luz[i] >= LOMBADA_FAIXA:
+                break
+            dentro.append(i)
+        if not dentro:
+            continue
+        mais_escura = float(luz[dentro].min())
+        if LOMBADA_SOMBRA_MINIMA <= mais_escura < LOMBADA_SOMBRA_MAXIMA:
+            faixa[dentro] = True
+    if not faixa.any():
+        return None
+    luz_cheia = cv2.resize(luz.reshape(1, -1), (largura, 1), interpolation=cv2.INTER_LINEAR).ravel()
+    faixa_cheia = cv2.resize(faixa.astype(np.uint8).reshape(1, -1), (largura, 1),
+                             interpolation=cv2.INTER_NEAREST).ravel() > 0
+    return luz_cheia, faixa_cheia
+
+
+# A sombra que nao e da lombada (folha FOTOGRAFADA com o celular: a sombra da
+# mao ou da propria folha; Lista de bugs 23/10/2026, "o Preto e branco
+# transforma a sombra da mao ou da pagina numa grande mancha preta", Razoes do
+# Integralismo 57 e Atanasio 8): a mesma conta, mas a luz e medida em
+# quadradinhos (SOMBRA_QUADROS por lado; o papel de cada um e o percentil 90)
+# e a sombra e onde a luz fica abaixo de LOMBADA_FAIXA do papel claro, sem
+# chegar a LOMBADA_SOMBRA_MINIMA, e onde o quadradinho tem POUCA tinta
+# (SOMBRA_TINTA_MAXIMA): a gravura, a foto e a pintura escuras tem muita
+# "tinta" contra o papel delas e ficam de fora (e, se o detector as marcou, o
+# Preto e branco delas e outro, por cima). So vale quando ha sombra forte
+# (algum quadradinho abaixo de LOMBADA_SOMBRA_MAXIMA).
+SOMBRA_QUADROS = 24
+SOMBRA_TINTA_MAXIMA = 0.25
+
+
+def _sombra_em_quadros(cinza: np.ndarray) -> tuple[np.ndarray, np.ndarray] | None:
+    """(luz em quadradinhos, de 0 a 1 do papel claro; onde e sombra) - as duas
+    na grade de SOMBRA_QUADROS por lado (pequenas: quem usa estica) - da
+    sombra medida em quadradinhos (ver SOMBRA_QUADROS), ou None sem sombra
+    forte. A conta e numa copia reduzida (no maximo SOMBRA_LADO_DA_CONTA
+    pontos de lado): milissegundos."""
+    altura, largura = cinza.shape[:2]
+    escala = min(1.0, SOMBRA_LADO_DA_CONTA / max(altura, largura))
+    pequena = cinza if escala >= 1.0 else cv2.resize(
+        cinza, (max(1, int(largura * escala)), max(1, int(altura * escala))),
+        interpolation=cv2.INTER_AREA)
+    alt, larg = pequena.shape[:2]
+    lado_y, lado_x = alt // SOMBRA_QUADROS, larg // SOMBRA_QUADROS
+    if lado_y < 4 or lado_x < 4:
+        return None
+    gy, gx = alt // lado_y, larg // lado_x
+    quadros = (pequena[:gy * lado_y, :gx * lado_x].reshape(gy, lado_y, gx, lado_x)
+               .transpose(0, 2, 1, 3).reshape(gy, gx, -1))
+    k = int(0.9 * (quadros.shape[2] - 1))
+    papel = np.partition(quadros, k, axis=2)[:, :, k].astype(np.float32)
+    tinta = (quadros < 0.6 * papel[..., None]).mean(axis=2)
+    papel = cv2.medianBlur(np.clip(papel, 0, 255).astype(np.uint8), 3).astype(np.float32)
+    topo = float(np.percentile(papel, 90))
+    if topo <= 1:
+        return None
+    luz = cv2.GaussianBlur(papel / topo, (0, 0), 1.0)
+    forte = (luz < LOMBADA_SOMBRA_MAXIMA) & (luz >= LOMBADA_SOMBRA_MINIMA) & (tinta < SOMBRA_TINTA_MAXIMA)
+    if not forte.any():
+        return None
+    sombra = (luz < LOMBADA_FAIXA) & (luz >= LOMBADA_SOMBRA_MINIMA) & (tinta < SOMBRA_TINTA_MAXIMA)
+    return luz, sombra
+
+
+# A conta da sombra em quadradinhos e feita numa copia de no maximo este lado
+# (regra 6: a pagina inteira a 300 DPI custava ~0,1 s; a luz e lisa).
+SOMBRA_LADO_DA_CONTA = 480
+
+
+def _sem_a_sombra_da_lombada(cinza: np.ndarray, binaria: np.ndarray) -> np.ndarray:
+    """binaria com a sombra da lombada (faixa de colunas) e a sombra da foto
+    de celular (quadradinhos) refeitas pela luz igualada (ver
+    LOMBADA_SOMBRA_MAXIMA e SOMBRA_QUADROS). Sem sombra, devolve a MESMA
+    binaria. Regra 6: a luz e a conta so na caixa da sombra; o limiar do
+    Otsu numa amostra (de 2 em 2 ou 4 em 4 pontos) da pagina igualada."""
+    altura, largura = cinza.shape[:2]
+    faixa = _faixa_da_sombra_da_lombada(cinza)
+    quadros = _sombra_em_quadros(cinza)
+    if faixa is None and quadros is None:
+        return binaria
+    # a luz e onde ha sombra, na resolucao da pagina, montadas por partes
+    def luz_e_onde(ys: slice, xs: slice, passo: int = 1) -> tuple[np.ndarray, np.ndarray]:
+        y0, y1 = ys.start, ys.stop
+        x0, x1 = xs.start, xs.stop
+        h, w = len(range(y0, y1, passo)), len(range(x0, x1, passo))
+        luz = np.ones((h, w), np.float32)
+        onde = np.zeros((h, w), bool)
+        if faixa is not None:
+            luz_col, col = faixa
+            cols = np.arange(x0, x1, passo)
+            c = col[cols]
+            luz[:, c] = luz_col[cols][c][None, :]
+            onde[:, c] = True
+        if quadros is not None:
+            luz_q, sombra_q = quadros
+            gy, gx = luz_q.shape
+            # o centro de cada ponto na grade dos quadradinhos
+            yy = (np.arange(y0, y1, passo) + 0.5) * gy / altura - 0.5
+            xx = (np.arange(x0, x1, passo) + 0.5) * gx / largura - 0.5
+            mapa_x, mapa_y = np.meshgrid(xx.astype(np.float32), yy.astype(np.float32))
+            lq = cv2.remap(luz_q.astype(np.float32), mapa_x, mapa_y, cv2.INTER_CUBIC,
+                           borderMode=cv2.BORDER_REPLICATE)
+            iy = np.clip(np.round(yy).astype(int), 0, gy - 1)
+            ix = np.clip(np.round(xx).astype(int), 0, gx - 1)
+            sq = sombra_q[iy][:, ix]
+            so_quadros = sq & ~onde
+            luz[so_quadros] = lq[so_quadros]
+            onde |= sq
+        return luz, onde
+
+    # o limiar: Otsu na pagina igualada vista de PASSO em PASSO pontos
+    passo = 4 if min(altura, largura) >= 1200 else 2
+    luz_a, _onde_a = luz_e_onde(slice(0, altura), slice(0, largura), passo)
+    amostra = np.clip(cinza[::passo, ::passo].astype(np.float32)
+                      / np.maximum(luz_a, LOMBADA_SOMBRA_MINIMA), 0, 255).astype(np.uint8)
+    if not _onde_a.any():
+        return binaria
+    limiar, _ = cv2.threshold(amostra, 0, 255, cv2.THRESH_BINARY + cv2.THRESH_OTSU)
+    # o meio entre a tinta e o papel que o Otsu separou (no Otsu puro, com a
+    # tinta toda num tom so, o limiar cai colado na tinta e metade some)
+    escura, clara = amostra[amostra <= limiar], amostra[amostra > limiar]
+    if escura.size and clara.size:
+        limiar = (float(escura.mean()) + float(clara.mean())) / 2.0
+    # a caixa da sombra, na resolucao da pagina
+    ys, xs = np.nonzero(_onde_a)
+    y0, y1 = max(0, int(ys.min()) * passo - passo), min(altura, int(ys.max()) * passo + 2 * passo)
+    x0, x1 = max(0, int(xs.min()) * passo - passo), min(largura, int(xs.max()) * passo + 2 * passo)
+    luz, onde = luz_e_onde(slice(y0, y1), slice(x0, x1))
+    igualada = cinza[y0:y1, x0:x1].astype(np.float32) / np.maximum(luz, LOMBADA_SOMBRA_MINIMA)
+    saida = binaria.copy()
+    trecho = saida[y0:y1, x0:x1]
+    trecho[onde] = np.where(igualada[onde] < limiar, 0, 255).astype(np.uint8)
+    return saida
 
 
 # Os dez jeitos do ScanTailor (item 2.8): os mesmos códigos de
@@ -1200,7 +1481,28 @@ def _preto_e_branco_do_scantailor(img: np.ndarray, forca, algoritmo: str,
     quase da cor do papel)."""
     from core import preto_e_branco_scantailor as pbst
 
-    binaria = pbst.preto_e_branco(img, algoritmo, forca, getattr(despeckle, "dpi", None))
+    dpi = getattr(despeckle, "dpi", None)
+    dpi_do_pdf = getattr(despeckle, "dpi_do_pdf", None)
+    if dpi and dpi_do_pdf and float(dpi_do_pdf) > 1.1 * float(dpi):
+        # Etapa 10b (D-193, `lu-tc-igual`: "na tela gerada a letra está mais
+        # grossa"): na prévia, a conta do ScanTailor muda com o DPI (a
+        # suavização e o limiar dele seguem o DPI) e a letra saía 10 a 17%
+        # mais grossa que no PDF (Boécio 22 e Palatino 9, Otsu e Wolf). Como o
+        # ScanTailor faz (ele mostra a saída reduzida): a conta é feita no DPI
+        # do PDF e o resultado volta ao tamanho da prévia. Medido: a tinta da
+        # tela fica a até 4% da do PDF reduzido (tests/test_etapa10b_imagem.py).
+        # O PDF não passa por aqui (dpi_do_pdf vem None nele).
+        altura, largura = img.shape[:2]
+        f = float(dpi_do_pdf) / float(dpi)
+        grande = cv2.resize(img, (max(1, int(round(largura * f))), max(1, int(round(altura * f)))),
+                            interpolation=cv2.INTER_CUBIC)
+        binaria = pbst.preto_e_branco(grande, algoritmo, forca, float(dpi_do_pdf))
+        if binaria is None:
+            return None
+        binaria = cv2.resize(binaria, (largura, altura), interpolation=cv2.INTER_AREA)
+        binaria = np.where(binaria < 128, 0, 255).astype(np.uint8)
+    else:
+        binaria = pbst.preto_e_branco(img, algoritmo, forca, dpi)
     if binaria is None:
         return None
     binaria = _com_a_tinta_colorida(img, binaria)
@@ -1923,10 +2225,91 @@ def _limpar_o_papel_de_verdade(original: np.ndarray, saida: np.ndarray,
         cor_de_papel = np.ones(cinza.shape, bool)
 
     papel_limpo = ~perto_da_tinta & ~escuro & cor_de_papel
+    if hsv is not None:
+        papel_limpo |= _graos_do_papel(hsv, matiz, cor_de_papel, perto_da_tinta, escuro, corte)
 
     limpa = saida.copy()
     _pintar_de_branco(limpa, papel_limpo)               # limpa[papel_limpo] = 255
     return limpa
+
+
+# Etapa 10b da obra (lista unica 4.12, 23/10/2026, Antiphon 56 no Magico pro:
+# "sobraram pontinhos laranja das manchas do pergaminho na margem da
+# direita"). Medido: os pontinhos sao grao do pergaminho com o MATIZ do papel
+# (21 a 23, dentro de MATIZ_DE_PAPEL_MIN..MAX) mas um pouco mais saturados
+# (60 a 71) que a trava SATURACAO_DE_RUBRICA (60): a trava da cor os guardava
+# como se fossem pintura, e o realce do Magico pro os avivava em laranja. O
+# conserto: o ponto com o matiz do papel e saturacao ate GRAO_SATURACAO_MAXIMA,
+# longe da letra e nao escuro, que forma uma peca PEQUENA (menor que a peca
+# minima de letra, PECA_DE_LETRA_MINIMA) e grao do papel e vai a branco como o
+# papel. A area colorida grande (ceu, pintura, moldura) e a cor fora do matiz
+# do papel (rubrica vermelha, azul) continuam como estavam. Arriscado: subir
+# GRAO_SATURACAO_MAXIMA (o pontinho dourado de uma iluminura pequena solta
+# passaria a ser grao).
+GRAO_SATURACAO_MAXIMA = 110
+
+
+def _sem_o_grao_no_bloco(img: np.ndarray, traco: np.ndarray, papel_do_bloco: np.ndarray,
+                        bloco: np.ndarray) -> tuple[np.ndarray, np.ndarray]:
+    """(traco, papel do bloco) sem o grao do papel dentro do bloco de letra
+    (lista unica 4.12, Antiphon 56): a peca de "traco" pequena (menor que a
+    peca minima de letra, PECA_DE_LETRA_MINIMA), longe de letra de verdade e
+    CLARA (sem ponto abaixo de ESCURO_DEMAIS_PARA_SER_MANCHA do papel - o
+    ponto final e o pingo do i sao escuros e ficam) e grao: sai do traco e
+    entra, com a orla dela, no papel do bloco (vai a branco). Nos blocos sem
+    grao, nada muda. A mesma regra das pecas pequenas de
+    _limpar_o_papel_de_verdade."""
+    if not traco.any():
+        return traco, papel_do_bloco
+    altura, largura = traco.shape
+    corte = max(4.0, PECA_DE_LETRA_MINIMA * altura * largura)
+    quantas, rotulos, medidas, _c = cv2.connectedComponentsWithStats(traco.view(np.uint8), 8)
+    if quantas <= 1:
+        return traco, papel_do_bloco
+    pequenas = np.zeros(quantas, bool)
+    pequenas[1:] = medidas[1:, cv2.CC_STAT_AREA] < corte
+    if not pequenas.any():
+        return traco, papel_do_bloco
+    grandes = ~pequenas
+    grandes[0] = False
+    lado = max(3, int(min(altura, largura) / ORLA_DA_LETRA) | 1)
+    nucleo = cv2.getStructuringElement(cv2.MORPH_ELLIPSE, (lado, lado))
+    perto = cv2.dilate(grandes[rotulos].view(np.uint8), nucleo) > 0
+    encostadas = np.zeros(quantas, bool)
+    encostadas[np.unique(rotulos[perto & traco])] = True
+    cinza = _para_cinza(img)
+    nivel = _percentil(cinza[::4, ::4], BRANCO_PERCENTIL)
+    minimo = np.full(quantas, 255.0, np.float32)
+    np.minimum.at(minimo, rotulos[traco], cinza[traco].astype(np.float32))
+    grao = pequenas & ~encostadas & (minimo >= ESCURO_DEMAIS_PARA_SER_MANCHA * nivel)
+    grao[0] = False
+    if not grao.any():
+        return traco, papel_do_bloco
+    sai = grao[rotulos] & traco
+    # a orla da peca com a mesma largura que refinar_para_tinta deixou de fora
+    # do papel (ORLA_DO_TRACO), e um ponto a mais: sem isso fica um anel
+    from core.detectar_regioes import ORLA_DO_TRACO
+
+    lado_orla = max(3, int(min(altura, largura) * ORLA_DO_TRACO) | 1) + 2
+    orla = cv2.dilate(sai.view(np.uint8), cv2.getStructuringElement(
+        cv2.MORPH_ELLIPSE, (lado_orla, lado_orla))) > 0
+    return traco & ~sai, papel_do_bloco | (orla & bloco & ~(traco & ~sai))
+
+
+def _graos_do_papel(hsv: np.ndarray, matiz: np.ndarray, cor_de_papel: np.ndarray,
+                    perto_da_tinta: np.ndarray, escuro: np.ndarray, corte: float) -> np.ndarray:
+    """Os pontos de grao do papel que a trava da cor deixava de fora (ver
+    GRAO_SATURACAO_MAXIMA): booleano do tamanho da pagina."""
+    candidato = (~cor_de_papel & ~perto_da_tinta & ~escuro
+                 & (matiz >= MATIZ_DE_PAPEL_MIN) & (matiz <= MATIZ_DE_PAPEL_MAX)
+                 & (hsv[:, :, 1] < GRAO_SATURACAO_MAXIMA))
+    if not candidato.any():
+        return candidato
+    quantas, rotulos, medidas, _c = cv2.connectedComponentsWithStats(
+        candidato.view(np.uint8), connectivity=8)
+    pequenas = np.zeros(quantas, bool)
+    pequenas[1:] = medidas[1:, cv2.CC_STAT_AREA] < corte
+    return pequenas[rotulos] & candidato
 
 
 # --- o papel DENTRO da gravura (bug dos quadradinhos no anjo, 28/09/2026) ----
@@ -2404,6 +2787,19 @@ DESENHO_CONTRASTE = 0.20            # preto se o ponto < (1 - isto) x fundo em v
 DESENHO_AREA_ESCURA = 0.80
 DESENHO_MANCHA_PEQUENA = 1 / 12
 DESENHO_CROMA_DE_TINTA = 22.0
+# Etapa 10b da obra (lista unica 4.1, 27/10/2026: "a gravura sai pior que o
+# original" - Palatino 74, Valades 41): a mancha escura pequena enchia de preto
+# a mancha INTEIRA. Na nota do Graduale isso esta certo (ela e tinta de ponta
+# a ponta), mas a hachura fechada (rostos e roupas do Valades 41) e o fundo
+# manchado da gravura em madeira (Palatino 70 e 74) tambem sao "manchas
+# escuras pequenas", e viravam BLOCOS PRETOS chapados. Agora so entram os
+# pontos da mancha mais escuros que DESENHO_TINTA_CHEIA do nivel do papel: a
+# nota (tinta de 45 a 90 contra papel de ~190) continua cheia; o espaco claro
+# entre os riscos da hachura continua branco. Medido: o Palatino 5 (retrato
+# aprovado) e a jarra do Marial 78 quase nao mudam; os blocos do Palatino 74,
+# 70 e do Valades 41 somem (tests/test_etapa10b_imagem.py). Arriscado: subir
+# muito (a hachura volta a virar bloco) ou baixar muito (a nota volta oca).
+DESENHO_TINTA_CHEIA = 0.55
 
 # Foto e pintura de tom continuo (a estatua do Opus Majus 20, o anjo da Escola
 # 35): no Preto e branco saem em TONS DE CINZA (decisao do Samuel, conferencia
@@ -2452,6 +2848,34 @@ def _niveis_da_foto(img3: np.ndarray, gravura: np.ndarray | None = None) -> tupl
         fora = cinza[::2, ::2][~gravura[::2, ::2]]
         if fora.size >= 0.05 * cinza[::2, ::2].size:
             branco = min(branco, _percentil(fora, BRANCO_PERCENTIL))
+    return preto, max(branco, preto + 1.0)
+
+
+# Etapa 10b da obra (lista unica 4.3, 23/10/2026: "Uma folha de guarda branca
+# sai cinza e toda manchada: a textura e as rugas do papel viram desenho" -
+# Boecio 49, Marial 2). A folha sem tinta que o detector toma por OBJETO (a
+# "capa": textura ou fundo escuro em volta, _e_objeto_e_nao_folha) inteira vira
+# "foto", e a foto em cinza estica os niveis do ponto mais escuro ao mais claro
+# DA PROPRIA FOLHA (_niveis_da_foto): numa folha quase lisa (Boecio 49: de 161 a
+# 244) a ruga de 10 tons virava 30 - o papel saia cinza e manchado. Na capa os
+# niveis passam a seguir o PAPEL: o branco e o nivel do papel da folha
+# (BRANCO_PERCENTIL) e o preto nunca fica mais claro que CAPA_PRETO_MAXIMO do
+# branco - o papel vai a branco e so a marca escura de verdade (carimbo, tinta)
+# fica escura. Medido: Boecio 49 sai quase branca; o carimbo do Marial 2
+# continua (tests/test_etapa10b_imagem.py). Vale so na marcacao "capa"
+# automatica; a foto de verdade (Opus 20, anjo da Escola 35) nao muda.
+# Arriscado: subir CAPA_PRETO_MAXIMO (a ruga volta a escurecer). A capa de
+# couro de verdade (que nao se imprime: regra de 21/10) sai mais clara.
+CAPA_PRETO_MAXIMO = 0.35
+
+
+def _niveis_da_capa(img3: np.ndarray) -> tuple[float, float]:
+    """(preto, branco) da foto em cinza da folha marcada como "capa": o branco
+    no nivel do papel da folha e o preto no maximo CAPA_PRETO_MAXIMO dele (ver
+    o comentario acima)."""
+    cinza = _para_cinza(img3)
+    branco = _percentil(cinza, BRANCO_PERCENTIL)
+    preto = min(_percentil(cinza, FOTO_PRETO), CAPA_PRETO_MAXIMO * branco)
     return preto, max(branco, preto + 1.0)
 
 
@@ -2667,7 +3091,10 @@ def _desenho_em_preto_e_branco(img3: np.ndarray, nivel_papel: float,
                      / np.maximum(medidas[:, cv2.CC_STAT_AREA], 1))
             tinta = pequenas & (media < DESENHO_CROMA_DE_TINTA)
             if tinta.any():
-                preto |= tinta[rotulos]
+                # so os pontos ESCUROS DE VERDADE da mancha (ver
+                # DESENHO_TINTA_CHEIA): a nota cheia volta cheia; a hachura e o
+                # fundo manchado da gravura nao viram bloco preto (4.1)
+                preto |= tinta[rotulos] & (cinza < DESENHO_TINTA_CHEIA * nivel_papel)
     saida = np.full(cinza.shape, 255, np.uint8)
     saida[preto] = 0
     return saida
@@ -3142,7 +3569,8 @@ def _com_a_decoracao(base: np.ndarray, img3: np.ndarray, peso_decoracao: np.ndar
 def _preto_e_branco_com_gravura(img: np.ndarray, binaria: np.ndarray,
                                 peso_gravura: np.ndarray, peso_papel: np.ndarray,
                                 clareza: int = AJUSTE_PADRAO,
-                                decoracao_em_preto_e_branco: bool = False
+                                decoracao_em_preto_e_branco: bool = False,
+                                capa: bool = False
                                 ) -> tuple[np.ndarray, bool]:
     """O Preto e branco de uma pagina com gravura marcada (regra de 30/09/2026,
     com a emenda da conferencia 3).
@@ -3170,6 +3598,10 @@ def _preto_e_branco_com_gravura(img: np.ndarray, binaria: np.ndarray,
 
     clareza: nao e mais usado (era o do Melhorar na foto); fica na assinatura
     para quem chama.
+
+    capa: a marcacao e a "capa" automatica (a folha sem conteudo tomada por
+    objeto, core.detectar_regioes._folha_nua_ou_objeto): os tons de cinza
+    seguem o PAPEL da folha (_niveis_da_capa; etapa 10b, lista unica 4.3).
 
     Arriscado mudar: nao misturar desenho e pagina pelo peso (sairia cinza, e
     a pagina deixaria de caber em 1 bit); rodar o Melhorar na decoracao (era o
@@ -3234,8 +3666,8 @@ def _preto_e_branco_com_gravura(img: np.ndarray, binaria: np.ndarray,
         y0, y1 = max(0, by - folga), min(altura, by + bh + folga)
         x0, x1 = max(0, bx - folga), min(largura, bx + bw + folga)
         tons = saida.copy()
-        tons[y0:y1, x0:x1] = _foto_em_tons_de_cinza(
-            img3[y0:y1, x0:x1], _niveis_da_foto(img3, peso_gravura > 0))
+        niveis = _niveis_da_capa(img3) if capa else _niveis_da_foto(img3, peso_gravura > 0)
+        tons[y0:y1, x0:x1] = _foto_em_tons_de_cinza(img3[y0:y1, x0:x1], niveis)
         saida = _misturar(saida, tons, peso_foto)
 
     if decoracao.any():
@@ -3555,6 +3987,63 @@ def aplicar_so_os_pedacos(
         raise ErroFiltro("Não consegui limpar esta página.") from exc
 
 
+# Etapa 10b da obra (lista unica 4.7, 23/10/2026, Pesel 51, 59, 67 e 75 no
+# Magico pro: "O bordado ficou bom, mas o cartao marrom em volta virou um
+# remendo: o titulo e cada bloco de texto ganharam um retangulo branco por
+# cima, com a letra engrossada, e sobrou uma tira branca torta na beirada
+# esquerda"). A causa: nas pranchas da Pesel a pagina e um CARTAO marrom
+# escuro; o detector marca o cartao como gravura (fica marrom), mas os blocos
+# de texto como LETRA - e no bloco de letra o papel entre as linhas vai a
+# branco (o "papel do bloco"), e a letra ganha a nitidez; a beirada sem
+# marcacao fica com o Magico pro da pagina, que tambem branqueia o cartao.
+# O conserto: o fundo escuro (a luz da folha, _estimar_fundo_cinza, abaixo de
+# CARTAO_ESCURO do nivel do papel) que encosta no fundo escuro DA GRAVURA e o
+# mesmo cartao: ali o texto, o papel e a beirada saem como foram escaneados
+# (o tom do cartao fica, a letra fica como no original), sem mexer no
+# tratamento da gravura (o papel claro da prancha continua indo a branco). Pagina sem
+# gravura sobre fundo escuro: nada muda. Medido no gabarito (Melhorar): so
+# muda pagina com cartao (ver o ONDE-PAREI da etapa 10b). Arriscado: subir
+# CARTAO_ESCURO (sombra de lombada e mancha encostadas numa gravura passariam
+# a ser "cartao").
+CARTAO_ESCURO = 0.60
+
+
+def _o_cartao_em_volta_da_gravura(img: np.ndarray, peso_gravura: np.ndarray) -> np.ndarray | None:
+    """Mascara (booleana) do cartao escuro que encosta na gravura e que NAO e
+    gravura (os blocos de texto e a beirada sobre o cartao) - ver
+    CARTAO_ESCURO -, ou None quando a pagina nao tem isso (nada muda). Ali o
+    texto e o cartao saem como foram escaneados; a gravura em si continua com
+    o tratamento dela (o papel claro da prancha vai a branco como antes)."""
+    if not peso_gravura.any():
+        return None
+    cinza = _para_cinza(img)
+    nivel = _percentil(cinza, BRANCO_PERCENTIL)
+    fundo = _estimar_fundo_cinza(cinza)
+    cartao = (fundo < CARTAO_ESCURO * nivel).astype(np.uint8)
+    gravura = peso_gravura > 0.5
+    semente = (cartao > 0) & gravura
+    if not semente.any():
+        return None
+    quantos, rotulos = cv2.connectedComponents(cartao, connectivity=8)
+    if quantos <= 1:
+        return None
+    vale = np.zeros(quantos, bool)
+    vale[np.unique(rotulos[semente])] = True
+    vale[0] = False
+    junto = vale[rotulos] & ~gravura
+    return junto if junto.any() else None
+
+
+def _e_a_capa_automatica(selecao) -> bool:
+    """A marcacao da pagina e so a "capa" que o detector pos sozinho (a folha
+    inteira como gravura, rotulo "capa": core.detectar_regioes.
+    _folha_nua_ou_objeto)? Ver CAPA_PRETO_MAXIMO. Marcacao a mao nunca."""
+    regioes = list(getattr(selecao, "regioes", None) or [])
+    return bool(regioes) and all(
+        getattr(r, "rotulo", "") == "capa" and getattr(r, "origem", "") == "automatico"
+        for r in regioes)
+
+
 def _papel_a_mao_em_branco(saida: np.ndarray, selecao) -> np.ndarray:
     """O papel marcado A MAO vai a branco por cima de `saida` (Original e
     Tirar o fundo intacto; etapa 9c da obra, 26/10/2026).
@@ -3723,7 +4212,8 @@ def aplicar_filtro_com_selecao(
             else:
                 saida, mono = _preto_e_branco_com_gravura(
                     img, binaria, peso_gravura, peso_papel, clareza,
-                    decoracao_em_preto_e_branco=decoracao_em_preto_e_branco)
+                    decoracao_em_preto_e_branco=decoracao_em_preto_e_branco,
+                    capa=_e_a_capa_automatica(selecao))
 
             com_pedaco = _filtro_so_no_pedaco(img, saida, selecao, filtro,
                                               forca_preto, clareza, intensidade,
@@ -3733,6 +4223,12 @@ def aplicar_filtro_com_selecao(
             return com_pedaco, False    # o pedaco tem tom ou cor: nao cabe em 1 bit
 
         # --- Melhorar e Magico pro ------------------------------------------
+        # O texto e o papel sobre o CARTAO escuro em volta da gravura (Pesel)
+        # recebem o tratamento da gravura: etapa 10b, ver CARTAO_ESCURO.
+        cartao = _o_cartao_em_volta_da_gravura(img, peso_gravura)
+        if cartao is not None:
+            peso_letra = np.where(cartao, 0.0, peso_letra).astype(np.float32)
+            peso_papel = np.where(cartao, 0.0, peso_papel).astype(np.float32)
         base = filtro_melhorar(img, clareza=clareza) if filtro == MELHORAR \
             else filtro_magico_pro(img, intensidade=intensidade)
 
@@ -3784,6 +4280,9 @@ def aplicar_filtro_com_selecao(
             from core.detectar_regioes import refinar_para_tinta
 
             traco, papel_do_bloco = refinar_para_tinta(img, peso_letra > 0.5)
+            # o grao claro do pergaminho nao e letra (etapa 10b, 4.12)
+            traco, papel_do_bloco = _sem_o_grao_no_bloco(img, traco, papel_do_bloco,
+                                                         peso_letra > 0.5)
             if traco.any():
                 so_nitidez = _nitidez(
                     _tres_canais(img), _entre(intensidade, NITIDEZ_MIN, NITIDEZ_MAX)
@@ -3796,6 +4295,13 @@ def aplicar_filtro_com_selecao(
         # No papel marcado, branco de verdade.
         if peso_papel.any():
             base = _misturar(base, np.full_like(base, 255), peso_papel)
+
+        # O cartao escuro em volta da gravura (Pesel): como foi escaneado,
+        # como o cartao que a gravura ja guarda (etapa 10b, ver CARTAO_ESCURO)
+        if cartao is not None:
+            peso_cartao = cv2.GaussianBlur(cartao.astype(np.float32), (0, 0), 1.0)
+            base = _misturar(_tres_canais(base), _tres_canais(img), peso_cartao)
+            peso_gravura = np.maximum(peso_gravura, peso_cartao)
 
         # A tinta velha e marrom, e a impressora imprime isso como cor.
         # Dentro da gravura nao se toca. Ver tirar_o_amarelado_da_tinta.

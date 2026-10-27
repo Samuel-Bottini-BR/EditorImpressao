@@ -509,7 +509,8 @@ def test_d113_o_desentortar_mede_a_caixa_do_conteudo_sem_a_moldura(monkeypatch):
     img = np.full((ALTURA_PX, LARGURA_PX, 3), 220, np.uint8)
     img[:, :40] = 30
     vistas = []
-    monkeypatch.setattr(ds, "caixa_do_conteudo", lambda im, caixa, dpi: vistas.append(im) or (0, 0, 8, 8))
+    monkeypatch.setattr(ds, "caixa_do_conteudo",
+                        lambda im, caixa, dpi, so_o_bloco=False: vistas.append(im) or (0, 0, 8, 8))
     monkeypatch.setattr(ds, "desentortar", lambda *a, **k: ds.Resultado(None, motivo="teste"))
     pagina = ConfigPagina(indice=0, folha=0)
     pagina.desentortar = ds.AUTOMATICO
@@ -531,3 +532,132 @@ def test_d095_cunha_do_giro_nao_fica_branca_na_beirada(tmp_path):
     beiradas = np.concatenate([saida[:, :8].reshape(-1, 3), saida[:, -8:].reshape(-1, 3),
                                saida[:8].reshape(-1, 3), saida[-8:].reshape(-1, 3)])
     assert float((beiradas.min(axis=1) >= 254).mean()) < 0.01
+
+
+# --- obra de 26/10/2026, etapa 10b (defeitos na imagem final) ------------------
+# As medidas nas páginas de verdade estão em tests/test_etapa10b_imagem.py; aqui,
+# a prova de comportamento de cada decisão tocada (regra 4 do CLAUDE.md §11).
+
+def _texto_com_notas_na_margem() -> np.ndarray:
+    """Página com duas colunas de texto e notas da margem dos dois lados (como
+    a página de teste do D-113, Marial 41): as notas só em poucas linhas."""
+    img = np.full((ALTURA_PX * 2, LARGURA_PX * 2, 3), 225, np.uint8)
+    for y in range(160, 1560, 36):
+        for x in range(260, 560, 22):                   # coluna 1
+            img[y:y + 16, x:x + 14] = 30
+        for x in range(640, 940, 22):                   # coluna 2
+            img[y:y + 16, x:x + 14] = 30
+    for y in (300, 336, 900):                           # notas da esquerda
+        img[y:y + 12, 120:200] = 40
+    for y in (500, 536, 1200, 1236):                    # notas da direita
+        img[y:y + 12, 1000:1120] = 40
+    return img
+
+
+def test_d493_a_conta_do_bloco_do_texto_deixa_as_notas_de_fora():
+    """D-493 (27/10/2026, escolha da gerente apoiada em D-113): "O desentortar
+    segue só o bloco do texto, sem as notas da margem". SITUAÇÃO: pela metade -
+    a conta está pronta (caixa_do_conteudo(so_o_bloco=True)), mas NÃO foi
+    ligada ao desentortar: ligada, ela entortava a Marial 41 reta e fazia o
+    Righetti 96 perder o começo das linhas (pergunta no ONDE-PAREI da etapa
+    10b). Prova da conta: a caixa começa no texto (não nas notas da esquerda)
+    e acaba no texto (não nas notas da direita)."""
+    from core import desentortar_scantailor as ds
+
+    img = _texto_com_notas_na_margem()
+    h, w = img.shape[:2]
+    x, _y, largura, _a = ds.caixa_do_conteudo(img, (0, 0, w, h), 300, so_o_bloco=True)
+    assert x >= 240, x
+    assert x + largura <= 960, (x, largura)
+
+
+def test_d493_pagina_sem_notas_tem_a_caixa_de_sempre():
+    """D-493 (a conta, não ligada): sem nota da margem, a caixa é a de sempre
+    (o texto inteiro)."""
+    from core import desentortar_scantailor as ds
+
+    img = _texto_com_notas_na_margem()
+    img[:, :230] = 225
+    img[:, 960:] = 225
+    h, w = img.shape[:2]
+    x, _y, largura, _a = ds.caixa_do_conteudo(img, (0, 0, w, h), 300, so_o_bloco=True)
+    assert x <= 262 and x + largura >= 930
+
+
+def test_d189_reduzir_cores_no_preto_e_branco_nao_forca_preto(monkeypatch):
+    """D-189 (21/10/2026): "Reduzir cores" não pode apagar parte da letra ("Ele
+    está apagando as letras"). Prova de comportamento: no Preto e branco com
+    "Letras com a cor delas", a posterização vai SEM o "forçar preto e branco"
+    (o que jogava metade da palavra no preto); nos outros filtros fica o de
+    fábrica do ScanTailor."""
+    from core import cores_scantailor as cs
+
+    pedidos = []
+
+    def cores(img, dpi, *, preto_e_branco=None, posterizar=False, opcoes=cs.FABRICA, biblioteca=None):
+        pedidos.append(opcoes)
+        return cs.st.Resultado(np.zeros(img.shape[:2] + (3,), np.uint8), None, None)
+
+    monkeypatch.setattr(cs, "cores", cores)
+    pagina_pb = np.full((60, 80), 255, np.uint8)
+    pagina_pb[20:40, 20:60] = 0
+    preparada = np.full((60, 80, 3), 200, np.uint8)
+    cs.aplicar(preparada, pagina_pb, PRETO_E_BRANCO, True, True, 300)
+    cs.aplicar(preparada, preparada, ORIGINAL, False, True, 300)
+    assert pedidos[0].forcar_preto_e_branco is False
+    assert pedidos[1].forcar_preto_e_branco is True
+
+
+def test_d193_previa_dos_jeitos_do_scantailor_faz_a_conta_no_dpi_do_pdf(monkeypatch):
+    """D-193 (22/10/2026, `lu-tc-igual`): "precisamos que o pdf saia que nem está
+    na tela" (a tela cheia mostrava a letra mais grossa). Prova: na prévia, o
+    jeito do ScanTailor recebe a página no tamanho e no DPI do PDF, e o
+    resultado volta ao tamanho da prévia; no desenho do PDF, nada muda."""
+    from core import filtros
+    from core import preto_e_branco_scantailor as pbst
+    from core.pontinhos_scantailor import Pontinhos
+
+    vistos = []
+
+    def binarizar(img, metodo, forca=50, dpi=None, **_):
+        vistos.append((img.shape[:2], dpi))
+        return np.full(img.shape[:2], 255, np.uint8)
+
+    monkeypatch.setattr(pbst, "preto_e_branco", binarizar)
+    img = np.full((200, 150, 3), 230, np.uint8)
+    previa = filtros._preto_e_branco_do_scantailor(img, 50, "st_otsu",
+                                                   Pontinhos("desligado", 150.0, 300.0))
+    assert vistos[0] == ((400, 300), 300.0) and previa.shape == (200, 150)
+    filtros._preto_e_branco_do_scantailor(img, 50, "st_otsu", Pontinhos("desligado", 300.0))
+    assert vistos[1] == ((200, 150), 300.0)
+
+
+def test_d473_d066_a_tinta_forte_do_so_as_letras_nao_depende_da_resolucao():
+    """D-473 ("Tela e PDF saem da mesma conta") e D-066 ("precisamos que o pdf
+    saia que nem está na tela"), o caso da letra T do Antiphonal 46: no "Só as
+    letras" a letra grande vermelha (mais clara que o texto) fica no desenho
+    grande (o PDF) E no pequeno (a prévia). Antes, ficava só na prévia."""
+    from core import misto
+
+    h, w = 1620, 1350
+    grande = np.full((h, w), 230, np.uint8)
+    linhas = np.zeros((h, w), bool)
+    for y in range(800, 1500, 80):
+        for x in range(100, 1250, 22):
+            grande[y:y + 27, x:x + 8] = 30
+        linhas[y - 5:y + 35, :] = True
+    grande[160:430, 160:430] = 75
+    grande = cv2.GaussianBlur(grande, (0, 0), 1.2)
+
+    def fica(img, linhas_aqui, altura):
+        _, binaria = cv2.threshold(img, 150, 255, cv2.THRESH_BINARY)
+        saida = misto._fora_do_texto(binaria, img, linhas_aqui, altura, misto.FORA_REDE,
+                                     np.ones(img.shape, bool))
+        a, b = img.shape
+        return float((saida[int(.12 * a):int(.25 * a), int(.13 * b):int(.30 * b)] == 0).mean())
+
+    pequena = cv2.resize(grande, (w * 10 // 27, h * 10 // 27), interpolation=cv2.INTER_AREA)
+    linhas_p = cv2.resize(linhas.astype(np.uint8), (pequena.shape[1], pequena.shape[0]),
+                          interpolation=cv2.INTER_NEAREST) > 0
+    assert fica(grande, linhas, 40.0) > 0.9
+    assert fica(pequena, linhas_p, 40.0 * 10 / 27) > 0.9

@@ -3346,6 +3346,23 @@ def _filtrar_com_a_marcacao(projeto: Projeto, pagina: ConfigPagina, img: np.ndar
                                          preto_e_branco=(pagina.filtro == PRETO_E_BRANCO))
 
 
+def _com_o_dpi_do_pdf(pontinhos: "pontinhos_scantailor.Pontinhos", projeto: Projeto,
+                      dpi_pedido: float | None) -> "pontinhos_scantailor.Pontinhos":
+    """Etapa 10b da obra (D-193 e D-473; `lu-tc-igual`, 22/10/2026: "na tela
+    gerada a letra está mais grossa"): na prévia (desenho menor que o do
+    PDF), o Pontinhos ganha o DPI em que a página sai no PDF, para os dez
+    jeitos do ScanTailor fazerem a conta nesse DPI e reduzirem (ver
+    core.filtros._preto_e_branco_do_scantailor). No desenho do PDF, nada
+    muda (o PDF sai igual ao de antes). Só quando se sabe o DPI de verdade."""
+    from dataclasses import replace
+
+    if not (pontinhos.dpi and dpi_pedido and projeto.qualidade_dpi
+            and float(dpi_pedido) < 0.9 * float(projeto.qualidade_dpi)):
+        return pontinhos
+    return replace(pontinhos, dpi_do_pdf=float(pontinhos.dpi) * float(projeto.qualidade_dpi)
+                   / float(dpi_pedido))
+
+
 def _filtro_da_pagina(projeto: Projeto, pagina: ConfigPagina, img: np.ndarray, selecao,
                       dpi: float | None, dpi_do_scan: float | None,
                       dpi_pedido: float | None = None,
@@ -3355,6 +3372,7 @@ def _filtro_da_pagina(projeto: Projeto, pagina: ConfigPagina, img: np.ndarray, s
     tamanho do PDF; juncao de 23/10/2026)."""
     # "Limpar pontinhos" (06/10/2026): a escolha da pagina e o DPI de verdade
     pontinhos = pontinhos_da_pagina(projeto, pagina, img, dpi, dpi_do_scan)
+    pontinhos = _com_o_dpi_do_pdf(pontinhos, projeto, dpi_pedido)
     if pagina.filtro == PRETO_E_BRANCO:
         opcoes = misto.opcoes_da_pagina(projeto, pagina)
         if opcoes is not None:
