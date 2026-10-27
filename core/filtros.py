@@ -1383,6 +1383,11 @@ def _sem_a_sombra_da_lombada(cinza: np.ndarray, binaria: np.ndarray) -> np.ndarr
     igualada = np.clip(cinza.astype(np.float32) / np.maximum(luz, LOMBADA_SOMBRA_MINIMA),
                        0, 255).astype(np.uint8)
     limiar, _ = cv2.threshold(igualada, 0, 255, cv2.THRESH_BINARY + cv2.THRESH_OTSU)
+    # o meio entre a tinta e o papel que o Otsu separou (no Otsu puro, com a
+    # tinta toda num tom so, o limiar cai colado na tinta e metade some)
+    escura, clara = igualada[igualada <= limiar], igualada[igualada > limiar]
+    if escura.size and clara.size:
+        limiar = (float(escura.mean()) + float(clara.mean())) / 2.0
     saida = binaria.copy()
     saida[onde] = np.where(igualada[onde] < limiar, 0, 255).astype(np.uint8)
     return saida
