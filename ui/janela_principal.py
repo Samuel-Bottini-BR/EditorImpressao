@@ -960,10 +960,12 @@ class JanelaPrincipal(QMainWindow):
             self._comecar_a_medir_ao_abrir()
 
         if self.acoes.linhas_perdidas:
+            perdidas = self.acoes.linhas_perdidas
             self.avisar(
-                f"O computador foi desligado no meio da última gravação, e "
-                f"{self.acoes.linhas_perdidas} ação(ões) do fim se perderam. "
-                "O resto do trabalho está aqui.")
+                "O computador foi desligado no meio da última gravação, e "
+                + ("1 ação do fim se perdeu. " if perdidas == 1
+                   else f"{perdidas} ações do fim se perderam. ")
+                + "O resto do trabalho está aqui.")
         elif recomecou:
             self.avisar(self._frase_do_recomeco(motivo, self.copia_do_trabalho))
         del automatico
