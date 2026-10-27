@@ -1333,14 +1333,22 @@ SOMBRA_TINTA_MAXIMA = 0.25
 
 
 def _sombra_em_quadros(cinza: np.ndarray) -> tuple[np.ndarray, np.ndarray] | None:
-    """(luz de cada ponto, de 0 a 1 do papel claro; onde e sombra) da sombra
-    medida em quadradinhos (ver SOMBRA_QUADROS), ou None sem sombra forte."""
+    """(luz em quadradinhos, de 0 a 1 do papel claro; onde e sombra) - as duas
+    na grade de SOMBRA_QUADROS por lado (pequenas: quem usa estica) - da
+    sombra medida em quadradinhos (ver SOMBRA_QUADROS), ou None sem sombra
+    forte. A conta e numa copia reduzida (no maximo SOMBRA_LADO_DA_CONTA
+    pontos de lado): milissegundos."""
     altura, largura = cinza.shape[:2]
-    lado_y, lado_x = altura // SOMBRA_QUADROS, largura // SOMBRA_QUADROS
+    escala = min(1.0, SOMBRA_LADO_DA_CONTA / max(altura, largura))
+    pequena = cinza if escala >= 1.0 else cv2.resize(
+        cinza, (max(1, int(largura * escala)), max(1, int(altura * escala))),
+        interpolation=cv2.INTER_AREA)
+    alt, larg = pequena.shape[:2]
+    lado_y, lado_x = alt // SOMBRA_QUADROS, larg // SOMBRA_QUADROS
     if lado_y < 4 or lado_x < 4:
         return None
-    gy, gx = altura // lado_y, largura // lado_x
-    quadros = (cinza[:gy * lado_y, :gx * lado_x].reshape(gy, lado_y, gx, lado_x)
+    gy, gx = alt // lado_y, larg // lado_x
+    quadros = (pequena[:gy * lado_y, :gx * lado_x].reshape(gy, lado_y, gx, lado_x)
                .transpose(0, 2, 1, 3).reshape(gy, gx, -1))
     papel = np.percentile(quadros, 90, axis=2).astype(np.float32)
     tinta = (quadros < 0.6 * papel[..., None]).mean(axis=2)
@@ -1353,43 +1361,76 @@ def _sombra_em_quadros(cinza: np.ndarray) -> tuple[np.ndarray, np.ndarray] | Non
     if not forte.any():
         return None
     sombra = (luz < LOMBADA_FAIXA) & (luz >= LOMBADA_SOMBRA_MINIMA) & (tinta < SOMBRA_TINTA_MAXIMA)
-    luz_cheia = cv2.resize(luz, (largura, altura), interpolation=cv2.INTER_CUBIC)
-    sombra_cheia = cv2.resize(sombra.astype(np.uint8), (largura, altura),
-                              interpolation=cv2.INTER_NEAREST) > 0
-    return luz_cheia, sombra_cheia
+    return luz, sombra
+
+
+# A conta da sombra em quadradinhos e feita numa copia de no maximo este lado
+# (regra 6: a pagina inteira a 300 DPI custava ~0,1 s; a luz e lisa).
+SOMBRA_LADO_DA_CONTA = 1200
 
 
 def _sem_a_sombra_da_lombada(cinza: np.ndarray, binaria: np.ndarray) -> np.ndarray:
     """binaria com a sombra da lombada (faixa de colunas) e a sombra da foto
     de celular (quadradinhos) refeitas pela luz igualada (ver
     LOMBADA_SOMBRA_MAXIMA e SOMBRA_QUADROS). Sem sombra, devolve a MESMA
-    binaria."""
+    binaria. Regra 6: a luz e a conta so na caixa da sombra; o limiar do
+    Otsu numa amostra de 2 em 2 pontos da pagina igualada."""
     altura, largura = cinza.shape[:2]
-    luz = np.ones((altura, largura), np.float32)
-    onde = np.zeros((altura, largura), bool)
-    achada = _faixa_da_sombra_da_lombada(cinza)
-    if achada is not None:
-        luz_colunas, faixa = achada
-        luz[:, faixa] = luz_colunas[faixa][None, :]
-        onde[:, faixa] = True
+    faixa = _faixa_da_sombra_da_lombada(cinza)
     quadros = _sombra_em_quadros(cinza)
-    if quadros is not None:
-        luz_quadros, sombra = quadros
-        so_quadros = sombra & ~onde
-        luz[so_quadros] = luz_quadros[so_quadros]
-        onde |= sombra
-    if not onde.any():
+    if faixa is None and quadros is None:
         return binaria
-    igualada = np.clip(cinza.astype(np.float32) / np.maximum(luz, LOMBADA_SOMBRA_MINIMA),
-                       0, 255).astype(np.uint8)
-    limiar, _ = cv2.threshold(igualada, 0, 255, cv2.THRESH_BINARY + cv2.THRESH_OTSU)
+    # a luz e onde ha sombra, na resolucao da pagina, montadas por partes
+    def luz_e_onde(ys: slice, xs: slice, passo: int = 1) -> tuple[np.ndarray, np.ndarray]:
+        y0, y1 = ys.start, ys.stop
+        x0, x1 = xs.start, xs.stop
+        h, w = len(range(y0, y1, passo)), len(range(x0, x1, passo))
+        luz = np.ones((h, w), np.float32)
+        onde = np.zeros((h, w), bool)
+        if faixa is not None:
+            luz_col, col = faixa
+            cols = np.arange(x0, x1, passo)
+            c = col[cols]
+            luz[:, c] = luz_col[cols][c][None, :]
+            onde[:, c] = True
+        if quadros is not None:
+            luz_q, sombra_q = quadros
+            gy, gx = luz_q.shape
+            # o centro de cada ponto na grade dos quadradinhos
+            yy = (np.arange(y0, y1, passo) + 0.5) * gy / altura - 0.5
+            xx = (np.arange(x0, x1, passo) + 0.5) * gx / largura - 0.5
+            mapa_x, mapa_y = np.meshgrid(xx.astype(np.float32), yy.astype(np.float32))
+            lq = cv2.remap(luz_q.astype(np.float32), mapa_x, mapa_y, cv2.INTER_CUBIC,
+                           borderMode=cv2.BORDER_REPLICATE)
+            iy = np.clip(np.round(yy).astype(int), 0, gy - 1)
+            ix = np.clip(np.round(xx).astype(int), 0, gx - 1)
+            sq = sombra_q[iy][:, ix]
+            so_quadros = sq & ~onde
+            luz[so_quadros] = lq[so_quadros]
+            onde |= sq
+        return luz, onde
+
+    # o limiar: Otsu na pagina igualada vista de 2 em 2 pontos
+    luz_a, _onde_a = luz_e_onde(slice(0, altura), slice(0, largura), 2)
+    amostra = np.clip(cinza[::2, ::2].astype(np.float32) / np.maximum(luz_a, LOMBADA_SOMBRA_MINIMA),
+                      0, 255).astype(np.uint8)
+    if not _onde_a.any():
+        return binaria
+    limiar, _ = cv2.threshold(amostra, 0, 255, cv2.THRESH_BINARY + cv2.THRESH_OTSU)
     # o meio entre a tinta e o papel que o Otsu separou (no Otsu puro, com a
     # tinta toda num tom so, o limiar cai colado na tinta e metade some)
-    escura, clara = igualada[igualada <= limiar], igualada[igualada > limiar]
+    escura, clara = amostra[amostra <= limiar], amostra[amostra > limiar]
     if escura.size and clara.size:
         limiar = (float(escura.mean()) + float(clara.mean())) / 2.0
+    # a caixa da sombra, na resolucao da pagina
+    ys, xs = np.nonzero(_onde_a)
+    y0, y1 = max(0, int(ys.min()) * 2 - 2), min(altura, int(ys.max()) * 2 + 4)
+    x0, x1 = max(0, int(xs.min()) * 2 - 2), min(largura, int(xs.max()) * 2 + 4)
+    luz, onde = luz_e_onde(slice(y0, y1), slice(x0, x1))
+    igualada = cinza[y0:y1, x0:x1].astype(np.float32) / np.maximum(luz, LOMBADA_SOMBRA_MINIMA)
     saida = binaria.copy()
-    saida[onde] = np.where(igualada[onde] < limiar, 0, 255).astype(np.uint8)
+    trecho = saida[y0:y1, x0:x1]
+    trecho[onde] = np.where(igualada[onde] < limiar, 0, 255).astype(np.uint8)
     return saida
 
 
