@@ -1200,7 +1200,28 @@ def _preto_e_branco_do_scantailor(img: np.ndarray, forca, algoritmo: str,
     quase da cor do papel)."""
     from core import preto_e_branco_scantailor as pbst
 
-    binaria = pbst.preto_e_branco(img, algoritmo, forca, getattr(despeckle, "dpi", None))
+    dpi = getattr(despeckle, "dpi", None)
+    dpi_do_pdf = getattr(despeckle, "dpi_do_pdf", None)
+    if dpi and dpi_do_pdf and float(dpi_do_pdf) > 1.1 * float(dpi):
+        # Etapa 10b (D-193, `lu-tc-igual`: "na tela gerada a letra está mais
+        # grossa"): na prévia, a conta do ScanTailor muda com o DPI (a
+        # suavização e o limiar dele seguem o DPI) e a letra saía 10 a 17%
+        # mais grossa que no PDF (Boécio 22 e Palatino 9, Otsu e Wolf). Como o
+        # ScanTailor faz (ele mostra a saída reduzida): a conta é feita no DPI
+        # do PDF e o resultado volta ao tamanho da prévia. Medido: a tinta da
+        # tela fica a até 4% da do PDF reduzido (tests/test_etapa10b_imagem.py).
+        # O PDF não passa por aqui (dpi_do_pdf vem None nele).
+        altura, largura = img.shape[:2]
+        f = float(dpi_do_pdf) / float(dpi)
+        grande = cv2.resize(img, (max(1, int(round(largura * f))), max(1, int(round(altura * f)))),
+                            interpolation=cv2.INTER_CUBIC)
+        binaria = pbst.preto_e_branco(grande, algoritmo, forca, float(dpi_do_pdf))
+        if binaria is None:
+            return None
+        binaria = cv2.resize(binaria, (largura, altura), interpolation=cv2.INTER_AREA)
+        binaria = np.where(binaria < 128, 0, 255).astype(np.uint8)
+    else:
+        binaria = pbst.preto_e_branco(img, algoritmo, forca, dpi)
     if binaria is None:
         return None
     binaria = _com_a_tinta_colorida(img, binaria)

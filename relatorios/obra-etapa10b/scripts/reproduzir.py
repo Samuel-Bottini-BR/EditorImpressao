@@ -72,6 +72,10 @@ LIVROS_DO_ACERVO = {
 }
 
 
+# Etapa 10b: livros de fora do acervo (D:\Livros para editar, só leitura)
+OUTROS = {"antiphonal1547": Path(r"D:\Livros para editar\Antiphonal 1547.pdf")}
+
+
 def carregar_de_fabrica(livro: str, numero: int, campos: dict | None = None):
     """Livro NOVO de fábrica com só a página `numero` do livro do acervo (cópia
     de uma página numa pasta temporária; o acervo é só lido). Devolve
@@ -85,7 +89,8 @@ def carregar_de_fabrica(livro: str, numero: int, campos: dict | None = None):
     pasta.mkdir(parents=True, exist_ok=True)
     destino = pasta / f"{livro}_p{numero:03d}.pdf"
     if not destino.is_file():
-        with fitz.open(str(ACERVO / LIVROS_DO_ACERVO[livro])) as doc:
+        origem = OUTROS.get(livro) or (ACERVO / LIVROS_DO_ACERVO[livro])
+        with fitz.open(str(origem)) as doc:
             um = fitz.open()
             um.insert_pdf(doc, from_page=numero - 1, to_page=numero - 1)
             um.save(str(destino))

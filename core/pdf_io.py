@@ -264,13 +264,16 @@ class EscritorPDF:
         # em C, com o GIL preso: a janela parava 4,3 s num livro de 10
         # folhas (o verificador mediu 4,56 s). Os pixels guardados sao os
         # mesmos (tests/test_gravar_pdf_sem_parar_a_janela.py).
-        dicionario, dados = _imagem_comprimida(img, monocromatico=monocromatico)
+        # Etapa 10b (lista unica 4.5): a pagina de tons (cor ou cinza) vai em
+        # JPEG de alta qualidade (DCTDecode), a de 1 bit continua sem perda
+        # (FlateDecode) - ver QUALIDADE_DO_JPEG.
+        dicionario, dados, filtro = _imagem_comprimida(img, monocromatico=monocromatico)
 
         with _TRANCA:
             xref = self.doc.get_new_xref()
             self.doc.update_object(xref, dicionario)
             self.doc.update_stream(xref, dados, compress=0)
-            self.doc.xref_set_key(xref, "Filter", "/FlateDecode")
+            self.doc.xref_set_key(xref, "Filter", filtro)
             pagina = self.doc.new_page(width=largura_pt, height=altura_pt)
             pagina.insert_image(fitz.Rect(0, 0, largura_pt, altura_pt), xref=xref)
         self._paginas += 1
@@ -348,38 +351,70 @@ class EscritorPDF:
             self.doc = None  # type: ignore[assignment]
 
 
-# Nivel do zlib das imagens do PDF (_imagem_comprimida). Medido em 06/10/2026
-# no livro de 10 folhas do verificador: 6 da um PDF 3,7% maior que o de antes
-# (o MuPDF comprimia um pouco melhor), 9 da 4,3% MENOR e custa ~0,2 s a mais
-# por pagina - no fio de processar, sem parar a janela. Seguro mudar (so
+# Nivel do zlib das imagens de 1 bit do PDF (_imagem_comprimida). Medido em
+# 06/10/2026 no livro de 10 folhas do verificador: 6 da um PDF 3,7% maior que o
+# de antes (o MuPDF comprimia um pouco melhor), 9 da 4,3% MENOR e custa ~0,2 s
+# a mais por pagina - no fio de processar, sem parar a janela. Seguro mudar (so
 # tamanho do arquivo e tempo; os pixels sao sempre os mesmos).
 NIVEL_DO_ZLIB = 9
 
+# Etapa 10b da obra (lista unica 4.5, 23/10/2026: "Com Magico pro e Melhorar o
+# PDF sai de 15 a 20 vezes maior que o original": Pesel 208 MB, Antiphon
+# 1.590 MB; La vida eterna 287 MB no Original). A CAUSA: os livros do acervo
+# vem com as paginas em JPEG (72 a 200 DPI nos de folha grande), e o programa
+# as guardava SEM PERDA (zlib) a 300 DPI - o ruido do scan, que o JPEG do
+# original jogava fora, ia inteiro para o PDF (Antiphon 56: 22,5 MB numa
+# pagina). Agora a pagina de tons (cor ou cinza) vai em JPEG de qualidade
+# QUALIDADE_DO_JPEG, sem reduzir a cor (4:4:4: a letra vermelha e o fio
+# dourado ficam com a cor no lugar). Medido (tests/test_etapa10b_imagem.py e
+# relatorios/obra-etapa10b/ONDE-PAREI.md): Antiphon 56 no Magico pro 22,5 ->
+# 5,1 MB, no Original 38,6 -> 3,9 MB; a diferenca para a imagem sem perda e
+# de 1 a 3 tons em 999 de cada 1000 pontos no Original (de 255) - nao se ve. O
+# Preto e branco puro (1 bit) continua sem perda: ja era leve, e o JPEG
+# borraria a beirada da letra.
+# Seguro mudar: o numero (95 = maior e mais fiel; abaixo de 90 aparecem
+# borroes em volta da letra). Arriscado: voltar ao zlib nas paginas de tons
+# (o PDF volta a ter 1,5 GB) ou ligar a reducao de cor (4:2:0: a rubrica
+# vermelha fina perde a cor nas beiradas).
+QUALIDADE_DO_JPEG = 92
 
-def _imagem_comprimida(img: np.ndarray, monocromatico: bool = False) -> tuple[str, bytes]:
-    """A imagem como um objeto de imagem do PDF ja comprimido (FlateDecode):
-    (dicionario sem o /Filter, dados comprimidos). Item 5 (06/10/2026): ver
-    EscritorPDF.escrever_imagem. Os mesmos pixels do PNG de antes
-    (_codificar_png): cor em RGB 8 bits, cinza em 8 bits, e o Preto e branco
-    em 1 bit (o "1" do Pillow: 1 = branco, linha completada ate o byte, como
-    o PDF quer). zlib.compress solta o GIL. Arriscado: mudar a conversao de
-    cor ou o limiar do 1 bit (mudaria a pagina)."""
+
+def _imagem_comprimida(img: np.ndarray, monocromatico: bool = False) -> tuple[str, bytes, str]:
+    """A imagem como um objeto de imagem do PDF ja comprimido: (dicionario sem
+    o /Filter, dados comprimidos, nome do /Filter). Item 5 (06/10/2026): ver
+    EscritorPDF.escrever_imagem.
+
+    - Preto e branco (monocromatico): 1 bit (o "1" do Pillow: 1 = branco,
+      linha completada ate o byte, como o PDF quer), zlib (/FlateDecode), sem
+      perda - os mesmos pixels do PNG de antes (_codificar_png).
+    - Cor (RGB) e cinza: JPEG de qualidade QUALIDADE_DO_JPEG, 4:4:4
+      (/DCTDecode) - etapa 10b, ver QUALIDADE_DO_JPEG.
+
+    zlib.compress e cv2.imencode soltam o GIL (a janela continua andando).
+    Arriscado: mudar a conversao de cor ou o limiar do 1 bit (mudaria a
+    pagina)."""
     import zlib
 
     altura, largura = img.shape[:2]
     if monocromatico:
         cinza = img if img.ndim == 2 else cv2.cvtColor(img, cv2.COLOR_BGR2GRAY)
         brutos = Image.fromarray(cinza).convert("1", dither=Image.Dither.NONE).tobytes()
-        cor, bits = "DeviceGray", 1
-    elif img.ndim == 2:
-        brutos = np.ascontiguousarray(img).tobytes()
-        cor, bits = "DeviceGray", 8
-    else:
-        brutos = cv2.cvtColor(img, cv2.COLOR_BGR2RGB).tobytes()
-        cor, bits = "DeviceRGB", 8
+        dicionario = (f"<</Type/XObject/Subtype/Image/Width {largura}/Height {altura}"
+                      f"/ColorSpace/DeviceGray/BitsPerComponent 1>>")
+        return dicionario, zlib.compress(brutos, NIVEL_DO_ZLIB), "/FlateDecode"
+    cor = "DeviceGray" if img.ndim == 2 else "DeviceRGB"
+    ok, jpeg = cv2.imencode(".jpg", np.ascontiguousarray(img), [
+        cv2.IMWRITE_JPEG_QUALITY, QUALIDADE_DO_JPEG,
+        cv2.IMWRITE_JPEG_SAMPLING_FACTOR, cv2.IMWRITE_JPEG_SAMPLING_FACTOR_444])
+    if not ok:                          # nunca visto; o jeito sem perda de antes
+        brutos = (np.ascontiguousarray(img).tobytes() if img.ndim == 2
+                  else cv2.cvtColor(img, cv2.COLOR_BGR2RGB).tobytes())
+        dicionario = (f"<</Type/XObject/Subtype/Image/Width {largura}/Height {altura}"
+                      f"/ColorSpace/{cor}/BitsPerComponent 8>>")
+        return dicionario, zlib.compress(brutos, NIVEL_DO_ZLIB), "/FlateDecode"
     dicionario = (f"<</Type/XObject/Subtype/Image/Width {largura}/Height {altura}"
-                  f"/ColorSpace/{cor}/BitsPerComponent {bits}>>")
-    return dicionario, zlib.compress(brutos, NIVEL_DO_ZLIB)
+                  f"/ColorSpace/{cor}/BitsPerComponent 8>>")
+    return dicionario, jpeg.tobytes(), "/DCTDecode"
 
 
 def _codificar_png(img: np.ndarray, monocromatico: bool = False) -> bytes:
