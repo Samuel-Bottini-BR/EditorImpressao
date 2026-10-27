@@ -137,8 +137,10 @@ def main():
         if info_p.is_file():
             info = json.loads(info_p.read_text(encoding="utf-8"))
             a, d = info["antes_cm"], info["depois_cm"]
-            linhas += [f"Tamanho da página pronta: antes {a[0]:.1f} x {a[1]:.1f} cm; depois {d[0]:.1f} x {d[1]:.1f} cm."
-                       .replace(".", ","), ""]
+            def cm(v):
+                return f"{v:.1f}".replace(".", ",")
+            linhas += [f"Tamanho da página pronta: antes {cm(a[0])} x {cm(a[1])} cm; depois {cm(d[0])} x {cm(d[1])} cm.",
+                       ""]
         if ressalva:
             linhas += [f"**Ressalva / nota:** {ressalva}", ""]
         linhas += [f"![{titulo}](img/{id_}.jpg)", ""]

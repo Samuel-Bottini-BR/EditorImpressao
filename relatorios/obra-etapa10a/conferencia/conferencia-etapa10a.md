@@ -14,7 +14,7 @@ Obra de 26/10/2026 (D-014: feita até o fim, você confere tudo no fim). Impleme
 
 **O que olhar:** Na esquerda do ANTES falta um quarto da página (o corte da beirada da vizinha ficou colado no texto, o giro levou o canto, e a caixa do ScanTailor jogou fora o resto). No DEPOIS o texto está inteiro.
 
-Tamanho da página pronta: antes 11,6 x 25,3 cm; depois 15,9 x 25,5 cm,
+Tamanho da página pronta: antes 11,6 x 25,3 cm; depois 15,9 x 25,5 cm.
 
 **Ressalva / nota:** Ressalva: no alto à esquerda continua um fio preto da lombada ao lado do "A" de "AD" (existe também sem o corte da beirada da vizinha; tirar ele cortaria o "A"). Projeto já analisado guarda o corte da beirada antigo: a folga nova vale numa análise nova do livro.
 
@@ -28,7 +28,7 @@ Tamanho da página pronta: antes 11,6 x 25,3 cm; depois 15,9 x 25,5 cm,
 
 **O que olhar:** ANTES: só uma tira da beirada da folha, que no Preto e branco virou faixa preta. DEPOIS: a folha inteira, sem o preto do scanner.
 
-Tamanho da página pronta: antes 2,6 x 8,6 cm; depois 13,1 x 10,6 cm,
+Tamanho da página pronta: antes 2,6 x 8,6 cm; depois 13,1 x 10,6 cm.
 
 **Ressalva / nota:** Ressalva: a lombada do lado direito (a beirada das outras folhas, castanha) ainda aparece fininha; e esta folha sai cinza no Preto e branco (é o filtro com uma folha quase sem tinta, não o corte).
 
@@ -42,7 +42,7 @@ Tamanho da página pronta: antes 2,6 x 8,6 cm; depois 13,1 x 10,6 cm,
 
 **O que olhar:** ANTES: só a etiqueta. DEPOIS: a guarda inteira, dentro da borda preta.
 
-Tamanho da página pronta: antes 20,9 x 10,7 cm; depois 32,4 x 42,7 cm,
+Tamanho da página pronta: antes 20,9 x 10,7 cm; depois 32,4 x 42,7 cm.
 
 **Ressalva / nota:** Ressalva: a beirada larga das outras folhas, à direita, fica (é larga demais para a regra segura).
 
@@ -56,7 +56,7 @@ Tamanho da página pronta: antes 20,9 x 10,7 cm; depois 32,4 x 42,7 cm,
 
 **O que olhar:** ANTES: a caixa do ScanTailor abraçava as manchas (do meio para a direita) e cortava o número "19" e o carimbo. DEPOIS: a folha inteira; não aparece mais o aviso "Corte deixou algo de fora", então o botão nem é preciso. E o corte alargado agora nunca fica menor que o corte que a página tem (teste de máquina).
 
-Tamanho da página pronta: antes 20,1 x 34,8 cm; depois 39,8 x 56,7 cm,
+Tamanho da página pronta: antes 20,1 x 34,8 cm; depois 39,8 x 56,7 cm.
 
 **Ressalva / nota:** Ressalva: o lado da tela (o que a prévia mostra antes de a medida chegar) é da etapa 9.
 
@@ -70,7 +70,7 @@ Tamanho da página pronta: antes 20,1 x 34,8 cm; depois 39,8 x 56,7 cm,
 
 **O que olhar:** Olhar a beirada esquerda: no ANTES o fio preto de cima a baixo; no DEPOIS, nada.
 
-Tamanho da página pronta: antes 8,9 x 12,9 cm; depois 8,9 x 12,9 cm,
+Tamanho da página pronta: antes 8,9 x 12,9 cm; depois 8,9 x 12,9 cm.
 
 ![Boécio 2 — o fio preto na beirada (4.10)](img/boecio2.jpg)
 
@@ -82,7 +82,7 @@ Tamanho da página pronta: antes 8,9 x 12,9 cm; depois 8,9 x 12,9 cm,
 
 **O que olhar:** Na esquerda: ANTES os itens começam no travessão; DEPOIS aparecem "1", "2" e "3".
 
-Tamanho da página pronta: antes 15,5 x 24,3 cm; depois 15,9 x 24,3 cm,
+Tamanho da página pronta: antes 15,5 x 24,3 cm; depois 15,9 x 24,3 cm.
 
 **Ressalva / nota:** Regra nova (a coluna de números da margem): peças do tamanho das letras da linha ao lado, em coluna (duas ou mais). Um número sozinho na margem continua de fora.
 
@@ -96,7 +96,7 @@ Tamanho da página pronta: antes 15,5 x 24,3 cm; depois 15,9 x 24,3 cm,
 
 **O que olhar:** Nos cantos do ANTES, triângulos brancos (o giro de 1,1 grau); no DEPOIS, com a cor do papel.
 
-Tamanho da página pronta: antes 8,8 x 12,4 cm; depois 8,8 x 12,3 cm,
+Tamanho da página pronta: antes 8,8 x 12,4 cm; depois 8,8 x 12,3 cm.
 
 **Ressalva / nota:** Muda as somas de fábrica desta página (só os pontos da cunha, até 1,3 mm da beirada: medido).
 
@@ -110,7 +110,7 @@ Tamanho da página pronta: antes 8,8 x 12,4 cm; depois 8,8 x 12,3 cm,
 
 **O que olhar:** Na esquerda, o ANTES vai até a beirada escura da folha; o DEPOIS para no papel. O "Cvij" do alto continua inteiro.
 
-Tamanho da página pronta: antes 33,7 x 46,3 cm; depois 32,6 x 46,0 cm,
+Tamanho da página pronta: antes 33,7 x 46,3 cm; depois 32,6 x 46,0 cm.
 
 **Ressalva / nota:** Muda as somas de fábrica desta página (de propósito).
 
@@ -124,7 +124,7 @@ Tamanho da página pronta: antes 33,7 x 46,3 cm; depois 32,6 x 46,0 cm,
 
 **O que olhar:** Em cima e embaixo: o ANTES tinha o fio escuro da beirada e as cunhas brancas.
 
-Tamanho da página pronta: antes 24,5 x 33,1 cm; depois 24,5 x 32,8 cm,
+Tamanho da página pronta: antes 24,5 x 33,1 cm; depois 24,5 x 32,8 cm.
 
 ![Marial 7 — cunhas e o fio escuro de cima e de baixo (ressalva do G6)](img/marial7.jpg)
 
@@ -136,7 +136,7 @@ Tamanho da página pronta: antes 24,5 x 33,1 cm; depois 24,5 x 32,8 cm,
 
 **O que olhar:** Em cima e embaixo do ANTES, a faixa preta do scanner; no DEPOIS, o papel. A moldura de riscos fica inteira.
 
-Tamanho da página pronta: antes 13,8 x 10,7 cm; depois 13,8 x 10,5 cm,
+Tamanho da página pronta: antes 13,8 x 10,7 cm; depois 13,8 x 10,5 cm.
 
 **Ressalva / nota:** Muda as somas de fábrica desta página (de propósito).
 
@@ -150,7 +150,7 @@ Tamanho da página pronta: antes 13,8 x 10,7 cm; depois 13,8 x 10,5 cm,
 
 **O que olhar:** ANTES: a moldura colada na esquerda e 2 a 3 cm de sobra (com a beirada da folha) na direita. DEPOIS: a moldura no meio, com folga dos dois lados.
 
-Tamanho da página pronta: antes 27,9 x 42,7 cm; depois 26,1 x 38,7 cm,
+Tamanho da página pronta: antes 27,9 x 42,7 cm; depois 26,1 x 38,7 cm.
 
 **Ressalva / nota:** Achado: a moldura NÃO era cortada (está inteira no PDF do teste, conferido ponto por ponto); o defeito era a sobra da direita. Muda o corte de fábrica de 4 páginas do Livro de Horas do gabarito (13, 14, 26, 27): ver as três abaixo.
 
@@ -164,7 +164,7 @@ Tamanho da página pronta: antes 27,9 x 42,7 cm; depois 26,1 x 38,7 cm,
 
 **O que olhar:** A direita perde a sobra; a moldura fica inteira.
 
-Tamanho da página pronta: antes 35,1 x 50,1 cm; depois 28,1 x 50,0 cm,
+Tamanho da página pronta: antes 35,1 x 50,1 cm; depois 28,1 x 50,0 cm.
 
 **Ressalva / nota:** Ressalva: a esquerda ainda guarda a sobra (há manchas do tamanho de letra perto da beirada).
 
@@ -178,7 +178,7 @@ Tamanho da página pronta: antes 35,1 x 50,1 cm; depois 28,1 x 50,0 cm,
 
 **O que olhar:** A tabela fica no meio; a moldura inteira.
 
-Tamanho da página pronta: antes 35,3 x 47,3 cm; depois 27,9 x 42,1 cm,
+Tamanho da página pronta: antes 35,3 x 47,3 cm; depois 27,9 x 42,1 cm.
 
 ![Horas 14 (gabarito) — o mesmo conserto](img/horas14.jpg)
 
@@ -190,7 +190,7 @@ Tamanho da página pronta: antes 35,3 x 47,3 cm; depois 27,9 x 42,1 cm,
 
 **O que olhar:** Embaixo perde a sobra; a moldura inteira.
 
-Tamanho da página pronta: antes 27,9 x 49,1 cm; depois 27,9 x 45,6 cm,
+Tamanho da página pronta: antes 27,9 x 49,1 cm; depois 27,9 x 45,6 cm.
 
 ![Horas 27 (gabarito) — o mesmo conserto](img/horas27.jpg)
 
@@ -202,7 +202,7 @@ Tamanho da página pronta: antes 27,9 x 49,1 cm; depois 27,9 x 45,6 cm,
 
 **O que olhar:** Perto da dobra (esquerda da página) nenhuma letra cortada nem levada para a outra página (provado em três folhas: 96, 100 e 123). Antes e depois iguais no meio.
 
-Tamanho da página pronta: antes 16,2 x 19,8 cm; depois 16,2 x 19,8 cm,
+Tamanho da página pronta: antes 16,2 x 19,8 cm; depois 16,2 x 19,8 cm.
 
 **Ressalva / nota:** Ressalva: a faixa preta do scanner em cima (a tampa branca do scanner vem antes dela) continua. A regra que a tiraria confundiria uma moldura impressa preta: ficou anotada para a etapa do Righetti.
 
