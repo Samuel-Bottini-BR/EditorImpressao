@@ -475,6 +475,16 @@
      "quem": "gerente",
      "em": "2026-10-27T22:30:00.000Z",
      "texto": "\"Obra\" é o nome que eu dei, sem explicar, para a rodada grande de consertos que você mandou fazer em 26/10 (depois da sessão de testes: abrir direto na área de trabalho, todas as ferramentas à vista, Automático de verdade, dividir à mão, mover e redimensionar, lado a lado...). Desculpe a palavra. Daqui para a frente escrevo \"esta rodada de consertos\"."
+    },
+    {
+     "quem": "samuel",
+     "em": "2026-10-27T22:53:42.985Z",
+     "texto": "Escolheu \"Depois desta rodada de consertos\". Comentário: \"Mas eu ainda não entendi onde vai ser colocado essas opções, do que você está falando.\""
+    },
+    {
+     "quem": "gerente",
+     "em": "2026-10-27T23:30:00.000Z",
+     "texto": "Onde fica: no painel \"Propriedades\" da área de trabalho, quando você marca uma área da página com as ferramentas de marcar (retângulo, laço, varinha), aparece \"Marcar como:\" com os jeitos de tratar aquela área. Hoje são três: \"gravura ou foto\", \"letra e traço\" e \"papel\". Em 12/10 você aprovou mais dois: \"iluminura ou pintura\" (sai com todas as cores) e \"moldura\" (o enfeite em volta da página). Eles aparecem nessa mesma lista. Anotado: entram depois desta rodada de consertos."
     }
    ]
   },
@@ -523,6 +533,16 @@
      "quem": "gerente",
      "em": "2026-10-27T22:30:00.000Z",
      "texto": "Expliquei de novo abaixo, com exemplo."
+    },
+    {
+     "quem": "samuel",
+     "em": "2026-10-27T22:52:34.776Z",
+     "texto": "Escolheu \"Salvar o jeito dos painéis com um nome, como no Photoshop\". Comentário: \"Ai seria bom que já viesse de fabrica alguma configurações desses paineis prontas.\""
+    },
+    {
+     "quem": "gerente",
+     "em": "2026-10-27T23:30:00.000Z",
+     "texto": "Anotado: salvar o jeito dos painéis com nome, e o programa já vem com alguns jeitos prontos de fábrica (por exemplo \"Limpo\" e \"Completo\"). Fica para a fase do layout, depois desta rodada de consertos."
     }
    ]
   },
@@ -676,21 +696,65 @@
   },
   {
    "id": "v-antes",
-   "titulo": "No \"antes / depois\", o \"antes\" é o quê?",
+   "titulo": "\"antes / depois\" na barra de baixo da área de trabalho: fica?",
    "explicacao": [
-    "\"depois\" é a página como vai sair. O \"antes\" pode ser a página em Original (já dividida, cortada e endireitada, sem filtro) ou a folha como veio do scanner (inteira, torta, sem nada)."
+    "Você tem razão: em 13/10 (pergunta 601, \"A\") o antes e depois que você escolheu é o do filtro, na tela cheia dos filtros: a chave \"Comparar com o Original\", com a linha arrastável.",
+    "Na barra de baixo da área de trabalho a etapa de ver o livro pôs também um botão \"antes / depois\", que mostra a página inteira como veio × como vai sair (com corte, endireitar, filtro). Ele veio de pedidos seus de 18/07 (\"Ver de perto\": \"Modo COMPARAR\") e 08/08 (faixa de baixo com zoom e \"ajustar à tela\"), mas o lugar na barra de baixo você nunca escolheu."
    ],
    "exemplos": [],
    "opcoes": [
     {
-     "id": "original",
-     "nome": "A página em Original (recomendo)",
+     "id": "so-filtro",
+     "nome": "Só no filtro, como decidi em 13/10: tirar da barra de baixo",
      "texto": "",
      "imgs": []
     },
     {
-     "id": "scanner",
-     "nome": "A folha como veio do scanner",
+     "id": "os-dois",
+     "nome": "Nos dois: no filtro e na barra de baixo",
+     "texto": "Na barra de baixo, o \"antes\" é a página em Original (já dividida, sem filtro).",
+     "imgs": []
+    },
+    {
+     "id": "nao-entendi",
+     "nome": "Ainda não entendi",
+     "texto": "Explique de outro jeito.",
+     "imgs": []
+    }
+   ],
+   "historico": [
+    {
+     "quem": "samuel",
+     "em": "2026-10-27T22:49:31.159Z",
+     "texto": "Ainda não entendi. \"antes e depois foi uma coisa que decidimos para usar no filtro né?\""
+    },
+    {
+     "quem": "gerente",
+     "em": "2026-10-27T23:30:00.000Z",
+     "texto": "Sim. Em 13/10 (rodada 11, pergunta 601, \"A\") você decidiu que a tela cheia dos filtros tem a chave \"Comparar com o Original\", que vira o antes e depois com a linha arrastável. O \"antes / depois\" na barra de baixo da área de trabalho veio de outro pedido seu, de 18/07 (\"Ver de perto\": zoom, \"+ / - / ajustar à tela\" e \"Modo COMPARAR\") e de 08/08 (faixa de baixo com página, zoom e \"ajustar à tela\"). A etapa de ver o livro pôs esse \"comparar\" na barra de baixo, para a página inteira (não só o filtro)."
+    }
+   ]
+  },
+  {
+   "id": "v-capa",
+   "titulo": "Lado a lado: botão para acertar os pares quando o PDF começa no meio da numeração?",
+   "explicacao": [
+    "Num livro de verdade aberto, a página da direita é sempre ímpar (1, 3, 5...) e a da esquerda é par (2, 4, 6...). A capa ou a página 1 fica sozinha, à direita.",
+    "No \"Duas lado a lado\" o programa monta os pares assim, contando pela ordem do PDF: [ — | 1 ]  [ 2 | 3 ]  [ 4 | 5 ] ...",
+    "O problema: alguns PDFs escaneados não começam na página 1 do livro. No \"La vida eterna\" a primeira página do PDF já é uma página par impressa. Aí os pares saem trocados: a página com número ímpar impresso aparece à esquerda, ao contrário do livro.",
+    "A opção seria um botão para \"empurrar\" os pares uma página, para esse tipo de livro: [ 1 | 2 ]  [ 3 | 4 ] ... e assim a ímpar impressa volta para a direita."
+   ],
+   "exemplos": [],
+   "opcoes": [
+    {
+     "id": "esperar",
+     "nome": "Não agora: deixar como está",
+     "texto": "",
+     "imgs": []
+    },
+    {
+     "id": "opcao",
+     "nome": "Fazer o botão de acertar os pares",
      "texto": "",
      "imgs": []
     },
@@ -700,34 +764,17 @@
      "texto": "Explique de outro jeito.",
      "imgs": []
     }
-   ]
-  },
-  {
-   "id": "v-capa",
-   "titulo": "Lado a lado: a página 1 sozinha ou junto da 2?",
-   "explicacao": [
-    "Ficou decidido \"a capa sozinha à direita\". No \"La vida eterna\" o PDF começa no meio da numeração, e por isso as páginas ímpares impressas caem à esquerda.",
-    "Daria para ter uma opção \"a 1 junto da 2\" para livros assim."
    ],
-   "exemplos": [],
-   "opcoes": [
+   "historico": [
     {
-     "id": "esperar",
-     "nome": "Esperar: deixar como está (recomendo)",
-     "texto": "",
-     "imgs": []
+     "quem": "samuel",
+     "em": "2026-10-27T22:48:43.135Z",
+     "texto": "Ainda não entendi. \"explique melhor\""
     },
     {
-     "id": "opcao",
-     "nome": "Fazer a opção \"a 1 junto da 2\"",
-     "texto": "",
-     "imgs": []
-    },
-    {
-     "id": "nao-entendi",
-     "nome": "Ainda não entendi",
-     "texto": "Explique de outro jeito.",
-     "imgs": []
+     "quem": "gerente",
+     "em": "2026-10-27T23:30:00.000Z",
+     "texto": "Expliquei de novo abaixo, com um desenho em texto."
     }
    ]
   }
