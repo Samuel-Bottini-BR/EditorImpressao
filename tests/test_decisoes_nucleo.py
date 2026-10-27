@@ -394,3 +394,30 @@ def test_d082_contas_que_discordam_de_verdade_continuam_avisando(nosso, do_scant
     from core.endireitar_scantailor import discordam
 
     assert discordam(nosso, do_scantailor)
+
+
+# --- item 7: "menor que o corte" com os dois números iguais ------------------
+
+@pytest.mark.parametrize("unidade", ["cm", "mm", "polegada"])
+@pytest.mark.parametrize("recorte", [(13.944, 20.031), (14.8, 21.0), (12.3456, 18.7654)])
+def test_folha_do_tamanho_do_corte_nao_avisa_menor_que_o_corte(unidade, recorte):
+    """Teste do Kaique / Lista de bugs de 02/10: "'Tamanho da folha' abre com
+    o aviso 'menor que o corte' mesmo com tamanho igual ao corte". A janela
+    abre com os campos no tamanho do corte, arredondado às casas da unidade
+    (core.unidades.CASAS: 13,944 cm vira 13,94); a conta exigia 0,001 cm de
+    folga, e o arredondamento para baixo bastava para o aviso aparecer com os
+    dois números iguais. Agora a folga é a do arredondamento dos campos."""
+    from core import unidades
+    from core.folha import tamanho_da_folha_cabe
+
+    unidade = {"cm": unidades.CM, "mm": unidades.MM, "polegada": unidades.POLEGADA}[unidade]
+    escolhido = tuple(unidades.para_cm(round(unidades.de_cm(v, unidade), unidades.CASAS[unidade]),
+                                       unidade) for v in recorte)
+    assert tamanho_da_folha_cabe(escolhido, recorte)
+
+
+def test_folha_menor_de_verdade_continua_avisando():
+    from core.folha import tamanho_da_folha_cabe
+
+    assert not tamanho_da_folha_cabe((13.8, 20.0), (13.944, 20.031))     # 1,4 mm menor
+    assert not tamanho_da_folha_cabe((14.8, 20.9), (14.8, 21.0))         # 1 mm mais baixa
