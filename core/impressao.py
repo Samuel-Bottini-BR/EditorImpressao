@@ -635,25 +635,39 @@ def _avisos_de_margem(origem, colocadas: list[Colocada], opcoes: OpcoesDeImpress
             y0, y1 = d.y0 + fy0 * d.height, d.y0 + fy1 * d.height
         faltas = []
 
-        def medir(nome: str, distancia_pt: float, precisa: float) -> None:
+        # Etapa 9d da obra (ressalva da etapa 10a, 27/10/2026): quando o
+        # impresso passa da beirada do papel (ou da dobra) - a pagina
+        # aumentada alem do lugar dela -, a distancia e NEGATIVA e a frase
+        # dizia "em cima -2,2 cm (precisa de 1,3 cm)", que nao se entende.
+        # Agora diz "em cima nenhuma (o impresso passa da beirada do papel)";
+        # quanto foi cortado ja esta no aviso "CORTADO" (_avisos_de_corte).
+        # Seguro mudar: so a frase. Arriscado: tirar o lado da lista (a
+        # pagina com 0,3 mm de corte, abaixo de CORTE_TOLERADO_MM, ficaria
+        # sem aviso nenhum).
+        def medir(nome: str, distancia_pt: float, precisa: float, beirada: str) -> None:
             mm = distancia_pt * MM_POR_PONTO
-            if mm < precisa - 0.05:
-                faltas.append(f"{nome} {mm / 10:.1f} cm".replace(".", ",")
-                              + f" (precisa de {precisa / 10:.1f} cm)".replace(".", ","))
+            if mm >= precisa - 0.05:
+                return
+            precisa_de = f" (precisa de {precisa / 10:.1f} cm)".replace(".", ",")
+            if mm < 0.05:
+                faltas.append(f"{nome} nenhuma (o impresso passa da {beirada})" + precisa_de)
+            else:
+                faltas.append(f"{nome} {mm / 10:.1f} cm".replace(".", ",") + precisa_de)
 
-        medir("em cima", y0 - papel.y0, precisa_fora)
-        medir("embaixo", papel.y1 - y1, precisa_fora)
+        papel_ = "beirada do papel"
+        medir("em cima", y0 - papel.y0, precisa_fora, papel_)
+        medir("embaixo", papel.y1 - y1, precisa_fora, papel_)
         if opcoes.formato == LIVRETO:
             na_esquerda = c.vaga.x0 < papel.width / 2 - 1
             if na_esquerda:
-                medir("do lado de fora", x0 - papel.x0, precisa_fora)
-                medir("na costura", c.vaga.x1 - x1, precisa_dobra)
+                medir("do lado de fora", x0 - papel.x0, precisa_fora, papel_)
+                medir("na costura", c.vaga.x1 - x1, precisa_dobra, "dobra")
             else:
-                medir("do lado de fora", papel.x1 - x1, precisa_fora)
-                medir("na costura", x0 - c.vaga.x0, precisa_dobra)
+                medir("do lado de fora", papel.x1 - x1, precisa_fora, papel_)
+                medir("na costura", x0 - c.vaga.x0, precisa_dobra, "dobra")
         else:
-            medir("à esquerda", x0 - papel.x0, precisa_fora)
-            medir("à direita", papel.x1 - x1, precisa_fora)
+            medir("à esquerda", x0 - papel.x0, precisa_fora, papel_)
+            medir("à direita", papel.x1 - x1, precisa_fora, papel_)
         if faltas:
             avisos.append(Aviso(c.numero, f"Página {c.numero}: a margem ficou abaixo de 1 cm - "
                                           + "; ".join(faltas)
