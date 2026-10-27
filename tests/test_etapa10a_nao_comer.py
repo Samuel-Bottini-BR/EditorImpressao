@@ -197,3 +197,18 @@ def test_reversao_corte_alargado_nunca_fica_menor_que_o_corte_de_agora(monkeypat
     x, y, w, h = pipeline.corte_alargado(projeto, pagina)
     assert x <= 0.1 + 1e-9 and y <= 0.05 + 1e-9
     assert x + w >= 0.95 - 1e-9 and y + h >= 0.95 - 1e-9
+
+
+def test_reversao_imprimir_aumentado_avisa_que_corta(tmp_path):
+    """D-104, oitavo lugar (Lista de bugs, 22/10/2026): "Imprimir com escala
+    acima de 100% corta o que passa da metade da folha; avisa só pela margem
+    pequena". Página de verdade (Escola 7, do acervo), livreto em A4 com o lado
+    esquerdo e o direito a 140%: o aviso diz que o impresso fica CORTADO."""
+    from core import impressao
+
+    livro = _uma_pagina(tmp_path, "escola", 7)
+    opcoes = impressao.OpcoesDeImpressao()
+    opcoes.escala_esquerda = opcoes.escala_direita = 140.0
+    r = impressao.montar_para_impressao(livro, tmp_path / "imprimir.pdf", opcoes)
+    textos = " ".join(a.texto for a in r.avisos)
+    assert "CORTADO" in textos, textos

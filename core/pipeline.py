@@ -1250,6 +1250,10 @@ def _geometria_endireitando_antes(base: np.ndarray, pagina: ConfigPagina, projet
             comum = detectar_bordas(reta, dpi=dpi, girada=angulo if girar else None,
                                     como_veio=em_cinza() if girar else None)
             recorte = comum.tupla
+            if medidas is not None:
+                # etapa 10a (D-104): o "Corte encostou no texto" medido no
+                # corte de verdade (a pagina reta), nao na folha da analise
+                medidas["encostou"] = bool(comum.encostou_no_conteudo)
             if _corte_sugerido(projeto, pagina):
                 # itens 2.5 e 2.13: o corte do ScanTailor (ou "so o preto"), na
                 # pagina ja reta (a ordem dele); sem caixa (pagina em branco,
@@ -1438,6 +1442,7 @@ def _guardar_geometria(folha: ConfigFolha, pagina: ConfigPagina, projeto: Projet
     geometria = _geometria(preparar_para_recorte(img_folha_do_pdf, folha, pagina, projeto), pagina, projeto,
                            dpi=projeto.qualidade_dpi, dpi_do_scan=dpi_do_scan, medidas=medidas)
     conteudo = medidas.pop("conteudo", None)              # item 2.5
+    encostou = medidas.pop("encostou", None)              # etapa 10a
     with _TRANCA_GEOMETRIAS:
         _GEOMETRIAS[chave] = geometria
         while len(_GEOMETRIAS) > MAX_GEOMETRIAS:
@@ -1449,6 +1454,26 @@ def _guardar_geometria(folha: ConfigFolha, pagina: ConfigPagina, projeto: Projet
             while len(_ANGULOS_MEDIDOS) > MAX_GEOMETRIAS:
                 _ANGULOS_MEDIDOS.popitem(last=False)
     _anotar_contas_discordam(pagina, bool(medidas.get("discordam")))
+    if encostou is not None:
+        _anotar_corte_encostou(folha, encostou)
+
+
+def _anotar_corte_encostou(folha: ConfigFolha, encostou: bool) -> None:
+    """Obra 26/10, etapa 10a (D-104, Lista de bugs 22/10: o aviso "Corte
+    encostou no texto quase nunca toca: e medido uma vez, na folha inteira,
+    antes de dividir e endireitar, nao no corte de verdade"). No livro novo a
+    medida do corte na pagina reta poe o aviso na folha; tira so da folha nao
+    dividida (na dividida, a outra metade pode ter encostado). Arriscado:
+    tirar o aviso da folha dividida por uma metade so."""
+    alertas = getattr(folha, "alertas", None)
+    if alertas is None:
+        return
+    tem = analise.CORTE_PEGOU_CONTEUDO in alertas
+    if encostou and not tem:
+        alertas.append(analise.CORTE_PEGOU_CONTEUDO)
+        folha.revisada = False
+    elif not encostou and tem and not folha.dividir:
+        folha.alertas = [a for a in alertas if a != analise.CORTE_PEGOU_CONTEUDO]
 
 
 # Item 2.2: as duas contas do angulo automatico de cada pagina (ver
