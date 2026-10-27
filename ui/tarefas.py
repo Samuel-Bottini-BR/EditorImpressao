@@ -16,7 +16,7 @@ import numpy as np
 import shiboken6
 from PySide6.QtCore import QObject, QRunnable, QThread, QThreadPool, QTimer, Signal
 
-from core import luz_scantailor
+from core import etapas, luz_scantailor
 from core.misto import escolhas_da_pagina as escolhas_do_misto
 from core.pontinhos_scantailor import escolha_da_pagina as pontinhos_da_pagina
 from core.pipeline import acertar_no_tamanho_do_pdf, faixa_da_sobra, precisa_do_desenho_do_pdf
@@ -669,8 +669,10 @@ class GerenciadorPrevias(QObject):
             f"{p.clareza_melhorar}:{p.intensidade_magico}:{p.metade}:"
             f"{p.angulo_manual}:{p.recorte}:"
             f"{f.posicao_corte:.4f}:{f.rotacao}:{f.dividir}:"
-            f"{self.projeto.limpar}:{self.projeto.endireitar}:"
-            f"{self.projeto.cortar_bordas}:{mist}:"
+            # obra 26/10, etapa 3: o automatico que vale NESTA pagina (o do
+            # livro, ou o rodado so nela: core/etapas)
+            f"{etapas.limpa_sozinho(self.projeto, p)}:{etapas.endireita_sozinho(self.projeto, p)}:"
+            f"{etapas.corta_sozinho(self.projeto, p)}:{mist}:"
             f"{pontinhos_da_pagina(self.projeto, p)}:"
             # item 2.1: o corte da sobra muda a pagina desenhada
             f"{faixa_da_sobra(f, p, self.projeto)}"

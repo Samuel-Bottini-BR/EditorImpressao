@@ -263,10 +263,13 @@ def alguma_precisa_das_linhas(projeto) -> bool:
     de texto)? Para a tela aquecer o leitor antes da primeira previa
     (core.linhas_do_texto.aquecer_em_segundo_plano). Sem "Limpar a folha",
     nenhum filtro vale: False. Barato (so le campos)."""
-    if not getattr(projeto, "limpar", True):
-        return False
+    from core import etapas   # aqui dentro: core/etapas le os campos sem importar ninguem
+
     for pagina in getattr(projeto, "paginas", []):
-        if getattr(pagina, "filtro", None) != F.PRETO_E_BRANCO or getattr(pagina, "apagada", False):
+        # obra 26/10, etapa 3: o filtro que VALE na pagina (o "Limpar a folha"
+        # pode estar ligado so em algumas paginas, ou o filtro escolhido a mao)
+        if (etapas.filtro_que_vale(projeto, pagina) != F.PRETO_E_BRANCO
+                or getattr(pagina, "apagada", False)):
             continue
         opcoes = opcoes_da_pagina(projeto, pagina)
         if opcoes is not None and opcoes.precisa_das_linhas:
