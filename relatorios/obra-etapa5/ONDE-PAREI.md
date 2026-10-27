@@ -4,7 +4,7 @@ Ramo `obra-etapa5-2026-10-26` (base `obra-2026-10-26` = `7fb3e4a`, com as etapas
 worktree `.claude/worktrees/obra-etapa5`. Agente: layout + implementador. Ordem do Samuel (D-014): fazer até o fim sem
 pausas; ele confere tudo no fim.
 
-**Situação: começando** (27/10/2026).
+**Situação: em andamento** (27/10/2026): núcleo, tela, provas e promessas feitos e enviados; faltam a rodada dos testes, a reversão, as somas, os prints e o GitHub.
 
 ## Decisões que esta tarefa precisa cumprir (palavras do Samuel)
 
@@ -44,12 +44,12 @@ pausas; ele confere tudo no fim.
 
 ## Passos
 
-- [ ] núcleo (folha, aviso, pipeline)
-- [ ] visualizador
-- [ ] ferramenta na tela (trilha, menu, letra, Propriedades)
-- [ ] usar em todas + conferência por trás
-- [ ] provas e testes antigos
-- [ ] promessas, teste_botoes
+- [x] núcleo (folha, aviso, pipeline)
+- [x] visualizador
+- [x] ferramenta na tela (trilha, menu, letra, Propriedades)
+- [x] usar em todas + conferência por trás
+- [x] provas e testes antigos
+- [ ] promessas (escritas), teste_botoes
 - [ ] reversão, somas, prints, GitHub, ONDE-PAREI final
 
 ## Perguntas para o Samuel
