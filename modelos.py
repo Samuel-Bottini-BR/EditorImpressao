@@ -102,9 +102,11 @@ class ConfigFolha:
     # preta em volta do livro) sai branco, na etapa "dividir"
     # (core.pipeline.preparar_para_recorte). So vale com a folha na mesma
     # rotacao em que foi medida. Achada so quando a pessoa divide a folha a
-    # mao (core/dividir_a_mao.achar_a_tampa). None = nada a pintar. Projeto
-    # antigo nao tem o campo: None (sai igual). Arriscado: achar por regra
-    # geral (moldura impressa preta sumiria).
+    # mao (core/dividir_a_mao.achar_a_tampa) ou acerta a linha dela a mao.
+    # [rotacao] = procurada nessa rotacao e nada achado (nao procura de novo).
+    # None = nunca procurada, nada a pintar. Projeto antigo nao tem o campo:
+    # None (sai igual). Arriscado: achar por regra geral (moldura impressa
+    # preta sumiria).
     tampa_do_scanner: list | None = None
 
     @property

@@ -3948,9 +3948,24 @@ class TelaConferir(QWidget):
 
     @protegido
     def _mover_corte(self, posicao: float) -> None:
+        """A linha azul arrastada: só esta folha (e as páginas dela) mudam.
+        Obra 26/10, etapa 4 (D-495): acertar a linha à mão também é dividir à
+        mão; na primeira vez nesta rotação, procura a tampa do scanner da
+        folha (uns décimos de segundo; depois não procura de novo)."""
+        assert self.projeto is not None
+        campos = {"posicao_corte": round(posicao, 4), "revisada": True}
+        folha = self.projeto.folhas[self.indice_folha]
+        if folha.dividir and not dividir_a_mao.tampa_ja_medida(folha):
+            from PySide6.QtWidgets import QApplication
+
+            QApplication.setOverrideCursor(Qt.WaitCursor)
+            try:
+                campos["tampa_do_scanner"] = dividir_a_mao.medir_a_tampa(
+                    self.projeto, self.indice_folha)
+            finally:
+                QApplication.restoreOverrideCursor()
         self._registrar(
-            "mover_corte", "folha", [self.indice_folha],
-            {"posicao_corte": round(posicao, 4), "revisada": True},
+            "mover_corte", "folha", [self.indice_folha], campos,
             f"Linha de corte da folha {self.indice_folha + 1}",
         )
 
@@ -4020,7 +4035,8 @@ class TelaConferir(QWidget):
         assert self.projeto is not None
         folha = self.projeto.folhas[self.indice_folha]
         pags = dividir_a_mao.paginas_da_folha(self.projeto, self.indice_folha)
-        if len(pags) >= 2 or folha.metades_guardadas:
+        devolve = len(pags) >= 2 or bool(folha.metades_guardadas)
+        if devolve and dividir_a_mao.tampa_ja_medida(folha):
             campos = dividir_a_mao.campos_para_dividir(self.projeto, self.indice_folha)
         else:
             QApplication.setOverrideCursor(Qt.WaitCursor)
@@ -4029,8 +4045,12 @@ class TelaConferir(QWidget):
                     self.projeto, self.indice_folha, jeito_de_dividir(self.projeto, folha))
             finally:
                 QApplication.restoreOverrideCursor()
-            campos = dividir_a_mao.campos_para_dividir(
-                self.projeto, self.indice_folha, lombada.posicao, lombada.confianca, tampa)
+            if devolve:        # as páginas de antes voltam, na linha de antes
+                campos = dividir_a_mao.campos_para_dividir(self.projeto, self.indice_folha,
+                                                           tampa=tampa)
+            else:
+                campos = dividir_a_mao.campos_para_dividir(
+                    self.projeto, self.indice_folha, lombada.posicao, lombada.confianca, tampa)
         self._registrar("dividir_a_mao", "folha", [self.indice_folha], campos,
                         f"Folha {self.indice_folha + 1}: dividir")
 

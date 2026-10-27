@@ -471,7 +471,7 @@ def test_d495_a_faixa_da_tampa_sai_ao_girar_e_dividir_a_mao(janela, tmp_path):
     tela._registrar("girar", "folha", [0, 1], {"rotacao": {"0": 270, "1": 270}}, "Girar")
     _no_dividir(tela, 1)
     tela.botao_nao_dividir.click()                       # folha 2 à mão
-    assert projeto.folhas[1].tampa_do_scanner is not None
+    assert len(projeto.folhas[1].tampa_do_scanner) == 5  # a tampa achada
     # a folha 1 pelo Automático (só ela): o Dividir nas páginas escolhidas
     from ui.automatico import NAS_ESCOLHIDAS
 
@@ -487,6 +487,24 @@ def test_d495_a_faixa_da_tampa_sai_ao_girar_e_dividir_a_mao(janela, tmp_path):
 
 
 @precisa_da_dll
+def test_d495_acertar_a_linha_a_mao_tambem_tira_a_tampa(janela, tmp_path):
+    """D-495, no caminho do Kaique: o Automático dividiu as folhas giradas (a faixa fica:
+    não é regra geral); ele entra no Dividir para consertar a folha 1 e arrasta a linha -
+    acertar a linha à mão é dividir à mão: a faixa da tampa sai SÓ nessa folha."""
+    janela.abrir_livro(_pdf(tmp_path / "tampa.pdf",
+                            [_de_lado(_righetti_sintetico()), _de_lado(_righetti_sintetico())]))
+    tela, projeto = janela.tela_conferir, janela.projeto
+    tela._acao_nas_escolhidas("girar_esquerda", [0, 1])
+    _rodar(janela, [A.DIVIDIR])
+    assert all(f.dividir and f.tampa_do_scanner is None for f in projeto.folhas)
+    _no_dividir(tela, 0)
+    tela._mover_corte(projeto.folhas[0].posicao_corte + 0.01)
+    assert len(projeto.folhas[0].tampa_do_scanner) == 5 and projeto.folhas[1].tampa_do_scanner is None
+    paginas = _gerar(janela, tmp_path, "linha")
+    assert [_linhas_pretas_em_cima(p) == 0 for p in paginas] == [True, True, False, False]
+
+
+@precisa_da_dll
 def test_d495_a_moldura_impressa_preta_nao_some_ao_dividir_a_mao(janela, tmp_path):
     """D-495: "livro com moldura impressa preta não perde a moldura". Dividir à mão o livro
     aberto com moldura preta grossa: nenhuma tampa, e a moldura sai no PDF (a linha de
@@ -495,7 +513,7 @@ def test_d495_a_moldura_impressa_preta_nao_some_ao_dividir_a_mao(janela, tmp_pat
     tela, projeto = janela.tela_conferir, janela.projeto
     _no_dividir(tela, 0)
     tela.botao_nao_dividir.click()
-    assert projeto.folhas[0].dividir and projeto.folhas[0].tampa_do_scanner is None
+    assert projeto.folhas[0].dividir and projeto.folhas[0].tampa_do_scanner == [0]   # procurada: nada
     paginas = _gerar(janela, tmp_path, "moldura")
     assert len(paginas) == 2
     assert all(_linhas_pretas_em_cima(p, 0.12) >= 10 for p in paginas)
@@ -570,6 +588,28 @@ def test_bug_9c_la_vida_eterna_folhas_4_e_5_de_verdade(tmp_path):
                 assert lombada.posicao == pytest.approx(st_) and lombada.confianca == 1.0
     finally:
         doc.close()
+
+
+@precisa_da_dll
+@pytest.mark.skipif(not LA_VIDA_ETERNA.is_file(), reason="o 'La vida eterna' não está neste computador")
+def test_bug_9c_la_vida_eterna_a_analise_ja_nao_faz_a_tira_de_margem(tmp_path):
+    """O efeito do conserto no caminho inteiro (análise com "Dividir" pelo jeito do
+    ScanTailor, as 6 primeiras folhas copiadas): a página 7 (texto da folha 4) não ganha
+    mais "Parece em branco" (era uma tira de margem de 177 pontos), e as folhas 4 e 5 ficam
+    em "Lombada incerta" para o Kaique conferir a linha."""
+    from core.pipeline import analisar_projeto
+    from modelos import Projeto
+
+    copia = tmp_path / "vida6.pdf"
+    with fitz.open(str(LA_VIDA_ETERNA)) as livro, fitz.open() as novo:
+        novo.insert_pdf(livro, from_page=0, to_page=5)
+        novo.save(str(copia))
+    projeto = Projeto(caminho_entrada=str(copia), caminho_saida=str(tmp_path / "s.pdf"), nome="vida")
+    projeto.dividir_folhas, projeto.dividir_como = True, ds.JEITO_SCANTAILOR
+    analisar_projeto(projeto)
+    assert all(0.4 < projeto.folhas[i].posicao_corte < 0.65 for i in (3, 4))
+    assert all(analise.LOMBADA_INCERTA in projeto.folhas[i].alertas for i in (3, 4))
+    assert analise.EM_BRANCO not in projeto.paginas[6].alertas
 
 
 # --- D-016: a página dividida à mão é montada como a do Automático ----------------------

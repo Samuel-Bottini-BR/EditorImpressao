@@ -326,14 +326,22 @@ def pintar_a_tampa(img: np.ndarray, folha) -> np.ndarray:
     return pintar_fora(img, area)
 
 
-def medir_para_dividir(projeto, indice_folha: int, jeito: str):
-    """(Lombada, tampa) da folha, para o "dividir esta": abre a folha a 150
-    DPI (como a análise), gira como ela está, acha a tampa do scanner (D-495)
-    e, na folha já sem ela, a divisão pelo `jeito` (forçada: a pessoa mandou
-    dividir). Levanta ErroPDF se o livro não abre."""
+def tampa_ja_medida(folha) -> bool:
+    """A tampa desta folha já foi procurada nesta rotação? (ConfigFolha.
+    tampa_do_scanner = [rotacao] quando nada foi achado; [rotacao, x0, y0, x1,
+    y1] quando foi.) Assim mover a linha de novo não abre o PDF de novo."""
+    tampa = getattr(folha, "tampa_do_scanner", None)
+    try:
+        return bool(tampa) and int(tampa[0]) % 360 == int(getattr(folha, "rotacao", 0)) % 360
+    except (TypeError, ValueError):
+        return False
+
+
+def _folha_girada(projeto, indice_folha: int) -> np.ndarray:
+    """A folha a 150 DPI (como a análise), girada como ela está."""
     from core.endireitar import girar_90
     from core.pdf_io import abrir_pdf, pagina_para_array
-    from core.pipeline import DPI_ANALISE, achar_divisao
+    from core.pipeline import DPI_ANALISE
 
     folha = projeto.folhas[indice_folha]
     doc = abrir_pdf(projeto.caminho_entrada)
@@ -341,12 +349,33 @@ def medir_para_dividir(projeto, indice_folha: int, jeito: str):
         img = pagina_para_array(doc, indice_folha, dpi=DPI_ANALISE)
     finally:
         doc.close()
-    if folha.rotacao:
-        img = girar_90(img, folha.rotacao)
-    tampa = achar_a_tampa(img, folha.rotacao, DPI_ANALISE)
-    medida = img
-    if tampa is not None:
-        from core.borda_preta import pintar_fora
+    return girar_90(img, folha.rotacao) if folha.rotacao else img
 
-        medida = pintar_fora(img, tuple(tampa[1:]))
+
+def medir_a_tampa(projeto, indice_folha: int, img: np.ndarray | None = None) -> list:
+    """O que vai para ConfigFolha.tampa_do_scanner quando a pessoa divide (ou
+    acerta a linha de) uma folha à mão (D-495): [rotacao, x0, y0, x1, y1] com
+    a tampa achada, ou [rotacao] (procurada, nada achado). `img`: a folha já
+    girada a 150 DPI (senão abre o PDF). Levanta ErroPDF se o livro não abre."""
+    from core.pipeline import DPI_ANALISE
+
+    folha = projeto.folhas[indice_folha]
+    if img is None:
+        img = _folha_girada(projeto, indice_folha)
+    rotacao = int(folha.rotacao) % 360
+    return achar_a_tampa(img, rotacao, DPI_ANALISE) or [rotacao]
+
+
+def medir_para_dividir(projeto, indice_folha: int, jeito: str):
+    """(Lombada, tampa) da folha, para o "dividir esta": abre a folha a 150
+    DPI (como a análise), gira como ela está, procura a tampa do scanner
+    (D-495; ver medir_a_tampa) e, na folha já sem ela, acha a divisão pelo
+    `jeito` (forçada: a pessoa mandou dividir). Levanta ErroPDF se o livro não
+    abre."""
+    from core.borda_preta import pintar_fora
+    from core.pipeline import DPI_ANALISE, achar_divisao
+
+    img = _folha_girada(projeto, indice_folha)
+    tampa = medir_a_tampa(projeto, indice_folha, img)
+    medida = pintar_fora(img, tuple(tampa[1:])) if len(tampa) == 5 else img
     return achar_divisao(medida, jeito, DPI_ANALISE, forcar=True), tampa
