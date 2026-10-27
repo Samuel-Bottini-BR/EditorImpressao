@@ -262,6 +262,33 @@ def test_d018_rodar_do_aviso_abre_a_janela_com_a_receita_de_sempre_e_nada_muda(j
     assert not janela.tela_conferir.aviso_do_livro_novo.isVisible()
 
 
+def test_fechar_a_janela_grande_e_desfazer_nao_da_erro(janela, app, tmp_path):
+    """Achado pelo teste_botoes.py (27/10/2026): fechar a janela grande do Automático
+    e depois clicar Desfazer dava "Internal C++ object (QComboBox) already deleted" -
+    a lista "Rodar em:" da janela apagada continuava ligada ao estado."""
+    from PySide6.QtCore import QCoreApplication, QEvent
+
+    janela.show()
+    janela.abrir_livro(_livro(tmp_path))
+    _assentar(app)
+    janela.abrir_o_automatico()
+    _assentar(app)
+    janela._fechar_a_janela_do_automatico()
+    QCoreApplication.sendPostedEvents(None, QEvent.DeferredDelete)
+    _assentar(app)
+    erros = []
+    import sys
+    antigo = sys.excepthook
+    sys.excepthook = lambda *a: erros.append(a[1])
+    try:
+        janela.estado_do_automatico.mudou.emit()
+        janela.estado_do_automatico.definir_alcance("livro")
+        _assentar(app)
+    finally:
+        sys.excepthook = antigo
+    assert not erros, erros
+
+
 # --- D-002: uma etapa só, numa página, no livro todo, nas escolhidas ------------------------
 
 def test_d002_rodar_so_endireitar_numa_pagina_muda_so_ela(janela, tmp_path):

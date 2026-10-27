@@ -395,28 +395,43 @@ class ListaDeEtapas(QListWidget):
             self.setCurrentItem(item)
 
 
-def _combo_do_alcance(estado: EstadoDoAutomatico) -> QComboBox:
-    """A lista "Rodar em:" (o livro todo / só esta página / as escolhidas)."""
-    combo = QComboBox()
-    combo.setObjectName("comboDoAlcance")
-    combo.setToolTip("Onde o automático vai rodar: no livro todo, só na página que está "
-                     "na tela, ou nas páginas escolhidas em \"escolher páginas...\".")
+class _ComboDoAlcance(QComboBox):
+    """A lista "Rodar em:" (o livro todo / só esta página / as escolhidas).
 
-    def encher() -> None:
-        combo.blockSignals(True)
-        combo.clear()
-        combo.addItem("no livro todo", NO_LIVRO)
-        combo.addItem(f"só nesta página ({estado.pagina_atual + 1})", NA_PAGINA)
+    E uma classe (e nao uma funcao solta ligada ao `estado.mudou`) de proposito:
+    o Qt desliga sozinho o sinal de um METODO de um objeto que foi apagado. Com
+    uma funcao solta, fechar a janela grande deixava o sinal apontando para a
+    lista apagada, e o Desfazer seguinte dava "already deleted" (achado pelo
+    teste_botoes.py na etapa 3 da obra)."""
+
+    def __init__(self, estado: EstadoDoAutomatico) -> None:
+        super().__init__()
+        self.estado = estado
+        self.setObjectName("comboDoAlcance")
+        self.setToolTip("Onde o automático vai rodar: no livro todo, só na página que está "
+                        "na tela, ou nas páginas escolhidas em \"escolher páginas...\".")
+        self.currentIndexChanged.connect(self._escolheu)
+        estado.mudou.connect(self.encher)
+        self.encher()
+
+    def _escolheu(self, _indice: int) -> None:
+        self.estado.definir_alcance(self.currentData())
+
+    def encher(self) -> None:
+        estado = self.estado
+        self.blockSignals(True)
+        self.clear()
+        self.addItem("no livro todo", NO_LIVRO)
+        self.addItem(f"só nesta página ({estado.pagina_atual + 1})", NA_PAGINA)
         quantas = len(estado.escolhidas)
-        combo.addItem(f"nas páginas escolhidas ({quantas})", NAS_ESCOLHIDAS)
-        combo.setCurrentIndex(max(0, combo.findData(estado.alcance)))
-        combo.blockSignals(False)
+        self.addItem(f"nas páginas escolhidas ({quantas})", NAS_ESCOLHIDAS)
+        self.setCurrentIndex(max(0, self.findData(estado.alcance)))
+        self.blockSignals(False)
 
-    combo.currentIndexChanged.connect(lambda _i: estado.definir_alcance(combo.currentData()))
-    estado.mudou.connect(encher)
-    encher()
-    combo.encher = encher
-    return combo
+
+def _combo_do_alcance(estado: EstadoDoAutomatico) -> QComboBox:
+    """A lista "Rodar em:" (ver _ComboDoAlcance)."""
+    return _ComboDoAlcance(estado)
 
 
 def _texto_do_rodar(estado: EstadoDoAutomatico) -> str:
