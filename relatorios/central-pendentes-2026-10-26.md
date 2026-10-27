@@ -66,3 +66,74 @@ Enquanto ele não responde, vale a opção recomendada (a primeira de cada pergu
 Fonte: `docs/plano/central/fonte.json` (dois cartões no fim da lista, frase e novidade) e o gerador
 `docs/plano/para_a_central.py` (sem avisos). Aviso no celular: a ferramenta PushNotification não existe nesta sessão;
 a gerente precisa mandar.
+
+## 5. Segunda leva (26/10, noite): as perguntas sem resposta do Livro de decisões
+
+Fonte: `docs/plano/DECISOES.md`, seção "Perguntas sem resposta" (itens 1 a 26). Cada uma procurada de novo no Registro
+do `docs/plano/PLANO-DEFINITIVO.md`, `relatorios/conferencia-samuel-*.md` (sobretudo `-2026-10-21-central.md`),
+`memoria/conferencias.md`, `memoria/itens/`, `relatorios/revisar-decisoes/`, no rascunho do layout e nas 143 respostas
+da Central (coleção `respostas`, lida ao vivo em 27/10 01:45 UTC; nenhuma resposta ainda às perguntas `pd-*`). Regra
+desta leva, por ordem da gerente: **na dúvida, não perguntar**; anotar como escolha da gerente a opção que respeita a
+decisão mais recente dele.
+
+### 5.1 Postas na Central (2)
+
+| id | Pergunta | Por que é nova | Recomendação (vale até ele responder) |
+|---|---|---|---|
+| `pd-chapas-vermelho-preto` | Prensa de duas cores: separar o vermelho do preto? (item 6.6) | `memoria/itens/6.6.md`: "é uma decisão do Samuel, ainda não pedida"; nenhuma fonte diz quem pediu nem com que prensa | Não precisa (imprimem na EPSON, que faz as duas cores juntas); o item fica na Lista de espera, sem data |
+| `pd-ia-no-ocr` | Ler o texto: a inteligência artificial pode corrigir o que foi lido? (item 7.1) | `memoria/itens/7.1.md`: "Nenhuma resposta do Samuel achada"; mexe na regra dele "nenhum modelo generativo", então a gerente não decide | A IA só escolhe entre as leituras dos OCRs e marca a linha quando nenhuma convence (opção c do `OCR-PESQUISA.md`) |
+
+As duas são das fases 6 e 7 (depois da obra), como a `pd-idioma-ocr` da primeira leva.
+
+### 5.2 Já estavam na Central (primeira leva)
+
+4 (`pd-versos-em-branco`), 15 (`pd-escala-kaique`), 19 (`pd-aviso-kaique`), a língua da 21 (`pd-idioma-ocr`).
+
+### 5.3 Não postas: já respondidas (com onde)
+
+| Pergunta do Livro | Onde está a resposta |
+|---|---|
+| 2. Medir o livro inteiro por trás (13 a 15 min) | `pr-medir-o-livro` (21/10): "Medir o livro inteiro por trás, depois de abrir"; a pergunta já trazia "de 13 a 15 minutos" e "pode chegar a 50 minutos" |
+| 5. Camões 66, aviso do livro sobre as linhas pretas | `pr-camoes-66` "Está bom" (21/10): a pergunta era "se pode esperar o corte (item 2.13) para este aviso existir"; D-276 continua, esperando o 2.13 |
+| 11. Título do oval da Horas 11 no Preto e branco; 6.3 | Conferência 6 (02/10), P4 "Horas 11: o título dentro do oval: BOM"; D-145 (01/10): "Saem pretos [...] o selecionador existe, para que eu possa escolher onde colocar cor" |
+| 22. `211-215`: o 2.15 e o limite de 1° | `211-215-aviso` "Está bom" (a pergunta dizia "só avisa se a página estiver a pelo menos 1 grau da média"); `211-215` "Aprovado" (21/10) |
+| 23. Rodada 4 "erros 2 e 3"; `rv5-conserto-gravura` "Os dois" | Conferido em `relatorios/revisar-decisoes/`: rodada 4, `rv4-erro-2-gravura` e `rv4-erro-3-faixa` "Os dois jeitos estão bons" (o rápido e o manual); rodada 5, "Os dois" = quadradinhos e pincel somar/tirar (D-240). Isso também responde o "a conferir" da D-241 |
+
+### 5.4 Não postas: resolvidas pela decisão mais recente (D-014)
+
+| Pergunta do Livro | Decisão mais recente |
+|---|---|
+| 6. Engano do leitor de texto manda a página ao Para revisar? (06/10) | D-270 (08/10, `rv4-resumo` "Fica assim"): a regra passou a medir no resultado o que foi apagado |
+| 7. "As contas discordam" em página reta (150 × 300 DPI) | `a-212-p6` (23/10): "B — Como o ScanTailor: medir sempre na imagem grande, por trás, e a tela e os cartões mostrarem isso" |
+| 13. Quantas páginas por vez na memória | D-364: 2.16 aprovado (`fr22`, 22/10), todos os núcleos cortados pela memória livre |
+| 14. Agentes ao mesmo tempo | 3 (Central `config/agentes`) |
+| 16 (parte). Barra de menus da tela inicial (R5 nº 16) | Rodadas 4 a 6: tela dos livros sem barra de menus, só "Configurações" e "Ajuda"; tela inicial aprovada (`l67-livros`, `ly-6-7`, 22/10) |
+| 18. As 5 etapas de terminar o layout (D-418) | D-436 (layout construído por partes, aprovado parte a parte desde 08/10) e D-014 (obra até o fim, conferência final) |
+
+### 5.5 Decididas pela gerente (D-014), anotadas no Livro de decisões
+
+| Nº | Pergunta do Livro | Escolha |
+|---|---|---|
+| D-473 | 1. Tela × PDF | Os dois saem da mesma conta: pronta a página, a tela mostra a imagem do PDF; diferença é defeito (vale D-066, a mais recente). Etapa 10 |
+| D-474 | 3. "Menos de 10% no Para revisar" ainda vale? | Continua como meta, medida na etapa 9 com a D-295; versos em branco de verdade dependem de `pd-versos-em-branco` |
+| D-475 | 8. "Só as pares" em livro dividido | Comportamento da D-036 fica; o texto do aviso cita a página da tela e a folha dela. Etapa 11 |
+| D-476 | 10. "Marcar como" iluminura e moldura: que fase? | Fase 1.5 do plano, depois da obra (muda o processamento) |
+| D-477 | 12. Ferrugem rosada da Pesel 2 | Deve sumir (regra R4 das manchas); Fase 6.2 |
+| D-478 | 16. Espaços Limpo / Completo | Arranjos salvos dentro do "tudo livre" (D-034); Fase 4, última parte |
+| D-479 | 17. "a do Editor" no Automático e no Histórico | Em todo lugar (907 e `ly-editor`). Etapa 11 |
+| D-480 | 21 (parte). 7.3: manuscritos na transcrição? | Entram, com Kraken e modelos de manuscrito (D-132 e item 7.2); ele confirma na Fase 7 |
+
+### 5.6 Não é hora
+
+- 20 (parte), 6.5 "marca de alceamento" e "numeração": é construção da Fase 6, não pergunta.
+- 9, 24, 25 e 26: tratadas na primeira leva (seções 2 e 3).
+
+### 5.7 O que foi gravado na Central (ArtifactData `batch`, atômico, 27/10 ~01:50 UTC)
+
+- `conferencias/pendentes-26-10` (v1 → v2): 8 perguntas; o resumo cita as duas levas e as escolhas D-473 a D-480.
+- `trabalhos/pendentes-26-10` (v1 → v2): "8 perguntas que ficaram sem resposta".
+- `geral/resumo` (v71 → v72): novidade "Mais 2 perguntas na aba [...] (agora são 8) [...]".
+
+Os outros documentos que o gerador refez só mudaram a hora de "atualizado"; não foram regravados. Fonte:
+`docs/plano/central/conferencias/pendentes-26-10.json` e `docs/plano/central/fonte.json`. O Livro de decisões foi
+copiado para `D:\programas\EditorImpressao-arquivos\plano-24-09-2026\DECISOES.md` (as duas cópias iguais).

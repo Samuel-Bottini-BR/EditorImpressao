@@ -9,6 +9,10 @@
     "layout": "https://claude.ai/artifact/QuzVaghq2tz2WVwJ1AyMWu",
     "novidades": [
       {
+        "em": "2026-10-27T01:50:00Z",
+        "texto": "Mais 2 perguntas na aba \"Perguntas que ficaram sem resposta\" (agora são 8): a prensa de duas cores e a inteligência artificial na leitura do texto, as duas para depois da obra. As outras perguntas do Livro de decisões já tinham resposta ou eu decidi e anotei (D-473 a D-480), para você conferir no fim."
+      },
+      {
         "em": "2026-10-27T01:16:00Z",
         "texto": "Novas perguntas para você responder quando puder (Conferência > \"Perguntas que ficaram sem resposta\", 6 perguntas); a obra continua sem esperar."
       },
@@ -882,17 +886,17 @@
     },
     {
       "id": "pendentes-26-10",
-      "titulo": "6 perguntas que ficaram sem resposta",
+      "titulo": "8 perguntas que ficaram sem resposta",
       "item": "Perguntas",
       "fase": "2",
       "coluna": "decidir",
-      "oque": "Perguntas antigas que nunca tiveram resposta sua (o aviso que o Kaique pediu, a escala do notebook dele, a ordem das páginas, os avisos do livro inteiro, os versos em branco e a língua do OCR). Conferi uma por uma: nenhuma foi respondida antes.",
+      "oque": "Perguntas antigas que nunca tiveram resposta sua (o aviso que o Kaique pediu, a escala do notebook dele, a ordem das páginas, os avisos do livro inteiro, os versos em branco, a língua do OCR, a prensa de duas cores e a inteligência artificial na leitura do texto). Conferi uma por uma: nenhuma foi respondida antes.",
       "situacao": "Abertas na Conferência, aba \"Perguntas que ficaram sem resposta\". Responda quando puder.",
       "falta": "A obra não espera: enquanto isso vale a opção recomendada de cada uma.",
       "selos": {},
       "fotos": [],
       "testar": [],
-      "mudouEm": "2026-10-27T01:16:00Z"
+      "mudouEm": "2026-10-27T01:50:00Z"
     },
     {
       "id": "obra-26-10",

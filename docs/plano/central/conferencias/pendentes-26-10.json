@@ -3,12 +3,13 @@
  "nome": "Perguntas que ficaram sem resposta",
  "trabalho": "pendentes-26-10",
  "ordem": 0,
- "origem": "auditoria dos documentos de 26/10 (relatorios/testes-guiados/2026-10-26-sessao-1/auditoria-documentos.md, seção 4), conferida uma por uma",
+ "origem": "auditoria dos documentos de 26/10 (relatorios/testes-guiados/2026-10-26-sessao-1/auditoria-documentos.md, seção 4), conferida uma por uma; segunda leva (26/10, noite): as perguntas sem resposta do Livro de decisões (docs/plano/DECISOES.md), conferidas uma por uma",
  "resumo": {
-  "titulo": "6 perguntas para responder quando puder",
+  "titulo": "8 perguntas para responder quando puder",
   "paragrafos": [
    "Você pediu em 26/10: \"coloque as perguntas sem resposta para responder na central\". Revisei uma por uma todas as perguntas que a auditoria dos documentos achou penduradas, e procurei a resposta no plano, nas conferências, no Livro de decisões e nas suas respostas aqui na Central.",
-   "Ficaram só estas 6. Nenhuma delas tem resposta sua em lugar nenhum. As que você já tinha respondido, ou que se resolvem pela sua regra \"vale a decisão mais recente\", não estão aqui (a lista do que tirei e por quê está em relatorios/central-pendentes-2026-10-26.md).",
+   "Ficaram só estas 8: as 6 primeiras saíram da revisão dos documentos; as 2 últimas (a prensa de duas cores e a inteligência artificial na leitura do texto) saíram da lista de perguntas do Livro de decisões. Nenhuma delas tem resposta sua em lugar nenhum. As que você já tinha respondido, ou que se resolvem pela sua regra \"vale a decisão mais recente\", não estão aqui (a lista do que tirei e por quê está em relatorios/central-pendentes-2026-10-26.md).",
+   "As de detalhe, que a obra precisava, eu escolhi e anotei no Livro de decisões como \"escolha da gerente\" (D-473 a D-480), para você conferir no fim junto com o resto.",
    "A obra não espera por estas respostas. Enquanto você não responde, vale o que já está decidido e, onde falta, a opção que eu recomendo (a primeira de cada pergunta). Se alguma não ficar clara, marque \"Ainda não entendi\" e escreva o porquê."
   ]
  },
@@ -200,6 +201,75 @@
      "id": "pergunta",
      "nome": "O programa pergunta sempre, ao abrir o livro",
      "texto": "",
+     "imgs": []
+    },
+    {
+     "id": "nao-entendi",
+     "nome": "Ainda não entendi",
+     "texto": "Explique de outro jeito.",
+     "imgs": []
+    }
+   ]
+  },
+  {
+   "id": "pd-chapas-vermelho-preto",
+   "titulo": "Prensa de duas cores: separar o vermelho do preto?",
+   "explicacao": [
+    "No plano de 24/09 ficou o item 6.6: \"Decidir: separar chapas vermelho/preto para as prensas de duas cores?\". Ele nunca foi perguntado, e não achei em lugar nenhum quem pediu nem com que prensa.",
+    "O que quer dizer: numa prensa de duas cores, o vermelho e o preto são impressos separados, cada cor com a sua chapa. Para isso o programa teria de tirar de cada página dois arquivos: um só com o que é vermelho e outro só com o que é preto.",
+    "Exemplo real: no Graduale e no Livro de Horas, os títulos e as rubricas são vermelhos e o texto é preto. A chapa do vermelho teria só os títulos; a do preto, só o texto.",
+    "Hoje vocês imprimem na EPSON WF-C5890, que é colorida e põe as duas cores de uma vez; nela não precisa separar.",
+    "Não tem pressa: é da fase 6, depois da obra. Só está aqui para não ficar esquecida."
+   ],
+   "exemplos": [],
+   "opcoes": [
+    {
+     "id": "nao-precisa",
+     "nome": "Não precisa: imprimimos na EPSON, que faz as duas cores juntas (recomendo)",
+     "texto": "O item fica guardado na Lista de espera, sem data. Se um dia vocês usarem uma prensa de duas cores, ele volta.",
+     "imgs": []
+    },
+    {
+     "id": "separar",
+     "nome": "Sim, quero o vermelho e o preto separados",
+     "texto": "Escreva no comentário com que prensa vão imprimir. Entra na fase 6.",
+     "imgs": []
+    },
+    {
+     "id": "nao-entendi",
+     "nome": "Ainda não entendi",
+     "texto": "Explique de outro jeito.",
+     "imgs": []
+    }
+   ]
+  },
+  {
+   "id": "pd-ia-no-ocr",
+   "titulo": "Ler o texto das páginas: a inteligência artificial pode corrigir o que foi lido?",
+   "explicacao": [
+    "Na fase 7, o programa vai ler o texto das páginas (o \"OCR\") com dois leitores treinados, o Tesseract e o Calamari. Eles erram de um jeito previsível: trocam uma letra parecida, mas nunca inventam palavra.",
+    "A sua regra do projeto é \"nenhum modelo generativo\": nenhuma inteligência artificial que cria coisa nova. Ela nasceu pensando nas imagens (uma IA pode inventar um detalhe numa gravura de 1579). Para o texto, a pesquisa de 24/09 deixou três jeitos de entender a regra, para você escolher antes da fase 7 (plano, item 7.1). Nunca foi perguntado.",
+    "Exemplo: numa linha em latim, um leitor lê \"Domlnus\" e o outro lê \"Dominus\".",
+    "Não tem pressa: é da fase 7, depois da obra. Só está aqui para não ficar esquecida."
+   ],
+   "exemplos": [],
+   "opcoes": [
+    {
+     "id": "so-escolhe",
+     "nome": "A IA só escolhe entre o que os leitores leram; quando nenhum convence, marca a linha para o Kaique (recomendo)",
+     "texto": "No exemplo, ela escolhe \"Dominus\". Se os dois tivessem lido errado, ela não escreve palavra nova: a linha fica marcada para revisar. É a recomendação da pesquisa.",
+     "imgs": []
+    },
+    {
+     "id": "sem-ia",
+     "nome": "Sem IA nenhuma: os dois leitores votam e, onde discordam, o Kaique revisa",
+     "texto": "É a regra como está escrita hoje. Sobram mais linhas para o Kaique conferir.",
+     "imgs": []
+    },
+    {
+     "id": "ia-corrige",
+     "nome": "A IA pode corrigir o texto à vontade",
+     "texto": "Acerta mais em página estragada, mas pode trocar uma palavra latina certa por outra, ou modernizar a ortografia, sem ninguém ver. Não recomendo.",
      "imgs": []
     },
     {

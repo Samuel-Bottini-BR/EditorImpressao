@@ -752,3 +752,43 @@ mudado aqui (a etapa 0 só mexe no Livro e na memória).
 25. `layout3-para-revisar` e `layout3-janela-pequena-e-temas` (13/10): ele confirmou as respostas da gerente?
 26. Da auditoria §4, ainda: o programa já substitui o CamScanner (6.7)? "N com dúvida" do Egenloff; pendências da lista
     única 1.5, 1.10, 1.8, 3.2.
+
+## Perguntas sem resposta: para onde foi cada uma (segunda leva, 26/10/2026, noite)
+
+Ordem do Samuel (D-014): "coloque as perguntas sem resposta para responder na central". Cada pergunta da lista acima
+foi procurada de novo no Registro de mudanças, em `relatorios/conferencia-samuel-*.md`, `memoria/conferencias.md`,
+`relatorios/revisar-decisoes/` e nas respostas da Central (coleção `respostas`, lida ao vivo em 26/10). Regra da
+gerente nesta revisão: **na dúvida, não perguntar** (ele se irritou com perguntas repetidas em 26/10). Detalhe em
+`relatorios/central-pendentes-2026-10-26.md`, seção 5.
+
+- **Na Central** (aba `pendentes-26-10`): 4 (`pd-versos-em-branco`), 15 (`pd-escala-kaique`), 19 (`pd-aviso-kaique`) e a
+  língua da 21 (`pd-idioma-ocr`), da primeira leva; **20, só o 6.6** (`pd-chapas-vermelho-preto`) e **21, só o 7.1**
+  (`pd-ia-no-ocr`), desta leva. As duas são das fases 6 e 7, depois da obra.
+- **Já respondidas:** 2 (`pr-medir-o-livro`, 21/10, com os 13 a 15 minutos escritos na pergunta); 5 (`pr-camoes-66`
+  "Está bom", 21/10: o aviso do livro, D-276, pode esperar o corte 2.13); 11 (P4 "BOM", 02/10, e D-145: no Preto e
+  branco a letra dentro da iluminura sai preta; cor, quem quiser marca o pedaço); 22 (`211-215-aviso` "Está bom": a
+  pergunta mostrava o mínimo de 1 grau; `211-215` "Aprovado" vale para o 2.15); 23 (rodada 4, `rv4-erro-2-gravura` e
+  `rv4-erro-3-faixa`: "Os dois jeitos estão bons" = o rápido e o manual; `rv5-conserto-gravura` "Os dois" = puxar pelos
+  quadradinhos e o pincel somar/tirar, que é a D-240; isso responde o "a conferir" da D-241); 9, 24 e 25 (primeira leva).
+- **Resolvidas pela decisão mais recente (D-014):** 6 (D-270, 08/10: o "Para revisar" mede no resultado o que foi
+  apagado, não o que o leitor de texto achou); 7 (`a-212-p6`, 23/10: medir sempre na imagem grande, e a tela mostra a
+  mesma medida; some a diferença de 150 e 300 DPI); 13 (D-364, 2.16 aprovado em 22/10: todos os núcleos, cortado pela
+  memória livre); 14 (3 agentes, Central `config/agentes`); 18 (D-418 substituída: o layout é construído por partes desde
+  08/10 e aprovado parte a parte, e a obra vai até o fim com conferência final, D-014); a barra de menus da 16 (a tela
+  dos livros não tem barra de menus, só "Configurações" e "Ajuda", rodadas 4 a 6; tela inicial aprovada em 22/10,
+  `l67-livros` e `ly-6-7`).
+- **Decididas pela gerente (D-014), para ele conferir no fim:** 1, 3, 8, 10, 12, os espaços da 16, 17 e o 7.3 da 21,
+  nas linhas D-473 a D-480 abaixo.
+- **Não é hora:** o 6.5 da 20 (alceamento e numeração são construção, não pergunta: entram na Fase 6 como já está no
+  plano) e a 26 (primeira leva).
+
+| Nº | Data | Palavras do Samuel | O que quer dizer na prática | Toca em | Prova (comportamento) | Situação | Dono | Fonte |
+|---|---|---|---|---|---|---|---|---|
+| D-473 | 26/10/2026 | (escolha da gerente, D-014) apoiada na mais recente, D-066 (23/10): "precisamos que o pdf saia que nem está na tela"; e D-064 (22/10) | **Tela e PDF saem da mesma conta.** Quando a página fica pronta, a tela mostra a mesma imagem que vai para o PDF (só reduzida); enquanto não fica, mostra a prévia com a bolinha de carregamento. Tela e PDF diferentes é defeito, nunca escolha: o PDF tem de sair como a tela que ele aprovou. Responde a pergunta 1 (D-064 × D-066 × "a tela decide, o PDF obedece"). | `core/pipeline.py`, prévia, `ui/tarefas.py` | Página com "Só as letras" (Antiphonal 46) → depois da bolinha, a imagem da tela é a do PDF reduzida (o T que o PDF não tem também some da tela) | não construída | Etapa 10 | Pergunta 1; D-064, D-066 |
+| D-474 | 26/10/2026 | (escolha da gerente, D-014) | **A meta de 18/07 (D-254, "menos de 10% das páginas" no "Para revisar" num livro bem escaneado) continua valendo**, medida na etapa 9 junto da D-295 (78 de 89). O Boécio (34%) é o caso a baixar; versos em branco de verdade (Egenloff, 49%) dependem da pergunta `pd-versos-em-branco` na Central e não contam como ruído. | `core/revisar.py`, `core/analise.py` | Livros bem escaneados da etapa 9 → menos de 10% das páginas no "Para revisar", sem contar versos em branco de verdade | a conferir | Etapa 9 | Pergunta 3; D-254, D-295 |
+| D-475 | 26/10/2026 | (escolha da gerente, D-014) | **"Só as pares" num livro dividido:** o comportamento da D-036 fica (numa folha ímpar nada gira), mas o aviso fala do que o Kaique vê na tela: o número da página e a folha dela. Ex.: "A página 2 fica na folha 1, que é ímpar. Para girar só as folhas pares, vá para a folha 2 (páginas 3 e 4)." | `core/girar.py` (texto do aviso) | Livro dividido, página 2 na tela, "só as pares" → o aviso cita a página 2 e a folha 1, e nenhuma folha gira | não construída | Etapa 11 (nomes e textos) | Pergunta 8; D-036; PD l.589 |
+| D-476 | 26/10/2026 | (escolha da gerente, D-014) | **"Marcar como" com "iluminura ou pintura" e "moldura" (D-242) entra na Fase 1.5 do plano, depois da obra**, junto com separar o texto de dentro da iluminura, porque muda o processamento (não é só tela). A obra não mexe nisso. | `ui/widgets/paineis.py` (`PainelMarcarComo`), `core/selecao.py` | Marcar uma área como "moldura" → tratada como moldura no PDF; "iluminura" → sai com todas as cores | não construída | Plano, Fase 1.5 (depois da obra) | Pergunta 10; D-242; PD l.474 |
+| D-477 | 26/10/2026 | (escolha da gerente, D-014) apoiada na regra R4 do plano (manchas somem, Fase 6) | **Ferrugem rosada da Pesel 2 no "Tirar o fundo": deve sumir, não só mudar de cor**, como as outras manchas (R4). Entra no 6.2 (manchas vermelhas e marrons). Até lá fica como defeito pequeno conhecido, aprovado assim em 02/10 (M1). | `core/camadas.py` (`_branquear_papel`) | Pesel 2 no "Tirar o fundo" → ex-libris sem mancha rosada e sem perder traço | não construída | Plano, Fase 6.2 (depois da obra) | Pergunta 12; PD l.70, l.297, l.310 |
+| D-478 | 26/10/2026 | (escolha da gerente, D-014) apoiada nas mais recentes: "C — tudo livre, como o Photoshop" (05/10) e "área de trabalho 1 nos dois lugares" (20/10) | **Espaços "Limpo / Completo" (decisão 4, 28/09) não viram dois botões fixos:** passam a ser arranjos salvos dentro do "tudo livre": a pessoa arruma os painéis e guarda o arranjo com um nome (D-034). | painéis da área de trabalho | Guardar um arranjo, mudar os painéis e escolher o arranjo guardado → os painéis voltam como estavam | não construída | Plano, Fase 4 última parte (depois da obra), com D-034 | Pergunta 16; PLR l.39, l.247; `relatorios/central-pendentes-2026-10-26.md` §3 |
+| D-479 | 26/10/2026 | (escolha da gerente, D-014) apoiada em 907 (20/10): "B — “o do Editor”" e `ly-editor` "Está bom" (21/10) | **"o do Editor" / "a do Editor" em todo lugar** onde aparece o jeito ou a conta do próprio programa: painel Automático, Histórico, Propriedades e a frase de resumo que ainda dizia "o do programa". (A tela "O que fazer" sai na etapa 3.) | textos de `ui/` e `core/analise.py` | Procurar "o do programa" / "a do programa" nos textos da tela → nenhum; Automático e Histórico dizem "Editor" | pela metade | Etapa 11 (nomes e textos) | Pergunta 17; PD l.626; D-370 |
+| D-480 | 26/10/2026 | (escolha da gerente, D-014) apoiada em D-132 (28/09): "OCR de manuscrito desde o começo" e no item 7.2 (treinar o Kraken) | **Item 7.3: os manuscritos (Graduale, Palatino) entram na transcrição da Fase 7**, com o Kraken e modelos de manuscrito (CREMMA), porque o Tesseract não lê manuscrito (OCR-PESQUISA, seção 2). Ele confirma quando a Fase 7 chegar. | Fase 7 (OCR) | Graduale 221 transcrito pelo Kraken e comparado à mão | não construída | Plano, Fase 7.3 (depois da obra) | Pergunta 21; D-132; `memoria/itens/7.3.md` |
