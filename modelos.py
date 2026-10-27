@@ -77,6 +77,15 @@ class ConfigFolha:
     # "Está bom" num motivo so (ver o mesmo campo em ConfigPagina).
     alertas_aceitos: list[str] = field(default_factory=list)
 
+    # Obra de 26/10/2026, etapa 1 (decisao D-004 do Samuel, 28/09/2026:
+    # "Automático em livro já mexido à mão: o programa pergunta se quer pular
+    # as páginas mexidas."): as etapas em que a pessoa mexeu A MAO nesta folha
+    # (core/etapas.py: "dividir", "girar"). Quem grava: a tela
+    # (core.etapas.marcar_mexida_a_mao) e a migracao (core.etapas.
+    # marcar_pelos_valores). Projeto antigo nao tem o campo: volta vazio e a
+    # migracao marca o que ja valia. Seguro mudar: nada aqui (interno).
+    mexida_a_mao: list[str] = field(default_factory=list)
+
     @property
     def alertas_pendentes(self) -> list[str]:
         """Os alertas que ainda pedem um olhar (ver ConfigPagina.alertas_pendentes)."""
@@ -335,6 +344,18 @@ class ConfigPagina:
     # tamanho - nunca o contrario (o recorte NUNCA e esticado/recentralizado
     # so por causa do tamanho de folha escolhido, que era o bug relatado).
     tamanho_folha_cm: tuple[float, float] | None = None
+
+    # Obra de 26/10/2026, etapa 1 (decisoes D-004 e D-009 do Samuel): as
+    # etapas em que a pessoa mexeu A MAO nesta pagina (codigos de
+    # core/etapas.py: "cortar", "endireitar", "filtro", "marcar", "mover").
+    # Serve para a pergunta "pular as paginas mexidas?" do Automatico (D-004,
+    # etapa 3) e, no projeto gravado antes desta etapa, para o valor a mao
+    # valer com a etapa do automatico desligada (core.etapas.
+    # feito_a_mao_vale). Quem grava: a tela (core.etapas.marcar_mexida_a_mao /
+    # desmarcar_mexida_a_mao) e a migracao (core.etapas.marcar_pelos_valores,
+    # em Projeto.de_dicionario). Projeto antigo nao tem o campo: volta vazio.
+    # Seguro mudar: nada aqui (interno, nunca texto de tela).
+    mexida_a_mao: list[str] = field(default_factory=list)
 
     @property
     def alertas_pendentes(self) -> list[str]:
@@ -626,6 +647,19 @@ class Projeto:
     pdf_em_duas_camadas: bool = False
     margens_mm: list = field(default_factory=lambda: [10.0, 5.0, 10.0, 5.0])
     margens_alinhamento: list = field(default_factory=lambda: ["meio", "meio"])
+    # Obra de 26/10/2026, etapa 1 (decisao D-009 do Samuel, 26/10/2026: "eu
+    # deveria conseguir abrir o livro sem escolher nenhuma opção para fazer
+    # tudo manualmente."): o que a pessoa fez a mao numa pagina (corte, angulo,
+    # filtro, marcacao, mover) vale no PDF MESMO com a etapa do automatico
+    # desligada (core/etapas.py, o lugar unico que o pipeline consulta). Livro
+    # NOVO: True. Projeto gravado antes desta etapa: False (de_dicionario) - la
+    # o valor a mao com a etapa desligada era ignorado, e o PDF dele tem de
+    # sair identico; so vale o que a pessoa mexer de novo pela tela (a marca
+    # ConfigPagina.mexida_a_mao). Nao e opcao da tela: acompanha o projeto.
+    # Arriscado: trocar o setdefault de de_dicionario (o projeto antigo
+    # reaberto mudaria de PDF) ou o padrao do livro novo (D-009 deixaria de
+    # valer).
+    feito_a_mao_sempre_vale: bool = True
 
     folhas: list[ConfigFolha] = field(default_factory=list)
     paginas: list[ConfigPagina] = field(default_factory=list)
@@ -707,6 +741,11 @@ class Projeto:
             and self.total_apagadas == 0
             # item 2.4: as margens iguais mudam a imagem (desligadas, nada muda)
             and not getattr(self, "margens_iguais", False)
+            # obra 26/10, etapa 1 (D-009): o feito a mao que vale (corte,
+            # angulo, filtro, marcacao, mover, dividir/girar a folha) muda a
+            # imagem - o caminho rapido o jogaria fora. Projeto antigo: so as
+            # marcas (sai igual). core/etapas.tem_feito_a_mao_que_vale.
+            and not _tem_feito_a_mao_que_vale(self)
         )
 
     @property
@@ -809,10 +848,27 @@ class Projeto:
         # Item 2.2, G6 (09/10/2026): o projeto gravado antes da ordem nova
         # cortava antes de endireitar - continua assim, ponto por ponto.
         dados.setdefault("ordem_do_preparo", ORDEM_DO_PROJETO_ANTIGO)
+        # Obra de 26/10/2026, etapa 1 (D-009): o projeto gravado antes ignorava
+        # o valor a mao com a etapa desligada - continua assim (o PDF dele sai
+        # identico); so vale o que for mexido de novo pela tela (a marca).
+        dados.setdefault("feito_a_mao_sempre_vale", False)
         projeto = Projeto(**_so_campos_conhecidos(Projeto, dados))
         projeto.folhas = folhas
         projeto.paginas = paginas
+        # ... e a marca "mexida a mao" (D-004) nasce dos valores a mao que ja
+        # existem: no projeto antigo, so onde eles ja valiam (nada muda no PDF)
+        from core.etapas import marcar_pelos_valores
+
+        marcar_pelos_valores(projeto)
         return projeto
+
+
+def _tem_feito_a_mao_que_vale(projeto: "Projeto") -> bool:
+    """core.etapas.tem_feito_a_mao_que_vale (import tardio: core/etapas.py le
+    os campos daqui sem importar este modulo)."""
+    from core.etapas import tem_feito_a_mao_que_vale
+
+    return tem_feito_a_mao_que_vale(projeto)
 
 
 def _alertas_pendentes(item) -> list[str]:

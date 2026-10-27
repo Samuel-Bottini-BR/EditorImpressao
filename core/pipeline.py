@@ -52,6 +52,7 @@ from core import revisar
 from core import claro_no_escuro, cores_scantailor, desentortar_scantailor
 from core import corte_pelo_conteudo   # item 2.5 (so com Projeto.cortar_pelo_conteudo)
 from core import borda_preta           # item 2.13 (so com Projeto.borda_preta)
+from core import etapas                # obra 26/10 etapa 1: "esta etapa vale nesta pagina?" (D-009)
 from core.ordem_do_preparo import endireita_antes, ordem_do_livro
 from core.filtros import (ORIGINAL, PRETO_E_BRANCO, TIRAR_FUNDO, aplicar_filtro,
                           aplicar_filtro_com_selecao, aplicar_so_os_pedacos)
@@ -612,7 +613,7 @@ def _preparar_metade_e_geometria(
                 inteira, recorte, angulo, projeto, pagina, dpi, endireita_antes=True, folha=folha)
         else:
             img, cortou, girar = _preparar_endireitando_antes(inteira, recorte, angulo, projeto,
-                                                              so_a_geometria)
+                                                              so_a_geometria, pagina)
         # juncao de 23/10/2026 (2.14 com o 2.12, os dois desligados de
         # fabrica): com o desentortar, a pagina sai do tamanho do corte, e o
         # pintar de branco vale do mesmo jeito; com o "desentortar aumentando
@@ -653,7 +654,7 @@ def _preparar_metade_e_geometria(
         # (a `inteira`): pinta nela, e o corte e o giro levam junto
         inteira = borda_preta.pintar_fora(inteira, area)
     img = inteira
-    girar = projeto.endireitar and abs(angulo) >= ANGULO_MINIMO
+    girar = etapas.endireita(projeto, pagina) and abs(angulo) >= ANGULO_MINIMO
     if recorte is not None:
         # fatiar (sem copiar) quando vai girar: o rotacionar ja devolve uma
         # imagem nova. Sem giro, copia, como sempre.
@@ -719,7 +720,7 @@ def _desentortar_com_o_papel_em_volta(inteira: np.ndarray, recorte, angulo: floa
     que nao existe no disco, filtro "Tirar o fundo"): o caminho de antes
     (desentorta na resolucao que vier). Ver _desentortada_guardada.
     """
-    girar = projeto.endireitar and abs(angulo) >= ANGULO_MINIMO
+    girar = etapas.endireita(projeto, pagina) and abs(angulo) >= ANGULO_MINIMO
     caixa = None if recorte is None else caixa_em_pontos(inteira.shape, recorte)
     cortou = caixa is not None
     if not girar:
@@ -980,7 +981,8 @@ def _rotacionar_em_volta_de(img: np.ndarray, angulo: float, caixa) -> np.ndarray
 
 
 def _preparar_endireitando_antes(inteira: np.ndarray, recorte, angulo: float,
-                                 projeto: Projeto, so_a_geometria: bool):
+                                 projeto: Projeto, so_a_geometria: bool,
+                                 pagina: ConfigPagina | None = None):
     """A ordem nova (item 2.2, G6, 09/10/2026): endireitar a pagina inteira
     (`inteira`: girada de 90 e dividida, sem corte), depois cortar a pagina
     reta pelo `recorte` (fracao da pagina RETA). Devolve (imagem, cortou,
@@ -994,8 +996,16 @@ def _preparar_endireitando_antes(inteira: np.ndarray, recorte, angulo: float,
     Arriscado: cortar antes de girar aqui (seria a ordem antiga com o
     recorte da nova); girar em volta de outro centro ou com outro tamanho
     (core/zonas_na_folha._matriz_folha_para_pagina supoe o rotacionar).
+
+    pagina (obra 26/10, etapa 1, D-009): para o angulo a mao valer com
+    "Endireitar" desligado (core/etapas.endireita). None (quem chama de
+    fora, sem a pagina): so a caixinha, como antes.
+
+    Ordem obrigatoria (D-016): endireita a pagina inteira, depois corta uma
+    vez so - com o corte e o angulo a mao ou automaticos, igual.
     """
-    girar = projeto.endireitar and abs(angulo) >= ANGULO_MINIMO
+    girar = ((etapas.endireita(projeto, pagina) if pagina is not None
+              else etapas.endireita_sozinho(projeto)) and abs(angulo) >= ANGULO_MINIMO)
     # o endireitar nao muda o tamanho: a caixa do corte e a mesma na pagina
     # inteira e na reta (None = sem corte, ou recorte absurdo: nao corta)
     caixa = None if recorte is None else caixa_em_pontos(inteira.shape, recorte)
@@ -1042,30 +1052,36 @@ def _geometria(base: np.ndarray, pagina: ConfigPagina, projeto: Projeto,
                                              medidas, com_o_corte)
     recorte = None
     automatico = None
-    if projeto.cortar_bordas:
-        if pagina.recorte is None:
-            # o recorte automatico e calculado na metade ja separada: cada
-            # pagina tem sua propria sombra de lombada de um lado so
-            automatico = detectar_bordas(base, dpi=dpi)
-            recorte = automatico.tupla
-            if _corte_sugerido(projeto, pagina):
-                # itens 2.5 e 2.13: o corte do ScanTailor (ou "so o preto"),
-                # medido na pagina ainda torta (nesta ordem o giro vem depois
-                # do corte); a folga do giro entra abaixo, como no corte comum
-                medido = _medir_o_conteudo(base, dpi, dpi_do_scan, automatico.pecas, projeto,
-                                           base if _corta_pela_borda(projeto, pagina) else None)
-                if medidas is not None:
-                    medidas["conteudo"] = medido
-                proprio = medido.recorte_proprio() if _troca_o_corte(projeto, pagina) else None
-                if proprio is not None:
-                    automatico = Recorte(*proprio, pecas=automatico.pecas)
-                    recorte = automatico.tupla
-        else:
-            recorte = tuple(pagina.recorte)
+    # obra 26/10, etapa 1 (D-009): o corte a mao vale com "Cortar as bordas"
+    # desligado tambem (core/etapas.recorte_a_mao); o AUTOMATICO so mede com a
+    # caixinha ligada, como sempre
+    recorte_a_mao = etapas.recorte_a_mao(projeto, pagina)
+    if recorte_a_mao is not None:
+        recorte = recorte_a_mao
+    elif etapas.corta_sozinho(projeto):
+        # o recorte automatico e calculado na metade ja separada: cada
+        # pagina tem sua propria sombra de lombada de um lado so
+        automatico = detectar_bordas(base, dpi=dpi)
+        recorte = automatico.tupla
+        if _corte_sugerido(projeto, pagina):
+            # itens 2.5 e 2.13: o corte do ScanTailor (ou "so o preto"),
+            # medido na pagina ainda torta (nesta ordem o giro vem depois
+            # do corte); a folga do giro entra abaixo, como no corte comum
+            medido = _medir_o_conteudo(base, dpi, dpi_do_scan, automatico.pecas, projeto,
+                                       base if _corta_pela_borda(projeto, pagina) else None)
+            if medidas is not None:
+                medidas["conteudo"] = medido
+            proprio = medido.recorte_proprio() if _troca_o_corte(projeto, pagina) else None
+            if proprio is not None:
+                automatico = Recorte(*proprio, pecas=automatico.pecas)
+                recorte = automatico.tupla
 
     angulo = 0.0
-    if projeto.endireitar:
-        angulo = pagina.angulo_manual
+    # obra 26/10, etapa 1 (D-009): o angulo a mao vale com "Endireitar"
+    # desligado tambem; o automatico so com a caixinha ligada
+    angulo_a_mao = etapas.angulo_a_mao(projeto, pagina)
+    if angulo_a_mao is not None or etapas.endireita_sozinho(projeto):
+        angulo = angulo_a_mao
         if angulo is None:
             cortada = base if recorte is None else fatiar(base, recorte)
             angulo = _angulo_automatico(base, cortada, pagina, projeto, dpi, dpi_do_scan, medidas)
@@ -1152,8 +1168,10 @@ def _geometria_endireitando_antes(base: np.ndarray, pagina: ConfigPagina, projet
     alargar o corte para o giro aqui (a pagina ja esta reta: so cresceria).
     """
     angulo = 0.0
-    if projeto.endireitar:
-        angulo = pagina.angulo_manual
+    # obra 26/10, etapa 1 (D-009): o angulo e o corte a mao valem com as
+    # caixinhas desligadas tambem (core/etapas); o automatico so mede com elas
+    angulo_a_mao = etapas.angulo_a_mao(projeto, pagina)
+    recorte_a_mao = etapas.recorte_a_mao(projeto, pagina)
     cinza = None
 
     def em_cinza():
@@ -1162,20 +1180,21 @@ def _geometria_endireitando_antes(base: np.ndarray, pagina: ConfigPagina, projet
             cinza = base if base.ndim == 2 else cv2.cvtColor(base, cv2.COLOR_BGR2GRAY)
         return cinza
 
-    if projeto.endireitar:
-        angulo = pagina.angulo_manual
+    if angulo_a_mao is not None or etapas.endireita_sozinho(projeto):
+        angulo = angulo_a_mao
         if angulo is None:
-            provisorio = detectar_bordas(em_cinza(), dpi=dpi).tupla if projeto.cortar_bordas else None
+            provisorio = (detectar_bordas(em_cinza(), dpi=dpi).tupla
+                          if etapas.corta_sozinho(projeto) else None)
             cortada = base if provisorio is None else fatiar(base, provisorio)
             angulo = _angulo_automatico(base, cortada, pagina, projeto, dpi, dpi_do_scan, medidas)
         angulo = float(angulo or 0.0)
 
     recorte = None
-    if projeto.cortar_bordas:
-        if pagina.recorte is not None:
-            recorte = tuple(pagina.recorte)
-        elif com_o_corte:
-            girar = projeto.endireitar and abs(angulo) >= ANGULO_MINIMO
+    if recorte_a_mao is not None:
+        recorte = recorte_a_mao
+    elif etapas.corta_sozinho(projeto):
+        if com_o_corte:
+            girar = etapas.endireita(projeto, pagina) and abs(angulo) >= ANGULO_MINIMO
             reta = rotacionar(em_cinza(), angulo) if girar else em_cinza()
             # `girada` (conserto de 13/10/2026): diz ao corte de quanto a
             # pagina foi girada, para a cunha branca do giro nao esconder a
@@ -1315,14 +1334,17 @@ def _chave_da_geometria(folha: ConfigFolha, pagina: ConfigPagina, projeto: Proje
     if arquivo is None:
         return None
     caminho, info = arquivo
-    recorte = None if pagina.recorte is None else tuple(round(float(v), 6) for v in pagina.recorte)
+    # obra 26/10, etapa 1: o corte e o angulo a mao que VALEM nesta pagina
+    # (core/etapas; com a caixinha ligada, os gravados, como sempre)
+    recorte_a_mao = etapas.recorte_a_mao(projeto, pagina)
+    recorte = None if recorte_a_mao is None else tuple(round(float(v), 6) for v in recorte_a_mao)
     dividir = bool(folha.dividir) and pagina.metade != METADE_INTEIRA
     return (
         caminho, info.st_mtime_ns, info.st_size, int(projeto.qualidade_dpi),
         folha.indice, int(folha.rotacao) % 360,
         dividir, round(float(folha.posicao_corte), 6) if dividir else None,
         pagina.metade if dividir else None, bool(projeto.cortar_bordas),
-        bool(projeto.endireitar), recorte, pagina.angulo_manual,
+        bool(projeto.endireitar), recorte, etapas.angulo_a_mao(projeto, pagina),
         faixa_da_sobra(folha, pagina, projeto),        # item 2.1
         endireitar_scantailor.jeito_da_pagina(projeto, pagina),   # item 2.2
         ordem_do_livro(projeto),                       # item 2.2, G6
@@ -1411,11 +1433,16 @@ def angulo_da_pagina(projeto: Projeto, pagina: ConfigPagina) -> float | None:
     automatico ja medido nesta sessao (_GEOMETRIAS). None quando o automatico
     ainda nao foi medido (a previa mede). Item 2.2 (G5): e o numero da aba
     Endireitar e a base dos ajustes a mao (setas, alca, linha-guia). Abaixo
-    de ANGULO_MINIMO a pagina nao gira (angulo_aplicado)."""
-    if not projeto.endireitar:
+    de ANGULO_MINIMO a pagina nao gira (angulo_aplicado).
+
+    Obra 26/10, etapa 1 (D-009): o angulo a mao vale com o endireitar
+    desligado tambem (core/etapas.angulo_a_mao); sem ele e com a caixinha
+    desligada, 0."""
+    angulo_a_mao = etapas.angulo_a_mao(projeto, pagina)
+    if angulo_a_mao is not None:
+        return float(angulo_a_mao)
+    if not etapas.endireita_sozinho(projeto):
         return 0.0
-    if pagina.angulo_manual is not None:
-        return float(pagina.angulo_manual)
     if not 0 <= pagina.folha < len(projeto.folhas):
         return None
     geometria = _geometria_guardada(projeto.folhas[pagina.folha], pagina, projeto)
@@ -1434,7 +1461,7 @@ def _usa_o_endireitar_do_scantailor(projeto: Projeto, pagina: ConfigPagina) -> b
     """A conta do ScanTailor entra nesta pagina (a dela ou a do livro, para o
     C1)? So com o endireitar ligado e o angulo automatico."""
     es = endireitar_scantailor
-    return (bool(projeto.endireitar) and pagina.angulo_manual is None
+    return (etapas.endireita_sozinho(projeto) and etapas.angulo_a_mao(projeto, pagina) is None
             and es.JEITO_SCANTAILOR in (es.jeito_da_pagina(projeto, pagina), es.jeito_do_livro(projeto)))
 
 
@@ -1791,7 +1818,7 @@ def _corte_do_livro(folha: ConfigFolha, pagina: ConfigPagina, projeto: Projeto,
     if not _troca_o_corte(projeto, pagina):
         return recorte                      # item 2.14: pinta, nao corta
     final = corte_pelo_conteudo.em_fracao(caixa, medido.medida.largura, medido.medida.altura)
-    if not endireita_antes(projeto) and projeto.endireitar and abs(angulo) >= ANGULO_MINIMO:
+    if not endireita_antes(projeto) and etapas.endireita(projeto, pagina) and abs(angulo) >= ANGULO_MINIMO:
         final = alargar_para_o_giro(Recorte(*final, pecas=medido.pecas), angulo, inteira).tupla
     return final
 
@@ -1934,7 +1961,7 @@ def medir_conteudo_do_livro(projeto: Projeto, doc=None, progresso: Progresso = N
             base = preparar_para_recorte(img_folha, folha, pagina, projeto)
             cinza = base if base.ndim == 2 else cv2.cvtColor(base, cv2.COLOR_BGR2GRAY)
             cunha_preta = base if _corta_pela_borda(projeto, pagina) else None
-            if endireita_antes(projeto) and projeto.endireitar:
+            if endireita_antes(projeto) and etapas.endireita(projeto, pagina):
                 angulo = angulo_da_pagina(projeto, pagina)
                 if angulo is None:
                     angulo = _geometria(base, pagina, projeto, dpi=dpi, dpi_do_scan=dpi_do_scan,
@@ -1985,8 +2012,10 @@ def acertar_avisos_do_corte(projeto: Projeto) -> None:
 
 def _precisa_de_geometria(pagina: ConfigPagina, projeto: Projeto) -> bool:
     """Ha corte ou angulo automatico a calcular nesta pagina?"""
-    return ((projeto.cortar_bordas and pagina.recorte is None)
-            or (projeto.endireitar and pagina.angulo_manual is None))
+    # obra 26/10, etapa 1: o automatico de cada etapa, onde nao ha valor a
+    # mao que valha (core/etapas; com a caixinha ligada, a conta de sempre)
+    return ((etapas.corta_sozinho(projeto) and etapas.recorte_a_mao(projeto, pagina) is None)
+            or (etapas.endireita_sozinho(projeto) and etapas.angulo_a_mao(projeto, pagina) is None))
 
 
 def escolha_da_gravura(projeto: Projeto,
@@ -2185,10 +2214,14 @@ def garantir_selecao(projeto: Projeto, pagina: ConfigPagina, img: np.ndarray,
     por igualdade em vez de identidade (uma marcacao igual de outra origem
     passaria) ou gravar sem conferir.
     """
-    from core.selecao import MAO, Selecao
+    from core.selecao import MAO
 
-    if not projeto.detectar_regioes:
-        return Selecao()
+    if not etapas.marca_sozinho(projeto):
+        # obra 26/10, etapa 1 (D-009): sem o AUTOMATICO da marcacao ("Limpar a
+        # folha" + "Procurar gravura e letra"), nada e procurado, mas a
+        # marcacao feita A MAO vale (core/etapas.marcacao_a_mao; vazia no
+        # projeto antigo sem a marca - como antes, que devolvia vazia)
+        return etapas.marcacao_a_mao(projeto, pagina)
 
     lida = pagina.selecao          # a lista de agora (ver a corrida, acima)
     antiga = pagina.obter_selecao()
@@ -2289,7 +2322,9 @@ def usa_tirar_fundo(projeto: Projeto, pagina: ConfigPagina) -> bool:
     False - ela sai toda branca (_filtrar), e tirar o fundo dela seria
     trabalho jogado fora.
     """
-    return bool(projeto.limpar and projeto.tem_camadas and pagina.filtro == TIRAR_FUNDO
+    # obra 26/10, etapa 1: o filtro que VALE (core/etapas.filtro_que_vale: o
+    # da pagina com "Limpar a folha" ligado, ou escolhido a mao)
+    return bool(projeto.tem_camadas and etapas.filtro_que_vale(projeto, pagina) == TIRAR_FUNDO
                 and not getattr(pagina, "em_branco", False))
 
 
@@ -2540,8 +2575,8 @@ def precisa_do_desenho_do_pdf(projeto: Projeto, pagina: ConfigPagina) -> bool:
     Para ui/tarefas.GerenciadorPrevias.pedir_medida. Barato: so le campos."""
     if pagina.apagada or getattr(pagina, "em_branco", False):
         return False
-    provisoria = bool(getattr(pagina, "marcacao_provisoria", False) and projeto.limpar
-                      and projeto.detectar_regioes and pagina.filtro != TIRAR_FUNDO)
+    provisoria = bool(getattr(pagina, "marcacao_provisoria", False) and etapas.marca_sozinho(projeto)
+                      and pagina.filtro != TIRAR_FUNDO)
     return provisoria or precisa_medir_para_revisar(projeto, pagina)
 
 
@@ -2621,9 +2656,10 @@ def _entradas_do_preparo(folha: ConfigFolha, pagina: ConfigPagina, projeto: Proj
     divisao, o corte e o angulo, a mao ou automaticos). Se mudar enquanto a
     tarefa calcula, a geometria calculada ja nao vale (converter_zonas_do_livro).
     Seguro: acrescentar campos. Arriscado: tirar algum."""
-    recorte = None if pagina.recorte is None else tuple(float(v) for v in pagina.recorte)
+    recorte_a_mao = etapas.recorte_a_mao(projeto, pagina)     # obra 26/10, etapa 1
+    recorte = None if recorte_a_mao is None else tuple(float(v) for v in recorte_a_mao)
     return (int(folha.rotacao) % 360, bool(folha.dividir), float(folha.posicao_corte),
-            pagina.metade, int(pagina.folha), recorte, pagina.angulo_manual,
+            pagina.metade, int(pagina.folha), recorte, etapas.angulo_a_mao(projeto, pagina),
             bool(projeto.cortar_bordas), bool(projeto.endireitar), int(projeto.qualidade_dpi),
             faixa_da_sobra(folha, pagina, projeto),       # item 2.1
             endireitar_scantailor.jeito_da_pagina(projeto, pagina))   # item 2.2
@@ -2723,7 +2759,7 @@ def _vai_detectar(projeto: Projeto, pagina: ConfigPagina, dpi_pedido: float | No
     trocar de filtro - por isso o Original NAO fica de fora aqui.
     dpi_pedido: a resolucao do desenho; no do tamanho do PDF a marcacao
     provisoria (a da previa) tambem e procurada de novo (13/10/2026)."""
-    if not (projeto.limpar and pagina.filtro != TIRAR_FUNDO and projeto.detectar_regioes):
+    if not (etapas.marca_sozinho(projeto) and pagina.filtro != TIRAR_FUNDO):
         return False
     if not pagina.selecao or _gravura_a_refazer(projeto, pagina):
         return True
@@ -2743,7 +2779,7 @@ def _vai_limpar_pelo_scantailor(projeto: Projeto, pagina: ConfigPagina) -> bool:
     """_filtrar vai usar o limpar pontinhos do ScanTailor nesta pagina (o
     Preto e branco com "pouco", "normal" ou "muito")? So serve para medir o
     DPI de verdade so quando precisa. Errar para "sim" so custa milissegundos."""
-    return bool(projeto.limpar and pagina.filtro == PRETO_E_BRANCO
+    return bool(etapas.filtro_que_vale(projeto, pagina) == PRETO_E_BRANCO
                 and (pontinhos_scantailor.escolha_da_pagina(projeto, pagina)
                      in pontinhos_scantailor.DO_SCANTAILOR
                      or _jeito_do_scantailor(pagina)))
@@ -2912,10 +2948,26 @@ def _filtrar_a_pagina(projeto: Projeto, pagina: ConfigPagina, img: np.ndarray,
     assim mudaria o PDF. Se o Samuel quiser o contrario, a mudanca e aqui (e
     na tela, para o pedaco aparecer). Coberto por
     tests/test_so_neste_pedaco_no_original.py.
+
+    MUDOU na obra de 26/10/2026, etapa 1 (decisao D-009 do Samuel: "eu deveria
+    conseguir abrir o livro sem escolher nenhuma opção para fazer tudo
+    manualmente."): o paragrafo acima vale so para o PROJETO ANTIGO
+    (Projeto.feito_a_mao_sempre_vale False) sem a marca "mexida a mao". No
+    livro novo, com "Limpar a folha" desligado:
+      - pagina sem nada a mao: sai como veio (como sempre);
+      - filtro escolhido a mao na pagina (core/etapas.filtro_a_mao): o
+        caminho inteiro abaixo, com esse filtro e so a marcacao a mao (o
+        automatico da marcacao fica desligado: garantir_selecao);
+      - so marcacao a mao ("so neste pedaco", "pintar por cima"...): a pagina
+        fica no Original e so o marcado muda (_so_a_marcacao_a_mao).
+    Arriscado: deixar o filtro do livro (escondido na tela de opcoes) valer
+    numa pagina que ninguem mexeu - por isso filtro_que_vale.
     """
-    if not projeto.limpar:
+    if not etapas.filtra(projeto, pagina):
         _tirar_avisos_do_so_as_letras(projeto, pagina)
         return img, False
+    if not projeto.limpar and not etapas.filtro_a_mao(projeto, pagina):
+        return _so_a_marcacao_a_mao(projeto, pagina, img)
     invertida = claro_no_escuro.ligado(pagina) and pagina.filtro not in (ORIGINAL, TIRAR_FUNDO)
     entrada = claro_no_escuro.inverter(img) if invertida else img
     saida, monocromatica = _filtrar_preto_no_branco(projeto, pagina, entrada, dpi, dpi_do_scan,
@@ -2932,6 +2984,27 @@ def _filtrar_a_pagina(projeto: Projeto, pagina: ConfigPagina, img: np.ndarray,
         if com_cor is not None:
             saida, monocromatica = com_cor
     return (claro_no_escuro.inverter(saida) if invertida else saida), monocromatica
+
+
+def _so_a_marcacao_a_mao(projeto: Projeto, pagina: ConfigPagina,
+                         img: np.ndarray) -> tuple[np.ndarray, bool]:
+    """A pagina no Original com so o que foi marcado A MAO por cima (obra de
+    26/10/2026, etapa 1, D-009): "Limpar a folha" desligado, o filtro da
+    pagina nao foi escolhido a mao, mas ha marcacao a mao que vale (um pedaco
+    com filtro proprio, "pintar por cima", "tinta preta, fundo original"...).
+    E o mesmo caminho da pagina em Original com marcacao (aplicar_filtro_com_
+    selecao no ORIGINAL, que so mexe nos pedacos com filtro, e
+    editar_zonas.aplicar_por_cima). Sem pedaco nem zona, a pagina sai como
+    veio. Arriscado: passar aqui pelo filtro da pagina (o do livro, que
+    ninguem escolheu nesta pagina)."""
+    selecao = etapas.marcacao_a_mao(projeto, pagina)
+    _tirar_avisos_do_so_as_letras(projeto, pagina)
+    saida, monocromatica = aplicar_filtro_com_selecao(
+        img, ORIGINAL, selecao, pagina.forca_preto, pagina.clareza_melhorar,
+        pagina.intensidade_magico, algoritmo_pb=pagina.algoritmo_preto_branco)
+    return editar_zonas.aplicar_por_cima(img, saida, monocromatica, selecao,
+                                         pagina.forca_preto, pagina.algoritmo_preto_branco,
+                                         preto_e_branco=False)
 
 
 def filtro_com_as_caixinhas(img: np.ndarray, pagina: ConfigPagina, filtro: str, dpi: float,
@@ -3099,7 +3172,7 @@ def precisa_medir_para_revisar(projeto: Projeto, pagina: ConfigPagina) -> bool:
     branco com "So as letras" num jeito que usa o leitor de texto, e nao foi
     deixada em branco nem apagada). Para a tela saber se pede a medida por
     tras (ui/tarefas.GerenciadorPrevias.pedir_medida). Barato: so le campos."""
-    if (not projeto.limpar or pagina.filtro != PRETO_E_BRANCO or pagina.apagada
+    if (etapas.filtro_que_vale(projeto, pagina) != PRETO_E_BRANCO or pagina.apagada
             or getattr(pagina, "em_branco", False)):
         return False
     opcoes = misto.opcoes_da_pagina(projeto, pagina)
@@ -3119,9 +3192,10 @@ def _chave_das_linhas(projeto: Projeto, pagina: ConfigPagina):
     arquivo = _chave_do_arquivo(projeto.caminho_entrada, folha)
     if arquivo is None:
         return None
-    recorte = tuple(round(float(v), 4) for v in pagina.recorte) if pagina.recorte else None
+    recorte_a_mao = etapas.recorte_a_mao(projeto, pagina)     # obra 26/10, etapa 1
+    recorte = tuple(round(float(v), 4) for v in recorte_a_mao) if recorte_a_mao else None
     return (arquivo, pagina.metade, folha.rotacao, folha.dividir,
-            round(float(folha.posicao_corte), 4), recorte, pagina.angulo_manual,
+            round(float(folha.posicao_corte), 4), recorte, etapas.angulo_a_mao(projeto, pagina),
             projeto.dividir_folhas, projeto.cortar_bordas, projeto.endireitar,
             faixa_da_sobra(folha, pagina, projeto))       # item 2.1
 
@@ -3292,8 +3366,9 @@ def acertar_aviso_do_reforco(projeto: Projeto, pagina: ConfigPagina) -> None:
     if pagina.forca_antes_do_reforco is not None and int(pagina.forca_preto) != FORCA_DO_REFORCO:
         pagina.forca_antes_do_reforco = None
         pagina.reforco_desfeito = True
-    vale = bool(pagina.forca_antes_do_reforco is not None and projeto.limpar
-                and pagina.filtro == PRETO_E_BRANCO and not getattr(pagina, "em_branco", False))
+    vale = bool(pagina.forca_antes_do_reforco is not None
+                and etapas.filtro_que_vale(projeto, pagina) == PRETO_E_BRANCO
+                and not getattr(pagina, "em_branco", False))
     tem = analise.FORCA_REFORCADA in pagina.alertas
     if vale and not tem:
         pagina.alertas = [analise.FORCA_REFORCADA] + pagina.alertas
@@ -3404,7 +3479,7 @@ def _acertar_alerta_do_misto(projeto: Projeto, pagina: ConfigPagina) -> None:
     aviso antigo ("Tinta forte fora do texto"), que sai de qualquer pagina:
     desde 12/10/2026 ninguem mais o poe, e o projeto salvo antes ainda o tem."""
     opcoes = (misto.opcoes_da_pagina(projeto, pagina)
-              if projeto.limpar and pagina.filtro == PRETO_E_BRANCO else None)
+              if etapas.filtro_que_vale(projeto, pagina) == PRETO_E_BRANCO else None)
     if opcoes is None or not opcoes.precisa_das_linhas:
         if (pagina.faixa_na_beirada is not None
                 or any(a in _AVISOS_QUE_SAEM for a in pagina.alertas)):
@@ -3505,7 +3580,7 @@ def _misto_vale(projeto: Projeto, pagina: ConfigPagina) -> bool:
     """A pagina vai sair pelo Misto ("So as letras")? A MESMA conta de
     _filtrar: "Limpar a folha" ligado, filtro Preto e branco e "So as letras"
     valendo nela (dela ou do livro). Barato (so le campos)."""
-    return bool(getattr(projeto, "limpar", True) and pagina.filtro == PRETO_E_BRANCO
+    return bool(etapas.filtro_que_vale(projeto, pagina) == PRETO_E_BRANCO
                 and misto.opcoes_da_pagina(projeto, pagina) is not None)
 
 
@@ -3568,8 +3643,12 @@ def _tem_pedaco_com_filtro(projeto: Projeto, pagina: ConfigPagina) -> bool:
     nao, como no Original (garantir_selecao devolve a marcacao vazia): sem
     ele a aba Marcar nem aparece, e um pedaco que ficou guardado mudaria o
     PDF sem poder ser visto. Arriscado: tirar esta condicao."""
-    if not projeto.detectar_regioes or not pagina.selecao:
+    if not pagina.selecao:
         return False
+    if not projeto.detectar_regioes:
+        # obra 26/10, etapa 1 (D-009): o pedaco e feito a mao - vale no livro
+        # novo (no projeto antigo, so com a marca: core/etapas)
+        return etapas.tem_pedaco_a_mao(projeto, pagina)
     return bool(pagina.obter_selecao().filtros_pedidos())
 
 
@@ -3688,11 +3767,11 @@ def renderizar_pagina_para_recorte(
     folha = projeto.folhas[pagina.folha]
     img_folha = pagina_para_array(doc, folha.indice, dpi=dpi)
     base = preparar_para_recorte(img_folha, folha, pagina, projeto)
-    if not endireita_antes(projeto) or not projeto.endireitar:
+    if not endireita_antes(projeto) or not etapas.endireita(projeto, pagina):
         return base
     grande = img_folha if dpi == projeto.qualidade_dpi else None
     geometria = _geometria_da_folha_como_veio(doc, folha, pagina, projeto, grande)
-    angulo = pagina.angulo_manual if geometria is None else geometria[1]
+    angulo = etapas.angulo_a_mao(projeto, pagina) if geometria is None else geometria[1]
     return rotacionar(base, angulo_aplicado(angulo))
 
 
@@ -4028,10 +4107,18 @@ def _pagina_pronta(projeto: Projeto, doc, folha: ConfigFolha, pagina: ConfigPagi
     # `avaliar.py` (a regua de qualidade dos filtros) e padding ali
     # contaminaria as metricas. Sem `tamanho_folha_cm` (None, o padrao)
     # devolve `img` sem nenhuma alteracao - comportamento de sempre.
+    #
+    # Obra 26/10, etapa 1 (D-008/D-009): o conteudo movido ou redimensionado A
+    # MAO chega ao PDF tambem sem tamanho de folha, e nunca e jogado fora por
+    # 1 ponto de arredondamento (core/etapas.conteudo_mexido; projeto antigo
+    # sem a marca: a conta de sempre). Vem depois do filtro e das margens: a
+    # pagina pronta e que anda (a montagem continua endireitar -> cortar ->
+    # filtro, D-016).
     img = compor_na_folha(
         img, pagina.tamanho_folha_cm, projeto.qualidade_dpi,
         escala=pagina.conteudo_escala,
         deslocamento=pagina.conteudo_deslocamento,
+        mexido_a_mao=etapas.conteudo_mexido(projeto, pagina),
     )
     return img, mono
 
@@ -4410,6 +4497,12 @@ def resumo_em_portugues(projeto: Projeto, total_folhas: int) -> str:
     if getattr(projeto, "margens_iguais", False):
         # item 2.4 (as margens do ScanTailor)
         partes.append("deixar todas as páginas do tamanho da maior, com margens iguais")
+    # obra 26/10, etapa 1 (D-009): o que foi feito a mao numa etapa desligada
+    # tambem vai para o PDF - o resumo diz (so aparece quando ha)
+    a_mao = len(etapas.paginas_a_mao_fora_do_automatico(projeto))
+    if a_mao:
+        partes.append("manter o que você fez à mão em "
+                      + ("1 página" if a_mao == 1 else f"{a_mao} páginas"))
     if projeto.montar_cadernos:
         partes.append(f"montar cadernos de {projeto.paginas_por_caderno} páginas")
 
