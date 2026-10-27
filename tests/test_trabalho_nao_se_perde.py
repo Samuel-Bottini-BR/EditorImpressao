@@ -1131,7 +1131,14 @@ def test_projeto_antigo_nao_esc_e_x_nao_mudam_nada(janela, pasta, como):
     assert not janela.avisos
     janela.close()
     depois = json.loads(estado.read_text(encoding="utf-8"))
-    assert depois["paginas"] == paginas_antes, "o trabalho mudou sem a pessoa dizer Sim"
+    # Obra 26/10, etapa 4 (D-007): o livro dividido nao abre mais no Dividir (a
+    # folha inteira), e sim numa pagina - desenhar a pagina anota ONDE ela foi
+    # medida (geometria_das_zonas, nota interna das marcacoes, sem marcacao
+    # nenhuma aqui). Isso nao e trabalho da pessoa: fica fora da comparacao.
+    def _trabalho(paginas):
+        return [{k: v for k, v in p.items() if k != "geometria_das_zonas"} for p in paginas]
+
+    assert _trabalho(depois["paginas"]) == _trabalho(paginas_antes),         "o trabalho mudou sem a pessoa dizer Sim"
     assert depois["perguntou_fundo"] is True, "Esc/X/Nao nao contou como perguntado"
 
 
