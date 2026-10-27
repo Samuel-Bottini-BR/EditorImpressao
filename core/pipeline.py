@@ -2779,7 +2779,7 @@ def renderizar_pagina(
     if _vai_detectar(projeto, pagina, dpi) or _vai_limpar_pelo_scantailor(projeto, pagina):
         dpi_desenho = _dpi_do_desenho(doc, folha.indice, img_folha)
         dpi_scan = _dpi_do_scan(doc, folha)
-    _tirar_o_em_branco_falso(projeto, folha, pagina, img_folha, dpi)   # etapa 9c
+    _acertar_o_em_branco(projeto, folha, pagina, img_folha, dpi)   # etapas 9c e 9d (D-497)
     img, desenho = _preparar_metade_e_geometria(img_folha, folha, pagina, projeto, dpi=dpi)
     _acompanhar_as_zonas(pagina, desenho)
     return _filtrar(projeto, pagina, img, dpi_desenho, dpi_scan, dpi_pedido=dpi)
@@ -2789,27 +2789,98 @@ def _tirar_o_em_branco_falso(projeto: Projeto, folha: ConfigFolha, pagina: Confi
                              img_folha: np.ndarray, dpi: float) -> None:
     """Tira o aviso "Parece em branco" da pagina que, como esta dividida
     AGORA, tem conteudo (etapa 9c da obra, 26/10/2026; D-271, D-288; teste do
-    Kaique, "La vida eterna" pagina 7, lista unica 5.7).
+    Kaique, "La vida eterna" pagina 7, lista unica 5.7). Desde a etapa 9d e a
+    metade "tirar" de _acertar_o_em_branco (que tambem poe o aviso na pagina
+    que ficou branca depois de mudar a divisao, D-497); fica com este nome
+    para quem ja chamava.
 
     O aviso e decidido uma vez, na analise (_analisar_a_folha), na metade da
     folha que a analise dividiu. Quando a divisao muda depois (a pessoa
     arrasta a linha; o ScanTailor tinha dividido a folha 4 do "La vida
     eterna" a 10%, na linha escura da beirada, e a pagina 7 era uma tira de
-    margem), a pagina passa a ter o texto e o aviso ficava - falso.
+    margem), a pagina passa a ter o texto e o aviso ficava - falso."""
+    _acertar_o_em_branco(projeto, folha, pagina, img_folha, dpi)
 
-    Aqui a pagina e medida de novo pela MESMA conta da analise
-    (analise.parece_em_branco), na MESMA etapa (girada e dividida, sem corte
-    nem giro do endireitar: preparar_para_recorte) e na MESMA escala
-    (DPI_ANALISE: o desenho maior e reduzido antes). Pagina branca de verdade
-    mede igual a analise e fica com o aviso. So TIRA, nunca poe: o aviso
-    tirado pela pessoa ("esta bom assim", "tirar da lista") nao pode voltar.
-    Desenho menor que o da analise (o do arrasto, 55 DPI): nao mede (a letra
-    miuda some e a conta nao vale). Barato: so roda na pagina com o aviso.
+
+# Etapa 9d da obra (D-497, escolha da gerente, 27/10/2026, apoiada em "nunca
+# bloquear" e no aviso de folha que some): "Página que fica branca depois de
+# mudar a divisão ganha o aviso 'Parece em branco', a não ser que a pessoa já
+# tenha dito 'está certo' nesse aviso daquela página (o aviso que ela tirou
+# não volta)." Pergunta 2 da etapa 9c.
+#
+# "Depois de mudar a divisao" = a folha tem a marca "mexida a mao" do Dividir
+# (core/etapas.DIVIDIR: "dividir esta", "nao dividir esta", mover a linha; o
+# Automatico tira a marca e mede os avisos ele mesmo) e a pagina ainda nao foi
+# medida com a divisao de AGORA nesta sessao. A divisao medida fica pendurada
+# na pagina, num atributo SOLTO (_ATRIBUTO_DA_DIVISAO_MEDIDA, fora dos campos:
+# nao vai para o projeto.json, como as marcas do aviso): ao reabrir o livro, a
+# pagina de uma folha mexida e medida uma vez de novo (o aviso que a pessoa
+# aceitou continua sem voltar: ele mora em alertas_aceitos, no disco).
+# "Esta certo" = o codigo em ConfigPagina.alertas_aceitos ("está bom" no
+# motivo). A pagina "Deixar em branco" ou tirada do livro nao mede. O livro em
+# que o "Parece em branco" ja e aviso do livro inteiro (D-522) nao ganha aviso
+# por pagina.
+# Seguro mudar: o que entra na assinatura (_divisao_da_pagina). Arriscado:
+# medir toda pagina de todo livro (a conta e a mesma da analise, ~10 ms, mas
+# na pagina NAO mexida o aviso e o da analise e nao deve mudar sozinho).
+_ATRIBUTO_DA_DIVISAO_MEDIDA = "_em_branco_medido_com"
+
+
+def _divisao_da_pagina(folha: ConfigFolha, pagina: ConfigPagina) -> tuple:
+    """O que identifica a divisao de agora desta pagina (para saber se ela ja
+    foi medida assim): a folha dividida ou nao, a linha, o giro de 90, a metade
+    e a tampa do scanner (D-495). So le campos."""
+    tampa = getattr(folha, "tampa_do_scanner", None) or ()
+    return (bool(folha.dividir), round(float(folha.posicao_corte), 4),
+            int(folha.rotacao or 0) % 360, str(pagina.metade),
+            tuple(round(float(v), 4) for v in tampa))
+
+
+def precisa_medir_o_em_branco(projeto: Projeto, pagina: ConfigPagina) -> bool:
+    """A pagina pode ganhar o "Parece em branco" por ter mudado a divisao
+    (D-497) e ainda nao foi medida assim? Ver o comentario acima. Barato (so
+    le campos): para a tela (etapa 7) saber se pede a medida
+    (medir_o_em_branco) depois de dividir, juntar ou mover a linha."""
+    if pagina.apagada or getattr(pagina, "em_branco", False):
+        return False
+    if analise.EM_BRANCO in pagina.alertas:
+        return False                     # ja tem (a medida que TIRA e a da etapa 9c)
+    if analise.EM_BRANCO in (getattr(pagina, "alertas_aceitos", None) or []):
+        return False                     # a pessoa ja disse "está certo" neste aviso
+    if analise.e_observacao_do_livro(getattr(projeto, "observacoes", None), analise.EM_BRANCO):
+        return False                     # D-522: ja e aviso do livro inteiro
+    if not 0 <= pagina.folha < len(projeto.folhas):
+        return False
+    folha = projeto.folhas[pagina.folha]
+    if folha.apagada or not etapas.mexida_a_mao(projeto, folha, etapas.DIVIDIR):
+        return False
+    return getattr(pagina, _ATRIBUTO_DA_DIVISAO_MEDIDA, None) != _divisao_da_pagina(folha, pagina)
+
+
+def _acertar_o_em_branco(projeto: Projeto, folha: ConfigFolha, pagina: ConfigPagina,
+                         img_folha: np.ndarray, dpi: float) -> bool:
+    """O "Parece em branco" da pagina como ela esta dividida AGORA. Devolve
+    True se o aviso mudou.
+
+    - TIRA o aviso da pagina que passou a ter conteudo (etapa 9c; ver
+      _tirar_o_em_branco_falso);
+    - POE o aviso na pagina que ficou branca depois de mudar a divisao, a nao
+      ser que a pessoa ja tenha dito "está certo" nele (etapa 9d, D-497;
+      precisa_medir_o_em_branco).
+
+    A medida e a MESMA conta da analise (analise.parece_em_branco), na MESMA
+    etapa (girada e dividida, sem corte nem giro do endireitar:
+    preparar_para_recorte) e na MESMA escala (DPI_ANALISE: o desenho maior e
+    reduzido antes). Desenho menor que o da analise (a previa de 110 DPI, o
+    arrasto de 55): nao mede (a letra miuda some e a conta nao vale). Barato:
+    so roda na pagina com o aviso ou na que precisa_medir_o_em_branco.
     Arriscado: medir na pagina cortada ou endireitada (os cantos do giro e a
     borda mudam a conta) ou em outra escala (o limite foi medido a 150 DPI).
     Nunca derruba a previa: um erro aqui deixa o aviso como estava."""
-    if analise.EM_BRANCO not in pagina.alertas or dpi < DPI_ANALISE * 0.95:
-        return
+    tem = analise.EM_BRANCO in pagina.alertas
+    por_dividir = precisa_medir_o_em_branco(projeto, pagina)
+    if not (tem or por_dividir) or dpi < DPI_ANALISE * 0.95:
+        return False
     try:
         metade = preparar_para_recorte(img_folha, folha, pagina, projeto)
         if dpi > DPI_ANALISE * 1.05:
@@ -2817,11 +2888,33 @@ def _tirar_o_em_branco_falso(projeto: Projeto, folha: ConfigFolha, pagina: Confi
             metade = cv2.resize(metade, (max(1, round(metade.shape[1] * fator)),
                                          max(1, round(metade.shape[0] * fator))),
                                 interpolation=cv2.INTER_AREA)
-        if not analise.parece_em_branco(metade):
-            pagina.alertas = [a for a in pagina.alertas if a != analise.EM_BRANCO]
+        branca = analise.parece_em_branco(metade)
     except Exception:  # noqa: BLE001 - o aviso fica como estava; a previa segue
         _log.exception("nao consegui medir de novo o 'parece em branco' da pagina %s",
                        pagina.indice + 1)
+        return False
+    setattr(pagina, _ATRIBUTO_DA_DIVISAO_MEDIDA, _divisao_da_pagina(folha, pagina))
+    if tem and not branca:
+        pagina.alertas = [a for a in pagina.alertas if a != analise.EM_BRANCO]
+        return True
+    if por_dividir and branca:
+        pagina.alertas = [*pagina.alertas, analise.EM_BRANCO]     # lista nova (outro fio le)
+        return True
+    return False
+
+
+def medir_o_em_branco(doc, projeto: Projeto, pagina: ConfigPagina) -> bool:
+    """O que a tela chama (etapa 7, D-497), por tras, depois de dividir,
+    juntar ou mover a linha de uma folha: desenha a folha na escala da
+    analise (DPI_ANALISE, uma por vez) e acerta o "Parece em branco" da
+    pagina (_acertar_o_em_branco). Devolve True se o aviso mudou (a tela
+    redesenha a lista do "Para revisar"). Sem nada a medir, nao desenha nada.
+    Arriscado: chamar no fio da tela (leva uns decimos de segundo)."""
+    if analise.EM_BRANCO not in pagina.alertas and not precisa_medir_o_em_branco(projeto, pagina):
+        return False
+    folha = projeto.folhas[pagina.folha]
+    img_folha = pagina_para_array(doc, folha.indice, dpi=DPI_ANALISE)
+    return _acertar_o_em_branco(projeto, folha, pagina, img_folha, DPI_ANALISE)
 
 
 def precisa_do_desenho_do_pdf(projeto: Projeto, pagina: ConfigPagina) -> bool:
@@ -3872,7 +3965,7 @@ def _cor_valeria_sem_o_misto(projeto: Projeto, pagina: ConfigPagina) -> bool:
                 and projeto.filtro_padrao == PRETO_E_BRANCO
                 and analise.EM_BRANCO not in pagina.alertas
                 and analise.OBSERVACOES[analise.COR] not in observacoes
-                and analise.OBSERVACOES[analise.EM_BRANCO] not in observacoes)
+                and not analise.e_observacao_do_livro(observacoes, analise.EM_BRANCO))
 
 
 def acertar_alertas_de_cor(projeto: Projeto,

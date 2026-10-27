@@ -421,3 +421,240 @@ def test_reversao_d528_no_automatico_tambem(tmp_path):
     # B (x 0,75..0,85 da folha) na página da direita
     bx0, bx1 = (0.75 - corte) / (1 - corte), (0.85 - corte) / (1 - corte)
     assert _escuro(pag_dir, bx0 + 0.02, 0.23, bx1 - 0.02, 0.34) < 0.01
+
+
+# =============================================================================
+# Item 6 - D-522: muitas páginas em branco viram UM aviso do livro (núcleo)
+# =============================================================================
+
+def _pagina_de_texto() -> np.ndarray:
+    img = np.full((1400, 1000), 245, np.uint8)
+    for y in range(200, 1200, 45):
+        img[y:y + 14, 120:880] = 25
+    return img
+
+
+def _pagina_branca() -> np.ndarray:
+    return np.full((1400, 1000), 245, np.uint8)
+
+
+def _livro_de_paginas(tmp_path, brancas: int, total: int = 10):
+    """Livro novo de `total` folhas de uma página só (sem dividir), `brancas`
+    delas sem nada (os versos em branco)."""
+    from core import pipeline
+    from modelos import Projeto
+
+    paginas = [_pagina_branca() if i % 2 == 1 and i // 2 < brancas else _pagina_de_texto()
+               for i in range(total)]
+    faltam = brancas - sum(1 for p in paginas if p.min() > 200)
+    for i in range(total - 1, -1, -1):                 # completa, se faltar
+        if faltam <= 0:
+            break
+        if paginas[i].min() < 200:
+            paginas[i] = _pagina_branca()
+            faltam -= 1
+    caminho = _pdf_sintetico(tmp_path / f"livro{brancas}.pdf", paginas)
+    projeto = Projeto(caminho_entrada=str(caminho), nome="livro",
+                      caminho_saida=str(tmp_path / "saida.pdf"))
+    projeto.dividir_folhas = False
+    return pipeline.analisar_projeto(projeto)
+
+
+def test_reversao_d522_metade_das_paginas_brancas_vira_um_aviso_do_livro(tmp_path):
+    """D-522 (Central, `pd-versos-em-branco`, 27/10/2026: "Juntar num aviso só
+    do livro quando forem muitas"; "muitas" = 40% ou mais das páginas). Prova
+    do Livro: "Livro com metade das páginas brancas → 1 aviso do livro e nenhum
+    por página". No código antigo o aviso do livro só vinha com 70%: com 5 de
+    10 brancas, eram 5 avisos "Parece em branco" (um por página)."""
+    from core import analise
+
+    projeto = _livro_de_paginas(tmp_path, brancas=5)
+    por_pagina = [p.indice for p in projeto.paginas if analise.EM_BRANCO in p.alertas]
+    assert por_pagina == [], f"devia ser um aviso só do livro, e não por página: {por_pagina}"
+    assert analise.e_observacao_do_livro(projeto.observacoes, analise.EM_BRANCO), \
+        projeto.observacoes
+
+
+def test_d522_poucas_paginas_brancas_continuam_com_o_aviso_de_cada_uma(tmp_path):
+    """O outro lado da prova do Livro: "livro com 3 brancas → 3 avisos" (3 de
+    10 = 30%, abaixo de 40%)."""
+    from core import analise
+
+    projeto = _livro_de_paginas(tmp_path, brancas=3)
+    por_pagina = [p.indice for p in projeto.paginas if analise.EM_BRANCO in p.alertas]
+    assert len(por_pagina) == 3, por_pagina
+    assert not analise.e_observacao_do_livro(projeto.observacoes, analise.EM_BRANCO)
+
+
+def test_d522_a_conta_dos_40_por_cento_e_so_do_em_branco():
+    """A conta (core.analise.separar_observacoes): 4 de 10 páginas brancas →
+    aviso do livro; 3 de 10 → não; os outros alertas continuam com 70% (4 de
+    10 coloridas não viram "o livro inteiro é colorido")."""
+    from core.analise import COR, EM_BRANCO, OBSERVACOES, separar_observacoes
+
+    quatro = [[EM_BRANCO]] * 4 + [[]] * 6
+    observacoes, remover = separar_observacoes(quatro)
+    assert remover == {EM_BRANCO} and observacoes == [OBSERVACOES[EM_BRANCO]]
+    assert separar_observacoes([[EM_BRANCO]] * 3 + [[]] * 7) == ([], set())
+    assert separar_observacoes([[COR]] * 4 + [[]] * 6) == ([], set())
+
+
+def test_d522_a_frase_antiga_gravada_no_projeto_continua_valendo():
+    """Projeto gravado antes (Projeto.observacoes com a frase de antes, "quase
+    todas as páginas parecem estar em branco") continua sendo o aviso do livro
+    do "Parece em branco" (a frase mudou porque 40% não é "quase todas")."""
+    from core import analise
+
+    assert analise.e_observacao_do_livro(
+        ["quase todas as páginas parecem estar em branco"], analise.EM_BRANCO)
+    assert not analise.e_observacao_do_livro(["o livro inteiro é colorido"], analise.EM_BRANCO)
+
+
+# =============================================================================
+# Item 7 - D-497: a página que fica branca depois de mudar a divisão
+# =============================================================================
+
+def _folha_com_texto_so_perto_da_lombada() -> np.ndarray:
+    """Folha de livro aberto (150 DPI): texto na página da esquerda e, na da
+    direita, só numa coluna perto da lombada (x 1100..1450); dali para a
+    beirada, só margem."""
+    img = np.full((1400, 2000), 245, np.uint8)
+    for y in range(200, 1200, 45):
+        img[y:y + 14, 150:850] = 25
+        img[y:y + 14, 1100:1450] = 25
+    return img
+
+
+def _livro_dividido(tmp_path, img: np.ndarray, posicao: float = 0.5):
+    """Livro de uma folha dividida em duas páginas, na linha `posicao`, sem
+    avisos (como depois da análise de uma folha com texto nos dois lados)."""
+    from core import pipeline
+    from modelos import Projeto
+
+    caminho = _pdf_sintetico(tmp_path / "folha.pdf", [img])
+    projeto = Projeto(caminho_entrada=str(caminho), nome="folha",
+                      caminho_saida=str(tmp_path / "saida.pdf"))
+    projeto.dividir_folhas = True
+    projeto.cortar_bordas = False
+    projeto.endireitar = False
+    projeto = pipeline.analisar_projeto(projeto)
+    assert [p.metade for p in projeto.paginas] == ["esquerda", "direita"]
+    projeto.folhas[0].posicao_corte = posicao
+    for pagina in projeto.paginas:
+        pagina.alertas = []
+    return projeto
+
+
+def _mover_a_linha(projeto, posicao: float) -> None:
+    """O que a tela faz ao arrastar a linha da folha (a marca "mexida à mão"
+    do Dividir, D-004)."""
+    from core import etapas
+
+    projeto.folhas[0].posicao_corte = posicao
+    etapas.marcar_mexida_a_mao(projeto.folhas[0], etapas.DIVIDIR)
+
+
+def _medir(projeto, pagina) -> bool:
+    from core import pipeline
+
+    doc = fitz.open(projeto.caminho_entrada)
+    try:
+        return pipeline.medir_o_em_branco(doc, projeto, pagina)
+    finally:
+        doc.close()
+
+
+def test_reversao_d497_pagina_que_ficou_branca_depois_de_mover_a_linha_ganha_o_aviso(tmp_path):
+    """D-497 (escolha da gerente, 27/10/2026; pergunta 2 da etapa 9c): "Página
+    que fica branca depois de mudar a divisão ganha o aviso 'Parece em
+    branco', a não ser que a pessoa já tenha dito 'está certo' nesse aviso
+    daquela página (o aviso que ela tirou não volta)." Prova do Livro: "Mudar
+    a linha [...] até a página 9 ficar só margem → aviso aparece; dizer 'está
+    certo' e mudar de novo → não volta".
+
+    A linha da folha vai para 0,78: a página da direita fica só com a margem
+    (o texto dela passa para a esquerda) e ganha o aviso. No código antigo o
+    aviso só era TIRADO depois de mudar a divisão (etapa 9c), nunca posto."""
+    from core import analise, pipeline
+
+    projeto = _livro_dividido(tmp_path, _folha_com_texto_so_perto_da_lombada())
+    esquerda, direita = projeto.paginas
+    _mover_a_linha(projeto, 0.78)
+    # pelo desenho da página no tamanho da análise ou maior (o PDF, a medida
+    # por trás), e pela medida que a tela chama (etapa 7)
+    doc = fitz.open(projeto.caminho_entrada)
+    try:
+        pipeline.renderizar_pagina(doc, projeto, direita, dpi=150)
+    finally:
+        doc.close()
+    assert analise.EM_BRANCO in direita.alertas, "a página que ficou só margem devia ganhar o aviso"
+    assert not _medir(projeto, esquerda)
+    assert analise.EM_BRANCO not in esquerda.alertas
+
+
+def test_d497_esta_certo_no_aviso_nao_deixa_ele_voltar(tmp_path):
+    """"Dizer 'está certo' e mudar de novo → não volta": a pessoa aceita o
+    aviso (alertas_aceitos, o "está bom" do motivo); a linha volta para o meio
+    (a página tem texto: o aviso sai, etapa 9c) e de novo para a beirada (a
+    página fica branca de novo): o aviso NÃO volta."""
+    from core import analise
+
+    projeto = _livro_dividido(tmp_path, _folha_com_texto_so_perto_da_lombada())
+    direita = projeto.paginas[1]
+    _mover_a_linha(projeto, 0.78)
+    assert _medir(projeto, direita) and analise.EM_BRANCO in direita.alertas
+    direita.alertas_aceitos = [*direita.alertas_aceitos, analise.EM_BRANCO]   # "está certo"
+    _mover_a_linha(projeto, 0.5)
+    assert _medir(projeto, direita) and analise.EM_BRANCO not in direita.alertas
+    _mover_a_linha(projeto, 0.8)
+    assert not _medir(projeto, direita)
+    assert analise.EM_BRANCO not in direita.alertas, "o aviso que a pessoa aceitou voltou"
+
+
+def test_d497_dividir_a_mao_pela_primeira_vez_mede_as_duas_metades(tmp_path):
+    """"Dividir esta" numa folha inteira cujo verso é branco: a metade branca
+    ganha o aviso, a de texto não (as metades novas nascem sem aviso:
+    core/dividir_a_mao.LIMPAR_AO_PARTIR)."""
+    from core import analise, pipeline
+    from modelos import Projeto
+
+    img = np.full((1400, 2000), 245, np.uint8)
+    for y in range(200, 1200, 45):
+        img[y:y + 14, 150:850] = 25                    # só a página da esquerda
+    caminho = _pdf_sintetico(tmp_path / "verso.pdf", [img])
+    projeto = Projeto(caminho_entrada=str(caminho), nome="verso",
+                      caminho_saida=str(tmp_path / "saida.pdf"))
+    projeto.dividir_folhas = False
+    projeto.cortar_bordas = False
+    projeto.endireitar = False
+    projeto = pipeline.analisar_projeto(projeto)
+    assert analise.EM_BRANCO not in projeto.paginas[0].alertas
+    _dividir_a_mao(projeto, 0.5)
+    esquerda, direita = projeto.paginas
+    for pagina in projeto.paginas:
+        _medir(projeto, pagina)
+    assert analise.EM_BRANCO in direita.alertas
+    assert analise.EM_BRANCO not in esquerda.alertas
+
+
+def test_d497_folha_que_ninguem_mexeu_nao_ganha_aviso_sozinha(tmp_path):
+    """Guarda: sem a marca "mexida à mão" do Dividir, a página fica com o aviso
+    da análise (nada muda sozinho; a regra 9c de só tirar continua)."""
+    from core import analise
+
+    projeto = _livro_dividido(tmp_path, _folha_com_texto_so_perto_da_lombada(), posicao=0.78)
+    direita = projeto.paginas[1]
+    assert not _medir(projeto, direita)
+    assert analise.EM_BRANCO not in direita.alertas
+
+
+def test_d497_livro_com_o_aviso_do_livro_nao_ganha_aviso_por_pagina(tmp_path):
+    """D-522 junto: se o "Parece em branco" já é aviso do livro inteiro, a
+    página que ficou branca não ganha o aviso dela."""
+    from core import analise
+
+    projeto = _livro_dividido(tmp_path, _folha_com_texto_so_perto_da_lombada())
+    projeto.observacoes = [analise.OBSERVACOES[analise.EM_BRANCO]]
+    _mover_a_linha(projeto, 0.78)
+    assert not _medir(projeto, projeto.paginas[1])
+    assert analise.EM_BRANCO not in projeto.paginas[1].alertas
