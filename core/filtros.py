@@ -1299,13 +1299,13 @@ def _faixa_da_sombra_da_lombada(cinza: np.ndarray) -> tuple[np.ndarray, np.ndarr
     altura, largura = cinza.shape[:2]
     if largura < 20 or altura < 20:
         return None
-    pequena = cv2.resize(cinza, (min(largura, 400), min(altura, 300)),
+    pequena = cv2.resize(cinza, (min(largura, 600), min(altura, 400)),
                          interpolation=cv2.INTER_AREA)
     # o percentil 75 de cada coluna, pela ordenacao (mais rapido que
     # np.percentile com eixo; regra 6)
     k = int(0.75 * (pequena.shape[0] - 1))
     perfil = np.partition(pequena, k, axis=0)[k].astype(np.float32)
-    perfil = cv2.GaussianBlur(perfil.reshape(1, -1), (0, 0), 2).ravel()
+    perfil = cv2.GaussianBlur(perfil.reshape(1, -1), (0, 0), 3).ravel()
     topo = float(np.percentile(perfil, 90))
     if topo <= 1:
         return None
