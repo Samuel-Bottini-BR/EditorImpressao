@@ -85,6 +85,13 @@ só habilitada em folha dividida. Conserto junto: "não dividir esta" apaga na
 mesma ação a metade da direita (antes o PDF saía com a folha repetida); a
 folha que entrou como uma página só não oferece "dividir esta"
 (_alternar_dividir).
+Obra de 26/10/2026, etapa 4 (dividir à mão folha por folha): "dividir esta"
+fica SEMPRE aceso e divide também a folha que entrou como uma página só (a
+lista de páginas muda só no pedaço desta folha: core/dividir_a_mao); "não
+dividir esta" junta as duas páginas numa só e as guarda; a tampa do scanner
+achada ao dividir à mão sai branca (D-495). D-007: o livro abre e volta do
+Automático mostrando uma página por vez; a folha inteira com a linha só
+aparece dentro da ferramenta Dividir (_aba_de_partida, mostrar_paginas).
 
 Endireitar (item 2.2, 07/10/2026, decisão G4 (b) do Samuel: "O do ScanTailor
 de fábrica [...] mas eu vou ter a opção de escolher"; provisório até o
@@ -156,6 +163,7 @@ from core import preto_e_branco_scantailor
 from core import claro_no_escuro, cores_scantailor, desentortar_scantailor
 from core import luz_scantailor
 from core import etapas as etapas_core       # obra 26/10, etapa 3: a marca "mexida a mao"
+from core import dividir_a_mao              # obra 26/10, etapa 4: dividir a mao folha por folha
 from core.pipeline import (FORCA_DO_REFORCO, acertar_alertas_de_cor, acertar_alertas_do_fundo,
                            acertar_faixa_do_livro, angulo_aplicado,
                            angulo_da_pagina, angulos_medidos, corte_alargado, jeito_de_dividir,
@@ -2685,14 +2693,28 @@ class TelaConferir(QWidget):
         delas, a página na ferramenta de marcar (a página como vai sair, com
         Zoom e Mão), e não mais a tela provisória dos quatro filtros: ela não
         tem mais botão na trilha (R9 403 B), e quem abrisse nela não teria
-        como voltar. Seguro mudar: a ordem."""
-        if projeto.dividir_folhas:
-            return ABA_CORTE
+        como voltar. Seguro mudar: a ordem.
+
+        D-007 (Samuel, 26/10/2026: "quando eu escolher para começar no
+        automatico e dividir as folhas o livro tem que aparecer em uma pagina
+        por vez para mim"), obra etapa 4: o livro NUNCA abre no Dividir (a
+        folha inteira com a linha); o Dividir é só para consertar uma folha,
+        quando a pessoa o escolhe. Arriscado: voltar a abrir no Dividir."""
         if projeto.cortar_bordas:
             return ABA_BORDAS
         if projeto.endireitar:
             return ABA_ANGULO
         return ABA_MARCAR
+
+    def mostrar_paginas(self) -> None:
+        """D-007 (obra etapa 4): se a tela está na ferramenta Dividir (a folha
+        inteira com a linha), passa para a página como vai sair, uma por vez
+        (a ferramenta de marcar, com a Mão ou o Retângulo de sempre). Chamada
+        quando o Automático divide o livro. Fora do Dividir, nada muda."""
+        if not self._pronta() or self.aba_atual != ABA_CORTE or ABA_MARCAR not in self._abas_ativas:
+            return
+        self.barra_abas.setCurrentIndex(self._abas_ativas.index(ABA_MARCAR))
+        self._acertar_as_propriedades()
 
     @staticmethod
     def _ferramenta_de_partida(projeto: Projeto) -> str:
@@ -3694,18 +3716,15 @@ class TelaConferir(QWidget):
             self.botao_nao_dividir.setText(
                 "dividir esta" if not folha.dividir else "não dividir esta"
             )
-            # Item 2.1: folha que entrou como uma pagina so (a lista de
-            # paginas nao muda na conferencia) nao tem como ser dividida aqui
-            duas = self._tem_duas_paginas(self.indice_folha)
-            self.botao_nao_dividir.setEnabled(duas)
-            # A aba Onde cortar so existe com "Dividir folhas ao meio" marcada:
-            # a dica nao manda marcar (parecer do verificador, 06/10). Ela diz
-            # por que nao da: o jeito de dividir do livro nao achou duas
-            # paginas nesta folha.
+            # Obra 26/10, etapa 4 ("'dividir esta' sempre ativo"; promessa
+            # P-059): aceso em toda folha, inclusive a que entrou como uma
+            # pagina so (livro aberto sem "Dividir", folha girada depois).
+            # Antes ficava cinza, com a dica "aqui nao da para dividi-la".
+            self.botao_nao_dividir.setEnabled(True)
             self.botao_nao_dividir.setToolTip(
-                "" if duas else "Esta folha entrou como uma página só: o jeito de "
-                "dividir do livro não achou duas páginas nela, e aqui não dá para "
-                "dividi-la.")
+                "Junta as duas páginas desta folha numa só (as outras folhas não mudam)."
+                if folha.dividir else
+                "Divide esta folha em duas páginas, na lombada (as outras folhas não mudam).")
             # o jeito desta folha (sem sinal: so mostrar nao e trocar)
             self.combo_jeito_da_folha.blockSignals(True)
             self.combo_jeito_da_folha.setCurrentIndex(self.combo_jeito_da_folha.findData(
@@ -3869,6 +3888,14 @@ class TelaConferir(QWidget):
         aplicar(self.projeto, acao, acao.depois)
         self.acoes.registrar(acao)
 
+        if dividir_a_mao.muda_a_lista(campos):
+            # obra 26/10, etapa 4: dividir/juntar uma folha a mao muda os
+            # numeros das paginas dela em diante (as prévias guardam pelo
+            # numero): limpa todas e remonta a tira, como o Automatico
+            if self.previas is not None:
+                self.previas.invalidar()
+            self.lista_de_paginas_mudou()
+            return
         afetadas = indices if alvo == "pagina" else self._paginas_das_folhas(indices)
         if self.previas is not None:
             for indice in afetadas:
@@ -3938,48 +3965,74 @@ class TelaConferir(QWidget):
             f"Linha de corte de todas as {len(indices)} folhas",
         )
 
-    def _tem_duas_paginas(self, indice_folha: int) -> bool:
-        """A folha tem as duas metades na lista de paginas? (so assim ela pode
-        ser dividida ou deixar de ser na conferencia)"""
-        assert self.projeto is not None
-        return sum(1 for p in self.projeto.paginas if p.folha == indice_folha) >= 2
-
     @protegido
     def _alternar_dividir(self) -> None:
-        """"nao dividir esta" / "dividir esta".
+        """O botão "não dividir esta" / "dividir esta" da ferramenta Dividir.
 
-        Conserto junto do item 2.1 (06/10/2026): antes so trocava
-        ConfigFolha.dividir, e as duas paginas da folha saiam no PDF, cada uma
-        com a folha inteira (a folha repetida). Hoje quem garante que a folha
-        sai UMA vez e modelos.Projeto.paginas_ativas. Aqui, para a tira de
-        miniaturas nao mostrar a folha duas vezes, a metade da direita e
-        apagada na mesma acao - mas SO quando a da esquerda esta viva (ela
-        leva a folha inteira). Com a esquerda ja apagada, a da direita fica e
-        leva a folha: antes ela era apagada junto e a folha SUMIA do PDF
-        (parecer do verificador, 06/10, imagem b3). "dividir esta" devolve a
-        da direita nas mesmas condicoes (esquerda viva). A lista de paginas
-        nao muda (o desfazer guarda paginas pela posicao). Arriscado: apagar a
-        direita sem olhar a esquerda.
-        Folha que entrou como uma pagina so: nao ha metade para criar; so
-        marca como conferida (e o que a sugestao "nao dividir esta" do alerta
-        "parece ter uma pagina so" quer dizer: ela ja nao e dividida)."""
+        Obra 26/10/2026, etapa 4 (plano: "'dividir esta' sempre ativo";
+        Samuel, sessão 1: "eu posso entrar ali e mudar a marcação de folhas
+        erradas"; promessa P-059). Dividida, junta (_nao_dividir); não
+        dividida, divide (_dividir_esta) - inclusive a folha que entrou como
+        uma página só (livro aberto sem "Dividir", folha girada depois: lista
+        única 3.1), que antes deixava o botão cinza. Cada clique é UMA ação do
+        desfazer e mexe só nas páginas desta folha (core/dividir_a_mao)."""
+        assert self.projeto is not None
+        if self.projeto.folhas[self.indice_folha].dividir:
+            self._nao_dividir()
+        else:
+            self._dividir_esta()
+
+    @protegido
+    def _nao_dividir(self) -> None:
+        """"não dividir esta" (botão da ferramenta e o do aviso "Não parece
+        dupla"): as duas páginas da folha viram uma só, e as duas ficam
+        guardadas para o "dividir esta" devolver (core/dividir_a_mao.
+        campos_para_juntar). Folha já não dividida: só fica conferida - é o
+        que o aviso "Esta folha parece ter uma página só" quer (antes da etapa
+        4 era o mesmo; ele NUNCA divide).
+        Até a etapa 4 a página da direita ficava na lista, "apagada", e a
+        tira mostrava a folha duas vezes (a lista de páginas não podia
+        mudar na conferência)."""
         assert self.projeto is not None
         folha = self.projeto.folhas[self.indice_folha]
-        if not self._tem_duas_paginas(self.indice_folha):
+        if not folha.dividir and len(dividir_a_mao.paginas_da_folha(
+                self.projeto, self.indice_folha)) < 2:
             self._marcar_revisada()
             return
-        dividir = not folha.dividir
-        campos = {"dividir": dividir, "revisada": True}
-        da_folha = [p for p in self.projeto.paginas if p.folha == self.indice_folha]
-        direita = next((p for p in da_folha if p.metade == METADE_DIREITA), None)
-        esquerda_viva = any(not p.apagada for p in da_folha if p is not direita)
-        if direita is not None and esquerda_viva:
-            campos[campo_de_pagina(direita.indice, "apagada")] = not dividir
         self._registrar(
-            "nao_dividir", "folha", [self.indice_folha], campos,
-            f"Folha {self.indice_folha + 1}: "
-            + ("dividir" if dividir else "não dividir"),
-        )
+            "nao_dividir", "folha", [self.indice_folha],
+            dividir_a_mao.campos_para_juntar(self.projeto, self.indice_folha),
+            f"Folha {self.indice_folha + 1}: não dividir")
+
+    @protegido
+    def _dividir_esta(self) -> None:
+        """"dividir esta": a folha passa a sair como duas páginas.
+
+        - Folha que a pessoa juntou antes ("não dividir esta"): as duas
+          páginas voltam como estavam, na linha de antes (sem medir nada).
+        - Folha com uma página só: acha a lombada na folha como ela está
+          (girada, se foi girada: lista única 3.1), pelo jeito da folha ou do
+          livro, e a tampa do scanner em volta do livro (D-495: sai branca);
+          leva uns décimos de segundo (core/dividir_a_mao.medir_para_dividir).
+        Uma ação do desfazer; grava a marca "mexida à mão" (_registrar)."""
+        from PySide6.QtWidgets import QApplication
+
+        assert self.projeto is not None
+        folha = self.projeto.folhas[self.indice_folha]
+        pags = dividir_a_mao.paginas_da_folha(self.projeto, self.indice_folha)
+        if len(pags) >= 2 or folha.metades_guardadas:
+            campos = dividir_a_mao.campos_para_dividir(self.projeto, self.indice_folha)
+        else:
+            QApplication.setOverrideCursor(Qt.WaitCursor)
+            try:
+                lombada, tampa = dividir_a_mao.medir_para_dividir(
+                    self.projeto, self.indice_folha, jeito_de_dividir(self.projeto, folha))
+            finally:
+                QApplication.restoreOverrideCursor()
+            campos = dividir_a_mao.campos_para_dividir(
+                self.projeto, self.indice_folha, lombada.posicao, lombada.confianca, tampa)
+        self._registrar("dividir_a_mao", "folha", [self.indice_folha], campos,
+                        f"Folha {self.indice_folha + 1}: dividir")
 
     @protegido
     def _trocar_jeito_da_folha(self) -> None:
@@ -5624,7 +5677,9 @@ class TelaConferir(QWidget):
         elif correcao == "apagar":
             self.apagar_pagina()
         elif correcao == "nao_dividir":
-            self._alternar_dividir()
+            # nunca divide (etapa 4: o botão da ferramenta agora divide a
+            # folha de uma página só; o do aviso so junta ou confere)
+            self._nao_dividir()
         elif correcao == "angulo_zero":
             self._angulo_zero()
         elif correcao == "sem_recorte":
@@ -5779,7 +5834,11 @@ class TelaConferir(QWidget):
         vai para a aba "Onde cortar", se ela existir neste livro."""
         assert self.projeto is not None
         if aviso.alvo == avisos_do_livro.FOLHA:
-            if ABA_CORTE in self._abas_ativas:
+            # D-007 (obra etapa 4): a folha inteira só no Dividir, para
+            # consertar a DIVISÃO; os outros avisos de folha (torta, resolução,
+            # tamanho) levam à página dela, uma por vez
+            if (ABA_CORTE in self._abas_ativas
+                    and aviso.codigo in (analise.NAO_PARECE_DUPLA, analise.LOMBADA_INCERTA)):
                 self.barra_abas.setCurrentIndex(self._abas_ativas.index(ABA_CORTE))
                 self._ir_para(max(0, min(aviso.indice, len(self.projeto.folhas) - 1)))
                 return
@@ -5876,7 +5935,17 @@ class TelaConferir(QWidget):
         if self.projeto is None:
             return
         total = len(self.projeto.paginas)
-        if total and not 0 <= self.indice_pagina < total:
+        if (total and 0 <= self.indice_folha < len(self.projeto.folhas)
+                and not (0 <= self.indice_pagina < total
+                         and self.projeto.paginas[self.indice_pagina].folha == self.indice_folha)):
+            # Obra 26/10, etapa 4: a tela fica na MESMA folha (dividir/juntar
+            # uma folha a mao, ou desfazer isso, muda os numeros das paginas
+            # dela em diante; sem isto a tela pulava para a pagina de outra
+            # folha). A pagina da vez passa a ser a primeira da folha.
+            self.indice_pagina = next((p.indice for p in self.projeto.paginas
+                                       if p.folha == self.indice_folha),
+                                      min(self.indice_pagina, total - 1))
+        elif total and not 0 <= self.indice_pagina < total:
             self.indice_pagina = total - 1
         if total:
             self.indice_folha = self.projeto.paginas[self.indice_pagina].folha

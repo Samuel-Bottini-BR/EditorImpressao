@@ -8,9 +8,9 @@ janela na tela (tests/conftest.py):
   com "o do programa"); a escolha e a caixinha
   "Cortar a beirada da folha vizinha" vão para o projeto e voltam ao reabrir;
 - aba "Onde cortar": a lista "jeito:" troca o jeito SÓ desta folha, numa ação
-  do desfazer; "não dividir esta" apaga a metade da direita junto (o PDF não
-  repete a folha) e o desfazer devolve as duas coisas; folha de uma página só
-  não oferece "dividir esta".
+  do desfazer; "não dividir esta" junta as duas páginas numa só (o PDF não
+  repete a folha) e o desfazer devolve as duas; a folha de uma página só
+  oferece "dividir esta" (obra 26/10, etapa 4; antes não oferecia).
 """
 
 from __future__ import annotations
@@ -160,25 +160,38 @@ def test_trocar_o_jeito_so_desta_folha_e_desfazer(janela, pasta):
     assert tela.combo_jeito_da_folha.currentData() == ds.JEITO_PROGRAMA
 
 
-def test_nao_dividir_esta_apaga_a_direita_e_o_desfazer_devolve(janela, pasta):
+def test_nao_dividir_esta_junta_a_folha_numa_pagina_e_o_desfazer_devolve(janela, pasta):
+    """Obra 26/10, etapa 4 (dividir a mao folha por folha): "nao dividir esta"
+    junta as duas paginas da folha numa so (a lista muda so nesta folha) e o
+    desfazer devolve as duas. O ANTIGO SAIU: a metade da direita nao fica mais
+    na lista como "apagada" (a tira mostrava a folha duas vezes e o contador
+    dizia "1 apagadas")."""
     tela = _conferir_dividido(janela, pasta)
     projeto = janela.projeto
     assert len(projeto.paginas_ativas) == 6
     tela._alternar_dividir()
     assert not projeto.folhas[0].dividir
-    assert projeto.paginas[1].apagada and not projeto.paginas[0].apagada
+    assert [p.metade for p in projeto.paginas if p.folha == 0] == ["inteira"]
+    assert len(projeto.paginas) == 5 and projeto.total_apagadas == 0
+    assert [p.indice for p in projeto.paginas] == list(range(5))
     assert len(projeto.paginas_ativas) == 5
     assert tela.botao_nao_dividir.text() == "dividir esta"
     assert not tela.combo_jeito_da_folha.isEnabled()
     tela.desfazer()
-    assert projeto.folhas[0].dividir and not projeto.paginas[1].apagada
+    assert projeto.folhas[0].dividir and len(projeto.paginas) == 6
+    assert not any(p.apagada for p in projeto.paginas)
     assert len(projeto.paginas_ativas) == 6
     tela._alternar_dividir()
-    tela._alternar_dividir()              # "dividir esta": a direita volta
-    assert projeto.folhas[0].dividir and not projeto.paginas[1].apagada
+    tela._alternar_dividir()              # "dividir esta": as duas voltam
+    assert projeto.folhas[0].dividir and len(projeto.paginas) == 6
+    assert not any(p.apagada for p in projeto.paginas)
 
 
-def test_folha_de_uma_pagina_nao_oferece_dividir(janela, pasta):
+def test_folha_de_uma_pagina_agora_oferece_dividir(janela, pasta):
+    """Obra 26/10, etapa 4 ("'dividir esta' sempre ativo"; promessa P-059).
+    O ANTIGO SAIU: a folha que entrou como pagina inteira deixava o botao
+    cinza, com a dica "aqui nao da para dividi-la". Agora ele fica aceso e
+    divide so esta folha."""
     tela = _conferir_dividido(janela, pasta)
     projeto = janela.projeto
     # uma folha que entrou como pagina inteira (como uma capa em pe)
@@ -189,12 +202,17 @@ def test_folha_de_uma_pagina_nao_oferece_dividir(janela, pasta):
         p.indice = i
     tela.indice_folha = 0
     tela.atualizar()
-    assert not tela.botao_nao_dividir.isEnabled()
-    # parecer do verificador (06/10): a dica mandava "marcar Dividir folhas ao
-    # meio", que ja esta marcada (a aba Onde cortar so existe com ela marcada)
-    dica = tela.botao_nao_dividir.toolTip()
-    assert "uma página só" in dica and "marque" not in dica
-    tela._alternar_dividir()              # a sugestao do alerta: so confere
+    assert tela.botao_nao_dividir.isEnabled()
+    assert tela.botao_nao_dividir.text() == "dividir esta"
+    assert "não dá" not in tela.botao_nao_dividir.toolTip()
+    tela._alternar_dividir()
+    assert projeto.folhas[0].dividir
+    assert [p.metade for p in projeto.paginas if p.folha == 0] == ["esquerda", "direita"]
+    assert len(projeto.paginas) == 6
+    # o aviso "Não parece dupla" ("não dividir esta") nunca divide: so confere
+    tela.desfazer()
+    assert not projeto.folhas[0].dividir and len(projeto.paginas) == 5
+    tela._nao_dividir()
     assert not projeto.folhas[0].dividir and projeto.folhas[0].revisada
     assert len(projeto.paginas) == 5
 
@@ -231,7 +249,7 @@ def test_esquerda_apagada_e_nao_dividir_a_folha_continua_no_pdf(janela, pasta):
     projeto.paginas[0].apagada = True              # a esquerda da folha 1
     tela._alternar_dividir()
     assert not projeto.folhas[0].dividir
-    assert not projeto.paginas[1].apagada
+    assert not projeto.paginas[0].apagada          # etapa 4: a folha juntada, viva
     assert [p.folha for p in projeto.paginas_ativas].count(0) == 1
     tela._alternar_dividir()                       # "dividir esta": a esquerda continua apagada
     assert projeto.folhas[0].dividir and projeto.paginas[0].apagada and not projeto.paginas[1].apagada

@@ -418,7 +418,11 @@ def aplicar(projeto: Projeto, acao: Acao, valores: dict[str, Any]) -> None:
         valores = _despeckle_antigo_traduzido(valores)
 
     for campo, valor in valores.items():
-        if campo.startswith("livro."):
+        if campo.startswith(PREFIXO_PAGINAS_DA_FOLHA):
+            # obra 26/10, etapa 4: dividir/juntar UMA folha a mao troca so as
+            # paginas dela (ver PREFIXO_PAGINAS_DA_FOLHA)
+            _trocar_as_paginas_da_folha(projeto, campo, valor)
+        elif campo.startswith("livro."):
             nome = campo[len("livro."):]
             if nome in ("folhas", "paginas"):
                 # obra 26/10, etapa 3: o Automatico que mudou a lista de
@@ -440,7 +444,8 @@ def aplicar(projeto: Projeto, acao: Acao, valores: dict[str, Any]) -> None:
         item = itens[indice]
         for campo, valor in valores.items():
             if (campo.startswith("livro.") or campo.startswith(PREFIXO_PAGINA)
-                    or campo.startswith(PREFIXO_FOLHA)):
+                    or campo.startswith(PREFIXO_FOLHA)
+                    or campo.startswith(PREFIXO_PAGINAS_DA_FOLHA)):
                 continue
             if isinstance(valor, dict):
                 if str(indice) in valor:
@@ -495,6 +500,30 @@ def _aplicar_numa_folha(projeto: Projeto, campo: str, valor: Any) -> None:
         return
     if 0 <= indice < len(projeto.folhas) and hasattr(projeto.folhas[indice], nome):
         setattr(projeto.folhas[indice], nome, _restaurar_tipo(nome, valor))
+
+
+# Campo "paginas_da_folha:<indice da folha>" (obra 26/10, etapa 4: dividir a
+# mao folha por folha, core/dividir_a_mao.py): a lista das paginas DAQUELA
+# folha (dicionarios, como o JSON grava). Aplicar poe essa lista no lugar das
+# paginas da folha, na mesma posicao do livro, e renumera; as paginas das
+# outras folhas sao os mesmos objetos. Guarda so as paginas de uma folha
+# (leve), e nao o livro inteiro como o Automatico (livro.paginas). Arquivo de
+# acoes antigo nao tem esse campo. Arriscado: aplicar fora de ordem (as acoes
+# mais velhas guardam paginas pela posicao; o desfazer e em pilha).
+PREFIXO_PAGINAS_DA_FOLHA = "paginas_da_folha:"
+
+
+def _trocar_as_paginas_da_folha(projeto: Projeto, campo: str, valor: Any) -> None:
+    from core.dividir_a_mao import trocar_as_paginas_da_folha
+    from modelos import paginas_da_lista
+
+    try:
+        indice = int(campo[len(PREFIXO_PAGINAS_DA_FOLHA):])
+    except ValueError:
+        return
+    if not isinstance(valor, list) or not valor or not 0 <= indice < len(projeto.folhas):
+        return
+    trocar_as_paginas_da_folha(projeto, indice, paginas_da_lista(valor))
 
 
 def _trocar_a_lista(projeto: Projeto, nome: str, valor: Any) -> None:
@@ -560,6 +589,15 @@ def montar_acao(
 
     antes: dict[str, Any] = {}
     for campo in campos:
+        if campo.startswith(PREFIXO_PAGINAS_DA_FOLHA):     # etapa 4 (ver o prefixo)
+            from core.dividir_a_mao import em_dicionarios, paginas_da_folha
+
+            try:
+                folha = int(campo[len(PREFIXO_PAGINAS_DA_FOLHA):])
+            except ValueError:
+                continue
+            antes[campo] = em_dicionarios(paginas_da_folha(projeto, folha))
+            continue
         if campo.startswith(PREFIXO_PAGINA):          # item 2.1 (ver PREFIXO_PAGINA)
             partes = _separar_campo_de_pagina(campo)
             if partes is not None and 0 <= partes[0] < len(projeto.paginas):

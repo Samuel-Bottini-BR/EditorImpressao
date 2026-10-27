@@ -55,6 +55,7 @@ from core import corte_pelo_conteudo   # item 2.5 (so com Projeto.cortar_pelo_co
 from core import borda_preta           # item 2.13 (so com Projeto.borda_preta)
 from core import recortar              # etapa 10a: _caixa_sem_comer usa as contas do corte comum
 from core import etapas                # obra 26/10 etapa 1: "esta etapa vale nesta pagina?" (D-009)
+from core import dividir_a_mao         # obra 26/10 etapa 4: a tampa do scanner (D-495)
 from core.ordem_do_preparo import endireita_antes, ordem_do_livro
 from core.filtros import (ORIGINAL, PRETO_E_BRANCO, TIRAR_FUNDO, aplicar_filtro,
                           aplicar_filtro_com_selecao, aplicar_so_os_pedacos)
@@ -317,9 +318,24 @@ def achar_divisao(img: np.ndarray, jeito: str, dpi: float,
             posicao = dividir_scantailor.posicao_da_divisao(resultado)
             if posicao is None:
                 return Lombada(0.5, 0.0, False)
-            return Lombada(float(posicao), 1.0, True)
+            if not dividir_scantailor.na_beirada(resultado):
+                return Lombada(float(posicao), 1.0, True)
+            # Obra 26/10, etapa 4 (bug achado pela etapa 9c, "La vida eterna"
+            # folhas 4 e 5): o ScanTailor cortou na beirada da folha (a linha
+            # escura da beirada do livro). Vale a conta do Editor, que procura
+            # a lombada perto do meio, e a folha vai para o "Para revisar"
+            # ("Lombada incerta"): confianca abaixo de analise.CONFIANCA_LOMBADA_MIN.
+            achada = _lombada_do_editor(img, forcar=True)
+            return Lombada(achada.posicao,
+                           min(achada.confianca, analise.CONFIANCA_LOMBADA_MIN / 2), True)
         _log.warning("dividir do ScanTailor indisponivel, usando o do programa: %s (%s)",
                      resultado.motivo, resultado.detalhe_tecnico)
+    return _lombada_do_editor(img, forcar)
+
+
+def _lombada_do_editor(img: np.ndarray, forcar: bool) -> Lombada:
+    """A conta do Editor (core.dividir.detectar_lombada). forcar=True: a folha
+    em pe tambem e dividida, procurando como se fosse deitada."""
     lombada = detectar_lombada(img)
     if forcar and not lombada.e_paisagem:
         # folha em pe que a pessoa mandou dividir: a mesma busca, numa copia
@@ -420,6 +436,15 @@ def faixa_da_sobra(folha: ConfigFolha, pagina: ConfigPagina,
     return (a, b)
 
 
+def _com_a_tampa(folha: ConfigFolha) -> tuple:
+    """O pedaco das chaves das contas guardadas (geometria, zonas, linhas do
+    texto) que diz a tampa do scanner pintada de branco (obra 26/10, etapa 4,
+    D-495). So entra quando ha tampa: a chave das folhas sem ela fica igual a
+    de antes (as contas ja guardadas no disco continuam valendo)."""
+    area = dividir_a_mao.area_da_tampa(folha)
+    return () if area is None else (("tampa",) + tuple(round(v, 6) for v in area),)
+
+
 def _cortar_a_sobra(img: np.ndarray, faixa: tuple[float, float] | None) -> np.ndarray:
     """Fica so a faixa de colunas (fatia, sem copiar). Sem faixa, a imagem
     como veio. A conta das colunas e a de core/zonas_na_folha (fracao vezes
@@ -515,6 +540,10 @@ def preparar_para_recorte(
     img = img_folha
     if folha.rotacao:
         img = girar_90(img, folha.rotacao)
+    # Obra 26/10, etapa 4 (D-495): a tampa do scanner achada quando a pessoa
+    # dividiu a folha a mao sai branca, ainda na etapa "dividir" (sem tampa,
+    # a mesma imagem: nada muda no livro que nao a tem)
+    img = dividir_a_mao.pintar_a_tampa(img, folha)
     if folha.dividir and pagina.metade != METADE_INTEIRA:
         esq, dir_ = dividir_imagem(img, folha.posicao_corte)
         img = esq if pagina.metade == METADE_ESQUERDA else dir_
@@ -1407,7 +1436,7 @@ def _chave_da_geometria(folha: ConfigFolha, pagina: ConfigPagina, projeto: Proje
          if getattr(projeto, "borda_preta", False) else None),
         (borda_preta.fazer_valido(getattr(projeto, "borda_preta_fazer", None))   # item 2.14
          if getattr(projeto, "borda_preta", False) else None),
-    )
+    ) + _com_a_tampa(folha)
 
 
 def _geometria_guardada(folha: ConfigFolha, pagina: ConfigPagina, projeto: Projeto):
@@ -2891,7 +2920,7 @@ def _entradas_do_preparo(folha: ConfigFolha, pagina: ConfigPagina, projeto: Proj
             etapas.corta_sozinho(projeto, pagina), etapas.endireita_sozinho(projeto, pagina),
             int(projeto.qualidade_dpi),
             faixa_da_sobra(folha, pagina, projeto),       # item 2.1
-            endireitar_scantailor.jeito_da_pagina(projeto, pagina))   # item 2.2
+            endireitar_scantailor.jeito_da_pagina(projeto, pagina)) + _com_a_tampa(folha)
 
 
 def converter_zonas_do_livro(
@@ -3427,7 +3456,7 @@ def _chave_das_linhas(projeto: Projeto, pagina: ConfigPagina):
             round(float(folha.posicao_corte), 4), recorte, etapas.angulo_a_mao(projeto, pagina),
             projeto.dividir_folhas, etapas.corta_sozinho(projeto, pagina),
             etapas.endireita_sozinho(projeto, pagina),
-            faixa_da_sobra(folha, pagina, projeto))       # item 2.1
+            faixa_da_sobra(folha, pagina, projeto)) + _com_a_tampa(folha)   # itens 2.1; D-495
 
 
 def _filtrar_no_misto(projeto: Projeto, pagina: ConfigPagina, img: np.ndarray, selecao,
