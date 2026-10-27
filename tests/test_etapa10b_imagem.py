@@ -313,7 +313,7 @@ def test_reversao_foto_de_celular_a_sombra_da_mao_nao_vira_mancha(tmp_path):
     assert float(bloco.mean()) < 0.01
 
 
-# --- 4.5 PDF pronto gigante ------------------------------------------------------------
+# --- 4.5 PDF (desfeito na 9d: D-304, sem perda) ------------------------------------------------------------
 
 def _pagina_de_tons(semente: int = 5) -> np.ndarray:
     """Papel creme com o grão do scan (ruído), uma faixa colorida e "letras":
@@ -327,27 +327,27 @@ def _pagina_de_tons(semente: int = 5) -> np.ndarray:
     return img.clip(0, 255).astype(np.uint8)
 
 
-def test_reversao_4_5_pagina_de_tons_vai_comprimida_e_fiel(tmp_path):
-    """Lista única 4.5: "Com Mágico pro e Melhorar o PDF sai de 15 a 20 vezes
-    maior que o original" (Antiphon 1.590 MB). Causa: a página de tons ia sem
-    perda (zlib) e o grão do scan ia inteiro. Medida: o PDF fica menor que 40%
-    do jeito sem perda, e a imagem lida de volta, alisada como na impressão,
-    fica a menos de 2 tons, em média, da que entrou (sem diferença visível)."""
+def test_d304_pagina_de_tons_vai_sem_perda(tmp_path):
+    """D-304 (Samuel, P3, 01/10/2026): "Eu quero ter a opção 1.6, mas eu quero
+    poder deixar como está também, o tamanho do arquivo depois não importa".
+
+    A etapa 10b tinha passado a gravar a página de tons (cor e cinza) em JPEG
+    92 para o PDF ficar menor (lista única 4.5); a ordem do Samuel de
+    27/10/2026 ("os agentes estão mudando coisas que eu já tinha definido, é
+    só para fazer o que eu já tinha mandado") desfez isso na etapa 9d: a
+    página de tons volta a ir SEM PERDA (zlib, /FlateDecode), com os mesmos
+    pixels que entraram. Este teste falha no código da 10b (JPEG)."""
     from core.pdf_io import EscritorPDF
 
     img = _pagina_de_tons()
-    sem_perda = len(zlib.compress(cv2.cvtColor(img, cv2.COLOR_BGR2RGB).tobytes(), 9))
     with EscritorPDF(tmp_path / "x.pdf") as escritor:
         escritor.escrever_imagem(img, dpi=300)
-    tamanho = (tmp_path / "x.pdf").stat().st_size
-    assert tamanho < 0.40 * sem_perda
     with fitz.open(str(tmp_path / "x.pdf")) as doc:
-        pix = fitz.Pixmap(doc, doc[0].get_images()[0][0])
+        xref = doc[0].get_images()[0][0]
+        assert doc.xref_get_key(xref, "Filter") == ("name", "/FlateDecode")
+        pix = fitz.Pixmap(doc, xref)
         lida = np.frombuffer(pix.samples, np.uint8).reshape(pix.height, pix.width, 3)[..., ::-1]
-    # o que se vê (alisado de 1 ponto, como a impressão) fica a menos de 2 tons
-    lida_vista = cv2.GaussianBlur(lida.astype(np.float32), (0, 0), 1.0)
-    img_vista = cv2.GaussianBlur(img.astype(np.float32), (0, 0), 1.0)
-    assert float(np.abs(lida_vista - img_vista).mean()) < 2.0
+    assert np.array_equal(lida, img), "a página de tons devia sair no PDF ponto a ponto igual"
 
 
 def test_4_5_preto_e_branco_de_1_bit_continua_sem_perda(tmp_path):

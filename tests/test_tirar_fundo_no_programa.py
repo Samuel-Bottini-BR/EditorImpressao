@@ -632,11 +632,7 @@ def test_pdf_final_sai_igual_a_previa(tmp_path, espiao):
     gravada = _paginas_do_pdf(projeto.caminho_saida)
     assert len(gravada) == 1
     assert gravada[0].shape == previa.shape
-    # Etapa 10b (lista única 4.5): a página de tons vai em JPEG 92 no PDF; a
-    # imagem é a mesma conta, a poucos tons (sem diferença visível)
-    diferenca = np.abs(gravada[0].astype(np.int16) - previa.astype(np.int16))
-    assert float(diferenca.mean()) < 2.0
-    assert float(np.percentile(diferenca, 99.9)) < 25
+    assert np.array_equal(gravada[0], previa)
 
 
 def test_livro_inteiro_no_filtro_sai_todo_sem_fundo(tmp_path, espiao):
