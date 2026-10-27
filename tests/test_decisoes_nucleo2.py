@@ -104,3 +104,118 @@ def test_aviso_de_margem_pequena_continua_com_o_numero(tmp_path):
     textos = " ".join(a.texto for a in r.avisos if "margem ficou abaixo" in a.texto)
     assert re.search(r"\d,\d cm \(precisa de", textos), textos
     assert "nenhuma" not in textos, textos
+
+
+# =============================================================================
+# Item 4 - "Deixar a folha em branco" na página "Tirar o fundo" sem o fundo
+# =============================================================================
+
+@pytest.fixture
+def _sem_figuras(monkeypatch):
+    """O detector de figuras do core/camadas.py não acha nada (rápido, sem o
+    modelo), como em tests/test_tirar_fundo_no_programa.py."""
+    from core import camadas
+    from tests.test_camadas import sem_figuras
+
+    monkeypatch.setattr(camadas, "DETECTOR_DE_FIGURAS", sem_figuras)
+
+
+def _livro_sem_o_fundo(tmp_path, detectar: bool):
+    """Livro de uma página com camadas (como os do Internet Archive), no
+    filtro "Tirar o fundo", e a página de verdade sem o fundo (core/camadas)."""
+    from core import pipeline
+    from core.filtros import TIRAR_FUNDO
+    from modelos import Projeto
+    from tests.test_camadas import pdf_com_camadas
+
+    doc = pdf_com_camadas()
+    caminho = tmp_path / "camadas.pdf"
+    doc.save(str(caminho))
+    doc.close()
+    projeto = Projeto(caminho_entrada=str(caminho), nome="teste",
+                      caminho_saida=str(tmp_path / "saida.pdf"))
+    projeto.filtro_padrao = TIRAR_FUNDO
+    projeto.detectar_regioes = detectar
+    projeto.cortar_bordas = False
+    projeto.endireitar = False
+    projeto.montar_cadernos = False
+    projeto.qualidade_dpi = 100
+    projeto = pipeline.analisar_projeto(projeto)
+    assert projeto.paginas[0].filtro == TIRAR_FUNDO
+    return projeto
+
+
+def _marcar_papel(pagina, x0, y0, x1, y1, origem=None):
+    from core.selecao import MAO, PAPEL, RETANGULO, Regiao, Selecao
+
+    selecao = Selecao()
+    selecao.acrescentar(Regiao(tipo=PAPEL, forma=RETANGULO, pontos=[(x0, y0), (x1, y1)],
+                               origem=origem or MAO))
+    pagina.guardar_selecao(selecao)
+
+
+def _pagina_do_pdf(caminho) -> np.ndarray:
+    with fitz.open(str(caminho)) as doc:
+        assert len(doc) == 1, "a página tem de continuar no livro (mesmo lugar)"
+        pix = doc[0].get_pixmap(dpi=100, colorspace=fitz.csGRAY)
+        return np.frombuffer(pix.samples, np.uint8).reshape(pix.height, pix.stride)[:, :pix.width].copy()
+
+
+@pytest.mark.parametrize("detectar", [True, False], ids=["procurar_gravura", "sem_procurar"])
+def test_reversao_folha_em_branco_no_tirar_o_fundo_sem_o_fundo_sai_branca(tmp_path, _sem_figuras,
+                                                                          detectar):
+    """Bug achado na etapa 9c (27/10/2026, "Bugs para a Lista de bugs"):
+    "'Deixar a folha em branco' numa página 'Tirar o fundo' de que o fundo FOI
+    tirado: essa página vai por pipeline._pedacos_na_pagina_sem_fundo, que não
+    passa pelo conserto do item 1; a tinta continua." Decisão D-027 (30/09):
+    "essa é uma página que eu poderia simplesmente escolher a opção para virar
+    uma folha branca". Medida: no PDF, a página inteira sai branca (antes, as
+    letras pretas da camada de cima continuavam) - e a prévia igual."""
+    from core import pipeline
+
+    projeto = _livro_sem_o_fundo(tmp_path, detectar)
+    pipeline.processar(projeto)
+    antes = _pagina_do_pdf(projeto.caminho_saida)
+    assert antes.min() < 80, "o livro de teste devia ter letra preta sem o fundo"
+    _marcar_papel(projeto.paginas[0], 0.0, 0.0, 1.0, 1.0)      # "Deixar a folha em branco"
+    pipeline.processar(projeto)
+    img = _pagina_do_pdf(projeto.caminho_saida)
+    assert img.min() >= 250, f"a folha devia sair toda branca no PDF (mínimo {img.min()})"
+    doc = fitz.open(projeto.caminho_entrada)
+    try:
+        previa, _ = pipeline.renderizar_pagina(doc, projeto, projeto.paginas[0], dpi=100)
+    finally:
+        doc.close()
+    assert previa.min() >= 250, "a prévia também (tela = PDF, D-473)"
+
+
+def test_pintar_de_branco_no_tirar_o_fundo_so_na_area(tmp_path, _sem_figuras):
+    """D-227 ("pintar de branco" → no PDF sai branca) na página sem o fundo:
+    só a área marcada vai a branco; a letra de fora continua."""
+    from core import pipeline
+
+    projeto = _livro_sem_o_fundo(tmp_path, True)
+    pipeline.processar(projeto)
+    antes = _pagina_do_pdf(projeto.caminho_saida)
+    altura, largura = antes.shape
+    tinta = np.argwhere(antes < 80)
+    meio = float(np.median(tinta[:, 0])) / altura          # onde está a letra (altura)
+    _marcar_papel(projeto.paginas[0], 0.0, 0.0, 1.0, meio)  # a metade de cima da tinta
+    pipeline.processar(projeto)
+    img = _pagina_do_pdf(projeto.caminho_saida)
+    corte = int(meio * altura)
+    assert img[:max(1, corte - 2)].min() >= 250, "a área pintada não saiu branca"
+    assert (img[corte + 2:] < 80).sum() > 0.3 * (antes[corte + 2:] < 80).sum(), \
+        "a letra fora da área sumiu"
+
+
+def test_papel_da_maquina_nao_branqueia_a_pagina_sem_o_fundo(tmp_path, _sem_figuras):
+    """Guarda (D-134): o papel que a MÁQUINA marcou não muda a página sem o
+    fundo; só o marcado à mão."""
+    from core import pipeline
+    from core.selecao import AUTOMATICO
+
+    projeto = _livro_sem_o_fundo(tmp_path, True)
+    _marcar_papel(projeto.paginas[0], 0.0, 0.0, 1.0, 1.0, origem=AUTOMATICO)
+    pipeline.processar(projeto)
+    assert _pagina_do_pdf(projeto.caminho_saida).min() < 80

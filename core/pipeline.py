@@ -3971,9 +3971,14 @@ def _pedacos_na_pagina_sem_fundo(doc, projeto: Projeto, folha: ConfigFolha,
     a mais: a pagina sai exatamente como antes e o tempo nao muda. Com
     pedaco, custa um desenho a mais da folha (so nessa pagina). Sem "Limpar
     a folha" o fundo nem e tirado (usa_tirar_fundo), entao nao chega aqui.
+
+    Etapa 9d da obra (bug achado na 9c, 27/10/2026; D-027, D-227): o papel
+    marcado A MAO ("Deixar a folha em branco", "pintar de branco") vai a
+    branco por cima, como no Original (_papel_a_mao_sem_fundo). Antes a tinta
+    da pagina sem o fundo continuava no PDF.
     """
     if not _tem_pedaco_com_filtro(projeto, pagina):
-        return img
+        return _papel_a_mao_sem_fundo(projeto, pagina, img)
     if img_folha is None:
         img_folha = pagina_para_array(doc, folha.indice, dpi=dpi)
     altura, largura = forma_da_folha[:2]
@@ -3986,7 +3991,29 @@ def _pedacos_na_pagina_sem_fundo(doc, projeto: Projeto, folha: ConfigFolha,
     if como_veio.ndim != img.ndim:
         como_veio = (cv2.cvtColor(como_veio, cv2.COLOR_GRAY2BGR) if como_veio.ndim == 2
                      else cv2.cvtColor(como_veio, cv2.COLOR_BGR2GRAY))
-    return _so_os_pedacos_no_tirar_o_fundo(projeto, pagina, img, como_veio)
+    return _papel_a_mao_sem_fundo(
+        projeto, pagina, _so_os_pedacos_no_tirar_o_fundo(projeto, pagina, img, como_veio))
+
+
+def _papel_a_mao_sem_fundo(projeto: Projeto, pagina: ConfigPagina, img: np.ndarray) -> np.ndarray:
+    """A pagina de que o fundo FOI tirado com o papel marcado A MAO em branco
+    (etapa 9d da obra, 27/10/2026; bug achado na 9c: "'Deixar a folha em
+    branco' numa pagina 'Tirar o fundo' de que o fundo FOI tirado [...] a
+    tinta continua"). A mesma conta do Original e do Tirar o fundo intacto
+    (core.filtros._papel_a_mao_em_branco, etapa 9c; D-027 e D-227), com a
+    mesma marcacao que vale la: com "Procurar gravura e letra" a guardada;
+    sem ele so a feita a mao que vale (core/etapas.marcacao_a_mao, como
+    garantir_selecao devolve). O papel que a MAQUINA marcou nao muda nada
+    (D-134). Sem marcacao devolve `img`, o MESMO objeto (sem conta a mais).
+    Arriscado: deixar o papel da maquina entrar (a pagina sem o fundo
+    perderia o que o detector achou ser papel)."""
+    from core.filtros import _papel_a_mao_em_branco
+
+    if not pagina.selecao:
+        return img
+    selecao = (pagina.obter_selecao() if projeto.detectar_regioes
+               else etapas.marcacao_a_mao(projeto, pagina))
+    return _papel_a_mao_em_branco(img, selecao)
 
 
 def renderizar_com_filtro(
