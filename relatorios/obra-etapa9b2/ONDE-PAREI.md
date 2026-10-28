@@ -35,6 +35,11 @@ programa funcionem como deveriam e como eu tinha escolhido."
 | Lista de espera 29/09 | "Recuperar o trabalho anterior" no menu do cartão (ideia de agente, "a definir") | Não é decisão do Samuel no Livro: fica como está, vira pergunta. |
 | Lista única 1.2, 5.9, 1.4, 1.5, 1.10, 1.11, 1.13, 3.2, 2.3, 2.6, 5.3, 5.6, 5.7 | (ver `relatorios/testes-guiados/lista-unica-2026-10-23/lista.md`) | Conferir o que as etapas anteriores já resolveram; fazer só o que falta, como o Livro decide. |
 
-## Andamento
+## Andamento (27/10, noite)
 
-(preenchido item por item)
+Feitos, com prova em `tests/test_decisoes_9b2.py` (commits no ramo): D-563, D-564, D-554, D-568, D-570, D-571,
+D-558, D-559, D-547 + a troca da 10b (D-473/D-064, bolinhas), desfazer da marcação (P-129; lista 1.3, 1.6, 1.7,
+1.9, 4.6), "usar em todas" do Dividir (D-090, P-061), "letra e traço" à mão (bug 12/10), "só neste pedaço"
+(D-156: já consertado antes, só a prova), botões que piscavam (bug 22/10).
+Falta: lista única (1.2/5.9, 1.4, 1.5, 1.10, 1.11, 1.13, 3.2, 2.3, 2.6, 5.3, 5.6, 5.7), reversão no código antigo,
+somas, prints, GitHub, relatório final.
