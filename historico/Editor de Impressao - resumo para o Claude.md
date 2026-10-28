@@ -77,8 +77,9 @@ principal.
   decidir na Fase 7.
 
 ## 3. O que falta (ordem)
-1. **Terminar o fim:** a suíte inteira no PC (`b7sqr7gvq`, começou 28/10 de madrugada) e a do GitHub (`40624566910`)
-   estavam rodando no fechamento — conferir o resultado (`gh run view 40624566910 -R Samuel-Bottini-BR/EditorImpressao`).
+1. **Terminar o fim:** a suíte do GitHub (`40624566910`, ramo `obra-2026-10-26` em `fc38afd`) **passou inteira (verde)**.
+   A suíte inteira no PC (com os agentes parados) ainda estava rodando no fechamento: rodar de novo se não houver
+   resultado (`..\..\..\.venv\Scripts\python.exe -m pytest tests -q --basetemp _tmp\suite` na `obra-juncao`).
 2. **Teste do Kaique de novo** (agente leigo, janela fora da tela, dados isolados, só as tarefas nas palavras do
    Kaique; o relatório de 26/10 está no ramo `teste-kaique-2026-10-26`).
 3. **Verificador contra o Livro** (quem confere não é quem construiu; `CLAUDE.md` §11 regra 5).
