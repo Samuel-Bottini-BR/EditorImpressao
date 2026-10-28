@@ -1,0 +1,17 @@
+ok   abrir sem nada marcado
+ok   Cortar: 'Margens iguais' à vista, desmarcada
+ok   clique na caixinha: margens iguais do livro ligadas
+ok   o Automático mostra 'Margens iguais'
+ok   grade: 'dividir' aceso com 2 escolhidas
+ok   dividir: 180 -> 182 páginas
+ok   100% = a página inteira (D-571)
+ok   com zoom a roda anda pela página (D-568), a página continua a 7
+ok   zoom no 'Duas lado a lado' (D-570)
+ok   a miniatura da página 9 é a página movida
+ok   o desfazer de baixo tirou o retângulo à mão
+ok   Automático, Cortar: 'O que fica fora da página' à vista (D-559)
+ok   a caixinha da força sozinha acesa (5.3)
+ok   WM_CLOSE fechou a janela
+ok   o Automático achou a tampa nas duas folhas (D-559)
+ok   WM_CLOSE fechou a janela
+16 de 16
