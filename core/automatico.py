@@ -382,6 +382,10 @@ class MedidaDaFolha:
     confianca_angulo: float
     alertas: list[str]
     partes: list[tuple[str, list[str], bool, bool, float | None]]   # metade, alertas, tem_cor, discorda, angulo
+    # Etapa 9b-2 (D-559): a tampa do scanner achada nesta folha, como vai para
+    # ConfigFolha.tampa_do_scanner ([rotacao, x0, y0, x1, y1], ou [rotacao]
+    # quando procurada e nada achado); None = nao procurada (quem mede sem ela)
+    tampa: list | None = None
 
 
 def fotografar(projeto, pedido: Pedido) -> Fotografia:
@@ -436,8 +440,9 @@ def medir(foto: Fotografia, progresso: Callable | None = None,
     pagina em branco e as duas contas do endireitar. Nunca toca no projeto.
     `cancelado()` True = para (levanta core.pipeline.Cancelou). Uma folha por
     vez na memoria."""
-    from core import analise
+    from core import analise, dividir_a_mao
     from core import pipeline as P
+    from core.borda_preta import pintar_fora
     from core.dividir import Lombada, dividir_imagem
     from core.endireitar import Inclinacao, detectar_angulo, girar_90
     from core.pdf_io import abrir_pdf, dpi_real_da_pagina, info_paginas, pagina_para_array
@@ -459,6 +464,18 @@ def medir(foto: Fotografia, progresso: Callable | None = None,
             img = pagina_para_array(doc, f.indice, dpi=P.DPI_ANALISE)
             if f.rotacao:
                 img = girar_90(img, f.rotacao)
+            # Etapa 9b-2 (D-559, 27/10/2026, Central `ac-tampa`: "sumir em todo
+            # o livro, e o Kaique escolhe por livro cortar ou pintar de branco";
+            # D-097: "É para sumir totalmente."): a tampa do scanner e procurada
+            # em TODA folha que o Automatico olha (a mesma regra do dividir a
+            # mao, core/dividir_a_mao.achar_a_tampa, que nao pega moldura
+            # impressa: varredura das 2.903 folhas do acervo na etapa 4), e o
+            # resto da medida e feito na folha ja sem ela (como o "dividir
+            # esta": a lombada, o angulo e o corte nao confundem a faixa preta
+            # com o livro). Sem tampa (quase todo livro) a imagem e a mesma.
+            tampa = dividir_a_mao.achar_a_tampa(img, f.rotacao, P.DPI_ANALISE) or [f.rotacao]
+            if len(tampa) == 5:
+                img = pintar_fora(img, tuple(tampa[1:]))
             if f.redividir:
                 lombada = P.achar_divisao(img, foto.dividir_como, P.DPI_ANALISE)
                 dividir = bool(lombada.e_paisagem)
@@ -501,7 +518,8 @@ def medir(foto: Fotografia, progresso: Callable | None = None,
                 partes.append((metade, avisos, bool(tem_cor), discorda, angulo))
             medidas[f.indice] = MedidaDaFolha(
                 f.indice, dividir, float(posicao), float(confianca), bool(paisagem), sobra,
-                float(inclinacao.angulo), float(inclinacao.confianca), alertas, partes)
+                float(inclinacao.angulo), float(inclinacao.confianca), alertas, partes,
+                tampa=list(tampa))
             del img
         if progresso is not None:
             progresso(total, total, "Pronto")
@@ -686,6 +704,7 @@ def aplicar(projeto, pedido: Pedido, medidas: dict[int, MedidaDaFolha] | None = 
             else:                                 # MARGENS, CADERNOS
                 g.no_livro(CAMPO_DO_LIVRO[etapa], True)
         _avisos_medidos(projeto, pedido, medidas, g)
+        _a_tampa(projeto, medidas, g)                  # etapa 9b-2 (D-559)
         if pedido.no_livro_todo or etapas_pedidas:
             g.no_livro("passou_pelo_automatico", True)
 
@@ -698,6 +717,21 @@ def aplicar(projeto, pedido: Pedido, medidas: dict[int, MedidaDaFolha] | None = 
     acao = g.acao(texto)
     return Resultado(acao=acao, paginas_mudadas=len(acao.indices) if acao else 0,
                      gravuras_refeitas=refeitas, estrutura_mudou=g.estrutura is not None)
+
+
+def _a_tampa(projeto, medidas, g: _Gravador) -> None:
+    """Etapa 9b-2 (D-559: a tampa do scanner some em todo o livro, também no
+    Automático): cada folha medida guarda a tampa achada agora
+    (ConfigFolha.tampa_do_scanner; o preparo da página a pinta de branco e, no
+    livro em "cortar fora", corta a página na beirada dela). Na mesma ação do
+    Automático (o Ctrl+Z a devolve). A folha que não mudou nada (sem tampa, e
+    já procurada nesta rotação) não entra na ação."""
+    for folha in projeto.folhas:
+        medida = medidas.get(folha.indice)
+        if medida is None or medida.tampa is None:
+            continue
+        if _json(getattr(folha, "tampa_do_scanner", None)) != _json(medida.tampa):
+            g.na_folha(folha, "tampa_do_scanner", list(medida.tampa))
 
 
 def _paginas_do_pedido_depois_de_dividir(projeto, pedido: Pedido, antes: list) -> list:

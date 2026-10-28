@@ -25,6 +25,14 @@ O QUE FAZ
 
     Clicar numa página faz dela a página da vez (o quadro azul, como no livro aberto).
 
+    ZOOM (etapa 9b-2 da obra, D-570, 27/10/2026, Central `v-zoom-pares`: "Sim, zoom também no lado
+    a lado"; D-571, `v-100`: "A página inteira cabendo na tela"): o "– N% +" e o "ajustar à tela" da
+    barra de baixo valem aqui também. 100% = o par inteiro cabendo na tela (o "caber a página");
+    acima disso as páginas crescem na mesma proporção, a página da vez fica à vista e a roda rola
+    (para cima e para baixo; a barra de baixo, para os lados). Ctrl+roda dá zoom (D-568). As
+    prévias são aumentadas para o tamanho da tela (no_tamanho); no zoom alto a página fica tão
+    nítida quanto a prévia escolhida nas Configurações.
+
 Seguro mudar: os textos. Arriscado: pedir a prévia aqui no fio da tela de um jeito que espere por ela
 (trava a janela); guardar as prévias inteiras (memória).
 """
@@ -35,12 +43,17 @@ from PySide6.QtCore import QPointF, Qt, QTimer, Signal
 
 from ui.widgets.paginas_rolando import CABER_PAGINA, DUAS, MARGEM, PaginasRolando, no_tamanho
 
+# Os mesmos limites do zoom das ferramentas (ui/widgets/visualizador.ZOOM_MIN/MAX)
+ZOOM_MIN, ZOOM_MAX = 1.0, 8.0
+
 
 class PaginasLadoALado(PaginasRolando):
     """As páginas do livro como vão sair, em pares rolando (ver o começo do arquivo)."""
 
     # a página da vez agora (índice da página no projeto): rolando ou clicando
     pagina_da_vez_mudou = Signal(int)
+    # o zoom mudou (pela roda com Ctrl): a barra de baixo mostra o número novo
+    zoom_mudou = Signal(float)
 
     def __init__(self, parent=None) -> None:
         super().__init__(parent)
@@ -48,6 +61,7 @@ class PaginasLadoALado(PaginasRolando):
         self.continuo = True
         self.caber = CABER_PAGINA
         self.indices: list[int] = []          # posição na tela -> índice da página no projeto
+        self.zoom = 1.0                       # D-570: 1,0 = o par inteiro cabendo na tela
         self._buscar = None                   # função(indice, da_vez) -> (imagem ou None, chave)
         self._entregues: dict[int, str] = {}  # posição -> chave da prévia que está guardada
         self._refazer = QTimer(self)
@@ -119,6 +133,43 @@ class PaginasLadoALado(PaginasRolando):
         self.indices = []
         self._entregues = {}
         super().limpar()
+
+    # --- o zoom (D-570) --------------------------------------------------------------
+
+    def definir_zoom(self, zoom: float) -> None:
+        """Muda o zoom (preso entre ZOOM_MIN e ZOOM_MAX), com a página da vez
+        à vista e o par no meio da largura."""
+        novo = float(min(max(zoom, ZOOM_MIN), ZOOM_MAX))
+        if abs(novo - self.zoom) < 1e-4:
+            return
+        self.zoom = novo
+        atual = self.atual
+        self._arrumar()
+        self.ir_para(atual)
+        barra = self.horizontalScrollBar()
+        barra.setValue((barra.maximum() + barra.minimum()) // 2)
+        self.zoom_mudou.emit(self.zoom)
+
+    def ajustar_a_tela(self) -> None:
+        """100%: o par inteiro cabendo na tela."""
+        self.definir_zoom(1.0)
+
+    def _altura_da_linha(self, proporcoes: float, largura: float, altura: float) -> float:
+        """A altura da linha do "caber a página" (o par inteiro na tela)
+        vezes o zoom (D-570)."""
+        # getattr: a arrumação pode rodar ainda dentro do __init__ da classe-mãe
+        # (num resize), antes de o zoom existir
+        return super()._altura_da_linha(proporcoes, largura, altura) * getattr(self, "zoom", 1.0)
+
+    def wheelEvent(self, evento) -> None:  # noqa: N802 - nome do Qt
+        """Ctrl+roda dá zoom (D-568); sem Ctrl, rola como sempre."""
+        if evento.modifiers() & Qt.ControlModifier:
+            passos = evento.angleDelta().y()
+            if passos:
+                self.definir_zoom(self.zoom * (1.25 if passos > 0 else 1 / 1.25))
+            evento.accept()
+            return
+        super().wheelEvent(evento)
 
     # --- o desenho das páginas (troca o PDF pelas prévias) ----------------------
 

@@ -215,8 +215,6 @@ class PainelDeMiniaturas(QFrame):
             linha.addWidget(self.titulo)
             linha.addWidget(self.seta)
             linha.addWidget(self.pontos)
-            for peca in (self.titulo, self.pontos, self.botao_ver_todas):
-                peca.setVisible(True)
             if de_lado:
                 linha.addStretch()
                 baixo = QHBoxLayout(self.linha_do_ver_todas)
@@ -226,6 +224,11 @@ class PainelDeMiniaturas(QFrame):
             else:
                 linha.addWidget(self.botao_ver_todas)
                 linha.addStretch()
+            # Lista de bugs de 22/10/2026 (etapa 9b-2): só DEPOIS de cada peça
+            # estar no lugar (com pai); antes, o "ver todas" sem pai aparecia
+            # por um instante como janela solta
+            for peca in (self.titulo, self.pontos, self.botao_ver_todas):
+                peca.setVisible(True)
         self.linha_do_ver_todas.setVisible(de_lado and self.aberta)
         self.cabecalho.setSizePolicy(QSizePolicy.Preferred,
                                      QSizePolicy.Expanding if fininha else QSizePolicy.Fixed)

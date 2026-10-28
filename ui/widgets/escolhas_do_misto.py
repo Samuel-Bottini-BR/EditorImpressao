@@ -166,7 +166,12 @@ class EscolhasDoMisto(QWidget):
             self.botoes[valor] = botao
             self._frases[valor] = frase
             linha.addWidget(botao)
-            botao.setVisible(not com_amostra)
+            # Lista de bugs de 22/10/2026 (etapa 9b-2): mostrar um botão que
+            # ainda não tem pai (a `linha` só entra na peça depois) faz ele
+            # aparecer por um instante como janela solta. Só esconde quando
+            # precisa; aparecer, ele aparece junto com a peça.
+            if com_amostra:
+                botao.setVisible(False)
         if com_amostra:
             from ui.widgets.menu_com_amostra import ListaComAmostra, desenho_das_letras
             self.lista_do_texto = ListaComAmostra(desenho_das_letras)

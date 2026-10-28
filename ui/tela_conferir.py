@@ -127,6 +127,8 @@ programa" (eram "voltar ao automático"). As listas "aplicar em" dizem folha
 
 from __future__ import annotations
 
+import copy
+
 import functools
 import dataclasses
 import traceback
@@ -136,7 +138,7 @@ import numpy as np
 
 import atalhos
 from PySide6.QtCore import QEvent, Qt, QTimer, Signal
-from PySide6.QtCore import QLocale, QSize
+from PySide6.QtCore import QLocale, QObject, QSize
 from PySide6.QtGui import QColor, QPainter
 from PySide6.QtWidgets import (
     QCheckBox,
@@ -561,6 +563,49 @@ class _RotuloDoLivro(QLabel):
         self._encaixar()
 
 
+class _FiltroDaTab(QObject):
+    """Filtro de teclas da aplicação (etapa 9b-2, lista única 1.10): passa a
+    Tab à tela de conferir à vista (TelaConferir._tab_da_proxima_duvida) antes
+    de o Qt a usar para mudar o foco. UM filtro só para o programa inteiro
+    (instalar_o_filtro_da_tab), que conhece as telas por referência fraca: com
+    um filtro por tela, cada evento do programa passaria por todos eles. Só
+    olha KeyPress de Tab; o resto passa direto."""
+
+    def __init__(self) -> None:
+        super().__init__()
+        import weakref
+
+        self.telas = weakref.WeakSet()
+
+    def eventFilter(self, _vigiado, evento) -> bool:  # noqa: N802 - nome do Qt
+        if evento.type() != QEvent.KeyPress or evento.key() != Qt.Key_Tab:
+            return False
+        for tela in list(self.telas):
+            try:
+                if tela._tab_da_proxima_duvida(evento):
+                    return True
+            except RuntimeError:          # a tela do Qt já foi apagada
+                self.telas.discard(tela)
+        return False
+
+
+_FILTRO_DA_TAB: _FiltroDaTab | None = None
+
+
+def instalar_o_filtro_da_tab(tela) -> None:
+    """Põe `tela` no filtro único da Tab (e instala o filtro na primeira vez)."""
+    global _FILTRO_DA_TAB
+    from PySide6.QtWidgets import QApplication
+
+    app = QApplication.instance()
+    if app is None:
+        return
+    if _FILTRO_DA_TAB is None:
+        _FILTRO_DA_TAB = _FiltroDaTab()
+        app.installEventFilter(_FILTRO_DA_TAB)
+    _FILTRO_DA_TAB.telas.add(tela)
+
+
 class TelaConferir(QWidget):
     voltar = Signal()
     processar = Signal()
@@ -782,6 +827,8 @@ class TelaConferir(QWidget):
         self.lado_a_lado = PaginasLadoALado()
         self.lado_a_lado.definir_fonte(self._previa_do_lado_a_lado)
         self.lado_a_lado.pagina_da_vez_mudou.connect(self._pagina_do_lado_a_lado)
+        # D-570 (etapa 9b-2): o Ctrl+roda nos pares muda o "N%" da barra de baixo
+        self.lado_a_lado.zoom_mudou.connect(lambda _z: self._acertar_o_zoom_da_barra())
         self.vista_da_pagina.addWidget(self.lado_a_lado)
         from ui.widgets.filtros_tela_cheia import VistaAntesDepois
         self.vista_antes_depois = VistaAntesDepois()
@@ -792,6 +839,9 @@ class TelaConferir(QWidget):
         self.mostrar = UMA            # "Uma página" de fabrica (D-007)
         self.comparando = False       # "antes / depois" desligado de fabrica
         self._roda_acumulada = 0      # a roda do mouse que ainda nao virou pagina
+        # etapa 9b-2 (lista única 1.10): a Tab da "próxima dúvida" antes de o
+        # Qt usá-la para passar o foco (_tab_da_proxima_duvida)
+        instalar_o_filtro_da_tab(self)
         self._tamanhos_das_folhas: tuple[str, list] = ("", [])
         centro.addWidget(self.vista_da_pagina, 1)
         # os botoes de girar do canto: filhos da area da pagina, por cima dela
@@ -1012,6 +1062,27 @@ class TelaConferir(QWidget):
         self.sinal_desentortando.setVisible(False)
         linha.addSpacing(RESPIRO_DA_BARRA_DE_BAIXO)
         linha.addWidget(self.sinal_desentortando)
+        # Etapa 9b-2 da obra (D-064, 22/10/2026: "é só colocar uma bolinha de
+        # carregamento, pode ter uma pro livro inteiro e outra para a pagina
+        # que estamos, quando passsamos o mouse em cima mostra a mensagem de
+        # porcentagem e quantas paginas carregaram já."; D-473): a bolinha da
+        # página gira enquanto a página da vez não chegou, ou enquanto a
+        # imagem do tamanho do PDF dela é feita por trás (quando chega, a tela
+        # troca pela do PDF); a do livro gira enquanto o livro inteiro é
+        # medido por trás (D-284) ou as marcações são preparadas (Z1 (b)).
+        # Paradas, não aparecem. _acertar_as_bolinhas, num relógio.
+        from ui.widgets.bolinha import BolinhaDeCarregamento
+
+        self.bolinha_da_pagina = BolinhaDeCarregamento()
+        self.bolinha_do_livro = BolinhaDeCarregamento()
+        linha.addWidget(self.bolinha_da_pagina)
+        linha.addWidget(self.bolinha_do_livro)
+        self._andamento_das_marcacoes_n = (0, 0)
+        self._relogio_das_bolinhas = QTimer(self)
+        self._relogio_das_bolinhas.setInterval(400)
+        self._relogio_das_bolinhas.timeout.connect(self._acertar_as_bolinhas)
+        # o relógio só anda com a tela à vista (showEvent / hideEvent): uma tela
+        # escondida (outra janela, testes) não gasta nada
         linha.addSpacing(RESPIRO_DA_BARRA_DE_BAIXO)
         self.botao_desfazer_embaixo = botao_pequeno(
             "", "Desfazer (Ctrl+Z)", self.desfazer)
@@ -1130,6 +1201,53 @@ class TelaConferir(QWidget):
         self.paineis.historico.definir_icones(
             _icone_da_barra("desfazer"), _icone_da_barra("refazer"))
         return ""
+
+    def _acertar_as_bolinhas(self) -> None:
+        """As duas bolinhas de carregamento da barra de baixo (D-064; ver
+        _montar_barra_de_baixo). A da página: a prévia da vez ainda não chegou,
+        ou a imagem do tamanho do PDF dela está sendo feita por trás. A do
+        livro: o livro inteiro sendo medido por trás (a tarefa da janela,
+        `medida_ao_abrir`) ou as marcações sendo preparadas. O balão diz a
+        porcentagem e quantas páginas já foram. Nunca levanta."""
+        try:
+            if not hasattr(self, "bolinha_da_pagina"):
+                return
+            if not self.isVisible():
+                self._relogio_das_bolinhas.stop()
+                return
+            if not self._pronta() or self.projeto is None or self.previas is None:
+                self.bolinha_da_pagina.definir(False)
+                self.bolinha_do_livro.definir(False)
+                return
+            if self.trabalha_com_folhas:
+                self.bolinha_da_pagina.definir(False)
+            else:
+                indice = self.indice_pagina
+                sem_previa = self.previas.ja_pronta(indice, self._dpi_atual) is None
+                do_pdf = self.previas.medida_pendente(indice)
+                if sem_previa:
+                    dica = "Esta página: carregando."
+                elif do_pdf:
+                    dica = ("Esta página: preparando a imagem igual ao PDF. Quando ficar "
+                            "pronta, a tela troca sozinha.")
+                else:
+                    dica = ""
+                self.bolinha_da_pagina.definir(sem_previa or do_pdf, dica)
+            feitas, total = 0, 0
+            tarefa = getattr(self.window(), "medida_ao_abrir", None)
+            if tarefa is not None and tarefa.isRunning():
+                feitas, total = getattr(tarefa, "andamento", (0, 0))
+            marcadas, de_marcar = self._andamento_das_marcacoes_n
+            if de_marcar and marcadas < de_marcar and not total:
+                feitas, total = marcadas, de_marcar
+            carregando = bool(total) and feitas < total
+            dica = ""
+            if carregando:
+                dica = (f"Livro: {round(100 * feitas / total)}% ({feitas} de {total} "
+                        f"folha{'' if total == 1 else 's'} já carregada{'' if feitas == 1 else 's'}).")
+            self.bolinha_do_livro.definir(carregando, dica)
+        except Exception:  # noqa: BLE001 - a bolinha é ajuda; nunca derruba a tela
+            registrar_erro("bolinhas de carregamento", traceback.format_exc())
 
     def _mostrar_o_historico(self) -> None:
         """Botao do Historico na barra de baixo: abre o painel Historico, ou
@@ -1701,7 +1819,7 @@ class TelaConferir(QWidget):
         coluna.addWidget(frase_do_painel(
             "Rápida: abre logo. Alta: mais nítida no zoom, demora mais por página."))
         coluna.addSpacing(6)
-        coluna.addWidget(self._parte_do_livro(
+        parte = self._parte_do_livro(
             ["Cortar a beirada da folha vizinha: "
              + ("sim" if getattr(self.projeto, "cortar_sobra", False) else "não"),
              # item 2.5 (G8): o corte que segue o conteudo
@@ -1710,7 +1828,45 @@ class TelaConferir(QWidget):
              # item 2.13 (g7): a borda preta do scanner
              "Página dentro da borda preta: "
              + (_nome_da_borda(self.projeto) if getattr(self.projeto, "borda_preta", False)
-                else "não")], "cortar"))
+                else "não")], "cortar")
+        # Etapa 9b-2 da obra (D-554, 27/10/2026, Central `ac-margens-iguais`:
+        # "Também na tela do corte"; confirma a D-494; D-075: a caixinha
+        # "Margens iguais", desmarcada de fábrica): a MESMA caixinha da etapa
+        # "Margens iguais" do Automático, aqui na parte "Para o livro todo" do
+        # Cortar. Mexe no mesmo valor do livro (Projeto.margens_iguais), numa
+        # ação do desfazer (_mudar_margens_iguais); o Automático mostra o que o
+        # livro tem depois. Arriscado: guardar o valor em outro lugar (as duas
+        # caixinhas deixariam de concordar).
+        layout_da_parte = parte.layout()
+        self.caixa_margens_iguais = QCheckBox("Margens iguais")
+        estilo.estilizar(self.caixa_margens_iguais, lambda: estilo_da_caixinha_com_quadrado(13))
+        self.caixa_margens_iguais.setCursor(Qt.PointingHandCursor)
+        self.caixa_margens_iguais.setFocusPolicy(Qt.NoFocus)
+        self.caixa_margens_iguais.setToolTip(
+            "Todas as páginas do tamanho da maior, com a margem em volta (a mesma caixinha "
+            "da etapa \"Margens iguais\" do Automático).")
+        self.caixa_margens_iguais.setChecked(bool(getattr(self.projeto, "margens_iguais", False)))
+        self.caixa_margens_iguais.toggled.connect(self._mudar_margens_iguais)
+        layout_da_parte.insertWidget(layout_da_parte.count() - 1, self.caixa_margens_iguais)
+        coluna.addWidget(parte)
+
+    @protegido
+    def _mudar_margens_iguais(self, ligada: bool) -> None:
+        """A caixinha "Margens iguais" do Cortar (D-554): liga ou desliga as
+        margens iguais do LIVRO (o mesmo valor da etapa do Automático), numa
+        ação do Histórico (o Ctrl+Z desfaz), e o painel Automático passa a
+        mostrar o que o livro tem."""
+        if self.projeto is None or self.acoes is None:
+            return
+        ligada = bool(ligada)
+        if ligada == bool(getattr(self.projeto, "margens_iguais", False)):
+            return
+        self._gravar_no_livro("margens_iguais", ligada,
+                              "Margens iguais " + ("ligadas" if ligada else "desligadas"))
+        try:
+            self.paineis.automatico.estado.do_projeto(self.projeto)
+        except Exception:  # noqa: BLE001 - o painel é ajuda; nunca desfaz a mudança
+            registrar_erro("margens iguais no Automatico", traceback.format_exc())
 
     def _escolher_tamanho_da_folha(self) -> None:
         """Problema 1, opção A: digitar o tamanho final em vez de arrastar.
@@ -1831,6 +1987,8 @@ class TelaConferir(QWidget):
         self._qualidade_da_previa = nome_qualidade
         self._dpi_normal = QUALIDADES_DA_PREVIA[nome_qualidade]
         self._dpi_atual = self._dpi_normal
+        if self.previas is not None:
+            self.previas.dpi_da_tela = self._dpi_normal      # etapa 9b-2 (D-473)
         configuracoes.escrever("qualidade_previa", nome_qualidade)
         self.atualizar()
 
@@ -2650,11 +2808,33 @@ class TelaConferir(QWidget):
             return None
         return self.projeto.paginas[self.indice_pagina]
 
+    # Os campos da página que a marcação muda (o desfazer os guarda e devolve
+    # juntos: etapa 9b-2, _selecao_mudou)
+    CAMPOS_DA_MARCACAO = ("selecao", "marcacao_provisoria", "mexida_a_mao", "geometria_das_zonas")
+
     def _selecao_mudou(self) -> None:
-        """Grava a marcacao na pagina e joga fora a previa, que ficou velha."""
+        """Grava a marcacao na pagina e joga fora a previa, que ficou velha.
+
+        Etapa 9b-2 da obra (D-020, 18/07: "Ctrl+Z desfaz qualquer alteração,
+        sem limite de quantidade"; lista única 23/10, 1.3: "Marco um
+        retângulo com a ferramenta Retângulo, clico no desfazer de baixo, e a
+        marcação continua lá" - em 11 livros -, 4.6: a marca que o desfazer
+        não tirou sai impressa, e 1.7: o desfazer desfazia a ação de ANTES
+        (o giro das 135 folhas); promessa P-129): cada mudança da marcação
+        (uma área nova, "Limpar tudo", "Deixar a folha em branco", procurar de
+        novo, mexer numa área) vira UMA ação do Histórico, com a marcação de
+        antes e a de depois. O Ctrl+Z, o menu Editar e o desfazer da barra de
+        baixo a tiram (e o PDF sai sem ela). Antes ela só ia para a página,
+        fora do Histórico (o editor tinha um desfazer próprio, que só valia
+        enquanto a página estava aberta).
+        Arriscado: registrar a ação ANTES de gravar na página (a de depois
+        sairia igual à de antes) ou guardar a lista da página sem copiar (o
+        desfazer devolveria a lista já mudada)."""
         pagina = self._pagina_marcada()
         if pagina is None:
             return
+        antes = {campo: copy.deepcopy(getattr(pagina, campo, None))
+                 for campo in self.CAMPOS_DA_MARCACAO}
         # 13/10/2026: o que a máquina marcou na cópia do editor é o que ele
         # carregou (_atualizar_marcacao). Se era a marcação provisória (a da
         # prévia) e, por trás, a página já tinha ganhado a do tamanho do PDF,
@@ -2666,6 +2846,7 @@ class TelaConferir(QWidget):
         # etapa 3 da obra: a marcacao feita aqui e "mexida a mao" (core/etapas)
         if any(r.origem == "mao" for r in self.editor_selecao.selecao.regioes):
             etapas_core.marcar_mexida_a_mao(pagina, etapas_core.MARCAR)
+        self._registrar_a_marcacao(pagina, antes)
         self._mostrar_aviso_da_marcacao(
             self.editor_selecao.selecao.resumo_em_portugues())
         self._avaliar_os_pedacos(pagina)        # conferencia 13, S3
@@ -2675,7 +2856,37 @@ class TelaConferir(QWidget):
         # contador. Mas mexe no TRABALHO, e por isso avisa daqui.
         self.trabalho_mudou.emit()
 
+    def _registrar_a_marcacao(self, pagina, antes: dict) -> None:
+        """A ação do Histórico da marcação (ver _selecao_mudou): só quando algo
+        mudou. Valores como o projeto.json grava (o desfazer os põe de volta
+        com historico_acoes.aplicar)."""
+        from core.dividir_a_mao import _json
+        from modelos import Acao
+
+        if self.acoes is None:
+            return
+        depois = {campo: copy.deepcopy(getattr(pagina, campo, None))
+                  for campo in self.CAMPOS_DA_MARCACAO}
+        if _json(antes) == _json(depois):
+            return
+        indice = str(pagina.indice)
+        mudaram = [c for c in self.CAMPOS_DA_MARCACAO if _json(antes[c]) != _json(depois[c])]
+        acao = Acao.nova("marcar", "pagina", [pagina.indice],
+                         {c: {indice: _json(antes[c])} for c in mudaram},
+                         {c: {indice: _json(depois[c])} for c in mudaram},
+                         f"Marcação da página {pagina.indice + 1}")
+        self.acoes.registrar(acao)
+        self._atualizar_barra_de_baixo()
+
     def _desfazer_marcacao(self) -> None:
+        """O "desfazer" da marcação: com a última ação do Histórico sendo a
+        marcação desta página, é o desfazer de todo lugar (etapa 9b-2, 1.3);
+        senão, tira a última área do editor (e isso também vira ação)."""
+        ultima = self.acoes.feitas[-1] if self.acoes is not None and self.acoes.feitas else None
+        if (ultima is not None and ultima.tipo == "marcar"
+                and ultima.indices == [self.indice_pagina]):
+            self.desfazer()
+            return
         self.editor_selecao.desfazer()
         self._selecao_mudou()
 
@@ -3147,6 +3358,9 @@ class TelaConferir(QWidget):
             self.projeto = projeto
             self.acoes = acoes
             self.previas = previas
+            # etapa 9b-2 (D-473/D-064): a imagem do tamanho do PDF volta
+            # reduzida a esta resolucao e toma o lugar da previa
+            self.previas.dpi_da_tela = self._dpi_normal
             self.previas.pronta.connect(self._previa_chegou)
             self.previas.cartoes_prontos.connect(self._cartoes_prontos)
             # item 2.12 (resposta P6): a medida do desentortar por tras
@@ -3958,7 +4172,7 @@ class TelaConferir(QWidget):
 
         for chave, cartao in self.cartoes.items():
             if chave == pagina.filtro:
-                cartao.definir_amostra(limitar_altura(self._com_as_margens(img), 260))
+                cartao.definir_amostra(limitar_altura(self._como_sai_no_pdf(img), 260))
 
         outros = [chave for chave in self.cartoes if chave != pagina.filtro]
         if TIRAR_FUNDO in outros:
@@ -3983,7 +4197,7 @@ class TelaConferir(QWidget):
                 and all(c in self._cartoes_cache for c in a_pintar)):
             for chave in a_pintar:
                 self.cartoes[chave].definir_amostra(
-                    self._com_as_margens(self._cartoes_cache.get(chave)))
+                    self._como_sai_no_pdf(self._cartoes_cache.get(chave)))
             return
 
         for chave in a_pintar:
@@ -3995,12 +4209,13 @@ class TelaConferir(QWidget):
             chave=chave_cache, dpi=DPI_AMOSTRA_DOS_CARTOES,
         )
 
-    def _com_as_margens(self, img):
+    def _com_as_margens(self, img, indice: int | None = None):
         """Item 2.4 (Samuel, 22/10/2026: "Sim, a tela mostra igual ao que
         sai"): com as margens iguais ligadas, a pagina dos cartoes aparece com
         elas, como no PDF. Enquanto as paginas nao foram medidas, pede a
         medida por tras (TarefaMedirAsMargens) e mostra sem margem; quando
-        termina, os cartoes sao pintados de novo. Desligadas: `img` mesmo."""
+        termina, os cartoes sao pintados de novo. Desligadas: `img` mesmo.
+        indice: a pagina (None = a da vez; etapa 9b-2, o lado a lado)."""
         from core.pipeline import conta_das_margens_para_a_tela, margens_na_tela
 
         if img is None or self.projeto is None or not getattr(self.projeto, "margens_iguais", False):
@@ -4009,7 +4224,71 @@ class TelaConferir(QWidget):
         if conta is None:
             self._medir_as_margens()
             return img
-        return margens_na_tela(img, self.projeto, self.projeto.paginas[self.indice_pagina], conta)
+        indice = self.indice_pagina if indice is None else indice
+        return margens_na_tela(img, self.projeto, self.projeto.paginas[indice], conta)
+
+    def _como_sai_no_pdf(self, img, indice: int | None = None, dpi: float | None = None):
+        """Etapa 9b-2 da obra (D-547, apoiada em D-473/D-066: "precisamos que
+        o pdf saia que nem está na tela"; o Livro: "Mover uma página → a
+        miniatura, a tela cheia e o lado a lado mostram igual ao PDF"): a
+        página `img` (a prévia, ou uma amostra dela) como ela sai no PDF -
+        com as margens iguais, se ligadas, e MOVIDA/REDIMENSIONADA na área
+        branca (a folha escolhida ou, sem folha, a própria página), pela
+        MESMA conta do PDF (core.folha.compor_na_folha, depois do filtro e das
+        margens, como core.pipeline._pagina_pronta). Página que ninguém moveu
+        nem pôs numa folha: a mesma imagem (as margens à parte).
+        dpi: a resolução de `img`; None = a da prévia, contada pela altura da
+        prévia guardada desta página (as amostras dos cartões são menores).
+        Onde vale: os cartões do painel Filtro, o lado a lado, o "antes /
+        depois", a tela cheia dos filtros e as miniaturas da página movida.
+        Não vale nas ferramentas em que se marca, corta, divide ou endireita
+        SOBRE a página (Marcar, Cortar, Dividir, Endireitar): lá a marcação e o
+        corte são frações da página (D-546). A ferramenta Mover compõe sozinha.
+        Nunca levanta (a tela mostra a página como veio)."""
+        from core.folha import compor_na_folha
+
+        if img is None or self.projeto is None:
+            return img
+        try:
+            indice = self.indice_pagina if indice is None else indice
+            if not 0 <= indice < len(self.projeto.paginas):
+                return img
+            pagina = self.projeto.paginas[indice]
+            if dpi is None:
+                dpi = float(self._dpi_atual or DPI_PREVIA)
+                previa = (self.previas.ja_pronta(indice, self._dpi_atual)
+                          if self.previas is not None else None)
+                if previa is not None and previa.shape[0] > 0 and previa.shape[0] != img.shape[0]:
+                    dpi *= img.shape[0] / previa.shape[0]
+            com_margens = self._com_as_margens(img, indice)
+            return compor_na_folha(
+                com_margens, pagina.tamanho_folha_cm, dpi,
+                escala=pagina.conteudo_escala, deslocamento=pagina.conteudo_deslocamento,
+                mexido_a_mao=etapas_core.conteudo_mexido(self.projeto, pagina))
+        except Exception:  # noqa: BLE001 - a tela mostra a página como veio
+            registrar_erro("como sai no PDF (tela)", traceback.format_exc())
+            return img
+
+    def _sai_diferente_da_previa(self, indice: int) -> bool:
+        """A página `indice` sai no PDF diferente da prévia (movida, numa
+        folha escolhida ou com as margens iguais)? Barato: só lê campos."""
+        if self.projeto is None or not 0 <= indice < len(self.projeto.paginas):
+            return False
+        pagina = self.projeto.paginas[indice]
+        return bool(getattr(self.projeto, "margens_iguais", False)
+                    or pagina.tamanho_folha_cm is not None
+                    or etapas_core.conteudo_mexido(self.projeto, pagina))
+
+    def _assinatura_do_como_sai(self, indice: int) -> str:
+        """O que muda a página composta (D-547) além da prévia: o lugar e o
+        tamanho do conteúdo, a folha e as margens. Vai junto na chave de quem
+        guarda a página composta (o lado a lado)."""
+        if self.projeto is None or not 0 <= indice < len(self.projeto.paginas):
+            return ""
+        pagina = self.projeto.paginas[indice]
+        return (f":{pagina.conteudo_escala}:{tuple(pagina.conteudo_deslocamento)}:"
+                f"{pagina.tamanho_folha_cm}:{bool(getattr(self.projeto, 'margens_iguais', False))}"
+                f":{etapas_core.conteudo_mexido(self.projeto, pagina)}")
 
     def _medir_as_margens(self) -> None:
         from ui.tarefas import TarefaMedirAsMargens
@@ -4120,22 +4399,38 @@ class TelaConferir(QWidget):
         a_pintar = self._cartoes_a_pintar(list(resultados), pagina)
         for chave, amostra in resultados.items():
             if chave in self.cartoes and chave in a_pintar:
-                self.cartoes[chave].definir_amostra(self._com_as_margens(amostra))
+                self.cartoes[chave].definir_amostra(self._como_sai_no_pdf(amostra))
 
         self._conferir_qualidade_do_preto_e_branco(pagina, resultados)
 
     def _conferir_qualidade_do_preto_e_branco(self, pagina, resultados: dict) -> None:
         """Problema 5.4 do plano: aponta sozinho páginas que podem ter saído
         erradas, comparando o resultado com o original - em vez do Samuel
-        ter que abrir imagem por imagem procurando problema."""
+        ter que abrir imagem por imagem procurando problema.
+
+        Etapa 9b-2 da obra (lista única 23/10, 1.2: "O aviso oferece 'usar
+        mais fraco', e o botão não faz nada" - em páginas de Mágico pro e de
+        Melhorar -, e 5.9: "O aviso fala de 'força do preto' em página feita
+        com Mágico pro ou Melhorar, onde isso não existe"): o aviso "Ficou
+        escura" / "Texto quase sumiu" é sobre o PRETO E BRANCO (o resultado
+        medido aqui é o do cartão Preto e branco, e o botão mexe na força do
+        preto), como core.analise.analisar_resultado já dizia ("Só valem para o
+        preto e branco"). Só vale na página que sai em Preto e branco; nas
+        outras ele sai. Arriscado: pôr o aviso pelo cartão de um filtro que a
+        página não usa (o botão não mudaria a página)."""
         from core.analise import ESCURA_DEMAIS, APAGADA_DEMAIS, avaliar_preto_e_branco
 
         original = resultados.get(ORIGINAL)
         pb = resultados.get(PRETO_E_BRANCO)
-        if original is None or pb is None:
+        if self.projeto is not None and etapas_core.filtro_que_vale(self.projeto, pagina) != PRETO_E_BRANCO:
+            original = pb = None                     # não é Preto e branco: o aviso não vale
+            if not (pagina.alertas.count(ESCURA_DEMAIS) or pagina.alertas.count(APAGADA_DEMAIS)):
+                return
+            achado = None
+        elif original is None or pb is None:
             return
-
-        achado = avaliar_preto_e_branco(original, pb)
+        else:
+            achado = avaliar_preto_e_branco(original, pb)
         tinha_algum = pagina.alertas.count(ESCURA_DEMAIS) or pagina.alertas.count(APAGADA_DEMAIS)
         pagina.alertas = [a for a in pagina.alertas if a not in (ESCURA_DEMAIS, APAGADA_DEMAIS)]
         if achado is not None:
@@ -4258,6 +4553,7 @@ class TelaConferir(QWidget):
         total 0, ou feitas >= total, tira o andamento. Seguro mudar: a frase.
         """
         texto = ""
+        self._andamento_das_marcacoes_n = (int(feitas), int(total))   # etapa 9b-2 (D-064)
         if total > 0 and feitas < total:
             texto = f"Preparando as marcações do livro… {feitas} de {total}"
         if texto == self._andamento_das_marcacoes:
@@ -4388,6 +4684,13 @@ class TelaConferir(QWidget):
         if ABA_ANGULO in self._abas_ativas:
             self._atualizar_conta_do_endireitar()
 
+        if hasattr(self, "caixa_margens_iguais"):
+            # D-554: a caixinha do Cortar mostra o valor do livro (mudado aqui,
+            # no Automático ou pelo desfazer), sem sinal (mostrar não é mudar)
+            self.caixa_margens_iguais.blockSignals(True)
+            self.caixa_margens_iguais.setChecked(bool(getattr(self.projeto, "margens_iguais", False)))
+            self.caixa_margens_iguais.blockSignals(False)
+
         if ABA_FILTRO in self._abas_ativas:
             self._configurar_medidor()
         # "deixar em branco" / "tirar do livro" (os de "Esta página" e os do
@@ -4407,7 +4710,33 @@ class TelaConferir(QWidget):
                              apagada=getattr(item, "apagada", False),
                              conferida=bool(item.revisada))
         self.tira.definir_giros(self._giros_das_folhas())      # D2: so as que mudaram
+        self._acertar_as_miniaturas_movidas()
         self.tira.selecionar(self.indice_atual)
+
+    def _acertar_as_miniaturas_movidas(self) -> None:
+        """Etapa 9b-2 (D-547: "Mover uma página → a miniatura [...] mostra
+        igual ao PDF"): a miniatura da página movida/redimensionada ou posta
+        numa folha escolhida mostra a página como sai no PDF (a prévia já
+        guardada, composta na área branca: _como_sai_no_pdf); a que voltou ao
+        lugar volta à folha crua. Página movida cuja prévia ainda não foi
+        desenhada fica com a folha crua até a prévia chegar (_previa_chegou).
+        No Dividir a tira mostra folhas: nada muda. Barato: só lê campos, e
+        só compõe o que mudou (a chave)."""
+        if self.projeto is None or self.previas is None or self.trabalha_com_folhas:
+            return
+        for indice, pagina in enumerate(self.projeto.paginas):
+            movida = (pagina.tamanho_folha_cm is not None
+                      or etapas_core.conteudo_mexido(self.projeto, pagina))
+            if not movida:
+                self.tira.definir_como_sai(indice, "", None)
+                continue
+            previa = self.previas.ja_pronta(indice, self._dpi_atual)
+            if previa is None:
+                continue
+            chave = self.previas.chave(indice, self._dpi_atual) + self._assinatura_do_como_sai(indice)
+            if self.tira._como_sai.get(indice, ("",))[0] == chave:
+                continue
+            self.tira.definir_como_sai(indice, chave, self._como_sai_no_pdf(previa, indice))
 
     def _atualizar_contador(self) -> None:
         assert self.projeto is not None
@@ -4459,6 +4788,8 @@ class TelaConferir(QWidget):
             self.previas.chave_folha(self.indice_folha, DPI_PREVIA),
             self.previas.chave_para_recorte(self.indice_pagina, self._dpi_atual),
         )
+        if chave == esperadas[0]:
+            self._acertar_as_miniaturas_movidas()      # etapa 9b-2 (D-547)
         if chave in esperadas or chave.startswith("folha:"):
             self._atualizar_previa()
         elif (not self.trabalha_com_folhas
@@ -4556,6 +4887,7 @@ class TelaConferir(QWidget):
         if self._espera_pelas_marcacoes(alvo, indices, campos):
             return
         campos = self._com_a_marca_mexida_a_mao(alvo, indices, campos)
+        campos = self._com_os_avisos_de_agora(alvo, indices, campos)
         acao = montar_acao(self.projeto, tipo, alvo, indices, campos, descricao)
         aplicar(self.projeto, acao, acao.depois)
         self.acoes.registrar(acao)
@@ -4580,6 +4912,31 @@ class TelaConferir(QWidget):
             for indice in afetadas:
                 self.previas.invalidar(indice)
         self.atualizar()
+
+    def _com_os_avisos_de_agora(self, alvo: str, indices: list[int], campos: dict) -> dict:
+        """Etapa 9b-2 da obra (lista única 23/10, 1.6: "Mexo numa página que
+        tinha aviso e desfaço: a página volta, mas o aviso some e a dúvida sai
+        da lista sem eu ter resolvido nada [...] desfazer o 'usar Mágico pro
+        nesta' trouxe um aviso a mais que não existia"; D-020): a ação guarda
+        os avisos de AGORA de cada página (os que valem antes de a página ser
+        desenhada de novo e medida), e o desfazer os devolve como eram. Só nas
+        ações de página que não mexem nos avisos por conta própria (o "está
+        bom assim" e os botões dos avisos já os levam). A folha: os avisos
+        dela, do mesmo jeito."""
+        if self.projeto is None:
+            return campos
+        itens = self.projeto.folhas if alvo == "folha" else self.projeto.paginas
+        novos = dict(campos)
+        for campo in ("alertas", "alertas_aceitos"):
+            if campo in campos:
+                continue
+            valores = {}
+            for indice in indices:
+                if 0 <= indice < len(itens) and hasattr(itens[indice], campo):
+                    valores[str(indice)] = copy.deepcopy(list(getattr(itens[indice], campo) or []))
+            if valores:
+                novos[campo] = valores
+        return novos
 
     def _com_a_marca_mexida_a_mao(self, alvo: str, indices: list[int], campos: dict) -> dict:
         """Os campos da acao com a marca "mexida a mao" (core/etapas) de cada
@@ -4650,14 +5007,52 @@ class TelaConferir(QWidget):
 
     @protegido
     def _corte_em_todas(self) -> None:
+        """O "usar em todas" do Dividir (promessa P-061). Etapa 9b-2 da obra
+        (D-090, 08/10/2026: "fazer um corte e mandar para todas as paginas e
+        alterar em algumas paginas só o corte quando cortamos alguma, assim
+        quando mudar de um não muda de todas, eu devo conseguir abrir uma aba
+        para selecionar as que eu quero ( as paginas) ou também simplismente
+        apertar num botão e selecionar todas."; D-091: "'Selecionar todas' e
+        'Nenhuma'"): antes de aplicar, a janela "Em quais páginas?" com as
+        FOLHAS, e as folhas em que a linha já foi acertada à mão (a marca
+        "mexida à mão" do Dividir) vêm desmarcadas: a linha delas não é
+        apagada. Só as marcadas recebem a linha desta folha; cancelar não
+        muda nada. Até a etapa 9b-2 a linha ia para todas, sem perguntar."""
         assert self.projeto is not None
         posicao = self.projeto.folhas[self.indice_folha].posicao_corte
-        indices = [f.indice for f in self.projeto.folhas]
+        # pendencia da D2 (como o "usar em todas" do Cortar): com marcacoes
+        # ainda no formato antigo, avisa e nao abre a janela
+        if self._espera_pelas_marcacoes("folha", [f.indice for f in self.projeto.folhas],
+                                        {"posicao_corte": round(posicao, 4)}):
+            return
+        indices = self._escolher_folhas_da_linha()
+        if not indices:
+            return
+        n = len(indices)
         self._registrar(
             "aplicar_em_todas", "folha", indices,
             {"posicao_corte": round(posicao, 4)},
-            f"Linha de corte de todas as {len(indices)} folhas",
+            f"Linha de corte em {n} folha" + ("" if n == 1 else "s"),
         )
+
+    def _escolher_folhas_da_linha(self) -> list[int]:
+        """Abre a janela "Em quais páginas?" com as folhas (ver
+        _corte_em_todas) e devolve as marcadas (vazio se cancelou). Separado
+        para os testes trocarem a janela."""
+        from core import etapas as E
+        from ui.dialogo_escolher_paginas import DialogoEscolherPaginas
+
+        assert self.projeto is not None
+        vez = self.indice_folha
+        dialogo = DialogoEscolherPaginas(
+            self.projeto, vez, self, itens=self.projeto.folhas, nome="Folha",
+            tem_proprio=lambda f: E.DIVIDIR in (getattr(f, "mexida_a_mao", None) or []),
+            marca="linha própria",
+            explicacao="A linha desta folha vai para as folhas marcadas. As folhas em que "
+                       "você já mudou a linha vêm desmarcadas, para não perder o que fez nelas.")
+        if dialogo.exec() != DialogoEscolherPaginas.Accepted:
+            return []
+        return dialogo.escolhidas()
 
     @protegido
     def _alternar_dividir(self) -> None:
@@ -5257,6 +5652,11 @@ class TelaConferir(QWidget):
         elif acao == "trazer":
             self._registrar("restaurar", "pagina", indices, {"apagada": False, "em_branco": False},
                             f"Trazer de volta {n} {plural}")
+        elif acao == "dividir":
+            # etapa 9b-2 (D-558): as folhas das escolhidas, pela conta do
+            # "dividir esta" (por trás, com andamento; _dividir_escolhidas)
+            self._dividir_escolhidas(sorted({self.projeto.paginas[i].folha for i in indices}))
+            return
         elif acao == "extrair":
             self._extrair(indices)
             return
@@ -5266,6 +5666,144 @@ class TelaConferir(QWidget):
             return
         self.abrir_todas_as_paginas()
         self.todas.comecar_a_escolher(indices)
+
+    # --- etapa 9b-2 da obra: "dividir" na grade (D-558) ----------------------
+    #
+    # Samuel, 27/10/2026, Central `ac-grade-inserir`: "quando falei dividir é
+    # dividir a pagina, usando a funcionalidade do scantailor que colocamos no
+    # aplicativo, é isso que deveria ser feito." (D-334: a grade "Todas as
+    # páginas" com seleção múltipla, girar, apagar, extrair, dividir; a D-529,
+    # "numa etapa futura", saiu.) Cada folha escolhida que ainda sai como uma
+    # página só é dividida pela MESMA conta do "dividir esta" da ferramenta
+    # Dividir (core.dividir_a_mao: a lombada pelo jeito da folha - o do
+    # ScanTailor de fábrica -, a tampa do scanner, as marcações à mão indo
+    # para a metade em que estão), por trás, com andamento e "parar", e o
+    # livro muda numa ação só do desfazer. Folha já dividida fica como está.
+    # Arriscado: medir no fio da tela (135 folhas travariam a janela ~30 s) ou
+    # registrar uma ação por folha (o Ctrl+Z desfaria uma folha só).
+
+    def _dividir_escolhidas(self, folhas: list[int], esperar: bool = False) -> None:
+        """Divide as folhas `folhas` (as das páginas escolhidas na grade).
+        `esperar` (testes): mede no mesmo fio, sem a caixa do andamento."""
+        from PySide6.QtWidgets import QProgressDialog
+
+        from ui.tarefas import TarefaDividirFolhas
+
+        if self.projeto is None or self.acoes is None:
+            return
+        a_dividir = [f for f in folhas if 0 <= f < len(self.projeto.folhas)
+                     and not self.projeto.folhas[f].dividir]
+        if not a_dividir:
+            self._avisar("As folhas escolhidas já estão divididas.")
+            return
+        prontas: dict[int, tuple] = {}
+        pedidos: list[tuple[int, str]] = []
+        for f in a_dividir:
+            folha = self.projeto.folhas[f]
+            devolve = (len(dividir_a_mao.paginas_da_folha(self.projeto, f)) >= 2
+                       or bool(folha.metades_guardadas))
+            if devolve and dividir_a_mao.tampa_ja_medida(folha):
+                prontas[f] = (None, None)          # volta como estava, sem medir
+            else:
+                pedidos.append((f, jeito_de_dividir(self.projeto, folha)))
+        if not pedidos:
+            self._dividir_as_medidas(a_dividir, prontas)
+            return
+        if esperar:
+            for f, jeito in pedidos:
+                prontas[f] = dividir_a_mao.medir_para_dividir(self.projeto, f, jeito)
+            self._dividir_as_medidas(a_dividir, prontas)
+            return
+        total = len(pedidos)
+        caixa = QProgressDialog(f"Dividindo as folhas escolhidas... 0 de {total}", "parar",
+                                0, total, self)
+        caixa.setWindowTitle("Dividir")
+        caixa.setWindowModality(Qt.WindowModal)
+        caixa.setMinimumDuration(0)
+        caixa.setAutoClose(False)
+        caixa.setAutoReset(False)
+        tarefa = TarefaDividirFolhas(self.projeto, pedidos)
+        self._tarefa_de_dividir = tarefa
+        self._caixa_de_dividir = caixa
+        self._dividir_pedido = (a_dividir, prontas)
+        # métodos desta tela (e não funções soltas): o Qt entrega o sinal do
+        # fio de fundo no fio da janela
+        tarefa.progresso.connect(self._dividir_andou)
+        tarefa.concluida.connect(self._dividir_mediu)
+        tarefa.falhou.connect(self._dividir_falhou)
+        caixa.canceled.connect(tarefa.cancelar)
+        caixa.show()
+        tarefa.start()
+
+    def _dividir_andou(self, feitas: int, de: int) -> None:
+        """O andamento do "dividir" da grade (D-558) na caixa."""
+        caixa = getattr(self, "_caixa_de_dividir", None)
+        if caixa is None:
+            return
+        caixa.setMaximum(de)
+        caixa.setValue(feitas)
+        caixa.setLabelText(f"Dividindo as folhas escolhidas... {feitas} de {de}")
+
+    def _dividir_mediu(self, medidas) -> None:
+        """As folhas do "dividir" da grade foram medidas: põe no livro (só a
+        tarefa da vez, e não cancelada)."""
+        tarefa = getattr(self, "_tarefa_de_dividir", None)
+        self._fechar_a_caixa_de_dividir()
+        if tarefa is None or tarefa.foi_cancelada:
+            return
+        a_dividir, prontas = self._dividir_pedido
+        self._dividir_as_medidas(a_dividir, {**prontas, **medidas})
+
+    def _dividir_falhou(self, mensagem: str) -> None:
+        self._fechar_a_caixa_de_dividir()
+        self._avisar(mensagem)
+
+    def _fechar_a_caixa_de_dividir(self) -> None:
+        """Fecha a caixa do andamento SEM o sinal "canceled" (o Qt o manda ao
+        fechar a caixa, e ele pararia a tarefa como se fosse o "parar")."""
+        caixa = getattr(self, "_caixa_de_dividir", None)
+        if caixa is not None:
+            caixa.blockSignals(True)
+            caixa.close()
+            self._caixa_de_dividir = None
+
+    def _dividir_as_medidas(self, folhas: list[int], medidas: dict) -> None:
+        """Põe no livro a divisão das `folhas` (medidas: folha -> (lombada,
+        tampa), ou (None, None) para a folha que volta como estava), numa
+        ação só do desfazer (os campos de cada folha juntos, por folha), e
+        volta à grade com as páginas novas escolhidas."""
+        if self.projeto is None:
+            return
+        juntos: dict = {}
+        feitas = []
+        for f in folhas:
+            if f not in medidas or self.projeto.folhas[f].dividir:
+                continue
+            lombada, tampa = medidas[f]
+            if lombada is None:
+                campos = dividir_a_mao.campos_para_dividir(self.projeto, f)
+            elif (len(dividir_a_mao.paginas_da_folha(self.projeto, f)) >= 2
+                  or self.projeto.folhas[f].metades_guardadas):
+                campos = dividir_a_mao.campos_para_dividir(self.projeto, f, tampa=tampa)
+            else:
+                campos = dividir_a_mao.campos_para_dividir(
+                    self.projeto, f, lombada.posicao, lombada.confianca, tampa)
+            for campo, valor in campos.items():
+                if dividir_a_mao.muda_a_lista({campo: valor}):
+                    juntos[campo] = valor
+                else:
+                    juntos.setdefault(campo, {})[str(f)] = valor
+            feitas.append(f)
+        if not feitas:
+            return
+        n = len(feitas)
+        self._registrar("dividir_a_mao", "folha", feitas, juntos,
+                        f"Dividir {n} folha" + ("" if n == 1 else "s")
+                        + " (escolhidas em Todas as páginas)")
+        novas = self._paginas_das_folhas(feitas)
+        if self.pilha_da_tela.currentWidget() is self.todas or self.todas.isVisible():
+            self.abrir_todas_as_paginas()
+            self.todas.comecar_a_escolher(novas)
 
     def _extrair(self, indices: list[int]) -> None:
         """"Extrair": as folhas das paginas escolhidas, como estao no PDF de
@@ -6095,10 +6633,14 @@ class TelaConferir(QWidget):
 
     def _vista_com_zoom(self):
         """A página com zoom que está à vista: a da ferramenta de marcar ou a
-        da ferramenta de página (Dividir, Cortar, Endireitar, Mover). None no
-        "Duas lado a lado" e no "antes / depois" (etapa 6: eles não têm zoom)."""
+        da ferramenta de página (Dividir, Cortar, Endireitar, Mover) e, desde
+        a etapa 9b-2 (D-570, `v-zoom-pares`: "Sim, zoom também no lado a
+        lado"), os pares do "Duas lado a lado". None no "antes / depois"
+        (etapa 6: ele não tem zoom)."""
         if not self._pronta():
             return None
+        if self.vista_da_pagina.currentWidget() is self.lado_a_lado:
+            return self.lado_a_lado
         if self.vista_da_pagina.currentWidget() is not self.area_imagem:
             return None
         aba = self.aba_atual
@@ -6137,8 +6679,8 @@ class TelaConferir(QWidget):
         self.botao_menos_zoom.setEnabled(com_zoom and zoom > 1.0 + 1e-3)
         self.botao_ajustar_a_tela.setEnabled(com_zoom and zoom > 1.0 + 1e-3)
         explicacao = ("" if com_zoom else
-                      "\nNo “Duas lado a lado” e no “antes / depois” a página cabe na tela; "
-                      "o zoom é na “Uma página”.")
+                      "\nNo “antes / depois” a página cabe na tela; o zoom é na “Uma página” "
+                      "e no “Duas lado a lado”.")
         self.rotulo_do_zoom.setToolTip(
             "O zoom da página (100% = a página inteira cabendo na tela)" + explicacao)
 
@@ -6246,10 +6788,12 @@ class TelaConferir(QWidget):
         pedir nada."""
         if self.previas is None or self.projeto is None:
             return None, ""
-        chave = self.previas.chave(indice, self._dpi_atual)
+        # etapa 9b-2 (D-547): a página como sai no PDF (movida, na folha, com
+        # as margens iguais); a chave leva o lugar e o tamanho do conteúdo
+        chave = self.previas.chave(indice, self._dpi_atual) + self._assinatura_do_como_sai(indice)
         if so_olhar:
             return None, chave
-        return self.previas.pegar(indice, self._dpi_atual), chave
+        return self._como_sai_no_pdf(self.previas.pegar(indice, self._dpi_atual), indice), chave
 
     @protegido
     def _pagina_do_lado_a_lado(self, indice: int) -> None:
@@ -6271,29 +6815,39 @@ class TelaConferir(QWidget):
         pagina = self.projeto.paginas[indice]
         filtro = etapas_core.filtro_que_vale(self.projeto, pagina)
         nome = NOMES_AMIGAVEIS.get(filtro, filtro)
-        depois = self.previas.pegar(indice, self._dpi_atual)
+        # etapa 9b-2 (D-547): as duas como saem no PDF (movidas, na folha)
+        depois = self._como_sai_no_pdf(self.previas.pegar(indice, self._dpi_atual), indice)
         rotulos = ("antes: Original", f"depois: {nome}")
         if filtro == ORIGINAL:
             self.vista_antes_depois.definir(
                 None, depois, False, rotulos, "Escolha outro filtro para comparar com o Original.")
             return
-        antes = self.previas.pegar_com_filtro(indice, self._dpi_atual, ORIGINAL)
+        antes = self._como_sai_no_pdf(
+            self.previas.pegar_com_filtro(indice, self._dpi_atual, ORIGINAL), indice)
         self.vista_antes_depois.definir(antes, depois, True, rotulos)
 
     def _roda_na_pagina(self, vista, evento) -> bool:
         """D-021 e o pedido da etapa 6 (27/10: "roda do mouse troca de página
-        (quando não está com zoom)"). Na página da área de trabalho:
+        (quando não está com zoom)"); D-568 (27/10/2026, Central `v-roda`:
+        "Como ficou: sem zoom troca de página; Ctrl + roda dá zoom", e com
+        zoom anda pela página - vale contra o "a roda sempre dá zoom" da
+        D-026). Na página da área de trabalho:
           - sem zoom (a página inteira cabendo), a roda troca de página (de
             folha, no Dividir): para baixo a próxima, para cima a anterior;
-          - com zoom, a roda continua dando zoom, como antes (D-026);
-          - Ctrl+roda dá zoom sempre (para o zoom pela roda não sumir);
+          - com zoom, a roda ANDA PELA PÁGINA (para cima e para baixo; com
+            Shift, ou a roda de lado, para os lados), como no UPDF - antes
+            da etapa 9b-2 ela continuava dando zoom;
+          - Ctrl+roda dá zoom sempre;
           - na ferramenta de marcar com o Pincel ou a Varinha, a roda continua
             mudando a espessura ou a tolerância, como antes.
         Devolve True se a roda foi usada aqui."""
         passos = evento.angleDelta().y()
-        if not passos or not self._pronta():
+        de_lado = evento.angleDelta().x()
+        if (not passos and not de_lado) or not self._pronta():
             return False
         if evento.modifiers() & Qt.ControlModifier:
+            if not passos:
+                return True
             fator = self.PASSO_DO_ZOOM if passos > 0 else 1 / self.PASSO_DO_ZOOM
             vista.definir_zoom(vista.zoom * fator)
             self._acertar_o_zoom_da_barra()
@@ -6302,14 +6856,55 @@ class TelaConferir(QWidget):
                 vista.ferramenta not in FERRAMENTAS_DE_NAVEGACAO):
             return False
         if vista.zoom > 1.0 + 1e-3:
-            QTimer.singleShot(0, self._acertar_o_zoom_da_barra)    # a página dá o zoom
-            return False
+            if evento.modifiers() & Qt.ShiftModifier:
+                de_lado, passos = de_lado or passos, 0
+            self._andar_pela_pagina(vista, de_lado, passos)
+            return True
+        if not passos:
+            return True
         self._roda_acumulada += passos
         if abs(self._roda_acumulada) >= 120:
             passo = -1 if self._roda_acumulada > 0 else 1
             self._roda_acumulada = 0
             self._navegar(passo)
         return True
+
+    # quanto a roda anda pela página com zoom: esta fração da altura da vista
+    # por "dente" da roda (120). Seguro mudar.
+    PASSO_DA_RODA_COM_ZOOM = 0.12
+
+    def _andar_pela_pagina(self, vista, de_lado: int, para_baixo: int) -> None:
+        """D-568: com zoom, a roda anda pela página. Muda o deslocamento da
+        vista (o mesmo do arrastar com a Mão), sem deixar a página sair da
+        tela: a beirada dela para na beirada da vista (com uma folga pequena).
+        `para_baixo`/`de_lado` são o angleDelta da roda (120 por dente;
+        positivo = roda para cima/esquerda = ver o que está acima/à esquerda)."""
+        from PySide6.QtCore import QPoint
+
+        if hasattr(vista, "_largura_base"):          # Visualizador (as ferramentas de página)
+            largura = int(vista._largura_base() * vista.zoom)
+            altura = int(vista._altura_base() * vista.zoom)
+        else:                                        # o editor de marcar
+            area = vista._calcular_area()
+            largura, altura = area.width(), area.height()
+        if largura <= 0 or altura <= 0:
+            return
+        folga = 20
+        passo = self.PASSO_DA_RODA_COM_ZOOM * max(1, vista.height())
+        dx = de_lado / 120.0 * passo
+        dy = para_baixo / 120.0 * passo
+        atual = vista.deslocamento
+
+        def limite(tamanho: int, lugar: int) -> float:
+            return max(0.0, (tamanho - lugar) / 2.0 + folga)
+
+        lx, ly = limite(largura, vista.width()), limite(altura, vista.height())
+        novo_x = min(lx, max(-lx, atual.x() + dx))
+        novo_y = min(ly, max(-ly, atual.y() + dy))
+        vista.deslocamento = QPoint(int(round(novo_x)), int(round(novo_y)))
+        if hasattr(vista, "vista_mudou"):
+            vista.vista_mudou.emit(vista.zoom, vista.deslocamento)
+        vista.update()
 
     @protegido
     def restaurar_pagina(self) -> None:
@@ -6892,6 +7487,47 @@ class TelaConferir(QWidget):
 
     # --- teclado ----------------------------------------------------------
 
+    def showEvent(self, evento) -> None:  # noqa: N802 - nome do Qt
+        """As bolinhas de carregamento (D-064) andam só com a tela à vista."""
+        super().showEvent(evento)
+        if hasattr(self, "_relogio_das_bolinhas"):
+            self._relogio_das_bolinhas.start()
+
+    def hideEvent(self, evento) -> None:  # noqa: N802 - nome do Qt
+        super().hideEvent(evento)
+        if hasattr(self, "_relogio_das_bolinhas"):
+            self._relogio_das_bolinhas.stop()
+
+    def _tab_da_proxima_duvida(self, evento) -> bool:
+        """Etapa 9b-2 da obra (lista única 23/10, 1.10: "A tecla Tab ('Ir para
+        a próxima dúvida') não andou no teste do mapa (ficou na folha 2). Pode
+        ser o lugar do foco"): o Qt usa a Tab para passar o foco de um botão a
+        outro ANTES de a tecla chegar à janela (JanelaPrincipal.keyPressEvent
+        -> tratar_tecla), então com o foco num botão ou numa lista da área de
+        trabalho a Tab nunca ia para a próxima dúvida. O filtro de teclas da
+        aplicação (_FiltroDaTab) chama isto: com o foco dentro desta tela, um
+        livro aberto, a área de trabalho à vista e a Tab sendo a tecla da
+        "próxima dúvida" (Configurações), ela vai para a próxima dúvida.
+        Shift+Tab, Ctrl+Tab, outra tecla escolhida, ou foco fora daqui: o de
+        sempre. Devolve True se usou a tecla. Nunca levanta."""
+        try:
+            from PySide6.QtWidgets import QApplication
+
+            if evento.key() != Qt.Key_Tab or evento.modifiers() not in (Qt.NoModifier,):
+                return False
+            if atalhos.tecla_atual(CHAVE_PROXIMO_ALERTA) not in ("Tab", ""):
+                return False
+            foco = QApplication.focusWidget()
+            if not self.isVisible() or not self._pronta() or foco is None or not self.isAncestorOf(foco):
+                return False
+            if self.pilha_da_tela.currentWidget() is not self.trabalho:
+                return False
+            self._ir_para_proximo_alerta()
+            return True
+        except Exception:  # noqa: BLE001 - a tecla nunca derruba a tela
+            registrar_erro("tab da proxima duvida", traceback.format_exc())
+            return False
+
     def tratar_tecla(self, evento) -> bool:
         """Atalhos da secao 4.7. Devolve True se consumiu a tecla."""
         if not self._pronta():
@@ -6900,6 +7536,16 @@ class TelaConferir(QWidget):
         tecla = evento.key()
         ctrl = evento.modifiers() & Qt.ControlModifier
         shift = evento.modifiers() & Qt.ShiftModifier
+
+        # Etapa 9b-2 da obra (lista única 23/10, 1.11: "Na grade 'ver todas'
+        # da tela de conferir, o Esc não volta; só o botão 'voltar ao
+        # trabalho'"): com a grade "Todas as páginas" à vista, o Esc faz o
+        # mesmo que "voltar ao trabalho" (no "escolher páginas..." do
+        # Automático, o mesmo que "cancelar": volta sem mudar a escolha).
+        if (tecla == Qt.Key_Escape and not ctrl and hasattr(self, "pilha_da_tela")
+                and self.pilha_da_tela.currentWidget() is self.todas):
+            self.todas.voltar.emit()
+            return True
 
         if ctrl and tecla == Qt.Key_Z:
             self.refazer() if shift else self.desfazer()
@@ -7100,7 +7746,10 @@ ABA_DA_FERRAMENTA = {
 # nao precisa desenhar a pagina de novo. Arriscado: por aqui um campo que muda
 # o desenho da pagina (a previa ficaria velha).
 CAMPOS_SO_DO_MOVER = frozenset({"conteudo_escala", "conteudo_deslocamento",
-                                "tamanho_folha_cm", "mexida_a_mao"})
+                                "tamanho_folha_cm", "mexida_a_mao",
+                                # etapa 9b-2: os avisos guardados para o desfazer
+                                # (_com_os_avisos_de_agora) nao mudam o desenho
+                                "alertas", "alertas_aceitos"})
 FERRAMENTA_DA_ABA = {aba: ferramenta for ferramenta, aba in ABA_DA_FERRAMENTA.items()}
 
 # As margens (esquerda, cima, direita, baixo) da fila de botoes embaixo da

@@ -497,6 +497,11 @@ def test_pendencia_d2_corte_e_angulo_esperam_as_zonas_antigas(janela, pasta, mon
         # paginas?"; aqui ela responde com todas
         monkeypatch.setattr(type(tela), "_escolher_paginas_do_corte",
                             lambda self: [p.indice for p in self.projeto.paginas])
+    if mudanca == "corte_em_todas":
+        # etapa 9b-2 (D-090, P-061): o "usar em todas" do Dividir abre a janela
+        # "Em quais páginas?" com as folhas; aqui ela responde com todas
+        monkeypatch.setattr(type(tela), "_escolher_folhas_da_linha",
+                            lambda self: [f.indice for f in self.projeto.folhas])
     antes = _preparo(janela, 0)
     feitas = len(janela.acoes.feitas)
     acoes[mudanca]()

@@ -20,7 +20,7 @@ from core import etapas, luz_scantailor
 from core.misto import escolhas_da_pagina as escolhas_do_misto
 from core.pontinhos_scantailor import escolha_da_pagina as pontinhos_da_pagina
 from core.pipeline import acertar_no_tamanho_do_pdf, faixa_da_sobra, precisa_do_desenho_do_pdf
-from core.dividir_a_mao import area_da_tampa      # obra 26/10, etapa 4 (D-495)
+from core.dividir_a_mao import assinatura_da_tampa   # obra 26/10, etapas 4 e 9b-2 (D-495, D-559)
 from core.pdf_io import ErroPDF, abrir_pdf
 from core.pipeline import (
     Cancelou,
@@ -195,6 +195,8 @@ class TarefaMedirAoAbrir(QThread):
         super().__init__()
         self.fotografia = fotografia
         self._cancelar = False
+        # etapa 9b-2 (D-064): (folhas medidas, total), para a bolinha do livro
+        self.andamento = (0, len(getattr(fotografia, "folhas", []) or []))
 
     def cancelar(self) -> None:
         self._cancelar = True
@@ -204,7 +206,11 @@ class TarefaMedirAoAbrir(QThread):
 
         medidas = {}
         try:
-            medidas = automatico.medir(self.fotografia, cancelado=lambda: self._cancelar)
+            # etapa 9b-2 (D-064): o andamento fica anotado para a bolinha do
+            # livro da barra de baixo (ui/tela_conferir._acertar_as_bolinhas)
+            medidas = automatico.medir(
+                self.fotografia, cancelado=lambda: self._cancelar,
+                progresso=lambda feitas, total, _t: setattr(self, "andamento", (feitas, total)))
         except Cancelou:
             medidas = {}
         except Exception:  # noqa: BLE001 - nada pode derrubar o programa
@@ -365,6 +371,58 @@ class TarefaConferirOImpressoDeFora(QThread):
         except Exception:  # noqa: BLE001
             registrar_erro("conferir o impresso de fora", traceback.format_exc())
         self.terminou.emit()
+
+
+class TarefaDividirFolhas(QThread):
+    """Etapa 9b-2 da obra (D-558, 27/10/2026, Central `ac-grade-inserir`: "quando
+    falei dividir é dividir a pagina, usando a funcionalidade do scantailor que
+    colocamos no aplicativo, é isso que deveria ser feito."): o "dividir" da
+    grade "Todas as páginas", nas folhas escolhidas. Para cada folha, a MESMA
+    conta do "dividir esta" da ferramenta Dividir
+    (core.dividir_a_mao.medir_para_dividir: abre a folha a 150 DPI, gira como
+    ela está, procura a tampa do scanner e acha a lombada pelo jeito da folha,
+    o do ScanTailor de fábrica). Uns décimos de segundo por folha: por isso
+    aqui, num fio de fundo, com andamento (`progresso(feitas, total)`) e o
+    "parar" que funciona. Só LÊ o projeto (a janela fica esperando, com a caixa
+    do andamento por cima); quem muda o livro é a tela, no fim, numa ação só do
+    desfazer. Uma folha por vez na memória. Nunca deixa exceção escapar.
+
+    pedidos: [(folha, jeito)]; concluida: {folha: (Lombada, tampa)}."""
+
+    progresso = Signal(int, int)
+    concluida = Signal(object)
+    falhou = Signal(str)
+
+    def __init__(self, projeto: Projeto, pedidos: list[tuple[int, str]]) -> None:
+        super().__init__()
+        self.projeto = projeto
+        self.pedidos = list(pedidos)
+        self._cancelar = False
+
+    def cancelar(self) -> None:
+        self._cancelar = True
+
+    @property
+    def foi_cancelada(self) -> bool:
+        return self._cancelar
+
+    def run(self) -> None:
+        from core import dividir_a_mao
+
+        medidas = {}
+        total = len(self.pedidos)
+        try:
+            for n, (folha, jeito) in enumerate(self.pedidos):
+                if self._cancelar:
+                    return
+                self.progresso.emit(n, total)
+                medidas[folha] = dividir_a_mao.medir_para_dividir(self.projeto, folha, jeito)
+            self.progresso.emit(total, total)
+            if not self._cancelar:
+                self.concluida.emit(medidas)
+        except Exception as erro:  # noqa: BLE001 - nada pode derrubar o programa
+            registrar_erro("dividir as escolhidas", traceback.format_exc())
+            self.falhou.emit(_mensagem_amigavel(erro))
 
 
 class TarefaMedirOEmBranco(QThread):
@@ -655,6 +713,10 @@ class _TarefaPrevia(QRunnable):
         self.dpi = dpi
         self.sinais = sinais
         self.filtro = filtro
+        # Etapa 9b-2 (D-473/D-064): no acerto do tamanho do PDF, a resolucao
+        # da previa da tela, para a imagem do PDF voltar reduzida a ela
+        # (None = nao devolve a imagem). Posto por GerenciadorPrevias._comecar.
+        self.dpi_da_tela: int | None = None
         # So para a folha crua: o giro que a CHAVE promete, anotado na hora
         # do pedido (GerenciadorPrevias.pegar_folha). Ler folha.rotacao aqui,
         # no outro fio, guardaria sob a chave do giro de antes uma folha
@@ -690,8 +752,23 @@ class _TarefaPrevia(QRunnable):
                     # forca sozinha sao acertados la dentro). Nenhuma imagem
                     # grande volta: so um aviso de "pronto", que diz se a
                     # marcacao mudou (ai a previa tem de ser desenhada de novo).
-                    mudou = acertar_no_tamanho_do_pdf(doc, self.projeto, pagina)
+                    mudou, grande = acertar_no_tamanho_do_pdf(doc, self.projeto, pagina,
+                                                              com_a_imagem=True)
                     img = np.zeros(FORMA_MARCACAO_MUDOU if mudou else FORMA_SEM_MUDANCA, np.uint8)
+                    if grande is not None and self.dpi_da_tela:
+                        # etapa 9b-2 (D-473/D-064): a imagem do tamanho do
+                        # PDF, REDUZIDA ao tamanho da previa (INTER_AREA,
+                        # como o ScanTailor mostra a saida), vai junto: a
+                        # tela troca a previa por ela (GerenciadorPrevias.
+                        # _guardar). Reduzir aqui, no fio de fundo.
+                        import cv2
+
+                        escala = float(self.dpi_da_tela) / float(max(1, self.dpi))
+                        largura = max(1, int(round(grande.shape[1] * escala)))
+                        altura = max(1, int(round(grande.shape[0] * escala)))
+                        img = (img, cv2.resize(grande, (largura, altura),
+                                               interpolation=cv2.INTER_AREA))
+                    del grande
                 elif self.filtro is None:
                     img, _ = renderizar_pagina(doc, self.projeto, pagina, dpi=self.dpi)
                 else:
@@ -798,6 +875,11 @@ class GerenciadorPrevias(QObject):
         # quando parar (ou ao gerar o PDF, que acerta todas).
         # Arriscado: comecar um destes com previa na fila, ou dois juntos.
         self._medidas_a_espera: list[tuple[str, int]] = []
+        # Etapa 9b-2 (D-473/D-064): a resolucao da previa da tela (a tela poe
+        # quando muda a qualidade) e as chaves de previa que ja sao a imagem
+        # do PDF reduzida (_por_a_imagem_do_pdf)
+        self.dpi_da_tela: int | None = None
+        self._iguais_ao_pdf: set[str] = set()
         self._relogio_das_medidas = QTimer(self)
         self._relogio_das_medidas.setSingleShot(True)
         self._relogio_das_medidas.setInterval(150)
@@ -866,8 +948,9 @@ class GerenciadorPrevias(QObject):
             f"{pontinhos_da_pagina(self.projeto, p)}:"
             # item 2.1: o corte da sobra muda a pagina desenhada
             f"{faixa_da_sobra(f, p, self.projeto)}"
-            # obra 26/10, etapa 4 (D-495): a tampa do scanner pintada de branco
-            f"{area_da_tampa(f)}"
+            # obra 26/10, etapa 4 (D-495): a tampa do scanner pintada de branco;
+            # etapa 9b-2 (D-559): e se o livro a corta ou a pinta
+            f"{assinatura_da_tampa(f, self.projeto)}"
             # "Deixar em branco" (12/10/2026) muda a pagina desenhada
             f":{'branca' if getattr(p, 'em_branco', False) else ''}:"
             # itens 2.9 e 2.11 (bug do verificador do 2.9, 21/10): as
@@ -889,6 +972,12 @@ class GerenciadorPrevias(QObject):
         )
 
     # --- uso --------------------------------------------------------------
+
+    def ja_pronta(self, indice: int, dpi: int) -> np.ndarray | None:
+        """A prévia da página no estado de agora, se já está guardada; None
+        se não (sem pedir nada: a etapa 9b-2 usa para saber a resolução das
+        amostras e para as miniaturas da página movida, D-547)."""
+        return self._cache.get(self.chave(indice, dpi))
 
     def pegar(self, indice: int, dpi: int) -> np.ndarray | None:
         """Devolve na hora se estiver no cache; senao pede e devolve None."""
@@ -982,7 +1071,7 @@ class GerenciadorPrevias(QObject):
         if self._medidas_a_espera and not self._relogio_das_medidas.isActive():
             self._relogio_das_medidas.start()
 
-    def refazer_previas(self, indice: int) -> None:
+    def refazer_previas(self, indice: int, menos: str | None = None) -> None:
         """A marcacao da pagina `indice` foi trocada por tras (a provisoria,
         da previa, pela do tamanho do PDF): as previas e os cartoes dela foram
         desenhados com a marcacao de antes. Manda desenhar de novo os do
@@ -1009,6 +1098,8 @@ class GerenciadorPrevias(QObject):
             pendente = chave in self._pedidas
             if ":recorte:" in chave and not pendente:
                 continue
+            if chave == menos:
+                continue            # etapa 9b-2: ja e a imagem do PDF, do estado de agora
             como = self._como_pedir.get(chave)
             if como is None or not self._e_do_estado_de_agora(chave, *como):
                 self._pedidas.pop(chave, None)
@@ -1055,11 +1146,11 @@ class GerenciadorPrevias(QObject):
         if not folha and MARCA_DA_MEDIDA not in chave:
             # como pedir de novo esta mesma chave (refazer_previas)
             self._como_pedir[chave] = (indice, dpi, filtro)
-        self._pool.start(
-            _TarefaPrevia(chave, self.caminho_pdf, self.projeto, indice, dpi, self._sinais,
-                          filtro=filtro, rotacao=rotacao, geracao=geracao),
-            prioridade,
-        )
+        tarefa = _TarefaPrevia(chave, self.caminho_pdf, self.projeto, indice, dpi, self._sinais,
+                               filtro=filtro, rotacao=rotacao, geracao=geracao)
+        if MARCA_DA_MEDIDA in chave:
+            tarefa.dpi_da_tela = self.dpi_da_tela          # etapa 9b-2 (D-473)
+        self._pool.start(tarefa, prioridade)
 
     # --- a pagina com outro filtro (item 1.1) --------------------------------
 
@@ -1098,7 +1189,7 @@ class GerenciadorPrevias(QObject):
         f = self.projeto.folhas[p.folha]
         return (f"{indice}:recorte:{dpi}:{p.metade}:{f.posicao_corte:.4f}:{f.rotacao}:{f.dividir}:"
                 f"{faixa_da_sobra(f, p, self.projeto)}"       # item 2.1
-                f"{area_da_tampa(f)}")                        # etapa 4 (D-495)
+                f"{assinatura_da_tampa(f, self.projeto)}")    # etapas 4 e 9b-2 (D-495, D-559)
 
     def pegar_para_recorte(self, indice: int, dpi: int) -> np.ndarray | None:
         chave = self.chave_para_recorte(indice, dpi)
@@ -1225,6 +1316,7 @@ class GerenciadorPrevias(QObject):
         if indice is None:
             self._cache.clear()
             self._ordem.clear()
+            self._iguais_ao_pdf.clear()
             self._geracao_do_livro += 1
             for chave in [c for c, g in self._pedidas.items() if g is not None]:
                 del self._pedidas[chave]
@@ -1236,6 +1328,7 @@ class GerenciadorPrevias(QObject):
         for chave in [c for c in self._ordem if c.startswith(prefixo)]:
             self._cache.pop(chave, None)
             self._ordem.remove(chave)
+        self._iguais_ao_pdf = {c for c in self._iguais_ao_pdf if not c.startswith(prefixo)}
 
     # --- interno ----------------------------------------------------------
 
@@ -1245,6 +1338,11 @@ class GerenciadorPrevias(QObject):
         geracao: a do pedido (_comecar). Se a pagina foi invalidada depois do
         pedido, a imagem e de um estado que ja passou: nao entra no cache nem
         e anunciada (D4, 06/10/2026)."""
+        # etapa 9b-2 (D-473/D-064): o acerto no tamanho do PDF pode trazer a
+        # imagem do PDF reduzida junto (ver _TarefaPrevia.run)
+        do_pdf = None
+        if MARCA_DA_MEDIDA in chave and isinstance(img, tuple):
+            img, do_pdf = img
         # o acerto por tras trocou a marcacao da pagina? (ver _TarefaPrevia.run)
         trocou = MARCA_DA_MEDIDA in chave and tuple(img.shape[:2]) == FORMA_MARCACAO_MUDOU
         if (geracao is not None
@@ -1259,10 +1357,19 @@ class GerenciadorPrevias(QObject):
             self._soltar_a_medida_a_espera()
             return
         self._pedidas.pop(chave, None)
+        if chave in self._iguais_ao_pdf:
+            # etapa 9b-2: a previa pedida antes de a imagem do PDF chegar nao
+            # toma o lugar dela (as duas sao do mesmo estado da pagina)
+            self._soltar_a_medida_a_espera()
+            return
+        trocada = None
+        if do_pdf is not None:
+            trocada = self._por_a_imagem_do_pdf(chave, do_pdf)
         if trocou:
             # as previas guardadas da pagina foram desenhadas com a marcacao
-            # de antes: desenha de novo, sem tirar da tela a que esta la
-            self.refazer_previas(int(chave.split(":", 1)[0]))
+            # de antes: desenha de novo, sem tirar da tela a que esta la (a
+            # que acabou de ser trocada pela do PDF ja e a de agora)
+            self.refazer_previas(int(chave.split(":", 1)[0]), menos=trocada)
         self._cache[chave] = img
         if chave in self._ordem:       # previa refeita: a chave ja estava guardada
             self._ordem.remove(chave)
@@ -1270,11 +1377,57 @@ class GerenciadorPrevias(QObject):
         while len(self._ordem) > TAMANHO_CACHE:
             velha = self._ordem.pop(0)
             self._cache.pop(velha, None)
+            self._iguais_ao_pdf.discard(velha)
         # so se lembra de como pedir o que ainda esta guardado ou a caminho
         self._como_pedir = {c: como for c, como in self._como_pedir.items()
                             if c in self._cache or c in self._pedidas}
         self._soltar_a_medida_a_espera()
+        if trocada is not None:
+            self.pronta.emit(trocada, self._cache[trocada])
         self.pronta.emit(chave, img)
+
+    def _por_a_imagem_do_pdf(self, chave_da_medida: str, img: np.ndarray) -> str | None:
+        """Etapa 9b-2 da obra (D-473, escolha da gerente apoiada em D-066:
+        "precisamos que o pdf saia que nem está na tela"; D-064: "a tela troca
+        sozinha pela imagem do PDF quando fica pronta"): a imagem do tamanho
+        do PDF, já reduzida, entra no lugar da prévia da página, na chave da
+        prévia da tela (dpi_da_tela) - SÓ se a página não mudou desde o
+        pedido (a chave da medida é a de agora). A tela redesenha pelo sinal
+        `pronta` dessa chave. Devolve a chave trocada, ou None. Fica anotada
+        em _iguais_ao_pdf (a bolinha da página sabe que a tela já é a do PDF)."""
+        try:
+            indice = int(chave_da_medida.split(":", 1)[0])
+        except ValueError:
+            return None
+        if not 0 <= indice < len(self.projeto.paginas) or not self.dpi_da_tela:
+            return None
+        if chave_da_medida != self.chave_da_medida(indice):
+            return None
+        alvo = self.chave(indice, self.dpi_da_tela)
+        antiga = self._cache.get(alvo)
+        if antiga is not None and antiga.shape[:2] != img.shape[:2]:
+            import cv2
+
+            # o mesmo tamanho da previa que esta na tela (nada pula)
+            img = cv2.resize(img, (antiga.shape[1], antiga.shape[0]), interpolation=cv2.INTER_AREA)
+        self._cache[alvo] = img
+        if alvo in self._ordem:
+            self._ordem.remove(alvo)
+        self._ordem.append(alvo)
+        self._pedidas.pop(alvo, None)
+        self._iguais_ao_pdf.add(alvo)
+        return alvo
+
+    def igual_ao_pdf(self, indice: int) -> bool:
+        """A prévia guardada da página `indice` (na resolução da tela) já é a
+        imagem do PDF reduzida (D-473)?"""
+        return self.chave(indice, self.dpi_da_tela or 0) in self._iguais_ao_pdf
+
+    def medida_pendente(self, indice: int) -> bool:
+        """A imagem do tamanho do PDF da página `indice` foi pedida e ainda
+        não chegou (D-064: a bolinha da página)?"""
+        chave = self.chave_da_medida(indice)
+        return chave in self._pedidas or any(c == chave for c, _i in self._medidas_a_espera)
 
     def _esquecer_pedido(self, chave: str, geracao: tuple | None = None) -> None:
         """Tira da lista de 'ja pedidas' quando uma previa falha, para poder

@@ -510,7 +510,7 @@ def test_d113_o_desentortar_mede_a_caixa_do_conteudo_sem_a_moldura(monkeypatch):
     img[:, :40] = 30
     vistas = []
     monkeypatch.setattr(ds, "caixa_do_conteudo",
-                        lambda im, caixa, dpi, so_o_bloco=False: vistas.append(im) or (0, 0, 8, 8))
+                        lambda im, caixa, dpi: vistas.append(im) or (0, 0, 8, 8))
     monkeypatch.setattr(ds, "desentortar", lambda *a, **k: ds.Resultado(None, motivo="teste"))
     pagina = ConfigPagina(indice=0, folha=0)
     pagina.desentortar = ds.AUTOMATICO
@@ -538,50 +538,8 @@ def test_d095_cunha_do_giro_nao_fica_branca_na_beirada(tmp_path):
 # As medidas nas páginas de verdade estão em tests/test_etapa10b_imagem.py; aqui,
 # a prova de comportamento de cada decisão tocada (regra 4 do CLAUDE.md §11).
 
-def _texto_com_notas_na_margem() -> np.ndarray:
-    """Página com duas colunas de texto e notas da margem dos dois lados (como
-    a página de teste do D-113, Marial 41): as notas só em poucas linhas."""
-    img = np.full((ALTURA_PX * 2, LARGURA_PX * 2, 3), 225, np.uint8)
-    for y in range(160, 1560, 36):
-        for x in range(260, 560, 22):                   # coluna 1
-            img[y:y + 16, x:x + 14] = 30
-        for x in range(640, 940, 22):                   # coluna 2
-            img[y:y + 16, x:x + 14] = 30
-    for y in (300, 336, 900):                           # notas da esquerda
-        img[y:y + 12, 120:200] = 40
-    for y in (500, 536, 1200, 1236):                    # notas da direita
-        img[y:y + 12, 1000:1120] = 40
-    return img
-
-
-def test_d493_a_conta_do_bloco_do_texto_deixa_as_notas_de_fora():
-    """D-493 (27/10/2026, escolha da gerente apoiada em D-113): "O desentortar
-    segue só o bloco do texto, sem as notas da margem". SITUAÇÃO: pela metade -
-    a conta está pronta (caixa_do_conteudo(so_o_bloco=True)), mas NÃO foi
-    ligada ao desentortar: ligada, ela entortava a Marial 41 reta e fazia o
-    Righetti 96 perder o começo das linhas (pergunta no ONDE-PAREI da etapa
-    10b). Prova da conta: a caixa começa no texto (não nas notas da esquerda)
-    e acaba no texto (não nas notas da direita)."""
-    from core import desentortar_scantailor as ds
-
-    img = _texto_com_notas_na_margem()
-    h, w = img.shape[:2]
-    x, _y, largura, _a = ds.caixa_do_conteudo(img, (0, 0, w, h), 300, so_o_bloco=True)
-    assert x >= 240, x
-    assert x + largura <= 960, (x, largura)
-
-
-def test_d493_pagina_sem_notas_tem_a_caixa_de_sempre():
-    """D-493 (a conta, não ligada): sem nota da margem, a caixa é a de sempre
-    (o texto inteiro)."""
-    from core import desentortar_scantailor as ds
-
-    img = _texto_com_notas_na_margem()
-    img[:, :230] = 225
-    img[:, 960:] = 225
-    h, w = img.shape[:2]
-    x, _y, largura, _a = ds.caixa_do_conteudo(img, (0, 0, w, h), 300, so_o_bloco=True)
-    assert x <= 262 and x + largura >= 930
+# (D-493: as duas provas da conta "só o bloco do texto" saíram junto com a conta,
+# etapa 9b-2, D-563; a prova de que ela saiu está em tests/test_decisoes_9b2.py.)
 
 
 def test_d189_reduzir_cores_no_preto_e_branco_nao_forca_preto(monkeypatch):

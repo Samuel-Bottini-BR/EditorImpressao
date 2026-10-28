@@ -29,8 +29,12 @@ VÁRIAS ESCOLHIDAS (obra de 26/10/2026, etapa 3; D-334, 24/09: "Ver todas as pá
     "rodar o automático nelas". Quem faz é a tela de trabalho (acao_nas_escolhidas), cada ação
     numa só do desfazer. O "escolher páginas..." do Automático abre a grade no jeito de escolher
     (comecar_a_escolher(para_o_automatico=True)): o clique comum marca, e "usar estas N páginas"
-    devolve a escolha (escolha_pronta). "Inserir" página de outro PDF e "dividir" daqui não
-    existem: o livro é feito de um PDF só (ressalva no ONDE-PAREI da etapa 3).
+    devolve a escolha (escolha_pronta). "Inserir" página de outro PDF não existe: o livro é feito
+    de um PDF só (ressalva no ONDE-PAREI da etapa 3; D-567: fica para depois desta rodada).
+    "dividir" (etapa 9b-2 da obra, D-558, 27/10/2026: "quando falei dividir é dividir a pagina,
+    usando a funcionalidade do scantailor que colocamos no aplicativo, é isso que deveria ser
+    feito."): divide as folhas das escolhidas pela conta do "dividir esta", por trás, com
+    andamento (TelaConferir._dividir_escolhidas).
 
 Seguro mudar: tamanhos e textos. Arriscado: desenhar as páginas no fio da tela (trava a janela
 num livro grande).
@@ -312,7 +316,7 @@ class TodasAsPaginas(QWidget):
     ir_para = Signal(int)          # o índice da página clicada
     voltar = Signal()
     # etapa 3 da obra (D-334): ação nas escolhidas ("girar_esquerda", "girar_direita",
-    # "em_branco", "tirar", "trazer", "extrair", "automatico") e a escolha pronta do
+    # "em_branco", "tirar", "trazer", "extrair", "automatico", "dividir") e a escolha pronta do
     # "escolher páginas..." do Automático
     acao_nas_escolhidas = Signal(str, list)
     escolha_pronta = Signal(list)
@@ -417,6 +421,9 @@ class TodasAsPaginas(QWidget):
 
         def botao(chave: str, texto: str, dica: str, acao) -> QPushButton:
             b = QPushButton(texto)
+            # etapa 9b-2: um pouco menos de folga dos lados, para o "dividir"
+            # (D-558) caber na faixa a 1280 sem cortar os outros nomes
+            b.setObjectName("acaoDaEscolha")
             b.setToolTip(dica)
             b.setCursor(Qt.PointingHandCursor)
             b.clicked.connect(lambda _c=False: acao())
@@ -429,6 +436,9 @@ class TodasAsPaginas(QWidget):
         for chave, texto, dica in (
                 ("girar_esquerda", "girar ¼ ←", "Gira as folhas das páginas escolhidas ¼ à esquerda."),
                 ("girar_direita", "girar ¼ →", "Gira as folhas das páginas escolhidas ¼ à direita."),
+                # etapa 9b-2 da obra (D-558): a conta do "dividir esta"
+                ("dividir", "dividir", "Divide em duas páginas as folhas das escolhidas, na "
+                 "lombada (a mesma conta do \"dividir esta\" da ferramenta Dividir)."),
                 ("em_branco", "deixar em branco", "As escolhidas saem como folha branca (a "
                  "encadernação não muda)."),
                 ("tirar", "tirar do livro", "As escolhidas saem do PDF final."),
@@ -534,6 +544,7 @@ class TodasAsPaginas(QWidget):
                 f"QLabel#peDasTodas {{ background: {c('bar')}; color: {c('fraco')}; padding: 6px 14px;"
                 f" border-top: 1px solid {c('linha')}; font-size: 12px; }}"
                 f"QPushButton#chaveDasTodas {{ padding: 4px 12px; }}"
+                f"QPushButton#acaoDaEscolha {{ padding: 9px 10px; }}"
                 f"QPushButton#chaveDasTodas:checked {{ background: {c('sel')}; border: 1px solid {c('azul')};"
                 f" color: {c('forte')}; }}"
                 f"QFrame#faixaDaEscolha {{ background: {c('cabeca')}; border-bottom: 1px solid {c('linha')}; }}")
@@ -631,7 +642,11 @@ class TodasAsPaginas(QWidget):
 
     def _montar(self) -> None:
         for quadro in self.quadros:
-            quadro.setParent(None)
+            # etapa 9b-2 (Lista de bugs 22/10, as janelinhas soltas): tirar da
+            # grade e esconder, sem setParent(None) - sem pai o quadro virava
+            # uma janela solta até ser apagado
+            self.grade.removeWidget(quadro)
+            quadro.hide()
             quadro.deleteLater()
         self.quadros = []
         for grupo in self._grupos():

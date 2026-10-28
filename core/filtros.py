@@ -3497,67 +3497,12 @@ def _pode_ter_decoracao(img3: np.ndarray, peso_gravura: np.ndarray, menor_lado: 
     return bool((largo.astype(bool) & g).any())
 
 
-# Etapa 9d da obra (D-532, escolha da gerente, 27/10/2026, apoiada na pergunta 3
-# da etapa 10b): "Gravura de fundo escuro (Palatino 70 e 74, fotos de retícula
-# do Righetti) no Preto e branco sai em tons de cinza, como as fotos, em vez de
-# 1 bit." Em 1 bit o fundo manchado da gravura em madeira e a retícula da foto
-# impressa so saem como chuvisco.
-# DESLIGADA DE FABRICA (GRAVURA_ESCURA_EM_CINZA = False): ordem do Samuel de
-# 27/10/2026, pela gerente ("é só para fazer o que eu já tinha mandado"): a
-# D-532 e escolha da gerente, nao dele; a conta fica pronta e provada, sem
-# mudar o que sai hoje, e vai como pergunta para ele.
-# A conta (so na zona que ja nao e foto nem decoracao colorida; medida no
-# cinza do original da zona, relativo ao nivel do papel da pagina):
-#   - FUNDO ESCURO: a mediana da zona abaixo de ESCURA_MEDIANA do papel E, na
-#     zona alisada (desfoque de ESCURA_ALISAR do menor lado da pagina), pelo
-#     menos ESCURA_FRACAO dela abaixo de ESCURA_TOM do papel. Medido (pelo
-#     caminho inteiro, livro novo de fabrica, Preto e branco): Palatino 70,
-#     71, 74, 75 e Righetti 64: mediana 0,56 a 0,63, alisada 0,43 a 0,68;
-#     gravuras de traco que tem de ficar em 1 bit - Palatino 5 (retrato),
-#     Valades 38 e 41 (hachura), Pesel 51, Horas 14 e 26, Graduale 223,
-#     Palatino 68, 69 e 73: mediana 0,70 ou mais (a Pesel 51, alisada 0,41,
-#     fica de fora pela mediana 0,74).
-#   - RETICULA (foto impressa em pontinhos): muitas pecas escuras pequenas
-#     (menores que RETICULA_PECA do menor lado), RETICULA_DENSIDADE ou mais por
-#     quadradinho de 1% do menor lado. Righetti 62: 6,6; Righetti 64: 2,1; as
-#     gravuras de traco do gabarito: 1,03 no maximo (Palatino 68).
-# Seguro mudar: os numeros, olhando as paginas acima. Arriscado: ligar sem o
-# "sim" do Samuel; baixar ESCURA_MEDIANA (a hachura do Valades e o retrato do
-# Palatino 5 sairiam cinza, e o papel dentro da gravura deixaria de ser branco,
-# D-126).
-GRAVURA_ESCURA_EM_CINZA = False
-ESCURA_MEDIANA = 0.665
-ESCURA_ALISAR = 0.01
-ESCURA_TOM = 0.60
-ESCURA_FRACAO = 0.37
-RETICULA_PECA = 0.004
-RETICULA_DENSIDADE = 1.5
-
-
-def _e_gravura_escura_ou_reticula(img3: np.ndarray, zona: np.ndarray,
-                                  caixa: tuple[int, int, int, int], menor_lado: int,
-                                  nivel_papel: float) -> bool:
-    """A zona de gravura (que nao e foto nem decoracao) e de FUNDO ESCURO ou
-    uma foto de RETICULA? (D-532; ver o comentario acima). zona: mascara
-    booleana do tamanho da caixa (x, y, largura, altura); nivel_papel: o cinza
-    do papel da pagina (BRANCO_PERCENTIL). So e chamada com
-    GRAVURA_ESCURA_EM_CINZA ligada."""
-    if not zona.any() or nivel_papel <= 0:
-        return False
-    x, y, largura, altura = caixa
-    cinza = _para_cinza(img3[y:y + altura, x:x + largura]).astype(np.float32)
-    dentro = cinza[zona]
-    if float(np.median(dentro)) < ESCURA_MEDIANA * nivel_papel:
-        alisada = cv2.GaussianBlur(cinza, (0, 0), max(1.0, ESCURA_ALISAR * menor_lado))
-        if float((alisada[zona] < ESCURA_TOM * nivel_papel).mean()) >= ESCURA_FRACAO:
-            return True
-    tinta = ((cinza < DESENHO_TINTA_CHEIA * nivel_papel) & zona).astype(np.uint8)
-    quantas, _r, medidas, _c = cv2.connectedComponentsWithStats(tinta, connectivity=8)
-    if quantas <= 1:
-        return False
-    pequenas = int((medidas[1:, cv2.CC_STAT_AREA] < (RETICULA_PECA * menor_lado) ** 2).sum())
-    quadradinhos = float(zona.sum()) / max(1.0, (0.01 * menor_lado) ** 2)
-    return pequenas / max(1.0, quadradinhos) >= RETICULA_DENSIDADE
+# (Etapa 9b-2 da obra, D-564, 27/10/2026: a conta da D-532 - "gravura de fundo
+# escuro e foto de reticula em tons de cinza no Preto e branco", que a etapa 9d
+# deixou pronta e desligada (GRAVURA_ESCURA_EM_CINZA) - saiu. Samuel, Central
+# `ac-gravura-cinza`: "Não fazer: gravura continua em preto e branco
+# (recomendo)". A gravura de traco e a de fundo escuro saem como desenho de 1
+# bit, como sempre.)
 
 
 def _tipos_das_zonas(img3: np.ndarray, peso_gravura: np.ndarray, com_decoracao: bool = True,
@@ -3589,7 +3534,6 @@ def _tipos_das_zonas(img3: np.ndarray, peso_gravura: np.ndarray, com_decoracao: 
     foto = np.zeros(quantas, bool)
     decoracao = np.zeros(quantas, bool)
     referencia = None
-    nivel_papel = None          # D-532: medido so se a conta estiver ligada
     for i in range(1, quantas):
         x, y, w, h = (int(v) for v in medidas[i, :4])
         zona = rotulos[y:y + h, x:x + w] == i
@@ -3608,13 +3552,6 @@ def _tipos_das_zonas(img3: np.ndarray, peso_gravura: np.ndarray, com_decoracao: 
             if referencia is None:
                 referencia = _referencia_do_papel(img3, onde > 0)
             decoracao[i] = _e_decoracao_colorida(img3, zona, (x, y, w, h), menor_lado, referencia)
-        if GRAVURA_ESCURA_EM_CINZA and not (foto[i] or decoracao[i]):
-            # D-532 (desligada de fabrica): gravura de fundo escuro e foto de
-            # reticula saem em tons de cinza, como as fotos
-            if nivel_papel is None:
-                nivel_papel = _percentil(_para_cinza(img3)[::4, ::4], BRANCO_PERCENTIL)
-            foto[i] = _e_gravura_escura_ou_reticula(img3, zona, (x, y, w, h), menor_lado,
-                                                    nivel_papel)
     return rotulos, foto, decoracao, referencia
 
 

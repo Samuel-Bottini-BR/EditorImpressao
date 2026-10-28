@@ -581,7 +581,15 @@ class FiltrosEmTelaCheia(QDialog):
                 comparando = False
             elif comparando:
                 antes = self._imagem(ORIGINAL)
-            self.vista.definir(antes, self._imagem(self.escolhido), comparando,
+            # etapa 9b-2 (D-547): as duas como saem no PDF (movidas, na folha
+            # escolhida, com as margens iguais), pela conta da tela de conferir
+            como_sai = getattr(self.conferir, "_como_sai_no_pdf", None)
+            depois = self._imagem(self.escolhido)
+            if como_sai is not None:
+                indice = self.conferir.indice_pagina
+                depois = como_sai(depois, indice, DPI_DA_TELA_CHEIA)
+                antes = como_sai(antes, indice, DPI_DA_TELA_CHEIA)
+            self.vista.definir(antes, depois, comparando,
                                ("antes: Original", f"depois: {nome}"), aviso)
         except Exception:  # noqa: BLE001 - nada aqui fecha a janela
             registrar_erro("filtros em tela cheia (atualizar)", traceback.format_exc())

@@ -27,8 +27,20 @@ O QUE ESTE MÓDULO FAZ (só contas; a tela é ui/tela_conferir.py)
       inteira, não passam; a marcação feita à mão vai para a metade em que
       está, D-528, etapa 9d). O Automático usa a mesma conta
       (core/automatico._dividir).
-    - achar_a_tampa (D-495): a faixa preta da tampa do scanner em volta do
-      livro, na folha GIRADA, achada só quando a pessoa divide a folha à mão.
+    - achar_a_tampa (D-495; D-559 desde a etapa 9b-2): a faixa preta da tampa
+      do scanner em volta do livro, na folha GIRADA. Achada quando a pessoa
+      divide a folha à mão (ou acerta a linha dela), no "dividir" da grade e,
+      desde a etapa 9b-2 (D-559, 27/10/2026, Central `ac-tampa`: "Como eu
+      decidi: sumir em todo o livro, e o Kaique escolhe por livro cortar ou
+      pintar de branco"), também pelo Automático, em toda folha que ele olha
+      (core/automatico.medir). O que fazer com ela é a escolha do livro "O que
+      fica fora da página" (Projeto.borda_preta_fazer, D-092: "O Kaique escolhe
+      por livro"): "pintar de branco" pinta (a página fica do tamanho de
+      sempre); "cortar fora" (o de fábrica) pinta E corta a página na beirada
+      da tampa (corte_sem_a_tampa, chamado pelo preparo da página em
+      core/pipeline). A regra (abaixo) foi passada nas 2.903 folhas do acervo
+      pela etapa 4 (relatorios/obra-etapa4/varrer-tampa-acervo.json): só achou
+      fundo preto de scanner, nenhuma moldura impressa.
     - medir_para_dividir: abre a folha (150 DPI, como a análise), gira, acha a
       tampa e a divisão. Uns décimos de segundo.
 
@@ -42,8 +54,10 @@ O QUE É ARRISCADO
       antes das ações mais velhas, e é, porque o desfazer é em pilha).
     - Deixar uma folha sem página nenhuma (projetos.motivo_sem_analise
       recomeçaria a conferência ao abrir: D-489).
-    - Achar a tampa por regra geral, fora do dividir à mão (D-495: moldura
-      impressa preta sumiria).
+    - Afrouxar a regra da tampa (ESPESSURA_MM, LINHA_CHEIA, COLUNA_CHEIA):
+      desde a D-559 ela roda em todo o livro pelo Automático, e uma moldura
+      impressa preta sumiria (D-495). Passar de novo a varredura do acervo
+      antes de mudar.
 """
 
 from __future__ import annotations
@@ -418,3 +432,86 @@ def medir_para_dividir(projeto, indice_folha: int, jeito: str):
     tampa = medir_a_tampa(projeto, indice_folha, img)
     medida = pintar_fora(img, tuple(tampa[1:])) if len(tampa) == 5 else img
     return achar_divisao(medida, jeito, DPI_ANALISE, forcar=True), tampa
+
+
+
+# --- D-559 (etapa 9b-2): cortar fora ou pintar de branco, por livro -------------------
+
+def corta_a_tampa(projeto) -> bool:
+    """O livro "corta fora" o que fica fora da página (Projeto.borda_preta_fazer,
+    a escolha da D-092, "O Kaique escolhe por livro"; "cortar" de fábrica)? Se
+    não, "pintar de branco": a tampa só é pintada (pintar_a_tampa)."""
+    from core import borda_preta
+
+    if projeto is None:
+        return False
+    fazer = borda_preta.fazer_valido(getattr(projeto, "borda_preta_fazer", None))
+    return fazer == borda_preta.CORTAR_FORA
+
+
+def area_da_tampa_na_pagina(folha, pagina, projeto=None) -> tuple[float, float, float, float] | None:
+    """A parte da PÁGINA (a metade, se a folha é dividida, depois do corte da
+    sobra, se houver) que fica dentro da área sem a tampa, (x0, y0, x1, y1) em
+    fração da página; None sem tampa nesta rotação, ou quando a página inteira
+    fica (a tampa está toda na outra metade). A conta das colunas é a de
+    core/dividir.dividir_imagem (a linha da divisão) e a da sobra
+    (core/pipeline.faixa_da_sobra)."""
+    area = area_da_tampa(folha)
+    if area is None:
+        return None
+    x0, y0, x1, y1 = area
+    if folha.dividir and pagina.metade in (METADE_ESQUERDA, METADE_DIREITA):
+        corte = float(np.clip(folha.posicao_corte, 0.02, 0.98))
+        if pagina.metade == METADE_ESQUERDA:
+            a, b = 0.0, corte
+        else:
+            a, b = corte, 1.0
+    else:
+        from core.pipeline import faixa_da_sobra
+
+        a, b = faixa_da_sobra(folha, pagina, projeto) or (0.0, 1.0)
+    largura = max(1e-6, b - a)
+    px0 = min(1.0, max(0.0, (x0 - a) / largura))
+    px1 = min(1.0, max(0.0, (x1 - a) / largura))
+    if px1 - px0 < 0.05 or y1 - y0 < 0.05:
+        return None
+    if (px0, y0, px1, y1) == (0.0, 0.0, 1.0, 1.0):
+        return None
+    return (round(px0, 6), round(y0, 6), round(px1, 6), round(y1, 6))
+
+
+def corte_sem_a_tampa(folha, pagina, projeto, recorte):
+    """D-559, "cortar fora": o corte da página (core.recortar.Recorte em
+    tupla: (x, y, largura, altura) em fração dela, ou None = sem corte) sem
+    passar da beirada da tampa do scanner. Sem tampa, com o livro em "pintar
+    de branco" ou com o corte feito À MÃO nesta página (D-009: o feito à mão
+    vale como está; a tampa já sai branca), devolve `recorte` como veio. Sem
+    corte, o corte passa a ser a área sem a tampa."""
+    if not corta_a_tampa(projeto) or getattr(pagina, "recorte", None) is not None:
+        return recorte
+    area = area_da_tampa_na_pagina(folha, pagina, projeto)
+    if area is None:
+        return recorte
+    ax0, ay0, ax1, ay1 = area
+    if recorte is None:
+        return (ax0, ay0, round(ax1 - ax0, 6), round(ay1 - ay0, 6))
+    try:
+        x, y, w, h = (float(v) for v in recorte)
+    except (TypeError, ValueError):
+        return recorte
+    x0, y0 = max(x, ax0), max(y, ay0)
+    x1, y1 = min(x + w, ax1), min(y + h, ay1)
+    if x1 - x0 < 0.05 or y1 - y0 < 0.05:
+        return recorte                # nada sobraria: o corte fica o de sempre
+    return (round(x0, 6), round(y0, 6), round(x1 - x0, 6), round(y1 - y0, 6))
+
+
+def assinatura_da_tampa(folha, projeto=None) -> tuple:
+    """O que da tampa muda a página desenhada (para as chaves das prévias e das
+    contas guardadas): a área, e se o livro corta ou pinta. () sem tampa (as
+    chaves dos livros sem tampa ficam iguais às de antes)."""
+    area = area_da_tampa(folha)
+    if area is None:
+        return ()
+    fazer = ("cortar",) if corta_a_tampa(projeto) else ("pintar",)
+    return (("tampa",) + tuple(round(v, 6) for v in area) + fazer,)

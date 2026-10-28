@@ -327,7 +327,7 @@ programa), a partir do **nome do botão**, da **dica** (o balão do mouse) e das
 - **dica:** "Põe a linha de divisão desta folha em todas as folhas."
 - **decisões:** D-090 ("eu devo conseguir abrir uma aba para selecionar as que eu quero [...] quando mudar de um não
   muda de todas"): abre a lista das páginas, com as exceções desmarcadas, e nunca apaga exceção.
-- **aguarda:** etapa 9, D-090 ("Usar em todas" que apaga exceções; no Dividir ainda aplica em todas sem seletor)
+- **feita:** etapa 9b-2 (a janela "Em quais páginas?" com as folhas; a de linha própria vem desmarcada)
 - **na tela:** abre a lista das folhas para escolher.
 - **no projeto:** só as folhas marcadas recebem a linha; a folha com linha própria (exceção) fica com a dela.
 
@@ -488,7 +488,7 @@ programa), a partir do **nome do botão**, da **dica** (o balão do mouse) e das
 - **chaves:** `menu/desfazer`
 - **decisões:** D-020 ("Ctrl+Z desfaz qualquer alteração, sem limite de quantidade"); lista única 1.3 ("O desfazer
   não tira a marcação do Retângulo"), 4.6 (a marca que o desfazer não tirou sai impressa)
-- **aguarda:** etapa 9 (desfazer e Retângulo: lista única 1.3 e 4.6)
+- **feita:** etapa 9b-2 (cada mudança da marcação é uma ação do Histórico)
 - **no projeto:** depois de "Limpar tudo" (ou de desenhar uma área), o Desfazer traz a marcação de antes.
 
 ### P-078 · menu Marcar > "Deixar a folha em branco"
@@ -894,6 +894,15 @@ programa), a partir do **nome do botão**, da **dica** (o balão do mouse) e das
 - **decisões:** D-002 ("fazer automatico para todo livro, mas também [...] uma a uma"), D-334
 - **na tela:** volta ao trabalho com o Automático em "nas páginas escolhidas", com estas páginas.
 - **no projeto:** nada muda até "Rodar".
+
+### P-196 · "dividir" (as escolhidas)
+- **chaves:** `área de trabalho/todas as páginas/dividir`
+- **decisões:** D-558 (27/10, `ac-grade-inserir`: "quando falei dividir é dividir a pagina, usando a funcionalidade
+  do scantailor que colocamos no aplicativo, é isso que deveria ser feito."), D-334
+- **na tela:** a caixa "Dividindo as folhas escolhidas... N de M" com "parar"; depois, a grade com as páginas novas.
+- **no projeto:** as folhas das escolhidas que saem como uma página só viram duas, na lombada (a conta do "dividir
+  esta"), numa ação só do Histórico; as outras não mudam.
+- **no PDF:** a folha escolhida sai como duas páginas.
 
 ## Janela grande do Automático (etapa 3 da obra)
 

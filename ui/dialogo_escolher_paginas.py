@@ -22,6 +22,12 @@ para todas as folhas"), com a mesma regra de D-090 ("nunca apaga exceção"): as
 páginas que já têm tamanho ou lugar próprio do conteúdo vêm desmarcadas. Quem
 chama passa `tem_proprio` (a regra da exceção), a `explicacao` e a `marca` que
 aparece ao lado da página. Sem eles, é a janela do Cortar, como sempre.
+
+Etapa 9b-2 da obra (promessa P-061; D-090: "usar em todas" abre a lista das
+páginas com as exceções desmarcadas e nunca apaga exceção; o Livro dizia "no
+Dividir ainda aplica em todas sem seletor"): a mesma janela serve ao "usar em
+todas" do Dividir, com as FOLHAS (`itens=projeto.folhas`, `nome="Folha"`): as
+folhas em que a pessoa já acertou a linha à mão vêm desmarcadas.
 """
 
 from __future__ import annotations
@@ -36,14 +42,15 @@ def _corte_proprio(pagina) -> bool:
     return pagina.recorte is not None
 
 
-def paginas_de_fabrica(projeto, indice_da_vez: int, tem_proprio=None) -> list[int]:
+def paginas_de_fabrica(projeto, indice_da_vez: int, tem_proprio=None, itens=None) -> list[int]:
     """As páginas que vêm marcadas: a da vez e todas as que não têm o seu
     próprio (`tem_proprio`; de fábrica, o corte próprio: recorte não None).
-    As que têm o seu (exceções) e as apagadas ficam desmarcadas."""
+    As que têm o seu (exceções) e as apagadas ficam desmarcadas.
+    itens: a lista (de fábrica, projeto.paginas; o Dividir passa as folhas)."""
     tem_proprio = tem_proprio or _corte_proprio
     marcadas = []
-    for p in projeto.paginas:
-        if p.indice == indice_da_vez or (not tem_proprio(p) and not p.apagada):
+    for p in (projeto.paginas if itens is None else itens):
+        if p.indice == indice_da_vez or (not tem_proprio(p) and not getattr(p, "apagada", False)):
             marcadas.append(p.indice)
     return marcadas
 
@@ -53,7 +60,8 @@ class DialogoEscolherPaginas(QDialog):
     "Aplicar" e "Cancelar". escolhidas() devolve os índices marcados."""
 
     def __init__(self, projeto, indice_da_vez: int, parent=None, *, tem_proprio=None,
-                 explicacao: str | None = None, marca: str = "corte próprio") -> None:
+                 explicacao: str | None = None, marca: str = "corte próprio",
+                 itens=None, nome: str = "Página") -> None:
         super().__init__(parent)
         self.setWindowTitle("Em quais páginas?")
         coluna = QVBoxLayout(self)
@@ -64,12 +72,12 @@ class DialogoEscolherPaginas(QDialog):
         coluna.addWidget(explicacao)
         self.lista = QListWidget()
         tem_proprio = tem_proprio or _corte_proprio
-        marcadas = set(paginas_de_fabrica(projeto, indice_da_vez, tem_proprio))
-        for p in projeto.paginas:
-            texto = f"Página {p.indice + 1}"
+        marcadas = set(paginas_de_fabrica(projeto, indice_da_vez, tem_proprio, itens))
+        for p in (projeto.paginas if itens is None else itens):
+            texto = f"{nome} {p.indice + 1}"
             if tem_proprio(p) and p.indice != indice_da_vez:
                 texto += f"  ({marca})"
-            if p.apagada:
+            if getattr(p, "apagada", False):
                 texto += "  (apagada)"
             item = QListWidgetItem(texto)
             item.setData(Qt.UserRole, p.indice)
