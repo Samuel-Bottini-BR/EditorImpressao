@@ -426,3 +426,96 @@ def test_d250_sem_letras_pinta_sem_perguntar(editor_no_marial_7, monkeypatch):
     _arrastar(editor, 0.10, 0.955, 0.60, 0.995)
     _arrastar(editor, 0.0, 0.2, 0.03, 0.8)
     assert len(editor.selecao) == 2
+
+
+# --- o foco preso na lista do Automático (achado das etapas 5 e 6) --------------------------------
+
+def _clicar_na_pagina(janela, tela):  # noqa: F811
+    """Clica (mouse do Qt) no meio da página, como o Kaique antes de usar as teclas; devolve quem
+    ficou com o teclado."""
+    from PySide6.QtCore import Qt
+    from PySide6.QtTest import QTest
+    from PySide6.QtWidgets import QApplication
+
+    janela.activateWindow()
+    pagina = tela.area_imagem.currentWidget()
+    QTest.mouseClick(pagina, Qt.LeftButton, Qt.NoModifier, pagina.rect().center())
+    aj.assentar()
+    return QApplication.focusWidget()
+
+
+def _clicar_na_lista_do_automatico(janela, tela):  # noqa: F811
+    """Abre o painel Automático e clica (mouse de verdade do Qt) na primeira etapa da lista."""
+    from PySide6.QtCore import Qt
+    from PySide6.QtTest import QTest
+
+    from ui.widgets.paineis import PAINEL_AUTOMATICO
+
+    tela.paineis.abrir(PAINEL_AUTOMATICO)
+    aj.assentar()
+    lista = tela.paineis.automatico.lista
+    retangulo = lista.visualItemRect(lista.item(0))
+    QTest.mouseClick(lista.viewport(), Qt.LeftButton, Qt.NoModifier, retangulo.center())
+    aj.assentar()
+    return lista
+
+
+def _apertar_e_conferir(janela, tela, tecla):  # noqa: F811
+    """Aperta a tecla em quem está com o teclado e confere que ela chegou à página."""
+    from PySide6.QtCore import Qt
+    from PySide6.QtTest import QTest
+    from PySide6.QtWidgets import QApplication
+
+    from core.filtros import PRETO_E_BRANCO
+
+    alvo = QApplication.focusWidget() or janela
+    antes = tela.indice_atual
+    if tecla == "D":
+        QTest.keyClick(alvo, Qt.Key_D)
+        aj.assentar()
+        assert tela.trilha.ferramenta == "dividir", "a letra D não chegou à página"
+    elif tecla == "PageDown":
+        QTest.keyClick(alvo, Qt.Key_PageDown)
+        aj.assentar()
+        assert tela.indice_atual > antes, "Page Down não chegou à página"   # anda 10 (D-021)
+    else:
+        QTest.keyClick(alvo, Qt.Key_2)
+        aj.assentar()
+        assert tela.projeto.paginas[tela.indice_pagina].filtro == PRETO_E_BRANCO,             "a tecla 2 não chegou à página"
+
+
+@pytest.mark.parametrize("tecla", ["D", "PageDown", "2"])
+def test_teclas_chegam_a_pagina_depois_de_clicar_na_lista_do_automatico(janela, tela, tecla):  # noqa: F811
+    """REVERSÃO. Achado das etapas 5 e 6 (ONDE-PAREI, ressalvas 2 e 3): depois de clicar na
+    lista do painel Automático, as teclas (D, X, I, F, 1-4, Page Down) iam para a lista (e o
+    Page Down para a rolagem do painel) e não chegavam à página até um clique na página. Agora:
+    clique na página, clique na lista (ela escolhe a etapa, como antes), e o teclado continua
+    com a página. As teclas não mudam (D-561: "Manter"): D leva ao Dividir, Page Down anda 10
+    páginas (D-021), 2 põe o Preto e branco na página."""
+    from PySide6.QtWidgets import QApplication
+
+    _clicar_na_pagina(janela, tela)
+    lista = _clicar_na_lista_do_automatico(janela, tela)
+    assert lista.currentRow() == 0, "o clique na lista não escolheu a etapa"
+    dono = QApplication.focusWidget()
+    while dono is not None and dono is not tela.paineis:
+        dono = dono.parentWidget()
+    assert dono is None, f"o teclado ficou no painel ({type(QApplication.focusWidget()).__name__})"
+    _apertar_e_conferir(janela, tela, tecla)
+
+
+@pytest.mark.parametrize("tecla", ["PageDown"])
+def test_page_down_chega_a_pagina_depois_de_clicar_numa_miniatura(janela, tela, tecla):  # noqa: F811
+    """REVERSÃO. O mesmo foco preso, na tira de miniaturas (achado ao provar o de cima): a rolagem
+    da tira ficava com o teclado (ao abrir o livro e depois de clicar numa miniatura), e o Page
+    Down rolava a tira em vez de andar as páginas (D-021: "Page Up/Down, Home/End"). O clique na
+    miniatura continua levando à página dela."""
+    from PySide6.QtCore import Qt
+    from PySide6.QtTest import QTest
+
+    janela.activateWindow()
+    quadro = tela.tira._miniaturas[1]
+    QTest.mouseClick(quadro, Qt.LeftButton, Qt.NoModifier, quadro.rect().center())
+    aj.assentar()
+    assert tela.indice_atual == 1, "o clique na miniatura não levou à página"
+    _apertar_e_conferir(janela, tela, tecla)

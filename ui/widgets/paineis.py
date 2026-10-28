@@ -663,6 +663,11 @@ def _rolagem_do_painel() -> QScrollArea:
     rolagem.setFrameShape(QFrame.NoFrame)
     rolagem.setHorizontalScrollBarPolicy(Qt.ScrollBarAlwaysOff)
     rolagem.viewport().setObjectName("fundoDoPainel")
+    # Etapa 9b-1 (achado das etapas 5 e 6, o foco preso no painel Automático):
+    # um clique no painel dava o teclado à rolagem dele, e o Page Down rolava
+    # o painel em vez de andar as páginas (e as letras não chegavam). A roda
+    # do mouse e a barra continuam rolando; o teclado fica com a página.
+    rolagem.setFocusPolicy(Qt.NoFocus)
     return rolagem
 
 

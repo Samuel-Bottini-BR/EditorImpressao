@@ -489,6 +489,15 @@ class PainelAutomatico(_classe_do_painel()):
         self.dentro.addWidget(frase_do_painel("arraste para mudar a ordem; a caixinha liga e desliga"))
         self.lista = ListaDeEtapas(self.estado, compacta=True)
         self.lista.setMinimumHeight(7 * 46)
+        # Etapa 9b-1 (achado das etapas 5 e 6: "com o foco na lista do
+        # Automático, as letras vão para a lista"): a lista do painel não
+        # pega o teclado, como os botões dele (NoFocus, mais abaixo). O mouse
+        # continua igual: clicar escolhe a etapa, a caixinha liga e desliga,
+        # arrastar muda a ordem, duplo clique ajusta. As teclas (D, X, I, F,
+        # 1-4, Page Down...) continuam indo para a página. A lista da janela
+        # grande (JanelaDoAutomatico) não muda: lá não há página atrás.
+        # Arriscado: devolver o foco à lista do painel.
+        self.lista.setFocusPolicy(Qt.NoFocus)
         self.lista.ajustar_pedido.connect(self.janela_pedida.emit)
         self.dentro.addWidget(self.lista)
         self.botao_ajustar = QPushButton("ajustar a etapa escolhida ›")
