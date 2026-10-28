@@ -507,17 +507,45 @@ class _RotuloDoLivro(QLabel):
 
 class _FiltroDaTab(QObject):
     """Filtro de teclas da aplicação (etapa 9b-2, lista única 1.10): passa a
-    Tab à tela (TelaConferir._tab_da_proxima_duvida) antes de o Qt a usar para
-    mudar o foco. Só olha KeyPress; o resto passa direto (custo desprezível)."""
+    Tab à tela de conferir à vista (TelaConferir._tab_da_proxima_duvida) antes
+    de o Qt a usar para mudar o foco. UM filtro só para o programa inteiro
+    (instalar_o_filtro_da_tab), que conhece as telas por referência fraca: com
+    um filtro por tela, cada evento do programa passaria por todos eles. Só
+    olha KeyPress de Tab; o resto passa direto."""
 
-    def __init__(self, tela) -> None:
-        super().__init__(tela)
-        self._tela = tela
+    def __init__(self) -> None:
+        super().__init__()
+        import weakref
+
+        self.telas = weakref.WeakSet()
 
     def eventFilter(self, _vigiado, evento) -> bool:  # noqa: N802 - nome do Qt
-        if evento.type() == QEvent.KeyPress and evento.key() == Qt.Key_Tab:
-            return self._tela._tab_da_proxima_duvida(evento)
+        if evento.type() != QEvent.KeyPress or evento.key() != Qt.Key_Tab:
+            return False
+        for tela in list(self.telas):
+            try:
+                if tela._tab_da_proxima_duvida(evento):
+                    return True
+            except RuntimeError:          # a tela do Qt já foi apagada
+                self.telas.discard(tela)
         return False
+
+
+_FILTRO_DA_TAB: _FiltroDaTab | None = None
+
+
+def instalar_o_filtro_da_tab(tela) -> None:
+    """Põe `tela` no filtro único da Tab (e instala o filtro na primeira vez)."""
+    global _FILTRO_DA_TAB
+    from PySide6.QtWidgets import QApplication
+
+    app = QApplication.instance()
+    if app is None:
+        return
+    if _FILTRO_DA_TAB is None:
+        _FILTRO_DA_TAB = _FiltroDaTab()
+        app.installEventFilter(_FILTRO_DA_TAB)
+    _FILTRO_DA_TAB.telas.add(tela)
 
 
 class TelaConferir(QWidget):
@@ -755,11 +783,7 @@ class TelaConferir(QWidget):
         self._roda_acumulada = 0      # a roda do mouse que ainda nao virou pagina
         # etapa 9b-2 (lista única 1.10): a Tab da "próxima dúvida" antes de o
         # Qt usá-la para passar o foco (_tab_da_proxima_duvida)
-        from PySide6.QtWidgets import QApplication
-
-        self._filtro_da_tab = _FiltroDaTab(self)
-        if QApplication.instance() is not None:
-            QApplication.instance().installEventFilter(self._filtro_da_tab)
+        instalar_o_filtro_da_tab(self)
         self._tamanhos_das_folhas: tuple[str, list] = ("", [])
         centro.addWidget(self.vista_da_pagina, 1)
         # os botoes de girar do canto: filhos da area da pagina, por cima dela
@@ -996,7 +1020,8 @@ class TelaConferir(QWidget):
         self._relogio_das_bolinhas = QTimer(self)
         self._relogio_das_bolinhas.setInterval(400)
         self._relogio_das_bolinhas.timeout.connect(self._acertar_as_bolinhas)
-        self._relogio_das_bolinhas.start()
+        # o relógio só anda com a tela à vista (showEvent / hideEvent): uma tela
+        # escondida (outra janela, testes) não gasta nada
         linha.addSpacing(8)
         self.botao_desfazer_embaixo = botao_pequeno(
             "", "Desfazer (Ctrl+Z)", self.desfazer)
@@ -1125,6 +1150,9 @@ class TelaConferir(QWidget):
         porcentagem e quantas páginas já foram. Nunca levanta."""
         try:
             if not hasattr(self, "bolinha_da_pagina"):
+                return
+            if not self.isVisible():
+                self._relogio_das_bolinhas.stop()
                 return
             if not self._pronta() or self.projeto is None or self.previas is None:
                 self.bolinha_da_pagina.definir(False)
@@ -7397,6 +7425,17 @@ class TelaConferir(QWidget):
             registrar_erro("reacertar as opcoes", traceback.format_exc())
 
     # --- teclado ----------------------------------------------------------
+
+    def showEvent(self, evento) -> None:  # noqa: N802 - nome do Qt
+        """As bolinhas de carregamento (D-064) andam só com a tela à vista."""
+        super().showEvent(evento)
+        if hasattr(self, "_relogio_das_bolinhas"):
+            self._relogio_das_bolinhas.start()
+
+    def hideEvent(self, evento) -> None:  # noqa: N802 - nome do Qt
+        super().hideEvent(evento)
+        if hasattr(self, "_relogio_das_bolinhas"):
+            self._relogio_das_bolinhas.stop()
 
     def _tab_da_proxima_duvida(self, evento) -> bool:
         """Etapa 9b-2 da obra (lista única 23/10, 1.10: "A tecla Tab ('Ir para

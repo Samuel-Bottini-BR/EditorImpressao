@@ -592,6 +592,8 @@ def test_d473_d064_a_tela_troca_pela_imagem_do_pdf_e_a_bolinha_da_pagina(janela,
 
     janela.abrir_livro(_pdf(tmp_path / "pdf.pdf", [_pagina(marca=k) for k in range(2)]))
     tela = janela.tela_conferir
+    janela.show()                                  # as bolinhas só andam com a tela à vista
+    janela.move(-3000, -3000)
     _esperar(lambda: tela.previas.ja_pronta(0, tela._dpi_atual) is not None, motivo="a prévia")
     solta = threading.Event()
 
