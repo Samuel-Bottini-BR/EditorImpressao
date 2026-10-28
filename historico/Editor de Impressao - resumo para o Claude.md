@@ -1,6 +1,6 @@
 # Editor de Impressão — documento para colar no Claude
 
-Atualizado em 27/10/2026 (PARTE -21; a anterior, PARTE -20, é de 23 e 24/10). Desde 19/10 a memória por assunto fica em `memoria/` (índice `memoria/INDICE.md`). Versão **máxima**: reúne o histórico institucional, o
+Atualizado em 28/10/2026 (PARTE -22; a anterior, PARTE -21, é de 26 e 27/10). Desde 19/10 a memória por assunto fica em `memoria/` (índice `memoria/INDICE.md`). Versão **máxima**: reúne o histórico institucional, o
 que o programa é, todas as funcionalidades pedidas, os 68 pedidos feitos até
 hoje **palavra por palavra**, o que foi feito, o que falta, e os dois
 documentos-fonte inteiros (a especificação original e o prompt de testes) em
@@ -14,7 +14,102 @@ o backup). Repositório git ligado a
 
 ---
 
-# PARTE -21 — Checkpoint de 26 e 27/10/2026: sessão guiada 1, Livro de decisões e a OBRA (leia isto primeiro, é o mais novo)
+# PARTE -22 — Checkpoint de 27 e 28/10/2026: a rodada de consertos quase inteira; regra 7; atalho de teste (leia isto primeiro, é o mais novo)
+
+Sessão no PC, continuação da PARTE -21, fechada com `/checkpoint`. **O que manda:** `docs/plano/DECISOES.md` no ramo
+`obra-2026-10-26` (D-001 a D-571; as duas cópias iguais: a outra em
+`D:\programas\EditorImpressao-arquivos\plano-24-09-2026\DECISOES.md`) e a seção **EXECUÇÃO** do plano
+`C:\Users\fotog\.claude\plans\ent-o-vamos-fazer-um-cozy-brooks.md`.
+
+**Palavra proibida com ele:** "obra". Ele perguntou "Que Obra?". Para ele é **"esta rodada de consertos"** (memória
+`feedback_explicar_termos_simples`). O ramo continua se chamando `obra-2026-10-26`.
+
+## 0. Para recomeçar
+1. `git -C D:\programas\EditorImpressao fetch origin`. Ler na Central (https://claude.ai/artifact/XNFrsdVR7q4K8cBcxNftZy)
+   as respostas com `lida != true` das abas **"Coisas que eu acrescentei sem você pedir"** (`acrescentei-27-10`, 36
+   perguntas; respondidas até `v-zoom-pares`; abertas: `v-antes`, `v-capa`, `a-*` (4), `b-*` (4), `c-*` (5)) e
+   **"Revisão dos nomes"** (`nomes-28-10`, 20 perguntas `nm-*`). Fonte das abas no ramo da obra:
+   `docs/plano/central/conferencias/{acrescentei-27-10,nomes-28-10}.json`. Cada resposta: anotar no Livro (próximo
+   número livre: D-572) e no `relatorios/central-pendentes-2026-10-26.md`; comentário dele se responde NA página
+   (`historico` da pergunta), e a pergunta volta com opções novas.
+2. Ler a seção EXECUÇÃO do plano (estado de cada etapa).
+
+## 1. O que está no ramo `obra-2026-10-26` (no GitHub, `fc38afd`; NADA no `fase-1` ainda)
+Juntadas e com provas passando juntas (rodada no PC, um arquivo por vez, depois da 9b-2): etapas **1** (o feito à
+mão vale no PDF), **2** (todas as ferramentas à vista), **3** (abre direto na área de trabalho + Automático de
+verdade), **4** (dividir à mão, Righetti), **5** (Mover e redimensionar próprio, Centralizar), **6** (uma página / lado
+a lado, barra de baixo, Page Up/Down, roda), **7** ("está certo" com tique/contador/próxima dúvida, um número só de
+dúvidas, botões no cartão), **9a** (imprimir pergunta antes, rodinha, janelas em português), **9b-1** (nomes antigos do
+"Montar para imprimir" de volta, lado direito com os 4 jeitos, tique do Filtro, menu Confirmar → "Antes de processar"
+`138e425`, nome do PDF com acento, aviso do Pintar por cima, foco, contador, testes instáveis firmados), **9b-2**
+(dividir na grade, tampa some no Automático com cortar/pintar por livro, tela = PDF com duas bolinhas, zoom com roda
+e no lado a lado, Margens iguais no Cortar, desfazer do Retângulo, Tab/Esc), **9c** e **9d** (núcleo: avisos falsos,
+plurais, branco no Original e no Tirar o fundo, marcações vão para a metade, **PDF sem perda de novo**), **10a** (o
+corte não come a página), **10b** (imagem final: gravura no P&B, folha cinza, sombras, T do Antiphonal, tela × PDF,
+Reduzir cores), **bateria de promessas** (`tests/test_promessas.py`, ~260 casos; GitHub da 9b-1 inteiro verde).
+Provas por etapa: `tests/test_decisoes*.py`, `tests/test_etapa10a_nao_comer.py`, `tests/test_etapa10b_imagem.py`.
+Relatórios: `relatorios/obra-etapa*/ONDE-PAREI.md` (+ conferências com imagens da 10a, 10b e 9d).
+
+**Atalho para ele testar (rodando de verdade, testado fora da tela, abre sem erro):** Área de Trabalho
+"Editor de Impressao (rodada de consertos).lnk" → `wscript D:\programas\EditorImpressao-arquivos\atalho-rodada-de-consertos\abrir.vbs`
+→ `pythonw main.py` na worktree `.claude\worktrees\obra-juncao` com `LOCALAPPDATA` =
+`D:\programas\EditorImpressao-arquivos\dados-teste-rodada-de-consertos` (nunca os dados de verdade). Toda junção nova
+na `obra-juncao` aparece no atalho. A `obra-juncao` tem junções (fora do git) `modelos` e `gabarito\paginas` → pasta
+principal.
+
+## 2. Decisões e regras desta sessão
+- **Regra 7 do `CLAUDE.md` §11 (Samuel, 27/10):** "os agentes estão mudando coisas que eu já tinha definido, é só para
+  fazer o que eu já tinha mandado, fazer as ferramentas que colocamos no programa funcionem como deveriam e como eu
+  tinha escolhido." Nada de "escolha da gerente" que acrescente ou mude comportamento; o que o Livro não responde fica
+  como está e vira pergunta na Central (memória `feedback_so_o_que_ele_mandou`). D-549.
+- **PDF sem perda (D-304 vale):** "o tamanho do arquivo depois não importa". O JPEG 92 da 10b foi desfeito na 9d; a
+  limitação de resolução (D-531) foi cancelada. O "PDF gigante" (4.5) era achado de agente.
+- **Auditoria das escolhas** (`relatorios/obra-auditoria-escolhas/auditoria.md`): 6 C (desfeitas ou perguntadas),
+  17 B (perguntadas), 55 A. As respostas dele viraram D-550 a D-571 (manter: aviso CORTADO, frase do Ficou pronto,
+  pergunta antes de imprimir, caixinha da receita, troca sozinha da lombada, teclas D/X/I/F/Shift+Del, menu
+  Ferramentas; tirar: desentortar só no texto, gravura em cinza; fazer: Margens iguais no Cortar, nome com acento,
+  dividir na grade com o ScanTailor, tampa em todo livro, roda com zoom anda, zoom no lado a lado, 100% = cabe).
+- **Central, 8 pendentes de 26/10:** respondidas (D-520 a D-527): sem o "aviso do Kaique"; avisos do livro no alto do
+  Para revisar; versos em branco num aviso só; OCR pergunta a língua; sem chapas de duas cores; OCR sem IA; telas
+  para 150%; ordem das páginas só pelo aviso de número (Lista de espera).
+- Datas fora da rodada: "Marcar como" iluminura/moldura e "inserir" na grade → depois desta rodada; espaços de
+  trabalho = salvar o jeito dos painéis com nome + alguns prontos de fábrica (Fase do layout); manuscritos no OCR →
+  decidir na Fase 7.
+
+## 3. O que falta (ordem)
+1. **Terminar o fim:** a suíte inteira no PC (`b7sqr7gvq`, começou 28/10 de madrugada) e a do GitHub (`40624566910`)
+   estavam rodando no fechamento — conferir o resultado (`gh run view 40624566910 -R Samuel-Bottini-BR/EditorImpressao`).
+2. **Teste do Kaique de novo** (agente leigo, janela fora da tela, dados isolados, só as tarefas nas palavras do
+   Kaique; o relatório de 26/10 está no ramo `teste-kaique-2026-10-26`).
+3. **Verificador contra o Livro** (quem confere não é quem construiu; `CLAUDE.md` §11 regra 5).
+4. **Etapa 11 fase 2:** aplicar os nomes que ele escolher na aba "Revisão dos nomes" (`relatorios/obra-etapa11/levantamento.md`).
+5. **Respostas pendentes** das abas → o que ele mandar fazer vira uma rodada pequena.
+6. Não feitos e sem dono decidido: lista única 1.5 (Tab/Confirmar e processar), 5.6 e 5.7 (avisos demais / número
+   que muda: regra do Para revisar, D-254/D-295/D-296) — perguntar onde entram; 1.13 (rapidez) → Fase 5.
+7. **Página de conferência final na Central**, item por item com as palavras dele, os prints e as conferências de
+   imagem (10a, 10b, 9d), os ~40 consertos "esperando o olho do Samuel", a pergunta 2 da etapa 4 (faixa no Automático,
+   já respondida por D-559) e o roteiro de uma folha na EPSON. **Só depois do "aprovado" dele o ramo entra no `fase-1`.**
+
+## 4. Lições / descobertas
+- Junção de ramos: o Livro de decisões dá conflito em toda junção (cada etapa mexe na coluna "situação"). Resolver
+  linha a linha, e nunca pegar o lado da etapa às cegas (aconteceu: D-496 voltou a "construída"; consertado à mão).
+- Agentes param pelo limite de uso (429): o trabalho fica salvo; retomar com SendMessage quando ele avisar.
+- Nas worktrees novas, ligar `gabarito\paginas` e `modelos` (junções `mklink /J`) — sem isso testes de imagem pulam e o
+  programa fica sem os modelos.
+- No Git Bash, `git show ramo:caminho` precisa de `MSYS_NO_PATHCONV=1`.
+- O script de prints do GitHub (`.github/scripts/fotografar_janela.py`, ramo `claude/list-server-files-gkos8v`, worktree
+  `.claude/worktrees/filtro-velocidade`) foi adaptado ao livro que abre direto (`d2971c3`).
+
+## 5. Como validar
+`cd D:\programas\EditorImpressao\.claude\worktrees\obra-juncao` e, um arquivo por vez (TEMP em `_tmp`):
+`..\..\..\.venv\Scripts\python.exe -m pytest tests\test_decisoes_9b2.py -q --basetemp _tmp\pt` (idem para cada
+`tests\test_decisoes*.py`, `test_trabalho_nao_se_perde.py`, `test_etapa10a_nao_comer.py`, `test_etapa10b_imagem.py`).
+Resultado no fechamento: todos passaram (9b2 30, 9b1 25, avisos 13, ver 11, mover 13, dividir 19, automatico 24,
+tela 35, nucleo 38, nucleo2 21, impressao 22, decisoes 26, trabalho 82, 10a 8, 10b 23).
+
+---
+
+# PARTE -21 — Checkpoint de 26 e 27/10/2026: sessão guiada 1, Livro de decisões e a OBRA
 
 Sessão no PC, aberta com `/projeto`, fechada com `/checkpoint` (a sessão ia acabar). **O que manda agora:**
 `docs/plano/DECISOES.md` (Livro de decisões, D-001 a D-492, `CLAUDE.md` §11) e o plano da obra
