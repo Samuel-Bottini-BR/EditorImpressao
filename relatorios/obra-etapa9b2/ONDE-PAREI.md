@@ -90,12 +90,14 @@ tela; a tela do PC está a 125%, os prints saem 1600×821) em `relatorios/obra-e
 - **Rodados também (todos passando):** test_decisoes 26 · test_decisoes_automatico 24 · test_decisoes_avisos 13 ·
   test_decisoes_dividir 19 · test_decisoes_impressao 22 · test_decisoes_mover 13 · test_decisoes_nucleo 38 ·
   test_decisoes_nucleo2 21 · test_decisoes_tela 35 · test_decisoes_ver 11 · test_trabalho_nao_se_perde 82 ·
-  test_etapa10a_nao_comer (ver abaixo) · test_etapa10b_imagem 23 · test_promessas `-k "dividir or desfazer or
+  test_etapa10a_nao_comer 8 · test_etapa10b_imagem 23 · test_promessas `-k "dividir or desfazer or
   retangulo or usar"` 22 (+1 xfail de outra promessa) · test_borda_preta 29 · test_dividir_no_programa 19 ·
   test_previa_composta 10 · test_misto_no_programa 41 · test_misto 31 · test_misto_consertos 25 ·
   test_misto_no_projeto 12 · test_filtros_tela_cheia 11 · test_paineis_na_tela 22 · test_historico_depois_de_reabrir 11 ·
   test_recomeco_limpa_o_historico 13 · test_zonas_na_folha 25 · test_so_neste_pedaco_no_original 22 ·
-  test_girar_cartoes_e_previas 23 · test_alerta_pb 5.
+  test_girar_cartoes_e_previas 23 · test_alerta_pb 5 · test_corte_pelo_conteudo_na_tela 13 ·
+  test_corte_pelo_conteudo_no_programa 16 · test_borda_preta_paginas_do_samuel 17 · test_livro_aberto 14 ·
+  test_dividir_na_tela 9 · test_avisos 34 · test_revisar 28 · test_para_revisar_na_tela 25.
 - **Testes antigos mudados (e por quê):**
   - `test_decisoes.py`: saíram as 2 provas da conta do D-493 (D-563 mandou tirar a conta).
   - `test_decisoes_nucleo2.py`: saíram os 4 testes da conta ligada do D-532 (D-564); o "Palatino 74 sai em 1 bit" ficou,
@@ -115,7 +117,12 @@ tela; a tela do PC está a 125%, os prints saem 1600×821) em `relatorios/obra-e
 
 ## Somas "Desligado de fábrica"
 
-(preenchido abaixo)
+**96 de 96 somas iguais** (32 páginas do gabarito × Original / Preto e branco / Melhorar, livro novo de fábrica, a
+imagem que vai ao escritor do PDF; `relatorios/obra-etapa10b/scripts/somas_da_imagem.py` com o código antigo
+`27b4c52` e com o desta etapa: `somas-antes-27b4c52.json` × `somas-depois.json`). Nenhuma muda, e é o esperado: a tampa
+só existe depois do Automático ou de dividir; a proteção de "letra e traço" só com essa marcação à mão; as duas contas
+que saíram estavam desligadas. (Uma primeira rodada deu 49 diferentes porque a cópia do código antigo estava sem a
+junção `modelos` — o detector de gravura não carregava; com a junção, 96 de 96.)
 
 ## Ressalvas (escritas, não escondidas)
 
@@ -180,7 +187,9 @@ tela; a tela do PC está a 125%, os prints saem 1600×821) em `relatorios/obra-e
 
 ## Bugs para a Lista de bugs (achados, não consertados)
 
-- 28/10: com o foco na lista do Automático as teclas vão para ela (já anotado na etapa 6).
+- 28/10: `tests/test_para_revisar_na_tela.py::test_a_janela_lista_as_paginas_e_os_motivos` falhou uma vez no PC com
+  outros testes rodando juntos; sozinho e no arquivo inteiro de novo, passa (a `ui/janela_dos_avisos.py` não foi
+  mexida nesta etapa).
 
 ## Commits (ramo `obra-etapa9b2-2026-10-26`, com push)
 
