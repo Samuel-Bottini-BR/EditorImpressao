@@ -556,6 +556,10 @@ class JanelaPrincipal(QMainWindow):
             self.tela_inicio.mostrar_os_livros()
         for peca in getattr(self, "_pecas_da_tela_de_trabalho", ()):
             peca.setVisible(indice == CONFERIR)
+        # etapa 9b-1 (D-033): os botões do "Painel solto" moram na linha dos
+        # menus e só aparecem na tela de trabalho (e só nesse jeito)
+        if hasattr(self, "tela_conferir"):
+            self.tela_conferir.paineis.definir_na_tela(indice == CONFERIR)
 
     def _montar_a_linha_dos_menus(self) -> None:
         """Etapa 2 do layout (rodada 8, 303 B: "Na mesma linha dos menus"): a
@@ -585,6 +589,11 @@ class JanelaPrincipal(QMainWindow):
         caixa.addSpacing(6)
         conferir = self.tela_conferir
         caixa.addWidget(conferir.barra_opcoes, 1)
+        # etapa 9b-1 (D-033, o "Painel solto"): os botões dos cinco painéis na
+        # linha de cima, à direita (o desenho `13-rodada7-padrao-e-flutuante`);
+        # escondidos nos outros jeitos (ColunaDePaineis._acertar)
+        caixa.addWidget(conferir.paineis.botoes_do_alto, 0, Qt.AlignVCenter)
+        caixa.addSpacing(8)
         # Mola de peso zero no fim: com a barra de opções à vista (peso 1) ela
         # não ganha nada; nas telas sem ela (inicial, "O que fazer") é ela que
         # fica com a sobra, e os menus continuam à esquerda (sem ela, o Qt

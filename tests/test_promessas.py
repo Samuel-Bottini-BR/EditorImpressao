@@ -1157,6 +1157,13 @@ def test_p043_lado_direito_sanfona_e_icones(janela, tela):
     apertar(janela, "menu/lado_sanfona")
     assert tela.paineis.jeito == "sanfona" and tela.paineis.sanfona.isVisible()
     assert jeito_guardado() == "sanfona", "a escolha não ficou guardada"
+    # D-033 (etapa 9b-1): os outros dois jeitos
+    apertar(janela, "menu/lado_abas")
+    assert tela.paineis.jeito == "abas" and tela.paineis.abas.isVisible()
+    assert jeito_guardado() == "abas"
+    apertar(janela, "menu/lado_solto")
+    assert tela.paineis.jeito == "solto" and tela.paineis.botoes_do_alto.isVisible()
+    assert jeito_guardado() == "solto"
     apertar(janela, "menu/lado_icones")
     assert tela.paineis.jeito == "icones" and jeito_guardado() == "icones"
 
@@ -3367,13 +3374,13 @@ def test_p161_mandar_para_a_impressora(janela, tela, monkeypatch, pasta):
 def test_p162_parar_e_fechar(janela, tela, monkeypatch, pasta):
     pdf, dialogo = _montar(janela, tela, monkeypatch, pasta)
     chaves = aj.chaves_dos_botoes(dialogo, "montar para imprimir")
-    assert not chaves["montar para imprimir/parar"].isEnabled() or True
+    assert not chaves["montar para imprimir/cancelar"].isEnabled() or True
     import ui.dialogos_de_arquivo as dialogos
 
     destino = pasta / "saida" / "parado.pdf"
     monkeypatch.setattr(dialogos, "escolher_onde_salvar_pdf", lambda *a, **k: str(destino))
     chaves["montar para imprimir/gravar o arquivo para imprimir"].click()
-    chaves["montar para imprimir/parar"].click()
+    chaves["montar para imprimir/cancelar"].click()
     _esperar_a_tarefa(dialogo)
     if destino.exists():
         assert len(aj.paginas_do_pdf(destino)) >= 1, "ficou um arquivo pela metade"

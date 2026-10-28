@@ -477,7 +477,8 @@ def testar_tela_inicial(janela, caminho_pdf: str) -> tuple[int, int]:
     # achariam. Sao conferidos em tests/test_menu_paineis.py.
     o, f = acionar_menu_habilitado(janela, excluir={"abrir", "sair", "miniaturas", "icones",
                                                     "filtros_tela_cheia", "lado_icones",
-                                                    "lado_sanfona", "automatico"})
+                                                    "lado_sanfona", "lado_abas", "lado_solto",
+                                                    "automatico"})
     ok += o
     falhas += f
 
@@ -908,7 +909,8 @@ def testar_conferir_e_ampliada(janela) -> tuple[int, int]:
     o, f = acionar_menu_habilitado(janela, excluir={"processar", "sair", "voltar", "abrir",
                                                     "comparar", "miniaturas", "icones",
                                                     "filtros_tela_cheia", "lado_icones",
-                                                    "lado_sanfona", "automatico"})
+                                                    "lado_sanfona", "lado_abas", "lado_solto",
+                                                    "automatico"})
     ok += o
     falhas += f
     o, f = testar_o_lado_direito(janela)
@@ -1003,14 +1005,16 @@ def testar_o_ver_da_barra_de_baixo(conferir) -> tuple[int, int]:
 
 def testar_o_lado_direito(janela) -> tuple[int, int]:
     """Etapa 2 da obra (R7 203 D: "Mas eu também quero ter a opção da area de
-    trabalho 1"; R14 902 C: menu Ver e Configuracoes): Ver > Lado direito >
-    Sanfona poe os paineis em sanfona; Icones na borda volta ao de fabrica."""
+    trabalho 1"; R14 902 C: menu Ver e Configuracoes) e 9b-1 (D-033, os
+    quatro jeitos): Ver > Lado direito > Sanfona, Abas no alto e Painel solto
+    poem os paineis nesses jeitos; Icones na borda volta ao de fabrica."""
     acoes = janela.menu.acoes
     if "lado_sanfona" not in acoes:
         return 0, 0
     paineis = janela.tela_conferir.paineis
     ok = falhas = 0
-    for chave, jeito in (("lado_sanfona", "sanfona"), ("lado_icones", "icones")):
+    for chave, jeito in (("lado_sanfona", "sanfona"), ("lado_abas", "abas"),
+                         ("lado_solto", "solto"), ("lado_icones", "icones")):
         if acionar(acoes[chave], f"menu: {chave}") and paineis.jeito == jeito:
             ok += 1
         else:

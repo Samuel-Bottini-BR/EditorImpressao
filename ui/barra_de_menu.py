@@ -8,9 +8,11 @@ Etapa 2 da obra (26/10/2026):
     página do livro" (Samuel, 07/10/2026: "Deixar em branco" (tecla Delete;
     página branca no lugar, encadernação não muda) e "Tirar do livro"). A
     Delete apagava a página;
-  - menu Ver > "Lado direito": ícones na borda (de fábrica) ou a área de
-    trabalho 1, em sanfona (R7 203 D: "Mas eu também quero ter a opção da
-    area de trabalho 1"; R14 902 C: no menu Ver e nas Configurações);
+  - menu Ver > "Lado direito": os quatro jeitos (D-033: "Quer os quatro
+    jeitos no app, escolhendo dentro dele: sanfona (o primeiro), abas no
+    alto, ícones na borda, painel flutuante"; R14 902 C: no menu Ver e nas
+    Configurações): ícones na borda (de fábrica), a área de trabalho 1 em
+    sanfona, abas no alto e painel solto (os dois últimos na etapa 9b-1);
   - com um livro aberto todos os menus ficam acesos (lista única 1.12; ver
     janela_principal._tela_mudou).
 
@@ -272,11 +274,11 @@ class BarraDeMenu(QMenuBar):
         menu.addSeparator()
         item = self._acao(menu, "comparar", "Modo comparar")
         item.setCheckable(True)
-        # Etapa 2 da obra: o jeito do lado direito (R7 203 D + R14 902 C).
-        # Os nomes são os da rodada 14 (sugestão do agente, aceitos com a 902).
-        # Só os dois que o Samuel pediu: os ícones na borda (de fábrica) e a
-        # área de trabalho 1; "abas no alto" e "painel solto" não entram (não
-        # foram pedidos e não existem no programa).
+        # Etapa 2 da obra e 9b-1: o jeito do lado direito, os quatro da D-033
+        # ("Quer os quatro jeitos no app, escolhendo dentro dele"; R14 902 C:
+        # aqui e nas Configurações). Os nomes são os da rodada 14 (sugestão do
+        # agente, aceitos com a 902). A etapa 2 tinha deixado de fora "abas no
+        # alto" e "painel solto" (auditoria de 27/10, C2).
         from PySide6.QtGui import QActionGroup as _Grupo
 
         from ui.widgets.paineis import JEITOS_DO_LADO_DIREITO, NOMES_DOS_JEITOS

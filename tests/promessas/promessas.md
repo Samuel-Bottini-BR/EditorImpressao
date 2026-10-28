@@ -237,9 +237,11 @@ programa), a partir do **nome do botão**, da **dica** (o balão do mouse) e das
 - **decisões:** D-023 ("queria pode fechar e abrir ela"), D-057
 - **na tela:** o painel aberto fecha e a página ganha o lugar dele.
 
-### P-043 · "Lado direito": ícones na borda / sanfona (área de trabalho 1)
-- **chaves:** `menu/lado_icones`, `menu/lado_sanfona`
-- **decisões:** D-037 ("eu também quero ter a opção da area de trabalho 1"), D-033 ("C — Nos dois lugares")
+### P-043 · "Lado direito": ícones na borda / sanfona (área de trabalho 1) / abas no alto / painel solto
+- **chaves:** `menu/lado_icones`, `menu/lado_sanfona`, `menu/lado_abas`, `menu/lado_solto`
+- **decisões:** D-037 ("eu também quero ter a opção da area de trabalho 1"), D-033 ("Quer os quatro jeitos no app,
+  escolhendo dentro dele: sanfona (o primeiro), abas no alto, ícones na borda, painel flutuante"; "C — Nos dois
+  lugares")
 - **na tela:** troca o jeito do lado direito; fica guardado para a próxima vez que o programa abrir.
 
 ## Área de trabalho: "Girar a folha" e "Esta página" (alto do Propriedades)
@@ -1024,9 +1026,10 @@ programa), a partir do **nome do botão**, da **dica** (o balão do mouse) e das
 - **na tela:** pergunta antes ("Mandar para a impressora?").
 - **na impressora:** "mandar" manda as folhas montadas, com as cópias escolhidas; "cancelar" não manda nada.
 
-### P-162 · "parar" / "fechar" (Montar para imprimir)
-- **chaves:** `montar para imprimir/parar`, `montar para imprimir/fechar`
-- **na tela:** "parar" interrompe a montagem (nada fica pela metade); "fechar" fecha a janela sem gravar.
+### P-162 · "cancelar" / "fechar" (Montar para imprimir)
+- **chaves:** `montar para imprimir/cancelar`, `montar para imprimir/fechar`
+- **na tela:** "cancelar" interrompe a montagem (nada fica pela metade); "fechar" fecha a janela sem gravar. (O nome
+  voltou ao do `fase-1` na etapa 9b-1: a 9a o tinha trocado por "parar"; auditoria C3.)
 
 ## Configurações
 

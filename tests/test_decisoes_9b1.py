@@ -567,3 +567,102 @@ def test_barra_de_baixo_nada_saiu(janela, tela):  # noqa: F811
                  tela.botao_antes_depois, tela.botao_menos_zoom, tela.rotulo_do_zoom,
                  tela.botao_mais_zoom, tela.botao_ajustar_a_tela):
         assert peca.isVisible(), peca
+
+
+# --- D-033: os quatro jeitos do lado direito ------------------------------------------------------
+
+def _clicar_na_fila(fila, painel):  # noqa: F811
+    from PySide6.QtCore import Qt
+    from PySide6.QtTest import QTest
+
+    QTest.mouseClick(fila, Qt.LeftButton, Qt.NoModifier, fila.retangulos()[painel].center())
+    aj.assentar()
+
+
+def test_d033_os_quatro_jeitos_no_menu_ver_e_nas_configuracoes(janela, tela):  # noqa: F811
+    """REVERSÃO. D-033 (05/10/2026): "Quer os quatro jeitos no app, escolhendo dentro dele:
+    sanfona (o primeiro), abas no alto, ícones na borda, painel flutuante" · R14 902: "C — Nos
+    dois lugares" (menu Ver e Configurações). A etapa 2 só fez dois (auditoria C2). Os quatro,
+    com os nomes da pergunta 902, nos dois lugares, e o mesmo caminho: escolher num marca no
+    outro."""
+    from ui.tela_configuracoes import TelaConfiguracoes
+    from ui.widgets.paineis import jeito_guardado
+
+    nomes = {"icones": "Ícones na borda (de fábrica)", "sanfona": "Sanfona (a área de trabalho 1)",
+             "abas": "Abas no alto", "solto": "Painel solto"}
+    submenu = janela.menu.menu_do_lado_direito
+    assert [a.text() for a in submenu.actions()] == list(nomes.values())
+    configuracoes = TelaConfiguracoes(janela)
+    try:
+        assert {j: b.text() for j, b in configuracoes.botoes_lado.items()} == nomes
+        for jeito in ("abas", "solto", "sanfona", "icones"):
+            configuracoes.botoes_lado[jeito].setChecked(True)
+            aj.assentar()
+            assert tela.paineis.jeito == jeito and jeito_guardado() == jeito
+            assert janela.menu.acoes[f"lado_{jeito}"].isChecked(), "o menu Ver não acompanhou"
+    finally:
+        configuracoes.close()
+
+
+def test_d033_abas_no_alto(janela, tela):  # noqa: F811
+    """REVERSÃO. D-033, "abas no alto" (o desenho `13-rodada7-padrao-c-abas`, "aberto em
+    Revisar"): Ver > Lado direito > "Abas no alto" -> a coluna dos painéis com as cinco abas no
+    alto e o "Para revisar" aberto embaixo delas; o clique numa aba abre o painel dela (o mouse
+    do Qt na aba); o clique na aba aberta não fecha; a página fica ao lado (não por baixo)."""
+    from PySide6.QtCore import QPoint
+
+    janela.menu.acoes["lado_abas"].trigger()
+    aj.assentar()
+    paineis = tela.paineis
+    assert paineis.jeito == "abas" and paineis.abas.isVisible()
+    assert not paineis.icones.isVisible() and not paineis.sanfona.isVisible()
+    assert paineis.aberto == "revisar" and paineis.para_revisar.isVisible()
+    fila = paineis.fila_de_abas
+    assert paineis.para_revisar.mapTo(paineis.abas, QPoint(0, 0)).y() >= fila.height(), \
+        "o painel não está embaixo das abas"
+    for painel in ("filtro", "historico", "automatico", "props"):
+        _clicar_na_fila(fila, painel)
+        assert paineis.aberto == painel and paineis.paineis[painel].isVisible(), painel
+    _clicar_na_fila(fila, "props")
+    assert paineis.aberto == "props", "o clique na aba aberta fechou o painel"
+    pagina = tela.vista_da_pagina
+    canto = pagina.mapTo(tela, QPoint(pagina.width(), 0)).x()
+    assert canto <= paineis.abas.mapTo(tela, QPoint(0, 0)).x(), "as abas ficaram por cima da página"
+
+
+def test_d033_painel_solto(janela, tela):  # noqa: F811
+    """REVERSÃO. D-033, "painel flutuante" (o "Painel solto" da pergunta 902; o desenho
+    `13-rodada7-padrao-e-flutuante`): os botões dos painéis na linha de cima (a dos menus), o
+    painel aberto POR CIMA da página, no canto de cima à direita; a página não encolhe; o
+    clique no botão do aberto fecha. Fora da tela de trabalho os botões somem."""
+    from PySide6.QtCore import QPoint
+
+    from ui.janela_principal import CONFERIR, INICIO
+
+    pagina = tela.vista_da_pagina
+    janela.menu.acoes["lado_solto"].trigger()
+    aj.assentar()
+    paineis = tela.paineis
+    botoes = paineis.botoes_do_alto
+    assert paineis.jeito == "solto" and botoes.isVisible()
+    assert janela.linha_dos_menus.isAncestorOf(botoes), "os botões não estão na linha de cima"
+    assert not paineis.icones.isVisible()
+    largura_da_pagina = pagina.width()
+    _clicar_na_fila(botoes, "historico")
+    assert paineis.aberto == "historico" and paineis.historico.isVisible()
+    moldura = paineis.moldura_do_solto
+    assert moldura is not None and moldura.isVisible()
+    assert pagina.width() == largura_da_pagina, "a página encolheu (o painel solto fica por cima)"
+    canto_da_pagina = pagina.mapTo(tela, QPoint(0, 0))
+    canto_da_moldura = moldura.mapTo(tela, QPoint(0, 0))
+    assert canto_da_pagina.x() < canto_da_moldura.x() < canto_da_pagina.x() + pagina.width()
+    assert canto_da_moldura.x() + moldura.width() <= canto_da_pagina.x() + pagina.width()
+    assert canto_da_pagina.y() <= canto_da_moldura.y() < canto_da_pagina.y() + 40
+    _clicar_na_fila(botoes, "historico")
+    assert paineis.aberto is None and not moldura.isVisible()
+    janela.telas.setCurrentIndex(INICIO)
+    aj.assentar()
+    assert not botoes.isVisible(), "os botões do painel solto ficaram fora da tela de trabalho"
+    janela.telas.setCurrentIndex(CONFERIR)
+    aj.assentar()
+    assert botoes.isVisible()
