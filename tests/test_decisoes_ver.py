@@ -356,8 +356,9 @@ def test_antes_depois_mostra_o_original_e_como_vai_sair(janela, tmp_path):
 
 def test_zoom_da_barra_de_baixo(janela, tmp_path):
     """Desenho decidido: "– 78% +" e "ajustar à tela" na barra de baixo. "+" aproxima e o
-    número mostra o zoom; "ajustar à tela" volta a 100%; no lado a lado (a página cabe na
-    tela) os botões do zoom ficam apagados."""
+    número mostra o zoom; "ajustar à tela" volta a 100%. Etapa 9b-2 (D-570, `v-zoom-pares`:
+    "Sim, zoom também no lado a lado"): no lado a lado os botões do zoom ficam ACESOS (antes
+    ficavam apagados); a prova do zoom nos pares está em tests/test_decisoes_9b2.py."""
     from ui.widgets.paginas_rolando import DUAS
 
     tela = _dividido(janela, tmp_path)
@@ -370,16 +371,17 @@ def test_zoom_da_barra_de_baixo(janela, tmp_path):
     tela.botao_ajustar_a_tela.click()
     assert vista.zoom == 1.0 and tela.rotulo_do_zoom.text() == "100%"
     tela.definir_mostrar(DUAS)
-    assert not tela.botao_mais_zoom.isEnabled() and not tela.botao_ajustar_a_tela.isEnabled()
+    assert tela.botao_mais_zoom.isEnabled() and tela.rotulo_do_zoom.text() == "100%"
 
 
 # --- D-021: roda do mouse, Page Up/Down, Home/End ----------------------------------
 
 def test_d021_roda_troca_de_pagina_sem_zoom_e_da_zoom_com_zoom(janela, tmp_path):
     """Pedido da etapa 6 (27/10): "roda do mouse troca de página (quando não está com zoom)".
-    Sem zoom, a roda para baixo vai à próxima página e para cima à anterior; com zoom, a roda
-    dá zoom como antes (D-026) e não troca de página; Ctrl+roda dá zoom sempre. Vale também
-    no Endireitar (outra peça de página). No código antigo a roda só dava zoom."""
+    Sem zoom, a roda para baixo vai à próxima página e para cima à anterior; Ctrl+roda dá
+    zoom sempre. Vale também no Endireitar (outra peça de página). No código antigo a roda só
+    dava zoom. Etapa 9b-2 (D-568, `v-roda`): com zoom a roda ANDA PELA PÁGINA (antes dava
+    zoom, D-026); a prova está em tests/test_decisoes_9b2.py."""
     tela = _dividido(janela, tmp_path)
     tela.escolher_ferramenta("mao")
     tela.ir_para_pagina(4)
@@ -390,8 +392,8 @@ def test_d021_roda_troca_de_pagina_sem_zoom_e_da_zoom_com_zoom(janela, tmp_path)
     assert tela.indice_pagina == 4
     _roda(vista, 1, ctrl=True)                             # Ctrl+roda: zoom
     assert tela.indice_pagina == 4 and abs(vista.zoom - 1.25) < 1e-6
-    _roda(vista, 1)                                        # com zoom: zoom, não página
-    assert tela.indice_pagina == 4 and vista.zoom > 1.25
+    _roda(vista, 1)                                        # com zoom: anda, não troca de página
+    assert tela.indice_pagina == 4 and abs(vista.zoom - 1.25) < 1e-6
     assert tela.rotulo_do_zoom.text() == f"{round(vista.zoom * 100)}%"
     tela.escolher_ferramenta("endireitar")
     tela.mudar_o_zoom(None)

@@ -222,3 +222,129 @@ def test_d554_margens_iguais_na_tela_do_cortar_e_o_mesmo_valor_do_automatico(jan
     paginas = _gerar(janela, tmp_path, "margens")
     tamanhos = {p.shape[:2] for p in paginas}
     assert len(paginas) == 3 and len(tamanhos) == 1, tamanhos
+
+
+# --- D-568, D-570, D-571: a roda e o zoom --------------------------------------------------
+
+def _dividido(janela, tmp_path: Path, folhas: int = 5):
+    """O caminho do Kaique: abrir o livro aberto e rodar o Automático só com "Dividir"."""
+    janela.abrir_livro(_pdf(tmp_path / "livro.pdf", [_aberto(f) for f in range(folhas)]))
+    estado = janela.estado_do_automatico
+    estado.marcadas = {A.DIVIDIR}
+    estado.alcance = "livro"
+    assert janela.rodar_o_automatico(esperar=True, perguntar=False)
+    assert len(janela.projeto.paginas) == 2 * folhas
+    return janela.tela_conferir
+
+
+def _roda(vista, passos: int, ctrl: bool = False, shift: bool = False) -> None:
+    """Uma volta da roda do mouse em cima da página (como o Windows manda)."""
+    from PySide6.QtCore import QPoint, QPointF, Qt
+    from PySide6.QtGui import QWheelEvent
+    from PySide6.QtWidgets import QApplication
+
+    teclas = Qt.NoModifier
+    if ctrl:
+        teclas |= Qt.ControlModifier
+    if shift:
+        teclas |= Qt.ShiftModifier
+    centro = QPointF(vista.width() / 2, vista.height() / 2)
+    evento = QWheelEvent(centro, vista.mapToGlobal(centro), QPoint(0, 0), QPoint(0, 120 * passos),
+                         Qt.NoButton, teclas, Qt.NoScrollPhase, False)
+    QApplication.sendEvent(vista, evento)
+
+
+@pytest.mark.parametrize("ferramenta", ["mao", "endireitar"])
+def test_d568_com_zoom_a_roda_anda_pela_pagina(janela, tmp_path, ferramenta):
+    """D-568 (27/10/2026, Central `v-roda`: "Como ficou: sem zoom troca de página; Ctrl + roda
+    dá zoom"; com zoom anda pela página). Com zoom, a roda para baixo mostra a parte de baixo
+    da página (o deslocamento sobe), não troca de página e não muda o zoom; para cima volta;
+    a página não sai da tela (para na beirada). Na Mão (o editor de marcar) e numa ferramenta
+    de página (Endireitar). Falha no código antigo (com zoom a roda dava zoom)."""
+    tela = _dividido(janela, tmp_path)
+    tela.escolher_ferramenta(ferramenta)
+    tela.ir_para_pagina(4)
+    janela.show()
+    janela.move(-3000, -3000)
+    _assentar()
+    vista = tela.editor_selecao if ferramenta == "mao" else tela.visualizadores["angulo"]
+    _esperar(lambda: getattr(vista, "_pixmap", None) is not None, motivo="a prévia")
+    tela.mudar_o_zoom(2.0)
+    zoom = vista.zoom
+    assert zoom > 1.9
+    antes = vista.deslocamento.y()
+    _roda(vista, -1)
+    assert tela.indice_pagina == 4 and vista.zoom == zoom
+    assert vista.deslocamento.y() < antes                 # andou para baixo na página
+    for _ in range(60):                                   # muito: para na beirada
+        _roda(vista, -1)
+    fundo = vista.deslocamento.y()
+    _roda(vista, -1)
+    assert vista.deslocamento.y() == fundo and tela.indice_pagina == 4
+    _roda(vista, 1)
+    assert vista.deslocamento.y() > fundo                 # volta para cima
+    _roda(vista, 1, ctrl=True)                            # Ctrl+roda: zoom
+    assert vista.zoom > zoom
+    tela.mudar_o_zoom(2.0)                                # bem perto: a página passa dos lados
+    de_lado = vista.deslocamento.x()
+    _roda(vista, -1, shift=True)                          # Shift: para os lados
+    assert vista.deslocamento.x() < de_lado and tela.indice_pagina == 4
+    tela.mudar_o_zoom(None)                               # sem zoom: troca de página
+    _roda(vista, -1)
+    assert tela.indice_pagina == 5
+
+
+def test_d570_zoom_tambem_no_lado_a_lado(janela, tmp_path):
+    """D-570 (27/10/2026, Central `v-zoom-pares`: "Sim, zoom também no lado a lado"). No "Duas
+    lado a lado" o "+" da barra de baixo aumenta as páginas dos pares (a altura de cada página
+    na tela cresce na mesma conta), o número mostra o zoom, Ctrl+roda também dá zoom, e
+    "ajustar à tela" volta o par inteiro à tela (100%). A página da vez continua a mesma.
+    Falha no código antigo (no lado a lado os botões do zoom ficavam apagados e nada mudava)."""
+    from ui.widgets.paginas_rolando import DUAS
+
+    tela = _dividido(janela, tmp_path)
+    tela.ir_para_pagina(4)
+    tela.definir_mostrar(DUAS)
+    _assentar()
+    pares = tela.lado_a_lado
+    assert tela.botao_mais_zoom.isEnabled() and tela.rotulo_do_zoom.text() == "100%"
+    alturas = dict(pares.altura_das_paginas())
+    tela.botao_mais_zoom.click()
+    _assentar()
+    assert tela.rotulo_do_zoom.text() == "125%" and abs(pares.zoom - 1.25) < 1e-6
+    depois = dict(pares.altura_das_paginas())
+    assert all(abs(depois[i] - 1.25 * alturas[i]) < 2 for i in alturas)
+    assert tela.indice_pagina == 4
+    _roda(pares.viewport(), 1, ctrl=True)
+    _assentar()
+    assert pares.zoom > 1.5 and tela.rotulo_do_zoom.text() == f"{round(pares.zoom * 100)}%"
+    tela.botao_ajustar_a_tela.click()
+    _assentar()
+    assert pares.zoom == 1.0 and tela.rotulo_do_zoom.text() == "100%"
+    assert dict(pares.altura_das_paginas()) == alturas
+
+
+def test_d571_100_por_cento_e_a_pagina_inteira_cabendo_na_tela(janela, tmp_path):
+    """D-571 (27/10/2026, Central `v-100`: "A página inteira cabendo na tela (recomendo)"). A
+    conferir: com "100%" na barra de baixo, a página desenhada cabe inteira na área da página
+    (e encosta nela na largura ou na altura: não é menor que a tela); "ajustar à tela" leva a
+    100%. Vale na Mão e numa ferramenta de página."""
+    tela = _dividido(janela, tmp_path)
+    tela.escolher_ferramenta("endireitar")
+    janela.show()
+    janela.move(-3000, -3000)
+    _assentar()
+    vista = tela.visualizadores["angulo"]
+    _esperar(lambda: getattr(vista, "_pixmap", None) is not None, motivo="a prévia")
+    tela.mudar_o_zoom(1.6)
+    tela.botao_ajustar_a_tela.click()
+    _assentar()
+    vista.repaint()
+    assert tela.rotulo_do_zoom.text() == "100%"
+    from ui.widgets.visualizador import PADDING_MOLDURA
+
+    area = vista._area
+    assert area.left() >= 0 and area.top() >= 0
+    assert area.right() <= vista.width() and area.bottom() <= vista.height()
+    folga = 2 * PADDING_MOLDURA + 2                       # a moldura em volta da página
+    assert (area.width() >= vista.width() - folga) or (area.height() >= vista.height() - folga)

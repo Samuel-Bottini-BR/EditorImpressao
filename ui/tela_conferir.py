@@ -724,6 +724,8 @@ class TelaConferir(QWidget):
         self.lado_a_lado = PaginasLadoALado()
         self.lado_a_lado.definir_fonte(self._previa_do_lado_a_lado)
         self.lado_a_lado.pagina_da_vez_mudou.connect(self._pagina_do_lado_a_lado)
+        # D-570 (etapa 9b-2): o Ctrl+roda nos pares muda o "N%" da barra de baixo
+        self.lado_a_lado.zoom_mudou.connect(lambda _z: self._acertar_o_zoom_da_barra())
         self.vista_da_pagina.addWidget(self.lado_a_lado)
         from ui.widgets.filtros_tela_cheia import VistaAntesDepois
         self.vista_antes_depois = VistaAntesDepois()
@@ -6079,10 +6081,14 @@ class TelaConferir(QWidget):
 
     def _vista_com_zoom(self):
         """A página com zoom que está à vista: a da ferramenta de marcar ou a
-        da ferramenta de página (Dividir, Cortar, Endireitar, Mover). None no
-        "Duas lado a lado" e no "antes / depois" (etapa 6: eles não têm zoom)."""
+        da ferramenta de página (Dividir, Cortar, Endireitar, Mover) e, desde
+        a etapa 9b-2 (D-570, `v-zoom-pares`: "Sim, zoom também no lado a
+        lado"), os pares do "Duas lado a lado". None no "antes / depois"
+        (etapa 6: ele não tem zoom)."""
         if not self._pronta():
             return None
+        if self.vista_da_pagina.currentWidget() is self.lado_a_lado:
+            return self.lado_a_lado
         if self.vista_da_pagina.currentWidget() is not self.area_imagem:
             return None
         aba = self.aba_atual
@@ -6121,8 +6127,8 @@ class TelaConferir(QWidget):
         self.botao_menos_zoom.setEnabled(com_zoom and zoom > 1.0 + 1e-3)
         self.botao_ajustar_a_tela.setEnabled(com_zoom and zoom > 1.0 + 1e-3)
         explicacao = ("" if com_zoom else
-                      "\nNo “Duas lado a lado” e no “antes / depois” a página cabe na tela; "
-                      "o zoom é na “Uma página”.")
+                      "\nNo “antes / depois” a página cabe na tela; o zoom é na “Uma página” "
+                      "e no “Duas lado a lado”.")
         self.rotulo_do_zoom.setToolTip(
             "O zoom da página (100% = a página inteira cabendo na tela)" + explicacao)
 
@@ -6266,18 +6272,26 @@ class TelaConferir(QWidget):
 
     def _roda_na_pagina(self, vista, evento) -> bool:
         """D-021 e o pedido da etapa 6 (27/10: "roda do mouse troca de página
-        (quando não está com zoom)"). Na página da área de trabalho:
+        (quando não está com zoom)"); D-568 (27/10/2026, Central `v-roda`:
+        "Como ficou: sem zoom troca de página; Ctrl + roda dá zoom", e com
+        zoom anda pela página - vale contra o "a roda sempre dá zoom" da
+        D-026). Na página da área de trabalho:
           - sem zoom (a página inteira cabendo), a roda troca de página (de
             folha, no Dividir): para baixo a próxima, para cima a anterior;
-          - com zoom, a roda continua dando zoom, como antes (D-026);
-          - Ctrl+roda dá zoom sempre (para o zoom pela roda não sumir);
+          - com zoom, a roda ANDA PELA PÁGINA (para cima e para baixo; com
+            Shift, ou a roda de lado, para os lados), como no UPDF - antes
+            da etapa 9b-2 ela continuava dando zoom;
+          - Ctrl+roda dá zoom sempre;
           - na ferramenta de marcar com o Pincel ou a Varinha, a roda continua
             mudando a espessura ou a tolerância, como antes.
         Devolve True se a roda foi usada aqui."""
         passos = evento.angleDelta().y()
-        if not passos or not self._pronta():
+        de_lado = evento.angleDelta().x()
+        if (not passos and not de_lado) or not self._pronta():
             return False
         if evento.modifiers() & Qt.ControlModifier:
+            if not passos:
+                return True
             fator = self.PASSO_DO_ZOOM if passos > 0 else 1 / self.PASSO_DO_ZOOM
             vista.definir_zoom(vista.zoom * fator)
             self._acertar_o_zoom_da_barra()
@@ -6286,14 +6300,55 @@ class TelaConferir(QWidget):
                 vista.ferramenta not in FERRAMENTAS_DE_NAVEGACAO):
             return False
         if vista.zoom > 1.0 + 1e-3:
-            QTimer.singleShot(0, self._acertar_o_zoom_da_barra)    # a página dá o zoom
-            return False
+            if evento.modifiers() & Qt.ShiftModifier:
+                de_lado, passos = de_lado or passos, 0
+            self._andar_pela_pagina(vista, de_lado, passos)
+            return True
+        if not passos:
+            return True
         self._roda_acumulada += passos
         if abs(self._roda_acumulada) >= 120:
             passo = -1 if self._roda_acumulada > 0 else 1
             self._roda_acumulada = 0
             self._navegar(passo)
         return True
+
+    # quanto a roda anda pela página com zoom: esta fração da altura da vista
+    # por "dente" da roda (120). Seguro mudar.
+    PASSO_DA_RODA_COM_ZOOM = 0.12
+
+    def _andar_pela_pagina(self, vista, de_lado: int, para_baixo: int) -> None:
+        """D-568: com zoom, a roda anda pela página. Muda o deslocamento da
+        vista (o mesmo do arrastar com a Mão), sem deixar a página sair da
+        tela: a beirada dela para na beirada da vista (com uma folga pequena).
+        `para_baixo`/`de_lado` são o angleDelta da roda (120 por dente;
+        positivo = roda para cima/esquerda = ver o que está acima/à esquerda)."""
+        from PySide6.QtCore import QPoint
+
+        if hasattr(vista, "_largura_base"):          # Visualizador (as ferramentas de página)
+            largura = int(vista._largura_base() * vista.zoom)
+            altura = int(vista._altura_base() * vista.zoom)
+        else:                                        # o editor de marcar
+            area = vista._calcular_area()
+            largura, altura = area.width(), area.height()
+        if largura <= 0 or altura <= 0:
+            return
+        folga = 20
+        passo = self.PASSO_DA_RODA_COM_ZOOM * max(1, vista.height())
+        dx = de_lado / 120.0 * passo
+        dy = para_baixo / 120.0 * passo
+        atual = vista.deslocamento
+
+        def limite(tamanho: int, lugar: int) -> float:
+            return max(0.0, (tamanho - lugar) / 2.0 + folga)
+
+        lx, ly = limite(largura, vista.width()), limite(altura, vista.height())
+        novo_x = min(lx, max(-lx, atual.x() + dx))
+        novo_y = min(ly, max(-ly, atual.y() + dy))
+        vista.deslocamento = QPoint(int(round(novo_x)), int(round(novo_y)))
+        if hasattr(vista, "vista_mudou"):
+            vista.vista_mudou.emit(vista.zoom, vista.deslocamento)
+        vista.update()
 
     @protegido
     def restaurar_pagina(self) -> None:
