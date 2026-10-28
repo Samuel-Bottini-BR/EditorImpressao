@@ -4931,6 +4931,11 @@ class TelaConferir(QWidget):
         muda nada. Até a etapa 9b-2 a linha ia para todas, sem perguntar."""
         assert self.projeto is not None
         posicao = self.projeto.folhas[self.indice_folha].posicao_corte
+        # pendencia da D2 (como o "usar em todas" do Cortar): com marcacoes
+        # ainda no formato antigo, avisa e nao abre a janela
+        if self._espera_pelas_marcacoes("folha", [f.indice for f in self.projeto.folhas],
+                                        {"posicao_corte": round(posicao, 4)}):
+            return
         indices = self._escolher_folhas_da_linha()
         if not indices:
             return
