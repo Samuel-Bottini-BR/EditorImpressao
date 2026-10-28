@@ -4,8 +4,7 @@ Ramo `obra-etapa9b1-2026-10-26` (base `obra-2026-10-26` = `27b4c52`), worktree `
 Agente: layout + implementador. Regra 7 (Samuel, 27/10/2026): "é só para fazer o que eu já tinha mandado, fazer as
 ferramentas que colocamos no programa funcionem como deveriam e como eu tinha escolhido."
 
-**Situação: PRONTO PARA CONFERIR** (começada e terminada em 27/10/2026). Ramo enviado ao GitHub. (Rodada do GitHub:
-ver "GitHub", no fim.)
+**Situação: PRONTO PARA CONFERIR** (começada e terminada em 27/10/2026). Ramo enviado ao GitHub. Rodada do GitHub 40619905327: passou inteira.
 
 ## Em uma frase
 
@@ -89,8 +88,6 @@ defeito que conserta: `relatorios/obra-etapa9b1/reversao-no-codigo-antigo.txt`).
 - `relatorios/layout-antes-de-processar/` (veio com o cherry-pick de `138e425`: os prints antes/depois aprovados).
 
 ## Testes
-
-(números finais na seção "GitHub")
 
 - No PC, um arquivo por vez: `test_decisoes_9b1.py` 25 passaram; `test_promessas.py` inteiro (ver GitHub);
   `test_decisoes_tela.py` 35, `test_decisoes_ver.py` 11, `test_decisoes_avisos.py` 13, `test_decisoes_automatico.py`
@@ -186,8 +183,29 @@ Filosofia - Severino Boécio.pdf", o nome com acento) e do Marial (página 7). N
 
 ## GitHub
 
-(preenchido no fim)
+Rodada **40619905327** (`gh workflow run "Testes no Windows" ... -f ramo=obra-etapa9b1-2026-10-26`, sobre `812d64f`):
+**passou inteira** (as 5 partes da suíte e "Botões e prints da janela real").
+
+- Suíte: 0 falhas (somando as linhas das 5 partes: 3.210 passaram, 282 pulados — os que pedem o acervo ou o OCR — e
+  6 xfailed). Entre eles: `test_decisoes_9b1.py` 25 passaram; `test_promessas.py` 257 passaram + 3 xfailed (as
+  "aguarda" de outras etapas); `test_trabalho_nao_se_perde.py` 82; `test_decisoes.py` 28; `test_paginas_diferentes.py`
+  12.
+- `teste_botoes.py`: 338 ações, 0 falhas (com os quatro jeitos do lado direito, ida e volta).
+- No PC, `test_promessas.py` inteiro: 257 passaram + 3 xfailed (15 min 37 s), P-085, P-125 e P-127 incluídas, sem marca de defeito.
 
 ## Commits (ramo `obra-etapa9b1-2026-10-26`)
 
-(preenchido no fim)
+- `9d58bb4` Etapa 9b-1: ONDE-PAREI com as decisões que a tarefa precisa cumprir
+- `c0ad0ba` Etapa 9b-1: nome com acento (D-555), tique do menu Filtro (D-492/P-085), menu processar passa pela 'Antes de processar' (D-274/P-127), Desfazer do menu apagado sem nada (P-125), cartão 'PDF gerado' desatualizado (D-309/bug 332); provas em tests/test_decisoes_9b1.py
+- `5a63d96` Etapa 9b-1: nomes da 'Montar para imprimir' voltam aos do fase-1 (auditoria C3); duas colunas ficam
+- `258a229` Layout: janela Antes de processar mais clara e menor
+- `dbbba6e` Etapa 9b-1: 'Antes de processar' aprovada (lm22, cherry-pick de 138e425) com o 'Mostrar' inteiro (D-283)
+- `160ef44` Etapa 9b-1: 'Pintar por cima' sobre letras pergunta antes ('Pintar assim mesmo' / 'Voltar', D-250)
+- `e06c5b7` Etapa 9b-1: foco preso - a lista do Automático, a rolagem dos painéis e a da tira não pegam o teclado; D, X, I, F, 1-4 e Page Down chegam à página
+- `1828ca7` Etapa 9b-1: ONDE-PAREI (andamento)
+- `6165eb0` Etapa 9b-1: contador da barra de baixo inteiro a 1280 com painel aberto (duas linhas quando não cabe em uma; vãos menores; nada saiu)
+- `5340140` Etapa 9b-1: testes instáveis estabilizados - P-092/P-094 (a medida ao abrir punha os avisos por cima dos da prova) e a página torta (a ordem das chamadas com vários trabalhadores); o programa não muda
+- `da78f1d` Etapa 9b-1: lado direito com os quatro jeitos (D-033) - 'Abas no alto' e 'Painel solto' no menu Ver e nas Configurações; promessas P-043 e P-162 acertadas
+- `5044b4a` Etapa 9b-1: promessa P-079 (aviso do Pintar por cima) e as provas P-070/P-071 respondem ao aviso; roteiro dos prints da janela de verdade
+- `812d64f` Etapa 9b-1: prints da janela de verdade (antes e depois), reversão no código antigo, ONDE-PAREI, situação no Livro de decisões
+- (e o deste ONDE-PAREI final)

@@ -1,0 +1,462 @@
+<!doctype html>
+<html lang="pt-BR">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Obra de 26/10/2026 — etapa 9b-1 (menus, impressão, janelas e lado direito): ONDE PAREI</title>
+<style>
+:root { color-scheme: light dark; }
+* { box-sizing: border-box; }
+body {
+  font: 17px/1.65 "Segoe UI", system-ui, sans-serif;
+  max-width: 46rem; margin: 0 auto; padding: 2.5rem 1.5rem 6rem;
+  color: #1c1c1e; background: #fdfdfc;
+}
+h1 { font-size: 2rem; line-height: 1.2; margin: 0 0 .3em; letter-spacing: -.02em; }
+h2 { font-size: 1.35rem; margin: 2.4em 0 .6em; padding-top: .8em;
+     border-top: 1px solid #e6e4e0; letter-spacing: -.01em; }
+h3 { font-size: 1.1rem; margin: 1.8em 0 .4em; }
+h1 + p, h2 + p { margin-top: .4em; }
+p, li { margin: 0 0 .9em; }
+ul, ol { padding-left: 1.3em; }
+strong { font-weight: 640; }
+code {
+  font: .88em ui-monospace, "Cascadia Code", Consolas, monospace;
+  background: #f1efec; padding: .12em .35em; border-radius: 4px;
+}
+pre {
+  background: #f1efec; padding: 1em 1.1em; border-radius: 8px;
+  overflow-x: auto; line-height: 1.5;
+}
+pre code { background: none; padding: 0; }
+blockquote {
+  margin: 1.2em 0; padding: .1em 0 .1em 1.1em;
+  border-left: 3px solid #c9c5be; color: #55524d;
+}
+table {
+  border-collapse: collapse; width: 100%; margin: 1.2em 0;
+  font-size: .95rem; display: block; overflow-x: auto;
+}
+th, td { padding: .5em .8em; text-align: left; border-bottom: 1px solid #e6e4e0; }
+th { font-weight: 620; background: #f7f5f2; white-space: nowrap; }
+tr:last-child td { border-bottom: none; }
+img { max-width: 100%; height: auto; border-radius: 6px; margin: 1em 0;
+      border: 1px solid #e6e4e0; }
+hr { border: none; border-top: 1px solid #e6e4e0; margin: 2.5em 0; }
+.rodape { margin-top: 4em; padding-top: 1.2em; border-top: 1px solid #e6e4e0;
+          font-size: .85rem; color: #86827c; }
+@media (prefers-color-scheme: dark) {
+  body { color: #e8e6e3; background: #1a1917; }
+  h2 { border-top-color: #35332f; }
+  code, pre, th { background: #262421; }
+  th, td { border-bottom-color: #35332f; }
+  blockquote { border-left-color: #4a4741; color: #b0aca6; }
+  img { border-color: #35332f; }
+  .rodape { border-top-color: #35332f; color: #7d7973; }
+}
+@media print {
+  body { max-width: none; padding: 0; color: #000; background: #fff; }
+  h2 { page-break-after: avoid; }
+  table, img { page-break-inside: avoid; }
+}
+</style>
+</head>
+<body>
+<h1>Obra de 26/10/2026 — etapa 9b-1 (menus, impressão, janelas e lado direito): ONDE PAREI</h1>
+<p>Ramo <code>obra-etapa9b1-2026-10-26</code> (base <code>obra-2026-10-26</code> = <code>27b4c52</code>), worktree <code>.claude/worktrees/obra-etapa9b1</code>.
+Agente: layout + implementador. Regra 7 (Samuel, 27/10/2026): "é só para fazer o que eu já tinha mandado, fazer as
+ferramentas que colocamos no programa funcionem como deveriam e como eu tinha escolhido."</p>
+<p><strong>Situação: PRONTO PARA CONFERIR</strong> (começada e terminada em 27/10/2026). Ramo enviado ao GitHub. Rodada do GitHub 40619905327: passou inteira.</p>
+<h2>Em uma frase</h2>
+<p>A janela "Montar para imprimir" voltou a ter os nomes de antes (do <code>fase-1</code>, os do UPDF) com a disposição nova em duas
+colunas; o lado direito tem os quatro jeitos (ícones na borda, sanfona, <strong>abas no alto</strong> e <strong>painel solto</strong>), no menu
+Ver e nas Configurações; o tique do menu Filtro acompanha a página; o menu Arquivo &gt; "Confirmar e processar" (e
+Ctrl+Return) passa pela "Antes de processar"; o nome sugerido do PDF voltou a ter acento; a "Antes de processar" é a
+aprovada no <code>lm22</code> e o "Mostrar" não corta mais o motivo; o "Pintar por cima" sobre letras pergunta antes ("Pintar assim
+mesmo" / "Voltar"); as teclas chegam à página depois de clicar na lista do Automático; o Desfazer do menu fica apagado
+sem nada para desfazer; o cartão deixa de dizer "PDF gerado" quando o trabalho muda depois do PDF; o contador da barra de
+baixo aparece inteiro a 1280 com um painel aberto; e os três testes instáveis ficaram estáveis (sem mudar o programa).</p>
+<h2>Decisões que esta tarefa precisa cumprir (palavras do Samuel)</h2>
+<table>
+<thead>
+<tr>
+<th>Item</th>
+<th>Nº</th>
+<th>Palavras dele</th>
+<th>O que tem de ficar no programa</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>1</td>
+<td>Auditoria C3 · <code>fr-26</code> (22/10) / D-333</td>
+<td>"Está bom" + "Só tem que melhorar esse layout, cheio de letras uma em cima da outra, tudo bagunçado e dificil de saber o que é o que."</td>
+<td>Disposição nova (duas colunas) fica; os NOMES voltam aos de antes.</td>
+</tr>
+<tr>
+<td>1</td>
+<td>D-315 (14/10)</td>
+<td>"todas as outras opções que aparecem nos prints do PDF que mandei. Quero TODAS essas opções dentro do programa" · <code>fr22</code>: APROVADO</td>
+<td>Os nomes das opções do UPDF, como estavam no <code>fase-1</code>.</td>
+</tr>
+<tr>
+<td>1</td>
+<td>D-374 (22/10)</td>
+<td>"Anote a ideia de depois revisarmos todos os nomes de botão com um novo agente que vai ser criado."</td>
+<td>Nome novo só pela revisão de nomes (etapa 11), decidido por ele.</td>
+</tr>
+<tr>
+<td>2</td>
+<td>D-033 (05/10) · R14 902 (20/10)</td>
+<td>"Quer os quatro jeitos no app, escolhendo dentro dele: sanfona (o primeiro), abas no alto, ícones na borda, painel flutuante" · <code>r14-lado-direito-onde</code>: "C — Nos dois lugares"</td>
+<td>Os 4 jeitos no menu Ver &gt; "Lado direito" e em Configurações &gt; Aparência.</td>
+</tr>
+<tr>
+<td>2</td>
+<td>R7 203 D (rodada 7)</td>
+<td>"Ícones na borda, tudo fechado" + "Mas eu também quero ter a opção da area de trabalho 1."</td>
+<td>Ícones na borda continua o de fábrica.</td>
+</tr>
+<tr>
+<td>3</td>
+<td>D-492 (27/10, escolha da gerente) · P-085</td>
+<td>"o botão tem que ser provado que ele faz o que se diz"</td>
+<td>O tique do menu Filtro acompanha o filtro da página aberta.</td>
+</tr>
+<tr>
+<td>4</td>
+<td>D-274 (08/10) · P-127</td>
+<td>"quando alguém tentar imprimir sem ver os alertas o programa para e mostra os alertas e a pessoa diz se quer ver ou continuar"</td>
+<td>Menu Arquivo &gt; "Confirmar e processar" (Ctrl+Return) passa pela "Antes de processar", igual ao botão.</td>
+</tr>
+<tr>
+<td>5</td>
+<td>D-555 (27/10)</td>
+<td>Central <code>ac-nome-sem-acento</code>: "Voltar com acento (recomendo)"</td>
+<td>Nome sugerido do PDF com acento ("Ofício da Imaculada Conceição - mágico pro.pdf").</td>
+</tr>
+<tr>
+<td>5</td>
+<td>D-365 (18/07)</td>
+<td>"Corrija TODOS os textos da interface para português correto"</td>
+<td>—</td>
+</tr>
+<tr>
+<td>6</td>
+<td>D-283 (21-22/10) · <code>lm22</code></td>
+<td><code>pr-antes-de-processar</code>: "Melhorar" + "ficou meio embolado, deve ficar mais claro e não tão grande." · <code>lm-antes-de-processar</code>: "Está bom" / <code>lm22</code> "Aprovado" (com o "Mostrar" cortado a consertar)</td>
+<td>"Antes de processar" do commit <code>138e425</code>, e o motivo inteiro no "Mostrar".</td>
+</tr>
+<tr>
+<td>6</td>
+<td>D-061 (21-23/10)</td>
+<td><code>lm22</code>: "Aprovado"</td>
+<td>Trabalho aprovado vai para o programa como estava.</td>
+</tr>
+<tr>
+<td>6</td>
+<td>D-285 (21/10) · etapa 7</td>
+<td><code>pr-contagens</code>: "A janela de salvar passa a contar as páginas com aviso pendente"</td>
+<td>A contagem da etapa 7 continua (um número só).</td>
+</tr>
+<tr>
+<td>7</td>
+<td>D-250 (22/10)</td>
+<td><code>fr-218-aviso</code>: "A — Avisar (recomendo)" · no chat: "1- sim"</td>
+<td>"Pintar por cima" sobre letras → aviso com "Pintar assim mesmo" e "Voltar"; nada pintado sem confirmar.</td>
+</tr>
+<tr>
+<td>8</td>
+<td>D-561 (27/10)</td>
+<td>Central <code>ac-letras</code>: "Manter (recomendo)" — D, X, I, F, Shift+Del</td>
+<td>As teclas não mudam; só passam a chegar à página com o foco na lista do Automático.</td>
+</tr>
+<tr>
+<td>8</td>
+<td>D-021</td>
+<td>"Page Up/Down, Home/End"</td>
+<td>Page Down anda as páginas também depois de clicar no painel.</td>
+</tr>
+<tr>
+<td>9</td>
+<td>D-057 (20-21/10)</td>
+<td><code>r14-menu-paineis</code>: "B — Um menu novo, “Painéis”" · <code>ly-paineis</code>: "Está bom"</td>
+<td>Os "Painel: …" saíram do Ver para o menu Painéis; cada item abre o painel.</td>
+</tr>
+<tr>
+<td>9</td>
+<td>D-020 (18/07) · P-125</td>
+<td>"13. Ctrl+Z desfaz qualquer alteração, sem limite de quantidade, e Ctrl+Shift+Z refaz"</td>
+<td>Desfazer apagado sem nada para desfazer (barra de baixo e menu).</td>
+</tr>
+<tr>
+<td>9</td>
+<td>D-309 (05/10)</td>
+<td>"pode mandar concertar, mas continue com a fase 2 em paralelo"</td>
+<td>O cartão só diz "PDF gerado" quando o PDF é o do trabalho de agora (Lista de bugs 332).</td>
+</tr>
+<tr>
+<td>9</td>
+<td>D-342 (05/10)</td>
+<td>"o programa quando estiver pronto, ele vai ter que ser capaz de abrir arquivos de versões anteriores."</td>
+<td><code>projeto.json</code> ilegível: cópia guardada e aviso na tela.</td>
+</tr>
+<tr>
+<td>10</td>
+<td>D-045 (06/10) · D-015 (22/10) · etapa 7 ressalva 1</td>
+<td>R9 405: "C — Os dois" · "Uma página / Duas lado a lado" na barra de baixo</td>
+<td>Barra de baixo com tudo o que tem; o contador inteiro a 1280 com painel aberto, sem tirar nada.</td>
+</tr>
+<tr>
+<td>11</td>
+<td>D-272 · D-280 · P-092 · P-094</td>
+<td>"com todas as paginas ou com todos os motivos"</td>
+<td>Testes estáveis sem mudar o programa só para o teste passar.</td>
+</tr>
+</tbody>
+</table>
+<h2>Como cumpri cada uma</h2>
+<p>Prova: <code>tests/test_decisoes_9b1.py</code> (25 testes; os 20 marcados REVERSÃO falham no código antigo <code>27b4c52</code>, cada um pelo
+defeito que conserta: <code>relatorios/obra-etapa9b1/reversao-no-codigo-antigo.txt</code>). Prints da janela de verdade em
+<code>relatorios/obra-etapa9b1/prints/</code> (ver "Prints").</p>
+<table>
+<thead>
+<tr>
+<th>Item</th>
+<th>O que ficou no programa</th>
+<th>Prova</th>
+<th>Print (depois × antes)</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>1 nomes (C3, D-315, D-333, D-374)</td>
+<td><code>ui/dialogo_impressao.py</code>: voltaram os nomes do <code>fase-1</code> — "Ordem de páginas", "Páginas por caderno" (com os números sozinhos na lista, como era), "Rotação automática", "Centralizar automático", "Reverter páginas", "Agrupar", "Esquerda"/"Direita", "cancelar" (os oito da auditoria) e também os outros que a 9a tinha trocado: "Escala personalizada", "em pé (retrato)"/"deitada (paisagem)", "Frente e verso"/"Só a frente"/"Só o verso", "Horizontal"/"Vertical", "Escala de cada lado", "Só uma página", "Imprimir em escala de cinza", "Folhas de (0 = todas)", "Páginas do livro de (0 = todas)", "(a de sempre do Windows)", "Impressora (para mandar direto)". <strong>Ficou da 9a</strong> só a disposição: as duas colunas com o cartão "O que vai sair", o texto que era parêntese virou a frase de baixo da caixinha (a de "Rotação automática" é a do <code>fase-1</code>, "Página deitada gira de pé."), o nome curto do formato com a explicação embaixo e o "todas" escrito no campo. Promessa P-162 acompanha ("cancelar").</td>
+<td><code>test_c3_nomes_da_montar_para_imprimir_sao_os_do_fase_1</code> (os do <code>fase-1</code> voltaram, os da 9a saíram, o cartão continua)</td>
+<td><code>depois-17</code> e <code>-17b</code> × <code>antes-17</code></td>
+</tr>
+<tr>
+<td>2 quatro jeitos (D-033, R14 902 C)</td>
+<td><code>ui/widgets/paineis.py</code>: <code>JEITOS_DO_LADO_DIREITO</code> com os quatro, nomes da pergunta 902 ("Ícones na borda (de fábrica)", "Sanfona (a área de trabalho 1)", "Abas no alto", "Painel solto"); o menu Ver e as Configurações leem a mesma lista (aparecem nos dois, o mesmo caminho, guardado para a próxima vez). <strong>Abas no alto</strong> (desenho <code>7-paineis-da-direita-opcao-1</code> / <code>13-rodada7-padrao-c-abas</code>, "aberto em Revisar"): coluna de 300 px com as cinco abas no alto (ícone e nome curto: "Revisar", "Automático", "Propriedades", "Filtro", "Histórico"; o nome inteiro no balão; a bolinha laranja no "Revisar"), o painel embaixo; abre no "Para revisar"; clicar na aba aberta não fecha; a seta "&gt;&gt;" na ponta esconde a coluna. <strong>Painel solto</strong> (desenho <code>7-paineis-da-direita-opcao-3</code> / <code>13-rodada7-padrao-e-flutuante</code>): os botões dos cinco painéis vão para a linha de cima, à direita (só o ícone; nome no balão); o painel abre POR CIMA da página, no canto de cima à direita (12 da direita, 10 do alto, borda arredondada), a página não encolhe; clicar de novo no botão fecha; fora da tela de trabalho os botões somem. Ícones na borda continua o de fábrica.</td>
+<td><code>test_d033_os_quatro_jeitos_no_menu_ver_e_nas_configuracoes</code>, <code>test_d033_abas_no_alto</code> (clique do mouse nas abas), <code>test_d033_painel_solto</code> (a página não encolhe; o painel por cima, no canto); P-043 com os quatro; <code>teste_botoes.py</code> (os quatro, ida e volta)</td>
+<td><code>depois-04</code> (menu), <code>-05</code> ícones, <code>-06</code>/<code>-07</code> abas, <code>-08</code> solto, <code>-09</code> sanfona, <code>-10</code> Configurações × <code>antes-04</code> (dois jeitos), <code>antes-10</code></td>
+</tr>
+<tr>
+<td>3 tique do Filtro (D-492, P-085)</td>
+<td><code>ui/janela_principal._marcar_o_filtro_no_menu</code>: marca só o filtro da página da tela, a cada mudança da tela (folhear, trocar filtro por qualquer lugar, desfazer) e ao abrir o menu; o clique no item já marcado não tira mais a marca. Página em "Tirar o fundo" (que o menu não tem): nenhum marcado. P-085 sem "defeito".</td>
+<td><code>test_d492_tique_do_menu_filtro_acompanha_a_pagina</code>, <code>test_d492_clicar_no_filtro_que_ja_esta_nao_tira_a_marca</code>; P-085</td>
+<td><code>depois-02</code> (página 2 em Preto e branco) e <code>-03</code> (página 1, Original) × <code>antes-02</code>/<code>-03</code> (a marca ficou em "Preto e branco" na página 1, que está em Original)</td>
+</tr>
+<tr>
+<td>4 menu processar (D-274, P-127)</td>
+<td>O menu Arquivo &gt; "Confirmar e processar" (e Ctrl+Return) chama o mesmo caminho do botão (<code>TelaConferir._pedir_processamento</code>): com aviso pendente, a "Antes de processar"; sem aviso, direto à janela de salvar. P-127 sem "defeito".</td>
+<td><code>test_d274_menu_e_ctrl_return_mostram_antes_de_processar[menu/tecla]</code>, <code>test_d274_sem_aviso_o_menu_vai_direto_para_salvar</code>; P-127</td>
+<td><code>depois-13</code> (pelo menu) × <code>antes-13-menu-processar-foi-direto-para-salvar</code></td>
+</tr>
+<tr>
+<td>5 acento (D-555)</td>
+<td><code>modelos.nome_de_saida_sugerido</code> e <code>ui/dialogo_impressao.destino_sugerido</code> sem o <code>sem_acento</code> (as duas funções <code>sem_acento</code> das etapas 9a/9c saíram; ninguém mais as usava). As três provas que exigiam o sem acento (<code>test_core</code>, <code>test_decisoes_nucleo</code>, <code>test_decisoes_impressao</code>) agora exigem o acento e conferem que o sem acento saiu.</td>
+<td><code>test_d555_nome_do_pdf_pronto_e_do_para_imprimir_com_acento</code>; <code>test_d555_*</code> dos outros dois arquivos</td>
+<td><code>depois-16</code> ("Sobre a Consolação da Filosofia - Severino Boécio - arrumado.pdf") × <code>antes-16</code> ("Consolacao", "Boecio")</td>
+</tr>
+<tr>
+<td>6 "Antes de processar" (D-283, <code>lm22</code>, D-061)</td>
+<td><code>138e425</code> trazido por cherry-pick (sem conflito: a frase de cima já usa a contagem da etapa 7, <code>frase_de_quantos(avisos, projeto)</code>); o "Mostrar" tem a largura do motivo mais comprido da lista (antes 20 letras, cortava o "(12)"); a janela só passa dos 500 pontos quando um motivo comprido precisa (558 × 400 no print).</td>
+<td><code>test_d283_antes_de_processar_aprovada_e_o_mostrar_nao_corta</code> (mede o campo de texto do "Mostrar" contra o motivo); <code>test_antes_de_processar_menor_e_em_duas_filas</code> (do <code>138e425</code>)</td>
+<td><code>depois-13</code>, <code>-14</code> ("Endireitar: as contas discordam (11)" inteiro), <code>-15</code> × <code>antes-14</code> (a janela velha, 560 × 520)</td>
+</tr>
+<tr>
+<td>7 "Pintar por cima" (D-250)</td>
+<td><code>core/editar_zonas.letras_na_area</code> / <code>cobre_letras</code> (conta os borrões de tinta do tamanho de letra dentro do retângulo, pelo Preto e branco da página, só lendo; 3 ou mais = cobre letras) e, na ferramenta de marcar, o retângulo de "Pintar por cima" sobre letras pergunta antes, com o texto e os botões aprovados no <code>fr-218-aviso</code> ("Este retângulo cobre letras; elas vão ser pintadas também." · "Pintar assim mesmo" / "Voltar"). "Voltar" (ou fechar) não pinta nada. Sem letras (margem, sombra da lombada) pinta direto. Promessa nova P-079; P-070/P-071 respondem ao aviso.</td>
+<td><code>test_d250_pintar_por_cima_das_letras_pergunta_antes[Pintar assim mesmo/Voltar]</code> (o Marial 7 do gabarito, o caso do teste dele), <code>test_d250_sem_letras_pinta_sem_perguntar</code>; P-079</td>
+<td><code>depois-18</code> (o aviso) e <code>-19</code> (depois do "Voltar": nada pintado) × <code>antes-19</code> (pintou as letras sem perguntar)</td>
+</tr>
+<tr>
+<td>8 foco preso (D-561, D-021)</td>
+<td>A lista de etapas do painel Automático, a rolagem dos painéis e a rolagem da tira de miniaturas não pegam mais o teclado (o mesmo jeito dos botões do painel e da lista do "Para revisar", que já eram assim). O mouse continua igual (clicar escolhe a etapa, a caixinha liga, arrastar muda a ordem, a roda rola). As teclas não mudaram. Achado ao provar: o Page Down ficava preso também na rolagem da tira (ao abrir o livro e depois de clicar numa miniatura) e na rolagem do painel; consertado junto.</td>
+<td><code>test_teclas_chegam_a_pagina_depois_de_clicar_na_lista_do_automatico[D/PageDown/2]</code>, <code>test_page_down_chega_a_pagina_depois_de_clicar_numa_miniatura</code></td>
+<td><code>depois-12</code> (página 1 → 11 com Page Down depois do clique na lista) × <code>antes-12</code> (ficou na página 1)</td>
+</tr>
+<tr>
+<td>9 Desfazer (P-125, D-020)</td>
+<td>Menu Editar &gt; Desfazer/Refazer acesos só quando há o que desfazer/refazer, como os da barra de baixo (<code>_acertar_o_desfazer_do_menu</code>). P-125 sem "aguarda".</td>
+<td><code>test_p125_desfazer_do_menu_acompanha_o_que_ha_para_desfazer</code>; P-125</td>
+<td><code>depois-01</code> (cinza) × <code>antes-01</code> (aceso)</td>
+</tr>
+<tr>
+<td>9 cartão "PDF gerado" (D-309, bug 332)</td>
+<td>Mudou o trabalho depois do PDF (uma ação a mais, a menos ou outra na pilha do desfazer, ou a marcação mexida à mão) → o cartão volta a "N de M conferidas" com "continuar" (os dois jeitos que ele já tinha); folhear não conta; gerar de novo → pronto outra vez.</td>
+<td><code>test_d309_cartao_deixa_de_dizer_pronto_quando_o_trabalho_muda</code>, <code>test_d309_marcacao_mexida_tambem_tira_o_pronto</code>; <code>tests/test_cartao_pdf_gerado.py</code> (4)</td>
+<td>—</td>
+</tr>
+<tr>
+<td>9 <code>projeto.json</code> ilegível (D-342)</td>
+<td><strong>A etapa 3 já cobria:</strong> abrir com o arquivo estragado mostra "Comecei a conferência deste livro de novo: o trabalho salvo não pôde ser lido…" com a cópia, e a 9c guarda o estragado ao lado. Nada mudou.</td>
+<td><code>test_d342_projeto_ilegivel_mostra_o_aviso</code> (passa no antigo e no novo)</td>
+<td>—</td>
+</tr>
+<tr>
+<td>9 "Painel: …" (D-057)</td>
+<td><strong>Já resolvido:</strong> os "Painel: …" saíram do menu Ver para o menu Painéis (rodada 14); cada item abre o painel. Nada mudou.</td>
+<td><code>test_d057_menu_paineis_abre_cada_painel_e_o_ver_nao_tem_painel</code> (passa no antigo e no novo)</td>
+<td>—</td>
+</tr>
+<tr>
+<td>10 contador (etapa 7, ressalva 1)</td>
+<td>Nada saiu da barra. Quando a conta não cabe numa linha, ela vai em duas ("1 de 50 conferidas" / "2 com dúvida"), em letra 11 (cabe nos 30 pontos da barra); o nome do livro fica no balão; os vãos da barra ficaram menores (6 → 4 e 8 → 4; a folga dos botões pequenos, 7 → 5). Com o painel fechado continua numa linha só, com o nome.</td>
+<td><code>test_contador_da_barra_de_baixo_em_duas_linhas_quando_nao_cabe_em_uma</code>, <code>test_barra_de_baixo_nada_saiu</code></td>
+<td><code>depois-11</code> × <code>antes-11</code> ("1 de 50 c…")</td>
+</tr>
+<tr>
+<td>11 testes instáveis</td>
+<td><strong>P-092/P-094:</strong> a medida do livro novo por trás (D-284) termina depois de abrir e PÕE OS AVISOS do livro por cima dos que a prova tinha posto à mão; quando ela terminava no meio da prova, os avisos sumiam ("0 == 3"). O ajudante que abre o livro agora espera a medida terminar. <strong>Página torta:</strong> a análise mede as folhas em vários trabalhadores ao mesmo tempo (item 2.16) e a medida falsa do teste dava os ângulos na ordem das chamadas, não das páginas; o teste agora usa um trabalhador só. <strong>Também:</strong> a ferramenta de marcar recebe a imagem da página por trás; as provas de marcar esperam a imagem (o aviso do D-250 mede nela). O programa não mudou em nada disso.</td>
+<td>Antes × depois, só o teste: página torta 12 de 15 falharam × 0 de 15; P-092/P-094 5 de 25 × 0 de 25</td>
+<td>—</td>
+</tr>
+</tbody>
+</table>
+<h2>Arquivos mudados</h2>
+<ul>
+<li>Tela: <code>ui/dialogo_impressao.py</code>, <code>ui/janela_principal.py</code>, <code>ui/janela_dos_avisos.py</code> (cherry-pick + "Mostrar"),
+  <code>ui/widgets/paineis.py</code> (os quatro jeitos; a rolagem dos painéis), <code>ui/barra_de_menu.py</code> e <code>ui/tela_configuracoes.py</code>
+  (só comentários), <code>ui/automatico.py</code> (a lista do painel), <code>ui/widgets/tira_miniaturas.py</code> (a rolagem), <code>ui/estilo.py</code>
+  (a folga dos botões pequenos da barra de baixo).</li>
+<li><strong>Na área do outro agente (9b-2), o mínimo:</strong> <code>ui/tela_conferir.py</code> — só a classe <code>_RotuloDoLivro</code> (as duas linhas)
+  e os números dos vãos em <code>_montar_barra_de_baixo</code>/<code>_montar_o_ver_da_barra_de_baixo</code> (constantes
+  <code>ESPACO_DA_BARRA_DE_BAIXO</code>, <code>RESPIRO_DA_BARRA_DE_BAIXO</code>); <code>ui/widgets/editor_selecao.py</code> — duas linhas em
+  <code>_acrescentar</code> e o método <code>_pintar_mesmo_sobre_letras</code> (o aviso do D-250). Na junção, conferir esses dois arquivos.</li>
+<li>Núcleo: <code>modelos.py</code> (o nome com acento), <code>core/editar_zonas.py</code> (só acrescentei <code>letras_na_area</code>/<code>cobre_letras</code>, que
+  só leem; o processamento e o PDF não mudam — não precisa do filtro de velocidade).</li>
+<li>Testes: <code>tests/test_decisoes_9b1.py</code> (novo), <code>tests/test_promessas.py</code> + <code>tests/promessas/promessas.md</code> (P-043 com os
+  quatro, P-079 nova, P-085/P-127 sem "defeito", P-125 sem "aguarda", P-162 "cancelar", P-070/P-071 respondem ao aviso,
+  a varredura acha o aviso do "Pintar por cima"), <code>tests/promessas/ajudantes.py</code> (espera a medida ao abrir),
+  <code>tests/test_paginas_diferentes.py</code> (um trabalhador), <code>tests/test_core.py</code>, <code>tests/test_decisoes_nucleo.py</code>,
+  <code>tests/test_decisoes_impressao.py</code> (o acento), <code>tests/test_decisoes_tela.py</code> (os quatro nas Configurações),
+  <code>teste_botoes.py</code> (os quatro jeitos).</li>
+<li>Livro de decisões: só a coluna "situação" de D-020, D-033, D-250, D-283, D-309, D-333, D-492, D-555.</li>
+<li><code>relatorios/layout-antes-de-processar/</code> (veio com o cherry-pick de <code>138e425</code>: os prints antes/depois aprovados).</li>
+</ul>
+<h2>Testes</h2>
+<ul>
+<li>No PC, um arquivo por vez: <code>test_decisoes_9b1.py</code> 25 passaram; <code>test_promessas.py</code> inteiro (ver GitHub);
+  <code>test_decisoes_tela.py</code> 35, <code>test_decisoes_ver.py</code> 11, <code>test_decisoes_avisos.py</code> 13, <code>test_decisoes_automatico.py</code>
+  24, <code>test_decisoes_impressao.py</code> 22, <code>test_dialogo_impressao.py</code> 5, <code>test_impressao.py</code> 17, <code>test_paineis.py</code> 34,
+  <code>test_menu_paineis.py</code> 3, <code>test_cartao_pdf_gerado.py</code> 4, <code>test_para_revisar_na_tela.py</code> 26, <code>test_editor_selecao.py</code>
+  17, <code>test_editar_zonas.py</code> 10, <code>test_miniaturas_novas.py</code> 5, <code>test_paginas_diferentes.py</code> (as duas da análise, 15
+  vezes seguidas sem falhar).</li>
+<li>Reversão: <code>relatorios/obra-etapa9b1/reversao-no-codigo-antigo.txt</code> — os 20 REVERSÃO falham no <code>27b4c52</code>, cada um pelo
+  defeito (ex.: "Oficio" sem acento; "livro aberto sem a marca"; "a janela 'Antes de processar' não apareceu"; "o
+  cartão continua 'PDF gerado'"; "nomes do fase-1 que não voltaram"; "o teclado ficou no painel (ListaDeEtapas)";
+  "'0 de 360 conferid…'"; <code>KeyError: 'lado_abas'</code>).</li>
+</ul>
+<h2>Prints da janela de verdade (1280×657 lógicos, a 125% deste PC = 1600×821; fora da tela)</h2>
+<p>Roteiro <code>relatorios/obra-etapa9b1/roteiro/prints.py</code> (base da etapa 3: cliques e teclas por mensagens do Windows,
+PrintWindow; a troca do jeito do lado direito pelo item do menu, <code>trigger</code>). Cópias do Boécio ("Sobre a Consolação da
+Filosofia - Severino Boécio.pdf", o nome com acento) e do Marial (página 7). Nunca processa (janela de salvar em
+"voltar"). Os números de cada passo: <code>depois-numeros.txt</code> / <code>antes-numeros.txt</code>; os textos das janelas:
+<code>depois-textos.txt</code>. Abri e olhei todos.</p>
+<ul>
+<li><code>depois-01</code> menu Editar sem nada feito: Desfazer e Refazer cinza (<code>antes-01</code>: acesos).</li>
+<li><code>depois-02</code>/<code>-03</code> menu Filtro: Preto e branco marcado na página 2 (posto pela tecla 2), Original na página 1
+  (<code>antes-03</code>: continuava "Preto e branco" na página 1).</li>
+<li><code>depois-04</code> Ver &gt; Lado direito com os quatro (<code>antes-04</code>: dois); <code>-05</code> ícones na borda; <code>-06</code> abas no alto (aberto em
+  "Revisar"); <code>-07</code> clique (mensagem do Windows) na aba "Filtro"; <code>-08</code> painel solto: os botões na linha de cima e o
+  "Para revisar" por cima da página, a página do mesmo tamanho; <code>-09</code> sanfona; <code>-10</code> Configurações &gt; Aparência com os
+  quatro.</li>
+<li><code>depois-11</code> barra de baixo a 1280 com o "Para revisar" aberto: "1 de 50 conferidas / 2 com dúvida" em duas linhas
+  (<code>antes-11</code>: "1 de 50 c…").</li>
+<li><code>depois-12</code> clique na página, clique na lista do Automático, Page Down: página 1 → 11 (<code>antes-12</code>: ficou na 1).</li>
+<li><code>depois-13</code> menu Arquivo &gt; "Confirmar e processar" com 13 páginas com aviso: a "Antes de processar" (<code>antes-13-menu-
+  processar-foi-direto-para-salvar</code>: foi direto à janela de salvar); <code>-14</code> "Mostrar" em "Endireitar: as contas
+  discordam (11)", inteiro; <code>-15</code> a mesma pelo botão. <strong>Os avisos dessas 12 páginas foram postos pelo roteiro para a
+  foto</strong> (o Boécio novo só tem 2). No "antes", <code>antes-13/14/15</code> são a janela velha aberta pelo botão.</li>
+<li><code>depois-16</code> janela de salvar: "Sobre a Consolação da Filosofia - Severino Boécio - arrumado.pdf" (<code>antes-16</code>:
+  "Consolacao", "Boecio").</li>
+<li><code>depois-17</code>/<code>-17b</code> "Montar para imprimir" (em cima e rolada para baixo) com os nomes do <code>fase-1</code> (<code>antes-17</code>: "Cada
+  caderno", "costura à esquerda", "Imprimir", "Folhas de papel", "parar").</li>
+<li><code>depois-18</code> o aviso do "Pintar por cima" no Marial 7 (retângulo sobre o começo das linhas, arrastado por mensagens do
+  Windows); <code>-19</code> depois do "Voltar": nenhuma área (<code>antes-19</code>: a área roxa pintada sobre as letras, sem perguntar).</li>
+</ul>
+<h2>Ressalvas</h2>
+<ol>
+<li><strong>Mexi em dois arquivos da área da 9b-2</strong> (<code>ui/tela_conferir.py</code>, <code>ui/widgets/editor_selecao.py</code>), o mínimo
+   (listado acima). Conferir na junção.</li>
+<li><strong>Painel solto:</strong> os botões de cima são só o ícone (o nome fica no balão): com o nome escrito ao lado, como no
+   desenho, eles não cabem na linha dos menus a 1280 junto com os ajustes da ferramenta. O painel fica dentro da altura
+   da página (para não cobrir a faixa do aviso e o "está certo"); num livro novo, com a faixa "Livro novo: ainda não
+   passou pelo automático", a página é mais baixa e o "Para revisar" fica com pouca lista à vista (rola). Pergunta 1.</li>
+<li><strong>Abas no alto:</strong> o cabeçalho do painel (nome, subtítulo, "x", o botão de tela cheia do Filtro) continua embaixo das
+   abas, como na sanfona — no desenho das abas não havia cabeçalho; tirar levaria o "x" e o botão de tela cheia. Os
+   nomes curtos das abas são os do desenho, com "Propriedades" no lugar de "Ajustes". Pergunta 2.</li>
+<li><strong>"Montar para imprimir":</strong> voltaram todos os nomes que a 9a tinha trocado, não só os oito da auditoria (a lista
+   completa está na tabela). Ficou redundante "Folhas de (0 = todas): todas até todas" (o rótulo do <code>fase-1</code> e o "todas"
+   escrito no campo, da 9a). Pergunta 3.</li>
+<li><strong>D-250 vale só para o retângulo</strong> (a decisão fala do retângulo); oval, laço e pincel de "Pintar por cima" pintam
+   sem perguntar, como antes. A conta mede a imagem que a ferramenta de marcar mostra; se a pessoa desenhar antes de a
+   página chegar (fração de segundo ao trocar de página), pinta sem perguntar. Pergunta 4.</li>
+<li><strong>Cartão "PDF gerado":</strong> mudar o trabalho depois do PDF tira o "pronto" (volta "N de M conferidas" e "continuar"; o
+   "abrir a pasta" sai até gerar de novo). Não criei texto novo ("PDF desatualizado") porque não está no Livro.
+   Pergunta 5. Mudança que não passa pela pilha do desfazer nem pela marcação (ex.: "procurar de novo") não tira o
+   "pronto".</li>
+<li><strong>Foco:</strong> além da lista do Automático, a rolagem dos painéis e a da tira não pegam mais o teclado (o Page Down ficava
+   preso nelas). Com isso as setas do teclado não rolam a tira nem o painel (a roda do mouse, a barra e as setinhas da
+   tira continuam).</li>
+<li><strong>Contador:</strong> com um painel aberto a 1280, o nome do livro sai da barra (fica no balão) e a conta vai em duas linhas,
+   em letra 11; a segunda linha encosta na beirada de baixo da barra (inteira no print). Vãos da barra um pouco
+   menores.</li>
+<li><strong>"Antes de processar"</strong> fica mais larga que os 500 pontos do <code>138e425</code> quando há motivo comprido (558 no print),
+   para o "Mostrar" caber.</li>
+<li><strong>O "Mostrar" do <code>138e425</code></strong> tinha 20 letras de largura fixa; agora acompanha o motivo mais comprido da lista
+    (a lista "todos os motivos (N)" fica com a mesma largura).</li>
+<li>Os testes P-092/P-094 e os de marcar demoram um pouco mais (esperam a medida e a imagem, como o Kaique).</li>
+<li>A D-554 ("Margens iguais" também no Cortar), a D-558 ("Dividir" na grade) e a D-559 (a tampa no Automático) estão
+    no Livro com dono "Etapa 9b", mas não estavam no meu pedido (são da tela de corte e da grade, da 9b-2?). Não fiz.</li>
+</ol>
+<h2>Perguntas para o Samuel (com recomendação; nenhuma trava a etapa)</h2>
+<ol>
+<li><strong>Painel solto: os botões de cima só com o ícone</strong> (o nome no balão), porque com o nome não cabem a 1280; e o painel
+   na altura da página (não cobre o aviso nem o "está certo"). <em>Recomendo deixar assim.</em></li>
+<li><strong>Abas no alto: o cabeçalho do painel fica embaixo das abas</strong> (repete o nome da aba, mas guarda o "x", o subtítulo e
+   o botão de tela cheia do Filtro), e os nomes curtos das abas ("Revisar", "Automático", "Propriedades", "Filtro",
+   "Histórico"). <em>Recomendo deixar assim.</em></li>
+<li><strong>"Montar para imprimir": voltaram TODOS os nomes do <code>fase-1</code></strong> (não só os oito da auditoria); quer que a revisão de
+   nomes (D-374, etapa 11) olhe "Folhas de (0 = todas): todas até todas" e as frases embaixo das caixinhas que a 9a
+   escreveu ("Ligada de fábrica: sem ela pode sair algo errado.", "Sai o livro inteiro, depois o livro inteiro de
+   novo.")? <em>Recomendo levar à etapa 11, sem mexer agora.</em></li>
+<li><strong>O aviso do "Pintar por cima" também para oval, laço e pincel?</strong> Hoje só o retângulo pergunta (a decisão fala do
+   retângulo). <em>Recomendo os quatro (o risco de apagar letras é o mesmo), mas só com o seu "sim".</em></li>
+<li><strong>Cartão depois de mudar o trabalho:</strong> volta a "N de M conferidas" com "continuar" (some o "abrir a pasta" até gerar
+   de novo). Quer um texto próprio, como "PDF desatualizado" com "abrir a pasta"? <em>Recomendo deixar como está (não
+   inventa texto; gerar de novo devolve o "pronto").</em></li>
+</ol>
+<h2>GitHub</h2>
+<p>Rodada <strong>40619905327</strong> (<code>gh workflow run "Testes no Windows" ... -f ramo=obra-etapa9b1-2026-10-26</code>, sobre <code>812d64f</code>):
+<strong>passou inteira</strong> (as 5 partes da suíte e "Botões e prints da janela real").</p>
+<ul>
+<li>Suíte: 0 falhas (somando as linhas das 5 partes: 3.210 passaram, 282 pulados — os que pedem o acervo ou o OCR — e
+  6 xfailed). Entre eles: <code>test_decisoes_9b1.py</code> 25 passaram; <code>test_promessas.py</code> 257 passaram + 3 xfailed (as
+  "aguarda" de outras etapas); <code>test_trabalho_nao_se_perde.py</code> 82; <code>test_decisoes.py</code> 28; <code>test_paginas_diferentes.py</code>
+  12.</li>
+<li><code>teste_botoes.py</code>: 338 ações, 0 falhas (com os quatro jeitos do lado direito, ida e volta).</li>
+<li>No PC, <code>test_promessas.py</code> inteiro: 257 passaram + 3 xfailed (15 min 37 s), P-085, P-125 e P-127 incluídas, sem marca de defeito.</li>
+</ul>
+<h2>Commits (ramo <code>obra-etapa9b1-2026-10-26</code>)</h2>
+<ul>
+<li><code>9d58bb4</code> Etapa 9b-1: ONDE-PAREI com as decisões que a tarefa precisa cumprir</li>
+<li><code>c0ad0ba</code> Etapa 9b-1: nome com acento (D-555), tique do menu Filtro (D-492/P-085), menu processar passa pela 'Antes de processar' (D-274/P-127), Desfazer do menu apagado sem nada (P-125), cartão 'PDF gerado' desatualizado (D-309/bug 332); provas em tests/test_decisoes_9b1.py</li>
+<li><code>5a63d96</code> Etapa 9b-1: nomes da 'Montar para imprimir' voltam aos do fase-1 (auditoria C3); duas colunas ficam</li>
+<li><code>258a229</code> Layout: janela Antes de processar mais clara e menor</li>
+<li><code>dbbba6e</code> Etapa 9b-1: 'Antes de processar' aprovada (lm22, cherry-pick de 138e425) com o 'Mostrar' inteiro (D-283)</li>
+<li><code>160ef44</code> Etapa 9b-1: 'Pintar por cima' sobre letras pergunta antes ('Pintar assim mesmo' / 'Voltar', D-250)</li>
+<li><code>e06c5b7</code> Etapa 9b-1: foco preso - a lista do Automático, a rolagem dos painéis e a da tira não pegam o teclado; D, X, I, F, 1-4 e Page Down chegam à página</li>
+<li><code>1828ca7</code> Etapa 9b-1: ONDE-PAREI (andamento)</li>
+<li><code>6165eb0</code> Etapa 9b-1: contador da barra de baixo inteiro a 1280 com painel aberto (duas linhas quando não cabe em uma; vãos menores; nada saiu)</li>
+<li><code>5340140</code> Etapa 9b-1: testes instáveis estabilizados - P-092/P-094 (a medida ao abrir punha os avisos por cima dos da prova) e a página torta (a ordem das chamadas com vários trabalhadores); o programa não muda</li>
+<li><code>da78f1d</code> Etapa 9b-1: lado direito com os quatro jeitos (D-033) - 'Abas no alto' e 'Painel solto' no menu Ver e nas Configurações; promessas P-043 e P-162 acertadas</li>
+<li><code>5044b4a</code> Etapa 9b-1: promessa P-079 (aviso do Pintar por cima) e as provas P-070/P-071 respondem ao aviso; roteiro dos prints da janela de verdade</li>
+<li><code>812d64f</code> Etapa 9b-1: prints da janela de verdade (antes e depois), reversão no código antigo, ONDE-PAREI, situação no Livro de decisões</li>
+<li>(e o deste ONDE-PAREI final)</li>
+</ul>
+<p class="rodape">Editor de Impressão &middot; gerado em 27/10/2026 às 22:32</p>
+</body>
+</html>
