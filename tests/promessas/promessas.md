@@ -439,6 +439,13 @@ programa), a partir do **nome do botão**, da **dica** (o balão do mouse) e das
 - **decisões:** D-231
 - **na tela:** abre a escolha da cor do "pintar por cima". **no projeto:** a área pintada usa a cor escolhida.
 
+### P-079 · aviso do "Pintar por cima" sobre letras: "Pintar assim mesmo" / "Voltar"
+- **chaves:** `caixa “Pintar por cima”/Pintar assim mesmo`, `caixa “Pintar por cima”/Voltar`
+- **decisões:** D-250 (`fr-218-aviso`: "A — Avisar (recomendo)"; no chat: "1- sim")
+- **na tela:** o retângulo de "Pintar por cima" desenhado sobre letras pergunta antes ("Este retângulo cobre letras;
+  elas vão ser pintadas também.").
+- **no projeto:** "Voltar" não grava área nenhuma; "Pintar assim mesmo" grava a área de "pintar por cima".
+
 ### P-072 · "detectar automaticamente" / menu "Procurar de novo"
 - **chaves:** `área de trabalho/marcar/detectar automaticamente`, `menu/procurar_de_novo`
 - **dica:** "Procura de novo a gravura, a letra e o papel desta página. O que você marcou à mão continua."

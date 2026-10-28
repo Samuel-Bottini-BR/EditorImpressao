@@ -355,6 +355,13 @@ def _varrer_janelas(janela, tela) -> dict:
     vistas = []
     for chave in ("ir_para_pagina", "nome_do_arquivo", "atalhos"):
         vistas += aj.caixas_durante(janela.menu.acoes[chave].trigger)
+    # etapa 9b-1 (D-250): o aviso do "Pintar por cima" sobre as letras ("Voltar": nada é pintado)
+    from core.selecao import GRAVURA, PINTAR
+
+    _no_marcar(janela, tela)
+    tela.editor_selecao.definir_tipo(PINTAR)
+    vistas += aj.caixas_durante(lambda: _desenhar_area(tela), clicar="Voltar")
+    tela.editor_selecao.definir_tipo(GRAVURA)
     _anotar_caixas(chaves, vistas)
     return chaves
 
@@ -1623,6 +1630,9 @@ def _no_marcar(janela, tela, indice=1):
     tela.escolher_ferramenta("retangulo")
     tela.paineis.abrir("props")
     aj.assentar()
+    # etapa 9b-1: a imagem da página chega à ferramenta de marcar por trás; o aviso do "Pintar
+    # por cima" (D-250) mede as letras nela. Como o Kaique, a prova desenha com a página à vista.
+    aj.esperar(lambda: tela.editor_selecao._img is not None, 30, "a página na ferramenta de marcar")
 
 
 def _desenhar_area(tela, x0=0.2, y0=0.2, x1=0.6, y1=0.6):
@@ -1650,7 +1660,9 @@ def test_p070_marcar_como(janela, tela, nome):
         apertar(janela, "área de trabalho/marcar/papel")
     apertar(janela, f"área de trabalho/marcar/{nome}")
     assert tela.paineis.marcar_como.tipo == TIPOS_DE_MARCAR[nome], "o tipo não ficou escolhido"
-    _desenhar_area(tela)
+    # D-250 (etapa 9b-1): o "pintar por cima" sobre as letras do livro de teste pergunta antes;
+    # "Pintar assim mesmo" (a P-079 prova o "Voltar")
+    aj.caixas_durante(lambda: _desenhar_area(tela), clicar="Pintar assim mesmo")
     selecao = aj.pagina_gravada(janela, 1)["selecao"]
     assert selecao, "a área desenhada não foi gravada"
     assert selecao[-1].get("tipo") == TIPOS_DE_MARCAR[nome], f"marcou como {selecao[-1].get('tipo')}"
@@ -1669,9 +1681,24 @@ def test_p071_cor_de_pintar(janela, tela, monkeypatch):
     caixa.accept()
     aj.assentar()
     apertar(janela, "área de trabalho/marcar/pintar por cima")
-    _desenhar_area(tela)
+    aj.caixas_durante(lambda: _desenhar_area(tela), clicar="Pintar assim mesmo")     # D-250
     selecao = aj.pagina_gravada(janela, 1)["selecao"]
     assert "ff0000" in str(selecao[-1]).lower(), f"a cor escolhida não foi para a área: {selecao[-1]}"
+
+
+@prova("P-079")
+def test_p079_aviso_do_pintar_por_cima(janela, tela):
+    """D-250: sobre as letras, "Voltar" não grava nada; "Pintar assim mesmo" grava a área."""
+    _no_marcar(janela, tela)
+    apertar(janela, "área de trabalho/marcar/pintar por cima")
+    vistas = aj.caixas_durante(lambda: _desenhar_area(tela), clicar="Voltar")
+    assert vistas and vistas[0][0] == "Pintar por cima", vistas
+    assert sorted(vistas[0][1]) == ["Pintar assim mesmo", "Voltar"], vistas
+    pintadas = [r for r in aj.pagina_gravada(janela, 1)["selecao"] if r.get("tipo") == "pintar"]
+    assert not pintadas, "'Voltar' pintou"
+    aj.caixas_durante(lambda: _desenhar_area(tela), clicar="Pintar assim mesmo")
+    pintadas = [r for r in aj.pagina_gravada(janela, 1)["selecao"] if r.get("tipo") == "pintar"]
+    assert pintadas, "'Pintar assim mesmo' não pintou"
 
 
 @prova("P-072")
