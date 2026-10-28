@@ -343,7 +343,7 @@ ROTULOS_DO_AJUSTE = {
 CARTOES = [
     (ORIGINAL, "Original", "sem mexer"),
     (PRETO_E_BRANCO, "Preto e branco", "tira o amarelado"),
-    (MELHORAR, "Melhorar", "mantem a cor"),
+    (MELHORAR, "Melhorar", "mantém a cor"),
     (MAGICO_PRO, "Mágico pro", "cor viva"),
     # Item 1.1: so em livro com camadas (ver _montar_aba_filtro).
     (TIRAR_FUNDO, "Tirar o fundo", "só o que está impresso"),

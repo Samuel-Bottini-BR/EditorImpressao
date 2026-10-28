@@ -1,0 +1,749 @@
+{
+ "id": "nomes-28-10",
+ "nome": "Revisão dos nomes",
+ "trabalho": "nomes-28-10",
+ "ordem": 0,
+ "origem": "revisão dos nomes pedida na D-374 (22/10) e na regra 7 do CLAUDE.md §11 (27/10); levantamento só de leitura no código do ramo obra-2026-10-26 (worktree obra-juncao, commit 7f25e86), conferido contra o Livro de decisões, o rascunho do layout e a Central; tabela completa em relatorios/obra-etapa11/levantamento.md",
+ "resumo": {
+  "titulo": "20 perguntas: os nomes que confundem",
+  "paragrafos": [
+   "Você pediu em 22/10 (D-374): \"revisarmos todos os nomes de botão com um novo agente\", e que você decide um por um. Nada foi mudado no programa: aqui estão só as perguntas.",
+   "Li os textos da tela no código da obra (botões, menus, avisos, janelas e dicas) e conferi cada um contra o Livro de decisões, o rascunho do layout e a Central. Os nomes que você já aprovou ficaram de fora (ex.: \"deixar como veio\", \"o do Editor\", \"Limpar a sujeira\", \"daqui em diante\", \"Deixar em branco / Tirar do livro\").",
+   "Vêm primeiro os do caminho de todo dia do Kaique. Em cada uma, a primeira opção é a que eu recomendo; \"Deixar como está\" mantém o nome de hoje. O que cada botão faz não muda em nenhuma delas.",
+   "A lista inteira, com o lugar de cada texto no código, está em relatorios/obra-etapa11/levantamento.md. Os acentos que faltam (\"mantem a cor\", \"ha espaço\", \"Conferir a pagina\") você já mandou corrigir em 18/07 (D-365): não viraram pergunta. Quatro assuntos de nome já estão na Central esperando você (b-abas-nomes, a-aviso-curto, a-contador-dividir, v-antes) e não foram repetidos."
+  ]
+ },
+ "quadros": 0,
+ "perguntas": [
+  {
+   "id": "nm-esta-bom",
+   "titulo": "Os botões parecidos: \"está certo\", \"está bom assim\", \"aceitar o corte\", \"está bom: todas\", \"está bom em tudo\"",
+   "explicacao": [
+    "Onde aparecem: na faixa embaixo da página e no painel \"Para revisar\". São cinco botões com nomes quase iguais, que fazem coisas diferentes:",
+    "\"está certo\" (faixa, sempre): a página inteira conta como conferida e sai do \"Para revisar\" (a barra de espaço faz o mesmo e passa para a próxima). · \"está bom assim\" (em quase todo aviso): tira só aquele aviso; a página não muda. · \"aceitar o corte\" (só no aviso \"Lombada incerta\", no Dividir): faz exatamente o mesmo que \"está bom assim\". · \"está bom: todas\" (\"Para revisar\" > \"Por motivo\", embaixo de cada motivo): tira aquele aviso de todas as páginas que o têm. · \"está bom em tudo\" (pé do \"Para revisar\"): tira todos os avisos do livro de uma vez.",
+    "Exemplo real (teste do Kaique, 26/10, La vida eterna, folha 4): a faixa mostrava lado a lado \"aceitar o corte\", \"está certo\" e \"próxima dúvida\". Ele escreveu: \"'Aceitar o corte' e 'está certo' parecem a mesma coisa\"; \"'está bom: todas' aparece três vezes, embaixo de cada motivo, sem dizer de qual motivo é. E 'está bom em tudo' embaixo — fácil apertar sem querer e aprovar 54 páginas sem olhar.\"",
+    "Suas decisões que tocam: 05/10 (D-259), a faixa com \"está certo\" e \"próxima dúvida\" (\"Aprovado\"); 08/10 (D-272), o \"está bom\" em quatro níveis (21/10, `pr-esta-bom`: \"Está bom\"); 22/10 (D-374): \"os nomes dos botões são horriveis [...] revisarmos todos os nomes de botão\". O que cada botão faz não muda: só o nome."
+   ],
+   "exemplos": [],
+   "opcoes": [
+    {
+     "id": "onde-vale",
+     "nome": "Ficam \"está certo\" e \"está bom\", mas cada um diz onde vale (recomendo)",
+     "texto": "\"está certo\" fica. \"está bom assim\" fica, e \"aceitar o corte\" passa a ser \"está bom assim\" também (faz o mesmo). \"está bom: todas\" vira \"está bom nas 8 (Parece em branco)\", com o número e o motivo. \"está bom em tudo\" vira \"está bom nos 54 avisos\". Mantém as palavras que você já aprovou e diz onde cada um vale.",
+     "imgs": []
+    },
+    {
+     "id": "pelo-que-faz",
+     "nome": "Nomes pelo que fazem: \"página conferida\" e \"tirar este aviso\"",
+     "texto": "\"está certo\" vira \"página conferida\" (no Dividir, \"folha conferida\"). \"está bom assim\" e \"aceitar o corte\" viram \"tirar este aviso\". \"está bom: todas\" vira \"tirar este aviso das 8\". \"está bom em tudo\" vira \"tirar todos os 54 avisos\". Fica bem diferente do \"está certo\", mas troca palavras que você já tinha aprovado.",
+     "imgs": []
+    },
+    {
+     "id": "so-aceitar",
+     "nome": "Só trocar \"aceitar o corte\" por \"está bom assim\"",
+     "texto": "O resto fica como está.",
+     "imgs": []
+    },
+    {
+     "id": "deixar",
+     "nome": "Deixar como está",
+     "texto": "O nome de hoje continua.",
+     "imgs": []
+    },
+    {
+     "id": "nao-entendi",
+     "nome": "Ainda não entendi",
+     "texto": "Explique de outro jeito.",
+     "imgs": []
+    }
+   ]
+  },
+  {
+   "id": "nm-antes-de-processar",
+   "titulo": "Janela \"Antes de processar\": os nomes dos botões",
+   "explicacao": [
+    "Onde aparece: ao clicar \"Confirmar e processar\" com avisos que ninguém olhou. A janela diz \"Ainda tem 64 páginas que eu não tive certeza (66 avisos na lista). Quer ver antes ou continuar assim mesmo?\" e tem os botões \"Selecionar todas\", \"Nenhuma\", \"está bom nas marcadas\", \"ver\" e \"continuar assim mesmo\".",
+    "O que cada um faz: \"Selecionar todas\" e \"Nenhuma\" marcam e desmarcam as linhas; \"está bom nas marcadas\" tira da lista os avisos das linhas marcadas; \"ver\" fecha a janela e leva até a página da linha escolhida; \"continuar assim mesmo\" processa o livro com os avisos.",
+    "Foi nesta janela que você escreveu, em 22/10 (D-374): \"os nomes dos botões são horriveis, na verdade em todo o programa\". O Kaique, em 26/10: \"Muitos botões\".",
+    "Decisões que tocam: 08/10 (D-274), a janela com \"ver\" e \"continuar assim mesmo\" (\"Fica assim\"); 22/10 (D-283), a janela menor (\"Está bom\"). A D-374 é a mais nova das três."
+   ],
+   "exemplos": [],
+   "opcoes": [
+    {
+     "id": "dizem-o-que",
+     "nome": "Nomes que dizem o que acontece (recomendo)",
+     "texto": "\"marcar todas\" · \"desmarcar todas\" · \"está bom nas marcadas\" (segue a sua escolha na pergunta dos \"está bom\") · \"ir para a página\" · \"processar assim mesmo\".",
+     "imgs": []
+    },
+    {
+     "id": "so-baixo",
+     "nome": "Só os dois de baixo mudam",
+     "texto": "\"ver\" vira \"ir para a página\"; \"continuar assim mesmo\" vira \"processar com os avisos\". O resto fica.",
+     "imgs": []
+    },
+    {
+     "id": "deixar",
+     "nome": "Deixar como está",
+     "texto": "O nome de hoje continua.",
+     "imgs": []
+    },
+    {
+     "id": "nao-entendi",
+     "nome": "Ainda não entendi",
+     "texto": "Explique de outro jeito.",
+     "imgs": []
+    }
+   ]
+  },
+  {
+   "id": "nm-folha-pagina",
+   "titulo": "Folha e página misturadas",
+   "explicacao": [
+    "No programa, \"folha\" quer dizer três coisas: (1) a foto do scan, que tem duas páginas do livro (Dividir, girar); (2) o papel da impressora, no \"Montar para imprimir\"; (3) o tamanho final da página, no botão \"tamanho da folha...\" do Cortar e do Mover e no aviso \"Folha menor que o corte\".",
+    "E às vezes diz \"página\" onde é folha: o livro aberto da tela inicial mostra \"360 páginas\" em cima e \"página 1 de 180\" embaixo, com as setas \"folha anterior\" e \"próxima folha\"; o botão \"Ver todas as páginas\" tem a dica \"Todas as folhas do livro\". No Automático, a etapa \"Endireitar folhas tortas\" endireita páginas.",
+    "Exemplo real (teste do Kaique, 26/10): o \"Para revisar\" dizia \"Página 9\" e o clique levou para a \"folha 5\". Ele escreveu: \"A conta folha ↔ página não é mostrada.\"",
+    "Suas decisões: 12/10 (D-367), \"B — As palavras dentro da lista dizem folha ou página\" (girar = folha, endireitar = página); 14/10 (D-314), no \"Montar para imprimir\" a folha é o papel da impressora."
+   ],
+   "exemplos": [],
+   "opcoes": [
+    {
+     "id": "sua-regra",
+     "nome": "Seguir a sua regra de 12/10 em todo lugar (recomendo)",
+     "texto": "\"folha\" só para a foto do scan e para o papel da impressora. Livro aberto: \"180 folhas, 360 páginas\" em cima e \"folha 1 de 180\" embaixo. \"tamanho da folha...\" vira \"tamanho final da página...\". \"Folha menor que o corte\" vira \"Tamanho final menor que o corte\". \"Endireitar folhas tortas\" vira \"Endireitar páginas tortas\". No \"Para revisar\", a linha mostra os dois: \"Página 9 (folha 5)\".",
+     "imgs": []
+    },
+    {
+     "id": "so-numeros",
+     "nome": "Só o livro aberto e o \"Para revisar\"",
+     "texto": "Conserta os dois lugares onde o número engana. \"tamanho da folha\" e os nomes das etapas ficam.",
+     "imgs": []
+    },
+    {
+     "id": "deixar",
+     "nome": "Deixar como está",
+     "texto": "O nome de hoje continua.",
+     "imgs": []
+    },
+    {
+     "id": "nao-entendi",
+     "nome": "Ainda não entendi",
+     "texto": "Explique de outro jeito.",
+     "imgs": []
+    }
+   ]
+  },
+  {
+   "id": "nm-nao-esta",
+   "titulo": "\"não dividir esta\", \"não cortar esta\" e \"voltar como veio\": o mesmo nome do \"deixar como veio\"?",
+   "explicacao": [
+    "No Endireitar, você trocou \"não endireitar esta\" por \"deixar como veio\" (12/10, D-368: \"B — 'deixar como veio' e 'usar o ângulo do programa'\").",
+    "Nas outras ferramentas, o botão que faz a mesma coisa ficou com o nome antigo: no Dividir, \"não dividir esta\" (a folha sai inteira, uma página só); no Cortar, \"não cortar esta\" (a página sai sem cortar a borda); no Mover, \"voltar como veio\" (desfaz o mover e o tamanho). Os dois primeiros aparecem também nos avisos \"Não parece dupla\" e \"Corte encostou no texto\".",
+    "Exemplo: no Endireitar o Kaique aprende que \"deixar como veio\" é \"não mexer nesta\"; no Cortar o mesmo botão se chama \"não cortar esta\", e no Mover \"voltar como veio\" (quase igual, outra palavra)."
+   ],
+   "exemplos": [],
+   "opcoes": [
+    {
+     "id": "deixar-como-veio",
+     "nome": "\"deixar como veio\" nas quatro ferramentas (recomendo)",
+     "texto": "Dividir, Cortar, Endireitar e Mover: o botão de não mexer nesta página (ou folha) se chama igual. Com a folha sem dividir, o botão do Dividir continua \"dividir esta\".",
+     "imgs": []
+    },
+    {
+     "id": "completar",
+     "nome": "Completar o nome antigo",
+     "texto": "\"não dividir esta folha\", \"não cortar esta página\"; o Mover passa a \"deixar como veio\".",
+     "imgs": []
+    },
+    {
+     "id": "deixar",
+     "nome": "Deixar como está",
+     "texto": "O nome de hoje continua.",
+     "imgs": []
+    },
+    {
+     "id": "nao-entendi",
+     "nome": "Ainda não entendi",
+     "texto": "Explique de outro jeito.",
+     "imgs": []
+    }
+   ]
+  },
+  {
+   "id": "nm-limpar-a-folha",
+   "titulo": "\"Limpar a folha\" no Automático, e o painel \"Filtro da página\"",
+   "explicacao": [
+    "No Automático, a etapa que escolhe o filtro do livro se chama \"Limpar a folha — tira o amarelado\". De fábrica ela vem com o Original, que \"não mexe na página\": o nome promete limpar e nada é limpo (lista única de 23/10, 5.11).",
+    "Do outro lado, o painel da direita se chama \"Filtro da página\", mas tem \"todas\" embaixo: é ali que se muda o livro inteiro.",
+    "Exemplo real (teste do Kaique, 26/10): para o livro sair sem o amarelado, ele procurou no Automático e só conseguiu pelo painel \"Filtro da página\" + \"todas\". Escreveu: \"o painel se chama 'Filtro da página', mas tem 'todas' embaixo; o Kaique não imagina que é ali que se muda o livro inteiro.\"",
+    "\"Limpar a sujeira\" (os pontinhos) é outra coisa e é nome seu (07/10, D-366): fica. Não achei decisão sua sobre as palavras \"Limpar a folha\" e \"Filtro da página\"."
+   ],
+   "exemplos": [],
+   "opcoes": [
+    {
+     "id": "filtro-do-livro",
+     "nome": "A etapa se chama \"Filtro do livro\" e mostra o filtro escolhido (recomendo)",
+     "texto": "\"Filtro do livro — hoje: Original (não mexe na página)\"; o subtítulo muda quando o filtro muda. O painel continua \"Filtro da página\".",
+     "imgs": []
+    },
+    {
+     "id": "os-dois",
+     "nome": "A etapa vira \"Filtro do livro\" e o painel vira só \"Filtro\"",
+     "texto": "Sem o \"da página\" no painel, porque ele muda uma página, as próximas ou todas.",
+     "imgs": []
+    },
+    {
+     "id": "deixar",
+     "nome": "Deixar como está",
+     "texto": "O nome de hoje continua.",
+     "imgs": []
+    },
+    {
+     "id": "nao-entendi",
+     "nome": "Ainda não entendi",
+     "texto": "Explique de outro jeito.",
+     "imgs": []
+    }
+   ]
+  },
+  {
+   "id": "nm-scantailor",
+   "titulo": "\"ScanTailor\" nos nomes das caixinhas e no aviso das contas",
+   "explicacao": [
+    "Os nomes \"o do ScanTailor / o do Editor\" (Dividir) e \"a do ScanTailor / a do Editor\" (Endireitar) são seus (20/10, D-373; 12/10, D-369 e D-370) e ficam fora desta pergunta.",
+    "Sobram, no Automático e nas Configurações, nomes com \"ScanTailor\" que ninguém aprovou: \"Cortar seguindo o conteúdo (como o ScanTailor)\"; \"Cortar a beirada da folha vizinha — o corte da sobra do ScanTailor\"; \"fica no mesmo lugar (como o ScanTailor)\" (você aprovou \"Fica no mesmo lugar\", 09/10, D-093). E o aviso \"Endireitar: as contas discordam\", que diz \"A conta do ScanTailor e a do Editor acharam inclinações diferentes nesta página\".",
+    "Exemplo real: teste do Kaique (26/10): \"o Kaique não sabe o que é ScanTailor nem qual 'Editor'\". O aviso das contas apareceu em 9 das 50 páginas do Boécio e em 69 das 135 folhas do Righetti (lista única 5.8)."
+   ],
+   "exemplos": [],
+   "opcoes": [
+    {
+     "id": "tirar-dos-nomes",
+     "nome": "Tirar o \"ScanTailor\" dos nomes; ele fica só na dica do mouse (recomendo)",
+     "texto": "\"Cortar seguindo o conteúdo\", \"Cortar a beirada da folha vizinha\", \"fica no mesmo lugar\". O aviso vira \"Endireitar: dois ângulos diferentes\", com a frase \"As duas contas do Endireitar acharam ângulos diferentes nesta página. Confira e escolha a que deixou o texto reto.\" Os nomes que você aprovou (\"o do ScanTailor\", \"a do Editor\") ficam.",
+     "imgs": []
+    },
+    {
+     "id": "so-caixinhas",
+     "nome": "Só nos nomes das caixinhas",
+     "texto": "O aviso das contas fica como está.",
+     "imgs": []
+    },
+    {
+     "id": "deixar",
+     "nome": "Deixar como está",
+     "texto": "O nome de hoje continua.",
+     "imgs": []
+    },
+    {
+     "id": "nao-entendi",
+     "nome": "Ainda não entendi",
+     "texto": "Explique de outro jeito.",
+     "imgs": []
+    }
+   ]
+  },
+  {
+   "id": "nm-tirada",
+   "titulo": "Página \"apagada\" ou \"tirada do livro\"?",
+   "explicacao": [
+    "O botão se chama \"Tirar do livro\" (nome seu: 07/10 e 09/10, D-046 e D-269, \"Os dois botões: 'Deixar em branco' e 'Tirar do livro'\").",
+    "Mas em outros lugares a mesma página aparece como \"apagada\": a janela \"Confirmar e processar\" (\"359 páginas vão para o PDF, e 1 foi apagada\"), o contador de baixo (\"- 1 apagadas\"), a miniatura e a grade (\"apagada\"), a lista de escolher páginas (\"(apagada)\") e a mensagem \"Não sobrou nenhuma página para gerar. Restaure alguma página apagada.\"",
+    "Por que confunde: \"apagada\" parece que sumiu de vez, e não há botão \"apagar\" (o de voltar se chama \"trazer de volta\"). Exemplo real: no teste do Kaique (26/10) a janela dizia \"359 páginas vão para o PDF, e 1 foram apagadas\" (o erro de concordância já foi consertado; a palavra ficou)."
+   ],
+   "exemplos": [],
+   "opcoes": [
+    {
+     "id": "tirada",
+     "nome": "\"tirada do livro\" em todo lugar (recomendo)",
+     "texto": "\"359 páginas vão para o PDF; 1 foi tirada do livro\", \"tirada\" na miniatura e no contador, e \"Traga de volta alguma página tirada do livro\".",
+     "imgs": []
+    },
+    {
+     "id": "fora",
+     "nome": "\"fora do livro\"",
+     "texto": "\"359 páginas vão para o PDF; 1 ficou fora do livro\"; a miniatura diz \"fora\".",
+     "imgs": []
+    },
+    {
+     "id": "deixar",
+     "nome": "Deixar como está",
+     "texto": "O nome de hoje continua.",
+     "imgs": []
+    },
+    {
+     "id": "nao-entendi",
+     "nome": "Ainda não entendi",
+     "texto": "Explique de outro jeito.",
+     "imgs": []
+    }
+   ]
+  },
+  {
+   "id": "nm-frase-salvar",
+   "titulo": "A frase da janela de salvar: \"Ainda há N páginas que você não conferiu\"",
+   "explicacao": [
+    "Onde aparece: na janela \"Confirmar e processar\", embaixo do lugar de salvar: \"Ainda há 15 páginas que você não conferiu. Dá para processar assim mesmo, mas o que não foi olhado sai do jeito que o programa decidiu sozinho.\"",
+    "Desde a etapa 7, o número conta as páginas com aviso que ninguém olhou (sua decisão de 21/10, D-285, `pr-contagens`: \"A janela de salvar passa a contar as páginas com aviso pendente\"). A frase continua dizendo \"não conferiu\", que parece querer dizer todas as páginas sem \"está certo\".",
+    "Exemplo real (teste do Kaique, 26/10, antes da etapa 7): depois de \"nada pendente\" no painel, a janela disse \"Ainda há 356 página(s) que você não conferiu\". Ele não soube se tinha terminado. O agente da etapa 7 deixou esta frase para a revisão de nomes."
+   ],
+   "exemplos": [],
+   "opcoes": [
+    {
+     "id": "com-aviso",
+     "nome": "\"Ainda há 15 páginas com aviso que você não olhou.\" (recomendo)",
+     "texto": "O resto da frase fica. Usa a mesma ideia do painel \"Para revisar\".",
+     "imgs": []
+    },
+    {
+     "id": "no-revisar",
+     "nome": "\"Ainda há 15 páginas no 'Para revisar'.\"",
+     "texto": "Diz o lugar onde elas estão.",
+     "imgs": []
+    },
+    {
+     "id": "deixar",
+     "nome": "Deixar como está",
+     "texto": "O nome de hoje continua.",
+     "imgs": []
+    },
+    {
+     "id": "nao-entendi",
+     "nome": "Ainda não entendi",
+     "texto": "Explique de outro jeito.",
+     "imgs": []
+    }
+   ]
+  },
+  {
+   "id": "nm-historico",
+   "titulo": "O Histórico usa nomes antigos dos botões",
+   "explicacao": [
+    "O painel Histórico mostra a lista do que foi feito, e é por ali que se volta atrás. Várias linhas usam o nome antigo do botão ou uma palavra técnica:",
+    "\"Voltar ao corte automático na página 5\" (o botão é \"usar o corte do programa\") · \"Voltar ao endireitar automático na página 5\" (\"usar o ângulo do programa\") · \"Não endireitar a página 5\" (\"deixar como veio\") · \"Algoritmo do Preto e branco na página 5: Otsu\" (na tela é \"Jeito do preto e branco\") · \"Conferir a pagina 5\" (o botão é \"está certo\"; e falta o acento, que você já mandou pôr em 18/07, D-365) · \"Linha de corte da folha 4\" (é a linha azul de dividir) · \"Posição/tamanho do conteúdo na página 5\".",
+    "Por que confunde: o Kaique clica num botão e o Histórico mostra outro nome; na hora de voltar atrás, ele não reconhece a linha. Os nomes dos botões são seus (12/10, D-368)."
+   ],
+   "exemplos": [],
+   "opcoes": [
+    {
+     "id": "nome-do-botao",
+     "nome": "Cada linha repete o nome do botão clicado, com a página (recomendo)",
+     "texto": "\"usar o corte do programa — página 5\", \"deixar como veio — página 5\", \"está certo — página 5\", \"Jeito do preto e branco da página 5: Otsu\", \"linha de dividir da folha 4\".",
+     "imgs": []
+    },
+    {
+     "id": "so-tecnicas",
+     "nome": "Só trocar as palavras técnicas e o acento",
+     "texto": "\"Algoritmo\" vira \"Jeito do preto e branco\", \"Conferir a pagina\" vira \"Conferida a página\", \"Posição/tamanho\" vira \"Lugar e tamanho\". O resto fica.",
+     "imgs": []
+    },
+    {
+     "id": "deixar",
+     "nome": "Deixar como está",
+     "texto": "O nome de hoje continua.",
+     "imgs": []
+    },
+    {
+     "id": "nao-entendi",
+     "nome": "Ainda não entendi",
+     "texto": "Explique de outro jeito.",
+     "imgs": []
+    }
+   ]
+  },
+  {
+   "id": "nm-dois-mover",
+   "titulo": "Duas ferramentas \"Mover\" na barra da esquerda",
+   "explicacao": [
+    "Há duas ferramentas com quase o mesmo nome: \"Mover e redimensionar\" (tecla F), que mexe a página inteira dentro da folha e aumenta ou diminui (a sua \"quero conseguir redimensionar o conteudo tambem\", 22/09, D-008); e \"Mover e mudar o tamanho da área\" (tecla A), que mexe uma área marcada (gravura, letra, papel).",
+    "Por que confunde: \"redimensionar\" e \"mudar o tamanho\" dizem a mesma coisa, e as duas começam com \"Mover\". A ajuda do Marcar manda usar \"a ferramenta 'Mover e mudar o tamanho da área' (tecla A)\", e a do Cortar manda usar \"a ferramenta Mover (tecla F)\".",
+    "O nome \"Mover e redimensionar\" foi escolha da gerente (27/10, D-540, que tratou só da tecla F). Não achei decisão sua sobre os dois nomes."
+   ],
+   "exemplos": [],
+   "opcoes": [
+    {
+     "id": "pagina-area",
+     "nome": "\"Mover a página\" (F) e \"Mover a área marcada\" (A) (recomendo)",
+     "texto": "O nome diz o que anda: a página inteira ou só a área marcada. A dica do mouse diz que as duas também aumentam e diminuem.",
+     "imgs": []
+    },
+    {
+     "id": "aumentar",
+     "nome": "\"Mover e aumentar a página\" (F) e \"Mover e aumentar a área\" (A)",
+     "texto": "",
+     "imgs": []
+    },
+    {
+     "id": "deixar",
+     "nome": "Deixar como está",
+     "texto": "O nome de hoje continua.",
+     "imgs": []
+    },
+    {
+     "id": "nao-entendi",
+     "nome": "Ainda não entendi",
+     "texto": "Explique de outro jeito.",
+     "imgs": []
+    }
+   ]
+  },
+  {
+   "id": "nm-menu-marcar",
+   "titulo": "Menu \"Marcar\": \"Procurar de novo\", \"Limpar tudo\" e \"Deixar a folha em branco\"",
+   "explicacao": [
+    "\"Procurar de novo\" (menu Marcar) e \"detectar automaticamente\" (botão do painel Propriedades, na ferramenta Marcar) fazem a mesma coisa: procuram de novo a gravura, a letra e o papel da página. São dois nomes para um botão só. E \"procurar de novo\" é também o nome de outro botão, no cartão do livro (achar o PDF que mudou de lugar).",
+    "\"Limpar tudo\" tira todas as marcações da página. Mas \"Limpar\" no programa já quer dizer a etapa \"Limpar a folha\" (o filtro) e o \"Limpar a sujeira\" (os pontinhos).",
+    "\"Deixar a folha em branco\" marca a página inteira como papel, e ela sai branca. No menu \"Página\" há \"Deixar esta página em branco\" (tecla Delete), que dá quase o mesmo resultado: um diz folha, o outro página. Decisão que toca: 06/08 (D-200), \"eu quero ter opção de transformar uma capa em branco\"."
+   ],
+   "exemplos": [],
+   "opcoes": [
+    {
+     "id": "pelo-que-faz",
+     "nome": "Nomes pelo que fazem (recomendo)",
+     "texto": "\"Procurar de novo nesta página\" (no menu e no botão, o mesmo nome) · \"Tirar todas as marcações\" · \"Marcar a página inteira como papel\".",
+     "imgs": []
+    },
+    {
+     "id": "so-igualar",
+     "nome": "Só igualar o menu e o botão",
+     "texto": "Os dois viram \"Procurar de novo nesta página\"; \"Limpar tudo\" e \"Deixar a folha em branco\" ficam.",
+     "imgs": []
+    },
+    {
+     "id": "deixar",
+     "nome": "Deixar como está",
+     "texto": "O nome de hoje continua.",
+     "imgs": []
+    },
+    {
+     "id": "nao-entendi",
+     "nome": "Ainda não entendi",
+     "texto": "Explique de outro jeito.",
+     "imgs": []
+    }
+   ]
+  },
+  {
+   "id": "nm-manter-cor-tinta",
+   "titulo": "\"manter a cor da tinta\": o nome provisório",
+   "explicacao": [
+    "Na ferramenta Marcar, em \"Marcar como\", o botão \"manter a cor da tinta\" faz a área marcada sair com a tinta na cor do livro (por exemplo, um título vermelho que ficaria preto no Preto e branco), com o papel branco ou como o resto da página.",
+    "Em 22/10 você escreveu (`b-11-nome`): \"não tem outro nome para recomendar? eu nem entendi para que serve esse botão.\" e depois \"esse botão ainda é bem confuso, mas por enquanto pode ficar assim.\" O Livro de decisões anotou: nome provisório, volta na revisão de nomes (D-375).",
+    "Ao lado dele estão \"tinta preta, fundo original\" (seu \"Sim, como opção\", 05/10, D-229), \"pintar por cima\", \"gravura ou foto\" e \"letra e traço\". Exemplo: no Livro de Horas 13, o título em vermelho marcado assim sai vermelho numa página em Preto e branco."
+   ],
+   "exemplos": [],
+   "opcoes": [
+    {
+     "id": "tinta-colorida",
+     "nome": "\"tinta colorida\" (recomendo)",
+     "texto": "Faz par com \"tinta preta, fundo original\": um deixa a tinta preta, o outro deixa a tinta com a cor.",
+     "imgs": []
+    },
+    {
+     "id": "letra-colorida",
+     "nome": "\"letra colorida\"",
+     "texto": "Diz o uso mais comum (o título vermelho), mas o botão serve também para desenho.",
+     "imgs": []
+    },
+    {
+     "id": "deixar",
+     "nome": "Deixar como está",
+     "texto": "O nome de hoje continua.",
+     "imgs": []
+    },
+    {
+     "id": "nao-entendi",
+     "nome": "Ainda não entendi",
+     "texto": "Explique de outro jeito.",
+     "imgs": []
+    }
+   ]
+  },
+  {
+   "id": "nm-montar-dois",
+   "titulo": "Dois \"montar cadernos\" com nomes parecidos",
+   "explicacao": [
+    "Há dois jeitos de montar os cadernos: (1) no Automático, a etapa \"Montar cadernos — para imprimir, dobrar ao meio e costurar (no tamanho do scan)\": o próprio PDF do livro sai em cadernos, sem A4 e sem margem; (2) na tela \"Ficou pronto!\", o botão \"montar para imprimir em A4 (com margens)...\": o PDF do livro não muda, e sai outro arquivo arrumado para a impressora.",
+    "Os nomes quase iguais não dizem qual usar. Em 22/10 você mesmo perguntou (`b-3-cadernos-antigo`): \"Pera ai, mas ele monta em formato livreto também? como assim monta com dobro de largura explique melhor.\" e decidiu \"Deixar os dois\" (D-330). Os dois ficam: só o nome está em pergunta.",
+    "Exemplo: o Kaique quer cadernos para a EPSON, vê \"Montar cadernos\" no Automático e liga; o PDF sai em folhas de dobro de largura, sem margem, e o \"montar para imprimir em A4\" passa a avisar que o PDF já saiu em cadernos (lista única 5.12)."
+   ],
+   "exemplos": [],
+   "opcoes": [
+    {
+     "id": "pdf-ja-em-cadernos",
+     "nome": "A etapa diz que o PDF já sai em cadernos (recomendo)",
+     "texto": "Etapa: \"PDF já em cadernos (tamanho do scan, sem margem)\". O botão da \"Ficou pronto!\" fica \"montar para imprimir em A4 (com margens)...\".",
+     "imgs": []
+    },
+    {
+     "id": "os-dois",
+     "nome": "Os dois mudam",
+     "texto": "Etapa: \"Cadernos sem margem (tamanho do scan)\"; botão: \"cadernos em A4 para a impressora...\".",
+     "imgs": []
+    },
+    {
+     "id": "deixar",
+     "nome": "Deixar como está",
+     "texto": "O nome de hoje continua.",
+     "imgs": []
+    },
+    {
+     "id": "nao-entendi",
+     "nome": "Ainda não entendi",
+     "texto": "Explique de outro jeito.",
+     "imgs": []
+    }
+   ]
+  },
+  {
+   "id": "nm-montar-nomes",
+   "titulo": "\"Montar para imprimir\": os nomes das opções",
+   "explicacao": [
+    "A janela \"Montar para imprimir\" usa os nomes da janela de imprimir do UPDF (você pediu em 14/10, D-315: \"Quero TODAS essas opções dentro do programa\"). Na etapa 9a um agente encurtou vários nomes sem perguntar; na auditoria de 27/10 eles voltaram aos de antes, e as sugestões vieram para esta revisão.",
+    "Os que mais confundem: \"Ordem de páginas:\" (escolhe \"Frente e verso / Só a frente / Só o verso\"; na janela \"imprimir agora\" a mesma escolha se chama \"Lados do papel:\"); \"Folhas de (0 = todas):\", que aparece como \"todas até todas\"; \"Páginas do livro de (0 = todas):\"; \"Escala personalizada\"; \"Rotação automática\"; \"Centralizar automático\"; \"Reverter páginas\"; \"Agrupar\"; \"Encadernação: Esquerda / Direita\".",
+    "Exemplo real (teste do Kaique, 26/10): \"muitas opções técnicas para quem só quer cadernos: 'Escala personalizada', 'Folha: a do formato', 'Imprimir como imagem', 'Reverter páginas', 'Agrupar', 'Folhas de (0 = todas)'\".",
+    "Decisões que tocam: 22/10 (`fr-26`, D-333): \"Está bom\" + \"Só tem que melhorar esse layout [...] dificil de saber o que é o que.\"; 21/10 (D-326): \"Imprimir como imagem\" existe e vem ligada (esse nome fica)."
+   ],
+   "exemplos": [],
+   "opcoes": [
+    {
+     "id": "nomes-9a",
+     "nome": "Os nomes curtos da etapa 9a, com dois consertos (recomendo)",
+     "texto": "\"Ordem de páginas\" → \"Lados do papel\" (igual ao \"imprimir agora\") · \"Páginas por caderno\" → \"Cada caderno\" · \"Esquerda / Direita\" → \"costura à esquerda / à direita\" · \"Rotação automática\" → \"Girar sozinho a página deitada\" · \"Centralizar automático\" → \"Centralizar sozinho\" · \"Reverter páginas\" → \"Ordem invertida\" · \"Agrupar\" → \"Agrupar as cópias\" · \"Folhas de (0 = todas)\" → \"Só as folhas: da ... até a ...\" (vazio = todas) · \"Páginas do livro de (0 = todas)\" → \"Só as páginas: da ... até a ...\".",
+     "imgs": []
+    },
+    {
+     "id": "so-tres",
+     "nome": "Só os três que mais confundem",
+     "texto": "\"Ordem de páginas\" → \"Lados do papel\"; \"Folhas de (0 = todas)\" → \"Só as folhas: da ... até a ...\"; \"Reverter páginas\" → \"Ordem invertida\". O resto fica com o nome do UPDF.",
+     "imgs": []
+    },
+    {
+     "id": "deixar",
+     "nome": "Deixar como está",
+     "texto": "O nome de hoje continua.",
+     "imgs": []
+    },
+    {
+     "id": "nao-entendi",
+     "nome": "Ainda não entendi",
+     "texto": "Explique de outro jeito.",
+     "imgs": []
+    }
+   ]
+  },
+  {
+   "id": "nm-montar-frases",
+   "titulo": "\"Montar para imprimir\": as frases novas embaixo das opções",
+   "explicacao": [
+    "Na etapa 9a, ao arrumar esta janela, o agente pôs frases que você não pediu: no alto, \"O PDF do livro não muda: aqui só se arrumam as folhas para a impressora.\"; uma frase para cada formato (ex.: \"Duas páginas de cada lado de uma folha A4 deitada, já na ordem dos cadernos: é só imprimir, dobrar ao meio e costurar.\"); embaixo de \"Imprimir como imagem\", \"Ligada de fábrica: sem ela pode sair algo errado.\"; embaixo de \"Agrupar\", \"Sai o livro inteiro, depois o livro inteiro de novo.\"; e \"Ao gravar, os passos para imprimir e dobrar aparecem aqui.\"",
+    "Outras já existiam entre parênteses no nome e só desceram para baixo dele (ex.: \"Rotação automática (página deitada gira de pé)\").",
+    "Pela sua regra de 27/10 (`CLAUDE.md` §11, regra 7), \"é só para fazer o que eu já tinha mandado\". Por outro lado, em 22/10 (`fr-26`) você pediu esta janela menos \"dificil de saber o que é o que\". O agente da etapa 9b-1 deixou a pergunta para esta revisão."
+   ],
+   "exemplos": [],
+   "opcoes": [
+    {
+     "id": "ficam-agrupar",
+     "nome": "Ficam, e a do \"Agrupar\" fica mais clara (recomendo)",
+     "texto": "\"Sai o livro inteiro, depois o livro inteiro de novo.\" vira \"Com 2 cópias: sai o livro inteiro, e depois a segunda cópia inteira.\" As outras ficam.",
+     "imgs": []
+    },
+    {
+     "id": "saem",
+     "nome": "Saem as frases novas",
+     "texto": "Ficam só as que já estavam entre parênteses no nome (como no programa antes da obra).",
+     "imgs": []
+    },
+    {
+     "id": "deixar",
+     "nome": "Deixar como está",
+     "texto": "O nome de hoje continua.",
+     "imgs": []
+    },
+    {
+     "id": "nao-entendi",
+     "nome": "Ainda não entendi",
+     "texto": "Explique de outro jeito.",
+     "imgs": []
+    }
+   ]
+  },
+  {
+   "id": "nm-atalhos",
+   "titulo": "Teclas escritas em inglês e a lista de atalhos escondida",
+   "explicacao": [
+    "Nos menus, as teclas aparecem como o Windows escreve em inglês: \"Ctrl+Return\" (Confirmar e processar), \"Ctrl+Left\" e \"Ctrl+Right\" (girar ¼), \"Del\" (Deixar esta página em branco), \"Shift+Del\" (Tirar do livro).",
+    "Na Ajuda (F1), a janela \"Lista de atalhos\" mostra só \"O que dá para fazer, e por qual tecla:\"; a lista fica escondida atrás de um botão em inglês, \"Show Details...\" (lista única de 23/10, 5.10).",
+    "Decisão que toca: 18/07 (D-365): \"Corrija TODOS os textos da interface para português correto\"."
+   ],
+   "exemplos": [],
+   "opcoes": [
+    {
+     "id": "portugues",
+     "nome": "Teclas em português e a lista à vista (recomendo)",
+     "texto": "\"Ctrl+Enter\", \"Ctrl+seta para a esquerda\", \"Ctrl+seta para a direita\", \"Delete\", \"Shift+Delete\"; a janela abre já com a lista inteira, sem o botão.",
+     "imgs": []
+    },
+    {
+     "id": "so-botao",
+     "nome": "Só o botão em português",
+     "texto": "\"Show Details...\" vira \"Ver a lista\"; as teclas ficam como o Windows escreve.",
+     "imgs": []
+    },
+    {
+     "id": "deixar",
+     "nome": "Deixar como está",
+     "texto": "O nome de hoje continua.",
+     "imgs": []
+    },
+    {
+     "id": "nao-entendi",
+     "nome": "Ainda não entendi",
+     "texto": "Explique de outro jeito.",
+     "imgs": []
+    }
+   ]
+  },
+  {
+   "id": "nm-codigos",
+   "titulo": "Números de decisão nas dicas do Automático",
+   "explicacao": [
+    "Três dicas que aparecem ao passar o mouse no Automático trazem códigos internos do projeto: \"Tira o automático das etapas marcadas, onde está escolhido em 'Rodar' (D-068: toda função automática liga e desliga). O Desfazer traz de volta.\"; \"D-094: a mesma escolha existe nas Configurações (para todos os livros) e na ferramenta Endireitar (só uma página).\"; e \"Livro novo não divide sozinho: só quando esta etapa roda (G2).\"",
+    "\"D-068\", \"D-094\" e \"G2\" são números do Livro de decisões e das conferências; o Kaique não sabe o que é. Nenhuma decisão sua pediu esses números na tela."
+   ],
+   "exemplos": [],
+   "opcoes": [
+    {
+     "id": "tirar-codigos",
+     "nome": "Tirar só os códigos e deixar o resto da frase (recomendo)",
+     "texto": "Ex.: \"A mesma escolha existe nas Configurações (para todos os livros) e na ferramenta Endireitar (só uma página).\"",
+     "imgs": []
+    },
+    {
+     "id": "tirar-frase",
+     "nome": "Tirar a parte da frase que fala da regra",
+     "texto": "Ex.: \"Tira o automático das etapas marcadas, onde está escolhido em 'Rodar'. O Desfazer traz de volta.\"",
+     "imgs": []
+    },
+    {
+     "id": "deixar",
+     "nome": "Deixar como está",
+     "texto": "O nome de hoje continua.",
+     "imgs": []
+    },
+    {
+     "id": "nao-entendi",
+     "nome": "Ainda não entendi",
+     "texto": "Explique de outro jeito.",
+     "imgs": []
+    }
+   ]
+  },
+  {
+   "id": "nm-tela-livros",
+   "titulo": "Tela dos livros: dois nomes para a mesma coisa",
+   "explicacao": [
+    "No menu \"Mais...\" do livro aberto, o botão é \"remover da lista\"; a janela que ele abre pergunta \"Tirar da lista?\" e o botão de confirmar é \"Tirar da lista\" (o nome que está na sua decisão de 29/09, D-335).",
+    "Quando o PDF muda de lugar, o cartão mostra o botão \"procurar de novo\", e a mensagem manda usar \"'Mais...' > 'procurar o livro'\", que é o mesmo. E \"Procurar de novo\" também é item do menu Marcar, que faz outra coisa (procura a gravura na página).",
+    "A palavra \"projeto\" aparece onde o resto do programa diz \"livro\": \"Nenhum projeto com 'Horas' no nome.\", \"Renomear — Nome deste projeto:\", \"ele não é o livro deste projeto\"."
+   ],
+   "exemplos": [],
+   "opcoes": [
+    {
+     "id": "um-nome",
+     "nome": "Um nome só para cada coisa, e \"livro\" no lugar de \"projeto\" (recomendo)",
+     "texto": "\"tirar da lista\" no menu e na janela; \"procurar o livro\" no cartão e no menu; \"Nenhum livro com 'Horas' no nome\", \"Nome deste livro:\", \"ele não é o mesmo livro\".",
+     "imgs": []
+    },
+    {
+     "id": "so-botoes",
+     "nome": "Só os dois botões; \"projeto\" fica",
+     "texto": "",
+     "imgs": []
+    },
+    {
+     "id": "deixar",
+     "nome": "Deixar como está",
+     "texto": "O nome de hoje continua.",
+     "imgs": []
+    },
+    {
+     "id": "nao-entendi",
+     "nome": "Ainda não entendi",
+     "texto": "Explique de outro jeito.",
+     "imgs": []
+    }
+   ]
+  },
+  {
+   "id": "nm-desligar-marcadas",
+   "titulo": "Automático: o botão \"desligar as marcadas\"",
+   "explicacao": [
+    "No painel Automático, embaixo da lista de etapas, \"desligar as marcadas\" faz o programa deixar de fazer sozinho as etapas que estão com a caixinha marcada, no lugar escolhido em \"Rodar\" (livro todo, esta página ou as escolhidas). Ex.: marcar só \"Endireitar\", escolher \"só nesta página\" e clicar: esta página deixa de ser endireitada sozinha; as outras continuam.",
+    "Por que confunde: \"as marcadas\" pode ser lido como as páginas marcadas na grade \"Todas as páginas\"; e caixinha marcada costuma querer dizer \"ligado\", mas aqui o botão desliga justamente o que está marcado.",
+    "Vem da sua regra de 24/09 (D-068): \"Toda função automática tem botão de ligar e desligar.\" O nome foi escolha da gerente (27/10, D-484)."
+   ],
+   "exemplos": [],
+   "opcoes": [
+    {
+     "id": "estas-etapas",
+     "nome": "\"desligar estas etapas\" (recomendo)",
+     "texto": "Com a dica: \"o programa para de fazer sozinho as etapas marcadas, onde está escolhido em Rodar\".",
+     "imgs": []
+    },
+    {
+     "id": "nao-fazer",
+     "nome": "\"não fazer sozinho\"",
+     "texto": "",
+     "imgs": []
+    },
+    {
+     "id": "deixar",
+     "nome": "Deixar como está",
+     "texto": "O nome de hoje continua.",
+     "imgs": []
+    },
+    {
+     "id": "nao-entendi",
+     "nome": "Ainda não entendi",
+     "texto": "Explique de outro jeito.",
+     "imgs": []
+    }
+   ]
+  },
+  {
+   "id": "nm-jeito-pb",
+   "titulo": "\"Jeito do preto e branco\": Sauvola, Otsu e Wolf",
+   "explicacao": [
+    "Em \"Mais ajustes\" do Preto e branco, a lista \"Jeito do preto e branco\" tem: \"Automático\" (de fábrica: o programa escolhe por página), depois \"Sauvola (padrão)\", \"Otsu (letra grossa/gótica)\", \"Wolf (scan de baixo contraste)\", e os dez \"... do ScanTailor\".",
+    "Problemas: \"Sauvola (padrão)\" diz \"padrão\", mas o de fábrica é o \"Automático\"; \"Sauvola\", \"Otsu\" e \"Wolf\" são os nomes técnicos que o CLAUDE.md diz que o Kaique nunca vê (\"Ele vê 'Força do preto', nunca 'Sauvola'\"); e \"Automático\" é também o nome do painel Automático.",
+    "Os dez do ScanTailor (\"Bradley do ScanTailor\" e os outros) você mandou pôr no programa como estão (21/10, D-176) e ficam fora desta pergunta."
+   ],
+   "exemplos": [],
+   "opcoes": [
+    {
+     "id": "pelo-uso",
+     "nome": "Os três pelo uso, sem \"(padrão)\" (recomendo)",
+     "texto": "\"o programa escolhe\" (de fábrica) · \"letra fina\" · \"letra grossa ou gótica\" · \"scan apagado\". O nome técnico fica na dica do mouse.",
+     "imgs": []
+    },
+    {
+     "id": "so-padrao",
+     "nome": "Só tirar o \"(padrão)\" do Sauvola",
+     "texto": "",
+     "imgs": []
+    },
+    {
+     "id": "deixar",
+     "nome": "Deixar como está",
+     "texto": "O nome de hoje continua.",
+     "imgs": []
+    },
+    {
+     "id": "nao-entendi",
+     "nome": "Ainda não entendi",
+     "texto": "Explique de outro jeito.",
+     "imgs": []
+    }
+   ]
+  }
+ ]
+}

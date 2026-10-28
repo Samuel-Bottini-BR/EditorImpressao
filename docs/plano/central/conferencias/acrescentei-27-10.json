@@ -5,7 +5,7 @@
  "ordem": 0,
  "origem": "auditoria de 27/10 (relatorios/obra-auditoria-escolhas/auditoria.html), pedida pela regra 7 do CLAUDE.md §11",
  "resumo": {
-  "titulo": "31 perguntas: o que eu e os agentes acrescentamos ou escolhemos sem você",
+  "titulo": "36 perguntas: o que eu e os agentes acrescentamos ou escolhemos sem você",
   "paragrafos": [
    "Você disse em 27/10: \"os agentes estão mudando coisas que eu já tinha definido, é só para fazer o que eu já tinha mandado\". Um conferente revisou as 78 escolhas e mudanças da obra contra as suas decisões.",
    "55 só fazem funcionar o que você mandou. 4 mudavam o que você tinha decidido e estão sendo desfeitas sem perguntar: o PDF volta a sair sem perda (sem JPEG), o aviso \"as contas discordam\" volta à sua regra de 0,3 grau, os nomes do \"Montar para imprimir\" voltam aos de antes (a disposição nova fica) e os dois jeitos que faltavam do lado direito (\"abas no alto\" e \"painel solto\") vão ser feitos.",
@@ -994,6 +994,154 @@
     {
      "id": "desatualizado",
      "nome": "Escrever \"PDF desatualizado\"",
+     "texto": "",
+     "imgs": []
+    },
+    {
+     "id": "nao-entendi",
+     "nome": "Ainda não entendi",
+     "texto": "Explique de outro jeito.",
+     "imgs": []
+    }
+   ]
+  },
+  {
+   "id": "c-tampa-ao-abrir",
+   "titulo": "Faixa da tampa do scanner: some também só de abrir o livro?",
+   "explicacao": [
+    "Feito como você escolheu: a faixa preta da tampa some em todo o livro quando ele passa pelo Automático ou quando a folha é dividida (à mão ou pela grade), e o livro escolhe \"cortar fora\" ou \"pintar de branco\".",
+    "Só abrir o livro não muda nenhuma página (decisão de 29/09: \"a página sempre abre em Original, sem mexer\").",
+    "Prints: relatorios/obra-etapa9b2/prints/."
+   ],
+   "exemplos": [],
+   "opcoes": [
+    {
+     "id": "nao",
+     "nome": "Não: só no Automático e ao dividir (recomendo)",
+     "texto": "",
+     "imgs": []
+    },
+    {
+     "id": "sim",
+     "nome": "Sim, já ao abrir o livro",
+     "texto": "",
+     "imgs": []
+    },
+    {
+     "id": "nao-entendi",
+     "nome": "Ainda não entendi",
+     "texto": "Explique de outro jeito.",
+     "imgs": []
+    }
+   ]
+  },
+  {
+   "id": "c-borda-e-tampa",
+   "titulo": "Uma escolha só (cortar ou pintar) para a borda preta e para a tampa?",
+   "explicacao": [
+    "Em 09/10 você decidiu: tarja e moldura do scanner — \"O Kaique escolhe por livro\" entre cortar e pintar de branco. A mesma escolha agora vale para a borda preta e para a faixa da tampa. Daria para separar em duas escolhas."
+   ],
+   "exemplos": [],
+   "opcoes": [
+    {
+     "id": "uma",
+     "nome": "Uma escolha só para as duas (recomendo)",
+     "texto": "",
+     "imgs": []
+    },
+    {
+     "id": "duas",
+     "nome": "Duas escolhas separadas",
+     "texto": "",
+     "imgs": []
+    },
+    {
+     "id": "nao-entendi",
+     "nome": "Ainda não entendi",
+     "texto": "Explique de outro jeito.",
+     "imgs": []
+    }
+   ]
+  },
+  {
+   "id": "c-girar-inteira",
+   "titulo": "Endireitar: mostrar a página inteira enquanto gira?",
+   "explicacao": [
+    "Da lista de 23/10 (3.2): ao girar no Endireitar, a página aparece cortada e fica difícil ver se ficou reta. Daria para mostrar a página inteira só enquanto se gira, e voltar ao corte ao soltar. Isso muda o que a ferramenta mostra."
+   ],
+   "exemplos": [],
+   "opcoes": [
+    {
+     "id": "sim",
+     "nome": "Sim, a página inteira enquanto gira (recomendo)",
+     "texto": "",
+     "imgs": []
+    },
+    {
+     "id": "nao",
+     "nome": "Não, deixar como está",
+     "texto": "",
+     "imgs": []
+    },
+    {
+     "id": "nao-entendi",
+     "nome": "Ainda não entendi",
+     "texto": "Explique de outro jeito.",
+     "imgs": []
+    }
+   ]
+  },
+  {
+   "id": "c-luz-area",
+   "titulo": "Painéis Luz e Área (lista de 23/10, 2.6)",
+   "explicacao": [
+    "Dois detalhes da lista de 23/10: o \"Igualar a luz\" não aparece quando a página está em Original, e o \"Área\" fica lá no fim do painel Propriedades, difícil de achar."
+   ],
+   "exemplos": [],
+   "opcoes": [
+    {
+     "id": "os-dois",
+     "nome": "\"Igualar a luz\" também no Original e \"Área\" mais para cima",
+     "texto": "",
+     "imgs": []
+    },
+    {
+     "id": "so-area",
+     "nome": "Só subir o \"Área\"",
+     "texto": "",
+     "imgs": []
+    },
+    {
+     "id": "nada",
+     "nome": "Deixar como está",
+     "texto": "",
+     "imgs": []
+    },
+    {
+     "id": "nao-entendi",
+     "nome": "Ainda não entendi",
+     "texto": "Explique de outro jeito.",
+     "imgs": []
+    }
+   ]
+  },
+  {
+   "id": "c-recuperar",
+   "titulo": "\"Recuperar o trabalho anterior\" no menu do cartão do livro?",
+   "explicacao": [
+    "Quando o programa recomeça um livro (o PDF mudou, por exemplo), ele guarda uma cópia do trabalho anterior e avisa onde está. Um agente sugeriu um item \"Recuperar o trabalho anterior\" no menu do cartão do livro, na tela inicial, para voltar a essa cópia com um clique. Não achei decisão sua sobre isso."
+   ],
+   "exemplos": [],
+   "opcoes": [
+    {
+     "id": "sim",
+     "nome": "Sim, quero o item no menu do cartão",
+     "texto": "",
+     "imgs": []
+    },
+    {
+     "id": "nao",
+     "nome": "Não precisa",
      "texto": "",
      "imgs": []
     },

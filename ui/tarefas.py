@@ -87,7 +87,7 @@ def _mensagem_amigavel(erro: Exception) -> str:
         return ("Não consegui gravar o arquivo. Ele pode estar aberto em outro "
                 "programa - feche e tente de novo.")
     if isinstance(erro, OSError):
-        return "Não consegui gravar o arquivo. Verifique se ha espaço em disco."
+        return "Não consegui gravar o arquivo. Verifique se há espaço em disco."
     return "Aconteceu um problema inesperado. O programa continua funcionando."
 
 
