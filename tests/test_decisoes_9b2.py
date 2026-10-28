@@ -963,3 +963,106 @@ def test_bug_22_10_nenhum_botao_pisca_como_janela_solta(app, qual):
         app.removeEventFilter(vigia.filtro)
     assert vigia.soltas == [], vigia.soltas
     assert peca is not None
+
+
+# --- Lista única: 1.2 e 5.9, 1.10, 1.11, 5.3 ------------------------------------------------
+
+def test_lista_1_2_e_5_9_o_aviso_da_forca_do_preto_so_em_pagina_de_preto_e_branco(janela, tmp_path):
+    """Lista única 23/10, 1.2 ("O aviso oferece 'usar mais fraco', e o botão não faz nada" -
+    Escola p. 1 em Mágico pro, Horas p. 4 em Melhorar) e 5.9 ("O aviso fala de 'força do preto'
+    em página feita com Mágico pro ou Melhorar, onde isso não existe"). D-114: cada filtro tem o
+    seu medidor ("Força do preto" só no Preto e branco). O aviso "Ficou escura" (medido no
+    cartão Preto e branco) só fica na página que sai em Preto e branco; ali o "usar mais fraco"
+    muda a força do preto da página. REVERSÃO: no código antigo a página em Mágico pro ganhava
+    o aviso (e o botão não mudava nada nela)."""
+    from core import analise
+    from core.filtros import MAGICO_PRO, ORIGINAL, PRETO_E_BRANCO
+
+    janela.abrir_livro(_pdf(tmp_path / "escura.pdf", [_pagina(), _pagina()]))
+    tela, projeto = janela.tela_conferir, janela.projeto
+    pagina = projeto.paginas[0]
+    original = cv2.cvtColor(_pagina(), cv2.COLOR_BGR2GRAY)
+    preta = np.zeros_like(original)                         # o Preto e branco "todo preto"
+    tela._escolher_filtro(MAGICO_PRO)
+    tela._conferir_qualidade_do_preto_e_branco(pagina, {ORIGINAL: original, PRETO_E_BRANCO: preta})
+    assert analise.ESCURA_DEMAIS not in pagina.alertas      # Mágico pro: sem o aviso
+    tela._escolher_filtro(PRETO_E_BRANCO)
+    tela._conferir_qualidade_do_preto_e_branco(pagina, {ORIGINAL: original, PRETO_E_BRANCO: preta})
+    assert analise.ESCURA_DEMAIS in pagina.alertas          # Preto e branco: o aviso
+    antes = pagina.forca_preto
+    tela._escolher_forca("mais_fraco")                      # o botão do aviso
+    assert pagina.forca_preto < antes
+    pagina.alertas.append(analise.ESCURA_DEMAIS)
+    tela._escolher_filtro(MAGICO_PRO)                       # trocou de filtro: o aviso sai
+    tela._conferir_qualidade_do_preto_e_branco(pagina, {ORIGINAL: original, PRETO_E_BRANCO: preta})
+    assert analise.ESCURA_DEMAIS not in pagina.alertas
+
+
+def test_lista_1_10_a_tab_vai_a_proxima_duvida_mesmo_com_o_foco_num_botao(janela, tmp_path):
+    """Lista única 23/10, 1.10: "A tecla Tab ('Ir para a próxima dúvida') não andou no teste do
+    mapa (ficou na folha 2). Pode ser o lugar do foco". Com o foco num botão da área de
+    trabalho (o "próxima dúvida"), a Tab vai à próxima página com dúvida em vez de só passar o
+    foco. REVERSÃO: no código antigo o Qt usava a Tab para mudar o foco e a página não mudava."""
+    from PySide6.QtCore import QEvent, Qt
+    from PySide6.QtGui import QKeyEvent
+    from PySide6.QtWidgets import QApplication
+
+    from core import analise
+
+    janela.abrir_livro(_pdf(tmp_path / "tab.pdf", [_pagina() for _ in range(4)]))
+    tela, projeto = janela.tela_conferir, janela.projeto
+    projeto.paginas[2].alertas = [analise.ESCURA_DEMAIS]
+    tela.escolher_ferramenta("mao")
+    tela.ir_para_pagina(0)
+    janela.show()
+    janela.move(-3000, -3000)
+    _assentar()
+    botao = tela.botao_proxima_duvida
+    botao.setFocusPolicy(Qt.StrongFocus)
+    botao.setFocus()
+    _assentar()
+    assert QApplication.focusWidget() is botao
+    QApplication.sendEvent(botao, QKeyEvent(QEvent.KeyPress, Qt.Key_Tab, Qt.NoModifier))
+    _assentar()
+    assert tela.indice_pagina == 2
+
+
+def test_lista_1_11_esc_fecha_o_ver_todas(janela, tmp_path):
+    """Lista única 23/10, 1.11: "Na grade 'ver todas' da tela de conferir, o Esc não volta; só o
+    botão 'voltar ao trabalho'". Com a grade à vista, o Esc volta à área de trabalho (como o
+    botão). REVERSÃO: no código antigo o Esc não fazia nada."""
+    from PySide6.QtCore import QEvent, Qt
+    from PySide6.QtGui import QKeyEvent
+
+    janela.abrir_livro(_pdf(tmp_path / "esc.pdf", [_pagina() for _ in range(3)]))
+    tela = janela.tela_conferir
+    tela.abrir_todas_as_paginas()
+    _assentar()
+    assert tela.pilha_da_tela.currentWidget() is tela.todas
+    janela.keyPressEvent(QKeyEvent(QEvent.KeyPress, Qt.Key_Escape, Qt.NoModifier))
+    _assentar()
+    assert tela.pilha_da_tela.currentWidget() is tela.trabalho
+
+
+def test_lista_5_3_a_caixinha_da_forca_sozinha_nao_fica_cinza_e_marcada(janela, tmp_path):
+    """Lista única 23/10, 5.3 (Samuel, 0-2: "Essa opção não dá para desativar"): no Automático,
+    com o Preto e branco, a caixinha "Escurecer sozinho a força do preto quando o texto sair
+    falhado" aparecia MARCADA e CINZA sem o "Só as letras". Agora ela fica acesa: dá para
+    desmarcar e marcar (regra 8 do plano: toda função automática liga e desliga). REVERSÃO: no
+    código antigo ela ficava cinza."""
+    from core.filtros import PRETO_E_BRANCO
+
+    janela.abrir_livro(_pdf(tmp_path / "forca.pdf", [_pagina()]))
+    estado = janela.estado_do_automatico
+    estado.opcoes.update({"filtro_padrao": PRETO_E_BRANCO, "misto_so_as_letras": False,
+                          "reforcar_texto_falhado": True})
+    grande = janela.abrir_o_automatico(A.LIMPAR)
+    try:
+        grande._mostrar_opcoes()
+        _assentar()
+        caixa = grande.cx_forca_sozinha
+        assert not caixa.isHidden() and caixa.isChecked() and caixa.isEnabled()
+        caixa.click()
+        assert estado.opcoes["reforcar_texto_falhado"] is False
+    finally:
+        janela._fechar_a_janela_do_automatico()

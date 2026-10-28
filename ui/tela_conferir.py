@@ -138,7 +138,7 @@ import numpy as np
 
 import atalhos
 from PySide6.QtCore import QEvent, Qt, QTimer, Signal
-from PySide6.QtCore import QLocale, QSize
+from PySide6.QtCore import QLocale, QObject, QSize
 from PySide6.QtGui import QColor, QPainter
 from PySide6.QtWidgets import (
     QCheckBox,
@@ -505,6 +505,21 @@ class _RotuloDoLivro(QLabel):
         self._encaixar()
 
 
+class _FiltroDaTab(QObject):
+    """Filtro de teclas da aplicação (etapa 9b-2, lista única 1.10): passa a
+    Tab à tela (TelaConferir._tab_da_proxima_duvida) antes de o Qt a usar para
+    mudar o foco. Só olha KeyPress; o resto passa direto (custo desprezível)."""
+
+    def __init__(self, tela) -> None:
+        super().__init__(tela)
+        self._tela = tela
+
+    def eventFilter(self, _vigiado, evento) -> bool:  # noqa: N802 - nome do Qt
+        if evento.type() == QEvent.KeyPress and evento.key() == Qt.Key_Tab:
+            return self._tela._tab_da_proxima_duvida(evento)
+        return False
+
+
 class TelaConferir(QWidget):
     voltar = Signal()
     processar = Signal()
@@ -738,6 +753,13 @@ class TelaConferir(QWidget):
         self.mostrar = UMA            # "Uma página" de fabrica (D-007)
         self.comparando = False       # "antes / depois" desligado de fabrica
         self._roda_acumulada = 0      # a roda do mouse que ainda nao virou pagina
+        # etapa 9b-2 (lista única 1.10): a Tab da "próxima dúvida" antes de o
+        # Qt usá-la para passar o foco (_tab_da_proxima_duvida)
+        from PySide6.QtWidgets import QApplication
+
+        self._filtro_da_tab = _FiltroDaTab(self)
+        if QApplication.instance() is not None:
+            QApplication.instance().installEventFilter(self._filtro_da_tab)
         self._tamanhos_das_folhas: tuple[str, list] = ("", [])
         centro.addWidget(self.vista_da_pagina, 1)
         # os botoes de girar do canto: filhos da area da pagina, por cima dela
@@ -4295,15 +4317,31 @@ class TelaConferir(QWidget):
     def _conferir_qualidade_do_preto_e_branco(self, pagina, resultados: dict) -> None:
         """Problema 5.4 do plano: aponta sozinho páginas que podem ter saído
         erradas, comparando o resultado com o original - em vez do Samuel
-        ter que abrir imagem por imagem procurando problema."""
+        ter que abrir imagem por imagem procurando problema.
+
+        Etapa 9b-2 da obra (lista única 23/10, 1.2: "O aviso oferece 'usar
+        mais fraco', e o botão não faz nada" - em páginas de Mágico pro e de
+        Melhorar -, e 5.9: "O aviso fala de 'força do preto' em página feita
+        com Mágico pro ou Melhorar, onde isso não existe"): o aviso "Ficou
+        escura" / "Texto quase sumiu" é sobre o PRETO E BRANCO (o resultado
+        medido aqui é o do cartão Preto e branco, e o botão mexe na força do
+        preto), como core.analise.analisar_resultado já dizia ("Só valem para o
+        preto e branco"). Só vale na página que sai em Preto e branco; nas
+        outras ele sai. Arriscado: pôr o aviso pelo cartão de um filtro que a
+        página não usa (o botão não mudaria a página)."""
         from core.analise import ESCURA_DEMAIS, APAGADA_DEMAIS, avaliar_preto_e_branco
 
         original = resultados.get(ORIGINAL)
         pb = resultados.get(PRETO_E_BRANCO)
-        if original is None or pb is None:
+        if self.projeto is not None and etapas_core.filtro_que_vale(self.projeto, pagina) != PRETO_E_BRANCO:
+            original = pb = None                     # não é Preto e branco: o aviso não vale
+            if not (pagina.alertas.count(ESCURA_DEMAIS) or pagina.alertas.count(APAGADA_DEMAIS)):
+                return
+            achado = None
+        elif original is None or pb is None:
             return
-
-        achado = avaliar_preto_e_branco(original, pb)
+        else:
+            achado = avaliar_preto_e_branco(original, pb)
         tinha_algum = pagina.alertas.count(ESCURA_DEMAIS) or pagina.alertas.count(APAGADA_DEMAIS)
         pagina.alertas = [a for a in pagina.alertas if a not in (ESCURA_DEMAIS, APAGADA_DEMAIS)]
         if achado is not None:
@@ -7355,6 +7393,36 @@ class TelaConferir(QWidget):
 
     # --- teclado ----------------------------------------------------------
 
+    def _tab_da_proxima_duvida(self, evento) -> bool:
+        """Etapa 9b-2 da obra (lista única 23/10, 1.10: "A tecla Tab ('Ir para
+        a próxima dúvida') não andou no teste do mapa (ficou na folha 2). Pode
+        ser o lugar do foco"): o Qt usa a Tab para passar o foco de um botão a
+        outro ANTES de a tecla chegar à janela (JanelaPrincipal.keyPressEvent
+        -> tratar_tecla), então com o foco num botão ou numa lista da área de
+        trabalho a Tab nunca ia para a próxima dúvida. O filtro de teclas da
+        aplicação (_FiltroDaTab) chama isto: com o foco dentro desta tela, um
+        livro aberto, a área de trabalho à vista e a Tab sendo a tecla da
+        "próxima dúvida" (Configurações), ela vai para a próxima dúvida.
+        Shift+Tab, Ctrl+Tab, outra tecla escolhida, ou foco fora daqui: o de
+        sempre. Devolve True se usou a tecla. Nunca levanta."""
+        try:
+            from PySide6.QtWidgets import QApplication
+
+            if evento.key() != Qt.Key_Tab or evento.modifiers() not in (Qt.NoModifier,):
+                return False
+            if atalhos.tecla_atual(CHAVE_PROXIMO_ALERTA) not in ("Tab", ""):
+                return False
+            foco = QApplication.focusWidget()
+            if not self.isVisible() or not self._pronta() or foco is None or not self.isAncestorOf(foco):
+                return False
+            if self.pilha_da_tela.currentWidget() is not self.trabalho:
+                return False
+            self._ir_para_proximo_alerta()
+            return True
+        except Exception:  # noqa: BLE001 - a tecla nunca derruba a tela
+            registrar_erro("tab da proxima duvida", traceback.format_exc())
+            return False
+
     def tratar_tecla(self, evento) -> bool:
         """Atalhos da secao 4.7. Devolve True se consumiu a tecla."""
         if not self._pronta():
@@ -7363,6 +7431,16 @@ class TelaConferir(QWidget):
         tecla = evento.key()
         ctrl = evento.modifiers() & Qt.ControlModifier
         shift = evento.modifiers() & Qt.ShiftModifier
+
+        # Etapa 9b-2 da obra (lista única 23/10, 1.11: "Na grade 'ver todas'
+        # da tela de conferir, o Esc não volta; só o botão 'voltar ao
+        # trabalho'"): com a grade "Todas as páginas" à vista, o Esc faz o
+        # mesmo que "voltar ao trabalho" (no "escolher páginas..." do
+        # Automático, o mesmo que "cancelar": volta sem mudar a escolha).
+        if (tecla == Qt.Key_Escape and not ctrl and hasattr(self, "pilha_da_tela")
+                and self.pilha_da_tela.currentWidget() is self.todas):
+            self.todas.voltar.emit()
+            return True
 
         if ctrl and tecla == Qt.Key_Z:
             self.refazer() if shift else self.desfazer()

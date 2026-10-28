@@ -1027,7 +1027,11 @@ class JanelaDoAutomatico(QDialog):
             so_letras = bool(o.get("misto_so_as_letras", False))
             self.escolhas_misto.setVisible(no_pb)
             self.cx_forca_sozinha.setVisible(no_pb)
-            self.cx_forca_sozinha.setEnabled(so_letras)
+            # etapa 9b-2 (lista única 23/10, 5.3, Samuel: "Essa opção não dá
+            # para desativar" - ela ficava marcada e CINZA sem "Só as letras"):
+            # a caixinha fica sempre acesa, para ligar e desligar quando quiser
+            # (regra 8 do plano); a frase embaixo diz que ela age com "Só as letras"
+            self.cx_forca_sozinha.setEnabled(True)
             # "Limpar a sujeira" so aparece com o Preto e branco (escondida, a
             # escolha fica guardada: como a tela "O que fazer" fazia)
             self.linhas["limpar_pontinhos"].setVisible(no_pb)
