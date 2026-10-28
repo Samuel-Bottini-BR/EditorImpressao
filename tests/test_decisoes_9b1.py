@@ -519,3 +519,51 @@ def test_page_down_chega_a_pagina_depois_de_clicar_numa_miniatura(janela, tela, 
     aj.assentar()
     assert tela.indice_atual == 1, "o clique na miniatura não levou à página"
     _apertar_e_conferir(janela, tela, tecla)
+
+
+# --- o contador da barra de baixo cabe (ressalva 1 da etapa 7) ------------------------------------
+
+def test_contador_da_barra_de_baixo_em_duas_linhas_quando_nao_cabe_em_uma(app):  # noqa: F811
+    """REVERSÃO. Etapa 7, ressalva 1: "o contador do rodapé ainda sai cortado com um painel aberto
+    a 1280 ('3 de 36…')". Quando a conta não cabe numa linha, ela vai em duas ("N de M
+    conferidas" / "K com dúvida"), inteira, em letra um ponto menor; o texto inteiro (com o nome
+    do livro) continua no balão. Mede com as letras desta máquina: a largura dada é a que cabe
+    em duas linhas e não cabe em uma."""
+    from PySide6.QtGui import QFont, QFontMetrics
+
+    from ui.tela_conferir import _RotuloDoLivro
+
+    rotulo = _RotuloDoLivro()
+    conta = "0 de 360 conferidas · 18 com dúvida"
+    pequena = QFont(rotulo.font())
+    pequena.setPixelSize(getattr(_RotuloDoLivro, "LETRA_EM_DUAS_LINHAS", 11))
+    largura = max(QFontMetrics(pequena).horizontalAdvance(t) for t in conta.split(" · ")) + 12
+    if QFontMetrics(rotulo.font()).horizontalAdvance(conta) <= largura - 4:
+        pytest.skip("nesta máquina a conta cabe numa linha nessa largura")
+    rotulo.resize(largura, 30)
+    rotulo.show()
+    aj.assentar()
+    rotulo.definir("La vida eterna", conta)
+    aj.assentar()
+    assert rotulo.text() == "0 de 360 conferidas\n18 com dúvida", repr(rotulo.text())
+    assert rotulo.toolTip() == "La vida eterna · " + conta
+    rotulo.resize(2000, 30)          # cabe tudo numa linha: volta ao de sempre
+    aj.assentar()
+    assert rotulo.text() == "La vida eterna · " + conta
+    rotulo.close()
+
+
+def test_barra_de_baixo_nada_saiu(janela, tela):  # noqa: F811
+    """O conserto do contador não tira nada da barra de baixo (o pedido: "faça caber sem tirar
+    nada"): as setas, "página N de M", desfazer, refazer, Histórico, a conta, "Uma página",
+    "Duas lado a lado", "antes / depois", o zoom e "ajustar à tela" continuam à vista, com um
+    painel aberto."""
+    tela.paineis.abrir("revisar")
+    aj.assentar()
+    for peca in (tela.botao_anterior, tela.rotulo_da_pagina, tela.botao_proxima,
+                 tela.botao_desfazer_embaixo, tela.botao_refazer_embaixo, tela.botao_historico_embaixo,
+                 tela.rotulo_do_livro, tela.botoes_mostrar["uma"] if "uma" in tela.botoes_mostrar
+                 else list(tela.botoes_mostrar.values())[0], list(tela.botoes_mostrar.values())[1],
+                 tela.botao_antes_depois, tela.botao_menos_zoom, tela.rotulo_do_zoom,
+                 tela.botao_mais_zoom, tela.botao_ajustar_a_tela):
+        assert peca.isVisible(), peca
