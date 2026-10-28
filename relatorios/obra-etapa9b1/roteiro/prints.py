@@ -194,6 +194,22 @@ def main() -> None:
 
     base.quando_abrir_janela(JanelaDosAvisos, f"{PREFIXO}-13-antes-de-processar-pelo-menu", PRINTS, TXT,
                              depois=no_mostrar, fechar=True)
+    from PySide6.QtCore import QTimer
+    from PySide6.QtWidgets import QApplication
+
+    from ui.janela_confirmar import JanelaConfirmar
+
+    def se_foi_direto_para_salvar():
+        """No código antigo o menu ia direto à janela de salvar (sem a "Antes de processar"):
+        print dela e "voltar" (nunca processa)."""
+        for w in QApplication.topLevelWidgets():
+            if isinstance(w, JanelaConfirmar) and w.isVisible():
+                NUMEROS["menu processar foi direto para a janela de salvar"] = "sim"
+                base.print_window(w, PRINTS / f"{PREFIXO}-13-menu-processar-foi-direto-para-salvar.png",
+                                  so_cliente=False)
+                w.reject()
+
+    QTimer.singleShot(4000, se_foi_direto_para_salvar)
     janela.menu.acoes["processar"].trigger()
     base.esperar(6.0)
     NUMEROS["menu processar mostrou a 'Antes de processar'"] = str(
@@ -224,6 +240,13 @@ def main() -> None:
     base.esperar(2.0)
     _p(dialogo, "17-montar-para-imprimir", so_cliente=False)
     base.gravar_textos(dialogo, TXT, "Montar para imprimir")
+    from PySide6.QtWidgets import QScrollArea
+
+    for rolagem in dialogo.findChildren(QScrollArea):     # as opções de baixo (rolando)
+        barra = rolagem.verticalScrollBar()
+        barra.setValue(barra.maximum())
+    base.esperar(1.0)
+    _p(dialogo, "17b-montar-para-imprimir-embaixo", so_cliente=False)
     NUMEROS["Montar para imprimir: nome sugerido"] = dialogo.destino_sugerido().name
     dialogo.reject()
     base.esperar(0.5)

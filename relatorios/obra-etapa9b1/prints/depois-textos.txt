@@ -1,0 +1,146 @@
+
+===== menu depois-01-menu-editar-sem-nada-feito =====
+Desfazer   [Ctrl+Z, CINZA]
+Refazer   [Ctrl+Shift+Z, CINZA]
+----
+Mostrar o histórico
+
+===== menu depois-02-menu-filtro-pagina-2-preto-e-branco =====
+Original   [1, desmarcado]
+Preto e branco   [2, marcado]
+Melhorar   [3, desmarcado]
+Mágico pro   [4, desmarcado]
+
+===== menu depois-03-menu-filtro-pagina-1-original =====
+Original   [1, marcado]
+Preto e branco   [2, desmarcado]
+Melhorar   [3, desmarcado]
+Mágico pro   [4, desmarcado]
+
+===== menu depois-04-menu-ver-lado-direito =====
+Ícones na borda (de fábrica)   [marcado]
+Sanfona (a área de trabalho 1)   [desmarcado]
+Abas no alto   [desmarcado]
+Painel solto   [desmarcado]
+
+===== Configurações =====
+texto    ( 234,  18 745x35)                    'Aparência'
+texto    ( 234,  63 745x19)                    'As cores do programa. Vale na hora, em todas as telas.'
+bolinha  ( 234,  94 67x19) desmarcado         'Escuro'
+bolinha  ( 311,  92 139x24) marcado            'Cinza (de fábrica)'
+bolinha  ( 460,  94 59x19) desmarcado         'Claro'
+texto    ( 234, 140 745x35)                    'Lado direito'
+texto    ( 234, 185 745x19)                    'Como os painéis (Para revisar, Automático, Propriedades, Filtro da página, Histórico) ficam na tela de trabalho.'
+bolinha  ( 234, 214 745x24) marcado            'Ícones na borda (de fábrica)'
+bolinha  ( 234, 248 745x19) desmarcado         'Sanfona (a área de trabalho 1)'
+bolinha  ( 234, 277 745x19) desmarcado         'Abas no alto'
+bolinha  ( 234, 306 745x19) desmarcado         'Painel solto'
+botão    ( 912, 622 75x39)                    'Fechar'
+
+===== janela depois-13-antes-de-processar-pelo-menu (JanelaDosAvisos, título 'Antes de processar') =====
+texto    (  18,  16 522x20)                    'Ainda tem 13 páginas que eu não tive certeza.'
+texto    (  18,  44 522x19)                    'Quer ver antes ou continuar assim mesmo?'
+texto    (  18,  75 52x35)                    'Mostrar:'
+lista    (  76,  75 256x35)                    'todos os motivos (13)  [todos os motivos (13) | Endireitar: as contas discordam (11) | Parece em branco (2)]'
+botão    ( 338,  78 117x28)                    'Selecionar todas'
+botão    ( 461,  78 79x28)                    'Nenhuma'
+botão    (  18, 347 179x39)                    'está bom nas marcadas'  · balão: 'Tira da lista as linhas marcadas. Não muda nada nas páginas; o Desfazer traz de volta.'
+botão    ( 287, 348 64x37)                    'ver'  · balão: 'Vai para a página da linha escolhida (ou a primeira da lista).'
+botão    ( 359, 347 181x39)                    'continuar assim mesmo'  · balão: 'Processa o livro como está, com os avisos.'
+
+===== janela depois-15-antes-de-processar-pelo-botao (JanelaDosAvisos, título 'Antes de processar') =====
+texto    (  18,  16 522x20)                    'Ainda tem 13 páginas que eu não tive certeza.'
+texto    (  18,  44 522x19)                    'Quer ver antes ou continuar assim mesmo?'
+texto    (  18,  75 52x35)                    'Mostrar:'
+lista    (  76,  75 256x35)                    'todos os motivos (13)  [todos os motivos (13) | Endireitar: as contas discordam (11) | Parece em branco (2)]'
+botão    ( 338,  78 117x28)                    'Selecionar todas'
+botão    ( 461,  78 79x28)                    'Nenhuma'
+botão    (  18, 347 179x39)                    'está bom nas marcadas'  · balão: 'Tira da lista as linhas marcadas. Não muda nada nas páginas; o Desfazer traz de volta.'
+botão    ( 287, 348 64x37)                    'ver'  · balão: 'Vai para a página da linha escolhida (ou a primeira da lista).'
+botão    ( 359, 347 181x39)                    'continuar assim mesmo'  · balão: 'Processa o livro como está, com os avisos.'
+
+===== janela depois-16-janela-de-salvar-nome-com-acento (JanelaConfirmar, título 'Confirmar e processar') =====
+texto    (  22,  18 623x26)                    'Onde salvar o livro pronto'
+texto    (  35,  64 65x39)                    'Salvar em:'
+texto    ( 110,  64 389x39)                    'C:\\Users\\fotog\\Documents\\Editor de Impressao'  · balão: 'C:\\Users\\fotog\\Documents\\Editor de Impressao'
+botão    ( 509,  64 123x39)                    'Escolher pasta'
+texto    (  35, 107 115x35)                    'Nome do arquivo:'
+campo    ( 160, 107 472x35)                    'Sobre a Consolação da Filosofia - Severino Boécio - arrumado.pdf'
+texto    (  37, 173 593x38)                    'Ainda há <b>13 páginas</b> que você não conferiu. Dá para processar assim mesmo, mas o que não foi olhado sai do jeito que o programa decidiu sozinho.'
+texto    (  22, 234 623x19)                    '50 páginas vão para o PDF.'
+caixinha (  22, 265 623x22) desmarcado         'Gravar em duas camadas: a letra em cima, o fundo embaixo (arquivo bem menor)'  · balão: 'O papel vai numa imagem pequena embaixo, e o que se imprime vai em cima, nítido. O arquivo fica bem menor; a camada de cima tem uma perda pequena (como uma foto JPEG de qualidade alta). Páginas só em preto e branco saem como sempre.'
+botão    ( 441, 299 129x48)                    'Processar'
+botão    ( 576, 303 69x39)                    'voltar'
+
+===== Montar para imprimir =====
+texto    (  18,  14 964x19)                    '<b>Sobre a Consolação da Filosofia - Severino Boécio.pdf</b> &nbsp;·&nbsp; 50 páginas'
+texto    (  18,  43 964x16)                    'O PDF do livro não muda: aqui só se arrumam as folhas para a impressora.'
+texto    (  18,  79 634x16)                    'COMO VAI SAIR'
+texto    (  18, 101 56x33)                    'Formato:'
+lista    (  90, 101 562x35)                    'Livreto (cadernos)  [Livreto (cadernos) | Página inteira | Várias páginas por folha | Pôster]'
+texto    (  18, 144 634x32)                    'Duas páginas de cada lado de uma folha A4 deitada, já na ordem dos cadernos: é só imprimir, dobrar ao meio e costurar.'
+texto    (  18, 184 37x33)                    'Papel:'
+lista    (  90, 184 562x35)                    'A4  [A4 | A5 | A3 | Carta | Ofício 9 | 8,5 x 13 pol. | México-Ofício | Ofício | Executivo | Envelope #10 | 8 x 10 pol. | 5 x 7 pol.]'
+texto    (  18, 227 37x33)                    'Folha:'
+lista    (  90, 227 562x35)                    'a do formato  [a do formato | em pé (retrato) | deitada (paisagem)]'
+texto    (  18, 270 60x33)                    'Tamanho:'
+lista    (  90, 270 562x35)                    'Ajustar  [Ajustar | Tamanho real | Escala personalizada (%) | Reduzir páginas muito grandes]'
+texto    (  18, 325 634x16)                    'LIVRETO'
+texto    (  18, 347 130x33)                    'Páginas por caderno:'
+lista    ( 164, 347 488x35)                    '20  [8 | 12 | 16 | 20 | 24 | 32 | 40]'
+texto    (  18, 390 89x33)                    'Encadernação:'
+lista    ( 164, 390 488x35)                    'Esquerda  [Esquerda | Direita]'
+texto    (  18, 433 118x33)                    'Ordem de páginas:'
+lista    ( 164, 433 488x35)                    'Frente e verso  [Frente e verso | Só a frente | Só o verso]'
+texto    (  18, 476 134x33)                    'Folhas de (0 = todas):'
+número   ( 164, 476 110x39)                    '0'
+campo    ( 175, 483 61x25)                    'todas'
+texto    ( 280, 476 20x39)                    'até'
+número   ( 306, 476 110x39)                    '0'
+campo    ( 317, 483 61x25)                    'todas'
+texto    (  18, 535 634x16)                    'ESCALA DE CADA LADO'
+texto    (  18, 557 634x16)                    'Em % sobre o tamanho escolhido acima. Página diminuída fica no meio da sua metade.'
+texto    (  18, 581 176x33)                    'Páginas da esquerda (pares):'
+campo    ( 217, 588 71x25)                    '100 %'
+texto    (  18, 628 174x33)                    'Páginas da direita (ímpares):'
+campo    ( 217, 635 71x25)                    '100 %'
+texto    (  18, 675 96x33)                    'Só uma página:'
+campo    ( 206, 675 446x35)                    '(ex.: 12=90; 15=85)'  · balão: 'Uma página só, com outra escala: número da página do livro = %.'
+texto    (  18, 718 634x16)                    'Número da página do livro = tamanho em %. Vale só para aquela página, não para a folha inteira.'
+texto    (  18, 754 634x16)                    'MARGENS E AJUSTES'
+caixinha (  18, 776 634x22) marcado            'Margens da encadernação'
+texto    (  18, 798 634x16)                    '1,3 cm da beirada do papel e 1 cm na costura, em cada página. Avisa se o texto passar disso.'
+caixinha (  18, 822 634x22) marcado            'Rotação automática'
+texto    (  18, 844 634x16)                    'Página deitada gira de pé.'
+caixinha (  18, 868 634x22) marcado            'Centralizar automático'
+texto    (  18, 910 634x16)                    'OUTRAS OPÇÕES'
+texto    (  18, 932 192x33)                    'Páginas do livro de (0 = todas):'
+número   ( 222, 932 110x39)                    '0'
+campo    ( 233, 939 61x25)                    'todas'
+texto    ( 338, 932 20x39)                    'até'
+número   ( 364, 932 110x39)                    '0'
+campo    ( 375, 939 61x25)                    'todas'
+caixinha (  18, 979 634x22) marcado            'Imprimir como imagem'
+texto    (  18,1001 634x16)                    'Ligada de fábrica: sem ela pode sair algo errado.'
+caixinha (  18,1025 634x22) desmarcado         'Imprimir em escala de cinza'
+caixinha (  18,1055 634x22) desmarcado         'Reverter páginas'
+texto    (  18,1077 634x16)                    'Da última folha para a primeira.'
+texto    (  18,1113 634x16)                    'IMPRESSORA (PARA MANDAR DIRETO)'
+texto    (  18,1135 72x33)                    'Impressora:'
+lista    ( 102,1135 550x35)                    'EPSON25A08A (ET-3750 Series) (a de sempre)  [EPSON25A08A (ET-3750 Series) (a de sempre) | OneNote (Desktop) | Microsoft Print to PDF | Fax | Adobe PDF]'
+texto    (  18,1178 45x33)                    'Cópias:'
+número   ( 102,1178 90x39)                    '1'
+campo    ( 113,1185 41x25)                    '1'
+caixinha (  18,1225 634x22) marcado            'Agrupar'
+texto    (  18,1247 634x16)                    'Sai o livro inteiro, depois o livro inteiro de novo.'
+texto    ( 707,  82 260x16)                    'O QUE VAI SAIR'
+texto    ( 707, 106 260x171)                    'Livreto (cadernos) em papel A4.\n\nEntram as 50 páginas do livro.\n\nSaem 13 folhas de papel (frente e verso), 3 cadernos; o último com 3 folhas.\n\nAo gravar, os passos para imprimir e dobrar aparecem aqui.'
+botão    (  18, 578 283x48)                    'gravar o arquivo para imprimir'
+botão    ( 309, 582 205x39)                    'mandar para a impressora...'
+botão    ( 522, 582 85x39) CINZA              'cancelar'
+botão    ( 909, 582 73x39)                    'fechar'
+
+===== janela depois-18-pintar-por-cima-aviso (QMessageBox, título 'Pintar por cima') =====
+texto    (  62,  11 358x19)                    'Este retângulo cobre letras; elas vão ser pintadas também.'
+botão    ( 185,  58 158x39)                    'Pintar assim mesmo'
+botão    ( 349,  58 71x39)                    'Voltar'
