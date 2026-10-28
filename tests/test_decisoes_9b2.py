@@ -515,3 +515,248 @@ def test_d559_a_escolha_cortar_ou_pintar_fica_a_vista_no_automatico(janela, tmp_
         assert "tampa do scanner" in grande.controles["borda_preta_fazer"].toolTip()
     finally:
         janela._fechar_a_janela_do_automatico()
+
+
+# --- D-547 e a troca da 10b (D-473 / D-064): a tela como sai no PDF ---------------------------
+
+def _caixa_da_tinta(img: np.ndarray, rgb: bool = True) -> tuple[float, float, float, float]:
+    """(x0, y0, x1, y1) do preto da página, em fração dela."""
+    cinza = img if img.ndim == 2 else cv2.cvtColor(img, cv2.COLOR_RGB2GRAY if rgb
+                                                  else cv2.COLOR_BGR2GRAY)
+    ys, xs = np.nonzero(cinza < 100)
+    assert xs.size, "a página saiu sem texto"
+    altura, largura = cinza.shape
+    return (xs.min() / largura, ys.min() / altura, (xs.max() + 1) / largura,
+            (ys.max() + 1) / altura)
+
+
+def _perto(a, b, folga: float = 0.03) -> bool:
+    return all(abs(x - y) <= folga for x, y in zip(a, b))
+
+
+def test_d547_a_pagina_movida_aparece_como_sai_no_pdf_no_lado_a_lado_antes_depois_e_miniatura(
+        janela, tmp_path):
+    """D-547 (27/10/2026, escolha da gerente apoiada em D-473/D-066: "precisamos que o pdf saia
+    que nem está na tela"; prova do Livro: "Mover uma página → a miniatura, a tela cheia e o
+    lado a lado mostram igual ao PDF"). Página 2 com o conteúdo diminuído a 60% (ferramenta
+    Mover): o lugar do texto (a caixa do preto) no lado a lado, no "antes / depois", na
+    miniatura e nos cartões do painel Filtro é o mesmo do PDF (até 3% da página). Falha no
+    código antigo (as outras telas mostravam a página sem o mover, D-546)."""
+    from ui.widgets.paginas_rolando import DUAS
+
+    janela.abrir_livro(_pdf(tmp_path / "mover.pdf", [_pagina(marca=k) for k in range(3)]))
+    tela = janela.tela_conferir
+    tela.ir_para_pagina(1)
+    tela.escolher_ferramenta("mover")
+    _esperar(lambda: tela.previas.ja_pronta(1, tela._dpi_atual) is not None, motivo="a prévia")
+    tela._mudar_tamanho_do_conteudo(60)
+    _assentar()
+    pdf = _gerar(janela, tmp_path, "movida")
+    no_pdf = _caixa_da_tinta(pdf[1])
+    assert no_pdf[2] - no_pdf[0] < 0.55                       # o texto diminuiu no PDF
+
+    img, _chave = tela._previa_do_lado_a_lado(1, True)        # o lado a lado
+    _esperar(lambda: tela._previa_do_lado_a_lado(1, True)[0] is not None, motivo="lado a lado")
+    img, _chave = tela._previa_do_lado_a_lado(1, True)
+    assert _perto(_caixa_da_tinta(img, rgb=False), no_pdf), (_caixa_da_tinta(img, False), no_pdf)
+
+    tela.escolher_ferramenta("filtros")                       # os cartões do painel Filtro
+    tela.definir_mostrar(DUAS)
+    tela.definir_mostrar("uma")
+    tela.botao_antes_depois.setChecked(True)                  # o "antes / depois"
+    tela._alternar_antes_depois()
+    _assentar()
+    depois = tela._como_sai_no_pdf(tela.previas.ja_pronta(1, tela._dpi_atual), 1)
+    assert _perto(_caixa_da_tinta(depois, rgb=False), no_pdf)
+
+    tela._acertar_as_miniaturas_movidas()                    # a miniatura
+    _chave, mini = tela.tira._como_sai[1]
+    assert _perto(_caixa_da_tinta(mini, rgb=False), no_pdf, 0.05)
+    assert 0 not in tela.tira._como_sai and 2 not in tela.tira._como_sai   # as outras: cruas
+
+
+def test_d473_d064_a_tela_troca_pela_imagem_do_pdf_e_a_bolinha_da_pagina(janela, tmp_path,
+                                                                      monkeypatch):
+    """D-473 (escolha da gerente apoiada em D-066: "precisamos que o pdf saia que nem está na
+    tela") + D-064 (22/10: "é só colocar uma bolinha de carregamento, pode ter uma pro livro
+    inteiro e outra para a pagina que estamos"); a troca que a etapa 10b deixou para a tela
+    (relatorios/obra-etapa10b/ONDE-PAREI.md). Na página em que a tela pede, por trás, o desenho
+    do tamanho do PDF (a regra do "Para revisar" do "Só as letras"): enquanto ele não chega, a
+    bolinha da página gira e diz "preparando a imagem igual ao PDF"; quando chega, a prévia da
+    tela passa a ser a imagem do PDF REDUZIDA (a marca que só o desenho do PDF tem aparece na
+    tela) e a bolinha para. Falha no código antigo (a imagem do PDF era jogada fora; não havia
+    bolinha)."""
+    import threading
+
+    import ui.tarefas as T
+
+    janela.abrir_livro(_pdf(tmp_path / "pdf.pdf", [_pagina(marca=k) for k in range(2)]))
+    tela = janela.tela_conferir
+    _esperar(lambda: tela.previas.ja_pronta(0, tela._dpi_atual) is not None, motivo="a prévia")
+    solta = threading.Event()
+
+    def acerto(doc, projeto, pagina, com_a_imagem=False):
+        """O desenho do tamanho do PDF de mentira: a página com um quadrado preto no meio
+        (a "diferença" que só o PDF tem); espera o teste soltar."""
+        solta.wait(20)
+        grande = np.full((int(840 * projeto.qualidade_dpi / DPI), int(600 * projeto.qualidade_dpi / DPI),
+                          3), 255, np.uint8)
+        h, w = grande.shape[:2]
+        grande[h // 3: 2 * h // 3, w // 3: 2 * w // 3] = 0
+        return (False, grande) if com_a_imagem else False
+
+    monkeypatch.setattr(T, "acertar_no_tamanho_do_pdf", acerto)
+    monkeypatch.setattr(T, "precisa_do_desenho_do_pdf", lambda projeto, pagina: True)
+    assert tela.previas.pedir_medida(0)
+    _esperar(lambda: tela.previas.medida_pendente(0), motivo="pedida")
+    tela._acertar_as_bolinhas()
+    assert tela.bolinha_da_pagina.carregando
+    assert "igual ao PDF" in tela.bolinha_da_pagina.toolTip()
+    solta.set()
+    _esperar(lambda: tela.previas.igual_ao_pdf(0), motivo="a imagem do PDF na tela")
+    previa = tela.previas.ja_pronta(0, tela._dpi_atual)
+    h, w = previa.shape[:2]
+    assert previa[h // 2, w // 2].max() < 30                   # o quadrado do "PDF" está na tela
+    tela._acertar_as_bolinhas()
+    assert not tela.bolinha_da_pagina.carregando
+
+
+def test_d547_a_tela_cheia_dos_filtros_mostra_a_pagina_movida_como_no_pdf(janela, tmp_path):
+    """D-547 (prova do Livro: "Mover uma página → [...] a tela cheia [...] mostra igual ao
+    PDF"): a página grande da tela cheia dos filtros sai com o conteúdo no lugar e no tamanho do
+    PDF (a caixa do preto até 3% da página). Falha no código antigo."""
+    from ui.widgets.filtros_tela_cheia import FiltrosEmTelaCheia
+
+    janela.abrir_livro(_pdf(tmp_path / "mover.pdf", [_pagina(marca=k) for k in range(2)]))
+    tela = janela.tela_conferir
+    tela.ir_para_pagina(1)
+    tela.escolher_ferramenta("mover")
+    _esperar(lambda: tela.previas.ja_pronta(1, tela._dpi_atual) is not None, motivo="a prévia")
+    tela._mudar_tamanho_do_conteudo(60)
+    _assentar()
+    no_pdf = _caixa_da_tinta(_gerar(janela, tmp_path, "movida")[1])
+    vistas = []
+    cheia = FiltrosEmTelaCheia(tela, parent=janela)
+    original = cheia.vista.definir
+    cheia.vista.definir = lambda antes, depois, *a, **k: (vistas.append(depois),
+                                                          original(antes, depois, *a, **k))
+    try:
+        _esperar(lambda: (cheia.atualizar() or True) and any(v is not None for v in vistas),
+                 motivo="a página grande da tela cheia")
+        grande = next(v for v in vistas if v is not None)
+        assert _perto(_caixa_da_tinta(grande, rgb=False), no_pdf)
+    finally:
+        cheia.done(0)
+
+
+# --- D-020 / P-129: o desfazer e o Retângulo (lista única 1.3, 1.6, 1.7, 1.9, 4.6) -----------
+
+def _regiao_pintar(x0=0.15, y0=0.15, x1=0.85, y1=0.5):
+    """Um retângulo "Pintar por cima" (branco) feito à mão sobre o texto."""
+    from core.selecao import MAO, PINTAR, RETANGULO, Regiao
+
+    regiao = Regiao(tipo=PINTAR, forma=RETANGULO, pontos=[(x0, y0), (x1, y1)], origem=MAO)
+    regiao.cor = "#ffffff"
+    return regiao
+
+
+def _tinta_no_alto(img: np.ndarray) -> float:
+    """A parte do alto da página (onde o retângulo pinta) que é preta."""
+    cinza = cv2.cvtColor(img, cv2.COLOR_RGB2GRAY)
+    h, w = cinza.shape
+    return float((cinza[int(0.2 * h): int(0.45 * h), int(0.25 * w): int(0.75 * w)] < 100).mean())
+
+
+def test_p129_o_desfazer_tira_o_retangulo_e_ele_nao_sai_impresso(janela, tmp_path):
+    """D-020 (18/07: "Ctrl+Z desfaz qualquer alteração, sem limite de quantidade") + promessa
+    P-129 + lista única 23/10: 1.3 ("Marco um retângulo com a ferramenta Retângulo, clico no
+    desfazer de baixo, e a marcação continua lá", nos 11 livros), 4.6 (a marca que o desfazer
+    não tirou sai impressa) e 1.7 (o desfazer desfez a coisa de ANTES: o giro das 135 folhas).
+    Livro de 2 páginas: girar as folhas, marcar um retângulo "Pintar por cima" branco sobre o
+    texto → no PDF o texto some ali; o desfazer da barra de baixo tira o RETÂNGULO (o giro
+    fica) e o PDF sai com o texto; "Limpar tudo" + desfazer traz a marcação de volta. REVERSÃO:
+    no código antigo o desfazer desfazia o giro e o retângulo saía impresso."""
+    janela.abrir_livro(_pdf(tmp_path / "ret.pdf", [_pagina(), _pagina()]))
+    tela, projeto = janela.tela_conferir, janela.projeto
+    tela._acao_nas_escolhidas("girar_direita", [0])
+    tela._acao_nas_escolhidas("girar_esquerda", [0])          # volta de pé: duas ações
+    giros = len(janela.acoes.feitas)
+    tela.pilha_da_tela.setCurrentWidget(tela.trabalho)
+    tela.escolher_ferramenta("retangulo")
+    tela.ir_para_pagina(0)
+    _assentar()
+    tela.editor_selecao._acrescentar(_regiao_pintar())
+    _assentar()
+    assert len(projeto.paginas[0].selecao) == 1
+    assert len(janela.acoes.feitas) == giros + 1               # a marcação é uma ação
+    assert _tinta_no_alto(_gerar(janela, tmp_path, "com")[0]) < 0.01      # pintado de branco
+
+    tela.botao_desfazer_embaixo.click()                       # o desfazer de baixo
+    _assentar()
+    assert projeto.paginas[0].selecao == []                   # o retângulo saiu
+    assert len(janela.acoes.feitas) == giros                  # o giro ficou
+    assert tela.editor_selecao.selecao.vazia                  # e a tela mostra
+    assert _tinta_no_alto(_gerar(janela, tmp_path, "sem")[0]) > 0.1       # o texto volta
+
+    tela.refazer()
+    _assentar()
+    assert len(projeto.paginas[0].selecao) == 1
+    tela._limpar_marcacao()                                    # "Limpar tudo"
+    assert projeto.paginas[0].selecao == []
+    tela.desfazer()                                            # traz a marcação de antes
+    _assentar()
+    assert len(projeto.paginas[0].selecao) == 1
+
+
+def test_lista_1_6_o_desfazer_devolve_os_avisos_da_pagina(janela, tmp_path):
+    """Lista única 23/10, 1.6: "Mexo numa página que tinha aviso e desfaço: a página volta, mas
+    o aviso some e a dúvida sai da lista sem eu ter resolvido nada" (Boécio p. 2 no
+    Endireitar; Pesel p. 1 no "usar mais escuro"), "e no caminho contrário [...] trouxe um
+    aviso a mais". D-020. Página com o aviso "Ficou escura": girar à mão 1,5° (a página é
+    desenhada e medida de novo e o aviso sai), desfazer → o aviso volta, e só ele. REVERSÃO:
+    no código antigo o aviso não voltava."""
+    from core import analise
+
+    janela.abrir_livro(_pdf(tmp_path / "aviso.pdf", [_pagina(), _pagina()]))
+    tela, projeto = janela.tela_conferir, janela.projeto
+    pagina = projeto.paginas[0]
+    pagina.alertas = [analise.ESCURA_DEMAIS]
+    tela._gravar_angulo(0, 1.5)
+    pagina.alertas = []                         # a medida da página nova tirou o aviso
+    tela.desfazer()
+    _assentar()
+    assert pagina.angulo_manual is None
+    assert pagina.alertas == [analise.ESCURA_DEMAIS]
+
+
+def test_lista_1_9_o_retangulo_feito_a_mao_aparece_dentro_da_area_da_maquina(app):
+    """Lista única 23/10, 1.9: "Numa página que o programa já marcou quase inteira como gravura
+    (em salmão), o retângulo que eu marco some dentro do salmão". Agora a área feita à mão tem
+    o contorno cheio na cor do tipo dela: na beirada do retângulo há pontos da cor da gravura
+    (vermelho-alaranjado puro), que a área da máquina sozinha não tem. Falha no código antigo
+    (lá só o colorido transparente, igual dentro e fora)."""
+    from PySide6.QtGui import QImage
+
+    from core.selecao import AUTOMATICO, GRAVURA, MAO, RETANGULO, Regiao, Selecao
+    from ui.widgets.editor_selecao import EditorSelecao
+
+    editor = EditorSelecao()
+    editor.resize(400, 560)
+    editor.definir_imagem(np.full((560, 400, 3), 230, np.uint8))
+    selecao = Selecao()
+    selecao.acrescentar(Regiao(tipo=GRAVURA, forma=RETANGULO, pontos=[(0.02, 0.02), (0.98, 0.98)],
+                               origem=AUTOMATICO))
+    selecao.acrescentar(Regiao(tipo=GRAVURA, forma=RETANGULO, pontos=[(0.3, 0.3), (0.7, 0.6)],
+                               origem=MAO))
+    editor.definir_selecao(selecao)
+    imagem = editor.grab().toImage().convertToFormat(QImage.Format_RGB888)
+    largura, altura = imagem.width(), imagem.height()
+    dados = np.frombuffer(imagem.constBits(), np.uint8).reshape(altura, imagem.bytesPerLine())
+    rgb = dados[:, :largura * 3].reshape(altura, largura, 3)
+    area = editor._area
+    x = area.left() + int(0.3 * area.width())
+    meio_y = area.top() + int(0.45 * area.height())
+    borda = rgb[meio_y, max(0, x - 2): x + 3]
+    assert any(abs(int(p[0]) - 255) < 40 and int(p[1]) < 110 and int(p[2]) < 60 for p in borda), borda
+    dentro = rgb[meio_y, x + 20]
+    assert not (int(dentro[1]) < 110 and int(dentro[2]) < 60)          # dentro: só o colorido

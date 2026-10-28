@@ -546,7 +546,35 @@ class EditorSelecao(QWidget):
             imagem = QImage(capa.data, largura, altura, 4 * largura,
                             QImage.Format_RGBA8888).copy()
             pintor.drawImage(self._area.topLeft(), imagem)
+        self._pintar_as_feitas_a_mao(pintor)
         self._pintar_achadas_e_escolhida(pintor)
+
+    def _pintar_as_feitas_a_mao(self, pintor: QPainter) -> None:
+        """Etapa 9b-2 da obra (lista única 23/10, 1.9: "Numa página que o
+        programa já marcou quase inteira como gravura (em salmão), o retângulo
+        que eu marco some dentro do salmão; só o número 'Marcado: 5 de
+        gravura' mostra que houve algo"): cada área feita À MÃO ganha o
+        contorno cheio na cor do tipo dela, por cima do colorido, para se ver
+        mesmo dentro de uma área do mesmo tipo achada pela máquina. As áreas
+        da máquina continuam como sempre (o contorno laranja delas é o
+        "mostrar as áreas achadas"). Seguro mudar: a grossura."""
+        largura, altura = self._area.width(), self._area.height()
+        if largura <= 0 or altura <= 0:
+            return
+        pintor.setBrush(Qt.NoBrush)
+        for regiao in self.selecao.regioes:
+            if regiao.origem != MAO or regiao.operacao != SOMAR or not regiao.valida():
+                continue
+            cor = CORES_BORDA.get(regiao.tipo)
+            if cor is None:
+                continue
+            pintor.setPen(QPen(cor, 2))
+            for contorno in editar_zonas.contornos(Selecao([regiao]), altura, largura,
+                                                   so_da_maquina=False):
+                pontos = [QPoint(self._area.left() + int(x), self._area.top() + int(y))
+                          for x, y in contorno.reshape(-1, 2)]
+                if len(pontos) >= 2:
+                    pintor.drawPolygon(pontos)
 
     def _pintar_achadas_e_escolhida(self, pintor: QPainter) -> None:
         """Item 2.18: o contorno laranja das areas achadas pela maquina (com

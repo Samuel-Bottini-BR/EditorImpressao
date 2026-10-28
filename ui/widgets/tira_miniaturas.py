@@ -245,6 +245,11 @@ class TiraMiniaturas(QWidget):
         # que cada uma esta sendo mostrada (definir_giros)
         self._cruas: dict[int, np.ndarray] = {}
         self._giros: dict[int, int] = {}
+        # Etapa 9b-2 da obra (D-547: "Mover uma página → a miniatura [...]
+        # mostra igual ao PDF"): a página movida ou posta numa folha escolhida
+        # aparece como sai no PDF (a prévia composta, que a tela dá em
+        # definir_como_sai), no lugar da folha crua. indice -> (chave, imagem)
+        self._como_sai: dict[int, tuple[str, np.ndarray]] = {}
 
         fora = QVBoxLayout(self)
         fora.setContentsMargins(0, 0, 0, 0)
@@ -371,6 +376,7 @@ class TiraMiniaturas(QWidget):
         self._miniaturas.clear()
         self._mapa_folha.clear()
         self._cruas.clear()
+        self._como_sai.clear()
 
     def _receber(self, indice_folha: int, img: np.ndarray) -> None:
         """Uma folha chegou pronta: guarda como veio e distribui (girada e
@@ -392,8 +398,31 @@ class TiraMiniaturas(QWidget):
         if giro:
             img = girar_90(img, giro)
         for indice in self._mapa_folha.get(indice_folha, []):
-            if 0 <= indice < len(self._miniaturas):
+            if 0 <= indice < len(self._miniaturas) and indice not in self._como_sai:
                 self._miniaturas[indice].definir_imagem(self._metade(indice, img))
+
+    def definir_como_sai(self, indice: int, chave: str = "", img: np.ndarray | None = None) -> bool:
+        """Etapa 9b-2 (D-547): a miniatura `indice` passa a mostrar `img` (a
+        página como sai no PDF, já movida); `img` None volta à folha crua.
+        `chave` diz de que estado é a imagem: a mesma chave não redesenha.
+        Devolve True se a miniatura mudou."""
+        if not 0 <= indice < len(self._miniaturas):
+            return False
+        if img is None:
+            if self._como_sai.pop(indice, None) is None:
+                return False
+            folha = next((f for f, itens in self._mapa_folha.items() if indice in itens), None)
+            if folha is not None:
+                self._mostrar_folha(folha)
+            return True
+        if self._como_sai.get(indice, ("",))[0] == chave and chave:
+            return False
+        from core.pdf_io import limitar_altura
+
+        pequena = limitar_altura(img, ALTURA_GUARDADA * 2)
+        self._como_sai[indice] = (chave, pequena)
+        self._miniaturas[indice].definir_imagem(pequena)
+        return True
 
     def definir_giros(self, giros: dict[int, int]) -> int:
         """O giro de cada folha (indice da folha -> 0/90/180/270). Redesenha

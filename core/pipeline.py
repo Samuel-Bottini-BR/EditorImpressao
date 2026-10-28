@@ -2935,7 +2935,8 @@ def precisa_do_desenho_do_pdf(projeto: Projeto, pagina: ConfigPagina) -> bool:
     return provisoria or precisa_medir_para_revisar(projeto, pagina)
 
 
-def acertar_no_tamanho_do_pdf(doc, projeto: Projeto, pagina: ConfigPagina) -> bool:
+def acertar_no_tamanho_do_pdf(doc, projeto: Projeto, pagina: ConfigPagina,
+                              com_a_imagem: bool = False):
     """O que a tela pede POR TRAS para a pagina da vez (ui/tarefas, numa
     QThread; decisao da gerente, 13/10/2026): troca a marcacao provisoria (a
     da previa) pela achada na pagina do tamanho do PDF e, se a regra do "Para
@@ -2953,10 +2954,19 @@ def acertar_no_tamanho_do_pdf(doc, projeto: Projeto, pagina: ConfigPagina) -> bo
     procurar a marcacao (sem passar o filtro, que seria tempo jogado fora).
     Nunca levanta excecao para fora de quem chama por causa da marcacao: se a
     procura falhar, a pagina continua com a provisoria (e a regra nao mede).
-    Arriscado: chamar isto no fio da tela (leva segundos)."""
+    Arriscado: chamar isto no fio da tela (leva segundos).
+
+    com_a_imagem (etapa 9b-2 da obra, D-473 + D-064: "Tela e PDF saem da mesma
+    conta. Quando a página fica pronta, a tela mostra a mesma imagem que vai
+    para o PDF (só reduzida)"): devolve (mudou, imagem), com a imagem do
+    tamanho do PDF da pagina em que a regra vale (a que foi desenhada
+    inteira, com o filtro: e a MESMA de _pagina_pronta antes das margens e da
+    folha), ou None nas outras (nada foi desenhado com o filtro). Sem ele,
+    so o bool, como sempre."""
     lida = pagina.selecao
+    grande = None
     if precisa_medir_para_revisar(projeto, pagina):
-        renderizar_pagina(doc, projeto, pagina, dpi=projeto.qualidade_dpi)
+        grande, _mono = renderizar_pagina(doc, projeto, pagina, dpi=projeto.qualidade_dpi)
     elif getattr(pagina, "marcacao_provisoria", False):
         folha = projeto.folhas[pagina.folha]
         grande = pagina_para_array(doc, folha.indice, dpi=projeto.qualidade_dpi)
@@ -2968,6 +2978,8 @@ def acertar_no_tamanho_do_pdf(doc, projeto: Projeto, pagina: ConfigPagina) -> bo
                                                     dpi=projeto.qualidade_dpi)
         _acompanhar_as_zonas(pagina, desenho)
         garantir_selecao(projeto, pagina, img, dpi_desenho, dpi_scan, no_tamanho_do_pdf=True)
+    if com_a_imagem:
+        return pagina.selecao is not lida, grande
     return pagina.selecao is not lida
 
 

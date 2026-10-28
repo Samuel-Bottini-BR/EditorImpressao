@@ -127,6 +127,8 @@ programa" (eram "voltar ao automático"). As listas "aplicar em" dizem folha
 
 from __future__ import annotations
 
+import copy
+
 import functools
 import dataclasses
 import traceback
@@ -953,6 +955,26 @@ class TelaConferir(QWidget):
         self.sinal_desentortando.setVisible(False)
         linha.addSpacing(8)
         linha.addWidget(self.sinal_desentortando)
+        # Etapa 9b-2 da obra (D-064, 22/10/2026: "é só colocar uma bolinha de
+        # carregamento, pode ter uma pro livro inteiro e outra para a pagina
+        # que estamos, quando passsamos o mouse em cima mostra a mensagem de
+        # porcentagem e quantas paginas carregaram já."; D-473): a bolinha da
+        # página gira enquanto a página da vez não chegou, ou enquanto a
+        # imagem do tamanho do PDF dela é feita por trás (quando chega, a tela
+        # troca pela do PDF); a do livro gira enquanto o livro inteiro é
+        # medido por trás (D-284) ou as marcações são preparadas (Z1 (b)).
+        # Paradas, não aparecem. _acertar_as_bolinhas, num relógio.
+        from ui.widgets.bolinha import BolinhaDeCarregamento
+
+        self.bolinha_da_pagina = BolinhaDeCarregamento()
+        self.bolinha_do_livro = BolinhaDeCarregamento()
+        linha.addWidget(self.bolinha_da_pagina)
+        linha.addWidget(self.bolinha_do_livro)
+        self._andamento_das_marcacoes_n = (0, 0)
+        self._relogio_das_bolinhas = QTimer(self)
+        self._relogio_das_bolinhas.setInterval(400)
+        self._relogio_das_bolinhas.timeout.connect(self._acertar_as_bolinhas)
+        self._relogio_das_bolinhas.start()
         linha.addSpacing(8)
         self.botao_desfazer_embaixo = botao_pequeno(
             "", "Desfazer (Ctrl+Z)", self.desfazer)
@@ -1071,6 +1093,50 @@ class TelaConferir(QWidget):
         self.paineis.historico.definir_icones(
             _icone_da_barra("desfazer"), _icone_da_barra("refazer"))
         return ""
+
+    def _acertar_as_bolinhas(self) -> None:
+        """As duas bolinhas de carregamento da barra de baixo (D-064; ver
+        _montar_barra_de_baixo). A da página: a prévia da vez ainda não chegou,
+        ou a imagem do tamanho do PDF dela está sendo feita por trás. A do
+        livro: o livro inteiro sendo medido por trás (a tarefa da janela,
+        `medida_ao_abrir`) ou as marcações sendo preparadas. O balão diz a
+        porcentagem e quantas páginas já foram. Nunca levanta."""
+        try:
+            if not hasattr(self, "bolinha_da_pagina"):
+                return
+            if not self._pronta() or self.projeto is None or self.previas is None:
+                self.bolinha_da_pagina.definir(False)
+                self.bolinha_do_livro.definir(False)
+                return
+            if self.trabalha_com_folhas:
+                self.bolinha_da_pagina.definir(False)
+            else:
+                indice = self.indice_pagina
+                sem_previa = self.previas.ja_pronta(indice, self._dpi_atual) is None
+                do_pdf = self.previas.medida_pendente(indice)
+                if sem_previa:
+                    dica = "Esta página: carregando."
+                elif do_pdf:
+                    dica = ("Esta página: preparando a imagem igual ao PDF. Quando ficar "
+                            "pronta, a tela troca sozinha.")
+                else:
+                    dica = ""
+                self.bolinha_da_pagina.definir(sem_previa or do_pdf, dica)
+            feitas, total = 0, 0
+            tarefa = getattr(self.window(), "medida_ao_abrir", None)
+            if tarefa is not None and tarefa.isRunning():
+                feitas, total = getattr(tarefa, "andamento", (0, 0))
+            marcadas, de_marcar = self._andamento_das_marcacoes_n
+            if de_marcar and marcadas < de_marcar and not total:
+                feitas, total = marcadas, de_marcar
+            carregando = bool(total) and feitas < total
+            dica = ""
+            if carregando:
+                dica = (f"Livro: {round(100 * feitas / total)}% ({feitas} de {total} "
+                        f"folha{'' if total == 1 else 's'} já carregada{'' if feitas == 1 else 's'}).")
+            self.bolinha_do_livro.definir(carregando, dica)
+        except Exception:  # noqa: BLE001 - a bolinha é ajuda; nunca derruba a tela
+            registrar_erro("bolinhas de carregamento", traceback.format_exc())
 
     def _mostrar_o_historico(self) -> None:
         """Botao do Historico na barra de baixo: abre o painel Historico, ou
@@ -1810,6 +1876,8 @@ class TelaConferir(QWidget):
         self._qualidade_da_previa = nome_qualidade
         self._dpi_normal = QUALIDADES_DA_PREVIA[nome_qualidade]
         self._dpi_atual = self._dpi_normal
+        if self.previas is not None:
+            self.previas.dpi_da_tela = self._dpi_normal      # etapa 9b-2 (D-473)
         configuracoes.escrever("qualidade_previa", nome_qualidade)
         self.atualizar()
 
@@ -2629,11 +2697,33 @@ class TelaConferir(QWidget):
             return None
         return self.projeto.paginas[self.indice_pagina]
 
+    # Os campos da página que a marcação muda (o desfazer os guarda e devolve
+    # juntos: etapa 9b-2, _selecao_mudou)
+    CAMPOS_DA_MARCACAO = ("selecao", "marcacao_provisoria", "mexida_a_mao", "geometria_das_zonas")
+
     def _selecao_mudou(self) -> None:
-        """Grava a marcacao na pagina e joga fora a previa, que ficou velha."""
+        """Grava a marcacao na pagina e joga fora a previa, que ficou velha.
+
+        Etapa 9b-2 da obra (D-020, 18/07: "Ctrl+Z desfaz qualquer alteração,
+        sem limite de quantidade"; lista única 23/10, 1.3: "Marco um
+        retângulo com a ferramenta Retângulo, clico no desfazer de baixo, e a
+        marcação continua lá" - em 11 livros -, 4.6: a marca que o desfazer
+        não tirou sai impressa, e 1.7: o desfazer desfazia a ação de ANTES
+        (o giro das 135 folhas); promessa P-129): cada mudança da marcação
+        (uma área nova, "Limpar tudo", "Deixar a folha em branco", procurar de
+        novo, mexer numa área) vira UMA ação do Histórico, com a marcação de
+        antes e a de depois. O Ctrl+Z, o menu Editar e o desfazer da barra de
+        baixo a tiram (e o PDF sai sem ela). Antes ela só ia para a página,
+        fora do Histórico (o editor tinha um desfazer próprio, que só valia
+        enquanto a página estava aberta).
+        Arriscado: registrar a ação ANTES de gravar na página (a de depois
+        sairia igual à de antes) ou guardar a lista da página sem copiar (o
+        desfazer devolveria a lista já mudada)."""
         pagina = self._pagina_marcada()
         if pagina is None:
             return
+        antes = {campo: copy.deepcopy(getattr(pagina, campo, None))
+                 for campo in self.CAMPOS_DA_MARCACAO}
         # 13/10/2026: o que a máquina marcou na cópia do editor é o que ele
         # carregou (_atualizar_marcacao). Se era a marcação provisória (a da
         # prévia) e, por trás, a página já tinha ganhado a do tamanho do PDF,
@@ -2645,6 +2735,7 @@ class TelaConferir(QWidget):
         # etapa 3 da obra: a marcacao feita aqui e "mexida a mao" (core/etapas)
         if any(r.origem == "mao" for r in self.editor_selecao.selecao.regioes):
             etapas_core.marcar_mexida_a_mao(pagina, etapas_core.MARCAR)
+        self._registrar_a_marcacao(pagina, antes)
         self._mostrar_aviso_da_marcacao(
             self.editor_selecao.selecao.resumo_em_portugues())
         self._avaliar_os_pedacos(pagina)        # conferencia 13, S3
@@ -2654,7 +2745,37 @@ class TelaConferir(QWidget):
         # contador. Mas mexe no TRABALHO, e por isso avisa daqui.
         self.trabalho_mudou.emit()
 
+    def _registrar_a_marcacao(self, pagina, antes: dict) -> None:
+        """A ação do Histórico da marcação (ver _selecao_mudou): só quando algo
+        mudou. Valores como o projeto.json grava (o desfazer os põe de volta
+        com historico_acoes.aplicar)."""
+        from core.dividir_a_mao import _json
+        from modelos import Acao
+
+        if self.acoes is None:
+            return
+        depois = {campo: copy.deepcopy(getattr(pagina, campo, None))
+                  for campo in self.CAMPOS_DA_MARCACAO}
+        if _json(antes) == _json(depois):
+            return
+        indice = str(pagina.indice)
+        mudaram = [c for c in self.CAMPOS_DA_MARCACAO if _json(antes[c]) != _json(depois[c])]
+        acao = Acao.nova("marcar", "pagina", [pagina.indice],
+                         {c: {indice: _json(antes[c])} for c in mudaram},
+                         {c: {indice: _json(depois[c])} for c in mudaram},
+                         f"Marcação da página {pagina.indice + 1}")
+        self.acoes.registrar(acao)
+        self._atualizar_barra_de_baixo()
+
     def _desfazer_marcacao(self) -> None:
+        """O "desfazer" da marcação: com a última ação do Histórico sendo a
+        marcação desta página, é o desfazer de todo lugar (etapa 9b-2, 1.3);
+        senão, tira a última área do editor (e isso também vira ação)."""
+        ultima = self.acoes.feitas[-1] if self.acoes is not None and self.acoes.feitas else None
+        if (ultima is not None and ultima.tipo == "marcar"
+                and ultima.indices == [self.indice_pagina]):
+            self.desfazer()
+            return
         self.editor_selecao.desfazer()
         self._selecao_mudou()
 
@@ -3126,6 +3247,9 @@ class TelaConferir(QWidget):
             self.projeto = projeto
             self.acoes = acoes
             self.previas = previas
+            # etapa 9b-2 (D-473/D-064): a imagem do tamanho do PDF volta
+            # reduzida a esta resolucao e toma o lugar da previa
+            self.previas.dpi_da_tela = self._dpi_normal
             self.previas.pronta.connect(self._previa_chegou)
             self.previas.cartoes_prontos.connect(self._cartoes_prontos)
             # item 2.12 (resposta P6): a medida do desentortar por tras
@@ -3937,7 +4061,7 @@ class TelaConferir(QWidget):
 
         for chave, cartao in self.cartoes.items():
             if chave == pagina.filtro:
-                cartao.definir_amostra(limitar_altura(self._com_as_margens(img), 260))
+                cartao.definir_amostra(limitar_altura(self._como_sai_no_pdf(img), 260))
 
         outros = [chave for chave in self.cartoes if chave != pagina.filtro]
         if TIRAR_FUNDO in outros:
@@ -3962,7 +4086,7 @@ class TelaConferir(QWidget):
                 and all(c in self._cartoes_cache for c in a_pintar)):
             for chave in a_pintar:
                 self.cartoes[chave].definir_amostra(
-                    self._com_as_margens(self._cartoes_cache.get(chave)))
+                    self._como_sai_no_pdf(self._cartoes_cache.get(chave)))
             return
 
         for chave in a_pintar:
@@ -3974,12 +4098,13 @@ class TelaConferir(QWidget):
             chave=chave_cache, dpi=DPI_AMOSTRA_DOS_CARTOES,
         )
 
-    def _com_as_margens(self, img):
+    def _com_as_margens(self, img, indice: int | None = None):
         """Item 2.4 (Samuel, 22/10/2026: "Sim, a tela mostra igual ao que
         sai"): com as margens iguais ligadas, a pagina dos cartoes aparece com
         elas, como no PDF. Enquanto as paginas nao foram medidas, pede a
         medida por tras (TarefaMedirAsMargens) e mostra sem margem; quando
-        termina, os cartoes sao pintados de novo. Desligadas: `img` mesmo."""
+        termina, os cartoes sao pintados de novo. Desligadas: `img` mesmo.
+        indice: a pagina (None = a da vez; etapa 9b-2, o lado a lado)."""
         from core.pipeline import conta_das_margens_para_a_tela, margens_na_tela
 
         if img is None or self.projeto is None or not getattr(self.projeto, "margens_iguais", False):
@@ -3988,7 +4113,71 @@ class TelaConferir(QWidget):
         if conta is None:
             self._medir_as_margens()
             return img
-        return margens_na_tela(img, self.projeto, self.projeto.paginas[self.indice_pagina], conta)
+        indice = self.indice_pagina if indice is None else indice
+        return margens_na_tela(img, self.projeto, self.projeto.paginas[indice], conta)
+
+    def _como_sai_no_pdf(self, img, indice: int | None = None, dpi: float | None = None):
+        """Etapa 9b-2 da obra (D-547, apoiada em D-473/D-066: "precisamos que
+        o pdf saia que nem está na tela"; o Livro: "Mover uma página → a
+        miniatura, a tela cheia e o lado a lado mostram igual ao PDF"): a
+        página `img` (a prévia, ou uma amostra dela) como ela sai no PDF -
+        com as margens iguais, se ligadas, e MOVIDA/REDIMENSIONADA na área
+        branca (a folha escolhida ou, sem folha, a própria página), pela
+        MESMA conta do PDF (core.folha.compor_na_folha, depois do filtro e das
+        margens, como core.pipeline._pagina_pronta). Página que ninguém moveu
+        nem pôs numa folha: a mesma imagem (as margens à parte).
+        dpi: a resolução de `img`; None = a da prévia, contada pela altura da
+        prévia guardada desta página (as amostras dos cartões são menores).
+        Onde vale: os cartões do painel Filtro, o lado a lado, o "antes /
+        depois", a tela cheia dos filtros e as miniaturas da página movida.
+        Não vale nas ferramentas em que se marca, corta, divide ou endireita
+        SOBRE a página (Marcar, Cortar, Dividir, Endireitar): lá a marcação e o
+        corte são frações da página (D-546). A ferramenta Mover compõe sozinha.
+        Nunca levanta (a tela mostra a página como veio)."""
+        from core.folha import compor_na_folha
+
+        if img is None or self.projeto is None:
+            return img
+        try:
+            indice = self.indice_pagina if indice is None else indice
+            if not 0 <= indice < len(self.projeto.paginas):
+                return img
+            pagina = self.projeto.paginas[indice]
+            if dpi is None:
+                dpi = float(self._dpi_atual or DPI_PREVIA)
+                previa = (self.previas.ja_pronta(indice, self._dpi_atual)
+                          if self.previas is not None else None)
+                if previa is not None and previa.shape[0] > 0 and previa.shape[0] != img.shape[0]:
+                    dpi *= img.shape[0] / previa.shape[0]
+            com_margens = self._com_as_margens(img, indice)
+            return compor_na_folha(
+                com_margens, pagina.tamanho_folha_cm, dpi,
+                escala=pagina.conteudo_escala, deslocamento=pagina.conteudo_deslocamento,
+                mexido_a_mao=etapas_core.conteudo_mexido(self.projeto, pagina))
+        except Exception:  # noqa: BLE001 - a tela mostra a página como veio
+            registrar_erro("como sai no PDF (tela)", traceback.format_exc())
+            return img
+
+    def _sai_diferente_da_previa(self, indice: int) -> bool:
+        """A página `indice` sai no PDF diferente da prévia (movida, numa
+        folha escolhida ou com as margens iguais)? Barato: só lê campos."""
+        if self.projeto is None or not 0 <= indice < len(self.projeto.paginas):
+            return False
+        pagina = self.projeto.paginas[indice]
+        return bool(getattr(self.projeto, "margens_iguais", False)
+                    or pagina.tamanho_folha_cm is not None
+                    or etapas_core.conteudo_mexido(self.projeto, pagina))
+
+    def _assinatura_do_como_sai(self, indice: int) -> str:
+        """O que muda a página composta (D-547) além da prévia: o lugar e o
+        tamanho do conteúdo, a folha e as margens. Vai junto na chave de quem
+        guarda a página composta (o lado a lado)."""
+        if self.projeto is None or not 0 <= indice < len(self.projeto.paginas):
+            return ""
+        pagina = self.projeto.paginas[indice]
+        return (f":{pagina.conteudo_escala}:{tuple(pagina.conteudo_deslocamento)}:"
+                f"{pagina.tamanho_folha_cm}:{bool(getattr(self.projeto, 'margens_iguais', False))}"
+                f":{etapas_core.conteudo_mexido(self.projeto, pagina)}")
 
     def _medir_as_margens(self) -> None:
         from ui.tarefas import TarefaMedirAsMargens
@@ -4099,7 +4288,7 @@ class TelaConferir(QWidget):
         a_pintar = self._cartoes_a_pintar(list(resultados), pagina)
         for chave, amostra in resultados.items():
             if chave in self.cartoes and chave in a_pintar:
-                self.cartoes[chave].definir_amostra(self._com_as_margens(amostra))
+                self.cartoes[chave].definir_amostra(self._como_sai_no_pdf(amostra))
 
         self._conferir_qualidade_do_preto_e_branco(pagina, resultados)
 
@@ -4237,6 +4426,7 @@ class TelaConferir(QWidget):
         total 0, ou feitas >= total, tira o andamento. Seguro mudar: a frase.
         """
         texto = ""
+        self._andamento_das_marcacoes_n = (int(feitas), int(total))   # etapa 9b-2 (D-064)
         if total > 0 and feitas < total:
             texto = f"Preparando as marcações do livro… {feitas} de {total}"
         if texto == self._andamento_das_marcacoes:
@@ -4393,7 +4583,33 @@ class TelaConferir(QWidget):
                              apagada=getattr(item, "apagada", False),
                              conferida=bool(item.revisada))
         self.tira.definir_giros(self._giros_das_folhas())      # D2: so as que mudaram
+        self._acertar_as_miniaturas_movidas()
         self.tira.selecionar(self.indice_atual)
+
+    def _acertar_as_miniaturas_movidas(self) -> None:
+        """Etapa 9b-2 (D-547: "Mover uma página → a miniatura [...] mostra
+        igual ao PDF"): a miniatura da página movida/redimensionada ou posta
+        numa folha escolhida mostra a página como sai no PDF (a prévia já
+        guardada, composta na área branca: _como_sai_no_pdf); a que voltou ao
+        lugar volta à folha crua. Página movida cuja prévia ainda não foi
+        desenhada fica com a folha crua até a prévia chegar (_previa_chegou).
+        No Dividir a tira mostra folhas: nada muda. Barato: só lê campos, e
+        só compõe o que mudou (a chave)."""
+        if self.projeto is None or self.previas is None or self.trabalha_com_folhas:
+            return
+        for indice, pagina in enumerate(self.projeto.paginas):
+            movida = (pagina.tamanho_folha_cm is not None
+                      or etapas_core.conteudo_mexido(self.projeto, pagina))
+            if not movida:
+                self.tira.definir_como_sai(indice, "", None)
+                continue
+            previa = self.previas.ja_pronta(indice, self._dpi_atual)
+            if previa is None:
+                continue
+            chave = self.previas.chave(indice, self._dpi_atual) + self._assinatura_do_como_sai(indice)
+            if self.tira._como_sai.get(indice, ("",))[0] == chave:
+                continue
+            self.tira.definir_como_sai(indice, chave, self._como_sai_no_pdf(previa, indice))
 
     def _atualizar_contador(self) -> None:
         assert self.projeto is not None
@@ -4445,6 +4661,8 @@ class TelaConferir(QWidget):
             self.previas.chave_folha(self.indice_folha, DPI_PREVIA),
             self.previas.chave_para_recorte(self.indice_pagina, self._dpi_atual),
         )
+        if chave == esperadas[0]:
+            self._acertar_as_miniaturas_movidas()      # etapa 9b-2 (D-547)
         if chave in esperadas or chave.startswith("folha:"):
             self._atualizar_previa()
         elif (not self.trabalha_com_folhas
@@ -4542,6 +4760,7 @@ class TelaConferir(QWidget):
         if self._espera_pelas_marcacoes(alvo, indices, campos):
             return
         campos = self._com_a_marca_mexida_a_mao(alvo, indices, campos)
+        campos = self._com_os_avisos_de_agora(alvo, indices, campos)
         acao = montar_acao(self.projeto, tipo, alvo, indices, campos, descricao)
         aplicar(self.projeto, acao, acao.depois)
         self.acoes.registrar(acao)
@@ -4566,6 +4785,31 @@ class TelaConferir(QWidget):
             for indice in afetadas:
                 self.previas.invalidar(indice)
         self.atualizar()
+
+    def _com_os_avisos_de_agora(self, alvo: str, indices: list[int], campos: dict) -> dict:
+        """Etapa 9b-2 da obra (lista única 23/10, 1.6: "Mexo numa página que
+        tinha aviso e desfaço: a página volta, mas o aviso some e a dúvida sai
+        da lista sem eu ter resolvido nada [...] desfazer o 'usar Mágico pro
+        nesta' trouxe um aviso a mais que não existia"; D-020): a ação guarda
+        os avisos de AGORA de cada página (os que valem antes de a página ser
+        desenhada de novo e medida), e o desfazer os devolve como eram. Só nas
+        ações de página que não mexem nos avisos por conta própria (o "está
+        bom assim" e os botões dos avisos já os levam). A folha: os avisos
+        dela, do mesmo jeito."""
+        if self.projeto is None:
+            return campos
+        itens = self.projeto.folhas if alvo == "folha" else self.projeto.paginas
+        novos = dict(campos)
+        for campo in ("alertas", "alertas_aceitos"):
+            if campo in campos:
+                continue
+            valores = {}
+            for indice in indices:
+                if 0 <= indice < len(itens) and hasattr(itens[indice], campo):
+                    valores[str(indice)] = copy.deepcopy(list(getattr(itens[indice], campo) or []))
+            if valores:
+                novos[campo] = valores
+        return novos
 
     def _com_a_marca_mexida_a_mao(self, alvo: str, indices: list[int], campos: dict) -> dict:
         """Os campos da acao com a marca "mexida a mao" (core/etapas) de cada
@@ -6379,10 +6623,12 @@ class TelaConferir(QWidget):
         pedir nada."""
         if self.previas is None or self.projeto is None:
             return None, ""
-        chave = self.previas.chave(indice, self._dpi_atual)
+        # etapa 9b-2 (D-547): a página como sai no PDF (movida, na folha, com
+        # as margens iguais); a chave leva o lugar e o tamanho do conteúdo
+        chave = self.previas.chave(indice, self._dpi_atual) + self._assinatura_do_como_sai(indice)
         if so_olhar:
             return None, chave
-        return self.previas.pegar(indice, self._dpi_atual), chave
+        return self._como_sai_no_pdf(self.previas.pegar(indice, self._dpi_atual), indice), chave
 
     @protegido
     def _pagina_do_lado_a_lado(self, indice: int) -> None:
@@ -6404,13 +6650,15 @@ class TelaConferir(QWidget):
         pagina = self.projeto.paginas[indice]
         filtro = etapas_core.filtro_que_vale(self.projeto, pagina)
         nome = NOMES_AMIGAVEIS.get(filtro, filtro)
-        depois = self.previas.pegar(indice, self._dpi_atual)
+        # etapa 9b-2 (D-547): as duas como saem no PDF (movidas, na folha)
+        depois = self._como_sai_no_pdf(self.previas.pegar(indice, self._dpi_atual), indice)
         rotulos = ("antes: Original", f"depois: {nome}")
         if filtro == ORIGINAL:
             self.vista_antes_depois.definir(
                 None, depois, False, rotulos, "Escolha outro filtro para comparar com o Original.")
             return
-        antes = self.previas.pegar_com_filtro(indice, self._dpi_atual, ORIGINAL)
+        antes = self._como_sai_no_pdf(
+            self.previas.pegar_com_filtro(indice, self._dpi_atual, ORIGINAL), indice)
         self.vista_antes_depois.definir(antes, depois, True, rotulos)
 
     def _roda_na_pagina(self, vista, evento) -> bool:
