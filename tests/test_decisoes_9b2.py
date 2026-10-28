@@ -912,3 +912,54 @@ def test_bug_12_10_letra_e_traco_a_mao_protege_a_tinta_do_so_as_letras(modo):
                                  altura_linha=14.0)
     assert float((com[640:650, 100:500] == 0).mean()) > 0.3            # protegida
     assert np.array_equal(com[:600], sem[:600])                        # o resto não muda
+
+
+# --- Lista de bugs 22/10: botões que aparecem por um instante como janelinhas soltas -------
+
+class _VigiaDeJanelas:
+    """Anota todo botão que aparece como JANELA solta (sem pai) - a "janelinha" que pisca."""
+
+    def __init__(self):
+        from PySide6.QtCore import QObject
+
+        vigia = self
+
+        class _Filtro(QObject):
+            def eventFilter(self, obj, evento):  # noqa: N802 - nome do Qt
+                from PySide6.QtCore import QEvent
+                from PySide6.QtWidgets import QAbstractButton
+
+                if (evento.type() == QEvent.Show and isinstance(obj, QAbstractButton)
+                        and obj.isWindow()):
+                    vigia.soltas.append(obj.text() or obj.toolTip())
+                return False
+
+        self.soltas: list[str] = []
+        self.filtro = _Filtro()
+
+
+@pytest.mark.parametrize("qual", ["escolhas_do_misto", "miniaturas"])
+def test_bug_22_10_nenhum_botao_pisca_como_janela_solta(app, qual):
+    """Lista de bugs de 22/10/2026: "Quatro botões aparecem por um instante como janelinhas
+    soltas ao abrir o programa ('Guardar a tinta forte', 'Guardar tudo', 'Guardar só o texto' e
+    'ver todas') [...] o verificador da tinta viu o mesmo ao escolher um tipo no 'Marcar como'"
+    (ui/widgets/escolhas_do_misto.py e ui/widgets/miniaturas.py). Montar as duas peças não
+    mostra nenhum botão como janela solta. REVERSÃO: no código antigo os três botões do "Só as
+    letras" e o "ver todas" eram mostrados antes de ter pai."""
+    vigia = _VigiaDeJanelas()
+    app.installEventFilter(vigia.filtro)
+    try:
+        if qual == "escolhas_do_misto":
+            from ui.widgets.escolhas_do_misto import EscolhasDoMisto
+
+            peca = EscolhasDoMisto()
+            EscolhasDoMisto(compacto=True)
+        else:
+            from ui.widgets.miniaturas import PainelDeMiniaturas
+
+            peca = PainelDeMiniaturas()
+        _assentar()
+    finally:
+        app.removeEventFilter(vigia.filtro)
+    assert vigia.soltas == [], vigia.soltas
+    assert peca is not None
