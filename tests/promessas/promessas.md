@@ -889,6 +889,15 @@ programa), a partir do **nome do botão**, da **dica** (o balão do mouse) e das
 - **na tela:** volta ao trabalho com o Automático em "nas páginas escolhidas", com estas páginas.
 - **no projeto:** nada muda até "Rodar".
 
+### P-196 · "dividir" (as escolhidas)
+- **chaves:** `área de trabalho/todas as páginas/dividir`
+- **decisões:** D-558 (27/10, `ac-grade-inserir`: "quando falei dividir é dividir a pagina, usando a funcionalidade
+  do scantailor que colocamos no aplicativo, é isso que deveria ser feito."), D-334
+- **na tela:** a caixa "Dividindo as folhas escolhidas... N de M" com "parar"; depois, a grade com as páginas novas.
+- **no projeto:** as folhas das escolhidas que saem como uma página só viram duas, na lombada (a conta do "dividir
+  esta"), numa ação só do Histórico; as outras não mudam.
+- **no PDF:** a folha escolhida sai como duas páginas.
+
 ## Janela grande do Automático (etapa 3 da obra)
 
 ### P-183 · janela grande: "Rodar N etapas"

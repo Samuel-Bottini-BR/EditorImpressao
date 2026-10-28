@@ -2839,6 +2839,24 @@ def test_p178_girar_as_escolhidas(janela, tela, monkeypatch, pasta):
     assert not paginas[0].deitada and not paginas[3].deitada
 
 
+@prova("P-196")
+def test_p196_dividir_as_escolhidas(janela, pasta, monkeypatch):
+    """D-558: "dividir" na grade divide as folhas das escolhidas (a conta do "dividir esta"),
+    por trás, numa ação só; as outras ficam inteiras."""
+    livro = aj.criar_livro_duplo(pasta, folhas=3)
+    tela = aj.abrir_livro_para_teste(janela, livro, marcadas=())
+    assert len(janela.projeto.paginas) == 3
+    _grade_escolhendo(tela, 1)
+    feitas = len(janela.acoes.feitas)
+    apertar(janela, "área de trabalho/todas as páginas/dividir")
+    aj.esperar(lambda: len(janela.projeto.paginas) == 4, 60, motivo="dividir as escolhidas")
+    assert [f.dividir for f in janela.projeto.folhas] == [False, True, False]
+    assert len(janela.acoes.feitas) == feitas + 1
+    _voltar_ao_trabalho(janela)
+    paginas = _gerar(janela, monkeypatch, pasta)
+    assert len(paginas) == 4, "a folha escolhida não saiu como duas páginas"
+
+
 @prova("P-179")
 def test_p179_deixar_em_branco_as_escolhidas(janela, tela):
     _grade_escolhendo(tela, 0, 3)
