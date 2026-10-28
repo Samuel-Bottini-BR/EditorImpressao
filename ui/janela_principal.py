@@ -182,6 +182,11 @@ class JanelaPrincipal(QMainWindow):
         self.tela_conferir.voltar.connect(lambda: self._sair_da_conferencia())
         self.tela_conferir.processar.connect(self.processar)
         self.tela_conferir.trabalho_mudou.connect(self._marcar_para_salvar)
+        # etapa 9b-1 (D-309, Lista de bugs 332): o cartao deixa de dizer
+        # "pronto, PDF gerado" quando o trabalho muda depois do PDF
+        self._trabalho_do_pdf = None
+        self._marcacao_ligada_ao_cartao = None
+        self.tela_conferir.trabalho_mudou.connect(self._ver_se_o_pdf_ficou_velho)
         self.telas.addWidget(self.tela_conferir)
         self._ligar_o_automatico()
 
@@ -224,7 +229,13 @@ class JanelaPrincipal(QMainWindow):
         self.menu.ligar("abrir", self.tela_inicio.area.abrir_dialogo_de_arquivo)
         self.menu.ligar("pasta_de_saida", self._escolher_pasta_de_saida)
         self.menu.ligar("nome_do_arquivo", self._escolher_nome_do_arquivo)
-        self.menu.ligar("processar", self.processar)
+        # etapa 9b-1 (D-274, P-127): o menu Arquivo > "Confirmar e processar"
+        # (e a tecla Ctrl+Return) passa pela "Antes de processar", como o
+        # botao da area de trabalho. Antes chamava self.processar direto e os
+        # avisos pendentes ficavam sem ser mostrados. Arriscado: voltar a
+        # ligar o menu em self.processar.
+        self.menu.ligar("processar", self._no_trabalho(
+            lambda: self.tela_conferir._pedir_processamento()))
         self.menu.ligar("voltar", lambda: self._sair_da_conferencia())
         # etapa 3 da obra: o Automático no menu Arquivo (a janela grande)
         self.menu.ligar("automatico", self._no_trabalho(lambda: self.abrir_o_automatico()))
@@ -237,6 +248,10 @@ class JanelaPrincipal(QMainWindow):
         trabalho = self._no_trabalho
         self.menu.ligar("desfazer", trabalho(conferir.desfazer))
         self.menu.ligar("refazer", trabalho(conferir.refazer))
+        # etapa 9b-1 (P-125, D-020 "Desfazer ligado sem nada"): o Desfazer e
+        # o Refazer do menu Editar ficam apagados sem nada para desfazer ou
+        # refazer, como os da barra de baixo
+        conferir.trabalho_mudou.connect(self._acertar_o_desfazer_do_menu)
 
         self.menu.ligar("procurar_de_novo", trabalho(conferir._detectar_de_novo))
         self.menu.ligar("limpar_marcacao", trabalho(conferir._limpar_marcacao))
@@ -245,6 +260,15 @@ class JanelaPrincipal(QMainWindow):
         for chave in (ORIGINAL, PRETO_E_BRANCO, MELHORAR, MAGICO_PRO):
             self.menu.ligar(f"filtro_{chave}",
                             trabalho(lambda f=chave: conferir._escolher_filtro(f)))
+            # etapa 9b-1 (D-492, P-085): o clique no item marcado o desmarcava
+            # (o Qt alterna); a marca volta a dizer o filtro da pagina
+            self.menu.acoes[f"filtro_{chave}"].triggered.connect(
+                lambda _marcado=False: self._marcar_o_filtro_no_menu())
+        # D-492 (27/10/2026; P-085): o tique do menu Filtro acompanha o filtro
+        # da pagina aberta - ao trocar de pagina, ao trocar o filtro (por
+        # qualquer lugar: cartao, tecla, menu, desfazer) e ao abrir o menu
+        conferir.trabalho_mudou.connect(self._marcar_o_filtro_no_menu)
+        self.menu.menus["Filtro"].aboutToShow.connect(self._marcar_o_filtro_no_menu)
 
         # Etapa 2 da obra: o menu Ferramentas (as da trilha, pelo mesmo ponto
         # unico de troca da tela) e a marca acompanha a trilha
@@ -341,6 +365,41 @@ class JanelaPrincipal(QMainWindow):
                     and self.tela_conferir.projeto is self.projeto):
                 acao()
         return feito
+
+    def _acertar_o_desfazer_do_menu(self) -> None:
+        """P-125 (D-020: "Ctrl+Z desfaz qualquer alteração"; o defeito
+        "Desfazer ligado sem nada"): menu Editar > Desfazer aceso só quando há
+        o que desfazer, Refazer só quando há o que refazer - o mesmo que a
+        barra de baixo mostra (TelaConferir._atualizar_barra_de_baixo). Num
+        livro recém-aberto, os dois apagados. Chamado a cada mudança da tela
+        (trabalho_mudou: ação feita, desfeita, página aberta). Seguro mudar: o
+        texto. Arriscado: apagar o item pelo menu inteiro (Editar) - o
+        "Mostrar o histórico" mora nele."""
+        acoes = getattr(self.tela_conferir, "acoes", None)
+        self.menu.acoes["desfazer"].setEnabled(bool(acoes and acoes.feitas))
+        self.menu.acoes["refazer"].setEnabled(bool(acoes and acoes.desfeitas))
+
+    def _marcar_o_filtro_no_menu(self) -> None:
+        """D-492 (escolha da gerente, 27/10/2026, apoiada no "o botão tem que
+        ser provado que ele faz o que se diz"; promessa P-085): no menu
+        Filtro fica marcado SÓ o filtro da página que está na tela. Antes os
+        itens eram de marcar mas ninguém acertava a marca: escolhido o Preto
+        e branco pelo cartão, o menu ficava sem marca, e a marca de um clique
+        no menu ficava lá ao passar para uma página em Original. Página com
+        um filtro que o menu não tem ("Tirar o fundo") ou sem livro aberto:
+        nenhum marcado. Não vira clique (blockSignals). Barato: lê um campo."""
+        from core.filtros import MAGICO_PRO, MELHORAR, ORIGINAL, PRETO_E_BRANCO
+
+        conferir = self.tela_conferir
+        projeto = conferir.projeto
+        filtro = None
+        if projeto is not None and 0 <= conferir.indice_pagina < len(projeto.paginas):
+            filtro = projeto.paginas[conferir.indice_pagina].filtro
+        for chave in (ORIGINAL, PRETO_E_BRANCO, MELHORAR, MAGICO_PRO):
+            item = self.menu.acoes[f"filtro_{chave}"]
+            item.blockSignals(True)
+            item.setChecked(chave == filtro)
+            item.blockSignals(False)
 
     def _trocar_lado_direito(self, jeito: str) -> None:
         """Menu Ver > "Lado direito" e Configurações > Aparência (R14 902 C):
@@ -497,6 +556,10 @@ class JanelaPrincipal(QMainWindow):
             self.tela_inicio.mostrar_os_livros()
         for peca in getattr(self, "_pecas_da_tela_de_trabalho", ()):
             peca.setVisible(indice == CONFERIR)
+        # etapa 9b-1 (D-033): os botões do "Painel solto" moram na linha dos
+        # menus e só aparecem na tela de trabalho (e só nesse jeito)
+        if hasattr(self, "tela_conferir"):
+            self.tela_conferir.paineis.definir_na_tela(indice == CONFERIR)
 
     def _montar_a_linha_dos_menus(self) -> None:
         """Etapa 2 do layout (rodada 8, 303 B: "Na mesma linha dos menus"): a
@@ -526,6 +589,11 @@ class JanelaPrincipal(QMainWindow):
         caixa.addSpacing(6)
         conferir = self.tela_conferir
         caixa.addWidget(conferir.barra_opcoes, 1)
+        # etapa 9b-1 (D-033, o "Painel solto"): os botões dos cinco painéis na
+        # linha de cima, à direita (o desenho `13-rodada7-padrao-e-flutuante`);
+        # escondidos nos outros jeitos (ColunaDePaineis._acertar)
+        caixa.addWidget(conferir.paineis.botoes_do_alto, 0, Qt.AlignVCenter)
+        caixa.addSpacing(8)
         # Mola de peso zero no fim: com a barra de opções à vista (peso 1) ela
         # não ganha nada; nas telas sem ela (inicial, "O que fazer") é ela que
         # fica com a sobra, e os menus continuam à esquerda (sem ela, o Qt
@@ -1449,6 +1517,56 @@ class JanelaPrincipal(QMainWindow):
             self._relogio_de_salvar.start()
             self._acertar_a_capa()
 
+    def _marca_do_trabalho(self) -> tuple:
+        """Um retrato barato do trabalho feito: quantas ações feitas e
+        desfeitas e qual a última (a pilha do desfazer muda a cada ação de
+        trabalho; folhear não a muda). Serve só para comparar com o retrato
+        tirado quando o PDF ficou pronto (_ver_se_o_pdf_ficou_velho)."""
+        acoes = getattr(self, "acoes", None)
+        if acoes is None:
+            return (0, None, 0)
+        ultima = acoes.feitas[-1] if acoes.feitas else None
+        return (len(acoes.feitas), id(ultima), len(acoes.desfeitas))
+
+    def _ver_se_o_pdf_ficou_velho(self, marcacao: bool = False) -> None:
+        """D-309 (Samuel, 05/10/2026: "pode mandar concertar"; "o cartão só
+        diz 'PDF gerado' depois de gravar") e Lista de bugs 332 (05/10,
+        "o cartão continua 'pronto, PDF gerado' depois de mudar páginas sem
+        gerar de novo"): o trabalho mudou depois do PDF pronto -> o cartão
+        volta a "N de M conferidas" com "continuar" (os dois jeitos que ele
+        já tem; nada novo na tela). Gravado no disco no próximo salvar
+        (_salvar_agora -> projetos.atualizar -> gravar_resumo).
+
+        O que conta como mudança: uma ação a mais, a menos ou outra na pilha
+        do desfazer (filtro, corte, giro, Automático, desfazer, refazer...) e
+        a marcação mexida à mão (marcacao=True; ela não passa pela pilha).
+        Folhear não conta. O primeiro retrato de um livro é tirado aqui
+        mesmo, na primeira vez que a tela se acerta depois de abrir (o
+        trabalho de então é o do PDF que o cartão já dizia pronto).
+        Arriscado: contar o folhear como mudança (o cartão nunca ficaria
+        pronto)."""
+        # a ferramenta de marcar nasce so quando e usada a primeira vez: o
+        # aviso dela (marcacao mexida a mao) e ligado aqui, uma vez
+        editor = getattr(self.tela_conferir, "editor_selecao", None)
+        if editor is not None and self._marcacao_ligada_ao_cartao is not editor:
+            self._marcacao_ligada_ao_cartao = editor
+            editor.selecao_mudou.connect(lambda: self._ver_se_o_pdf_ficou_velho(marcacao=True))
+        resumo = self.resumo
+        if resumo is None:
+            return
+        retrato = (resumo.pasta, self._marca_do_trabalho())
+        guardado = self._trabalho_do_pdf
+        if guardado is None or guardado[0] != resumo.pasta:
+            self._trabalho_do_pdf = retrato
+            if not marcacao:
+                return
+        if not resumo.pdf_gerado:
+            self._trabalho_do_pdf = retrato
+            return
+        if marcacao or retrato != self._trabalho_do_pdf:
+            resumo.pdf_gerado = False
+            self._trabalho_do_pdf = retrato
+
     def _acertar_a_capa(self) -> None:
         """A capa do cartao na tela inicial acompanha o giro da primeira folha
         (D2 do verificador, 06/10/2026). So compara um numero; quando o giro
@@ -1774,6 +1892,9 @@ class JanelaPrincipal(QMainWindow):
             return
         self.resumo.pdf_gerado = True
         self.resumo.caminho_saida = str(caminho)
+        # o retrato do trabalho que foi para este PDF (D-309: mudou depois,
+        # o cartao deixa de dizer pronto - _ver_se_o_pdf_ficou_velho)
+        self._trabalho_do_pdf = (self.resumo.pasta, self._marca_do_trabalho())
 
     def _falhou_no_processamento(self, mensagem: str) -> None:
         """Processamento deu erro: volta para Conferir (o projeto continua

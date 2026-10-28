@@ -237,9 +237,11 @@ programa), a partir do **nome do botão**, da **dica** (o balão do mouse) e das
 - **decisões:** D-023 ("queria pode fechar e abrir ela"), D-057
 - **na tela:** o painel aberto fecha e a página ganha o lugar dele.
 
-### P-043 · "Lado direito": ícones na borda / sanfona (área de trabalho 1)
-- **chaves:** `menu/lado_icones`, `menu/lado_sanfona`
-- **decisões:** D-037 ("eu também quero ter a opção da area de trabalho 1"), D-033 ("C — Nos dois lugares")
+### P-043 · "Lado direito": ícones na borda / sanfona (área de trabalho 1) / abas no alto / painel solto
+- **chaves:** `menu/lado_icones`, `menu/lado_sanfona`, `menu/lado_abas`, `menu/lado_solto`
+- **decisões:** D-037 ("eu também quero ter a opção da area de trabalho 1"), D-033 ("Quer os quatro jeitos no app,
+  escolhendo dentro dele: sanfona (o primeiro), abas no alto, ícones na borda, painel flutuante"; "C — Nos dois
+  lugares")
 - **na tela:** troca o jeito do lado direito; fica guardado para a próxima vez que o programa abrir.
 
 ## Área de trabalho: "Girar a folha" e "Esta página" (alto do Propriedades)
@@ -437,6 +439,13 @@ programa), a partir do **nome do botão**, da **dica** (o balão do mouse) e das
 - **decisões:** D-231
 - **na tela:** abre a escolha da cor do "pintar por cima". **no projeto:** a área pintada usa a cor escolhida.
 
+### P-079 · aviso do "Pintar por cima" sobre letras: "Pintar assim mesmo" / "Voltar"
+- **chaves:** `caixa “Pintar por cima”/Pintar assim mesmo`, `caixa “Pintar por cima”/Voltar`
+- **decisões:** D-250 (`fr-218-aviso`: "A — Avisar (recomendo)"; no chat: "1- sim")
+- **na tela:** o retângulo de "Pintar por cima" desenhado sobre letras pergunta antes ("Este retângulo cobre letras;
+  elas vão ser pintadas também.").
+- **no projeto:** "Voltar" não grava área nenhuma; "Pintar assim mesmo" grava a área de "pintar por cima".
+
 ### P-072 · "detectar automaticamente" / menu "Procurar de novo"
 - **chaves:** `área de trabalho/marcar/detectar automaticamente`, `menu/procurar_de_novo`
 - **dica:** "Procura de novo a gravura, a letra e o papel desta página. O que você marcou à mão continua."
@@ -505,7 +514,6 @@ programa), a partir do **nome do botão**, da **dica** (o balão do mouse) e das
 - **decisões:** os itens do menu Filtro são de marcar (têm o tique), como os do menu Painéis, em que "a marca acompanha"
   (D-057); um tique que não acompanha a página diz o filtro errado.
 - **na tela:** o menu Filtro mostra marcado o filtro da página que está na tela, e acompanha ao trocar de página.
-- **defeito:** QUEBRADA no programa de 26/10 (defeito D desta bateria). Os itens do menu Filtro são de marcar, mas o tique nunca acompanha a página: escolhido o Preto e branco, o menu continua sem marca (e o tique de um clique no menu fica lá ao passar para uma página em Original). Sem dono (etapa 9, consertos de tela, ou 11).
 
 ### P-084 · "Só neste pedaço": os quatro filtros do pedaço
 - **chaves:** `área de trabalho/filtro da página/só neste pedaço: Original`,
@@ -709,7 +717,6 @@ programa), a partir do **nome do botão**, da **dica** (o balão do mouse) e das
 ### P-125 · Desfazer aceso sem nada para desfazer
 - **chaves:** `área de trabalho/barra de baixo/Desfazer`, `menu/desfazer`
 - **decisões:** D-020 ("Desfazer ligado sem nada", aberto)
-- **aguarda:** etapa 9 (Desfazer ligado sem nada)
 - **na tela:** num livro recém-aberto, sem nada feito, o Desfazer fica apagado (barra de baixo e menu).
 
 ### P-126 · botão do Histórico (barra de baixo) / menu Editar > "Mostrar o histórico"
@@ -732,7 +739,6 @@ programa), a partir do **nome do botão**, da **dica** (o balão do mouse) e das
   fim, "Ficou pronto!".
 - **no projeto:** o destino do PDF fica gravado.
 - **no PDF:** o PDF é gravado no destino, com uma página por página do livro, na ordem.
-- **defeito:** QUEBRADA no programa de 26/10 (defeito C desta bateria). Pelo menu Arquivo > "Confirmar e processar" (e a tecla Ctrl+Enter) o programa NÃO mostra a janela "Antes de processar" com os avisos pendentes (D-274: "quando alguém tentar imprimir sem ver os alertas o programa para e mostra os alertas"): o menu chama `JanelaPrincipal.processar` direto, sem passar por `TelaConferir._pedir_processamento`. O botão da área de trabalho mostra. Sem dono.
 
 ## Janelas da área de trabalho
 
@@ -1027,9 +1033,10 @@ programa), a partir do **nome do botão**, da **dica** (o balão do mouse) e das
 - **na tela:** pergunta antes ("Mandar para a impressora?").
 - **na impressora:** "mandar" manda as folhas montadas, com as cópias escolhidas; "cancelar" não manda nada.
 
-### P-162 · "parar" / "fechar" (Montar para imprimir)
-- **chaves:** `montar para imprimir/parar`, `montar para imprimir/fechar`
-- **na tela:** "parar" interrompe a montagem (nada fica pela metade); "fechar" fecha a janela sem gravar.
+### P-162 · "cancelar" / "fechar" (Montar para imprimir)
+- **chaves:** `montar para imprimir/cancelar`, `montar para imprimir/fechar`
+- **na tela:** "cancelar" interrompe a montagem (nada fica pela metade); "fechar" fecha a janela sem gravar. (O nome
+  voltou ao do `fase-1` na etapa 9b-1: a 9a o tinha trocado por "parar"; auditoria C3.)
 
 ## Configurações
 

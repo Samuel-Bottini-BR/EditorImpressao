@@ -1,0 +1,15 @@
+Editar > Desfazer aceso sem nada feito: True
+página 2: filtro: preto_e_branco
+página 1: filtro: original
+Editar > Desfazer aceso depois do filtro: True
+rodapé, painel aberto (o que se vê): '1 de 50 c…'
+rodapé (balão): Sobre a Consolação da Filosofia - Severino Boécio · 1 de 50 conferidas · 2 com dúvida
+Page Down depois de clicar na lista do Automático: página 1 -> 1
+menu processar foi direto para a janela de salvar: sim
+menu processar mostrou a 'Antes de processar': False
+Antes de processar (frase): Ainda tem 14 páginas que eu não tive certeza. Quer ver antes ou continuar assim mesmo?
+Antes de processar (tamanho): 560 x 520
+Mostrar: Endireitar: as contas discordam (12)
+nome sugerido: Sobre a Consolacao da Filosofia - Severino Boecio - arrumado.pdf
+Montar para imprimir: nome sugerido: Sobre a Consolacao da Filosofia - Severino Boecio - para imprimir.pdf
+áreas depois do 'Voltar': 0 -> 1

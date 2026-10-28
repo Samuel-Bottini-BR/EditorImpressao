@@ -452,6 +452,13 @@ class _LugaresDeEncaixe(QWidget):
         pintor.end()
 
 
+# Os vãos da barra de baixo (etapa 9b-1; eram 6 e 8). Seguro mudar: aumentar
+# volta a cortar a conta a 1280 com um painel aberto (prova em
+# tests/test_decisoes_9b1.py).
+ESPACO_DA_BARRA_DE_BAIXO = 4
+RESPIRO_DA_BARRA_DE_BAIXO = 4
+
+
 class _RotuloDoLivro(QLabel):
     """O "nome · N de M conferidas · K com dúvida" da barra de baixo.
 
@@ -476,23 +483,74 @@ class _RotuloDoLivro(QLabel):
     def texto_inteiro(self) -> str:
         return f"{self._nome} · {self._conta}" if self._nome else self._conta
 
+    # Etapa 9b-1 (ressalva 1 da etapa 7: "o contador do rodapé ainda sai
+    # cortado com um painel aberto a 1280"): quando nem a conta cabe numa
+    # linha, ela vai em DUAS ("N de M conferidas" em cima, "K com dúvida"
+    # embaixo), em letra um ponto menor, para caber nos 30 pontos da barra.
+    # Nada sai da barra; o nome do livro (que já encolhia primeiro) fica no
+    # balão, com o texto inteiro. Seguro mudar: o tamanho da letra das duas
+    # linhas (LETRA_EM_DUAS_LINHAS). Arriscado: voltar a cortar a conta.
+    LETRA_EM_DUAS_LINHAS = 11
+
+    def _medida_normal(self):
+        """As medidas da letra de sempre (a da folha de estilo do programa),
+        mesmo com a letra menor posta (guardada antes de pôr)."""
+        from PySide6.QtGui import QFont, QFontMetrics
+
+        if not self.styleSheet():
+            self._fonte_normal = QFont(self.font())
+        return QFontMetrics(getattr(self, "_fonte_normal", self.font()))
+
     def _encaixar(self) -> None:
-        medida = self.fontMetrics()
+        medida = self._medida_normal()
         cabe = max(0, self.width() - 4)
         inteiro = self.texto_inteiro()
         if not self.isVisible() or cabe <= 0:     # sem tela ainda: não há largura para medir
-            super().setText(inteiro)
+            self._por(inteiro)
             return
-        if medida.horizontalAdvance(inteiro) <= cabe or not self._nome:
-            super().setText(inteiro if medida.horizontalAdvance(inteiro) <= cabe or not cabe
-                            else medida.elidedText(inteiro, Qt.ElideRight, cabe))
+        if medida.horizontalAdvance(inteiro) <= cabe:
+            self._por(inteiro)
             return
-        resto = f" · {self._conta}"
-        sobra = cabe - medida.horizontalAdvance(resto)
-        if sobra < medida.horizontalAdvance("M…"):
-            super().setText(medida.elidedText(self._conta, Qt.ElideRight, cabe))
+        if self._nome:
+            resto = f" · {self._conta}"
+            sobra = cabe - medida.horizontalAdvance(resto)
+            if sobra >= medida.horizontalAdvance("M…"):
+                self._por(medida.elidedText(self._nome, Qt.ElideRight, sobra) + resto)
+                return
+        if medida.horizontalAdvance(self._conta) <= cabe:
+            self._por(self._conta)
             return
-        super().setText(medida.elidedText(self._nome, Qt.ElideRight, sobra) + resto)
+        if not self._em_duas_linhas(cabe):
+            self._por(medida.elidedText(self._conta, Qt.ElideRight, cabe))
+
+    def _por(self, texto: str, pequena: bool = False) -> None:
+        """Escreve o texto, na letra de sempre ou na menor (duas linhas)."""
+        folha = f"font-size: {self.LETRA_EM_DUAS_LINHAS}px;" if pequena else ""
+        if self.styleSheet() != folha:
+            self.setStyleSheet(folha)
+        if self.text() != texto:
+            super().setText(texto)
+
+    def em_duas_linhas(self) -> bool:
+        """A conta está em duas linhas agora? (testes e prints)"""
+        return "\n" in self.text()
+
+    def _em_duas_linhas(self, cabe: int) -> bool:
+        """Põe a conta em duas linhas, na letra menor, se cada linha couber
+        inteira; True se pôs. Se não couber nem assim, False (quem chama
+        encurta com "…", como antes)."""
+        from PySide6.QtGui import QFont, QFontMetrics
+
+        partes = self._conta.split(" · ")
+        if len(partes) < 2:
+            return False
+        fonte = QFont(getattr(self, "_fonte_normal", self.font()))
+        fonte.setPixelSize(self.LETRA_EM_DUAS_LINHAS)
+        medida = QFontMetrics(fonte)
+        if max(medida.horizontalAdvance(parte) for parte in partes) > cabe:
+            return False
+        self._por("\n".join(partes), pequena=True)
+        return True
 
     def resizeEvent(self, evento) -> None:  # noqa: N802 - nome do Qt
         super().resizeEvent(evento)
@@ -919,7 +977,10 @@ class TelaConferir(QWidget):
         barra.setFixedHeight(30)
         linha = QHBoxLayout(barra)
         linha.setContentsMargins(10, 0, 10, 0)
-        linha.setSpacing(6)
+        # etapa 9b-1 (ressalva 1 da etapa 7, o contador cortado a 1280 com um
+        # painel aberto): os vãos da barra ficaram menores (6 -> 4 entre as
+        # peças, 8 -> 4 nos respiros) para sobrar lugar à conta; nada saiu
+        linha.setSpacing(ESPACO_DA_BARRA_DE_BAIXO)
 
         def botao_pequeno(texto: str, dica: str, acao) -> QPushButton:
             botao = QPushButton(texto)
@@ -949,9 +1010,9 @@ class TelaConferir(QWidget):
             "A página na tela ainda está sem desentortar. Em alguns segundos ela "
             "aparece desentortada, igual vai sair no PDF.")
         self.sinal_desentortando.setVisible(False)
-        linha.addSpacing(8)
+        linha.addSpacing(RESPIRO_DA_BARRA_DE_BAIXO)
         linha.addWidget(self.sinal_desentortando)
-        linha.addSpacing(8)
+        linha.addSpacing(RESPIRO_DA_BARRA_DE_BAIXO)
         self.botao_desfazer_embaixo = botao_pequeno(
             "", "Desfazer (Ctrl+Z)", self.desfazer)
         self.botao_desfazer_embaixo.setIcon(_icone_da_barra("desfazer"))
@@ -962,7 +1023,7 @@ class TelaConferir(QWidget):
             "", "Abrir ou fechar o painel Histórico (a lista do que foi feito)",
             self._mostrar_o_historico)
         self.botao_historico_embaixo.setIcon(_icone_da_barra("historico"))
-        linha.addSpacing(8)
+        linha.addSpacing(RESPIRO_DA_BARRA_DE_BAIXO)
         self.rotulo_do_livro = _RotuloDoLivro()
         self.rotulo_do_livro.setObjectName("rotuloDaBarraDeBaixo")
         # cede lugar (etapa 3): com um painel aberto numa janela estreita, o
@@ -1029,12 +1090,12 @@ class TelaConferir(QWidget):
             self._grupo_mostrar.addButton(b)
             self.botoes_mostrar[jeito] = b
         self.botoes_mostrar[UMA].setChecked(True)
-        linha.addSpacing(8)
+        linha.addSpacing(RESPIRO_DA_BARRA_DE_BAIXO)
         self.botao_antes_depois = botao(
             "antes / depois",
             "Mostra a página da vez com o Original à esquerda e como vai sair à direita. "
             "Arraste a linha do meio para comparar.", self._alternar_antes_depois, marcavel=True)
-        linha.addSpacing(8)
+        linha.addSpacing(RESPIRO_DA_BARRA_DE_BAIXO)
         self.botao_menos_zoom = botao("–", "Afastar (Ctrl+-)",
                                       lambda: self.mudar_o_zoom(1 / self.PASSO_DO_ZOOM),
                                       objeto="botaoDaBarraDeBaixo")

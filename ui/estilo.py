@@ -442,7 +442,7 @@ QFrame#separadorDosMenus {{ background: {c["sep"]}; }}
 QFrame#barraDeBaixo {{ background: {c["bar"]}; border-top: 1px solid {c["linha"]}; }}
 QLabel#rotuloDaBarraDeBaixo {{ color: {c["fraco"]}; font-size: 12px; }}
 QPushButton#botaoDaBarraDeBaixo {{ background: transparent; border: 1px solid transparent;
-    border-radius: 4px; padding: 0px 7px; min-height: 22px; font-size: 16px; color: {c["fraco"]}; }}
+    border-radius: 4px; padding: 0px 5px; min-height: 22px; font-size: 16px; color: {c["fraco"]}; }}
 QPushButton#botaoDaBarraDeBaixo:hover {{ background: {c["botao_h"]}; }}
 QPushButton#botaoDaBarraDeBaixo:disabled {{ color: {c["desligado"]}; background: transparent; }}
 /* etapa 6 da obra: "Uma página", "Duas lado a lado", "antes / depois" e "ajustar à tela" na barra de

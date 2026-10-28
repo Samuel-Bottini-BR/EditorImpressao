@@ -19,9 +19,11 @@ Impressão"; as palavras dele estão no "Plano de layout (rascunho).md"):
     página | Por motivo", abrindo "Sempre 'Por página'";
   - rodada 7, 203 D, o resto do comentário: "Mas eu também quero ter a opção
     da area de trabalho 1." + rodada 14, 902 C ("Nos dois lugares": menu Ver
-    e Configurações) -> etapa 2 da obra (26/10/2026): o lado direito tem dois
-    jeitos, ColunaDePaineis.definir_jeito: "icones" (de fábrica, o de
-    sempre) e "sanfona", a área de trabalho 1 do desenho
+    e Configurações) e D-033 ("Quer os quatro jeitos no app") -> etapas 2 e
+    9b-1 da obra: o lado direito tem quatro jeitos,
+    ColunaDePaineis.definir_jeito: "icones" (de fábrica, o de sempre),
+    "abas" (abas no alto), "solto" (o painel por cima da página, com os
+    botões na linha de cima) e "sanfona", a área de trabalho 1 do desenho
     `1-area-de-trabalho-opcao-1.png` / `13-rodada7-padrao-a-area1-automatico-
     aberto.png`: os painéis empilhados numa coluna, cada um com a sua linha
     de título; clicar na linha abre o painel ali mesmo (um por vez) e os
@@ -91,17 +93,35 @@ NOMES_DOS_PAINEIS = {
     PAINEL_HISTORICO: "Histórico",
 }
 
-# Os jeitos do lado direito (etapa 2 da obra; R7 203 D e R14 902 C). Os nomes
-# são os que o agente de layout pôs na pergunta 902 da rodada 14 ("Ícones na
-# borda", "Sanfona (a área de trabalho 1)"); "abas no alto" e "painel solto",
-# que a pergunta também listava, não foram pedidos pelo Samuel e não existem.
+# Os jeitos do lado direito (D-033, 05/10/2026: "Quer os quatro jeitos no app,
+# escolhendo dentro dele: sanfona (o primeiro), abas no alto, ícones na borda,
+# painel flutuante"; R14 902 C, 20/10: "Nos dois lugares" - menu Ver e
+# Configurações). Os nomes são os da pergunta 902 da rodada 14 ("Ícones na
+# borda", "Sanfona (a área de trabalho 1)", "Abas no alto", "Painel solto"). A
+# etapa 2 da obra fez só os dois primeiros; a 9b-1 (27/10/2026, auditoria C2)
+# pôs os outros dois. Seguro mudar: os nomes (com o Samuel, D-374).
 LADO_ICONES = "icones"
 LADO_SANFONA = "sanfona"
-JEITOS_DO_LADO_DIREITO = (LADO_ICONES, LADO_SANFONA)
+LADO_ABAS = "abas"
+LADO_SOLTO = "solto"
+JEITOS_DO_LADO_DIREITO = (LADO_ICONES, LADO_SANFONA, LADO_ABAS, LADO_SOLTO)
 LADO_DE_FABRICA = LADO_ICONES
 NOMES_DOS_JEITOS = {
     LADO_ICONES: "Ícones na borda (de fábrica)",
     LADO_SANFONA: "Sanfona (a área de trabalho 1)",
+    LADO_ABAS: "Abas no alto",
+    LADO_SOLTO: "Painel solto",
+}
+# O nome curto de cada painel nas abas (o desenho das abas no alto,
+# `7-paineis-da-direita-opcao-1`: "Revisar", "Automático", "Ajustes",
+# "Filtro", "Histórico"; o "Ajustes" do desenho chama-se "Propriedades" desde
+# a rodada 9, 402 C). O nome inteiro fica no balão de cada aba.
+NOMES_CURTOS_DOS_PAINEIS = {
+    PAINEL_REVISAR: "Revisar",
+    PAINEL_AUTOMATICO: "Automático",
+    PAINEL_PROPRIEDADES: "Propriedades",
+    PAINEL_FILTRO: "Filtro",
+    PAINEL_HISTORICO: "Histórico",
 }
 ALTURA_DA_LINHA_DA_SANFONA = 34
 
@@ -663,6 +683,11 @@ def _rolagem_do_painel() -> QScrollArea:
     rolagem.setFrameShape(QFrame.NoFrame)
     rolagem.setHorizontalScrollBarPolicy(Qt.ScrollBarAlwaysOff)
     rolagem.viewport().setObjectName("fundoDoPainel")
+    # Etapa 9b-1 (achado das etapas 5 e 6, o foco preso no painel Automático):
+    # um clique no painel dava o teclado à rolagem dele, e o Page Down rolava
+    # o painel em vez de andar as páginas (e as letras não chegavam). A roda
+    # do mouse e a barra continuam rolando; o teclado fica com a página.
+    rolagem.setFocusPolicy(Qt.NoFocus)
     return rolagem
 
 
@@ -2302,12 +2327,235 @@ class _BotaoEsconderASanfona(QPushButton):
 
 
 # ---------------------------------------------------------------------------
+# etapa 9b-1: "Abas no alto" e "Painel solto" (D-033: os quatro jeitos)
+# ---------------------------------------------------------------------------
+
+class FilaDePaineis(QWidget):
+    """Uma fila de botões dos cinco painéis, pintada à mão (como a coluna de
+    ícones), em um de dois desenhos (etapa 9b-1, D-033):
+
+      "abas"  as abas no alto da coluna dos painéis (o desenho de
+              `7-paineis-da-direita-opcao-1` / `13-rodada7-padrao-c-abas`):
+              cada aba com o ícone e o nome curto embaixo, a aberta com o
+              risco azul por baixo; o "Para revisar" com a bolinha laranja.
+      "alto"  os botões do "Painel solto" na linha de cima, à direita (o
+              desenho de `7-paineis-da-direita-opcao-3` /
+              `13-rodada7-padrao-e-flutuante`): só o ícone (com o nome no
+              balão), o do painel aberto em azul. O nome escrito ao lado do
+              ícone não cabe na linha dos menus a 1280 de largura.
+
+    Só avisa o clique (`escolhido`); quem abre e fecha é a ColunaDePaineis.
+    O mouse vira mãozinha em cima de cada botão (pista visual)."""
+
+    escolhido = Signal(str)
+
+    ALTURA_DAS_ABAS = 46
+    LADO_NO_ALTO = (34, 28)
+
+    def __init__(self, desenho: str, parent=None) -> None:
+        super().__init__(parent)
+        self.desenho = desenho
+        self.aberto: str | None = None
+        self.contagem = 0
+        self._sob_o_mouse: str | None = None
+        self._apertado: str | None = None
+        self.setMouseTracking(True)
+        self.setAttribute(Qt.WA_Hover, True)
+        if desenho == "abas":
+            self.setFixedHeight(self.ALTURA_DAS_ABAS)
+        else:
+            largura, altura = self.LADO_NO_ALTO
+            self.setFixedSize(len(ORDEM_DOS_PAINEIS) * (largura + 4) + 4, altura + 4)
+
+    # --- estado -----------------------------------------------------------
+
+    def definir_aberto(self, painel: str | None) -> None:
+        self.aberto = painel
+        self.update()
+
+    def definir_contagem(self, quantas: int) -> None:
+        self.contagem = max(0, int(quantas))
+        self.update()
+
+    # --- geometria --------------------------------------------------------
+
+    def _fonte_do_nome(self) -> QFont:
+        fonte = QFont(self.font())
+        fonte.setPixelSize(11)
+        return fonte
+
+    def retangulos(self) -> dict[str, QRect]:
+        """O retângulo de cada painel. Nas abas, cada uma com a largura do
+        seu nome mais um respiro, e o que sobra repartido igual."""
+        saida: dict[str, QRect] = {}
+        if self.desenho != "abas":
+            largura, altura = self.LADO_NO_ALTO
+            x = 2
+            for painel in ORDEM_DOS_PAINEIS:
+                saida[painel] = QRect(x, 2, largura, altura)
+                x += largura + 4
+            return saida
+        from PySide6.QtGui import QFontMetrics
+
+        medida = QFontMetrics(self._fonte_do_nome())
+        larguras = [max(40, medida.horizontalAdvance(NOMES_CURTOS_DOS_PAINEIS[p]) + 10)
+                    for p in ORDEM_DOS_PAINEIS]
+        total = sum(larguras)
+        if total > self.width() > 0:            # letra maior que a de sempre: encolhe todas
+            larguras = [max(1, largura * self.width() // total) for largura in larguras]
+        sobra = max(0, self.width() - sum(larguras))
+        x = 0
+        for i, painel in enumerate(ORDEM_DOS_PAINEIS):
+            largura = larguras[i] + sobra // len(ORDEM_DOS_PAINEIS)
+            if i == len(ORDEM_DOS_PAINEIS) - 1:
+                largura = max(1, self.width() - x)
+            saida[painel] = QRect(x, 0, largura, self.height())
+            x += largura
+        return saida
+
+    def _item_em(self, ponto: QPoint) -> str | None:
+        for chave, ret in self.retangulos().items():
+            if ret.contains(ponto):
+                return chave
+        return None
+
+    # --- desenho ----------------------------------------------------------
+
+    def paintEvent(self, _evento) -> None:  # noqa: N802 - nome do Qt
+        pintor = QPainter(self)
+        pintor.setRenderHint(QPainter.Antialiasing)
+        abas = self.desenho == "abas"
+        if abas:
+            pintor.fillRect(self.rect(), QColor(estilo.cor("bar2")))
+            pintor.setPen(QPen(QColor(estilo.cor("linha")), 1))
+            pintor.drawLine(0, self.height() - 1, self.width(), self.height() - 1)
+        for painel, ret in self.retangulos().items():
+            aberto = painel == self.aberto
+            sob = painel == self._sob_o_mouse
+            if abas:
+                if aberto or sob:
+                    pintor.fillRect(ret, QColor(estilo.cor("painel" if aberto else "botao_h")))
+                if aberto:
+                    pintor.fillRect(QRect(ret.left(), ret.bottom() - 1, ret.width(), 2),
+                                    QColor(estilo.cor("azul")))
+                cor = estilo.cor("forte") if aberto else estilo.cor("fraco")
+                pintor.setBrush(Qt.NoBrush)
+                pintor.setPen(_caneta(cor, 1.5))
+                lado = 16
+                desenhar_icone_do_painel(pintor, painel, ret.center().x() - lado / 2 + 0.5,
+                                         ret.top() + 7, lado)
+                pintor.setFont(self._fonte_do_nome())
+                pintor.setPen(QColor(cor))
+                pintor.drawText(QRect(ret.left(), ret.top() + 25, ret.width(), 16),
+                                Qt.AlignHCenter | Qt.AlignTop, NOMES_CURTOS_DOS_PAINEIS[painel])
+                if painel == PAINEL_REVISAR and self.contagem:
+                    self._desenhar_a_contagem(pintor, QRect(ret.center().x() - 2, ret.top() + 6, 14, 14))
+            else:
+                if aberto or sob:
+                    pintor.setPen(Qt.NoPen)
+                    pintor.setBrush(QColor(estilo.cor("azul" if aberto else "botao_h")))
+                    pintor.drawRoundedRect(ret, 5, 5)
+                pintor.setBrush(Qt.NoBrush)
+                pintor.setPen(_caneta("#FFFFFF" if aberto else estilo.cor("icone"), 1.5))
+                lado = 17
+                desenhar_icone_do_painel(pintor, painel, ret.center().x() - lado / 2 + 0.5,
+                                         ret.center().y() - lado / 2 + 0.5, lado)
+                if painel == PAINEL_REVISAR and self.contagem:
+                    self._desenhar_a_contagem(pintor, QRect(ret.right() - 12, ret.top() + 4, 14, 14))
+
+    def _desenhar_a_contagem(self, pintor: QPainter, onde: QRect) -> None:
+        """A bolinha laranja com o número de páginas com dúvida (a mesma da
+        coluna de ícones)."""
+        texto = str(self.contagem) if self.contagem < 1000 else "999+"
+        fonte = QFont(self.font())
+        fonte.setPixelSize(10)
+        fonte.setBold(True)
+        pintor.setFont(fonte)
+        largura = max(16, pintor.fontMetrics().horizontalAdvance(texto) + 8)
+        bolinha = QRectF(min(onde.left(), self.width() - largura - 1), onde.top() - 4, largura, 15)
+        pintor.setPen(Qt.NoPen)
+        pintor.setBrush(QColor(estilo.cor("aviso")))
+        pintor.drawRoundedRect(bolinha, 7.5, 7.5)
+        pintor.setPen(QColor("#2A1808"))
+        pintor.drawText(bolinha, Qt.AlignCenter, texto)
+
+    # --- interação --------------------------------------------------------
+
+    def mousePressEvent(self, evento) -> None:  # noqa: N802 - nome do Qt
+        if evento.button() == Qt.LeftButton:
+            self._apertado = self._item_em(evento.position().toPoint())
+
+    def mouseReleaseEvent(self, evento) -> None:  # noqa: N802 - nome do Qt
+        apertado, self._apertado = self._apertado, None
+        if evento.button() != Qt.LeftButton or apertado is None:
+            return
+        if self._item_em(evento.position().toPoint()) == apertado:
+            self.escolhido.emit(apertado)
+
+    def mouseMoveEvent(self, evento) -> None:  # noqa: N802 - nome do Qt
+        sob = self._item_em(evento.position().toPoint())
+        if sob != self._sob_o_mouse:
+            self._sob_o_mouse = sob
+            self.setCursor(Qt.PointingHandCursor if sob else Qt.ArrowCursor)
+            self.update()
+
+    def leaveEvent(self, evento) -> None:  # noqa: N802 - nome do Qt
+        self._sob_o_mouse = None
+        self.setCursor(Qt.ArrowCursor)
+        self.update()
+
+    def texto_da_dica(self, item: str) -> str:
+        """O balão: o nome inteiro do painel (e quantas com dúvida)."""
+        nome = NOMES_DOS_PAINEIS.get(item, "")
+        if item == PAINEL_REVISAR and self.contagem:
+            nome += (" · 1 página com dúvida" if self.contagem == 1
+                     else f" · {self.contagem} páginas com dúvida")
+        if self.desenho != "abas" and item == self.aberto:
+            nome += "  (clique para fechar)"
+        return nome
+
+    def event(self, evento) -> bool:  # noqa: D401 - nome do Qt
+        if evento.type() == QEvent.ToolTip:
+            item = self._item_em(evento.pos())
+            if item is None:
+                QToolTip.hideText()
+            else:
+                QToolTip.showText(evento.globalPos(), self.texto_da_dica(item), self)
+            return True
+        return super().event(evento)
+
+
+class _MolduraDoSolto(QFrame):
+    """A moldura do "Painel solto": o painel aberto POR CIMA da página, no
+    canto de cima à direita, com borda arredondada (o desenho de
+    `13-rodada7-padrao-e-flutuante`: 12 pontos da direita, 10 do alto). É
+    filha da tela de trabalho (não da coluna da direita), para poder ficar
+    por cima da página; a ColunaDePaineis a põe no lugar
+    (_por_o_solto_no_lugar) quando a tela muda de tamanho."""
+
+    def __init__(self, parent=None) -> None:
+        super().__init__(parent)
+        self.setObjectName("painelSolto")
+        self.setAttribute(Qt.WA_StyledBackground, True)
+        estilo.estilizar(self, lambda: (
+            f"QFrame#painelSolto {{ background: {estilo.cor('painel')};"
+            f" border: 1px solid {estilo.cor('sep')}; border-radius: 10px; }}"))
+        self.caixa = QVBoxLayout(self)
+        self.caixa.setContentsMargins(1, 4, 1, 4)
+        self.caixa.setSpacing(0)
+
+
+# ---------------------------------------------------------------------------
 # tudo junto: o painel aberto e, na borda, a coluna de ícones
 # ---------------------------------------------------------------------------
 
 class ColunaDePaineis(QWidget):
-    """O lado direito da tela de trabalho, em um de dois jeitos (etapa 2 da
-    obra; R7 203 D e R14 902 C):
+    """O lado direito da tela de trabalho, em um de quatro jeitos (D-033,
+    05/10/2026: "Quer os quatro jeitos no app, escolhendo dentro dele:
+    sanfona (o primeiro), abas no alto, ícones na borda, painel flutuante";
+    R14 902 C: no menu Ver e nas Configurações). Os nomes dos quatro são os
+    da pergunta 902 da rodada 14 ("Ícones na borda", "Sanfona (a área de
+    trabalho 1)", "Abas no alto", "Painel solto"):
 
     "icones" (de fábrica): o painel aberto (se houver) e a coluna de ícones
     na borda. De fábrica os ícones à vista e NENHUM painel aberto (rodada 7,
@@ -2323,15 +2571,35 @@ class ColunaDePaineis(QWidget):
     Automático (como no desenho da área de trabalho 1). A seta ">>" no alto
     esconde a coluna; sobra a faixa fina com a seta de mostrar.
 
-    Os dois jeitos usam os MESMOS painéis (nada é montado duas vezes): trocar
-    de jeito só muda onde a pilha dos painéis (`area`) fica. Arriscado: montar
-    um segundo conjunto de painéis para a sanfona (a tela liga os sinais de um
-    conjunto só).
+    "abas" (etapa 9b-1; o desenho `7-paineis-da-direita-opcao-1` e
+    `13-rodada7-padrao-c-abas`, "aberto em Revisar"): a coluna de 300 px com
+    as cinco abas no alto (FilaDePaineis "abas": ícone e nome curto, a
+    bolinha do "Para revisar") e o painel da aba embaixo. Clicar numa aba
+    abre o painel dela (clicar na aberta não fecha: numa fila de abas sempre
+    se vê uma). Ao entrar nas abas sem painel aberto, abre o "Para revisar".
+    O "x" do painel e "Fechar o painel" deixam só as abas; a seta ">>" na
+    ponta das abas esconde a coluna (sobra a faixa fina, como na sanfona).
+
+    "solto" (etapa 9b-1; o desenho `7-paineis-da-direita-opcao-3` e
+    `13-rodada7-padrao-e-flutuante`): os botões dos painéis vão para a linha
+    de cima, à direita (FilaDePaineis "alto", em `botoes_do_alto`, que a
+    janela põe na linha dos menus), e o painel aberto fica POR CIMA da
+    página, no canto de cima à direita, com borda arredondada
+    (_MolduraDoSolto). A página não encolhe. Clicar no botão do aberto, ou
+    no "x", fecha. Com os ícones escondidos (menu), sobra a faixa fina com
+    a seta de mostrar, como nos outros jeitos.
+
+    Os quatro jeitos usam os MESMOS painéis (nada é montado duas vezes):
+    trocar de jeito só muda onde a pilha dos painéis (`area`) fica.
+    Arriscado: montar um segundo conjunto de painéis (a tela liga os sinais
+    de um conjunto só).
     """
 
     abriu = Signal(str)        # a chave do painel aberto, ou "" quando fechou
     icones_mudaram = Signal(bool)   # a coluna de ícones apareceu (True) ou sumiu
-    jeito_mudou = Signal(str)       # "icones" ou "sanfona"
+    jeito_mudou = Signal(str)       # "icones", "sanfona", "abas" ou "solto"
+
+    MARGEM_DO_SOLTO = (12, 10)      # da direita e do alto da página (o desenho)
 
     def __init__(self, parent=None) -> None:
         super().__init__(parent)
@@ -2401,10 +2669,48 @@ class ColunaDePaineis(QWidget):
         self.sanfona.setVisible(False)
         linha.addWidget(self.sanfona)
 
+        # etapa 9b-1: as abas no alto (a fila de abas e a seta de esconder na
+        # ponta; embaixo, a pilha dos painéis)
+        self.abas = QFrame()
+        self.abas.setObjectName("abasDosPaineis")
+        self.abas.setAttribute(Qt.WA_StyledBackground, True)
+        self.abas.setFixedWidth(LARGURA + 1)
+        estilo.estilizar(self.abas, lambda: (
+            f"QFrame#abasDosPaineis {{ background: {estilo.cor('painel')};"
+            f" border: none; border-left: 1px solid {estilo.cor('linha')}; }}"))
+        self._coluna_das_abas = QVBoxLayout(self.abas)
+        self._coluna_das_abas.setContentsMargins(1, 0, 0, 0)
+        self._coluna_das_abas.setSpacing(0)
+        topo_das_abas = Bloco()
+        linha_das_abas = QHBoxLayout(topo_das_abas)
+        linha_das_abas.setContentsMargins(0, 0, 0, 0)
+        linha_das_abas.setSpacing(0)
+        self.fila_de_abas = FilaDePaineis("abas")
+        self.fila_de_abas.escolhido.connect(self.abrir)
+        linha_das_abas.addWidget(self.fila_de_abas, 1)
+        self.botao_esconder_as_abas = _BotaoEsconderASanfona()
+        self.botao_esconder_as_abas.setFixedSize(22, FilaDePaineis.ALTURA_DAS_ABAS)
+        self.botao_esconder_as_abas.clicked.connect(lambda *_: self.alternar_os_icones())
+        linha_das_abas.addWidget(self.botao_esconder_as_abas)
+        self._coluna_das_abas.addWidget(topo_das_abas)
+        self._coluna_das_abas.addStretch(1)
+        self.abas.setVisible(False)
+        linha.addWidget(self.abas)
+
+        # etapa 9b-1: o painel solto (os botões vão para a linha de cima; a
+        # moldura nasce quando o jeito é escolhido, filha da tela de trabalho)
+        self.botoes_do_alto = FilaDePaineis("alto")
+        self.botoes_do_alto.escolhido.connect(self.alternar)
+        self.botoes_do_alto.setVisible(False)
+        self.moldura_do_solto: _MolduraDoSolto | None = None
+        self._na_tela = False
+
         self.icones = ColunaDeIcones()
         self.icones.escolhido.connect(self.alternar)
         self.icones.seta.connect(self.alternar_os_icones)
         self.para_revisar.contagem_mudou.connect(self.icones.definir_contagem)
+        self.para_revisar.contagem_mudou.connect(self.fila_de_abas.definir_contagem)
+        self.para_revisar.contagem_mudou.connect(self.botoes_do_alto.definir_contagem)
         linha.addWidget(self.icones)
 
         self.aberto: str | None = None
@@ -2412,12 +2718,13 @@ class ColunaDePaineis(QWidget):
         self.jeito = LADO_DE_FABRICA
         self._acertar()
 
-    # --- o jeito do lado direito (etapa 2 da obra) -------------------------
+    # --- o jeito do lado direito (etapa 2 e etapa 9b-1 da obra) --------------
 
     def definir_jeito(self, jeito: str) -> None:
-        """Troca o jeito do lado direito: "icones" ou "sanfona" (valor
-        estranho vira o de fábrica). Na sanfona sem painel aberto, o
-        Automático abre (desenho da área de trabalho 1). Avisa (jeito_mudou)
+        """Troca o jeito do lado direito: "icones", "sanfona", "abas" ou
+        "solto" (valor estranho vira o de fábrica). Na sanfona sem painel
+        aberto, o Automático abre (desenho da área de trabalho 1); nas abas,
+        o "Para revisar" (desenho "aberto em Revisar"). Avisa (jeito_mudou)
         só se mudou. Quem guarda a escolha é quem chama (guardar_jeito)."""
         jeito = jeito if jeito in JEITOS_DO_LADO_DIREITO else LADO_DE_FABRICA
         if jeito == self.jeito:
@@ -2425,12 +2732,21 @@ class ColunaDePaineis(QWidget):
         self.jeito = jeito
         if jeito == LADO_SANFONA and self.aberto is None:
             self.abrir(PAINEL_AUTOMATICO)
+        if jeito == LADO_ABAS and self.aberto is None:
+            self.abrir(PAINEL_REVISAR)
         self._acertar()
         self.jeito_mudou.emit(jeito)
 
     def em_sanfona(self) -> bool:
         """O lado direito está na área de trabalho 1 (sanfona)?"""
         return self.jeito == LADO_SANFONA
+
+    def definir_na_tela(self, na_tela: bool) -> None:
+        """A janela diz se a tela de trabalho está à vista (os botões do
+        painel solto moram na linha dos menus, que as outras telas também
+        têm: fora da tela de trabalho eles somem)."""
+        self._na_tela = bool(na_tela)
+        self._acertar()
 
     # --- abrir e fechar ---------------------------------------------------
 
@@ -2450,7 +2766,8 @@ class ColunaDePaineis(QWidget):
 
     def fechar(self) -> None:
         """Fecha o painel aberto (a página volta a ocupar o lugar dele; na
-        sanfona, ele volta a ser só a linha de título)."""
+        sanfona, ele volta a ser só a linha de título; nas abas, ficam só as
+        abas; solto, a moldura some)."""
         if self.aberto is None:
             return
         self.aberto = None
@@ -2466,8 +2783,9 @@ class ColunaDePaineis(QWidget):
 
     def alternar_os_icones(self) -> None:
         """A seta do alto: esconde os ícones (e o painel aberto com eles) ou
-        mostra de novo (o painel que estava aberto volta). Na sanfona,
-        esconde e mostra a coluna inteira."""
+        mostra de novo (o painel que estava aberto volta). Na sanfona e nas
+        abas, esconde e mostra a coluna inteira; solto, os botões de cima e o
+        painel."""
         self.mostrar_icones(not self.icones_a_vista)
 
     def mostrar_icones(self, a_vista: bool) -> None:
@@ -2486,40 +2804,123 @@ class ColunaDePaineis(QWidget):
         elif self.aberto == chave:
             self.fechar()
 
+    # --- pôr cada coisa no lugar ---------------------------------------------
+
+    def _tirar_a_area(self) -> None:
+        """Tira a pilha dos painéis de onde ela estiver (cada jeito a põe num
+        lugar)."""
+        caixas = [self._linha, self._coluna_da_sanfona, self._coluna_das_abas]
+        if self.moldura_do_solto is not None:
+            caixas.append(self.moldura_do_solto.caixa)
+        for caixa in caixas:
+            if caixa.indexOf(self.area) >= 0:
+                caixa.removeWidget(self.area)
+
+    def _moldura(self) -> _MolduraDoSolto | None:
+        """A moldura do painel solto, filha da tela de trabalho (o pai desta
+        coluna), criada na primeira vez. Sem pai (coluna solta, nos testes):
+        None, e o painel fica ao lado, como nos ícones."""
+        pai = self.parentWidget()
+        if pai is None:
+            return None
+        if self.moldura_do_solto is None or self.moldura_do_solto.parentWidget() is not pai:
+            self.moldura_do_solto = _MolduraDoSolto(pai)
+            self.moldura_do_solto.setVisible(False)
+            pai.installEventFilter(self)
+        return self.moldura_do_solto
+
+    def _area_da_pagina(self):
+        """Onde a página está desenhada (para o painel solto ficar por cima
+        dela, no canto de cima à direita): o "areaDaPagina" da tela, ou o pai
+        inteiro se não houver."""
+        pai = self.parentWidget()
+        if pai is None:
+            return None
+        area = pai.findChild(QWidget, "areaDaPagina")
+        if area is not None:
+            fora = area.parentWidget()               # a vista da página (as três vistas)
+            return fora if fora is not None and fora is not pai else area
+        return pai
+
+    def _por_o_solto_no_lugar(self) -> None:
+        """A moldura do solto no canto de cima à direita da página, com a
+        altura da página (menos as margens do desenho)."""
+        moldura = self.moldura_do_solto
+        pai = self.parentWidget()
+        if moldura is None or pai is None or not moldura.isVisible():
+            return
+        alvo = self._area_da_pagina()
+        if alvo is None:
+            return
+        canto = alvo.mapTo(pai, QPoint(0, 0)) if alvo is not pai else QPoint(0, 0)
+        direita, alto = self.MARGEM_DO_SOLTO
+        largura = LARGURA + 2
+        altura = max(160, alvo.height() - 2 * alto)
+        x = canto.x() + alvo.width() - largura - direita
+        moldura.setGeometry(max(0, x), canto.y() + alto, largura, altura)
+        moldura.raise_()
+
+    def eventFilter(self, objeto, evento) -> bool:  # noqa: N802 - nome do Qt
+        """A tela de trabalho mudou de tamanho: o painel solto acompanha."""
+        if objeto is self.parentWidget() and evento.type() in (QEvent.Resize, QEvent.LayoutRequest):
+            QTimer.singleShot(0, self._por_o_solto_no_lugar)
+        return super().eventFilter(objeto, evento)
+
     def _acertar(self) -> None:
         """Põe à vista o que o estado manda (o jeito, o painel, os ícones, o
         ícone azul). Na sanfona a pilha dos painéis vai para o lugar da linha
-        do painel aberto; nos ícones, volta para o lado da coluna de ícones."""
-        sanfona = self.jeito == LADO_SANFONA and self.icones_a_vista
-        coluna = self._coluna_da_sanfona
+        do painel aberto; nas abas, embaixo das abas; solto, para a moldura
+        por cima da página; nos ícones, volta para o lado da coluna de
+        ícones."""
+        a_vista = self.icones_a_vista
+        sanfona = self.jeito == LADO_SANFONA and a_vista
+        abas = self.jeito == LADO_ABAS and a_vista
+        moldura = self._moldura() if self.jeito == LADO_SOLTO else None
+        solto = self.jeito == LADO_SOLTO and a_vista and moldura is not None
+        aberto = self.aberto is not None
+        self._tirar_a_area()
         if sanfona:
-            if self._linha.indexOf(self.area) >= 0:
-                self._linha.removeWidget(self.area)
-            if coluna.indexOf(self.area) >= 0:
-                coluna.removeWidget(self.area)
-            if self.aberto is not None:
+            coluna = self._coluna_da_sanfona
+            if aberto:
                 lugar = coluna.indexOf(self.linhas_da_sanfona[self.aberto])
                 coluna.insertWidget(lugar + 1, self.area, 1)
             # sem painel aberto, as linhas ficam no alto e a mola embaixo
-            coluna.setStretch(coluna.count() - 1, 0 if self.aberto is not None else 1)
+            coluna.setStretch(coluna.count() - 1, 0 if aberto else 1)
             for chave, linha in self.linhas_da_sanfona.items():
                 linha.setVisible(chave != self.aberto)
-        elif coluna.indexOf(self.area) >= 0:
-            coluna.removeWidget(self.area)
+        elif abas:
+            coluna = self._coluna_das_abas
+            coluna.insertWidget(1, self.area, 1)
+            coluna.setStretch(coluna.count() - 1, 0 if aberto else 1)
+        elif solto:
+            moldura.caixa.addWidget(self.area)
+        else:
             self._linha.insertWidget(0, self.area)
         self.sanfona.setVisible(sanfona)
-        self.area.setVisible(self.aberto is not None and self.icones_a_vista)
-        # na sanfona os ícones somem; com a coluna escondida, sobra a faixa
-        # fina com a seta de mostrar (nos dois jeitos)
-        self.icones.setVisible(not sanfona)
-        self.icones.definir_recolhida(not self.icones_a_vista)
+        self.abas.setVisible(abas)
+        self.area.setVisible(aberto and a_vista)
+        if self.moldura_do_solto is not None:
+            self.moldura_do_solto.setVisible(solto and aberto)
+            if solto and aberto:
+                self._por_o_solto_no_lugar()
+        self.botoes_do_alto.setVisible(self.jeito == LADO_SOLTO and a_vista and self._na_tela)
+        # na sanfona, nas abas e solto os ícones da borda somem; com tudo
+        # escondido, sobra a faixa fina com a seta de mostrar (nos quatro)
+        self.icones.setVisible(not (sanfona or abas or solto))
+        self.icones.definir_recolhida(not a_vista)
         self.icones.definir_aberto(self.aberto)
+        self.fila_de_abas.definir_aberto(self.aberto)
+        self.botoes_do_alto.definir_aberto(self.aberto)
         self.updateGeometry()
 
     def largura_ocupada(self) -> int:
         """Quantos pontos de largura o lado direito toma agora (testes)."""
         if self.sanfona.isVisibleTo(self):
             return self.sanfona.width()
+        if self.abas.isVisibleTo(self):
+            return self.abas.width()
+        if self.jeito == LADO_SOLTO and self.icones_a_vista:
+            return 0                      # solto: por cima da página, não ao lado
         return self.icones.width() + (LARGURA if self.area.isVisibleTo(self) else 0)
 
 

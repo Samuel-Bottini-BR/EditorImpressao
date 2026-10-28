@@ -6,7 +6,8 @@ as partes ficam numa lista à esquerda e, clicando numa, ela aparece à direita.
 
 As partes de hoje:
     Aparência            o tema (escuro, cinza de fábrica, claro) e, desde a etapa 2 da obra
-                         (26/10/2026), o "Lado direito" (ícones na borda ou a área de trabalho 1).
+                         (26/10/2026), o "Lado direito" (os quatro jeitos da D-033: ícones na
+                         borda, a área de trabalho 1, abas no alto, painel solto; etapa 9b-1).
     Atalhos de teclado   cada atalho, com captura de tecla e aviso de conflito (a tela de antes).
     Velocidade           páginas ao mesmo tempo (item 2.16; juntado em 23/10/2026).
     Medidas e receitas   cm/mm/polegadas e a receita do livro novo (item 2.19).

@@ -373,6 +373,38 @@ def test_a_janela_lista_as_paginas_e_os_motivos(tela):
     assert seletor.escolha == FECHAR
 
 
+def test_antes_de_processar_menor_e_em_duas_filas(tela):
+    """Samuel, 21/10/2026 (`pr-antes-de-processar`): "ficou meio embolado, deve
+    ficar mais claro e não tão grande." A janela abre menor que os 560 x 520 de
+    antes e cabe no notebook do Kaique (1280 x 657); a frase de cima em duas
+    linhas; os botões em duas filas (a de cima da lista e a de baixo) em vez
+    de três; nenhum controle sumiu."""
+    from PySide6.QtWidgets import QApplication
+
+    from ui.janela_dos_avisos import TAMANHO_DA_JANELA, JanelaDosAvisos
+
+    janela = JanelaDosAvisos(_lista(tela), antes_de_processar=True)
+    janela.show()
+    QApplication.processEvents()
+    # a largura de verdade depende das letras do Windows (522 pontos na janela de verdade,
+    # relatorios/layout-antes-de-processar); aqui, sem as letras do Windows, so a altura
+    assert TAMANHO_DA_JANELA[0] * TAMANHO_DA_JANELA[1] < 560 * 520 * 0.8
+    assert janela.height() <= 657 * 0.65
+    assert "3 páginas" in janela.rotulo.text()
+    assert janela.pergunta.text() == "Quer ver antes ou continuar assim mesmo?"
+    assert janela.rotulo.y() < janela.pergunta.y() < janela.combo_motivo.y()
+    botoes = [b for b in janela.findChildren(QPushButton) if b.isVisible()]
+    assert {b.text() for b in botoes} == {"Selecionar todas", "Nenhuma", "está bom nas marcadas",
+                                         "ver", "continuar assim mesmo"}
+    cima = {b.text() for b in botoes if b.y() < janela.lista.y()}
+    baixo = {b.text() for b in botoes if b.y() > janela.lista.y() + janela.lista.height()}
+    assert cima == {"Selecionar todas", "Nenhuma"}
+    assert baixo == {"está bom nas marcadas", "ver", "continuar assim mesmo"}
+    meios = [b.y() + b.height() / 2 for b in botoes if b.text() in baixo]
+    assert max(meios) - min(meios) <= 3, "uma fila só embaixo"
+    janela.close()
+
+
 @pytest.fixture
 def janela_dos_avisos(monkeypatch):
     """Troca o exec() da lista grande por um roteiro: cada vez que ela abre,

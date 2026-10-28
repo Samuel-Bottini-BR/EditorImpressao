@@ -1054,19 +1054,6 @@ class Acao:
         return Acao(**dados)
 
 
-def sem_acento(texto: str) -> str:
-    """Tira os acentos ("Mágico pro" -> "Magico pro", "ç" -> "c").
-
-    Caminho de disco vai sem acento (CLAUDE.md §3). E a mesma conta de
-    ui/dialogo_impressao.sem_acento (o nome "para imprimir"); fica aqui para o
-    nucleo usar sem importar a tela. Etapa 9c da obra (lista unica 5.15: o
-    nome sugerido saia "antiphon-trecho - mágico pro.pdf")."""
-    import unicodedata
-
-    decomposto = unicodedata.normalize("NFKD", texto)
-    return "".join(c for c in decomposto if not unicodedata.combining(c))
-
-
 def nome_de_arquivo_seguro(nome: str) -> str:
     """Tira do nome os caracteres que o Windows não aceita em arquivo."""
     proibidos = '<>:"/\\|?*'
@@ -1075,10 +1062,18 @@ def nome_de_arquivo_seguro(nome: str) -> str:
 
 
 def nome_de_saida_sugerido(projeto: "Projeto") -> str:
-    """Nome de arquivo proposto, já com a extensao, sem acento (etapa 9c).
+    """Nome de arquivo proposto, já com a extensao, COM o acento do nome do
+    livro e do filtro ("Ofício da Imaculada Conceição - mágico pro.pdf").
 
     O sufixo conta o que foi feito, para o Kaique diferenciar duas versoes do
     mesmo livro na mesma pasta.
+
+    D-555 (Samuel, 27/10/2026, Central `ac-nome-sem-acento`: "Voltar com
+    acento (recomendo)"): as etapas 9a/9c tinham tirado os acentos (lista
+    unica 5.15, achado de agente); voltou como no `fase-1`. O nome e do
+    Kaique (D-365: "português correto"); a regra "caminho sem acento" do
+    CLAUDE.md vale para as pastas que o programa cria, nao para o nome do
+    livro. Arriscado: tirar o acento de novo sem ele pedir.
     """
     from core.filtros import NOMES_AMIGAVEIS
 
@@ -1095,9 +1090,7 @@ def nome_de_saida_sugerido(projeto: "Projeto") -> str:
     else:
         sufixo = "arrumado"
 
-    # etapa 9c (lista unica 5.15): o nome inteiro sem acento - o do livro e o
-    # do filtro ("mágico pro"); caminho de disco sem acento (CLAUDE.md §3)
-    return sem_acento(f"{base} - {sufixo}.pdf")
+    return f"{base} - {sufixo}.pdf"
 
 
 def filtro_valido(filtro: str) -> str:

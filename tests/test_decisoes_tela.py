@@ -390,7 +390,8 @@ def test_area_de_trabalho_1_nas_configuracoes(janela, pasta):
     tela = _abrir(janela, pasta, marcadas=())
     configuracoes = TelaConfiguracoes(janela)
     botoes = configuracoes.botoes_lado
-    assert set(botoes) == {"icones", "sanfona"} and botoes["icones"].isChecked()
+    # D-033 ("os quatro jeitos"; etapa 9b-1): os quatro nas Configurações
+    assert set(botoes) == {"icones", "sanfona", "abas", "solto"} and botoes["icones"].isChecked()
     assert "área de trabalho 1" in botoes["sanfona"].text()
     botoes["sanfona"].setChecked(True)
     _assentar()

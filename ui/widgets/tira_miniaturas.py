@@ -260,6 +260,12 @@ class TiraMiniaturas(QWidget):
         self.rolagem = QScrollArea()
         self.rolagem.setWidgetResizable(True)
         self.rolagem.setFrameShape(QFrame.NoFrame)
+        # Etapa 9b-1 (o foco preso, achado das etapas 5 e 6): a rolagem da tira
+        # ficava com o teclado (ao abrir o livro e a cada clique numa
+        # miniatura), e o Page Down, as setas, o Home e o End rolavam a tira
+        # em vez de trocar a página (D-021). A roda do mouse, a barra e as
+        # setinhas da tira continuam rolando; o teclado fica com a página.
+        self.rolagem.setFocusPolicy(Qt.NoFocus)
 
         interno = QWidget()
         interno.setObjectName("dentroDaTira")

@@ -1,0 +1,15 @@
+Editar > Desfazer aceso sem nada feito: False
+página 2: filtro: preto_e_branco
+página 1: filtro: original
+Editar > Desfazer aceso depois do filtro: True
+rodapé, painel aberto (o que se vê): '1 de 50 conferidas\n2 com dúvida'
+rodapé (balão): Sobre a Consolação da Filosofia - Severino Boécio · 1 de 50 conferidas · 2 com dúvida
+Page Down depois de clicar na lista do Automático: página 1 -> 11
+Antes de processar (frase): Ainda tem 13 páginas que eu não tive certeza.
+Antes de processar (tamanho): 558 x 400
+Mostrar: Endireitar: as contas discordam (11)
+menu processar mostrou a 'Antes de processar': True
+nome sugerido: Sobre a Consolação da Filosofia - Severino Boécio - arrumado.pdf
+Montar para imprimir: nome sugerido: Sobre a Consolação da Filosofia - Severino Boécio - para imprimir.pdf
+aviso do Pintar por cima: Este retângulo cobre letras; elas vão ser pintadas também. | Pintar assim mesmo, Voltar
+áreas depois do 'Voltar': 0 -> 0

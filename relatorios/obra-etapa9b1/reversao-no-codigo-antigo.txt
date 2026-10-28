@@ -1,0 +1,48 @@
+Provas de tests/test_decisoes_9b1.py rodadas no código ANTIGO (27b4c52, base da etapa), em 27/10/2026.
+Os 20 marcados REVERSÃO falham lá, cada um pelo defeito que consertam; os 5 sem a marca passam (provas do outro lado).
+
+tests\test_decisoes_9b1.py:51: AssertionError: assert 'Oficio da Im...agico pro.pdf' == 'Of?cio da Im...?gico pro.pdf'
+tests\test_decisoes_9b1.py:75: AssertionError: livro aberto sem a marca
+tests\test_decisoes_9b1.py:100: AssertionError: assert ['filtro_orig...o_magico_pro'] == ['filtro_magico_pro']
+tests\test_decisoes_9b1.py:130: AssertionError: a janela 'Antes de processar' n?o apareceu
+tests\test_decisoes_9b1.py:130: AssertionError: a janela 'Antes de processar' n?o apareceu
+tests\test_decisoes_9b1.py:163: assert (not True)
+tests\test_decisoes_9b1.py:204: AssertionError: o cart?o continua 'PDF gerado' depois de mudar a p?gina
+tests\test_decisoes_9b1.py:222: AssertionError: assert not True
+tests\test_decisoes_9b1.py:310: AssertionError: nomes do fase-1 que n?o voltaram: ['Ordem de p?ginas:', 'P?ginas por caderno:', 'Rota??o autom?tica', 'Centralizar autom?tico', 'Reverter p
+tests\test_decisoes_9b1.py:341: AttributeError: 'JanelaDosAvisos' object has no attribute 'pergunta'
+tests\test_decisoes_9b1.py:411: AssertionError: assert [] == [('Pintar por...o', 'Voltar')]
+tests\test_decisoes_9b1.py:411: AssertionError: assert [] == [('Pintar por...o', 'Voltar')]
+tests\test_decisoes_9b1.py:503: AssertionError: o teclado ficou no painel (ListaDeEtapas)
+tests\test_decisoes_9b1.py:503: AssertionError: o teclado ficou no painel (ListaDeEtapas)
+tests\test_decisoes_9b1.py:503: AssertionError: o teclado ficou no painel (ListaDeEtapas)
+tests\test_decisoes_9b1.py:480: AssertionError: Page Down n?o chegou ? p?gina
+tests\test_decisoes_9b1.py:548: AssertionError: '0 de 360 conferid?'
+tests\test_decisoes_9b1.py:594: AssertionError: assert ['?cones na b... trabalho 1)'] == ['?cones na b...Painel solto']
+tests\test_decisoes_9b1.py:614: KeyError: 'lado_abas'
+tests\test_decisoes_9b1.py:643: KeyError: 'lado_solto'
+FAILED tests/test_decisoes_9b1.py::test_d555_nome_do_pdf_pronto_e_do_para_imprimir_com_acento
+FAILED tests/test_decisoes_9b1.py::test_d492_tique_do_menu_filtro_acompanha_a_pagina
+FAILED tests/test_decisoes_9b1.py::test_d492_clicar_no_filtro_que_ja_esta_nao_tira_a_marca
+FAILED tests/test_decisoes_9b1.py::test_d274_menu_e_ctrl_return_mostram_antes_de_processar[menu]
+FAILED tests/test_decisoes_9b1.py::test_d274_menu_e_ctrl_return_mostram_antes_de_processar[tecla]
+FAILED tests/test_decisoes_9b1.py::test_p125_desfazer_do_menu_acompanha_o_que_ha_para_desfazer
+FAILED tests/test_decisoes_9b1.py::test_d309_cartao_deixa_de_dizer_pronto_quando_o_trabalho_muda
+FAILED tests/test_decisoes_9b1.py::test_d309_marcacao_mexida_tambem_tira_o_pronto
+FAILED tests/test_decisoes_9b1.py::test_c3_nomes_da_montar_para_imprimir_sao_os_do_fase_1
+FAILED tests/test_decisoes_9b1.py::test_d283_antes_de_processar_aprovada_e_o_mostrar_nao_corta
+FAILED tests/test_decisoes_9b1.py::test_d250_pintar_por_cima_das_letras_pergunta_antes[Pintar assim mesmo]
+FAILED tests/test_decisoes_9b1.py::test_d250_pintar_por_cima_das_letras_pergunta_antes[Voltar]
+FAILED tests/test_decisoes_9b1.py::test_teclas_chegam_a_pagina_depois_de_clicar_na_lista_do_automatico[D]
+FAILED tests/test_decisoes_9b1.py::test_teclas_chegam_a_pagina_depois_de_clicar_na_lista_do_automatico[PageDown]
+FAILED tests/test_decisoes_9b1.py::test_teclas_chegam_a_pagina_depois_de_clicar_na_lista_do_automatico[2]
+FAILED tests/test_decisoes_9b1.py::test_page_down_chega_a_pagina_depois_de_clicar_numa_miniatura[PageDown]
+FAILED tests/test_decisoes_9b1.py::test_contador_da_barra_de_baixo_em_duas_linhas_quando_nao_cabe_em_uma
+FAILED tests/test_decisoes_9b1.py::test_d033_os_quatro_jeitos_no_menu_ver_e_nas_configuracoes
+FAILED tests/test_decisoes_9b1.py::test_d033_abas_no_alto - KeyError: 'lado_a...
+FAILED tests/test_decisoes_9b1.py::test_d033_painel_solto - KeyError: 'lado_s...
+20 failed, 5 passed, 16 warnings in 21.30s
+
+Testes instáveis (antes x depois do conserto, só o teste, nesta máquina de 8 núcleos):
+  test_paginas_diferentes::test_na_analise_* : teste antigo 12 de 15 rodadas falharam; novo 0 de 15
+  P-092/P-094 (test_promessas -k 'p092 or p094'): antigo 5 de 25 falharam (P-094: '0 == 3'); novo 0 de 25

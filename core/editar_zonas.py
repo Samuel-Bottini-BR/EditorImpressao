@@ -340,3 +340,59 @@ def _tinta_na_area(original: np.ndarray, mascara: np.ndarray, forca_preto: int,
     tinta = np.zeros(mascara.shape, bool)
     tinta[y0:y1, x0:x1] = binaria < 128
     return tinta
+
+
+# --- D-250: o "Pintar por cima" que cobre letras pergunta antes ---------------------------------
+
+# Quantas "letras" dentro da área bastam para perguntar. Uma letra é um borrão de tinta (o Preto
+# e branco da página, o mesmo da TINTA_COR) do tamanho de letra: altura de ALTURA_DA_LETRA da
+# página e largura de no máximo LARGURA_DA_LETRA. Mancha, sombra da lombada e fio da beirada são
+# maiores (ou finos e compridos) e não contam; pontinho de sujeira é menor e não conta.
+# Seguro mudar: os números (mais alto = pergunta menos). Arriscado: contar só a tinta (sem o
+# tamanho): a sombra da lombada perguntaria sempre.
+LETRAS_PARA_PERGUNTAR = 3
+ALTURA_DA_LETRA = (0.006, 0.06)      # fração da altura da página
+LARGURA_DA_LETRA = 0.08              # fração da largura da página
+LADO_DA_CONTA_DAS_LETRAS = 1600      # a conta é feita com a página reduzida a este lado (rapidez)
+
+
+def letras_na_area(original: np.ndarray, regiao: Regiao) -> int:
+    """Quantas letras (borrões de tinta do tamanho de letra) a área cobre, na imagem da página.
+
+    D-250 (Samuel, 22/10/2026, `fr-218-aviso`: "A — Avisar (recomendo)" e, no chat, "1- sim"):
+    quando o retângulo de "Pintar por cima" cobre letras, o programa avisa antes ("Pintar assim
+    mesmo" / "Voltar"). Esta é a conta; quem pergunta é a tela (ui/widgets/editor_selecao.py).
+    Só lê: nada muda na página nem na área. Imagem vazia ou área inválida: 0."""
+    if original is None or original.size == 0 or not regiao.valida():
+        return 0
+    from core.selecao import _desenhar
+
+    altura, largura = original.shape[:2]
+    escala = min(1.0, LADO_DA_CONTA_DAS_LETRAS / max(altura, largura))
+    img = original if escala >= 1.0 else cv2.resize(
+        original, (max(8, round(largura * escala)), max(8, round(altura * escala))),
+        interpolation=cv2.INTER_AREA)
+    if img.ndim == 2:
+        img = cv2.cvtColor(img, cv2.COLOR_GRAY2BGR)
+    alt, larg = img.shape[:2]
+    mascara = np.zeros((alt, larg), np.uint8)
+    _desenhar(mascara, regiao)
+    if not mascara.any():
+        return 0
+    from core.filtros import AJUSTE_PADRAO
+
+    tinta = _tinta_na_area(img, mascara, AJUSTE_PADRAO, "auto") & (mascara > 0)
+    quantos, _rotulos, medidas, _centros = cv2.connectedComponentsWithStats(
+        tinta.astype(np.uint8), connectivity=8)
+    letras = 0
+    for i in range(1, quantos):
+        h = medidas[i, cv2.CC_STAT_HEIGHT] / alt
+        w = medidas[i, cv2.CC_STAT_WIDTH] / larg
+        if ALTURA_DA_LETRA[0] <= h <= ALTURA_DA_LETRA[1] and w <= LARGURA_DA_LETRA:
+            letras += 1
+    return letras
+
+
+def cobre_letras(original: np.ndarray, regiao: Regiao) -> bool:
+    """A área cobre letras (LETRAS_PARA_PERGUNTAR ou mais)? Ver letras_na_area (D-250)."""
+    return letras_na_area(original, regiao) >= LETRAS_PARA_PERGUNTAR
