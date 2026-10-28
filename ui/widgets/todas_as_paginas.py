@@ -29,8 +29,12 @@ VÁRIAS ESCOLHIDAS (obra de 26/10/2026, etapa 3; D-334, 24/09: "Ver todas as pá
     "rodar o automático nelas". Quem faz é a tela de trabalho (acao_nas_escolhidas), cada ação
     numa só do desfazer. O "escolher páginas..." do Automático abre a grade no jeito de escolher
     (comecar_a_escolher(para_o_automatico=True)): o clique comum marca, e "usar estas N páginas"
-    devolve a escolha (escolha_pronta). "Inserir" página de outro PDF e "dividir" daqui não
-    existem: o livro é feito de um PDF só (ressalva no ONDE-PAREI da etapa 3).
+    devolve a escolha (escolha_pronta). "Inserir" página de outro PDF não existe: o livro é feito
+    de um PDF só (ressalva no ONDE-PAREI da etapa 3; D-567: fica para depois desta rodada).
+    "dividir" (etapa 9b-2 da obra, D-558, 27/10/2026: "quando falei dividir é dividir a pagina,
+    usando a funcionalidade do scantailor que colocamos no aplicativo, é isso que deveria ser
+    feito."): divide as folhas das escolhidas pela conta do "dividir esta", por trás, com
+    andamento (TelaConferir._dividir_escolhidas).
 
 Seguro mudar: tamanhos e textos. Arriscado: desenhar as páginas no fio da tela (trava a janela
 num livro grande).
@@ -312,7 +316,7 @@ class TodasAsPaginas(QWidget):
     ir_para = Signal(int)          # o índice da página clicada
     voltar = Signal()
     # etapa 3 da obra (D-334): ação nas escolhidas ("girar_esquerda", "girar_direita",
-    # "em_branco", "tirar", "trazer", "extrair", "automatico") e a escolha pronta do
+    # "em_branco", "tirar", "trazer", "extrair", "automatico", "dividir") e a escolha pronta do
     # "escolher páginas..." do Automático
     acao_nas_escolhidas = Signal(str, list)
     escolha_pronta = Signal(list)
@@ -429,6 +433,9 @@ class TodasAsPaginas(QWidget):
         for chave, texto, dica in (
                 ("girar_esquerda", "girar ¼ ←", "Gira as folhas das páginas escolhidas ¼ à esquerda."),
                 ("girar_direita", "girar ¼ →", "Gira as folhas das páginas escolhidas ¼ à direita."),
+                # etapa 9b-2 da obra (D-558): a conta do "dividir esta"
+                ("dividir", "dividir", "Divide em duas páginas as folhas das escolhidas, na "
+                 "lombada (a mesma conta do \"dividir esta\" da ferramenta Dividir)."),
                 ("em_branco", "deixar em branco", "As escolhidas saem como folha branca (a "
                  "encadernação não muda)."),
                 ("tirar", "tirar do livro", "As escolhidas saem do PDF final."),

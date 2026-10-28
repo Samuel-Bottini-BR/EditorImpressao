@@ -5243,6 +5243,11 @@ class TelaConferir(QWidget):
         elif acao == "trazer":
             self._registrar("restaurar", "pagina", indices, {"apagada": False, "em_branco": False},
                             f"Trazer de volta {n} {plural}")
+        elif acao == "dividir":
+            # etapa 9b-2 (D-558): as folhas das escolhidas, pela conta do
+            # "dividir esta" (por trás, com andamento; _dividir_escolhidas)
+            self._dividir_escolhidas(sorted({self.projeto.paginas[i].folha for i in indices}))
+            return
         elif acao == "extrair":
             self._extrair(indices)
             return
@@ -5252,6 +5257,144 @@ class TelaConferir(QWidget):
             return
         self.abrir_todas_as_paginas()
         self.todas.comecar_a_escolher(indices)
+
+    # --- etapa 9b-2 da obra: "dividir" na grade (D-558) ----------------------
+    #
+    # Samuel, 27/10/2026, Central `ac-grade-inserir`: "quando falei dividir é
+    # dividir a pagina, usando a funcionalidade do scantailor que colocamos no
+    # aplicativo, é isso que deveria ser feito." (D-334: a grade "Todas as
+    # páginas" com seleção múltipla, girar, apagar, extrair, dividir; a D-529,
+    # "numa etapa futura", saiu.) Cada folha escolhida que ainda sai como uma
+    # página só é dividida pela MESMA conta do "dividir esta" da ferramenta
+    # Dividir (core.dividir_a_mao: a lombada pelo jeito da folha - o do
+    # ScanTailor de fábrica -, a tampa do scanner, as marcações à mão indo
+    # para a metade em que estão), por trás, com andamento e "parar", e o
+    # livro muda numa ação só do desfazer. Folha já dividida fica como está.
+    # Arriscado: medir no fio da tela (135 folhas travariam a janela ~30 s) ou
+    # registrar uma ação por folha (o Ctrl+Z desfaria uma folha só).
+
+    def _dividir_escolhidas(self, folhas: list[int], esperar: bool = False) -> None:
+        """Divide as folhas `folhas` (as das páginas escolhidas na grade).
+        `esperar` (testes): mede no mesmo fio, sem a caixa do andamento."""
+        from PySide6.QtWidgets import QProgressDialog
+
+        from ui.tarefas import TarefaDividirFolhas
+
+        if self.projeto is None or self.acoes is None:
+            return
+        a_dividir = [f for f in folhas if 0 <= f < len(self.projeto.folhas)
+                     and not self.projeto.folhas[f].dividir]
+        if not a_dividir:
+            self._avisar("As folhas escolhidas já estão divididas.")
+            return
+        prontas: dict[int, tuple] = {}
+        pedidos: list[tuple[int, str]] = []
+        for f in a_dividir:
+            folha = self.projeto.folhas[f]
+            devolve = (len(dividir_a_mao.paginas_da_folha(self.projeto, f)) >= 2
+                       or bool(folha.metades_guardadas))
+            if devolve and dividir_a_mao.tampa_ja_medida(folha):
+                prontas[f] = (None, None)          # volta como estava, sem medir
+            else:
+                pedidos.append((f, jeito_de_dividir(self.projeto, folha)))
+        if not pedidos:
+            self._dividir_as_medidas(a_dividir, prontas)
+            return
+        if esperar:
+            for f, jeito in pedidos:
+                prontas[f] = dividir_a_mao.medir_para_dividir(self.projeto, f, jeito)
+            self._dividir_as_medidas(a_dividir, prontas)
+            return
+        total = len(pedidos)
+        caixa = QProgressDialog(f"Dividindo as folhas escolhidas... 0 de {total}", "parar",
+                                0, total, self)
+        caixa.setWindowTitle("Dividir")
+        caixa.setWindowModality(Qt.WindowModal)
+        caixa.setMinimumDuration(0)
+        caixa.setAutoClose(False)
+        caixa.setAutoReset(False)
+        tarefa = TarefaDividirFolhas(self.projeto, pedidos)
+        self._tarefa_de_dividir = tarefa
+        self._caixa_de_dividir = caixa
+        self._dividir_pedido = (a_dividir, prontas)
+        # métodos desta tela (e não funções soltas): o Qt entrega o sinal do
+        # fio de fundo no fio da janela
+        tarefa.progresso.connect(self._dividir_andou)
+        tarefa.concluida.connect(self._dividir_mediu)
+        tarefa.falhou.connect(self._dividir_falhou)
+        caixa.canceled.connect(tarefa.cancelar)
+        caixa.show()
+        tarefa.start()
+
+    def _dividir_andou(self, feitas: int, de: int) -> None:
+        """O andamento do "dividir" da grade (D-558) na caixa."""
+        caixa = getattr(self, "_caixa_de_dividir", None)
+        if caixa is None:
+            return
+        caixa.setMaximum(de)
+        caixa.setValue(feitas)
+        caixa.setLabelText(f"Dividindo as folhas escolhidas... {feitas} de {de}")
+
+    def _dividir_mediu(self, medidas) -> None:
+        """As folhas do "dividir" da grade foram medidas: põe no livro (só a
+        tarefa da vez, e não cancelada)."""
+        tarefa = getattr(self, "_tarefa_de_dividir", None)
+        self._fechar_a_caixa_de_dividir()
+        if tarefa is None or tarefa.foi_cancelada:
+            return
+        a_dividir, prontas = self._dividir_pedido
+        self._dividir_as_medidas(a_dividir, {**prontas, **medidas})
+
+    def _dividir_falhou(self, mensagem: str) -> None:
+        self._fechar_a_caixa_de_dividir()
+        self._avisar(mensagem)
+
+    def _fechar_a_caixa_de_dividir(self) -> None:
+        """Fecha a caixa do andamento SEM o sinal "canceled" (o Qt o manda ao
+        fechar a caixa, e ele pararia a tarefa como se fosse o "parar")."""
+        caixa = getattr(self, "_caixa_de_dividir", None)
+        if caixa is not None:
+            caixa.blockSignals(True)
+            caixa.close()
+            self._caixa_de_dividir = None
+
+    def _dividir_as_medidas(self, folhas: list[int], medidas: dict) -> None:
+        """Põe no livro a divisão das `folhas` (medidas: folha -> (lombada,
+        tampa), ou (None, None) para a folha que volta como estava), numa
+        ação só do desfazer (os campos de cada folha juntos, por folha), e
+        volta à grade com as páginas novas escolhidas."""
+        if self.projeto is None:
+            return
+        juntos: dict = {}
+        feitas = []
+        for f in folhas:
+            if f not in medidas or self.projeto.folhas[f].dividir:
+                continue
+            lombada, tampa = medidas[f]
+            if lombada is None:
+                campos = dividir_a_mao.campos_para_dividir(self.projeto, f)
+            elif (len(dividir_a_mao.paginas_da_folha(self.projeto, f)) >= 2
+                  or self.projeto.folhas[f].metades_guardadas):
+                campos = dividir_a_mao.campos_para_dividir(self.projeto, f, tampa=tampa)
+            else:
+                campos = dividir_a_mao.campos_para_dividir(
+                    self.projeto, f, lombada.posicao, lombada.confianca, tampa)
+            for campo, valor in campos.items():
+                if dividir_a_mao.muda_a_lista({campo: valor}):
+                    juntos[campo] = valor
+                else:
+                    juntos.setdefault(campo, {})[str(f)] = valor
+            feitas.append(f)
+        if not feitas:
+            return
+        n = len(feitas)
+        self._registrar("dividir_a_mao", "folha", feitas, juntos,
+                        f"Dividir {n} folha" + ("" if n == 1 else "s")
+                        + " (escolhidas em Todas as páginas)")
+        novas = self._paginas_das_folhas(feitas)
+        if self.pilha_da_tela.currentWidget() is self.todas or self.todas.isVisible():
+            self.abrir_todas_as_paginas()
+            self.todas.comecar_a_escolher(novas)
 
     def _extrair(self, indices: list[int]) -> None:
         """"Extrair": as folhas das paginas escolhidas, como estao no PDF de

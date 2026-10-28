@@ -367,6 +367,58 @@ class TarefaConferirOImpressoDeFora(QThread):
         self.terminou.emit()
 
 
+class TarefaDividirFolhas(QThread):
+    """Etapa 9b-2 da obra (D-558, 27/10/2026, Central `ac-grade-inserir`: "quando
+    falei dividir é dividir a pagina, usando a funcionalidade do scantailor que
+    colocamos no aplicativo, é isso que deveria ser feito."): o "dividir" da
+    grade "Todas as páginas", nas folhas escolhidas. Para cada folha, a MESMA
+    conta do "dividir esta" da ferramenta Dividir
+    (core.dividir_a_mao.medir_para_dividir: abre a folha a 150 DPI, gira como
+    ela está, procura a tampa do scanner e acha a lombada pelo jeito da folha,
+    o do ScanTailor de fábrica). Uns décimos de segundo por folha: por isso
+    aqui, num fio de fundo, com andamento (`progresso(feitas, total)`) e o
+    "parar" que funciona. Só LÊ o projeto (a janela fica esperando, com a caixa
+    do andamento por cima); quem muda o livro é a tela, no fim, numa ação só do
+    desfazer. Uma folha por vez na memória. Nunca deixa exceção escapar.
+
+    pedidos: [(folha, jeito)]; concluida: {folha: (Lombada, tampa)}."""
+
+    progresso = Signal(int, int)
+    concluida = Signal(object)
+    falhou = Signal(str)
+
+    def __init__(self, projeto: Projeto, pedidos: list[tuple[int, str]]) -> None:
+        super().__init__()
+        self.projeto = projeto
+        self.pedidos = list(pedidos)
+        self._cancelar = False
+
+    def cancelar(self) -> None:
+        self._cancelar = True
+
+    @property
+    def foi_cancelada(self) -> bool:
+        return self._cancelar
+
+    def run(self) -> None:
+        from core import dividir_a_mao
+
+        medidas = {}
+        total = len(self.pedidos)
+        try:
+            for n, (folha, jeito) in enumerate(self.pedidos):
+                if self._cancelar:
+                    return
+                self.progresso.emit(n, total)
+                medidas[folha] = dividir_a_mao.medir_para_dividir(self.projeto, folha, jeito)
+            self.progresso.emit(total, total)
+            if not self._cancelar:
+                self.concluida.emit(medidas)
+        except Exception as erro:  # noqa: BLE001 - nada pode derrubar o programa
+            registrar_erro("dividir as escolhidas", traceback.format_exc())
+            self.falhou.emit(_mensagem_amigavel(erro))
+
+
 class TarefaMedirOEmBranco(QThread):
     """Etapa 7 da obra, D-497 (escolha da gerente, 27/10/2026): "Página que
     fica branca depois de mudar a divisão ganha o aviso 'Parece em branco', a

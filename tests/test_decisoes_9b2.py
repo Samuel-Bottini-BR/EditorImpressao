@@ -348,3 +348,59 @@ def test_d571_100_por_cento_e_a_pagina_inteira_cabendo_na_tela(janela, tmp_path)
     assert area.right() <= vista.width() and area.bottom() <= vista.height()
     folga = 2 * PADDING_MOLDURA + 2                       # a moldura em volta da página
     assert (area.width() >= vista.width() - folga) or (area.height() >= vista.height() - folga)
+
+
+# --- D-558: "dividir" na grade "Todas as páginas" --------------------------------------------
+
+def test_d558_dividir_na_grade_nas_folhas_escolhidas_com_a_conta_do_dividir_esta(janela, tmp_path):
+    """D-558 (27/10/2026, Central `ac-grade-inserir`: "quando falei dividir é dividir a pagina,
+    usando a funcionalidade do scantailor que colocamos no aplicativo, é isso que deveria ser
+    feito."; D-334). Livro aberto de 4 folhas, sem "Dividir": na grade "Todas as páginas",
+    escolher as folhas 2 e 3 e clicar "dividir" → por trás, com andamento, as duas viram duas
+    páginas cada, na lombada (a mesma conta do "dividir esta", o jeito do ScanTailor de
+    fábrica); as outras ficam inteiras; numa ação só do desfazer (o Ctrl+Z junta as duas de
+    novo); o PDF sai com 6 páginas, as divididas com metade da largura. Falha no código antigo
+    (não havia o "dividir" na grade)."""
+    from core import dividir_a_mao
+
+    folha_aberta = np.concatenate([_pagina(), _pagina()], axis=1)
+    janela.abrir_livro(_pdf(tmp_path / "aberto.pdf", [folha_aberta] * 4))
+    tela = janela.tela_conferir
+    assert len(janela.projeto.paginas) == 4
+    medidas = []
+    original = dividir_a_mao.medir_para_dividir
+
+    def contar(projeto, folha, jeito):
+        lombada, tampa = original(projeto, folha, jeito)
+        medidas.append((folha, jeito, lombada.posicao))
+        return lombada, tampa
+
+    dividir_a_mao.medir_para_dividir = contar
+    try:
+        tela.abrir_todas_as_paginas()
+        tela.todas.comecar_a_escolher([1, 2])
+        _assentar()
+        botao = tela.todas.botoes_da_escolha["dividir"]
+        assert botao.isEnabled() and botao.text() == "dividir"
+        historico = len(janela.acoes.feitas)
+        botao.click()
+        assert getattr(tela, "_tarefa_de_dividir", None) is not None       # por trás
+        _esperar(lambda: len(janela.projeto.paginas) == 6, motivo="dividir as escolhidas")
+    finally:
+        dividir_a_mao.medir_para_dividir = original
+    projeto = janela.projeto
+    assert sorted(f for f, _j, _p in medidas) == [1, 2]
+    assert all(j == "scantailor" for _f, j, _p in medidas)                 # o do ScanTailor
+    assert [f.dividir for f in projeto.folhas] == [False, True, True, False]
+    for f, _j, posicao in medidas:                                       # a linha medida
+        assert projeto.folhas[f].posicao_corte == round(posicao, 4)
+        assert abs(posicao - 0.5) < 0.05                                 # na lombada
+        assert "dividir" in projeto.folhas[f].mexida_a_mao
+    assert len(janela.acoes.feitas) == historico + 1                     # uma ação só
+    paginas = _gerar(janela, tmp_path, "dividido")
+    larguras = [p.shape[1] for p in paginas]
+    assert len(paginas) == 6
+    assert abs(larguras[1] - larguras[0] / 2) < larguras[0] * 0.08
+    tela.desfazer()
+    _assentar()
+    assert len(projeto.paginas) == 4 and not any(f.dividir for f in projeto.folhas)
