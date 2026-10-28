@@ -421,6 +421,9 @@ class TodasAsPaginas(QWidget):
 
         def botao(chave: str, texto: str, dica: str, acao) -> QPushButton:
             b = QPushButton(texto)
+            # etapa 9b-2: um pouco menos de folga dos lados, para o "dividir"
+            # (D-558) caber na faixa a 1280 sem cortar os outros nomes
+            b.setObjectName("acaoDaEscolha")
             b.setToolTip(dica)
             b.setCursor(Qt.PointingHandCursor)
             b.clicked.connect(lambda _c=False: acao())
@@ -541,6 +544,7 @@ class TodasAsPaginas(QWidget):
                 f"QLabel#peDasTodas {{ background: {c('bar')}; color: {c('fraco')}; padding: 6px 14px;"
                 f" border-top: 1px solid {c('linha')}; font-size: 12px; }}"
                 f"QPushButton#chaveDasTodas {{ padding: 4px 12px; }}"
+                f"QPushButton#acaoDaEscolha {{ padding: 9px 10px; }}"
                 f"QPushButton#chaveDasTodas:checked {{ background: {c('sel')}; border: 1px solid {c('azul')};"
                 f" color: {c('forte')}; }}"
                 f"QFrame#faixaDaEscolha {{ background: {c('cabeca')}; border-bottom: 1px solid {c('linha')}; }}")
@@ -638,7 +642,11 @@ class TodasAsPaginas(QWidget):
 
     def _montar(self) -> None:
         for quadro in self.quadros:
-            quadro.setParent(None)
+            # etapa 9b-2 (Lista de bugs 22/10, as janelinhas soltas): tirar da
+            # grade e esconder, sem setParent(None) - sem pai o quadro virava
+            # uma janela solta até ser apagado
+            self.grade.removeWidget(quadro)
+            quadro.hide()
             quadro.deleteLater()
         self.quadros = []
         for grupo in self._grupos():
