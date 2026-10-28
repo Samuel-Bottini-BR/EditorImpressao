@@ -5,7 +5,7 @@
  "ordem": 0,
  "origem": "auditoria de 27/10 (relatorios/obra-auditoria-escolhas/auditoria.html), pedida pela regra 7 do CLAUDE.md §11",
  "resumo": {
-  "titulo": "23 perguntas: o que eu e os agentes acrescentamos ou escolhemos sem você",
+  "titulo": "27 perguntas: o que eu e os agentes acrescentamos ou escolhemos sem você",
   "paragrafos": [
    "Você disse em 27/10: \"os agentes estão mudando coisas que eu já tinha definido, é só para fazer o que eu já tinha mandado\". Um conferente revisou as 78 escolhas e mudanças da obra contra as suas decisões.",
    "55 só fazem funcionar o que você mandou. 4 mudavam o que você tinha decidido e estão sendo desfeitas sem perguntar: o PDF volta a sair sem perda (sem JPEG), o aviso \"as contas discordam\" volta à sua regra de 0,3 grau, os nomes do \"Montar para imprimir\" voltam aos de antes (a disposição nova fica) e os dois jeitos que faltavam do lado direito (\"abas no alto\" e \"painel solto\") vão ser feitos.",
@@ -775,6 +775,119 @@
      "quem": "gerente",
      "em": "2026-10-27T23:30:00.000Z",
      "texto": "Expliquei de novo abaixo, com um desenho em texto."
+    }
+   ]
+  },
+  {
+   "id": "a-contador-dividir",
+   "titulo": "No Dividir, o contador \"N de M conferidas\" conta folhas?",
+   "explicacao": [
+    "Agora, ao clicar \"está certo\", a página ganha um tique, o contador sobe e a tela vai para a próxima dúvida. No Dividir o \"está certo\" vale para a folha inteira (as duas páginas), então lá o contador conta folhas: \"1 de 180\". Fora do Dividir conta páginas: \"1 de 360\".",
+    "Prints: relatorios/obra-etapa7/prints/ (etapa do \"está certo\" e dos avisos)."
+   ],
+   "exemplos": [],
+   "opcoes": [
+    {
+     "id": "folhas",
+     "nome": "No Dividir conta folhas, fora dele páginas (recomendo)",
+     "texto": "",
+     "imgs": []
+    },
+    {
+     "id": "paginas",
+     "nome": "Sempre páginas",
+     "texto": "",
+     "imgs": []
+    },
+    {
+     "id": "nao-entendi",
+     "nome": "Ainda não entendi",
+     "texto": "Explique de outro jeito.",
+     "imgs": []
+    }
+   ]
+  },
+  {
+   "id": "a-lombada-fora",
+   "titulo": "\"Lombada incerta\" também fora do Dividir?",
+   "explicacao": [
+    "O aviso \"Lombada incerta\" (o programa não tem certeza de onde dividir a folha) antes só aparecia dentro do Dividir, e por isso a contagem de dúvidas não batia (o \"356\" do teste). Agora ele aparece também na página, com o botão \"aceitar o corte\". Fora do Dividir a linha da divisão não aparece."
+   ],
+   "exemplos": [],
+   "opcoes": [
+    {
+     "id": "aparece",
+     "nome": "Aparece também na página, como está (recomendo)",
+     "texto": "",
+     "imgs": []
+    },
+    {
+     "id": "so-dividir",
+     "nome": "Só dentro do Dividir",
+     "texto": "",
+     "imgs": []
+    },
+    {
+     "id": "nao-entendi",
+     "nome": "Ainda não entendi",
+     "texto": "Explique de outro jeito.",
+     "imgs": []
+    }
+   ]
+  },
+  {
+   "id": "a-botoes-cartoes",
+   "titulo": "Botões em todos os cartões do \"Para revisar\"?",
+   "explicacao": [
+    "Agora o cartão da página em que você está, no painel \"Para revisar\", tem os mesmos botões da faixa de aviso (\"está certo\", \"aceitar o corte\"...). Os outros cartões só levam para a página quando clicados."
+   ],
+   "exemplos": [],
+   "opcoes": [
+    {
+     "id": "so-da-vez",
+     "nome": "Só no cartão da página em que estou (recomendo)",
+     "texto": "",
+     "imgs": []
+    },
+    {
+     "id": "todos",
+     "nome": "Em todos os cartões",
+     "texto": "",
+     "imgs": []
+    },
+    {
+     "id": "nao-entendi",
+     "nome": "Ainda não entendi",
+     "texto": "Explique de outro jeito.",
+     "imgs": []
+    }
+   ]
+  },
+  {
+   "id": "a-aviso-curto",
+   "titulo": "Mensagem curta ao clicar \"está certo\"?",
+   "explicacao": [
+    "Num desenho de 13/10 aparecia uma mensagem curta, por um instante, ao clicar \"está certo\": \"Página 7: conferida\". Hoje a resposta é o tique na miniatura, o contador que sobe e a ida para a próxima dúvida."
+   ],
+   "exemplos": [],
+   "opcoes": [
+    {
+     "id": "nao",
+     "nome": "Não precisa: o tique, o contador e a próxima dúvida bastam (recomendo)",
+     "texto": "",
+     "imgs": []
+    },
+    {
+     "id": "sim",
+     "nome": "Quero a mensagem curta também",
+     "texto": "",
+     "imgs": []
+    },
+    {
+     "id": "nao-entendi",
+     "nome": "Ainda não entendi",
+     "texto": "Explique de outro jeito.",
+     "imgs": []
     }
    ]
   }
