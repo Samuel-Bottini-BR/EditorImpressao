@@ -261,3 +261,58 @@ def test_d057_menu_paineis_abre_cada_painel_e_o_ver_nao_tem_painel(janela, tela)
     janela.menu.acoes["painel_fechar"].trigger()
     aj.assentar()
     assert tela.paineis.aberto is None
+
+
+# --- auditoria C3: os nomes da "Montar para imprimir" voltam aos do fase-1 ------------------------
+
+def _textos_da_janela(janela_de_imprimir) -> set[str]:
+    """Todos os textos à vista da janela: rótulos, caixinhas, botões e os itens das listas."""
+    from PySide6.QtWidgets import QAbstractButton, QComboBox, QLabel
+
+    textos = set()
+    for rotulo in janela_de_imprimir.findChildren(QLabel):
+        textos.add(rotulo.text())
+    for botao in janela_de_imprimir.findChildren(QAbstractButton):
+        textos.add(botao.text())
+    for lista in janela_de_imprimir.findChildren(QComboBox):
+        textos.update(lista.itemText(i) for i in range(lista.count()))
+    return {t.strip().upper() if t.isupper() else t.strip() for t in textos if t}
+
+
+def test_c3_nomes_da_montar_para_imprimir_sao_os_do_fase_1(app, pasta):  # noqa: F811
+    """REVERSÃO. Auditoria das escolhas (27/10/2026), C3: a etapa 9a trocou os nomes das opções
+    da "Montar para imprimir"; o Samuel tinha pedido só "melhorar esse layout" (fr-26, D-333) e
+    as opções "que aparecem nos prints do PDF que mandei" (D-315); nome novo só pela revisão de
+    nomes (D-374). Voltam os do `fase-1`; os da 9a saíram. A disposição em duas colunas fica
+    (o cartão "O que vai sair" continua)."""
+    from ui.dialogo_impressao import DialogoImpressao
+
+    livro_de_teste = aj.criar_livro(pasta, folhas=2)
+    dialogo = DialogoImpressao(str(livro_de_teste))
+    try:
+        textos = _textos_da_janela(dialogo)
+        rotulos_do_form = set()
+        from PySide6.QtWidgets import QFormLayout, QLabel
+
+        for form in dialogo.findChildren(QFormLayout):
+            for linha in range(form.rowCount()):
+                item = form.itemAt(linha, QFormLayout.LabelRole)
+                if item is not None and isinstance(item.widget(), QLabel):
+                    rotulos_do_form.add(item.widget().text())
+        textos |= rotulos_do_form
+        do_fase_1 = ["Ordem de páginas:", "Páginas por caderno:", "Rotação automática",
+                     "Centralizar automático", "Reverter páginas", "Agrupar", "Esquerda", "Direita",
+                     "cancelar", "Escala personalizada:", "em pé (retrato)", "deitada (paisagem)",
+                     "Frente e verso", "Horizontal", "Vertical", "Só uma página:",
+                     "Imprimir em escala de cinza", "Folhas de (0 = todas):",
+                     "Páginas do livro de (0 = todas):", "(a de sempre do Windows)"]
+        faltam = [t for t in do_fase_1 if t not in textos]
+        assert not faltam, f"nomes do fase-1 que não voltaram: {faltam}"
+        da_9a = ["Imprimir:", "Cada caderno:", "Girar sozinho a página deitada", "Centralizar sozinho",
+                 "Ordem invertida", "Agrupar as cópias", "costura à esquerda", "costura à direita",
+                 "parar", "Escala:", "Uma página só:", "Imprimir em tons de cinza", "Folhas de papel:"]
+        sobraram = [t for t in da_9a if t in textos]
+        assert not sobraram, f"nomes da etapa 9a que ficaram: {sobraram}"
+        assert "O QUE VAI SAIR" in textos, "a disposição nova (cartão 'O que vai sair') saiu"
+    finally:
+        dialogo.reject()

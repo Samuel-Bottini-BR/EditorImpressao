@@ -27,6 +27,21 @@ MONTAR PARA IMPRIMIR (item 2.6; refeita na etapa 9a da obra de 26/10/2026)
     - "mandar para a impressora" pergunta antes (como o "imprimir agora").
     Nenhuma opção saiu (D-315); os de fábrica são os das decisões imp-1 a imp-6.
 
+    NOMES (etapa 9b-1, 27/10/2026; auditoria C3 e regra 7 do Samuel: "é só
+    para fazer o que eu já tinha mandado"): a etapa 9a tinha trocado os nomes
+    das opções ("Imprimir", "Cada caderno", "Girar sozinho a página
+    deitada", "Centralizar sozinho", "Ordem invertida", "Agrupar as cópias",
+    "costura à esquerda/à direita", "parar"...). Voltaram os do `fase-1`, que
+    são os do UPDF (D-315): "Ordem de páginas", "Páginas por caderno",
+    "Rotação automática", "Centralizar automático", "Reverter páginas",
+    "Agrupar", "Esquerda/Direita", "cancelar", "Escala personalizada",
+    "em pé (retrato)", "Horizontal/Vertical", "Escala de cada lado", "Só
+    uma página", "escala de cinza", "(0 = todas)". Ficou da 9a só o que é
+    disposição: as duas colunas, o texto entre parênteses que virou a frase
+    de baixo da caixinha, o nome curto do formato com a explicação embaixo
+    e o "todas" escrito no campo. Nome novo só pela revisão de nomes (D-374,
+    etapa 11), decidido por ele. Arriscado: renomear opção aqui.
+
 IMPRIMIR AGORA (D-012, 26/10/2026: "2" - conserto na etapa 9)
     Antes, o botão da tela "Ficou pronto!" mandava o PDF inteiro para a
     impressora padrão do Windows num clique, sem escolher nada nem perguntar
@@ -427,39 +442,39 @@ class DialogoImpressao(QDialog):
         self.combo_papel = _lista(tuple(imp.PAPEIS_MM), {p: p for p in imp.PAPEIS_MM})
         form.addRow("Papel:", self.combo_papel)
         self.combo_orientacao = _lista(("", imp.RETRATO, imp.PAISAGEM),
-                                       {"": "a do formato", imp.RETRATO: "em pé",
-                                        imp.PAISAGEM: "deitada"})
+                                       {"": "a do formato", imp.RETRATO: "em pé (retrato)",
+                                        imp.PAISAGEM: "deitada (paisagem)"})
         form.addRow("Folha:", self.combo_orientacao)
         self.combo_escala = _lista(imp.ESCALAS, imp.NOMES_DAS_ESCALAS)
         form.addRow("Tamanho:", self.combo_escala)
         self.escala_percentual = _por_cento()
-        form.addRow("Escala:", self.escala_percentual)
+        form.addRow("Escala personalizada:", self.escala_percentual)
         self._form_como_vai_sair = form
 
         # 2. livreto (D-316, imp-4)
         self.grupo_livreto, form = secao("Livreto")
         self.combo_caderno = QComboBox()
         for valor in OPCOES_CADERNO:
-            self.combo_caderno.addItem(f"{valor} páginas", valor)
-        form.addRow("Cada caderno:", self.combo_caderno)
+            self.combo_caderno.addItem(str(valor), valor)
+        form.addRow("Páginas por caderno:", self.combo_caderno)
         self.combo_encadernacao = _lista((imp.ESQUERDA, imp.DIREITA),
-                                         {imp.ESQUERDA: "costura à esquerda",
-                                          imp.DIREITA: "costura à direita"})
+                                         {imp.ESQUERDA: "Esquerda",
+                                          imp.DIREITA: "Direita"})
         form.addRow("Encadernação:", self.combo_encadernacao)
         self.combo_lados = _lista((imp.AMBOS, imp.SO_FRENTE, imp.SO_VERSO),
-                                  {imp.AMBOS: "frente e verso", imp.SO_FRENTE: "só a frente",
-                                   imp.SO_VERSO: "só o verso"})
-        form.addRow("Imprimir:", self.combo_lados)
+                                  {imp.AMBOS: "Frente e verso", imp.SO_FRENTE: "Só a frente",
+                                   imp.SO_VERSO: "Só o verso"})
+        form.addRow("Ordem de páginas:", self.combo_lados)
         self.folhas_de, self.folhas_ate = _numero_ou_todas(), _numero_ou_todas()
-        form.addRow("Folhas de papel:", _de_ate(self.folhas_de, self.folhas_ate))
+        form.addRow("Folhas de (0 = todas):", _de_ate(self.folhas_de, self.folhas_ate))
 
         # 3. várias por folha e pôster
         self.grupo_multiplo, form = secao("Várias páginas por folha")
         self.combo_por_folha = _lista(imp.POR_FOLHA, {n: str(n) for n in imp.POR_FOLHA})
         form.addRow("Páginas por folha:", self.combo_por_folha)
         self.combo_ordem = _lista((imp.HORIZONTAL, imp.VERTICAL),
-                                  {imp.HORIZONTAL: "deitada (linha por linha)",
-                                   imp.VERTICAL: "em pé (coluna por coluna)"})
+                                  {imp.HORIZONTAL: "Horizontal",
+                                   imp.VERTICAL: "Vertical"})
         form.addRow("Ordem:", self.combo_ordem)
         self.cx_moldura, bloco = _caixinha("Moldura em volta de cada página")
         form.addRow(bloco)
@@ -479,7 +494,7 @@ class DialogoImpressao(QDialog):
         form.addRow(bloco)
 
         # 4. escala de cada lado (D-317, imp-1, imp-2, imp-3)
-        _bloco, form = secao("Tamanho de cada lado")
+        _bloco, form = secao("Escala de cada lado")
         form.addRow(_explicacao("Em % sobre o tamanho escolhido acima. Página diminuída fica no "
                                 "meio da sua metade."))
         self.escala_esquerda = _por_cento()
@@ -488,8 +503,8 @@ class DialogoImpressao(QDialog):
         form.addRow("Páginas da direita (ímpares):", self.escala_direita)
         self.excecoes = QLineEdit()
         self.excecoes.setPlaceholderText("ex.: 12=90; 15=85")
-        self.excecoes.setToolTip("Uma página só, com outro tamanho: número da página do livro = %.")
-        form.addRow("Uma página só:", self.excecoes)
+        self.excecoes.setToolTip("Uma página só, com outra escala: número da página do livro = %.")
+        form.addRow("Só uma página:", self.excecoes)
         form.addRow(_explicacao("Número da página do livro = tamanho em %. Vale só para "
                                 "aquela página, não para a folha inteira."))
 
@@ -501,38 +516,38 @@ class DialogoImpressao(QDialog):
             "texto passar disso.")
         form.addRow(bloco)
         self.cx_girar, bloco = _caixinha(
-            "Girar sozinho a página deitada",
-            "Uma tabela deitada fica de pé na folha, com o alto à esquerda.")
+            "Rotação automática",
+            "Página deitada gira de pé.")
         form.addRow(bloco)
-        self.cx_centralizar, bloco = _caixinha("Centralizar sozinho")
+        self.cx_centralizar, bloco = _caixinha("Centralizar automático")
         form.addRow(bloco)
 
         # 6. o resto da janela do UPDF (imp-6)
         _bloco, form = secao("Outras opções")
         self.paginas_de, self.paginas_ate = _numero_ou_todas(), _numero_ou_todas()
-        form.addRow("Páginas do livro:", _de_ate(self.paginas_de, self.paginas_ate))
+        form.addRow("Páginas do livro de (0 = todas):", _de_ate(self.paginas_de, self.paginas_ate))
         self.cx_imagem, bloco = _caixinha("Imprimir como imagem",
                                           "Ligada de fábrica: sem ela pode sair algo errado.")
         form.addRow(bloco)
-        self.cx_cinza, bloco = _caixinha("Imprimir em tons de cinza")
+        self.cx_cinza, bloco = _caixinha("Imprimir em escala de cinza")
         form.addRow(bloco)
-        self.cx_reverter, bloco = _caixinha("Ordem invertida",
+        self.cx_reverter, bloco = _caixinha("Reverter páginas",
                                             "Da última folha para a primeira.")
         form.addRow(bloco)
 
         # 7. impressora (imp-5)
-        _bloco, form = secao("Impressora (só para mandar direto)")
+        _bloco, form = secao("Impressora (para mandar direto)")
         self.combo_impressora = QComboBox()
         self.combo_impressora.setSizeAdjustPolicy(
             QComboBox.SizeAdjustPolicy.AdjustToMinimumContentsLengthWithIcon)
         self.combo_impressora.setMinimumContentsLength(14)
-        self.combo_impressora.addItem("a de sempre do Windows", "")
+        self.combo_impressora.addItem("(a de sempre do Windows)", "")
         form.addRow("Impressora:", self.combo_impressora)
         self.copias = QSpinBox()
         self.copias.setRange(1, 99)
         self.copias.setFixedWidth(90)
         form.addRow("Cópias:", self.copias)
-        self.cx_agrupar, bloco = _caixinha("Agrupar as cópias",
+        self.cx_agrupar, bloco = _caixinha("Agrupar",
                                            "Sai o livro inteiro, depois o livro inteiro de novo.")
         self.cx_agrupar.setChecked(True)
         form.addRow(bloco)
@@ -601,7 +616,7 @@ class DialogoImpressao(QDialog):
         self.botao_gravar.clicked.connect(self._gravar)
         self.botao_imprimir = QPushButton("mandar para a impressora...")
         self.botao_imprimir.clicked.connect(self._imprimir)
-        self.botao_cancelar = QPushButton("parar")
+        self.botao_cancelar = QPushButton("cancelar")
         self.botao_cancelar.clicked.connect(self._cancelar)
         self.botao_cancelar.setEnabled(False)
         self.botao_fechar = QPushButton("fechar")
