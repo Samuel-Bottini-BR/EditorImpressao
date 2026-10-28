@@ -78,8 +78,13 @@ principal.
 
 ## 3. O que falta (ordem)
 1. **Terminar o fim:** a suíte do GitHub (`40624566910`, ramo `obra-2026-10-26` em `fc38afd`) **passou inteira (verde)**.
-   A suíte inteira no PC (com os agentes parados) ainda estava rodando no fechamento: rodar de novo se não houver
-   resultado (`..\..\..\.venv\Scripts\python.exe -m pytest tests -q --basetemp _tmp\suite` na `obra-juncao`).
+   **Suíte inteira no PC (28/10, sem agentes, 2 h 39 min — o PC estava ocupado):** 3310 passaram, 6 falharam, 1 erro.
+   As 5 falhas abaixo **passam rodando sozinhas** (dependem da ordem dos testes ou do PC ocupado); a 6ª,
+   `test_desentortar_conferir_de_novo::test_destino_do_socialismo_18...`, já falhava no código de antes (etapa 4).
+   Antes de levar ao `fase-1` é preciso achar a causa e deixar a suíte do PC verde (regra §4.6):
+   `test_girar_na_tela::test_as_teclas_do_giro_nao_brigam_com_nenhuma_outra`, `test_gravar_por_tras::test_folhear_com_o_disco_lento_nao_para_a_janela`,
+   `test_paineis_na_tela::test_a_faixa_tem_esta_certo_e_proxima_duvida`, `test_sem_janela_na_tela::test_caixa_modal_sem_resposta_e_fechada_pelo_vigia_e_o_teste_falharia`,
+   `test_tirar_da_lista_nao_volta::test_tirar_OUTRO_livro_nao_solta_o_aberto`; o erro (1) está na saída da rodada.
 2. **Teste do Kaique de novo** (agente leigo, janela fora da tela, dados isolados, só as tarefas nas palavras do
    Kaique; o relatório de 26/10 está no ramo `teste-kaique-2026-10-26`).
 3. **Verificador contra o Livro** (quem confere não é quem construiu; `CLAUDE.md` §11 regra 5).
