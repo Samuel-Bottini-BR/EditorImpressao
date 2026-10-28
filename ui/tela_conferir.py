@@ -1640,7 +1640,7 @@ class TelaConferir(QWidget):
         coluna.addWidget(frase_do_painel(
             "Rápida: abre logo. Alta: mais nítida no zoom, demora mais por página."))
         coluna.addSpacing(6)
-        coluna.addWidget(self._parte_do_livro(
+        parte = self._parte_do_livro(
             ["Cortar a beirada da folha vizinha: "
              + ("sim" if getattr(self.projeto, "cortar_sobra", False) else "não"),
              # item 2.5 (G8): o corte que segue o conteudo
@@ -1649,7 +1649,45 @@ class TelaConferir(QWidget):
              # item 2.13 (g7): a borda preta do scanner
              "Página dentro da borda preta: "
              + (_nome_da_borda(self.projeto) if getattr(self.projeto, "borda_preta", False)
-                else "não")], "cortar"))
+                else "não")], "cortar")
+        # Etapa 9b-2 da obra (D-554, 27/10/2026, Central `ac-margens-iguais`:
+        # "Também na tela do corte"; confirma a D-494; D-075: a caixinha
+        # "Margens iguais", desmarcada de fábrica): a MESMA caixinha da etapa
+        # "Margens iguais" do Automático, aqui na parte "Para o livro todo" do
+        # Cortar. Mexe no mesmo valor do livro (Projeto.margens_iguais), numa
+        # ação do desfazer (_mudar_margens_iguais); o Automático mostra o que o
+        # livro tem depois. Arriscado: guardar o valor em outro lugar (as duas
+        # caixinhas deixariam de concordar).
+        layout_da_parte = parte.layout()
+        self.caixa_margens_iguais = QCheckBox("Margens iguais")
+        estilo.estilizar(self.caixa_margens_iguais, lambda: estilo_da_caixinha_com_quadrado(13))
+        self.caixa_margens_iguais.setCursor(Qt.PointingHandCursor)
+        self.caixa_margens_iguais.setFocusPolicy(Qt.NoFocus)
+        self.caixa_margens_iguais.setToolTip(
+            "Todas as páginas do tamanho da maior, com a margem em volta (a mesma caixinha "
+            "da etapa \"Margens iguais\" do Automático).")
+        self.caixa_margens_iguais.setChecked(bool(getattr(self.projeto, "margens_iguais", False)))
+        self.caixa_margens_iguais.toggled.connect(self._mudar_margens_iguais)
+        layout_da_parte.insertWidget(layout_da_parte.count() - 1, self.caixa_margens_iguais)
+        coluna.addWidget(parte)
+
+    @protegido
+    def _mudar_margens_iguais(self, ligada: bool) -> None:
+        """A caixinha "Margens iguais" do Cortar (D-554): liga ou desliga as
+        margens iguais do LIVRO (o mesmo valor da etapa do Automático), numa
+        ação do Histórico (o Ctrl+Z desfaz), e o painel Automático passa a
+        mostrar o que o livro tem."""
+        if self.projeto is None or self.acoes is None:
+            return
+        ligada = bool(ligada)
+        if ligada == bool(getattr(self.projeto, "margens_iguais", False)):
+            return
+        self._gravar_no_livro("margens_iguais", ligada,
+                              "Margens iguais " + ("ligadas" if ligada else "desligadas"))
+        try:
+            self.paineis.automatico.estado.do_projeto(self.projeto)
+        except Exception:  # noqa: BLE001 - o painel é ajuda; nunca desfaz a mudança
+            registrar_erro("margens iguais no Automatico", traceback.format_exc())
 
     def _escolher_tamanho_da_folha(self) -> None:
         """Problema 1, opção A: digitar o tamanho final em vez de arrastar.
@@ -4326,6 +4364,13 @@ class TelaConferir(QWidget):
 
         if ABA_ANGULO in self._abas_ativas:
             self._atualizar_conta_do_endireitar()
+
+        if hasattr(self, "caixa_margens_iguais"):
+            # D-554: a caixinha do Cortar mostra o valor do livro (mudado aqui,
+            # no Automático ou pelo desfazer), sem sinal (mostrar não é mudar)
+            self.caixa_margens_iguais.blockSignals(True)
+            self.caixa_margens_iguais.setChecked(bool(getattr(self.projeto, "margens_iguais", False)))
+            self.caixa_margens_iguais.blockSignals(False)
 
         if ABA_FILTRO in self._abas_ativas:
             self._configurar_medidor()

@@ -673,70 +673,11 @@ def test_d497_livro_com_o_aviso_do_livro_nao_ganha_aviso_por_pagina(tmp_path):
 
 
 # =============================================================================
-# Item 2 - D-532: gravura de fundo escuro e foto de retícula em tons de cinza
-# (conta pronta e DESLIGADA de fábrica: escolha da gerente, pergunta ao Samuel)
+# Item 2 - D-532 saiu (etapa 9b-2, D-564, 27/10/2026: Samuel, `ac-gravura-cinza`:
+# "Não fazer: gravura continua em preto e branco (recomendo)"). Fica a prova de
+# que a gravura de fundo escuro continua em 1 bit; a de que a chave saiu está em
+# tests/test_decisoes_9b2.py.
 # =============================================================================
-
-@pytest.fixture
-def _d532_ligada(monkeypatch):
-    """A conta da D-532 ligada (de fábrica está desligada)."""
-    from core import filtros
-
-    monkeypatch.setattr(filtros, "GRAVURA_ESCURA_EM_CINZA", True)
-
-
-def _gravura_de_fundo_escuro() -> np.ndarray:
-    """Página de 1000 x 1400 (papel 240) com uma faixa de gravura em madeira
-    de fundo escuro manchado (cinza ~90) e um filete claro (230), como a
-    moldura dos alfabetos do Palatino 70 e 74, de (100,100) a (200,900).
-    Estreita de propósito: a zona larga e lisa já é "foto" pela regra antiga
-    (pouco traço), e aqui interessa a gravura que hoje sai como desenho."""
-    rng = np.random.default_rng(3)
-    img = np.full((1400, 1000), 240, np.float32)
-    fundo = 90 + 30 * cv2.GaussianBlur(rng.normal(0, 1, (800, 100)).astype(np.float32), (0, 0), 3)
-    img[100:900, 100:200] = fundo + rng.normal(0, 12, fundo.shape)
-    img[150:850, 140:160] = 230
-    return cv2.cvtColor(img.clip(0, 255).astype(np.uint8), cv2.COLOR_GRAY2BGR)
-
-
-def _hachura() -> np.ndarray:
-    """A mesma faixa em gravura de traço (riscos de 2 pontos a cada 6, papel
-    entre eles), como a hachura do Valadés 41."""
-    img = np.full((1400, 1000), 240, np.uint8)
-    for y in range(100, 900, 6):
-        img[y:y + 2, 100:200] = 40
-    return cv2.cvtColor(img, cv2.COLOR_GRAY2BGR)
-
-
-def _foto_da_zona(img3: np.ndarray) -> bool:
-    """O Preto e branco trata a zona marcada como foto (tons de cinza)?"""
-    from core import filtros
-
-    peso = np.zeros(img3.shape[:2], np.float32)
-    peso[100:900, 100:200] = 1.0
-    _rotulos, foto, _decoracao, _ref = filtros._tipos_das_zonas(img3, peso)
-    return bool(foto[1:].any())
-
-
-def test_d532_desligada_de_fabrica_nada_muda():
-    """Ordem do Samuel de 27/10/2026 (pela gerente): "é só para fazer o que eu
-    já tinha mandado" - a D-532 é escolha da gerente; a conta fica pronta e
-    desligada. De fábrica, a gravura de fundo escuro continua saindo como
-    desenho de 1 bit, como hoje."""
-    from core import filtros
-
-    assert filtros.GRAVURA_ESCURA_EM_CINZA is False
-    assert not _foto_da_zona(_gravura_de_fundo_escuro())
-
-
-def test_d532_ligada_gravura_de_fundo_escuro_vira_tons_de_cinza(_d532_ligada):
-    """D-532 (escolha da gerente, 27/10/2026): "Gravura de fundo escuro
-    (Palatino 70 e 74, fotos de retícula do Righetti) no Preto e branco sai em
-    tons de cinza, como as fotos, em vez de 1 bit." Com a conta ligada, a zona
-    de fundo escuro passa a ser tratada como foto; a hachura de traço, não."""
-    assert _foto_da_zona(_gravura_de_fundo_escuro())
-    assert not _foto_da_zona(_hachura())
-
 
 def _palatino_no_preto_e_branco(tmp_path, numero: int):
     """A página do Palatino do acervo como livro novo de fábrica, no Preto e
@@ -775,28 +716,9 @@ def _em_tons(img: np.ndarray) -> float:
     return float(((cinza > 10) & (cinza < 245)).mean())
 
 
-def test_d532_palatino_74_hoje_sai_em_1_bit(tmp_path):
-    """Página de verdade, de fábrica (conta desligada): o Palatino 74 sai como
-    hoje, em 1 bit (o chuvisco que a pergunta 3 da etapa 10b mostrou)."""
+def test_d564_palatino_74_continua_em_1_bit(tmp_path):
+    """D-564 (27/10/2026, `ac-gravura-cinza`: "Não fazer: gravura continua em
+    preto e branco (recomendo)"). Página de verdade, livro novo de fábrica,
+    Preto e branco: o Palatino 74 (gravura de fundo escuro) sai em 1 bit."""
     img, mono = _palatino_no_preto_e_branco(tmp_path, 74)
     assert mono and _em_tons(img) == 0.0
-
-
-@pytest.mark.parametrize("numero", [74, 70])
-def test_d532_ligada_palatino_de_fundo_escuro_sai_em_tons_de_cinza(tmp_path, _d532_ligada,
-                                                                     numero):
-    """Prova do Livro (com a conta ligada): "Palatino 74 no Preto e branco →
-    gravura em cinza sem chuvisco". Medida: a página deixa de ser 1 bit e mais
-    da metade dela (a gravura ocupa ~90%) fica em tons de cinza."""
-    img, mono = _palatino_no_preto_e_branco(tmp_path, numero)
-    assert not mono
-    assert _em_tons(img) > 0.5
-
-
-@pytest.mark.parametrize("numero", [5, 69])
-def test_d532_ligada_gravura_de_traco_continua_em_1_bit(tmp_path, _d532_ligada, numero):
-    """Guarda: com a conta ligada, a gravura de traço (o retrato do Palatino 5,
-    com o papel dentro dela branco - D-126) e o alfabeto mais claro do
-    Palatino 69 continuam em 1 bit."""
-    img, mono = _palatino_no_preto_e_branco(tmp_path, numero)
-    assert mono
