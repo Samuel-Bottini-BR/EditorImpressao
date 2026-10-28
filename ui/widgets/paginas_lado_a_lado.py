@@ -157,7 +157,9 @@ class PaginasLadoALado(PaginasRolando):
     def _altura_da_linha(self, proporcoes: float, largura: float, altura: float) -> float:
         """A altura da linha do "caber a página" (o par inteiro na tela)
         vezes o zoom (D-570)."""
-        return super()._altura_da_linha(proporcoes, largura, altura) * self.zoom
+        # getattr: a arrumação pode rodar ainda dentro do __init__ da classe-mãe
+        # (num resize), antes de o zoom existir
+        return super()._altura_da_linha(proporcoes, largura, altura) * getattr(self, "zoom", 1.0)
 
     def wheelEvent(self, evento) -> None:  # noqa: N802 - nome do Qt
         """Ctrl+roda dá zoom (D-568); sem Ctrl, rola como sempre."""

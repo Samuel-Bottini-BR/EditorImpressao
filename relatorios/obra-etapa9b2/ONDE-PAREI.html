@@ -1,0 +1,498 @@
+<!doctype html>
+<html lang="pt-BR">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Obra de 26/10/2026 — etapa 9b-2 (a área de trabalho): ONDE PAREI</title>
+<style>
+:root { color-scheme: light dark; }
+* { box-sizing: border-box; }
+body {
+  font: 17px/1.65 "Segoe UI", system-ui, sans-serif;
+  max-width: 46rem; margin: 0 auto; padding: 2.5rem 1.5rem 6rem;
+  color: #1c1c1e; background: #fdfdfc;
+}
+h1 { font-size: 2rem; line-height: 1.2; margin: 0 0 .3em; letter-spacing: -.02em; }
+h2 { font-size: 1.35rem; margin: 2.4em 0 .6em; padding-top: .8em;
+     border-top: 1px solid #e6e4e0; letter-spacing: -.01em; }
+h3 { font-size: 1.1rem; margin: 1.8em 0 .4em; }
+h1 + p, h2 + p { margin-top: .4em; }
+p, li { margin: 0 0 .9em; }
+ul, ol { padding-left: 1.3em; }
+strong { font-weight: 640; }
+code {
+  font: .88em ui-monospace, "Cascadia Code", Consolas, monospace;
+  background: #f1efec; padding: .12em .35em; border-radius: 4px;
+}
+pre {
+  background: #f1efec; padding: 1em 1.1em; border-radius: 8px;
+  overflow-x: auto; line-height: 1.5;
+}
+pre code { background: none; padding: 0; }
+blockquote {
+  margin: 1.2em 0; padding: .1em 0 .1em 1.1em;
+  border-left: 3px solid #c9c5be; color: #55524d;
+}
+table {
+  border-collapse: collapse; width: 100%; margin: 1.2em 0;
+  font-size: .95rem; display: block; overflow-x: auto;
+}
+th, td { padding: .5em .8em; text-align: left; border-bottom: 1px solid #e6e4e0; }
+th { font-weight: 620; background: #f7f5f2; white-space: nowrap; }
+tr:last-child td { border-bottom: none; }
+img { max-width: 100%; height: auto; border-radius: 6px; margin: 1em 0;
+      border: 1px solid #e6e4e0; }
+hr { border: none; border-top: 1px solid #e6e4e0; margin: 2.5em 0; }
+.rodape { margin-top: 4em; padding-top: 1.2em; border-top: 1px solid #e6e4e0;
+          font-size: .85rem; color: #86827c; }
+@media (prefers-color-scheme: dark) {
+  body { color: #e8e6e3; background: #1a1917; }
+  h2 { border-top-color: #35332f; }
+  code, pre, th { background: #262421; }
+  th, td { border-bottom-color: #35332f; }
+  blockquote { border-left-color: #4a4741; color: #b0aca6; }
+  img { border-color: #35332f; }
+  .rodape { border-top-color: #35332f; color: #7d7973; }
+}
+@media print {
+  body { max-width: none; padding: 0; color: #000; background: #fff; }
+  h2 { page-break-after: avoid; }
+  table, img { page-break-inside: avoid; }
+}
+</style>
+</head>
+<body>
+<h1>Obra de 26/10/2026 — etapa 9b-2 (a área de trabalho): ONDE PAREI</h1>
+<p>Ramo <code>obra-etapa9b2-2026-10-26</code> (base <code>obra-2026-10-26</code> = <code>27b4c52</code>), worktree <code>.claude/worktrees/obra-etapa9b2</code>.
+Agente: layout + implementador. Ao mesmo tempo, a etapa 9b-1 mexe em menus, impressão e janelas
+(<code>ui/janela_principal.py</code>, <code>ui/barra_de_menu.py</code>, <code>ui/dialogo_impressao.py</code>, <code>ui/janela_confirmar.py</code>,
+<code>ui/widgets/paineis.py</code>, <code>modelos.nome_de_saida_sugerido</code>): <strong>não mexi em nenhum deles</strong> (só chamei métodos que já
+existiam neles: <code>paineis.automatico.estado.do_projeto</code> e o atributo <code>medida_ao_abrir</code> da janela).</p>
+<p>Regra 7 (Samuel, 27/10/2026): "é só para fazer o que eu já tinha mandado, fazer as ferramentas que colocamos no
+programa funcionem como deveriam e como eu tinha escolhido."</p>
+<p><strong>Situação: PRONTO PARA CONFERIR</strong> (27-28/10/2026). Falta: verificador separado, conferência do Samuel. Nada juntado.</p>
+<h2>Em uma frase</h2>
+<p>Agora a grade "Todas as páginas" divide as folhas escolhidas (com a conta do ScanTailor do "dividir esta", com
+andamento); a faixa preta da tampa do scanner some também pelo Automático, cortada ou pintada de branco como o livro
+escolher; as telas e as miniaturas mostram a página movida como sai no PDF, e a tela troca pela imagem do PDF quando
+ela fica pronta, com as duas bolinhas de carregamento; com zoom a roda anda pela página e o lado a lado tem zoom; o
+Cortar tem a caixinha "Margens iguais"; o desfazer tira o retângulo marcado (e ele não sai mais impresso) e devolve
+os avisos; o "usar em todas" do Dividir pergunta em quais folhas; "letra e traço" à mão protege a tinta; e saíram as
+duas contas que o Samuel mandou tirar.</p>
+<h2>Decisões que esta tarefa precisa cumprir (número + palavras dele)</h2>
+<table>
+<thead>
+<tr>
+<th>Nº</th>
+<th>Palavras dele</th>
+<th>O que tem de ficar no programa</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>D-558 (27/10)</td>
+<td><code>ac-grade-inserir</code>: "quando falei dividir é dividir a pagina, usando a funcionalidade do scantailor que colocamos no aplicativo, é isso que deveria ser feito."</td>
+<td>"Dividir" na grade "Todas as páginas", nas folhas escolhidas, com a função de dividir do ScanTailor do programa (a mesma do "dividir esta"), com andamento. Sai a D-529.</td>
+</tr>
+<tr>
+<td>D-334 (24/09)</td>
+<td>(paráfrase) "Ver todas as páginas do livro em grade [...]: seleção múltipla, girar, apagar, extrair, inserir, dividir."</td>
+<td>(o "dividir" é a D-558; o "inserir" ficou para depois, D-567)</td>
+</tr>
+<tr>
+<td>D-559 (27/10)</td>
+<td><code>ac-tampa</code>: "Como eu decidi: sumir em todo o livro, e o Kaique escolhe por livro cortar ou pintar de branco (recomendo)"</td>
+<td>A faixa preta da tampa do scanner some em todo o livro, também no Automático; por livro, cortar ou pintar de branco. Substitui D-495/D-499 (só à mão).</td>
+</tr>
+<tr>
+<td>D-097 (13-21/10)</td>
+<td>"É para sumir totalmente." · "tem que ficar rente a folha de papel, não pode ter preto ali."</td>
+<td>Nada de preto da tampa no PDF.</td>
+</tr>
+<tr>
+<td>D-092 (09/10)</td>
+<td><code>rv5-pag-egenloff-047</code>: "O Kaique escolhe por livro"</td>
+<td>A escolha cortar / pintar de branco é do livro.</td>
+</tr>
+<tr>
+<td>D-547 (27/10)</td>
+<td>(escolha da gerente sobre D-066: "precisamos que o pdf saia que nem está na tela")</td>
+<td>Todas as telas e miniaturas mostram a página movida/redimensionada como sai no PDF.</td>
+</tr>
+<tr>
+<td>D-473 / D-066 / D-064</td>
+<td>D-066: "precisamos que o pdf saia que nem está na tela" · D-064: "é só colocar uma bolinha de carregamento, pode ter uma pro livro inteiro e outra para a pagina que estamos, quando passsamos o mouse em cima mostra a mensagem de porcentagem e quantas paginas carregaram já."</td>
+<td>Quando a medida no tamanho do PDF termina, a tela troca pela imagem do PDF reduzida (troca da 10b, <code>ui/tarefas.py</code>), e as duas bolinhas.</td>
+</tr>
+<tr>
+<td>D-568 (27/10)</td>
+<td><code>v-roda</code>: "Como ficou: sem zoom troca de página; Ctrl + roda dá zoom"</td>
+<td>Com zoom, a roda anda pela página.</td>
+</tr>
+<tr>
+<td>D-570 (27/10)</td>
+<td><code>v-zoom-pares</code>: "Sim, zoom também no lado a lado"</td>
+<td>O "– N% +" vale no "Duas lado a lado".</td>
+</tr>
+<tr>
+<td>D-571 (27/10)</td>
+<td><code>v-100</code>: "A página inteira cabendo na tela (recomendo)"</td>
+<td>Conferir: 100% = página inteira cabendo.</td>
+</tr>
+<tr>
+<td>D-554 / D-494 / D-075</td>
+<td><code>ac-margens-iguais</code>: "Também na tela do corte" · D-075: "Mas eu vou conseguir alterar isso né?"</td>
+<td>Caixinha "Margens iguais" também na tela do Cortar, ligada ao mesmo valor do Automático.</td>
+</tr>
+<tr>
+<td>D-563 (27/10)</td>
+<td><code>ac-desentortar-texto</code>: "Tirar, voltar como era antes (recomendo)"</td>
+<td>Sai a conta "desentortar só o bloco do texto" (D-493/D-530), com os testes dela.</td>
+</tr>
+<tr>
+<td>D-564 (27/10)</td>
+<td><code>ac-gravura-cinza</code>: "Não fazer: gravura continua em preto e branco (recomendo)"</td>
+<td>Sai a chave <code>GRAVURA_ESCURA_EM_CINZA</code> (D-532), com os testes dela.</td>
+</tr>
+<tr>
+<td>D-020 (18/07) + P-129</td>
+<td>"13. Ctrl+Z desfaz qualquer alteração, sem limite de quantidade, e Ctrl+Shift+Z refaz"</td>
+<td>O desfazer tira a marcação do Retângulo (lista 1.3, 1.9, 4.6); o aviso volta (1.6); o desfazer não desfaz o que não está à vista (1.7).</td>
+</tr>
+<tr>
+<td>D-090 / D-091 + P-061</td>
+<td>"eu devo conseguir abrir uma aba para selecionar as que eu quero ( as paginas) ou também simplismente apertar num botão e selecionar todas." · "'Selecionar todas' e 'Nenhuma'"</td>
+<td>"usar em todas" (Cortar e Dividir) abre a lista com as exceções desmarcadas e nunca apaga exceção.</td>
+</tr>
+<tr>
+<td>D-156 (01/10)</td>
+<td>"espero ter a escolha de conseguir deixar a foto em original, caso precise."</td>
+<td>"Só neste pedaço" vale também no Preto e branco / sem "Limpar a folha".</td>
+</tr>
+<tr>
+<td>Lista de bugs 12/10</td>
+<td>(bug) "letra e traço" marcado à mão não protege a tinta do "Só as letras"</td>
+<td>A marcação à mão protege a tinta.</td>
+</tr>
+<tr>
+<td>Lista de bugs 22/10</td>
+<td>(bug) botões que aparecem por um instante como janelinhas soltas ao abrir</td>
+<td>Não piscam.</td>
+</tr>
+<tr>
+<td>Lista de espera 29/09</td>
+<td>"Recuperar o trabalho anterior" no menu do cartão (ideia de agente, "a definir")</td>
+<td>Não é decisão do Samuel no Livro: fica como está, vira pergunta.</td>
+</tr>
+<tr>
+<td>D-114 (18/07)</td>
+<td>"PRETO E BRANCO → slider 'Força do preto' [...] MÁGICO PRO → slider 'Intensidade' [...] MELHORAR → slider 'Clareza do fundo'"</td>
+<td>(lista 1.2 e 5.9) o aviso da "força do preto" só na página de Preto e branco.</td>
+</tr>
+<tr>
+<td>D-037 / D-052</td>
+<td>R7 203: "D — Ícones na borda, tudo fechado" · R13 802: "A — Abre sozinho"</td>
+<td>(lista 2.3) os painéis começam fechados e o Propriedades abre ao escolher Dividir/Cortar/Endireitar: como ele decidiu, nada a mudar.</td>
+</tr>
+<tr>
+<td>Lista única 1.2, 5.9, 1.4, 1.5, 1.10, 1.11, 1.13, 3.2, 2.3, 2.6, 5.3, 5.6, 5.7</td>
+<td>(ver <code>relatorios/testes-guiados/lista-unica-2026-10-23/lista.md</code>)</td>
+<td>Conferir o que as etapas anteriores já resolveram; fazer só o que falta, como o Livro decide.</td>
+</tr>
+</tbody>
+</table>
+<h2>Como cumpri cada uma</h2>
+<p>Provas em <code>tests/test_decisoes_9b2.py</code> (30 testes; todos passam aqui). <strong>Reversão</strong> no código antigo (<code>27b4c52</code>):
+<strong>25 falham lá, 5 passam</strong> — os 5 são guardas de propósito (ver "Testes"). Prints da janela de verdade (1280×657 fora da
+tela; a tela do PC está a 125%, os prints saem 1600×821) em <code>relatorios/obra-etapa9b2/prints/</code> (roteiro
+<code>roteiro/prints.py</code>, cliques por mensagens do Windows; abri e olhei todos).</p>
+<table>
+<thead>
+<tr>
+<th>Decisão / item</th>
+<th>O que ficou no programa</th>
+<th>Prova</th>
+<th>Print</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><strong>D-558</strong></td>
+<td>Botão <strong>"dividir"</strong> na faixa das escolhidas da grade. Divide as folhas das páginas escolhidas que saem como uma página só, pela MESMA conta do "dividir esta" (<code>core/dividir_a_mao.medir_para_dividir</code>: a folha girada como está, a tampa, a lombada pelo jeito da folha — o do ScanTailor de fábrica; as marcações à mão vão para a metade em que estão, D-528). Por trás (<code>ui/tarefas.TarefaDividirFolhas</code>), com a caixa "Dividindo as folhas escolhidas... 3 de 12" e "parar" (parar não muda nada). O livro muda numa ação só do desfazer; a grade volta com as páginas novas escolhidas. Folha já dividida fica como está.</td>
+<td><code>test_d558_*</code> (ScanTailor chamado nas 2 folhas, linha na lombada, só elas divididas, 1 ação, PDF com 6 páginas, Ctrl+Z junta); promessa P-196</td>
+<td><code>depois-03-grade-dividir.png</code>, <code>depois-04-grade-depois-de-dividir.png</code></td>
+</tr>
+<tr>
+<td><strong>D-559</strong></td>
+<td>O Automático procura a tampa em <strong>toda folha que ele olha</strong> (a regra da etapa 4, que não pega moldura impressa: varredura das 2.903 folhas, <code>relatorios/obra-etapa4/varrer-tampa-acervo.json</code>) e mede o resto na folha já sem ela; a folha guarda a tampa na mesma ação do Automático. O que fazer com ela é a escolha do livro <strong>"O que fica fora da página: cortar fora / pintar de branco"</strong> (a mesma da D-092, <code>Projeto.borda_preta_fazer</code>; "cortar fora" de fábrica): pintar = a faixa sai branca (como na etapa 4); cortar = sai branca E a página é cortada na beirada da tampa (<code>dividir_a_mao.corte_sem_a_tampa</code>; o corte feito à mão vale como está). A escolha agora fica à vista no Automático também com a borda preta desmarcada (vale para as duas).</td>
+<td><code>test_d559_*</code> (3 folhas como o Righetti, Automático só com Endireitar: tampa nas 3, nenhuma faixa no PDF; "cortar" → página mais baixa; "pintar" → do tamanho da folha, faixa branca; Ctrl+Z tira; moldura impressa preta inteira; a escolha à vista). Os 3 testes da etapa 4 que provavam "pelo Automático a faixa fica" foram trocados para a regra nova (o Righetti 96 de verdade: 0 linhas pretas também pelo Automático).</td>
+<td><code>depois-14-righetti-girado-com-a-faixa-da-tampa.png</code> × <code>depois-15-righetti-pelo-automatico-sem-a-faixa.png</code>, <code>depois-12-automatico-cortar.png</code></td>
+</tr>
+<tr>
+<td><strong>D-547</strong></td>
+<td>A página movida/redimensionada (ou numa folha escolhida, ou com margens iguais) aparece <strong>como sai no PDF</strong> (<code>TelaConferir._como_sai_no_pdf</code>: margens + <code>core.folha.compor_na_folha</code>, a mesma conta do PDF) no <strong>lado a lado</strong>, no <strong>"antes / depois"</strong>, na <strong>tela cheia dos filtros</strong>, nos <strong>cartões do painel Filtro</strong> e na <strong>miniatura</strong> dela. As ferramentas em que se marca, corta, divide ou endireita SOBRE a página continuam mostrando a página (D-546: a marcação e o corte são frações da página); o Mover já compunha.</td>
+<td><code>test_d547_*</code> (página a 60%: a caixa do texto no lado a lado, no antes/depois, na tela cheia e na miniatura é a do PDF, até 3%)</td>
+<td><code>depois-08-mover-60-por-cento.png</code>, <code>depois-09-lado-a-lado-com-a-pagina-movida.png</code></td>
+</tr>
+<tr>
+<td><strong>D-473 + D-064 (a troca da 10b)</strong></td>
+<td>Quando o desenho do tamanho do PDF da página da vez termina (<code>GerenciadorPrevias.pedir_medida</code>), a imagem volta <strong>reduzida</strong> (INTER_AREA, no fio de fundo) e entra no lugar da prévia na chave da prévia, se a página não mudou; a tela redesenha (<code>pronta</code>). Duas <strong>bolinhas</strong> na barra de baixo: a <strong>da página</strong> gira enquanto a prévia não chegou ou a imagem do PDF está sendo feita ("Esta página: preparando a imagem igual ao PDF..."), a <strong>do livro</strong> gira enquanto o livro é medido por trás (D-284) ou as marcações são preparadas, com "Livro: 45% (90 de 200 folhas já carregadas)" no balão. Paradas, não aparecem.</td>
+<td><code>test_d473_d064_*</code> (bolinha gira com a frase; quando chega, a prévia da tela é a imagem do PDF; bolinha para)</td>
+<td><code>depois-10-...png</code> (a bolinha da página aparece ao lado de "página 11 de 182")</td>
+</tr>
+<tr>
+<td><strong>D-568</strong></td>
+<td>Com zoom, a roda <strong>anda pela página</strong> (Shift ou a roda de lado: para os lados), parando na beirada; sem zoom troca de página; Ctrl+roda dá zoom. Na Mão/marcar e nas ferramentas de página.</td>
+<td><code>test_d568_*</code> (Mão e Endireitar)</td>
+<td><code>depois-06-zoom-156-roda-andou-para-baixo.png</code></td>
+</tr>
+<tr>
+<td><strong>D-570</strong></td>
+<td>O "– N% +", "ajustar à tela" e Ctrl+roda valem no "Duas lado a lado": 100% = o par inteiro na tela; acima, as páginas crescem (a da vez fica à vista; a roda rola, a barra de baixo vai para os lados).</td>
+<td><code>test_d570_*</code> (alturas × 1,25; Ctrl+roda; volta a 100%)</td>
+<td><code>depois-07-lado-a-lado-zoom-125.png</code></td>
+</tr>
+<tr>
+<td><strong>D-571</strong></td>
+<td>Conferido: "100%" já era a página inteira cabendo na tela (encosta na largura ou na altura, com a moldura). Nada mudou.</td>
+<td><code>test_d571_*</code></td>
+<td><code>depois-05-zoom-100-pagina-inteira.png</code></td>
+</tr>
+<tr>
+<td><strong>D-554</strong></td>
+<td>Caixinha <strong>"Margens iguais"</strong> no "Para o livro todo" do Cortar: liga/desliga as margens iguais do LIVRO (o mesmo valor da etapa do Automático, que passa a mostrá-la), numa ação do desfazer; mostra o valor do livro sempre.</td>
+<td><code>test_d554_*</code> (Automático acompanha, Ctrl+Z, PDF com as páginas do mesmo tamanho)</td>
+<td><code>depois-01-cortar-margens-iguais.png</code>, <code>depois-02-...marcada.png</code></td>
+</tr>
+<tr>
+<td><strong>D-563</strong></td>
+<td>Saiu a conta "só o bloco do texto" (<code>_so_o_bloco_do_texto</code>, <code>so_o_bloco</code>, os números) e os 2 testes dela; a caixa do conteúdo é a de sempre.</td>
+<td><code>test_d563_*</code></td>
+<td>—</td>
+</tr>
+<tr>
+<td><strong>D-564</strong></td>
+<td>Saiu <code>GRAVURA_ESCURA_EM_CINZA</code> e a conta (<code>_e_gravura_escura_ou_reticula</code>) e os 4 testes dela; ficou a prova de que o Palatino 74 sai em 1 bit.</td>
+<td><code>test_d564_*</code>, <code>test_decisoes_nucleo2.py::test_d564_palatino_74_continua_em_1_bit</code></td>
+<td>—</td>
+</tr>
+<tr>
+<td><strong>D-020 / P-129 / lista 1.3, 4.6, 1.7</strong></td>
+<td>Toda mudança da marcação (área nova, "Limpar tudo", "Deixar a folha em branco", procurar de novo, mexer numa área) vira <strong>uma ação do Histórico</strong> com a marcação de antes e de depois: o Ctrl+Z, o menu e o desfazer de baixo a tiram e o PDF sai sem ela. Antes ela ficava fora do Histórico, e o desfazer de baixo desfazia a ação ANTERIOR (no Righetti, o giro das 135 folhas: 1.7). O "desfazer" do painel Marcar usa o mesmo desfazer quando a última ação é a marcação da página.</td>
+<td><code>test_p129_*</code> (retângulo "pintar" branco sobre o texto: some no PDF; desfazer de baixo o tira, o giro fica, o texto volta; "Limpar tudo" + desfazer traz de volta); promessa P-129 sem "aguarda"</td>
+<td><code>depois-10-...png</code>, <code>depois-11-depois-do-desfazer-de-baixo.png</code></td>
+</tr>
+<tr>
+<td><strong>lista 1.6</strong></td>
+<td>Toda ação de página e de folha guarda os <strong>avisos de antes</strong> (<code>alertas</code>, <code>alertas_aceitos</code>), e o desfazer os devolve como eram (nem some, nem vem um a mais).</td>
+<td><code>test_lista_1_6_*</code></td>
+<td>—</td>
+</tr>
+<tr>
+<td><strong>lista 1.9</strong></td>
+<td>A área feita <strong>à mão</strong> ganha o contorno cheio na cor do tipo, por cima do colorido: aparece mesmo dentro de uma área do mesmo tipo achada pela máquina.</td>
+<td><code>test_lista_1_9_*</code> (medida no desenho do editor)</td>
+<td><code>depois-10-retangulo-a-mao-dentro-da-area-da-maquina.png</code></td>
+</tr>
+<tr>
+<td><strong>D-090 / P-061 (Dividir)</strong></td>
+<td>O "usar em todas" do Dividir abre <strong>"Em quais páginas?" com as folhas</strong> ("Folha 1"...; "Selecionar todas" / "Nenhuma"); a folha com a linha acertada à mão vem desmarcada ("linha própria") e fica com a dela; cancelar não muda nada.</td>
+<td><code>test_d090_usar_em_todas_do_dividir_*</code>; promessa P-061 sem "aguarda"</td>
+<td>— (janela de exec: provado no teste)</td>
+</tr>
+<tr>
+<td><strong>D-090 (Cortar / Bordas)</strong></td>
+<td>Conferido: já não apagava a exceção (item 2.13).</td>
+<td><code>test_d090_usar_em_todas_do_cortar_*</code> (guarda)</td>
+<td>—</td>
+</tr>
+<tr>
+<td><strong>D-156 "só neste pedaço"</strong></td>
+<td>Conferido: já valia no Preto e branco (conserto <code>60d8c58</code>) e sem "Limpar a folha" (etapa 1, D-009). Só a prova.</td>
+<td><code>test_d156_*</code> (guarda, nos dois casos)</td>
+<td>—</td>
+</tr>
+<tr>
+<td><strong>Bug 12/10 "letra e traço"</strong></td>
+<td>A área marcada à mão como "letra e traço" protege a tinta do "Só as letras" (<code>core/misto._letra_a_mao</code>, passada a <code>_fora_do_texto</code>): não é apagada nem contada como "de fora". Sem essa marcação, nada muda.</td>
+<td><code>test_bug_12_10_*</code> (modos "Guardar só o texto" e rede: a nota fica; o resto da página igual)</td>
+<td>—</td>
+</tr>
+<tr>
+<td><strong>Bug 22/10 botões que piscam</strong></td>
+<td>Os 3 botões do "Só as letras" e o "ver todas" das miniaturas não são mais mostrados antes de ter pai (viravam janelinhas soltas); os quadros da grade também não viram janela ao serem trocados.</td>
+<td><code>test_bug_22_10_*</code> (um vigia de janelas soltas)</td>
+<td>—</td>
+</tr>
+<tr>
+<td><strong>lista 1.2 + 5.9</strong></td>
+<td>O aviso "Ficou escura" / "Texto quase sumiu" (medido no cartão Preto e branco, com o botão da força do preto) só fica na página que sai em <strong>Preto e branco</strong> (como <code>analise.analisar_resultado</code> já dizia); ali o "usar mais fraco" muda a força do preto. Nas páginas de Mágico pro e Melhorar ele sai.</td>
+<td><code>test_lista_1_2_e_5_9_*</code></td>
+<td>—</td>
+</tr>
+<tr>
+<td><strong>lista 1.10</strong></td>
+<td>A Tab da "próxima dúvida" vai à próxima dúvida mesmo com o foco num botão ou lista da área de trabalho (um filtro de teclas da aplicação pega a Tab antes de o Qt usá-la para mudar o foco). Shift+Tab e outra tecla escolhida: como sempre.</td>
+<td><code>test_lista_1_10_*</code></td>
+<td>—</td>
+</tr>
+<tr>
+<td><strong>lista 1.11</strong></td>
+<td>Esc na grade "Todas as páginas" volta ao trabalho (como o botão; no "escolher páginas..." do Automático, como "cancelar").</td>
+<td><code>test_lista_1_11_*</code></td>
+<td>—</td>
+</tr>
+<tr>
+<td><strong>lista 5.3</strong></td>
+<td>A caixinha "Escurecer sozinho a força do preto quando o texto sair falhado" (Automático, Limpar) não fica mais <strong>cinza e marcada</strong>: fica acesa, dá para desmarcar (a frase embaixo continua dizendo que age com "Só as letras").</td>
+<td><code>test_lista_5_3_*</code></td>
+<td><code>depois-13-automatico-limpar.png</code></td>
+</tr>
+<tr>
+<td><strong>lista 1.4</strong></td>
+<td>Já consertado na etapa 10a ("alargado nunca menor").</td>
+<td>(etapa 10a)</td>
+<td>—</td>
+</tr>
+<tr>
+<td><strong>lista 2.3</strong></td>
+<td>Como ele decidiu (D-037 "tudo fechado", D-052 "Abre sozinho"; nomes no balão, R8 302): nada a mudar.</td>
+<td>—</td>
+<td>—</td>
+</tr>
+</tbody>
+</table>
+<h2>Testes (um arquivo por vez, no PC; TEMP e --basetemp em <code>_tmp/</code>)</h2>
+<ul>
+<li><strong>Novo:</strong> <code>tests/test_decisoes_9b2.py</code> <strong>30 passaram</strong>. Reversão (<code>relatorios/obra-etapa9b2/reversao-no-codigo-antigo.txt</code>):
+  <strong>25 falham no <code>27b4c52</code>, 5 passam</strong> — os 5 são guardas: D-563 "a caixa de sempre", D-571 (só conferir), D-090 no
+  Cortar e D-156 ×2 (já consertados antes desta etapa).</li>
+<li><strong>Rodados também (todos passando):</strong> test_decisoes 26 · test_decisoes_automatico 24 · test_decisoes_avisos 13 ·
+  test_decisoes_dividir 19 · test_decisoes_impressao 22 · test_decisoes_mover 13 · test_decisoes_nucleo 38 ·
+  test_decisoes_nucleo2 21 · test_decisoes_tela 35 · test_decisoes_ver 11 · test_trabalho_nao_se_perde 82 ·
+  test_etapa10a_nao_comer 8 · test_etapa10b_imagem 23 · test_promessas inteiro no PC: 254 passaram, 2 xfail, 4
+  falharam (p085 e p127, que falham no código antigo; p094 e p019, intermitentes — passam sozinhos) · test_borda_preta 29 · test_dividir_no_programa 19 ·
+  test_previa_composta 10 · test_misto_no_programa 41 · test_misto 31 · test_misto_consertos 25 ·
+  test_misto_no_projeto 12 · test_filtros_tela_cheia 11 · test_paineis_na_tela 22 · test_historico_depois_de_reabrir 11 ·
+  test_recomeco_limpa_o_historico 13 · test_zonas_na_folha 25 · test_so_neste_pedaco_no_original 22 ·
+  test_girar_cartoes_e_previas 23 · test_alerta_pb 5 · test_corte_pelo_conteudo_na_tela 13 ·
+  test_corte_pelo_conteudo_no_programa 16 · test_borda_preta_paginas_do_samuel 17 · test_livro_aberto 14 ·
+  test_dividir_na_tela 9 · test_avisos 34 · test_revisar 28 · test_para_revisar_na_tela 25.</li>
+<li><strong>Testes antigos mudados (e por quê):</strong></li>
+<li><code>test_decisoes.py</code>: saíram as 2 provas da conta do D-493 (D-563 mandou tirar a conta).</li>
+<li><code>test_decisoes_nucleo2.py</code>: saíram os 4 testes da conta ligada do D-532 (D-564); o "Palatino 74 sai em 1 bit" ficou,
+    renomeado para D-564.</li>
+<li><code>test_decisoes_ver.py</code>: o zoom com a roda e o zoom apagado no lado a lado (D-568 e D-570 trocam esses dois
+    comportamentos; os testes agora provam o novo).</li>
+<li><code>test_decisoes_dividir.py</code>: os 3 testes da tampa que provavam "pelo Automático a faixa fica" agora provam que sai
+    (D-559 substitui a D-495/D-499); nos sintéticos, a medida da faixa conta só linha preta de ponta a ponta (com o
+    "cortar fora" a página fica justa e as linhas de "texto" de mentira entram no alto dela).</li>
+<li><code>test_girar_cartoes_e_previas.py</code>: o "usar em todas" do Dividir agora abre a lista; o teste da pendência D2 responde
+    a lista (como já fazia no do Cortar).</li>
+<li><code>tests/promessas/promessas.md</code>: P-061 e P-129 sem "aguarda"; promessa nova <strong>P-196</strong> ("dividir" da grade,
+    com a prova <code>test_p196_dividir_as_escolhidas</code>: o <code>test_todo_botao_tem_promessa</code> exige promessa para o botão novo).</li>
+</ul>
+<h2>GitHub e velocidade</h2>
+<ul>
+<li><strong>Rodada 1</strong> <code>40610908787</code> (no <code>8b77477</code>): partes 4 e 5 e o <code>teste_botoes.py</code> passaram. Falharam: parte 2,
+  <code>test_decisoes_mover::test_d056_*</code> (mover/aumentar passou a jogar fora a prévia por causa dos avisos guardados para o
+  desfazer: consertado no <code>838cbdc</code>); parte 3, <code>test_girar_cartoes_e_previas[corte_em_todas]</code> (o "usar em todas" do
+  Dividir abria a lista antes de conferir a pendência D2: consertado no <code>577e6ec</code>); parte 1, <code>test_promessas.py</code>
+  passou do limite de 1.500 s.</li>
+<li><strong>Rodada 2</strong> <code>40613304910</code> (no <code>838cbdc</code>): partes 2 a 5 e o <code>teste_botoes.py</code> passaram; parte 1 de novo com
+  <code>test_promessas.py</code> no limite. Causa: cada tela de conferir instalava um filtro de teclas no programa (a Tab, 1.10) e
+  tinha um relógio de 400 ms (as bolinhas); numa bateria que abre centenas de janelas, todo evento passava por
+  centenas de filtros. Consertado no <code>8352986</code> (um filtro só para o programa; o relógio só com a tela à vista): no PC a
+  bateria inteira de promessas foi de "não termina" para 17 min.</li>
+<li><strong>Rodada 3</strong> <code>40620630318</code> (no <code>8352986</code>): <strong>partes 2, 3, 4 e 5 e o <code>teste_botoes.py</code> passaram; parte 1:
+  <code>test_promessas.py</code> 255 passaram, 3 falharam</strong> — <code>test_p085</code> (o tique do menu Filtro, D-492, da 9b-1) e
+  <code>test_p127</code> (o "Antes de processar" pelo menu, <code>janela_principal</code>), que falham também no <code>obra-2026-10-26</code> sem esta
+  etapa (rodada da etapa 7, <code>40601574220</code>), e <code>test_p094</code> (lista dos avisos), que é <strong>intermitente</strong>: depende de as
+  prévias das páginas vizinhas chegarem (e tirarem o "Parece em branco" falso que o teste põe em páginas com texto)
+  antes ou depois da conta; repeti no PC a dupla <code>p019</code>+<code>p094</code> no código antigo (<code>d347300</code>: 1 de 3 falha) e no novo
+  (<code>049525b</code>: 3 de 3 passam) — a etapa 10b já tinha anotado o p094 como intermitente.</li>
+<li>Depois da rodada 3 entraram só a promessa P-196 com a prova (<code>625a1ba</code>, rodada no PC) e uma guarda de uma linha no
+  zoom do lado a lado (<code>getattr</code>).</li>
+<li><strong>Filtro de velocidade</strong> <code>40610936683</code> (<code>27b4c52</code> × <code>8b77477</code>): <strong>"igual (dentro do vai-e-vem)"</strong> — Abrir o livro
+  +0,6%, Trocar de página −0,1%, Mágico pro (10 páginas) +0,7%, Preto e branco (10 páginas) −0,9%. As mudanças
+  depois do <code>8b77477</code> só tiram trabalho (a prévia que o mover jogava fora, os filtros e relógios a mais).</li>
+</ul>
+<h2>Somas "Desligado de fábrica"</h2>
+<p><strong>96 de 96 somas iguais</strong> (32 páginas do gabarito × Original / Preto e branco / Melhorar, livro novo de fábrica, a
+imagem que vai ao escritor do PDF; <code>relatorios/obra-etapa10b/scripts/somas_da_imagem.py</code> com o código antigo
+<code>27b4c52</code> e com o desta etapa: <code>somas-antes-27b4c52.json</code> × <code>somas-depois.json</code>). Nenhuma muda, e é o esperado: a tampa
+só existe depois do Automático ou de dividir; a proteção de "letra e traço" só com essa marcação à mão; as duas contas
+que saíram estavam desligadas. (Uma primeira rodada deu 49 diferentes porque a cópia do código antigo estava sem a
+junção <code>modelos</code> — o detector de gravura não carregava; com a junção, 96 de 96.)</p>
+<h2>Ressalvas (escritas, não escondidas)</h2>
+<ol>
+<li><strong>D-559 só no Automático e no dividir:</strong> um livro que nunca passa pelo Automático (nem é dividido à mão ou pela
+   grade) continua com a faixa, porque a medida por trás ao abrir só põe avisos (D-483) e "a página sempre abre em
+   Original, sem mexer" (D-134). Pergunta 1.</li>
+<li><strong>D-559 "cortar fora" é de fábrica</strong> (é o de fábrica da escolha da D-092): as folhas que a etapa 4 só pintava agora
+   também são cortadas na beirada da tampa. A escolha muda pelo Automático (etapa Cortar): para trocar só ela é
+   preciso rodar a etapa Cortar.</li>
+<li><strong>D-547 não vale nas ferramentas em que se mexe sobre a página</strong> (Marcar, Cortar, Dividir, Endireitar): lá a página
+   aparece sem o mover (D-546). A miniatura só mostra a página movida depois de a prévia dela ter sido desenhada (a
+   página que foi visitada; a que foi movida pelo "usar em todas" e nunca aberta continua crua na tira).</li>
+<li><strong>A troca da tela pela imagem do PDF (D-473)</strong> só acontece nas páginas em que a tela já pedia o desenho do tamanho
+   do PDF (a regra do "Para revisar" do "Só as letras", e o acerto da marcação provisória sem filtro não traz
+   imagem). Nas outras, a prévia já sai da mesma conta (etapa 10b). A tela cheia dos filtros não pede o desenho do PDF.</li>
+<li><strong>A roda do mouse de verdade</strong> não chega a uma janela fora da tela (como na etapa 6): o print 06 usou um evento de
+   roda do Qt mandado à página (o mesmo caminho da roda).</li>
+<li><strong>A grade com "dividir"</strong> precisou de menos folga dos lados nos botões da faixa para nada ficar cortado a 1280.</li>
+<li><strong>O desfazer da marcação</strong>: cada área marcada é uma ação do Histórico (o Histórico fica mais comprido quando se
+   marca muito). O desfazer próprio do editor de marcar continua só para o "desfazer" do painel Marcar quando a última
+   ação não é desta página.</li>
+<li><strong>1.10 (Tab):</strong> a Tab não passa mais o foco entre os botões da área de trabalho (é a tecla da "próxima dúvida",
+   como a lista de atalhos manda); com outra tecla escolhida nas Configurações, a Tab volta a passar o foco.</li>
+</ol>
+<h2>O que não fiz (e por quê)</h2>
+<ul>
+<li><strong>Lista 1.5</strong> ("Confirmar e processar" às vezes não abre; "a conferir", provável jeito de pilotar a janela): é da
+  <code>ui/janela_confirmar.py</code>/<code>janela_principal.py</code>, da etapa 9b-1. Não mexi.</li>
+<li><strong>Lista 1.13</strong> (a tela vazia ou "Preparando a prévia..." uns segundos): a bolinha da página agora mostra que está
+  carregando; deixar mais rápido é da fase de desempenho.</li>
+<li><strong>Lista 3.2</strong> (girar vendo a página inteira) e <strong>2.6</strong> (a Luz no Original; a "Área" no fim do Propriedades): o Livro
+  não decide como; perguntas 2 e 3.</li>
+<li><strong>Lista 5.6 e 5.7</strong> (o número de dúvidas que muda ao folhear; avisos demais): são a regra do "Para revisar" (D-254,
+  D-295, D-296, D-474: "Etapa 9 (avisos demais/falsos)"), conta do núcleo com medida no acervo; não cabem nesta etapa
+  da área de trabalho sem mexer no que outros agentes fazem. A etapa 7 já juntou o número (um só em todo lugar).
+  Para a gerente.</li>
+<li><strong>"Recuperar o trabalho anterior"</strong> no menu do cartão: está na Lista de espera (29/09, ideia de agente, "a
+  definir"), não é decisão do Samuel no Livro. Pergunta 4.</li>
+<li><strong>D-555</strong> (nome com acento) e <strong>D-492</strong> (o tique do menu Filtro): são de arquivos da 9b-1.</li>
+</ul>
+<h2>Perguntas para o Samuel (com recomendação; nenhuma trava a etapa)</h2>
+<ol>
+<li><strong>Tampa do scanner em livro que não passa pelo Automático:</strong> hoje ela some quando o Automático roda (qualquer
+   etapa que olhe as páginas), ao dividir à mão e no "dividir" da grade. Quer que suma também ao só abrir o livro?
+   <em>Recomendo não: abrir não muda página nenhuma (D-134, D-483); rodar o Automático já tira.</em></li>
+<li><strong>Lista 3.2, "girar vendo a página inteira, como no Photoshop":</strong> para isso o Endireitar teria de mostrar a página
+   ainda sem corte nem filtro, girando inteira (a parte de fora aparece). Hoje mostra a página como sai (cortada e
+   com o filtro), e o que gira para fora do retângulo sai também do PDF. <em>Recomendo: no Endireitar, mostrar a página
+   inteira girando, só enquanto se gira; ao soltar, volta a mostrar como sai. Precisa do "sim" dele (muda o que a
+   ferramenta mostra).</em></li>
+<li><strong>Lista 2.6:</strong> "Igualar a luz" também no Original (D-195 disse "Em todos" — os filtros que limpam?) e a "Área" mais
+   para cima no Propriedades? <em>Recomendo deixar a Luz só nos três filtros que limpam (o Original é "como veio") e
+   levar a ordem do Propriedades à revisão do layout.</em></li>
+<li><strong>"Recuperar o trabalho anterior"</strong> no menu do cartão do livro (listar as cópias guardadas antes de recomeçar):
+   <em>recomendo sim, numa etapa futura; hoje as cópias ficam guardadas e o aviso diz onde.</em></li>
+<li><strong>D-559, uma escolha só para borda preta e tampa:</strong> usei a mesma "O que fica fora da página" (D-092) para as duas.
+   <em>Recomendo manter uma só.</em></li>
+</ol>
+<h2>Ideias para a Lista de espera</h2>
+<ul>
+<li>Mostrar também na tira as páginas movidas que nunca foram abertas (hoje só depois da prévia).</li>
+</ul>
+<h2>Bugs para a Lista de bugs (achados, não consertados)</h2>
+<ul>
+<li>28/10: <code>tests/test_para_revisar_na_tela.py::test_a_janela_lista_as_paginas_e_os_motivos</code> falhou uma vez no PC com
+  outros testes rodando juntos; sozinho e no arquivo inteiro de novo, passa (a <code>ui/janela_dos_avisos.py</code> não foi
+  mexida nesta etapa).</li>
+</ul>
+<h2>Commits (ramo <code>obra-etapa9b2-2026-10-26</code>, com push)</h2>
+<p>(ver <code>git log 27b4c52..</code>)</p>
+<p class="rodape">Editor de Impressão &middot; gerado em 27/10/2026 às 22:49</p>
+</body>
+</html>

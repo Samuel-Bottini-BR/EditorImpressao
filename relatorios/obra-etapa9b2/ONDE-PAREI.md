@@ -57,7 +57,7 @@ tela; a tela do PC está a 125%, os prints saem 1600×821) em `relatorios/obra-e
 
 | Decisão / item | O que ficou no programa | Prova | Print |
 |---|---|---|---|
-| **D-558** | Botão **"dividir"** na faixa das escolhidas da grade. Divide as folhas das páginas escolhidas que saem como uma página só, pela MESMA conta do "dividir esta" (`core/dividir_a_mao.medir_para_dividir`: a folha girada como está, a tampa, a lombada pelo jeito da folha — o do ScanTailor de fábrica; as marcações à mão vão para a metade em que estão, D-528). Por trás (`ui/tarefas.TarefaDividirFolhas`), com a caixa "Dividindo as folhas escolhidas... 3 de 12" e "parar" (parar não muda nada). O livro muda numa ação só do desfazer; a grade volta com as páginas novas escolhidas. Folha já dividida fica como está. | `test_d558_*` (ScanTailor chamado nas 2 folhas, linha na lombada, só elas divididas, 1 ação, PDF com 6 páginas, Ctrl+Z junta) | `depois-03-grade-dividir.png`, `depois-04-grade-depois-de-dividir.png` |
+| **D-558** | Botão **"dividir"** na faixa das escolhidas da grade. Divide as folhas das páginas escolhidas que saem como uma página só, pela MESMA conta do "dividir esta" (`core/dividir_a_mao.medir_para_dividir`: a folha girada como está, a tampa, a lombada pelo jeito da folha — o do ScanTailor de fábrica; as marcações à mão vão para a metade em que estão, D-528). Por trás (`ui/tarefas.TarefaDividirFolhas`), com a caixa "Dividindo as folhas escolhidas... 3 de 12" e "parar" (parar não muda nada). O livro muda numa ação só do desfazer; a grade volta com as páginas novas escolhidas. Folha já dividida fica como está. | `test_d558_*` (ScanTailor chamado nas 2 folhas, linha na lombada, só elas divididas, 1 ação, PDF com 6 páginas, Ctrl+Z junta); promessa P-196 | `depois-03-grade-dividir.png`, `depois-04-grade-depois-de-dividir.png` |
 | **D-559** | O Automático procura a tampa em **toda folha que ele olha** (a regra da etapa 4, que não pega moldura impressa: varredura das 2.903 folhas, `relatorios/obra-etapa4/varrer-tampa-acervo.json`) e mede o resto na folha já sem ela; a folha guarda a tampa na mesma ação do Automático. O que fazer com ela é a escolha do livro **"O que fica fora da página: cortar fora / pintar de branco"** (a mesma da D-092, `Projeto.borda_preta_fazer`; "cortar fora" de fábrica): pintar = a faixa sai branca (como na etapa 4); cortar = sai branca E a página é cortada na beirada da tampa (`dividir_a_mao.corte_sem_a_tampa`; o corte feito à mão vale como está). A escolha agora fica à vista no Automático também com a borda preta desmarcada (vale para as duas). | `test_d559_*` (3 folhas como o Righetti, Automático só com Endireitar: tampa nas 3, nenhuma faixa no PDF; "cortar" → página mais baixa; "pintar" → do tamanho da folha, faixa branca; Ctrl+Z tira; moldura impressa preta inteira; a escolha à vista). Os 3 testes da etapa 4 que provavam "pelo Automático a faixa fica" foram trocados para a regra nova (o Righetti 96 de verdade: 0 linhas pretas também pelo Automático). | `depois-14-righetti-girado-com-a-faixa-da-tampa.png` × `depois-15-righetti-pelo-automatico-sem-a-faixa.png`, `depois-12-automatico-cortar.png` |
 | **D-547** | A página movida/redimensionada (ou numa folha escolhida, ou com margens iguais) aparece **como sai no PDF** (`TelaConferir._como_sai_no_pdf`: margens + `core.folha.compor_na_folha`, a mesma conta do PDF) no **lado a lado**, no **"antes / depois"**, na **tela cheia dos filtros**, nos **cartões do painel Filtro** e na **miniatura** dela. As ferramentas em que se marca, corta, divide ou endireita SOBRE a página continuam mostrando a página (D-546: a marcação e o corte são frações da página); o Mover já compunha. | `test_d547_*` (página a 60%: a caixa do texto no lado a lado, no antes/depois, na tela cheia e na miniatura é a do PDF, até 3%) | `depois-08-mover-60-por-cento.png`, `depois-09-lado-a-lado-com-a-pagina-movida.png` |
 | **D-473 + D-064 (a troca da 10b)** | Quando o desenho do tamanho do PDF da página da vez termina (`GerenciadorPrevias.pedir_medida`), a imagem volta **reduzida** (INTER_AREA, no fio de fundo) e entra no lugar da prévia na chave da prévia, se a página não mudou; a tela redesenha (`pronta`). Duas **bolinhas** na barra de baixo: a **da página** gira enquanto a prévia não chegou ou a imagem do PDF está sendo feita ("Esta página: preparando a imagem igual ao PDF..."), a **do livro** gira enquanto o livro é medido por trás (D-284) ou as marcações são preparadas, com "Livro: 45% (90 de 200 folhas já carregadas)" no balão. Paradas, não aparecem. | `test_d473_d064_*` (bolinha gira com a frase; quando chega, a prévia da tela é a imagem do PDF; bolinha para) | `depois-10-...png` (a bolinha da página aparece ao lado de "página 11 de 182") |
@@ -90,8 +90,8 @@ tela; a tela do PC está a 125%, os prints saem 1600×821) em `relatorios/obra-e
 - **Rodados também (todos passando):** test_decisoes 26 · test_decisoes_automatico 24 · test_decisoes_avisos 13 ·
   test_decisoes_dividir 19 · test_decisoes_impressao 22 · test_decisoes_mover 13 · test_decisoes_nucleo 38 ·
   test_decisoes_nucleo2 21 · test_decisoes_tela 35 · test_decisoes_ver 11 · test_trabalho_nao_se_perde 82 ·
-  test_etapa10a_nao_comer 8 · test_etapa10b_imagem 23 · test_promessas `-k "dividir or desfazer or
-  retangulo or usar"` 22 (+1 xfail de outra promessa) · test_borda_preta 29 · test_dividir_no_programa 19 ·
+  test_etapa10a_nao_comer 8 · test_etapa10b_imagem 23 · test_promessas inteiro no PC: 254 passaram, 2 xfail, 4
+  falharam (p085 e p127, que falham no código antigo; p094 e p019, intermitentes — passam sozinhos) · test_borda_preta 29 · test_dividir_no_programa 19 ·
   test_previa_composta 10 · test_misto_no_programa 41 · test_misto 31 · test_misto_consertos 25 ·
   test_misto_no_projeto 12 · test_filtros_tela_cheia 11 · test_paineis_na_tela 22 · test_historico_depois_de_reabrir 11 ·
   test_recomeco_limpa_o_historico 13 · test_zonas_na_folha 25 · test_so_neste_pedaco_no_original 22 ·
@@ -109,11 +109,33 @@ tela; a tela do PC está a 125%, os prints saem 1600×821) em `relatorios/obra-e
     "cortar fora" a página fica justa e as linhas de "texto" de mentira entram no alto dela).
   - `test_girar_cartoes_e_previas.py`: o "usar em todas" do Dividir agora abre a lista; o teste da pendência D2 responde
     a lista (como já fazia no do Cortar).
-  - `tests/promessas/promessas.md`: P-061 e P-129 sem "aguarda".
+  - `tests/promessas/promessas.md`: P-061 e P-129 sem "aguarda"; promessa nova **P-196** ("dividir" da grade,
+    com a prova `test_p196_dividir_as_escolhidas`: o `test_todo_botao_tem_promessa` exige promessa para o botão novo).
 
 ## GitHub e velocidade
 
-(preenchido abaixo)
+- **Rodada 1** `40610908787` (no `8b77477`): partes 4 e 5 e o `teste_botoes.py` passaram. Falharam: parte 2,
+  `test_decisoes_mover::test_d056_*` (mover/aumentar passou a jogar fora a prévia por causa dos avisos guardados para o
+  desfazer: consertado no `838cbdc`); parte 3, `test_girar_cartoes_e_previas[corte_em_todas]` (o "usar em todas" do
+  Dividir abria a lista antes de conferir a pendência D2: consertado no `577e6ec`); parte 1, `test_promessas.py`
+  passou do limite de 1.500 s.
+- **Rodada 2** `40613304910` (no `838cbdc`): partes 2 a 5 e o `teste_botoes.py` passaram; parte 1 de novo com
+  `test_promessas.py` no limite. Causa: cada tela de conferir instalava um filtro de teclas no programa (a Tab, 1.10) e
+  tinha um relógio de 400 ms (as bolinhas); numa bateria que abre centenas de janelas, todo evento passava por
+  centenas de filtros. Consertado no `8352986` (um filtro só para o programa; o relógio só com a tela à vista): no PC a
+  bateria inteira de promessas foi de "não termina" para 17 min.
+- **Rodada 3** `40620630318` (no `8352986`): **partes 2, 3, 4 e 5 e o `teste_botoes.py` passaram; parte 1:
+  `test_promessas.py` 255 passaram, 3 falharam** — `test_p085` (o tique do menu Filtro, D-492, da 9b-1) e
+  `test_p127` (o "Antes de processar" pelo menu, `janela_principal`), que falham também no `obra-2026-10-26` sem esta
+  etapa (rodada da etapa 7, `40601574220`), e `test_p094` (lista dos avisos), que é **intermitente**: depende de as
+  prévias das páginas vizinhas chegarem (e tirarem o "Parece em branco" falso que o teste põe em páginas com texto)
+  antes ou depois da conta; repeti no PC a dupla `p019`+`p094` no código antigo (`d347300`: 1 de 3 falha) e no novo
+  (`049525b`: 3 de 3 passam) — a etapa 10b já tinha anotado o p094 como intermitente.
+- Depois da rodada 3 entraram só a promessa P-196 com a prova (`625a1ba`, rodada no PC) e uma guarda de uma linha no
+  zoom do lado a lado (`getattr`).
+- **Filtro de velocidade** `40610936683` (`27b4c52` × `8b77477`): **"igual (dentro do vai-e-vem)"** — Abrir o livro
+  +0,6%, Trocar de página −0,1%, Mágico pro (10 páginas) +0,7%, Preto e branco (10 páginas) −0,9%. As mudanças
+  depois do `8b77477` só tiram trabalho (a prévia que o mover jogava fora, os filtros e relógios a mais).
 
 ## Somas "Desligado de fábrica"
 
