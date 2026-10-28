@@ -107,9 +107,20 @@ def _livro(pasta: Path, paginas: int) -> str:
     return str(caminho)
 
 
-def _medidas_em_fila(angulos):
-    from core import endireitar_scantailor as es
+def _medidas_em_fila(angulos, monkeypatch=None):
+    """Uma medida falsa do ScanTailor que devolve os ângulos na ordem das chamadas.
 
+    Estabilizado na etapa 9b-1 (27/10/2026): a análise mede as folhas em vários trabalhadores ao
+    mesmo tempo (item 2.16, core/nucleos.py), e a ordem das CHAMADAS deixava de ser a ordem das
+    páginas quando duas linhas corriam juntas: o ângulo de 3° caía noutra página e o teste
+    falhava às vezes (na rodada inteira do GitHub). Com `monkeypatch`, a análise fica com um
+    trabalhador só (o laço de sempre, core/nucleos.em_ordem): a ordem das chamadas é a das
+    páginas. O programa não muda."""
+    from core import endireitar_scantailor as es
+    from core import nucleos
+
+    if monkeypatch is not None:
+        monkeypatch.setattr(nucleos, "quantos_trabalhadores", lambda *_a, **_k: 1)
     fila = iter(angulos)
 
     def medir(*_args, **_kwargs):
@@ -124,7 +135,7 @@ def test_na_analise_a_pagina_torta_ganha_o_aviso(tmp_path, monkeypatch):
     from modelos import Projeto
 
     caminho = _livro(tmp_path, 6)
-    monkeypatch.setattr(es, "medir_na_pagina", _medidas_em_fila([0.5, 0.45, 0.55, 0.5, 0.5, 3.0]))
+    monkeypatch.setattr(es, "medir_na_pagina", _medidas_em_fila([0.5, 0.45, 0.55, 0.5, 0.5, 3.0], monkeypatch))
     projeto = Projeto(caminho_entrada=caminho, dividir_folhas=False)
     pipeline.analisar_projeto(projeto)
     marcadas = [analise.ANGULO_DIFERENTE_DAS_OUTRAS in p.alertas for p in projeto.paginas]
@@ -164,7 +175,7 @@ def test_na_analise_pouco_torta_nao_ganha_o_aviso(tmp_path, monkeypatch):
     from modelos import Projeto
 
     caminho = _livro(tmp_path, 6)
-    monkeypatch.setattr(es, "medir_na_pagina", _medidas_em_fila([0.5, 0.48, 0.52, 0.5, 0.5, 1.2]))
+    monkeypatch.setattr(es, "medir_na_pagina", _medidas_em_fila([0.5, 0.48, 0.52, 0.5, 0.5, 1.2], monkeypatch))
     projeto = Projeto(caminho_entrada=caminho, dividir_folhas=False)
     pipeline.analisar_projeto(projeto)
     assert not any(analise.ANGULO_DIFERENTE_DAS_OUTRAS in p.alertas for p in projeto.paginas)

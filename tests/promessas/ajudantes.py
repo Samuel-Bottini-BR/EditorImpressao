@@ -227,6 +227,18 @@ def abrir_livro_para_teste(janela, caminho: Path | str, marcadas: tuple[str, ...
     janela.resize(1280, 760)
     janela.show()
     assentar()
+    # Etapa 9b-1 (27/10/2026; P-092 e P-094 instáveis): o livro novo é medido por trás depois
+    # de abrir (D-284, JanelaPrincipal._comecar_a_medir_ao_abrir) e, no fim, a medida PÕE OS
+    # AVISOS do livro (core.automatico.avisos_do_livro), por cima dos que a prova tinha posto à
+    # mão. Quando a medida terminava no meio da prova (o laço da janela "ver a lista…", por
+    # exemplo), os avisos da prova sumiam: "0 == 3". Aqui a abertura só termina depois da
+    # medida, como o Kaique vê o livro pronto. O programa não muda.
+    fim = time.monotonic() + 120
+    while getattr(janela, "medida_ao_abrir", None) is not None and time.monotonic() < fim:
+        assentar(2)
+        time.sleep(0.02)
+    assert getattr(janela, "medida_ao_abrir", None) is None, "a medida ao abrir não terminou"
+    assentar()
     return janela.tela_conferir
 
 
