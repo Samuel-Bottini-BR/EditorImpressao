@@ -316,3 +316,43 @@ def test_c3_nomes_da_montar_para_imprimir_sao_os_do_fase_1(app, pasta):  # noqa:
         assert "O QUE VAI SAIR" in textos, "a disposição nova (cartão 'O que vai sair') saiu"
     finally:
         dialogo.reject()
+
+
+# --- D-283: a "Antes de processar" aprovada (lm22) e o "Mostrar" inteiro ---------------------------
+
+def test_d283_antes_de_processar_aprovada_e_o_mostrar_nao_corta(app):  # noqa: F811
+    """REVERSÃO. D-283 (21/10, `pr-antes-de-processar`: "ficou meio embolado, deve ficar mais
+    claro e não tão grande"; 22/10 `lm22` "Aprovado", com o "Mostrar" cortado a consertar): a
+    janela do commit `138e425` (frase em duas linhas, uma fila de botões embaixo, menor que os
+    560 x 520 de antes, cabe a 1280 x 657 em 61% da altura) e o "Mostrar" com o motivo inteiro:
+    "Endireitar: as contas discordam (12)", com o "(12)"."""
+    from PySide6.QtWidgets import QApplication
+
+    from core import analise
+    from core import avisos as avisos_do_livro
+    from ui.janela_dos_avisos import JanelaDosAvisos
+
+    avisos = [avisos_do_livro.Aviso(avisos_do_livro.PAGINA, i, analise.CONTAS_DO_ENDIREITAR_DISCORDAM)
+              for i in range(12)]
+    janela_dos_avisos = JanelaDosAvisos(avisos, antes_de_processar=True)
+    janela_dos_avisos.show()
+    QApplication.processEvents()
+    try:
+        assert janela_dos_avisos.pergunta.text() == "Quer ver antes ou continuar assim mesmo?"
+        assert janela_dos_avisos.height() <= 657 * 0.61
+        combo = janela_dos_avisos.combo_motivo
+        combo.setCurrentIndex(1)
+        QApplication.processEvents()
+        texto = combo.currentText()
+        assert texto == "Endireitar: as contas discordam (12)"
+        from PySide6.QtWidgets import QStyle, QStyleOptionComboBox
+
+        opcao = QStyleOptionComboBox()
+        combo.initStyleOption(opcao)
+        cabe = combo.style().subControlRect(QStyle.CC_ComboBox, opcao,
+                                            QStyle.SC_ComboBoxEditField, combo).width()
+        assert combo.fontMetrics().horizontalAdvance(texto) <= cabe, \
+            f"o 'Mostrar' corta o motivo: {combo.width()} pontos para {texto!r}"
+        assert janela_dos_avisos.width() <= 1280
+    finally:
+        janela_dos_avisos.close()

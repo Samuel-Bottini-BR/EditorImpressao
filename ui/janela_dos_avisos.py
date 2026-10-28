@@ -133,9 +133,13 @@ class JanelaDosAvisos(QDialog):
         for codigo, do_motivo in avisos_do_livro.por_motivo(self.avisos).items():
             self.combo_motivo.addItem(f"{do_motivo[0].titulo} ({len(do_motivo)})", codigo)
         self.combo_motivo.currentIndexChanged.connect(lambda _i: self._encher_a_lista())
-        # a lista não cresce até o motivo mais comprido (a janela ficava larga)
-        self.combo_motivo.setSizeAdjustPolicy(QComboBox.AdjustToMinimumContentsLengthWithIcon)
-        self.combo_motivo.setMinimumContentsLength(20)
+        # Etapa 9b-1 (D-283; `lm22` "Aprovado" com o "Mostrar" cortado a
+        # consertar, Registro de 22/10: "Endireitar: as contas discordam (12)"
+        # saía sem o "(12)"): o campo tem a largura do motivo mais comprido
+        # da lista, inteiro. Antes ele tinha 20 letras de largura e cortava;
+        # a janela só fica mais larga que os 500 pontos quando um motivo
+        # comprido precisa (o resto da janela não muda).
+        self.combo_motivo.setSizeAdjustPolicy(QComboBox.AdjustToContents)
         linha_filtro.addWidget(self.combo_motivo)
         linha_filtro.addStretch(1)
         self.botao_todas = QPushButton("Selecionar todas")
