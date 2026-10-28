@@ -419,3 +419,20 @@ Conferido no `git` (só leitura), para a etapa 0 não confiar no que ficou velho
 - Os consertos desta ficha que mudam o que o Samuel vê foram listados, em formato curto, em "Consertos esperando o
   olho do Samuel" no fim do Livro de decisões (`docs/plano/DECISOES.md`): uma página de conferência só, no fim da obra.
 
+
+## Achados de 28/10/2026 (sessão 2 de testes e agentes da conferência; versão de teste `obra-2026-10-26`)
+
+Todos só anotados; nada consertado. Detalhe e prints em `relatorios/testes-guiados/2026-10-28-sessao-2/sessao-2.md` e
+na Central (aba "O que você não gostou: alternativas").
+
+- **Painel Filtro, "Mais ajustes", nomes cortados a 1280 x 657:** "Igualar a luz da página / Suavizar as letras / Tirar
+  o chuvisco" saem "Igual / Suav / Tirar o chu"; o resumo ao lado de "Mais ajustes" perde o começo. Contra a D-059.
+  Visto em print fora da tela (offscreen); conferir na janela de verdade. (agente das dúvidas, 28/10)
+- **Possível: "está bom assim" desenhado por cima do cartão de baixo no "Para revisar"** ao trocar o lado direito para
+  "Abas no alto" ou "Painel solto" numa página sem aviso. Só em print fora da tela; não conferido na janela de verdade.
+  (agente das perguntas, 28/10)
+- **Marcação lenta com muitas marcas (2-1):** dois cliques da Varinha no papel do Cursus p.1 = 151 + 151 marcas
+  repetidas; cada mexida grava as 302 no histórico (563 KB) e para a tela 0,7 a 1,5 s.
+- **"Ver de perto" espera na fila (2-8):** Palatino p.13, 14 s na fila de prévias (2 fios ocupados) + 6 s desenhando.
+- **Aviso de falta de memória culpa o livro (2-12):** `ui/tarefas.py`; faltou memória no PC (pedaços de 3,6 e 18 MB) e
+  a frase manda usar uma "qualidade normal" que não existe.
