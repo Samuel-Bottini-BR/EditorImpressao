@@ -356,3 +356,73 @@ def test_d283_antes_de_processar_aprovada_e_o_mostrar_nao_corta(app):  # noqa: F
         assert janela_dos_avisos.width() <= 1280
     finally:
         janela_dos_avisos.close()
+
+
+# --- D-250: o "Pintar por cima" que cobre letras pergunta antes -----------------------------------
+
+@pytest.fixture
+def editor_no_marial_7(app):  # noqa: F811
+    """A ferramenta de marcar com o Marial 7 do gabarito (a página do teste do Samuel), no
+    "Pintar por cima" e no Retângulo."""
+    import cv2
+
+    from core.selecao import PINTAR
+    from ui.widgets.editor_selecao import FERRAMENTA_RETANGULO, EditorSelecao
+
+    img = cv2.imread(str(aj.RAIZ / "gabarito" / "paginas" / "marial_p007.png"))
+    if img is None:
+        pytest.skip("gabarito/paginas/marial_p007.png não está nesta cópia")
+    editor = EditorSelecao()
+    editor.resize(600, 800)
+    editor.definir_imagem(img)
+    editor.definir_ferramenta(FERRAMENTA_RETANGULO)
+    editor.definir_tipo(PINTAR)
+    editor.show()
+    aj.assentar()
+    yield editor
+    editor.close()
+
+
+def _arrastar(editor, x0, y0, x1, y1):
+    from tests.test_editor_selecao import arrastar
+
+    arrastar(editor, x0, y0, x1, y1)
+    aj.assentar()
+
+
+@pytest.mark.parametrize("resposta", ["Pintar assim mesmo", "Voltar"])
+def test_d250_pintar_por_cima_das_letras_pergunta_antes(editor_no_marial_7, monkeypatch, resposta):
+    """REVERSÃO. D-250 (Samuel, 22/10/2026, `fr-218-aviso`: "A — Avisar (recomendo)"; no chat:
+    "1- sim"): o retângulo de "Pintar por cima" desenhado sobre o começo das linhas do Marial 7
+    (o caso do teste dele) pergunta antes, com "Este retângulo cobre letras; elas vão ser
+    pintadas também." e os botões "Pintar assim mesmo" e "Voltar". "Voltar" não pinta nada (a
+    marcação continua vazia); "Pintar assim mesmo" pinta."""
+    from ui import perguntas
+
+    editor = editor_no_marial_7
+    perguntadas = []
+
+    def responder(_pai, titulo, texto, sim="Sim", nao="Não", padrao_sim=False):
+        perguntadas.append((titulo, texto, sim, nao))
+        return resposta == sim
+
+    monkeypatch.setattr(perguntas, "perguntar", responder)
+    _arrastar(editor, 0.05, 0.15, 0.20, 0.45)
+    assert perguntadas == [("Pintar por cima", "Este retângulo cobre letras; elas vão ser pintadas também.",
+                            "Pintar assim mesmo", "Voltar")]
+    if resposta == "Voltar":
+        assert len(editor.selecao) == 0, "'Voltar' pintou"
+    else:
+        assert len(editor.selecao) == 1
+
+
+def test_d250_sem_letras_pinta_sem_perguntar(editor_no_marial_7, monkeypatch):
+    """D-250 (o outro lado): na margem branca de baixo e na sombra da lombada (sem letras) o
+    retângulo pinta direto, sem pergunta."""
+    from ui import perguntas
+
+    editor = editor_no_marial_7
+    monkeypatch.setattr(perguntas, "perguntar", lambda *a, **k: pytest.fail("perguntou sem letras"))
+    _arrastar(editor, 0.10, 0.955, 0.60, 0.995)
+    _arrastar(editor, 0.0, 0.2, 0.03, 0.8)
+    assert len(editor.selecao) == 2

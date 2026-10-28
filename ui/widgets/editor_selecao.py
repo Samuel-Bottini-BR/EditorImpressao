@@ -442,6 +442,11 @@ class EditorSelecao(QWidget):
         adiciona a selecao."""
         if not regiao.valida():
             return
+        # etapa 9b-1 (D-250): retângulo de "Pintar por cima" sobre letras
+        # pergunta antes; "Voltar" não pinta nada
+        if not self._pintar_mesmo_sobre_letras(regiao):
+            self.update()
+            return
         regiao.filtro = self.filtro_da_regiao
         if regiao.tipo == PINTAR:
             regiao.cor = self.cor_de_pintar       # item 2.18
@@ -452,6 +457,38 @@ class EditorSelecao(QWidget):
         self.selecao.acrescentar(regiao)
         self.selecao_mudou.emit()
         self.update()
+
+    # Etapa 9b-1 (D-250): o texto e os botões aprovados pelo Samuel (Central
+    # `fr-218-aviso`, opção A, e "1- sim" no chat, 22/10/2026). Seguro mudar:
+    # nada sem ele (D-374, revisão de nomes).
+    TEXTO_DO_AVISO_DE_PINTAR = "Este retângulo cobre letras; elas vão ser pintadas também."
+
+    def _pintar_mesmo_sobre_letras(self, regiao: Regiao) -> bool:
+        """D-250 (Samuel, 22/10/2026, `fr-218-aviso`: "A — Avisar (recomendo)";
+        no chat: "1- sim"): quando o RETÂNGULO de "Pintar por cima" (somar)
+        cobre letras (core.editar_zonas.cobre_letras, medido na imagem da
+        página que está na tela), pergunta antes: "Pintar assim mesmo" pinta;
+        "Voltar" (ou fechar a caixa) não pinta nada. Outro tipo, outra forma
+        ou o "tirar": True sem perguntar (a decisão fala do retângulo). Se a
+        conta falhar, pinta como antes (o erro vai para o erros.log): a conta
+        nunca impede a ferramenta. Arriscado: pintar antes de perguntar."""
+        if regiao.tipo != PINTAR or regiao.forma != RETANGULO or regiao.operacao != SOMAR:
+            return True
+        try:
+            cobre = editar_zonas.cobre_letras(self._img, regiao)
+        except Exception:  # noqa: BLE001 - a conta nunca impede de pintar
+            import traceback
+
+            from registro import registrar_erro
+
+            registrar_erro("pintar por cima: contar as letras", traceback.format_exc())
+            return True
+        if not cobre:
+            return True
+        from ui import perguntas
+
+        return perguntas.perguntar(self, "Pintar por cima", self.TEXTO_DO_AVISO_DE_PINTAR,
+                                   sim="Pintar assim mesmo", nao="Voltar")
 
     # --- geometria --------------------------------------------------------
 
