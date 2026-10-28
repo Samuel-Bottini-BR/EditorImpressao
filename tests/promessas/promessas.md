@@ -505,7 +505,6 @@ programa), a partir do **nome do botão**, da **dica** (o balão do mouse) e das
 - **decisões:** os itens do menu Filtro são de marcar (têm o tique), como os do menu Painéis, em que "a marca acompanha"
   (D-057); um tique que não acompanha a página diz o filtro errado.
 - **na tela:** o menu Filtro mostra marcado o filtro da página que está na tela, e acompanha ao trocar de página.
-- **defeito:** QUEBRADA no programa de 26/10 (defeito D desta bateria). Os itens do menu Filtro são de marcar, mas o tique nunca acompanha a página: escolhido o Preto e branco, o menu continua sem marca (e o tique de um clique no menu fica lá ao passar para uma página em Original). Sem dono (etapa 9, consertos de tela, ou 11).
 
 ### P-084 · "Só neste pedaço": os quatro filtros do pedaço
 - **chaves:** `área de trabalho/filtro da página/só neste pedaço: Original`,
@@ -709,7 +708,6 @@ programa), a partir do **nome do botão**, da **dica** (o balão do mouse) e das
 ### P-125 · Desfazer aceso sem nada para desfazer
 - **chaves:** `área de trabalho/barra de baixo/Desfazer`, `menu/desfazer`
 - **decisões:** D-020 ("Desfazer ligado sem nada", aberto)
-- **aguarda:** etapa 9 (Desfazer ligado sem nada)
 - **na tela:** num livro recém-aberto, sem nada feito, o Desfazer fica apagado (barra de baixo e menu).
 
 ### P-126 · botão do Histórico (barra de baixo) / menu Editar > "Mostrar o histórico"
@@ -732,7 +730,6 @@ programa), a partir do **nome do botão**, da **dica** (o balão do mouse) e das
   fim, "Ficou pronto!".
 - **no projeto:** o destino do PDF fica gravado.
 - **no PDF:** o PDF é gravado no destino, com uma página por página do livro, na ordem.
-- **defeito:** QUEBRADA no programa de 26/10 (defeito C desta bateria). Pelo menu Arquivo > "Confirmar e processar" (e a tecla Ctrl+Enter) o programa NÃO mostra a janela "Antes de processar" com os avisos pendentes (D-274: "quando alguém tentar imprimir sem ver os alertas o programa para e mostra os alertas"): o menu chama `JanelaPrincipal.processar` direto, sem passar por `TelaConferir._pedir_processamento`. O botão da área de trabalho mostra. Sem dono.
 
 ## Janelas da área de trabalho
 

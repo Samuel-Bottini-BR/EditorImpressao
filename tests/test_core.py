@@ -718,9 +718,9 @@ def test_nome_de_saida_sugerido_descreve_o_que_foi_feito():
     projeto.limpar, projeto.filtro_padrao = True, PRETO_E_BRANCO
     assert nome_de_saida_sugerido(projeto) == "Gradus Primus - preto e branco.pdf"
 
-    # etapa 9c (lista única 5.15): caminho de disco sem acento - era "mágico pro"
+    # D-555 (27/10/2026, "Voltar com acento"): com o acento, como no fase-1
     projeto.filtro_padrao = MAGICO_PRO
-    assert nome_de_saida_sugerido(projeto) == "Gradus Primus - magico pro.pdf"
+    assert nome_de_saida_sugerido(projeto) == "Gradus Primus - mágico pro.pdf"
 
     projeto.montar_cadernos = True
     assert nome_de_saida_sugerido(projeto) == "Gradus Primus - cadernos.pdf"

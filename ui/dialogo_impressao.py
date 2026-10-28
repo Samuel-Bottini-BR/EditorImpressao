@@ -49,7 +49,6 @@ from __future__ import annotations
 
 import math
 import traceback
-import unicodedata
 from pathlib import Path
 
 from PySide6.QtCore import Qt, QThread, QTimer, Signal
@@ -122,13 +121,6 @@ def quebravel(caminho: str) -> str:
     caminho comprido sem espaço alargava o cartão do resultado e cortava o
     texto (a linha não tinha onde quebrar)."""
     return caminho.replace("\\", "\\\u200b").replace("/", "/\u200b")
-
-
-def sem_acento(texto: str) -> str:
-    """Tira os acentos (caminho de disco sem acento, CLAUDE.md §3; lista
-    única 5.15: o nome sugerido saía com "mágico pro")."""
-    decomposto = unicodedata.normalize("NFKD", texto)
-    return "".join(c for c in decomposto if not unicodedata.combining(c))
 
 
 def ler_excecoes(texto: str) -> dict[int, float]:
@@ -774,9 +766,11 @@ class DialogoImpressao(QDialog):
     # --- as ações
 
     def destino_sugerido(self) -> Path:
-        """"<livro> - para imprimir.pdf", ao lado do livro e sem acento (5.15)."""
+        """"<livro> - para imprimir.pdf", ao lado do livro, com o acento do
+        nome do livro (D-555, 27/10/2026: "Voltar com acento"; a etapa 9a
+        tinha tirado, lista unica 5.15)."""
         entrada = Path(self.entrada)
-        return entrada.with_name(sem_acento(f"{entrada.stem} - para imprimir.pdf"))
+        return entrada.with_name(f"{entrada.stem} - para imprimir.pdf")
 
     def _gravar(self) -> None:
         from ui.dialogos_de_arquivo import escolher_onde_salvar_pdf

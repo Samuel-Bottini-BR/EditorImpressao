@@ -8,7 +8,7 @@ Itens:
      "pintar de branco" chegam ao PDF numa página em Original, com e sem
      "Limpar a folha". Antes o Original devolvia a página como veio e o papel
      marcado à mão era ignorado.
-  2. nome do arquivo de saída sem acento (modelos.nome_de_saida_sugerido).
+  2. nome do arquivo de saída: voltou COM acento (D-555, etapa 9b-1; modelos.nome_de_saida_sugerido).
   3. projeto.json ilegível: a cópia estragada fica guardada e a tela recebe um
      sinal para avisar (projetos.py).
   4. "Parece em branco" falso em página com texto (core/analise.py).
@@ -149,21 +149,22 @@ def test_papel_que_a_maquina_marcou_nao_branqueia_o_original(tmp_path):
     assert _amarelado(img[40:200, 350:550])
 
 
-# --- item 2: o nome do arquivo de saída sem acento ----------------------------
+# --- item 2: o nome do arquivo de saída (D-555: voltou COM acento) ------------
 
-def test_nome_de_saida_sugerido_sai_sem_acento():
-    """Lista única 5.15 (teste do Kaique, 23/10/2026): o nome sugerido saía
-    "antiphon-trecho - mágico pro.pdf". Regra do projeto (CLAUDE.md §3):
-    caminho de disco sem acento - o nome do livro e o do filtro. O mesmo
-    sem_acento do nome "para imprimir" (ui/dialogo_impressao.sem_acento)."""
+def test_d555_nome_de_saida_sugerido_com_acento():
+    """D-555 (Samuel, 27/10/2026, Central `ac-nome-sem-acento`: "Voltar com
+    acento (recomendo)"): a etapa 9c tinha tirado os acentos do nome sugerido
+    (lista única 5.15, achado de agente); volta "Ofício da Imaculada Conceição
+    - mágico pro.pdf", como no `fase-1`. Prova também que o sem acento saiu
+    (etapa 9b-1)."""
     from core.filtros import MAGICO_PRO
     from modelos import nome_de_saida_sugerido
 
     projeto = Projeto(caminho_entrada="x.pdf", caminho_saida="", nome="Ofício da Imaculada Conceição")
     projeto.limpar, projeto.filtro_padrao, projeto.montar_cadernos = True, MAGICO_PRO, False
     nome = nome_de_saida_sugerido(projeto)
-    assert nome == "Oficio da Imaculada Conceicao - magico pro.pdf"
-    assert nome.isascii()
+    assert nome == "Ofício da Imaculada Conceição - mágico pro.pdf"
+    assert nome != "Oficio da Imaculada Conceicao - magico pro.pdf"
 
 
 # --- item 3: projeto.json ilegível não some calado ----------------------------

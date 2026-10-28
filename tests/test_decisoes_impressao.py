@@ -601,15 +601,17 @@ def test_janela_do_windows_conferida_na_volta(app, pasta, monkeypatch):
 
 # --------------------------------------------------------------- 5.12 e 5.15
 
-def test_5_15_nome_sugerido_sem_acento(app, pasta):
-    """REVERSÃO. Lista única 5.15 ("mágico pro" com acento no nome sugerido;
-    CLAUDE.md §3: caminho de disco sem acento): o arquivo para imprimir é
-    sugerido sem acento."""
+def test_d555_nome_sugerido_com_acento(app, pasta):
+    """D-555 (Samuel, 27/10/2026, Central `ac-nome-sem-acento`: "Voltar com
+    acento (recomendo)"): o arquivo para imprimir é sugerido com o acento do
+    nome do livro, como no `fase-1`. Substitui a prova da lista única 5.15
+    (etapa 9a), que tirava os acentos; prova também que o sem acento saiu."""
     from ui.dialogo_impressao import DialogoImpressao
 
     livro = _livro(pasta / "Camões - mágico pro.pdf", 2)
     dialogo = DialogoImpressao(str(livro))
-    assert dialogo.destino_sugerido().name == "Camoes - magico pro - para imprimir.pdf"
+    assert dialogo.destino_sugerido().name == "Camões - mágico pro - para imprimir.pdf"
+    assert dialogo.destino_sugerido().name != "Camoes - magico pro - para imprimir.pdf"
     dialogo.reject()
 
 
