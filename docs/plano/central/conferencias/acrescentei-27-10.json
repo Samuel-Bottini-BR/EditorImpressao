@@ -5,7 +5,7 @@
  "ordem": 0,
  "origem": "auditoria de 27/10 (relatorios/obra-auditoria-escolhas/auditoria.html), pedida pela regra 7 do CLAUDE.md §11",
  "resumo": {
-  "titulo": "27 perguntas: o que eu e os agentes acrescentamos ou escolhemos sem você",
+  "titulo": "31 perguntas: o que eu e os agentes acrescentamos ou escolhemos sem você",
   "paragrafos": [
    "Você disse em 27/10: \"os agentes estão mudando coisas que eu já tinha definido, é só para fazer o que eu já tinha mandado\". Um conferente revisou as 78 escolhas e mudanças da obra contra as suas decisões.",
    "55 só fazem funcionar o que você mandou. 4 mudavam o que você tinha decidido e estão sendo desfeitas sem perguntar: o PDF volta a sair sem perda (sem JPEG), o aviso \"as contas discordam\" volta à sua regra de 0,3 grau, os nomes do \"Montar para imprimir\" voltam aos de antes (a disposição nova fica) e os dois jeitos que faltavam do lado direito (\"abas no alto\" e \"painel solto\") vão ser feitos.",
@@ -880,6 +880,120 @@
     {
      "id": "sim",
      "nome": "Quero a mensagem curta também",
+     "texto": "",
+     "imgs": []
+    },
+    {
+     "id": "nao-entendi",
+     "nome": "Ainda não entendi",
+     "texto": "Explique de outro jeito.",
+     "imgs": []
+    }
+   ]
+  },
+  {
+   "id": "b-solto-icones",
+   "titulo": "Painel solto: botões de cima só com o ícone?",
+   "explicacao": [
+    "Foram feitos os dois jeitos que faltavam do lado direito (05/10: \"os quatro jeitos\"): \"Abas no alto\" e \"Painel solto\". No painel solto, os botões dos painéis vão para a linha dos menus, em cima. Com o nome escrito eles não cabem numa tela de 1280; ficaram só com o ícone, e o nome aparece ao passar o mouse.",
+    "Prints: relatorios/obra-etapa9b1/prints/."
+   ],
+   "exemplos": [],
+   "opcoes": [
+    {
+     "id": "icone",
+     "nome": "Só o ícone, com o nome ao passar o mouse (recomendo)",
+     "texto": "",
+     "imgs": []
+    },
+    {
+     "id": "nome",
+     "nome": "Com o nome escrito, mesmo que precise rolar",
+     "texto": "",
+     "imgs": []
+    },
+    {
+     "id": "nao-entendi",
+     "nome": "Ainda não entendi",
+     "texto": "Explique de outro jeito.",
+     "imgs": []
+    }
+   ]
+  },
+  {
+   "id": "b-abas-nomes",
+   "titulo": "Abas no alto: nomes das abas",
+   "explicacao": [
+    "No jeito \"Abas no alto\", as abas usam os nomes curtos do desenho que você viu, com \"Propriedades\" no lugar de \"Ajustes\". O cabeçalho do painel (com o \"x\" e o botão de tela cheia) fica embaixo das abas.",
+    "Prints: relatorios/obra-etapa9b1/prints/."
+   ],
+   "exemplos": [],
+   "opcoes": [
+    {
+     "id": "manter",
+     "nome": "Como ficou (recomendo)",
+     "texto": "",
+     "imgs": []
+    },
+    {
+     "id": "revisar",
+     "nome": "Levar à revisão dos nomes",
+     "texto": "",
+     "imgs": []
+    },
+    {
+     "id": "nao-entendi",
+     "nome": "Ainda não entendi",
+     "texto": "Explique de outro jeito.",
+     "imgs": []
+    }
+   ]
+  },
+  {
+   "id": "b-pintar-outras",
+   "titulo": "Aviso do \"Pintar por cima\" também no oval, laço e pincel?",
+   "explicacao": [
+    "Você aprovou (\"1- sim\") o aviso quando o retângulo do \"Pintar por cima\" cobre letras: \"Este retângulo cobre letras; elas vão ser pintadas também.\" com \"Pintar assim mesmo\" / \"Voltar\". Foi feito no retângulo. As outras formas de marcar (oval, laço, pincel) ainda pintam sem perguntar."
+   ],
+   "exemplos": [],
+   "opcoes": [
+    {
+     "id": "todas",
+     "nome": "Sim, em todas as formas (recomendo)",
+     "texto": "",
+     "imgs": []
+    },
+    {
+     "id": "so-retangulo",
+     "nome": "Só no retângulo",
+     "texto": "",
+     "imgs": []
+    },
+    {
+     "id": "nao-entendi",
+     "nome": "Ainda não entendi",
+     "texto": "Explique de outro jeito.",
+     "imgs": []
+    }
+   ]
+  },
+  {
+   "id": "b-pdf-desatualizado",
+   "titulo": "Cartão do livro depois de mudar um trabalho que já virou PDF",
+   "explicacao": [
+    "O cartão do livro na tela inicial dizia \"PDF gerado\" mesmo depois de você mudar o trabalho. Agora ele volta a \"N de M conferidas\" com \"continuar\". Daria para escrever algo próprio, como \"PDF desatualizado: gere de novo\"."
+   ],
+   "exemplos": [],
+   "opcoes": [
+    {
+     "id": "como-esta",
+     "nome": "Como está: \"N de M conferidas\" (recomendo)",
+     "texto": "",
+     "imgs": []
+    },
+    {
+     "id": "desatualizado",
+     "nome": "Escrever \"PDF desatualizado\"",
      "texto": "",
      "imgs": []
     },
