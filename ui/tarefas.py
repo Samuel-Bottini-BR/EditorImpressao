@@ -20,7 +20,7 @@ from core import etapas, luz_scantailor
 from core.misto import escolhas_da_pagina as escolhas_do_misto
 from core.pontinhos_scantailor import escolha_da_pagina as pontinhos_da_pagina
 from core.pipeline import acertar_no_tamanho_do_pdf, faixa_da_sobra, precisa_do_desenho_do_pdf
-from core.dividir_a_mao import area_da_tampa      # obra 26/10, etapa 4 (D-495)
+from core.dividir_a_mao import assinatura_da_tampa   # obra 26/10, etapas 4 e 9b-2 (D-495, D-559)
 from core.pdf_io import ErroPDF, abrir_pdf
 from core.pipeline import (
     Cancelou,
@@ -918,8 +918,9 @@ class GerenciadorPrevias(QObject):
             f"{pontinhos_da_pagina(self.projeto, p)}:"
             # item 2.1: o corte da sobra muda a pagina desenhada
             f"{faixa_da_sobra(f, p, self.projeto)}"
-            # obra 26/10, etapa 4 (D-495): a tampa do scanner pintada de branco
-            f"{area_da_tampa(f)}"
+            # obra 26/10, etapa 4 (D-495): a tampa do scanner pintada de branco;
+            # etapa 9b-2 (D-559): e se o livro a corta ou a pinta
+            f"{assinatura_da_tampa(f, self.projeto)}"
             # "Deixar em branco" (12/10/2026) muda a pagina desenhada
             f":{'branca' if getattr(p, 'em_branco', False) else ''}:"
             # itens 2.9 e 2.11 (bug do verificador do 2.9, 21/10): as
@@ -1150,7 +1151,7 @@ class GerenciadorPrevias(QObject):
         f = self.projeto.folhas[p.folha]
         return (f"{indice}:recorte:{dpi}:{p.metade}:{f.posicao_corte:.4f}:{f.rotacao}:{f.dividir}:"
                 f"{faixa_da_sobra(f, p, self.projeto)}"       # item 2.1
-                f"{area_da_tampa(f)}")                        # etapa 4 (D-495)
+                f"{assinatura_da_tampa(f, self.projeto)}")    # etapas 4 e 9b-2 (D-495, D-559)
 
     def pegar_para_recorte(self, indice: int, dpi: int) -> np.ndarray | None:
         chave = self.chave_para_recorte(indice, dpi)

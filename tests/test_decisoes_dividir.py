@@ -155,11 +155,14 @@ def _gerar(janela, tmp_path: Path, nome: str) -> list[np.ndarray]:
     return _paginas_do_pdf(processar(projeto))
 
 
-def _linhas_pretas_em_cima(img: np.ndarray, parte: float = 0.2) -> int:
-    """Quantas linhas, no alto da página, são quase todas pretas (a faixa da tampa)."""
+def _linhas_pretas_em_cima(img: np.ndarray, parte: float = 0.2, cheia: float = 0.6) -> int:
+    """Quantas linhas, no alto da página, são quase todas pretas (a faixa da tampa).
+    `cheia`: a parte da largura que tem de ser preta (etapa 9b-2: com o "cortar fora" da
+    D-559 a página fica justa no texto, e as linhas de "texto" de mentira, de 83% da largura,
+    entram no alto da página; 0,9 só conta a faixa, que atravessa a página inteira)."""
     cinza = cv2.cvtColor(img, cv2.COLOR_RGB2GRAY)
     alto = cinza[: int(cinza.shape[0] * parte)]
-    return int(((alto < 60).mean(axis=1) > 0.6).sum())
+    return int(((alto < 60).mean(axis=1) > cheia).sum())
 
 
 # --- a janela ---------------------------------------------------------------------
@@ -461,10 +464,12 @@ def test_d495_a_regra_da_tampa_na_folha_e_na_moldura():
 
 @precisa_da_dll
 def test_d495_a_faixa_da_tampa_sai_ao_girar_e_dividir_a_mao(janela, tmp_path):
-    """D-495: "a faixa preta da tampa do scanner sai quando a folha é girada e dividida à
-    mão [...], não por regra geral". A mesma folha (de lado): a 1 girada e dividida à mão
-    sai sem a faixa preta em cima nas duas páginas; a 2 girada e dividida pelo Automático
-    continua com ela (não é regra geral). No código antigo nem dava para dividir à mão."""
+    """D-495: a faixa preta da tampa do scanner sai quando a folha é girada e dividida à
+    mão. A mesma folha (de lado): a 2 girada e dividida à mão sai sem a faixa preta em cima
+    nas duas páginas. No código antigo nem dava para dividir à mão.
+    Etapa 9b-2 (D-559, 27/10/2026, `ac-tampa`: "sumir em todo o livro, e o Kaique escolhe por
+    livro cortar ou pintar de branco"; substitui a D-495/D-499 "só à mão"): a 1, girada e
+    dividida pelo AUTOMÁTICO, também sai sem a faixa (até a etapa 9b-2 ela continuava)."""
     janela.abrir_livro(_pdf(tmp_path / "tampa.pdf",
                             [_de_lado(_righetti_sintetico()), _de_lado(_righetti_sintetico())]))
     tela, projeto = janela.tela_conferir, janela.projeto
@@ -478,30 +483,29 @@ def test_d495_a_faixa_da_tampa_sai_ao_girar_e_dividir_a_mao(janela, tmp_path):
     estado = janela.estado_do_automatico
     estado.escolhidas = [0]
     _rodar(janela, [A.DIVIDIR], alcance=NAS_ESCOLHIDAS)
-    assert projeto.folhas[0].dividir and projeto.folhas[0].tampa_do_scanner is None
+    assert projeto.folhas[0].dividir and len(projeto.folhas[0].tampa_do_scanner) == 5   # D-559
     paginas = _gerar(janela, tmp_path, "tampa")
     assert len(paginas) == 4
-    automatico, a_mao = paginas[:2], paginas[2:]
-    assert all(_linhas_pretas_em_cima(p) > 20 for p in automatico)   # a faixa continua
-    assert all(_linhas_pretas_em_cima(p) == 0 for p in a_mao)        # a faixa saiu
+    assert all(_linhas_pretas_em_cima(p, cheia=0.9) == 0 for p in paginas)   # saiu das quatro
 
 
 @precisa_da_dll
 def test_d495_acertar_a_linha_a_mao_tambem_tira_a_tampa(janela, tmp_path):
-    """D-495, no caminho do Kaique: o Automático dividiu as folhas giradas (a faixa fica:
-    não é regra geral); ele entra no Dividir para consertar a folha 1 e arrasta a linha -
-    acertar a linha à mão é dividir à mão: a faixa da tampa sai SÓ nessa folha."""
+    """D-495, no caminho do Kaique: o Automático dividiu as folhas giradas; ele entra no
+    Dividir para consertar a folha 1 e arrasta a linha - acertar a linha à mão não traz a
+    faixa de volta. Etapa 9b-2 (D-559: "sumir em todo o livro"): o Automático já tira a
+    faixa de todas as folhas (até a etapa 9b-2 só a folha da linha acertada a perdia)."""
     janela.abrir_livro(_pdf(tmp_path / "tampa.pdf",
                             [_de_lado(_righetti_sintetico()), _de_lado(_righetti_sintetico())]))
     tela, projeto = janela.tela_conferir, janela.projeto
     tela._acao_nas_escolhidas("girar_esquerda", [0, 1])
     _rodar(janela, [A.DIVIDIR])
-    assert all(f.dividir and f.tampa_do_scanner is None for f in projeto.folhas)
+    assert all(f.dividir and len(f.tampa_do_scanner) == 5 for f in projeto.folhas)   # D-559
     _no_dividir(tela, 0)
     tela._mover_corte(projeto.folhas[0].posicao_corte + 0.01)
-    assert len(projeto.folhas[0].tampa_do_scanner) == 5 and projeto.folhas[1].tampa_do_scanner is None
+    assert all(len(f.tampa_do_scanner) == 5 for f in projeto.folhas)
     paginas = _gerar(janela, tmp_path, "linha")
-    assert [_linhas_pretas_em_cima(p) == 0 for p in paginas] == [True, True, False, False]
+    assert [_linhas_pretas_em_cima(p, cheia=0.9) == 0 for p in paginas] == [True] * 4
 
 
 @precisa_da_dll
@@ -523,8 +527,9 @@ def test_d495_a_moldura_impressa_preta_nao_some_ao_dividir_a_mao(janela, tmp_pat
 @pytest.mark.skipif(not RIGHETTI.is_file(), reason="sem o acervo (só no PC do Samuel)")
 def test_d495_righetti_96_de_verdade(janela, tmp_path):
     """D-495 no Righetti 96 (só lido): girar ¼ à esquerda e "dividir esta". REVERSÃO: no
-    código antigo o botão ficava cinza; dividida pelo Automático, a página da direita tem
-    a faixa preta em cima (medido em 27/10: ~125 linhas a 150 DPI); dividida à mão, nenhuma."""
+    código antigo o botão ficava cinza; dividida à mão, a página da direita sai sem a faixa
+    preta em cima. Etapa 9b-2 (D-559: "sumir em todo o livro"): dividida pelo Automático
+    também (até a etapa 9b-2: ~125 linhas pretas a 150 DPI)."""
     pdf = tmp_path / "righetti96.pdf"
     with fitz.open(str(RIGHETTI)) as origem, fitz.open() as novo:
         novo.insert_pdf(origem, from_page=95, to_page=95)
@@ -541,7 +546,7 @@ def test_d495_righetti_96_de_verdade(janela, tmp_path):
     _rodar(janela, [A.DIVIDIR], alcance=NAS_ESCOLHIDAS)
     paginas = _gerar(janela, tmp_path, "righetti96")
     assert len(paginas) == 4
-    assert _linhas_pretas_em_cima(paginas[1]) > 60       # Automático: a faixa continua
+    assert _linhas_pretas_em_cima(paginas[1]) == 0       # Automático: saiu (D-559)
     assert _linhas_pretas_em_cima(paginas[3]) == 0       # à mão: saiu
     assert _linhas_pretas_em_cima(paginas[2]) == 0
 

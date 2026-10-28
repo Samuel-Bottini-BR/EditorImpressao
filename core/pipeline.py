@@ -436,13 +436,13 @@ def faixa_da_sobra(folha: ConfigFolha, pagina: ConfigPagina,
     return (a, b)
 
 
-def _com_a_tampa(folha: ConfigFolha) -> tuple:
+def _com_a_tampa(folha: ConfigFolha, projeto: Projeto | None = None) -> tuple:
     """O pedaco das chaves das contas guardadas (geometria, zonas, linhas do
     texto) que diz a tampa do scanner pintada de branco (obra 26/10, etapa 4,
-    D-495). So entra quando ha tampa: a chave das folhas sem ela fica igual a
-    de antes (as contas ja guardadas no disco continuam valendo)."""
-    area = dividir_a_mao.area_da_tampa(folha)
-    return () if area is None else (("tampa",) + tuple(round(v, 6) for v in area),)
+    D-495) e, desde a etapa 9b-2 (D-559), se o livro a corta ou a pinta. So
+    entra quando ha tampa: a chave das folhas sem ela fica igual a de antes
+    (as contas ja guardadas no disco continuam valendo)."""
+    return dividir_a_mao.assinatura_da_tampa(folha, projeto)
 
 
 def _cortar_a_sobra(img: np.ndarray, faixa: tuple[float, float] | None) -> np.ndarray:
@@ -540,9 +540,10 @@ def preparar_para_recorte(
     img = img_folha
     if folha.rotacao:
         img = girar_90(img, folha.rotacao)
-    # Obra 26/10, etapa 4 (D-495): a tampa do scanner achada quando a pessoa
-    # dividiu a folha a mao sai branca, ainda na etapa "dividir" (sem tampa,
-    # a mesma imagem: nada muda no livro que nao a tem)
+    # Obra 26/10, etapa 4 (D-495) e etapa 9b-2 (D-559): a tampa do scanner
+    # (achada ao dividir a mao e pelo Automatico) sai branca, ainda na etapa
+    # "dividir" (sem tampa, a mesma imagem: nada muda no livro que nao a tem);
+    # no "cortar fora" o corte da pagina para na beirada dela (corte_sem_a_tampa)
     img = dividir_a_mao.pintar_a_tampa(img, folha)
     if folha.dividir and pagina.metade != METADE_INTEIRA:
         esq, dir_ = dividir_imagem(img, folha.posicao_corte)
@@ -664,6 +665,10 @@ def _preparar_metade_e_geometria(
     # item 2.5: com o livro em "cortar seguindo o conteudo", o corte do livro
     # (do tamanho das outras paginas); fora disso, volta como esta
     recorte = _corte_do_livro(folha, pagina, projeto, recorte, angulo, inteira)
+    # etapa 9b-2 (D-559): com o livro em "cortar fora", o corte nao passa da
+    # beirada da tampa do scanner (que ja saiu branca em preparar_para_recorte);
+    # sem tampa, ou "pintar de branco", nada muda
+    recorte = dividir_a_mao.corte_sem_a_tampa(folha, pagina, projeto, recorte)
     # item 2.14: o que fica fora da pagina achada vira branco (so com a borda
     # preta ligada e "pintar de branco"); None = nada a pintar
     area = None if so_a_geometria else _area_que_fica(folha, pagina, projeto)
@@ -1436,7 +1441,7 @@ def _chave_da_geometria(folha: ConfigFolha, pagina: ConfigPagina, projeto: Proje
          if getattr(projeto, "borda_preta", False) else None),
         (borda_preta.fazer_valido(getattr(projeto, "borda_preta_fazer", None))   # item 2.14
          if getattr(projeto, "borda_preta", False) else None),
-    ) + _com_a_tampa(folha)
+    ) + _com_a_tampa(folha, projeto)
 
 
 def _geometria_guardada(folha: ConfigFolha, pagina: ConfigPagina, projeto: Projeto):
@@ -3013,7 +3018,7 @@ def _entradas_do_preparo(folha: ConfigFolha, pagina: ConfigPagina, projeto: Proj
             etapas.corta_sozinho(projeto, pagina), etapas.endireita_sozinho(projeto, pagina),
             int(projeto.qualidade_dpi),
             faixa_da_sobra(folha, pagina, projeto),       # item 2.1
-            endireitar_scantailor.jeito_da_pagina(projeto, pagina)) + _com_a_tampa(folha)
+            endireitar_scantailor.jeito_da_pagina(projeto, pagina)) + _com_a_tampa(folha, projeto)
 
 
 def converter_zonas_do_livro(
@@ -3567,7 +3572,7 @@ def _chave_das_linhas(projeto: Projeto, pagina: ConfigPagina):
             round(float(folha.posicao_corte), 4), recorte, etapas.angulo_a_mao(projeto, pagina),
             projeto.dividir_folhas, etapas.corta_sozinho(projeto, pagina),
             etapas.endireita_sozinho(projeto, pagina),
-            faixa_da_sobra(folha, pagina, projeto)) + _com_a_tampa(folha)   # itens 2.1; D-495
+            faixa_da_sobra(folha, pagina, projeto)) + _com_a_tampa(folha, projeto)   # itens 2.1; D-495
 
 
 def _filtrar_no_misto(projeto: Projeto, pagina: ConfigPagina, img: np.ndarray, selecao,

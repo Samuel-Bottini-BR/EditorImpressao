@@ -404,3 +404,114 @@ def test_d558_dividir_na_grade_nas_folhas_escolhidas_com_a_conta_do_dividir_esta
     tela.desfazer()
     _assentar()
     assert len(projeto.paginas) == 4 and not any(f.dividir for f in projeto.folhas)
+
+
+# --- D-559: a faixa da tampa do scanner some em todo o livro, também no Automático ----------
+
+def _righetti_sintetico() -> np.ndarray:
+    """A folha do Righetti como ela fica depois de girada (medida no livro de verdade, folha 96
+    a 150 DPI; a mesma de tests/test_decisoes_dividir.py): uma tira clara da tampa em cima, a
+    faixa preta de ~2 cm atravessando a folha, o fundo preto do scanner à esquerda e o livro
+    aberto."""
+    altura, largura = 1275, 1650
+    img = np.full((altura, largura, 3), 240, np.uint8)
+    img[:, :270] = 12
+    img[105:235, :] = 12
+    img[:105, :] = 236
+    for y in range(300, 1200, 24):
+        img[y:y + 8, 330:900] = 30
+        img[y:y + 8, 1010:1580] = 30
+    return img
+
+
+def _com_moldura_impressa() -> np.ndarray:
+    """Livro aberto com moldura impressa PRETA e grossa (4,5 mm) em cada página: tem de sobrar
+    inteira (D-495; a regra da tampa não pode pegá-la)."""
+    altura, largura = 1275, 1650
+    img = np.full((altura, largura, 3), 240, np.uint8)
+    for x0, x1 in ((60, 780), (870, 1590)):
+        cv2.rectangle(img, (x0, 60), (x1, altura - 60), (15, 15, 15), 27)
+        for y in range(160, altura - 160, 24):
+            img[y:y + 8, x0 + 80:x1 - 80] = 30
+    return img
+
+
+def _faixa_em_cima(img: np.ndarray, parte: float = 0.2, cheia: float = 0.9) -> int:
+    """Quantas linhas, no alto da página, são pretas de ponta a ponta (a faixa da tampa)."""
+    cinza = cv2.cvtColor(img, cv2.COLOR_RGB2GRAY)
+    alto = cinza[: int(cinza.shape[0] * parte)]
+    return int(((alto < 60).mean(axis=1) > cheia).sum())
+
+
+def _rodar(janela, etapas_, alcance="livro", opcoes=None) -> bool:
+    """O que o Kaique faz no painel Automático: marca as etapas e roda (no mesmo fio)."""
+    estado = janela.estado_do_automatico
+    estado.marcadas = set(etapas_)
+    estado.opcoes.update(opcoes or {})
+    estado.alcance = alcance
+    return janela.rodar_o_automatico(esperar=True, perguntar=False)
+
+
+def test_d559_a_tampa_some_em_todo_o_livro_pelo_automatico_e_o_livro_escolhe_cortar_ou_pintar(
+        janela, tmp_path):
+    """D-559 (27/10/2026, Central `ac-tampa`: "Como eu decidi: sumir em todo o livro, e o Kaique
+    escolhe por livro cortar ou pintar de branco"; D-097: "É para sumir totalmente." / "tem que
+    ficar rente a folha de papel, não pode ter preto ali."; D-092: "O Kaique escolhe por
+    livro"). Substitui a D-495/D-499 (só ao dividir à mão). Livro de 3 folhas como o Righetti
+    (já de pé), o Automático só com "Endireitar" (nenhum dividir à mão): a tampa é achada nas
+    três; no PDF nenhuma página tem a faixa preta em cima. Com o livro em "cortar fora" (o de
+    fábrica) a página fica mais baixa que a folha (cortada na beirada da tampa); em "pintar de
+    branco", do tamanho da folha, com o lugar da faixa branco. O Ctrl+Z do Automático devolve a
+    folha sem a tampa. Falha no código antigo (o Automático nunca tirava a tampa)."""
+    janela.abrir_livro(_pdf(tmp_path / "tampa.pdf", [_righetti_sintetico()] * 3))
+    projeto = janela.projeto
+    assert projeto.borda_preta_fazer == "cortar"                       # de fábrica
+    _rodar(janela, [A.ENDIREITAR])
+    assert all(f.tampa_do_scanner and len(f.tampa_do_scanner) == 5 for f in projeto.folhas)
+    cortadas = _gerar(janela, tmp_path, "cortar")
+    assert len(cortadas) == 3
+    assert all(_faixa_em_cima(p) == 0 for p in cortadas)
+    folha_alta = 1275                                                  # a folha, no PDF a 100 DPI
+    assert all(p.shape[0] < 0.88 * folha_alta for p in cortadas)       # cortada na tampa
+
+    projeto.borda_preta_fazer = "pintar"
+    pintadas = _gerar(janela, tmp_path, "pintar")
+    assert all(_faixa_em_cima(p) == 0 for p in pintadas)
+    assert all(p.shape[0] > 0.97 * folha_alta for p in pintadas)       # do tamanho da folha
+    cinza = cv2.cvtColor(pintadas[0], cv2.COLOR_RGB2GRAY)
+    faixa = cinza[int(0.10 * cinza.shape[0]): int(0.17 * cinza.shape[0]), int(0.3 * cinza.shape[1]):]
+    assert float(faixa.mean()) > 200                                   # o lugar da faixa: branco
+
+    janela.tela_conferir.desfazer()
+    _assentar()
+    assert all(f.tampa_do_scanner is None for f in projeto.folhas)
+
+
+def test_d559_a_moldura_impressa_preta_nao_some_pelo_automatico(janela, tmp_path):
+    """D-559 com o cuidado da D-495 ("livro com moldura impressa preta não perde a moldura"):
+    o Automático procura a tampa no livro aberto com moldura preta grossa e não acha nada
+    (tampa_do_scanner = [giro]: procurada, nada); a moldura sai inteira no PDF. A regra é a
+    da etapa 4, passada nas 2.903 folhas do acervo sem pegar moldura nenhuma
+    (relatorios/obra-etapa4/varrer-tampa-acervo.json)."""
+    janela.abrir_livro(_pdf(tmp_path / "moldura.pdf", [_com_moldura_impressa()] * 2))
+    projeto = janela.projeto
+    _rodar(janela, [A.ENDIREITAR])
+    assert all(f.tampa_do_scanner == [0] for f in projeto.folhas)
+    paginas = _gerar(janela, tmp_path, "moldura")
+    assert all(_faixa_em_cima(p, 0.12, 0.6) >= 10 for p in paginas)    # a linha de cima da moldura
+
+
+def test_d559_a_escolha_cortar_ou_pintar_fica_a_vista_no_automatico(janela, tmp_path):
+    """D-559 ("o Kaique escolhe por livro cortar ou pintar de branco") + D-092: a escolha "O que
+    fica fora da página" (cortar fora / pintar de branco) do Automático vale também para a
+    tampa e fica à vista com a borda preta desmarcada (antes só aparecia com ela marcada)."""
+    janela.abrir_livro(_pdf(tmp_path / "tampa.pdf", [_righetti_sintetico()]))
+    janela.estado_do_automatico.opcoes["borda_preta"] = False
+    grande = janela.abrir_o_automatico(A.CORTAR)
+    try:
+        _assentar()
+        assert not grande.linhas["borda_preta_fazer"].isHidden()
+        assert grande.linhas["borda_preta_ate"].isHidden()                # o "até onde": só com ela
+        assert "tampa do scanner" in grande.controles["borda_preta_fazer"].toolTip()
+    finally:
+        janela._fechar_a_janela_do_automatico()

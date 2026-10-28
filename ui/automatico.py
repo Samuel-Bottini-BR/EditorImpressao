@@ -827,10 +827,16 @@ class JanelaDoAutomatico(QDialog):
         self._combo("borda_preta_ate", [(j, borda_preta.NOMES[j]) for j in borda_preta.JEITOS], col,
                     "Cortar:", "Até a moldura: o corte vai até o que está impresso. Só o preto: "
                     "tira só a faixa preta do scanner.")
+        # Etapa 9b-2 (D-559: a faixa preta da tampa do scanner some em todo o
+        # livro, "e o Kaique escolhe por livro cortar ou pintar de branco"): a
+        # MESMA escolha do livro da D-092 ("O Kaique escolhe por livro") vale
+        # para a borda preta e para a tampa; por isso fica à vista também com
+        # a borda preta desmarcada (_mostrar_opcoes).
         self._combo("borda_preta_fazer", [(f, borda_preta.NOMES_DO_FAZER[f]) for f in borda_preta.FAZERES],
                     col, "O que fica fora da página:",
                     "Cortar fora: a página fica menor. Pintar de branco: a página fica do tamanho "
-                    "de sempre e o que está fora vira branco.")
+                    "de sempre e o que está fora vira branco. Vale para a borda preta e para a "
+                    "faixa preta da tampa do scanner.")
 
     def _opcoes_limpar(self, col) -> None:
         from ui.widgets.escolhas_do_misto import EscolhasDoMisto
@@ -1050,9 +1056,11 @@ class JanelaDoAutomatico(QDialog):
             vertical, horizontal = margens_scantailor.alinhamento_valido(o.get("margens_alinhamento"))
             self.combo_vertical.setCurrentIndex(max(0, self.combo_vertical.findData(vertical)))
             self.combo_horizontal.setCurrentIndex(max(0, self.combo_horizontal.findData(horizontal)))
-            # a lista da borda preta so aparece com a caixinha marcada (D-101)
+            # a lista da borda preta so aparece com a caixinha marcada (D-101);
+            # o "O que fica fora da pagina" fica sempre: vale tambem para a
+            # tampa do scanner, que some em todo livro (D-559, etapa 9b-2)
             self.linhas["borda_preta_ate"].setVisible(bool(o.get("borda_preta")))
-            self.linhas["borda_preta_fazer"].setVisible(bool(o.get("borda_preta")))
+            self.linhas["borda_preta_fazer"].setVisible(True)
         finally:
             self._enchendo = False
 
