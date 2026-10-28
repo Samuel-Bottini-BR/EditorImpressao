@@ -1784,7 +1784,7 @@ def test_p077_limpar_tudo(janela, tela):
     assert aj.pagina_gravada(janela, 1)["selecao"]
     apertar(janela, "menu/limpar_marcacao")
     assert not aj.pagina_gravada(janela, 1)["selecao"]
-    # o Desfazer da marcação é a promessa P-129 (aguarda a etapa 9)
+    # o Desfazer da marcação é a promessa P-129 (feita na etapa 9b-2)
 
 
 @prova("P-129")

@@ -760,3 +760,155 @@ def test_lista_1_9_o_retangulo_feito_a_mao_aparece_dentro_da_area_da_maquina(app
     assert any(abs(int(p[0]) - 255) < 40 and int(p[1]) < 110 and int(p[2]) < 60 for p in borda), borda
     dentro = rgb[meio_y, x + 20]
     assert not (int(dentro[1]) < 110 and int(dentro[2]) < 60)          # dentro: só o colorido
+
+
+# --- D-090 / D-091 (P-061, P-065): "usar em todas" nunca apaga exceção ------------------------
+
+def test_d090_usar_em_todas_do_dividir_abre_as_folhas_e_nao_apaga_a_linha_propria(
+        janela, tmp_path, monkeypatch):
+    """D-090 (08/10/2026: "fazer um corte e mandar para todas as paginas e alterar em algumas
+    paginas só o corte quando cortamos alguma, assim quando mudar de um não muda de todas, eu
+    devo conseguir abrir uma aba para selecionar as que eu quero ( as paginas) ou também
+    simplismente apertar num botão e selecionar todas."), D-091 ("'Selecionar todas' e
+    'Nenhuma'"), promessa P-061. Livro de 4 folhas dividido: a linha da folha 3 acertada à mão
+    (exceção); na folha 1, mover a linha e "usar em todas" → abre "Em quais páginas?" com as
+    FOLHAS, a 3 desmarcada; aplicar → as folhas 2 e 4 ganham a linha da 1, a 3 fica com a dela.
+    REVERSÃO: no código antigo a linha ia para todas, sem lista, e a da folha 3 se perdia."""
+    from ui.dialogo_escolher_paginas import DialogoEscolherPaginas
+
+    tela = _dividido(janela, tmp_path, folhas=4)
+    projeto = janela.projeto
+    tela.escolher_ferramenta("dividir")
+    tela._ir_para(2)
+    tela._mover_corte(0.44)                                   # a exceção, à mão
+    tela._ir_para(0)
+    tela._mover_corte(0.53)
+    vistas = []
+
+    def aplicar(dialogo):
+        textos = [dialogo.lista.item(i).text() for i in range(dialogo.lista.count())]
+        marcadas = dialogo.escolhidas()
+        vistas.append((textos, marcadas, dialogo.botao_todas.text(), dialogo.botao_nenhuma.text()))
+        return DialogoEscolherPaginas.Accepted
+
+    monkeypatch.setattr(DialogoEscolherPaginas, "exec", aplicar)
+    tela._corte_em_todas()
+    assert vistas, "não abriu a lista (D-090)"
+    textos, marcadas, todas, nenhuma = vistas[0]
+    assert textos[0].startswith("Folha 1") and len(textos) == 4
+    assert "linha própria" in textos[2] and 2 not in marcadas      # a exceção desmarcada
+    assert marcadas == [0, 1, 3]
+    assert (todas, nenhuma) == ("Selecionar todas", "Nenhuma")
+    linhas = [round(f.posicao_corte, 2) for f in projeto.folhas]
+    assert linhas == [0.53, 0.53, 0.44, 0.53]
+
+    monkeypatch.setattr(DialogoEscolherPaginas, "exec", lambda self: 0)      # cancelar
+    tela._mover_corte(0.6)
+    tela._corte_em_todas()
+    assert [round(f.posicao_corte, 2) for f in projeto.folhas] == [0.6, 0.53, 0.44, 0.53]
+
+
+def test_d090_usar_em_todas_do_cortar_nao_apaga_a_excecao(janela, tmp_path, monkeypatch):
+    """D-090 no Cortar (Lista de bugs, 08/10: "O 'usar em todas' da aba Bordas apaga as exceções
+    por página"; consertado no item 2.13, conferido aqui na etapa 9b-2): a página com corte
+    próprio vem desmarcada e fica com o dela."""
+    from ui.dialogo_escolher_paginas import DialogoEscolherPaginas
+
+    janela.abrir_livro(_pdf(tmp_path / "bordas.pdf", [_pagina() for _ in range(3)]))
+    tela, projeto = janela.tela_conferir, janela.projeto
+    tela._registrar("recortar", "pagina", [2], {"recorte": [0.1, 0.1, 0.5, 0.5]}, "exceção")
+    tela.ir_para_pagina(0)
+    tela._registrar("recortar", "pagina", [0], {"recorte": [0.0, 0.0, 0.8, 0.8]}, "corte")
+    monkeypatch.setattr(DialogoEscolherPaginas, "exec", lambda self: DialogoEscolherPaginas.Accepted)
+    tela._recorte_em_todas()
+    assert tuple(projeto.paginas[1].recorte) == (0.0, 0.0, 0.8, 0.8)
+    assert tuple(projeto.paginas[2].recorte) == (0.1, 0.1, 0.5, 0.5)
+
+
+# --- D-156: "só neste pedaço" (no Preto e branco e sem "Limpar a folha") --------------------
+
+def _pagina_com_foto() -> np.ndarray:
+    """Papel amarelado com texto e uma "foto" colorida (azul e vermelho) no meio."""
+    img = _pagina()
+    img[330:520, 160:440] = (200, 80, 40)                 # BGR: azul
+    img[330:520, 300:440] = (40, 60, 210)                 # vermelho
+    return img
+
+
+def _pedaco(filtro: str):
+    from core.selecao import GRAVURA, MAO, RETANGULO, Regiao
+
+    regiao = Regiao(tipo=GRAVURA, forma=RETANGULO, pontos=[(0.25, 0.38), (0.75, 0.63)], origem=MAO)
+    regiao.filtro = filtro
+    return regiao
+
+
+def _saturacao_no_meio(img: np.ndarray) -> float:
+    hsv = cv2.cvtColor(img, cv2.COLOR_RGB2HSV)
+    h, w = hsv.shape[:2]
+    return float(hsv[int(0.42 * h): int(0.6 * h), int(0.3 * w): int(0.7 * w), 1].mean())
+
+
+@pytest.mark.parametrize("com_limpar", [True, False])
+def test_d156_so_neste_pedaco_vale_no_preto_e_branco_e_sem_limpar(janela, tmp_path, com_limpar):
+    """D-156 (01/10/2026: "espero ter a escolha de conseguir deixar a foto em original, caso
+    precise."; Lista de bugs 05/10: "No Preto e branco, o 'só neste pedaço' da aba Marcar é
+    ignorado"; o pedido da etapa 9b-2: "'Só neste pedaço' ignorado sem 'Limpar a folha'").
+    Página em Preto e branco, a foto marcada "só neste pedaço: Original" → no PDF a foto sai
+    colorida e o resto em preto e branco; com o "Limpar a folha" do livro ligado (Automático) e
+    desligado (o filtro escolhido à mão na página, D-009). Conferido na etapa 9b-2: já vinha
+    consertado (60d8c58 e etapa 1); este teste guarda."""
+    from core.filtros import ORIGINAL, PRETO_E_BRANCO
+
+    janela.abrir_livro(_pdf(tmp_path / "foto.pdf", [_pagina_com_foto()]))
+    tela, projeto = janela.tela_conferir, janela.projeto
+    if com_limpar:
+        _rodar(janela, [A.LIMPAR], opcoes={"filtro_padrao": PRETO_E_BRANCO})
+    else:
+        tela._escolher_filtro(PRETO_E_BRANCO)
+    assert projeto.limpar is com_limpar
+    tela.escolher_ferramenta("retangulo")
+    tela.ir_para_pagina(0)
+    _assentar()
+    sem_pedaco = _gerar(janela, tmp_path, "sem")[0]
+    assert _saturacao_no_meio(sem_pedaco) < 10                   # em preto e branco
+    tela._escolher_filtro_da_regiao(ORIGINAL)                  # "só neste pedaço: Original"
+    tela.editor_selecao._acrescentar(_pedaco(ORIGINAL))
+    _assentar()
+    assert projeto.paginas[0].selecao[-1]["filtro"] == ORIGINAL
+    com_pedaco = _gerar(janela, tmp_path, "com")[0]
+    assert _saturacao_no_meio(com_pedaco) > 100                  # a foto em Original
+    cinza = cv2.cvtColor(com_pedaco, cv2.COLOR_RGB2GRAY)
+    assert float(((cinza > 20) & (cinza < 235))[:120].mean()) < 0.02   # o resto: preto e branco
+
+
+# --- Lista de bugs 12/10: "letra e traço" marcado à mão protege a tinta do "Só as letras" -----
+
+@pytest.mark.parametrize("modo", ["apagar", "rede"])
+def test_bug_12_10_letra_e_traco_a_mao_protege_a_tinta_do_so_as_letras(modo):
+    """Lista de bugs de 12/10/2026: "Marcar uma área como 'letra e traço' à mão não protege a
+    tinta do apagar do 'Só as letras' (core/misto.py, _fora_do_texto). Na rodada 5 o Samuel viu,
+    em simulação, que a tinta voltava." (D-281: o aviso manda marcar "letra e traço" quando é
+    escrita.) Página com linhas de texto e uma nota fina (cinza claro, fora das linhas): o "Só
+    as letras" ("Guardar só o texto" e a rede de segurança) apaga a nota; marcada à mão como
+    "letra e traço", a nota fica inteira. REVERSÃO: no código antigo a nota sumia igual."""
+    from core import misto
+    from core.selecao import LETRA, MAO, RETANGULO, Regiao, Selecao
+
+    img = np.full((800, 600), 225, np.uint8)
+    linhas = np.zeros((800, 600), bool)
+    for y in range(100, 500, 40):
+        img[y:y + 14, 80:520] = 20
+        linhas[y - 4:y + 18, 70:530] = True
+    for x in range(100, 500, 12):                         # a nota: traços finos, claros
+        img[640:650, x:x + 6] = 120
+    selecao = Selecao()
+    sem, _ = misto.aplicar_misto(img, selecao, fora_do_texto=modo, linhas=linhas,
+                                 altura_linha=14.0)
+    assert float((sem[640:650, 100:500] == 0).mean()) < 0.05          # apagada
+    selecao.acrescentar(Regiao(tipo=LETRA, forma=RETANGULO, pontos=[(0.1, 0.78), (0.9, 0.84)],
+                               origem=MAO))
+    com, _ = misto.aplicar_misto(img, selecao, fora_do_texto=modo, linhas=linhas,
+                                 altura_linha=14.0)
+    assert float((com[640:650, 100:500] == 0).mean()) > 0.3            # protegida
+    assert np.array_equal(com[:600], sem[:600])                        # o resto não muda

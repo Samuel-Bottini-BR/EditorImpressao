@@ -406,7 +406,8 @@ def _cinza_na_escala_da_linha(cinza: np.ndarray, altura_linha: float) -> np.ndar
 
 def _fora_do_texto(binaria: np.ndarray, cinza: np.ndarray, linhas: np.ndarray,
                    altura_linha: float, modo: str, fora_da_imagem: np.ndarray,
-                   medidas: dict | None = None, pecas: dict | None = None) -> np.ndarray:
+                   medidas: dict | None = None, pecas: dict | None = None,
+                   protegida: np.ndarray | None = None) -> np.ndarray:
     """O preto e branco da pagina com a opcao `modo` aplicada a tinta fora das
     linhas e fora da imagem (ver o comentario de FORA_TUDO). binaria: 0 =
     tinta. Nunca muda a tinta de dentro das linhas. medidas recebe:
@@ -421,10 +422,21 @@ def _fora_do_texto(binaria: np.ndarray, cinza: np.ndarray, linhas: np.ndarray,
     ajustada (core/revisar.py), que olha o resultado de verdade; forte_fora
     so decide no "Guardar só o texto" (C). pecas (dict, opcional) recebe
     "forte": a mascara da tinta forte de fora (a que o C apaga), para o aviso
-    marcar onde ela sumiu."""
+    marcar onde ela sumiu.
+
+    protegida (etapa 9b-2 da obra; Lista de bugs de 12/10/2026: "Marcar uma
+    área como 'letra e traço' à mão não protege a tinta do apagar do 'Só as
+    letras' (core/misto.py, _fora_do_texto). Na rodada 5 o Samuel viu, em
+    simulação, que a tinta voltava"; D-281, a frase do aviso: "se for escrita,
+    marque a área e escolha 'letra e traço' no painel Propriedades"): a área
+    marcada À MÃO como "letra e traço" (_letra_a_mao). A tinta dela nunca é
+    apagada nem contada como "de fora", como a de dentro das linhas. None
+    (sem marcação dessas): nada muda."""
     tinta = binaria == 0
     total = int(np.count_nonzero(tinta)) or 1
     fora = tinta & ~linhas & fora_da_imagem
+    if protegida is not None:
+        fora &= ~protegida
     saida = binaria.copy()
     forte = np.zeros_like(fora)
     escuro = None
@@ -463,6 +475,20 @@ def _fora_do_texto(binaria: np.ndarray, cinza: np.ndarray, linhas: np.ndarray,
     if pecas is not None:
         pecas["forte"] = forte
     return saida
+
+
+def _letra_a_mao(selecao, altura: int, largura: int) -> np.ndarray | None:
+    """A área marcada À MÃO como "letra e traço" (somada, válida), em pontos
+    da página; None quando não há (o caminho de sempre, sem conta a mais).
+    Etapa 9b-2: protege a tinta dela do "Só as letras" (_fora_do_texto)."""
+    from core.selecao import Selecao
+
+    regioes = [r for r in selecao.regioes
+               if r.tipo == LETRA and r.origem == MAO and r.operacao == SOMAR and r.valida()]
+    if not regioes:
+        return None
+    mascara = Selecao(regioes).mascara(altura, largura, LETRA)
+    return mascara if mascara.any() else None
 
 
 def _tira_a_imagem(regiao) -> bool:
@@ -665,7 +691,8 @@ def _misto(img, selecao, forca_preto, algoritmo_pb, despeckle, clareza, intensid
         pecas.update(cinza=cinza, base_tinta=binaria == 0, imagem=peso_imagem > 0)
     if com_linhas:
         binaria = _fora_do_texto(binaria, cinza, linhas, altura_linha,
-                                 fora_do_texto, ~(peso_imagem > 0), medidas, pecas)
+                                 fora_do_texto, ~(peso_imagem > 0), medidas, pecas,
+                                 protegida=_letra_a_mao(selecao, altura, largura))
     pedidos = [f for f in selecao.filtros_pedidos()
                if f in F.FILTROS_COMUNS and f != F.PRETO_E_BRANCO]
 

@@ -4880,14 +4880,47 @@ class TelaConferir(QWidget):
 
     @protegido
     def _corte_em_todas(self) -> None:
+        """O "usar em todas" do Dividir (promessa P-061). Etapa 9b-2 da obra
+        (D-090, 08/10/2026: "fazer um corte e mandar para todas as paginas e
+        alterar em algumas paginas só o corte quando cortamos alguma, assim
+        quando mudar de um não muda de todas, eu devo conseguir abrir uma aba
+        para selecionar as que eu quero ( as paginas) ou também simplismente
+        apertar num botão e selecionar todas."; D-091: "'Selecionar todas' e
+        'Nenhuma'"): antes de aplicar, a janela "Em quais páginas?" com as
+        FOLHAS, e as folhas em que a linha já foi acertada à mão (a marca
+        "mexida à mão" do Dividir) vêm desmarcadas: a linha delas não é
+        apagada. Só as marcadas recebem a linha desta folha; cancelar não
+        muda nada. Até a etapa 9b-2 a linha ia para todas, sem perguntar."""
         assert self.projeto is not None
         posicao = self.projeto.folhas[self.indice_folha].posicao_corte
-        indices = [f.indice for f in self.projeto.folhas]
+        indices = self._escolher_folhas_da_linha()
+        if not indices:
+            return
+        n = len(indices)
         self._registrar(
             "aplicar_em_todas", "folha", indices,
             {"posicao_corte": round(posicao, 4)},
-            f"Linha de corte de todas as {len(indices)} folhas",
+            f"Linha de corte em {n} folha" + ("" if n == 1 else "s"),
         )
+
+    def _escolher_folhas_da_linha(self) -> list[int]:
+        """Abre a janela "Em quais páginas?" com as folhas (ver
+        _corte_em_todas) e devolve as marcadas (vazio se cancelou). Separado
+        para os testes trocarem a janela."""
+        from core import etapas as E
+        from ui.dialogo_escolher_paginas import DialogoEscolherPaginas
+
+        assert self.projeto is not None
+        vez = self.indice_folha
+        dialogo = DialogoEscolherPaginas(
+            self.projeto, vez, self, itens=self.projeto.folhas, nome="Folha",
+            tem_proprio=lambda f: E.DIVIDIR in (getattr(f, "mexida_a_mao", None) or []),
+            marca="linha própria",
+            explicacao="A linha desta folha vai para as folhas marcadas. As folhas em que "
+                       "você já mudou a linha vêm desmarcadas, para não perder o que fez nelas.")
+        if dialogo.exec() != DialogoEscolherPaginas.Accepted:
+            return []
+        return dialogo.escolhidas()
 
     @protegido
     def _alternar_dividir(self) -> None:
