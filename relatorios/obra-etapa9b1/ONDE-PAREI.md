@@ -33,4 +33,8 @@ ferramentas que colocamos no programa funcionem como deveriam e como eu tinha es
 
 ## Andamento
 
-(preenchido a cada passo)
+- [x] 5 nome com acento (D-555) · [x] 3 tique do Filtro (D-492) · [x] 4 menu processar (D-274) · [x] 9 Desfazer (P-125),
+  cartão "PDF gerado" (D-309), `projeto.json` ilegível (já coberto, prova), "Painel: …" (já no menu Painéis, prova)
+- [x] 1 nomes da "Montar para imprimir" · [x] 6 "Antes de processar" (`138e425` + "Mostrar" inteiro) · [x] 7 aviso do
+  "Pintar por cima" (D-250) · [x] 8 foco preso (lista do Automático, rolagem dos painéis e da tira)
+- [ ] 10 contador da barra de baixo · [ ] 11 testes instáveis · [ ] 2 lado direito com os 4 jeitos · [ ] prints · [ ] GitHub
