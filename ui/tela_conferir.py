@@ -7646,7 +7646,10 @@ ABA_DA_FERRAMENTA = {
 # nao precisa desenhar a pagina de novo. Arriscado: por aqui um campo que muda
 # o desenho da pagina (a previa ficaria velha).
 CAMPOS_SO_DO_MOVER = frozenset({"conteudo_escala", "conteudo_deslocamento",
-                                "tamanho_folha_cm", "mexida_a_mao"})
+                                "tamanho_folha_cm", "mexida_a_mao",
+                                # etapa 9b-2: os avisos guardados para o desfazer
+                                # (_com_os_avisos_de_agora) nao mudam o desenho
+                                "alertas", "alertas_aceitos"})
 FERRAMENTA_DA_ABA = {aba: ferramenta for ferramenta, aba in ABA_DA_FERRAMENTA.items()}
 
 # As margens (esquerda, cima, direita, baixo) da fila de botoes embaixo da
