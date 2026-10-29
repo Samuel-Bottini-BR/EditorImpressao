@@ -269,3 +269,89 @@ def test_d237_com_marcacoes_desligado_a_caixinha_ainda_mostra_o_laranja(janela, 
     tela.caixa_mostrar_achadas.setChecked(False)
     _assentar()
     assert _laranja_das_achadas(editor) == 0
+
+
+# --- D-584: as ferramentas de marcar ligam as marcações sozinhas -------------------------------------
+#
+# D-584 (Samuel, 29/10/2026, "a"): "A — O botão liga sozinho ao escolher uma ferramenta de marcar
+# (Retângulo, Laço, Pincel, Varinha...) e desliga sozinho ao voltar para o Zoom ou a Mão. Quem marca
+# sempre vê o que está marcando; quem só olha a página vê ela limpa."
+# REVERSÃO: no commit abbb0d3 (D-580 sem a D-584) estes testes FALHAM: escolher o Pincel não liga.
+
+FERRAMENTAS_DE_MARCAR = ["retangulo", "elipse", "laco", "poligono", "pincel", "varinha", "cor",
+                         "ajustar"]
+
+
+def test_d584_pincel_liga_zoom_desliga_e_o_clique_ainda_esconde(janela, pasta):
+    """D-584 na janela de verdade, pelos pixels: Pincel → colorido pintado e botão aceso; Zoom →
+    nada pintado e botão apagado; de novo o Pincel e um clique no botão → some, e fica desligado
+    até trocar de ferramenta (outra de marcar liga de novo)."""
+    tela = _abrir_marcado(janela, pasta)
+    tela.escolher_ferramenta("zoom")
+    tela.ir_para_pagina(1)
+    _esperar_a_pagina(tela)
+    editor, botao = tela.editor_selecao, tela.botao_marcacoes
+    assert not botao.isChecked() and _coloridos_na_pagina(editor) < 300
+
+    tela.escolher_ferramenta("pincel")
+    _assentar()
+    assert botao.isChecked(), "escolher o Pincel não acendeu o botão (D-584)"
+    assert _coloridos_na_pagina(editor) > 20000, "com o Pincel as marcações não aparecem (D-584)"
+
+    tela.escolher_ferramenta("zoom")
+    _assentar()
+    assert not botao.isChecked(), "voltar ao Zoom não apagou o botão (D-584)"
+    assert _coloridos_na_pagina(editor) < 300
+
+    tela.escolher_ferramenta("pincel")
+    _assentar()
+    botao.click()                                   # a pessoa esconde com o Pincel na mão
+    _assentar()
+    assert not botao.isChecked() and _coloridos_na_pagina(editor) < 300
+    tela.ir_para_pagina(2)                          # fica desligado (não é troca de ferramenta)
+    _esperar_a_pagina(tela)
+    assert not botao.isChecked() and _coloridos_na_pagina(editor) < 300
+    tela.escolher_ferramenta("laco")                # trocar de ferramenta de marcar liga de novo
+    _assentar()
+    assert botao.isChecked() and _coloridos_na_pagina(editor) > 20000
+
+
+@pytest.mark.parametrize("ferramenta", FERRAMENTAS_DE_MARCAR)
+def test_d584_toda_ferramenta_de_marcar_liga_e_a_mao_desliga(janela, pasta, ferramenta):
+    """D-584: todas as ferramentas que pintam ou mexem na marcação (a lista FERRAMENTAS do editor
+    menos o Zoom e a Mão) acendem "marcações"; a Mão apaga."""
+    from ui.widgets.editor_selecao import FERRAMENTAS, FERRAMENTAS_DE_NAVEGACAO
+
+    assert sorted(FERRAMENTAS_DE_MARCAR) == sorted(
+        f for f in FERRAMENTAS if f not in FERRAMENTAS_DE_NAVEGACAO), "a lista do editor mudou"
+    tela = _abrir_marcado(janela, pasta)
+    tela.escolher_ferramenta("mao")
+    assert not tela.botao_marcacoes.isChecked()
+    tela.escolher_ferramenta(ferramenta)
+    assert tela.botao_marcacoes.isChecked(), ferramenta
+    assert tela.editor_selecao.mostrar_marcacao, ferramenta
+    tela.escolher_ferramenta("mao")
+    assert not tela.botao_marcacoes.isChecked() and not tela.editor_selecao.mostrar_marcacao
+
+
+def test_d580_d584_abrir_outro_livro_o_editor_novo_segue_o_botao(janela, pasta):
+    """D-580 ("vale para todas as páginas e livros"): o editor da página nasce de novo a cada livro
+    aberto (_montar_aba_marcar). O editor novo tem de seguir o botão (antes ficava com as cores
+    escondidas embaixo de um botão aceso). Abrir um livro não é "escolher" ferramenta (D-584):
+    o botão fica como estava."""
+    tela = _abrir_marcado(janela, pasta)
+    tela.escolher_ferramenta("zoom")
+    tela.botao_marcacoes.click()                    # ligado à mão (não depende da D-584)
+    assert tela.botao_marcacoes.isChecked() and tela.editor_selecao.mostrar_marcacao
+    outro = pasta / "livros" / "Outro Livro.pdf"      # outro arquivo de verdade (outra assinatura)
+    doc = fitz.open()
+    for i in range(2):
+        doc.new_page(width=400, height=560).insert_text((40, 60), f"outro livro {i}", fontsize=14)
+    doc.save(str(outro))
+    doc.close()
+    janela.abrir_livro(str(outro))
+    _assentar()
+    tela = janela.tela_conferir
+    assert tela.botao_marcacoes.isChecked()
+    assert tela.editor_selecao.mostrar_marcacao == tela.botao_marcacoes.isChecked(), \
+        "o editor do livro novo não segue o botão"
