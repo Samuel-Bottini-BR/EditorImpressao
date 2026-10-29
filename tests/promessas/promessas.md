@@ -547,6 +547,19 @@ programa), a partir do **nome do botão**, da **dica** (o balão do mouse) e das
 - **no projeto:** o jeito escolhido (na lista da área de trabalho, ou nos botões da etapa "Limpar a folha" da janela
   grande do Automático, que vale para o livro; até a etapa 3 eram os da tela "O que fazer") fica gravado. "Mais opções" abre as escolhas a mais e "Menos opções" fecha.
 
+### P-086 · caixinha "Respeitar as gravuras achadas" (painel Filtro)
+- **chaves:** `área de trabalho/filtro da página/Respeitar as gravuras achadas`
+- **dica:** "Ligada, o filtro respeita as gravuras que o programa achou; desligada, o filtro vale na página inteira."
+- **fora da varredura:** é uma caixinha, e a varredura ainda não olha caixinhas (ver `inventario`, "ficam para a
+  próxima leva"); a prova clica nela.
+- **decisões:** D-583 ("C — As duas, com uma escolha no painel do Filtro. Por exemplo, uma caixinha que diz se o filtro
+  respeita ou não as gravuras achadas."), D-586 ("De início vem ligada, que é como funciona hoje. Desligada, o filtro
+  vale na página inteira [...]. Vale com o "Aplicar em""), D-020, D-066/D-473
+- **na tela:** logo abaixo das figurinhas dos filtros; vem ligada em toda página. Desligada numa página em Preto e
+  branco com gravura colorida achada pela máquina, a página da tela sai toda em preto e branco.
+- **no projeto:** a página fica com `respeitar_gravuras_achadas` desligado (uma ação no histórico; o Desfazer volta).
+- **no PDF:** com ela desligada, essa página sai toda em preto e branco; ligada, a gravura achada sai com a cor.
+
 ## Área de trabalho: "Para revisar"
 
 ### P-090 · "Por página" / "Por motivo"
