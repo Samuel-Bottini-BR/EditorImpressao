@@ -133,13 +133,13 @@ ferramenta Zoom e depois o Pincel escolhido; "marcações" acende sozinho e as c
    balão de motivo nem apaguei o botão, para não acrescentar comportamento (regra 7).
 4. A prova da lista 1.9 (`tests/test_decisoes_9b2.py`) ganhou uma linha: liga "marcações" antes de olhar o contorno
    das feitas à mão. A conferência dela é a mesma.
-6. **Ferramenta de partida ao abrir um livro (D-584):** a ferramenta que fica na mão ao abrir não é o Zoom. É o
+5. **Ferramenta de partida ao abrir um livro (D-584):** a ferramenta que fica na mão ao abrir não é o Zoom. É o
    Retângulo, quando o livro tem "procurar gravuras" ligado, ou a Mão (`_ferramenta_de_partida`, escolha do agente de
    layout na etapa 2). Como a gerente fixou "ao abrir, continua desligado", abrir o livro não conta como "escolher":
    abre com o Retângulo na mão e as marcações escondidas, até a pessoa escolher uma ferramenta. Ver a pergunta 2.
-7. Abrir outro livro com o botão aceso: o botão continua aceso (D-580, "vale para todos os livros"), mesmo que a
+6. Abrir outro livro com o botão aceso: o botão continua aceso (D-580, "vale para todos os livros"), mesmo que a
    ferramenta de partida do livro novo seja a Mão.
-5. Clique simulado do Qt e `grab()` sem janela na tela: não pilotei a janela real com mouse nativo (o PC está em uso).
+7. Clique simulado do Qt e `grab()` sem janela na tela: não pilotei a janela real com mouse nativo (o PC está em uso).
 
 ## Perguntas para o Samuel
 
