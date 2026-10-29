@@ -22,3 +22,8 @@ página por cima da imagem, cada tipo numa cor (`ui/widgets/editor_selecao.py`, 
 inteira fica marcada, e a imagem some debaixo das cores. A caixinha "Mostrar as áreas achadas" (D-237) só liga o
 contorno laranja; não esconde o colorido. Então o conserto do a-2 e o "jeito de aparecer e desaparecer" são a mesma
 coisa: um botão que mostra e esconde o colorido das marcações.
+
+## Teste do item 1 (botão "marcações"), 29/10
+
+- Pergunta dele: "Assim que eu abro o livro as marcações já aparecem se eu apertar no botão marcação, elas já estão feitas, acho que o programa já procura elas quando a gente abre ele né? mas se eu desmarcar elas saem." Resposta (código): o programa acha gravura, letra e papel sozinho ao desenhar uma página com filtro (`core/pipeline.garantir_selecao`); neste livro parte delas sobrou do Automático desfeito (D-581, item 2).
+- Resultado dele: "deu certo, deu tudo certo, vamos para o proximo". D-578, D-580 e D-584 marcadas como testadas no Livro.
