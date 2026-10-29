@@ -1172,8 +1172,9 @@ class TelaConferir(QWidget):
         # D-578/D-580 (Samuel, 29/10/2026, "A"): o botão "marcações", ao lado
         # do "antes / depois", começando desligado (a página limpa, como vai
         # sair, com qualquer ferramenta). Só o nome e o balão; nada de atalho
-        # nem de menu (§11, regra 7). O estado vale enquanto o programa está
-        # aberto (todas as páginas e livros: a tela é uma só) e não é gravado.
+        # nem de menu (§11, regra 7). O estado vale enquanto o livro está
+        # aberto (todas as páginas), não é gravado, e abrir um livro volta a
+        # apagado (_montar_aba_marcar).
         self.botao_marcacoes = botao(
             "marcações",
             "Mostra ou esconde as cores das marcações (gravura, letras, papel) por cima da página.",
@@ -2612,13 +2613,20 @@ class TelaConferir(QWidget):
         # acompanha o zoom da ferramenta de marcar (ela avisa "Zoom: N%")
         self.editor_selecao.installEventFilter(self)
         self.editor_selecao.aviso.connect(lambda *_: self._acertar_o_zoom_da_barra())
-        # D-580 ("vale para todas as páginas e livros"): o editor nasce de novo
-        # a cada livro; ele segue o botão "marcações" da barra de baixo, que é
-        # um só enquanto o programa está aberto (antes ficava desligado embaixo
-        # de um botão aceso). De fábrica o botão está desligado.
+        # D-578/D-580/D-584 (decisão da gerente, 29/10/2026, sobre o caminho que
+        # o verificador achou): abrir QUALQUER livro, o primeiro ou outro na
+        # mesma sessão, começa com "marcações" apagado e a página limpa, mesmo
+        # que a ferramenta da partida seja de marcar (o Retângulo). Este é o
+        # único lugar que roda a cada livro aberto (carregar ->
+        # _montar_aba_marcar): o editor nasce de novo e o botão volta a apagado
+        # junto, para os dois nunca discordarem. Só escolher uma ferramenta de
+        # marcar depois de aberto acende (_marcacoes_pela_ferramenta).
+        # Arriscado: deixar o botão como estava no livro anterior (no 4a7213f
+        # o livro 2 abria coberto de cores, 61.824 pixels, o defeito da D-578).
         botao_marcacoes = getattr(self, "botao_marcacoes", None)
         if botao_marcacoes is not None:
-            self.editor_selecao.definir_mostrar_marcacao(botao_marcacoes.isChecked())
+            botao_marcacoes.setChecked(False)
+        self.editor_selecao.definir_mostrar_marcacao(False)
         linha.addWidget(self.editor_selecao, 1)
 
         proxima = QPushButton(">")
@@ -6732,10 +6740,12 @@ class TelaConferir(QWidget):
         feitas à mão, como antes; desligado (de fábrica), a página aparece
         limpa, como vai sair. Só muda o que se vê: nada vai para o projeto,
         o histórico ou o PDF. O laranja de "Mostrar as áreas achadas" e do
-        "Para revisar" segue as regras dele (D-237). Seguro mudar: nada;
-        arriscado: gravar o estado (o Samuel decidiu que volta a desligado ao
-        abrir o programa)."""
-        self.editor_selecao.definir_mostrar_marcacao(bool(self.botao_marcacoes.isChecked()))
+        "Para revisar" segue as regras dele (D-237). O estado vale enquanto o
+        livro está aberto (todas as páginas); abrir um livro volta a apagado
+        (_montar_aba_marcar). Fala com o editor pelo _ao_editor, como o resto
+        da tela (o editor nasce de novo a cada livro). Seguro mudar: nada;
+        arriscado: gravar o estado (abrir um livro começa sempre apagado)."""
+        self._ao_editor("definir_mostrar_marcacao", bool(self.botao_marcacoes.isChecked()))
 
     def _marcacoes_pela_ferramenta(self, ferramenta: str) -> None:
         """D-584 (Samuel, 29/10/2026, "a": "O botão liga sozinho ao escolher
@@ -6746,8 +6756,8 @@ class TelaConferir(QWidget):
         ESCOLHER uma de marcar acende o botão "marcações", escolher o Zoom ou a
         Mão apaga. O clique no botão continua valendo a qualquer hora até a
         próxima escolha de ferramenta. Abrir um livro NÃO passa por aqui (a
-        ferramenta de partida é posta direto no editor): o botão fica como
-        estava (D-580). As ferramentas de página (Dividir, Cortar...) não mexem
+        ferramenta de partida é posta direto no editor): abrir um livro começa
+        sempre apagado (_montar_aba_marcar). As ferramentas de página (Dividir, Cortar...) não mexem
         no botão. Seguro mudar: nada; arriscado: chamar isto ao abrir o livro
         (a página do Automático voltaria a abrir coberta de cores, D-578)."""
         from ui.widgets.editor_selecao import FERRAMENTAS_DE_MARCAR, FERRAMENTAS_DE_NAVEGACAO
