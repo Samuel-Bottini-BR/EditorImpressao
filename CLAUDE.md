@@ -67,6 +67,11 @@ daí. Nenhuma é preferência de estilo — cada uma é cicatriz.
   branco eleva o ruído de 5,5 para 17,5". O número vem **depois** da frase,
   nunca no lugar dela.
 - **Ser conciso.** O essencial no chat, o detalhe em arquivo.
+- **Claro e direto (Samuel, 29/10/2026: "quando for falar comigo, seja mais direto como foi nessa mensagem,
+  coloque isso nas regras, eu preciso de clareza e direto").** Poucas linhas; uma ideia por frase; os nomes que ele vê
+  na tela; no máximo uma pergunta, de preferência "sim ou não" com a sugestão já feita. Nada de tabela, número de
+  decisão ou nome de arquivo no meio da explicação (isso vai para o registro). Se ele disser "não entendi", encurtar,
+  não explicar mais.
 - **Ser honesto.** Se eu estiver enganado ou correndo um risco, me avisar. Não
   concordar só para agradar.
 - **Não inventar detalhe** que eu não forneci.
