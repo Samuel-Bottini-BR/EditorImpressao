@@ -71,8 +71,22 @@ def _espiar() -> None:
 
     def deco(img3, zona, caixa, menor_lado, referencia):
         resposta = original_deco(img3, zona, caixa, menor_lado, referencia)
+        # a mesma conta de _e_decoracao_colorida: a fracao da zona que e cor larga
+        x, y, w, h = caixa
+        fator = 1.0 / F.DECORACAO_REDUCAO
+        tamanho = (max(1, round(w * fator)), max(1, round(h * fator)))
+        pequeno = cv2.resize(img3[y:y + h, x:x + w], tamanho, interpolation=cv2.INTER_AREA)
+        lab = cv2.cvtColor(pequeno, cv2.COLOR_BGR2LAB).astype(np.float32)
+        _n, a_papel, b_papel, _r = referencia
+        dist = np.hypot(lab[:, :, 1] - 128.0 - a_papel, lab[:, :, 2] - 128.0 - b_papel)
+        colorido = (dist > F.DECORACAO_CROMA).astype(np.uint8)
+        lado = max(3, int(round(menor_lado * F.DESENHO_FECHAMENTO * fator)) | 1)
+        largo = cv2.morphologyEx(colorido, cv2.MORPH_OPEN,
+                                 cv2.getStructuringElement(cv2.MORPH_ELLIPSE, (lado, lado)))
+        dentro = cv2.resize(zona.astype(np.uint8), tamanho, interpolation=cv2.INTER_NEAREST) > 0
         ZONAS.append({"alvo": ALVO, "area": round(float(zona.sum()) / (img3.shape[0] * img3.shape[1]), 4),
-                      "decoracao": bool(resposta)})
+                      "decoracao": bool(resposta),
+                      "cor_larga": round(float(largo[dentro].mean()) if dentro.any() else 0.0, 3)})
         return resposta
 
     F._e_foto_ou_pintura = foto
