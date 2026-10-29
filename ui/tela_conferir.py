@@ -1130,6 +1130,9 @@ class TelaConferir(QWidget):
               padrao; D-007: de fabrica, uma pagina por vez)
           "antes / depois", "–  N%  +", "ajustar à tela"  (o desenho decidido
               da barra de baixo, rodada 13: `21-rodada13-base.html`)
+          "marcações" (D-580, 29/10/2026), entre o "antes / depois" e o zoom:
+              liga e desliga as cores das marcações na página; de fábrica
+              desligado (_alternar_marcacoes)
 
         O "antes / depois" mostra a pagina da vez com o Original a esquerda
         da linha e como vai sair a direita (o mesmo "Comparar com o Original"
@@ -1166,6 +1169,15 @@ class TelaConferir(QWidget):
             "antes / depois",
             "Mostra a página da vez com o Original à esquerda e como vai sair à direita. "
             "Arraste a linha do meio para comparar.", self._alternar_antes_depois, marcavel=True)
+        # D-578/D-580 (Samuel, 29/10/2026, "A"): o botão "marcações", ao lado
+        # do "antes / depois", começando desligado (a página limpa, como vai
+        # sair, com qualquer ferramenta). Só o nome e o balão; nada de atalho
+        # nem de menu (§11, regra 7). O estado vale enquanto o programa está
+        # aberto (todas as páginas e livros: a tela é uma só) e não é gravado.
+        self.botao_marcacoes = botao(
+            "marcações",
+            "Mostra ou esconde as cores das marcações (gravura, letras, papel) por cima da página.",
+            self._alternar_marcacoes, marcavel=True)
         linha.addSpacing(RESPIRO_DA_BARRA_DE_BAIXO)
         self.botao_menos_zoom = botao("–", "Afastar (Ctrl+-)",
                                       lambda: self.mudar_o_zoom(1 / self.PASSO_DO_ZOOM),
@@ -6703,6 +6715,19 @@ class TelaConferir(QWidget):
         """O botão "antes / depois" da barra de baixo (liga e desliga)."""
         self.comparando = bool(self.botao_antes_depois.isChecked())
         self._acertar_a_vista_da_pagina()
+
+    @protegido
+    def _alternar_marcacoes(self) -> None:
+        """D-578/D-580 (Samuel, 29/10/2026): o botão "marcações" da barra de
+        baixo. Ligado, a vista da página (EditorSelecao: Zoom, Mão e as
+        ferramentas de marcar) pinta as cores das marcações e o contorno das
+        feitas à mão, como antes; desligado (de fábrica), a página aparece
+        limpa, como vai sair. Só muda o que se vê: nada vai para o projeto,
+        o histórico ou o PDF. O laranja de "Mostrar as áreas achadas" e do
+        "Para revisar" segue as regras dele (D-237). Seguro mudar: nada;
+        arriscado: gravar o estado (o Samuel decidiu que volta a desligado ao
+        abrir o programa)."""
+        self.editor_selecao.definir_mostrar_marcacao(bool(self.botao_marcacoes.isChecked()))
 
     def _acertar_a_vista_da_pagina(self) -> None:
         """Põe no lugar da página o que a barra de baixo pede: a ferramenta da

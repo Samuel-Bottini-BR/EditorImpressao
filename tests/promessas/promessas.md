@@ -995,6 +995,17 @@ programa), a partir do **nome do botão**, da **dica** (o balão do mouse) e das
   à direita; numa página em Original, diz "Escolha outro filtro para comparar com o Original."; desligado, volta à
   página da ferramenta. **no projeto:** nada muda. **no PDF:** nada muda.
 
+### P-197 · "marcações" (barra de baixo)
+- **chaves:** `área de trabalho/barra de baixo/marcações`
+- **dica:** "Mostra ou esconde as cores das marcações (gravura, letras, papel) por cima da página."
+- **decisões:** D-578 (29/10: "tem que ter um jeito de aparecer e desaparecer essas marcações nas paginas"), D-580
+  (29/10, "A": "Na barra de baixo, começando escondido. [...] Com qualquer ferramenta, até com o Zoom, a página
+  aparece limpa, como vai sair. Um clique mostra as cores e outro esconde."); D-237 continua (o laranja das áreas
+  achadas e do "Para revisar" segue a caixinha e o aviso)
+- **na tela:** de fábrica desligado: numa página marcada (gravura, letra, papel), com qualquer ferramenta (até o Zoom),
+  a página aparece sem as cores. Um clique liga: as cores das marcações aparecem por cima da página, também nas
+  outras páginas. Outro clique esconde. **no projeto:** nada muda. **no PDF:** nada muda.
+
 ### P-147 · Ver > "Tema": Escuro / Cinza / Claro
 - **chaves:** `menu/tema_escuro`, `menu/tema_cinza`, `menu/tema_claro`
 - **decisões:** D-359 ("Os três: escuro, cinza e claro"), D-360 (o escolhido fica guardado), D-362
