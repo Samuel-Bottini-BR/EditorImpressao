@@ -1,0 +1,43 @@
+D-586: caixinha LIGADA (o padrão de todo projeto antigo) = o programa de antes, ponto por ponto.
+Projeto real: cópia do 'Na escola de Jesus' (dados de teste), depois do Automático; 4 páginas x 4 filtros, 110 DPI.
+Script: identica_entre_commits.py. md5 de cada desenho; 'segunda' é a que vale (ver Ressalvas).
+
+--- no 2db002e (antes da caixinha) ---
+codigo: antigo | campo novo na pagina: False
+pagina   1 original        areas=20 primeira=2ef9160f0f97 segunda=cbd2765089a1
+pagina   1 preto_e_branco  areas=20 primeira=cfddfbfab26a segunda=cfddfbfab26a
+pagina   1 melhorar        areas=20 primeira=09c9c5460d91 segunda=09c9c5460d91
+pagina   1 magico_pro      areas=20 primeira=d3e650c24c9b segunda=d3e650c24c9b
+pagina   9 original        areas=24 primeira=532f8a15abb8 segunda=70a3fbde80fd
+pagina   9 preto_e_branco  areas=24 primeira=f786c6eb571b segunda=f786c6eb571b
+pagina   9 melhorar        areas=24 primeira=f866e2f329a7 segunda=f866e2f329a7
+pagina   9 magico_pro      areas=24 primeira=a21d3d30b6ec segunda=a21d3d30b6ec
+pagina  19 original        areas=19 primeira=cc669bc346d0 segunda=22af8526f5c7
+pagina  19 preto_e_branco  areas=19 primeira=4dfa82a6c82e segunda=4dfa82a6c82e
+pagina  19 melhorar        areas=19 primeira=789041fe68aa segunda=789041fe68aa
+pagina  19 magico_pro      areas=19 primeira=aad61614bb9d segunda=aad61614bb9d
+pagina  45 original        areas=22 primeira=683e5ca4ada9 segunda=3687e4062e1d
+pagina  45 preto_e_branco  areas=22 primeira=b6307fb198b1 segunda=b6307fb198b1
+pagina  45 melhorar        areas=22 primeira=ebba7e374b15 segunda=ebba7e374b15
+pagina  45 magico_pro      areas=22 primeira=d723d03d5c42 segunda=d723d03d5c42
+
+--- neste ramo ---
+codigo: auto-respeitar | campo novo na pagina: True
+pagina   1 original        areas=20 primeira=2ef9160f0f97 segunda=cbd2765089a1
+pagina   1 preto_e_branco  areas=20 primeira=cfddfbfab26a segunda=cfddfbfab26a
+pagina   1 melhorar        areas=20 primeira=09c9c5460d91 segunda=09c9c5460d91
+pagina   1 magico_pro      areas=20 primeira=d3e650c24c9b segunda=d3e650c24c9b
+pagina   9 original        areas=24 primeira=532f8a15abb8 segunda=70a3fbde80fd
+pagina   9 preto_e_branco  areas=24 primeira=f786c6eb571b segunda=f786c6eb571b
+pagina   9 melhorar        areas=24 primeira=f866e2f329a7 segunda=f866e2f329a7
+pagina   9 magico_pro      areas=24 primeira=a21d3d30b6ec segunda=a21d3d30b6ec
+pagina  19 original        areas=19 primeira=cc669bc346d0 segunda=22af8526f5c7
+pagina  19 preto_e_branco  areas=19 primeira=4dfa82a6c82e segunda=4dfa82a6c82e
+pagina  19 melhorar        areas=19 primeira=789041fe68aa segunda=789041fe68aa
+pagina  19 magico_pro      areas=19 primeira=aad61614bb9d segunda=aad61614bb9d
+pagina  45 original        areas=22 primeira=683e5ca4ada9 segunda=3687e4062e1d
+pagina  45 preto_e_branco  areas=22 primeira=b6307fb198b1 segunda=b6307fb198b1
+pagina  45 melhorar        areas=22 primeira=ebba7e374b15 segunda=ebba7e374b15
+pagina  45 magico_pro      areas=22 primeira=d723d03d5c42 segunda=d723d03d5c42
+
+RESULTADO: as 16 linhas iguais (primeira e segunda vez), nos dois commits.
