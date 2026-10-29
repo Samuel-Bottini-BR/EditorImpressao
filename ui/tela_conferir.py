@@ -1477,6 +1477,7 @@ class TelaConferir(QWidget):
         self.trilha.definir_ferramenta(ferramenta)
         self.barra_opcoes.definir_ferramenta(ferramenta)
         self._ao_editor("definir_ferramenta", ferramenta)
+        self._marcacoes_pela_ferramenta(ferramenta)     # D-584
         if ABA_MARCAR in self._abas_ativas and self.aba_atual != ABA_MARCAR:
             self.barra_abas.setCurrentIndex(self._abas_ativas.index(ABA_MARCAR))
         self._acertar_as_propriedades()     # o painel Propriedades segue a ferramenta
@@ -2611,6 +2612,13 @@ class TelaConferir(QWidget):
         # acompanha o zoom da ferramenta de marcar (ela avisa "Zoom: N%")
         self.editor_selecao.installEventFilter(self)
         self.editor_selecao.aviso.connect(lambda *_: self._acertar_o_zoom_da_barra())
+        # D-580 ("vale para todas as páginas e livros"): o editor nasce de novo
+        # a cada livro; ele segue o botão "marcações" da barra de baixo, que é
+        # um só enquanto o programa está aberto (antes ficava desligado embaixo
+        # de um botão aceso). De fábrica o botão está desligado.
+        botao_marcacoes = getattr(self, "botao_marcacoes", None)
+        if botao_marcacoes is not None:
+            self.editor_selecao.definir_mostrar_marcacao(botao_marcacoes.isChecked())
         linha.addWidget(self.editor_selecao, 1)
 
         proxima = QPushButton(">")
@@ -6728,6 +6736,32 @@ class TelaConferir(QWidget):
         arriscado: gravar o estado (o Samuel decidiu que volta a desligado ao
         abrir o programa)."""
         self.editor_selecao.definir_mostrar_marcacao(bool(self.botao_marcacoes.isChecked()))
+
+    def _marcacoes_pela_ferramenta(self, ferramenta: str) -> None:
+        """D-584 (Samuel, 29/10/2026, "a": "O botão liga sozinho ao escolher
+        uma ferramenta de marcar (Retângulo, Laço, Pincel, Varinha...) e
+        desliga sozinho ao voltar para o Zoom ou a Mão. Quem marca sempre vê o
+        que está marcando; quem só olha a página vê ela limpa."). Chamado só
+        por escolher_ferramenta (trilha, menu Ferramentas, letras do teclado):
+        ESCOLHER uma de marcar acende o botão "marcações", escolher o Zoom ou a
+        Mão apaga. O clique no botão continua valendo a qualquer hora até a
+        próxima escolha de ferramenta. Abrir um livro NÃO passa por aqui (a
+        ferramenta de partida é posta direto no editor): o botão fica como
+        estava (D-580). As ferramentas de página (Dividir, Cortar...) não mexem
+        no botão. Seguro mudar: nada; arriscado: chamar isto ao abrir o livro
+        (a página do Automático voltaria a abrir coberta de cores, D-578)."""
+        from ui.widgets.editor_selecao import FERRAMENTAS_DE_MARCAR, FERRAMENTAS_DE_NAVEGACAO
+
+        botao = getattr(self, "botao_marcacoes", None)
+        if botao is None:
+            return
+        if ferramenta in FERRAMENTAS_DE_MARCAR:
+            botao.setChecked(True)
+        elif ferramenta in FERRAMENTAS_DE_NAVEGACAO:
+            botao.setChecked(False)
+        else:
+            return
+        self._ao_editor("definir_mostrar_marcacao", botao.isChecked())
 
     def _acertar_a_vista_da_pagina(self) -> None:
         """Põe no lugar da página o que a barra de baixo pede: a ferramenta da

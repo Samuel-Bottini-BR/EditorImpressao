@@ -107,6 +107,15 @@ FERRAMENTAS = (
     FERRAMENTA_MAO,
 )
 
+# D-584 (Samuel, 29/10/2026, "a": "O botão liga sozinho ao escolher uma
+# ferramenta de marcar (Retângulo, Laço, Pincel, Varinha...) e desliga sozinho
+# ao voltar para o Zoom ou a Mão"): as que pintam ou mexem na marcação são
+# todas as do editor menos as de navegação. Quem usa: ui/tela_conferir
+# (escolher_ferramenta -> _marcacoes_pela_ferramenta). Ferramenta nova de
+# marcar entra sozinha aqui; uma nova de só olhar tem de ir para
+# FERRAMENTAS_DE_NAVEGACAO, senão acende as marcações.
+FERRAMENTAS_DE_MARCAR = tuple(f for f in FERRAMENTAS if f not in FERRAMENTAS_DE_NAVEGACAO)
+
 NOMES_DAS_FERRAMENTAS = {
     FERRAMENTA_RETANGULO: "Retângulo",
     FERRAMENTA_ELIPSE: "Oval",

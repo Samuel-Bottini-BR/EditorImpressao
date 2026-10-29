@@ -1001,10 +1001,12 @@ programa), a partir do **nome do botão**, da **dica** (o balão do mouse) e das
 - **decisões:** D-578 (29/10: "tem que ter um jeito de aparecer e desaparecer essas marcações nas paginas"), D-580
   (29/10, "A": "Na barra de baixo, começando escondido. [...] Com qualquer ferramenta, até com o Zoom, a página
   aparece limpa, como vai sair. Um clique mostra as cores e outro esconde."); D-237 continua (o laranja das áreas
-  achadas e do "Para revisar" segue a caixinha e o aviso)
-- **na tela:** de fábrica desligado: numa página marcada (gravura, letra, papel), com qualquer ferramenta (até o Zoom),
-  a página aparece sem as cores. Um clique liga: as cores das marcações aparecem por cima da página, também nas
-  outras páginas. Outro clique esconde. **no projeto:** nada muda. **no PDF:** nada muda.
+  achadas e do "Para revisar" segue a caixinha e o aviso); D-584 (29/10, "a": "O botão liga sozinho ao escolher uma
+  ferramenta de marcar (Retângulo, Laço, Pincel, Varinha...) e desliga sozinho ao voltar para o Zoom ou a Mão.")
+- **na tela:** de fábrica desligado: numa página marcada (gravura, letra, papel), com o Zoom ou a Mão, a página aparece
+  sem as cores. Um clique liga: as cores das marcações aparecem por cima da página, também nas outras páginas. Outro
+  clique esconde. Escolher uma ferramenta de marcar acende o botão sozinho (as cores aparecem); escolher o Zoom ou a
+  Mão apaga. **no projeto:** nada muda. **no PDF:** nada muda.
 
 ### P-147 · Ver > "Tema": Escuro / Cinza / Claro
 - **chaves:** `menu/tema_escuro`, `menu/tema_cinza`, `menu/tema_claro`

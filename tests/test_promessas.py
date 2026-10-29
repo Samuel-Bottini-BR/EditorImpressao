@@ -3210,7 +3210,7 @@ def test_p195_antes_depois(janela, tela):
 
 @prova("P-197")
 def test_p197_marcacoes(janela, tela):
-    """D-578/D-580 (29/10/2026). Página marcada como o Automático deixa (gravura, letra, papel),
+    """D-578/D-580/D-584 (29/10/2026). Página marcada como o Automático deixa (gravura, letra, papel),
     ferramenta Zoom: de fábrica a vista da página é a página sem as cores; "marcações" liga as cores
     (muitos pixels mudam, também na outra página) e o outro clique volta exatamente à página limpa.
     Conferido pelos pixels pintados na vista da página (o livro de teste é colorido, então a prova
@@ -3255,6 +3255,15 @@ def test_p197_marcacoes(janela, tela):
     aj.assentar()
     apertar(janela, "área de trabalho/barra de baixo/marcações")
     assert mudados(limpa, vista()) == 0, "desligado, a página não voltou a ficar limpa"
+    # D-584: escolher uma ferramenta de marcar acende; o Zoom apaga
+    tela.escolher_ferramenta("pincel")
+    aj.assentar()
+    assert botao(janela, "área de trabalho/barra de baixo/marcações").isChecked()
+    assert mudados(limpa, vista()) > 10000, "com o Pincel as cores não apareceram (D-584)"
+    tela.escolher_ferramenta("zoom")
+    aj.assentar()
+    assert not botao(janela, "área de trabalho/barra de baixo/marcações").isChecked()
+    assert mudados(limpa, vista()) == 0, "de volta ao Zoom, a página não ficou limpa (D-584)"
     assert aj.projeto_gravado(janela)["paginas"] == antes["paginas"]
 
 
