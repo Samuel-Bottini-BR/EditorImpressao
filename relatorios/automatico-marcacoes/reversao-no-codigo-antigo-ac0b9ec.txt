@@ -1,0 +1,18 @@
+E       AssertionError: com o Zoom a página ainda aparece pintada (126474 pixels coloridos)
+E       AssertionError: mao
+E       AssertionError: pincel
+E       AssertionError: retangulo
+E       AssertionError: varinha
+E       AssertionError: ajustar
+E       AssertionError: com o Zoom a página aparece pintada (76500 pixels coloridos; D-578)
+E       AttributeError: 'TelaConferir' object has no attribute 'botao_marcacoes'
+FAILED tests/test_decisoes_marcacoes.py::test_d578_d580_com_o_zoom_a_pagina_aparece_limpa_e_marcacoes_mostra_e_esconde
+FAILED tests/test_decisoes_marcacoes.py::test_d580_com_qualquer_ferramenta_a_pagina_aparece_limpa[mao]
+FAILED tests/test_decisoes_marcacoes.py::test_d580_com_qualquer_ferramenta_a_pagina_aparece_limpa[pincel]
+FAILED tests/test_decisoes_marcacoes.py::test_d580_com_qualquer_ferramenta_a_pagina_aparece_limpa[retangulo]
+FAILED tests/test_decisoes_marcacoes.py::test_d580_com_qualquer_ferramenta_a_pagina_aparece_limpa[varinha]
+FAILED tests/test_decisoes_marcacoes.py::test_d580_com_qualquer_ferramenta_a_pagina_aparece_limpa[ajustar]
+FAILED tests/test_decisoes_marcacoes.py::test_d580_o_traco_em_andamento_e_o_laranja_das_achadas_continuam
+FAILED tests/test_decisoes_marcacoes.py::test_d578_d580_o_botao_marcacoes_da_barra_de_baixo
+FAILED tests/test_decisoes_marcacoes.py::test_d237_com_marcacoes_desligado_a_caixinha_ainda_mostra_o_laranja
+9 failed in 8.31s
