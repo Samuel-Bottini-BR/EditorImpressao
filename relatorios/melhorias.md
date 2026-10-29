@@ -3277,3 +3277,36 @@ desentortar medida sem a moldura do scanner.
   no lugar, e a beirada de baixo puxada de branco). Ficou só para medir a caixa do conteúdo. Na página de teste
   curva com moldura (Marial 41 encurvada) a curva continua não achada: a causa medida é a caixa pegar as notas da
   margem (com a caixa só do bloco do texto a DLL acha a curva; com a caixa do programa ou a do ScanTailor, não).
+
+---
+
+## 29/10/2026 - D-585: separar a pintura (tons de cinza) do enfeite (com a cor) no Preto e branco - NÃO mudou nada (ramo `automatico-pintura-2026-10-29`)
+
+**Situação:** nenhuma linha do programa mudou; vira pergunta ao Samuel (`relatorios/automatico-pintura/ONDE-PAREI.md`).
+**Número atacado:** as pinturas do *Na escola de Jesus* que guardam a cor no Preto e branco sem "Só as letras" (contra a D-147).
+
+### A causa (medida)
+
+No Preto e branco, cada gravura marcada passa por duas perguntas (`core/filtros._tipos_das_zonas`):
+1. "é foto ou pintura?" (`_e_foto_ou_pintura`): grossa (espessura ≥ 12% do menor lado) **e** com pouco traço
+   (traço < 5% da caixa da gravura, `GRAVURA_DE_TRACO_MINIMA`) → tons de cinza (D-147);
+2. se não, "é enfeite colorido?" (`_e_decoracao_colorida`, cor larga ≥ 8%) → fica com a cor (D-144).
+
+A medida do "traço" é a **escrita que cai dentro da caixa da gravura**. Na capa do *Na escola de Jesus* o título
+"Jesus" e o rodapé "190 QUADROS ARTÍSTICOS" estão em cima da pintura: o traço dá 12,7% (no PDF, 300 dpi), passa dos
+5%, e a pintura colorida cai em "enfeite". O mesmo nas páginas 19 (faixa com inscrição latina), 45 (legenda e coluna
+de texto do Papa) e 173 (texto dentro do quadro): 12% a 15%. As outras 95 pinturas do livro (páginas ímpares
+medidas) dão 0% a 5% e saem em cinza.
+
+### Tentativas (só medidas e protótipos; nada entrou)
+
+| Ideia | Resultado | Por que não |
+|---|---|---|
+| Subir o limite do traço só para gravura colorida (ex.: 17%) | no PDF separa: pinturas 12% a 15%, iluminuras das Horas a partir de 20% (Horas 11) | **na prévia da tela (110 dpi) a ordem se inverte**: Horas 11 = 5,4%, Escola 45 = 28,5%, Escola 19 = 18,9%, Escola 173 = 0%. Nenhum limite acerta as duas; tela e PDF ficariam diferentes (contra D-066/D-473) |
+| Mediana do traço por pedaços da gravura (ignorar o título) | capa → ~0 (pintura) | a iluminura da Horas 11 também → 0: o traço dela também é só o texto do meio. Ela iria para cinza (contra D-144) |
+| Fração de "cor larga" na gravura | capa 0,395 × Horas 11 0,386 | não separa |
+| Retícula de impressão (FFT) para reconhecer livro impresso | — | o *Na escola de Jesus* foi escaneado a 200 dpi em JPEG: a retícula não aparece |
+| "Opção B" (protótipo, só no script `opcoes_d585.py`): no Preto e branco sem "Só as letras" nada fica colorido | pinturas em cinza; molduras e iluminuras também em cinza | muda a D-144 ("Mantém a cor original"): só com o "sim" dele. No protótipo, o texto dentro da iluminura da Horas 11 sai cinza, não preto (precisaria de um ajuste a mais) |
+
+Medidas: `_tmp` (não vai ao git) e `relatorios/automatico-pintura/medida-pintura-x-enfeite.txt`; imagens
+`relatorios/automatico-pintura/d585-*.jpg`.

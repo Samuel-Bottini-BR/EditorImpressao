@@ -1,0 +1,15 @@
+# python relatorios/automatico-pintura/conferir_so_as_letras.py 8
+Na escola de Jesus, página 9 (cópia do projeto dele; o livro já tem Endireitar, Cortar, Limpar a folha e Gravuras e fotos ligados)
+ANTES: {'livro.misto_so_as_letras': False, 'livro.filtro_padrao': 'original', 'pagina9.misto_so_as_letras': None} | painel: {"caixinha 'Só as letras' marcada": False, 'resumo da parte': 'desligado'}
+janela do Automático: Preto e branco + 'Só as letras' marcados -> escolha = True | caixinha das molduras apagada (D-168)? True
+rodou: True | projeto aberto: livro.misto_so_as_letras = True | página.filtro = preto_e_branco | página.misto_so_as_letras = None | vale na página: True
+gravado no projeto.json: {'livro.misto_so_as_letras': True, 'livro.filtro_padrao': 'preto_e_branco', 'pagina9.misto_so_as_letras': None}
+painel 'Filtro da página' logo depois de rodar: {"caixinha 'Só as letras' marcada": True, 'resumo da parte': 'Guardar a tinta forte'}
+  tela, 'Uma página' (a prévia que a vista recebe): na LETRA 0.0% com cor e 0.0% cinza do meio; na GRAVURA 90.1% com cor
+  print: 1-so-as-letras-herdado-uma-pagina.jpg (1280 x 657)
+  tela, 'antes / depois' (lado depois): na LETRA 0.0% com cor e 14.4% cinza do meio; na GRAVURA 90.0% com cor
+  print: 2-so-as-letras-herdado-antes-depois.jpg (1280 x 657)
+  desenho do tamanho do PDF (300 dpi): na LETRA 0.0% com cor e 0.0% cinza do meio; na GRAVURA 90.2% com cor
+  PDF gerado (Confirmar e processar, só esta página): na LETRA 0.0% com cor e 14.0% cinza do meio; na GRAVURA 89.9% com cor
+DESFEITO (Ctrl+Z): livro.misto_so_as_letras = False | filtro_padrao = original | página.filtro = original | gravado = {'livro.misto_so_as_letras': False, 'livro.filtro_padrao': 'original', 'pagina9.misto_so_as_letras': None}
+REFEITO (Ctrl+Y): livro.misto_so_as_letras = True | gravado = {'livro.misto_so_as_letras': True, 'livro.filtro_padrao': 'preto_e_branco', 'pagina9.misto_so_as_letras': None}

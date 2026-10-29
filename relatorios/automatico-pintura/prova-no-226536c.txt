@@ -1,0 +1,4 @@
+# tests/test_decisoes_so_as_letras.py rodado numa cópia do 226536c (worktree temporária em _tmp, já removida), 29/10/2026.
+# Passa lá também: o 'Só as letras' do Automático já funcionava; não houve conserto (sem teste de reversão).
+.....                                                                    [100%]
+5 passed in 24.60s
