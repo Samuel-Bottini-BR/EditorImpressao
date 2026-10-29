@@ -3208,6 +3208,65 @@ def test_p195_antes_depois(janela, tela):
     assert aj.projeto_gravado(janela)["paginas"] == antes["paginas"]
 
 
+@prova("P-197")
+def test_p197_marcacoes(janela, tela):
+    """D-578/D-580/D-584 (29/10/2026). Página marcada como o Automático deixa (gravura, letra, papel),
+    ferramenta Zoom: de fábrica a vista da página é a página sem as cores; "marcações" liga as cores
+    (muitos pixels mudam, também na outra página) e o outro clique volta exatamente à página limpa.
+    Conferido pelos pixels pintados na vista da página (o livro de teste é colorido, então a prova
+    compara o desligado com o ligado); o projeto gravado não muda."""
+    from PySide6.QtGui import QImage
+
+    from core.selecao import AUTOMATICO, GRAVURA, LETRA, PAPEL, RETANGULO, Regiao, Selecao
+
+    def vista() -> np.ndarray:
+        editor = tela.editor_selecao
+        aj.esperar(lambda: editor._pixmap is not None and not editor._pixmap.isNull(),
+                   motivo="a página no editor")
+        imagem = editor.grab().toImage().convertToFormat(QImage.Format_RGB888)
+        w, h = imagem.width(), imagem.height()
+        rgb = np.frombuffer(imagem.constBits(), np.uint8).reshape(h, imagem.bytesPerLine())
+        return rgb[:, :w * 3].reshape(h, w, 3).astype(np.int16)
+
+    def mudados(a: np.ndarray, b: np.ndarray) -> int:
+        return int((np.abs(a - b).max(axis=2) > 12).sum())
+
+    for pagina in janela.projeto.paginas:
+        selecao = Selecao()
+        for tipo, caixa in ((PAPEL, [(0.02, 0.02), (0.98, 0.98)]), (GRAVURA, [(0.1, 0.1), (0.9, 0.5)]),
+                            (LETRA, [(0.1, 0.6), (0.9, 0.9)])):
+            selecao.acrescentar(Regiao(tipo=tipo, forma=RETANGULO, pontos=caixa, origem=AUTOMATICO))
+        pagina.guardar_selecao(selecao, provisoria=False)
+    tela.escolher_ferramenta("zoom")
+    tela.ir_para_pagina(0)
+    aj.assentar()
+    limpa_0 = vista()
+    tela.ir_para_pagina(1)
+    aj.assentar()
+    antes = aj.projeto_gravado(janela)
+    limpa = vista()
+    assert not botao(janela, "área de trabalho/barra de baixo/marcações").isChecked()
+    apertar(janela, "área de trabalho/barra de baixo/marcações")
+    assert mudados(limpa, vista()) > 10000, "ligado, as cores não apareceram"
+    tela.ir_para_pagina(0)
+    aj.assentar()
+    assert mudados(limpa_0, vista()) > 10000, "na outra página as cores sumiram"
+    tela.ir_para_pagina(1)
+    aj.assentar()
+    apertar(janela, "área de trabalho/barra de baixo/marcações")
+    assert mudados(limpa, vista()) == 0, "desligado, a página não voltou a ficar limpa"
+    # D-584: escolher uma ferramenta de marcar acende; o Zoom apaga
+    tela.escolher_ferramenta("pincel")
+    aj.assentar()
+    assert botao(janela, "área de trabalho/barra de baixo/marcações").isChecked()
+    assert mudados(limpa, vista()) > 10000, "com o Pincel as cores não apareceram (D-584)"
+    tela.escolher_ferramenta("zoom")
+    aj.assentar()
+    assert not botao(janela, "área de trabalho/barra de baixo/marcações").isChecked()
+    assert mudados(limpa, vista()) == 0, "de volta ao Zoom, a página não ficou limpa (D-584)"
+    assert aj.projeto_gravado(janela)["paginas"] == antes["paginas"]
+
+
 @prova("P-147")
 @pytest.mark.parametrize("tema", ["escuro", "claro", "cinza"])
 def test_p147_tema(janela, tela, tema):

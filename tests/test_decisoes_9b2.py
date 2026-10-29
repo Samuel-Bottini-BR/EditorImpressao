@@ -751,6 +751,9 @@ def test_lista_1_9_o_retangulo_feito_a_mao_aparece_dentro_da_area_da_maquina(app
     selecao.acrescentar(Regiao(tipo=GRAVURA, forma=RETANGULO, pontos=[(0.3, 0.3), (0.7, 0.6)],
                                origem=MAO))
     editor.definir_selecao(selecao)
+    # D-580 (29/10/2026): as cores e o contorno das feitas à mão só aparecem com o botão
+    # "marcações" ligado (de fábrica escondidos); a 1.9 vale com ele ligado
+    editor.definir_mostrar_marcacao(True)
     imagem = editor.grab().toImage().convertToFormat(QImage.Format_RGB888)
     largura, altura = imagem.width(), imagem.height()
     dados = np.frombuffer(imagem.constBits(), np.uint8).reshape(altura, imagem.bytesPerLine())

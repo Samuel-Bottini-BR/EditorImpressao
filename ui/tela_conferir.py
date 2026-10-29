@@ -1130,6 +1130,9 @@ class TelaConferir(QWidget):
               padrao; D-007: de fabrica, uma pagina por vez)
           "antes / depois", "–  N%  +", "ajustar à tela"  (o desenho decidido
               da barra de baixo, rodada 13: `21-rodada13-base.html`)
+          "marcações" (D-580, 29/10/2026), entre o "antes / depois" e o zoom:
+              liga e desliga as cores das marcações na página; de fábrica
+              desligado (_alternar_marcacoes)
 
         O "antes / depois" mostra a pagina da vez com o Original a esquerda
         da linha e como vai sair a direita (o mesmo "Comparar com o Original"
@@ -1166,6 +1169,16 @@ class TelaConferir(QWidget):
             "antes / depois",
             "Mostra a página da vez com o Original à esquerda e como vai sair à direita. "
             "Arraste a linha do meio para comparar.", self._alternar_antes_depois, marcavel=True)
+        # D-578/D-580 (Samuel, 29/10/2026, "A"): o botão "marcações", ao lado
+        # do "antes / depois", começando desligado (a página limpa, como vai
+        # sair, com qualquer ferramenta). Só o nome e o balão; nada de atalho
+        # nem de menu (§11, regra 7). O estado vale enquanto o livro está
+        # aberto (todas as páginas), não é gravado, e abrir um livro volta a
+        # apagado (_montar_aba_marcar).
+        self.botao_marcacoes = botao(
+            "marcações",
+            "Mostra ou esconde as cores das marcações (gravura, letras, papel) por cima da página.",
+            self._alternar_marcacoes, marcavel=True)
         linha.addSpacing(RESPIRO_DA_BARRA_DE_BAIXO)
         self.botao_menos_zoom = botao("–", "Afastar (Ctrl+-)",
                                       lambda: self.mudar_o_zoom(1 / self.PASSO_DO_ZOOM),
@@ -1465,6 +1478,7 @@ class TelaConferir(QWidget):
         self.trilha.definir_ferramenta(ferramenta)
         self.barra_opcoes.definir_ferramenta(ferramenta)
         self._ao_editor("definir_ferramenta", ferramenta)
+        self._marcacoes_pela_ferramenta(ferramenta)     # D-584
         if ABA_MARCAR in self._abas_ativas and self.aba_atual != ABA_MARCAR:
             self.barra_abas.setCurrentIndex(self._abas_ativas.index(ABA_MARCAR))
         self._acertar_as_propriedades()     # o painel Propriedades segue a ferramenta
@@ -2599,6 +2613,20 @@ class TelaConferir(QWidget):
         # acompanha o zoom da ferramenta de marcar (ela avisa "Zoom: N%")
         self.editor_selecao.installEventFilter(self)
         self.editor_selecao.aviso.connect(lambda *_: self._acertar_o_zoom_da_barra())
+        # D-578/D-580/D-584 (decisão da gerente, 29/10/2026, sobre o caminho que
+        # o verificador achou): abrir QUALQUER livro, o primeiro ou outro na
+        # mesma sessão, começa com "marcações" apagado e a página limpa, mesmo
+        # que a ferramenta da partida seja de marcar (o Retângulo). Este é o
+        # único lugar que roda a cada livro aberto (carregar ->
+        # _montar_aba_marcar): o editor nasce de novo e o botão volta a apagado
+        # junto, para os dois nunca discordarem. Só escolher uma ferramenta de
+        # marcar depois de aberto acende (_marcacoes_pela_ferramenta).
+        # Arriscado: deixar o botão como estava no livro anterior (no 4a7213f
+        # o livro 2 abria coberto de cores, 61.824 pixels, o defeito da D-578).
+        botao_marcacoes = getattr(self, "botao_marcacoes", None)
+        if botao_marcacoes is not None:
+            botao_marcacoes.setChecked(False)
+        self.editor_selecao.definir_mostrar_marcacao(False)
         linha.addWidget(self.editor_selecao, 1)
 
         proxima = QPushButton(">")
@@ -6703,6 +6731,47 @@ class TelaConferir(QWidget):
         """O botão "antes / depois" da barra de baixo (liga e desliga)."""
         self.comparando = bool(self.botao_antes_depois.isChecked())
         self._acertar_a_vista_da_pagina()
+
+    @protegido
+    def _alternar_marcacoes(self) -> None:
+        """D-578/D-580 (Samuel, 29/10/2026): o botão "marcações" da barra de
+        baixo. Ligado, a vista da página (EditorSelecao: Zoom, Mão e as
+        ferramentas de marcar) pinta as cores das marcações e o contorno das
+        feitas à mão, como antes; desligado (de fábrica), a página aparece
+        limpa, como vai sair. Só muda o que se vê: nada vai para o projeto,
+        o histórico ou o PDF. O laranja de "Mostrar as áreas achadas" e do
+        "Para revisar" segue as regras dele (D-237). O estado vale enquanto o
+        livro está aberto (todas as páginas); abrir um livro volta a apagado
+        (_montar_aba_marcar). Fala com o editor pelo _ao_editor, como o resto
+        da tela (o editor nasce de novo a cada livro). Seguro mudar: nada;
+        arriscado: gravar o estado (abrir um livro começa sempre apagado)."""
+        self._ao_editor("definir_mostrar_marcacao", bool(self.botao_marcacoes.isChecked()))
+
+    def _marcacoes_pela_ferramenta(self, ferramenta: str) -> None:
+        """D-584 (Samuel, 29/10/2026, "a": "O botão liga sozinho ao escolher
+        uma ferramenta de marcar (Retângulo, Laço, Pincel, Varinha...) e
+        desliga sozinho ao voltar para o Zoom ou a Mão. Quem marca sempre vê o
+        que está marcando; quem só olha a página vê ela limpa."). Chamado só
+        por escolher_ferramenta (trilha, menu Ferramentas, letras do teclado):
+        ESCOLHER uma de marcar acende o botão "marcações", escolher o Zoom ou a
+        Mão apaga. O clique no botão continua valendo a qualquer hora até a
+        próxima escolha de ferramenta. Abrir um livro NÃO passa por aqui (a
+        ferramenta de partida é posta direto no editor): abrir um livro começa
+        sempre apagado (_montar_aba_marcar). As ferramentas de página (Dividir, Cortar...) não mexem
+        no botão. Seguro mudar: nada; arriscado: chamar isto ao abrir o livro
+        (a página do Automático voltaria a abrir coberta de cores, D-578)."""
+        from ui.widgets.editor_selecao import FERRAMENTAS_DE_MARCAR, FERRAMENTAS_DE_NAVEGACAO
+
+        botao = getattr(self, "botao_marcacoes", None)
+        if botao is None:
+            return
+        if ferramenta in FERRAMENTAS_DE_MARCAR:
+            botao.setChecked(True)
+        elif ferramenta in FERRAMENTAS_DE_NAVEGACAO:
+            botao.setChecked(False)
+        else:
+            return
+        self._ao_editor("definir_mostrar_marcacao", botao.isChecked())
 
     def _acertar_a_vista_da_pagina(self) -> None:
         """Põe no lugar da página o que a barra de baixo pede: a ferramenta da

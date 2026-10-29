@@ -1,0 +1,21 @@
+E       AssertionError: escolher o Pincel não acendeu o botão (D-584)
+E       AssertionError: retangulo
+E       AssertionError: elipse
+E       AssertionError: laco
+E       AssertionError: poligono
+E       AssertionError: pincel
+E       AssertionError: varinha
+E       AssertionError: cor
+E       AssertionError: ajustar
+E       AssertionError: o editor do livro novo não segue o botão
+FAILED tests/test_decisoes_marcacoes.py::test_d584_pincel_liga_zoom_desliga_e_o_clique_ainda_esconde
+FAILED tests/test_decisoes_marcacoes.py::test_d584_toda_ferramenta_de_marcar_liga_e_a_mao_desliga[retangulo]
+FAILED tests/test_decisoes_marcacoes.py::test_d584_toda_ferramenta_de_marcar_liga_e_a_mao_desliga[elipse]
+FAILED tests/test_decisoes_marcacoes.py::test_d584_toda_ferramenta_de_marcar_liga_e_a_mao_desliga[laco]
+FAILED tests/test_decisoes_marcacoes.py::test_d584_toda_ferramenta_de_marcar_liga_e_a_mao_desliga[poligono]
+FAILED tests/test_decisoes_marcacoes.py::test_d584_toda_ferramenta_de_marcar_liga_e_a_mao_desliga[pincel]
+FAILED tests/test_decisoes_marcacoes.py::test_d584_toda_ferramenta_de_marcar_liga_e_a_mao_desliga[varinha]
+FAILED tests/test_decisoes_marcacoes.py::test_d584_toda_ferramenta_de_marcar_liga_e_a_mao_desliga[cor]
+FAILED tests/test_decisoes_marcacoes.py::test_d584_toda_ferramenta_de_marcar_liga_e_a_mao_desliga[ajustar]
+FAILED tests/test_decisoes_marcacoes.py::test_d580_d584_abrir_outro_livro_o_editor_novo_segue_o_botao
+10 failed, 9 passed in 23.47s

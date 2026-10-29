@@ -107,6 +107,15 @@ FERRAMENTAS = (
     FERRAMENTA_MAO,
 )
 
+# D-584 (Samuel, 29/10/2026, "a": "O botão liga sozinho ao escolher uma
+# ferramenta de marcar (Retângulo, Laço, Pincel, Varinha...) e desliga sozinho
+# ao voltar para o Zoom ou a Mão"): as que pintam ou mexem na marcação são
+# todas as do editor menos as de navegação. Quem usa: ui/tela_conferir
+# (escolher_ferramenta -> _marcacoes_pela_ferramenta). Ferramenta nova de
+# marcar entra sozinha aqui; uma nova de só olhar tem de ir para
+# FERRAMENTAS_DE_NAVEGACAO, senão acende as marcações.
+FERRAMENTAS_DE_MARCAR = tuple(f for f in FERRAMENTAS if f not in FERRAMENTAS_DE_NAVEGACAO)
+
 NOMES_DAS_FERRAMENTAS = {
     FERRAMENTA_RETANGULO: "Retângulo",
     FERRAMENTA_ELIPSE: "Oval",
@@ -257,7 +266,13 @@ class EditorSelecao(QWidget):
         # Filtro so para o que for marcado daqui em diante. Vazio quer
         # dizer "use o filtro da pagina", que e o comportamento de sempre.
         self.filtro_da_regiao = ""
-        self.mostrar_marcacao = True
+        # D-578/D-580 (Samuel, 29/10/2026, "A": "Na barra de baixo, começando
+        # escondido [...] Com qualquer ferramenta, até com o Zoom, a página
+        # aparece limpa, como vai sair. Um clique mostra as cores e outro
+        # esconde."): o colorido da marcação e o contorno das feitas à mão só
+        # aparecem com o botão "marcações" da barra de baixo ligado. De
+        # fábrica escondido. Quem liga: definir_mostrar_marcacao.
+        self.mostrar_marcacao = False
         # Item 2.18: a cor do "Pintar por cima", as areas achadas delineadas,
         # a area escolhida pela ferramenta Ajustar e a copiada.
         self.cor_de_pintar = "#ffffff"
@@ -383,6 +398,20 @@ class EditorSelecao(QWidget):
         """Item 2.18: o papel da proxima "Tinta com a cor original" sai branco
         (False, o de fabrica) ou como o resto da pagina (True)."""
         self.papel_da_pagina = bool(da_pagina)
+
+    def definir_mostrar_marcacao(self, mostrar: bool) -> None:
+        """D-578/D-580 (29/10/2026): mostrar (True) ou esconder (False, o de
+        fábrica) o colorido da marcação (letra azul, gravura salmão, papel
+        verde...) e o contorno das áreas feitas à mão. Quem chama: o botão
+        "marcações" da barra de baixo (ui/tela_conferir._alternar_marcacoes).
+        Só muda o que se vê: a marcação da página, o projeto e o PDF ficam
+        como estão. NÃO esconde o traço que está sendo desenhado, o laranja
+        das áreas achadas (D-237) nem o do "Para revisar" (D-278/D-279), nem a
+        caixa da área escolhida pelo Ajustar: esses têm as regras deles
+        (paintEvent). Seguro mudar: nada aqui; arriscado: esconder mais coisas
+        com esta chave (o Samuel decidiu só as cores)."""
+        self.mostrar_marcacao = bool(mostrar)
+        self.update()
 
     def definir_mostrar_achadas(self, mostrar: bool) -> None:
         """Item 2.18: delinear (em laranja) as areas que a maquina achou."""
@@ -539,7 +568,18 @@ class EditorSelecao(QWidget):
 
     def paintEvent(self, evento: QPaintEvent) -> None:  # noqa: N802 (nome do Qt)
         """Desenha o fundo, a pagina, a marcacao ja feita e o que esta sendo
-        desenhado no momento (arrasto em andamento, ou poligono ponto a ponto)."""
+        desenhado no momento (arrasto em andamento, ou poligono ponto a ponto).
+
+        D-578/D-580 (29/10/2026): o colorido da marcação e o contorno das
+        feitas à mão (_pintar_marcacao) só com o botão "marcações" ligado
+        (mostrar_marcacao; de fábrica escondido). O laranja das áreas achadas
+        e a caixa da área escolhida (_pintar_achadas_e_escolhida), as marcas
+        do aviso do "Para revisar" e o traço em andamento são pintados SEMPRE
+        que as regras deles pedem, com "marcações" ligado ou não (D-237,
+        D-278, D-279). Antes, o laranja e a caixa moravam dentro de
+        _pintar_marcacao. Arriscado: pôr o _pintar_achadas_e_escolhida de
+        volta dentro do `if` (a caixinha "Mostrar as áreas achadas" pararia de
+        funcionar com "marcações" desligado)."""
         pintor = QPainter(self)
         # Etapa 1 do layout (temas): o fundo é o do tema da vez, lido na hora
         from ui import estilo
@@ -553,6 +593,7 @@ class EditorSelecao(QWidget):
 
         if self.mostrar_marcacao:
             self._pintar_marcacao(pintor)
+        self._pintar_achadas_e_escolhida(pintor)
         # as marcas do aviso ("onde sumiu"), por cima da marcacao
         marcas = getattr(self, "_marcas_do_aviso", None)
         if marcas:
@@ -563,11 +604,16 @@ class EditorSelecao(QWidget):
         self._pintar_o_que_esta_sendo_desenhado(pintor)
 
     def _pintar_marcacao(self, pintor: QPainter) -> None:
-        """Pinta a marcacao ja feita, cada tipo na sua cor.
+        """Pinta a marcacao ja feita, cada tipo na sua cor, e o contorno das
+        areas feitas a mao.
 
         A mascara e calculada no tamanho da AREA na tela, e nao no da pagina:
         numa pagina de 300 DPI seriam sete milhoes de pixels a cada repintura,
         e a tela travaria ao arrastar.
+
+        D-578/D-580 (29/10/2026): so e chamada com o botão "marcações" ligado
+        (paintEvent). O laranja das achadas e a caixa da escolhida saíram
+        daqui para o paintEvent, para continuarem com "marcações" desligado.
         """
         largura, altura = self._area.width(), self._area.height()
         if largura <= 0 or altura <= 0 or self.selecao.vazia:
@@ -584,7 +630,6 @@ class EditorSelecao(QWidget):
                             QImage.Format_RGBA8888).copy()
             pintor.drawImage(self._area.topLeft(), imagem)
         self._pintar_as_feitas_a_mao(pintor)
-        self._pintar_achadas_e_escolhida(pintor)
 
     def _pintar_as_feitas_a_mao(self, pintor: QPainter) -> None:
         """Etapa 9b-2 da obra (lista única 23/10, 1.9: "Numa página que o
