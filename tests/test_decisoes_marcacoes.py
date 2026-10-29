@@ -334,24 +334,37 @@ def test_d584_toda_ferramenta_de_marcar_liga_e_a_mao_desliga(janela, pasta, ferr
     assert not tela.botao_marcacoes.isChecked() and not tela.editor_selecao.mostrar_marcacao
 
 
-def test_d580_d584_abrir_outro_livro_o_editor_novo_segue_o_botao(janela, pasta):
-    """D-580 ("vale para todas as páginas e livros"): o editor da página nasce de novo a cada livro
-    aberto (_montar_aba_marcar). O editor novo tem de seguir o botão (antes ficava com as cores
-    escondidas embaixo de um botão aceso). Abrir um livro não é "escolher" ferramenta (D-584):
-    o botão fica como estava."""
+def test_d578_d580_d584_abrir_outro_livro_comeca_com_marcacoes_apagado(janela, pasta):
+    """D-578 + D-580 ("começando escondido") + D-584 (Zoom/Mão: a página limpa). Decisão da gerente
+    (29/10/2026), a partir do caminho que o verificador achou: abrir QUALQUER livro, o primeiro ou
+    outro na mesma sessão, começa com "marcações" apagado e as cores escondidas, mesmo que a
+    ferramenta da partida seja de marcar. Só escolher uma ferramenta de marcar depois de aberto
+    acende. Caminho: livro 1, Pincel (acende) → abrir o livro 2, marcado pela máquina → botão
+    apagado e ~0 pixels coloridos na página. REVERSÃO: no 4a7213f o botão continuava aceso e a
+    página do livro 2 aparecia coberta de cores (o verificador mediu 61.824 pixels coloridos)."""
     tela = _abrir_marcado(janela, pasta)
-    tela.escolher_ferramenta("zoom")
-    tela.botao_marcacoes.click()                    # ligado à mão (não depende da D-584)
-    assert tela.botao_marcacoes.isChecked() and tela.editor_selecao.mostrar_marcacao
+    tela.escolher_ferramenta("pincel")
+    assert tela.botao_marcacoes.isChecked()
+
     outro = pasta / "livros" / "Outro Livro.pdf"      # outro arquivo de verdade (outra assinatura)
     doc = fitz.open()
-    for i in range(2):
+    for i in range(3):
         doc.new_page(width=400, height=560).insert_text((40, 60), f"outro livro {i}", fontsize=14)
     doc.save(str(outro))
     doc.close()
     janela.abrir_livro(str(outro))
     _assentar()
+    for pagina in janela.projeto.paginas:              # o livro 2 marcado pela máquina
+        pagina.guardar_selecao(_marcacao_da_maquina(), provisoria=False)
     tela = janela.tela_conferir
-    assert tela.botao_marcacoes.isChecked()
-    assert tela.editor_selecao.mostrar_marcacao == tela.botao_marcacoes.isChecked(), \
-        "o editor do livro novo não segue o botão"
+    tela.ir_para_pagina(1)
+    _esperar_a_pagina(tela)
+    editor = tela.editor_selecao
+    assert not editor.selecao.vazia, "o livro 2 não ficou marcado (o teste não estaria provando nada)"
+    coloridos = _coloridos_na_pagina(editor)
+    assert coloridos < 300, f"o livro 2 abriu coberto de cores ({coloridos} pixels coloridos; D-578)"
+    assert not tela.botao_marcacoes.isChecked(), "abrir outro livro deixou \"marcações\" aceso"
+
+    tela.escolher_ferramenta("pincel")                 # escolher depois de aberto acende (D-584)
+    _assentar()
+    assert tela.botao_marcacoes.isChecked() and _coloridos_na_pagina(editor) > 20000
