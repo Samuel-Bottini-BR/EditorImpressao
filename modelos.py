@@ -178,6 +178,21 @@ class ConfigPagina:
     # projeto salvo antes abre desmarcado.
     letras_com_a_cor: bool = False
     reduzir_cores: bool = False
+    # D-583/D-586 (Samuel, 29/10/2026): a caixinha "Respeitar as gravuras
+    # achadas" do painel "Filtro da pagina", SO desta pagina. "De início vem
+    # ligada, que é como funciona hoje. Desligada, o filtro vale na página
+    # inteira". True = o filtro da pagina obedece a marcacao que a MAQUINA fez
+    # (gravura, letra, papel, enfeite: o de sempre); False = o filtro trata a
+    # pagina como se a maquina nao tivesse achado nada (o que foi marcado A
+    # MAO, inclusive o "So neste pedaco", continua valendo). Quem le:
+    # core.pipeline.marcacao_que_o_filtro_usa. MUDANCA DE FORMATO autorizada
+    # pela D-586 ("campo por pagina"): projeto gravado antes nao tem a chave e
+    # abre com o padrao True (Projeto.de_dicionario: campo que falta ganha o
+    # padrao), entao sai igual ponto por ponto; o programa de antes que abrir
+    # um projeto novo descarta a chave e respeita as gravuras.
+    # ARRISCADO: mudar o padrao para False (todo livro com a marcacao do
+    # Automatico mudaria de imagem sem ninguem pedir).
+    respeitar_gravuras_achadas: bool = True
     # Item 2.12 (regra da Fase 2, 13/10/2026: igual ao ScanTailor, desligado
     # de fabrica): desentortar a pagina curva perto da lombada, SO desta
     # pagina. Valores: os codigos de core/desentortar_scantailor.MODOS
