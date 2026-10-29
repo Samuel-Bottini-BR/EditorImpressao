@@ -2,7 +2,8 @@
 Automático (cópia do projeto de teste em <worktree>/_tmp/dados), página 1 (a capa), Preto e
 branco, ferramenta Zoom (a página limpa, D-580), painel "Filtro da página" aberto:
   1 e 2: "Uma página", caixinha "Respeitar as gravuras achadas" ligada e desligada;
-  3 e 4: "antes / depois", ligada e desligada.
+  3 e 4: "antes / depois", ligada e desligada;
+  5 (D-587): "Uma página", "Só as letras" ligado na página: a caixinha cinza.
 Por onde a capa passou: endireitada, cortada, "Limpar a folha", "Gravuras e fotos" (a marcação
 que o Automático do livro dele deixou), Preto e branco, "Só as letras" desligado.
 Uso: python relatorios/automatico-respeitar/fazer_prints.py
@@ -97,7 +98,19 @@ def main() -> int:
     esperar_e_fotografar("3-antes-depois-ligada.jpg", True)
     por_a_caixinha(False)
     esperar_e_fotografar("4-antes-depois-desligada.jpg", True)
-    por_a_caixinha(True)                                    # a cópia volta como estava
+    por_a_caixinha(True)
+    # 5 (D-587): "Uma página", "Só as letras" ligado na página → a caixinha fica cinza
+    tela.botao_antes_depois.click()
+    assentar(1)
+    from PySide6.QtWidgets import QCheckBox
+    so_as_letras = next(c for c in tela.paineis.filtro_da_pagina.findChildren(QCheckBox)
+                        if c.text() == "Só as letras" and c.isVisibleTo(tela))
+    so_as_letras.click()
+    assentar(0.5)
+    print("so as letras:", pagina.misto_so_as_letras, "caixinha habilitada:", caixa.isEnabled())
+    esperar_e_fotografar("5-so-as-letras-caixinha-cinza.jpg", False)
+    so_as_letras.click()                         # a cópia volta como estava
+    assentar(0.5)
     if janela.previas is not None:
         janela.previas.parar()
     janela._salvar_agora()

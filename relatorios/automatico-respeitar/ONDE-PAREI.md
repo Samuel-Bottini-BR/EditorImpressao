@@ -18,6 +18,10 @@ Conferidas no `docs/plano/DECISOES.md` desta worktree.
   inteira: no Preto e branco, a capa sairia toda em preto e branco, como na fileira de baixo da primeira imagem que te
   mostrei. Vale com o "Aplicar em: só nesta / todas / daqui em diante" que já existe no painel."
 
+- **D-587** (29/10/2026, resposta à pergunta 1 desta tarefa; "sim" a: "enquanto a "Só as letras" estiver marcada, a
+  caixinha nova fica cinza e não dá para clicar. É assim que já funciona com a caixinha das molduras. Está bom
+  assim?") — a opção C, do jeito da D-168.
+
 **As que não podem quebrar:**
 
 - **D-148** (30/09 e 05/10): "(a) Uma caixinha 'Só as letras' dentro do Preto e branco, para o livro [...] e para a
@@ -89,7 +93,8 @@ Arquivos:
 | D-020 — Ctrl+Z / Ctrl+Shift+Z | `test_d586_ctrl_z_desfaz_e_ctrl_shift_z_refaz` (teclas de verdade; a caixinha acompanha) e o desfazer na P-086 |
 | D-066 / D-473 — tela = PDF | prova 1 (tela = desenho), `test_d586_antes_depois_e_tela_cheia_seguem_a_caixinha`, `test_d586_o_pdf_sai_como_a_tela` (PDF gerado = desenho do tamanho do PDF) |
 | D-199 / D-224 — pedaço à mão continua | `test_d586_o_pedaco_a_mao_continua_valendo_com_a_caixinha_desligada` |
-| D-148 / D-168 — "Só as letras" | com "Só as letras" ligado a caixinha não muda nada (`test_d586_com_so_as_letras_a_caixinha_nao_muda_a_pagina`); `tests/test_decisoes_so_as_letras.py` verde. Pergunta 1 abaixo |
+| D-148 / D-168 — "Só as letras" | com "Só as letras" ligado a caixinha não muda nada (`test_d586_com_so_as_letras_a_caixinha_nao_muda_a_pagina`); `tests/test_decisoes_so_as_letras.py` verde |
+| D-587 — caixinha cinza com "Só as letras" | `test_d587_com_so_as_letras_na_pagina_a_caixinha_fica_cinza_e_volta` (ligada e desligada antes; clique não muda nada; volta com o valor) e `test_d587_so_as_letras_herdado_do_livro_tambem_deixa_cinza`; falham no `ae0dc8c` (`reversao-no-2db002e.txt`); print 5 |
 | D-144 / D-127 / D-128 / D-126 | intocadas com a caixinha ligada (provas byte a byte acima; `test_decoracao_no_preto_e_branco.py`, `test_filtro_com_selecao.py` verdes) |
 | D-585 | não mexi na classificação pintura × enfeite |
 | D-010 | promessa P-086 (fora da varredura: a varredura ainda não olha caixinhas) + prova `test_p086_*` (clica, confere projeto, PDF e desfazer) |
@@ -106,6 +111,8 @@ cortada, "Limpar a folha", "Gravuras e fotos"), Preto e branco, "Só as letras" 
 - `2-uma-pagina-desligada.jpg` — desligada: a capa toda em preto e branco;
 - `3-antes-depois-ligada.jpg` — "antes / depois", ligada;
 - `4-antes-depois-desligada.jpg` — "antes / depois", desligada.
+- `5-so-as-letras-caixinha-cinza.jpg` — D-587: "Só as letras" ligado na página; a caixinha fica cinza (marcada, como
+  estava) e a pintura com a cor.
 Refazer: `fazer_prints.py` (instruções no topo).
 
 ## Velocidade (mexi em `core/`)
@@ -128,13 +135,17 @@ oficial e o PC estava em uso; a conta nova é uma leitura de campo por página.
 - caminho do filtro com a marcação: `test_filtro_com_selecao` 22 · `test_so_neste_pedaco_no_preto_e_branco` 8 ·
   `test_so_neste_pedaco_no_original` 22 · `test_decoracao_no_preto_e_branco` 12 · `test_garantir_selecao_corrida` 2
   (todos passed)
+- **D-587 (rodada de novo depois):** `test_decisoes_respeitar_gravuras` 19 passed · `test_decisoes_so_as_letras` 5 ·
+  `test_misto_na_tela` 14 · `test_paineis_na_tela` 22 · `test_promessas -k "p086 or todo_botao"` 2 passed
 - Não rodei a suíte inteira nem o `teste_botoes.py` (regra do PC); falta a rodada do GitHub (não fiz push, como
   pedido).
 
 ## Ressalvas
 
-- **Com "Só as letras" ligado, a caixinha não muda nada** (escolha do que menos muda, à espera da pergunta 1). Ela
-  continua clicável e grava; só não muda a imagem enquanto "Só as letras" estiver ligado.
+- **Com "Só as letras" valendo (Preto e branco, na página ou herdado do livro), a caixinha fica cinza e não dá para
+  clicar (D-587)**, como a das molduras (D-168); o valor guardado não muda e volta ao desligar "Só as letras". A conta
+  também ignora a caixinha nesse caso (o "Só as letras" manda). Em Melhorar e Mágico pro o "Só as letras" não vale,
+  então ela fica clicável.
 - **No Original a caixinha também não muda nada** (pedido da gerente: "No Original não muda nada"); ela continua à
   vista, como a D-586 descreve (não a escondi: seria comportamento novo).
 - **Desligada e sem pedaço à mão, a página passa pelo filtro "sem marcação"**, e nesse caminho o programa de hoje
@@ -158,16 +169,6 @@ oficial e o PC estava em uso; a conta nova é uma leitura de campo por página.
 
 ## Perguntas para o Samuel
 
-1. **"Só as letras" ligado + "Respeitar as gravuras achadas" desligada: o que deve acontecer?** O "Só as letras" deixa
-   preto e branco só as letras e guarda a cor das gravuras **que a máquina achou**. Sem as gravuras achadas, ele não
-   tem o que guardar: a página sairia toda em preto e branco, igual ao Preto e branco comum. Hoje (o que construí, por
-   ser o que menos muda) a caixinha **não faz nada** enquanto "Só as letras" estiver ligado.
-   - **A — Fica como construí:** com "Só as letras", a caixinha não muda a página (o "Só as letras" manda).
-   - **B — A caixinha manda:** desligada, a página sai toda em preto e branco mesmo com "Só as letras" (só os
-     pedaços marcados à mão guardam a cor).
-   - **C — A caixinha fica apagada (cinza) enquanto "Só as letras" estiver ligado**, como a das molduras na D-168, e
-     volta como estava ao desligar. (Muda a tela: só com o seu "sim".)
-   Opinião do agente: **C** é a mais clara para o Kaique (não deixa uma caixinha que não faz nada), mas é tela nova;
-   **A** é o que está hoje.
-2. **No Original a caixinha também não faz nada.** Quer que ela fique apagada (cinza) no Original, ou à vista como
+1. ~~"Só as letras" + caixinha desligada~~ — **respondida: D-587 (opção C), construída** (ver abaixo).
+2. **(Ainda não feita a ele.) No Original a caixinha também não faz nada.** Quer que ela fique apagada (cinza) no Original, ou à vista como
    está? (Hoje: à vista, como a D-586 descreve.)

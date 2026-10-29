@@ -17,3 +17,14 @@ FAILED tests/test_decisoes_respeitar_gravuras.py::test_d586_melhorar_e_magico_pr
 FAILED tests/test_decisoes_respeitar_gravuras.py::test_d586_melhorar_e_magico_pro_desligada_e_a_pagina_sem_a_marcacao[magico_pro]
 FAILED tests/test_decisoes_respeitar_gravuras.py::test_d586_com_so_as_letras_a_caixinha_nao_muda_a_pagina
 16 failed in 41.79s
+
+D-587 (29/10): as provas test_d587_* rodadas no ae0dc8c (antes da caixinha cinza), worktree temporária _tmp/antigo:
+
+E       AssertionError: com 'Só as letras' a caixinha não ficou cinza
+E       AssertionError: com 'Só as letras' a caixinha não ficou cinza
+E       AssertionError: com 'Só as letras' do livro a caixinha não ficou cinza
+FAILED tests/test_decisoes_respeitar_gravuras.py::test_d587_com_so_as_letras_na_pagina_a_caixinha_fica_cinza_e_volta[True]
+FAILED tests/test_decisoes_respeitar_gravuras.py::test_d587_com_so_as_letras_na_pagina_a_caixinha_fica_cinza_e_volta[False]
+FAILED tests/test_decisoes_respeitar_gravuras.py::test_d587_so_as_letras_herdado_do_livro_tambem_deixa_cinza
+3 failed, 16 deselected in 30.10s
+Neste ramo: 3 passed (o arquivo inteiro: 19 passed).
