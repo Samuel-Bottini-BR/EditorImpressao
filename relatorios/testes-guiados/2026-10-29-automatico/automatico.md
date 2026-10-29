@@ -9,6 +9,7 @@ Trabalho: uma coisa por vez, e ele testa cada uma assim que fica pronta (D-576).
 | a-2b | "não tem nenhuma opção de marcação escolhida, está o zoom escolhido" (correção dele à explicação da gerente) | ![](a-03-zoom-tambem-mostra.png) | Página 8 de 199, ferramenta Zoom: as cores aparecem também. A gerente tinha dito "só nas ferramentas de marcar": errado. Ver a causa corrigida abaixo. |
 | a-3 | "Outra coisa para adicionar ai, quando usamo o automatico temos que conseguir depois de ter passado ele diminuir ou aumentar ou mudar opções, caso não tenha saido como a gente queria e dai o programa recalcula isso que mudamos, nós mudamos em uma pagina e ele faz no resto" | — | D-579 |
 | a-4 | "e quando mostra para fazer os cadernos lá na parte de fazer caderno tem que ter um botão para ver como vai ficar o caderno." | — | Já era a D-574 (28/10, 2-10: "eu deveria conseguir ver o livreto pronto aqui nessa tela"); palavras de hoje acrescentadas a ela. |
+| a-5 | "outra coisa para adicionar na nossa lista, eu desfiz todo o historico e continuou a marcação antiga nas paginas. acho que como eu desfiz tudo, as marcações deveriam sumir também né?" | ![](a-05-desfez-tudo-marcacao-fica.png) | D-581. Print: histórico com todas as ações desfeitas (inclusive "Automático: endireitar folhas tortas, cortar ..."), faixa "Livro novo: ainda não passou pelo automático" de volta. Pela D-020 (18/07, "Ctrl+Z desfaz qualquer alteração"), sim: é defeito. |
 
 ## Causa do a-2 (lida no código da versão de teste, `obra-2026-10-26`)
 
