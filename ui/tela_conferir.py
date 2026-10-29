@@ -6171,13 +6171,27 @@ class TelaConferir(QWidget):
     def _mostrar_respeitar_gravuras(self, pagina) -> None:
         """Mostra na caixinha "Respeitar as gravuras achadas" (D-586) o valor
         desta página, sem virar ação (mostrar não é mudar). Chamado em todo
-        filtro, inclusive no Original (por isso fora do bloco do ajuste)."""
+        filtro, inclusive no Original (por isso fora do bloco do ajuste).
+
+        D-587 (Samuel, 29/10/2026: "sim" a "enquanto a "Só as letras" estiver
+        marcada, a caixinha nova fica cinza e não dá para clicar. É assim que já
+        funciona com a caixinha das molduras"): com a página em Preto e branco e
+        "Só as letras" valendo nela (dela ou herdado do livro:
+        misto.escolhas_da_pagina), a caixinha fica cinza (desabilitada), do mesmo
+        jeito da D-168 (ui/automatico.py, cx_decoracao_pb.setEnabled). O valor
+        guardado na página não muda; ao desligar "Só as letras" ela volta
+        habilitada, com o valor que tinha. É o mesmo caso em que a conta ignora
+        a caixinha (core.pipeline.marcacao_que_o_filtro_usa). Arriscado: gravar
+        algo aqui (mostrar viraria ação do desfazer)."""
         caixa = getattr(self, "caixa_respeitar_gravuras", None)
         if caixa is None:
             return
         caixa.blockSignals(True)
         caixa.setChecked(bool(getattr(pagina, "respeitar_gravuras_achadas", True)))
         caixa.blockSignals(False)
+        so_as_letras = (pagina.filtro == PRETO_E_BRANCO and self.projeto is not None
+                        and misto.escolhas_da_pagina(self.projeto, pagina)[0])
+        caixa.setEnabled(not so_as_letras)
 
     @protegido
     def _mudar_pontinhos(self, indice: int) -> None:

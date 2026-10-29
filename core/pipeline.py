@@ -3500,12 +3500,14 @@ def marcacao_que_o_filtro_usa(projeto: Projeto, pagina: ConfigPagina, selecao):
     - No Original (e no "Tirar o fundo", que nem chega aqui): nada muda
       ("No Original não muda nada", pedido da gerente; o Original nao usa a
       marcacao da maquina).
-    - No Preto e branco com "So as letras" (D-148): nada muda, por ora. O "So
-      as letras" so existe para guardar a cor do que a maquina achou; tirar a
+    - No Preto e branco com "So as letras" (D-148): nada muda. O "So as
+      letras" so existe para guardar a cor do que a maquina achou; tirar a
       marcacao dele faria a pagina sair toda em preto e branco e desligaria o
-      "So as letras" sem a pessoa desmarcar. As decisoes nao respondem esse
-      caso: escolhido o comportamento que menos muda, e a pergunta foi para o
-      Samuel (relatorios/automatico-respeitar/ONDE-PAREI.md, pergunta 1).
+      "So as letras" sem a pessoa desmarcar. D-587 (Samuel, 29/10/2026, "sim"
+      a: "enquanto a "Só as letras" estiver marcada, a caixinha nova fica
+      cinza e não dá para clicar. É assim que já funciona com a caixinha das
+      molduras."): o "So as letras" manda, e a tela deixa a caixinha cinza
+      (ui/tela_conferir.py, _mostrar_respeitar_gravuras), como a D-168.
 
     Seguro mudar: nada sem decisao do Samuel. Arriscado: devolver uma copia
     com a caixinha ligada (a imagem continua igual, mas a corrida de
@@ -3516,7 +3518,7 @@ def marcacao_que_o_filtro_usa(projeto: Projeto, pagina: ConfigPagina, selecao):
     if pagina.filtro not in (PRETO_E_BRANCO, MELHORAR, MAGICO_PRO):
         return selecao
     if pagina.filtro == PRETO_E_BRANCO and misto.opcoes_da_pagina(projeto, pagina) is not None:
-        return selecao                       # "So as letras": pergunta 1 do ONDE-PAREI
+        return selecao                       # "So as letras" manda (D-587)
     from core.selecao import MAO, Selecao
 
     return Selecao(regioes=[r for r in selecao.regioes if r.origem == MAO])

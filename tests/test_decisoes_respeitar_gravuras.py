@@ -27,8 +27,10 @@ O que estas provas guardam:
   7. projeto gravado antes da caixinha abre com ela ligada e sai idêntico;
   8. PDF = tela (D-066/D-473);
   9. no Original nada muda; no Melhorar e no Mágico pro, desligada = a página sem a marcação da
-     máquina; com "Só as letras" (D-148) nada muda (o comportamento que menos muda, escolhido
-     enquanto a pergunta 1 do relatorios/automatico-respeitar/ONDE-PAREI.md não é respondida).
+     máquina; com "Só as letras" (D-148) nada muda;
+ 10. D-587 (29/10): com "Só as letras" valendo (na página ou herdado do livro), a caixinha fica
+     cinza e não dá para clicar, como a das molduras (D-168); ao desligar, volta com o valor de
+     antes.
 
 Livro sintético: papel amarelado, uma iluminura grande e colorida em cima (dourado, vermelho e
 azul com hachura, o tipo "enfeite colorido" que fica com a cor no Preto e branco: D-144/D-127) e
@@ -549,10 +551,9 @@ def test_d586_melhorar_e_magico_pro_desligada_e_a_pagina_sem_a_marcacao(janela, 
 def test_d586_com_so_as_letras_a_caixinha_nao_muda_a_pagina(janela, tmp_path):
     """D-148 ("Só as letras": só as letras viram preto e branco; gravura, foto, moldura e
     iluminura ficam como no original). O "Só as letras" depende das gravuras achadas para
-    guardar a cor; as decisões não dizem o que fazer com ele e a caixinha desligada juntos. Até
-    o Samuel responder (pergunta 1 do relatorios/automatico-respeitar/ONDE-PAREI.md), vale o
-    comportamento que menos muda: com "Só as letras" ligado, a caixinha não muda a página (a
-    iluminura continua com a cor)."""
+    guardar a cor. D-587 (29/10, "sim" à opção C): o "Só as letras" manda — com ele ligado, a
+    caixinha não muda a página (a iluminura continua com a cor) e fica cinza (provas
+    test_d587_*)."""
     from PySide6.QtWidgets import QCheckBox
 
     tela = _depois_do_automatico(janela, tmp_path)
@@ -567,7 +568,74 @@ def test_d586_com_so_as_letras_a_caixinha_nao_muda_a_pagina(janela, tmp_path):
     pagina.misto_fora_do_texto = "tudo"
     ligada = _desenho(projeto, pagina, 110)
     assert _colorido(_miolo_da_iluminura(ligada)) > 0.5
-    _caixa(tela).click()
-    _assentar()
-    assert pagina.respeitar_gravuras_achadas is False
+    # desde a D-587 a caixinha fica cinza com "Só as letras" (não dá para clicar); a página
+    # pode ter ficado desligada de antes: o valor guardado desligado também não muda a página
+    pagina.respeitar_gravuras_achadas = False
     assert np.array_equal(_desenho(projeto, pagina, 110), ligada)
+
+
+# --- 10. D-587: com "Só as letras", a caixinha fica cinza (como a D-168) -------------------
+
+def _caixa_so_as_letras(tela):
+    from PySide6.QtWidgets import QCheckBox
+
+    return next(c for c in tela.paineis.filtro_da_pagina.findChildren(QCheckBox)
+                if c.text() == "Só as letras" and c.isVisibleTo(tela))
+
+
+@pytest.mark.parametrize("valor_antes", [True, False])
+def test_d587_com_so_as_letras_na_pagina_a_caixinha_fica_cinza_e_volta(janela, tmp_path, valor_antes):
+    """D-587 (Samuel, 29/10/2026, "sim" a: "enquanto a "Só as letras" estiver marcada, a caixinha
+    nova fica cinza e não dá para clicar. É assim que já funciona com a caixinha das molduras.");
+    o jeito da D-168 ("Fica apagada (cinza) enquanto 'Só as letras' estiver marcada, e volta como
+    estava ao desligar"). Página em Preto e branco: ligar "Só as letras" → a caixinha fica cinza
+    e o valor guardado não muda (clicar nela não faz nada); desligar → volta clicável, com o
+    valor de antes (ligada ou desligada)."""
+    from PySide6.QtCore import Qt
+    from PySide6.QtTest import QTest
+
+    tela = _depois_do_automatico(janela, tmp_path)
+    pagina = janela.projeto.paginas[0]
+    _escolher(tela, PRETO_E_BRANCO)
+    caixa = _caixa(tela)
+    assert caixa.isEnabled()
+    if not valor_antes:
+        caixa.click()
+        _assentar()
+    assert pagina.respeitar_gravuras_achadas is valor_antes
+    _caixa_so_as_letras(tela).click()
+    _assentar()
+    assert pagina.misto_so_as_letras is True
+    assert not caixa.isEnabled(), "com 'Só as letras' a caixinha não ficou cinza"
+    QTest.mouseClick(caixa, Qt.LeftButton)                 # não dá para clicar
+    _assentar()
+    assert pagina.respeitar_gravuras_achadas is valor_antes and caixa.isChecked() is valor_antes
+    _caixa_so_as_letras(tela).click()
+    _assentar()
+    assert pagina.misto_so_as_letras is False
+    assert caixa.isEnabled(), "ao desligar 'Só as letras' a caixinha não voltou"
+    assert caixa.isChecked() is valor_antes and pagina.respeitar_gravuras_achadas is valor_antes
+
+
+def test_d587_so_as_letras_herdado_do_livro_tambem_deixa_cinza(janela, tmp_path):
+    """D-587, com o "Só as letras" do LIVRO (o da janela do Automático; a página segue o livro):
+    em Preto e branco a caixinha fica cinza; no Melhorar (onde o "Só as letras" não vale) e com o
+    livro desligado, volta clicável. O valor guardado não muda."""
+    tela = _depois_do_automatico(janela, tmp_path)
+    projeto, pagina = janela.projeto, janela.projeto.paginas[0]
+    _escolher(tela, PRETO_E_BRANCO)
+    assert pagina.misto_so_as_letras is None               # a página segue o livro
+    projeto.misto_so_as_letras = True
+    tela.atualizar()
+    _assentar()
+    caixa = _caixa(tela)
+    assert not caixa.isEnabled(), "com 'Só as letras' do livro a caixinha não ficou cinza"
+    assert pagina.respeitar_gravuras_achadas is True and caixa.isChecked()
+    _escolher(tela, MELHORAR)
+    assert caixa.isEnabled(), "no Melhorar o 'Só as letras' não vale: a caixinha volta"
+    _escolher(tela, PRETO_E_BRANCO)
+    assert not caixa.isEnabled()
+    projeto.misto_so_as_letras = False
+    tela.atualizar()
+    _assentar()
+    assert caixa.isEnabled() and caixa.isChecked() and pagina.respeitar_gravuras_achadas is True
