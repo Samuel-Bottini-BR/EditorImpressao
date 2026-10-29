@@ -443,3 +443,8 @@ na Central (aba "O que você não gostou: alternativas").
   branco, mas ao clicar a página sai colorida (a marcação do Automático guarda a cor da gravura). Faz parecer que o
   filtro não foi aplicado. Prints em `relatorios/automatico-filtro/1-uma-pagina-preto-e-branco.jpg` e `2-...` (ramo
   `automatico-filtro-2026-10-29`). Pergunta ao Samuel: as figurinhas devem mostrar a página com a marcação?
+- **Pintura confundida com enfeite no Preto e branco (D-585), ACEITO ATÉ DEPOIS pelo Samuel em 29/10** ("deixar como
+  está e deixar anotado, vamos continuar para o que temos que fazer"): título/escrita por cima da pintura somam traço e a
+  pintura cai em "enfeite" (guarda a cor sem "Só as letras"); 4 de 99 pinturas do *Na escola de Jesus* (capa, p.19, 45,
+  173). Nenhum limite seguro (tela 110 dpi × PDF inverte a ordem; Horas 11 iria a cinza). Opções B/C/D e imagens em
+  `relatorios/automatico-pintura/` (versão de teste).

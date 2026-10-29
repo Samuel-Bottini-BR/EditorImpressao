@@ -33,3 +33,4 @@ coisa: um botão que mostra e esconde o colorido das marcações.
 - O que fica "por cima" é a marcação que o Automático deixou ("Gravuras e fotos"): na capa, 82% da página virou "enfeite colorido", que guarda a cor em todos os filtros (D-144, D-127, D-128). Por isso Preto e branco, Melhorar e Mágico pro saem quase iguais (diferença 2,2 de 255) e parece que nada muda.
 - Imagem da explicação: `relatorios/automatico-filtro/5-capa-nos-4-filtros-com-e-sem-a-marcacao.jpg` (ramo `automatico-filtro-2026-10-29`, commit `d4407e9`, só provas e relatório).
 - Vira a pergunta D-583 ao Samuel; achado à parte na Lista de bugs (figurinhas do painel sem a marcação).
+- "Só as letras" do Automático conferido em 29/10: funciona (livro, página herdada, tela, PDF, desfazer). D-585: causa achada (escrita por cima da pintura), sem conserto seguro; Samuel: "deixar como está e deixar anotado, vamos continuar para o que temos que fazer".
