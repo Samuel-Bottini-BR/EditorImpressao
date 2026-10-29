@@ -1,0 +1,18 @@
+Prova de que os testes do D-582 pegam um defeito de tela (29/10/2026).
+Mutacao feita de proposito e desfeita logo depois (git checkout): a chave da previa sem o filtro (ui/tarefas.py, GerenciadorPrevias.chave)
+e sem o invalidar da pagina ao gravar (ui/tela_conferir.py, _registrar) = a tela ficaria com a previa velha.
+Com so a chave sem o filtro, os 4 testes PASSAM (o invalidar da pagina ja basta: nao ha defeito escondido ai).
+Com as duas mudancas juntas:
+
+            assert vista.comparando and vista.rotulos == ("antes: Original", f"depois: {nomes[filtro]}")
+>           assert _diferenca(depois, _desenho(projeto, pagina, filtro, dpi)) < 0.5, \
+E           AssertionError: o 'depois' não é o preto_e_branco escolhido
+E           assert 44.614755509641874 < 0.5
+tests\test_decisoes_filtro_automatico.py:262: AssertionError
+>       assert _diferenca(_bgr(tela.previas.ja_pronta(0, dpi)), direto) < 0.5
+E       assert 46.31907221566313 < 0.5
+tests\test_decisoes_filtro_automatico.py:287: AssertionError
+>           assert _diferenca(_bgr(tela.editor_selecao._img),
+E           AssertionError: assert 46.31907221566313 < 0.5
+tests\test_decisoes_filtro_automatico.py:305: AssertionError
+4 failed in 6.24s

@@ -1,0 +1,51 @@
+# python relatorios/automatico-filtro/medir_filtros.py   (capa = pagina 1; PAG=8 = pagina 9). Diferenca media |a-b| em tons de cinza (0 a 255).
+--- pagina 1, com a marcacao do Automatico
+  original        forma (1100, 805, 3) media  127.1 cor(|R-B|) 64.11373009599096
+  preto_e_branco  forma (1100, 805, 3) media  134.7 cor(|R-B|) 54.60676566911349
+  melhorar        forma (1100, 805, 3) media  135.6 cor(|R-B|) 55.71865273856578
+  magico_pro      forma (1100, 805, 3) media  135.6 cor(|R-B|) 55.93073630717109
+  |original - preto_e_branco| =  10.42
+  |melhorar - original| =   8.79
+  |melhorar - preto_e_branco| =   2.24
+  |magico_pro - original| =   8.85
+  |magico_pro - preto_e_branco| =   2.16
+  |magico_pro - melhorar| =   0.19
+--- pagina 1, sem marcacao nenhuma
+  original        forma (1100, 805, 3) media  128.0 cor(|R-B|) 64.1171609260305
+  preto_e_branco  forma (1100, 805) media  106.2 cor(|R-B|) False
+  melhorar        forma (1100, 805, 3) media  126.9 cor(|R-B|) 46.875259175607
+  magico_pro      forma (1100, 805, 3) media  126.7 cor(|R-B|) 72.21673743647656
+  |original - preto_e_branco| =  82.59
+  |melhorar - original| =  18.49
+  |melhorar - preto_e_branco| =  69.61
+  |magico_pro - original| =  22.04
+  |magico_pro - preto_e_branco| =  68.72
+  |magico_pro - melhorar| =  13.13
+
+--- pagina 9, com a marcacao do Automatico
+  original        forma (1065, 713, 3) media  197.5 cor(|R-B|) 38.734249912753754
+  preto_e_branco  forma (1065, 713) media  185.2 cor(|R-B|) False
+  melhorar        forma (1065, 713, 3) media  198.8 cor(|R-B|) 23.614978698746945
+  magico_pro      forma (1065, 713, 3) media  198.9 cor(|R-B|) 23.643523036301023
+  |original - preto_e_branco| =  25.60
+  |melhorar - original| =  17.48
+  |melhorar - preto_e_branco| =  17.24
+  |magico_pro - original| =  17.53
+  |magico_pro - preto_e_branco| =  17.15
+  |magico_pro - melhorar| =   0.14
+--- pagina 9, sem marcacao nenhuma
+  original        forma (1065, 713, 3) media  198.0 cor(|R-B|) 38.696377799287546
+  preto_e_branco  forma (1065, 713) media  165.5 cor(|R-B|) False
+  melhorar        forma (1065, 713, 3) media  193.5 cor(|R-B|) 24.134090564894745
+  magico_pro      forma (1065, 713, 3) media  193.5 cor(|R-B|) 37.51411677169139
+  |original - preto_e_branco| =  58.32
+  |melhorar - original| =  21.59
+  |melhorar - preto_e_branco| =  41.93
+  |magico_pro - original| =  21.73
+  |magico_pro - preto_e_branco| =  41.24
+  |magico_pro - melhorar| =   3.65
+
+# python relatorios/automatico-filtro/tipos_das_zonas.py  (como o filtro classifica a gravura marcada na capa)
+pagina 1: gravura cobre 82%, letra 3%, papel 14% da pagina
+  zona 1: 87.2% da pagina -> DECORACAO COLORIDA (fica com a cor)
+capa automatica? False

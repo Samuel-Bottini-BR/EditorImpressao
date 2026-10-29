@@ -1,0 +1,13 @@
+# python relatorios/automatico-filtro/tela_recebe_o_filtro.py original preto_e_branco melhorar magico_pro   (Uma pagina, ferramenta Retangulo, painel Filtro aberto)
+filtro de partida: magico_pro
+original        pagina.filtro=original        chegou em  1.08s  Uma pagina (editor): |recebida - desenho de original| = 0.0
+preto_e_branco  pagina.filtro=preto_e_branco  chegou em  1.38s  Uma pagina (editor): |recebida - desenho de preto_e_branco| = 0.0
+melhorar        pagina.filtro=melhorar        chegou em  0.51s  Uma pagina (editor): |recebida - desenho de melhorar| = 0.0
+magico_pro      pagina.filtro=magico_pro      chegou em  0.54s  Uma pagina (editor): |recebida - desenho de magico_pro| = 0.0
+
+# o mesmo com MODO=ad (antes / depois ligado)
+filtro de partida: magico_pro
+original        pagina.filtro=original        chegou em  1.07s  antes/depois (lado depois): |recebida - desenho de original| = 0.0
+preto_e_branco  pagina.filtro=preto_e_branco  chegou em  1.28s  antes/depois (lado depois): |recebida - desenho de preto_e_branco| = 0.0
+melhorar        pagina.filtro=melhorar        chegou em  0.51s  antes/depois (lado depois): |recebida - desenho de melhorar| = 0.0
+magico_pro      pagina.filtro=magico_pro      chegou em  0.54s  antes/depois (lado depois): |recebida - desenho de magico_pro| = 0.0
