@@ -448,3 +448,9 @@ na Central (aba "O que você não gostou: alternativas").
   pintura cai em "enfeite" (guarda a cor sem "Só as letras"); 4 de 99 pinturas do *Na escola de Jesus* (capa, p.19, 45,
   173). Nenhum limite seguro (tela 110 dpi × PDF inverte a ordem; Horas 11 iria a cinza). Opções B/C/D e imagens em
   `relatorios/automatico-pintura/` (versão de teste).
+- **Preto e branco sem marcação: tela ≠ PDF nas gravuras (achado do verificador da D-586, 29/10; já existia no
+  `2db002e`):** com a caixinha "Respeitar as gravuras achadas" desligada (ou livro sem "Gravuras e fotos"), a tela
+  (110 DPI) mostra rostos e roupas muito mais pretos e com blocos quadrados que o PDF (300 DPI). Diferença média tela ×
+  PDF: capa 12,6, página 9 35,3 (*Na escola de Jesus*); com a caixinha ligada, 7,5. Contra a D-066/D-473.
+- **Original: o primeiro desenho da página logo depois do Automático sai um pouco diferente dos seguintes (achado do
+  construtor da D-586, 29/10; já existia no `2db002e`).**
