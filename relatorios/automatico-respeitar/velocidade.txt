@@ -1,0 +1,55 @@
+D-586: velocidade, antes (2db002e) x depois (este ramo), alternados, no PC do Samuel (com ele usando).
+A mudança no core é uma leitura de campo (a caixinha) por página filtrada; ligada, nenhuma conta a mais.
+
+1) teste_velocidade.py --rapido (Marial 300, 20 páginas; os números do --rapido NÃO valem como medição oficial; sem o modelo doclayout.onnx na worktree)
+== a1
+- Abrir o livro de 20 páginas: 7,4 segundos.
+- Trocar de página: a prévia de uma página nunca vista ficou pronta em 3,1 segundos em média
+- Processar 2 páginas em Mágico pro: 17,2 segundos
+- Processar 2 páginas em Preto e branco: 6,2 segundos
+== d1
+- Abrir o livro de 20 páginas: 6,9 segundos.
+- Trocar de página: a prévia de uma página nunca vista ficou pronta em 3,1 segundos em média
+- Processar 2 páginas em Mágico pro: 16,8 segundos
+- Processar 2 páginas em Preto e branco: 6,4 segundos
+== a2
+- Abrir o livro de 20 páginas: 6,8 segundos.
+- Trocar de página: a prévia de uma página nunca vista ficou pronta em 2,8 segundos em média
+- Processar 2 páginas em Mágico pro: 16,6 segundos
+- Processar 2 páginas em Preto e branco: 6,3 segundos
+== d2
+- Abrir o livro de 20 páginas: 6,2 segundos.
+- Trocar de página: a prévia de uma página nunca vista ficou pronta em 2,7 segundos em média
+- Processar 2 páginas em Mágico pro: 16,1 segundos
+- Processar 2 páginas em Preto e branco: 6,0 segundos
+== a3
+- Abrir o livro de 20 páginas: 6,1 segundos.
+- Trocar de página: a prévia de uma página nunca vista ficou pronta em 2,6 segundos em média
+- Processar 2 páginas em Mágico pro: 16,6 segundos
+- Processar 2 páginas em Preto e branco: 6,1 segundos
+== d3
+- Abrir o livro de 20 páginas: 6,5 segundos.
+- Trocar de página: a prévia de uma página nunca vista ficou pronta em 2,6 segundos em média
+- Processar 2 páginas em Mágico pro: 11,7 segundos
+- Processar 2 páginas em Preto e branco: 6,0 segundos
+
+
+2) medir_velocidade_do_filtro.py (desenho da prévia, 110 DPI, mediana de 5; caixinha ligada, o padrão)
+antigo          pagina  1 preto_e_branco  mediana 0.444 s
+antigo          pagina  1 magico_pro      mediana 0.699 s
+antigo          pagina  9 preto_e_branco  mediana 0.264 s
+antigo          pagina  9 magico_pro      mediana 0.874 s
+auto-respeitar  pagina  1 preto_e_branco  mediana 0.407 s
+auto-respeitar  pagina  1 magico_pro      mediana 0.687 s
+auto-respeitar  pagina  9 preto_e_branco  mediana 0.235 s
+auto-respeitar  pagina  9 magico_pro      mediana 0.844 s
+antigo          pagina  1 preto_e_branco  mediana 0.426 s
+antigo          pagina  1 magico_pro      mediana 0.701 s
+antigo          pagina  9 preto_e_branco  mediana 0.276 s
+antigo          pagina  9 magico_pro      mediana 1.032 s
+auto-respeitar  pagina  1 preto_e_branco  mediana 0.514 s
+auto-respeitar  pagina  1 magico_pro      mediana 0.768 s
+auto-respeitar  pagina  9 preto_e_branco  mediana 0.281 s
+auto-respeitar  pagina  9 magico_pro      mediana 0.879 s
+
+Leitura: sem diferença acima do vai-e-vem (as rodadas do mesmo código variam mais que as do antes x depois).

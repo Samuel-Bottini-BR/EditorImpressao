@@ -3322,6 +3322,23 @@ class TelaConferir(QWidget):
         self.aviso_luz.setVisible(False)
         coluna_mais.addWidget(self.aviso_luz)
 
+        # --- Respeitar as gravuras achadas (D-583/D-586, 29/10/2026), desta página ---
+        # "Uma caixinha no painel "Filtro da página", logo abaixo das figurinhas
+        # dos filtros: "Respeitar as gravuras achadas". De início vem ligada, que é
+        # como funciona hoje. Desligada, o filtro vale na página inteira [...]. Vale
+        # com o "Aplicar em"". O painel a põe logo abaixo da fila
+        # (PainelFiltroDaPagina.montar, peça "respeitar"); a conta mora em
+        # core.pipeline.marcacao_que_o_filtro_usa. No estilo das outras caixinhas
+        # do painel. Seguro mudar: o balão. Arriscado: o nome (é o que ele
+        # escolheu) e criar a caixinha no painel (perde o desfazer).
+        self.caixa_respeitar_gravuras = QCheckBox("Respeitar as gravuras achadas")
+        estilo.estilizar(self.caixa_respeitar_gravuras, lambda: estilo_da_caixinha_com_quadrado(15))
+        self.caixa_respeitar_gravuras.setToolTip(
+            "Ligada, o filtro respeita as gravuras que o programa achou; desligada, o filtro "
+            "vale na página inteira.")
+        self.caixa_respeitar_gravuras.setChecked(True)
+        self.caixa_respeitar_gravuras.toggled.connect(self._mudar_respeitar_gravuras)
+
         # --- Só as letras (modo Misto, 05/10/2026), desta página ---
         # Só com o Preto e branco escolhido (ver _configurar_medidor). No
         # painel, com a lista com amostra (rodada 10, 502 B) no lugar dos três
@@ -3367,7 +3384,8 @@ class TelaConferir(QWidget):
             [(chave, nome, TECLAS_DOS_FILTROS.get(chave, ""))
              for chave, nome, _explica in CARTOES if chave in filtros],
             {"ajuste": corpo_ajuste, "letras": self.escolhas_misto, "limpar": corpo_limpar,
-             "mais": corpo_mais, "aplicar": aplicar, "apagar": pagina_toda})
+             "mais": corpo_mais, "aplicar": aplicar, "apagar": pagina_toda,
+             "respeitar": self.caixa_respeitar_gravuras})          # D-586
         # a amostra de cada cartao grande vai tambem para a fila do painel
         for cartao in self.cartoes.values():
             cartao.amostra_mudou.connect(self.paineis.filtro_da_pagina.definir_amostra)
@@ -6130,6 +6148,52 @@ class TelaConferir(QWidget):
         )
 
     @protegido
+    def _mudar_respeitar_gravuras(self, marcada: bool) -> None:
+        """A caixinha "Respeitar as gravuras achadas" do painel Filtro (D-583/
+        D-586, 29/10/2026): SÓ desta página, como ação do desfazer (Ctrl+Z
+        desfaz, Ctrl+Shift+Z refaz: D-020). O "Aplicar em" leva o valor às
+        outras páginas (_filtro_em_todas, _filtro_nas_proximas). Nada acontece
+        se a página já está assim (mostrar o valor nunca grava). A conta:
+        core.pipeline.marcacao_que_o_filtro_usa. Arriscado: gravar sem passar
+        por _registrar (o desfazer e a marca "mexida a mão" não veriam)."""
+        if not self._pronta() or self.projeto is None:
+            return
+        pagina = self.projeto.paginas[self.indice_pagina]
+        if bool(marcada) == bool(getattr(pagina, "respeitar_gravuras_achadas", True)):
+            return
+        self._registrar(
+            "mudar_respeitar_gravuras", "pagina", [self.indice_pagina],
+            {"respeitar_gravuras_achadas": bool(marcada)},
+            f"Respeitar as gravuras achadas na página {self.indice_pagina + 1}: "
+            f"{'ligada' if marcada else 'desligada'}",
+        )
+
+    def _mostrar_respeitar_gravuras(self, pagina) -> None:
+        """Mostra na caixinha "Respeitar as gravuras achadas" (D-586) o valor
+        desta página, sem virar ação (mostrar não é mudar). Chamado em todo
+        filtro, inclusive no Original (por isso fora do bloco do ajuste).
+
+        D-587 (Samuel, 29/10/2026: "sim" a "enquanto a "Só as letras" estiver
+        marcada, a caixinha nova fica cinza e não dá para clicar. É assim que já
+        funciona com a caixinha das molduras"): com a página em Preto e branco e
+        "Só as letras" valendo nela (dela ou herdado do livro:
+        misto.escolhas_da_pagina), a caixinha fica cinza (desabilitada), do mesmo
+        jeito da D-168 (ui/automatico.py, cx_decoracao_pb.setEnabled). O valor
+        guardado na página não muda; ao desligar "Só as letras" ela volta
+        habilitada, com o valor que tinha. É o mesmo caso em que a conta ignora
+        a caixinha (core.pipeline.marcacao_que_o_filtro_usa). Arriscado: gravar
+        algo aqui (mostrar viraria ação do desfazer)."""
+        caixa = getattr(self, "caixa_respeitar_gravuras", None)
+        if caixa is None:
+            return
+        caixa.blockSignals(True)
+        caixa.setChecked(bool(getattr(pagina, "respeitar_gravuras_achadas", True)))
+        caixa.blockSignals(False)
+        so_as_letras = (pagina.filtro == PRETO_E_BRANCO and self.projeto is not None
+                        and misto.escolhas_da_pagina(self.projeto, pagina)[0])
+        caixa.setEnabled(not so_as_letras)
+
+    @protegido
     def _mudar_pontinhos(self, indice: int) -> None:
         """A lista "Limpar pontinhos" da aba Filtro (decisão do Samuel,
         06/10/2026, P7): a escolha SÓ desta página, como ação do desfazer.
@@ -6238,6 +6302,7 @@ class TelaConferir(QWidget):
         assert self.projeto is not None
         pagina = self.projeto.paginas[self.indice_pagina]
         campo = self._campo_do_ajuste(pagina.filtro)
+        self._mostrar_respeitar_gravuras(pagina)          # D-586: em todo filtro
 
         # Original não tem o que ajustar: o bloco inteiro some (e a frase
         # "O Original não tem ajuste." aparece no lugar dele, no painel).
@@ -7021,6 +7086,13 @@ class TelaConferir(QWidget):
 
     @protegido
     def _filtro_em_todas(self) -> None:
+        """O "Aplicar em" do painel Filtro: leva o filtro desta página e os
+        ajustes dele a todas as páginas, numa ação do desfazer. D-586 (29/10/2026):
+        a caixinha "Respeitar as gravuras achadas" vai junto ("Vale com o
+        "Aplicar em""). Não mexe na marcação de nenhuma página: os pedaços
+        feitos à mão das outras páginas ficam (D-090/D-545: nunca apaga
+        exceção). Arriscado: tirar daqui um campo do painel (ele deixaria de
+        seguir o "Aplicar em")."""
         assert self.projeto is not None
         pagina = self.projeto.paginas[self.indice_pagina]
         indices = [p.indice for p in self.projeto.paginas]
@@ -7036,6 +7108,9 @@ class TelaConferir(QWidget):
              # item 2.11: as cores desta pagina
              "letras_com_a_cor": pagina.letras_com_a_cor,
              "reduzir_cores": pagina.reduzir_cores,
+             # D-586: "Vale com o "Aplicar em"": a caixinha "Respeitar as
+             # gravuras achadas" desta pagina vai junto
+             "respeitar_gravuras_achadas": pagina.respeitar_gravuras_achadas,
              # modo Misto: as escolhas DESTA pagina (None = segue o livro)
              **{campo: getattr(pagina, campo) for campo in misto.CAMPOS_DO_MISTO},
              # item 2.17: igualar a luz, suavizar e chuvisco DESTA pagina
@@ -7045,6 +7120,13 @@ class TelaConferir(QWidget):
 
     @protegido
     def _filtro_nas_proximas(self) -> None:
+        """O "Aplicar em" do painel Filtro: leva o filtro desta página e os
+        ajustes dele a esta página e as seguintes, numa ação do desfazer. D-586 (29/10/2026):
+        a caixinha "Respeitar as gravuras achadas" vai junto ("Vale com o
+        "Aplicar em""). Não mexe na marcação de nenhuma página: os pedaços
+        feitos à mão das outras páginas ficam (D-090/D-545: nunca apaga
+        exceção). Arriscado: tirar daqui um campo do painel (ele deixaria de
+        seguir o "Aplicar em")."""
         assert self.projeto is not None
         pagina = self.projeto.paginas[self.indice_pagina]
         indices = [p.indice for p in self.projeto.paginas if p.indice >= self.indice_pagina]
@@ -7060,6 +7142,9 @@ class TelaConferir(QWidget):
              # item 2.11: as cores desta pagina
              "letras_com_a_cor": pagina.letras_com_a_cor,
              "reduzir_cores": pagina.reduzir_cores,
+             # D-586: "Vale com o "Aplicar em"": a caixinha "Respeitar as
+             # gravuras achadas" desta pagina vai junto
+             "respeitar_gravuras_achadas": pagina.respeitar_gravuras_achadas,
              # modo Misto: as escolhas DESTA pagina (None = segue o livro)
              **{campo: getattr(pagina, campo) for campo in misto.CAMPOS_DO_MISTO},
              # item 2.17: igualar a luz, suavizar e chuvisco DESTA pagina
@@ -7917,6 +8002,7 @@ MARCAS_DA_PAGINA = {
     "luz_igualar": etapas_core.FILTRO, "luz_suavizar": etapas_core.FILTRO,
     "luz_chuvisco": etapas_core.FILTRO, "claro_no_escuro": etapas_core.FILTRO,
     "letras_com_a_cor": etapas_core.FILTRO, "reduzir_cores": etapas_core.FILTRO,
+    "respeitar_gravuras_achadas": etapas_core.FILTRO,          # D-586
     "selecao": etapas_core.MARCAR,
     "conteudo_escala": etapas_core.MOVER, "conteudo_deslocamento": etapas_core.MOVER,
     "tamanho_folha_cm": etapas_core.MOVER,

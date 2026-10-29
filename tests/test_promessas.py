@@ -2013,6 +2013,49 @@ def test_p083_jeitos_no_automatico(janela, tela, nome, valor):
     aj.assentar()
     assert opcoes.escolhas_misto.fora_do_texto() == valor
 
+
+@prova("P-086")
+def test_p086_respeitar_as_gravuras_achadas(janela, pasta, monkeypatch):
+    """D-583/D-586: a caixinha logo abaixo das figurinhas, ligada de fábrica. Num livro com uma
+    iluminura colorida grande (o livro de tests/test_decisoes_respeitar_gravuras.py), depois do
+    Automático ("Limpar a folha") e com a iluminura achada pela máquina, página 1 em Preto e
+    branco: clicar na caixinha a desliga (gravado no projeto, uma ação no histórico, o Desfazer
+    volta) e o PDF gerado sai com a página 1 toda em preto e branco; a página 2 (ligada) sai
+    com a iluminura colorida."""
+    from PySide6.QtWidgets import QCheckBox
+
+    from core.filtros import PRETO_E_BRANCO
+    from tests import test_decisoes_respeitar_gravuras as R
+
+    tela = aj.abrir_livro_para_teste(janela, R._pdf(pasta / "iluminura.pdf", 2), marcadas=("cx_limpar",))
+    janela.projeto.detectar_regioes = True          # o "Gravuras e fotos" (o detector não roda aqui)
+    for pagina in janela.projeto.paginas:
+        pagina.guardar_selecao(R._marcacao_da_maquina(), provisoria=False)
+        pagina.gravura_feita_com = ""
+    tela.previas.invalidar()
+    for indice in (1, 0):
+        tela.ir_para_pagina(indice)
+        tela._escolher_filtro(PRETO_E_BRANCO)
+    tela.paineis.abrir("filtro")
+    aj.assentar()
+    painel = tela.paineis.filtro_da_pagina
+    caixa = next(c for c in painel.findChildren(QCheckBox)
+                 if c.text() == "Respeitar as gravuras achadas" and c.isVisibleTo(tela))
+    assert caixa.isChecked() and caixa.toolTip()
+    assert aj.pagina_gravada(janela, 0)["respeitar_gravuras_achadas"] is True
+    caixa.click()
+    aj.assentar()
+    assert aj.pagina_gravada(janela, 0)["respeitar_gravuras_achadas"] is False
+    assert aj.pagina_gravada(janela, 1)["respeitar_gravuras_achadas"] is True
+    paginas = _gerar(janela, monkeypatch, pasta)
+    assert aj.so_preto_e_branco(paginas[0]), "a página 1 não saiu toda em preto e branco"
+    assert R._colorido(R._miolo_da_iluminura(paginas[1].imagem)) > 0.5, "a página 2 perdeu a cor"
+    _voltar_ao_trabalho(janela)
+    tela.ir_para_pagina(0)
+    tela.desfazer()
+    aj.assentar()
+    assert aj.pagina_gravada(janela, 0)["respeitar_gravuras_achadas"] is True and caixa.isChecked()
+
 # --- "Para revisar" -------------------------------------------------------------------------------
 
 def _com_avisos(janela, tela):

@@ -969,6 +969,11 @@ class GerenciadorPrevias(QObject):
             f"{':' + estado_do_desentortar(self.projeto, p) if getattr(p, 'desentortar', 'desligado') != 'desligado' else ''}"
             # item 2.17: igualar a luz, suavizar, chuvisco ("-" desligados)
             f":{luz_scantailor.assinatura(p)}"
+            # D-583/D-586: a caixinha "Respeitar as gravuras achadas" muda a
+            # previa, o "antes / depois" e a tela cheia. So entra na chave
+            # quando DESLIGADA: ligada (o de fabrica), a chave e a de sempre.
+            # Arriscado: tirar daqui (a tela mostraria a imagem velha).
+            f"{'' if getattr(p, 'respeitar_gravuras_achadas', True) else ':sem_as_achadas'}"
         )
 
     # --- uso --------------------------------------------------------------

@@ -57,7 +57,7 @@ from core import recortar              # etapa 10a: _caixa_sem_comer usa as cont
 from core import etapas                # obra 26/10 etapa 1: "esta etapa vale nesta pagina?" (D-009)
 from core import dividir_a_mao         # obra 26/10 etapa 4: a tampa do scanner (D-495)
 from core.ordem_do_preparo import endireita_antes, ordem_do_livro
-from core.filtros import (ORIGINAL, PRETO_E_BRANCO, TIRAR_FUNDO, aplicar_filtro,
+from core.filtros import (MAGICO_PRO, MELHORAR, ORIGINAL, PRETO_E_BRANCO, TIRAR_FUNDO, aplicar_filtro,
                           aplicar_filtro_com_selecao, aplicar_so_os_pedacos)
 from core.folha import compor_na_folha, impresso_fica_de_fora, parte_impressa_de_fora
 from core import editar_zonas, luz_scantailor, margens_scantailor, nucleos
@@ -3439,10 +3439,21 @@ def _filtrar_com_a_marcacao(projeto: Projeto, pagina: ConfigPagina, img: np.ndar
     """O fim de _filtrar (a marcacao e o filtro), separado em 22/10/2026 so
     para caber dentro do "suavizar nesta pagina" do item 2.17. A conta e a
     mesma de antes, linha por linha. dpi_pedido: o do "Para revisar" (ver
-    _filtrar; juncao de 23/10/2026)."""
+    _filtrar; juncao de 23/10/2026).
+
+    D-583/D-586 (29/10/2026): entre achar a marcacao e passar o filtro, a
+    caixinha "Respeitar as gravuras achadas" da pagina decide qual marcacao o
+    filtro usa (marcacao_que_o_filtro_usa). Ligada (o de fabrica): a de
+    sempre, o mesmo objeto, nenhuma conta a mais. Como a previa, o "antes /
+    depois", a tela cheia e o PDF passam todos por aqui, a caixinha vale igual
+    nos quatro (D-066/D-473)."""
     # a marcacao provisoria (da previa) e trocada no desenho do tamanho do PDF
     no_pdf = _e_o_desenho_do_pdf(projeto, dpi_pedido)
     selecao = garantir_selecao(projeto, pagina, img, dpi, dpi_do_scan, no_tamanho_do_pdf=no_pdf)
+    # D-583/D-586: com a caixinha "Respeitar as gravuras achadas" desligada, o
+    # filtro nao usa o que a maquina achou (so o que foi marcado a mao). A
+    # marcacao guardada na pagina NAO muda: religar devolve a mesma imagem.
+    selecao = marcacao_que_o_filtro_usa(projeto, pagina, selecao)
     saida, monocromatica = _filtro_da_pagina(projeto, pagina, img, selecao, dpi, dpi_do_scan,
                                              dpi_pedido, no_pdf)
     # Item 2.18 (P11 (a) e TINTA3, 05/10/2026): "Pintar por cima", "Tinta com
@@ -3454,6 +3465,63 @@ def _filtrar_com_a_marcacao(projeto: Projeto, pagina: ConfigPagina, img: np.ndar
     return editar_zonas.aplicar_por_cima(img, saida, monocromatica, selecao,
                                          pagina.forca_preto, pagina.algoritmo_preto_branco,
                                          preto_e_branco=(pagina.filtro == PRETO_E_BRANCO))
+
+
+def respeita_as_gravuras_achadas(pagina: ConfigPagina) -> bool:
+    """A caixinha "Respeitar as gravuras achadas" desta pagina (D-586) esta
+    ligada? Pagina sem o campo (objeto de fora, projeto antigo carregado de
+    outro jeito): ligada, que e o de sempre. Barato: so le o campo."""
+    return bool(getattr(pagina, "respeitar_gravuras_achadas", True))
+
+
+def marcacao_que_o_filtro_usa(projeto: Projeto, pagina: ConfigPagina, selecao):
+    """A marcacao que o filtro da pagina usa: a de sempre, ou so a feita A MAO.
+
+    D-583 (Samuel, 29/10/2026): "Precisamos da opção de jogar o filtro em cima
+    de outro filtro ou só substituir o filtro que está colocado em cima." → "C
+    — As duas, com uma escolha no painel do Filtro. Por exemplo, uma caixinha
+    que diz se o filtro respeita ou não as gravuras achadas." D-586 ("A"):
+    "Uma caixinha no painel "Filtro da página" [...] "Respeitar as gravuras
+    achadas". De início vem ligada, que é como funciona hoje. Desligada, o
+    filtro vale na página inteira: no Preto e branco, a capa sairia toda em
+    preto e branco".
+
+    - Caixinha ligada (o de fabrica; ConfigPagina.respeitar_gravuras_achadas):
+      devolve `selecao` - O MESMO objeto, nenhuma conta a mais (a pagina sai
+      igual ponto por ponto ao programa de antes da caixinha).
+    - Desligada, no Preto e branco, no Melhorar e no Magico pro: so as areas
+      feitas A MAO (core.selecao.MAO), na ordem em que estavam. O que a
+      MAQUINA achou (gravura, letra, papel, enfeite; origem "automatico" ou
+      "rede") nao vale para o filtro, e a pagina e filtrada como se nao
+      tivesse marcacao. O "So neste pedaco" e o "Pintar por cima" (que moram
+      nas areas a mao) continuam valendo: a caixinha fala de "achadas"
+      (D-199, D-224). A marcacao guardada na pagina NAO muda (religar devolve
+      a mesma imagem; a deteccao continua guardada).
+    - No Original (e no "Tirar o fundo", que nem chega aqui): nada muda
+      ("No Original não muda nada", pedido da gerente; o Original nao usa a
+      marcacao da maquina).
+    - No Preto e branco com "So as letras" (D-148): nada muda. O "So as
+      letras" so existe para guardar a cor do que a maquina achou; tirar a
+      marcacao dele faria a pagina sair toda em preto e branco e desligaria o
+      "So as letras" sem a pessoa desmarcar. D-587 (Samuel, 29/10/2026, "sim"
+      a: "enquanto a "Só as letras" estiver marcada, a caixinha nova fica
+      cinza e não dá para clicar. É assim que já funciona com a caixinha das
+      molduras."): o "So as letras" manda, e a tela deixa a caixinha cinza
+      (ui/tela_conferir.py, _mostrar_respeitar_gravuras), como a D-168.
+
+    Seguro mudar: nada sem decisao do Samuel. Arriscado: devolver uma copia
+    com a caixinha ligada (a imagem continua igual, mas a corrida de
+    garantir_selecao compara objetos), ou tirar daqui as areas a mao.
+    `selecao` None (nenhuma marcacao) passa como veio."""
+    if selecao is None or respeita_as_gravuras_achadas(pagina):
+        return selecao
+    if pagina.filtro not in (PRETO_E_BRANCO, MELHORAR, MAGICO_PRO):
+        return selecao
+    if pagina.filtro == PRETO_E_BRANCO and misto.opcoes_da_pagina(projeto, pagina) is not None:
+        return selecao                       # "So as letras" manda (D-587)
+    from core.selecao import MAO, Selecao
+
+    return Selecao(regioes=[r for r in selecao.regioes if r.origem == MAO])
 
 
 def _com_o_dpi_do_pdf(pontinhos: "pontinhos_scantailor.Pontinhos", projeto: Projeto,
