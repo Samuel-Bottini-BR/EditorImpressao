@@ -15,8 +15,10 @@ Worktree `D:\programas\EditorImpressao\.claude\worktrees\auto-marcacoes`. Agente
   página / Duas lado a lado / antes / depois". Com qualquer ferramenta, até com o Zoom, a página aparece limpa, como vai
   sair. Um clique mostra as cores e outro esconde." Na prática: botão de ligar/desligar chamado "marcações" na barra de
   baixo, mesmo estilo dos vizinhos; de fábrica desligado; desligado = sem o colorido e sem o contorno das feitas à mão,
-  com qualquer ferramenta; ligado = como hoje. Vale enquanto o programa está aberto (todas as páginas e livros); volta a
-  desligado ao abrir o programa; nada gravado no projeto, nada muda no PDF.
+  com qualquer ferramenta; ligado = como hoje. Vale enquanto o livro está aberto (todas as páginas dele); abrir um
+  livro (o primeiro ou outro na mesma sessão) começa apagado; nada gravado no projeto, nada muda no PDF. (Corrigido na
+  3ª rodada: antes estava escrito "todas as páginas e livros", o que contradizia "começando escondido" e deixava o
+  livro seguinte abrir coberto de cores; ver "O que mudou".)
   Detalhes fixados pela gerente: o traço que está sendo desenhado continua aparecendo; o contorno laranja da caixinha
   "Mostrar as áreas achadas" e o laranja das páginas do "Para revisar" continuam com as regras deles; a caixa da área
   escolhida pela ferramenta Ajustar continua.
@@ -34,6 +36,10 @@ Worktree `D:\programas\EditorImpressao\.claude\worktrees\auto-marcacoes`. Agente
   marca sempre vê o que está marcando; quem só olha a página vê ela limpa." Detalhes da gerente: o clique no botão
   continua valendo a qualquer hora (desligado com o Pincel na mão, fica desligado até trocar de ferramenta de novo);
   ao abrir o programa/livro continua desligado. (Escrito antes de mexer no código, na segunda rodada.)
+- **Decisão da gerente, 3ª rodada (29/10/2026)**, a partir do caminho que o verificador achou, pela D-580 ("começando
+  escondido") e pela D-584 (Zoom/Mão → limpa): **abrir qualquer livro, o primeiro ou outro na mesma sessão, começa com
+  "marcações" apagado e as cores escondidas**, mesmo que a ferramenta da partida seja o Retângulo. Só escolher uma
+  ferramenta de marcar depois de aberto acende.
 - **§11 regra 7** ("Só o que ele mandou"): nada além do nome "marcações" e de um balão de uma frase. Sem atalho, sem
   menu, sem aviso.
 
@@ -51,16 +57,23 @@ Worktree `D:\programas\EditorImpressao\.claude\worktrees\auto-marcacoes`. Agente
     mesmo jeito dos vizinhos (`objectName` `jeitoDaBarraDeBaixo`, marcável, sem foco, cursor de mão). Balão: "Mostra ou
     esconde as cores das marcações (gravura, letras, papel) por cima da página."
   - `_alternar_marcacoes` (nova): passa o estado do botão para o editor. Nada é gravado (nem projeto, nem histórico,
-    nem configurações): o botão é um só enquanto o programa está aberto e volta a desligado ao abrir o programa.
-  - `_montar_aba_marcar` (2ª rodada): o editor da página **nasce de novo a cada livro aberto**; agora ele já nasce
-    seguindo o botão. Na 1ª rodada eu tinha escrito que "a tela é uma só", e por isso o estado valia para os livros:
-    estava errado. No `abbb0d3`, com o botão aceso, o livro seguinte abria sem as cores embaixo do botão aceso. Achei
-    na 2ª rodada; a prova é `test_d580_d584_abrir_outro_livro_o_editor_novo_segue_o_botao`.
+    nem configurações). Desde a 3ª rodada fala com o editor pelo `_ao_editor`, como o resto da tela (achado do
+    verificador: usava `self.editor_selecao` direto).
+  - `_montar_aba_marcar`: o editor da página **nasce de novo a cada livro aberto** (é chamado só por `carregar`, que
+    só roda ao abrir um livro, em `JanelaPrincipal._abrir_o_trabalho`).
+    - 1ª rodada (`abbb0d3`): o editor novo nascia apagado e o botão ficava como estava, então os dois discordavam
+      (botão aceso, página sem cores).
+    - 2ª rodada (`e08623b`): fiz o editor novo seguir o botão. **Isso trouxe de volta o defeito da D-578**: o
+      verificador abriu um livro, escolheu o Pincel (acende), abriu outro livro marcado e achou o botão aceso, com a
+      Mão na mão e 61.824 pixels coloridos. O meu teste de então (`..._o_editor_novo_segue_o_botao`) provava o
+      comportamento errado.
+    - 3ª rodada (`5548664`): abrir um livro **apaga o botão e o editor novo nasce sem cores**. A prova nova é
+      `test_d578_d580_d584_abrir_outro_livro_comeca_com_marcacoes_apagado` (pixels), que substituiu a antiga.
   - `escolher_ferramenta` -> `_marcacoes_pela_ferramenta` (nova, D-584): escolher uma ferramenta de marcar acende o
     botão; o Zoom ou a Mão apagam. `escolher_ferramenta` é o ponto único de troca (trilha, menu Ferramentas, letras do
     teclado e o nome antigo `_escolher_ferramenta` passam por ele). As ferramentas de página (Dividir, Cortar...) não
-    mexem no botão. Abrir um livro não passa por ali (a ferramenta de partida vai direto para o editor), então ao abrir
-    o botão fica como estava.
+    mexem no botão. Abrir um livro não passa por ali (a ferramenta de partida vai direto para o editor); ao abrir, o
+    botão é apagado em `_montar_aba_marcar`.
 - `ui/widgets/editor_selecao.py` (2ª rodada): `FERRAMENTAS_DE_MARCAR` = todas as `FERRAMENTAS` menos as de navegação
   (Retângulo, Elipse, Laço, Polígono, Pincel, Varinha, Escolher por cor, Ajustar).
 - `tests/test_decisoes_marcacoes.py` (novo): as provas (abaixo).
@@ -83,7 +96,7 @@ Worktree `D:\programas\EditorImpressao\.claude\worktrees\auto-marcacoes`. Agente
 | D-010 | Promessa P-197 escrita e provada. | `tests/test_promessas.py`: 261 passaram, 1 xfail (o que já estava como "aguarda"); `test_todo_botao_tem_promessa` passou com o botão novo |
 | D-001 | Nada saiu de vista. | `tests/test_decisoes_tela.py`: 35 passaram |
 | D-584: ferramenta de marcar acende, Zoom/Mão apagam | Escolher qualquer uma das 8 de marcar acende o botão e mostra as cores; Zoom ou Mão apagam. O clique no botão continua: desligado com o Pincel, fica desligado (até mudando de página) até trocar de ferramenta. | `test_d584_pincel_liga_zoom_desliga_e_o_clique_ainda_esconde` (pixels), `test_d584_toda_ferramenta_de_marcar_liga_e_a_mao_desliga[8 ferramentas]`; P-197 atualizada e provada; print `marcacoes-3-pincel-acende-sozinho.jpg` |
-| D-584: ao abrir, desligado | Abrir o programa: desligado. Abrir outro livro: o botão fica como estava, e o editor novo segue o botão. | `test_d578_d580_o_botao_...` (abre desligado); `test_d580_d584_abrir_outro_livro_o_editor_novo_segue_o_botao` |
+| D-580/D-584 + decisão da gerente: abrir um livro começa apagado | Abrir o programa ou qualquer livro (o primeiro ou outro na mesma sessão): botão apagado e página sem cores, mesmo que antes o Pincel tivesse acendido. Escolher uma ferramenta de marcar depois acende. | `test_d578_d580_o_botao_...` (o primeiro livro abre apagado); `test_d578_d580_d584_abrir_outro_livro_comeca_com_marcacoes_apagado` (Pincel no livro 1 → livro 2 com ~0 pixels coloridos e botão apagado → Pincel acende) |
 | §11 regra 7 | Só o nome "marcações" e o balão de uma frase. Sem atalho, sem menu, sem aviso. O balão não mudou na D-584. | o diff (`git show f9a5a6e`, `git show e08623b`) |
 
 ### Teste de reversão (§4.7)
@@ -96,6 +109,16 @@ Cópia temporária de `abbb0d3` (a entrega da 1ª rodada) com o arquivo de teste
 falharam, 9 passaram** (as 9 da D-578/D-580). Saída em `reversao-d584-no-codigo-abbb0d3.txt`. As falhas: "escolher o
 Pincel não acendeu o botão (D-584)", as 8 ferramentas de marcar, e "o editor do livro novo não segue o botão". No
 código novo (`e08623b`): **19 passaram**.
+
+### Teste de reversão da 3ª rodada (abrir um livro começa apagado)
+Cópia temporária de `4a7213f` (a entrega da 2ª rodada) com o arquivo de teste novo copiado (apagada depois): saída em
+`reversao-3a-rodada-no-codigo-4a7213f.txt`. A prova nova falha lá com "o livro 2 abriu coberto de cores (61824 pixels
+coloridos; D-578)", o mesmo número que o verificador mediu. No código novo (`5548664`): passa.
+
+### Testes da 3ª rodada, no `5548664`, um arquivo por vez
+- test_decisoes_marcacoes: 19 passed · test_editor_selecao: 17 passed · test_para_revisar_na_tela: 26 passed
+- test_trilha_e_opcoes: 29 passed · test_promessas -k "p197 or todo_botao": 2 passed
+- Reversão no 4a7213f: 1 failed, 18 passed (a que falha é a prova nova).
 
 ### Testes da 2ª rodada (D-584), no `e08623b`, um arquivo por vez
 - test_decisoes_marcacoes: 19 passed · test_editor_selecao: 17 passed · test_editar_zonas: 10 passed
@@ -135,15 +158,16 @@ ferramenta Zoom e depois o Pincel escolhido; "marcações" acende sozinho e as c
    das feitas à mão. A conferência dela é a mesma.
 5. **Ferramenta de partida ao abrir um livro (D-584):** a ferramenta que fica na mão ao abrir não é o Zoom. É o
    Retângulo, quando o livro tem "procurar gravuras" ligado, ou a Mão (`_ferramenta_de_partida`, escolha do agente de
-   layout na etapa 2). Como a gerente fixou "ao abrir, continua desligado", abrir o livro não conta como "escolher":
-   abre com o Retângulo na mão e as marcações escondidas, até a pessoa escolher uma ferramenta. Ver a pergunta 2.
-6. Abrir outro livro com o botão aceso: o botão continua aceso (D-580, "vale para todos os livros"), mesmo que a
-   ferramenta de partida do livro novo seja a Mão.
+   layout na etapa 2). Abrir o livro não conta como "escolher": abre com o Retângulo na mão e as marcações apagadas,
+   até a pessoa escolher uma ferramenta. A gerente decidiu assim na 3ª rodada (ver a pergunta 2).
+6. (Corrigido na 3ª rodada.) Na 2ª rodada, abrir outro livro com o botão aceso deixava o botão aceso e o livro novo
+   coberto de cores. Agora abrir qualquer livro começa apagado.
 7. Clique simulado do Qt e `grab()` sem janela na tela: não pilotei a janela real com mouse nativo (o PC está em uso).
 
 ## Perguntas para o Samuel
 
-2. (2ª rodada) Ao abrir um livro que passou pelo Automático com "procurar gravuras", a ferramenta que já vem na mão é
+2. (2ª rodada; **decidida pela gerente na 3ª rodada**: abrir qualquer livro começa apagado, mesmo com o Retângulo
+   na mão. Fica aqui só para o Samuel mudar, se quiser.) Ao abrir um livro que passou pelo Automático com "procurar gravuras", a ferramenta que já vem na mão é
    o Retângulo, que é de marcar. Hoje as marcações abrem escondidas mesmo assim (a página limpa, como na D-578) e só
    acendem quando ele escolhe uma ferramenta. Está bom assim, ou abrir com o Retângulo na mão deve já acender as
    marcações? (Nesse caso, a página do Automático voltaria a abrir com as cores por cima.)
