@@ -41,7 +41,10 @@ PROJETO_DELE = (RAIZ / "_tmp/dados/EditorImpressao/projetos/"
 LIVROS = {"escola": ESCOLA.name, "horas": "Livro de Horas - Luís XIV.pdf",
           "graduale": "Graduale - Saeculum XIV.pdf", "palatino": "Giovambattista Palatino cittadino romano.pdf",
           "marial": "Marial de sermoens - Frei Balthasar Paez. (1).pdf",
-          "opus": "Opus Majus.pdf"}
+          "ljs47": "ljs47.pdf", "antiphon": "Antiphon_25.pdf",
+          "pesel": "POINTS d´ANCIENNES BRODERIES ANGLAISES - Louisa F. Pesel.pdf",
+          "matematica": "Matemática Para vencer.pdf", "valades": "Rhetorica Christiana -  Fray Diego Valadés.pdf",
+          "siebmacher": "Schön Neues Modell Buch - Johann Siebmacher.pdf"}
 # O Automático de sempre (a receita da D-018), com o Preto e branco escolhido
 CAMPOS = {"endireitar": True, "cortar_bordas": True, "limpar": True, "detectar_regioes": True,
           "gravura_forma": "livre", "filtro_padrao": "preto_e_branco", "misto_so_as_letras": False,
@@ -136,14 +139,19 @@ def carregar(alvo: str):
     return _livro_de_uma_pagina(RAIZ / "gabarito" / item["pdf"], 1, alvo)
 
 
-def pronta(projeto, pagina):
+def pronta(projeto, pagina, dpi: int = 0):
+    """A página pronta como no PDF (o corpo do processar); com `dpi`, o desenho da prévia
+    da tela nesse DPI (core.pipeline.renderizar_com_filtro, 110 = a prévia "rápida")."""
     from core import pipeline
     from core.pdf_io import abrir_pdf
 
     doc = abrir_pdf(projeto.caminho_entrada)
     try:
-        folha = projeto.folhas[pagina.folha]
-        img, _mono = pipeline._pagina_pronta(projeto, doc, folha, pagina, pipeline._FolhaDaVez(), 0)
+        if dpi:
+            img, _mono = pipeline.renderizar_com_filtro(doc, projeto, pagina, pagina.filtro, dpi=dpi)
+        else:
+            folha = projeto.folhas[pagina.folha]
+            img, _mono = pipeline._pagina_pronta(projeto, doc, folha, pagina, pipeline._FolhaDaVez(), 0)
     finally:
         doc.close()
     return img
@@ -156,6 +164,7 @@ def main() -> None:
     global ALVO
     ap = argparse.ArgumentParser()
     ap.add_argument("--saida", required=True)
+    ap.add_argument("--dpi", type=int, default=0, help="o desenho da prévia neste DPI (sem: o do PDF)")
     ap.add_argument("alvos", nargs="*")
     a = ap.parse_args()
     saida = Path(a.saida)
@@ -168,7 +177,7 @@ def main() -> None:
         t0 = time.monotonic()
         try:
             projeto, pagina = carregar(alvo)
-            img = pronta(projeto, copy.deepcopy(pagina) if alvo != "escola-capa-do-samuel" else pagina)
+            img = pronta(projeto, copy.deepcopy(pagina) if alvo != "escola-capa-do-samuel" else pagina, a.dpi)
         except Exception as erro:  # noqa: BLE001 - anota e segue
             print(f"{alvo}: ERRO {erro!r}", flush=True)
             continue
