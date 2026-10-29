@@ -528,4 +528,6 @@ O detalhe de cada um está em `relatorios/melhorias.md` e nas seções "Tentado 
 - **Nunca fechar `python.exe` em geral.** Guardar o PID de tudo o que o agente abre e fechar só esses (o agente do mapa fechou processos sem conferir). Toda janela nova fora da tela, inclusive "Antes de processar" (apareceu na tela do Samuel em 23/10).
 - **Suíte que passa no GitHub pode falhar no PC pela ordem dos testes.** Estado global de "uma vez por sessão" (aviso da gravura) vazava entre testes; o conserto é limpar no `tests/conftest.py`, não arquivo por arquivo. Achar a origem com uma sonda (`-p` plugin espiando a função), não com palpite.
 - **Caminho Windows em Python dentro de heredoc do Bash quebra** (`\2`, `\p`). Usar `D:/...` ou o Write.
-
+- **Agentes pesados no PC enquanto o Samuel testa derrubam o programa dele.** Em 28/10, 4 agentes rodando testes e prints ao mesmo tempo coincidiram com duas falhas de memória no processar dele (2-12). Com ele usando o PC: um processo pesado por vez, e avisar antes.
+- **Print mandado no meio do turno não vira arquivo.** Conferir a pasta `images` da sessão e pedir de novo; nunca dizer "guardei" sem o arquivo.
+- **Responder ao que ele perguntou, não ao que parece.** Em 28/10 a gerente disse que o "está certo" funcionou (o tique apareceu); ele: "você está vendo errado [...] deveria sumir quando eu aperto está certo." Ler o que ele circulou.

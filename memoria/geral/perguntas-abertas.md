@@ -9,6 +9,12 @@ Como manter: quando ele responder, registre no plano (as duas cópias) e na fich
 daqui** (ou mova para "Respondidas recentemente" com a data). O `conferir_memoria.py` avisa quando uma pergunta desta
 lista com nome entre crases já aparece como decidida no Registro.
 
+## 000. Atualização de 28/10/2026 (vale sobre o resto; [PARTE -23](../../historico/Editor%20de%20Impressao%20-%20resumo%20para%20o%20Claude.md) §3)
+
+- Central, aba `nao-gostei-28-10`: 12 perguntas (2-1 a 2-12 da sessão 2), entre elas as três opções de ver o livreto (D-574) e sair em livreto ao processar (D-575).
+- Central, abas `acrescentei-27-10` (13 abertas) e `nomes-28-10` (20 abertas), reescritas com print.
+- No chat, sem resposta: o que os avisos "Conferir o fundo tirado" e "Tamanho diferente" oferecem além de "está bom assim"; o que ele esperava do "Tirar do livro" ("não é tirada do pc"); botão à vista para voltar à tela dos livros e onde; "processar vários livros" (D-573) nesta rodada ou depois; D-572: o que a faixa mostra depois do "está certo".
+
 ## 00. Atualização de 26/10/2026 (etapa 0 da obra: Livro de decisões)
 
 As perguntas sem resposta passaram a ser listadas no fim do Livro de decisões, `docs/plano/DECISOES.md` ("Perguntas sem

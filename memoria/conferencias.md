@@ -330,3 +330,10 @@ Regra do [CLAUDE.md](../CLAUDE.md) §10 item 10 (06/10/2026 e 07/10/2026), com o
 4. Se veio comentário com dúvida, responde **na página**, não no chat (regra de 07/10/2026): copia o comentário para o campo `historico` da pergunta (`[{quem, em, texto}]`, aparece fixado no alto), esvazia o `comentario` da resposta e mostra a pergunta de novo, com opções novas tiradas do comentário. No chat, só um aviso curto.
 5. **Novo (memória, 19/10/2026):** anota a resposta **aqui** (na seção certa, com data, onde, arquivo dos literais, principal, itens e o que ficou aberto) e **na ficha do item** em [itens/](itens/). Se fechou uma pergunta aberta, tira da tabela "o que está aberto hoje" no topo e de [geral/perguntas-abertas.md](geral/perguntas-abertas.md).
 6. Página nova pronta: abre no navegador dele com `start "" "<endereço>"`, só se ele já respondeu a anterior e deu ok; senão, só avisa no chat.
+
+## Central, 28/10/2026 — conferência da versão de teste (5 abas)
+
+- Pedido do Samuel: "as conferencias [...] estão mal explicadas e todas elas sem print"; "Tem perguntas lá que eu já respondi e que tem questionamentos meus"; auditar "de forma rapida" o que foi escolhido e "já me de alternativas das coisas que eu falei que não gostei".
+- Abas (coleção `conferencias`): `auditoria-28-10` (25 quadros, uma linha por decisão com ✔/⚠/✘/—), `nao-gostei-28-10` (12 perguntas da sessão 2, alternativas desenhadas), `duvidas` (11 dele + 3 comentários antigos de p211/p29 respondidos; ids novos `dv-211-215`, `dv-29-horas`, `dv-29-ressalvas`), `acrescentei-27-10` e `nomes-28-10` (33 abertas reescritas, ids de opção mantidos).
+- Fonte: `D:\programas\EditorImpressao-arquivos\conferencia-versao-teste-2026-10-28\` (`_publicar\`). Imagens em `vt28/<parte>/`. Limite da Central: 511 arquivos por versão; saíram 14 `esc/img/imp/*` e 60 `conf/img/*` sem uso.
+- Regra nova (memória do usuário `feedback_central_sempre_com_print`): toda pergunta com print; todo comentário dele respondido no `historico` na mesma rodada. Em [PARTE -23](../historico/Editor%20de%20Impressao%20-%20resumo%20para%20o%20Claude.md).

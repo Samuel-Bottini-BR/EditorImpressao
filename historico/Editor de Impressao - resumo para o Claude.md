@@ -1,6 +1,6 @@
 # Editor de Impressão — documento para colar no Claude
 
-Atualizado em 28/10/2026 (PARTE -22; a anterior, PARTE -21, é de 26 e 27/10). Desde 19/10 a memória por assunto fica em `memoria/` (índice `memoria/INDICE.md`). Versão **máxima**: reúne o histórico institucional, o
+Atualizado em 28/10/2026 à noite (PARTE -23; a anterior, PARTE -22, é de 27 e 28/10). Desde 19/10 a memória por assunto fica em `memoria/` (índice `memoria/INDICE.md`). Versão **máxima**: reúne o histórico institucional, o
 que o programa é, todas as funcionalidades pedidas, os 68 pedidos feitos até
 hoje **palavra por palavra**, o que foi feito, o que falta, e os dois
 documentos-fonte inteiros (a especificação original e o prompt de testes) em
@@ -11,6 +11,99 @@ Pasta do projeto: `D:\programas\EditorImpressao` (mudou de
 `C:\Users\fotog\Desktop\EditorImpressao` em 07/09/2026; essa pasta antiga virou
 o backup). Repositório git ligado a
 `https://github.com/Samuel-Bottini-BR/EditorImpressao`.
+
+---
+
+# PARTE -23 — Checkpoint de 28/10/2026 (tarde e noite): o Samuel testou a versão de teste; instalador para o Kaique; conferência da versão de teste na Central (leia isto primeiro)
+
+Sessão no PC. Nenhum código do programa mudou nesta sessão: só anotações, decisões, instalador e conferência.
+
+## 0. Para recomeçar
+1. `git -C D:\programas\EditorImpressao fetch origin`. Ler na Central (https://claude.ai/artifact/XNFrsdVR7q4K8cBcxNftZy)
+   as respostas com `lida != true` **e com `comentario`** (memória `feedback_central_sempre_com_print`: todo comentário
+   dele ganha resposta no `historico` da pergunta, na mesma rodada). As 5 abas desta conferência, na ordem em que
+   aparecem: `auditoria-28-10` (25 quadros, sem perguntas), `nao-gostei-28-10` (12 perguntas), `duvidas` (18, só
+   "Entendi"), `acrescentei-27-10` (13 abertas reescritas) e `nomes-28-10` (20 abertas reescritas).
+2. Fonte de tudo o que foi publicado (JSON + imagens + LEIA-ME de cada agente):
+   `D:\programas\EditorImpressao-arquivos\conferencia-versao-teste-2026-10-28\` (`_publicar\` = o que foi gravado no
+   banco; `REGRAS-COMUNS.md` = o pedido aos agentes). Imagens na Central em `vt28/<parte>/`.
+3. Relatório da sessão de testes dele: `relatorios/testes-guiados/2026-10-28-sessao-2/sessao-2.md` (achados 2-1 a 2-12,
+   prints `s2-0*.png`).
+
+## 1. O que aconteceu
+- **Ele testou a versão de teste pelo atalho** (Palatino, Cursus, Rhetorica Christiana) e mandou 12 achados (2-1 a 2-12):
+  travado no Cursus; "Tirar do livro" fica "apagada" na tira; onde ver o fundo tirado; avisos só com "está bom assim";
+  como tirar páginas muda a ordem (respondido: tirar número ímpar antes do texto troca o lado de todas); "Deixar em
+  branco" não aparece na capa (existe em Propriedades > "Esta página", Delete, Shift+Del, menu Página: escondido);
+  depois de "está certo" o botão continua (D-572); "Ver de perto" lento; processar vários livros + voltar à tela dos
+  livros (D-573); ver o livreto pronto (D-574) e sair em livreto ao processar (D-575); ver como fica no Automático
+  (liga-se à D-070); "Este livro ficou grande demais para a memória" no Rhetorica (2-12).
+- **Ordem dele no meio da sessão:** "não precisa dar nenhuma solução agora, só precisa anotar tudo e guardar os prints"
+  → enquanto ele manda apontamentos, só anotar e dizer onde ficou (memória `feedback_testes_guiados_anotar_e_mostrar`).
+- **Instalador para o Kaique** (pedido: "pode transformar esse aplicativo em .exe para eu mandar para o kaique"):
+  feito da versão de teste (ramo `obra-2026-10-26`, worktree `obra-juncao`) com `empacotar.py --modo instalador`
+  (26 min, 563 MB). Na Área de Trabalho, pasta **"Editor de Impressao - rodada de consertos para o Kaique"** com
+  "Instalar o Editor de Impressao.exe" e "COMO INSTALAR.txt". Conferido: o empacotado abre (offscreen, 25 s vivo, sem
+  erro) e `--conferir-ocr` dá docTR, Tesseract e Kraken disponíveis; modelos e Visual C++ conferidos pelo script.
+  **Não instalado de verdade** (instalaria no PC dele). O instalador antigo de 23/09 na Área de Trabalho ficou intocado.
+- **Conferência pedida por ele:** "as conferencias [...] estão mal explicadas e todas elas sem print"; "Tem perguntas
+  lá que eu já respondi e que tem questionamentos meus"; "quero que tudo que foi discutido eu possa auditar de forma
+  rapida [...] veja o que ainda não está funcionando bem e já me de alternativas". Feito com 4 agentes em paralelo (só
+  leitura, prints offscreen, dados copiados) e publicado na Central (seção 0).
+- **Auditoria (aba `auditoria-28-10`):** 167 decisões desta rodada: 107 ✔, 35 ⚠, 1 ✘ (D-572), 24 não feitas; +13
+  combinadas para depois. Provas rodadas hoje em `fc38afd`: 12 baterias `test_decisoes*` (305 passaram), 10a 8/8, 10b
+  23/23, `test_revisar` 28/28, `test_promessas` 259 passaram + 1 falhou (`test_todo_botao_tem_promessa`, esperou 30 s:
+  PC ocupado, a conferir). Das 6 falhas da suíte do PC, sozinhas: 4 passaram; falham ainda
+  `test_gravar_por_tras::test_folhear_com_o_disco_lento_nao_para_a_janela` (1,95 s parada, limite 0,5 s, PC carregado) e
+  a do Destino do Socialismo 18 (já falhava antes). O "1 erro" da suíte não foi identificado (saída não guardada).
+- **Livro de decisões:** D-572 a D-575 novas (palavras dele, sessão 2); situação de D-001 a D-005, D-009, D-016, D-018 e
+  D-046 acertada pela auditoria (`4f752e9`). Duas cópias iguais, como sempre.
+- **Lista de bugs** (`memoria/bugs.md`, "Achados de 28/10"): nomes cortados no painel Filtro > "Mais ajustes" a
+  1280 x 657 ("Igual / Suav / Tirar o chu", contra a D-059; visto em offscreen); possível "está bom assim" por cima do
+  cartão no "Para revisar" com "Abas no alto"/"Painel solto"; Marcação lenta; "Ver de perto" na fila; aviso de memória.
+
+## 2. Descobertas de comportamento real (medidas hoje)
+- **Cursus p.1 (2-1):** as 302 marcas vieram de **dois cliques da Varinha** no papel: 151 + as mesmas 151 por cima. Cada
+  mexida grava as 302 no `acoes.jsonl` (563 KB; o arquivo do livro já tem 2,8 MB) e para a tela 0,7 a 1,5 s; arrastar
+  redesenha em 0,15 s (0,002 s sem marcas). Abrir o Cursus: 19 s a 1ª vez, 7,7 s a 2ª (3,9 s lendo o tamanho das 402).
+- **"Ver de perto" (2-8, Palatino p.13):** fora da tela a página fica pronta em ~1 s (220 DPI) e 1–2 s (300 DPI). No
+  programa: 21 s = **14 s na fila** de prévias (`ui/tarefas.py`, pool de 2 fios ocupados com a página 68 e a 13 em tela)
+  + 6 s desenhando; com fila vazia 4,3 s. Medido com o PC ocupado (73–100% de processador).
+- **Falta de memória (2-12):** `erros.log` dos dados de teste: 18:27 (OpenCV não conseguiu 3,6 MB, endireitar) e 18:40
+  (numpy 18,1 MB, `margens_scantailor.compor_com_margens`). Faltou memória no PC, não "o livro". O processar decide uma
+  vez, no começo, quantas páginas ao mesmo tempo (`core/nucleos.quantos_trabalhadores`: até 16 núcleos, 900 MB por
+  página, 1,5 GB de reserva) e **não diminui nem tenta de novo** se a memória cai no meio. Nenhum teste simula isso, e
+  nenhum confere se a frase do aviso diz a causa certa (`ui/tarefas._mensagem_amigavel`). Na hora: League of Legends,
+  Chrome e **os agentes da gerente** rodando (desde ~18:25) — provável parte da causa.
+- **Mensagem enviada enquanto a gerente trabalha (meio do turno) não vira arquivo** em `images/` da sessão: 5 prints
+  dele de hoje ficaram só no chat (17:13 fundo tirado, 17:14 página 134, 17:23 página 13, o do Automático e o da
+  correção do 2-7). Conferir a pasta e pedir de novo.
+- **Central: limite de 511 arquivos por versão.** Para caber, saíram 14 `esc/img/imp/*` e 60 `conf/img/*` que nenhuma aba
+  nem cartão usava (conferido contra o banco e as abas). Republicar a página exige ler o `index.html` inteiro antes
+  (cópia lida em `conferencia-versao-teste-2026-10-28\_publicar\index.html`, versão 26 da Central).
+- `empacotar.py` rodado de uma worktree acha o motor do Kraken e o `vc_redist` por `RAIZ.parent /
+  "EditorImpressao-arquivos"`: foi preciso uma junção temporária `.claude\worktrees\EditorImpressao-arquivos` →
+  `D:\programas\EditorImpressao-arquivos` (criada com `mklink /J`, apagada com `rmdir`, nunca `rm -r`).
+
+## 3. Perguntas em aberto (exatas)
+- Na Central, aba `nao-gostei-28-10` (uma por achado, alternativas desenhadas, 1ª recomendada, última "Deixar como está").
+- No chat, sem resposta: (a) "O que esses dois avisos devem oferecer além de 'está bom assim'?" (Conferir o fundo tirado;
+  Tamanho diferente) — também na aba; (b) "'Tirar do livro': [...] Quando você escreveu 'não é tirada do pc', o que
+  esperava? (a) sumir da fila de miniaturas; (b) sair do PDF final (já sai); (c) outra coisa."; (c) "A. Quer um botão à
+  vista para voltar à tela dos livros [...]? Se sim, onde?" e "B. O 'processar vários livros' entra nesta rodada de
+  consertos ou depois dela? Eu recomendo depois"; (d) D-572: "depois do 'está certo', o que a faixa deve mostrar?";
+  (e) os 5 prints que não viraram arquivo: pedir de novo.
+- Ele perguntou "porque os testes não pegaram esse erro? de não processar o arquivo." — respondido no chat (seção 2);
+  o conserto depende da escolha dele na pergunta 2-12 da aba.
+
+## 4. Próximo passo recomendado
+Ler as respostas dele nas 5 abas (com os comentários), registrar no Livro (próximo livre: **D-576**) e montar a rodada
+pequena do que ele mandar; antes de qualquer coisa ir para o `fase-1`, a suíte do PC verde (as 2 falhas acima) e a
+conferência final dele (§4.6).
+
+## 5. Como validar
+Como na PARTE -22 (seção 5): na worktree `obra-juncao`, um arquivo de cada vez com `--basetemp`. Hoje no fechamento:
+`tests\test_decisoes.py` 26 passaram (25 s). O código do programa não mudou desde `fc38afd`.
 
 ---
 
