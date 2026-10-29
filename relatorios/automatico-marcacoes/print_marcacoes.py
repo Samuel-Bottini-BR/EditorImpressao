@@ -71,6 +71,14 @@ def main() -> int:
     assentar(1.5)
     print("botao depois do clique", tela.botao_marcacoes.isChecked())
     janela.grab().save(str(SAIDA / "marcacoes-2-ligado.jpg"), "JPG", 85)
+    # D-584: desliga no botão, volta ao Zoom e escolhe o Pincel: as marcações acendem sozinhas
+    tela.botao_marcacoes.click()
+    tela.escolher_ferramenta("zoom")
+    assentar(0.5)
+    tela.escolher_ferramenta("pincel")
+    assentar(1.5)
+    print("botao com o Pincel", tela.botao_marcacoes.isChecked())
+    janela.grab().save(str(SAIDA / "marcacoes-3-pincel-acende-sozinho.jpg"), "JPG", 85)
     print("caixas", caixas)
     if janela.previas is not None:
         janela.previas.parar()
