@@ -27,3 +27,9 @@ coisa: um botão que mostra e esconde o colorido das marcações.
 
 - Pergunta dele: "Assim que eu abro o livro as marcações já aparecem se eu apertar no botão marcação, elas já estão feitas, acho que o programa já procura elas quando a gente abre ele né? mas se eu desmarcar elas saem." Resposta (código): o programa acha gravura, letra e papel sozinho ao desenhar uma página com filtro (`core/pipeline.garantir_selecao`); neste livro parte delas sobrou do Automático desfeito (D-581, item 2).
 - Resultado dele: "deu certo, deu tudo certo, vamos para o proximo". D-578, D-580 e D-584 marcadas como testadas no Livro.
+
+## Item 3 (D-582), investigação de 29/10
+- Não é defeito de tela: a tela mostra o filtro escolhido toda vez (diferença 0,0 entre o que aparece e o desenho do filtro). O filtro não vai por cima do outro: cada escolha desenha a página de novo a partir do scan.
+- O que fica "por cima" é a marcação que o Automático deixou ("Gravuras e fotos"): na capa, 82% da página virou "enfeite colorido", que guarda a cor em todos os filtros (D-144, D-127, D-128). Por isso Preto e branco, Melhorar e Mágico pro saem quase iguais (diferença 2,2 de 255) e parece que nada muda.
+- Imagem da explicação: `relatorios/automatico-filtro/5-capa-nos-4-filtros-com-e-sem-a-marcacao.jpg` (ramo `automatico-filtro-2026-10-29`, commit `d4407e9`, só provas e relatório).
+- Vira a pergunta D-583 ao Samuel; achado à parte na Lista de bugs (figurinhas do painel sem a marcação).

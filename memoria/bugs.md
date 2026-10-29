@@ -436,3 +436,10 @@ na Central (aba "O que você não gostou: alternativas").
 - **"Ver de perto" espera na fila (2-8):** Palatino p.13, 14 s na fila de prévias (2 fios ocupados) + 6 s desenhando.
 - **Aviso de falta de memória culpa o livro (2-12):** `ui/tarefas.py`; faltou memória no PC (pedaços de 3,6 e 18 MB) e
   a frase manda usar uma "qualidade normal" que não existe.
+
+## Achados de 29/10/2026 (trabalho do Automático, versão de teste `obra-2026-10-26`)
+- **Figurinhas do painel "Filtro da página" não usam a marcação (achado do agente, investigação da D-582):** com o
+  Mágico pro escolhido na capa do *Na escola de Jesus*, a figurinha do Preto e branco mostra a capa toda em preto e
+  branco, mas ao clicar a página sai colorida (a marcação do Automático guarda a cor da gravura). Faz parecer que o
+  filtro não foi aplicado. Prints em `relatorios/automatico-filtro/1-uma-pagina-preto-e-branco.jpg` e `2-...` (ramo
+  `automatico-filtro-2026-10-29`). Pergunta ao Samuel: as figurinhas devem mostrar a página com a marcação?
