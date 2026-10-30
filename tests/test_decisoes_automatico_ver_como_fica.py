@@ -789,3 +789,109 @@ def test_d577_comparar_na_tela_cheia_mostra_o_livro_e_o_depois_lado_a_lado(janel
     _assentar(app)
     assert not tela.comparando and tela.rolagem.isVisible() and not tela.duas.isVisible()
     assert tela.visor.comparando
+
+
+# --- D-577: o "antes" na folha dividida (resposta do Samuel, "pode", 30/10) ---------------------
+#
+# (1) "A folha já foi dividida: o antes mostra só a metade dela, crua, sem filtro e sem
+#     endireitar. O depois mostra essa mesma metade pronta."
+# (2) "A folha ainda não foi dividida e 'Dividir folhas ao meio' está marcada: o antes mostra a
+#     folha inteira, crua. O depois mostra as duas metades prontas, uma ao lado da outra, como já
+#     faz hoje."
+# (3) "Quando a pessoa marca 'Dividir folhas ao meio' na janela, o depois muda na hora [...] O
+#     antes continua sendo a folha inteira crua, porque é dela que as duas metades vão sair. Se ela
+#     desmarcar 'Dividir', o depois volta a ser a folha inteira pronta. Se a folha já tinha sido
+#     dividida antes, o antes mostra só a metade crua, com 'Dividir' marcado ou não."
+
+
+def _folha_crua(janela, indice_da_pagina: int):
+    """A folha da página como veio do PDF, na resolução da prévia."""
+    from core.pdf_io import abrir_pdf, pagina_para_array
+    from ui.automatico import DPI_DA_PREVIA
+
+    doc = abrir_pdf(janela.projeto.caminho_entrada)
+    try:
+        return pagina_para_array(doc, janela.projeto.paginas[indice_da_pagina].folha, dpi=DPI_DA_PREVIA)
+    finally:
+        doc.close()
+
+
+def test_d577_folha_ja_dividida_o_antes_e_so_a_metade_crua(janela, app, tmp_path):
+    """Caso (1) e o fim do caso (3): a folha dupla já dividida NO LIVRO (o "Rodar" de verdade
+    com "Dividir"); na metade da esquerda, o antes é só essa metade, crua (a folha como veio,
+    cortada na linha da divisão, e mais nada), e o depois é essa mesma metade pronta (aqui, em
+    Preto e branco). Com "Dividir" marcado ou não na janela, o antes continua a metade crua.
+    Teste de reversão (§4.7): no código de antes (1b5f947), o antes era a folha inteira."""
+    from core.pipeline import dividir_imagem
+
+    janela.abrir_livro(_livro(tmp_path))
+    _assentar(app)
+    estado = janela.estado_do_automatico
+    estado.marcadas = {A.DIVIDIR}
+    assert janela.rodar_o_automatico(esperar=True, perguntar=False)
+    _assentar(app)
+    projeto = janela.projeto
+    pagina = projeto.paginas[0]
+    folha = projeto.folhas[pagina.folha]
+    assert folha.dividir and pagina.metade == "esquerda", "a folha dupla não foi dividida"
+    crua = _folha_crua(janela, 0)
+    metade = dividir_imagem(crua, folha.posicao_corte)[0]
+    janela.tela_conferir.ir_para_pagina(0)
+    grande = janela.abrir_o_automatico()
+    painel = grande.antes_e_depois
+    _esperar(app, painel)
+    for marcadas in ({A.LIMPAR}, {A.DIVIDIR, A.LIMPAR}, {A.LIMPAR}):
+        _marcar(grande, marcadas, PRETO_E_BRANCO)
+        _esperar(app, painel)
+        antes, depois = _imagens(painel)
+        assert antes.shape == metade.shape and np.array_equal(antes, metade), (
+            f"com {sorted(marcadas)}, o antes não é só a metade crua ({antes.shape}, metade "
+            f"{metade.shape}, folha {crua.shape})")
+        assert depois.shape[:2] == antes.shape[:2], "o depois não é essa mesma metade"
+        assert _papel(depois) > 240, "o depois não está pronto (Preto e branco)"
+
+
+def test_d577_folha_inteira_com_dividir_marcado_antes_inteiro_depois_duas_metades(janela, app,
+                                                                                  tmp_path):
+    """Caso (2): a folha dupla ainda não dividida, com "Dividir folhas ao meio" marcado na
+    janela: o antes é a folha inteira crua (ponto por ponto) e o depois são as duas metades
+    prontas, uma ao lado da outra (com o vão branco no meio)."""
+    from ui.automatico import VAO_ENTRE_AS_METADES
+
+    grande = _abrir(janela, app, tmp_path, pagina=0)
+    painel = grande.antes_e_depois
+    _marcar(grande, {A.DIVIDIR})
+    _esperar(app, painel)
+    antes, depois = _imagens(painel)
+    crua = _folha_crua(janela, 0)
+    assert np.array_equal(antes, crua), "o antes não é a folha inteira crua"
+    assert abs(depois.shape[1] - (crua.shape[1] + VAO_ENTRE_AS_METADES)) <= 4, (crua.shape, depois.shape)
+    meio = depois.shape[1] // 2
+    assert depois[:, meio - 2:meio + 2].min() >= 250, "não são duas metades lado a lado"
+
+
+def test_d577_marcar_e_desmarcar_dividir_muda_so_o_depois(janela, app, tmp_path):
+    """Caso (3): na folha dupla ainda não dividida, marcar "Dividir" muda o depois na hora (as
+    duas metades lado a lado); o antes continua a folha inteira crua (o mesmo, ponto por ponto).
+    Desmarcar: o depois volta a ser a folha inteira pronta (do tamanho da folha), e o antes
+    não muda."""
+    from ui.automatico import VAO_ENTRE_AS_METADES
+
+    grande = _abrir(janela, app, tmp_path, pagina=0)
+    painel = grande.antes_e_depois
+    crua = _folha_crua(janela, 0)
+    _marcar(grande, {A.LIMPAR}, PRETO_E_BRANCO)
+    _esperar(app, painel)
+    antes0, depois0 = _imagens(painel)
+    assert np.array_equal(antes0, crua) and depois0.shape[:2] == crua.shape[:2]
+    _marcar(grande, {A.DIVIDIR, A.LIMPAR})
+    _esperar(app, painel)
+    antes, depois = _imagens(painel)
+    assert np.array_equal(antes, crua), "marcar Dividir mudou o antes"
+    assert abs(depois.shape[1] - (crua.shape[1] + VAO_ENTRE_AS_METADES)) <= 4, "o depois não dividiu"
+    _marcar(grande, {A.LIMPAR})
+    _esperar(app, painel)
+    antes, depois = _imagens(painel)
+    assert np.array_equal(antes, crua), "desmarcar Dividir mudou o antes"
+    assert depois.shape[:2] == crua.shape[:2], "o depois não voltou a ser a folha inteira pronta"
+    assert np.array_equal(depois, depois0)

@@ -169,10 +169,19 @@ Nenhuma prova antiga falhou: o livro sintético das provas está todo em Origina
 
 ## Perguntas para o Samuel (2ª rodada)
 
-3. **Página de folha dividida:** o "antes" de uma página que é metade de uma folha dividida é a **folha inteira** como
-   veio do PDF, ou **só a metade** dela (crua, sem nada)? O código não diz. Hoje está a folha inteira (o que veio do
-   PDF); a resposta muda só `core/automatico.antes_da_pagina`. Também: a folha que veio deitada (giro de 90 graus) aparece
-   deitada no antes, porque "sem nada" inclui não girar. Se não for assim, dizer.
+3. ~~Página de folha dividida~~ **respondida** (30/10, "pode", pela gerente): (1) "A folha já foi dividida: o antes
+   mostra só a metade dela, crua, sem filtro e sem endireitar. O depois mostra essa mesma metade pronta." (2) "A folha
+   ainda não foi dividida e 'Dividir folhas ao meio' está marcada: o antes mostra a folha inteira, crua. O depois mostra
+   as duas metades prontas, uma ao lado da outra, como já faz hoje." (3) "[...] O antes continua sendo a folha inteira
+   crua, porque é dela que as duas metades vão sair. Se ela desmarcar 'Dividir', o depois volta a ser a folha inteira
+   pronta. Se a folha já tinha sido dividida antes, o antes mostra só a metade crua, com 'Dividir' marcado ou não."
+   Feito em `core/automatico.antes_da_pagina`: a metade sai da folha crua pelo giro de 90 da folha (para saber para que
+   lado ela fica de pé) e pela linha da divisão, mais nada. Provas: `test_d577_folha_ja_dividida_o_antes_e_so_a_metade_crua`
+   (falhou no 1b5f947: o antes era a folha inteira, 1008 x 1440 em vez de 1008 x 720),
+   `test_d577_folha_inteira_com_dividir_marcado_antes_inteiro_depois_duas_metades` e
+   `test_d577_marcar_e_desmarcar_dividir_muda_so_o_depois` (estas duas já passavam: guardam o que já era assim).
+   Ressalva: a folha inteira que veio deitada continua deitada no antes (sem giro); a metade usa o giro, senão a linha
+   da divisão cairia no lugar errado.
 4. (continua a pergunta 2 da rodada anterior) Na capa, "Preto e branco + Só as letras" ainda mostra a capa toda em preto e
    branco duro, porque a capa guarda opções dela mesma do teste da D-588; o Rodar faz o mesmo. Print
    `4-antes-cru-depois-preto-e-branco.png`.

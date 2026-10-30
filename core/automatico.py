@@ -1025,17 +1025,43 @@ def antes_da_pagina(doc, copia, indice: int, dpi: int):
     e o depois podem ter tamanhos diferentes: a vista com a linha poe os dois
     na mesma escala (ui/automatico.VistaAntesDepoisComZoom).
 
-    PAGINA DE FOLHA DIVIDIDA: aqui sai a folha inteira (o que veio do PDF). Se
-    o antes de uma metade deve ser a folha inteira ou so a metade dela ainda
-    e PERGUNTA ao Samuel (relatorios/automatico-ver-como-fica/ONDE-PAREI.md);
-    a resposta muda so esta funcao.
+    FOLHA DIVIDIDA (resposta do Samuel, "pode", 30/10, palavra por palavra):
+      (1) "A folha já foi dividida: o antes mostra só a metade dela, crua, sem
+          filtro e sem endireitar. O depois mostra essa mesma metade pronta."
+      (2) "A folha ainda não foi dividida e 'Dividir folhas ao meio' está
+          marcada: o antes mostra a folha inteira, crua. O depois mostra as
+          duas metades prontas, uma ao lado da outra, como já faz hoje."
+      (3) "[...] O antes continua sendo a folha inteira crua, porque é dela
+          que as duas metades vão sair. Se ela desmarcar 'Dividir', o depois
+          volta a ser a folha inteira pronta. Se a folha já tinha sido
+          dividida antes, o antes mostra só a metade crua, com 'Dividir'
+          marcado ou não."
+    Quem decide e a pagina NO LIVRO (a `copia` ainda sem o pedido aplicado):
+    metade de folha dividida -> so a metade; senao -> a folha inteira. Nao
+    depende do "Dividir" marcado na janela.
+    A metade e tirada da folha crua como o programa divide (o giro de 90 da
+    folha, que diz para que lado ela fica de pe, e a linha do corte:
+    core.pipeline.girar_90 e dividir_imagem), e mais nada: sem a tampa
+    pintada, sem a sobra, sem cortar, sem endireitar, sem filtro. A folha
+    inteira sai sem giro nenhum (como veio do PDF).
 
     Ate 30/10 (29/10) o antes era a pagina como esta no livro, com o filtro
-    dela: agora e pagina_como_esta (o "comparar" da tela cheia). Nao le nem
-    muda a `copia` alem de achar a folha."""
+    dela: agora e pagina_como_esta (o "comparar" da tela cheia). Nao muda a
+    `copia`. Arriscado: decidir pela metade DEPOIS do aplicar (o caso 3
+    mudaria com o "Dividir" marcado)."""
     from core.pdf_io import pagina_para_array
+    from core.pipeline import dividir_imagem, girar_90
+    from modelos import METADE_ESQUERDA, METADE_INTEIRA
 
-    return pagina_para_array(doc, copia.paginas[indice].folha, dpi=dpi)
+    pagina = copia.paginas[indice]
+    folha = copia.folhas[pagina.folha]
+    crua = pagina_para_array(doc, folha.indice, dpi=dpi)
+    if not (folha.dividir and pagina.metade != METADE_INTEIRA):
+        return crua
+    if folha.rotacao:
+        crua = girar_90(crua, folha.rotacao)
+    esquerda, direita = dividir_imagem(crua, folha.posicao_corte)
+    return esquerda if pagina.metade == METADE_ESQUERDA else direita
 
 
 def pagina_como_esta(doc, copia, indice: int, dpi: int):
