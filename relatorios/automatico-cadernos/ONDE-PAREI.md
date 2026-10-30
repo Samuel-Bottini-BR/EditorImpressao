@@ -31,7 +31,7 @@ Ramo `automatico-cadernos-2026-10-30` (saiu de `obra-2026-10-26` em `d93c506`), 
 - [x] Prints num livro de verdade copiado (12 primeiras páginas do "Sobre a Consolação da Filosofia"),
       antes e depois do conserto: `antes-*.png` e `depois-*.png` nesta pasta; script `prints_d589.py`.
 - [x] Commit e push.
-- [ ] Rodada do GitHub (número na entrega).
+- [x] Rodada do GitHub 41131159641: passou inteira (suíte em 5 partes + botões).
 
 ## Causa
 
