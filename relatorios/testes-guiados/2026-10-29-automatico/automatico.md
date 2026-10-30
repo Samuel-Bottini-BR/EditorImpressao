@@ -57,3 +57,11 @@ coisa: um botão que mostra e esconde o colorido das marcações.
   - 2: o antes e depois da prévia também em tela grande, com zoom (o "tela cheia" hoje mostra a folha crua).
   - 3: ![](a-09-caixinha-molduras-cinza.png) a caixinha "No Preto e branco, molduras e iluminuras também em preto e branco" fica cinza porque "Só as letras" está marcada (D-168: `ui/automatico.py`, `cx_decoracao_pb.setEnabled(not (so_letras and no_pb))`). Desmarcando "Só as letras", ela volta a funcionar.
 - Quarta coisa (30/10, palavras dele): "quarta coisa, quando você mexe no antes e depois, ele começa a mostrar o antes de qual pagina, parece que ele troca o antes conforme se troca os perfis dos filtros." Pela D-577, o "antes" é a página como está agora no livro e não muda com as opções. Vai para o construtor investigar e reproduzir.
+
+## Problema do Kaique: "Montar cadernos" volta sozinho (30/10) — D-589
+- Samuel: "tenho outro problema para resolver também, para ser colocado nessa lista [...] olha o arquivo world nessa pasta" (`D:\programas\EditorImpressao-arquivos\TESTES MANUAIS DO SAMUEL\kaique audio transcrição\Kaique audios.docx`, áudios 1.ogg a 3.ogg).
+- Kaique, áudio 1: "Tá vendo ali na caixa de seleção, ó, ela não tá selecionada, nem ela e nem a opção de dividir, que é a primeira. É, aí na hora que gera, depois o resultado final, né, aí aplicou o filtro branco, letra preta. Aí só que ele forma os cadernos do mesmo jeito."
+- Kaique, áudio 2: "Aí antes de de rodar a etapa, é, ele mostra marcado ali, tá vendo? É, depois, né, depois de rodar a etapa, aí ele volta a marcar."
+- Kaique, áudio 3: "Aí eu vou lá, ajusto a etapa, né, tiro, é, a opção de montar os cadernos, aí depois ele coloca de novo sozinho."
+- ![](k-01-montar-cadernos-desmarcada.jpg) Janela do Automático (versão do Kaique, ainda com "O livro, como está agora"), livro de 599 folhas: a 7 "Montar cadernos" está desmarcada, mas o texto embaixo diz "20 páginas por caderno · ligada no livro todo"; o botão diz "Rodar 5 etapas".
+- ![](k-02-painel-montar-cadernos-ligada.jpg) Painel Automático depois de rodar: "7 Montar cadernos · ligada no livro todo", com o ✓.
