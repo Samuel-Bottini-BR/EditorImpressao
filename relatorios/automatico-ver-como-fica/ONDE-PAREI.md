@@ -196,3 +196,54 @@ Nenhuma prova antiga falhou: o livro sintético das provas está todo em Origina
   o teste seguinte) acha no erros.log uma prévia da ÁREA DE TRABALHO (`ui/tarefas.py` linha 832, categoria "previa")
   que não achou o PDF do teste. Esse teste não abre o Automático; o `janela` do test_promessas espera as tarefas de fundo
   só 15 s. No PC o arquivo passou inteiro (262). Fica como ressalva: teste instável no GitHub, não do código da D-577.
+
+---
+
+# 3ª rodada: depois do 3º teste do Samuel (30/10, 16:30)
+
+Ramo atualizado com a obra (db0a661). Prints dele a-15 a a-18.
+
+## Decisões que esta rodada precisa cumprir
+
+- **D-577, 3º teste:** "1- não consigo dar zoom com o mouse, usando o scrool" · "eu quero que a faixa seja de acordo com
+  a direção do antes e depois, se ela está embaixo do depois ela está aparecendo o depois se está embaixo do antes ela
+  está no antes." · "sim" a: "Linha toda à direita, embaixo de 'depois': a página inteira mostra o depois. Linha toda à
+  esquerda, embaixo de 'antes': a página inteira mostra o antes. Linha no meio: à esquerda dela aparece o depois, e à
+  direita aparece o antes. Hoje é o contrário." · "sim" a valer também no "antes / depois" da área de trabalho.
+- Os rótulos não mudam de lugar; a linha abre onde abria (no meio). A 3ª coisa dele (opções de cada lado no comparar)
+  NÃO foi começada (ainda em conversa).
+
+## Como cumpri
+
+- **Roda do mouse:** `VistaAntesDepoisComZoom.wheelEvent` (ui/automatico.py), com o `PASSO_DA_RODA` do Visualizador e o
+  ponto debaixo do ponteiro parado; vale na página da direita e na tela cheia. As duas telas do "comparar" já eram
+  `Visualizador` (já tinham a roda e andam juntas). Prova: `test_d577_a_roda_do_mouse_da_zoom_ancorado_no_ponteiro`
+  (no db0a661: "página da direita: a roda não deu zoom (1.0)").
+- **Lado da linha:** `VistaAntesDepois.paintEvent` (ui/widgets/filtros_tela_cheia.py): o antes por baixo, a página toda, e
+  o depois por cima, da beirada esquerda até a linha. Prova: `test_d577_a_linha_mostra_o_lado_para_onde_vai` (no db0a661:
+  "área de trabalho: linha toda à direita não mostra o depois inteiro"); `test_d577_o_antes_depois_da_area_de_trabalho_e_a_mesma_vista`
+  confere que a área de trabalho e o Automático usam a mesma vista.
+- **Textos que diziam o lado** (ficariam falsos): a dica do visor do Automático e a dica do botão "antes / depois" da
+  área de trabalho agora dizem "para o lado do "antes" ... para o lado do "depois" ..."; docstrings acertadas.
+- **Provas antigas:** nenhuma dependia do lado desenhado (as da área de trabalho, P-xxx e D-577 conferem as imagens
+  guardadas, `vista.antes` / `vista.depois`, não o lado pintado). Nenhuma mudou.
+- **Prints** (`prints_d577_30-10c.py`): `6-area-de-trabalho-linha-toda-a-esquerda.png`, `6-area-de-trabalho-linha-no-meio.png`,
+  `6-area-de-trabalho-linha-toda-a-direita.png`, `7-automatico-linha-toda-a-esquerda.png`, `7-automatico-linha-no-meio.png`,
+  `7-automatico-linha-toda-a-direita.png`.
+
+- **Testes no PC, um arquivo por vez:** 25 arquivos (os do Automático e os da `VistaAntesDepois`: test_filtros_tela_cheia,
+  test_decisoes_ver, _filtro_automatico, _respeitar_gravuras, _marcacoes, _9b1, test_promessas...): todos passaram (o da
+  D-577: 22 de 22).
+
+## Pergunta / ressalva da 3ª rodada
+
+5. A mesma vista também é o "Comparar com o Original" da **tela cheia dos filtros** (`FiltrosEmTelaCheia`, rótulos
+   "antes: Original" e "depois: <filtro>"). Lá também passou a valer o lado novo. Não foi perguntado ao Samuel; se lá
+   for para continuar como era, dizer (dá para separar, mas a mesma vista ficaria com dois jeitos).
+- **GitHub 41129841728 (3050494):** passou depois de rodar de novo a parte 1. Na 1ª vez, de novo o erro de tempo do
+  `test_promessas.py` (p083 [rede], p083 no Automático [Guardar tudo] e p107 [aviso/forca:mais_escuro]): prévia da área
+  de trabalho (`ui/tarefas.py` linha 832) sem o PDF do teste já apagado. Nas rodadas deste ramo, a parte 1 (ou a 2)
+  falhou na 1ª vez em 4 de 4 e passou ao rodar de novo; o ramo `automatico-cadernos` (mesma obra) passou de primeira
+  (41131159641). Bug para a Lista de bugs (não consertado; não é desta tarefa): o `janela` do test_promessas espera só
+  as tarefas do QThreadPool (15 s), e não as contas da prévia do Automático (QThread no `_Guardiao`), que podem seguir
+  rodando no teste seguinte; dá para chamar `ui.automatico.parar_as_previas()` ali.

@@ -1167,8 +1167,9 @@ class TelaConferir(QWidget):
         linha.addSpacing(RESPIRO_DA_BARRA_DE_BAIXO)
         self.botao_antes_depois = botao(
             "antes / depois",
-            "Mostra a página da vez com o Original à esquerda e como vai sair à direita. "
-            "Arraste a linha do meio para comparar.", self._alternar_antes_depois, marcavel=True)
+            # D-577, 3º teste (30/10): a linha mostra o lado para onde vai
+            "Mostra a página da vez no Original e como vai sair. Arraste a linha: para o "
+            "lado do \"antes\" aparece o Original; para o lado do \"depois\", como vai sair.", self._alternar_antes_depois, marcavel=True)
         # D-578/D-580 (Samuel, 29/10/2026, "A"): o botão "marcações", ao lado
         # do "antes / depois", começando desligado (a página limpa, como vai
         # sair, com qualquer ferramenta). Só o nome e o balão; nada de atalho
@@ -6941,9 +6942,11 @@ class TelaConferir(QWidget):
         self.ir_para_pagina(indice)
 
     def _mostrar_antes_depois(self) -> None:
-        """O "antes / depois" da página da vez: o Original à esquerda da linha
-        e como vai sair à direita (as prévias; o mesmo jeito da tela cheia dos
-        filtros, R11 601 A, inclusive a frase quando a página já é Original)."""
+        """O "antes / depois" da página da vez: o Original (o "antes") e como
+        vai sair (o "depois"), as prévias; desde 30/10 (D-577) o depois fica à
+        esquerda da linha e o antes à direita (VistaAntesDepois). O mesmo jeito
+        da tela cheia dos filtros, R11 601 A, inclusive a frase quando a página
+        já é Original."""
         assert self.projeto is not None and self.previas is not None
         indice = self.indice_pagina
         pagina = self.projeto.paginas[indice]

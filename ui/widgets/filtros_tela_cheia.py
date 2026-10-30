@@ -112,9 +112,25 @@ def pagina_com_as_opcoes(pagina, filtro: str, ajuste_campo: str | None, ajuste, 
 
 class VistaAntesDepois(QWidget):
     """A página grande. Com `depois` só, mostra a página inteira; com `antes`
-    também (a chave "Comparar com o Original"), o antes à esquerda da linha e o
-    depois à direita, na mesma imagem; a linha se arrasta (cursor de setas
-    para os lados e a alça redonda no meio: a pista de que dá para arrastar)."""
+    também (a chave "Comparar com o Original"), o antes e o depois na mesma
+    imagem, com a linha que se arrasta (cursor de setas para os lados e a alça
+    redonda no meio: a pista de que dá para arrastar).
+
+    O LADO (D-577, 3º teste do Samuel, 30/10/2026: "se ela está embaixo do
+    depois ela está aparecendo o depois se está embaixo do antes ela está no
+    antes"; resposta "sim" a: "Linha toda à direita, embaixo de 'depois': a
+    página inteira mostra o depois. Linha toda à esquerda, embaixo de 'antes':
+    a página inteira mostra o antes. Linha no meio: à esquerda dela aparece o
+    depois, e à direita aparece o antes. Hoje é o contrário."; e "sim" a valer
+    também no "antes / depois" da área de trabalho): à ESQUERDA da linha o
+    depois, à DIREITA o antes. Os rótulos ficam parados ("antes" no canto
+    esquerdo, "depois" no direito) e a linha abre no meio (posicao 0,5).
+    Vale em todo lugar que usa esta vista: o "antes / depois" da área de
+    trabalho (ui/tela_conferir.py), a tela cheia dos filtros (abaixo) e a
+    página da direita e a tela cheia do Automático (ui/automatico.py).
+    Até 30/10 era o contrário (antes à esquerda da linha). Arriscado: trocar
+    os lados de novo sem trocar os rótulos (volta a confusão dos prints a-16 e
+    a-17)."""
 
     def __init__(self, parent=None) -> None:
         super().__init__(parent)
@@ -150,12 +166,17 @@ class VistaAntesDepois(QWidget):
             pintor.end()
             return
         area = self._area(self.depois)
-        pintor.drawPixmap(area, self.depois, QRectF(self.depois.rect()))
         if self.comparando and self.antes is not None:
+            # D-577 (30/10): o antes por baixo, a página toda (o que fica à direita da
+            # linha), e o depois por cima, da beirada esquerda até a linha
+            pintor.drawPixmap(area, self.antes, QRectF(self.antes.rect()))
             x = area.left() + area.width() * self.posicao
             parte = QRectF(area.left(), area.top(), x - area.left(), area.height())
-            fonte = QRectF(0, 0, self.antes.width() * self.posicao, self.antes.height())
-            pintor.drawPixmap(parte, self.antes, fonte)
+            fonte = QRectF(0, 0, self.depois.width() * self.posicao, self.depois.height())
+            pintor.drawPixmap(parte, self.depois, fonte)
+        else:
+            pintor.drawPixmap(area, self.depois, QRectF(self.depois.rect()))
+        if self.comparando and self.antes is not None:
             pintor.setPen(QPen(QColor(estilo.cor("azul")), 2))
             pintor.drawLine(QPointF(x, area.top()), QPointF(x, area.bottom()))
             pintor.setBrush(QColor(estilo.cor("azul")))
