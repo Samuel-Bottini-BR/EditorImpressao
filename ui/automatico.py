@@ -783,6 +783,132 @@ def _lado_a_lado(imagens: list):
     return np.concatenate(pedacos, axis=1)
 
 
+class TelaCheiaDoAntesEDepois(QDialog):
+    """O "tela cheia" da página da direita da janela grande do Automático (D-577, 30/10/2026).
+
+    Samuel, depois do teste de 30/10 (print a-08: o "tela cheia" mostrava a folha crua do PDF):
+    "tem que dar para ver na previa em tela grande e poder dar zoom na previa em tela grande".
+
+    O QUE MOSTRA: o MESMO antes e depois da PaginaAntesEDepois que a abriu (as mesmas imagens,
+    nada é calculado de novo), grande, com a linha que se arrasta, e:
+      - o zoom: –, + e "ajustar à tela", os mesmos da janela grande (VistaAntesDepoisComZoom
+        numa área de rolar, a vista que a página da direita já usa);
+      - o folhear: "<" e ">" e as setas do teclado (como a TelaCheiaDoPDF de antes já
+        folheava). Folhear aqui é folhear a página da direita (PaginaAntesEDepois.virar): a
+        conta do antes e depois da página nova é a dela, e a bolinha gira aqui também;
+      - "fechar" (e Esc) volta para a janela grande, na página em que parou.
+    Quem põe as imagens, o "página N de M", os botões e a bolinha é a PaginaAntesEDepois
+    (_acertar_tela_cheia): esta janela só mostra. Abre maximizada, como a TelaCheiaDoPDF.
+
+    Seguro mudar: tamanhos e margens. Arriscado: calcular aqui uma prévia própria (duas
+    contas da mesma página, e a tela cheia poderia mostrar outra coisa que a janela)."""
+
+    def __init__(self, painel: "PaginaAntesEDepois") -> None:
+        super().__init__(painel)
+        from PySide6.QtGui import QGuiApplication
+
+        from ui.widgets.bolinha import BolinhaDeCarregamento
+
+        self.painel = painel
+        self.setWindowTitle("A página, antes e depois")
+        estilo.estilizar(self, lambda: estilo.FOLHA_DE_ESTILO)
+        self.setSizeGripEnabled(True)
+        self._mostrado: tuple = (None, None, None)      # (antes, depois, aviso) já postos na vista
+
+        camadas = QVBoxLayout(self)
+        camadas.setContentsMargins(14, 14, 14, 12)
+        camadas.setSpacing(8)
+        self.rolagem = QScrollArea()
+        self.rolagem.setWidgetResizable(True)
+        self.rolagem.setFrameShape(QFrame.NoFrame)
+        self.rolagem.setAlignment(Qt.AlignCenter)
+        self.visor = VistaAntesDepoisComZoom(self.rolagem)
+        self.visor.setToolTip(painel.visor.toolTip())
+        self.visor.posicao = painel.visor.posicao        # a linha onde estava na janela
+        self.rolagem.setWidget(self.visor)
+        camadas.addWidget(self.rolagem, 1)
+
+        barra = QHBoxLayout()
+        barra.setSpacing(8)
+        self.botao_anterior = QPushButton("<")
+        self.botao_anterior.setFixedWidth(44)
+        self.botao_anterior.clicked.connect(lambda: painel.virar(-1))
+        barra.addWidget(self.botao_anterior)
+        self.contador = QLabel("")
+        self.contador.setAlignment(Qt.AlignCenter)
+        barra.addWidget(self.contador, 1)
+        self.bolinha = BolinhaDeCarregamento()
+        barra.addWidget(self.bolinha)
+        self.botao_proxima = QPushButton(">")
+        self.botao_proxima.setFixedWidth(44)
+        self.botao_proxima.clicked.connect(lambda: painel.virar(1))
+        barra.addWidget(self.botao_proxima)
+        # o zoom: os mesmos botões, dicas e passos da janela grande (JanelaDoAutomatico._zoom)
+        self.botao_menos = QPushButton("–")
+        self.botao_menos.setToolTip("afastar")
+        self.botao_menos.clicked.connect(lambda: self._zoom(0.8))
+        self.botao_mais = QPushButton("+")
+        self.botao_mais.setToolTip("aproximar")
+        self.botao_mais.clicked.connect(lambda: self._zoom(1.25))
+        for botao in (self.botao_menos, self.botao_mais):
+            botao.setMinimumWidth(44)
+            barra.addWidget(botao)
+        self.botao_caber = QPushButton("ajustar à tela")
+        self.botao_caber.clicked.connect(lambda: self._zoom(None))
+        barra.addWidget(self.botao_caber)
+        fechar = QPushButton("fechar")
+        fechar.setObjectName("primario")
+        fechar.clicked.connect(self.accept)
+        barra.addWidget(fechar)
+        camadas.addLayout(barra)
+
+        # o tamanho da tela pedido ANTES de maximizar (o mesmo cuidado da TelaCheiaDoPDF: se o
+        # Windows ignorar o maximizar, o pior caso ainda é uma janela grande)
+        tela = self.screen() or QGuiApplication.primaryScreen()
+        if tela is not None:
+            self.setGeometry(tela.availableGeometry())
+        self.setWindowState(Qt.WindowMaximized)
+
+    def acertar(self, antes, depois, aviso: str, contador: str, anterior: bool, proxima: bool,
+                calculando: bool) -> None:
+        """Põe o que a página da direita mostra agora (só refaz a imagem quando ela mudou)."""
+        if (self._mostrado[0] is not antes or self._mostrado[1] is not depois
+                or self._mostrado[2] != aviso):
+            self._mostrado = (antes, depois, aviso)
+            self.visor.mostrar(antes, depois, aviso=aviso)
+        self.contador.setText(contador)
+        self.botao_anterior.setEnabled(anterior)
+        self.botao_proxima.setEnabled(proxima)
+        self.bolinha.definir(calculando, "Calculando como a página vai ficar..." if calculando else "")
+
+    def _zoom(self, fator: float | None) -> None:
+        """–, + e "ajustar à tela" (a mesma conta de JanelaDoAutomatico._zoom)."""
+        if fator is None:
+            self.visor.ajustar_a_tela()
+        else:
+            self.visor.definir_zoom(max(0.1, min(8.0, self.visor.zoom * fator)))
+
+    def keyPressEvent(self, evento) -> None:  # noqa: N802 - nome do Qt
+        """Setas e Page Up/Down viram a página (como na TelaCheiaDoPDF); Esc fecha."""
+        if evento.key() in (Qt.Key_Left, Qt.Key_PageUp):
+            self.painel.virar(-1)
+        elif evento.key() in (Qt.Key_Right, Qt.Key_PageDown):
+            self.painel.virar(1)
+        else:
+            super().keyPressEvent(evento)
+
+    def done(self, resultado: int) -> None:  # noqa: D401 - nome do Qt
+        """Ao fechar: a linha volta para a janela onde ficou aqui, e a página da direita
+        esquece esta janela (não manda mais nada para ela)."""
+        self.painel.visor.posicao = self.visor.posicao
+        self.painel.visor.update()
+        if self.painel.tela_cheia is self:
+            self.painel.tela_cheia = None
+        self._mostrado = (None, None, None)
+        self.visor.mostrar(None, None)              # solta as imagens (uma página por vez)
+        super().done(resultado)
+
+
 class PaginaAntesEDepois(QWidget):
     """A página da direita da janela grande do Automático (D-577, 29/10/2026).
 
@@ -799,7 +925,10 @@ class PaginaAntesEDepois(QWidget):
     Automático com as etapas marcadas e as opções escolhidas na janela) à
     direita. Folheia as páginas do livro ("<" e ">", as setas do teclado) e dá
     zoom (a janela grande liga os botões −, + e "ajustar à tela" ao `visor`).
-    "tela cheia" abre a folha do PDF grande, como antes (TelaCheiaDoPDF).
+    "tela cheia" abre o MESMO antes e depois, grande, com zoom e folhear
+    (TelaCheiaDoAntesEDepois; D-577, 30/10: "tem que dar para ver na previa em
+    tela grande e poder dar zoom na previa em tela grande"). Antes abria a
+    folha crua do PDF (TelaCheiaDoPDF), que saiu.
 
     COMO CALCULA: cada troca no EstadoDoAutomatico (marcar, opção, receita,
     ordem, onde rodar) pede um "depois" novo. A conta vai para um fio de fundo
@@ -833,6 +962,7 @@ class PaginaAntesEDepois(QWidget):
         self._antes = None                    # (índice, imagem) do antes da página da vez
         self._depois = None                   # (índice, imagem) do depois
         self._fechada = False                 # fechar(): nada mais é pedido
+        self.tela_cheia: TelaCheiaDoAntesEDepois | None = None   # aberta pelo "tela cheia"
 
         col = QVBoxLayout(self)
         col.setContentsMargins(0, 0, 0, 0)
@@ -905,6 +1035,7 @@ class PaginaAntesEDepois(QWidget):
         self._acertar_botoes(ativas)
         self._mostrar()
         self.pedir(agora=True)
+        self._acertar_tela_cheia()
 
     def virar(self, passo: int) -> None:
         ativas = self._ativas()
@@ -920,33 +1051,29 @@ class PaginaAntesEDepois(QWidget):
         self.botao_tela_cheia.setEnabled(tem)
 
     def abrir_em_tela_cheia(self) -> None:
-        """A folha da página da vez, grande, como ela está no PDF (o que o
-        "tela cheia" do folhear já fazia: ui/widgets/folhear_pdf.TelaCheiaDoPDF).
-        Ao voltar, a página da vez passa a ser a da folha em que a pessoa parou."""
-        from core.pdf_io import abrir_pdf
-        from registro import registrar_erro
-        from ui.widgets.folhear_pdf import TelaCheiaDoPDF
-
+        """O "tela cheia": o antes e depois da página da vez, grande, com zoom e folhear
+        (TelaCheiaDoAntesEDepois; D-577, 30/10). Não bloqueia (open): a conta do antes e
+        depois continua chegando e aparece lá. Ao fechar, a página da vez é a da página em
+        que a pessoa parou (o folhear de lá é o daqui). Antes abria a folha crua do PDF
+        (ui/widgets/folhear_pdf.TelaCheiaDoPDF; print a-08 do teste de 30/10)."""
         if self.projeto is None or self._indice not in self._ativas():
             return
-        folha = self.projeto.paginas[self._indice].folha
-        try:
-            doc = abrir_pdf(self.projeto.caminho_entrada)
-        except Exception:  # noqa: BLE001 - a janela nunca cai aqui
-            import traceback
+        if self.tela_cheia is None:
+            self.tela_cheia = TelaCheiaDoAntesEDepois(self)
+        self._acertar_tela_cheia()
+        self.tela_cheia.open()
+        self.tela_cheia.raise_()
+        self.tela_cheia.activateWindow()
 
-            registrar_erro("tela cheia do automatico", traceback.format_exc())
+    def _acertar_tela_cheia(self) -> None:
+        """Manda para o tela cheia aberto o que a página da direita mostra agora: o antes e o
+        depois (os mesmos da vista daqui), o "página N de M", os botões e a bolinha."""
+        if self.tela_cheia is None:
             return
-        try:
-            janela = TelaCheiaDoPDF(doc, folha, self)
-            janela.exec()
-            nova = janela.indice
-        finally:
-            doc.close()
-        if nova != folha:
-            da_folha = [i for i in self._ativas() if self.projeto.paginas[i].folha == nova]
-            if da_folha:
-                self.ir_para(da_folha[0])
+        antes, depois = self.visor._crus
+        self.tela_cheia.acertar(antes, depois, self.visor.aviso, self.contador.text(),
+                                self.botao_anterior.isEnabled(), self.botao_proxima.isEnabled(),
+                                self.calculando())
 
     def keyPressEvent(self, evento) -> None:  # noqa: N802 - nome do Qt
         """Setas e Page Up/Down viram a página, como no folhear."""
@@ -991,7 +1118,12 @@ class PaginaAntesEDepois(QWidget):
 
         if self._fechada or self.projeto is None or self._indice not in self._ativas():
             return
-        pedido = self.estado.pedido()
+        # a prévia NUNCA pula as páginas mexidas à mão (D-577, 30/10: "na previa ali, ele
+        # mostra a mudança em todas as paginas mas só muda as que nós autorizarmos ( no caso
+        # as que foram mexidas a mão)"). Quem decide pular é a pergunta da D-004 ao "Rodar",
+        # que usa o pedido de fábrica do estado (pular_mexidas=True), não este. Arriscado:
+        # voltar a pular aqui (a capa mexida do teste de 30/10 não mudava com o filtro).
+        pedido = self.estado.pedido(pular_mexidas=False)
         chave = self._chave(pedido)
         self._querida = chave
         precisa_do_antes = self._antes is None or self._antes[0] != self._indice
@@ -1050,6 +1182,7 @@ class PaginaAntesEDepois(QWidget):
         antes = self._antes[1] if self._antes and self._antes[0] == self._indice else None
         self._depois = None
         self.visor.mostrar(antes, None, aviso="Não foi possível mostrar como esta página vai ficar.")
+        self._acertar_tela_cheia()
 
     def _terminou(self, tarefa) -> None:
         """Uma conta terminou (pronta, falha ou cancelada): começa a que estava
@@ -1067,11 +1200,13 @@ class PaginaAntesEDepois(QWidget):
     def _acertar_bolinha(self) -> None:
         calculando = self.calculando()
         self.bolinha.definir(calculando, "Calculando como a página vai ficar..." if calculando else "")
+        self._acertar_tela_cheia()
 
     def _mostrar(self) -> None:
         antes = self._antes[1] if self._antes and self._antes[0] == self._indice else None
         depois = self._depois[1] if self._depois and self._depois[0] == self._indice else None
         self.visor.mostrar(antes, depois)
+        self._acertar_tela_cheia()
 
     def fechar(self) -> None:
         """Ao fechar a janela: para a conta (o que estiver rodando termina
@@ -1095,6 +1230,8 @@ class PaginaAntesEDepois(QWidget):
                 except (RuntimeError, TypeError):
                     pass
             self._tarefa = None
+        if self.tela_cheia is not None:
+            self.tela_cheia.reject()            # a tela cheia fecha junto com a janela grande
         self._antes = self._depois = None
         self._acertar_bolinha()
 

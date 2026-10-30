@@ -492,3 +492,156 @@ def test_d577_fechar_o_programa_com_a_conta_rodando_para_e_espera_a_conta(janela
     assert not [t for t in tarefas if t.isRunning()], "fechar o programa deixou a conta da prévia rodando"
     assert all(t.foi_cancelada for t in tarefas), "a conta não recebeu o pedido de parar"
     assert janela.janela_do_automatico is None
+
+
+# --- D-577, o que o Samuel mandou depois do teste de 30/10 ------------------------------
+#
+# Samuel (30/10/2026), depois do teste (prints a-07 e a-08 em
+# relatorios/testes-guiados/2026-10-29-automatico/): "ele não está funcionando, e não funciona em
+# tela cheia também, como pode ver pelo print ele não muda no antes e depois conforme eu troco os
+# filtros" · "na previa ali, ele mostra a mudança em todas as paginas mas só muda as que nós
+# autorizarmos ( no caso as que foram mexidas a mão), segundo tem que dar para ver na previa em
+# tela grande e poder dar zoom na previa em tela grande" · "quarta coisa, quando você mexe no
+# antes e depois, ele começa a mostrar o antes de qual pagina, parece que ele troca o antes
+# conforme se troca os perfis dos filtros."
+
+
+def _mexida_no_filtro(janela, indice: int) -> None:
+    """A página `indice` marcada como mexida à mão no filtro, como a capa e a página 17 do livro
+    de teste do Samuel (`mexida_a_mao: ['filtro']`, dos testes de 29/10)."""
+    from core import etapas
+
+    etapas.marcar_mexida_a_mao(janela.projeto.paginas[indice], etapas.FILTRO)
+    assert A.paginas_mexidas(janela.projeto, A.Pedido(etapas=[A.LIMPAR])) == [indice]
+
+
+def test_d577_a_previa_mostra_a_mudanca_tambem_na_pagina_mexida_a_mao(janela, app, tmp_path,
+                                                                        monkeypatch):
+    """D-577, 30/10: "na previa ali, ele mostra a mudança em todas as paginas mas só muda as que
+    nós autorizarmos ( no caso as que foram mexidas a mão)". Defeito do teste de 30/10 (print
+    a-07): a prévia pulava a página mexida à mão (o pedido saía com pular_mexidas=True), e o
+    "depois" da capa nunca mudava com o filtro. Agora a prévia mostra a mudança nela também; o
+    "Rodar" de verdade continua perguntando (D-004) e o pedido dele continua pulando de fábrica.
+    Teste de reversão (§4.7): no código de antes, o depois da página mexida fica igual ao antes
+    (o papel continua amarelado)."""
+    janela.abrir_livro(_livro(tmp_path))
+    _assentar(app)
+    _mexida_no_filtro(janela, 2)
+    janela.tela_conferir.ir_para_pagina(2)
+    grande = janela.abrir_o_automatico()
+    painel = grande.antes_e_depois
+    _esperar(app, painel)
+    _marcar(grande, {A.LIMPAR}, PRETO_E_BRANCO)
+    _esperar(app, painel)
+    antes, depois = _imagens(painel)
+    assert abs(_papel(antes) - AMARELADO[0]) < 8, "o antes mudou"
+    assert _papel(depois) > 240, (f"a prévia pulou a página mexida à mão (papel do depois "
+                                  f"{_papel(depois):.0f}, igual ao antes)")
+    # o "Rodar" de verdade não muda: o pedido dele pula de fábrica e a pergunta da D-004 continua
+    assert janela.estado_do_automatico.pedido().pular_mexidas is True
+    perguntas = []
+    monkeypatch.setattr(janela, "_perguntar_mexidas", lambda n: perguntas.append(n))   # = cancelar
+    janela._fechar_a_janela_do_automatico()
+    assert janela.rodar_o_automatico(esperar=True) is False
+    assert perguntas == [1], "o Rodar deixou de perguntar das páginas mexidas à mão (D-004)"
+    assert janela.projeto.paginas[2].filtro == ORIGINAL, "cancelar a pergunta mudou a página"
+
+
+def test_d577_tela_cheia_mostra_o_antes_e_depois_da_previa_com_zoom_e_folhear(janela, app, tmp_path,
+                                                                             monkeypatch):
+    """D-577, 30/10: "tem que dar para ver na previa em tela grande e poder dar zoom na previa em
+    tela grande". O "tela cheia" da página da direita abre o MESMO antes e depois (as mesmas
+    imagens, com a linha que se arrasta), grande, com o zoom (–, + e "ajustar à tela") e o
+    folhear (< > e as setas do teclado), como a tela cheia de antes já folheava. O antigo saiu:
+    não abre mais a folha crua do PDF (TelaCheiaDoPDF, print a-08). Teste de reversão (§4.7): no
+    código de antes, o "tela cheia" abre a TelaCheiaDoPDF."""
+    from PySide6.QtCore import Qt
+    from PySide6.QtTest import QTest
+
+    from ui.widgets import folhear_pdf
+    from ui.widgets.filtros_tela_cheia import VistaAntesDepois
+
+    cruas = []
+
+    class _FolhaCrua:                        # a tela cheia de antes, sem travar o teste no exec()
+        def __init__(self, _doc, folha, _pai=None):
+            cruas.append(folha)
+            self.indice = folha
+
+        def exec(self):
+            return 0
+
+    monkeypatch.setattr(folhear_pdf, "TelaCheiaDoPDF", _FolhaCrua)
+    grande = _abrir(janela, app, tmp_path, pagina=1)
+    painel = grande.antes_e_depois
+    _marcar(grande, {A.LIMPAR}, PRETO_E_BRANCO)
+    _esperar(app, painel)
+    painel.botao_tela_cheia.click()
+    _assentar(app)
+    assert not cruas, "o tela cheia abriu a folha crua do PDF (TelaCheiaDoPDF), não a prévia"
+    tela = painel.tela_cheia
+    assert tela is not None and tela.isVisible()
+    vista = tela.visor
+    assert isinstance(vista, VistaAntesDepois)
+    antes, depois = _imagens(painel)
+    assert vista._crus[0] is antes and vista._crus[1] is depois, "não é o antes e depois da prévia"
+    assert vista.comparando and vista.rotulos == ("antes", "depois")
+    assert "página 2 de 3" in tela.contador.text()
+    # o zoom
+    tela.botao_mais.click()
+    assert vista.zoom > 1.0 and not tela.rolagem.widgetResizable()
+    tela.botao_menos.click()
+    tela.botao_menos.click()
+    assert vista.zoom < 1.0
+    tela.botao_caber.click()
+    assert vista.zoom == 1.0 and tela.rolagem.widgetResizable()
+    # o folhear: a página seguinte, com o antes e depois DELA (calculado como na janela)
+    tela.botao_proxima.click()
+    assert painel._indice == 2
+    _esperar(app, painel)
+    antes2, depois2 = _imagens(painel)
+    assert vista._crus[0] is antes2 and vista._crus[1] is depois2
+    assert _papel(depois2) > 240
+    assert "página 3 de 3" in tela.contador.text()
+    QTest.keyClick(tela, Qt.Key_Left)
+    assert painel._indice == 1
+    _esperar(app, painel)
+    QTest.keyClick(tela, Qt.Key_Escape)
+    _assentar(app)
+    assert not tela.isVisible() and painel.tela_cheia is None
+    assert not cruas
+
+
+def test_d577_o_antes_nao_muda_ao_trocar_o_filtro_nem_na_pagina_mexida(janela, app, tmp_path):
+    """D-577, 30/10: "quarta coisa, quando você mexe no antes e depois, ele começa a mostrar o
+    antes de qual pagina, parece que ele troca o antes conforme se troca os perfis dos filtros."
+    Pela D-577, o "antes" é a página como está agora no livro e não muda com as opções. Na
+    página mexida à mão (como a capa do teste) e trocando os quatro jeitos de limpar e o "Só as
+    letras", o antes é sempre o mesmo, ponto por ponto (o guardado e o que a vista mostra), e o
+    depois muda. Esta prova NÃO é de reversão: a troca do antes não se reproduziu
+    (relatorios/automatico-ver-como-fica/ONDE-PAREI.md); ela guarda que o antes não muda."""
+    from core.filtros import MAGICO_PRO, MELHORAR
+
+    janela.abrir_livro(_livro(tmp_path))
+    _assentar(app)
+    _mexida_no_filtro(janela, 2)
+    janela.tela_conferir.ir_para_pagina(2)
+    grande = janela.abrir_o_automatico()
+    painel = grande.antes_e_depois
+    _esperar(app, painel)
+    antes0 = _imagens(painel)[0].copy()
+    vistos = set()
+    trocas = [lambda f=f: grande.radios_de_filtro[f].click()
+              for f in (PRETO_E_BRANCO, MAGICO_PRO, MELHORAR, ORIGINAL, PRETO_E_BRANCO)]
+    estado = janela.estado_do_automatico          # o que a caixinha "Só as letras" faz (_mudou)
+    trocas += [lambda: estado.definir_opcao("misto_so_as_letras", True),
+               lambda: estado.definir_opcao("misto_so_as_letras", False)]
+    _marcar(grande, {A.LIMPAR})
+    for trocar in trocas:
+        trocar()
+        _esperar(app, painel)
+        antes, depois = _imagens(painel)
+        assert np.array_equal(antes, antes0), "o antes mudou com a opção"
+        assert painel.visor._crus[0] is painel._antes[1], "a vista mostra outro antes"
+        vistos.add(depois.tobytes())
+    assert len(vistos) >= 3, "o depois não mudou com as opções"
