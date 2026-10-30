@@ -65,3 +65,9 @@ coisa: um botão que mostra e esconde o colorido das marcações.
 - Kaique, áudio 3: "Aí eu vou lá, ajusto a etapa, né, tiro, é, a opção de montar os cadernos, aí depois ele coloca de novo sozinho."
 - ![](k-01-montar-cadernos-desmarcada.jpg) Janela do Automático (versão do Kaique, ainda com "O livro, como está agora"), livro de 599 folhas: a 7 "Montar cadernos" está desmarcada, mas o texto embaixo diz "20 páginas por caderno · ligada no livro todo"; o botão diz "Rodar 5 etapas".
 - ![](k-02-painel-montar-cadernos-ligada.jpg) Painel Automático depois de rodar: "7 Montar cadernos · ligada no livro todo", com o ✓.
+
+## Capa colorida na ferramenta Cortar e em preto e branco no "Ver de perto" (30/10)
+- Palavras dele: "1- no primeiro print está normal 2- quando eu abro, mostra em preto e branco"
+- ![](a-10-cortar-capa-colorida.png) Área de trabalho, ferramenta "Cortar as bordas", capa colorida, com o retângulo verde.
+- ![](a-11-ver-de-perto-capa-preto-e-branco.png) "Ver de perto" aberto da mesma ferramenta: capa em "Preto e branco", 1 bit.
+- O que é (código da versão de teste): a ferramenta Cortar mostra sempre a página sem filtro, só girada e dividida (`ui/tela_conferir._atualizar_previa_para_recorte` → `core/pipeline.preparar_para_recorte`, conserto de 23/09 para o corte não "andar sozinho"). O "Ver de perto" (`ui/tela_ampliada.py`, modo Bordas) mostra a página com o filtro dela (`previas.pegar`). O filtro da capa é Preto e branco, do teste de 29/10 (D-588).
