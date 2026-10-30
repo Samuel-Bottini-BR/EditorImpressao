@@ -454,3 +454,4 @@ na Central (aba "O que você não gostou: alternativas").
   PDF: capa 12,6, página 9 35,3 (*Na escola de Jesus*); com a caixinha ligada, 7,5. Contra a D-066/D-473.
 - **Original: o primeiro desenho da página logo depois do Automático sai um pouco diferente dos seguintes (achado do
   construtor da D-586, 29/10; já existia no `2db002e`).**
+- **Janela do Automático, Mágico pro: a frase da caixinha "Escurecer sozinho" fica sem a caixinha (achado do construtor da D-577, 30/10; versão de teste):** na janela grande do Automático, etapa "Limpar a folha" com Mágico pro, a caixinha "Escurecer sozinho a força do preto..." some, mas a frase de explicação dela fica à vista (`ui/automatico.py`, `_opcoes_limpar` / `_mostrar_opcoes`). Print: `relatorios/automatico-ver-como-fica/3-antes-e-depois-magico-pro.png` (ramo `automatico-ver-como-fica-2026-10-29`). Não impede nada; não consertado.

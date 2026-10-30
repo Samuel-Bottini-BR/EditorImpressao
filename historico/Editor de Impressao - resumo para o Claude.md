@@ -1,6 +1,6 @@
 # Editor de Impressão — documento para colar no Claude
 
-Atualizado em 28/10/2026 à noite (PARTE -23; a anterior, PARTE -22, é de 27 e 28/10). Desde 19/10 a memória por assunto fica em `memoria/` (índice `memoria/INDICE.md`). Versão **máxima**: reúne o histórico institucional, o
+Atualizado em 29-30/10/2026 (PARTE -24; a anterior, PARTE -23, é de 28/10). Desde 19/10 a memória por assunto fica em `memoria/` (índice `memoria/INDICE.md`). Versão **máxima**: reúne o histórico institucional, o
 que o programa é, todas as funcionalidades pedidas, os 68 pedidos feitos até
 hoje **palavra por palavra**, o que foi feito, o que falta, e os dois
 documentos-fonte inteiros (a especificação original e o prompt de testes) em
@@ -11,6 +11,109 @@ Pasta do projeto: `D:\programas\EditorImpressao` (mudou de
 `C:\Users\fotog\Desktop\EditorImpressao` em 07/09/2026; essa pasta antiga virou
 o backup). Repositório git ligado a
 `https://github.com/Samuel-Bottini-BR/EditorImpressao`.
+
+---
+
+# PARTE -24 — Checkpoint de 29-30/10/2026: o Automático para o Kaique, uma coisa por vez (leia isto primeiro)
+
+Sessão no PC, gerente + agentes (no máximo 3 de uma vez). Código mudou só no ramo da versão de teste
+`obra-2026-10-26` (worktree `.claude/worktrees/obra-juncao`); o `fase-1` só recebeu anotações.
+
+## 0. Para recomeçar
+1. `git -C D:\programas\EditorImpressao fetch origin`. Ler a Central (https://claude.ai/artifact/XNFrsdVR7q4K8cBcxNftZy):
+   respostas novas nas 6 abas da auditoria refeita (seção 2).
+2. **Primeira coisa: o Samuel ia testar o item 6 (D-577) "amanhã" (30/10)** ("vou testar amanhã, vamos dar checkpoint")
+   pelo atalho `D:\programas\EditorImpressao-arquivos\atalho-rodada-de-consertos\abrir.vbs` (roda o `obra-juncao` com os
+   dados em `dados-teste-rodada-de-consertos`). Pedir o resultado dele; anotar palavra por palavra no
+   `relatorios/testes-guiados/2026-10-29-automatico/automatico.md` e na D-577 (duas cópias do Livro).
+3. Relatório do dia (palavras dele + prints a-01 a a-06): `relatorios/testes-guiados/2026-10-29-automatico/automatico.md`.
+
+## 1. Regras novas desta sessão (já no CLAUDE.md §2 e nas memórias do Claude)
+- **Uma coisa por vez, e ele testa cada uma assim que fica pronta (D-576):** "vamos fazer uma coisa por vez e assim que
+  a coisa é feita, eu sou acionado para testar ela". Ciclo: construtor (cópia própria) → verificador separado →
+  junção no `obra-2026-10-26` → teste do arquivo de provas na junção → Livro "pronta para testar" → chamar o Samuel.
+- **Claro e direto (29/10):** "quando for falar comigo, seja mais direto como foi nessa mensagem, coloque isso nas regras,
+  eu preciso de clareza e direto." Modelo que funcionou: o problema em 2 linhas, a sugestão em 1 frase, "Responda sim ou
+  não". Explicações longas com A/B/C e jargão deram "explica melhor"/"nao ententi".
+- **Máximo 3 agentes** (ele: "5 agentes você está quebrando a regra do claude md").
+- Quando ele pergunta "tem certeza que era isso que estava na lista?", conferir na conversa/registro e citar a lista.
+
+## 2. Central: auditoria da versão de teste refeita
+Pedido: "auditoria [...] ficou muito ruim [...] tem coisas que estão misturadas" → "não quero que tire print dessa vez,
+só coloque cada decisão separada e a sua solução" → "você podia ter colocado os prints originais junto dessas perguntas"
+e "que as respostas não fizerem sentido também mude". Feito: 181 cartões (180 decisões) em 6 abas, todos como pergunta
+com escolhas por situação; 123 com os prints originais (162 imagens; 73 subidas ao depósito de imagens da Central, a
+página foi republicada com `assets`). Montador:
+`D:\programas\EditorImpressao-arquivos\conferencia-versao-teste-2026-10-28\auditoria-separada\montar.py`.
+Aba velha `auditoria-28-10` apagada. **Respostas dele nessas abas ainda não lidas.**
+
+## 3. A lista do Automático (situação em 30/10, madrugada)
+| Item | Decisão | Situação |
+|---|---|---|
+| Botão "marcações" na barra de baixo, começa escondido; acende sozinho nas ferramentas de marcar | D-578, D-580, D-584 | **testado: "deu certo, deu tudo certo"** (junção `5338cdc`) |
+| Desfazer o Automático tirar as marcações | D-581 | **descartada**: "vamos pular isso, pois o programa já faz isso automatico" |
+| Filtro "por cima" depois do Automático | D-582 | investigado: não é defeito de tela; é a marcação do Automático (enfeite guarda a cor, D-144/D-128) |
+| Caixinha "Respeitar as gravuras achadas" no painel Filtro (de fábrica ligada; segue "Aplicar em"; cinza com "Só as letras") | D-583 ("c"), D-586 ("A"), D-587 ("sim") | **testada: "o programa está mudando de efeito como deveria"** (junção `99a3cdc`) |
+| Pintura tomada por enfeite (capa do *Na escola de Jesus*) | D-585 | aceita até depois: "deixar como está e deixar anotado" (sem limiar seguro) |
+| **Ver como fica na janela grande do Automático**: antes e depois com a linha + bolinha | D-577 | **pronta para testar** (junção `d00dcec`; seção 4) |
+| Mudar uma opção numa página depois do Automático e refazer o resto | D-579 | próximo (pergunta na seção 5) |
+| Botão para ver o caderno no "Montar para imprimir" | D-574 | depois (3 desenhos A/B/C na aba "Não gostei" da Central) |
+| Filtro (Mágico pro) nas gravuras achadas | D-221 | **adiado por ele**: "vamos deixar a 5 para depois, é mais importante fazer a 6 e a 7 e 8" |
+| Gravura em tons de cinza por escolha | D-588 | depois da lista: "vamos deixar esse problema para resolver logo após terminamos os que nós propomos a fazer" |
+
+Ordem: D-577 (teste dele) → D-579 → D-574 → D-221 → D-588. Depois: D-575 (livreto ao processar), D-573 (vários livros).
+Para a D-221 a gerente já tinha sugerido (sem resposta, porque ele adiou): parte "Nas gravuras achadas" no painel Filtro,
+abaixo de "Respeitar as gravuras achadas", com os 4 filtros, nenhum aceso de início, valendo com "Aplicar em".
+
+## 4. D-577 (ver como fica no Automático): o que foi feito
+- Ele: "sim, mas coloca uma bolinha de carregamento como fez na area de trabalho, porque as vezes vai demorar para
+  processar né?"
+- `ui/automatico.py` (`PaginaAntesEDepois`, `VistaAntesDepoisComZoom`, `parar_as_previas`), `core/automatico.py`
+  (`copia_para_a_previa`, `depois_da_pagina`...), `ui/tarefas.py` (`TarefaPreviaDoAutomatico`), `ui/janela_principal.py`
+  (`closeEvent` para a conta da prévia). A prévia passa uma cópia do projeto pelo mesmo caminho do "Rodar"; 180 DPI.
+- Provas: `tests/test_decisoes_automatico_ver_como_fica.py`, 11 passaram na junção. Verificador: 1ª rodada NÃO CUMPRE
+  (D1: fechar o programa com a conta rodando saía com código 127; D2: a 110 DPI o Mágico pro estragava letras que o PDF
+  não tem) → consertado em `c998fa9` → 2ª rodada PRONTO PARA O SAMUEL TESTAR. Tempos: abrir 4,4 s; trocar para Mágico
+  pro 3,8 s; folhear 1,6-2,1 s. Detalhes: `relatorios/automatico-ver-como-fica/ONDE-PAREI.md` (no ramo).
+- Ressalvas dadas a ele: margens iguais não aparecem na prévia; "tela cheia" mostra a folha crua; no Mágico pro a prévia
+  ainda perde um "I"/acento aqui e ali.
+- **Perguntas que o verificador sugeriu e que ainda não foram feitas** (só se o teste dele tocar nelas, uma por vez,
+  sim/não): "tela cheia" deveria mostrar o antes e depois?; "Rodar: só nesta página" é a página da área de trabalho, não a
+  que aparece na prévia; a prévia supõe "pular as páginas mexidas à mão"; margens iguais e "todas do tamanho da maior"
+  não aparecem.
+
+## 5. Perguntas em aberto (texto exato)
+- Sem resposta (ele disse "entendi" e voltou ao teste): "Minha sugestão: o botão "marcações" também liga e desliga esse
+  contorno laranja. Responda sim ou não." (contorno laranja das áreas achadas, sozinho nas páginas com "!", D-237).
+- Ainda não perguntada: no Original a caixinha "Respeitar as gravuras achadas" não faz nada — deixar visível (como está)
+  ou cinza?
+- D-579, quando chegar a vez: leva a mudança para o livro todo sozinho, ou abre a lista "Em quais páginas?" (como o
+  "usar em todas" do Cortar)? Pula as páginas mexidas à mão (D-004)?
+
+## 6. Descobertas desta sessão (não redescobrir)
+- As "marcações por cima da página" eram o editor pintando sempre a seleção (letra azul, gravura salmão, papel verde);
+  vale também para Zoom e Mão (são ferramentas do mesmo `EditorSelecao`).
+- Os riscos laranja nas páginas com "!" são o contorno das áreas achadas (D-237), não as marcações.
+- No Preto e branco, pintura/foto sai em tons de cinza por regra (D-147); só "enfeite" guarda a cor. Com a caixinha
+  desmarcada a área vira 1 bit (na capa pareceu "negativo"; com Otsu e força "bem fraco").
+- `core/pipeline.garantir_selecao` acha gravura/letra/papel sozinho ao desenhar página com filtro; parte das marcações
+  do livro de teste sobrou do Automático desfeito.
+- Lista de bugs ganhou: figurinhas do painel Filtro sem a marcação; P&B sem marcação: tela ≠ PDF nas gravuras; no
+  Original o primeiro desenho depois do Automático difere dos seguintes. Achado do construtor da D-577 (ainda não na
+  Lista): no Mágico pro, a frase da caixinha "Escurecer sozinho..." fica à vista sem a caixinha (`_opcoes_limpar` /
+  `_mostrar_opcoes` em `ui/automatico.py`).
+
+## 7. Como conferir
+- Na versão de teste (`.claude\worktrees\obra-juncao`), offscreen, um arquivo por vez (PowerShell):
+  `$env:QT_QPA_PLATFORM="offscreen"; D:\programas\EditorImpressao\.venv\Scripts\python.exe -m pytest tests\<arquivo> -q --basetemp=_tmp\bt`
+  para `test_decisoes_marcacoes.py` (19), `test_decisoes_respeitar_gravuras.py` (19),
+  `test_decisoes_automatico_ver_como_fica.py` (11, conferido na junção em 30/10), `test_decisoes_automatico.py` (24).
+- A suíte inteira não rodou nesta sessão. **Antes de qualquer coisa entrar no `fase-1`: suíte inteira do PC verde e a
+  revisão final dele (§4.6).**
+
+## 8. Ramos e cópias criados nesta sessão
+Ver `memoria/ramos.md`, seção "Ramos do Automático, 29-30/10/2026". Todos já juntados ao `obra-2026-10-26`. A cópia
+`auto-ver` tem `_vtmp\` (~1,1 GB, do verificador, fora do git, criado nesta tarefa): pode ser apagado depois do teste dele.
 
 ---
 

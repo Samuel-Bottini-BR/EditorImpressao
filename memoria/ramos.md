@@ -322,3 +322,13 @@ Todos com "No fase-1? SIM" na tabela. Destaques:
   `girar-aplicar-copia`, `misto-desenho-apagado`, `consertos-06-10`, `pedaco-e-salvo-2-2026-10-05` (06/10);
   `consertos-janela-2026-10-05`, `consertos-cancelar-pedaco-2026-10-05` (05/10); `plano-09-10` (sessão na nuvem).
   O que cada um trouxe está no Registro de mudanças, na data da junção.
+
+## Ramos do Automático, 29-30/10/2026 (todos saíram do `obra-2026-10-26` e foram juntados nele)
+
+| Cópia | Ramo | O que é | Junção |
+|---|---|---|---|
+| `.claude\worktrees\auto-marcacoes` | `automatico-marcacoes-2026-10-29` | botão "marcações" (D-578, D-580, D-584) | `5338cdc` |
+| `.claude\worktrees\auto-filtro` | `automatico-filtro-2026-10-29` | investigação da D-582 (só provas e relatório) | `acd44d4` |
+| `.claude\worktrees\auto-pintura` | `automatico-pintura-2026-10-29` | D-585 e "Só as letras" do Automático (só provas e relatório) | `18fe50b` |
+| `.claude\worktrees\auto-respeitar` | `automatico-respeitar-gravuras-2026-10-29` | caixinha "Respeitar as gravuras achadas" (D-583, D-586, D-587) | `99a3cdc` |
+| `.claude\worktrees\auto-ver` | `automatico-ver-como-fica-2026-10-29` | antes e depois na janela do Automático (D-577); `_vtmp\` (~1,1 GB, do verificador, fora do git) | `d00dcec` |
