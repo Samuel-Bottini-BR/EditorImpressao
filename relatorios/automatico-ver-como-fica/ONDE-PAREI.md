@@ -69,7 +69,11 @@ Ramo atualizado com `obra-2026-10-26` (20a07c7). Livro de teste: cópia do proje
 - [x] Quadro laranja do a-08: procurado (abaixo)
 - [x] 3 provas novas (commit d301673); as 3 falharam no código de antes
 - [x] prints (`prints_d577_30-10.py antes|depois`)
-- [ ] testes que tocam ui/automatico.py, um por vez (rodando)
+- [x] testes que tocam ui/automatico.py, um por vez no PC: 18 arquivos, todos passaram (o da D-577: 14 de 14)
+- [x] GitHub, rodada 41086238065: passou. Na 1ª vez, a parte 2 falhou num teste de tempo
+      (`test_d148_desfazer_o_automatico_devolve_o_so_as_letras_do_livro`: "o projeto.json com o 'Só as letras'
+      desfeito" não chegou em 15 s); a mesma parte rodada de novo passou, e no PC ele passou 4 de 4 vezes. Esse teste
+      não abre página mexida nem o tela cheia.
 
 ## Como cumpri cada uma
 
