@@ -71,3 +71,9 @@ coisa: um botão que mostra e esconde o colorido das marcações.
 - ![](a-10-cortar-capa-colorida.png) Área de trabalho, ferramenta "Cortar as bordas", capa colorida, com o retângulo verde.
 - ![](a-11-ver-de-perto-capa-preto-e-branco.png) "Ver de perto" aberto da mesma ferramenta: capa em "Preto e branco", 1 bit.
 - O que é (código da versão de teste): a ferramenta Cortar mostra sempre a página sem filtro, só girada e dividida (`ui/tela_conferir._atualizar_previa_para_recorte` → `core/pipeline.preparar_para_recorte`, conserto de 23/09 para o corte não "andar sozinho"). O "Ver de perto" (`ui/tela_ampliada.py`, modo Bordas) mostra a página com o filtro dela (`previas.pegar`). O filtro da capa é Preto e branco, do teste de 29/10 (D-588).
+
+## Teste da D-577 depois do conserto (30/10, 13:33)
+- Palavras dele: "1- a questão do antes e depois, ela é de acordo com o que? 2- no primeiro print mostra o antes no original e no segundo print mostra o depois no preto e branco."
+- ![](a-12-d577-linha-na-esquerda-depois-original.png) Capa, "Limpar a folha" em Original. A linha está toda à esquerda, então o que aparece é o "depois": a capa colorida (Original), como ele escolheu. Antes do conserto a capa mexida não mudava.
+- ![](a-13-d577-linha-na-direita-antes-pb.png) Mesma escolha, linha toda à direita: aparece o "antes", a capa como está no livro (Preto e branco 1 bit, do teste da D-588).
+- Leitura da gerente: a tela está certa, e ele leu os lados trocados. Isso pode explicar a "quarta coisa" (o antes parecia mudar com o filtro).
