@@ -108,3 +108,5 @@ coisa: um botão que mostra e esconde o colorido das marcações.
 - ![](a-16-linha-na-esquerda.png) (print 2 dele) Janela, P&B + Só as letras, linha toda à esquerda: debaixo do rótulo "antes" aparece o depois (P&B). Ele circulou esse lado.
 - ![](a-17-linha-na-direita.png) (print 3 dele) Linha toda à direita: debaixo do rótulo "depois" aparece o antes (cru). Ele circulou esse lado.
 - ![](a-18-comparar.png) (print 4 dele) "comparar": "como está no livro: Preto e branco" × "depois: Preto e branco".
+- 1 (zoom com a roda): conferido no código; `VistaAntesDepoisComZoom` (ui/automatico.py) não trata a roda (só os botões); o Visualizador da área de trabalho trata (`ui/widgets/visualizador.py`, `wheelEvent`). Vai para o construtor.
+- 2: sugestão da gerente (os rótulos andam colados na linha) → ele: "não gostei da sugestão, eu quero que a faixa seja de acordo com a direção do antes e depois, se ela está embaixo do depois ela está aparecendo o depois se está embaixo do antes ela está no antes."
