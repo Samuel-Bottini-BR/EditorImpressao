@@ -34,3 +34,8 @@ coisa: um botão que mostra e esconde o colorido das marcações.
 - Imagem da explicação: `relatorios/automatico-filtro/5-capa-nos-4-filtros-com-e-sem-a-marcacao.jpg` (ramo `automatico-filtro-2026-10-29`, commit `d4407e9`, só provas e relatório).
 - Vira a pergunta D-583 ao Samuel; achado à parte na Lista de bugs (figurinhas do painel sem a marcação).
 - "Só as letras" do Automático conferido em 29/10: funciona (livro, página herdada, tela, PDF, desfazer). D-585: causa achada (escrita por cima da pintura), sem conserto seguro; Samuel: "deixar como está e deixar anotado, vamos continuar para o que temos que fazer".
+
+## Teste da caixinha "Respeitar as gravuras achadas" (D-583, D-586, D-587), 29/10
+- Página 17 (pintura colorida saindo cinza no Preto e branco): é a D-147 (pintura e foto em tons de cinza). Os riscos laranja são o contorno das áreas achadas, ligado sozinho nas páginas com "!" (D-237); ele perguntou "porque estão ali, não são marcações". Pergunta da gerente (o botão "marcações" também esconder o laranja?) ficou sem resposta.
+- Capa, caixinha desmarcada: "onde está a opção que deixa só cinza e branco ,essa parece que está dando um negativo". Não existe; vira a D-588.
+- Resultado dele: "beleza, vamos deixar esse problema para resolver logo após terminamos os que nós propomos a fazer, o programa está mudando de efeito como deveria". D-583, D-586 e D-587 marcadas como testadas no Livro.
