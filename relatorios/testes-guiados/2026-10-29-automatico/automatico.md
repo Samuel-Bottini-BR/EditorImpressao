@@ -43,3 +43,11 @@ coisa: um botão que mostra e esconde o colorido das marcações.
 ## Ordem da lista, 29/10 (fim do dia)
 - Ele pediu a lista de novo ("acho que você está confundindo, olha a conversa e veja a lista e passa ela aqui pra mim"); a gerente repassou a de 14h59 (itens 1 a 8) com a situação de cada um.
 - Ordem nova, palavras dele: "vamos deixar a 5 para depois, é mais importante fazer a 6 e a 7 e 8". Fica: D-577 (ver como vai ficar), D-579 (mudar e refazer o resto), D-574 (ver o caderno), depois D-221 (filtro nas gravuras achadas), depois D-588 (gravura em tons de cinza).
+
+## Teste do item 6 (D-577, ver como fica na janela do Automático), 30/10
+- Palavras dele: "ele não está funcionando, e não funciona em tela cheia também, como pode ver pelo print ele não muda no antes e depois conforme eu troco os filtros"
+- ![](a-07-ver-como-fica-nao-muda-com-o-filtro.png) Janela do Automático, *Na escola de Jesus*, página 1 de 199 (capa), etapa 4 "Limpar a folha", Preto e branco + "Só as letras" + "Guardar a tinta forte", "Escurecer sozinho" ligado. O "depois" mostra a capa inteira em preto e branco duro (a pintura também), e não muda quando ele troca o filtro.
+- ![](a-08-ver-como-fica-tela-cheia.png) "tela cheia": mostra a folha 1 de 199 crua, colorida (sem antes e depois). No canto de cima à esquerda aparece um quadro solto com uma imagem laranja e preta (a origem ainda não foi vista).
+- Situação: D-577 **não passou no teste dele**. A causa está em investigação.
+- **Causa achada (30/10, na versão de teste):** a prévia supõe sempre "pular as páginas mexidas à mão" (`EstadoDoAutomatico.pedido()` com `pular_mexidas=True`; D-004). No livro de teste, a capa (página 1) e a página 17 estão marcadas como mexidas à mão no filtro (`mexida_a_mao: ['filtro']`, dos testes de 29/10). Então o Automático pula a capa, e o "depois" fica igual ao que já está no livro: a capa em 1 bit do teste da D-588. Prova numa cópia do projeto: na página 1, Preto e branco × Mágico pro dá diferença de 2,1 (de 255) pulando e muda sem pular; na página 3 (não mexida), dá 17,4 (muda). Nas páginas não mexidas a prévia funciona.
+- "tela cheia" mostra a folha crua do PDF: foi escolha do construtor ("como antes", TelaCheiaDoPDF), uma das ressalvas dadas a ele.
