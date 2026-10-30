@@ -100,3 +100,4 @@ coisa: um botão que mostra e esconde o colorido das marcações.
 - Conferido no código da versão de teste: o painel Filtro tem "Aplicar em: só nesta · todas · daqui em diante" (`ui/tela_conferir.py`, `_filtro_em_todas` e `_filtro_nas_proximas`), que leva o filtro da página e os ajustes dele (a força, "Só as letras", "Respeitar as gravuras achadas"...) para as outras páginas. Cortar e Mover têm "usar em todas".
 - Gerente: "Então tiro o item 7 da lista? Responda sim ou não." → ele: "sim". D-579 descartada (já existe o "Aplicar em" do painel Filtro e o "usar em todas"). Lista: 6 (D-577, em construção) → 8 (D-574) → 5 (D-221) → D-588.
 - Ele (30/10): "coloque mais uma coisa nessa lista, aquele relato do Kaique do montar cadernos que eu mandei você ler a pasta". D-589 entra na lista como item 9. Ordem: 6 (D-577) → 8 (D-574) → 5 (D-221) → D-588 → 9 (D-589).
+- Gerente: "Quer que ele venha logo depois do item 6?" → ele: "não". O item 9 (D-589) fica no fim da lista.
