@@ -24,9 +24,23 @@ Ramo `automatico-ver-como-fica-2026-10-29` (saiu de `obra-2026-10-26`), cópia
 - [x] tarefa de fundo (ui/tarefas.py: TarefaPreviaDoAutomatico)
 - [x] coluna da direita da janela grande (ui/automatico.py: PaginaAntesEDepois, VistaAntesDepoisComZoom)
 - [x] provas (tests/test_decisoes_automatico_ver_como_fica.py, 10 testes; commit 55a816d)
-- [ ] testes que já tocam ui/automatico.py, um por vez (rodando)
-- [ ] prints offscreen (script _tmp/prints_d577.py, livro copiado em _tmp/livro)
+- [x] testes que já tocam ui/automatico.py, um por vez
+- [x] prints offscreen (prints_d577.py nesta pasta; livro copiado em _tmp/livro)
+
+## Como cumpri cada uma
+
+- **D-577, antes e depois com a linha:** a coluna da direita é `PaginaAntesEDepois` (ui/automatico.py), com a
+  `VistaAntesDepois` da área de trabalho (a linha que se arrasta). Prova: `test_d577_a_pagina_da_direita_mostra_o_antes_e_depois_com_a_linha`;
+  prints 1, 3 e 4.
+- **D-577, o depois muda a cada opção:** `test_d577_marcar_uma_opcao_muda_o_depois_e_desmarcar_volta`,
+  `test_d577_cortar_e_dividir_mudam_o_tamanho_do_depois`, `test_d577_sem_etapa_marcada_o_depois_e_o_antes`.
+- **D-577, a bolinha:** `BolinhaDeCarregamento` ao lado do título; `test_d577_a_bolinha_gira_enquanto_calcula_e_some_no_fim`; print 2.
+- **D-577, só mostra:** cópia do projeto; `test_d577_mexer_e_fechar_deixa_o_livro_o_desfazer_e_o_disco_iguais`,
+  `test_d577_core_a_previa_nao_toca_no_projeto` (as duas falham se a prévia usar o projeto aberto: conferido).
+- **Mesmo caminho do rodar:** `test_d577_o_depois_bate_com_o_rodar_de_verdade` (torta P&B 0,08% dos pontos; dividir 0%).
+- **Só o último pedido vale:** `test_d577_resultado_velho_nunca_cobre_o_novo` (falha sem a conferência da chave: conferido).
+- **D-486 saiu / D-002 folhear e zoom:** mesmo teste da linha (sem FolhearPDF) e `test_d577_folhear_e_zoom_continuam`; P-187.
 
 ## Perguntas para o Samuel
 
-(nenhuma ainda)
+(nenhuma; as ressalvas vão na entrega à gerente)
