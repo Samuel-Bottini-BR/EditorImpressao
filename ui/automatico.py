@@ -276,8 +276,8 @@ class EstadoDoAutomatico(QObject):
 
     def pedido(self, pular_mexidas: bool = True, desligar: bool = False) -> A.Pedido:
         """O pedido do "Rodar" (ou do "Desligar as marcadas"). Leva também as
-        etapas desmarcadas (D-589: "Montar cadernos" desmarcada desliga no
-        "Rodar"; core/automatico.Pedido.desmarcadas)."""
+        etapas desmarcadas (D-589: Montar cadernos, Margens iguais e Gravuras
+        e fotos desmarcadas desligam no "Rodar"; core/automatico.Pedido.desmarcadas)."""
         return A.Pedido(etapas=self.etapas_marcadas(), opcoes=copy.deepcopy(self.opcoes),
                         paginas=self.paginas(), pular_mexidas=pular_mexidas,
                         receita=self.receita, desligar=desligar, ordem=list(self.ordem),

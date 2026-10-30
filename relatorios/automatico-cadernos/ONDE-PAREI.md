@@ -76,3 +76,28 @@ dividir"): hoje o livro continua dividido.
   desmarcados fariam as páginas voltarem como vieram (o feito à mão fica).
 - Recomendação do construtor: **B** (é o mesmo tipo de etapa dos cadernos e não desfaz trabalho de
   página); C muda muito o livro com um clique só.
+
+## 30/10, segunda parte — P1 respondida: também Margens iguais e Gravuras e fotos
+
+- Samuel, respondendo a "conserto essas duas também ['Margens iguais' e 'Gravuras e fotos'], do mesmo
+  jeito que os cadernos?": **"Sim, se algo não está marcado, não é para fazer , certo?"**. Dividir fica
+  como está (a gerente ainda vai perguntar).
+- Reproduzido antes do conserto (livro sintético com texto e uma "foto"): Limpar + Gravuras + Margens
+  ligadas → desmarcar as duas e rodar só o Limpar → continuavam "ligada no livro todo", voltavam
+  marcadas, e o PDF saía com margens (345 x 432 pt em vez de 288 x 403) e a foto em cinzas.
+- Conserto: `core/automatico.py`, `_desligar_as_desmarcadas` (lista `DESLIGAM_DESMARCADAS` = Gravuras,
+  Margens, Cadernos), chamada no "Rodar" DEPOIS das etapas marcadas (Gravuras só conta como ligada com o
+  Limpar ligado, e o Limpar pode ter ligado na mesma rodada). Desliga do mesmo jeito do "Desligar as
+  marcadas": Margens → `margens_iguais=False`; Gravuras → `gravura_forma="desligada"`. Mesma ação do
+  Desfazer. "Desligar as marcadas" igual a antes.
+- Provas novas (falharam no código de `3b70bb3`, passam agora):
+  `test_d589_desmarcar_margens_iguais_e_rodar_sai_sem_margens_e_nao_volta_marcada`,
+  `test_d589_desmarcar_gravuras_e_rodar_a_foto_sai_em_preto_e_branco_e_nao_volta_marcada`, e
+  `test_d589_desligar_as_marcadas_nao_mexe_nas_desmarcadas`.
+- P2 (do verificador, aberta): **sim, com este conserto acontece o mesmo com Margens iguais e Gravuras
+  e fotos** — rodar "só nesta página" ou "nas escolhidas" com uma delas desmarcada desliga no livro
+  todo (são do livro todo, D-484). Não mudei.
+- Atenção (mudança que o Samuel precisa saber): antes, rodar só "Limpar a folha" já fazia o livro
+  achar gravuras sozinho (a etapa aparecia ligada e marcada depois). Agora, com "Gravuras e fotos"
+  desmarcada, o livro não procura gravuras. A receita de sempre (D-018) marca as gravuras, então o
+  caminho do aviso do livro novo não muda.
