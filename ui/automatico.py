@@ -676,8 +676,8 @@ def _classe_da_vista():
 
 class VistaAntesDepoisComZoom(_classe_da_vista()):
     """O "antes / depois" que já existe na área de trabalho (VistaAntesDepois:
-    o antes à esquerda da linha, o depois à direita, a linha se arrasta), com
-    duas coisas a mais que a janela grande do Automático precisa:
+    a linha se arrasta; à esquerda dela o depois, à direita o antes, desde o 3º
+    teste de 30/10), com o que a janela grande do Automático precisa a mais:
 
       - antes e depois de tamanhos diferentes (cortar, endireitar e dividir
         mudam o tamanho da página): os dois vão para uma tela do mesmo tamanho
@@ -689,6 +689,10 @@ class VistaAntesDepoisComZoom(_classe_da_vista()):
         nº 5: "Na janela, ver a página ao lado, folhear e dar zoom."): ela
         fica dentro de uma área de rolar, e o zoom muda o tamanho dela (1 =
         cabendo na área).
+      - a roda do mouse dá zoom (D-577, 3º teste, 30/10: "não consigo dar zoom
+        com o mouse, usando o scrool"), como o Visualizador da área de trabalho
+        (ui/widgets/visualizador.wheelEvent): o mesmo passo (PASSO_DA_RODA) por
+        dente, e o ponto da página debaixo do ponteiro fica parado.
 
     `zoom`, definir_zoom e ajustar_a_tela têm os nomes do Visualizador do
     folhear (a janela grande e a prova P-187 usam esses nomes).
@@ -745,6 +749,36 @@ class VistaAntesDepoisComZoom(_classe_da_vista()):
     def ajustar_a_tela(self) -> None:
         self.zoom = 1.0
         self.rolagem.setWidgetResizable(True)
+
+    def wheelEvent(self, evento) -> None:  # noqa: N802 - nome do Qt
+        """A roda dá zoom (D-577, 30/10), ancorado no ponteiro: o ponto da página que estava
+        debaixo dele continua lá (a área de rolar anda o que for preciso). O passo é o do
+        Visualizador da área de trabalho. Sem página na tela, não faz nada."""
+        from PySide6.QtWidgets import QApplication
+
+        from ui.widgets.visualizador import PASSO_DA_RODA
+
+        if self.depois is None:
+            return
+        passos = evento.angleDelta().y() / 120.0
+        if not passos:
+            return
+        evento.accept()
+        ponto = evento.position()
+        area = self._area(self.depois)
+        fx = (ponto.x() - area.left()) / max(1.0, area.width())
+        fy = (ponto.y() - area.top()) / max(1.0, area.height())
+        porta = self.rolagem.viewport()
+        na_tela = self.mapTo(porta, ponto.toPoint())         # o ponteiro, parado na tela
+        self.definir_zoom(self.zoom * (PASSO_DA_RODA ** passos))
+        QApplication.sendPostedEvents(self.rolagem)          # o tamanho novo chega às barras
+        area = self._area(self.depois)
+        x = area.left() + fx * area.width()
+        y = area.top() + fy * area.height()
+        barra_x, barra_y = self.rolagem.horizontalScrollBar(), self.rolagem.verticalScrollBar()
+        # a página no lugar: o ponto (x, y) da vista cai em `na_tela` da área visível
+        barra_x.setValue(int(round(x - na_tela.x())))
+        barra_y.setValue(int(round(y - na_tela.y())))
 
 
 def _no_meio(pix: QPixmap, largura: int, altura: int, fundo: str) -> QPixmap:
@@ -1067,8 +1101,9 @@ class PaginaAntesEDepois(QWidget):
         self.rolagem.setAlignment(Qt.AlignCenter)
         self.visor = VistaAntesDepoisComZoom(self.rolagem)
         # D-577, 30/10: o antes é a folha crua (antes dizia "a página como está agora")
-        self.visor.setToolTip("À esquerda da linha, a página como veio, sem nada; à direita, como "
-                              "ela vai sair com as etapas marcadas. Arraste a linha para comparar.")
+        # D-577, 3º teste (30/10): o lado do "antes" mostra o antes, o do "depois", o depois
+        self.visor.setToolTip("Arraste a linha: para o lado do \"antes\", a página como veio, sem nada; "
+                              "para o lado do \"depois\", como ela vai sair com as etapas marcadas.")
         self.rolagem.setWidget(self.visor)
         col.addWidget(self.rolagem, 1)
 
