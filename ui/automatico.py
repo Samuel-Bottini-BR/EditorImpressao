@@ -804,6 +804,7 @@ class PaginaAntesEDepois(QWidget):
         self._feito = None                    # a chave a que o "depois" mostrado responde
         self._antes = None                    # (índice, imagem) do antes da página da vez
         self._depois = None                   # (índice, imagem) do depois
+        self._fechada = False                 # fechar(): nada mais é pedido
 
         col = QVBoxLayout(self)
         col.setContentsMargins(0, 0, 0, 0)
@@ -946,7 +947,7 @@ class PaginaAntesEDepois(QWidget):
         """Uma troca na janela: pede o depois de novo (depois de uma espera
         curta, para trocas seguidas virarem uma só). `agora`: sem a espera
         (abrir a janela, folhear)."""
-        if self.projeto is None or self._indice not in self._ativas():
+        if self._fechada or self.projeto is None or self._indice not in self._ativas():
             return
         if agora:
             self._relogio.stop()
@@ -960,7 +961,7 @@ class PaginaAntesEDepois(QWidget):
         `_querida` passa a ser a chave dele: só o resultado dela é mostrado."""
         from core.automatico import copia_para_a_previa
 
-        if self.projeto is None or self._indice not in self._ativas():
+        if self._fechada or self.projeto is None or self._indice not in self._ativas():
             return
         pedido = self.estado.pedido()
         chave = self._chave(pedido)
@@ -1046,7 +1047,15 @@ class PaginaAntesEDepois(QWidget):
 
     def fechar(self) -> None:
         """Ao fechar a janela: para a conta (o que estiver rodando termina
-        sozinho, e nada chega mais aqui) e solta as imagens."""
+        sozinho, e nada chega mais aqui) e solta as imagens. Depois disto,
+        nenhuma troca no estado pede conta nova (a janela fechada pode
+        demorar um instante para sumir, e o "Rodar" troca o estado)."""
+        if not self._fechada:            # a janela pode chamar duas vezes (Fechar e depois done)
+            self._fechada = True
+            try:
+                self.estado.mudou.disconnect(self.pedir)
+            except (RuntimeError, TypeError):
+                pass
         self._relogio.stop()
         self._na_espera = None
         if self._tarefa is not None:

@@ -19,12 +19,13 @@ Ramo `automatico-ver-como-fica-2026-10-29` (saiu de `obra-2026-10-26`), cópia
 ## Andamento
 
 - [x] Li CLAUDE.md (§3, §10, §11), implementador.md, memoria/INDICE.md, D-577/D-486.
-- [ ] core: prévia de uma página pelo mesmo caminho do rodar (core/automatico.py)
-- [ ] tarefa de fundo (ui/tarefas.py)
-- [ ] coluna da direita da janela grande (ui/automatico.py)
-- [ ] provas (tests/test_decisoes_automatico_ver_como_fica.py)
-- [ ] testes que já tocam ui/automatico.py, um por vez
-- [ ] prints offscreen
+- [x] core: prévia de uma página pelo mesmo caminho do rodar (core/automatico.py: copia_para_a_previa,
+      antes_da_pagina, depois_da_pagina, paginas_depois, como_sai_na_tela)
+- [x] tarefa de fundo (ui/tarefas.py: TarefaPreviaDoAutomatico)
+- [x] coluna da direita da janela grande (ui/automatico.py: PaginaAntesEDepois, VistaAntesDepoisComZoom)
+- [x] provas (tests/test_decisoes_automatico_ver_como_fica.py, 10 testes; commit 55a816d)
+- [ ] testes que já tocam ui/automatico.py, um por vez (rodando)
+- [ ] prints offscreen (script _tmp/prints_d577.py, livro copiado em _tmp/livro)
 
 ## Perguntas para o Samuel
 
