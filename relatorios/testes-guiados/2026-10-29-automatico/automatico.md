@@ -56,3 +56,4 @@ coisa: um botão que mostra e esconde o colorido das marcações.
   - 1: a prévia mostra a mudança em todas as páginas, inclusive as mexidas à mão; ao "Rodar", a pergunta da D-004 continua decidindo.
   - 2: o antes e depois da prévia também em tela grande, com zoom (o "tela cheia" hoje mostra a folha crua).
   - 3: ![](a-09-caixinha-molduras-cinza.png) a caixinha "No Preto e branco, molduras e iluminuras também em preto e branco" fica cinza porque "Só as letras" está marcada (D-168: `ui/automatico.py`, `cx_decoracao_pb.setEnabled(not (so_letras and no_pb))`). Desmarcando "Só as letras", ela volta a funcionar.
+- Quarta coisa (30/10, palavras dele): "quarta coisa, quando você mexe no antes e depois, ele começa a mostrar o antes de qual pagina, parece que ele troca o antes conforme se troca os perfis dos filtros." Pela D-577, o "antes" é a página como está agora no livro e não muda com as opções. Vai para o construtor investigar e reproduzir.
