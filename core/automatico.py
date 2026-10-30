@@ -1014,12 +1014,51 @@ def como_sai_na_tela(img, projeto, pagina, dpi: float):
 
 
 def antes_da_pagina(doc, copia, indice: int, dpi: int):
-    """A pagina `indice` como esta agora (o "antes"), desenhada na `copia`."""
+    """O "antes" da previa do Automatico (D-577, 30/10/2026, depois do 2o
+    teste): a folha da pagina `indice` CRUA, como veio do PDF - sem filtro,
+    sem girar, sem dividir, sem endireitar, sem cortar, sem margens.
+
+    Samuel: "o antes é sem filtro e sem cortar sem nada, o depois na tela de
+    atualizar que aplica os filtros de endireitar cortar ou fazer qualquer
+    outra coisa para ver como iria ficar." (no lugar de "mostra já cortada e
+    endireitada se tiver sido feito isso.", dito antes no mesmo dia). O antes
+    e o depois podem ter tamanhos diferentes: a vista com a linha poe os dois
+    na mesma escala (ui/automatico.VistaAntesDepoisComZoom).
+
+    PAGINA DE FOLHA DIVIDIDA: aqui sai a folha inteira (o que veio do PDF). Se
+    o antes de uma metade deve ser a folha inteira ou so a metade dela ainda
+    e PERGUNTA ao Samuel (relatorios/automatico-ver-como-fica/ONDE-PAREI.md);
+    a resposta muda so esta funcao.
+
+    Ate 30/10 (29/10) o antes era a pagina como esta no livro, com o filtro
+    dela: agora e pagina_como_esta (o "comparar" da tela cheia). Nao le nem
+    muda a `copia` alem de achar a folha."""
+    from core.pdf_io import pagina_para_array
+
+    return pagina_para_array(doc, copia.paginas[indice].folha, dpi=dpi)
+
+
+def pagina_como_esta(doc, copia, indice: int, dpi: int):
+    """A pagina `indice` como esta agora no livro, COM o filtro que ela ja tem
+    (Original ou o aplicado), desenhada na `copia`. E a tela da esquerda do
+    "comparar" da tela cheia da previa (D-577, 30/10: "nessa vai ter o filtro
+    que estava antes, seja ele original ou que foi aplicado e o filtro que
+    está selecionado no momento")."""
     from core.pipeline import renderizar_pagina
 
     pagina = copia.paginas[indice]
     img, _ = renderizar_pagina(doc, copia, pagina, dpi=dpi)
     return como_sai_na_tela(img, copia, pagina, dpi)
+
+
+def filtro_depois(copia, folha: int, metade: str) -> str:
+    """O filtro com que a pagina (folha, metade) sai DEPOIS do aplicar na
+    `copia` (o rotulo da tela da direita do "comparar"). "" se ela nao vai
+    para o PDF."""
+    from core import etapas
+
+    novas = paginas_depois(copia, folha, metade)
+    return etapas.filtro_que_vale(copia, novas[0]) if novas else ""
 
 
 def depois_da_pagina(doc, copia, pedido: Pedido, indice: int, dpi: int,

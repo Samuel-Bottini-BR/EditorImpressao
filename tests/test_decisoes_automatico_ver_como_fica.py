@@ -199,7 +199,8 @@ def test_d577_a_pagina_da_direita_mostra_o_antes_e_depois_com_a_linha(janela, ap
 
 def test_d577_sem_etapa_marcada_o_depois_e_o_antes(janela, app, tmp_path):
     """D-577: o "depois" é "como ela vai sair com as etapas e opções marcadas". Livro novo,
-    nada marcado: rodar não muda nada, e o depois é igual ao antes (ponto por ponto)."""
+    nada marcado: rodar não muda nada, e o depois é igual ao antes (ponto por ponto; a página
+    do livro novo está em Original, então o antes sem filtro é ela mesma)."""
     grande = _abrir(janela, app, tmp_path, pagina=2)
     assert not janela.estado_do_automatico.marcadas
     antes, depois = _imagens(grande.antes_e_depois)
@@ -220,7 +221,8 @@ def test_d577_marcar_uma_opcao_muda_o_depois_e_desmarcar_volta(janela, app, tmp_
     _marcar(grande, {A.LIMPAR}, ORIGINAL)
     _esperar(app, painel)
     antes, depois = _imagens(painel)
-    assert np.array_equal(antes, depois), "no Original o depois tinha de ser a página como está"
+    # (o livro sintético está todo em Original: o antes, sem filtro, é a página como está)
+    assert np.array_equal(antes, depois), "no Original o depois tinha de ser o antes"
     _marcar(grande, {A.LIMPAR}, PRETO_E_BRANCO)
     _esperar(app, painel)
     assert _papel(_imagens(painel)[1]) > 240
@@ -615,7 +617,9 @@ def test_d577_tela_cheia_mostra_o_antes_e_depois_da_previa_com_zoom_e_folhear(ja
 def test_d577_o_antes_nao_muda_ao_trocar_o_filtro_nem_na_pagina_mexida(janela, app, tmp_path):
     """D-577, 30/10: "quarta coisa, quando você mexe no antes e depois, ele começa a mostrar o
     antes de qual pagina, parece que ele troca o antes conforme se troca os perfis dos filtros."
-    Pela D-577, o "antes" é a página como está agora no livro e não muda com as opções. Na
+    Pela D-577, o "antes" não muda com as opções (desde o 2º teste de 30/10 ele é a página sem
+    filtro, em Original, cortada e endireitada como está no livro; antes era a página como está
+    no livro, com o filtro dela; as duas coisas são iguais aqui, página em Original). Na
     página mexida à mão (como a capa do teste) e trocando os quatro jeitos de limpar e o "Só as
     letras", o antes é sempre o mesmo, ponto por ponto (o guardado e o que a vista mostra), e o
     depois muda. Esta prova NÃO é de reversão: a troca do antes não se reproduziu
@@ -645,3 +649,143 @@ def test_d577_o_antes_nao_muda_ao_trocar_o_filtro_nem_na_pagina_mexida(janela, a
         assert painel.visor._crus[0] is painel._antes[1], "a vista mostra outro antes"
         vistos.add(depois.tobytes())
     assert len(vistos) >= 3, "o depois não mudou com as opções"
+
+
+# --- D-577, depois do 2º teste do Samuel (30/10, 13:33) -----------------------------------
+#
+# Samuel: "está bem confuso, na verdade, porque eu já tinha colocado um filtro antes, eu acho que
+# o antes deveria ser sempre o original e o filtro depois o que escolhemos, ai se quiser comparar
+# faz isso na tela cheia." · "na tela cheia vai ter um botão de comparação , ai vão aparecer duas
+# telas para comparar" · "nessa vai ter o filtro que estava antes, seja ele original ou que foi
+# aplicado e o filtro que está selecionado no momento" · e, no lugar de "mostra já cortada e
+# endireitada se tiver sido feito isso.": "o antes é sem filtro e sem cortar sem nada, o depois
+# na tela de atualizar que aplica os filtros de endireitar cortar ou fazer qualquer outra coisa
+# para ver como iria ficar." (prints a-12, a-13 e a-14 em
+# relatorios/testes-guiados/2026-10-29-automatico/)
+
+
+def _papel_mediano(img: np.ndarray) -> float:
+    """O azul do papel pela mediana da página inteira (o papel é a maior parte dela; não depende
+    de onde caiu o corte): 170 no amarelado, 255 no Preto e branco."""
+    return float(np.median(img[..., 0] if img.ndim == 3 else img))
+
+
+def _torta_ja_rodada(janela, app, tmp_path):
+    """O livro com a página torta (índice 1) já endireitada, cortada e em Preto e branco NO
+    LIVRO (o "Rodar" de verdade), e a janela grande aberta nela, com o antes e depois prontos."""
+    from core import etapas
+
+    janela.abrir_livro(_livro(tmp_path))
+    _assentar(app)
+    janela.tela_conferir.ir_para_pagina(1)
+    estado = janela.estado_do_automatico
+    estado.marcadas = {A.ENDIREITAR, A.CORTAR, A.LIMPAR}
+    estado.definir_opcao("filtro_padrao", PRETO_E_BRANCO)
+    assert janela.rodar_o_automatico(esperar=True, perguntar=False)
+    _assentar(app)
+    assert etapas.filtro_que_vale(janela.projeto, janela.projeto.paginas[1]) == PRETO_E_BRANCO
+    janela.tela_conferir.ir_para_pagina(1)
+    grande = janela.abrir_o_automatico()
+    _esperar(app, grande.antes_e_depois)
+    return grande
+
+
+def test_d577_o_antes_e_a_folha_crua_sem_nada(janela, app, tmp_path):
+    """D-577, depois do 2º teste (30/10): "o antes é sem filtro e sem cortar sem nada, o depois
+    na tela de atualizar que aplica os filtros de endireitar cortar ou fazer qualquer outra
+    coisa para ver como iria ficar." Na página que já está endireitada, cortada e em Preto e
+    branco no livro, o "antes" é a folha como veio do PDF, ponto por ponto (sem filtro: o papel
+    amarelado; sem corte: do tamanho da folha, maior que o depois cortado). O depois continua
+    sendo o que o Rodar faria. O antigo saiu: o antes não é mais a página com o filtro e o corte
+    do livro. Teste de reversão (§4.7): no código de antes, o antes sai em Preto e branco e
+    cortado."""
+    from core.pdf_io import abrir_pdf, pagina_para_array
+    from ui.automatico import DPI_DA_PREVIA
+
+    grande = _torta_ja_rodada(janela, app, tmp_path)
+    painel = grande.antes_e_depois
+    antes, depois = _imagens(painel)
+    projeto = janela.projeto
+    doc = abrir_pdf(projeto.caminho_entrada)
+    try:
+        crua = pagina_para_array(doc, projeto.paginas[1].folha, dpi=DPI_DA_PREVIA)
+    finally:
+        doc.close()
+    assert antes.shape == crua.shape, f"o antes não é a folha crua (tamanho {antes.shape}, crua {crua.shape})"
+    assert np.array_equal(antes, crua), "o antes não é a folha como veio do PDF"
+    assert abs(_papel_mediano(antes) - AMARELADO[0]) < 8
+    # o depois: endireitado, cortado e em Preto e branco (o que o Rodar faria), menor que o antes
+    assert depois.shape[0] < antes.shape[0] and depois.shape[1] < antes.shape[1]
+    assert _papel_mediano(depois) > 240
+
+
+def test_d577_comparar_na_tela_cheia_mostra_o_livro_e_o_depois_lado_a_lado(janela, app, tmp_path):
+    """D-577, depois do 2º teste (30/10): "na tela cheia vai ter um botão de comparação , ai vão
+    aparecer duas telas para comparar" · "nessa vai ter o filtro que estava antes, seja ele
+    original ou que foi aplicado e o filtro que está selecionado no momento". O botão
+    "comparar" da tela cheia (o nome do "Ver de perto") mostra duas telas: à esquerda a página
+    como está no livro (Preto e branco, como foi aplicado; igual ao desenho dela no livro), à
+    direita o depois (Original, escolhido agora na janela), cada uma com o rótulo dela; o zoom
+    e a posição andam juntos nas duas (como no "Ver de perto"); folhear continua; apertar de
+    novo volta ao antes e depois com a linha. Teste de reversão (§4.7): no código de antes, a
+    tela cheia não tem o botão "comparar"."""
+    from PySide6.QtCore import QPoint
+    from PySide6.QtWidgets import QPushButton
+
+    from core.pdf_io import abrir_pdf
+    from core.pipeline import renderizar_pagina
+    from ui.automatico import DPI_DA_PREVIA
+
+    grande = _torta_ja_rodada(janela, app, tmp_path)
+    painel = grande.antes_e_depois
+    grande.radios_de_filtro[ORIGINAL].click()       # o escolhido agora: Original
+    _esperar(app, painel)
+    painel.botao_tela_cheia.click()
+    _assentar(app)
+    tela = painel.tela_cheia
+    botoes = [b for b in tela.findChildren(QPushButton) if b.text() == "comparar"]
+    assert botoes, "a tela cheia não tem o botão \"comparar\""
+    assert tela.rolagem.isVisible() and not tela.duas.isVisible()
+    botoes[0].click()
+    _esperar(app, painel)
+    _assentar(app)
+    assert tela.comparando and tela.duas.isVisible() and not tela.rolagem.isVisible()
+    do_livro = painel._do_livro[1]
+    depois = _imagens(painel)[1]
+    # a da esquerda: a página como está no livro, desenhada como no livro
+    projeto = janela.projeto
+    doc = abrir_pdf(projeto.caminho_entrada)
+    try:
+        copia = A.copia_para_a_previa(projeto)
+        ref, _ = renderizar_pagina(doc, copia, copia.paginas[1], dpi=DPI_DA_PREVIA)
+    finally:
+        doc.close()
+    ref = A.como_sai_na_tela(ref, copia, copia.paginas[1], DPI_DA_PREVIA)
+    assert do_livro.shape == ref.shape and _diferenca(do_livro, ref) < 0.005, \
+        "a tela da esquerda não é a página como está no livro"
+    assert _papel_mediano(do_livro) > 240, "a tela da esquerda não está em Preto e branco"
+    assert abs(_papel_mediano(depois) - AMARELADO[0]) < 8, "a tela da direita não é o depois (Original)"
+    for vista, img in ((tela.vista_a, do_livro), (tela.vista_b, depois)):
+        assert vista._pixmap is not None and (vista._pixmap.height(), vista._pixmap.width()) == img.shape[:2]
+    assert tela.rotulo_a.text() == "como está no livro: Preto e branco"
+    assert tela.rotulo_b.text() == "depois: Original"
+    # o zoom e a posição andam juntos
+    tela.botao_mais.click()
+    tela.botao_mais.click()
+    assert tela.vista_a.zoom > 1.0 and tela.vista_b.zoom == tela.vista_a.zoom
+    tela.vista_b.deslocamento = QPoint(30, -20)
+    tela.vista_b.vista_mudou.emit(tela.vista_b.zoom, tela.vista_b.deslocamento)
+    assert tela.vista_a.deslocamento == QPoint(30, -20)
+    tela.botao_caber.click()
+    assert tela.vista_a.zoom == 1.0 and tela.vista_b.zoom == 1.0
+    # folhear com o comparar ligado: a página seguinte, as duas telas dela
+    tela.botao_proxima.click()
+    _esperar(app, painel)
+    _assentar(app)
+    assert painel._indice == 2 and painel._do_livro[0] == 2
+    assert tela.rotulo_a.text() == "como está no livro: Preto e branco"   # rodou no livro todo
+    # apertar de novo volta ao antes e depois com a linha
+    botoes[0].click()
+    _assentar(app)
+    assert not tela.comparando and tela.rolagem.isVisible() and not tela.duas.isVisible()
+    assert tela.visor.comparando
