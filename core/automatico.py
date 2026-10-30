@@ -221,6 +221,15 @@ class Pedido:
     desligar: True = tirar o automatico das etapas pedidas (D-068: "Toda
         função automática tem botão de ligar e desligar.").
     ordem: a ordem das etapas arrastada na janela (vai para o livro).
+    desmarcadas: as etapas com a caixinha DESMARCADA na janela do Automatico
+        (o EstadoDoAutomatico manda; quem monta o pedido por outro caminho
+        deixa vazia e nada muda). D-589 (30/10/2026): "Desmarcar 'Montar
+        cadernos' no Automático tem que valer: o livro sai sem cadernos, e a
+        etapa não volta marcada sozinha." Por isso, no "Rodar", "Montar
+        cadernos" desmarcada e ligada no livro DESLIGA (ver aplicar). So
+        "Montar cadernos": as outras etapas desmarcadas ficam como estao (o
+        Livro ainda nao decidiu; pergunta em relatorios/automatico-cadernos/
+        ONDE-PAREI.md).
     """
 
     etapas: list[str]
@@ -230,6 +239,7 @@ class Pedido:
     receita: str = ""
     desligar: bool = False
     ordem: list[str] | None = None
+    desmarcadas: list[str] = field(default_factory=list)
 
     @property
     def no_livro_todo(self) -> bool:
@@ -684,6 +694,16 @@ def aplicar(projeto, pedido: Pedido, medidas: dict[int, MedidaDaFolha] | None = 
     if pedido.desligar:
         _desligar(projeto, pedido, etapas_pedidas, escopo, g)
     else:
+        # D-589 (30/10/2026): antes, a caixinha desmarcada so deixava a etapa
+        # de fora da rodada; "Montar cadernos" ligada de uma rodada anterior
+        # continuava ligada (o PDF saia em cadernos) e, relido o livro, a
+        # caixinha voltava marcada. Desmarcada na janela, ela desliga aqui, na
+        # mesma acao (o Ctrl+Z traz de volta). E do livro todo (D-484), em
+        # qualquer "Rodar em". Arriscado: estender a outras etapas sem decisao
+        # (Dividir desligado junta as folhas de novo).
+        if (CADERNOS in (pedido.desmarcadas or []) and CADERNOS not in etapas_pedidas
+                and ligada_no_livro(projeto, CADERNOS)):
+            g.no_livro(CAMPO_DO_LIVRO[CADERNOS], False)
         for etapa in etapas_pedidas:          # na ordem de rodar (D-003/D-016)
             if etapa == DIVIDIR:
                 _dividir(projeto, pedido, medidas, pular, g)
