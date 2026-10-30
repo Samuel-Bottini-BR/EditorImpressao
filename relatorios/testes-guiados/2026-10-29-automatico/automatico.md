@@ -39,3 +39,7 @@ coisa: um botão que mostra e esconde o colorido das marcações.
 - Página 17 (pintura colorida saindo cinza no Preto e branco): é a D-147 (pintura e foto em tons de cinza). Os riscos laranja são o contorno das áreas achadas, ligado sozinho nas páginas com "!" (D-237); ele perguntou "porque estão ali, não são marcações". Pergunta da gerente (o botão "marcações" também esconder o laranja?) ficou sem resposta.
 - Capa, caixinha desmarcada: "onde está a opção que deixa só cinza e branco ,essa parece que está dando um negativo". Não existe; vira a D-588.
 - Resultado dele: "beleza, vamos deixar esse problema para resolver logo após terminamos os que nós propomos a fazer, o programa está mudando de efeito como deveria". D-583, D-586 e D-587 marcadas como testadas no Livro.
+
+## Ordem da lista, 29/10 (fim do dia)
+- Ele pediu a lista de novo ("acho que você está confundindo, olha a conversa e veja a lista e passa ela aqui pra mim"); a gerente repassou a de 14h59 (itens 1 a 8) com a situação de cada um.
+- Ordem nova, palavras dele: "vamos deixar a 5 para depois, é mais importante fazer a 6 e a 7 e 8". Fica: D-577 (ver como vai ficar), D-579 (mudar e refazer o resto), D-574 (ver o caderno), depois D-221 (filtro nas gravuras achadas), depois D-588 (gravura em tons de cinza).
