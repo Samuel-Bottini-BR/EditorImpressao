@@ -458,3 +458,37 @@ def test_d577_core_a_previa_nao_toca_no_projeto(tmp_path):
         assert json.dumps(dataclasses.asdict(projeto), sort_keys=True, default=str) == antes
     finally:
         doc.close()
+
+
+def test_d577_fechar_o_programa_com_a_conta_rodando_para_e_espera_a_conta(janela, app, tmp_path,
+                                                                          monkeypatch):
+    """Defeito D1 do verificador da D-577 (30/10/2026): fechar o PROGRAMA com a janela grande
+    aberta e a conta da prévia rodando deixava a conta viva (presa no _Guardiao; o done() da
+    janela grande nem era chamado) e o processo saía quebrado (código 127). CLAUDE.md §3:
+    "Interface nunca congela" e nenhum erro na saída; como as outras tarefas, a do antes e
+    depois tem de receber o pedido de parar e ser esperada no closeEvent. Teste de reversão
+    (§4.7): no código de antes, logo depois de fechar, a conta ainda está rodando."""
+    import threading
+
+    from ui.automatico import _guardiao
+
+    grande = _abrir(janela, app, tmp_path, pagina=2)
+    painel = grande.antes_e_depois
+    comecou = threading.Event()
+    original = A.depois_da_pagina
+
+    def devagar(*args, **kwargs):          # uma conta comprida, como a de um livro de verdade
+        comecou.set()
+        time.sleep(2.0)
+        return original(*args, **kwargs)
+
+    monkeypatch.setattr(A, "depois_da_pagina", devagar)
+    _marcar(grande, {A.LIMPAR}, PRETO_E_BRANCO)
+    painel.pedir(agora=True)
+    assert comecou.wait(30), "a conta da prévia não começou"
+    tarefas = [t for t in _guardiao().tarefas if t.isRunning()]
+    assert tarefas
+    janela.close()
+    assert not [t for t in tarefas if t.isRunning()], "fechar o programa deixou a conta da prévia rodando"
+    assert all(t.foi_cancelada for t in tarefas), "a conta não recebeu o pedido de parar"
+    assert janela.janela_do_automatico is None

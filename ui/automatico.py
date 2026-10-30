@@ -593,15 +593,21 @@ class PainelAutomatico(_classe_do_painel()):
 # a página da direita da janela grande: antes e depois (D-577)
 # ---------------------------------------------------------------------------
 
-# A resolução em que a prévia desenha a página: a da tela, a mesma da prévia
-# "Rápida" da área de trabalho (ui/tela_conferir.DPI_PREVIA, 110). Escolha
-# técnica (pedido da gerente, item 6): o PDF é de 300 DPI, e desenhar a página
-# inteira nele a cada opção trocada levaria vários segundos por página. Só o
-# desenho é na resolução da tela: o corte e o ângulo continuam sendo medidos
-# na resolução do PDF (core/pipeline.renderizar_pagina já faz assim, e guarda
-# a medida para o rodar de verdade). Seguro mudar: o número (mais alto = mais
-# nítido e mais lento).
-DPI_DA_PREVIA = 110
+# A resolução em que a prévia desenha a página. Escolha técnica (pedido da
+# gerente, item 6): o PDF é de 300 DPI, e desenhar a página inteira nele a cada
+# opção trocada levaria vários segundos por página. Só o desenho é nesta
+# resolução: o corte e o ângulo continuam medidos na resolução do PDF
+# (core/pipeline.renderizar_pagina já faz assim, e guarda a medida para o rodar
+# de verdade).
+# Era 110 (a prévia "Rápida" da área de trabalho). Subiu para 180 (decisão da
+# gerente, 30/10/2026, defeito D2 do verificador da D-577): no Mágico pro, a
+# 110 DPI a prévia estragava letras que o PDF não estraga ("Nihil" virava
+# "N h", "1955" virava "19 5", "vês" virava "ves"). Medido pelo verificador no
+# *Na escola de Jesus*, Mágico pro, diferença da prévia para o PDF: página 5,
+# 2,10% a 110 DPI e 1,02% a 180; página 41, 5,22% e 2,82%; uns 0,6 s a mais
+# por conta. Seguro mudar: o número (mais alto = mais perto do PDF e mais
+# lento); arriscado: descer de novo para 110 (as letras falham no Mágico pro).
+DPI_DA_PREVIA = 180
 # Quanto esperar depois da última troca antes de começar a conta (várias trocas
 # seguidas, como as setinhas das margens, viram um pedido só). Seguro mudar.
 ESPERA_ANTES_DE_CALCULAR_MS = 200
@@ -636,6 +642,28 @@ def _guardiao() -> _Guardiao:
     if _O_GUARDIAO is None:
         _O_GUARDIAO = _Guardiao()
     return _O_GUARDIAO
+
+
+# Quanto esperar, ao fechar o programa, a conta da prévia que estiver rodando.
+# Ela só para entre a medida, o aplicar e o desenho: o desenho de uma página já
+# começado termina (alguns segundos no pior caso). Seguro mudar: para mais.
+ESPERA_AO_SAIR_MS = 60000
+
+
+def parar_as_previas(espera_ms: int = ESPERA_AO_SAIR_MS) -> None:
+    """Ao fechar o programa (ui/janela_principal.closeEvent): pede a toda conta
+    da prévia do antes e depois (D-577) que pare, e espera cada uma terminar.
+    Defeito achado pelo verificador da D-577 (30/10/2026): fechar o programa
+    com uma conta rodando deixava a QThread viva no _Guardiao, e o processo
+    saía quebrado (código 127), como já acontecia com as outras tarefas
+    antes de o closeEvent esperar por elas. Arriscado: não esperar."""
+    if _O_GUARDIAO is None:
+        return
+    tarefas = list(_O_GUARDIAO.tarefas)
+    for tarefa in tarefas:
+        tarefa.cancelar()
+    for tarefa in tarefas:
+        tarefa.wait(espera_ms)
 
 
 def _classe_da_vista():

@@ -1965,6 +1965,14 @@ class JanelaPrincipal(QMainWindow):
         # rodando derruba o processo na saida.
         for tarefa in self._tarefas_saindo:
             tarefa.wait(3000)
+        # D-577 (defeito do verificador, 30/10/2026): a janela grande do
+        # Automatico fecha (para de pedir contas) e a conta da previa do antes
+        # e depois que estiver rodando para e e esperada; sem isto o processo
+        # saia quebrado (codigo 127)
+        from ui.automatico import parar_as_previas
+
+        self._fechar_a_janela_do_automatico()
+        parar_as_previas()
         if self.previas is not None:
             self.previas.parar()
         self.tela_conferir.tira.parar()
