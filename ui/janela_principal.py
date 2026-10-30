@@ -1146,7 +1146,9 @@ class JanelaPrincipal(QMainWindow):
         if receita:
             estado.por_receita(receita)
         self._fechar_a_janela_do_automatico()
-        janela = JanelaDoAutomatico(estado, self.projeto.caminho_entrada, self)
+        # D-577: a janela recebe o livro só para LER (o antes e depois da página
+        # trabalha numa cópia; nada muda até "Rodar")
+        janela = JanelaDoAutomatico(estado, self.projeto.caminho_entrada, self, projeto=self.projeto)
         janela.rodar_pedido.connect(lambda: self._da_janela(janela, desligar=False))
         janela.desligar_pedido.connect(lambda: self._da_janela(janela, desligar=True))
         janela.escolher_pedido.connect(lambda: self._escolher_da_janela(janela))

@@ -568,6 +568,80 @@ class TarefaMedirOLivro(QThread):
         self.terminou.emit(self, medidas)
 
 
+class TarefaPreviaDoAutomatico(QThread):
+    """D-577 (29/10/2026; Samuel: "eu queria poder nessa etapa do automatico
+    poder ver como iria ficar conforme as opções que eu fosse escolhendo."):
+    o antes e o depois de UMA pagina na janela grande do Automatico, num fio
+    de fundo (a interface nunca congela, regra 3).
+
+    Recebe uma COPIA do projeto (core/automatico.copia_para_a_previa, feita no
+    fio da janela) e o pedido de agora; desenha o "antes" (so quando pedido:
+    ele nao muda com as opcoes, quem chama o guarda) numa segunda copia, e o
+    "depois" pelo mesmo caminho do "Rodar" (core/automatico.depois_da_pagina).
+    Nunca toca no projeto aberto nem grava nada.
+
+    `chave`: o que foi pedido (a pagina e o pedido inteiro, em texto); volta
+    junto com o resultado, e a janela joga fora o que nao for o ultimo pedido
+    (trocas rapidas: so o ultimo vale). `cancelar()` faz a conta parar no proximo ponto de parada (entre a
+    medida, o aplicar e o desenho); cancelada, nao emite `pronta`.
+    `terminou` sai SEMPRE no fim (pronta, falha ou cancelada), para a janela
+    soltar a tarefa e comecar a que estava esperando.
+
+    Arriscado: desenhar no projeto aberto (o desenho anota avisos e a
+    marcacao provisoria na pagina); emitir `pronta` depois de cancelada."""
+
+    pronta = Signal(str, int, object, object)     # chave, indice, antes (ou None), [depois]
+    falhou = Signal(str, str)                     # chave, mensagem
+    terminou = Signal(object)                     # a tarefa
+
+    def __init__(self, copia: Projeto, pedido, indice: int, dpi: int, com_o_antes: bool,
+                 chave: str) -> None:
+        super().__init__()
+        self.copia = copia
+        self.pedido = pedido
+        self.indice = indice
+        self.dpi = dpi
+        self.com_o_antes = com_o_antes
+        self.chave = chave
+        self._cancelar = False
+
+    def cancelar(self) -> None:
+        self._cancelar = True
+
+    @property
+    def foi_cancelada(self) -> bool:
+        return self._cancelar
+
+    def run(self) -> None:
+        """Nunca deixa excecao escapar (regra 3.3)."""
+        from core import automatico
+
+        try:
+            doc = abrir_pdf(self.copia.caminho_entrada)
+            try:
+                antes = None
+                if self.com_o_antes:
+                    antes = automatico.antes_da_pagina(
+                        doc, copy.deepcopy(self.copia), self.indice, self.dpi)
+                if self._cancelar:
+                    raise Cancelou()
+                depois = automatico.depois_da_pagina(
+                    doc, self.copia, self.pedido, self.indice, self.dpi,
+                    cancelado=lambda: self._cancelar)
+            finally:
+                doc.close()
+            if not self._cancelar:
+                self.pronta.emit(self.chave, self.indice, antes, depois)
+        except Cancelou:
+            pass
+        except Exception as erro:  # noqa: BLE001 - nada pode derrubar o programa
+            registrar_erro("previa do automatico", traceback.format_exc())
+            self.falhou.emit(self.chave, _mensagem_amigavel(erro))
+        finally:
+            self.copia = None              # uma pagina por vez na memoria
+            self.terminou.emit(self)
+
+
 class _SinaisPrevia(QObject):
     """Sinais de uma tarefa de prévia. Existe separado de _TarefaPrevia porque
     QRunnable nao e QObject e nao pode emitir sinal Qt sozinho."""

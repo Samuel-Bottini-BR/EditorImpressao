@@ -934,6 +934,125 @@ def rodar(projeto, pedido: Pedido, progresso=None, cancelado=None) -> Resultado:
     return aplicar(projeto, pedido, medidas)
 
 
+# --- ver como fica (D-577): a pagina da vez, antes e depois do Automatico -------
+#
+# Decisao D-577 (29/10/2026). Samuel: "eu queria poder nessa etapa do automatico
+# poder ver como iria ficar conforme as opções que eu fosse escolhendo." e, sobre a
+# pagina da direita da janela grande mostrar o antes e depois com a linha que se
+# arrasta: "sim, mas coloca uma bolinha de carregamento [...] porque as vezes vai
+# demorar para processar né?". So MOSTRA: o projeto, o historico e o disco nao mudam.
+#
+# COMO A PREVIA NAO MENTE: o "depois" passa pelo MESMO caminho do "Rodar" de verdade
+# (ui/janela_principal.rodar_o_automatico): fotografar -> medir -> aplicar, e a
+# pagina desenhada como a tela de conferir a desenha depois (core/pipeline.
+# renderizar_pagina, com a mesma composicao "como sai no PDF" da tela). A unica
+# diferenca e que `medir` olha so a folha da pagina da vez (o rodar olha todas):
+# `medir` mede cada folha sozinha, sem olhar as outras, entao a medida dessa folha
+# e a mesma. Tudo acontece numa COPIA do projeto (copia_para_a_previa, feita no
+# fio da janela); o que aplicar e o desenho anotam fica na copia, que e jogada fora.
+# Os guardados de memoria do pipeline (corte e angulo ja medidos, por chave) sao
+# os mesmos do programa: a chave tem tudo de que a conta depende, entao a previa
+# so adianta o que o rodar de verdade faria igual.
+#
+# O QUE A PREVIA NAO MOSTRA IGUAL (ressalvas escritas, ver tambem a entrega):
+#   - "Margens iguais": a conta precisa de TODAS as paginas medidas
+#     (pipeline.conta_das_margens_para_a_tela); sem isso a tela de conferir mostra
+#     sem margem ate medir por tras, e a previa tambem (nao mede o livro inteiro).
+#   - "Cortar seguindo o conteúdo": "todas as páginas do tamanho da maior" depende
+#     do livro inteiro medido (pipeline.tamanho_do_livro); a previa corta pelo
+#     conteudo da propria pagina, como a tela de conferir logo depois de rodar.
+#   - "Montar cadernos": nao muda a pagina (monta as folhas para imprimir).
+#   - A pergunta das paginas mexidas a mao (D-004): a previa usa o pedido como
+#     esta (de fabrica, pular as mexidas); o rodar de verdade pergunta.
+#   - A resolucao: o desenho e na resolucao da tela (quem chama escolhe o dpi);
+#     o corte e o angulo sao os da resolucao do PDF (renderizar_pagina ja faz
+#     assim), mas a marcacao achada sozinha e a provisoria da resolucao da tela,
+#     como na previa da tela de conferir (o PDF acha na resolucao dele).
+#
+# Seguro mudar: nada aqui sem mudar junto o rodar de verdade. Arriscado: medir
+# folhas fora do pedido (aplicar dividiria/mexeria nelas: _dividir usa toda folha
+# que tem medida), ou fazer qualquer conta no projeto aberto em vez da copia.
+
+def copia_para_a_previa(projeto):
+    """Uma copia inteira do projeto, para a previa mexer a vontade. Fazer no
+    fio da janela (o projeto aberto so muda nele); a tarefa de fundo so le a
+    copia."""
+    return copy.deepcopy(projeto)
+
+
+def paginas_depois(projeto, folha: int, metade: str) -> list:
+    """As paginas que a pagina (folha, metade) vira DEPOIS do aplicar, na copia:
+    a mesma metade da mesma folha, se ainda existe e vai para o PDF; senao as
+    paginas da folha que vao para o PDF (Projeto.paginas_ativas, na ordem do
+    PDF: a folha inteira que foi dividida vira
+    as duas metades; a dividida que foi juntada vira a inteira)."""
+    da_folha = [p for p in projeto.paginas_ativas if p.folha == folha]
+    iguais = [p for p in da_folha if p.metade == metade]
+    return iguais[:1] if iguais else da_folha
+
+
+def como_sai_na_tela(img, projeto, pagina, dpi: float):
+    """A pagina desenhada `img` como ela sai no PDF: com as margens iguais (se
+    ja medidas) e movida na folha. A MESMA conta da tela de conferir
+    (ui/tela_conferir._como_sai_no_pdf, D-547), sem pedir medida nenhuma.
+    Nunca levanta (devolve `img`)."""
+    from core.etapas import conteudo_mexido
+    from core.folha import compor_na_folha
+    from core.pipeline import conta_das_margens_para_a_tela, margens_na_tela
+
+    if img is None:
+        return img
+    try:
+        conta = conta_das_margens_para_a_tela(projeto)
+        com_margens = margens_na_tela(img, projeto, pagina, conta) if conta is not None else img
+        return compor_na_folha(com_margens, pagina.tamanho_folha_cm, dpi,
+                               escala=pagina.conteudo_escala,
+                               deslocamento=pagina.conteudo_deslocamento,
+                               mexido_a_mao=conteudo_mexido(projeto, pagina))
+    except Exception:  # noqa: BLE001 - a previa mostra a pagina como veio do desenho
+        return img
+
+
+def antes_da_pagina(doc, copia, indice: int, dpi: int):
+    """A pagina `indice` como esta agora (o "antes"), desenhada na `copia`."""
+    from core.pipeline import renderizar_pagina
+
+    pagina = copia.paginas[indice]
+    img, _ = renderizar_pagina(doc, copia, pagina, dpi=dpi)
+    return como_sai_na_tela(img, copia, pagina, dpi)
+
+
+def depois_da_pagina(doc, copia, pedido: Pedido, indice: int, dpi: int,
+                     cancelado: Callable | None = None) -> list:
+    """O "depois" da pagina `indice`: como ela sai se o Automatico rodar com o
+    `pedido`. MUDA A `copia` (aplica o pedido nela): passar sempre uma copia
+    (copia_para_a_previa). Devolve as imagens das paginas que ela vira (uma; ou
+    duas, quando a folha inteira e dividida; ver paginas_depois).
+    `cancelado()` True = para (levanta core.pipeline.Cancelou)."""
+    from core import pipeline as P
+
+    pagina = copia.paginas[indice]
+    folha, metade = pagina.folha, pagina.metade
+    medidas: dict = {}
+    if precisa_medir(pedido):
+        foto = fotografar(copia, pedido)
+        # so a folha da pagina da vez (e so se ela esta no pedido: fotografar
+        # ja deixa de fora as folhas fora do "Rodar em")
+        foto.folhas = [f for f in foto.folhas if f.indice == folha]
+        if foto.folhas:
+            medidas = medir(foto, cancelado=cancelado)
+    if cancelado is not None and cancelado():
+        raise P.Cancelou()
+    aplicar(copia, pedido, medidas)
+    imagens = []
+    for nova in paginas_depois(copia, folha, metade):
+        if cancelado is not None and cancelado():
+            raise P.Cancelou()
+        img, _ = P.renderizar_pagina(doc, copia, nova, dpi=dpi)
+        imagens.append(como_sai_na_tela(img, copia, nova, dpi))
+    return imagens
+
+
 def medir_o_livro_ao_abrir(projeto, progresso=None, cancelado=None) -> dict[int, MedidaDaFolha]:
     """D-284 ("Medir o livro inteiro por trás, depois de abrir"): mede as
     folhas como estao, sem ligar etapa nenhuma (os avisos de pagina em branco,

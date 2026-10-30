@@ -13,6 +13,11 @@ AS DECISÕES DO SAMUEL QUE ESTA TELA CUMPRE
       etapa e "Desligar as marcadas").
   D-071 (`fr-219`, 22/10): "Mas ainda pode melhorar a caixa de como escolhemos o que vai dentro
       da receita." (CaixaDaReceita: o que vai, escrito por extenso, etapa por etapa).
+  D-577 (29/10/2026): "eu queria poder nessa etapa do automatico poder ver como iria ficar
+      conforme as opções que eu fosse escolhendo." → a página da direita da janela grande mostra
+      o antes e depois da página da vez, com a linha que se arrasta, e a bolinha de carregamento
+      enquanto calcula ("sim, mas coloca uma bolinha de carregamento como fez na area de
+      trabalho"). Substitui a D-486 (a página original). PaginaAntesEDepois.
   Tudo o que morava na tela "O que fazer" (ui/tela_opcoes.py, que saiu do caminho) mora aqui,
   em grupos: Página (Dividir, Endireitar, Cortar), Limpeza (Limpar a folha: filtros, "Só as
   letras", força sozinha, molduras no Preto e branco, limpar a sujeira), Gravuras e fotos,
@@ -43,6 +48,7 @@ from __future__ import annotations
 import copy
 
 from PySide6.QtCore import QObject, Qt, QTimer, Signal
+from PySide6.QtGui import QColor, QPainter, QPixmap
 from PySide6.QtWidgets import (
     QAbstractItemView,
     QButtonGroup,
@@ -584,13 +590,487 @@ class PainelAutomatico(_classe_do_painel()):
 
 
 # ---------------------------------------------------------------------------
+# a página da direita da janela grande: antes e depois (D-577)
+# ---------------------------------------------------------------------------
+
+# A resolução em que a prévia desenha a página: a da tela, a mesma da prévia
+# "Rápida" da área de trabalho (ui/tela_conferir.DPI_PREVIA, 110). Escolha
+# técnica (pedido da gerente, item 6): o PDF é de 300 DPI, e desenhar a página
+# inteira nele a cada opção trocada levaria vários segundos por página. Só o
+# desenho é na resolução da tela: o corte e o ângulo continuam sendo medidos
+# na resolução do PDF (core/pipeline.renderizar_pagina já faz assim, e guarda
+# a medida para o rodar de verdade). Seguro mudar: o número (mais alto = mais
+# nítido e mais lento).
+DPI_DA_PREVIA = 110
+# Quanto esperar depois da última troca antes de começar a conta (várias trocas
+# seguidas, como as setinhas das margens, viram um pedido só). Seguro mudar.
+ESPERA_ANTES_DE_CALCULAR_MS = 200
+# Entre as duas páginas que uma folha dividida vira, no "depois" (pontos da
+# imagem, na resolução da prévia).
+VAO_ENTRE_AS_METADES = 12
+
+
+class _Guardiao(QObject):
+    """Segura as tarefas da prévia até elas terminarem, mesmo depois de a
+    janela grande fechar (uma QThread apagada no meio da conta derruba o
+    programa). Vive no fio da janela; um só para o programa (_guardiao())."""
+
+    def __init__(self) -> None:
+        super().__init__()
+        self.tarefas: set = set()
+
+    def segurar(self, tarefa) -> None:
+        self.tarefas.add(tarefa)
+        tarefa.terminou.connect(self.soltar)
+
+    def soltar(self, tarefa) -> None:
+        self.tarefas.discard(tarefa)
+        tarefa.deleteLater()
+
+
+_O_GUARDIAO: _Guardiao | None = None
+
+
+def _guardiao() -> _Guardiao:
+    global _O_GUARDIAO
+    if _O_GUARDIAO is None:
+        _O_GUARDIAO = _Guardiao()
+    return _O_GUARDIAO
+
+
+def _classe_da_vista():
+    """VistaAntesDepois (ui/widgets/filtros_tela_cheia.py), importada só aqui
+    (o mesmo jeito de _classe_do_painel)."""
+    from ui.widgets.filtros_tela_cheia import VistaAntesDepois
+
+    return VistaAntesDepois
+
+
+class VistaAntesDepoisComZoom(_classe_da_vista()):
+    """O "antes / depois" que já existe na área de trabalho (VistaAntesDepois:
+    o antes à esquerda da linha, o depois à direita, a linha se arrasta), com
+    duas coisas a mais que a janela grande do Automático precisa:
+
+      - antes e depois de tamanhos diferentes (cortar, endireitar e dividir
+        mudam o tamanho da página): os dois vão para uma tela do mesmo tamanho
+        (o maior dos dois), cada um no meio dela, na MESMA escala (a mesma
+        resolução de desenho). Assim a linha não estica nenhum dos dois, e a
+        página cortada aparece menor, como vai sair. O que sobra em volta tem
+        a cor do fundo da janela.
+      - o zoom (−, +, ajustar à tela), como o folhear tinha (D-002, rodada 2
+        nº 5: "Na janela, ver a página ao lado, folhear e dar zoom."): ela
+        fica dentro de uma área de rolar, e o zoom muda o tamanho dela (1 =
+        cabendo na área).
+
+    `zoom`, definir_zoom e ajustar_a_tela têm os nomes do Visualizador do
+    folhear (a janela grande e a prova P-187 usam esses nomes).
+    Seguro mudar: os limites do zoom. Arriscado: desenhar o antes esticado no
+    tamanho do depois (a página cortada pareceria do tamanho da inteira)."""
+
+    def __init__(self, rolagem: QScrollArea, parent=None) -> None:
+        super().__init__(parent)
+        self.rolagem = rolagem
+        self.zoom = 1.0
+        self._crus: tuple = (None, None)         # (antes, depois) como chegaram (numpy)
+        self._fundo_usado = ""
+
+    def mostrar(self, antes, depois, rotulos=("antes", "depois"), aviso: str = "") -> None:
+        """Põe o antes e o depois (numpy, ou None enquanto não chegam)."""
+        self._crus = (antes, depois)
+        self._fundo_usado = ""
+        self.rotulos, self.aviso = rotulos, aviso
+        self._montar()
+
+    def _montar(self) -> None:
+        from ui.widgets.visualizador import numpy_para_qimage
+
+        antes, depois = self._crus
+        fundo = estilo.cor("tela")
+        self._fundo_usado = fundo
+        pix = [None if img is None else QPixmap.fromImage(numpy_para_qimage(img))
+               for img in (antes, depois)]
+        if pix[0] is not None and pix[1] is not None and pix[0].size() != pix[1].size():
+            largura = max(pix[0].width(), pix[1].width())
+            altura = max(pix[0].height(), pix[1].height())
+            pix = [_no_meio(p, largura, altura, fundo) for p in pix]
+        self.antes, self.depois = pix
+        self.comparando = self.antes is not None and self.depois is not None
+        if self.depois is None and self.antes is not None:
+            # o depois ainda não chegou: o antes sozinho (a bolinha gira ao lado)
+            self.depois, self.antes, self.comparando = self.antes, None, False
+        self.update()
+
+    def paintEvent(self, evento) -> None:  # noqa: N802 - nome do Qt
+        if self._fundo_usado and self._fundo_usado != estilo.cor("tela"):
+            self._montar()                 # o tema mudou: o que sobra em volta acompanha
+        super().paintEvent(evento)
+
+    def definir_zoom(self, zoom: float) -> None:
+        self.zoom = max(0.2, min(8.0, float(zoom)))
+        if abs(self.zoom - 1.0) < 1e-6:
+            self.ajustar_a_tela()
+            return
+        area = self.rolagem.viewport().size()
+        self.rolagem.setWidgetResizable(False)
+        self.resize(max(50, int(area.width() * self.zoom)), max(50, int(area.height() * self.zoom)))
+
+    def ajustar_a_tela(self) -> None:
+        self.zoom = 1.0
+        self.rolagem.setWidgetResizable(True)
+
+
+def _no_meio(pix: QPixmap, largura: int, altura: int, fundo: str) -> QPixmap:
+    """`pix` no meio de uma tela largura x altura da cor `fundo`."""
+    tela = QPixmap(largura, altura)
+    tela.fill(QColor(fundo))
+    pintor = QPainter(tela)
+    pintor.drawPixmap((largura - pix.width()) // 2, (altura - pix.height()) // 2, pix)
+    pintor.end()
+    return tela
+
+
+def _lado_a_lado(imagens: list):
+    """As páginas que uma folha vira (o "depois" de uma folha inteira que vai
+    ser dividida), uma ao lado da outra, na ordem do PDF, com um vão branco
+    entre elas. Uma só: ela mesma. Nenhuma: None."""
+    import numpy as np
+
+    imagens = [img for img in imagens if img is not None]
+    if not imagens:
+        return None
+    if len(imagens) == 1:
+        return imagens[0]
+    cores = 3 if any(img.ndim == 3 for img in imagens) else 1
+    altura = max(img.shape[0] for img in imagens)
+    pedacos = []
+    for n, img in enumerate(imagens):
+        if cores == 3 and img.ndim == 2:
+            img = np.repeat(img[:, :, None], 3, axis=2)
+        if img.shape[0] < altura:
+            resto = np.full((altura - img.shape[0],) + img.shape[1:], 255, img.dtype)
+            img = np.concatenate([img, resto], axis=0)
+        if n:
+            pedacos.append(np.full((altura, VAO_ENTRE_AS_METADES) + img.shape[2:], 255, img.dtype))
+        pedacos.append(img)
+    return np.concatenate(pedacos, axis=1)
+
+
+class PaginaAntesEDepois(QWidget):
+    """A página da direita da janela grande do Automático (D-577, 29/10/2026).
+
+    Samuel: "eu queria poder nessa etapa do automatico poder ver como iria
+    ficar conforme as opções que eu fosse escolhendo." Pergunta: "A página da
+    direita passa a mostrar o antes e depois, com a linha que você arrasta. O
+    lado do "depois" muda a cada opção que você marca ou desmarca." → "sim,
+    mas coloca uma bolinha de carregamento como fez na area de trabalho,
+    porque as vezes vai demorar para processar né?" (substitui a D-486, em que
+    a página da direita era a original).
+
+    O QUE MOSTRA: a página da vez, com o "antes" (como ela está agora no
+    livro) à esquerda da linha e o "depois" (como ela sai se rodar o
+    Automático com as etapas marcadas e as opções escolhidas na janela) à
+    direita. Folheia as páginas do livro ("<" e ">", as setas do teclado) e dá
+    zoom (a janela grande liga os botões −, + e "ajustar à tela" ao `visor`).
+    "tela cheia" abre a folha do PDF grande, como antes (TelaCheiaDoPDF).
+
+    COMO CALCULA: cada troca no EstadoDoAutomatico (marcar, opção, receita,
+    ordem, onde rodar) pede um "depois" novo. A conta vai para um fio de fundo
+    (ui/tarefas.TarefaPreviaDoAutomatico) numa CÓPIA do projeto, pelo mesmo
+    caminho do "Rodar" (core/automatico.depois_da_pagina). Enquanto calcula, a
+    BolinhaDeCarregamento (a mesma da barra de baixo) gira ao lado do título.
+    Trocas rápidas: espera ESPERA_ANTES_DE_CALCULAR_MS depois da última; só
+    uma conta por vez; a que está rodando é cancelada e a última troca espera
+    a vez; o resultado de um pedido velho (chave diferente da `_querida`, ou
+    outra página) é jogado fora. O "antes" não muda com as opções: é calculado uma vez por
+    página. Uma página por vez na memória (o antes e o depois da página da
+    vez; ao folhear, os da anterior saem).
+
+    NÃO MUDA NADA: nem o projeto, nem o Histórico, nem o disco. Fechar a
+    janela sem rodar deixa o livro como estava.
+
+    Arriscado: calcular no projeto aberto em vez da cópia; mostrar o que
+    chegar sem conferir a geração (o depois velho cobriria o novo)."""
+
+    def __init__(self, estado: EstadoDoAutomatico, projeto=None, parent=None) -> None:
+        super().__init__(parent)
+        from ui.widgets.bolinha import BolinhaDeCarregamento
+
+        self.estado = estado
+        self.projeto = projeto
+        self._indice = 0                      # a página da vez (índice em projeto.paginas)
+        self._querida = None                  # a chave do último pedido (_chave): só ela vale
+        self._tarefa = None                   # a conta que está rodando
+        self._na_espera: tuple | None = None  # a última troca, esperando a vez
+        self._feito = None                    # a chave a que o "depois" mostrado responde
+        self._antes = None                    # (índice, imagem) do antes da página da vez
+        self._depois = None                   # (índice, imagem) do depois
+
+        col = QVBoxLayout(self)
+        col.setContentsMargins(0, 0, 0, 0)
+        col.setSpacing(6)
+        topo = QHBoxLayout()
+        topo.addWidget(QLabel("A página, antes e depois"))
+        self.bolinha = BolinhaDeCarregamento()
+        topo.addWidget(self.bolinha)
+        topo.addStretch()
+        col.addLayout(topo)
+        self.rolagem = QScrollArea()
+        self.rolagem.setWidgetResizable(True)
+        self.rolagem.setFrameShape(QFrame.NoFrame)
+        self.rolagem.setAlignment(Qt.AlignCenter)
+        self.visor = VistaAntesDepoisComZoom(self.rolagem)
+        self.visor.setToolTip("À esquerda da linha, a página como está agora; à direita, como "
+                              "ela vai sair com as etapas marcadas. Arraste a linha para comparar.")
+        self.rolagem.setWidget(self.visor)
+        col.addWidget(self.rolagem, 1)
+
+        barra = QHBoxLayout()
+        barra.setSpacing(8)
+        self.botao_anterior = QPushButton("<")
+        self.botao_anterior.setFixedWidth(40)
+        self.botao_anterior.clicked.connect(lambda: self.virar(-1))
+        barra.addWidget(self.botao_anterior)
+        self.contador = QLabel("")
+        self.contador.setAlignment(Qt.AlignCenter)
+        barra.addWidget(self.contador, 1)
+        self.botao_proxima = QPushButton(">")
+        self.botao_proxima.setFixedWidth(40)
+        self.botao_proxima.clicked.connect(lambda: self.virar(1))
+        barra.addWidget(self.botao_proxima)
+        self.botao_tela_cheia = QPushButton("tela cheia")
+        self.botao_tela_cheia.clicked.connect(self.abrir_em_tela_cheia)
+        barra.addWidget(self.botao_tela_cheia)
+        col.addLayout(barra)
+
+        self._relogio = QTimer(self)
+        self._relogio.setSingleShot(True)
+        self._relogio.setInterval(ESPERA_ANTES_DE_CALCULAR_MS)
+        self._relogio.timeout.connect(self._calcular_agora)
+        estado.mudou.connect(self.pedir)
+        self.ir_para(estado.pagina_atual)
+
+    # --- folhear ------------------------------------------------------------
+
+    def _ativas(self) -> list[int]:
+        """As páginas que vão para o PDF (as que se folheiam)."""
+        if self.projeto is None:
+            return []
+        return [p.indice for p in self.projeto.paginas_ativas]
+
+    def ir_para(self, indice: int) -> None:
+        """Vai para a página `indice` (a ativa mais perto, se ela não vai para
+        o PDF) e pede o antes e o depois dela."""
+        ativas = self._ativas()
+        if not ativas:
+            self.contador.setText("")
+            self._acertar_botoes(ativas)
+            self.visor.mostrar(None, None)
+            return
+        depois_dela = [i for i in ativas if i >= int(indice)]
+        indice = depois_dela[0] if depois_dela else ativas[-1]
+        if indice != self._indice or self._antes is None:
+            self._antes = self._depois = None     # uma página por vez na memória
+            self._feito = None
+        self._indice = indice
+        self.contador.setText(f"página {indice + 1} de {len(self.projeto.paginas)}")
+        self._acertar_botoes(ativas)
+        self._mostrar()
+        self.pedir(agora=True)
+
+    def virar(self, passo: int) -> None:
+        ativas = self._ativas()
+        if self._indice not in ativas:
+            return
+        lugar = max(0, min(len(ativas) - 1, ativas.index(self._indice) + passo))
+        self.ir_para(ativas[lugar])
+
+    def _acertar_botoes(self, ativas: list[int]) -> None:
+        tem = bool(ativas) and self._indice in ativas
+        self.botao_anterior.setEnabled(tem and ativas.index(self._indice) > 0)
+        self.botao_proxima.setEnabled(tem and ativas.index(self._indice) < len(ativas) - 1)
+        self.botao_tela_cheia.setEnabled(tem)
+
+    def abrir_em_tela_cheia(self) -> None:
+        """A folha da página da vez, grande, como ela está no PDF (o que o
+        "tela cheia" do folhear já fazia: ui/widgets/folhear_pdf.TelaCheiaDoPDF).
+        Ao voltar, a página da vez passa a ser a da folha em que a pessoa parou."""
+        from core.pdf_io import abrir_pdf
+        from registro import registrar_erro
+        from ui.widgets.folhear_pdf import TelaCheiaDoPDF
+
+        if self.projeto is None or self._indice not in self._ativas():
+            return
+        folha = self.projeto.paginas[self._indice].folha
+        try:
+            doc = abrir_pdf(self.projeto.caminho_entrada)
+        except Exception:  # noqa: BLE001 - a janela nunca cai aqui
+            import traceback
+
+            registrar_erro("tela cheia do automatico", traceback.format_exc())
+            return
+        try:
+            janela = TelaCheiaDoPDF(doc, folha, self)
+            janela.exec()
+            nova = janela.indice
+        finally:
+            doc.close()
+        if nova != folha:
+            da_folha = [i for i in self._ativas() if self.projeto.paginas[i].folha == nova]
+            if da_folha:
+                self.ir_para(da_folha[0])
+
+    def keyPressEvent(self, evento) -> None:  # noqa: N802 - nome do Qt
+        """Setas e Page Up/Down viram a página, como no folhear."""
+        if evento.key() in (Qt.Key_Left, Qt.Key_PageUp):
+            self.virar(-1)
+        elif evento.key() in (Qt.Key_Right, Qt.Key_PageDown):
+            self.virar(1)
+        else:
+            super().keyPressEvent(evento)
+
+    # --- o cálculo -----------------------------------------------------------
+
+    def _chave(self, pedido) -> str:
+        """Tudo o que muda o depois, em texto: a página e o pedido inteiro."""
+        import json
+
+        return json.dumps([self._indice, pedido.etapas, pedido.opcoes, pedido.paginas,
+                           pedido.pular_mexidas, pedido.ordem, pedido.desligar],
+                          sort_keys=True, default=str)
+
+    def calculando(self) -> bool:
+        """Há conta pedida ou rodando (a bolinha gira)?"""
+        return bool(self._relogio.isActive() or self._tarefa is not None or self._na_espera)
+
+    def pedir(self, agora: bool = False) -> None:
+        """Uma troca na janela: pede o depois de novo (depois de uma espera
+        curta, para trocas seguidas virarem uma só). `agora`: sem a espera
+        (abrir a janela, folhear)."""
+        if self.projeto is None or self._indice not in self._ativas():
+            return
+        if agora:
+            self._relogio.stop()
+            self._calcular_agora()
+        else:
+            self._relogio.start()
+        self._acertar_bolinha()
+
+    def _calcular_agora(self) -> None:
+        """Começa a conta do pedido de agora (ou a põe na espera, se outra roda).
+        `_querida` passa a ser a chave dele: só o resultado dela é mostrado."""
+        from core.automatico import copia_para_a_previa
+
+        if self.projeto is None or self._indice not in self._ativas():
+            return
+        pedido = self.estado.pedido()
+        chave = self._chave(pedido)
+        self._querida = chave
+        precisa_do_antes = self._antes is None or self._antes[0] != self._indice
+        rodando = self._tarefa
+        if chave == self._feito and not precisa_do_antes:
+            # o depois mostrado já é este: nada a calcular (e o que roda ficou velho)
+            self._na_espera = None
+            if rodando is not None:
+                rodando.cancelar()
+        elif rodando is not None and rodando.chave == chave and not rodando.foi_cancelada:
+            self._na_espera = None                    # a que roda já é esta: esperar por ela
+        else:
+            # a cópia é feita AQUI, no fio da janela (o projeto aberto só muda nele)
+            pedido_da_vez = (chave, self._indice, copia_para_a_previa(self.projeto), pedido,
+                             precisa_do_antes)
+            if rodando is not None:
+                # só uma conta por vez: a que roda para no próximo ponto de
+                # parada, e esta espera a vez (no lugar da que esperava antes)
+                rodando.cancelar()
+                self._na_espera = pedido_da_vez
+            else:
+                self._comecar(pedido_da_vez)
+        self._acertar_bolinha()
+
+    def _comecar(self, pedido_da_vez: tuple) -> None:
+        from ui.tarefas import TarefaPreviaDoAutomatico
+
+        chave, indice, copia, pedido, com_o_antes = pedido_da_vez
+        tarefa = TarefaPreviaDoAutomatico(copia, pedido, indice, DPI_DA_PREVIA, com_o_antes, chave)
+        tarefa.pronta.connect(self._chegou)
+        tarefa.falhou.connect(self._falhou)
+        tarefa.terminou.connect(self._terminou)
+        _guardiao().segurar(tarefa)
+        self._tarefa = tarefa
+        tarefa.start()
+
+    def _chegou(self, chave: str, indice: int, antes, depois) -> None:
+        """O antes e o depois chegaram. O depois só vale se é do ÚLTIMO pedido
+        (`_querida`) e da página da vez: resultado velho nunca cobre o novo.
+        O antes vale para a página dele (não muda com as opções)."""
+        if indice != self._indice:
+            return
+        if antes is not None:
+            self._antes = (indice, antes)
+        if chave == self._querida:
+            self._depois = (indice, _lado_a_lado(depois or []))
+            self._feito = chave
+        self._mostrar()
+
+    def _falhou(self, chave: str, _mensagem: str) -> None:
+        """A conta deu erro (já está no erros.log): a página da vez mostra o
+        antes e uma frase, e a janela continua (regra 3: nenhuma exceção fecha
+        a janela)."""
+        if chave != self._querida:
+            return
+        antes = self._antes[1] if self._antes and self._antes[0] == self._indice else None
+        self._depois = None
+        self.visor.mostrar(antes, None, aviso="Não foi possível mostrar como esta página vai ficar.")
+
+    def _terminou(self, tarefa) -> None:
+        """Uma conta terminou (pronta, falha ou cancelada): começa a que estava
+        esperando, se ela ainda é a última pedida."""
+        if tarefa is self._tarefa:
+            self._tarefa = None
+        espera, self._na_espera = self._na_espera, None
+        if espera is not None and self._tarefa is None:
+            if espera[0] == self._querida and espera[1] == self._indice:
+                self._comecar(espera)
+            elif not self._relogio.isActive():
+                self._calcular_agora()
+        self._acertar_bolinha()
+
+    def _acertar_bolinha(self) -> None:
+        calculando = self.calculando()
+        self.bolinha.definir(calculando, "Calculando como a página vai ficar..." if calculando else "")
+
+    def _mostrar(self) -> None:
+        antes = self._antes[1] if self._antes and self._antes[0] == self._indice else None
+        depois = self._depois[1] if self._depois and self._depois[0] == self._indice else None
+        self.visor.mostrar(antes, depois)
+
+    def fechar(self) -> None:
+        """Ao fechar a janela: para a conta (o que estiver rodando termina
+        sozinho, e nada chega mais aqui) e solta as imagens."""
+        self._relogio.stop()
+        self._na_espera = None
+        if self._tarefa is not None:
+            self._tarefa.cancelar()
+            for sinal, alvo in ((self._tarefa.pronta, self._chegou), (self._tarefa.falhou, self._falhou),
+                                (self._tarefa.terminou, self._terminou)):
+                try:
+                    sinal.disconnect(alvo)
+                except (RuntimeError, TypeError):
+                    pass
+            self._tarefa = None
+        self._antes = self._depois = None
+        self._acertar_bolinha()
+
+
+# ---------------------------------------------------------------------------
 # a janela grande
 # ---------------------------------------------------------------------------
 
 class JanelaDoAutomatico(QDialog):
     """A janela grande do Automático ("O que o automático vai fazer"): as
     etapas à esquerda, as opções da etapa escolhida no meio, a página ao lado
-    (folhear e zoom) e, embaixo, a frase do que vai acontecer.
+    (antes e depois, D-577; folhear e zoom) e, embaixo, a frase do que vai
+    acontecer.
 
     `controles`: campo do Projeto -> o controle que o muda (a prova de que
     nenhuma opção da tela "O que fazer" se perdeu)."""
@@ -600,7 +1080,12 @@ class JanelaDoAutomatico(QDialog):
     escolher_pedido = Signal()
     receita_guardar_pedida = Signal()
 
-    def __init__(self, estado: EstadoDoAutomatico, caminho_pdf: str = "", parent=None) -> None:
+    def __init__(self, estado: EstadoDoAutomatico, caminho_pdf: str = "", parent=None,
+                 projeto=None) -> None:
+        """`projeto`: o livro aberto, só para LER (a prévia do antes e depois
+        trabalha numa cópia dele, D-577). Sem ele, a página da direita fica
+        vazia. `caminho_pdf` ficou só para quem já chamava assim (a página da
+        direita lê o PDF do projeto)."""
         super().__init__(parent)
         self.setWindowTitle("Automático")
         self.setObjectName("janelaDoAutomatico")
@@ -664,16 +1149,15 @@ class JanelaDoAutomatico(QDialog):
             self.paginas_das_etapas[etapa] = pagina
             self.pilha.addWidget(pagina)
         meio.addWidget(self.pilha, 3)     # as opções ganham mais largura que a página ao lado
-        # direita: a página ao lado, para folhear e dar zoom
-        from ui.widgets.folhear_pdf import FolhearPDF
-
+        # direita: a página da vez, antes e depois (D-577, no lugar da página
+        # original da D-486), para folhear e dar zoom. `folhear` é o nome de
+        # sempre (a prova P-187 e o _zoom usam: .visor, ._indice)
         direita = QWidget()
         direita.setObjectName("paginaAoLado")
         direita.setMinimumWidth(320)
         cold = QVBoxLayout(direita)
         cold.setContentsMargins(10, 10, 12, 10)
-        cold.addWidget(QLabel("O livro, como está agora"))
-        self.folhear = FolhearPDF()
+        self.folhear = self.antes_e_depois = PaginaAntesEDepois(estado, projeto)
         cold.addWidget(self.folhear, 1)
         zoom = QHBoxLayout()
         for texto, dica, fator in (("–", "afastar", 0.8), ("+", "aproximar", 1.25)):
@@ -732,8 +1216,6 @@ class JanelaDoAutomatico(QDialog):
             f" padding: 7px 10px; color: {estilo.cor('forte')}; }}"))
         estado.mudou.connect(self._estado_mudou)
         self.encher_receitas()
-        if caminho_pdf:
-            self.folhear.abrir(caminho_pdf, max(0, estado.pagina_atual))
         self._mostrar_opcoes()
         self._estado_mudou()
         primeira = next(iter(estado.etapas_marcadas()), estado.ordem[0])
@@ -1126,6 +1608,7 @@ class JanelaDoAutomatico(QDialog):
             self.estado.mudou.emit()
 
     def _zoom(self, fator: float | None) -> None:
+        """−, + e "ajustar à tela" da página da direita (D-002: "folhear e dar zoom")."""
         visor = self.folhear.visor
         if fator is None:
             visor.ajustar_a_tela()
@@ -1133,7 +1616,8 @@ class JanelaDoAutomatico(QDialog):
             visor.definir_zoom(max(0.1, min(8.0, getattr(visor, "zoom", 1.0) * fator)))
 
     def done(self, resultado: int) -> None:  # noqa: D401 - nome do Qt
-        """Ao fechar, solta o PDF do folhear (ver FolhearPDF.fechar)."""
+        """Ao fechar, para a conta do antes e depois e solta as imagens
+        (PaginaAntesEDepois.fechar). Nada muda no livro (D-577: só mostra)."""
         self.folhear.fechar()
         super().done(resultado)
 
