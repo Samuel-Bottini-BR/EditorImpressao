@@ -101,3 +101,10 @@ coisa: um botão que mostra e esconde o colorido das marcações.
 - Gerente: "Então tiro o item 7 da lista? Responda sim ou não." → ele: "sim". D-579 descartada (já existe o "Aplicar em" do painel Filtro e o "usar em todas"). Lista: 6 (D-577, em construção) → 8 (D-574) → 5 (D-221) → D-588.
 - Ele (30/10): "coloque mais uma coisa nessa lista, aquele relato do Kaique do montar cadernos que eu mandei você ler a pasta". D-589 entra na lista como item 9. Ordem: 6 (D-577) → 8 (D-574) → 5 (D-221) → D-588 → 9 (D-589).
 - Gerente: "Quer que ele venha logo depois do item 6?" → ele: "não". O item 9 (D-589) fica no fim da lista.
+
+## 3º teste da D-577 (30/10, 16:30, junção f39a37d)
+- Palavras dele: "1- não consigo dar zoom com o mouse, usando o scrool 2- ainda está confuso qual o lado que é o antes e depois, o lado para onde a gente desliza a faixa de antes e depois tem que estar o nome, conseguiu entender? print 2 desse lado deveria ser o antes e está o depois . print 3 - desse lado deveria ser o depois e está o antes. 3- print 4 - seria bom se pudessemos ver as opções e mudar simutaneamente nesse comparar, tivesse uma aba de cada lado que abrisse e fechasse para mudar as opções no comparar, ao em vez de ser só o antes e depois."
+- ![](a-15-tela-cheia-pagina-4.png) Tela cheia, página 4, linha na direita (aparece o antes, cru).
+- ![](a-16-linha-na-esquerda.png) (print 2 dele) Janela, P&B + Só as letras, linha toda à esquerda: debaixo do rótulo "antes" aparece o depois (P&B). Ele circulou esse lado.
+- ![](a-17-linha-na-direita.png) (print 3 dele) Linha toda à direita: debaixo do rótulo "depois" aparece o antes (cru). Ele circulou esse lado.
+- ![](a-18-comparar.png) (print 4 dele) "comparar": "como está no livro: Preto e branco" × "depois: Preto e branco".
