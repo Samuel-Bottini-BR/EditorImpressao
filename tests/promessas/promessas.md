@@ -953,8 +953,9 @@ programa), a partir do **nome do botão**, da **dica** (o balão do mouse) e das
 - **chaves:** `automático (janela grande)/<`, `automático (janela grande)/>`, `automático (janela grande)/tela cheia`,
   `automático (janela grande)/–`, `automático (janela grande)/+`, `automático (janela grande)/ajustar à tela`
 - **decisões:** rodada 2 nº 5 ("Na janela, ver a página ao lado, folhear e dar zoom.")
-- **na tela:** a folha mostrada passa para a de antes / a de depois; "tela cheia" abre a folha grande; "–" e "+"
-  afastam e aproximam; "ajustar à tela" volta a caber. **no projeto:** nada muda.
+- **na tela:** a página mostrada (com o antes e depois, D-577) passa para a de antes / a de depois; "tela cheia"
+  abre a folha dela grande, como está no PDF; "–" e "+" afastam e aproximam; "ajustar à tela" volta a caber.
+  **no projeto:** nada muda.
 
 ### P-188 · janela grande: "Fechar" e "Mais opções" (Gravuras e fotos)
 - **chaves:** `automático (janela grande)/Fechar`, `automático (janela grande)/Mais opções`
