@@ -185,3 +185,14 @@ Nenhuma prova antiga falhou: o livro sintético das provas está todo em Origina
 4. (continua a pergunta 2 da rodada anterior) Na capa, "Preto e branco + Só as letras" ainda mostra a capa toda em preto e
    branco duro, porque a capa guarda opções dela mesma do teste da D-588; o Rodar faz o mesmo. Print
    `4-antes-cru-depois-preto-e-branco.png`.
+
+## Testes da 2ª rodada
+
+- PC, um arquivo por vez: os 18 arquivos que tocam o Automático passaram (no 2669603); depois da metade crua (72fbdc0),
+  de novo `test_decisoes_automatico_ver_como_fica.py` (19 de 19), `test_decisoes_automatico.py`, `test_decisoes_dividir.py`
+  e `test_dividir_na_tela.py`: todos passaram.
+- GitHub: 41104087681 (2669603) e 41109208060 (72fbdc0) passaram, as duas depois de rodar de novo a parte 1. Nas duas, a
+  1ª vez caiu no mesmo erro de tempo do `test_promessas.py`: `test_p083_jeitos_do_so_as_letras[rede]` (e, numa delas,
+  o teste seguinte) acha no erros.log uma prévia da ÁREA DE TRABALHO (`ui/tarefas.py` linha 832, categoria "previa")
+  que não achou o PDF do teste. Esse teste não abre o Automático; o `janela` do test_promessas espera as tarefas de fundo
+  só 15 s. No PC o arquivo passou inteiro (262). Fica como ressalva: teste instável no GitHub, não do código da D-577.
