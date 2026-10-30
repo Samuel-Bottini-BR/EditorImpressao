@@ -240,3 +240,10 @@ Ramo atualizado com a obra (db0a661). Prints dele a-15 a a-18.
 5. A mesma vista também é o "Comparar com o Original" da **tela cheia dos filtros** (`FiltrosEmTelaCheia`, rótulos
    "antes: Original" e "depois: <filtro>"). Lá também passou a valer o lado novo. Não foi perguntado ao Samuel; se lá
    for para continuar como era, dizer (dá para separar, mas a mesma vista ficaria com dois jeitos).
+- **GitHub 41129841728 (3050494):** passou depois de rodar de novo a parte 1. Na 1ª vez, de novo o erro de tempo do
+  `test_promessas.py` (p083 [rede], p083 no Automático [Guardar tudo] e p107 [aviso/forca:mais_escuro]): prévia da área
+  de trabalho (`ui/tarefas.py` linha 832) sem o PDF do teste já apagado. Nas rodadas deste ramo, a parte 1 (ou a 2)
+  falhou na 1ª vez em 4 de 4 e passou ao rodar de novo; o ramo `automatico-cadernos` (mesma obra) passou de primeira
+  (41131159641). Bug para a Lista de bugs (não consertado; não é desta tarefa): o `janela` do test_promessas espera só
+  as tarefas do QThreadPool (15 s), e não as contas da prévia do Automático (QThread no `_Guardiao`), que podem seguir
+  rodando no teste seguinte; dá para chamar `ui.automatico.parar_as_previas()` ali.
