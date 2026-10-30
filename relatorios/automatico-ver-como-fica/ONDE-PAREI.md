@@ -123,3 +123,56 @@ Ramo atualizado com `obra-2026-10-26` (20a07c7). Livro de teste: cópia do proje
    duro: a capa tem as opções dela mesma do teste da D-588 ("Só as letras" desligado nela, Otsu, força 0), e o "Rodar"
    (com "Rodar nelas também") troca só o filtro e mantém essas opções da página. A prévia mostra o mesmo que o Rodar
    faria. Está certo assim, ou o "Rodar nelas também" deve devolver a página às opções do livro?
+
+---
+
+# 2ª rodada: depois do 2º teste do Samuel (30/10, 13:33)
+
+Ramo atualizado com `obra-2026-10-26` (3f169d7). Pedido da gerente (A e B), com a correção do Samuel para a A.
+
+## Decisões que esta rodada precisa cumprir
+
+- **D-577, 30/10, depois do 2º teste** (prints a-12, a-13 e a-14): "está bem confuso, na verdade, porque eu já tinha
+  colocado um filtro antes, eu acho que o antes deveria ser sempre o original e o filtro depois o que escolhemos, ai se
+  quiser comparar faz isso na tela cheia." · "na tela cheia vai ter um botão de comparação , ai vão aparecer duas telas
+  para comparar" · "nessa vai ter o filtro que estava antes, seja ele original ou que foi aplicado e o filtro que está
+  selecionado no momento" · e, no lugar de "mostra já cortada e endireitada se tiver sido feito isso.": "o antes é sem
+  filtro e sem cortar sem nada, o depois na tela de atualizar que aplica os filtros de endireitar cortar ou fazer
+  qualquer outra coisa para ver como iria ficar."
+- Os rótulos "antes" e "depois" do visor não mudam (ele não respondeu a essa sugestão).
+- CLAUDE.md §11 regra 7: só o que ele mandou (sem seletor de filtro no comparar).
+
+## Andamento
+
+- [x] A: o antes é a folha crua, como veio do PDF (`core/automatico.antes_da_pagina` = `pdf_io.pagina_para_array`).
+      A página como está no livro, com o filtro dela, virou `pagina_como_esta` (usada só no comparar).
+- [x] B: botão "comparar" na tela cheia (`TelaCheiaDoAntesEDepois`): duas telas (`Visualizador`, como o "Ver de perto"),
+      à esquerda "como está no livro: <filtro>", à direita "depois: <filtro>"; zoom e posição juntos (botões, roda e
+      arrastar); folhear continua; apertar de novo volta à linha. A página como está no livro só é desenhada com o
+      comparar ligado (um desenho a mais por página só aí; o folhear de sempre não fica mais lento).
+- [x] Provas novas: `test_d577_o_antes_e_a_folha_crua_sem_nada`, `test_d577_comparar_na_tela_cheia_mostra_o_livro_e_o_depois_lado_a_lado`
+      (as duas falharam no código de antes, 3f169d7: "o antes não é a folha crua (tamanho (655, 471), crua (1008, 720, 3))"
+      e "a tela cheia não tem o botão \"comparar\""). Arquivo da D-577: 16 de 16.
+- [x] Prints: `4-antes-cru-depois-preto-e-branco.png`, `5-tela-cheia-antes-cru-depois-preto-e-branco.png`,
+      `5-tela-cheia-comparar-preto-e-branco.png`, `5-tela-cheia-comparar-magico-pro.png`,
+      `5-tela-cheia-comparar-magico-pro-com-zoom.png` (script `prints_d577_30-10b.py`).
+
+## Provas antigas que mudaram (e por quê)
+
+Nenhuma prova antiga falhou: o livro sintético das provas está todo em Original, sem corte, então a folha crua é igual
+à "página como está". Mudei só o texto que dizia "o antes é a página como está no livro":
+- `test_d577_sem_etapa_marcada_o_depois_e_o_antes`: docstring diz que ali o antes sem nada é a própria página.
+- `test_d577_marcar_uma_opcao_muda_o_depois_e_desmarcar_volta`: a mensagem "no Original o depois tinha de ser a página
+  como está" virou "... tinha de ser o antes".
+- `test_d577_o_antes_nao_muda_ao_trocar_o_filtro_nem_na_pagina_mexida`: docstring diz o que o antes é agora.
+- A dica (tooltip) do visor dizia "a página como está agora"; agora "a página como veio, sem nada".
+
+## Perguntas para o Samuel (2ª rodada)
+
+3. **Página de folha dividida:** o "antes" de uma página que é metade de uma folha dividida é a **folha inteira** como
+   veio do PDF, ou **só a metade** dela (crua, sem nada)? O código não diz. Hoje está a folha inteira (o que veio do
+   PDF); a resposta muda só `core/automatico.antes_da_pagina`. Também: a folha que veio deitada (giro de 90 graus) aparece
+   deitada no antes, porque "sem nada" inclui não girar. Se não for assim, dizer.
+4. (continua a pergunta 2 da rodada anterior) Na capa, "Preto e branco + Só as letras" ainda mostra a capa toda em preto e
+   branco duro, porque a capa guarda opções dela mesma do teste da D-588; o Rodar faz o mesmo. Print
+   `4-antes-cru-depois-preto-e-branco.png`.
