@@ -93,3 +93,8 @@ coisa: um botão que mostra e esconde o colorido das marcações.
 - Ele (30/10): "ela teria que ser cortada antes né, eu acho que é o que mais faz sentido, ai como fariamos isso, colocaria um aviso logo que abre o automatico?"
 - Proposta da gerente: sem aviso. (1) Folha já dividida: o antes é a metade crua, e o depois é essa metade pronta. (2) Folha não dividida com "Dividir" marcado: o antes é a folha inteira crua, e o depois são as duas metades prontas, lado a lado. Ele: "mas dai se a pessoa apertar dividir ?" → gerente: marcar "Dividir" muda o depois na hora para as duas metades, e o antes continua a folha inteira crua; desmarcar volta o depois à folha inteira pronta; folha já dividida: o antes é a metade crua com "Dividir" marcado ou não. "Pode ser assim? Responda sim ou não."
 - Ele: "pode".
+
+## Item 7 (D-579), 30/10
+- Ele: "não entendi a 7" → a gerente explicou com as palavras dele de 29/10 (a-3) e um exemplo (página 10 com letra fraca, aumentar a força, o programa levar ao resto).
+- Ele: "sim, mas ele não pode fazer isso automaticamente né, na verdade, eu acho que não precisa dessa opção pois já podemos fazer isso em folhas individuais e jogar para o livro todo né? temos essa opção no programa já?"
+- Conferido no código da versão de teste: o painel Filtro tem "Aplicar em: só nesta · todas · daqui em diante" (`ui/tela_conferir.py`, `_filtro_em_todas` e `_filtro_nas_proximas`), que leva o filtro da página e os ajustes dele (a força, "Só as letras", "Respeitar as gravuras achadas"...) para as outras páginas. Cortar e Mover têm "usar em todas".
