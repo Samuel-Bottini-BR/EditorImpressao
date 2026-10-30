@@ -578,6 +578,10 @@ class TarefaPreviaDoAutomatico(QThread):
     fio da janela) e o pedido de agora; desenha o "antes" (so quando pedido:
     ele nao muda com as opcoes, quem chama o guarda) numa segunda copia, e o
     "depois" pelo mesmo caminho do "Rodar" (core/automatico.depois_da_pagina).
+    O "antes" e a folha crua, como veio do PDF (sem filtro, sem cortar, sem
+    nada: core/automatico.antes_da_pagina; D-577, 30/10). Com
+    `com_o_do_livro` (o "comparar" da tela cheia), desenha tambem a pagina
+    como esta no livro, com o filtro dela (core/automatico.pagina_como_esta).
     Nunca toca no projeto aberto nem grava nada.
 
     `chave`: o que foi pedido (a pagina e o pedido inteiro, em texto); volta
@@ -590,18 +594,20 @@ class TarefaPreviaDoAutomatico(QThread):
     Arriscado: desenhar no projeto aberto (o desenho anota avisos e a
     marcacao provisoria na pagina); emitir `pronta` depois de cancelada."""
 
-    pronta = Signal(str, int, object, object)     # chave, indice, antes (ou None), [depois]
+    # chave, indice, antes (ou None), [depois], {"do_livro": imagem ou None, "filtro_depois": str}
+    pronta = Signal(str, int, object, object, object)
     falhou = Signal(str, str)                     # chave, mensagem
     terminou = Signal(object)                     # a tarefa
 
     def __init__(self, copia: Projeto, pedido, indice: int, dpi: int, com_o_antes: bool,
-                 chave: str) -> None:
+                 chave: str, com_o_do_livro: bool = False) -> None:
         super().__init__()
         self.copia = copia
         self.pedido = pedido
         self.indice = indice
         self.dpi = dpi
         self.com_o_antes = com_o_antes
+        self.com_o_do_livro = com_o_do_livro
         self.chave = chave
         self._cancelar = False
 
@@ -619,19 +625,26 @@ class TarefaPreviaDoAutomatico(QThread):
         try:
             doc = abrir_pdf(self.copia.caminho_entrada)
             try:
-                antes = None
+                antes = do_livro = None
                 if self.com_o_antes:
                     antes = automatico.antes_da_pagina(
                         doc, copy.deepcopy(self.copia), self.indice, self.dpi)
+                if self.com_o_do_livro and not self._cancelar:
+                    do_livro = automatico.pagina_como_esta(
+                        doc, copy.deepcopy(self.copia), self.indice, self.dpi)
                 if self._cancelar:
                     raise Cancelou()
+                pagina = self.copia.paginas[self.indice]
+                folha, metade = pagina.folha, pagina.metade
                 depois = automatico.depois_da_pagina(
                     doc, self.copia, self.pedido, self.indice, self.dpi,
                     cancelado=lambda: self._cancelar)
+                filtro = automatico.filtro_depois(self.copia, folha, metade)
             finally:
                 doc.close()
             if not self._cancelar:
-                self.pronta.emit(self.chave, self.indice, antes, depois)
+                self.pronta.emit(self.chave, self.indice, antes, depois,
+                                 {"do_livro": do_livro, "filtro_depois": filtro})
         except Cancelou:
             pass
         except Exception as erro:  # noqa: BLE001 - nada pode derrubar o programa

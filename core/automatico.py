@@ -1014,12 +1014,77 @@ def como_sai_na_tela(img, projeto, pagina, dpi: float):
 
 
 def antes_da_pagina(doc, copia, indice: int, dpi: int):
-    """A pagina `indice` como esta agora (o "antes"), desenhada na `copia`."""
+    """O "antes" da previa do Automatico (D-577, 30/10/2026, depois do 2o
+    teste): a folha da pagina `indice` CRUA, como veio do PDF - sem filtro,
+    sem girar, sem dividir, sem endireitar, sem cortar, sem margens.
+
+    Samuel: "o antes é sem filtro e sem cortar sem nada, o depois na tela de
+    atualizar que aplica os filtros de endireitar cortar ou fazer qualquer
+    outra coisa para ver como iria ficar." (no lugar de "mostra já cortada e
+    endireitada se tiver sido feito isso.", dito antes no mesmo dia). O antes
+    e o depois podem ter tamanhos diferentes: a vista com a linha poe os dois
+    na mesma escala (ui/automatico.VistaAntesDepoisComZoom).
+
+    FOLHA DIVIDIDA (resposta do Samuel, "pode", 30/10, palavra por palavra):
+      (1) "A folha já foi dividida: o antes mostra só a metade dela, crua, sem
+          filtro e sem endireitar. O depois mostra essa mesma metade pronta."
+      (2) "A folha ainda não foi dividida e 'Dividir folhas ao meio' está
+          marcada: o antes mostra a folha inteira, crua. O depois mostra as
+          duas metades prontas, uma ao lado da outra, como já faz hoje."
+      (3) "[...] O antes continua sendo a folha inteira crua, porque é dela
+          que as duas metades vão sair. Se ela desmarcar 'Dividir', o depois
+          volta a ser a folha inteira pronta. Se a folha já tinha sido
+          dividida antes, o antes mostra só a metade crua, com 'Dividir'
+          marcado ou não."
+    Quem decide e a pagina NO LIVRO (a `copia` ainda sem o pedido aplicado):
+    metade de folha dividida -> so a metade; senao -> a folha inteira. Nao
+    depende do "Dividir" marcado na janela.
+    A metade e tirada da folha crua como o programa divide (o giro de 90 da
+    folha, que diz para que lado ela fica de pe, e a linha do corte:
+    core.pipeline.girar_90 e dividir_imagem), e mais nada: sem a tampa
+    pintada, sem a sobra, sem cortar, sem endireitar, sem filtro. A folha
+    inteira sai sem giro nenhum (como veio do PDF).
+
+    Ate 30/10 (29/10) o antes era a pagina como esta no livro, com o filtro
+    dela: agora e pagina_como_esta (o "comparar" da tela cheia). Nao muda a
+    `copia`. Arriscado: decidir pela metade DEPOIS do aplicar (o caso 3
+    mudaria com o "Dividir" marcado)."""
+    from core.pdf_io import pagina_para_array
+    from core.pipeline import dividir_imagem, girar_90
+    from modelos import METADE_ESQUERDA, METADE_INTEIRA
+
+    pagina = copia.paginas[indice]
+    folha = copia.folhas[pagina.folha]
+    crua = pagina_para_array(doc, folha.indice, dpi=dpi)
+    if not (folha.dividir and pagina.metade != METADE_INTEIRA):
+        return crua
+    if folha.rotacao:
+        crua = girar_90(crua, folha.rotacao)
+    esquerda, direita = dividir_imagem(crua, folha.posicao_corte)
+    return esquerda if pagina.metade == METADE_ESQUERDA else direita
+
+
+def pagina_como_esta(doc, copia, indice: int, dpi: int):
+    """A pagina `indice` como esta agora no livro, COM o filtro que ela ja tem
+    (Original ou o aplicado), desenhada na `copia`. E a tela da esquerda do
+    "comparar" da tela cheia da previa (D-577, 30/10: "nessa vai ter o filtro
+    que estava antes, seja ele original ou que foi aplicado e o filtro que
+    está selecionado no momento")."""
     from core.pipeline import renderizar_pagina
 
     pagina = copia.paginas[indice]
     img, _ = renderizar_pagina(doc, copia, pagina, dpi=dpi)
     return como_sai_na_tela(img, copia, pagina, dpi)
+
+
+def filtro_depois(copia, folha: int, metade: str) -> str:
+    """O filtro com que a pagina (folha, metade) sai DEPOIS do aplicar na
+    `copia` (o rotulo da tela da direita do "comparar"). "" se ela nao vai
+    para o PDF."""
+    from core import etapas
+
+    novas = paginas_depois(copia, folha, metade)
+    return etapas.filtro_que_vale(copia, novas[0]) if novas else ""
 
 
 def depois_da_pagina(doc, copia, pedido: Pedido, indice: int, dpi: int,

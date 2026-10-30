@@ -796,9 +796,19 @@ class TelaCheiaDoAntesEDepois(QDialog):
       - o folhear: "<" e ">" e as setas do teclado (como a TelaCheiaDoPDF de antes já
         folheava). Folhear aqui é folhear a página da direita (PaginaAntesEDepois.virar): a
         conta do antes e depois da página nova é a dela, e a bolinha gira aqui também;
-      - "fechar" (e Esc) volta para a janela grande, na página em que parou.
+      - "fechar" (e Esc) volta para a janela grande, na página em que parou;
+      - "comparar" (D-577, 30/10, depois do 2º teste: "na tela cheia vai ter um botão de
+        comparação , ai vão aparecer duas telas para comparar" · "nessa vai ter o filtro que
+        estava antes, seja ele original ou que foi aplicado e o filtro que está selecionado
+        no momento"): duas telas lado a lado, à esquerda a página como está agora no livro
+        (com o filtro que ela já tem) e à direita o "depois" (o que está escolhido na
+        janela), cada uma com o rótulo dela. O jeito é o do "comparar" do "Ver de perto"
+        (ui/tela_ampliada.py): dois Visualizador, o zoom e a posição andam juntos (a roda
+        do mouse e o arrastar também). Apertar de novo volta ao antes e depois com a linha.
     Quem põe as imagens, o "página N de M", os botões e a bolinha é a PaginaAntesEDepois
     (_acertar_tela_cheia): esta janela só mostra. Abre maximizada, como a TelaCheiaDoPDF.
+    A página como está no livro só é desenhada com o "comparar" ligado (custa um desenho a
+    mais por página).
 
     Seguro mudar: tamanhos e margens. Arriscado: calcular aqui uma prévia própria (duas
     contas da mesma página, e a tela cheia poderia mostrar outra coisa que a janela)."""
@@ -828,6 +838,29 @@ class TelaCheiaDoAntesEDepois(QDialog):
         self.rolagem.setWidget(self.visor)
         camadas.addWidget(self.rolagem, 1)
 
+        # o "comparar": duas telas lado a lado, como no "Ver de perto" (ui/tela_ampliada.py)
+        from ui.widgets.visualizador import MODO_NENHUM, Visualizador
+
+        self.comparando = False
+        self.duas = QWidget()
+        lado = QHBoxLayout(self.duas)
+        lado.setContentsMargins(0, 0, 0, 0)
+        lado.setSpacing(10)
+        self.rotulo_a, self.rotulo_b = QLabel(""), QLabel("")
+        self.vista_a, self.vista_b = Visualizador(), Visualizador()
+        for rotulo, vista in ((self.rotulo_a, self.vista_a), (self.rotulo_b, self.vista_b)):
+            coluna = QVBoxLayout()
+            coluna.setSpacing(4)
+            rotulo.setAlignment(Qt.AlignCenter)
+            coluna.addWidget(rotulo)
+            vista.definir_modo(MODO_NENHUM)
+            coluna.addWidget(vista, 1)
+            lado.addLayout(coluna, 1)
+        self.vista_a.vista_mudou.connect(self._vista_a_mudou)
+        self.vista_b.vista_mudou.connect(self._vista_b_mudou)
+        self.duas.setVisible(False)
+        camadas.addWidget(self.duas, 1)
+
         barra = QHBoxLayout()
         barra.setSpacing(8)
         self.botao_anterior = QPushButton("<")
@@ -856,6 +889,10 @@ class TelaCheiaDoAntesEDepois(QDialog):
         self.botao_caber = QPushButton("ajustar à tela")
         self.botao_caber.clicked.connect(lambda: self._zoom(None))
         barra.addWidget(self.botao_caber)
+        self.botao_comparar = QPushButton("comparar")
+        self.botao_comparar.setCheckable(True)
+        self.botao_comparar.clicked.connect(lambda *_: self._alternar_comparar())
+        barra.addWidget(self.botao_comparar)
         fechar = QPushButton("fechar")
         fechar.setObjectName("primario")
         fechar.clicked.connect(self.accept)
@@ -870,23 +907,65 @@ class TelaCheiaDoAntesEDepois(QDialog):
         self.setWindowState(Qt.WindowMaximized)
 
     def acertar(self, antes, depois, aviso: str, contador: str, anterior: bool, proxima: bool,
-                calculando: bool) -> None:
-        """Põe o que a página da direita mostra agora (só refaz a imagem quando ela mudou)."""
+                calculando: bool, indice: int = -1, do_livro=None, nome_do_livro: str = "",
+                nome_depois: str = "") -> None:
+        """Põe o que a página da direita mostra agora (só refaz a imagem quando ela mudou) e,
+        no "comparar", as duas telas: a página como está no livro (`do_livro`, None enquanto
+        não chega) e o depois, com os nomes dos filtros nos rótulos."""
         if (self._mostrado[0] is not antes or self._mostrado[1] is not depois
                 or self._mostrado[2] != aviso):
             self._mostrado = (antes, depois, aviso)
             self.visor.mostrar(antes, depois, aviso=aviso)
+        if self.comparando:
+            # depois de _lado_a_lado: o mesmo "depois" do antes e depois (as duas metades,
+            # quando a folha é dividida)
+            depois_cru = self.visor._crus[1]
+            self.vista_a.definir_imagem(do_livro, dono=("pagina", indice))
+            self.vista_b.definir_imagem(depois_cru, dono=("pagina", indice))
+            self.rotulo_a.setText(f"como está no livro: {nome_do_livro}" if nome_do_livro
+                                  else "como está no livro")
+            self.rotulo_b.setText(f"depois: {nome_depois}" if nome_depois else "depois")
         self.contador.setText(contador)
         self.botao_anterior.setEnabled(anterior)
         self.botao_proxima.setEnabled(proxima)
         self.bolinha.definir(calculando, "Calculando como a página vai ficar..." if calculando else "")
 
     def _zoom(self, fator: float | None) -> None:
-        """–, + e "ajustar à tela" (a mesma conta de JanelaDoAutomatico._zoom)."""
+        """–, + e "ajustar à tela" (a mesma conta de JanelaDoAutomatico._zoom). No "comparar",
+        nas duas telas juntas (a da direita copia a da esquerda, como no "Ver de perto")."""
+        if self.comparando:
+            if fator is None:
+                self.vista_a.ajustar_a_tela()
+                self.vista_b.ajustar_a_tela()
+            else:
+                self.vista_a.definir_zoom(self.vista_a.zoom * fator)
+            return
         if fator is None:
             self.visor.ajustar_a_tela()
         else:
             self.visor.definir_zoom(max(0.1, min(8.0, self.visor.zoom * fator)))
+
+    def _vista_a_mudou(self, zoom: float, deslocamento) -> None:
+        if self.comparando:
+            self.vista_b.aplicar_vista(zoom, deslocamento)
+
+    def _vista_b_mudou(self, zoom: float, deslocamento) -> None:
+        if self.comparando:
+            self.vista_a.aplicar_vista(zoom, deslocamento)
+
+    def _alternar_comparar(self) -> None:
+        """O botão "comparar": liga as duas telas (e pede a página como está no livro, se
+        ela ainda não foi desenhada) ou volta ao antes e depois com a linha."""
+        self.comparando = self.botao_comparar.isChecked()
+        self.rolagem.setVisible(not self.comparando)
+        self.duas.setVisible(self.comparando)
+        if self.comparando:
+            self.vista_b.aplicar_vista(self.vista_a.zoom, self.vista_a.deslocamento)
+            self.painel.pedir(agora=True)
+        else:
+            self.vista_a.definir_imagem(None, dono=("nada",))   # solta as imagens
+            self.vista_b.definir_imagem(None, dono=("nada",))
+        self.painel._acertar_tela_cheia()
 
     def keyPressEvent(self, evento) -> None:  # noqa: N802 - nome do Qt
         """Setas e Page Up/Down viram a página (como na TelaCheiaDoPDF); Esc fecha."""
@@ -906,6 +985,8 @@ class TelaCheiaDoAntesEDepois(QDialog):
             self.painel.tela_cheia = None
         self._mostrado = (None, None, None)
         self.visor.mostrar(None, None)              # solta as imagens (uma página por vez)
+        self.vista_a.definir_imagem(None, dono=("nada",))
+        self.vista_b.definir_imagem(None, dono=("nada",))
         super().done(resultado)
 
 
@@ -920,9 +1001,14 @@ class PaginaAntesEDepois(QWidget):
     porque as vezes vai demorar para processar né?" (substitui a D-486, em que
     a página da direita era a original).
 
-    O QUE MOSTRA: a página da vez, com o "antes" (como ela está agora no
-    livro) à esquerda da linha e o "depois" (como ela sai se rodar o
-    Automático com as etapas marcadas e as opções escolhidas na janela) à
+    O QUE MOSTRA: a página da vez, com o "antes" (a folha CRUA, como veio do
+    PDF: sem filtro, sem cortar, sem endireitar, sem nada: core/automatico.
+    antes_da_pagina; D-577, 30/10, depois do 2º teste: "o antes é sem filtro e
+    sem cortar sem nada, o depois na tela de atualizar que aplica os filtros de
+    endireitar cortar ou fazer qualquer outra coisa para ver como iria
+    ficar."; até 30/10 era a página como está no livro, com o filtro dela) à
+    esquerda da linha e o
+    "depois" (como ela sai se rodar o Automático com as etapas marcadas e as opções escolhidas na janela) à
     direita. Folheia as páginas do livro ("<" e ">", as setas do teclado) e dá
     zoom (a janela grande liga os botões −, + e "ajustar à tela" ao `visor`).
     "tela cheia" abre o MESMO antes e depois, grande, com zoom e folhear
@@ -961,6 +1047,8 @@ class PaginaAntesEDepois(QWidget):
         self._feito = None                    # a chave a que o "depois" mostrado responde
         self._antes = None                    # (índice, imagem) do antes da página da vez
         self._depois = None                   # (índice, imagem) do depois
+        self._do_livro = None                 # (índice, imagem) da página como está no livro
+        self._filtro_depois = ""              # o filtro do depois (o rótulo do "comparar")
         self._fechada = False                 # fechar(): nada mais é pedido
         self.tela_cheia: TelaCheiaDoAntesEDepois | None = None   # aberta pelo "tela cheia"
 
@@ -978,7 +1066,8 @@ class PaginaAntesEDepois(QWidget):
         self.rolagem.setFrameShape(QFrame.NoFrame)
         self.rolagem.setAlignment(Qt.AlignCenter)
         self.visor = VistaAntesDepoisComZoom(self.rolagem)
-        self.visor.setToolTip("À esquerda da linha, a página como está agora; à direita, como "
+        # D-577, 30/10: o antes é a folha crua (antes dizia "a página como está agora")
+        self.visor.setToolTip("À esquerda da linha, a página como veio, sem nada; à direita, como "
                               "ela vai sair com as etapas marcadas. Arraste a linha para comparar.")
         self.rolagem.setWidget(self.visor)
         col.addWidget(self.rolagem, 1)
@@ -1029,6 +1118,7 @@ class PaginaAntesEDepois(QWidget):
         indice = depois_dela[0] if depois_dela else ativas[-1]
         if indice != self._indice or self._antes is None:
             self._antes = self._depois = None     # uma página por vez na memória
+            self._do_livro = None
             self._feito = None
         self._indice = indice
         self.contador.setText(f"página {indice + 1} de {len(self.projeto.paginas)}")
@@ -1070,10 +1160,27 @@ class PaginaAntesEDepois(QWidget):
         depois (os mesmos da vista daqui), o "página N de M", os botões e a bolinha."""
         if self.tela_cheia is None:
             return
+        from core import etapas
+        from core.filtros import NOMES_AMIGAVEIS as NOMES
+
         antes, depois = self.visor._crus
+        do_livro = self._do_livro[1] if self._do_livro and self._do_livro[0] == self._indice else None
+        nome_do_livro = nome_depois = ""
+        if self.projeto is not None and 0 <= self._indice < len(self.projeto.paginas):
+            filtro = etapas.filtro_que_vale(self.projeto, self.projeto.paginas[self._indice])
+            nome_do_livro = NOMES.get(filtro, filtro)
+        if self._feito is not None and self._filtro_depois:
+            nome_depois = NOMES.get(self._filtro_depois, self._filtro_depois)
         self.tela_cheia.acertar(antes, depois, self.visor.aviso, self.contador.text(),
                                 self.botao_anterior.isEnabled(), self.botao_proxima.isEnabled(),
-                                self.calculando())
+                                self.calculando(), self._indice, do_livro, nome_do_livro,
+                                nome_depois)
+
+    def _precisa_do_livro(self) -> bool:
+        """O "comparar" da tela cheia está ligado e a página como está no livro desta página
+        ainda não foi desenhada."""
+        return bool(self.tela_cheia is not None and self.tela_cheia.comparando
+                    and (self._do_livro is None or self._do_livro[0] != self._indice))
 
     def keyPressEvent(self, evento) -> None:  # noqa: N802 - nome do Qt
         """Setas e Page Up/Down viram a página, como no folhear."""
@@ -1127,18 +1234,20 @@ class PaginaAntesEDepois(QWidget):
         chave = self._chave(pedido)
         self._querida = chave
         precisa_do_antes = self._antes is None or self._antes[0] != self._indice
+        precisa_do_livro = self._precisa_do_livro()
         rodando = self._tarefa
-        if chave == self._feito and not precisa_do_antes:
+        if chave == self._feito and not precisa_do_antes and not precisa_do_livro:
             # o depois mostrado já é este: nada a calcular (e o que roda ficou velho)
             self._na_espera = None
             if rodando is not None:
                 rodando.cancelar()
-        elif rodando is not None and rodando.chave == chave and not rodando.foi_cancelada:
+        elif (rodando is not None and rodando.chave == chave and not rodando.foi_cancelada
+              and (rodando.com_o_do_livro or not precisa_do_livro)):
             self._na_espera = None                    # a que roda já é esta: esperar por ela
         else:
             # a cópia é feita AQUI, no fio da janela (o projeto aberto só muda nele)
             pedido_da_vez = (chave, self._indice, copia_para_a_previa(self.projeto), pedido,
-                             precisa_do_antes)
+                             precisa_do_antes, precisa_do_livro)
             if rodando is not None:
                 # só uma conta por vez: a que roda para no próximo ponto de
                 # parada, e esta espera a vez (no lugar da que esperava antes)
@@ -1151,8 +1260,9 @@ class PaginaAntesEDepois(QWidget):
     def _comecar(self, pedido_da_vez: tuple) -> None:
         from ui.tarefas import TarefaPreviaDoAutomatico
 
-        chave, indice, copia, pedido, com_o_antes = pedido_da_vez
-        tarefa = TarefaPreviaDoAutomatico(copia, pedido, indice, DPI_DA_PREVIA, com_o_antes, chave)
+        chave, indice, copia, pedido, com_o_antes, com_o_do_livro = pedido_da_vez
+        tarefa = TarefaPreviaDoAutomatico(copia, pedido, indice, DPI_DA_PREVIA, com_o_antes, chave,
+                                          com_o_do_livro)
         tarefa.pronta.connect(self._chegou)
         tarefa.falhou.connect(self._falhou)
         tarefa.terminou.connect(self._terminou)
@@ -1160,17 +1270,22 @@ class PaginaAntesEDepois(QWidget):
         self._tarefa = tarefa
         tarefa.start()
 
-    def _chegou(self, chave: str, indice: int, antes, depois) -> None:
+    def _chegou(self, chave: str, indice: int, antes, depois, extra=None) -> None:
         """O antes e o depois chegaram. O depois só vale se é do ÚLTIMO pedido
         (`_querida`) e da página da vez: resultado velho nunca cobre o novo.
-        O antes vale para a página dele (não muda com as opções)."""
+        O antes (e a página como está no livro, do "comparar") vale para a
+        página dele (não muda com as opções). `extra`: {"do_livro", "filtro_depois"}."""
         if indice != self._indice:
             return
+        extra = extra or {}
         if antes is not None:
             self._antes = (indice, antes)
+        if extra.get("do_livro") is not None:
+            self._do_livro = (indice, extra["do_livro"])
         if chave == self._querida:
             self._depois = (indice, _lado_a_lado(depois or []))
             self._feito = chave
+            self._filtro_depois = extra.get("filtro_depois", "")
         self._mostrar()
 
     def _falhou(self, chave: str, _mensagem: str) -> None:
@@ -1232,7 +1347,7 @@ class PaginaAntesEDepois(QWidget):
             self._tarefa = None
         if self.tela_cheia is not None:
             self.tela_cheia.reject()            # a tela cheia fecha junto com a janela grande
-        self._antes = self._depois = None
+        self._antes = self._depois = self._do_livro = None
         self._acertar_bolinha()
 
 
