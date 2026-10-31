@@ -273,8 +273,8 @@ def test_d589_desmarcar_margens_iguais_e_rodar_sai_sem_margens_e_nao_volta_marca
 
 def test_d589_desmarcar_gravuras_e_rodar_a_foto_sai_em_preto_e_branco_e_nao_volta_marcada(janela, app, tmp_path):
     """D-589 + Samuel (30/10): "se algo não está marcado, não é para fazer". "Gravuras e fotos"
-    ligada → desmarcar e rodar → o livro deixa de procurar gravuras (como o "Desligar as
-    marcadas": forma "desligada"), a foto sai só em preto e branco no PDF, a etapa fica
+    ligada → desmarcar e rodar → o livro deixa de procurar gravuras (o "Procurar" do livro;
+    a forma de dentro fica), a foto sai só em preto e branco no PDF, a etapa fica
     "desligada" e não volta marcada. As margens continuam (foram marcadas). O Desfazer traz
     as gravuras de volta."""
     (_, cinzas_antes), (tamanho_depois, cinzas_depois) = _ligar_e_depois_desmarcar(
@@ -283,6 +283,9 @@ def test_d589_desmarcar_gravuras_e_rodar_a_foto_sai_em_preto_e_branco_e_nao_volt
     assert not A.ligada_no_livro(janela.projeto, A.GRAVURAS)
     assert cinzas_depois < 0.05                                  # agora: só preto e branco
     assert janela.projeto.margens_iguais and tamanho_depois[0] > 300
+    # desliga pelo "Procurar" do livro; a escolha de dentro "Achar gravuras e fotos" (a forma,
+    # D-212) fica como estava - com a forma "desligada" a etapa não religava (2ª rodada)
+    assert not janela.projeto.detectar_regioes and janela.projeto.gravura_forma != "desligada"
     janela.tela_conferir.desfazer()
     assert A.ligada_no_livro(janela.projeto, A.GRAVURAS)
 
@@ -336,13 +339,7 @@ def _pela_janela(janela, app, etapa: str, marcar: bool) -> None:
     _assentar(app, 30)
 
 
-@pytest.mark.parametrize("etapa", [
-    pytest.param(A.GRAVURAS, marks=pytest.mark.xfail(strict=True, reason=(
-        "DEFEITO CONHECIDO (2ª rodada do verificador, 30/10): desligada pela forma 'desligada' "
-        "(a caixinha de dentro, D-212), a etapa Gravuras não religa ao marcar e rodar; o "
-        "conserto pelo 'Procurar' do livro quebrava o 'Só as letras' (D-148). Pergunta P3 no "
-        "ONDE-PAREI. Tirar o xfail quando decidido."))),
-    A.MARGENS, A.CADERNOS])
+@pytest.mark.parametrize("etapa", [A.GRAVURAS, A.MARGENS, A.CADERNOS])
 def test_d589_desmarcar_rodar_marcar_rodar_religa(janela, app, tmp_path, etapa):
     """D-589 + Samuel (30/10): "se algo não está marcado, não é para fazer" — e o que está
     marcado é para fazer. Ligada → desmarcar e rodar (desliga) → marcar de novo e rodar → a
@@ -372,3 +369,90 @@ def test_d589_desmarcar_rodar_marcar_rodar_religa(janela, app, tmp_path, etapa):
     assert de_novo[:2] == ligada[:2]
     if ligada[2] is not None:
         assert abs(de_novo[2] - ligada[2]) < 0.05
+
+
+# --- "Só as letras" com "Gravuras e fotos" desmarcada (Samuel, 31/10/2026) ------------------
+#
+# Aprovado por ele, palavra por palavra: "A caixinha da etapa 5 fica do jeito que você deixou,
+# desmarcada. Com 'Só as letras' marcada, o programa procura as figuras por dentro, só para deixar
+# elas coloridas. Se depois você desmarcar 'Só as letras', a etapa 5 continua desmarcada e a
+# página sai toda em preto e branco." + "sim, mas tem que ter certeza que o programa vai procurar
+# as figuras mesmo com a opção desmarcada e que não vai remarcar ela de novo na caixinha".
+
+def _rodar_pela_janela(janela, app, so_as_letras: bool, gravuras: bool) -> None:
+    """Na janela grande, como o Kaique: "Limpar a folha" em Preto e branco, a caixinha "Só as
+    letras" e a etapa "Gravuras e fotos" como pedido, e "Rodar"."""
+    from PySide6.QtCore import Qt
+
+    from core.filtros import PRETO_E_BRANCO
+
+    jan = janela.abrir_o_automatico("limpar")
+    _assentar(app)
+    jan.radios_de_filtro[PRETO_E_BRANCO].setChecked(True)
+    jan.escolhas_misto.caixa.setChecked(so_as_letras)
+    jan.lista.item_da_etapa(A.LIMPAR).setCheckState(Qt.Checked)
+    jan.lista.item_da_etapa(A.GRAVURAS).setCheckState(Qt.Checked if gravuras else Qt.Unchecked)
+    _assentar(app)
+    jan.botao_rodar.click()
+    if janela.tarefa is not None:
+        janela.tarefa.wait(60000)
+    _assentar(app, 30)
+
+
+def _caixinha_das_gravuras_desmarcada(janela, app) -> None:
+    """A etapa 5 "desligada" e a caixinha desmarcada no painel e na janela aberta de novo."""
+    estado = janela.estado_do_automatico
+    assert estado.situacoes[A.GRAVURAS] == "desligada"
+    assert A.GRAVURAS not in estado.marcadas
+    assert not _caixinha(janela.tela_conferir.paineis.automatico.lista, A.GRAVURAS)
+    jan = janela.abrir_o_automatico()
+    _assentar(app)
+    assert not _caixinha(jan.lista, A.GRAVURAS)
+    janela._fechar_a_janela_do_automatico()
+
+
+@pytest.fixture
+def livro_com_gravuras_e_so_as_letras(janela, app, tmp_path):
+    """Livro com a "foto" (degradê) em que uma rodada ligou Limpar (Preto e branco) e Gravuras;
+    depois o Kaique marca "Só as letras", desmarca "Gravuras e fotos" e roda."""
+    janela.show()
+    janela.abrir_livro(_livro_com_foto(tmp_path))
+    _assentar(app)
+    _rodar_pela_janela(janela, app, so_as_letras=False, gravuras=True)
+    assert janela.estado_do_automatico.situacoes[A.GRAVURAS] == "ligada no livro todo"
+    _rodar_pela_janela(janela, app, so_as_letras=True, gravuras=False)
+    assert janela.projeto.misto_so_as_letras is True
+    return janela
+
+
+def test_d589_1_so_as_letras_com_gravuras_desmarcada_a_caixinha_nao_volta_marcada(
+        livro_com_gravuras_e_so_as_letras, app):
+    """(1) "Gravuras e fotos" desmarcada e rodar desliga a etapa, e a caixinha NÃO volta
+    marcada, nem com "Só as letras" ligado (painel e janela aberta de novo)."""
+    janela = livro_com_gravuras_e_so_as_letras
+    assert not janela.projeto.detectar_regioes
+    _caixinha_das_gravuras_desmarcada(janela, app)
+
+
+def test_d589_2_so_as_letras_acha_as_figuras_por_dentro_e_a_figura_sai_colorida(
+        livro_com_gravuras_e_so_as_letras, tmp_path):
+    """(2) Com "Só as letras" ligado, as figuras são achadas mesmo com a etapa desmarcada: a
+    "foto" sai como no original (com os cinzas) no PDF, não em preto e branco."""
+    janela = livro_com_gravuras_e_so_as_letras
+    from core import etapas
+
+    assert etapas.marca_sozinho(janela.projeto, janela.projeto.paginas[0])
+    _, cinzas = _pdf_da_foto(janela, tmp_path, "so-as-letras")
+    assert cinzas > 0.3
+
+
+def test_d589_3_sem_so_as_letras_e_gravuras_desmarcada_a_pagina_sai_toda_em_preto_e_branco(
+        livro_com_gravuras_e_so_as_letras, app, tmp_path):
+    """(3) Depois, desmarcar "Só as letras" e rodar: a etapa 5 continua desmarcada e a página
+    sai toda em preto e branco (a "foto" sem os cinzas)."""
+    janela = livro_com_gravuras_e_so_as_letras
+    _rodar_pela_janela(janela, app, so_as_letras=False, gravuras=False)
+    assert janela.projeto.misto_so_as_letras is False
+    _caixinha_das_gravuras_desmarcada(janela, app)
+    _, cinzas = _pdf_da_foto(janela, tmp_path, "sem-so-as-letras")
+    assert cinzas < 0.05

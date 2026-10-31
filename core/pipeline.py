@@ -4100,7 +4100,7 @@ def _tem_pedaco_com_filtro(projeto: Projeto, pagina: ConfigPagina) -> bool:
     PDF sem poder ser visto. Arriscado: tirar esta condicao."""
     if not pagina.selecao:
         return False
-    if not projeto.detectar_regioes:
+    if not etapas.a_marcacao_da_maquina_vale(projeto, pagina):     # D-589: ou o "So as letras"
         # obra 26/10, etapa 1 (D-009): o pedaco e feito a mao - vale no livro
         # novo (no projeto antigo, so com a marca: core/etapas)
         return etapas.tem_pedaco_a_mao(projeto, pagina)
@@ -4189,7 +4189,7 @@ def _papel_a_mao_sem_fundo(projeto: Projeto, pagina: ConfigPagina, img: np.ndarr
 
     if not pagina.selecao:
         return img
-    selecao = (pagina.obter_selecao() if projeto.detectar_regioes
+    selecao = (pagina.obter_selecao() if etapas.a_marcacao_da_maquina_vale(projeto, pagina)
                else etapas.marcacao_a_mao(projeto, pagina))
     return _papel_a_mao_em_branco(img, selecao)
 

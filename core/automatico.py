@@ -861,7 +861,13 @@ def _desligar_as_desmarcadas(projeto, pedido: Pedido, etapas_pedidas: list, g: _
     ela) e, relido o livro (ui EstadoDoAutomatico.do_projeto), a caixinha
     voltava marcada. Aqui a etapa desmarcada na janela (Pedido.desmarcadas) e
     ainda ligada DESLIGA, na mesma acao do Automatico (o Ctrl+Z traz de
-    volta), do mesmo jeito do "Desligar as marcadas" (_desligar). Sao etapas do livro
+    volta): Margens e Cadernos do mesmo jeito do "Desligar as marcadas"
+    (_desligar); as Gravuras pelo "Procurar" do livro (detectar_regioes), para
+    religar ao marcar. Samuel, 31/10: "A caixinha da etapa 5 fica do jeito que
+    você deixou, desmarcada. Com 'Só as letras' marcada, o programa procura as
+    figuras por dentro, só para deixar elas coloridas. Se depois você desmarcar
+    'Só as letras', a etapa 5 continua desmarcada e a página sai toda em preto e
+    branco." (a procura de dentro: core/etapas.marca_sozinho). Sao etapas do livro
     todo (D-484): vale em qualquer "Rodar em" (pergunta P2 aberta).
 
     Roda DEPOIS das etapas marcadas: Gravuras so conta como ligada com o
@@ -871,15 +877,14 @@ def _desligar_as_desmarcadas(projeto, pedido: Pedido, etapas_pedidas: list, g: _
         if (etapa in (pedido.desmarcadas or []) and etapa not in etapas_pedidas
                 and ligada_no_livro(projeto, etapa)):
             if etapa == GRAVURAS:
-                # como em _desligar (a forma "desligada", D-212). DEFEITO
-                # CONHECIDO (2a rodada do verificador, 30/10): marcar a etapa
-                # de novo e rodar nao religa, porque a janela traz a forma
-                # "desligada" do livro. Desligar pelo "Procurar" do livro
-                # (detectar_regioes) religava, mas desligava junto a marcacao
-                # das letras: o "So as letras" (D-148) deixava a gravura em
-                # preto e branco (tests/test_decisoes_so_as_letras.py). Pergunta
-                # P3 no relatorios/automatico-cadernos/ONDE-PAREI.md.
-                g.no_livro("gravura_forma", "desligada")
+                # pelo "Procurar" do livro, o mesmo campo que o Rodar liga
+                # quando a etapa vem marcada: marcar e rodar religa (2a rodada
+                # do verificador, 30/10). NAO a forma "desligada": ela e a
+                # caixinha de dentro "Achar gravuras e fotos" (D-212) e, gravada
+                # aqui, a etapa nao religava. Com o "So as letras" ligado, a
+                # marcacao procura por dentro mesmo assim e a etapa continua
+                # desligada (Samuel, 31/10; core/etapas.marca_sozinho).
+                g.no_livro("detectar_regioes", False)
             else:
                 g.no_livro(CAMPO_DO_LIVRO[etapa], False)
 
