@@ -285,3 +285,14 @@ opções que faltam do automatico" · "Sim, podemos fazer isso junto com a taref
 - [ ] B: o painel de opções separado da janela (o mesmo nos dois lados do comparar)
 - [ ] B: comparar com opções nos dois lados e "usar este"
 - [ ] provas, testes um por um, prints, GitHub
+
+## Perguntas para o Samuel (4ª rodada)
+
+6. **(opções novas do "Limpar a folha")** As opções novas ("Força do preto", "Jeito do preto e branco", "Tirar o
+   chuvisco"...) são de cada página, no painel Filtro. Na janela do Automático elas começam **com os valores da página
+   em que você está** (como o painel Filtro mostra os dela), e o "Rodar" leva esses valores para as páginas onde o
+   "Limpar a folha" roda (as mexidas à mão continuam com a pergunta de pular). Sugestão: fica assim. Sim ou não?
+7. **(nomes no "comparar")** Cada lado ganhou o botão **"opções"**, que abre e fecha a aba, e o **"usar este"**.
+   Enquanto você não mexe no lado esquerdo, ele continua dizendo "como está no livro: <filtro>"; depois que você muda
+   uma opção nele, passa a dizer "depois: <filtro>", como o lado direito, porque também mostra como a página vai sair.
+   Sugestão: fica assim. Sim ou não?
