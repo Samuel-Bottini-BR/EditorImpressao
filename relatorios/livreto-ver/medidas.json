@@ -1,0 +1,40 @@
+{
+ "primeira_folha_desde_abrir_s": 1.99,
+ "folha_1": [
+  "Folha 1 de 32 — frente",
+  "Folha 1 de 32 — verso"
+ ],
+ "folha_1_paginas": {
+  "frente": [
+   20,
+   1
+  ],
+  "verso": [
+   2,
+   19
+  ]
+ },
+ "diferenca_media_previa_x_pdf_0_a_255": [
+  4.087,
+  3.148
+ ],
+ "clique_na_seta_volta_em_s": 0.0,
+ "folha_2_s": 0.25,
+ "folha_2": [
+  "Folha 2 de 32 — frente",
+  "Folha 2 de 32 — verso"
+ ],
+ "troca_16_por_caderno_s": 0.47,
+ "depois_de_trocar": [
+  "Folha 2 de 32 — frente",
+  "Folha 2 de 32 — verso"
+ ],
+ "fotos": [
+  "1-ao-abrir-montando.png",
+  "2-folha-1-frente-e-verso.png",
+  "3-seta-folha-2.png",
+  "4-trocou-para-16-por-caderno.png",
+  "5-notebook-1000x617.png",
+  "6-janela-minima.png"
+ ]
+}

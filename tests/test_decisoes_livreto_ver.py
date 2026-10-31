@@ -314,6 +314,8 @@ def test_d574_gravar_com_a_previa_montando_espera_e_grava(app, pasta):
     assert _esperar(lambda: dialogo.tarefa is not None and not dialogo.tarefa.isRunning()
                     and "Pronto" in dialogo.estado.text(), 60)
     assert destino.exists()
+    # o resultado mora embaixo da folha: o cartão rola até ele (à vista)
+    assert _esperar(lambda: not dialogo.estado.visibleRegion().isEmpty(), 5)
     assert _esperar(lambda: _previa_quieta(dialogo), 60)
     assert _paginas_na_tela(dialogo)[imp.FRENTE] == (20, 1)
     dialogo.reject()

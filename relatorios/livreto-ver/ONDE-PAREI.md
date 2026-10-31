@@ -19,5 +19,49 @@ Ramo `livreto-ver-2026-10-31` (saiu de `obra-2026-10-26` em d95df6b). Cópia: `.
 - **CLAUDE.md §3**: a interface nunca congela; uma página (aqui: uma folha) por vez na memória.
 - **Regra 7 (27/10)**: só o que ele mandou; nada de botão/texto/comportamento a mais.
 
-## Andamento
-- [ ] ONDE-PAREI criado
+## Andamento (31/10/2026)
+- [x] Prova escrita antes: `tests/test_decisoes_livreto_ver.py`, 9 provas. No código antigo: **9 falharam** (a janela não
+  tinha prévia nem o core a `previa_da_folha`). No novo: **9 passaram** (rodado 4 vezes).
+- [x] `core/impressao.py`: `folhas_que_saem` e `previa_da_folha` (a MESMA `_montar_livreto` do arquivo, pedindo uma folha
+  só; desenhada pequena; trava do MuPDF `pdf_io._TRANCA`).
+- [x] `ui/dialogo_impressao.py`: no cartão da direita, em cima, "Como vai sair da impressora" + bolinha; "Folha 1 de 32 —
+  frente", a folha, "Folha 1 de 32 — verso", a folha, "‹ folha 1 ›  (vira o papel)". Embaixo continua o "O que vai
+  sair" de antes. Fio à parte (`_TarefaPrevia`), uma folha guardada, pedido velho ignorado, opção mudou = refaz (250 ms
+  de espera), "gravar" e prévia nunca no MuPDF ao mesmo tempo, fechar espera o fio.
+- [x] Testes da impressão, um arquivo por vez: test_decisoes_livreto_ver 9/9, test_dialogo_impressao 5/5,
+  test_decisoes_impressao 22/22 (inclui D-333: nada cortado nem por cima), test_impressao 17/17, test_cadernos 28/28.
+- [x] Prints com o Palatino (cópia em `_tmp/palatino/`): `relatorios/livreto-ver/*.png`, medidas em `medidas.json`
+  (script `prints.py`). Folha 1: frente 20 e 1, verso 2 e 19 (a montagem); primeira folha 2,0 s depois de abrir; seta
+  0,25 s; trocar para 16 por caderno 0,47 s.
+- [x] Commit e push no ramo `livreto-ver-2026-10-31`.
+
+## Perguntas para o Samuel
+
+1. **O botão do dia 29/10.** Ele escreveu: "quando mostra para fazer os cadernos lá na parte de fazer caderno tem que ter
+   um botão para ver como vai ficar o caderno." O desenho da opção 1 não tem botão: a folha já aparece sozinha ao abrir
+   o "Montar para imprimir" (foi assim que fiz, seguindo o desenho). Pergunta: "a parte de fazer caderno" era esta
+   janela (então está atendido, sem botão) ou a etapa "Montar cadernos" do Automático (lá não mexi; é de outra cópia)?
+   Exemplo real: Palatino, abrir "Montar para imprimir" → em 2 s aparece a folha 1, sem apertar nada.
+2. **Os outros formatos.** A prévia só aparece no Livreto (é o formato da D-574); em "Página inteira", "Várias páginas
+   por folha" e "Pôster" a janela fica como estava, só com o texto. Quer as folhas também nesses? Exemplo real:
+   Palatino em "Página inteira" sairia "Folha 1 de 63 — frente" com a página 1 e o verso com a 2.
+3. **O livreto do jeito antigo (2 por folha, do Automático).** Quando o PDF já saiu em cadernos pela etapa "Montar
+   cadernos" (duas páginas por lado, no tamanho do scan), o botão "montar para imprimir..." fica apagado e não há
+   prévia nenhuma. Fica assim? Exemplo real: Rhetorica Christiana, que tem a etapa 7 marcada.
+4. **"Folhas de / até".** Escolhendo folhas 3 a 5, a prévia diz "Folha 3 de 32 — frente" (o número de verdade da folha
+   no livreto, e o total do livreto inteiro), e as setas andam só de 3 a 5. Ou prefere "Folha 1 de 3"? Exemplo real:
+   Palatino, reimprimir só as folhas 3 a 5.
+5. **"Só a frente" / "Só o verso".** Aparece só o lado que vai sair ("Folha 1 de 32 — frente"), sem o "(vira o papel)".
+   Está bom assim?
+
+## Ideias para a Lista de espera
+- Já pedido por ele (31/10), para a gerente anotar se ainda não estiver: "Não gostei da tela que mostra o livreto,
+  podemos mudar depois, deixe anotado na lista de espera [...] tem como olha como outros aplicativos fazem isso".
+
+## Ressalvas
+- A prévia é desenhada direto da montagem; o arquivo gravado (com "Imprimir como imagem") é a mesma montagem desenhada
+  a 300 DPI. No Palatino a diferença média entre a prévia e a folha 1 gravada, reduzida ao mesmo tamanho, foi 4 e 3
+  (numa escala de 0 a 255): é só o arredondamento de reduzir a imagem, não página trocada (no livro sintético, < 2).
+- O "gravar" (`montar_para_impressao`) continua sem a trava do MuPDF (`pdf_io._TRANCA`), como já era; a prévia usa a
+  trava e nunca roda junto com o "gravar" desta janela.
+- Prints fora da tela (offscreen, letra Segoe UI carregada à mão); a janela de verdade no PC não foi pilotada.
