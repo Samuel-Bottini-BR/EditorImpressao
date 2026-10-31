@@ -311,6 +311,9 @@ def test_d574_gravar_com_a_previa_montando_espera_e_grava(app, pasta):
     dialogo.pedir_previa()
     destino = pasta / "saida.pdf"
     dialogo.comecar(destino=str(destino))
+    # o fio do "gravar" nasce na hora (quem chama pode esperar por ele) e é ele
+    # que espera a prévia soltar o MuPDF
+    assert dialogo.tarefa is not None
     assert _esperar(lambda: dialogo.tarefa is not None and not dialogo.tarefa.isRunning()
                     and "Pronto" in dialogo.estado.text(), 60)
     assert destino.exists()

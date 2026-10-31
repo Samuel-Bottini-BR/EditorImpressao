@@ -61,7 +61,7 @@ VER AS FOLHAS ANTES DE GRAVAR (D-574, 31/10/2026)
     ARRISCADO: montar a folha no fio da tela (a janela pararia ~0,5 s a cada
     seta no Palatino); guardar todas as folhas (a memória cresceria com o
     livro); dois fios do MuPDF ao mesmo tempo (a prévia espera o "gravar" e o
-    "gravar" espera a prévia soltar).
+    fio do "gravar" espera a prévia soltar, _Tarefa.esperar).
 
 IMPRIMIR AGORA (D-012, 26/10/2026: "2" - conserto na etapa 9)
     Antes, o botão da tela "Ficou pronto!" mandava o PDF inteiro para a
@@ -297,16 +297,23 @@ class _Tarefa(QThread):
     falhou = Signal(str)
 
     def __init__(self, entrada: str, opcoes: imp.OpcoesDeImpressao, destino: str = "",
-                 impressora: str = "", copias: int = 1, agrupar: bool = True) -> None:
+                 impressora: str = "", copias: int = 1, agrupar: bool = True,
+                 esperar: QThread | None = None) -> None:
         super().__init__()
         self.entrada, self.opcoes, self.destino = entrada, opcoes, destino
         self.impressora, self.copias, self.agrupar = impressora, copias, agrupar
+        # D-574: o fio da prévia que ainda está soltando o MuPDF (já avisado
+        # para parar); este fio espera por ele antes de começar (dois fios no
+        # MuPDF ao mesmo tempo já travaram o programa, core/pdf_io._TRANCA)
+        self.esperar = esperar
         self._cancelar = False
 
     def cancelar(self) -> None:
         self._cancelar = True
 
     def run(self) -> None:
+        if self.esperar is not None:
+            self.esperar.wait()
         try:
             avisar = lambda f, t, txt: self.progresso.emit(f, t, txt)  # noqa: E731
             if self.destino:
@@ -434,7 +441,6 @@ class DialogoImpressao(QDialog):
         self.tarefa_previa: _TarefaPrevia | None = None
         self._pedido_da_previa = 0
         self._previa_pendente = False
-        self._gravar_depois_da_previa: tuple[str, str] | None = None
         self.setWindowTitle("Montar para imprimir")
         estilo.estilizar(self, lambda: estilo.FOLHA_DE_ESTILO + _ESTILO_DA_JANELA)
         self.setMinimumSize(760, 460)
@@ -900,13 +906,8 @@ class DialogoImpressao(QDialog):
         tarefa.start()
 
     def _fio_da_previa_terminou(self) -> None:
-        if self._gravar_depois_da_previa is not None:
-            destino, impressora = self._gravar_depois_da_previa
-            self._gravar_depois_da_previa = None
-            self.comecar(destino=destino, impressora=impressora)
-            return
         if self._previa_pendente:
-            self.pedir_previa()
+            self.pedir_previa()         # (espera o "gravar", se ele estiver rodando)
 
     def passar_folha(self, passo: int) -> None:
         """As setas: a folha anterior / a próxima (das que vão sair)."""
@@ -1102,17 +1103,16 @@ class DialogoImpressao(QDialog):
         """Começa a montar (destino) ou a imprimir, num fio à parte."""
         if self.tarefa is not None and self.tarefa.isRunning():
             return
+        esperar = None
         if self.tarefa_previa is not None and self.tarefa_previa.isRunning():
-            # D-574: a prévia para e o arquivo começa quando ela soltar o MuPDF
+            # D-574: a prévia para; o arquivo começa (no fio dele) quando ela
+            # soltar o MuPDF, e a prévia volta depois de gravar (_terminou)
             self.tarefa_previa.cancelar()
             self._previa_pendente = True
-            self._gravar_depois_da_previa = (destino, impressora)
-            for botao in (self.botao_gravar, self.botao_imprimir):
-                botao.setEnabled(False)
-            return
+            esperar = self.tarefa_previa
         opcoes = self._guardar()
         self.tarefa = _Tarefa(self.entrada, opcoes, destino, impressora,
-                              self.copias.value(), self.cx_agrupar.isChecked())
+                              self.copias.value(), self.cx_agrupar.isChecked(), esperar)
         self.tarefa.progresso.connect(self._andou)
         self.tarefa.concluida.connect(lambda r, d=destino: self._pronto(r, d))
         self.tarefa.falhou.connect(self._falhou)
@@ -1187,7 +1187,6 @@ class DialogoImpressao(QDialog):
     def _parar_e_esperar(self) -> None:
         self._relogio_da_previa.stop()
         self._previa_pendente = False
-        self._gravar_depois_da_previa = None
         if self.tarefa_previa is not None and self.tarefa_previa.isRunning():
             self.tarefa_previa.cancelar()
             self.tarefa_previa.wait(30000)

@@ -1077,6 +1077,15 @@ programa), a partir do **nome do botão**, da **dica** (o balão do mouse) e das
 - **na tela:** "cancelar" interrompe a montagem (nada fica pela metade); "fechar" fecha a janela sem gravar. (O nome
   voltou ao do `fase-1` na etapa 9b-1: a 9a o tinha trocado por "parar"; auditoria C3.)
 
+### P-163 · "‹" / "›" (as setas da folha, Montar para imprimir)
+- **chaves:** `montar para imprimir/‹`, `montar para imprimir/›`
+- **dica:** "folha anterior" / "próxima folha"
+- **decisões:** D-574 (31/10, "Opção 1: as folhas como saem da impressora, frente e verso": "Folha 1 de 32 — frente"
+  e embaixo o verso, "com setas para passar as 32 folhas")
+- **na tela:** "›" mostra a folha seguinte que vai sair da impressora, frente e verso ("Folha 2 de N — frente", com as
+  páginas dela); "‹" volta à anterior. Na primeira folha a "‹" fica apagada; na última, a "›".
+- **no PDF:** nada muda (o PDF do livro fica igual e nenhum arquivo é gravado).
+
 ## Configurações
 
 ### P-170 · "Fechar" (Configurações)

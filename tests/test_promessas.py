@@ -3536,6 +3536,59 @@ def test_p162_parar_e_fechar(janela, tela, monkeypatch, pasta):
     assert not dialogo.isVisible()
 
 
+@prova("P-163")
+def test_p163_setas_da_folha(janela, tela, monkeypatch, pasta):
+    """As setas passam as folhas da prévia do livreto (D-574). Livro de 12
+    páginas, 8 por caderno: 3 folhas (um caderno de 8 e o último, menor, de 4)."""
+    import fitz
+
+    from core import impressao as imp
+    from ui.dialogo_impressao import DialogoImpressao
+
+    livro = pasta / "doze.pdf"
+    doc = fitz.open()
+    for _ in range(12):
+        doc.new_page(width=420, height=595)
+    doc.save(str(livro))
+    doc.close()
+    antes = livro.read_bytes()
+    dialogo = DialogoImpressao(str(livro), janela)
+    opcoes = imp.OpcoesDeImpressao()
+    opcoes.paginas_por_caderno = 8
+    dialogo.definir_opcoes(opcoes)
+    dialogo.show()
+
+    def quieta():
+        return (not dialogo._relogio_da_previa.isActive() and not dialogo._previa_pendente
+                and not dialogo.bolinha_da_previa.carregando and dialogo.folha_na_tela is not None)
+
+    def esperar(condicao, segundos=60):
+        fim = time.monotonic() + segundos
+        while not condicao() and time.monotonic() < fim:
+            aj.assentar(2)
+            time.sleep(0.02)
+        return condicao()
+
+    assert esperar(quieta), "a folha não apareceu"
+    chaves = aj.chaves_dos_botoes(dialogo, "montar para imprimir")
+    anterior, seguinte = chaves["montar para imprimir/‹"], chaves["montar para imprimir/›"]
+    assert dialogo.rotulos_da_face[imp.FRENTE].text() == "Folha 1 de 3 — frente"
+    assert not anterior.isEnabled() and seguinte.isEnabled()
+    seguinte.click()
+    assert esperar(lambda: quieta() and dialogo.folha_na_tela.numero == 2)
+    assert dialogo.rotulos_da_face[imp.FRENTE].text() == "Folha 2 de 3 — frente"
+    assert dialogo.rotulos_da_face[imp.VERSO].text() == "Folha 2 de 3 — verso"
+    anterior.click()
+    assert esperar(lambda: quieta() and dialogo.folha_na_tela.numero == 1)
+    for numero in (2, 3):
+        seguinte.click()
+        assert esperar(lambda: quieta() and dialogo.folha_na_tela.numero == numero)
+    assert not seguinte.isEnabled() and anterior.isEnabled()
+    assert livro.read_bytes() == antes, "o PDF do livro mudou"
+    assert not list(pasta.glob("*imprimir*.pdf")), "gravou um arquivo"
+    dialogo.close()
+
+
 # --- Configurações -------------------------------------------------------------------------------
 
 @prova("P-170")
