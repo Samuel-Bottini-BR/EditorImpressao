@@ -102,3 +102,28 @@ dividir"): hoje o livro continua dividido.
   desmarcada, o livro não procura gravuras. A receita de sempre (D-018) marca as gravuras, então o
   caminho do aviso do livro novo não muda.
 - Rodada do GitHub 41147611641 (commit 484cb1c): passou inteira (suíte em 5 partes + botões).
+
+## 30/10, terceira parte — 2ª rodada do verificador: Gravuras não religavam
+
+- Parecer (`verif-cadernos/.../parecer-d589-rodada2.md`): NÃO CUMPRE nas Gravuras. Depois de desmarcar e
+  rodar, marcar "Gravuras e fotos" de novo e rodar não religava (a frase prometia "achar gravuras e fotos";
+  a caixinha voltava desmarcada).
+- Causa conferida: `_desligar_as_desmarcadas` gravava `gravura_forma="desligada"`, que é também a caixinha
+  de dentro "Achar gravuras e fotos" (D-212). A janela começa do livro (`opcoes_do_livro`), então o Rodar
+  seguinte, com a etapa marcada, aplicava a forma "desligada" de novo (`aplicar`, ramo GRAVURAS:
+  `opcoes.get(campo, ...)`) e `ligada_no_livro` continuava falso. Reproduzido pela prova nova
+  `test_d589_desmarcar_rodar_marcar_rodar_religa[gravuras]` (falhou: "desligada" ≠ "ligada no livro todo";
+  `[margens]` e `[cadernos]` já religavam).
+- Conserto (como o verificador sugeriu): desmarcada, a etapa Gravuras desliga pelo "Procurar" do livro
+  (`detectar_regioes=False`), o mesmo campo que o Rodar liga quando ela vem marcada. A forma de dentro não
+  muda. Sem `detectar_regioes`, o PDF não usa as áreas achadas pela máquina; a marcação feita à mão fica
+  (`garantir_selecao`/`etapas.marcacao_a_mao`). Mesma ação do Desfazer.
+- "Desligar as marcadas" NÃO mudou (D-068): continua gravando a forma "desligada" (`_desligar`). Por isso
+  o mesmo defeito continua por esse caminho: depois de "Desligar as marcadas" com Gravuras, marcar e rodar
+  não religa (só pela caixinha de dentro). **Pergunta P3 para o Samuel/gerente:** o "Desligar as marcadas"
+  das Gravuras passa a desligar do mesmo jeito (pelo "Procurar", para religar ao marcar)? Não mexi.
+- Provas: `test_d589_desmarcar_rodar_marcar_rodar_religa` para Gravuras, Margens e Cadernos (desmarcar,
+  rodar, marcar, rodar → "ligada no livro todo", caixinha marcada e o PDF igual ao da primeira vez:
+  cinzas da foto, largura da folha, cadernos). A prova das Gravuras agora confere também que a forma de
+  dentro não fica "desligada". Arquivo: 8 de 8.
+- Testes um por vez (todos passaram): decisoes_automatico 24, decisoes_impressao 22, dialogo_impressao 5, impressao 17, cadernos 28, ver_como_fica 19, filtro_automatico 4, nucleo2 21, cancelar 1, recomeco 13, para_revisar_na_tela 26, respeitar_gravuras 19, marcacoes 19, trabalho_nao_se_perde 82.

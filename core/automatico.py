@@ -860,8 +860,10 @@ def _desligar_as_desmarcadas(projeto, pedido: Pedido, etapas_pedidas: list, g: _
     de uma rodada anterior, ela continuava ligada no livro (o PDF saia com
     ela) e, relido o livro (ui EstadoDoAutomatico.do_projeto), a caixinha
     voltava marcada. Aqui a etapa desmarcada na janela (Pedido.desmarcadas) e
-    ainda ligada DESLIGA, do mesmo jeito do "Desligar as marcadas" (_desligar)
-    e na mesma acao do Automatico (o Ctrl+Z traz de volta). Sao etapas do livro
+    ainda ligada DESLIGA, na mesma acao do Automatico (o Ctrl+Z traz de
+    volta): Margens e Cadernos como o "Desligar as marcadas" (_desligar); as
+    Gravuras pelo "Procurar" do livro (detectar_regioes), para que marcar e
+    rodar de novo religue. Sao etapas do livro
     todo (D-484): vale em qualquer "Rodar em" (pergunta P2 aberta).
 
     Roda DEPOIS das etapas marcadas: Gravuras so conta como ligada com o
@@ -871,7 +873,12 @@ def _desligar_as_desmarcadas(projeto, pedido: Pedido, etapas_pedidas: list, g: _
         if (etapa in (pedido.desmarcadas or []) and etapa not in etapas_pedidas
                 and ligada_no_livro(projeto, etapa)):
             if etapa == GRAVURAS:
-                g.no_livro("gravura_forma", "desligada")      # como em _desligar
+                # o "Procurar" do livro, o mesmo campo que o Rodar liga quando
+                # a etapa vem marcada. NAO a forma "desligada": ela e a caixinha
+                # de dentro "Achar gravuras e fotos" (D-212) e, gravada aqui,
+                # marcar a etapa de novo e rodar nao religava (2a rodada do
+                # verificador, 30/10). A marcacao a mao fica (garantir_selecao).
+                g.no_livro("detectar_regioes", False)
             else:
                 g.no_livro(CAMPO_DO_LIVRO[etapa], False)
 

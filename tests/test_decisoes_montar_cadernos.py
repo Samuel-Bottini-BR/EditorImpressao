@@ -273,18 +273,23 @@ def test_d589_desmarcar_margens_iguais_e_rodar_sai_sem_margens_e_nao_volta_marca
 
 def test_d589_desmarcar_gravuras_e_rodar_a_foto_sai_em_preto_e_branco_e_nao_volta_marcada(janela, app, tmp_path):
     """D-589 + Samuel (30/10): "se algo não está marcado, não é para fazer". "Gravuras e fotos"
-    ligada → desmarcar e rodar → o livro deixa de procurar gravuras (como o "Desligar as
-    marcadas": forma "desligada"), a foto sai só em preto e branco no PDF, a etapa fica
+    ligada → desmarcar e rodar → o livro deixa de procurar gravuras (Projeto.detectar_regioes;
+    a forma de dentro fica como estava), a foto sai só em preto e branco no PDF, a etapa fica
     "desligada" e não volta marcada. As margens continuam (foram marcadas). O Desfazer traz
     as gravuras de volta."""
     (_, cinzas_antes), (tamanho_depois, cinzas_depois) = _ligar_e_depois_desmarcar(
         janela, app, tmp_path, A.GRAVURAS)
     assert cinzas_antes > 0.3                                    # a foto guardava os cinzas
-    assert janela.projeto.gravura_forma == "desligada"
+    assert not A.ligada_no_livro(janela.projeto, A.GRAVURAS)
     assert cinzas_depois < 0.05                                  # agora: só preto e branco
     assert janela.projeto.margens_iguais and tamanho_depois[0] > 300
+    # a escolha de dentro "Achar gravuras e fotos" (a forma, D-212) não muda: desligar a
+    # etapa é o "Procurar" do livro (rodada 2 do verificador: com a forma "desligada", marcar
+    # a etapa de novo não religava)
+    forma = janela.projeto.gravura_forma
+    assert forma != "desligada"
     janela.tela_conferir.desfazer()
-    assert janela.projeto.gravura_forma != "desligada"
+    assert A.ligada_no_livro(janela.projeto, A.GRAVURAS)
 
 
 def test_d589_desligar_as_marcadas_nao_mexe_nas_desmarcadas(tmp_path):
@@ -300,3 +305,69 @@ def test_d589_desligar_as_marcadas_nao_mexe_nas_desmarcadas(tmp_path):
                                 desmarcadas=[A.GRAVURAS, A.MARGENS]))
     assert not projeto.montar_cadernos
     assert projeto.margens_iguais and projeto.gravura_forma != "desligada"
+
+
+# --- religar (2ª rodada do verificador, 30/10): o que está marcado é para fazer --------------
+#
+# Defeito achado na 2ª rodada (1b5c69b): depois de desmarcar "Gravuras e fotos" e rodar, marcar
+# de novo e rodar NÃO religava (o desligar gravava a forma "desligada", a mesma da caixinha de
+# dentro "Achar gravuras e fotos", D-212; o Rodar seguinte lia essa forma e não procurava). A
+# frase da janela prometia "achar gravuras e fotos" e a caixinha voltava desmarcada sozinha.
+
+def _medida(janela, tmp_path: Path, nome: str):
+    """O que cada etapa muda no PDF: (folhas deitadas?, largura da 1ª folha, cinzas da foto)."""
+    projeto = copy.copy(janela.projeto)
+    projeto.caminho_saida = str(tmp_path / f"{nome}.pdf")
+    with fitz.open(processar(projeto)) as doc:
+        pagina = doc[0]
+        deitada = pagina.rect.width > pagina.rect.height
+        largura = round(pagina.rect.width)
+        if deitada:
+            return deitada, largura, None
+    return deitada, largura, _pdf_da_foto(janela, tmp_path, nome + "-foto")[1]
+
+
+def _pela_janela(janela, app, etapa: str, marcar: bool) -> None:
+    """Na janela grande: marca ou desmarca `etapa` e clica "Rodar"."""
+    from PySide6.QtCore import Qt
+
+    jan = janela.abrir_o_automatico()
+    _assentar(app)
+    jan.lista.item_da_etapa(etapa).setCheckState(Qt.Checked if marcar else Qt.Unchecked)
+    _assentar(app)
+    jan.botao_rodar.click()
+    if janela.tarefa is not None:
+        janela.tarefa.wait(60000)
+    _assentar(app, 30)
+
+
+@pytest.mark.parametrize("etapa", [A.GRAVURAS, A.MARGENS, A.CADERNOS])
+def test_d589_desmarcar_rodar_marcar_rodar_religa(janela, app, tmp_path, etapa):
+    """D-589 + Samuel (30/10): "se algo não está marcado, não é para fazer" — e o que está
+    marcado é para fazer. Ligada → desmarcar e rodar (desliga) → marcar de novo e rodar → a
+    etapa volta "ligada no livro todo", a caixinha fica marcada e o PDF sai como na primeira vez
+    (gravura com os cinzas guardados; margens; cadernos)."""
+    from core.filtros import PRETO_E_BRANCO
+
+    janela.show()
+    janela.abrir_livro(_livro_com_foto(tmp_path))
+    _assentar(app)
+    estado = janela.estado_do_automatico
+    estado.marcadas = {A.LIMPAR, etapa}
+    estado.opcoes["filtro_padrao"] = PRETO_E_BRANCO
+    assert janela.rodar_o_automatico(esperar=True, perguntar=False)
+    assert estado.situacoes[etapa] == "ligada no livro todo"
+    ligada = _medida(janela, tmp_path, "ligada")
+
+    _pela_janela(janela, app, etapa, marcar=False)
+    assert estado.situacoes[etapa] == "desligada"
+    assert _medida(janela, tmp_path, "desligada") != ligada
+
+    _pela_janela(janela, app, etapa, marcar=True)
+    assert estado.situacoes[etapa] == "ligada no livro todo"
+    assert etapa in estado.marcadas
+    assert _caixinha(janela.tela_conferir.paineis.automatico.lista, etapa)
+    de_novo = _medida(janela, tmp_path, "de-novo")
+    assert de_novo[:2] == ligada[:2]
+    if ligada[2] is not None:
+        assert abs(de_novo[2] - ligada[2]) < 0.05
