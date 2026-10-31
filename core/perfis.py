@@ -20,7 +20,13 @@ ONDE FICA: configuracoes.json, chave "perfis" ({nome: {campo: valor}}) e
 DESLIGADO DE FÁBRICA: sem receita escolhida para livro novo, nada muda.
 
 O QUE NÃO ENTRA: o que é de cada folha e de cada página (corte, ângulo,
-    marcação) - receita é do livro. Nem o que é fato do PDF (tem_camadas) ou
+    marcação) - receita é do livro. Exceção (D-594, 31/10/2026): as opções do
+    painel Filtro que o Automático leva na etapa "Limpar a folha"
+    (core/automatico.CAMPOS_DA_PAGINA: "Força do preto", "Jeito do preto e
+    branco", "Tirar o chuvisco"...) entram na receita do Automático como as
+    outras opções dele; o "Rodar" as grava nas páginas. Receita guardada antes
+    não tem essas chaves: posta, a janela fica com o que já mostrava nelas
+    (nada quebra). Nem o que é fato do PDF (tem_camadas) ou
     história do projeto (ordem_do_preparo, perguntou_fundo).
 
 SEGURO MUDAR: CAMPOS (acrescentar campo de livro novo).
@@ -47,6 +53,14 @@ CAMPOS = (
     # levava (estavam na tela "O que fazer" e ficaram de fora da receita)
     "cortar_pelo_conteudo", "borda_preta", "borda_preta_ate", "borda_preta_fazer",
     "reforcar_texto_falhado", "retangulo_do_corte",
+    # D-594 (31/10/2026): as opcoes do painel Filtro no "Limpar a folha" do
+    # Automatico (as mesmas de core/automatico.CAMPOS_DA_PAGINA; a prova
+    # tests/test_decisoes_automatico_opcoes_do_filtro.py confere que nao falta
+    # nenhuma). Sao campos da PAGINA: do_projeto e aplicar (tela antiga) as
+    # ignoram (hasattr), so a receita do Automatico as leva.
+    "forca_preto", "clareza_melhorar", "intensidade_magico", "algoritmo_preto_branco",
+    "claro_no_escuro", "letras_com_a_cor", "reduzir_cores",
+    "luz_igualar", "luz_suavizar", "luz_chuvisco", "respeitar_gravuras_achadas",
 )
 
 # Obra de 26/10/2026, etapa 3 (D-071, `fr-219`: "Mas ainda pode melhorar a caixa
@@ -84,10 +98,12 @@ def do_projeto(projeto) -> dict[str, Any]:
 
 
 def de_fabrica() -> dict[str, Any]:
-    """A receita "De fábrica": as escolhas de um livro novo sem nada mudado."""
+    """A receita "De fábrica": as escolhas de um livro novo sem nada mudado (e,
+    D-594, as opções do painel Filtro de uma página nova)."""
+    from core.automatico import de_fabrica_da_pagina
     from modelos import Projeto
 
-    return do_projeto(Projeto(caminho_entrada=""))
+    return {**do_projeto(Projeto(caminho_entrada="")), **de_fabrica_da_pagina()}
 
 
 def nomes() -> list[str]:
