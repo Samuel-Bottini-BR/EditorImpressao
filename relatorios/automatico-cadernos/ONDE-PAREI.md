@@ -147,3 +147,15 @@ marca Gravuras de novo e roda. Hoje a gravura não volta (a etapa fica "desligad
 - Recomendação do construtor: decidir primeiro a pergunta do "Só as letras"; se a gravura deve ficar com
   cor, B; se deve sair em preto e branco, A.
 - Rodada do GitHub 41154048024 (commit c854ade, forma "desligada" de volta + xfail): passou inteira.
+
+## 31/10 — resposta da pergunta de base da P3 e conferência da B
+
+- Samuel: "Sim" para "vale o 'Só as letras', e a figura sai colorida" (com "Gravuras e fotos" desmarcada).
+- Conferido (teste temporário, apagado): o "Só as letras" só guarda a figura colorida quando ela está
+  marcada como gravura pela máquina. Sem a área da gravura (só a das letras), a pintura sumiu (cor 0,0 em
+  vez de > 0,8). Ou seja: para a figura sair colorida, o programa precisa PROCURAR as gravuras. Com o
+  "Só as letras" ligado e "Gravuras e fotos" desmarcada, as duas frases dele se chocam, em qualquer jeito
+  de desligar (A, B ou C).
+- Jeito que não perde nada e não mexe na tela: desligar pelo "Procurar" do livro (religa ao marcar, guarda
+  o "Este livro tem fotos"), MAS não desligar quando o "Só as letras" estiver ligado. Custo: nesse caso a
+  etapa "Gravuras e fotos" continua ligada e volta marcada depois do "Rodar". Parado esperando a resposta.
