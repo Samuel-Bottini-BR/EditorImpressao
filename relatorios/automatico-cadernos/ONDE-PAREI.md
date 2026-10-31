@@ -101,3 +101,4 @@ dividir"): hoje o livro continua dividido.
   achar gravuras sozinho (a etapa aparecia ligada e marcada depois). Agora, com "Gravuras e fotos"
   desmarcada, o livro não procura gravuras. A receita de sempre (D-018) marca as gravuras, então o
   caminho do aviso do livro novo não muda.
+- Rodada do GitHub 41147611641 (commit 484cb1c): passou inteira (suíte em 5 partes + botões).
