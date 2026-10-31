@@ -337,8 +337,8 @@ Todos com "No fase-1? SIM" na tabela. Destaques:
 
 | Cópia | Ramo | O que é | Situação |
 |---|---|---|---|
-| `.claude\worktreesuto-ver` | `automatico-ver-como-fica-2026-10-29` | D-577, 2ª a 4ª rodada (prévia nas páginas mexidas, antes cru, comparar, roda do mouse, lado da linha) | juntado: `21f7e0a`, `f39a37d`, `53a301b` |
-| `.claude\worktreesuto-cadernos` | `automatico-cadernos-2026-10-30` | D-589 (desmarcado não é feito) + D-590 ("juntar todas") | parado em `d67933f`, não juntado; falta o verificador das Gravuras e do "juntar todas" |
+| `.claude\worktrees\auto-ver` | `automatico-ver-como-fica-2026-10-29` | D-577, 2ª a 4ª rodada (prévia nas páginas mexidas, antes cru, comparar, roda do mouse, lado da linha) | juntado: `21f7e0a`, `f39a37d`, `53a301b` |
+| `.claude\worktrees\auto-cadernos` | `automatico-cadernos-2026-10-30` | D-589 (desmarcado não é feito) + D-590 ("juntar todas") | parado em `d67933f`, não juntado; falta o verificador das Gravuras e do "juntar todas" |
 | `.claude\worktrees\livreto-ver` | `livreto-ver-2026-10-31` | D-574, opção 1 (ver as folhas no "Montar para imprimir") | parado em `ff0260f`, não juntado; o verificador parou no meio |
 
 Cópias de verificador (destacadas, sem ramo, sem commit; podem ser apagadas depois de copiar os pareceres):
