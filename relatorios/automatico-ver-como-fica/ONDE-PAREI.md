@@ -368,4 +368,12 @@ opções que faltam do automatico" · "Sim, podemos fazer isso junto com a taref
   página 3 já tinha chegado quando o roteiro abriu o painel "Para revisar", e ele clicou "ver as 1 em tela cheia" e
   "ver a lista…", que abrem janelas por cima e não são fechadas pelo roteiro; os ícones seguintes não recebem o
   clique. Nas rodadas que passaram (este ramo 41129841728, livreto 41217021857) o aviso ainda não tinha chegado e
-  esses dois botões nem aparecem. Não toca nada desta tarefa. Rodei de novo a parte que falhou.
+  esses dois botões nem aparecem. Rodada de novo, a parte falhou igual (2 de 2); a base (`obra-2026-10-26`,
+  2822470, rodada 41251418890) passou no `teste_botoes.py` (sem o aviso nesse ponto; a parte 1 dela caiu num teste
+  das conferências, não olhei). O que muda o tempo: o roteiro clica cada controle da janela do Automático, e agora
+  são 15 trocas a mais (os jeitos do preto e branco e as caixinhas novas), uns 5 segundos.
+- Achado (31/10): o que falhava era o roteiro, não o programa. "ver as N em tela cheia" troca a página pela grade
+  "Todas as páginas"; com a grade na frente, o painel abre mas fica escondido (conferido num roteiro à parte: sem
+  grade o painel aparece; com a grade, não; voltando da grade, aparece). Conserto no `teste_botoes.py`: depois de
+  cada botão do painel, se a grade abriu, volta (o "voltar" da grade, como a pessoa faria). No PC, numa rodada em que
+  o aviso já tinha chegado ("ver as 1 em tela cheia"): 371 ações, 0 falhas (commit 14d8a3c).
