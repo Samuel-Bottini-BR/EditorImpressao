@@ -132,3 +132,18 @@ coisa: um botão que mostra e esconde o colorido das marcações.
 - Ele: "eu vou pode escolher depois na area de trabalho para deixar só aquela pagina em tons cinza?" → gerente: painel "Filtro da página", Preto e branco, sem "Só as letras", "Respeitar as gravuras achadas" marcada, "Aplicar em: só nesta"; mesma exceção.
 - Ele: "mas se ele confundiu a gravura no automatico na capa, ele não vai confundir de novo, olhando só aquela pagina?" → gerente: sim, confunde de novo; é a D-588. "Quer que esse item suba na lista? Hoje ele vem depois do 5" → ele: "sim". Ordem nova: 6 (D-577), 8 (D-574) e 9 (D-589) em andamento → D-588 → 5 (D-221).
 - Pergunta do construtor (com "Só as letras", Gravuras precisa procurar e voltaria marcada sozinha) → ele: "porque ele vai estar marcado? se ele estiver marcado as figuras e fotos não vão sair preto e branco?" → gerente: com "Só as letras" a figura sai colorida com a etapa 5 marcada ou não; sugestão nova: a caixinha da etapa 5 fica como ele deixou (desmarcada); com "Só as letras", o programa procura as figuras por dentro só para deixá-las coloridas; desmarcando "Só as letras", a etapa 5 continua desmarcada e a página sai toda em P&B. → ele: "sim, mas tem que ter certeza que o programa vai procurar as figuras mesmo com a opção desmarcada e que não vai remarcar ela de novo na caixinha".
+
+## Pausa (31/10)
+- Ele: "vamos pausar o trabalho". Os agentes foram mandados parar num ponto seguro e salvar.
+- Situação na pausa:
+  - D-577 (item 6): a roda do mouse e a linha estão juntadas na versão de teste (`53a301b`) e prontas para ele testar. Falta o "comparar" com as opções dos dois lados e o "usar este".
+  - D-574 (item 8): construída no ramo `livreto-ver-2026-10-31` (ff0260f); o verificador estava conferindo quando parou.
+  - D-589 (item 9) + D-590: ramo `automatico-cadernos-2026-10-30`; os cadernos e as margens estão verificados; faltam as gravuras (decisão de 31/10) e o "juntar todas"; o construtor parou.
+- Perguntas abertas com ele:
+  - D-574, botão de 29/10: "ao abrir a janela "Montar para imprimir", a folha já aparece sozinha, sem precisar de botão. Está bom assim, sem botão?"
+  - D-574, as outras 4 do construtor: outros formatos, livreto antigo do Automático, "Folhas de/até", "Só a frente/verso".
+  - D-589, P2: rodar numa página só desliga a etapa desmarcada no livro todo.
+  - D-589, P3: a frase da janela e o Histórico dizem o que foi desligado?
+  - D-588: como fica na tela.
+  - D-593: o botão "home" e as abas.
+- A fazer da Central de 31/10: D-575, D-591, D-592, a aba "Pesquisas" e a Lista de espera do livreto ("como outros aplicativos fazem").
