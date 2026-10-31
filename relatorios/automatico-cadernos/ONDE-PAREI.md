@@ -204,3 +204,15 @@ falharam antes de existir). Prints em `d590/` (Schön Neues Modell Buch, 6 folha
   `test_p198_juntar_todas` (apertar → 2 folhas inteiras no PDF; Desfazer divide de novo). No PC:
   `test_promessas` -k "p198 or p060 or todo_botao or toda_promessa": 5 de 5 (o arquivo inteiro, antes
   da prova: 261 passaram, só faltava ela).
+
+## PAUSA (31/10, pedido do Samuel)
+
+- **Pronto e no ramo:** D-589 (Cadernos, Margens e Gravuras desmarcadas desligam no Rodar; Gravuras religam ao
+  marcar; com "Só as letras" a figura é achada por dentro e a caixinha não volta marcada) em `25d2283`;
+  D-590 ("juntar todas") em `b96c948` + promessa P-198 em `21741fe`; conserto do `teste_botoes` em `dfca260`.
+- **Testes:** todos os arquivos listados acima passaram no PC, um por vez; `teste_botoes` no PC: 340 ações, 0
+  falhas. GitHub 41216553481 só falhou pela promessa do botão novo (já escrita).
+- **Falta:** ver o resultado da rodada do GitHub **41218623088** (disparada em `21741fe`, ainda rodando na
+  pausa) e entregar à gerente. Nada mais começado.
+- Abertos: P2 (rodar "só nesta página"/"nas escolhidas" com Cadernos/Margens/Gravuras desmarcadas desliga no
+  livro todo) e o "Desligar as marcadas" das Gravuras (forma "desligada", não religa ao marcar; igual a antes).
