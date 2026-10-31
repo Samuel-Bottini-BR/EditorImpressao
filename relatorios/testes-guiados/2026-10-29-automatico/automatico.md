@@ -168,3 +168,17 @@ coisa: um botão que mostra e esconde o colorido das marcações.
 - Gerente: "No Livro de decisões não existe pedido seu para o Automático ter todas essas opções [...] Pode entrar na lista como item 6?" → ele: "mas isso era uma coisa obvia que deveria ter". Entrou no Livro como D-594 (falha da equipe, não pedido novo).
 - Gerente: "Sugiro fazer isso logo depois de terminar o que está pela metade, antes da gravura em tons de cinza. Pode ser?" → ele: "ta bom, agora que eu relatei os problemas, vamos organizar para continuar os concertos e as listas."
 - Lista nova (31/10, noite): em andamento, 3 agentes: (A) D-577 comparar + "usar este" + zoom da área de trabalho para onde está o mouse; (B) verificador D-574; (C) verificador D-589/D-590 (com o caso a-20). Depois: D-594 → D-588 → D-221. Depois da lista: respostas da Central de 31/10.
+
+## Organizar a lista (31/10, noite)
+- Gerente chamou 3 agentes sem "sim"; ele: "chamar os agentes para o que? você não perguntou o que era para fazer e ignorou minha mensagem "ta bom, agora que eu relatei os problemas, vamos organizar para continuar os concertos e as listas."" → os 3 foram parados (nada mudou no programa).
+- Lista mostrada (1 a 9) e "está faltando ou sobrando alguma coisa?" → respostas dele, palavra por palavra:
+  - 1 (D-577 comparar + "usar este"): "mas já faça com as opções que faltam do automatico."
+  - 2 (D-574, print a-23: ![](a-23-montar-cadernos-no-automatico.png), janela do Automático na etapa 7 "Montar cadernos"): "Ele vai aparecer quando estiver na aba do montar caderno como no print que eu mandei, quando a pessoa for nessa aba ela vai poder ver, tem outro lugar além do automatico hoje que dá para montar caderno e ver ele de outras formas? se não tiver pode dar sugestões."
+  - 3 (D-589 + D-590): "são duas coisas diferentes, faça separadamente."
+  - 4 (D-594): "Sim, podemos fazer isso junto com a tarefa 1."
+  - 5 (D-588): "ok"
+  - 6 (D-221): "ok aparecendo em todos os paineis de filtro, seja automatico ou em outros lugares."
+  - Geral: "acredito que esteja coisa faltando, mas tudo bem, vamos fazer isso, só não pode esquecer da questão dos cadernos que o Kaique falou, de não criar caderno quando não estiver marcado."
+  - Ordem para esta sessão (não é regra permanente; ele: "não era uma regra nova, era uma ordem só para agora"): "Use um agente só por vez, não quero gastar muito token. e antes de usar me diga qual claude está usando no agente."
+- Gerente perguntou se usava o Sonnet 5.5 nos agentes para gastar menos → ele: "tenho medo de usar o sonnet 5.5 e ele fazer cagada." Fica o Claude Opus 5.5.
+- Gerente: "mostrar as folhas do livreto nos três lugares (etapa 7 do Automático, painel "Montar cadernos" e "Montar para imprimir")?" → ele: "Sim, mas no caso, eu estou falando em tela grande, pois no painel automatico, vamos conseguir ver ele só se clicarmos na opção de montar cadernos e lá se apertarmos em ver tela grande abriremos o tela grande que já temos mas para versão de caderno."
