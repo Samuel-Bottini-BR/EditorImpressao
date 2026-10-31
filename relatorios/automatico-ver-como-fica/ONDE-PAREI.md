@@ -280,11 +280,12 @@ opções que faltam do automatico" · "Sim, podemos fazer isso junto com a taref
 
 ## Andamento (4ª rodada)
 
-- [ ] A: opções novas no core (campos da página, gravadas pelo "Limpar a folha") e na receita
-- [ ] A: as opções na janela (com os mesmos nomes do painel)
-- [ ] B: o painel de opções separado da janela (o mesmo nos dois lados do comparar)
-- [ ] B: comparar com opções nos dois lados e "usar este"
-- [ ] provas, testes um por um, prints, GitHub
+- [x] A: opções novas no core (campos da página, gravadas pelo "Limpar a folha") e na receita
+- [x] A: as opções na janela (com os mesmos nomes do painel)
+- [x] B: o painel de opções separado da janela (o mesmo nos dois lados do comparar)
+- [x] B: comparar com opções nos dois lados e "usar este"
+- [x] provas (18), prints (8-*, 9-*), testes um por um
+- [ ] GitHub
 
 ## Perguntas para o Samuel (4ª rodada)
 
@@ -296,3 +297,60 @@ opções que faltam do automatico" · "Sim, podemos fazer isso junto com a taref
    Enquanto você não mexe no lado esquerdo, ele continua dizendo "como está no livro: <filtro>"; depois que você muda
    uma opção nele, passa a dizer "depois: <filtro>", como o lado direito, porque também mostra como a página vai sair.
    Sugestão: fica assim. Sim ou não?
+
+## Como cumpri cada uma (4ª rodada)
+
+- **D-594, todas as opções do painel Filtro, com os mesmos nomes.** Conferido no código do painel
+  (`ui/tela_conferir._montar_aba_filtro`) o que faltava no "Limpar a folha": o "Ajuste" (a barra "Força do preto" /
+  "Clareza do fundo" / "Intensidade", um valor por filtro: estava faltando também, não só os da lista), o "Jeito do
+  preto e branco" (Automático, os três de sempre e os dez do ScanTailor), "Letra clara em fundo escuro", "Letras com a
+  cor delas", "Reduzir cores", "Igualar a luz da página", "Suavizar as letras", "Tirar o chuvisco" (com os avisos de
+  luz do painel) e "Respeitar as gravuras achadas". "Limpar a sujeira" e "Só as letras" já estavam. Fora do painel
+  Filtro (não entram): "Aplicar em", "deixar em branco", "tirar do livro" (são ações, não opções). Onde:
+  `ui/automatico.PainelDeOpcoes._opcoes_do_painel_filtro`; aparecem com as regras do painel (só no Preto e branco o
+  jeito, as letras com a cor e o suavizar; o "Mais ajustes" e o "Ajuste" só nos filtros com ajuste; "Respeitar" em
+  todos e cinza com "Só as letras", D-587). Provas: `test_d594_cada_opcao_do_painel_filtro_esta_no_limpar_a_folha_com_o_mesmo_nome`
+  (lê os nomes da tela de conferir de verdade e compara; a lista dos jeitos é igual item por item),
+  `test_d594_aparecem_como_no_painel_conforme_o_filtro`. Prints `8-automatico-limpar-preto-e-branco-mais-ajustes.png`,
+  `8-automatico-jeito-do-preto-e-branco.png`, `8-automatico-limpar-magico-pro-chuvisco-30.png`.
+- **D-594, o mesmo resultado que escolher no painel (mesmos campos, nada de conta nova).** As opções são os campos da
+  página (`core/automatico.CAMPOS_DA_PAGINA`); o "Rodar" grava, em cada página onde o "Limpar a folha" roda (as
+  puladas pela pergunta D-004 ficam), as que o painel mostra com aquele filtro (`campos_da_pagina_no_filtro`), na
+  mesma ação do desfazer. A "Força do preto" escurecida sozinha pelo programa não é desfeita se o valor pedido é o
+  de antes do reforço (`_valor_da_pagina`). Prova: `test_d594_rodar_com_a_opcao_da_o_mesmo_que_escolher_no_painel`,
+  11 casos (uma por opção, inclusive os três ajustes): os campos da página e a página desenhada saem iguais pelos dois
+  caminhos; o Ctrl+Z desfaz o Automático com a opção junto.
+- **D-577 + D-594, a prévia mostra a mudança.** `test_d594_a_previa_mostra_a_mudanca_da_opcao` ("Tirar o chuvisco" 60
+  muda o depois; 0 volta ao mesmo).
+- **Receitas.** As chaves novas entram em `core/perfis.CAMPOS` (a receita do Automático as guarda como as outras).
+  Receita antiga não tem as chaves: posta, as opções novas ficam como estavam (nada quebra; não precisou mudar o
+  formato de um jeito que quebre). "De fábrica" põe as de uma página nova. A caixa da receita diz as novas que não
+  estão de fábrica, com os nomes do painel. Prova: `test_d594_a_receita_leva_as_opcoes_novas_e_a_antiga_continua_valendo`.
+- **D-577, comparar: aba com todas as opções em cada lado, mudando à parte.** O miolo da janela virou
+  `PainelDeOpcoes` (a lista das etapas e as opções de cada etapa); a janela grande e cada lado do comparar usam o
+  MESMO (sem cópia de código). Cada lado (`LadoDoComparar`) tem um estado só dele, o botão "opções" (abre e fecha a
+  aba) e o "usar este". A esquerda começa das opções do livro como está e mostra a página como está no livro (como
+  era); a direita começa das opções da janela e mostra o depois da janela (e acompanha a janela enquanto não é
+  mexida). Mexido, o lado mostra como a página sai com as opções dele (a mesma conta da prévia, numa cópia; só o
+  depois; bolinha girando). Provas: `test_d577_cada_lado_do_comparar_tem_a_aba_com_todas_as_opcoes_e_o_usar_este`,
+  `test_d577_lado_direito_nao_mexido_acompanha_a_janela`. Prints `9-comparar-abas-fechadas.png`,
+  `9-comparar-abas-abertas-direita-magico-pro.png`.
+- **D-577, "usar este" passa as opções para a janela; o "Rodar" usa as da janela; nada muda no livro.**
+  `test_d577_mudar_um_lado_nao_muda_a_janela_e_usar_este_passa_para_ela` (os dois lados; o pedido do "Rodar" sai com
+  as opções passadas; o livro e o desfazer iguais). Prints `9-comparar-depois-de-usar-este-da-direita.png`,
+  `9-janela-depois-de-usar-este-magico-pro.png`.
+- **Reversão (§11 regra 4):** as provas novas rodadas no código de antes (2822470) falham: "\"Letra clara em fundo
+  escuro\" (painel Filtro) não está no \"Limpar a folha\" do Automático", "no attribute 'CAMPOS_DA_PAGINA'",
+  "cannot import name 'PainelDeOpcoes'".
+- **O painel Filtro não mudou** (nenhuma linha de `ui/tela_conferir.py`; os nomes cortados de lá não são desta tarefa).
+
+## Ressalvas (4ª rodada)
+
+- Mexi em `core/` (`core/automatico.py`: o "Limpar a folha" grava os campos da página; `core/perfis.py`: as chaves da
+  receita). Nada do desenho da página (`core/pipeline`) mudou; o rodar faz uma volta a mais pelas páginas comparando
+  11 campos. O filtro de velocidade do GitHub não foi rodado.
+- No lado do comparar, a aba tem 400 pontos de largura: as frases ao lado dos filtros ficam cortadas e a aba rola de
+  lado (como a coluna estreita). Em tela pequena as duas abas abertas deixam pouca página à vista.
+- Bug que já existia (não consertei, não é desta tarefa): no "Limpar a folha", fora do Preto e branco, a caixinha
+  "Escurecer sozinho a força do preto..." some mas a frase de baixo dela fica ("com "Só as letras": escurece só na
+  página falhada..."); aparece no print `9-comparar-abas-abertas-direita-magico-pro.png`. Para a Lista de bugs.
