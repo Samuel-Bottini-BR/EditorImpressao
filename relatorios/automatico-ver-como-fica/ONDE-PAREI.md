@@ -354,3 +354,18 @@ opções que faltam do automatico" · "Sim, podemos fazer isso junto com a taref
 - Bug que já existia (não consertei, não é desta tarefa): no "Limpar a folha", fora do Preto e branco, a caixinha
   "Escurecer sozinho a força do preto..." some mas a frase de baixo dela fica ("com "Só as letras": escurece só na
   página falhada..."); aparece no print `9-comparar-abas-abertas-direita-magico-pro.png`. Para a Lista de bugs.
+
+## Testes da 4ª rodada
+
+- PC, um arquivo por vez (offscreen): 29 arquivos que tocam o Automático, as receitas e o painel Filtro. Todos
+  passaram (o novo `test_decisoes_automatico_opcoes_do_filtro.py`: 18 de 18; o da D-577: 22 de 22;
+  `test_promessas.py`: 262 + 1 xfail). Um falhou na 1ª vez: `test_unidades_e_perfis.py::test_de_fabrica_existe_e_e_o_livro_novo`
+  (eu tinha posto as opções da página na receita "De fábrica" do `core/perfis`); consertado pondo-as pela janela
+  (`EstadoDoAutomatico.por_receita`), e o arquivo passou (9 de 9), com o do Automático e o novo de novo.
+- `teste_botoes.py` no PC (offscreen): 366 ações, 0 falhas.
+- GitHub 41249268892 (ac6e4c9): as conferências passaram; o `teste_botoes.py` deu 4 falhas ("o icone 'automatico' /
+  'props' / 'filtro' / 'historico' nao abriu o painel dele"). Causa: nessa rodada o aviso "Qualidade baixa" da
+  página 3 já tinha chegado quando o roteiro abriu o painel "Para revisar", e ele clicou "ver as 1 em tela cheia" e
+  "ver a lista…", que abrem janelas por cima e não são fechadas pelo roteiro; os ícones seguintes não recebem o
+  clique. Nas rodadas que passaram (este ramo 41129841728, livreto 41217021857) o aviso ainda não tinha chegado e
+  esses dois botões nem aparecem. Não toca nada desta tarefa. Rodei de novo a parte que falhou.
