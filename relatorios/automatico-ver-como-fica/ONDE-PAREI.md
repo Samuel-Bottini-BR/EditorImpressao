@@ -285,7 +285,7 @@ opções que faltam do automatico" · "Sim, podemos fazer isso junto com a taref
 - [x] B: o painel de opções separado da janela (o mesmo nos dois lados do comparar)
 - [x] B: comparar com opções nos dois lados e "usar este"
 - [x] provas (18), prints (8-*, 9-*), testes um por um
-- [ ] GitHub
+- [x] GitHub 41252917494 (14d8a3c): passou de primeira, tudo verde
 
 ## Perguntas para o Samuel (4ª rodada)
 
@@ -377,3 +377,6 @@ opções que faltam do automatico" · "Sim, podemos fazer isso junto com a taref
   grade o painel aparece; com a grade, não; voltando da grade, aparece). Conserto no `teste_botoes.py`: depois de
   cada botão do painel, se a grade abriu, volta (o "voltar" da grade, como a pessoa faria). No PC, numa rodada em que
   o aviso já tinha chegado ("ver as 1 em tela cheia"): 371 ações, 0 falhas (commit 14d8a3c).
+- **GitHub 41252917494 (14d8a3c): passou** (as 5 partes das conferências e o `teste_botoes.py`, de primeira).
+
+PRONTO PARA O VERIFICADOR (4ª rodada).
