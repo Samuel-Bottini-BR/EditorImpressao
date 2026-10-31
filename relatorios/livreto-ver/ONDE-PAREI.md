@@ -35,6 +35,25 @@ Ramo `livreto-ver-2026-10-31` (saiu de `obra-2026-10-26` em d95df6b). Cópia: `.
   0,25 s; trocar para 16 por caderno 0,47 s.
 - [x] Commit e push no ramo `livreto-ver-2026-10-31`.
 
+- [ ] Rodada no GitHub: 41213885135 (ramo livreto-ver-2026-10-31), esperando.
+
+## Como cumpri cada uma
+- **D-574, opção 1:** a folha A4 deitada, "Folha 1 de 32 — frente" e embaixo o verso, setas "‹ folha 1 ›". Print
+  `2-folha-1-frente-e-verso.png` (Palatino: frente 20 e 1, verso 2 em branco e 19) ao lado do desenho 2-10-A; provas
+  `test_d574_folha_1_frente_20_e_1_verso_2_e_19_igual_ao_pdf`, `test_d574_janela_mostra_a_folha_1_frente_e_verso`,
+  `test_d574_setas_passam_as_folhas`, `test_d574_trocar_a_opcao_refaz_a_previa`.
+- **D-473 (a mesma conta do PDF):** a prévia vem de `_montar_livreto`, a mesma do arquivo; a prova compara os pontos da
+  prévia com a folha 1 do PDF gravado.
+- **D-064 (bolinha):** a bolinha gira ao lado do título enquanto monta (print `1-ao-abrir-montando.png`); balão
+  "Montando a folha (o livreto tem 32 folhas)".
+- **§3, não congela / uma folha por vez:** `test_d574_janela_nao_congela_enquanto_monta` (montagem de 1,5 s, o relógio
+  da tela continua batendo), `test_d574_uma_folha_por_vez_na_memoria`.
+- **D-315 / D-333:** nenhuma opção saiu; o texto "O que vai sair" continua embaixo; `test_decisoes_impressao.py` 22/22
+  (nada cortado nem por cima, na janela de 1000x617 e na mínima); prints 5 e 6.
+- **Regra 7:** nenhum botão novo além das setas do desenho; nenhum texto novo além dos do desenho ("Como vai sair da
+  impressora", "Folha N de M — frente/verso", "folha N", "(vira o papel)"), do balão da bolinha e do aviso de erro
+  ("Não consegui mostrar esta folha.", regra §3 de erro virar frase em português).
+
 ## Perguntas para o Samuel
 
 1. **O botão do dia 29/10.** Ele escreveu: "quando mostra para fazer os cadernos lá na parte de fazer caderno tem que ter
