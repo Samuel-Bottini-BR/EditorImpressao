@@ -42,6 +42,27 @@ MONTAR PARA IMPRIMIR (item 2.6; refeita na etapa 9a da obra de 26/10/2026)
     e o "todas" escrito no campo. Nome novo só pela revisão de nomes (D-374,
     etapa 11), decidido por ele. Arriscado: renomear opção aqui.
 
+VER AS FOLHAS ANTES DE GRAVAR (D-574, 31/10/2026)
+    Palavras dele (28/10): "eu deveria conseguir ver o livreto pronto aqui
+    nessa tela para que eu possa ver se ficou certo". Na Central (31/10) ele
+    escolheu a "Opção 1: as folhas como saem da impressora, frente e verso":
+    "À direita, a folha A4 deitada como vai sair: "Folha 1 de 32 — frente" e
+    embaixo o verso, com setas para passar as 32 folhas." Desenho:
+    conferencia-versao-teste-2026-10-28/alternativas/img/2-10-A-folhas-da-
+    impressora.jpg. Disse também: "não gostei muito" (mudar depois: Lista de
+    espera).
+    No cartão da direita, em cima, "Como vai sair da impressora": a frente e o
+    verso da folha, desenhados da MESMA montagem que grava o arquivo
+    (core/impressao.previa_da_folha), num fio à parte (_TarefaPrevia), com a
+    bolinha de carregamento (D-064) enquanto monta. Uma folha por vez na
+    memória (CLAUDE.md §3): a seta pede a folha seguinte ao fio. Mudar uma
+    opção refaz a folha. Embaixo continua o texto "O que vai sair" de antes.
+    Só aparece no Livreto (é o formato da D-574; os outros: perguntar).
+    ARRISCADO: montar a folha no fio da tela (a janela pararia ~0,5 s a cada
+    seta no Palatino); guardar todas as folhas (a memória cresceria com o
+    livro); dois fios do MuPDF ao mesmo tempo (a prévia espera o "gravar" e o
+    "gravar" espera a prévia soltar).
+
 IMPRIMIR AGORA (D-012, 26/10/2026: "2" - conserto na etapa 9)
     Antes, o botão da tela "Ficou pronto!" mandava o PDF inteiro para a
     impressora padrão do Windows num clique, sem escolher nada nem perguntar
@@ -67,6 +88,7 @@ import traceback
 from pathlib import Path
 
 from PySide6.QtCore import Qt, QThread, QTimer, Signal
+from PySide6.QtGui import QImage, QPixmap
 from PySide6.QtWidgets import (
     QCheckBox,
     QComboBox,
@@ -90,6 +112,7 @@ import configuracoes
 from core import impressao as imp
 from registro import registrar_erro
 from ui import estilo, rodinha
+from ui.widgets.bolinha import BolinhaDeCarregamento
 
 CHAVE_DAS_CONFIGURACOES = "impressao"
 OPCOES_CADERNO = [8, 12, 16, 20, 24, 32, 40]
@@ -313,6 +336,37 @@ class _Tarefa(QThread):
                              "O livro continua salvo como estava.")
 
 
+class _TarefaPrevia(QThread):
+    """D-574: monta e desenha UMA folha do livreto (frente e verso) fora do fio
+    da tela (core/impressao.previa_da_folha). `pedido` é o número do pedido:
+    a janela ignora a resposta de um pedido velho (a opção mudou no meio)."""
+
+    pronta = Signal(object, int)        # FolhaDaPrevia ou None, pedido
+    falhou = Signal(int)
+
+    def __init__(self, entrada: str, opcoes: imp.OpcoesDeImpressao, posicao: int,
+                 largura_px: int, pedido: int) -> None:
+        super().__init__()
+        self.entrada, self.opcoes, self.posicao = entrada, opcoes, posicao
+        self.largura_px, self.pedido = largura_px, pedido
+        self._cancelar = False
+
+    def cancelar(self) -> None:
+        self._cancelar = True
+
+    def run(self) -> None:
+        try:
+            folha = imp.previa_da_folha(self.entrada, self.opcoes, self.posicao, self.largura_px,
+                                        cancelado=lambda: self._cancelar)
+            if not self._cancelar:
+                self.pronta.emit(folha, self.pedido)
+        except imp.Cancelou:
+            pass
+        except Exception:  # noqa: BLE001 - nunca fecha a janela (CLAUDE.md §3)
+            registrar_erro("mostrar a folha do livreto", traceback.format_exc())
+            self.falhou.emit(self.pedido)
+
+
 class _TarefaImprimirArquivo(QThread):
     """"imprimir agora": manda as páginas escolhidas do PDF pronto para a
     impressora, fora do fio da tela (core/impressora.imprimir)."""
@@ -365,6 +419,8 @@ class DialogoImpressao(QDialog):
     """A janela de imprimir. `entrada` é o PDF do livro (as páginas em ordem)."""
 
     LARGURA_DO_RESULTADO = 290
+    LARGURA_DA_FOLHA = 240          # D-574: a folha desenhada no cartão (pontos da tela)
+    ESPERA_DA_PREVIA_MS = 250
 
     def __init__(self, entrada: str, parent=None) -> None:
         super().__init__(parent)
@@ -372,6 +428,13 @@ class DialogoImpressao(QDialog):
         self.tarefa: _Tarefa | None = None
         self.ultimo_resultado: imp.Resultado | None = None
         self.paginas_do_livro = paginas_do_pdf(entrada)
+        # D-574: a folha à vista (a única guardada) e o fio que monta a próxima
+        self.folha_na_tela: imp.FolhaDaPrevia | None = None
+        self.posicao_da_previa = 0
+        self.tarefa_previa: _TarefaPrevia | None = None
+        self._pedido_da_previa = 0
+        self._previa_pendente = False
+        self._gravar_depois_da_previa: tuple[str, str] | None = None
         self.setWindowTitle("Montar para imprimir")
         estilo.estilizar(self, lambda: estilo.FOLHA_DE_ESTILO + _ESTILO_DA_JANELA)
         self.setMinimumSize(760, 460)
@@ -403,10 +466,19 @@ class DialogoImpressao(QDialog):
                       self.folhas_de.valueChanged, self.folhas_ate.valueChanged,
                       self.paginas_de.valueChanged, self.paginas_ate.valueChanged):
             sinal.connect(lambda *_a: self._mostrar_resumo())
+        # D-574: toda opção que muda o desenho da folha refaz a prévia (com
+        # uma pausa curta, para não montar a cada número digitado)
+        self._relogio_da_previa = QTimer(self)
+        self._relogio_da_previa.setSingleShot(True)
+        self._relogio_da_previa.setInterval(self.ESPERA_DA_PREVIA_MS)
+        self._relogio_da_previa.timeout.connect(self.pedir_previa)
+        for sinal in self._sinais_que_mudam_a_folha():
+            sinal.connect(lambda *_a: self._agendar_previa())
         self.definir_opcoes(imp.OpcoesDeImpressao.de_dicionario(
             configuracoes.ler(CHAVE_DAS_CONFIGURACOES)))
         rodinha.proteger(self)
         self._tamanho_ao_abrir()
+        self._agendar_previa()
 
     # --- montagem da janela
 
@@ -571,7 +643,9 @@ class DialogoImpressao(QDialog):
         coluna.setContentsMargins(14, 12, 14, 12)
         coluna.setSpacing(8)
         rolagem.setWidget(dentro)
+        self.rolagem_do_resultado = rolagem
 
+        coluna.addWidget(self._montar_previa())
         coluna.addWidget(_titulo_da_secao("O que vai sair"))
         self.resumo = QLabel("")
         self.resumo.setWordWrap(True)
@@ -607,6 +681,58 @@ class DialogoImpressao(QDialog):
         coluna.addWidget(self.avisos)
         coluna.addStretch()
         return cartao
+
+    def _montar_previa(self) -> QWidget:
+        """D-574, opção 1 (desenho 2-10-A): "Como vai sair da impressora", a
+        frente e embaixo o verso da folha, e as setas "‹ folha 1 ›" com o
+        lembrete "(vira o papel)"."""
+        bloco = QWidget()
+        coluna = QVBoxLayout(bloco)
+        coluna.setContentsMargins(0, 0, 0, 10)
+        coluna.setSpacing(6)
+        titulo = QHBoxLayout()
+        titulo.setSpacing(6)
+        titulo.addWidget(_titulo_da_secao("Como vai sair da impressora"))
+        self.bolinha_da_previa = BolinhaDeCarregamento()
+        titulo.addWidget(self.bolinha_da_previa)
+        titulo.addStretch()
+        coluna.addLayout(titulo)
+
+        self.rotulos_da_face: dict[str, QLabel] = {}
+        self.imagens_da_face: dict[str, QLabel] = {}
+        for lado in (imp.FRENTE, imp.VERSO):
+            rotulo = QLabel("")
+            rotulo.setStyleSheet("font-weight: 700;")
+            imagem = QLabel()
+            imagem.setAlignment(Qt.AlignmentFlag.AlignCenter)
+            estilo.estilizar(imagem, lambda: f"background: {estilo.cor('bar2')};")
+            coluna.addWidget(rotulo)
+            coluna.addWidget(imagem)
+            self.rotulos_da_face[lado], self.imagens_da_face[lado] = rotulo, imagem
+
+        setas = QHBoxLayout()
+        setas.setSpacing(4)
+        self.botao_folha_anterior = QPushButton("‹")
+        self.botao_folha_anterior.setToolTip("folha anterior")
+        self.botao_folha_anterior.clicked.connect(lambda: self.passar_folha(-1))
+        self.rotulo_da_folha = QLabel("")
+        self.botao_folha_seguinte = QPushButton("›")
+        self.botao_folha_seguinte.setToolTip("próxima folha")
+        self.botao_folha_seguinte.clicked.connect(lambda: self.passar_folha(1))
+        for botao in (self.botao_folha_anterior, self.botao_folha_seguinte):
+            botao.setStyleSheet("padding: 0px 8px; font-size: 16px;")
+            botao.setFocusPolicy(Qt.FocusPolicy.NoFocus)
+        self.nota_vira_o_papel = _explicacao("(vira o papel)")
+        self.nota_vira_o_papel.setWordWrap(False)
+        setas.addWidget(self.botao_folha_anterior)
+        setas.addWidget(self.rotulo_da_folha)
+        setas.addWidget(self.botao_folha_seguinte)
+        setas.addSpacing(8)
+        setas.addWidget(self.nota_vira_o_papel)
+        setas.addStretch()
+        coluna.addLayout(setas)
+        self.bloco_da_previa = bloco
+        return bloco
 
     def _montar_botoes(self) -> QHBoxLayout:
         botoes = QHBoxLayout()
@@ -702,6 +828,160 @@ class DialogoImpressao(QDialog):
             for rotulo in (self.estado, self.passos, self.conferencia, self.avisos,
                            self.titulo_avisos):
                 rotulo.setVisible(False)
+
+    # --- a prévia das folhas (D-574)
+
+    def _sinais_que_mudam_a_folha(self) -> list:
+        """As opções que mudam o desenho da folha do livreto. Fora: impressora,
+        cópias, agrupar e "Imprimir como imagem" (a folha sai igual) e as do
+        Múltiplo e do Pôster (outros formatos)."""
+        sinais = []
+        for combo in (self.combo_formato, self.combo_papel, self.combo_orientacao,
+                      self.combo_escala, self.combo_caderno, self.combo_encadernacao,
+                      self.combo_lados):
+            sinais.append(combo.currentIndexChanged)
+        for caixa in (self.escala_percentual, self.escala_esquerda, self.escala_direita,
+                      self.folhas_de, self.folhas_ate, self.paginas_de, self.paginas_ate):
+            sinais.append(caixa.valueChanged)
+        for caixa in (self.cx_margens, self.cx_girar, self.cx_centralizar, self.cx_cinza,
+                      self.cx_reverter):
+            sinais.append(caixa.toggled)
+        sinais.append(self.excecoes.textChanged)
+        return sinais
+
+    def _agendar_previa(self) -> None:
+        """Uma opção mudou: refaz a folha daqui a pouco (só no Livreto)."""
+        livreto = self.combo_formato.currentData() == imp.LIVRETO and self.paginas_do_livro > 0
+        self.bloco_da_previa.setVisible(livreto)
+        if not livreto:
+            self._relogio_da_previa.stop()
+            self._largar_a_previa()
+            return
+        self._mostrar_carregando()
+        self._relogio_da_previa.start()
+
+    def _largar_a_previa(self) -> None:
+        """Esquece a folha à vista e para o fio (o formato não é Livreto)."""
+        self._pedido_da_previa += 1
+        self._previa_pendente = False
+        if self.tarefa_previa is not None and self.tarefa_previa.isRunning():
+            self.tarefa_previa.cancelar()
+        self.folha_na_tela = None
+        self.bolinha_da_previa.definir(False)
+
+    def _razao_da_tela(self) -> float:
+        razao = self.devicePixelRatioF()
+        return razao if razao > 0 else 1.0
+
+    def pedir_previa(self) -> None:
+        """Pede ao fio a folha `posicao_da_previa` com as opções de agora. Se
+        um fio ainda está montando (a prévia ou o "gravar"), a prévia velha é
+        avisada para parar e o pedido sai quando o fio terminar (um fio do
+        MuPDF por vez)."""
+        self._relogio_da_previa.stop()
+        if self.combo_formato.currentData() != imp.LIVRETO or self.paginas_do_livro <= 0:
+            return
+        self._pedido_da_previa += 1
+        self._mostrar_carregando()
+        ocupado = self.tarefa_previa is not None and self.tarefa_previa.isRunning()
+        if ocupado or (self.tarefa is not None and self.tarefa.isRunning()):
+            if ocupado:
+                self.tarefa_previa.cancelar()
+            self._previa_pendente = True
+            return
+        self._previa_pendente = False
+        largura_px = max(1, round(self.LARGURA_DA_FOLHA * self._razao_da_tela()))
+        tarefa = _TarefaPrevia(self.entrada, self.opcoes(), self.posicao_da_previa,
+                               largura_px, self._pedido_da_previa)
+        tarefa.pronta.connect(self._previa_pronta)
+        tarefa.falhou.connect(self._previa_falhou)
+        tarefa.finished.connect(self._fio_da_previa_terminou)
+        self.tarefa_previa = tarefa
+        tarefa.start()
+
+    def _fio_da_previa_terminou(self) -> None:
+        if self._gravar_depois_da_previa is not None:
+            destino, impressora = self._gravar_depois_da_previa
+            self._gravar_depois_da_previa = None
+            self.comecar(destino=destino, impressora=impressora)
+            return
+        if self._previa_pendente:
+            self.pedir_previa()
+
+    def passar_folha(self, passo: int) -> None:
+        """As setas: a folha anterior / a próxima (das que vão sair)."""
+        quantas = self.folha_na_tela.quantas if self.folha_na_tela is not None else 0
+        nova = max(0, min(self.posicao_da_previa + passo, max(0, quantas - 1)))
+        if nova == self.posicao_da_previa:
+            return
+        self.posicao_da_previa = nova
+        self.pedir_previa()
+
+    @staticmethod
+    def texto_da_face(numero: int, total: int, lado: str) -> str:
+        """ "Folha 1 de 32 — frente" (o texto da opção 1 da D-574)."""
+        return f"Folha {numero} de {total} — {lado}"
+
+    def _mostrar_carregando(self) -> None:
+        """Enquanto o fio monta: a bolinha gira (D-064; o balão diz o que está
+        montando), o desenho velho sai (valia para outra folha ou outras
+        opções) e as setas esperam."""
+        total = self.folha_na_tela.total if self.folha_na_tela is not None else 0
+        dica = "Montando a folha" + (f" (o livreto tem {contar(total, 'folha', 'folhas')})"
+                                      if total else "")
+        self.bolinha_da_previa.definir(True, dica)
+        largura_pt, altura_pt = imp.tamanho_do_papel_pt(self.opcoes())
+        altura = round(self.LARGURA_DA_FOLHA * altura_pt / max(1.0, largura_pt))
+        for imagem in self.imagens_da_face.values():
+            imagem.clear()
+            imagem.setFixedSize(self.LARGURA_DA_FOLHA, altura)
+        self.botao_folha_anterior.setEnabled(False)
+        self.botao_folha_seguinte.setEnabled(False)
+
+    def _previa_pronta(self, folha, pedido: int) -> None:
+        if pedido != self._pedido_da_previa:
+            return                          # pedido velho: a opção mudou no meio
+        self.bolinha_da_previa.definir(False, "")
+        if folha is None:                   # nenhuma folha sai com essas opções
+            self.folha_na_tela = None
+            self.bloco_da_previa.setVisible(False)
+            return
+        self.bloco_da_previa.setVisible(True)
+        self.folha_na_tela = folha          # a única folha guardada (CLAUDE.md §3)
+        self.posicao_da_previa = folha.posicao
+        razao = self._razao_da_tela()
+        for lado, imagem in self.imagens_da_face.items():
+            rotulo = self.rotulos_da_face[lado]
+            face = next((f for f in folha.faces if f.lado == lado), None)
+            rotulo.setVisible(face is not None)
+            imagem.setVisible(face is not None)
+            if face is None:
+                continue
+            rotulo.setText(self.texto_da_face(folha.numero, folha.total, lado))
+            formato = (QImage.Format.Format_Grayscale8 if face.canais == 1
+                       else QImage.Format.Format_RGB888)
+            quadro = QImage(face.amostras, face.largura, face.altura,
+                            face.largura * face.canais, formato).copy()
+            desenho = QPixmap.fromImage(quadro)
+            desenho.setDevicePixelRatio(razao)
+            imagem.setFixedSize(round(face.largura / razao), round(face.altura / razao))
+            imagem.setPixmap(desenho)
+        lados = {face.lado for face in folha.faces}
+        self.nota_vira_o_papel.setVisible(lados == {imp.FRENTE, imp.VERSO})
+        self.rotulo_da_folha.setText(f"folha {folha.numero}")
+        self.botao_folha_anterior.setEnabled(folha.posicao > 0)
+        self.botao_folha_seguinte.setEnabled(folha.posicao < folha.quantas - 1)
+
+    def _previa_falhou(self, pedido: int) -> None:
+        if pedido != self._pedido_da_previa:
+            return
+        self.bolinha_da_previa.definir(False, "")
+        self.folha_na_tela = None
+        for lado in self.rotulos_da_face:
+            self.imagens_da_face[lado].setVisible(False)
+            self.rotulos_da_face[lado].setVisible(False)
+        self.rotulos_da_face[imp.FRENTE].setText("Não consegui mostrar esta folha.")
+        self.rotulos_da_face[imp.FRENTE].setVisible(True)
 
     # --- as opções
 
@@ -822,6 +1102,14 @@ class DialogoImpressao(QDialog):
         """Começa a montar (destino) ou a imprimir, num fio à parte."""
         if self.tarefa is not None and self.tarefa.isRunning():
             return
+        if self.tarefa_previa is not None and self.tarefa_previa.isRunning():
+            # D-574: a prévia para e o arquivo começa quando ela soltar o MuPDF
+            self.tarefa_previa.cancelar()
+            self._previa_pendente = True
+            self._gravar_depois_da_previa = (destino, impressora)
+            for botao in (self.botao_gravar, self.botao_imprimir):
+                botao.setEnabled(False)
+            return
         opcoes = self._guardar()
         self.tarefa = _Tarefa(self.entrada, opcoes, destino, impressora,
                               self.copias.value(), self.cx_agrupar.isChecked())
@@ -838,6 +1126,7 @@ class DialogoImpressao(QDialog):
         self.barra.setRange(0, 0)
         self.barra.setVisible(True)
         self.tarefa.start()
+        QTimer.singleShot(0, lambda: self.rolagem_do_resultado.ensureWidgetVisible(self.barra))
 
     def _andou(self, feito: int, total: int, texto: str) -> None:
         self.estado.setText(texto)
@@ -854,6 +1143,10 @@ class DialogoImpressao(QDialog):
             botao.setEnabled(True)
         self.botao_cancelar.setEnabled(False)
         self.barra.setVisible(False)
+        # D-574: o resultado mora embaixo da folha; rola o cartão até ele
+        QTimer.singleShot(0, lambda: self.rolagem_do_resultado.ensureWidgetVisible(self.estado))
+        if self._previa_pendente:
+            QTimer.singleShot(0, self.pedir_previa)
 
     def _pronto(self, resultado: imp.Resultado, destino: str) -> None:
         self._terminou()
@@ -892,6 +1185,12 @@ class DialogoImpressao(QDialog):
         self.estado.setVisible(True)
 
     def _parar_e_esperar(self) -> None:
+        self._relogio_da_previa.stop()
+        self._previa_pendente = False
+        self._gravar_depois_da_previa = None
+        if self.tarefa_previa is not None and self.tarefa_previa.isRunning():
+            self.tarefa_previa.cancelar()
+            self.tarefa_previa.wait(30000)
         if self.tarefa is not None and self.tarefa.isRunning():
             self.tarefa.cancelar()
             self.tarefa.wait(30000)

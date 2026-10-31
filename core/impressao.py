@@ -35,6 +35,8 @@ AS DECISÕES QUE VALEM AQUI
       estiver acontecendo." (a rotação automática; o aviso sai em `avisos`).
     - Aviso de margem (14/10): "o programa precisa avisar quando o corte deixar
       qualquer margem abaixo de 1 cm".
+    - D-574 (28/10 e 31/10): ver o livreto pronto, "as folhas como saem da
+      impressora, frente e verso" (previa_da_folha, no fim do módulo).
 
 COMO (pesquisa da impressão, ramo pesquisa-impressao-2026-10-19, seção 3)
     Cada página entra na folha com `show_pdf_page` do PyMuPDF: sem refazer a
@@ -830,6 +832,134 @@ def montar_em_memoria(entrada: str | Path, opcoes: OpcoesDeImpressao) -> tuple[f
         dados = doc.tobytes()
         doc.close()
     return fitz.open("pdf", dados), resultado
+
+
+# --------------------------------------------------------------- a prévia do livreto (D-574)
+#
+# D-574 (28/10/2026): "eu deveria conseguir ver o livreto pronto aqui nessa tela
+# para que eu possa ver se ficou certo"; 31/10/2026, na Central, ele escolheu a
+# "Opção 1: as folhas como saem da impressora, frente e verso": "a folha A4
+# deitada como vai sair: "Folha 1 de 32 — frente" e embaixo o verso, com setas
+# para passar as 32 folhas."
+#
+# COMO: a folha da prévia sai da MESMA montagem do arquivo (_montar_livreto,
+# com as mesmas opções); só se pede a ela UMA folha de papel (folhas_de =
+# folhas_ate = a folha), que é exatamente a mesma folha que sai no arquivo
+# inteiro (cada página é posta sozinha, sem depender das outras folhas). Depois
+# a folha é desenhada pequena, como o "Imprimir como imagem" faz (em cinza se a
+# "escala de cinza" estiver ligada). Assim a prévia é o que sai (D-473).
+#
+# MEMÓRIA (CLAUDE.md §3): uma folha por vez. Nada fica guardado aqui; quem
+# chama guarda só a folha que está à vista e pede a próxima quando a seta anda.
+#
+# SEGURO MUDAR: a largura do desenho (quem chama escolhe). ARRISCADO: montar a
+# prévia por outra conta que não _montar_livreto (a prévia deixaria de ser o
+# que sai no papel); juntar várias folhas numa lista (a memória cresceria com o
+# livro).
+
+FRENTE = "frente"
+VERSO = "verso"
+
+
+@dataclass
+class FaceDaPrevia:
+    """Um lado de uma folha de papel desenhado pequeno. `amostras` são os pontos
+    linha a linha, sem folga no fim da linha (largura * canais bytes por linha);
+    `canais` é 3 (cor) ou 1 (escala de cinza)."""
+
+    lado: str                       # FRENTE ou VERSO
+    largura: int
+    altura: int
+    canais: int
+    amostras: bytes
+
+
+@dataclass
+class FolhaDaPrevia:
+    """Uma folha de papel do livreto, como sai da impressora. `numero` é a folha
+    do livreto (1 = a primeira do primeiro caderno) e `total` quantas folhas tem
+    o livreto inteiro; `posicao` é a ordem dela no que vai sair (0, 1, ...) e
+    `quantas` quantas folhas vão sair com as opções de agora (folhas de/até)."""
+
+    numero: int
+    total: int
+    posicao: int
+    quantas: int
+    faces: list[FaceDaPrevia] = field(default_factory=list)
+
+
+def folhas_que_saem(total_paginas: int, opcoes: OpcoesDeImpressao) -> tuple[list[int], int]:
+    """(as folhas do livreto que saem, na ordem em que saem; quantas folhas tem
+    o livreto inteiro). Conta pura, sem abrir o PDF: segue _lados_do_livreto
+    (folhas de/até e "Reverter páginas")."""
+    escolhidas = _paginas_escolhidas(max(1, total_paginas), opcoes)
+    total = len(cadernos.montar_ordem(len(escolhidas), opcoes.paginas_por_caderno)) // 2
+    de = opcoes.folhas_de if opcoes.folhas_de > 0 else 1
+    ate = opcoes.folhas_ate if opcoes.folhas_ate > 0 else total
+    numeros = list(range(max(1, de), min(ate, total) + 1))
+    if opcoes.reverter:
+        numeros.reverse()
+    return numeros, total
+
+
+def previa_da_folha(entrada: str | Path, opcoes: OpcoesDeImpressao, posicao: int,
+                    largura_px: int, cancelado: Cancelado = None) -> FolhaDaPrevia | None:
+    """A folha `posicao` (0 = a primeira que sai) do livreto, frente e verso,
+    desenhada com `largura_px` pontos de largura. None se não sai nenhuma folha
+    (ex.: "folhas de" depois da última). Só o formato Livreto.
+
+    Levanta Cancelou se `cancelado()` ficar verdadeiro no meio."""
+    if opcoes.formato != LIVRETO:
+        raise ValueError("A prévia das folhas é só do livreto.")
+
+    def checar(*_a, **_k) -> None:
+        if cancelado is not None and cancelado():
+            raise Cancelou()
+
+    # A trava do MuPDF do programa (core/pdf_io._TRANCA): a prévia roda num fio
+    # à parte, e dois fios chamando o MuPDF ao mesmo tempo já travaram o
+    # programa (achado de 08/09/2026, comentário em pdf_io).
+    from core.pdf_io import _TRANCA
+
+    with _TRANCA:
+        origem = fitz.open(str(entrada))
+        montado = fitz.open()
+    try:
+        if origem.page_count == 0:
+            raise ValueError("O arquivo do livro não tem páginas.")
+        numeros, total = folhas_que_saem(origem.page_count, opcoes)
+        if not numeros:
+            return None
+        posicao = max(0, min(posicao, len(numeros) - 1))
+        numero = numeros[posicao]
+        # a mesma montagem do arquivo, pedindo só esta folha
+        so_esta = OpcoesDeImpressao.de_dicionario(opcoes.para_dicionario())
+        so_esta.folhas_de = so_esta.folhas_ate = numero
+        so_esta.reverter = False
+        escolhidas = _paginas_escolhidas(origem.page_count, so_esta)
+        checar()
+        with _TRANCA:
+            _montar_livreto(origem, montado, escolhidas, so_esta, [], checar)
+        lados = {AMBOS: (FRENTE, VERSO), SO_FRENTE: (FRENTE,), SO_VERSO: (VERSO,)}.get(
+            opcoes.lados, (FRENTE, VERSO))
+        folha = FolhaDaPrevia(numero, total, posicao, len(numeros))
+        espaco = fitz.csGRAY if opcoes.cinza else fitz.csRGB
+        for n, lado in zip(range(montado.page_count), lados):
+            checar()
+            with _TRANCA:
+                pagina = montado[n]
+                zoom = max(1, int(largura_px)) / pagina.rect.width
+                pix = pagina.get_pixmap(matrix=fitz.Matrix(zoom, zoom), colorspace=espaco,
+                                        alpha=False)
+            linhas = np.frombuffer(pix.samples, np.uint8).reshape(pix.height, pix.stride)
+            amostras = linhas[:, :pix.width * pix.n].tobytes()
+            folha.faces.append(FaceDaPrevia(lado, pix.width, pix.height, pix.n, amostras))
+            del pix, linhas
+        return folha
+    finally:
+        with _TRANCA:
+            montado.close()
+            origem.close()
 
 
 def _linha_de_comando() -> int:
