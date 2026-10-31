@@ -332,3 +332,15 @@ Todos com "No fase-1? SIM" na tabela. Destaques:
 | `.claude\worktrees\auto-pintura` | `automatico-pintura-2026-10-29` | D-585 e "Só as letras" do Automático (só provas e relatório) | `18fe50b` |
 | `.claude\worktrees\auto-respeitar` | `automatico-respeitar-gravuras-2026-10-29` | caixinha "Respeitar as gravuras achadas" (D-583, D-586, D-587) | `99a3cdc` |
 | `.claude\worktrees\auto-ver` | `automatico-ver-como-fica-2026-10-29` | antes e depois na janela do Automático (D-577); `_vtmp\` (~1,1 GB, do verificador, fora do git) | `d00dcec` |
+
+## Ramos de 30-31/10/2026 (saíram do `obra-2026-10-26`)
+
+| Cópia | Ramo | O que é | Situação |
+|---|---|---|---|
+| `.claude\worktreesuto-ver` | `automatico-ver-como-fica-2026-10-29` | D-577, 2ª a 4ª rodada (prévia nas páginas mexidas, antes cru, comparar, roda do mouse, lado da linha) | juntado: `21f7e0a`, `f39a37d`, `53a301b` |
+| `.claude\worktreesuto-cadernos` | `automatico-cadernos-2026-10-30` | D-589 (desmarcado não é feito) + D-590 ("juntar todas") | parado em `d67933f`, não juntado; falta o verificador das Gravuras e do "juntar todas" |
+| `.claude\worktrees\livreto-ver` | `livreto-ver-2026-10-31` | D-574, opção 1 (ver as folhas no "Montar para imprimir") | parado em `ff0260f`, não juntado; o verificador parou no meio |
+
+Cópias de verificador (destacadas, sem ramo, sem commit; podem ser apagadas depois de copiar os pareceres):
+`verif-ver`, `verif-ver-antes`, `verif-cadernos`, `verif-cadernos-antes`, `verif-cadernos-merge`, `verif-livreto`,
+`verif-livreto-antes`. Os pareceres ficam em `relatorios/.../verificador/` dentro de cada uma.

@@ -1,6 +1,6 @@
 # Editor de Impressão — documento para colar no Claude
 
-Atualizado em 29-30/10/2026 (PARTE -24; a anterior, PARTE -23, é de 28/10). Desde 19/10 a memória por assunto fica em `memoria/` (índice `memoria/INDICE.md`). Versão **máxima**: reúne o histórico institucional, o
+Atualizado em 30-31/10/2026 (PARTE -25; a anterior, PARTE -24, é de 29-30/10). Desde 19/10 a memória por assunto fica em `memoria/` (índice `memoria/INDICE.md`). Versão **máxima**: reúne o histórico institucional, o
 que o programa é, todas as funcionalidades pedidas, os 68 pedidos feitos até
 hoje **palavra por palavra**, o que foi feito, o que falta, e os dois
 documentos-fonte inteiros (a especificação original e o prompt de testes) em
@@ -14,7 +14,128 @@ o backup). Repositório git ligado a
 
 ---
 
-# PARTE -24 — Checkpoint de 29-30/10/2026: o Automático para o Kaique, uma coisa por vez (leia isto primeiro)
+# PARTE -25 — Checkpoint de 30-31/10/2026: o Automático e as respostas da Central (leia isto primeiro)
+
+Sessão no PC, gerente + agentes (no máximo 3 de uma vez). O código mudou só em ramos de trabalho e na versão de teste
+`obra-2026-10-26` (worktree `.claude/worktrees/obra-juncao`). O `fase-1` só recebeu anotações. As palavras dele, palavra
+por palavra, e todos os prints (a-07 a a-18, k-01, k-02) estão em
+`relatorios/testes-guiados/2026-10-29-automatico/automatico.md`, que é o relatório vivo. As seções "Pausa (31/10)" e
+"Depois da pausa", no fim dele, resumem onde tudo parou.
+
+## 0. Para recomeçar
+1. `git -C D:\programas\EditorImpressao fetch origin`. Ler a Central (coleção `respostas` com `lida != true` e `ordens`).
+2. **Primeira coisa: o teste dele da D-577 (4ª vez)**, pelo atalho
+   `D:\programas\EditorImpressao-arquivos\atalho-rodada-de-consertos\abrir.vbs`. O que testar: a roda do mouse dá zoom
+   (janela do Automático, tela cheia e "comparar"), e a linha mostra o lado para onde vai (toda embaixo de "depois" =
+   depois; toda embaixo de "antes" = antes). Vale também no "antes / depois" da área de trabalho e no "Comparar com o
+   Original" dos filtros. Junção `53a301b`.
+3. Depois: retomar os dois ramos parados (seção 3) e as perguntas abertas (seção 5), **uma pergunta por vez**.
+
+## 1. Regras e jeito de falar (confirmados de novo nesta sessão)
+- Uma coisa por vez, e ele testa cada uma (D-576). **Em 30/10 ele liberou trabalhar em paralelo** ("conseguimos botar o 8
+  e o 9 para fazer ao mesmo tempo...?" → "sim"), mas ele continua testando um item de cada vez.
+- Ciclo usado: construtor (cópia própria) → verificador separado (cópia própria, sem commit) → junção no
+  `obra-2026-10-26` → provas na junção → Livro "pronta para testar" → chamar o Samuel.
+- Explicações longas ou com termo técnico deram "não entendi" e "rapaz não entendi nada mesmo agora". O que funcionou foi
+  começar pelo problema que ele conhece (o do Kaique), dar um exemplo em 3 linhas e fazer uma pergunta sim/não.
+  Para pergunta de agente, traduzir primeiro em "o que você vê na tela".
+- Toda resposta dele vai na hora para o relatório e para o Livro, nas duas cópias:
+  `docs/plano/DECISOES.md` no `obra-2026-10-26` e `D:\programas\EditorImpressao-arquivos\plano-24-09-2026\DECISOES.md`.
+  Conferir com `cmp` que as duas ficaram iguais.
+
+## 2. D-577 (ver como fica no Automático): o que vale hoje
+Ele testou 3 vezes; cada teste mudou o pedido. O que vale hoje está na linha D-577 do Livro:
+- A prévia mostra a mudança **também nas páginas mexidas à mão**. Quem decide pular essas páginas é a pergunta da D-004,
+  ao "Rodar". Causa do 1º teste: a prévia usava `pular_mexidas=True`, e a capa do livro de teste está mexida à mão no
+  filtro, então o depois nunca mudava.
+- O **antes é a página crua do PDF**, sem filtro, sem corte e sem endireitar ("o antes é sem filtro e sem cortar sem
+  nada"). Isso vale no lugar de "já cortada e endireitada", que ele corrigiu.
+  - Folha já dividida: o antes é a metade crua.
+  - Folha não dividida com "Dividir" marcado: o antes é a folha inteira crua, e o depois são as duas metades lado a lado.
+  - Não aparece aviso.
+- A "tela cheia" mostra o antes e o depois grandes, com zoom e folhear, e tem o botão **"comparar"**: à esquerda "como
+  está no livro: <filtro>", à direita "depois: <filtro>"; o zoom e a posição andam juntos.
+- A roda do mouse dá zoom.
+- A linha mostra o lado para onde vai: os rótulos ficam parados; com a linha no meio, o depois fica à esquerda e o antes
+  à direita. Vale nos 3 lugares que usam `VistaAntesDepois`.
+- **Falta construir:** no "comparar", cada lado ganha uma aba que abre e fecha com **todas as opções** do Automático,
+  mudando à parte. Cada lado tem um botão **"usar este"** (nome provisório: "não gostei do nome, mas vamos ficar com esse
+  por enquanto"), que passa as opções daquele lado para a janela; o "Rodar" usa as opções da janela.
+- Tentado e descartado: os rótulos andarem colados na linha ("não gostei da sugestão").
+- Ramo `automatico-ver-como-fica-2026-10-29` (`9e0b820`), juntado.
+
+## 3. Ramos parados na pausa (não juntados)
+| Ramo (cópia) | O que é | Situação |
+|---|---|---|
+| `automatico-cadernos-2026-10-30` (`auto-cadernos`, `d67933f`) | D-589 (o que está desmarcado no Automático não é feito: Cadernos, Margens iguais, Gravuras e fotos) + D-590 ("juntar todas" na ferramenta Dividir) + conserto do roteiro `teste_botoes` | Cadernos e Margens: verificados (CUMPRE). Gravuras, refeitas com as 4 regras dele, e o "juntar todas": feitos, **sem verificador**. Ver a rodada 41218623088 do GitHub. |
+| `livreto-ver-2026-10-31` (`livreto-ver`, `ff0260f`) | D-574, opção 1: na janela "Montar para imprimir", a folha A4 como sai da impressora (frente e verso, setas, bolinha) | Feito; 9 provas; GitHub 41217021857 verde. O verificador parou no meio: as provas e os testes da impressão estão ok, falta a tela. Onde parou: `.claude\worktrees\verif-livreto\relatorios\livreto-ver\verificador\ONDE-PAREI.md` |
+
+D-589, as 4 regras das Gravuras ("sim, mas tem que ter certeza que o programa vai procurar as figuras mesmo com a opção
+desmarcada e que não vai remarcar ela de novo na caixinha"):
+1. desmarcada e rodar desliga, e a caixinha não volta marcada;
+2. com "Só as letras", o programa procura as figuras por dentro e a figura sai colorida;
+3. sem "Só as letras" e sem Gravuras, a página sai toda em preto e branco;
+4. marcar e rodar religa.
+
+"Dividir" desmarcado não junta nada (D-590). Causa da D-589: `core/automatico.aplicar` só ligava as etapas marcadas.
+
+## 4. Outras decisões desta sessão (todas no Livro)
+- D-579 **descartada**: "já podemos fazer isso em folhas individuais e jogar para o livro todo". Existe o "Aplicar em: só
+  nesta · todas · daqui em diante" do painel Filtro e o "usar em todas" do Cortar e do Mover.
+- D-588 (gravura em tons de cinza) **subiu**: vem antes da D-221. O jeito na tela ainda está a decidir.
+- Respostas na Central em 31/10 (aba "O que você não gostou: alternativas"), marcadas como lidas:
+  - D-574: opção 1 ("não gostei muito"; vai para a Lista de espera a pesquisa de "como outros aplicativos fazem").
+  - D-575: caixinha no "Confirmar e processar".
+  - D-070: esperar o Laboratório.
+  - D-591: aviso de memória com a frase certa e o botão "tentar de novo".
+  - D-592: o "Ver de perto" passa à frente na fila; e a **aba nova "Pesquisas" na Central**, ainda não criada, com as
+    perguntas dele sobre velocidade.
+  - D-593: botão "home" no alto à esquerda, que ele ligou a abrir vários livros em abas; a conversar.
+- Na pausa, a lista do Automático ficou assim: 6 (D-577, falta o comparar com opções), 8 (D-574) e 9 (D-589/590) em
+  andamento → D-588 → 5 (D-221).
+
+## 5. Perguntas em aberto (texto exato)
+- D-574: "ao abrir a janela "Montar para imprimir", a folha já aparece sozinha, sem precisar de botão. Está bom assim,
+  sem botão? Responda sim ou não." Ainda sem resposta. Depois desta vêm as outras 4 do construtor, no ONDE-PAREI do ramo:
+  outros formatos, o livreto antigo do Automático, "Folhas de/até" ("Folha 3 de 32" ou "1 de 3") e "Só a frente/verso".
+- D-589 P2, do verificador: com o livro em cadernos, rodar uma etapa "só nesta página" ou "nas escolhidas", com a etapa
+  desmarcada, desliga essa etapa **no livro todo**. Deve? A sugestão do verificador é não. Ainda não foi perguntada a ele.
+- D-589 P3: quando o Rodar desliga uma etapa, a frase da janela e o Histórico devem dizer isso? Ainda não foi perguntada.
+- D-577, do verificador: no Automático a roda sozinha dá zoom; na área de trabalho o zoom é Ctrl + roda (D-568). Não foi
+  perguntada, porque ele pediu a roda com todas as letras.
+- Antigas, ainda sem resposta: o botão "marcações" também esconder o contorno laranja; o "Ver de perto" aberto da
+  ferramenta Cortar mostrar sem filtro, igual à tela pequena (a sugestão foi feita em 30/10 e ele não respondeu).
+
+## 6. Descobertas desta sessão (não redescobrir)
+- A ferramenta Cortar mostra sempre a página **sem filtro** (`preparar_para_recorte`, conserto de 23/09). O "Ver de
+  perto" em modo Bordas mostra com filtro (`previas.pegar`). Ele achou que era defeito e depois entendeu.
+- A caixinha "No Preto e branco, molduras e iluminuras também em preto e branco" fica cinza com "Só as letras" (D-168).
+- Como sai a figura no Preto e branco: colorida com "Só as letras"; cinza sem "Só as letras" e com a etapa 5; tudo em
+  preto e branco sem as duas. A exceção é a figura tomada por enfeite (D-585/D-588).
+- O "quadro laranja" no print da tela cheia (a-08) não é do programa: parece a janela de outro programa.
+- **Teste instável no GitHub** (parte 1): `test_promessas` p083/p107 e `test_d148_desfazer...`, "não aconteceu a tempo".
+  É uma prévia da área de trabalho (`_TarefaPrevia`) que termina depois do fim do teste e não acha o PDF. Passa ao rodar
+  de novo; no PC passa. Já aconteceu em 27/10 em outro ramo. Rodar a parte 1 da obra 2 ou 3 vezes antes de concluir
+  qualquer coisa. Está na Lista de bugs.
+- Os dados de teste do atalho: a capa e a página 17 do *Na escola de Jesus* estão mexidas à mão (filtro); a capa guarda
+  "Só as letras" desligado, Otsu e força 0 (do teste da D-588), por isso o P&B dela sai duro.
+
+## 7. Como conferir
+Na versão de teste (`.claude\worktrees\obra-juncao`), offscreen, um arquivo por vez (PowerShell):
+`$env:QT_QPA_PLATFORM="offscreen"; D:\programas\EditorImpressao\.venv\Scripts\python.exe -m pytest tests\<arquivo> -q --basetemp=_tmp\bt`.
+Rodados na junção `53a301b` em 30/10: `test_decisoes_automatico_ver_como_fica.py` + `test_filtros_tela_cheia.py`
+(33 passaram). A suíte inteira não rodou nesta sessão. Antes de qualquer coisa entrar no `fase-1`: a suíte inteira do PC
+verde e a revisão final dele (§4.6).
+
+## 8. Cópias criadas nesta sessão
+`auto-cadernos`, `livreto-ver` (construtores) e `verif-ver`, `verif-ver-antes`, `verif-cadernos`,
+`verif-cadernos-antes`, `verif-cadernos-merge`, `verif-livreto`, `verif-livreto-antes` (verificadores, destacadas, sem
+commit). As cópias de verificador podem ser apagadas depois que os pareceres forem copiados. `auto-ver\_vtmp\` (~1,1 GB)
+também pode ser apagada. Ver `memoria/ramos.md`.
+
+---
+
+# PARTE -24 — Checkpoint de 29-30/10/2026: o Automático para o Kaique, uma coisa por vez
 
 Sessão no PC, gerente + agentes (no máximo 3 de uma vez). Código mudou só no ramo da versão de teste
 `obra-2026-10-26` (worktree `.claude/worktrees/obra-juncao`); o `fase-1` só recebeu anotações.

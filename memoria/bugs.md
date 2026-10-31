@@ -455,3 +455,9 @@ na Central (aba "O que você não gostou: alternativas").
 - **Original: o primeiro desenho da página logo depois do Automático sai um pouco diferente dos seguintes (achado do
   construtor da D-586, 29/10; já existia no `2db002e`).**
 - **Janela do Automático, Mágico pro: a frase da caixinha "Escurecer sozinho" fica sem a caixinha (achado do construtor da D-577, 30/10; versão de teste):** na janela grande do Automático, etapa "Limpar a folha" com Mágico pro, a caixinha "Escurecer sozinho a força do preto..." some, mas a frase de explicação dela fica à vista (`ui/automatico.py`, `_opcoes_limpar` / `_mostrar_opcoes`). Print: `relatorios/automatico-ver-como-fica/3-antes-e-depois-magico-pro.png` (ramo `automatico-ver-como-fica-2026-10-29`). Não impede nada; não consertado.
+- **Teste instável no GitHub, parte 1 (30-31/10):** `test_promessas` p083/p107 e
+  `test_d148_desfazer_o_automatico_devolve_o_so_as_letras_do_livro` falham às vezes com "não aconteceu a tempo". É uma
+  prévia da área de trabalho (`ui/tarefas.py`, `_TarefaPrevia`) que termina depois do fim do teste e não acha o PDF.
+  Passa ao rodar de novo e passa no PC. Já tinha acontecido em 27/10 (`obra-etapa7`, rodada 40601574220).
+- **"Desligar as marcadas" com Gravuras e fotos (achado do construtor da D-589, 31/10; já era assim antes):** depois dele,
+  marcar a etapa Gravuras de novo e rodar não religa; só religa pela caixinha de dentro, "Achar gravuras e fotos" (D-212).
