@@ -103,28 +103,46 @@ dividir"): hoje o livro continua dividido.
   caminho do aviso do livro novo não muda.
 - Rodada do GitHub 41147611641 (commit 484cb1c): passou inteira (suíte em 5 partes + botões).
 
-## 30/10, terceira parte — 2ª rodada do verificador: Gravuras não religavam
+## 30/10, terceira parte — 2ª rodada do verificador: Gravuras não religavam (PARADO, pergunta P3)
 
 - Parecer (`verif-cadernos/.../parecer-d589-rodada2.md`): NÃO CUMPRE nas Gravuras. Depois de desmarcar e
-  rodar, marcar "Gravuras e fotos" de novo e rodar não religava (a frase prometia "achar gravuras e fotos";
-  a caixinha voltava desmarcada).
-- Causa conferida: `_desligar_as_desmarcadas` gravava `gravura_forma="desligada"`, que é também a caixinha
-  de dentro "Achar gravuras e fotos" (D-212). A janela começa do livro (`opcoes_do_livro`), então o Rodar
-  seguinte, com a etapa marcada, aplicava a forma "desligada" de novo (`aplicar`, ramo GRAVURAS:
-  `opcoes.get(campo, ...)`) e `ligada_no_livro` continuava falso. Reproduzido pela prova nova
-  `test_d589_desmarcar_rodar_marcar_rodar_religa[gravuras]` (falhou: "desligada" ≠ "ligada no livro todo";
-  `[margens]` e `[cadernos]` já religavam).
-- Conserto (como o verificador sugeriu): desmarcada, a etapa Gravuras desliga pelo "Procurar" do livro
-  (`detectar_regioes=False`), o mesmo campo que o Rodar liga quando ela vem marcada. A forma de dentro não
-  muda. Sem `detectar_regioes`, o PDF não usa as áreas achadas pela máquina; a marcação feita à mão fica
-  (`garantir_selecao`/`etapas.marcacao_a_mao`). Mesma ação do Desfazer.
-- "Desligar as marcadas" NÃO mudou (D-068): continua gravando a forma "desligada" (`_desligar`). Por isso
-  o mesmo defeito continua por esse caminho: depois de "Desligar as marcadas" com Gravuras, marcar e rodar
-  não religa (só pela caixinha de dentro). **Pergunta P3 para o Samuel/gerente:** o "Desligar as marcadas"
-  das Gravuras passa a desligar do mesmo jeito (pelo "Procurar", para religar ao marcar)? Não mexi.
-- Provas: `test_d589_desmarcar_rodar_marcar_rodar_religa` para Gravuras, Margens e Cadernos (desmarcar,
-  rodar, marcar, rodar → "ligada no livro todo", caixinha marcada e o PDF igual ao da primeira vez:
-  cinzas da foto, largura da folha, cadernos). A prova das Gravuras agora confere também que a forma de
-  dentro não fica "desligada". Arquivo: 8 de 8.
-- Testes um por vez (todos passaram): decisoes_automatico 24, decisoes_impressao 22, dialogo_impressao 5, impressao 17, cadernos 28, ver_como_fica 19, filtro_automatico 4, nucleo2 21, cancelar 1, recomeco 13, para_revisar_na_tela 26, respeitar_gravuras 19, marcacoes 19, trabalho_nao_se_perde 82.
-- Rodada do GitHub 41151868748 (commit bc1b590): passou inteira.
+  rodar, marcar "Gravuras e fotos" de novo e rodar não religa (a frase promete "achar gravuras e fotos";
+  a caixinha volta desmarcada).
+- Causa conferida: o desligar grava `gravura_forma="desligada"`, que é também a caixinha de dentro
+  "Achar gravuras e fotos" (D-212). A janela começa do livro (`opcoes_do_livro`), então o Rodar seguinte,
+  com a etapa marcada, aplica de novo a forma "desligada" (`aplicar`, ramo GRAVURAS) e `ligada_no_livro`
+  continua falso. Reproduzido pela prova nova `test_d589_desmarcar_rodar_marcar_rodar_religa[gravuras]`
+  ("desligada" ≠ "ligada no livro todo"); `[margens]` e `[cadernos]` religam.
+- Tentei a ideia do verificador (commit `bc1b590`): desligar pelo "Procurar" do livro
+  (`detectar_regioes=False`). Religava, e a prova passou, mas a rodada do GitHub 41151868748 FALHOU:
+  - `tests/test_decisoes_so_as_letras.py::test_d148_...` (prova da D-148): com "Limpar" + "Só as letras"
+    e "Gravuras e fotos" desmarcada, a gravura saiu em preto e branco ("a gravura perdeu a cor"). O
+    `detectar_regioes` é o "Procurar gravura e letra": desliga também a marcação das letras e do papel,
+    da qual o "Só as letras" depende. (Eu não tinha rodado esse arquivo; falha também no PC.)
+  - `teste_botoes.py`: 4 falhas ("o ícone 'automatico'/'props'/'filtro'/'historico' não abriu o painel
+    dele"). Com as gravuras desligadas, o livro de teste ganhou "1 página para você olhar", o roteiro
+    clicou em "ver a lista…" do "Para revisar", e os ícones seguintes não abriram. Efeito da mesma troca.
+- Voltei o código ao jeito da forma "desligada" (igual ao `484cb1c`, que passou no GitHub e na
+  1ª conferência), com o defeito escrito no código. A prova de religar das Gravuras ficou marcada como
+  "falha conhecida" (`xfail` estrito, com o motivo); Margens e Cadernos passam.
+- "Desligar as marcadas" NÃO mudou (D-068). Ele já tinha o mesmo defeito antes desta tarefa: depois de
+  "Desligar as marcadas" com Gravuras, marcar e rodar também não religa.
+
+**P3 — Como desligar "Gravuras e fotos" desmarcada sem quebrar o religar nem o "Só as letras"?**
+Exemplo real: Kaique liga Limpar (Preto e branco) + Gravuras e roda; depois desmarca Gravuras e roda; depois
+marca Gravuras de novo e roda. Hoje a gravura não volta (a etapa fica "desligada").
+- **A** — Desligar pelo "Procurar gravura e letra" (o que tentei): religa, mas com Gravuras desmarcada o
+  programa também para de achar as letras, e o "Só as letras" deixa a gravura em preto e branco (fere a
+  prova da D-148, que roda com Gravuras desmarcada).
+- **B** — Continuar com a forma "desligada" e, quando a pessoa marca a etapa Gravuras com "Achar gravuras e
+  fotos" desligada, a janela marca "Achar gravuras e fotos" junto (volta ao contorno "livre", D-213; a
+  escolha "Este livro tem fotos" de antes se perde). Mexe na tela (`ui/automatico.py`) e vale também
+  depois do "Desligar as marcadas".
+- **C** — Guardar a forma de antes ao desligar e devolvê-la ao marcar (precisa de um campo novo no
+  projeto.json — mudança de formato de dados, CLAUDE.md §6).
+- Também precisa da resposta: com "Gravuras e fotos" desmarcada e "Só as letras" ligado, a gravura deve
+  sair com a cor (como a D-148 diz) ou em preto e branco ("se algo não está marcado, não é para fazer")?
+  Não conferi o que acontece hoje num livro de verdade com a forma "desligada" (a prova da D-148 usa uma
+  marcação antiga, sem assinatura, que não é refeita).
+- Recomendação do construtor: decidir primeiro a pergunta do "Só as letras"; se a gravura deve ficar com
+  cor, B; se deve sair em preto e branco, A.

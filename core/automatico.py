@@ -861,9 +861,7 @@ def _desligar_as_desmarcadas(projeto, pedido: Pedido, etapas_pedidas: list, g: _
     ela) e, relido o livro (ui EstadoDoAutomatico.do_projeto), a caixinha
     voltava marcada. Aqui a etapa desmarcada na janela (Pedido.desmarcadas) e
     ainda ligada DESLIGA, na mesma acao do Automatico (o Ctrl+Z traz de
-    volta): Margens e Cadernos como o "Desligar as marcadas" (_desligar); as
-    Gravuras pelo "Procurar" do livro (detectar_regioes), para que marcar e
-    rodar de novo religue. Sao etapas do livro
+    volta), do mesmo jeito do "Desligar as marcadas" (_desligar). Sao etapas do livro
     todo (D-484): vale em qualquer "Rodar em" (pergunta P2 aberta).
 
     Roda DEPOIS das etapas marcadas: Gravuras so conta como ligada com o
@@ -873,12 +871,15 @@ def _desligar_as_desmarcadas(projeto, pedido: Pedido, etapas_pedidas: list, g: _
         if (etapa in (pedido.desmarcadas or []) and etapa not in etapas_pedidas
                 and ligada_no_livro(projeto, etapa)):
             if etapa == GRAVURAS:
-                # o "Procurar" do livro, o mesmo campo que o Rodar liga quando
-                # a etapa vem marcada. NAO a forma "desligada": ela e a caixinha
-                # de dentro "Achar gravuras e fotos" (D-212) e, gravada aqui,
-                # marcar a etapa de novo e rodar nao religava (2a rodada do
-                # verificador, 30/10). A marcacao a mao fica (garantir_selecao).
-                g.no_livro("detectar_regioes", False)
+                # como em _desligar (a forma "desligada", D-212). DEFEITO
+                # CONHECIDO (2a rodada do verificador, 30/10): marcar a etapa
+                # de novo e rodar nao religa, porque a janela traz a forma
+                # "desligada" do livro. Desligar pelo "Procurar" do livro
+                # (detectar_regioes) religava, mas desligava junto a marcacao
+                # das letras: o "So as letras" (D-148) deixava a gravura em
+                # preto e branco (tests/test_decisoes_so_as_letras.py). Pergunta
+                # P3 no relatorios/automatico-cadernos/ONDE-PAREI.md.
+                g.no_livro("gravura_forma", "desligada")
             else:
                 g.no_livro(CAMPO_DO_LIVRO[etapa], False)
 
