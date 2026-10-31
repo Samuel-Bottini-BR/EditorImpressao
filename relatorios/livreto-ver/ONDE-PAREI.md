@@ -35,7 +35,15 @@ Ramo `livreto-ver-2026-10-31` (saiu de `obra-2026-10-26` em d95df6b). Cópia: `.
   0,25 s; trocar para 16 por caderno 0,47 s.
 - [x] Commit e push no ramo `livreto-ver-2026-10-31`.
 
-- [ ] Rodada no GitHub: 41213885135 (ramo livreto-ver-2026-10-31), esperando.
+- [x] Rodada no GitHub 41213885135: 2 falhas. (1) `test_promessas::test_todo_botao_tem_promessa`: as setas "‹" "›"
+  não tinham promessa; escrevi a P-163 em `tests/promessas/promessas.md` e a prova `test_p163_setas_da_folha`
+  (test_promessas.py inteiro no PC: 263 passaram, 1 xfail de antes). (2) `test_decisoes_so_as_letras::
+  test_d148_desfazer_o_automatico_devolve_o_so_as_letras_do_livro` ("não aconteceu a tempo"): não toca a impressão; no
+  PC passou. Parece demora da máquina do GitHub.
+- [x] Conserto achado ao rever: apertar "gravar" com a prévia montando adiava o começo e deixava `dialogo.tarefa` vazio;
+  agora o fio do "gravar" nasce na hora e ele mesmo espera a prévia soltar o MuPDF (prova no
+  `test_d574_gravar_com_a_previa_montando_espera_e_grava`).
+- [x] Rodada no GitHub 41217021857 (commit 4309a15): **tudo verde** (5 partes da suíte + botões e prints da janela real).
 
 ## Como cumpri cada uma
 - **D-574, opção 1:** a folha A4 deitada, "Folha 1 de 32 — frente" e embaixo o verso, setas "‹ folha 1 ›". Print
