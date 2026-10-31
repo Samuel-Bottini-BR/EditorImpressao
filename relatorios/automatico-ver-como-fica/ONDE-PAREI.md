@@ -247,3 +247,41 @@ Ramo atualizado com a obra (db0a661). Prints dele a-15 a a-18.
   (41131159641). Bug para a Lista de bugs (não consertado; não é desta tarefa): o `janela` do test_promessas espera só
   as tarefas do QThreadPool (15 s), e não as contas da prévia do Automático (QThread no `_Guardiao`), que podem seguir
   rodando no teste seguinte; dá para chamar `ui.automatico.parar_as_previas()` ali.
+
+---
+
+# 4ª rodada (31/10): D-594 (todas as opções do painel Filtro no Automático) + D-577 (opções nos dois lados do "comparar")
+
+Ramo atualizado com `obra-2026-10-26` (2822470). Pedido da gerente: uma tarefa só (Samuel: "mas já faça com as
+opções que faltam do automatico" · "Sim, podemos fazer isso junto com a tarefa 1").
+
+## Decisões que esta tarefa precisa cumprir
+
+- **D-594** (31/10): "Outra coisa, no automatico não tem opções que encontramos nos filtros da aba da area de
+  trabalho." · print do "Mais ajustes": "os tipos de preto." · "mas isso era uma coisa obvia que deveria ter". No
+  Livro: **a etapa "Limpar a folha" do Automático tem todas as opções do painel Filtro da área de trabalho, com os
+  mesmos nomes**: o "Jeito do preto e branco", "Letra clara em fundo escuro", "Letras com a cor delas", "Reduzir
+  cores", "Igualar a luz da página", "Suavizar as letras", "Tirar o chuvisco" e "Respeitar as gravuras achadas".
+  Prova pedida: abrir o Automático, etapa "Limpar a folha" → cada opção do "Mais ajustes" do painel Filtro aparece,
+  e rodar com ela dá o mesmo resultado que escolhê-la no painel. Pedido da gerente: conferir se falta mais alguma
+  (os ajustes de Melhorar/Mágico pro); a prévia antes/depois (D-577) mostra a mudança; receita leva as opções novas.
+- **D-577** (o que falta): "seria bom se pudessemos ver as opções e mudar simutaneamente nesse comparar, tivesse uma
+  aba de cada lado que abrisse e fechasse para mudar as opções no comparar, ao em vez de ser só o antes e depois." ·
+  "não, eu quero poder mudar dos dois lados, todas as opções." · "usar este" em cada lado → "ok, não gostei do nome,
+  mas vamos ficar com esse por enquanto." No Livro: **no "comparar": cada lado com uma aba que abre e fecha com
+  todas as opções do Automático, mudando à parte; cada lado com "usar este" (nome provisório), que passa as opções
+  daquele lado para a janela; o "Rodar" usa as da janela.** Tentado e descartado: rótulos colados na linha.
+  Continua valendo da D-577: o comparar mostra à esquerda o filtro que a página já tinha e à direita o escolhido.
+- **D-583/D-586/D-587**: "Respeitar as gravuras achadas", ligada de fábrica; cinza com "Só as letras" no Preto e
+  branco (como a caixinha das molduras, D-168).
+- **D-004**: o "Rodar" pergunta se pula as páginas mexidas à mão (não muda).
+- **CLAUDE.md §11 regra 7**: só o que ele mandou (o painel Filtro não muda; o defeito dos nomes cortados lá não é
+  desta tarefa). §3: interface nunca congela, uma página por vez na memória.
+
+## Andamento (4ª rodada)
+
+- [ ] A: opções novas no core (campos da página, gravadas pelo "Limpar a folha") e na receita
+- [ ] A: as opções na janela (com os mesmos nomes do painel)
+- [ ] B: o painel de opções separado da janela (o mesmo nos dois lados do comparar)
+- [ ] B: comparar com opções nos dois lados e "usar este"
+- [ ] provas, testes um por um, prints, GitHub
