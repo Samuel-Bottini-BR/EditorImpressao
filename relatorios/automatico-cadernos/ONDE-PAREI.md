@@ -199,3 +199,8 @@ como no "não dividir esta". Provas `tests/test_decisoes_juntar_todas.py` (3 de 
 falharam antes de existir). Prints em `d590/` (Schön Neues Modell Buch, 6 folhas copiadas: 12 páginas →
 "juntar todas" → 6 → Desfazer → 12 → Dividir desmarcada e Rodar → continuam 12).
 - Testes um por vez (todos passaram): montar_cadernos 11, so_as_letras 5, respeitar_gravuras 19, marcacoes 19, automatico 24, filtro_automatico 4, nucleo 38, nucleo2 21, impressao 22, dialogo_impressao 5, impressao 17, cadernos 28, ver_como_fica 19, cancelar 1, recomeco 13, para_revisar_na_tela 26, decisoes 26, avisos 13, misto_na_tela 14, misto_no_projeto 12, juntar_todas 3, dividir 19, trabalho_nao_se_perde 82; teste_botoes no PC: 340 ações, 0 falhas.
+- Rodada 41216553481 (`dfca260`): só falhou `test_promessas::test_todo_botao_tem_promessa` (o botão novo
+  "juntar todas" sem promessa). Escrevi a P-198 em `tests/promessas/promessas.md` e a prova
+  `test_p198_juntar_todas` (apertar → 2 folhas inteiras no PDF; Desfazer divide de novo). No PC:
+  `test_promessas` -k "p198 or p060 or todo_botao or toda_promessa": 5 de 5 (o arquivo inteiro, antes
+  da prova: 261 passaram, só faltava ela).
