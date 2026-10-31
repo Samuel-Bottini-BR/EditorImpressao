@@ -146,3 +146,4 @@ marca Gravuras de novo e roda. Hoje a gravura não volta (a etapa fica "desligad
   marcação antiga, sem assinatura, que não é refeita).
 - Recomendação do construtor: decidir primeiro a pergunta do "Só as letras"; se a gravura deve ficar com
   cor, B; se deve sair em preto e branco, A.
+- Rodada do GitHub 41154048024 (commit c854ade, forma "desligada" de volta + xfail): passou inteira.
