@@ -159,3 +159,43 @@ marca Gravuras de novo e roda. Hoje a gravura não volta (a etapa fica "desligad
 - Jeito que não perde nada e não mexe na tela: desligar pelo "Procurar" do livro (religa ao marcar, guarda
   o "Este livro tem fotos"), MAS não desligar quando o "Só as letras" estiver ligado. Custo: nesse caso a
   etapa "Gravuras e fotos" continua ligada e volta marcada depois do "Rodar". Parado esperando a resposta.
+
+## 31/10 — Gravuras resolvidas como o Samuel aprovou; teste_botoes; D-590
+
+**Gravuras (Samuel, palavra por palavra):** "A caixinha da etapa 5 fica do jeito que você deixou, desmarcada.
+Com 'Só as letras' marcada, o programa procura as figuras por dentro, só para deixar elas coloridas. Se
+depois você desmarcar 'Só as letras', a etapa 5 continua desmarcada e a página sai toda em preto e branco." +
+"sim, mas tem que ter certeza que o programa vai procurar as figuras mesmo com a opção desmarcada e que não
+vai remarcar ela de novo na caixinha".
+- `core/automatico._desligar_as_desmarcadas`: Gravuras desmarcada desliga pelo "Procurar" do livro
+  (`detectar_regioes=False`); a forma de dentro (D-212) fica. Marcar e rodar religa.
+- `core/etapas.marca_sozinho`: sem o "Procurar", a marcação da máquina procura mesmo assim quando o "Só as
+  letras" vale na página (Preto e branco + caixinha; `so_as_letras_procura`). `ligada_no_livro` continua
+  lendo só o `detectar_regioes`: a etapa fica "desligada" e a caixinha não volta marcada.
+  `core/pipeline` (pedaço com filtro e papel em branco) usa a mesma regra (`a_marcacao_da_maquina_vale`).
+- Provas (`tests/test_decisoes_montar_cadernos.py`, 11 de 11): `test_d589_1_...` (caixinha desmarcada no
+  painel e na janela reaberta, com "Só as letras"), `test_d589_2_...` (a figura sai com os cinzas),
+  `test_d589_3_...` (sem "Só as letras": tudo em preto e branco, caixinha desmarcada),
+  `test_d589_desmarcar_rodar_marcar_rodar_religa[gravuras|margens|cadernos]`. No código anterior falharam
+  a 1, a 2, o religar das gravuras e a do desmarcar gravuras; a 3 passava também lá (com a forma
+  "desligada" a página já saía em preto e branco).
+- "Desligar as marcadas" não mudou (D-068): continua pela forma "desligada" (o religar depois dele segue
+  só pela caixinha de dentro, como antes desta tarefa).
+
+**teste_botoes (rodada 41151868748, 4 falhas):** causa achada. Com uma página no "Para revisar", o roteiro
+clica em todos os botões do painel, inclusive "ver as N em tela cheia" (D-259), que troca a página pela
+grade "Todas as páginas". O roteiro não voltava da grade; os ícones seguintes abriam os painéis escondidos
+atrás dela ("não abriu o painel dele"). Reproduzido à parte (a grade fica, o painel "automatico" abre
+invisível; com o "voltar", abre). Conserto no roteiro: depois de cada botão de painel, se a grade está à
+vista, volta pelo "voltar" e confere. No PC: 340 ações, 0 falhas.
+- Para a Lista de bugs (não conserta): com a grade "Todas as páginas" aberta, os ícones da direita abrem o
+  painel atrás da grade, sem nada à vista.
+
+**D-590 ("juntar todas"):** commit `b96c948`. `core/dividir_a_mao.campos_para_juntar_todas` + botão
+"juntar todas" ao lado de "não dividir esta" (`ui/tela_conferir._montar_aba_corte`, `_juntar_todas`);
+"usar em todas" desceu para a linha de baixo (três botões na mesma linha cortavam os textos). Uma ação do
+desfazer ("Juntar N folhas"); as folhas não ficam "conferidas"; a marca "mexida à mão" do Dividir entra
+como no "não dividir esta". Provas `tests/test_decisoes_juntar_todas.py` (3 de 3; as duas do botão
+falharam antes de existir). Prints em `d590/` (Schön Neues Modell Buch, 6 folhas copiadas: 12 páginas →
+"juntar todas" → 6 → Desfazer → 12 → Dividir desmarcada e Rodar → continuam 12).
+- Testes um por vez (todos passaram): montar_cadernos 11, so_as_letras 5, respeitar_gravuras 19, marcacoes 19, automatico 24, filtro_automatico 4, nucleo 38, nucleo2 21, impressao 22, dialogo_impressao 5, impressao 17, cadernos 28, ver_como_fica 19, cancelar 1, recomeco 13, para_revisar_na_tela 26, decisoes 26, avisos 13, misto_na_tela 14, misto_no_projeto 12, juntar_todas 3, dividir 19, trabalho_nao_se_perde 82; teste_botoes no PC: 340 ações, 0 falhas.

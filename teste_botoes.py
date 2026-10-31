@@ -1104,6 +1104,21 @@ def testar_paineis_da_direita(conferir) -> tuple[int, int]:
                 ok += 1
             else:
                 falhas += 1
+            # "ver as N em tela cheia" do "Para revisar" (D-259) troca a página
+            # pela grade "Todas as páginas" (só aparece com página a revisar).
+            # Sem voltar, os ícones seguintes abriam os painéis escondidos atrás
+            # da grade e o roteiro acusava "não abriu o painel dele" (rodada
+            # 41151868748, 31/10/2026). Volta como a pessoa volta ("voltar").
+            if conferir.pilha_da_tela.currentWidget() is conferir.todas:
+                conferir.todas.voltar.emit()
+                QApplication.processEvents()
+                esperar(0.3)
+                if conferir.pilha_da_tela.currentWidget() is conferir.todas:
+                    falhas += 1
+                    print("  FALHA o 'voltar' da grade 'Todas as páginas' não voltou à página")
+                else:
+                    ok += 1
+                    print("  ok    voltou da grade 'Todas as páginas' para a página")
         # No Historico, "Desfazer" e "Refazer" sao clicados em PAR e
         # conferidos (o laco acima so clica no que estava aceso ao abrir o
         # painel: so o "Desfazer", e a ultima acao da bateria ficava
