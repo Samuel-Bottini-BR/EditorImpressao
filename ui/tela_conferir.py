@@ -1757,10 +1757,17 @@ class TelaConferir(QWidget):
         lista_estreita(self.combo_jeito_da_folha)
         par = self._par_de_botoes(coluna)
         self.botao_nao_dividir = _botao("não dividir esta", par, self._alternar_dividir)
-        _botao("usar em todas", par, self._corte_em_todas).setToolTip(
-            "Põe a linha de divisão desta folha em todas as folhas.")
+        # D-590 (30/10/2026): "juntar todas" ao lado de "não dividir esta"; o
+        # "usar em todas", que dividia a linha com ele, desce para a linha de
+        # baixo (três botões na mesma linha cortavam os textos no painel)
+        self.botao_juntar_todas = _botao("juntar todas", par, self._juntar_todas)
+        self.botao_juntar_todas.setToolTip(
+            "Junta todas as folhas divididas do livro: cada uma volta a ser uma página só "
+            "(o Desfazer divide de novo).")
         par.setStretch(0, 1)
         par.setStretch(1, 1)
+        _botao("usar em todas", coluna, self._corte_em_todas).setToolTip(
+            "Põe a linha de divisão desta folha em todas as folhas.")
         # (O botao "girar" que ficava aqui saiu em 13/10/2026: fazia o mesmo que
         # o "¼ à direita" do bloco "Girar a folha", logo acima no painel - os
         # dois chamavam _girar_folhas(GIRO_DIREITA), com o mesmo "aplicar em".)
@@ -5138,6 +5145,22 @@ class TelaConferir(QWidget):
             "nao_dividir", "folha", [self.indice_folha],
             dividir_a_mao.campos_para_juntar(self.projeto, self.indice_folha),
             f"Folha {self.indice_folha + 1}: não dividir")
+
+    @protegido
+    def _juntar_todas(self) -> None:
+        """"juntar todas" da ferramenta Dividir (D-590, 30/10/2026: "se quiser
+        juntar as folhas de novo deveria ter uma opção mais clara né" → "pode
+        ser assim"): o "não dividir esta" em TODAS as folhas divididas do
+        livro, numa ação só do desfazer (core/dividir_a_mao.
+        campos_para_juntar_todas). Sem folha dividida, não faz nada. Não mexe
+        no "Dividir" do Automático (desmarcar o Dividir lá não junta nada)."""
+        assert self.projeto is not None
+        indices, campos = dividir_a_mao.campos_para_juntar_todas(self.projeto)
+        if not indices:
+            return
+        n = len(indices)
+        self._registrar("nao_dividir", "folha", indices, campos,
+                        f"Juntar {n} folha" + ("" if n == 1 else "s"))
 
     @protegido
     def _dividir_esta(self) -> None:
