@@ -937,7 +937,7 @@ class LadoDoComparar(QObject):
         self.painel = PainelDeOpcoes(self.estado, self, vertical=True)
         self.aba = QWidget()
         self.aba.setObjectName("abaDasOpcoesDoComparar")
-        self.aba.setFixedWidth(360)
+        self.aba.setFixedWidth(400)
         col = QVBoxLayout(self.aba)
         col.setContentsMargins(0, 0, 0, 0)
         col.setSpacing(4)
