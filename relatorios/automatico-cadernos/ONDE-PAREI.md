@@ -127,3 +127,4 @@ dividir"): hoje o livro continua dividido.
   cinzas da foto, largura da folha, cadernos). A prova das Gravuras agora confere também que a forma de
   dentro não fica "desligada". Arquivo: 8 de 8.
 - Testes um por vez (todos passaram): decisoes_automatico 24, decisoes_impressao 22, dialogo_impressao 5, impressao 17, cadernos 28, ver_como_fica 19, filtro_automatico 4, nucleo2 21, cancelar 1, recomeco 13, para_revisar_na_tela 26, respeitar_gravuras 19, marcacoes 19, trabalho_nao_se_perde 82.
+- Rodada do GitHub 41151868748 (commit bc1b590): passou inteira.
