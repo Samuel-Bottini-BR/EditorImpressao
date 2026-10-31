@@ -268,6 +268,9 @@ class EstadoDoAutomatico(QObject):
         dados = perfis.ler(nome)
         if dados is None:
             return False
+        if nome == perfis.NOME_DE_FABRICA:
+            # D-594: "De fábrica" põe também as opções do painel Filtro de uma página nova
+            dados = {**dados, **A.de_fabrica_da_pagina()}
         for campo, valor in dados.items():
             if campo in perfis.CAMPOS:
                 self.opcoes[campo] = copy.deepcopy(valor)

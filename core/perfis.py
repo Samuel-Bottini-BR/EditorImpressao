@@ -98,12 +98,12 @@ def do_projeto(projeto) -> dict[str, Any]:
 
 
 def de_fabrica() -> dict[str, Any]:
-    """A receita "De fábrica": as escolhas de um livro novo sem nada mudado (e,
-    D-594, as opções do painel Filtro de uma página nova)."""
-    from core.automatico import de_fabrica_da_pagina
+    """A receita "De fábrica": as escolhas de um livro novo sem nada mudado. (As
+    opções do painel Filtro de uma página nova, D-594, são postas pela janela do
+    Automático: ui/automatico.EstadoDoAutomatico.por_receita.)"""
     from modelos import Projeto
 
-    return {**do_projeto(Projeto(caminho_entrada="")), **de_fabrica_da_pagina()}
+    return do_projeto(Projeto(caminho_entrada=""))
 
 
 def nomes() -> list[str]:
