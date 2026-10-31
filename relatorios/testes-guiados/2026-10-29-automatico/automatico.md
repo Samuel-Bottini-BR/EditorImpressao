@@ -147,3 +147,6 @@ coisa: um botão que mostra e esconde o colorido das marcações.
   - D-588: como fica na tela.
   - D-593: o botão "home" e as abas.
 - A fazer da Central de 31/10: D-575, D-591, D-592, a aba "Pesquisas" e a Lista de espera do livreto ("como outros aplicativos fazem").
+- Depois da pausa:
+  - Construtor D-589/D-590 parou em `d67933f`: gravuras com as 4 regras, "juntar todas" (P-198) e `teste_botoes` consertado. Falta: ver a rodada 41218623088 do GitHub e o verificador. Fica aberto: "Desligar as marcadas" das Gravuras não religa (já era assim).
+  - Verificador D-574 parou sem parecer: as provas e os testes da impressão estão ok; falta a parte de tela. Onde parou: `.claude\worktrees\verif-livreto\relatorios\livreto-ver\verificador\ONDE-PAREI.md`.
