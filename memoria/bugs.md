@@ -461,3 +461,9 @@ na Central (aba "O que você não gostou: alternativas").
   Passa ao rodar de novo e passa no PC. Já tinha acontecido em 27/10 (`obra-etapa7`, rodada 40601574220).
 - **"Desligar as marcadas" com Gravuras e fotos (achado do construtor da D-589, 31/10; já era assim antes):** depois dele,
   marcar a etapa Gravuras de novo e rodar não religa; só religa pela caixinha de dentro, "Achar gravuras e fotos" (D-212).
+- **Nomes cortados no "Mais ajustes" do painel Filtro (visto no print do Samuel, 31/10, a-22):** "Igualar a luz da
+  página", "Suavizar as letras" e "Tirar o chuvisco" aparecem como "Igual", "Suavi" e "Tirar o chu" (versão de teste
+  `obra-2026-10-26`). Print: `relatorios/testes-guiados/2026-10-29-automatico/a-22-mais-ajustes-tipos-de-preto.png`.
+- **Zoom da área de trabalho vai para o centro, não para o mouse (Samuel, 31/10):** "na area de trabalho o zoom se
+  comporta sozinho, porque ele se direciona somente para o centro da pagina e não onde o mouse está". Em conserto junto
+  com a D-577 (ramo `automatico-ver-como-fica-2026-10-29`).
