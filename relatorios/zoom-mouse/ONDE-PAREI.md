@@ -98,4 +98,7 @@ do meio (e o Shift mover página estreita) foi aprovada: "sim" (D-599).
   test_girar_cartoes_e_previas 23, test_promessas 262.
 - **Prints:** `shift-lado-a-lado-1-com-zoom-*.png` e `shift-lado-a-lado-2-shift-roda-3-vezes-*.png` (cruz = mouse).
   Antes: as páginas descem (página 3 -> 6). Depois: o par anda para os lados, mesma altura, página 3.
-- **GitHub:** (preencher)
+- **GitHub:** rodada 41331010059 (commit `aba8c37`). 1ª tentativa: só a parte 1 falhou, no instável conhecido
+  `test_promessas.py::test_p107_forca_do_preto[aviso/forca:mais_escuro-True]` ("um botão falhou por baixo"); no PC
+  `test_promessas` passou inteiro. 2ª tentativa (só a parte que falhou): **passou**. Rodada inteira: sucesso.
+- **Perguntas para o Samuel:** nenhuma.
