@@ -184,9 +184,10 @@ def _valor_da_pagina(pagina, campo: str):
 
 def opcoes_da_pagina(projeto, indice: int) -> dict[str, Any]:
     """Os valores de agora da pagina `indice` (o painel Filtro mostra os dela)
-    para os CAMPOS_DA_PAGINA: a janela do Automatico comeca deles (a pagina da
-    vez), como comeca das opcoes do livro para as do livro. Livro sem paginas:
-    os de fabrica (os de uma pagina nova)."""
+    para os CAMPOS_DA_PAGINA. Usado so pelo lado esquerdo do "comparar" ("como
+    esta no livro", D-577): a janela do Automatico comeca pelos da RECEITA
+    escolhida (D-594, Samuel 31/10: "sim"; ui/automatico.EstadoDoAutomatico.
+    do_projeto). Livro sem paginas: os de fabrica (os de uma pagina nova)."""
     paginas = getattr(projeto, "paginas", None) or []
     if paginas:
         pagina = paginas[max(0, min(int(indice or 0), len(paginas) - 1))]

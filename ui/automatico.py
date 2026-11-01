@@ -238,23 +238,45 @@ class EstadoDoAutomatico(QObject):
 
     # --- de onde vem ---------------------------------------------------------
 
-    def do_projeto(self, projeto, receita: str | None = None) -> None:
+    def do_projeto(self, projeto, receita: str | None = None, da_pagina: bool = False) -> None:
         """Começa do livro: as opções e a ordem dele, e as etapas que já estão
         ligadas (no livro ou em alguma página). Com `receita`, a receita por
-        cima (o aviso do livro novo marca a receita de sempre, D-018)."""
+        cima (o aviso do livro novo marca a receita de sempre, D-018).
+
+        D-594, as opções do painel Filtro que moram na página (CAMPOS_DA_PAGINA):
+        começam pelos valores da RECEITA escolhida no alto da janela, nunca pelos
+        da página em que a pessoa está. Samuel, 31/10/2026, à pergunta "A outra
+        opção é as opções novas começarem com os valores da receita escolhida no
+        alto da janela (hoje, "De fábrica"), qualquer que seja a página em que
+        você está. [...] Pode ser assim, pela receita?" → "sim". Sem receita, ou
+        "De fábrica", ou receita guardada antes sem essas chaves: os de uma página
+        nova. `da_pagina=True`: os da página da vez (só o lado esquerdo do
+        "comparar", que é "como está no livro", D-577). Arriscado: voltar a ler da
+        página da vez (a janela mudaria conforme a página aberta)."""
         self.opcoes = A.opcoes_do_livro(projeto)
-        # D-594: as opções do painel Filtro que moram na página começam das da
-        # página da vez (como o painel Filtro mostra as dela)
-        self.opcoes.update(A.opcoes_da_pagina(projeto, self.pagina_atual))
         self.ordem = A.ordem(projeto)
         self.marcadas = set(A.etapas_ligadas(projeto))
         self.receita = getattr(projeto, "receita_usada", "") or ""
+        if da_pagina:
+            self.opcoes.update(A.opcoes_da_pagina(projeto, self.pagina_atual))
+        else:
+            self.opcoes.update(self._opcoes_da_pagina_da_receita(self.receita))
         self.total_paginas = len(getattr(projeto, "paginas", []))
         self.tem_camadas = bool(getattr(projeto, "tem_camadas", False))
         self.acertar_situacoes(projeto)
         if receita:
             self.por_receita(receita, avisar=False)
         self.mudou.emit()
+
+    @staticmethod
+    def _opcoes_da_pagina_da_receita(nome: str) -> dict:
+        """D-594: os CAMPOS_DA_PAGINA da receita `nome` (os que ela não tem: os de
+        uma página nova). "" ou "De fábrica": os de uma página nova."""
+        valores = A.de_fabrica_da_pagina()
+        dados = perfis.ler(nome) if nome and nome != perfis.NOME_DE_FABRICA else None
+        if isinstance(dados, dict):
+            valores.update({c: copy.deepcopy(dados[c]) for c in A.CAMPOS_DA_PAGINA if c in dados})
+        return valores
 
     def acertar_situacoes(self, projeto) -> None:
         """Onde cada etapa está ligada hoje ("ligada no livro todo",
@@ -268,9 +290,10 @@ class EstadoDoAutomatico(QObject):
         dados = perfis.ler(nome)
         if dados is None:
             return False
-        if nome == perfis.NOME_DE_FABRICA:
-            # D-594: "De fábrica" põe também as opções do painel Filtro de uma página nova
-            dados = {**dados, **A.de_fabrica_da_pagina()}
+        # D-594 ("sim", 31/10: as opções novas "pela receita"): as opções do painel Filtro
+        # vêm da receita; "De fábrica" e a receita guardada antes, sem elas, põem as de
+        # uma página nova
+        dados = {**dados, **self._opcoes_da_pagina_da_receita(nome)}
         for campo, valor in dados.items():
             if campo in perfis.CAMPOS:
                 self.opcoes[campo] = copy.deepcopy(valor)
@@ -936,7 +959,9 @@ class LadoDoComparar(QObject):
         self.estado = EstadoDoAutomatico(self)
         self.estado.copiar_de(janela)                  # onde rodar e a página da vez
         if da_esquerda and tela.painel.projeto is not None:
-            self.estado.do_projeto(tela.painel.projeto)    # as opções do livro como está
+            # as opções do livro como está (e as do painel Filtro, as da página: é "como
+            # está no livro", D-577)
+            self.estado.do_projeto(tela.painel.projeto, da_pagina=True)
         self.painel = PainelDeOpcoes(self.estado, self, vertical=True)
         self.aba = QWidget()
         self.aba.setObjectName("abaDasOpcoesDoComparar")
@@ -1855,8 +1880,9 @@ class PainelDeOpcoes(QObject):
             Preto e branco); "Letra clara em fundo escuro", "Reduzir cores", "Igualar a
             luz da página" e "Tirar o chuvisco" (nos filtros com ajuste), com os avisos
             das opções de luz do painel.
-        Os valores são campos da PÁGINA (core/automatico.CAMPOS_DA_PAGINA): começam dos
-        da página da vez e o "Rodar" os grava em cada página do "Limpar a folha" (o
+        Os valores são campos da PÁGINA (core/automatico.CAMPOS_DA_PAGINA): começam pelos
+        da receita escolhida no alto da janela ("De fábrica": os de uma página nova;
+        EstadoDoAutomatico.do_projeto, Samuel 31/10: "sim") e o "Rodar" os grava em cada página do "Limpar a folha" (o
         mesmo campo que o painel grava). Seguro mudar: a ordem na tela. Arriscado: outro
         nome (tem de ser o do painel: a prova compara)."""
         from PySide6.QtWidgets import QSpinBox

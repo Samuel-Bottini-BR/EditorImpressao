@@ -265,8 +265,8 @@ def test_d594_a_previa_mostra_a_mudanca_da_opcao(janela, app, tmp_path):
 
 def test_d594_a_receita_leva_as_opcoes_novas_e_a_antiga_continua_valendo(janela, app, tmp_path, monkeypatch):
     """A receita guarda as opções novas como as outras; posta, elas voltam. Receita guardada
-    antes (sem as chaves novas) continua valendo: as opções novas ficam como estavam. A caixa
-    da receita diz o que vai dentro (D-071)."""
+    antes (sem as chaves novas) continua valendo, e as opções novas ficam as de uma página
+    nova. A caixa da receita diz o que vai dentro (D-071)."""
     from ui.automatico import EstadoDoAutomatico, texto_das_opcoes
 
     guardado = {}
@@ -283,14 +283,72 @@ def test_d594_a_receita_leva_as_opcoes_novas_e_a_antiga_continua_valendo(janela,
     outro.opcoes = dict(A.de_fabrica_da_pagina())
     assert outro.por_receita(nome)
     assert outro.opcoes["luz_chuvisco"] == 30
-    # receita antiga, sem as chaves novas
+    # receita antiga, sem as chaves novas: vale; as opções novas vêm "pela receita" (D-594,
+    # "sim", 31/10), e ela não tem: as de uma página nova
     guardado["perfis"]["Antiga"] = {"limpar": True, "filtro_padrao": MELHORAR}
     outro.opcoes["luz_chuvisco"] = 10
     assert outro.por_receita("Antiga")
-    assert outro.opcoes["filtro_padrao"] == MELHORAR and outro.opcoes["luz_chuvisco"] == 10
+    assert outro.opcoes["filtro_padrao"] == MELHORAR and outro.opcoes["luz_chuvisco"] == 0
     # "De fábrica" devolve as de uma página nova
     assert outro.por_receita(perfis.NOME_DE_FABRICA)
     assert outro.opcoes["luz_chuvisco"] == 0 and outro.opcoes["respeitar_gravuras_achadas"] is True
+
+
+def test_d594_a_janela_comeca_pelas_opcoes_da_receita_nao_pelas_da_pagina(janela, app, tmp_path, monkeypatch):
+    """D-594, resposta do Samuel (31/10/2026) à pergunta "A outra opção é as opções novas
+    começarem com os valores da receita escolhida no alto da janela (hoje, "De fábrica"),
+    qualquer que seja a página em que você está. [...] Pode ser assim, pela receita?" → "sim".
+
+    A página 3 tem "Tirar o chuvisco" 30 (escolhido no painel Filtro) e o livro é aberto de
+    novo nela. Abrir o Automático (receita "De fábrica"): o chuvisco da janela começa no de
+    fábrica (0), não em 30. Trocar de página antes de abrir não muda nada. Com uma receita que
+    tem o chuvisco 40, a janela começa em 40, em qualquer página. (No 4440a17 a janela começava
+    pelos valores da página em que se estava: falha.)"""
+    guardado = {}
+    monkeypatch.setattr(perfis, "_ler", lambda chave, padrao: guardado.get(chave, padrao))
+    monkeypatch.setattr(perfis, "_escrever", lambda chave, valor: guardado.__setitem__(chave, valor))
+    caminho = _livro(tmp_path)
+    janela.abrir_livro(caminho)
+    _assentar(app)
+    tc = janela.tela_conferir
+    tc.ir_para_pagina(PAGINA)
+    tc._escolher_filtro(PRETO_E_BRANCO)
+    tc._mudar_luz("luz_chuvisco", 30)
+    assert janela.projeto.paginas[PAGINA].luz_chuvisco == 30
+    janela._salvar_agora()
+    import projetos
+
+    projetos.esperar_gravacoes()
+    janela.abrir_livro(caminho)                   # o livro volta na página em que parou
+    _assentar(app)
+    assert tc.indice_pagina == PAGINA and janela.projeto.paginas[PAGINA].luz_chuvisco == 30
+    fabrica = A.de_fabrica_da_pagina()
+    vistos = []
+    for pagina in (PAGINA, 0):
+        tc.ir_para_pagina(pagina)
+        grande = janela.abrir_o_automatico()
+        assert grande.estado.receita in ("", perfis.NOME_DE_FABRICA)
+        assert grande.estado.opcoes["luz_chuvisco"] == 0,             "o chuvisco da janela começou pelo da página, não pelo da receita"
+        assert grande.seletor_luz_chuvisco.value() == 0
+        vistos.append({c: grande.estado.opcoes[c] for c in A.CAMPOS_DA_PAGINA})
+        assert vistos[-1] == fabrica
+        janela._fechar_a_janela_do_automatico()
+        _assentar(app)
+    # uma receita com o chuvisco 40: trocar na caixa põe o dela; e o livro que a usa começa nela
+    opcoes = {**fabrica, "filtro_padrao": PRETO_E_BRANCO, "luz_chuvisco": 40}
+    nome = perfis.guardar_receita("Chuvisco 40", opcoes, [A.LIMPAR])
+    grande = janela.abrir_o_automatico()
+    grande.combo_receitas.clear()
+    grande.encher_receitas()
+    grande.combo_receitas.setCurrentIndex(grande.combo_receitas.findData(nome))
+    grande._escolheu_receita()
+    assert grande.estado.opcoes["luz_chuvisco"] == 40 and grande.seletor_luz_chuvisco.value() == 40
+    janela._fechar_a_janela_do_automatico()
+    janela.projeto.receita_usada = nome
+    for pagina in (0, PAGINA):
+        tc.ir_para_pagina(pagina)
+        janela.estado_do_automatico.do_projeto(janela.projeto)
+        assert janela.estado_do_automatico.opcoes["luz_chuvisco"] == 40
 
 
 # --- D-577: o "comparar" com as opções nos dois lados ----------------------------------

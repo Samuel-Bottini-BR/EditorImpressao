@@ -289,7 +289,9 @@ opções que faltam do automatico" · "Sim, podemos fazer isso junto com a taref
 
 ## Perguntas para o Samuel (4ª rodada)
 
-6. **(opções novas do "Limpar a folha")** As opções novas ("Força do preto", "Jeito do preto e branco", "Tirar o
+6. ~~(opções novas do "Limpar a folha")~~ **respondida (31/10, pela gerente)**: "A outra opção é as opções novas
+   começarem com os valores da receita escolhida no alto da janela (hoje, "De fábrica"), qualquer que seja a página
+   em que você está. [...] Pode ser assim, pela receita?" → "sim". Feito (abaixo, "5ª rodada"). Texto de antes: As opções novas ("Força do preto", "Jeito do preto e branco", "Tirar o
    chuvisco"...) são de cada página, no painel Filtro. Na janela do Automático elas começam **com os valores da página
    em que você está** (como o painel Filtro mostra os dela), e o "Rodar" leva esses valores para as páginas onde o
    "Limpar a folha" roda (as mexidas à mão continuam com a pergunta de pular). Sugestão: fica assim. Sim ou não?
@@ -380,3 +382,30 @@ opções que faltam do automatico" · "Sim, podemos fazer isso junto com a taref
 - **GitHub 41252917494 (14d8a3c): passou** (as 5 partes das conferências e o `teste_botoes.py`, de primeira).
 
 PRONTO PARA O VERIFICADOR (4ª rodada).
+
+---
+
+# 5ª rodada (31/10): resposta à pergunta 6 — as opções novas começam pela receita
+
+## Decisão que esta rodada precisa cumprir
+
+- **D-594, resposta do Samuel (31/10)** à pergunta da gerente: "A outra opção é as opções novas começarem com os
+  valores da receita escolhida no alto da janela (hoje, "De fábrica"), qualquer que seja a página em que você está.
+  [...] Pode ser assim, pela receita?" → "sim". Pedido da gerente: a janela (e os dois lados do "comparar") começa
+  pelos valores da receita, nunca pelos da página; trocar a receita na caixa põe os dela; "De fábrica" = os de uma
+  página nova. O lado esquerdo do comparar continua mostrando a página como está no livro (D-577). A pergunta 7
+  continua aberta (nada mudou nela).
+
+## Como cumpri
+
+- `EstadoDoAutomatico.do_projeto` (ui/automatico.py): as opções do painel Filtro (`CAMPOS_DA_PAGINA`) vêm da receita
+  do livro (`receita_usada`); sem receita, "De fábrica" ou receita guardada antes sem essas chaves: os de uma página
+  nova. Não leem mais a página da vez. `por_receita` (trocar na caixa) põe os da receita do mesmo jeito (a receita
+  antiga sem as chaves agora põe os de uma página nova; antes deixava como estava: a prova da receita foi acertada).
+- O lado direito do comparar copia o estado da janela (então começa pela receita). O lado esquerdo, que é "como está
+  no livro" (D-577), continua começando pelas opções da página como ela está (`do_projeto(..., da_pagina=True)`):
+  é a única coisa que ainda lê a página, e não mudou.
+- Prova nova: `test_d594_a_janela_comeca_pelas_opcoes_da_receita_nao_pelas_da_pagina` (página 3 com "Tirar o
+  chuvisco" 30 escolhido no painel; o livro reaberto nela; abrir o Automático → 0, o de fábrica; na página 1 também;
+  uma receita com 40 escolhida na caixa → 40; o livro com essa receita começa em 40 em qualquer página). No 4440a17
+  ela falha: "o chuvisco da janela começou pelo da página, não pelo da receita — assert 30 == 0".
