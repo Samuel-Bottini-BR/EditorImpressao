@@ -74,3 +74,31 @@ Rodada 41324371101 ("Testes no Windows", ramo `zoom-mouse-2026-11-01`, commit `c
 ## Perguntas para o Samuel
 
 Nenhuma.
+
+---
+
+## Defeito de 01/11/2026: Shift + roda no "Duas lado a lado" com zoom trocava de página
+
+Samuel, testando a junção `d6d6e6f`: "1- funcionando" · "2- funciona o zoom mas com shift para os lados não
+funciona ele rola as paginas para pagina, no caso troca de pagina." · "3- ok". A escolha de a página sair um pouco
+do meio (e o Shift mover página estreita) foi aprovada: "sim" (D-599).
+
+- **Causa:** no lado a lado, a roda sem Ctrl ia para o rolar padrão do Qt (`PaginasRolando.wheelEvent` ->
+  `QScrollArea`), que usa o Shift para rolar de página em página na barra de pé. Então Shift + roda descia
+  páginas (no print de antes, da página 3 para a 6) em vez de andar para os lados.
+- **Conserto:** `ui/widgets/paginas_lado_a_lado.py`, `PaginasLadoALado.wheelEvent`: com zoom e Shift, a roda anda
+  na barra de baixo, o mesmo tanto que a roda anda para cima e para baixo (3 linhas por dente); a roda de lado
+  (tilt) também. Sem zoom, e a roda sem Shift, como antes. Nada mais mudou.
+- **Teste:** `tests/test_zoom_no_ponteiro.py::test_bug_01_11_shift_roda_no_lado_a_lado_com_zoom_anda_para_os_lados`.
+  Falha em `a6b9e02` (arquivo antigo trocado, teste novo mantido; saída em
+  `reversao-shift-no-codigo-antigo.txt`) e passa no novo.
+- **Testes no PC** (offscreen, um por vez; `testes-locais-shift.txt`): 10 arquivos, todos passaram (418 casos, 1 xfail
+  que já existia): test_zoom_no_ponteiro 5, test_decisoes_9b2 30, test_livro_aberto 14, test_decisoes_9b1 25,
+  test_decisoes_ver 11, test_decisoes_automatico_ver_como_fica 22, test_ajustar_pedaco 13, test_dividir_scantailor 13,
+  test_girar_cartoes_e_previas 23, test_promessas 262.
+- **Prints:** `shift-lado-a-lado-1-com-zoom-*.png` e `shift-lado-a-lado-2-shift-roda-3-vezes-*.png` (cruz = mouse).
+  Antes: as páginas descem (página 3 -> 6). Depois: o par anda para os lados, mesma altura, página 3.
+- **GitHub:** rodada 41331010059 (commit `aba8c37`). 1ª tentativa: só a parte 1 falhou, no instável conhecido
+  `test_promessas.py::test_p107_forca_do_preto[aviso/forca:mais_escuro-True]` ("um botão falhou por baixo"); no PC
+  `test_promessas` passou inteiro. 2ª tentativa (só a parte que falhou): **passou**. Rodada inteira: sucesso.
+- **Perguntas para o Samuel:** nenhuma.

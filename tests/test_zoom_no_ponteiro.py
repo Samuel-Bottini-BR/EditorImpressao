@@ -46,16 +46,21 @@ def _esperar(condicao, segundos: float = 40.0, motivo: str = "") -> None:
     raise AssertionError(f"não aconteceu a tempo: {motivo}")
 
 
-def _roda_em(vista, x: float, y: float, passos: int = 1, ctrl: bool = True) -> None:
+def _roda_em(vista, x: float, y: float, passos: int = 1, ctrl: bool = True,
+             shift: bool = False) -> None:
     """Uma volta da roda do mouse com o ponteiro em (x, y) da `vista` (como o Windows manda)."""
     from PySide6.QtCore import QPoint, QPointF, Qt
     from PySide6.QtGui import QWheelEvent
     from PySide6.QtWidgets import QApplication
 
+    teclas = Qt.NoModifier
+    if ctrl:
+        teclas |= Qt.ControlModifier
+    if shift:
+        teclas |= Qt.ShiftModifier
     ponto = QPointF(x, y)
     evento = QWheelEvent(ponto, vista.mapToGlobal(ponto), QPoint(0, 0), QPoint(0, 120 * passos),
-                         Qt.NoButton, Qt.ControlModifier if ctrl else Qt.NoModifier,
-                         Qt.NoScrollPhase, False)
+                         Qt.NoButton, teclas, Qt.NoScrollPhase, False)
     QApplication.sendEvent(vista, evento)
 
 
@@ -177,6 +182,50 @@ def test_bug_31_10_ctrl_roda_no_lado_a_lado_vai_para_onde_esta_o_mouse(janela, t
     _assentar()
     barra = pares.horizontalScrollBar()
     assert abs(barra.value() - (barra.maximum() + barra.minimum()) // 2) <= 1
+
+
+def test_bug_01_11_shift_roda_no_lado_a_lado_com_zoom_anda_para_os_lados(janela, tmp_path):
+    """Defeito de 01/11/2026 (Samuel, testando a junção d6d6e6f: "funciona o zoom mas com shift
+    para os lados não funciona ele rola as paginas para pagina, no caso troca de pagina."). No
+    "Duas lado a lado", COM zoom, Shift + roda anda pelo par para os lados (D-568: com zoom a
+    roda anda pela página, Shift para os lados, como na "Uma página"): a barra de baixo anda,
+    o rolar de cima para baixo e a página da vez ficam onde estavam; roda para cima volta.
+    Sem Shift, a roda continua rolando para cima e para baixo. Falha no código de antes
+    (a6b9e02): o Shift + roda rolava as páginas (de cima para baixo) e trocava a página."""
+    from ui.widgets.paginas_rolando import DUAS
+
+    tela = _dividido(janela, tmp_path)
+    tela.ir_para_pagina(4)
+    tela.definir_mostrar(DUAS)
+    janela.show()
+    janela.move(-3000, -3000)
+    _assentar()
+    pares = tela.lado_a_lado
+    porta = pares.viewport()
+    _esperar(lambda: pares.atual in pares.guardadas and not pares._refazer.isActive(),
+             motivo="as prévias do lado a lado")
+    _assentar(10)
+    tela.botao_mais_zoom.click()
+    tela.botao_mais_zoom.click()
+    _assentar()
+    assert pares.zoom > 1.5
+    deitada, de_pe = pares.horizontalScrollBar(), pares.verticalScrollBar()
+    assert deitada.maximum() > 0
+    x, y, pagina = deitada.value(), de_pe.value(), tela.indice_pagina
+    meio_x, meio_y = porta.width() / 2, porta.height() / 2
+
+    _roda_em(porta, meio_x, meio_y, passos=-1, ctrl=False, shift=True)
+    _assentar()
+    assert deitada.value() > x, "Shift + roda para baixo não andou para a direita"
+    assert de_pe.value() == y and tela.indice_pagina == pagina, "Shift + roda rolou as páginas"
+    andou = deitada.value()
+    _roda_em(porta, meio_x, meio_y, passos=1, ctrl=False, shift=True)
+    _assentar()
+    assert deitada.value() < andou and de_pe.value() == y and tela.indice_pagina == pagina
+
+    _roda_em(porta, meio_x, meio_y, passos=-1, ctrl=False)    # sem Shift: rola para baixo
+    _assentar()
+    assert de_pe.value() > y
 
 
 # --- conserto 2: os nomes inteiros no "Mais ajustes" -----------------------------------------
