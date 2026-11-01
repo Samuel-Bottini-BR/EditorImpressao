@@ -197,3 +197,9 @@ coisa: um botão que mostra e esconde o colorido das marcações.
 - Verificador do conserto (`d0f0d72`): CUMPRE COM RESSALVAS, nenhum defeito do conserto. Parecer: `.claude\worktrees\verif-t1\relatorios\automatico-ver-como-fica\verificador\parecer-verificador-31-10-conserto.html` (prints c1-c8, *Na escola de Jesus*).
   - Ressalva 1: o "usar este" da esquerda leva também as etapas marcadas daquele lado (já era assim).
   - Ressalva 2 (fora do conserto): no comparar, na página 21 feita à mão em Preto e branco, só ligar "Limpar a folha" do lado esquerdo faz a gravura passar de toda preta para cinza: com "Limpar a folha" ligada, a etapa Gravuras liga junto (`core/automatico.ligada_no_livro`). Mesmo assunto da D-589 ("desmarcado não é feito") e do a-20; vai para a conferência da D-589.
+
+## Teste da tarefa 1 (01/11, junção 01a1d68)
+- Central: D-497 "Concordo, fica assim" (anotada no Livro); D-548 "Ele dá o aviso só por ter algo perto da borda?" → gerente: não; só avisa quando, no "Mover e redimensionar", um pedaço do impresso sai da folha.
+- Ele pediu a lista ("não esqueça daquela lista que tinha 9 coisas") → gerente repassou a lista do Automático (1 a 9) e a ordem de 31/10. Ele: "ok" para juntar a tarefa 1.
+- Junção `01a1d68` no `obra-2026-10-26`: 42 provas da tarefa 1 + 28 do Automático passaram.
+- Resultado dele (Limpar a folha com todas as opções do Filtro; comparar com "opções" nos dois lados; "usar este"): "está funcionando". D-577 e D-594 marcadas como testadas no Livro.
