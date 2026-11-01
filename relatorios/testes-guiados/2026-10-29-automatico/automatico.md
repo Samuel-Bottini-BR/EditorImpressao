@@ -203,3 +203,7 @@ coisa: um botão que mostra e esconde o colorido das marcações.
 - Ele pediu a lista ("não esqueça daquela lista que tinha 9 coisas") → gerente repassou a lista do Automático (1 a 9) e a ordem de 31/10. Ele: "ok" para juntar a tarefa 1.
 - Junção `01a1d68` no `obra-2026-10-26`: 42 provas da tarefa 1 + 28 do Automático passaram.
 - Resultado dele (Limpar a folha com todas as opções do Filtro; comparar com "opções" nos dois lados; "usar este"): "está funcionando". D-577 e D-594 marcadas como testadas no Livro.
+
+| # | Palavras dele | Print | O que é |
+|---|---|---|---|
+| a-24 | "eu não gostei de como ficou o layout ficou tudo muito junto, mas isso fica para se arrumar depois." | ![](a-24-comparar-tudo-muito-junto.png) | "comparar" do Automático, página 5 de 199, lado direito com "opções" aberta (etapa 4 "Limpar a folha"): a página fica espremida e textos saem cortados ("arquivo pe", "mantém as", "também em pr"). Foi para a Lista de espera do plano (01/11), "depois da lista do Automático". |
