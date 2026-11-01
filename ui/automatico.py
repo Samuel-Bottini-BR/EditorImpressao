@@ -99,6 +99,10 @@ PAGINAS_POR_CADERNO = (8, 12, 16, 20, 24, 32, 40)
 # CAMPO_DO_AJUSTE), lidos de lá na hora (import tardio: a tela de conferir importa
 # este módulo). O da caixinha da D-586 é o texto do painel, o mesmo.
 ROTULO_RESPEITAR = "Respeitar as gravuras achadas"
+# D-588 (01/11/2026): "Uma caixinha "Gravuras em tons de cinza" no Preto e branco. Ela fica
+# no painel Filtro, na tela cheia dos filtros e no "Limpar a folha" do Automático." O nome
+# é o do painel (ui/tela_conferir.caixa_gravuras_cinza), o mesmo.
+ROTULO_GRAVURAS_CINZA = "Gravuras em tons de cinza"
 
 
 def _ajustes_do_painel() -> tuple[dict, dict]:
@@ -207,7 +211,8 @@ def _texto_das_opcoes_da_pagina(filtro: str, o: dict) -> str:
                     "reduzir_cores": cores_scantailor.ROTULO_REDUZIR,
                     "luz_igualar": luz_scantailor.ROTULO_IGUALAR,
                     "luz_suavizar": luz_scantailor.ROTULO_SUAVIZAR,
-                    "respeitar_gravuras_achadas": ROTULO_RESPEITAR}.get(campo, campo)
+                    "respeitar_gravuras_achadas": ROTULO_RESPEITAR,
+                    "gravuras_em_tons_de_cinza": ROTULO_GRAVURAS_CINZA}.get(campo, campo)
             partes.append(nome if valor else f"{nome}: desligada")
     return "".join(", " + p for p in partes)
 
@@ -1906,6 +1911,8 @@ class PainelDeOpcoes(QObject):
         aparecer (_mostrar_opcoes_do_painel_filtro, como o painel: _configurar_medidor):
           - "Respeitar as gravuras achadas" (D-583/D-586), em todo filtro; cinza com
             "Só as letras" no Preto e branco (D-587, como a caixinha das molduras);
+          - "Gravuras em tons de cinza" (D-588), só no Preto e branco; cinza com "Só as
+            letras" ou com "Respeitar as gravuras achadas" desligada;
           - "Ajuste": a barra do filtro ("Força do preto", "Clareza do fundo",
             "Intensidade"; um valor por filtro, como na página);
           - "Mais ajustes": "Jeito do preto e branco" (Automático, os três de sempre e os
@@ -1930,6 +1937,13 @@ class PainelDeOpcoes(QObject):
         self.cx_respeitar_gravuras.setToolTip(
             "Ligada, o filtro respeita as gravuras que o programa achou; desligada, o filtro "
             "vale na página inteira.")
+        # D-588: "Gravuras em tons de cinza", logo abaixo (como no painel), só no Preto e
+        # branco; cinza com "Só as letras" ou com "Respeitar as gravuras achadas" desligada
+        self.cx_gravuras_cinza = self._caixa(
+            "gravuras_em_tons_de_cinza", ROTULO_GRAVURAS_CINZA, "", col)
+        self.cx_gravuras_cinza.setToolTip(
+            "Marcada, toda gravura achada sai em tons de cinza no Preto e branco, mesmo a que o "
+            "programa acha que é um enfeite; o texto continua preto e branco.")
         # "Ajuste": a barra do filtro escolhido (o campo muda com o filtro, como na página)
         self.bloco_ajuste = QWidget()
         dentro = QVBoxLayout(self.bloco_ajuste)
@@ -2108,8 +2122,8 @@ class PainelDeOpcoes(QObject):
             self.medidor.definir(int(o.get(campo_do_ajuste, fabrica[campo_do_ajuste])))
         indice = self.combo_algoritmo_pb.findData(o.get("algoritmo_preto_branco", "auto"))
         self.combo_algoritmo_pb.setCurrentIndex(max(0, indice))
-        for campo in ("respeitar_gravuras_achadas", "claro_no_escuro", "letras_com_a_cor",
-                      "reduzir_cores", "luz_igualar", "luz_suavizar"):
+        for campo in ("respeitar_gravuras_achadas", "gravuras_em_tons_de_cinza", "claro_no_escuro",
+                      "letras_com_a_cor", "reduzir_cores", "luz_igualar", "luz_suavizar"):
             caixa = self.controles[campo]
             caixa.setChecked(bool(o.get(campo, fabrica[campo])))
             caixa.setVisible(campo in valem)
@@ -2118,6 +2132,9 @@ class PainelDeOpcoes(QObject):
         self.seletor_luz_chuvisco.setValue(int(o.get("luz_chuvisco", 0) or 0))
         # D-587: cinza com "Só as letras" no Preto e branco (o valor fica guardado)
         self.cx_respeitar_gravuras.setEnabled(not (so_letras and no_pb))
+        # D-588: no padrão da D-168/D-587 (pergunta ao Samuel no ONDE-PAREI da D-588)
+        respeita = bool(o.get("respeitar_gravuras_achadas", fabrica["respeitar_gravuras_achadas"]))
+        self.cx_gravuras_cinza.setEnabled(not (so_letras and no_pb) and respeita)
         # os avisos das opções de luz, como o painel (luz_scantailor.avisos_da_pagina)
         avisos = luz_scantailor.avisos_da_pagina(SimpleNamespace(
             filtro=filtro, luz_igualar=bool(o.get("luz_igualar")),

@@ -3346,6 +3346,24 @@ class TelaConferir(QWidget):
         self.caixa_respeitar_gravuras.setChecked(True)
         self.caixa_respeitar_gravuras.toggled.connect(self._mudar_respeitar_gravuras)
 
+        # --- Gravuras em tons de cinza (D-588, 01/11/2026), desta página ---
+        # "Uma caixinha "Gravuras em tons de cinza" no Preto e branco. Ela fica no
+        # painel Filtro, na tela cheia dos filtros e no "Limpar a folha" do
+        # Automático. Marcada, toda gravura achada sai cinza, mesmo quando o
+        # programa acha que é um enfeite [...]. Ela segue o "Aplicar em"" ("ok").
+        # Só no Preto e branco (_mostrar_gravuras_em_cinza); o painel a põe logo
+        # abaixo da "Respeitar as gravuras achadas" (peça "cinza"), fora do "Mais
+        # ajustes". A conta mora em core.pipeline.gravuras_em_cinza_valem.
+        # Desmarcada de fábrica. Arriscado: o nome (é o que ele aprovou) e criar a
+        # caixinha no painel (perde o desfazer).
+        self.caixa_gravuras_cinza = QCheckBox("Gravuras em tons de cinza")
+        estilo.estilizar(self.caixa_gravuras_cinza, lambda: estilo_da_caixinha_com_quadrado(15))
+        self.caixa_gravuras_cinza.setToolTip(
+            "Marcada, toda gravura achada sai em tons de cinza no Preto e branco, mesmo a que o "
+            "programa acha que é um enfeite; o texto continua preto e branco.")
+        self.caixa_gravuras_cinza.setChecked(False)
+        self.caixa_gravuras_cinza.toggled.connect(self._mudar_gravuras_em_cinza)
+
         # --- Só as letras (modo Misto, 05/10/2026), desta página ---
         # Só com o Preto e branco escolhido (ver _configurar_medidor). No
         # painel, com a lista com amostra (rodada 10, 502 B) no lugar dos três
@@ -3392,7 +3410,8 @@ class TelaConferir(QWidget):
              for chave, nome, _explica in CARTOES if chave in filtros],
             {"ajuste": corpo_ajuste, "letras": self.escolhas_misto, "limpar": corpo_limpar,
              "mais": corpo_mais, "aplicar": aplicar, "apagar": pagina_toda,
-             "respeitar": self.caixa_respeitar_gravuras})          # D-586
+             "respeitar": self.caixa_respeitar_gravuras,           # D-586
+             "cinza": self.caixa_gravuras_cinza})                  # D-588
         # a amostra de cada cartao grande vai tambem para a fila do painel
         for cartao in self.cartoes.values():
             cartao.amostra_mudou.connect(self.paineis.filtro_da_pagina.definir_amostra)
@@ -6201,6 +6220,54 @@ class TelaConferir(QWidget):
         caixa.setEnabled(not so_as_letras)
 
     @protegido
+    def _mudar_gravuras_em_cinza(self, marcada: bool) -> None:
+        """A caixinha "Gravuras em tons de cinza" do painel Filtro (D-588,
+        01/11/2026): SÓ desta página, como ação do desfazer (Ctrl+Z desfaz,
+        Ctrl+Shift+Z refaz: D-020), como a "Respeitar as gravuras achadas". O
+        "Aplicar em" leva o valor às outras páginas (_filtro_em_todas,
+        _filtro_nas_proximas). Nada acontece se a página já está assim
+        (mostrar o valor nunca grava). A conta: core.pipeline.
+        gravuras_em_cinza_valem. Arriscado: gravar sem passar por _registrar."""
+        if not self._pronta() or self.projeto is None:
+            return
+        pagina = self.projeto.paginas[self.indice_pagina]
+        if bool(marcada) == bool(getattr(pagina, "gravuras_em_tons_de_cinza", False)):
+            return
+        self._registrar(
+            "mudar_gravuras_em_cinza", "pagina", [self.indice_pagina],
+            {"gravuras_em_tons_de_cinza": bool(marcada)},
+            f"Gravuras em tons de cinza na página {self.indice_pagina + 1}: "
+            f"{'marcada' if marcada else 'desmarcada'}",
+        )
+
+    def _mostrar_gravuras_em_cinza(self, pagina) -> None:
+        """Mostra na caixinha "Gravuras em tons de cinza" (D-588) o valor desta
+        página, sem virar ação. Só aparece no Preto e branco ("Uma caixinha
+        "Gravuras em tons de cinza" no Preto e branco").
+
+        Fica cinza (desabilitada, sem perder o valor guardado; volta como estava),
+        no padrão da D-168/D-587, em dois casos - os dois em que a conta não a usa
+        (core.pipeline.gravuras_em_cinza_valem) e que estão como PERGUNTA ao
+        Samuel no relatorios/gravuras-cinza/ONDE-PAREI.md:
+          - "Só as letras" valendo na página (dela ou do livro): as gravuras já
+            guardam a cor (D-148);
+          - "Respeitar as gravuras achadas" desligada (D-586): não há gravura
+            achada para pintar de cinza.
+        Arriscado: gravar algo aqui (mostrar viraria ação do desfazer)."""
+        caixa = getattr(self, "caixa_gravuras_cinza", None)
+        if caixa is None:
+            return
+        caixa.blockSignals(True)
+        caixa.setChecked(bool(getattr(pagina, "gravuras_em_tons_de_cinza", False)))
+        caixa.blockSignals(False)
+        no_pb = pagina.filtro == PRETO_E_BRANCO
+        caixa.setVisible(no_pb)
+        so_as_letras = (no_pb and self.projeto is not None
+                        and misto.escolhas_da_pagina(self.projeto, pagina)[0])
+        respeita = bool(getattr(pagina, "respeitar_gravuras_achadas", True))
+        caixa.setEnabled(not so_as_letras and respeita)
+
+    @protegido
     def _mudar_pontinhos(self, indice: int) -> None:
         """A lista "Limpar pontinhos" da aba Filtro (decisão do Samuel,
         06/10/2026, P7): a escolha SÓ desta página, como ação do desfazer.
@@ -6310,6 +6377,7 @@ class TelaConferir(QWidget):
         pagina = self.projeto.paginas[self.indice_pagina]
         campo = self._campo_do_ajuste(pagina.filtro)
         self._mostrar_respeitar_gravuras(pagina)          # D-586: em todo filtro
+        self._mostrar_gravuras_em_cinza(pagina)           # D-588: só no Preto e branco
 
         # Original não tem o que ajustar: o bloco inteiro some (e a frase
         # "O Original não tem ajuste." aparece no lugar dele, no painel).
@@ -6673,6 +6741,8 @@ class TelaConferir(QWidget):
             self._mudar_papel_da_gravura(valor)
         elif campo == "misto_letras_na_moldura":
             self._mudar_letras_na_moldura(valor)
+        elif campo == "gravuras_em_tons_de_cinza":          # D-588
+            self._mudar_gravuras_em_cinza(bool(valor))
 
     def abrir_todas_as_paginas(self) -> None:
         """Botão "ver todas" (808 A) e menu Ver > "Todas as páginas" (904 A):
@@ -7169,6 +7239,9 @@ class TelaConferir(QWidget):
              # D-586: "Vale com o "Aplicar em"": a caixinha "Respeitar as
              # gravuras achadas" desta pagina vai junto
              "respeitar_gravuras_achadas": pagina.respeitar_gravuras_achadas,
+             # D-588: "Ela segue o "Aplicar em"": a caixinha "Gravuras em
+             # tons de cinza" desta pagina vai junto
+             "gravuras_em_tons_de_cinza": pagina.gravuras_em_tons_de_cinza,
              # modo Misto: as escolhas DESTA pagina (None = segue o livro)
              **{campo: getattr(pagina, campo) for campo in misto.CAMPOS_DO_MISTO},
              # item 2.17: igualar a luz, suavizar e chuvisco DESTA pagina
@@ -7203,6 +7276,9 @@ class TelaConferir(QWidget):
              # D-586: "Vale com o "Aplicar em"": a caixinha "Respeitar as
              # gravuras achadas" desta pagina vai junto
              "respeitar_gravuras_achadas": pagina.respeitar_gravuras_achadas,
+             # D-588: "Ela segue o "Aplicar em"": a caixinha "Gravuras em
+             # tons de cinza" desta pagina vai junto
+             "gravuras_em_tons_de_cinza": pagina.gravuras_em_tons_de_cinza,
              # modo Misto: as escolhas DESTA pagina (None = segue o livro)
              **{campo: getattr(pagina, campo) for campo in misto.CAMPOS_DO_MISTO},
              # item 2.17: igualar a luz, suavizar e chuvisco DESTA pagina
@@ -8061,6 +8137,7 @@ MARCAS_DA_PAGINA = {
     "luz_chuvisco": etapas_core.FILTRO, "claro_no_escuro": etapas_core.FILTRO,
     "letras_com_a_cor": etapas_core.FILTRO, "reduzir_cores": etapas_core.FILTRO,
     "respeitar_gravuras_achadas": etapas_core.FILTRO,          # D-586
+    "gravuras_em_tons_de_cinza": etapas_core.FILTRO,           # D-588
     "selecao": etapas_core.MARCAR,
     "conteudo_escala": etapas_core.MOVER, "conteudo_deslocamento": etapas_core.MOVER,
     "tamanho_folha_cm": etapas_core.MOVER,

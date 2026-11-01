@@ -193,6 +193,19 @@ class ConfigPagina:
     # ARRISCADO: mudar o padrao para False (todo livro com a marcacao do
     # Automatico mudaria de imagem sem ninguem pedir).
     respeitar_gravuras_achadas: bool = True
+    # D-588 (Samuel, 01/11/2026, "ok" a: "Uma caixinha "Gravuras em tons de
+    # cinza" no Preto e branco. [...] Marcada, toda gravura achada sai cinza,
+    # mesmo quando o programa acha que é um enfeite [...]. Ela segue o
+    # "Aplicar em""): a caixinha do painel Filtro, SO desta pagina. True = no
+    # Preto e branco toda zona de gravura da marcacao sai em tons de cinza
+    # (o cinza da D-147), inclusive a que a conta toma por moldura/iluminura
+    # (D-585) ou por desenho de traco; o texto continua preto e branco.
+    # Quem le: core.pipeline.gravuras_em_cinza_valem. Desmarcada de fabrica:
+    # projeto gravado antes nao tem a chave e abre desmarcado (campo que
+    # falta ganha o padrao), saindo igual ponto por ponto.
+    # ARRISCADO: mudar o padrao para True (todo livro em Preto e branco
+    # mudaria de imagem sem ninguem pedir).
+    gravuras_em_tons_de_cinza: bool = False
     # Item 2.12 (regra da Fase 2, 13/10/2026: igual ao ScanTailor, desligado
     # de fabrica): desentortar a pagina curva perto da lombada, SO desta
     # pagina. Valores: os codigos de core/desentortar_scantailor.MODOS

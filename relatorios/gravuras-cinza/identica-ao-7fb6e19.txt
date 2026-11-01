@@ -1,0 +1,76 @@
+D-588: desmarcada = como hoje, byte a byte, entre commits (01/11/2026).
+Script: relatorios/gravuras-cinza/identica_entre_commits.py; 'Na escola de Jesus' (cópia do projeto de teste, depois do Automático),
+páginas 1, 9, 19 e 45, quatro filtros, 'Respeitar as gravuras achadas' ligada e desligada, 110 DPI, md5 do segundo desenho.
+
+--- 7fb6e19 (antes da caixinha) ---
+codigo: antigo | campo novo na pagina: False
+pagina   1 respeitar=sim original        areas=20 segunda=cbd2765089a1
+pagina   1 respeitar=sim preto_e_branco  areas=20 segunda=76a685c49757
+pagina   1 respeitar=sim melhorar        areas=20 segunda=f9b258dddcaf
+pagina   1 respeitar=sim magico_pro      areas=20 segunda=64a009919733
+pagina   1 respeitar=nao original        areas=20 segunda=cbd2765089a1
+pagina   1 respeitar=nao preto_e_branco  areas=20 segunda=93346a871921
+pagina   1 respeitar=nao melhorar        areas=20 segunda=65dfd68571d0
+pagina   1 respeitar=nao magico_pro      areas=20 segunda=52c951e82835
+pagina   9 respeitar=sim original        areas=24 segunda=70a3fbde80fd
+pagina   9 respeitar=sim preto_e_branco  areas=24 segunda=2a6ab3a1f476
+pagina   9 respeitar=sim melhorar        areas=24 segunda=f866e2f329a7
+pagina   9 respeitar=sim magico_pro      areas=24 segunda=a21d3d30b6ec
+pagina   9 respeitar=nao original        areas=24 segunda=70a3fbde80fd
+pagina   9 respeitar=nao preto_e_branco  areas=24 segunda=2a6ab3a1f476
+pagina   9 respeitar=nao melhorar        areas=24 segunda=5b6794b8a515
+pagina   9 respeitar=nao magico_pro      areas=24 segunda=9937cce38f94
+pagina  19 respeitar=sim original        areas=19 segunda=22af8526f5c7
+pagina  19 respeitar=sim preto_e_branco  areas=19 segunda=e24c1ee57597
+pagina  19 respeitar=sim melhorar        areas=19 segunda=789041fe68aa
+pagina  19 respeitar=sim magico_pro      areas=19 segunda=aad61614bb9d
+pagina  19 respeitar=nao original        areas=19 segunda=22af8526f5c7
+pagina  19 respeitar=nao preto_e_branco  areas=19 segunda=e24c1ee57597
+pagina  19 respeitar=nao melhorar        areas=19 segunda=cb33ccfd75b5
+pagina  19 respeitar=nao magico_pro      areas=19 segunda=0f088f7dfb62
+pagina  45 respeitar=sim original        areas=22 segunda=3687e4062e1d
+pagina  45 respeitar=sim preto_e_branco  areas=22 segunda=3f1d7dfef29a
+pagina  45 respeitar=sim melhorar        areas=22 segunda=ebba7e374b15
+pagina  45 respeitar=sim magico_pro      areas=22 segunda=d723d03d5c42
+pagina  45 respeitar=nao original        areas=22 segunda=3687e4062e1d
+pagina  45 respeitar=nao preto_e_branco  areas=22 segunda=3f1d7dfef29a
+pagina  45 respeitar=nao melhorar        areas=22 segunda=3b4b68071bba
+pagina  45 respeitar=nao magico_pro      areas=22 segunda=1c1c4b368640
+
+--- este ramo (caixinha desmarcada) ---
+codigo: gravuras-cinza | campo novo na pagina: True
+pagina   1 respeitar=sim original        areas=20 segunda=cbd2765089a1
+pagina   1 respeitar=sim preto_e_branco  areas=20 segunda=76a685c49757
+pagina   1 respeitar=sim melhorar        areas=20 segunda=f9b258dddcaf
+pagina   1 respeitar=sim magico_pro      areas=20 segunda=64a009919733
+pagina   1 respeitar=nao original        areas=20 segunda=cbd2765089a1
+pagina   1 respeitar=nao preto_e_branco  areas=20 segunda=93346a871921
+pagina   1 respeitar=nao melhorar        areas=20 segunda=65dfd68571d0
+pagina   1 respeitar=nao magico_pro      areas=20 segunda=52c951e82835
+pagina   9 respeitar=sim original        areas=24 segunda=70a3fbde80fd
+pagina   9 respeitar=sim preto_e_branco  areas=24 segunda=2a6ab3a1f476
+pagina   9 respeitar=sim melhorar        areas=24 segunda=f866e2f329a7
+pagina   9 respeitar=sim magico_pro      areas=24 segunda=a21d3d30b6ec
+pagina   9 respeitar=nao original        areas=24 segunda=70a3fbde80fd
+pagina   9 respeitar=nao preto_e_branco  areas=24 segunda=2a6ab3a1f476
+pagina   9 respeitar=nao melhorar        areas=24 segunda=5b6794b8a515
+pagina   9 respeitar=nao magico_pro      areas=24 segunda=9937cce38f94
+pagina  19 respeitar=sim original        areas=19 segunda=22af8526f5c7
+pagina  19 respeitar=sim preto_e_branco  areas=19 segunda=e24c1ee57597
+pagina  19 respeitar=sim melhorar        areas=19 segunda=789041fe68aa
+pagina  19 respeitar=sim magico_pro      areas=19 segunda=aad61614bb9d
+pagina  19 respeitar=nao original        areas=19 segunda=22af8526f5c7
+pagina  19 respeitar=nao preto_e_branco  areas=19 segunda=e24c1ee57597
+pagina  19 respeitar=nao melhorar        areas=19 segunda=cb33ccfd75b5
+pagina  19 respeitar=nao magico_pro      areas=19 segunda=0f088f7dfb62
+pagina  45 respeitar=sim original        areas=22 segunda=3687e4062e1d
+pagina  45 respeitar=sim preto_e_branco  areas=22 segunda=3f1d7dfef29a
+pagina  45 respeitar=sim melhorar        areas=22 segunda=ebba7e374b15
+pagina  45 respeitar=sim magico_pro      areas=22 segunda=d723d03d5c42
+pagina  45 respeitar=nao original        areas=22 segunda=3687e4062e1d
+pagina  45 respeitar=nao preto_e_branco  areas=22 segunda=3f1d7dfef29a
+pagina  45 respeitar=nao melhorar        areas=22 segunda=3b4b68071bba
+pagina  45 respeitar=nao magico_pro      areas=22 segunda=1c1c4b368640
+
+--- comparação (sem a primeira linha) ---
+IGUAIS: 32 desenhos com o mesmo md5

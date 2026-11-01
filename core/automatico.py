@@ -136,6 +136,9 @@ CAMPO_DO_LIVRO = {
 #   luz_igualar / luz_suavizar / luz_chuvisco: "Igualar a luz da página" /
 #       "Suavizar as letras" / "Tirar o chuvisco"
 #   respeitar_gravuras_achadas: "Respeitar as gravuras achadas" (D-583/D-586)
+#   gravuras_em_tons_de_cinza: "Gravuras em tons de cinza" (D-588, so no Preto e
+#       branco: "Ela fica no painel Filtro, na tela cheia dos filtros e no "Limpar
+#       a folha" do Automático")
 # ("Limpar a sujeira" e "Só as letras" ja estavam: sao do livro, CAMPOS do Projeto.)
 # Arriscado: tirar um campo daqui (some da janela e da receita); gravar campo que o
 # filtro escolhido nao usa (ver CAMPOS_DA_PAGINA_NO_FILTRO).
@@ -143,6 +146,7 @@ CAMPOS_DA_PAGINA = (
     "forca_preto", "clareza_melhorar", "intensidade_magico", "algoritmo_preto_branco",
     "claro_no_escuro", "letras_com_a_cor", "reduzir_cores",
     "luz_igualar", "luz_suavizar", "luz_chuvisco", "respeitar_gravuras_achadas",
+    "gravuras_em_tons_de_cinza",
 )
 
 
@@ -153,8 +157,8 @@ def campos_da_pagina_no_filtro(filtro: str) -> tuple[str, ...]:
       - todos os filtros: "Respeitar as gravuras achadas" (D-586: em todo filtro);
       - filtro com ajuste (Preto e branco, Melhorar, Mágico pro): o ajuste dele e
         o "Mais ajustes" comum (letra clara, reduzir cores, igualar a luz, chuvisco);
-      - so no Preto e branco: o jeito do preto e branco, "Letras com a cor delas"
-        e "Suavizar as letras".
+      - so no Preto e branco: o jeito do preto e branco, "Letras com a cor delas",
+        "Suavizar as letras" e "Gravuras em tons de cinza" (D-588).
     Original e Tirar o fundo nao tem ajuste nem "Mais ajustes" no painel.
     Arriscado: divergir do painel (a janela mostraria uma opcao que nao vale)."""
     from core.filtros import MAGICO_PRO, MELHORAR, PRETO_E_BRANCO
@@ -165,7 +169,8 @@ def campos_da_pagina_no_filtro(filtro: str) -> tuple[str, ...]:
         return ("respeitar_gravuras_achadas",)
     campos = [ajuste, "claro_no_escuro", "reduzir_cores", "luz_igualar", "luz_chuvisco"]
     if filtro == PRETO_E_BRANCO:
-        campos += ["algoritmo_preto_branco", "letras_com_a_cor", "luz_suavizar"]
+        campos += ["algoritmo_preto_branco", "letras_com_a_cor", "luz_suavizar",
+                   "gravuras_em_tons_de_cinza"]
     return tuple(campos) + ("respeitar_gravuras_achadas",)
 
 

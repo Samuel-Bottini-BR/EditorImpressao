@@ -71,6 +71,7 @@ def test_d594_cada_opcao_do_painel_filtro_esta_no_limpar_a_folha_com_o_mesmo_nom
                        tc.caixa_reduzir_cores.text(), tc.caixa_luz_igualar.text(),
                        tc.caixa_luz_suavizar.text(), tc.rotulo_luz_chuvisco.text(),
                        tc.caixa_respeitar_gravuras.text(), tc.rotulo_algoritmo_pb.text(),
+                       tc.caixa_gravuras_cinza.text(),          # D-588 (01/11/2026)
                        "Ajuste", "Mais ajustes"]
     textos = _textos(limpar)
     for nome in nomes_do_painel:
@@ -102,7 +103,7 @@ def test_d594_aparecem_como_no_painel_conforme_o_filtro(janela, app, tmp_path):
     (D-587)."""
     grande = _abrir(janela, app, tmp_path, pagina=PAGINA)
     e = grande.estado
-    so_pb = ("letras_com_a_cor", "luz_suavizar")
+    so_pb = ("letras_com_a_cor", "luz_suavizar", "gravuras_em_tons_de_cinza")    # D-588
     for filtro in (PRETO_E_BRANCO, MELHORAR, MAGICO_PRO, ORIGINAL):
         e.definir_opcao("filtro_padrao", filtro)
         com_ajuste = filtro != ORIGINAL
@@ -138,6 +139,8 @@ def _no_painel(tc, filtro, campo, valor) -> None:
         tc._mudar_luz(campo, valor)
     elif campo == "respeitar_gravuras_achadas":
         tc._mudar_respeitar_gravuras(valor)
+    elif campo == "gravuras_em_tons_de_cinza":          # D-588
+        tc._mudar_gravuras_em_cinza(valor)
 
 
 def _na_janela(grande, filtro, campo, valor) -> None:
@@ -184,6 +187,7 @@ CASOS = [
     (PRETO_E_BRANCO, "luz_suavizar", True),
     (PRETO_E_BRANCO, "luz_chuvisco", 30),
     (PRETO_E_BRANCO, "respeitar_gravuras_achadas", False),
+    (PRETO_E_BRANCO, "gravuras_em_tons_de_cinza", True),          # D-588
 ]
 
 

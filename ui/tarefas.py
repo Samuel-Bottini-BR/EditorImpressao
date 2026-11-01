@@ -1061,6 +1061,11 @@ class GerenciadorPrevias(QObject):
             # quando DESLIGADA: ligada (o de fabrica), a chave e a de sempre.
             # Arriscado: tirar daqui (a tela mostraria a imagem velha).
             f"{'' if getattr(p, 'respeitar_gravuras_achadas', True) else ':sem_as_achadas'}"
+            # D-588: a caixinha "Gravuras em tons de cinza" muda a previa, o
+            # "antes / depois" e a tela cheia. So entra na chave quando
+            # MARCADA: desmarcada (o de fabrica), a chave e a de sempre.
+            # Arriscado: tirar daqui (a tela mostraria a imagem velha).
+            f"{':gravuras_cinza' if getattr(p, 'gravuras_em_tons_de_cinza', False) else ''}"
         )
 
     # --- uso --------------------------------------------------------------
