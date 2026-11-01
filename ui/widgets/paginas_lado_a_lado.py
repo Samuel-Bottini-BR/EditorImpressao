@@ -39,7 +39,8 @@ Seguro mudar: os textos. Arriscado: pedir a prévia aqui no fio da tela de um je
 
 from __future__ import annotations
 
-from PySide6.QtCore import QPointF, Qt, QTimer, Signal
+from PySide6.QtCore import QPointF, QRectF, Qt, QTimer, Signal
+from PySide6.QtWidgets import QApplication
 
 from ui.widgets.paginas_rolando import CABER_PAGINA, DUAS, MARGEM, PaginasRolando, no_tamanho
 
@@ -161,12 +162,65 @@ class PaginasLadoALado(PaginasRolando):
         # (num resize), antes de o zoom existir
         return super()._altura_da_linha(proporcoes, largura, altura) * getattr(self, "zoom", 1.0)
 
+    def zoom_no_ponteiro(self, zoom: float, ponto) -> None:
+        """Ctrl+roda (D-568): o zoom vai para onde está o mouse, como nos
+        outros lugares do programa (janela do Automático, tela cheia,
+        "comparar"): o ponto da página que estava debaixo do ponteiro continua
+        debaixo dele (a página mais perto do ponteiro, se ele está no espaço
+        entre elas). `ponto`: o ponteiro, na área visível (viewport). Bug de
+        31/10/2026 (Samuel: "na area de trabalho o zoom [...] se direciona
+        somente para o centro da pagina e não onde o mouse está"); conserto
+        de 01/11/2026. Os botões "–", "+" e "ajustar à tela" continuam pelo
+        centro (definir_zoom). As barras de rolar não deixam a página sair da
+        tela (como na janela do Automático)."""
+        novo = float(min(max(zoom, ZOOM_MIN), ZOOM_MAX))
+        if abs(novo - self.zoom) < 1e-4:
+            return
+        no_conteudo = QPointF(self.folhas.mapFrom(self.viewport(), ponto))
+        perto = self._pagina_mais_perto(no_conteudo)
+        if perto is None:
+            self.definir_zoom(novo)
+            return
+        posicao, ret = perto
+        fx = (no_conteudo.x() - ret.left()) / max(1.0, ret.width())
+        fy = (no_conteudo.y() - ret.top()) / max(1.0, ret.height())
+        self.zoom = novo
+        self._arrumar()
+        QApplication.sendPostedEvents(self)          # o tamanho novo chega às barras
+        ret = next((r for i, r in self._ret if i == posicao), None)
+        if ret is not None:
+            self.horizontalScrollBar().setValue(int(round(ret.left() + fx * ret.width() - ponto.x())))
+            self.verticalScrollBar().setValue(int(round(ret.top() + fy * ret.height() - ponto.y())))
+        self._pedir_as_visiveis()
+        self.zoom_mudou.emit(self.zoom)
+
+    def _pagina_mais_perto(self, ponto: QPointF):
+        """(posição, retângulo) da página arrumada debaixo de `ponto` (no
+        conteúdo) ou, se nenhuma, da mais perto dele. None sem páginas."""
+        melhor, distancia = None, None
+        for posicao, ret in self._ret:
+            dx = max(ret.left() - ponto.x(), 0.0, ponto.x() - ret.right())
+            dy = max(ret.top() - ponto.y(), 0.0, ponto.y() - ret.bottom())
+            d = dx * dx + dy * dy
+            if distancia is None or d < distancia:
+                melhor, distancia = (posicao, QRectF(ret)), d
+        return melhor
+
+    def _largura_do_conteudo(self, largura: float) -> float:
+        """Com zoom, o que rola fica pelo menos do tamanho da tela vezes o zoom
+        (até o dobro), com o par no meio, como a área de rolar da janela do
+        Automático: assim o zoom vai para o mouse também para os lados, mesmo
+        quando o par ainda é mais estreito que a tela (01/11/2026, ver
+        zoom_no_ponteiro). Com 100%, a largura da tela, como sempre."""
+        return largura * min(max(getattr(self, "zoom", 1.0), 1.0), 2.0)
+
     def wheelEvent(self, evento) -> None:  # noqa: N802 - nome do Qt
-        """Ctrl+roda dá zoom (D-568); sem Ctrl, rola como sempre."""
+        """Ctrl+roda dá zoom (D-568), para onde está o mouse; sem Ctrl, rola como sempre."""
         if evento.modifiers() & Qt.ControlModifier:
             passos = evento.angleDelta().y()
             if passos:
-                self.definir_zoom(self.zoom * (1.25 if passos > 0 else 1 / 1.25))
+                self.zoom_no_ponteiro(self.zoom * (1.25 if passos > 0 else 1 / 1.25),
+                                      evento.position().toPoint())
             evento.accept()
             return
         super().wheelEvent(evento)

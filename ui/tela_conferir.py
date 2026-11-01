@@ -3293,7 +3293,12 @@ class TelaConferir(QWidget):
         # Filtro antiga; no layout ela vai para "Mais ajustes", como as
         # caixinhas dos itens 2.9 e 2.11 foram em 22/10.
         # Os textos moram em core/luz_scantailor.py.
-        linha_luz = QHBoxLayout()
+        # Bug de 31/10/2026 (print do Samuel, janela 1280 x 657): as duas
+        # caixinhas e o "Tirar o chuvisco" ficavam na MESMA linha e, no painel
+        # de largura fixa, os nomes saíam cortados ("Igual", "Suavi", "Tirar o
+        # chu"). Conserto de 01/11/2026: uma caixinha por linha, como as de
+        # cima, e o "Tirar o chuvisco:" com o número na linha dele. Os nomes,
+        # os controles e o que fazem são os mesmos.
         self.caixa_luz_igualar = QCheckBox(luz_scantailor.ROTULO_IGUALAR)
         self.caixa_luz_igualar.setToolTip(luz_scantailor.EXPLICACAO_IGUALAR)
         self.caixa_luz_suavizar = QCheckBox(luz_scantailor.ROTULO_SUAVIZAR)
@@ -3302,7 +3307,8 @@ class TelaConferir(QWidget):
                              (self.caixa_luz_suavizar, "luz_suavizar")):
             estilo.estilizar(caixa, lambda: estilo_da_caixinha_com_quadrado(15))
             caixa.toggled.connect(lambda marcada, c=campo: self._mudar_luz(c, bool(marcada)))
-            linha_luz.addWidget(caixa)
+            coluna_mais.addWidget(caixa)
+        linha_luz = QHBoxLayout()
         self.rotulo_luz_chuvisco = QLabel(luz_scantailor.ROTULO_CHUVISCO + ":")
         self.rotulo_luz_chuvisco.setToolTip(luz_scantailor.EXPLICACAO_CHUVISCO)
         linha_luz.addWidget(self.rotulo_luz_chuvisco)
@@ -6986,7 +6992,7 @@ class TelaConferir(QWidget):
             if not passos:
                 return True
             fator = self.PASSO_DO_ZOOM if passos > 0 else 1 / self.PASSO_DO_ZOOM
-            vista.definir_zoom(vista.zoom * fator)
+            self._zoom_no_ponteiro(vista, fator, evento.position().toPoint())
             self._acertar_o_zoom_da_barra()
             return True
         if vista is getattr(self, "editor_selecao", None) and (
@@ -7016,32 +7022,81 @@ class TelaConferir(QWidget):
         tela: a beirada dela para na beirada da vista (com uma folga pequena).
         `para_baixo`/`de_lado` são o angleDelta da roda (120 por dente;
         positivo = roda para cima/esquerda = ver o que está acima/à esquerda)."""
-        from PySide6.QtCore import QPoint
-
-        if hasattr(vista, "_largura_base"):          # Visualizador (as ferramentas de página)
-            largura = int(vista._largura_base() * vista.zoom)
-            altura = int(vista._altura_base() * vista.zoom)
-        else:                                        # o editor de marcar
-            area = vista._calcular_area()
-            largura, altura = area.width(), area.height()
+        largura, altura = self._tamanho_da_pagina_na_tela(vista)
         if largura <= 0 or altura <= 0:
             return
-        folga = 20
         passo = self.PASSO_DA_RODA_COM_ZOOM * max(1, vista.height())
-        dx = de_lado / 120.0 * passo
-        dy = para_baixo / 120.0 * passo
         atual = vista.deslocamento
+        self._por_o_deslocamento(vista, atual.x() + de_lado / 120.0 * passo,
+                                 atual.y() + para_baixo / 120.0 * passo)
+
+    @staticmethod
+    def _tamanho_da_pagina_na_tela(vista) -> tuple[int, int]:
+        """Largura e altura da página desenhada na vista, no zoom de agora (a
+        mesma conta do desenho de cada uma)."""
+        if hasattr(vista, "_largura_base"):          # Visualizador (as ferramentas de página)
+            return int(vista._largura_base() * vista.zoom), int(vista._altura_base() * vista.zoom)
+        area = vista._calcular_area()                # o editor de marcar
+        return area.width(), area.height()
+
+    def _por_o_deslocamento(self, vista, x: float, y: float) -> None:
+        """Põe o deslocamento da vista (o mesmo do arrastar com a Mão) sem
+        deixar a página sair da tela: a beirada dela para na beirada da vista
+        (com uma folga pequena). Avisa quem acompanha a vista (o comparar).
+
+        Desde 01/11/2026 (o zoom para onde está o mouse), o quanto ela pode
+        andar é também o da janela do Automático e da tela cheia, onde a
+        página fica numa área de rolar do tamanho da vista vezes o zoom: num
+        lado em que a página é mais estreita que a vista, ela pode sair do
+        meio até essa conta (antes ficava presa no meio, e o zoom não ia para
+        o mouse nesse lado), mas o meio da página nunca sai da vista. A roda
+        com zoom usa o mesmo limite, para a página não pular de lado ao rolar
+        depois de um zoom."""
+        from PySide6.QtCore import QPoint
+
+        largura, altura = self._tamanho_da_pagina_na_tela(vista)
+        folga = 20
+        sobra = max(0.0, vista.zoom - 1.0) / 2.0     # a área de rolar: a vista vezes o zoom
 
         def limite(tamanho: int, lugar: int) -> float:
-            return max(0.0, (tamanho - lugar) / 2.0 + folga)
+            return max(0.0, (tamanho - lugar) / 2.0 + folga, min(lugar * sobra, lugar / 2.0))
 
         lx, ly = limite(largura, vista.width()), limite(altura, vista.height())
-        novo_x = min(lx, max(-lx, atual.x() + dx))
-        novo_y = min(ly, max(-ly, atual.y() + dy))
+        novo_x = min(lx, max(-lx, x))
+        novo_y = min(ly, max(-ly, y))
         vista.deslocamento = QPoint(int(round(novo_x)), int(round(novo_y)))
         if hasattr(vista, "vista_mudou"):
             vista.vista_mudou.emit(vista.zoom, vista.deslocamento)
         vista.update()
+
+    def _zoom_no_ponteiro(self, vista, fator: float, ponto) -> None:
+        """Ctrl+roda (D-568) na "Uma página": o zoom vai para onde está o
+        mouse, como nos outros lugares do programa (janela do Automático, tela
+        cheia, "comparar"): o ponto da página que estava debaixo do ponteiro
+        continua debaixo dele. Bug de 31/10/2026 (Samuel, testando a versão de
+        teste: "na area de trabalho o zoom [...] se direciona somente para o
+        centro da pagina e não onde o mouse está"); conserto de 01/11/2026.
+        Os botões "–", "+" e "ajustar à tela" (sem mouse) continuam pelo
+        centro (mudar_o_zoom). A página não sai da tela (_por_o_deslocamento),
+        como na roda com zoom. As contas saem do zoom e do deslocamento de
+        agora, não do último desenho: várias voltas da roda antes de a tela
+        se redesenhar dão o mesmo resultado (D-026, zoom confiável)."""
+        largura, altura = self._tamanho_da_pagina_na_tela(vista)
+        desl = vista.deslocamento
+        esquerda = (vista.width() - largura) // 2 + desl.x()
+        topo = (vista.height() - altura) // 2 + desl.y()
+        vista.definir_zoom(vista.zoom * fator)
+        if vista.zoom <= 1.0 + 1e-3 or largura <= 0 or altura <= 0:
+            return                          # inteira na tela: no meio, como sempre
+        # onde o ponteiro está na página, de 0 a 1 (fora dela, passa de 0 ou de 1)
+        fx = (ponto.x() - esquerda) / largura
+        fy = (ponto.y() - topo) / altura
+        nova_largura, nova_altura = self._tamanho_da_pagina_na_tela(vista)
+        # o deslocamento que põe o ponto (fx, fy) da página de novo debaixo do ponteiro
+        self._por_o_deslocamento(
+            vista,
+            ponto.x() - fx * nova_largura - (vista.width() - nova_largura) // 2,
+            ponto.y() - fy * nova_altura - (vista.height() - nova_altura) // 2)
 
     @protegido
     def restaurar_pagina(self) -> None:
