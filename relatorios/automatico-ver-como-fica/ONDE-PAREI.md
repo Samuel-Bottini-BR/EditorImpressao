@@ -453,3 +453,12 @@ Parecer: `.claude/worktrees/verif-t1/relatorios/automatico-ver-como-fica/verific
   Melhorar; voltar à 3 → 30; marcar "Limpar a folha" e só "Reduzir cores" → a única opção que mudou é "Reduzir cores",
   o pedido do lado sai com chuvisco 30 e Preto e branco; o livro não mudou; folhear mexido leva o lado junto).
   **No `0c29ba4` falha**: "a aba da esquerda trouxe o chuvisco de outra página — assert 0 == 30". No novo: passa.
+
+## Testes da 6ª rodada
+
+- PC, um arquivo por vez (offscreen): `test_decisoes_automatico_opcoes_do_filtro.py` (20, com a prova nova),
+  `test_decisoes_automatico_ver_como_fica.py` (22), `test_decisoes_automatico.py` (24), `test_unidades_e_perfis.py` (9):
+  todos passaram.
+- GitHub 41263936968 (f02a621): passou de primeira, todas as partes e o `teste_botoes.py`.
+
+PRONTO PARA O VERIFICADOR (6ª rodada).
