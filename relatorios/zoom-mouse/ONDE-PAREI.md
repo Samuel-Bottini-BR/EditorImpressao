@@ -64,7 +64,12 @@ Cópia: `.claude/worktrees/zoom-mouse`, ramo `zoom-mouse-2026-11-01` (parte de `
 
 ## GitHub
 
-(preencher)
+Rodada 41324371101 ("Testes no Windows", ramo `zoom-mouse-2026-11-01`, commit `c269e33`):
+- 1ª tentativa: partes 2 a 5 e "Botões e prints da janela real" passaram; parte 1 falhou só em
+  `test_promessas.py::test_p090_por_pagina_e_por_motivo` (ERROR na desmontagem: uma prévia em segundo plano
+  (`ui/tarefas.py::_folha_crua`) tentou abrir o PDF do teste que já tinha sido apagado; "um botão falhou por
+  baixo (erros.log)"). Não passa pelo código mexido aqui; no PC, `test_promessas` passou inteiro (262).
+- 2ª tentativa (só a parte que falhou, rodada de novo uma vez): **passou**. Rodada inteira: sucesso.
 
 ## Perguntas para o Samuel
 
