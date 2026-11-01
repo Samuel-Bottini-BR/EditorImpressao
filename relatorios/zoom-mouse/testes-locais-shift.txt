@@ -1,0 +1,10 @@
+test_zoom_no_ponteiro: 5 passed in 13.99s
+test_decisoes_9b2: 30 passed in 45.76s
+test_livro_aberto: 14 passed in 3.91s
+test_decisoes_9b1: 25 passed, 16 warnings in 20.34s
+test_decisoes_ver: 11 passed in 19.72s
+test_decisoes_automatico_ver_como_fica: 22 passed in 69.36s (0:01:09)
+test_ajustar_pedaco: 13 passed in 0.74s
+test_dividir_scantailor: 13 passed in 1.02s
+test_girar_cartoes_e_previas: 23 passed in 25.16s
+test_promessas: 262 passed, 1 xfailed, 74 warnings in 617.31s (0:10:17)

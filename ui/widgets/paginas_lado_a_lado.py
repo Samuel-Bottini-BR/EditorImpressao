@@ -215,12 +215,29 @@ class PaginasLadoALado(PaginasRolando):
         return largura * min(max(getattr(self, "zoom", 1.0), 1.0), 2.0)
 
     def wheelEvent(self, evento) -> None:  # noqa: N802 - nome do Qt
-        """Ctrl+roda dá zoom (D-568), para onde está o mouse; sem Ctrl, rola como sempre."""
+        """Ctrl+roda dá zoom (D-568), para onde está o mouse; com zoom, Shift+roda
+        anda para os lados; no resto, rola como sempre.
+
+        Shift + roda com zoom: defeito de 01/11/2026 (Samuel: "com shift para os
+        lados não funciona ele rola as paginas para pagina, no caso troca de
+        pagina"). O rolar padrão do Qt usa o Shift para rolar de página em
+        página na barra de pé; aqui, com zoom, ele anda na barra de baixo, o
+        mesmo tanto que a roda anda para cima e para baixo (D-568: "com zoom anda
+        pela página", Shift para os lados, como na "Uma página"). Sem zoom, como
+        sempre."""
         if evento.modifiers() & Qt.ControlModifier:
             passos = evento.angleDelta().y()
             if passos:
                 self.zoom_no_ponteiro(self.zoom * (1.25 if passos > 0 else 1 / 1.25),
                                       evento.position().toPoint())
+            evento.accept()
+            return
+        if self.zoom > 1.0 + 1e-3 and evento.modifiers() & Qt.ShiftModifier:
+            de_lado = evento.angleDelta().x() or evento.angleDelta().y()
+            if de_lado:
+                barra = self.horizontalScrollBar()
+                passo = QApplication.wheelScrollLines() * barra.singleStep()
+                barra.setValue(barra.value() - int(round(de_lado / 120.0 * passo)))
             evento.accept()
             return
         super().wheelEvent(evento)
