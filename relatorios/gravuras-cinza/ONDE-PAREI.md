@@ -84,11 +84,15 @@ test_decisoes_gravuras_cinza 13 passaram (depois veio a 14ª, a da reversão pel
 test_decisoes_respeitar_gravuras 19 · test_decisoes_automatico_opcoes_do_filtro 21 (com o caso novo) ·
 test_filtros_tela_cheia 11 · test_preto_e_branco_regra_30_09 15 · test_decoracao_no_preto_e_branco 12 ·
 test_decisoes_filtro_automatico 4 · test_decisoes_automatico 24 · test_decisoes_automatico_ver_como_fica
-22 · test_filtro_com_selecao 22. Nenhuma falha. test_promessas: ver abaixo.
+22 · test_filtro_com_selecao 22. Nenhuma falha. test_promessas (o arquivo inteiro, com a P-087): 263 passaram, 1 xfail (o de antes).
 
-## GitHub
+## GitHub (commit `c44fe5c`, ramo enviado com `git push -u origin gravuras-cinza-2026-11-01`)
 
-(preenchido abaixo, ao fim das rodadas)
+- **Testes no Windows**, rodada `41323846070`: **passou** (as 5 partes da suíte, "Botões e prints da
+  janela real" e o resumo).
+- **Filtro de velocidade** `7fb6e19` -> `gravuras-cinza-2026-11-01`, rodada `41323848831`: **passou,
+  veredito "igual (dentro do vai-e-vem)"**: abrir o livro +0,5%; trocar de página +0,2%; Mágico pro 10
+  páginas +0,4%; Preto e branco 10 páginas -0,9%.
 
 ## Perguntas para o Samuel
 
