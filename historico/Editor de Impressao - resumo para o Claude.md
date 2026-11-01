@@ -1,6 +1,6 @@
 # Editor de Impressão — documento para colar no Claude
 
-Atualizado em 30-31/10/2026 (PARTE -25; a anterior, PARTE -24, é de 29-30/10). Desde 19/10 a memória por assunto fica em `memoria/` (índice `memoria/INDICE.md`). Versão **máxima**: reúne o histórico institucional, o
+Atualizado em 31/10/2026, noite (PARTE -26; a anterior, PARTE -25, é de 30-31/10). Desde 19/10 a memória por assunto fica em `memoria/` (índice `memoria/INDICE.md`). Versão **máxima**: reúne o histórico institucional, o
 que o programa é, todas as funcionalidades pedidas, os 68 pedidos feitos até
 hoje **palavra por palavra**, o que foi feito, o que falta, e os dois
 documentos-fonte inteiros (a especificação original e o prompt de testes) em
@@ -11,6 +11,120 @@ Pasta do projeto: `D:\programas\EditorImpressao` (mudou de
 `C:\Users\fotog\Desktop\EditorImpressao` em 07/09/2026; essa pasta antiga virou
 o backup). Repositório git ligado a
 `https://github.com/Samuel-Bottini-BR/EditorImpressao`.
+
+---
+
+# PARTE -26 — Checkpoint de 31/10/2026 (noite): testes dele, lista organizada, tarefa 1 pronta para juntar (leia isto primeiro)
+
+Sessão no PC, gerente + **um agente por vez** (ordem dele para esta sessão: "Use um agente só por vez, não quero gastar
+muito token. e antes de usar me diga qual claude está usando no agente." — ele: "não era uma regra nova, era uma ordem só
+para agora"). Agentes com **Claude Opus 5.5** ("tenho medo de usar o sonnet 5.5 e ele fazer cagada"). Palavras dele e
+prints a-19 a a-23: `relatorios/testes-guiados/2026-10-29-automatico/automatico.md` (seções do fim).
+
+## 0. Para recomeçar
+1. `git -C D:\programas\EditorImpressao fetch origin`. Ler a Central (`respostas` com `lida != true`, `ordens`).
+2. **Pergunta aberta, primeira coisa (ele: "vamos deixar para amanhã, de check point"):** "A tarefa 1 está pronta. O
+   próximo passo é eu juntar na versão de teste, para você testar pelo atalho de sempre. Isso não usa agente. Posso
+   juntar? Responda sim ou não." Juntar = `automatico-ver-como-fica-2026-10-29` (`d0f0d72`) no `obra-2026-10-26` (cópia
+   `.claude\worktrees\obra-juncao`), provas na junção, Livro "pronta para testar", chamar o Samuel (atalho
+   `D:\programas\EditorImpressao-arquivos\atalho-rodada-de-consertos\abrir.vbs`).
+3. Antes de chamar qualquer agente: dizer o que ele faz e o modelo, e esperar o "sim" literal (falha desta sessão: 3
+   agentes chamados sem "sim" — "chamar os agentes para o que? você não perguntou o que era para fazer e ignorou minha
+   mensagem"; foram parados). "Vamos organizar" = montar a lista com ele, não executar.
+
+## 1. O que ele testou hoje (versão de teste `obra-2026-10-26`)
+- D-577, 4º teste: "ok, o zoom está funcionando bem em todos os lugares, mas maneira como ele funciona na area de trabalho
+  é diferente da dos outros lugares." · "na area de trabalho o zoom se comporta sozinho, porque ele se direciona somente
+  para o centro da pagina e não onde o mouse está". **Defeito: zoom da área de trabalho vai ao centro** (tarefa 2). A
+  pergunta "deixar todos iguais à área de trabalho (Ctrl + roda)?" ficou **sem resposta**; a D-568 continua valendo.
+- a-19/a-20: com "Gravuras e fotos" desmarcada e sem "Só as letras", a gravura sai **cinza** (devia sair P&B). A gerente
+  leu o print errado ("você está lendo a imagem errado"). Causa: o cartão da etapa 5 diz "ligada no livro todo" com a
+  caixinha desmarcada = D-589 (conserto no ramo `automatico-cadernos-2026-10-30`, não juntado).
+- a-21/a-22: faltavam no Automático as opções do painel Filtro → **D-594** ("mas isso era uma coisa obvia que deveria
+  ter"). Visto no print: nomes cortados no "Mais ajustes" ("Igual", "Suavi", "Tirar o chu") → Lista de bugs.
+
+## 2. A lista organizada com ele (31/10, noite), um agente por vez
+1. **Tarefa 1 = D-577 "comparar" (opções nos dois lados + "usar este") + D-594 (todas as opções do Filtro no
+   Automático)** — "mas já faça com as opções que faltam do automatico" · "Sim, podemos fazer isso junto com a tarefa 1".
+   **Feita e verificada, não juntada** (seção 3).
+2. Zoom da área de trabalho para o mouse + nomes cortados no "Mais ajustes" (proposta da gerente; ele não comentou a ordem).
+3. D-574, folhas do livreto: o verificador terminar a tela (parado; ONDE-PAREI em
+   `.claude\worktrees\verif-livreto\relatorios\livreto-ver\verificador\`) e **levar a vista para os três lugares**:
+   "Sim, mas no caso, eu estou falando em tela grande, pois no painel automatico, vamos conseguir ver ele só se clicarmos
+   na opção de montar cadernos e lá se apertarmos em ver tela grande abriremos o tela grande que já temos mas para versão
+   de caderno." (etapa 7 do Automático: o lado direito mostra as folhas; "tela cheia" abre a tela grande em versão de
+   caderno; painel "Montar cadernos"; "Montar para imprimir", onde já foi construída).
+4. D-589 "desmarcado não é feito" (com os cadernos do Kaique: "só não pode esquecer da questão dos cadernos que o Kaique
+   falou, de não criar caderno quando não estiver marcado" — essa parte já está feita e verificada no ramo) e o caso a-20.
+5. D-590 "juntar todas", **separado** do 4: "são duas coisas diferentes, faça separadamente."
+6. D-588 gravura em tons de cinza ("ok").
+7. D-221 filtro só nas gravuras: "ok aparecendo em todos os paineis de filtro, seja automatico ou em outros lugares."
+
+Depois: respostas da Central de 31/10 (seção 5). Ele: "acredito que esteja coisa faltando, mas tudo bem".
+
+## 3. Tarefa 1: o que foi feito (ramo `automatico-ver-como-fica-2026-10-29`, cópia `auto-ver`, `d0f0d72`)
+- 4ª rodada (`92b75a1`..`4440a17`): o "Limpar a folha" tem todas as opções do painel Filtro com os mesmos nomes
+  (inclusive a barra "Ajuste", que faltava fora da lista); o miolo virou `ui/automatico.PainelDeOpcoes`, o mesmo na
+  janela e nos dois lados do comparar (`LadoDoComparar`: "opções" abre e fecha, "usar este"); receitas levam as chaves
+  novas (`core/perfis.CAMPOS`); `core/automatico.CAMPOS_DA_PAGINA`. Conserto do roteiro `teste_botoes` (grade "Todas as
+  páginas" na frente). Provas: `tests/test_decisoes_automatico_opcoes_do_filtro.py`.
+- 5ª rodada (`3d05893`): **as opções começam pela receita escolhida, nunca pela página aberta** (pergunta 6 do construtor,
+  explicada com o exemplo da página 17 / chuvisco 30 → "sim").
+- Verificador 1 (`0c29ba4`): CUMPRE COM RESSALVAS; 1 defeito (a aba do lado esquerdo lia a página da área de trabalho).
+  Parecer: `.claude\worktrees\verif-t1\relatorios\automatico-ver-como-fica\verificador\parecer-verificador-31-10.html`.
+  Velocidade: `aplicar` 1,5 → 2,9 ms (40 páginas); filtro de velocidade do GitHub **não rodado** (ressalva).
+- 6ª rodada (construtor novo, `f02a621`): conserto do defeito; prova
+  `test_d577_lado_esquerdo_comeca_pelas_opcoes_da_pagina_mostrada_e_troca_ao_folhear`. GitHub 41263936968 verde.
+- Verificador 2: CUMPRE COM RESSALVAS, nenhum defeito do conserto. Parecer `...parecer-verificador-31-10-conserto.html`
+  (prints c1-c8 no *Na escola de Jesus*). Ressalvas: o "usar este" da esquerda leva também as etapas daquele lado (já
+  era assim); ligar "Limpar a folha" liga as Gravuras junto (`core/automatico.ligada_no_livro`) → Lista de bugs, item 4.
+- Ele confirmou o comparar como foi feito ("não foi isso que eu pedi no comparar, reveja o meu pedido" → a gerente citou
+  as palavras de 30/10 e o que foi construído → "km" → "ok").
+- **Decidido e NÃO construído** (ele disse "não" para mandar agora): **cada trabalho guarda as opções do último "Rodar"**
+  ("dentro de uma sessão sim, mas trocando de pdf não" · "se abre o mesmo livro na mesma sessão então vai estar igual" ·
+  "não é o pdf que fica salvo, mas sim aquele trabalho no aplicativo" → "sim"): reabrir o mesmo trabalho, mesmo depois de
+  fechar o programa, mostra igual; trabalho novo começa pela receita. No Livro (D-594).
+
+## 4. Perguntas abertas (texto exato)
+- Juntar a tarefa 1 (seção 0).
+- Pergunta 7 do construtor: "Cada lado ganhou o botão "opções", que abre e fecha a aba, e o "usar este". Enquanto você
+  não mexe no lado esquerdo, ele continua dizendo "como está no livro: <filtro>"; depois que você muda uma opção nele,
+  passa a dizer "depois: <filtro>" [...]. Sugestão: fica assim. Sim ou não?" (não perguntada).
+- Zoom: "Sugiro deixar todos os lugares iguais à área de trabalho [...] Ctrl + roda dá zoom, e a roda sozinha passa a
+  página. Pode ser assim?" — ele respondeu com o defeito do centro, sem sim ou não.
+- As da PARTE -25 §5 continuam (D-589 P2/P3; botão "marcações" e contorno laranja; "Ver de perto" do Cortar sem filtro).
+  A D-574 "sem botão?" virou a decisão dos três lugares (seção 2, item 3).
+
+## 5. Central (lidas e no Livro)
+Respostas de 31/10 (21:00-21:11 UTC), aba "O que você não gostou": 2-7 → D-572 (faixa "Página N conferida." + só
+"próxima dúvida"; "Mas nas paginas que não foi dado o ok, ela vai aparecer ainda né?" → gerente: sim); 2-2 → **D-595**
+(somem da tira + botão "N tiradas do livro"; "hoje o programa nunca altera o arquivo original. - que continue assim");
+2-3 → **D-596**; 2-4 → **D-597**; 2-6 → **D-598** (botão direito; ele perguntou se fica nos painéis da direita → gerente:
+já fica no Propriedades > "Esta página"); **2-1 (Marcação travada no Cursus) = "Ainda não entendi"**: a gerente explicou
+de novo no chat (2 cliques da Varinha = 302 marcas; cada mexida guarda todas para o Ctrl+Z; sugestão "deixar a Marcação
+leve") e perguntou "Posso seguir com esse conserto da Marcação?" → ele trouxe a lista primeiro; **sem resposta**.
+Prioridade dada a ele para a Central: 2-1, depois "Auditoria 5: escolhas da gerente" (19), depois "Auditoria 2: não
+feito" (22). A Central (fonte.json / quadro) **não** foi regenerada nesta sessão.
+
+## 6. Descobertas (não redescobrir)
+- O GitHub mostra "HTML 75% / Python 25%" porque o ramo padrão é o **`master`** (antigo); o C++ do ScanTailor está no
+  `fase-1` em `terceiros/scantailor-advanced` (263 arquivos). O HTML são relatórios. A gerente ofereceu trocar o ramo
+  padrão; ele não pediu.
+- A Fase 3 (seleção no nível do Photoshop) **não foi construída** (D-203 a D-207, D-402, "depois da obra"); a gerente
+  disse o contrário e ele corrigiu ("está faltando uma fase a da seleção nivel photoshop ai").
+- Há três lugares de montar caderno: etapa 7 do Automático, painel "Montar cadernos", e "Ficou pronto!" → "montar para
+  imprimir em A4 (com margens)..." (`ui/tela_final.abrir_montar_para_imprimir`, janela `ui/dialogo_impressao.py`).
+
+## 7. Cópias novas
+`verif-t1` (em `d0f0d72`, destacada; pareceres e scripts dos dois verificadores), `verif-t1-antes` (`2822470`),
+`verif-gravuras` (criada pelo verificador que foi parado; sem trabalho). Ramos parados como na PARTE -25:
+`automatico-cadernos-2026-10-30` (`d67933f`), `livreto-ver-2026-10-31` (`ff0260f`).
+
+## 8. Como conferir
+Na cópia `.claude\worktrees\auto-ver` (PowerShell):
+`$env:QT_QPA_PLATFORM="offscreen"; D:\programas\EditorImpressao\.venv\Scripts\python.exe -m pytest tests\test_decisoes_automatico_opcoes_do_filtro.py -q --basetemp=_tmp\bt`
+(20 passaram no verificador 2) e `tests\test_decisoes_automatico_ver_como_fica.py` (22). GitHub 41263936968 (`f02a621`)
+verde. A suíte inteira do PC não rodou nesta sessão.
 
 ---
 

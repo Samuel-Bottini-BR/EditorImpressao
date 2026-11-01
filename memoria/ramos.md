@@ -344,3 +344,11 @@ Todos com "No fase-1? SIM" na tabela. Destaques:
 Cópias de verificador (destacadas, sem ramo, sem commit; podem ser apagadas depois de copiar os pareceres):
 `verif-ver`, `verif-ver-antes`, `verif-cadernos`, `verif-cadernos-antes`, `verif-cadernos-merge`, `verif-livreto`,
 `verif-livreto-antes`. Os pareceres ficam em `relatorios/.../verificador/` dentro de cada uma.
+
+## Ramos e cópias de 31/10/2026 (noite)
+
+| Cópia | Ramo | O que é | Situação |
+|---|---|---|---|
+| `.claude\worktrees\auto-ver` | `automatico-ver-como-fica-2026-10-29` | tarefa 1: D-577 comparar com opções + "usar este", D-594 todas as opções do Filtro, começa pela receita, conserto do lado esquerdo | `d0f0d72`, verificado (CUMPRE COM RESSALVAS), **não juntado** (esperando o "sim" dele) |
+| `.claude\worktrees\verif-t1` / `verif-t1-antes` | (destacadas) | pareceres e scripts dos dois verificadores da tarefa 1 | sem commit; podem ser apagadas depois de copiar os pareceres |
+| `.claude\worktrees\verif-gravuras` | (destacada) | criada pelo verificador da D-589 que foi parado | sem trabalho |

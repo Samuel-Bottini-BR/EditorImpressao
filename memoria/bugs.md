@@ -467,3 +467,12 @@ na Central (aba "O que você não gostou: alternativas").
 - **Zoom da área de trabalho vai para o centro, não para o mouse (Samuel, 31/10):** "na area de trabalho o zoom se
   comporta sozinho, porque ele se direciona somente para o centro da pagina e não onde o mouse está". Em conserto junto
   com a D-577 (ramo `automatico-ver-como-fica-2026-10-29`).
+- **"Limpar a folha" do Automático, fora do Preto e branco (achado do construtor da D-594, 31/10; já era assim):** a
+  caixinha "Escurecer sozinho a força do preto..." some, mas a frase de baixo dela continua ("com "Só as letras":
+  escurece só na página falhada..."). Print no ramo `automatico-ver-como-fica-2026-10-29`:
+  `relatorios/automatico-ver-como-fica/9-comparar-abas-abertas-direita-magico-pro.png` (ver o ONDE-PAREI).
+- **"No Preto e branco, molduras e iluminuras também em preto e branco" aparece também no Melhorar** (achado do
+  verificador da tarefa 1, 31/10; já era assim), no "Limpar a folha" do Automático.
+- **Automático: ligar "Limpar a folha" liga as Gravuras junto (verificador, 31/10):** no "comparar", página feita à mão em
+  Preto e branco (gravura toda preta), ligar só "Limpar a folha" faz a gravura ficar cinza, porque a etapa Gravuras liga
+  junto (`core/automatico.ligada_no_livro`). Mesmo assunto da D-589 e do print a-20; conferir no item 4 da lista.
