@@ -409,3 +409,16 @@ PRONTO PARA O VERIFICADOR (4ª rodada).
   chuvisco" 30 escolhido no painel; o livro reaberto nela; abrir o Automático → 0, o de fábrica; na página 1 também;
   uma receita com 40 escolhida na caixa → 40; o livro com essa receita começa em 40 em qualquer página). No 4440a17
   ela falha: "o chuvisco da janela começou pelo da página, não pelo da receita — assert 30 == 0".
+
+## Testes da 5ª rodada
+
+- PC, um arquivo por vez: `test_decisoes_automatico_opcoes_do_filtro.py` (19), `test_decisoes_automatico.py` (24),
+  `test_decisoes_automatico_ver_como_fica.py` (22), `test_unidades_e_perfis.py` (9), `test_paineis_na_tela.py` (22),
+  `test_decisoes_filtro_automatico.py` (4), `test_decisoes_respeitar_gravuras.py` (19), `test_limpar_pontinhos_na_tela.py`
+  (19), `test_misto_na_tela.py` (14): todos passaram.
+- GitHub 41255443322 (3d05893): passou depois de rodar de novo a parte 1. Na 1ª vez, a parte 1 caiu no teste instável
+  conhecido do `test_promessas.py` (`test_p083_jeitos_do_so_as_letras[rede]` e `test_p083_jeitos_no_automatico[Guardar
+  tudo-tudo]`: prévia da área de trabalho, `ui/tarefas.py` linha 832); o resto passou de primeira, inclusive o
+  `teste_botoes.py`.
+
+PRONTO PARA O VERIFICADOR (5ª rodada).
