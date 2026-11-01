@@ -1667,6 +1667,7 @@ class PainelFiltroDaPagina(Painel):
 
         fila dos filtros (a página pequena em cada um, nome, tecla)
         [x] Respeitar as gravuras achadas   (D-586, 29/10/2026)
+        [ ] Gravuras em tons de cinza       (D-588, 01/11/2026; só no Preto e branco)
         Ajuste            o deslizante do filtro da vez
         Só as letras      só no Preto e branco
         Limpar a sujeira  só no Preto e branco
@@ -1712,6 +1713,7 @@ class PainelFiltroDaPagina(Painel):
         self.montado = False
         self._fila = self._apagar = self._aplicar = self._espaco = self._risco = None
         self._respeitar = None           # D-586: a caixinha logo abaixo da fila
+        self._cinza = None               # D-588: a caixinha logo abaixo da D-586
         self.sem_filtro = frase_do_painel(
             "Este livro não passa pelos filtros: a etapa “Limpar a folha” está desligada.")
         self.dentro.addWidget(self.sem_filtro)
@@ -1725,7 +1727,8 @@ class PainelFiltroDaPagina(Painel):
         26/10/2026, os dois botões "deixar em branco" e "tirar do livro"; era
         só o "apagar página"); "respeitar" (D-583/D-586, 29/10/2026: a
         caixinha "Respeitar as gravuras achadas", logo abaixo da fila; sem
-        ela, o painel monta como antes)."""
+        ela, o painel monta como antes); "cinza" (D-588, 01/11/2026: a
+        caixinha "Gravuras em tons de cinza", logo abaixo da "respeitar")."""
         from core.filtros import NOMES_AMIGAVEIS
 
         self.desmontar()
@@ -1749,6 +1752,13 @@ class PainelFiltroDaPagina(Painel):
         if respeitar is not None:
             self.dentro.addWidget(respeitar)
             self._respeitar = respeitar
+        # D-588 (01/11/2026): "Uma caixinha "Gravuras em tons de cinza" no Preto e
+        # branco. Ela fica no painel Filtro [...]". Logo abaixo da D-586 (as duas
+        # falam das gravuras achadas); quem a mostra só no Preto e branco é a tela.
+        cinza = pecas.get("cinza")
+        if cinza is not None:
+            self.dentro.addWidget(cinza)
+            self._cinza = cinza
 
         for chave, titulo, aberta in (("ajuste", "Ajuste", False), ("letras", "Só as letras", True),
                                       ("limpar", "Limpar a sujeira", False),
@@ -1795,13 +1805,13 @@ class PainelFiltroDaPagina(Painel):
 
     def desmontar(self) -> None:
         """Tira as peças do livro anterior (as da tela são destruídas com ele)."""
-        for widget in (self._fila, self._respeitar, self._espaco, self._risco, self._apagar,
-                       self._aplicar, *self.partes.values()):
+        for widget in (self._fila, self._respeitar, self._cinza, self._espaco, self._risco,
+                       self._apagar, self._aplicar, *self.partes.values()):
             if widget is not None:
                 widget.setParent(None)
                 widget.deleteLater()
         self._fila = self._apagar = self._aplicar = self._espaco = self._risco = None
-        self._respeitar = None
+        self._respeitar = self._cinza = None
         self.cartoes.clear()
         self.partes.clear()
         self.botoes_do_pedaco.clear()

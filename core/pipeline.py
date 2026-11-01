@@ -3566,7 +3566,31 @@ def _filtro_da_pagina(projeto: Projeto, pagina: ConfigPagina, img: np.ndarray, s
         algoritmo_pb=pagina.algoritmo_preto_branco, despeckle=pontinhos,
         decoracao_em_preto_e_branco=bool(
             getattr(projeto, "pb_decoracao_em_preto_e_branco", False)),
+        gravuras_em_cinza=gravuras_em_cinza_valem(pagina),          # D-588
     )
+
+
+def gravuras_em_cinza_valem(pagina: ConfigPagina) -> bool:
+    """A caixinha "Gravuras em tons de cinza" desta pagina (D-588) vale na conta?
+
+    D-588 (Samuel, 01/11/2026, "ok" a: "Uma caixinha "Gravuras em tons de
+    cinza" no Preto e branco. [...] Marcada, toda gravura achada sai cinza,
+    mesmo quando o programa acha que é um enfeite, como na capa do *Na escola
+    de Jesus*. Ela segue o "Aplicar em""). Marcada, o Preto e branco desta
+    pagina passa toda zona de gravura da marcacao para tons de cinza
+    (core.filtros._preto_e_branco_com_gravura, gravuras_em_cinza).
+
+    So e chamada no Preto e branco SEM "So as letras" (_filtro_da_pagina: o
+    "So as letras" vai antes para _filtrar_no_misto e nao a ve) - o mesmo
+    caso em que a tela deixa a caixinha clicavel (ui/tela_conferir.py,
+    _mostrar_gravuras_em_cinza). Com "Respeitar as gravuras achadas"
+    desligada (D-586) nao ha gravura achada para pintar de cinza: a tela deixa
+    a caixinha cinza, e aqui ela nao vale (nem nas areas feitas a mao). As
+    duas coisas estao como pergunta ao Samuel (relatorios/gravuras-cinza/
+    ONDE-PAREI.md). Desmarcada (o de fabrica): False, a conta de sempre.
+    Barato: so le dois campos."""
+    return (bool(getattr(pagina, "gravuras_em_tons_de_cinza", False))
+            and respeita_as_gravuras_achadas(pagina))
 
 
 # ---------------------------------------------------------------------------

@@ -61,6 +61,8 @@ CAMPOS = (
     "forca_preto", "clareza_melhorar", "intensidade_magico", "algoritmo_preto_branco",
     "claro_no_escuro", "letras_com_a_cor", "reduzir_cores",
     "luz_igualar", "luz_suavizar", "luz_chuvisco", "respeitar_gravuras_achadas",
+    # D-588 (01/11/2026): "Gravuras em tons de cinza" (no Preto e branco)
+    "gravuras_em_tons_de_cinza",
 )
 
 # Obra de 26/10/2026, etapa 3 (D-071, `fr-219`: "Mas ainda pode melhorar a caixa
