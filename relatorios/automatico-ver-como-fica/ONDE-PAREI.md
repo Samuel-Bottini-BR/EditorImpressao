@@ -422,3 +422,34 @@ PRONTO PARA O VERIFICADOR (4ª rodada).
   `teste_botoes.py`.
 
 PRONTO PARA O VERIFICADOR (5ª rodada).
+
+# 6ª rodada (31/10): Defeito 1 do verificador — o lado esquerdo do "comparar" trazia as opções de outra página
+
+Parecer: `.claude/worktrees/verif-t1/relatorios/automatico-ver-como-fica/verificador/parecer-verificador-31-10.md`
+(Defeito 1; prints v18 e v19; `piloto_lado_esquerdo.py`). Só este defeito; nada fora do comparar.
+
+## Decisão que esta rodada precisa cumprir
+
+- **D-577** (Samuel): "nessa vai ter o filtro que estava antes, seja ele original ou que foi aplicado e o filtro que
+  está selecionado no momento" · "não, eu quero poder mudar dos dois lados, todas as opções." Pedido da gerente: a aba
+  da esquerda começa com as opções **da página que está sendo mostrada**, com o filtro dela; ao folhear (lado ainda não
+  mexido) passa às opções da página nova; mexer numa opção só muda aquela opção; lado já mexido, ao folhear, continua
+  como era (leva o lado mexido para a página nova). Não mudar: o lado direito (D-594 "sim", 31/10), o "usar este", os
+  nomes dos botões (pergunta 7 aberta).
+
+## Como cumpri
+
+- `core/automatico.opcoes_da_pagina` passa a trazer também o filtro da página (`filtro_padrao` =
+  `core/etapas.filtro_que_vale`: o dela, escolhido à mão ou com "Limpar a folha" valendo; senão o Original — o mesmo
+  que o rótulo "como está no livro: ..." já mostrava). Só o lado esquerdo do comparar usa essa função.
+- `EstadoDoAutomatico.do_projeto(..., da_pagina=True, indice=...)`: lê a página pedida, não a da área de trabalho.
+- `LadoDoComparar._ler_a_pagina` (novo): a esquerda lê a página que o comparar mostra (`painel._indice`), sem contar
+  como "mexido". `LadoDoComparar.ir_para` (o folhear): esquerda não mexida → relê a página nova; mexida → como era (o
+  motor vai para a página nova com as opções do lado). "Onde rodar" do lado continua o da janela.
+- Lado direito, "usar este", nomes: não mudaram.
+- Prova: `tests/test_decisoes_automatico_opcoes_do_filtro.py::test_d577_lado_esquerdo_comeca_pelas_opcoes_da_pagina_mostrada_e_troca_ao_folhear`
+  (os passos do parecer no livro sintético: página 3 com Preto e branco + chuvisco 30, página 2 com Melhorar à mão,
+  Automático aberto na página 1, folhear até a 3, comparar → aba: chuvisco 30 e Preto e branco; folhear para a 2 →
+  Melhorar; voltar à 3 → 30; marcar "Limpar a folha" e só "Reduzir cores" → a única opção que mudou é "Reduzir cores",
+  o pedido do lado sai com chuvisco 30 e Preto e branco; o livro não mudou; folhear mexido leva o lado junto).
+  **No `0c29ba4` falha**: "a aba da esquerda trouxe o chuvisco de outra página — assert 0 == 30". No novo: passa.

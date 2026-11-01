@@ -238,7 +238,8 @@ class EstadoDoAutomatico(QObject):
 
     # --- de onde vem ---------------------------------------------------------
 
-    def do_projeto(self, projeto, receita: str | None = None, da_pagina: bool = False) -> None:
+    def do_projeto(self, projeto, receita: str | None = None, da_pagina: bool = False,
+                   indice: int | None = None) -> None:
         """Começa do livro: as opções e a ordem dele, e as etapas que já estão
         ligadas (no livro ou em alguma página). Com `receita`, a receita por
         cima (o aviso do livro novo marca a receita de sempre, D-018).
@@ -250,15 +251,19 @@ class EstadoDoAutomatico(QObject):
         alto da janela (hoje, "De fábrica"), qualquer que seja a página em que
         você está. [...] Pode ser assim, pela receita?" → "sim". Sem receita, ou
         "De fábrica", ou receita guardada antes sem essas chaves: os de uma página
-        nova. `da_pagina=True`: os da página da vez (só o lado esquerdo do
-        "comparar", que é "como está no livro", D-577). Arriscado: voltar a ler da
-        página da vez (a janela mudaria conforme a página aberta)."""
+        nova. `da_pagina=True`: os da página `indice` (None = a da vez), com o
+        filtro dela (core/automatico.opcoes_da_pagina): só o lado esquerdo do
+        "comparar", que é "como está no livro" (D-577), e lê a página que o
+        comparar MOSTRA (defeito 1 do verificador, 31/10: lia a da área de
+        trabalho). Arriscado: a janela voltar a ler da página da vez (ela mudaria
+        conforme a página aberta)."""
         self.opcoes = A.opcoes_do_livro(projeto)
         self.ordem = A.ordem(projeto)
         self.marcadas = set(A.etapas_ligadas(projeto))
         self.receita = getattr(projeto, "receita_usada", "") or ""
         if da_pagina:
-            self.opcoes.update(A.opcoes_da_pagina(projeto, self.pagina_atual))
+            self.opcoes.update(A.opcoes_da_pagina(
+                projeto, self.pagina_atual if indice is None else indice))
         else:
             self.opcoes.update(self._opcoes_da_pagina_da_receita(self.receita))
         self.total_paginas = len(getattr(projeto, "paginas", []))
@@ -938,8 +943,9 @@ class LadoDoComparar(QObject):
 
     COMO COMEÇA (continua valendo da D-577, 30/10: "nessa vai ter o filtro que estava antes,
     seja ele original ou que foi aplicado e o filtro que está selecionado no momento"):
-      - esquerda: as opções do livro como está (EstadoDoAutomatico.do_projeto), mostrando a
-        página como está no livro;
+      - esquerda: as opções do livro como está e as da página MOSTRADA, com o filtro dela
+        (_ler_a_pagina), mostrando a página como está no livro; enquanto não é mexida, ao
+        folhear passa às opções da página nova (defeito 1 do verificador, 31/10);
       - direita: uma cópia das opções da janela, mostrando o "depois" da janela; enquanto não
         é mexida, acompanha a janela (o "usar este" do outro lado a muda junto).
     Mexer numa opção deste lado (`mexido`) passa a mostrar como a página sai com as opções
@@ -958,10 +964,11 @@ class LadoDoComparar(QObject):
         janela = tela.painel.estado
         self.estado = EstadoDoAutomatico(self)
         self.estado.copiar_de(janela)                  # onde rodar e a página da vez
-        if da_esquerda and tela.painel.projeto is not None:
-            # as opções do livro como está (e as do painel Filtro, as da página: é "como
-            # está no livro", D-577)
-            self.estado.do_projeto(tela.painel.projeto, da_pagina=True)
+        self._pagina_lida: int | None = None           # a página de que a esquerda leu as opções
+        if da_esquerda:
+            # as opções do livro como está e as da página MOSTRADA, com o filtro dela (é
+            # "como está no livro", D-577)
+            self._ler_a_pagina(tela.painel._indice)
         self.painel = PainelDeOpcoes(self.estado, self, vertical=True)
         self.aba = QWidget()
         self.aba.setObjectName("abaDasOpcoesDoComparar")
@@ -1011,8 +1018,34 @@ class LadoDoComparar(QObject):
         Não muda o livro."""
         self.tela.painel.estado.usar_as_opcoes_de(self.estado)
 
+    def _ler_a_pagina(self, indice: int) -> None:
+        """Lado esquerdo: as opções do livro como está e as da página `indice` (a que o
+        comparar mostra), com o filtro dela (EstadoDoAutomatico.do_projeto com da_pagina).
+        Não conta como mexer (`_copiando`): o lado continua mostrando a página como está.
+
+        Defeito 1 do verificador (31/10/2026, parecer-verificador-31-10.md): a esquerda lia
+        a página da área de trabalho (estado.pagina_atual), não a mostrada, e não relia ao
+        folhear; mexer numa opção trocava em silêncio o que a página tinha (o chuvisco 30
+        virava 0). D-577 (Samuel): "nessa vai ter o filtro que estava antes, seja ele original
+        ou que foi aplicado" · "eu quero poder mudar dos dois lados, todas as opções."
+        "Onde rodar" (estado.pagina_atual) continua o da janela. Arriscado: ler a página sem o
+        `_copiando` (o lado passaria a "mexido" sozinho)."""
+        projeto = self.tela.painel.projeto
+        if projeto is None:
+            return
+        self._copiando = True
+        try:
+            self.estado.do_projeto(projeto, da_pagina=True, indice=indice)
+        finally:
+            self._copiando = False
+        self._pagina_lida = indice
+
     def ir_para(self, indice: int) -> None:
-        """O folhear da tela cheia: o motor (se houver) vai para a mesma página."""
+        """O folhear da tela cheia: o motor (se houver) vai para a mesma página. O lado
+        esquerdo ainda não mexido passa às opções da página nova (_ler_a_pagina); o mexido
+        leva as opções dele para a página nova (como já era)."""
+        if self.da_esquerda and not self.mexido and indice != self._pagina_lida:
+            self._ler_a_pagina(indice)
         if self.motor is not None and self.motor._indice != indice:
             self.motor.ir_para(indice)
 

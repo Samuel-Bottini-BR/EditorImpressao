@@ -184,15 +184,24 @@ def _valor_da_pagina(pagina, campo: str):
 
 def opcoes_da_pagina(projeto, indice: int) -> dict[str, Any]:
     """Os valores de agora da pagina `indice` (o painel Filtro mostra os dela)
-    para os CAMPOS_DA_PAGINA. Usado so pelo lado esquerdo do "comparar" ("como
-    esta no livro", D-577): a janela do Automatico comeca pelos da RECEITA
-    escolhida (D-594, Samuel 31/10: "sim"; ui/automatico.EstadoDoAutomatico.
-    do_projeto). Livro sem paginas: os de fabrica (os de uma pagina nova)."""
+    para os CAMPOS_DA_PAGINA, e o filtro com que ela sai ("filtro_padrao" =
+    core/etapas.filtro_que_vale: o dela, escolhido a mao ou com "Limpar a folha"
+    valendo; senao o Original). Usado so pelo lado esquerdo do "comparar" ("como
+    esta no livro", D-577: "nessa vai ter o filtro que estava antes, seja ele
+    original ou que foi aplicado"): a janela do Automatico comeca pelos da
+    RECEITA escolhida (D-594, Samuel 31/10: "sim"; ui/automatico.
+    EstadoDoAutomatico.do_projeto). Livro sem paginas: os de fabrica (os de uma
+    pagina nova).
+    Defeito 1 do verificador (31/10): sem o filtro da pagina, a aba da esquerda
+    mostrava o filtro do livro numa pagina com filtro escolhido a mao.
+    Arriscado: tirar o "filtro_padrao" daqui (volta o defeito)."""
     paginas = getattr(projeto, "paginas", None) or []
     if paginas:
         pagina = paginas[max(0, min(int(indice or 0), len(paginas) - 1))]
-        return {c: copy.deepcopy(_valor_da_pagina(pagina, c)) for c in CAMPOS_DA_PAGINA
-                if hasattr(pagina, c)}
+        valores = {c: copy.deepcopy(_valor_da_pagina(pagina, c)) for c in CAMPOS_DA_PAGINA
+                   if hasattr(pagina, c)}
+        valores["filtro_padrao"] = E.filtro_que_vale(projeto, pagina)
+        return valores
     return de_fabrica_da_pagina()
 
 

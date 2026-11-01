@@ -474,3 +474,90 @@ def test_d577_lado_direito_nao_mexido_acompanha_a_janela(janela, app, tmp_path):
     _esperar_lado(app, painel, a)
     assert not b.mexido and b.estado.opcoes["filtro_padrao"] == MAGICO_PRO
     assert tela.rotulo_b.text() == "depois: Mágico pro"
+
+
+def test_d577_lado_esquerdo_comeca_pelas_opcoes_da_pagina_mostrada_e_troca_ao_folhear(janela, app, tmp_path):
+    """Defeito 1 do verificador (31/10/2026, parecer-verificador-31-10.md, prints v18 e v19): o
+    lado esquerdo do "comparar" trazia na aba as opções de OUTRA página (a da área de trabalho,
+    não a mostrada) e sem o filtro dela. Passos: na página com "Tirar o chuvisco" 30 escolhido
+    no painel Filtro, ir para outra página, abrir o Automático, folhear a página da direita até
+    a do chuvisco, "tela cheia" → "comparar" → "opções" da esquerda: a aba dizia chuvisco 0, e
+    marcar só "Reduzir cores" fazia a esquerda perder o chuvisco 30 sem a pessoa mexer nele.
+    Folhear dentro do comparar não trocava as opções da aba; página com filtro escolhido à mão
+    mostrava na aba o filtro do livro.
+
+    D-577 (Samuel): "nessa vai ter o filtro que estava antes, seja ele original ou que foi
+    aplicado e o filtro que está selecionado no momento" · "eu quero poder mudar dos dois
+    lados, todas as opções." O certo: a aba da esquerda começa pelas opções DA PÁGINA MOSTRADA,
+    com o filtro dela; ao folhear (lado ainda não mexido) passa às da página nova; mexer numa
+    opção só muda aquela opção. (No 0c29ba4: falha.)"""
+    from core import etapas
+
+    janela.abrir_livro(_livro(tmp_path))
+    _assentar(app)
+    tc = janela.tela_conferir
+    projeto = janela.projeto
+    # a página 3: Preto e branco com "Tirar o chuvisco" 30, no painel Filtro
+    tc.ir_para_pagina(PAGINA)
+    tc._escolher_filtro(PRETO_E_BRANCO)
+    tc._mudar_luz("luz_chuvisco", 30)
+    assert projeto.paginas[PAGINA].luz_chuvisco == 30
+    # a página 2: Melhorar escolhido à mão
+    tc.ir_para_pagina(1)
+    tc._escolher_filtro(MELHORAR)
+    assert etapas.filtro_que_vale(projeto, projeto.paginas[1]) == MELHORAR
+    # abre o Automático na página 1 e folheia a página da direita até a 3
+    tc.ir_para_pagina(0)
+    _assentar(app)
+    grande = janela.abrir_o_automatico()
+    _assentar(app)
+    painel = grande.antes_e_depois
+    painel.ir_para(PAGINA)
+    _esperar(app, painel)
+    painel, tela = _comparar(grande, app)
+    a = tela.lado_a
+    a.botao_opcoes.click()
+    a.painel.mostrar_etapa(A.LIMPAR)
+    _assentar(app)
+    assert painel._indice == PAGINA and tela.rotulo_a.text().startswith("como está no livro")
+    assert a.estado.opcoes["luz_chuvisco"] == 30, "a aba da esquerda trouxe o chuvisco de outra página"
+    assert a.painel.seletor_luz_chuvisco.value() == 30
+    assert a.estado.opcoes["filtro_padrao"] == PRETO_E_BRANCO
+    assert a.painel.radios_de_filtro[PRETO_E_BRANCO].isChecked()
+    assert not a.mexido
+
+    # folhear dentro do comparar: a aba passa às opções da página nova (filtro à mão: o dela)
+    painel.ir_para(1)
+    _esperar(app, painel)
+    assert painel._indice == 1 and not a.mexido
+    assert a.estado.opcoes["filtro_padrao"] == MELHORAR, "a aba mostra o filtro do livro, não o da página"
+    assert a.painel.radios_de_filtro[MELHORAR].isChecked()
+    assert a.estado.opcoes["luz_chuvisco"] == projeto.paginas[1].luz_chuvisco
+    painel.ir_para(PAGINA)
+    _esperar(app, painel)
+    assert a.estado.opcoes["luz_chuvisco"] == 30 and a.estado.opcoes["filtro_padrao"] == PRETO_E_BRANCO
+    assert not a.mexido
+
+    # marcar só "Reduzir cores": o chuvisco 30 e o filtro da página continuam
+    antes = dict(a.estado.opcoes)
+    a.painel.lista.item_da_etapa(A.LIMPAR).setCheckState(Qt.Checked)
+    a.painel.controles["reduzir_cores"].setChecked(True)
+    _esperar_lado(app, painel, a)
+    assert a.mexido
+    mudou = {c for c in a.estado.opcoes if a.estado.opcoes[c] != antes.get(c)}
+    assert mudou == {"reduzir_cores"}, f"mexer em uma opção mudou outras: {mudou}"
+    pedido = a.estado.pedido()
+    assert pedido.opcoes["luz_chuvisco"] == 30 and pedido.opcoes["filtro_padrao"] == PRETO_E_BRANCO
+    assert tela.rotulo_a.text() == "depois: Preto e branco"
+    # a conta da esquerda (a cópia do motor) saiu com o chuvisco 30 e o "Reduzir cores"
+    m = a.motor
+    assert m is not None and m._feito is not None
+    # o livro não mudou
+    assert projeto.paginas[PAGINA].luz_chuvisco == 30 and not projeto.paginas[PAGINA].reduzir_cores
+    # lado já mexido: folhear leva o lado mexido para a página nova (como já era)
+    painel.ir_para(1)
+    _esperar_lado(app, painel, a)
+    assert a.estado.opcoes["reduzir_cores"] is True and a.estado.opcoes["luz_chuvisco"] == 30
+    assert a.motor._indice == 1
+    tela.accept()
+    _assentar(app)
