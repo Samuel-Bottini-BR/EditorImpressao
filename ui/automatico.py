@@ -94,6 +94,19 @@ FILTROS_DA_LIMPEZA = (
 )
 PAGINAS_POR_CADERNO = (8, 12, 16, 20, 24, 32, 40)
 
+# D-594: os nomes do "Ajuste" do painel Filtro ("Força do preto", "Clareza do fundo",
+# "Intensidade") são os do próprio painel (ui/tela_conferir.ROTULOS_DO_AJUSTE e
+# CAMPO_DO_AJUSTE), lidos de lá na hora (import tardio: a tela de conferir importa
+# este módulo). O da caixinha da D-586 é o texto do painel, o mesmo.
+ROTULO_RESPEITAR = "Respeitar as gravuras achadas"
+
+
+def _ajustes_do_painel() -> tuple[dict, dict]:
+    """(ROTULOS_DO_AJUSTE, CAMPO_DO_AJUSTE) do painel Filtro (ui/tela_conferir)."""
+    from ui.tela_conferir import CAMPO_DO_AJUSTE, ROTULOS_DO_AJUSTE
+
+    return ROTULOS_DO_AJUSTE, CAMPO_DO_AJUSTE
+
 # D-093/D-094: o retângulo do corte quando o ângulo muda (códigos de core/pipeline)
 RETANGULO_SEGUE = None
 NOMES_DO_RETANGULO = (
@@ -146,6 +159,7 @@ def texto_das_opcoes(etapa: str, opcoes: dict) -> str:
                 texto += ", " + pontinhos.NOMES_NA_TELA[limpeza].lower()
             if o.get("pb_decoracao_em_preto_e_branco") and not o.get("misto_so_as_letras"):
                 texto += ", molduras em preto e branco"
+        texto += _texto_das_opcoes_da_pagina(filtro, o)
         return texto
     if etapa == A.GRAVURAS:
         forma = o.get("gravura_forma", "livre")
@@ -161,6 +175,41 @@ def texto_das_opcoes(etapa: str, opcoes: dict) -> str:
     if etapa == A.CADERNOS:
         return f"{o.get('paginas_por_caderno', 20)} páginas por caderno"
     return ""
+
+
+def _texto_das_opcoes_da_pagina(filtro: str, o: dict) -> str:
+    """D-594: as opções do painel Filtro no "Limpar a folha" que não estão como
+    numa página nova, com os nomes do painel (", Força do preto: mais escuro,
+    Tirar o chuvisco: 30"), para a caixa da receita dizer o que vai dentro (D-071).
+    Só as que valem com o `filtro` (core/automatico.campos_da_pagina_no_filtro)."""
+    from core import claro_no_escuro, cores_scantailor, luz_scantailor, preto_e_branco_scantailor
+    from core.filtros import NOMES_DOS_ALGORITMOS_PB, palavra_do_ajuste
+
+    rotulos, campos_do_ajuste = _ajustes_do_painel()
+    nome_do_ajuste = {campos_do_ajuste[f]: r[0] for f, r in rotulos.items()}
+    fabrica = A.de_fabrica_da_pagina()
+    partes = []
+    for campo in A.campos_da_pagina_no_filtro(filtro):
+        if campo not in o or o[campo] == fabrica.get(campo):
+            continue
+        valor = o[campo]
+        if campo in nome_do_ajuste:
+            partes.append(f"{nome_do_ajuste[campo]}: {palavra_do_ajuste(int(valor))}")
+        elif campo == "algoritmo_preto_branco":
+            nome = (NOMES_DOS_ALGORITMOS_PB.get(valor)
+                    or preto_e_branco_scantailor.NOMES_NA_TELA.get(valor, str(valor)))
+            partes.append(f"Jeito do preto e branco: {nome}")
+        elif campo == "luz_chuvisco":
+            partes.append(f"{luz_scantailor.ROTULO_CHUVISCO}: {int(valor)}")
+        else:
+            nome = {"claro_no_escuro": claro_no_escuro.ROTULO_NA_TELA,
+                    "letras_com_a_cor": cores_scantailor.ROTULO_LETRAS,
+                    "reduzir_cores": cores_scantailor.ROTULO_REDUZIR,
+                    "luz_igualar": luz_scantailor.ROTULO_IGUALAR,
+                    "luz_suavizar": luz_scantailor.ROTULO_SUAVIZAR,
+                    "respeitar_gravuras_achadas": ROTULO_RESPEITAR}.get(campo, campo)
+            partes.append(nome if valor else f"{nome}: desligada")
+    return "".join(", " + p for p in partes)
 
 
 # ---------------------------------------------------------------------------
@@ -189,20 +238,50 @@ class EstadoDoAutomatico(QObject):
 
     # --- de onde vem ---------------------------------------------------------
 
-    def do_projeto(self, projeto, receita: str | None = None) -> None:
+    def do_projeto(self, projeto, receita: str | None = None, da_pagina: bool = False,
+                   indice: int | None = None) -> None:
         """Começa do livro: as opções e a ordem dele, e as etapas que já estão
         ligadas (no livro ou em alguma página). Com `receita`, a receita por
-        cima (o aviso do livro novo marca a receita de sempre, D-018)."""
+        cima (o aviso do livro novo marca a receita de sempre, D-018).
+
+        D-594, as opções do painel Filtro que moram na página (CAMPOS_DA_PAGINA):
+        começam pelos valores da RECEITA escolhida no alto da janela, nunca pelos
+        da página em que a pessoa está. Samuel, 31/10/2026, à pergunta "A outra
+        opção é as opções novas começarem com os valores da receita escolhida no
+        alto da janela (hoje, "De fábrica"), qualquer que seja a página em que
+        você está. [...] Pode ser assim, pela receita?" → "sim". Sem receita, ou
+        "De fábrica", ou receita guardada antes sem essas chaves: os de uma página
+        nova. `da_pagina=True`: os da página `indice` (None = a da vez), com o
+        filtro dela (core/automatico.opcoes_da_pagina): só o lado esquerdo do
+        "comparar", que é "como está no livro" (D-577), e lê a página que o
+        comparar MOSTRA (defeito 1 do verificador, 31/10: lia a da área de
+        trabalho). Arriscado: a janela voltar a ler da página da vez (ela mudaria
+        conforme a página aberta)."""
         self.opcoes = A.opcoes_do_livro(projeto)
         self.ordem = A.ordem(projeto)
         self.marcadas = set(A.etapas_ligadas(projeto))
         self.receita = getattr(projeto, "receita_usada", "") or ""
+        if da_pagina:
+            self.opcoes.update(A.opcoes_da_pagina(
+                projeto, self.pagina_atual if indice is None else indice))
+        else:
+            self.opcoes.update(self._opcoes_da_pagina_da_receita(self.receita))
         self.total_paginas = len(getattr(projeto, "paginas", []))
         self.tem_camadas = bool(getattr(projeto, "tem_camadas", False))
         self.acertar_situacoes(projeto)
         if receita:
             self.por_receita(receita, avisar=False)
         self.mudou.emit()
+
+    @staticmethod
+    def _opcoes_da_pagina_da_receita(nome: str) -> dict:
+        """D-594: os CAMPOS_DA_PAGINA da receita `nome` (os que ela não tem: os de
+        uma página nova). "" ou "De fábrica": os de uma página nova."""
+        valores = A.de_fabrica_da_pagina()
+        dados = perfis.ler(nome) if nome and nome != perfis.NOME_DE_FABRICA else None
+        if isinstance(dados, dict):
+            valores.update({c: copy.deepcopy(dados[c]) for c in A.CAMPOS_DA_PAGINA if c in dados})
+        return valores
 
     def acertar_situacoes(self, projeto) -> None:
         """Onde cada etapa está ligada hoje ("ligada no livro todo",
@@ -216,6 +295,10 @@ class EstadoDoAutomatico(QObject):
         dados = perfis.ler(nome)
         if dados is None:
             return False
+        # D-594 ("sim", 31/10: as opções novas "pela receita"): as opções do painel Filtro
+        # vêm da receita; "De fábrica" e a receita guardada antes, sem elas, põem as de
+        # uma página nova
+        dados = {**dados, **self._opcoes_da_pagina_da_receita(nome)}
         for campo, valor in dados.items():
             if campo in perfis.CAMPOS:
                 self.opcoes[campo] = copy.deepcopy(valor)
@@ -224,6 +307,31 @@ class EstadoDoAutomatico(QObject):
         if avisar:
             self.mudou.emit()
         return True
+
+    def copiar_de(self, outro: "EstadoDoAutomatico") -> None:
+        """Fica igual a `outro` em tudo (etapas, ordem, opções, receita, onde rodar).
+        Para os dois lados do "comparar" (D-577) começarem de um estado."""
+        self.marcadas = set(outro.marcadas)
+        self.ordem = list(outro.ordem)
+        self.opcoes = copy.deepcopy(outro.opcoes)
+        self.receita = outro.receita
+        self.alcance = outro.alcance
+        self.escolhidas = list(outro.escolhidas)
+        self.pagina_atual = outro.pagina_atual
+        self.total_paginas = outro.total_paginas
+        self.tem_camadas = outro.tem_camadas
+        self.situacoes = dict(outro.situacoes)
+        self.mudou.emit()
+
+    def usar_as_opcoes_de(self, outro: "EstadoDoAutomatico") -> None:
+        """O "usar este" do "comparar" (D-577: "passa as opções daquele lado para a
+        janela"): as etapas marcadas, a ordem, as opções e a receita de `outro`. Onde
+        rodar fica o da janela (é do "Rodar", não das opções). Não muda o livro."""
+        self.marcadas = set(outro.marcadas)
+        self.ordem = list(outro.ordem)
+        self.opcoes = copy.deepcopy(outro.opcoes)
+        self.receita = outro.receita
+        self.mudou.emit()
 
     # --- mexer -----------------------------------------------------------------
 
@@ -817,6 +925,156 @@ def _lado_a_lado(imagens: list):
     return np.concatenate(pedacos, axis=1)
 
 
+class LadoDoComparar(QObject):
+    """Um lado do "comparar" da tela cheia (D-577, 3º teste, 30/10/2026).
+
+    Samuel: "seria bom se pudessemos ver as opções e mudar simutaneamente nesse comparar,
+    tivesse uma aba de cada lado que abrisse e fechasse para mudar as opções no comparar, ao
+    em vez de ser só o antes e depois." · "não, eu quero poder mudar dos dois lados, todas as
+    opções." · "usar este" em cada lado → "ok, não gostei do nome, mas vamos ficar com esse
+    por enquanto." No Livro: "cada lado com uma aba que abre e fecha com todas as opções do
+    Automático, mudando à parte; cada lado com "usar este" (nome provisório), que passa as
+    opções daquele lado para a janela; o "Rodar" usa as da janela."
+
+    O QUE TEM: um EstadoDoAutomatico SÓ deste lado (`estado`; mudar aqui não muda a janela
+    nem o outro lado), o MESMO PainelDeOpcoes da janela grande (`painel`, na `aba`, que abre
+    e fecha pelo `botao_opcoes`) e o "usar este" (`botao_usar`: passa as opções deste lado
+    para o estado da janela, EstadoDoAutomatico.usar_as_opcoes_de).
+
+    COMO COMEÇA (continua valendo da D-577, 30/10: "nessa vai ter o filtro que estava antes,
+    seja ele original ou que foi aplicado e o filtro que está selecionado no momento"):
+      - esquerda: as opções do livro como está e as da página MOSTRADA, com o filtro dela
+        (_ler_a_pagina), mostrando a página como está no livro; enquanto não é mexida, ao
+        folhear passa às opções da página nova (defeito 1 do verificador, 31/10);
+      - direita: uma cópia das opções da janela, mostrando o "depois" da janela; enquanto não
+        é mexida, acompanha a janela (o "usar este" do outro lado a muda junto).
+    Mexer numa opção deste lado (`mexido`) passa a mostrar como a página sai com as opções
+    DESTE lado, calculadas por um motor escondido (uma PaginaAntesEDepois com o estado daqui,
+    só o depois: a mesma conta, numa cópia do projeto, com a bolinha). Nada muda no livro.
+    Uma página por vez na memória (o motor guarda só o depois da página da vez).
+    Arriscado: o lado mexer no estado da janela sem o "usar este"."""
+
+    def __init__(self, tela: "TelaCheiaDoAntesEDepois", da_esquerda: bool) -> None:
+        super().__init__(tela)
+        self.tela = tela
+        self.da_esquerda = da_esquerda
+        self.mexido = False
+        self._copiando = False
+        self.motor: PaginaAntesEDepois | None = None
+        janela = tela.painel.estado
+        self.estado = EstadoDoAutomatico(self)
+        self.estado.copiar_de(janela)                  # onde rodar e a página da vez
+        self._pagina_lida: int | None = None           # a página de que a esquerda leu as opções
+        if da_esquerda:
+            # as opções do livro como está e as da página MOSTRADA, com o filtro dela (é
+            # "como está no livro", D-577)
+            self._ler_a_pagina(tela.painel._indice)
+        self.painel = PainelDeOpcoes(self.estado, self, vertical=True)
+        self.aba = QWidget()
+        self.aba.setObjectName("abaDasOpcoesDoComparar")
+        self.aba.setFixedWidth(400)
+        col = QVBoxLayout(self.aba)
+        col.setContentsMargins(0, 0, 0, 0)
+        col.setSpacing(4)
+        self.painel.lista.setMaximumHeight(230)
+        col.addWidget(self.painel.esquerda)
+        col.addWidget(self.painel.pilha, 1)
+        self.aba.setVisible(False)
+        self.botao_opcoes = QPushButton("opções")
+        self.botao_opcoes.setCheckable(True)
+        self.botao_opcoes.toggled.connect(self.aba.setVisible)
+        self.botao_usar = QPushButton("usar este")
+        self.botao_usar.clicked.connect(lambda *_: self.usar_este())
+        self.estado.mudou.connect(self._mexeu)
+        self._segue_a_janela = not da_esquerda
+        if self._segue_a_janela:
+            janela.mudou.connect(self._seguir_a_janela)
+
+    def _mexeu(self) -> None:
+        """Uma opção deste lado mudou (não a cópia que acompanha a janela): este lado
+        passa a mostrar a conta dele."""
+        if self._copiando:
+            return
+        self.mexido = True
+        if self.motor is None:
+            self.motor = PaginaAntesEDepois(self.estado, self.tela.painel.projeto,
+                                            indice=self.tela.painel._indice, com_o_antes=False)
+            self.motor.setVisible(False)
+            self.motor.mostrou.connect(self.tela._acertar_lados)
+        self.tela._acertar_lados()
+
+    def _seguir_a_janela(self) -> None:
+        """O lado direito não mexido acompanha o estado da janela."""
+        if self.mexido:
+            return
+        self._copiando = True
+        try:
+            self.estado.copiar_de(self.tela.painel.estado)
+        finally:
+            self._copiando = False
+
+    def usar_este(self) -> None:
+        """"usar este": as opções deste lado vão para a janela (o "Rodar" usa as da janela).
+        Não muda o livro."""
+        self.tela.painel.estado.usar_as_opcoes_de(self.estado)
+
+    def _ler_a_pagina(self, indice: int) -> None:
+        """Lado esquerdo: as opções do livro como está e as da página `indice` (a que o
+        comparar mostra), com o filtro dela (EstadoDoAutomatico.do_projeto com da_pagina).
+        Não conta como mexer (`_copiando`): o lado continua mostrando a página como está.
+
+        Defeito 1 do verificador (31/10/2026, parecer-verificador-31-10.md): a esquerda lia
+        a página da área de trabalho (estado.pagina_atual), não a mostrada, e não relia ao
+        folhear; mexer numa opção trocava em silêncio o que a página tinha (o chuvisco 30
+        virava 0). D-577 (Samuel): "nessa vai ter o filtro que estava antes, seja ele original
+        ou que foi aplicado" · "eu quero poder mudar dos dois lados, todas as opções."
+        "Onde rodar" (estado.pagina_atual) continua o da janela. Arriscado: ler a página sem o
+        `_copiando` (o lado passaria a "mexido" sozinho)."""
+        projeto = self.tela.painel.projeto
+        if projeto is None:
+            return
+        self._copiando = True
+        try:
+            self.estado.do_projeto(projeto, da_pagina=True, indice=indice)
+        finally:
+            self._copiando = False
+        self._pagina_lida = indice
+
+    def ir_para(self, indice: int) -> None:
+        """O folhear da tela cheia: o motor (se houver) vai para a mesma página. O lado
+        esquerdo ainda não mexido passa às opções da página nova (_ler_a_pagina); o mexido
+        leva as opções dele para a página nova (como já era)."""
+        if self.da_esquerda and not self.mexido and indice != self._pagina_lida:
+            self._ler_a_pagina(indice)
+        if self.motor is not None and self.motor._indice != indice:
+            self.motor.ir_para(indice)
+
+    def imagem_e_rotulo(self) -> tuple:
+        """(imagem, rótulo, calculando) do que este lado mostra agora."""
+        from core.filtros import NOMES_AMIGAVEIS as NOMES
+
+        p = self.tela.painel
+        if not self.mexido or self.motor is None:
+            return None, "", False
+        m = self.motor
+        depois = m._depois[1] if m._depois and m._depois[0] == m._indice == p._indice else None
+        nome = NOMES.get(m._filtro_depois, m._filtro_depois) if m._feito is not None else ""
+        return depois, (f"depois: {nome}" if nome else "depois"), m.calculando()
+
+    def fechar(self) -> None:
+        """Para a conta do motor e solta as imagens (a tela cheia fechou)."""
+        if self.motor is not None:
+            self.motor.fechar()
+            self.motor.deleteLater()
+            self.motor = None
+        if self._segue_a_janela:
+            self._segue_a_janela = False
+            try:
+                self.tela.painel.estado.mudou.disconnect(self._seguir_a_janela)
+            except (RuntimeError, TypeError):
+                pass
+
+
 class TelaCheiaDoAntesEDepois(QDialog):
     """O "tela cheia" da página da direita da janela grande do Automático (D-577, 30/10/2026).
 
@@ -882,13 +1140,30 @@ class TelaCheiaDoAntesEDepois(QDialog):
         lado.setSpacing(10)
         self.rotulo_a, self.rotulo_b = QLabel(""), QLabel("")
         self.vista_a, self.vista_b = Visualizador(), Visualizador()
-        for rotulo, vista in ((self.rotulo_a, self.vista_a), (self.rotulo_b, self.vista_b)):
+        # D-577 (3º teste): cada lado com a aba das opções (abre e fecha) e o "usar este"
+        self.lado_a, self.lado_b = LadoDoComparar(self, True), LadoDoComparar(self, False)
+        for rotulo, vista, lado_do in ((self.rotulo_a, self.vista_a, self.lado_a),
+                                       (self.rotulo_b, self.vista_b, self.lado_b)):
             coluna = QVBoxLayout()
             coluna.setSpacing(4)
+            topo = QHBoxLayout()
             rotulo.setAlignment(Qt.AlignCenter)
-            coluna.addWidget(rotulo)
+            if lado_do.da_esquerda:
+                topo.addWidget(lado_do.botao_opcoes)
+            topo.addWidget(rotulo, 1)
+            topo.addWidget(lado_do.botao_usar)
+            if not lado_do.da_esquerda:
+                topo.addWidget(lado_do.botao_opcoes)
+            coluna.addLayout(topo)
+            corpo = QHBoxLayout()
+            corpo.setSpacing(6)
             vista.definir_modo(MODO_NENHUM)
-            coluna.addWidget(vista, 1)
+            if lado_do.da_esquerda:
+                corpo.addWidget(lado_do.aba)
+            corpo.addWidget(vista, 1)
+            if not lado_do.da_esquerda:
+                corpo.addWidget(lado_do.aba)
+            coluna.addLayout(corpo, 1)
             lado.addLayout(coluna, 1)
         self.vista_a.vista_mudou.connect(self._vista_a_mudou)
         self.vista_b.vista_mudou.connect(self._vista_b_mudou)
@@ -950,18 +1225,38 @@ class TelaCheiaDoAntesEDepois(QDialog):
                 or self._mostrado[2] != aviso):
             self._mostrado = (antes, depois, aviso)
             self.visor.mostrar(antes, depois, aviso=aviso)
-        if self.comparando:
-            # depois de _lado_a_lado: o mesmo "depois" do antes e depois (as duas metades,
-            # quando a folha é dividida)
-            depois_cru = self.visor._crus[1]
-            self.vista_a.definir_imagem(do_livro, dono=("pagina", indice))
-            self.vista_b.definir_imagem(depois_cru, dono=("pagina", indice))
-            self.rotulo_a.setText(f"como está no livro: {nome_do_livro}" if nome_do_livro
-                                  else "como está no livro")
-            self.rotulo_b.setText(f"depois: {nome_depois}" if nome_depois else "depois")
+        self._da_janela = (indice, do_livro, nome_do_livro, nome_depois, calculando)
         self.contador.setText(contador)
         self.botao_anterior.setEnabled(anterior)
         self.botao_proxima.setEnabled(proxima)
+        self._acertar_lados()
+
+    def _acertar_lados(self) -> None:
+        """No "comparar", as duas telas: cada lado mostra o dele (LadoDoComparar). Lado não
+        mexido: a esquerda é a página como está no livro, a direita o "depois" da janela
+        (como era). Lado mexido: o "depois" com as opções daquele lado. E a bolinha gira
+        enquanto alguma conta roda."""
+        indice, do_livro, nome_do_livro, nome_depois, calculando = getattr(
+            self, "_da_janela", (-1, None, "", "", False))
+        if self.comparando:
+            for lado_do in (self.lado_a, self.lado_b):
+                lado_do.ir_para(self.painel._indice)
+            # depois de _lado_a_lado: o mesmo "depois" do antes e depois (as duas metades,
+            # quando a folha é dividida)
+            depois_cru = self.visor._crus[1]
+            img_a, rot_a, calc_a = self.lado_a.imagem_e_rotulo()
+            img_b, rot_b, calc_b = self.lado_b.imagem_e_rotulo()
+            if not self.lado_a.mexido:
+                img_a = do_livro
+                rot_a = f"como está no livro: {nome_do_livro}" if nome_do_livro else "como está no livro"
+            if not self.lado_b.mexido:
+                img_b = depois_cru
+                rot_b = f"depois: {nome_depois}" if nome_depois else "depois"
+            self.vista_a.definir_imagem(img_a, dono=("pagina", indice))
+            self.vista_b.definir_imagem(img_b, dono=("pagina", indice))
+            self.rotulo_a.setText(rot_a)
+            self.rotulo_b.setText(rot_b)
+            calculando = calculando or calc_a or calc_b
         self.bolinha.definir(calculando, "Calculando como a página vai ficar..." if calculando else "")
 
     def _zoom(self, fator: float | None) -> None:
@@ -1021,6 +1316,8 @@ class TelaCheiaDoAntesEDepois(QDialog):
         self.visor.mostrar(None, None)              # solta as imagens (uma página por vez)
         self.vista_a.definir_imagem(None, dono=("nada",))
         self.vista_b.definir_imagem(None, dono=("nada",))
+        self.lado_a.fechar()                        # as contas dos lados do "comparar" param
+        self.lado_b.fechar()
         super().done(resultado)
 
 
@@ -1068,12 +1365,21 @@ class PaginaAntesEDepois(QWidget):
     Arriscado: calcular no projeto aberto em vez da cópia; mostrar o que
     chegar sem conferir a geração (o depois velho cobriria o novo)."""
 
-    def __init__(self, estado: EstadoDoAutomatico, projeto=None, parent=None) -> None:
+    # avisa que o que esta pagina mostra mudou (o lado do "comparar" que a usa como
+    # motor escondido, D-577, redesenha a tela dele)
+    mostrou = Signal()
+
+    def __init__(self, estado: EstadoDoAutomatico, projeto=None, parent=None,
+                 indice: int | None = None, com_o_antes: bool = True) -> None:
+        """`indice`: a página em que começa (None = a da vez do estado).
+        `com_o_antes=False`: só calcula o depois (o lado do "comparar" não mostra o antes:
+        um desenho a menos por página)."""
         super().__init__(parent)
         from ui.widgets.bolinha import BolinhaDeCarregamento
 
         self.estado = estado
         self.projeto = projeto
+        self.com_o_antes = com_o_antes
         self._indice = 0                      # a página da vez (índice em projeto.paginas)
         self._querida = None                  # a chave do último pedido (_chave): só ela vale
         self._tarefa = None                   # a conta que está rodando
@@ -1130,7 +1436,7 @@ class PaginaAntesEDepois(QWidget):
         self._relogio.setInterval(ESPERA_ANTES_DE_CALCULAR_MS)
         self._relogio.timeout.connect(self._calcular_agora)
         estado.mudou.connect(self.pedir)
-        self.ir_para(estado.pagina_atual)
+        self.ir_para(estado.pagina_atual if indice is None else indice)
 
     # --- folhear ------------------------------------------------------------
 
@@ -1193,6 +1499,7 @@ class PaginaAntesEDepois(QWidget):
     def _acertar_tela_cheia(self) -> None:
         """Manda para o tela cheia aberto o que a página da direita mostra agora: o antes e o
         depois (os mesmos da vista daqui), o "página N de M", os botões e a bolinha."""
+        self.mostrou.emit()
         if self.tela_cheia is None:
             return
         from core import etapas
@@ -1268,7 +1575,7 @@ class PaginaAntesEDepois(QWidget):
         pedido = self.estado.pedido(pular_mexidas=False)
         chave = self._chave(pedido)
         self._querida = chave
-        precisa_do_antes = self._antes is None or self._antes[0] != self._indice
+        precisa_do_antes = self.com_o_antes and (self._antes is None or self._antes[0] != self._indice)
         precisa_do_livro = self._precisa_do_livro()
         rodando = self._tarefa
         if chave == self._feito and not precisa_do_antes and not precisa_do_livro:
@@ -1387,84 +1694,45 @@ class PaginaAntesEDepois(QWidget):
 
 
 # ---------------------------------------------------------------------------
-# a janela grande
+# o painel das opções (o mesmo na janela grande e em cada lado do "comparar")
 # ---------------------------------------------------------------------------
 
-class JanelaDoAutomatico(QDialog):
-    """A janela grande do Automático ("O que o automático vai fazer"): as
-    etapas à esquerda, as opções da etapa escolhida no meio, a página ao lado
-    (antes e depois, D-577; folhear e zoom) e, embaixo, a frase do que vai
-    acontecer.
+class PainelDeOpcoes(QObject):
+    """As opções do Automático: a lista das etapas (marcar e arrastar) e, ao lado ou
+    embaixo, as opções da etapa escolhida, ligadas a um EstadoDoAutomatico.
 
-    `controles`: campo do Projeto -> o controle que o muda (a prova de que
-    nenhuma opção da tela "O que fazer" se perdeu)."""
+    É o miolo da janela grande (`esquerda` e `pilha`, postas no layout dela) e o MESMO
+    painel de cada lado do "comparar" da tela cheia (D-577, 30/10: "não, eu quero poder
+    mudar dos dois lados, todas as opções."), cada lado com o estado dele. Não grava nada
+    no livro: muda só o `estado`.
 
-    rodar_pedido = Signal()
-    desligar_pedido = Signal()
-    escolher_pedido = Signal()
-    receita_guardar_pedida = Signal()
+    D-594 (31/10/2026: "no automatico não tem opções que encontramos nos filtros da aba da
+    area de trabalho." · "os tipos de preto."): a etapa "Limpar a folha" tem todas as opções
+    do painel Filtro da área de trabalho, com os mesmos nomes (_opcoes_do_painel_filtro).
 
-    def __init__(self, estado: EstadoDoAutomatico, caminho_pdf: str = "", parent=None,
-                 projeto=None) -> None:
-        """`projeto`: o livro aberto, só para LER (a prévia do antes e depois
-        trabalha numa cópia dele, D-577). Sem ele, a página da direita fica
-        vazia. `caminho_pdf` ficou só para quem já chamava assim (a página da
-        direita lê o PDF do projeto)."""
+    `controles`: campo -> o controle que o muda (a prova de que nenhuma opção da tela "O que
+    fazer" se perdeu). `vertical`: a lista das etapas em cima e as opções embaixo (o lado
+    do "comparar"); senão, lado a lado (a janela grande).
+    Arriscado: gravar no projeto daqui; tirar um controle (as provas o procuram)."""
+
+    def __init__(self, estado: EstadoDoAutomatico, parent=None, vertical: bool = False) -> None:
         super().__init__(parent)
-        self.setWindowTitle("Automático")
-        self.setObjectName("janelaDoAutomatico")
         self.estado = estado
         self.controles: dict[str, QWidget] = {}
         self.linhas: dict[str, QWidget] = {}
         self._enchendo = False
-        if parent is not None:
-            area = parent.geometry()
-            self.resize(max(900, int(area.width() * 0.92)), max(560, int(area.height() * 0.92)))
-        else:
-            self.resize(1180, 620)
-
-        fora = QVBoxLayout(self)
-        fora.setContentsMargins(0, 0, 0, 0)
-        fora.setSpacing(0)
-
-        # o alto: título, a receita e "Salvar receita..."
-        alto = QFrame()
-        alto.setObjectName("altoDaJanelaAuto")
-        linha = QHBoxLayout(alto)
-        linha.setContentsMargins(18, 10, 14, 10)
-        titulo = QLabel("O que o automático vai fazer")
-        titulo.setObjectName("tituloDaJanelaAuto")
-        linha.addWidget(titulo)
-        linha.addStretch()
-        linha.addWidget(QLabel("Receita:"))
-        self.combo_receitas = QComboBox()
-        self.combo_receitas.setMinimumWidth(200)
-        self.combo_receitas.activated.connect(lambda _i: self._escolheu_receita())
-        linha.addWidget(self.combo_receitas)
-        self.botao_salvar = QPushButton("Salvar receita...")
-        self.botao_salvar.clicked.connect(lambda: self.receita_guardar_pedida.emit())
-        linha.addWidget(self.botao_salvar)
-        self.botao_apagar = QPushButton("Apagar a receita")
-        self.botao_apagar.setObjectName("plano")
-        self.botao_apagar.clicked.connect(self._apagar_receita)
-        linha.addWidget(self.botao_apagar)
-        fora.addWidget(alto)
-
-        meio = QHBoxLayout()
-        meio.setContentsMargins(0, 0, 0, 0)
-        meio.setSpacing(0)
-        # esquerda: as etapas
-        esquerda = QWidget()
-        esquerda.setObjectName("colunaDasEtapas")
-        esquerda.setFixedWidth(290)
-        col = QVBoxLayout(esquerda)
+        # a lista das etapas
+        self.esquerda = QWidget()
+        self.esquerda.setObjectName("colunaDasEtapas")
+        if not vertical:
+            self.esquerda.setFixedWidth(290)
+        col = QVBoxLayout(self.esquerda)
         col.setContentsMargins(12, 10, 10, 10)
         col.addWidget(QLabel("Etapas, na ordem · arraste para mudar"))
         self.lista = ListaDeEtapas(estado, compacta=False)
         self.lista.etapa_escolhida.connect(self.mostrar_etapa)
         col.addWidget(self.lista, 1)
-        meio.addWidget(esquerda)
-        # meio: as opções da etapa escolhida
+        # as opções da etapa escolhida
         self.pilha = QStackedWidget()
         self.pilha.setObjectName("opcoesDaEtapa")
         self.paginas_das_etapas: dict[str, QWidget] = {}
@@ -1472,81 +1740,17 @@ class JanelaDoAutomatico(QDialog):
             pagina = self._pagina_da_etapa(etapa)
             self.paginas_das_etapas[etapa] = pagina
             self.pilha.addWidget(pagina)
-        meio.addWidget(self.pilha, 3)     # as opções ganham mais largura que a página ao lado
-        # direita: a página da vez, antes e depois (D-577, no lugar da página
-        # original da D-486), para folhear e dar zoom. `folhear` é o nome de
-        # sempre (a prova P-187 e o _zoom usam: .visor, ._indice)
-        direita = QWidget()
-        direita.setObjectName("paginaAoLado")
-        direita.setMinimumWidth(320)
-        cold = QVBoxLayout(direita)
-        cold.setContentsMargins(10, 10, 12, 10)
-        self.folhear = self.antes_e_depois = PaginaAntesEDepois(estado, projeto)
-        cold.addWidget(self.folhear, 1)
-        zoom = QHBoxLayout()
-        for texto, dica, fator in (("–", "afastar", 0.8), ("+", "aproximar", 1.25)):
-            botao = QPushButton(texto)
-            botao.setMinimumWidth(44)          # largura fixa de 34 escondia o sinal (o enchimento do estilo)
-            botao.setToolTip(dica)
-            botao.clicked.connect(lambda _c=False, f=fator: self._zoom(f))
-            zoom.addWidget(botao)
-        caber = QPushButton("ajustar à tela")
-        caber.clicked.connect(lambda: self._zoom(None))
-        zoom.addWidget(caber)
-        zoom.addStretch()
-        cold.addLayout(zoom)
-        meio.addWidget(direita, 2)
-        fora.addLayout(meio, 1)
-
-        # embaixo: a frase, onde rodar, escolher páginas, fechar, desligar, rodar
-        baixo = QFrame()
-        baixo.setObjectName("baixoDaJanelaAuto")
-        duas = QVBoxLayout(baixo)
-        duas.setContentsMargins(14, 8, 14, 10)
-        duas.setSpacing(6)
-        self.frase = QLabel("")
-        self.frase.setObjectName("fraseDaJanelaAuto")
-        self.frase.setWordWrap(True)
-        duas.addWidget(self.frase)
-        lb = QHBoxLayout()
-        duas.addLayout(lb)
-        lb.addWidget(QLabel("Rodar"))
-        self.combo_alcance = _combo_do_alcance(estado)
-        lb.addWidget(self.combo_alcance)
-        lb.addStretch()
-        self.botao_escolher = QPushButton("escolher páginas...")
-        self.botao_escolher.clicked.connect(lambda: self.escolher_pedido.emit())
-        lb.addWidget(self.botao_escolher)
-        self.botao_fechar = QPushButton("Fechar")
-        self.botao_fechar.clicked.connect(self.reject)
-        lb.addWidget(self.botao_fechar)
-        self.botao_desligar = QPushButton("Desligar as marcadas")
-        self.botao_desligar.setToolTip("Tira o automático das etapas marcadas (o Desfazer traz de volta).")
-        self.botao_desligar.clicked.connect(lambda: self.desligar_pedido.emit())
-        lb.addWidget(self.botao_desligar)
-        self.botao_rodar = QPushButton(_texto_do_rodar(estado))
-        self.botao_rodar.setObjectName("primario")
-        self.botao_rodar.setDefault(True)
-        self.botao_rodar.clicked.connect(lambda: self.rodar_pedido.emit())
-        lb.addWidget(self.botao_rodar)
-        fora.addWidget(baixo)
-
-        estilo.estilizar(self, lambda: (
-            f"QDialog#janelaDoAutomatico {{ background: {estilo.cor('tela')}; }}"
-            f"QFrame#altoDaJanelaAuto, QFrame#baixoDaJanelaAuto {{ background: {estilo.cor('bar')}; }}"
-            f"QLabel#tituloDaJanelaAuto {{ color: {estilo.cor('forte')}; font-size: 16px; font-weight: 600; }}"
-            f"QWidget#colunaDasEtapas {{ background: {estilo.cor('bar')}; }}"
-            f"QLabel#fraseDaJanelaAuto {{ background: {estilo.cor('sel')}; border-radius: 6px;"
-            f" padding: 7px 10px; color: {estilo.cor('forte')}; }}"))
-        estado.mudou.connect(self._estado_mudou)
-        self.encher_receitas()
+        estado.mudou.connect(self._mostrar_opcoes)
         self._mostrar_opcoes()
-        self._estado_mudou()
         primeira = next(iter(estado.etapas_marcadas()), estado.ordem[0])
-        self.lista.escolher(primeira)
         self.mostrar_etapa(primeira)
 
-    # --- as opções de cada etapa ---------------------------------------------
+    def mostrar_etapa(self, etapa: str) -> None:
+        """Mostra as opções da etapa (o "ajustar ›")."""
+        if etapa in self.paginas_das_etapas:
+            self.pilha.setCurrentWidget(self.paginas_das_etapas[etapa])
+            self.lista.escolher(etapa)
+
 
     def _pagina_da_etapa(self, etapa: str) -> QWidget:
         """As opções de uma etapa, com o nome e o que faz no alto."""
@@ -1691,6 +1895,107 @@ class JanelaDoAutomatico(QDialog):
         self.combo_pontinhos = self._combo(
             "limpar_pontinhos", [(c, pontinhos.NOMES_NA_TELA[c]) for c in pontinhos.ESCOLHAS], col,
             pontinhos.ROTULO_NA_TELA, pontinhos.EXPLICACAO_NA_TELA)
+        self._opcoes_do_painel_filtro(col)
+
+    def _opcoes_do_painel_filtro(self, col) -> None:
+        """D-594 (Samuel, 31/10/2026: "no automatico não tem opções que encontramos nos
+        filtros da aba da area de trabalho." · print do "Mais ajustes": "os tipos de
+        preto." · "mas isso era uma coisa obvia que deveria ter"): as opções do painel
+        "Filtro da página" da área de trabalho (ui/tela_conferir._montar_aba_filtro) que
+        faltavam aqui, com os MESMOS nomes e as mesmas escolhas, e as mesmas regras de
+        aparecer (_mostrar_opcoes_do_painel_filtro, como o painel: _configurar_medidor):
+          - "Respeitar as gravuras achadas" (D-583/D-586), em todo filtro; cinza com
+            "Só as letras" no Preto e branco (D-587, como a caixinha das molduras);
+          - "Ajuste": a barra do filtro ("Força do preto", "Clareza do fundo",
+            "Intensidade"; um valor por filtro, como na página);
+          - "Mais ajustes": "Jeito do preto e branco" (Automático, os três de sempre e os
+            dez do ScanTailor), "Letras com a cor delas" e "Suavizar as letras" (só no
+            Preto e branco); "Letra clara em fundo escuro", "Reduzir cores", "Igualar a
+            luz da página" e "Tirar o chuvisco" (nos filtros com ajuste), com os avisos
+            das opções de luz do painel.
+        Os valores são campos da PÁGINA (core/automatico.CAMPOS_DA_PAGINA): começam pelos
+        da receita escolhida no alto da janela ("De fábrica": os de uma página nova;
+        EstadoDoAutomatico.do_projeto, Samuel 31/10: "sim") e o "Rodar" os grava em cada página do "Limpar a folha" (o
+        mesmo campo que o painel grava). Seguro mudar: a ordem na tela. Arriscado: outro
+        nome (tem de ser o do painel: a prova compara)."""
+        from PySide6.QtWidgets import QSpinBox
+
+        from core import claro_no_escuro, cores_scantailor, luz_scantailor, preto_e_branco_scantailor
+        from core.filtros import ALGORITMOS_PB, NOMES_DOS_ALGORITMOS_PB
+        from ui.widgets.medidor import Medidor
+
+        col.addSpacing(8)
+        self.cx_respeitar_gravuras = self._caixa(
+            "respeitar_gravuras_achadas", ROTULO_RESPEITAR, "", col)
+        self.cx_respeitar_gravuras.setToolTip(
+            "Ligada, o filtro respeita as gravuras que o programa achou; desligada, o filtro "
+            "vale na página inteira.")
+        # "Ajuste": a barra do filtro escolhido (o campo muda com o filtro, como na página)
+        self.bloco_ajuste = QWidget()
+        dentro = QVBoxLayout(self.bloco_ajuste)
+        dentro.setContentsMargins(0, 6, 0, 0)
+        dentro.setSpacing(2)
+        dentro.addWidget(QLabel("Ajuste"))
+        rotulo, esquerda, direita = _ajustes_do_painel()[0][PRETO_E_BRANCO]
+        self.medidor = Medidor(rotulo, esquerda, direita, em_duas_linhas=True)
+        self.medidor.arrastando.connect(self._ajuste_mudou)
+        dentro.addWidget(self.medidor)
+        col.addWidget(self.bloco_ajuste)
+        for campo in A.CAMPOS_DA_PAGINA[:3]:          # forca_preto, clareza_melhorar, intensidade_magico
+            self.controles[campo] = self.medidor
+        # "Mais ajustes"
+        self.bloco_mais = QWidget()
+        mais = QVBoxLayout(self.bloco_mais)
+        mais.setContentsMargins(0, 6, 0, 0)
+        mais.setSpacing(4)
+        mais.addWidget(QLabel("Mais ajustes"))
+        self.rotulo_algoritmo_pb = QLabel("Jeito do preto e branco")
+        mais.addWidget(self.rotulo_algoritmo_pb)
+        self.combo_algoritmo_pb = QComboBox()
+        self.combo_algoritmo_pb.addItem("Automático", "auto")
+        for chave in ALGORITMOS_PB:
+            self.combo_algoritmo_pb.addItem(NOMES_DOS_ALGORITMOS_PB[chave], chave)
+        self.combo_algoritmo_pb.insertSeparator(self.combo_algoritmo_pb.count())
+        for chave in preto_e_branco_scantailor.CODIGOS:
+            self.combo_algoritmo_pb.addItem(preto_e_branco_scantailor.NOMES_NA_TELA[chave], chave)
+        self.combo_algoritmo_pb.setToolTip(preto_e_branco_scantailor.EXPLICACAO_NA_TELA)
+        self.combo_algoritmo_pb.currentIndexChanged.connect(
+            lambda _i: self._mudou("algoritmo_preto_branco", self.combo_algoritmo_pb.currentData()))
+        mais.addWidget(self.combo_algoritmo_pb)
+        self.controles["algoritmo_preto_branco"] = self.combo_algoritmo_pb
+        for campo, texto, dica in (
+                ("claro_no_escuro", claro_no_escuro.ROTULO_NA_TELA, claro_no_escuro.EXPLICACAO_NA_TELA),
+                ("letras_com_a_cor", cores_scantailor.ROTULO_LETRAS, cores_scantailor.EXPLICACAO_LETRAS),
+                ("reduzir_cores", cores_scantailor.ROTULO_REDUZIR, cores_scantailor.EXPLICACAO_REDUZIR),
+                ("luz_igualar", luz_scantailor.ROTULO_IGUALAR, luz_scantailor.EXPLICACAO_IGUALAR),
+                ("luz_suavizar", luz_scantailor.ROTULO_SUAVIZAR, luz_scantailor.EXPLICACAO_SUAVIZAR)):
+            caixa = self._caixa(campo, texto, "", mais)
+            caixa.setToolTip(dica)
+        linha = QHBoxLayout()
+        self.rotulo_luz_chuvisco = QLabel(luz_scantailor.ROTULO_CHUVISCO + ":")
+        self.rotulo_luz_chuvisco.setToolTip(luz_scantailor.EXPLICACAO_CHUVISCO)
+        linha.addWidget(self.rotulo_luz_chuvisco)
+        self.seletor_luz_chuvisco = QSpinBox()
+        self.seletor_luz_chuvisco.setRange(0, 100)
+        self.seletor_luz_chuvisco.setSingleStep(10)
+        self.seletor_luz_chuvisco.setToolTip(luz_scantailor.EXPLICACAO_CHUVISCO)
+        self.seletor_luz_chuvisco.setKeyboardTracking(False)
+        self.seletor_luz_chuvisco.valueChanged.connect(lambda v: self._mudou("luz_chuvisco", int(v)))
+        linha.addWidget(self.seletor_luz_chuvisco)
+        linha.addStretch()
+        mais.addLayout(linha)
+        self.controles["luz_chuvisco"] = self.seletor_luz_chuvisco
+        # os avisos das opções de luz, os do painel (Samuel, 22/10/2026)
+        self.aviso_luz = self._fraco("")
+        self.aviso_luz.setVisible(False)
+        mais.addWidget(self.aviso_luz)
+        col.addWidget(self.bloco_mais)
+
+    def _ajuste_mudou(self, valor: int) -> None:
+        """A barra do "Ajuste": o campo do filtro escolhido (cada filtro guarda o dele)."""
+        campo = _ajustes_do_painel()[1].get(self.estado.opcoes.get("filtro_padrao", ORIGINAL))
+        if campo:
+            self._mudou(campo, int(valor))
 
     def _opcoes_gravuras(self, col) -> None:
         """O grupo "Gravuras e fotos" (item 1.2, D-212 e D-213), como era na tela
@@ -1783,6 +2088,43 @@ class JanelaDoAutomatico(QDialog):
         col.addWidget(self._fraco("Monta os cadernos no tamanho do scan (sem A4, sem margem). "
                                   "A montagem em A4 fica em \"Ficou pronto!\"."))
 
+    def _mostrar_opcoes_do_painel_filtro(self, o: dict, filtro: str, no_pb: bool, so_letras: bool) -> None:
+        """D-594: acerta as opções do painel Filtro pelo estado, com as regras de aparecer
+        do painel (só o que vale com o filtro escolhido: core/automatico.
+        campos_da_pagina_no_filtro). Escondida, a escolha fica guardada. Chamado dentro
+        de _mostrar_opcoes (com _enchendo: mostrar não muda o estado)."""
+        from types import SimpleNamespace
+
+        from core import luz_scantailor
+
+        fabrica = A.de_fabrica_da_pagina()
+        valem = set(A.campos_da_pagina_no_filtro(filtro))
+        rotulos, campos_do_ajuste = _ajustes_do_painel()
+        campo_do_ajuste = campos_do_ajuste.get(filtro)
+        self.bloco_ajuste.setVisible(campo_do_ajuste is not None)
+        self.bloco_mais.setVisible(campo_do_ajuste is not None)
+        if campo_do_ajuste is not None:
+            self.medidor.definir_rotulo(*rotulos[filtro])
+            self.medidor.definir(int(o.get(campo_do_ajuste, fabrica[campo_do_ajuste])))
+        indice = self.combo_algoritmo_pb.findData(o.get("algoritmo_preto_branco", "auto"))
+        self.combo_algoritmo_pb.setCurrentIndex(max(0, indice))
+        for campo in ("respeitar_gravuras_achadas", "claro_no_escuro", "letras_com_a_cor",
+                      "reduzir_cores", "luz_igualar", "luz_suavizar"):
+            caixa = self.controles[campo]
+            caixa.setChecked(bool(o.get(campo, fabrica[campo])))
+            caixa.setVisible(campo in valem)
+        self.rotulo_algoritmo_pb.setVisible("algoritmo_preto_branco" in valem)
+        self.combo_algoritmo_pb.setVisible("algoritmo_preto_branco" in valem)
+        self.seletor_luz_chuvisco.setValue(int(o.get("luz_chuvisco", 0) or 0))
+        # D-587: cinza com "Só as letras" no Preto e branco (o valor fica guardado)
+        self.cx_respeitar_gravuras.setEnabled(not (so_letras and no_pb))
+        # os avisos das opções de luz, como o painel (luz_scantailor.avisos_da_pagina)
+        avisos = luz_scantailor.avisos_da_pagina(SimpleNamespace(
+            filtro=filtro, luz_igualar=bool(o.get("luz_igualar")),
+            luz_chuvisco=int(o.get("luz_chuvisco", 0) or 0)))
+        self.aviso_luz.setText(" ".join(avisos))
+        self.aviso_luz.setVisible(bool(avisos))
+
     def _forma_mudou(self) -> None:
         """"Achar gravuras e fotos" e "Este livro tem fotos" viram a forma do
         contorno do livro (Projeto.gravura_forma)."""
@@ -1852,6 +2194,7 @@ class JanelaDoAutomatico(QDialog):
             self.linhas["limpar_pontinhos"].setVisible(no_pb)
             # D-168: a caixinha das molduras fica cinza com "Só as letras" e volta como estava
             self.cx_decoracao_pb.setEnabled(not (so_letras and no_pb))
+            self._mostrar_opcoes_do_painel_filtro(o, filtro, no_pb, so_letras)
             forma = o.get("gravura_forma", "livre")
             self.cx_achar_gravuras.setChecked(forma != "desligada")
             self.painel_opcoes_gravura.setVisible(forma != "desligada")
@@ -1883,8 +2226,146 @@ class JanelaDoAutomatico(QDialog):
         finally:
             self._enchendo = False
 
+
+# ---------------------------------------------------------------------------
+# a janela grande
+# ---------------------------------------------------------------------------
+
+class JanelaDoAutomatico(QDialog):
+    """A janela grande do Automático ("O que o automático vai fazer"): as
+    etapas à esquerda, as opções da etapa escolhida no meio, a página ao lado
+    (antes e depois, D-577; folhear e zoom) e, embaixo, a frase do que vai
+    acontecer.
+
+    `controles`: campo do Projeto -> o controle que o muda (a prova de que
+    nenhuma opção da tela "O que fazer" se perdeu)."""
+
+    rodar_pedido = Signal()
+    desligar_pedido = Signal()
+    escolher_pedido = Signal()
+    receita_guardar_pedida = Signal()
+
+    def __init__(self, estado: EstadoDoAutomatico, caminho_pdf: str = "", parent=None,
+                 projeto=None) -> None:
+        """`projeto`: o livro aberto, só para LER (a prévia do antes e depois
+        trabalha numa cópia dele, D-577). Sem ele, a página da direita fica
+        vazia. `caminho_pdf` ficou só para quem já chamava assim (a página da
+        direita lê o PDF do projeto)."""
+        super().__init__(parent)
+        self.setWindowTitle("Automático")
+        self.setObjectName("janelaDoAutomatico")
+        self.estado = estado
+        if parent is not None:
+            area = parent.geometry()
+            self.resize(max(900, int(area.width() * 0.92)), max(560, int(area.height() * 0.92)))
+        else:
+            self.resize(1180, 620)
+
+        fora = QVBoxLayout(self)
+        fora.setContentsMargins(0, 0, 0, 0)
+        fora.setSpacing(0)
+
+        # o alto: título, a receita e "Salvar receita..."
+        alto = QFrame()
+        alto.setObjectName("altoDaJanelaAuto")
+        linha = QHBoxLayout(alto)
+        linha.setContentsMargins(18, 10, 14, 10)
+        titulo = QLabel("O que o automático vai fazer")
+        titulo.setObjectName("tituloDaJanelaAuto")
+        linha.addWidget(titulo)
+        linha.addStretch()
+        linha.addWidget(QLabel("Receita:"))
+        self.combo_receitas = QComboBox()
+        self.combo_receitas.setMinimumWidth(200)
+        self.combo_receitas.activated.connect(lambda _i: self._escolheu_receita())
+        linha.addWidget(self.combo_receitas)
+        self.botao_salvar = QPushButton("Salvar receita...")
+        self.botao_salvar.clicked.connect(lambda: self.receita_guardar_pedida.emit())
+        linha.addWidget(self.botao_salvar)
+        self.botao_apagar = QPushButton("Apagar a receita")
+        self.botao_apagar.setObjectName("plano")
+        self.botao_apagar.clicked.connect(self._apagar_receita)
+        linha.addWidget(self.botao_apagar)
+        fora.addWidget(alto)
+
+        meio = QHBoxLayout()
+        meio.setContentsMargins(0, 0, 0, 0)
+        meio.setSpacing(0)
+        # esquerda: as etapas; meio: as opções da etapa escolhida. As duas são do
+        # PainelDeOpcoes, o MESMO que vai para cada lado do "comparar" (D-577)
+        self.painel_de_opcoes = PainelDeOpcoes(estado, self)
+        meio.addWidget(self.painel_de_opcoes.esquerda)
+        meio.addWidget(self.painel_de_opcoes.pilha, 3)     # as opções ganham mais largura que a página ao lado
+        # direita: a página da vez, antes e depois (D-577, no lugar da página
+        # original da D-486), para folhear e dar zoom. `folhear` é o nome de
+        # sempre (a prova P-187 e o _zoom usam: .visor, ._indice)
+        direita = QWidget()
+        direita.setObjectName("paginaAoLado")
+        direita.setMinimumWidth(320)
+        cold = QVBoxLayout(direita)
+        cold.setContentsMargins(10, 10, 12, 10)
+        self.folhear = self.antes_e_depois = PaginaAntesEDepois(estado, projeto)
+        cold.addWidget(self.folhear, 1)
+        zoom = QHBoxLayout()
+        for texto, dica, fator in (("–", "afastar", 0.8), ("+", "aproximar", 1.25)):
+            botao = QPushButton(texto)
+            botao.setMinimumWidth(44)          # largura fixa de 34 escondia o sinal (o enchimento do estilo)
+            botao.setToolTip(dica)
+            botao.clicked.connect(lambda _c=False, f=fator: self._zoom(f))
+            zoom.addWidget(botao)
+        caber = QPushButton("ajustar à tela")
+        caber.clicked.connect(lambda: self._zoom(None))
+        zoom.addWidget(caber)
+        zoom.addStretch()
+        cold.addLayout(zoom)
+        meio.addWidget(direita, 2)
+        fora.addLayout(meio, 1)
+
+        # embaixo: a frase, onde rodar, escolher páginas, fechar, desligar, rodar
+        baixo = QFrame()
+        baixo.setObjectName("baixoDaJanelaAuto")
+        duas = QVBoxLayout(baixo)
+        duas.setContentsMargins(14, 8, 14, 10)
+        duas.setSpacing(6)
+        self.frase = QLabel("")
+        self.frase.setObjectName("fraseDaJanelaAuto")
+        self.frase.setWordWrap(True)
+        duas.addWidget(self.frase)
+        lb = QHBoxLayout()
+        duas.addLayout(lb)
+        lb.addWidget(QLabel("Rodar"))
+        self.combo_alcance = _combo_do_alcance(estado)
+        lb.addWidget(self.combo_alcance)
+        lb.addStretch()
+        self.botao_escolher = QPushButton("escolher páginas...")
+        self.botao_escolher.clicked.connect(lambda: self.escolher_pedido.emit())
+        lb.addWidget(self.botao_escolher)
+        self.botao_fechar = QPushButton("Fechar")
+        self.botao_fechar.clicked.connect(self.reject)
+        lb.addWidget(self.botao_fechar)
+        self.botao_desligar = QPushButton("Desligar as marcadas")
+        self.botao_desligar.setToolTip("Tira o automático das etapas marcadas (o Desfazer traz de volta).")
+        self.botao_desligar.clicked.connect(lambda: self.desligar_pedido.emit())
+        lb.addWidget(self.botao_desligar)
+        self.botao_rodar = QPushButton(_texto_do_rodar(estado))
+        self.botao_rodar.setObjectName("primario")
+        self.botao_rodar.setDefault(True)
+        self.botao_rodar.clicked.connect(lambda: self.rodar_pedido.emit())
+        lb.addWidget(self.botao_rodar)
+        fora.addWidget(baixo)
+
+        estilo.estilizar(self, lambda: (
+            f"QDialog#janelaDoAutomatico {{ background: {estilo.cor('tela')}; }}"
+            f"QFrame#altoDaJanelaAuto, QFrame#baixoDaJanelaAuto {{ background: {estilo.cor('bar')}; }}"
+            f"QLabel#tituloDaJanelaAuto {{ color: {estilo.cor('forte')}; font-size: 16px; font-weight: 600; }}"
+            f"QWidget#colunaDasEtapas {{ background: {estilo.cor('bar')}; }}"
+            f"QLabel#fraseDaJanelaAuto {{ background: {estilo.cor('sel')}; border-radius: 6px;"
+            f" padding: 7px 10px; color: {estilo.cor('forte')}; }}"))
+        estado.mudou.connect(self._estado_mudou)
+        self.encher_receitas()
+        self._estado_mudou()
+
     def _estado_mudou(self) -> None:
-        self._mostrar_opcoes()
         self.frase.setText(self.estado.frase())
         self.botao_rodar.setText(_texto_do_rodar(self.estado))
         self.botao_rodar.setEnabled(bool(self.estado.marcadas))
@@ -1898,9 +2379,17 @@ class JanelaDoAutomatico(QDialog):
 
     def mostrar_etapa(self, etapa: str) -> None:
         """Mostra no meio as opções da etapa (o "ajustar ›")."""
-        if etapa in self.paginas_das_etapas:
-            self.pilha.setCurrentWidget(self.paginas_das_etapas[etapa])
-            self.lista.escolher(etapa)
+        self.painel_de_opcoes.mostrar_etapa(etapa)
+
+    def __getattr__(self, nome: str):
+        """Os controles das opções moram no PainelDeOpcoes (D-577: o mesmo painel vai
+        para os dois lados do "comparar"); `janela.controles`, `janela.radios_de_filtro`,
+        `janela.lista`... continuam valendo (a prova "nenhuma opção se perdeu" e os
+        testes de tela os usam). Só é chamado quando a janela não tem o nome."""
+        painel = self.__dict__.get("painel_de_opcoes")
+        if painel is not None and not nome.startswith("__"):
+            return getattr(painel, nome)
+        raise AttributeError(nome)
 
     def encher_receitas(self) -> None:
         self.combo_receitas.blockSignals(True)
