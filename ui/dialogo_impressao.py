@@ -346,7 +346,13 @@ class _Tarefa(QThread):
 class _TarefaPrevia(QThread):
     """D-574: monta e desenha UMA folha do livreto (frente e verso) fora do fio
     da tela (core/impressao.previa_da_folha). `pedido` é o número do pedido:
-    a janela ignora a resposta de um pedido velho (a opção mudou no meio)."""
+    a janela ignora a resposta de um pedido velho (a opção mudou no meio).
+
+    Desde 02/11/2026 o trabalho pesado nem roda neste processo: previa_da_folha
+    pede a folha ao servidor de páginas (core/paginas_em_outro_processo), e
+    este fio só espera a resposta, com o Python solto. Num fio comum o PyMuPDF
+    segurava o Python inteiro e a tela parava 1,7 a 2,6 s por seta no Opus
+    Majus. Arriscado: desenhar com o PyMuPDF aqui dentro de novo."""
 
     pronta = Signal(object, int)        # FolhaDaPrevia ou None, pedido
     falhou = Signal(int)

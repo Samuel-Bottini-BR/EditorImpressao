@@ -16,6 +16,9 @@ O QUE SE PROVA (comportamento, não aparência)
     - as setas passam as folhas;
     - trocar uma opção refaz a prévia;
     - a janela não congela enquanto monta (fio à parte, bolinha girando);
+    - (02/11/2026) com a montagem DE VERDADE num livro pesado (e no Opus
+      Majus, quando está na máquina), a tela nunca para mais de 0,3 s: a folha
+      é montada no servidor de páginas, e sai igual à feita aqui (D-473);
     - uma folha por vez na memória (CLAUDE.md §3);
     - fora do Livreto a janela fica como estava (só o texto).
 Todas falham no código antigo (a janela só tinha o texto "O que vai sair" e o
@@ -30,6 +33,7 @@ metade da folha. A conferência com o Palatino de verdade fica nos prints
 from __future__ import annotations
 
 import time
+from pathlib import Path
 
 import numpy as np
 import pytest
@@ -255,6 +259,145 @@ def test_d574_janela_nao_congela_enquanto_monta(app, pasta, monkeypatch):
     assert len(batidas) >= 30, f"a janela parou: só {len(batidas)} batidas em 1,5 s"
     assert max(np.diff(batidas)) < 0.5
     dialogo.reject()
+
+
+# A maior parada aceita da tela enquanto a folha é montada (abrir, setas,
+# trocar o caderno). POR QUE 0,3 s: no Palatino a tela parava ~0,1 s e não se
+# notava; o defeito (02/11/2026) era 1,7 a 2,6 s no Opus Majus e 1 a 2 s no
+# livro pesado de teste. 0,3 s fica longe dos dois lados: pega o defeito com
+# folga e não acusa à toa numa máquina lenta ou ocupada (GitHub, PC com outros
+# agentes rodando). Com o conserto, no PC deu ~0,02 s.
+MAIOR_PARADA_S = 0.3
+OPUS_MAJUS = Path(__file__).resolve().parents[1] / "_tmp" / "livros" / "opusmajus.pdf"
+
+
+def _livro_pesado(caminho, n=8, tracos=16000):
+    """Livro de n páginas A5 que o MuPDF demora a desenhar (no PC, com o código
+    antigo, a tela parava ~1,1 s por folha montada):
+    cada página tem `tracos` riscos finos em lugares sorteados. É o que as
+    páginas JPEG 2000 do Internet Archive fazem (o Opus Majus), sem o PDF de
+    42 MB no git e gerado em ~1 s."""
+    rng = np.random.default_rng(1)
+    doc = fitz.open()
+    for _ in range(n):
+        pagina = doc.new_page(width=148 * MM, height=210 * MM)
+        pontos = rng.uniform(0, [pagina.rect.width, pagina.rect.height] * 2, (tracos, 4))
+        corpo = "0.3 w\n" + "\n".join(f"{a:.1f} {b:.1f} m {c:.1f} {d:.1f} l S"
+                                      for a, b, c, d in pontos)
+        xref = doc.get_new_xref()
+        doc.update_object(xref, "<<>>")
+        doc.update_stream(xref, corpo.encode())
+        pagina.set_contents(xref)
+    doc.save(str(caminho), deflate=True)
+    doc.close()
+    return caminho
+
+
+@pytest.mark.parametrize("qual", ["livro pesado de teste", "Opus Majus"])
+def test_d574_a_tela_nao_para_com_a_montagem_de_verdade(app, pasta, qual):
+    """Travamento achado pelo verificador em 02/11/2026 (D-574, CLAUDE.md §3
+    "Interface nunca congela"): no Opus Majus cada seta deixava a janela
+    parada 1,7 a 2,6 s, trocar o caderno 1,9 s e, ao abrir, mais 1,8 s. A
+    montagem já rodava num fio à parte, mas o PyMuPDF segura o Python inteiro
+    enquanto desenha. Conserto: a folha é montada e desenhada no servidor de
+    páginas (core/paginas_em_outro_processo.folha_do_livreto).
+
+    A prova de antes (test_d574_janela_nao_congela_enquanto_monta) usa uma
+    montagem de mentira com time.sleep, que solta o Python, e por isso não
+    pegava o defeito. Esta usa a montagem DE VERDADE num livro pesado e mede
+    com um relógio de 5 ms na janela (como o medir.py do verificador): ao
+    abrir, em 2 setas e ao trocar o caderno, nenhuma parada passa de
+    MAIOR_PARADA_S. No código antigo (ff0260f) a parada passa de 1 s."""
+    if qual == "Opus Majus":
+        if not OPUS_MAJUS.is_file():
+            pytest.skip("o Opus Majus não está nesta máquina (_tmp/livros/opusmajus.pdf)")
+        entrada = OPUS_MAJUS
+    else:
+        entrada = _livro_pesado(pasta / "pesado.pdf")
+    from ui.dialogo_impressao import DialogoImpressao
+
+    paradas: dict[str, float] = {}
+    batida = {"ultima": time.monotonic(), "maior": 0.0}
+
+    def bater() -> None:
+        agora = time.monotonic()
+        batida["maior"] = max(batida["maior"], agora - batida["ultima"])
+        batida["ultima"] = agora
+
+    relogio = QTimer()
+    relogio.setInterval(5)
+    relogio.timeout.connect(bater)
+    relogio.start()
+
+    def medir(nome: str, acao) -> None:
+        # sem processEvents antes de zerar: a montagem da primeira folha
+        # começa no primeiro giro da janela, e tem de cair na medida
+        batida["ultima"], batida["maior"] = time.monotonic(), 0.0
+        acao()
+        assert _esperar(lambda: _previa_quieta(dialogo), 180), f"{nome}: a folha não chegou"
+        paradas[nome] = round(batida["maior"], 3)
+
+    dialogo = DialogoImpressao(str(entrada))
+    dialogo.definir_opcoes(_opcoes_livreto(paginas_por_caderno=8 if qual != "Opus Majus" else 20))
+    dialogo.show()
+    try:
+        medir("abrir", lambda: None)
+        medir("seta 1", lambda: dialogo.botao_folha_seguinte.click())
+        assert dialogo.folha_na_tela.numero == 2
+        medir("seta 2", lambda: dialogo.botao_folha_anterior.click())
+        assert dialogo.folha_na_tela.numero == 1
+        medir("trocar o caderno", lambda: dialogo.combo_caderno.setCurrentIndex(
+            dialogo.combo_caderno.findData(16 if qual == "Opus Majus" else 12)))
+    finally:
+        relogio.stop()
+        dialogo.reject()
+    print(qual, paradas)
+    assert max(paradas.values()) < MAIOR_PARADA_S, f"a tela parou: {paradas} (segundos)"
+
+
+def test_d574_folha_do_servidor_e_igual_a_feita_aqui(pasta, monkeypatch):
+    """D-473 depois do conserto de 02/11: a folha que vem do servidor de
+    páginas é a MESMA, ponto por ponto, que a montada aqui dentro (a mesma
+    _montar_livreto), com várias opções."""
+    from core import paginas_em_outro_processo as servidor
+
+    entrada = _livro(pasta / "livro.pdf")
+    for mudar in ({}, {"encadernacao": imp.DIREITA, "paginas_por_caderno": 8},
+                  {"folhas_de": 2, "folhas_ate": 3, "reverter": True}, {"lados": imp.SO_VERSO},
+                  {"cinza": True}):
+        opcoes = _opcoes_livreto(**mudar)
+        monkeypatch.delenv(servidor.VARIAVEL_DESLIGA, raising=False)
+        de_fora = servidor.folha_do_livreto(str(entrada), opcoes.para_dicionario(), 1, 300)
+        assert isinstance(de_fora, imp.FolhaDaPrevia), "o servidor não respondeu"
+        monkeypatch.setenv(servidor.VARIAVEL_DESLIGA, "1")
+        daqui = imp.previa_da_folha(entrada, opcoes, 1, 300)
+        assert (de_fora.numero, de_fora.total, de_fora.posicao, de_fora.quantas) == (
+            daqui.numero, daqui.total, daqui.posicao, daqui.quantas), mudar
+        assert [(f.lado, f.largura, f.altura, f.canais) for f in de_fora.faces] == [
+            (f.lado, f.largura, f.altura, f.canais) for f in daqui.faces], mudar
+        assert all(a.amostras == b.amostras for a, b in zip(de_fora.faces, daqui.faces)), mudar
+    monkeypatch.delenv(servidor.VARIAVEL_DESLIGA, raising=False)
+    # nenhuma folha sai ("folhas de" depois da última): None, como aqui
+    assert servidor.folha_do_livreto(str(entrada), _opcoes_livreto(folhas_de=50).para_dicionario(),
+                                     0, 300) is None
+
+
+def test_d574_cancelar_para_a_folha_no_servidor(pasta, monkeypatch):
+    """A opção mudou no meio: o fio da prévia avisa "cancelar" e o servidor
+    para no próximo ponto de checagem (Cancelou), sem desenhar o resto da
+    folha; o próximo pedido sai certo."""
+    from core import paginas_em_outro_processo as servidor
+
+    monkeypatch.delenv(servidor.VARIAVEL_DESLIGA, raising=False)
+    entrada = _livro_pesado(pasta / "pesado.pdf")
+    opcoes = _opcoes_livreto(paginas_por_caderno=8).para_dicionario()
+    inicio = time.monotonic()
+    with pytest.raises(imp.Cancelou):
+        servidor.folha_do_livreto(str(entrada), opcoes, 0, 300,
+                                  cancelado=lambda: time.monotonic() - inicio > 0.2)
+    folha = servidor.folha_do_livreto(str(_livro(pasta / "livro.pdf")),
+                                      _opcoes_livreto().para_dicionario(), 0, 300)
+    assert _paginas_da_face(_cinza_da_face(folha.faces[0])) == (20, 1)
 
 
 def test_d574_uma_folha_por_vez_na_memoria(app, pasta, monkeypatch):

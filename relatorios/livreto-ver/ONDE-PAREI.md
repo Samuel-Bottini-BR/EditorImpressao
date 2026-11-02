@@ -92,3 +92,43 @@ Ramo `livreto-ver-2026-10-31` (saiu de `obra-2026-10-26` em d95df6b). Cópia: `.
 - O "gravar" (`montar_para_impressao`) continua sem a trava do MuPDF (`pdf_io._TRANCA`), como já era; a prévia usa a
   trava e nunca roda junto com o "gravar" desta janela.
 - Prints fora da tela (offscreen, letra Segoe UI carregada à mão); a janela de verdade no PC não foi pilotada.
+
+---
+
+## 02/11 — tirar o travamento
+
+Pedido do Samuel (02/11/2026, pela gerente): "vamos resolver esse problema do travamento agora, coloque um agente para
+trabalhar nisso" — o travamento que o verificador achou (parecer em `verif-livreto/relatorios/livreto-ver/verificador/`):
+no Opus Majus cada seta deixava a janela parada 1,7 a 2,6 s; trocar o caderno 1,9 s; ao abrir, mais 1,8 s.
+
+### Decisões que esta tarefa precisa cumprir
+- **CLAUDE.md §3:** "Interface nunca congela. Todo processamento em QThread, com barra de progresso e botão de cancelar
+  que funciona." (a causa: o PyMuPDF segura o Python inteiro enquanto desenha, então o fio à parte não basta).
+- **D-473** (26/10): "Tela e PDF saem da mesma conta" — a folha mostrada continua vindo da mesma `_montar_livreto` do
+  arquivo gravado.
+- **D-574** (31/10, opção 1): a folha A4 deitada, frente e verso, setas — nada muda na tela.
+- **CLAUDE.md §11 item 7 (27/10):** "é só para fazer o que eu já tinha mandado" — nada de botão, aviso ou texto novo.
+- **CLAUDE.md §4.7:** teste de reversão que falha no `ff0260f`.
+- Fora desta tarefa (a gerente mandou não mexer): as 4 perguntas do verificador, a "tela grande" de caderno, o travamento
+  ao gravar (defeito antigo).
+
+### Andamento
+- [x] Juntei `origin/obra-2026-10-26` (55 commits) no ramo: sem conflito (`cfde703`).
+- [x] `core/paginas_em_outro_processo.py`: pedido novo `folha_do_livreto` — o servidor de páginas (o mesmo de 30/09)
+  monta e desenha a folha com `core.impressao.previa_da_folha` lá dentro; o fio da janela só espera o cano, com o
+  Python solto. Aceita "cancelar" no meio (a opção mudou). Servidor fora do ar: monta aqui, como antes.
+- [x] `core/impressao.previa_da_folha`: pede ao servidor primeiro (como `pdf_io.pagina_para_array` já fazia).
+- [x] Provas novas em `tests/test_decisoes_livreto_ver.py`: `test_d574_a_tela_nao_para_com_a_montagem_de_verdade`
+  (livro pesado de teste + Opus Majus quando está em `_tmp/livros/`), `test_d574_folha_do_servidor_e_igual_a_feita_aqui`,
+  `test_d574_cancelar_para_a_folha_no_servidor`.
+- [x] Reversão no `ff0260f`: a prova falha (livro pesado: parada 1,0 a 1,1 s; Opus Majus: 1,8 a 3,6 s). No novo: 0,01 a
+  0,06 s.
+
+### Como cumpri cada uma
+- **§3:** a montagem e o desenho saíram do processo da janela; maior parada medida com relógio de 5 ms (ver "Medidas").
+- **D-473:** o servidor roda a MESMA `previa_da_folha` (a mesma `_montar_livreto`); a prova compara ponto por ponto a
+  folha do servidor com a feita aqui, com 5 jogos de opções: iguais.
+- **D-574 / regra 7:** nenhuma linha de tela mudou (só um comentário em `ui/dialogo_impressao.py`).
+
+## Perguntas para o Samuel
+(nenhuma nova nesta tarefa)

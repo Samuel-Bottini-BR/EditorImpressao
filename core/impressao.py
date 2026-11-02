@@ -912,6 +912,22 @@ def previa_da_folha(entrada: str | Path, opcoes: OpcoesDeImpressao, posicao: int
     if opcoes.formato != LIVRETO:
         raise ValueError("A prévia das folhas é só do livreto.")
 
+    # D-574, 02/11/2026 (travamento achado pelo verificador): a folha é montada
+    # e desenhada no servidor de páginas (core/paginas_em_outro_processo.py),
+    # nunca neste processo. O PyMuPDF segura o GIL enquanto desenha, e mesmo
+    # num fio à parte isso parava a janela: no Opus Majus (páginas JPEG 2000)
+    # cada seta deixava a tela parada 1,7 a 2,6 s. O servidor roda ESTA mesma
+    # função (com a delegação desligada lá dentro): a folha é a mesma, ponto
+    # por ponto (D-473). Servidor desligado (EDITOR_PAGINAS_AQUI=1) ou fora do
+    # ar: monta aqui, como antes. Arriscado: tirar isto (a tela volta a parar).
+    from core import paginas_em_outro_processo
+
+    if paginas_em_outro_processo.ligado() and Path(str(entrada)).is_file():
+        folha = paginas_em_outro_processo.folha_do_livreto(
+            str(Path(entrada).resolve()), opcoes.para_dicionario(), posicao, largura_px, cancelado)
+        if folha is not paginas_em_outro_processo.SEM_SERVIDOR:
+            return folha
+
     def checar(*_a, **_k) -> None:
         if cancelado is not None and cancelado():
             raise Cancelou()
