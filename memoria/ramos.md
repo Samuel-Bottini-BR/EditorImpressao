@@ -362,3 +362,23 @@ Cópias de verificador (destacadas, sem ramo, sem commit; podem ser apagadas dep
 | `.claude\worktrees\gravuras-cinza` | `gravuras-cinza-2026-11-01` | D-588 caixinha "Gravuras em tons de cinza" | `09e47d2`, **juntado** (`63fbbff`); sem verificador (a pedido dele); falta ele testar; 4 perguntas do construtor |
 
 As três cópias têm junções `modelos` e `gabarito\paginas`: apagar com `git worktree remove`, nunca `Remove-Item -Recurse`.
+
+## Ramos, cópias e agentes de 02/11/2026 (PAUSA a pedido do Samuel)
+
+Para continuar **com os mesmos agentes** (sem gastar contexto de novo): retomar **esta mesma conversa** do Claude Code
+(histórico do VS Code / `claude --resume`, sessão de 02/11 que começou com `/projeto`) e mandar mensagem (SendMessage) ao
+id do agente. Numa conversa nova os agentes não existem mais: aí o agente novo lê o ONDE-PAREI da cópia.
+
+| Agente (id) | Cópia | Ramo | O que é | Onde parou |
+|---|---|---|---|---|
+| `a49db993e3f745aea` (construtor do cinza) | `.claude\worktrees\gravuras-cinza` | `gravuras-cinza-2026-11-01` | aviso (balão) do "Gravuras em tons de cinza", texto aprovado | `relatorios/gravuras-cinza/ONDE-PAREI.md`, seção PAUSA |
+| `ad9b53152639a3338` (construtor da D-574) | `.claude\worktrees\livreto-ver` | `livreto-ver-2026-10-31` | tirar o travamento da prévia do livreto (outro processo) | `relatorios/livreto-ver/ONDE-PAREI.md`, seção PAUSA |
+| `a362a5e1bc6daa615` (prints da Central, Sonnet) | `.claude\worktrees\prints-central` (destacada, `6a98173`) | — | prints das 54 perguntas sem print + nomes | `relatorios/prints-central/ONDE-PAREI.md` e `mapa.json` |
+| `abe0a2d12c9917ab0` (testador clicando) | `.claude\worktrees\teste-cadernos` (destacada, `6a98173`) | — | testar D-589/D-590/P4 clicando | `relatorios/teste-cadernos/LEIA-ME.md` |
+| `ab2a8133fd0002828` (construtor da D-589) | `.claude\worktrees\auto-cadernos` | `automatico-cadernos-2026-10-30` | terminado e juntado (`6a98173`) | — |
+| `a65f9586a0808351d` (construtor do Shift) | `.claude\worktrees\zoom-mouse` | `zoom-mouse-2026-11-01` | terminado, juntado e testado | — |
+| `a4d4ad985632432b3` (verificador da D-574) | `.claude\worktrees\verif-livreto` | — | parecer entregue (`parecer.html`) | — |
+| `a6b8cb7bad729666a` (investigador do endireitar) | `.claude\worktrees\investiga-inclinado` (+ `-fase1`, pode apagar) | — | entregue; ele: "parece estar tudo certo" | `relatorios/investiga-inclinado/LEIA-ME.md` |
+
+Versão de teste (`obra-2026-10-26`) em `6a98173`+ (Livro em `640170d`). As cópias novas têm junção `modelos`: apagar só com
+`git worktree remove`, nunca `Remove-Item -Recurse`.
