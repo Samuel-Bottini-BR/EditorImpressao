@@ -26,9 +26,20 @@ O que estas provas guardam:
   7. a caixinha na tela cheia dos filtros (D-192), com o mesmo nome, e o "Usar" a grava;
   8. a caixinha no "Limpar a folha" do Automático (D-594), com o mesmo nome, só no Preto e
      branco; rodar com ela grava nas páginas e a gravura sai cinza;
-  9. no padrão da D-168/D-587 (PERGUNTA ao Samuel no ONDE-PAREI): com "Só as letras" ou com
-     "Respeitar as gravuras achadas" desligada, a caixinha fica cinza e volta como estava;
- 10. projeto gravado antes abre desmarcado e sai idêntico.
+  9. no padrão da D-168/D-587 (PERGUNTA 1 ao Samuel no ONDE-PAREI, ainda aberta): com "Só as
+     letras", a caixinha fica cinza e volta como estava;
+ 10. projeto gravado antes abre desmarcado e sai idêntico;
+ 11. CONSERTO de 02/11/2026 (teste do Samuel na página 13 de 199 do *Na escola de Jesus*: "para
+     deixar as gravuras cinzas o respeitar gravuras tem que estar ligado, por gravuras em tons
+     de cinza sozinho já deveria resolver o problema." → "sim pode" a: "marcar só "Gravuras em
+     tons de cinza" já basta: ela acha as gravuras sozinha e pinta de cinza, com o "Respeitar"
+     ligado ou desligado."): com "Respeitar as gravuras achadas" desligada, a caixinha fica
+     clicável nos três lugares (painel, tela cheia, "Limpar a folha" do Automático e os dois
+     lados do "comparar") e, marcada, a página sai IGUAL (byte a byte) à de "Respeitar" ligada:
+     a gravura em tons de cinza; na tela, no PDF e no livro dele (página 13 e capa). Desmarcada,
+     nada muda (o "Respeitar" desligado sozinho continua deixando a página em preto e branco).
+     Reversão (§4.7): no `091b200` (antes do conserto) as provas 11 falham
+     (relatorios/gravuras-cinza/reversao-conserto-no-091b200.txt).
 
 Livro sintético e caminho inteiro: os de tests/test_decisoes_respeitar_gravuras.py (papel
 amarelado, iluminura grande colorida achada pela máquina, origem "rede", texto embaixo; o
@@ -41,6 +52,7 @@ from __future__ import annotations
 
 import copy
 import time
+from pathlib import Path
 
 import numpy as np
 import pytest
@@ -370,7 +382,8 @@ def test_d588_no_limpar_a_folha_do_automatico(janela, tmp_path):
     """D-594 ("todas as opções do Filtro, com os mesmos nomes") e D-588 ("Ela fica [...] no
     "Limpar a folha" do Automático"): na janela grande, a caixinha mora na página do "Limpar a
     folha", com o nome do painel, só no Preto e branco, desmarcada (receita "De fábrica");
-    cinza com "Só as letras" ou com "Respeitar as gravuras achadas" desligada. Rodar o "Limpar
+    cinza com "Só as letras"; clicável com "Respeitar as gravuras achadas" desligada (conserto
+    de 02/11: "por gravuras em tons de cinza sozinho já deveria resolver o problema"). Rodar o "Limpar
     a folha" no livro todo, em Preto e branco, com ela marcada → todas as páginas ficam
     marcadas e a gravura sai em tons de cinza; os dois lados do "comparar" usam o mesmo painel
     (PainelDeOpcoes), então têm a caixinha também."""
@@ -397,7 +410,7 @@ def test_d588_no_limpar_a_folha_do_automatico(janela, tmp_path):
     assert not caixa.isEnabled()
     e.definir_opcao("misto_so_as_letras", False)
     e.definir_opcao("respeitar_gravuras_achadas", False)
-    assert not caixa.isEnabled()
+    assert caixa.isEnabled(), "com o Respeitar desligado a caixinha ficou apagada (conserto 02/11)"
     e.definir_opcao("respeitar_gravuras_achadas", True)
     assert caixa.isEnabled()
     # o "comparar": o mesmo painel, com a caixinha
@@ -420,14 +433,15 @@ def test_d588_no_limpar_a_folha_do_automatico(janela, tmp_path):
 
 # --- 9. no padrão da D-168/D-587 (pergunta ao Samuel) ------------------------------------------
 
-def test_d588_cinza_com_so_as_letras_e_com_respeitar_desligada_e_volta(janela, tmp_path):
+def test_d588_cinza_com_so_as_letras_e_volta(janela, tmp_path):
     """No padrão da D-168 e da D-587 ("Fica apagada (cinza) enquanto 'Só as letras' estiver
-    marcada, e volta como estava ao desligar"), à espera da resposta do Samuel (ONDE-PAREI):
+    marcada, e volta como estava ao desligar"), à espera da resposta do Samuel (pergunta 1 do
+    ONDE-PAREI, ainda aberta: NÃO mexer):
       - com "Só as letras" ligada, a caixinha fica cinza, o valor guardado não muda e a
         iluminura guarda a cor (D-148);
-      - com "Respeitar as gravuras achadas" desligada (D-586), não há gravura achada para
-        pintar: a caixinha fica cinza e a página sai toda em preto e branco, como sem ela;
-      - desfeito cada um, a caixinha volta clicável e marcada, e a gravura volta a sair cinza."""
+      - desligada, a caixinha volta clicável e marcada, e a gravura volta a sair cinza.
+    (Até 01/11 esta prova também deixava a caixinha cinza com "Respeitar as gravuras achadas"
+    desligada; o Samuel disse "não" a isso em 02/11: ver as provas 11, do conserto.)"""
     from PySide6.QtCore import Qt
     from PySide6.QtTest import QTest
 
@@ -453,19 +467,6 @@ def test_d588_cinza_com_so_as_letras_e_com_respeitar_desligada_e_volta(janela, t
     _assentar()
     assert pagina.misto_so_as_letras is False
     assert caixa.isEnabled() and caixa.isChecked()
-    # "Respeitar as gravuras achadas" desligada
-    tela.caixa_respeitar_gravuras.click()
-    _assentar()
-    assert pagina.respeitar_gravuras_achadas is False
-    assert not caixa.isEnabled() and caixa.isChecked()
-    sem_achadas = _desenho(projeto, pagina, 110)
-    assert _colorido(sem_achadas) == 0.0 and _meio_tons(_miolo_da_iluminura(sem_achadas)) < 0.05
-    so_sem_achadas = copy.deepcopy(pagina)
-    so_sem_achadas.gravuras_em_tons_de_cinza = False
-    assert np.array_equal(sem_achadas, _desenho(projeto, so_sem_achadas, 110))
-    tela.caixa_respeitar_gravuras.click()
-    _assentar()
-    assert caixa.isEnabled() and caixa.isChecked()
     assert _e_tons_de_cinza(_desenho(projeto, pagina, 110))
 
 
@@ -487,3 +488,221 @@ def test_d588_projeto_antigo_abre_desmarcado_e_sai_identico(janela, tmp_path):
     assert all(p.gravuras_em_tons_de_cinza is False for p in antigo.paginas)
     assert np.array_equal(_desenho(antigo, antigo.paginas[0], 110),
                           _desenho(projeto, projeto.paginas[0], 110))
+
+
+# --- 11. CONSERTO de 02/11/2026: o cinza sem o "Respeitar" ---------------------------------------
+#
+# Teste do Samuel, 02/11/2026, página 13 de 199 do *Na escola de Jesus*, Preto e branco:
+#   "1- não consigo trocar respeitar gravuras por gravuras em tons de cinza."
+#   "2- para deixar as gravuras cinzas o respeitar gravuras tem que estar ligado, por gravuras em
+#    tons de cinza sozinho já deveria resolver o problema."
+# Prints: relatorios/testes-guiados/2026-10-29-automatico/a-26 (as duas ligadas: cinza, certo) e
+# a-27 (Respeitar desligada: a caixinha marcada mas apagada, a gravura em preto e branco chapado).
+# Aprovado ("sim pode"): "marcar só "Gravuras em tons de cinza" já basta: ela acha as gravuras
+# sozinha e pinta de cinza, com o "Respeitar" ligado ou desligado."
+# Reversão: no 091b200 estas provas falham (relatorios/gravuras-cinza/reversao-conserto-no-091b200.txt).
+
+def test_d588_conserto_0211_painel_so_o_cinza_sem_o_respeitar_sai_igual_as_duas_ligadas(janela, tmp_path):
+    """Conserto de 02/11 (bug: "para deixar as gravuras cinzas o respeitar gravuras tem que estar
+    ligado"), no painel Filtro, com cliques de verdade:
+      - as duas ligadas → a gravura em tons de cinza (o print a-26, que estava certo);
+      - "Respeitar" desligada e a caixinha desmarcada → a página toda em preto e branco, como
+        antes (D-586: nada muda com a caixinha desmarcada);
+      - "Respeitar" desligada → a caixinha "Gravuras em tons de cinza" continua CLICÁVEL;
+        marcada → a página sai IGUAL, byte a byte, à das duas ligadas (a gravura cinza, não o
+        preto e branco chapado do a-27); a tela mostra esse desenho e o PDF sai igual;
+      - desmarcada de novo → volta ao preto e branco de antes, byte a byte."""
+    tela = _depois_do_automatico(janela, tmp_path)
+    projeto, pagina = janela.projeto, janela.projeto.paginas[0]
+    _escolher(tela, PRETO_E_BRANCO)
+    caixa = _caixa(tela)
+    caixa.click()
+    _assentar()
+    assert pagina.gravuras_em_tons_de_cinza is True and pagina.respeitar_gravuras_achadas is True
+    duas_ligadas = _desenho(projeto, pagina, 110)
+    assert _e_tons_de_cinza(duas_ligadas)
+    caixa.click()
+    _assentar()
+    tela.caixa_respeitar_gravuras.click()
+    _assentar()
+    assert pagina.respeitar_gravuras_achadas is False and pagina.gravuras_em_tons_de_cinza is False
+    so_sem_o_respeitar = _desenho(projeto, pagina, 110)
+    assert _colorido(so_sem_o_respeitar) == 0.0
+    assert _meio_tons(_miolo_da_iluminura(so_sem_o_respeitar)) < 0.05, "desmarcada mudou (D-586)"
+
+    assert caixa.isVisibleTo(tela) and caixa.isEnabled(), \
+        "com o Respeitar desligado a caixinha ficou apagada (print a-27)"
+    caixa.click()
+    _assentar()
+    assert pagina.gravuras_em_tons_de_cinza is True and caixa.isChecked()
+    assert pagina.respeitar_gravuras_achadas is False
+    so_o_cinza = _desenho(projeto, pagina, 110)
+    miolo = _miolo_da_iluminura(so_o_cinza)
+    assert _e_tons_de_cinza(so_o_cinza), (
+        f"só com o cinza a gravura não saiu em tons de cinza ({_meio_tons(miolo):.0%} de tons do "
+        f"meio no miolo da gravura; preto e branco chapado = 0%)")
+    assert np.array_equal(so_o_cinza, duas_ligadas), "não saiu igual às duas ligadas"
+    # a tela mostra esse desenho (D-473)
+    dpi = tela._dpi_atual
+    editor = tela.editor_selecao
+    _esperar(lambda: editor._img is not None and editor._img is tela.previas.ja_pronta(0, dpi),
+             motivo="a prévia só com o cinza")
+    assert _diferenca(_bgr(editor._img), _desenho(projeto, pagina, dpi)) < 0.5
+    assert _e_tons_de_cinza(_bgr(editor._img)), "a tela não mostra a gravura cinza"
+    # o PDF de verdade (o "Confirmar e processar")
+    paginas = _gerar(projeto, tmp_path, "saida", int(projeto.qualidade_dpi))
+    no_pdf = _miolo_da_iluminura(paginas[0])
+    assert _colorido(no_pdf) < 0.001 and _meio_tons(no_pdf) > 0.5, "no PDF não saiu cinza"
+    # desmarcada de novo: o preto e branco de antes
+    caixa.click()
+    _assentar()
+    assert pagina.gravuras_em_tons_de_cinza is False
+    assert np.array_equal(_desenho(projeto, pagina, 110), so_sem_o_respeitar)
+
+
+def test_d588_conserto_0211_tela_cheia_com_o_respeitar_desligado(janela, tmp_path):
+    """Conserto de 02/11, na tela cheia dos filtros: página com "Respeitar as gravuras achadas"
+    desligada → a caixinha aparece clicável no Preto e branco; marcá-la mostra a página grande
+    com a gravura em tons de cinza; "Usar" grava, e a página sai cinza."""
+    from ui.widgets.filtros_tela_cheia import DPI_DA_TELA_CHEIA, FiltrosEmTelaCheia
+
+    tela = _depois_do_automatico(janela, tmp_path)
+    pagina = janela.projeto.paginas[0]
+    _escolher(tela, PRETO_E_BRANCO)
+    tela.caixa_respeitar_gravuras.click()
+    _assentar()
+    assert pagina.respeitar_gravuras_achadas is False
+    dialogo = FiltrosEmTelaCheia(tela)
+    try:
+        dialogo.escolher(PRETO_E_BRANCO)
+        caixa = dialogo.caixa_gravuras_cinza
+        assert not caixa.isHidden() and caixa.isEnabled(), "na tela cheia a caixinha ficou apagada"
+        caixa.setChecked(True)
+        fim = time.monotonic() + 90
+        vista = None
+        while vista is None and time.monotonic() < fim:
+            _assentar(2)
+            vista = dialogo._imagem(PRETO_E_BRANCO)
+        assert vista is not None, "a página grande não chegou"
+        assert _e_tons_de_cinza(vista), "a tela cheia não mostra a gravura em tons de cinza"
+        dialogo.usar()
+    finally:
+        if dialogo.isVisible():
+            dialogo.reject()
+    _assentar()
+    assert pagina.gravuras_em_tons_de_cinza is True and pagina.respeitar_gravuras_achadas is False
+    assert _e_tons_de_cinza(_desenho(janela.projeto, pagina, DPI_DA_TELA_CHEIA))
+
+
+def test_d588_conserto_0211_automatico_com_o_respeitar_desligado(janela, tmp_path):
+    """Conserto de 02/11, no "Limpar a folha" do Automático (o print a-27): Preto e branco com
+    "Respeitar as gravuras achadas" desligada → a caixinha clicável, na janela grande e nos dois
+    lados do "comparar"; rodar com ela marcada grava as duas escolhas nas páginas (a receita) e a
+    gravura sai em tons de cinza, igual à página com as duas ligadas."""
+    from core import automatico as A
+    from ui.automatico import EstadoDoAutomatico, PainelDeOpcoes
+
+    _depois_do_automatico(janela, tmp_path)
+    projeto = janela.projeto
+    grande = janela.abrir_o_automatico()
+    assert grande is not None
+    _assentar()
+    e = grande.estado
+    caixa = grande.cx_gravuras_cinza
+    e.definir_opcao("filtro_padrao", PRETO_E_BRANCO)
+    e.definir_opcao("misto_so_as_letras", False)
+    e.definir_opcao("respeitar_gravuras_achadas", False)
+    assert not caixa.isHidden() and caixa.isEnabled(), "no Automático a caixinha ficou apagada (a-27)"
+    for _lado in ("a", "b"):                      # os dois lados do "comparar"
+        lado = PainelDeOpcoes(EstadoDoAutomatico(), vertical=True)
+        lado.estado.definir_opcao("filtro_padrao", PRETO_E_BRANCO)
+        lado.estado.definir_opcao("misto_so_as_letras", False)
+        lado.estado.definir_opcao("respeitar_gravuras_achadas", False)
+        assert lado.controles["gravuras_em_tons_de_cinza"].isEnabled(), f"lado {_lado} do comparar"
+    e.marcadas = {A.LIMPAR}
+    caixa.setChecked(True)
+    assert e.opcoes["gravuras_em_tons_de_cinza"] is True
+    assert e.opcoes["respeitar_gravuras_achadas"] is False
+    janela._fechar_a_janela_do_automatico()
+    assert janela.rodar_o_automatico(esperar=True, perguntar=False)
+    _assentar()
+    assert all(p.filtro == PRETO_E_BRANCO for p in projeto.paginas)
+    assert all(p.gravuras_em_tons_de_cinza is True and p.respeitar_gravuras_achadas is False
+               for p in projeto.paginas)
+    for pagina in projeto.paginas:
+        pagina.guardar_selecao(R._marcacao_da_maquina(), provisoria=False)
+        pagina.gravura_feita_com = ""
+    pagina = projeto.paginas[1]
+    so_o_cinza = _desenho(projeto, pagina, 110)
+    assert _e_tons_de_cinza(so_o_cinza), "rodando o Automático, a gravura saiu em preto e branco"
+    duas = copy.deepcopy(pagina)
+    duas.respeitar_gravuras_achadas = True
+    assert np.array_equal(so_o_cinza, _desenho(projeto, duas, 110))
+
+
+# o livro dele: as páginas 1 (a capa) e 13 (Jonas e a baleia) do *Na escola de Jesus*, com a
+# marcação que o "Gravuras e fotos" deixou na pasta de dados de teste em 02/11/2026 (cópia só
+# dessas duas páginas: tests/dados/na_escola_de_jesus_p1_p13.json). O PDF só existe no PC dele.
+NA_ESCOLA = Path(__file__).resolve().parent / "dados" / "na_escola_de_jesus_p1_p13.json"
+
+
+def _na_escola():
+    import json
+
+    from modelos import Projeto
+
+    projeto = Projeto.de_dicionario(json.loads(NA_ESCOLA.read_text(encoding="utf-8")))
+    if not Path(projeto.caminho_entrada).exists():
+        pytest.skip(f"sem {projeto.caminho_entrada} (só no PC do Samuel)")
+    return projeto
+
+
+def _desenho_com(projeto, pagina, **campos) -> np.ndarray:
+    copia = copy.deepcopy(pagina)
+    for campo, valor in campos.items():
+        setattr(copia, campo, valor)
+    return _desenho(projeto, copia, 110)
+
+
+@pytest.mark.parametrize("indice,nome", [(0, "capa"), (1, "página 13")])
+def test_d588_conserto_0211_na_escola_de_jesus(indice, nome, monkeypatch):
+    """Conserto de 02/11 no livro dele (a página 13, onde ele testou, e a capa), Preto e branco
+    sem "Só as letras", sem janela (o desenho da tela e do PDF, core.pipeline.renderizar_pagina):
+      - "Respeitar" desligada + "Gravuras em tons de cinza" marcada → IGUAL, byte a byte, às duas
+        ligadas; a gravura em tons de cinza: muitos tons do meio (o preto e branco chapado do
+        print a-27 tem 0%);
+      - desmarcada → nada muda: com o "Respeitar" desligado, a página sai como a regra da D-586
+        de antes do conserto (só as áreas feitas à mão valem; aqui não há nenhuma), sem nenhum tom
+        do meio. A prova entre commits (md5 iguais no 091b200 e depois do conserto) está em
+        relatorios/gravuras-cinza/identica-conserto-ao-091b200.txt."""
+    from core import pipeline
+    from core.selecao import MAO, Selecao
+
+    projeto = _na_escola()
+    pagina = projeto.paginas[indice]
+    pagina.filtro = PRETO_E_BRANCO
+    pagina.misto_so_as_letras = False            # sem "Só as letras" (a pergunta 1 fica de fora)
+    _desenho(projeto, pagina, 110)                # o primeiro desenho guarda as medidas
+    duas_ligadas = _desenho_com(projeto, pagina, respeitar_gravuras_achadas=True,
+                                gravuras_em_tons_de_cinza=True)
+    so_o_cinza = _desenho_com(projeto, pagina, respeitar_gravuras_achadas=False,
+                              gravuras_em_tons_de_cinza=True)
+    assert _meio_tons(duas_ligadas) > 0.25, f"{nome}: com as duas ligadas não há gravura cinza"
+    assert _meio_tons(so_o_cinza) > 0.25, (
+        f"{nome}: só com o cinza a página saiu em preto e branco chapado "
+        f"({_meio_tons(so_o_cinza):.1%} de tons do meio)")
+    assert np.array_equal(so_o_cinza, duas_ligadas), f"{nome}: não saiu igual às duas ligadas"
+
+    desmarcada = _desenho_com(projeto, pagina, respeitar_gravuras_achadas=False,
+                              gravuras_em_tons_de_cinza=False)
+    assert _meio_tons(desmarcada) < 0.01, f"{nome}: desmarcada deixou de sair em preto e branco"
+
+    def regra_de_antes(_projeto, pag, selecao):  # a D-586 como era no 091b200
+        if selecao is None or pag.respeitar_gravuras_achadas:
+            return selecao
+        return Selecao(regioes=[r for r in selecao.regioes if r.origem == MAO])
+
+    monkeypatch.setattr(pipeline, "marcacao_que_o_filtro_usa", regra_de_antes)
+    antes = _desenho_com(projeto, pagina, respeitar_gravuras_achadas=False,
+                         gravuras_em_tons_de_cinza=False)
+    assert np.array_equal(desmarcada, antes), f"{nome}: desmarcada mudou"

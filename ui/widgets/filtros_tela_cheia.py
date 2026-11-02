@@ -29,9 +29,9 @@ O QUE FAZ, E O QUE NÃO FAZ
     D-588 (Samuel, 01/11/2026, "ok"): "Uma caixinha "Gravuras em tons de cinza" no Preto e
     branco. Ela fica no painel Filtro, na tela cheia dos filtros e no "Limpar a folha" do
     Automático." Aqui ela fica logo abaixo do ajuste, antes do "Só as letras" (no painel, logo
-    abaixo da "Respeitar as gravuras achadas"), só no Preto e branco, e fica cinza nos mesmos
-    casos do painel ("Só as letras" valendo; "Respeitar as gravuras achadas" desligada na
-    página).
+    abaixo da "Respeitar as gravuras achadas"), só no Preto e branco, e fica cinza no mesmo
+    caso do painel ("Só as letras" valendo). Com "Respeitar as gravuras achadas" desligada na
+    página ela fica clicável e vale (conserto de 02/11/2026).
 
     O QUE SE VÊ É O QUE SAI: a página grande é sempre feita pelo mesmo caminho do PDF
     (core.pipeline.renderizar_com_filtro, o mesmo da GerenciadorPrevias.pegar_com_filtro), numa
@@ -544,13 +544,13 @@ class FiltrosEmTelaCheia(QDialog):
                 max(0, self.seletor_algoritmo_pb.findData(valores["algoritmo_preto_branco"])))
             for campo, caixa in self.caixas.items():
                 caixa.setChecked(bool(valores[campo]))
-            # D-588: só no Preto e branco; cinza com "Só as letras" ou com "Respeitar as
-            # gravuras achadas" desligada (como no painel: _mostrar_gravuras_em_cinza)
+            # D-588: só no Preto e branco; cinza só com "Só as letras" (como no painel:
+            # _mostrar_gravuras_em_cinza). Conserto de 02/11/2026: a "Respeitar as
+            # gravuras achadas" desligada NÃO a apaga ("com o "Respeitar" ligado ou
+            # desligado"). Arriscado: voltar a apagá-la com a "Respeitar" desligada.
             self.caixa_gravuras_cinza.setVisible(eh_pb)
             self.caixa_gravuras_cinza.setChecked(bool(valores["gravuras_em_tons_de_cinza"]))
-            self.caixa_gravuras_cinza.setEnabled(
-                not valores["misto_so_as_letras"]
-                and bool(getattr(self.pagina, "respeitar_gravuras_achadas", True)))
+            self.caixa_gravuras_cinza.setEnabled(not valores["misto_so_as_letras"])
         finally:
             self._mostrando = False
 
