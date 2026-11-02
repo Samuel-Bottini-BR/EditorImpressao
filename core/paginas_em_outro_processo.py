@@ -159,15 +159,17 @@ class _Servidor:
 
         Enquanto espera, olha o cano de 50 em 50 ms (esperando, o GIL fica
         solto) e, se `cancelado()` ficar verdadeiro, avisa o servidor
-        ("cancelar"), que para no proximo ponto de checagem da montagem.
-        Mesmo cancelado, espera a resposta: o cano fica limpo para o proximo
-        pedido. Se o "cancelar" chegar depois do fim, o servidor o ignora."""
+        ("cancelar"), que para no proximo ponto de checagem da montagem, e
+        devolve ("cancelado_aqui",) NA HORA, sem esperar a resposta: quem
+        chama deixa um fio esperando por ela (_devolver_depois), para o cano
+        ficar limpo antes do proximo pedido. Assim fechar a janela ou mudar a
+        opcao nao espera o desenho de um lado da folha (~1 s no Opus Majus).
+        Se o "cancelar" chegar depois do fim, o servidor o ignora."""
         self.cano.send(("folha_do_livreto", entrada, opcoes, posicao, largura_px))
-        avisado = False
         while not self.cano.poll(0.05):
-            if not avisado and cancelado is not None and cancelado():
+            if cancelado is not None and cancelado():
                 self.cano.send(("cancelar",))
-                avisado = True
+                return ("cancelado_aqui",)
         return self.cano.recv()
 
     def _bloco_do_servidor(self, nome: str):
@@ -658,6 +660,9 @@ def folha_do_livreto(entrada: str, opcoes: dict, posicao: int, largura_px: int,
         except BaseException:
             _livres.put(servidor)
             raise
+        if resposta[0] == "cancelado_aqui":
+            _devolver_depois(servidor)
+            raise impressao.Cancelou()
         _livres.put(servidor)
         if resposta[0] == "folha":
             numero, total, pos, quantas, faces = resposta[1]
@@ -671,6 +676,28 @@ def folha_do_livreto(entrada: str, opcoes: dict, posicao: int, largura_px: int,
         _, classe, mensagem = resposta
         raise RuntimeError(f"{classe}: {mensagem}")
     return SEM_SERVIDOR
+
+
+def _devolver_depois(servidor: _Servidor) -> None:
+    """Folha cancelada: um fio espera a resposta que o servidor ainda manda
+    ("cancelou" ou a folha, se ja tinha acabado), descarta e devolve o
+    servidor a fila. Se o cano quebrar, o servidor e trocado (como em
+    _adiantar). Nunca levanta."""
+
+    def esperar() -> None:
+        try:
+            servidor.cano.recv()
+            _livres.put(servidor)
+        except (OSError, EOFError, ValueError):
+            if servidor not in _todos:
+                return                  # os servidores foram fechados (encerrar)
+            novo = _trocar(servidor, "o servidor de paginas caiu cancelando a folha do livreto")
+            if novo is not None:
+                _livres.put(novo)
+        except BaseException:  # noqa: BLE001 - nunca derruba nada
+            _livres.put(servidor)
+
+    threading.Thread(target=esperar, daemon=True, name="folha cancelada").start()
 
 
 # Marcador de folha_do_livreto: "o servidor nao atende; desenhe aqui".

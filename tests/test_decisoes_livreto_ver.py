@@ -391,10 +391,13 @@ def test_d574_cancelar_para_a_folha_no_servidor(pasta, monkeypatch):
     monkeypatch.delenv(servidor.VARIAVEL_DESLIGA, raising=False)
     entrada = _livro_pesado(pasta / "pesado.pdf")
     opcoes = _opcoes_livreto(paginas_por_caderno=8).para_dicionario()
+    assert servidor._garantir_servidores()           # servidores já de pé
     inicio = time.monotonic()
     with pytest.raises(imp.Cancelou):
         servidor.folha_do_livreto(str(entrada), opcoes, 0, 300,
                                   cancelado=lambda: time.monotonic() - inicio > 0.2)
+    # volta na hora, sem esperar o servidor acabar o lado que desenha (~1 s)
+    assert time.monotonic() - inicio < 0.7
     folha = servidor.folha_do_livreto(str(_livro(pasta / "livro.pdf")),
                                       _opcoes_livreto().para_dicionario(), 0, 300)
     assert _paginas_da_face(_cinza_da_face(folha.faces[0])) == (20, 1)
