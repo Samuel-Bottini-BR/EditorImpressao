@@ -565,8 +565,9 @@ programa), a partir do **nome do botão**, da **dica** (o balão do mouse) e das
 
 ### P-087 · caixinha "Gravuras em tons de cinza" (painel Filtro, tela cheia dos filtros, Automático)
 - **chaves:** `área de trabalho/filtro da página/Gravuras em tons de cinza`
-- **dica:** "Marcada, toda gravura achada sai em tons de cinza no Preto e branco, mesmo a que o programa acha que é um
-  enfeite; o texto continua preto e branco."
+- **dica:** "Para quando o programa se confundir: marcada, toda gravura que ele achou sai em tons de cinza, mesmo a
+  que ele tomou por enfeite." (o mesmo nos três lugares; texto aprovado pelo Samuel em 02/11/2026: "pode ser esse
+  texto.")
 - **fora da varredura:** é uma caixinha, e a varredura ainda não olha caixinhas; a prova clica nela.
 - **decisões:** D-588 ("Uma caixinha "Gravuras em tons de cinza" no Preto e branco. Ela fica no painel Filtro, na tela
   cheia dos filtros e no "Limpar a folha" do Automático. Marcada, toda gravura achada sai cinza, mesmo quando o

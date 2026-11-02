@@ -1,0 +1,10 @@
+Reversao (CLAUDE.md 4.7) do balao de 02/11/2026: a prova test_d588_balao_aprovado_nos_tres_lugares rodada no codigo de ANTES (640170d, o obra-2026-10-26). Falha: o balao era o texto antigo. Depois da mudanca: passa.
+
+E       AssertionError: painel Filtro
+E       assert 'Marcada, tod...eto e branco.' == 'Para quando ... por enfeite.'
+E         
+E         - Para quando o programa se confundir: marcada, toda gravura que ele achou sai em tons de cinza, mesmo a que ele tomou por enfeite.
+E         + Marcada, toda gravura achada sai em tons de cinza no Preto e branco, mesmo a que o programa acha que é um enfeite; o texto continua preto e branco.
+tests\test_decisoes_gravuras_cinza.py:730: AssertionError
+FAILED tests/test_decisoes_gravuras_cinza.py::test_d588_balao_aprovado_nos_tres_lugares
+1 failed, 19 deselected in 25.98s

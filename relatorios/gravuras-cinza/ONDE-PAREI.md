@@ -240,3 +240,39 @@ test_decisoes_automatico_ver_como_fica 22 · test_filtro_com_selecao 22 · test_
    volta a funcionar (com o "Respeitar" ligado ou desligado). **Está bom assim? (sugestão: sim)**
 2. (respondida: "não", 02/11 — consertado acima)
 3. e 4.: continuam como em 01/11.
+
+---
+
+# 02/11 — o balão da caixinha (aviso de quando usar)
+
+Antes de mexer juntei o `origin/obra-2026-10-26` (`640170d`) no meu ramo: entrou direto, sem conflito (ele já
+tinha o conserto do cinza, juntado pela gerente em `be4b9c9`, testado pelo Samuel: print a-40).
+
+## Decisões que esta tarefa precisa cumprir (escrito antes de mexer)
+
+- **O pedido de 02/11:** "é bom botar um aviso quando passa em cima da opção gravuras em cor de cinza, avisando que
+  é quando o programa confundir". Texto aprovado por ele ("pode ser esse texto."), **exato**: "Para quando o programa
+  se confundir: marcada, toda gravura que ele achou sai em tons de cinza, mesmo a que ele tomou por enfeite."
+- Vale como **balão** (o que aparece ao passar o mouse) da caixinha "Gravuras em tons de cinza" nos três lugares:
+  painel Filtro, tela cheia dos filtros, "Limpar a folha" do Automático (e os dois lados do "comparar"). Onde já
+  havia balão, troca por este.
+- **D-588** (a caixinha, o nome e os lugares) e CLAUDE.md §11 item 7: nada além do balão.
+
+## O que mudou
+
+| Arquivo | O quê |
+|---|---|
+| `ui/automatico.py` | Constante `BALAO_GRAVURAS_CINZA` com o texto aprovado (um lugar só); o balão do "Limpar a folha" (e, por ser o mesmo painel, dos dois lados do "comparar") passa a ser ele. |
+| `ui/tela_conferir.py` | O balão da caixinha do painel Filtro passa a ser a mesma constante (antes: "Marcada, toda gravura achada sai em tons de cinza no Preto e branco, mesmo a que o programa acha que é um enfeite; o texto continua preto e branco."). |
+| `ui/widgets/filtros_tela_cheia.py` | A tela cheia lê a mesma constante (antes copiava o balão do painel). |
+| `tests/test_decisoes_gravuras_cinza.py` | Prova `test_d588_balao_aprovado_nos_tres_lugares`: o texto, letra por letra, nos três lugares e nos dois lados do "comparar". |
+| `tests/promessas/promessas.md` | A "dica" da P-087 com o texto novo. |
+
+Nada mais mudou (nome, lugar, comportamento e o balão da "Respeitar" ficam como estavam).
+
+## Como cumpri cada uma
+
+- **O texto exato nos três lugares (e no "comparar"):** prova `test_d588_balao_aprovado_nos_tres_lugares`
+  (compara letra por letra com o texto aprovado, escrito na prova, não lido do programa).
+- **§4.7 (reversão):** `reversao-balao-no-640170d.txt`: no `640170d` a prova falha (o balão era o antigo).
+- Testes no PC e GitHub: abaixo.
