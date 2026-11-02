@@ -352,3 +352,13 @@ Cópias de verificador (destacadas, sem ramo, sem commit; podem ser apagadas dep
 | `.claude\worktrees\auto-ver` | `automatico-ver-como-fica-2026-10-29` | tarefa 1: D-577 comparar com opções + "usar este", D-594 todas as opções do Filtro, começa pela receita, conserto do lado esquerdo | `d0f0d72`, verificado (CUMPRE COM RESSALVAS), **não juntado** (esperando o "sim" dele) |
 | `.claude\worktrees\verif-t1` / `verif-t1-antes` | (destacadas) | pareceres e scripts dos dois verificadores da tarefa 1 | sem commit; podem ser apagadas depois de copiar os pareceres |
 | `.claude\worktrees\verif-gravuras` | (destacada) | criada pelo verificador da D-589 que foi parado | sem trabalho |
+
+## Ramos e cópias de 01/11/2026
+
+| Cópia | Ramo | O que é | Situação |
+|---|---|---|---|
+| `.claude\worktrees\auto-ver` | `automatico-ver-como-fica-2026-10-29` | tarefa 1 (D-577 comparar + D-594) | **juntado** no `obra-2026-10-26` (`01a1d68`); testado: "está funcionando" |
+| `.claude\worktrees\zoom-mouse` | `zoom-mouse-2026-11-01` | D-599 zoom da área de trabalho para o mouse + nomes inteiros do "Mais ajustes" + Shift + roda no lado a lado | `e9f01ac`, **juntado** (`d6d6e6f`, `b43dc40`); sem verificador (a pedido dele); falta ele testar o Shift + roda |
+| `.claude\worktrees\gravuras-cinza` | `gravuras-cinza-2026-11-01` | D-588 caixinha "Gravuras em tons de cinza" | `09e47d2`, **juntado** (`63fbbff`); sem verificador (a pedido dele); falta ele testar; 4 perguntas do construtor |
+
+As três cópias têm junções `modelos` e `gabarito\paginas`: apagar com `git worktree remove`, nunca `Remove-Item -Recurse`.

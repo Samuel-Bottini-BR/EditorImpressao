@@ -276,3 +276,14 @@ Ficha [layout](../itens/layout.md).
 - `a-212-desentortar` — o desentortar perto da lombada (2.12) corta letras da beirada: A papel em volta antes de desentortar (recomendado), B desentortar antes de cortar, C desligado com aviso.
 - Conferência `lyupdf` — livro aberto como no UPDF e tela cheia dos filtros (8 quadros + decisão final).
 
+## Abertas em 01/11/2026 (PARTE -27 do histórico)
+
+- **D-588, perguntas do construtor** (no `relatorios/gravuras-cinza/ONDE-PAREI.md` do ramo `gravuras-cinza-2026-11-01`,
+  cada uma com sugestão "sim"; a gerente combinou fazê-las DEPOIS do teste dele, uma por vez, com print):
+  1. "Com "Só as letras" ligada, a caixinha fica cinza e as gravuras guardam a cor; desligando, ela volta como estava (print 4). Está bom?"
+  2. "Com "Respeitar as gravuras achadas" desligada, a caixinha também fica cinza, porque não sobra gravura achada para pintar; religando, ela volta (print 5). Está bom?"
+  3. "Os lugares da caixinha nos três pontos (prints 2, 6 e 7) estão bons?"
+  4. ""Toda gravura" pega também a gravura de traço (a xilogravura, que hoje sai como desenho preto e branco) e a área marcada à mão como gravura: as duas também saem em cinza. Está bom?"
+- Continuam as da PARTE -26 §4 (pergunta 7 do construtor da tarefa 1; zoom "todos iguais à área de trabalho?" —
+  superada pela D-599 na área de trabalho, mas a diferença roda sozinha × Ctrl + roda entre lugares continua sem
+  resposta) e da PARTE -25 §5 (D-574 "sem botão?"; D-589 P2/P3; "marcações" e contorno laranja; "Ver de perto" do Cortar).

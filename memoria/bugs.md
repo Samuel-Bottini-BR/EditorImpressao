@@ -464,9 +464,12 @@ na Central (aba "O que você não gostou: alternativas").
 - **Nomes cortados no "Mais ajustes" do painel Filtro (visto no print do Samuel, 31/10, a-22):** "Igualar a luz da
   página", "Suavizar as letras" e "Tirar o chuvisco" aparecem como "Igual", "Suavi" e "Tirar o chu" (versão de teste
   `obra-2026-10-26`). Print: `relatorios/testes-guiados/2026-10-29-automatico/a-22-mais-ajustes-tipos-de-preto.png`.
+  **Consertado em 01/11** (ramo `zoom-mouse-2026-11-01` `c269e33`: uma caixinha por linha; junção `d6d6e6f`); Samuel: "3- ok".
 - **Zoom da área de trabalho vai para o centro, não para o mouse (Samuel, 31/10):** "na area de trabalho o zoom se
   comporta sozinho, porque ele se direciona somente para o centro da pagina e não onde o mouse está". Em conserto junto
-  com a D-577 (ramo `automatico-ver-como-fica-2026-10-29`).
+  com a D-577 (ramo `automatico-ver-como-fica-2026-10-29`). **Consertado em 01/11 (D-599**, ramo `zoom-mouse-2026-11-01`
+  `c269e33`, junção `d6d6e6f`); Uma página: "1- funcionando". Defeito do conserto: Shift + roda no "Duas lado a lado" trocava
+  de página (rolar padrão do Qt) → consertado em `aba8c37` (junção `b43dc40`), **falta ele testar**.
 - **"Limpar a folha" do Automático, fora do Preto e branco (achado do construtor da D-594, 31/10; já era assim):** a
   caixinha "Escurecer sozinho a força do preto..." some, mas a frase de baixo dela continua ("com "Só as letras":
   escurece só na página falhada..."). Print no ramo `automatico-ver-como-fica-2026-10-29`:
@@ -476,3 +479,10 @@ na Central (aba "O que você não gostou: alternativas").
 - **Automático: ligar "Limpar a folha" liga as Gravuras junto (verificador, 31/10):** no "comparar", página feita à mão em
   Preto e branco (gravura toda preta), ligar só "Limpar a folha" faz a gravura ficar cinza, porque a etapa Gravuras liga
   junto (`core/automatico.ligada_no_livro`). Mesmo assunto da D-589 e do print a-20; conferir no item 4 da lista.
+
+## Achados de 01/11/2026 (versão de teste `obra-2026-10-26`)
+- **Teste instável no GitHub, parte 1, mais um caso:** `test_promessas.py::test_p090_por_pagina_e_por_motivo` (rodada
+  41324371101, 1ª tentativa): uma prévia em segundo plano (`ui/tarefas.py::_folha_crua`) tentou abrir o PDF de um teste
+  já apagado. Mesma família do p083/p107 (acima). Passou na 2ª tentativa; no PC passa.
+- **Layout do "comparar" do Automático "tudo muito junto"** (Samuel, print a-24): com "opções" aberta, a página do lado
+  direito fica espremida e textos saem cortados ("arquivo pe", "mantém as", "também em pr"). Na Lista de espera do plano.

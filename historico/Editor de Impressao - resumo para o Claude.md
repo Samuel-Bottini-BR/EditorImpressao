@@ -1,6 +1,6 @@
 # Editor de Impressão — documento para colar no Claude
 
-Atualizado em 31/10/2026, noite (PARTE -26; a anterior, PARTE -25, é de 30-31/10). Desde 19/10 a memória por assunto fica em `memoria/` (índice `memoria/INDICE.md`). Versão **máxima**: reúne o histórico institucional, o
+Atualizado em 01/11/2026 (PARTE -27; a anterior, PARTE -26, é de 31/10, noite). Desde 19/10 a memória por assunto fica em `memoria/` (índice `memoria/INDICE.md`). Versão **máxima**: reúne o histórico institucional, o
 que o programa é, todas as funcionalidades pedidas, os 68 pedidos feitos até
 hoje **palavra por palavra**, o que foi feito, o que falta, e os dois
 documentos-fonte inteiros (a especificação original e o prompt de testes) em
@@ -14,7 +14,84 @@ o backup). Repositório git ligado a
 
 ---
 
-# PARTE -26 — Checkpoint de 31/10/2026 (noite): testes dele, lista organizada, tarefa 1 pronta para juntar (leia isto primeiro)
+# PARTE -27 — Checkpoint de 01/11/2026: tarefa 1 testada, zoom para o mouse, caixinha do cinza (leia isto primeiro)
+
+Sessão no PC, gerente + agentes (dois ao mesmo tempo nesta sessão, Claude Opus 5.5). A ordem "um agente por vez" era só
+de 31/10. Palavras dele e prints: `relatorios/testes-guiados/2026-10-29-automatico/automatico.md` (seções do fim, a-24).
+Fichas mudadas: `memoria/bugs.md`, `memoria/ramos.md`, `memoria/geral/perguntas-abertas.md`, `memoria/LINHA-DO-TEMPO.md`.
+
+## 0. Para recomeçar
+1. `git -C D:\programas\EditorImpressao fetch origin`. Ler a Central (`respostas` com `lida != true`, `ordens`).
+2. **Primeira coisa: o teste dele de duas coisas já juntadas na versão de teste** (`obra-2026-10-26`, ponta depois de
+   `b43dc40`), pelo atalho `D:\programas\EditorImpressao-arquivos\atalho-rodada-de-consertos\abrir.vbs`:
+   - **D-588 cinza:** Preto e branco, capa do *Na escola de Jesus*: caixinha "Gravuras em tons de cinza" abaixo de
+     "Respeitar as gravuras achadas" no painel Filtro, na tela cheia dos filtros (abaixo de "Força do preto") e no
+     "Limpar a folha" do Automático (e nos dois lados do comparar). Marcada → pintura cinza, texto P&B.
+   - **Shift + roda no "Duas lado a lado"** com zoom → o par anda para os lados, sem trocar de página.
+3. Depois do teste do cinza: as **4 perguntas do construtor da D-588**, uma por vez, com print (texto exato em
+   `memoria/geral/perguntas-abertas.md`, "Abertas em 01/11/2026"; prints em `relatorios/gravuras-cinza/` no ramo).
+4. Depois: próximo item da lista (seção 3).
+
+## 1. O que se fez (e o que ele testou de verdade)
+- **Central:** D-497 "Concordo, fica assim" (Livro); D-548 "Ele dá o aviso só por ter algo perto da borda?" → gerente:
+  não; só avisa quando, no "Mover e redimensionar", 0,05% ou mais do IMPRESSO sai da área branca (`core/folha.py`,
+  `PARTE_DE_FORA_QUE_AVISA`); margem branca não conta. Ambas marcadas `lida: true`.
+- **Tarefa 1 (D-577 comparar + D-594)** juntada (`01a1d68`), 70 provas; **testada: "está funcionando"**. Ele: "eu não
+  gostei de como ficou o layout ficou tudo muito junto, mas isso fica para se arrumar depois." (a-24) → Lista de espera
+  do plano (01/11).
+- **D-599 (nova): zoom da área de trabalho para o mouse** + nomes inteiros no "Mais ajustes" (ramo `zoom-mouse-2026-11-01`,
+  junção `d6d6e6f`). Escolha do construtor (a página pode sair um pouco do meio para os lados; Shift + roda move página
+  estreita) → "sim, coloca no programa para eu testar" (**sem verificador**, a pedido dele). **Testado:** "1- funcionando"
+  (Uma página), "3- ok" (nomes). "2- [...] com shift para os lados não funciona ele rola as paginas para pagina" →
+  consertado (`aba8c37`; causa: a roda sem Ctrl ia ao rolar padrão do Qt, que com Shift desce página por página), junção
+  `b43dc40`, **falta testar**.
+- **D-588 caixinha "Gravuras em tons de cinza"**: ele perguntou "o modo que ficava as coisas cinzas quando escolhia o
+  preto e branco tem?" → gerente: sim (P&B sem "Só as letras" e com Gravuras → cinza, D-147). Ele tentou: "está muito
+  confuso e não deu certo, coloque um agente para fazer isso". Proposta da caixinha → "ok". Construída (ramo
+  `gravuras-cinza-2026-11-01` `09e47d2`: campo `gravuras_em_tons_de_cinza`; `core/filtros._preto_e_branco_com_gravura`
+  manda toda área de gravura pelo caminho da foto `_foto_em_tons_de_cinza`; `core/pipeline.gravuras_em_cinza_valem`;
+  receita e Automático). Capa: sem a caixinha 68,8% colorido; com ela 0% colorido, 86,7% cinza. Desmarcada: md5 igual ao
+  de antes em 32 desenhos. GitHub 41323846070 verde; velocidade 41323848831 "igual". Juntada `63fbbff` (**sem verificador**,
+  a pedido dele), **falta testar**. Ele também perguntou: "a opção já existe [...] ele só vai ligar essa opção a esse
+  botão" → gerente: quase; o cinza existe (D-147), mas quem decidia era o tipo da figura; a caixinha manda em todas.
+- Livro (`docs/plano/DECISOES.md`, duas cópias iguais por `cmp`): D-497, D-577, D-594 testadas, D-588, D-599.
+
+## 2. Descobertas (não redescobrir)
+- O "Mais ajustes" do Automático (`ui/automatico.PainelDeOpcoes`) tem miolo próprio, já com uma caixinha por linha;
+  o conserto dos nomes foi só em `ui/tela_conferir._montar_aba_filtro`.
+- Teste dos nomes precisa da letra Segoe UI carregada (offscreen mede letras como quadrados); prints offscreen precisam
+  `QT_QPA_FONTDIR=C:/Windows/Fonts`.
+- Teste instável da parte 1 no GitHub tem mais um caso: p090 (`memoria/bugs.md`, 01/11).
+- O `PLANO-DEFINITIVO.md` da cópia `EditorImpressao-arquivos` está em LF e o do git em CRLF: comparar com
+  `diff <(tr -d '\r' < a) <(tr -d '\r' < b)`, não `cmp`. O `DECISOES.md` é copiado por cima e confere com `cmp`.
+
+## 3. A lista (ordem de 31/10, com o que mudou hoje)
+1. ~~Tarefa 1 (D-577 comparar + D-594)~~: testada.
+2. Zoom para o mouse + nomes cortados (D-599): testado, falta só o Shift + roda no lado a lado.
+3. D-574 ver o caderno: verificador parado (`.claude\worktrees\verif-livreto\relatorios\livreto-ver\verificador\ONDE-PAREI.md`)
+   + levar a tela grande de caderno à etapa 7 do Automático e ao painel "Montar cadernos".
+4. D-589 desmarcado não é feito (cadernos do Kaique; caso a-20), ramo `automatico-cadernos-2026-10-30` (`d67933f`).
+5. D-590 "juntar todas", separado do 4.
+6. D-588 gravura em tons de cinza: **construída e juntada**, falta testar e as 4 perguntas.
+7. D-221 filtro só nas gravuras, em todos os painéis de filtro.
+Depois: layout do comparar (Lista de espera); cada trabalho guarda o último "Rodar" (decidido, ele disse "não" para
+mandar agora); respostas da Central de 31/10 (D-572, D-575, D-591, D-592, D-595 a D-598); "Marcação travada" (2-1, sem resposta).
+
+## 4. Perguntas abertas (texto exato)
+- As 4 da D-588 (`memoria/geral/perguntas-abertas.md`).
+- As da PARTE -26 §4 e da PARTE -25 §5 continuam.
+
+## 5. Como conferir
+Na versão de teste (`.claude\worktrees\obra-juncao`), PowerShell:
+`$env:QT_QPA_PLATFORM="offscreen"; D:\programas\EditorImpressao\.venv\Scripts\python.exe -m pytest tests\test_decisoes_gravuras_cinza.py tests\test_zoom_no_ponteiro.py tests\test_decisoes_9b2.py tests\test_livro_aberto.py -q --basetemp=_tmp\bt`
+(63 passaram em `b43dc40`). Também passaram nesta sessão, na junção: `test_decisoes_automatico_opcoes_do_filtro` (21),
+`test_decisoes_automatico_ver_como_fica` (22), `test_decisoes_automatico`, `test_decisoes_filtro_automatico`,
+`test_decisoes_respeitar_gravuras`, `test_filtros_tela_cheia`, `test_preto_e_branco_regra_30_09`, `test_paineis_na_tela`.
+A suíte inteira do PC não rodou. Central não regenerada (fonte.json) nesta sessão.
+
+---
+
+# PARTE -26 — Checkpoint de 31/10/2026 (noite): testes dele, lista organizada, tarefa 1 pronta para juntar
 
 Sessão no PC, gerente + **um agente por vez** (ordem dele para esta sessão: "Use um agente só por vez, não quero gastar
 muito token. e antes de usar me diga qual claude está usando no agente." — ele: "não era uma regra nova, era uma ordem só
