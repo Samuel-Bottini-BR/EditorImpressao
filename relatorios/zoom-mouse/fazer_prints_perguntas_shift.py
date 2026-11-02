@@ -7,7 +7,8 @@ Sem janela na tela (offscreen), com as letras do Windows, no "Na escola de Jesus
                          dentes de Shift + roda para baixo (hoje: muda a espessura do pincel; a
                          página não anda). Também mede o Retângulo.
 A cruz vermelha é o ponteiro. O que cada um fez sai escrito no terminal.
-Uso: QT_QPA_FONTDIR=C:/Windows/Fonts python relatorios/zoom-mouse/fazer_prints_perguntas_shift.py
+Uso: QT_QPA_FONTDIR=C:/Windows/Fonts python relatorios/zoom-mouse/fazer_prints_perguntas_shift.py [fim]
+(fim: acrescentado ao nome dos prints da pergunta 2; "-depois-do-sim" depois da resposta dele)
 Os dados do programa ficam em <worktree>/_tmp/dados_prints_shift."""
 import os
 import sys
@@ -25,6 +26,7 @@ TAMANHO = (1280, 657)
 
 
 def main() -> int:
+    fim_do_nome = sys.argv[1] if len(sys.argv) > 1 else ""
     from PySide6.QtCore import QPoint, QPointF, Qt, QTimer
     from PySide6.QtGui import QColor, QPainter, QPen, QWheelEvent
     from PySide6.QtWidgets import QApplication, QDialog, QMessageBox
@@ -107,10 +109,10 @@ def main() -> int:
         ponto = editor.rect().center()
         desl, espessura, zoom = editor.deslocamento, editor.espessura, editor.zoom
         if ferramenta == "pincel":
-            print_(janela, editor, ponto, "pergunta-2-pincel-com-zoom-antes-do-shift-roda")
+            print_(janela, editor, ponto, "pergunta-2-pincel-com-zoom-antes-do-shift-roda" + fim_do_nome)
         shift_roda(editor, ponto, 3)
         if ferramenta == "pincel":
-            print_(janela, editor, ponto, "pergunta-2-pincel-depois-de-3-shift-roda")
+            print_(janela, editor, ponto, "pergunta-2-pincel-depois-de-3-shift-roda" + fim_do_nome)
         print(f"pergunta 2, {ferramenta}: zoom {zoom:.2f} -> {editor.zoom:.2f}; deslocamento {desl.x()},{desl.y()} -> "
               f"{editor.deslocamento.x()},{editor.deslocamento.y()}; espessura {espessura:.4f} -> {editor.espessura:.4f}")
     janela.close()

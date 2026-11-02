@@ -872,7 +872,8 @@ class VistaAntesDepoisComZoom(_classe_da_vista()):
         zoom (D-600, 02/11/2026: "shift não funciona no automatico para mover para o lado" ·
         "o shift tem que funcionar em todas as telas"; a peça é ui/widgets/roda_de_lado). Antes
         o Shift + roda dava zoom como a roda sozinha. Com a página cabendo de lado, continua
-        dando zoom (pergunta aberta, relatorios/zoom-mouse/ONDE-PAREI.md)."""
+        dando zoom, como a roda sozinha (Samuel, 02/11/2026: "1- sim";
+        relatorios/zoom-mouse/ONDE-PAREI.md)."""
         from PySide6.QtWidgets import QApplication
 
         from ui.widgets.roda_de_lado import shift_roda_na_rolagem

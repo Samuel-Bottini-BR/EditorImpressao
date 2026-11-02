@@ -132,7 +132,7 @@ as telas". Primeiro passo: juntado o `obra-2026-10-26` (`091b200`) neste ramo (a
 | Tela | Arquivo e classe | Situação |
 |---|---|---|
 | Área de trabalho, "Uma página" (todas as ferramentas de página e a Mão/Zoom) | `ui/tela_conferir.py`, `TelaConferir._roda_na_pagina` (sobre `Visualizador` e `EditorSelecao`) | já funcionava (D-568/D-599); não mexi |
-| Área de trabalho, "Uma página", ferramentas de marcar (Pincel, Varinha, Retângulo...) | `ui/widgets/editor_selecao.py`, `EditorSelecao.wheelEvent` | **pergunta 2** (abaixo); não mexi |
+| Área de trabalho, "Uma página", ferramentas de marcar (Pincel, Varinha, Retângulo...) | `ui/tela_conferir.py`, `TelaConferir._roda_na_pagina` (antes de ir para `EditorSelecao.wheelEvent`) | era a **pergunta 2**; ele respondeu "sim": **feita** |
 | Área de trabalho, "Duas lado a lado" | `ui/widgets/paginas_lado_a_lado.py`, `PaginasLadoALado.wheelEvent` | já funcionava (`aba8c37`); agora usa a peça única, o que faz não mudou |
 | Área de trabalho, "antes / depois" | `ui/widgets/filtros_tela_cheia.py`, `VistaAntesDepois` | sem zoom (a página sempre inteira): não se aplica |
 | Automático, "A página, antes e depois" | `ui/automatico.py`, `PaginaAntesEDepois` → `VistaAntesDepoisComZoom.wheelEvent` | **feita** |
@@ -160,6 +160,9 @@ as telas". Primeiro passo: juntado o `obra-2026-10-26` (`091b200`) neste ramo (a
 - `ui/widgets/paginas_rolando.py`, `PaginasRolando.wheelEvent`: idem (livro aberto; e o "Duas lado a lado" sem zoom, se as
   páginas passarem da largura).
 - `ui/widgets/paginas_lado_a_lado.py`: usa `andar_na_barra`/`quanto_de_lado` da peça (a mesma conta de antes).
+- Depois do "sim" da pergunta 2 (ver abaixo): `ui/tela_conferir.py`, `TelaConferir._roda_na_pagina`: nas ferramentas de
+  marcar, com zoom, Shift + roda chama o mesmo `_andar_pela_pagina` da Mão (a conta da D-599); a roda sozinha continua
+  indo para a ferramenta (o Pincel muda de tamanho, a Varinha a tolerância). Sem zoom, nada muda.
 - Não mudou: a roda sozinha e o Ctrl + roda de nenhuma tela; nenhum botão, aviso ou texto.
 
 **Ressalvas (para a gerente conferir):**
@@ -178,8 +181,8 @@ as telas". Primeiro passo: juntado o `obra-2026-10-26` (`091b200`) neste ramo (a
   e livro aberto: com zoom, Shift + roda anda para os lados, sem zoom e sem trocar de página. Prova:
   `tests/test_decisoes_shift_todas_as_telas.py` (6 casos) e os prints `shift-*-depois.png`. Área de trabalho: já
   tinha (`tests/test_zoom_no_ponteiro.py`, `tests/test_decisoes_9b2.py`).
-- **D-599**: área de trabalho sem mudança (`ui/tela_conferir.py` não foi tocado; `test_zoom_no_ponteiro` e
-  `test_decisoes_9b2` passam).
+- **D-599**: na área de trabalho, o que a D-599 diz não mudou (`test_zoom_no_ponteiro` e `test_decisoes_9b2` passam). A
+  única mudança lá é a resposta "sim" da pergunta 2 (ferramentas de marcar com zoom), que usa a mesma conta da Mão.
 - **D-568** e **D-577**: a roda sozinha e o Ctrl + roda não mudaram em nenhuma tela (os testes novos conferem que a roda
   sem Shift continua dando zoom no Automático e no "Ver de perto" e descendo no livro aberto).
 
@@ -210,6 +213,9 @@ Texto para ele: "Quando a página está inteira na tela, sem zoom, o Shift + rod
 Hoje ele faz o mesmo que a roda sozinha daquela tela: no Automático e no Ver de perto aproxima ou afasta; na área de
 trabalho troca de página. Pode continuar assim? (sugestão: sim, continua assim)"
 
+**Resposta do Samuel (02/11/2026, pela gerente): "1- sim".** Sem zoom, o Shift + roda continua fazendo o mesmo que a roda
+sozinha de cada tela. Nada mudou nesse caso (é como já estava construído; os prints `pergunta-1-*` mostram).
+
 **Pergunta 2 — Shift + roda nas ferramentas de marcar da área de trabalho, com zoom.** Com o Pincel, a Varinha ou as de
 marcar (Retângulo, Laço...), a roda não anda pela página: no Pincel muda o tamanho do pincel, na Varinha a tolerância
 (D-568: "na ferramenta de marcar com o Pincel ou a Varinha, a roda continua mudando a espessura ou a tolerância"), nas
@@ -219,3 +225,17 @@ nada. A área de trabalho ficou como estava (D-599).
 Texto para ele: "Na área de trabalho, com zoom e uma ferramenta de marcar (Pincel, Varinha, Retângulo...), o Shift + roda
 hoje não leva a página para os lados: no Pincel ele muda o tamanho do pincel. Quer que o Shift + roda leve a página para
 os lados também nessas ferramentas (a roda sozinha continua mudando o pincel)? (sugestão: sim)"
+
+**Resposta do Samuel (02/11/2026, pela gerente): "sim".** Antes ele perguntou "é só nesse lugar que tem esse atalho", e a
+gerente respondeu que sim: as ferramentas de marcar só existem na área de trabalho. Feito no mesmo dia:
+- `ui/tela_conferir.py`, `_roda_na_pagina` (ver "O que mudou").
+- Prova: `tests/test_decisoes_shift_todas_as_telas.py::test_d600_marcar_com_zoom_shift_roda_anda_para_os_lados` (Pincel,
+  Varinha, Retângulo, Laço): com zoom, Shift + roda anda para os lados sem mexer no zoom, na página, no tamanho do pincel
+  nem na tolerância; para cima volta; no Pincel, a roda sozinha continua mudando o tamanho.
+- Reversão (§4.7): os 4 casos **falham** no código de antes (`45641c9`, só o `ui/tela_conferir.py` antigo): "Shift + roda
+  para baixo não andou para os lados". Saída em `reversao-d600-marcar-no-codigo-antigo.txt`. No novo, passam.
+- Prints: `pergunta-2-pincel-com-zoom-antes-do-shift-roda-depois-do-sim.png` → `pergunta-2-pincel-depois-de-3-shift-roda-depois-do-sim.png`
+  (zoom 156%: a página andou para a esquerda e o pincel ficou em 2%; no Retângulo também andou). Os prints sem o
+  `-depois-do-sim` são de antes do conserto.
+
+As duas perguntas estão respondidas; não há mais perguntas abertas da D-600.

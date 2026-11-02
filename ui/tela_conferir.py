@@ -7052,7 +7052,14 @@ class TelaConferir(QWidget):
             da etapa 9b-2 ela continuava dando zoom;
           - Ctrl+roda dá zoom sempre;
           - na ferramenta de marcar com o Pincel ou a Varinha, a roda continua
-            mudando a espessura ou a tolerância, como antes.
+            mudando a espessura ou a tolerância, como antes;
+          - nas ferramentas de marcar (Pincel, Varinha, Retângulo, Laço...),
+            COM zoom, o Shift + roda (sem Ctrl) anda pela página para os lados,
+            como na Mão (D-600, resposta do Samuel de 02/11/2026: "sim" à
+            pergunta "Quer que o Shift + roda leve a página para os lados também
+            nessas ferramentas (a roda sozinha continua mudando o pincel)?").
+            Antes, ali, o Shift + roda fazia o mesmo que a roda sozinha (o
+            pincel mudava de tamanho, ou nada). Sem zoom, sem mudança.
         Devolve True se a roda foi usada aqui."""
         passos = evento.angleDelta().y()
         de_lado = evento.angleDelta().x()
@@ -7067,6 +7074,11 @@ class TelaConferir(QWidget):
             return True
         if vista is getattr(self, "editor_selecao", None) and (
                 vista.ferramenta not in FERRAMENTAS_DE_NAVEGACAO):
+            # D-600 (02/11): com zoom, Shift + roda anda para os lados também aqui;
+            # a roda sozinha continua sendo da ferramenta (pincel, tolerância)
+            if vista.zoom > 1.0 + 1e-3 and evento.modifiers() & Qt.ShiftModifier:
+                self._andar_pela_pagina(vista, de_lado or passos, 0)
+                return True
             return False
         if vista.zoom > 1.0 + 1e-3:
             if evento.modifiers() & Qt.ShiftModifier:

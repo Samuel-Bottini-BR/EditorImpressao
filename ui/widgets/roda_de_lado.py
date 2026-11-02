@@ -28,12 +28,12 @@ O QUE NÃO FAZ (de propósito: CLAUDE.md §11, item 7, "só o que ele mandou")
     - Só age quando há para onde ir de lado: numa área de rolar, quando a barra de baixo tem
       espaço (a imagem mais larga que a tela); no Visualizador, com zoom (acima de 100%, a mesma
       regra da área de trabalho, D-599). Com a página inteira cabendo (sem zoom), a tela
-      continua fazendo o que já fazia com o Shift + roda (pergunta aberta ao Samuel,
-      relatorios/zoom-mouse/ONDE-PAREI.md, seção de 02/11).
+      continua fazendo o mesmo que a roda sozinha dela (Samuel, 02/11/2026, "1- sim":
+      relatorios/zoom-mouse/ONDE-PAREI.md, seção de 02/11, pergunta 1).
 
 Seguro mudar: PASSO_NO_VISUALIZADOR e FOLGA_NO_VISUALIZADOR (o quanto anda e a folga na beirada).
 Arriscado: agir sem o Shift ou com o Ctrl (mudaria a roda sozinha e o zoom de todas as telas, que
-o Samuel não pediu), ou agir com a página inteira cabendo, sem zoom (a pergunta aberta)."""
+o Samuel não pediu), ou agir com a página inteira cabendo, sem zoom (ele decidiu que aí fica como a roda sozinha)."""
 
 from __future__ import annotations
 

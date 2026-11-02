@@ -226,6 +226,58 @@ def test_d600_ver_de_perto_shift_roda_anda_para_os_lados(janela, app, tmp_path):
         ampliada.close()
 
 
+# --- a área de trabalho, ferramentas de marcar (ui/tela_conferir._roda_na_pagina) ---------------
+
+@pytest.mark.parametrize("ferramenta", ["pincel", "varinha", "retangulo", "laco"])
+def test_d600_marcar_com_zoom_shift_roda_anda_para_os_lados(janela, app, tmp_path, ferramenta):
+    """D-600, pergunta 2 do ONDE-PAREI (02/11/2026): "Quer que o Shift + roda leve a página para
+    os lados também nessas ferramentas (a roda sozinha continua mudando o pincel)?" → Samuel:
+    "sim". Na área de trabalho, com zoom e uma ferramenta de marcar, Shift + roda para baixo
+    leva a página para a esquerda (ver o que está à direita), sem mudar a altura, o zoom, a
+    página, o tamanho do pincel nem a tolerância da varinha; para cima volta. A roda sozinha
+    continua da ferramenta (D-568: o Pincel muda de tamanho). Falha no código de antes: o
+    Shift + roda não andava (no Pincel mudava o tamanho, no Retângulo não fazia nada)."""
+    import time
+
+    janela.abrir_livro(_livro(tmp_path))
+    _assentar(app)
+    tela = janela.tela_conferir
+    tela.ir_para_pagina(1)
+    tela.escolher_ferramenta(ferramenta)
+    janela.show()
+    janela.move(-3000, -3000)
+    editor = tela.editor_selecao
+    fim = time.monotonic() + 60
+    while editor._pixmap is None and time.monotonic() < fim:
+        _assentar(app)
+        time.sleep(0.02)
+    assert editor._pixmap is not None, "a página não chegou ao editor de marcar"
+    assert editor.ferramenta == ferramenta
+    tela.botao_mais_zoom.click()
+    tela.botao_mais_zoom.click()
+    _assentar(app)
+    assert editor.zoom > 1.2
+    x, y, zoom, pagina = editor.deslocamento.x(), editor.deslocamento.y(), editor.zoom, tela.indice_pagina
+    espessura, tolerancia = editor.espessura, editor.tolerancia
+    meio = editor.rect().center()
+
+    _roda(editor, meio, passos=-1)
+    _assentar(app)
+    assert editor.deslocamento.x() < x, f"{ferramenta}: Shift + roda para baixo não andou para os lados"
+    assert editor.deslocamento.y() == y and editor.zoom == zoom and tela.indice_pagina == pagina
+    assert editor.espessura == espessura and editor.tolerancia == tolerancia, \
+        f"{ferramenta}: o Shift + roda mexeu no pincel ou na tolerância"
+    andou = editor.deslocamento.x()
+    _roda(editor, meio, passos=1)
+    _assentar(app)
+    assert editor.deslocamento.x() > andou and editor.zoom == zoom
+
+    if ferramenta == "pincel":                             # a roda sozinha continua do pincel
+        _roda(editor, meio, passos=1, shift=False)
+        _assentar(app)
+        assert editor.espessura != espessura and editor.zoom == zoom
+
+
 # --- o livro aberto (ui/tela_inicio.LivroAberto, ui/widgets/paginas_rolando.py) -----------------
 
 @pytest.mark.parametrize("continuo", [True, False])
