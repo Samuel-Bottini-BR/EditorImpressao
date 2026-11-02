@@ -1,0 +1,32 @@
+== test_decisoes_gravuras_cinza
+.............                                                            [100%]
+13 passed in 30.97s
+== test_decisoes_respeitar_gravuras
+...................                                                      [100%]
+19 passed in 44.82s
+== test_decisoes_automatico_opcoes_do_filtro
+.....................                                                    [100%]
+21 passed in 104.63s (0:01:44)
+== test_filtros_tela_cheia
+...........                                                              [100%]
+11 passed in 15.51s
+== test_preto_e_branco_regra_30_09
+...............                                                          [100%]
+15 passed in 3.73s
+== test_decoracao_no_preto_e_branco
+............                                                             [100%]
+12 passed in 15.84s
+== test_decisoes_filtro_automatico
+....                                                                     [100%]
+4 passed in 14.95s
+== test_decisoes_automatico
+........................                                                 [100%]
+24 passed in 62.21s (0:01:02)
+== test_decisoes_automatico_ver_como_fica
+......................                                                   [100%]
+22 passed in 96.84s (0:01:36)
+== test_filtro_com_selecao
+......................                                                   [100%]
+22 passed in 2.32s
+== test_decisoes_gravuras_cinza (depois da 14a prova)
+14 passed in 51.58s

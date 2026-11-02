@@ -2076,6 +2076,53 @@ def test_p086_respeitar_as_gravuras_achadas(janela, pasta, monkeypatch):
     aj.assentar()
     assert aj.pagina_gravada(janela, 0)["respeitar_gravuras_achadas"] is True and caixa.isChecked()
 
+
+@prova("P-087")
+def test_p087_gravuras_em_tons_de_cinza(janela, pasta, monkeypatch):
+    """D-588: a caixinha logo abaixo da "Respeitar as gravuras achadas", só no Preto e branco,
+    desmarcada de fábrica. No livro da iluminura colorida (tests/test_decisoes_respeitar_gravuras.py),
+    com a iluminura achada pela máquina (que o programa toma por enfeite), página 1 em Preto e
+    branco: clicar na caixinha a marca (gravado no projeto, uma ação no histórico, o Desfazer
+    volta) e o PDF gerado sai com a iluminura da página 1 em tons de cinza (nenhum ponto colorido,
+    muitos tons do meio); a página 2 (desmarcada) sai com a iluminura colorida."""
+    import cv2
+    from PySide6.QtWidgets import QCheckBox
+
+    from core.filtros import PRETO_E_BRANCO
+    from tests import test_decisoes_respeitar_gravuras as R
+
+    tela = aj.abrir_livro_para_teste(janela, R._pdf(pasta / "iluminura.pdf", 2), marcadas=("cx_limpar",))
+    janela.projeto.detectar_regioes = True          # o "Gravuras e fotos" (o detector não roda aqui)
+    for pagina in janela.projeto.paginas:
+        pagina.guardar_selecao(R._marcacao_da_maquina(), provisoria=False)
+        pagina.gravura_feita_com = ""
+    tela.previas.invalidar()
+    for indice in (1, 0):
+        tela.ir_para_pagina(indice)
+        tela._escolher_filtro(PRETO_E_BRANCO)
+    tela.paineis.abrir("filtro")
+    aj.assentar()
+    painel = tela.paineis.filtro_da_pagina
+    caixa = next(c for c in painel.findChildren(QCheckBox)
+                 if c.text() == "Gravuras em tons de cinza" and c.isVisibleTo(tela))
+    assert not caixa.isChecked() and caixa.toolTip()
+    assert aj.pagina_gravada(janela, 0)["gravuras_em_tons_de_cinza"] is False
+    caixa.click()
+    aj.assentar()
+    assert aj.pagina_gravada(janela, 0)["gravuras_em_tons_de_cinza"] is True
+    assert aj.pagina_gravada(janela, 1)["gravuras_em_tons_de_cinza"] is False
+    paginas = _gerar(janela, monkeypatch, pasta)
+    miolo = R._miolo_da_iluminura(paginas[0].imagem)
+    cinza = cv2.cvtColor(R._bgr(miolo), cv2.COLOR_BGR2GRAY)
+    assert R._colorido(miolo) < 0.001, "a iluminura da página 1 continua colorida"
+    assert float(((cinza > 10) & (cinza < 245)).mean()) > 0.5, "a página 1 não saiu em tons de cinza"
+    assert R._colorido(R._miolo_da_iluminura(paginas[1].imagem)) > 0.5, "a página 2 perdeu a cor"
+    _voltar_ao_trabalho(janela)
+    tela.ir_para_pagina(0)
+    tela.desfazer()
+    aj.assentar()
+    assert aj.pagina_gravada(janela, 0)["gravuras_em_tons_de_cinza"] is False and not caixa.isChecked()
+
 # --- "Para revisar" -------------------------------------------------------------------------------
 
 def _com_avisos(janela, tela):

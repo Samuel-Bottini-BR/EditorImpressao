@@ -895,3 +895,147 @@ def test_d577_marcar_e_desmarcar_dividir_muda_so_o_depois(janela, app, tmp_path)
     assert np.array_equal(antes, crua), "desmarcar Dividir mudou o antes"
     assert depois.shape[:2] == crua.shape[:2], "o depois não voltou a ser a folha inteira pronta"
     assert np.array_equal(depois, depois0)
+
+
+# --- D-577, 3º teste do Samuel (30/10, 16:30) ------------------------------------------------
+#
+# "1- não consigo dar zoom com o mouse, usando o scrool" · "2- ainda está confuso qual o lado que
+# é o antes e depois, o lado para onde a gente desliza a faixa de antes e depois tem que estar o
+# nome [...]" · "eu quero que a faixa seja de acordo com a direção do antes e depois, se ela está
+# embaixo do depois ela está aparecendo o depois se está embaixo do antes ela está no antes." ·
+# pergunta: "Linha toda à direita, embaixo de 'depois': a página inteira mostra o depois. Linha
+# toda à esquerda, embaixo de 'antes': a página inteira mostra o antes. Linha no meio: à esquerda
+# dela aparece o depois, e à direita aparece o antes. Hoje é o contrário." → "sim"; e vale também
+# no "antes / depois" da área de trabalho → "sim". (prints a-15 a a-18)
+
+
+def _roda(vista, ponto, passos: int = 1) -> None:
+    """Um giro da roda do mouse em `ponto` da `vista` (120 = um dente, como no Windows)."""
+    from PySide6.QtCore import QPoint, QPointF, Qt
+    from PySide6.QtGui import QWheelEvent
+    from PySide6.QtWidgets import QApplication
+
+    evento = QWheelEvent(QPointF(ponto), QPointF(vista.mapToGlobal(ponto)), QPoint(0, 0),
+                         QPoint(0, 120 * passos), Qt.NoButton, Qt.NoModifier, Qt.NoScrollPhase, False)
+    QApplication.sendEvent(vista, evento)
+
+
+def _ponto_da_imagem(vista, ponto):
+    """Onde, na imagem (0 a 1 nos dois sentidos), cai o `ponto` da vista."""
+    area = vista._area(vista.depois)
+    return ((ponto.x() - area.left()) / area.width(), (ponto.y() - area.top()) / area.height())
+
+
+def test_d577_a_roda_do_mouse_da_zoom_ancorado_no_ponteiro(janela, app, tmp_path):
+    """D-577, 3º teste: "não consigo dar zoom com o mouse, usando o scrool". A roda dá zoom como
+    no Visualizador da área de trabalho (o mesmo passo, PASSO_DA_RODA, e o ponto debaixo do
+    ponteiro fica parado): na página da direita da janela grande, na tela cheia e nas duas telas
+    do "comparar", que andam juntas. Girar para trás afasta. Teste de reversão (§4.7): no código
+    de antes, a roda não mudava o zoom da página da direita nem da tela cheia."""
+    from PySide6.QtCore import QPoint
+
+    from ui.widgets.visualizador import PASSO_DA_RODA
+
+    grande = _abrir(janela, app, tmp_path, pagina=1)
+    grande.resize(1400, 800)
+    grande.show()
+    _assentar(app)
+    painel = grande.antes_e_depois
+    painel.botao_tela_cheia.click()
+    _assentar(app)
+    tela = painel.tela_cheia
+    tela.resize(1400, 850)
+    _assentar(app)
+    for nome, vista in (("página da direita", painel.visor), ("tela cheia", tela.visor)):
+        vista.ajustar_a_tela()
+        _assentar(app)
+        area = vista._area(vista.depois)
+        ponto = QPoint(int(area.left() + area.width() * 0.3), int(area.top() + area.height() * 0.4))
+        alvo = _ponto_da_imagem(vista, ponto)
+        na_tela = vista.mapTo(vista.rolagem.viewport(), ponto)    # o ponteiro, parado na tela
+        _roda(vista, ponto)
+        _assentar(app)
+        assert abs(vista.zoom - PASSO_DA_RODA) < 1e-6, f"{nome}: a roda não deu zoom ({vista.zoom})"
+        # o mesmo ponto da imagem continua debaixo do ponteiro
+        agora = vista.mapFrom(vista.rolagem.viewport(), na_tela)
+        x, y = _ponto_da_imagem(vista, agora)
+        assert abs(x - alvo[0]) < 0.02 and abs(y - alvo[1]) < 0.02, f"{nome}: o ponto fugiu do ponteiro"
+        _roda(vista, agora, passos=-1)
+        _assentar(app)
+        assert abs(vista.zoom - 1.0) < 1e-6, f"{nome}: girar para trás não afastou"
+    # o "comparar": as duas telas andam juntas com a roda
+    tela.botao_comparar.click()
+    _esperar(app, painel)
+    _assentar(app)
+    _roda(tela.vista_a, QPoint(200, 200))
+    assert tela.vista_a.zoom > 1.0 and tela.vista_b.zoom == tela.vista_a.zoom
+    assert tela.vista_b.deslocamento == tela.vista_a.deslocamento
+    _roda(tela.vista_b, QPoint(150, 150))
+    assert tela.vista_a.zoom == tela.vista_b.zoom
+
+
+def _pintado(vista, posicao: float):
+    """A vista desenhada com a linha em `posicao`: devolve a imagem (QImage) e a área da
+    página nela."""
+    vista.posicao = posicao
+    return vista.grab().toImage(), vista._area(vista.depois)
+
+
+def _cor(imagem, x: float, y: float) -> int:
+    return imagem.pixelColor(int(x), int(y)).red()
+
+
+def test_d577_a_linha_mostra_o_lado_para_onde_vai(app):
+    """D-577, 3º teste: "se ela está embaixo do depois ela está aparecendo o depois se está
+    embaixo do antes ela está no antes." Com o "antes" preto e o "depois" branco: linha toda à
+    direita (embaixo de "depois") → a página inteira é o depois; toda à esquerda (embaixo de
+    "antes") → a página inteira é o antes; no meio → à esquerda da linha o depois, à direita o
+    antes. Os rótulos não saem do lugar ("antes" à esquerda, "depois" à direita) e a linha abre
+    no meio, como antes. Vale nos dois lugares, que são a mesma vista: a página da direita do
+    Automático (VistaAntesDepoisComZoom) e o "antes / depois" da área de trabalho
+    (VistaAntesDepois, ui/tela_conferir.py). Teste de reversão (§4.7): no código de antes, era
+    o contrário (linha toda à direita mostrava o antes)."""
+    from PySide6.QtWidgets import QScrollArea
+
+    from ui.automatico import VistaAntesDepoisComZoom
+    from ui.widgets.filtros_tela_cheia import VistaAntesDepois
+
+    preto = np.zeros((300, 200, 3), np.uint8)
+    branco = np.full((300, 200, 3), 255, np.uint8)
+    da_area = VistaAntesDepois()
+    da_area.definir(preto, branco, True, ("antes: Original", "depois: Preto e branco"))
+    rolagem = QScrollArea()
+    do_automatico = VistaAntesDepoisComZoom(rolagem)
+    do_automatico.mostrar(preto, branco)
+    for nome, vista in (("área de trabalho", da_area), ("Automático", do_automatico)):
+        vista.resize(420, 520)
+        assert vista.posicao == 0.5, f"{nome}: a linha não abre no meio"
+        rotulos = tuple(vista.rotulos)
+        img, area = _pintado(vista, 1.0)
+        meio_y = area.top() + area.height() * 0.75          # longe dos rótulos e da alça
+        for fx in (0.1, 0.5, 0.9):
+            assert _cor(img, area.left() + area.width() * fx, meio_y) > 200, \
+                f"{nome}: linha toda à direita não mostra o depois inteiro"
+        img, area = _pintado(vista, 0.0)
+        for fx in (0.1, 0.5, 0.9):
+            assert _cor(img, area.left() + area.width() * fx, meio_y) < 50, \
+                f"{nome}: linha toda à esquerda não mostra o antes inteiro"
+        img, area = _pintado(vista, 0.5)
+        assert _cor(img, area.left() + area.width() * 0.25, meio_y) > 200, \
+            f"{nome}: à esquerda da linha não aparece o depois"
+        assert _cor(img, area.left() + area.width() * 0.75, meio_y) < 50, \
+            f"{nome}: à direita da linha não aparece o antes"
+        assert tuple(vista.rotulos) == rotulos and rotulos[0].startswith("antes"), \
+            f"{nome}: os rótulos mudaram"
+
+
+def test_d577_o_antes_depois_da_area_de_trabalho_e_a_mesma_vista(janela, app, tmp_path):
+    """O "antes / depois" da área de trabalho usa a MESMA VistaAntesDepois (a mudança do lado vale
+    lá também, como o Samuel respondeu "sim"); a página da direita do Automático é ela, com zoom."""
+    from ui.automatico import VistaAntesDepoisComZoom
+    from ui.widgets.filtros_tela_cheia import VistaAntesDepois
+
+    grande = _abrir(janela, app, tmp_path, pagina=1)
+    assert type(janela.tela_conferir.vista_antes_depois) is VistaAntesDepois
+    assert isinstance(grande.antes_e_depois.visor, VistaAntesDepoisComZoom)
+    assert issubclass(VistaAntesDepoisComZoom, VistaAntesDepois)

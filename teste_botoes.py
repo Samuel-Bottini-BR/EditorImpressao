@@ -1104,12 +1104,14 @@ def testar_paineis_da_direita(conferir) -> tuple[int, int]:
                 ok += 1
             else:
                 falhas += 1
-            # "ver as N em tela cheia" do "Para revisar" (D-259) troca a página
-            # pela grade "Todas as páginas" (só aparece com página a revisar).
-            # Sem voltar, os ícones seguintes abriam os painéis escondidos atrás
-            # da grade e o roteiro acusava "não abriu o painel dele" (rodada
-            # 41151868748, 31/10/2026). Volta como a pessoa volta ("voltar").
-            if conferir.pilha_da_tela.currentWidget() is conferir.todas:
+            # "ver as N em tela cheia" (Para revisar, D-259) troca a página pela grade
+            # "Todas as páginas"; a pessoa volta pelo "voltar" da grade. Sem voltar, os
+            # ícones seguintes abrem o painel, mas a página fica escondida atrás da grade
+            # e a conta da largura acusa falha (31/10/2026: só acontecia quando o aviso
+            # "Qualidade baixa" já tinha chegado nesse ponto do roteiro, o que dependia
+            # de quanto tempo o roteiro levava até ali; rodada 41151868748: "não abriu o
+            # painel dele"). Volta como a pessoa volta ("voltar") e confere que voltou.
+            if conferir.pilha_da_tela.currentWidget() is getattr(conferir, "todas", None):
                 conferir.todas.voltar.emit()
                 QApplication.processEvents()
                 esperar(0.3)

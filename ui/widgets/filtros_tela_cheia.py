@@ -26,6 +26,13 @@ O QUE FAZ, E O QUE NÃO FAZ
     ajuste, "Letra clara em fundo escuro" e "Reduzir cores". O que se mexe aqui fica guardado só
     nesta tela (self.ajustes e self.opcoes) até "Usar".
 
+    D-588 (Samuel, 01/11/2026, "ok"): "Uma caixinha "Gravuras em tons de cinza" no Preto e
+    branco. Ela fica no painel Filtro, na tela cheia dos filtros e no "Limpar a folha" do
+    Automático." Aqui ela fica logo abaixo do ajuste, antes do "Só as letras" (no painel, logo
+    abaixo da "Respeitar as gravuras achadas"), só no Preto e branco, e fica cinza nos mesmos
+    casos do painel ("Só as letras" valendo; "Respeitar as gravuras achadas" desligada na
+    página).
+
     O QUE SE VÊ É O QUE SAI: a página grande é sempre feita pelo mesmo caminho do PDF
     (core.pipeline.renderizar_com_filtro, o mesmo da GerenciadorPrevias.pegar_com_filtro), numa
     CÓPIA da página com as opções mexidas aqui; sem nada mexido, é a própria pegar_com_filtro.
@@ -112,9 +119,25 @@ def pagina_com_as_opcoes(pagina, filtro: str, ajuste_campo: str | None, ajuste, 
 
 class VistaAntesDepois(QWidget):
     """A página grande. Com `depois` só, mostra a página inteira; com `antes`
-    também (a chave "Comparar com o Original"), o antes à esquerda da linha e o
-    depois à direita, na mesma imagem; a linha se arrasta (cursor de setas
-    para os lados e a alça redonda no meio: a pista de que dá para arrastar)."""
+    também (a chave "Comparar com o Original"), o antes e o depois na mesma
+    imagem, com a linha que se arrasta (cursor de setas para os lados e a alça
+    redonda no meio: a pista de que dá para arrastar).
+
+    O LADO (D-577, 3º teste do Samuel, 30/10/2026: "se ela está embaixo do
+    depois ela está aparecendo o depois se está embaixo do antes ela está no
+    antes"; resposta "sim" a: "Linha toda à direita, embaixo de 'depois': a
+    página inteira mostra o depois. Linha toda à esquerda, embaixo de 'antes':
+    a página inteira mostra o antes. Linha no meio: à esquerda dela aparece o
+    depois, e à direita aparece o antes. Hoje é o contrário."; e "sim" a valer
+    também no "antes / depois" da área de trabalho): à ESQUERDA da linha o
+    depois, à DIREITA o antes. Os rótulos ficam parados ("antes" no canto
+    esquerdo, "depois" no direito) e a linha abre no meio (posicao 0,5).
+    Vale em todo lugar que usa esta vista: o "antes / depois" da área de
+    trabalho (ui/tela_conferir.py), a tela cheia dos filtros (abaixo) e a
+    página da direita e a tela cheia do Automático (ui/automatico.py).
+    Até 30/10 era o contrário (antes à esquerda da linha). Arriscado: trocar
+    os lados de novo sem trocar os rótulos (volta a confusão dos prints a-16 e
+    a-17)."""
 
     def __init__(self, parent=None) -> None:
         super().__init__(parent)
@@ -150,12 +173,17 @@ class VistaAntesDepois(QWidget):
             pintor.end()
             return
         area = self._area(self.depois)
-        pintor.drawPixmap(area, self.depois, QRectF(self.depois.rect()))
         if self.comparando and self.antes is not None:
+            # D-577 (30/10): o antes por baixo, a página toda (o que fica à direita da
+            # linha), e o depois por cima, da beirada esquerda até a linha
+            pintor.drawPixmap(area, self.antes, QRectF(self.antes.rect()))
             x = area.left() + area.width() * self.posicao
             parte = QRectF(area.left(), area.top(), x - area.left(), area.height())
-            fonte = QRectF(0, 0, self.antes.width() * self.posicao, self.antes.height())
-            pintor.drawPixmap(parte, self.antes, fonte)
+            fonte = QRectF(0, 0, self.depois.width() * self.posicao, self.depois.height())
+            pintor.drawPixmap(parte, self.depois, fonte)
+        else:
+            pintor.drawPixmap(area, self.depois, QRectF(self.depois.rect()))
+        if self.comparando and self.antes is not None:
             pintor.setPen(QPen(QColor(estilo.cor("azul")), 2))
             pintor.drawLine(QPointF(x, area.top()), QPointF(x, area.bottom()))
             pintor.setBrush(QColor(estilo.cor("azul")))
@@ -403,6 +431,16 @@ class FiltrosEmTelaCheia(QDialog):
             return coluna
 
         self.partes_das_opcoes: dict[str, QWidget] = {}
+        # D-588: "Gravuras em tons de cinza" (só no Preto e branco), o mesmo nome e o
+        # mesmo balão do painel Filtro da página (ui/tela_conferir._montar_aba_filtro)
+        self.caixa_gravuras_cinza = QCheckBox("Gravuras em tons de cinza")
+        estilo.estilizar(self.caixa_gravuras_cinza, lambda: estilo_da_caixinha_com_quadrado(15))
+        do_painel = getattr(self.conferir, "caixa_gravuras_cinza", None)
+        self.caixa_gravuras_cinza.setToolTip(do_painel.toolTip() if do_painel is not None else "")
+        self.caixa_gravuras_cinza.setCursor(Qt.PointingHandCursor)
+        self.caixa_gravuras_cinza.toggled.connect(
+            lambda marcada: self._guardar_opcao("gravuras_em_tons_de_cinza", bool(marcada)))
+        self.coluna_opcoes.addWidget(self.caixa_gravuras_cinza)
         # Só as letras (só no Preto e branco)
         coluna = parte("Só as letras")
         self.escolhas_misto = EscolhasDoMisto(com_amostra=True)
@@ -469,7 +507,8 @@ class FiltrosEmTelaCheia(QDialog):
                 "algoritmo_preto_branco": pagina.algoritmo_preto_branco,
                 "claro_no_escuro": claro_no_escuro.ligado(pagina),
                 "letras_com_a_cor": bool(getattr(pagina, "letras_com_a_cor", False)),
-                "reduzir_cores": bool(getattr(pagina, "reduzir_cores", False))}
+                "reduzir_cores": bool(getattr(pagina, "reduzir_cores", False)),
+                "gravuras_em_tons_de_cinza": bool(getattr(pagina, "gravuras_em_tons_de_cinza", False))}
 
     def _guardar_opcao(self, campo: str, valor) -> None:
         """Uma opção mexida aqui: guardada (ou esquecida, se voltou ao que a
@@ -505,6 +544,13 @@ class FiltrosEmTelaCheia(QDialog):
                 max(0, self.seletor_algoritmo_pb.findData(valores["algoritmo_preto_branco"])))
             for campo, caixa in self.caixas.items():
                 caixa.setChecked(bool(valores[campo]))
+            # D-588: só no Preto e branco; cinza com "Só as letras" ou com "Respeitar as
+            # gravuras achadas" desligada (como no painel: _mostrar_gravuras_em_cinza)
+            self.caixa_gravuras_cinza.setVisible(eh_pb)
+            self.caixa_gravuras_cinza.setChecked(bool(valores["gravuras_em_tons_de_cinza"]))
+            self.caixa_gravuras_cinza.setEnabled(
+                not valores["misto_so_as_letras"]
+                and bool(getattr(self.pagina, "respeitar_gravuras_achadas", True)))
         finally:
             self._mostrando = False
 

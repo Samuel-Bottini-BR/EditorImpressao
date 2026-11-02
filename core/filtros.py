@@ -3578,7 +3578,8 @@ def _preto_e_branco_com_gravura(img: np.ndarray, binaria: np.ndarray,
                                 peso_gravura: np.ndarray, peso_papel: np.ndarray,
                                 clareza: int = AJUSTE_PADRAO,
                                 decoracao_em_preto_e_branco: bool = False,
-                                capa: bool = False
+                                capa: bool = False,
+                                gravuras_em_cinza: bool = False
                                 ) -> tuple[np.ndarray, bool]:
     """O Preto e branco de uma pagina com gravura marcada (regra de 30/09/2026,
     com a emenda da conferencia 3).
@@ -3611,6 +3612,15 @@ def _preto_e_branco_com_gravura(img: np.ndarray, binaria: np.ndarray,
     objeto, core.detectar_regioes._folha_nua_ou_objeto): os tons de cinza
     seguem o PAPEL da folha (_niveis_da_capa; etapa 10b, lista unica 4.3).
 
+    gravuras_em_cinza (D-588, Samuel 01/11/2026: a caixinha "Gravuras em tons
+    de cinza", "Marcada, toda gravura achada sai cinza, mesmo quando o
+    programa acha que é um enfeite"): TODA zona de gravura vira foto - tons
+    de cinza, pelo mesmo caminho da D-147 (_foto_em_tons_de_cinza, nunca
+    pontilhado) -, sem as perguntas de _tipos_das_zonas (a resposta delas e
+    justamente o que erra na capa do *Na escola de Jesus*, D-585). A letra e
+    o papel fora das zonas continuam como sempre (preto e branco). Desligado
+    (o de fabrica): a conta de sempre, linha por linha.
+
     Arriscado mudar: nao misturar desenho e pagina pelo peso (sairia cinza, e
     a pagina deixaria de caber em 1 bit); rodar o Melhorar na decoracao (era o
     que a escurecia e lavava, e custava ~3 s por pagina).
@@ -3621,8 +3631,18 @@ def _preto_e_branco_com_gravura(img: np.ndarray, binaria: np.ndarray,
     saida = binaria if binaria.ndim == 2 else _para_cinza(binaria)
     saida = saida.copy()
 
-    rotulos, foto, decoracao, referencia = _tipos_das_zonas(
-        img3, peso_gravura, com_decoracao=not decoracao_em_preto_e_branco)
+    if gravuras_em_cinza:
+        # D-588: toda zona e foto (tons de cinza); os mesmos rotulos de
+        # _tipos_das_zonas (pedacos ligados, vizinhanca 8), sem medir nada
+        quantas, rotulos = cv2.connectedComponents((peso_gravura > 0).astype(np.uint8),
+                                                   connectivity=8)
+        foto = np.ones(quantas, bool)
+        foto[0] = False
+        decoracao = np.zeros(quantas, bool)
+        referencia = None
+    else:
+        rotulos, foto, decoracao, referencia = _tipos_das_zonas(
+            img3, peso_gravura, com_decoracao=not decoracao_em_preto_e_branco)
     desenho = ~(foto | decoracao)
     desenho[0] = False
 
@@ -4096,8 +4116,14 @@ def aplicar_filtro_com_selecao(
     algoritmo_pb: str = "auto",
     despeckle=True,
     decoracao_em_preto_e_branco: bool = False,
+    gravuras_em_cinza: bool = False,
 ) -> tuple[np.ndarray, bool]:
     """O filtro pedido, mas cada area da pagina tratada do seu jeito.
+
+    gravuras_em_cinza (so vale no Preto e branco; D-588, a caixinha
+    "Gravuras em tons de cinza" da pagina): toda gravura da marcacao sai em
+    tons de cinza, mesmo a que a conta toma por moldura/iluminura; ver
+    _preto_e_branco_com_gravura. Desligado: exatamente a conta de antes.
 
     decoracao_em_preto_e_branco (so vale no Preto e branco): a moldura dourada
     e a iluminura saem como desenho em preto e branco, em vez de manter a cor
@@ -4221,7 +4247,8 @@ def aplicar_filtro_com_selecao(
                 saida, mono = _preto_e_branco_com_gravura(
                     img, binaria, peso_gravura, peso_papel, clareza,
                     decoracao_em_preto_e_branco=decoracao_em_preto_e_branco,
-                    capa=_e_a_capa_automatica(selecao))
+                    capa=_e_a_capa_automatica(selecao),
+                    gravuras_em_cinza=gravuras_em_cinza)
 
             com_pedaco = _filtro_so_no_pedaco(img, saida, selecao, filtro,
                                               forca_preto, clareza, intensidade,

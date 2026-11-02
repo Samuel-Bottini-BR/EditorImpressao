@@ -1,0 +1,34 @@
+Reversão (§4.7): tests/test_decisoes_gravuras_cinza.py rodado no código de antes (7fb6e19, git archive),
+01/11/2026. Só passa a prova 'desmarcada = a conta de antes' (é a que tem de passar nos dois).
+A prova pela imagem acusa: no miolo da gravura, 96% dos pontos coloridos (a medida pede 0%).
+
+E       TypeError: aplicar_filtro_com_selecao() got an unexpected keyword argument 'gravuras_em_cinza'
+E       AttributeError: 'TelaConferir' object has no attribute 'caixa_gravuras_cinza'
+E       AttributeError: 'TelaConferir' object has no attribute 'caixa_gravuras_cinza'
+E       AssertionError: a gravura continua colorida (96% dos pontos)
+E       assert 0.9649426660296225 == 0.0
+E        +  where 0.9649426660296225 = _colorido(array([[[ 29,  50,  85],\n        [ 29,  50,  85],\n        [ 29,  50,  85],\n        ...,\n        [ 47,  50, 182],\n     ...    ...,\n        [137,  90,  56],\n        [138,  90,  56],\n        [139,  91,  55]]], shape=(184, 182, 3), dtype=uint8))
+E       AttributeError: 'TelaConferir' object has no attribute 'caixa_gravuras_cinza'
+E       AttributeError: 'TelaConferir' object has no attribute 'caixa_gravuras_cinza'
+E       AttributeError: 'TelaConferir' object has no attribute 'caixa_gravuras_cinza'
+E       AttributeError: 'TelaConferir' object has no attribute 'caixa_gravuras_cinza'
+E       AttributeError: 'TelaConferir' object has no attribute 'caixa_gravuras_cinza'
+E           AttributeError: 'FiltrosEmTelaCheia' object has no attribute 'caixa_gravuras_cinza'
+E           AttributeError: 'PainelDeOpcoes' object has no attribute 'cx_gravuras_cinza'
+E       AttributeError: 'TelaConferir' object has no attribute 'caixa_gravuras_cinza'
+E   KeyError: 'gravuras_em_tons_de_cinza'
+FAILED tests/test_decisoes_gravuras_cinza.py::test_d588_a_conta_toda_gravura_em_tons_de_cinza_e_o_texto_preto_e_branco
+FAILED tests/test_decisoes_gravuras_cinza.py::test_d588_caixinha_no_painel_so_no_preto_e_branco_desmarcada_de_fabrica
+FAILED tests/test_decisoes_gravuras_cinza.py::test_d588_marcada_a_gravura_achada_sai_cinza_desmarcada_volta_igual
+FAILED tests/test_decisoes_gravuras_cinza.py::test_d588_reversao_pela_imagem_a_capa_com_a_escolha_gravada
+FAILED tests/test_decisoes_gravuras_cinza.py::test_d588_aplicar_em_leva_a_caixinha[todas]
+FAILED tests/test_decisoes_gravuras_cinza.py::test_d588_aplicar_em_leva_a_caixinha[daqui em diante]
+FAILED tests/test_decisoes_gravuras_cinza.py::test_d588_ctrl_z_desfaz_e_ctrl_shift_z_refaz
+FAILED tests/test_decisoes_gravuras_cinza.py::test_d588_o_pdf_sai_como_a_tela
+FAILED tests/test_decisoes_gravuras_cinza.py::test_d588_antes_depois_segue_a_caixinha
+FAILED tests/test_decisoes_gravuras_cinza.py::test_d588_na_tela_cheia_dos_filtros
+FAILED tests/test_decisoes_gravuras_cinza.py::test_d588_no_limpar_a_folha_do_automatico
+FAILED tests/test_decisoes_gravuras_cinza.py::test_d588_cinza_com_so_as_letras_e_com_respeitar_desligada_e_volta
+FAILED tests/test_decisoes_gravuras_cinza.py::test_d588_projeto_antigo_abre_desmarcado_e_sai_identico
+PASSED tests/test_decisoes_gravuras_cinza.py::test_d588_desmarcada_e_a_conta_de_antes_byte_a_byte
+13 failed, 1 passed in 37.13s
