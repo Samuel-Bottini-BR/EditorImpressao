@@ -18,3 +18,12 @@ test_endireitar_na_tela : 5 passed in 6.19s
 test_promessas : 263 passed, 1 xfailed, 74 warnings in 985.51s (0:16:25)
 
 2a rodada (ferramentas de marcar, ui/tela_conferir.py), um arquivo por vez:
+test_decisoes_shift_todas_as_telas : 10 passed in 27.72s
+test_zoom_no_ponteiro : 5 passed in 21.01s
+test_decisoes_9b2 : 30 passed in 47.79s
+test_editor_selecao : 17 passed, 85 warnings in 0.92s
+test_decisoes_marcacoes : 19 passed in 7.77s
+test_decisoes_9b1 : 25 passed, 16 warnings in 19.38s
+test_conferencia : 55 passed in 9.72s
+test_decisoes_automatico_ver_como_fica : 22 passed in 76.34s (0:01:16)
+test_promessas : 263 passed, 1 xfailed, 74 warnings in 623.09s (0:10:23)
