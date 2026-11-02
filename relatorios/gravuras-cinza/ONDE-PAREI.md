@@ -299,7 +299,10 @@ branco +1,0%).
 - **Pronto e enviado** (ramo `gravuras-cinza-2026-11-01`): o conserto do cinza sem o "Respeitar" (`00d1ddf`,
   já juntado pela gerente) e o balão aprovado da caixinha nos três lugares (`6798a38`), com prova, reversão e
   testes do PC passando.
-- **Falta:** conferir a 2ª tentativa da parte 1 da rodada `41473778845` (estado ao pausar: completed failure). Se cair de novo
-  nos mesmos p083, anotar como teste instável novo em `memoria/bugs.md` (o mesmo erro apareceu nas duas rodadas
-  deste ramo e sumiu ao disparar de novo). O balão não foi juntado na versão de teste.
+- **Falta:** a rodada `41473778845` do balão está **vermelha** depois de 2 tentativas, cada vez numa prova
+  diferente, nenhuma do balão. 1ª: os 2 erros de limpeza do p083 (acima). 2ª: o `test_promessas` passou inteiro, e
+  falhou `test_decisoes_so_as_letras.py::test_d148_desfazer_o_automatico_devolve_o_so_as_letras_do_livro` por tempo
+  ("não aconteceu a tempo: o projeto.json com o 'Só as letras' desfeito"). Ao voltar: rodar essa prova no PC e
+  disparar a rodada de novo; se os p083 voltarem, anotar como teste instável em `memoria/bugs.md`. O balão não foi
+  juntado na versão de teste.
 - **Perguntas abertas:** a 1 (com "Só as letras", caso do a-25), a 3 e a 4, como acima.
