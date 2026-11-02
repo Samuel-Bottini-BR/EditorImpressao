@@ -261,3 +261,33 @@ desmarcada faz o programa parar de procurar gravuras.
   D-588 passa a marcar também "Gravuras e fotos".
 - Recomendação do construtor: **A**, e fazer junto com (ou depois de) o conserto da D-588 que está no
   ramo gravuras-cinza, para não mexer duas vezes na mesma regra.
+
+## 02/11, segunda parte — P4 respondida: "a"
+
+- Pergunta da gerente ao Samuel: "A: o cinza procura as figuras por conta própria, só para pintá-las
+  de cinza, e a etapa 5 continua desmarcada. É o mesmo que você aprovou para o "Só as letras" em
+  31/10 [...] e bate com o de hoje: "ela acha as gravuras sozinha"." → Samuel: **"a"**.
+- Junção de novo de `origin/obra-2026-10-26` (`a4b9953`, traz o conserto da D-588 "cinza sem o
+  Respeitar", junção `be4b9c9`): commit `47e4131`, sem conflito; os 25 arquivos conferidos como na
+  primeira (o resultado difere da versão de teste só pelo que o ramo faz).
+- Conserto (`18e7f28`): `core/etapas.procura_por_dentro` = `so_as_letras_procura` ou
+  `cinza_procura` (Preto e branco que vale + caixinha "Gravuras em tons de cinza" da página
+  marcada), usada em `marca_sozinho` e `a_marcacao_da_maquina_vale`. A etapa 5 continua
+  "desligada" (`ligada_no_livro` lê só o `detectar_regioes`), a caixinha não volta marcada.
+  Nenhum botão, aviso ou texto novo.
+- Provas em `tests/test_decisoes_montar_cadernos.py`: `test_p4_1_...` (com o cinza e a etapa 5
+  desmarcada, a "foto" sai com os cinzas e a caixinha não volta marcada) FALHOU no código de antes
+  (`marca_sozinho` False) e passa agora; `test_p4_2_...` (tirar o cinza → tudo em preto e branco)
+  passa nos dois, como a `d589_3`. A prova da D-588 que falhava
+  (`test_d588_no_limpar_a_folha_do_automatico`) passa: gravuras_cinza 19 de 19.
+- PC, um arquivo por vez (em `18e7f28`, todos passaram): montar_cadernos 13, juntar_todas 3,
+  so_as_letras 5, respeitar_gravuras 19, marcacoes 19, automatico 24, filtro_automatico 4, nucleo 38,
+  nucleo2 21, impressao 22, dialogo_impressao 5, impressao 17, cadernos 28, cancelar 1, recomeco 13,
+  para_revisar_na_tela 26, decisoes 26, avisos 13, misto_na_tela 14, misto_no_projeto 12, dividir 19,
+  trabalho_nao_se_perde 82, automatico_ver_como_fica 22, automatico_opcoes_do_filtro 21,
+  gravuras_cinza 19, shift_todas_as_telas 10, zoom_no_ponteiro 5, promessas 264 + 1 xfail.
+  `teste_botoes` no PC: 369 ações, 0 falhas.
+- GitHub 41470124822 (`18e7f28`): passou inteira (suíte em 5 partes + botões).
+- Filtro de velocidade 41470135392 (`a4b9953` → `18e7f28`, todo o `core/` do ramo): "igual (dentro
+  do vai-e-vem)".
+- Abertos (como estavam): P2 e o "Desligar as marcadas" das Gravuras. Pronto para a gerente juntar.
