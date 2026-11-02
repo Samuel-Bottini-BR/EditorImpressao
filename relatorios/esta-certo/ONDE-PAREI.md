@@ -40,6 +40,25 @@ Ramo `esta-certo-2026-11-02` (saiu de `obra-2026-10-26`, commit `a3a7405`), cóp
 - **Ctrl+Z:** o desfazer tira o `revisada` (some o tique) → a faixa volta ao texto de antes e o "está certo"
   volta. Mesma coisa que o código já faz com o tique.
 
+## O que mudou
+
+| Arquivo | O quê |
+|---|---|
+| `ui/tela_conferir.py` | `_atualizar_faixa`: um caso novo entre a página em branco e a frase de sempre: a folha/página com o tique (`_conferida_na_faixa`) mostra `_texto_conferida()` ("Página N conferida." / no Dividir "Folha N conferida."), sem botão de aviso; o "está certo" fica escondido só nesse caso. `_texto_tranquilo` ganhou docstring. Nada mais muda: o "próxima dúvida", o clique do "está certo", a barra de espaço, os avisos e as contas ficam iguais. |
+| `tests/test_decisoes_avisos.py` | 7 provas `test_d572_*` (página com aviso e a vizinha sem o ok; Dividir folha 1 como no Gradus; Cortar, Endireitar, Marcar/Filtro e Mover; Ctrl+Z na página e no Dividir). |
+| `tests/promessas/promessas.md` | P-101 diz o que a faixa mostra depois do "está certo" (D-572). |
+
+Fora do caso novo (ficam como eram): a página "em branco" (continua "Esta página vai sair em branco" com
+"voltar a página" e o "está certo") e a página tirada do livro.
+
 ## Perguntas para o Samuel
 
-(abaixo, quando houver)
+1. **Mexer à mão também põe o tique (o programa já fazia isso antes).** Quando a pessoa gira a página, move a
+   linha da lombada, ajusta o corte ou troca o filtro, o programa já marca a página como conferida e põe o
+   tique verde, mesmo sem ela apertar "está certo". Com esta mudança, a faixa acompanha o tique: nesses casos
+   também passa a dizer "Página N conferida." e o "está certo" some. Antes, ela dizia por exemplo "Você girou
+   esta página em 2°." ou "Você ajustou o corte desta página." Fica assim (a faixa segue o tique), ou essas
+   frases devem continuar quando a pessoa só mexeu e não apertou "está certo"?
+2. **Confirmar o texto no Dividir:** lá quem fica conferida é a folha (a tira mostra "FOLHAS" e a barra de
+   baixo diz "folha 1 de 70"), então a faixa diz "Folha 1 conferida.". Está certo assim, ou prefere
+   "Página" também ali?
