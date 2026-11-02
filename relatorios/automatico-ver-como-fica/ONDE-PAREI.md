@@ -247,3 +247,218 @@ Ramo atualizado com a obra (db0a661). Prints dele a-15 a a-18.
   (41131159641). Bug para a Lista de bugs (não consertado; não é desta tarefa): o `janela` do test_promessas espera só
   as tarefas do QThreadPool (15 s), e não as contas da prévia do Automático (QThread no `_Guardiao`), que podem seguir
   rodando no teste seguinte; dá para chamar `ui.automatico.parar_as_previas()` ali.
+
+---
+
+# 4ª rodada (31/10): D-594 (todas as opções do painel Filtro no Automático) + D-577 (opções nos dois lados do "comparar")
+
+Ramo atualizado com `obra-2026-10-26` (2822470). Pedido da gerente: uma tarefa só (Samuel: "mas já faça com as
+opções que faltam do automatico" · "Sim, podemos fazer isso junto com a tarefa 1").
+
+## Decisões que esta tarefa precisa cumprir
+
+- **D-594** (31/10): "Outra coisa, no automatico não tem opções que encontramos nos filtros da aba da area de
+  trabalho." · print do "Mais ajustes": "os tipos de preto." · "mas isso era uma coisa obvia que deveria ter". No
+  Livro: **a etapa "Limpar a folha" do Automático tem todas as opções do painel Filtro da área de trabalho, com os
+  mesmos nomes**: o "Jeito do preto e branco", "Letra clara em fundo escuro", "Letras com a cor delas", "Reduzir
+  cores", "Igualar a luz da página", "Suavizar as letras", "Tirar o chuvisco" e "Respeitar as gravuras achadas".
+  Prova pedida: abrir o Automático, etapa "Limpar a folha" → cada opção do "Mais ajustes" do painel Filtro aparece,
+  e rodar com ela dá o mesmo resultado que escolhê-la no painel. Pedido da gerente: conferir se falta mais alguma
+  (os ajustes de Melhorar/Mágico pro); a prévia antes/depois (D-577) mostra a mudança; receita leva as opções novas.
+- **D-577** (o que falta): "seria bom se pudessemos ver as opções e mudar simutaneamente nesse comparar, tivesse uma
+  aba de cada lado que abrisse e fechasse para mudar as opções no comparar, ao em vez de ser só o antes e depois." ·
+  "não, eu quero poder mudar dos dois lados, todas as opções." · "usar este" em cada lado → "ok, não gostei do nome,
+  mas vamos ficar com esse por enquanto." No Livro: **no "comparar": cada lado com uma aba que abre e fecha com
+  todas as opções do Automático, mudando à parte; cada lado com "usar este" (nome provisório), que passa as opções
+  daquele lado para a janela; o "Rodar" usa as da janela.** Tentado e descartado: rótulos colados na linha.
+  Continua valendo da D-577: o comparar mostra à esquerda o filtro que a página já tinha e à direita o escolhido.
+- **D-583/D-586/D-587**: "Respeitar as gravuras achadas", ligada de fábrica; cinza com "Só as letras" no Preto e
+  branco (como a caixinha das molduras, D-168).
+- **D-004**: o "Rodar" pergunta se pula as páginas mexidas à mão (não muda).
+- **CLAUDE.md §11 regra 7**: só o que ele mandou (o painel Filtro não muda; o defeito dos nomes cortados lá não é
+  desta tarefa). §3: interface nunca congela, uma página por vez na memória.
+
+## Andamento (4ª rodada)
+
+- [x] A: opções novas no core (campos da página, gravadas pelo "Limpar a folha") e na receita
+- [x] A: as opções na janela (com os mesmos nomes do painel)
+- [x] B: o painel de opções separado da janela (o mesmo nos dois lados do comparar)
+- [x] B: comparar com opções nos dois lados e "usar este"
+- [x] provas (18), prints (8-*, 9-*), testes um por um
+- [x] GitHub 41252917494 (14d8a3c): passou de primeira, tudo verde
+
+## Perguntas para o Samuel (4ª rodada)
+
+6. ~~(opções novas do "Limpar a folha")~~ **respondida (31/10, pela gerente)**: "A outra opção é as opções novas
+   começarem com os valores da receita escolhida no alto da janela (hoje, "De fábrica"), qualquer que seja a página
+   em que você está. [...] Pode ser assim, pela receita?" → "sim". Feito (abaixo, "5ª rodada"). Texto de antes: As opções novas ("Força do preto", "Jeito do preto e branco", "Tirar o
+   chuvisco"...) são de cada página, no painel Filtro. Na janela do Automático elas começam **com os valores da página
+   em que você está** (como o painel Filtro mostra os dela), e o "Rodar" leva esses valores para as páginas onde o
+   "Limpar a folha" roda (as mexidas à mão continuam com a pergunta de pular). Sugestão: fica assim. Sim ou não?
+7. **(nomes no "comparar")** Cada lado ganhou o botão **"opções"**, que abre e fecha a aba, e o **"usar este"**.
+   Enquanto você não mexe no lado esquerdo, ele continua dizendo "como está no livro: <filtro>"; depois que você muda
+   uma opção nele, passa a dizer "depois: <filtro>", como o lado direito, porque também mostra como a página vai sair.
+   Sugestão: fica assim. Sim ou não?
+
+## Como cumpri cada uma (4ª rodada)
+
+- **D-594, todas as opções do painel Filtro, com os mesmos nomes.** Conferido no código do painel
+  (`ui/tela_conferir._montar_aba_filtro`) o que faltava no "Limpar a folha": o "Ajuste" (a barra "Força do preto" /
+  "Clareza do fundo" / "Intensidade", um valor por filtro: estava faltando também, não só os da lista), o "Jeito do
+  preto e branco" (Automático, os três de sempre e os dez do ScanTailor), "Letra clara em fundo escuro", "Letras com a
+  cor delas", "Reduzir cores", "Igualar a luz da página", "Suavizar as letras", "Tirar o chuvisco" (com os avisos de
+  luz do painel) e "Respeitar as gravuras achadas". "Limpar a sujeira" e "Só as letras" já estavam. Fora do painel
+  Filtro (não entram): "Aplicar em", "deixar em branco", "tirar do livro" (são ações, não opções). Onde:
+  `ui/automatico.PainelDeOpcoes._opcoes_do_painel_filtro`; aparecem com as regras do painel (só no Preto e branco o
+  jeito, as letras com a cor e o suavizar; o "Mais ajustes" e o "Ajuste" só nos filtros com ajuste; "Respeitar" em
+  todos e cinza com "Só as letras", D-587). Provas: `test_d594_cada_opcao_do_painel_filtro_esta_no_limpar_a_folha_com_o_mesmo_nome`
+  (lê os nomes da tela de conferir de verdade e compara; a lista dos jeitos é igual item por item),
+  `test_d594_aparecem_como_no_painel_conforme_o_filtro`. Prints `8-automatico-limpar-preto-e-branco-mais-ajustes.png`,
+  `8-automatico-jeito-do-preto-e-branco.png`, `8-automatico-limpar-magico-pro-chuvisco-30.png`.
+- **D-594, o mesmo resultado que escolher no painel (mesmos campos, nada de conta nova).** As opções são os campos da
+  página (`core/automatico.CAMPOS_DA_PAGINA`); o "Rodar" grava, em cada página onde o "Limpar a folha" roda (as
+  puladas pela pergunta D-004 ficam), as que o painel mostra com aquele filtro (`campos_da_pagina_no_filtro`), na
+  mesma ação do desfazer. A "Força do preto" escurecida sozinha pelo programa não é desfeita se o valor pedido é o
+  de antes do reforço (`_valor_da_pagina`). Prova: `test_d594_rodar_com_a_opcao_da_o_mesmo_que_escolher_no_painel`,
+  11 casos (uma por opção, inclusive os três ajustes): os campos da página e a página desenhada saem iguais pelos dois
+  caminhos; o Ctrl+Z desfaz o Automático com a opção junto.
+- **D-577 + D-594, a prévia mostra a mudança.** `test_d594_a_previa_mostra_a_mudanca_da_opcao` ("Tirar o chuvisco" 60
+  muda o depois; 0 volta ao mesmo).
+- **Receitas.** As chaves novas entram em `core/perfis.CAMPOS` (a receita do Automático as guarda como as outras).
+  Receita antiga não tem as chaves: posta, as opções novas ficam como estavam (nada quebra; não precisou mudar o
+  formato de um jeito que quebre). "De fábrica" põe as de uma página nova. A caixa da receita diz as novas que não
+  estão de fábrica, com os nomes do painel. Prova: `test_d594_a_receita_leva_as_opcoes_novas_e_a_antiga_continua_valendo`.
+- **D-577, comparar: aba com todas as opções em cada lado, mudando à parte.** O miolo da janela virou
+  `PainelDeOpcoes` (a lista das etapas e as opções de cada etapa); a janela grande e cada lado do comparar usam o
+  MESMO (sem cópia de código). Cada lado (`LadoDoComparar`) tem um estado só dele, o botão "opções" (abre e fecha a
+  aba) e o "usar este". A esquerda começa das opções do livro como está e mostra a página como está no livro (como
+  era); a direita começa das opções da janela e mostra o depois da janela (e acompanha a janela enquanto não é
+  mexida). Mexido, o lado mostra como a página sai com as opções dele (a mesma conta da prévia, numa cópia; só o
+  depois; bolinha girando). Provas: `test_d577_cada_lado_do_comparar_tem_a_aba_com_todas_as_opcoes_e_o_usar_este`,
+  `test_d577_lado_direito_nao_mexido_acompanha_a_janela`. Prints `9-comparar-abas-fechadas.png`,
+  `9-comparar-abas-abertas-direita-magico-pro.png`.
+- **D-577, "usar este" passa as opções para a janela; o "Rodar" usa as da janela; nada muda no livro.**
+  `test_d577_mudar_um_lado_nao_muda_a_janela_e_usar_este_passa_para_ela` (os dois lados; o pedido do "Rodar" sai com
+  as opções passadas; o livro e o desfazer iguais). Prints `9-comparar-depois-de-usar-este-da-direita.png`,
+  `9-janela-depois-de-usar-este-magico-pro.png`.
+- **Reversão (§11 regra 4):** as provas novas rodadas no código de antes (2822470) falham: "\"Letra clara em fundo
+  escuro\" (painel Filtro) não está no \"Limpar a folha\" do Automático", "no attribute 'CAMPOS_DA_PAGINA'",
+  "cannot import name 'PainelDeOpcoes'".
+- **O painel Filtro não mudou** (nenhuma linha de `ui/tela_conferir.py`; os nomes cortados de lá não são desta tarefa).
+
+## Ressalvas (4ª rodada)
+
+- Mexi em `core/` (`core/automatico.py`: o "Limpar a folha" grava os campos da página; `core/perfis.py`: as chaves da
+  receita). Nada do desenho da página (`core/pipeline`) mudou; o rodar faz uma volta a mais pelas páginas comparando
+  11 campos. O filtro de velocidade do GitHub não foi rodado.
+- No lado do comparar, a aba tem 400 pontos de largura: as frases ao lado dos filtros ficam cortadas e a aba rola de
+  lado (como a coluna estreita). Em tela pequena as duas abas abertas deixam pouca página à vista.
+- Bug que já existia (não consertei, não é desta tarefa): no "Limpar a folha", fora do Preto e branco, a caixinha
+  "Escurecer sozinho a força do preto..." some mas a frase de baixo dela fica ("com "Só as letras": escurece só na
+  página falhada..."); aparece no print `9-comparar-abas-abertas-direita-magico-pro.png`. Para a Lista de bugs.
+
+## Testes da 4ª rodada
+
+- PC, um arquivo por vez (offscreen): 29 arquivos que tocam o Automático, as receitas e o painel Filtro. Todos
+  passaram (o novo `test_decisoes_automatico_opcoes_do_filtro.py`: 18 de 18; o da D-577: 22 de 22;
+  `test_promessas.py`: 262 + 1 xfail). Um falhou na 1ª vez: `test_unidades_e_perfis.py::test_de_fabrica_existe_e_e_o_livro_novo`
+  (eu tinha posto as opções da página na receita "De fábrica" do `core/perfis`); consertado pondo-as pela janela
+  (`EstadoDoAutomatico.por_receita`), e o arquivo passou (9 de 9), com o do Automático e o novo de novo.
+- `teste_botoes.py` no PC (offscreen): 366 ações, 0 falhas.
+- GitHub 41249268892 (ac6e4c9): as conferências passaram; o `teste_botoes.py` deu 4 falhas ("o icone 'automatico' /
+  'props' / 'filtro' / 'historico' nao abriu o painel dele"). Causa: nessa rodada o aviso "Qualidade baixa" da
+  página 3 já tinha chegado quando o roteiro abriu o painel "Para revisar", e ele clicou "ver as 1 em tela cheia" e
+  "ver a lista…", que abrem janelas por cima e não são fechadas pelo roteiro; os ícones seguintes não recebem o
+  clique. Nas rodadas que passaram (este ramo 41129841728, livreto 41217021857) o aviso ainda não tinha chegado e
+  esses dois botões nem aparecem. Rodada de novo, a parte falhou igual (2 de 2); a base (`obra-2026-10-26`,
+  2822470, rodada 41251418890) passou no `teste_botoes.py` (sem o aviso nesse ponto; a parte 1 dela caiu num teste
+  das conferências, não olhei). O que muda o tempo: o roteiro clica cada controle da janela do Automático, e agora
+  são 15 trocas a mais (os jeitos do preto e branco e as caixinhas novas), uns 5 segundos.
+- Achado (31/10): o que falhava era o roteiro, não o programa. "ver as N em tela cheia" troca a página pela grade
+  "Todas as páginas"; com a grade na frente, o painel abre mas fica escondido (conferido num roteiro à parte: sem
+  grade o painel aparece; com a grade, não; voltando da grade, aparece). Conserto no `teste_botoes.py`: depois de
+  cada botão do painel, se a grade abriu, volta (o "voltar" da grade, como a pessoa faria). No PC, numa rodada em que
+  o aviso já tinha chegado ("ver as 1 em tela cheia"): 371 ações, 0 falhas (commit 14d8a3c).
+- **GitHub 41252917494 (14d8a3c): passou** (as 5 partes das conferências e o `teste_botoes.py`, de primeira).
+
+PRONTO PARA O VERIFICADOR (4ª rodada).
+
+---
+
+# 5ª rodada (31/10): resposta à pergunta 6 — as opções novas começam pela receita
+
+## Decisão que esta rodada precisa cumprir
+
+- **D-594, resposta do Samuel (31/10)** à pergunta da gerente: "A outra opção é as opções novas começarem com os
+  valores da receita escolhida no alto da janela (hoje, "De fábrica"), qualquer que seja a página em que você está.
+  [...] Pode ser assim, pela receita?" → "sim". Pedido da gerente: a janela (e os dois lados do "comparar") começa
+  pelos valores da receita, nunca pelos da página; trocar a receita na caixa põe os dela; "De fábrica" = os de uma
+  página nova. O lado esquerdo do comparar continua mostrando a página como está no livro (D-577). A pergunta 7
+  continua aberta (nada mudou nela).
+
+## Como cumpri
+
+- `EstadoDoAutomatico.do_projeto` (ui/automatico.py): as opções do painel Filtro (`CAMPOS_DA_PAGINA`) vêm da receita
+  do livro (`receita_usada`); sem receita, "De fábrica" ou receita guardada antes sem essas chaves: os de uma página
+  nova. Não leem mais a página da vez. `por_receita` (trocar na caixa) põe os da receita do mesmo jeito (a receita
+  antiga sem as chaves agora põe os de uma página nova; antes deixava como estava: a prova da receita foi acertada).
+- O lado direito do comparar copia o estado da janela (então começa pela receita). O lado esquerdo, que é "como está
+  no livro" (D-577), continua começando pelas opções da página como ela está (`do_projeto(..., da_pagina=True)`):
+  é a única coisa que ainda lê a página, e não mudou.
+- Prova nova: `test_d594_a_janela_comeca_pelas_opcoes_da_receita_nao_pelas_da_pagina` (página 3 com "Tirar o
+  chuvisco" 30 escolhido no painel; o livro reaberto nela; abrir o Automático → 0, o de fábrica; na página 1 também;
+  uma receita com 40 escolhida na caixa → 40; o livro com essa receita começa em 40 em qualquer página). No 4440a17
+  ela falha: "o chuvisco da janela começou pelo da página, não pelo da receita — assert 30 == 0".
+
+## Testes da 5ª rodada
+
+- PC, um arquivo por vez: `test_decisoes_automatico_opcoes_do_filtro.py` (19), `test_decisoes_automatico.py` (24),
+  `test_decisoes_automatico_ver_como_fica.py` (22), `test_unidades_e_perfis.py` (9), `test_paineis_na_tela.py` (22),
+  `test_decisoes_filtro_automatico.py` (4), `test_decisoes_respeitar_gravuras.py` (19), `test_limpar_pontinhos_na_tela.py`
+  (19), `test_misto_na_tela.py` (14): todos passaram.
+- GitHub 41255443322 (3d05893): passou depois de rodar de novo a parte 1. Na 1ª vez, a parte 1 caiu no teste instável
+  conhecido do `test_promessas.py` (`test_p083_jeitos_do_so_as_letras[rede]` e `test_p083_jeitos_no_automatico[Guardar
+  tudo-tudo]`: prévia da área de trabalho, `ui/tarefas.py` linha 832); o resto passou de primeira, inclusive o
+  `teste_botoes.py`.
+
+PRONTO PARA O VERIFICADOR (5ª rodada).
+
+# 6ª rodada (31/10): Defeito 1 do verificador — o lado esquerdo do "comparar" trazia as opções de outra página
+
+Parecer: `.claude/worktrees/verif-t1/relatorios/automatico-ver-como-fica/verificador/parecer-verificador-31-10.md`
+(Defeito 1; prints v18 e v19; `piloto_lado_esquerdo.py`). Só este defeito; nada fora do comparar.
+
+## Decisão que esta rodada precisa cumprir
+
+- **D-577** (Samuel): "nessa vai ter o filtro que estava antes, seja ele original ou que foi aplicado e o filtro que
+  está selecionado no momento" · "não, eu quero poder mudar dos dois lados, todas as opções." Pedido da gerente: a aba
+  da esquerda começa com as opções **da página que está sendo mostrada**, com o filtro dela; ao folhear (lado ainda não
+  mexido) passa às opções da página nova; mexer numa opção só muda aquela opção; lado já mexido, ao folhear, continua
+  como era (leva o lado mexido para a página nova). Não mudar: o lado direito (D-594 "sim", 31/10), o "usar este", os
+  nomes dos botões (pergunta 7 aberta).
+
+## Como cumpri
+
+- `core/automatico.opcoes_da_pagina` passa a trazer também o filtro da página (`filtro_padrao` =
+  `core/etapas.filtro_que_vale`: o dela, escolhido à mão ou com "Limpar a folha" valendo; senão o Original — o mesmo
+  que o rótulo "como está no livro: ..." já mostrava). Só o lado esquerdo do comparar usa essa função.
+- `EstadoDoAutomatico.do_projeto(..., da_pagina=True, indice=...)`: lê a página pedida, não a da área de trabalho.
+- `LadoDoComparar._ler_a_pagina` (novo): a esquerda lê a página que o comparar mostra (`painel._indice`), sem contar
+  como "mexido". `LadoDoComparar.ir_para` (o folhear): esquerda não mexida → relê a página nova; mexida → como era (o
+  motor vai para a página nova com as opções do lado). "Onde rodar" do lado continua o da janela.
+- Lado direito, "usar este", nomes: não mudaram.
+- Prova: `tests/test_decisoes_automatico_opcoes_do_filtro.py::test_d577_lado_esquerdo_comeca_pelas_opcoes_da_pagina_mostrada_e_troca_ao_folhear`
+  (os passos do parecer no livro sintético: página 3 com Preto e branco + chuvisco 30, página 2 com Melhorar à mão,
+  Automático aberto na página 1, folhear até a 3, comparar → aba: chuvisco 30 e Preto e branco; folhear para a 2 →
+  Melhorar; voltar à 3 → 30; marcar "Limpar a folha" e só "Reduzir cores" → a única opção que mudou é "Reduzir cores",
+  o pedido do lado sai com chuvisco 30 e Preto e branco; o livro não mudou; folhear mexido leva o lado junto).
+  **No `0c29ba4` falha**: "a aba da esquerda trouxe o chuvisco de outra página — assert 0 == 30". No novo: passa.
+
+## Testes da 6ª rodada
+
+- PC, um arquivo por vez (offscreen): `test_decisoes_automatico_opcoes_do_filtro.py` (20, com a prova nova),
+  `test_decisoes_automatico_ver_como_fica.py` (22), `test_decisoes_automatico.py` (24), `test_unidades_e_perfis.py` (9):
+  todos passaram.
+- GitHub 41263936968 (f02a621): passou de primeira, todas as partes e o `teste_botoes.py`.
+
+PRONTO PARA O VERIFICADOR (6ª rodada).

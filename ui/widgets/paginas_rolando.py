@@ -356,7 +356,7 @@ class PaginasRolando(QScrollArea):
             h = self._altura_da_linha(max(0.05, soma), largura, altura)
             arrumadas.append((linha, prop, h))
             maior = max(maior, h * soma)
-        total_w = max(float(largura), maior + 2 * MARGEM)
+        total_w = max(self._largura_do_conteudo(float(largura)), maior + 2 * MARGEM)
         meio = total_w / 2
         ret: list[tuple[int, QRectF]] = []
         y = float(MARGEM)
@@ -380,6 +380,11 @@ class PaginasRolando(QScrollArea):
         self.folhas.resize(QSize(int(total_w + 0.999), int(alto_total + 0.999)))
         self.folhas.update()
         self._pedir_as_visiveis()
+
+    def _largura_do_conteudo(self, largura: float) -> float:
+        """A largura mínima do que rola (as páginas no meio dela): a da tela.
+        O lado a lado com zoom aumenta (ui/widgets/paginas_lado_a_lado)."""
+        return largura
 
     def tamanho_para_desenhar(self, largura: int, altura: int) -> tuple[int, int]:
         """O tamanho em que a folha é desenhada: o da tela, ou menor se passar
@@ -410,7 +415,16 @@ class PaginasRolando(QScrollArea):
 
     def wheelEvent(self, evento) -> None:  # noqa: N802 - nome do Qt
         """Sem "Rolar sem parar": a roda rola dentro da página e, no fim dela,
-        passa para a próxima (no começo, para a anterior), como no UPDF."""
+        passa para a próxima (no começo, para a anterior), como no UPDF.
+
+        Shift + roda (sem Ctrl), com as páginas mais largas que a tela (ex.: "Tamanho
+        real"): anda para os lados, sem descer nem trocar de folha (D-600, 02/11/2026: "o
+        shift tem que funcionar em todas as telas"; ui/widgets/roda_de_lado). Antes o rolar
+        padrão do Qt descia uma tela inteira. Com as páginas cabendo de lado, como antes."""
+        from ui.widgets.roda_de_lado import shift_roda_na_rolagem
+
+        if shift_roda_na_rolagem(self, evento):
+            return
         if self.continuo:
             super().wheelEvent(evento)
             return

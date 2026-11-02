@@ -3293,7 +3293,12 @@ class TelaConferir(QWidget):
         # Filtro antiga; no layout ela vai para "Mais ajustes", como as
         # caixinhas dos itens 2.9 e 2.11 foram em 22/10.
         # Os textos moram em core/luz_scantailor.py.
-        linha_luz = QHBoxLayout()
+        # Bug de 31/10/2026 (print do Samuel, janela 1280 x 657): as duas
+        # caixinhas e o "Tirar o chuvisco" ficavam na MESMA linha e, no painel
+        # de largura fixa, os nomes saíam cortados ("Igual", "Suavi", "Tirar o
+        # chu"). Conserto de 01/11/2026: uma caixinha por linha, como as de
+        # cima, e o "Tirar o chuvisco:" com o número na linha dele. Os nomes,
+        # os controles e o que fazem são os mesmos.
         self.caixa_luz_igualar = QCheckBox(luz_scantailor.ROTULO_IGUALAR)
         self.caixa_luz_igualar.setToolTip(luz_scantailor.EXPLICACAO_IGUALAR)
         self.caixa_luz_suavizar = QCheckBox(luz_scantailor.ROTULO_SUAVIZAR)
@@ -3302,7 +3307,8 @@ class TelaConferir(QWidget):
                              (self.caixa_luz_suavizar, "luz_suavizar")):
             estilo.estilizar(caixa, lambda: estilo_da_caixinha_com_quadrado(15))
             caixa.toggled.connect(lambda marcada, c=campo: self._mudar_luz(c, bool(marcada)))
-            linha_luz.addWidget(caixa)
+            coluna_mais.addWidget(caixa)
+        linha_luz = QHBoxLayout()
         self.rotulo_luz_chuvisco = QLabel(luz_scantailor.ROTULO_CHUVISCO + ":")
         self.rotulo_luz_chuvisco.setToolTip(luz_scantailor.EXPLICACAO_CHUVISCO)
         linha_luz.addWidget(self.rotulo_luz_chuvisco)
@@ -3339,6 +3345,24 @@ class TelaConferir(QWidget):
             "vale na página inteira.")
         self.caixa_respeitar_gravuras.setChecked(True)
         self.caixa_respeitar_gravuras.toggled.connect(self._mudar_respeitar_gravuras)
+
+        # --- Gravuras em tons de cinza (D-588, 01/11/2026), desta página ---
+        # "Uma caixinha "Gravuras em tons de cinza" no Preto e branco. Ela fica no
+        # painel Filtro, na tela cheia dos filtros e no "Limpar a folha" do
+        # Automático. Marcada, toda gravura achada sai cinza, mesmo quando o
+        # programa acha que é um enfeite [...]. Ela segue o "Aplicar em"" ("ok").
+        # Só no Preto e branco (_mostrar_gravuras_em_cinza); o painel a põe logo
+        # abaixo da "Respeitar as gravuras achadas" (peça "cinza"), fora do "Mais
+        # ajustes". A conta mora em core.pipeline.gravuras_em_cinza_valem.
+        # Desmarcada de fábrica. Arriscado: o nome (é o que ele aprovou) e criar a
+        # caixinha no painel (perde o desfazer).
+        self.caixa_gravuras_cinza = QCheckBox("Gravuras em tons de cinza")
+        estilo.estilizar(self.caixa_gravuras_cinza, lambda: estilo_da_caixinha_com_quadrado(15))
+        self.caixa_gravuras_cinza.setToolTip(
+            "Marcada, toda gravura achada sai em tons de cinza no Preto e branco, mesmo a que o "
+            "programa acha que é um enfeite; o texto continua preto e branco.")
+        self.caixa_gravuras_cinza.setChecked(False)
+        self.caixa_gravuras_cinza.toggled.connect(self._mudar_gravuras_em_cinza)
 
         # --- Só as letras (modo Misto, 05/10/2026), desta página ---
         # Só com o Preto e branco escolhido (ver _configurar_medidor). No
@@ -3386,7 +3410,8 @@ class TelaConferir(QWidget):
              for chave, nome, _explica in CARTOES if chave in filtros],
             {"ajuste": corpo_ajuste, "letras": self.escolhas_misto, "limpar": corpo_limpar,
              "mais": corpo_mais, "aplicar": aplicar, "apagar": pagina_toda,
-             "respeitar": self.caixa_respeitar_gravuras})          # D-586
+             "respeitar": self.caixa_respeitar_gravuras,           # D-586
+             "cinza": self.caixa_gravuras_cinza})                  # D-588
         # a amostra de cada cartao grande vai tambem para a fila do painel
         for cartao in self.cartoes.values():
             cartao.amostra_mudou.connect(self.paineis.filtro_da_pagina.definir_amostra)
@@ -6195,6 +6220,56 @@ class TelaConferir(QWidget):
         caixa.setEnabled(not so_as_letras)
 
     @protegido
+    def _mudar_gravuras_em_cinza(self, marcada: bool) -> None:
+        """A caixinha "Gravuras em tons de cinza" do painel Filtro (D-588,
+        01/11/2026): SÓ desta página, como ação do desfazer (Ctrl+Z desfaz,
+        Ctrl+Shift+Z refaz: D-020), como a "Respeitar as gravuras achadas". O
+        "Aplicar em" leva o valor às outras páginas (_filtro_em_todas,
+        _filtro_nas_proximas). Nada acontece se a página já está assim
+        (mostrar o valor nunca grava). A conta: core.pipeline.
+        gravuras_em_cinza_valem. Arriscado: gravar sem passar por _registrar."""
+        if not self._pronta() or self.projeto is None:
+            return
+        pagina = self.projeto.paginas[self.indice_pagina]
+        if bool(marcada) == bool(getattr(pagina, "gravuras_em_tons_de_cinza", False)):
+            return
+        self._registrar(
+            "mudar_gravuras_em_cinza", "pagina", [self.indice_pagina],
+            {"gravuras_em_tons_de_cinza": bool(marcada)},
+            f"Gravuras em tons de cinza na página {self.indice_pagina + 1}: "
+            f"{'marcada' if marcada else 'desmarcada'}",
+        )
+
+    def _mostrar_gravuras_em_cinza(self, pagina) -> None:
+        """Mostra na caixinha "Gravuras em tons de cinza" (D-588) o valor desta
+        página, sem virar ação. Só aparece no Preto e branco ("Uma caixinha
+        "Gravuras em tons de cinza" no Preto e branco").
+
+        Fica cinza (desabilitada, sem perder o valor guardado; volta como estava),
+        no padrão da D-168/D-587, só com "Só as letras" valendo na página (dela ou
+        do livro): as gravuras já guardam a cor (D-148) e a conta não a usa
+        (pergunta 1 ao Samuel no relatorios/gravuras-cinza/ONDE-PAREI.md, aberta).
+
+        Conserto de 02/11/2026: com "Respeitar as gravuras achadas" desligada ela
+        fica CLICÁVEL (Samuel: "por gravuras em tons de cinza sozinho já deveria
+        resolver o problema." -> "sim pode": "com o "Respeitar" ligado ou
+        desligado"); a conta a usa nos dois casos (core.pipeline.
+        gravuras_em_cinza_valem e marcacao_que_o_filtro_usa). Arriscado: voltar a
+        apagá-la com a "Respeitar" desligada (o defeito do print a-27); gravar
+        algo aqui (mostrar viraria ação do desfazer)."""
+        caixa = getattr(self, "caixa_gravuras_cinza", None)
+        if caixa is None:
+            return
+        caixa.blockSignals(True)
+        caixa.setChecked(bool(getattr(pagina, "gravuras_em_tons_de_cinza", False)))
+        caixa.blockSignals(False)
+        no_pb = pagina.filtro == PRETO_E_BRANCO
+        caixa.setVisible(no_pb)
+        so_as_letras = (no_pb and self.projeto is not None
+                        and misto.escolhas_da_pagina(self.projeto, pagina)[0])
+        caixa.setEnabled(not so_as_letras)          # a "Respeitar" não apaga (02/11)
+
+    @protegido
     def _mudar_pontinhos(self, indice: int) -> None:
         """A lista "Limpar pontinhos" da aba Filtro (decisão do Samuel,
         06/10/2026, P7): a escolha SÓ desta página, como ação do desfazer.
@@ -6304,6 +6379,7 @@ class TelaConferir(QWidget):
         pagina = self.projeto.paginas[self.indice_pagina]
         campo = self._campo_do_ajuste(pagina.filtro)
         self._mostrar_respeitar_gravuras(pagina)          # D-586: em todo filtro
+        self._mostrar_gravuras_em_cinza(pagina)           # D-588: só no Preto e branco
 
         # Original não tem o que ajustar: o bloco inteiro some (e a frase
         # "O Original não tem ajuste." aparece no lugar dele, no painel).
@@ -6667,6 +6743,8 @@ class TelaConferir(QWidget):
             self._mudar_papel_da_gravura(valor)
         elif campo == "misto_letras_na_moldura":
             self._mudar_letras_na_moldura(valor)
+        elif campo == "gravuras_em_tons_de_cinza":          # D-588
+            self._mudar_gravuras_em_cinza(bool(valor))
 
     def abrir_todas_as_paginas(self) -> None:
         """Botão "ver todas" (808 A) e menu Ver > "Todas as páginas" (904 A):
@@ -6976,7 +7054,14 @@ class TelaConferir(QWidget):
             da etapa 9b-2 ela continuava dando zoom;
           - Ctrl+roda dá zoom sempre;
           - na ferramenta de marcar com o Pincel ou a Varinha, a roda continua
-            mudando a espessura ou a tolerância, como antes.
+            mudando a espessura ou a tolerância, como antes;
+          - nas ferramentas de marcar (Pincel, Varinha, Retângulo, Laço...),
+            COM zoom, o Shift + roda (sem Ctrl) anda pela página para os lados,
+            como na Mão (D-600, resposta do Samuel de 02/11/2026: "sim" à
+            pergunta "Quer que o Shift + roda leve a página para os lados também
+            nessas ferramentas (a roda sozinha continua mudando o pincel)?").
+            Antes, ali, o Shift + roda fazia o mesmo que a roda sozinha (o
+            pincel mudava de tamanho, ou nada). Sem zoom, sem mudança.
         Devolve True se a roda foi usada aqui."""
         passos = evento.angleDelta().y()
         de_lado = evento.angleDelta().x()
@@ -6986,11 +7071,16 @@ class TelaConferir(QWidget):
             if not passos:
                 return True
             fator = self.PASSO_DO_ZOOM if passos > 0 else 1 / self.PASSO_DO_ZOOM
-            vista.definir_zoom(vista.zoom * fator)
+            self._zoom_no_ponteiro(vista, fator, evento.position().toPoint())
             self._acertar_o_zoom_da_barra()
             return True
         if vista is getattr(self, "editor_selecao", None) and (
                 vista.ferramenta not in FERRAMENTAS_DE_NAVEGACAO):
+            # D-600 (02/11): com zoom, Shift + roda anda para os lados também aqui;
+            # a roda sozinha continua sendo da ferramenta (pincel, tolerância)
+            if vista.zoom > 1.0 + 1e-3 and evento.modifiers() & Qt.ShiftModifier:
+                self._andar_pela_pagina(vista, de_lado or passos, 0)
+                return True
             return False
         if vista.zoom > 1.0 + 1e-3:
             if evento.modifiers() & Qt.ShiftModifier:
@@ -7016,32 +7106,81 @@ class TelaConferir(QWidget):
         tela: a beirada dela para na beirada da vista (com uma folga pequena).
         `para_baixo`/`de_lado` são o angleDelta da roda (120 por dente;
         positivo = roda para cima/esquerda = ver o que está acima/à esquerda)."""
-        from PySide6.QtCore import QPoint
-
-        if hasattr(vista, "_largura_base"):          # Visualizador (as ferramentas de página)
-            largura = int(vista._largura_base() * vista.zoom)
-            altura = int(vista._altura_base() * vista.zoom)
-        else:                                        # o editor de marcar
-            area = vista._calcular_area()
-            largura, altura = area.width(), area.height()
+        largura, altura = self._tamanho_da_pagina_na_tela(vista)
         if largura <= 0 or altura <= 0:
             return
-        folga = 20
         passo = self.PASSO_DA_RODA_COM_ZOOM * max(1, vista.height())
-        dx = de_lado / 120.0 * passo
-        dy = para_baixo / 120.0 * passo
         atual = vista.deslocamento
+        self._por_o_deslocamento(vista, atual.x() + de_lado / 120.0 * passo,
+                                 atual.y() + para_baixo / 120.0 * passo)
+
+    @staticmethod
+    def _tamanho_da_pagina_na_tela(vista) -> tuple[int, int]:
+        """Largura e altura da página desenhada na vista, no zoom de agora (a
+        mesma conta do desenho de cada uma)."""
+        if hasattr(vista, "_largura_base"):          # Visualizador (as ferramentas de página)
+            return int(vista._largura_base() * vista.zoom), int(vista._altura_base() * vista.zoom)
+        area = vista._calcular_area()                # o editor de marcar
+        return area.width(), area.height()
+
+    def _por_o_deslocamento(self, vista, x: float, y: float) -> None:
+        """Põe o deslocamento da vista (o mesmo do arrastar com a Mão) sem
+        deixar a página sair da tela: a beirada dela para na beirada da vista
+        (com uma folga pequena). Avisa quem acompanha a vista (o comparar).
+
+        Desde 01/11/2026 (o zoom para onde está o mouse), o quanto ela pode
+        andar é também o da janela do Automático e da tela cheia, onde a
+        página fica numa área de rolar do tamanho da vista vezes o zoom: num
+        lado em que a página é mais estreita que a vista, ela pode sair do
+        meio até essa conta (antes ficava presa no meio, e o zoom não ia para
+        o mouse nesse lado), mas o meio da página nunca sai da vista. A roda
+        com zoom usa o mesmo limite, para a página não pular de lado ao rolar
+        depois de um zoom."""
+        from PySide6.QtCore import QPoint
+
+        largura, altura = self._tamanho_da_pagina_na_tela(vista)
+        folga = 20
+        sobra = max(0.0, vista.zoom - 1.0) / 2.0     # a área de rolar: a vista vezes o zoom
 
         def limite(tamanho: int, lugar: int) -> float:
-            return max(0.0, (tamanho - lugar) / 2.0 + folga)
+            return max(0.0, (tamanho - lugar) / 2.0 + folga, min(lugar * sobra, lugar / 2.0))
 
         lx, ly = limite(largura, vista.width()), limite(altura, vista.height())
-        novo_x = min(lx, max(-lx, atual.x() + dx))
-        novo_y = min(ly, max(-ly, atual.y() + dy))
+        novo_x = min(lx, max(-lx, x))
+        novo_y = min(ly, max(-ly, y))
         vista.deslocamento = QPoint(int(round(novo_x)), int(round(novo_y)))
         if hasattr(vista, "vista_mudou"):
             vista.vista_mudou.emit(vista.zoom, vista.deslocamento)
         vista.update()
+
+    def _zoom_no_ponteiro(self, vista, fator: float, ponto) -> None:
+        """Ctrl+roda (D-568) na "Uma página": o zoom vai para onde está o
+        mouse, como nos outros lugares do programa (janela do Automático, tela
+        cheia, "comparar"): o ponto da página que estava debaixo do ponteiro
+        continua debaixo dele. Bug de 31/10/2026 (Samuel, testando a versão de
+        teste: "na area de trabalho o zoom [...] se direciona somente para o
+        centro da pagina e não onde o mouse está"); conserto de 01/11/2026.
+        Os botões "–", "+" e "ajustar à tela" (sem mouse) continuam pelo
+        centro (mudar_o_zoom). A página não sai da tela (_por_o_deslocamento),
+        como na roda com zoom. As contas saem do zoom e do deslocamento de
+        agora, não do último desenho: várias voltas da roda antes de a tela
+        se redesenhar dão o mesmo resultado (D-026, zoom confiável)."""
+        largura, altura = self._tamanho_da_pagina_na_tela(vista)
+        desl = vista.deslocamento
+        esquerda = (vista.width() - largura) // 2 + desl.x()
+        topo = (vista.height() - altura) // 2 + desl.y()
+        vista.definir_zoom(vista.zoom * fator)
+        if vista.zoom <= 1.0 + 1e-3 or largura <= 0 or altura <= 0:
+            return                          # inteira na tela: no meio, como sempre
+        # onde o ponteiro está na página, de 0 a 1 (fora dela, passa de 0 ou de 1)
+        fx = (ponto.x() - esquerda) / largura
+        fy = (ponto.y() - topo) / altura
+        nova_largura, nova_altura = self._tamanho_da_pagina_na_tela(vista)
+        # o deslocamento que põe o ponto (fx, fy) da página de novo debaixo do ponteiro
+        self._por_o_deslocamento(
+            vista,
+            ponto.x() - fx * nova_largura - (vista.width() - nova_largura) // 2,
+            ponto.y() - fy * nova_altura - (vista.height() - nova_altura) // 2)
 
     @protegido
     def restaurar_pagina(self) -> None:
@@ -7114,6 +7253,9 @@ class TelaConferir(QWidget):
              # D-586: "Vale com o "Aplicar em"": a caixinha "Respeitar as
              # gravuras achadas" desta pagina vai junto
              "respeitar_gravuras_achadas": pagina.respeitar_gravuras_achadas,
+             # D-588: "Ela segue o "Aplicar em"": a caixinha "Gravuras em
+             # tons de cinza" desta pagina vai junto
+             "gravuras_em_tons_de_cinza": pagina.gravuras_em_tons_de_cinza,
              # modo Misto: as escolhas DESTA pagina (None = segue o livro)
              **{campo: getattr(pagina, campo) for campo in misto.CAMPOS_DO_MISTO},
              # item 2.17: igualar a luz, suavizar e chuvisco DESTA pagina
@@ -7148,6 +7290,9 @@ class TelaConferir(QWidget):
              # D-586: "Vale com o "Aplicar em"": a caixinha "Respeitar as
              # gravuras achadas" desta pagina vai junto
              "respeitar_gravuras_achadas": pagina.respeitar_gravuras_achadas,
+             # D-588: "Ela segue o "Aplicar em"": a caixinha "Gravuras em
+             # tons de cinza" desta pagina vai junto
+             "gravuras_em_tons_de_cinza": pagina.gravuras_em_tons_de_cinza,
              # modo Misto: as escolhas DESTA pagina (None = segue o livro)
              **{campo: getattr(pagina, campo) for campo in misto.CAMPOS_DO_MISTO},
              # item 2.17: igualar a luz, suavizar e chuvisco DESTA pagina
@@ -8006,6 +8151,7 @@ MARCAS_DA_PAGINA = {
     "luz_chuvisco": etapas_core.FILTRO, "claro_no_escuro": etapas_core.FILTRO,
     "letras_com_a_cor": etapas_core.FILTRO, "reduzir_cores": etapas_core.FILTRO,
     "respeitar_gravuras_achadas": etapas_core.FILTRO,          # D-586
+    "gravuras_em_tons_de_cinza": etapas_core.FILTRO,           # D-588
     "selecao": etapas_core.MARCAR,
     "conteudo_escala": etapas_core.MOVER, "conteudo_deslocamento": etapas_core.MOVER,
     "tamanho_folha_cm": etapas_core.MOVER,

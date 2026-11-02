@@ -118,8 +118,110 @@ CAMPO_DO_LIVRO = {
     CADERNOS: "montar_cadernos",
 }
 
+# D-594 (Samuel, 31/10/2026: "no automatico não tem opções que encontramos nos
+# filtros da aba da area de trabalho." · "os tipos de preto." · "mas isso era uma
+# coisa obvia que deveria ter"): a etapa "Limpar a folha" tem TODAS as opcoes do
+# painel Filtro da area de trabalho (ui/tela_conferir._montar_aba_filtro). As que
+# o painel grava NA PAGINA (ConfigPagina; o livro nao tem campo delas) moram aqui:
+# o "Rodar" grava cada uma em cada pagina em que o "Limpar a folha" roda (as
+# puladas pela pergunta D-004 ficam como estao), o MESMO campo que o painel grava
+# (nada de conta nova: o desenho da pagina e o de sempre, core/pipeline).
+#   forca_preto / clareza_melhorar / intensidade_magico: o "Ajuste" do painel
+#       ("Força do preto", "Clareza do fundo", "Intensidade"; um campo por filtro,
+#       como na pagina: trocar de filtro e voltar devolve o ajuste daquele filtro)
+#   algoritmo_preto_branco: "Jeito do preto e branco" (os tres de sempre e os dez
+#       do ScanTailor)
+#   claro_no_escuro: "Letra clara em fundo escuro"
+#   letras_com_a_cor / reduzir_cores: "Letras com a cor delas" / "Reduzir cores"
+#   luz_igualar / luz_suavizar / luz_chuvisco: "Igualar a luz da página" /
+#       "Suavizar as letras" / "Tirar o chuvisco"
+#   respeitar_gravuras_achadas: "Respeitar as gravuras achadas" (D-583/D-586)
+#   gravuras_em_tons_de_cinza: "Gravuras em tons de cinza" (D-588, so no Preto e
+#       branco: "Ela fica no painel Filtro, na tela cheia dos filtros e no "Limpar
+#       a folha" do Automático")
+# ("Limpar a sujeira" e "Só as letras" ja estavam: sao do livro, CAMPOS do Projeto.)
+# Arriscado: tirar um campo daqui (some da janela e da receita); gravar campo que o
+# filtro escolhido nao usa (ver CAMPOS_DA_PAGINA_NO_FILTRO).
+CAMPOS_DA_PAGINA = (
+    "forca_preto", "clareza_melhorar", "intensidade_magico", "algoritmo_preto_branco",
+    "claro_no_escuro", "letras_com_a_cor", "reduzir_cores",
+    "luz_igualar", "luz_suavizar", "luz_chuvisco", "respeitar_gravuras_achadas",
+    "gravuras_em_tons_de_cinza",
+)
+
+
+def campos_da_pagina_no_filtro(filtro: str) -> tuple[str, ...]:
+    """Os campos da pagina (CAMPOS_DA_PAGINA) que o painel Filtro MOSTRA com o
+    `filtro` escolhido (ui/tela_conferir._configurar_medidor e _resumir_o_filtro):
+    so esses o "Rodar" grava, como so esses a pessoa consegue mudar no painel.
+      - todos os filtros: "Respeitar as gravuras achadas" (D-586: em todo filtro);
+      - filtro com ajuste (Preto e branco, Melhorar, Mágico pro): o ajuste dele e
+        o "Mais ajustes" comum (letra clara, reduzir cores, igualar a luz, chuvisco);
+      - so no Preto e branco: o jeito do preto e branco, "Letras com a cor delas",
+        "Suavizar as letras" e "Gravuras em tons de cinza" (D-588).
+    Original e Tirar o fundo nao tem ajuste nem "Mais ajustes" no painel.
+    Arriscado: divergir do painel (a janela mostraria uma opcao que nao vale)."""
+    from core.filtros import MAGICO_PRO, MELHORAR, PRETO_E_BRANCO
+
+    ajuste = {PRETO_E_BRANCO: "forca_preto", MELHORAR: "clareza_melhorar",
+              MAGICO_PRO: "intensidade_magico"}.get(filtro)
+    if ajuste is None:
+        return ("respeitar_gravuras_achadas",)
+    campos = [ajuste, "claro_no_escuro", "reduzir_cores", "luz_igualar", "luz_chuvisco"]
+    if filtro == PRETO_E_BRANCO:
+        campos += ["algoritmo_preto_branco", "letras_com_a_cor", "luz_suavizar",
+                   "gravuras_em_tons_de_cinza"]
+    return tuple(campos) + ("respeitar_gravuras_achadas",)
+
+
+def _valor_da_pagina(pagina, campo: str):
+    """O valor do campo que a PESSOA deixou na pagina. Na "Força do preto"
+    escurecida sozinha pelo programa ("Escurecer sozinho...", core/pipeline.
+    _reforcar_se_o_texto_falhou), e a forca de antes do reforco
+    (forca_antes_do_reforco): assim o Automatico com a mesma forca nao desfaz o
+    reforco da pagina (gravar outra forca o desfaz, como mexer na barra do
+    painel). Arriscado: comparar com a forca reforcada (todo "Rodar" desfaria
+    o reforco das paginas falhadas)."""
+    if campo == "forca_preto" and getattr(pagina, "forca_antes_do_reforco", None) is not None:
+        return int(pagina.forca_antes_do_reforco)
+    return getattr(pagina, campo)
+
+
+def opcoes_da_pagina(projeto, indice: int) -> dict[str, Any]:
+    """Os valores de agora da pagina `indice` (o painel Filtro mostra os dela)
+    para os CAMPOS_DA_PAGINA, e o filtro com que ela sai ("filtro_padrao" =
+    core/etapas.filtro_que_vale: o dela, escolhido a mao ou com "Limpar a folha"
+    valendo; senao o Original). Usado so pelo lado esquerdo do "comparar" ("como
+    esta no livro", D-577: "nessa vai ter o filtro que estava antes, seja ele
+    original ou que foi aplicado"): a janela do Automatico comeca pelos da
+    RECEITA escolhida (D-594, Samuel 31/10: "sim"; ui/automatico.
+    EstadoDoAutomatico.do_projeto). Livro sem paginas: os de fabrica (os de uma
+    pagina nova).
+    Defeito 1 do verificador (31/10): sem o filtro da pagina, a aba da esquerda
+    mostrava o filtro do livro numa pagina com filtro escolhido a mao.
+    Arriscado: tirar o "filtro_padrao" daqui (volta o defeito)."""
+    paginas = getattr(projeto, "paginas", None) or []
+    if paginas:
+        pagina = paginas[max(0, min(int(indice or 0), len(paginas) - 1))]
+        valores = {c: copy.deepcopy(_valor_da_pagina(pagina, c)) for c in CAMPOS_DA_PAGINA
+                   if hasattr(pagina, c)}
+        valores["filtro_padrao"] = E.filtro_que_vale(projeto, pagina)
+        return valores
+    return de_fabrica_da_pagina()
+
+
+def de_fabrica_da_pagina() -> dict[str, Any]:
+    """Os CAMPOS_DA_PAGINA de uma pagina nova (modelos.ConfigPagina de fabrica)."""
+    from modelos import ConfigPagina
+
+    padroes = {f.name: f.default for f in dataclasses.fields(ConfigPagina)
+               if f.default is not dataclasses.MISSING}
+    return {c: copy.deepcopy(padroes[c]) for c in CAMPOS_DA_PAGINA if c in padroes}
+
+
 # As opcoes de cada etapa (campos de modelos.Projeto): tudo o que morava na tela
 # "O que fazer" (ui/tela_opcoes._mudou), agora dentro da etapa a que pertence.
+# D-594: o "Limpar a folha" tem tambem os CAMPOS_DA_PAGINA (gravados nas paginas).
 OPCOES = {
     DIVIDIR: ("dividir_como",),
     ENDIREITAR: ("endireitar_como", "retangulo_do_corte"),
@@ -127,7 +229,7 @@ OPCOES = {
              "borda_preta_fazer"),
     LIMPAR: ("filtro_padrao", "pb_decoracao_em_preto_e_branco", "misto_so_as_letras",
              "misto_fora_do_texto", "misto_papel_da_gravura", "misto_letras_na_moldura",
-             "reforcar_texto_falhado", "limpar_pontinhos"),
+             "reforcar_texto_falhado", "limpar_pontinhos") + CAMPOS_DA_PAGINA,
     GRAVURAS: ("gravura_forma", "gravura_sensibilidade", "gravura_mais_sensivel",
                "gravura_normalizar"),
     MARGENS: ("margens_mm", "margens_alinhamento"),
@@ -142,9 +244,10 @@ MEXIDA = {DIVIDIR: E.DIVIDIR, ENDIREITAR: E.ENDIREITAR, CORTAR: E.CORTAR, LIMPAR
 
 
 def todas_as_opcoes() -> tuple[str, ...]:
-    """Os campos do Projeto que o Automatico mostra e grava: as caixinhas das
-    etapas e as opcoes de cada uma. (A prova "nenhuma opcao da tela 'O que
-    fazer' se perdeu" confere esta lista: tests/test_decisoes_automatico.py.)"""
+    """Os campos que o Automatico mostra e grava: as caixinhas das etapas e as
+    opcoes de cada uma (do Projeto; e, D-594, os CAMPOS_DA_PAGINA, que o "Rodar"
+    grava nas paginas). (A prova "nenhuma opcao da tela 'O que fazer' se perdeu"
+    confere esta lista: tests/test_decisoes_automatico.py.)"""
     campos = list(CAMPO_DO_LIVRO.values()) + ["detectar_regioes"]
     for etapa in ETAPAS:
         campos.extend(OPCOES[etapa])
@@ -831,6 +934,14 @@ def _ligar_na_pagina(projeto, pedido: Pedido, etapa: str, escopo: list, pular: s
                 g.na_pagina(pagina, "recorte", None)
         if etapa == LIMPAR and pagina.filtro != filtro:
             g.na_pagina(pagina, "filtro", filtro)
+        if etapa == LIMPAR:
+            # D-594: as opcoes do painel Filtro que moram na pagina, as que o
+            # painel mostra com este filtro (campos_da_pagina_no_filtro); o mesmo
+            # campo que o painel grava, na mesma acao do desfazer
+            for campo in campos_da_pagina_no_filtro(filtro):
+                if campo in opcoes and hasattr(pagina, campo) \
+                        and _json(_valor_da_pagina(pagina, campo)) != _json(opcoes[campo]):
+                    g.na_pagina(pagina, campo, copy.deepcopy(opcoes[campo]))
 
 
 def _desligar(projeto, pedido: Pedido, etapas_pedidas: list, escopo: list, g: _Gravador) -> None:

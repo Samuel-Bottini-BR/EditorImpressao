@@ -26,6 +26,13 @@ O QUE FAZ, E O QUE NÃO FAZ
     ajuste, "Letra clara em fundo escuro" e "Reduzir cores". O que se mexe aqui fica guardado só
     nesta tela (self.ajustes e self.opcoes) até "Usar".
 
+    D-588 (Samuel, 01/11/2026, "ok"): "Uma caixinha "Gravuras em tons de cinza" no Preto e
+    branco. Ela fica no painel Filtro, na tela cheia dos filtros e no "Limpar a folha" do
+    Automático." Aqui ela fica logo abaixo do ajuste, antes do "Só as letras" (no painel, logo
+    abaixo da "Respeitar as gravuras achadas"), só no Preto e branco, e fica cinza no mesmo
+    caso do painel ("Só as letras" valendo). Com "Respeitar as gravuras achadas" desligada na
+    página ela fica clicável e vale (conserto de 02/11/2026).
+
     O QUE SE VÊ É O QUE SAI: a página grande é sempre feita pelo mesmo caminho do PDF
     (core.pipeline.renderizar_com_filtro, o mesmo da GerenciadorPrevias.pegar_com_filtro), numa
     CÓPIA da página com as opções mexidas aqui; sem nada mexido, é a própria pegar_com_filtro.
@@ -424,6 +431,16 @@ class FiltrosEmTelaCheia(QDialog):
             return coluna
 
         self.partes_das_opcoes: dict[str, QWidget] = {}
+        # D-588: "Gravuras em tons de cinza" (só no Preto e branco), o mesmo nome e o
+        # mesmo balão do painel Filtro da página (ui/tela_conferir._montar_aba_filtro)
+        self.caixa_gravuras_cinza = QCheckBox("Gravuras em tons de cinza")
+        estilo.estilizar(self.caixa_gravuras_cinza, lambda: estilo_da_caixinha_com_quadrado(15))
+        do_painel = getattr(self.conferir, "caixa_gravuras_cinza", None)
+        self.caixa_gravuras_cinza.setToolTip(do_painel.toolTip() if do_painel is not None else "")
+        self.caixa_gravuras_cinza.setCursor(Qt.PointingHandCursor)
+        self.caixa_gravuras_cinza.toggled.connect(
+            lambda marcada: self._guardar_opcao("gravuras_em_tons_de_cinza", bool(marcada)))
+        self.coluna_opcoes.addWidget(self.caixa_gravuras_cinza)
         # Só as letras (só no Preto e branco)
         coluna = parte("Só as letras")
         self.escolhas_misto = EscolhasDoMisto(com_amostra=True)
@@ -490,7 +507,8 @@ class FiltrosEmTelaCheia(QDialog):
                 "algoritmo_preto_branco": pagina.algoritmo_preto_branco,
                 "claro_no_escuro": claro_no_escuro.ligado(pagina),
                 "letras_com_a_cor": bool(getattr(pagina, "letras_com_a_cor", False)),
-                "reduzir_cores": bool(getattr(pagina, "reduzir_cores", False))}
+                "reduzir_cores": bool(getattr(pagina, "reduzir_cores", False)),
+                "gravuras_em_tons_de_cinza": bool(getattr(pagina, "gravuras_em_tons_de_cinza", False))}
 
     def _guardar_opcao(self, campo: str, valor) -> None:
         """Uma opção mexida aqui: guardada (ou esquecida, se voltou ao que a
@@ -526,6 +544,13 @@ class FiltrosEmTelaCheia(QDialog):
                 max(0, self.seletor_algoritmo_pb.findData(valores["algoritmo_preto_branco"])))
             for campo, caixa in self.caixas.items():
                 caixa.setChecked(bool(valores[campo]))
+            # D-588: só no Preto e branco; cinza só com "Só as letras" (como no painel:
+            # _mostrar_gravuras_em_cinza). Conserto de 02/11/2026: a "Respeitar as
+            # gravuras achadas" desligada NÃO a apaga ("com o "Respeitar" ligado ou
+            # desligado"). Arriscado: voltar a apagá-la com a "Respeitar" desligada.
+            self.caixa_gravuras_cinza.setVisible(eh_pb)
+            self.caixa_gravuras_cinza.setChecked(bool(valores["gravuras_em_tons_de_cinza"]))
+            self.caixa_gravuras_cinza.setEnabled(not valores["misto_so_as_letras"])
         finally:
             self._mostrando = False
 

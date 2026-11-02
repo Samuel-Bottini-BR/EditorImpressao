@@ -1104,6 +1104,16 @@ def testar_paineis_da_direita(conferir) -> tuple[int, int]:
                 ok += 1
             else:
                 falhas += 1
+            # "ver as N em tela cheia" (Para revisar, D-259) troca a página pela grade
+            # "Todas as páginas"; a pessoa volta pelo "voltar" da grade. Sem voltar, os
+            # ícones seguintes abrem o painel, mas a página fica escondida atrás da grade
+            # e a conta da largura acusa falha (31/10/2026: só acontecia quando o aviso
+            # "Qualidade baixa" já tinha chegado nesse ponto do roteiro, o que dependia
+            # de quanto tempo o roteiro levava até ali).
+            if conferir.pilha_da_tela.currentWidget() is getattr(conferir, "todas", None):
+                conferir.todas.voltar.emit()
+                QApplication.processEvents()
+                esperar(0.3)
         # No Historico, "Desfazer" e "Refazer" sao clicados em PAR e
         # conferidos (o laco acima so clica no que estava aceso ao abrir o
         # painel: so o "Desfazer", e a ultima acao da bateria ficava

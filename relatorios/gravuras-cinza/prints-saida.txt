@@ -1,0 +1,10 @@
+partida: preto_e_branco marcacao: 20 areas respeitar: True
+1-capa-sem-a-caixinha.jpg filtro: preto_e_branco cinza: False caixinha: False habilitada: True visivel: True
+2-capa-com-a-caixinha.jpg filtro: preto_e_branco cinza: True caixinha: True habilitada: True visivel: True
+capa sem a caixinha: canais=3, pontos coloridos=68.8%, tons do meio=80.6%
+capa com a caixinha: canais=2, pontos coloridos=0.0%, tons do meio=86.7%
+3-antes-depois-com-a-caixinha.jpg filtro: preto_e_branco cinza: True caixinha: True habilitada: True visivel: True
+4-so-as-letras-caixinha-cinza.jpg filtro: preto_e_branco cinza: True caixinha: True habilitada: False visivel: True
+5-respeitar-desligada-caixinha-cinza.jpg filtro: preto_e_branco cinza: True caixinha: True habilitada: False visivel: True
+tela cheia: caixinha Gravuras em tons de cinza marcada: True
+automatico: caixinha Gravuras em tons de cinza visivel: True

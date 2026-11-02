@@ -1,0 +1,45 @@
+Reversao (CLAUDE.md 4.7) do conserto de 02/11/2026: tests/test_decisoes_gravuras_cinza.py rodado no codigo de ANTES do conserto
+(091b200, o obra-2026-10-26 que o Samuel testou, com as provas novas ja escritas). 6 provas falham, todas pelo defeito:
+a caixinha apagada com o Respeitar desligado (painel, tela cheia, Automatico) e, no livro dele, a pagina 13 e a capa
+em preto e branco chapado (0,0% de tons do meio) com a caixinha marcada.
+Depois do conserto: 19 passaram (_tmp/depois: '19 passed in 33.32s').
+
+E       AssertionError: com o Respeitar desligado a caixinha ficou apagada (conserto 02/11)
+E       assert False
+E        +  where False = <built-in method isEnabled of PySide6.QtWidgets.QCheckBox object at 0x000001B5C02A8180>()
+E        +    where <built-in method isEnabled of PySide6.QtWidgets.QCheckBox object at 0x000001B5C02A8180> = <PySide6.QtWidgets.QCheckBox(0x1b5d0414e90) at 0x000001B5C02A8180>.isEnabled
+tests\test_decisoes_gravuras_cinza.py:413: AssertionError
+E       AssertionError: com o Respeitar desligado a caixinha ficou apagada (print a-27)
+E       assert (True and False)
+E        +  where True = <built-in method isVisibleTo of PySide6.QtWidgets.QCheckBox object at 0x000001B5C0241640>(<ui.tela_conferir.TelaConferir(0x1b5d4b98850) at 0x000001B5D7B53D40>)
+E        +    where <built-in method isVisibleTo of PySide6.QtWidgets.QCheckBox object at 0x000001B5C0241640> = <PySide6.QtWidgets.QCheckBox(0x1b5d788a0d0) at 0x000001B5C0241640>.isVisibleTo
+E        +  and   False = <built-in method isEnabled of PySide6.QtWidgets.QCheckBox object at 0x000001B5C0241640>()
+E        +    where <built-in method isEnabled of PySide6.QtWidgets.QCheckBox object at 0x000001B5C0241640> = <PySide6.QtWidgets.QCheckBox(0x1b5d788a0d0) at 0x000001B5C0241640>.isEnabled
+tests\test_decisoes_gravuras_cinza.py:533: AssertionError
+E           AssertionError: na tela cheia a caixinha ficou apagada
+E           assert (not False and False)
+E            +  where False = <built-in method isHidden of PySide6.QtWidgets.QCheckBox object at 0x000001B5C405F000>()
+E            +    where <built-in method isHidden of PySide6.QtWidgets.QCheckBox object at 0x000001B5C405F000> = <PySide6.QtWidgets.QCheckBox(0x1b5dee80fa0) at 0x000001B5C405F000>.isHidden
+E            +  and   False = <built-in method isEnabled of PySide6.QtWidgets.QCheckBox object at 0x000001B5C405F000>()
+E            +    where <built-in method isEnabled of PySide6.QtWidgets.QCheckBox object at 0x000001B5C405F000> = <PySide6.QtWidgets.QCheckBox(0x1b5dee80fa0) at 0x000001B5C405F000>.isEnabled
+tests\test_decisoes_gravuras_cinza.py:579: AssertionError
+E       AssertionError: no Automático a caixinha ficou apagada (a-27)
+E       assert (not False and False)
+E        +  where False = <built-in method isHidden of PySide6.QtWidgets.QCheckBox object at 0x000001B5C404CDC0>()
+E        +    where <built-in method isHidden of PySide6.QtWidgets.QCheckBox object at 0x000001B5C404CDC0> = <PySide6.QtWidgets.QCheckBox(0x1b5dee9ee20) at 0x000001B5C404CDC0>.isHidden
+E        +  and   False = <built-in method isEnabled of PySide6.QtWidgets.QCheckBox object at 0x000001B5C404CDC0>()
+E        +    where <built-in method isEnabled of PySide6.QtWidgets.QCheckBox object at 0x000001B5C404CDC0> = <PySide6.QtWidgets.QCheckBox(0x1b5dee9ee20) at 0x000001B5C404CDC0>.isEnabled
+tests\test_decisoes_gravuras_cinza.py:615: AssertionError
+E       AssertionError: capa: só com o cinza a página saiu em preto e branco chapado (0.0% de tons do meio)
+E       assert 0.0 > 0.25
+tests\test_decisoes_gravuras_cinza.py:691: AssertionError
+E       AssertionError: página 13: só com o cinza a página saiu em preto e branco chapado (0.0% de tons do meio)
+E       assert 0.0 > 0.25
+tests\test_decisoes_gravuras_cinza.py:691: AssertionError
+FAILED tests/test_decisoes_gravuras_cinza.py::test_d588_no_limpar_a_folha_do_automatico
+FAILED tests/test_decisoes_gravuras_cinza.py::test_d588_conserto_0211_painel_so_o_cinza_sem_o_respeitar_sai_igual_as_duas_ligadas
+FAILED tests/test_decisoes_gravuras_cinza.py::test_d588_conserto_0211_tela_cheia_com_o_respeitar_desligado
+FAILED tests/test_decisoes_gravuras_cinza.py::test_d588_conserto_0211_automatico_com_o_respeitar_desligado
+FAILED tests/test_decisoes_gravuras_cinza.py::test_d588_conserto_0211_na_escola_de_jesus[0-capa]
+FAILED tests/test_decisoes_gravuras_cinza.py::test_d588_conserto_0211_na_escola_de_jesus[1-p\xe1gina 13]
+6 failed, 13 passed in 38.25s

@@ -563,6 +563,22 @@ programa), a partir do **nome do botão**, da **dica** (o balão do mouse) e das
 - **no projeto:** a página fica com `respeitar_gravuras_achadas` desligado (uma ação no histórico; o Desfazer volta).
 - **no PDF:** com ela desligada, essa página sai toda em preto e branco; ligada, a gravura achada sai com a cor.
 
+### P-087 · caixinha "Gravuras em tons de cinza" (painel Filtro, tela cheia dos filtros, Automático)
+- **chaves:** `área de trabalho/filtro da página/Gravuras em tons de cinza`
+- **dica:** "Marcada, toda gravura achada sai em tons de cinza no Preto e branco, mesmo a que o programa acha que é um
+  enfeite; o texto continua preto e branco."
+- **fora da varredura:** é uma caixinha, e a varredura ainda não olha caixinhas; a prova clica nela.
+- **decisões:** D-588 ("Uma caixinha "Gravuras em tons de cinza" no Preto e branco. Ela fica no painel Filtro, na tela
+  cheia dos filtros e no "Limpar a folha" do Automático. Marcada, toda gravura achada sai cinza, mesmo quando o
+  programa acha que é um enfeite [...]. Ela segue o "Aplicar em""), D-147, D-020, D-066/D-473
+- **na tela:** logo abaixo da "Respeitar as gravuras achadas", só com o Preto e branco; vem desmarcada em toda página.
+  Marcada numa página em Preto e branco com gravura achada pela máquina (mesmo a que o programa toma por enfeite),
+  a gravura da tela sai em tons de cinza e o texto continua preto e branco. Vale com a "Respeitar as gravuras
+  achadas" ligada ou desligada, e a caixinha fica clicável nos dois casos (conserto de 02/11/2026: "por gravuras em
+  tons de cinza sozinho já deveria resolver o problema." → "sim pode").
+- **no projeto:** a página fica com `gravuras_em_tons_de_cinza` ligado (uma ação no histórico; o Desfazer volta).
+- **no PDF:** com ela marcada, a gravura dessa página sai em tons de cinza; desmarcada, como antes (o enfeite com a cor).
+
 ## Área de trabalho: "Para revisar"
 
 ### P-090 · "Por página" / "Por motivo"

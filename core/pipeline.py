@@ -3453,6 +3453,8 @@ def _filtrar_com_a_marcacao(projeto: Projeto, pagina: ConfigPagina, img: np.ndar
     # D-583/D-586: com a caixinha "Respeitar as gravuras achadas" desligada, o
     # filtro nao usa o que a maquina achou (so o que foi marcado a mao). A
     # marcacao guardada na pagina NAO muda: religar devolve a mesma imagem.
+    # Excecao (conserto de 02/11/2026): no Preto e branco com "Gravuras em tons
+    # de cinza" marcada, a marcacao inteira vale (a gravura sai cinza).
     selecao = marcacao_que_o_filtro_usa(projeto, pagina, selecao)
     saida, monocromatica = _filtro_da_pagina(projeto, pagina, img, selecao, dpi, dpi_do_scan,
                                              dpi_pedido, no_pdf)
@@ -3508,10 +3510,22 @@ def marcacao_que_o_filtro_usa(projeto: Projeto, pagina: ConfigPagina, selecao):
       cinza e não dá para clicar. É assim que já funciona com a caixinha das
       molduras."): o "So as letras" manda, e a tela deixa a caixinha cinza
       (ui/tela_conferir.py, _mostrar_respeitar_gravuras), como a D-168.
+    - No Preto e branco com "Gravuras em tons de cinza" marcada (D-588):
+      nada muda, a marcacao inteira (o MESMO objeto). Conserto de 02/11/2026
+      (teste do Samuel na pagina 13 do *Na escola de Jesus*: "para deixar as
+      gravuras cinzas o respeitar gravuras tem que estar ligado, por gravuras
+      em tons de cinza sozinho já deveria resolver o problema." -> "sim pode"
+      a: "marcar só "Gravuras em tons de cinza" já basta: ela acha as gravuras
+      sozinha e pinta de cinza, com o "Respeitar" ligado ou desligado."). Com a
+      caixinha marcada a pagina sai IGUAL, ponto por ponto, a de "Respeitar"
+      ligada (tests/test_decisoes_gravuras_cinza.py, provas 11). Desmarcada:
+      a regra de cima, como antes.
 
     Seguro mudar: nada sem decisao do Samuel. Arriscado: devolver uma copia
     com a caixinha ligada (a imagem continua igual, mas a corrida de
-    garantir_selecao compara objetos), ou tirar daqui as areas a mao.
+    garantir_selecao compara objetos), ou tirar daqui as areas a mao; tirar
+    o caso do cinza (volta o defeito de 02/11: a gravura em preto e branco
+    chapado com a caixinha marcada).
     `selecao` None (nenhuma marcacao) passa como veio."""
     if selecao is None or respeita_as_gravuras_achadas(pagina):
         return selecao
@@ -3519,6 +3533,8 @@ def marcacao_que_o_filtro_usa(projeto: Projeto, pagina: ConfigPagina, selecao):
         return selecao
     if pagina.filtro == PRETO_E_BRANCO and misto.opcoes_da_pagina(projeto, pagina) is not None:
         return selecao                       # "So as letras" manda (D-587)
+    if pagina.filtro == PRETO_E_BRANCO and gravuras_em_tons_de_cinza_marcada(pagina):
+        return selecao                       # o cinza acha as gravuras sozinho (D-588, 02/11)
     from core.selecao import MAO, Selecao
 
     return Selecao(regioes=[r for r in selecao.regioes if r.origem == MAO])
@@ -3566,7 +3582,43 @@ def _filtro_da_pagina(projeto: Projeto, pagina: ConfigPagina, img: np.ndarray, s
         algoritmo_pb=pagina.algoritmo_preto_branco, despeckle=pontinhos,
         decoracao_em_preto_e_branco=bool(
             getattr(projeto, "pb_decoracao_em_preto_e_branco", False)),
+        gravuras_em_cinza=gravuras_em_cinza_valem(pagina),          # D-588
     )
+
+
+def gravuras_em_cinza_valem(pagina: ConfigPagina) -> bool:
+    """A caixinha "Gravuras em tons de cinza" desta pagina (D-588) vale na conta?
+
+    D-588 (Samuel, 01/11/2026, "ok" a: "Uma caixinha "Gravuras em tons de
+    cinza" no Preto e branco. [...] Marcada, toda gravura achada sai cinza,
+    mesmo quando o programa acha que é um enfeite, como na capa do *Na escola
+    de Jesus*. Ela segue o "Aplicar em""). Marcada, o Preto e branco desta
+    pagina passa toda zona de gravura da marcacao para tons de cinza
+    (core.filtros._preto_e_branco_com_gravura, gravuras_em_cinza).
+
+    So e chamada no Preto e branco SEM "So as letras" (_filtro_da_pagina: o
+    "So as letras" vai antes para _filtrar_no_misto e nao a ve) - o mesmo
+    caso em que a tela deixa a caixinha clicavel (ui/tela_conferir.py,
+    _mostrar_gravuras_em_cinza; o caso do "So as letras" e a pergunta 1 ao
+    Samuel, ainda aberta).
+
+    Conserto de 02/11/2026 ("por gravuras em tons de cinza sozinho já deveria
+    resolver o problema." -> "sim pode": "com o "Respeitar" ligado ou
+    desligado"): vale com "Respeitar as gravuras achadas" ligada OU desligada.
+    Antes exigia a "Respeitar" ligada, e com ela desligada a gravura saia em
+    preto e branco chapado (print a-27). A marcacao inteira chega aqui porque
+    marcacao_que_o_filtro_usa nao a corta quando esta caixinha esta marcada.
+    Desmarcada (o de fabrica): False, a conta de sempre. Barato: so le um
+    campo. Arriscado: voltar a pedir a "Respeitar" ligada aqui."""
+    return gravuras_em_tons_de_cinza_marcada(pagina)
+
+
+def gravuras_em_tons_de_cinza_marcada(pagina: ConfigPagina) -> bool:
+    """A caixinha "Gravuras em tons de cinza" (D-588) esta marcada nesta
+    pagina? Pagina sem o campo (projeto antigo, objeto de fora): desmarcada,
+    o de fabrica. Barato: so le o campo. Quem usa: gravuras_em_cinza_valem
+    (a conta) e marcacao_que_o_filtro_usa (o conserto de 02/11)."""
+    return bool(getattr(pagina, "gravuras_em_tons_de_cinza", False))
 
 
 # ---------------------------------------------------------------------------

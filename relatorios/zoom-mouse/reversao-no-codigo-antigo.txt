@@ -1,0 +1,9 @@
+E       AssertionError: o ponto debaixo do mouse saiu do lugar: (0.25, 0.3) -> (0.30017301038062283, 0.34085820895522384)
+E       assert ((0.05017301038062283 * 289) <= 2)
+E       AssertionError: o ponto debaixo do mouse saiu do lugar: (0.25, 0.3) -> (0.3021276595744681, 0.3410550458715596)
+E       assert ((0.05212765957446808 * 235) <= 2)
+E           AssertionError: o ponto debaixo do mouse saiu do lugar: PySide6.QtCore.QPoint(653, 156) -> PySide6.QtCore.QPoint(669, 190) (zoom 1.25)
+E           assert (16 <= 2)
+E           AssertionError: “Igualar a luz da página” cortado: 58 de 180 pontos
+E           assert 58 >= 180
+4 failed in 12.20s

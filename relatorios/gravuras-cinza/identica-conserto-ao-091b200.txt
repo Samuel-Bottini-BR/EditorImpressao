@@ -1,0 +1,132 @@
+Conserto de 02/11/2026 (o cinza sem o Respeitar): md5 dos desenhos ANTES (091b200) e DEPOIS do conserto.
+Script: relatorios/gravuras-cinza/identica_conserto.py; 'Na escola de Jesus', marcacao da pasta de dados de teste dele (so lida),
+paginas 1, 9, 13, 19 e 45, sem 'So as letras', 110 DPI.
+Resultado: as 40 linhas com a caixinha DESMARCADA tem o mesmo md5 nos dois (nada muda).
+Com a caixinha MARCADA e o Respeitar desligado: antes 0,0% de tons do meio (preto e branco chapado, o print a-27);
+depois, o mesmo md5 da pagina com as duas ligadas (a gravura cinza).
+
+--- 091b200 (antes do conserto) ---
+pagina   1 cinza=desmarcada respeitar=sim original        md5=cbd2765089a1a33308245e10f0175766 tons_do_meio=99.1%
+pagina   1 cinza=desmarcada respeitar=sim preto_e_branco  md5=76a685c4975770fa37d0d118d4e67e6a tons_do_meio=80.6%
+pagina   1 cinza=desmarcada respeitar=sim melhorar        md5=f9b258dddcaf6177e2ef04ad5dc7ee4f tons_do_meio=82.6%
+pagina   1 cinza=desmarcada respeitar=sim magico_pro      md5=64a0099197339da3ec4e0d45902a87ff tons_do_meio=82.5%
+pagina   1 cinza=desmarcada respeitar=nao original        md5=cbd2765089a1a33308245e10f0175766 tons_do_meio=99.1%
+pagina   1 cinza=desmarcada respeitar=nao preto_e_branco  md5=93346a871921cd0cfff0d3d35927b1b9 tons_do_meio=0.0%
+pagina   1 cinza=desmarcada respeitar=nao melhorar        md5=65dfd68571d0e63ea1dec4d5893bb0c4 tons_do_meio=85.5%
+pagina   1 cinza=desmarcada respeitar=nao magico_pro      md5=52c951e8283560d2353acf4603075629 tons_do_meio=82.7%
+pagina   1 cinza=marcada   respeitar=sim preto_e_branco  md5=344b0ab3700894bd57959b6c34a4e329 tons_do_meio=86.7%
+pagina   1 cinza=marcada   respeitar=nao preto_e_branco  md5=93346a871921cd0cfff0d3d35927b1b9 tons_do_meio=0.0%
+pagina   9 cinza=desmarcada respeitar=sim original        md5=70a3fbde80fd655954183c9b8563b794 tons_do_meio=51.1%
+pagina   9 cinza=desmarcada respeitar=sim preto_e_branco  md5=f786c6eb571bf497222f8884897d38d1 tons_do_meio=34.9%
+pagina   9 cinza=desmarcada respeitar=sim melhorar        md5=f866e2f329a7249b36746f5b67becc4e tons_do_meio=43.5%
+pagina   9 cinza=desmarcada respeitar=sim magico_pro      md5=a21d3d30b6ecfe75b536b3ca6be666fb tons_do_meio=43.2%
+pagina   9 cinza=desmarcada respeitar=nao original        md5=70a3fbde80fd655954183c9b8563b794 tons_do_meio=51.1%
+pagina   9 cinza=desmarcada respeitar=nao preto_e_branco  md5=267cf1f27de03683c9c2c690a03776cd tons_do_meio=0.0%
+pagina   9 cinza=desmarcada respeitar=nao melhorar        md5=5b6794b8a515eb2256749fa300922b08 tons_do_meio=41.8%
+pagina   9 cinza=desmarcada respeitar=nao magico_pro      md5=9937cce38f94d9f8b2f0b6b11fecf367 tons_do_meio=40.9%
+pagina   9 cinza=marcada   respeitar=sim preto_e_branco  md5=f786c6eb571bf497222f8884897d38d1 tons_do_meio=34.9%
+pagina   9 cinza=marcada   respeitar=nao preto_e_branco  md5=267cf1f27de03683c9c2c690a03776cd tons_do_meio=0.0%
+pagina  13 cinza=desmarcada respeitar=sim original        md5=c8a2fe5fedee8361ad13eb39c76ceb9e tons_do_meio=57.0%
+pagina  13 cinza=desmarcada respeitar=sim preto_e_branco  md5=b526477252b046c1ccc810f7d6f3572f tons_do_meio=31.9%
+pagina  13 cinza=desmarcada respeitar=sim melhorar        md5=279f61ab8d6852d882b47f1bbf95b0a9 tons_do_meio=40.1%
+pagina  13 cinza=desmarcada respeitar=sim magico_pro      md5=502c2b746205c22b1237dd13b5b7fbdb tons_do_meio=39.5%
+pagina  13 cinza=desmarcada respeitar=nao original        md5=c8a2fe5fedee8361ad13eb39c76ceb9e tons_do_meio=57.0%
+pagina  13 cinza=desmarcada respeitar=nao preto_e_branco  md5=65e39a119414d1d759cd5992fa990290 tons_do_meio=0.0%
+pagina  13 cinza=desmarcada respeitar=nao melhorar        md5=af8724daa428f8de8ad6c2b16132bbc2 tons_do_meio=35.2%
+pagina  13 cinza=desmarcada respeitar=nao magico_pro      md5=3942e01d28ef54e25008b67756cd706d tons_do_meio=34.2%
+pagina  13 cinza=marcada   respeitar=sim preto_e_branco  md5=b526477252b046c1ccc810f7d6f3572f tons_do_meio=31.9%
+pagina  13 cinza=marcada   respeitar=nao preto_e_branco  md5=65e39a119414d1d759cd5992fa990290 tons_do_meio=0.0%
+pagina  19 cinza=desmarcada respeitar=sim original        md5=22af8526f5c76391dace4fba4d111562 tons_do_meio=52.5%
+pagina  19 cinza=desmarcada respeitar=sim preto_e_branco  md5=4dfa82a6c82ef85e5f361f2d83201ec0 tons_do_meio=35.7%
+pagina  19 cinza=desmarcada respeitar=sim melhorar        md5=789041fe68aaf82e042d3da652907115 tons_do_meio=48.2%
+pagina  19 cinza=desmarcada respeitar=sim magico_pro      md5=aad61614bb9dfa7a011b6cfcf8de53bf tons_do_meio=47.8%
+pagina  19 cinza=desmarcada respeitar=nao original        md5=22af8526f5c76391dace4fba4d111562 tons_do_meio=52.5%
+pagina  19 cinza=desmarcada respeitar=nao preto_e_branco  md5=f1bbae478c8dee7dbe32d9665d0f7034 tons_do_meio=0.0%
+pagina  19 cinza=desmarcada respeitar=nao melhorar        md5=cb33ccfd75b5b66dbe19c180bff6e980 tons_do_meio=46.0%
+pagina  19 cinza=desmarcada respeitar=nao magico_pro      md5=0f088f7dfb6246d03f98114dec26bc1c tons_do_meio=45.0%
+pagina  19 cinza=marcada   respeitar=sim preto_e_branco  md5=fa437ab198bf35f05a3c7d2ff48018ca tons_do_meio=35.7%
+pagina  19 cinza=marcada   respeitar=nao preto_e_branco  md5=f1bbae478c8dee7dbe32d9665d0f7034 tons_do_meio=0.0%
+pagina  45 cinza=desmarcada respeitar=sim original        md5=3687e4062e1dd78875eaebebcf316d91 tons_do_meio=47.0%
+pagina  45 cinza=desmarcada respeitar=sim preto_e_branco  md5=b6307fb198b1c34de1f29c4938599547 tons_do_meio=32.9%
+pagina  45 cinza=desmarcada respeitar=sim melhorar        md5=ebba7e374b1536743b83a310080f4ed5 tons_do_meio=42.8%
+pagina  45 cinza=desmarcada respeitar=sim magico_pro      md5=d723d03d5c422d68563afc22a8af1733 tons_do_meio=42.4%
+pagina  45 cinza=desmarcada respeitar=nao original        md5=3687e4062e1dd78875eaebebcf316d91 tons_do_meio=47.0%
+pagina  45 cinza=desmarcada respeitar=nao preto_e_branco  md5=a048cb09b63c491b73500901f512bbbd tons_do_meio=0.0%
+pagina  45 cinza=desmarcada respeitar=nao melhorar        md5=3b4b68071bbad03bc41c536f0b9eaa67 tons_do_meio=38.3%
+pagina  45 cinza=desmarcada respeitar=nao magico_pro      md5=1c1c4b3686401f64e5420089a5385bc2 tons_do_meio=38.0%
+pagina  45 cinza=marcada   respeitar=sim preto_e_branco  md5=8c813d93683a6197fc25a2fd2a5cc9b5 tons_do_meio=33.2%
+pagina  45 cinza=marcada   respeitar=nao preto_e_branco  md5=a048cb09b63c491b73500901f512bbbd tons_do_meio=0.0%
+
+--- depois do conserto ---
+pagina   1 cinza=desmarcada respeitar=sim original        md5=cbd2765089a1a33308245e10f0175766 tons_do_meio=99.1%
+pagina   1 cinza=desmarcada respeitar=sim preto_e_branco  md5=76a685c4975770fa37d0d118d4e67e6a tons_do_meio=80.6%
+pagina   1 cinza=desmarcada respeitar=sim melhorar        md5=f9b258dddcaf6177e2ef04ad5dc7ee4f tons_do_meio=82.6%
+pagina   1 cinza=desmarcada respeitar=sim magico_pro      md5=64a0099197339da3ec4e0d45902a87ff tons_do_meio=82.5%
+pagina   1 cinza=desmarcada respeitar=nao original        md5=cbd2765089a1a33308245e10f0175766 tons_do_meio=99.1%
+pagina   1 cinza=desmarcada respeitar=nao preto_e_branco  md5=93346a871921cd0cfff0d3d35927b1b9 tons_do_meio=0.0%
+pagina   1 cinza=desmarcada respeitar=nao melhorar        md5=65dfd68571d0e63ea1dec4d5893bb0c4 tons_do_meio=85.5%
+pagina   1 cinza=desmarcada respeitar=nao magico_pro      md5=52c951e8283560d2353acf4603075629 tons_do_meio=82.7%
+pagina   1 cinza=marcada   respeitar=sim preto_e_branco  md5=344b0ab3700894bd57959b6c34a4e329 tons_do_meio=86.7%
+pagina   1 cinza=marcada   respeitar=nao preto_e_branco  md5=344b0ab3700894bd57959b6c34a4e329 tons_do_meio=86.7%
+pagina   9 cinza=desmarcada respeitar=sim original        md5=70a3fbde80fd655954183c9b8563b794 tons_do_meio=51.1%
+pagina   9 cinza=desmarcada respeitar=sim preto_e_branco  md5=f786c6eb571bf497222f8884897d38d1 tons_do_meio=34.9%
+pagina   9 cinza=desmarcada respeitar=sim melhorar        md5=f866e2f329a7249b36746f5b67becc4e tons_do_meio=43.5%
+pagina   9 cinza=desmarcada respeitar=sim magico_pro      md5=a21d3d30b6ecfe75b536b3ca6be666fb tons_do_meio=43.2%
+pagina   9 cinza=desmarcada respeitar=nao original        md5=70a3fbde80fd655954183c9b8563b794 tons_do_meio=51.1%
+pagina   9 cinza=desmarcada respeitar=nao preto_e_branco  md5=267cf1f27de03683c9c2c690a03776cd tons_do_meio=0.0%
+pagina   9 cinza=desmarcada respeitar=nao melhorar        md5=5b6794b8a515eb2256749fa300922b08 tons_do_meio=41.8%
+pagina   9 cinza=desmarcada respeitar=nao magico_pro      md5=9937cce38f94d9f8b2f0b6b11fecf367 tons_do_meio=40.9%
+pagina   9 cinza=marcada   respeitar=sim preto_e_branco  md5=f786c6eb571bf497222f8884897d38d1 tons_do_meio=34.9%
+pagina   9 cinza=marcada   respeitar=nao preto_e_branco  md5=f786c6eb571bf497222f8884897d38d1 tons_do_meio=34.9%
+pagina  13 cinza=desmarcada respeitar=sim original        md5=c8a2fe5fedee8361ad13eb39c76ceb9e tons_do_meio=57.0%
+pagina  13 cinza=desmarcada respeitar=sim preto_e_branco  md5=b526477252b046c1ccc810f7d6f3572f tons_do_meio=31.9%
+pagina  13 cinza=desmarcada respeitar=sim melhorar        md5=279f61ab8d6852d882b47f1bbf95b0a9 tons_do_meio=40.1%
+pagina  13 cinza=desmarcada respeitar=sim magico_pro      md5=502c2b746205c22b1237dd13b5b7fbdb tons_do_meio=39.5%
+pagina  13 cinza=desmarcada respeitar=nao original        md5=c8a2fe5fedee8361ad13eb39c76ceb9e tons_do_meio=57.0%
+pagina  13 cinza=desmarcada respeitar=nao preto_e_branco  md5=65e39a119414d1d759cd5992fa990290 tons_do_meio=0.0%
+pagina  13 cinza=desmarcada respeitar=nao melhorar        md5=af8724daa428f8de8ad6c2b16132bbc2 tons_do_meio=35.2%
+pagina  13 cinza=desmarcada respeitar=nao magico_pro      md5=3942e01d28ef54e25008b67756cd706d tons_do_meio=34.2%
+pagina  13 cinza=marcada   respeitar=sim preto_e_branco  md5=b526477252b046c1ccc810f7d6f3572f tons_do_meio=31.9%
+pagina  13 cinza=marcada   respeitar=nao preto_e_branco  md5=b526477252b046c1ccc810f7d6f3572f tons_do_meio=31.9%
+pagina  19 cinza=desmarcada respeitar=sim original        md5=22af8526f5c76391dace4fba4d111562 tons_do_meio=52.5%
+pagina  19 cinza=desmarcada respeitar=sim preto_e_branco  md5=4dfa82a6c82ef85e5f361f2d83201ec0 tons_do_meio=35.7%
+pagina  19 cinza=desmarcada respeitar=sim melhorar        md5=789041fe68aaf82e042d3da652907115 tons_do_meio=48.2%
+pagina  19 cinza=desmarcada respeitar=sim magico_pro      md5=aad61614bb9dfa7a011b6cfcf8de53bf tons_do_meio=47.8%
+pagina  19 cinza=desmarcada respeitar=nao original        md5=22af8526f5c76391dace4fba4d111562 tons_do_meio=52.5%
+pagina  19 cinza=desmarcada respeitar=nao preto_e_branco  md5=f1bbae478c8dee7dbe32d9665d0f7034 tons_do_meio=0.0%
+pagina  19 cinza=desmarcada respeitar=nao melhorar        md5=cb33ccfd75b5b66dbe19c180bff6e980 tons_do_meio=46.0%
+pagina  19 cinza=desmarcada respeitar=nao magico_pro      md5=0f088f7dfb6246d03f98114dec26bc1c tons_do_meio=45.0%
+pagina  19 cinza=marcada   respeitar=sim preto_e_branco  md5=fa437ab198bf35f05a3c7d2ff48018ca tons_do_meio=35.7%
+pagina  19 cinza=marcada   respeitar=nao preto_e_branco  md5=fa437ab198bf35f05a3c7d2ff48018ca tons_do_meio=35.7%
+pagina  45 cinza=desmarcada respeitar=sim original        md5=3687e4062e1dd78875eaebebcf316d91 tons_do_meio=47.0%
+pagina  45 cinza=desmarcada respeitar=sim preto_e_branco  md5=b6307fb198b1c34de1f29c4938599547 tons_do_meio=32.9%
+pagina  45 cinza=desmarcada respeitar=sim melhorar        md5=ebba7e374b1536743b83a310080f4ed5 tons_do_meio=42.8%
+pagina  45 cinza=desmarcada respeitar=sim magico_pro      md5=d723d03d5c422d68563afc22a8af1733 tons_do_meio=42.4%
+pagina  45 cinza=desmarcada respeitar=nao original        md5=3687e4062e1dd78875eaebebcf316d91 tons_do_meio=47.0%
+pagina  45 cinza=desmarcada respeitar=nao preto_e_branco  md5=a048cb09b63c491b73500901f512bbbd tons_do_meio=0.0%
+pagina  45 cinza=desmarcada respeitar=nao melhorar        md5=3b4b68071bbad03bc41c536f0b9eaa67 tons_do_meio=38.3%
+pagina  45 cinza=desmarcada respeitar=nao magico_pro      md5=1c1c4b3686401f64e5420089a5385bc2 tons_do_meio=38.0%
+pagina  45 cinza=marcada   respeitar=sim preto_e_branco  md5=8c813d93683a6197fc25a2fd2a5cc9b5 tons_do_meio=33.2%
+pagina  45 cinza=marcada   respeitar=nao preto_e_branco  md5=8c813d93683a6197fc25a2fd2a5cc9b5 tons_do_meio=33.2%
+
+--- diferencas (diff) ---
+10c10
+< pagina   1 cinza=marcada   respeitar=nao preto_e_branco  md5=93346a871921cd0cfff0d3d35927b1b9 tons_do_meio=0.0%
+---
+> pagina   1 cinza=marcada   respeitar=nao preto_e_branco  md5=344b0ab3700894bd57959b6c34a4e329 tons_do_meio=86.7%
+20c20
+< pagina   9 cinza=marcada   respeitar=nao preto_e_branco  md5=267cf1f27de03683c9c2c690a03776cd tons_do_meio=0.0%
+---
+> pagina   9 cinza=marcada   respeitar=nao preto_e_branco  md5=f786c6eb571bf497222f8884897d38d1 tons_do_meio=34.9%
+30c30
+< pagina  13 cinza=marcada   respeitar=nao preto_e_branco  md5=65e39a119414d1d759cd5992fa990290 tons_do_meio=0.0%
+---
+> pagina  13 cinza=marcada   respeitar=nao preto_e_branco  md5=b526477252b046c1ccc810f7d6f3572f tons_do_meio=31.9%
+40c40
+< pagina  19 cinza=marcada   respeitar=nao preto_e_branco  md5=f1bbae478c8dee7dbe32d9665d0f7034 tons_do_meio=0.0%
+---
+> pagina  19 cinza=marcada   respeitar=nao preto_e_branco  md5=fa437ab198bf35f05a3c7d2ff48018ca tons_do_meio=35.7%
+50c50
+< pagina  45 cinza=marcada   respeitar=nao preto_e_branco  md5=a048cb09b63c491b73500901f512bbbd tons_do_meio=0.0%
+---
+> pagina  45 cinza=marcada   respeitar=nao preto_e_branco  md5=8c813d93683a6197fc25a2fd2a5cc9b5 tons_do_meio=33.2%
