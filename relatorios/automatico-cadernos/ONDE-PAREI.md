@@ -216,3 +216,48 @@ falharam antes de existir). Prints em `d590/` (Schön Neues Modell Buch, 6 folha
   pausa) e entregar à gerente. Nada mais começado.
 - Abertos: P2 (rodar "só nesta página"/"nas escolhidas" com Cadernos/Margens/Gravuras desmarcadas desliga no
   livro todo) e o "Desligar as marcadas" das Gravuras (forma "desligada", não religa ao marcar; igual a antes).
+
+## 02/11 — atualizar com a versão de teste (PARADO, pergunta P4)
+
+- Rodada 41218623088 (`21741fe`, a da pausa): falhou só na parte 1, 1 erro, o instável conhecido
+  (`test_p083_jeitos_no_automatico[Guardar tudo-tudo]`, "um botão falhou por baixo (erros.log)").
+- Junção de `origin/obra-2026-10-26` (`c5befb5`, 57 commits) no ramo: commit `50c0c5b`.
+  - Conflito só no `teste_botoes.py`: os dois lados tinham feito o mesmo conserto (voltar da grade
+    "Todas as páginas" depois do "ver as N em tela cheia"). Ficou o da versão de teste (`getattr`,
+    texto) mais a conferência de que voltou (meu `dfca260`: "ok"/"FALHA" do "voltar").
+  - Junções automáticas conferidas: em todos os 25 arquivos que o ramo muda, a diferença entre o
+    resultado e a versão de teste é exatamente o que o ramo fazia (nada da versão de teste perdido
+    ou mudado).
+- PC, um arquivo por vez (todos passaram, menos um): montar_cadernos 11, juntar_todas 3,
+  so_as_letras 5, respeitar_gravuras 19, marcacoes 19, automatico 24, filtro_automatico 4, nucleo 38,
+  nucleo2 21, impressao 22, dialogo_impressao 5, impressao 17, cadernos 28, cancelar 1, recomeco 13,
+  para_revisar_na_tela 26, decisoes 26, avisos 13, misto_na_tela 14, misto_no_projeto 12, dividir 19,
+  trabalho_nao_se_perde 82, automatico_ver_como_fica 22, automatico_opcoes_do_filtro 21,
+  shift_todas_as_telas 10, zoom_no_ponteiro 5, promessas 264 + 1 xfail (sem erro);
+  **gravuras_cinza: 1 falha, 13 passaram**. `teste_botoes` no PC: 369 ações, 0 falhas.
+- GitHub 41463140548 (`50c0c5b`): parte 1 só o instável (p083 `[rede]` do "Só as letras" e
+  `[Guardar tudo-tudo]`, a prévia abrindo o PDF de pasta já apagada); **parte 4:
+  `test_decisoes_gravuras_cinza.py::test_d588_no_limpar_a_folha_do_automatico` falhou** (a mesma do
+  PC). Partes 2, 3, 5 e botões passaram. Não disparei de novo (não é só o instável).
+- Causa: a prova da D-588 marca só "Limpar a folha" (`e.marcadas = {A.LIMPAR}`), com "Gravuras em
+  tons de cinza" ligada, e espera a gravura em cinza. Com a D-589, "Gravuras e fotos" desmarcada no
+  "Rodar" desliga o "Procurar" do livro (`detectar_regioes=False`); sem ele a marcação da máquina não
+  vale (`core/etapas.a_marcacao_da_maquina_vale`, que só abre exceção para o "Só as letras") e não há
+  gravura achada para pintar de cinza. Conferido: com `{LIMPAR, GRAVURAS}` a prova passa (cópia
+  temporária, apagada). Sozinha, a D-588 passou no GitHub (41455630372, ramo gravuras-cinza).
+- Ligado a isto: em 02/11 o Samuel aprovou mudar a D-588 ("marcar só 'Gravuras em tons de cinza' já
+  basta: ela acha as gravuras sozinha e pinta de cinza, com o 'Respeitar' ligado ou desligado" →
+  "sim pode"), conserto em andamento no ramo `gravuras-cinza-2026-11-01`.
+- Não mudei nada além da junção (nenhum `core/`), então sem filtro de velocidade.
+
+**P4 — Com "Gravuras e fotos" desmarcada e "Gravuras em tons de cinza" marcada, a gravura sai cinza?**
+Exemplo real: capa do *Na escola de Jesus*; Kaique marca só "Limpar a folha" (Preto e branco) com
+"Gravuras em tons de cinza" e roda. Hoje, junto, a pintura sai em preto e branco, porque a etapa 5
+desmarcada faz o programa parar de procurar gravuras.
+- **A** — Igual ao "Só as letras" (31/10): com "Gravuras em tons de cinza" marcada, o programa procura
+  as figuras por dentro só para pintá-las de cinza; a etapa 5 continua desmarcada e não volta marcada.
+  Casa com o "ela acha as gravuras sozinha" de 02/11. Mexe em `core/etapas` (uma condição a mais).
+- **B** — "Se não está marcado, não faz": sem a etapa 5, a caixinha do cinza não faz nada; a prova da
+  D-588 passa a marcar também "Gravuras e fotos".
+- Recomendação do construtor: **A**, e fazer junto com (ou depois de) o conserto da D-588 que está no
+  ramo gravuras-cinza, para não mexer duas vezes na mesma regra.
