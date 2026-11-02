@@ -1926,7 +1926,8 @@ class PainelDeOpcoes(QObject):
           - "Respeitar as gravuras achadas" (D-583/D-586), em todo filtro; cinza com
             "Só as letras" no Preto e branco (D-587, como a caixinha das molduras);
           - "Gravuras em tons de cinza" (D-588), só no Preto e branco; cinza com "Só as
-            letras" ou com "Respeitar as gravuras achadas" desligada;
+            letras"; clicável com "Respeitar as gravuras achadas" desligada (conserto de
+            02/11/2026: "com o "Respeitar" ligado ou desligado");
           - "Ajuste": a barra do filtro ("Força do preto", "Clareza do fundo",
             "Intensidade"; um valor por filtro, como na página);
           - "Mais ajustes": "Jeito do preto e branco" (Automático, os três de sempre e os
@@ -1952,7 +1953,7 @@ class PainelDeOpcoes(QObject):
             "Ligada, o filtro respeita as gravuras que o programa achou; desligada, o filtro "
             "vale na página inteira.")
         # D-588: "Gravuras em tons de cinza", logo abaixo (como no painel), só no Preto e
-        # branco; cinza com "Só as letras" ou com "Respeitar as gravuras achadas" desligada
+        # branco; cinza só com "Só as letras" (a "Respeitar" desligada não a apaga: 02/11)
         self.cx_gravuras_cinza = self._caixa(
             "gravuras_em_tons_de_cinza", ROTULO_GRAVURAS_CINZA, "", col)
         self.cx_gravuras_cinza.setToolTip(
@@ -2146,9 +2147,12 @@ class PainelDeOpcoes(QObject):
         self.seletor_luz_chuvisco.setValue(int(o.get("luz_chuvisco", 0) or 0))
         # D-587: cinza com "Só as letras" no Preto e branco (o valor fica guardado)
         self.cx_respeitar_gravuras.setEnabled(not (so_letras and no_pb))
-        # D-588: no padrão da D-168/D-587 (pergunta ao Samuel no ONDE-PAREI da D-588)
-        respeita = bool(o.get("respeitar_gravuras_achadas", fabrica["respeitar_gravuras_achadas"]))
-        self.cx_gravuras_cinza.setEnabled(not (so_letras and no_pb) and respeita)
+        # D-588: cinza só com "Só as letras" (padrão da D-168/D-587; pergunta 1 ao Samuel,
+        # aberta). Conserto de 02/11/2026 (print a-27; "por gravuras em tons de cinza sozinho
+        # já deveria resolver o problema" -> "sim pode"): a "Respeitar as gravuras achadas"
+        # desligada NÃO a apaga; a conta a usa nos dois casos (core.pipeline.
+        # marcacao_que_o_filtro_usa). Arriscado: voltar a apagá-la com a "Respeitar" desligada.
+        self.cx_gravuras_cinza.setEnabled(not (so_letras and no_pb))
         # os avisos das opções de luz, como o painel (luz_scantailor.avisos_da_pagina)
         avisos = luz_scantailor.avisos_da_pagina(SimpleNamespace(
             filtro=filtro, luz_igualar=bool(o.get("luz_igualar")),

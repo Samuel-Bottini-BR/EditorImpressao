@@ -6269,14 +6269,17 @@ class TelaConferir(QWidget):
         "Gravuras em tons de cinza" no Preto e branco").
 
         Fica cinza (desabilitada, sem perder o valor guardado; volta como estava),
-        no padrão da D-168/D-587, em dois casos - os dois em que a conta não a usa
-        (core.pipeline.gravuras_em_cinza_valem) e que estão como PERGUNTA ao
-        Samuel no relatorios/gravuras-cinza/ONDE-PAREI.md:
-          - "Só as letras" valendo na página (dela ou do livro): as gravuras já
-            guardam a cor (D-148);
-          - "Respeitar as gravuras achadas" desligada (D-586): não há gravura
-            achada para pintar de cinza.
-        Arriscado: gravar algo aqui (mostrar viraria ação do desfazer)."""
+        no padrão da D-168/D-587, só com "Só as letras" valendo na página (dela ou
+        do livro): as gravuras já guardam a cor (D-148) e a conta não a usa
+        (pergunta 1 ao Samuel no relatorios/gravuras-cinza/ONDE-PAREI.md, aberta).
+
+        Conserto de 02/11/2026: com "Respeitar as gravuras achadas" desligada ela
+        fica CLICÁVEL (Samuel: "por gravuras em tons de cinza sozinho já deveria
+        resolver o problema." -> "sim pode": "com o "Respeitar" ligado ou
+        desligado"); a conta a usa nos dois casos (core.pipeline.
+        gravuras_em_cinza_valem e marcacao_que_o_filtro_usa). Arriscado: voltar a
+        apagá-la com a "Respeitar" desligada (o defeito do print a-27); gravar
+        algo aqui (mostrar viraria ação do desfazer)."""
         caixa = getattr(self, "caixa_gravuras_cinza", None)
         if caixa is None:
             return
@@ -6287,8 +6290,7 @@ class TelaConferir(QWidget):
         caixa.setVisible(no_pb)
         so_as_letras = (no_pb and self.projeto is not None
                         and misto.escolhas_da_pagina(self.projeto, pagina)[0])
-        respeita = bool(getattr(pagina, "respeitar_gravuras_achadas", True))
-        caixa.setEnabled(not so_as_letras and respeita)
+        caixa.setEnabled(not so_as_letras)          # a "Respeitar" não apaga (02/11)
 
     @protegido
     def _mudar_pontinhos(self, indice: int) -> None:
