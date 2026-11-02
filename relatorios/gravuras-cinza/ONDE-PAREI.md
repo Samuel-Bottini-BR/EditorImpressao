@@ -276,3 +276,30 @@ Nada mais mudou (nome, lugar, comportamento e o balão da "Respeitar" ficam como
   (compara letra por letra com o texto aprovado, escrito na prova, não lido do programa).
 - **§4.7 (reversão):** `reversao-balao-no-640170d.txt`: no `640170d` a prova falha (o balão era o antigo).
 - Testes no PC e GitHub: abaixo.
+
+## Testes do balão
+
+- PC (um arquivo por vez), nenhuma falha: test_decisoes_gravuras_cinza 20 · test_decisoes_automatico_opcoes_do_filtro
+  21 · test_filtros_tela_cheia 11 · test_decisoes_respeitar_gravuras 19 · test_decisoes_automatico 24 ·
+  test_promessas 263 (1 xfail, o de antes).
+- GitHub (commit `6798a38`), Testes no Windows, rodada `41473778845`: 1ª tentativa falhou só na parte 1, com os
+  mesmos 2 erros de limpeza do `test_promessas` da rodada do conserto (`test_p083_jeitos_do_so_as_letras[rede]` e
+  `test_p083_jeitos_no_automatico[Guardar tudo-tudo]`: a prévia tenta abrir o PDF da pasta temporária já apagada;
+  as 263 provas passam). Disparei de novo a parte 1.
+
+Rodadas do conserto do cinza (commit `00d1ddf`), já fechadas: Testes no Windows `41455630372` **passou** (na 2ª
+tentativa da parte 1, mesmos 2 erros de limpeza na 1ª); Filtro de velocidade `41455635198` `091b200` ->
+ramo **passou, "igual (dentro do vai-e-vem)"** (abrir -1,5%, trocar de página +0,9%, Mágico pro -1,4%, Preto e
+branco +1,0%).
+
+# PAUSA (02/11, pedido do Samuel)
+
+"vamos pausar todos os trabalhos, para continuar depois". Parei os acompanhamentos em segundo plano.
+
+- **Pronto e enviado** (ramo `gravuras-cinza-2026-11-01`): o conserto do cinza sem o "Respeitar" (`00d1ddf`,
+  já juntado pela gerente) e o balão aprovado da caixinha nos três lugares (`6798a38`), com prova, reversão e
+  testes do PC passando.
+- **Falta:** conferir a 2ª tentativa da parte 1 da rodada `41473778845` (estado ao pausar: completed failure). Se cair de novo
+  nos mesmos p083, anotar como teste instável novo em `memoria/bugs.md` (o mesmo erro apareceu nas duas rodadas
+  deste ramo e sumiu ao disparar de novo). O balão não foi juntado na versão de teste.
+- **Perguntas abertas:** a 1 (com "Só as letras", caso do a-25), a 3 e a 4, como acima.
