@@ -1,0 +1,5 @@
+﻿Testes no PC, offscreen, um arquivo por vez (02/11/2026, D-600)
+test_decisoes_shift_todas_as_telas : 6 passed in 4.88s
+test_zoom_no_ponteiro : 5 passed in 17.74s
+test_decisoes_9b2 : 30 passed in 60.84s (0:01:00)
+test_livro_aberto : 14 passed in 4.98s

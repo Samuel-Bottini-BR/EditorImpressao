@@ -415,7 +415,16 @@ class PaginasRolando(QScrollArea):
 
     def wheelEvent(self, evento) -> None:  # noqa: N802 - nome do Qt
         """Sem "Rolar sem parar": a roda rola dentro da página e, no fim dela,
-        passa para a próxima (no começo, para a anterior), como no UPDF."""
+        passa para a próxima (no começo, para a anterior), como no UPDF.
+
+        Shift + roda (sem Ctrl), com as páginas mais largas que a tela (ex.: "Tamanho
+        real"): anda para os lados, sem descer nem trocar de folha (D-600, 02/11/2026: "o
+        shift tem que funcionar em todas as telas"; ui/widgets/roda_de_lado). Antes o rolar
+        padrão do Qt descia uma tela inteira. Com as páginas cabendo de lado, como antes."""
+        from ui.widgets.roda_de_lado import shift_roda_na_rolagem
+
+        if shift_roda_na_rolagem(self, evento):
+            return
         if self.continuo:
             super().wheelEvent(evento)
             return

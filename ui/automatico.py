@@ -866,12 +866,21 @@ class VistaAntesDepoisComZoom(_classe_da_vista()):
     def wheelEvent(self, evento) -> None:  # noqa: N802 - nome do Qt
         """A roda dá zoom (D-577, 30/10), ancorado no ponteiro: o ponto da página que estava
         debaixo dele continua lá (a área de rolar anda o que for preciso). O passo é o do
-        Visualizador da área de trabalho. Sem página na tela, não faz nada."""
+        Visualizador da área de trabalho. Sem página na tela, não faz nada.
+
+        Shift + roda (sem Ctrl), com a página mais larga que o espaço: anda para os lados, sem
+        zoom (D-600, 02/11/2026: "shift não funciona no automatico para mover para o lado" ·
+        "o shift tem que funcionar em todas as telas"; a peça é ui/widgets/roda_de_lado). Antes
+        o Shift + roda dava zoom como a roda sozinha. Com a página cabendo de lado, continua
+        dando zoom (pergunta aberta, relatorios/zoom-mouse/ONDE-PAREI.md)."""
         from PySide6.QtWidgets import QApplication
 
+        from ui.widgets.roda_de_lado import shift_roda_na_rolagem
         from ui.widgets.visualizador import PASSO_DA_RODA
 
         if self.depois is None:
+            return
+        if shift_roda_na_rolagem(self.rolagem, evento):
             return
         passos = evento.angleDelta().y() / 120.0
         if not passos:

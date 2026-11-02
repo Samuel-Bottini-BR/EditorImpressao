@@ -102,3 +102,120 @@ do meio (e o Shift mover página estreita) foi aprovada: "sim" (D-599).
   `test_promessas.py::test_p107_forca_do_preto[aviso/forca:mais_escuro-True]` ("um botão falhou por baixo"); no PC
   `test_promessas` passou inteiro. 2ª tentativa (só a parte que falhou): **passou**. Rodada inteira: sucesso.
 - **Perguntas para o Samuel:** nenhuma.
+
+
+---
+
+## 02/11 — D-600: Shift + roda em todas as telas
+
+Pedido do Samuel (02/11/2026), testando a D-599: "3- shift não funciona no automatico para mover para o lado. No duas
+paginas lado a lado está funcionando" · "e no automatico pode colocar o shift tambem, o shift tem que funcionar em todas
+as telas". Primeiro passo: juntado o `obra-2026-10-26` (`091b200`) neste ramo (avançou direto, sem conflito).
+
+### Decisões que esta tarefa precisa cumprir
+
+- **D-600** (02/11/2026): "Shift + roda move a imagem para os lados em todas as telas do programa que mostram página com
+  zoom (área de trabalho, "antes e depois" do Automático e as outras), como já faz no "Duas lado a lado"."
+- **D-599** (01/11/2026): "Na área de trabalho, Ctrl + roda dá zoom para onde está o mouse (Uma página e Duas lado a
+  lado); a página pode sair um pouco do meio para os lados (o meio dela nunca sai da tela), e Shift + roda move para os
+  lados também uma página estreita. Os botões "–", "+" e "ajustar à tela" continuam pelo centro; a roda sem Ctrl
+  continua como na D-568." (na área de trabalho, fica como está)
+- **D-568** (27/10/2026): "Como ficou: sem zoom troca de página; Ctrl + roda dá zoom" → roda sem zoom troca de página;
+  com zoom anda pela página; Ctrl + roda dá zoom. (não muda)
+- **D-577** (30/10/2026, 3º teste: "não consigo dar zoom com o mouse, usando o scrool"): no Automático a roda dá zoom.
+  (não muda: só o Shift muda)
+- CLAUDE.md §11 item 7 (só o que ele mandou): nada de botão, aviso ou comportamento a mais; a diferença entre telas no
+  "roda sozinha × Ctrl + roda" é pergunta aberta dele e não se mexe.
+
+### As telas com página que pode ficar maior que o espaço dela
+
+| Tela | Arquivo e classe | Situação |
+|---|---|---|
+| Área de trabalho, "Uma página" (todas as ferramentas de página e a Mão/Zoom) | `ui/tela_conferir.py`, `TelaConferir._roda_na_pagina` (sobre `Visualizador` e `EditorSelecao`) | já funcionava (D-568/D-599); não mexi |
+| Área de trabalho, "Uma página", ferramentas de marcar (Pincel, Varinha, Retângulo...) | `ui/widgets/editor_selecao.py`, `EditorSelecao.wheelEvent` | **pergunta 2** (abaixo); não mexi |
+| Área de trabalho, "Duas lado a lado" | `ui/widgets/paginas_lado_a_lado.py`, `PaginasLadoALado.wheelEvent` | já funcionava (`aba8c37`); agora usa a peça única, o que faz não mudou |
+| Área de trabalho, "antes / depois" | `ui/widgets/filtros_tela_cheia.py`, `VistaAntesDepois` | sem zoom (a página sempre inteira): não se aplica |
+| Automático, "A página, antes e depois" | `ui/automatico.py`, `PaginaAntesEDepois` → `VistaAntesDepoisComZoom.wheelEvent` | **feita** |
+| Automático, "tela cheia" | `ui/automatico.py`, `TelaCheiaDoAntesEDepois` → `VistaAntesDepoisComZoom` (a mesma) | **feita** |
+| Automático, "comparar" da tela cheia | `ui/automatico.py`, `TelaCheiaDoAntesEDepois.vista_a/vista_b` → `Visualizador.wheelEvent` | **feita** (as duas andam juntas) |
+| "Ver de perto" (e o "comparar" dele) | `ui/tela_ampliada.py`, `TelaAmpliada.vista/vista_b` → `Visualizador.wheelEvent` | **feita** |
+| Filtros em tela cheia | `ui/widgets/filtros_tela_cheia.py`, `FiltrosEmTelaCheia` (`VistaAntesDepois`) | sem zoom: não se aplica |
+| Livro aberto (tela de início) | `ui/tela_inicio.py`, `LivroAberto` → `ui/widgets/paginas_rolando.py`, `PaginasRolando.wheelEvent` | **feita** (só quando as páginas passam da largura, ex.: "Tamanho real"; ver a ressalva) |
+| Imprimir / "Montar cadernos" | `ui/dialogo_impressao.py`, `DialogoImpressao` | não mostra página (só textos): não se aplica |
+| Miniaturas e "Todas as páginas" | `ui/widgets/tira_miniaturas.py`, `ui/widgets/todas_as_paginas.py` | miniaturas, sem zoom: não se aplica |
+| Folhear do PDF e a tela cheia dele | `ui/widgets/folhear_pdf.py`, `FolhearPDF`/`TelaCheiaDoPDF` | não abre em lugar nenhum hoje (a `TelaOpcoes` que o usava não é criada); usa o `Visualizador`, então ganhou o Shift junto |
+
+### O que mudou
+
+- **Peça única nova: `ui/widgets/roda_de_lado.py`** (a conta do conserto `aba8c37`, para nenhuma tela copiar a da outra):
+  - `shift_roda_na_rolagem`: numa área de rolar, com Shift (sem Ctrl) e a barra de baixo com espaço, anda a barra de
+    baixo (3 linhas por dente, como a roda anda de cima para baixo) e não deixa a roda ir para o zoom nem para o rolar
+    do Qt.
+  - `shift_roda_no_visualizador`: no `Visualizador`, com Shift (sem Ctrl) e zoom acima de 100%, muda o deslocamento para
+    os lados (o mesmo do arrastar), avisa o "comparar". O limite de quanto anda é a conta da área de trabalho (D-599):
+    a beirada para na beirada, e uma página estreita com zoom pode sair um pouco do meio (o meio dela não sai da tela).
+- `ui/automatico.py`, `VistaAntesDepoisComZoom.wheelEvent`: Shift + roda passa pela peça antes do zoom.
+- `ui/widgets/visualizador.py`, `Visualizador.wheelEvent`: idem (vale para o "Ver de perto" e o "comparar"). Na área de
+  trabalho a roda é decidida antes, pela `TelaConferir` (nada muda lá).
+- `ui/widgets/paginas_rolando.py`, `PaginasRolando.wheelEvent`: idem (livro aberto; e o "Duas lado a lado" sem zoom, se as
+  páginas passarem da largura).
+- `ui/widgets/paginas_lado_a_lado.py`: usa `andar_na_barra`/`quanto_de_lado` da peça (a mesma conta de antes).
+- Não mudou: a roda sozinha e o Ctrl + roda de nenhuma tela; nenhum botão, aviso ou texto.
+
+**Ressalvas (para a gerente conferir):**
+1. Livro aberto: o Livro diz "telas que mostram página com zoom"; o livro aberto não tem zoom, mas no "Tamanho real" (ou
+   "Caber a altura" em duas lado a lado numa janela estreita) a página passa da largura e há barra de baixo. Pus o Shift
+   ali pela ordem dele, "o shift tem que funcionar em todas as telas". Antes, ali, Shift + roda descia uma tela inteira.
+   Se a gerente achar que o livro aberto fica de fora, é só tirar as 3 linhas de `PaginasRolando.wheelEvent`.
+2. "Ver de perto" e "comparar": com zoom, uma página ainda mais estreita que a vista também anda um pouco para os lados
+   (a mesma regra que ele aprovou na área de trabalho, D-599). Sem isso, numa janela larga com página alta, o Shift + roda
+   com zoom 300% caía no zoom e afastava a página (visto na 1ª versão do print `shift-ver-de-perto-2-...-depois.png`,
+   que mostrava 153%; o print foi refeito depois do acerto e mostra 300%).
+
+### Como cumpri cada uma
+
+- **D-600**: Automático (página da direita e tela cheia), "comparar" do Automático, "Ver de perto" (e o "comparar" dele)
+  e livro aberto: com zoom, Shift + roda anda para os lados, sem zoom e sem trocar de página. Prova:
+  `tests/test_decisoes_shift_todas_as_telas.py` (6 casos) e os prints `shift-*-depois.png`. Área de trabalho: já
+  tinha (`tests/test_zoom_no_ponteiro.py`, `tests/test_decisoes_9b2.py`).
+- **D-599**: área de trabalho sem mudança (`ui/tela_conferir.py` não foi tocado; `test_zoom_no_ponteiro` e
+  `test_decisoes_9b2` passam).
+- **D-568** e **D-577**: a roda sozinha e o Ctrl + roda não mudaram em nenhuma tela (os testes novos conferem que a roda
+  sem Shift continua dando zoom no Automático e no "Ver de perto" e descendo no livro aberto).
+
+### Testes
+
+- Teste de reversão (§4.7): os 6 casos novos **falham** no código de antes (`091b200`, os 4 arquivos de `ui/` trocados
+  pelos antigos, teste novo mantido): no Automático e no "Ver de perto" "o Shift + roda deu zoom (2.0 -> 1.6)"; no livro
+  aberto "Shift + roda para baixo não andou para a direita". Saída em `reversao-d600-no-codigo-antigo.txt`. No novo,
+  passam.
+
+### Prints (sem janela na tela, letras do Windows, 1280 x 657, "Na escola de Jesus" página 2; a cruz vermelha é o mouse)
+
+Script: `fazer_prints_shift.py antes|depois`. Cada tela: `-1-com-zoom` e `-2-shift-roda-3-vezes`, antes e depois.
+- `shift-automatico-*`: antes, o Shift + roda afastou a página até caber (zoom); depois, a página anda para a direita.
+- `shift-automatico-tela-cheia-*` e `shift-automatico-comparar-*`: o mesmo (no "comparar", as duas telas juntas).
+- `shift-ver-de-perto-*`: antes, zoom de 300% caiu; depois, 300% e a página andou para a direita.
+- `shift-livro-aberto-*` ("Duas lado a lado", "Tamanho real"): antes, desceu uma tela (página 3 para o texto da 4);
+  depois, o par anda para a direita na mesma altura.
+
+### Perguntas para o Samuel
+
+**Pergunta 1 — Shift + roda com a página inteira cabendo (sem zoom).** A D-600 fala das telas "com zoom". Quando a
+página está inteira na tela (sem zoom), não há para onde ir de lado, e hoje o Shift + roda faz coisas diferentes em cada
+tela: no Automático e no "Ver de perto" dá zoom, como a roda sozinha (print `pergunta-1-sem-zoom-antes-do-shift-roda.png`
+→ `pergunta-1-sem-zoom-depois-de-1-shift-roda.png`: a página ficou menor); na área de trabalho troca de página, como a roda
+sozinha (D-568); no livro aberto desce a tela. Deixei como está.
+Texto para ele: "Quando a página está inteira na tela, sem zoom, o Shift + roda não tem para onde levar a página de lado.
+Hoje ele faz o mesmo que a roda sozinha daquela tela: no Automático e no Ver de perto aproxima ou afasta; na área de
+trabalho troca de página. Pode continuar assim? (sugestão: sim, continua assim)"
+
+**Pergunta 2 — Shift + roda nas ferramentas de marcar da área de trabalho, com zoom.** Com o Pincel, a Varinha ou as de
+marcar (Retângulo, Laço...), a roda não anda pela página: no Pincel muda o tamanho do pincel, na Varinha a tolerância
+(D-568: "na ferramenta de marcar com o Pincel ou a Varinha, a roda continua mudando a espessura ou a tolerância"), nas
+outras não faz nada. O Shift + roda faz o mesmo: no print `pergunta-2-pincel-com-zoom-antes-do-shift-roda.png` →
+`pergunta-2-pincel-depois-de-3-shift-roda.png` (zoom 156%), a página não andou e o pincel foi de 2% para 1,5%; no Retângulo,
+nada. A área de trabalho ficou como estava (D-599).
+Texto para ele: "Na área de trabalho, com zoom e uma ferramenta de marcar (Pincel, Varinha, Retângulo...), o Shift + roda
+hoje não leva a página para os lados: no Pincel ele muda o tamanho do pincel. Quer que o Shift + roda leve a página para
+os lados também nessas ferramentas (a roda sozinha continua mudando o pincel)? (sugestão: sim)"
