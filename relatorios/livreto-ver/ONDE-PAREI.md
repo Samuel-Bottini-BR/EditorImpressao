@@ -123,6 +123,28 @@ no Opus Majus cada seta deixava a janela parada 1,7 a 2,6 s; trocar o caderno 1,
   `test_d574_cancelar_para_a_folha_no_servidor`.
 - [x] Reversão no `ff0260f`: a prova falha (livro pesado: parada 1,0 a 1,1 s; Opus Majus: 1,8 a 3,6 s). No novo: 0,01 a
   0,06 s.
+- [x] Folha cancelada (opção mudou, janela fechou) volta na hora; um fio espera a resposta do servidor (`b541caa`).
+- [x] Testes no PC, um arquivo por vez: test_decisoes_livreto_ver 13/13, test_paginas_em_outro_processo 11/11,
+  test_dialogo_impressao 5/5, test_decisoes_impressao 22/22, test_impressao 17/17, test_cadernos 28/28,
+  test_promessas 264 + 1 xfail antigo.
+- [x] Medidas antes × depois (`medir/medir.py`, cópia do do verificador com `SEM_GRAVAR=1`; janela de verdade do
+  Windows, fora da tela; antigo = `ff0260f`). Maior parada da tela:
+  - **Opus Majus:** setas antes 1,5 a 3,0 s → depois 0,007 a 0,014 s; trocar o caderno 0,95 s → 0,008 s; ao abrir
+    3,0 s → 0,008 s. A folha leva o mesmo tempo para aparecer (~2 a 3 s), mas a janela não para.
+  - **Palatino:** setas 0,08 a 0,14 s → 0,005 a 0,008 s; caderno 0,12 s → 0,008 s; ao abrir 1,4 s → 0,007 s.
+  - Arquivos: `medir/medir-antigo-*.json`, `medir/medir-livreto-ver-*.json`.
+- [x] Prints do Opus Majus (`medir/prints_opus.py`): `opus-1-seta-montando.png`, `opus-2-ainda-montando-meio-segundo-depois.png`
+  (a foto sai na hora, com a folha montando: a janela responde), `opus-3-folha-2-pronta.png`; relógio de 5 ms bateu 421
+  vezes em 2,35 s (`prints-opus.json`).
+
+### Ressalvas
+- Continua de antes, fora desta tarefa: **abrir a janela** "Montar para imprimir" sozinha para a tela 6,7 s (antes 7 a
+  11 s; montagem dos widgets, igual no código antigo) e o **gravar** para a tela 18 s no Palatino e 78 s no Opus. A
+  peça de hoje não resolve o gravar de graça: ele grava o arquivo inteiro com progresso e cancelar, e levá-lo para o
+  servidor é outra mudança.
+- O cancelar no servidor só é visto entre um lado e outro da folha; quem pediu já volta na hora, mas o servidor fica
+  ocupado até acabar aquele lado (~1 s no Opus). Há dois servidores, então o pedido seguinte usa o outro.
+- Durante a montagem continua escrito "Folha 1 de 113" até a folha nova chegar (pergunta 2 do verificador; não mexi).
 
 ### Como cumpri cada uma
 - **§3:** a montagem e o desenho saíram do processo da janela; maior parada medida com relógio de 5 ms (ver "Medidas").

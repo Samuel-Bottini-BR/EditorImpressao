@@ -1,0 +1,86 @@
+{
+ "copia": "C:\\Users\\fotog\\AppData\\Local\\Temp\\claude\\C--Users-fotog\\9b732f36-c3f3-421a-be90-4f23a6c859ce\\scratchpad\\antigo",
+ "criar_e_mostrar_s": 7.356,
+ "parada_ao_criar_s": 7.356,
+ "primeira_folha_s": 1.864,
+ "parada_enquanto_monta_a_primeira_s": 1.446,
+ "setas": [
+  {
+   "folha": 2,
+   "s": 0.187,
+   "maior_parada_s": 0.078,
+   "batidas_de_5ms": 4
+  },
+  {
+   "folha": 3,
+   "s": 0.206,
+   "maior_parada_s": 0.084,
+   "batidas_de_5ms": 3
+  },
+  {
+   "folha": 4,
+   "s": 0.164,
+   "maior_parada_s": 0.077,
+   "batidas_de_5ms": 3
+  },
+  {
+   "folha": 5,
+   "s": 0.175,
+   "maior_parada_s": 0.077,
+   "batidas_de_5ms": 3
+  },
+  {
+   "folha": 6,
+   "s": 0.234,
+   "maior_parada_s": 0.137,
+   "batidas_de_5ms": 3
+  },
+  {
+   "folha": 7,
+   "s": 0.17,
+   "maior_parada_s": 0.08,
+   "batidas_de_5ms": 3
+  },
+  {
+   "folha": 8,
+   "s": 0.174,
+   "maior_parada_s": 0.079,
+   "batidas_de_5ms": 4
+  },
+  {
+   "folha": 9,
+   "s": 0.204,
+   "maior_parada_s": 0.115,
+   "batidas_de_5ms": 4
+  },
+  {
+   "folha": 10,
+   "s": 0.175,
+   "maior_parada_s": 0.086,
+   "batidas_de_5ms": 4
+  },
+  {
+   "folha": 11,
+   "s": 0.184,
+   "maior_parada_s": 0.086,
+   "batidas_de_5ms": 4
+  }
+ ],
+ "trocar_caderno": {
+  "s": 0.411,
+  "maior_parada_s": 0.122
+ },
+ "previa_da_folha_sozinha_s": [
+  0.124,
+  0.123,
+  1.012,
+  1.007
+ ],
+ "fechar_com_a_folha_montando": {
+  "montava_no_clique": true,
+  "montava_50ms_depois": true,
+  "close_levou_s": 0.007,
+  "fio_ainda_roda": false,
+  "parada_s": 0.007
+ }
+}
