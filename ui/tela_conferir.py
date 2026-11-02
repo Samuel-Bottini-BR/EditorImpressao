@@ -4552,8 +4552,10 @@ class TelaConferir(QWidget):
         folha ou página (ConfigPagina.alertas_pendentes), com os botões dele
         (analise.Alerta.botoes: até dois, ao lado dos botões da aba). Dar
         "está bom assim" nele mostra o próximo motivo da mesma página (Samuel,
-        rodada 4: "com um motivo individual de uma pagina"). Sem alerta, o
-        texto tranquilo da aba. As marcas de "onde sumiu" seguem o alerta
+        rodada 4: "com um motivo individual de uma pagina"). Sem alerta: a
+        página em branco; a folha/página já conferida ("Página N conferida.",
+        sem o "está certo": D-572, _conferida_na_faixa); senão o texto
+        tranquilo da aba. As marcas de "onde sumiu" seguem o alerta
         mostrado (_mostrar_marcas_do_aviso)."""
         item = self.item_atual
         aba = self.aba_atual
@@ -4582,11 +4584,25 @@ class TelaConferir(QWidget):
             self._mostrar_sugestao(aba, "voltar a página")
             self._mostrar_sugestao(aba, None, qual=1)
             self._mostrar_sugestao(aba, None, qual=2)
+        elif self._conferida_na_faixa(item):
+            # D-572 (Samuel, 28/10: "a opção esta certo continua aparecendo,
+            # deveria sumir quando eu aperto está certo"; 31/10, Central: "A
+            # faixa diz "Página 7 conferida." e fica só "próxima dúvida""):
+            # a folha/página com o tique verde diz que foi conferida, sem a
+            # frase da ferramenta e sem o "está certo" (escondido logo abaixo)
+            self.texto_faixa.setText(self._com_andamento(self._texto_conferida()))
+            self._pintar_faixa(alerta=False)
+            for qual in range(3):
+                self._mostrar_sugestao(aba, None, qual)
         else:
             self.texto_faixa.setText(self._com_andamento(self._texto_tranquilo(aba)))
             self._pintar_faixa(alerta=False)
             for qual in range(3):
                 self._mostrar_sugestao(aba, None, qual)
+        # D-572: o "está certo" só some na conferida; nas outras ("nas paginas
+        # que não foi dado o ok") ele continua, com o aviso ou a frase de sempre
+        self.botao_esta_certo.setVisible(
+            alerta is not None or not self._conferida_na_faixa(item))
         self._mostrar_marcas_do_aviso()
         # etapa 7 da obra (lista única 1.8; D-268 "(a) Botão no aviso"; sessão
         # 0, 0-7: "tem os avisos mas não tem como apertar para fazer ele
@@ -4648,7 +4664,36 @@ class TelaConferir(QWidget):
             except Exception:  # noqa: BLE001 - o andamento nunca derruba a tela
                 registrar_erro("andamento_das_marcacoes", traceback.format_exc())
 
+    def _conferida_na_faixa(self, item) -> bool:
+        """D-572: a faixa desta folha (no Dividir) ou página diz "conferida"?
+        Sim quando ela tem o tique verde da miniatura (o mesmo campo
+        `revisada` que _atualizar_tira usa), a não ser que a faixa já mostre
+        outra coisa dela: a página "em branco" (fica o "voltar a página") e a
+        página tirada do livro (ficam como eram: as duas ganham `revisada`
+        sem o "está certo"). Ctrl+Z do "está certo" tira o `revisada`: a
+        faixa volta ao que era, como o tique. Arriscado: usar outro campo que
+        não o do tique (a faixa e a miniatura passariam a discordar)."""
+        if not getattr(item, "revisada", False):
+            return False
+        if self.trabalha_com_folhas:
+            return not getattr(item, "apagada", False)
+        return not (getattr(item, "em_branco", False) or getattr(item, "apagada", False))
+
+    def _texto_conferida(self) -> str:
+        """D-572: "Página N conferida." (31/10, Central: "A faixa diz "Página
+        7 conferida.""), com o N do "página N de M" da barra de baixo. No
+        Dividir quem fica conferida é a folha (o tique é o da folha, a tira
+        mostra folhas e a barra de baixo diz "folha N de M"): "Folha N
+        conferida.". Seguro mudar: só com nova decisão do Samuel."""
+        if self.trabalha_com_folhas:
+            return f"Folha {self.indice_folha + 1} conferida."
+        return f"Página {self.indice_pagina + 1} conferida."
+
     def _texto_tranquilo(self, aba: str) -> str:
+        """A frase da faixa quando a folha/página não tem aviso e ainda não
+        foi conferida (a conferida diz "conferida": _texto_conferida, D-572).
+        Uma por ferramenta; a das ferramentas de marcar e do Mover é a do
+        Filtro ("Esta página vai sair em ...")."""
         assert self.projeto is not None
         if aba == ABA_CORTE:
             folha = self.projeto.folhas[self.indice_folha]
