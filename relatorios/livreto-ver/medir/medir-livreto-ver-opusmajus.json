@@ -1,0 +1,86 @@
+{
+ "copia": "D:\\programas\\EditorImpressao\\.claude\\worktrees\\livreto-ver",
+ "criar_e_mostrar_s": 6.692,
+ "parada_ao_criar_s": 6.692,
+ "primeira_folha_s": 3.404,
+ "parada_enquanto_monta_a_primeira_s": 0.008,
+ "setas": [
+  {
+   "folha": 2,
+   "s": 2.902,
+   "maior_parada_s": 0.008,
+   "batidas_de_5ms": 581
+  },
+  {
+   "folha": 3,
+   "s": 2.683,
+   "maior_parada_s": 0.008,
+   "batidas_de_5ms": 537
+  },
+  {
+   "folha": 4,
+   "s": 2.948,
+   "maior_parada_s": 0.01,
+   "batidas_de_5ms": 588
+  },
+  {
+   "folha": 5,
+   "s": 2.745,
+   "maior_parada_s": 0.014,
+   "batidas_de_5ms": 548
+  },
+  {
+   "folha": 6,
+   "s": 2.038,
+   "maior_parada_s": 0.007,
+   "batidas_de_5ms": 408
+  },
+  {
+   "folha": 7,
+   "s": 1.986,
+   "maior_parada_s": 0.012,
+   "batidas_de_5ms": 396
+  },
+  {
+   "folha": 8,
+   "s": 2.08,
+   "maior_parada_s": 0.008,
+   "batidas_de_5ms": 416
+  },
+  {
+   "folha": 9,
+   "s": 2.062,
+   "maior_parada_s": 0.008,
+   "batidas_de_5ms": 412
+  },
+  {
+   "folha": 10,
+   "s": 1.926,
+   "maior_parada_s": 0.01,
+   "batidas_de_5ms": 384
+  },
+  {
+   "folha": 11,
+   "s": 2.009,
+   "maior_parada_s": 0.008,
+   "batidas_de_5ms": 402
+  }
+ ],
+ "trocar_caderno": {
+  "s": 2.195,
+  "maior_parada_s": 0.008
+ },
+ "previa_da_folha_sozinha_s": [
+  2.741,
+  2.061,
+  1.867,
+  2.031
+ ],
+ "fechar_com_a_folha_montando": {
+  "montava_no_clique": true,
+  "montava_50ms_depois": true,
+  "close_levou_s": 0.004,
+  "fio_ainda_roda": false,
+  "parada_s": 0.007
+ }
+}

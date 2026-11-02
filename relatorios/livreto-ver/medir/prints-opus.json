@@ -1,0 +1,12 @@
+{
+ "foto_1_s": 0.22,
+ "foto_2_s": 0.74,
+ "montando_na_foto_2": true,
+ "folha_2_pronta_s": 2.35,
+ "batidas_do_relogio_de_5ms": 421,
+ "maior_intervalo_entre_batidas_s": 0.115,
+ "textos": [
+  "Folha 2 de 113 — frente",
+  "Folha 2 de 113 — verso"
+ ]
+}

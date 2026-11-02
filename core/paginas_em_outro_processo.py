@@ -20,6 +20,11 @@ mesma imagem (BGR uint8), ponto por ponto igual: o servidor roda o MESMO codigo
 (pdf_io.pagina_para_array, com a delegacao desligada). Enquanto espera a
 resposta pelo cano, a thread que pediu solta o GIL: a janela continua viva.
 
+- (02/11/2026, D-574) `folha_do_livreto(...)` pede ao servidor UMA folha do
+  livreto da previa do "Montar para imprimir", montada e desenhada la
+  (core.impressao.previa_da_folha, a mesma funcao): no Opus Majus a janela
+  parava 1,7 a 2,6 s por seta com a montagem num fio deste processo. Aceita
+  "cancelar" no meio (a opcao mudou).
 - Dois servidores, cada um atendendo um pedido por vez (as previas, as
   miniaturas e a analise pedem ao mesmo tempo). Aqui dentro, o desenho era
   um por vez (pdf_io._TRANCA); em processos separados os dois desenham em
@@ -144,6 +149,28 @@ class _Servidor:
 
             raise ErroPDF(mensagem)
         raise _ErroDoServidor(f"{classe}: {mensagem}")
+
+    def pedir_folha_do_livreto(self, entrada: str, opcoes: dict, posicao: int,
+                               largura_px: int, cancelado) -> tuple:
+        """D-574 (02/11/2026): pede ao servidor UMA folha do livreto montada e
+        desenhada (core.impressao.previa_da_folha, la dentro). Devolve a
+        resposta crua do servidor: ("folha", dados) | ("nenhuma",) |
+        ("cancelou",) | ("erro", classe, mensagem).
+
+        Enquanto espera, olha o cano de 50 em 50 ms (esperando, o GIL fica
+        solto) e, se `cancelado()` ficar verdadeiro, avisa o servidor
+        ("cancelar"), que para no proximo ponto de checagem da montagem, e
+        devolve ("cancelado_aqui",) NA HORA, sem esperar a resposta: quem
+        chama deixa um fio esperando por ela (_devolver_depois), para o cano
+        ficar limpo antes do proximo pedido. Assim fechar a janela ou mudar a
+        opcao nao espera o desenho de um lado da folha (~1 s no Opus Majus).
+        Se o "cancelar" chegar depois do fim, o servidor o ignora."""
+        self.cano.send(("folha_do_livreto", entrada, opcoes, posicao, largura_px))
+        while not self.cano.poll(0.05):
+            if cancelado is not None and cancelado():
+                self.cano.send(("cancelar",))
+                return ("cancelado_aqui",)
+        return self.cano.recv()
 
     def _bloco_do_servidor(self, nome: str):
         """O bloco de memoria compartilhada que o servidor usa agora (ele troca
@@ -483,6 +510,12 @@ def servir(endereco: str, chave_hex: str) -> None:
                     fechar_o_aberto()
                 cano.send(("solto",))
                 continue
+            if pedido[0] == "cancelar":
+                continue            # chegou depois de a folha ficar pronta: nada a fazer
+            if pedido[0] == "folha_do_livreto":
+                if not _servir_folha_do_livreto(cano, pedido):
+                    return          # o programa mandou sair no meio
+                continue
             if pedido[0] != "pagina":
                 return
             _, caminho, indice, dpi = pedido
@@ -519,6 +552,156 @@ def servir(endereco: str, chave_hex: str) -> None:
             except (OSError, BufferError):
                 pass
         cano.close()
+
+
+def _servir_folha_do_livreto(cano, pedido: tuple) -> bool:
+    """Lado do servidor do pedido "folha_do_livreto" (D-574, 02/11/2026):
+    monta e desenha a folha com core.impressao.previa_da_folha AQUI, no
+    servidor (a delegacao esta desligada nele: e o mesmo codigo, a mesma
+    _montar_livreto do arquivo gravado, D-473). Responde ("folha", dados),
+    ("nenhuma",), ("cancelou",) ou ("erro", classe, mensagem).
+
+    Cancelar: a cada ponto de checagem da montagem (cada lado da folha), olha
+    se o programa mandou "cancelar" pelo cano. Se chegar "fim" (o programa
+    fechando), para tambem e devolve False (o laco do servidor sai).
+    """
+    from core import impressao
+
+    _, entrada, opcoes, posicao, largura_px = pedido
+    estado = {"cancelar": False, "sair": False}
+
+    def cancelado() -> bool:
+        if not estado["cancelar"]:
+            try:
+                if cano.poll(0):
+                    recado = cano.recv()
+                    estado["cancelar"] = True
+                    estado["sair"] = recado[0] != "cancelar"
+            except (EOFError, OSError):
+                estado["cancelar"] = estado["sair"] = True
+        return estado["cancelar"]
+
+    try:
+        folha = impressao.previa_da_folha(
+            entrada, impressao.OpcoesDeImpressao.de_dicionario(opcoes), posicao, largura_px,
+            cancelado=cancelado)
+        if folha is None:
+            resposta = ("nenhuma",)
+        else:
+            resposta = ("folha", (folha.numero, folha.total, folha.posicao, folha.quantas,
+                                  [(f.lado, f.largura, f.altura, f.canais, f.amostras)
+                                   for f in folha.faces]))
+    except impressao.Cancelou:
+        resposta = ("cancelou",)
+    except Exception as erro:  # noqa: BLE001 - o erro vai para o programa
+        resposta = ("erro", type(erro).__name__, str(erro))
+    if estado["sair"]:
+        return False
+    cano.send(resposta)
+    return True
+
+
+def folha_do_livreto(entrada: str, opcoes: dict, posicao: int, largura_px: int,
+                     cancelado=None):
+    """D-574 (02/11/2026, travamento achado pelo verificador): a folha do
+    livreto da previa do "Montar para imprimir", montada e desenhada pelo
+    servidor - nunca neste processo.
+
+    POR QUE: no Opus Majus (paginas JPEG 2000 do Internet Archive) cada seta
+    deixava a janela parada 1,7 a 2,6 s, mesmo com a montagem num fio a
+    parte: o PyMuPDF segura o GIL enquanto desenha (o mesmo achado de 30/09
+    que criou este modulo). No servidor, o fio que pediu so espera o cano,
+    com o GIL solto, e a janela continua viva.
+
+    Devolve a FolhaDaPrevia (ou None se nao sai folha nenhuma), igual a de
+    core.impressao.previa_da_folha feita aqui - e a mesma funcao, rodando no
+    servidor. Devolve o marcador SEM_SERVIDOR quando o servidor esta
+    desligado ou nao sobe (quem chama desenha aqui, como antes). Levanta
+    impressao.Cancelou se `cancelado()` ficar verdadeiro, e RuntimeError com
+    a mensagem do servidor se a montagem der erro la.
+
+    Servidor que caiu no meio e trocado por outro e o pedido e feito de novo,
+    uma vez (como em pagina()). Arriscado mudar: montar a folha de outro
+    jeito no servidor (a previa deixaria de ser o arquivo gravado, D-473).
+    """
+    from core import impressao
+
+    if not ligado() or not _garantir_servidores():
+        return SEM_SERVIDOR
+    for tentativa in range(2):
+        # espera um servidor livre (as miniaturas e a analise tambem usam),
+        # sem deixar de ouvir o "cancelar"
+        while True:
+            if cancelado is not None and cancelado():
+                raise impressao.Cancelou()
+            try:
+                servidor = _livres.get(timeout=0.05)
+                break
+            except queue.Empty:
+                continue
+        if servidor is None or _falhou_ao_subir:
+            _livres.put(servidor)
+            return SEM_SERVIDOR
+        if not servidor.vivo():
+            servidor = _trocar(servidor, "o servidor de paginas tinha caido (folha do livreto)")
+            if servidor is None:
+                return SEM_SERVIDOR
+        try:
+            resposta = servidor.pedir_folha_do_livreto(entrada, opcoes, posicao, largura_px,
+                                                      cancelado)
+        except (OSError, EOFError, ValueError):
+            novo = _trocar(servidor, f"o servidor de paginas caiu na folha do livreto de {entrada}")
+            if novo is None:
+                return SEM_SERVIDOR
+            _livres.put(novo)
+            if tentativa == 1:
+                return SEM_SERVIDOR
+            continue
+        except BaseException:
+            _livres.put(servidor)
+            raise
+        if resposta[0] == "cancelado_aqui":
+            _devolver_depois(servidor)
+            raise impressao.Cancelou()
+        _livres.put(servidor)
+        if resposta[0] == "folha":
+            numero, total, pos, quantas, faces = resposta[1]
+            folha = impressao.FolhaDaPrevia(numero, total, pos, quantas)
+            folha.faces = [impressao.FaceDaPrevia(*face) for face in faces]
+            return folha
+        if resposta[0] == "nenhuma":
+            return None
+        if resposta[0] == "cancelou":
+            raise impressao.Cancelou()
+        _, classe, mensagem = resposta
+        raise RuntimeError(f"{classe}: {mensagem}")
+    return SEM_SERVIDOR
+
+
+def _devolver_depois(servidor: _Servidor) -> None:
+    """Folha cancelada: um fio espera a resposta que o servidor ainda manda
+    ("cancelou" ou a folha, se ja tinha acabado), descarta e devolve o
+    servidor a fila. Se o cano quebrar, o servidor e trocado (como em
+    _adiantar). Nunca levanta."""
+
+    def esperar() -> None:
+        try:
+            servidor.cano.recv()
+            _livres.put(servidor)
+        except (OSError, EOFError, ValueError):
+            if servidor not in _todos:
+                return                  # os servidores foram fechados (encerrar)
+            novo = _trocar(servidor, "o servidor de paginas caiu cancelando a folha do livreto")
+            if novo is not None:
+                _livres.put(novo)
+        except BaseException:  # noqa: BLE001 - nunca derruba nada
+            _livres.put(servidor)
+
+    threading.Thread(target=esperar, daemon=True, name="folha cancelada").start()
+
+
+# Marcador de folha_do_livreto: "o servidor nao atende; desenhe aqui".
+SEM_SERVIDOR = object()
 
 
 if __name__ == "__main__":
