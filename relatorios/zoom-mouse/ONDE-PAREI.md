@@ -239,3 +239,16 @@ gerente respondeu que sim: as ferramentas de marcar só existem na área de trab
   `-depois-do-sim` são de antes do conserto.
 
 As duas perguntas estão respondidas; não há mais perguntas abertas da D-600.
+### Testes no PC e no GitHub (02/11)
+
+- **PC** (offscreen, um arquivo por vez; lista em `testes-locais-d600.txt`): 1ª rodada (commit `45641c9`), 17 arquivos, todos
+  passaram (entre eles `test_promessas` 263 + 1 xfail que já existia, `test_decisoes_9b2` 30,
+  `test_decisoes_automatico_ver_como_fica` 22, `test_livro_aberto` 14, `test_filtros_tela_cheia` 11). 2ª rodada (ferramentas
+  de marcar, `ui/tela_conferir.py`), 9 arquivos, todos passaram (`test_decisoes_shift_todas_as_telas` 10,
+  `test_zoom_no_ponteiro` 5, `test_decisoes_9b2` 30, `test_decisoes_marcacoes` 19, `test_promessas` 263 + 1 xfail).
+- **GitHub**, rodada 41454679526 (commit `45641c9`): partes 2 a 5 e "Botões e prints da janela real" passaram; a parte 1
+  falhou só em `test_promessas.py::test_p083_jeitos_do_so_as_letras[rede]` e `test_p083_jeitos_no_automatico[Guardar
+  tudo-tudo]` (ERROR na desmontagem, "um botão falhou por baixo": uma prévia em segundo plano, `ui/tarefas.py`, tentou abrir
+  o PDF do teste já apagado; o mesmo tipo dos instáveis p090/p107). Não passa pelo código mexido; no PC passou inteiro.
+  Não disparei de novo porque o commit seguinte já tinha rodada própria.
+- **GitHub**, rodada 41458116491 (commit `9bfbe8e`, o que vale): **tudo passou** na 1ª tentativa.
