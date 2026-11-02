@@ -324,6 +324,15 @@ class Pedido:
     desligar: True = tirar o automatico das etapas pedidas (D-068: "Toda
         função automática tem botão de ligar e desligar.").
     ordem: a ordem das etapas arrastada na janela (vai para o livro).
+    desmarcadas: as etapas com a caixinha DESMARCADA na janela do Automatico
+        (o EstadoDoAutomatico manda; quem monta o pedido por outro caminho
+        deixa vazia e nada muda). D-589 (30/10/2026): "Desmarcar 'Montar
+        cadernos' no Automático tem que valer: o livro sai sem cadernos, e a
+        etapa não volta marcada sozinha." (e 30/10, para Margens iguais e
+        Gravuras e fotos: "Sim, se algo não está marcado, não é para fazer").
+        Por isso, no "Rodar", essas etapas desmarcadas e ligadas no livro
+        DESLIGAM (_desligar_as_desmarcadas). Dividir, Endireitar, Cortar e
+        Limpar desmarcados ficam como estao (ainda a perguntar).
     """
 
     etapas: list[str]
@@ -333,6 +342,7 @@ class Pedido:
     receita: str = ""
     desligar: bool = False
     ordem: list[str] | None = None
+    desmarcadas: list[str] = field(default_factory=list)
 
     @property
     def no_livro_todo(self) -> bool:
@@ -806,6 +816,7 @@ def aplicar(projeto, pedido: Pedido, medidas: dict[int, MedidaDaFolha] | None = 
                 refeitas = trocar_opcoes_da_gravura(projeto, novas)
             else:                                 # MARGENS, CADERNOS
                 g.no_livro(CAMPO_DO_LIVRO[etapa], True)
+        _desligar_as_desmarcadas(projeto, pedido, etapas_pedidas, g)   # D-589
         _avisos_medidos(projeto, pedido, medidas, g)
         _a_tampa(projeto, medidas, g)                  # etapa 9b-2 (D-559)
         if pedido.no_livro_todo or etapas_pedidas:
@@ -942,6 +953,51 @@ def _ligar_na_pagina(projeto, pedido: Pedido, etapa: str, escopo: list, pular: s
                 if campo in opcoes and hasattr(pagina, campo) \
                         and _json(_valor_da_pagina(pagina, campo)) != _json(opcoes[campo]):
                     g.na_pagina(pagina, campo, copy.deepcopy(opcoes[campo]))
+
+
+# As etapas que a caixinha DESMARCADA desliga no "Rodar" (D-589). Dividir,
+# Endireitar, Cortar e Limpar ficam de fora ate o Samuel decidir (Dividir
+# desligado juntaria as folhas de novo).
+DESLIGAM_DESMARCADAS = (GRAVURAS, MARGENS, CADERNOS)
+
+
+def _desligar_as_desmarcadas(projeto, pedido: Pedido, etapas_pedidas: list, g: _Gravador) -> None:
+    """D-589 (30/10/2026): "Desmarcar 'Montar cadernos' no Automático tem que
+    valer: o livro sai sem cadernos, e a etapa não volta marcada sozinha." e,
+    para Margens iguais e Gravuras e fotos, Samuel (30/10): "Sim, se algo não
+    está marcado, não é para fazer , certo?".
+
+    Antes, a caixinha desmarcada so deixava a etapa de fora da rodada: ligada
+    de uma rodada anterior, ela continuava ligada no livro (o PDF saia com
+    ela) e, relido o livro (ui EstadoDoAutomatico.do_projeto), a caixinha
+    voltava marcada. Aqui a etapa desmarcada na janela (Pedido.desmarcadas) e
+    ainda ligada DESLIGA, na mesma acao do Automatico (o Ctrl+Z traz de
+    volta): Margens e Cadernos do mesmo jeito do "Desligar as marcadas"
+    (_desligar); as Gravuras pelo "Procurar" do livro (detectar_regioes), para
+    religar ao marcar. Samuel, 31/10: "A caixinha da etapa 5 fica do jeito que
+    você deixou, desmarcada. Com 'Só as letras' marcada, o programa procura as
+    figuras por dentro, só para deixar elas coloridas. Se depois você desmarcar
+    'Só as letras', a etapa 5 continua desmarcada e a página sai toda em preto e
+    branco." (a procura de dentro: core/etapas.marca_sozinho). Sao etapas do livro
+    todo (D-484): vale em qualquer "Rodar em" (pergunta P2 aberta).
+
+    Roda DEPOIS das etapas marcadas: Gravuras so conta como ligada com o
+    Limpar ligado (ligada_no_livro), e o Limpar pode ter ligado agora.
+    Arriscado: acrescentar etapa a DESLIGAM_DESMARCADAS sem decisao."""
+    for etapa in DESLIGAM_DESMARCADAS:
+        if (etapa in (pedido.desmarcadas or []) and etapa not in etapas_pedidas
+                and ligada_no_livro(projeto, etapa)):
+            if etapa == GRAVURAS:
+                # pelo "Procurar" do livro, o mesmo campo que o Rodar liga
+                # quando a etapa vem marcada: marcar e rodar religa (2a rodada
+                # do verificador, 30/10). NAO a forma "desligada": ela e a
+                # caixinha de dentro "Achar gravuras e fotos" (D-212) e, gravada
+                # aqui, a etapa nao religava. Com o "So as letras" ligado, a
+                # marcacao procura por dentro mesmo assim e a etapa continua
+                # desligada (Samuel, 31/10; core/etapas.marca_sozinho).
+                g.no_livro("detectar_regioes", False)
+            else:
+                g.no_livro(CAMPO_DO_LIVRO[etapa], False)
 
 
 def _desligar(projeto, pedido: Pedido, etapas_pedidas: list, escopo: list, g: _Gravador) -> None:

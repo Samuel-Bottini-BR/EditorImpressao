@@ -322,6 +322,16 @@ programa), a partir do **nome do botão**, da **dica** (o balão do mouse) e das
   uma só na lista e voltam como estavam com "dividir esta".
 - **no PDF:** a folha não dividida sai como UMA página (a folha inteira, deitada).
 
+### P-198 · "juntar todas" (Dividir)
+- **chaves:** `área de trabalho/dividir/juntar todas`
+- **dica:** "Junta todas as folhas divididas do livro: cada uma volta a ser uma página só (o Desfazer divide de novo)."
+- **decisões:** D-590 ("se quiser juntar as folhas de novo deveria ter uma opção mais clara né" → "pode ser assim")
+- **feita:** 31/10/2026 (`tests/test_decisoes_juntar_todas.py`)
+- **na tela:** ao lado de "não dividir esta".
+- **no projeto:** todas as folhas divididas viram uma página só cada, numa ação só do desfazer (o Ctrl+Z divide de
+  novo); "dividir esta" numa folha devolve as duas páginas dela como estavam. Sem folha dividida, nada muda.
+- **no PDF:** cada folha sai como UMA página (a folha inteira, deitada).
+
 ### P-061 · "usar em todas" (Dividir)
 - **chaves:** `área de trabalho/dividir/usar em todas`
 - **dica:** "Põe a linha de divisão desta folha em todas as folhas."

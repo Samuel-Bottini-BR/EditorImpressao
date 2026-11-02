@@ -22,6 +22,9 @@ O QUE ESTE MÓDULO FAZ (só contas; a tela é ui/tela_conferir.py)
       mesmo lugar, devolve as duas como estavam (era o que o jeito antigo,
       de esconder a metade da direita, garantia; ver o histórico em
       modelos.Projeto.paginas_ativas).
+    - campos_para_juntar_todas (D-590, 30/10/2026): o "juntar todas" da
+      ferramenta Dividir - o "não dividir esta" em todas as folhas divididas,
+      numa ação só do desfazer.
     - metades_da_pagina: a página inteira partida em duas (as duas herdam o
       filtro e os ajustes dela; corte, ângulo e mover, que eram da folha
       inteira, não passam; a marcação feita à mão vai para a metade em que
@@ -254,6 +257,33 @@ def campos_para_juntar(projeto, indice_folha: int) -> dict[str, Any]:
     campos["metades_guardadas"] = em_dicionarios(pags[:2])
     campos[chave_das_paginas(indice_folha)] = em_dicionarios([pagina_inteira_das(pags)])
     return campos
+
+
+def campos_para_juntar_todas(projeto) -> tuple[list[int], dict[str, Any]]:
+    """D-590 (30/10/2026; Samuel: "se quiser juntar as folhas de novo deveria
+    ter uma opção mais clara né" → "pode ser assim"): o botão "juntar todas"
+    da ferramenta Dividir. Devolve (as folhas divididas, os campos de UMA ação
+    do desfazer, alvo "folha") que juntam todas elas de uma vez: em cada uma, o
+    mesmo que "não dividir esta" (campos_para_juntar: a página inteira no
+    lugar das duas, as duas guardadas para "dividir esta" devolver). Os campos
+    que mudam de folha para folha vão como {indice: valor} (historico_acoes.
+    aplicar); as páginas, uma chave por folha (PREFIXO_PAGINAS_DA_FOLHA).
+    Nenhuma folha dividida: ([], {}).
+    Diferente do "não dividir esta": as folhas NÃO ficam "conferidas"
+    (revisada) - a pessoa não olhou cada uma; a D-590 só manda juntar.
+    Arriscado: juntar folha de uma página só (campos_para_juntar não muda a
+    lista dela) - por isso só entram as de duas páginas ou mais."""
+    indices = [f.indice for f in projeto.folhas
+               if len(paginas_da_folha(projeto, f.indice)) >= 2]
+    if not indices:
+        return [], {}
+    campos: dict[str, Any] = {"dividir": False, "metades_guardadas": {}}
+    for indice in indices:
+        uma = campos_para_juntar(projeto, indice)
+        campos["metades_guardadas"][str(indice)] = uma["metades_guardadas"]
+        chave = chave_das_paginas(indice)
+        campos[chave] = uma[chave]
+    return indices, campos
 
 
 def muda_a_lista(campos: dict) -> bool:

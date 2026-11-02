@@ -347,8 +347,87 @@ def filtro_que_vale(projeto, pagina) -> str:
 def marca_sozinho(projeto, pagina=None) -> bool:
     """O AUTOMATICO da marcacao (procurar gravura, letra e papel) esta ligado?
     "Limpar a folha" (do livro, ou so nesta `pagina`: limpa_sozinho) e
-    "Procurar gravura e letra" (Projeto.detectar_regioes)."""
-    return bool(limpa_sozinho(projeto, pagina) and getattr(projeto, "detectar_regioes", False))
+    "Procurar gravura e letra" (Projeto.detectar_regioes) - ou, sem ele, o
+    "So as letras" valendo na pagina (so_as_letras_procura).
+
+    D-589 (Samuel, 31/10/2026): "Com 'Só as letras' marcada, o programa procura
+    as figuras por dentro, só para deixar elas coloridas." e "tem que ter
+    certeza que o programa vai procurar as figuras mesmo com a opção desmarcada
+    e que não vai remarcar ela de novo na caixinha". A etapa "Gravuras e fotos"
+    do Automatico continua desligada (core/automatico.ligada_no_livro le so o
+    detectar_regioes): a procura de dentro nao a remarca.
+
+    P4 (Samuel, 02/11/2026, "a"): o mesmo para a caixinha "Gravuras em tons
+    de cinza" (D-588): marcada, a procura de dentro acha as figuras so para
+    pinta-las de cinza (cinza_procura)."""
+    if not limpa_sozinho(projeto, pagina):
+        return False
+    return bool(getattr(projeto, "detectar_regioes", False)) or procura_por_dentro(projeto, pagina)
+
+
+def procura_por_dentro(projeto, pagina=None) -> bool:
+    """A marcacao da maquina procura nesta pagina mesmo sem "Procurar gravura
+    e letra" (Projeto.detectar_regioes, a etapa "Gravuras e fotos" do
+    Automatico)? Sim quando uma caixinha do Preto e branco precisa da gravura
+    achada: o "So as letras" (so_as_letras_procura, D-589 de 31/10) ou a
+    "Gravuras em tons de cinza" (cinza_procura, P4 de 02/11). Nenhuma das duas
+    remarca a etapa 5 (core/automatico.ligada_no_livro le so o
+    detectar_regioes). Barato (so le campos). Arriscado: acrescentar aqui uma
+    condicao sem decisao do Samuel ("se algo não está marcado, não é para
+    fazer")."""
+    return so_as_letras_procura(projeto, pagina) or cinza_procura(projeto, pagina)
+
+
+def cinza_procura(projeto, pagina=None) -> bool:
+    """A caixinha "Gravuras em tons de cinza" (D-588) vale nesta pagina: Preto e
+    branco (o filtro que vale) com a caixinha da pagina marcada. Ela precisa da
+    gravura achada para pinta-la de cinza, entao a marcacao procura mesmo com
+    "Gravuras e fotos" desligada.
+
+    P4 (Samuel, 02/11/2026, "a" a: "A: o cinza procura as figuras por conta
+    própria, só para pintá-las de cinza, e a etapa 5 continua desmarcada. É o
+    mesmo que você aprovou para o "Só as letras" em 31/10 [...] e bate com o de
+    hoje: "ela acha as gravuras sozinha"."). Defeito que isto conserta (juncao
+    de 02/11/2026, GitHub 41463140548): com a etapa 5 desmarcada a figura saia
+    em preto e branco com a caixinha marcada.
+
+    A caixinha so existe na pagina (ConfigPagina.gravuras_em_tons_de_cinza);
+    sem a `pagina`: False. Barato (so le campos). Arriscado: tirar a condicao
+    do Preto e branco (a caixinha so vale nele; a procura voltaria em outro
+    filtro, contra "se algo não está marcado, não é para fazer")."""
+    from core.filtros import PRETO_E_BRANCO
+
+    if pagina is None or not bool(getattr(pagina, "gravuras_em_tons_de_cinza", False)):
+        return False
+    return filtro_que_vale(projeto, pagina) == PRETO_E_BRANCO
+
+
+def so_as_letras_procura(projeto, pagina=None) -> bool:
+    """O "So as letras" (D-148) vale nesta pagina: Preto e branco com a caixinha
+    ligada (na pagina, ou no livro). Ele precisa da gravura achada para
+    deixa-la colorida, entao a marcacao procura mesmo com "Gravuras e fotos"
+    desligada (D-589, 31/10/2026; ver marca_sozinho). Sem a pagina: o filtro e
+    a caixinha do livro. Barato (so le campos). Arriscado: tirar a condicao do
+    Preto e branco (a procura voltaria em todo filtro, contra "se algo não está
+    marcado, não é para fazer")."""
+    from core import misto
+    from core.filtros import ORIGINAL, PRETO_E_BRANCO
+
+    if pagina is None:
+        filtro = getattr(projeto, "filtro_padrao", ORIGINAL)
+    else:
+        filtro = filtro_que_vale(projeto, pagina)
+    if filtro != PRETO_E_BRANCO:
+        return False
+    return bool(misto.escolhas_da_pagina(projeto, pagina)[0])
+
+
+def a_marcacao_da_maquina_vale(projeto, pagina=None) -> bool:
+    """A marcacao achada pela MAQUINA vale nesta pagina (no filtro por pedaco,
+    no papel em branco)? Com "Procurar gravura e letra", ou com o "So as letras"
+    ou o "Gravuras em tons de cinza" procurando por dentro (procura_por_dentro;
+    D-589 e P4). Senao, so a feita a mao (marcacao_a_mao)."""
+    return bool(getattr(projeto, "detectar_regioes", False)) or procura_por_dentro(projeto, pagina)
 
 
 def marcacao_a_mao_vale(projeto, pagina) -> bool:

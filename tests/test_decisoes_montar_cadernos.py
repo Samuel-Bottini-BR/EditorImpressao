@@ -1,0 +1,512 @@
+"""Prova de comportamento da D-589 (30/10/2026): desmarcar "Montar cadernos" no Automático vale.
+
+O DEFEITO (relato do Kaique, áudios de 30/10; prints k-01 e k-02 em
+relatorios/testes-guiados/2026-10-29-automatico/):
+  "ela não tá selecionada, nem ela e nem a opção de dividir [...] aí aplicou o filtro branco,
+  letra preta. Aí só que ele forma os cadernos do mesmo jeito." · "depois de rodar a etapa, aí
+  ele volta a marcar." · "tiro, é, a opção de montar os cadernos, aí depois ele coloca de novo
+  sozinho."
+Livro de decisões, D-589: "Desmarcar 'Montar cadernos' no Automático tem que valer: o livro sai
+sem cadernos, e a etapa não volta marcada sozinha."
+
+A CAUSA (achada em 30/10): o "Rodar" só ligava as etapas marcadas (core/automatico.aplicar); a
+caixinha desmarcada deixava a etapa de fora da rodada, mas "Montar cadernos" continuava ligada no
+livro todo (Projeto.montar_cadernos, de uma rodada anterior). O PDF saía em cadernos
+(core/pipeline.processar lê esse campo) e, depois do "Rodar", o painel relia o livro
+(EstadoDoAutomatico.do_projeto: as etapas ligadas voltam marcadas) e a caixinha voltava marcada.
+
+O que se mede aqui não é aparência: o campo do livro, o PDF que o programa grava (o mesmo do
+"Confirmar e processar") e a caixinha da lista depois do "Rodar". Páginas sintéticas de propósito
+(a medida é o número e a forma das folhas do PDF), como tests/test_decisoes_automatico.py.
+"""
+
+from __future__ import annotations
+
+import copy
+from pathlib import Path
+
+import numpy as np
+import pytest
+
+fitz = pytest.importorskip("fitz")
+cv2 = pytest.importorskip("cv2")
+pytest.importorskip("PySide6")
+
+from core import automatico as A  # noqa: E402
+from core.pipeline import processar  # noqa: E402
+
+DPI = 100
+
+
+def _livro(tmp_path: Path) -> str:
+    """4 páginas em pé (papel amarelado com linhas de "texto")."""
+    caminho = tmp_path / "livro.pdf"
+    doc = fitz.open()
+    for _ in range(4):
+        img = np.full((560, 400, 3), (170, 215, 235), np.uint8)
+        for y in range(90, 460, 30):
+            img[y:y + 8, 70:330] = 25
+        ok, buffer = cv2.imencode(".png", img)
+        assert ok
+        largura, altura = 400 / DPI * 72, 560 / DPI * 72
+        pagina = doc.new_page(width=largura, height=altura)
+        pagina.insert_image(fitz.Rect(0, 0, largura, altura), stream=buffer.tobytes())
+    doc.save(str(caminho))
+    doc.close()
+    return str(caminho)
+
+
+def _folhas_do_pdf(janela, tmp_path: Path, nome: str) -> list[tuple[float, float]]:
+    """O PDF do livro aberto, como o "Confirmar e processar" grava: (largura, altura) de cada
+    folha. Sem cadernos: uma folha em pé por página. Em cadernos: folhas deitadas, duas
+    páginas lado a lado."""
+    projeto = copy.copy(janela.projeto)
+    projeto.caminho_saida = str(tmp_path / f"{nome}.pdf")
+    with fitz.open(processar(projeto)) as doc:
+        return [(p.rect.width, p.rect.height) for p in doc]
+
+
+@pytest.fixture(scope="module")
+def app():
+    from PySide6.QtWidgets import QApplication
+
+    return QApplication.instance() or QApplication([])
+
+
+@pytest.fixture
+def janela(app, tmp_path, monkeypatch):
+    import projetos
+    from ui.janela_principal import JanelaPrincipal
+
+    pasta = tmp_path / "projetos"
+    pasta.mkdir()
+    monkeypatch.setattr(projetos, "pasta_dos_projetos", lambda: pasta)
+    janela = JanelaPrincipal()
+    janela.resize(1280, 657)
+    yield janela
+    janela._fechar_a_janela_do_automatico()
+    if janela.aviso_do_fundo is not None:
+        janela.aviso_do_fundo.done(0)
+    janela.close()
+
+
+def _assentar(app, vezes: int = 10) -> None:
+    for _ in range(vezes):
+        app.processEvents()
+
+
+def _caixinha(lista, etapa: str):
+    from PySide6.QtCore import Qt
+
+    return lista.item_da_etapa(etapa).checkState() == Qt.Checked
+
+
+def test_d589_desmarcar_montar_cadernos_e_rodar_sai_sem_cadernos_e_nao_volta_marcada(janela, app, tmp_path):
+    """D-589: livro com "Montar cadernos" ligada no livro todo → na janela grande do
+    Automático, desmarcar "Montar cadernos" e rodar o resto (como o Kaique, print k-01) → o
+    PDF sai sem cadernos, a etapa fica "desligada" e a caixinha não volta marcada sozinha
+    (nem no painel, nem ao abrir a janela de novo). O Desfazer traz os cadernos de volta."""
+    from PySide6.QtCore import Qt
+
+    janela.show()
+    janela.abrir_livro(_livro(tmp_path))
+    _assentar(app)
+    estado = janela.estado_do_automatico
+
+    # 1) uma rodada anterior ligou "Montar cadernos" no livro todo (e o Limpar)
+    estado.marcadas = {A.LIMPAR, A.CADERNOS}
+    assert janela.rodar_o_automatico(esperar=True)
+    projeto = janela.projeto
+    assert projeto.montar_cadernos
+    assert estado.situacoes[A.CADERNOS] == "ligada no livro todo"
+    assert A.CADERNOS in estado.marcadas
+    com_cadernos = _folhas_do_pdf(janela, tmp_path, "com-cadernos")
+    assert all(largura > altura for largura, altura in com_cadernos)    # folhas deitadas
+
+    # 2) o Kaique abre a janela grande, tira "Montar cadernos" e roda o resto
+    jan = janela.abrir_o_automatico()
+    _assentar(app)
+    assert _caixinha(jan.lista, A.CADERNOS)              # vem marcada: está ligada no livro
+    jan.lista.item_da_etapa(A.CADERNOS).setCheckState(Qt.Unchecked)
+    _assentar(app)
+    assert A.CADERNOS not in estado.marcadas
+    jan.botao_rodar.click()
+    if janela.tarefa is not None:
+        janela.tarefa.wait(60000)
+    _assentar(app, 30)
+
+    # o livro sai sem cadernos: uma folha em pé por página
+    assert not janela.projeto.montar_cadernos
+    sem_cadernos = _folhas_do_pdf(janela, tmp_path, "sem-cadernos")
+    assert len(sem_cadernos) == 4
+    assert all(largura < altura for largura, altura in sem_cadernos)
+    # o que estava marcado continua ligado (só a desmarcada saiu)
+    assert janela.projeto.limpar
+    # e a etapa não volta marcada sozinha: nem no painel, nem na janela aberta de novo
+    painel = janela.tela_conferir.paineis.automatico
+    assert estado.situacoes[A.CADERNOS] == "desligada"
+    assert A.CADERNOS not in estado.marcadas
+    assert not _caixinha(painel.lista, A.CADERNOS)
+    jan = janela.abrir_o_automatico()
+    _assentar(app)
+    assert not _caixinha(jan.lista, A.CADERNOS)
+    janela._fechar_a_janela_do_automatico()
+
+    # o Desfazer traz de volta (está na mesma ação do Automático)
+    janela.tela_conferir.desfazer()
+    assert janela.projeto.montar_cadernos
+
+
+def test_d589_so_a_janela_desliga_quem_monta_o_pedido_sem_ela_nao_mexe(tmp_path):
+    """O desligar da D-589 vale para a caixinha DESMARCADA na janela (Pedido.desmarcadas), não
+    para qualquer pedido sem "Montar cadernos": um pedido montado por outro caminho (testes,
+    linha de comando) com só "Limpar" deixa os cadernos como estão. E "Desligar as marcadas"
+    continua como era (D-068)."""
+    from modelos import Projeto
+
+    projeto = Projeto(caminho_entrada=_livro(tmp_path))
+    projeto.montar_cadernos = True
+    A.aplicar(projeto, A.Pedido(etapas=[A.LIMPAR]))
+    assert projeto.montar_cadernos
+    # "Desligar as marcadas" com só o Limpar marcado: os cadernos ficam
+    A.aplicar(projeto, A.Pedido(etapas=[A.LIMPAR], desligar=True, desmarcadas=[A.CADERNOS]))
+    assert projeto.montar_cadernos and not projeto.limpar
+    # "Rodar" com a caixinha dos cadernos desmarcada na janela: desliga
+    A.aplicar(projeto, A.Pedido(etapas=[A.LIMPAR], desmarcadas=[A.CADERNOS]))
+    assert not projeto.montar_cadernos and projeto.limpar
+
+
+# --- D-589 também para "Margens iguais" e "Gravuras e fotos" (Samuel, 30/10) ---------------
+#
+# Pergunta: "conserto essas duas também ['Margens iguais' e 'Gravuras e fotos'], do mesmo jeito
+# que os cadernos?" → Samuel: "Sim, se algo não está marcado, não é para fazer , certo?"
+
+def _livro_com_foto(tmp_path: Path) -> str:
+    """2 páginas em pé: linhas de "texto" em cima e uma "foto" (degradê de cinza) embaixo."""
+    caminho = tmp_path / "livro-com-foto.pdf"
+    doc = fitz.open()
+    for _ in range(2):
+        img = np.full((560, 400, 3), (170, 215, 235), np.uint8)
+        for y in range(60, 200, 30):
+            img[y:y + 8, 70:330] = 25
+        degrade = np.tile(np.linspace(40, 220, 260).astype(np.uint8), (200, 1))
+        img[260:460, 70:330] = np.dstack([degrade] * 3)
+        ok, buffer = cv2.imencode(".png", img)
+        assert ok
+        largura, altura = 400 / DPI * 72, 560 / DPI * 72
+        pagina = doc.new_page(width=largura, height=altura)
+        pagina.insert_image(fitz.Rect(0, 0, largura, altura), stream=buffer.tobytes())
+    doc.save(str(caminho))
+    doc.close()
+    return str(caminho)
+
+
+def _pdf_da_foto(janela, tmp_path: Path, nome: str):
+    """O PDF do livro aberto: (largura, altura) da 1ª folha e quanto da "foto" saiu em tons de
+    cinza (fração de pixels entre o preto e o branco). Gravura achada no Preto e branco guarda
+    os cinzas; sem ela, a foto vira só preto e branco."""
+    projeto = copy.copy(janela.projeto)
+    projeto.caminho_saida = str(tmp_path / f"{nome}.pdf")
+    with fitz.open(processar(projeto)) as doc:
+        pagina = doc[0]
+        pix = pagina.get_pixmap(dpi=DPI, colorspace=fitz.csGRAY)
+        img = np.frombuffer(pix.samples, np.uint8).reshape(pix.height, pix.width)
+        altura, largura = img.shape
+        foto = img[int(altura * 0.5):int(altura * 0.8), int(largura * 0.2):int(largura * 0.8)]
+        cinzas = float(((foto > 30) & (foto < 225)).mean())
+        return (pagina.rect.width, pagina.rect.height), cinzas
+
+
+def _ligar_e_depois_desmarcar(janela, app, tmp_path, etapa: str):
+    """Uma rodada liga Limpar (Preto e branco), Gravuras e Margens no livro todo; depois, na
+    janela grande, o Kaique desmarca `etapa` e roda o resto. Devolve (PDF antes, PDF depois)."""
+    from PySide6.QtCore import Qt
+
+    from core.filtros import PRETO_E_BRANCO
+
+    janela.show()
+    janela.abrir_livro(_livro_com_foto(tmp_path))
+    _assentar(app)
+    estado = janela.estado_do_automatico
+    estado.marcadas = {A.LIMPAR, A.GRAVURAS, A.MARGENS}
+    estado.opcoes["filtro_padrao"] = PRETO_E_BRANCO
+    assert janela.rodar_o_automatico(esperar=True, perguntar=False)
+    assert estado.situacoes[etapa] == "ligada no livro todo"
+    antes = _pdf_da_foto(janela, tmp_path, "antes")
+
+    jan = janela.abrir_o_automatico()
+    _assentar(app)
+    assert _caixinha(jan.lista, etapa)
+    jan.lista.item_da_etapa(etapa).setCheckState(Qt.Unchecked)
+    _assentar(app)
+    jan.botao_rodar.click()
+    if janela.tarefa is not None:
+        janela.tarefa.wait(60000)
+    _assentar(app, 30)
+    depois = _pdf_da_foto(janela, tmp_path, "depois")
+
+    # a etapa não volta marcada sozinha: nem no painel, nem na janela aberta de novo
+    assert estado.situacoes[etapa] == "desligada"
+    assert etapa not in estado.marcadas
+    assert not _caixinha(janela.tela_conferir.paineis.automatico.lista, etapa)
+    jan = janela.abrir_o_automatico()
+    _assentar(app)
+    assert not _caixinha(jan.lista, etapa)
+    janela._fechar_a_janela_do_automatico()
+    return antes, depois
+
+
+def test_d589_desmarcar_margens_iguais_e_rodar_sai_sem_margens_e_nao_volta_marcada(janela, app, tmp_path):
+    """D-589 + Samuel (30/10): "se algo não está marcado, não é para fazer". "Margens iguais"
+    ligada → desmarcar e rodar → o PDF sai sem as margens (a folha volta ao tamanho do scan,
+    288 x 403 pt), a etapa fica "desligada" e não volta marcada. As gravuras continuam (foram
+    marcadas). O Desfazer traz as margens de volta."""
+    (tamanho_antes, _), (tamanho_depois, cinzas_depois) = _ligar_e_depois_desmarcar(
+        janela, app, tmp_path, A.MARGENS)
+    assert tamanho_antes[0] > 300                               # com margens: folha maior
+    assert not janela.projeto.margens_iguais
+    assert abs(tamanho_depois[0] - 288) < 2 and abs(tamanho_depois[1] - 403) < 2
+    assert janela.projeto.gravura_forma != "desligada" and cinzas_depois > 0.3
+    janela.tela_conferir.desfazer()
+    assert janela.projeto.margens_iguais
+
+
+def test_d589_desmarcar_gravuras_e_rodar_a_foto_sai_em_preto_e_branco_e_nao_volta_marcada(janela, app, tmp_path):
+    """D-589 + Samuel (30/10): "se algo não está marcado, não é para fazer". "Gravuras e fotos"
+    ligada → desmarcar e rodar → o livro deixa de procurar gravuras (o "Procurar" do livro;
+    a forma de dentro fica), a foto sai só em preto e branco no PDF, a etapa fica
+    "desligada" e não volta marcada. As margens continuam (foram marcadas). O Desfazer traz
+    as gravuras de volta."""
+    (_, cinzas_antes), (tamanho_depois, cinzas_depois) = _ligar_e_depois_desmarcar(
+        janela, app, tmp_path, A.GRAVURAS)
+    assert cinzas_antes > 0.3                                    # a foto guardava os cinzas
+    assert not A.ligada_no_livro(janela.projeto, A.GRAVURAS)
+    assert cinzas_depois < 0.05                                  # agora: só preto e branco
+    assert janela.projeto.margens_iguais and tamanho_depois[0] > 300
+    # desliga pelo "Procurar" do livro; a escolha de dentro "Achar gravuras e fotos" (a forma,
+    # D-212) fica como estava - com a forma "desligada" a etapa não religava (2ª rodada)
+    assert not janela.projeto.detectar_regioes and janela.projeto.gravura_forma != "desligada"
+    janela.tela_conferir.desfazer()
+    assert A.ligada_no_livro(janela.projeto, A.GRAVURAS)
+
+
+def test_d589_desligar_as_marcadas_nao_mexe_nas_desmarcadas(tmp_path):
+    """"Desligar as marcadas" continua como era (D-068): desliga só as marcadas; as desmarcadas
+    (margens, gravuras) ficam como estão."""
+    from modelos import Projeto
+
+    projeto = Projeto(caminho_entrada=_livro(tmp_path))
+    projeto.limpar = True
+    projeto.margens_iguais = True
+    projeto.montar_cadernos = True
+    A.aplicar(projeto, A.Pedido(etapas=[A.CADERNOS], desligar=True,
+                                desmarcadas=[A.GRAVURAS, A.MARGENS]))
+    assert not projeto.montar_cadernos
+    assert projeto.margens_iguais and projeto.gravura_forma != "desligada"
+
+
+# --- religar (2ª rodada do verificador, 30/10): o que está marcado é para fazer --------------
+#
+# Defeito achado na 2ª rodada (1b5c69b): depois de desmarcar "Gravuras e fotos" e rodar, marcar
+# de novo e rodar NÃO religava (o desligar gravava a forma "desligada", a mesma da caixinha de
+# dentro "Achar gravuras e fotos", D-212; o Rodar seguinte lia essa forma e não procurava). A
+# frase da janela prometia "achar gravuras e fotos" e a caixinha voltava desmarcada sozinha.
+
+def _medida(janela, tmp_path: Path, nome: str):
+    """O que cada etapa muda no PDF: (folhas deitadas?, largura da 1ª folha, cinzas da foto)."""
+    projeto = copy.copy(janela.projeto)
+    projeto.caminho_saida = str(tmp_path / f"{nome}.pdf")
+    with fitz.open(processar(projeto)) as doc:
+        pagina = doc[0]
+        deitada = pagina.rect.width > pagina.rect.height
+        largura = round(pagina.rect.width)
+        if deitada:
+            return deitada, largura, None
+    return deitada, largura, _pdf_da_foto(janela, tmp_path, nome + "-foto")[1]
+
+
+def _pela_janela(janela, app, etapa: str, marcar: bool) -> None:
+    """Na janela grande: marca ou desmarca `etapa` e clica "Rodar"."""
+    from PySide6.QtCore import Qt
+
+    jan = janela.abrir_o_automatico()
+    _assentar(app)
+    jan.lista.item_da_etapa(etapa).setCheckState(Qt.Checked if marcar else Qt.Unchecked)
+    _assentar(app)
+    jan.botao_rodar.click()
+    if janela.tarefa is not None:
+        janela.tarefa.wait(60000)
+    _assentar(app, 30)
+
+
+@pytest.mark.parametrize("etapa", [A.GRAVURAS, A.MARGENS, A.CADERNOS])
+def test_d589_desmarcar_rodar_marcar_rodar_religa(janela, app, tmp_path, etapa):
+    """D-589 + Samuel (30/10): "se algo não está marcado, não é para fazer" — e o que está
+    marcado é para fazer. Ligada → desmarcar e rodar (desliga) → marcar de novo e rodar → a
+    etapa volta "ligada no livro todo", a caixinha fica marcada e o PDF sai como na primeira vez
+    (gravura com os cinzas guardados; margens; cadernos)."""
+    from core.filtros import PRETO_E_BRANCO
+
+    janela.show()
+    janela.abrir_livro(_livro_com_foto(tmp_path))
+    _assentar(app)
+    estado = janela.estado_do_automatico
+    estado.marcadas = {A.LIMPAR, etapa}
+    estado.opcoes["filtro_padrao"] = PRETO_E_BRANCO
+    assert janela.rodar_o_automatico(esperar=True, perguntar=False)
+    assert estado.situacoes[etapa] == "ligada no livro todo"
+    ligada = _medida(janela, tmp_path, "ligada")
+
+    _pela_janela(janela, app, etapa, marcar=False)
+    assert estado.situacoes[etapa] == "desligada"
+    assert _medida(janela, tmp_path, "desligada") != ligada
+
+    _pela_janela(janela, app, etapa, marcar=True)
+    assert estado.situacoes[etapa] == "ligada no livro todo"
+    assert etapa in estado.marcadas
+    assert _caixinha(janela.tela_conferir.paineis.automatico.lista, etapa)
+    de_novo = _medida(janela, tmp_path, "de-novo")
+    assert de_novo[:2] == ligada[:2]
+    if ligada[2] is not None:
+        assert abs(de_novo[2] - ligada[2]) < 0.05
+
+
+# --- "Só as letras" com "Gravuras e fotos" desmarcada (Samuel, 31/10/2026) ------------------
+#
+# Aprovado por ele, palavra por palavra: "A caixinha da etapa 5 fica do jeito que você deixou,
+# desmarcada. Com 'Só as letras' marcada, o programa procura as figuras por dentro, só para deixar
+# elas coloridas. Se depois você desmarcar 'Só as letras', a etapa 5 continua desmarcada e a
+# página sai toda em preto e branco." + "sim, mas tem que ter certeza que o programa vai procurar
+# as figuras mesmo com a opção desmarcada e que não vai remarcar ela de novo na caixinha".
+
+def _rodar_pela_janela(janela, app, so_as_letras: bool, gravuras: bool, cinza: bool = False) -> None:
+    """Na janela grande, como o Kaique: "Limpar a folha" em Preto e branco, a caixinha "Só as
+    letras", a caixinha "Gravuras em tons de cinza" (D-588; P4) e a etapa "Gravuras e fotos"
+    como pedido, e "Rodar"."""
+    from PySide6.QtCore import Qt
+
+    from core.filtros import PRETO_E_BRANCO
+
+    jan = janela.abrir_o_automatico("limpar")
+    _assentar(app)
+    jan.radios_de_filtro[PRETO_E_BRANCO].setChecked(True)
+    jan.escolhas_misto.caixa.setChecked(so_as_letras)
+    _assentar(app)
+    jan.cx_gravuras_cinza.setChecked(cinza)
+    jan.lista.item_da_etapa(A.LIMPAR).setCheckState(Qt.Checked)
+    jan.lista.item_da_etapa(A.GRAVURAS).setCheckState(Qt.Checked if gravuras else Qt.Unchecked)
+    _assentar(app)
+    jan.botao_rodar.click()
+    if janela.tarefa is not None:
+        janela.tarefa.wait(60000)
+    _assentar(app, 30)
+
+
+def _caixinha_das_gravuras_desmarcada(janela, app) -> None:
+    """A etapa 5 "desligada" e a caixinha desmarcada no painel e na janela aberta de novo."""
+    estado = janela.estado_do_automatico
+    assert estado.situacoes[A.GRAVURAS] == "desligada"
+    assert A.GRAVURAS not in estado.marcadas
+    assert not _caixinha(janela.tela_conferir.paineis.automatico.lista, A.GRAVURAS)
+    jan = janela.abrir_o_automatico()
+    _assentar(app)
+    assert not _caixinha(jan.lista, A.GRAVURAS)
+    janela._fechar_a_janela_do_automatico()
+
+
+@pytest.fixture
+def livro_com_gravuras_e_so_as_letras(janela, app, tmp_path):
+    """Livro com a "foto" (degradê) em que uma rodada ligou Limpar (Preto e branco) e Gravuras;
+    depois o Kaique marca "Só as letras", desmarca "Gravuras e fotos" e roda."""
+    janela.show()
+    janela.abrir_livro(_livro_com_foto(tmp_path))
+    _assentar(app)
+    _rodar_pela_janela(janela, app, so_as_letras=False, gravuras=True)
+    assert janela.estado_do_automatico.situacoes[A.GRAVURAS] == "ligada no livro todo"
+    _rodar_pela_janela(janela, app, so_as_letras=True, gravuras=False)
+    assert janela.projeto.misto_so_as_letras is True
+    return janela
+
+
+def test_d589_1_so_as_letras_com_gravuras_desmarcada_a_caixinha_nao_volta_marcada(
+        livro_com_gravuras_e_so_as_letras, app):
+    """(1) "Gravuras e fotos" desmarcada e rodar desliga a etapa, e a caixinha NÃO volta
+    marcada, nem com "Só as letras" ligado (painel e janela aberta de novo)."""
+    janela = livro_com_gravuras_e_so_as_letras
+    assert not janela.projeto.detectar_regioes
+    _caixinha_das_gravuras_desmarcada(janela, app)
+
+
+def test_d589_2_so_as_letras_acha_as_figuras_por_dentro_e_a_figura_sai_colorida(
+        livro_com_gravuras_e_so_as_letras, tmp_path):
+    """(2) Com "Só as letras" ligado, as figuras são achadas mesmo com a etapa desmarcada: a
+    "foto" sai como no original (com os cinzas) no PDF, não em preto e branco."""
+    janela = livro_com_gravuras_e_so_as_letras
+    from core import etapas
+
+    assert etapas.marca_sozinho(janela.projeto, janela.projeto.paginas[0])
+    _, cinzas = _pdf_da_foto(janela, tmp_path, "so-as-letras")
+    assert cinzas > 0.3
+
+
+def test_d589_3_sem_so_as_letras_e_gravuras_desmarcada_a_pagina_sai_toda_em_preto_e_branco(
+        livro_com_gravuras_e_so_as_letras, app, tmp_path):
+    """(3) Depois, desmarcar "Só as letras" e rodar: a etapa 5 continua desmarcada e a página
+    sai toda em preto e branco (a "foto" sem os cinzas)."""
+    janela = livro_com_gravuras_e_so_as_letras
+    _rodar_pela_janela(janela, app, so_as_letras=False, gravuras=False)
+    assert janela.projeto.misto_so_as_letras is False
+    _caixinha_das_gravuras_desmarcada(janela, app)
+    _, cinzas = _pdf_da_foto(janela, tmp_path, "sem-so-as-letras")
+    assert cinzas < 0.05
+
+
+# --- P4: "Gravuras em tons de cinza" com "Gravuras e fotos" desmarcada (Samuel, 02/11/2026) -----
+#
+# Pergunta (gerente): "A: o cinza procura as figuras por conta própria, só para pintá-las de cinza,
+# e a etapa 5 continua desmarcada. É o mesmo que você aprovou para o "Só as letras" em 31/10 [...]
+# e bate com o de hoje: "ela acha as gravuras sozinha"." → Samuel: "a".
+# Defeito que estas provas pegam (junção da versão de teste, 02/11/2026; GitHub 41463140548, parte
+# 4, test_d588_no_limpar_a_folha_do_automatico): com a etapa 5 desmarcada o livro parava de procurar
+# gravuras e a caixinha do cinza não fazia nada - a figura saía em preto e branco.
+
+@pytest.fixture
+def livro_com_gravuras_e_cinza(janela, app, tmp_path):
+    """Livro com a "foto" (degradê) em que uma rodada ligou Limpar (Preto e branco) e Gravuras;
+    depois o Kaique marca "Gravuras em tons de cinza", desmarca "Gravuras e fotos" e roda."""
+    janela.show()
+    janela.abrir_livro(_livro_com_foto(tmp_path))
+    _assentar(app)
+    _rodar_pela_janela(janela, app, so_as_letras=False, gravuras=True)
+    assert janela.estado_do_automatico.situacoes[A.GRAVURAS] == "ligada no livro todo"
+    _rodar_pela_janela(janela, app, so_as_letras=False, gravuras=False, cinza=True)
+    assert all(p.gravuras_em_tons_de_cinza for p in janela.projeto.paginas)
+    return janela
+
+
+def test_p4_1_cinza_com_gravuras_desmarcada_acha_as_figuras_e_a_caixinha_nao_volta_marcada(
+        livro_com_gravuras_e_cinza, app, tmp_path):
+    """P4 "a": com "Gravuras em tons de cinza" marcada, o programa procura as figuras por dentro
+    mesmo com a etapa 5 desmarcada: a "foto" sai em tons de cinza no PDF (não em preto e branco
+    chapado); a etapa 5 continua "desligada" e a caixinha não volta marcada."""
+    janela = livro_com_gravuras_e_cinza
+    from core import etapas
+
+    assert not janela.projeto.detectar_regioes
+    _caixinha_das_gravuras_desmarcada(janela, app)
+    assert etapas.marca_sozinho(janela.projeto, janela.projeto.paginas[0])
+    _, cinzas = _pdf_da_foto(janela, tmp_path, "cinza")
+    assert cinzas > 0.3
+
+
+def test_p4_2_sem_o_cinza_e_gravuras_desmarcada_a_pagina_sai_toda_em_preto_e_branco(
+        livro_com_gravuras_e_cinza, app, tmp_path):
+    """P4: depois, desmarcar "Gravuras em tons de cinza" e rodar: nada procura as figuras, a etapa
+    5 continua desmarcada e a página sai toda em preto e branco ("se algo não está marcado, não é
+    para fazer")."""
+    janela = livro_com_gravuras_e_cinza
+    _rodar_pela_janela(janela, app, so_as_letras=False, gravuras=False, cinza=False)
+    assert not any(p.gravuras_em_tons_de_cinza for p in janela.projeto.paginas)
+    _caixinha_das_gravuras_desmarcada(janela, app)
+    _, cinzas = _pdf_da_foto(janela, tmp_path, "sem-cinza")
+    assert cinzas < 0.05

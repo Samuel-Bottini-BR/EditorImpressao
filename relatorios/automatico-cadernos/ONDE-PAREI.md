@@ -1,0 +1,293 @@
+# ONDE PAREI — D-589 ("Montar cadernos" volta sozinho)
+
+Ramo `automatico-cadernos-2026-10-30` (saiu de `obra-2026-10-26` em `d93c506`), cópia
+`.claude/worktrees/auto-cadernos`. Construtor: implementador (pedido da gerente, 30/10/2026).
+
+## Decisões que esta tarefa precisa cumprir
+
+- **D-589 (30/10/2026).** Kaique: "ela não tá selecionada, nem ela e nem a opção de dividir [...] aí
+  aplicou o filtro branco, letra preta. Aí só que ele forma os cadernos do mesmo jeito." · "depois de
+  rodar a etapa, aí ele volta a marcar." · "tiro, é, a opção de montar os cadernos, aí depois ele
+  coloca de novo sozinho." Livro: **"Desmarcar 'Montar cadernos' no Automático tem que valer: o livro
+  sai sem cadernos, e a etapa não volta marcada sozinha."** Prova do Livro: "livro com 'Montar
+  cadernos' ligada → desmarcar e rodar → o PDF sai sem cadernos, e o painel não mostra a etapa ligada".
+- **D-068 (24/09).** "Toda função automática tem botão de ligar e desligar." (a caixinha de cada etapa
+  e "Desligar as marcadas" continuam como estão).
+- **D-484 (27/10, escolha da gerente).** "Gravuras e fotos, Margens iguais e Montar cadernos valem
+  sempre para o livro todo (são do livro, não de uma página)".
+- **D-002 (25/09)** e o desenho: "Marcar só as etapas que se quer; escolher a ordem" · nada muda no
+  livro até "Rodar".
+- **Regra 7 (27/10): só o que ele mandou.** Nenhum botão, aviso ou texto novo.
+
+## Andamento
+
+- [x] Li implementador.md, CLAUDE.md §3/§10/§11, D-589, relato e prints k-01/k-02.
+- [x] Causa achada (abaixo).
+- [x] Prova `tests/test_decisoes_montar_cadernos.py` escrita ANTES do conserto: falhou no código
+      antigo (`assert not janela.projeto.montar_cadernos` → era True; e `Pedido` sem `desmarcadas`).
+- [x] Conserto (commit `4ad3dbf`).
+- [x] Prova passa (2 de 2). Testes do Automático e do "Montar para imprimir", um arquivo por vez: todos
+      passaram (lista na entrega).
+- [x] Prints num livro de verdade copiado (12 primeiras páginas do "Sobre a Consolação da Filosofia"),
+      antes e depois do conserto: `antes-*.png` e `depois-*.png` nesta pasta; script `prints_d589.py`.
+- [x] Commit e push.
+- [x] Rodada do GitHub 41131159641: passou inteira (suíte em 5 partes + botões).
+
+## Causa
+
+1. `core/automatico.py`, `aplicar` (no código antigo, linhas 684-705): o "Rodar" só LIGA as etapas
+   marcadas (`g.no_livro(CAMPO_DO_LIVRO[etapa], True)` para Margens e Cadernos). Etapa desmarcada fica
+   de fora da rodada, mas o que estava ligado no livro continua ligado. "Montar cadernos" tinha sido
+   ligada numa rodada anterior → `Projeto.montar_cadernos` continuava `True` → `core/pipeline.py:4440`
+   (`if projeto.montar_cadernos:`) monta os cadernos no PDF.
+2. `ui/janela_principal.py:1358` (`_aplicar_o_automatico`): depois do "Rodar", o painel relê o livro
+   (`EstadoDoAutomatico.do_projeto`), e `ui/automatico.py:198` faz
+   `self.marcadas = set(A.etapas_ligadas(projeto))` → a etapa ainda ligada volta MARCADA. É o "ele
+   coloca de novo sozinho".
+
+Reproduzido no livro de verdade (código antigo): desmarcada e rodada, o livro continuou com
+`montar_cadernos=True`, a caixinha voltou marcada, "ligada no livro todo", e o PDF saiu com 6 folhas
+deitadas (cadernos) em vez de 12 páginas em pé.
+
+## O conserto (só "Montar cadernos", como a D-589 manda)
+
+- `core/automatico.py`: `Pedido.desmarcadas` (as etapas com a caixinha desmarcada na janela). No
+  "Rodar" (não no "Desligar as marcadas"), "Montar cadernos" desmarcada e ligada no livro DESLIGA,
+  na mesma ação do Automático (o Ctrl+Z traz de volta). Vale em qualquer "Rodar em", porque a etapa
+  é do livro todo (D-484), como o ligar já era.
+- `ui/automatico.py` (só `EstadoDoAutomatico.pedido`, uma linha + docstring): manda as desmarcadas.
+- Como a etapa fica desligada no livro, o painel a relê como desligada: não volta marcada.
+- Pedido montado por outro caminho (testes, linha de comando) sem `desmarcadas` não muda nada.
+
+## Perguntas para o Samuel
+
+**P1 — As outras etapas desmarcadas também devem desligar no "Rodar"?** O mesmo jeito de funcionar vale
+para todas as etapas, mas a D-589 fala só de "Montar cadernos", e o conserto ficou só nela. Exemplo
+real: no livro do Kaique, "Margens iguais" ligada numa rodada anterior → ele desmarca "Margens iguais"
+e roda → o livro continua com as margens iguais e a caixinha volta marcada (igual aos cadernos). O
+mesmo com "Dividir folhas ao meio", que ele também tinha desmarcado ("nem ela e nem a opção de
+dividir"): hoje o livro continua dividido.
+- **A** — Só "Montar cadernos" (como ficou). As outras desmarcadas ficam como estão no livro e voltam
+  marcadas depois do "Rodar"; para tirar, "Desligar as marcadas".
+- **B** — Também as outras etapas "do livro todo" (Margens iguais, Gravuras e fotos): desmarcada e
+  "Rodar" desliga, como os cadernos. Nenhuma página perde trabalho.
+- **C** — Todas: desmarcada e "Rodar" desliga no livro todo. Cuidado: "Dividir" desmarcado juntaria as
+  folhas de novo (as páginas divididas voltam a ser a folha inteira), e Endireitar/Cortar/Limpar
+  desmarcados fariam as páginas voltarem como vieram (o feito à mão fica).
+- Recomendação do construtor: **B** (é o mesmo tipo de etapa dos cadernos e não desfaz trabalho de
+  página); C muda muito o livro com um clique só.
+
+## 30/10, segunda parte — P1 respondida: também Margens iguais e Gravuras e fotos
+
+- Samuel, respondendo a "conserto essas duas também ['Margens iguais' e 'Gravuras e fotos'], do mesmo
+  jeito que os cadernos?": **"Sim, se algo não está marcado, não é para fazer , certo?"**. Dividir fica
+  como está (a gerente ainda vai perguntar).
+- Reproduzido antes do conserto (livro sintético com texto e uma "foto"): Limpar + Gravuras + Margens
+  ligadas → desmarcar as duas e rodar só o Limpar → continuavam "ligada no livro todo", voltavam
+  marcadas, e o PDF saía com margens (345 x 432 pt em vez de 288 x 403) e a foto em cinzas.
+- Conserto: `core/automatico.py`, `_desligar_as_desmarcadas` (lista `DESLIGAM_DESMARCADAS` = Gravuras,
+  Margens, Cadernos), chamada no "Rodar" DEPOIS das etapas marcadas (Gravuras só conta como ligada com o
+  Limpar ligado, e o Limpar pode ter ligado na mesma rodada). Desliga do mesmo jeito do "Desligar as
+  marcadas": Margens → `margens_iguais=False`; Gravuras → `gravura_forma="desligada"`. Mesma ação do
+  Desfazer. "Desligar as marcadas" igual a antes.
+- Provas novas (falharam no código de `3b70bb3`, passam agora):
+  `test_d589_desmarcar_margens_iguais_e_rodar_sai_sem_margens_e_nao_volta_marcada`,
+  `test_d589_desmarcar_gravuras_e_rodar_a_foto_sai_em_preto_e_branco_e_nao_volta_marcada`, e
+  `test_d589_desligar_as_marcadas_nao_mexe_nas_desmarcadas`.
+- P2 (do verificador, aberta): **sim, com este conserto acontece o mesmo com Margens iguais e Gravuras
+  e fotos** — rodar "só nesta página" ou "nas escolhidas" com uma delas desmarcada desliga no livro
+  todo (são do livro todo, D-484). Não mudei.
+- Atenção (mudança que o Samuel precisa saber): antes, rodar só "Limpar a folha" já fazia o livro
+  achar gravuras sozinho (a etapa aparecia ligada e marcada depois). Agora, com "Gravuras e fotos"
+  desmarcada, o livro não procura gravuras. A receita de sempre (D-018) marca as gravuras, então o
+  caminho do aviso do livro novo não muda.
+- Rodada do GitHub 41147611641 (commit 484cb1c): passou inteira (suíte em 5 partes + botões).
+
+## 30/10, terceira parte — 2ª rodada do verificador: Gravuras não religavam (PARADO, pergunta P3)
+
+- Parecer (`verif-cadernos/.../parecer-d589-rodada2.md`): NÃO CUMPRE nas Gravuras. Depois de desmarcar e
+  rodar, marcar "Gravuras e fotos" de novo e rodar não religa (a frase promete "achar gravuras e fotos";
+  a caixinha volta desmarcada).
+- Causa conferida: o desligar grava `gravura_forma="desligada"`, que é também a caixinha de dentro
+  "Achar gravuras e fotos" (D-212). A janela começa do livro (`opcoes_do_livro`), então o Rodar seguinte,
+  com a etapa marcada, aplica de novo a forma "desligada" (`aplicar`, ramo GRAVURAS) e `ligada_no_livro`
+  continua falso. Reproduzido pela prova nova `test_d589_desmarcar_rodar_marcar_rodar_religa[gravuras]`
+  ("desligada" ≠ "ligada no livro todo"); `[margens]` e `[cadernos]` religam.
+- Tentei a ideia do verificador (commit `bc1b590`): desligar pelo "Procurar" do livro
+  (`detectar_regioes=False`). Religava, e a prova passou, mas a rodada do GitHub 41151868748 FALHOU:
+  - `tests/test_decisoes_so_as_letras.py::test_d148_...` (prova da D-148): com "Limpar" + "Só as letras"
+    e "Gravuras e fotos" desmarcada, a gravura saiu em preto e branco ("a gravura perdeu a cor"). O
+    `detectar_regioes` é o "Procurar gravura e letra": desliga também a marcação das letras e do papel,
+    da qual o "Só as letras" depende. (Eu não tinha rodado esse arquivo; falha também no PC.)
+  - `teste_botoes.py`: 4 falhas ("o ícone 'automatico'/'props'/'filtro'/'historico' não abriu o painel
+    dele"). Com as gravuras desligadas, o livro de teste ganhou "1 página para você olhar", o roteiro
+    clicou em "ver a lista…" do "Para revisar", e os ícones seguintes não abriram. Efeito da mesma troca.
+- Voltei o código ao jeito da forma "desligada" (igual ao `484cb1c`, que passou no GitHub e na
+  1ª conferência), com o defeito escrito no código. A prova de religar das Gravuras ficou marcada como
+  "falha conhecida" (`xfail` estrito, com o motivo); Margens e Cadernos passam.
+- "Desligar as marcadas" NÃO mudou (D-068). Ele já tinha o mesmo defeito antes desta tarefa: depois de
+  "Desligar as marcadas" com Gravuras, marcar e rodar também não religa.
+
+**P3 — Como desligar "Gravuras e fotos" desmarcada sem quebrar o religar nem o "Só as letras"?**
+Exemplo real: Kaique liga Limpar (Preto e branco) + Gravuras e roda; depois desmarca Gravuras e roda; depois
+marca Gravuras de novo e roda. Hoje a gravura não volta (a etapa fica "desligada").
+- **A** — Desligar pelo "Procurar gravura e letra" (o que tentei): religa, mas com Gravuras desmarcada o
+  programa também para de achar as letras, e o "Só as letras" deixa a gravura em preto e branco (fere a
+  prova da D-148, que roda com Gravuras desmarcada).
+- **B** — Continuar com a forma "desligada" e, quando a pessoa marca a etapa Gravuras com "Achar gravuras e
+  fotos" desligada, a janela marca "Achar gravuras e fotos" junto (volta ao contorno "livre", D-213; a
+  escolha "Este livro tem fotos" de antes se perde). Mexe na tela (`ui/automatico.py`) e vale também
+  depois do "Desligar as marcadas".
+- **C** — Guardar a forma de antes ao desligar e devolvê-la ao marcar (precisa de um campo novo no
+  projeto.json — mudança de formato de dados, CLAUDE.md §6).
+- Também precisa da resposta: com "Gravuras e fotos" desmarcada e "Só as letras" ligado, a gravura deve
+  sair com a cor (como a D-148 diz) ou em preto e branco ("se algo não está marcado, não é para fazer")?
+  Não conferi o que acontece hoje num livro de verdade com a forma "desligada" (a prova da D-148 usa uma
+  marcação antiga, sem assinatura, que não é refeita).
+- Recomendação do construtor: decidir primeiro a pergunta do "Só as letras"; se a gravura deve ficar com
+  cor, B; se deve sair em preto e branco, A.
+- Rodada do GitHub 41154048024 (commit c854ade, forma "desligada" de volta + xfail): passou inteira.
+
+## 31/10 — resposta da pergunta de base da P3 e conferência da B
+
+- Samuel: "Sim" para "vale o 'Só as letras', e a figura sai colorida" (com "Gravuras e fotos" desmarcada).
+- Conferido (teste temporário, apagado): o "Só as letras" só guarda a figura colorida quando ela está
+  marcada como gravura pela máquina. Sem a área da gravura (só a das letras), a pintura sumiu (cor 0,0 em
+  vez de > 0,8). Ou seja: para a figura sair colorida, o programa precisa PROCURAR as gravuras. Com o
+  "Só as letras" ligado e "Gravuras e fotos" desmarcada, as duas frases dele se chocam, em qualquer jeito
+  de desligar (A, B ou C).
+- Jeito que não perde nada e não mexe na tela: desligar pelo "Procurar" do livro (religa ao marcar, guarda
+  o "Este livro tem fotos"), MAS não desligar quando o "Só as letras" estiver ligado. Custo: nesse caso a
+  etapa "Gravuras e fotos" continua ligada e volta marcada depois do "Rodar". Parado esperando a resposta.
+
+## 31/10 — Gravuras resolvidas como o Samuel aprovou; teste_botoes; D-590
+
+**Gravuras (Samuel, palavra por palavra):** "A caixinha da etapa 5 fica do jeito que você deixou, desmarcada.
+Com 'Só as letras' marcada, o programa procura as figuras por dentro, só para deixar elas coloridas. Se
+depois você desmarcar 'Só as letras', a etapa 5 continua desmarcada e a página sai toda em preto e branco." +
+"sim, mas tem que ter certeza que o programa vai procurar as figuras mesmo com a opção desmarcada e que não
+vai remarcar ela de novo na caixinha".
+- `core/automatico._desligar_as_desmarcadas`: Gravuras desmarcada desliga pelo "Procurar" do livro
+  (`detectar_regioes=False`); a forma de dentro (D-212) fica. Marcar e rodar religa.
+- `core/etapas.marca_sozinho`: sem o "Procurar", a marcação da máquina procura mesmo assim quando o "Só as
+  letras" vale na página (Preto e branco + caixinha; `so_as_letras_procura`). `ligada_no_livro` continua
+  lendo só o `detectar_regioes`: a etapa fica "desligada" e a caixinha não volta marcada.
+  `core/pipeline` (pedaço com filtro e papel em branco) usa a mesma regra (`a_marcacao_da_maquina_vale`).
+- Provas (`tests/test_decisoes_montar_cadernos.py`, 11 de 11): `test_d589_1_...` (caixinha desmarcada no
+  painel e na janela reaberta, com "Só as letras"), `test_d589_2_...` (a figura sai com os cinzas),
+  `test_d589_3_...` (sem "Só as letras": tudo em preto e branco, caixinha desmarcada),
+  `test_d589_desmarcar_rodar_marcar_rodar_religa[gravuras|margens|cadernos]`. No código anterior falharam
+  a 1, a 2, o religar das gravuras e a do desmarcar gravuras; a 3 passava também lá (com a forma
+  "desligada" a página já saía em preto e branco).
+- "Desligar as marcadas" não mudou (D-068): continua pela forma "desligada" (o religar depois dele segue
+  só pela caixinha de dentro, como antes desta tarefa).
+
+**teste_botoes (rodada 41151868748, 4 falhas):** causa achada. Com uma página no "Para revisar", o roteiro
+clica em todos os botões do painel, inclusive "ver as N em tela cheia" (D-259), que troca a página pela
+grade "Todas as páginas". O roteiro não voltava da grade; os ícones seguintes abriam os painéis escondidos
+atrás dela ("não abriu o painel dele"). Reproduzido à parte (a grade fica, o painel "automatico" abre
+invisível; com o "voltar", abre). Conserto no roteiro: depois de cada botão de painel, se a grade está à
+vista, volta pelo "voltar" e confere. No PC: 340 ações, 0 falhas.
+- Para a Lista de bugs (não conserta): com a grade "Todas as páginas" aberta, os ícones da direita abrem o
+  painel atrás da grade, sem nada à vista.
+
+**D-590 ("juntar todas"):** commit `b96c948`. `core/dividir_a_mao.campos_para_juntar_todas` + botão
+"juntar todas" ao lado de "não dividir esta" (`ui/tela_conferir._montar_aba_corte`, `_juntar_todas`);
+"usar em todas" desceu para a linha de baixo (três botões na mesma linha cortavam os textos). Uma ação do
+desfazer ("Juntar N folhas"); as folhas não ficam "conferidas"; a marca "mexida à mão" do Dividir entra
+como no "não dividir esta". Provas `tests/test_decisoes_juntar_todas.py` (3 de 3; as duas do botão
+falharam antes de existir). Prints em `d590/` (Schön Neues Modell Buch, 6 folhas copiadas: 12 páginas →
+"juntar todas" → 6 → Desfazer → 12 → Dividir desmarcada e Rodar → continuam 12).
+- Testes um por vez (todos passaram): montar_cadernos 11, so_as_letras 5, respeitar_gravuras 19, marcacoes 19, automatico 24, filtro_automatico 4, nucleo 38, nucleo2 21, impressao 22, dialogo_impressao 5, impressao 17, cadernos 28, ver_como_fica 19, cancelar 1, recomeco 13, para_revisar_na_tela 26, decisoes 26, avisos 13, misto_na_tela 14, misto_no_projeto 12, juntar_todas 3, dividir 19, trabalho_nao_se_perde 82; teste_botoes no PC: 340 ações, 0 falhas.
+- Rodada 41216553481 (`dfca260`): só falhou `test_promessas::test_todo_botao_tem_promessa` (o botão novo
+  "juntar todas" sem promessa). Escrevi a P-198 em `tests/promessas/promessas.md` e a prova
+  `test_p198_juntar_todas` (apertar → 2 folhas inteiras no PDF; Desfazer divide de novo). No PC:
+  `test_promessas` -k "p198 or p060 or todo_botao or toda_promessa": 5 de 5 (o arquivo inteiro, antes
+  da prova: 261 passaram, só faltava ela).
+
+## PAUSA (31/10, pedido do Samuel)
+
+- **Pronto e no ramo:** D-589 (Cadernos, Margens e Gravuras desmarcadas desligam no Rodar; Gravuras religam ao
+  marcar; com "Só as letras" a figura é achada por dentro e a caixinha não volta marcada) em `25d2283`;
+  D-590 ("juntar todas") em `b96c948` + promessa P-198 em `21741fe`; conserto do `teste_botoes` em `dfca260`.
+- **Testes:** todos os arquivos listados acima passaram no PC, um por vez; `teste_botoes` no PC: 340 ações, 0
+  falhas. GitHub 41216553481 só falhou pela promessa do botão novo (já escrita).
+- **Falta:** ver o resultado da rodada do GitHub **41218623088** (disparada em `21741fe`, ainda rodando na
+  pausa) e entregar à gerente. Nada mais começado.
+- Abertos: P2 (rodar "só nesta página"/"nas escolhidas" com Cadernos/Margens/Gravuras desmarcadas desliga no
+  livro todo) e o "Desligar as marcadas" das Gravuras (forma "desligada", não religa ao marcar; igual a antes).
+
+## 02/11 — atualizar com a versão de teste (PARADO, pergunta P4)
+
+- Rodada 41218623088 (`21741fe`, a da pausa): falhou só na parte 1, 1 erro, o instável conhecido
+  (`test_p083_jeitos_no_automatico[Guardar tudo-tudo]`, "um botão falhou por baixo (erros.log)").
+- Junção de `origin/obra-2026-10-26` (`c5befb5`, 57 commits) no ramo: commit `50c0c5b`.
+  - Conflito só no `teste_botoes.py`: os dois lados tinham feito o mesmo conserto (voltar da grade
+    "Todas as páginas" depois do "ver as N em tela cheia"). Ficou o da versão de teste (`getattr`,
+    texto) mais a conferência de que voltou (meu `dfca260`: "ok"/"FALHA" do "voltar").
+  - Junções automáticas conferidas: em todos os 25 arquivos que o ramo muda, a diferença entre o
+    resultado e a versão de teste é exatamente o que o ramo fazia (nada da versão de teste perdido
+    ou mudado).
+- PC, um arquivo por vez (todos passaram, menos um): montar_cadernos 11, juntar_todas 3,
+  so_as_letras 5, respeitar_gravuras 19, marcacoes 19, automatico 24, filtro_automatico 4, nucleo 38,
+  nucleo2 21, impressao 22, dialogo_impressao 5, impressao 17, cadernos 28, cancelar 1, recomeco 13,
+  para_revisar_na_tela 26, decisoes 26, avisos 13, misto_na_tela 14, misto_no_projeto 12, dividir 19,
+  trabalho_nao_se_perde 82, automatico_ver_como_fica 22, automatico_opcoes_do_filtro 21,
+  shift_todas_as_telas 10, zoom_no_ponteiro 5, promessas 264 + 1 xfail (sem erro);
+  **gravuras_cinza: 1 falha, 13 passaram**. `teste_botoes` no PC: 369 ações, 0 falhas.
+- GitHub 41463140548 (`50c0c5b`): parte 1 só o instável (p083 `[rede]` do "Só as letras" e
+  `[Guardar tudo-tudo]`, a prévia abrindo o PDF de pasta já apagada); **parte 4:
+  `test_decisoes_gravuras_cinza.py::test_d588_no_limpar_a_folha_do_automatico` falhou** (a mesma do
+  PC). Partes 2, 3, 5 e botões passaram. Não disparei de novo (não é só o instável).
+- Causa: a prova da D-588 marca só "Limpar a folha" (`e.marcadas = {A.LIMPAR}`), com "Gravuras em
+  tons de cinza" ligada, e espera a gravura em cinza. Com a D-589, "Gravuras e fotos" desmarcada no
+  "Rodar" desliga o "Procurar" do livro (`detectar_regioes=False`); sem ele a marcação da máquina não
+  vale (`core/etapas.a_marcacao_da_maquina_vale`, que só abre exceção para o "Só as letras") e não há
+  gravura achada para pintar de cinza. Conferido: com `{LIMPAR, GRAVURAS}` a prova passa (cópia
+  temporária, apagada). Sozinha, a D-588 passou no GitHub (41455630372, ramo gravuras-cinza).
+- Ligado a isto: em 02/11 o Samuel aprovou mudar a D-588 ("marcar só 'Gravuras em tons de cinza' já
+  basta: ela acha as gravuras sozinha e pinta de cinza, com o 'Respeitar' ligado ou desligado" →
+  "sim pode"), conserto em andamento no ramo `gravuras-cinza-2026-11-01`.
+- Não mudei nada além da junção (nenhum `core/`), então sem filtro de velocidade.
+
+**P4 — Com "Gravuras e fotos" desmarcada e "Gravuras em tons de cinza" marcada, a gravura sai cinza?**
+Exemplo real: capa do *Na escola de Jesus*; Kaique marca só "Limpar a folha" (Preto e branco) com
+"Gravuras em tons de cinza" e roda. Hoje, junto, a pintura sai em preto e branco, porque a etapa 5
+desmarcada faz o programa parar de procurar gravuras.
+- **A** — Igual ao "Só as letras" (31/10): com "Gravuras em tons de cinza" marcada, o programa procura
+  as figuras por dentro só para pintá-las de cinza; a etapa 5 continua desmarcada e não volta marcada.
+  Casa com o "ela acha as gravuras sozinha" de 02/11. Mexe em `core/etapas` (uma condição a mais).
+- **B** — "Se não está marcado, não faz": sem a etapa 5, a caixinha do cinza não faz nada; a prova da
+  D-588 passa a marcar também "Gravuras e fotos".
+- Recomendação do construtor: **A**, e fazer junto com (ou depois de) o conserto da D-588 que está no
+  ramo gravuras-cinza, para não mexer duas vezes na mesma regra.
+
+## 02/11, segunda parte — P4 respondida: "a"
+
+- Pergunta da gerente ao Samuel: "A: o cinza procura as figuras por conta própria, só para pintá-las
+  de cinza, e a etapa 5 continua desmarcada. É o mesmo que você aprovou para o "Só as letras" em
+  31/10 [...] e bate com o de hoje: "ela acha as gravuras sozinha"." → Samuel: **"a"**.
+- Junção de novo de `origin/obra-2026-10-26` (`a4b9953`, traz o conserto da D-588 "cinza sem o
+  Respeitar", junção `be4b9c9`): commit `47e4131`, sem conflito; os 25 arquivos conferidos como na
+  primeira (o resultado difere da versão de teste só pelo que o ramo faz).
+- Conserto (`18e7f28`): `core/etapas.procura_por_dentro` = `so_as_letras_procura` ou
+  `cinza_procura` (Preto e branco que vale + caixinha "Gravuras em tons de cinza" da página
+  marcada), usada em `marca_sozinho` e `a_marcacao_da_maquina_vale`. A etapa 5 continua
+  "desligada" (`ligada_no_livro` lê só o `detectar_regioes`), a caixinha não volta marcada.
+  Nenhum botão, aviso ou texto novo.
+- Provas em `tests/test_decisoes_montar_cadernos.py`: `test_p4_1_...` (com o cinza e a etapa 5
+  desmarcada, a "foto" sai com os cinzas e a caixinha não volta marcada) FALHOU no código de antes
+  (`marca_sozinho` False) e passa agora; `test_p4_2_...` (tirar o cinza → tudo em preto e branco)
+  passa nos dois, como a `d589_3`. A prova da D-588 que falhava
+  (`test_d588_no_limpar_a_folha_do_automatico`) passa: gravuras_cinza 19 de 19.
+- PC, um arquivo por vez (em `18e7f28`, todos passaram): montar_cadernos 13, juntar_todas 3,
+  so_as_letras 5, respeitar_gravuras 19, marcacoes 19, automatico 24, filtro_automatico 4, nucleo 38,
+  nucleo2 21, impressao 22, dialogo_impressao 5, impressao 17, cadernos 28, cancelar 1, recomeco 13,
+  para_revisar_na_tela 26, decisoes 26, avisos 13, misto_na_tela 14, misto_no_projeto 12, dividir 19,
+  trabalho_nao_se_perde 82, automatico_ver_como_fica 22, automatico_opcoes_do_filtro 21,
+  gravuras_cinza 19, shift_todas_as_telas 10, zoom_no_ponteiro 5, promessas 264 + 1 xfail.
+  `teste_botoes` no PC: 369 ações, 0 falhas.
+- GitHub 41470124822 (`18e7f28`): passou inteira (suíte em 5 partes + botões).
+- Filtro de velocidade 41470135392 (`a4b9953` → `18e7f28`, todo o `core/` do ramo): "igual (dentro
+  do vai-e-vem)".
+- Abertos (como estavam): P2 e o "Desligar as marcadas" das Gravuras. Pronto para a gerente juntar.
