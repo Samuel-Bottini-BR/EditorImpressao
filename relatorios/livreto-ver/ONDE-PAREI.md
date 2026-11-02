@@ -152,5 +152,18 @@ no Opus Majus cada seta deixava a janela parada 1,7 a 2,6 s; trocar o caderno 1,
   folha do servidor com a feita aqui, com 5 jogos de opções: iguais.
 - **D-574 / regra 7:** nenhuma linha de tela mudou (só um comentário em `ui/dialogo_impressao.py`).
 
+## PAUSA (02/11, pedido do Samuel)
+"vamos pausar todos os trabalhos, para continuar depois". Parei aqui, no commit da pausa (depois de `e6e7b46`).
+
+- **Pronto:** o conserto (`bdb137a` + `b541caa`): a folha do livreto é montada no servidor de páginas, a tela não para
+  mais (Opus Majus: seta de 1,5–3,0 s → 0,014 s; Palatino 0,14 s → 0,008 s). Prova nova falha no `ff0260f` e passa
+  agora. Testes no PC, um por vez, todos passaram (lista em "Andamento"). Medidas e prints em `medir/`.
+- **Rodadas do GitHub abertas (não vi o fim):**
+  - 41477464406 — suíte inteira no `bdb137a`;
+  - 41479852414 — suíte inteira no `b541caa` (o código final; a que vale);
+  - 41477472279 — filtro de velocidade `cfde703` → `bdb137a`.
+- **Falta:** ler o resultado das três rodadas (se falhar p083/p090/p107 ou D-148, disparar de novo uma vez; se o filtro
+  acusar lentidão, disparar de novo uma vez) e entregar à gerente.
+
 ## Perguntas para o Samuel
 (nenhuma nova nesta tarefa)
