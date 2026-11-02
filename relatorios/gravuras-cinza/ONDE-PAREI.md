@@ -224,7 +224,12 @@ test_decisoes_automatico_ver_como_fica 22 · test_filtro_com_selecao 22 · test_
 
 ## GitHub (commit `00d1ddf`)
 
-- **Testes no Windows**, rodada `41455630372`: (resultado abaixo)
+- **Testes no Windows**, rodada `41455630372`: 1ª tentativa **falhou só na parte 1**, com 2 erros no fim (na
+  limpeza) de `test_promessas` (`test_p083_jeitos_do_so_as_letras[rede]` e
+  `test_p083_jeitos_no_automatico[Guardar tudo-tudo]`: "um botão falhou por baixo", a prévia tentou abrir o PDF da
+  pasta temporária já apagada). As 263 provas passaram; as partes 2 a 5 e "Botões e prints" passaram. No PC o
+  `test_promessas` inteiro passou (263). Disparei de novo a parte que falhou (uma vez, como manda a regra):
+  resultado a conferir.
 - **Filtro de velocidade** `091b200` -> `gravuras-cinza-2026-11-01`, rodada `41455635198`: (resultado abaixo)
 
 ## Perguntas para o Samuel (abertas)
