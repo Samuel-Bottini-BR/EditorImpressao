@@ -382,3 +382,14 @@ id do agente. Numa conversa nova os agentes não existem mais: aí o agente novo
 
 Versão de teste (`obra-2026-10-26`) em `6a98173`+ (Livro em `640170d`). As cópias novas têm junção `modelos`: apagar só com
 `git worktree remove`, nunca `Remove-Item -Recurse`.
+
+## Agentes e cópias de 02/11/2026 (noite)
+
+| Agente (id) | Cópia | Ramo | O que é |
+|---|---|---|---|
+| `a8326b31cd59aeb9c` | `.claude\worktrees\esta-certo` | `esta-certo-2026-11-02` | D-572: faixa "Página N conferida." depois do "está certo" |
+| `a8778a545254480c4` | `.claude\worktrees\dividir-metade` | `dividir-metade-2026-11-02` | D-601: Dividir mostra a metade em "Uma página" |
+| `a54d1b8de5ca73d1b` | `.claude\worktrees\margens-depois` | `margens-depois-2026-11-02` | Margens iguais no "depois" do Automático (D-577, D-329) |
+
+Juntados no `obra-2026-10-26` nesta noite: balão do cinza (`99e7c6b`), D-574 sem travamento (`45b8704`). Cópias `prints-central`,
+`teste-cadernos`, `investiga-inclinado`, `investiga-inclinado-fase1` terminadas (podem ser apagadas com `git worktree remove`).
