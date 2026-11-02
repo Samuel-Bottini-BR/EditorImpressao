@@ -183,7 +183,8 @@ from core.filtros import (
     palavra_do_ajuste,
 )
 from historico_acoes import HistoricoAcoes, aplicar, campo_de_pagina, montar_acao
-from modelos import METADE_DIREITA, Projeto
+from core.dividir import dividir_imagem     # D-601: a metade da folha no Dividir
+from modelos import METADE_DIREITA, METADE_ESQUERDA, Projeto
 from registro import registrar_erro
 from ui import estilo
 from ui.estilo import estilo_da_caixinha_com_quadrado
@@ -1318,9 +1319,12 @@ class TelaConferir(QWidget):
         else:
             texto = f"página {self.indice_pagina + 1} de {len(self.projeto.paginas)}"
         self.rotulo_da_pagina.setText(texto)
-        total = self._total()
-        self.botao_anterior.setEnabled(self.indice_atual > 0)
-        self.botao_proxima.setEnabled(self.indice_atual < total - 1)
+        total, agora = self._total(), self.indice_atual
+        if self._dividir_por_paginas():      # D-601: as setas andam pelas páginas
+            passos = self._passos_do_dividir()
+            total, agora = len(passos), self._passo_do_dividir_atual(passos)
+        self.botao_anterior.setEnabled(agora > 0)
+        self.botao_proxima.setEnabled(agora < total - 1)
         feitas = bool(self.acoes and self.acoes.feitas)
         desfeitas = bool(self.acoes and self.acoes.desfeitas)
         self.botao_desfazer_embaixo.setEnabled(feitas)
@@ -3731,9 +3735,88 @@ class TelaConferir(QWidget):
 
     @protegido
     def _navegar(self, passo: int) -> None:
+        """As setas (da barra de baixo e do teclado), a roda sem zoom e o
+        "está certo e avança": a próxima (ou a anterior) página, ou folha no
+        Dividir. D-601 (02/11/2026): no Dividir com "Uma página", andam pelas
+        PÁGINAS (a da esquerda, depois a da direita, depois a próxima folha;
+        a folha não dividida é um passo só) - _passos_do_dividir."""
         if not self._pronta():
             return
+        if self._dividir_por_paginas():
+            passos = self._passos_do_dividir()
+            if passos:
+                agora = self._passo_do_dividir_atual(passos)
+                destino = passos[max(0, min(len(passos) - 1, agora + passo))]
+                self.indice_pagina = destino
+                self.indice_folha = self.projeto.paginas[destino].folha
+                self.atualizar()
+            return
         self._ir_para(max(0, min(self._total() - 1, self.indice_atual + passo)))
+
+    # --- D-601 (02/11/2026): o Dividir com "Uma página" --------------------------
+    # Samuel, testando o Dividir no Gradus Primus: "deveria então aparecer só
+    # metdade da pagina que era dupla, e eu pode mudar a opção lá embaixo de uma
+    # pagina, para pagina dupla." → ""Uma página" (de fábrica): depois de
+    # dividir, aparece só a metade, uma página de cada vez, e as setas andam
+    # pelas páginas. "Duas lado a lado": aparece a folha inteira, com a linha
+    # azul para arrastar, como hoje." → "ok". Só a tela muda: a tira continua
+    # de folhas, o "está certo" continua conferindo a folha e o rótulo continua
+    # "folha N de M" (o Dividir trabalha com folhas: trabalha_com_folhas).
+    # Arriscado: mudar trabalha_com_folhas aqui (a tira, o contador, o "está
+    # certo" e os avisos da folha passariam a contar páginas).
+
+    def _dividir_por_paginas(self) -> bool:
+        """No Dividir com "Uma página" (D-601): as setas andam pelas páginas e
+        a folha dividida aparece pela metade."""
+        return self.trabalha_com_folhas and self.mostrar == UMA
+
+    def _passos_do_dividir(self) -> list[int]:
+        """Por onde as setas andam no Dividir com "Uma página" (D-601), na
+        ordem do livro: as páginas de cada folha dividida (a esquerda, depois a
+        direita) e uma página só de cada folha não dividida (a primeira dela:
+        a tela mostra a folha inteira, como antes; projeto antigo pode ter duas
+        páginas numa folha não dividida)."""
+        assert self.projeto is not None
+        passos: list[int] = []
+        ja_foram: set[int] = set()
+        for posicao, pagina in enumerate(self.projeto.paginas):
+            if not 0 <= pagina.folha < len(self.projeto.folhas):
+                continue
+            if not self.projeto.folhas[pagina.folha].dividir:
+                if pagina.folha in ja_foram:
+                    continue
+                ja_foram.add(pagina.folha)
+            passos.append(posicao)
+        return passos
+
+    def _passo_do_dividir_atual(self, passos: list[int]) -> int:
+        """Em que passo de _passos_do_dividir a tela está: a página da vez, ou
+        o primeiro passo da folha da vez (se a página da vez não é um passo)."""
+        assert self.projeto is not None
+        if self.indice_pagina in passos:
+            return passos.index(self.indice_pagina)
+        for numero, posicao in enumerate(passos):
+            if self.projeto.paginas[posicao].folha == self.indice_folha:
+                return numero
+        return 0
+
+    def _metade_no_dividir(self) -> str | None:
+        """A metade que o Dividir mostra (D-601): com "Uma página" e a folha
+        da vez dividida, a da página da vez ("esquerda" ou "direita"); None =
+        a folha inteira (folha não dividida, ou "Duas lado a lado", com a
+        linha para arrastar)."""
+        if not self._dividir_por_paginas() or self.projeto is None:
+            return None
+        if not 0 <= self.indice_folha < len(self.projeto.folhas):
+            return None
+        if not self.projeto.folhas[self.indice_folha].dividir:
+            return None
+        if not 0 <= self.indice_pagina < len(self.projeto.paginas):
+            return None
+        pagina = self.projeto.paginas[self.indice_pagina]
+        if pagina.folha != self.indice_folha or pagina.metade not in (METADE_ESQUERDA, METADE_DIREITA):
+            return None
+        return pagina.metade
 
     def _ir_para(self, indice: int) -> None:
         assert self.projeto is not None
@@ -3976,10 +4059,16 @@ class TelaConferir(QWidget):
         if aba == ABA_CORTE:
             img = self.previas.pegar_folha(self.indice_folha, DPI_PREVIA)
             vis = self.visualizadores[ABA_CORTE]
-            vis.definir_imagem(img, dono=("folha", self.indice_folha))   # D4
             folha = self.projeto.folhas[self.indice_folha]
+            # D-601 (02/11/2026): com "Uma página", a folha dividida mostra só
+            # a metade da página da vez, partida na linha (sem a linha)
+            metade = self._metade_no_dividir()
+            if metade is not None and img is not None:
+                img = dividir_imagem(img, folha.posicao_corte)[0 if metade == METADE_ESQUERDA else 1]
+            vis.definir_imagem(img, dono=("folha", self.indice_folha, metade))   # D4
             # a linha so aparece em folha dividida (parecer do verificador, 06/10)
-            vis.definir_corte(folha.posicao_corte, visivel=bool(folha.dividir))
+            # e so na folha inteira ("Duas lado a lado", D-601)
+            vis.definir_corte(folha.posicao_corte, visivel=bool(folha.dividir) and metade is None)
             self.previas.pre_carregar_folhas(self.indice_folha, DPI_PREVIA)
             # na ferramenta Dividir a tela trabalha com a folha inteira: a
             # fila do painel Filtro fica sem as paginas pequenas (nao mostra
@@ -6889,12 +6978,18 @@ class TelaConferir(QWidget):
     def definir_mostrar(self, jeito: str) -> None:
         """"Uma página" ou "Duas lado a lado" (barra de baixo e menu Ver > "Ver
         lado a lado"; D-015, D-006). Fica na mesma página. Escolher um dos dois
-        desliga o "antes / depois" (ele mostra uma página só)."""
+        desliga o "antes / depois" (ele mostra uma página só).
+        D-601 (02/11/2026): no Dividir, "Uma página" mostra a metade da folha
+        dividida (a página da vez) e "Duas lado a lado" a folha inteira com a
+        linha: a tela inteira se redesenha (a imagem, as setas)."""
         if jeito not in (UMA, DUAS):
             return
         self.mostrar = jeito
         self.comparando = False
-        self._acertar_a_vista_da_pagina()
+        if self._pronta() and self.trabalha_com_folhas:
+            self.atualizar()            # chama o _acertar_a_vista_da_pagina
+        else:
+            self._acertar_a_vista_da_pagina()
         self.mostrar_mudou.emit(jeito)
 
     @protegido
@@ -6946,10 +7041,13 @@ class TelaConferir(QWidget):
 
     def _acertar_a_vista_da_pagina(self) -> None:
         """Põe no lugar da página o que a barra de baixo pede: a ferramenta da
-        vez (uma página), os pares rolando ou o "antes / depois". No Dividir a
-        tela trabalha com a folha inteira (D-007: a folha com a linha só
-        dentro do Dividir): ali fica sempre a ferramenta, e os botões do ver
-        dizem por quê. Barato quando nada mudou."""
+        vez (uma página), os pares rolando ou o "antes / depois". No Dividir
+        fica sempre a ferramenta (D-007: a folha com a linha só dentro do
+        Dividir); desde a D-601 (02/11/2026) os botões "Uma página" / "Duas
+        lado a lado" valem ali também: "Uma página" mostra a metade da folha
+        dividida e "Duas lado a lado" a folha inteira com a linha
+        (_atualizar_previa, _metade_no_dividir). O "antes / depois" continua
+        apagado no Dividir. Barato quando nada mudou."""
         if not hasattr(self, "vista_da_pagina"):
             return
         pronta = self._pronta() and self.projeto is not None
@@ -6962,14 +7060,12 @@ class TelaConferir(QWidget):
             self.vista_da_pagina.setCurrentWidget(self.lado_a_lado)
         else:
             self.vista_da_pagina.setCurrentWidget(self.area_imagem)
-        # os botões mostram a escolha (mesmo no Dividir, onde ela espera)
+        # os botões mostram a escolha (no Dividir também valem: D-601)
         self.botoes_mostrar[self.mostrar].setChecked(True)
         self.botao_antes_depois.setChecked(self.comparando)
-        motivo = ("\nNo Dividir a tela mostra a folha inteira, com a linha; "
-                  "escolha outra ferramenta para ver as páginas.") if no_dividir else ""
         for jeito, _texto, dica in self.JEITOS_DE_MOSTRAR:
-            self.botoes_mostrar[jeito].setEnabled(pronta and not no_dividir)
-            self.botoes_mostrar[jeito].setToolTip(dica + motivo)
+            self.botoes_mostrar[jeito].setEnabled(pronta)
+            self.botoes_mostrar[jeito].setToolTip(dica)
         self.botao_antes_depois.setEnabled(pronta and not no_dividir)
         self._acertar_o_zoom_da_barra()
 
