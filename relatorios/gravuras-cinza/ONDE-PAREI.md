@@ -100,7 +100,8 @@ test_decisoes_filtro_automatico 4 · test_decisoes_automatico 24 · test_decisoe
    "Gravuras em tons de cinza" fica cinza e não dá para clicar; as gravuras ficam com a cor (como o "Só
    as letras" manda). Desligando "Só as letras", ela volta como estava (print 4). É o mesmo jeito da
    caixinha das molduras e da "Respeitar as gravuras achadas". **Está bom assim? (sugestão: sim)**
-2. **Com "Respeitar as gravuras achadas" desligada.** Desligada, o filtro vale na página inteira e não
+2. **RESPONDIDA em 02/11: "não"** (ver a seção "02/11 — conserto" abaixo). Texto de 01/11:
+   **Com "Respeitar as gravuras achadas" desligada.** Desligada, o filtro vale na página inteira e não
    sobra gravura achada para pintar de cinza: a página sai toda em preto e branco. Então a caixinha
    "Gravuras em tons de cinza" fica cinza e não dá para clicar; religando "Respeitar", ela volta como
    estava (print 5). **Está bom assim? (sugestão: sim)**
@@ -120,3 +121,109 @@ test_decisoes_filtro_automatico 4 · test_decisoes_automatico 24 · test_decisoe
 - A cópia do código antigo para a reversão foi tirada com `git archive 7fb6e19` na pasta temporária do
   agente (com uma junção para `modelos`), não é outra cópia do projeto.
 - Não mexi no layout do "Mais ajustes" (o outro construtor está nele); a caixinha fica fora dele.
+
+---
+
+# 02/11 — conserto: o cinza sem o Respeitar
+
+Ramo `gravuras-cinza-2026-11-01`, cópia `.claude/worktrees/gravuras-cinza`. Antes de mexer, juntei o
+`obra-2026-10-26` (a versão que o Samuel testa) no meu ramo: entrou direto, sem conflito (o ramo ficou no
+`091b200`). Não juntei nada em nenhum outro ramo.
+
+## Decisões que esta tarefa precisa cumprir (escrito antes de mexer)
+
+- **O pedido de 02/11** (página 13 de 199 do *Na escola de Jesus*, Preto e branco): "1- não consigo trocar
+  respeitar gravuras por gravuras em tons de cinza." · "2- para deixar as gravuras cinzas o respeitar gravuras tem
+  que estar ligado, por gravuras em tons de cinza sozinho já deveria resolver o problema." É o "não" dele à minha
+  pergunta 2 de 01/11. Proposta aprovada ("sim pode"): **"marcar só "Gravuras em tons de cinza" já basta: ela acha
+  as gravuras sozinha e pinta de cinza, com o "Respeitar" ligado ou desligado."**
+- **D-588**: a caixinha nos três lugares (painel Filtro, tela cheia dos filtros, "Limpar a folha" do Automático,
+  com os dois lados do "comparar"); marcada, toda gravura achada sai em tons de cinza, mesmo a que o programa toma
+  por enfeite (D-585); segue o "Aplicar em".
+- **D-147**: no Preto e branco, foto e pintura em tons de cinza, nunca pontilhadas.
+- **D-585**: pintura e foto só guardam a cor com "Só as letras" (D-148).
+- **D-586**: com a caixinha do cinza **desmarcada**, o "Respeitar" desligado continua como era (a página toda em
+  preto e branco, só as áreas feitas à mão valem).
+- **D-066/D-473**: tela = PDF (vale na receita e no PDF de verdade, não só na prévia).
+- **Ficam como estão (perguntas abertas):** "Só as letras" ligada (pergunta 1), os lugares da caixinha (pergunta
+  3), a gravura de traço e a área marcada à mão (pergunta 4).
+- CLAUDE.md §4.6, §4.7, §10 item 5, §11 item 7 ("só o que ele mandou").
+
+## O que mudou
+
+| Arquivo | O quê |
+|---|---|
+| `core/pipeline.py` | `marcacao_que_o_filtro_usa`: no Preto e branco com "Gravuras em tons de cinza" marcada, devolve a marcação inteira (o mesmo objeto), com o "Respeitar" ligado ou desligado. `gravuras_em_cinza_valem`: não pede mais o "Respeitar" ligado. Função nova `gravuras_em_tons_de_cinza_marcada` (só lê o campo). Docstrings com as palavras dele e o que é arriscado mudar. |
+| `ui/tela_conferir.py` | `_mostrar_gravuras_em_cinza`: a caixinha só fica cinza com "Só as letras" (o "Respeitar" desligado não a apaga mais). |
+| `ui/widgets/filtros_tela_cheia.py` | A mesma regra na tela cheia. |
+| `ui/automatico.py` | A mesma regra no "Limpar a folha" (vale para a janela grande e os dois lados do "comparar": é o mesmo painel). |
+| `tests/test_decisoes_gravuras_cinza.py` | 5 provas novas (abaixo); a prova 8 (Automático) e a 9 (que deixava a caixinha cinza com o "Respeitar" desligado, o jeito que ele recusou) acertadas ao pedido de hoje. |
+| `tests/dados/na_escola_de_jesus_p1_p13.json` | Cópia só das páginas 1 e 13 do projeto de teste dele (com a marcação do "Gravuras e fotos"), para a prova no livro de verdade. O PDF só existe no PC dele: no GitHub a prova pula. |
+| `tests/promessas/promessas.md` | P-087: "vale com a Respeitar ligada ou desligada". |
+
+Com a caixinha marcada, o resultado é **o mesmo, ponto por ponto**, com o "Respeitar" ligado ou desligado. Por
+isso as molduras e iluminuras saem exatamente como no caso das duas ligadas (o print a-26, que ele disse que
+estava certo): não sobrou nada sem resposta, e não abri pergunta nova.
+
+## Como cumpri cada uma
+
+- **"marcar só Gravuras em tons de cinza já basta ... com o Respeitar ligado ou desligado":**
+  - no livro dele, páginas 1, 9, 13, 19 e 45 (`identica-conserto-ao-091b200.txt`): com a caixinha marcada e o
+    "Respeitar" desligado, **antes 0,0% de tons de cinza** (preto e branco chapado, o a-27); **depois o mesmo md5
+    da página com as duas ligadas** (página 13: 31,9% de tons de cinza; capa: 86,7%);
+  - prova `test_d588_conserto_0211_na_escola_de_jesus[capa / página 13]` (igual byte a byte às duas ligadas);
+  - prova `test_d588_conserto_0211_painel_so_o_cinza_sem_o_respeitar_sai_igual_as_duas_ligadas` (cliques de
+    verdade; a tela mostra; **o PDF de verdade** sai cinza).
+- **"não consigo trocar" / a caixinha apagada:** clicável com o "Respeitar" desligado no painel, na tela cheia, no
+  Automático e nos dois lados do "comparar" (provas `..._painel_...`, `..._tela_cheia_com_o_respeitar_desligado`,
+  `..._automatico_com_o_respeitar_desligado`, e a prova 8). Prints `conserto-1/2/3-...-antes/depois.jpg`.
+- **Receita e processamento:** rodar o Automático com "Respeitar" desligada e o cinza marcado grava os dois campos
+  nas páginas e a gravura sai cinza, igual às duas ligadas (`..._automatico_com_o_respeitar_desligado`).
+- **Desmarcada, nada muda (D-586):** as 40 combinações desmarcadas (5 páginas, 4 filtros, "Respeitar" ligada e
+  desligada) têm **o mesmo md5** no `091b200` e depois do conserto (`identica-conserto-ao-091b200.txt`); e as
+  provas comparam com a regra de antes byte a byte.
+- **D-147:** é o mesmo cinza das duas ligadas (o caminho da foto da D-147).
+- **"Só as letras" (pergunta 1):** não mexi; prova `test_d588_cinza_com_so_as_letras_e_volta`.
+- **§4.7 (reversão):** `reversao-conserto-no-091b200.txt`: as provas novas rodadas no código de antes do conserto
+  → **6 falham** (caixinha apagada no painel, na tela cheia e no Automático; capa e página 13 em preto e branco
+  chapado, 0,0% de tons de cinza). Depois do conserto: 19 passaram.
+
+## Prints (janela de verdade sem tela, 1280 x 657, *Na escola de Jesus*, página 13)
+
+Feitos por `fazer_prints_conserto.py` numa cópia do projeto de teste em `_tmp/dados-conserto` (nada gravado na
+pasta dele), com o código de antes (`091b200`) e o de depois. Na cópia, a página 13 está sem "Só as letras"
+(veja a observação abaixo).
+
+- `conserto-1-painel-pagina-13-antes.jpg` / `-depois.jpg`: painel Filtro, marquei o cinza e desliguei o
+  "Respeitar". Antes: caixinha marcada mas apagada e a baleia em preto e branco chapado. Depois: caixinha clicável e
+  a baleia em tons de cinza.
+- `conserto-2-tela-cheia-pagina-13-antes.jpg` / `-depois.jpg`: a tela cheia dos filtros, com o "Respeitar"
+  desligado na página.
+- `conserto-3-automatico-pagina-13-antes.jpg` / `-depois.jpg`: o "Limpar a folha" do Automático, como no a-27.
+- `pagina-13-antes.jpg` / `pagina-13-depois.jpg`: o desenho da página 13 (o da tela e do PDF) nesse estado.
+
+## Observação para a gerente (não mexi): o print a-25
+
+No a-25 (painel Filtro da página 13, as duas caixinhas apagadas), o motivo é o **"Só as letras"**: no projeto de
+teste dele o livro está com "Só as letras" ligado e a página 13 herda (o resumo da parte "Só as letras" no painel
+mostra "Guardar a tinta forte", que só aparece com ela ligada). Esse caso é a **pergunta 1**, que ficou como está.
+Então, na página 13 do projeto dele, a queixa "1- não consigo trocar..." **continua no painel** enquanto o "Só as
+letras" estiver ligado lá; com ele desligado (como no Automático do a-27), está consertado. A pergunta 1 abaixo
+ganhou esse caso.
+
+Também vi que, com as duas ligadas (e agora só com o cinza), a gravura da página 13 tem dois recortes brancos no pé
+(onde a marcação da máquina pôs "papel" e "letra" dentro da gravura). É o mesmo desenho do a-26, que ele disse estar
+certo, e não é deste conserto.
+
+## Testes no PC (um arquivo por vez, offscreen) — `testes-locais-conserto.txt`
+
+(preenchido abaixo, na entrega)
+
+## Perguntas para o Samuel (abertas)
+
+1. A pergunta 1 de 01/11 continua aberta. Caso real: no *Na escola de Jesus* o "Só as letras" está ligado no livro;
+   por isso, na página 13 (print `relatorios/testes-guiados/2026-10-29-automatico/a-25-painel-filtro-cinza-nao-troca.png`),
+   as duas caixinhas ficam apagadas e não dá para marcar o cinza. Desligando o "Só as letras" da página, a caixinha
+   volta a funcionar (com o "Respeitar" ligado ou desligado). **Está bom assim? (sugestão: sim)**
+2. (respondida: "não", 02/11 — consertado acima)
+3. e 4.: continuam como em 01/11.
