@@ -240,3 +240,69 @@ test_decisoes_automatico_ver_como_fica 22 · test_filtro_com_selecao 22 · test_
    volta a funcionar (com o "Respeitar" ligado ou desligado). **Está bom assim? (sugestão: sim)**
 2. (respondida: "não", 02/11 — consertado acima)
 3. e 4.: continuam como em 01/11.
+
+---
+
+# 02/11 — o balão da caixinha (aviso de quando usar)
+
+Antes de mexer juntei o `origin/obra-2026-10-26` (`640170d`) no meu ramo: entrou direto, sem conflito (ele já
+tinha o conserto do cinza, juntado pela gerente em `be4b9c9`, testado pelo Samuel: print a-40).
+
+## Decisões que esta tarefa precisa cumprir (escrito antes de mexer)
+
+- **O pedido de 02/11:** "é bom botar um aviso quando passa em cima da opção gravuras em cor de cinza, avisando que
+  é quando o programa confundir". Texto aprovado por ele ("pode ser esse texto."), **exato**: "Para quando o programa
+  se confundir: marcada, toda gravura que ele achou sai em tons de cinza, mesmo a que ele tomou por enfeite."
+- Vale como **balão** (o que aparece ao passar o mouse) da caixinha "Gravuras em tons de cinza" nos três lugares:
+  painel Filtro, tela cheia dos filtros, "Limpar a folha" do Automático (e os dois lados do "comparar"). Onde já
+  havia balão, troca por este.
+- **D-588** (a caixinha, o nome e os lugares) e CLAUDE.md §11 item 7: nada além do balão.
+
+## O que mudou
+
+| Arquivo | O quê |
+|---|---|
+| `ui/automatico.py` | Constante `BALAO_GRAVURAS_CINZA` com o texto aprovado (um lugar só); o balão do "Limpar a folha" (e, por ser o mesmo painel, dos dois lados do "comparar") passa a ser ele. |
+| `ui/tela_conferir.py` | O balão da caixinha do painel Filtro passa a ser a mesma constante (antes: "Marcada, toda gravura achada sai em tons de cinza no Preto e branco, mesmo a que o programa acha que é um enfeite; o texto continua preto e branco."). |
+| `ui/widgets/filtros_tela_cheia.py` | A tela cheia lê a mesma constante (antes copiava o balão do painel). |
+| `tests/test_decisoes_gravuras_cinza.py` | Prova `test_d588_balao_aprovado_nos_tres_lugares`: o texto, letra por letra, nos três lugares e nos dois lados do "comparar". |
+| `tests/promessas/promessas.md` | A "dica" da P-087 com o texto novo. |
+
+Nada mais mudou (nome, lugar, comportamento e o balão da "Respeitar" ficam como estavam).
+
+## Como cumpri cada uma
+
+- **O texto exato nos três lugares (e no "comparar"):** prova `test_d588_balao_aprovado_nos_tres_lugares`
+  (compara letra por letra com o texto aprovado, escrito na prova, não lido do programa).
+- **§4.7 (reversão):** `reversao-balao-no-640170d.txt`: no `640170d` a prova falha (o balão era o antigo).
+- Testes no PC e GitHub: abaixo.
+
+## Testes do balão
+
+- PC (um arquivo por vez), nenhuma falha: test_decisoes_gravuras_cinza 20 · test_decisoes_automatico_opcoes_do_filtro
+  21 · test_filtros_tela_cheia 11 · test_decisoes_respeitar_gravuras 19 · test_decisoes_automatico 24 ·
+  test_promessas 263 (1 xfail, o de antes).
+- GitHub (commit `6798a38`), Testes no Windows, rodada `41473778845`: 1ª tentativa falhou só na parte 1, com os
+  mesmos 2 erros de limpeza do `test_promessas` da rodada do conserto (`test_p083_jeitos_do_so_as_letras[rede]` e
+  `test_p083_jeitos_no_automatico[Guardar tudo-tudo]`: a prévia tenta abrir o PDF da pasta temporária já apagada;
+  as 263 provas passam). Disparei de novo a parte 1.
+
+Rodadas do conserto do cinza (commit `00d1ddf`), já fechadas: Testes no Windows `41455630372` **passou** (na 2ª
+tentativa da parte 1, mesmos 2 erros de limpeza na 1ª); Filtro de velocidade `41455635198` `091b200` ->
+ramo **passou, "igual (dentro do vai-e-vem)"** (abrir -1,5%, trocar de página +0,9%, Mágico pro -1,4%, Preto e
+branco +1,0%).
+
+# PAUSA (02/11, pedido do Samuel)
+
+"vamos pausar todos os trabalhos, para continuar depois". Parei os acompanhamentos em segundo plano.
+
+- **Pronto e enviado** (ramo `gravuras-cinza-2026-11-01`): o conserto do cinza sem o "Respeitar" (`00d1ddf`,
+  já juntado pela gerente) e o balão aprovado da caixinha nos três lugares (`6798a38`), com prova, reversão e
+  testes do PC passando.
+- **Falta:** a rodada `41473778845` do balão está **vermelha** depois de 2 tentativas, cada vez numa prova
+  diferente, nenhuma do balão. 1ª: os 2 erros de limpeza do p083 (acima). 2ª: o `test_promessas` passou inteiro, e
+  falhou `test_decisoes_so_as_letras.py::test_d148_desfazer_o_automatico_devolve_o_so_as_letras_do_livro` por tempo
+  ("não aconteceu a tempo: o projeto.json com o 'Só as letras' desfeito"). Ao voltar: rodar essa prova no PC e
+  disparar a rodada de novo; se os p083 voltarem, anotar como teste instável em `memoria/bugs.md`. O balão não foi
+  juntado na versão de teste.
+- **Perguntas abertas:** a 1 (com "Só as letras", caso do a-25), a 3 e a 4, como acima.

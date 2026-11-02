@@ -3363,11 +3363,15 @@ class TelaConferir(QWidget):
         # ajustes". A conta mora em core.pipeline.gravuras_em_cinza_valem.
         # Desmarcada de fábrica. Arriscado: o nome (é o que ele aprovou) e criar a
         # caixinha no painel (perde o desfazer).
+        # O balão é o aviso aprovado em 02/11/2026 ("é bom botar um aviso quando passa
+        # em cima da opção gravuras em cor de cinza, avisando que é quando o programa
+        # confundir" → "pode ser esse texto."), o mesmo nos três lugares
+        # (ui/automatico.BALAO_GRAVURAS_CINZA; import aqui dentro, como os outros).
+        from ui.automatico import BALAO_GRAVURAS_CINZA
+
         self.caixa_gravuras_cinza = QCheckBox("Gravuras em tons de cinza")
         estilo.estilizar(self.caixa_gravuras_cinza, lambda: estilo_da_caixinha_com_quadrado(15))
-        self.caixa_gravuras_cinza.setToolTip(
-            "Marcada, toda gravura achada sai em tons de cinza no Preto e branco, mesmo a que o "
-            "programa acha que é um enfeite; o texto continua preto e branco.")
+        self.caixa_gravuras_cinza.setToolTip(BALAO_GRAVURAS_CINZA)
         self.caixa_gravuras_cinza.setChecked(False)
         self.caixa_gravuras_cinza.toggled.connect(self._mudar_gravuras_em_cinza)
 

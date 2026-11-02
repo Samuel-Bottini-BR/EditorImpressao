@@ -706,3 +706,41 @@ def test_d588_conserto_0211_na_escola_de_jesus(indice, nome, monkeypatch):
     antes = _desenho_com(projeto, pagina, respeitar_gravuras_achadas=False,
                          gravuras_em_tons_de_cinza=False)
     assert np.array_equal(desmarcada, antes), f"{nome}: desmarcada mudou"
+
+
+# --- 12. o balão da caixinha (pedido de 02/11/2026) ------------------------------------------------
+
+BALAO = ("Para quando o programa se confundir: marcada, toda gravura que ele achou sai em tons de "
+         "cinza, mesmo a que ele tomou por enfeite.")
+
+
+def test_d588_balao_aprovado_nos_tres_lugares(janela, tmp_path):
+    """Pedido do Samuel, 02/11/2026: "é bom botar um aviso quando passa em cima da opção gravuras em
+    cor de cinza, avisando que é quando o programa confundir" → texto aprovado ("pode ser esse
+    texto."): BALAO, letra por letra, como balão da caixinha "Gravuras em tons de cinza" no painel
+    Filtro, na tela cheia dos filtros, no "Limpar a folha" do Automático e nos dois lados do
+    "comparar". Reversão: no 640170d (antes do pedido) o balão era outro e a prova falha
+    (relatorios/gravuras-cinza/reversao-balao-no-640170d.txt)."""
+    from ui.automatico import EstadoDoAutomatico, PainelDeOpcoes
+    from ui.widgets.filtros_tela_cheia import FiltrosEmTelaCheia
+
+    tela = _depois_do_automatico(janela, tmp_path)
+    _escolher(tela, PRETO_E_BRANCO)
+    assert _caixa(tela).text() == NOME
+    assert _caixa(tela).toolTip() == BALAO, "painel Filtro"
+    dialogo = FiltrosEmTelaCheia(tela)
+    try:
+        dialogo.escolher(PRETO_E_BRANCO)
+        assert dialogo.caixa_gravuras_cinza.text() == NOME
+        assert dialogo.caixa_gravuras_cinza.toolTip() == BALAO, "tela cheia dos filtros"
+    finally:
+        dialogo.reject()
+    grande = janela.abrir_o_automatico()
+    assert grande is not None
+    _assentar()
+    assert grande.cx_gravuras_cinza.text() == NOME
+    assert grande.cx_gravuras_cinza.toolTip() == BALAO, "Limpar a folha do Automático"
+    for lado in ("a", "b"):                       # os dois lados do "comparar": o mesmo painel
+        painel = PainelDeOpcoes(EstadoDoAutomatico(), vertical=True)
+        caixa = painel.controles["gravuras_em_tons_de_cinza"]
+        assert caixa.text() == NOME and caixa.toolTip() == BALAO, f"lado {lado} do comparar"

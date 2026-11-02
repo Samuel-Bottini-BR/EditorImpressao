@@ -103,6 +103,13 @@ ROTULO_RESPEITAR = "Respeitar as gravuras achadas"
 # no painel Filtro, na tela cheia dos filtros e no "Limpar a folha" do Automático." O nome
 # é o do painel (ui/tela_conferir.caixa_gravuras_cinza), o mesmo.
 ROTULO_GRAVURAS_CINZA = "Gravuras em tons de cinza"
+# O balão (tooltip) dessa caixinha, o MESMO nos três lugares (painel Filtro: ui/tela_conferir;
+# tela cheia: ui/widgets/filtros_tela_cheia; "Limpar a folha" do Automático e os dois lados do
+# "comparar": aqui). Pedido do Samuel, 02/11/2026: "é bom botar um aviso quando passa em cima da
+# opção gravuras em cor de cinza, avisando que é quando o programa confundir" → texto aprovado
+# ("pode ser esse texto."). Arriscado: mudar uma letra sem ele pedir (a prova compara o texto).
+BALAO_GRAVURAS_CINZA = ("Para quando o programa se confundir: marcada, toda gravura que ele achou "
+                        "sai em tons de cinza, mesmo a que ele tomou por enfeite.")
 
 
 def _ajustes_do_painel() -> tuple[dict, dict]:
@@ -1956,9 +1963,7 @@ class PainelDeOpcoes(QObject):
         # branco; cinza só com "Só as letras" (a "Respeitar" desligada não a apaga: 02/11)
         self.cx_gravuras_cinza = self._caixa(
             "gravuras_em_tons_de_cinza", ROTULO_GRAVURAS_CINZA, "", col)
-        self.cx_gravuras_cinza.setToolTip(
-            "Marcada, toda gravura achada sai em tons de cinza no Preto e branco, mesmo a que o "
-            "programa acha que é um enfeite; o texto continua preto e branco.")
+        self.cx_gravuras_cinza.setToolTip(BALAO_GRAVURAS_CINZA)       # o aviso de 02/11
         # "Ajuste": a barra do filtro escolhido (o campo muda com o filtro, como na página)
         self.bloco_ajuste = QWidget()
         dentro = QVBoxLayout(self.bloco_ajuste)

@@ -432,11 +432,14 @@ class FiltrosEmTelaCheia(QDialog):
 
         self.partes_das_opcoes: dict[str, QWidget] = {}
         # D-588: "Gravuras em tons de cinza" (só no Preto e branco), o mesmo nome e o
-        # mesmo balão do painel Filtro da página (ui/tela_conferir._montar_aba_filtro)
+        # mesmo balão do painel Filtro da página (ui/tela_conferir._montar_aba_filtro).
+        # O balão é o aviso aprovado em 02/11/2026 ("pode ser esse texto."), lido da
+        # constante única (ui/automatico.BALAO_GRAVURAS_CINZA), não copiado do painel.
+        from ui.automatico import BALAO_GRAVURAS_CINZA
+
         self.caixa_gravuras_cinza = QCheckBox("Gravuras em tons de cinza")
         estilo.estilizar(self.caixa_gravuras_cinza, lambda: estilo_da_caixinha_com_quadrado(15))
-        do_painel = getattr(self.conferir, "caixa_gravuras_cinza", None)
-        self.caixa_gravuras_cinza.setToolTip(do_painel.toolTip() if do_painel is not None else "")
+        self.caixa_gravuras_cinza.setToolTip(BALAO_GRAVURAS_CINZA)
         self.caixa_gravuras_cinza.setCursor(Qt.PointingHandCursor)
         self.caixa_gravuras_cinza.toggled.connect(
             lambda marcada: self._guardar_opcao("gravuras_em_tons_de_cinza", bool(marcada)))
