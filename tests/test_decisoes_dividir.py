@@ -352,8 +352,11 @@ def test_d007_dividido_pelo_automatico_aparece_uma_pagina_por_vez(janela, tmp_pa
     """D-007 (26/10): "quando eu escolher para começar no automatico e dividir as folhas o
     livro tem que aparecer em uma pagina por vez para mim." Rodar o Dividir com a tela no
     Dividir leva à página (uma por vez); a folha inteira com a linha continua no Dividir,
-    quando a pessoa o escolhe, para consertar. O ANTIGO SAIU: a tela ficava no Dividir."""
+    quando a pessoa o escolhe, para consertar. O ANTIGO SAIU: a tela ficava no Dividir.
+    D-601 (02/11/2026): no Dividir, com "Uma página" (de fábrica) a folha dividida aparece
+    pela metade, sem a linha; a folha inteira com a linha é a do "Duas lado a lado"."""
     from ui.tela_conferir import ABA_CORTE
+    from ui.widgets.paginas_rolando import DUAS
 
     janela.abrir_livro(_livro_aberto(tmp_path))
     tela = janela.tela_conferir
@@ -363,6 +366,8 @@ def test_d007_dividido_pelo_automatico_aparece_uma_pagina_por_vez(janela, tmp_pa
     assert tela.aba_atual != ABA_CORTE and not tela.trabalha_com_folhas
     assert tela.item_atual.metade in ("esquerda", "direita")     # uma página, não a folha
     tela.escolher_ferramenta("dividir")                          # consertar: a folha volta
+    assert tela.trabalha_com_folhas and not tela.visualizadores[ABA_CORTE].corte_visivel   # D-601
+    tela.definir_mostrar(DUAS)                                   # a folha inteira com a linha
     assert tela.trabalha_com_folhas and tela.visualizadores[ABA_CORTE].corte_visivel
 
 

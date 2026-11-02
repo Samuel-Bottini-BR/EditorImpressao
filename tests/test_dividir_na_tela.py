@@ -257,8 +257,13 @@ def test_esquerda_apagada_e_nao_dividir_a_folha_continua_no_pdf(janela, pasta):
 
 def test_linha_azul_some_quando_a_folha_nao_e_dividida(janela, pasta):
     """Parecer do verificador (06/10/2026; ja existia no fase-1): depois de
-    "nao dividir esta", a linha azul "arraste" continuava desenhada."""
+    "nao dividir esta", a linha azul "arraste" continuava desenhada.
+    D-601 (02/11/2026): a linha fica no "Duas lado a lado" (no "Uma página" a folha
+    dividida aparece pela metade, sem a linha)."""
+    from ui.widgets.paginas_rolando import DUAS
+
     tela = _conferir_dividido(janela, pasta)
+    tela.definir_mostrar(DUAS)
     vis = tela.visualizadores["corte"]
     assert vis.corte_visivel
     tela._alternar_dividir()

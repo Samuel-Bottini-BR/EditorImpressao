@@ -240,8 +240,10 @@ def test_d007_todo_livro_abre_uma_pagina_por_vez(janela, tmp_path):
 
 def test_no_dividir_a_folha_inteira_continua(janela, tmp_path):
     """D-007 / D-501: a folha inteira com a linha fica só dentro do Dividir. Com "Duas lado a
-    lado" escolhido, o Dividir continua mostrando a folha (para consertar), e os botões do ver
-    ficam apagados com a explicação; voltando às páginas, os pares voltam."""
+    lado" escolhido, o Dividir mostra a folha inteira com a linha (para consertar), não os
+    pares; voltando às páginas, os pares voltam. D-601 (02/11/2026): os botões do ver valem no
+    Dividir ("Uma página" mostra a metade da folha dividida). O ANTIGO SAIU: ali eles ficavam
+    apagados, com a explicação "No Dividir a tela mostra a folha inteira"."""
     from ui.tela_conferir import ABA_CORTE
     from ui.widgets.paginas_rolando import DUAS
 
@@ -250,7 +252,8 @@ def test_no_dividir_a_folha_inteira_continua(janela, tmp_path):
     tela.escolher_ferramenta("dividir")
     assert tela.aba_atual == ABA_CORTE
     assert tela.vista_da_pagina.currentWidget() is tela.area_imagem
-    assert not tela.botoes_mostrar[DUAS].isEnabled() and "Dividir" in tela.botoes_mostrar[DUAS].toolTip()
+    assert tela.visualizadores[ABA_CORTE].corte_visivel
+    assert tela.botoes_mostrar[DUAS].isEnabled() and "Dividir" not in tela.botoes_mostrar[DUAS].toolTip()
     tela.escolher_ferramenta("mao")
     assert tela.vista_da_pagina.currentWidget() is tela.lado_a_lado
 
