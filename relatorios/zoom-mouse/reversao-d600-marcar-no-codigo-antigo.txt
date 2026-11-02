@@ -1,0 +1,208 @@
+﻿FFFF                                                                     [100%]
+================================== FAILURES ===================================
+_______ test_d600_marcar_com_zoom_shift_roda_anda_para_os_lados[pincel] _______
+
+janela = <ui.janela_principal.JanelaPrincipal(0x21ac5d9a530) at 0x0000021AE5939EC0>
+app = <PySide6.QtWidgets.QApplication(0x21ac1acc230) at 0x0000021AE5229300>
+tmp_path = WindowsPath('D:/programas/EditorImpressao/.claude/worktrees/zoom-mouse/_tmp/bt_shift3/test_d600_marcar_com_zoom_shif0')
+ferramenta = 'pincel'
+
+    @pytest.mark.parametrize("ferramenta", ["pincel", "varinha", "retangulo", "laco"])
+    def test_d600_marcar_com_zoom_shift_roda_anda_para_os_lados(janela, app, tmp_path, ferramenta):
+        """D-600, pergunta 2 do ONDE-PAREI (02/11/2026): "Quer que o Shift + roda leve a página para
+        os lados também nessas ferramentas (a roda sozinha continua mudando o pincel)?" → Samuel:
+        "sim". Na área de trabalho, com zoom e uma ferramenta de marcar, Shift + roda para baixo
+        leva a página para a esquerda (ver o que está à direita), sem mudar a altura, o zoom, a
+        página, o tamanho do pincel nem a tolerância da varinha; para cima volta. A roda sozinha
+        continua da ferramenta (D-568: o Pincel muda de tamanho). Falha no código de antes: o
+        Shift + roda não andava (no Pincel mudava o tamanho, no Retângulo não fazia nada)."""
+        import time
+    
+        janela.abrir_livro(_livro(tmp_path))
+        _assentar(app)
+        tela = janela.tela_conferir
+        tela.ir_para_pagina(1)
+        tela.escolher_ferramenta(ferramenta)
+        janela.show()
+        janela.move(-3000, -3000)
+        editor = tela.editor_selecao
+        fim = time.monotonic() + 60
+        while editor._pixmap is None and time.monotonic() < fim:
+            _assentar(app)
+            time.sleep(0.02)
+        assert editor._pixmap is not None, "a página não chegou ao editor de marcar"
+        assert editor.ferramenta == ferramenta
+        tela.botao_mais_zoom.click()
+        tela.botao_mais_zoom.click()
+        _assentar(app)
+        assert editor.zoom > 1.2
+        x, y, zoom, pagina = editor.deslocamento.x(), editor.deslocamento.y(), editor.zoom, tela.indice_pagina
+        espessura, tolerancia = editor.espessura, editor.tolerancia
+        meio = editor.rect().center()
+    
+        _roda(editor, meio, passos=-1)
+        _assentar(app)
+>       assert editor.deslocamento.x() < x, f"{ferramenta}: Shift + roda para baixo não andou para os lados"
+E       AssertionError: pincel: Shift + roda para baixo não andou para os lados
+E       assert 0 < 0
+E        +  where 0 = <built-in method x of PySide6.QtCore.QPoint object at 0x0000021AE6D7A480>()
+E        +    where <built-in method x of PySide6.QtCore.QPoint object at 0x0000021AE6D7A480> = PySide6.QtCore.QPoint(0, 0).x
+E        +      where PySide6.QtCore.QPoint(0, 0) = <ui.widgets.editor_selecao.EditorSelecao(0x21ac6200350) at 0x0000021AE6D7A600>.deslocamento
+
+tests\test_decisoes_shift_todas_as_telas.py:266: AssertionError
+______ test_d600_marcar_com_zoom_shift_roda_anda_para_os_lados[varinha] _______
+
+janela = <ui.janela_principal.JanelaPrincipal(0x21ae6702b70) at 0x0000021AE7816A00>
+app = <PySide6.QtWidgets.QApplication(0x21ac1acc230) at 0x0000021AE5229300>
+tmp_path = WindowsPath('D:/programas/EditorImpressao/.claude/worktrees/zoom-mouse/_tmp/bt_shift3/test_d600_marcar_com_zoom_shif1')
+ferramenta = 'varinha'
+
+    @pytest.mark.parametrize("ferramenta", ["pincel", "varinha", "retangulo", "laco"])
+    def test_d600_marcar_com_zoom_shift_roda_anda_para_os_lados(janela, app, tmp_path, ferramenta):
+        """D-600, pergunta 2 do ONDE-PAREI (02/11/2026): "Quer que o Shift + roda leve a página para
+        os lados também nessas ferramentas (a roda sozinha continua mudando o pincel)?" → Samuel:
+        "sim". Na área de trabalho, com zoom e uma ferramenta de marcar, Shift + roda para baixo
+        leva a página para a esquerda (ver o que está à direita), sem mudar a altura, o zoom, a
+        página, o tamanho do pincel nem a tolerância da varinha; para cima volta. A roda sozinha
+        continua da ferramenta (D-568: o Pincel muda de tamanho). Falha no código de antes: o
+        Shift + roda não andava (no Pincel mudava o tamanho, no Retângulo não fazia nada)."""
+        import time
+    
+        janela.abrir_livro(_livro(tmp_path))
+        _assentar(app)
+        tela = janela.tela_conferir
+        tela.ir_para_pagina(1)
+        tela.escolher_ferramenta(ferramenta)
+        janela.show()
+        janela.move(-3000, -3000)
+        editor = tela.editor_selecao
+        fim = time.monotonic() + 60
+        while editor._pixmap is None and time.monotonic() < fim:
+            _assentar(app)
+            time.sleep(0.02)
+        assert editor._pixmap is not None, "a página não chegou ao editor de marcar"
+        assert editor.ferramenta == ferramenta
+        tela.botao_mais_zoom.click()
+        tela.botao_mais_zoom.click()
+        _assentar(app)
+        assert editor.zoom > 1.2
+        x, y, zoom, pagina = editor.deslocamento.x(), editor.deslocamento.y(), editor.zoom, tela.indice_pagina
+        espessura, tolerancia = editor.espessura, editor.tolerancia
+        meio = editor.rect().center()
+    
+        _roda(editor, meio, passos=-1)
+        _assentar(app)
+>       assert editor.deslocamento.x() < x, f"{ferramenta}: Shift + roda para baixo não andou para os lados"
+E       AssertionError: varinha: Shift + roda para baixo não andou para os lados
+E       assert 0 < 0
+E        +  where 0 = <built-in method x of PySide6.QtCore.QPoint object at 0x0000021AE7827DC0>()
+E        +    where <built-in method x of PySide6.QtCore.QPoint object at 0x0000021AE7827DC0> = PySide6.QtCore.QPoint(0, 0).x
+E        +      where PySide6.QtCore.QPoint(0, 0) = <ui.widgets.editor_selecao.EditorSelecao(0x21ae8451d80) at 0x0000021AE9539680>.deslocamento
+
+tests\test_decisoes_shift_todas_as_telas.py:266: AssertionError
+_____ test_d600_marcar_com_zoom_shift_roda_anda_para_os_lados[retangulo] ______
+
+janela = <ui.janela_principal.JanelaPrincipal(0x21ae88485e0) at 0x0000021AE510D380>
+app = <PySide6.QtWidgets.QApplication(0x21ac1acc230) at 0x0000021AE5229300>
+tmp_path = WindowsPath('D:/programas/EditorImpressao/.claude/worktrees/zoom-mouse/_tmp/bt_shift3/test_d600_marcar_com_zoom_shif2')
+ferramenta = 'retangulo'
+
+    @pytest.mark.parametrize("ferramenta", ["pincel", "varinha", "retangulo", "laco"])
+    def test_d600_marcar_com_zoom_shift_roda_anda_para_os_lados(janela, app, tmp_path, ferramenta):
+        """D-600, pergunta 2 do ONDE-PAREI (02/11/2026): "Quer que o Shift + roda leve a página para
+        os lados também nessas ferramentas (a roda sozinha continua mudando o pincel)?" → Samuel:
+        "sim". Na área de trabalho, com zoom e uma ferramenta de marcar, Shift + roda para baixo
+        leva a página para a esquerda (ver o que está à direita), sem mudar a altura, o zoom, a
+        página, o tamanho do pincel nem a tolerância da varinha; para cima volta. A roda sozinha
+        continua da ferramenta (D-568: o Pincel muda de tamanho). Falha no código de antes: o
+        Shift + roda não andava (no Pincel mudava o tamanho, no Retângulo não fazia nada)."""
+        import time
+    
+        janela.abrir_livro(_livro(tmp_path))
+        _assentar(app)
+        tela = janela.tela_conferir
+        tela.ir_para_pagina(1)
+        tela.escolher_ferramenta(ferramenta)
+        janela.show()
+        janela.move(-3000, -3000)
+        editor = tela.editor_selecao
+        fim = time.monotonic() + 60
+        while editor._pixmap is None and time.monotonic() < fim:
+            _assentar(app)
+            time.sleep(0.02)
+        assert editor._pixmap is not None, "a página não chegou ao editor de marcar"
+        assert editor.ferramenta == ferramenta
+        tela.botao_mais_zoom.click()
+        tela.botao_mais_zoom.click()
+        _assentar(app)
+        assert editor.zoom > 1.2
+        x, y, zoom, pagina = editor.deslocamento.x(), editor.deslocamento.y(), editor.zoom, tela.indice_pagina
+        espessura, tolerancia = editor.espessura, editor.tolerancia
+        meio = editor.rect().center()
+    
+        _roda(editor, meio, passos=-1)
+        _assentar(app)
+>       assert editor.deslocamento.x() < x, f"{ferramenta}: Shift + roda para baixo não andou para os lados"
+E       AssertionError: retangulo: Shift + roda para baixo não andou para os lados
+E       assert 0 < 0
+E        +  where 0 = <built-in method x of PySide6.QtCore.QPoint object at 0x0000021AE95F9900>()
+E        +    where <built-in method x of PySide6.QtCore.QPoint object at 0x0000021AE95F9900> = PySide6.QtCore.QPoint(0, 0).x
+E        +      where PySide6.QtCore.QPoint(0, 0) = <ui.widgets.editor_selecao.EditorSelecao(0x21ae9cae0f0) at 0x0000021AE95F9800>.deslocamento
+
+tests\test_decisoes_shift_todas_as_telas.py:266: AssertionError
+________ test_d600_marcar_com_zoom_shift_roda_anda_para_os_lados[laco] ________
+
+janela = <ui.janela_principal.JanelaPrincipal(0x21aea5570e0) at 0x0000021AE6D78B80>
+app = <PySide6.QtWidgets.QApplication(0x21ac1acc230) at 0x0000021AE5229300>
+tmp_path = WindowsPath('D:/programas/EditorImpressao/.claude/worktrees/zoom-mouse/_tmp/bt_shift3/test_d600_marcar_com_zoom_shif3')
+ferramenta = 'laco'
+
+    @pytest.mark.parametrize("ferramenta", ["pincel", "varinha", "retangulo", "laco"])
+    def test_d600_marcar_com_zoom_shift_roda_anda_para_os_lados(janela, app, tmp_path, ferramenta):
+        """D-600, pergunta 2 do ONDE-PAREI (02/11/2026): "Quer que o Shift + roda leve a página para
+        os lados também nessas ferramentas (a roda sozinha continua mudando o pincel)?" → Samuel:
+        "sim". Na área de trabalho, com zoom e uma ferramenta de marcar, Shift + roda para baixo
+        leva a página para a esquerda (ver o que está à direita), sem mudar a altura, o zoom, a
+        página, o tamanho do pincel nem a tolerância da varinha; para cima volta. A roda sozinha
+        continua da ferramenta (D-568: o Pincel muda de tamanho). Falha no código de antes: o
+        Shift + roda não andava (no Pincel mudava o tamanho, no Retângulo não fazia nada)."""
+        import time
+    
+        janela.abrir_livro(_livro(tmp_path))
+        _assentar(app)
+        tela = janela.tela_conferir
+        tela.ir_para_pagina(1)
+        tela.escolher_ferramenta(ferramenta)
+        janela.show()
+        janela.move(-3000, -3000)
+        editor = tela.editor_selecao
+        fim = time.monotonic() + 60
+        while editor._pixmap is None and time.monotonic() < fim:
+            _assentar(app)
+            time.sleep(0.02)
+        assert editor._pixmap is not None, "a página não chegou ao editor de marcar"
+        assert editor.ferramenta == ferramenta
+        tela.botao_mais_zoom.click()
+        tela.botao_mais_zoom.click()
+        _assentar(app)
+        assert editor.zoom > 1.2
+        x, y, zoom, pagina = editor.deslocamento.x(), editor.deslocamento.y(), editor.zoom, tela.indice_pagina
+        espessura, tolerancia = editor.espessura, editor.tolerancia
+        meio = editor.rect().center()
+    
+        _roda(editor, meio, passos=-1)
+        _assentar(app)
+>       assert editor.deslocamento.x() < x, f"{ferramenta}: Shift + roda para baixo não andou para os lados"
+E       AssertionError: laco: Shift + roda para baixo não andou para os lados
+E       assert 0 < 0
+E        +  where 0 = <built-in method x of PySide6.QtCore.QPoint object at 0x0000021AE935CA80>()
+E        +    where <built-in method x of PySide6.QtCore.QPoint object at 0x0000021AE935CA80> = PySide6.QtCore.QPoint(0, 0).x
+E        +      where PySide6.QtCore.QPoint(0, 0) = <ui.widgets.editor_selecao.EditorSelecao(0x21aebc98ab0) at 0x0000021AE935CAC0>.deslocamento
+
+tests\test_decisoes_shift_todas_as_telas.py:266: AssertionError
+=========================== short test summary info ===========================
+FAILED tests/test_decisoes_shift_todas_as_telas.py::test_d600_marcar_com_zoom_shift_roda_anda_para_os_lados[pincel]
+FAILED tests/test_decisoes_shift_todas_as_telas.py::test_d600_marcar_com_zoom_shift_roda_anda_para_os_lados[varinha]
+FAILED tests/test_decisoes_shift_todas_as_telas.py::test_d600_marcar_com_zoom_shift_roda_anda_para_os_lados[retangulo]
+FAILED tests/test_decisoes_shift_todas_as_telas.py::test_d600_marcar_com_zoom_shift_roda_anda_para_os_lados[laco]
+4 failed, 6 deselected in 4.84s

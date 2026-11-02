@@ -224,7 +224,14 @@ class PaginasLadoALado(PaginasRolando):
         página na barra de pé; aqui, com zoom, ele anda na barra de baixo, o
         mesmo tanto que a roda anda para cima e para baixo (D-568: "com zoom anda
         pela página", Shift para os lados, como na "Uma página"). Sem zoom, como
-        sempre."""
+        sempre (o livro aberto, PaginasRolando.wheelEvent, só anda para os lados se as
+        páginas passarem da largura da tela).
+
+        Desde 02/11/2026 (D-600, "o shift tem que funcionar em todas as telas") a conta
+        de andar na barra é a peça única ui/widgets/roda_de_lado (a mesma do Automático e
+        do livro aberto); o que acontece aqui não mudou."""
+        from ui.widgets.roda_de_lado import andar_na_barra, quanto_de_lado
+
         if evento.modifiers() & Qt.ControlModifier:
             passos = evento.angleDelta().y()
             if passos:
@@ -233,11 +240,9 @@ class PaginasLadoALado(PaginasRolando):
             evento.accept()
             return
         if self.zoom > 1.0 + 1e-3 and evento.modifiers() & Qt.ShiftModifier:
-            de_lado = evento.angleDelta().x() or evento.angleDelta().y()
+            de_lado = quanto_de_lado(evento)
             if de_lado:
-                barra = self.horizontalScrollBar()
-                passo = QApplication.wheelScrollLines() * barra.singleStep()
-                barra.setValue(barra.value() - int(round(de_lado / 120.0 * passo)))
+                andar_na_barra(self.horizontalScrollBar(), de_lado)
             evento.accept()
             return
         super().wheelEvent(evento)

@@ -1,0 +1,267 @@
+﻿FFFFFF                                                                   [100%]
+================================== FAILURES ===================================
+_ test_d600_automatico_antes_e_depois_shift_roda_anda_para_os_lados[pagina da direita] _
+
+janela = <ui.janela_principal.JanelaPrincipal(0x16cbd3b7b20) at 0x0000016CDCB96A80>
+app = <PySide6.QtWidgets.QApplication(0x16cb8d12d50) at 0x0000016CDC433840>
+tmp_path = WindowsPath('D:/programas/EditorImpressao/.claude/worktrees/zoom-mouse/_tmp/bt_shift/test_d600_automatico_antes_e_d0')
+onde = 'pagina da direita'
+
+    @pytest.mark.parametrize("onde", ["pagina da direita", "tela cheia"])
+    def test_d600_automatico_antes_e_depois_shift_roda_anda_para_os_lados(janela, app, tmp_path, onde):
+        """D-600: "shift não funciona no automatico para mover para o lado" · "o shift tem que
+        funcionar em todas as telas". Na janela grande do Automático, na "A página, antes e depois"
+        (a coluna da direita) e na tela cheia dela, com zoom: Shift + roda para baixo anda para a
+        direita (a barra de baixo anda), sem mudar a altura, o zoom nem a página; para cima volta.
+        A roda sem Shift continua dando zoom (D-577). Falha no código de antes: o Shift + roda dava
+        zoom."""
+        from PySide6.QtWidgets import QApplication
+    
+        grande = _abrir(janela, app, tmp_path, pagina=1)
+        grande.resize(1400, 800)
+        grande.show()
+        _assentar(app)
+        painel = grande.antes_e_depois
+        if onde == "tela cheia":
+            painel.botao_tela_cheia.click()
+            _assentar(app)
+            painel.tela_cheia.resize(1400, 850)
+            _assentar(app)
+            vista = painel.tela_cheia.visor
+        else:
+            vista = painel.visor
+        vista.definir_zoom(2.0)
+        QApplication.sendPostedEvents(vista.rolagem)
+        _assentar(app)
+        deitada, de_pe = vista.rolagem.horizontalScrollBar(), vista.rolagem.verticalScrollBar()
+        assert deitada.maximum() > 0, "com zoom 2 a página devia ser mais larga que o espaço"
+        deitada.setValue(deitada.maximum() // 2)              # no meio: dá para ir para os dois lados
+        x, y, zoom, pagina = deitada.value(), de_pe.value(), vista.zoom, painel._indice
+        porta = vista.rolagem.viewport()
+        ponto = vista.mapFrom(porta, porta.rect().center())   # o ponteiro no meio da tela
+    
+        _roda(vista, ponto, passos=-1)
+        _assentar(app)
+>       assert vista.zoom == zoom, f"{onde}: o Shift + roda deu zoom ({zoom} -> {vista.zoom})"
+E       AssertionError: pagina da direita: o Shift + roda deu zoom (2.0 -> 1.6)
+E       assert 1.6 == 2.0
+E        +  where 1.6 = <ui.automatico.VistaAntesDepoisComZoom(0x16cde153c70) at 0x0000016CDE3CDA00>.zoom
+
+tests\test_decisoes_shift_todas_as_telas.py:95: AssertionError
+_ test_d600_automatico_antes_e_depois_shift_roda_anda_para_os_lados[tela cheia] _
+
+janela = <ui.janela_principal.JanelaPrincipal(0x16cde151750) at 0x0000016CDE506D40>
+app = <PySide6.QtWidgets.QApplication(0x16cb8d12d50) at 0x0000016CDC433840>
+tmp_path = WindowsPath('D:/programas/EditorImpressao/.claude/worktrees/zoom-mouse/_tmp/bt_shift/test_d600_automatico_antes_e_d1')
+onde = 'tela cheia'
+
+    @pytest.mark.parametrize("onde", ["pagina da direita", "tela cheia"])
+    def test_d600_automatico_antes_e_depois_shift_roda_anda_para_os_lados(janela, app, tmp_path, onde):
+        """D-600: "shift não funciona no automatico para mover para o lado" · "o shift tem que
+        funcionar em todas as telas". Na janela grande do Automático, na "A página, antes e depois"
+        (a coluna da direita) e na tela cheia dela, com zoom: Shift + roda para baixo anda para a
+        direita (a barra de baixo anda), sem mudar a altura, o zoom nem a página; para cima volta.
+        A roda sem Shift continua dando zoom (D-577). Falha no código de antes: o Shift + roda dava
+        zoom."""
+        from PySide6.QtWidgets import QApplication
+    
+        grande = _abrir(janela, app, tmp_path, pagina=1)
+        grande.resize(1400, 800)
+        grande.show()
+        _assentar(app)
+        painel = grande.antes_e_depois
+        if onde == "tela cheia":
+            painel.botao_tela_cheia.click()
+            _assentar(app)
+            painel.tela_cheia.resize(1400, 850)
+            _assentar(app)
+            vista = painel.tela_cheia.visor
+        else:
+            vista = painel.visor
+        vista.definir_zoom(2.0)
+        QApplication.sendPostedEvents(vista.rolagem)
+        _assentar(app)
+        deitada, de_pe = vista.rolagem.horizontalScrollBar(), vista.rolagem.verticalScrollBar()
+        assert deitada.maximum() > 0, "com zoom 2 a página devia ser mais larga que o espaço"
+        deitada.setValue(deitada.maximum() // 2)              # no meio: dá para ir para os dois lados
+        x, y, zoom, pagina = deitada.value(), de_pe.value(), vista.zoom, painel._indice
+        porta = vista.rolagem.viewport()
+        ponto = vista.mapFrom(porta, porta.rect().center())   # o ponteiro no meio da tela
+    
+        _roda(vista, ponto, passos=-1)
+        _assentar(app)
+>       assert vista.zoom == zoom, f"{onde}: o Shift + roda deu zoom ({zoom} -> {vista.zoom})"
+E       AssertionError: tela cheia: o Shift + roda deu zoom (2.0 -> 1.6)
+E       assert 1.6 == 2.0
+E        +  where 1.6 = <ui.automatico.VistaAntesDepoisComZoom(0x16ce2f77890) at 0x0000016CDE185540>.zoom
+
+tests\test_decisoes_shift_todas_as_telas.py:95: AssertionError
+_ test_d600_comparar_da_tela_cheia_do_automatico_shift_roda_anda_para_os_lados _
+
+janela = <ui.janela_principal.JanelaPrincipal(0x16ce2bc6820) at 0x0000016CDC80BB80>
+app = <PySide6.QtWidgets.QApplication(0x16cb8d12d50) at 0x0000016CDC433840>
+tmp_path = WindowsPath('D:/programas/EditorImpressao/.claude/worktrees/zoom-mouse/_tmp/bt_shift/test_d600_comparar_da_tela_che0')
+
+    def test_d600_comparar_da_tela_cheia_do_automatico_shift_roda_anda_para_os_lados(janela, app, tmp_path):
+        """D-600 no "comparar" da tela cheia do Automático (duas telas, o zoom e a posição andam
+        juntos, D-577): com zoom, Shift + roda na tela da esquerda leva a página para os lados nas
+        duas, sem mudar a altura nem o zoom; para cima volta. Falha no código de antes: dava zoom."""
+        grande = _abrir(janela, app, tmp_path, pagina=1)
+        grande.resize(1400, 800)
+        grande.show()
+        _assentar(app)
+        painel = grande.antes_e_depois
+        painel.botao_tela_cheia.click()
+        _assentar(app)
+        tela = painel.tela_cheia
+        tela.resize(1400, 850)
+        tela.botao_comparar.click()
+        _esperar(app, painel)
+        _assentar(app)
+        a, b = tela.vista_a, tela.vista_b
+        assert a._pixmap is not None and b._pixmap is not None
+        a.definir_zoom(3.0)
+        _assentar(app)
+        assert a._largura_base() * a.zoom > a.width(), "com zoom 3 a página devia passar da largura"
+        x, y, zoom = a.deslocamento.x(), a.deslocamento.y(), a.zoom
+    
+        _roda(a, a.rect().center(), passos=-1)
+        _assentar(app)
+>       assert a.zoom == zoom and b.zoom == zoom, "o Shift + roda deu zoom"
+E       AssertionError: o Shift + roda deu zoom
+E       assert (2.4000000000000004 == 3.0)
+E        +  where 2.4000000000000004 = <ui.widgets.visualizador.Visualizador(0x16ce6f67bb0) at 0x0000016CE024BA80>.zoom
+
+tests\test_decisoes_shift_todas_as_telas.py:136: AssertionError
+____________ test_d600_ver_de_perto_shift_roda_anda_para_os_lados _____________
+
+janela = <ui.janela_principal.JanelaPrincipal(0x16ce6f7baa0) at 0x0000016CDE415E80>
+app = <PySide6.QtWidgets.QApplication(0x16cb8d12d50) at 0x0000016CDC433840>
+tmp_path = WindowsPath('D:/programas/EditorImpressao/.claude/worktrees/zoom-mouse/_tmp/bt_shift/test_d600_ver_de_perto_shift_r0')
+
+    def test_d600_ver_de_perto_shift_roda_anda_para_os_lados(janela, app, tmp_path):
+        """D-600 no "Ver de perto": com zoom, Shift + roda leva a página para os lados (para baixo:
+        ver o que está à direita), sem mudar a altura, o zoom nem a página; para cima volta. A roda
+        sem Shift continua dando zoom. No "comparar" dele as duas telas andam juntas. Falha no
+        código de antes: o Shift + roda dava zoom."""
+        tela, ampliada = _ver_de_perto(janela, app, tmp_path)
+        try:
+            vista = ampliada.vista
+            # o zoom que deixa a página com o dobro da largura da tela (a janela pode ser larga)
+            vista.definir_zoom(min(7.0, max(2.0, 2.0 * vista.width() / vista._largura_base())))
+            _assentar(app)
+            assert vista._largura_base() * vista.zoom > vista.width()
+            x, y, zoom, pagina = vista.deslocamento.x(), vista.deslocamento.y(), vista.zoom, tela.indice_pagina
+    
+            _roda(vista, vista.rect().center(), passos=-1)
+            _assentar(app)
+>           assert vista.zoom == zoom, f"o Shift + roda deu zoom ({zoom} -> {vista.zoom})"
+E           AssertionError: o Shift + roda deu zoom (7.0 -> 5.6000000000000005)
+E           assert 5.6000000000000005 == 7.0
+E            +  where 5.6000000000000005 = <ui.widgets.visualizador.Visualizador(0x16ce9872630) at 0x0000016CDFB38DC0>.zoom
+
+tests\test_decisoes_shift_todas_as_telas.py:187: AssertionError
+_ test_d600_livro_aberto_pagina_mais_larga_shift_roda_anda_para_os_lados[True] _
+
+app = <PySide6.QtWidgets.QApplication(0x16cb8d12d50) at 0x0000016CDC433840>
+tmp_path = WindowsPath('D:/programas/EditorImpressao/.claude/worktrees/zoom-mouse/_tmp/bt_shift/test_d600_livro_aberto_pagina_0')
+continuo = True
+
+    @pytest.mark.parametrize("continuo", [True, False])
+    def test_d600_livro_aberto_pagina_mais_larga_shift_roda_anda_para_os_lados(app, tmp_path, continuo):
+        """D-600 no livro aberto: no "Tamanho real", uma página mais larga que a tela; Shift + roda
+        anda para os lados (a barra de baixo), sem descer a página nem trocar de folha, com o
+        "Rolar sem parar" ligado ou não; para cima volta. A roda sem Shift continua descendo.
+        Falha no código de antes: o Shift + roda descia a tela inteira (o rolar padrão do Qt)."""
+        from PySide6.QtCore import QPointF
+    
+        from ui.widgets import paginas_rolando as pr
+    
+        caminho = tmp_path / "largo.pdf"
+        doc = fitz.open()
+        for i in range(4):
+            doc.new_page(width=1400, height=1000).insert_text((50, 80), f"folha {i + 1}", fontsize=30)
+        doc.save(str(caminho))
+        doc.close()
+        vista = pr.PaginasRolando()
+        try:
+            vista.resize(700, 500)
+            vista.show()
+            vista.move(-3000, -3000)
+            vista.abrir(str(caminho))
+            vista.definir_jeito(caber=pr.TAMANHO_REAL, continuo=continuo)
+            vista.ir_para(1)
+            _assentar(app)
+            deitada, de_pe = vista.horizontalScrollBar(), vista.verticalScrollBar()
+            assert deitada.maximum() > 0, "a página devia ser mais larga que a tela"
+            deitada.setValue(deitada.maximum() // 2)
+            de_pe.setValue(min(de_pe.maximum(), de_pe.value() + 40))   # longe do começo e do fim
+            x, y, folha = deitada.value(), de_pe.value(), vista.atual
+            porta = vista.viewport()
+            meio = QPointF(porta.rect().center())
+    
+            _roda(porta, meio, passos=-1)
+            _assentar(app)
+>           assert deitada.value() > x, "Shift + roda para baixo não andou para a direita"
+E           AssertionError: Shift + roda para baixo não andou para a direita
+E           assert 608 > 608
+E            +  where 608 = <built-in method value of PySide6.QtWidgets.QScrollBar object at 0x0000016CDFBAFA80>()
+E            +    where <built-in method value of PySide6.QtWidgets.QScrollBar object at 0x0000016CDFBAFA80> = <PySide6.QtWidgets.QScrollBar(0x16ce92b1bb0) at 0x0000016CDFBAFA80>.value
+
+tests\test_decisoes_shift_todas_as_telas.py:266: AssertionError
+_ test_d600_livro_aberto_pagina_mais_larga_shift_roda_anda_para_os_lados[False] _
+
+app = <PySide6.QtWidgets.QApplication(0x16cb8d12d50) at 0x0000016CDC433840>
+tmp_path = WindowsPath('D:/programas/EditorImpressao/.claude/worktrees/zoom-mouse/_tmp/bt_shift/test_d600_livro_aberto_pagina_1')
+continuo = False
+
+    @pytest.mark.parametrize("continuo", [True, False])
+    def test_d600_livro_aberto_pagina_mais_larga_shift_roda_anda_para_os_lados(app, tmp_path, continuo):
+        """D-600 no livro aberto: no "Tamanho real", uma página mais larga que a tela; Shift + roda
+        anda para os lados (a barra de baixo), sem descer a página nem trocar de folha, com o
+        "Rolar sem parar" ligado ou não; para cima volta. A roda sem Shift continua descendo.
+        Falha no código de antes: o Shift + roda descia a tela inteira (o rolar padrão do Qt)."""
+        from PySide6.QtCore import QPointF
+    
+        from ui.widgets import paginas_rolando as pr
+    
+        caminho = tmp_path / "largo.pdf"
+        doc = fitz.open()
+        for i in range(4):
+            doc.new_page(width=1400, height=1000).insert_text((50, 80), f"folha {i + 1}", fontsize=30)
+        doc.save(str(caminho))
+        doc.close()
+        vista = pr.PaginasRolando()
+        try:
+            vista.resize(700, 500)
+            vista.show()
+            vista.move(-3000, -3000)
+            vista.abrir(str(caminho))
+            vista.definir_jeito(caber=pr.TAMANHO_REAL, continuo=continuo)
+            vista.ir_para(1)
+            _assentar(app)
+            deitada, de_pe = vista.horizontalScrollBar(), vista.verticalScrollBar()
+            assert deitada.maximum() > 0, "a página devia ser mais larga que a tela"
+            deitada.setValue(deitada.maximum() // 2)
+            de_pe.setValue(min(de_pe.maximum(), de_pe.value() + 40))   # longe do começo e do fim
+            x, y, folha = deitada.value(), de_pe.value(), vista.atual
+            porta = vista.viewport()
+            meio = QPointF(porta.rect().center())
+    
+            _roda(porta, meio, passos=-1)
+            _assentar(app)
+>           assert deitada.value() > x, "Shift + roda para baixo não andou para a direita"
+E           AssertionError: Shift + roda para baixo não andou para a direita
+E           assert 608 > 608
+E            +  where 608 = <built-in method value of PySide6.QtWidgets.QScrollBar object at 0x0000016CDFB7F200>()
+E            +    where <built-in method value of PySide6.QtWidgets.QScrollBar object at 0x0000016CDFB7F200> = <PySide6.QtWidgets.QScrollBar(0x16cdd7b7b30) at 0x0000016CDFB7F200>.value
+
+tests\test_decisoes_shift_todas_as_telas.py:266: AssertionError
+=========================== short test summary info ===========================
+FAILED tests/test_decisoes_shift_todas_as_telas.py::test_d600_automatico_antes_e_depois_shift_roda_anda_para_os_lados[pagina da direita]
+FAILED tests/test_decisoes_shift_todas_as_telas.py::test_d600_automatico_antes_e_depois_shift_roda_anda_para_os_lados[tela cheia]
+FAILED tests/test_decisoes_shift_todas_as_telas.py::test_d600_comparar_da_tela_cheia_do_automatico_shift_roda_anda_para_os_lados
+FAILED tests/test_decisoes_shift_todas_as_telas.py::test_d600_ver_de_perto_shift_roda_anda_para_os_lados
+FAILED tests/test_decisoes_shift_todas_as_telas.py::test_d600_livro_aberto_pagina_mais_larga_shift_roda_anda_para_os_lados[True]
+FAILED tests/test_decisoes_shift_todas_as_telas.py::test_d600_livro_aberto_pagina_mais_larga_shift_roda_anda_para_os_lados[False]
+6 failed in 6.28s

@@ -418,7 +418,16 @@ class Visualizador(QWidget):
         return self._tamanho_base_px()[1] * self._escala_ajustada()
 
     def wheelEvent(self, evento) -> None:  # noqa: N802
+        """A roda dá zoom, ancorado no ponteiro (o "Ver de perto", o "comparar" da tela
+        cheia do Automático). Com Shift (sem Ctrl) e zoom (acima de 100%), anda para os
+        lados em vez de dar zoom (D-600, 02/11/2026: "o shift tem que funcionar em
+        todas as telas"; ui/widgets/roda_de_lado). Na área de trabalho quem decide a roda é a
+        TelaConferir (_roda_na_pagina, pelo filtro de eventos), antes de chegar aqui."""
         if self._pixmap is None:
+            return
+        from ui.widgets.roda_de_lado import shift_roda_no_visualizador
+
+        if shift_roda_no_visualizador(self, evento):
             return
         passos = evento.angleDelta().y() / 120.0
         if not passos:
