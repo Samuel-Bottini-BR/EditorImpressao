@@ -379,9 +379,10 @@ def test_d589_desmarcar_rodar_marcar_rodar_religa(janela, app, tmp_path, etapa):
 # página sai toda em preto e branco." + "sim, mas tem que ter certeza que o programa vai procurar
 # as figuras mesmo com a opção desmarcada e que não vai remarcar ela de novo na caixinha".
 
-def _rodar_pela_janela(janela, app, so_as_letras: bool, gravuras: bool) -> None:
+def _rodar_pela_janela(janela, app, so_as_letras: bool, gravuras: bool, cinza: bool = False) -> None:
     """Na janela grande, como o Kaique: "Limpar a folha" em Preto e branco, a caixinha "Só as
-    letras" e a etapa "Gravuras e fotos" como pedido, e "Rodar"."""
+    letras", a caixinha "Gravuras em tons de cinza" (D-588; P4) e a etapa "Gravuras e fotos"
+    como pedido, e "Rodar"."""
     from PySide6.QtCore import Qt
 
     from core.filtros import PRETO_E_BRANCO
@@ -390,6 +391,8 @@ def _rodar_pela_janela(janela, app, so_as_letras: bool, gravuras: bool) -> None:
     _assentar(app)
     jan.radios_de_filtro[PRETO_E_BRANCO].setChecked(True)
     jan.escolhas_misto.caixa.setChecked(so_as_letras)
+    _assentar(app)
+    jan.cx_gravuras_cinza.setChecked(cinza)
     jan.lista.item_da_etapa(A.LIMPAR).setCheckState(Qt.Checked)
     jan.lista.item_da_etapa(A.GRAVURAS).setCheckState(Qt.Checked if gravuras else Qt.Unchecked)
     _assentar(app)
@@ -455,4 +458,55 @@ def test_d589_3_sem_so_as_letras_e_gravuras_desmarcada_a_pagina_sai_toda_em_pret
     assert janela.projeto.misto_so_as_letras is False
     _caixinha_das_gravuras_desmarcada(janela, app)
     _, cinzas = _pdf_da_foto(janela, tmp_path, "sem-so-as-letras")
+    assert cinzas < 0.05
+
+
+# --- P4: "Gravuras em tons de cinza" com "Gravuras e fotos" desmarcada (Samuel, 02/11/2026) -----
+#
+# Pergunta (gerente): "A: o cinza procura as figuras por conta própria, só para pintá-las de cinza,
+# e a etapa 5 continua desmarcada. É o mesmo que você aprovou para o "Só as letras" em 31/10 [...]
+# e bate com o de hoje: "ela acha as gravuras sozinha"." → Samuel: "a".
+# Defeito que estas provas pegam (junção da versão de teste, 02/11/2026; GitHub 41463140548, parte
+# 4, test_d588_no_limpar_a_folha_do_automatico): com a etapa 5 desmarcada o livro parava de procurar
+# gravuras e a caixinha do cinza não fazia nada - a figura saía em preto e branco.
+
+@pytest.fixture
+def livro_com_gravuras_e_cinza(janela, app, tmp_path):
+    """Livro com a "foto" (degradê) em que uma rodada ligou Limpar (Preto e branco) e Gravuras;
+    depois o Kaique marca "Gravuras em tons de cinza", desmarca "Gravuras e fotos" e roda."""
+    janela.show()
+    janela.abrir_livro(_livro_com_foto(tmp_path))
+    _assentar(app)
+    _rodar_pela_janela(janela, app, so_as_letras=False, gravuras=True)
+    assert janela.estado_do_automatico.situacoes[A.GRAVURAS] == "ligada no livro todo"
+    _rodar_pela_janela(janela, app, so_as_letras=False, gravuras=False, cinza=True)
+    assert all(p.gravuras_em_tons_de_cinza for p in janela.projeto.paginas)
+    return janela
+
+
+def test_p4_1_cinza_com_gravuras_desmarcada_acha_as_figuras_e_a_caixinha_nao_volta_marcada(
+        livro_com_gravuras_e_cinza, app, tmp_path):
+    """P4 "a": com "Gravuras em tons de cinza" marcada, o programa procura as figuras por dentro
+    mesmo com a etapa 5 desmarcada: a "foto" sai em tons de cinza no PDF (não em preto e branco
+    chapado); a etapa 5 continua "desligada" e a caixinha não volta marcada."""
+    janela = livro_com_gravuras_e_cinza
+    from core import etapas
+
+    assert not janela.projeto.detectar_regioes
+    _caixinha_das_gravuras_desmarcada(janela, app)
+    assert etapas.marca_sozinho(janela.projeto, janela.projeto.paginas[0])
+    _, cinzas = _pdf_da_foto(janela, tmp_path, "cinza")
+    assert cinzas > 0.3
+
+
+def test_p4_2_sem_o_cinza_e_gravuras_desmarcada_a_pagina_sai_toda_em_preto_e_branco(
+        livro_com_gravuras_e_cinza, app, tmp_path):
+    """P4: depois, desmarcar "Gravuras em tons de cinza" e rodar: nada procura as figuras, a etapa
+    5 continua desmarcada e a página sai toda em preto e branco ("se algo não está marcado, não é
+    para fazer")."""
+    janela = livro_com_gravuras_e_cinza
+    _rodar_pela_janela(janela, app, so_as_letras=False, gravuras=False, cinza=False)
+    assert not any(p.gravuras_em_tons_de_cinza for p in janela.projeto.paginas)
+    _caixinha_das_gravuras_desmarcada(janela, app)
+    _, cinzas = _pdf_da_foto(janela, tmp_path, "sem-cinza")
     assert cinzas < 0.05
