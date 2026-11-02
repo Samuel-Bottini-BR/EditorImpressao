@@ -214,3 +214,15 @@ coisa: um botão que mostra e esconde o colorido das marcações.
 - Teste do zoom (junção `d6d6e6f`), palavras dele: "1- funcionando" (Uma página: Ctrl + roda vai para o mouse) · "2- funciona o zoom mas com shift para os lados não funciona ele rola as paginas para pagina, no caso troca de pagina." (Duas lado a lado: Shift + roda troca de página em vez de ir para os lados — defeito) · "3- ok" (nomes inteiros no "Mais ajustes").
 - Construtor do cinza entregou (`09e47d2`; GitHub 41323846070 verde; velocidade "igual"); 4 perguntas dele (Só as letras; Respeitar desligada; lugares; gravura de traço/área à mão). Ele: "pode" juntar → junção `63fbbff`; 114 provas passaram.
 - Conserto do Shift + roda no "Duas lado a lado" (construtor do zoom, `aba8c37`; causa: a roda sem Ctrl ia para o rolar padrão do Qt, que com Shift desce página por página; GitHub 41331010059 verde na 2ª, p107 instável). Junção `b43dc40`; 63 provas passaram.
+
+## Teste do cinza (D-588) e do Shift + roda (D-599), 02/11, junção `d7483c5`
+- Central lida ao abrir: nada novo (ordens abertas são de 22/10, já vistas; `respostas` todas lidas).
+
+| # | Palavras dele | Print | O que é |
+|---|---|---|---|
+| a-25 | "1- não consigo trocar respeitar gravuras por gravuras em tons de cinza." | ![](a-25-painel-filtro-cinza-nao-troca.png) | Painel "Filtro da página", página 13 de 199 (Jonas), Preto e branco: "Respeitar as gravuras achadas" marcada, "Gravuras em tons de cinza" desmarcada. |
+| a-26 | "2- para deixar as gravuras cinzas o respeitar gravuras tem que estar ligado, por gravuras em tons de cinza sozinho já deveria resolver o problema. 2 ultimos prints eu deixei explicado" | ![](a-26-automatico-respeitar-e-cinza-ligadas.png) | Automático, "Limpar a folha", página 13: as duas marcadas → o "depois" sai com a gravura em cinza. |
+| a-27 | (mesma frase do 2) | ![](a-27-automatico-so-cinza-sai-pb.png) | Mesma página com "Respeitar" desmarcada: a caixinha do cinza fica marcada mas apagada, e a gravura sai em preto e branco chapado. É a pergunta 2 do construtor da D-588 ("Com Respeitar desligada, a caixinha também fica cinza [...] Está bom?") → resposta dele: não. |
+
+- "3- shift não funciona no automatico para mover para o lado. No duas paginas lado a lado está funcionando" → D-599 no "Duas lado a lado": **testado, funcionando**. O "antes e depois" do Automático não entra na D-599 (que é "na área de trabalho"): perguntar se ele quer lá também.
+- Gerente propôs: "marcar só "Gravuras em tons de cinza" já basta: ela acha as gravuras sozinha e pinta de cinza, com o "Respeitar" ligado ou desligado. Chamo o agente para fazer assim?" → ele: "sim pode, e no automatico pode colocar o shift tambem, o shift tem que funcionar em todas as telas" → D-588 (conserto) e D-600 (Shift + roda em todas as telas). Dois construtores chamados: cinza no ramo `gravuras-cinza-2026-11-01`, Shift no ramo `zoom-mouse-2026-11-01`.
