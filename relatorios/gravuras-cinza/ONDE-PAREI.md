@@ -217,7 +217,15 @@ certo, e não é deste conserto.
 
 ## Testes no PC (um arquivo por vez, offscreen) — `testes-locais-conserto.txt`
 
-(preenchido abaixo, na entrega)
+Nenhuma falha: test_decisoes_gravuras_cinza 19 · test_decisoes_respeitar_gravuras 19 ·
+test_preto_e_branco_regra_30_09 15 · test_decisoes_automatico_opcoes_do_filtro 21 · test_filtros_tela_cheia 11 ·
+test_decoracao_no_preto_e_branco 12 · test_decisoes_filtro_automatico 4 · test_decisoes_automatico 24 ·
+test_decisoes_automatico_ver_como_fica 22 · test_filtro_com_selecao 22 · test_promessas 263 (1 xfail, o de antes).
+
+## GitHub (commit `00d1ddf`)
+
+- **Testes no Windows**, rodada `41455630372`: (resultado abaixo)
+- **Filtro de velocidade** `091b200` -> `gravuras-cinza-2026-11-01`, rodada `41455635198`: (resultado abaixo)
 
 ## Perguntas para o Samuel (abertas)
 

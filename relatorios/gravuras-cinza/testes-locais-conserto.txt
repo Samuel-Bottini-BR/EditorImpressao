@@ -1,0 +1,12 @@
+Conserto de 02/11/2026: testes no PC, um arquivo por vez, offscreen (QT_QPA_PLATFORM=offscreen, --basetemp=_tmp/bt), no commit 00d1ddf.
+test_decisoes_gravuras_cinza: 19 passed in 45.79s
+test_decisoes_respeitar_gravuras: 19 passed in 44.16s
+test_preto_e_branco_regra_30_09: 15 passed in 4.24s
+test_decisoes_automatico_opcoes_do_filtro: 21 passed in 124.38s (0:02:04)
+test_filtros_tela_cheia: 11 passed in 17.20s
+test_decoracao_no_preto_e_branco: 12 passed in 14.55s
+test_decisoes_filtro_automatico: 4 passed in 14.25s
+test_decisoes_automatico: 24 passed in 52.73s
+test_decisoes_automatico_ver_como_fica: 22 passed in 88.54s (0:01:28)
+test_filtro_com_selecao: 22 passed in 2.22s
+test_promessas: 263 passed, 1 xfailed, 74 warnings in 1008.19s (0:16:48)
