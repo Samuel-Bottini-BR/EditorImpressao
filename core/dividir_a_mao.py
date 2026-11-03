@@ -455,13 +455,47 @@ def medir_para_dividir(projeto, indice_folha: int, jeito: str):
     (D-495; ver medir_a_tampa) e, na folha já sem ela, acha a divisão pelo
     `jeito` (forçada: a pessoa mandou dividir). Levanta ErroPDF se o livro não
     abre."""
+    folha = projeto.folhas[indice_folha]
+    return ler_a_linha(projeto.caminho_entrada, indice_folha, folha.rotacao, jeito, forcar=True)
+
+
+def ler_a_linha(caminho_pdf, indice_folha: int, rotacao: int, jeito: str,
+                forcar: bool = False):
+    """(Lombada, tampa): onde o motor de corte `jeito` cortaria a folha
+    `indice_folha` do PDF, girada `rotacao` graus - a MESMA conta do "dividir
+    esta" (a folha a 150 DPI, girada, a tampa do scanner procurada e pintada
+    de branco antes, D-495), sem tocar no projeto.
+
+    D-602 (Samuel, 03/11/2026: "o programa deveria carregar com a conta que
+    está escolhida, e dai eu conseguir ver a linha e dai eu clicar e dividir
+    esta"): a ferramenta Dividir chama esta conta por trás (QThread) para
+    mostrar a linha azul na folha ainda inteira, e o "dividir todas" para ler
+    cada folha. Com forcar=False o motor também diz se a folha é de UMA página
+    só (Lombada.e_paisagem False: folha em pé no do Editor, "uma página" no
+    automático do ScanTailor) - essa não mostra linha nem é cortada pelo
+    "dividir todas". forcar=True é a conta do "dividir esta" na folha que o
+    motor acha simples (medir_para_dividir: a pessoa mandou dividir).
+    Recebe o caminho e a rotação em vez do projeto para poder rodar num fio
+    de fundo enquanto a tela continua mudando o projeto. Levanta ErroPDF se o
+    livro não abre.
+    Arriscado: mudar a imagem lida (DPI, giro, tampa) só aqui - a linha
+    mostrada deixaria de ser a do "dividir esta"."""
     from core.borda_preta import pintar_fora
+    from core.endireitar import girar_90
+    from core.pdf_io import abrir_pdf, pagina_para_array
     from core.pipeline import DPI_ANALISE, achar_divisao
 
-    img = _folha_girada(projeto, indice_folha)
-    tampa = medir_a_tampa(projeto, indice_folha, img)
+    doc = abrir_pdf(caminho_pdf)
+    try:
+        img = pagina_para_array(doc, indice_folha, dpi=DPI_ANALISE)
+    finally:
+        doc.close()
+    giro = int(rotacao) % 360
+    if giro:
+        img = girar_90(img, giro)
+    tampa = achar_a_tampa(img, giro, DPI_ANALISE) or [giro]
     medida = pintar_fora(img, tuple(tampa[1:])) if len(tampa) == 5 else img
-    return achar_divisao(medida, jeito, DPI_ANALISE, forcar=True), tampa
+    return achar_divisao(medida, jeito, DPI_ANALISE, forcar=forcar), tampa
 
 
 

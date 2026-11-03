@@ -177,6 +177,27 @@ def test_d602_dividir_esta_corta_na_linha_mostrada(janela, tmp_path):
     assert not projeto.folhas[0].dividir and len(projeto.paginas) == 2
 
 
+def test_d602_folha_juntada_mostra_a_linha_de_antes(janela, tmp_path):
+    """D-602 com a D-498: depois de "não dividir esta", a folha (dupla) mostra a linha onde o
+    "dividir esta" a corta de novo - a linha de antes, mesmo arrastada à mão."""
+    from ui.tela_conferir import ABA_CORTE
+    from ui.widgets.paginas_rolando import DUAS, UMA
+
+    tela = _no_dividir(janela, tmp_path, [_aberto_torto()])
+    projeto, vista = janela.projeto, tela.visualizadores[ABA_CORTE]
+    _linha_lida(tela)
+    tela.botao_nao_dividir.click()                       # dividir esta
+    tela.botoes_mostrar[DUAS].click()
+    vista.corte_movido.emit(0.47)                        # a linha acertada à mão
+    tela.botoes_mostrar[UMA].click()
+    tela.botao_nao_dividir.click()                       # não dividir esta
+    _linha_lida(tela)
+    assert not projeto.folhas[0].dividir
+    assert vista.corte_visivel and vista.posicao_corte == pytest.approx(0.47)
+    tela.botao_nao_dividir.click()                       # dividir esta: na linha de antes
+    assert projeto.folhas[0].dividir and projeto.folhas[0].posicao_corte == pytest.approx(0.47)
+
+
 # --- 3. a lista do motor não trava ---------------------------------------------------------------
 
 def test_reversao_d602_lista_do_motor_nao_trava_na_folha_inteira(janela, tmp_path):
@@ -294,7 +315,10 @@ def test_d602_dividir_todas_parar_nao_muda_nada(janela, tmp_path, monkeypatch):
     tela.botao_dividir_todas.click()
     caixa = tela._caixa_de_dividir_todas
     assert caixa is not None, "aparece a caixa do andamento, com o parar"
-    caixa.cancel()
+    from PySide6.QtWidgets import QPushButton
+
+    parar = next(b for b in caixa.findChildren(QPushButton) if b.text() == "parar")
+    parar.click()                                         # o que a pessoa faz
     tarefa = tela._tarefa_de_dividir_todas
     tarefa.wait(10000)
     _assentar(10)
