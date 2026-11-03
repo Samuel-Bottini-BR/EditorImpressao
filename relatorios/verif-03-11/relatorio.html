@@ -1,0 +1,382 @@
+<!doctype html>
+<html lang="pt-BR">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Verificador clicando - 03/11/2026</title>
+<style>
+:root { color-scheme: light dark; }
+* { box-sizing: border-box; }
+body {
+  font: 17px/1.65 "Segoe UI", system-ui, sans-serif;
+  max-width: 46rem; margin: 0 auto; padding: 2.5rem 1.5rem 6rem;
+  color: #1c1c1e; background: #fdfdfc;
+}
+h1 { font-size: 2rem; line-height: 1.2; margin: 0 0 .3em; letter-spacing: -.02em; }
+h2 { font-size: 1.35rem; margin: 2.4em 0 .6em; padding-top: .8em;
+     border-top: 1px solid #e6e4e0; letter-spacing: -.01em; }
+h3 { font-size: 1.1rem; margin: 1.8em 0 .4em; }
+h1 + p, h2 + p { margin-top: .4em; }
+p, li { margin: 0 0 .9em; }
+ul, ol { padding-left: 1.3em; }
+strong { font-weight: 640; }
+code {
+  font: .88em ui-monospace, "Cascadia Code", Consolas, monospace;
+  background: #f1efec; padding: .12em .35em; border-radius: 4px;
+}
+pre {
+  background: #f1efec; padding: 1em 1.1em; border-radius: 8px;
+  overflow-x: auto; line-height: 1.5;
+}
+pre code { background: none; padding: 0; }
+blockquote {
+  margin: 1.2em 0; padding: .1em 0 .1em 1.1em;
+  border-left: 3px solid #c9c5be; color: #55524d;
+}
+table {
+  border-collapse: collapse; width: 100%; margin: 1.2em 0;
+  font-size: .95rem; display: block; overflow-x: auto;
+}
+th, td { padding: .5em .8em; text-align: left; border-bottom: 1px solid #e6e4e0; }
+th { font-weight: 620; background: #f7f5f2; white-space: nowrap; }
+tr:last-child td { border-bottom: none; }
+img { max-width: 100%; height: auto; border-radius: 6px; margin: 1em 0;
+      border: 1px solid #e6e4e0; }
+hr { border: none; border-top: 1px solid #e6e4e0; margin: 2.5em 0; }
+.rodape { margin-top: 4em; padding-top: 1.2em; border-top: 1px solid #e6e4e0;
+          font-size: .85rem; color: #86827c; }
+@media (prefers-color-scheme: dark) {
+  body { color: #e8e6e3; background: #1a1917; }
+  h2 { border-top-color: #35332f; }
+  code, pre, th { background: #262421; }
+  th, td { border-bottom-color: #35332f; }
+  blockquote { border-left-color: #4a4741; color: #b0aca6; }
+  img { border-color: #35332f; }
+  .rodape { border-top-color: #35332f; color: #7d7973; }
+}
+@media print {
+  body { max-width: none; padding: 0; color: #000; background: #fff; }
+  h2 { page-break-after: avoid; }
+  table, img { page-break-inside: avoid; }
+}
+</style>
+</head>
+<body>
+<h1>Verificador clicando: os três consertos de 03/11 (D-602, D-004 no Gradus, D-590)</h1>
+<p><strong>Opinião: PRONTO PARA CONFERIR, com ressalvas.</strong> Os três consertos funcionaram na janela de verdade.
+Nada travou e nada ficou "uma folha na outra". Há três coisas que só o Samuel pode decidir (no fim).</p>
+<p><strong>Como foi conferido: por olho, clicando.</strong> O programa de verdade (a janela do Windows, com as letras de
+verdade) foi aberto fora da tela. Os cliques foram mandados como mensagens de mouse do Windows direto para
+a janela: botões, caixinhas, a lista "motor de corte" (abrir e escolher a opção), as miniaturas da tira, a
+trilha de ferramentas, a pergunta "Páginas mexidas à mão". O Ctrl+Z foi tecla do Windows. Cada print foi
+aberto e olhado. Pasta de dados isolada, só minha (nunca a do Samuel). O PDF do Gradus foi copiado para essa
+pasta. Janela do tamanho da dele (1536 x 824, como nos prints a-51/a-53). O programa foi fechado no fim.</p>
+<p>O que não foi clique de mão: o PDF foi aberto passando o caminho ao programa (sem a janela "Abrir" do
+Windows). Para achar uma folha longe na tira, a tira foi rolada pelo programa, e o clique na miniatura foi
+de mouse. A roda do mouse não foi usada.</p>
+<p>Versão testada: <code>613d6833</code> (ponta do <code>obra-2026-10-26</code>).</p>
+<hr />
+<h2>Teste 1: a linha azul e o Dividir (D-602) — funciona, com ressalvas</h2>
+<p>Palavras do Samuel (D-602): "Quando eu estiver na ferramenta de dividir, o programa deveria carregar com a
+conta que está escolhida, e dai eu conseguir ver a linha e dai eu clicar e dividir esta, dai ele reparte [...]
+o botão do jeito [...] o nome poderia ser motor de corte) ficou travado e não dava para mudar."</p>
+<table>
+<thead>
+<tr>
+<th>O que fiz</th>
+<th>O que vi</th>
+<th>Resultado</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>Gradus aberto novo (70 folhas, nada dividido), cliquei no Dividir na trilha, cliquei na folha 5</td>
+<td>Linha azul tracejada na lombada, sem a pega "arraste". Nada cortado (70 páginas)</td>
+<td>funciona</td>
+</tr>
+<tr>
+<td>"Duas lado a lado" na folha 5</td>
+<td>A mesma linha, no mesmo lugar</td>
+<td>funciona</td>
+</tr>
+<tr>
+<td>"dividir esta"</td>
+<td>Cortou exatamente na linha mostrada. Em "Uma página" aparece só a metade esquerda (página 2 do livro)</td>
+<td>funciona</td>
+</tr>
+<tr>
+<td>Troquei o "motor de corte" 15 vezes (folha dividida, folha inteira, em "Uma página" e "Duas lado a lado", depois de "não dividir esta", depois de "juntar todas", depois de trocar de folha)</td>
+<td>A lista abriu e trocou nas 15 vezes. Nunca ficou cinza nem travada. Na folha inteira a linha muda com o motor (folha 6: Editor 0,491, ScanTailor 0,496)</td>
+<td>funciona, com ressalva 1</td>
+</tr>
+<tr>
+<td>"dividir todas", e "parar" quando ia em 6 de 65</td>
+<td>Janela "Lendo as folhas pelo motor de corte... 6 de 65" com "parar". Depois de parar: nada mudou (70 páginas, 0 divididas)</td>
+<td>funciona</td>
+</tr>
+<tr>
+<td>"dividir todas" de novo, até o fim</td>
+<td>36 segundos. <strong>140 páginas</strong>, 70 folhas divididas. Cada folha cortada na sua própria linha (70 de 70 batem com a leitura do motor; 37 posições diferentes)</td>
+<td>funciona</td>
+</tr>
+<tr>
+<td>Olhei folhas 5, 9, 30 e 60 em "Duas lado a lado"</td>
+<td>Linha na lombada de cada uma</td>
+<td>funciona</td>
+</tr>
+<tr>
+<td>Ctrl+Z</td>
+<td>Voltou a 70 páginas, nenhuma dividida</td>
+<td>funciona</td>
+</tr>
+<tr>
+<td>Boécio (só folhas de uma página), folhas 1 e 3</td>
+<td>Sem linha, em "Uma página" e em "Duas lado a lado"</td>
+<td>funciona</td>
+</tr>
+<tr>
+<td>Procurei "jeito" em todos os textos do Dividir e da etapa 1 do Automático</td>
+<td>Não aparece. No Automático está "Motor de corte:" e "motor de corte: o do ScanTailor"</td>
+<td>funciona</td>
+</tr>
+</tbody>
+</table>
+<p><img alt="Folha 5 inteira: a linha azul antes de cortar" src="t1-03-folha-5-inteira-uma-pagina-linha.png" /></p>
+<p><img alt="Depois de &quot;dividir esta&quot;: só a metade" src="t1-05-folha-5-dividir-esta-uma-pagina.png" /></p>
+<p><img alt="Lista trocada na folha 6 inteira (motor &quot;o do Editor&quot;)" src="t1-09-motor-trocado-folha-6-inteira.png" /></p>
+<p><img alt="O andamento do &quot;dividir todas&quot;, com &quot;parar&quot;" src="t1-14-dividir-todas-andamento-antes-de-parar.png" /></p>
+<p><img alt="Boécio: folha de uma página, sem linha" src="boecio-01-boecio-folha-1-uma-pagina.png" /></p>
+<p><strong>Ressalvas do teste 1</strong></p>
+<ol>
+<li><strong>Folha que já foi dividida e depois juntada</strong>: trocar o motor não muda a linha. Exemplo: folha 5 depois
+   de "não dividir esta", e folha 7 depois de "juntar todas". A linha fica onde estava antes, nos dois
+   motores. Isso segue a D-498 ("dividir esta de novo devolve as duas como estavam, na linha de antes"). Mas
+   quem olha vê a lista trocar e a linha parada. (Pergunta 1.)</li>
+<li><strong>Frase de baixo</strong>: na folha inteira com a linha azul à vista, a faixa diz "Esta folha não vai ser
+   dividida." (print t1-03). Ela está certa (ainda não foi cortada), mas parece contradizer a linha. É a
+   mesma frase do print a-50 do Samuel.</li>
+<li>Depois do "dividir todas" o contador passou de "0 com dúvida" para "7 com dúvida", e o triângulo de
+   avisos ficou com 7. Não investiguei quais são.</li>
+<li>Depois do Ctrl+Z a tira voltou para o começo (folhas 1 a 16), mas a folha da vez era a 60: a miniatura
+   escolhida ficou fora da vista (print t1-22).</li>
+<li>Depois de usar a lista "motor de corte", a seta do teclado (→) não trocou de folha. O teclado ficou com a
+   lista. O clique na seta da barra de baixo não foi testado.</li>
+<li>A palavra "jeito" continua na etapa 4 do Automático ("Jeito de limpar", "Jeito do preto e branco") e no
+   balão da receita. Isso está fora do Dividir. A D-602 fala só do Dividir e da etapa 1.</li>
+</ol>
+<hr />
+<h2>Teste 2: Automático depois de dividir à mão (defeito do Gradus, D-004) — funciona, com ressalvas</h2>
+<p>Palavras do Samuel: "teve até uma folha que ficou colocada uma na outra" · D-004: "o programa pergunta se
+quer pular as páginas mexidas."</p>
+<table>
+<thead>
+<tr>
+<th>O que fiz</th>
+<th>O que vi</th>
+<th>Resultado</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>Gradus novo. Dividir: "dividir esta" nas folhas 1, 2 e 9</td>
+<td>73 páginas</td>
+<td>funciona</td>
+</tr>
+<tr>
+<td>"Rodar o automático…" (o botão do aviso "Livro novo"). Desmarquei tudo e deixei só "1 Dividir folhas ao meio", "no livro todo"</td>
+<td>A frase diz "Vou dividir as folhas, no livro todo (73 páginas)."</td>
+<td>funciona</td>
+</tr>
+<tr>
+<td>Rodar</td>
+<td>A pergunta "6 páginas foram mexidas à mão [...] Pular essas páginas?" Cliquei "Pular as 6"</td>
+<td>funciona</td>
+</tr>
+<tr>
+<td>Depois de rodar (72 s)</td>
+<td><strong>140 páginas</strong>, 70 folhas divididas. Toda folha tem 2 páginas, nenhuma metade repetida</td>
+<td>funciona</td>
+</tr>
+<tr>
+<td>Olhei as folhas 5 a 10, metade por metade, em "Uma página", e cada folha em "Duas lado a lado" (18 prints)</td>
+<td>Cada página é a metade certa, na ordem do livro (páginas 2, 3, 4, 5, branca, 7, branca, 9, 10, 11, 12, 13). <strong>Nenhuma "uma na outra"</strong>. A folha 9, dividida à mão, ficou com a linha dela</td>
+<td>funciona</td>
+</tr>
+<tr>
+<td>Marquei "6 Margens iguais" (com o Dividir), e olhei a prévia na página 11 (como no a-51) e na 5</td>
+<td>Página em pé, uma só, com a margem branca em volta. <strong>Nenhuma folha deitada</strong></td>
+<td>funciona</td>
+</tr>
+<tr>
+<td>Rodar com Dividir e Margens ("Pular as 6")</td>
+<td>140 páginas, todas em pé. Olhei as páginas 1, 3, 9, 11, 12, 13, 17, 18, 20 e 60, e as 12 e 18 em "Duas lado a lado". <strong>Nenhuma deitada nem misturada</strong> (no a-53 as 11 e 12 estavam deitadas)</td>
+<td>funciona</td>
+</tr>
+</tbody>
+</table>
+<p><img alt="A pergunta das mexidas" src="por-cima/t2-por-cima-01.png" /></p>
+<p><img alt="Folha 9 (dividida à mão) depois de rodar, em &quot;Duas lado a lado&quot;" src="t2-20-rodou-folha-9-duas.png" /></p>
+<p><img alt="Folha 10 depois de rodar, em &quot;Duas lado a lado&quot;" src="t2-21-rodou-folha-10-duas.png" /></p>
+<p><img alt="Prévia de Margens iguais na página 11: página em pé (era o a-51)" src="t2m-02-previa-margens-pagina-11.png" /></p>
+<p><img alt="Depois de rodar Dividir + Margens: páginas 18 e 19 lado a lado" src="t2m-15-margens-pagina-18-duas.png" /></p>
+<p><strong>Ressalvas do teste 2</strong></p>
+<ol>
+<li><strong>A rodada foi parada no meio</strong> (o Samuel pediu) logo depois de marcar "Margens iguais". Retomei
+   reabrindo o trabalho pela tela inicial. A rodada parada já tinha ficado gravada (Margens "ligada no livro
+   todo", 140 páginas). Rodei de novo Dividir + Margens, e a pergunta voltou ("Pular as 6").</li>
+<li><strong>O PDF final não foi gerado nem medido</strong> (não foi pedido). A vista da página na área de trabalho não
+   mostra a margem acrescentada: quem mostra é a prévia do Automático. Não sei se as 6 páginas puladas
+   (folhas 1, 2 e 9) recebem as margens iguais no PDF. A pergunta diz "pular nessas etapas", e as etapas
+   eram Dividir e Margens. (Pergunta 2.)</li>
+<li>Na janela grande do Automático, na etapa 6, a coluna do meio fica cortada à direita nesse tamanho de
+   janela: "5,0 mm" e "no meio" aparecem pela metade, com barra de rolagem (print t2m-02). O print a-51 do
+   Samuel mostra a mesma coluna cortada do outro lado.</li>
+<li>Minha primeira tentativa travou na pergunta das mexidas. O defeito era do meu roteiro (o "respondedor"
+   de janelas sumiu da memória), não do programa. A pergunta estava na tela, certa
+   (<code>t2-primeira-tentativa/</code>).</li>
+</ol>
+<hr />
+<h2>Teste 3: a caixinha do Dividir (D-590) — funciona, com ressalva</h2>
+<p>Palavras do Samuel (03/11): "Sim a caixinha continua desmacada."</p>
+<table>
+<thead>
+<tr>
+<th>O que fiz</th>
+<th>O que vi</th>
+<th>Resultado</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>Livro do teste 2 (140 páginas, Dividir e Margens ligadas). Na janela grande, desmarquei "1 Dividir" e deixei "6 Margens" para ter o que rodar</td>
+<td>Frase: "Vou deixar as margens iguais, no livro todo (140 páginas)." <strong>Não diz "Vou dividir"</strong></td>
+<td>funciona</td>
+</tr>
+<tr>
+<td>Rodar</td>
+<td>Continua com <strong>140 páginas, 70 folhas divididas</strong></td>
+<td>funciona</td>
+</tr>
+<tr>
+<td>Painel Automático</td>
+<td>"1 Dividir folhas ao meio · desligada", caixinha <strong>desmarcada</strong></td>
+<td>funciona</td>
+</tr>
+<tr>
+<td>Janela grande reaberta</td>
+<td>Caixinha <strong>desmarcada</strong>, "desligada". A frase só fala de margens</td>
+<td>funciona</td>
+</tr>
+<tr>
+<td>Fechei o programa e abri de novo (programa novo, mesma pasta de dados). Abri o livro pela tela inicial</td>
+<td>140 páginas. Painel e janela grande: Dividir <strong>desmarcada</strong></td>
+<td>funciona</td>
+</tr>
+<tr>
+<td>"juntar todas" (70 páginas). Marquei "1 Dividir" de novo e Rodar</td>
+<td>Pergunta: "<strong>70 páginas foram mexidas à mão</strong> [...] Pular essas páginas?". Com "Pular as 70", <strong>nada foi dividido</strong>: continuou com 70 páginas, mas a caixinha ficou marcada, "ligada no livro todo"</td>
+<td>ressalva (pergunta 3)</td>
+</tr>
+<tr>
+<td>De novo: Dividir marcada, Rodar, e "Rodar nelas também"</td>
+<td><strong>140 páginas</strong>, 70 divididas. Caixinha marcada no painel e na janela grande, "ligada no livro todo"</td>
+<td>funciona</td>
+</tr>
+</tbody>
+</table>
+<p><img alt="Dividir desmarcada antes de rodar" src="t3-02-dividir-desmarcada-antes-de-rodar.png" /></p>
+<p><img alt="Painel depois de fechar e reabrir: Dividir desmarcada" src="t3b-02-painel-trabalho-reaberto.png" /></p>
+<p><img alt="Janela grande depois de reabrir: desmarcada, frase sem &quot;Vou dividir&quot;" src="t3b-03-janela-grande-trabalho-reaberto.png" /></p>
+<p><img alt="A pergunta das 70 mexidas depois do &quot;juntar todas&quot;" src="por-cima/t3b-por-cima-01.png" /></p>
+<p><img alt="Dividir marcada de novo e rodada (&quot;Rodar nelas também&quot;): marcada no painel" src="t3c-03-painel-depois-de-rodar.png" /></p>
+<p><strong>Ressalva do teste 3</strong>: depois de "juntar todas", as 70 folhas contam como "mexidas à mão". Ao marcar
+Dividir e rodar, o programa pergunta. "Pular" deixa tudo inteiro, mas a etapa aparece "ligada no livro
+todo". O teste do pedido ("marcar de novo e rodar → divide") só deu certo com "Rodar nelas também".
+(Pergunta 3.) O "juntar todas" também marcou as 70 folhas como conferidas ("70 de 70 conferidas", tique
+verde em todas as miniaturas; print t3b-05).</p>
+<hr />
+<h2>Como cumpri cada decisão</h2>
+<table>
+<thead>
+<tr>
+<th>Decisão</th>
+<th>Situação</th>
+<th>Prova</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>D-602 linha azul antes de cortar, só na folha dupla</td>
+<td>cumprida</td>
+<td>t1-03, t1-04, boecio-01 a 03</td>
+</tr>
+<tr>
+<td>D-602 "dividir esta" corta na linha</td>
+<td>cumprida</td>
+<td>t1-05 (0,5086 mostrada = 0,5086 cortada)</td>
+</tr>
+<tr>
+<td>D-602 "dividir todas"</td>
+<td>cumprida</td>
+<td>t1-14, t1-16, t1-17, t1-18 a 21; 140 páginas</td>
+</tr>
+<tr>
+<td>D-602 "motor de corte" no lugar de "jeito"</td>
+<td>cumprida no Dividir e na etapa 1</td>
+<td>t1-23; ressalva 6</td>
+</tr>
+<tr>
+<td>D-602 lista travada</td>
+<td>cumprida (15 de 15 trocas)</td>
+<td>anotacoes-t1, troca-01 a 15</td>
+</tr>
+<tr>
+<td>D-601 "Uma página" mostra a metade</td>
+<td>cumprida</td>
+<td>t1-05, t2-04 a t2-15</td>
+</tr>
+<tr>
+<td>D-498 / D-590 "não dividir esta", "juntar todas", Ctrl+Z</td>
+<td>cumprida</td>
+<td>t1-11, t1-12, t1-22</td>
+</tr>
+<tr>
+<td>D-004 pergunta e pular, sem "uma na outra"</td>
+<td>cumprida</td>
+<td>por-cima/t2-por-cima-01, t2-16 a t2-21</td>
+</tr>
+<tr>
+<td>D-590 caixinha desmarcada fica desmarcada, folhas continuam divididas</td>
+<td>cumprida (também ao reabrir)</td>
+<td>t3-02 a t3-04, t3b-02, t3b-03</td>
+</tr>
+<tr>
+<td>D-090 "usar em todas"</td>
+<td>não testado (não foi pedido)</td>
+<td>—</td>
+</tr>
+</tbody>
+</table>
+<h2>Perguntas para o Samuel</h2>
+<ol>
+<li>Folha que você dividiu e depois juntou: ao trocar o "motor de corte", a linha deve ir para onde o motor
+   novo acha? Hoje ela fica na linha de antes (regra D-498, "na linha de antes").</li>
+<li>"Pular as 6" com Margens iguais marcada: as páginas mexidas à mão também devem ficar sem as margens
+   iguais? Ou "pular" vale só para o que foi mexido (o Dividir)? Não medi o PDF.</li>
+<li>Depois de "juntar todas", marcar Dividir e rodar pergunta "70 páginas mexidas à mão". Responder "Pular"
+   não divide nada, e a etapa fica "ligada no livro todo". É isso que você quer, ou "juntar todas" não deve
+   contar como mexida à mão para o Automático?</li>
+</ol>
+<h2>Onde estão as coisas</h2>
+<ul>
+<li>Prints numerados nesta pasta: <code>t1-*</code>, <code>boecio-*</code>, <code>t2-*</code>, <code>t2m-*</code>, <code>t3-*</code>, <code>t3b-*</code>, <code>t3c-*</code>. As janelas
+  que abriram por cima estão em <code>por-cima/</code>.</li>
+<li>Anotações de cada passo (estado da linha, contagem de páginas, caixinhas): <code>anotacoes-*.txt</code> e <code>.json</code>.</li>
+<li>O roteiro que pilotou a janela: <code>piloto.py</code>.</li>
+<li>Pasta de dados isolada:
+  <code>C:\Users\fotog\AppData\Local\Temp\claude\C--Users-fotog\05fa28dc-c2f5-4152-b355-e6ab76bb386f\scratchpad\verif-03-11-dados\</code>.
+  Ninguém mais usa essa pasta. Não apaguei (fica fora do projeto).</li>
+</ul>
+<p class="rodape">Editor de Impressão &middot; gerado em 03/11/2026 às 18:37</p>
+</body>
+</html>

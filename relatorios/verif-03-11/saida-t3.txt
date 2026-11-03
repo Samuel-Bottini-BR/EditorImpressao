@@ -1,0 +1,18 @@
+cartoes => ["pdfcoffee.com_gradus-primus-pdf-pdf-free"]
+  print t3-01-tela-inicial-livro-escolhido.png (1938, 1077)
+reabriu-em-s => 2.3
+00-ao-reabrir => {"paginas": 140, "vao_ao_pdf": 140, "folhas_divididas": 70, "folhas": 70, "folhas_nao_divididas": [], "folhas_com_paginas_diferente_de_2": {}, "metade_repetida": []}
+abri-pelo-painel => true
+01-janela-ao-abrir => {"dividir": "desmarcada | 1  Dividir folhas ao meio / motor de corte: o do ScanTailor · desligada", "endireitar": "desmarcada | 2  Endireitar folhas tortas / conta: a do ScanTailor · desligada", "cortar": "desmarcada | 3  Cortar as bordas / o corte de sempre · desligada", "limpar": "desmarcada | 4  Limpar a folha / Original · desligada", "gravuras": "desmarcada | 5  Gravuras e fotos / seguindo o desenho · desligada", "margens": "MARCADA | 6  Margens iguais / margens 10 / 5 / 10 / 5 mm · ligada no livro todo", "cadernos": "desmarcada | 7  Montar cadernos / 20 páginas por caderno · desligada"}
+02-dividir-desmarcada => {"lista": {"dividir": "desmarcada | 1  Dividir folhas ao meio / motor de corte: o do ScanTailor · desligada", "endireitar": "desmarcada | 2  Endireitar folhas tortas / conta: a do ScanTailor · desligada", "cortar": "desmarcada | 3  Cortar as bordas / o corte de sempre · desligada", "limpar": "desmarcada | 4  Limpar a folha / Original · desligada", "gravuras": "desmarcada | 5  Gravuras e fotos / seguindo o desenho · desligada", "margens": "MARCADA | 6  Margens iguais / margens 10 / 5 / 10 / 5 mm · ligada no livro todo", "cadernos": "desmarcada | 7  Montar cadernos / 20 páginas por caderno · desligada"}, "frase": "Vou deixar as margens iguais, no livro todo (140 páginas)."}
+  print t3-02-dividir-desmarcada-antes-de-rodar.png (1784, 995)
+rodar-viu-a-tarefa => false
+03-rodar-s => 34.0
+04-depois-de-rodar => {"paginas": 140, "vao_ao_pdf": 140, "folhas_divididas": 70, "folhas": 70, "folhas_nao_divididas": [], "folhas_com_paginas_diferente_de_2": {}, "metade_repetida": []}
+05-painel => {"lista": {"dividir": "desmarcada | 1  Dividir folhas ao meio / desligada", "endireitar": "desmarcada | 2  Endireitar folhas tortas / desligada", "cortar": "desmarcada | 3  Cortar as bordas / desligada", "limpar": "desmarcada | 4  Limpar a folha / desligada", "gravuras": "desmarcada | 5  Gravuras e fotos / desligada", "margens": "MARCADA | 6  Margens iguais / ligada no livro todo", "cadernos": "desmarcada | 7  Montar cadernos / desligada"}}
+  print t3-03-painel-depois-de-rodar.png (1938, 1077)
+abri-pelo-painel => true
+06-janela-reaberta => {"lista": {"dividir": "desmarcada | 1  Dividir folhas ao meio / motor de corte: o do ScanTailor · desligada", "endireitar": "desmarcada | 2  Endireitar folhas tortas / conta: a do ScanTailor · desligada", "cortar": "desmarcada | 3  Cortar as bordas / o corte de sempre · desligada", "limpar": "desmarcada | 4  Limpar a folha / Original · desligada", "gravuras": "desmarcada | 5  Gravuras e fotos / seguindo o desenho · desligada", "margens": "MARCADA | 6  Margens iguais / margens 10 / 5 / 10 / 5 mm · ligada no livro todo", "cadernos": "desmarcada | 7  Montar cadernos / 20 páginas por caderno · desligada"}, "frase": "Vou deixar as margens iguais, no livro todo (140 páginas)."}
+  print t3-04-janela-grande-reaberta.png (1784, 995)
+  ok      WM_CLOSE fechou a janela
+fim

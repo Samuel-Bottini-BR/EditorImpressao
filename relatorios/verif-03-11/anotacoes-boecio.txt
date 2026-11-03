@@ -1,0 +1,6 @@
+boecio-original => {"paginas": 50, "tamanho_p1": [257, 368], "tamanho_p10": [246, 369]}
+abriu-em-s => 2.6
+ferramenta => "corte"
+boecio-folha1-uma => {"folha": 1, "pagina": 1, "mostrar": "uma", "folha_dividida": false, "posicao_corte_da_folha": 0.5, "linha_visivel": false, "linha_em": 0.5, "linha_arrastavel": false, "atualizando": false, "motor": "o do ScanTailor", "lista_motor_ativa": true, "botao": "dividir esta", "paginas": 6, "vao_ao_pdf": 6, "folhas_divididas": 0}
+boecio-folha3-uma => {"folha": 3, "pagina": 3, "mostrar": "uma", "folha_dividida": false, "posicao_corte_da_folha": 0.5, "linha_visivel": false, "linha_em": 0.5, "linha_arrastavel": false, "atualizando": false, "motor": "o do ScanTailor", "lista_motor_ativa": true, "botao": "dividir esta", "paginas": 6, "vao_ao_pdf": 6, "folhas_divididas": 0}
+boecio-folha3-duas => {"folha": 3, "pagina": 3, "mostrar": "duas", "folha_dividida": false, "posicao_corte_da_folha": 0.5, "linha_visivel": false, "linha_em": 0.5, "linha_arrastavel": false, "atualizando": false, "motor": "o do ScanTailor", "lista_motor_ativa": true, "botao": "dividir esta", "paginas": 6, "vao_ao_pdf": 6, "folhas_divididas": 0}
