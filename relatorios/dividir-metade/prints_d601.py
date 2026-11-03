@@ -58,7 +58,7 @@ def main() -> None:
     app = QApplication.instance() or QApplication([])
     from ui.janela_principal import JanelaPrincipal
     from ui.tela_conferir import ABA_CORTE
-    from ui.widgets.paginas_rolando import DUAS
+    from ui.widgets.paginas_rolando import DUAS, UMA
 
     def assentar(vezes: int = 30) -> None:
         for _ in range(vezes):
@@ -88,7 +88,8 @@ def main() -> None:
         pagina = janela.projeto.paginas[tela.indice_pagina]
         print(f"{QUANDO}-{nome}: folha {tela.indice_folha + 1}, página {tela.indice_pagina + 1} "
               f"({pagina.metade}), rótulo '{tela.rotulo_da_pagina.text()}', "
-              f"linha à vista={tela.visualizadores[ABA_CORTE].corte_visivel}")
+              f"linha à vista={tela.visualizadores[ABA_CORTE].corte_visivel}, "
+              f"miniaturas na tira={len(tela.tira._miniaturas)}")
 
     tela.escolher_ferramenta("dividir")
     tela._ir_para(0)
@@ -104,6 +105,11 @@ def main() -> None:
     else:                                     # antes: o botão ficava apagado no Dividir
         tela.definir_mostrar(DUAS)
     foto("3-duas-lado-a-lado")
+    # acréscimo de 02/11: a tira do Dividir; volta ao "Uma página" e clica na
+    # miniatura da direita da folha 1 (a capa); antes, o quadro 2 era a folha 2
+    tela.definir_mostrar(UMA)
+    tela.tira.selecionada.emit(1)
+    foto("4-clique-na-miniatura-2")
     if janela.aviso_do_fundo is not None:
         janela.aviso_do_fundo.done(0)
     janela.close()
