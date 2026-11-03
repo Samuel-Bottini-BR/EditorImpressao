@@ -25,13 +25,31 @@ Outro agente mexe ao mesmo tempo em `core/automatico._dividir`, `paginas_mexidas
 ## Andamento
 
 - [x] Li implementador.md, CLAUDE.md §11, D-002, D-004, D-068, D-589, D-590.
-- [ ] Causa.
-- [ ] Teste de reversão (falha em 8846017).
-- [ ] Conserto.
+- [x] Causa (abaixo).
+- [x] Teste de reversão `tests/test_dividir_desmarcada_caixinha.py` (3 testes): os 3 FALHARAM em 8846017
+      (`assert 'ligada no livro todo' == 'desligada'`; `dividir_folhas` continuava True). Passam no novo.
+- [x] Conserto (commit `0f8663d`).
 - [ ] Testes no PC (um por vez).
 - [ ] Olhar Endireitar, Cortar, Limpar (achados).
 - [ ] Print da janela grande reaberta.
 - [ ] GitHub: conjunto inteiro + botões; filtro de velocidade.
+
+## Causa
+
+`core/automatico._desligar_as_desmarcadas` deixava o Dividir de fora de propósito (`DESLIGAM_DESMARCADAS` só com
+Gravuras, Margens, Cadernos: "Dividir desligado juntaria as folhas de novo"). Então `Projeto.dividir_folhas` (o
+"ligada no livro todo" do Dividir) continuava True depois do Rodar; o painel relê o livro
+(`ui/automatico.EstadoDoAutomatico.do_projeto` → `A.etapas_ligadas` → `ligada_no_livro`), a caixinha volta marcada
+e a frase, que sai das marcadas, diz "Vou dividir as folhas".
+
+## Conserto
+
+1. `core/automatico.py`: `DESLIGAM_DESMARCADAS` ganha o DIVIDIR + docstrings de `_desligar_as_desmarcadas` e de
+   `Pedido.desmarcadas`. O desligar grava só `dividir_folhas = False` (o ramo `else` que já existia); **nenhuma folha
+   é tocada** (`ConfigFolha.dividir` e as páginas ficam). Longe de `_dividir`, `paginas_mexidas` e `pular`.
+2. `modelos.py`, `Projeto.so_cadernos`: `and not any(f.dividir for f in self.folhas)`. Sem isso, com o Dividir
+   desligado e só "Montar cadernos", o caminho rápido montava os cadernos com as folhas cruas do PDF (juntava as
+   folhas: medido, 2 folhas de 1152 pt no lugar de 4 de 576 pt). O teste 3 prova.
 
 ## Perguntas para o Samuel
 
