@@ -28,11 +28,16 @@ Outro agente mexe ao mesmo tempo em `core/automatico._dividir`, `paginas_mexidas
 - [x] Causa (abaixo).
 - [x] Teste de reversão `tests/test_dividir_desmarcada_caixinha.py` (3 testes): os 3 FALHARAM em 8846017
       (`assert 'ligada no livro todo' == 'desligada'`; `dividir_folhas` continuava True). Passam no novo.
-- [x] Conserto (commit `0f8663d`).
-- [ ] Testes no PC (um por vez).
-- [ ] Olhar Endireitar, Cortar, Limpar (achados).
-- [ ] Print da janela grande reaberta.
-- [ ] GitHub: conjunto inteiro + botões; filtro de velocidade.
+- [x] Conserto (commits `0f8663d` e `51edcca`: o "só cadernos" conta a página que é metade de folha dividida;
+      a 1ª versão olhava só `folha.dividir`, que é True de fábrica, e quebrava `test_core::test_caminho_rapido_so_com_cadernos`).
+- [x] Prova da D-590 em `tests/test_decisoes_juntar_todas.py::test_d590_dividir_desmarcada_a_caixinha_continua_desmarcada`
+      (falha em 8846017, passa no novo).
+- [x] Testes no PC (um por vez): test_decisoes_montar_cadernos 13, test_decisoes_juntar_todas 4,
+      test_decisoes_automatico 24, test_decisoes_dividir 19, test_dividir_no_programa 19, test_core 62,
+      test_dividir_desmarcada_caixinha 3: todos passaram.
+- [x] Olhar Endireitar, Cortar, Limpar: achados em `relatorio.md` (o mesmo defeito; e Gravuras desmarca sozinha).
+- [x] Prints da janela grande reaberta: `2-…`, `3-…` (pasta de dados isolada `_tmp/dividir-caixinha-dados`).
+- [ ] GitHub: conjunto inteiro + botões (rodada 41690519031); filtro de velocidade (41689838943). Em andamento.
 
 ## Causa
 
@@ -54,3 +59,5 @@ e a frase, que sai das marcadas, diz "Vou dividir as folhas".
 ## Perguntas para o Samuel
 
 (nenhuma por enquanto)
+
+- P1 e P2 do `relatorio.md` (achados das etapas 2-4 e da etapa 5). Não consertei: esperam a decisão dele.
