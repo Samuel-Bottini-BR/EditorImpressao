@@ -319,3 +319,4 @@ coisa: um botão que mostra e esconde o colorido das marcações.
 - Caderno, P7 ("Folha N de M" troca na hora ao apertar a seta, na etapa 7 e no "Montar para imprimir"): "o que o que não entendi a 4" → gerente explicou com o Gradus → "já troca". (Responde também a pergunta 2 do verificador da D-574.)
 - D-601, pergunta 3 (numeração das miniaturas por página depois de dividir): "que numeração?" → print depois-4 e explicação → "ok".
 - D-601 juntada (`07ed5a2`), 60 provas passaram no PC. Caderno na etapa 7 entregue (`dba6af9`), esperando GitHub 41570406574 e velocidade 41565812027.
+- 03/11: caderno na etapa 7 juntado (`e8b991a`; velocidade "igual"); 68 provas passaram no PC. Os quatro trabalhos da noite estão na versão de teste.
