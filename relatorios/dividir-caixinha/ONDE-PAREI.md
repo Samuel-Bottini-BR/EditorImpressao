@@ -58,6 +58,6 @@ e a frase, que sai das marcadas, diz "Vou dividir as folhas".
 
 ## Perguntas para o Samuel
 
-(nenhuma por enquanto)
+
 
 - P1 e P2 do `relatorio.md` (achados das etapas 2-4 e da etapa 5). Não consertei: esperam a decisão dele.
