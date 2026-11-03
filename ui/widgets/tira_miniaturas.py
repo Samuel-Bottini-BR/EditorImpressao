@@ -447,6 +447,23 @@ class TiraMiniaturas(QWidget):
                 mudaram += 1
         return mudaram
 
+    def definir_cortes(self, corte_de: dict[int, tuple[str, float]]) -> int:
+        """D-601 (02/11/2026): a metade e a linha de cada miniatura (o mesmo
+        corte_de de montar), sem ler o PDF de novo: mover a linha no Dividir
+        redesenha só as folhas cujas miniaturas mudaram, a partir da imagem
+        guardada (como definir_giros). Devolve quantas folhas foram
+        redesenhadas. Seguro mudar: nada; arriscado: remontar a tira aqui (a
+        tira inteira seria lida do PDF a cada arrasto da linha)."""
+        folhas: set[int] = set()
+        for indice, dados in corte_de.items():
+            if self._cortes.get(indice) == dados:
+                continue
+            self._cortes[indice] = dados
+            folhas.update(f for f, itens in self._mapa_folha.items() if indice in itens)
+        for indice_folha in folhas:
+            self._mostrar_folha(indice_folha)
+        return len([f for f in folhas if f in self._cruas])
+
     def _metade(self, indice: int, img: np.ndarray) -> np.ndarray:
         """Recorta a metade que esta página representa."""
         dados = self._cortes.get(indice)

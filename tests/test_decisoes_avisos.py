@@ -536,10 +536,14 @@ def test_d572_no_dividir_a_folha_conferida_gradus_primus_folha_1(janela, tmp_pat
     "1 de 70 conferidas", mas a faixa continuava "Achei a lombada e vou cortar na linha azul. Se
     estiver errado, arraste a linha." com o "está certo". No Dividir quem fica conferida é a
     FOLHA (o tique é o da folha, o rodapé diz "folha N de M"): a faixa diz "Folha N conferida."
-    e fica só o "próxima dúvida". A folha 2, sem o ok, continua como antes."""
+    e fica só o "próxima dúvida". A folha 2, sem o ok, continua como antes.
+    D-601 (02/11/2026): a folha dividida em "Uma página" (de fábrica) tem a frase da metade
+    ("Achei a lombada. Para mudar onde corta, escolha “Duas lado a lado” e arraste a linha.");
+    depois do ok, a D-572 vale igual."""
     tela = _dividido(janela, tmp_path)
     _no_dividir(tela, 0)
-    lombada = "Achei a lombada e vou cortar na linha azul. Se estiver errado, arraste a linha."
+    lombada = ("Achei a lombada. Para mudar onde corta, escolha “Duas lado a lado” "
+               "e arraste a linha.")
     assert _faixa(tela)[:2] == (lombada, True)
 
     tela.botao_esta_certo.click()

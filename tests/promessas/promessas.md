@@ -311,7 +311,8 @@ programa), a partir do **nome do botão**, da **dica** (o balão do mouse) e das
   ficava apagado, com a dica "aqui não dá para dividi-la")
 - **decisões:** D-009 ("abrir o livro sem escolher nenhuma opção para fazer tudo manualmente"), D-080, plano de
   26/10, etapa 4 ("Dividir à mão folha por folha [...] 'dividir esta' sempre ativo")
-- **na tela:** num livro aberto sem "Dividir", "dividir esta" fica aceso e põe a linha na folha.
+- **na tela:** num livro aberto sem "Dividir", "dividir esta" fica aceso e divide a folha: com "Uma página" (de
+  fábrica) aparece só a metade da esquerda; com "Duas lado a lado", a folha inteira com a linha (D-601, 02/11/2026).
 - **no projeto / no PDF:** a folha passa a sair como duas páginas (só ela; as outras não mudam).
 
 ### P-060 · "não dividir esta" / "dividir esta" (folha já dividida)
@@ -852,7 +853,9 @@ programa), a partir do **nome do botão**, da **dica** (o balão do mouse) e das
   202 A: pares rolando), D-058, D-007 (de fábrica, uma página por vez), D-343 (o par da grade abre lado a lado)
 - **na tela:** "Duas lado a lado" (ou Ver > "Ver lado a lado" marcado) põe no lugar da página as páginas COMO VÃO
   SAIR em pares rolando, a 1 sozinha à direita, na página da vez; o menu e a barra andam juntos. "Uma página" (ou o
-  menu desmarcado) volta à página da ferramenta. Todo livro abre em "Uma página".
+  menu desmarcado) volta à página da ferramenta. Todo livro abre em "Uma página". No Dividir (D-601, 02/11/2026)
+  os dois valem também: "Uma página" mostra só a metade da folha dividida (as setas andam pelas páginas) e "Duas
+  lado a lado" a folha inteira com a linha azul para arrastar.
 - **no projeto:** nada muda. **no PDF:** nada muda.
 
 ### P-137 · aviso de livro novo: "Rodar o automático…" / "agora não"
