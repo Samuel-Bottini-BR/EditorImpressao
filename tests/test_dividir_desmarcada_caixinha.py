@@ -191,8 +191,8 @@ def test_d590_dividir_desmarcada_o_desfazer_volta_a_ligar(janela, app, tmp_path)
     janela.show()
     janela.abrir_livro(_livro_aberto(tmp_path))
     _assentar(app)
-    assert _rodar(janela, [A.DIVIDIR])
-    _pela_janela(janela, app, marcar=False)
+    assert _rodar(janela, [A.DIVIDIR, A.LIMPAR])
+    _pela_janela(janela, app, marcar=False)      # o Limpar continua marcado: o "Rodar" vale
     assert not janela.projeto.dividir_folhas
     janela.tela_conferir.desfazer()
     assert janela.projeto.dividir_folhas

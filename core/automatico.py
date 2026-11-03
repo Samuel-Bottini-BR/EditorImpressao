@@ -332,8 +332,10 @@ class Pedido:
         etapa não volta marcada sozinha." (e 30/10, para Margens iguais e
         Gravuras e fotos: "Sim, se algo não está marcado, não é para fazer").
         Por isso, no "Rodar", essas etapas desmarcadas e ligadas no livro
-        DESLIGAM (_desligar_as_desmarcadas). Dividir, Endireitar, Cortar e
-        Limpar desmarcados ficam como estao (ainda a perguntar).
+        DESLIGAM (_desligar_as_desmarcadas). D-590 (03/11): o Dividir
+        desmarcado desliga so a caixinha do livro; as folhas divididas
+        continuam divididas. Endireitar, Cortar e Limpar desmarcados ficam
+        como estao (ainda a perguntar).
     """
 
     etapas: list[str]
@@ -956,10 +958,16 @@ def _ligar_na_pagina(projeto, pedido: Pedido, etapa: str, escopo: list, pular: s
                     g.na_pagina(pagina, campo, copy.deepcopy(opcoes[campo]))
 
 
-# As etapas que a caixinha DESMARCADA desliga no "Rodar" (D-589). Dividir,
-# Endireitar, Cortar e Limpar ficam de fora ate o Samuel decidir (Dividir
-# desligado juntaria as folhas de novo).
-DESLIGAM_DESMARCADAS = (GRAVURAS, MARGENS, CADERNOS)
+# As etapas que a caixinha DESMARCADA desliga no "Rodar" (D-589). Endireitar,
+# Cortar e Limpar ficam de fora ate o Samuel decidir.
+# DIVIDIR (D-590, Samuel 03/11/2026: "Sim a caixinha continua desmacada."):
+# desliga SO a caixinha do livro (Projeto.dividir_folhas, o "ligada no livro
+# todo"), nunca as folhas: as divididas continuam divididas (D-590, 30/10:
+# "desmarcar 'Dividir' no Automático não junta nada"). O desenho da pagina
+# segue a folha (ConfigFolha.dividir / ConfigPagina.metade), nao esse campo;
+# o caminho rapido "so cadernos" (modelos.Projeto.so_cadernos) confere as
+# folhas divididas para nao junta-las.
+DESLIGAM_DESMARCADAS = (DIVIDIR, GRAVURAS, MARGENS, CADERNOS)
 
 
 def _desligar_as_desmarcadas(projeto, pedido: Pedido, etapas_pedidas: list, g: _Gravador) -> None:
@@ -982,9 +990,16 @@ def _desligar_as_desmarcadas(projeto, pedido: Pedido, etapas_pedidas: list, g: _
     branco." (a procura de dentro: core/etapas.marca_sozinho). Sao etapas do livro
     todo (D-484): vale em qualquer "Rodar em" (pergunta P2 aberta).
 
+    D-590 (03/11/2026): o Dividir desmarcado tambem desliga, mas so a caixinha
+    do livro (dividir_folhas = False): nenhuma folha e juntada (ver
+    DESLIGAM_DESMARCADAS). Antes ele ficava de fora e, relido o livro, a
+    caixinha voltava marcada e a frase dizia "Vou dividir as folhas" (achado
+    do testador, 02/11, prints 36/36b; tests/test_dividir_desmarcada_caixinha.py).
+
     Roda DEPOIS das etapas marcadas: Gravuras so conta como ligada com o
     Limpar ligado (ligada_no_livro), e o Limpar pode ter ligado agora.
-    Arriscado: acrescentar etapa a DESLIGAM_DESMARCADAS sem decisao."""
+    Arriscado: acrescentar etapa a DESLIGAM_DESMARCADAS sem decisao; no
+    Dividir, mexer nas folhas aqui (juntaria as folhas, contra a D-590)."""
     for etapa in DESLIGAM_DESMARCADAS:
         if (etapa in (pedido.desmarcadas or []) and etapa not in etapas_pedidas
                 and ligada_no_livro(projeto, etapa)):

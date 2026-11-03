@@ -838,6 +838,13 @@ class Projeto:
             # obra 26/10, etapa 3: o Automatico rodado so em algumas paginas
             # (ConfigPagina.automatico) tambem muda a imagem delas
             and not _tem_automatico_por_pagina(self)
+            # D-590 (03/11/2026): com o "Dividir" desmarcado no Automatico a
+            # caixinha do livro desliga (dividir_folhas False), mas as folhas
+            # divididas continuam divididas ("não junta nada"). O caminho
+            # rapido monta com as folhas cruas do PDF e as juntaria.
+            # Arriscado: tirar esta linha (os cadernos sairiam com a folha
+            # inteira no lugar das duas paginas).
+            and not any(f.dividir for f in self.folhas)
         )
 
     @property
