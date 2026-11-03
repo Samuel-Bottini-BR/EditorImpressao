@@ -1,0 +1,64 @@
+{
+ "cartoes": [
+  "pdfcoffee.com_gradus-primus-pdf-pdf-free"
+ ],
+ "reabriu-em-s": 2.3,
+ "00-ao-reabrir": {
+  "paginas": 140,
+  "vao_ao_pdf": 140,
+  "folhas_divididas": 70,
+  "folhas": 70,
+  "folhas_nao_divididas": [],
+  "folhas_com_paginas_diferente_de_2": {},
+  "metade_repetida": [],
+  "margens_iguais_no_livro": true
+ },
+ "abri-pelo-painel": true,
+ "01-janela-ao-abrir": {
+  "dividir": "MARCADA | 1  Dividir folhas ao meio / motor de corte: o do ScanTailor · ligada no livro todo",
+  "endireitar": "desmarcada | 2  Endireitar folhas tortas / conta: a do ScanTailor · desligada",
+  "cortar": "desmarcada | 3  Cortar as bordas / o corte de sempre · desligada",
+  "limpar": "desmarcada | 4  Limpar a folha / Original · desligada",
+  "gravuras": "desmarcada | 5  Gravuras e fotos / seguindo o desenho · desligada",
+  "margens": "MARCADA | 6  Margens iguais / margens 10 / 5 / 10 / 5 mm · ligada no livro todo",
+  "cadernos": "desmarcada | 7  Montar cadernos / 20 páginas por caderno · desligada"
+ },
+ "02-previa": {
+  "contador": "página 11 de 140",
+  "frase": "Vou dividir as folhas e deixar as margens iguais, no livro todo (140 páginas).",
+  "lista": {
+   "dividir": "MARCADA | 1  Dividir folhas ao meio / motor de corte: o do ScanTailor · ligada no livro todo",
+   "endireitar": "desmarcada | 2  Endireitar folhas tortas / conta: a do ScanTailor · desligada",
+   "cortar": "desmarcada | 3  Cortar as bordas / o corte de sempre · desligada",
+   "limpar": "desmarcada | 4  Limpar a folha / Original · desligada",
+   "gravuras": "desmarcada | 5  Gravuras e fotos / seguindo o desenho · desligada",
+   "margens": "MARCADA | 6  Margens iguais / margens 10 / 5 / 10 / 5 mm · ligada no livro todo",
+   "cadernos": "desmarcada | 7  Montar cadernos / 20 páginas por caderno · desligada"
+  }
+ },
+ "02b-previa": "página 5 de 140",
+ "t2m-por-cima-01": {
+  "titulo": "Páginas mexidas à mão",
+  "texto": "6 páginas foram mexidas à mão nas etapas que vão rodar. Pular essas páginas?",
+  "mais": "Pular: elas ficam como você deixou nessas etapas. Rodar nelas também: o automático passa por cima do que você fez à mão nelas (o Desfazer traz de volta).",
+  "botoes": [
+   "Pular as 6",
+   "cancelar",
+   "Rodar nelas também"
+  ]
+ },
+ "t2m-por-cima-01-respondi": "Pular as 6",
+ "rodar-viu-a-tarefa": true,
+ "03-rodar-margens-s": 47.3,
+ "04-depois-de-margens": {
+  "paginas": 140,
+  "vao_ao_pdf": 140,
+  "folhas_divididas": 70,
+  "folhas": 70,
+  "folhas_nao_divididas": [],
+  "folhas_com_paginas_diferente_de_2": {},
+  "metade_repetida": [],
+  "margens_iguais_no_livro": true
+ },
+ "05-ferramenta": "marcar"
+}
