@@ -1,0 +1,8 @@
+test_decisoes_avisos.py: 22 passed in 140.63s (0:02:20) (148s)
+test_para_revisar_na_tela.py: 26 passed in 51.62s (57s)
+test_reversao_para_revisar.py: 6 passed in 8.12s (12s)
+test_paineis_na_tela.py: 22 passed in 159.54s (0:02:39) (169s)
+test_misto_consertos.py: 25 passed in 43.43s (56s)
+test_avisos.py: 34 passed in 17.00s (23s)
+test_desentortar_conferir_de_novo.py: 1 failed, 13 passed in 106.64s (0:01:46) (111s)
+test_promessas.py: 264 passed, 1 xfailed, 74 warnings in 3447.86s (0:57:27) (3980s)

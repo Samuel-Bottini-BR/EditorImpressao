@@ -66,6 +66,41 @@ Ramo `esta-certo-2026-11-02` (saiu de `obra-2026-10-26`, commit `a3a7405`), cóp
 Fora do caso novo (ficam como eram): a página "em branco" (continua "Esta página vai sair em branco" com
 "voltar a página" e o "está certo") e a página tirada do livro.
 
+## Como cumpri cada uma
+
+- **D-572 (página):** `test_d572_esta_certo_na_pagina_a_faixa_diz_conferida_e_some_o_esta_certo` (a prova do Livro
+  no livro de teste: página 7 com aviso → "está certo" → tique, a faixa "Página 7 conferida.", sem "está certo", com o
+  "próxima dúvida"; a página 9, sem o ok, continua com o aviso e o "está certo"). Prints `antes-3`/`depois-3` (página
+  5 no Filtro) e `antes-4`/`depois-4` (página 6, sem o ok, igual nos dois).
+- **D-572 (Dividir, o bug do Gradus):** `test_d572_no_dividir_a_folha_conferida_gradus_primus_folha_1`; prints
+  `antes-1` (folha 1 com o tique e a faixa "Achei a lombada..." com "está certo": o print a-43 do Samuel) e `depois-1`
+  ("Folha 1 conferida." e só o "próxima dúvida"); `antes-2`/`depois-2` (folha 2 sem o ok, igual nos dois).
+- **D-572 (em toda ferramenta):** `test_d572_em_toda_ferramenta_de_pagina[cortar|endireitar|mao|mover]`.
+- **D-572 (só o ok, não o tique de mexer):** `test_d572_mexer_a_mao_poe_o_tique_mas_nao_e_o_ok` (mover a linha, ajustar o
+  corte, girar, trocar o filtro: tique sim, faixa com a frase de sempre e o "está certo"; depois do "está certo",
+  "conferida"; mexer depois do ok continua "conferida").
+- **Ctrl+Z / páginas que andam:** `test_d572_ctrl_z_volta_a_faixa_e_o_esta_certo_como_o_tique`,
+  `test_d572_dividir_uma_folha_depois_nao_tira_o_ok_das_paginas_de_antes`.
+- **Reversão (§4.7):** as 9 provas falham no `a3a7405` (`reversao-no-a3a7405.txt`: "9 failed").
+- **D-259:** a faixa é a mesma, embaixo da página, com "próxima dúvida"; o "está certo" só sai na conferida
+  (`test_a_faixa_tem_esta_certo_e_proxima_duvida` passa).
+- **D-010 / P-101:** o clique do "está certo" faz o mesmo de antes (tique, contador, próxima dúvida):
+  `test_p101_*`, `test_esta_certo_no_dividir_*` e a promessa P-101 passam.
+- **D-497 / D-007:** nada mudou nos avisos nem no Dividir (`test_d497_*`, `test_0_8_*`, `test_d501_*` passam).
+- **§11 item 7:** só a frase decidida; nenhum botão, aviso ou campo novo no projeto.
+
+## Testes
+
+- **PC, um arquivo por vez, no código final** (`testes-locais.txt`): test_decisoes_avisos 22 passaram;
+  test_para_revisar_na_tela 26; test_reversao_para_revisar 6; test_paineis_na_tela 22; test_misto_consertos 25;
+  test_avisos 34; test_promessas 264 passaram + 1 xfail (57 min: o PC estava ocupado; a primeira vez estourou o meu
+  limite de 40 min e rodei de novo); test_desentortar_conferir_de_novo 13 passaram e **1 falhou:
+  `test_destino_do_socialismo_18_o_botao_traz_a_deformacao_e_aparece_a_pergunta`** - teste de imagem do núcleo com
+  livro do acervo (no GitHub é pulado); **falha igual no `a3a7405`** (rodei com o `ui/tela_conferir.py` antigo): não
+  é desta mudança.
+- **GitHub, código final** (rodada 41552732352): 189 arquivos, 3391 passaram, 0 falharam, 140 pulados; botões: 369
+  ações, 0 falhas. Rodada anterior (primeira versão, a do tique, 41547963966): 3389 passaram, 0 falharam; 368 ações.
+
 ## Perguntas para o Samuel
 
 1. ~~Mexer à mão também põe o tique~~ → **respondida pela gerente (02/11)** com o Livro (D-572, 31/10): a faixa segue
