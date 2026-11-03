@@ -631,7 +631,8 @@ class TarefaPreviaDoAutomatico(QThread):
                         doc, copy.deepcopy(self.copia), self.indice, self.dpi)
                 if self.com_o_do_livro and not self._cancelar:
                     do_livro = automatico.pagina_como_esta(
-                        doc, copy.deepcopy(self.copia), self.indice, self.dpi)
+                        doc, copy.deepcopy(self.copia), self.indice, self.dpi,
+                        cancelado=lambda: self._cancelar)
                 if self._cancelar:
                     raise Cancelou()
                 pagina = self.copia.paginas[self.indice]

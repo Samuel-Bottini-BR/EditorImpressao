@@ -58,6 +58,7 @@ from __future__ import annotations
 
 import copy
 import dataclasses
+import threading
 from dataclasses import dataclass, field
 from typing import Any, Callable
 
@@ -1122,9 +1123,10 @@ def rodar(projeto, pedido: Pedido, progresso=None, cancelado=None) -> Resultado:
 # so adianta o que o rodar de verdade faria igual.
 #
 # O QUE A PREVIA NAO MOSTRA IGUAL (ressalvas escritas, ver tambem a entrega):
-#   - "Margens iguais": a conta precisa de TODAS as paginas medidas
-#     (pipeline.conta_das_margens_para_a_tela); sem isso a tela de conferir mostra
-#     sem margem ate medir por tras, e a previa tambem (nao mede o livro inteiro).
+#   - "Margens iguais": ATE 02/11/2026 a previa nao as mostrava (so media a folha
+#     da vez, e a conta precisa de TODAS as paginas). Desde o conserto de 02/11
+#     ela mede o livro como o "Rodar" e o PDF (ver "as margens iguais na previa",
+#     abaixo): o depois sai com as margens e no tamanho final.
 #   - "Cortar seguindo o conteúdo": "todas as páginas do tamanho da maior" depende
 #     do livro inteiro medido (pipeline.tamanho_do_livro); a previa corta pelo
 #     conteudo da propria pagina, como a tela de conferir logo depois de rodar.
@@ -1231,15 +1233,20 @@ def antes_da_pagina(doc, copia, indice: int, dpi: int):
     return esquerda if pagina.metade == METADE_ESQUERDA else direita
 
 
-def pagina_como_esta(doc, copia, indice: int, dpi: int):
+def pagina_como_esta(doc, copia, indice: int, dpi: int, cancelado: Callable | None = None):
     """A pagina `indice` como esta agora no livro, COM o filtro que ela ja tem
     (Original ou o aplicado), desenhada na `copia`. E a tela da esquerda do
     "comparar" da tela cheia da previa (D-577, 30/10: "nessa vai ter o filtro
     que estava antes, seja ele original ou que foi aplicado e o filtro que
     está selecionado no momento")."""
-    from core.pipeline import renderizar_pagina
+    from core.pipeline import medir_o_livro_para_as_margens, renderizar_pagina
 
     pagina = copia.paginas[indice]
+    if getattr(copia, "margens_iguais", False):
+        # o livro ja tem as margens iguais ligadas: a pagina como esta sai com
+        # elas no PDF (D-329), entao o livro todo e medido como o PDF mede
+        # (rapido quando ja medido: o tamanho fica guardado)
+        medir_o_livro_para_as_margens(copia, doc, copia.paginas_ativas, cancelado=cancelado)
     img, _ = renderizar_pagina(doc, copia, pagina, dpi=dpi)
     return como_sai_na_tela(img, copia, pagina, dpi)
 
@@ -1254,28 +1261,150 @@ def filtro_depois(copia, folha: int, metade: str) -> str:
     return etapas.filtro_que_vale(copia, novas[0]) if novas else ""
 
 
+# --- as margens iguais na previa (defeito de 02/11/2026) -----------------------
+#
+# Samuel, 02/11/2026: "coloquei margem e ela não apareceu no preview." (Gradus
+# Primus, etapa "Margens iguais" marcada com 10 / 5 / 10 / 5 mm). Decisoes: D-577
+# (o "depois" e como a pagina vai sair com as etapas e opcoes marcadas), D-329
+# ("Sim, a tela mostra igual ao que sai"), D-311 ("Todas as páginas do tamanho da
+# maior: Sim"). Antes a previa so media a folha da pagina da vez, e a conta das
+# margens precisa do tamanho de TODAS as paginas (pipeline.conta_das_margens_para_
+# a_tela devolvia None, e o depois saia sem margem).
+#
+# COMO FICA: com as margens ligadas depois do pedido, a previa faz o que o "Rodar"
+# e o PDF fazem: mede TODAS as folhas do pedido (medir, a mesma do Rodar), aplica o
+# pedido na copia com essas medidas e faz a primeira passada do PDF
+# (pipeline.medir_o_livro_para_as_margens). A conta e a do PDF; nada novo.
+#
+# O QUE CUSTA: na primeira vez, olhar o livro todo (como o "Rodar") e desenhar cada
+# folha na resolucao do PDF (como a primeira passada do processar). Depois:
+#   - o tamanho de cada pagina pronta fica guardado no pipeline (_TAMANHOS_PRONTOS,
+#     pela chave do corte: tudo de que o corte depende), e o PDF e a tela o reusam;
+#   - a medida de cada folha fica guardada aqui (_MEDIDAS_GUARDADAS), pela chave de
+#     tudo de que ela depende MENOS o filtro (o filtro so muda o aviso de cor das
+#     outras paginas, que a previa nao mostra; a folha da pagina da vez e sempre
+#     medida de novo, com o filtro de agora, como antes).
+#   Por isso trocar um numero da margem ou o filtro nao mede o livro de novo; trocar
+#   o Dividir, o Endireitar ou o Cortar (o que muda o tamanho das paginas) mede.
+# Cancelar no meio (outra opcao trocada) nao perde o que ja foi medido.
+# Regra "uma pagina por vez": so numeros sao guardados, nunca imagem.
+#
+# Seguro mudar: MAX_MEDIDAS_GUARDADAS. Arriscado: tirar da chave
+# (_chave_da_medida) algo de que a medida depende (a previa usaria a medida de
+# outro estado e o tamanho sairia diferente do PDF).
+
+# Quantas medidas de folha ficam guardadas (cada uma e um punhado de numeros).
+MAX_MEDIDAS_GUARDADAS = 8192
+_MEDIDAS_GUARDADAS: "dict[tuple, MedidaDaFolha]" = {}
+# a previa da janela e as dos dois lados do "comparar" rodam em fios separados
+_TRANCA_DAS_MEDIDAS = threading.Lock()
+
+# O que nao muda a medida de uma folha (fica fora da chave): as opcoes do Limpar
+# (so o aviso de cor depende do filtro), das gravuras, das margens e dos cadernos.
+_FORA_DA_CHAVE_DA_MEDIDA = frozenset(
+    OPCOES[LIMPAR] + OPCOES[GRAVURAS] + OPCOES[MARGENS] + OPCOES[CADERNOS]
+    + (CAMPO_DO_LIVRO[LIMPAR], CAMPO_DO_LIVRO[MARGENS], CAMPO_DO_LIVRO[CADERNOS],
+       "detectar_regioes", "folhas", "paginas"))
+
+
+def _margens_ligadas_depois(copia, pedido: Pedido) -> bool:
+    """As margens iguais ficam ligadas depois de aplicar o `pedido`? Responde
+    com o proprio `aplicar` (numa copia descartavel, sem medida nenhuma: as
+    margens nao dependem de medida), para nunca discordar dele (marcar a etapa
+    liga; desmarcada, D-589, desliga; "Desligar as marcadas" desliga). So faz a
+    conta quando pode dar sim (etapa marcada ou ja ligada no livro)."""
+    if MARGENS not in pedido.etapas and not getattr(copia, "margens_iguais", False):
+        return False
+    teste = copy.deepcopy(copia)
+    aplicar(teste, pedido, {})
+    return bool(getattr(teste, "margens_iguais", False))
+
+
+def _chave_da_medida(foto: Fotografia, f: _FolhaParaMedir):
+    """Tudo de que a medida da folha `f` depende, menos o filtro (ver acima):
+    o arquivo (caminho, data e tamanho), a folha como esta, o que o pedido vai
+    fazer nela e as opcoes do livro (menos as que nao mudam a medida). None se o
+    arquivo nao existe (nada e guardado)."""
+    import json
+    import os
+
+    try:
+        info = os.stat(foto.caminho)
+    except OSError:
+        return None
+    livro = {campo.name: getattr(foto.livro, campo.name, None)
+             for campo in dataclasses.fields(foto.livro)
+             if campo.name not in _FORA_DA_CHAVE_DA_MEDIDA} \
+        if dataclasses.is_dataclass(foto.livro) else {}
+    return (
+        os.path.abspath(foto.caminho), info.st_mtime_ns, info.st_size,
+        f.indice, f.rotacao, f.dividir, round(float(f.posicao_corte), 6), f.redividir,
+        json.dumps(f.endireitar_como, sort_keys=True, default=str),
+        foto.dividir_como, foto.cortar_sobra, foto.vai_endireitar, foto.vai_cortar,
+        foto.vai_dividir, json.dumps(livro, sort_keys=True, default=str),
+    )
+
+
+def _medidas_das_outras_folhas(foto: Fotografia, outras: list[_FolhaParaMedir],
+                               cancelado: Callable | None = None) -> dict[int, MedidaDaFolha]:
+    """As medidas das folhas `outras` do pedido (todas menos a da pagina da vez),
+    pela MESMA `medir` do "Rodar", uma folha por vez; a que ja foi medida no
+    mesmo estado vem de _MEDIDAS_GUARDADAS. Cancelar no meio guarda o que ja foi
+    medido. Levanta core.pipeline.Cancelou."""
+    medidas: dict[int, MedidaDaFolha] = {}
+    for f in outras:
+        chave = _chave_da_medida(foto, f)
+        with _TRANCA_DAS_MEDIDAS:
+            guardada = _MEDIDAS_GUARDADAS.get(chave) if chave is not None else None
+        if guardada is None:
+            uma = dataclasses.replace(foto, folhas=[f])
+            guardada = medir(uma, cancelado=cancelado)[f.indice]
+            if chave is not None:
+                with _TRANCA_DAS_MEDIDAS:
+                    _MEDIDAS_GUARDADAS[chave] = guardada
+                    while len(_MEDIDAS_GUARDADAS) > MAX_MEDIDAS_GUARDADAS:
+                        _MEDIDAS_GUARDADAS.pop(next(iter(_MEDIDAS_GUARDADAS)))
+        # uma copia: o aplicar poe partes dela na copia do projeto
+        medidas[f.indice] = copy.deepcopy(guardada)
+    return medidas
+
+
 def depois_da_pagina(doc, copia, pedido: Pedido, indice: int, dpi: int,
                      cancelado: Callable | None = None) -> list:
     """O "depois" da pagina `indice`: como ela sai se o Automatico rodar com o
     `pedido`. MUDA A `copia` (aplica o pedido nela): passar sempre uma copia
     (copia_para_a_previa). Devolve as imagens das paginas que ela vira (uma; ou
     duas, quando a folha inteira e dividida; ver paginas_depois).
+    Com as margens iguais ligadas depois do pedido, mede tambem as outras folhas
+    e o livro todo, como o "Rodar" e o PDF (defeito de 02/11/2026: "coloquei
+    margem e ela não apareceu no preview."; ver "as margens iguais na previa").
     `cancelado()` True = para (levanta core.pipeline.Cancelou)."""
     from core import pipeline as P
 
     pagina = copia.paginas[indice]
     folha, metade = pagina.folha, pagina.metade
+    # Margens iguais (defeito de 02/11/2026, ver _margens_ligadas_depois): com
+    # elas ligadas depois do pedido, o tamanho de TODA pagina entra na conta
+    margens = _margens_ligadas_depois(copia, pedido)
     medidas: dict = {}
     if precisa_medir(pedido):
         foto = fotografar(copia, pedido)
-        # so a folha da pagina da vez (e so se ela esta no pedido: fotografar
-        # ja deixa de fora as folhas fora do "Rodar em")
+        # sem as margens, so a folha da pagina da vez (e so se ela esta no
+        # pedido: fotografar ja deixa de fora as folhas fora do "Rodar em")
+        outras = [f for f in foto.folhas if f.indice != folha]
         foto.folhas = [f for f in foto.folhas if f.indice == folha]
         if foto.folhas:
             medidas = medir(foto, cancelado=cancelado)
+        if margens and outras:
+            medidas.update(_medidas_das_outras_folhas(foto, outras, cancelado))
     if cancelado is not None and cancelado():
         raise P.Cancelou()
     aplicar(copia, pedido, medidas)
+    if margens and getattr(copia, "margens_iguais", False):
+        # a primeira passada do PDF (P.processar), na copia ja com o pedido:
+        # o tamanho de cada pagina pronta fica guardado (P._TAMANHOS_PRONTOS)
+        # e como_sai_na_tela monta a MESMA conta das margens com ele
+        P.medir_o_livro_para_as_margens(copia, doc, copia.paginas_ativas, cancelado=cancelado)
     imagens = []
     for nova in paginas_depois(copia, folha, metade):
         if cancelado is not None and cancelado():
