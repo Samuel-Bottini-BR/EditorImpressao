@@ -321,3 +321,22 @@ def test_d601_tira_do_dividir_acompanha_a_linha_e_o_juntar(janela, tmp_path):
     _assentar(10)
     imagens = _imagens_da_tira(tela)
     assert len(imagens) == 3 and imagens[0].shape[1] == imagens[1].shape[1]
+
+
+@precisa_da_dll
+def test_d601_frase_da_faixa_no_uma_pagina(janela, tmp_path):
+    """Resposta do Samuel (02/11/2026, "ok") à pergunta do construtor: no Dividir, com a folha
+    dividida e "Uma página", a faixa diz "Achei a lombada. Para mudar onde corta, escolha
+    “Duas lado a lado” e arraste a linha." (a linha não aparece ali); com "Duas lado a lado",
+    a frase de antes. O ANTIGO SAIU: dizia "arraste a linha" sem a linha à vista."""
+    from ui.widgets.paginas_rolando import DUAS, UMA
+
+    tela = _no_dividir_dividida(janela, tmp_path)
+    tela.botao_nao_dividir.click()                     # "dividir esta"
+    assert tela.texto_faixa.text().startswith(
+        "Achei a lombada. Para mudar onde corta, escolha “Duas lado a lado” e arraste a linha.")
+    tela.botoes_mostrar[DUAS].click()
+    assert tela.texto_faixa.text().startswith(
+        "Achei a lombada e vou cortar na linha azul. Se estiver errado, arraste a linha.")
+    tela.botoes_mostrar[UMA].click()
+    assert "Duas lado a lado" in tela.texto_faixa.text()

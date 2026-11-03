@@ -4763,6 +4763,10 @@ class TelaConferir(QWidget):
             folha = self.projeto.folhas[self.indice_folha]
             if not folha.dividir:
                 return "Esta folha não vai ser dividida."
+            if self._metade_no_dividir() is not None:
+                # D-601 (Samuel, 02/11/2026, "ok"): em "Uma página" a linha não aparece
+                return ("Achei a lombada. Para mudar onde corta, escolha "
+                        "“Duas lado a lado” e arraste a linha.")
             return ("Achei a lombada e vou cortar na linha azul. "
                     "Se estiver errado, arraste a linha.")
         if aba == ABA_BORDAS:

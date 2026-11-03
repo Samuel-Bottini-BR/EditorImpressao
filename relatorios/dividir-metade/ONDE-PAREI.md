@@ -75,7 +75,8 @@ Só `ui/` (e os testes). Outro construtor mexe ao mesmo tempo na faixa de baixo 
   (novo) faz o clique e o duplo clique numa miniatura levar àquela página; `_cortes_da_tira_do_dividir` (novo).
 - `ui/widgets/tira_miniaturas.py`: `definir_cortes` (novo) — mover a linha redesenha só as miniaturas daquela folha,
   da imagem guardada, sem ler o PDF de novo (como o `definir_giros`).
-- Não mexi em `_atualizar_faixa` nem `_texto_tranquilo` (são do outro construtor).
+- `_texto_tranquilo`: só a frase do Dividir com a folha dividida em "Uma página" (resposta 1 do Samuel). Nada mais
+  na faixa (`_atualizar_faixa` é do outro construtor).
 
 ## Escolhas pelo jeito que o código já tem (anotadas)
 
@@ -106,12 +107,16 @@ Só `ui/` (e os testes). Outro construtor mexe ao mesmo tempo na faixa de baixo 
    Pergunta: "No Dividir com "Uma página", a faixa diz "arraste a linha", mas a linha só aparece no "Duas lado a
    lado". Posso trocar a frase, só nesse caso, por: "Achei a lombada. Para mudar onde corta, escolha "Duas lado a
    lado" e arraste a linha."?" (sugestão: sim). Não mexi: a faixa é do outro construtor (`_texto_tranquilo`).
-   **(gerente, 02/11: ainda sem resposta; deixar como está.)**
+   **Resposta (02/11, pela gerente):** ele perguntou "esssa mensagem vai ficar aonde? e ela vai aparecer depois de eu
+   fazer o que?"; a gerente explicou (na barra embaixo da página, no Dividir, com a folha já cortada e "Uma página"
+   marcado, antes do "está certo"; com "Duas lado a lado" fica a frase de hoje) → **"ok"**. **Feito:** só nesse caso,
+   `_texto_tranquilo` diz "Achei a lombada. Para mudar onde corta, escolha “Duas lado a lado” e arraste a linha."
+   (mudança de 4 linhas; prova `test_d601_frase_da_faixa_no_uma_pagina`).
 2. **"folha 1 de 70" nas duas metades.** Na "Uma página", a esquerda e a direita da folha 1 mostram as duas "folha 1
    de 70" embaixo (a seta anda, o número não). Print: `depois-1` e `depois-2`.
    Pergunta: "No Dividir com "Uma página", embaixo continua "folha 1 de 70" nas duas páginas da folha. Fica assim
    (o Dividir conta folhas), ou quer que diga a página, por exemplo "folha 1 de 70 · página 2"?" (sugestão: fica
-   assim). **(gerente, 02/11: ainda sem resposta; deixar como está.)**
+   assim). **Resposta (02/11, pela gerente): fica como está.**
 3. **Os números embaixo das miniaturas do Dividir.** Com a folha 1 dividida, a tira mostra 1 (contracapa), 2 (capa),
    3 (folha 2), 4 (folha 3)... e o rótulo do rodapé diz "folha 2 de 70" quando a miniatura "3" está escolhida.
    Print: `relatorios/dividir-metade/depois-4-clique-na-miniatura-2.png`.
