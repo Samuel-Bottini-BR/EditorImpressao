@@ -441,6 +441,46 @@ def test_d004_rodar_nelas_tambem_passa_por_cima_e_o_desfazer_volta(janela, tmp_p
     assert pagina.angulo_manual == 1.5 and etapas.ENDIREITAR in pagina.mexida_a_mao
 
 
+def test_d004_pular_as_folhas_divididas_a_mao_divide_todas_as_outras(janela, tmp_path, monkeypatch):
+    """D-004: "o programa pergunta se quer pular as páginas mexidas." — com "pular", a folha
+    dividida à mão fica igual e TODAS as outras são divididas, por mais que as páginas mudem
+    de número no caminho.
+
+    Defeito de 03/11/2026 (Gradus Primus; Samuel: "teve até uma folha que ficou colocada uma
+    na outra"): com as folhas 1, 2 e 9 divididas à mão, rodar "Dividir" deixava as folhas 6 e
+    7 inteiras (138 páginas em vez de 140). O Automático guardava as páginas a pular pelo
+    número, e cada folha dividida no caminho renumerava as seguintes. Aqui: 7 folhas de duas
+    páginas, as folhas 1, 2 e 6 divididas à mão pela tela (linha em 0,47); no código antigo a
+    folha 4 ficava inteira e a 6 perdia a linha à mão."""
+    from core import dividir_a_mao
+
+    aberto = np.concatenate([_pagina(), _pagina()], axis=1)
+    janela.abrir_livro(_pdf(tmp_path / "sete.pdf", [aberto] * 7))
+    tela, projeto = janela.tela_conferir, janela.projeto
+    tela.escolher_ferramenta("dividir")
+    for folha in (0, 1, 5):                    # "dividir esta", com a linha posta à mão
+        tela._ir_para(folha)
+        tela._registrar("dividir_a_mao", "folha", [folha],
+                        dividir_a_mao.campos_para_dividir(projeto, folha, 0.47),
+                        f"Folha {folha + 1}: dividir")
+        assert etapas.DIVIDIR in projeto.folhas[folha].mexida_a_mao
+    assert len(projeto.paginas) == 10
+    perguntas = []
+    monkeypatch.setattr(janela, "_perguntar_mexidas", lambda n: perguntas.append(n) or True)
+    assert _rodar(janela, [A.DIVIDIR])
+    assert perguntas == [6]                    # as 6 páginas das 3 folhas mexidas
+
+    projeto = janela.projeto
+    assert len(projeto.paginas) == 14
+    for folha in projeto.folhas:
+        metades = [p.metade for p in projeto.paginas if p.folha == folha.indice]
+        assert folha.dividir and metades == ["esquerda", "direita"], folha.indice
+    for folha in (0, 1, 5):                    # as puladas ficam como estavam
+        assert projeto.folhas[folha].posicao_corte == 0.47
+        assert etapas.DIVIDIR in projeto.folhas[folha].mexida_a_mao
+    assert len(_gerar(janela, tmp_path, "todas_divididas")) == 14
+
+
 def test_d004_cancelar_a_pergunta_nao_muda_nada(janela, tmp_path, monkeypatch):
     janela.abrir_livro(_livro(tmp_path))
     _mexer_no_angulo(janela, 2, 1.5)

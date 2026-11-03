@@ -766,6 +766,37 @@ def _juntar_avisos(antigos, novos, refeitos) -> list[str]:
     return ficam + [a for a in novos if a not in ficam]
 
 
+class _Puladas:
+    """As paginas que a pessoa escolheu pular (D-004, 28/09/2026: "Automático em
+    livro já mexido à mão: o programa pergunta se quer pular as páginas
+    mexidas."), guardadas pela PAGINA (o objeto ConfigPagina), nao pelo numero.
+
+    Por que (defeito de 03/11/2026, Gradus Primus; Samuel: "teve até uma folha
+    que ficou colocada uma na outra"): antes era um set de `pagina.indice`
+    contado antes do Dividir. Cada folha de uma pagina que o `_dividir` parte
+    em duas renumera as paginas seguintes, e o numero guardado passava a
+    apontar para outra pagina: as folhas 6 e 7 eram puladas no lugar da folha
+    9 dividida a mao, e o Endireitar/Cortar/Limpar da mesma rodada pulava a
+    pagina errada (tests/test_automatico_pular_depois_de_dividir.py).
+
+    Pagina pulada nunca e partida (o `_dividir` pula a folha dela), entao o
+    objeto continua o mesmo na rodada inteira; as metades novas de uma pagina
+    partida nao estao aqui (a pagina de que vieram nao era pulada). Guarda a
+    lista junto para os objetos viverem enquanto o `id` vale.
+    Arriscado: voltar a comparar por `pagina.indice` depois de dividir."""
+
+    def __init__(self, projeto, indices) -> None:
+        indices = set(indices)
+        self._paginas = [p for p in projeto.paginas if p.indice in indices]
+        self._ids = {id(p) for p in self._paginas}
+
+    def __contains__(self, pagina) -> bool:
+        return id(pagina) in self._ids
+
+    def __len__(self) -> int:
+        return len(self._paginas)
+
+
 def aplicar(projeto, pedido: Pedido, medidas: dict[int, MedidaDaFolha] | None = None,
             descricao: str = "") -> Resultado:
     """Poe o pedido no projeto aberto (fio da janela). Devolve o Resultado,
@@ -778,7 +809,8 @@ def aplicar(projeto, pedido: Pedido, medidas: dict[int, MedidaDaFolha] | None = 
     g = _Gravador(projeto)
     opcoes = pedido.opcoes or {}
     etapas_pedidas = [e for e in pedido.etapas if e in ETAPAS]
-    pular = set(paginas_mexidas(projeto, pedido)) if pedido.pular_mexidas else set()
+    # pelas PAGINAS (objetos), nao pelos numeros: o Dividir renumera (_Puladas)
+    pular = _Puladas(projeto, paginas_mexidas(projeto, pedido) if pedido.pular_mexidas else [])
     escopo = _paginas_do_pedido(projeto, pedido)
     refeitas = 0
 
@@ -858,7 +890,7 @@ def _paginas_do_pedido_depois_de_dividir(projeto, pedido: Pedido, antes: list) -
     return [p for p in projeto.paginas if p.folha in folhas]
 
 
-def _dividir(projeto, pedido: Pedido, medidas, pular: set, g: _Gravador) -> None:
+def _dividir(projeto, pedido: Pedido, medidas, pular: _Puladas, g: _Gravador) -> None:
     """Dividir: cada folha medida ganha a divisao achada. Folha com duas
     paginas na lista: so muda a divisao e a metade da direita (como o "não
     dividir esta" da ferramenta, ui/tela_conferir._alternar_dividir). Folha
@@ -879,7 +911,7 @@ def _dividir(projeto, pedido: Pedido, medidas, pular: set, g: _Gravador) -> None
         if medida is None:
             continue
         pags = [p for p in projeto.paginas if p.folha == folha.indice]
-        if any(p.indice in pular for p in pags):
+        if any(p in pular for p in pags):     # pela pagina, nao pelo numero (_Puladas)
             continue
         g.na_folha(folha, "posicao_corte", round(float(medida.posicao_corte), 4))
         g.na_folha(folha, "confianca_corte", float(medida.confianca_corte))
@@ -915,7 +947,7 @@ def _dividir(projeto, pedido: Pedido, medidas, pular: set, g: _Gravador) -> None
             g.na_folha(folha, "sobra", medida.sobra)
 
 
-def _ligar_na_pagina(projeto, pedido: Pedido, etapa: str, escopo: list, pular: set,
+def _ligar_na_pagina(projeto, pedido: Pedido, etapa: str, escopo: list, pular: _Puladas,
                      opcoes: dict, g: _Gravador) -> None:
     """Endireitar, Cortar, Limpar: no livro todo liga a caixinha; em paginas
     escolhidas liga so nelas (ConfigPagina.automatico). Pagina mexida a mao
@@ -934,7 +966,7 @@ def _ligar_na_pagina(projeto, pedido: Pedido, etapa: str, escopo: list, pular: s
             g.no_livro("filtro_padrao", filtro)
     for pagina in escopo:
         mexida = E.mexida_a_mao(projeto, pagina, codigo)
-        if pagina.indice in pular:
+        if pagina in pular:                   # pela pagina, nao pelo numero (_Puladas)
             continue
         if not pedido.no_livro_todo:
             g.na_pagina(pagina, "automatico", _com_o_codigo(pagina.automatico, codigo))

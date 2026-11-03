@@ -1,0 +1,18 @@
+﻿paginas antes: 73
+redividir: [(0, False), (1, False), (2, True), (3, True), (4, True), (5, True), (6, True), (7, True), (8, False), (9, True)]
+mexidas: [0, 1, 2, 3, 10, 11]
+0 MedidaDaFolha(indice=0, dividir=True, posicao_corte=0.5232, confianca_corte=1.0, e_paisagem=True, sobra=None, angulo_detectado=0.0, confianca_angulo=0.0, alertas=[], partes=[('esquerda', [], False, False, None), ('direita', [], True, False, None)], tampa=[0])
+1 MedidaDaFolha(indice=1, dividir=True, posicao_corte=0.4942, confianca_corte=1.0, e_paisagem=True, sobra=None, angulo_detectado=0.0, confianca_angulo=0.0, alertas=[], partes=[('esquerda', ['em_branco'], False, False, None), ('direita', [], False, False, None)], tampa=[0])
+2 MedidaDaFolha(indice=2, dividir=True, posicao_corte=0.49302215585243436, confianca_corte=1.0, e_paisagem=True, sobra=None, angulo_detectado=0.0, confianca_angulo=0.0, alertas=[], partes=[('esquerda', ['em_branco'], False, False, None), ('direita', [], False, False, None)], tampa=[0])
+3 MedidaDaFolha(indice=3, dividir=True, posicao_corte=0.5000324703558379, confianca_corte=1.0, e_paisagem=True, sobra=None, angulo_detectado=0.0, confianca_angulo=0.0, alertas=[], partes=[('esquerda', [], False, False, None), ('direita', [], False, False, None)], tampa=[0])
+4 MedidaDaFolha(indice=4, dividir=True, posicao_corte=0.5085795602649821, confianca_corte=1.0, e_paisagem=True, sobra=None, angulo_detectado=0.0, confianca_angulo=0.0, alertas=[], partes=[('esquerda', [], False, False, None), ('direita', [], False, False, None)], tampa=[0])
+5 MedidaDaFolha(indice=5, dividir=True, posicao_corte=0.49575892540126565, confianca_corte=1.0, e_paisagem=True, sobra=None, angulo_detectado=0.0, confianca_angulo=0.0, alertas=[], partes=[('esquerda', [], False, False, None), ('direita', [], False, False, None)], tampa=[0])
+6 MedidaDaFolha(indice=6, dividir=True, posicao_corte=0.5000324703558379, confianca_corte=1.0, e_paisagem=True, sobra=None, angulo_detectado=0.0, confianca_angulo=0.0, alertas=[], partes=[('esquerda', ['em_branco'], False, False, None), ('direita', [], False, False, None)], tampa=[0])
+7 MedidaDaFolha(indice=7, dividir=True, posicao_corte=0.50430601531041, confianca_corte=1.0, e_paisagem=True, sobra=None, angulo_detectado=0.0, confianca_angulo=0.0, alertas=[], partes=[('esquerda', ['em_branco'], False, False, None), ('direita', [], False, False, None)], tampa=[0])
+8 MedidaDaFolha(indice=8, dividir=True, posicao_corte=0.5, confianca_corte=1.0, e_paisagem=True, sobra=None, angulo_detectado=0.0, confianca_angulo=0.0, alertas=[], partes=[('esquerda', [], False, False, None), ('direita', [], False, False, None)], tampa=[0])
+9 MedidaDaFolha(indice=9, dividir=True, posicao_corte=0.50430601531041, confianca_corte=1.0, e_paisagem=True, sobra=None, angulo_detectado=0.0, confianca_angulo=0.0, alertas=[], partes=[('esquerda', [], False, False, None), ('direita', [], False, False, None)], tampa=[0])
+paginas depois: 140
+[(0, True, 1.0), (1, True, 1.0), (2, True, 1.0), (3, True, 1.0), (4, True, 1.0), (5, True, 1.0), (6, True, 1.0), (7, True, 1.0), (8, True, 1.0), (9, True, 1.0)]
+folhas que ficaram com uma pagina so (indice): []
+motor achou duas paginas e ficou inteira: []
+indices seguidos: True
