@@ -70,7 +70,9 @@ Fora do caso novo (ficam como eram): a página "em branco" (continua "Esta pági
 
 1. ~~Mexer à mão também põe o tique~~ → **respondida pela gerente (02/11)** com o Livro (D-572, 31/10): a faixa segue
    o "está certo" apertado. Feito (acima).
-2. **Confirmar o texto no Dividir** (a gerente leva ao Samuel): lá quem fica conferida é a folha (a tira mostra
+2. **Respondida pelo Samuel (02/11, pela gerente): "pode deixar do jeito que ele esta fazendo".** Fica: na página,
+   "Página N conferida." e só o "próxima dúvida" (escolha de 31/10); no Dividir, "Folha N conferida.". Pergunta que
+   foi: lá quem fica conferida é a folha (a tira mostra
    "FOLHAS" e a barra de baixo diz "folha 1 de 70"), então a faixa diz "Folha 1 conferida.". Está certo assim, ou
    prefere "Página" também ali?
 3. **Para a gerente decidir se leva:** os botões "só nesta" (Aplicar em, painel Filtro) e "Usar" (tela cheia dos
