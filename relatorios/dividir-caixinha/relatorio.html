@@ -87,6 +87,19 @@ folha dividida.</p>
 <li><code>relatorios/dividir-caixinha/</code>: ONDE-PAREI, este relatório, <code>olhar_etapas.py</code> (script dos prints e do olhar),
   <code>olhar_etapas-saida.txt</code> e os prints.</li>
 </ul>
+<h2>Testes</h2>
+<ul>
+<li>Teste de reversão <code>tests/test_dividir_desmarcada_caixinha.py</code> (3): <strong>falharam em 8846017</strong>
+  (<code>'ligada no livro todo' == 'desligada'</code>), passam no novo. Sem a linha nova do <code>so_cadernos</code>, o 3º falha medindo o PDF
+  (os cadernos saíam com as folhas juntas).</li>
+<li>Prova da D-590 em <code>tests/test_decisoes_juntar_todas.py::test_d590_dividir_desmarcada_a_caixinha_continua_desmarcada</code>:
+  falha em 8846017, passa no novo.</li>
+<li>No PC, um arquivo por vez: test_decisoes_montar_cadernos 13, test_decisoes_juntar_todas 4, test_decisoes_automatico
+  24, test_decisoes_dividir 19, test_dividir_no_programa 19, test_core 62, test_dividir_desmarcada_caixinha 3: passaram.</li>
+<li>GitHub, conjunto inteiro + botões: rodada 41690519031 passou (a parte 1 rodada 2 vezes: na 1ª, um erro instável em
+  <code>test_promessas.py::test_p083_jeitos_do_so_as_letras[rede]</code>, a prévia de fundo sem o PDF já apagado; passa no PC).</li>
+<li>Filtro de velocidade: rodada 41689838943, <strong>igual</strong> em tudo.</li>
+</ul>
 <h2>Prints (janela real, offscreen, pasta de dados isolada em <code>_tmp/dividir-caixinha-dados</code>)</h2>
 <ul>
 <li><code>1-painel-depois-de-rodar-dividir-desmarcado.png</code>: o painel depois do Rodar.</li>
@@ -138,6 +151,6 @@ folha dividida.</p>
   mostra a caixinha como um quadrado preto cheio (ver o "4 Limpar a folha" no print <code>4-olhar-endireitar-…</code>), que
   pode ser lido como "marcada". Já era assim antes; não mexi.</li>
 </ul>
-<p class="rodape">Editor de Impressão &middot; gerado em 03/11/2026 às 14:05</p>
+<p class="rodape">Editor de Impressão &middot; gerado em 03/11/2026 às 15:42</p>
 </body>
 </html>

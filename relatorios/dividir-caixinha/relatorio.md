@@ -29,6 +29,19 @@ folha dividida.
 - `relatorios/dividir-caixinha/`: ONDE-PAREI, este relatório, `olhar_etapas.py` (script dos prints e do olhar),
   `olhar_etapas-saida.txt` e os prints.
 
+## Testes
+
+- Teste de reversão `tests/test_dividir_desmarcada_caixinha.py` (3): **falharam em 8846017**
+  (`'ligada no livro todo' == 'desligada'`), passam no novo. Sem a linha nova do `so_cadernos`, o 3º falha medindo o PDF
+  (os cadernos saíam com as folhas juntas).
+- Prova da D-590 em `tests/test_decisoes_juntar_todas.py::test_d590_dividir_desmarcada_a_caixinha_continua_desmarcada`:
+  falha em 8846017, passa no novo.
+- No PC, um arquivo por vez: test_decisoes_montar_cadernos 13, test_decisoes_juntar_todas 4, test_decisoes_automatico
+  24, test_decisoes_dividir 19, test_dividir_no_programa 19, test_core 62, test_dividir_desmarcada_caixinha 3: passaram.
+- GitHub, conjunto inteiro + botões: rodada 41690519031 passou (a parte 1 rodada 2 vezes: na 1ª, um erro instável em
+  `test_promessas.py::test_p083_jeitos_do_so_as_letras[rede]`, a prévia de fundo sem o PDF já apagado; passa no PC).
+- Filtro de velocidade: rodada 41689838943, **igual** em tudo.
+
 ## Prints (janela real, offscreen, pasta de dados isolada em `_tmp/dividir-caixinha-dados`)
 
 - `1-painel-depois-de-rodar-dividir-desmarcado.png`: o painel depois do Rodar.

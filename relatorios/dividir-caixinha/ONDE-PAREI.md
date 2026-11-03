@@ -37,7 +37,11 @@ Outro agente mexe ao mesmo tempo em `core/automatico._dividir`, `paginas_mexidas
       test_dividir_desmarcada_caixinha 3: todos passaram.
 - [x] Olhar Endireitar, Cortar, Limpar: achados em `relatorio.md` (o mesmo defeito; e Gravuras desmarca sozinha).
 - [x] Prints da janela grande reaberta: `2-…`, `3-…` (pasta de dados isolada `_tmp/dividir-caixinha-dados`).
-- [ ] GitHub: conjunto inteiro + botões (rodada 41690519031); filtro de velocidade (41689838943). Em andamento.
+- [x] GitHub, conjunto inteiro + botões: rodada **41690519031** (commit `2d7c7f2`) PASSOU. Na 1ª tentativa a parte 1 deu
+      1 erro em `test_promessas.py::test_p083_jeitos_do_so_as_letras[rede]` (a prévia de fundo não achou o PDF já apagado no
+      fim do teste, erros.log); passa no PC (6 de 6) e passou ao rodar de novo a parte 1: instável, sem ligação com o Dividir.
+- [x] Filtro de velocidade: rodada **41689838943** (8846017 x 51edcca, mesmo código do fim): **igual** em tudo
+      (abrir +0,2%, trocar de página +1,1%, Mágico pro -1,4%, Preto e branco +0,4%).
 
 ## Causa
 
