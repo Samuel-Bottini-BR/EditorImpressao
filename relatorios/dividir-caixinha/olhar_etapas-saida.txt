@@ -1,0 +1,21 @@
+﻿
+DIVIDIR: paginas=6 folhas_divididas=3 dividir_folhas=False situacao='desligada' caixinha_reaberta_marcada=False 
+frase='Vou deixar a página em Original (sem filtro), no livro todo (6 páginas).'
+DIVIDIR (trabalho reaberto): paginas=6 caixinha_marcada=False frase='Vou deixar a página em Original (sem filtro), no 
+livro todo (6 páginas).'
+ENDIREITAR: ligada_antes=True campo_do_livro_depois=True situacao='ligada no livro todo' marcada_no_estado=True 
+caixinha_reaberta_marcada=True frase='Vou endireitar e deixar as margens iguais, no livro todo (2 páginas).'
+CORTAR: ligada_antes=True campo_do_livro_depois=True situacao='ligada no livro todo' marcada_no_estado=True 
+caixinha_reaberta_marcada=True frase='Vou cortar as bordas e deixar as margens iguais, no livro todo (2 páginas).'
+LIMPAR: ligada_antes=True campo_do_livro_depois=True situacao='ligada no livro todo' marcada_no_estado=True 
+caixinha_reaberta_marcada=True frase='Vou limpar em Preto e branco e deixar as margens iguais, no livro todo (2 
+páginas). No Preto e branco: deixar tudo em preto e branco.'
+SO DIVIDIR marcada e Rodar -> marcadas depois: ['dividir']
+SO ENDIREITAR marcada e Rodar -> marcadas depois: ['endireitar']
+SO CORTAR marcada e Rodar -> marcadas depois: ['cortar']
+SO LIMPAR marcada e Rodar -> marcadas depois: ['limpar']
+SO GRAVURAS marcada e Rodar -> marcadas depois: []
+SO MARGENS marcada e Rodar -> marcadas depois: ['margens']
+SO CADERNOS marcada e Rodar -> marcadas depois: ['cadernos']
+
+

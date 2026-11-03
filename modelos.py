@@ -838,6 +838,16 @@ class Projeto:
             # obra 26/10, etapa 3: o Automatico rodado so em algumas paginas
             # (ConfigPagina.automatico) tambem muda a imagem delas
             and not _tem_automatico_por_pagina(self)
+            # D-590 (03/11/2026): com o "Dividir" desmarcado no Automatico a
+            # caixinha do livro desliga (dividir_folhas False), mas as folhas
+            # divididas continuam divididas ("não junta nada"). O caminho
+            # rapido monta com as folhas cruas do PDF e as juntaria. Conta a
+            # pagina que e METADE de uma folha dividida (como o desenho da
+            # pagina, core/pipeline: folha.dividir e metade != inteira), nao
+            # so o folha.dividir (de fabrica True em ConfigFolha).
+            # Arriscado: tirar esta linha (os cadernos sairiam com a folha
+            # inteira no lugar das duas paginas).
+            and not _tem_metade_de_folha_dividida(self)
         )
 
     @property
@@ -961,6 +971,17 @@ def _tem_feito_a_mao_que_vale(projeto: "Projeto") -> bool:
     from core.etapas import tem_feito_a_mao_que_vale
 
     return tem_feito_a_mao_que_vale(projeto)
+
+
+def _tem_metade_de_folha_dividida(projeto: "Projeto") -> bool:
+    """Alguma pagina e a metade (esquerda/direita) de uma folha dividida? (o
+    que o desenho da pagina parte: core/pipeline, "folha.dividir and
+    pagina.metade != METADE_INTEIRA"). Usado por Projeto.so_cadernos (D-590:
+    com o "Dividir" desligado no livro, as folhas divididas continuam
+    divididas). Pagina de folha que nao existe nao conta."""
+    folhas = projeto.folhas
+    return any(p.metade != METADE_INTEIRA and 0 <= p.folha < len(folhas)
+               and folhas[p.folha].dividir for p in projeto.paginas)
 
 
 def _tem_automatico_por_pagina(projeto: "Projeto") -> bool:
