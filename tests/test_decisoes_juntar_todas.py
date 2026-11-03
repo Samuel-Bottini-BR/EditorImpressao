@@ -110,3 +110,27 @@ def test_d590_dividir_desmarcada_no_automatico_nao_junta_nada(janela, tmp_path):
     assert janela.rodar_o_automatico(esperar=True, perguntar=False)
     assert len(projeto.paginas) == 6 and all(f.dividir for f in projeto.folhas)
     assert len(_gerar(janela, tmp_path, "continua")) == 6
+
+
+@precisa_da_dll
+def test_d590_dividir_desmarcada_a_caixinha_continua_desmarcada(janela, tmp_path):
+    """D-590, Samuel 03/11/2026, à sugestão "a caixinha fica desmarcada como você deixou, e as
+    folhas continuam divididas. Pode ser?": "Sim a caixinha continua desmacada." Livro dividido pelo
+    Automático → desmarcar "Dividir" e rodar outra etapa → as folhas continuam divididas, a etapa
+    fica "desligada" e não volta marcada (nem relendo o livro, como ao reabrir o trabalho); a frase
+    de baixo não diz "Vou dividir". O comportamento antigo (a caixinha voltava "ligada no livro
+    todo") saiu. Com a janela de verdade, reabrir o trabalho e o PDF:
+    tests/test_dividir_desmarcada_caixinha.py."""
+    janela.abrir_livro(_livro_aberto(tmp_path))
+    _rodar(janela, [A.DIVIDIR, A.LIMPAR])
+    estado = janela.estado_do_automatico
+    assert estado.situacoes[A.DIVIDIR] == "ligada no livro todo"
+    estado.marcadas = {A.LIMPAR}
+    assert janela.rodar_o_automatico(esperar=True, perguntar=False)
+    projeto = janela.projeto
+    assert len(projeto.paginas) == 6 and all(f.dividir for f in projeto.folhas)
+    assert estado.situacoes[A.DIVIDIR] == "desligada"
+    assert A.DIVIDIR not in estado.marcadas
+    assert "dividir" not in estado.frase().lower()
+    estado.do_projeto(projeto)                             # relido, como ao reabrir
+    assert A.DIVIDIR not in estado.marcadas

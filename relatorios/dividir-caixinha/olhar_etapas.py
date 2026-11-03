@@ -113,8 +113,8 @@ def _rodar_pela_janela(janela, etapa: str, marcar: bool) -> None:
     assentar(60)
 
 
-def _print_reaberta(janela, etapa: str, nome: str) -> bool:
-    jan = janela.abrir_o_automatico(etapa)
+def _print_reaberta(janela, etapa: str, nome: str, aberta: str = A.LIMPAR) -> bool:
+    jan = janela.abrir_o_automatico(aberta if aberta != etapa else A.MARGENS)  # a linha da etapa olhada fica sem o destaque de selecionada
     jan.resize(1280, 720)
     jan.lista.scrollToTop()
     assentar(60)

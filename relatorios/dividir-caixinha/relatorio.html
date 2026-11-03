@@ -1,0 +1,143 @@
+<!doctype html>
+<html lang="pt-BR">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>D-590: a caixinha do Dividir</title>
+<style>
+:root { color-scheme: light dark; }
+* { box-sizing: border-box; }
+body {
+  font: 17px/1.65 "Segoe UI", system-ui, sans-serif;
+  max-width: 46rem; margin: 0 auto; padding: 2.5rem 1.5rem 6rem;
+  color: #1c1c1e; background: #fdfdfc;
+}
+h1 { font-size: 2rem; line-height: 1.2; margin: 0 0 .3em; letter-spacing: -.02em; }
+h2 { font-size: 1.35rem; margin: 2.4em 0 .6em; padding-top: .8em;
+     border-top: 1px solid #e6e4e0; letter-spacing: -.01em; }
+h3 { font-size: 1.1rem; margin: 1.8em 0 .4em; }
+h1 + p, h2 + p { margin-top: .4em; }
+p, li { margin: 0 0 .9em; }
+ul, ol { padding-left: 1.3em; }
+strong { font-weight: 640; }
+code {
+  font: .88em ui-monospace, "Cascadia Code", Consolas, monospace;
+  background: #f1efec; padding: .12em .35em; border-radius: 4px;
+}
+pre {
+  background: #f1efec; padding: 1em 1.1em; border-radius: 8px;
+  overflow-x: auto; line-height: 1.5;
+}
+pre code { background: none; padding: 0; }
+blockquote {
+  margin: 1.2em 0; padding: .1em 0 .1em 1.1em;
+  border-left: 3px solid #c9c5be; color: #55524d;
+}
+table {
+  border-collapse: collapse; width: 100%; margin: 1.2em 0;
+  font-size: .95rem; display: block; overflow-x: auto;
+}
+th, td { padding: .5em .8em; text-align: left; border-bottom: 1px solid #e6e4e0; }
+th { font-weight: 620; background: #f7f5f2; white-space: nowrap; }
+tr:last-child td { border-bottom: none; }
+img { max-width: 100%; height: auto; border-radius: 6px; margin: 1em 0;
+      border: 1px solid #e6e4e0; }
+hr { border: none; border-top: 1px solid #e6e4e0; margin: 2.5em 0; }
+.rodape { margin-top: 4em; padding-top: 1.2em; border-top: 1px solid #e6e4e0;
+          font-size: .85rem; color: #86827c; }
+@media (prefers-color-scheme: dark) {
+  body { color: #e8e6e3; background: #1a1917; }
+  h2 { border-top-color: #35332f; }
+  code, pre, th { background: #262421; }
+  th, td { border-bottom-color: #35332f; }
+  blockquote { border-left-color: #4a4741; color: #b0aca6; }
+  img { border-color: #35332f; }
+  .rodape { border-top-color: #35332f; color: #7d7973; }
+}
+@media print {
+  body { max-width: none; padding: 0; color: #000; background: #fff; }
+  h2 { page-break-after: avoid; }
+  table, img { page-break-inside: avoid; }
+}
+</style>
+</head>
+<body>
+<h1>D-590: a caixinha do "Dividir" desmarcada fica desmarcada</h1>
+<p>Ramo <code>dividir-caixinha-2026-11-03</code> (saiu de <code>obra-2026-10-26</code> em <code>8846017</code>). Implementador, 03/11/2026.</p>
+<h2>O que foi feito</h2>
+<p>Agora, com "1 Dividir folhas ao meio" desmarcada e Rodar, <strong>as folhas continuam divididas e a caixinha fica
+desmarcada</strong> (no painel, na janela grande aberta de novo e depois de fechar e reabrir o trabalho); a etapa fica
+"desligada" e a frase de baixo não fala mais em dividir. Marcar de novo e rodar divide e a etapa volta "ligada no
+livro todo". O Ctrl+Z traz de volta.</p>
+<p><strong>Por que acontecia:</strong> o "Rodar" desliga as etapas desmarcadas (D-589), mas o Dividir ficava de fora de propósito
+(com medo de juntar as folhas). Então o livro continuava com o Dividir "ligado no livro todo", e o painel, ao reler
+o livro depois do Rodar, marcava a caixinha de novo.</p>
+<p><strong>O conserto:</strong> o Rodar desliga também o Dividir desmarcado, mas <strong>só a caixinha do livro</strong> (<code>dividir_folhas</code>);
+nenhuma folha é tocada. Junto, um cuidado necessário: com o Dividir desligado e só "Montar cadernos", o programa
+usava um atalho que monta os cadernos com as folhas cruas do PDF, e isso <strong>juntaria as folhas</strong> nos cadernos
+(medido: 2 folhas de 1152 pt no lugar de 4 de 576 pt). O atalho agora não vale quando há página que é metade de
+folha dividida.</p>
+<h2>Arquivos alterados</h2>
+<ul>
+<li><code>core/automatico.py</code>: <code>DESLIGAM_DESMARCADAS</code> (agora com o DIVIDIR) e os docstrings de
+  <code>_desligar_as_desmarcadas</code> e de <code>Pedido.desmarcadas</code>. <strong>Não toquei</strong> em <code>_dividir</code>, <code>paginas_mexidas</code> nem no uso
+  de <code>pular</code> (o trecho do outro agente).</li>
+<li><code>modelos.py</code>: <code>Projeto.so_cadernos</code> (uma condição a mais) e a função nova <code>_tem_metade_de_folha_dividida</code>.</li>
+<li><code>tests/test_dividir_desmarcada_caixinha.py</code> (novo, 3 testes).</li>
+<li><code>relatorios/dividir-caixinha/</code>: ONDE-PAREI, este relatório, <code>olhar_etapas.py</code> (script dos prints e do olhar),
+  <code>olhar_etapas-saida.txt</code> e os prints.</li>
+</ul>
+<h2>Prints (janela real, offscreen, pasta de dados isolada em <code>_tmp/dividir-caixinha-dados</code>)</h2>
+<ul>
+<li><code>1-painel-depois-de-rodar-dividir-desmarcado.png</code>: o painel depois do Rodar.</li>
+<li><code>2-janela-reaberta-dividir-desmarcado.png</code>: a janela grande aberta de novo: "1 Dividir · desligada", caixinha
+  vazia, frase "Vou deixar a página em Original (sem filtro), no livro todo (6 páginas)."</li>
+<li><code>3-trabalho-reaberto-janela-dividir.png</code>: o trabalho fechado e reaberto: igual, 6 páginas.</li>
+<li><code>4-</code>, <code>5-</code>, <code>6-olhar-*-desmarcada-reaberta.png</code>: o olhar das etapas 2, 3 e 4 (abaixo).</li>
+</ul>
+<h2>Achados para o Samuel (só olhados, <strong>sem conserto</strong>: regra "Só o que ele mandou")</h2>
+<p>Medido pela janela grande (script <code>olhar_etapas.py</code>, saída em <code>olhar_etapas-saida.txt</code>):</p>
+<ol>
+<li><strong>"2 Endireitar", "3 Cortar as bordas" e "4 Limpar a folha" têm o mesmo defeito que o Dividir tinha.</strong> Ligadas
+   numa rodada, desmarcadas na janela grande e Rodar → a caixinha <strong>volta marcada</strong>, a etapa continua "ligada no
+   livro todo" e a frase de baixo diz "Vou endireitar…" / "Vou cortar as bordas…" / "Vou limpar em Preto e
+   branco…". <strong>E a etapa continua valendo</strong>: o campo do livro que o PDF lê (<code>endireitar</code>, <code>cortar_bordas</code>,
+   <code>limpar</code>; <code>core/etapas.endireita_sozinho</code> / <code>corta_sozinho</code> / <code>limpa_sozinho</code>) fica ligado, então o livro sai
+   endireitado, cortado e limpo mesmo com a caixinha desmarcada. Prints <code>4-olhar-endireitar-…</code>,
+   <code>5-olhar-cortar-…</code>, <code>6-olhar-limpar-…</code>. No código está escrito de propósito: "Endireitar, Cortar e Limpar
+   desmarcados ficam como estão (ainda a perguntar)" (<code>core/automatico.DESLIGAM_DESMARCADAS</code>). Pela D-589 ("se
+   algo não está marcado, não é para fazer") pareceria que elas devem desligar também; <strong>falta a decisão dele</strong>
+   (pergunta abaixo).</li>
+<li><strong>"5 Gravuras e fotos" marcada sozinha e Rodar → a caixinha volta DESMARCADA.</strong> É o contrário: num livro sem
+   "Limpar a folha" ligada, marcar só a etapa 5 e rodar faz a caixinha desmarcar sozinha, porque o programa só conta
+   a etapa 5 como ligada quando o "Limpar a folha" também está (<code>core/automatico.ligada_no_livro</code>). Visto no
+   script ("SO GRAVURAS marcada e Rodar -&gt; marcadas depois: []").</li>
+<li><strong>"Limpar a folha" liga a "Gravuras e fotos" junto (anotado em 01/11):</strong> pela janela, com a etapa 5
+   desmarcada, <strong>não se reproduziu</strong> nesta versão: o desligar da D-589 a desliga no mesmo Rodar ("SO LIMPAR
+   marcada e Rodar -&gt; marcadas depois: ['limpar']"). A ligação continua no código (<code>ligada_no_livro</code>: a etapa 5
+   conta como ligada sempre que "Limpar" está ligada e o "Procurar" do livro está ligado, e o "Procurar" vem ligado
+   de fábrica). Por outro caminho que não leve as desmarcadas (ex.: um pedido montado fora da janela) ela ainda
+   apareceria ligada.</li>
+<li>As outras (1 Dividir, 6 Margens, 7 Cadernos), marcadas sozinhas e rodadas, ficam só elas marcadas: nenhuma
+   ligou sozinha.</li>
+</ol>
+<h2>Perguntas para o Samuel</h2>
+<ul>
+<li><strong>P1 (achado 1).</strong> "Quando você desmarca 'Endireitar', 'Cortar as bordas' ou 'Limpar a folha' e roda, hoje a
+  caixinha volta marcada e o livro continua saindo endireitado, cortado ou limpo. Sugestão: a caixinha fica
+  desmarcada e a etapa deixa de ser feita no livro todo (como já é com Cadernos, Margens e Gravuras). As páginas que
+  você mexeu à mão continuam como você deixou. Pode ser assim?"</li>
+<li><strong>P2 (achado 2).</strong> "Marcar só 'Gravuras e fotos' (sem 'Limpar a folha') e rodar faz a caixinha voltar
+  desmarcada. Sugestão: ela fica marcada como você deixou. Pode ser?" (Observação técnica para a gerente: a
+  procura das gravuras só muda a página quando há filtro; sem "Limpar a folha", marcar a etapa 5 hoje não muda o
+  PDF.)</li>
+</ul>
+<h2>Ideias / bugs</h2>
+<ul>
+<li>Bug para a Lista de bugs (não impede): na janela grande, a linha <strong>selecionada</strong> com a caixinha desmarcada
+  mostra a caixinha como um quadrado preto cheio (ver o "4 Limpar a folha" no print <code>4-olhar-endireitar-…</code>), que
+  pode ser lido como "marcada". Já era assim antes; não mexi.</li>
+</ul>
+<p class="rodape">Editor de Impressão &middot; gerado em 03/11/2026 às 14:05</p>
+</body>
+</html>
