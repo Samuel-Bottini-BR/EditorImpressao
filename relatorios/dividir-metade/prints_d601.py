@@ -27,7 +27,9 @@ from pathlib import Path
 
 RAIZ = Path(__file__).resolve().parents[2]
 QUANDO = sys.argv[1] if len(sys.argv) > 1 else "depois"
-PASTA = RAIZ / "_tmp" / f"d601-{QUANDO}"
+# "... depois esta-certo": só os prints 5 e 6 (a faixa antes e depois do "está certo", D-572)
+ESTA_CERTO = len(sys.argv) > 2 and sys.argv[2] == "esta-certo"
+PASTA = RAIZ / "_tmp" / f"d601-{QUANDO}{'-ok' if ESTA_CERTO else ''}"
 shutil.rmtree(PASTA, ignore_errors=True)
 (PASTA / "dados").mkdir(parents=True)
 (PASTA / "projetos").mkdir(parents=True)
@@ -96,6 +98,14 @@ def main() -> None:
     assentar()
     esperar_a_imagem()
     tela.botao_nao_dividir.click()            # "dividir esta"
+    if ESTA_CERTO:                            # D-572 + D-601: antes e depois do ok
+        foto("5-uma-pagina-antes-do-esta-certo")
+        tela.botao_esta_certo.click()
+        foto("6-uma-pagina-depois-do-esta-certo")
+        print(f"faixa: '{tela.texto_faixa.text()}', está certo à vista: "
+              f"{tela.botao_esta_certo.isVisible()}")
+        janela.close()
+        return
     foto("1-dividida-uma-pagina")
     tela.botao_proxima.click()                # a seta da barra de baixo
     foto("2-seta-para-a-direita")
