@@ -423,7 +423,7 @@ def test_o_propriedades_do_dividir(janela, pasta):
     assert conteudo.isAncestorOf(tela.combo_jeito_da_folha)
     partes = [r.text() for r in conteudo.findChildren(QLabel)]
     assert "SÓ NESTA FOLHA" in partes and "PARA O LIVRO TODO" in partes
-    assert any(t.startswith("Jeito de dividir:") for t in partes)
+    assert any(t.startswith("Motor de corte:") for t in partes)      # D-602: era "Jeito de dividir:"
     tela.paineis.abrir("props")
     assert tela.paineis.propriedades.cabecalho.subtitulo.text() == "Dividir a folha"
 

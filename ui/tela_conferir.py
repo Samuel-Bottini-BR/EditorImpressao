@@ -78,7 +78,7 @@ aqui e nunca alcançada: a R do Retângulo ganhava).
 
 Dividir (item 2.1, 06/10/2026, decisão G2 (a) do Samuel: "trocando numa
 folha se um ficar ruim"; provisório até o layout, pedido da gerente): na
-linha de botões da aba Onde cortar, a lista "jeito:" (o do programa · o do
+linha de botões da aba Onde cortar, a lista "motor de corte:" (D-602; era "jeito:") (o do programa · o do
 ScanTailor) troca o jeito SÓ desta folha e recalcula a linha azul
 (_trocar_jeito_da_folha; ConfigFolha.dividir_como), numa ação do desfazer;
 só habilitada em folha dividida. Conserto junto: "não dividir esta" apaga na
@@ -1114,6 +1114,14 @@ class TelaConferir(QWidget):
         estilo.estilizar(barra, self._icones_da_barra_de_baixo)
         return barra
 
+    # D-602: a leitura da linha do motor de corte (_pedir_a_linha). Os
+    # valores de cada livro sao postos em carregar.
+    _linhas_do_motor: dict = {}
+    _geracao_das_linhas = 0
+    _chave_lendo = None
+    _linha_pedida = None
+    _leituras: tuple | list = ()
+
     # Obra 26/10, etapa 6: os botoes do "ver" na barra de baixo, (jeito,
     # texto, balao). Os nomes "Uma página" e "Duas lado a lado" sao os do
     # livro aberto aprovado (D-015, lyupdf "Aprovado"); os baloes tambem.
@@ -1743,20 +1751,24 @@ class TelaConferir(QWidget):
         coluna = self._conteudo_de_propriedades(ABA_CORTE)
         coluna.addWidget(titulo_de_parte("Só nesta folha"))
         coluna.addWidget(titulo_de_secao("Onde dividir"))
-        # Item 2.1 (G2 (a), "trocando numa folha se um ficar ruim"): o jeito
-        # de dividir SO desta folha. Trocar recalcula a linha azul pelo outro
-        # jeito (core.pipeline.recalcular_divisao). So habilitada em folha
-        # dividida (_atualizar_botoes).
+        # Item 2.1 (G2 (a), "trocando numa folha se um ficar ruim"): o motor
+        # de corte SO desta folha. Trocar recalcula a linha azul pelo outro
+        # motor (core.pipeline.recalcular_divisao; na folha inteira, a leitura
+        # por tras da D-602). D-602 (03/11/2026): acesa em TODA folha - antes
+        # so na dividida, e a folha ainda inteira (todas, ao abrir o livro) a
+        # deixava cinza: era a "lista travada" do Samuel. E o rotulo "jeito"
+        # virou "motor de corte" ("acho que o nome poderia ser motor de corte");
+        # os nomes das opcoes nao mudam (D-373).
         linha = self._par_de_botoes(coluna)
-        self.rotulo_jeito_da_folha = QLabel("jeito:")
+        self.rotulo_jeito_da_folha = QLabel("motor de corte:")
         self.rotulo_jeito_da_folha.setObjectName("rotuloDoPainel")
         linha.addWidget(self.rotulo_jeito_da_folha)
         self.combo_jeito_da_folha = QComboBox()
         for jeito in dividir_scantailor.JEITOS:
             self.combo_jeito_da_folha.addItem(nome_do_jeito_de_dividir(jeito), jeito)
         self.combo_jeito_da_folha.setToolTip(
-            "Divide esta folha de outro jeito: o do Editor ou o do ScanTailor. "
-            "A linha azul vai para onde o outro jeito acha a divisão.")
+            "O motor de corte desta folha: o do Editor ou o do ScanTailor. "
+            "A linha azul vai para onde o motor escolhido acha a divisão.")
         self.combo_jeito_da_folha.currentIndexChanged.connect(
             lambda _i: self._trocar_jeito_da_folha())
         linha.addWidget(self.combo_jeito_da_folha, 1)
@@ -1772,8 +1784,19 @@ class TelaConferir(QWidget):
             "(o Desfazer divide de novo).")
         par.setStretch(0, 1)
         par.setStretch(1, 1)
-        _botao("usar em todas", coluna, self._corte_em_todas).setToolTip(
+        # D-602 (03/11/2026): "dividir todas" ao lado do "usar em todas" (os
+        # dois valem para o livro; dois por linha, como "não dividir esta" /
+        # "juntar todas"). O "usar em todas" (D-090) continua copiando a linha
+        # DESTA folha; o "dividir todas" lê cada folha pelo motor de corte.
+        par = self._par_de_botoes(coluna)
+        _botao("usar em todas", par, self._corte_em_todas).setToolTip(
             "Põe a linha de divisão desta folha em todas as folhas.")
+        self.botao_dividir_todas = _botao("dividir todas", par, self._dividir_todas)
+        self.botao_dividir_todas.setToolTip(
+            "Lê cada folha do livro pelo motor de corte e divide cada folha dupla na sua "
+            "própria linha; as de uma página só ficam inteiras (o Desfazer junta de novo).")
+        par.setStretch(0, 1)
+        par.setStretch(1, 1)
         # (O botao "girar" que ficava aqui saiu em 13/10/2026: fazia o mesmo que
         # o "¼ à direita" do bloco "Girar a folha", logo acima no painel - os
         # dois chamavam _girar_folhas(GIRO_DIREITA), com o mesmo "aplicar em".)
@@ -1781,7 +1804,7 @@ class TelaConferir(QWidget):
         jeito_do_livro = dividir_scantailor.jeito_valido(
             getattr(self.projeto, "dividir_como", None))
         coluna.addWidget(self._parte_do_livro(
-            [f"Jeito de dividir: {nome_do_jeito_de_dividir(jeito_do_livro)}"], "dividir"))
+            [f"Motor de corte: {nome_do_jeito_de_dividir(jeito_do_livro)}"], "dividir"))
 
     def _montar_aba_bordas(self) -> None:
         """A ferramenta Cortar as bordas: a pagina com o retangulo verde e,
@@ -3456,6 +3479,10 @@ class TelaConferir(QWidget):
             self._cartoes_cache = {}
             self._cartoes_cache_chave = None
             self._tira_assinatura = None
+            # D-602: as linhas lidas pelo motor de corte são deste livro
+            self._linhas_do_motor = {}
+            self._geracao_das_linhas += 1
+            self._linha_pedida = None
 
             self.indice_folha = 0
             self.indice_pagina = 0
@@ -3839,6 +3866,131 @@ class TelaConferir(QWidget):
             return None
         return pagina.metade
 
+    # --- D-602 (03/11/2026): a linha do motor de corte antes de cortar ----------
+    # Samuel, no Gradus Primus (a-45 a a-47): "quando eu entro no dividir não
+    # aparece a linha azul [...] Quando eu estiver na ferramenta de dividir, o
+    # programa deveria carregar com a conta que está escolhida, e dai eu
+    # conseguir ver a linha e dai eu clicar e dividir esta, dai ele reparte" ·
+    # só nas folhas duplas → "pode ser assim na questão do divisor."
+    # A folha ainda inteira é lida pelo motor de corte dela (o da folha ou o do
+    # livro) POR TRÁS (ui.tarefas.TarefaLerLinhas -> core.dividir_a_mao.
+    # ler_a_linha, a mesma conta do "dividir esta", sem forçar), uma folha por
+    # vez, e a leitura fica guardada em _linhas_do_motor por (folha, rotação,
+    # motor): girar a folha ou trocar o motor lê de novo. Nada vai para o
+    # projeto (abrir o Dividir não grava nada); o "dividir esta" e o "dividir
+    # todas" cortam na linha lida. Enquanto lê, o selo "atualizando...".
+    # Arriscado: ler no fio da tela (o Gradus tem 70 folhas: congelaria), ou
+    # cortar numa conta diferente da que mostrou.
+
+    def _chave_da_linha(self, indice: int) -> tuple[int, int, str]:
+        """(folha, rotação, motor de corte): o que a leitura do motor depende."""
+        assert self.projeto is not None
+        folha = self.projeto.folhas[indice]
+        return (int(indice), int(folha.rotacao) % 360, jeito_de_dividir(self.projeto, folha))
+
+    def _linha_do_motor(self, indice: int):
+        """(Lombada, tampa) já lida desta folha, como ela está agora, ou None."""
+        return self._linhas_do_motor.get(self._chave_da_linha(indice))
+
+    def _volta_como_estava(self, indice: int) -> bool:
+        """A folha inteira que o "dividir esta" devolve como estava, na linha de
+        antes (D-498: a pessoa juntou; ou duas páginas não divididas)."""
+        assert self.projeto is not None
+        return (len(dividir_a_mao.paginas_da_folha(self.projeto, indice)) >= 2
+                or bool(self.projeto.folhas[indice].metades_guardadas))
+
+    def _acertar_a_linha_do_dividir(self) -> None:
+        """Põe a linha da folha da vez na vista do Dividir.
+
+        - Folha dividida: a linha dela, para arrastar, só com a folha inteira na
+          tela ("Duas lado a lado", D-601).
+        - Folha ainda inteira (D-602): a linha onde o motor cortaria, só para
+          ver, se o motor acha a folha dupla (a de uma página só fica sem
+          linha); na folha que volta como estava, a linha de antes. Ainda não
+          lida: sem linha, o selo "atualizando..." e a leitura pedida."""
+        if self.projeto is None or ABA_CORTE not in self.visualizadores:
+            return
+        vis = self.visualizadores[ABA_CORTE]
+        indice = self.indice_folha
+        folha = self.projeto.folhas[indice]
+        if folha.dividir:
+            vis.definir_lendo_a_linha(False)
+            vis.definir_corte(folha.posicao_corte, visivel=self._metade_no_dividir() is None)
+            return
+        lida = self._linha_do_motor(indice)
+        if lida is None:
+            vis.definir_corte(folha.posicao_corte, visivel=False)
+            vis.definir_lendo_a_linha(True)
+            self._pedir_a_linha(indice)
+            return
+        lombada, _tampa = lida
+        posicao = folha.posicao_corte if self._volta_como_estava(indice) else lombada.posicao
+        vis.definir_lendo_a_linha(False)
+        vis.definir_corte(posicao, visivel=bool(lombada.e_paisagem), arrastavel=False)
+
+    def _pedir_a_linha(self, indice: int) -> None:
+        """Lê a folha `indice` pelo motor, por trás. Uma leitura por vez: se já
+        há uma andando, esta fica pedida e começa quando ela acabar (a tela
+        nunca espera por ela). As tarefas ficam guardadas até acabarem (QThread
+        apagado andando derruba o programa)."""
+        from ui.tarefas import TarefaLerLinhas
+
+        assert self.projeto is not None
+        if self._chave_lendo is not None:
+            self._linha_pedida = indice
+            return
+        self._linha_pedida = None
+        chave = self._chave_da_linha(indice)
+        tarefa = TarefaLerLinhas(self.projeto.caminho_entrada, [chave])
+        tarefa.geracao = self._geracao_das_linhas
+        # métodos desta tela (e não funções soltas): o Qt entrega o sinal do
+        # fio de fundo no fio da janela
+        tarefa.lida.connect(self._linha_lida)
+        tarefa.falhou.connect(self._linha_nao_lida)
+        tarefa.finished.connect(self._leitura_acabou)
+        self._leituras = [t for t in self._leituras if t.isRunning()] + [tarefa]
+        self._chave_lendo = chave
+        tarefa.start()
+
+    def _da_leitura_velha(self) -> bool:
+        """O sinal veio de uma leitura de antes de abrir este livro?"""
+        tarefa = self.sender()
+        return (tarefa is not None
+                and getattr(tarefa, "geracao", self._geracao_das_linhas) != self._geracao_das_linhas)
+
+    def _linha_lida(self, chave, resultado) -> None:
+        """Uma folha lida pelo motor (da leitura da tela ou do "dividir
+        todas"): guarda e, se é a da vez no Dividir, mostra a linha."""
+        if self.projeto is None or self._da_leitura_velha():
+            return
+        self._linhas_do_motor[tuple(chave)] = resultado
+        if (self.aba_atual == ABA_CORTE and 0 <= self.indice_folha < len(self.projeto.folhas)
+                and self._chave_da_linha(self.indice_folha) == tuple(chave)):
+            self._acertar_a_linha_do_dividir()
+
+    def _linha_nao_lida(self, _mensagem: str) -> None:
+        """O motor não conseguiu ler a folha da leitura da tela (o erro técnico
+        já foi para o log): fica sem linha, como folha de uma página, e não
+        tenta de novo."""
+        from core.dividir import Lombada
+
+        chave = self._chave_lendo
+        if chave is not None and not self._da_leitura_velha():
+            self._linha_lida(chave, (Lombada(0.5, 0.0, False), [int(chave[1])]))
+
+    def _leitura_acabou(self) -> None:
+        """A leitura da tela acabou: começa a pedida (outra folha), se há."""
+        self._chave_lendo = None
+        pedida = self._linha_pedida
+        self._linha_pedida = None
+        if self.projeto is None:
+            return
+        if (pedida is not None and 0 <= pedida < len(self.projeto.folhas)
+                and self._linha_do_motor(pedida) is None):
+            self._pedir_a_linha(pedida)
+        elif self.aba_atual == ABA_CORTE and self._pronta():
+            self._acertar_a_linha_do_dividir()
+
     def _ir_para(self, indice: int) -> None:
         assert self.projeto is not None
         if self.trabalha_com_folhas:
@@ -4087,9 +4239,10 @@ class TelaConferir(QWidget):
             if metade is not None and img is not None:
                 img = dividir_imagem(img, folha.posicao_corte)[0 if metade == METADE_ESQUERDA else 1]
             vis.definir_imagem(img, dono=("folha", self.indice_folha, metade))   # D4
-            # a linha so aparece em folha dividida (parecer do verificador, 06/10)
-            # e so na folha inteira ("Duas lado a lado", D-601)
-            vis.definir_corte(folha.posicao_corte, visivel=bool(folha.dividir) and metade is None)
+            # a linha: na folha dividida, so na folha inteira ("Duas lado a
+            # lado", D-601), para arrastar; na folha ainda inteira, a do motor
+            # de corte, so se ele acha a folha dupla (D-602)
+            self._acertar_a_linha_do_dividir()
             self.previas.pre_carregar_folhas(self.indice_folha, DPI_PREVIA)
             # na ferramenta Dividir a tela trabalha com a folha inteira: a
             # fila do painel Filtro fica sem as paginas pequenas (nao mostra
@@ -4962,8 +5115,10 @@ class TelaConferir(QWidget):
             self.combo_jeito_da_folha.setCurrentIndex(self.combo_jeito_da_folha.findData(
                 jeito_de_dividir(self.projeto, folha)))
             self.combo_jeito_da_folha.blockSignals(False)
-            self.combo_jeito_da_folha.setEnabled(bool(folha.dividir))
-            self.rotulo_jeito_da_folha.setEnabled(bool(folha.dividir))
+            # D-602: acesa em toda folha (a inteira também tem a linha do
+            # motor). Antes: setEnabled(folha.dividir) - a "lista travada".
+            self.combo_jeito_da_folha.setEnabled(True)
+            self.rotulo_jeito_da_folha.setEnabled(True)
 
         if ABA_ANGULO in self._abas_ativas:
             self._atualizar_conta_do_endireitar()
@@ -5436,16 +5591,125 @@ class TelaConferir(QWidget):
         self._registrar("nao_dividir", "folha", indices, campos,
                         f"Juntar {n} folha" + ("" if n == 1 else "s"))
 
+    # --- D-602: "dividir todas" ---------------------------------------------------
+    # Samuel, 03/11/2026: "se eu apertasse para todas as folhas ele carregaria
+    # para todas as folhas, faria a leitura em todas as folhas." → "Um botão
+    # novo, "dividir todas", faz a conta em cada folha do livro e corta cada
+    # uma na sua própria linha" · só nas folhas duplas → "pode ser assim".
+    # Cada folha ainda inteira é lida pelo motor de corte dela (a leitura que a
+    # tela já fez é usada; as outras, por trás, com andamento e "parar") e
+    # cortada na SUA linha - a mesma que a tela mostra -, com a tampa do
+    # scanner (D-495) e as marcações indo para a metade certa (D-528, em
+    # core.dividir_a_mao.campos_para_dividir). A folha que o motor acha de uma
+    # página só fica inteira; a já dividida fica como está (não é dividida de
+    # novo); a que a pessoa juntou volta como estava, na linha de antes
+    # (D-498), se o motor a acha dupla. Uma ação só do desfazer.
+    # Arriscado: ler no fio da tela (congelaria) ou uma ação por folha.
+
+    @protegido
+    def _dividir_todas(self) -> None:
+        """O botão "dividir todas" da ferramenta Dividir (ver acima)."""
+        from PySide6.QtWidgets import QProgressDialog
+
+        from ui.tarefas import TarefaLerLinhas
+
+        if self.projeto is None or self.acoes is None:
+            return
+        inteiras = [f.indice for f in self.projeto.folhas if not f.dividir]
+        if not inteiras:
+            self._avisar("Todas as folhas já estão divididas.")
+            return
+        pedidos = [self._chave_da_linha(f) for f in inteiras if self._linha_do_motor(f) is None]
+        if not pedidos:
+            self._dividir_as_lidas(inteiras)
+            return
+        total = len(pedidos)
+        caixa = QProgressDialog(f"Lendo as folhas pelo motor de corte... 0 de {total}", "parar",
+                                0, total, self)
+        caixa.setWindowTitle("Dividir todas")
+        caixa.setWindowModality(Qt.WindowModal)
+        caixa.setMinimumDuration(0)
+        caixa.setAutoClose(False)
+        caixa.setAutoReset(False)
+        tarefa = TarefaLerLinhas(self.projeto.caminho_entrada, pedidos)
+        tarefa.geracao = self._geracao_das_linhas
+        self._tarefa_de_dividir_todas = tarefa
+        self._caixa_de_dividir_todas = caixa
+        self._dividir_todas_pedido = inteiras
+        # métodos desta tela (e não funções soltas): o Qt entrega o sinal do
+        # fio de fundo no fio da janela
+        tarefa.progresso.connect(self._dividir_todas_andou)
+        tarefa.lida.connect(self._linha_lida)          # cada folha lida já serve à tela
+        tarefa.concluida.connect(self._dividir_todas_leu)
+        tarefa.falhou.connect(self._dividir_todas_falhou)
+        caixa.canceled.connect(tarefa.cancelar)
+        caixa.show()
+        tarefa.start()
+
+    def _dividir_todas_andou(self, feitas: int, de: int) -> None:
+        """O andamento do "dividir todas" na caixa."""
+        caixa = getattr(self, "_caixa_de_dividir_todas", None)
+        if caixa is None:
+            return
+        caixa.setMaximum(de)
+        caixa.setValue(feitas)
+        caixa.setLabelText(f"Lendo as folhas pelo motor de corte... {feitas} de {de}")
+
+    def _dividir_todas_leu(self, _lidas) -> None:
+        """Todas as folhas lidas (as leituras já estão em _linhas_do_motor,
+        pelo sinal `lida`): corta (só se não foi parada nem é de outro livro)."""
+        tarefa = getattr(self, "_tarefa_de_dividir_todas", None)
+        self._fechar_a_caixa_de_dividir_todas()
+        if (tarefa is None or tarefa.foi_cancelada or self._da_leitura_velha()
+                or self.projeto is None):
+            return
+        self._dividir_as_lidas(self._dividir_todas_pedido)
+
+    def _dividir_todas_falhou(self, mensagem: str) -> None:
+        self._fechar_a_caixa_de_dividir_todas()
+        self._avisar(mensagem)
+
+    def _fechar_a_caixa_de_dividir_todas(self) -> None:
+        """Fecha a caixa do andamento SEM o sinal "canceled" (o Qt o manda ao
+        fechar a caixa, e ele pararia a tarefa como se fosse o "parar")."""
+        caixa = getattr(self, "_caixa_de_dividir_todas", None)
+        if caixa is not None:
+            caixa.blockSignals(True)
+            caixa.close()
+            self._caixa_de_dividir_todas = None
+
+    def _dividir_as_lidas(self, folhas: list[int]) -> None:
+        """Corta as `folhas` já lidas pelo motor: cada dupla na sua linha, as
+        de uma página só ficam inteiras (ver o comentário do "dividir todas")."""
+        assert self.projeto is not None
+        medidas: dict[int, tuple] = {}
+        for f in folhas:
+            folha = self.projeto.folhas[f]
+            lida = self._linha_do_motor(f)
+            if folha.dividir or lida is None or not lida[0].e_paisagem:
+                continue
+            if self._volta_como_estava(f) and dividir_a_mao.tampa_ja_medida(folha):
+                medidas[f] = (None, None)            # volta como estava, sem medir
+            else:
+                medidas[f] = lida
+        if not medidas or not self._dividir_as_medidas(folhas, medidas, " (dividir todas)",
+                                                       conferidas=False):
+            self._avisar("Nenhuma folha dupla para dividir: as que faltam são de uma página só.")
+
     @protegido
     def _dividir_esta(self) -> None:
         """"dividir esta": a folha passa a sair como duas páginas.
 
         - Folha que a pessoa juntou antes ("não dividir esta"): as duas
           páginas voltam como estavam, na linha de antes (sem medir nada).
-        - Folha com uma página só: acha a lombada na folha como ela está
-          (girada, se foi girada: lista única 3.1), pelo jeito da folha ou do
-          livro, e a tampa do scanner em volta do livro (D-495: sai branca);
-          leva uns décimos de segundo (core/dividir_a_mao.medir_para_dividir).
+        - Folha com uma página só: corta NA LINHA QUE A TELA MOSTRA (D-602,
+          Samuel, 03/11/2026: "e dai eu conseguir ver a linha e dai eu clicar
+          e dividir esta, dai ele reparte"): a leitura do motor de corte da
+          folha (_linha_do_motor; ainda não lida, lida agora, a mesma conta),
+          com a tampa do scanner em volta do livro (D-495: sai branca). Se o
+          motor acha a folha de uma página só (sem linha na tela), a conta
+          forçada de antes (core/dividir_a_mao.medir_para_dividir: "'dividir
+          esta' sempre ativo", P-059). Uns décimos de segundo.
         Uma ação do desfazer; grava a marca "mexida à mão" (_registrar)."""
         from PySide6.QtWidgets import QApplication
 
@@ -5458,8 +5722,15 @@ class TelaConferir(QWidget):
         else:
             QApplication.setOverrideCursor(Qt.WaitCursor)
             try:
-                lombada, tampa = dividir_a_mao.medir_para_dividir(
-                    self.projeto, self.indice_folha, jeito_de_dividir(self.projeto, folha))
+                lida = self._linha_do_motor(self.indice_folha)
+                if lida is None:
+                    chave = self._chave_da_linha(self.indice_folha)
+                    lida = dividir_a_mao.ler_a_linha(self.projeto.caminho_entrada, *chave)
+                    self._linhas_do_motor[chave] = lida
+                lombada, tampa = lida
+                if not devolve and not lombada.e_paisagem:
+                    lombada, tampa = dividir_a_mao.medir_para_dividir(
+                        self.projeto, self.indice_folha, jeito_de_dividir(self.projeto, folha))
             finally:
                 QApplication.restoreOverrideCursor()
             if devolve:        # as páginas de antes voltam, na linha de antes
@@ -5473,16 +5744,29 @@ class TelaConferir(QWidget):
 
     @protegido
     def _trocar_jeito_da_folha(self) -> None:
-        """Item 2.1: a lista "jeito:" da aba Onde cortar. Recalcula a divisao
-        DESTA folha pelo jeito escolhido (uns decimos de segundo: abre a folha
-        a 150 DPI) e grava numa acao so (o desfazer devolve o jeito e a linha
-        de antes). A folha continua dividida (o ScanTailor e chamado no modo
-        "duas paginas"). Escolher o jeito do livro volta a "seguir o livro"
+        """Item 2.1: a lista "motor de corte:" (era "jeito:", D-602) do
+        Dividir. Folha dividida: recalcula a divisao DESTA folha pelo motor
+        escolhido (uns decimos de segundo: abre a folha a 150 DPI) e grava numa
+        acao so (o desfazer devolve o motor e a linha de antes); a folha
+        continua dividida (o ScanTailor e chamado no modo "duas paginas").
+        Folha ainda inteira (D-602; antes a lista ficava cinza nela - a "lista
+        travada"): grava so o motor desta folha, numa acao do desfazer, e a
+        linha azul e lida de novo pelo motor novo, por tras; nada e cortado.
+        Escolher o motor do livro volta a "seguir o livro"
         (ConfigFolha.dividir_como None)."""
         assert self.projeto is not None
         folha = self.projeto.folhas[self.indice_folha]
         jeito = dividir_scantailor.jeito_valido(self.combo_jeito_da_folha.currentData())
-        if not folha.dividir or jeito == jeito_de_dividir(self.projeto, folha):
+        if jeito == jeito_de_dividir(self.projeto, folha):
+            return
+        do_livro = dividir_scantailor.jeito_valido(getattr(self.projeto, "dividir_como", None))
+        if not folha.dividir:
+            self._registrar(
+                "jeito_de_dividir", "folha", [self.indice_folha],
+                {"dividir_como": None if jeito == do_livro else jeito},
+                f"Folha {self.indice_folha + 1}: motor de corte "
+                f"“{nome_do_jeito_de_dividir(jeito)}”",
+            )
             return
         from PySide6.QtWidgets import QApplication
 
@@ -5491,13 +5775,12 @@ class TelaConferir(QWidget):
             lombada = recalcular_divisao(self.projeto, self.indice_folha, jeito, forcar=True)
         finally:
             QApplication.restoreOverrideCursor()
-        do_livro = dividir_scantailor.jeito_valido(getattr(self.projeto, "dividir_como", None))
         self._registrar(
             "jeito_de_dividir", "folha", [self.indice_folha],
             {"dividir_como": None if jeito == do_livro else jeito,
              "posicao_corte": round(float(lombada.posicao), 4),
              "confianca_corte": float(lombada.confianca), "revisada": True},
-            f"Folha {self.indice_folha + 1}: dividir pelo jeito "
+            f"Folha {self.indice_folha + 1}: motor de corte "
             f"“{nome_do_jeito_de_dividir(jeito)}”",
         )
 
@@ -6110,13 +6393,20 @@ class TelaConferir(QWidget):
             caixa.close()
             self._caixa_de_dividir = None
 
-    def _dividir_as_medidas(self, folhas: list[int], medidas: dict) -> None:
+    def _dividir_as_medidas(self, folhas: list[int], medidas: dict,
+                            descricao: str = " (escolhidas em Todas as páginas)",
+                            conferidas: bool = True) -> list[int]:
         """Põe no livro a divisão das `folhas` (medidas: folha -> (lombada,
         tampa), ou (None, None) para a folha que volta como estava), numa
         ação só do desfazer (os campos de cada folha juntos, por folha), e
-        volta à grade com as páginas novas escolhidas."""
+        volta à grade com as páginas novas escolhidas (se ela está à vista).
+        Folha sem medida fica como está. `descricao`: o fim do nome da ação
+        no Histórico (D-602: o "dividir todas" da ferramenta Dividir usa a
+        mesma). `conferidas` False: as folhas NÃO ficam "conferidas" (o
+        "dividir todas", como o "juntar todas" da D-590: a pessoa não olhou
+        cada uma). Devolve as folhas divididas."""
         if self.projeto is None:
-            return
+            return []
         juntos: dict = {}
         feitas = []
         for f in folhas:
@@ -6131,6 +6421,8 @@ class TelaConferir(QWidget):
             else:
                 campos = dividir_a_mao.campos_para_dividir(
                     self.projeto, f, lombada.posicao, lombada.confianca, tampa)
+            if not conferidas:
+                campos.pop("revisada", None)
             for campo, valor in campos.items():
                 if dividir_a_mao.muda_a_lista({campo: valor}):
                     juntos[campo] = valor
@@ -6138,15 +6430,15 @@ class TelaConferir(QWidget):
                     juntos.setdefault(campo, {})[str(f)] = valor
             feitas.append(f)
         if not feitas:
-            return
+            return []
         n = len(feitas)
         self._registrar("dividir_a_mao", "folha", feitas, juntos,
-                        f"Dividir {n} folha" + ("" if n == 1 else "s")
-                        + " (escolhidas em Todas as páginas)")
+                        f"Dividir {n} folha" + ("" if n == 1 else "s") + descricao)
         novas = self._paginas_das_folhas(feitas)
         if self.pilha_da_tela.currentWidget() is self.todas or self.todas.isVisible():
             self.abrir_todas_as_paginas()
             self.todas.comecar_a_escolher(novas)
+        return feitas
 
     def _extrair(self, indices: list[int]) -> None:
         """"Extrair": as folhas das paginas escolhidas, como estao no PDF de

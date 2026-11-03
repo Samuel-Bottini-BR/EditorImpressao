@@ -266,6 +266,12 @@ class Visualizador(QWidget):
         # dividida (definir_corte). Parecer do verificador do item 2.1,
         # 06/10/2026: depois de "nao dividir esta" ela continuava desenhada.
         self.corte_visivel = True
+        # D-602 (03/11/2026): a folha ainda inteira mostra a linha onde o motor
+        # de corte cortaria, so para ver (nao se arrasta: corte_arrastavel
+        # False, sem a pega "arraste"); enquanto o motor le a folha por tras,
+        # lendo_a_linha acende o mesmo selo "atualizando..." da previa.
+        self.corte_arrastavel = True
+        self.lendo_a_linha = False
         self.recorte = (0.0, 0.0, 1.0, 1.0)
         self.angulo = 0.0
         # Item 2.2 (G5): o angulo que a imagem na tela JA tem (ver o topo, "A
@@ -495,12 +501,23 @@ class Visualizador(QWidget):
         """A linha-guia sendo desenhada (pontos de tela), ou None."""
         return self._linha_guia
 
-    def definir_corte(self, posicao: float, visivel: bool = True) -> None:
-        """A linha de corte (aba Onde cortar). visivel=False: a folha nao vai
-        ser dividida - nada de linha nem de "arraste", e arrastar nao move."""
+    def definir_corte(self, posicao: float, visivel: bool = True,
+                      arrastavel: bool = True) -> None:
+        """A linha de corte (aba Onde cortar). visivel=False: nada de linha
+        nem de "arraste", e arrastar nao move. arrastavel=False (D-602: a
+        linha do motor na folha ainda inteira): a linha aparece, sem a pega
+        "arraste", e arrastar nao move."""
         self.posicao_corte = float(min(max(posicao, 0.02), 0.98))
         self.corte_visivel = bool(visivel)
+        self.corte_arrastavel = bool(arrastavel)
         self.update()
+
+    def definir_lendo_a_linha(self, lendo: bool) -> None:
+        """D-602: o motor de corte esta lendo a folha por tras (o selo
+        "atualizando..." no canto, o mesmo da previa que ainda vem)."""
+        if bool(lendo) != self.lendo_a_linha:
+            self.lendo_a_linha = bool(lendo)
+            self.update()
 
     def definir_recorte(self, recorte: tuple) -> None:
         self.recorte = tuple(recorte)
@@ -675,7 +692,7 @@ class Visualizador(QWidget):
         pintor.setPen(QPen(QColor(estilo.cor("linha")), 1))   # cor do tema (layout, etapa 1)
         pintor.drawRect(self._area.adjusted(0, 0, -1, -1))
 
-        if self.carregando:
+        if self.carregando or (self.lendo_a_linha and self.modo == MODO_CORTE):
             self._desenhar_aviso_de_espera(pintor)
 
         if self.modo == MODO_CORTE:
@@ -747,6 +764,8 @@ class Visualizador(QWidget):
         caneta = QPen(QColor(estilo.AZUL), 3, Qt.DashLine)
         pintor.setPen(caneta)
         pintor.drawLine(x, self._area.top(), x, self._area.bottom())
+        if not self.corte_arrastavel:
+            return                        # D-602: a linha do motor so se ve
 
         # pega larga no topo, para o usuario saber que da para arrastar
         pintor.setBrush(QColor(estilo.AZUL))
@@ -1011,8 +1030,8 @@ class Visualizador(QWidget):
         self._ponto_inicial = ponto
 
         if self.modo == MODO_CORTE:
-            if not self.corte_visivel:
-                return                    # folha nao dividida: nada a arrastar
+            if not self.corte_visivel or not self.corte_arrastavel:
+                return                    # sem linha, ou a do motor na folha inteira (D-602)
             self._arrastando = "corte"
             self._mover_corte(ponto)
         elif self.modo == MODO_RECORTE:

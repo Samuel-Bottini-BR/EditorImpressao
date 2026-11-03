@@ -176,7 +176,9 @@ def test_nao_dividir_esta_junta_a_folha_numa_pagina_e_o_desfazer_devolve(janela,
     assert [p.indice for p in projeto.paginas] == list(range(5))
     assert len(projeto.paginas_ativas) == 5
     assert tela.botao_nao_dividir.text() == "dividir esta"
-    assert not tela.combo_jeito_da_folha.isEnabled()
+    # D-602 (03/11/2026): a lista do motor de corte continua acesa na folha inteira (antes
+    # ficava cinza aqui: a "lista travada" do Samuel)
+    assert tela.combo_jeito_da_folha.isEnabled()
     tela.desfazer()
     assert projeto.folhas[0].dividir and len(projeto.paginas) == 6
     assert not any(p.apagada for p in projeto.paginas)

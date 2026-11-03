@@ -145,7 +145,8 @@ def texto_das_opcoes(etapa: str, opcoes: dict) -> str:
     que vai dentro")."""
     o = opcoes
     if etapa == A.DIVIDIR:
-        return "jeito: " + _nome_do_jeito(dividir_scantailor.jeito_valido(o.get("dividir_como")))
+        # D-602 (03/11/2026): "jeito" virou "motor de corte" (os nomes das opções, D-373, não)
+        return "motor de corte: " + _nome_do_jeito(dividir_scantailor.jeito_valido(o.get("dividir_como")))
     if etapa == A.ENDIREITAR:
         conta = _nome_da_conta(endireitar_scantailor.jeito_valido(o.get("endireitar_como")))
         return f"conta: {conta}"
@@ -1897,7 +1898,7 @@ class PainelDeOpcoes(QObject):
 
     def _opcoes_dividir(self, col) -> None:
         self._combo("dividir_como", [(j, _nome_do_jeito(j)) for j in dividir_scantailor.JEITOS], col,
-                    "Jeito de dividir:",
+                    "Motor de corte:",          # D-602: era "Jeito de dividir:"
                     "O do Editor procura a lombada no meio das folhas deitadas; o do ScanTailor "
                     "divide toda folha mais larga que alta, na dobra que ele acha.")
         col.addWidget(self._fraco("Livro novo não divide sozinho: só quando esta etapa roda (G2). "

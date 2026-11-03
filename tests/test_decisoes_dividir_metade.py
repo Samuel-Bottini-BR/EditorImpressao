@@ -156,7 +156,7 @@ def test_d601_uma_pagina_mostra_so_a_metade_e_as_setas_andam_pelas_paginas(janel
     # folha não dividida: a folha inteira, como hoje
     assert not projeto.folhas[0].dividir
     folha, _e, _d = _partes(tela)
-    assert _igual(_na_tela(tela), folha) and not vista.corte_visivel
+    assert _igual(_na_tela(tela), folha)  # a linha da folha inteira é da D-602 (test_decisoes_dividir_linha.py)
 
     tela.botao_nao_dividir.click()                     # "dividir esta"
     assert projeto.folhas[0].dividir
@@ -240,7 +240,7 @@ def test_d601_nao_dividir_esta_volta_a_folha_inteira(janela, tmp_path):
     tela.botao_nao_dividir.click()                     # "não dividir esta"
     assert not projeto.folhas[0].dividir and tela.indice_folha == 0
     folha, _e, _d = _partes(tela)
-    assert _igual(_na_tela(tela), folha) and not vista.corte_visivel
+    assert _igual(_na_tela(tela), folha)  # a linha da folha inteira é da D-602 (test_decisoes_dividir_linha.py)
     tela._navegar(1)
     assert tela.indice_folha == 1
 
@@ -294,7 +294,7 @@ def test_d601_tira_do_dividir_folha_dividida_vira_duas_miniaturas(janela, tmp_pa
     tira.selecionada.emit(2)                           # a folha 2 (não dividida)
     assert tela.indice_folha == 1
     folha, _e, _d = _partes(tela)
-    assert _igual(_na_tela(tela), folha) and not tela.visualizadores[ABA_CORTE].corte_visivel
+    assert _igual(_na_tela(tela), folha)  # a linha da folha inteira é da D-602 (test_decisoes_dividir_linha.py)
 
     tela._navegar(-1)                                  # a seta acompanha a tira
     assert tira._miniaturas[1].selecionada

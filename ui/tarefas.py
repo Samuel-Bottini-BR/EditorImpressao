@@ -425,6 +425,63 @@ class TarefaDividirFolhas(QThread):
             self.falhou.emit(_mensagem_amigavel(erro))
 
 
+class TarefaLerLinhas(QThread):
+    """D-602 (Samuel, 03/11/2026: "Quando eu estiver na ferramenta de dividir, o
+    programa deveria carregar com a conta que está escolhida, e dai eu conseguir
+    ver a linha [...] se eu apertasse para todas as folhas ele carregaria para
+    todas as folhas, faria a leitura em todas as folhas."): o motor de corte lê
+    as folhas por trás - uma, para a linha azul da folha inteira na ferramenta
+    Dividir, ou todas, para o "dividir todas" (aí com a caixa do andamento e o
+    "parar"). A conta é core.dividir_a_mao.ler_a_linha, a mesma do "dividir
+    esta", sem forçar (diz também se a folha é de uma página só).
+
+    Não toca no projeto: recebe o caminho do PDF e, por folha, (folha, rotação,
+    motor), por isso pode rodar com a tela mexendo no livro. Uma folha por vez
+    na memória. Nunca deixa exceção escapar.
+
+    pedidos: [(folha, rotacao, jeito)]; lida(chave, (Lombada, tampa)) a cada
+    folha (chave = o pedido); concluida({chave: (Lombada, tampa)}) no fim, se
+    não foi parada."""
+
+    progresso = Signal(int, int)
+    lida = Signal(object, object)
+    concluida = Signal(object)
+    falhou = Signal(str)
+
+    def __init__(self, caminho_pdf: str, pedidos: list[tuple[int, int, str]]) -> None:
+        super().__init__()
+        self.caminho_pdf = caminho_pdf
+        self.pedidos = [(int(f), int(r) % 360, str(j)) for f, r, j in pedidos]
+        self._cancelar = False
+
+    def cancelar(self) -> None:
+        self._cancelar = True
+
+    @property
+    def foi_cancelada(self) -> bool:
+        return self._cancelar
+
+    def run(self) -> None:
+        from core import dividir_a_mao
+
+        lidas = {}
+        total = len(self.pedidos)
+        try:
+            for n, chave in enumerate(self.pedidos):
+                if self._cancelar:
+                    return
+                self.progresso.emit(n, total)
+                folha, rotacao, jeito = chave
+                lidas[chave] = dividir_a_mao.ler_a_linha(self.caminho_pdf, folha, rotacao, jeito)
+                self.lida.emit(chave, lidas[chave])
+            self.progresso.emit(total, total)
+            if not self._cancelar:
+                self.concluida.emit(lidas)
+        except Exception as erro:  # noqa: BLE001 - nada pode derrubar o programa
+            registrar_erro("ler a linha do motor de corte", traceback.format_exc())
+            self.falhou.emit(_mensagem_amigavel(erro))
+
+
 class TarefaMedirOEmBranco(QThread):
     """Etapa 7 da obra, D-497 (escolha da gerente, 27/10/2026): "Página que
     fica branca depois de mudar a divisão ganha o aviso 'Parece em branco', a
