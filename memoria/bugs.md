@@ -486,3 +486,17 @@ na Central (aba "O que você não gostou: alternativas").
   já apagado. Mesma família do p083/p107 (acima). Passou na 2ª tentativa; no PC passa.
 - **Layout do "comparar" do Automático "tudo muito junto"** (Samuel, print a-24): com "opções" aberta, a página do lado
   direito fica espremida e textos saem cortados ("arquivo pe", "mantém as", "também em pr"). Na Lista de espera do plano.
+
+- **Instáveis do GitHub, parte 1, mais casos (02/11/2026):** `test_promessas` p083 `[rede]` e `[Guardar tudo-tudo]`
+  ("um botão falhou por baixo": a prévia em segundo plano abre o PDF de uma pasta temporária já apagada) apareceram em
+  quase todo ramo de 02/11; e `test_decisoes_so_as_letras.py::test_d148_desfazer_o_automatico_devolve_o_so_as_letras_do_livro`
+  ("não aconteceu a tempo", arquivo preso). Disparar de novo (`gh run rerun <id> --failed`) resolveu todas as vezes.
+- **Endireitar no Palatino (02/11/2026, investigação `.claude\worktrees\investiga-inclinado\relatorios\investiga-inclinado\LEIA-ME.md`):**
+  em 11 de 52 páginas medidas a conta (ScanTailor e Editor, que concordam) segue a moldura, a xilogravura ou o verso por
+  transparência e entorta as letras até 1,1°; o aviso "contas discordam" (D-082) não aparece. No projeto dele o Palatino
+  está com o endireitar desligado. No *Na escola de Jesus* não é defeito: o texto foi impresso torto e o endireitar o
+  acerta (o endereço do blog, a faixa preta e às vezes a gravura ficam tortos); ele: "parece estar tudo certo".
+- **Achados pequenos de 02/11 sem dono:** com "Gravuras em tons de cinza" marcada, a frase de baixo do Automático diz
+  "deixar tudo em preto e branco"; a linha de "Montar cadernos" desmarcada aparece cortada na janela grande ("…", sem o
+  "desligada"); com "Só as letras" o "Respeitar" aparece desmarcado e o resumo diz "desligada" (print a-31); com "Dividir"
+  desmarcada e Rodar, a caixinha volta marcada sozinha (pergunta aberta, PARTE -28 §3).

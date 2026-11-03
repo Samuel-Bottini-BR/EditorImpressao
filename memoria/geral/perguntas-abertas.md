@@ -287,3 +287,16 @@ Ficha [layout](../itens/layout.md).
 - Continuam as da PARTE -26 §4 (pergunta 7 do construtor da tarefa 1; zoom "todos iguais à área de trabalho?" —
   superada pela D-599 na área de trabalho, mas a diferença roda sozinha × Ctrl + roda entre lugares continua sem
   resposta) e da PARTE -25 §5 (D-574 "sem botão?"; D-589 P2/P3; "marcações" e contorno laranja; "Ver de perto" do Cortar).
+
+## Abertas em 02-03/11/2026 (PARTE -28 do histórico)
+
+- **D-590:** "Sugestão: a caixinha fica desmarcada como você deixou, e as folhas continuam divididas. Pode ser?" (com
+  "Dividir" desmarcada e Rodar, a caixinha volta marcada sozinha e a frase diz "Vou dividir as folhas").
+- **D-154:** "Da lista de fazer, quer que eu comece pela D-154 (letras que somem ou furam), que você marcou como urgente?"
+- **Central, aba "Para responder agora":** 3 do verificador da D-574 ("Folhas de/até" vai para a 1ª folha escolhida?;
+  porcentagem no balão da bolinha?; "O que vai sair" embaixo da folha?) e a da D-588 com "Só as letras".
+- **Auditoria 2:** 5 "Ainda não entendi" (D-254, D-275, D-421, D-427, D-474) e a pergunta da D-065 (cache em disco, placa
+  de vídeo) esperam explicação nova na página.
+- Respondidas hoje (não perguntar de novo): as 4 da D-588 (2 = "não", consertada; 1 = ele explicou que "Só as letras"
+  respeita tudo), D-600 sem zoom ("1- sim") e ferramentas de marcar ("sim"), D-572 (como o construtor fez), D-601
+  (frase, "folha 1 de 70", numeração da tira), D-574 (tamanho do scan e mais 6).

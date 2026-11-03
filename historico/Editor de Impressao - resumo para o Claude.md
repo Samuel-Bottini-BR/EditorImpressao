@@ -1,6 +1,6 @@
 # Editor de Impressão — documento para colar no Claude
 
-Atualizado em 01/11/2026 (PARTE -27; a anterior, PARTE -26, é de 31/10, noite). Desde 19/10 a memória por assunto fica em `memoria/` (índice `memoria/INDICE.md`). Versão **máxima**: reúne o histórico institucional, o
+Atualizado em 03/11/2026 (PARTE -28; a anterior, PARTE -27, é de 01/11). Desde 19/10 a memória por assunto fica em `memoria/` (índice `memoria/INDICE.md`). Versão **máxima**: reúne o histórico institucional, o
 que o programa é, todas as funcionalidades pedidas, os 68 pedidos feitos até
 hoje **palavra por palavra**, o que foi feito, o que falta, e os dois
 documentos-fonte inteiros (a especificação original e o prompt de testes) em
@@ -11,6 +11,96 @@ Pasta do projeto: `D:\programas\EditorImpressao` (mudou de
 `C:\Users\fotog\Desktop\EditorImpressao` em 07/09/2026; essa pasta antiga virou
 o backup). Repositório git ligado a
 `https://github.com/Samuel-Bottini-BR/EditorImpressao`.
+
+---
+
+# PARTE -28 — Checkpoint de 02-03/11/2026: cinza, Shift, D-589/590, caderno, Dividir, "está certo", margens (leia isto primeiro)
+
+Sessão no PC (Claude Opus 5.5 gerente + muitos agentes em paralelo, a pedido dele), com uma pausa no meio e retomada
+**na mesma conversa** (os agentes voltaram pelo id com o contexto inteiro: funcionou). Palavras dele e prints a-25 a a-44:
+`relatorios/testes-guiados/2026-10-29-automatico/automatico.md` (seções de 02/11). Ids dos agentes e cópias:
+`memoria/ramos.md` ("02/11/2026"). Fichas mudadas: `memoria/ramos.md`, `memoria/bugs.md`, `memoria/geral/perguntas-abertas.md`,
+`memoria/LINHA-DO-TEMPO.md`.
+
+## 0. Para recomeçar
+1. `git -C D:\programas\EditorImpressao fetch origin`. Ler a Central (`respostas` com `lida != true`; `ordens`).
+2. **Ele ainda não testou** (versão de teste `obra-2026-10-26`, ponta `94a0eb1`, atalho
+   `D:\programas\EditorImpressao-arquivos\atalho-rodada-de-consertos\abrir.vbs`), no Gradus Primus
+   (`C:\Users\fotog\Desktop\Estudos\Latim\pdfcoffee.com_gradus-primus-pdf-pdf-free.pdf`, já aberto no projeto de teste):
+   - **Caderno na etapa 7** (D-574): clicar na etapa 7 → folhas no tamanho do scan, frente e verso, setas, "tela cheia".
+   - **Dividir com a metade** (D-601): "Uma página" só a metade; "Duas lado a lado" a folha com a linha; tira com as metades.
+   - **"Está certo"** (D-572): a barra vira "Folha 1 conferida." / "Página N conferida.".
+   - **Margens no "depois"** (D-329/D-577): etapa 6 marcada → margem branca no depois.
+   - **"Ver o caderno" no "Montar para imprimir" sem travar** (D-574 opção 1) e **"desmarcado não é feito"** (D-589/D-590,
+     já testado por agente clicando: 6 de 6).
+3. Depois: as **19 respostas da Auditoria 2** (§4) e o resto da lista (§3).
+
+## 1. O que se fez (e o que ele testou de verdade)
+- **Testado por ele e "funcionando":** Shift + roda no "Duas lado a lado" (D-599) e em todas as telas (D-600: "shift
+  funcionando"); cinza sem o "Respeitar" (D-588, print a-40); endireitar ("olhei o endireitar e aparece estar tudo certo").
+- **Juntado na versão de teste (provas no PC e GitHub verdes), falta ele testar:** balão do cinza (`99e7c6b`); D-574 sem
+  travamento (`45b8704`, Opus Majus 1,5-3,0 s → 0,014 s por seta); D-589/D-590/P4 (`6a98173`, testado por agente clicando);
+  margens no depois (`515372b`); D-572 (`400f617`); D-601 (`07ed5a2`); caderno na etapa 7 (`e8b991a`).
+- **Central:** abas reordenadas (agora, dúvidas, auditoria 1, 2, acrescentei, nomes, auditoria 5, 3, 6, 4); 12 abas todas
+  respondidas viraram "Respondidos (85)" (cópia em `EditorImpressao-arquivos\central-banco\backup-conferencias-2026-11-02`);
+  56 perguntas ganharam print da versão de teste (agente Sonnet; 12 sem print: D-255, D-521, D-500, D-528, D-560, D-489,
+  D-309, D-298, D-564, D-555, D-550, D-342). Aba "Para responder agora": 4 perguntas do verificador da D-574 (a do texto
+  durante a montagem foi respondida hoje: "Folha N de M" troca na hora; abertas: "Folhas de/até" vai para a 1ª folha
+  escolhida?, porcentagem no balão?, "O que vai sair" embaixo da folha?) + D-588 "Só as letras" (com ele ligado o cinza fica
+  apagado: ele explicou que "Só as letras" respeita tudo; não respondeu formalmente).
+- **Investigações (sem mudar código):** letras "inclinadas" no Na escola de Jesus = o texto foi impresso torto; o endireitar
+  acerta o texto e entorta endereço/faixa/gravura (não é regressão); só no Palatino a conta segue a moldura (11 de 52
+  páginas) → Lista de bugs. Livros com duas páginas por folha para testar o Dividir: Gramática Latina (Napoleão), Gradus
+  Primus, Key to the Greek Prose, Scientiae et Philosophia (misto); o Siebmacher tem muitas folhas de uma página só.
+- Versão A4 do caderno da etapa 7 guardada (`relatorios/caderno-etapa7-versao-A4/`) e na Lista de espera ("caso o kaique
+  queira trocar").
+
+## 2. Decisões novas desta sessão (todas no Livro, duas cópias iguais por `cmp`)
+D-588 (cinza vale sem o "Respeitar"; balão "Para quando o programa se confundir: marcada, toda gravura que ele achou sai em
+tons de cinza, mesmo a que ele tomou por enfeite."); D-589 P4 (cinza procura as figuras com a etapa 5 desmarcada, "a");
+D-600 (Shift + roda em todas as telas; também nas ferramentas de marcar; sem zoom faz o que a roda faz); D-601 (Dividir:
+metade em "Uma página", folha com linha em "Duas lado a lado", tira com as metades, numeração por página, frase "Achei a
+lombada. Para mudar onde corta, escolha "Duas lado a lado" e arraste a linha."); D-572 (a faixa segue o "está certo"
+apertado, não o tique da edição à mão; "Página N conferida."; no Dividir "Folha N conferida."); D-574 (etapa 7 no tamanho
+do scan; caixinha desmarcada mostra igual; painel abre a janela grande na etapa 7; etapa 6 não mostra folhas; abre na
+folha 1; zoom só no "tela cheia"; "Folha N de M" troca na hora); margens no depois = D-329/D-311/D-577 (já decididas).
+
+## 3. A lista (o que falta)
+- Pergunta aberta da D-590 (achado do testador clicando, prints 36/36b em `teste-cadernos\relatorios\teste-cadernos\`):
+  com "Dividir" desmarcada e Rodar, a caixinha volta marcada sozinha e a frase diz "Vou dividir as folhas". Pergunta exata,
+  **sem resposta**: "Sugestão: a caixinha fica desmarcada como você deixou, e as folhas continuam divididas. Pode ser?"
+- Achados pequenos sem dono: com o cinza marcado a frase de baixo do Automático diz "deixar tudo em preto e branco"; linha
+  de "Montar cadernos" desmarcada cortada na janela grande; o "Respeitar" aparece desmarcado/"desligada" com "Só as letras"
+  (que já respeita) — a-31.
+- D-154 (letras que somem/furam), marcada por ele como **urgente** na Auditoria 2. Pergunta sem resposta: "Da lista de
+  fazer, quer que eu comece pela D-154?"
+- D-221 (filtro só nas gravuras): não feito. Depois: layout do comparar; cada trabalho guarda o último "Rodar"; Central de 31/10.
+
+## 4. Respostas da Auditoria 2 (02/11, no Livro e marcadas lidas)
+13 "Pôr na lista de fazer" (D-087, D-110, D-117, D-153, D-154 "urgente", D-180, D-237, D-238 "como na simulação", D-295
+"regras rígidas do que vai para revisar", D-296, D-297, D-573, D-065 com pergunta sobre cache em disco e placa de vídeo);
+1 "Não quero mais" (D-251); 5 "Ainda não entendi" (D-254, D-275, D-421, D-427, D-474 — refazer a explicação na página,
+com exemplo e print; D-474 traz a regra "avisos somente quando necessários [...] não se confundir e nem deixar passar erros
+graves"). **Nenhuma foi respondida na Central ainda** (regra: comentário se responde na página).
+
+## 5. Descobertas (não redescobrir)
+- Retomar a conversa (VS Code, histórico) traz os agentes de volta pelo id (SendMessage) com o contexto: funciona.
+- Instáveis do GitHub, parte 1: p083 `[rede]` e `[Guardar tudo-tudo]` ("um botão falhou por baixo", prévia abre PDF de
+  pasta já apagada) e `test_d148_desfazer_o_automatico...` ("não aconteceu a tempo"); disparar de novo resolve.
+- `test_promessas` no PC leva 45-60 min com vários agentes; no GitHub 7-12 min. Agentes não têm permissão de fechar
+  processo: trazer ao Samuel (ele disse "pode fechar" para o pytest preso de 02/11).
+- O "De fábrica" de uma pasta de dados nova não traz "Dividir" ligado.
+- `esta-certo` e `dividir-metade` bateram em `ui/tela_conferir.py` (imports); resolvido no ramo dividir-metade.
+- O filtro de velocidade se dispara com `gh workflow run "Testes no Windows" -R Samuel-Bottini-BR/EditorImpressao --ref
+  claude/list-server-files-gkos8v -f velocidade_ab=true -f ramo_antes=<commit> -f ramo_depois=<commit>`.
+
+## 6. Como conferir
+Versão de teste (`.claude\worktrees\obra-juncao`), PowerShell, um arquivo por vez:
+`$env:QT_QPA_PLATFORM="offscreen"; D:\programas\EditorImpressao\.venv\Scripts\python.exe -m pytest tests\<arquivo>.py -q --basetemp=_tmp\bt`
+Passaram em `e8b991a`: test_decisoes_caderno_tela_grande 11, test_decisoes_livreto_ver 13 (+1 pulado), test_paginas_em_outro_processo 11,
+test_decisoes_automatico_margens_no_depois 5, test_decisoes_dividir_metade 6, test_decisoes_avisos 22; em `07ed5a2`: test_decisoes_dividir 19,
+test_decisoes_juntar_todas 3, test_decisoes_shift_todas_as_telas 10; antes: test_decisoes_montar_cadernos 13, test_decisoes_gravuras_cinza 20.
+A suíte inteira do PC não rodou (cada ramo passou inteiro no GitHub).
 
 ---
 
