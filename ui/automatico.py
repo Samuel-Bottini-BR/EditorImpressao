@@ -1577,7 +1577,8 @@ class PaginaAntesEDepois(QWidget):
         """Uma troca na janela: pede o depois de novo (depois de uma espera
         curta, para trocas seguidas virarem uma só). `agora`: sem a espera
         (abrir a janela, folhear)."""
-        if self._fechada or self.projeto is None or self._indice not in self._ativas():
+        if (self._fechada or getattr(self, "_pausada", False) or self.projeto is None
+                or self._indice not in self._ativas()):
             return
         if agora:
             self._relogio.stop()
@@ -1586,12 +1587,30 @@ class PaginaAntesEDepois(QWidget):
             self._relogio.start()
         self._acertar_bolinha()
 
+    def pausar(self, sim: bool) -> None:
+        """D-574 (02/11/2026): com a etapa 7 "Montar cadernos" aberta, o lado direito mostra as
+        folhas do caderno e esta página fica escondida: nada é calculado (a conta que roda
+        para). Ao voltar a outra etapa, pede o antes e depois de novo."""
+        sim = bool(sim)
+        if sim == getattr(self, "_pausada", False):
+            return
+        self._pausada = sim
+        if sim:
+            self._relogio.stop()
+            self._na_espera = None
+            if self._tarefa is not None:
+                self._tarefa.cancelar()
+            self._acertar_bolinha()
+        else:
+            self.pedir(agora=True)
+
     def _calcular_agora(self) -> None:
         """Começa a conta do pedido de agora (ou a põe na espera, se outra roda).
         `_querida` passa a ser a chave dele: só o resultado dela é mostrado."""
         from core.automatico import copia_para_a_previa
 
-        if self._fechada or self.projeto is None or self._indice not in self._ativas():
+        if (self._fechada or getattr(self, "_pausada", False) or self.projeto is None
+                or self._indice not in self._ativas()):
             return
         # a prévia NUNCA pula as páginas mexidas à mão (D-577, 30/10: "na previa ali, ele
         # mostra a mudança em todas as paginas mas só muda as que nós autorizarmos ( no caso
@@ -2345,8 +2364,21 @@ class JanelaDoAutomatico(QDialog):
         cold = QVBoxLayout(direita)
         cold.setContentsMargins(10, 10, 12, 10)
         self.folhear = self.antes_e_depois = PaginaAntesEDepois(estado, projeto)
-        cold.addWidget(self.folhear, 1)
-        zoom = QHBoxLayout()
+        # D-574 (31/10/2026: "No Automático: clicando na etapa 7 "Montar cadernos", o lado
+        # direito mostra as folhas do livreto; o botão "tela cheia" abre a tela grande que já
+        # existe, na versão de caderno."): com a etapa 7 aberta, o lado direito troca para as
+        # folhas do caderno (ui/widgets/folhas_do_caderno); nas outras, o antes e depois de
+        # sempre (02/11: "só quando a etapa 7 estiver selecionada"). _acertar_o_lado_direito.
+        from ui.widgets.folhas_do_caderno import FolhasDoCaderno
+
+        self.folhas_do_caderno = FolhasDoCaderno(estado, projeto)
+        self.lado_direito = QStackedWidget()
+        self.lado_direito.addWidget(self.folhear)
+        self.lado_direito.addWidget(self.folhas_do_caderno)
+        cold.addWidget(self.lado_direito, 1)
+        self.linha_do_zoom = QWidget()          # o zoom é da página: some com as folhas à vista
+        zoom = QHBoxLayout(self.linha_do_zoom)
+        zoom.setContentsMargins(0, 0, 0, 0)
         for texto, dica, fator in (("–", "afastar", 0.8), ("+", "aproximar", 1.25)):
             botao = QPushButton(texto)
             botao.setMinimumWidth(44)          # largura fixa de 34 escondia o sinal (o enchimento do estilo)
@@ -2357,8 +2389,9 @@ class JanelaDoAutomatico(QDialog):
         caber.clicked.connect(lambda: self._zoom(None))
         zoom.addWidget(caber)
         zoom.addStretch()
-        cold.addLayout(zoom)
+        cold.addWidget(self.linha_do_zoom)
         meio.addWidget(direita, 2)
+        self.painel_de_opcoes.pilha.currentChanged.connect(lambda _i: self._acertar_o_lado_direito())
         fora.addLayout(meio, 1)
 
         # embaixo: a frase, onde rodar, escolher páginas, fechar, desligar, rodar
@@ -2404,6 +2437,21 @@ class JanelaDoAutomatico(QDialog):
         estado.mudou.connect(self._estado_mudou)
         self.encher_receitas()
         self._estado_mudou()
+        self._acertar_o_lado_direito()
+
+    def etapa_aberta(self) -> str:
+        """A etapa cujas opções estão no meio (a clicada na lista)."""
+        atual = self.painel_de_opcoes.pilha.currentWidget()
+        return next((e for e, w in self.painel_de_opcoes.paginas_das_etapas.items() if w is atual), "")
+
+    def _acertar_o_lado_direito(self) -> None:
+        """D-574: etapa 7 "Montar cadernos" aberta → as folhas do caderno; senão o antes e
+        depois da página (D-577). Só o lado à vista calcula (o outro fica parado)."""
+        caderno = self.etapa_aberta() == A.CADERNOS
+        self.lado_direito.setCurrentWidget(self.folhas_do_caderno if caderno else self.folhear)
+        self.linha_do_zoom.setVisible(not caderno)
+        self.folhear.pausar(caderno)
+        self.folhas_do_caderno.ligar(caderno)
 
     def _estado_mudou(self) -> None:
         self.frase.setText(self.estado.frase())
@@ -2472,6 +2520,7 @@ class JanelaDoAutomatico(QDialog):
         """Ao fechar, para a conta do antes e depois e solta as imagens
         (PaginaAntesEDepois.fechar). Nada muda no livro (D-577: só mostra)."""
         self.folhear.fechar()
+        self.folhas_do_caderno.fechar()      # D-574: as folhas do caderno também
         super().done(resultado)
 
 

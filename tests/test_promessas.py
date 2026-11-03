@@ -3178,6 +3178,48 @@ def test_p187_folhear_na_janela_grande(janela, tela, monkeypatch):
     assert _trabalho_gravado(janela) == antes
 
 
+@prova("P-211")
+def test_p211_setas_da_folha_do_caderno(janela, tela, pasta):
+    """As setas passam as folhas do caderno com a etapa 7 aberta (D-574). Livro de 10 páginas,
+    8 por caderno: 3 folhas; o "tela cheia" abre a tela grande de caderno."""
+    from core import automatico as A
+    from tests.test_decisoes_caderno_tela_grande import _livro_marcado
+    from ui.widgets.folhas_do_caderno import TelaGrandeDoCaderno
+
+    janela.abrir_livro(_livro_marcado(pasta))
+    aj.assentar()
+    janela.estado_do_automatico.marcadas = {A.CADERNOS}
+    janela.estado_do_automatico.opcoes["paginas_por_caderno"] = 8
+    antes = _trabalho_gravado(janela)
+    grande, achados = _janela_grande(janela, A.CADERNOS)
+    folhas = grande.folhas_do_caderno
+
+    def esperar(segundos=120):
+        fim = time.monotonic() + segundos
+        while folhas.calculando() and time.monotonic() < fim:
+            aj.assentar(2)
+            time.sleep(0.02)
+        return not folhas.calculando() and folhas.faces() is not None
+
+    assert esperar(), "a folha do caderno não apareceu"
+    anterior, seguinte = achados["automático (janela grande)/‹"], achados["automático (janela grande)/›"]
+    assert folhas.rotulos["frente"].text() == "Folha 1 de 3 — frente"
+    assert not anterior.isEnabled() and seguinte.isEnabled()
+    seguinte.click()
+    assert esperar() and folhas.rotulos["frente"].text() == "Folha 2 de 3 — frente"
+    anterior.click()
+    assert esperar() and folhas.rotulos["frente"].text() == "Folha 1 de 3 — frente"
+    for numero in (2, 3):
+        seguinte.click()
+        assert esperar() and folhas.rotulos["verso"].text() == f"Folha {numero} de 3 — verso"
+    assert not seguinte.isEnabled() and anterior.isEnabled()
+    achados["automático (janela grande)/tela cheia"].click()
+    aj.assentar()
+    assert isinstance(folhas.tela_grande, TelaGrandeDoCaderno)
+    folhas.tela_grande.accept()
+    assert _trabalho_gravado(janela) == antes
+
+
 @prova("P-188")
 def test_p188_fechar_e_mais_opcoes(janela, tela):
     from core import automatico as A
