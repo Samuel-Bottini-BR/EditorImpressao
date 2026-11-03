@@ -595,3 +595,70 @@ def test_d572_ctrl_z_volta_a_faixa_e_o_esta_certo_como_o_tique(janela, tmp_path)
     tela.desfazer()
     _assentar()
     assert _faixa(tela)[:2] == antes[:2]
+
+
+def test_d572_mexer_a_mao_poe_o_tique_mas_nao_e_o_ok(janela, tmp_path):
+    """D-572: "Mas nas paginas que não foi dado o ok, ela vai aparecer ainda né?" (sim; a
+    gerente, 02/11: o ok é o "está certo"). Mexer à mão (mover a linha no Dividir, ajustar o corte,
+    girar, trocar o filtro) já punha o tique, mas não é o ok: a faixa continua com a frase de
+    sempre e o "está certo". Só depois do "está certo" ela diz "conferida"; mexer de novo depois
+    do ok não tira o "conferida" (o tique também fica)."""
+    tela = _dividido(janela, tmp_path)
+    # Dividir: mover a linha da folha 1
+    _no_dividir(tela, 0)
+    tela._mover_corte(0.48)
+    _assentar()
+    assert janela.projeto.folhas[0].revisada and tela.tira._miniaturas[0].conferida
+    texto, esta_certo, _ = _faixa(tela)
+    assert esta_certo and "conferida" not in texto
+    tela.botao_esta_certo.click()
+    _assentar()
+    assert _faixa(tela) == ("Folha 1 conferida.", False, True)
+    tela._mover_corte(0.5)                       # mexer depois do ok
+    _assentar()
+    assert _faixa(tela) == ("Folha 1 conferida.", False, True)
+
+    # Cortar: ajustar o corte da página 3
+    tela.escolher_ferramenta("cortar")
+    tela.ir_para_pagina(2)
+    tela._mover_recorte((0.05, 0.05, 0.95, 0.95))
+    _assentar()
+    assert janela.projeto.paginas[2].revisada
+    assert _faixa(tela)[:2] == ("Você ajustou o corte desta página.", True)
+
+    # Endireitar: girar a página 4 à mão
+    tela.escolher_ferramenta("endireitar")
+    tela.ir_para_pagina(3)
+    tela._gravar_angulo(3, 2.0)
+    _assentar()
+    assert janela.projeto.paginas[3].revisada
+    texto, esta_certo, _ = _faixa(tela)
+    assert texto.startswith("Você girou esta página") and esta_certo
+
+    # Filtro: trocar o filtro da página 5
+    tela.escolher_ferramenta("filtros")
+    tela.ir_para_pagina(4)
+    tela._escolher_filtro("preto_e_branco")
+    _assentar()
+    assert janela.projeto.paginas[4].revisada
+    texto, esta_certo, _ = _faixa(tela)
+    assert esta_certo and "conferida" not in texto
+    tela.botao_esta_certo.click()
+    _assentar()
+    assert _faixa(tela) == ("Página 5 conferida.", False, True)
+
+
+def test_d572_dividir_uma_folha_depois_nao_tira_o_ok_das_paginas_de_antes(janela, tmp_path):
+    """D-572 com os números das páginas andando: juntar a folha 4 (as páginas dela em diante
+    mudam de número) não tira o "conferida" da página 1, que veio da folha 1."""
+    tela = _dividido(janela, tmp_path)
+    _na_pagina(tela, 0)
+    tela.botao_esta_certo.click()
+    _assentar()
+    assert _faixa(tela)[:2] == ("Página 1 conferida.", False)
+    _no_dividir(tela, 3)
+    tela._nao_dividir()
+    _assentar()
+    assert len(janela.projeto.paginas) == 2 * FOLHAS - 1
+    _na_pagina(tela, 0)
+    assert _faixa(tela)[:2] == ("Página 1 conferida.", False)

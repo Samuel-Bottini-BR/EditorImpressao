@@ -182,7 +182,8 @@ from core.filtros import (
     filtros_do_livro,
     palavra_do_ajuste,
 )
-from historico_acoes import HistoricoAcoes, aplicar, campo_de_pagina, montar_acao
+from historico_acoes import (HistoricoAcoes, PREFIXO_PAGINAS_DA_FOLHA, aplicar, campo_de_pagina,
+                             montar_acao)
 from modelos import METADE_DIREITA, Projeto
 from registro import registrar_erro
 from ui import estilo
@@ -4666,18 +4667,60 @@ class TelaConferir(QWidget):
 
     def _conferida_na_faixa(self, item) -> bool:
         """D-572: a faixa desta folha (no Dividir) ou página diz "conferida"?
-        Sim quando ela tem o tique verde da miniatura (o mesmo campo
-        `revisada` que _atualizar_tira usa), a não ser que a faixa já mostre
-        outra coisa dela: a página "em branco" (fica o "voltar a página") e a
-        página tirada do livro (ficam como eram: as duas ganham `revisada`
-        sem o "está certo"). Ctrl+Z do "está certo" tira o `revisada`: a
-        faixa volta ao que era, como o tique. Arriscado: usar outro campo que
-        não o do tique (a faixa e a miniatura passariam a discordar)."""
+        Só quando a pessoa DEU O OK nela: tem o tique (`revisada`) e o
+        Histórico tem a ação "revisar" dela (_ok_dado). O Samuel, 31/10: "Mas
+        nas paginas que não foi dado o ok, ela vai aparecer ainda né?" (sim);
+        a gerente, 02/11: o ok dele é o "está certo". Mexer à mão (girar,
+        mover a linha, cortar, trocar o filtro) também põe o tique, mas NÃO é
+        o ok: a faixa continua com a frase de hoje e o "está certo".
+        Também ficam como eram a página "em branco" (fica o "voltar a
+        página") e a tirada do livro. Ctrl+Z do "está certo" tira a ação do
+        Histórico e o tique: a faixa volta ao que era. Mexer depois do ok
+        mantém o tique e a ação: continua "conferida"."""
         if not getattr(item, "revisada", False):
             return False
         if self.trabalha_com_folhas:
-            return not getattr(item, "apagada", False)
-        return not (getattr(item, "em_branco", False) or getattr(item, "apagada", False))
+            if getattr(item, "apagada", False):
+                return False
+            return self._ok_dado("folha", self.indice_folha)
+        if getattr(item, "em_branco", False) or getattr(item, "apagada", False):
+            return False
+        return self._ok_dado("pagina", self.indice_pagina)
+
+    def _ok_dado(self, alvo: str, indice: int) -> bool:
+        """D-572: a folha/página `indice` recebeu o ok? É a ação "revisar" do
+        Histórico (a que _marcar_revisada grava: o "está certo", a barra de
+        espaço, o "está bom assim" do último aviso e os botões que só dão a
+        página por conferida), ainda feita (não desfeita). Sem campo novo no
+        projeto: o Histórico já fica gravado (acoes.jsonl) e volta ao reabrir.
+        Os números das PÁGINAS andam quando uma folha é dividida/juntada ou o
+        Automático refaz a lista: a busca para (sem ok) na ação que mudou as
+        páginas desta folha ou de uma folha antes dela, ou a lista inteira -
+        nesses casos a ação antiga pode ser de outra página. As folhas nunca
+        mudam de número. Barato: só lê a lista de ações, da mais nova à mais
+        velha. Arriscado: contar ações de outro tipo (mexer à mão não é o ok)."""
+        if self.acoes is None or self.projeto is None:
+            return False
+        folha_da_pagina = None
+        if alvo == "pagina" and 0 <= indice < len(self.projeto.paginas):
+            folha_da_pagina = self.projeto.paginas[indice].folha
+        prefixo = PREFIXO_PAGINAS_DA_FOLHA
+        for acao in reversed(self.acoes.feitas):
+            if alvo == "pagina":
+                for campo in acao.depois:
+                    campo = str(campo)
+                    if campo == "livro.paginas":
+                        return False
+                    if campo.startswith(prefixo):
+                        try:
+                            folha = int(campo[len(prefixo):])
+                        except ValueError:
+                            return False
+                        if folha_da_pagina is None or folha <= folha_da_pagina:
+                            return False
+            if acao.tipo == "revisar" and acao.alvo == alvo and indice in acao.indices:
+                return True
+        return False
 
     def _texto_conferida(self) -> str:
         """D-572: "Página N conferida." (31/10, Central: "A faixa diz "Página
