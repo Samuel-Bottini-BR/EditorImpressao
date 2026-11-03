@@ -44,7 +44,19 @@ margens.
 - [x] Provas e teste de reversão: `tests/test_decisoes_automatico_margens_no_depois.py`, 5 provas; as 5 falham no
       `110976f` e passam no ramo.
 - [x] Prints antes/depois do Gradus (`antes-*.png`, `depois-*.png`, script `prints_margens.py`).
-- [ ] Testes no PC, GitHub, filtro de velocidade (ver "Testes" abaixo).
+- [x] Testes no PC, GitHub; filtro de velocidade (ver "Testes" abaixo).
+
+## Testes
+
+- PC (um arquivo por vez, sem tela, commit `0678ad1`): `test_decisoes_automatico_margens_no_depois` 5 passed ·
+  `test_decisoes_automatico_ver_como_fica` 22 passed · `test_decisoes_automatico_opcoes_do_filtro` 21 passed ·
+  `test_margens_na_tela` 4 passed · `test_margens_scantailor` 22 passed · `test_decisoes_montar_cadernos` 13 passed ·
+  `test_decisoes_automatico` 24 passed · `test_promessas` 265 passed, 1 xfailed (51 min).
+- Reversão: as 5 provas novas falham no `110976f` (cópia em `_tmp\antigo`).
+- GitHub, rodada 41551241998 (testou `0678ad1`): verde; 3.400 passed, 0 failed, 140 skipped; `teste_botoes.py` 369
+  ações, 0 falhas.
+- Filtro de velocidade: rodada 41551281395 (`110976f` → ramo, 3 rodadas de cada, alternadas): **"igual (dentro do
+  vai-e-vem)"**. (A mudança só toca a prévia do Automático; o processar não muda.)
 
 ## O que mudou e onde
 
