@@ -315,3 +315,5 @@ coisa: um botão que mostra e esconde o colorido das marcações.
 - Caderno, P4 do construtor (etapa 6 aberta mostra as folhas?): ele: "etapa 6 e não" → não; folhas só na etapa 7.
 - Caderno, P5 (etapa 7 abre sempre na folha 1?): "não, eu posso ir em qualquer pagina" → gerente: A (abre na folha da página atual) ou B (sempre folha 1, setas para qualquer folha)? → "b".
 - D-572 juntada (`400f617`, Livro `20f0ab6`). D-601 entregue (`fd0b619`, GitHub 41559220935 verde) mas a junção deu conflito em `ui/tela_conferir.py` com a D-572 → desfeita na versão de teste; construtor resolve no ramo dele. Pergunta nova dele: numeração 1, 2, 3 na tira depois de dividir.
+- Caderno, P6 (zoom de baixo some com as folhas; zoom no "tela cheia"): "3. sim".
+- Caderno, P7 ("Folha N de M" troca na hora ao apertar a seta, na etapa 7 e no "Montar para imprimir"): "o que o que não entendi a 4" → gerente explicou com o Gradus → "já troca". (Responde também a pergunta 2 do verificador da D-574.)
