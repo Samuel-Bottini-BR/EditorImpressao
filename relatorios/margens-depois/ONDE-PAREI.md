@@ -46,4 +46,22 @@ margens.
 
 ## Perguntas para o Samuel
 
-(nenhuma ainda)
+### P1 (02/11/2026) — enquanto o programa mede o livro para as margens
+
+Print: `relatorios/margens-depois/depois-1-medindo-o-livro-bolinha.png` (a bolinha girando ao lado de "A página,
+antes e depois"; o lado "depois" ainda sem a margem).
+
+Texto para a Central:
+
+"Para mostrar as margens iguais no "depois", o programa precisa medir todas as páginas do livro (todas saem do tamanho
+da maior). Isso só acontece na primeira vez que você marca "Margens iguais", ou quando troca Dividir, Endireitar ou
+Cortar. No Gradus (70 folhas): com o livro já dividido e só "Margens iguais" marcada, leva uns 15 segundos; com Dividir,
+Endireitar, Cortar e Margens marcadas de uma vez, leva uns 1 minuto e meio. Depois disso, trocar um número da margem
+muda o "depois" em menos de 2 segundos. Enquanto mede, a bolinha gira e o "depois" continua mostrando a página como
+estava antes (sem a margem); a janela não trava e dá para mexer em tudo. Quando termina, o "depois" aparece com as
+margens. É o mesmo jeito da área de trabalho, que também mostra sem margem até terminar de medir. Pode ficar assim?"
+
+Sugestão: sim, fica assim (é o que está construído agora; nada a mais). Outra opção, se ele quiser: escrever ao lado
+da bolinha "Medindo o livro para as margens: 12 de 70" (isso seria coisa nova, só com o "sim" dele).
+
+Situação: construído do jeito sugerido; espera a resposta.
