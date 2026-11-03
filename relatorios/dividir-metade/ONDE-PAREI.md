@@ -124,6 +124,8 @@ Só `ui/` (e os testes). Outro construtor mexe ao mesmo tempo na faixa de baixo 
    Pergunta: "Na tira do Dividir, depois de dividir a folha 1, as miniaturas ficam numeradas 1, 2, 3... (a folha 2
    vira o número 3, como nas outras ferramentas, que contam páginas). Fica assim?" (sugestão: fica assim; anda junto
    com a resposta da pergunta 2).
+   **Resposta (02/11, pela gerente):** ele perguntou "que numeração?"; a gerente mostrou o print `depois-4` e explicou
+   (contracapa 1, capa 2, folha 2 vira 3) → **"ok". Fica como está.**
 
 ## Como cumpri cada uma
 
@@ -156,3 +158,21 @@ Só `ui/` (e os testes). Outro construtor mexe ao mesmo tempo na faixa de baixo 
 - GitHub "Testes no Windows": 41549443337 (1ª parte) verde, 3398 passaram; 41556367244 (com a tira) verde, 3400;
   **41559220935 (versão final, `a1a1323`) verde: 191 arquivos, 3401 passaram, 0 falharam, 141 pulados; botões 369
   ações, 0 falhas.**
+
+## Junção com a D-572 (02/11, pedido da gerente)
+
+- A junção de `fd0b619` no `obra-2026-10-26` deu conflito com a D-572 (construtor do "está certo", junção `400f617`).
+  Juntei `origin/obra-2026-10-26` (`20f0ab6`) no meu ramo (`2be3dba`). O conflito era só nos `import` do começo de
+  `ui/tela_conferir.py` (os dois mantidos); o `_texto_tranquilo` juntou sozinho com as duas coisas.
+- Como ficou a faixa no Dividir: **antes do "está certo"**, com a folha dividida e "Uma página", a frase da D-601
+  ("Achei a lombada. Para mudar onde corta, escolha “Duas lado a lado” e arraste a linha.") e o "está certo"; com
+  "Duas lado a lado", a frase de sempre. **Depois do "está certo"** (D-572): "Folha 1 conferida." e só "próxima
+  dúvida", nas duas metades. Prints `depois-5-uma-pagina-antes-do-esta-certo.png` e
+  `depois-6-uma-pagina-depois-do-esta-certo.png` (Gradus Primus, folha 1).
+- `tests/test_decisoes_avisos.py::test_d572_no_dividir_a_folha_conferida_gradus_primus_folha_1` esperava a frase
+  antiga antes do ok (o livro dividido abre em "Uma página"): passou a esperar a frase da D-601 (`406feb7`);
+  o resto do teste (D-572) igual.
+- Testes depois da junção (código `97c94e1`): PC, um arquivo por vez — dividir_metade 6, avisos 22 (as 9 `test_d572_*`
+  passam), para_revisar_na_tela 26, dividir 19, dividir_na_tela 9, dividir_no_programa 19, ver 11, juntar_todas 3;
+  nenhuma falha. GitHub 41568178075 verde: 192 arquivos, 3415 passaram, 0 falharam, 141 pulados; botões 369 ações,
+  0 falhas.
