@@ -277,6 +277,8 @@ def test_d602_dividir_todas_corta_as_duplas_cada_uma_na_sua_linha(janela, tmp_pa
     assert f[2].dividir and f[2].posicao_corte == pytest.approx(0.5, abs=0.03)
     assert f[3].dividir and f[3].posicao_corte == pytest.approx(0.47), "a já dividida fica"
     assert len(projeto.paginas) == 1 + 2 + 2 + 2
+    # como o "juntar todas" (D-590): a pessoa não olhou cada uma, nada fica "conferida"
+    assert not f[1].revisada and not f[2].revisada
     assert len(janela.acoes.feitas) == feitas_antes + 1, "uma ação só do desfazer"
     tela.desfazer()                                       # uma ação só: volta tudo
     assert not f[1].dividir and not f[2].dividir and f[3].dividir

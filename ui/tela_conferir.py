@@ -5692,7 +5692,8 @@ class TelaConferir(QWidget):
                 medidas[f] = (None, None)            # volta como estava, sem medir
             else:
                 medidas[f] = lida
-        if not medidas or not self._dividir_as_medidas(folhas, medidas, " (dividir todas)"):
+        if not medidas or not self._dividir_as_medidas(folhas, medidas, " (dividir todas)",
+                                                       conferidas=False):
             self._avisar("Nenhuma folha dupla para dividir: as que faltam são de uma página só.")
 
     @protegido
@@ -6393,14 +6394,17 @@ class TelaConferir(QWidget):
             self._caixa_de_dividir = None
 
     def _dividir_as_medidas(self, folhas: list[int], medidas: dict,
-                            descricao: str = " (escolhidas em Todas as páginas)") -> list[int]:
+                            descricao: str = " (escolhidas em Todas as páginas)",
+                            conferidas: bool = True) -> list[int]:
         """Põe no livro a divisão das `folhas` (medidas: folha -> (lombada,
         tampa), ou (None, None) para a folha que volta como estava), numa
         ação só do desfazer (os campos de cada folha juntos, por folha), e
         volta à grade com as páginas novas escolhidas (se ela está à vista).
         Folha sem medida fica como está. `descricao`: o fim do nome da ação
         no Histórico (D-602: o "dividir todas" da ferramenta Dividir usa a
-        mesma). Devolve as folhas divididas."""
+        mesma). `conferidas` False: as folhas NÃO ficam "conferidas" (o
+        "dividir todas", como o "juntar todas" da D-590: a pessoa não olhou
+        cada uma). Devolve as folhas divididas."""
         if self.projeto is None:
             return []
         juntos: dict = {}
@@ -6417,6 +6421,8 @@ class TelaConferir(QWidget):
             else:
                 campos = dividir_a_mao.campos_para_dividir(
                     self.projeto, f, lombada.posicao, lombada.confianca, tampa)
+            if not conferidas:
+                campos.pop("revisada", None)
             for campo, valor in campos.items():
                 if dividir_a_mao.muda_a_lista({campo: valor}):
                     juntos[campo] = valor
