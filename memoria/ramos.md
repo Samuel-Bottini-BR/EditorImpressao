@@ -394,3 +394,9 @@ Versão de teste (`obra-2026-10-26`) em `6a98173`+ (Livro em `640170d`). As cóp
 Juntados no `obra-2026-10-26` nesta noite: balão do cinza (`99e7c6b`), D-574 sem travamento (`45b8704`). Cópias `prints-central`,
 `teste-cadernos`, `investiga-inclinado`, `investiga-inclinado-fase1` terminadas (podem ser apagadas com `git worktree remove`).
 | (agente da tela grande de caderno) | `.claude\worktrees\caderno-tela-grande` | `caderno-tela-grande-2026-11-02` | D-574: folhas do caderno na etapa 7 do Automático, painel "Montar cadernos" e tela grande |
+
+## Agentes e cópias de 03/11/2026
+
+| Agente (id) | Cópia | Ramo | O que é |
+|---|---|---|---|
+| `a0be25a78346e4ef1` | `.claude\worktrees\automatico-pular` | `automatico-pular-2026-11-03` (de `8846017`) | Automático pula as folhas erradas depois de folha dividida à mão (`pular` com índices antigos em `core/automatico._dividir`); Samuel: "pode chamar um agente para concertar isso" |
