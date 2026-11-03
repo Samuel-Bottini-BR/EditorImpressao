@@ -650,6 +650,9 @@ programa), a partir do **nome do botão**, da **dica** (o balão do mouse) e das
 - **na tela:** a miniatura ganha o tique, o contador de conferidas sobe, e a tela vai para a próxima página com dúvida
   (no Dividir: a folha, o tique na miniatura da folha, o contador de folhas conferidas, a próxima folha com dúvida).
   Sem outra dúvida no livro, fica onde está (o tique e o contador mostram que pegou).
+  Na página conferida a faixa diz "Página N conferida." (no Dividir, "Folha N conferida.") e fica só o "próxima
+  dúvida"; nas que não tiveram o ok, o aviso e o "está certo" continuam (D-572; Ctrl+Z volta como o tique;
+  `tests/test_decisoes_avisos.py`::test_d572_*).
 
 ### P-102 · "próxima dúvida"
 - **chaves:** `área de trabalho/faixa do aviso/próxima dúvida`

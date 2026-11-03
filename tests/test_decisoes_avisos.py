@@ -488,3 +488,177 @@ def test_d497_mexer_na_divisao_chama_por_tras_a_conta_do_em_branco(janela, tmp_p
     assert sorted(set(chamadas)) == [4, 5]
     assert tela.paineis.para_revisar.lista.item(0).text() == "Página 6"
 
+
+
+# --- D-572: depois de "está certo", a faixa diz "conferida" e fica só o "próxima dúvida" ------------
+
+def _faixa(tela) -> tuple[str, bool, bool]:
+    """O que a faixa mostra: o texto, o "está certo" à vista? o "próxima dúvida" à vista?"""
+    _assentar()
+    return (tela.texto_faixa.text(), tela.botao_esta_certo.isVisibleTo(tela),
+            tela.botao_proxima_duvida.isVisibleTo(tela))
+
+
+def test_d572_esta_certo_na_pagina_a_faixa_diz_conferida_e_some_o_esta_certo(janela, tmp_path):
+    """D-572 (sessão 2, 2-7, 28/10): "o está certo deixou o tique verde mas continuou com o aviso
+    na pagina, dá para ver que a opção esta certo continua aparecendo, deveria sumir quando eu
+    aperto está certo." · 31/10, Central: "A faixa diz "Página 7 conferida." e fica só "próxima
+    dúvida" (recomendo)" · "Mas nas paginas que não foi dado o ok, ela vai aparecer ainda né?"
+    (sim). Bug de 02/11/2026 (Gradus Primus, a-43): "o aviso não sai, mesmo clicando no está
+    certo". Antes: depois do clique a faixa continuava com a frase da ferramenta e o "está certo".
+    A prova do Livro (Palatino 7 → "está certo" → tique e a faixa sem "está certo") no livro de
+    teste: a página 7, com aviso, e a página 9, com aviso, que fica sem o ok."""
+    tela = _dividido(janela, tmp_path)
+    for indice in (6, 8):
+        janela.projeto.paginas[indice].alertas = [analise.IMPRESSO_DE_FORA]
+    _na_pagina(tela, 6)
+    mensagem = analise.descrever(analise.IMPRESSO_DE_FORA).mensagem
+    assert _faixa(tela)[:2] == (mensagem, True)
+
+    tela.botao_esta_certo.click()
+    _assentar()
+    assert tela.tira._miniaturas[6].conferida, "a miniatura não ganhou o tique"
+    # foi para a próxima dúvida (a página 9): lá, sem o ok, o aviso e o "está certo" continuam
+    assert tela.indice_pagina == 8
+    assert _faixa(tela) == (mensagem, True, True)
+
+    # volta à página 7: a faixa diz que ela foi conferida e fica só o "próxima dúvida"
+    tela.ir_para_pagina(6)
+    assert _faixa(tela) == ("Página 7 conferida.", False, True)
+    # e uma página sem aviso e sem o ok continua com a frase de sempre e o "está certo"
+    tela.ir_para_pagina(0)
+    texto, esta_certo, _ = _faixa(tela)
+    assert texto != "Página 1 conferida." and esta_certo
+
+
+def test_d572_no_dividir_a_folha_conferida_gradus_primus_folha_1(janela, tmp_path):
+    """D-572 no Dividir (bug de 02/11/2026, print a-43 do Gradus Primus): folha 1 com o tique e
+    "1 de 70 conferidas", mas a faixa continuava "Achei a lombada e vou cortar na linha azul. Se
+    estiver errado, arraste a linha." com o "está certo". No Dividir quem fica conferida é a
+    FOLHA (o tique é o da folha, o rodapé diz "folha N de M"): a faixa diz "Folha N conferida."
+    e fica só o "próxima dúvida". A folha 2, sem o ok, continua como antes."""
+    tela = _dividido(janela, tmp_path)
+    _no_dividir(tela, 0)
+    lombada = "Achei a lombada e vou cortar na linha azul. Se estiver errado, arraste a linha."
+    assert _faixa(tela)[:2] == (lombada, True)
+
+    tela.botao_esta_certo.click()
+    _assentar()
+    assert tela.indice_folha == 0, "sem outra dúvida a tela fica onde está"
+    assert tela.tira._miniaturas[0].conferida
+    assert f"1 de {FOLHAS} conferidas" in tela.rotulo_do_livro.text()
+    assert _faixa(tela) == ("Folha 1 conferida.", False, True)
+
+    tela._ir_para(1)
+    assert _faixa(tela)[:2] == (lombada, True), "a folha sem o ok perdeu o aviso ou o 'está certo'"
+
+
+@pytest.mark.parametrize("ferramenta", ["cortar", "endireitar", "mao", "mover"])
+def test_d572_em_toda_ferramenta_de_pagina(janela, tmp_path, ferramenta):
+    """D-572 em todas as ferramentas onde a faixa aparece (Cortar, Endireitar, as de marcar, que
+    mostram a frase do Filtro, e o Mover): depois do "está certo", "Página N conferida." e o
+    "está certo" some; na página ao lado, sem o ok, o "está certo" continua."""
+    tela = _dividido(janela, tmp_path)
+    tela.escolher_ferramenta(ferramenta)
+    tela.ir_para_pagina(3)
+    tela.atualizar()
+    assert _faixa(tela)[1], "antes do ok o 'está certo' está na faixa"
+    tela.botao_esta_certo.click()
+    _assentar()
+    assert tela.indice_pagina == 3
+    assert _faixa(tela) == ("Página 4 conferida.", False, True)
+    tela.ir_para_pagina(4)
+    texto, esta_certo, _ = _faixa(tela)
+    assert esta_certo and "conferida" not in texto
+
+
+def test_d572_ctrl_z_volta_a_faixa_e_o_esta_certo_como_o_tique(janela, tmp_path):
+    """D-572 com o desfazer: o Ctrl+Z do "está certo" tira o tique, e a faixa volta à frase de
+    antes, com o "está certo" (o mesmo que o código já faz com o tique). Na página e no Dividir."""
+    tela = _dividido(janela, tmp_path)
+    janela.projeto.paginas[2].alertas = [analise.IMPRESSO_DE_FORA]
+    _na_pagina(tela, 2)
+    antes = _faixa(tela)
+    tela.botao_esta_certo.click()
+    _assentar()
+    assert _faixa(tela)[:2] == ("Página 3 conferida.", False)
+    tela.desfazer()
+    _assentar()
+    assert not tela.tira._miniaturas[2].conferida
+    assert _faixa(tela)[:2] == antes[:2]
+
+    _no_dividir(tela, 1)
+    antes = _faixa(tela)
+    tela.botao_esta_certo.click()
+    _assentar()
+    assert _faixa(tela)[:2] == ("Folha 2 conferida.", False)
+    tela.desfazer()
+    _assentar()
+    assert _faixa(tela)[:2] == antes[:2]
+
+
+def test_d572_mexer_a_mao_poe_o_tique_mas_nao_e_o_ok(janela, tmp_path):
+    """D-572: "Mas nas paginas que não foi dado o ok, ela vai aparecer ainda né?" (sim; a
+    gerente, 02/11: o ok é o "está certo"). Mexer à mão (mover a linha no Dividir, ajustar o corte,
+    girar, trocar o filtro) já punha o tique, mas não é o ok: a faixa continua com a frase de
+    sempre e o "está certo". Só depois do "está certo" ela diz "conferida"; mexer de novo depois
+    do ok não tira o "conferida" (o tique também fica)."""
+    tela = _dividido(janela, tmp_path)
+    # Dividir: mover a linha da folha 1
+    _no_dividir(tela, 0)
+    tela._mover_corte(0.48)
+    _assentar()
+    assert janela.projeto.folhas[0].revisada and tela.tira._miniaturas[0].conferida
+    texto, esta_certo, _ = _faixa(tela)
+    assert esta_certo and "conferida" not in texto
+    tela.botao_esta_certo.click()
+    _assentar()
+    assert _faixa(tela) == ("Folha 1 conferida.", False, True)
+    tela._mover_corte(0.5)                       # mexer depois do ok
+    _assentar()
+    assert _faixa(tela) == ("Folha 1 conferida.", False, True)
+
+    # Cortar: ajustar o corte da página 3
+    tela.escolher_ferramenta("cortar")
+    tela.ir_para_pagina(2)
+    tela._mover_recorte((0.05, 0.05, 0.95, 0.95))
+    _assentar()
+    assert janela.projeto.paginas[2].revisada
+    assert _faixa(tela)[:2] == ("Você ajustou o corte desta página.", True)
+
+    # Endireitar: girar a página 4 à mão
+    tela.escolher_ferramenta("endireitar")
+    tela.ir_para_pagina(3)
+    tela._gravar_angulo(3, 2.0)
+    _assentar()
+    assert janela.projeto.paginas[3].revisada
+    texto, esta_certo, _ = _faixa(tela)
+    assert texto.startswith("Você girou esta página") and esta_certo
+
+    # Filtro: trocar o filtro da página 5
+    tela.escolher_ferramenta("filtros")
+    tela.ir_para_pagina(4)
+    tela._escolher_filtro("preto_e_branco")
+    _assentar()
+    assert janela.projeto.paginas[4].revisada
+    texto, esta_certo, _ = _faixa(tela)
+    assert esta_certo and "conferida" not in texto
+    tela.botao_esta_certo.click()
+    _assentar()
+    assert _faixa(tela) == ("Página 5 conferida.", False, True)
+
+
+def test_d572_dividir_uma_folha_depois_nao_tira_o_ok_das_paginas_de_antes(janela, tmp_path):
+    """D-572 com os números das páginas andando: juntar a folha 4 (as páginas dela em diante
+    mudam de número) não tira o "conferida" da página 1, que veio da folha 1."""
+    tela = _dividido(janela, tmp_path)
+    _na_pagina(tela, 0)
+    tela.botao_esta_certo.click()
+    _assentar()
+    assert _faixa(tela)[:2] == ("Página 1 conferida.", False)
+    _no_dividir(tela, 3)
+    tela._nao_dividir()
+    _assentar()
+    assert len(janela.projeto.paginas) == 2 * FOLHAS - 1
+    _na_pagina(tela, 0)
+    assert _faixa(tela)[:2] == ("Página 1 conferida.", False)
