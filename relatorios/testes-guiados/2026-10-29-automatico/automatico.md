@@ -309,3 +309,4 @@ coisa: um botão que mostra e esconde o colorido das marcações.
 - Ele: "isso" (tira de baixo do Dividir: folha cortada = duas miniaturas; não cortada = uma dupla) → D-601 ampliada no Livro e passada ao construtor.
 - Caderno, prints A (A4) × B (tamanho do scan), Gradus dividido → ele: "mostra como no scan, pois eu vou querer ver como vai ficar impresso quando eu estiver no margens né." (D-574, etapa 7 no tamanho do scan).
 - Ele: "mas deixe essa versão guardada, caso o kaique queira trocar" → versão A4 guardada em `relatorios/caderno-etapa7-versao-A4/` e na Lista de espera do plano (02/11).
+- Dividir (D-601), frase da barra em "Uma página": ele: "esssa mensagem vai ficar aonde? e ela vai aparecer depois de eu fazer o que?" → gerente explicou (barra de baixo, folha cortada, "Uma página", antes do "está certo") → "ok" (frase: "Achei a lombada. Para mudar onde corta, escolha "Duas lado a lado" e arraste a linha."). "folha 1 de 70" fica como está.
