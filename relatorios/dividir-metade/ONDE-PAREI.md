@@ -53,7 +53,8 @@ Só `ui/` (e os testes). Outro construtor mexe ao mesmo tempo na faixa de baixo 
 - [x] Prints antes/depois (cópia do Gradus Primus em `_tmp/`)
 - [x] GitHub da 1ª parte: rodada 41549443337 verde (3398 passaram, 0 falharam; botões 369 ações, 0 falhas)
 - [x] Acréscimo da tira (`3b098c9`): prova (2 testes) + reversão no `110976f` (falha) + prints `*-4-*`
-- [ ] Testes no PC e GitHub da versão final
+- [x] Frase da faixa (resposta 1 do Samuel) (`a1a1323`)
+- [x] Testes no PC e GitHub da versão final (ver "Testes")
 
 ## O que mudou (só `ui/tela_conferir.py`)
 
@@ -123,3 +124,35 @@ Só `ui/` (e os testes). Outro construtor mexe ao mesmo tempo na faixa de baixo 
    Pergunta: "Na tira do Dividir, depois de dividir a folha 1, as miniaturas ficam numeradas 1, 2, 3... (a folha 2
    vira o número 3, como nas outras ferramentas, que contam páginas). Fica assim?" (sugestão: fica assim; anda junto
    com a resposta da pergunta 2).
+
+## Como cumpri cada uma
+
+- **D-601** — `tests/test_decisoes_dividir_metade.py` (6 testes; os 6 FALHAM no `110976f`):
+  `..._uma_pagina_mostra_so_a_metade_e_as_setas_andam_pelas_paginas` (folha não dividida inteira; "dividir esta" →
+  só a esquerda, sem linha; seta, botão "›", tecla ← e roda andam esquerda → direita → próxima folha),
+  `..._duas_lado_a_lado_mostra_a_folha_inteira_com_a_linha` (folha inteira, linha que arrasta, setas de folha em
+  folha; fora do Dividir, os pares), `..._nao_dividir_esta_volta_a_folha_inteira`. Prints `antes-1..3` e
+  `depois-1..3` (Gradus Primus, folha 1: contracapa; seta: capa; "Duas lado a lado": folha inteira com a linha).
+- **D-601, acréscimo da tira** — `..._tira_do_dividir_folha_dividida_vira_duas_miniaturas`,
+  `..._tira_do_dividir_acompanha_a_linha_e_o_juntar`. Prints `antes-4` (6 miniaturas; clicar na 2 leva à folha 2) e
+  `depois-4` (7 miniaturas; clicar na 2 leva à capa).
+- **Resposta 1 (frase)** — `..._frase_da_faixa_no_uma_pagina`.
+- **D-007 / D-501** — `test_decisoes_dividir.py::test_d007_*` e `test_decisoes_ver.py` passam (o teste que dizia
+  "botões apagados no Dividir" foi trocado: era o comportamento que a D-601 mudou).
+- **D-015 / D-006 / D-058** — `test_decisoes_ver.py` 11 passaram (o menu Ver acompanha o botão no Dividir).
+- **D-046, D-051, D-074, D-080, D-498, D-528, D-558** — `test_decisoes_dividir.py` 19, `test_dividir_na_tela.py` 9,
+  `test_dividir_no_programa.py` 19, `test_decisoes_nucleo2.py` 21 passaram.
+- **D-590** — `test_decisoes_juntar_todas.py` 3 passaram.
+- **D-568 / D-599 / D-600** — `test_decisoes_shift_todas_as_telas.py` 10, `test_zoom_no_ponteiro.py` 5,
+  `test_decisoes_9b2.py` 30 passaram.
+
+## Testes
+
+- PC (um arquivo por vez, versão final do código): dividir_metade 6, dividir 19, dividir_na_tela 9, ver 11,
+  juntar_todas 3, shift_todas_as_telas 10, zoom_no_ponteiro 5, miniaturas_novas 5, 9b1 22 (+3 pulados), avisos 13,
+  girar_cartoes_e_previas 23, 9b2 30, livro_aberto 14, girar_na_tela 22, dividir_no_programa 19, tela 35,
+  paineis_na_tela 22, trilha_agrupada 19, barra_de_menu 20, nucleo2 21, automatico 24, promessas 265 (+1 xfailed)
+  — nenhuma falha. `teste_botoes.py`: 368 ações, 0 falhas.
+- GitHub "Testes no Windows": 41549443337 (1ª parte) verde, 3398 passaram; 41556367244 (com a tira) verde, 3400;
+  **41559220935 (versão final, `a1a1323`) verde: 191 arquivos, 3401 passaram, 0 falharam, 141 pulados; botões 369
+  ações, 0 falhas.**
