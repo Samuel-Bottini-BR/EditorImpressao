@@ -182,7 +182,8 @@ from core.filtros import (
     filtros_do_livro,
     palavra_do_ajuste,
 )
-from historico_acoes import HistoricoAcoes, aplicar, campo_de_pagina, montar_acao
+from historico_acoes import (HistoricoAcoes, PREFIXO_PAGINAS_DA_FOLHA, aplicar, campo_de_pagina,
+                             montar_acao)
 from core.dividir import dividir_imagem     # D-601: a metade da folha no Dividir
 from modelos import METADE_DIREITA, METADE_ESQUERDA, METADE_INTEIRA, Projeto
 from registro import registrar_erro
@@ -4661,8 +4662,10 @@ class TelaConferir(QWidget):
         folha ou página (ConfigPagina.alertas_pendentes), com os botões dele
         (analise.Alerta.botoes: até dois, ao lado dos botões da aba). Dar
         "está bom assim" nele mostra o próximo motivo da mesma página (Samuel,
-        rodada 4: "com um motivo individual de uma pagina"). Sem alerta, o
-        texto tranquilo da aba. As marcas de "onde sumiu" seguem o alerta
+        rodada 4: "com um motivo individual de uma pagina"). Sem alerta: a
+        página em branco; a folha/página já conferida ("Página N conferida.",
+        sem o "está certo": D-572, _conferida_na_faixa); senão o texto
+        tranquilo da aba. As marcas de "onde sumiu" seguem o alerta
         mostrado (_mostrar_marcas_do_aviso)."""
         item = self.item_atual
         aba = self.aba_atual
@@ -4691,11 +4694,25 @@ class TelaConferir(QWidget):
             self._mostrar_sugestao(aba, "voltar a página")
             self._mostrar_sugestao(aba, None, qual=1)
             self._mostrar_sugestao(aba, None, qual=2)
+        elif self._conferida_na_faixa(item):
+            # D-572 (Samuel, 28/10: "a opção esta certo continua aparecendo,
+            # deveria sumir quando eu aperto está certo"; 31/10, Central: "A
+            # faixa diz "Página 7 conferida." e fica só "próxima dúvida""):
+            # a folha/página com o tique verde diz que foi conferida, sem a
+            # frase da ferramenta e sem o "está certo" (escondido logo abaixo)
+            self.texto_faixa.setText(self._com_andamento(self._texto_conferida()))
+            self._pintar_faixa(alerta=False)
+            for qual in range(3):
+                self._mostrar_sugestao(aba, None, qual)
         else:
             self.texto_faixa.setText(self._com_andamento(self._texto_tranquilo(aba)))
             self._pintar_faixa(alerta=False)
             for qual in range(3):
                 self._mostrar_sugestao(aba, None, qual)
+        # D-572: o "está certo" só some na conferida; nas outras ("nas paginas
+        # que não foi dado o ok") ele continua, com o aviso ou a frase de sempre
+        self.botao_esta_certo.setVisible(
+            alerta is not None or not self._conferida_na_faixa(item))
         self._mostrar_marcas_do_aviso()
         # etapa 7 da obra (lista única 1.8; D-268 "(a) Botão no aviso"; sessão
         # 0, 0-7: "tem os avisos mas não tem como apertar para fazer ele
@@ -4757,7 +4774,78 @@ class TelaConferir(QWidget):
             except Exception:  # noqa: BLE001 - o andamento nunca derruba a tela
                 registrar_erro("andamento_das_marcacoes", traceback.format_exc())
 
+    def _conferida_na_faixa(self, item) -> bool:
+        """D-572: a faixa desta folha (no Dividir) ou página diz "conferida"?
+        Só quando a pessoa DEU O OK nela: tem o tique (`revisada`) e o
+        Histórico tem a ação "revisar" dela (_ok_dado). O Samuel, 31/10: "Mas
+        nas paginas que não foi dado o ok, ela vai aparecer ainda né?" (sim);
+        a gerente, 02/11: o ok dele é o "está certo". Mexer à mão (girar,
+        mover a linha, cortar, trocar o filtro) também põe o tique, mas NÃO é
+        o ok: a faixa continua com a frase de hoje e o "está certo".
+        Também ficam como eram a página "em branco" (fica o "voltar a
+        página") e a tirada do livro. Ctrl+Z do "está certo" tira a ação do
+        Histórico e o tique: a faixa volta ao que era. Mexer depois do ok
+        mantém o tique e a ação: continua "conferida"."""
+        if not getattr(item, "revisada", False):
+            return False
+        if self.trabalha_com_folhas:
+            if getattr(item, "apagada", False):
+                return False
+            return self._ok_dado("folha", self.indice_folha)
+        if getattr(item, "em_branco", False) or getattr(item, "apagada", False):
+            return False
+        return self._ok_dado("pagina", self.indice_pagina)
+
+    def _ok_dado(self, alvo: str, indice: int) -> bool:
+        """D-572: a folha/página `indice` recebeu o ok? É a ação "revisar" do
+        Histórico (a que _marcar_revisada grava: o "está certo", a barra de
+        espaço, o "está bom assim" do último aviso e os botões que só dão a
+        página por conferida), ainda feita (não desfeita). Sem campo novo no
+        projeto: o Histórico já fica gravado (acoes.jsonl) e volta ao reabrir.
+        Os números das PÁGINAS andam quando uma folha é dividida/juntada ou o
+        Automático refaz a lista: a busca para (sem ok) na ação que mudou as
+        páginas desta folha ou de uma folha antes dela, ou a lista inteira -
+        nesses casos a ação antiga pode ser de outra página. As folhas nunca
+        mudam de número. Barato: só lê a lista de ações, da mais nova à mais
+        velha. Arriscado: contar ações de outro tipo (mexer à mão não é o ok)."""
+        if self.acoes is None or self.projeto is None:
+            return False
+        folha_da_pagina = None
+        if alvo == "pagina" and 0 <= indice < len(self.projeto.paginas):
+            folha_da_pagina = self.projeto.paginas[indice].folha
+        prefixo = PREFIXO_PAGINAS_DA_FOLHA
+        for acao in reversed(self.acoes.feitas):
+            if alvo == "pagina":
+                for campo in acao.depois:
+                    campo = str(campo)
+                    if campo == "livro.paginas":
+                        return False
+                    if campo.startswith(prefixo):
+                        try:
+                            folha = int(campo[len(prefixo):])
+                        except ValueError:
+                            return False
+                        if folha_da_pagina is None or folha <= folha_da_pagina:
+                            return False
+            if acao.tipo == "revisar" and acao.alvo == alvo and indice in acao.indices:
+                return True
+        return False
+
+    def _texto_conferida(self) -> str:
+        """D-572: "Página N conferida." (31/10, Central: "A faixa diz "Página
+        7 conferida.""), com o N do "página N de M" da barra de baixo. No
+        Dividir quem fica conferida é a folha (o tique é o da folha, a tira
+        mostra folhas e a barra de baixo diz "folha N de M"): "Folha N
+        conferida.". Seguro mudar: só com nova decisão do Samuel."""
+        if self.trabalha_com_folhas:
+            return f"Folha {self.indice_folha + 1} conferida."
+        return f"Página {self.indice_pagina + 1} conferida."
+
     def _texto_tranquilo(self, aba: str) -> str:
+        """A frase da faixa quando a folha/página não tem aviso e ainda não
+        foi conferida (a conferida diz "conferida": _texto_conferida, D-572).
+        Uma por ferramenta; a das ferramentas de marcar e do Mover é a do
+        Filtro ("Esta página vai sair em ...")."""
         assert self.projeto is not None
         if aba == ABA_CORTE:
             folha = self.projeto.folhas[self.indice_folha]

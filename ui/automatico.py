@@ -1283,7 +1283,15 @@ class TelaCheiaDoAntesEDepois(QDialog):
             self.rotulo_a.setText(rot_a)
             self.rotulo_b.setText(rot_b)
             calculando = calculando or calc_a or calc_b
-        self.bolinha.definir(calculando, "Calculando como a página vai ficar..." if calculando else "")
+        # o balão: o da conta que mede o livro (a janela ou um lado do "comparar"), senão a frase
+        dica = ""
+        for quem in (self.painel, self.lado_a.motor, self.lado_b.motor):
+            if quem is not None and quem.calculando() and quem._andamento is not None:
+                dica = quem.dica_da_bolinha()
+                break
+        if calculando and not dica:
+            dica = "Calculando como a página vai ficar..."
+        self.bolinha.definir(calculando, dica)
 
     def _zoom(self, fator: float | None) -> None:
         """–, + e "ajustar à tela" (a mesma conta de JanelaDoAutomatico._zoom). No "comparar",
@@ -1416,6 +1424,7 @@ class PaginaAntesEDepois(QWidget):
         self._do_livro = None                 # (índice, imagem) da página como está no livro
         self._filtro_depois = ""              # o filtro do depois (o rótulo do "comparar")
         self._fechada = False                 # fechar(): nada mais é pedido
+        self._andamento = None                # (feitas, total, unidade) da medida do livro (margens)
         self.tela_cheia: TelaCheiaDoAntesEDepois | None = None   # aberta pelo "tela cheia"
 
         col = QVBoxLayout(self)
@@ -1634,6 +1643,7 @@ class PaginaAntesEDepois(QWidget):
         tarefa.pronta.connect(self._chegou)
         tarefa.falhou.connect(self._falhou)
         tarefa.terminou.connect(self._terminou)
+        tarefa.andamento.connect(self._andou)
         _guardiao().segurar(tarefa)
         self._tarefa = tarefa
         tarefa.start()
@@ -1667,11 +1677,36 @@ class PaginaAntesEDepois(QWidget):
         self.visor.mostrar(antes, None, aviso="Não foi possível mostrar como esta página vai ficar.")
         self._acertar_tela_cheia()
 
+    def _andou(self, chave: str, feitas: int, total: int, unidade: str) -> None:
+        """O andamento da medida do livro para as margens iguais (defeito de 02/11/2026: com
+        elas, a prévia mede o livro todo). Só o do último pedido vale; vai para o balão da
+        bolinha (D-064: "quando passsamos o mouse em cima mostra a mensagem de porcentagem e
+        quantas paginas carregaram já."; a gerente, 02/11: sem frase ao lado da bolinha)."""
+        if chave != self._querida:
+            return
+        self._andamento = (feitas, total, unidade) if total and feitas < total else None
+        self._acertar_bolinha()
+
+    def dica_da_bolinha(self) -> str:
+        """O balão da bolinha: "" parada; calculando, a frase de sempre e, enquanto o livro é
+        medido para as margens, a porcentagem e quantas folhas/páginas já foram, no formato
+        do balão da bolinha do livro da barra de baixo (ui/tela_conferir._acertar_as_bolinhas)."""
+        if not self.calculando():
+            return ""
+        dica = "Calculando como a página vai ficar..."
+        if self._andamento is not None:
+            feitas, total, unidade = self._andamento
+            um = unidade[:-1] if unidade.endswith("s") else unidade
+            dica += (f"\nLivro: {round(100 * feitas / total)}% ({feitas} de {total} "
+                     f"{um if total == 1 else unidade} já carregada{'' if feitas == 1 else 's'}).")
+        return dica
+
     def _terminou(self, tarefa) -> None:
         """Uma conta terminou (pronta, falha ou cancelada): começa a que estava
         esperando, se ela ainda é a última pedida."""
         if tarefa is self._tarefa:
             self._tarefa = None
+            self._andamento = None
         espera, self._na_espera = self._na_espera, None
         if espera is not None and self._tarefa is None:
             if espera[0] == self._querida and espera[1] == self._indice:
@@ -1681,8 +1716,7 @@ class PaginaAntesEDepois(QWidget):
         self._acertar_bolinha()
 
     def _acertar_bolinha(self) -> None:
-        calculando = self.calculando()
-        self.bolinha.definir(calculando, "Calculando como a página vai ficar..." if calculando else "")
+        self.bolinha.definir(self.calculando(), self.dica_da_bolinha())
         self._acertar_tela_cheia()
 
     def _mostrar(self) -> None:
