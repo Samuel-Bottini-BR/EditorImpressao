@@ -267,7 +267,7 @@ def test_d574_tela_cheia_com_a_etapa_7_abre_a_tela_grande_de_caderno(janela, app
     assert _paginas_do_lado(folhas.faces()[0]) == (6, 3)
     tela.accept()
     _assentar(app)
-    assert folhas.tela_grande is None
+    assert not tela.isVisible() and tela.imagens["frente"].pixmap().isNull()
 
     grande.painel_de_opcoes.lista.setCurrentItem(grande.painel_de_opcoes.lista.item_da_etapa(A.LIMPAR))
     _assentar(app)
@@ -359,3 +359,68 @@ def test_d574_a_tela_nao_para_enquanto_monta_a_folha(janela, app, tmp_path):
         relogio.stop()
     assert folhas.faces() is not None
     assert marcas["maior"] < LIMITE_DA_PARADA_S, f"a tela parou {marcas['maior']:.2f} s"
+
+
+def _pedido_da_folha(janela, numero: int = 0):
+    """(cópia do projeto, pedido, folha, índices) da folha `numero`, como a janela pede."""
+    from core import cadernos
+    from core.automatico import copia_para_a_previa
+
+    ativas = [p.indice for p in janela.projeto.paginas_ativas]
+    folha = cadernos.ordem_das_folhas(len(ativas), 8)[numero]
+    indices = {pos: ativas[pos] for lado in folha for pos in (lado.esquerda, lado.direita)
+               if pos is not None and pos < len(ativas)}
+    return (copia_para_a_previa(janela.projeto), janela.estado_do_automatico.pedido(pular_mexidas=False),
+            folha, indices)
+
+
+def test_d574_folha_do_servidor_e_igual_a_feita_aqui(janela, app, tmp_path, monkeypatch):
+    """D-473 + §3: a folha montada no servidor de páginas (fora do processo da janela) é a
+    MESMA, ponto por ponto, que a montada aqui (é a mesma função, core/automatico.
+    folha_do_caderno), também com um filtro ligado (Preto e branco)."""
+    from core import automatico
+    from core import paginas_em_outro_processo as servidor
+    from core.filtros import PRETO_E_BRANCO
+
+    janela.abrir_livro(_livro_marcado(tmp_path))
+    _assentar(app)
+    estado = janela.estado_do_automatico
+    chamadas = []
+    original = servidor.folha_do_caderno
+    monkeypatch.setattr(servidor, "folha_do_caderno",
+                        lambda *a, **k: chamadas.append(1) or original(*a, **k))
+    for etapas, filtro in (({A.CADERNOS}, None), ({A.LIMPAR, A.CADERNOS}, PRETO_E_BRANCO)):
+        estado.marcadas = set(etapas)
+        if filtro:
+            estado.opcoes["filtro_padrao"] = filtro
+        copia, pedido, folha, indices = _pedido_da_folha(janela)
+        monkeypatch.delenv(servidor.VARIAVEL_DESLIGA, raising=False)
+        chamadas.clear()
+        de_la = automatico.folha_do_caderno(copia, pedido, folha, indices, 120)
+        assert chamadas, "a folha não foi pedida ao servidor"
+        monkeypatch.setenv(servidor.VARIAVEL_DESLIGA, "1")
+        daqui = automatico.folha_do_caderno(copia, pedido, folha, indices, 120)
+        monkeypatch.delenv(servidor.VARIAVEL_DESLIGA, raising=False)
+        for a, b in zip(de_la, daqui):
+            assert a.shape == b.shape and np.array_equal(a, b)
+        assert _paginas_do_lado(de_la[0]) == (8, 1)
+
+
+def test_d574_cancelar_para_a_folha_no_servidor(janela, app, tmp_path):
+    """A opção mudou no meio (ou a janela fechou): a folha pedida ao servidor volta na hora,
+    cancelada, e o servidor continua atendendo (a folha seguinte sai certa)."""
+    from core import automatico
+    from core.pipeline import Cancelou
+
+    janela.abrir_livro(_livro_marcado(tmp_path))
+    _assentar(app)
+    janela.estado_do_automatico.marcadas = {A.CADERNOS}
+    copia, pedido, folha, indices = _pedido_da_folha(janela)
+    inicio = time.monotonic()
+    with pytest.raises(Cancelou):
+        automatico.folha_do_caderno(copia, pedido, folha, indices, 120,
+                                    cancelado=lambda: time.monotonic() - inicio > 0.05)
+    assert time.monotonic() - inicio < 2.0
+    copia, pedido, folha, indices = _pedido_da_folha(janela, 1)
+    frente, _verso = automatico.folha_do_caderno(copia, pedido, folha, indices, 120)
+    assert _paginas_do_lado(frente) == (6, 3)

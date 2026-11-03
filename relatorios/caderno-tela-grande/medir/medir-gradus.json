@@ -1,0 +1,86 @@
+{
+ "livro": "gradus",
+ "base_antes_e_depois_setas": [
+  {
+   "pagina": 2,
+   "s": 3.02,
+   "maior_parada_s": 0.195
+  },
+  {
+   "pagina": 3,
+   "s": 3.767,
+   "maior_parada_s": 0.203
+  },
+  {
+   "pagina": 4,
+   "s": 6.101,
+   "maior_parada_s": 0.284
+  }
+ ],
+ "abrir_a_etapa_7": {
+  "clique_s": 0.065,
+  "primeira_folha_s": 30.546,
+  "maior_parada_s": 0.119,
+  "batidas_de_5ms": 5561,
+  "folhas": 18
+ },
+ "setas": [
+  {
+   "folha": 2,
+   "s": 24.45,
+   "maior_parada_s": 0.103,
+   "batidas_de_5ms": 4554
+  },
+  {
+   "folha": 3,
+   "s": 25.164,
+   "maior_parada_s": 0.269,
+   "batidas_de_5ms": 3972
+  },
+  {
+   "folha": 4,
+   "s": 28.443,
+   "maior_parada_s": 0.13,
+   "batidas_de_5ms": 4649
+  },
+  {
+   "folha": 5,
+   "s": 22.598,
+   "maior_parada_s": 0.062,
+   "batidas_de_5ms": 4163
+  },
+  {
+   "folha": 6,
+   "s": 23.935,
+   "maior_parada_s": 0.124,
+   "batidas_de_5ms": 4302
+  }
+ ],
+ "trocar_paginas_por_caderno": [
+  {
+   "por_caderno": 12,
+   "s": 23.034,
+   "maior_parada_s": 0.342,
+   "folhas": 18
+  },
+  {
+   "por_caderno": 20,
+   "s": 20.079,
+   "maior_parada_s": 0.135,
+   "folhas": 18
+  }
+ ],
+ "abrir_a_tela_grande": {
+  "s": 0.568,
+  "maior_parada_s": 0.565
+ },
+ "seta_na_tela_grande": {
+  "s": 26.217,
+  "maior_parada_s": 0.066
+ },
+ "voltar_a_outra_etapa": {
+  "s": 0.027,
+  "maior_parada_s": 0.026
+ },
+ "maior_parada_de_todas_s": 0.565
+}

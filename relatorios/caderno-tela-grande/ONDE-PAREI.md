@@ -33,7 +33,20 @@ Ramo `caderno-tela-grande-2026-11-02` (saiu de `obra-2026-10-26` em `110976f`). 
 
 ## Andamento
 - [x] Li CLAUDE.md, layout.md, INDICE, o ONDE-PAREI do livreto-ver e o parecer do verificador.
-- [x] Achado: a etapa 7 não é o livreto A4 (ver pergunta 1). Avisei a gerente na hora (02/11).
+- [x] Achado: a etapa 7 não monta o livreto A4 do "Montar para imprimir"; ela monta "no tamanho do scan (sem A4, sem
+  margem)" (`core/cadernos.impor_pdf`). A `previa_da_folha` desenha o A4 e precisa do PDF já processado, que não
+  existe antes do "Rodar". Avisei a gerente na hora (pergunta 1).
+- [x] `ui/widgets/folhas_do_caderno.py` (novo): `FolhasDoCaderno` (o lado direito com a etapa 7 aberta) e
+  `TelaGrandeDoCaderno` (a tela grande, versão de caderno).
+- [x] `ui/automatico.py` (mudança pequena, separada): o lado direito vira uma pilha (antes e depois | folhas);
+  `_acertar_o_lado_direito` troca pela etapa aberta; o zoom de baixo (–, +, ajustar à tela) some com as folhas à vista
+  (é da página); `PaginaAntesEDepois.pausar` para a conta do antes e depois enquanto ele está escondido. Margens: não
+  mexi.
+- [x] `core/cadernos.py`: `ordem_das_folhas`, `montar_o_lado`, `montar_a_folha`, `paginas_lado_a_lado` (a mesma
+  `montar_ordem` e o mesmo encaixe de `impor_pdf`).
+- [x] `core/automatico.folha_do_caderno` + `core/paginas_em_outro_processo.folha_do_caderno` (pedido novo
+  `folha_do_caderno` do servidor de páginas): a folha inteira é feita fora do processo da janela.
+- [x] Provas: `tests/test_decisoes_caderno_tela_grande.py` (10) e P-211 (`tests/test_promessas.py`).
 
 ## Perguntas para o Samuel
-(em preparação; ver abaixo quando os prints estiverem prontos)
+(em preparação)

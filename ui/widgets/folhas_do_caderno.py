@@ -38,9 +38,10 @@ A FOLHA É A QUE A ETAPA 7 FAZ (D-473, "tela e PDF saem da mesma conta")
     cada troca levaria minutos). Livro com páginas do mesmo tamanho: igual.
 
 A TELA NUNCA PARA (CLAUDE.md §3)
-    A conta vai para um fio (TarefaFolhaDoCaderno); o desenho de cada página já sai do processo da
-    janela (core/pdf_io.pagina_para_array pede ao servidor de páginas,
-    core/paginas_em_outro_processo). Trocas seguidas viram uma só (a mesma espera da página da
+    A folha inteira (o "depois" das páginas e a montagem) é feita no servidor de páginas, fora do
+    processo da janela (core/automatico.folha_do_caderno -> core/paginas_em_outro_processo.
+    folha_do_caderno); o fio TarefaFolhaDoCaderno só espera o cano e prepara as imagens. Medido no
+    Gradus Primus (02/11): com a conta num fio da janela a tela parava 0,28 a 0,49 s. Trocas seguidas viram uma só (a mesma espera da página da
     direita); só uma conta por vez; a que roda é cancelada; resultado velho é jogado fora. Uma
     folha por vez na memória (a frente e o verso da folha à vista).
 
@@ -49,11 +50,9 @@ Seguro mudar: tamanhos e margens. Arriscado: montar a folha de outro jeito que n
 
 from __future__ import annotations
 
-import copy
 import json
 import traceback
 
-import numpy as np
 from PySide6.QtCore import QEvent, QObject, Qt, QThread, QTimer, Signal
 from PySide6.QtGui import QPixmap
 from PySide6.QtWidgets import (
@@ -80,54 +79,11 @@ FRENTE, VERSO = "frente", "verso"
 # a conta (sem janela)
 # ---------------------------------------------------------------------------
 
-def ordem_das_folhas(total_paginas: int, paginas_por_caderno: int) -> list[tuple]:
-    """As folhas de papel do livro, na ordem em que saem: (frente, verso), cada um um
-    core/cadernos.Lado com as posições (0, 1, ...) das páginas no PDF (None = branco). É a
-    MESMA conta de core/cadernos.impor_pdf (montar_ordem, com o último caderno menor)."""
-    lados = cadernos.montar_ordem(max(0, int(total_paginas)), paginas_por_caderno)
-    return [(lados[i], lados[i + 1]) for i in range(0, len(lados) - 1, 2)]
-
-
-def _em_cor(img: np.ndarray) -> np.ndarray:
-    if img.ndim == 2:
-        return np.repeat(img[:, :, None], 3, axis=2)
-    return img[:, :, :3]
-
-
-def montar_o_lado(esquerda, direita, largura: int, altura: int) -> np.ndarray:
-    """Um lado da folha (BGR, branco onde não há página): duas metades de `largura` x
-    `altura` pontos; cada página encaixada na sua metade sem mudar a proporção, no meio dela -
-    o que show_pdf_page faz em core/cadernos.impor_pdf. None = metade em branco."""
-    import cv2
-
-    folha = np.full((altura, largura * 2, 3), 255, np.uint8)
-    for n, img in enumerate((esquerda, direita)):
-        if img is None:
-            continue
-        img = _em_cor(img)
-        alt, larg = img.shape[:2]
-        escala = min(largura / max(1, larg), altura / max(1, alt))
-        nova_l, nova_a = max(1, round(larg * escala)), max(1, round(alt * escala))
-        if (nova_l, nova_a) != (larg, alt):
-            jeito = cv2.INTER_AREA if escala < 1 else cv2.INTER_LINEAR
-            img = cv2.resize(img, (nova_l, nova_a), interpolation=jeito)
-        x = n * largura + (largura - nova_l) // 2
-        y = (altura - nova_a) // 2
-        folha[y:y + nova_a, x:x + nova_l] = img
-    return folha
-
-
-def montar_a_folha(frente, verso, imagens: dict) -> tuple[np.ndarray, np.ndarray]:
-    """(frente, verso) da folha, com `imagens` = posição no PDF -> imagem da página. As duas
-    faces com o mesmo tamanho de metade: o da maior página da folha (ver a ressalva no topo)."""
-    usadas = [imagens[p] for p in imagens if imagens[p] is not None]
-    largura = max((img.shape[1] for img in usadas), default=10)
-    altura = max((img.shape[0] for img in usadas), default=14)
-
-    def lado(l):
-        return montar_o_lado(imagens.get(l.esquerda), imagens.get(l.direita), largura, altura)
-
-    return lado(frente), lado(verso)
+# a conta da folha mora em core/cadernos.py (ao lado de impor_pdf, a montagem do PDF da etapa 7),
+# para o servidor de páginas poder montar a folha fora do processo da janela
+ordem_das_folhas = cadernos.ordem_das_folhas
+montar_o_lado = cadernos.montar_o_lado
+montar_a_folha = cadernos.montar_a_folha
 
 
 class TarefaFolhaDoCaderno(QThread):
@@ -159,28 +115,18 @@ class TarefaFolhaDoCaderno(QThread):
     def run(self) -> None:
         """Nunca deixa exceção escapar (CLAUDE.md §3)."""
         from core import automatico
-        from core.pdf_io import abrir_pdf
         from core.pipeline import Cancelou
         from registro import registrar_erro
-        from ui.automatico import _lado_a_lado
 
         try:
-            doc = abrir_pdf(self.copia.caminho_entrada)
-            try:
-                imagens = {}
-                for posicao, indice in self.indices.items():
-                    if self._cancelar:
-                        raise Cancelou()
-                    depois = automatico.depois_da_pagina(
-                        doc, copy.deepcopy(self.copia), self.pedido, indice, self.dpi,
-                        cancelado=lambda: self._cancelar)
-                    imagens[posicao] = _lado_a_lado(depois or [])
-            finally:
-                doc.close()
+            # a folha é montada e desenhada no servidor de páginas (outro processo: a tela nunca
+            # para, CLAUDE.md §3); servidor fora do ar: aqui, neste fio (core/automatico.
+            # folha_do_caderno). Este fio só espera o cano, com o Python solto.
+            frente, verso = automatico.folha_do_caderno(
+                self.copia, self.pedido, self.folha, self.indices, self.dpi,
+                cancelado=lambda: self._cancelar)
             if self._cancelar:
                 raise Cancelou()
-            frente, verso = montar_a_folha(self.folha[0], self.folha[1], imagens)
-            del imagens
             # as imagens da tela feitas aqui, fora do fio da tela (medido no Gradus Primus: a
             # conversão e a redução de uma folha no fio da tela davam paradas de 0,2 a 0,5 s).
             # QImage pode ser feita fora do fio da tela; QPixmap não (quem faz é a janela).
@@ -436,6 +382,8 @@ class FolhasDoCaderno(QWidget):
         self._qimagens = imagens
         self._feito = self._querida
         self._mostrar()
+        if self.tela_grande is None:
+            QTimer.singleShot(0, self._preparar_a_tela_grande)
 
     def _falhou(self, numero: int) -> None:
         if numero != self._numero:
@@ -475,7 +423,7 @@ class FolhasDoCaderno(QWidget):
             quantas = f"{total} {'folha' if total == 1 else 'folhas'}"
             dica = "Montando a folha" + (f" (o livreto tem {quantas})" if total else "")
         self.bolinha.definir(calculando, dica)
-        if self.tela_grande is not None:
+        if self.tela_grande is not None and self.tela_grande.aberta:
             self.tela_grande.acertar()
 
     # --- mostrar ----------------------------------------------------------------------
@@ -493,7 +441,7 @@ class FolhasDoCaderno(QWidget):
             self.rotulos[VERSO].setVisible(False)
             self.rotulos[FRENTE].setText("Não consegui mostrar esta folha.")
         self._desenhar()
-        if self.tela_grande is not None:
+        if self.tela_grande is not None and self.tela_grande.aberta:
             self.tela_grande.acertar()
 
     def pixmaps(self) -> tuple | None:
@@ -544,12 +492,23 @@ class FolhasDoCaderno(QWidget):
 
     # --- a tela grande ----------------------------------------------------------------
 
+    def _preparar_a_tela_grande(self) -> None:
+        """Monta a tela grande escondida logo que a primeira folha chega (uma vez): criar a
+        janela e o estilo dela no clique do "tela cheia" parava a tela ~0,15 s a mais (medido
+        no Gradus Primus, 02/11). Fechada, ela fica guardada para a próxima vez (vazia)."""
+        if self.tela_grande is not None or self._fechada or not self.ligada:
+            return
+        self.tela_grande = TelaGrandeDoCaderno(self)
+        self.tela_grande.ensurePolished()
+        self.tela_grande.winId()
+
     def abrir_em_tela_cheia(self) -> None:
         """O "tela cheia" com a etapa 7 aberta: a tela grande, na versão de caderno."""
         if self.total() == 0:
             return
         if self.tela_grande is None:
             self.tela_grande = TelaGrandeDoCaderno(self)
+        self.tela_grande.aberta = True
         self.tela_grande.acertar()
         self.tela_grande.open()
         self.tela_grande.raise_()
@@ -565,7 +524,10 @@ class FolhasDoCaderno(QWidget):
                 pass
         self._parar()
         if self.tela_grande is not None:
-            self.tela_grande.reject()
+            if self.tela_grande.isVisible():
+                self.tela_grande.reject()
+            self.tela_grande.deleteLater()
+            self.tela_grande = None
         self._folha = self._pix = None
 
 
@@ -607,6 +569,7 @@ class TelaGrandeDoCaderno(QDialog):
 
         self.painel = painel
         self.zoom = 1.0
+        self.aberta = False                # o "tela cheia" foi apertado e ela não fechou
         self._feito = None                 # (pixmaps, largura, altura) já postos
         self.setWindowTitle("Como vai sair da impressora")
         estilo.estilizar(self, lambda: estilo.FOLHA_DE_ESTILO)
@@ -737,9 +700,10 @@ class TelaGrandeDoCaderno(QDialog):
             super().keyPressEvent(evento)
 
     def done(self, resultado: int) -> None:  # noqa: D401 - nome do Qt
-        """Ao fechar: o lado direito esquece esta janela; as imagens saem."""
-        if self.painel.tela_grande is self:
-            self.painel.tela_grande = None
+        """Ao fechar: as imagens saem (uma folha por vez na memória); a janela fica guardada,
+        escondida, para o próximo "tela cheia"."""
+        self.aberta = False
+        self._feito = None
         for imagem in self.imagens.values():
             imagem.clear()
         super().done(resultado)

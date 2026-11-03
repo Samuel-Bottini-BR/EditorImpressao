@@ -32,6 +32,7 @@ from dataclasses import dataclass
 from pathlib import Path
 
 import fitz
+import numpy as np
 
 # Multiplo obrigatorio: cada folha carrega 4 paginas (2 frente + 2 verso).
 MULTIPLO = 4
@@ -293,3 +294,88 @@ def instrucoes_de_impressao(total_paginas: int, paginas_por_caderno: int) -> lis
         ("Dobre o grupo ao meio - é 1 caderno pronto." if cadernos == 1
          else f"Dobre cada grupo ao meio - são {cadernos} cadernos prontos."),
     ]
+
+
+# ---------------------------------------------------------------------------
+# A folha desenhada na tela (D-574, 02/11/2026: a etapa 7 "Montar cadernos" do
+# Automatico mostra as folhas do caderno, frente e verso). A MESMA conta de
+# impor_pdf (montar_ordem) e o MESMO encaixe (show_pdf_page: cada pagina na sua
+# metade, sem mudar a proporcao, no meio), feitos sobre as imagens das paginas.
+# Quem desenha as paginas e core/automatico.folha_do_caderno. Arriscado: mudar
+# o encaixe aqui sem mudar impor_pdf (a tela deixaria de ser o arquivo, D-473;
+# tests/test_decisoes_caderno_tela_grande.py compara com o PDF gravado).
+# ---------------------------------------------------------------------------
+
+VAO_ENTRE_AS_METADES = 12   # o mesmo de ui/automatico (o "depois" de uma folha que vai ser dividida)
+
+
+def paginas_lado_a_lado(imagens: list):
+    """As paginas que uma folha vira (uma; ou duas, quando a folha inteira vai ser dividida),
+    uma ao lado da outra com um vao branco - a mesma conta de ui/automatico._lado_a_lado.
+    Nenhuma: None."""
+    imagens = [img for img in imagens if img is not None]
+    if not imagens:
+        return None
+    if len(imagens) == 1:
+        return imagens[0]
+    altura = max(img.shape[0] for img in imagens)
+    pedacos = []
+    for n, img in enumerate(imagens):
+        img = _em_cor(img)
+        if img.shape[0] < altura:
+            img = np.concatenate([img, np.full((altura - img.shape[0],) + img.shape[1:], 255, img.dtype)])
+        if n:
+            pedacos.append(np.full((altura, VAO_ENTRE_AS_METADES, 3), 255, img.dtype))
+        pedacos.append(img)
+    return np.concatenate(pedacos, axis=1)
+
+
+def ordem_das_folhas(total_paginas: int, paginas_por_caderno: int) -> list[tuple]:
+    """As folhas de papel do livro, na ordem em que saem: (frente, verso), cada um um
+    Lado com as posições (0, 1, ...) das páginas no PDF (None = branco). É a
+    MESMA conta de core/cadernos.impor_pdf (montar_ordem, com o último caderno menor)."""
+    lados = montar_ordem(max(0, int(total_paginas)), paginas_por_caderno)
+    return [(lados[i], lados[i + 1]) for i in range(0, len(lados) - 1, 2)]
+
+
+def _em_cor(img: np.ndarray) -> np.ndarray:
+    if img.ndim == 2:
+        return np.repeat(img[:, :, None], 3, axis=2)
+    return img[:, :, :3]
+
+
+def montar_o_lado(esquerda, direita, largura: int, altura: int) -> np.ndarray:
+    """Um lado da folha (BGR, branco onde não há página): duas metades de `largura` x
+    `altura` pontos; cada página encaixada na sua metade sem mudar a proporção, no meio dela -
+    o que show_pdf_page faz em core/cadernos.impor_pdf. None = metade em branco."""
+    import cv2
+
+    folha = np.full((altura, largura * 2, 3), 255, np.uint8)
+    for n, img in enumerate((esquerda, direita)):
+        if img is None:
+            continue
+        img = _em_cor(img)
+        alt, larg = img.shape[:2]
+        escala = min(largura / max(1, larg), altura / max(1, alt))
+        nova_l, nova_a = max(1, round(larg * escala)), max(1, round(alt * escala))
+        if (nova_l, nova_a) != (larg, alt):
+            jeito = cv2.INTER_AREA if escala < 1 else cv2.INTER_LINEAR
+            img = cv2.resize(img, (nova_l, nova_a), interpolation=jeito)
+        x = n * largura + (largura - nova_l) // 2
+        y = (altura - nova_a) // 2
+        folha[y:y + nova_a, x:x + nova_l] = img
+    return folha
+
+
+def montar_a_folha(frente, verso, imagens: dict) -> tuple[np.ndarray, np.ndarray]:
+    """(frente, verso) da folha, com `imagens` = posição no PDF -> imagem da página. As duas
+    faces com o mesmo tamanho de metade: o da maior página da folha. RESSALVA: impor_pdf usa a maior página do LIVRO
+    inteiro; livro com páginas do mesmo tamanho sai igual."""
+    usadas = [imagens[p] for p in imagens if imagens[p] is not None]
+    largura = max((img.shape[1] for img in usadas), default=10)
+    altura = max((img.shape[0] for img in usadas), default=14)
+
+    def lado(l):
+        return montar_o_lado(imagens.get(l.esquerda), imagens.get(l.direita), largura, altura)
+
+    return lado(frente), lado(verso)
