@@ -400,3 +400,4 @@ Juntados no `obra-2026-10-26` nesta noite: balão do cinza (`99e7c6b`), D-574 se
 | Agente (id) | Cópia | Ramo | O que é |
 |---|---|---|---|
 | `a0be25a78346e4ef1` | `.claude\worktrees\automatico-pular` | `automatico-pular-2026-11-03` (de `8846017`) | Automático pula as folhas erradas depois de folha dividida à mão (`pular` com índices antigos em `core/automatico._dividir`); Samuel: "pode chamar um agente para concertar isso" |
+| `a51997f8d559dfd78` | `.claude\worktrees\dividir-caixinha` | `dividir-caixinha-2026-11-03` (de `8846017`) | D-590: caixinha do Dividir fica desmarcada depois do Rodar; só olhar (sem consertar) Endireitar, Cortar e Limpar; Samuel: "o problema 2" |
