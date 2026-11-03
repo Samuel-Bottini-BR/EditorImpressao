@@ -243,3 +243,81 @@ def test_d601_nao_dividir_esta_volta_a_folha_inteira(janela, tmp_path):
     assert _igual(_na_tela(tela), folha) and not vista.corte_visivel
     tela._navegar(1)
     assert tela.indice_folha == 1
+
+
+# --- o acréscimo de 02/11: a tira de baixo do Dividir ----------------------------------------------
+# Samuel: "quando cortar as paginas lá embaxio que foram cortadas vão aparecer como uma só e nas
+# paginas que não foram cortadas ainda vão aparecer duplas ainda, mas para ver as paginas que foram
+# cortadas vão ter que apertar uma folha só ali embaixo no aplicativo." · gerente: "Na tira de
+# baixo do Dividir: a folha 1 foi cortada, então na tira ela aparece como duas miniaturas separadas
+# (a contracapa e a capa); as folhas 2 a 70 ainda não foram cortadas, então continuam como uma
+# miniatura dupla cada; [...] É isso?" → "isso".
+
+def _imagens_da_tira(tela) -> list[np.ndarray]:
+    """O que cada miniatura da tira mostra (espera as folhas chegarem do PDF)."""
+    tira = tela.tira
+    _esperar(lambda: all(m._pixmap is not None for m in tira._miniaturas), motivo="as miniaturas")
+    return [_pixmap_bgr(m._pixmap) for m in tira._miniaturas]
+
+
+@precisa_da_dll
+def test_d601_tira_do_dividir_folha_dividida_vira_duas_miniaturas(janela, tmp_path):
+    """Acréscimo da D-601: antes de dividir, a tira do Dividir tem uma miniatura dupla por
+    folha (3). "dividir esta" na folha 1 → 4 miniaturas: a da esquerda (com o quadrado) e a da
+    direita, cada uma mais estreita que a folha dupla, e as folhas 2 e 3 duplas, como antes.
+    Clicar na miniatura da direita da folha 1 → a tela vai a essa página (no "Uma página",
+    só a metade da direita); clicar na da folha 2 → a folha 2 inteira. A miniatura escolhida
+    é a da página da vez. O ANTIGO SAIU: a tira do Dividir tinha sempre uma miniatura por folha."""
+    from ui.tela_conferir import ABA_CORTE
+
+    tela = _no_dividir_dividida(janela, tmp_path)
+    projeto, tira = janela.projeto, tela.tira
+    antes = _imagens_da_tira(tela)
+    assert len(antes) == 3
+    dupla = antes[0].shape[1]
+
+    tela.botao_nao_dividir.click()                     # "dividir esta" na folha 1
+    _assentar(10)
+    depois = _imagens_da_tira(tela)
+    assert len(depois) == 4, "a folha dividida vira duas miniaturas"
+    esquerda, direita, folha2, folha3 = depois
+    assert esquerda.shape[1] < 0.7 * dupla and direita.shape[1] < 0.7 * dupla
+    assert folha2.shape[1] == dupla and folha3.shape[1] == dupla    # as não divididas: duplas
+    assert _tem_o_quadrado(esquerda) and not _tem_o_quadrado(direita)
+    assert tira._miniaturas[0].selecionada                         # a página da vez: a esquerda
+
+    tira.selecionada.emit(1)                           # clicar na miniatura da direita
+    assert tela.indice_folha == 0 and projeto.paginas[tela.indice_pagina].metade == "direita"
+    assert tira._miniaturas[1].selecionada and not tira._miniaturas[0].selecionada
+    _f, _e, metade_direita = _partes(tela)
+    assert _igual(_na_tela(tela), metade_direita)
+    tira.selecionada.emit(2)                           # a folha 2 (não dividida)
+    assert tela.indice_folha == 1
+    folha, _e, _d = _partes(tela)
+    assert _igual(_na_tela(tela), folha) and not tela.visualizadores[ABA_CORTE].corte_visivel
+
+    tela._navegar(-1)                                  # a seta acompanha a tira
+    assert tira._miniaturas[1].selecionada
+
+
+@precisa_da_dll
+def test_d601_tira_do_dividir_acompanha_a_linha_e_o_juntar(janela, tmp_path):
+    """Acréscimo da D-601: no "Duas lado a lado", arrastar a linha da folha 1 para 30% → a
+    miniatura da esquerda fica mais estreita que a da direita (sem ler o livro de novo);
+    "não dividir esta" → a folha 1 volta a ser uma miniatura dupla (3 ao todo)."""
+    from ui.tela_conferir import ABA_CORTE
+    from ui.widgets.paginas_rolando import DUAS
+
+    tela = _no_dividir_dividida(janela, tmp_path)
+    tela.botao_nao_dividir.click()                     # "dividir esta"
+    _imagens_da_tira(tela)
+    tela.botoes_mostrar[DUAS].click()
+    tela.visualizadores[ABA_CORTE].corte_movido.emit(0.3)
+    esquerda, direita = _imagens_da_tira(tela)[:2]
+    assert esquerda.shape[1] < 0.6 * direita.shape[1]
+    assert len(tela.tira._miniaturas) == 4
+
+    tela.botao_nao_dividir.click()                     # "não dividir esta"
+    _assentar(10)
+    imagens = _imagens_da_tira(tela)
+    assert len(imagens) == 3 and imagens[0].shape[1] == imagens[1].shape[1]

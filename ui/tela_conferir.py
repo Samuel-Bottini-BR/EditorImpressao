@@ -184,7 +184,7 @@ from core.filtros import (
 )
 from historico_acoes import HistoricoAcoes, aplicar, campo_de_pagina, montar_acao
 from core.dividir import dividir_imagem     # D-601: a metade da folha no Dividir
-from modelos import METADE_DIREITA, METADE_ESQUERDA, Projeto
+from modelos import METADE_DIREITA, METADE_ESQUERDA, METADE_INTEIRA, Projeto
 from registro import registrar_erro
 from ui import estilo
 from ui.estilo import estilo_da_caixinha_com_quadrado
@@ -3658,10 +3658,17 @@ class TelaConferir(QWidget):
         if self.projeto is None:
             return
         if self.aba_atual == ABA_CORTE:
+            # D-601, acréscimo de 02/11/2026 (Samuel: "quando cortar as paginas
+            # lá embaxio que foram cortadas vão aparecer como uma só e nas
+            # paginas que não foram cortadas ainda vão aparecer duplas ainda"):
+            # na tira do Dividir, a folha dividida vira duas miniaturas (uma por
+            # metade) e a não dividida fica uma, a folha inteira. Os quadros são
+            # os passos das setas (_passos_do_dividir). Antes: uma por folha.
             titulo = "Folhas - as laranjas eu não tive certeza"
-            quantidade = len(self.projeto.folhas)
-            folha_de = {i: i for i in range(len(self.projeto.folhas))}
-            corte_de = None
+            passos = self._passos_do_dividir()
+            quantidade = len(passos)
+            folha_de = {i: self.projeto.paginas[p].folha for i, p in enumerate(passos)}
+            corte_de = self._cortes_da_tira_do_dividir(passos)
         else:
             titulo = "Páginas - as laranjas eu não tive certeza"
             quantidade = len(self.projeto.paginas)
@@ -3684,6 +3691,19 @@ class TelaConferir(QWidget):
         self._tira_assinatura = assinatura
         self.tira.montar(quantidade, self.projeto.caminho_entrada, folha_de, corte_de,
                          giros=self._giros_das_folhas())
+
+    def _cortes_da_tira_do_dividir(self, passos: list[int]) -> dict[int, tuple[str, float]]:
+        """D-601 (acréscimo de 02/11): o corte_de da tira do Dividir - para cada
+        quadro, a metade da página (folha dividida) ou a folha inteira (não
+        dividida), e a linha da folha."""
+        assert self.projeto is not None
+        cortes: dict[int, tuple[str, float]] = {}
+        for i, posicao in enumerate(passos):
+            pagina = self.projeto.paginas[posicao]
+            folha = self.projeto.folhas[pagina.folha]
+            metade = pagina.metade if folha.dividir else METADE_INTEIRA
+            cortes[i] = (metade, folha.posicao_corte)
+        return cortes
 
     def _giros_das_folhas(self) -> dict[int, int]:
         """O giro de cada folha, para a tira de miniaturas (D2, 06/10/2026).
@@ -3834,7 +3854,7 @@ class TelaConferir(QWidget):
     @protegido
     def _escolher_da_tira(self, indice: int) -> None:
         if self._pronta():
-            self._ir_para(indice)
+            self._ir_para_o_quadro_da_tira(indice)     # D-601: no Dividir, o passo
 
     @protegido
     def _trocou_de_aba(self, _indice: int) -> None:
@@ -4871,6 +4891,9 @@ class TelaConferir(QWidget):
 
     def _atualizar_tira(self) -> None:
         assert self.projeto is not None
+        if self.trabalha_com_folhas:
+            self._atualizar_tira_do_dividir()
+            return
         itens = (self.projeto.folhas if self.trabalha_com_folhas
                  else self.projeto.paginas)
         # etapa 7 da obra: o "!" é a mesma dúvida da faixa (com os avisos da
@@ -4884,6 +4907,46 @@ class TelaConferir(QWidget):
         self.tira.definir_giros(self._giros_das_folhas())      # D2: so as que mudaram
         self._acertar_as_miniaturas_movidas()
         self.tira.selecionar(self.indice_atual)
+
+    def _atualizar_tira_do_dividir(self) -> None:
+        """A tira do Dividir (D-601, acréscimo de 02/11/2026): um quadro por
+        passo das setas (_passos_do_dividir: as duas metades da folha
+        dividida, a folha inteira da não dividida). O "!" e o tique são os da
+        FOLHA (o Dividir confere a folha), nos quadros dela; a marca de
+        apagada é a da página (metade) ou a da folha (inteira). A linha que
+        mudou redesenha só as miniaturas da folha (TiraMiniaturas.
+        definir_cortes, sem ler o PDF). Os quadros ficam com a folha crua
+        (sem o "como sai" das outras ferramentas, como antes no Dividir).
+        Selecionado: o quadro da página da vez."""
+        assert self.projeto is not None
+        passos = self._passos_do_dividir()
+        com_duvida = self._itens_com_duvida()           # folhas
+        for i, posicao in enumerate(passos):
+            pagina = self.projeto.paginas[posicao]
+            folha = self.projeto.folhas[pagina.folha]
+            apagada = pagina.apagada if folha.dividir else getattr(folha, "apagada", False)
+            self.tira.marcar(i, em_alerta=pagina.folha in com_duvida, apagada=apagada,
+                             conferida=bool(folha.revisada))
+            self.tira.definir_como_sai(i, "", None)
+        self.tira.definir_cortes(self._cortes_da_tira_do_dividir(passos))
+        self.tira.definir_giros(self._giros_das_folhas())      # D2: so as que mudaram
+        self.tira.selecionar(self._passo_do_dividir_atual(passos))
+
+    def _ir_para_o_quadro_da_tira(self, indice: int) -> None:
+        """Um clique (ou duplo clique) na miniatura `indice` da tira: vai para
+        ela. No Dividir o quadro é um passo das setas (D-601, acréscimo de
+        02/11: a miniatura de uma metade leva àquela página; a da folha
+        inteira, à folha); nas outras ferramentas, a página."""
+        assert self.projeto is not None
+        if self.trabalha_com_folhas:
+            passos = self._passos_do_dividir()
+            if not 0 <= indice < len(passos):
+                return
+            self.indice_pagina = passos[indice]
+            self.indice_folha = self.projeto.paginas[self.indice_pagina].folha
+            self.atualizar()
+            return
+        self._ir_para(indice)
 
     def _acertar_as_miniaturas_movidas(self) -> None:
         """Etapa 9b-2 (D-547: "Mover uma página → a miniatura [...] mostra
@@ -6692,7 +6755,7 @@ class TelaConferir(QWidget):
         """Duplo clique na tira: vai para aquela página e abre ampliada."""
         if not self._pronta():
             return
-        self._ir_para(indice)
+        self._ir_para_o_quadro_da_tira(indice)         # D-601: no Dividir, o passo
         self.ampliar()
 
     # --- os itens do menu Ver e Pagina que nao faziam nada ------------------
