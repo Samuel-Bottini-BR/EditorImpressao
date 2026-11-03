@@ -49,7 +49,9 @@ Ramo `dividir-linha-2026-11-03` (saiu do `obra-2026-10-26`, ponta `8846017`). Wo
 - [x] "jeito" → "motor de corte" (Dividir e Automático)
 - [x] provas D-602: `tests/test_decisoes_dividir_linha.py` (13)
 - [x] testes no PC (um arquivo por vez): ver relatório
-- [ ] GitHub: rodada 41706257524 (conjunto + teste_botoes); filtro de velocidade 41706298782 (8846017 → d2c6ffa1)
+- [x] GitHub: 41711039690 verde na 2ª tentativa (1ª: erro solto no fim do test_p083, prévia do Automático; 41706257524
+      faltava a promessa P-212, feita); filtro de velocidade 41706298782: igual
+- [x] relatório: `relatorio.md/.html/.pdf` aqui
 - [x] prints da janela real (Gradus Primus e Boécio, pasta de dados isolada no scratchpad): `depois-*.png` aqui
 
 ## Causa da lista travada
