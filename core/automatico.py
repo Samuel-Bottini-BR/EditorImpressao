@@ -1233,20 +1233,21 @@ def antes_da_pagina(doc, copia, indice: int, dpi: int):
     return esquerda if pagina.metade == METADE_ESQUERDA else direita
 
 
-def pagina_como_esta(doc, copia, indice: int, dpi: int, cancelado: Callable | None = None):
+def pagina_como_esta(doc, copia, indice: int, dpi: int, cancelado: Callable | None = None,
+                     andamento: Callable | None = None):
     """A pagina `indice` como esta agora no livro, COM o filtro que ela ja tem
     (Original ou o aplicado), desenhada na `copia`. E a tela da esquerda do
     "comparar" da tela cheia da previa (D-577, 30/10: "nessa vai ter o filtro
     que estava antes, seja ele original ou que foi aplicado e o filtro que
     está selecionado no momento")."""
-    from core.pipeline import medir_o_livro_para_as_margens, renderizar_pagina
+    from core.pipeline import renderizar_pagina
 
     pagina = copia.paginas[indice]
     if getattr(copia, "margens_iguais", False):
         # o livro ja tem as margens iguais ligadas: a pagina como esta sai com
         # elas no PDF (D-329), entao o livro todo e medido como o PDF mede
         # (rapido quando ja medido: o tamanho fica guardado)
-        medir_o_livro_para_as_margens(copia, doc, copia.paginas_ativas, cancelado=cancelado)
+        _medir_o_livro(copia, doc, cancelado, andamento)
     img, _ = renderizar_pagina(doc, copia, pagina, dpi=dpi)
     return como_sai_na_tela(img, copia, pagina, dpi)
 
@@ -1346,13 +1347,17 @@ def _chave_da_medida(foto: Fotografia, f: _FolhaParaMedir):
 
 
 def _medidas_das_outras_folhas(foto: Fotografia, outras: list[_FolhaParaMedir],
-                               cancelado: Callable | None = None) -> dict[int, MedidaDaFolha]:
+                               cancelado: Callable | None = None,
+                               andamento: Callable | None = None) -> dict[int, MedidaDaFolha]:
     """As medidas das folhas `outras` do pedido (todas menos a da pagina da vez),
     pela MESMA `medir` do "Rodar", uma folha por vez; a que ja foi medida no
     mesmo estado vem de _MEDIDAS_GUARDADAS. Cancelar no meio guarda o que ja foi
-    medido. Levanta core.pipeline.Cancelou."""
+    medido. `andamento(feitas, total, "folhas")` a cada folha (o balao da
+    bolinha, D-064). Levanta core.pipeline.Cancelou."""
     medidas: dict[int, MedidaDaFolha] = {}
-    for f in outras:
+    for n, f in enumerate(outras):
+        if andamento is not None:
+            andamento(n, len(outras), "folhas")
         chave = _chave_da_medida(foto, f)
         with _TRANCA_DAS_MEDIDAS:
             guardada = _MEDIDAS_GUARDADAS.get(chave) if chave is not None else None
@@ -1366,11 +1371,28 @@ def _medidas_das_outras_folhas(foto: Fotografia, outras: list[_FolhaParaMedir],
                         _MEDIDAS_GUARDADAS.pop(next(iter(_MEDIDAS_GUARDADAS)))
         # uma copia: o aplicar poe partes dela na copia do projeto
         medidas[f.indice] = copy.deepcopy(guardada)
+    if andamento is not None:
+        andamento(len(outras), len(outras), "folhas")
     return medidas
 
 
+def _medir_o_livro(copia, doc, cancelado: Callable | None = None,
+                   andamento: Callable | None = None) -> None:
+    """A primeira passada do PDF (pipeline.medir_o_livro_para_as_margens) na
+    `copia`, com o andamento por pagina para o balao da bolinha (D-064:
+    "quando passsamos o mouse em cima mostra a mensagem de porcentagem e
+    quantas paginas carregaram já."): `andamento(feitas, total, "páginas")`."""
+    from core import pipeline as P
+
+    ativas = copia.paginas_ativas
+    progresso = None if andamento is None else (lambda feito, total, _t: andamento(feito, total, "páginas"))
+    P.medir_o_livro_para_as_margens(copia, doc, ativas, progresso=progresso, cancelado=cancelado)
+    if andamento is not None:
+        andamento(len(ativas), len(ativas), "páginas")
+
+
 def depois_da_pagina(doc, copia, pedido: Pedido, indice: int, dpi: int,
-                     cancelado: Callable | None = None) -> list:
+                     cancelado: Callable | None = None, andamento: Callable | None = None) -> list:
     """O "depois" da pagina `indice`: como ela sai se o Automatico rodar com o
     `pedido`. MUDA A `copia` (aplica o pedido nela): passar sempre uma copia
     (copia_para_a_previa). Devolve as imagens das paginas que ela vira (uma; ou
@@ -1378,7 +1400,9 @@ def depois_da_pagina(doc, copia, pedido: Pedido, indice: int, dpi: int,
     Com as margens iguais ligadas depois do pedido, mede tambem as outras folhas
     e o livro todo, como o "Rodar" e o PDF (defeito de 02/11/2026: "coloquei
     margem e ela não apareceu no preview."; ver "as margens iguais na previa").
-    `cancelado()` True = para (levanta core.pipeline.Cancelou)."""
+    `cancelado()` True = para (levanta core.pipeline.Cancelou).
+    `andamento(feitas, total, unidade)`: o andamento da medida do livro para as
+    margens ("folhas", depois "páginas"), para o balao da bolinha (D-064)."""
     from core import pipeline as P
 
     pagina = copia.paginas[indice]
@@ -1396,7 +1420,7 @@ def depois_da_pagina(doc, copia, pedido: Pedido, indice: int, dpi: int,
         if foto.folhas:
             medidas = medir(foto, cancelado=cancelado)
         if margens and outras:
-            medidas.update(_medidas_das_outras_folhas(foto, outras, cancelado))
+            medidas.update(_medidas_das_outras_folhas(foto, outras, cancelado, andamento))
     if cancelado is not None and cancelado():
         raise P.Cancelou()
     aplicar(copia, pedido, medidas)
@@ -1404,7 +1428,7 @@ def depois_da_pagina(doc, copia, pedido: Pedido, indice: int, dpi: int,
         # a primeira passada do PDF (P.processar), na copia ja com o pedido:
         # o tamanho de cada pagina pronta fica guardado (P._TAMANHOS_PRONTOS)
         # e como_sai_na_tela monta a MESMA conta das margens com ele
-        P.medir_o_livro_para_as_margens(copia, doc, copia.paginas_ativas, cancelado=cancelado)
+        _medir_o_livro(copia, doc, cancelado, andamento)
     imagens = []
     for nova in paginas_depois(copia, folha, metade):
         if cancelado is not None and cancelado():

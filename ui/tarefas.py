@@ -598,6 +598,11 @@ class TarefaPreviaDoAutomatico(QThread):
     pronta = Signal(str, int, object, object, object)
     falhou = Signal(str, str)                     # chave, mensagem
     terminou = Signal(object)                     # a tarefa
+    # chave, feitas, total, unidade ("folhas" ou "páginas"): o andamento da medida do
+    # livro para as margens iguais (defeito de 02/11/2026), para o balão da bolinha
+    # (D-064: "quando passsamos o mouse em cima mostra a mensagem de porcentagem e
+    # quantas paginas carregaram já.")
+    andamento = Signal(str, int, int, str)
 
     def __init__(self, copia: Projeto, pedido, indice: int, dpi: int, com_o_antes: bool,
                  chave: str, com_o_do_livro: bool = False) -> None:
@@ -618,6 +623,11 @@ class TarefaPreviaDoAutomatico(QThread):
     def foi_cancelada(self) -> bool:
         return self._cancelar
 
+    def _avisar_andamento(self, feitas: int, total: int, unidade: str) -> None:
+        """Do fio de fundo para a janela (o sinal atravessa os fios sozinho)."""
+        if not self._cancelar:
+            self.andamento.emit(self.chave, int(feitas), int(total), unidade)
+
     def run(self) -> None:
         """Nunca deixa excecao escapar (regra 3.3)."""
         from core import automatico
@@ -632,14 +642,14 @@ class TarefaPreviaDoAutomatico(QThread):
                 if self.com_o_do_livro and not self._cancelar:
                     do_livro = automatico.pagina_como_esta(
                         doc, copy.deepcopy(self.copia), self.indice, self.dpi,
-                        cancelado=lambda: self._cancelar)
+                        cancelado=lambda: self._cancelar, andamento=self._avisar_andamento)
                 if self._cancelar:
                     raise Cancelou()
                 pagina = self.copia.paginas[self.indice]
                 folha, metade = pagina.folha, pagina.metade
                 depois = automatico.depois_da_pagina(
                     doc, self.copia, self.pedido, self.indice, self.dpi,
-                    cancelado=lambda: self._cancelar)
+                    cancelado=lambda: self._cancelar, andamento=self._avisar_andamento)
                 filtro = automatico.filtro_depois(self.copia, folha, metade)
             finally:
                 doc.close()

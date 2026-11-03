@@ -64,4 +64,11 @@ margens. É o mesmo jeito da área de trabalho, que também mostra sem margem at
 Sugestão: sim, fica assim (é o que está construído agora; nada a mais). Outra opção, se ele quiser: escrever ao lado
 da bolinha "Medindo o livro para as margens: 12 de 70" (isso seria coisa nova, só com o "sim" dele).
 
-Situação: construído do jeito sugerido; espera a resposta.
+Situação: **respondida pela D-064** (gerente, 02/11/2026, sem perguntar de novo ao Samuel). D-064 (22/10), palavras
+dele: "não precisa do mostrado como sai no pdf, é só colocar uma bolinha de carregamento, pode ter uma pro livro
+inteiro e outra para a pagina que estamos, quando passsamos o mouse em cima mostra a mensagem de porcentagem e quantas
+paginas carregaram já." Então: (1) fica o jeito construído (a bolinha gira, o "depois" sem margem até medir, depois
+troca sozinho); (2) nada de frase ao lado da bolinha; (3) o balão da bolinha, enquanto mede, mostra a porcentagem e
+quantas folhas/páginas já foram, no formato do balão da bolinha do livro da barra de baixo ("Livro: 42% (59 de 140
+páginas já carregadas)."). Feito (`ui/automatico.PaginaAntesEDepois.dica_da_bolinha`; prova
+`test_enquanto_mede_o_livro_a_bolinha_gira_e_o_balao_diz_quanto_falta`).

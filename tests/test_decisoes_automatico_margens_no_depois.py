@@ -192,3 +192,38 @@ def test_como_esta_no_livro_com_as_margens_ligadas_sai_com_elas(janela, app, tmp
         doc.close()
     na_tela = _como_a_tela_mostra(projeto, 2)
     assert img.shape == na_tela.shape and np.array_equal(img, na_tela), (img.shape, na_tela.shape)
+
+
+def test_enquanto_mede_o_livro_a_bolinha_gira_e_o_balao_diz_quanto_falta(janela, app, tmp_path):
+    """Enquanto o livro é medido para as margens, a janela não trava (a conta é num fio de
+    fundo) e a bolinha gira; o balão dela diz a porcentagem e quantas folhas e páginas já foram
+    (D-064, 22/10/2026: "não precisa do mostrado como sai no pdf, é só colocar uma bolinha de
+    carregamento, pode ter uma pro livro inteiro e outra para a pagina que estamos, quando
+    passsamos o mouse em cima mostra a mensagem de porcentagem e quantas paginas carregaram
+    já."), no formato do balão da bolinha do livro da barra de baixo. Nenhuma frase nova ao lado
+    da bolinha. No fim, a bolinha para e o balão fica vazio. Com o Dividir marcado junto, as
+    outras folhas também são olhadas ("folhas"), depois as páginas medidas ("páginas")."""
+    import re
+
+    grande = _abrir(janela, app, tmp_path, pagina=2)
+    painel = grande.antes_e_depois
+    baloes = []
+    original = painel.bolinha.definir
+
+    def anotar(carregando, dica=""):
+        baloes.append((carregando, dica))
+        original(carregando, dica)
+
+    painel.bolinha.definir = anotar
+    _marcar(grande, {A.DIVIDIR, A.MARGENS})
+    _esperar(app, painel)
+    do_livro = [d for c, d in baloes if c and "Livro:" in d]
+    assert do_livro, f"o balão não disse o andamento do livro: {baloes[:5]}"
+    formato = re.compile(r"Livro: \d+% \(\d+ de \d+ (folhas?|páginas?) já carregadas?\)\.")
+    assert all(formato.search(d) for d in do_livro), do_livro
+    assert any("folha" in d for d in do_livro) and any("página" in d for d in do_livro), do_livro
+    assert not painel.bolinha.carregando and painel.bolinha.toolTip() == ""
+    from PySide6.QtWidgets import QLabel
+
+    assert not [w.text() for w in grande.findChildren(QLabel) if "Livro:" in w.text()], \
+        "apareceu frase ao lado da bolinha (o andamento vai só no balão)"
