@@ -698,7 +698,7 @@ def _servir_folha_do_caderno(cano, pedido: tuple) -> bool:
     from core import automatico
     from core.pipeline import Cancelou
 
-    _, copia, pedido_do_automatico, folha, indices, dpi = pedido
+    _, copia, pedido_do_automatico, folha, indices, dpi, largura_maxima = pedido
     estado = {"cancelar": False, "sair": False}
 
     def cancelado() -> bool:
@@ -714,7 +714,8 @@ def _servir_folha_do_caderno(cano, pedido: tuple) -> bool:
 
     try:
         frente, verso = automatico.folha_do_caderno(copia, pedido_do_automatico, folha, indices, dpi,
-                                                    cancelado=cancelado)
+                                                    cancelado=cancelado,
+                                                    largura_maxima=largura_maxima)
         resposta = ("faces", frente, verso)
     except Cancelou:
         resposta = ("cancelou",)
@@ -726,7 +727,8 @@ def _servir_folha_do_caderno(cano, pedido: tuple) -> bool:
     return True
 
 
-def folha_do_caderno(copia, pedido, folha: tuple, indices: dict, dpi: int, cancelado=None):
+def folha_do_caderno(copia, pedido, folha: tuple, indices: dict, dpi: int, cancelado=None,
+                     largura_maxima: int | None = None):
     """D-574 (02/11/2026): a folha do caderno da etapa 7 do Automatico (frente, verso: numpy
     BGR), montada e desenhada pelo servidor - nunca neste processo (core/automatico.
     folha_do_caderno). Medido no Gradus Primus: com a conta num fio da janela, a tela parava
@@ -742,7 +744,7 @@ def folha_do_caderno(copia, pedido, folha: tuple, indices: dict, dpi: int, cance
 
     if not ligado() or not _garantir_servidores():
         return SEM_SERVIDOR
-    mensagem = ("folha_do_caderno", copia, pedido, folha, dict(indices), int(dpi))
+    mensagem = ("folha_do_caderno", copia, pedido, folha, dict(indices), int(dpi), largura_maxima)
     for tentativa in range(2):
         while True:
             if cancelado is not None and cancelado():

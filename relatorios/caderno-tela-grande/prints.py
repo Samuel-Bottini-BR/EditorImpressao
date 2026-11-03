@@ -81,13 +81,19 @@ def copia(origem: Path, nome: str) -> Path:
     return destino
 
 
-def abrir(janela, livro: Path, etapa: str):
+def abrir(janela, livro: Path, etapa: str, dividir: bool = False):
     janela.abrir_livro(str(livro))
     rodar(1.0)
     fim = time.monotonic() + 600
     while time.monotonic() < fim and getattr(janela, "medida_ao_abrir", None) is not None:
         rodar(0.2)
     estado = janela.estado_do_automatico
+    if dividir:
+        # o livro dividido, como o dele (o "Dividir folhas ao meio" rodado no livro todo)
+        estado.marcadas = {A.DIVIDIR}
+        estado.alcance = "livro"
+        janela.rodar_o_automatico(esperar=True)
+        rodar(0.5)
     estado.por_receita(perfis.NOME_DE_FABRICA)       # as etapas de fábrica, como no print a-44
     estado.marcadas.add(A.CADERNOS)
     grande = janela.abrir_o_automatico(etapa)
@@ -101,7 +107,7 @@ janela.show()
 rodar(0.5)
 
 gradus = copia(RAIZ / "_tmp" / "livros" / "gradus.pdf", "pdfcoffee.com_gradus-primus-pdf-pdf-free.pdf")
-grande = abrir(janela, gradus, A.LIMPAR)
+grande = abrir(janela, gradus, A.LIMPAR, dividir=True)
 esperar(grande.folhear)
 foto(grande, "00-antes-outra-etapa-antes-e-depois.png")
 lista = grande.painel_de_opcoes.lista

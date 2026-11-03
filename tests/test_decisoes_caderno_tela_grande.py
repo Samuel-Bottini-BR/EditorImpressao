@@ -295,6 +295,26 @@ def test_d574_ajustar_a_etapa_7_no_painel_abre_a_janela_nas_folhas(janela, app, 
     assert grande.lado_direito.currentWidget() is _folhas(grande)
 
 
+def test_d574_caixinha_desmarcada_mostra_as_folhas_igual(janela, app, tmp_path):
+    """D-574, pergunta 2 (02/11): "com a etapa 7 clicada e a caixinha "Montar cadernos"
+    desmarcada, mostra as folhas igual?" → "sim". Desmarcar a caixinha com a etapa aberta não
+    troca o lado direito: continuam as folhas, na mesma ordem."""
+    from PySide6.QtCore import Qt
+
+    grande = _abrir(janela, app, tmp_path)
+    folhas = _folhas(grande)
+    _esperar(app, folhas)
+    item = grande.painel_de_opcoes.lista.item_da_etapa(A.CADERNOS)
+    item.setCheckState(Qt.Unchecked)
+    _assentar(app)
+    assert A.CADERNOS not in janela.estado_do_automatico.marcadas
+    assert grande.etapa_aberta() == A.CADERNOS
+    assert grande.lado_direito.currentWidget() is folhas and folhas.ligada
+    _esperar(app, folhas)
+    assert folhas.rotulos["frente"].text() == "Folha 1 de 3 — frente"
+    assert _paginas_do_lado(folhas.faces()[0]) == (8, 1)
+
+
 def test_d574_so_mostra_nao_muda_o_livro(janela, app, tmp_path):
     """D-577/D-574: a janela só mostra; passar folhas e trocar o caderno não muda o projeto."""
     import dataclasses
@@ -329,6 +349,12 @@ def test_d574_a_tela_nao_para_enquanto_monta_a_folha(janela, app, tmp_path):
 
     janela.abrir_livro(_livro_pesado(tmp_path))
     _assentar(app)
+    # a medida do livro ao abrir (D-284) roda por trás e não é desta tela: espera ela acabar,
+    # para o relógio medir só a folha do caderno (o medir.py do verificador faz o mesmo)
+    fim = time.monotonic() + LIMITE_S
+    while getattr(janela, "medida_ao_abrir", None) is not None and time.monotonic() < fim:
+        app.processEvents()
+        time.sleep(0.05)
     from core import perfis
 
     estado = janela.estado_do_automatico
@@ -408,19 +434,32 @@ def test_d574_folha_do_servidor_e_igual_a_feita_aqui(janela, app, tmp_path, monk
 
 def test_d574_cancelar_para_a_folha_no_servidor(janela, app, tmp_path):
     """A opção mudou no meio (ou a janela fechou): a folha pedida ao servidor volta na hora,
-    cancelada, e o servidor continua atendendo (a folha seguinte sai certa)."""
+    cancelada, e o servidor continua atendendo (a folha seguinte sai certa). A folha pedida é
+    pesada de propósito (Mágico pro a 300 DPI) e o "cancelar" vem logo depois de o pedido sair
+    (a 2ª pergunta "cancelou?" já é dentro da espera pelo servidor)."""
     from core import automatico
+    from core import paginas_em_outro_processo as servidor
+    from core.filtros import MAGICO_PRO
     from core.pipeline import Cancelou
 
     janela.abrir_livro(_livro_marcado(tmp_path))
     _assentar(app)
-    janela.estado_do_automatico.marcadas = {A.CADERNOS}
+    estado = janela.estado_do_automatico
+    estado.marcadas = {A.LIMPAR, A.CADERNOS}
+    estado.opcoes["filtro_padrao"] = MAGICO_PRO
     copia, pedido, folha, indices = _pedido_da_folha(janela)
+    perguntas = []
+
+    def cancelado():
+        perguntas.append(1)
+        return len(perguntas) >= 2
+
+    assert servidor.ligado()
     inicio = time.monotonic()
     with pytest.raises(Cancelou):
-        automatico.folha_do_caderno(copia, pedido, folha, indices, 120,
-                                    cancelado=lambda: time.monotonic() - inicio > 0.05)
+        automatico.folha_do_caderno(copia, pedido, folha, indices, 300, cancelado=cancelado)
     assert time.monotonic() - inicio < 2.0
+    estado.marcadas = {A.CADERNOS}
     copia, pedido, folha, indices = _pedido_da_folha(janela, 1)
     frente, _verso = automatico.folha_do_caderno(copia, pedido, folha, indices, 120)
     assert _paginas_do_lado(frente) == (6, 3)

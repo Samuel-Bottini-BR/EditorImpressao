@@ -48,5 +48,18 @@ Ramo `caderno-tela-grande-2026-11-02` (saiu de `obra-2026-10-26` em `110976f`). 
   `folha_do_caderno` do servidor de páginas): a folha inteira é feita fora do processo da janela.
 - [x] Provas: `tests/test_decisoes_caderno_tela_grande.py` (10) e P-211 (`tests/test_promessas.py`).
 
+## Respostas do Samuel
+- **P1 (02/11), a folha da etapa 7: A4 do "Montar para imprimir" ou no tamanho do scan?** Prints
+  `escolha-A-folha-A4.png`, `escolha-B-tamanho-do-scan.png`, `escolha-A-e-B-lado-a-lado.png` (Gradus dividido, folha
+  1). Escolheu **B**: "mostra como no scan, pois eu vou querer ver como vai ficar impresso quando eu estiver no margens
+  né." → a etapa 7 mostra a folha no tamanho do scan (como `core/cadernos.impor_pdf` grava); a folha A4 fica no
+  "Montar para imprimir". (Pela gerente, 02/11.) A versão A4 ficou guardada pela gerente em
+  `relatorios/caderno-etapa7-versao-A4/` no `fase-1`.
+- **P2 (02/11): com a etapa 7 clicada e a caixinha "Montar cadernos" desmarcada, mostra as folhas igual?** → "sim".
+  (Print `08-caixinha-desmarcada-etapa-7-aberta.png`; prova `test_d574_caixinha_desmarcada_mostra_as_folhas_igual`.)
+- **P3 (02/11): o painel "Montar cadernos"/Automático da área de trabalho não tem lugar para a folha; "ajustar a etapa
+  escolhida ›" (ou duplo clique na etapa 7) abre a janela grande já na etapa 7, sem botão novo?** → "sim". (Print
+  `09-painel-automatico-etapa-7-escolhida.png`; prova `test_d574_ajustar_a_etapa_7_no_painel_abre_a_janela_nas_folhas`.)
+
 ## Perguntas para o Samuel
-(em preparação)
+(ver o fim do arquivo)

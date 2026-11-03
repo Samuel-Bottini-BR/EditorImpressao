@@ -1286,7 +1286,7 @@ def depois_da_pagina(doc, copia, pedido: Pedido, indice: int, dpi: int,
 
 
 def folha_do_caderno(copia, pedido: Pedido, folha: tuple, indices: dict, dpi: int,
-                     cancelado: Callable | None = None) -> tuple:
+                     cancelado: Callable | None = None, largura_maxima: int | None = None) -> tuple:
     """D-574 (02/11/2026): uma folha do caderno da etapa 7 "Montar cadernos", como sai, frente e
     verso (numpy BGR). Samuel, 31/10: "No Automático: clicando na etapa 7 "Montar cadernos", o
     lado direito mostra as folhas do livreto". `folha` = (frente, verso), dois core/cadernos.Lado
@@ -1299,6 +1299,9 @@ def folha_do_caderno(copia, pedido: Pedido, folha: tuple, indices: dict, dpi: in
     no processo da janela quando o servidor esta no ar: medido no Gradus Primus (02/11), com a
     conta num fio da janela a tela parava 0,28 a 0,49 s enquanto a folha montava (o filtro e o
     desenho seguram o Python). Servidor desligado ou fora do ar: aqui, como antes.
+    `largura_maxima`: a folha volta reduzida a essa largura (pontos), se for maior - a tela
+    nunca mostra mais que isso, e reduzir aqui (no servidor) poupa o fio da tela de copiar e
+    reduzir uma imagem de 4000 pontos (medido: 0,1 a 0,2 s com o Python preso).
     Levanta core.pipeline.Cancelou se `cancelado()` ficar verdadeiro."""
     from pathlib import Path
 
@@ -1308,7 +1311,8 @@ def folha_do_caderno(copia, pedido: Pedido, folha: tuple, indices: dict, dpi: in
     from core.pipeline import Cancelou
 
     if servidor.ligado() and Path(str(copia.caminho_entrada)).is_file():
-        feita = servidor.folha_do_caderno(copia, pedido, folha, indices, dpi, cancelado)
+        feita = servidor.folha_do_caderno(copia, pedido, folha, indices, dpi, cancelado,
+                                          largura_maxima)
         if feita is not servidor.SEM_SERVIDOR:
             return feita
     doc = abrir_pdf(copia.caminho_entrada)
@@ -1324,7 +1328,14 @@ def folha_do_caderno(copia, pedido: Pedido, folha: tuple, indices: dict, dpi: in
         doc.close()
     if cancelado is not None and cancelado():
         raise Cancelou()
-    return cadernos.montar_a_folha(folha[0], folha[1], imagens)
+    faces = cadernos.montar_a_folha(folha[0], folha[1], imagens)
+    if largura_maxima and faces[0].shape[1] > largura_maxima:
+        import cv2
+
+        escala = largura_maxima / faces[0].shape[1]
+        tamanho = (int(largura_maxima), max(1, round(faces[0].shape[0] * escala)))
+        faces = tuple(cv2.resize(f, tamanho, interpolation=cv2.INTER_AREA) for f in faces)
+    return faces
 
 
 def medir_o_livro_ao_abrir(projeto, progresso=None, cancelado=None) -> dict[int, MedidaDaFolha]:

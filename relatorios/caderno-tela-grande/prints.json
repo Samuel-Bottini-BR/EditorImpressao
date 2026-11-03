@@ -1,0 +1,14 @@
+{
+ "01_montando_bolinha": true,
+ "02_primeira_folha_s": 27.35,
+ "02_textos": [
+  "Folha 1 de 35 — frente",
+  "Folha 1 de 35 — verso",
+  "folha 1"
+ ],
+ "03_seta_s": 30.35,
+ "04_trocar_para_12_s": 16.6,
+ "04_textos": "Folha 2 de 35 — frente",
+ "10_palatino_primeira_folha_s": 18.18,
+ "10_palatino_textos": "Folha 1 de 32 — frente"
+}

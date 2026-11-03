@@ -72,6 +72,10 @@ from ui import estilo
 # a resolução das páginas da folha: a mesma do "depois" da página da direita (ui/automatico.
 # DPI_DA_PREVIA, 180: abaixo disso o Mágico pro estragava letras na prévia). Seguro mudar junto.
 DPI_DA_FOLHA = 180
+# a folha volta do servidor reduzida a esta largura (a tela grande nunca mostra mais; um lado da
+# folha de páginas largas passava de 4000 pontos, e copiar e reduzir isso no programa prendia o
+# Python 0,1 a 0,2 s). Seguro mudar (mais = mais nítido no zoom da tela grande, mais memória).
+LARGURA_MAXIMA_DA_FOLHA = 2400
 FRENTE, VERSO = "frente", "verso"
 
 
@@ -84,6 +88,17 @@ FRENTE, VERSO = "frente", "verso"
 ordem_das_folhas = cadernos.ordem_das_folhas
 montar_o_lado = cadernos.montar_o_lado
 montar_a_folha = cadernos.montar_a_folha
+
+
+def _qimagem(img):
+    """A QImage (RGB) de uma imagem BGR do OpenCV, copiada (a QImage não pode apontar para a
+    memória do numpy, que o Python solta). Pode rodar fora do fio da tela."""
+    import numpy as np
+    from PySide6.QtGui import QImage
+
+    rgb = np.ascontiguousarray(img[:, :, ::-1])
+    altura, largura = rgb.shape[:2]
+    return QImage(rgb.data, largura, altura, largura * 3, QImage.Format_RGB888).copy()
 
 
 class TarefaFolhaDoCaderno(QThread):
@@ -124,18 +139,21 @@ class TarefaFolhaDoCaderno(QThread):
             # folha_do_caderno). Este fio só espera o cano, com o Python solto.
             frente, verso = automatico.folha_do_caderno(
                 self.copia, self.pedido, self.folha, self.indices, self.dpi,
-                cancelado=lambda: self._cancelar)
+                cancelado=lambda: self._cancelar, largura_maxima=LARGURA_MAXIMA_DA_FOLHA)
             if self._cancelar:
                 raise Cancelou()
-            # as imagens da tela feitas aqui, fora do fio da tela (medido no Gradus Primus: a
-            # conversão e a redução de uma folha no fio da tela davam paradas de 0,2 a 0,5 s).
-            # QImage pode ser feita fora do fio da tela; QPixmap não (quem faz é a janela).
-            from ui.widgets.visualizador import numpy_para_qimage
+            # as imagens da tela feitas aqui, fora do fio da tela, e sem o QImage.scaled (ele
+            # prende o Python ~0,2 s numa folha grande, medido em 02/11): a redução é do OpenCV
+            # (que solta o Python) e a QImage é só uma cópia. QPixmap não pode ser feita fora do
+            # fio da tela (quem faz é a janela).
+            import cv2
 
-            inteiras = tuple(numpy_para_qimage(img) for img in (frente, verso))
             largura, altura = self.tamanho_pequeno
-            pequenas = tuple(img.scaled(max(1, largura), max(1, altura), Qt.KeepAspectRatio,
-                                        Qt.SmoothTransformation) for img in inteiras)
+            escala = min(max(1, largura) / frente.shape[1], max(1, altura) / frente.shape[0])
+            tamanho = (max(1, round(frente.shape[1] * escala)), max(1, round(frente.shape[0] * escala)))
+            pequenas = tuple(_qimagem(cv2.resize(f, tamanho, interpolation=cv2.INTER_AREA))
+                             for f in (frente, verso))
+            inteiras = tuple(_qimagem(f) for f in (frente, verso))
             if not self._cancelar:
                 self.pronta.emit(self.numero, (frente, verso),
                                  {"inteiras": inteiras, "pequenas": pequenas,
