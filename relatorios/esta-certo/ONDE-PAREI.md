@@ -31,21 +31,36 @@ Ramo `esta-certo-2026-11-02` (saiu de `obra-2026-10-26`, commit `a3a7405`), cóp
 
 ## Escolhas dentro do pedido (a gerente mandou decidir pelo que o código já usa)
 
-- **O que conta como "conferida":** o mesmo que já põe o tique verde na miniatura: o campo `revisada` da
-  folha (no Dividir) ou da página (nas outras ferramentas) (`_atualizar_tira`, `conferida=bool(item.revisada)`).
+- **O que conta como "conferida" (resposta da gerente, 02/11, à minha pergunta 1):** "A sua pergunta 1 (mexer à
+  mão já põe o tique) tem resposta no Livro, D-572, comentário do Samuel em 31/10: "Mas nas paginas que não foi dado
+  o ok, ela vai aparecer ainda né?" [...] O "ok" dele é o botão "está certo". Então a faixa segue o **"está certo"
+  apertado**, não o tique que a edição à mão põe". Primeira versão (commit `aa2ed95`) seguia o tique; trocada no
+  commit seguinte. Como guardo a diferença **sem mudar o formato do projeto**: o ok é a ação "revisar" do Histórico
+  (a que `_marcar_revisada` grava; o Histórico já fica gravado em `acoes.jsonl` e volta ao reabrir). Mexer à mão grava
+  outras ações ("recortar", "ajustar_angulo", "mudar_filtro", a linha da lombada...), que põem o tique mas não são o ok. A faixa diz
+  "conferida" quando a folha/página tem o tique **e** a ação "revisar" dela ainda está feita (`_ok_dado`).
 - **O texto no Dividir:** lá a tira mostra FOLHAS ("Folhas - as laranjas eu não tive certeza"), o rodapé diz
   "folha 1 de 70" e "1 de 70 conferidas" conta folhas. Então a faixa diz **"Folha N conferida."**, com o N
   que o Kaique vê no "folha N de M" (Gradus Primus folha 1 → "Folha 1 conferida."). Nas outras ferramentas,
   **"Página N conferida."** com o N do "página N de M".
-- **Ctrl+Z:** o desfazer tira o `revisada` (some o tique) → a faixa volta ao texto de antes e o "está certo"
-  volta. Mesma coisa que o código já faz com o tique.
+- **Ctrl+Z:** o desfazer do "está certo" tira a ação e o tique → a faixa volta ao texto de antes e o "está certo"
+  volta (como o tique).
+- **Mexer depois do ok:** a ação "revisar" continua feita e o tique fica → continua "conferida" (como o tique).
+- **Números das páginas que andam:** juntar/dividir uma folha à mão ou o Automático refazer a lista mudam o número das
+  páginas dali em diante. Para não pôr o ok de uma página em outra, a busca para nessa ação quando ela é desta folha,
+  de uma folha antes dela, ou da lista inteira: aí a página volta à frase de sempre com o "está certo" (o tique fica).
+  Folhas nunca mudam de número.
+- **Quais botões contam como ok (todos gravam a mesma ação "revisar"):** o "está certo", a barra de espaço ("marca e
+  já vai para a próxima"), o "está bom assim" do último aviso da página, e os botões que só dão a página por
+  conferida: "só nesta" do "Aplicar em" do Filtro, o "Usar" da tela cheia dos filtros com o mesmo filtro, o "não
+  dividir esta" numa folha que já tem uma página só, e o "ver o corte alargado" quando ainda não há corte alargado.
 
 ## O que mudou
 
 | Arquivo | O quê |
 |---|---|
-| `ui/tela_conferir.py` | `_atualizar_faixa`: um caso novo entre a página em branco e a frase de sempre: a folha/página com o tique (`_conferida_na_faixa`) mostra `_texto_conferida()` ("Página N conferida." / no Dividir "Folha N conferida."), sem botão de aviso; o "está certo" fica escondido só nesse caso. `_texto_tranquilo` ganhou docstring. Nada mais muda: o "próxima dúvida", o clique do "está certo", a barra de espaço, os avisos e as contas ficam iguais. |
-| `tests/test_decisoes_avisos.py` | 7 provas `test_d572_*` (página com aviso e a vizinha sem o ok; Dividir folha 1 como no Gradus; Cortar, Endireitar, Marcar/Filtro e Mover; Ctrl+Z na página e no Dividir). |
+| `ui/tela_conferir.py` | `_atualizar_faixa`: um caso novo entre a página em branco e a frase de sempre: a folha/página com o tique **e** o ok no Histórico (`_conferida_na_faixa`, `_ok_dado`) mostra `_texto_conferida()` ("Página N conferida." / no Dividir "Folha N conferida."), sem botão de aviso; o "está certo" fica escondido só nesse caso. `_texto_tranquilo` ganhou docstring. Nada mais muda: o "próxima dúvida", o clique do "está certo", a barra de espaço, os avisos e as contas ficam iguais. |
+| `tests/test_decisoes_avisos.py` | 9 provas `test_d572_*` (página com aviso e a vizinha sem o ok; Dividir folha 1 como no Gradus; Cortar, Endireitar, Marcar/Filtro e Mover; Ctrl+Z na página e no Dividir; mexer à mão põe o tique e a faixa continua com a frase e o "está certo"; juntar uma folha depois não tira o ok das páginas de antes). |
 | `tests/promessas/promessas.md` | P-101 diz o que a faixa mostra depois do "está certo" (D-572). |
 
 Fora do caso novo (ficam como eram): a página "em branco" (continua "Esta página vai sair em branco" com
@@ -53,12 +68,11 @@ Fora do caso novo (ficam como eram): a página "em branco" (continua "Esta pági
 
 ## Perguntas para o Samuel
 
-1. **Mexer à mão também põe o tique (o programa já fazia isso antes).** Quando a pessoa gira a página, move a
-   linha da lombada, ajusta o corte ou troca o filtro, o programa já marca a página como conferida e põe o
-   tique verde, mesmo sem ela apertar "está certo". Com esta mudança, a faixa acompanha o tique: nesses casos
-   também passa a dizer "Página N conferida." e o "está certo" some. Antes, ela dizia por exemplo "Você girou
-   esta página em 2°." ou "Você ajustou o corte desta página." Fica assim (a faixa segue o tique), ou essas
-   frases devem continuar quando a pessoa só mexeu e não apertou "está certo"?
-2. **Confirmar o texto no Dividir:** lá quem fica conferida é a folha (a tira mostra "FOLHAS" e a barra de
-   baixo diz "folha 1 de 70"), então a faixa diz "Folha 1 conferida.". Está certo assim, ou prefere
-   "Página" também ali?
+1. ~~Mexer à mão também põe o tique~~ → **respondida pela gerente (02/11)** com o Livro (D-572, 31/10): a faixa segue
+   o "está certo" apertado. Feito (acima).
+2. **Confirmar o texto no Dividir** (a gerente leva ao Samuel): lá quem fica conferida é a folha (a tira mostra
+   "FOLHAS" e a barra de baixo diz "folha 1 de 70"), então a faixa diz "Folha 1 conferida.". Está certo assim, ou
+   prefere "Página" também ali?
+3. **Para a gerente decidir se leva:** os botões "só nesta" (Aplicar em, painel Filtro) e "Usar" (tela cheia dos
+   filtros, com o mesmo filtro) gravam o mesmo "conferir" do "está certo", então também deixam a faixa "conferida".
+   Separar exigiria um tipo novo de ação no Histórico (mudaria o que fica gravado em `acoes.jsonl`); não fiz.

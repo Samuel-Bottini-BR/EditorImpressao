@@ -1,8 +1,8 @@
-FFFFFFF                                                                  [100%]
+FFFFFFFFF                                                                [100%]
 ================================== FAILURES ===================================
 __ test_d572_esta_certo_na_pagina_a_faixa_diz_conferida_e_some_o_esta_certo ___
 
-janela = <ui.janela_principal.JanelaPrincipal(0x294b9bb20f0) at 0x00000294BBC50F00>
+janela = <ui.janela_principal.JanelaPrincipal(0x18436b502a0) at 0x000001843889F940>
 tmp_path = WindowsPath('D:/programas/EditorImpressao/.claude/worktrees/esta-certo/_tmp/bt/test_d572_esta_certo_na_pagina0')
 
     def test_d572_esta_certo_na_pagina_a_faixa_diz_conferida_e_some_o_esta_certo(janela, tmp_path):
@@ -39,7 +39,7 @@ E         Use -v to get more diff
 tests\test_decisoes_avisos.py:527: AssertionError
 ________ test_d572_no_dividir_a_folha_conferida_gradus_primus_folha_1 _________
 
-janela = <ui.janela_principal.JanelaPrincipal(0x294bcaacd50) at 0x00000294BDC91180>
+janela = <ui.janela_principal.JanelaPrincipal(0x18439712340) at 0x000001843A8CFA80>
 tmp_path = WindowsPath('D:/programas/EditorImpressao/.claude/worktrees/esta-certo/_tmp/bt/test_d572_no_dividir_a_folha_c0')
 
     def test_d572_no_dividir_a_folha_conferida_gradus_primus_folha_1(janela, tmp_path):
@@ -67,7 +67,7 @@ E         Use -v to get more diff
 tests\test_decisoes_avisos.py:550: AssertionError
 _______________ test_d572_em_toda_ferramenta_de_pagina[cortar] ________________
 
-janela = <ui.janela_principal.JanelaPrincipal(0x294be4faba0) at 0x00000294BB51DE00>
+janela = <ui.janela_principal.JanelaPrincipal(0x1843bc40cb0) at 0x00000184387EE3C0>
 tmp_path = WindowsPath('D:/programas/EditorImpressao/.claude/worktrees/esta-certo/_tmp/bt/test_d572_em_toda_ferramenta_d0')
 ferramenta = 'cortar'
 
@@ -93,7 +93,7 @@ E         Use -v to get more diff
 tests\test_decisoes_avisos.py:569: AssertionError
 _____________ test_d572_em_toda_ferramenta_de_pagina[endireitar] ______________
 
-janela = <ui.janela_principal.JanelaPrincipal(0x294c1bed350) at 0x00000294BDC45340>
+janela = <ui.janela_principal.JanelaPrincipal(0x1843edae3f0) at 0x000001843A9484C0>
 tmp_path = WindowsPath('D:/programas/EditorImpressao/.claude/worktrees/esta-certo/_tmp/bt/test_d572_em_toda_ferramenta_d1')
 ferramenta = 'endireitar'
 
@@ -119,7 +119,7 @@ E         Use -v to get more diff
 tests\test_decisoes_avisos.py:569: AssertionError
 _________________ test_d572_em_toda_ferramenta_de_pagina[mao] _________________
 
-janela = <ui.janela_principal.JanelaPrincipal(0x294c3d368a0) at 0x00000294BDC47540>
+janela = <ui.janela_principal.JanelaPrincipal(0x18440e18280) at 0x0000018417B01540>
 tmp_path = WindowsPath('D:/programas/EditorImpressao/.claude/worktrees/esta-certo/_tmp/bt/test_d572_em_toda_ferramenta_d2')
 ferramenta = 'mao'
 
@@ -145,7 +145,7 @@ E         Use -v to get more diff
 tests\test_decisoes_avisos.py:569: AssertionError
 ________________ test_d572_em_toda_ferramenta_de_pagina[mover] ________________
 
-janela = <ui.janela_principal.JanelaPrincipal(0x294c51acb90) at 0x00000294BDC5F140>
+janela = <ui.janela_principal.JanelaPrincipal(0x184421299e0) at 0x000001843AB40640>
 tmp_path = WindowsPath('D:/programas/EditorImpressao/.claude/worktrees/esta-certo/_tmp/bt/test_d572_em_toda_ferramenta_d3')
 ferramenta = 'mover'
 
@@ -171,7 +171,7 @@ E         Use -v to get more diff
 tests\test_decisoes_avisos.py:569: AssertionError
 _________ test_d572_ctrl_z_volta_a_faixa_e_o_esta_certo_como_o_tique __________
 
-janela = <ui.janela_principal.JanelaPrincipal(0x294c601a1a0) at 0x00000294BDABEC00>
+janela = <ui.janela_principal.JanelaPrincipal(0x18443429e30) at 0x000001843ABC1940>
 tmp_path = WindowsPath('D:/programas/EditorImpressao/.claude/worktrees/esta-certo/_tmp/bt/test_d572_ctrl_z_volta_a_faixa0')
 
     def test_d572_ctrl_z_volta_a_faixa_e_o_esta_certo_como_o_tique(janela, tmp_path):
@@ -190,6 +190,53 @@ E         At index 0 diff: 'Esta página vai sair em Original.' != 'Página 3 conf
 E         Use -v to get more diff
 
 tests\test_decisoes_avisos.py:584: AssertionError
+______________ test_d572_mexer_a_mao_poe_o_tique_mas_nao_e_o_ok _______________
+
+janela = <ui.janela_principal.JanelaPrincipal(0x184467f4630) at 0x000001843A92FB80>
+tmp_path = WindowsPath('D:/programas/EditorImpressao/.claude/worktrees/esta-certo/_tmp/bt/test_d572_mexer_a_mao_poe_o_ti0')
+
+    def test_d572_mexer_a_mao_poe_o_tique_mas_nao_e_o_ok(janela, tmp_path):
+        """D-572: "Mas nas paginas que não foi dado o ok, ela vai aparecer ainda né?" (sim; a
+        gerente, 02/11: o ok é o "está certo"). Mexer à mão (mover a linha no Dividir, ajustar o corte,
+        girar, trocar o filtro) já punha o tique, mas não é o ok: a faixa continua com a frase de
+        sempre e o "está certo". Só depois do "está certo" ela diz "conferida"; mexer de novo depois
+        do ok não tira o "conferida" (o tique também fica)."""
+        tela = _dividido(janela, tmp_path)
+        # Dividir: mover a linha da folha 1
+        _no_dividir(tela, 0)
+        tela._mover_corte(0.48)
+        _assentar()
+        assert janela.projeto.folhas[0].revisada and tela.tira._miniaturas[0].conferida
+        texto, esta_certo, _ = _faixa(tela)
+        assert esta_certo and "conferida" not in texto
+        tela.botao_esta_certo.click()
+        _assentar()
+>       assert _faixa(tela) == ("Folha 1 conferida.", False, True)
+E       AssertionError: assert ('Achei a lom...', True, True) == ('Folha 1 con..., False, True)
+E         
+E         At index 0 diff: 'Achei a lombada e vou cortar na linha azul. Se estiver errado, arraste a linha.' != 'Folha 1 conferida.'
+E         Use -v to get more diff
+
+tests\test_decisoes_avisos.py:616: AssertionError
+____ test_d572_dividir_uma_folha_depois_nao_tira_o_ok_das_paginas_de_antes ____
+
+janela = <ui.janela_principal.JanelaPrincipal(0x18446ec7040) at 0x000001843DF54B00>
+tmp_path = WindowsPath('D:/programas/EditorImpressao/.claude/worktrees/esta-certo/_tmp/bt/test_d572_dividir_uma_folha_de0')
+
+    def test_d572_dividir_uma_folha_depois_nao_tira_o_ok_das_paginas_de_antes(janela, tmp_path):
+        """D-572 com os números das páginas andando: juntar a folha 4 (as páginas dela em diante
+        mudam de número) não tira o "conferida" da página 1, que veio da folha 1."""
+        tela = _dividido(janela, tmp_path)
+        _na_pagina(tela, 0)
+        tela.botao_esta_certo.click()
+        _assentar()
+>       assert _faixa(tela)[:2] == ("Página 1 conferida.", False)
+E       AssertionError: assert ('Esta página...ginal.', True) == ('Página 1 conferida.', False)
+E         
+E         At index 0 diff: 'Esta página vai sair em Original.' != 'Página 1 conferida.'
+E         Use -v to get more diff
+
+tests\test_decisoes_avisos.py:658: AssertionError
 =========================== short test summary info ===========================
 FAILED tests/test_decisoes_avisos.py::test_d572_esta_certo_na_pagina_a_faixa_diz_conferida_e_some_o_esta_certo
 FAILED tests/test_decisoes_avisos.py::test_d572_no_dividir_a_folha_conferida_gradus_primus_folha_1
@@ -198,4 +245,6 @@ FAILED tests/test_decisoes_avisos.py::test_d572_em_toda_ferramenta_de_pagina[end
 FAILED tests/test_decisoes_avisos.py::test_d572_em_toda_ferramenta_de_pagina[mao]
 FAILED tests/test_decisoes_avisos.py::test_d572_em_toda_ferramenta_de_pagina[mover]
 FAILED tests/test_decisoes_avisos.py::test_d572_ctrl_z_volta_a_faixa_e_o_esta_certo_como_o_tique
-7 failed, 13 deselected in 26.68s
+FAILED tests/test_decisoes_avisos.py::test_d572_mexer_a_mao_poe_o_tique_mas_nao_e_o_ok
+FAILED tests/test_decisoes_avisos.py::test_d572_dividir_uma_folha_depois_nao_tira_o_ok_das_paginas_de_antes
+9 failed, 13 deselected in 91.32s (0:01:31)
