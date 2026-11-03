@@ -1366,6 +1366,31 @@ def test_p198_juntar_todas(janela, pasta, monkeypatch):
     assert len(janela.projeto.paginas) == 4, "o Desfazer não dividiu de novo"
 
 
+@prova("P-212")
+def test_p212_dividir_todas(janela, pasta, monkeypatch):
+    """D-602: livro de folhas duplas aberto sem nada marcado (2 folhas, 2 páginas): "dividir
+    todas" lê as folhas pelo motor de corte (por trás) e divide as duas, numa ação só; no PDF,
+    4 páginas. O Desfazer junta de novo."""
+    import time
+
+    livro = aj.criar_livro_duplo(pasta, folhas=2)
+    tela = aj.abrir_livro_para_teste(janela, livro)
+    tela.escolher_ferramenta("dividir")
+    tela.paineis.abrir("props")
+    tela.ir_para_pagina(0)
+    apertar(janela, "área de trabalho/dividir/dividir todas")
+    fim = time.monotonic() + 60
+    while time.monotonic() < fim and not all(f.dividir for f in janela.projeto.folhas):
+        aj.assentar()
+        time.sleep(0.05)
+    assert [f["dividir"] for f in aj.projeto_gravado(janela)["folhas"]] == [True, True]
+    paginas = _gerar(janela, monkeypatch, pasta)
+    assert len(paginas) == 4, "as folhas duplas não saíram como duas páginas cada"
+    _voltar_ao_trabalho(janela)
+    janela.tela_conferir.desfazer()
+    assert len(janela.projeto.paginas) == 2, "o Desfazer não juntou de novo"
+
+
 @prova("P-059")
 def test_p059_dividir_esta_em_livro_aberto_sem_dividir(janela, pasta, monkeypatch):
     """Etapa 4 (plano de 26/10: "'dividir esta' sempre ativo") e D-009: livro de folhas duplas

@@ -333,6 +333,20 @@ programa), a partir do **nome do botão**, da **dica** (o balão do mouse) e das
   novo); "dividir esta" numa folha devolve as duas páginas dela como estavam. Sem folha dividida, nada muda.
 - **no PDF:** cada folha sai como UMA página (a folha inteira, deitada).
 
+### P-212 · "dividir todas" (Dividir)
+- **chaves:** `área de trabalho/dividir/dividir todas`
+- **dica:** "Lê cada folha do livro pelo motor de corte e divide cada folha dupla na sua própria linha; as de uma
+  página só ficam inteiras (o Desfazer junta de novo)."
+- **decisões:** D-602 ("se eu apertasse para todas as folhas ele carregaria para todas as folhas, faria a leitura em
+  todas as folhas" → "Um botão novo, "dividir todas", faz a conta em cada folha do livro e corta cada uma na sua
+  própria linha" · só nas duplas → "pode ser assim na questão do divisor.")
+- **feita:** 03/11/2026 (`tests/test_decisoes_dividir_linha.py`)
+- **na tela:** ao lado de "usar em todas"; a leitura roda por trás, com andamento e "parar".
+- **no projeto:** cada folha dupla ainda inteira é dividida na linha que o motor de corte acha nela (a mesma que a
+  tela mostra), numa ação só do desfazer; a folha de uma página só fica inteira; a já dividida fica como está; as
+  folhas não ficam "conferidas". "parar" não muda nada.
+- **no PDF:** cada folha dupla sai como duas páginas.
+
 ### P-061 · "usar em todas" (Dividir)
 - **chaves:** `área de trabalho/dividir/usar em todas`
 - **dica:** "Põe a linha de divisão desta folha em todas as folhas."
