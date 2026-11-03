@@ -25,12 +25,18 @@ folha dividida no laço renumera as seguintes, e o número guardado passa a apon
 
 ## Passos
 
-- [ ] 1. Teste de reversão (sem DLL, sem PDF) — rodar no código de `8846017` e ver falhar.
-- [ ] 2. Conserto: pular pela página (o objeto), não pelo número.
-- [ ] 3. Prova de comportamento D-004 com renumeração (janela, `tests/test_decisoes_automatico.py`).
-- [ ] 4. Testes do Automático e do dividir no PC, um arquivo por vez.
-- [ ] 5. `replay.py` do Gradus no código novo (140 páginas).
-- [ ] 6. GitHub: conjunto inteiro e filtro de velocidade.
+- [x] 1. Teste de reversão `tests/test_automatico_pular_depois_de_dividir.py` (4 testes, sem DLL, sem PDF): no
+      código de `8846017` 3 falham (18 páginas em vez de 20; a folha 10 com ângulo à mão era dividida).
+- [x] 2. Conserto (`b772402`): `core/automatico._Puladas` guarda as páginas a pular pelo objeto da página;
+      `_dividir` e `_ligar_na_pagina` perguntam "esta página está entre as puladas?". O `fotografar` não muda
+      (roda antes de qualquer renumeração; ali o número ainda vale).
+- [x] 3. Prova D-004 pela janela: `tests/test_decisoes_automatico.py::test_d004_pular_as_folhas_divididas_a_mao_divide_todas_as_outras`
+      (7 folhas, 1, 2 e 6 divididas à mão → 14 páginas; no código antigo 13).
+- [x] 4. PC, um arquivo por vez: test_decisoes_automatico 25, juntar_todas 3, montar_cadernos 13, nucleo2 21,
+      dividir_metade 6 passaram (mais uma leva rodando: ver relatório).
+- [x] 5. Replay do Gradus (`replay_gradus.py`, saída em `replay_gradus_saida.txt`): código novo 140 páginas,
+      nenhuma folha inteira; código antigo 138, folhas de índice 5 e 6 inteiras.
+- [ ] 6. GitHub: conjunto inteiro rodada 41688177103; velocidade rodada 41688199193 (8846017 → ae88f15).
 - [ ] 7. Relatório.
 
 ## Perguntas para o Samuel
