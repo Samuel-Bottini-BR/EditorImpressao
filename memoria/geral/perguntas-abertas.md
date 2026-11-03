@@ -290,8 +290,7 @@ Ficha [layout](../itens/layout.md).
 
 ## Abertas em 02-03/11/2026 (PARTE -28 do histórico)
 
-- **D-590:** "Sugestão: a caixinha fica desmarcada como você deixou, e as folhas continuam divididas. Pode ser?" (com
-  "Dividir" desmarcada e Rodar, a caixinha volta marcada sozinha e a frase diz "Vou dividir as folhas").
+- **D-590:** respondida em 03/11: "Sim a caixinha continua desmacada." (fica desmarcada; folhas continuam divididas). A fazer.
 - **D-154:** "Da lista de fazer, quer que eu comece pela D-154 (letras que somem ou furam), que você marcou como urgente?"
 - **Central, aba "Para responder agora":** 3 do verificador da D-574 ("Folhas de/até" vai para a 1ª folha escolhida?;
   porcentagem no balão da bolinha?; "O que vai sair" embaixo da folha?) e a da D-588 com "Só as letras".

@@ -320,3 +320,7 @@ coisa: um botão que mostra e esconde o colorido das marcações.
 - D-601, pergunta 3 (numeração das miniaturas por página depois de dividir): "que numeração?" → print depois-4 e explicação → "ok".
 - D-601 juntada (`07ed5a2`), 60 provas passaram no PC. Caderno na etapa 7 entregue (`dba6af9`), esperando GitHub 41570406574 e velocidade 41565812027.
 - 03/11: caderno na etapa 7 juntado (`e8b991a`; velocidade "igual"); 68 provas passaram no PC. Os quatro trabalhos da noite estão na versão de teste.
+
+### 03/11/2026 (nova conversa)
+- D-590, pergunta do testador clicando (prints 36 e 36b em `.claude\worktrees\teste-cadernos\relatorios\teste-cadernos\`): ele não tinha entendido ("não entendi isso aqui"); a gerente explicou com o print 36b → ele: "isso não tinha sido revisto em todo programa, se tinha algum item que desmarcado voltava a funcionar sozinho ou se marcava sem precisar estar marcado, sem ser uma opção já colocada para ser assim. Sim a caixinha continua desmacada. e me diga o que eu preciso testar no programa"
+- Gerente, conferindo o registro: a revisão da D-589 (30-31/10) cobriu só as etapas 5 (Gravuras), 6 (Margens) e 7 (Cadernos); o Dividir ficou como exceção (D-590) e ninguém olhou a caixinha dele; as etapas 2 (Endireitar), 3 (Cortar as bordas) e 4 (Limpar a folha) não foram revistas para esse defeito. Já anotado antes (ressalva de 01/11): com "Limpar a folha" ligada, a etapa Gravuras liga junto.
