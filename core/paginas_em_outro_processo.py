@@ -25,6 +25,11 @@ resposta pelo cano, a thread que pediu solta o GIL: a janela continua viva.
   (core.impressao.previa_da_folha, a mesma funcao): no Opus Majus a janela
   parava 1,7 a 2,6 s por seta com a montagem num fio deste processo. Aceita
   "cancelar" no meio (a opcao mudou).
+- (02/11/2026, D-574, etapa 7 do Automatico) `folha_do_caderno(...)` pede ao
+  servidor UMA folha do caderno da etapa 7 "Montar cadernos", com as paginas
+  desenhadas como o "depois" da janela grande (core.automatico.
+  folha_do_caderno, a mesma funcao): num fio da janela a tela parava 0,28 a
+  0,49 s no Gradus Primus. A copia do projeto vai pelo cano. Aceita "cancelar".
 - Dois servidores, cada um atendendo um pedido por vez (as previas, as
   miniaturas e a analise pedem ao mesmo tempo). Aqui dentro, o desenho era
   um por vez (pdf_io._TRANCA); em processos separados os dois desenham em
@@ -516,6 +521,11 @@ def servir(endereco: str, chave_hex: str) -> None:
                 if not _servir_folha_do_livreto(cano, pedido):
                     return          # o programa mandou sair no meio
                 continue
+            if pedido[0] == "folha_do_caderno":
+                fechar_o_aberto()   # a folha abre o livro ela mesma (e o fecha no fim)
+                if not _servir_folha_do_caderno(cano, pedido):
+                    return          # o programa mandou sair no meio
+                continue
             if pedido[0] != "pagina":
                 return
             _, caminho, indice, dpi = pedido
@@ -675,6 +685,113 @@ def folha_do_livreto(entrada: str, opcoes: dict, posicao: int, largura_px: int,
             raise impressao.Cancelou()
         _, classe, mensagem = resposta
         raise RuntimeError(f"{classe}: {mensagem}")
+    return SEM_SERVIDOR
+
+
+def _servir_folha_do_caderno(cano, pedido: tuple) -> bool:
+    """Lado do servidor do pedido "folha_do_caderno" (D-574, 02/11/2026, etapa 7 "Montar
+    cadernos" do Automatico): monta e desenha a folha com core.automatico.folha_do_caderno AQUI
+    (a delegacao esta desligada no servidor: o mesmo codigo do "depois" da janela e a mesma
+    montagem de core/cadernos). Responde ("faces", frente, verso), ("cancelou",) ou ("erro",
+    classe, mensagem). "cancelar" pelo cano e visto nos pontos de parada da conta (entre as
+    paginas e dentro de cada uma); "fim" para tambem e devolve False."""
+    from core import automatico
+    from core.pipeline import Cancelou
+
+    _, copia, pedido_do_automatico, folha, indices, dpi, largura_maxima = pedido
+    estado = {"cancelar": False, "sair": False}
+
+    def cancelado() -> bool:
+        if not estado["cancelar"]:
+            try:
+                if cano.poll(0):
+                    recado = cano.recv()
+                    estado["cancelar"] = True
+                    estado["sair"] = recado[0] != "cancelar"
+            except (EOFError, OSError):
+                estado["cancelar"] = estado["sair"] = True
+        return estado["cancelar"]
+
+    try:
+        frente, verso = automatico.folha_do_caderno(copia, pedido_do_automatico, folha, indices, dpi,
+                                                    cancelado=cancelado,
+                                                    largura_maxima=largura_maxima)
+        resposta = ("faces", frente, verso)
+    except Cancelou:
+        resposta = ("cancelou",)
+    except Exception as erro:  # noqa: BLE001 - o erro vai para o programa
+        resposta = ("erro", type(erro).__name__, str(erro))
+    if estado["sair"]:
+        return False
+    cano.send(resposta)
+    return True
+
+
+def folha_do_caderno(copia, pedido, folha: tuple, indices: dict, dpi: int, cancelado=None,
+                     largura_maxima: int | None = None):
+    """D-574 (02/11/2026): a folha do caderno da etapa 7 do Automatico (frente, verso: numpy
+    BGR), montada e desenhada pelo servidor - nunca neste processo (core/automatico.
+    folha_do_caderno). Medido no Gradus Primus: com a conta num fio da janela, a tela parava
+    0,28 a 0,49 s. Aqui o fio que pediu so espera o cano, com o GIL solto.
+
+    `copia` (do projeto) e `pedido` vao pelo cano (pickle). Devolve SEM_SERVIDOR quando o
+    servidor esta desligado ou nao sobe (quem chama monta aqui, como antes). Levanta
+    core.pipeline.Cancelou se `cancelado()` ficar verdadeiro (o servidor para no proximo ponto
+    de parada; um fio espera a resposta dele, _devolver_depois) e RuntimeError com a mensagem do
+    servidor se a conta der erro la. Servidor que caiu e trocado e o pedido feito de novo, uma
+    vez (como folha_do_livreto). Arriscado: montar a folha de outro jeito aqui."""
+    from core.pipeline import Cancelou
+
+    if not ligado() or not _garantir_servidores():
+        return SEM_SERVIDOR
+    mensagem = ("folha_do_caderno", copia, pedido, folha, dict(indices), int(dpi), largura_maxima)
+    for tentativa in range(2):
+        while True:
+            if cancelado is not None and cancelado():
+                raise Cancelou()
+            try:
+                servidor = _livres.get(timeout=0.05)
+                break
+            except queue.Empty:
+                continue
+        if servidor is None or _falhou_ao_subir:
+            _livres.put(servidor)
+            return SEM_SERVIDOR
+        if not servidor.vivo():
+            servidor = _trocar(servidor, "o servidor de paginas tinha caido (folha do caderno)")
+            if servidor is None:
+                return SEM_SERVIDOR
+        try:
+            servidor.cano.send(mensagem)
+            resposta = None
+            while not servidor.cano.poll(0.05):
+                if cancelado is not None and cancelado():
+                    servidor.cano.send(("cancelar",))
+                    resposta = ("cancelado_aqui",)
+                    break
+            if resposta is None:
+                resposta = servidor.cano.recv()
+        except (OSError, EOFError, ValueError):
+            novo = _trocar(servidor, "o servidor de paginas caiu na folha do caderno")
+            if novo is None:
+                return SEM_SERVIDOR
+            _livres.put(novo)
+            if tentativa == 1:
+                return SEM_SERVIDOR
+            continue
+        except BaseException:
+            _livres.put(servidor)
+            raise
+        if resposta[0] == "cancelado_aqui":
+            _devolver_depois(servidor)
+            raise Cancelou()
+        _livres.put(servidor)
+        if resposta[0] == "faces":
+            return resposta[1], resposta[2]
+        if resposta[0] == "cancelou":
+            raise Cancelou()
+        _, classe, texto = resposta
+        raise RuntimeError(f"{classe}: {texto}")
     return SEM_SERVIDOR
 
 

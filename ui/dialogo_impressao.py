@@ -937,6 +937,20 @@ class DialogoImpressao(QDialog):
         dica = "Montando a folha" + (f" (o livreto tem {contar(total, 'folha', 'folhas')})"
                                       if total else "")
         self.bolinha_da_previa.definir(True, dica)
+        # D-574, 02/11/2026 (pergunta 2 do verificador; Samuel: "já troca"): o "Folha N de M"
+        # e o "folha N" já mostram a folha pedida na hora, enquanto o desenho monta (antes
+        # ficava o número da folha velha até a nova chegar: a tela dizia uma coisa que não
+        # era). A conta é a mesma da prévia (core/impressao.folhas_que_saem, sem abrir o PDF).
+        # Arriscado: contar a folha de outro jeito (o texto deixaria de bater com o desenho).
+        try:
+            numeros, total_de_folhas = imp.folhas_que_saem(self.paginas_do_livro, self.opcoes())
+        except Exception:  # noqa: BLE001 - só o texto; o desenho acerta quando chegar
+            numeros = []
+        if numeros:
+            numero = numeros[max(0, min(self.posicao_da_previa, len(numeros) - 1))]
+            for lado, rotulo in self.rotulos_da_face.items():
+                rotulo.setText(self.texto_da_face(numero, total_de_folhas, lado))
+            self.rotulo_da_folha.setText(f"folha {numero}")
         largura_pt, altura_pt = imp.tamanho_do_papel_pt(self.opcoes())
         altura = round(self.LARGURA_DA_FOLHA * altura_pt / max(1.0, largura_pt))
         for imagem in self.imagens_da_face.values():

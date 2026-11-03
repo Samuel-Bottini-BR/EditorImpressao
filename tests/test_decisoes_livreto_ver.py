@@ -209,6 +209,38 @@ def test_d574_setas_passam_as_folhas(app, pasta):
     dialogo.reject()
 
 
+def test_d574_folha_n_de_m_troca_na_hora_ao_apertar_a_seta(app, pasta, monkeypatch):
+    """D-574, pergunta 2 do verificador (02/11/2026): "Ao apertar a seta, o desenho some e, até a
+    folha nova chegar, ainda está escrito 'Folha 1 de 32'. Pode já trocar para 'Folha 2 de 32' na
+    hora, com a bolinha girando?" → Samuel: "já troca". Teste de reversão: no código antigo
+    (110976f) o texto continuava "Folha 1 de 10" enquanto a folha 2 montava. A montagem fica
+    presa de propósito, para olhar o texto ANTES de o desenho chegar."""
+    import threading
+
+    dialogo = _dialogo(_livro(pasta / "livro.pdf"))
+    assert dialogo.rotulos_da_face[imp.FRENTE].text() == "Folha 1 de 10 — frente"
+    solta = threading.Event()
+    original = imp.previa_da_folha
+
+    def presa(*a, **k):
+        solta.wait(30)
+        return original(*a, **k)
+
+    monkeypatch.setattr(imp, "previa_da_folha", presa)
+    dialogo.botao_folha_seguinte.click()
+    app.processEvents()
+    try:
+        assert dialogo.bolinha_da_previa.carregando
+        assert dialogo.rotulos_da_face[imp.FRENTE].text() == "Folha 2 de 10 — frente"
+        assert dialogo.rotulos_da_face[imp.VERSO].text() == "Folha 2 de 10 — verso"
+        assert dialogo.rotulo_da_folha.text() == "folha 2"
+    finally:
+        solta.set()
+    assert _esperar(lambda: _previa_quieta(dialogo) and dialogo.folha_na_tela.numero == 2)
+    assert dialogo.rotulos_da_face[imp.FRENTE].text() == "Folha 2 de 10 — frente"
+    dialogo.reject()
+
+
 def test_d574_trocar_a_opcao_refaz_a_previa(app, pasta):
     """Trocar "Páginas por caderno" de 20 para 8 refaz a folha 1: frente com
     a 8 e a 1. Trocar a encadernação para "Direita" troca os lados (1 e 8)."""

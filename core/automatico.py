@@ -1438,6 +1438,59 @@ def depois_da_pagina(doc, copia, pedido: Pedido, indice: int, dpi: int,
     return imagens
 
 
+def folha_do_caderno(copia, pedido: Pedido, folha: tuple, indices: dict, dpi: int,
+                     cancelado: Callable | None = None, largura_maxima: int | None = None) -> tuple:
+    """D-574 (02/11/2026): uma folha do caderno da etapa 7 "Montar cadernos", como sai, frente e
+    verso (numpy BGR). Samuel, 31/10: "No Automático: clicando na etapa 7 "Montar cadernos", o
+    lado direito mostra as folhas do livreto". `folha` = (frente, verso), dois core/cadernos.Lado
+    com as posicoes das paginas no PDF; `indices` = posicao no PDF -> indice em copia.paginas.
+    Cada pagina e o "depois" de depois_da_pagina (o mesmo caminho do "Rodar"), cada uma numa
+    copia da `copia` (o depois muda a copia que recebe); a folha e a de core/cadernos.
+    montar_a_folha (a conta e o encaixe de impor_pdf). Nao muda a `copia`.
+
+    ONDE RODA: no servidor de paginas (core/paginas_em_outro_processo.folha_do_caderno), nunca
+    no processo da janela quando o servidor esta no ar: medido no Gradus Primus (02/11), com a
+    conta num fio da janela a tela parava 0,28 a 0,49 s enquanto a folha montava (o filtro e o
+    desenho seguram o Python). Servidor desligado ou fora do ar: aqui, como antes.
+    `largura_maxima`: a folha volta reduzida a essa largura (pontos), se for maior - a tela
+    nunca mostra mais que isso, e reduzir aqui (no servidor) poupa o fio da tela de copiar e
+    reduzir uma imagem de 4000 pontos (medido: 0,1 a 0,2 s com o Python preso).
+    Levanta core.pipeline.Cancelou se `cancelado()` ficar verdadeiro."""
+    from pathlib import Path
+
+    from core import cadernos
+    from core import paginas_em_outro_processo as servidor
+    from core.pdf_io import abrir_pdf
+    from core.pipeline import Cancelou
+
+    if servidor.ligado() and Path(str(copia.caminho_entrada)).is_file():
+        feita = servidor.folha_do_caderno(copia, pedido, folha, indices, dpi, cancelado,
+                                          largura_maxima)
+        if feita is not servidor.SEM_SERVIDOR:
+            return feita
+    doc = abrir_pdf(copia.caminho_entrada)
+    try:
+        imagens = {}
+        for posicao, indice in indices.items():
+            if cancelado is not None and cancelado():
+                raise Cancelou()
+            depois = depois_da_pagina(doc, copy.deepcopy(copia), pedido, indice, dpi,
+                                      cancelado=cancelado)
+            imagens[posicao] = cadernos.paginas_lado_a_lado(depois or [])
+    finally:
+        doc.close()
+    if cancelado is not None and cancelado():
+        raise Cancelou()
+    faces = cadernos.montar_a_folha(folha[0], folha[1], imagens)
+    if largura_maxima and faces[0].shape[1] > largura_maxima:
+        import cv2
+
+        escala = largura_maxima / faces[0].shape[1]
+        tamanho = (int(largura_maxima), max(1, round(faces[0].shape[0] * escala)))
+        faces = tuple(cv2.resize(f, tamanho, interpolation=cv2.INTER_AREA) for f in faces)
+    return faces
+
+
 def medir_o_livro_ao_abrir(projeto, progresso=None, cancelado=None) -> dict[int, MedidaDaFolha]:
     """D-284 ("Medir o livro inteiro por trás, depois de abrir"): mede as
     folhas como estao, sem ligar etapa nenhuma (os avisos de pagina em branco,

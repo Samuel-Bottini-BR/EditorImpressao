@@ -990,6 +990,18 @@ programa), a partir do **nome do botão**, da **dica** (o balão do mouse) e das
   abre a folha dela grande, como está no PDF; "–" e "+" afastam e aproximam; "ajustar à tela" volta a caber.
   **no projeto:** nada muda.
 
+### P-211 · janela grande, etapa 7 aberta: "‹" / "›" (as setas da folha do caderno)
+- **chaves:** `automático (janela grande)/‹`, `automático (janela grande)/›`
+- **dica:** "folha anterior" / "próxima folha"
+- **decisões:** D-574 (31/10: "No Automático: clicando na etapa 7 "Montar cadernos", o lado direito mostra as folhas do
+  livreto; o botão "tela cheia" abre a tela grande que já existe, na versão de caderno."; opção 1: frente e verso,
+  "Folha N de M", setas)
+- **feita:** 02/11/2026 (`tests/test_decisoes_caderno_tela_grande.py`)
+- **na tela:** com a etapa 7 aberta, "›" mostra a folha seguinte do caderno, frente e verso ("Folha 2 de N — frente",
+  com as páginas dela na ordem da dobra); "‹" volta à anterior. Na primeira folha a "‹" fica apagada; na última, a "›".
+  Com a etapa 7 aberta, o "tela cheia" da P-187 abre a tela grande na versão de caderno (a frente e o verso grandes).
+- **no projeto:** nada muda (só mostra).
+
 ### P-188 · janela grande: "Fechar" e "Mais opções" (Gravuras e fotos)
 - **chaves:** `automático (janela grande)/Fechar`, `automático (janela grande)/Mais opções`
 - **na tela:** "Fechar" fecha a janela sem rodar; "Mais opções" mostra as escolhas a mais do achar gravuras.

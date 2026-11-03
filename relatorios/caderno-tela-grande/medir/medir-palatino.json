@@ -1,0 +1,86 @@
+{
+ "livro": "palatino",
+ "base_antes_e_depois_setas": [
+  {
+   "pagina": 2,
+   "s": 0.786,
+   "maior_parada_s": 0.056
+  },
+  {
+   "pagina": 3,
+   "s": 3.357,
+   "maior_parada_s": 0.314
+  },
+  {
+   "pagina": 4,
+   "s": 3.195,
+   "maior_parada_s": 0.333
+  }
+ ],
+ "abrir_a_etapa_7": {
+  "clique_s": 0.032,
+  "primeira_folha_s": 16.283,
+  "maior_parada_s": 0.033,
+  "batidas_de_5ms": 3236,
+  "folhas": 32
+ },
+ "setas": [
+  {
+   "folha": 2,
+   "s": 17.857,
+   "maior_parada_s": 0.024,
+   "batidas_de_5ms": 3553
+  },
+  {
+   "folha": 3,
+   "s": 12.358,
+   "maior_parada_s": 0.026,
+   "batidas_de_5ms": 2464
+  },
+  {
+   "folha": 4,
+   "s": 11.991,
+   "maior_parada_s": 0.02,
+   "batidas_de_5ms": 2389
+  },
+  {
+   "folha": 5,
+   "s": 12.087,
+   "maior_parada_s": 0.036,
+   "batidas_de_5ms": 2375
+  },
+  {
+   "folha": 6,
+   "s": 12.447,
+   "maior_parada_s": 0.025,
+   "batidas_de_5ms": 2450
+  }
+ ],
+ "trocar_paginas_por_caderno": [
+  {
+   "por_caderno": 12,
+   "s": 12.099,
+   "maior_parada_s": 0.045,
+   "folhas": 32
+  },
+  {
+   "por_caderno": 20,
+   "s": 11.456,
+   "maior_parada_s": 0.028,
+   "folhas": 32
+  }
+ ],
+ "abrir_a_tela_grande": {
+  "s": 0.042,
+  "maior_parada_s": 0.042
+ },
+ "seta_na_tela_grande": {
+  "s": 11.688,
+  "maior_parada_s": 0.033
+ },
+ "voltar_a_outra_etapa": {
+  "s": 0.023,
+  "maior_parada_s": 0.01
+ },
+ "maior_parada_de_todas_s": 0.045
+}
