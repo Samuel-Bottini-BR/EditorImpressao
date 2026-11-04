@@ -18,6 +18,9 @@ AS DECISÕES DO SAMUEL QUE ESTA TELA CUMPRE
       o antes e depois da página da vez, com a linha que se arrasta, e a bolinha de carregamento
       enquanto calcula ("sim, mas coloca uma bolinha de carregamento como fez na area de
       trabalho"). Substitui a D-486 (a página original). PaginaAntesEDepois.
+  D-614 (04/11/2026): "é para aparecer como se já tivesse sido feita a separação." → com o
+      Dividir marcado, o "depois" mostra uma metade por vez, cortada na linha, e as setas andam
+      pelas páginas, como a área de trabalho no Dividir (D-601). PaginaAntesEDepois._passos.
   Tudo o que morava na tela "O que fazer" (ui/tela_opcoes.py, que saiu do caminho) mora aqui,
   em grupos: Página (Dividir, Endireitar, Cortar), Limpeza (Limpar a folha: filtros, "Só as
   letras", força sozinha, molduras no Preto e branco, limpar a sujeira), Gravuras e fotos,
@@ -801,8 +804,11 @@ DPI_DA_PREVIA = 180
 # Quanto esperar depois da última troca antes de começar a conta (várias trocas
 # seguidas, como as setinhas das margens, viram um pedido só). Seguro mudar.
 ESPERA_ANTES_DE_CALCULAR_MS = 200
-# Entre as duas páginas que uma folha dividida vira, no "depois" (pontos da
-# imagem, na resolução da prévia).
+# Entre as duas páginas que uma folha dividida vira, quando o "depois" as mostra
+# lado a lado (pontos da imagem, na resolução da prévia). Desde a D-614
+# (04/11/2026) o depois da folha que o Dividir vai partir é UMA metade por vez;
+# o lado a lado só sobra para o caso de a conta discordar dos passos previstos
+# (PaginaAntesEDepois._escolher_o_depois).
 VAO_ENTRE_AS_METADES = 12
 
 
@@ -994,7 +1000,9 @@ def _no_meio(pix: QPixmap, largura: int, altura: int, fundo: str) -> QPixmap:
 def _lado_a_lado(imagens: list):
     """As páginas que uma folha vira (o "depois" de uma folha inteira que vai
     ser dividida), uma ao lado da outra, na ordem do PDF, com um vão branco
-    entre elas. Uma só: ela mesma. Nenhuma: None."""
+    entre elas. Uma só: ela mesma. Nenhuma: None. Desde a D-614 (04/11/2026) a
+    janela mostra uma metade por vez; isto só sobra para quando a conta devolve
+    duas páginas sem metade da vez (PaginaAntesEDepois._escolher_o_depois)."""
     import numpy as np
 
     imagens = [img for img in imagens if img is not None]
@@ -1092,6 +1100,7 @@ class LadoDoComparar(QObject):
             self.motor = PaginaAntesEDepois(self.estado, self.tela.painel.projeto,
                                             indice=self.tela.painel._indice, com_o_antes=False)
             self.motor.setVisible(False)
+            self._pedido_ao_motor = None          # a metade da vez vai no ir_para (D-614)
             self.motor.mostrou.connect(self.tela._acertar_lados)
         self.tela._acertar_lados()
 
@@ -1132,14 +1141,20 @@ class LadoDoComparar(QObject):
             self._copiando = False
         self._pagina_lida = indice
 
-    def ir_para(self, indice: int) -> None:
-        """O folhear da tela cheia: o motor (se houver) vai para a mesma página. O lado
+    def ir_para(self, indice: int, metade: str | None = None) -> None:
+        """O folhear da tela cheia: o motor (se houver) vai para a mesma página (e a mesma
+        metade, D-614: a folha que o Dividir vai partir mostra uma metade por vez). O lado
         esquerdo ainda não mexido passa às opções da página nova (_ler_a_pagina); o mexido
-        leva as opções dele para a página nova (como já era)."""
+        leva as opções dele para a página nova (como já era).
+        O motor só é mandado quando o pedido muda (`_pedido_ao_motor`): com as opções deste
+        lado sem o Dividir, ele fica na folha inteira e não acharia a metade pedida (mandar a
+        cada desenho faria um laço, porque o motor avisa a tela a cada ida). Com o Dividir só
+        deste lado, o motor mostra a metade da esquerda (o folhear é o da janela)."""
         if self.da_esquerda and not self.mexido and indice != self._pagina_lida:
             self._ler_a_pagina(indice)
-        if self.motor is not None and self.motor._indice != indice:
-            self.motor.ir_para(indice)
+        if self.motor is not None and getattr(self, "_pedido_ao_motor", None) != (indice, metade):
+            self._pedido_ao_motor = (indice, metade)
+            self.motor.ir_para(indice, metade)
 
     def imagem_e_rotulo(self) -> tuple:
         """(imagem, rótulo, calculando) do que este lado mostra agora."""
@@ -1159,6 +1174,7 @@ class LadoDoComparar(QObject):
             self.motor.fechar()
             self.motor.deleteLater()
             self.motor = None
+            self._pedido_ao_motor = None
         if self._segue_a_janela:
             self._segue_a_janela = False
             try:
@@ -1332,9 +1348,9 @@ class TelaCheiaDoAntesEDepois(QDialog):
             self, "_da_janela", (-1, None, "", "", False))
         if self.comparando:
             for lado_do in (self.lado_a, self.lado_b):
-                lado_do.ir_para(self.painel._indice)
-            # depois de _lado_a_lado: o mesmo "depois" do antes e depois (as duas metades,
-            # quando a folha é dividida)
+                lado_do.ir_para(self.painel._indice, self.painel._metade)
+            # o mesmo "depois" do antes e depois (D-614: com o Dividir marcado, a metade da vez;
+            # até 04/11 eram as duas metades lado a lado)
             depois_cru = self.visor._crus[1]
             img_a, rot_a, calc_a = self.lado_a.imagem_e_rotulo()
             img_b, rot_b, calc_b = self.lado_b.imagem_e_rotulo()
@@ -1442,6 +1458,10 @@ class PaginaAntesEDepois(QWidget):
     "depois" (como ela sai se rodar o Automático com as etapas marcadas e as opções escolhidas na janela) à
     direita. Folheia as páginas do livro ("<" e ">", as setas do teclado) e dá
     zoom (a janela grande liga os botões −, + e "ajustar à tela" ao `visor`).
+    Com o Dividir marcado (D-614, 04/11/2026), a folha inteira que vai ser
+    partida mostra no depois UMA metade por vez, e as setas passam pela da
+    esquerda, depois pela da direita (_passos); o antes continua a folha inteira
+    crua. Até 04/11 o depois eram as duas metades lado a lado.
     "tela cheia" abre o MESMO antes e depois, grande, com zoom e folhear
     (TelaCheiaDoAntesEDepois; D-577, 30/10: "tem que dar para ver na previa em
     tela grande e poder dar zoom na previa em tela grande"). Antes abria a
@@ -1486,7 +1506,14 @@ class PaginaAntesEDepois(QWidget):
         self._na_espera: tuple | None = None  # a última troca, esperando a vez
         self._feito = None                    # a chave a que o "depois" mostrado responde
         self._antes = None                    # (índice, imagem) do antes da página da vez
-        self._depois = None                   # (índice, imagem) do depois
+        self._depois = None                   # (índice, imagem) do depois mostrado
+        # D-614: a metade mostrada da folha que o Dividir marcado vai partir ("esquerda" ou
+        # "direita"); None = o depois inteiro (a página como ela sai, uma só)
+        self._metade: str | None = None
+        # (índice, [imagens], [metades]) tudo o que a conta do depois devolveu: as duas
+        # metades da folha que vai ser dividida (D-614: a seta passa de uma à outra sem conta nova)
+        self._depois_todas = None
+        self._lista_depois = None             # (chave, lista) de paginas_do_pdf_depois guardada
         self._do_livro = None                 # (índice, imagem) da página como está no livro
         self._filtro_depois = ""              # o filtro do depois (o rótulo do "comparar")
         self._fechada = False                 # fechar(): nada mais é pedido
@@ -1547,40 +1574,141 @@ class PaginaAntesEDepois(QWidget):
             return []
         return [p.indice for p in self.projeto.paginas_ativas]
 
-    def ir_para(self, indice: int) -> None:
-        """Vai para a página `indice` (a ativa mais perto, se ela não vai para
-        o PDF) e pede o antes e o depois dela."""
-        ativas = self._ativas()
-        if not ativas:
+    # --- D-614 (04/11/2026): o folhear com o Dividir marcado ---------------------------
+    # Samuel (print a-60): "o dividir folha está escolhido era para aparecer uma folha divida
+    # ali né, e não duas folhas coladas, está errado" · "é para aparecer como se já tivesse sido
+    # feita a separação." No Livro: "igual à área de trabalho depois de dividir (D-601, "Uma
+    # página"): uma página por vez, a metade cortada na linha, e as setas andam pelas páginas."
+    # Os PASSOS das setas: um por página que vai para o PDF depois do pedido, na ordem do PDF
+    # (a mesma lista das folhas do caderno, D-603: core/automatico.paginas_do_pdf_depois, sem
+    # desenhar nada). A folha inteira que o Dividir vai partir dá dois passos, (página,
+    # "esquerda") e (página, "direita"): a MESMA página do livro e a mesma conta (a chave não
+    # tem a metade), só a imagem mostrada muda. Toda outra página é um passo (página, None),
+    # como antes. Sem o Dividir marcado: as páginas ativas, como sempre (nada muda). O
+    # contador continua "página N de M" (N = a página do livro), como o rodapé da área de
+    # trabalho continua "folha N de M" nas duas metades (D-601).
+    # Arriscado: pôr a metade na chave (a outra metade faria a conta de novo); folhear pelas
+    # ativas com o Dividir marcado (a seta pularia a metade da direita, como antes).
+
+    def _passos(self) -> list[tuple[int, str | None]]:
+        """Por onde as setas andam (ver acima): [(índice em projeto.paginas, metade ou None)]."""
+        if self.projeto is None:
+            return []
+        import json
+
+        from modelos import METADE_INTEIRA
+
+        pedido = self.estado.pedido(pular_mexidas=False)   # a prévia nunca pula (D-577)
+        if pedido.desligar or A.DIVIDIR not in pedido.etapas:
+            return [(i, None) for i in self._ativas()]
+        # guardada enquanto o pedido e o livro não mudam (a mesma chave das folhas do caderno,
+        # ui/widgets/folhas_do_caderno._depois): as setas e os botões perguntam a cada passo
+        chave = (id(self.projeto), json.dumps(
+            [pedido.paginas, (pedido.opcoes or {}).get("dividir_como"),
+             [(p.folha, p.metade, p.apagada, p.mexida_a_mao) for p in self.projeto.paginas],
+             [(f.dividir, f.rotacao, f.posicao_corte, f.mexida_a_mao) for f in self.projeto.folhas],
+             str(self.projeto.caminho_entrada), self.projeto.dividir_como],
+            default=str))
+        if self._lista_depois is None or self._lista_depois[0] != chave:
+            self._lista_depois = (chave, A.paginas_do_pdf_depois(self.projeto, pedido))
+        passos = []
+        for origem, _folha, metade in self._lista_depois[1]:
+            partida = (self.projeto.paginas[origem].metade == METADE_INTEIRA
+                       and metade != METADE_INTEIRA)
+            passos.append((origem, metade if partida else None))
+        return passos
+
+    @staticmethod
+    def _passo_mais_perto(passos: list, indice: int, metade: str | None) -> tuple:
+        """O passo (índice, metade) pedido; se não há: o primeiro da mesma página (marcar o
+        Dividir numa folha inteira mostra a metade da esquerda; desmarcar volta à folha
+        inteira); senão o primeiro de uma página dali para a frente; senão o último."""
+        if (indice, metade) in passos:
+            return (indice, metade)
+        mesma = [p for p in passos if p[0] == indice]
+        if mesma:
+            return mesma[0]
+        adiante = [p for p in passos if p[0] >= indice]
+        return adiante[0] if adiante else passos[-1]
+
+    def _escolher_o_depois(self) -> None:
+        """O depois mostrado (`_depois`) sai do que a conta devolveu (`_depois_todas`): com uma
+        metade da vez (D-614), a imagem dessa metade; senão a página inteira (uma imagem). Se
+        a conta trouxe duas imagens e não há metade (o passo previsto discordou da conta), as
+        duas lado a lado, como era (_lado_a_lado), para nada sumir."""
+        todas = self._depois_todas
+        if not todas or todas[0] != self._indice:
+            self._depois = None
+            return
+        _indice, imagens, metades = todas
+        if self._metade is not None and len(metades) == len(imagens) and self._metade in metades:
+            img = imagens[metades.index(self._metade)]
+        else:
+            img = _lado_a_lado(imagens)
+        self._depois = (self._indice, img) if img is not None else None
+
+    def ir_para(self, indice: int, metade: str | None = None) -> None:
+        """Vai para a página `indice` (e a `metade` dela, quando o Dividir marcado vai partir a
+        folha: D-614; o passo mais perto, se ele não existe) e pede o antes e o depois dela.
+        Trocar só de metade não faz conta nova: a imagem da outra metade já está guardada."""
+        passos = self._passos()
+        if not passos:
             self.contador.setText("")
-            self._acertar_botoes(ativas)
+            self._acertar_botoes(passos)
             self.visor.mostrar(None, None)
             return
-        depois_dela = [i for i in ativas if i >= int(indice)]
-        indice = depois_dela[0] if depois_dela else ativas[-1]
-        if indice != self._indice or self._antes is None:
+        indice, metade = self._passo_mais_perto(passos, int(indice), metade)
+        if indice != self._indice or (self._antes is None and self._depois_todas is None):
             self._antes = self._depois = None     # uma página por vez na memória
+            self._depois_todas = None
             self._do_livro = None
             self._feito = None
-        self._indice = indice
+        self._indice, self._metade = indice, metade
+        self._escolher_o_depois()
         self.contador.setText(f"página {indice + 1} de {len(self.projeto.paginas)}")
-        self._acertar_botoes(ativas)
+        self._acertar_botoes(passos)
         self._mostrar()
         self.pedir(agora=True)
         self._acertar_tela_cheia()
 
     def virar(self, passo: int) -> None:
-        ativas = self._ativas()
-        if self._indice not in ativas:
+        """As setas: o passo seguinte (ou o anterior). Com o Dividir marcado, a folha que vai ser
+        partida tem dois passos, a metade da esquerda e a da direita (D-614)."""
+        passos = self._passos()
+        atual = (self._indice, self._metade)
+        if atual not in passos:
             return
-        lugar = max(0, min(len(ativas) - 1, ativas.index(self._indice) + passo))
-        self.ir_para(ativas[lugar])
+        lugar = max(0, min(len(passos) - 1, passos.index(atual) + passo))
+        self.ir_para(*passos[lugar])
 
-    def _acertar_botoes(self, ativas: list[int]) -> None:
-        tem = bool(ativas) and self._indice in ativas
-        self.botao_anterior.setEnabled(tem and ativas.index(self._indice) > 0)
-        self.botao_proxima.setEnabled(tem and ativas.index(self._indice) < len(ativas) - 1)
+    def _acertar_botoes(self, passos: list) -> None:
+        atual = (self._indice, self._metade)
+        tem = bool(passos) and atual in passos
+        self.botao_anterior.setEnabled(tem and passos.index(atual) > 0)
+        self.botao_proxima.setEnabled(tem and passos.index(atual) < len(passos) - 1)
         self.botao_tela_cheia.setEnabled(tem)
+
+    def _acertar_o_passo(self) -> bool:
+        """Uma troca na janela (marcar ou desmarcar o Dividir, onde rodar...) pode mudar os
+        passos (D-614): o passo da vez passa ao mais perto (a mesma página, a metade da
+        esquerda ou a folha inteira) e as setas se acertam. True = mudou de página (ir_para
+        já pediu a conta)."""
+        passos = self._passos()
+        atual = (self._indice, self._metade)
+        if passos and atual not in passos:
+            indice, metade = self._passo_mais_perto(passos, *atual)
+            if indice != self._indice:
+                self.ir_para(indice, metade)
+                return True
+            self._metade = metade
+            self._escolher_o_depois()
+            self._mostrar()
+        self._acertar_botoes(passos)
+        return False
+
+    def _na_lista(self) -> bool:
+        """A página da vez é um passo das setas (vai para o PDF depois do pedido)?"""
+        return self._indice in {i for i, _m in self._passos()}
 
     def abrir_em_tela_cheia(self) -> None:
         """O "tela cheia": o antes e depois da página da vez, grande, com zoom e folhear
@@ -1588,7 +1716,7 @@ class PaginaAntesEDepois(QWidget):
         depois continua chegando e aparece lá. Ao fechar, a página da vez é a da página em
         que a pessoa parou (o folhear de lá é o daqui). Antes abria a folha crua do PDF
         (ui/widgets/folhear_pdf.TelaCheiaDoPDF; print a-08 do teste de 30/10)."""
-        if self.projeto is None or self._indice not in self._ativas():
+        if self.projeto is None or not self._na_lista():
             return
         if self.tela_cheia is None:
             self.tela_cheia = TelaCheiaDoAntesEDepois(self)
@@ -1651,9 +1779,11 @@ class PaginaAntesEDepois(QWidget):
     def pedir(self, agora: bool = False) -> None:
         """Uma troca na janela: pede o depois de novo (depois de uma espera
         curta, para trocas seguidas virarem uma só). `agora`: sem a espera
-        (abrir a janela, folhear)."""
-        if (self._fechada or getattr(self, "_pausada", False) or self.projeto is None
-                or self._indice not in self._ativas()):
+        (abrir a janela, folhear). D-614: antes, o passo da vez se acerta aos passos
+        de agora (marcar o Dividir mostra a metade da esquerda; desmarcar, a folha inteira)."""
+        if self._fechada or getattr(self, "_pausada", False) or self.projeto is None:
+            return
+        if self._acertar_o_passo() or not self._na_lista():
             return
         if agora:
             self._relogio.stop()
@@ -1685,7 +1815,7 @@ class PaginaAntesEDepois(QWidget):
         from core.automatico import copia_para_a_previa
 
         if (self._fechada or getattr(self, "_pausada", False) or self.projeto is None
-                or self._indice not in self._ativas()):
+                or not self._na_lista()):
             return
         # a prévia NUNCA pula as páginas mexidas à mão (D-577, 30/10: "na previa ali, ele
         # mostra a mudança em todas as paginas mas só muda as que nós autorizarmos ( no caso
@@ -1737,7 +1867,10 @@ class PaginaAntesEDepois(QWidget):
         """O antes e o depois chegaram. O depois só vale se é do ÚLTIMO pedido
         (`_querida`) e da página da vez: resultado velho nunca cobre o novo.
         O antes (e a página como está no livro, do "comparar") vale para a
-        página dele (não muda com as opções). `extra`: {"do_livro", "filtro_depois"}."""
+        página dele (não muda com as opções). `extra`: {"do_livro", "filtro_depois",
+        "metades"}. D-614: as imagens do depois ficam todas guardadas (as duas metades da
+        folha que o Dividir vai partir); a mostrada é a da metade da vez (_escolher_o_depois).
+        Até 04/11 o depois eram as duas metades lado a lado."""
         if indice != self._indice:
             return
         extra = extra or {}
@@ -1746,7 +1879,8 @@ class PaginaAntesEDepois(QWidget):
         if extra.get("do_livro") is not None:
             self._do_livro = (indice, extra["do_livro"])
         if chave == self._querida:
-            self._depois = (indice, _lado_a_lado(depois or []))
+            self._depois_todas = (indice, list(depois or []), list(extra.get("metades") or []))
+            self._escolher_o_depois()
             self._feito = chave
             self._filtro_depois = extra.get("filtro_depois", "")
         self._mostrar()
@@ -1758,7 +1892,7 @@ class PaginaAntesEDepois(QWidget):
         if chave != self._querida:
             return
         antes = self._antes[1] if self._antes and self._antes[0] == self._indice else None
-        self._depois = None
+        self._depois = self._depois_todas = None
         self.visor.mostrar(antes, None, aviso="Não foi possível mostrar como esta página vai ficar.")
         self._acertar_tela_cheia()
 
@@ -1834,7 +1968,7 @@ class PaginaAntesEDepois(QWidget):
             self._tarefa = None
         if self.tela_cheia is not None:
             self.tela_cheia.reject()            # a tela cheia fecha junto com a janela grande
-        self._antes = self._depois = self._do_livro = None
+        self._antes = self._depois = self._do_livro = self._depois_todas = None
         self._acertar_bolinha()
 
 
