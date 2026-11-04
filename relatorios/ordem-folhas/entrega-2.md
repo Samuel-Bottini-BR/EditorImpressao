@@ -79,3 +79,9 @@ Rodei `piloto.py e2`. As anotações estão em `anotacoes-e2.txt`:
 ## Perguntas para o Samuel
 
 Nenhuma nova. A da entrega 1 continua aberta.
+
+## GitHub
+
+- Entrega 1: testes 41885681255 passaram inteiros; velocidade 41885686939 (obra-2026-10-26 -> ordem-folhas) "igual".
+- Entrega 2: testes 41888422108 passaram inteiros (com botões e prints da janela real); velocidade 41888426950
+  (755bfae3 -> ordem-folhas) "igual".

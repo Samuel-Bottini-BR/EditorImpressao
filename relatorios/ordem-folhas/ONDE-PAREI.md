@@ -62,3 +62,9 @@ Desfazer e projeto salvo: `test_historico_depois_de_reabrir.py`, `test_recomeco_
 
 1. (opcional; tem jeito padrão) Juntar ("não dividir esta") uma folha cujas páginas foram separadas: a folha
    inteira fica no lugar da primeira das duas. Pode ser assim? Sugestão: sim. (ver `entrega-1.md`)
+
+## GitHub
+
+- Entrega 1: testes 41885681255 passaram inteiros; velocidade 41885686939 (obra-2026-10-26 -> ordem-folhas) "igual".
+- Entrega 2: testes 41888422108 passaram inteiros (com botões e prints da janela real); velocidade 41888426950
+  (755bfae3 -> ordem-folhas) "igual".
