@@ -1,0 +1,6 @@
+ferramenta => "corte"
+ao abrir => {"folha": 1, "pagina": 1, "dividida": false, "linha_da_folha": 0.5, "linha_visivel": true, "linha_na_tela": 0.5245, "motor": "o do ScanTailor", "botao": "dividir esta", "paginas": 70, "com_duvida": 0}
+depois do dividir todas => {"folha": 1, "pagina": 1, "dividida": true, "linha_da_folha": 0.5245, "linha_visivel": false, "linha_na_tela": 0.5245, "motor": "o do ScanTailor", "botao": "não dividir esta", "paginas": 140, "com_duvida": 7}
+depois do Ctrl+Z => {"folha": 1, "pagina": 1, "dividida": false, "linha_da_folha": 0.5, "linha_visivel": true, "linha_na_tela": 0.5245, "motor": "o do ScanTailor", "botao": "dividir esta", "paginas": 70, "com_duvida": 0}
+depois do Ctrl+Y => {"folha": 1, "pagina": 1, "dividida": true, "linha_da_folha": 0.5245, "linha_visivel": false, "linha_na_tela": 0.5245, "motor": "o do ScanTailor", "botao": "não dividir esta", "paginas": 140, "com_duvida": 7}
+folha 7 depois do Ctrl+Y => {"folha": 7, "pagina": 13, "dividida": true, "linha_da_folha": 0.5, "linha_visivel": false, "linha_na_tela": 0.5, "motor": "o do ScanTailor", "botao": "não dividir esta", "paginas": 140, "com_duvida": 7}
