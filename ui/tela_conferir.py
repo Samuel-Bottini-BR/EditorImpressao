@@ -868,6 +868,8 @@ class TelaConferir(QWidget):
         self.lado_a_lado.pagina_da_vez_mudou.connect(self._pagina_do_lado_a_lado)
         # D-570 (etapa 9b-2): o Ctrl+roda nos pares muda o "N%" da barra de baixo
         self.lado_a_lado.zoom_mudou.connect(lambda _z: self._acertar_o_zoom_da_barra())
+        # D-622: o clique fora larga a escolha, o clique na página escolhe
+        self.lado_a_lado.escolha_mudou.connect(self._escolha_dos_pares)
         self.vista_da_pagina.addWidget(self.lado_a_lado)
         from ui.widgets.filtros_tela_cheia import VistaAntesDepois
         self.vista_antes_depois = VistaAntesDepois()
@@ -2222,6 +2224,7 @@ class TelaConferir(QWidget):
         vis = self._area_de_visualizador(ABA_MOVER, MODO_CONTEUDO)
         vis.conteudo_movido.connect(self._mover_conteudo)
         vis.guias_mudaram.connect(self._mudar_as_linhas_de_apoio)    # item 2.5, g8-guias
+        vis.escolha_mudou.connect(self._escolha_do_mover)             # D-622
         assert self.projeto is not None
 
         coluna = self._conteudo_de_propriedades(ABA_MOVER)
@@ -7928,6 +7931,7 @@ class TelaConferir(QWidget):
                 if atual is not peca:
                     self._devolver_a_peca_do_par(atual)
         if peca is None:
+            self._ligar_o_desescolher(False)
             return
         if peca not in fora_de_casa:
             # o zoom da "Uma página" fica guardado; fora de casa o zoom é o da
@@ -7940,7 +7944,35 @@ class TelaConferir(QWidget):
         # D-612 (a), Samuel "ok": na outra página do par, o mesmo aperto escolhe e
         # já arrasta - no Mover, no Cortar e nas de marcar (no Endireitar não)
         self.lado_a_lado.arrastar_ao_escolher = self.aba_atual in (ABA_MOVER, ABA_BORDAS, ABA_MARCAR)
+        self._ligar_o_desescolher(destino is self.lado_a_lado and self.aba_atual == ABA_MOVER)
         destino.definir_ferramenta(peca)
+
+    def _ligar_o_desescolher(self, ligado: bool) -> None:
+        """D-622 (Samuel, 04/11/2026: "quando eu clicar fora da folha ele
+        desseleciona o que está selecionado [...] como no photoshop"): nos
+        pares com o Mover, o clique no cinza larga a escolha (o quadro da página
+        da vez e os cantos azuis); fora disso, os pares ficam como sempre (o
+        quadro aceso)."""
+        pares = self.lado_a_lado
+        pares.desescolher_ao_clicar_fora = bool(ligado)
+        if not ligado:
+            pares.definir_sem_escolha(False)
+        else:
+            vis = self.visualizadores.get(ABA_MOVER)
+            pares.definir_sem_escolha(vis is not None and not vis.conteudo_escolhido)
+
+    def _escolha_dos_pares(self, escolhida: bool) -> None:
+        """D-622: os pares escolheram (clique numa página) ou largaram (clique
+        no cinza): os cantos do Mover acompanham."""
+        vis = self.visualizadores.get(ABA_MOVER)
+        if vis is not None and self.aba_atual == ABA_MOVER:
+            vis.definir_escolhido(escolhida)
+
+    def _escolha_do_mover(self, escolhida: bool) -> None:
+        """D-622: o Mover foi escolhido (clique na página) ou largado (clique
+        fora dela): nos pares, o quadro da página da vez acompanha."""
+        if self.lado_a_lado.desescolher_ao_clicar_fora:
+            self.lado_a_lado.definir_sem_escolha(not escolhida)
 
     @staticmethod
     def _por_a_vista_da_peca(peca, zoom: float, deslocamento) -> None:

@@ -236,6 +236,11 @@ class Visualizador(QWidget):
     # MODO_CONTEUDO. `ui/tela_conferir.py::_mover_conteudo` converte para
     # (escala, deslocamento) antes de gravar em ConfigPagina.
     conteudo_movido = Signal(tuple)
+    # D-622 (Samuel, 04/11/2026, print a-74: "quando eu clicar fora da folha ele
+    # desseleciona o que está selecionado, para eu selecionar de novo tenho que
+    # clicar de novo na coisa selecionada como no photoshop"): a página do Mover
+    # foi escolhida (True) ou largada (False) pelo clique (definir_escolhido)
+    escolha_mudou = Signal(bool)
     # Item 2.5 (g8-guias): as linhas do Kaique mudaram pelo menu do botão
     # direito no "Mover conteúdo": lista de (orientação, fração da folha), as
     # orientações de core/guias. Quem grava (em mm, no livro) é a tela.
@@ -346,6 +351,10 @@ class Visualizador(QWidget):
         # sempre. Arriscado: deixar um lugar posto ao voltar para a "Uma
         # página" (a tela tira em _devolver_a_peca_do_par).
         self._lugar_no_par: QRect | None = None
+        # D-622: a página do Mover está escolhida (os cantos azuis e o contorno
+        # à vista). Clicar fora da página larga; clicar nela escolhe de novo;
+        # outra página (definir_mover com outro dono) chega escolhida.
+        self.conteudo_escolhido = True
         self._arrastando_vista = False
         self._deslocamento_inicial = QPoint(0, 0)
 
@@ -393,6 +402,17 @@ class Visualizador(QWidget):
         self.deslocamento = QPoint(deslocamento)
         self.update()
 
+    def definir_escolhido(self, escolhido: bool) -> None:
+        """D-622: escolhe ou larga a página do Mover (os cantos azuis e o
+        contorno aparecem ou somem). Avisa (escolha_mudou) só quando muda: os
+        pares acendem ou apagam o quadro da página da vez junto."""
+        escolhido = bool(escolhido)
+        if escolhido == self.conteudo_escolhido:
+            return
+        self.conteudo_escolhido = escolhido
+        self.update()
+        self.escolha_mudou.emit(escolhido)
+
     def definir_lugar_no_par(self, lugar: QRect | None) -> None:
         """D-612: o retângulo (nas coordenadas deste visualizador) da página da
         vez dentro dos pares. Com ele, a página é desenhada ali, do tamanho da
@@ -414,7 +434,7 @@ class Visualizador(QWidget):
         lado = 2 * DISTANCIA_PEGA + 2
         if self.modo == MODO_CONTEUDO:
             pontos = [p for n, p in self._alcas(self._area_do_conteudo()).items()
-                      if n in ("no", "ne", "so", "se")]
+                      if n in ("no", "ne", "so", "se") and self.conteudo_escolhido]
         elif self.modo == MODO_RECORTE:
             pontos = list(self._alcas(self._retangulo_recorte()).values())
         elif self.modo == MODO_ANGULO:
@@ -663,7 +683,10 @@ class Visualizador(QWidget):
         nela (`retangulo`, fração da área branca, core.folha.retangulo_na_folha)
         e a caixa do impresso (para o ímã). `conteudo` None: ainda vem (como
         definir_imagem: a de antes fica, se for do mesmo `dono`). Durante um
-        arrasto o retângulo do mouse manda (o que chegar não o desfaz)."""
+        arrasto o retângulo do mouse manda (o que chegar não o desfaz).
+        D-622: outra página (outro `dono`) chega escolhida."""
+        if dono is not None and dono != self._dono:
+            self.definir_escolhido(True)
         self.definir_imagem(conteudo, dono=dono)
         if conteudo is not None:
             self._tamanho_conteudo_px = (int(conteudo.shape[1]), int(conteudo.shape[0]))
@@ -997,15 +1020,18 @@ class Visualizador(QWidget):
         consigo movimentar o conteúdo" - ver `mousePressEvent`): sem elas,
         nada na tela mostrava onde o retângulo arrastável começava."""
         r = self._area_do_conteudo()
+        # D-622: largada (clique fora da página), sem o contorno e os cantos
+        escolhido = self.conteudo_escolhido or not self._em_modo_mover()
 
         pintor.setBrush(Qt.NoBrush)
         pintor.setPen(QPen(QColor(estilo.AZUL), 2))
-        pintor.drawRect(r)
+        if escolhido:
+            pintor.drawRect(r)
 
         pintor.setBrush(QColor(estilo.AZUL))
         pintor.setPen(Qt.NoPen)
         for nome, ponto in self._alcas(r).items():
-            if nome not in ("no", "ne", "so", "se"):
+            if nome not in ("no", "ne", "so", "se") or not escolhido:
                 continue
             pintor.drawRoundedRect(
                 QRect(ponto.x() - TAMANHO_ALCA // 2, ponto.y() - TAMANHO_ALCA // 2,
@@ -1138,7 +1164,11 @@ class Visualizador(QWidget):
                 self._arrastando = "linha"
                 self._linha_guia = (QPointF(ponto), QPointF(ponto))
         elif self.modo == MODO_CONTEUDO:
-            alca = self._alca_conteudo_sob(ponto)
+            # D-622: sem a seleção (clique fora), os cantos não estão à vista e
+            # não se pegam; apertar na página escolhe de novo (e arrasta)
+            alca = self._alca_conteudo_sob(ponto) if self.conteudo_escolhido else None
+            if self._em_modo_mover():
+                self.definir_escolhido(alca is not None or self._pega_o_conteudo(ponto))
             if alca is not None:
                 # Fase 3 (Samuel, 22/09/2026: "quero conseguir redimensionar
                 # o conteudo tambem") - arrastar um canto redimensiona.
@@ -1329,7 +1359,7 @@ class Visualizador(QWidget):
         """MODO_CONTEUDO: cursor de redimensionar sobre um canto, cursor de
         "mover" (mãozinha) sobre o resto da folha - a pista visual que
         faltava pro Samuel achar onde clicar (ver `mousePressEvent`)."""
-        alca = self._alca_conteudo_sob(ponto)
+        alca = self._alca_conteudo_sob(ponto) if self.conteudo_escolhido else None   # D-622
         formatos = {
             "no": Qt.SizeFDiagCursor, "se": Qt.SizeFDiagCursor,
             "ne": Qt.SizeBDiagCursor, "so": Qt.SizeBDiagCursor,
