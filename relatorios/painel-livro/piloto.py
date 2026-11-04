@@ -30,7 +30,7 @@ PROJ_ORIGEM = Path(r"D:\programas\EditorImpressao-arquivos\dados-teste-rodada-de
 LARGURA = int(sys.argv[1]) if len(sys.argv) > 1 else 1366
 ALTURA = int(sys.argv[2]) if len(sys.argv) > 2 else 728
 FASE = f"{LARGURA}"
-LOG = open(AQUI / f"anotacoes-{'opcoes' if FASE == '0' else FASE}.txt", "w", encoding="utf-8")
+LOG = open(AQUI / f"anotacoes-{FASE}.txt", "w", encoding="utf-8")
 N = [0]
 
 
@@ -91,8 +91,8 @@ def barra(j):
             continue
         g = w.geometry()
         texto = getattr(w, "text", lambda: "")() if hasattr(w, "text") else ""
-        if not texto and hasattr(w, "currentText"):
-            texto = w.currentText()
+        if not texto and w is getattr(t, "botao_qualidade", None):
+            texto = "setinha da qualidade"
         pecas.append({"peca": texto or type(w).__name__, "x": g.x(), "dir": g.right(),
                       "larg": g.width(), "pede": w.sizeHint().width(),
                       "espremida": g.width() < w.minimumSizeHint().width()})
@@ -152,97 +152,55 @@ def main():
     anotar("barra-cortar-com-painel", barra(j))
     p(j, "barra-cortar-com-painel")
     # a mesma barra sem a qualidade (como era antes), para comparar a folga
-    t.rotulo_da_qualidade.hide(); t.seletor_qualidade.hide(); base.esperar(0.8)
+    t.botao_qualidade.hide(); base.esperar(0.8)
     anotar("barra-sem-a-qualidade-para-comparar", barra(j))
-    t.rotulo_da_qualidade.show(); t.seletor_qualidade.show(); base.esperar(0.8)
+    t.botao_qualidade.show(); base.esperar(0.8)
     # miniaturas fechadas (a seta delas, clique de verdade): o "Confirmar e processar" desce para
     # a barra (D-050) - o caso mais cheio da barra
     base.clique(j, t.miniaturas.seta); base.esperar(1.5)
     anotar("barra-miniaturas-fechadas", barra(j))
     p(j, "barra-miniaturas-fechadas")
+    t.botao_qualidade.hide(); base.esperar(0.8)
+    anotar("barra-miniaturas-fechadas-sem-a-qualidade-para-comparar", barra(j))
+    t.botao_qualidade.show(); base.esperar(0.8)
     base.clique(j, t.miniaturas.seta); base.esperar(1.5)
 
-    # D-620: trocar a qualidade no Cortar, pela lista da barra (clique de verdade), e ver nas outras
-    base.clique(j, t.seletor_qualidade); base.esperar(1.0)
-    vista = t.seletor_qualidade.view()
-    popup = vista.window()
-    anotar("lista-aberta", {"visivel": popup.isVisible(), "itens": [t.seletor_qualidade.itemText(i) for i in range(3)]})
-    if popup.isVisible():
-        p(popup, "lista-aberta")
-        indice = vista.model().index(2, 0)
-        r = vista.visualRect(indice)
-        base.clique(popup, vista.viewport(), r.center()); base.esperar(2.5)
-    anotar("depois-de-escolher-alta", {"lista": t.seletor_qualidade.currentText(),
+    # D-620: trocar a qualidade no Cortar, pelo botão da setinha (clique de verdade) e pelo item
+    # "Alta" do menu (clique de verdade no menu), e ver nas outras ferramentas
+    anotar("balao-antes", t.botao_qualidade.toolTip())
+    base.clique(j, t.botao_qualidade); base.esperar(1.0)
+    menu = t.menu_da_qualidade
+    anotar("menu-aberto", {"visivel": menu.isVisible(),
+                           "itens": [(a.text(), a.isChecked()) for a in menu.actions()]})
+    if menu.isVisible():
+        p(menu, "menu-aberto")
+        acao = t.acoes_da_qualidade["alta"]
+        anotar("menu-onde", {"geometria": str(menu.geometry()), "item": str(menu.actionGeometry(acao))})
+        base.clique(menu, menu, menu.actionGeometry(acao).center()); base.esperar(2.5)
+        if not acao.isChecked():
+            # o clique por mensagem não pegou no menu: pelas setas e Enter (teclado de verdade)
+            anotar("menu-clique-nao-pegou", {"visivel": menu.isVisible()})
+            if not menu.isVisible():
+                base.clique(j, t.botao_qualidade); base.esperar(1.0)
+            base.tecla(menu, 0x28, vezes=3); base.tecla(menu, 0x0D); base.esperar(2.5)
+    anotar("depois-de-escolher-alta", {"marcada": [a.text() for a in menu.actions() if a.isChecked()],
+                                        "balao": t.botao_qualidade.toolTip(),
                                         "gravada": configuracoes.ler("qualidade_previa"),
                                         "dpi_da_tela": t._dpi_normal,
                                         "previas": t.previas.dpi_da_tela, "aba": t.aba_atual})
     p(j, "alta-no-cortar")
     for letra, nome in (("I", "endireitar"), ("F", "mover"), ("D", "dividir")):
         ferramenta(j, letra); base.esperar(2.0)
-        anotar(f"alta-no-{nome}", {"lista": t.seletor_qualidade.currentText(),
-                                  "visivel": t.seletor_qualidade.isVisible(),
+        anotar(f"alta-no-{nome}", {"balao": t.botao_qualidade.toolTip().splitlines()[0],
+                                  "visivel": t.botao_qualidade.isVisible(),
                                   "dpi_da_tela": t._dpi_normal, "aba": t.aba_atual})
         p(j, f"alta-no-{nome}")
     anotar("barra-dividir", barra(j))
     # volta à de fábrica do teste
-    t.seletor_qualidade.setCurrentIndex(0); base.esperar(1.0)
+    t.acoes_da_qualidade["rapida"].trigger(); base.esperar(1.0)
     base.fechar(j)
     base.gravar_resultados(AQUI / "prints")
 
 
-def recorte_da_barra(j, nome):
-    """Print da janela e, ao lado, só a faixa de baixo (a barra), para a pergunta ao Samuel."""
-    img = p(j, nome)
-    if img is not None:
-        w, h = img.size
-        img.crop((0, h - 70, w, h)).save(AQUI / "prints" / f"{FASE}-{N[0]:02d}-{nome}-faixa.png")
-
-
-def opcoes():
-    """Para a pergunta ao Samuel: o mesmo livro, no Cortar com o Propriedades aberto, em 1536
-    (a tela dele: 1920 com letra a 125%) e em 1366, com três jeitos de pôr a qualidade na barra.
-    Nada aqui fica no programa: só muda o texto das peças da barra nesta janela de teste."""
-    base.preparar(str(RAIZ), str(SCRATCH), limpar=False)
-    import configuracoes
-    import projetos
-    configuracoes.escrever("qualidade_previa", "rapida")
-    pasta = preparar_copia()
-    resumo = projetos.ler_resumo(pasta)
-    j = base.nova_janela(1536, 800)
-    j.abrir_livro(resumo.caminho_entrada, resumo=resumo)
-    anotar("abriu-em-s", esperar_tela(j))
-    t = j.tela_conferir
-    ferramenta(j, "X")
-    lista, rotulo = t.seletor_qualidade, t.rotulo_da_qualidade
-
-    def jeito(qual):
-        nomes = {"A": ["Rápida", "Média", "Alta"], "B": ["Rápida", "Média", "Alta"],
-                 "C": ["Prévia rápida", "Prévia média", "Prévia alta"],
-                 "antes": ["Rápida", "Média", "Alta"], "agora": ["Rápida", "Média", "Alta"]}[qual]
-        for i, n in enumerate(nomes):
-            lista.setItemText(i, n)
-        rotulo.setText("prévia" if qual == "B" else "Qualidade da prévia")
-        rotulo.setVisible(qual in ("B", "agora"))
-        lista.setVisible(qual != "antes")
-        lista.adjustSize()
-        base.esperar(1.0)
-
-    for largura in (1536, 1366):
-        j.resize(largura, 728 if largura == 1366 else 800); base.esperar(1.5)
-        for qual in ("antes", "agora", "A", "B", "C"):
-            jeito(qual)
-            medida = barra(j)
-            anotar(f"opcao-{qual}-{largura}", {k: medida[k] for k in (
-                "janela", "barra_larg", "barra_minimo", "conta_na_tela", "conta_cortada",
-                "espremidas")})
-            recorte_da_barra(j, f"opcao-{qual}-{largura}")
-    jeito("agora")
-    base.fechar(j)
-
-
 if __name__ == "__main__":
-    if FASE == "0":
-        FASE = "opcoes"
-        opcoes()
-    else:
-        main()
+    main()
