@@ -37,10 +37,22 @@ par, e um vão entre um par e outro (ESPACO_ENTRE_PARES_DA_VISTA). O "Ver em
 pares" sozinho (D-032, aprovado "Está bom" em 21/10) e "Uma página" ficam com
 o jeito de antes. Arriscado: encostar também no "Ver em pares" do menu (muda
 um jeito já aprovado, D-605).
+
+D-615 (Samuel, 04/11/2026, print a-62: "eu quero poder mover folhas para onde eu
+quiser dentro do app, quero poder arrastar e mover folhas" → "ok"): arrastar uma
+miniatura e soltar noutro vão pede à tela para mudar a página (ou a folha) de
+lugar (sinal mover_pedido). Enquanto arrasta, a miniatura fica apagadinha e uma
+linha azul mostra o vão onde ela vai cair; perto da beirada a tira rola sozinha.
+O clique continua indo para a página no apertar, como antes. Quando a tela
+remonta a tira com os mesmos quadros em outra ordem, eles só trocam de lugar
+(_reordenar): nada é lido do PDF de novo. Arriscado: trocar o arrastar à mão
+pelo do Windows (QDrag: o piloto da janela não o move, e a tira inteira viraria
+alvo de soltar arquivo).
 """
 
 from __future__ import annotations
 
+import time
 import traceback
 
 import numpy as np
@@ -139,6 +151,8 @@ class Miniatura(QFrame):
         # direita, encosta no lado esquerdo; None = no meio, como sempre.
         # Quem põe é a TiraMiniaturas (_arrumar), só com os pares da vista.
         self.encostar: str | None = None
+        # D-615: a miniatura que está sendo arrastada fica apagadinha
+        self.arrastada = False
         self._pixmap: QPixmap | None = None
 
         self.setFixedSize(QSize(LARGURA_DO_QUADRO, ALTURA_MINIATURA + ALTURA_DO_NUMERO + 4))
@@ -219,6 +233,11 @@ class Miniatura(QFrame):
         if self.apagada:
             rotulo = "apagada"
         pintor.drawText(rodape, Qt.AlignCenter, rotulo)
+        if self.arrastada:
+            # D-615: a que anda fica apagadinha (o lugar de onde ela sai)
+            fundo = QColor(estilo.cor("bar"))
+            fundo.setAlpha(170)
+            pintor.fillRect(self.rect(), fundo)
 
     @staticmethod
     def _pintar_o_tique(pintor: QPainter, area) -> None:
@@ -256,11 +275,32 @@ class Miniatura(QFrame):
         return tira
 
     def mousePressEvent(self, evento) -> None:  # noqa: N802
-        """Clique simples seleciona esta página."""
+        """Clique simples seleciona esta página (como sempre: na hora do
+        clique). D-615: o botão apertado pode virar um arrastar, se o mouse
+        andar (mouseMoveEvent)."""
         if evento.button() == Qt.LeftButton:
             tira = self._tira()
             if tira is not None:
+                tira._apertou(self, evento.globalPosition().toPoint())
                 tira.selecionada.emit(self.numero - 1)
+
+    def mouseMoveEvent(self, evento) -> None:  # noqa: N802
+        """D-615: com o botão apertado, andar o mouse mais que a distância de
+        arrastar do Windows começa a mudar a página de lugar (a tira mostra a
+        linha azul de onde ela vai cair)."""
+        if evento.buttons() & Qt.LeftButton:
+            tira = self._tira()
+            if tira is not None:
+                tira._andou(evento.globalPosition().toPoint())
+
+    def mouseReleaseEvent(self, evento) -> None:  # noqa: N802
+        """D-615: soltar o botão depois de arrastar muda a página de lugar (a
+        tira pede à tela, sinal mover_pedido). Sem arrastar, nada (o clique já
+        foi feito no apertar)."""
+        if evento.button() == Qt.LeftButton:
+            tira = self._tira()
+            if tira is not None:
+                tira._soltou(evento.globalPosition().toPoint())
 
     def mouseDoubleClickEvent(self, evento) -> None:  # noqa: N802
         """Duplo clique abre a página em tamanho grande."""
@@ -275,6 +315,9 @@ class TiraMiniaturas(QWidget):
 
     selecionada = Signal(int)
     ampliar_pedido = Signal(int)   # duplo clique numa miniatura
+    # D-615: arrastou a miniatura `origem` e soltou no vão `destino` (0 = antes
+    # da primeira; quantidade = depois da última). Quem muda o livro é a tela.
+    mover_pedido = Signal(int, int)
 
     def __init__(self, titulo: str, parent=None) -> None:
         """Monta a area de rolagem vazia; os quadros so aparecem em `montar`."""
@@ -303,6 +346,9 @@ class TiraMiniaturas(QWidget):
         # isto e selecionar() rola de novo quando a grade já está arrumada
         # (_rolar_ate_a_escolhida).
         self._rolar_depois_de_montar = False
+        # o PDF dos quadros de agora (D-615: montar com o mesmo PDF e os mesmos
+        # quadros em outra ordem só os troca de lugar, _reordenar)
+        self._caminho: str | None = None
 
         fora = QVBoxLayout(self)
         fora.setContentsMargins(0, 0, 0, 0)
@@ -332,6 +378,18 @@ class TiraMiniaturas(QWidget):
         self.linha.setSpacing(ESPACO_ENTRE_OS_QUADROS)
         self.rolagem.setWidget(interno)
         fora.addWidget(self.rolagem)
+
+        # D-615 (04/11/2026): arrastar uma miniatura muda a página de lugar. A
+        # linha azul (fora da grade, por cima dos quadros) mostra o vão onde
+        # ela vai cair; a rolagem anda sozinha perto das beiradas.
+        self._arrasto: dict | None = None
+        self.sinal_do_vao = QFrame(interno)
+        self.sinal_do_vao.setObjectName("sinalDoVao")
+        self.sinal_do_vao.setStyleSheet(f"QFrame#sinalDoVao {{ background: {estilo.AZUL}; }}")
+        self.sinal_do_vao.setVisible(False)
+        self._relogio_da_beirada = QTimer(self)
+        self._relogio_da_beirada.setInterval(40)
+        self._relogio_da_beirada.timeout.connect(self._rolar_na_beirada)
         self.vertical = False
         self.em_pares = False
         self.pares_pela_vista = False      # D-611: "Duas lado a lado" escolhida
@@ -352,8 +410,17 @@ class TiraMiniaturas(QWidget):
 
         giros: o giro de cada folha (indice da folha -> 0/90/180/270); o
         mesmo de definir_giros.
+
+        D-615 (04/11/2026): se os quadros pedidos são OS MESMOS de agora (mesmo
+        PDF, mesma folha e metade de cada um), só em outra ordem - a página
+        mudada de lugar, ou o Ctrl+Z disso -, os quadros só trocam de lugar
+        (_reordenar): nada é lido do PDF de novo (num livro de 1010 páginas a
+        tira inteira ficaria cinza por um bom tempo).
         """
+        if self._reordenar(quantidade, caminho_pdf, folha_de, corte_de, giros):
+            return
         self.limpar()
+        self._caminho = caminho_pdf
         self._cortes = corte_de or {}
         self._giros = {int(k): int(v) % 360 for k, v in (giros or {}).items()}
         self._rolar_depois_de_montar = True
@@ -367,6 +434,235 @@ class TiraMiniaturas(QWidget):
         indices_de_folha = sorted(self._mapa_folha)
         self._tarefa = _TarefaMiniaturas(caminho_pdf, indices_de_folha, self._sinais)
         self._pool.start(self._tarefa)
+
+    def _reordenar(self, quantidade: int, caminho_pdf: str, folha_de: dict[int, int],
+                   corte_de: dict | None, giros: dict | None) -> bool:
+        """D-615: os quadros pedidos por `montar` são os de agora em outra ordem?
+        Então troca os quadros de lugar (com a imagem, as marcas e o "como sai"
+        de cada um), renumera e devolve True. Senão (outro PDF, outra
+        quantidade, um quadro novo, ou a mesma ordem) devolve False e `montar`
+        faz como sempre. Barato: só reposiciona (nenhum PDF é lido, nenhuma
+        imagem é refeita). Arriscado: aceitar quadro que não existia (ficaria
+        sem imagem)."""
+        from collections import defaultdict, deque
+
+        if (not self._miniaturas or quantidade != len(self._miniaturas)
+                or caminho_pdf != getattr(self, "_caminho", None)):
+            return False
+        corte_de = corte_de or {}
+        folha_antiga = {i: f for f, itens in self._mapa_folha.items() for i in itens}
+
+        def quem(folha, corte):
+            return (folha, tuple(corte) if corte is not None else None)
+
+        filas: dict = defaultdict(deque)
+        for i in range(quantidade):
+            filas[quem(folha_antiga.get(i, i), self._cortes.get(i))].append(i)
+        nova = []
+        for k in range(quantidade):
+            fila = filas.get(quem(folha_de.get(k, k), corte_de.get(k)))
+            if not fila:
+                return False
+            nova.append(fila.popleft())
+        if nova == list(range(quantidade)):
+            return False
+        self._miniaturas = [self._miniaturas[i] for i in nova]
+        for k, mini in enumerate(self._miniaturas):
+            if mini.numero != k + 1:
+                mini.numero = k + 1
+                mini.update()
+        self._mapa_folha = {}
+        for k in range(quantidade):
+            self._mapa_folha.setdefault(folha_de.get(k, k), []).append(k)
+        self._cortes = dict(corte_de)
+        self._como_sai = {k: self._como_sai[i] for k, i in enumerate(nova) if i in self._como_sai}
+        if giros:
+            self.definir_giros({int(f): int(g) for f, g in giros.items()})
+        self._rolar_depois_de_montar = True
+        self._arrumar()
+        return True
+
+    # --- D-615: arrastar uma miniatura para mudar a página de lugar ----------
+    # Samuel, 04/11/2026 (print a-62): "eu quero poder mover folhas para onde eu
+    # quiser dentro do app, quero poder arrastar e mover folhas" → "ok" a
+    # "arrastar a miniatura da tira e soltar onde quiser". O arrastar é feito à
+    # mão (apertar, andar, soltar), sem o arrastar-e-soltar do Windows: só dentro
+    # da tira, e funciona igual com o mouse de verdade e com o piloto da janela.
+    # O clique continua indo para a página NA HORA do apertar, como antes; só
+    # andar mais que a distância de arrastar do Windows começa a mudar de lugar.
+    # A tira só mostra e avisa (mover_pedido); quem muda o livro é a tela.
+    # Arriscado: escolher a página no soltar (o clique mudaria de jeito); mudar o
+    # livro aqui (o desfazer não veria).
+
+    def _apertou(self, mini: "Miniatura", ponto) -> None:
+        """O botão foi apertado numa miniatura: guarda de onde (ainda não é
+        arrastar)."""
+        if mini not in self._miniaturas:
+            return
+        self._arrasto = {"mini": mini, "inicio": ponto, "andando": False, "vao": None}
+
+    def _andou(self, ponto) -> None:
+        """O mouse andou com o botão apertado: passou da distância de
+        arrastar, começa; arrastando, a linha azul vai para o vão mais perto."""
+        from PySide6.QtWidgets import QApplication
+
+        arrasto = self._arrasto
+        if arrasto is None:
+            return
+        if not arrasto["andando"]:
+            if (ponto - arrasto["inicio"]).manhattanLength() < QApplication.startDragDistance():
+                return
+            arrasto["andando"] = True
+            arrasto["mini"].arrastada = True
+            arrasto["mini"].update()
+            arrasto["mini"].setCursor(Qt.ClosedHandCursor)
+            self._relogio_da_beirada.start()
+        arrasto["ponto"] = ponto
+        self._mostrar_o_vao(ponto)
+
+    def _soltou(self, ponto) -> None:
+        """O botão foi solto: se estava arrastando e há um vão, pede à tela
+        para mudar a página de lugar (depois deste evento, pelo laço do Qt: a
+        tela remonta a tira). Soltar fora da tira não muda nada."""
+        arrasto, self._arrasto = self._arrasto, None
+        if arrasto is None:
+            return
+        self._relogio_da_beirada.stop()
+        self.sinal_do_vao.setVisible(False)
+        mini = arrasto["mini"]
+        mini.arrastada = False
+        mini.setCursor(Qt.PointingHandCursor)
+        mini.update()
+        if not arrasto["andando"] or mini not in self._miniaturas:
+            return
+        vao = self.vao_do_ponto(ponto)
+        if vao is None:
+            return
+        origem = self._miniaturas.index(mini)
+        if vao in (origem, origem + 1):
+            return                                  # soltou no mesmo lugar
+        QTimer.singleShot(0, lambda o=origem, v=vao: self.mover_pedido.emit(o, v))
+
+    def arrastando(self) -> bool:
+        """Uma miniatura está sendo arrastada agora?"""
+        return bool(self._arrasto and self._arrasto.get("andando"))
+
+    def vao_do_ponto(self, ponto) -> int | None:
+        """O vão onde a miniatura cai com o mouse em `ponto` (na tela): 0 =
+        antes da primeira, N = depois da última. None = fora da tira (longe
+        dela, soltar ali não muda nada). Acha o quadro mais perto do mouse e,
+        pela metade dele em que o mouse está, o vão antes ou depois dele.
+        Passar da beirada no sentido da tira (à esquerda ou à direita da fila)
+        vale como estar na beirada (a tira rola até lá); só longe no outro
+        sentido (bem acima ou abaixo da fila) é "fora"."""
+        from PySide6.QtCore import QPoint
+
+        if not self._miniaturas:
+            return None
+        janela = self.rolagem.viewport()
+        local = janela.mapFromGlobal(ponto)
+        folga = 60
+        de_lado = self.vertical
+        cruzado, comprimento = ((local.x(), janela.width()) if de_lado else (local.y(), janela.height()))
+        if cruzado < -folga or cruzado > comprimento + folga:
+            return None
+        # no sentido da tira, o ponto fica dentro da parte à vista
+        if de_lado:
+            local = QPoint(local.x(), max(0, min(janela.height() - 1, local.y())))
+        else:
+            local = QPoint(max(0, min(janela.width() - 1, local.x())), local.y())
+        interno = self.rolagem.widget()
+        p = interno.mapFrom(janela, local)
+        melhor, distancia = 0, None
+        for i, mini in enumerate(self._miniaturas):
+            g = mini.geometry()
+            dx = max(g.left() - p.x(), 0, p.x() - g.right())
+            dy = max(g.top() - p.y(), 0, p.y() - g.bottom())
+            d = dx * dx + dy * dy
+            if distancia is None or d < distancia:
+                melhor, distancia = i, d
+                if d == 0:
+                    break
+        g = self._miniaturas[melhor].geometry()
+        if self.vertical and not self.em_pares_agora:
+            depois = p.y() > g.center().y()
+        else:
+            depois = p.x() > g.center().x()
+        return melhor + 1 if depois else melhor
+
+    def _mostrar_o_vao(self, ponto) -> None:
+        """Põe a linha azul no vão do ponto (ou a esconde fora da tira). Na
+        fila: uma linha em pé entre os dois quadros; na coluna: deitada."""
+        vao = self.vao_do_ponto(ponto)
+        if self._arrasto is not None:
+            self._arrasto["vao"] = vao
+        sinal = self.sinal_do_vao
+        if vao is None:
+            sinal.setVisible(False)
+            return
+        n = len(self._miniaturas)
+        de_pe = not (self.vertical and not self.em_pares_agora)
+        if vao < n:
+            g = self._miniaturas[vao].geometry()
+            antes = self._miniaturas[vao - 1].geometry() if vao > 0 else None
+        else:
+            antes = self._miniaturas[n - 1].geometry()
+            g = None
+        espessura = 4
+        if de_pe:
+            if g is not None and antes is not None and abs(antes.center().y() - g.center().y()) < 4:
+                x = (antes.right() + g.left()) // 2
+            elif g is not None:
+                x = g.left() - 3
+            else:
+                x = antes.right() + 3
+            ref = g or antes
+            sinal.setGeometry(x - espessura // 2, ref.top(), espessura, ref.height())
+        else:
+            if g is not None and antes is not None:
+                y = (antes.bottom() + g.top()) // 2
+            elif g is not None:
+                y = g.top() - 3
+            else:
+                y = antes.bottom() + 3
+            ref = g or antes
+            sinal.setGeometry(ref.left(), y - espessura // 2, ref.width(), espessura)
+        sinal.setVisible(True)
+        sinal.raise_()
+
+    def _rolar_na_beirada(self) -> None:
+        """Arrastando com o mouse perto da beirada da tira, ela rola sozinha
+        (para levar a página longe sem soltar). Nunca levanta."""
+        try:
+            if not self.arrastando() or self._arrasto.get("ponto") is None:
+                if not self.arrastando():
+                    self._relogio_da_beirada.stop()
+                return
+            ponto = self._arrasto["ponto"]          # onde o mouse parou por último
+            if self._arrasto.get("vao") is None:
+                return                              # longe da tira: não rola
+            janela = self.rolagem.viewport()
+            local = janela.mapFromGlobal(ponto)
+            if self.vertical:
+                barra, pos, tamanho = self.rolagem.verticalScrollBar(), local.y(), janela.height()
+            else:
+                barra, pos, tamanho = self.rolagem.horizontalScrollBar(), local.x(), janela.width()
+            beirada = 36
+            if pos < beirada:
+                passo = -min(60, max(6, beirada - pos))
+            elif pos > tamanho - beirada:
+                passo = min(60, max(6, pos - (tamanho - beirada)))
+            else:
+                self._arrasto.pop("na_beirada_desde", None)
+                return
+            # quanto mais tempo parado na beirada, mais depressa (até 4 vezes):
+            # num livro de 1010 páginas a tira tem metros
+            desde = self._arrasto.setdefault("na_beirada_desde", time.monotonic())
+            passo = int(passo * min(4.0, 1.0 + (time.monotonic() - desde)))
+            barra.setValue(barra.value() + passo)
+            self._mostrar_o_vao(ponto)
+        except RuntimeError:
+            pass
 
     # --- o arranjo (etapa 5 do layout) -----------------------------------
 
@@ -466,6 +762,10 @@ class TiraMiniaturas(QWidget):
         if self._tarefa is not None:
             self._tarefa.parar = True
             self._tarefa = None
+        # D-615: um arrastar no meio acaba (os quadros vão sair)
+        self._arrasto = None
+        self._relogio_da_beirada.stop()
+        self.sinal_do_vao.setVisible(False)
         for mini in self._miniaturas:
             self.linha.removeWidget(mini)
             mini.setParent(None)
