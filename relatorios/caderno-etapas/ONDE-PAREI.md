@@ -81,16 +81,16 @@ folha do caderno mostra a folha aberta (parece o scan inteiro, print a-49).
     (ler os tamanhos, 58 ms), depois 13 ms. Sem o Dividir: 0,2 ms.
 - (prints: ver prints.json)
 
-## Andamento
+## Andamento — ENTREGUE (04/11)
 
-- [x] conserto (`35affb34`, `8bf6356a`)
-- [x] teste de reversão: `tests/test_caderno_segue_as_etapas.py::test_d603_dividir_marcado_o_caderno_mostra_as_paginas_divididas`
-      falha em 016ec37a ("Folha 1 de 2" no lugar de "Folha 1 de 3"), passa no novo
-- [x] provas D-603 em `tests/test_decisoes_caderno_tela_grande.py` (4 novas; as 11 antigas passam)
-- [ ] testes antigos no PC, um por vez (rodando)
-- [ ] GitHub: conjunto 41777456037; velocidade 41777458962 (rodando)
-- [ ] prints na janela de verdade
-- [ ] relatório
+- [x] conserto (`35affb34`, `8bf6356a`, `14c512a2`)
+- [x] teste de reversão: falha em 016ec37a, passa no novo
+- [x] provas D-603 (4 novas em `test_decisoes_caderno_tela_grande.py` + 10 em `test_caderno_segue_as_etapas.py`)
+- [x] testes antigos no PC, um por vez: todos passaram
+- [x] GitHub: 41780218098 verde (depois de rodar de novo a parte 2, falha solta de tempo no d148);
+      velocidade 41777458962 "igual"
+- [x] prints na janela de verdade (01 a 05) e prints.json
+- [x] relatório: `relatorio.md/.html/.pdf`
 
 ## Perguntas para o Samuel
 

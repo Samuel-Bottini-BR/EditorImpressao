@@ -1,0 +1,251 @@
+<!doctype html>
+<html lang="pt-BR">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Caderno segue as etapas marcadas (D-603)</title>
+<style>
+:root { color-scheme: light dark; }
+* { box-sizing: border-box; }
+body {
+  font: 17px/1.65 "Segoe UI", system-ui, sans-serif;
+  max-width: 46rem; margin: 0 auto; padding: 2.5rem 1.5rem 6rem;
+  color: #1c1c1e; background: #fdfdfc;
+}
+h1 { font-size: 2rem; line-height: 1.2; margin: 0 0 .3em; letter-spacing: -.02em; }
+h2 { font-size: 1.35rem; margin: 2.4em 0 .6em; padding-top: .8em;
+     border-top: 1px solid #e6e4e0; letter-spacing: -.01em; }
+h3 { font-size: 1.1rem; margin: 1.8em 0 .4em; }
+h1 + p, h2 + p { margin-top: .4em; }
+p, li { margin: 0 0 .9em; }
+ul, ol { padding-left: 1.3em; }
+strong { font-weight: 640; }
+code {
+  font: .88em ui-monospace, "Cascadia Code", Consolas, monospace;
+  background: #f1efec; padding: .12em .35em; border-radius: 4px;
+}
+pre {
+  background: #f1efec; padding: 1em 1.1em; border-radius: 8px;
+  overflow-x: auto; line-height: 1.5;
+}
+pre code { background: none; padding: 0; }
+blockquote {
+  margin: 1.2em 0; padding: .1em 0 .1em 1.1em;
+  border-left: 3px solid #c9c5be; color: #55524d;
+}
+table {
+  border-collapse: collapse; width: 100%; margin: 1.2em 0;
+  font-size: .95rem; display: block; overflow-x: auto;
+}
+th, td { padding: .5em .8em; text-align: left; border-bottom: 1px solid #e6e4e0; }
+th { font-weight: 620; background: #f7f5f2; white-space: nowrap; }
+tr:last-child td { border-bottom: none; }
+img { max-width: 100%; height: auto; border-radius: 6px; margin: 1em 0;
+      border: 1px solid #e6e4e0; }
+hr { border: none; border-top: 1px solid #e6e4e0; margin: 2.5em 0; }
+.rodape { margin-top: 4em; padding-top: 1.2em; border-top: 1px solid #e6e4e0;
+          font-size: .85rem; color: #86827c; }
+@media (prefers-color-scheme: dark) {
+  body { color: #e8e6e3; background: #1a1917; }
+  h2 { border-top-color: #35332f; }
+  code, pre, th { background: #262421; }
+  th, td { border-bottom-color: #35332f; }
+  blockquote { border-left-color: #4a4741; color: #b0aca6; }
+  img { border-color: #35332f; }
+  .rodape { border-top-color: #35332f; color: #7d7973; }
+}
+@media print {
+  body { max-width: none; padding: 0; color: #000; background: #fff; }
+  h2 { page-break-after: avoid; }
+  table, img { page-break-inside: avoid; }
+}
+</style>
+</head>
+<body>
+<h1>As folhas do caderno seguem as etapas marcadas (D-603) — relatório do implementador</h1>
+<p>04/11/2026 · ramo <code>caderno-etapas-2026-11-04</code> · PRONTO PARA CONFERIR (não juntado: quem junta é a gerente)</p>
+<h2>O que foi feito</h2>
+<p>Agora, com "Dividir" marcado na janela do Automático, as folhas do caderno da etapa 7 (e a tela
+grande de caderno) mostram as páginas já divididas, antes do "Rodar": uma página em cada metade da
+folha, e a conta das folhas usa o número de páginas depois de dividir (Gradus: "Folha 1 de 35" com
+o Dividir, "Folha 1 de 18" sem). As outras etapas marcadas (margens, cortar, limpar...) já entravam
+no desenho de cada página; continuam entrando. Continua sendo montada só a folha à vista.</p>
+<p><strong>Por que saía inteiro:</strong> a lista das páginas do caderno vinha do livro como está, sem o Dividir do
+pedido. Cada lugar do caderno recebia a folha do scan inteira (as duas metades coladas lado a lado)
+e a conta usava uma página por folha do scan.</p>
+<p><strong>O conserto, na causa:</strong> a lista das páginas do caderno passa a ser a do livro depois das etapas
+marcadas, feita sem desenhar nada. Quais folhas o Dividir vai partir sai da mesma regra que a medida
+do "Rodar" usa no modo automático, que só olha o tamanho da folha (ScanTailor: mais larga que alta;
+jeito do programa: mais larga que 1,2 vez a altura), lido do PDF sem desenhar. Cada lugar do caderno
+recebe só a sua metade.</p>
+<h2>Arquivos</h2>
+<ul>
+<li><code>core/automatico.py</code>: <code>paginas_do_pdf_depois</code> (a lista depois do pedido, sem desenhar),
+  <code>vai_dividir_pelo_tamanho</code>, <code>_retangulos_do_pdf</code>; <code>folha_do_caderno</code> ganhou <code>metades</code> (opcional;
+  sem ele, igual a antes) e desenha uma vez a folha que dá duas posições.</li>
+<li><code>core/paginas_em_outro_processo.py</code>: leva <code>metades</code> ao servidor de páginas.</li>
+<li><code>ui/widgets/folhas_do_caderno.py</code>: a conta das folhas e as páginas de cada lado vêm da lista nova
+  (só com a etapa 7 aberta; fechada, como antes).</li>
+<li><code>tests/test_caderno_segue_as_etapas.py</code> (novo: reversão + 10 provas da conta sem desenhar).</li>
+<li><code>tests/test_decisoes_caderno_tela_grande.py</code> (4 provas novas no fim; as 11 antigas sem mudança).</li>
+<li><code>relatorios/caderno-etapas/</code> (ONDE-PAREI, prints, prints.py, prints.json, este relatório).</li>
+</ul>
+<h2>Como cumpri cada decisão</h2>
+<table>
+<thead>
+<tr>
+<th>Decisão</th>
+<th>Como</th>
+<th>Prova</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>D-603 "era para ser com divisão [...] mesmo que eu não tenha processado ainda"</td>
+<td>Dividir marcado → folhas com páginas divididas, sem Rodar</td>
+<td><code>test_d603_dividir_marcado_o_caderno_mostra_as_paginas_divididas</code> (reversão), <code>test_d603_marcar_e_desmarcar_o_dividir_muda_o_caderno_na_hora</code>, <code>test_d603_gradus_...</code>; prints 02</td>
+</tr>
+<tr>
+<td>D-603 "seguir todas as etapas marcadas (dividir, cortar, margens e as outras)"</td>
+<td>o desenho de cada página é o "depois" (já era); agora com a página certa</td>
+<td><code>test_d603_margens_marcadas_entram_nas_folhas_do_caderno</code>; print 04</td>
+</tr>
+<tr>
+<td>D-603 "a bolinha de carregamento aparece enquanto ele monta"</td>
+<td>a mesma bolinha de antes</td>
+<td>provas acima (<code>calculando()</code> logo depois de marcar); prints.json <code>*_bolinha: true</code></td>
+</tr>
+<tr>
+<td>04/11 "ele só carrega a folha que está aparecendo né?"</td>
+<td>sim: só a folha à vista; a conta do livro é só de números</td>
+<td><code>folha_do_caderno</code> recebe só as 4 posições da folha</td>
+</tr>
+<tr>
+<td>D-589 etapa desmarcada não entra</td>
+<td>Dividir desmarcado → lista do livro como está; margens desmarcadas → sem margem</td>
+<td><code>test_d603_marcar_e_desmarcar...</code>, <code>test_d603_margens...</code>, <code>test_d603_sem_o_dividir_a_lista_e_o_livro_como_esta</code>; print 03</td>
+</tr>
+<tr>
+<td>D-590 Dividir desmarcado não junta</td>
+<td>livro já dividido + Dividir desmarcado → continua dividido</td>
+<td><code>test_d603_dividir_desmarcado_nao_junta_as_folhas_ja_divididas</code></td>
+</tr>
+<tr>
+<td>D-577 / D-574 só mostra, não muda o livro; tamanho do scan; folha 1</td>
+<td>nada disso mudou</td>
+<td>as 11 provas antigas da D-574 passam; provas novas conferem o livro sem mudar</td>
+</tr>
+<tr>
+<td>D-064 bolinha</td>
+<td>igual</td>
+<td>idem</td>
+</tr>
+<tr>
+<td>D-605 o novo não estraga o que já estava</td>
+<td>etapa 7 fechada ou Dividir desmarcado: exatamente o caminho antigo; nenhum teste antigo mudado</td>
+<td>testes antigos abaixo</td>
+</tr>
+<tr>
+<td>D-604</td>
+<td>não feita (próxima tarefa)</td>
+<td>—</td>
+</tr>
+</tbody>
+</table>
+<h2>Testes</h2>
+<ul>
+<li><strong>Reversão:</strong> no código antigo (<code>016ec37a</code>) o teste falha ("Folha 1 de 2" no lugar de "Folha 1 de
+  3") e passa no novo. As 3 provas novas da D-603 com o Dividir/margens também falham no antigo; a da
+  D-590 passa nos dois (é guarda: o antigo já não juntava).</li>
+<li><strong>Prova de que a conta sem desenhar dá o mesmo que o "Rodar":</strong> 8 combinações (dois jeitos de
+  dividir, livro todo ou algumas páginas, pular ou não as mexidas à mão) num livro com folhas
+  inteiras, já divididas, juntadas, tiradas, mexidas à mão, em pé, deitadas, quase quadradas e
+  giradas: a lista é igual à do <code>aplicar</code> de verdade.</li>
+<li><strong>Prova de que a regra do tamanho é a da medida:</strong> comparada com a medida de verdade (que desenha e
+  pergunta ao ScanTailor) em folhas sintéticas e nas 12 primeiras folhas do Gradus, nos dois jeitos,
+  sem giro e girada: igual em todas.</li>
+<li><strong>No PC, um arquivo por vez (todos passaram):</strong> test_decisoes_caderno_tela_grande 15,
+  test_caderno_segue_as_etapas 11, test_cadernos 28, test_decisoes_automatico_ver_como_fica 22,
+  test_decisoes_automatico_margens_no_depois 5, test_decisoes_automatico 29,
+  test_decisoes_montar_cadernos 13, test_decisoes_livreto_ver 13 (+1 pulado), test_previa_composta
+  10, test_decisoes_juntar_todas 4, test_automatico_pular_depois_de_dividir 4,
+  test_decisoes_impressao 22, test_decisoes_automatico_opcoes_do_filtro 21,
+  test_decisoes_filtro_automatico 4, test_decisoes_dividir 21, test_promessas (caderno/p211) 1,
+  test_promessas p083 6.</li>
+<li><strong>GitHub:</strong> ver "Rodadas do GitHub" no fim.</li>
+</ul>
+<h2>Tempos medidos (PC do Samuel)</h2>
+<ul>
+<li><strong>A conta das páginas depois do Dividir</strong> (sem desenhar, no fio da tela):</li>
+<li>Gradus Primus (70 folhas → 140 páginas): 144 ms na primeira vez da sessão (67 ms são abrir a
+    DLL do ScanTailor, uma vez só; 9 ms ler os tamanhos do PDF); depois 1 ms.</li>
+<li>Livro grande (o Gradus repetido 10 vezes: 700 folhas → 1400 páginas, 108 MB): 75 ms na primeira
+    vez (58 ms ler os tamanhos), depois 13 ms. Sem o Dividir: 0,2 ms.</li>
+<li>A primeira versão usava o próprio <code>_dividir</code> do Rodar numa cópia: 0,35 s nas 700 folhas (a tela
+    pararia); trocada pela conta direta.</li>
+<li><strong>Na janela de verdade, Gradus</strong> (prints.json): folha 1 com o Dividir em 1,0 a 1,4 s; desmarcar
+  0,8 s; maior parada da tela 0,025 s (limite 0,3 s).</li>
+<li><strong>Com "Margens iguais" marcada: ~45-50 s por folha</strong>, igual no código antigo (medido: antigo 45,0
+  e 44,7 s; novo 44,7 e 50,4 s, folhas 1 e 2). Não é desta mudança: ver Bugs.</li>
+</ul>
+<h2>Prints (janela de verdade fora da tela, pasta de dados própria <code>_tmp/dados-prints-caderno-etapas</code>)</h2>
+<ul>
+<li><code>01-etapa-1-marcada-montando.png</code>: abrindo a etapa 7 com a etapa 1 marcada, a bolinha girando.</li>
+<li><code>02-etapa-1-marcada-folha-1-dividida.png</code>: "Folha 1 de 35"; frente: página de exercícios e a
+  contracapa, cada uma numa metade; verso: a capa azul e o vocabulário.</li>
+<li><code>03-etapa-1-desmarcada-scans-inteiros.png</code>: "Folha 1 de 18"; cada metade com o scan inteiro (como
+  o print a-49).</li>
+<li><code>04-etapas-1-e-6-marcadas-com-margens.png</code>: Dividir e Margens marcadas; páginas divididas com a
+  margem branca.</li>
+<li><code>05-etapas-1-e-6-folha-2.png</code>: a seta para a folha 2, com as margens.</li>
+</ul>
+<h2>Ressalvas</h2>
+<ol>
+<li><strong>A conta das folhas usa a regra do tamanho, não a medida da imagem.</strong> É a mesma regra que a
+   medida usa no modo automático (provado), mas se um dia a medida passar a olhar o conteúdo (ou se a
+   DLL do ScanTailor recusar a imagem num processo e aceitar no outro), a conta e o desenho podem
+   discordar numa folha. Nesse caso a folha mostra o scan inteiro naquele lugar (como antes), sem
+   erro.</li>
+<li>Se o <code>_dividir</code> do "Rodar" mudar, <code>paginas_do_pdf_depois</code> tem de mudar junto (está escrito no
+   código; a prova <code>test_d603_lista_sem_desenhar_e_a_mesma_do_rodar</code> acusa a diferença).</li>
+<li>A primeira vez que a etapa 7 abre com o Dividir marcado custa até ~0,15 s no fio da tela (DLL +
+   tamanhos do PDF); num livro de 900 folhas a leitura dos tamanhos deve ficar por volta de 0,1 s.
+   Abaixo do limite de 0,3 s, mas não é zero.</li>
+<li>A bolinha aparece pelo mesmo caminho de antes; nos prints ela está presente na hora de montar
+   (<code>01</code>), mas a foto pega um instante só.</li>
+</ol>
+<h2>Bugs para a Lista de bugs (não consertados: não impedem a tarefa)</h2>
+<ul>
+<li><strong>04/11/2026 — Etapa 7 com "Margens iguais" marcada: cada folha do caderno leva ~45-50 s no
+  Gradus, e a segunda folha não aproveita a conta da primeira.</strong> Já era assim antes desta mudança
+  (código antigo: 45,0 s e 44,7 s). Cada página da folha mede o livro inteiro para as margens; a
+  folha é feita no servidor de páginas, e a conta guardada de uma folha não serve à seguinte. A
+  bolinha gira o tempo todo, a tela não para. Onde: <code>core/automatico.depois_da_pagina</code> /
+  <code>folha_do_caderno</code> (servidor de páginas). Prints 04 e 05 (<code>04_margens_s</code>, <code>05_seta_com_margens_s</code>
+  em prints.json).</li>
+<li><strong>GitHub, rodada 41777456037:</strong> <code>test_promessas.py::test_p083_jeitos_no_automatico[Guardar
+  tudo-tudo]</code> deu ERROR na limpeza do teste (a prévia da tela de conferir, <code>ui/tarefas.py</code> linha 900,
+  tentou abrir o PDF do teste depois de ele ser apagado). No PC o teste passa (6 de 6). O caminho
+  não passa pelas folhas do caderno; mesmo assim tirei da abertura da janela a única conta nova
+  (agora só com a etapa 7 aberta) e rodei de novo — ver abaixo.</li>
+</ul>
+<h2>Rodadas do GitHub</h2>
+<ul>
+<li><strong>41777456037</strong> (conjunto inteiro + <code>teste_botoes.py</code>, commit <code>8bf6356a</code>): 1 ERROR na parte 1,
+  <code>test_promessas.py::test_p083_jeitos_no_automatico[Guardar tudo-tudo]</code> (prévia da tela de conferir
+  abrindo o PDF do teste já apagado, na limpeza do teste); as outras 4 partes e os botões passaram.
+  No PC o p083 passa.</li>
+<li><strong>41780218098</strong> (conjunto inteiro + <code>teste_botoes.py</code>, commit <code>14c512a2</code>, o final): a parte 1 (com o
+  p083) passou; 1 falha na parte 2, <code>test_decisoes_so_as_letras.py::test_d148_desfazer_o_automatico_
+  devolve_o_so_as_letras_do_livro</code> ("não aconteceu a tempo": o projeto.json gravado depois de 15 s;
+  nada de caderno nem de Dividir; na rodada anterior a mesma parte passou; no PC 5 de 5). Rodei de
+  novo só a parte que falhou: <strong>passou. Rodada inteira verde</strong> (todas as 5 partes, botões e prints).</li>
+<li><strong>41777458962</strong> (filtro de velocidade, <code>016ec37a</code> x <code>8bf6356a</code>, a última mudança em <code>core/</code>):
+  <strong>"igual (dentro do vai-e-vem)"</strong> — abrir o livro -0,5%, trocar de página +0,4%, Mágico pro -0,4%,
+  Preto e branco +0,5%.</li>
+<li>As duas falhas soltas (p083 e d148) parecem de tempo da máquina do GitHub, não desta mudança; ficam
+  anotadas para o verificador olhar se voltarem.</li>
+</ul>
+<p class="rodape">Editor de Impressão &middot; gerado em 04/11/2026 às 02:42</p>
+</body>
+</html>
