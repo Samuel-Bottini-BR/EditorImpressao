@@ -51,6 +51,16 @@ Regra: nenhum desses muda. A folha inteira (não dividida) continua girando a fo
    Print para a pergunta: `prints/antes-02-esquerda-1.png` (o defeito) e `prints/depois-02-painel-esquerda.png`
    (com "só esta folha", já consertado).
 
+## Para a gerente: um teste antigo contradiz a D-618 (não mexi nele)
+
+`tests/test_recomeco_limpa_o_historico.py` (5 testes) falha no GitHub (rodada 41900193119) e no PC. O ajudante
+`_conferir_com_o_livro_dividido_e_mexer` divide o livro todo, vai à página 1 (metade esquerda da folha 1) e chama
+`_girar_folhas(90)` com "só esta folha"; depois cobra `folhas[0].rotacao == 90` (linha 126). É exatamente o
+comportamento que a D-618 tira: numa folha dividida, agora gira só a página 1 (`paginas[0].giro_da_pagina == 90`) e
+a folha fica em 0. O assunto do teste é outro (o Ctrl+Z depois de recomeçar); o giro ali é só "uma ação qualquer".
+Não mudei o teste (regra). Sugestão para a gerente decidir: no ajudante, cobrar o giro da página 1 em vez do da
+folha (ou girar com o livro ainda não dividido).
+
 ## Andamento
 
 - [x] reproduzir na janela de verdade (antes): `prints/antes-*.png`, `anotacoes-antes.txt`
@@ -59,7 +69,7 @@ Regra: nenhum desses muda. A folha inteira (não dividida) continua girando a fo
 - [x] conserto: commit 93a390ed
 - [x] prints depois, e o que funcionava ao redor: `prints/depois-*.png`
 - [x] folha inteira: medida (`prints/folha-*.png`) e, depois do "girar - sim", gira como foto (`prints/foto-*.png`)
-- [ ] GitHub (suíte e filtro de velocidade)
+- [x] GitHub: suíte 41903363460 (só o teste antigo que contradiz a D-618 falha); velocidade 41900198976 igual
 
 ## Como cumpri cada decisão
 

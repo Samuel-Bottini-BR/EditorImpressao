@@ -125,7 +125,7 @@ O teste novo `tests/test_decisoes_girar_pagina.py` foi rodado também no código
 (`test_reversao_d618_folha_inteira_com_*`) também falham lá pela medida: com o corte à mão a página sai com proporção
 0,36 em vez de 1,37; com o tamanho escolhido, 1,42 em vez de 0,71 (apertada).
 
-GitHub: GITHUB
+GitHub: rodada 41903363460 (último commit 06b80752): partes 1, 3, 4 e 5 e os botões/prints da janela real passaram; a parte 2 falhou só em `tests/test_recomeco_limpa_o_historico.py` (5 testes, "assert 0 == 90"), que contradiz a D-618 (ver "Para a gerente" no ONDE-PAREI; o teste não foi mudado). A rodada 41900193119 (commit 3b6f998c) deu o mesmo. Filtro de velocidade 41900198976 (obra-2026-10-26 → 3b6f998c): **igual** em tudo (abrir +0,9%, trocar de página +0,5%, Mágico pro +0,9%, Preto e branco -1,0%, todos dentro do vai-e-vem). O último commit só acrescentou contas chamadas no clique de girar (nada no processamento).
 
 ## Perguntas para o Samuel
 
@@ -135,6 +135,13 @@ GitHub: GITHUB
    passa a se chamar "Girar a página", a lista diz "só esta página / todas as páginas / daqui em diante / só as pares
    / só as ímpares", e cada página gira sozinha, virada como a da tela. O mesmo para o girar da grade "ver todas"
    (hoje gira as folhas das páginas escolhidas). Pode ser assim?
+
+## Um teste antigo contradiz a D-618
+
+`tests/test_recomeco_limpa_o_historico.py`: o ajudante divide o livro, gira a página 1 com "só esta folha" e cobra
+que a FOLHA 1 ficou girada (`folhas[0].rotacao == 90`). Com a D-618 é a página 1 que gira, e a folha fica em 0. O teste
+trata de outra coisa (o Ctrl+Z depois de recomeçar). Não foi mudado: a gerente decide (sugestão: cobrar o giro da
+página 1, ou girar antes de dividir).
 
 ## Ressalvas
 
