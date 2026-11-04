@@ -61,6 +61,16 @@ a folha fica em 0. O assunto do teste é outro (o Ctrl+Z depois de recomeçar); 
 Não mudei o teste (regra). Sugestão para a gerente decidir: no ajudante, cobrar o giro da página 1 em vez do da
 folha (ou girar com o livro ainda não dividido).
 
+### Depois da autorização (04/11)
+
+- Ajudante trocado (commit b4a5538c): 4 dos 5 passam.
+- Falta 1: `test_desligar_o_dividir_nao_recomeca_e_o_ctrl_z_continua_certo`, linha 170, FORA do ajudante:
+  `assert janela.projeto.folhas[0].rotacao == 90  # o trabalho ficou`, logo depois de "desligar o Dividir" no
+  Automático. Com a D-618 o giro está na página 1 (`giro_da_pagina == 90`, guardado; a folha não está mais dividida,
+  então ele não aparece até o Ctrl+Z dividir de novo, e aí volta). Não mexi (só o ajudante foi autorizado).
+  Proposta: `assert janela.projeto.paginas[0].giro_da_pagina == 90  # o trabalho ficou (D-618: na página)`.
+- Achado e consertado (b12d6f61): juntar a folha e dividir noutra linha fazia as metades novas herdarem o giro.
+
 ## Andamento
 
 - [x] reproduzir na janela de verdade (antes): `prints/antes-*.png`, `anotacoes-antes.txt`
