@@ -29,6 +29,10 @@ O QUE FAZ
     "deixar como veio" e "não cortar esta". A divisão não entra: a página continua separada e a
     outra página da folha não muda. Tudo é UMA ação do Histórico (Ctrl+Z volta tudo, Ctrl+Y refaz).
 
+D-623 (04/11/2026, no mesmo menu): na MINIATURA da tira, embaixo do "Desfazer nesta página",
+    "adicionar página em branco antes" e "adicionar página em branco depois"
+    (TelaConferir.adicionar_pagina_em_branco; a conta em core/paginas_em_branco.py).
+
 ONDE ESTÁ LIGADO
     TelaConferir.__init__ chama ligar(tela) (filtros do botão direito na área da página e na tira);
     TelaConferir._area_de_visualizador põe acrescentar_ao_menu no menu do botão direito do Mover
@@ -320,14 +324,36 @@ def acrescentar_ao_menu(tela, menu: QMenu, indice: int | None = None) -> QMenu |
     return submenu
 
 
-def abrir_menu(tela, indice: int, posicao_global) -> QMenu | None:
+# D-623 (Samuel, 04/11/2026, print a-80: "eu queria conseguir com botão direito apertando no meio
+# das paginas aperece opção de adicionar folha em branco."): na miniatura da tira, o mesmo menu
+# ganha estes dois (TelaConferir.adicionar_pagina_em_branco). Seguro mudar: os textos.
+ANTES_EM_BRANCO = "adicionar página em branco antes"
+DEPOIS_EM_BRANCO = "adicionar página em branco depois"
+
+
+def acrescentar_pagina_em_branco(tela, menu: QMenu, indice: int) -> None:
+    """Põe em `menu` "adicionar página em branco antes" e "... depois" da página `indice`
+    (D-623; só no botão direito da miniatura)."""
+    metodo = getattr(tela, "adicionar_pagina_em_branco", None)
+    if not callable(metodo):
+        return
+    for texto, depois in ((ANTES_EM_BRANCO, False), (DEPOIS_EM_BRANCO, True)):
+        acao = menu.addAction(texto)
+        acao.triggered.connect(lambda _marcada=False, d=depois: metodo(indice, d))
+
+
+def abrir_menu(tela, indice: int, posicao_global, da_tira: bool = False) -> QMenu | None:
     """Abre (sem esperar) o menu do botão direito da página `indice`, em `posicao_global`.
+    Na miniatura da tira (`da_tira`), com o "adicionar página em branco" (D-623) embaixo.
     Guarda o menu em tela._menu_desfazer (o Qt não o apaga enquanto está aberto)."""
     menu = QMenu(tela)
     menu.setObjectName("menuDoBotaoDireitoDaPagina")
     if acrescentar_ao_menu(tela, menu, indice) is None:
         menu.deleteLater()
         return None
+    if da_tira:
+        menu.addSeparator()
+        acrescentar_pagina_em_branco(tela, menu, indice)
     anterior = getattr(tela, "_menu_desfazer", None)
     if anterior is not None:
         try:
@@ -434,13 +460,14 @@ class _FiltroDoBotaoDireito(QObject):
             if getattr(tela, "projeto", None) is None or not tela._pronta():
                 return False
             posicao = evento.globalPos()
-            if vigiado is getattr(tela, "tira", None):
+            da_tira = vigiado is getattr(tela, "tira", None)
+            if da_tira:
                 debaixo = vigiado.childAt(vigiado.mapFromGlobal(posicao)) or QApplication.widgetAt(posicao)
                 indice = pagina_da_miniatura(tela, debaixo)
             else:
                 indice = pagina_no_ponto(tela, posicao)
             if indice is not None:
-                abrir_menu(tela, indice, posicao)
+                abrir_menu(tela, indice, posicao, da_tira=da_tira)
         except Exception:  # noqa: BLE001 - o botão direito nunca fecha a janela
             registrar_erro("botão direito na página", traceback.format_exc())
         evento.accept()

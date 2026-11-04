@@ -3258,7 +3258,9 @@ def _filtrar(projeto: Projeto, pagina: ConfigPagina, img: np.ndarray,
     (acertar_aviso_do_reforco). Arriscado: devolver aqui uma folha de outro
     tamanho (a encadernacao e a folha escolhida contam com o tamanho da
     pagina)."""
-    if getattr(pagina, "em_branco", False):
+    # D-623 (04/11/2026): a pagina em branco posta a mao (ConfigPagina.inserida) sai
+    # sempre branca, mesmo se o "deixar em branco" dela for desligado
+    if getattr(pagina, "em_branco", False) or getattr(pagina, "inserida", 0):
         acertar_aviso_do_reforco(projeto, pagina)
         return np.full(img.shape[:2], 255, np.uint8), True
     saida = _filtrar_a_pagina(projeto, pagina, img, dpi, dpi_do_scan, dpi_pedido)

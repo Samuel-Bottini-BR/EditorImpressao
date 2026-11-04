@@ -3948,6 +3948,8 @@ class TelaConferir(QWidget):
         for posicao, pagina in enumerate(self.projeto.paginas):
             if not 0 <= pagina.folha < len(self.projeto.folhas):
                 continue
+            if getattr(pagina, "inserida", 0):
+                continue           # D-623: o Dividir é das folhas; a página posta não é
             if not self.projeto.folhas[pagina.folha].dividir:
                 if pagina.folha in ja_foram:
                     continue
@@ -5419,6 +5421,19 @@ class TelaConferir(QWidget):
             self.indice_folha = folha
             self.atualizar()
 
+    def _miniatura_branca(self, indice: int) -> None:
+        """D-623: a miniatura da página em branco posta à mão: uma folha branca da
+        proporção da prévia dela (já desenhada) ou, antes, de uma folha em pé."""
+        img = None
+        if self.previas is not None:
+            img = self.previas.ja_pronta(indice, self._dpi_atual)
+        altura, largura = (img.shape[:2] if img is not None else (140, 100))
+        escala = 140.0 / max(1, altura)
+        branca = np.full((max(1, int(altura * escala)), max(1, int(largura * escala)), 3), 255, np.uint8)
+        chave = f"em-branco-{branca.shape[0]}x{branca.shape[1]}"
+        if self.tira._como_sai.get(indice, ("",))[0] != chave:
+            self.tira.definir_como_sai(indice, chave, branca)
+
     def _acertar_as_miniaturas_movidas(self) -> None:
         """Etapa 9b-2 (D-547: "Mover uma página → a miniatura [...] mostra
         igual ao PDF"): a miniatura da página movida/redimensionada ou posta
@@ -5431,6 +5446,11 @@ class TelaConferir(QWidget):
         if self.projeto is None or self.previas is None or self.trabalha_com_folhas:
             return
         for indice, pagina in enumerate(self.projeto.paginas):
+            if getattr(pagina, "inserida", 0):
+                # D-623: a página em branco posta à mão aparece branca (não a folha
+                # da vizinha, de quem ela copia só o tamanho)
+                self._miniatura_branca(indice)
+                continue
             movida = (pagina.tamanho_folha_cm is not None
                       or etapas_core.conteudo_mexido(self.projeto, pagina))
             if not movida:
@@ -5635,6 +5655,34 @@ class TelaConferir(QWidget):
         ação só do Histórico. A conta e o que cada etapa grava estão em
         ui/desfazer_nesta_pagina.py. Devolve True se mudou."""
         return desfazer_nesta_pagina.desfazer(self, indice, etapas)
+
+    @protegido
+    def adicionar_pagina_em_branco(self, indice: int, depois: bool) -> bool:
+        """D-623 (Samuel, 04/11/2026, print a-80: "eu queria conseguir com botão
+        direito apertando no meio das paginas aperece opção de adicionar folha em
+        branco."): põe uma página em branco antes (`depois` False) ou depois da
+        página `indice`, do tamanho dela, numa ação do desfazer (core/
+        paginas_em_branco.campos_para_inserir; historico_acoes.
+        CAMPO_DAS_INSERIDAS). Pelo _registrar de sempre (ele limpa as prévias e
+        remonta a tira, como o dividir). A tela não muda de página. Devolve True
+        se pôs."""
+        from core import paginas_em_branco
+
+        if not self._pronta() or self.projeto is None:
+            return False
+        campos = paginas_em_branco.campos_para_inserir(self.projeto, indice, depois)
+        if not campos:
+            return False
+        atual = self.projeto.paginas[self.indice_pagina]             if 0 <= self.indice_pagina < len(self.projeto.paginas) else None
+        lado = "depois" if depois else "antes"
+        self._registrar("pagina_em_branco", "pagina", [], campos,
+                        f"Página em branco {lado} da página {indice + 1}")
+        if atual is not None:                      # a mesma página continua na tela
+            nova = next((n for n, p in enumerate(self.projeto.paginas) if p is atual), None)
+            if nova is not None and nova != self.indice_pagina:
+                self.indice_pagina = nova
+                self.atualizar()
+        return True
 
     def _com_os_avisos_de_agora(self, alvo: str, indices: list[int], campos: dict) -> dict:
         """Etapa 9b-2 da obra (lista única 23/10, 1.6: "Mexo numa página que

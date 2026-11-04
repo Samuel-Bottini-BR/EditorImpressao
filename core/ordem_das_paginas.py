@@ -49,8 +49,19 @@ from historico_acoes import CAMPO_DA_ORDEM  # noqa: E402
 
 
 def chave(pagina) -> list:
-    """[folha, metade] da página: o que a identifica na ordem guardada."""
+    """[folha, metade] da página: o que a identifica na ordem guardada. D-623: a página em
+    branco posta à mão ganha o número dela no fim ([folha, metade, número]); a que veio do PDF
+    continua [folha, metade], como o desfazer de antes gravou."""
+    numero = int(getattr(pagina, "inserida", 0) or 0)
+    if numero:
+        return [int(pagina.folha), str(pagina.metade), numero]
     return [int(pagina.folha), str(pagina.metade)]
+
+
+def _chave_do_item(item) -> tuple:
+    """A chave guardada (lista) como tupla: [folha, metade] ou [folha, metade, número]."""
+    numero = int(item[2]) if len(item) > 2 else 0
+    return (int(item[0]), str(item[1])) + ((numero,) if numero else ())
 
 
 def chaves(projeto) -> list[list]:
@@ -72,12 +83,12 @@ def por_na_ordem(projeto, ordem) -> None:
         return
     filas: dict[tuple, deque] = defaultdict(deque)
     for pagina in projeto.paginas:
-        filas[tuple(chave(pagina))].append(pagina)
+        filas[_chave_do_item(chave(pagina))].append(pagina)
     nova = []
     usadas = set()
     for item in ordem:
         try:
-            fila = filas.get((int(item[0]), str(item[1])))
+            fila = filas.get(_chave_do_item(item))
         except (TypeError, ValueError, IndexError):
             continue
         if fila:
@@ -105,10 +116,12 @@ def bloco(projeto, posicao: int) -> list[int]:
     if not 0 <= posicao < len(paginas):
         return []
     pagina = paginas[posicao]
-    if _dividida(projeto, pagina):
+    # D-623: a página em branco posta à mão anda sozinha e não anda com a folha
+    if _dividida(projeto, pagina) or getattr(pagina, "inserida", 0):
         return [posicao]
     return [n for n, p in enumerate(paginas)
-            if p.folha == pagina.folha and not _dividida(projeto, p)]
+            if p.folha == pagina.folha and not _dividida(projeto, p)
+            and not getattr(p, "inserida", 0)]
 
 
 def ordem_depois_de_mover(projeto, posicoes: list[int], antes_de: int | None) -> list:
@@ -146,7 +159,8 @@ def fora_da_ordem_do_pdf(projeto) -> bool:
 def folha_espalhada(projeto, indice_folha: int) -> bool:
     """As páginas da folha não estão uma seguida da outra na lista (uma delas
     foi mudada de lugar)?"""
-    lugares = [n for n, p in enumerate(projeto.paginas) if p.folha == indice_folha]
+    lugares = [n for n, p in enumerate(projeto.paginas)
+               if p.folha == indice_folha and not getattr(p, "inserida", 0)]   # D-623
     return bool(lugares) and lugares[-1] - lugares[0] + 1 != len(lugares)
 
 
@@ -159,7 +173,7 @@ def ordem_depois_de_trocar(projeto, trocas: dict[int, list]) -> list[list]:
     ja = set()
     for pagina in projeto.paginas:
         f = pagina.folha
-        if f in trocas:
+        if f in trocas and not getattr(pagina, "inserida", 0):     # D-623: não é da folha
             if f not in ja:
                 ja.add(f)
                 ordem.extend([list(c) for c in trocas[f]])
@@ -191,8 +205,10 @@ def ordem_com_a_capa_na_frente(projeto, folha: int = 0) -> list | None:
     if not 0 <= folha < len(projeto.folhas) or not projeto.folhas[folha].dividir:
         return None
     paginas = projeto.paginas
-    direita = next((p for p in paginas if p.folha == folha and p.metade == "direita"), None)
-    esquerda = next((p for p in paginas if p.folha == folha and p.metade == "esquerda"), None)
+    direita = next((p for p in paginas if p.folha == folha and p.metade == "direita"
+                    and not getattr(p, "inserida", 0)), None)            # D-623
+    esquerda = next((p for p in paginas if p.folha == folha and p.metade == "esquerda"
+                     and not getattr(p, "inserida", 0)), None)
     if direita is None or esquerda is None:
         return None
     resto = [p for p in paginas if p is not direita and p is not esquerda]

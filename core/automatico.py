@@ -385,7 +385,8 @@ def paginas_mexidas(projeto, pedido: Pedido) -> list[int]:
         folhas = set(folhas_do_pedido(projeto, pedido))
         for folha in projeto.folhas:
             if folha.indice in folhas and E.mexida_a_mao(projeto, folha, E.DIVIDIR):
-                achadas.update(p.indice for p in projeto.paginas if p.folha == folha.indice)
+                achadas.update(p.indice for p in projeto.paginas if p.folha == folha.indice
+                               and not getattr(p, "inserida", 0))   # D-623
     return sorted(achadas)
 
 
@@ -937,7 +938,9 @@ def _dividir(projeto, pedido: Pedido, medidas, pular: _Puladas, g: _Gravador) ->
         medida = medidas.get(folha.indice)
         if medida is None:
             continue
-        pags = [p for p in projeto.paginas if p.folha == folha.indice]
+        # D-623: a pagina em branco posta a mao nao e da folha (core/paginas_em_branco)
+        pags = [p for p in projeto.paginas if p.folha == folha.indice
+                and not getattr(p, "inserida", 0)]
         if any(p in pular for p in pags):     # pela pagina, nao pelo numero (_Puladas)
             continue
         feitas.add(folha.indice)
@@ -1126,7 +1129,8 @@ def _desligar(projeto, pedido: Pedido, etapas_pedidas: list, escopo: list, g: _G
             for folha in projeto.folhas:
                 if folha.indice not in folhas or not folha.dividir:
                     continue
-                pags = [p for p in projeto.paginas if p.folha == folha.indice]
+                pags = [p for p in projeto.paginas if p.folha == folha.indice
+                and not getattr(p, "inserida", 0)]          # D-623
                 g.na_folha(folha, "dividir", False)
                 from modelos import METADE_DIREITA
 
@@ -1172,7 +1176,8 @@ def _avisos_medidos(projeto, pedido: Pedido, medidas, g: _Gravador) -> None:
         if ENDIREITAR in rodou:
             g.na_folha(folha, "angulo_detectado", float(medida.angulo_detectado))
             g.na_folha(folha, "confianca_angulo", float(medida.confianca_angulo))
-        pags = [p for p in projeto.paginas if p.folha == folha.indice]
+        pags = [p for p in projeto.paginas if p.folha == folha.indice
+                and not getattr(p, "inserida", 0)]          # D-623
         for metade, avisos, tem_cor, discorda, angulo in medida.partes:
             pagina = next((p for p in pags if p.metade == metade), None)
             if pagina is None and len(pags) == 1:
@@ -1677,7 +1682,8 @@ def paginas_do_pdf_depois(projeto, pedido: Pedido) -> list[tuple[int, int, str]]
     pular = set(paginas_mexidas(projeto, so_dividir)) if pedido.pular_mexidas else set()
     da_folha: dict[int, list] = {}
     for p in projeto.paginas:
-        da_folha.setdefault(p.folha, []).append(p)
+        if not getattr(p, "inserida", 0):      # D-623: a pagina posta a mao nao e da folha
+            da_folha.setdefault(p.folha, []).append(p)
     dividida = {f.indice: bool(f.dividir) for f in projeto.folhas}
     divide: dict[int, bool] = {}
     for i in folhas_do_pedido(projeto, pedido):
@@ -1690,10 +1696,13 @@ def paginas_do_pdf_depois(projeto, pedido: Pedido) -> list[tuple[int, int, str]]
         dividida[i] = divide[i] and bool(pags)    # o `dividir` da folha depois (_dividir)
     # (origem, folha, metade, apagada) de cada pagina da lista depois do Dividir, na ordem
     novas = []
+    inseridas = set()
     for p in projeto.paginas:
         f = p.folha
-        if f not in divide:
+        if f not in divide or getattr(p, "inserida", 0):     # D-623: fica como esta
             novas.append((p.indice, f, p.metade, p.apagada))
+            if getattr(p, "inserida", 0):
+                inseridas.add(p.indice)
             continue
         pags = da_folha[f]
         if len(pags) >= 2:
@@ -1717,6 +1726,9 @@ def paginas_do_pdf_depois(projeto, pedido: Pedido) -> list[tuple[int, int, str]]
     lista, ja_sairam = [], set()
     for origem, f, metade, apagada in novas:
         if apagada:
+            continue
+        if origem in inseridas:                    # D-623: a pagina posta sai sempre
+            lista.append((origem, f, metade))
             continue
         if metade != METADE_INTEIRA and 0 <= f < len(projeto.folhas) and not dividida.get(f, False):
             if f in ja_sairam:
@@ -1831,7 +1843,8 @@ def avisos_do_livro(projeto, medidas: dict[int, MedidaDaFolha]) -> int:
         if novos != folha.alertas:
             folha.alertas = novos
             mudaram += 1
-        pags = [p for p in projeto.paginas if p.folha == folha.indice]
+        pags = [p for p in projeto.paginas if p.folha == folha.indice
+                and not getattr(p, "inserida", 0)]          # D-623
         for metade, avisos, tem_cor, _d, _a in medida.partes:
             pagina = next((p for p in pags if p.metade == metade), None)
             if pagina is None and len(pags) == 1:
