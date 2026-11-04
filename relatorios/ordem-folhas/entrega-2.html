@@ -1,0 +1,234 @@
+<!doctype html>
+<html lang="pt-BR">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Entrega 2 - D-616</title>
+<style>
+:root { color-scheme: light dark; }
+* { box-sizing: border-box; }
+body {
+  font: 17px/1.65 "Segoe UI", system-ui, sans-serif;
+  max-width: 46rem; margin: 0 auto; padding: 2.5rem 1.5rem 6rem;
+  color: #1c1c1e; background: #fdfdfc;
+}
+h1 { font-size: 2rem; line-height: 1.2; margin: 0 0 .3em; letter-spacing: -.02em; }
+h2 { font-size: 1.35rem; margin: 2.4em 0 .6em; padding-top: .8em;
+     border-top: 1px solid #e6e4e0; letter-spacing: -.01em; }
+h3 { font-size: 1.1rem; margin: 1.8em 0 .4em; }
+h1 + p, h2 + p { margin-top: .4em; }
+p, li { margin: 0 0 .9em; }
+ul, ol { padding-left: 1.3em; }
+strong { font-weight: 640; }
+code {
+  font: .88em ui-monospace, "Cascadia Code", Consolas, monospace;
+  background: #f1efec; padding: .12em .35em; border-radius: 4px;
+}
+pre {
+  background: #f1efec; padding: 1em 1.1em; border-radius: 8px;
+  overflow-x: auto; line-height: 1.5;
+}
+pre code { background: none; padding: 0; }
+blockquote {
+  margin: 1.2em 0; padding: .1em 0 .1em 1.1em;
+  border-left: 3px solid #c9c5be; color: #55524d;
+}
+table {
+  border-collapse: collapse; width: 100%; margin: 1.2em 0;
+  font-size: .95rem; display: block; overflow-x: auto;
+}
+th, td { padding: .5em .8em; text-align: left; border-bottom: 1px solid #e6e4e0; }
+th { font-weight: 620; background: #f7f5f2; white-space: nowrap; }
+tr:last-child td { border-bottom: none; }
+img { max-width: 100%; height: auto; border-radius: 6px; margin: 1em 0;
+      border: 1px solid #e6e4e0; }
+hr { border: none; border-top: 1px solid #e6e4e0; margin: 2.5em 0; }
+.rodape { margin-top: 4em; padding-top: 1.2em; border-top: 1px solid #e6e4e0;
+          font-size: .85rem; color: #86827c; }
+@media (prefers-color-scheme: dark) {
+  body { color: #e8e6e3; background: #1a1917; }
+  h2 { border-top-color: #35332f; }
+  code, pre, th { background: #262421; }
+  th, td { border-bottom-color: #35332f; }
+  blockquote { border-left-color: #4a4741; color: #b0aca6; }
+  img { border-color: #35332f; }
+  .rodape { border-top-color: #35332f; color: #7d7973; }
+}
+@media print {
+  body { max-width: none; padding: 0; color: #000; background: #fff; }
+  h2 { page-break-after: avoid; }
+  table, img { page-break-inside: avoid; }
+}
+</style>
+</head>
+<body>
+<h1>Entrega 2: D-616, a caixinha "A 1ª folha é a capa aberta"</h1>
+<p>Ramo <code>ordem-folhas-2026-11-04</code>, depois da entrega 1. Está <strong>pronta para conferir</strong>: passou nos testes da máquina e na janela de verdade. Quem dá o "está bom" é o Samuel.</p>
+<h2>O que o Samuel pediu</h2>
+<p>Print a-61, com a contracapa na frente da folha 1 do caderno: "essa capa está no lugar certo?". E também: "qual seria o jeito para resolver esse problema sem ser na mão?". A gerente propôs a caixinha "A 1ª folha é a capa aberta" no Dividir do Automático, e ele respondeu "ok".</p>
+<h2>O que mudou, em português simples</h2>
+<ul>
+<li>No Automático, a etapa "Dividir folhas ao meio" ganhou a caixinha <strong>"A 1ª folha é a capa aberta"</strong>, desmarcada.
+  Embaixo dela há uma explicação em uma frase.</li>
+<li><strong>Marcada:</strong> ao rodar o Dividir, a metade da direita da 1ª folha (a capa) vira a página 1. A metade da esquerda (a contracapa) vai para a última página.</li>
+<li><strong>Antes do "Rodar"</strong>, a prévia e as folhas do caderno da etapa 7 já mostram o livro assim. A prévia começa pela capa, e a folha 1 do caderno tem a capa na frente.</li>
+<li>A escolha fica guardada <strong>no livro</strong> e não vai na receita.</li>
+<li>O <strong>Ctrl+Z</strong> desfaz tudo de uma vez: a ordem das páginas e a caixinha guardada.</li>
+<li><strong>Desmarcada</strong>, nada muda. Se a etapa Dividir não estiver marcada, a caixinha também não faz nada (D-589).</li>
+</ul>
+<h2>Como cumpri cada decisão</h2>
+<table>
+<thead>
+<tr>
+<th>Decisão</th>
+<th>Como</th>
+<th>Prova</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>D-616 caixinha, desmarcada, por livro</td>
+<td><code>Projeto.capa_aberta</code> (False de fábrica e no projeto antigo); opção da etapa Dividir; fora da receita</td>
+<td><code>test_d616_caixinha_desmarcada...</code>, print e2-02</td>
+</tr>
+<tr>
+<td>D-616 capa na página 1, contracapa na última</td>
+<td><code>core/automatico._capa_aberta</code> com o mesmo jeito de mudar a ordem da D-615</td>
+<td><code>test_d616_marcada_o_dividir...</code>, prints e2-07 e e2-pdf-e2-pagina-1</td>
+</tr>
+<tr>
+<td>D-603 / D-614 antes do Rodar</td>
+<td><code>paginas_do_pdf_depois</code> segue a mesma regra; o "depois" da prévia aplica o pedido numa cópia</td>
+<td><code>test_d616_a_previa_e_o_caderno...</code>, prints e2-04 e e2-06 (o e2-03 é o "antes", igual ao a-61)</td>
+</tr>
+<tr>
+<td>D-589 desmarcada não faz</td>
+<td>sem a caixinha, ou sem a etapa Dividir: nada</td>
+<td><code>test_d616_desmarcada...</code>, <code>test_d616_marcada_sem_o_dividir...</code></td>
+</tr>
+<tr>
+<td>D-004 páginas mexidas à mão</td>
+<td>a regra só vale se o Dividir rodou de verdade na 1ª folha (não pulada)</td>
+<td>código (<code>feitas</code>)</td>
+</tr>
+<tr>
+<td>Livro já dividido</td>
+<td>rodar de novo com a caixinha põe a capa na frente; rodar outra vez não muda nada</td>
+<td><code>test_d616_folha_ja_dividida...</code></td>
+</tr>
+</tbody>
+</table>
+<h2>Decisões técnicas (minhas)</h2>
+<ul>
+<li>"1ª folha" quer dizer a folha 1 do PDF.</li>
+<li>A caixinha vale <strong>só para o Dividir do Automático</strong>, que é onde ela está. O "dividir esta" e o "dividir todas" da ferramenta Dividir não olham para ela. Para casos assim, existe o arrastar da D-615.</li>
+<li>Desmarcar a caixinha e rodar de novo <strong>não</strong> devolve a contracapa ao lugar (D-589: o que está desmarcado não é feito). Para voltar, use o Ctrl+Z ou arraste.</li>
+</ul>
+<h2>Testes no PC (um arquivo por vez)</h2>
+<p>Novo: <code>tests/test_decisoes_capa_aberta.py</code>, com 6 testes que passaram. Na ponta da entrega 1 (<code>c34699d3</code>), 5 deles falham. O que passa lá é o "desmarcada nada muda", que só confere que nada mudou.</p>
+<p>Testes antigos dos arquivos que mexi, todos passaram e nenhum foi mudado:</p>
+<table>
+<thead>
+<tr>
+<th>Arquivo</th>
+<th>Passaram</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>test_decisoes_automatico</td>
+<td>29</td>
+</tr>
+<tr>
+<td>test_decisoes_automatico_ver_como_fica</td>
+<td>22</td>
+</tr>
+<tr>
+<td>test_caderno_segue_as_etapas</td>
+<td>11</td>
+</tr>
+<tr>
+<td>test_decisoes_montar_cadernos</td>
+<td>13</td>
+</tr>
+<tr>
+<td>test_decisoes_caderno_tela_grande</td>
+<td>14 (1 pulado)</td>
+</tr>
+<tr>
+<td>test_decisoes_automatico_margens_no_depois</td>
+<td>5</td>
+</tr>
+<tr>
+<td>test_decisoes_automatico_opcoes_do_filtro</td>
+<td>21</td>
+</tr>
+<tr>
+<td>test_unidades_e_perfis</td>
+<td>9</td>
+</tr>
+<tr>
+<td>test_automatico_pular_depois_de_dividir</td>
+<td>4</td>
+</tr>
+<tr>
+<td>test_dividir_desmarcada_caixinha</td>
+<td>3</td>
+</tr>
+<tr>
+<td>test_decisoes_dividir</td>
+<td>21</td>
+</tr>
+<tr>
+<td>test_projetos</td>
+<td>24</td>
+</tr>
+<tr>
+<td>test_decisoes_filtro_automatico</td>
+<td>4</td>
+</tr>
+<tr>
+<td>test_corte_pelo_conteudo_na_tela</td>
+<td>13</td>
+</tr>
+<tr>
+<td>test_limpar_pontinhos_na_tela</td>
+<td>19</td>
+</tr>
+<tr>
+<td>test_decisoes</td>
+<td>26</td>
+</tr>
+<tr>
+<td>test_decisoes_ordem_folhas</td>
+<td>12</td>
+</tr>
+</tbody>
+</table>
+<h2>Janela de verdade (Gradus Primus, numa cópia)</h2>
+<p>Rodei <code>piloto.py e2</code>. As anotações estão em <code>anotacoes-e2.txt</code>:</p>
+<ul>
+<li><strong>e2-02:</strong> a caixinha aparece desmarcada.</li>
+<li><strong>e2-03:</strong> etapa 7 sem a caixinha. A contracapa fica na frente, igual ao a-61.</li>
+<li><strong>e2-04:</strong> com a caixinha marcada, o 1º passo da prévia mostra a capa.</li>
+<li><strong>e2-05:</strong> o último passo da prévia mostra a contracapa.</li>
+<li><strong>e2-06:</strong> etapa 7 com a caixinha. A capa azul fica na frente da folha 1.</li>
+<li><strong>e2-07:</strong> depois de "Rodar", o livro começa por "1d" e termina por "1e".</li>
+<li><strong>e2-pdf-e2-pagina-1:</strong> a página 1 do PDF de saída é a capa.</li>
+<li><strong>e2-08:</strong> o Ctrl+Z volta tudo.</li>
+</ul>
+<h2>Ressalva</h2>
+<ul>
+<li>Na prévia, o contador continua mostrando o número que a página tem hoje (D-614: "N = a página do livro"). Por isso, antes de rodar, a capa aparece como "página 2 de 140" e a contracapa como "página 1 de 140" (prints e2-04 e e2-05). Não mexi nisso porque é uma escolha já testada (D-605). Se ele quiser o número de depois, é uma pergunta nova; a D-617, de outra frente, mexe nesse número.</li>
+</ul>
+<h2>Perguntas para o Samuel</h2>
+<p>Nenhuma nova. A da entrega 1 continua aberta.</p>
+<h2>GitHub</h2>
+<ul>
+<li>Entrega 1: testes 41885681255 passaram inteiros; velocidade 41885686939 (obra-2026-10-26 -&gt; ordem-folhas) "igual".</li>
+<li>Entrega 2: testes 41888422108 passaram inteiros (com botões e prints da janela real); velocidade 41888426950
+  (755bfae3 -&gt; ordem-folhas) "igual".</li>
+</ul>
+<p class="rodape">Editor de Impressão &middot; gerado em 04/11/2026 às 16:07</p>
+</body>
+</html>

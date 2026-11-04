@@ -54,11 +54,17 @@ Desfazer e projeto salvo: `test_historico_depois_de_reabrir.py`, `test_recomeco_
 ## Andamento
 
 - [x] Entrega 1 (D-615): commits 7150504a..c34699d3 (+ relatório `entrega-1.*`); testes no PC ok; janela de
-  verdade ok (prints e1-*); GitHub 41885681255 e velocidade 41885686939 disparados.
-- [ ] Entrega 2 (D-616): código e `tests/test_decisoes_capa_aberta.py` (6 passam; 5 falham na ponta da
-  entrega 1); janela de verdade (piloto e2) em andamento.
+  verdade ok (prints e1-*); GitHub 41885681255 passou; velocidade 41885686939. Mandada à gerente.
+- [x] Entrega 2 (D-616): b701df31..bd406a79; `tests/test_decisoes_capa_aberta.py` (6 passam; 5 falham na
+  ponta da entrega 1); janela de verdade ok (prints e2-*); GitHub 41888422108 e velocidade 41888426950.
 
 ## Perguntas para o Samuel
 
 1. (opcional; tem jeito padrão) Juntar ("não dividir esta") uma folha cujas páginas foram separadas: a folha
    inteira fica no lugar da primeira das duas. Pode ser assim? Sugestão: sim. (ver `entrega-1.md`)
+
+## GitHub
+
+- Entrega 1: testes 41885681255 passaram inteiros; velocidade 41885686939 (obra-2026-10-26 -> ordem-folhas) "igual".
+- Entrega 2: testes 41888422108 passaram inteiros (com botões e prints da janela real); velocidade 41888426950
+  (755bfae3 -> ordem-folhas) "igual".
