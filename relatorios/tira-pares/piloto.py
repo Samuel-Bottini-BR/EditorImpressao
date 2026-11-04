@@ -110,6 +110,11 @@ def desenhos(j, quantos=16) -> list[tuple[int, int]]:
         esc = min((area_l - 4) / pw, (area_a - 4) / ph)
         largura = round(pw * esc)
         esq = x0 + 2 + (area_l - largura) // 2
+        encostar = getattr(m, "encostar", None)          # D-611 refeita (só no código novo)
+        if encostar == "direita":
+            esq = x0 + m.width() - 2 - largura
+        elif encostar == "esquerda":
+            esq = x0 + 2
         saida.append((esq, esq + largura))
     return saida
 
