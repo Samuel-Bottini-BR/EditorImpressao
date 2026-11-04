@@ -69,8 +69,42 @@ Pela regra da gerente: **não toco nesses testes**; paro e explico antes.
 ## Andamento
 
 - [x] ler CLAUDE.md §11, agentes, Livro (D-614, D-577, D-601, D-603, D-589, D-590, D-004); prints a-59 e a-60
-- [ ] teste novo (falha no código de agora)
-- [ ] código
-- [ ] testes no PC, um arquivo por vez
-- [ ] janela de verdade (Gradus, página 68), prints, velocidade
+- [x] teste novo `tests/test_decisoes_previa_dividida.py` (4): no código de antes 3 falham (a da folha já
+      dividida passa, de propósito: não deve mudar); no código novo, 4 passam
+- [x] código (`ee5b1049`): `ui/automatico.py` (PaginaAntesEDepois: `_passos`, `_passo_mais_perto`,
+      `_escolher_o_depois`, `ir_para(indice, metade)`, `virar`, `_acertar_botoes`, `_acertar_o_passo`, `_na_lista`,
+      `_chegou`; LadoDoComparar.ir_para com a metade; TelaCheia._acertar_lados), `ui/tarefas.py` (a tarefa manda
+      a metade de cada imagem)
+- [x] testes no PC, um arquivo por vez (ver abaixo)
+- [x] velocidade (`medir_velocidade.py`, `velocidade.txt`)
+- [ ] **PARADO: 4 provas antigas da D-577 pedem as duas metades lado a lado (lista acima). Esperando a gerente.**
+- [ ] janela de verdade (Gradus, página 68), prints
 - [ ] GitHub
+- [ ] relatório
+
+## Testes no PC (04/11, código novo `ee5b1049`)
+
+| arquivo | resultado |
+|---|---|
+| test_decisoes_previa_dividida (novo) | 4 passaram (antes: 3 falharam, 1 passou) |
+| test_decisoes_automatico_ver_como_fica | 18 passaram, **4 falharam** (as 4 da lista, cada uma na conta da largura "folha + vão" ou na comparação com as duas metades lado a lado); antes da mudança: 22 passaram |
+| test_decisoes_automatico_opcoes_do_filtro | 21 passaram |
+| test_decisoes_automatico_margens_no_depois | 5 passaram |
+| test_decisoes_caderno_tela_grande | 15 passaram (o do Gradus rodou com a cópia do PDF em `_tmp/livros`) |
+| test_caderno_segue_as_etapas | 11 passaram |
+| test_decisoes_shift_todas_as_telas | 10 passaram |
+| test_zoom_no_ponteiro | 5 passaram |
+| test_dividir_desmarcada_caixinha | 3 passaram |
+| test_decisoes_automatico | 29 passaram |
+| test_automatico_pular_depois_de_dividir | 4 passaram |
+| test_decisoes_montar_cadernos | 13 passaram |
+| test_decisoes_juntar_todas | 4 passaram |
+| test_decisoes_dividir_aviso | 11 passaram |
+
+## Velocidade (Gradus, página 68, 9 rodadas de cada, alternadas, mesma máquina)
+
+- ir à página (sem etapa): antes 0,21 a 0,32 s; agora 0,22 a 0,31 s (igual).
+- marcar o Dividir até o depois chegar: antes 0,70 a 0,99 s; agora 0,75 a 0,95 s (igual, dentro do vaivém).
+- ">" para a outra metade: 0,05 a 0,07 s (a conta já tinha desenhado as duas). Antes o ">" ia para a folha
+  seguinte (0,65 a 0,93 s, com conta nova).
+- a lista dos passos (`paginas_do_pdf_depois`): 2 a 3 milésimos de segundo.
