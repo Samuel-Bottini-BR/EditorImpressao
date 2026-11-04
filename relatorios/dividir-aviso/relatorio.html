@@ -1,0 +1,157 @@
+<!doctype html>
+<html lang="pt-BR">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>D-613: dividir todas pergunta sobre as juntadas</title>
+<style>
+:root { color-scheme: light dark; }
+* { box-sizing: border-box; }
+body {
+  font: 17px/1.65 "Segoe UI", system-ui, sans-serif;
+  max-width: 46rem; margin: 0 auto; padding: 2.5rem 1.5rem 6rem;
+  color: #1c1c1e; background: #fdfdfc;
+}
+h1 { font-size: 2rem; line-height: 1.2; margin: 0 0 .3em; letter-spacing: -.02em; }
+h2 { font-size: 1.35rem; margin: 2.4em 0 .6em; padding-top: .8em;
+     border-top: 1px solid #e6e4e0; letter-spacing: -.01em; }
+h3 { font-size: 1.1rem; margin: 1.8em 0 .4em; }
+h1 + p, h2 + p { margin-top: .4em; }
+p, li { margin: 0 0 .9em; }
+ul, ol { padding-left: 1.3em; }
+strong { font-weight: 640; }
+code {
+  font: .88em ui-monospace, "Cascadia Code", Consolas, monospace;
+  background: #f1efec; padding: .12em .35em; border-radius: 4px;
+}
+pre {
+  background: #f1efec; padding: 1em 1.1em; border-radius: 8px;
+  overflow-x: auto; line-height: 1.5;
+}
+pre code { background: none; padding: 0; }
+blockquote {
+  margin: 1.2em 0; padding: .1em 0 .1em 1.1em;
+  border-left: 3px solid #c9c5be; color: #55524d;
+}
+table {
+  border-collapse: collapse; width: 100%; margin: 1.2em 0;
+  font-size: .95rem; display: block; overflow-x: auto;
+}
+th, td { padding: .5em .8em; text-align: left; border-bottom: 1px solid #e6e4e0; }
+th { font-weight: 620; background: #f7f5f2; white-space: nowrap; }
+tr:last-child td { border-bottom: none; }
+img { max-width: 100%; height: auto; border-radius: 6px; margin: 1em 0;
+      border: 1px solid #e6e4e0; }
+hr { border: none; border-top: 1px solid #e6e4e0; margin: 2.5em 0; }
+.rodape { margin-top: 4em; padding-top: 1.2em; border-top: 1px solid #e6e4e0;
+          font-size: .85rem; color: #86827c; }
+@media (prefers-color-scheme: dark) {
+  body { color: #e8e6e3; background: #1a1917; }
+  h2 { border-top-color: #35332f; }
+  code, pre, th { background: #262421; }
+  th, td { border-bottom-color: #35332f; }
+  blockquote { border-left-color: #4a4741; color: #b0aca6; }
+  img { border-color: #35332f; }
+  .rodape { border-top-color: #35332f; color: #7d7973; }
+}
+@media print {
+  body { max-width: none; padding: 0; color: #000; background: #fff; }
+  h2 { page-break-after: avoid; }
+  table, img { page-break-inside: avoid; }
+}
+</style>
+</head>
+<body>
+<h1>D-613: o "dividir todas" pergunta sobre as folhas juntadas à mão</h1>
+<p>Ramo <code>dividir-aviso-2026-11-04</code> (saiu de <code>obra-2026-10-26</code> em <code>dd7a648c</code>). Agente implementador, 04/11/2026.
+Situação: <strong>feito, a testar pelo Samuel.</strong> Nada foi juntado em outro ramo.</p>
+<h2>O pedido</h2>
+<p>Pergunta: "O "dividir todas" pula as folhas que você juntou à mão? Sugiro que sim." → Samuel: "2- ele dá um aviso perguntando ."</p>
+<h2>O que mudou</h2>
+<p>Quando há folha juntada à mão ("dividir esta" e depois "não dividir esta"), o "dividir todas" mostra um aviso antes de começar:</p>
+<ul>
+<li><strong>Pular</strong>: essas folhas ficam inteiras; as outras são divididas como sempre.</li>
+<li><strong>Dividir também</strong>: todas são divididas, como era antes.</li>
+<li><strong>cancelar</strong>: nada muda (nem começa a ler as folhas).</li>
+</ul>
+<p>Cada escolha é uma ação só no desfazer (Ctrl+Z e Ctrl+Y). Sem folha juntada à mão, não aparece aviso nenhum: tudo como antes.</p>
+<p>Onde: <code>ui/tela_conferir.py</code> (<code>_dividir_todas</code> e o aviso novo <code>_perguntar_as_juntadas</code>) e <code>core/dividir_a_mao.py</code> (<code>folhas_juntadas_a_mao</code> e a chave <code>JUNTAR_TODAS_CONTA</code>). Para saber quem juntou cada folha, o programa olha o histórico do desfazer (a última ação que juntou a folha foi um "não dividir esta" ou o "juntar todas"). Nada novo é gravado no projeto: o formato dos arquivos não muda.</p>
+<h2>O texto do aviso (para mostrar ao Samuel)</h2>
+<p>Título: <strong>Folhas juntadas à mão</strong></p>
+<p>Com uma folha:</p>
+<blockquote>
+<p>1 folha foi juntada à mão no Dividir. Pular essa folha?</p>
+<p>Pular: ela fica inteira, como você deixou. Dividir também: ela é dividida junto com as outras (o Desfazer traz de volta). As outras folhas são divididas nos dois casos.</p>
+<p>Botões: <strong>Pular esta</strong> (o de fábrica) · <strong>Dividir também</strong> · <strong>cancelar</strong></p>
+</blockquote>
+<p>Com mais de uma (exemplo, 3):</p>
+<blockquote>
+<p>3 folhas foram juntadas à mão no Dividir. Pular essas folhas?</p>
+<p>Pular: elas ficam inteiras, como você deixou. Dividir também: elas são divididas junto com as outras (o Desfazer traz de volta). As outras folhas são divididas nos dois casos.</p>
+<p>Botões: <strong>Pular as 3</strong> (o de fábrica) · <strong>Dividir também</strong> · <strong>cancelar</strong></p>
+</blockquote>
+<p>Mesmo jeito do aviso do Automático (D-004): a pergunta, a explicação embaixo, "Pular as N"/"Pular esta", o outro caminho e "cancelar" (minúsculo, como lá).</p>
+<h2>Pergunta aberta (não é minha de decidir)</h2>
+<p><strong>As folhas juntadas pelo "juntar todas" contam como "juntadas à mão" para esse aviso?</strong> Enquanto o Samuel não responder: <strong>não contam</strong> (só as juntadas uma por uma). Para ligar: trocar <code>JUNTAR_TODAS_CONTA = False</code> para <code>True</code> em <code>core/dividir_a_mao.py</code>; o teste <code>test_d613_juntar_todas_conta_com_a_chave_ligada</code> já prova esse jeito. Hoje, no Gradus copiado (as 70 folhas juntadas pelo "juntar todas"), o "dividir todas" divide as 70 sem aviso, como antes.</p>
+<h2>Na janela de verdade (Gradus copiado, mensagens do Windows)</h2>
+<p>Piloto: <code>relatorios/dividir-aviso/piloto.py</code>; anotações: <code>anotacoes.txt</code>; prints em <code>prints/</code>.</p>
+<table>
+<thead>
+<tr>
+<th>print</th>
+<th>o que mostra</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>01</td>
+<td>Dividir aberto: 70 folhas juntadas pelo "juntar todas", linha azul à vista</td>
+</tr>
+<tr>
+<td>02</td>
+<td>sem juntada à mão: "dividir todas" sem aviso, 70 divididas (depois, Ctrl+Z)</td>
+</tr>
+<tr>
+<td>03, 04</td>
+<td>folha 5: linha azul; "dividir esta" (a seta → depois foi para a página 6, D-608)</td>
+</tr>
+<tr>
+<td>05</td>
+<td>folha 5 juntada à mão ("não dividir esta")</td>
+</tr>
+<tr>
+<td>06, 07</td>
+<td>aviso → "cancelar": nada mudou, nenhuma ação nova</td>
+</tr>
+<tr>
+<td>08, 09, 10</td>
+<td>em "Duas lado a lado", aviso → "Pular esta": 69 divididas, a folha 5 inteira com a linha azul, a vista passou para "Uma página" (D-610)</td>
+</tr>
+<tr>
+<td>11, 12</td>
+<td>Ctrl+Z: tudo volta (a 5 continua juntada); Ctrl+Y: de novo 69 divididas</td>
+</tr>
+<tr>
+<td>13, 14, 15</td>
+<td>aviso → "Dividir também": as 70 divididas; Ctrl+Z volta</td>
+</tr>
+<tr>
+<td>16</td>
+<td>"dividir esta" na 5 e "juntar todas": continua juntando (D-590)</td>
+</tr>
+</tbody>
+</table>
+<h2>Testes (PC, um arquivo por vez)</h2>
+<p>Novo: <code>tests/test_decisoes_dividir_aviso.py</code>, <strong>11 passaram</strong>. No código de antes (<code>dd7a648c</code>) <strong>10 falham</strong> (os de pular, dividir também, cancelar, mistura, o aviso de verdade; o de reversão acusa "o aviso não aparece": <code>[] == [1]</code>); só o "sem juntada não pergunta" passa lá, como deve.</p>
+<p>Antigos, sem nenhuma mudança: <code>test_decisoes_dividir</code> 21 · <code>test_decisoes_dividir_linha</code> 13 · <code>test_decisoes_dividir_arrastar</code> 16 · <code>test_decisoes_dividir_metade</code> 6 · <code>test_decisoes_juntar_todas</code> 4 · <code>test_decisoes_tira_em_pares</code> 4 · <code>test_dividir_ajustes_03_11</code> 9 · <code>test_dividir_na_tela</code> 9 · <code>test_dividir_no_programa</code> 19 · <code>test_dividir_desmarcada_caixinha</code> 3 · <code>test_dividir_scantailor</code> 13 · <code>test_caderno_segue_as_etapas</code> 11 · <code>test_automatico_pular_depois_de_dividir</code> 4 · <code>test_historico_depois_de_reabrir</code> 11 · <code>test_recomeco_limpa_o_historico</code> 13 · <code>test_promessas</code> (Dividir: P-212, P-059, juntar) 10. Todos passaram. <strong>Nenhum teste antigo foi mudado.</strong></p>
+<p>GitHub: rodada <strong>41851955352</strong> (resultado no fim deste relatório, quando chegar).</p>
+<h2>Ressalvas</h2>
+<ul>
+<li>Se o histórico do desfazer foi recomeçado, uma folha juntada sem ação no histórico conta como juntada à mão (o aviso pergunta: é o lado seguro).</li>
+<li>Se a pessoa escolhe "Pular" e todas as folhas que faltam são as juntadas, nada acontece e nenhuma frase aparece (não havia o que dividir).</li>
+<li>O aviso aparece antes de ler as folhas; uma folha juntada que o motor ache de uma página só entra na conta do aviso, mas mesmo com "Dividir também" ela fica inteira (como já era).</li>
+<li>A ordem dos botões na tela é a do Windows/Qt, igual à do aviso da D-004 ("Pular", "Dividir também", "cancelar").</li>
+</ul>
+<p class="rodape">Editor de Impressão &middot; gerado em 04/11/2026 às 10:54</p>
+</body>
+</html>

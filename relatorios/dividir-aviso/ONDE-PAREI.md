@@ -75,9 +75,21 @@ caminho fica igual, e nenhum teste antigo contradiz a D-613.
 ## Andamento
 
 - [x] Li CLAUDE.md, implementador.md, verificador.md, DECISOES (D-004, D-590, D-601, D-602, D-606 a D-610, D-613)
-- [ ] teste novo
-- [ ] código
-- [ ] testes do Dividir e do desfazer no PC
-- [ ] janela de verdade (prints)
-- [ ] GitHub
-- [ ] relatório
+- [x] teste novo (`tests/test_decisoes_dividir_aviso.py`, 11; 10 falham em dd7a648c)
+- [x] código (commits 725764c6, 58aa4cbf)
+- [x] testes do Dividir e do desfazer no PC (todos passaram, nenhum mudado)
+- [x] janela de verdade (piloto.py, 16 prints)
+- [ ] GitHub: rodada 41851955352 disparada
+- [x] relatório (`relatorio.md/.html/.pdf`)
+
+## Como cumpri cada uma
+
+- **D-613**: aviso antes do "dividir todas" quando há folha juntada à mão; Pular / Dividir também /
+  cancelar. Provas: `test_reversao_d613_*` (pular, dividir também, cancelar) e o piloto (prints 06 a 15).
+- **D-004** (o jeito do aviso): mesma forma (pergunta, explicação, "Pular as N"/"Pular esta" de fábrica,
+  outro caminho, "cancelar"). Prova: `test_d613_o_aviso_como_o_da_d004` e o print 08.
+- **D-605**: sem juntada à mão, nada muda (sem aviso): `test_d613_sem_juntada_nao_pergunta`, print 02;
+  todos os testes antigos do Dividir e do desfazer passaram sem mudança; ao redor conferido no piloto:
+  "dividir esta", "juntar todas", linha azul, seta → depois do botão (D-608), vista "Uma página" depois
+  de dividir (D-610).
+- **Pergunta aberta** ("juntar todas" conta?): chave `JUNTAR_TODAS_CONTA` (False); os dois jeitos provados.
