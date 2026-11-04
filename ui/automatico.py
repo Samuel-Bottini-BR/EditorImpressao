@@ -235,6 +235,23 @@ def _texto_das_opcoes_da_pagina(filtro: str, o: dict) -> str:
 # o estado (o mesmo para o painel e para a janela)
 # ---------------------------------------------------------------------------
 
+def mexe_no_dividir_do_livro(acao) -> bool:
+    """A ação (do Histórico) muda o "Dividir ligado no livro todo" (o campo
+    "livro.dividir_folhas", que só o "Rodar" do Automático grava)? Sem ação
+    (None): False. Usado no desfazer/refazer (ui/tela_conferir.
+    _reacertar_as_opcoes) e no fim do "Rodar" e do "Desligar as marcadas"
+    (ui/janela_principal._aplicar_o_automatico), D-590 de 04/11/2026: só a
+    ação que muda o Dividir do livro faz a caixinha do Dividir desmarcada
+    seguir o livro. As ações da ferramenta Dividir (dividir, juntar, linha,
+    motor) mudam as folhas, nunca esse campo.
+    Seguro mudar: nada. Arriscado: olhar outro campo (as folhas divididas não
+    são o "ligado no livro todo", D-590)."""
+    if acao is None:
+        return False
+    chave = "livro.dividir_folhas"
+    return chave in (getattr(acao, "antes", None) or {}) or chave in (getattr(acao, "depois", None) or {})
+
+
 class EstadoDoAutomatico(QObject):
     """O que está escolhido no Automático: as etapas marcadas, a ordem, as
     opções, a receita e onde rodar. Não grava nada no livro: só monta o
@@ -258,7 +275,7 @@ class EstadoDoAutomatico(QObject):
     # --- de onde vem ---------------------------------------------------------
 
     def do_projeto(self, projeto, receita: str | None = None, da_pagina: bool = False,
-                   indice: int | None = None) -> None:
+                   indice: int | None = None, manter_o_dividir_desmarcado: bool = False) -> None:
         """Começa do livro: as opções e a ordem dele, e as etapas que já estão
         ligadas (no livro ou em alguma página). Com `receita`, a receita por
         cima (o aviso do livro novo marca a receita de sempre, D-018).
@@ -275,10 +292,27 @@ class EstadoDoAutomatico(QObject):
         "comparar", que é "como está no livro" (D-577), e lê a página que o
         comparar MOSTRA (defeito 1 do verificador, 31/10: lia a da área de
         trabalho). Arriscado: a janela voltar a ler da página da vez (ela mudaria
-        conforme a página aberta)."""
+        conforme a página aberta).
+
+        `manter_o_dividir_desmarcado` (D-590, defeito de 04/11/2026, print a-67: "depois de
+        usar o dividir e voltar ao automatico ele está marcado de novo"; Samuel, 03/11: "Sim a
+        caixinha continua desmacada."): com a caixinha "1 Dividir folhas ao meio" DESMARCADA
+        pela pessoa, ela continua desmarcada depois desta releitura, mesmo com o Dividir ainda
+        ligado no livro (desmarcada e ainda sem "Rodar", ou depois do "Desligar as marcadas",
+        que não mexe nas desmarcadas). Quem relê o livro sem que o Dividir do livro tenha
+        mudado passa True: o Ctrl+Z / Ctrl+Y de uma ação que não mexe no Dividir do livro
+        (ui/tela_conferir._reacertar_as_opcoes), a caixinha "Margens iguais" do Cortar e o fim
+        do "Rodar" (ui/janela_principal._aplicar_o_automatico). Só o Dividir, e só o
+        desmarcado: a caixinha marcada e as outras etapas seguem o livro como sempre (D-605).
+        Abrir o livro e o Ctrl+Z do próprio "Rodar" que mudou o Dividir do livro (False)
+        continuam lendo o livro. Arriscado: passar True ao abrir outro livro (a caixinha de um
+        livro passaria para o outro)."""
+        dividir_desmarcado = A.DIVIDIR not in self.marcadas
         self.opcoes = A.opcoes_do_livro(projeto)
         self.ordem = A.ordem(projeto)
         self.marcadas = set(A.etapas_ligadas(projeto))
+        if manter_o_dividir_desmarcado and dividir_desmarcado:
+            self.marcadas.discard(A.DIVIDIR)
         self.receita = getattr(projeto, "receita_usada", "") or ""
         if da_pagina:
             self.opcoes.update(A.opcoes_da_pagina(
