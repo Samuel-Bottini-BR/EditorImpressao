@@ -47,12 +47,17 @@ Testes que já existem e têm de continuar passando sem mudança:
 
 ## Andamento
 
-- [ ] 1. D-606 motor na folha juntada
-- [ ] 2. D-607 aviso depois do "juntar todas"
-- [ ] 3. setas depois da lista "motor de corte"
-- [ ] 4. tira depois do Ctrl+Z
-- [ ] 5. "7 com dúvida" (investigar)
-- [ ] 6. etapa 6 cortada em 1536 x 824
+- [x] 1. D-606 motor na folha juntada (commit "D-606: ...")
+- [x] 2. D-607 aviso depois do "juntar todas"
+- [x] 3. setas depois da lista "motor de corte"
+- [x] 4. tira depois do Ctrl+Z
+- [x] 5. "7 com dúvida": são os "Parece em branco" (D-497) das metades esquerdas brancas das folhas
+  2, 3, 7, 8, 62, 63, 69; "dividir esta" nessas mesmas folhas dá os mesmos 7. Não é defeito: nada mudou.
+- [x] 6. etapa 6 cortada em 1536 x 824
+- [ ] testes antigos no PC, um por vez
+- [ ] GitHub (conjunto inteiro + teste_botoes)
+- [ ] prints na janela de verdade (Gradus)
+- [ ] relatório
 
 ## Perguntas para o Samuel
 
