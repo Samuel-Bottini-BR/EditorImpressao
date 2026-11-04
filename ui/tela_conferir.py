@@ -5733,6 +5733,12 @@ class TelaConferir(QWidget):
     # página só fica inteira; a já dividida fica como está (não é dividida de
     # novo); a que a pessoa juntou volta como estava, na linha de antes
     # (D-498), se o motor a acha dupla. Uma ação só do desfazer.
+    # D-613 (Samuel, 04/11/2026: "O "dividir todas" pula as folhas que você
+    # juntou à mão?" → "2- ele dá um aviso perguntando ."): havendo folha
+    # juntada à mão (core.dividir_a_mao.folhas_juntadas_a_mao), o aviso
+    # (_perguntar_as_juntadas) vem ANTES de ler: "Pular" corta só as outras;
+    # "Dividir também", todas, como sempre; "cancelar", nada. Sem juntada à
+    # mão, nenhum aviso: tudo como antes (D-605).
     # Arriscado: ler no fio da tela (congelaria) ou uma ação por folha.
 
     @protegido
@@ -5748,6 +5754,16 @@ class TelaConferir(QWidget):
         if not inteiras:
             self._avisar("Todas as folhas já estão divididas.")
             return
+        juntadas = dividir_a_mao.folhas_juntadas_a_mao(self.projeto, self.acoes.feitas,
+                                                       entre=inteiras)      # D-613
+        if juntadas:
+            pular = self._perguntar_as_juntadas(len(juntadas))
+            if pular is None:
+                return                                 # cancelar: nada muda
+            if pular:
+                inteiras = [f for f in inteiras if f not in set(juntadas)]
+                if not inteiras:
+                    return                             # só havia as juntadas: ficam inteiras
         pedidos = [self._chave_da_linha(f) for f in inteiras if self._linha_do_motor(f) is None]
         if not pedidos:
             self._dividir_as_lidas(inteiras)
@@ -5774,6 +5790,44 @@ class TelaConferir(QWidget):
         caixa.canceled.connect(tarefa.cancelar)
         caixa.show()
         tarefa.start()
+
+    def _perguntar_as_juntadas(self, quantas: int) -> bool | None:
+        """D-613: o aviso do "dividir todas" quando há `quantas` folhas
+        juntadas à mão. Devolve True (pular essas), False (dividir também) ou
+        None (cancelar). No jeito do aviso das páginas mexidas à mão do
+        Automático (D-004, ui/janela_principal._perguntar_mexidas): a frase com
+        a pergunta, a explicação embaixo, "Pular as N"/"Pular esta" (o de
+        fábrica), o outro caminho e "cancelar". Separado para os testes
+        trocarem a pergunta.
+        Arriscado: mudar o texto sem a gerente (é o que o Samuel vê e aprova)."""
+        caixa = QMessageBox(self)
+        caixa.setWindowTitle("Folhas juntadas à mão")
+        caixa.setIcon(QMessageBox.Question)
+        if quantas == 1:
+            caixa.setText("1 folha foi juntada à mão no Dividir. Pular essa folha?")
+            caixa.setInformativeText(
+                "Pular: ela fica inteira, como você deixou. Dividir também: ela é dividida "
+                "junto com as outras (o Desfazer traz de volta). As outras folhas são divididas "
+                "nos dois casos.")
+        else:
+            caixa.setText(f"{quantas} folhas foram juntadas à mão no Dividir. "
+                          "Pular essas folhas?")
+            caixa.setInformativeText(
+                "Pular: elas ficam inteiras, como você deixou. Dividir também: elas são "
+                "divididas junto com as outras (o Desfazer traz de volta). As outras folhas são "
+                "divididas nos dois casos.")
+        pular = caixa.addButton(f"Pular as {quantas}" if quantas > 1 else "Pular esta",
+                                QMessageBox.AcceptRole)
+        dividir = caixa.addButton("Dividir também", QMessageBox.DestructiveRole)
+        caixa.addButton("cancelar", QMessageBox.RejectRole)
+        caixa.setDefaultButton(pular)
+        caixa.exec()
+        escolhido = caixa.clickedButton()
+        if escolhido is pular:
+            return True
+        if escolhido is dividir:
+            return False
+        return None
 
     def _dividir_todas_andou(self, feitas: int, de: int) -> None:
         """O andamento do "dividir todas" na caixa."""

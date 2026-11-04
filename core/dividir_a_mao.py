@@ -25,6 +25,9 @@ O QUE ESTE MÓDULO FAZ (só contas; a tela é ui/tela_conferir.py)
     - campos_para_juntar_todas (D-590, 30/10/2026): o "juntar todas" da
       ferramenta Dividir - o "não dividir esta" em todas as folhas divididas,
       numa ação só do desfazer.
+    - folhas_juntadas_a_mao (D-613, 04/11/2026): as folhas juntadas à mão,
+      para o aviso do "dividir todas" (com a chave JUNTAR_TODAS_CONTA, a
+      pergunta aberta sobre as do "juntar todas").
     - metades_da_pagina: a página inteira partida em duas (as duas herdam o
       filtro e os ajustes dela; corte, ângulo e mover, que eram da folha
       inteira, não passam; a marcação feita à mão vai para a metade em que
@@ -284,6 +287,77 @@ def campos_para_juntar_todas(projeto) -> tuple[list[int], dict[str, Any]]:
         chave = chave_das_paginas(indice)
         campos[chave] = uma[chave]
     return indices, campos
+
+
+# --- D-613: as folhas juntadas à mão, para o aviso do "dividir todas" ------------
+#
+# Samuel, 04/11/2026 (Central `d602-juntada`): "O "dividir todas" pula as folhas
+# que você juntou à mão? Sugiro que sim." → "2- ele dá um aviso perguntando ."
+# A tela (ui/tela_conferir._dividir_todas) pergunta antes de ler as folhas,
+# quando há folha juntada à mão; folhas_juntadas_a_mao diz quais são.
+#
+# "Juntada" = folha que não está dividida e guarda as duas páginas de antes
+# (metades_guardadas: só o "não dividir esta" e o "juntar todas" as guardam).
+# "À mão, uma por uma" = a ÚLTIMA ação do histórico que mexeu no "dividir"
+# dela foi um "não dividir esta" (o botão da ferramenta ou o do aviso "Não
+# parece dupla"), e não o "juntar todas" (D-590). As duas ações têm o tipo
+# "nao_dividir"; a do "juntar todas" guarda metades_guardadas como
+# {folha: páginas} (campos_para_juntar_todas), a do "não dividir esta" como a
+# lista das páginas (campos_para_juntar). Nada novo é gravado no projeto: o
+# formato dos arquivos não muda.
+# Folha juntada sem ação nenhuma no histórico (o histórico foi recomeçado):
+# conta como juntada à mão - o aviso pergunta, que é o lado seguro.
+#
+# JUNTAR_TODAS_CONTA - PERGUNTA ABERTA ao Samuel (04/11/2026, pela gerente): as
+# folhas juntadas pelo "juntar todas" contam como "juntadas à mão" para esse
+# aviso? Até a resposta: False (só as juntadas uma por uma). Se ele disser que
+# contam, é só trocar para True (o teste
+# test_d613_juntar_todas_conta_com_a_chave_ligada já prova esse jeito).
+JUNTAR_TODAS_CONTA = False
+
+
+def _e_do_juntar_todas(acao) -> bool:
+    """A ação é o "juntar todas" (D-590), e não um "não dividir esta"?"""
+    return (getattr(acao, "tipo", None) == "nao_dividir"
+            and isinstance((getattr(acao, "depois", None) or {}).get("metades_guardadas"), dict))
+
+
+def _ultima_que_mexeu_no_dividir(feitas, indice_folha: int):
+    """A ação mais nova (das já feitas, não desfeitas) que mudou o "dividir" da
+    folha, ou None."""
+    for acao in reversed(list(feitas or [])):
+        if (getattr(acao, "alvo", None) == "folha" and indice_folha in (acao.indices or [])
+                and "dividir" in (acao.depois or {})):
+            return acao
+    return None
+
+
+def folhas_juntadas_a_mao(projeto, feitas, contar_o_juntar_todas: bool | None = None,
+                          entre: list[int] | None = None) -> list[int]:
+    """D-613: as folhas juntadas à mão (ver o comentário acima), em ordem.
+
+    `feitas`: as ações já feitas do histórico (HistoricoAcoes.feitas).
+    `contar_o_juntar_todas`: None = vale JUNTAR_TODAS_CONTA (a pergunta aberta);
+    True = as do "juntar todas" também contam.
+    `entre`: só estas folhas (None = o livro todo).
+    Seguro mudar: a chave. Arriscado: contar folha que não guarda as duas
+    páginas (a de uma página só nunca foi juntada) ou decidir pela descrição
+    da ação (é texto da tela, pode mudar)."""
+    if contar_o_juntar_todas is None:
+        contar_o_juntar_todas = JUNTAR_TODAS_CONTA
+    escolhidas = None if entre is None else set(entre)
+    achadas = []
+    for folha in projeto.folhas:
+        if escolhidas is not None and folha.indice not in escolhidas:
+            continue
+        if folha.dividir or not getattr(folha, "metades_guardadas", None):
+            continue
+        if not contar_o_juntar_todas:
+            ultima = _ultima_que_mexeu_no_dividir(feitas, folha.indice)
+            if ultima is not None and _e_do_juntar_todas(ultima):
+                continue
+        achadas.append(folha.indice)
+    return achadas
 
 
 def muda_a_lista(campos: dict) -> bool:
