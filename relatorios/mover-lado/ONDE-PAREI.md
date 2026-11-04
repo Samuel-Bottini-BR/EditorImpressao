@@ -5,7 +5,17 @@ Ramo `mover-lado-2026-11-04` (saiu de `obra-2026-10-26`, ponta `dd7a648c`). Cóp
 
 **Situação (04/11, fim):** feito e testado no PC (19 arquivos de teste, piloto 20/20). Commits `6d503cde`
 (o conserto), `1aa98650` (a roda nos pares, achado do piloto), `bb11ff93` (piloto e prints). Rodada do GitHub
-41856247413 (ver `relatorio.md`). Relatório: `relatorio.md` (.html/.pdf).
+41856247413 (ver `relatorio.md`). Relatório: `relatorio.md` (.html/.pdf). Entrega do Mover mandada à gerente.
+
+**Segunda parte (04/11, Samuel "1- sim"):** Cortar, Endireitar e marcar em "Duas lado a lado" feitos
+(`41963824`), testes no PC passando (`testes-pc-2.txt`), piloto 15/15 (`piloto_ferramentas.py`).
+~~Parado na pergunta do "antes / depois"~~ — respondida ("Ok, pode ser assim o antes e depois").
+
+**Terceira parte e defeito do pincel (04/11, fim):** "antes / depois" feito (`18cb692e`, `f85eb4b6`);
+defeito do "tamanho" de cima (print a-65) feito em commit separado (`033560c9`); pilotos 16/16
+(`piloto_antes_depois.py`); testes no PC em `testes-pc-3.txt`. GitHub: ver `relatorio.md`.
+Perguntas ainda abertas com a gerente: (a) arrastar a outra página do par no mesmo aperto; (b) cantos só
+na página da vez; e a nova do rótulo "antes" em cima do lado do "depois" (print p406).
 
 ## Decisões que esta tarefa precisa cumprir
 
@@ -78,3 +88,9 @@ Mantive como já era nos pares e na "Uma página" (nada novo decidido); pergunta
 ## Como cumpri cada decisão
 
 Ver `relatorio.md`, seção "Decisões: como cumpri cada uma".
+
+**Tamanho da prévia nos pares (pedido do Samuel, 04/11):** feito em commit próprio ("nos pares a página da
+ferramenta fica do tamanho da prévia"), teste `tests/test_decisoes_tamanho_no_par.py`, pilotos refeitos
+(20/20, 15/15, 16/16), testes no PC em `testes-pc-4.txt`. GitHub final: ver `relatorio.md`.
+
+GitHub final 41892321210 (em 4ede8fd5): 1 falha de tempo em test_gravura_na_aba_marcar (passa no PC 3/3). Entregue a gerente.

@@ -102,6 +102,9 @@ class BarraOpcoes(QFrame):
         self.dica.setVisible(False)
         self.linha.addStretch(1)
 
+        # os deslizantes da ferramenta da vez, por campo do editor ("espessura",
+        # "tolerancia"): mostrar_ajuste (bug de 04/11/2026)
+        self._deslizantes: dict = {}
         self._montar_modos()
         self.definir_ferramenta(NOMES_DAS_FERRAMENTAS and "retangulo")
 
@@ -135,7 +138,9 @@ class BarraOpcoes(QFrame):
     # --- troca de ferramenta ----------------------------------------------
 
     def definir_ferramenta(self, ferramenta: str) -> None:
-        """Refaz a faixa para a ferramenta pedida."""
+        """Refaz a faixa para a ferramenta pedida. Os deslizantes nascem no
+        valor de fábrica; quem sabe o valor de agora (o editor) o mostra logo
+        depois por mostrar_ajuste (TelaConferir._acertar_a_barra_pelo_editor)."""
         self.ferramenta = ferramenta
         self._limpar()
 
@@ -144,21 +149,24 @@ class BarraOpcoes(QFrame):
         self.dica.setText("")
 
         if ferramenta == FERRAMENTA_COR:
-            self._deslizante("variação", TOLERANCIA_MIN, TOLERANCIA_MAX, 30,
-                             lambda v: self.tolerancia_mudou.emit(int(v)),
-                             sufixo="média",
-                             dica="a roda do mouse também muda a variação")
+            self._deslizantes["tolerancia"] = self._deslizante(
+                "variação", TOLERANCIA_MIN, TOLERANCIA_MAX, 30,
+                lambda v: self.tolerancia_mudou.emit(int(v)),
+                sufixo="média",
+                dica="a roda do mouse também muda a variação")
 
         elif ferramenta == FERRAMENTA_VARINHA:
-            self._deslizante("tolerância", TOLERANCIA_MIN, TOLERANCIA_MAX, 30,
-                             lambda v: self.tolerancia_mudou.emit(int(v)),
-                             dica="a roda do mouse também muda a tolerância")
+            self._deslizantes["tolerancia"] = self._deslizante(
+                "tolerância", TOLERANCIA_MIN, TOLERANCIA_MAX, 30,
+                lambda v: self.tolerancia_mudou.emit(int(v)),
+                dica="a roda do mouse também muda a tolerância")
 
         elif ferramenta == FERRAMENTA_PINCEL:
-            self._deslizante("tamanho", int(ESPESSURA_MIN * 1000),
-                             int(ESPESSURA_MAX * 1000), 20,
-                             lambda v: self.espessura_mudou.emit(v / 1000.0),
-                             dica="a roda do mouse também muda o tamanho")
+            self._deslizantes["espessura"] = self._deslizante(
+                "tamanho", int(ESPESSURA_MIN * 1000),
+                int(ESPESSURA_MAX * 1000), 20,
+                lambda v: self.espessura_mudou.emit(v / 1000.0),
+                dica="a roda do mouse também muda o tamanho")
 
         elif ferramenta == FERRAMENTA_ZOOM:
             self._deslizante("aproximar", int(ZOOM_MIN * 100), int(ZOOM_MAX * 100),
@@ -192,8 +200,27 @@ class BarraOpcoes(QFrame):
         for botao in self.botoes_modo.values():
             botao.setVisible(False)
 
+    def mostrar_ajuste(self, campo: str, valor) -> None:
+        """Bug de 04/11/2026 (Samuel, print a-65: "quando eu giro o scrool ele
+        fica aumentando e diminuindo o tamnho do pincel no painel direito mas
+        no painel de cima 'tamanho' ele não muda nada"): põe no deslizante da
+        barra o valor de agora do editor - `campo` "espessura" (o "tamanho" do
+        Pincel, fração da página) ou "tolerancia" (Varinha, Cor) -, sem avisar
+        ninguém (o valor já está no editor; avisar o arredondaria). Sem o
+        deslizante desse campo na barra, nada. Seguro mudar: nada. Arriscado:
+        tirar o blockSignals (o deslizante devolveria ao editor o valor
+        arredondado a cada volta da roda)."""
+        deslizante = self._deslizantes.get(campo)
+        if deslizante is None:
+            return
+        numero = int(round(float(valor) * 1000)) if campo == "espessura" else int(valor)
+        deslizante.blockSignals(True)
+        deslizante.setValue(numero)
+        deslizante.blockSignals(False)
+
     def _limpar(self) -> None:
         """Remove os controles da ferramenta anterior antes de montar a nova faixa."""
+        self._deslizantes = {}
         while self.dentro.count():
             item = self.dentro.takeAt(0)
             widget = item.widget()
