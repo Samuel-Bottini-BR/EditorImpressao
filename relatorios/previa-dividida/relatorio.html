@@ -1,0 +1,187 @@
+<!doctype html>
+<html lang="pt-BR">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>D-614: a prévia do Dividir no Automático</title>
+<style>
+:root { color-scheme: light dark; }
+* { box-sizing: border-box; }
+body {
+  font: 17px/1.65 "Segoe UI", system-ui, sans-serif;
+  max-width: 46rem; margin: 0 auto; padding: 2.5rem 1.5rem 6rem;
+  color: #1c1c1e; background: #fdfdfc;
+}
+h1 { font-size: 2rem; line-height: 1.2; margin: 0 0 .3em; letter-spacing: -.02em; }
+h2 { font-size: 1.35rem; margin: 2.4em 0 .6em; padding-top: .8em;
+     border-top: 1px solid #e6e4e0; letter-spacing: -.01em; }
+h3 { font-size: 1.1rem; margin: 1.8em 0 .4em; }
+h1 + p, h2 + p { margin-top: .4em; }
+p, li { margin: 0 0 .9em; }
+ul, ol { padding-left: 1.3em; }
+strong { font-weight: 640; }
+code {
+  font: .88em ui-monospace, "Cascadia Code", Consolas, monospace;
+  background: #f1efec; padding: .12em .35em; border-radius: 4px;
+}
+pre {
+  background: #f1efec; padding: 1em 1.1em; border-radius: 8px;
+  overflow-x: auto; line-height: 1.5;
+}
+pre code { background: none; padding: 0; }
+blockquote {
+  margin: 1.2em 0; padding: .1em 0 .1em 1.1em;
+  border-left: 3px solid #c9c5be; color: #55524d;
+}
+table {
+  border-collapse: collapse; width: 100%; margin: 1.2em 0;
+  font-size: .95rem; display: block; overflow-x: auto;
+}
+th, td { padding: .5em .8em; text-align: left; border-bottom: 1px solid #e6e4e0; }
+th { font-weight: 620; background: #f7f5f2; white-space: nowrap; }
+tr:last-child td { border-bottom: none; }
+img { max-width: 100%; height: auto; border-radius: 6px; margin: 1em 0;
+      border: 1px solid #e6e4e0; }
+hr { border: none; border-top: 1px solid #e6e4e0; margin: 2.5em 0; }
+.rodape { margin-top: 4em; padding-top: 1.2em; border-top: 1px solid #e6e4e0;
+          font-size: .85rem; color: #86827c; }
+@media (prefers-color-scheme: dark) {
+  body { color: #e8e6e3; background: #1a1917; }
+  h2 { border-top-color: #35332f; }
+  code, pre, th { background: #262421; }
+  th, td { border-bottom-color: #35332f; }
+  blockquote { border-left-color: #4a4741; color: #b0aca6; }
+  img { border-color: #35332f; }
+  .rodape { border-top-color: #35332f; color: #7d7973; }
+}
+@media print {
+  body { max-width: none; padding: 0; color: #000; background: #fff; }
+  h2 { page-break-after: avoid; }
+  table, img { page-break-inside: avoid; }
+}
+</style>
+</head>
+<body>
+<h1>D-614: a prévia do Dividir no Automático, como se já tivesse dividido (04/11/2026)</h1>
+<p>Ramo <code>previa-dividida-2026-11-04</code> (saiu de <code>obra-2026-10-26</code>, <code>ad563c35</code>). Pronto para conferir; não juntado.</p>
+<h2>O que o Samuel pediu</h2>
+<p>Print a-60: "o dividir folha está escolhido era para aparecer uma folha divida ali né, e não duas folhas coladas,
+está errado" · "era para eu ter um preview de como vai ficar a folha separada" · "é para aparecer como se já tivesse
+sido feita a separação" · "você já sabe como é".</p>
+<h2>O que mudou</h2>
+<p>Na janela grande do Automático, com "1 Dividir" marcado, o "depois" mostra <strong>uma página por vez</strong>, cortada na
+linha, como a área de trabalho no Dividir com "Uma página" (D-601):</p>
+<ul>
+<li>na página 68 do Gradus, o depois é a página 128 (a metade da esquerda);</li>
+<li>"&gt;" mostra a 129 (a outra metade da mesma folha), sem conta nova (0,05 s);</li>
+<li>"&gt;" de novo vai para a folha 69; "&lt;" volta pelo mesmo caminho;</li>
+<li>o contador continua "página 68 de 70" nas duas metades, como o rodapé da área de trabalho continua
+  "folha 68 de 70" (D-601);</li>
+<li>o "antes" continua a folha inteira crua; a linha, a bolinha, o zoom, a tela cheia e o comparar continuam;
+  a tela cheia e o comparar mostram a mesma metade;</li>
+<li>sem o Dividir marcado, nada muda; folha já dividida também não muda.</li>
+</ul>
+<p>Arquivos: <code>ui/automatico.py</code> (PaginaAntesEDepois: os passos das setas, a metade da vez, a escolha da imagem;
+o lado do comparar segue a metade), <code>ui/tarefas.py</code> (a conta diz a metade de cada imagem).</p>
+<h2>Prints (Gradus Primus, cópia do projeto, janela de verdade)</h2>
+<p>Em <code>relatorios/previa-dividida/prints/</code>:</p>
+<table>
+<thead>
+<tr>
+<th>print</th>
+<th>o que mostra</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>01</td>
+<td>sem etapa marcada: o depois é a folha inteira</td>
+</tr>
+<tr>
+<td>02</td>
+<td>Dividir marcado, linha no meio</td>
+</tr>
+<tr>
+<td>03</td>
+<td>Dividir marcado, linha toda para a direita: só a página 128</td>
+</tr>
+<tr>
+<td>04</td>
+<td>"&gt;" : a página 129 (a outra metade)</td>
+</tr>
+<tr>
+<td>05</td>
+<td>"&gt;" : a folha 69, metade da esquerda ("página 69 de 70")</td>
+</tr>
+<tr>
+<td>07, 08</td>
+<td>o comparar: à direita a metade (128, depois 129)</td>
+</tr>
+<tr>
+<td>09</td>
+<td>Dividir desmarcado: a folha inteira de novo</td>
+</tr>
+<tr>
+<td>10, 11</td>
+<td>Limpar em Preto e branco; com o Dividir junto, a metade em Preto e branco</td>
+</tr>
+<tr>
+<td>12</td>
+<td>Dividir + Margens iguais (a metade com as margens)</td>
+</tr>
+<tr>
+<td>13</td>
+<td>etapa 7 aberta: "Folha 1 de 35"</td>
+</tr>
+<tr>
+<td>14</td>
+<td>depois do "Rodar" com o Dividir: o livro com 140 páginas, a página 135 é a 128</td>
+</tr>
+<tr>
+<td>15, 16</td>
+<td>a tela cheia: metade da esquerda e da direita (print pelo próprio Qt; o do Windows sai branco nessa janela fora da tela)</td>
+</tr>
+</tbody>
+</table>
+<h2>Como cumpri cada decisão</h2>
+<ul>
+<li><strong>D-614</strong>: prova <code>tests/test_decisoes_previa_dividida.py</code> (4). No código de antes, 3 falham; a da folha já
+  dividida passa nos dois, de propósito. A metade é igual, ponto por ponto, à que o "Rodar" desenha. Prints 02 a 08, 15 e 16.</li>
+<li><strong>D-577</strong> (o resto): as 22 provas passam. Quatro delas pediam as duas metades lado a lado; só essa conferência
+  foi trocada por "uma metade", com autorização da gerente (04/11), e cada uma ganhou um comentário da D-614.
+  O resto de cada uma (o antes inteiro, o Cortar, desmarcar volta) ficou igual.</li>
+<li><strong>D-601</strong>: as setas andam pelas páginas e o contador não muda nas duas metades, como na área de trabalho.</li>
+<li><strong>D-603</strong>: etapa 7 com o Dividir: "Folha 1 de 35" (print 13; provas do caderno passam, inclusive a do Gradus).</li>
+<li><strong>D-589 / D-590</strong>: desmarcar o Dividir volta a folha inteira (print 09); as provas da caixinha passam.</li>
+<li><strong>D-004 / D-607</strong>: a prévia não pula as páginas mexidas; o "Rodar" perguntou ("70 páginas foram juntadas no
+  Dividir e vão ser separadas...") e, com "Rodar nelas também", dividiu as 70 folhas (print 14).</li>
+</ul>
+<h2>Velocidade (Gradus, página 68, 9 rodadas alternadas)</h2>
+<ul>
+<li>ir à página: antes 0,21 a 0,32 s; agora 0,22 a 0,31 s (igual);</li>
+<li>marcar o Dividir até o depois chegar: antes 0,70 a 0,99 s; agora 0,75 a 0,95 s (igual);</li>
+<li>"&gt;" para a outra metade: 0,05 a 0,07 s.</li>
+</ul>
+<h2>Ressalvas</h2>
+<ol>
+<li><strong>A linha no meio.</strong> Pela regra da D-577 (à esquerda da linha o depois, à direita o antes), com a linha no meio
+   a metade (no meio da tela) fica ao lado da metade direita da folha crua: de relance parece a folha inteira de
+   novo, e na metade da direita o mesmo texto aparece duas vezes (prints 02, 15 e 16). Com a linha toda para a
+   direita, só a página (print 03). Não mudei: é a regra da linha e o jeito de pôr páginas de tamanhos
+   diferentes no meio. Pode ser assunto para perguntar ao Samuel.</li>
+<li><strong>Comparar com o Dividir só num lado.</strong> Se só um lado do comparar tem o Dividir marcado, esse lado mostra a
+   metade da esquerda (o folhear é o da janela). Ficou assim, como a gerente mandou.</li>
+</ol>
+<h2>Testes</h2>
+<ul>
+<li>GitHub, "Testes no Windows", rodada 41862922577 (ramo no commit <code>ce734945</code>): <strong>passou</strong> (as 5 partes da suíte, a
+  velocidade e o resumo).</li>
+<li>No PC, as 31 <code>tests/test_decisoes*.py</code>, um arquivo por vez: todas passam (1 pulada em <code>test_decisoes_livreto_ver</code>,
+  por falta de livro no PC). Também: <code>test_caderno_segue_as_etapas</code> (11), <code>test_zoom_no_ponteiro</code> (5),
+  <code>test_dividir_desmarcada_caixinha</code> (3), <code>test_automatico_pular_depois_de_dividir</code> (4).</li>
+<li>Teste antigo mudado: só as 4 conferências "lado a lado" da D-577, com autorização da gerente.</li>
+</ul>
+<p>No PC, um arquivo por vez: ver <code>ONDE-PAREI.md</code>.</p>
+<p class="rodape">Editor de Impressão &middot; gerado em 04/11/2026 às 12:26</p>
+</body>
+</html>

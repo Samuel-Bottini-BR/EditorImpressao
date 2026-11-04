@@ -52,7 +52,9 @@ A janela grande do Automático, o lado direito (`ui/automatico.py`: `PaginaAntes
 4. `test_d577_marcar_e_desmarcar_dividir_muda_so_o_depois` — marcar Dividir: o depois são as duas metades lado a
    lado (o resto da prova, antes cru e desmarcar volta, continua valendo).
 
-Pela regra da gerente: **não toco nesses testes**; paro e explico antes.
+Pela regra da gerente: **não toco nesses testes**; paro e explico antes. **Resposta da gerente (04/11):** a D-614
+substitui exatamente essa frase da D-577; trocar só a conferência "lado a lado" por "uma metade, como o Rodar
+desenha", manter o resto e citar a D-614 em comentário. Feito em `ba2c67dd`; nenhum outro teste antigo mudou.
 
 ## Escolhas que segui do que já existe (sem pergunta)
 
@@ -77,10 +79,12 @@ Pela regra da gerente: **não toco nesses testes**; paro e explico antes.
       a metade de cada imagem)
 - [x] testes no PC, um arquivo por vez (ver abaixo)
 - [x] velocidade (`medir_velocidade.py`, `velocidade.txt`)
-- [ ] **PARADO: 4 provas antigas da D-577 pedem as duas metades lado a lado (lista acima). Esperando a gerente.**
-- [ ] janela de verdade (Gradus, página 68), prints
-- [ ] GitHub
-- [ ] relatório
+- [x] parado nas 4 provas antigas; a gerente autorizou; trocadas (`ba2c67dd`); o arquivo passa (22)
+- [x] janela de verdade (Gradus, página 68), prints (`piloto.py`, `anotacoes*.txt`, `prints/`)
+- [x] todas as `tests/test_decisoes*.py` no PC, um arquivo por vez: 31 arquivos, todos passam (2 pulados por falta
+      de livro no PC)
+- [x] GitHub (ver o relatório)
+- [x] relatório `relatorio.md/.html/.pdf`
 
 ## Testes no PC (04/11, código novo `ee5b1049`)
 
