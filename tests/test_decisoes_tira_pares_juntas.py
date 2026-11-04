@@ -127,8 +127,8 @@ def _esperar_o_que_anda_por_tras(tela) -> None:
 
 def test_reversao_d611_par_junto_no_dividir_em_duas_lado_a_lado(janela, tmp_path):
     """D-611, o defeito do a-57 (04/11/2026): no Dividir, folhas divididas, "Duas lado a lado" →
-    os dois desenhos de cada par (2-3, 4-5, 6-7) ficam encostados, e entre um par e outro fica um
-    vão bem maior. No código de antes o vão dentro do par era 22 pontos (o mesmo de "Uma
+    os dois desenhos de cada par ficam encostados, e entre um par e outro fica um vão bem maior.
+    (Desde a D-611 atualizada de 04/11, no Dividir o par é a folha: 1-2, 3-4, 5-6, 7-8.) No código de antes o vão dentro do par era 22 pontos (o mesmo de "Uma
     página"): falha lá."""
     from ui.widgets.paginas_rolando import DUAS
 
@@ -137,9 +137,15 @@ def test_reversao_d611_par_junto_no_dividir_em_duas_lado_a_lado(janela, tmp_path
     _assentar(10)
     assert tela.mostrar == DUAS and tela.tira.pares_pela_vista
     vaos = _vaos(tela.tira)
-    dentro = [vaos[1], vaos[3], vaos[5]]            # 2-3, 4-5, 6-7
-    entre = [vaos[0], vaos[2], vaos[4], vaos[6]]     # 1|2, 3|4, 5|6, 7|8
-    assert max(dentro) <= 6, f"as duas páginas do par juntas, como no livro aberto: vãos {vaos}"
+    # D-611 atualizada (04/11/2026), só no Dividir: "Quer que a tira junte igual à tela grande, a
+    # 11 com a 12?" → "SIm, mas tem que verificar se vai ficar assim em todo os lugares né? a
+    # miniatura corresponder com o numero real". No Dividir o par é a FOLHA (1-2, 3-4, 5-6, 7-8),
+    # como a tela grande; antes era como no livro aberto (2-3, 4-5, 6-7). O que se mede continua o
+    # mesmo (as duas do par encostadas, um vão que se vê entre um par e outro). Mudança
+    # autorizada pela gerente em 04/11.
+    dentro = [vaos[0], vaos[2], vaos[4], vaos[6]]    # 1-2, 3-4, 5-6, 7-8 (a folha)
+    entre = [vaos[1], vaos[3], vaos[5]]              # 2|3, 4|5, 6|7
+    assert max(dentro) <= 6, f"as duas páginas da folha juntas, como a tela grande: vãos {vaos}"
     assert min(entre) >= 20 and min(entre) >= 4 * max(dentro, default=1), \
         f"entre um par e outro, um vão que se vê: vãos {vaos}"
     _esperar_o_que_anda_por_tras(tela)

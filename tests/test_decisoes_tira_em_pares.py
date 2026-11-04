@@ -41,6 +41,8 @@ from tests.test_decisoes_dividir import (  # noqa: E402,F401  (fixtures app, pas
 
 LIVRO_ABERTO = [(0, 1), (0, 3), (0, 4), (0, 6), (0, 7), (0, 9)]   # 1 sozinha à direita; 2-3; 4-5
 UMA_A_UMA = [(0, 0), (0, 1), (0, 2), (0, 3), (0, 4), (0, 5)]
+# D-611 atualizada (04/11/2026, só no Dividir): as duas metades de cada folha juntas, 1-2, 3-4, 5-6
+PELA_FOLHA = [(0, 0), (0, 1), (0, 3), (0, 4), (0, 6), (0, 7)]
 
 
 def _aberto() -> np.ndarray:
@@ -88,7 +90,8 @@ def _aberto_no(janela, tmp_path, folhas: int = 3, ferramenta: str | None = None)
 
 def test_reversao_d611_tira_em_pares_no_dividir_em_duas_lado_a_lado(janela, tmp_path):
     """D-611 (a-56): no Dividir, Gradus dividido (aqui 3 folhas duplas: 6 páginas), "Duas lado a
-    lado" → a tira em pares como no livro aberto (a 1 sozinha à direita; 2-3; 4-5; 6);
+    lado" → a tira em pares (desde a D-611 atualizada de 04/11, no Dividir pela folha: 1-2; 3-4;
+    5-6; antes, como no livro aberto: a 1 sozinha à direita; 2-3; 4-5; 6);
     "Uma página" → a tira volta a ficar uma a uma, como está. No código de antes (e17410fe) a
     tira ficava uma a uma nas duas: falha lá."""
     from ui.widgets.paginas_rolando import DUAS, UMA
@@ -103,8 +106,14 @@ def test_reversao_d611_tira_em_pares_no_dividir_em_duas_lado_a_lado(janela, tmp_
     assert _na_grade(tira) == UMA_A_UMA, "Uma página: uma a uma, como está"
     tela.botoes_mostrar[DUAS].click()
     _assentar()
-    assert _na_grade(tira) == LIVRO_ABERTO, "Duas lado a lado: em pares, como no livro aberto"
-    assert [tira.posicao(i) for i in range(6)] == LIVRO_ABERTO
+    # D-611 atualizada (04/11/2026), só no Dividir: a pergunta "Quer que a tira junte igual à
+    # tela grande, a 11 com a 12?" → "SIm, mas tem que verificar se vai ficar assim em todo os
+    # lugares né? a miniatura corresponder com o numero real". No Dividir a tira junta pela
+    # FOLHA (as duas metades de cada folha: 1-2, 3-4, 5-6), como a tela grande; antes era como no
+    # livro aberto (LIVRO_ABERTO). Fora do Dividir continua LIVRO_ABERTO (teste de baixo).
+    # Mudança autorizada pela gerente em 04/11.
+    assert _na_grade(tira) == PELA_FOLHA, "Duas lado a lado no Dividir: em pares, pela folha"
+    assert [tira.posicao(i) for i in range(6)] == PELA_FOLHA
     tela.botoes_mostrar[UMA].click()
     _assentar()
     assert _na_grade(tira) == UMA_A_UMA
