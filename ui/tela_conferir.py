@@ -1476,10 +1476,28 @@ class TelaConferir(QWidget):
 
     def _mudar_no_editor(self, campo: str, valor) -> None:
         """Muda um ajuste do editor de marcar do livro aberto (tolerância,
-        espessura), se houver um."""
+        espessura), se houver um. Bug de 04/11/2026 (o caminho contrário do
+        print a-65): o número do painel ("Pincel: N% da página") acompanha,
+        com a mesma frase da roda (EditorSelecao.frase_do_ajuste)."""
         editor = getattr(self, "editor_selecao", None)
         if editor is not None:
             setattr(editor, campo, valor)
+            editor.aviso.emit(editor.frase_do_ajuste(campo))
+
+    def _acertar_a_barra_pelo_editor(self) -> None:
+        """Bug de 04/11/2026 (Samuel, print a-65: "quando eu giro o scrool ele
+        fica aumentando e diminuindo o tamnho do pincel no painel direito mas
+        no painel de cima 'tamanho' ele não muda nada"): o deslizante da barra
+        de cima ("tamanho" do Pincel, "tolerância"/"variação" da Varinha e da
+        Cor) mostra o valor de agora do editor. Chamado quando o editor avisa
+        (a roda muda o ajuste e avisa, D-600) e quando a barra é refeita
+        (escolher a ferramenta). A roda continua mudando o pincel; só a barra
+        passa a acompanhar."""
+        editor = getattr(self, "editor_selecao", None)
+        if editor is None or not hasattr(self, "barra_opcoes"):
+            return
+        self.barra_opcoes.mostrar_ajuste("espessura", editor.espessura)
+        self.barra_opcoes.mostrar_ajuste("tolerancia", editor.tolerancia)
 
     def _ligar_ferramentas(self) -> None:
         """A trilha manda na barra de opcoes e no editor, nesta ordem.
@@ -1524,6 +1542,7 @@ class TelaConferir(QWidget):
             return
         self.trilha.definir_ferramenta(ferramenta)
         self.barra_opcoes.definir_ferramenta(ferramenta)
+        self._acertar_a_barra_pelo_editor()      # bug de 04/11: o "tamanho" de agora
         self._ao_editor("definir_ferramenta", ferramenta)
         self._marcacoes_pela_ferramenta(ferramenta)     # D-584
         if ABA_MARCAR in self._abas_ativas and self.aba_atual != ABA_MARCAR:
@@ -1577,6 +1596,7 @@ class TelaConferir(QWidget):
             self.barra_opcoes.definir_ferramenta_da_pagina(NOMES_DA_TRILHA[ferramenta])
         elif aba == ABA_MARCAR and hasattr(self, "editor_selecao"):
             self.barra_opcoes.definir_ferramenta(self.barra_opcoes.ferramenta)
+            self._acertar_a_barra_pelo_editor()  # bug de 04/11: o "tamanho" de agora
         self._acertar_as_propriedades()
         self._por_o_girar_no_canto()
 
@@ -2693,6 +2713,9 @@ class TelaConferir(QWidget):
         # acompanha o zoom da ferramenta de marcar (ela avisa "Zoom: N%")
         self.editor_selecao.installEventFilter(self)
         self.editor_selecao.aviso.connect(lambda *_: self._acertar_o_zoom_da_barra())
+        # bug de 04/11/2026 (print a-65): a roda muda o pincel e avisa; a barra
+        # de cima acompanha
+        self.editor_selecao.aviso.connect(lambda *_: self._acertar_a_barra_pelo_editor())
         # D-578/D-580/D-584 (decisão da gerente, 29/10/2026, sobre o caminho que
         # o verificador achou): abrir QUALQUER livro, o primeiro ou outro na
         # mesma sessão, começa com "marcações" apagado e a página limpa, mesmo
