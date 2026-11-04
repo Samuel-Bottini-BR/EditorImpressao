@@ -58,3 +58,28 @@ exatamente "página N de M" (os testes antigos leem assim). O tela cheia não mu
 ## Perguntas para o Samuel
 
 (nenhuma até agora)
+
+---
+
+# Parte 2 (04/11/2026): com o Dividir marcado, o número é o da página como o livro vai sair
+
+Samuel, testando a D-617 (já juntada na obra): "funciona , mas com o dividir marcado o numero de
+pagina tem que corresponder com a pagina que está sendo passada." Pedido da gerente: com o Dividir
+marcado, a metade da esquerda da folha 68 aparece como "página 135 de 140" e a da direita como "136 de
+140"; escrever o número leva a essa página; sem o Dividir, tudo como está; o número segue a ordem do
+livro como vai sair (D-615, a ordem mudada à mão, e D-616, a capa aberta: capa = "página 1"); o "tela
+cheia" mostra o mesmo número.
+
+Obra juntada no ramo antes de começar (`git merge obra-2026-10-26`, avanço direto até `2499bd28`).
+
+## O que já está escolhido e testado aqui (parte 2)
+
+- D-617 parte 1 (testada: "funciona"): `tests/test_decisoes_previa_numero.py` (5).
+- D-614: `tests/test_decisoes_previa_dividida.py`. **Conflito:** as linhas 76, 84, 89 e 137 pedem
+  "página 1 de 3" nas duas metades com o Dividir marcado. A gerente autorizou trocar só essas 4
+  linhas e a frase da docstring, num commit separado, com comentário citando a D-617 de 04/11
+  (o pedido novo substitui a parte do contador da D-614). As linhas 176 e 180 (livro já dividido)
+  não mudam.
+- D-615 (`tests/test_decisoes_ordem_folhas.py`) e D-616 (`tests/test_decisoes_capa_aberta.py`): a ordem
+  vem de `core/automatico.paginas_do_pdf_depois`, a mesma lista das setas (`_passos`) e do caderno.
+- D-577 sem o Dividir: "página N de M" com N = a página do livro, igual.
