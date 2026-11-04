@@ -116,6 +116,10 @@ estão em `prints/depois-*`.
   - `test_decisoes_previa_dividida`: 4
   - `test_paineis_na_tela`: 22 (depois do ajuste)
 - Nenhum teste antigo mudou.
+- GitHub: a rodada 41899524962 falhou em 1 teste (`test_paineis_na_tela`, ver o ajuste acima).
+  A rodada 41905058081 passou toda.
+- O piloto "depois" rodou antes desse ajuste. O ajuste não muda os caminhos do piloto, mas o piloto
+  não foi rodado de novo depois dele.
 
 ## Perguntas abertas (para o Samuel)
 
