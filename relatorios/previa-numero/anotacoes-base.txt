@@ -1,0 +1,16 @@
+abriu-em-s => 2.3
+abriu-o-automatico => {"indice": 29, "pagina": 30, "metade": null, "contador": "página 30 de 140", "campo": null, "foco": "QComboBox", "anterior": true, "proxima": true}
+ao-abrir-antes-das-setas => {"indice": 29, "pagina": 30, "metade": null, "contador": "página 30 de 140", "campo": null, "foco": "QComboBox", "anterior": true, "proxima": true}
+ao-abrir-depois-de-Direita => {"indice": 29, "pagina": 30, "metade": null, "contador": "página 30 de 140", "campo": null, "foco": "QComboBox", "anterior": true, "proxima": true}
+ao-abrir-depois-de-Direita-2 => {"indice": 29, "pagina": 30, "metade": null, "contador": "página 30 de 140", "campo": null, "foco": "QComboBox", "anterior": true, "proxima": true}
+ao-abrir-depois-de-Esquerda => {"indice": 29, "pagina": 30, "metade": null, "contador": "página 30 de 140", "campo": null, "foco": "QComboBox", "anterior": true, "proxima": true}
+depois-de-clicar-> => {"indice": 30, "pagina": 31, "metade": null, "contador": "página 31 de 140", "campo": null, "foco": "QPushButton '>'", "anterior": true, "proxima": true}
+depois-do-clique-no->-antes-das-setas => {"indice": 30, "pagina": 31, "metade": null, "contador": "página 31 de 140", "campo": null, "foco": "QPushButton '>'", "anterior": true, "proxima": true}
+depois-do-clique-no->-depois-de-Direita => {"indice": 30, "pagina": 31, "metade": null, "contador": "página 31 de 140", "campo": null, "foco": "QPushButton 'tela cheia'", "anterior": true, "proxima": true}
+depois-do-clique-no->-depois-de-Direita-2 => {"indice": 30, "pagina": 31, "metade": null, "contador": "página 31 de 140", "campo": null, "foco": "QPushButton '–'", "anterior": true, "proxima": true}
+depois-do-clique-no->-depois-de-Esquerda => {"indice": 30, "pagina": 31, "metade": null, "contador": "página 31 de 140", "campo": null, "foco": "QPushButton 'tela cheia'", "anterior": true, "proxima": true}
+depois-de-clicar-na-imagem => {"indice": 30, "pagina": 31, "metade": null, "contador": "página 31 de 140", "campo": null, "foco": "QScrollArea", "anterior": true, "proxima": true}
+depois-do-clique-na-imagem-antes-das-setas => {"indice": 30, "pagina": 31, "metade": null, "contador": "página 31 de 140", "campo": null, "foco": "QScrollArea", "anterior": true, "proxima": true}
+depois-do-clique-na-imagem-depois-de-Direita => {"indice": 30, "pagina": 31, "metade": null, "contador": "página 31 de 140", "campo": null, "foco": "QScrollArea", "anterior": true, "proxima": true}
+depois-do-clique-na-imagem-depois-de-Direita-2 => {"indice": 30, "pagina": 31, "metade": null, "contador": "página 31 de 140", "campo": null, "foco": "QScrollArea", "anterior": true, "proxima": true}
+depois-do-clique-na-imagem-depois-de-Esquerda => {"indice": 30, "pagina": 31, "metade": null, "contador": "página 31 de 140", "campo": null, "foco": "QScrollArea", "anterior": true, "proxima": true}
