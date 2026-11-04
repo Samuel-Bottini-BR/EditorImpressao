@@ -1236,6 +1236,47 @@ class TelaConferir(QWidget):
                                      objeto="botaoDaBarraDeBaixo")
         self.botao_ajustar_a_tela = botao("ajustar à tela", "A página inteira cabe na tela (Ctrl+0)",
                                           lambda: self.mudar_o_zoom(None))
+        self._montar_a_qualidade_da_barra_de_baixo(linha)
+
+    def _montar_a_qualidade_da_barra_de_baixo(self, linha: QHBoxLayout) -> None:
+        """D-620 (Samuel, 04/11/2026, print a-69: "essa opção de qualidade não
+        deveria ser para todas as ferramentas?" -> "2- Pode"): a "Qualidade da
+        prévia" (Rápida / Média / Alta) mora na barra de baixo, logo depois do
+        zoom, e por isso aparece em todas as ferramentas. Antes ficava só no
+        painel do Cortar (_montar_aba_bordas).
+
+        É a MESMA escolha de antes, uma só para o programa inteiro: a lista
+        chama _mudar_qualidade_da_previa, que grava em configuracoes
+        ("qualidade_previa") e troca a resolução da prévia. A barra nasce uma
+        vez (no __init__), então a lista é uma só para todos os livros e todas
+        as ferramentas, e mostra o que estava gravado ao abrir.
+
+        O nome e os balões são os de antes. O visual segue o dos outros botões
+        da barra (ui/estilo.py, QComboBox#listaDaBarraDeBaixo). Seguro mudar:
+        os textos. Arriscado: guardar a escolha em outro lugar (deixaria de
+        valer no programa todo) ou criar uma segunda lista em algum painel (as
+        duas deixariam de concordar)."""
+        linha.addSpacing(RESPIRO_DA_BARRA_DE_BAIXO)
+        self.rotulo_da_qualidade = QLabel("Qualidade da prévia")
+        self.rotulo_da_qualidade.setObjectName("rotuloDaBarraDeBaixo")
+        dica = "Rápida: abre logo. Alta: mais nítida no zoom, demora mais por página."
+        self.rotulo_da_qualidade.setToolTip(dica)
+        linha.addWidget(self.rotulo_da_qualidade)
+        seletor_qualidade = QComboBox()
+        seletor_qualidade.setObjectName("listaDaBarraDeBaixo")
+        for chave, nome in NOMES_DA_QUALIDADE.items():
+            seletor_qualidade.addItem(nome, chave)
+        seletor_qualidade.setCurrentIndex(
+            seletor_qualidade.findData(self._qualidade_da_previa))
+        seletor_qualidade.setToolTip(dica)
+        seletor_qualidade.setCursor(Qt.PointingHandCursor)
+        # o teclado continua da página (D-021), como os botões da barra
+        seletor_qualidade.setFocusPolicy(Qt.NoFocus)
+        seletor_qualidade.setSizeAdjustPolicy(QComboBox.AdjustToContents)
+        seletor_qualidade.currentIndexChanged.connect(
+            lambda i: self._mudar_qualidade_da_previa(seletor_qualidade.itemData(i)))
+        self.seletor_qualidade = seletor_qualidade
+        linha.addWidget(seletor_qualidade)
 
     def _icones_das_setas_do_angulo(self) -> str:
         """(Re)desenha as setinhas dos botoes de 0,1 grau da ferramenta
@@ -1889,23 +1930,9 @@ class TelaConferir(QWidget):
             "Para mover ou mudar o tamanho do conteúdo na folha, use a ferramenta Mover "
             f"(tecla {tecla_de(FERRAMENTA_MOVER)})."))
 
-        coluna.addWidget(risco_do_painel())
-        coluna.addWidget(titulo_de_secao("Qualidade da prévia"))
-        seletor_qualidade = QComboBox()
-        for chave, nome in NOMES_DA_QUALIDADE.items():
-            seletor_qualidade.addItem(nome, chave)
-        seletor_qualidade.setCurrentIndex(
-            seletor_qualidade.findData(self._qualidade_da_previa))
-        seletor_qualidade.setToolTip(
-            "Rápida: abre logo. Alta: mais nítida no zoom, demora mais por página."
-        )
-        seletor_qualidade.currentIndexChanged.connect(
-            lambda i: self._mudar_qualidade_da_previa(seletor_qualidade.itemData(i)))
-        self.seletor_qualidade = seletor_qualidade
-        coluna.addWidget(seletor_qualidade)
-        lista_estreita(seletor_qualidade)
-        coluna.addWidget(frase_do_painel(
-            "Rápida: abre logo. Alta: mais nítida no zoom, demora mais por página."))
+        # D-620 (04/11/2026, "2- Pode"): a "Qualidade da prévia" que ficava
+        # aqui foi para a barra de baixo, ao lado do zoom, e vale em todas as
+        # ferramentas (_montar_a_qualidade_da_barra_de_baixo). A mesma escolha.
         coluna.addSpacing(6)
         parte = self._parte_do_livro(
             ["Cortar a beirada da folha vizinha: "
@@ -2066,7 +2093,10 @@ class TelaConferir(QWidget):
         """Troca a resolução da prévia (estilo After Effects: Rápida/Média/Alta).
 
         Fica salvo (configuracoes.py) e vale para a próxima vez que o
-        programa abrir também.
+        programa abrir também. Desde a D-620 (04/11/2026) quem chama é a
+        lista da barra de baixo (_montar_a_qualidade_da_barra_de_baixo), em
+        todas as ferramentas; antes era a do painel do Cortar. O efeito é o
+        mesmo. Arriscado: mudar a chave "qualidade_previa".
         """
         import configuracoes
 
