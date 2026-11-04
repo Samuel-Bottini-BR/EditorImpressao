@@ -310,3 +310,113 @@ def test_reversao_refazer_devolve_o_parece_em_branco(janela, tmp_path, como):
         _em_branco_medido(tela)
         assert _avisos_das_paginas(projeto) == depois, "o refazer devolve os avisos"
         assert avisos.quantas_com_duvida(projeto) == duvidas
+
+
+# --- D-608: depois de clicar num botão do painel, as setas continuam passando de página ------------
+
+def _botao_do_painel(tela, aba: str, texto: str):
+    from PySide6.QtWidgets import QPushButton
+
+    painel = tela.propriedades_das_abas[aba]
+    return next(b for b in painel.findChildren(QPushButton) if b.text() == texto)
+
+
+def _tecla_onde_o_teclado_esta(janela, tecla) -> None:
+    """A tecla vai a quem tem o teclado na janela (o "foco" dela), como no Windows."""
+    from PySide6.QtTest import QTest
+
+    QTest.keyClick(janela.focusWidget() or janela, tecla)
+    _assentar()
+
+
+def test_reversao_d608_seta_depois_de_clicar_dividir_esta(janela, tmp_path):
+    """D-608 (03/11/2026). Pergunta: "Quer que, depois de clicar num botão do painel, as setas
+    continuem passando de página, em todas as ferramentas? As caixas de número continuam como
+    estão." → "ok". Achado (entrega de 03/11, ressalva do item 3): depois de clicar em "dividir
+    esta", o botão ficava com o teclado e a seta → passava de um botão a outro em vez de
+    trocar de folha. Agora: clicar "dividir esta" (o botão funciona: divide) e a seta → vai à
+    folha seguinte; ← volta; Page Down, Home e End também (D-021). No código de antes
+    (75ed04af) falha."""
+    from PySide6.QtCore import Qt
+    from PySide6.QtTest import QTest
+    from PySide6.QtWidgets import QAbstractButton
+
+    from ui.tela_conferir import ABA_CORTE
+
+    tela = _no_dividir(janela, tmp_path, 12)
+    _esperar(lambda: not tela.visualizadores[ABA_CORTE].lendo_a_linha, motivo="a linha")
+    botao = tela.botao_nao_dividir
+    assert botao.text() == "dividir esta"
+    QTest.mouseClick(botao, Qt.LeftButton)
+    _assentar()
+    assert janela.projeto.folhas[0].dividir, "o botão funciona"
+    assert isinstance(janela.focusWidget(), QAbstractButton), "o clique deu o teclado ao botão"
+    _tecla_onde_o_teclado_esta(janela, Qt.Key_Right)
+    assert tela.indice_pagina == 1 and tela.indice_folha == 0, "→ anda (metade direita, D-601)"
+    _tecla_onde_o_teclado_esta(janela, Qt.Key_Right)
+    assert tela.indice_folha == 1, "→ foi à folha seguinte"
+    _tecla_onde_o_teclado_esta(janela, Qt.Key_Left)
+    assert tela.indice_folha == 0
+    _tecla_onde_o_teclado_esta(janela, Qt.Key_End)
+    assert tela.indice_folha == 11, "End: a última"
+    _tecla_onde_o_teclado_esta(janela, Qt.Key_Home)
+    assert tela.indice_folha == 0, "Home: a primeira"
+    _tecla_onde_o_teclado_esta(janela, Qt.Key_PageDown)
+    assert tela.indice_atual > 0, "Page Down anda (D-021)"
+
+
+def test_reversao_d608_seta_depois_de_clicar_nao_cortar_esta(janela, tmp_path):
+    """D-608 "em todas as ferramentas": no Cortar, depois de clicar "não cortar esta", a seta
+    → passa à página seguinte. No código de antes (75ed04af) falha."""
+    from PySide6.QtCore import Qt
+    from PySide6.QtTest import QTest
+
+    from ui.tela_conferir import ABA_BORDAS, FERRAMENTA_CORTAR
+
+    janela.show()
+    janela.activateWindow()
+    janela.abrir_livro(_pdf(tmp_path / "livro.pdf", [_pagina() for _ in range(4)]))
+    tela = janela.tela_conferir
+    tela.escolher_ferramenta(FERRAMENTA_CORTAR)
+    tela.ir_para_pagina(0)
+    _assentar()
+    botao = _botao_do_painel(tela, ABA_BORDAS, "não cortar esta")
+    QTest.mouseClick(botao, Qt.LeftButton)
+    _assentar()
+    _tecla_onde_o_teclado_esta(janela, Qt.Key_Right)
+    assert tela.indice_pagina == 1, "→ foi à página seguinte"
+    _tecla_onde_o_teclado_esta(janela, Qt.Key_Left)
+    assert tela.indice_pagina == 0
+
+
+def test_d608_caixa_de_numero_do_angulo_continua_com_as_setas(janela, tmp_path):
+    """D-608 ("As caixas de número continuam como estão") e D-083 (ângulo em número, setas de
+    0,1°): com o teclado na caixa do ângulo do Endireitar, a seta ↑ sobe 0,1° e a página não
+    muda; os botões de 0,1° continuam girando."""
+    from PySide6.QtCore import Qt
+    from PySide6.QtTest import QTest
+
+    from ui.tela_conferir import FERRAMENTA_ENDIREITAR
+
+    janela.show()
+    janela.activateWindow()
+    janela.abrir_livro(_pdf(tmp_path / "livro.pdf", [_pagina() for _ in range(3)]))
+    tela = janela.tela_conferir
+    tela.escolher_ferramenta(FERRAMENTA_ENDIREITAR)
+    tela.ir_para_pagina(0)
+    tela._angulo_zero()
+    _assentar()
+    campo = tela.campo_angulo
+    antes = campo.value()
+    QTest.mouseClick(campo.lineEdit(), Qt.LeftButton)
+    _assentar()
+    assert janela.focusWidget() is campo or campo.isAncestorOf(janela.focusWidget())
+    QTest.keyClick(janela.focusWidget(), Qt.Key_Up)
+    _assentar()
+    assert campo.value() == pytest.approx(antes + 0.1), "a seta ↑ sobe 0,1°"
+    QTest.keyClick(janela.focusWidget(), Qt.Key_Left)    # anda o cursor no número
+    _assentar()
+    assert tela.indice_pagina == 0, "a seta na caixa de número não troca de página"
+    QTest.mouseClick(tela.botao_angulo_anti_horario, Qt.LeftButton)
+    _assentar()
+    assert tela.visualizadores["angulo"].angulo == pytest.approx(antes + 0.2), "o botão de 0,1° gira"

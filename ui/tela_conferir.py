@@ -565,13 +565,28 @@ class _RotuloDoLivro(QLabel):
         self._encaixar()
 
 
+# D-608 (03/11/2026): as teclas que, chegando a um botão da tela de conferir,
+# vão para a página (andar: D-021). Seguro mudar: acrescentar uma tecla de
+# andar. Arriscado: pôr aqui o Espaço ou o Enter (apertam o botão, como sempre).
+TECLAS_DE_ANDAR_NUM_BOTAO = frozenset({Qt.Key_Left, Qt.Key_Right, Qt.Key_PageUp,
+                                       Qt.Key_PageDown, Qt.Key_Home, Qt.Key_End})
+
+
 class _FiltroDaTab(QObject):
     """Filtro de teclas da aplicação (etapa 9b-2, lista única 1.10): passa a
     Tab à tela de conferir à vista (TelaConferir._tab_da_proxima_duvida) antes
     de o Qt a usar para mudar o foco. UM filtro só para o programa inteiro
     (instalar_o_filtro_da_tab), que conhece as telas por referência fraca: com
     um filtro por tela, cada evento do programa passaria por todos eles. Só
-    olha KeyPress de Tab; o resto passa direto."""
+    olha KeyPress de Tab e das teclas de andar (abaixo); o resto passa direto.
+
+    D-608 (Samuel, 03/11/2026: "Quer que, depois de clicar num botão do
+    painel, as setas continuem passando de página, em todas as ferramentas?
+    As caixas de número continuam como estão." → "ok"): as setas ← →, Page
+    Up/Down, Home e End que chegam a um BOTÃO da tela de conferir (ele fica
+    com o teclado depois do clique) vão para a página
+    (TelaConferir._tecla_de_andar_num_botao). Caixa de número, campo de
+    texto e lista não são botões: continuam como estão."""
 
     def __init__(self) -> None:
         super().__init__()
@@ -579,12 +594,20 @@ class _FiltroDaTab(QObject):
 
         self.telas = weakref.WeakSet()
 
-    def eventFilter(self, _vigiado, evento) -> bool:  # noqa: N802 - nome do Qt
-        if evento.type() != QEvent.KeyPress or evento.key() != Qt.Key_Tab:
+    def eventFilter(self, vigiado, evento) -> bool:  # noqa: N802 - nome do Qt
+        if evento.type() != QEvent.KeyPress:
+            return False
+        tecla = evento.key()
+        if tecla == Qt.Key_Tab:
+            metodo = "_tab_da_proxima_duvida"
+        elif tecla in TECLAS_DE_ANDAR_NUM_BOTAO:
+            metodo = "_tecla_de_andar_num_botao"
+        else:
             return False
         for tela in list(self.telas):
             try:
-                if tela._tab_da_proxima_duvida(evento):
+                if (tela._tab_da_proxima_duvida(evento) if metodo == "_tab_da_proxima_duvida"
+                        else tela._tecla_de_andar_num_botao(vigiado, evento)):
                     return True
             except RuntimeError:          # a tela do Qt já foi apagada
                 self.telas.discard(tela)
@@ -8444,6 +8467,41 @@ class TelaConferir(QWidget):
         super().hideEvent(evento)
         if hasattr(self, "_relogio_das_bolinhas"):
             self._relogio_das_bolinhas.stop()
+
+    def _tecla_de_andar_num_botao(self, vigiado, evento) -> bool:
+        """D-608 (Samuel, 03/11/2026, "Quer que, depois de clicar num botão do
+        painel, as setas continuem passando de página, em todas as
+        ferramentas? As caixas de número continuam como estão." → "ok"): a
+        seta ← →, Page Up/Down, Home ou End que chega a um BOTÃO desta tela
+        (o botão do painel, da faixa, da barra de baixo, que ficou com o
+        teclado depois do clique) vai para a página (tratar_tecla), como se o
+        teclado estivesse nela. Antes o Qt usava as setas para passar o
+        teclado de um botão a outro, e Page Up/Down/Home/End rolavam o painel.
+        Só com Ctrl/Alt soltos, com o botão sendo quem tem o teclado e com a
+        área de trabalho à vista. Bolinha (QRadioButton) fica de fora: nela as
+        setas escolhem a opção. Caixa de número, campo de texto e lista não
+        são botões: as setas continuam neles (D-083: o ângulo de 0,1°). O
+        Espaço e o Enter continuam apertando o botão. Devolve True se usou a
+        tecla. Nunca levanta.
+        Arriscado: tirar a condição "é quem tem o teclado" (a tecla que sobe
+        de um filho para o botão seria tomada) ou pôr as caixas de número."""
+        try:
+            from PySide6.QtWidgets import QAbstractButton, QApplication, QRadioButton
+
+            if evento.modifiers() & (Qt.ControlModifier | Qt.AltModifier | Qt.MetaModifier):
+                return False
+            if not isinstance(vigiado, QAbstractButton) or isinstance(vigiado, QRadioButton):
+                return False
+            if vigiado is not QApplication.focusWidget() or not self.isAncestorOf(vigiado):
+                return False
+            if not self.isVisible() or not self._pronta():
+                return False
+            if self.pilha_da_tela.currentWidget() is not self.trabalho:
+                return False
+            return bool(self.tratar_tecla(evento))
+        except Exception:  # noqa: BLE001 - a tecla nunca derruba a tela
+            registrar_erro("tecla de andar num botao", traceback.format_exc())
+            return False
 
     def _tab_da_proxima_duvida(self, evento) -> bool:
         """Etapa 9b-2 da obra (lista única 23/10, 1.10: "A tecla Tab ('Ir para
