@@ -7937,6 +7937,9 @@ class TelaConferir(QWidget):
             if hasattr(peca, "folga_da_moldura"):   # só o Visualizador tem moldura
                 peca.folga_da_moldura = self.FOLGA_NO_PAR
             self._por_a_vista_da_peca(peca, 1.0, QPoint(0, 0))
+        # D-612 (a), Samuel "ok": na outra página do par, o mesmo aperto escolhe e
+        # já arrasta - no Mover, no Cortar e nas de marcar (no Endireitar não)
+        self.lado_a_lado.arrastar_ao_escolher = self.aba_atual in (ABA_MOVER, ABA_BORDAS, ABA_MARCAR)
         destino.definir_ferramenta(peca)
 
     @staticmethod
