@@ -415,3 +415,4 @@ Juntados no `obra-2026-10-26` nesta noite: balão do cinza (`99e7c6b`), D-574 se
 - `previa-numero-2026-11-04` (04/11): D-617, escrever o número da folha na prévia do Automático. Entregue e juntado (`fa430a85`).
 - `caixinha-volta-2026-11-04` (04/11): D-590, a caixinha do Dividir volta marcada depois de usar o Dividir (print a-67). Agente trabalhando.
 - `girar-pagina-2026-11-04` (04/11): D-618, girar só a página numa folha dividida. Agente trabalhando.
+- `painel-livro-2026-11-04` (04/11): D-619 e D-620. Agente trabalhando.
