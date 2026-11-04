@@ -1,0 +1,30 @@
+{
+  "pasta_de_dados": "D:\\programas\\EditorImpressao\\.claude\\worktrees\\caderno-etapas\\_tmp\\dados-prints-caderno-etapas",
+  "paginas_do_livro_aberto": 70,
+  "01_montando_bolinha": true,
+  "02_primeira_folha_dividida_s": 1.36,
+  "02_textos": [
+    "Folha 1 de 35 — frente",
+    "Folha 1 de 35 — verso"
+  ],
+  "parada_02_abrir_com_dividir_s": 0.025,
+  "03_desmarcar_bolinha": true,
+  "03_desmarcar_s": 0.86,
+  "03_textos": [
+    "Folha 1 de 18 — frente",
+    "Folha 1 de 18 — verso"
+  ],
+  "parada_03_desmarcar_s": 0.019,
+  "04_marcar_de_novo_s": 1.91,
+  "04_margens_bolinha": true,
+  "04_margens_s": 50.72,
+  "04_textos": [
+    "Folha 1 de 35 — frente",
+    "Folha 1 de 35 — verso"
+  ],
+  "parada_04_margens_s": 0.025,
+  "05_seta_com_margens_s": 49.4,
+  "parada_05_seta_s": 0.021,
+  "maior_parada_da_tela_s": 0.025,
+  "projeto_nao_mudou_paginas": 70
+}

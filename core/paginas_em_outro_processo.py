@@ -698,7 +698,9 @@ def _servir_folha_do_caderno(cano, pedido: tuple) -> bool:
     from core import automatico
     from core.pipeline import Cancelou
 
-    _, copia, pedido_do_automatico, folha, indices, dpi, largura_maxima = pedido
+    # D-603 (04/11/2026): o 8o item, `metades` (a metade de cada posicao depois do pedido)
+    _, copia, pedido_do_automatico, folha, indices, dpi, largura_maxima, *resto = pedido
+    metades = resto[0] if resto else None
     estado = {"cancelar": False, "sair": False}
 
     def cancelado() -> bool:
@@ -715,7 +717,8 @@ def _servir_folha_do_caderno(cano, pedido: tuple) -> bool:
     try:
         frente, verso = automatico.folha_do_caderno(copia, pedido_do_automatico, folha, indices, dpi,
                                                     cancelado=cancelado,
-                                                    largura_maxima=largura_maxima)
+                                                    largura_maxima=largura_maxima,
+                                                    metades=metades)
         resposta = ("faces", frente, verso)
     except Cancelou:
         resposta = ("cancelou",)
@@ -728,7 +731,7 @@ def _servir_folha_do_caderno(cano, pedido: tuple) -> bool:
 
 
 def folha_do_caderno(copia, pedido, folha: tuple, indices: dict, dpi: int, cancelado=None,
-                     largura_maxima: int | None = None):
+                     largura_maxima: int | None = None, metades: dict | None = None):
     """D-574 (02/11/2026): a folha do caderno da etapa 7 do Automatico (frente, verso: numpy
     BGR), montada e desenhada pelo servidor - nunca neste processo (core/automatico.
     folha_do_caderno). Medido no Gradus Primus: com a conta num fio da janela, a tela parava
@@ -739,12 +742,15 @@ def folha_do_caderno(copia, pedido, folha: tuple, indices: dict, dpi: int, cance
     core.pipeline.Cancelou se `cancelado()` ficar verdadeiro (o servidor para no proximo ponto
     de parada; um fio espera a resposta dele, _devolver_depois) e RuntimeError com a mensagem do
     servidor se a conta der erro la. Servidor que caiu e trocado e o pedido feito de novo, uma
-    vez (como folha_do_livreto). Arriscado: montar a folha de outro jeito aqui."""
+    vez (como folha_do_livreto). Arriscado: montar a folha de outro jeito aqui.
+    `metades` (D-603, 04/11/2026): a metade de cada posicao depois do pedido (ver core/
+    automatico.folha_do_caderno); vai pelo cano como o 8o item."""
     from core.pipeline import Cancelou
 
     if not ligado() or not _garantir_servidores():
         return SEM_SERVIDOR
-    mensagem = ("folha_do_caderno", copia, pedido, folha, dict(indices), int(dpi), largura_maxima)
+    mensagem = ("folha_do_caderno", copia, pedido, folha, dict(indices), int(dpi), largura_maxima,
+                None if metades is None else dict(metades))
     for tentativa in range(2):
         while True:
             if cancelado is not None and cancelado():

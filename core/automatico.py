@@ -1508,8 +1508,184 @@ def depois_da_pagina(doc, copia, pedido: Pedido, indice: int, dpi: int,
     return imagens
 
 
+# --- as paginas do PDF DEPOIS do pedido, sem desenhar (D-603, 04/11/2026) ---------
+#
+# Samuel, 03/11/2026 (print a-49: etapa 1 "Dividir" marcada, etapa 7 aberta, o caderno com os
+# scans inteiros): "eu fui lá e apertei o botão de dividir e nos cadernos ainda aparece a folha
+# sem divisão, era para ser com divisão, já que eu cliquei lá em cima, mesmo que eu não tenha
+# processado ainda, pois é o preview." -> "pode ser assim nos cadernos".
+#
+# CAUSA: as folhas do caderno (ui/widgets/folhas_do_caderno) contavam e distribuiam as paginas
+# do livro COMO ESTA (Projeto.paginas_ativas, antes do pedido). Com o Dividir marcado num livro
+# sem dividir, a conta usava uma pagina por folha e cada lugar do caderno recebia o "depois" da
+# folha inteira (as duas metades coladas lado a lado): o caderno mostrava a folha aberta.
+#
+# COMO FICA: a lista das paginas que vao para o PDF DEPOIS do pedido, sem desenhar nada. So o
+# Dividir muda essa lista (as outras etapas mudam o desenho de cada pagina, nao quantas sao);
+# para saber quais folhas o Dividir parte, a MESMA regra da medida (medir -> pipeline.
+# achar_divisao), que no modo automatico so olha o TAMANHO da folha (ja girada):
+#   - jeito do ScanTailor: "folha mais larga que alta = duas paginas" (ProjectPages::
+#     adviseNumberOfLogicalPages, copiada sem mudanca em terceiros/scantailor-advanced/
+#     ligacao-ferramentas/dividir.cpp; com duas paginas o ScanTailor sempre devolve a divisao);
+#   - jeito do programa (ou o ScanTailor fora do ar / recusando a imagem): mais larga que 1,2 x
+#     a altura (core/dividir.detectar_lombada, RAZAO_PAISAGEM).
+# O tamanho vem do PDF (page.rect: milissegundos, nada e desenhado) e fica guardado por arquivo.
+# Com essa regra, a lista faz o que o `_dividir` do "Rodar" faz com as paginas (pula as mesmas
+# folhas mexidas a mao, D-004) e o que Projeto.paginas_ativas escolhe (paginas_do_pdf_depois).
+# Dividir desmarcado (D-589/D-590): a lista do livro como esta, sem conta nenhuma (igual a
+# antes; nada e juntado).
+#
+# Arriscado: outra etapa passar a mudar a lista de paginas (entraria aqui tambem); mudar a regra
+# do tamanho sem mudar a da medida (a conta das folhas discordaria do desenho).
+
+# (caminho, data, tamanho do arquivo) -> [(x0, y0, x1, y1) de cada pagina do PDF, em pontos]
+_RETANGULOS_DO_PDF: dict = {}
+_TRANCA_DOS_RETANGULOS = threading.Lock()
+
+
+def _retangulos_do_pdf(caminho) -> list | None:
+    """Os retangulos (page.rect) de cada pagina do PDF, sem desenhar; guardados por arquivo
+    (um so: o livro aberto). None se o arquivo nao abre."""
+    import os
+
+    from core.pdf_io import _TRANCA, abrir_pdf
+
+    try:
+        info = os.stat(str(caminho))
+    except OSError:
+        return None
+    chave = (os.path.abspath(str(caminho)), info.st_mtime_ns, info.st_size)
+    with _TRANCA_DOS_RETANGULOS:
+        if chave in _RETANGULOS_DO_PDF:
+            return _RETANGULOS_DO_PDF[chave]
+    try:
+        doc = abrir_pdf(caminho)
+    except Exception:  # noqa: BLE001 - sem o arquivo, a lista fica como esta
+        return None
+    try:
+        with _TRANCA:
+            retangulos = [tuple(doc[i].rect) for i in range(doc.page_count)]
+    finally:
+        doc.close()
+    with _TRANCA_DOS_RETANGULOS:
+        _RETANGULOS_DO_PDF.clear()
+        _RETANGULOS_DO_PDF[chave] = retangulos
+    return retangulos
+
+
+def vai_dividir_pelo_tamanho(retangulo, rotacao: int, jeito: str,
+                             scantailor: bool | None = None) -> bool:
+    """A folha (o `retangulo` dela no PDF, (x0, y0, x1, y1) em pontos, girada `rotacao` graus)
+    vai ser dividida pelo Dividir do Automatico no `jeito`? A mesma regra da medida (ver acima),
+    no tamanho em pontos da imagem que a medida desenha (core.pdf_io.pagina_para_array a
+    DPI_ANALISE: dpi_seguro e o arredondamento do retangulo do PyMuPDF). `scantailor`: a DLL do
+    ScanTailor abriu? (None = pergunta; quem conta o livro todo pergunta uma vez so)."""
+    import math
+
+    from core import dividir_scantailor, st_ferramentas
+    from core.dividir import RAZAO_PAISAGEM
+    from core.pdf_io import MAX_PIXELS
+    from core.pipeline import DPI_ANALISE
+
+    x0, y0, x1, y1 = (float(v) for v in retangulo)
+    dpi = DPI_ANALISE
+    area = ((x1 - x0) / 72.0) * ((y1 - y0) / 72.0)
+    if area > 0:
+        dpi = max(50, min(dpi, int((MAX_PIXELS / area) ** 0.5)))   # pdf_io.dpi_seguro
+    escala = dpi / 72.0
+
+    def pontos(a: float, b: float) -> int:      # fz_round_rect, o Rect.irect do PyMuPDF
+        return int(math.ceil(b * escala - 0.001) - math.floor(a * escala + 0.001))
+
+    largura, altura = pontos(x0, x1), pontos(y0, y1)
+    if int(rotacao) % 180 == 90:
+        largura, altura = altura, largura
+    if dividir_scantailor.jeito_valido(jeito) == dividir_scantailor.JEITO_SCANTAILOR:
+        if scantailor is None:
+            scantailor = st_ferramentas.disponivel()
+        if scantailor and st_ferramentas.motivo_de_recusa(largura, altura, dpi, dpi) is None:
+            return largura > altura
+    return largura > altura * RAZAO_PAISAGEM
+
+
+def paginas_do_pdf_depois(projeto, pedido: Pedido) -> list[tuple[int, int, str]]:
+    """D-603: as paginas que vao para o PDF se o Automatico rodar com o `pedido`, na ordem do
+    PDF, SEM desenhar nada (ver o comentario acima). Cada uma: (indice em projeto.paginas da
+    pagina de que ela sai, folha, metade depois). A pagina "de que ela sai" e a que se passa a
+    depois_da_pagina para desenha-la: a mesma pagina, se ela continua; a pagina inteira, para as
+    duas metades de uma folha que vai ser partida. Nao muda o `projeto`.
+    Sem o Dividir marcado (ou desligando): o livro como esta (Projeto.paginas_ativas).
+
+    E o que `_dividir` (o "Rodar") faz com a lista de paginas, seguido de Projeto.paginas_ativas,
+    sem copiar o projeto (o `_dividir` de verdade, numa copia, levava 0,35 s num livro de 700
+    folhas - a tela pararia): folha pulada (D-004) fica como esta; folha com duas paginas so
+    troca o `dividir` (e a da direita sai ou volta, como o "nao dividir esta"); folha de uma
+    pagina que divide vira esquerda e direita (com o "tirar do livro" da inteira,
+    dividir_a_mao.metades_da_pagina); a que nao divide continua inteira. A prova de que da o
+    mesmo que o `_dividir`: tests/test_caderno_segue_as_etapas.py. Arriscado: mudar o
+    `_dividir` sem mudar aqui."""
+    from core import st_ferramentas
+    from modelos import METADE_DIREITA, METADE_ESQUERDA, METADE_INTEIRA
+
+    como_esta = [(p.indice, p.folha, p.metade) for p in projeto.paginas_ativas]
+    if pedido.desligar or DIVIDIR not in pedido.etapas:
+        return como_esta
+    retangulos = _retangulos_do_pdf(projeto.caminho_entrada)
+    if retangulos is None:
+        return como_esta
+    jeito = (pedido.opcoes or {}).get("dividir_como", projeto.dividir_como)
+    scantailor = st_ferramentas.disponivel()
+    so_dividir = Pedido(etapas=[DIVIDIR], opcoes=pedido.opcoes, paginas=pedido.paginas,
+                        pular_mexidas=pedido.pular_mexidas)
+    pular = set(paginas_mexidas(projeto, so_dividir)) if pedido.pular_mexidas else set()
+    da_folha: dict[int, list] = {}
+    for p in projeto.paginas:
+        da_folha.setdefault(p.folha, []).append(p)
+    dividida = {f.indice: bool(f.dividir) for f in projeto.folhas}
+    divide: dict[int, bool] = {}
+    for i in folhas_do_pedido(projeto, pedido):
+        folha = projeto.folhas[i]
+        pags = da_folha.get(i, [])
+        if not 0 <= folha.indice < len(retangulos) or any(p.indice in pular for p in pags):
+            continue                              # sem medida, ou pulada: fica como esta
+        divide[i] = vai_dividir_pelo_tamanho(retangulos[folha.indice], folha.rotacao, jeito,
+                                             scantailor)
+        dividida[i] = divide[i] and bool(pags)    # o `dividir` da folha depois (_dividir)
+    # (origem, folha, metade, apagada) de cada pagina da lista depois do Dividir, na ordem
+    novas = []
+    for p in projeto.paginas:
+        f = p.folha
+        if f not in divide:
+            novas.append((p.indice, f, p.metade, p.apagada))
+            continue
+        pags = da_folha[f]
+        if len(pags) >= 2:
+            direita = next((q for q in pags if q.metade == METADE_DIREITA), None)
+            apagada = p.apagada
+            if p is direita and any(not q.apagada for q in pags if q is not direita):
+                apagada = not divide[f]
+            novas.append((p.indice, f, p.metade, apagada))
+        elif divide[f]:
+            novas.append((p.indice, f, METADE_ESQUERDA, p.apagada))
+            novas.append((p.indice, f, METADE_DIREITA, p.apagada))
+        else:
+            novas.append((p.indice, f, p.metade, p.apagada))
+    # Projeto.paginas_ativas, na lista de depois
+    lista, ja_sairam = [], set()
+    for origem, f, metade, apagada in novas:
+        if apagada:
+            continue
+        if metade != METADE_INTEIRA and 0 <= f < len(projeto.folhas) and not dividida.get(f, False):
+            if f in ja_sairam:
+                continue
+            ja_sairam.add(f)
+        lista.append((origem, f, metade))
+    return lista
+
+
 def folha_do_caderno(copia, pedido: Pedido, folha: tuple, indices: dict, dpi: int,
-                     cancelado: Callable | None = None, largura_maxima: int | None = None) -> tuple:
+                     cancelado: Callable | None = None, largura_maxima: int | None = None,
+                     metades: dict | None = None) -> tuple:
     """D-574 (02/11/2026): uma folha do caderno da etapa 7 "Montar cadernos", como sai, frente e
     verso (numpy BGR). Samuel, 31/10: "No Automático: clicando na etapa 7 "Montar cadernos", o
     lado direito mostra as folhas do livreto". `folha` = (frente, verso), dois core/cadernos.Lado
@@ -1525,7 +1701,14 @@ def folha_do_caderno(copia, pedido: Pedido, folha: tuple, indices: dict, dpi: in
     `largura_maxima`: a folha volta reduzida a essa largura (pontos), se for maior - a tela
     nunca mostra mais que isso, e reduzir aqui (no servidor) poupa o fio da tela de copiar e
     reduzir uma imagem de 4000 pontos (medido: 0,1 a 0,2 s com o Python preso).
-    Levanta core.pipeline.Cancelou se `cancelado()` ficar verdadeiro."""
+    Levanta core.pipeline.Cancelou se `cancelado()` ficar verdadeiro.
+
+    D-603 (04/11/2026): `metades` = posicao no PDF -> a metade que a pagina daquela posicao tem
+    DEPOIS do pedido (paginas_do_pdf_depois). Com ela, a folha inteira que o Dividir marcado vai
+    partir da a cada posicao SO a sua metade (antes: as duas metades coladas lado a lado em cada
+    posicao, print a-49). A folha e desenhada uma vez para as duas posicoes que saem dela (so
+    durante esta folha: uma folha por vez na memoria, CLAUDE.md §3). Sem `metades` (ou a
+    pagina desenhada sendo uma so): como antes."""
     from pathlib import Path
 
     from core import cadernos
@@ -1535,18 +1718,24 @@ def folha_do_caderno(copia, pedido: Pedido, folha: tuple, indices: dict, dpi: in
 
     if servidor.ligado() and Path(str(copia.caminho_entrada)).is_file():
         feita = servidor.folha_do_caderno(copia, pedido, folha, indices, dpi, cancelado,
-                                          largura_maxima)
+                                          largura_maxima, metades)
         if feita is not servidor.SEM_SERVIDOR:
             return feita
     doc = abrir_pdf(copia.caminho_entrada)
     try:
         imagens = {}
+        desenhadas: dict = {}       # indice -> [(metade, imagem)] (so desta folha)
         for posicao, indice in indices.items():
             if cancelado is not None and cancelado():
                 raise Cancelou()
-            depois = depois_da_pagina(doc, copy.deepcopy(copia), pedido, indice, dpi,
-                                      cancelado=cancelado)
-            imagens[posicao] = cadernos.paginas_lado_a_lado(depois or [])
+            if indice not in desenhadas:
+                usada = copy.deepcopy(copia)
+                depois = depois_da_pagina(doc, usada, pedido, indice, dpi, cancelado=cancelado)
+                pagina = copia.paginas[indice]
+                novas = paginas_depois(usada, pagina.folha, pagina.metade)
+                desenhadas[indice] = [(nova.metade, img) for nova, img in zip(novas, depois or [])]
+            imagens[posicao] = _a_imagem_da_posicao(desenhadas[indice],
+                                                    (metades or {}).get(posicao))
     finally:
         doc.close()
     if cancelado is not None and cancelado():
@@ -1559,6 +1748,19 @@ def folha_do_caderno(copia, pedido: Pedido, folha: tuple, indices: dict, dpi: in
         tamanho = (int(largura_maxima), max(1, round(faces[0].shape[0] * escala)))
         faces = tuple(cv2.resize(f, tamanho, interpolation=cv2.INTER_AREA) for f in faces)
     return faces
+
+
+def _a_imagem_da_posicao(desenhadas: list, metade: str | None):
+    """A imagem de uma posicao do caderno (D-603): das paginas desenhadas da folha
+    ([(metade, imagem)]), a da `metade` pedida; uma so, ou nenhuma metade pedida, ou nenhuma
+    igual (a medida de verdade discordou da conta pelo tamanho): como antes, todas lado a lado."""
+    from core import cadernos
+
+    if metade is not None and len(desenhadas) > 1:
+        for qual, img in desenhadas:
+            if qual == metade:
+                return img
+    return cadernos.paginas_lado_a_lado([img for _, img in desenhadas])
 
 
 def medir_o_livro_ao_abrir(projeto, progresso=None, cancelado=None) -> dict[int, MedidaDaFolha]:
