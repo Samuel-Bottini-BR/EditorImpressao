@@ -583,11 +583,17 @@ class TiraMiniaturas(QWidget):
             mini.em_alerta, mini.apagada, mini.conferida = novo
             mini.update()
 
-    def selecionar(self, indice: int) -> None:
-        """Marca a miniatura escolhida (borda grossa) e rola a tira para ela ficar visivel."""
+    def selecionar(self, indice: int, junto=()) -> None:
+        """Marca a miniatura escolhida (borda grossa) e rola a tira para ela ficar visivel.
+        `junto`: outras miniaturas que também estão na tela agora e ficam
+        marcadas com ela (D-612, Samuel, 04/11/2026, prints a-75/a-76: no
+        Dividir com "Duas lado a lado" a tela mostra a folha inteira, e a tira
+        marcava só uma das duas páginas dela; "A miniatura marcada tem que ser a
+        da página ou folha que está na tela"). A rolagem vai para `indice`."""
+        marcadas = {indice, *junto}
         for i, mini in enumerate(self._miniaturas):
             estava = mini.selecionada
-            mini.selecionada = i == indice
+            mini.selecionada = i in marcadas
             if estava != mini.selecionada:
                 mini.update()
         if 0 <= indice < len(self._miniaturas):

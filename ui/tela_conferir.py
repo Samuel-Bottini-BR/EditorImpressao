@@ -5318,7 +5318,16 @@ class TelaConferir(QWidget):
             self.tira.definir_como_sai(i, "", None)
         self.tira.definir_cortes(self._cortes_da_tira_do_dividir(passos))
         self.tira.definir_giros(self._giros_das_folhas())      # D2: so as que mudaram
-        self.tira.selecionar(self._passo_do_dividir_atual(passos))
+        # D-612 (Samuel, 04/11/2026, prints a-75/a-76: "deveria escolher
+        # exatamente a pagina que eu estou clicando, isso confunde muito"): com
+        # a folha inteira na tela ("Duas lado a lado", D-601), as miniaturas das
+        # duas metades dela ficam marcadas; com "Uma página", só a da metade à
+        # vista (como antes)
+        junto = ()
+        if self._metade_no_dividir() is None:
+            junto = tuple(i for i, posicao in enumerate(passos)
+                          if self.projeto.paginas[posicao].folha == self.indice_folha)
+        self.tira.selecionar(self._passo_do_dividir_atual(passos), junto)
 
     def _ir_para_o_quadro_da_tira(self, indice: int) -> None:
         """Um clique (ou duplo clique) na miniatura `indice` da tira: vai para
