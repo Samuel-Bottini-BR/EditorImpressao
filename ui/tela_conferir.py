@@ -1764,6 +1764,12 @@ class TelaConferir(QWidget):
         self.rotulo_jeito_da_folha.setObjectName("rotuloDoPainel")
         linha.addWidget(self.rotulo_jeito_da_folha)
         self.combo_jeito_da_folha = QComboBox()
+        # o teclado continua da página (D-021, etapa 9b-1), como as outras
+        # listas da área de trabalho. Achado do verificador clicando, 03/11:
+        # depois de escolher o motor, a seta → não trocava mais de folha (a
+        # lista ficava com o teclado e a rolagem do painel comia a seta).
+        # O clique continua abrindo a lista. Arriscado: tirar esta linha.
+        self.combo_jeito_da_folha.setFocusPolicy(Qt.NoFocus)
         for jeito in dividir_scantailor.JEITOS:
             self.combo_jeito_da_folha.addItem(nome_do_jeito_de_dividir(jeito), jeito)
         self.combo_jeito_da_folha.setToolTip(
