@@ -993,6 +993,7 @@ class TelaConferir(QWidget):
         self.tira = self.miniaturas.tira
         self.tira.selecionada.connect(self._escolher_da_tira)
         self.tira.ampliar_pedido.connect(self._ampliar_miniatura)
+        self.tira.mover_pedido.connect(self._mover_da_tira)       # D-615
         self.miniaturas.lugar_pedido.connect(self._por_as_miniaturas)
         self.miniaturas.aberta_mudou.connect(lambda _a: self._por_as_miniaturas(self.miniaturas.lugar))
         self.miniaturas.ver_todas.connect(self.abrir_todas_as_paginas)
@@ -3849,7 +3850,26 @@ class TelaConferir(QWidget):
                 self.indice_folha = self.projeto.paginas[destino].folha
                 self.atualizar()
             return
+        if self.trabalha_com_folhas:
+            # D-615: no Dividir com "Duas lado a lado", as setas andam pelas
+            # folhas NA ORDEM DO LIVRO (a da tira), que pode ter sido mudada
+            # arrastando. Livro sem ordem mudada: a folha seguinte, como antes.
+            ordem = self._folhas_na_ordem_do_livro()
+            if self.indice_folha in ordem:
+                agora = ordem.index(self.indice_folha)
+                self._ir_para(ordem[max(0, min(len(ordem) - 1, agora + passo))])
+                return
         self._ir_para(max(0, min(self._total() - 1, self.indice_atual + passo)))
+
+    def _folhas_na_ordem_do_livro(self) -> list[int]:
+        """D-615: as folhas na ordem em que aparecem no livro (a da primeira
+        página de cada uma). Sem ordem mudada: 0, 1, 2... Folha sem página
+        (não acontece) vai para o fim."""
+        assert self.projeto is not None
+        ordem = list(dict.fromkeys(p.folha for p in self.projeto.paginas
+                                   if 0 <= p.folha < len(self.projeto.folhas)))
+        ja = set(ordem)
+        return ordem + [f.indice for f in self.projeto.folhas if f.indice not in ja]
 
     # --- D-601 (02/11/2026): o Dividir com "Uma página" --------------------------
     # Samuel, testando o Dividir no Gradus Primus: "deveria então aparecer só
@@ -5297,6 +5317,59 @@ class TelaConferir(QWidget):
             self.atualizar()
             return
         self._ir_para(indice)
+
+    # --- D-615 (04/11/2026): mudar folhas de lugar arrastando a miniatura ----------
+    # Samuel (prints a-61 e a-62): "eu quero poder mover folhas para onde eu quiser
+    # dentro do app, quero poder arrastar e mover folhas, caso eu precise resolver
+    # esse problema na mão" → "ok" a "arrastar uma miniatura da tira de baixo e soltar
+    # onde quiser; a folha (ou a página, se já dividida) muda de lugar no livro, e o
+    # Ctrl+Z desfaz". A ordem do livro é a da lista de páginas (core/
+    # ordem_das_paginas): a tela, o PDF e os cadernos a seguem. Uma ação do desfazer
+    # (historico_acoes.CAMPO_DA_ORDEM), pelo _registrar de sempre (ele limpa as
+    # prévias e remonta a tira, como o dividir). Depois, a tela fica na página que
+    # mudou de lugar. Arriscado: mudar a lista sem passar pelo _registrar.
+
+    def _posicao_do_quadro(self, quadro: int) -> int | None:
+        """A posição (em projeto.paginas) da página do quadro `quadro` da tira: no
+        Dividir, o passo das setas (D-601); nas outras ferramentas, a página."""
+        assert self.projeto is not None
+        if self.trabalha_com_folhas:
+            passos = self._passos_do_dividir()
+            return passos[quadro] if 0 <= quadro < len(passos) else None
+        return quadro if 0 <= quadro < len(self.projeto.paginas) else None
+
+    @protegido
+    def _mover_da_tira(self, origem: int, destino: int) -> None:
+        """A miniatura `origem` foi arrastada para o vão `destino` da tira (0 =
+        antes da primeira; o número de quadros = depois da última). Muda de lugar
+        a página (folha dividida) ou a folha inteira (não dividida), antes da
+        página do quadro `destino` (core/ordem_das_paginas.bloco e
+        campos_para_mover). Soltou no mesmo lugar: nada."""
+        from core import ordem_das_paginas as O
+
+        if not self._pronta() or self.projeto is None:
+            return
+        posicao = self._posicao_do_quadro(origem)
+        if posicao is None:
+            return
+        andam = O.bloco(self.projeto, posicao)
+        alvo = self._posicao_do_quadro(destino)
+        antes_de = None if alvo is None else O.bloco(self.projeto, alvo)[0]
+        campos = O.campos_para_mover(self.projeto, andam, antes_de)
+        if not campos:
+            return
+        movida = self.projeto.paginas[posicao]
+        folha = movida.folha
+        dividida = len(andam) == 1 and movida.metade != METADE_INTEIRA \
+            and self.projeto.folhas[folha].dividir
+        nome = (f"a página {posicao + 1}" if dividida else f"a folha {folha + 1}")
+        self.indice_folha = folha
+        self._registrar("mudar_de_lugar", "pagina", [], campos, f"Mudar de lugar {nome}")
+        nova = next((n for n, p in enumerate(self.projeto.paginas) if p is movida), None)
+        if nova is not None and nova != self.indice_pagina:
+            self.indice_pagina = nova
+            self.indice_folha = folha
+            self.atualizar()
 
     def _acertar_as_miniaturas_movidas(self) -> None:
         """Etapa 9b-2 (D-547: "Mover uma página → a miniatura [...] mostra
