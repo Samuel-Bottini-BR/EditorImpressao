@@ -154,3 +154,11 @@ Detalhe em `CLAUDE.md` §4.6 a §4.9.
 - **Para o verificador:** confira a entrega **contra o Livro de decisões**, não só contra o pedido. Abra o programa
   **do zero, sem caixinhas pré-marcadas nem livro preparado**, e para cada decisão tocada diga: cumprida / pela metade /
   não cumprida, com print ao lado das palavras do Samuel. Você nunca confere o que você mesmo construiu.
+
+## Regra de 03/11/2026 — o novo não estraga o que já está escolhido e testado (decisão do Samuel; CLAUDE.md §11.8; D-605; vale sobre o que estiver diferente acima)
+
+- Palavras dele: "A partir de agora, nenhuma função nova, ou nova escolha dentro do programa pode alterar o que já está escolhido e testado, coisas novas não podem criar novos problemas, essa é uma nova regra que todos os agentes precisam ler".
+- Antes de mexer, escreva no ONDE-PAREI "O que já está escolhido e testado aqui": as decisões do Livro e os testes que já existem para a tela ou o arquivo que você vai tocar.
+- Se a coisa nova mudaria uma dessas escolhas, pare e pergunte (a gerente leva à Central). Nunca mude em silêncio, nem "por enquanto".
+- Antes de entregar, rode as provas das decisões (`tests/test_decisoes*.py`) e os testes dos arquivos que tocou; o GitHub roda todos. Teste antigo que quebra faz a entrega voltar: nunca mude um teste antigo para ele passar.
+- O verificador confere também o que já funcionava ao redor (clicando, nos trabalhos de tela), não só o item novo.
