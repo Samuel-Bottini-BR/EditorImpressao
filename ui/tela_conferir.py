@@ -5415,6 +5415,10 @@ class TelaConferir(QWidget):
             self._acertar_as_miniaturas_movidas()      # etapa 9b-2 (D-547)
         if chave in esperadas or chave.startswith("folha:"):
             self._atualizar_previa()
+            # D-612: a imagem da peça nos pares chegou (a do editor de marcar
+            # decide a largura dela no par): acerta o lugar
+            if visivel is self.lado_a_lado and self.lado_a_lado.ferramenta is not None:
+                self.lado_a_lado.definir_ferramenta(self.lado_a_lado.ferramenta)
         elif (not self.trabalha_com_folhas
               and chave.startswith(f"{self.indice_pagina}:{self._dpi_atual}:")):
             # "Força do preto sozinha" (12/10/2026): a prévia que chegou é

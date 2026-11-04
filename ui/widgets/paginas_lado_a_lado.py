@@ -158,14 +158,32 @@ class PaginasLadoALado(PaginasRolando):
         self._por_a_ferramenta_no_lugar()
 
     def tirar_ferramenta(self):
-        """Larga a peça (devolve ela; quem chamou a põe de volta na casa dela)."""
+        """Larga a peça, sem a máscara e sem o lugar no par (devolve ela; quem
+        chamou a põe de volta na casa dela)."""
         peca, self.ferramenta = self.ferramenta, None
+        if peca is not None:
+            peca.clearMask()
+            if hasattr(peca, "definir_lugar_no_par"):
+                peca.definir_lugar_no_par(None)
         return peca
 
     def _por_a_ferramenta_no_lugar(self) -> None:
-        """A peça exatamente no retângulo da página da vez (as beiradas
-        arredondadas uma a uma, como as páginas); sem a página da vez
-        arrumada (livro vazio), escondida."""
+        """A peça da ferramenta em cima da página da vez, DO TAMANHO DA PRÉVIA
+        (Samuel, 04/11/2026, testando o Mover nos pares: "ela deveria continuar
+        o preview das duas do mesmo tamanho"):
+          - o Visualizador (Mover, Cortar, Endireitar) cobre o desenho inteiro
+            dos pares, sem fundo, e desenha a página no lugar dela
+            (definir_lugar_no_par): a área branca do Mover é o lugar da página;
+            a parte que passa da beirada e os cantos azuis ficam à vista em
+            volta, no espaço entre as páginas;
+          - a peça sem esse jeito (o editor de marcar) fica na altura do lugar
+            da página (no par as duas têm a mesma altura), no meio dele.
+        As OUTRAS páginas ficam por cima (uma máscara as tira da peça): elas
+        continuam à vista e o clique nelas continua delas. Sem a página da vez
+        arrumada (livro vazio), a peça fica escondida."""
+        from PySide6.QtCore import QRect
+        from PySide6.QtGui import QRegion
+
         peca = getattr(self, "ferramenta", None)
         if peca is None:
             return
@@ -174,7 +192,26 @@ class PaginasLadoALado(PaginasRolando):
             peca.hide()
             return
         x0, y0 = round(ret.left()), round(ret.top())
-        peca.setGeometry(x0, y0, max(1, round(ret.right()) - x0), max(1, round(ret.bottom()) - y0))
+        lugar = QRect(x0, y0, max(1, round(ret.right()) - x0), max(1, round(ret.bottom()) - y0))
+        if hasattr(peca, "definir_lugar_no_par"):
+            geometria = self.folhas.rect()
+            peca.setGeometry(geometria)
+            peca.definir_lugar_no_par(lugar.translated(-geometria.topLeft()))
+        else:
+            geometria = QRect(lugar)
+            imagem = getattr(peca, "_pixmap", None)
+            if imagem is not None and not imagem.isNull() and imagem.height() > 0:
+                largura = max(1, round(lugar.height() * imagem.width() / imagem.height()))
+                geometria = QRect(lugar.center().x() - largura // 2, lugar.top(), largura, lugar.height())
+            peca.setGeometry(geometria)
+        regiao = QRegion(peca.rect())
+        for indice, outro in self._ret:
+            if indice != self.atual:
+                regiao = regiao.subtracted(QRegion(outro.toAlignedRect().translated(-geometria.topLeft())))
+        # as pegas da ferramenta (cantos azuis, alças) por cima de tudo
+        for pega in getattr(peca, "retangulos_das_pegas", lambda: [])():
+            regiao = regiao.united(QRegion(pega))
+        peca.setMask(regiao)
         peca.show()
         peca.raise_()
 
