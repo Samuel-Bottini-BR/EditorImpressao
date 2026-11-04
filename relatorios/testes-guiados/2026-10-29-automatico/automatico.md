@@ -349,3 +349,4 @@ coisa: um botão que mostra e esconde o colorido das marcações.
 
 ### 04/11/2026 (testando os consertos do Dividir)
 - Print a-54 (Dividir, Gradus folha 2 inteira, "Uma página", linha azul na lombada, faixa "Esta folha não vai ser dividida."): "não consigo mover a linha azul manualmente." → é a pergunta `d602-arrastar` da Central (ainda sem resposta): hoje, na folha inteira, a linha é só para ver; para mudar, "dividir esta" e arrastar em "Duas lado a lado" (D-601). Perguntado no chat.
+- Pergunta: "Quer poder arrastar a linha já na folha inteira, antes de dividir, e o "dividir esta" cortar onde você deixou?" → "Sim" → D-609 (responde `d602-arrastar`).
