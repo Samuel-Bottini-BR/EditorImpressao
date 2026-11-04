@@ -137,7 +137,23 @@ class VistaAntesDepois(QWidget):
     página da direita e a tela cheia do Automático (ui/automatico.py).
     Até 30/10 era o contrário (antes à esquerda da linha). Arriscado: trocar
     os lados de novo sem trocar os rótulos (volta a confusão dos prints a-16 e
-    a-17)."""
+    a-17).
+
+    A FERRAMENTA NO "DEPOIS" (D-612, Samuel, 04/11/2026: "1- sim" para as
+    ferramentas no "antes / depois" e, explicado de novo, "Ok, pode ser assim o
+    antes e depois": as ferramentas mexem na imagem do "depois" e o "antes"
+    fica parado, só para comparar). Na área de trabalho a tela pode pôr aqui a
+    PEÇA da ferramenta da vez (definir_ferramenta: o visualizador do Mover,
+    Cortar ou Endireitar, ou o editor de marcar). Ela fica por cima da página,
+    no mesmo lugar, mas só à esquerda da linha (uma máscara): ali o mouse é da
+    ferramenta; à direita (o "antes") e na própria linha, o mouse é desta
+    vista (a linha continua se arrastando). Arrastar a linha muda o pedaço da
+    ferramenta. O aviso escrito por cima da página continua à vista. Sem peça
+    (a tela cheia dos filtros, o Automático), tudo como sempre."""
+
+    # quanto antes da linha a peça da ferramenta acaba (a linha se pega a 12
+    # pontos dela, _na_linha): a pega da linha fica sempre desta vista
+    FOLGA_DA_LINHA = 12
 
     def __init__(self, parent=None) -> None:
         super().__init__(parent)
@@ -148,6 +164,7 @@ class VistaAntesDepois(QWidget):
         self.rotulos = ("", "")
         self.aviso = ""
         self._arrastando = False
+        self.ferramenta = None          # D-612: a peça da ferramenta no "depois" (ou None)
         self.setMinimumSize(QSize(200, 200))
         self.setMouseTracking(True)
 
@@ -156,6 +173,69 @@ class VistaAntesDepois(QWidget):
         self.antes, self.depois = conv(antes), conv(depois)
         self.comparando, self.rotulos, self.aviso = comparando, rotulos, aviso
         self.update()
+        self._por_a_ferramenta_no_lugar()
+
+    # --- a ferramenta no "depois" (D-612) ---------------------------------------------
+
+    def definir_ferramenta(self, peca) -> None:
+        """Põe a `peca` (QWidget da ferramenta da vez) por cima do "depois" (ver
+        o começo da classe). Chamar de novo só acerta o lugar."""
+        self.ferramenta = peca
+        if peca is None:
+            return
+        if peca.parentWidget() is not self:
+            peca.setParent(self)
+        self._por_a_ferramenta_no_lugar()
+
+    def tirar_ferramenta(self):
+        """Larga a peça, sem a máscara (quem chamou a põe de volta na casa dela)."""
+        peca, self.ferramenta = self.ferramenta, None
+        if peca is not None:
+            peca.clearMask()
+        return peca
+
+    def _caixa_do_aviso(self, pintor_ou_widget, area: QRectF) -> QRectF:
+        """Onde fica a caixa do aviso escrito por cima da página (a mesma conta
+        do paintEvent)."""
+        largura = pintor_ou_widget.fontMetrics().horizontalAdvance(self.aviso) + 24
+        return QRectF((self.width() - largura) / 2, area.top() + 10, largura, 26)
+
+    def _por_a_ferramenta_no_lugar(self) -> None:
+        """A peça no lugar da página (mais a folga da moldura dela, para a área
+        branca do Visualizador cair em cima da página), com a máscara: só o
+        pedaço à esquerda da linha (todo, sem comparar), menos a caixa do
+        aviso. Sem "depois" ainda, ou com a linha toda à esquerda, escondida."""
+        from PySide6.QtCore import QRect
+        from PySide6.QtGui import QRegion
+
+        peca = self.ferramenta
+        if peca is None:
+            return
+        if self.depois is None:
+            peca.hide()
+            return
+        area = self._area(self.depois)
+        folga = int(getattr(peca, "folga_da_moldura", 0))
+        lugar = area.adjusted(-folga, -folga, folga, folga).toRect()
+        peca.setGeometry(lugar)
+        largura = lugar.width()
+        if self.comparando and self.antes is not None:
+            x = area.left() + area.width() * self.posicao
+            largura = int(x - lugar.left()) - self.FOLGA_DA_LINHA
+        if largura <= 0:
+            peca.hide()
+            return
+        regiao = QRegion(QRect(0, 0, min(largura, lugar.width()), lugar.height()))
+        if self.aviso:
+            caixa = self._caixa_do_aviso(self, area).toRect().translated(-lugar.left(), -lugar.top())
+            regiao = regiao.subtracted(QRegion(caixa))
+        peca.setMask(regiao)
+        peca.show()
+        peca.raise_()
+
+    def resizeEvent(self, evento) -> None:  # noqa: N802 - nome do Qt
+        super().resizeEvent(evento)
+        self._por_a_ferramenta_no_lugar()
 
     def _area(self, pix: QPixmap) -> QRectF:
         escala = min((self.width() - 20) / pix.width(), (self.height() - 20) / pix.height())
@@ -232,6 +312,7 @@ class VistaAntesDepois(QWidget):
             area = self._area(self.depois)
             self.posicao = min(1.0, max(0.0, (x - area.left()) / max(1.0, area.width())))
             self.update()
+            self._por_a_ferramenta_no_lugar()       # D-612: o pedaço da ferramenta acompanha
         self.setCursor(Qt.SplitHCursor if (self._arrastando or self._na_linha(x)) else Qt.ArrowCursor)
 
     def mouseReleaseEvent(self, _evento) -> None:  # noqa: N802 - nome do Qt
