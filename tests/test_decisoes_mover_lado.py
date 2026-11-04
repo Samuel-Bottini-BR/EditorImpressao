@@ -234,8 +234,10 @@ def test_d612_ctrl_roda_na_pagina_da_vez_da_zoom_nos_pares(janela, tmp_path):
         alvo, ponto = porta, porta.mapFrom(tela.lado_a_lado.folhas, ponto)
     roda = QWheelEvent(QPointF(ponto), QPointF(alvo.mapToGlobal(ponto)), QPoint(0, 0), QPoint(0, 120),
                        Qt.NoButton, Qt.ControlModifier, Qt.NoScrollPhase, False)
+    pagina = tela.indice_pagina
     QApplication.sendEvent(alvo, roda)
     _assentar()
     assert tela.lado_a_lado.zoom > 1.1
+    assert tela.indice_pagina == pagina                   # o zoom não troca a página da vez
     assert vis.zoom == pytest.approx(1.0)
     assert tela.rotulo_do_zoom.text() == f"{round(tela.lado_a_lado.zoom * 100)}%"

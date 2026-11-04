@@ -7809,7 +7809,11 @@ class TelaConferir(QWidget):
         from PySide6.QtWidgets import QApplication
 
         porta = self.lado_a_lado.viewport()
-        ponto = porta.mapFrom(peca, evento.position().toPoint())
+        # mapTo (da peça para a área dos pares, que é um pai dela): o caminho de
+        # pai em pai, sem passar pela tela inteira. Arriscado: porta.mapFrom(peca)
+        # - o Qt pede que o de dentro seja pai e, com a janela longe da tela, a
+        # conta pelo "global" errava (o zoom ia para a última página, piloto)
+        ponto = peca.mapTo(porta, evento.position().toPoint())
         copia = QWheelEvent(QPointF(ponto), evento.globalPosition(), evento.pixelDelta(),
                             evento.angleDelta(), evento.buttons(), evento.modifiers(),
                             evento.phase(), evento.inverted())
