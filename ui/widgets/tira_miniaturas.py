@@ -22,7 +22,7 @@ from __future__ import annotations
 import traceback
 
 import numpy as np
-from PySide6.QtCore import QObject, QRunnable, QSize, Qt, QThreadPool, Signal
+from PySide6.QtCore import QEvent, QObject, QRunnable, QSize, Qt, QThreadPool, QTimer, Signal
 from PySide6.QtGui import QColor, QPainter, QPixmap
 from PySide6.QtWidgets import (
     QFrame,
@@ -250,6 +250,13 @@ class TiraMiniaturas(QWidget):
         # aparece como sai no PDF (a prévia composta, que a tela dá em
         # definir_como_sai), no lugar da folha crua. indice -> (chave, imagem)
         self._como_sai: dict[int, tuple[str, np.ndarray]] = {}
+        # Achado do verificador clicando (03/11/2026, print t1-22): depois de
+        # remontar (montar), os quadros novos só ficam no lugar quando o Qt
+        # arruma a grade (depois deste fio voltar ao laço de eventos); rolar
+        # até a escolhida ANTES disso rolava para o começo. montar() liga
+        # isto e selecionar() rola de novo quando a grade já está arrumada
+        # (_rolar_ate_a_escolhida).
+        self._rolar_depois_de_montar = False
 
         fora = QVBoxLayout(self)
         fora.setContentsMargins(0, 0, 0, 0)
@@ -302,6 +309,7 @@ class TiraMiniaturas(QWidget):
         self.limpar()
         self._cortes = corte_de or {}
         self._giros = {int(k): int(v) % 360 for k, v in (giros or {}).items()}
+        self._rolar_depois_de_montar = True
 
         for i in range(quantidade):
             mini = Miniatura(i + 1)
@@ -502,6 +510,32 @@ class TiraMiniaturas(QWidget):
         if 0 <= indice < len(self._miniaturas):
             folga = (0, 120) if self.vertical else (200, 0)
             self.rolagem.ensureWidgetVisible(self._miniaturas[indice], *folga)
+        if self._rolar_depois_de_montar:
+            # a tira acabou de ser remontada (o Ctrl+Z ou o refazer de dividir/
+            # juntar, por exemplo): rola de novo quando os quadros estiverem
+            # no lugar (achado do verificador clicando, 03/11/2026)
+            self._rolar_depois_de_montar = False
+            QTimer.singleShot(0, self._rolar_ate_a_escolhida)
+
+    def _rolar_ate_a_escolhida(self) -> None:
+        """Rola a tira até a miniatura escolhida, com a grade já arrumada:
+        arruma a grade agora (os quadros novos já apareceram) e deixa a
+        rolagem acertar o tamanho de dentro antes de rolar. Chamado uma vez
+        depois de remontar (selecionar). Nunca levanta: é só a rolagem.
+        Arriscado: rolar sem arrumar a grade antes (os quadros novos estão
+        todos na posição 0 e a tira vai para o começo)."""
+        try:
+            from PySide6.QtWidgets import QApplication
+
+            escolhida = next((m for m in self._miniaturas if m.selecionada), None)
+            if escolhida is None:
+                return
+            self.linha.activate()
+            QApplication.sendPostedEvents(None, QEvent.LayoutRequest)
+            folga = (0, 120) if self.vertical else (200, 0)
+            self.rolagem.ensureWidgetVisible(escolhida, *folga)
+        except RuntimeError:          # a tira foi apagada no meio (fechar o livro)
+            pass
 
     def definir_titulo(self, texto: str) -> None:
         """Muda o texto do rotulo (hoje invisivel - ver o comentario no __init__)."""

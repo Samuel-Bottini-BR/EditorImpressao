@@ -118,3 +118,49 @@ def test_reversao_seta_troca_de_folha_depois_de_escolher_o_motor(janela, tmp_pat
     QTest.keyClick(janela.focusWidget() or janela, Qt.Key_Left)
     _assentar()
     assert tela.indice_folha == 0, "e a ← volta"
+
+
+# --- a tira mostra a folha da vez depois do Ctrl+Z ---------------------------------------------
+
+def _a_vista_na_tira(tela) -> bool:
+    """A miniatura escolhida (borda grossa) está dentro da parte visível da tira?"""
+    tira = tela.tira
+    escolhidas = [m for m in tira._miniaturas if m.selecionada]
+    assert len(escolhidas) == 1
+    mini = escolhidas[0]
+    vista = tira.rolagem.viewport()
+    canto = mini.mapTo(vista, mini.rect().topLeft())
+    return (0 <= canto.x() and canto.x() + mini.width() <= vista.width()
+            and 0 <= canto.y() and canto.y() + mini.height() <= vista.height())
+
+
+def test_reversao_tira_mostra_a_folha_da_vez_depois_do_ctrl_z(janela, tmp_path):
+    """Achado do verificador clicando (03/11/2026, ressalva 4 do teste 1, print t1-22): "Depois
+    do Ctrl+Z a tira voltou para o começo (folhas 1 a 16), mas a folha da vez era a 60: a
+    miniatura escolhida ficou fora da vista." CAUSA: o desfazer remonta a tira (a lista de
+    páginas mudou) e logo depois pede para rolar até a escolhida, mas os quadros novos ainda
+    não estão no lugar (posição 0): a tira rolava para o começo. Agora, depois de remontar, a
+    tira rola até a escolhida quando os quadros já estão no lugar. Vale para o desfazer e o
+    refazer. No código de antes (75ed04af) falha (no programa de teste, o desfazer às vezes é
+    acertado por um redesenho que chega depois - na janela do verificador não foi -; o refazer
+    falha sempre)."""
+    tela = _no_dividir(janela, tmp_path, 40)
+    janela.resize(1536, 824)
+    _assentar()
+    projeto = janela.projeto
+    tela.botao_dividir_todas.click()
+    _esperar(lambda: all(f.dividir for f in projeto.folhas), 120, "dividir todas")
+    _assentar(10)
+    tela._ir_para(19)                                    # a folha 20, longe do começo
+    _assentar(10)
+    assert _a_vista_na_tira(tela), "antes do Ctrl+Z a escolhida está à vista"
+    tela.desfazer()                                       # Ctrl+Z do "dividir todas"
+    _assentar(10)
+    assert not any(f.dividir for f in projeto.folhas)
+    assert tela.indice_folha == 19
+    assert _a_vista_na_tira(tela), "depois do Ctrl+Z a tira mostra a folha da vez"
+    assert tela.tira.rolagem.horizontalScrollBar().value() > 0
+    tela.refazer()                                        # e o refazer também
+    _assentar(10)
+    assert all(f.dividir for f in projeto.folhas) and tela.indice_folha == 19
+    assert _a_vista_na_tira(tela), "depois do refazer a tira mostra a folha da vez"
