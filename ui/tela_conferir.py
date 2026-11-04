@@ -565,13 +565,28 @@ class _RotuloDoLivro(QLabel):
         self._encaixar()
 
 
+# D-608 (03/11/2026): as teclas que, chegando a um botão da tela de conferir,
+# vão para a página (andar: D-021). Seguro mudar: acrescentar uma tecla de
+# andar. Arriscado: pôr aqui o Espaço ou o Enter (apertam o botão, como sempre).
+TECLAS_DE_ANDAR_NUM_BOTAO = frozenset({Qt.Key_Left, Qt.Key_Right, Qt.Key_PageUp,
+                                       Qt.Key_PageDown, Qt.Key_Home, Qt.Key_End})
+
+
 class _FiltroDaTab(QObject):
     """Filtro de teclas da aplicação (etapa 9b-2, lista única 1.10): passa a
     Tab à tela de conferir à vista (TelaConferir._tab_da_proxima_duvida) antes
     de o Qt a usar para mudar o foco. UM filtro só para o programa inteiro
     (instalar_o_filtro_da_tab), que conhece as telas por referência fraca: com
     um filtro por tela, cada evento do programa passaria por todos eles. Só
-    olha KeyPress de Tab; o resto passa direto."""
+    olha KeyPress de Tab e das teclas de andar (abaixo); o resto passa direto.
+
+    D-608 (Samuel, 03/11/2026: "Quer que, depois de clicar num botão do
+    painel, as setas continuem passando de página, em todas as ferramentas?
+    As caixas de número continuam como estão." → "ok"): as setas ← →, Page
+    Up/Down, Home e End que chegam a um BOTÃO da tela de conferir (ele fica
+    com o teclado depois do clique) vão para a página
+    (TelaConferir._tecla_de_andar_num_botao). Caixa de número, campo de
+    texto e lista não são botões: continuam como estão."""
 
     def __init__(self) -> None:
         super().__init__()
@@ -579,12 +594,20 @@ class _FiltroDaTab(QObject):
 
         self.telas = weakref.WeakSet()
 
-    def eventFilter(self, _vigiado, evento) -> bool:  # noqa: N802 - nome do Qt
-        if evento.type() != QEvent.KeyPress or evento.key() != Qt.Key_Tab:
+    def eventFilter(self, vigiado, evento) -> bool:  # noqa: N802 - nome do Qt
+        if evento.type() != QEvent.KeyPress:
+            return False
+        tecla = evento.key()
+        if tecla == Qt.Key_Tab:
+            metodo = "_tab_da_proxima_duvida"
+        elif tecla in TECLAS_DE_ANDAR_NUM_BOTAO:
+            metodo = "_tecla_de_andar_num_botao"
+        else:
             return False
         for tela in list(self.telas):
             try:
-                if tela._tab_da_proxima_duvida(evento):
+                if (tela._tab_da_proxima_duvida(evento) if metodo == "_tab_da_proxima_duvida"
+                        else tela._tecla_de_andar_num_botao(vigiado, evento)):
                     return True
             except RuntimeError:          # a tela do Qt já foi apagada
                 self.telas.discard(tela)
@@ -1764,6 +1787,12 @@ class TelaConferir(QWidget):
         self.rotulo_jeito_da_folha.setObjectName("rotuloDoPainel")
         linha.addWidget(self.rotulo_jeito_da_folha)
         self.combo_jeito_da_folha = QComboBox()
+        # o teclado continua da página (D-021, etapa 9b-1), como as outras
+        # listas da área de trabalho. Achado do verificador clicando, 03/11:
+        # depois de escolher o motor, a seta → não trocava mais de folha (a
+        # lista ficava com o teclado e a rolagem do painel comia a seta).
+        # O clique continua abrindo a lista. Arriscado: tirar esta linha.
+        self.combo_jeito_da_folha.setFocusPolicy(Qt.NoFocus)
         for jeito in dividir_scantailor.JEITOS:
             self.combo_jeito_da_folha.addItem(nome_do_jeito_de_dividir(jeito), jeito)
         self.combo_jeito_da_folha.setToolTip(
@@ -3892,6 +3921,35 @@ class TelaConferir(QWidget):
         """(Lombada, tampa) já lida desta folha, como ela está agora, ou None."""
         return self._linhas_do_motor.get(self._chave_da_linha(indice))
 
+    def _linha_com_o_motor(self, indice: int, jeito: str):
+        """D-606 (Samuel, 03/11/2026: "Ele deve fazer a conta novamente com o
+        novo motor"): a Lombada onde o motor `jeito` corta a folha `indice`,
+        como ela está girada - a leitura já feita (_linhas_do_motor) ou feita
+        agora, no fio da tela, com o cursor de espera (uns décimos de
+        segundo, como a troca de motor na folha dividida). A leitura fica
+        guardada com a chave do motor novo, e a tela a mostra sem ler de novo.
+        Se o motor acha a folha de uma página só, a conta forçada do "dividir
+        esta" (a linha fica escondida, como na folha nunca dividida; é onde
+        o "dividir esta" cortaria). Levanta ErroPDF se o livro não abre."""
+        from PySide6.QtWidgets import QApplication
+
+        assert self.projeto is not None
+        folha = self.projeto.folhas[indice]
+        chave = (int(indice), int(folha.rotacao) % 360, dividir_scantailor.jeito_valido(jeito))
+        lida = self._linhas_do_motor.get(chave)
+        QApplication.setOverrideCursor(Qt.WaitCursor)
+        try:
+            if lida is None:
+                lida = dividir_a_mao.ler_a_linha(self.projeto.caminho_entrada, *chave)
+                self._linhas_do_motor[chave] = lida
+            lombada = lida[0]
+            if not lombada.e_paisagem:
+                lombada = dividir_a_mao.ler_a_linha(self.projeto.caminho_entrada, *chave,
+                                                    forcar=True)[0]
+        finally:
+            QApplication.restoreOverrideCursor()
+        return lombada
+
     def _volta_como_estava(self, indice: int) -> bool:
         """A folha inteira que o "dividir esta" devolve como estava, na linha de
         antes (D-498: a pessoa juntou; ou duas páginas não divididas)."""
@@ -5752,6 +5810,14 @@ class TelaConferir(QWidget):
         Folha ainda inteira (D-602; antes a lista ficava cinza nela - a "lista
         travada"): grava so o motor desta folha, numa acao do desfazer, e a
         linha azul e lida de novo pelo motor novo, por tras; nada e cortado.
+        Folha JUNTADA de volta ("não dividir esta" / "juntar todas", D-498:
+        mostra a linha de antes) - D-606 (Samuel, 03/11/2026: "Ele deve fazer
+        a conta novamente com o novo motor"): a folha é lida pelo motor novo
+        (_linha_com_o_motor: a mesma conta da folha nunca dividida) e a linha
+        de antes passa a ser a dele (posicao_corte, na MESMA ação do desfazer:
+        o Ctrl+Z devolve o motor e a linha de antes). "dividir esta" depois
+        devolve as páginas de antes, nessa linha. Enquanto o motor não é
+        trocado, a D-498 continua: a linha de antes.
         Escolher o motor do livro volta a "seguir o livro"
         (ConfigFolha.dividir_como None)."""
         assert self.projeto is not None
@@ -5761,9 +5827,13 @@ class TelaConferir(QWidget):
             return
         do_livro = dividir_scantailor.jeito_valido(getattr(self.projeto, "dividir_como", None))
         if not folha.dividir:
+            campos: dict = {"dividir_como": None if jeito == do_livro else jeito}
+            if self._volta_como_estava(self.indice_folha):          # D-606
+                lombada = self._linha_com_o_motor(self.indice_folha, jeito)
+                campos["posicao_corte"] = round(float(lombada.posicao), 4)
+                campos["confianca_corte"] = float(lombada.confianca)
             self._registrar(
-                "jeito_de_dividir", "folha", [self.indice_folha],
-                {"dividir_como": None if jeito == do_livro else jeito},
+                "jeito_de_dividir", "folha", [self.indice_folha], campos,
                 f"Folha {self.indice_folha + 1}: motor de corte "
                 f"“{nome_do_jeito_de_dividir(jeito)}”",
             )
@@ -8330,11 +8400,39 @@ class TelaConferir(QWidget):
         if self.acoes.desfeitas and self._acoes_esperam_pelas_marcacoes(
                 [self.acoes.desfeitas[-1]], para_tras=False):
             return                       # pendencia da D2 (_espera_pelas_marcacoes)
-        if self.acoes.refazer(self.projeto) is not None:
+        acao = self.acoes.refazer(self.projeto)
+        if acao is not None:
             if self.previas is not None:
                 self.previas.invalidar()
             self.lista_de_paginas_mudou()      # etapa 3: o Automatico muda a lista
             self._reacertar_as_opcoes()
+            self._medir_o_em_branco_ao_refazer(acao)
+
+    def _medir_o_em_branco_ao_refazer(self, acao) -> None:
+        """O refazer mede o "Parece em branco" como o _registrar mede depois
+        de aplicar a mesma ação (D-497): ação de FOLHA que troca as páginas
+        dela (dividir, juntar, "dividir todas", "juntar todas") ou que muda a
+        linha (posicao_corte) → as páginas dessas folhas são medidas de novo,
+        por trás.
+
+        Defeito (03/11/2026, achado no Gradus Primus; existia desde a etapa 7,
+        27/10, quando a medida do em branco entrou, e não veio da D-602):
+        "dividir todas" → 7 "Parece em branco" (folhas 2, 3, 7, 8, 62, 63,
+        69); Ctrl+Z; Ctrl+Y → 0 com dúvida. A ação guarda as páginas como
+        eram NA HORA de dividir, antes da medida por trás, e o refazer as
+        devolvia assim, sem medir. O mesmo com "dividir esta". A medida é a
+        mesma função (core.pipeline.medir_o_em_branco, que põe ou tira o
+        aviso), então o refazer fica igual ao que ficou depois da ação.
+        Só no refazer: o desfazer devolve as páginas com os avisos de antes
+        da ação, como já eram (nada muda nele). Nunca levanta."""
+        try:
+            if self.projeto is None or getattr(acao, "alvo", None) != "folha":
+                return
+            depois = getattr(acao, "depois", None) or {}
+            if dividir_a_mao.muda_a_lista(depois) or "posicao_corte" in depois:
+                self._medir_o_em_branco_por_tras(self._paginas_das_folhas(list(acao.indices)))
+        except Exception:  # noqa: BLE001 - o aviso é ajuda; nunca derruba o refazer
+            registrar_erro("medir o em branco ao refazer", traceback.format_exc())
 
     def _reacertar_as_opcoes(self) -> None:
         """Depois de desfazer ou refazer, a tela "O que fazer" deste mesmo
@@ -8369,6 +8467,43 @@ class TelaConferir(QWidget):
         super().hideEvent(evento)
         if hasattr(self, "_relogio_das_bolinhas"):
             self._relogio_das_bolinhas.stop()
+
+    def _tecla_de_andar_num_botao(self, vigiado, evento) -> bool:
+        """D-608 (Samuel, 03/11/2026, "Quer que, depois de clicar num botão do
+        painel, as setas continuem passando de página, em todas as
+        ferramentas? As caixas de número continuam como estão." → "ok"): a
+        seta ← →, Page Up/Down, Home ou End que chega a um BOTÃO desta tela
+        (o botão do painel, da faixa, da barra de baixo, que ficou com o
+        teclado depois do clique) vai para a página (tratar_tecla), como se o
+        teclado estivesse nela. Antes o Qt usava as setas para passar o
+        teclado de um botão a outro, e Page Up/Down/Home/End rolavam o painel.
+        Só com Ctrl/Alt soltos, com o botão sendo quem tem o teclado e com a
+        área de trabalho à vista. Bolinha (QRadioButton) fica de fora: nela as
+        setas escolhem a opção. Caixa de número, campo de texto e lista não
+        são botões: as setas continuam neles (D-083: o ângulo de 0,1°). O
+        Espaço e o Enter continuam apertando o botão. Devolve True se usou a
+        tecla. Nunca levanta.
+        Arriscado: tirar a condição "é quem tem o teclado" (a tecla que sobe
+        de um filho para o botão seria tomada) ou pôr as caixas de número."""
+        try:
+            from PySide6.QtWidgets import QAbstractButton, QRadioButton
+
+            if evento.modifiers() & (Qt.ControlModifier | Qt.AltModifier | Qt.MetaModifier):
+                return False
+            if not isinstance(vigiado, QAbstractButton) or isinstance(vigiado, QRadioButton):
+                return False
+            # quem tem o teclado DA JANELA (com a janela por trás de outra, o
+            # Qt ainda manda a tecla a ele, mas o "foco da aplicação" é nenhum)
+            if vigiado.window().focusWidget() is not vigiado or not self.isAncestorOf(vigiado):
+                return False
+            if not self.isVisible() or not self._pronta():
+                return False
+            if self.pilha_da_tela.currentWidget() is not self.trabalho:
+                return False
+            return bool(self.tratar_tecla(evento))
+        except Exception:  # noqa: BLE001 - a tecla nunca derruba a tela
+            registrar_erro("tecla de andar num botao", traceback.format_exc())
+            return False
 
     def _tab_da_proxima_duvida(self, evento) -> bool:
         """Etapa 9b-2 da obra (lista única 23/10, 1.10: "A tecla Tab ('Ir para

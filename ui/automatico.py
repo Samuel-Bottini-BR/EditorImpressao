@@ -47,7 +47,7 @@ from __future__ import annotations
 
 import copy
 
-from PySide6.QtCore import QObject, Qt, QTimer, Signal
+from PySide6.QtCore import QObject, QSize, Qt, QTimer, Signal
 from PySide6.QtGui import QColor, QPainter, QPixmap
 from PySide6.QtWidgets import (
     QAbstractItemView,
@@ -57,8 +57,10 @@ from PySide6.QtWidgets import (
     QDialog,
     QDoubleSpinBox,
     QFrame,
+    QBoxLayout,
     QGridLayout,
     QHBoxLayout,
+    QLayout,
     QLabel,
     QLineEdit,
     QListWidget,
@@ -67,6 +69,7 @@ from PySide6.QtWidgets import (
     QPushButton,
     QRadioButton,
     QScrollArea,
+    QSizePolicy,
     QSlider,
     QStackedWidget,
     QVBoxLayout,
@@ -525,6 +528,68 @@ class ListaDeEtapas(QListWidget):
         item = self.item_da_etapa(etapa)
         if item is not None:
             self.setCurrentItem(item)
+
+
+class _LinhaQueDobra(QWidget):
+    """Uma linha de partes (cada parte: um rótulo e o seu controle) que fica numa linha só
+    quando cabe e dobra, uma parte embaixo da outra, quando não cabe - mesmos textos, mesmos
+    controles, mesma ordem de leitura.
+
+    Achado do verificador clicando (03/11/2026, ressalva 3 do teste 2, print t2m-02; o print
+    a-51 do Samuel mostra o mesmo): na janela grande do Automático aberta da janela de 1536 x
+    824 (a do Samuel: a do Automático fica com 92%, 1413 x 758), a coluna do meio da etapa 6
+    "Margens iguais" ficava cortada, com barra de rolagem - a linha "página menor, de cima a
+    baixo: [no meio] de um lado ao outro: [no meio]" pedia 732 pontos e a coluna tinha 674.
+    Onde cabe (a janela maior), fica exatamente como era, numa linha.
+    Seguro mudar: nada. Arriscado: deixar o layout de dentro impor a largura da linha
+    inteira (SetNoConstraint): a rolagem de lado voltaria."""
+
+    def __init__(self, partes: list[QWidget], parent=None) -> None:
+        super().__init__(parent)
+        self._partes = list(partes)
+        self._caixa = QBoxLayout(QBoxLayout.LeftToRight, self)
+        self._caixa.setContentsMargins(0, 0, 0, 0)
+        self._caixa.setSizeConstraint(QLayout.SetNoConstraint)
+        for parte in self._partes:
+            self._caixa.addWidget(parte, 0, Qt.AlignLeft)
+        self._caixa.addStretch()
+
+    def _espaco(self) -> int:
+        espaco = self._caixa.spacing()
+        return espaco if espaco >= 0 else self.style().layoutSpacing(
+            QSizePolicy.Label, QSizePolicy.ComboBox, Qt.Horizontal)
+
+    def largura_numa_linha(self) -> int:
+        """A largura mínima com todas as partes numa linha só."""
+        return (sum(p.minimumSizeHint().width() for p in self._partes)
+                + self._espaco() * max(0, len(self._partes) - 1))
+
+    def minimumSizeHint(self) -> QSize:  # noqa: N802 - nome do Qt
+        """A largura mínima é a da parte mais larga (dobrada); a altura, a do jeito de agora."""
+        largura = max((p.minimumSizeHint().width() for p in self._partes), default=0)
+        return QSize(largura, self._caixa.minimumSize().height())
+
+    def resizeEvent(self, evento) -> None:  # noqa: N802 - nome do Qt
+        direcao = (QBoxLayout.LeftToRight if evento.size().width() >= self.largura_numa_linha()
+                   else QBoxLayout.TopToBottom)
+        if self._caixa.direction() != direcao:
+            self._caixa.setDirection(direcao)
+            self.updateGeometry()
+        super().resizeEvent(evento)
+
+    @property
+    def dobrada(self) -> bool:
+        return self._caixa.direction() == QBoxLayout.TopToBottom
+
+
+def _parte(rotulo: str, controle: QWidget) -> QWidget:
+    """Um rótulo e o seu controle juntos (uma parte de _LinhaQueDobra)."""
+    parte = QWidget()
+    linha = QHBoxLayout(parte)
+    linha.setContentsMargins(0, 0, 0, 0)
+    linha.addWidget(QLabel(rotulo))
+    linha.addWidget(controle)
+    return parte
 
 
 class _ComboDoAlcance(QComboBox):
@@ -2161,13 +2226,12 @@ class PainelDeOpcoes(QObject):
             self.combo_horizontal.addItem(margens_scantailor.NOMES_HORIZONTAIS[codigo], codigo)
         for combo in (self.combo_vertical, self.combo_horizontal):
             combo.currentIndexChanged.connect(lambda _i: self._alinhamento_mudou())
-        linha = QHBoxLayout()
-        linha.addWidget(QLabel("página menor, de cima a baixo:"))
-        linha.addWidget(self.combo_vertical)
-        linha.addWidget(QLabel("de um lado ao outro:"))
-        linha.addWidget(self.combo_horizontal)
-        linha.addStretch()
-        col.addLayout(linha)
+        # achado do verificador clicando (03/11/2026): numa linha só quando cabe; na janela
+        # do Automático da tela do Samuel (1413 de largura) dobra em duas (_LinhaQueDobra)
+        self.linha_do_alinhamento = _LinhaQueDobra([
+            _parte("página menor, de cima a baixo:", self.combo_vertical),
+            _parte("de um lado ao outro:", self.combo_horizontal)])
+        col.addWidget(self.linha_do_alinhamento)
         self.controles["margens_alinhamento"] = self.combo_vertical
 
     def _opcoes_cadernos(self, col) -> None:

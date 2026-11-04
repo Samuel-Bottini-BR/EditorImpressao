@@ -63,6 +63,30 @@ MAXIMO_DE_RECENTES = 10
 LARGURA_E_ALTURA_MINIMAS = (1000, 600)
 
 
+def texto_das_mexidas(quantas: int, juntadas: int = 0) -> str:
+    """O texto da pergunta das páginas mexidas à mão (D-004), com a parte das
+    folhas juntadas de volta no Dividir (D-607, Samuel, 03/11/2026: "só temos
+    que mudar o aviso, avisar que as páginas foram juntadas e que vão ser
+    separadas se o processar continuar."). `juntadas` das `quantas` páginas
+    são de folhas juntadas; as outras foram mexidas de outro jeito. Sem
+    juntadas: o texto de sempre (D-004), letra por letra. A pergunta do fim
+    ("Pular essas páginas?") é a de sempre."""
+    juntadas = max(0, min(int(juntadas), int(quantas)))
+    outras = int(quantas) - juntadas
+    partes = []
+    if juntadas:
+        if juntadas == 1:
+            partes.append("1 página foi juntada no Dividir e vai ser separada se o processar "
+                          "continuar nela.")
+        else:
+            partes.append(f"{juntadas} páginas foram juntadas no Dividir e vão ser separadas "
+                          "se o processar continuar nelas.")
+    if outras or not juntadas:
+        palavra = "página foi mexida" if outras == 1 else "páginas foram mexidas"
+        partes.append(f"{outras} {palavra} à mão nas etapas que vão rodar.")
+    return " ".join(partes) + " Pular essas páginas?"
+
+
 class JanelaPrincipal(QMainWindow):
     """A janela unica do programa: um QStackedWidget com as cinco telas do
     fluxo (ver INICIO..FINAL acima) e a orquestracao entre elas - abrir livro,
@@ -1235,16 +1259,20 @@ class JanelaPrincipal(QMainWindow):
         caixa.finished.connect(fechou)
         caixa.open()
 
-    def _perguntar_mexidas(self, quantas: int) -> bool | None:
+    def _perguntar_mexidas(self, quantas: int, juntadas: int = 0) -> bool | None:
         """D-004 (28/09): "Automático em livro já mexido à mão: o programa
         pergunta se quer pular as páginas mexidas." Devolve True (pular),
-        False (rodar nelas tambem) ou None (desistir)."""
+        False (rodar nelas tambem) ou None (desistir).
+        D-607 (03/11/2026: "só temos que mudar o aviso, avisar que as páginas
+        foram juntadas e que vão ser separadas se o processar continuar."):
+        `juntadas` das `quantas` são de folhas juntadas de volta no Dividir
+        (core/automatico.paginas_juntadas); o texto diz isso delas e, se há
+        outras, a frase de sempre para as outras. SÓ O TEXTO muda: o título,
+        a explicação de baixo, os botões e a contagem ficam os da D-004."""
         caixa = QMessageBox(self)
         caixa.setWindowTitle("Páginas mexidas à mão")
         caixa.setIcon(QMessageBox.Question)
-        palavra = "página foi mexida" if quantas == 1 else "páginas foram mexidas"
-        caixa.setText(f"{quantas} {palavra} à mão nas etapas que vão rodar. "
-                      "Pular essas páginas?")
+        caixa.setText(texto_das_mexidas(quantas, juntadas))
         caixa.setInformativeText(
             "Pular: elas ficam como você deixou nessas etapas. Rodar nelas também: o "
             "automático passa por cima do que você fez à mão nelas (o Desfazer traz de volta).")
@@ -1287,7 +1315,14 @@ class JanelaPrincipal(QMainWindow):
             return False
         mexidas = automatico.paginas_mexidas(self.projeto, pedido) if perguntar else []
         if mexidas:
-            resposta = self._perguntar_mexidas(len(mexidas))
+            # D-607: só o texto muda quando há folhas juntadas de volta (a
+            # chamada sem o segundo valor é a de sempre: os testes antigos
+            # trocam a pergunta por uma de um valor só)
+            juntadas = automatico.paginas_juntadas(self.projeto, pedido, mexidas)
+            if juntadas:
+                resposta = self._perguntar_mexidas(len(mexidas), len(juntadas))
+            else:
+                resposta = self._perguntar_mexidas(len(mexidas))
             if resposta is None:
                 return False
             pedido.pular_mexidas = bool(resposta)

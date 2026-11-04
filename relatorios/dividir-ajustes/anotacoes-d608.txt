@@ -1,0 +1,4 @@
+ferramenta => "corte"
+depois do clique em dividir esta => {"folha": 5, "pagina": 5, "dividida": true, "linha_da_folha": 0.5086, "linha_visivel": true, "linha_na_tela": 0.5086, "motor": "o do ScanTailor", "botao": "não dividir esta", "paginas": 71, "com_duvida": 0, "teclado_com": "QPushButton", "texto_de_quem_tem_o_teclado": "não dividir esta"}
+depois da seta direita => {"folha": 6, "pagina": 7, "dividida": false, "linha_da_folha": 0.5, "linha_visivel": true, "linha_na_tela": 0.4958, "motor": "o do ScanTailor", "botao": "dividir esta", "paginas": 71, "com_duvida": 0}
+depois da seta esquerda => {"folha": 5, "pagina": 5, "dividida": true, "linha_da_folha": 0.5086, "linha_visivel": true, "linha_na_tela": 0.5086, "motor": "o do ScanTailor", "botao": "não dividir esta", "paginas": 71, "com_duvida": 0}
