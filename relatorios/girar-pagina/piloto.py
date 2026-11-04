@@ -123,7 +123,8 @@ def esperar_previa(j, limite=60):
     t0 = time.time()
     base.esperar(0.5)
     while time.time() - t0 < limite:
-        vis = j.tela_conferir.area_imagem.currentWidget()
+        t = j.tela_conferir
+        vis = getattr(t, "visualizadores", {}).get(t.aba_atual) or t.area_imagem.currentWidget()
         if getattr(vis, "_pixmap", 1) is not None and not getattr(vis, "carregando", False):
             break
         base.esperar(0.2)
@@ -181,8 +182,11 @@ def ctrl(j, tecla_vk):
     est[VK_CONTROL] = est[VK_LCONTROL] = 0x80
     base.user32.SetKeyboardState(est)
     base.user32.PostMessageW(h, 0x0100, VK_CONTROL, 1); base.esperar(0.05)
-    base.user32.PostMessageW(h, 0x0100, tecla_vk, 1); base.esperar(0.05)
-    base.user32.PostMessageW(h, 0x0101, tecla_vk, 0xC0000001); base.esperar(0.05)
+    # as setas sao teclas "estendidas" (bit 24 do lParam): sem ele o Windows as
+    # entrega como as do teclado numerico e o atalho Ctrl+Seta nao casa
+    ext = 0x01000000 if tecla_vk in (VK_LEFT, VK_RIGHT) else 0
+    base.user32.PostMessageW(h, 0x0100, tecla_vk, 1 | ext); base.esperar(0.05)
+    base.user32.PostMessageW(h, 0x0101, tecla_vk, 0xC0000001 | ext); base.esperar(0.05)
     base.user32.PostMessageW(h, 0x0101, VK_CONTROL, 0xC0000001); base.esperar(0.3)
     est[VK_CONTROL] = est[VK_LCONTROL] = 0
     base.user32.SetKeyboardState(est); base.esperar(1.5)
@@ -263,7 +267,10 @@ def fase_depois(j):
     girar_painel(j, girar.GIRO_ESQUERDA); passo(j, "painel-esquerda")
     girar_painel(j, girar.GIRO_ESQUERDA); passo(j, "painel-esquerda-2")
     girar_canto(j, girar.GIRO_DIREITA); passo(j, "canto-direita")
-    ctrl(j, VK_RIGHT); esperar_previa(j); passo(j, "ctrl-seta-direita")
+    # Ctrl+Seta: o atalho do menu Pagina so dispara com a janela ATIVA, e a janela do piloto
+    # fica fora da tela, sem foco (a mensagem do Windows cai na navegacao: o mesmo no codigo de
+    # antes, fase "tecla"). Vai pela acao do menu, que e o que o atalho chama.
+    j.menu.acoes["girar"].trigger(); esperar_previa(j); passo(j, "menu-girar-direita-ctrl-seta")
     girar_painel(j, girar.GIRO_MEIA_VOLTA); passo(j, "meia-volta")
     for n in range(1, 6):
         ctrl(j, ord("Z")); esperar_previa(j)
@@ -286,26 +293,73 @@ def fase_depois(j):
         ctrl(j, ord("Z")); esperar_previa(j)
 
 
+def medir_na_tela(j) -> dict:
+    """O que a tela mostra: o tamanho da imagem posta no visualizador da vez e o retângulo em
+    que ela é desenhada (proporção na tela = largura/altura do desenho)."""
+    vis = j.tela_conferir.area_imagem.currentWidget()
+    saida = {"visualizador": type(vis).__name__}
+    pix = getattr(vis, "_pixmap", None)
+    if pix is not None:
+        saida["imagem (larg x alt)"] = [pix.width(), pix.height()]
+        saida["proporcao da imagem"] = round(pix.width() / max(1, pix.height()), 3)
+    for nome in ("_area_da_imagem", "_area_do_conteudo", "_retangulo_da_imagem"):
+        f = getattr(vis, nome, None)
+        if callable(f):
+            try:
+                r = f()
+                saida[nome] = [r.x(), r.y(), r.width(), r.height(),
+                               round(r.width() / max(1, r.height()), 3)]
+            except Exception as erro:  # noqa: BLE001 - só anotação
+                saida[nome] = str(erro)
+    return saida
+
+
 def fase_folha(j):
-    """A folha inteira (não dividida): a proporção antes e depois de girar ¼."""
+    """A folha inteira (não dividida): a proporção antes e depois de girar ¼. O Gradus tem todas
+    as folhas divididas: a folha 1 é juntada no Dividir ("não dividir esta"), como o Kaique."""
     from core import girar
-    ferramenta(j, "X"); esperar_previa(j)
-    inteiras = [pg.indice for pg in j.projeto.paginas if not j.projeto.folhas[pg.folha].dividir]
-    anotar("paginas-de-folha-inteira", inteiras[:10])
-    if not inteiras:
-        return
-    i = inteiras[0]
-    ir_pagina(j, i + 1)
-    anotar("folha-inteira", {"estado": estado(j), "medidas": medir_paginas(j, (i,))}); p(j, "folha-inteira")
+    t = j.tela_conferir
+    ferramenta(j, "D"); mostrar(j, "duas"); esperar_previa(j)
+    ir_pagina(j, 1)
+    if j.projeto.folhas[t.indice_folha].dividir:
+        base.clique(j, t.botao_nao_dividir); base.esperar(2.0)
+    anotar("juntou", {"folha": t.indice_folha + 1, "dividida": j.projeto.folhas[t.indice_folha].dividir,
+                      "estado": estado(j)})
+    mostrar(j, "uma")
+    i = next(pg.indice for pg in j.projeto.paginas if pg.folha == t.indice_folha)
+    for letra, nome in (("X", "cortar"), ("F", "mover"), ("E", "endireitar")):
+        ferramenta(j, letra); esperar_previa(j); ir_pagina(j, i + 1)
+        anotar(f"{nome}-antes", {"estado": estado(j), "medidas": medir_paginas(j, (i,)),
+                                 "tela": medir_na_tela(j)})
+        p(j, f"{nome}-folha-inteira")
+        girar_painel(j, girar.GIRO_ESQUERDA)
+        anotar(f"{nome}-depois-de-girar", {"estado": estado(j), "medidas": medir_paginas(j, (i,)),
+                                           "tela": medir_na_tela(j)})
+        p(j, f"{nome}-folha-inteira-girada")
+        ctrl(j, ord("Z")); esperar_previa(j)
+    mostrar(j, "duas"); esperar_previa(j)
+    p(j, "duas-lado-a-lado-antes")
     girar_painel(j, girar.GIRO_ESQUERDA)
-    anotar("folha-inteira-esquerda", {"estado": estado(j), "medidas": medir_paginas(j, (i,))})
-    p(j, "folha-inteira-esquerda")
+    anotar("duas-depois-de-girar", {"estado": estado(j), "medidas": medir_paginas(j, (i,))})
+    p(j, "duas-lado-a-lado-girada")
+
+
+def fase_tecla(j):
+    """So a tecla Ctrl+Seta na pagina 14 do Cortar: gira ou troca de pagina? (para comparar
+    com o codigo de antes)."""
+    ferramenta(j, "X"); esperar_previa(j)
+    ir_pagina(j, 14)
+    from PySide6.QtWidgets import QApplication
+    foco = QApplication.focusWidget()
+    anotar("foco-antes", type(foco).__name__ if foco else None)
+    ctrl(j, VK_RIGHT); esperar_previa(j)
+    passo(j, "ctrl-seta-direita")
 
 
 def main():
     j, _porteiro = abrir()
     anotar("inicio", estado(j))
-    {"antes": fase_antes, "depois": fase_depois, "folha": fase_folha}[FASE](j)
+    {"antes": fase_antes, "depois": fase_depois, "folha": fase_folha, "tecla": fase_tecla}[FASE](j)
     base.fechar(j)
 
 

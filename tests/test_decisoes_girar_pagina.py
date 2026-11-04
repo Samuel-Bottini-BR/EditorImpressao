@@ -242,6 +242,33 @@ def test_d618_folha_inteira_continua_girando_a_folha(janela, tmp_path):
     assert projeto.folhas[0].rotacao == 0 and projeto.paginas[1].giro_da_pagina == 0
 
 
+def test_d618_folha_inteira_girada_mede_a_proporcao_na_previa_e_no_pdf(janela, tmp_path):
+    """Correção do Samuel na D-618 (04/11, recado da gerente): "hoje quando gira a folha altera a
+    proporção dela para girar ela". Medida, sem mudar nada: a folha inteira (larga, 29,7 x 21)
+    girada ¼ fica 21 x 29,7 - a proporção exatamente invertida, sem esticar nem apertar - na
+    imagem da ferramenta Cortar e na página do PDF gravado; e o conteúdo é a mesma imagem,
+    girada. (Se a gerente confirmar outro jeito de girar a folha inteira, este teste diz o que
+    era antes.)"""
+    tela, projeto = _livro_com_a_folha_1_dividida(janela, tmp_path)
+    tela.ir_para_pagina(2)
+
+    def gerar(nome):
+        copia = copy.copy(projeto)
+        copia.caminho_saida = str(tmp_path / f"{nome}.pdf")
+        return _paginas_do_pdf(pipeline.processar(copia))[2]
+
+    base_antes, pdf_antes = _como_o_cortar_mostra(projeto, 2), gerar("inteira_antes")
+    tela.barra_girar.botoes_de_giro[girar.GIRO_ESQUERDA].click()
+    base_depois, pdf_depois = _como_o_cortar_mostra(projeto, 2), gerar("inteira_depois")
+
+    def proporcao(img):
+        return img.shape[1] / img.shape[0]
+
+    assert proporcao(base_depois) == pytest.approx(1 / proporcao(base_antes), rel=0.01)
+    assert proporcao(pdf_depois) == pytest.approx(1 / proporcao(pdf_antes), rel=0.01)
+    assert np.array_equal(base_depois, girar_90(base_antes, girar.GIRO_ESQUERDA))
+
+
 def test_d618_no_dividir_em_duas_lado_a_lado_a_folha_inteira_gira(janela, tmp_path):
     """No Dividir com "Duas lado a lado" a tela mostra a FOLHA inteira com a linha (D-601): ali o
     giro continua sendo o da folha, como antes (o que aparece na tela é a folha). Ressalva escrita

@@ -41,14 +41,32 @@ Regra: nenhum desses muda. A folha inteira (não dividida) continua girando como
 
 ## Perguntas para o Samuel
 
-(abertas conforme o trabalho anda; ver o fim deste arquivo)
+1. **O "aplicar em" e o nome do bloco numa folha dividida.** Hoje, numa folha dividida, só "só esta folha" gira a
+   página; "todas as folhas", "daqui em diante", "só as pares" e "só as ímpares" continuam girando as folhas
+   inteiras, como antes (o que, numa folha dividida, ainda faz a confusão do a-70). Sugestão: numa folha dividida o
+   bloco passa a se chamar "Girar a página", a lista diz "só esta página / todas as páginas / daqui em diante / só
+   as pares / só as ímpares", e cada página gira sozinha, virada como a da tela. O mesmo para o girar da grade "ver
+   todas" (hoje gira as folhas das páginas escolhidas). Pode ser assim?
+   Print para a pergunta: `prints/antes-02-esquerda-1.png` (o defeito) e `prints/depois-02-painel-esquerda.png`
+   (com "só esta folha", já consertado).
 
 ## Andamento
 
-- [ ] reproduzir na janela de verdade (antes)
-- [ ] provar a causa
-- [ ] teste de reversão
-- [ ] conserto
-- [ ] prints depois, e o que funcionava ao redor
-- [ ] investigar a proporção da folha inteira (sem mudar)
-- [ ] GitHub
+- [x] reproduzir na janela de verdade (antes): `prints/antes-*.png`, `anotacoes-antes.txt`
+- [x] provar a causa (medidas no relatório)
+- [x] teste de reversão: `tests/test_decisoes_girar_pagina.py` (falha em ce086bb6)
+- [x] conserto: commit 93a390ed
+- [x] prints depois, e o que funcionava ao redor: `prints/depois-*.png`
+- [x] investigar a proporção da folha inteira (sem mudar): nada estica; `prints/folha-*.png`
+- [ ] GitHub (suíte e filtro de velocidade)
+
+## Como cumpri cada decisão
+
+- D-618: `test_reversao_d618_*`, `test_d618_canto_ctrl_seta_e_meia_volta_*`, `test_d618_o_pdf_sai_com_so_a_pagina_girada`;
+  prints `depois-02` a `depois-08` (página 13 igual em todos os passos).
+- Correção do Samuel (folha inteira): investigada e medida, nada mudado (`test_d618_folha_inteira_girada_mede_a_proporcao_*`).
+- D-030, D-035, D-036, D-049, D-053, D-361, D-367, D-371, D-556: `tests/test_girar.py` e `tests/test_girar_na_tela.py`
+  passam sem mudança; textos da tela não mudaram.
+- D-487: o girar da grade não foi mexido (fica na pergunta 1). D-601 / D-609: `test_decisoes_dividir_*` passam.
+- Projeto antigo abre igual: `test_d618_projeto_antigo_sem_o_campo_abre_igual` e
+  `test_d618_a_geometria_das_zonas_de_antes_continua_igual`.

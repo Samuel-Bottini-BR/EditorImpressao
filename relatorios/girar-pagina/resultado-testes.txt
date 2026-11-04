@@ -1,0 +1,36 @@
+﻿test_girar.py :: 53 passed in 15.87s
+test_girar_na_tela.py :: 22 passed in 72.91s (0:01:12)
+test_girar_cartoes_e_previas.py :: 23 passed in 59.93s
+test_ajustar_pedaco_na_folha_girada.py :: 8 passed in 7.55s
+test_zonas_na_folha.py :: 25 passed in 24.88s
+test_converter_zonas_ao_abrir.py :: 14 passed in 38.69s
+test_decisoes_dividir.py :: 21 passed in 57.26s
+test_decisoes_dividir_arrastar.py :: 16 passed in 16.93s
+test_decisoes_dividir_metade.py :: 6 passed in 6.82s
+test_decisoes_dividir_linha.py :: 13 passed in 16.21s
+test_decisoes_dividir_aviso.py :: 11 passed in 14.62s
+test_dividir_na_tela.py :: 9 passed in 21.61s
+test_dividir_no_programa.py :: 19 passed in 14.83s
+test_pipeline_folha.py :: 7 passed in 3.52s
+test_corte_previa_igual_pdf.py :: 4 passed in 3.51s
+test_cadernos.py :: 28 passed in 0.31s
+test_caderno_segue_as_etapas.py :: 11 passed in 5.06s
+test_decisoes_montar_cadernos.py :: 13 passed in 73.20s (0:01:13)
+test_decisoes_impressao.py :: 22 passed in 21.03s
+test_decisoes_tira_em_pares.py :: 4 passed in 10.58s
+test_decisoes_tira_pares_juntas.py :: 3 passed in 8.16s
+test_decisoes_previa_dividida.py :: 4 passed in 15.57s
+test_paineis_na_tela.py :: 22 passed in 59.82s
+test_decisoes_nucleo.py :: 38 passed in 4.93s
+test_decisoes_automatico.py :: 29 passed in 54.74s
+test_decisoes_automatico_ver_como_fica.py :: 22 passed in 61.52s (0:01:01)
+test_decisoes.py :: 26 passed in 4.24s
+FIM
+test_decisoes_girar_pagina.py :: 16 passed in 9.55s
+FIM
+test_cartoes_e_previas.py :: 2 passed in 2.22s
+test_decisoes_mover.py :: 13 passed in 10.46s
+test_decisoes_ver.py :: 11 passed in 20.07s
+test_previa_composta.py :: 10 passed in 3.37s
+test_decisoes_tela.py :: 35 passed, 4 warnings in 30.47s
+FIM
