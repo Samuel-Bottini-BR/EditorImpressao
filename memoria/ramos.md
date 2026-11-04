@@ -420,3 +420,4 @@ Juntados no `obra-2026-10-26` nesta noite: balão do cinza (`99e7c6b`), D-574 se
 - `memoria-pdf-2026-11-04` (04/11): falta de memória ao processar (causa) + D-591. Agente trabalhando.
 - `caderno-numeros-2026-11-04` (04/11): D-604, números das páginas nas folhas do caderno. Agente trabalhando.
 - `ordem-folhas-2026-11-04`: entregas 1 e 2 juntadas (`7af096ab`, `9d72dfb8`).
+- 04/11 fim da sessão: previa-numero parte 2 juntada (`50b69a74`). Ainda trabalhando: mover-lado (clique no par, antes/depois do Mover, clicar fora, pares pela folha no Dividir), painel-livro (setinha da qualidade), girar-pagina (falta GitHub e a pergunta do "aplicar em"), memoria-pdf, desfazer-pagina (+ página em branco), caderno-numeros.
