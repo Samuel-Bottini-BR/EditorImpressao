@@ -243,13 +243,13 @@ def test_d577_cortar_e_dividir_mudam_o_tamanho_do_depois(janela, app, tmp_path):
     _marcar(grande, {A.DIVIDIR})
     _esperar(app, painel)
     _, depois = _imagens(painel)
-    from ui.automatico import VAO_ENTRE_AS_METADES
-
+    # D-614 (04/11/2026, Samuel: "é para aparecer como se já tivesse sido feita a separação"):
+    # o depois é UMA metade (a da esquerda), da altura da folha e com metade da largura dela.
+    # Até 04/11 esta prova pedia as duas metades lado a lado, com o vão branco no meio
+    # (VAO_ENTRE_AS_METADES); a gerente autorizou a troca só desta conferência (04/11).
+    # Que a metade é a do "Rodar" de verdade: test_d577_o_depois_bate_com_o_rodar_de_verdade.
     assert depois.shape[0] == antes.shape[0]
-    assert abs(depois.shape[1] - (antes.shape[1] + VAO_ENTRE_AS_METADES)) <= 4, (antes.shape, depois.shape)
-    # o vão branco no meio separa as duas páginas
-    meio = depois.shape[1] // 2
-    assert depois[:, meio - 2:meio + 2].min() >= 250
+    assert abs(depois.shape[1] - antes.shape[1] / 2) <= 4, (antes.shape, depois.shape)
     _marcar(grande, {A.CORTAR})
     _esperar(app, painel)
     _, depois = _imagens(painel)
@@ -378,16 +378,21 @@ def test_d577_o_depois_bate_com_o_rodar_de_verdade(janela, app, tmp_path):
     (sem filtro): ponto por ponto igual."""
     from core.pdf_io import abrir_pdf
     from core.pipeline import renderizar_pagina
-    from ui.automatico import DPI_DA_PREVIA, _lado_a_lado
+    from ui.automatico import DPI_DA_PREVIA
 
     def desenhado(projeto, indice_antes, folha, metade):
+        # D-614 (04/11/2026, Samuel: "é para aparecer como se já tivesse sido feita a
+        # separação"): na folha dupla a prévia mostra UMA metade por vez, começando pela da
+        # esquerda; ela é comparada com a primeira página que o "Rodar" desenha dessa folha.
+        # Até 04/11 eram as duas páginas do Rodar postas lado a lado (_lado_a_lado); a gerente
+        # autorizou a troca só desta conferência (04/11). Na página torta, uma página só: igual.
         doc = abrir_pdf(projeto.caminho_entrada)
         try:
             imagens = []
             for pagina in A.paginas_depois(projeto, folha, metade):
                 img, _ = renderizar_pagina(doc, projeto, pagina, dpi=DPI_DA_PREVIA)
                 imagens.append(A.como_sai_na_tela(img, projeto, pagina, DPI_DA_PREVIA))
-            return _lado_a_lado(imagens)
+            return imagens[0]
         finally:
             doc.close()
 
@@ -855,9 +860,11 @@ def test_d577_folha_inteira_com_dividir_marcado_antes_inteiro_depois_duas_metade
                                                                                   tmp_path):
     """Caso (2): a folha dupla ainda não dividida, com "Dividir folhas ao meio" marcado na
     janela: o antes é a folha inteira crua (ponto por ponto) e o depois são as duas metades
-    prontas, uma ao lado da outra (com o vão branco no meio)."""
-    from ui.automatico import VAO_ENTRE_AS_METADES
+    prontas, uma ao lado da outra (com o vão branco no meio).
 
+    D-614 (04/11/2026), que troca a parte do depois: "é para aparecer como se já tivesse sido
+    feita a separação" -> o depois é UMA metade por vez (a da esquerda primeiro). O antes
+    continua a folha inteira crua."""
     grande = _abrir(janela, app, tmp_path, pagina=0)
     painel = grande.antes_e_depois
     _marcar(grande, {A.DIVIDIR})
@@ -865,9 +872,12 @@ def test_d577_folha_inteira_com_dividir_marcado_antes_inteiro_depois_duas_metade
     antes, depois = _imagens(painel)
     crua = _folha_crua(janela, 0)
     assert np.array_equal(antes, crua), "o antes não é a folha inteira crua"
-    assert abs(depois.shape[1] - (crua.shape[1] + VAO_ENTRE_AS_METADES)) <= 4, (crua.shape, depois.shape)
-    meio = depois.shape[1] // 2
-    assert depois[:, meio - 2:meio + 2].min() >= 250, "não são duas metades lado a lado"
+    # D-614: até 04/11 aqui se pedia a largura da folha + o vão (VAO_ENTRE_AS_METADES) e o vão
+    # branco no meio (as duas metades lado a lado); agora, uma metade só, da altura da folha e
+    # com metade da largura (a gerente autorizou a troca só desta conferência, 04/11). Que ela
+    # é a metade do "Rodar" de verdade: test_d577_o_depois_bate_com_o_rodar_de_verdade.
+    assert depois.shape[0] == crua.shape[0], (crua.shape, depois.shape)
+    assert abs(depois.shape[1] - crua.shape[1] / 2) <= 4, (crua.shape, depois.shape)
 
 
 def test_d577_marcar_e_desmarcar_dividir_muda_so_o_depois(janela, app, tmp_path):
@@ -875,8 +885,6 @@ def test_d577_marcar_e_desmarcar_dividir_muda_so_o_depois(janela, app, tmp_path)
     duas metades lado a lado); o antes continua a folha inteira crua (o mesmo, ponto por ponto).
     Desmarcar: o depois volta a ser a folha inteira pronta (do tamanho da folha), e o antes
     não muda."""
-    from ui.automatico import VAO_ENTRE_AS_METADES
-
     grande = _abrir(janela, app, tmp_path, pagina=0)
     painel = grande.antes_e_depois
     crua = _folha_crua(janela, 0)
@@ -888,7 +896,12 @@ def test_d577_marcar_e_desmarcar_dividir_muda_so_o_depois(janela, app, tmp_path)
     _esperar(app, painel)
     antes, depois = _imagens(painel)
     assert np.array_equal(antes, crua), "marcar Dividir mudou o antes"
-    assert abs(depois.shape[1] - (crua.shape[1] + VAO_ENTRE_AS_METADES)) <= 4, "o depois não dividiu"
+    # D-614 (04/11/2026, Samuel: "é para aparecer como se já tivesse sido feita a separação"):
+    # marcar o Dividir mostra UMA metade (a da esquerda), não mais as duas lado a lado (aqui se
+    # pedia a largura da folha + VAO_ENTRE_AS_METADES; a gerente autorizou a troca só desta
+    # conferência, 04/11).
+    assert depois.shape[0] == crua.shape[0], "o depois não dividiu"
+    assert abs(depois.shape[1] - crua.shape[1] / 2) <= 4, "o depois não dividiu"
     _marcar(grande, {A.LIMPAR})
     _esperar(app, painel)
     antes, depois = _imagens(painel)
