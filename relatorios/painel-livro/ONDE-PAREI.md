@@ -46,8 +46,11 @@ Arquivos que vou tocar: `ui/tela_conferir.py` (só `_parte_do_livro`, `_montar_a
   3 testes antigos (`84995d4e`).
 - [x] Janela de verdade (`piloto.py`): prints em `prints/`. Quadro novo nos três; a troca para "Alta" no Cortar vale
   no Endireitar, no Mover e no Dividir (300 DPI, gravada).
-- [ ] A barra não cabe com o nome inteiro: pergunta abaixo (enviada à gerente em 04/11).
-- [ ] GitHub.
+- [x] A barra não cabe com o nome inteiro: pergunta abaixo. Resposta do Samuel (pela gerente, 04/11): "é porque o
+  aplicativo está mal diagramado, não tem como colocar só uma setinha e quando aperta nela aparece as opções de
+  qualidade?" -> feito (`c6e73beb`): botão só com a setinha, menu com a escolhida marcada, balão
+  "Qualidade da prévia: X". Medidas e ressalva da barra em 1366 no `RELATORIO.md`.
+- [ ] Testes por arquivo de novo, push, GitHub.
 
 ## Perguntas para o Samuel
 
