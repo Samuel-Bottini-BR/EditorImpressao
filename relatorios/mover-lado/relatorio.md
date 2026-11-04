@@ -134,3 +134,58 @@ suíte, os botões e prints da janela real, e o resumo.
 - D-601/D-609/D-610/D-611: provas antigas passando; piloto (linha arrastada no Dividir em "Duas lado a
   lado", p02; tira em pares, p03).
 - D-605: nenhum teste antigo mudado; 19 arquivos de teste passando; "Uma página" igual (p10).
+
+
+---
+
+# Segunda parte: Cortar, Endireitar e marcar em "Duas lado a lado" (04/11/2026)
+
+Palavras do Samuel: "O Cortar, o Endireitar e o marcar também têm que funcionar em 'Duas lado a lado' e
+em 'antes / depois', como o Mover?" → "1- sim".
+
+## O que mudou
+
+- Nos pares, com o Cortar, o Endireitar ou uma ferramenta de marcar (Retângulo, Laço, Pincel, Varinha...),
+  a página da vez passa a ser a própria ferramenta, do mesmo jeito do Mover: puxar a beirada do corte,
+  desenhar a linha do Endireitar ou girar pela bolinha, marcar. A vista não muda sozinha.
+- A Mão e o Zoom só olham: nos pares continuam os pares de sempre (sem o editor por cima).
+- Com o Pincel, a Varinha ou a Cor, a roda sozinha continua mudando a espessura ou a tolerância (D-600);
+  Ctrl+roda dá zoom no par.
+- **"antes / depois": ainda não** (pergunta para o Samuel: em qual lado a ferramenta age).
+- Onde: `ui/tela_conferir.py` (`FERRAMENTAS_NO_PAR` com as quatro, `_a_ferramenta_vai_no_par`,
+  `_peca_da_aba`, `_por_a_vista_da_peca`, `_roda_da_peca_e_da_ferramenta`; `escolher_ferramenta` acerta a
+  peça ao trocar entre Mão/Zoom e as de marcar). Teste novo: `tests/test_decisoes_ferramentas_lado.py`.
+
+## Prints (janela de verdade, Gradus)
+
+- `prints/p301-cortar-nos-pares.png`, `prints/p302-cortar-puxou-a-beirada.png`: o Cortar na página da vez.
+- `prints/p303-endireitar-nos-pares.png`: a linha torta girou a página (-2,73 graus).
+- `prints/p304-retangulo-nos-pares.png`: um retângulo marcado ("gravura ou foto").
+- `prints/p305-pincel-ctrl-roda-nos-pares.png`: Ctrl+roda dá zoom no par com o Pincel.
+- `prints/p306-mao-nos-pares.png`: a Mão, os pares de sempre.
+- `prints/p307-uma-pagina-endireitar.png`: "Uma página" igual.
+- Piloto `piloto_ferramentas.py`: **15 de 15** (`ferramentas/conferencias.txt`).
+
+## Testes no PC (um arquivo por vez, todos passaram)
+
+ferramentas_lado (novo) 9, mover_lado 7, mover 13, ver 11, dividir_metade 6, dividir_arrastar 16,
+tira_em_pares 4, previa_composta 10, paineis_na_tela 22, visualizador 70, zoom_no_ponteiro 5, 9b2 30,
+livro_aberto 14, dividir_linha 13, decisoes_dividir 21, dividir_na_tela 9, marcacoes 19, guias 14,
+shift_todas_as_telas 10, decisoes 26, endireitar_no_programa 15, gravura_na_aba_marcar 8,
+trilha_e_opcoes 29, selecao 24, nucleo 38, nucleo2 21, corte_previa_igual_pdf 4
+(`testes-pc-2.txt`). **Nenhum teste antigo mudado.**
+
+Reversão: no código antes desta parte (`472e410c`), 4 provas novas falharam (Cortar, Endireitar,
+Retângulo, Pincel) e 5 passaram (guardas: Mão/Zoom e "Uma página").
+
+## Ressalvas da segunda parte
+
+- No Cortar, a página da vez mostra a página inteira (sem cortar, com o retângulo verde, como na "Uma
+  página"); a outra página do par mostra como vai sair. Por isso ela pode parecer de outro tamanho.
+- A peça fica 8 pontos menor que o lugar da página no par (só nas ferramentas com moldura: Mover, Cortar,
+  Endireitar); o editor de marcar ocupa o lugar inteiro.
+
+## Pergunta aberta
+
+No "antes / depois" aparecem duas imagens da mesma página: à esquerda o "depois" (como vai sair), à direita o
+"antes" (o Original). Em qual lado a ferramenta age? Sugestão: no "depois"; o "antes" fica só para olhar.
