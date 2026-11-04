@@ -1,0 +1,2 @@
+ok   WM_CLOSE fechou a janela
+1 de 1

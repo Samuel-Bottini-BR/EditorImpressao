@@ -1437,6 +1437,107 @@ class TelaCheiaDoAntesEDepois(QDialog):
         super().done(resultado)
 
 
+# --- D-617 (04/11/2026): o número da folha que se escreve -------------------------------
+# Samuel, print a-63 ("página 30 de 70" circulado): "queria poder escrever o numero da folha
+# aqui para ir direto." No Livro: digita o número, Enter, e a prévia vai direto para essa folha;
+# as setas < > continuam como estão. Pedido da gerente: fora do intervalo ou vazio volta ao
+# número atual, sem mensagem; as setas do teclado continuam como hoje na janela.
+
+class _CampoDoNumero(QLineEdit):
+    """O número da folha, de escrever (D-617). Um QLineEdit só de algarismos (até 5), com o
+    visual dos outros números de escrever do programa (a folha de estilo de ui/estilo.py vale
+    igual para QLineEdit e QSpinBox; o tamanho é o do "ir para" da tela inicial,
+    ui/tela_inicio.campo_ir). Não é um QSpinBox de propósito: o QSpinBox corta o que passa do
+    máximo ("200" num livro de 140 vira "20" e iria para a 20), e o pedido é voltar ao atual.
+
+    Seguro mudar: a largura. Arriscado:
+    - deixar o Enter passar (keyPressEvent): o "Rodar" é o botão padrão da janela grande e o
+      Enter que o QLineEdit ignora chegaria ao QDialog, que aperta o "Rodar";
+    - o foco por Tab (setFocusPolicy): o campo entraria na fila do Tab e na das setas entre os
+      botões, e o teclado da janela mudaria (D-605)."""
+
+    def __init__(self, parent=None) -> None:
+        from PySide6.QtCore import QRegularExpression
+        from PySide6.QtGui import QRegularExpressionValidator
+
+        super().__init__(parent)
+        self.setValidator(QRegularExpressionValidator(QRegularExpression(r"\d{0,5}"), self))
+        self.setFixedWidth(64)                 # o do "ir para" da tela inicial: "1000" cabe a 125%
+        self.setAlignment(Qt.AlignCenter)
+        self.setFocusPolicy(Qt.ClickFocus)     # só com o clique (o teclado da janela fica igual)
+        self.setToolTip("Escreva o número da página e aperte Enter para ir direto a ela.")
+
+    def keyPressEvent(self, evento) -> None:  # noqa: N802 - nome do Qt
+        """O Enter fica aqui (o QLineEdit o deixaria subir até o "Rodar", botão padrão)."""
+        super().keyPressEvent(evento)
+        if evento.key() in (Qt.Key_Return, Qt.Key_Enter):
+            evento.accept()
+
+
+class ContadorDaPagina(QWidget):
+    """O "página N de M" da prévia, com o N de escrever (D-617). `text()` continua dando o
+    texto inteiro, "página N de M" (ou "" sem página), como o QLabel de antes: o "tela cheia"
+    o copia e as provas da D-577 e da D-614 o leem assim.
+
+    `pedida(numero)`: a pessoa escreveu um número de 1 a M, diferente do atual, e apertou Enter
+    (ou saiu do campo). Vazio, 0, maior que M: o campo volta ao número atual, sem mensagem.
+
+    Seguro mudar: os espaços. Arriscado: emitir `pedida` com o número atual (com o Dividir
+    marcado, ir_para levaria da metade da direita para a da esquerda só por sair do campo)."""
+
+    pedida = Signal(int)
+
+    def __init__(self, parent=None) -> None:
+        super().__init__(parent)
+        self._numero = 0
+        self._total = 0
+        linha = QHBoxLayout(self)
+        linha.setContentsMargins(0, 0, 0, 0)
+        linha.setSpacing(6)
+        linha.addStretch(1)
+        self.rotulo_pagina = QLabel("página")
+        linha.addWidget(self.rotulo_pagina)
+        self.campo = _CampoDoNumero()
+        self.campo.editingFinished.connect(self._escrito)
+        linha.addWidget(self.campo)
+        self.rotulo_total = QLabel("")
+        linha.addWidget(self.rotulo_total)
+        linha.addStretch(1)
+        self.limpar()
+
+    def definir(self, numero: int, total: int) -> None:
+        """Mostra "página `numero` de `total`" (sem mexer no que a pessoa está escrevendo,
+        se o número não mudou)."""
+        mudou = (numero, total) != (self._numero, self._total)
+        self._numero, self._total = numero, total
+        self.rotulo_total.setText(f"de {total}")
+        if mudou or not self.campo.hasFocus():
+            self.campo.setText(str(numero))
+        for peca in (self.rotulo_pagina, self.campo, self.rotulo_total):
+            peca.setVisible(True)
+
+    def limpar(self) -> None:
+        """Sem página (livro sem páginas a mostrar): nada à vista, como o rótulo vazio."""
+        self._numero = self._total = 0
+        self.campo.setText("")
+        for peca in (self.rotulo_pagina, self.campo, self.rotulo_total):
+            peca.setVisible(False)
+
+    def text(self) -> str:
+        """O texto de sempre: "página N de M" (N = o número atual, não o que está a meio de
+        escrever), ou "" sem página."""
+        return f"página {self._numero} de {self._total}" if self._total else ""
+
+    def _escrito(self) -> None:
+        """Enter (ou sair do campo): um número válido e diferente do atual vai em `pedida`;
+        qualquer outra coisa volta ao número atual, sem mensagem."""
+        texto = self.campo.text().strip()
+        numero = int(texto) if texto.isdigit() else 0
+        self.campo.setText(str(self._numero) if self._total else "")
+        if 1 <= numero <= self._total and numero != self._numero:
+            self.pedida.emit(numero)
+
+
 class PaginaAntesEDepois(QWidget):
     """A página da direita da janela grande do Automático (D-577, 29/10/2026).
 
@@ -1547,8 +1648,10 @@ class PaginaAntesEDepois(QWidget):
         self.botao_anterior.setFixedWidth(40)
         self.botao_anterior.clicked.connect(lambda: self.virar(-1))
         barra.addWidget(self.botao_anterior)
-        self.contador = QLabel("")
-        self.contador.setAlignment(Qt.AlignCenter)
+        # D-617: o "página N de M" com o N de escrever (antes um QLabel; text() continua igual)
+        self.contador = ContadorDaPagina()
+        self.contador.pedida.connect(self._numero_escrito)
+        self.campo_pagina = self.contador.campo
         barra.addWidget(self.contador, 1)
         self.botao_proxima = QPushButton(">")
         self.botao_proxima.setFixedWidth(40)
@@ -1653,7 +1756,7 @@ class PaginaAntesEDepois(QWidget):
         Trocar só de metade não faz conta nova: a imagem da outra metade já está guardada."""
         passos = self._passos()
         if not passos:
-            self.contador.setText("")
+            self.contador.limpar()
             self._acertar_botoes(passos)
             self.visor.mostrar(None, None)
             return
@@ -1665,7 +1768,7 @@ class PaginaAntesEDepois(QWidget):
             self._feito = None
         self._indice, self._metade = indice, metade
         self._escolher_o_depois()
-        self.contador.setText(f"página {indice + 1} de {len(self.projeto.paginas)}")
+        self.contador.definir(indice + 1, len(self.projeto.paginas))
         self._acertar_botoes(passos)
         self._mostrar()
         self.pedir(agora=True)
@@ -1680,6 +1783,13 @@ class PaginaAntesEDepois(QWidget):
             return
         lugar = max(0, min(len(passos) - 1, passos.index(atual) + passo))
         self.ir_para(*passos[lugar])
+
+    def _numero_escrito(self, numero: int) -> None:
+        """D-617: a pessoa escreveu o número `numero` (1 a M, diferente do atual) e apertou Enter:
+        a prévia vai direto para essa página (ir_para: com o Dividir marcado, a metade da
+        esquerda, como as setas chegam nela; página que não vai para o PDF: a mais perto, como
+        ao abrir a janela nela). As setas < > não mudam."""
+        self.ir_para(numero - 1)
 
     def _acertar_botoes(self, passos: list) -> None:
         atual = (self._indice, self._metade)

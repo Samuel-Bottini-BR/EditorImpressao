@@ -1,0 +1,14 @@
+ok   45 + Enter mostra a página 45
+ok   depois de escrever, as setas e o Page Down/Up deixam na 45 (Page Down vai e Page Up volta)
+ok   vazio + Enter: fica na 45
+ok   0 + Enter: fica na 45
+ok   99 + Enter (o livro tem 70): fica na 45
+ok   letras + Enter: fica na 45
+ok   nenhum Enter fechou a janela nem rodou
+ok   < com o mouse volta uma (44)
+ok   com o Dividir, 30 + Enter: a metade da esquerda da 30
+ok   com o Dividir, o > da 30 mostra a outra metade da mesma folha
+ok   o > seguinte vai à metade da esquerda da 31
+ok   o contador continua 'página N de 70' nas metades
+ok   WM_CLOSE fechou a janela
+13 de 13
