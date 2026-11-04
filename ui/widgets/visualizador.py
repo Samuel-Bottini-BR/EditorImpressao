@@ -260,6 +260,10 @@ class Visualizador(QWidget):
         self._area = QRect()          # onde a imagem foi desenhada
         self.modo = MODO_NENHUM
         self.carregando = True
+        # D-621 (04/11/2026, "Desfazer nesta página" pelo botão direito): função(menu) que a tela
+        # põe aqui para acrescentar o "Desfazer nesta página" embaixo do menu do Mover (as linhas
+        # de apoio, D-056, que continuam iguais). None = nada a acrescentar.
+        self.menu_a_mais = None
 
         self.posicao_corte = 0.5
         # A linha de corte so aparece (e so se arrasta) quando a folha vai ser
@@ -1216,12 +1220,18 @@ class Visualizador(QWidget):
         do ScanTailor (page_layout/ImageView.cpp, linhas 652-666): pôr uma
         linha de pé ou deitada onde clicou, tirar a linha embaixo do mouse,
         tirar todas. Emite guias_mudaram com a lista nova (quem grava é a
-        tela, numa ação que o Ctrl+Z desfaz). Fora desse modo, nada."""
+        tela, numa ação que o Ctrl+Z desfaz).
+        D-621 (04/11/2026): fora desse modo (ou fora da página) o botão direito
+        não é usado aqui e segue para a tela (evento.ignore()), que abre o
+        "Desfazer nesta página" (ui/desfazer_nesta_pagina.py); no Mover, o
+        "Desfazer nesta página" vem embaixo das linhas (menu_a_mais)."""
         if self.modo != MODO_CONTEUDO or self._area.width() <= 0 or self._area.height() <= 0:
+            evento.ignore()
             return
         x = (evento.pos().x() - self._area.left()) / self._area.width()
         y = (evento.pos().y() - self._area.top()) / self._area.height()
         if not (0.0 <= x <= 1.0 and 0.0 <= y <= 1.0):
+            evento.ignore()
             return
         perto = _guias.mais_perto(self.guias_do_livro, x=x, y=y)
         menu = QMenu(self)
@@ -1233,6 +1243,9 @@ class Visualizador(QWidget):
             de_pe = deitada = None
             tirar = menu.addAction("Tirar esta linha")
         todas = menu.addAction("Tirar todas as linhas") if self.guias_do_livro else None
+        if callable(self.menu_a_mais):                 # D-621
+            menu.addSeparator()
+            self.menu_a_mais(menu)
         escolhida = menu.exec(evento.globalPos())
         linhas = list(self.guias_do_livro)
         if escolhida is None:

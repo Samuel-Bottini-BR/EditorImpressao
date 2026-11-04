@@ -187,6 +187,7 @@ from historico_acoes import (HistoricoAcoes, PREFIXO_PAGINAS_DA_FOLHA, aplicar, 
 from core.dividir import dividir_imagem     # D-601: a metade da folha no Dividir
 from modelos import METADE_DIREITA, METADE_ESQUERDA, METADE_INTEIRA, Projeto
 from registro import registrar_erro
+from ui import desfazer_nesta_pagina   # D-621: o botão direito na página
 from ui import estilo
 from ui.estilo import estilo_da_caixinha_com_quadrado
 from ui.tarefas import MARCA_DA_MEDIDA, GerenciadorPrevias
@@ -1050,6 +1051,9 @@ class TelaConferir(QWidget):
         # a barra de opções e o editor de marcar: ligados uma vez só (etapa 2
         # da obra; antes era a cada livro, ver _ligar_ferramentas)
         self._ligar_ferramentas()
+        # D-621 (04/11/2026): o botão direito na página e na miniatura abre o
+        # "Desfazer nesta página" (ui/desfazer_nesta_pagina.py)
+        desfazer_nesta_pagina.ligar(self)
 
     def _montar_barra_de_baixo(self) -> QWidget:
         """A barra fina de baixo, como no prototipo das rodadas 9 a 11:
@@ -1723,6 +1727,9 @@ class TelaConferir(QWidget):
         # etapa 6: a roda do mouse troca de pagina sem zoom (_roda_na_pagina)
         visualizador.installEventFilter(self)
         visualizador.vista_mudou.connect(lambda *_: self._acertar_o_zoom_da_barra())
+        # D-621: no Mover o botão direito é o das linhas de apoio; o "Desfazer
+        # nesta página" vem embaixo delas
+        visualizador.menu_a_mais = functools.partial(desfazer_nesta_pagina.acrescentar_ao_menu, self)
         self.visualizadores[aba] = visualizador
         self.paginas_de_imagem[aba] = pagina
         return visualizador
@@ -5543,6 +5550,15 @@ class TelaConferir(QWidget):
             for indice in afetadas:
                 self.previas.invalidar(indice)
         self.atualizar()
+
+    @protegido
+    def desfazer_nesta_pagina(self, indice: int, etapas) -> bool:
+        """D-621 (04/11/2026, "A2"): desfaz só na página `indice` as `etapas`
+        marcadas no "Desfazer nesta página" (códigos de core/etapas:
+        ENDIREITAR, CORTAR, MOVER, FILTRO, MARCAR = "Gravuras e fotos"), numa
+        ação só do Histórico. A conta e o que cada etapa grava estão em
+        ui/desfazer_nesta_pagina.py. Devolve True se mudou."""
+        return desfazer_nesta_pagina.desfazer(self, indice, etapas)
 
     def _com_os_avisos_de_agora(self, alvo: str, indices: list[int], campos: dict) -> dict:
         """Etapa 9b-2 da obra (lista única 23/10, 1.6: "Mexo numa página que
