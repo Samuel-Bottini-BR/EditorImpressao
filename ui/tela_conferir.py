@@ -8377,11 +8377,39 @@ class TelaConferir(QWidget):
         if self.acoes.desfeitas and self._acoes_esperam_pelas_marcacoes(
                 [self.acoes.desfeitas[-1]], para_tras=False):
             return                       # pendencia da D2 (_espera_pelas_marcacoes)
-        if self.acoes.refazer(self.projeto) is not None:
+        acao = self.acoes.refazer(self.projeto)
+        if acao is not None:
             if self.previas is not None:
                 self.previas.invalidar()
             self.lista_de_paginas_mudou()      # etapa 3: o Automatico muda a lista
             self._reacertar_as_opcoes()
+            self._medir_o_em_branco_ao_refazer(acao)
+
+    def _medir_o_em_branco_ao_refazer(self, acao) -> None:
+        """O refazer mede o "Parece em branco" como o _registrar mede depois
+        de aplicar a mesma ação (D-497): ação de FOLHA que troca as páginas
+        dela (dividir, juntar, "dividir todas", "juntar todas") ou que muda a
+        linha (posicao_corte) → as páginas dessas folhas são medidas de novo,
+        por trás.
+
+        Defeito (03/11/2026, achado no Gradus Primus; existia desde a etapa 7,
+        27/10, quando a medida do em branco entrou, e não veio da D-602):
+        "dividir todas" → 7 "Parece em branco" (folhas 2, 3, 7, 8, 62, 63,
+        69); Ctrl+Z; Ctrl+Y → 0 com dúvida. A ação guarda as páginas como
+        eram NA HORA de dividir, antes da medida por trás, e o refazer as
+        devolvia assim, sem medir. O mesmo com "dividir esta". A medida é a
+        mesma função (core.pipeline.medir_o_em_branco, que põe ou tira o
+        aviso), então o refazer fica igual ao que ficou depois da ação.
+        Só no refazer: o desfazer devolve as páginas com os avisos de antes
+        da ação, como já eram (nada muda nele). Nunca levanta."""
+        try:
+            if self.projeto is None or getattr(acao, "alvo", None) != "folha":
+                return
+            depois = getattr(acao, "depois", None) or {}
+            if dividir_a_mao.muda_a_lista(depois) or "posicao_corte" in depois:
+                self._medir_o_em_branco_por_tras(self._paginas_das_folhas(list(acao.indices)))
+        except Exception:  # noqa: BLE001 - o aviso é ajuda; nunca derruba o refazer
+            registrar_erro("medir o em branco ao refazer", traceback.format_exc())
 
     def _reacertar_as_opcoes(self) -> None:
         """Depois de desfazer ou refazer, a tela "O que fazer" deste mesmo

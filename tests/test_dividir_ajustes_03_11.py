@@ -245,3 +245,68 @@ def test_margens_iguais_onde_cabe_fica_numa_linha_como_era(app):
     assert b.mapTo(linha, b.rect().topLeft()).x() > painel.combo_vertical.mapTo(
         linha, painel.combo_vertical.rect().topLeft()).x(), "a ordem de sempre"
     painel.pilha.close()
+
+
+# --- o refazer devolve os "Parece em branco" (D-497, D-605) ---------------------------------------
+
+def _branca_e_escrita() -> np.ndarray:
+    """Livro aberto com a página da esquerda em branco (o verso de uma folha de rosto, como
+    as folhas 2, 3, 7, 8, 62, 63 e 69 do Gradus Primus) e a da direita escrita."""
+    branca = np.full_like(_pagina(600), 235)
+    return np.concatenate([branca, _pagina(600)], axis=1)
+
+
+def _em_branco_medido(tela) -> None:
+    """Espera a medida do "Parece em branco", que roda por trás."""
+    _assentar(5)
+    tarefa = getattr(tela, "_tarefa_do_em_branco", None)
+    if tarefa is not None:
+        tarefa.wait(60000)
+    _assentar(10)
+
+
+def _avisos_das_paginas(projeto) -> list:
+    return [(p.folha, p.metade, sorted(p.alertas)) for p in projeto.paginas]
+
+
+@pytest.mark.parametrize("como", ["dividir todas", "dividir esta"])
+def test_reversao_refazer_devolve_o_parece_em_branco(janela, tmp_path, como):
+    """Defeito anotado na entrega de 03/11/2026 (Gradus Primus): "dividir todas" → 7 "Parece em
+    branco" (folhas 2, 3, 7, 8, 62, 63, 69); Ctrl+Z; Ctrl+Y (refazer) → 0 com dúvida. Samuel:
+    "ele burlou a regra, colocou um defeito novo, concerta isso ai". Provado: já acontecia em
+    75ed04af (antes destes ajustes) e também com "dividir esta" - vem da etapa 7 (27/10), quando a
+    medida do em branco entrou: a ação guarda as páginas de ANTES da medida por trás, e o
+    refazer as devolvia sem medir. Agora o refazer mede como o _registrar (D-497) e as páginas
+    e os avisos ficam exatamente como depois da ação; o Ctrl+Z continua como estava; Ctrl+Z e
+    Ctrl+Y de novo, também. No código de antes (75ed04af e abd8cd0a) falha."""
+    from core import analise
+    from core import avisos
+
+    janela.show()
+    janela.abrir_livro(_pdf(tmp_path / "branca.pdf", [_aberto(), _branca_e_escrita()]))
+    tela = janela.tela_conferir
+    projeto = janela.projeto
+    tela.escolher_ferramenta("dividir")
+    tela._ir_para(1)
+    _assentar()
+    ao_abrir = _avisos_das_paginas(projeto)
+    if como == "dividir todas":
+        tela.botao_dividir_todas.click()
+        _esperar(lambda: all(f.dividir for f in projeto.folhas), 60, "dividir todas")
+    else:
+        tela.botao_nao_dividir.click()                     # "dividir esta" na folha 2
+        assert projeto.folhas[1].dividir
+    _em_branco_medido(tela)
+    depois = _avisos_das_paginas(projeto)
+    esquerda = next(p for p in projeto.paginas if p.folha == 1 and p.metade == "esquerda")
+    assert analise.EM_BRANCO in esquerda.alertas, "a metade branca ganha o aviso (D-497)"
+    duvidas = avisos.quantas_com_duvida(projeto)
+    assert duvidas >= 1
+    for _ in range(2):                                      # Ctrl+Z e Ctrl+Y, duas vezes
+        tela.desfazer()
+        _em_branco_medido(tela)
+        assert _avisos_das_paginas(projeto) == ao_abrir, "o Ctrl+Z continua como estava"
+        tela.refazer()
+        _em_branco_medido(tela)
+        assert _avisos_das_paginas(projeto) == depois, "o refazer devolve os avisos"
+        assert avisos.quantas_com_duvida(projeto) == duvidas
