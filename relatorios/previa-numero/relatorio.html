@@ -1,0 +1,178 @@
+<!doctype html>
+<html lang="pt-BR">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>D-617: o número da página na prévia do Automático</title>
+<style>
+:root { color-scheme: light dark; }
+* { box-sizing: border-box; }
+body {
+  font: 17px/1.65 "Segoe UI", system-ui, sans-serif;
+  max-width: 46rem; margin: 0 auto; padding: 2.5rem 1.5rem 6rem;
+  color: #1c1c1e; background: #fdfdfc;
+}
+h1 { font-size: 2rem; line-height: 1.2; margin: 0 0 .3em; letter-spacing: -.02em; }
+h2 { font-size: 1.35rem; margin: 2.4em 0 .6em; padding-top: .8em;
+     border-top: 1px solid #e6e4e0; letter-spacing: -.01em; }
+h3 { font-size: 1.1rem; margin: 1.8em 0 .4em; }
+h1 + p, h2 + p { margin-top: .4em; }
+p, li { margin: 0 0 .9em; }
+ul, ol { padding-left: 1.3em; }
+strong { font-weight: 640; }
+code {
+  font: .88em ui-monospace, "Cascadia Code", Consolas, monospace;
+  background: #f1efec; padding: .12em .35em; border-radius: 4px;
+}
+pre {
+  background: #f1efec; padding: 1em 1.1em; border-radius: 8px;
+  overflow-x: auto; line-height: 1.5;
+}
+pre code { background: none; padding: 0; }
+blockquote {
+  margin: 1.2em 0; padding: .1em 0 .1em 1.1em;
+  border-left: 3px solid #c9c5be; color: #55524d;
+}
+table {
+  border-collapse: collapse; width: 100%; margin: 1.2em 0;
+  font-size: .95rem; display: block; overflow-x: auto;
+}
+th, td { padding: .5em .8em; text-align: left; border-bottom: 1px solid #e6e4e0; }
+th { font-weight: 620; background: #f7f5f2; white-space: nowrap; }
+tr:last-child td { border-bottom: none; }
+img { max-width: 100%; height: auto; border-radius: 6px; margin: 1em 0;
+      border: 1px solid #e6e4e0; }
+hr { border: none; border-top: 1px solid #e6e4e0; margin: 2.5em 0; }
+.rodape { margin-top: 4em; padding-top: 1.2em; border-top: 1px solid #e6e4e0;
+          font-size: .85rem; color: #86827c; }
+@media (prefers-color-scheme: dark) {
+  body { color: #e8e6e3; background: #1a1917; }
+  h2 { border-top-color: #35332f; }
+  code, pre, th { background: #262421; }
+  th, td { border-bottom-color: #35332f; }
+  blockquote { border-left-color: #4a4741; color: #b0aca6; }
+  img { border-color: #35332f; }
+  .rodape { border-top-color: #35332f; color: #7d7973; }
+}
+@media print {
+  body { max-width: none; padding: 0; color: #000; background: #fff; }
+  h2 { page-break-after: avoid; }
+  table, img { page-break-inside: avoid; }
+}
+</style>
+</head>
+<body>
+<h1>D-617: escrever o número da página na prévia do Automático (04/11/2026)</h1>
+<p><strong>Em uma frase:</strong> no "página 30 de 70" da prévia "A página, antes e depois", o 30 virou uma caixinha
+de escrever; escreve 45, Enter, e a prévia vai direto para a página 45.</p>
+<p>Ramo <code>previa-numero-2026-11-04</code> (saiu de <code>obra-2026-10-26</code>). Mexi só no contador da prévia.</p>
+<h2>Decisões e como cumpri cada uma</h2>
+<ul>
+<li><strong>D-617</strong>, "queria poder escrever o numero da folha aqui para ir direto." Feito: "página [45] de 70",
+  Enter vai direto (print <code>prints/novo-02-escreveu-45.png</code>; prova
+  <code>test_d617_escrever_o_numero_e_enter_vai_direto_para_a_folha</code>).</li>
+<li>Vazio, 0, número maior que o livro (99 num livro de 70) ou letras: fica na página e o número
+    volta ao atual, sem mensagem (print <code>prints/novo-03-fora-do-intervalo-fica.png</code>; prova
+    <code>test_d617_vazio_ou_fora_do_intervalo_volta_ao_numero_atual_sem_mensagem</code>). As letras nem entram.</li>
+<li>Setas &lt; &gt;: iguais. Com o Dividir marcado continuam pelas metades (D-614): 30 + Enter dá a metade
+    da esquerda da 30, "&gt;" a da direita, "&gt;" a esquerda da 31 (prints <code>novo-04</code> a <code>novo-07</code>; prova
+    <code>test_d617_com_dividir_as_setas_continuam_pelas_metades</code>).</li>
+<li>Visual: o mesmo dos números de escrever do programa (a caixa da folha de estilo de
+    <code>ui/estilo.py</code>, larga como o "ir para" da tela inicial).</li>
+<li><strong>D-605</strong> (o novo não estraga o testado): nenhum teste antigo mudou; os 6 arquivos da prévia
+  passaram no PC. O <code>contador.text()</code> continua "página N de M" (o tela cheia e as provas da D-577
+  e da D-614 leem assim).</li>
+</ul>
+<h2>O teclado: medido antes e depois na janela de verdade (Gradus)</h2>
+<p>Hoje as setas Direita/Esquerda <strong>não</strong> viram a página dentro da janela grande: ao abrir, o foco fica
+na caixa da receita; depois de clicar "&gt;", as setas passam o foco entre os botões; o Page Down/Up
+vira a página depois de clicar num botão da barra da prévia (<code>anotacoes-base.txt</code>).
+Depois da mudança, igual (<code>anotacoes-novo.txt</code>): o foco ao abrir é o mesmo, a caixinha não entra na
+fila do Tab nem na das setas (só pega o foco com o clique) e, dentro dela, o Page Down/Up vira a
+página como nos botões ao lado. Dentro da caixinha, Direita/Esquerda andam no texto.</p>
+<h2>Achado que virou cuidado</h2>
+<p>O "Rodar" é o botão padrão da janela: um Enter que a caixinha deixasse passar apertaria o "Rodar".
+A caixinha segura o Enter. Prova <code>test_d617_o_enter_do_numero_nao_aperta_o_rodar</code> (ela falha se a
+caixinha soltar o Enter: conferi). Na janela de verdade, com 4 e 5 etapas marcadas, nenhum Enter
+rodou nem fechou a janela.</p>
+<h2>Arquivos</h2>
+<ul>
+<li><code>ui/automatico.py</code>: <code>_CampoDoNumero</code> e <code>ContadorDaPagina</code> (novos), <code>PaginaAntesEDepois</code>
+  (<code>contador</code> agora é o <code>ContadorDaPagina</code>, <code>campo_pagina</code>, <code>_numero_escrito</code>, <code>ir_para</code>).</li>
+<li><code>tests/test_decisoes_previa_numero.py</code> (novo, 5 provas; as 5 falham no código de antes).</li>
+<li><code>relatorios/previa-numero/</code>: ONDE-PAREI, piloto da janela de verdade, anotações e prints.</li>
+</ul>
+<h2>Ressalvas</h2>
+<ul>
+<li>Sair da caixinha com um número novo sem apertar Enter (clicar em outro lugar) também vai para a
+  página, como nos outros números de escrever do programa (o "ir para" da tela inicial, o ângulo).</li>
+<li>Página que não vai para o PDF (tirada do livro): escrever o número dela leva à página mais perto,
+  como as setas e o abrir da janela já fazem. No Gradus todas vão.</li>
+<li>O "tela cheia" continua com o número só de ler (o pedido era a prévia). Se ele quiser lá também, é
+  pergunta para ele.</li>
+<li>O Gradus da pasta de teste já está dividido (140 páginas); para o print igual ao a-63 (70 páginas)
+  o piloto abre a cópia do PDF como livro novo.</li>
+</ul>
+<h2>Para o Samuel testar</h2>
+<ol>
+<li>Gradus, Automático: clique no número de "página 30 de 70", escreva 45 e Enter: a prévia mostra a página 45.</li>
+<li>Marque "Dividir folhas ao meio" e use &lt; &gt;: as setas continuam andando pelas metades.</li>
+</ol>
+<h2>GitHub</h2>
+<p>Rodada 41884336233 (Testes no Windows, ramo previa-numero-2026-11-04): passou, todos os testes.</p>
+<hr />
+<h1>Parte 2 (04/11/2026): com o Dividir marcado, o número é o da página como o livro vai sair</h1>
+<p><strong>Em uma frase:</strong> com o Dividir marcado, cada metade tem o seu número, o da página no livro como vai
+sair; no Gradus, a metade da esquerda da folha 68 é a "página 135 de 140" e a da direita a "136 de 140".</p>
+<p>Pedido do Samuel, testando a parte 1: "funciona , mas com o dividir marcado o numero de pagina tem que
+corresponder com a pagina que está sendo passada."</p>
+<h2>Como cumpri cada ponto do pedido</h2>
+<ul>
+<li><strong>Número da página como sai, com o Dividir marcado.</strong> Gradus (70 folhas, sai com 140 páginas):
+  135 + Enter mostra a metade da esquerda da folha 68, "página 135 de 140"; "&gt;" mostra a da direita,
+  "136 de 140" (prints <code>dividir-02</code> e <code>dividir-03</code>). Marcar o Dividir estando na página 30 já mostra
+  "página 59 de 140". Prova <code>test_d617_com_dividir_o_numero_e_a_pagina_como_o_livro_vai_sair</code>.</li>
+<li><strong>Escrever um número leva a essa página.</strong> 45 + Enter com o Dividir: a metade da esquerda da folha
+  23, "página 45 de 140" (print <code>dividir-05</code>). Fora do intervalo continua ficando onde está.</li>
+<li><strong>Sem o Dividir marcado, como sempre.</strong> "página 30 de 70"; desmarcar o Dividir volta a "de 70"
+  (prints <code>dividir-01</code> e <code>dividir-08</code>).</li>
+<li><strong>A ordem do livro como vai sair.</strong> É a mesma lista das setas e do caderno
+  (<code>core/automatico.paginas_do_pdf_depois</code>). Ordem mudada à mão (D-615): prova
+  <code>test_d617_com_dividir_o_numero_segue_a_ordem_mudada_a_mao</code>. Capa aberta (D-616): a capa é a
+  "página 1 de 140" e a contracapa a "140 de 140" (prints <code>dividir-06</code> e <code>dividir-07</code>; prova
+  <code>test_d617_com_dividir_e_a_capa_aberta_a_capa_e_a_pagina_1</code>).</li>
+<li><strong>O "tela cheia" mostra o mesmo número:</strong> "página 136 de 140" (print <code>dividir-04</code>).</li>
+</ul>
+<p>Janela de verdade: 11 de 11 conferências certas (<code>anotacoes-dividir.txt</code>).</p>
+<h2>Testes antigos mudados (com autorização da gerente, em commits separados)</h2>
+<ul>
+<li><code>tests/test_decisoes_previa_dividida.py</code> (D-614), linhas 76, 84, 89 e 137 e uma frase da docstring:
+  "página 1 de 3" nas duas metades passou a "1 de 4", "2 de 4", "3 de 4" (commit <code>9ad1d87c</code>).</li>
+<li><code>tests/test_decisoes_previa_numero.py</code> (D-617 parte 1),
+  <code>test_d617_com_dividir_as_setas_continuam_pelas_metades</code>: só os números (commit <code>3007f97d</code>).</li>
+<li>Cada linha tem um comentário com a D-617 de 04/11 e as palavras dele. Nenhum outro teste mudou.</li>
+</ul>
+<h2>Arquivos</h2>
+<ul>
+<li><code>ui/automatico.py</code>: <code>PaginaAntesEDepois._com_o_dividir</code>, <code>_numero_e_total</code> (novas), <code>ir_para</code>,
+  <code>_numero_escrito</code>, <code>_acertar_o_passo</code> (o número se acerta ao marcar ou desmarcar o Dividir ou a capa
+  aberta, e o "tela cheia" acompanha).</li>
+<li><code>tests/test_decisoes_previa_numero.py</code>: 3 provas novas, que falham no código da parte 1.</li>
+</ul>
+<h2>Ressalvas</h2>
+<ul>
+<li>Com o Dividir marcado, numa página tirada do livro (que não vai para o PDF), o número de
+  escrever é sempre o de uma página que sai; não dá para ir a uma página tirada. Sem o Dividir,
+  como antes.</li>
+<li>Com o Dividir marcado num livro já dividido, a numeração é a do PDF: se houver página tirada do
+  livro, os números passam a não contar com ela (antes contavam). No Gradus nenhuma foi tirada.</li>
+</ul>
+<h2>Para o Samuel testar</h2>
+<ol>
+<li>Gradus, Automático, marque "Dividir folhas ao meio", escreva 135 e Enter: aparece a metade da
+   esquerda da folha 68 como "página 135 de 140"; "&gt;" mostra "136 de 140".</li>
+<li>Marque também "A 1ª folha é a capa aberta" e escreva 1: a capa aparece como "página 1".</li>
+</ol>
+<p class="rodape">Editor de Impressão &middot; gerado em 04/11/2026 às 17:07</p>
+</body>
+</html>

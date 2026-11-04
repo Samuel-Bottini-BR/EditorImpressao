@@ -83,3 +83,13 @@ Obra juntada no ramo antes de começar (`git merge obra-2026-10-26`, avanço dir
 - D-615 (`tests/test_decisoes_ordem_folhas.py`) e D-616 (`tests/test_decisoes_capa_aberta.py`): a ordem
   vem de `core/automatico.paginas_do_pdf_depois`, a mesma lista das setas (`_passos`) e do caderno.
 - D-577 sem o Dividir: "página N de M" com N = a página do livro, igual.
+
+## Andamento (parte 2)
+
+- [x] teste novo que falha antes (3 provas; falham na parte 1)
+- [x] código (`667fc94f`)
+- [x] testes antigos autorizados: D-614 (`9ad1d87c`), D-617 parte 1 (`3007f97d`)
+- [x] arquivos de teste no PC, um por vez: todos passaram (também D-615 e D-616)
+- [x] janela de verdade com o Gradus: 11 de 11 (`anotacoes-dividir.txt`, prints `dividir-*`)
+- [ ] GitHub
+- [x] relatório (`relatorio.md`/`.html`/`.pdf`, parte 2 no fim)
