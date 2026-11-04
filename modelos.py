@@ -524,6 +524,16 @@ class Projeto:
     # Arriscado: trocar o setdefault de de_dicionario junto (o projeto
     # antigo reaberto mudaria de jeito).
     dividir_como: str = DIVIDIR_DO_LIVRO_NOVO
+    # D-616 (Samuel, 04/11/2026, print a-61: "essa capa está no lugar certo?" ->
+    # "ok" a caixinha "A 1ª folha é a capa aberta" na etapa Dividir do
+    # Automatico, desmarcada de fabrica, por livro): marcada, ao DIVIDIR pelo
+    # Automatico, a metade da direita da 1a folha (a capa) vira a pagina 1 e a
+    # da esquerda (a contracapa) vai para a ultima pagina (core/automatico.
+    # _dividir, core/ordem_das_paginas.capa_na_frente). So o Dividir rodado
+    # muda a ordem (D-589: desmarcada, nada e feito; marcar sem rodar nao mexe
+    # no livro). Nao vai na receita (e do livro, nao do jeito de trabalhar).
+    # Projeto antigo nao tem o campo: False (abre igual). Seguro mudar: nada.
+    capa_aberta: bool = False
     # Item 2.1, decisao G3 (b): o "corte da sobra" do ScanTailor (tira a
     # beirada da folha vizinha que entrou na foto), DESLIGADO de fabrica. So
     # nas folhas que nao sao divididas. Ver ConfigFolha.sobra.

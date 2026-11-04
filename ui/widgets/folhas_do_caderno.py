@@ -291,6 +291,7 @@ class FolhasDoCaderno(QWidget):
             return [(p.indice, p.folha, p.metade) for p in self.projeto.paginas_ativas]
         chave = (id(self.projeto), json.dumps(
             [pedido.paginas, (pedido.opcoes or {}).get("dividir_como"),
+             (pedido.opcoes or {}).get("capa_aberta"),                      # D-616
              [(p.folha, p.metade, p.apagada, p.mexida_a_mao) for p in self.projeto.paginas],
              [(f.dividir, f.rotacao, f.posicao_corte, f.mexida_a_mao) for f in self.projeto.folhas],
              str(self.projeto.caminho_entrada), self.projeto.dividir_como],

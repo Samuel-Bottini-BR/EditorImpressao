@@ -1605,6 +1605,7 @@ class PaginaAntesEDepois(QWidget):
         # ui/widgets/folhas_do_caderno._depois): as setas e os botões perguntam a cada passo
         chave = (id(self.projeto), json.dumps(
             [pedido.paginas, (pedido.opcoes or {}).get("dividir_como"),
+             (pedido.opcoes or {}).get("capa_aberta"),                      # D-616
              [(p.folha, p.metade, p.apagada, p.mexida_a_mao) for p in self.projeto.paginas],
              [(f.dividir, f.rotacao, f.posicao_corte, f.mexida_a_mao) for f in self.projeto.folhas],
              str(self.projeto.caminho_entrada), self.projeto.dividir_como],
@@ -2102,6 +2103,14 @@ class PainelDeOpcoes(QObject):
                     "divide toda folha mais larga que alta, na dobra que ele acha.")
         col.addWidget(self._fraco("Livro novo não divide sozinho: só quando esta etapa roda (G2). "
                                   "Dá para trocar numa folha só, com a ferramenta Dividir a folha."))
+        # D-616 (Samuel, 04/11/2026: "ok" à caixinha "A 1ª folha é a capa aberta" no
+        # Dividir; desmarcada de fábrica, vale por livro): ao dividir, a capa (a metade da
+        # direita da 1ª folha) vira a página 1 e a contracapa vai para a última página
+        # (core/automatico._capa_aberta). Seguro mudar: os textos.
+        col.addSpacing(6)
+        self._caixa("capa_aberta", "A 1ª folha é a capa aberta",
+                    "ao dividir, a capa (a metade da direita da 1ª folha) vira a página 1 e a "
+                    "contracapa (a metade da esquerda) vai para a última página", col)
 
     def _opcoes_endireitar(self, col) -> None:
         self._combo("endireitar_como", [(j, _nome_da_conta(j)) for j in endireitar_scantailor.JEITOS],
@@ -2457,7 +2466,8 @@ class PainelDeOpcoes(QObject):
                     indice = combo.findData(o.get(campo))
                     combo.setCurrentIndex(max(0, indice))
             for campo in ("cortar_sobra", "cortar_pelo_conteudo", "borda_preta", "reforcar_texto_falhado",
-                          "pb_decoracao_em_preto_e_branco", "gravura_mais_sensivel", "gravura_normalizar"):
+                          "pb_decoracao_em_preto_e_branco", "gravura_mais_sensivel", "gravura_normalizar",
+                          "capa_aberta"):                               # D-616
                 caixa = self.controles.get(campo)
                 if isinstance(caixa, QCheckBox):
                     caixa.setChecked(bool(o.get(campo, False)))

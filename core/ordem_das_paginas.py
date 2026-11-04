@@ -176,20 +176,30 @@ def capa_na_frente(projeto, folha: int = 0) -> bool:
     o começo do livro e a da ESQUERDA (a contracapa) para o fim. Devolve True se
     a ordem mudou. Quem chama guarda o antes para o desfazer
     (core/automatico._dividir: na ação do Automático)."""
-    if not 0 <= folha < len(projeto.folhas) or not projeto.folhas[folha].dividir:
-        return False
-    paginas = projeto.paginas
-    direita = next((p for p in paginas if p.folha == folha and p.metade == "direita"), None)
-    esquerda = next((p for p in paginas if p.folha == folha and p.metade == "esquerda"), None)
-    if direita is None or esquerda is None:
-        return False
-    resto = [p for p in paginas if p is not direita and p is not esquerda]
-    nova = [direita] + resto + [esquerda]
-    if all(a is b for a, b in zip(nova, paginas)):
+    nova = ordem_com_a_capa_na_frente(projeto, folha)
+    if nova is None:
         return False
     projeto.paginas = nova
     renumerar(projeto)
     return True
+
+
+def ordem_com_a_capa_na_frente(projeto, folha: int = 0) -> list | None:
+    """A lista de páginas (os mesmos objetos) com a capa na frente e a contracapa
+    no fim (capa_na_frente), sem mudar o projeto. None se nada muda (a folha não
+    está dividida, falta uma das metades, ou já está assim)."""
+    if not 0 <= folha < len(projeto.folhas) or not projeto.folhas[folha].dividir:
+        return None
+    paginas = projeto.paginas
+    direita = next((p for p in paginas if p.folha == folha and p.metade == "direita"), None)
+    esquerda = next((p for p in paginas if p.folha == folha and p.metade == "esquerda"), None)
+    if direita is None or esquerda is None:
+        return None
+    resto = [p for p in paginas if p is not direita and p is not esquerda]
+    nova = [direita] + resto + [esquerda]
+    if all(a is b for a, b in zip(nova, paginas)):
+        return None
+    return nova
 
 
 def capa_na_frente_na_lista(lista: list, folha: int = 0) -> list:
