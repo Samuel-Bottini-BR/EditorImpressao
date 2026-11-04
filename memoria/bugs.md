@@ -500,3 +500,16 @@ na Central (aba "O que você não gostou: alternativas").
   "deixar tudo em preto e branco"; a linha de "Montar cadernos" desmarcada aparece cortada na janela grande ("…", sem o
   "desligada"); com "Só as letras" o "Respeitar" aparece desmarcado e o resumo diz "desligada" (print a-31); com "Dividir"
   desmarcada e Rodar, a caixinha volta marcada sozinha (pergunta aberta, PARTE -28 §3).
+
+## 04/11/2026 (PARTE -29)
+
+- **Consertados e juntados:** caixinha do Dividir voltava marcada com Ctrl+Z/Ctrl+Y/"Desligar as marcadas" sem Rodar (a-67,
+  `9ac7d433`); Mover parava em "Duas lado a lado" e no "antes / depois" (`152a750b`); "tamanho" do pincel não acompanhava a roda
+  (a-65, `152a750b`); tira em pares sem vão (a-57, `d216819d`).
+- **Consertados, ainda não juntados (agentes pausados):** girar numa folha dividida girava a folha do scan (a-70 a a-73, ramo
+  `girar-pagina`); folha inteira mudava de proporção com corte à mão ou tamanho escolhido (mesmo ramo); clique no par não
+  escolhe a página clicada e tira marca a miniatura errada no Dividir (a-75, a-76, ramo `mover-lado`); "antes / depois" não
+  mostra o depois do Mover (a-77, a-78, ramo `mover-lado`).
+- **Abertos:** falta de memória ao processar (agente `memoria-pdf`, pausado); vista das margens na janela grande "estranha"
+  (Lista de bugs do plano, 04/11); "Área branca" 29,7×21,0 → 31,7×22,0 cm depois de Ctrl+Z/Ctrl+Y com margens iguais (achado do
+  agente mover-lado, não mexido); prévia lenta com "Margens iguais" (mede o livro todo; fase de desempenho).

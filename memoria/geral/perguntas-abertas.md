@@ -300,3 +300,16 @@ Ficha [layout](../itens/layout.md).
 - Respondidas hoje (não perguntar de novo): as 4 da D-588 (2 = "não", consertada; 1 = ele explicou que "Só as letras"
   respeita tudo), D-600 sem zoom ("1- sim") e ferramentas de marcar ("sim"), D-572 (como o construtor fez), D-601
   (frase, "folha 1 de 70", numeração da tira), D-574 (tamanho do scan e mais 6).
+
+## Abertas em 03-04/11/2026 (PARTE -29 do histórico)
+
+- **Girar numa folha dividida (D-618):** "numa folha dividida, o quadro passa a se chamar 'Girar a página', a lista diz 'só esta
+  página / todas as páginas / daqui em diante / pares / ímpares', e cada página gira sozinha, como a da tela; o mesmo na tela 'ver
+  todas'. Pode ser assim?"
+- **Caixinha do Dividir (D-590, agente caixinha-volta), ainda não levadas:** (1) desmarcar sem Rodar e fechar: ao abrir volta
+  marcada — continua desmarcada? (2) Ctrl+Z do Rodar devolve a caixinha marcada — fica assim? (3) "Montar cadernos" e "Margens
+  iguais" com o mesmo defeito do Ctrl+Z sem Rodar — consertar igual?
+- **Ordem das folhas (D-615):** página separada da irmã e depois "não dividir esta": a folha fica no lugar da primeira (sugestão: assim).
+- **Respondidas nesta sessão (não perguntar de novo):** D-606, D-607, D-609 a D-623 (ver o Livro); "girar - sim" (folha inteira
+  como foto); um clique escolhe e arrasta ("ok"); cantos só na escolhida ("Sim"); no Dividir a tira junta pela folha ("SIm, mas
+  tem que verificar se vai ficar assim em todo os lugares"); A2 no desfazer; D-591 e memória: agente ("Sim").

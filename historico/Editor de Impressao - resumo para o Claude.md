@@ -1,6 +1,6 @@
 # Editor de Impressão — documento para colar no Claude
 
-Atualizado em 03/11/2026 (PARTE -28; a anterior, PARTE -27, é de 01/11). Desde 19/10 a memória por assunto fica em `memoria/` (índice `memoria/INDICE.md`). Versão **máxima**: reúne o histórico institucional, o
+Atualizado em 04/11/2026 (PARTE -29; a anterior, PARTE -28, é de 02-03/11). Desde 19/10 a memória por assunto fica em `memoria/` (índice `memoria/INDICE.md`). Versão **máxima**: reúne o histórico institucional, o
 que o programa é, todas as funcionalidades pedidas, os 68 pedidos feitos até
 hoje **palavra por palavra**, o que foi feito, o que falta, e os dois
 documentos-fonte inteiros (a especificação original e o prompt de testes) em
@@ -11,6 +11,167 @@ Pasta do projeto: `D:\programas\EditorImpressao` (mudou de
 `C:\Users\fotog\Desktop\EditorImpressao` em 07/09/2026; essa pasta antiga virou
 o backup). Repositório git ligado a
 `https://github.com/Samuel-Bottini-BR/EditorImpressao`.
+
+---
+
+# PARTE -29 — Checkpoint de 03-04/11/2026: regra D-605, Dividir, Mover nos pares, capa, ordem das folhas, girar (leia isto primeiro)
+
+Sessão no PC, com o Claude Opus 5.5 como gerente e muitos agentes em paralelo.
+- Palavras do Samuel e prints a-45 a a-78: `relatorios/testes-guiados/2026-10-29-automatico/automatico.md` (seções de 03 e 04/11).
+- Ids, cópias e pontas dos agentes: `memoria/ramos.md`, no fim do arquivo ("04/11").
+- Fichas mudadas: `memoria/ramos.md`, `memoria/bugs.md`, `memoria/geral/perguntas-abertas.md`, `memoria/LINHA-DO-TEMPO.md`.
+
+## 0. Para recomeçar
+
+1. Rodar `git -C D:\programas\EditorImpressao fetch origin` e ler a Central (as `respostas` com `lida != true`).
+
+2. **Seis agentes foram PAUSADOS no fim.** Palavras do Samuel: "pode pausar eles, pois a sessão vai acabar". Os arquivos sem
+   commit estão no disco e não se perderam.
+
+   | Cópia (`.claude\worktrees\`) | Ponta | Sem commit | O que faltava |
+   |---|---|---|---|
+   | `mover-lado` | `af4005d2` | 0 | Consertos da D-612: o clique escolhe a página clicada, e o "antes / depois" mostra o depois do Mover. D-622: clicar fora tira a seleção. D-611: no Dividir a tira junta pela folha, e em todas as ferramentas a miniatura tem que bater com o número real. Um clique escolhe e já arrasta. Mudança autorizada só na parte do Dividir de `test_decisoes_tira_em_pares` e `test_decisoes_tira_pares_juntas`. Faltava a rodada do GitHub. |
+   | `girar-pagina` | `064b2e4e` | 0 | D-618 pronta: na folha dividida gira só a página; a folha inteira gira como foto. Mudança autorizada no ajudante e na linha 170 de `test_recomeco_limpa_o_historico.py`. Faltavam o GitHub e a junção. |
+   | `painel-livro` | `dc998272` | 2 | D-619 feita ("Já feito no livro todo"); 3 linhas de `test_paineis_na_tela.py` trocadas com autorização. D-620: só uma setinha na barra de baixo, que abre Rápida/Média/Alta. Faltava o GitHub. |
+   | `memoria-pdf` | `8c952cad` | 5 | Causa da falta de memória ao processar. D-591: o aviso "Faltou memória no computador..." com o botão "tentar de novo". |
+   | `desfazer-pagina` | `dd1fb46b` | 1 | D-621: botão direito abre "Desfazer nesta página", com caixinhas. D-623: botão direito na miniatura → "adicionar página em branco antes/depois". |
+   | `caderno-numeros` | `cd5dc539` | 1 | D-604: cada lado da folha do caderno diz as páginas do livro ("frente: páginas 20 e 1"). |
+
+   Para retomar cada um:
+   - ler o `relatorios/<nome>/ONDE-PAREI.md` da cópia;
+   - rodar `git status`;
+   - trazer a obra com `git merge obra-2026-10-26`;
+   - rodar os testes e o GitHub;
+   - só então juntar.
+
+   Na mesma conversa, os agentes antigos também podem ser retomados pelo id, com SendMessage.
+
+3. **Já está na versão de teste e ele ainda não testou.** Versão `obra-2026-10-26`, ponta `f06e0c15`. A rodada do GitHub
+   dessa ponta (41919662837) foi disparada no fim: conferir o resultado.
+   - Caixinha "A 1ª folha é a capa aberta" (D-616). Ele disse "essa opção não existe" porque o programa estava aberto desde
+     antes da junção: é preciso fechar e abrir.
+   - Número da página na prévia com o Dividir marcado (D-617 parte 2): "página 135 de 140".
+   - Caixinha do Dividir que não volta marcada sem Rodar (D-590, print a-67).
+
+## 1. A regra nova (D-605, 03/11)
+
+Palavras dele: "A partir de agora, nenhuma função nova, ou nova escolha dentro do programa pode alterar o que já está
+escolhido e testado, coisas novas não podem criar novos problemas, essa é uma nova regra que todos os agentes precisam ler".
+
+Onde está escrita: `CLAUDE.md` §11.8, no fim de cada `.claude/agents/*.md`, no Livro e na memória.
+
+Na prática:
+- todo pedido manda o agente listar "O que já está escolhido e testado aqui" no ONDE-PAREI;
+- um teste antigo nunca muda só para passar.
+
+**Exceção usada hoje.** Quando uma decisão NOVA dele troca exatamente o que um teste antigo conferia:
+- a gerente autoriza mudar só aquela conferência;
+- num commit separado, com um comentário citando a decisão;
+- e conta ao Samuel.
+
+Foi feito em D-609, D-610, D-614, D-617, D-618, D-619 e D-611.
+
+## 2. Testado por ele nesta sessão
+
+**OK:**
+- D-602: linha azul na folha inteira.
+- D-606: o motor muda a linha na folha juntada.
+- D-607: aviso depois do "juntar todas".
+- D-608: as setas continuam depois dos botões do painel.
+- D-609: arrastar a linha na folha inteira.
+- D-610: dividir em "Duas lado a lado" passa para "Uma página".
+- D-613: aviso do "dividir todas" com folhas juntadas à mão.
+- D-614: prévia do Dividir, uma página por vez.
+- D-615: "mudar folhas de lugar está funcionando".
+- D-603: caderno da etapa 7 já dividido ("Folha 1 de 35").
+- O tamanho do pincel acompanha a roda.
+- No Mover, as duas páginas do par ficam do mesmo tamanho.
+
+**Com defeito, mandado consertar:**
+- D-611, tira em pares: falhou 2 vezes; agora, no Dividir, junta pela folha.
+- D-612, clique no par e "antes / depois" do Mover (prints a-75 a a-78).
+- D-617, número da prévia com o Dividir marcado.
+
+**Na Lista de bugs do plano:** a vista das margens na janela grande está "estranha" (04/11, palavras dele).
+
+## 3. Decisões novas (D-605 a D-623)
+
+Todas estão no Livro, e as duas cópias foram conferidas iguais com `cmp`.
+- D-605: a regra do §1.
+- D-606: o motor recalcula na folha juntada.
+- D-607: aviso depois do "juntar todas".
+- D-608: as setas continuam depois de um botão do painel.
+- D-609: arrastar a linha na folha inteira.
+- D-610: dividir em "Duas lado a lado" passa para "Uma página".
+- D-611: tira em pares com "Duas lado a lado"; no Dividir, junta pela folha.
+- D-612: Mover, Cortar, Endireitar e marcar funcionam em "Duas lado a lado" e no "antes / depois", agindo no "depois". Um clique escolhe e arrasta. Os cantos aparecem só na página escolhida.
+- D-613: o "dividir todas" pergunta sobre as folhas juntadas uma por uma (não sobre as do "juntar todas").
+- D-614: a prévia do Dividir no Automático mostra como se já tivesse dividido.
+- D-615: arrastar a miniatura muda a folha de lugar.
+- D-616: caixinha "A 1ª folha é a capa aberta": a capa vira a página 1 e a contracapa vai para o fim.
+- D-617: escrever o número na prévia; com o Dividir marcado, é o número da página como vai sair.
+- D-618: numa folha dividida, girar gira só a página; a folha inteira gira como foto ("girar - sim").
+- D-619: o quadro passa a se chamar "Já feito no livro todo".
+- D-620: a qualidade da prévia vira uma setinha na barra de baixo.
+- D-621: desfazer nesta página pelo botão direito, com caixinhas (opção A2).
+- D-622: clicar fora tira a seleção, como no Photoshop.
+- D-623: adicionar página em branco pelo botão direito.
+
+## 4. Perguntas abertas (exatas)
+
+- **Girar** (agente girar-pagina), sem resposta: "numa folha dividida, o quadro passa a se chamar 'Girar a página', a lista
+  diz 'só esta página / todas as páginas / daqui em diante / pares / ímpares', e cada página gira sozinha, como a da tela; o
+  mesmo na tela 'ver todas'. Pode ser assim?"
+- **Caixinha do Dividir** (agente caixinha-volta). Ainda não foram levadas a ele:
+  1. Ele desmarca sem Rodar e fecha o livro. Ao abrir, a caixinha volta marcada. Deve continuar desmarcada?
+  2. O Ctrl+Z do Rodar que desmarcou devolve a caixinha marcada. Fica assim?
+  3. "Montar cadernos" e "Margens iguais" têm o mesmo defeito do Ctrl+Z sem Rodar. Consertar igual?
+- **Ordem das folhas:** uma página separada da irmã e depois "não dividir esta" — a folha fica no lugar da primeira. Sugestão: deixar assim.
+- **Antigas:** D-154 (urgente); 19 respostas da Auditoria 2 ainda sem resposta na Central (PARTE -28 §4).
+
+## 5. Descobertas (não redescobrir)
+
+- **Limite da API do GitHub.** Estoura quando vários agentes consultam. Mandar sempre UM `gh run watch <id> --interval 120`.
+- **`gh run watch` que sai antes do fim.** Às vezes ele sai por causa do limite. Conferir com
+  `gh run view <id> --json status,conclusion` antes de concluir que falhou: hoje uma "falha" do filtro de velocidade era só a
+  consulta bloqueada.
+- **Testes instáveis no GitHub** (passam no PC): `test_promessas::test_p083_*`, `test_decisoes_so_as_letras::test_d148`,
+  `test_gravura_na_aba_marcar::test_pagina_de_projeto_antigo_que_muda_de_forma_e_refeita`.
+- **Junção na obra:** só aparece para ele depois de fechar e abrir o programa.
+- **"Margens iguais" na prévia do Automático:** mede o livro todo, por isso demora. Fica para a fase de desempenho.
+- **"Qualidade da prévia":** muda só a página na tela, não o PDF.
+- **Internet caiu (ENOTFOUND):** os agentes param e voltam com SendMessage.
+- **`git worktree add`:** às vezes passa de 2 min (disco devagar). Esperar antes de criar as junções.
+
+## 6. Como conferir
+
+Na versão de teste (`.claude\worktrees\obra-juncao`), no PowerShell, um arquivo por vez:
+`$env:QT_QPA_PLATFORM="offscreen"; D:\programas\EditorImpressao\.venv\Scripts\python.exe -m pytest tests\<arquivo>.py -q --basetemp=_tmp\bt -p no:cacheprovider`
+
+**Passaram no PC na ponta final (04/11):**
+
+| Arquivo | Passaram |
+|---|---|
+| test_decisoes_previa_numero | 8 |
+| test_decisoes_previa_dividida | 4 |
+| test_decisoes_capa_aberta | 6 |
+| test_caixinha_do_dividir_nao_volta | 9 |
+
+**Passaram na mesma tarde, antes da ponta final:**
+
+| Arquivo | Passaram |
+|---|---|
+| test_decisoes_ordem_folhas | 12 |
+| test_decisoes_ferramentas_lado | 9 |
+| test_decisoes_ferramentas_antes_depois | 12 |
+| test_bug_04_11_pincel_tamanho | 4 |
+| test_decisoes_tamanho_no_par | 5 |
+| test_decisoes_dividir_aviso | 11 |
+| test_decisoes_tira_pares_juntas | 3 |
+| test_paineis_na_tela | 22 |
+| test_decisoes_automatico | 29 |
+
+**GitHub da obra:** 41898404438, 41902574754 e 41908826768 passaram. A 41919662837, da ponta final, foi disparada no fim.
 
 ---
 
