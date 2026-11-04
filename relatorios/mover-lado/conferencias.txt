@@ -1,0 +1,21 @@
+ok   Dividir em Duas lado a lado: a linha anda com o mouse (0.510 -> 0.477)
+ok   Ctrl+Z devolve a linha
+ok   tecla F no Duas lado a lado: ferramenta Mover, a vista continua nos pares
+ok   a página da vez nos pares é o Mover (com os cantos)
+ok   a tira embaixo continua em pares (D-611)
+ok   arrastar nos pares move ((0.0, 0.0) -> (-0.1198, 0.0012))
+ok   depois do arrasto a vista continua nos pares
+ok   Ctrl+Z desfaz o arrasto nos pares
+ok   Ctrl+Y refaz o arrasto nos pares
+ok   puxar o canto nos pares muda o tamanho (1.00 -> 0.85)
+ok   o número do tamanho acompanha
+ok   digitar 80 no número diminui a página nos pares
+ok   Ctrl+roda na página da vez dá zoom nos pares
+ok   clicar na outra página do par: ela vira a da vez, com o Mover
+ok   e o arrasto move a outra
+ok   Uma página: o Mover de sempre, no lugar dele
+ok   Uma página: arrastar move
+ok   trilha: Cortar
+ok   tecla F de novo na Uma página
+ok   Cortar em Duas lado a lado: os pares de sempre (sem o Mover)
+20 de 20

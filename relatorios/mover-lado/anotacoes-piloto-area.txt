@@ -1,0 +1,9 @@
+vis => {"visivel": true, "pixmap": true, "carregando": false, "modo": "conteudo", "folha_do_mover": [1287, 910], "aba": "mover", "pronta": true, "foco": "NoneType"}
+inicio => {"area": "A própria página (29,7 × 21,0 cm).", "mostrar": "uma", "pagina": 39, "paginas": 70, "desloc": [0.0, 0.0], "escala": 1.0, "feitas": 11, "ultima": "Juntar 70 folhas"}
+area-do-vis => [196, 32, 755, 534, 1148, 598]
+  conteudo_movido => [-0.1192, 0.0012, 1.0, 1.0]
+arrastou => {"area": "A própria página (29,7 × 21,0 cm).", "mostrar": "uma", "pagina": 39, "paginas": 70, "desloc": [-0.1192, 0.0012], "escala": 1.0, "feitas": 12, "ultima": "Posição/tamanho do conteúdo na página 39"}
+ctrl-z => {"area": "A própria página (29,7 × 21,0 cm).", "mostrar": "uma", "pagina": 39, "paginas": 70, "desloc": [0.0, 0.0], "escala": 1.0, "feitas": 11, "ultima": "Juntar 70 folhas"}
+ctrl-y => {"area": "A própria página (31,7 × 22,0 cm).", "mostrar": "uma", "pagina": 39, "paginas": 70, "desloc": [-0.1192, 0.0012], "escala": 1.0, "feitas": 12, "ultima": "Posição/tamanho do conteúdo na página 39"}
+  conteudo_movido => [-0.0706, 0.0498, 0.9029, 0.9029]
+canto => {"area": "A própria página (31,7 × 22,0 cm).", "mostrar": "uma", "pagina": 39, "paginas": 70, "desloc": [-0.1192, 0.0012], "escala": 0.903, "feitas": 13, "ultima": "Posição/tamanho do conteúdo na página 39"}
