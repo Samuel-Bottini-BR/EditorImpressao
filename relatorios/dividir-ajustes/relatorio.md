@@ -60,7 +60,30 @@ posta fora da tela, no Gradus Primus copiado para uma pasta de dados só desta t
 - Testes de reversão (todos falham no código de `75ed04af` e passam no novo): D-606 (2), D-607 (3 de 4; o 4º é a
   guarda "sem juntadas, texto de sempre"), setas, tira, etapa 6 (`tests/test_dividir_ajustes_03_11.py`; mais uma
   guarda: onde cabe, a linha fica como era).
-- PC, um arquivo por vez: RESULTADOS_PC
+- PC, um arquivo por vez: todos passaram (23 arquivos, nenhum teste antigo mudou):
+  - `tests/test_decisoes_dividir_linha.py`: 13 passed in 16.36s
+  - `tests/test_decisoes_dividir.py`: 21 passed in 74.94s (0:01:14)
+  - `tests/test_decisoes_dividir_metade.py`: 6 passed in 11.33s
+  - `tests/test_decisoes_juntar_todas.py`: 4 passed in 10.11s
+  - `tests/test_dividir_desmarcada_caixinha.py`: 3 passed in 14.31s
+  - `tests/test_dividir_na_tela.py`: 9 passed in 32.96s
+  - `tests/test_dividir_no_programa.py`: 19 passed in 21.41s
+  - `tests/test_automatico_pular_depois_de_dividir.py`: 4 passed in 0.51s
+  - `tests/test_decisoes_automatico.py`: 29 passed in 73.16s (0:01:13)
+  - `tests/test_decisoes_automatico_margens_no_depois.py`: 5 passed in 19.84s
+  - `tests/test_decisoes_automatico_opcoes_do_filtro.py`: 21 passed in 123.80s (0:02:03)
+  - `tests/test_decisoes_automatico_ver_como_fica.py`: 22 passed in 105.34s (0:01:45)
+  - `tests/test_decisoes_9b1.py`: 25 passed, 16 warnings in 38.36s
+  - `tests/test_decisoes_9b2.py`: 30 passed in 58.89s
+  - `tests/test_miniaturas_novas.py`: 5 passed in 4.42s
+  - `tests/test_decisoes_avisos.py`: 22 passed in 50.07s
+  - `tests/test_decisoes_caderno_tela_grande.py`: 11 passed in 41.06s
+  - `tests/test_decisoes.py`: 26 passed in 5.48s
+  - `tests/test_decisoes_tela.py`: 35 passed, 4 warnings in 46.96s
+  - `tests/test_dividir_ajustes_03_11.py`: 4 passed in 12.91s
+  - `tests/test_decisoes_filtro_automatico.py`: 4 passed in 15.42s
+  - `tests/test_decisoes_montar_cadernos.py`: 13 passed in 95.21s (0:01:35)
+  - `tests/test_menu_paineis.py`: 3 passed in 1.76s
 - GitHub: RESULTADOS_GH
 
 ## Ressalvas

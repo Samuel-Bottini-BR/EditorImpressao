@@ -54,11 +54,18 @@ Testes que já existem e têm de continuar passando sem mudança:
 - [x] 5. "7 com dúvida": são os "Parece em branco" (D-497) das metades esquerdas brancas das folhas
   2, 3, 7, 8, 62, 63, 69; "dividir esta" nessas mesmas folhas dá os mesmos 7. Não é defeito: nada mudou.
 - [x] 6. etapa 6 cortada em 1536 x 824
-- [ ] testes antigos no PC, um por vez
-- [ ] GitHub (conjunto inteiro + teste_botoes)
-- [ ] prints na janela de verdade (Gradus)
-- [ ] relatório
+- [x] testes antigos no PC, um por vez (23 arquivos, todos passaram; nenhum teste antigo mudou)
+- [x] reversão: os testes novos falham em 75ed04af
+- [x] GitHub, conjunto inteiro + teste_botoes: 41759151010 passou (na 1ª tentativa a parte 5 falhou em
+  `test_gravura_na_aba_marcar.py::test_pagina_de_projeto_antigo_que_muda_de_forma_e_refeita`, que passa 3 de 3 no PC
+  e passou ao repetir só a parte que falhou: tempo, área não tocada)
+- [ ] GitHub, filtro de velocidade 41759125497 (esperando)
+- [x] prints na janela de verdade (Gradus): p01 a p08
+- [x] relatório: relatorio.md
 
 ## Perguntas para o Samuel
 
-(nenhuma ainda)
+1. Botões do painel ficam com o teclado: depois de clicar em "dividir esta", "juntar todas" etc. (e nos botões das
+   outras ferramentas, como "não cortar esta"), as setas passam de um botão a outro em vez de trocar de folha. A lista
+   "motor de corte" já não faz isso. Fazer os botões do painel também deixarem o teclado com a página, em todas as
+   ferramentas? (Não feito: muda todas as ferramentas.)
