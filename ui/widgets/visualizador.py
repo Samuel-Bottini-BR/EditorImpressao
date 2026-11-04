@@ -329,6 +329,15 @@ class Visualizador(QWidget):
         # continuam certas em qualquer zoom, sem conta nenhuma a mais.
         self.zoom = 1.0
         self.deslocamento = QPoint(0, 0)
+        # D-612 (04/11/2026): a folga em volta do que a vista ajusta. De
+        # fábrica a moldura de sempre (PADDING_MOLDURA); a tela a diminui só
+        # enquanto o visualizador do Mover mora no lugar da página da vez nos
+        # pares do "Duas lado a lado" (lá a página tem o tamanho do par; a
+        # folga pequena deixa só os cantos azuis inteiros à vista) e devolve
+        # ao tirá-lo de lá. Seguro mudar: o valor dos pares
+        # (TelaConferir.FOLGA_NO_PAR). Arriscado: mudar o de fábrica (a
+        # "Uma página" de todas as ferramentas mudaria de tamanho).
+        self.folga_da_moldura = PADDING_MOLDURA
         self._arrastando_vista = False
         self._deslocamento_inicial = QPoint(0, 0)
 
@@ -406,9 +415,12 @@ class Visualizador(QWidget):
         return self._area_do_mundo if self._em_modo_mover() else self._area
 
     def _escala_ajustada(self) -> float:
-        """A escala de "ajustar à tela", já descontando a folga da moldura."""
-        largura_util = max(1.0, self.width() - 2 * PADDING_MOLDURA)
-        altura_util = max(1.0, self.height() - 2 * PADDING_MOLDURA)
+        """A escala de "ajustar à tela", já descontando a folga da moldura
+        (`folga_da_moldura`: PADDING_MOLDURA de fábrica; menor só quando a
+        peça mora dentro dos pares do "Duas lado a lado", D-612)."""
+        folga = getattr(self, "folga_da_moldura", PADDING_MOLDURA)
+        largura_util = max(1.0, self.width() - 2 * folga)
+        altura_util = max(1.0, self.height() - 2 * folga)
         largura, altura = self._tamanho_base_px()
         return min(largura_util / largura, altura_util / altura)
 

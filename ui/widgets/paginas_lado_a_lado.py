@@ -33,6 +33,14 @@ O QUE FAZ
     prévias são aumentadas para o tamanho da tela (no_tamanho); no zoom alto a página fica tão
     nítida quanto a prévia escolhida nas Configurações.
 
+    A FERRAMENTA NO LUGAR DA PÁGINA DA VEZ (D-612, Samuel, 04/11/2026: "1 - ele tem que funcionar com
+    paginas lado a lado também"): a tela pode pôr aqui a PEÇA de uma ferramenta (hoje o visualizador
+    do Mover; definir_ferramenta). Ela fica por cima da página da vez, exatamente no lugar dela, e
+    acompanha a arrumação (zoom, tamanho da janela, proporção que chegou, rolar). O mouse em cima
+    dela vai para ela (arrastar, cantos); a outra página do par continua a prévia, e o clique nela
+    continua escolhendo a página da vez. Quem tira a peça e a devolve para a casa dela é a tela
+    (TelaConferir._acertar_a_ferramenta_no_par).
+
 Seguro mudar: os textos. Arriscado: pedir a prévia aqui no fio da tela de um jeito que espere por ela
 (trava a janela); guardar as prévias inteiras (memória).
 """
@@ -65,6 +73,7 @@ class PaginasLadoALado(PaginasRolando):
         self.zoom = 1.0                       # D-570: 1,0 = o par inteiro cabendo na tela
         self._buscar = None                   # função(indice, da_vez) -> (imagem ou None, chave)
         self._entregues: dict[int, str] = {}  # posição -> chave da prévia que está guardada
+        self.ferramenta = None                # D-612: a peça no lugar da página da vez (ou None)
         self._refazer = QTimer(self)
         self._refazer.setSingleShot(True)
         self._refazer.timeout.connect(self._rearrumar)
@@ -134,6 +143,52 @@ class PaginasLadoALado(PaginasRolando):
         self.indices = []
         self._entregues = {}
         super().limpar()
+
+    # --- a ferramenta no lugar da página da vez (D-612) ------------------------------
+
+    def definir_ferramenta(self, peca) -> None:
+        """Põe a `peca` (um QWidget: a peça da ferramenta da vez, ver o começo
+        do arquivo) por cima da página da vez. Chamar de novo só acerta o
+        lugar. Quem a tira é tirar_ferramenta."""
+        self.ferramenta = peca
+        if peca is None:
+            return
+        if peca.parentWidget() is not self.folhas:
+            peca.setParent(self.folhas)
+        self._por_a_ferramenta_no_lugar()
+
+    def tirar_ferramenta(self):
+        """Larga a peça (devolve ela; quem chamou a põe de volta na casa dela)."""
+        peca, self.ferramenta = self.ferramenta, None
+        return peca
+
+    def _por_a_ferramenta_no_lugar(self) -> None:
+        """A peça exatamente no retângulo da página da vez (as beiradas
+        arredondadas uma a uma, como as páginas); sem a página da vez
+        arrumada (livro vazio), escondida."""
+        peca = getattr(self, "ferramenta", None)
+        if peca is None:
+            return
+        ret = next((r for i, r in self._ret if i == self.atual), None)
+        if ret is None:
+            peca.hide()
+            return
+        x0, y0 = round(ret.left()), round(ret.top())
+        peca.setGeometry(x0, y0, max(1, round(ret.right()) - x0), max(1, round(ret.bottom()) - y0))
+        peca.show()
+        peca.raise_()
+
+    def _arrumar(self) -> None:
+        """A arrumação de sempre (PaginasRolando._arrumar) e, depois dela, a
+        peça da ferramenta no lugar novo da página da vez (D-612)."""
+        super()._arrumar()
+        self._por_a_ferramenta_no_lugar()
+
+    def ir_para(self, indice: int) -> None:
+        """Como sempre (PaginasRolando.ir_para), e a peça da ferramenta vai
+        junto para a página da vez (D-612)."""
+        super().ir_para(indice)
+        self._por_a_ferramenta_no_lugar()
 
     # --- o zoom (D-570) --------------------------------------------------------------
 
