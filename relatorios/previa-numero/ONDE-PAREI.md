@@ -1,4 +1,4 @@
-﻿# ONDE PAREI — D-617, escrever o número da folha na prévia do Automático
+# ONDE PAREI — D-617, escrever o número da folha na prévia do Automático
 
 Ramo `previa-numero-2026-11-04` (saiu de `obra-2026-10-26`), cópia `.claude/worktrees/previa-numero`.
 Mexo só no contador da prévia (`ui/automatico.py`, `PaginaAntesEDepois`). Outro agente mexe na etapa
