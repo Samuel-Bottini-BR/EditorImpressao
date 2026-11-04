@@ -109,6 +109,21 @@ class ConfigFolha:
     # preta sumiria).
     tampa_do_scanner: list | None = None
 
+    # D-609 (Samuel, 04/11/2026, print a-54: "não consigo mover a linha azul
+    # manualmente." → "Sim" a "Quer poder arrastar a linha já na folha inteira,
+    # antes de dividir, e o "dividir esta" cortar onde você deixou?"): na folha
+    # dupla AINDA INTEIRA a linha azul se arrasta; o lugar vai para
+    # posicao_corte e aqui fica [rotacao, motor de corte] da folha no momento
+    # do arrasto. Enquanto a folha estiver nessa rotacao e com esse motor, a
+    # tela mostra a linha arrastada (e nao a do motor, D-602) e o "dividir
+    # esta" / "dividir todas" cortam nela. None = a linha nao foi arrastada na
+    # folha inteira (vale a do motor). Quem grava e apaga: a ferramenta Dividir
+    # (ui/tela_conferir.py: _mover_corte grava; trocar o motor apaga, D-606),
+    # sempre numa acao do desfazer. Projeto antigo nao tem o campo: None (sai
+    # igual). Arriscado: usar a marca sem conferir a rotacao e o motor (a linha
+    # de uma folha girada cairia no lugar errado).
+    linha_a_mao: list | None = None
+
     @property
     def alertas_pendentes(self) -> list[str]:
         """Os alertas que ainda pedem um olhar (ver ConfigPagina.alertas_pendentes)."""
