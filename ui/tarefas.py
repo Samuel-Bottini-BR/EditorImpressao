@@ -73,16 +73,54 @@ def _emitir_se_vivo(dono: QObject, sinal, *args) -> None:
     sinal.emit(*args)
 
 
+# D-591 (31/10/2026, Central 2-12: "Frase certa + botão "tentar de novo""):
+# a frase do aviso de falta de memoria. A de antes ("Este livro ficou grande
+# demais para a memória do computador. Tente de novo em qualidade normal.")
+# culpava o livro e mandava usar uma "qualidade normal" que nao existe. Desde
+# 04/11/2026 o PDF em montagem vai para o disco aos poucos
+# (core.pdf_io.PDFQueVaiParaODisco) e a memoria do programa nao cresce mais
+# com o livro: quando falta, e o computador inteiro que esta sem memoria.
+# Arriscado: mudar o texto (e o que o Samuel escolheu, palavra por palavra).
+FRASE_FALTOU_MEMORIA = (
+    "Faltou memória no computador: outros programas abertos estão usando quase "
+    "toda a memória. Feche o que não estiver usando. Nada do seu trabalho no "
+    "livro se perdeu.")
+
+# Pedacos do texto das falhas de memoria que nao chegam como MemoryError: o
+# OpenCV ("Insufficient memory", "Failed to allocate") e o MuPDF ("out of
+# memory", "malloc ... failed"). Seguro mudar: acrescentar outro texto de
+# falta de memoria. Arriscado: por um texto que apareca em erro de outro tipo
+# (o aviso diria "faltou memória" sem ter faltado).
+_SINAIS_DE_FALTA_DE_MEMORIA = ("insufficient memory", "failed to allocate", "out of memory",
+                               "cannot allocate memory", "malloc")
+
+
+def faltou_memoria(erro: BaseException | None) -> bool:
+    """O erro e falta de memoria? MemoryError (o numpy usa uma filha dele) ou
+    o texto de falta de memoria do OpenCV e do MuPDF, olhando tambem o erro
+    que causou este (`raise ... from`). D-591."""
+    vistos = 0
+    while erro is not None and vistos < 5:
+        if isinstance(erro, MemoryError):
+            return True
+        texto = str(erro).lower()
+        if any(sinal in texto for sinal in _SINAIS_DE_FALTA_DE_MEMORIA):
+            return True
+        erro = erro.__cause__ or erro.__context__
+        vistos += 1
+    return False
+
+
 def _mensagem_amigavel(erro: Exception) -> str:
     """Traduz qualquer excecao para uma frase que o Kaique entenda.
 
     O texto técnico vai para o arquivo de log, nunca para a tela (regra 3.3).
+    Falta de memoria (D-591, ver faltou_memoria): FRASE_FALTOU_MEMORIA.
     """
+    if faltou_memoria(erro):
+        return FRASE_FALTOU_MEMORIA
     if isinstance(erro, ErroPDF):
         return str(erro)
-    if isinstance(erro, MemoryError):
-        return ("Este livro ficou grande demais para a memória do computador. "
-                "Tente de novo em qualidade normal.")
     if isinstance(erro, PermissionError):
         return ("Não consegui gravar o arquivo. Ele pode estar aberto em outro "
                 "programa - feche e tente de novo.")
@@ -244,6 +282,10 @@ class TarefaProcessar(QThread):
         self.projeto = projeto
         self._cancelar = False
         self.antigo_preso = ""
+        # D-591: a falha foi falta de memoria? Preenchido ANTES de emitir
+        # `falhou` (como antigo_preso): a janela mostra o aviso com "tentar de
+        # novo" (ui/janela_principal.py::_falhou_no_processamento).
+        self.faltou_memoria = False
 
     def cancelar(self) -> None:
         """Pede para o processamento parar entre uma página e outra (mesma
@@ -269,6 +311,7 @@ class TarefaProcessar(QThread):
             self.concluida.emit(str(salvo.caminho))
         except Exception as erro:  # noqa: BLE001
             registrar_erro("processar", traceback.format_exc())
+            self.faltou_memoria = faltou_memoria(erro)
             self.falhou.emit(_mensagem_amigavel(erro))
 
 
