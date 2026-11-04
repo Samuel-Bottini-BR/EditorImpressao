@@ -55,6 +55,10 @@ test_dividir_na_tela 9, test_dividir_ajustes_03_11 9, test_decisoes_ver 11, test
 test_decisoes_9b2 30, test_decisoes_avisos 22, test_menu_paineis 3, test_girar_cartoes_e_previas 23,
 test_decisoes 26, test_decisoes_juntar_todas 4, test_dividir_no_programa 19, test_visualizador 70 — todos passaram.
 
+## GitHub
+
+Rodada `41856231452` (commit `987f964a`): as 5 partes do conjunto e "Botões e prints da janela real" passaram, de primeira.
+
 ## Pergunta para o Samuel (aberta)
 
 No Dividir, com "Duas lado a lado", a vista grande mostra a folha (as duas metades: folha 2 = páginas 3 e 4). A tira
