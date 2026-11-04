@@ -288,6 +288,15 @@ ABA_MOVER = "mover"
 # (D-001; etapa 2 da obra, 26/10/2026). A ordem é a de sempre: quem procura uma
 # aba usa _abas_ativas.index(...), nunca a posição. Seguro mudar: a ordem.
 ORDEM_DAS_FERRAMENTAS = ("corte", "bordas", "angulo", "mover", "marcar", "filtro")
+# D-612 (Samuel, 04/11/2026: "1 - ele tem que funcionar com paginas lado a lado
+# também"): as ferramentas cuja peça (o visualizador delas) passa a morar no
+# lugar da página da vez dentro dos pares do "Duas lado a lado", para o mouse
+# mexer nela ali (_acertar_a_ferramenta_no_par). Hoje só o Mover; Cortar,
+# Endireitar e as de marcar estão perguntadas ao Samuel (não pôr aqui sem a
+# resposta dele: D-605/D-612). Pôr uma aba aqui basta para as que têm
+# visualizador (Bordas, Endireitar); a de marcar (editor_selecao) precisaria
+# também de um lugar de volta em _devolver_a_peca_do_par.
+FERRAMENTAS_NO_PAR = (ABA_MOVER,)
 
 TITULOS = {
     ABA_CORTE: "Onde cortar",
@@ -3631,6 +3640,15 @@ class TelaConferir(QWidget):
         ou fechou): os botoes de girar voltam para o canto dela."""
         if vigiado is self.area_imagem and evento.type() == QEvent.Resize:
             self._por_o_girar_no_canto()
+        # D-612: a peça da ferramenta que mora nos pares passa a roda aos pares
+        if (evento.type() == QEvent.Wheel and hasattr(self, "lado_a_lado")
+                and vigiado is not None and vigiado is self.lado_a_lado.ferramenta):
+            try:
+                self._roda_na_peca_do_par(vigiado, evento)
+            except Exception:  # noqa: BLE001 - a roda nunca fecha a janela
+                registrar_erro("roda na pagina nos pares", traceback.format_exc())
+            evento.accept()
+            return True
         # etapa 6: a roda do mouse na página (_roda_na_pagina)
         if evento.type() == QEvent.Wheel and hasattr(vigiado, "zoom") and (
                 vigiado in self.visualizadores.values()
@@ -3671,7 +3689,10 @@ class TelaConferir(QWidget):
                     botao.setVisible(False)
 
     def _limpar_abas(self) -> None:
-        """Descarta as abas de um projeto anterior antes de montar as novas."""
+        """Descarta as abas de um projeto anterior antes de montar as novas.
+        D-612: a peça que estiver morando nos pares volta para casa antes (e
+        sai junto com a página dela)."""
+        self._acertar_a_ferramenta_no_par(False)
         while self.barra_abas.count():
             self.barra_abas.removeTab(0)
         for pilha in (self.area_imagem, self.barra_botoes):
@@ -7724,19 +7745,25 @@ class TelaConferir(QWidget):
         lado a lado" valem ali também: "Uma página" mostra a metade da folha
         dividida e "Duas lado a lado" a folha inteira com a linha
         (_atualizar_previa, _metade_no_dividir). O "antes / depois" continua
-        apagado no Dividir. Barato quando nada mudou."""
+        apagado no Dividir. Barato quando nada mudou.
+        D-612 (04/11/2026): nos pares, com uma ferramenta de FERRAMENTAS_NO_PAR
+        (hoje o Mover), a peça dela fica no lugar da página da vez
+        (_acertar_a_ferramenta_no_par); a vista não muda sozinha."""
         if not hasattr(self, "vista_da_pagina"):
             return
         pronta = self._pronta() and self.projeto is not None
         no_dividir = pronta and self.trabalha_com_folhas
+        no_par = False
         if pronta and not no_dividir and self.comparando:
             self._mostrar_antes_depois()
             self.vista_da_pagina.setCurrentWidget(self.vista_antes_depois)
         elif pronta and not no_dividir and self.mostrar == DUAS:
             self._acertar_o_lado_a_lado()
             self.vista_da_pagina.setCurrentWidget(self.lado_a_lado)
+            no_par = self.aba_atual in FERRAMENTAS_NO_PAR
         else:
             self.vista_da_pagina.setCurrentWidget(self.area_imagem)
+        self._acertar_a_ferramenta_no_par(no_par)
         # os botões mostram a escolha (no Dividir também valem: D-601)
         self.botoes_mostrar[self.mostrar].setChecked(True)
         # D-611 (Samuel, 04/11/2026: "quando estiver duas lado a lado escolhido
@@ -7762,6 +7789,89 @@ class TelaConferir(QWidget):
             self.lado_a_lado.mostrar_paginas(indices, self._tamanhos_estimados(indices))
         self.lado_a_lado.ir_para_pagina(self.indice_pagina)
         self.lado_a_lado.atualizar_imagens()
+
+    # --- D-612: a ferramenta no lugar da página da vez, nos pares ----------------
+    #
+    # Samuel, 04/11/2026, à pergunta "Ao escolher Mover, Cortar, Endireitar ou
+    # marcar, a tela passa sozinha para Uma página?": "1 - ele tem que funcionar
+    # com paginas lado a lado também". Antes, nos pares, o mouse ia para as
+    # prévias (que só sabem escolher a página da vez) e o arrasto do Mover se
+    # perdia (relatorios/mover-parou). Agora a MESMA peça da ferramenta (o
+    # visualizador do Mover, com tudo ligado: arrastar, cantos, ímã, linhas de
+    # apoio, botão direito, desfazer) muda de casa: sai da "Uma página" e fica
+    # por cima da página da vez dentro dos pares; a outra página do par continua
+    # a prévia e o clique nela continua escolhendo a página da vez. Ao sair dos
+    # pares (Uma página, antes / depois, outra ferramenta, Dividir, fechar o
+    # livro) a peça volta para a casa dela, com o zoom que tinha.
+    # Arriscado: deixar a peça fora de casa ao fechar o livro (_limpar_abas a
+    # devolve antes de apagar as páginas da área de imagem).
+
+    FOLGA_NO_PAR = 8      # pontos em volta da página nos pares (os cantos azuis inteiros)
+
+    def _acertar_a_ferramenta_no_par(self, no_par: bool) -> None:
+        """Põe a peça da ferramenta da vez no lugar da página da vez dentro
+        dos pares (no_par True e a ferramenta em FERRAMENTAS_NO_PAR) ou a
+        devolve para a casa dela. Página da vez fora do livro que vai sair
+        (tirada): os pares não a mostram, e a peça fica em casa (como antes)."""
+        from PySide6.QtCore import QPoint
+
+        if not hasattr(self, "lado_a_lado"):
+            return
+        pares = self.lado_a_lado
+        peca = self.visualizadores.get(self.aba_atual) if no_par else None
+        if peca is not None and self.indice_pagina not in pares.indices:
+            peca = None
+        atual = pares.ferramenta
+        if atual is not None and atual is not peca:
+            pares.tirar_ferramenta()
+            self._devolver_a_peca_do_par(atual)
+        if peca is None:
+            return
+        if atual is not peca:
+            # o zoom da "Uma página" fica guardado; nos pares o zoom é o do par
+            self._vista_da_peca_em_casa = (peca.zoom, QPoint(peca.deslocamento))
+            peca.folga_da_moldura = self.FOLGA_NO_PAR
+            peca.ajustar_a_tela()
+        pares.definir_ferramenta(peca)
+
+    def _devolver_a_peca_do_par(self, peca) -> None:
+        """A peça volta para a casa dela na área de imagem (o meio da linha
+        das setas escondidas, _area_de_visualizador), com a folga e o zoom de
+        antes. Peça que não é de nenhuma ferramenta (livro já trocado): sai."""
+        from PySide6.QtCore import QPoint
+
+        from ui.widgets.visualizador import PADDING_MOLDURA
+
+        aba = next((a for a, v in self.visualizadores.items() if v is peca), None)
+        casa = self.paginas_de_imagem.get(aba) if aba is not None else None
+        if casa is None or casa.layout() is None:
+            peca.setParent(None)
+            peca.deleteLater()
+            return
+        casa.layout().insertWidget(1, peca, 1)
+        peca.folga_da_moldura = PADDING_MOLDURA
+        zoom, deslocamento = getattr(self, "_vista_da_peca_em_casa", (1.0, QPoint(0, 0)))
+        peca.aplicar_vista(zoom, deslocamento)
+        peca.show()
+
+    def _roda_na_peca_do_par(self, peca, evento) -> None:
+        """A roda do mouse em cima da peça da ferramenta nos pares vai para os
+        pares, como no resto deles (D-568/D-570: Ctrl+roda dá zoom no par,
+        para onde está o mouse; sem Ctrl rola; Shift anda de lado com zoom)."""
+        from PySide6.QtCore import QPointF
+        from PySide6.QtGui import QWheelEvent
+        from PySide6.QtWidgets import QApplication
+
+        porta = self.lado_a_lado.viewport()
+        # mapTo (da peça para a área dos pares, que é um pai dela): o caminho de
+        # pai em pai, sem passar pela tela inteira. Arriscado: porta.mapFrom(peca)
+        # - o Qt pede que o de dentro seja pai e, com a janela longe da tela, a
+        # conta pelo "global" errava (o zoom ia para a última página, piloto)
+        ponto = peca.mapTo(porta, evento.position().toPoint())
+        copia = QWheelEvent(QPointF(ponto), evento.globalPosition(), evento.pixelDelta(),
+                            evento.angleDelta(), evento.buttons(), evento.modifiers(),
+                            evento.phase(), evento.inverted())
+        QApplication.sendEvent(porta, copia)
 
     def _tamanhos_estimados(self, indices: list[int]) -> list[tuple[float, float]]:
         """O tamanho (pontos) de cada página antes de a prévia chegar: a folha

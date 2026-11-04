@@ -1,0 +1,12 @@
+abriu-em-s => 2.3
+divididas => 0
+dividir-duas => {"vista": "ferramenta", "folha": 68, "dividir": false, "linha": 0.5101}
+F-em-duas => {"aba": "mover", "pagina": 38, "mostrar": "duas", "vista": "pares", "mover_nos_pares": true, "mover_a_vista": true, "escala": 1.0, "desloc": [0.0, 0.0], "campo_%": 100, "zoom_pares": 1.0, "zoom_mover": 1.0, "tira_em_pares": true, "feitas": 11}
+pagina-da-vez => {"aba": "mover", "pagina": 39, "mostrar": "duas", "vista": "pares", "mover_nos_pares": true, "mover_a_vista": true, "escala": 1.0, "desloc": [0.0, 0.0], "campo_%": 100, "zoom_pares": 1.0, "zoom_mover": 1.0, "tira_em_pares": true, "feitas": 11}
+arrasto-nos-pares => {"antes": [0.0, 0.0], "depois": [-0.1198, 0.0012], "estado": {"aba": "mover", "pagina": 39, "mostrar": "duas", "vista": "pares", "mover_nos_pares": true, "mover_a_vista": true, "escala": 1.0, "desloc": [-0.1198, 0.0012], "campo_%": 100, "zoom_pares": 1.0, "zoom_mover": 1.0, "tira_em_pares": true, "feitas": 12}}
+canto-nos-pares => {"aba": "mover", "pagina": 39, "mostrar": "duas", "vista": "pares", "mover_nos_pares": true, "mover_a_vista": true, "escala": 0.8465, "desloc": [-0.1198, 0.0012], "campo_%": 85, "zoom_pares": 1.0, "zoom_mover": 1.0, "tira_em_pares": true, "feitas": 13}
+ctrl-roda => {"aba": "mover", "pagina": 39, "mostrar": "duas", "vista": "pares", "mover_nos_pares": true, "mover_a_vista": true, "escala": 0.8, "desloc": [-0.1198, 0.0012], "campo_%": 80, "zoom_pares": 1.562, "zoom_mover": 1.0, "tira_em_pares": true, "feitas": 14}
+clicou-na-outra => {"aba": "mover", "pagina": 38, "mostrar": "duas", "vista": "pares", "mover_nos_pares": true, "mover_a_vista": true, "escala": 1.0, "desloc": [0.0, 0.0], "campo_%": 100, "zoom_pares": 1.0, "zoom_mover": 1.0, "tira_em_pares": true, "feitas": 14}
+uma-pagina => {"aba": "mover", "pagina": 38, "mostrar": "uma", "vista": "ferramenta", "mover_nos_pares": false, "mover_a_vista": true, "escala": 1.0, "desloc": [0.0989, 0.0], "campo_%": 100, "zoom_pares": 1.0, "zoom_mover": 1.0, "tira_em_pares": false, "feitas": 15}
+foco-antes-do-F => "QSpinBox"
+cortar-em-duas => {"aba": "bordas", "pagina": 38, "mostrar": "duas", "vista": "pares", "mover_nos_pares": false, "mover_a_vista": false, "escala": 1.0, "desloc": [0.047, 0.0], "campo_%": 100, "zoom_pares": 1.0, "zoom_mover": 1.0, "tira_em_pares": true, "feitas": 16}

@@ -1,0 +1,9 @@
+a-F => {"aba": "mover", "mostrar": "uma", "foco": null, "ativa": false}
+a-trilha-cortar => {"aba": "bordas", "mostrar": "uma", "foco": null, "ativa": false}
+a-F-de-novo => {"aba": "mover", "mostrar": "uma", "foco": null, "ativa": false}
+a-X => {"aba": "bordas", "mostrar": "uma", "foco": null, "ativa": false}
+a-F-depois-do-X => {"aba": "mover", "mostrar": "uma", "foco": null, "ativa": false}
+b-duas => {"aba": "mover", "mostrar": "duas", "foco": null, "ativa": false}
+b-uma => {"aba": "mover", "mostrar": "uma", "foco": null, "ativa": false}
+b-trilha-cortar => {"aba": "bordas", "mostrar": "uma", "foco": null, "ativa": false}
+b-F-de-novo => {"aba": "mover", "mostrar": "uma", "foco": null, "ativa": false}
