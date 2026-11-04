@@ -47,6 +47,12 @@ Saiu de `obra-2026-10-26` em `e17410fe`.
 
 (atualizada a cada passo)
 
+- 04/11: feito e commitado (`ecf5e3a1` o código e as provas; `6e5b4cdd` a linha 127 do teste da D-602, em
+  commit separado — ver o relatório). 13 provas novas; 11 falham em `e17410fe` (as 2 que passam lá são das escolhas
+  que continuam: folha de uma página sem linha, seta depois de arrastar).
+- Prints na janela de verdade (Gradus): p01 a p06 nesta pasta, anotações em `anotacoes.txt`.
+- GitHub: rodada 41785344022 (em andamento ao escrever). Testes do Dividir no PC, um por vez: `_tmp/um_por_vez.txt`.
+
 ## Perguntas para o Samuel
 
 (nenhuma por enquanto)
