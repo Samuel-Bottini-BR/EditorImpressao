@@ -64,7 +64,8 @@ hr { border: none; border-top: 1px solid #e6e4e0; margin: 2.5em 0; }
 <body>
 <h1>Ajustes do Dividir e da janela do Automático (03/11/2026)</h1>
 <p><strong>Os seis achados do verificador clicando de 03/11 estão resolvidos ou respondidos, sem mudar o que já estava
-escolhido.</strong> Cinco foram consertados (motor na folha juntada, aviso do "juntar todas", setas depois da lista, tira
+escolhido. Na segunda parte: o Ctrl+Y que perdia os "Parece em branco" (já existia antes; provado) e a D-608 foram
+consertados. Ver "Segunda parte", no fim.</strong> Cinco foram consertados (motor na folha juntada, aviso do "juntar todas", setas depois da lista, tira
 depois do Ctrl+Z, etapa 6 cortada). O sexto ("7 com dúvida") não é defeito: são as páginas em branco do livro, e o
 "dividir esta" folha a folha dá as mesmas 7. PRONTO PARA CONFERIR (quem confere é o verificador e o Samuel).</p>
 <p>Ramo <code>dividir-ajustes-2026-11-03</code> (saiu de <code>75ed04af</code>). Testes: de máquina. Prints: na janela de verdade do Windows,
@@ -199,20 +200,14 @@ posta fora da tela, no Gradus Primus copiado para uma pasta de dados só desta t
   mouse; o resto foi clique e tecla do Windows.</li>
 <li>Item 2: página que é de folha juntada e também foi mexida de outro jeito entra na parte das "juntadas" (a soma das
   duas partes é sempre a contagem dos botões). A palavra "processar" é a do Samuel; o botão da janela diz "Rodar".</li>
-<li>Item 3: a lista não pega mais o teclado. Mas os <strong>botões</strong> do painel ("dividir esta", "não dividir esta", "juntar
-  todas", "dividir todas", "usar em todas" — e os das outras ferramentas, como "não cortar esta") ainda pegam: depois
-  de clicar num deles, a seta passa de um botão a outro em vez de trocar de folha. Na sequência do verificador ele
-  tinha clicado nesses botões antes da lista. Não consertei (é de todas as ferramentas, vai como pergunta/bug).</li>
+<li>Item 3: a lista não pega mais o teclado. Os <strong>botões</strong> do painel também pegavam; isso virou a D-608 (abaixo) e
+  foi feito.</li>
 <li>Item 5: no Dividir a faixa da folha 7 mostra a frase do Dividir, não o "Parece em branco" (o aviso é da página e
   aparece no "Para revisar" e nas outras ferramentas). Isso já era assim.</li>
 </ul>
-<h2>Bugs para a Lista de bugs (não consertados)</h2>
+<h2>Bugs para a Lista de bugs</h2>
 <ul>
-<li>03/11/2026, Dividir: depois de <strong>refazer</strong> (Ctrl+Y) o "dividir todas", os 7 "Parece em branco" somem (contador
-  0 com dúvida); antes do Ctrl+Z eram 7. O refazer devolve as páginas como estavam na hora do corte, antes da
-  medida do em branco por trás, e não mede de novo. Anotações em <code>anotacoes.txt</code> ("depois do refazer").</li>
-<li>03/11/2026, todas as ferramentas: botão do painel clicado fica com o teclado e as setas passam a andar entre os
-  botões (ver ressalva do item 3).</li>
+<li>Nenhum aberto. Os dois anotados na 1ª entrega foram consertados (ver "Segunda parte").</li>
 </ul>
 <h2>Prints (pasta <code>relatorios/dividir-ajustes/</code>)</h2>
 <ul>
@@ -224,7 +219,196 @@ posta fora da tela, no Gradus Primus copiado para uma pasta de dados só desta t
 <li>p06 — item 4: depois do refazer, a miniatura da folha 60 à vista.</li>
 <li>p07 — item 2: o aviso novo depois do "juntar todas" (70 páginas).</li>
 <li>p08 — item 6: a etapa 6 inteira, janela do Automático aberta da janela de 1536 x 824.</li>
+<li>p09 — Ctrl+Y depois do "dividir todas": "7 com dúvida" de volta (triângulo com 7), folha 7.</li>
+<li>p10 — D-608: folha 5 logo depois do clique em "dividir esta" (o botão ficou com o teclado).</li>
+<li>p11 — D-608: tecla → depois desse clique: "folha 6 de 70".</li>
 </ul>
-<p class="rodape">Editor de Impressão &middot; gerado em 03/11/2026 às 23:04</p>
+<hr />
+<h1>Segunda parte (03/11/2026, depois da leitura do Samuel)</h1>
+<p>Samuel: "cara, ele burlou a regra, colocou um defeito novo, concerta isso ai, pode fazer o teste no meu pc mesmo se
+não está dando certo no git hub".</p>
+<h2>1. O Ctrl+Y que perdia os 7 "Parece em branco": de onde veio</h2>
+<p><strong>Não veio destes ajustes, nem da D-602: já existia antes.</strong> Mesmo caminho no Gradus ("dividir todas", Ctrl+Z,
+Ctrl+Y), contando as dúvidas, com o código de cada versão (programa sem janela, pasta de dados própria):</p>
+<table>
+<thead>
+<tr>
+<th>Código</th>
+<th>Ao abrir</th>
+<th>"dividir todas"</th>
+<th>Ctrl+Z</th>
+<th>Ctrl+Y</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><code>75ed04af</code> (antes dos ajustes)</td>
+<td>0</td>
+<td>7</td>
+<td>0</td>
+<td><strong>0</strong></td>
+</tr>
+<tr>
+<td><code>abd8cd0a</code> (1ª entrega)</td>
+<td>0</td>
+<td>7</td>
+<td>0</td>
+<td><strong>0</strong></td>
+</tr>
+<tr>
+<td><code>046c5b3b</code> em diante (conserto)</td>
+<td>0</td>
+<td>7</td>
+<td>0</td>
+<td><strong>7</strong> (folhas 2, 3, 7, 8, 62, 63, 69)</td>
+</tr>
+</tbody>
+</table>
+<p>E com "dividir esta" só na folha 7 (<code>abd8cd0a</code>): 1 → 0 → <strong>0</strong>. Ou seja, o refazer nunca mediu o em branco desde a
+etapa 7 (27/10), quando a medida por trás entrou. A ação guarda as páginas de antes da medida, e o refazer as
+devolvia assim. Eu tinha anotado isso como bug sem conferir de onde vinha; agora está provado e consertado.</p>
+<p><strong>Conserto na causa:</strong> <code>TelaConferir.refazer</code> mede o "Parece em branco" como o <code>_registrar</code> mede depois de aplicar
+a mesma ação (<code>_medir_o_em_branco_ao_refazer</code>: ação de folha que troca as páginas ou a linha). A medida é a mesma
+função, que põe ou tira o aviso. O desfazer não mudou.
+Teste de reversão <code>tests/test_dividir_ajustes_03_11.py::test_reversao_refazer_devolve_o_parece_em_branco</code>
+("dividir todas" e "dividir esta"; Ctrl+Z e Ctrl+Y duas vezes): falha no código de antes e passa no novo.
+Print p09 (janela de verdade, Ctrl+Y por tecla do Windows): "7 com dúvida".</p>
+<h2>2. Nenhum outro problema do mesmo tipo nos ajustes</h2>
+<p>Ida e volta no Gradus, comparando TUDO (cada página: metade, avisos, avisos aceitos, em branco, tirada do livro;
+cada folha: dividida, linha, motor, avisos; e o número de dúvidas):</p>
+<table>
+<thead>
+<tr>
+<th>Passo</th>
+<th><code>75ed04af</code></th>
+<th>novo</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>"dividir todas": Ctrl+Z = ao abrir</td>
+<td>igual</td>
+<td>igual</td>
+</tr>
+<tr>
+<td>"dividir todas": Ctrl+Y = depois de dividir</td>
+<td><strong>diferente</strong> (0 em vez de 7)</td>
+<td>igual</td>
+</tr>
+<tr>
+<td>"dividir todas": Ctrl+Z de novo</td>
+<td>igual</td>
+<td>igual</td>
+</tr>
+<tr>
+<td>"dividir todas": Ctrl+Y de novo</td>
+<td><strong>diferente</strong></td>
+<td>igual</td>
+</tr>
+<tr>
+<td>"juntar todas": Ctrl+Z</td>
+<td><strong>diferente</strong> (herdado do Ctrl+Y)</td>
+<td>igual</td>
+</tr>
+<tr>
+<td>"juntar todas": Ctrl+Y</td>
+<td>igual</td>
+<td>igual</td>
+</tr>
+<tr>
+<td>motor trocado na folha juntada (D-606): Ctrl+Z</td>
+<td>igual</td>
+<td>igual</td>
+</tr>
+<tr>
+<td>motor trocado na folha juntada (D-606): Ctrl+Y</td>
+<td>igual</td>
+<td>igual</td>
+</tr>
+<tr>
+<td>"dividir esta" (folha 7): Ctrl+Z</td>
+<td>igual</td>
+<td>igual</td>
+</tr>
+<tr>
+<td>"dividir esta" (folha 7): Ctrl+Y</td>
+<td><strong>diferente</strong> (0 em vez de 1)</td>
+<td>igual</td>
+</tr>
+<tr>
+<td>"não dividir esta": Ctrl+Z</td>
+<td><strong>diferente</strong> (herdado)</td>
+<td>igual</td>
+</tr>
+<tr>
+<td>"não dividir esta": Ctrl+Y</td>
+<td>igual</td>
+<td>igual</td>
+</tr>
+</tbody>
+</table>
+<p>No novo, 14 de 14 iguais (12 na tabela mais os dois Ctrl+Z do "dividir todas"). A tira e a lista do motor não
+mudam dados (só onde a tira rola e quem fica com o teclado). O aviso da D-607 só muda texto. A etapa 6 só muda o
+desenho da coluna.</p>
+<h2>3. D-608: depois de clicar num botão do painel, as setas continuam passando de página</h2>
+<p>Pergunta: "Quer que, depois de clicar num botão do painel, as setas continuem passando de página, em todas as
+ferramentas? As caixas de número continuam como estão." → "ok".</p>
+<ul>
+<li>As teclas ← →, Page Up/Down, Home e End que chegam a um <strong>botão</strong> da tela de conferir (painel, faixa, barra de
+  baixo) vão para a página. É o mesmo filtro único de teclas que já leva a Tab à próxima dúvida
+  (<code>ui/tela_conferir.py</code>, <code>_FiltroDaTab</code> e <code>TelaConferir._tecla_de_andar_num_botao</code>).</li>
+<li>Caixa de número, campo de texto, lista e bolinha de opção não são tocados. O Espaço e o Enter continuam apertando o
+  botão. Janelas por cima (avisos, Automático) não são tocadas.</li>
+<li>Provas (<code>tests/test_dividir_ajustes_03_11.py</code>): clicar "dividir esta" e → anda (← volta, End, Home, Page Down);
+  no Cortar, clicar "não cortar esta" e → anda. Os dois falham em <code>75ed04af</code>. Guarda: na caixa do ângulo do
+  Endireitar a seta ↑ sobe 0,1°, a seta ← não troca de página e o botão de 0,1° gira (D-083).</li>
+<li>Janela de verdade: "Duas lado a lado", clique em "dividir esta", → : "folha 6 de 70"; ← volta à 5 (p10, p11).
+  Achado no caminho: com a janela por trás de outra o Qt ainda manda a tecla ao botão, mas o "foco da aplicação" é
+  nenhum; a condição usa o teclado da janela (o print pegou isso; o teste sem janela não pegava).</li>
+<li>O que já estava escolhido e testado sobre teclado está no ONDE-PAREI (D-021, 9b-1, 1.10, botões dos avisos, D-083),
+  com os testes, que passam sem mudança.</li>
+</ul>
+<h2>4. Testes no PC e velocidade</h2>
+<p>No PC do Samuel, um arquivo por vez, depois de todos os consertos (commit <code>42f359a4</code>): <strong>36 arquivos, todos passaram</strong>. São os 23 de antes, mais o de gravura que tinha falhado uma vez no GitHub, os do histórico e os de teclado (D-021, 9b-1, D-083, atalhos, painéis, promessas). Nenhum teste antigo foi mudado.</p>
+<ul>
+<li><code>tests/test_decisoes_dividir_linha.py</code>: 13 passed in 15.77s</li>
+<li><code>tests/test_decisoes_dividir.py</code>: 21 passed in 47.04s</li>
+<li><code>tests/test_decisoes_dividir_metade.py</code>: 6 passed in 9.68s</li>
+<li><code>tests/test_decisoes_juntar_todas.py</code>: 4 passed in 8.62s</li>
+<li><code>tests/test_dividir_desmarcada_caixinha.py</code>: 3 passed in 11.95s</li>
+<li><code>tests/test_dividir_na_tela.py</code>: 9 passed in 27.85s</li>
+<li><code>tests/test_dividir_no_programa.py</code>: 19 passed in 14.43s</li>
+<li><code>tests/test_automatico_pular_depois_de_dividir.py</code>: 4 passed in 0.40s</li>
+<li><code>tests/test_decisoes_automatico.py</code>: 29 passed in 57.61s</li>
+<li><code>tests/test_decisoes_automatico_margens_no_depois.py</code>: 5 passed in 11.91s</li>
+<li><code>tests/test_decisoes_automatico_opcoes_do_filtro.py</code>: 21 passed in 96.88s (0:01:36)</li>
+<li><code>tests/test_decisoes_automatico_ver_como_fica.py</code>: 22 passed in 75.20s (0:01:15)</li>
+<li><code>tests/test_decisoes_9b1.py</code>: 25 passed, 16 warnings in 30.87s</li>
+<li><code>tests/test_decisoes_9b2.py</code>: 30 passed in 55.75s</li>
+<li><code>tests/test_miniaturas_novas.py</code>: 5 passed in 3.75s</li>
+<li><code>tests/test_decisoes_avisos.py</code>: 22 passed in 47.59s</li>
+<li><code>tests/test_decisoes_caderno_tela_grande.py</code>: 11 passed in 41.54s</li>
+<li><code>tests/test_decisoes.py</code>: 26 passed in 5.12s</li>
+<li><code>tests/test_decisoes_tela.py</code>: 35 passed, 4 warnings in 43.46s</li>
+<li><code>tests/test_dividir_ajustes_03_11.py</code>: 9 passed in 20.21s</li>
+<li><code>tests/test_decisoes_filtro_automatico.py</code>: 4 passed in 17.44s</li>
+<li><code>tests/test_decisoes_montar_cadernos.py</code>: 13 passed in 92.07s (0:01:32)</li>
+<li><code>tests/test_menu_paineis.py</code>: 3 passed in 1.86s</li>
+<li><code>tests/test_gravura_na_aba_marcar.py</code>: 8 passed in 6.70s</li>
+<li><code>tests/test_historico_depois_de_reabrir.py</code>: 11 passed in 0.74s</li>
+<li><code>tests/test_recomeco_limpa_o_historico.py</code>: 13 passed in 42.67s</li>
+<li><code>tests/test_endireitar_g5.py</code>: 13 passed in 7.06s</li>
+<li><code>tests/test_endireitar_na_tela.py</code>: 5 passed in 7.70s</li>
+<li><code>tests/test_para_revisar_na_tela.py</code>: 26 passed in 20.74s</li>
+<li><code>tests/test_girar_na_tela.py</code>: 22 passed in 51.08s</li>
+<li><code>tests/test_decisoes_ver.py</code>: 11 passed in 29.57s</li>
+<li><code>tests/test_decisoes_mover.py</code>: 13 passed in 17.16s</li>
+<li><code>tests/test_atalhos.py</code>: 15 passed in 0.43s</li>
+<li><code>tests/test_paineis_na_tela.py</code>: 22 passed in 59.81s</li>
+<li><code>tests/test_barra_de_menu.py</code>: 20 passed in 4.99s</li>
+<li><code>tests/test_promessas.py</code>: 267 passed, 1 xfailed, 74 warnings in 1055.07s (0:17:35)</li>
+</ul>
+<p>Velocidade: não medi no PC (o Samuel: "se está medindo lá porque medir aqui, o mais urgente é concertar os problemas agora"). O filtro do GitHub 41759125497 (<code>75ed04af</code> → <code>abd8cd0a</code>) fica com a gerente. Os consertos desta segunda parte mexem só em <code>ui/tela_conferir.py</code>; nenhum mexe em <code>core/</code>. A única mudança em <code>core/</code> da tarefa toda é a da 1ª entrega (<code>core/automatico.py</code>, <code>paginas_juntadas</code>, já dentro do <code>abd8cd0a</code>).</p>
+<p class="rodape">Editor de Impressão &middot; gerado em 04/11/2026 às 00:19</p>
 </body>
 </html>

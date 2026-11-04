@@ -109,3 +109,16 @@ ferramentas? As caixas de número continuam como estão." → "ok".
   `tests/test_decisoes_mover.py::test_letra_f_*`, `tests/test_promessas.py` (p163, p211 setas),
   `tests/test_decisoes_dividir_metade.py::test_d601_*_setas_andam_pelas_paginas`.
 - Espaço = "Marcar como certo e avançar" (atalho); num botão com o teclado, o Espaço aperta o botão (do Qt). Não muda.
+
+### Feito (D-608)
+- `ui/tela_conferir.py`: `TECLAS_DE_ANDAR_NUM_BOTAO`, `_FiltroDaTab` (também as teclas de andar),
+  `TelaConferir._tecla_de_andar_num_botao`. Último commit `42f359a4`. Testes `test_reversao_d608_*` (2, falham
+  em 75ed04af) e `test_d608_caixa_de_numero_do_angulo_continua_com_as_setas`. Prints p10, p11.
+
+## 3. Testes no PC (sem GitHub)
+- 36 arquivos, um por vez, todos passaram (lista no relatório). Nenhum teste antigo mudou.
+- Velocidade: não medida no PC (Samuel: "se está medindo lá porque medir aqui..."). O GitHub 41759125497 fica com a
+  gerente. Nada novo em `core/` nesta segunda parte.
+
+## Perguntas para o Samuel
+(nenhuma aberta; a dos botões virou D-608 e foi feita)
