@@ -1389,8 +1389,12 @@ class JanelaPrincipal(QMainWindow):
             # pagina por vez para mim" - sai do Dividir (a folha inteira)
             conferir.mostrar_paginas()
         # o painel passa a mostrar o que o livro tem agora (etapas ligadas,
-        # opcoes, ordem); onde rodar e as escolhidas ficam como a pessoa deixou
-        self.estado_do_automatico.do_projeto(projeto)
+        # opcoes, ordem); onde rodar e as escolhidas ficam como a pessoa deixou.
+        # D-590 (04/11/2026, "a caixinha continua desmacada"): a caixinha do
+        # Dividir desmarcada continua desmarcada (no "Rodar" o Dividir
+        # desmarcado já desliga no livro; no "Desligar as marcadas" ele fica
+        # ligado no livro, D-068, e a caixinha voltava marcada)
+        self.estado_do_automatico.do_projeto(projeto, manter_o_dividir_desmarcado=True)
         self._salvar_agora()
         self._comecar_a_medir_o_livro()          # item 2.5, se o corte pelo conteudo ligou
         if resultado.gravuras_refeitas:

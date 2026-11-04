@@ -1952,7 +1952,10 @@ class TelaConferir(QWidget):
         self._gravar_no_livro("margens_iguais", ligada,
                               "Margens iguais " + ("ligadas" if ligada else "desligadas"))
         try:
-            self.paineis.automatico.estado.do_projeto(self.projeto)
+            # D-590 (04/11/2026): a caixinha "Margens iguais" não mexe no
+            # Dividir; a caixinha do Dividir desmarcada continua desmarcada
+            self.paineis.automatico.estado.do_projeto(self.projeto,
+                                                      manter_o_dividir_desmarcado=True)
         except Exception:  # noqa: BLE001 - o painel é ajuda; nunca desfaz a mudança
             registrar_erro("margens iguais no Automatico", traceback.format_exc())
 
@@ -8662,11 +8665,12 @@ class TelaConferir(QWidget):
         if self.acoes.feitas and self._acoes_esperam_pelas_marcacoes(
                 [self.acoes.feitas[-1]], para_tras=True):
             return                       # pendencia da D2 (_espera_pelas_marcacoes)
-        if self.acoes.desfazer(self.projeto) is not None:
+        acao = self.acoes.desfazer(self.projeto)
+        if acao is not None:
             if self.previas is not None:
                 self.previas.invalidar()
             self.lista_de_paginas_mudou()      # etapa 3: o Automatico muda a lista
-            self._reacertar_as_opcoes()
+            self._reacertar_as_opcoes(acao)
 
     @protegido
     def refazer(self) -> None:
@@ -8680,7 +8684,7 @@ class TelaConferir(QWidget):
             if self.previas is not None:
                 self.previas.invalidar()
             self.lista_de_paginas_mudou()      # etapa 3: o Automatico muda a lista
-            self._reacertar_as_opcoes()
+            self._reacertar_as_opcoes(acao)
             self._medir_o_em_branco_ao_refazer(acao)
 
     def _medir_o_em_branco_ao_refazer(self, acao) -> None:
@@ -8712,13 +8716,27 @@ class TelaConferir(QWidget):
         except Exception:  # noqa: BLE001 - o aviso é ajuda; nunca derruba o refazer
             registrar_erro("medir o em branco ao refazer", traceback.format_exc())
 
-    def _reacertar_as_opcoes(self) -> None:
+    def _reacertar_as_opcoes(self, acao=None) -> None:
         """Depois de desfazer ou refazer, a tela "O que fazer" deste mesmo
         projeto volta a mostrar o que ele tem agora (parecer do verificador,
         30/09, r15: desfeito o "Sim" da pergunta do fundo, ela continuava em
         "Tirar o fundo"). O menu Editar desfaz em qualquer tela, inclusive com
         "O que fazer" a vista; escondida, ela se reacerta sozinha ao aparecer
-        (ui/tela_opcoes.showEvent). Nunca levanta excecao."""
+        (ui/tela_opcoes.showEvent). Nunca levanta excecao.
+
+        `acao`: a ação desfeita ou refeita. D-590 (defeito de 04/11/2026,
+        print a-67: "depois de usar o dividir e voltar ao automatico ele está
+        marcado de novo"): se ela NÃO mexe no Dividir do livro
+        (_mexe_no_dividir_do_livro), a caixinha "1 Dividir folhas ao meio"
+        que a pessoa desmarcou continua desmarcada (EstadoDoAutomatico.
+        do_projeto, manter_o_dividir_desmarcado). Antes, qualquer Ctrl+Z ou
+        Ctrl+Y (do Dividir, do "juntar todas", da linha, do motor, de
+        qualquer ferramenta) relia o livro, que ainda tinha o Dividir ligado,
+        e a caixinha voltava marcada. O Ctrl+Z do "Rodar" que mudou o Dividir
+        do livro continua mostrando o livro (como antes).
+        Arriscado: manter a caixinha também quando a ação muda o Dividir do
+        livro (o desfazer do "Rodar" deixaria a caixinha e o livro diferentes
+        sem a pessoa ter clicado)."""
         # Etapa 3 da obra: a tela "O que fazer" saiu do caminho; o que mostra
         # as escolhas do livro e o painel Automatico, que a atualizacao
         # (atualizar -> _atualizar_paineis) ja acerta. Fica so o aviso do
@@ -8729,7 +8747,9 @@ class TelaConferir(QWidget):
             # etapas ligadas, o filtro do livro...): como a tela "O que fazer"
             # acompanhava o desfazer (verificador, 30/09, r15)
             if self.projeto is not None:
-                self.paineis.automatico.estado.do_projeto(self.projeto)
+                self.paineis.automatico.estado.do_projeto(
+                    self.projeto,
+                    manter_o_dividir_desmarcado=not _mexe_no_dividir_do_livro(acao))
         except Exception:  # noqa: BLE001 - reacertar a tela nunca derruba o desfazer
             registrar_erro("reacertar as opcoes", traceback.format_exc())
 
@@ -8946,6 +8966,21 @@ class TelaConferir(QWidget):
 
 
 MINIATURAS_DE_FABRICA = {"lugar": EMBAIXO, "aberta": True, "em_pares": False}
+
+
+def _mexe_no_dividir_do_livro(acao) -> bool:
+    """A ação (do Histórico) muda o "Dividir ligado no livro todo" (o campo
+    "livro.dividir_folhas", que só o "Rodar" do Automático grava)? Sem ação
+    (None): False. Usado no desfazer/refazer (TelaConferir._reacertar_as_opcoes,
+    D-590 de 04/11/2026): só a ação que muda o Dividir do livro faz a caixinha
+    do Dividir desmarcada seguir o livro. As ações da ferramenta Dividir
+    (dividir, juntar, linha, motor) mudam as folhas, nunca esse campo.
+    Seguro mudar: nada. Arriscado: olhar outro campo (as folhas divididas não
+    são o "ligado no livro todo", D-590)."""
+    if acao is None:
+        return False
+    chave = "livro.dividir_folhas"
+    return chave in (getattr(acao, "antes", None) or {}) or chave in (getattr(acao, "depois", None) or {})
 
 
 def miniaturas_guardadas() -> dict:
