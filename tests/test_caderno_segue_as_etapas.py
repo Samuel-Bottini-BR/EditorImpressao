@@ -139,3 +139,153 @@ def test_d603_dividir_marcado_o_caderno_mostra_as_paginas_divididas(janela, app,
     assert paginas_do_lado(verso) == ([2], [7])
     # o livro não mudou (só mostra, D-577): continua com uma página por folha do scan
     assert len(janela.projeto.paginas_ativas) == FOLHAS
+
+
+# --- a lista de páginas depois do Dividir, sem desenhar, é a do "Rodar" ------------------
+#
+# core/automatico.paginas_do_pdf_depois faz, sem copiar o projeto, o que o `_dividir` do "Rodar"
+# faz com a lista de páginas (o `_dividir` numa cópia levava 0,35 s num livro de 700 folhas).
+# Estas provas comparam as duas contas em livros com tudo o que muda a lista: folhas inteiras,
+# já divididas, juntadas ("não dividir esta"), tiradas do livro, mexidas à mão (D-004), em pé,
+# deitadas, quase quadradas (o ScanTailor divide, o jeito do programa não), giradas, "Rodar em"
+# só algumas páginas, e os dois jeitos de dividir.
+
+# (largura, altura) em pontos de cada folha do PDF de tamanhos
+TAMANHOS = [(900, 600), (420, 600), (660, 600), (900, 600), (600, 900), (900, 600),
+            (900, 600), (900, 600), (620, 600), (420, 600)]
+
+
+def _pdf_de_tamanhos(tmp_path: Path) -> str:
+    caminho = tmp_path / "tamanhos.pdf"
+    if not caminho.exists():
+        doc = fitz.open()
+        for largura, altura in TAMANHOS:
+            doc.new_page(width=largura, height=altura)
+        doc.save(str(caminho))
+        doc.close()
+    return str(caminho)
+
+
+def _livro_variado(caminho: str, jeito: str):
+    """Folhas: 0 inteira deitada; 1 inteira em pé; 2 quase quadrada; 3 já dividida; 4 em pé
+    girada 90 (fica deitada); 5 juntada ("não dividir esta": duas páginas, a direita fora);
+    6 inteira tirada do livro; 7 dividida à mão (D-004); 8 quase quadrada dividida; 9 em pé
+    com duas páginas (juntada, a direita fora)."""
+    from core import etapas as E
+    from modelos import (METADE_DIREITA, METADE_ESQUERDA, METADE_INTEIRA, ConfigFolha,
+                         ConfigPagina, Projeto)
+
+    projeto = Projeto(caminho_entrada=caminho)
+    projeto.dividir_como = jeito
+    paginas = []
+
+    def inteira(f, **kw):
+        paginas.append(ConfigPagina(indice=0, folha=f, metade=METADE_INTEIRA, **kw))
+
+    def duas(f, direita_fora=False):
+        paginas.append(ConfigPagina(indice=0, folha=f, metade=METADE_ESQUERDA))
+        paginas.append(ConfigPagina(indice=0, folha=f, metade=METADE_DIREITA, apagada=direita_fora))
+
+    for f in range(len(TAMANHOS)):
+        folha = ConfigFolha(indice=f, dividir=False)
+        if f in (0, 1, 2):
+            inteira(f)
+        elif f == 3:
+            folha.dividir = True
+            duas(f)
+        elif f == 4:
+            folha.rotacao = 90
+            inteira(f)
+        elif f in (5, 9):
+            duas(f, direita_fora=True)
+        elif f == 6:
+            inteira(f, apagada=True)
+        elif f == 7:
+            folha.dividir, folha.posicao_corte, folha.mexida_a_mao = True, 0.47, [E.DIVIDIR]
+            duas(f)
+        elif f == 8:
+            folha.dividir = True
+            duas(f)
+        projeto.folhas.append(folha)
+    for n, pagina in enumerate(paginas):
+        pagina.indice = n
+    projeto.paginas = paginas
+    return projeto
+
+
+def _pelo_rodar(projeto, pedido) -> list[tuple]:
+    """A lista de (folha, metade) do PDF pelo `aplicar` de verdade (o "Rodar"), numa cópia, com
+    as medidas que a regra do tamanho dá (o que a medida acharia)."""
+    import copy
+
+    copia = copy.deepcopy(projeto)
+    retangulos = A._retangulos_do_pdf(projeto.caminho_entrada)
+    jeito = (pedido.opcoes or {}).get("dividir_como", projeto.dividir_como)
+    medidas = {}
+    for i in A.folhas_do_pedido(copia, pedido):
+        f = copia.folhas[i]
+        d = A.vai_dividir_pelo_tamanho(retangulos[i], f.rotacao, jeito)
+        medidas[i] = A.MedidaDaFolha(i, d, 0.5, 1.0, d, None, 0.0, 0.0, [], [])
+    A.aplicar(copia, pedido, medidas)
+    return [(p.folha, p.metade) for p in copia.paginas_ativas]
+
+
+@pytest.mark.parametrize("jeito", ["scantailor", "programa"])
+@pytest.mark.parametrize("paginas", [None, "algumas"])
+@pytest.mark.parametrize("pular", [True, False])
+def test_d603_lista_sem_desenhar_e_a_mesma_do_rodar(tmp_path, jeito, paginas, pular):
+    projeto = _livro_variado(_pdf_de_tamanhos(tmp_path), jeito)
+    escolhidas = None if paginas is None else [p.indice for p in projeto.paginas
+                                               if p.folha in (0, 2, 4, 5, 7)]
+    pedido = A.Pedido(etapas=[A.DIVIDIR, A.CADERNOS], paginas=escolhidas, pular_mexidas=pular)
+    lista = A.paginas_do_pdf_depois(projeto, pedido)
+    assert [(f, m) for _o, f, m in lista] == _pelo_rodar(projeto, pedido)
+    # cada página sai de uma página da mesma folha: a mesma metade, ou a inteira que é partida
+    for origem, folha, metade in lista:
+        de_onde = projeto.paginas[origem]
+        assert de_onde.folha == folha and de_onde.metade in (metade, "inteira")
+    # e o projeto não mudou
+    assert [(p.folha, p.metade, p.apagada) for p in projeto.paginas] == \
+        [(p.folha, p.metade, p.apagada) for p in _livro_variado(projeto.caminho_entrada, jeito).paginas]
+
+
+def test_d603_sem_o_dividir_a_lista_e_o_livro_como_esta(tmp_path):
+    """D-589/D-590: Dividir desmarcado (ou "Desligar as marcadas") → a lista é a do livro como
+    está (Projeto.paginas_ativas): nada é partido nem juntado."""
+    projeto = _livro_variado(_pdf_de_tamanhos(tmp_path), "scantailor")
+    como_esta = [(p.indice, p.folha, p.metade) for p in projeto.paginas_ativas]
+    for pedido in (A.Pedido(etapas=[A.CADERNOS], desmarcadas=[A.DIVIDIR]),
+                   A.Pedido(etapas=[A.DIVIDIR, A.CADERNOS], desligar=True)):
+        assert A.paginas_do_pdf_depois(projeto, pedido) == como_esta
+
+
+def test_d603_a_regra_do_tamanho_e_a_da_medida(tmp_path):
+    """A conta pelo tamanho (sem desenhar) diz o mesmo que a medida do "Rodar" (core/automatico.
+    medir, que desenha a folha e pergunta ao ScanTailor ou à conta do programa), nos dois
+    jeitos, em folhas deitadas, em pé, quase quadradas e giradas; e no Gradus Primus (as 12
+    primeiras folhas), quando a cópia está em _tmp/livros."""
+    caminho = tmp_path / "com_imagem.pdf"
+    imagens = []
+    for largura, altura in TAMANHOS:
+        img = np.full((altura, largura, 3), 245, np.uint8)
+        for y in range(60, altura - 60, 40):          # linhas de "texto" nas duas metades
+            img[y:y + 12, 40:largura // 2 - 30] = 30
+            img[y:y + 12, largura // 2 + 30:largura - 40] = 30
+        imagens.append(img)
+    _pdf(caminho, imagens)
+    livros = [(str(caminho), list(range(len(TAMANHOS))))]
+    gradus = Path(__file__).resolve().parents[1] / "_tmp" / "livros" / "gradus.pdf"
+    if gradus.is_file():
+        livros.append((str(gradus), list(range(12))))
+    for livro, folhas in livros:
+        retangulos = A._retangulos_do_pdf(livro)
+        for jeito in ("scantailor", "programa"):
+            for rotacao in (0, 90):
+                foto = A.Fotografia(
+                    caminho=livro, etapas=[A.DIVIDIR], dividir_como=jeito, cortar_sobra=False,
+                    vai_endireitar=False, vai_cortar=False, vai_dividir=True, livro=None,
+                    folhas=[A._FolhaParaMedir(i, rotacao, False, 0.5, True, {}, {}) for i in folhas])
+                medidas = A.medir(foto)
+                for i in folhas:
+                    pelo_tamanho = A.vai_dividir_pelo_tamanho(retangulos[i], rotacao, jeito)
+                    assert medidas[i].dividir == pelo_tamanho, (Path(livro).name, i, jeito, rotacao)

@@ -1530,10 +1530,10 @@ def depois_da_pagina(doc, copia, pedido: Pedido, indice: int, dpi: int,
 #   - jeito do programa (ou o ScanTailor fora do ar / recusando a imagem): mais larga que 1,2 x
 #     a altura (core/dividir.detectar_lombada, RAZAO_PAISAGEM).
 # O tamanho vem do PDF (page.rect: milissegundos, nada e desenhado) e fica guardado por arquivo.
-# Com essas "medidas pelo tamanho", o proprio `_dividir` do "Rodar" e aplicado numa copia leve
-# do projeto (pula as mesmas folhas mexidas a mao, D-004; nao junta nada, D-590) e a lista sai
-# de Projeto.paginas_ativas dessa copia. Dividir desmarcado (D-589/D-590): a lista do livro como
-# esta, sem conta nenhuma (igual a antes).
+# Com essa regra, a lista faz o que o `_dividir` do "Rodar" faz com as paginas (pula as mesmas
+# folhas mexidas a mao, D-004) e o que Projeto.paginas_ativas escolhe (paginas_do_pdf_depois).
+# Dividir desmarcado (D-589/D-590): a lista do livro como esta, sem conta nenhuma (igual a
+# antes; nada e juntado).
 #
 # Arriscado: outra etapa passar a mudar a lista de paginas (entraria aqui tambem); mudar a regra
 # do tamanho sem mudar a da medida (a conta das folhas discordaria do desenho).
@@ -1573,57 +1573,60 @@ def _retangulos_do_pdf(caminho) -> list | None:
     return retangulos
 
 
-def vai_dividir_pelo_tamanho(retangulo, rotacao: int, jeito: str) -> bool:
-    """A folha (o `retangulo` dela no PDF, em pontos, girada `rotacao` graus) vai ser dividida
-    pelo Dividir do Automatico no `jeito`? A mesma regra da medida (ver acima), no tamanho em
-    pontos da imagem que a medida desenha (core.pdf_io.pagina_para_array a DPI_ANALISE)."""
-    import fitz
+def vai_dividir_pelo_tamanho(retangulo, rotacao: int, jeito: str,
+                             scantailor: bool | None = None) -> bool:
+    """A folha (o `retangulo` dela no PDF, (x0, y0, x1, y1) em pontos, girada `rotacao` graus)
+    vai ser dividida pelo Dividir do Automatico no `jeito`? A mesma regra da medida (ver acima),
+    no tamanho em pontos da imagem que a medida desenha (core.pdf_io.pagina_para_array a
+    DPI_ANALISE: dpi_seguro e o arredondamento do retangulo do PyMuPDF). `scantailor`: a DLL do
+    ScanTailor abriu? (None = pergunta; quem conta o livro todo pergunta uma vez so)."""
+    import math
 
     from core import dividir_scantailor, st_ferramentas
     from core.dividir import RAZAO_PAISAGEM
     from core.pdf_io import MAX_PIXELS
     from core.pipeline import DPI_ANALISE
 
-    rect = fitz.Rect(retangulo)
+    x0, y0, x1, y1 = (float(v) for v in retangulo)
     dpi = DPI_ANALISE
-    area = (rect.width / 72.0) * (rect.height / 72.0)
+    area = ((x1 - x0) / 72.0) * ((y1 - y0) / 72.0)
     if area > 0:
         dpi = max(50, min(dpi, int((MAX_PIXELS / area) ** 0.5)))   # pdf_io.dpi_seguro
-    pontos = (rect * fitz.Matrix(dpi / 72.0, dpi / 72.0)).irect
-    largura, altura = pontos.width, pontos.height
+    escala = dpi / 72.0
+
+    def pontos(a: float, b: float) -> int:      # fz_round_rect, o Rect.irect do PyMuPDF
+        return int(math.ceil(b * escala - 0.001) - math.floor(a * escala + 0.001))
+
+    largura, altura = pontos(x0, x1), pontos(y0, y1)
     if int(rotacao) % 180 == 90:
         largura, altura = altura, largura
-    if dividir_scantailor.jeito_valido(jeito) == dividir_scantailor.JEITO_SCANTAILOR \
-            and st_ferramentas.disponivel() \
-            and st_ferramentas.motivo_de_recusa(largura, altura, dpi, dpi) is None:
-        return largura > altura
+    if dividir_scantailor.jeito_valido(jeito) == dividir_scantailor.JEITO_SCANTAILOR:
+        if scantailor is None:
+            scantailor = st_ferramentas.disponivel()
+        if scantailor and st_ferramentas.motivo_de_recusa(largura, altura, dpi, dpi) is None:
+            return largura > altura
     return largura > altura * RAZAO_PAISAGEM
-
-
-class _SemGravar(_Gravador):
-    """O _Gravador que so muda (nada e anotado para o desfazer): a conta da lista de paginas
-    depois do pedido roda o `_dividir` do "Rodar" numa copia que vai para o lixo."""
-
-    def no_livro(self, campo: str, valor) -> None:
-        setattr(self.projeto, campo, valor)
-
-    def na_folha(self, folha, campo: str, valor) -> None:
-        setattr(folha, campo, valor)
-
-    def na_pagina(self, pagina, campo: str, valor) -> None:
-        setattr(pagina, campo, valor)
-
-    def guardar_a_estrutura(self) -> None:
-        pass
 
 
 def paginas_do_pdf_depois(projeto, pedido: Pedido) -> list[tuple[int, int, str]]:
     """D-603: as paginas que vao para o PDF se o Automatico rodar com o `pedido`, na ordem do
     PDF, SEM desenhar nada (ver o comentario acima). Cada uma: (indice em projeto.paginas da
     pagina de que ela sai, folha, metade depois). A pagina "de que ela sai" e a que se passa a
-    depois_da_pagina para desenha-la: a mesma metade da mesma folha, se existe agora; senao a
-    pagina (inteira) da folha que vai ser partida. Nao muda o `projeto`.
-    Sem o Dividir marcado (ou desligando): o livro como esta (Projeto.paginas_ativas)."""
+    depois_da_pagina para desenha-la: a mesma pagina, se ela continua; a pagina inteira, para as
+    duas metades de uma folha que vai ser partida. Nao muda o `projeto`.
+    Sem o Dividir marcado (ou desligando): o livro como esta (Projeto.paginas_ativas).
+
+    E o que `_dividir` (o "Rodar") faz com a lista de paginas, seguido de Projeto.paginas_ativas,
+    sem copiar o projeto (o `_dividir` de verdade, numa copia, levava 0,35 s num livro de 700
+    folhas - a tela pararia): folha pulada (D-004) fica como esta; folha com duas paginas so
+    troca o `dividir` (e a da direita sai ou volta, como o "nao dividir esta"); folha de uma
+    pagina que divide vira esquerda e direita (com o "tirar do livro" da inteira,
+    dividir_a_mao.metades_da_pagina); a que nao divide continua inteira. A prova de que da o
+    mesmo que o `_dividir`: tests/test_caderno_segue_as_etapas.py. Arriscado: mudar o
+    `_dividir` sem mudar aqui."""
+    from core import st_ferramentas
+    from modelos import METADE_DIREITA, METADE_ESQUERDA, METADE_INTEIRA
+
     como_esta = [(p.indice, p.folha, p.metade) for p in projeto.paginas_ativas]
     if pedido.desligar or DIVIDIR not in pedido.etapas:
         return como_esta
@@ -1631,38 +1634,52 @@ def paginas_do_pdf_depois(projeto, pedido: Pedido) -> list[tuple[int, int, str]]
     if retangulos is None:
         return como_esta
     jeito = (pedido.opcoes or {}).get("dividir_como", projeto.dividir_como)
-    medidas = {}
-    for i in folhas_do_pedido(projeto, pedido):
-        folha = projeto.folhas[i]
-        if not 0 <= folha.indice < len(retangulos):
-            continue
-        divide = vai_dividir_pelo_tamanho(retangulos[folha.indice], folha.rotacao, jeito)
-        corte = float(folha.posicao_corte) if folha.dividir else 0.5
-        medidas[i] = MedidaDaFolha(i, divide, corte, 1.0, divide, None, 0.0, 0.0, [], [])
-    leve = copy.copy(projeto)
-    leve.folhas = [copy.copy(f) for f in projeto.folhas]
-    leve.paginas = [copy.copy(p) for p in projeto.paginas]
-    # pelo `id` da copia de cada pagina; `vivas` segura as copias ate o fim (o _dividir tira da
-    # lista a pagina que parte, e um objeto novo poderia nascer com o mesmo `id`)
-    vivas = list(leve.paginas)
-    de_onde = {id(c): p.indice for c, p in zip(vivas, projeto.paginas)}
+    scantailor = st_ferramentas.disponivel()
     so_dividir = Pedido(etapas=[DIVIDIR], opcoes=pedido.opcoes, paginas=pedido.paginas,
                         pular_mexidas=pedido.pular_mexidas)
-    pular = _Puladas(leve, paginas_mexidas(leve, so_dividir) if so_dividir.pular_mexidas else [])
-    _dividir(leve, so_dividir, medidas, pular, _SemGravar(leve))
+    pular = set(paginas_mexidas(projeto, so_dividir)) if pedido.pular_mexidas else set()
     da_folha: dict[int, list] = {}
     for p in projeto.paginas:
         da_folha.setdefault(p.folha, []).append(p)
-    lista = []
-    for nova in leve.paginas_ativas:
-        origem = de_onde.get(id(nova))
-        if origem is None:                      # metade nova de uma folha partida agora
-            antigas = da_folha.get(nova.folha, [])
-            igual = next((p for p in antigas if p.metade == nova.metade), None)
-            origem = (igual or antigas[0]).indice if antigas else None
-        if origem is not None:
-            lista.append((origem, nova.folha, nova.metade))
-    del vivas
+    dividida = {f.indice: bool(f.dividir) for f in projeto.folhas}
+    divide: dict[int, bool] = {}
+    for i in folhas_do_pedido(projeto, pedido):
+        folha = projeto.folhas[i]
+        pags = da_folha.get(i, [])
+        if not 0 <= folha.indice < len(retangulos) or any(p.indice in pular for p in pags):
+            continue                              # sem medida, ou pulada: fica como esta
+        divide[i] = vai_dividir_pelo_tamanho(retangulos[folha.indice], folha.rotacao, jeito,
+                                             scantailor)
+        dividida[i] = divide[i] and bool(pags)    # o `dividir` da folha depois (_dividir)
+    # (origem, folha, metade, apagada) de cada pagina da lista depois do Dividir, na ordem
+    novas = []
+    for p in projeto.paginas:
+        f = p.folha
+        if f not in divide:
+            novas.append((p.indice, f, p.metade, p.apagada))
+            continue
+        pags = da_folha[f]
+        if len(pags) >= 2:
+            direita = next((q for q in pags if q.metade == METADE_DIREITA), None)
+            apagada = p.apagada
+            if p is direita and any(not q.apagada for q in pags if q is not direita):
+                apagada = not divide[f]
+            novas.append((p.indice, f, p.metade, apagada))
+        elif divide[f]:
+            novas.append((p.indice, f, METADE_ESQUERDA, p.apagada))
+            novas.append((p.indice, f, METADE_DIREITA, p.apagada))
+        else:
+            novas.append((p.indice, f, p.metade, p.apagada))
+    # Projeto.paginas_ativas, na lista de depois
+    lista, ja_sairam = [], set()
+    for origem, f, metade, apagada in novas:
+        if apagada:
+            continue
+        if metade != METADE_INTEIRA and 0 <= f < len(projeto.folhas) and not dividida.get(f, False):
+            if f in ja_sairam:
+                continue
+            ja_sairam.add(f)
+        lista.append((origem, f, metade))
     return lista
 
 
