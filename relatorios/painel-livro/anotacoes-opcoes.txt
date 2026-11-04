@@ -1,0 +1,11 @@
+abriu-em-s => 2.3
+opcao-antes-1536 => {"janela": [1536, 800], "barra_larg": 1148, "barra_minimo": 886, "conta_na_tela": "pdfcoffee.… · 0 de 140 conferidas · 8 com dúvida", "conta_cortada": true, "espremidas": []}
+opcao-agora-1536 => {"janela": [1536, 800], "barra_larg": 1148, "barra_minimo": 1067, "conta_na_tela": "0 de 140 co…", "conta_cortada": true, "espremidas": []}
+opcao-A-1536 => {"janela": [1536, 800], "barra_larg": 1148, "barra_minimo": 956, "conta_na_tela": "0 de 140 conferidas · 8 com dúvida", "conta_cortada": false, "espremidas": []}
+opcao-B-1536 => {"janela": [1536, 800], "barra_larg": 1148, "barra_minimo": 993, "conta_na_tela": "0 de 140 conferidas\n8 com dúvida", "conta_cortada": false, "espremidas": []}
+opcao-C-1536 => {"janela": [1536, 800], "barra_larg": 1148, "barra_minimo": 956, "conta_na_tela": "0 de 140 conferidas\n8 com dúvida", "conta_cortada": false, "espremidas": []}
+opcao-antes-1366 => {"janela": [1366, 728], "barra_larg": 978, "barra_minimo": 886, "conta_na_tela": "0 de 140 confe…", "conta_cortada": true, "espremidas": []}
+opcao-agora-1366 => {"janela": [1366, 728], "barra_larg": 978, "barra_minimo": 1067, "conta_na_tela": "pdfcoffee.com_gradus-primus-pdf-pdf-free · 0 de 140 conferidas · 8 com dúvida", "conta_cortada": false, "espremidas": ["página 14 de 140", "pdfcoffee.com_gradus-primus-pdf-pdf-free · 0 de 140 conferidas · 8 com dúvida", "Uma página", "Duas lado a lado", "antes / depois", "ajustar à tela", "Qualidade da prévia"]}
+opcao-A-1366 => {"janela": [1366, 728], "barra_larg": 978, "barra_minimo": 956, "conta_na_tela": "0…", "conta_cortada": true, "espremidas": []}
+opcao-B-1366 => {"janela": [1366, 728], "barra_larg": 978, "barra_minimo": 993, "conta_na_tela": "pdfcoffee.com_gradus-primus-pdf-pdf-free · 0 de 140 conferidas · 8 com dúvida", "conta_cortada": false, "espremidas": ["pdfcoffee.com_gradus-primus-pdf-pdf-free · 0 de 140 conferidas · 8 com dúvida", "Duas lado a lado"]}
+opcao-C-1366 => {"janela": [1366, 728], "barra_larg": 978, "barra_minimo": 956, "conta_na_tela": "pdfcoffee.com_gradus-primus-pdf-pdf-free · 0 de 140 conferidas · 8 com dúvida", "conta_cortada": false, "espremidas": ["pdfcoffee.com_gradus-primus-pdf-pdf-free · 0 de 140 conferidas · 8 com dúvida"]}

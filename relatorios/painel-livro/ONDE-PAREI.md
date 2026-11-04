@@ -40,11 +40,21 @@ Arquivos que vou tocar: `ui/tela_conferir.py` (só `_parte_do_livro`, `_montar_a
 - [x] Lidos CLAUDE.md §11, regras de 03/11 dos agentes, D-619, D-620 e as da barra de baixo; print a-69.
 - [x] Pergunta à gerente sobre os 3 testes antigos com "PARA O LIVRO TODO": resposta "Opção A autorizada" (trocar só
   a palavra nas linhas 255, 378 e 425, commit separado, comentário citando a D-619).
-- [ ] D-620: teste novo, código, testes por arquivo.
-- [ ] D-619: teste novo, código, troca autorizada nos 3 testes antigos.
-- [ ] Janela de verdade: prints.
+- [x] D-620: teste novo (`tests/test_decisoes_painel_livro.py`, 4 testes; os 4 falham no código antigo), código
+  (commit `fd274726`).
+- [x] D-619: teste novo (mesmo arquivo, 4 casos; falham no antigo), código (`a9a0892b`), troca autorizada nos
+  3 testes antigos (`84995d4e`).
+- [x] Janela de verdade (`piloto.py`): prints em `prints/`. Quadro novo nos três; a troca para "Alta" no Cortar vale
+  no Endireitar, no Mover e no Dividir (300 DPI, gravada).
+- [ ] A barra não cabe com o nome inteiro: pergunta abaixo (enviada à gerente em 04/11).
 - [ ] GitHub.
 
 ## Perguntas para o Samuel
 
-(nenhuma ainda)
+1. **D-620: como a qualidade aparece na barra de baixo** (print `prints/pergunta-qualidade-na-barra.png`).
+   Com o nome inteiro "Qualidade da prévia" + a lista, a barra não cabe: na tela dele (1920 a 125% = janela de
+   1536) a conta vira "0 de 140 co..."; em 1366 com o Propriedades aberto, botões ficam cortados. Antes da D-620,
+   em 1366 com o painel aberto, a conta já saía cortada ("0 de 140 confe..."). Opções: A) só a lista "Rápida", o
+   nome no balão (1536: tudo cabe, conta inteira; 1366: nenhum botão cortado, a conta vira "0...", inteira no
+   balão); B) "prévia" + lista (1366 corta "Duas lado a lado"); C) nome inteiro (corta). Recomendação: A.
+   Ordem: logo depois de "ajustar à tela" (antes do "Confirmar e processar" quando ele desce para a barra).
