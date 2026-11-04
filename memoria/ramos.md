@@ -412,3 +412,4 @@ Juntados no `obra-2026-10-26` nesta noite: balão do cinza (`99e7c6b`), D-574 se
 - `tira-pares-2026-11-04` (04/11): D-611 não funcionou para o Samuel no Dividir (print a-57). Entregue e juntado (`d216819d`).
 - `previa-dividida-2026-11-04` (04/11): D-614, prévia do Dividir no Automático como se já tivesse dividido. Entregue e juntado (`856cc235`).
 - `ordem-folhas-2026-11-04` (04/11): D-615 (arrastar a miniatura muda a folha de lugar) e D-616 (caixinha da capa aberta). Agente trabalhando.
+- `previa-numero-2026-11-04` (04/11): D-617, escrever o número da folha na prévia do Automático. Agente trabalhando.
