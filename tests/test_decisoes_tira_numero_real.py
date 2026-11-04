@@ -54,7 +54,7 @@ def _livro_pronto(janela, tmp_path, folhas: int = 4):
 
 
 def _rotulos(tira) -> list[int]:
-    return [m.rotulo_numero if m.rotulo_numero is not None else m.numero for m in tira._miniaturas]
+    return [getattr(m, "rotulo_numero", None) or m.numero for m in tira._miniaturas]
 
 
 def _marcadas(tira) -> list[int]:
