@@ -310,3 +310,9 @@ nucleo2 21, corte_previa_igual_pdf 4, filtros_tela_cheia 11, automatico_ver_como
 barra_de_menu 20, opcoes_da_gravura_na_tela 15 (`testes-pc-4.txt`). **Nenhum teste antigo mudado.**
 
 GitHub da terceira parte e do pincel: rodada 41886245180 (em `07c051fb`) **passou inteira**.
+GitHub final (rodada **41892321210**, em `4ede8fd5`): passou tudo menos 1 teste, na parte 4:
+`test_gravura_na_aba_marcar::test_pagina_de_projeto_antigo_que_muda_de_forma_e_refeita` (lá a marcação já
+tinha sido refeita por trás quando o teste olhou: `'scantailor|...' == 'refazer'`). No PC esse arquivo passou
+inteiro 3 vezes seguidas (8 de 8) e nas rodadas 2, 3 e 4; na rodada 41886245180 do GitHub (em `07c051fb`,
+com tudo menos o tamanho da prévia) também passou. O teste não usa os pares, o "antes / depois" nem a barra
+de cima. Parece de tempo; ressalva para a gerente decidir se roda de novo.

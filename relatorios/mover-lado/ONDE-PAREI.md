@@ -92,3 +92,5 @@ Ver `relatorio.md`, seção "Decisões: como cumpri cada uma".
 **Tamanho da prévia nos pares (pedido do Samuel, 04/11):** feito em commit próprio ("nos pares a página da
 ferramenta fica do tamanho da prévia"), teste `tests/test_decisoes_tamanho_no_par.py`, pilotos refeitos
 (20/20, 15/15, 16/16), testes no PC em `testes-pc-4.txt`. GitHub final: ver `relatorio.md`.
+
+GitHub final 41892321210 (em 4ede8fd5): 1 falha de tempo em test_gravura_na_aba_marcar (passa no PC 3/3). Entregue a gerente.
