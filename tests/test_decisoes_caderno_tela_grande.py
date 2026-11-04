@@ -463,3 +463,163 @@ def test_d574_cancelar_para_a_folha_no_servidor(janela, app, tmp_path):
     copia, pedido, folha, indices = _pedido_da_folha(janela, 1)
     frente, _verso = automatico.folha_do_caderno(copia, pedido, folha, indices, 120)
     assert _paginas_do_lado(frente) == (6, 3)
+
+
+# --- D-603: as folhas do caderno seguem as etapas marcadas, antes do "Rodar" -------------
+#
+# D-603 (03/11/2026, print a-49: "Dividir" marcado e o caderno com os scans inteiros): "eu fui lá
+# e apertei o botão de dividir e nos cadernos ainda aparece a folha sem divisão, era para ser com
+# divisão, já que eu cliquei lá em cima, mesmo que eu não tenha processado ainda, pois é o
+# preview." · "as folhas do caderno passam a seguir todas as etapas marcadas (dividir, cortar,
+# margens e as outras), igual ao "depois", mesmo antes de rodar. [...] a bolinha de carregamento
+# aparece enquanto ele monta. Pode ser assim?" → "pode ser assim nos cadernos".
+# D-589: etapa desmarcada não entra. D-590: Dividir desmarcado não junta nada.
+# Livro: 6 folhas deitadas, cada uma com duas páginas lado a lado (tests/test_caderno_segue_as_
+# etapas.py, o teste de reversão).
+
+def _caixinha(grande, etapa: str, marcada: bool) -> None:
+    from PySide6.QtCore import Qt
+
+    item = grande.painel_de_opcoes.lista.item_da_etapa(etapa)
+    item.setCheckState(Qt.Checked if marcada else Qt.Unchecked)
+
+
+def _abrir_as_abertas(janela, app, tmp_path, marcadas):
+    from tests.test_caderno_segue_as_etapas import livro_de_folhas_abertas
+
+    janela.abrir_livro(livro_de_folhas_abertas(tmp_path))
+    _assentar(app)
+    estado = janela.estado_do_automatico
+    estado.marcadas = set(marcadas)
+    estado.opcoes["paginas_por_caderno"] = 8
+    grande = janela.abrir_o_automatico(A.CADERNOS)
+    _assentar(app)
+    return grande
+
+
+def _largura_da_faixa(metade: np.ndarray) -> float:
+    """A fração da largura da metade da folha ocupada pela faixa preta da página."""
+    cinza = metade.mean(axis=2)
+    linhas = (cinza < 100).mean(axis=1) > 0.15
+    colunas = (cinza[linhas] < 100).any(axis=0)
+    return float(colunas.mean())
+
+
+def test_d603_marcar_e_desmarcar_o_dividir_muda_o_caderno_na_hora(janela, app, tmp_path):
+    """D-603 + D-589: com a etapa 7 aberta, marcar "Dividir" (sem Rodar) → as folhas do caderno
+    mostram as páginas divididas (12 páginas, 3 folhas; frente 8 e 1, verso 2 e 7), com a
+    bolinha girando enquanto monta (D-064); desmarcar → voltam os scans inteiros (6 páginas, 2
+    folhas; a folha 1 do scan inteira, as páginas 1 e 2 juntas numa metade)."""
+    from tests.test_caderno_segue_as_etapas import paginas_do_lado
+
+    grande = _abrir_as_abertas(janela, app, tmp_path, {A.CADERNOS})
+    folhas = _folhas(grande)
+    _esperar(app, folhas)
+    assert folhas.rotulos["frente"].text() == "Folha 1 de 2 — frente"
+    assert paginas_do_lado(folhas.faces()[0]) == ([], [1, 2])
+
+    _caixinha(grande, A.DIVIDIR, True)
+    _assentar(app)
+    assert A.DIVIDIR in janela.estado_do_automatico.marcadas
+    assert folhas.calculando()                          # monta de novo: a bolinha gira
+    _esperar(app, folhas)
+    assert folhas.rotulos["frente"].text() == "Folha 1 de 3 — frente"
+    frente, verso = folhas.faces()
+    assert paginas_do_lado(frente) == ([8], [1])
+    assert paginas_do_lado(verso) == ([2], [7])
+    assert frente.shape[1] / frente.shape[0] < 2        # cada metade é uma página em pé
+    folhas.passar_folha(2)
+    _esperar(app, folhas)
+    # o 2º caderno (as páginas 9 a 12): frente 12 e 9
+    assert paginas_do_lado(folhas.faces()[0]) == ([12], [9])
+
+    _caixinha(grande, A.DIVIDIR, False)
+    _assentar(app)
+    _esperar(app, folhas)
+    assert folhas.rotulos["frente"].text().endswith("de 2 — frente")
+    folhas.passar_folha(-2)
+    _esperar(app, folhas)
+    frente, verso = folhas.faces()
+    assert paginas_do_lado(frente) == ([], [1, 2])
+    assert paginas_do_lado(verso) == ([3, 4], [])
+    assert frente.shape[1] / frente.shape[0] > 2        # cada metade é a folha do scan deitada
+    assert len(janela.projeto.paginas_ativas) == 6     # só mostra: o livro não mudou
+
+
+def test_d603_dividir_desmarcado_nao_junta_as_folhas_ja_divididas(janela, app, tmp_path):
+    """D-590 ("Dividir" desmarcada no Automático não junta nada): o livro já dividido (Rodar com
+    o Dividir) e a etapa 1 desmarcada → o caderno continua com as páginas divididas."""
+    from tests.test_caderno_segue_as_etapas import paginas_do_lado
+
+    grande = _abrir_as_abertas(janela, app, tmp_path, {A.DIVIDIR})
+    grande.reject()
+    _assentar(app)
+    assert janela.rodar_o_automatico(esperar=True, perguntar=False)
+    assert len(janela.projeto.paginas_ativas) == 12
+    janela.estado_do_automatico.marcadas = {A.CADERNOS}
+    janela.estado_do_automatico.opcoes["paginas_por_caderno"] = 8   # o Rodar trouxe as do livro
+    grande = janela.abrir_o_automatico(A.CADERNOS)
+    _assentar(app)
+    folhas = _folhas(grande)
+    _esperar(app, folhas)
+    assert A.DIVIDIR not in janela.estado_do_automatico.marcadas
+    assert folhas.rotulos["frente"].text() == "Folha 1 de 3 — frente"
+    assert paginas_do_lado(folhas.faces()[0]) == ([8], [1])
+
+
+def test_d603_margens_marcadas_entram_nas_folhas_do_caderno(janela, app, tmp_path):
+    """D-603 ("seguir todas as etapas marcadas (dividir, cortar, margens e as outras)"): com
+    "Dividir" marcado, marcar "Margens iguais" (10/5/10/5 mm de fábrica) → cada página da folha
+    ganha a margem branca em volta (a faixa ocupa menos da metade da folha), nas mesmas páginas;
+    desmarcar → volta sem a margem (D-589)."""
+    from tests.test_caderno_segue_as_etapas import paginas_do_lado
+
+    grande = _abrir_as_abertas(janela, app, tmp_path, {A.DIVIDIR, A.CADERNOS})
+    folhas = _folhas(grande)
+    _esperar(app, folhas)
+    sem = folhas.faces()[0]
+    faixa_sem = _largura_da_faixa(sem[:, sem.shape[1] // 2:])
+    _caixinha(grande, A.MARGENS, True)
+    _assentar(app)
+    _esperar(app, folhas)
+    com = folhas.faces()[0]
+    assert paginas_do_lado(com) == ([8], [1])
+    faixa_com = _largura_da_faixa(com[:, com.shape[1] // 2:])
+    assert faixa_com < faixa_sem - 0.02, f"a margem não apareceu ({faixa_sem:.3f} -> {faixa_com:.3f})"
+    _caixinha(grande, A.MARGENS, False)
+    _assentar(app)
+    _esperar(app, folhas)
+    de_volta = folhas.faces()[0]
+    assert abs(_largura_da_faixa(de_volta[:, de_volta.shape[1] // 2:]) - faixa_sem) < 0.01
+
+
+def test_d603_gradus_dividir_marcado_conta_as_paginas_divididas(janela, app, tmp_path):
+    """D-603 no livro do print a-49 (Gradus Primus, quando a cópia está em _tmp/livros): sem
+    dividir, marcar a etapa 1 → a conta das folhas usa as páginas divididas e cada metade da
+    folha 1 é uma página em pé; desmarcar → volta aos scans inteiros."""
+    from core import cadernos
+
+    gradus = Path(__file__).resolve().parents[1] / "_tmp" / "livros" / "gradus.pdf"
+    if not gradus.is_file():
+        pytest.skip("o Gradus Primus não está em _tmp/livros")
+    janela.abrir_livro(str(gradus))
+    _assentar(app)
+    estado = janela.estado_do_automatico
+    estado.marcadas = {A.CADERNOS}
+    estado.opcoes["paginas_por_caderno"] = 20
+    grande = janela.abrir_o_automatico(A.CADERNOS)
+    _assentar(app)
+    folhas = _folhas(grande)
+    scans = len(janela.projeto.paginas_ativas)
+    _esperar(app, folhas)
+    assert folhas.total() == len(cadernos.ordem_das_folhas(scans, 20))
+    assert folhas.faces()[0].shape[1] / folhas.faces()[0].shape[0] > 2
+    _caixinha(grande, A.DIVIDIR, True)
+    _assentar(app)
+    _esperar(app, folhas)
+    assert folhas.total() == len(cadernos.ordem_das_folhas(2 * scans, 20))
+    assert folhas.faces()[0].shape[1] / folhas.faces()[0].shape[0] < 2
+    _caixinha(grande, A.DIVIDIR, False)
+    _assentar(app)
+    _esperar(app, folhas)
+    assert folhas.total() == len(cadernos.ordem_das_folhas(scans, 20))
