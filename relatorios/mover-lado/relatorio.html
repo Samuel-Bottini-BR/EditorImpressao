@@ -3,7 +3,7 @@
 <head>
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width, initial-scale=1">
-<title>D-612: as ferramentas em Duas lado a lado</title>
+<title>D-612: as ferramentas em Duas lado a lado e no antes / depois</title>
 <style>
 :root { color-scheme: light dark; }
 * { box-sizing: border-box; }
@@ -295,9 +295,116 @@ Retângulo, Pincel) e 5 passaram (guardas: Mão/Zoom e "Uma página").</p>
 <li>A peça fica 8 pontos menor que o lugar da página no par (só nas ferramentas com moldura: Mover, Cortar,
   Endireitar); o editor de marcar ocupa o lugar inteiro.</li>
 </ul>
-<h2>Pergunta aberta</h2>
-<p>No "antes / depois" aparecem duas imagens da mesma página: à esquerda o "depois" (como vai sair), à direita o
-"antes" (o Original). Em qual lado a ferramenta age? Sugestão: no "depois"; o "antes" fica só para olhar.</p>
-<p class="rodape">Editor de Impressão &middot; gerado em 04/11/2026 às 11:53</p>
+<h2>GitHub da segunda parte</h2>
+<p>Rodada 41862461610 (em <code>bcae6968</code>): passou tudo menos <code>test_decisoes_so_as_letras::test_d148</code> (parte 5) e
+<code>test_promessas::test_p083_*</code> (2 erros, parte 1), os dois que às vezes estouram o tempo lá. No PC:
+<code>test_decisoes_so_as_letras</code> 5 passaram; <code>test_promessas</code> 267 passaram, 1 xfailed, nenhum erro.</p>
+<hr />
+<h1>Terceira parte: as ferramentas no "antes / depois" (04/11/2026)</h1>
+<p>Palavras do Samuel: "1- sim" e, explicado de novo, "Ok, pode ser assim o antes e depois" (as ferramentas
+mexem na imagem do "depois"; o "antes" fica parado, só para comparar).</p>
+<h2>O que mudou</h2>
+<ul>
+<li>Com "antes / depois" ligado, Mover, Cortar, Endireitar e as de marcar ficam por cima da página <strong>só à
+  esquerda da linha azul</strong> (o "depois", D-577). Ali a mão usa a ferramenta. À direita (o "antes") nada muda
+  com o mouse. A linha continua se arrastando, e o pedaço da ferramenta acompanha.</li>
+<li>As caixinhas "antes: Original" / "depois: ..." e o aviso escrito continuam à vista por cima.</li>
+<li>A Mão e o Zoom: como antes. O "antes / depois" continua sem zoom (a roda em cima da ferramenta não dá zoom
+  nem troca de página; a do Pincel/Varinha/Cor continua da ferramenta).</li>
+<li>Onde: <code>ui/widgets/filtros_tela_cheia.py</code> (<code>VistaAntesDepois</code>: <code>definir_ferramenta</code>, <code>tirar_ferramenta</code>,
+  <code>_por_a_ferramenta_no_lugar</code> com a máscara, <code>_caixas_dos_rotulos</code>, <code>_caixa_do_aviso</code>);
+  <code>ui/tela_conferir.py</code> (<code>_onde_vai_a_peca</code>, <code>_acertar_a_casa_da_peca</code>, a roda). Teste novo:
+  <code>tests/test_decisoes_ferramentas_antes_depois.py</code> (12). Reversão: em <code>bcae6968</code>, 6 falharam e 5 passaram.</li>
+</ul>
+<h2>Prints (janela de verdade, Gradus, página 39 em Preto e branco)</h2>
+<ul>
+<li><code>prints/p401-mover-antes-depois.png</code>, <code>prints/p402-mover-arrastou-no-depois.png</code> (Mover no "depois").</li>
+<li><code>prints/p403-linha-arrastada.png</code> (a linha arrastada; o pedaço da ferramenta acompanhou).</li>
+<li><code>prints/p404-cortar-no-depois.png</code>, <code>prints/p405-endireitar-no-depois.png</code>,
+  <code>prints/p406-retangulo-no-depois.png</code> (rótulos à vista).</li>
+<li>Piloto <code>piloto_antes_depois.py</code>: <strong>16 de 16</strong> (<code>antes-depois/conferencias.txt</code>).</li>
+</ul>
+<h2>Ressalvas da terceira parte</h2>
+<ul>
+<li>O rótulo "antes: Original" fica no canto esquerdo e o "depois" no direito (como decidido na D-577: dizem
+  para que lado arrastar a linha). A ferramenta age à esquerda da linha, que é o "depois", embaixo do
+  rótulo "antes". Pode confundir: ver print p406.</li>
+<li>No Cortar, o lado da ferramenta mostra a página inteira, sem cortar (como na "Uma página"), e o "antes"
+  mostra a página como sai: as duas partes não ficam do mesmo tamanho (print p404). No Mover, com o
+  conteúdo passando da beirada, o mesmo (a vista mostra a página inteira, D-541).</li>
+</ul>
+<hr />
+<h1>Defeito de 04/11 (print a-65): o "tamanho" de cima não acompanhava o pincel</h1>
+<p>Palavras do Samuel: "no modo do pincel, quando eu giro o scrool ele fica aumentando e diminuindo o tamnho do
+pincel no painel direito mas no painel de cima 'tamanho' ele não muda nada".</p>
+<h2>O que mudou (commit <code>033560c9</code>, separado)</h2>
+<ul>
+<li>A roda continua mudando o pincel (D-600). Agora o deslizante "tamanho" da barra de cima acompanha.</li>
+<li>Mexer no "tamanho" de cima muda o pincel e também o número do painel ("Pincel: N% da página").</li>
+<li>Escolher o Pincel de novo mostra o tamanho de agora (antes voltava ao de fábrica na barra).</li>
+<li>A mesma peça na Varinha e na Cor: a "tolerância"/"variação" de cima acompanha a roda.</li>
+<li>Onde: <code>ui/widgets/barra_opcoes.py</code> (<code>mostrar_ajuste</code>), <code>ui/widgets/editor_selecao.py</code>
+  (<code>frase_do_ajuste</code>), <code>ui/tela_conferir.py</code> (<code>_acertar_a_barra_pelo_editor</code>, <code>_mudar_no_editor</code>).</li>
+<li>Teste de reversão: <code>tests/test_bug_04_11_pincel_tamanho.py</code> (4): em <code>18cb692e</code> os 4 falharam.</li>
+<li>Prints: <code>prints/p407-pincel-roda-tamanho-de-cima.png</code>, <code>prints/p408-pincel-tamanho-de-cima.png</code>.</li>
+</ul>
+<h2>Testes no PC da terceira parte e do defeito (um arquivo por vez, todos passaram)</h2>
+<p>pincel_tamanho (novo) 4, ferramentas_antes_depois (novo) 11 (12 com a prova dos rótulos), ferramentas_lado 9,
+mover_lado 7, mover 13, ver 11, dividir_metade 6, dividir_arrastar 16, tira_em_pares 4, previa_composta 10,
+paineis_na_tela 22, visualizador 70, zoom_no_ponteiro 5, 9b2 30, livro_aberto 14, dividir_linha 13,
+decisoes_dividir 21, dividir_na_tela 9, marcacoes 19, guias 14, shift_todas_as_telas 10, decisoes 26,
+endireitar_no_programa 15, gravura_na_aba_marcar 8, trilha_e_opcoes 29, selecao 24, nucleo 38, nucleo2 21,
+corte_previa_igual_pdf 4, filtros_tela_cheia 11, automatico_ver_como_fica 22, 9b1 25, atalhos 15,
+barra_de_menu 20, opcoes_da_gravura_na_tela 15 (<code>testes-pc-3.txt</code>). <strong>Nenhum teste antigo mudado.</strong></p>
+<hr />
+<h1>Pedido do Samuel depois de testar: a página da ferramenta do tamanho da prévia nos pares (04/11/2026)</h1>
+<p>Palavras dele: "ele funciona mas eu não gostei do tamanho que aparece a pagina quando começa a mover ela,
+ela deveria continuar o preview das duas do mesmo tamanho."</p>
+<h2>O que mudou (commit próprio)</h2>
+<ul>
+<li>Nos pares, a página da ferramenta não encolhe mais. No Mover, a área branca é exatamente o lugar da página
+  no par (o tamanho da prévia), antes, durante e depois de arrastar ou mudar o tamanho. A parte que passa da
+  beirada (apagada, vermelha, com listras) e os cantos azuis aparecem em volta, no espaço cinza entre as páginas.</li>
+<li>Cortar, Endireitar e marcar: a página da ferramenta na altura da prévia (no par as duas têm a mesma altura),
+  no meio do lugar dela.</li>
+<li>As outras páginas ficam por cima: a outra página do par continua inteira à vista e o clique nela continua
+  escolhendo ela. Só os cantos azuis (e as alças do corte, a bolinha do Endireitar) ficam por cima de tudo.</li>
+<li>Onde: <code>ui/widgets/visualizador.py</code> (<code>definir_lugar_no_par</code>, <code>_area_no_lugar</code>, <code>retangulos_das_pegas</code>; o
+  aperto que não pega nada passa para os pares), <code>ui/widgets/paginas_lado_a_lado.py</code>
+  (<code>_por_a_ferramenta_no_lugar</code> com a máscara), <code>ui/tela_conferir.py</code> (<code>_previa_chegou</code> acerta o lugar).</li>
+<li>Teste: <code>tests/test_decisoes_tamanho_no_par.py</code> (5): mede a área da página da ferramenta contra o lugar
+  dela no par e a altura da outra página, antes e depois de arrastar e de puxar o canto. Em <code>07c051fb</code>: 3
+  falharam (Mover, Cortar, Endireitar) e 2 passaram (marcar já ficava da altura no livro de teste; a outra
+  página clicável).</li>
+</ul>
+<h2>Prints (janela de verdade, refeitos)</h2>
+<ul>
+<li><code>prints/p03-F-mover-nos-pares.png</code>, <code>prints/p04-arrastou-nos-pares.png</code> (Mover do tamanho da prévia; a
+  parte de fora em vermelho à esquerda, na margem), <code>prints/p06-canto-nos-pares.png</code>.</li>
+<li><code>prints/p301</code> a <code>p307</code> (Cortar, Endireitar, Retângulo, Pincel, Mão nos pares).</li>
+<li>Pilotos: <code>piloto.py</code> 20/20, <code>piloto_ferramentas.py</code> 15/15, <code>piloto_antes_depois.py</code> 16/16.</li>
+</ul>
+<h2>Ressalvas</h2>
+<ul>
+<li>A parte de fora do Mover que vai para o lado da outra página do par fica por baixo dela (só aparece no
+  espaço cinza). Se o conteúdo for todo para esse lado, os cantos podem ficar por baixo da outra página; o
+  número "Tamanho do conteúdo" e "Centralizar" continuam valendo, e na "Uma página" aparece tudo.</li>
+<li>No Cortar a página aparece inteira, sem cortar, na altura da prévia: ela pode ficar um pouco mais larga ou
+  mais estreita que o lugar da prévia cortada.</li>
+<li><code>test_paineis_na_tela::test_a_faixa_tem_esta_certo_e_proxima_duvida</code> falhou 1 vez numa rodada no PC e passou
+  sozinho e em mais 2 rodadas do arquivo inteiro (e nas 3 rodadas anteriores): parece de tempo, não do conserto.</li>
+<li>Os dados de teste do Gradus mudaram durante o dia (de 70 para 140 páginas, já divididas); os prints novos são
+  com os dados de agora.</li>
+</ul>
+<h2>Testes no PC (rodada 4, um arquivo por vez)</h2>
+<p>tamanho_no_par (novo) 5, pincel_tamanho 4, ferramentas_antes_depois 12, ferramentas_lado 9, mover_lado 7,
+mover 13, ver 11, dividir_metade 6, dividir_arrastar 16, tira_em_pares 4, previa_composta 10,
+paineis_na_tela 22 (uma vez 21+1, ver ressalva), visualizador 70, zoom_no_ponteiro 5, 9b2 30, livro_aberto 14,
+dividir_linha 13, decisoes_dividir 21, dividir_na_tela 9, marcacoes 19, guias 14, shift_todas_as_telas 10,
+decisoes 26, endireitar_no_programa 15, gravura_na_aba_marcar 8, trilha_e_opcoes 29, selecao 24, nucleo 38,
+nucleo2 21, corte_previa_igual_pdf 4, filtros_tela_cheia 11, automatico_ver_como_fica 22, 9b1 25, atalhos 15,
+barra_de_menu 20, opcoes_da_gravura_na_tela 15 (<code>testes-pc-4.txt</code>). <strong>Nenhum teste antigo mudado.</strong></p>
+<p>GitHub da terceira parte e do pincel: rodada 41886245180 (em <code>07c051fb</code>) <strong>passou inteira</strong>.</p>
+<p class="rodape">Editor de Impressão &middot; gerado em 04/11/2026 às 14:57</p>
 </body>
 </html>

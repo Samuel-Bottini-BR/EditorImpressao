@@ -185,7 +185,128 @@ Retângulo, Pincel) e 5 passaram (guardas: Mão/Zoom e "Uma página").
 - A peça fica 8 pontos menor que o lugar da página no par (só nas ferramentas com moldura: Mover, Cortar,
   Endireitar); o editor de marcar ocupa o lugar inteiro.
 
-## Pergunta aberta
+## GitHub da segunda parte
 
-No "antes / depois" aparecem duas imagens da mesma página: à esquerda o "depois" (como vai sair), à direita o
-"antes" (o Original). Em qual lado a ferramenta age? Sugestão: no "depois"; o "antes" fica só para olhar.
+Rodada 41862461610 (em `bcae6968`): passou tudo menos `test_decisoes_so_as_letras::test_d148` (parte 5) e
+`test_promessas::test_p083_*` (2 erros, parte 1), os dois que às vezes estouram o tempo lá. No PC:
+`test_decisoes_so_as_letras` 5 passaram; `test_promessas` 267 passaram, 1 xfailed, nenhum erro.
+
+---
+
+# Terceira parte: as ferramentas no "antes / depois" (04/11/2026)
+
+Palavras do Samuel: "1- sim" e, explicado de novo, "Ok, pode ser assim o antes e depois" (as ferramentas
+mexem na imagem do "depois"; o "antes" fica parado, só para comparar).
+
+## O que mudou
+
+- Com "antes / depois" ligado, Mover, Cortar, Endireitar e as de marcar ficam por cima da página **só à
+  esquerda da linha azul** (o "depois", D-577). Ali a mão usa a ferramenta. À direita (o "antes") nada muda
+  com o mouse. A linha continua se arrastando, e o pedaço da ferramenta acompanha.
+- As caixinhas "antes: Original" / "depois: ..." e o aviso escrito continuam à vista por cima.
+- A Mão e o Zoom: como antes. O "antes / depois" continua sem zoom (a roda em cima da ferramenta não dá zoom
+  nem troca de página; a do Pincel/Varinha/Cor continua da ferramenta).
+- Onde: `ui/widgets/filtros_tela_cheia.py` (`VistaAntesDepois`: `definir_ferramenta`, `tirar_ferramenta`,
+  `_por_a_ferramenta_no_lugar` com a máscara, `_caixas_dos_rotulos`, `_caixa_do_aviso`);
+  `ui/tela_conferir.py` (`_onde_vai_a_peca`, `_acertar_a_casa_da_peca`, a roda). Teste novo:
+  `tests/test_decisoes_ferramentas_antes_depois.py` (12). Reversão: em `bcae6968`, 6 falharam e 5 passaram.
+
+## Prints (janela de verdade, Gradus, página 39 em Preto e branco)
+
+- `prints/p401-mover-antes-depois.png`, `prints/p402-mover-arrastou-no-depois.png` (Mover no "depois").
+- `prints/p403-linha-arrastada.png` (a linha arrastada; o pedaço da ferramenta acompanhou).
+- `prints/p404-cortar-no-depois.png`, `prints/p405-endireitar-no-depois.png`,
+  `prints/p406-retangulo-no-depois.png` (rótulos à vista).
+- Piloto `piloto_antes_depois.py`: **16 de 16** (`antes-depois/conferencias.txt`).
+
+## Ressalvas da terceira parte
+
+- O rótulo "antes: Original" fica no canto esquerdo e o "depois" no direito (como decidido na D-577: dizem
+  para que lado arrastar a linha). A ferramenta age à esquerda da linha, que é o "depois", embaixo do
+  rótulo "antes". Pode confundir: ver print p406.
+- No Cortar, o lado da ferramenta mostra a página inteira, sem cortar (como na "Uma página"), e o "antes"
+  mostra a página como sai: as duas partes não ficam do mesmo tamanho (print p404). No Mover, com o
+  conteúdo passando da beirada, o mesmo (a vista mostra a página inteira, D-541).
+
+---
+
+# Defeito de 04/11 (print a-65): o "tamanho" de cima não acompanhava o pincel
+
+Palavras do Samuel: "no modo do pincel, quando eu giro o scrool ele fica aumentando e diminuindo o tamnho do
+pincel no painel direito mas no painel de cima 'tamanho' ele não muda nada".
+
+## O que mudou (commit `033560c9`, separado)
+
+- A roda continua mudando o pincel (D-600). Agora o deslizante "tamanho" da barra de cima acompanha.
+- Mexer no "tamanho" de cima muda o pincel e também o número do painel ("Pincel: N% da página").
+- Escolher o Pincel de novo mostra o tamanho de agora (antes voltava ao de fábrica na barra).
+- A mesma peça na Varinha e na Cor: a "tolerância"/"variação" de cima acompanha a roda.
+- Onde: `ui/widgets/barra_opcoes.py` (`mostrar_ajuste`), `ui/widgets/editor_selecao.py`
+  (`frase_do_ajuste`), `ui/tela_conferir.py` (`_acertar_a_barra_pelo_editor`, `_mudar_no_editor`).
+- Teste de reversão: `tests/test_bug_04_11_pincel_tamanho.py` (4): em `18cb692e` os 4 falharam.
+- Prints: `prints/p407-pincel-roda-tamanho-de-cima.png`, `prints/p408-pincel-tamanho-de-cima.png`.
+
+## Testes no PC da terceira parte e do defeito (um arquivo por vez, todos passaram)
+
+pincel_tamanho (novo) 4, ferramentas_antes_depois (novo) 11 (12 com a prova dos rótulos), ferramentas_lado 9,
+mover_lado 7, mover 13, ver 11, dividir_metade 6, dividir_arrastar 16, tira_em_pares 4, previa_composta 10,
+paineis_na_tela 22, visualizador 70, zoom_no_ponteiro 5, 9b2 30, livro_aberto 14, dividir_linha 13,
+decisoes_dividir 21, dividir_na_tela 9, marcacoes 19, guias 14, shift_todas_as_telas 10, decisoes 26,
+endireitar_no_programa 15, gravura_na_aba_marcar 8, trilha_e_opcoes 29, selecao 24, nucleo 38, nucleo2 21,
+corte_previa_igual_pdf 4, filtros_tela_cheia 11, automatico_ver_como_fica 22, 9b1 25, atalhos 15,
+barra_de_menu 20, opcoes_da_gravura_na_tela 15 (`testes-pc-3.txt`). **Nenhum teste antigo mudado.**
+
+---
+
+# Pedido do Samuel depois de testar: a página da ferramenta do tamanho da prévia nos pares (04/11/2026)
+
+Palavras dele: "ele funciona mas eu não gostei do tamanho que aparece a pagina quando começa a mover ela,
+ela deveria continuar o preview das duas do mesmo tamanho."
+
+## O que mudou (commit próprio)
+
+- Nos pares, a página da ferramenta não encolhe mais. No Mover, a área branca é exatamente o lugar da página
+  no par (o tamanho da prévia), antes, durante e depois de arrastar ou mudar o tamanho. A parte que passa da
+  beirada (apagada, vermelha, com listras) e os cantos azuis aparecem em volta, no espaço cinza entre as páginas.
+- Cortar, Endireitar e marcar: a página da ferramenta na altura da prévia (no par as duas têm a mesma altura),
+  no meio do lugar dela.
+- As outras páginas ficam por cima: a outra página do par continua inteira à vista e o clique nela continua
+  escolhendo ela. Só os cantos azuis (e as alças do corte, a bolinha do Endireitar) ficam por cima de tudo.
+- Onde: `ui/widgets/visualizador.py` (`definir_lugar_no_par`, `_area_no_lugar`, `retangulos_das_pegas`; o
+  aperto que não pega nada passa para os pares), `ui/widgets/paginas_lado_a_lado.py`
+  (`_por_a_ferramenta_no_lugar` com a máscara), `ui/tela_conferir.py` (`_previa_chegou` acerta o lugar).
+- Teste: `tests/test_decisoes_tamanho_no_par.py` (5): mede a área da página da ferramenta contra o lugar
+  dela no par e a altura da outra página, antes e depois de arrastar e de puxar o canto. Em `07c051fb`: 3
+  falharam (Mover, Cortar, Endireitar) e 2 passaram (marcar já ficava da altura no livro de teste; a outra
+  página clicável).
+
+## Prints (janela de verdade, refeitos)
+
+- `prints/p03-F-mover-nos-pares.png`, `prints/p04-arrastou-nos-pares.png` (Mover do tamanho da prévia; a
+  parte de fora em vermelho à esquerda, na margem), `prints/p06-canto-nos-pares.png`.
+- `prints/p301` a `p307` (Cortar, Endireitar, Retângulo, Pincel, Mão nos pares).
+- Pilotos: `piloto.py` 20/20, `piloto_ferramentas.py` 15/15, `piloto_antes_depois.py` 16/16.
+
+## Ressalvas
+
+- A parte de fora do Mover que vai para o lado da outra página do par fica por baixo dela (só aparece no
+  espaço cinza). Se o conteúdo for todo para esse lado, os cantos podem ficar por baixo da outra página; o
+  número "Tamanho do conteúdo" e "Centralizar" continuam valendo, e na "Uma página" aparece tudo.
+- No Cortar a página aparece inteira, sem cortar, na altura da prévia: ela pode ficar um pouco mais larga ou
+  mais estreita que o lugar da prévia cortada.
+- `test_paineis_na_tela::test_a_faixa_tem_esta_certo_e_proxima_duvida` falhou 1 vez numa rodada no PC e passou
+  sozinho e em mais 2 rodadas do arquivo inteiro (e nas 3 rodadas anteriores): parece de tempo, não do conserto.
+- Os dados de teste do Gradus mudaram durante o dia (de 70 para 140 páginas, já divididas); os prints novos são
+  com os dados de agora.
+
+## Testes no PC (rodada 4, um arquivo por vez)
+
+tamanho_no_par (novo) 5, pincel_tamanho 4, ferramentas_antes_depois 12, ferramentas_lado 9, mover_lado 7,
+mover 13, ver 11, dividir_metade 6, dividir_arrastar 16, tira_em_pares 4, previa_composta 10,
+paineis_na_tela 22 (uma vez 21+1, ver ressalva), visualizador 70, zoom_no_ponteiro 5, 9b2 30, livro_aberto 14,
+dividir_linha 13, decisoes_dividir 21, dividir_na_tela 9, marcacoes 19, guias 14, shift_todas_as_telas 10,
+decisoes 26, endireitar_no_programa 15, gravura_na_aba_marcar 8, trilha_e_opcoes 29, selecao 24, nucleo 38,
+nucleo2 21, corte_previa_igual_pdf 4, filtros_tela_cheia 11, automatico_ver_como_fica 22, 9b1 25, atalhos 15,
+barra_de_menu 20, opcoes_da_gravura_na_tela 15 (`testes-pc-4.txt`). **Nenhum teste antigo mudado.**
+
+GitHub da terceira parte e do pincel: rodada 41886245180 (em `07c051fb`) **passou inteira**.

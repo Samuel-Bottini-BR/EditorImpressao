@@ -1,8 +1,8 @@
 ok   Cortar em Duas lado a lado: a página da vez é o Cortar, a vista nos pares
-ok   Cortar nos pares: puxar a beirada muda o corte (1.000 -> 0.924)
+ok   Cortar nos pares: puxar a beirada muda o corte (1.000 -> 0.899)
 ok   Ctrl+Z desfaz o corte nos pares
 ok   Endireitar em Duas lado a lado: a página da vez é o Endireitar
-ok   Endireitar nos pares: a linha torta gira a página (None -> -2.73)
+ok   Endireitar nos pares: a linha torta gira a página (None -> -2.65)
 ok   Ctrl+Z desfaz o giro nos pares
 ok   Retângulo em Duas lado a lado: a página da vez é o editor de marcar
 ok   Retângulo nos pares: marca uma região
