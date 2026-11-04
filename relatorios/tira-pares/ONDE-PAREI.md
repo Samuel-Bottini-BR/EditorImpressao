@@ -58,7 +58,10 @@ como estão. 3. Prints antes/depois e o que já funcionava ao redor. 4. GitHub.
 
 ## Situação
 
-- 04/11: reproduzido; ONDE-PAREI escrito antes do código.
+- 04/11: reproduzido; ONDE-PAREI escrito antes do código (`702b3a9e`).
+- Conserto `34b07c13` (tira_miniaturas.py + prova nova; reversão falha em `5cf4aaed`: vãos 31/21). Prints depois
+  `306f997b`. Testes do PC, um por vez: 19 arquivos, todos passaram (lista no relatório). Prints da pergunta
+  (opção A como está, opção B só no piloto). Relatório: `relatorio.md` (.html, .pdf). Falta: rodada do GitHub.
 
 ## Perguntas para o Samuel
 

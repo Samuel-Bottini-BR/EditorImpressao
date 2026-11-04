@@ -268,9 +268,58 @@ def fase_caminho(j):
     img = p(j, "cortar-uma"); recorte_da_tira(img, j, "cortar-uma")
 
 
+def fase_opcao_a(j):
+    """Para a pergunta: a tira do Dividir como está no programa (o par do livro aberto)."""
+    fase_opcao_b(j, trocar=False)
+
+
+def fase_opcao_b(j, trocar=True):
+    """SÓ PARA A PERGUNTA AO SAMUEL (nada disto está no programa): como ficaria a tira do Dividir
+    se o par fosse a FOLHA (1-2, 3-4), como a vista grande do Dividir, em vez do livro aberto (1
+    sozinha; 2-3). A troca é feita aqui no piloto, por cima da tira, só para o print."""
+    from ui.widgets.tira_miniaturas import TiraMiniaturas
+    t = j.tela_conferir
+    ferramenta(j, "D")
+    base.clique(j, t.botao_dividir_todas); base.esperar(3)
+    fim = time.time() + 600
+    while time.time() < fim and getattr(t, "_caixa_de_dividir_todas", None) is not None:
+        base.esperar(0.5)
+    tarefa = getattr(t, "_tarefa_do_em_branco", None)
+    if tarefa is not None:
+        tarefa.wait(120000)
+    base.esperar(3)
+
+    def posicao_por_folha(self, indice):
+        if not self.em_pares_agora:
+            return (0, indice)
+        return 0, (indice // 2) * 3 + indice % 2
+
+    arrumar_de_verdade = TiraMiniaturas._arrumar
+
+    def arrumar_por_folha(self):
+        arrumar_de_verdade(self)
+        if self.pares_pela_vista:
+            for i, m in enumerate(self._miniaturas):
+                m.encostar = "direita" if i % 2 == 0 else "esquerda"
+                m.update()
+
+    if trocar:
+        TiraMiniaturas.posicao = posicao_por_folha
+        TiraMiniaturas._arrumar = arrumar_por_folha
+    mostrar(j, "duas"); esperar_miniaturas(j)
+    t.tira._arrumar()
+    t.tira.rolagem.horizontalScrollBar().setValue(0); base.esperar(1)
+    mini = t.tira._miniaturas[2]
+    base.clique(j, mini); base.esperar(2)
+    t.tira.rolagem.horizontalScrollBar().setValue(0); base.esperar(1)
+    nome = "opcao-b-par-pela-folha" if trocar else "opcao-a-par-do-livro-aberto"
+    medir(j, nome)
+    img = p(j, nome); recorte_da_tira(img, j, nome)
+
+
 def main():
     j = abrir()
-    {"abrir": fase_abrir, "caminho": fase_caminho}[FASE](j)
+    {"abrir": fase_abrir, "caminho": fase_caminho, "opcao_a": fase_opcao_a, "opcao_b": fase_opcao_b}[FASE](j)
     base.fechar(j)
 
 
