@@ -158,7 +158,13 @@ voltava marcado. O conserto de 03/11 só cobria o caso <strong>com</strong> Roda
   seguem o livro, como antes.</li>
 <li>Desfazer/refazer: usa <code>True</code> quando a ação não mexe no Dividir do livro (<code>_mexe_no_dividir_do_livro</code>).
   O Ctrl+Z do próprio Rodar que mudou o Dividir continua mostrando o livro, como antes (pergunta 2).</li>
-<li>"Margens iguais" do Cortar e fim do Rodar / "Desligar as marcadas": <code>True</code>.</li>
+<li>"Margens iguais" do Cortar: <code>True</code>.</li>
+<li>Fim do Rodar e do "Desligar as marcadas": usa a mesma regra do desfazer (<code>mexe_no_dividir_do_livro</code>).</li>
+<li>Ajuste depois da 1ª rodada do GitHub (41899524962): antes, o fim do Rodar usava sempre <code>True</code>.
+  Isso quebrou <code>test_paineis_na_tela::test_o_automatico_mostra_as_etapas_e_abre_a_janela_grande</code>,
+  porque um Rodar vindo de fora do painel (o "Conferir" antigo dos testes) ligava o Dividir e a
+  caixinha ficava desmarcada. Agora o Rodar que liga ou desliga o Dividir faz a caixinha seguir o livro,
+  como sempre. O teste antigo não foi mudado.</li>
 <li>A ferramenta Dividir não mudou em nada: dividir, juntar, linha, motor e aviso continuam iguais.</li>
 </ul>
 <h2>Depois do conserto, na janela de verdade</h2>
@@ -200,6 +206,7 @@ estão em <code>prints/depois-*</code>.</p>
 <li><code>test_automatico_pular_depois_de_dividir</code>: 4</li>
 <li><code>test_cartoes_seguem_as_caixinhas</code>: 5</li>
 <li><code>test_decisoes_previa_dividida</code>: 4</li>
+<li><code>test_paineis_na_tela</code>: 22 (depois do ajuste)</li>
 <li>Nenhum teste antigo mudou.</li>
 </ul>
 <h2>Perguntas abertas (para o Samuel)</h2>
@@ -214,6 +221,6 @@ estão em <code>prints/depois-*</code>.</p>
    "Gravuras e fotos" deve ser igual, mas não conferi. Isso não foi consertado, porque a tarefa era só o
    Dividir. Quer o mesmo conserto nelas?</li>
 </ol>
-<p class="rodape">Editor de Impressão &middot; gerado em 04/11/2026 às 15:42</p>
+<p class="rodape">Editor de Impressão &middot; gerado em 04/11/2026 às 16:16</p>
 </body>
 </html>

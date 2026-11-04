@@ -65,7 +65,13 @@ voltava marcado. O conserto de 03/11 só cobria o caso **com** Rodar.
   seguem o livro, como antes.
 - Desfazer/refazer: usa `True` quando a ação não mexe no Dividir do livro (`_mexe_no_dividir_do_livro`).
   O Ctrl+Z do próprio Rodar que mudou o Dividir continua mostrando o livro, como antes (pergunta 2).
-- "Margens iguais" do Cortar e fim do Rodar / "Desligar as marcadas": `True`.
+- "Margens iguais" do Cortar: `True`.
+- Fim do Rodar e do "Desligar as marcadas": usa a mesma regra do desfazer (`mexe_no_dividir_do_livro`).
+- Ajuste depois da 1ª rodada do GitHub (41899524962): antes, o fim do Rodar usava sempre `True`.
+  Isso quebrou `test_paineis_na_tela::test_o_automatico_mostra_as_etapas_e_abre_a_janela_grande`,
+  porque um Rodar vindo de fora do painel (o "Conferir" antigo dos testes) ligava o Dividir e a
+  caixinha ficava desmarcada. Agora o Rodar que liga ou desliga o Dividir faz a caixinha seguir o livro,
+  como sempre. O teste antigo não foi mudado.
 - A ferramenta Dividir não mudou em nada: dividir, juntar, linha, motor e aviso continuam iguais.
 
 ## Depois do conserto, na janela de verdade
@@ -108,6 +114,7 @@ estão em `prints/depois-*`.
   - `test_automatico_pular_depois_de_dividir`: 4
   - `test_cartoes_seguem_as_caixinhas`: 5
   - `test_decisoes_previa_dividida`: 4
+  - `test_paineis_na_tela`: 22 (depois do ajuste)
 - Nenhum teste antigo mudou.
 
 ## Perguntas abertas (para o Samuel)

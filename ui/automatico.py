@@ -235,6 +235,23 @@ def _texto_das_opcoes_da_pagina(filtro: str, o: dict) -> str:
 # o estado (o mesmo para o painel e para a janela)
 # ---------------------------------------------------------------------------
 
+def mexe_no_dividir_do_livro(acao) -> bool:
+    """A ação (do Histórico) muda o "Dividir ligado no livro todo" (o campo
+    "livro.dividir_folhas", que só o "Rodar" do Automático grava)? Sem ação
+    (None): False. Usado no desfazer/refazer (ui/tela_conferir.
+    _reacertar_as_opcoes) e no fim do "Rodar" e do "Desligar as marcadas"
+    (ui/janela_principal._aplicar_o_automatico), D-590 de 04/11/2026: só a
+    ação que muda o Dividir do livro faz a caixinha do Dividir desmarcada
+    seguir o livro. As ações da ferramenta Dividir (dividir, juntar, linha,
+    motor) mudam as folhas, nunca esse campo.
+    Seguro mudar: nada. Arriscado: olhar outro campo (as folhas divididas não
+    são o "ligado no livro todo", D-590)."""
+    if acao is None:
+        return False
+    chave = "livro.dividir_folhas"
+    return chave in (getattr(acao, "antes", None) or {}) or chave in (getattr(acao, "depois", None) or {})
+
+
 class EstadoDoAutomatico(QObject):
     """O que está escolhido no Automático: as etapas marcadas, a ordem, as
     opções, a receita e onde rodar. Não grava nada no livro: só monta o

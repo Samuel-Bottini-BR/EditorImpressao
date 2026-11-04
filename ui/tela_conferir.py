@@ -8727,7 +8727,7 @@ class TelaConferir(QWidget):
         `acao`: a ação desfeita ou refeita. D-590 (defeito de 04/11/2026,
         print a-67: "depois de usar o dividir e voltar ao automatico ele está
         marcado de novo"): se ela NÃO mexe no Dividir do livro
-        (_mexe_no_dividir_do_livro), a caixinha "1 Dividir folhas ao meio"
+        (ui/automatico.mexe_no_dividir_do_livro), a caixinha "1 Dividir folhas ao meio"
         que a pessoa desmarcou continua desmarcada (EstadoDoAutomatico.
         do_projeto, manter_o_dividir_desmarcado). Antes, qualquer Ctrl+Z ou
         Ctrl+Y (do Dividir, do "juntar todas", da linha, do motor, de
@@ -8747,9 +8747,11 @@ class TelaConferir(QWidget):
             # etapas ligadas, o filtro do livro...): como a tela "O que fazer"
             # acompanhava o desfazer (verificador, 30/09, r15)
             if self.projeto is not None:
+                from ui.automatico import mexe_no_dividir_do_livro
+
                 self.paineis.automatico.estado.do_projeto(
                     self.projeto,
-                    manter_o_dividir_desmarcado=not _mexe_no_dividir_do_livro(acao))
+                    manter_o_dividir_desmarcado=not mexe_no_dividir_do_livro(acao))
         except Exception:  # noqa: BLE001 - reacertar a tela nunca derruba o desfazer
             registrar_erro("reacertar as opcoes", traceback.format_exc())
 
@@ -8966,21 +8968,6 @@ class TelaConferir(QWidget):
 
 
 MINIATURAS_DE_FABRICA = {"lugar": EMBAIXO, "aberta": True, "em_pares": False}
-
-
-def _mexe_no_dividir_do_livro(acao) -> bool:
-    """A ação (do Histórico) muda o "Dividir ligado no livro todo" (o campo
-    "livro.dividir_folhas", que só o "Rodar" do Automático grava)? Sem ação
-    (None): False. Usado no desfazer/refazer (TelaConferir._reacertar_as_opcoes,
-    D-590 de 04/11/2026): só a ação que muda o Dividir do livro faz a caixinha
-    do Dividir desmarcada seguir o livro. As ações da ferramenta Dividir
-    (dividir, juntar, linha, motor) mudam as folhas, nunca esse campo.
-    Seguro mudar: nada. Arriscado: olhar outro campo (as folhas divididas não
-    são o "ligado no livro todo", D-590)."""
-    if acao is None:
-        return False
-    chave = "livro.dividir_folhas"
-    return chave in (getattr(acao, "antes", None) or {}) or chave in (getattr(acao, "depois", None) or {})
 
 
 def miniaturas_guardadas() -> dict:
