@@ -200,6 +200,19 @@ class VistaAntesDepois(QWidget):
         largura = pintor_ou_widget.fontMetrics().horizontalAdvance(self.aviso) + 24
         return QRectF((self.width() - largura) / 2, area.top() + 10, largura, 26)
 
+    def _caixas_dos_rotulos(self, area: QRectF) -> list[QRectF]:
+        """Onde ficam as caixinhas dos rótulos ("antes: Original", "depois: ...")
+        no alto da página (a mesma conta do paintEvent)."""
+        ret = area.adjusted(8, 8, -8, 0)
+        caixas = []
+        for texto, a_esquerda in ((self.rotulos[0], True), (self.rotulos[1], False)):
+            if not texto:
+                continue
+            largura = self.fontMetrics().horizontalAdvance(texto) + 16
+            caixas.append(QRectF(ret.left() if a_esquerda else ret.right() - largura,
+                                 ret.top(), largura, 22))
+        return caixas
+
     def _por_a_ferramenta_no_lugar(self) -> None:
         """A peça no lugar da página (mais a folga da moldura dela, para a área
         branca do Visualizador cair em cima da página), com a máscara: só o
@@ -226,9 +239,12 @@ class VistaAntesDepois(QWidget):
             peca.hide()
             return
         regiao = QRegion(QRect(0, 0, min(largura, lugar.width()), lugar.height()))
-        if self.aviso:
-            caixa = self._caixa_do_aviso(self, area).toRect().translated(-lugar.left(), -lugar.top())
-            regiao = regiao.subtracted(QRegion(caixa))
+        caixas = [self._caixa_do_aviso(self, area)] if self.aviso else []
+        if self.comparando and self.antes is not None:
+            caixas += self._caixas_dos_rotulos(area)
+        for caixa in caixas:      # o aviso e os rótulos "antes"/"depois" continuam à vista
+            regiao = regiao.subtracted(QRegion(caixa.toAlignedRect().translated(
+                -lugar.left(), -lugar.top())))
         peca.setMask(regiao)
         peca.show()
         peca.raise_()

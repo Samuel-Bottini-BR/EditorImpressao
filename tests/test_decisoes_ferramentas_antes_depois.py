@@ -164,3 +164,12 @@ def test_d612_mao_no_antes_depois_como_antes(janela, tmp_path):
     tela, vista = _no_antes_depois(janela, tmp_path, "mao")
     assert not vista.isAncestorOf(tela.editor_selecao)
     assert _alvo(tela, _ponto(vista, 0.25))[0] is vista
+
+
+def test_d612_os_rotulos_e_a_linha_continuam_a_vista(janela, tmp_path):
+    """D-605/D-577: com a peça da ferramenta no "depois", as caixinhas dos rótulos ("antes:
+    Original", "depois: ...") e a pega da linha continuam desta vista (não ficam por baixo)."""
+    tela, vista = _no_antes_depois(janela, tmp_path, "mover")
+    for caixa in vista._caixas_dos_rotulos(vista._area(vista.depois)):
+        assert _alvo(tela, caixa.center().toPoint())[0] is vista
+    assert _alvo(tela, _ponto(vista, vista.posicao))[0] is vista
