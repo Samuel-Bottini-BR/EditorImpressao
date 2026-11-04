@@ -259,17 +259,51 @@ def recorte_girado(recorte: Sequence[float] | None, giro: int) -> list[float] | 
     return [round(min(1.0, max(0.0, v)), 6) for v in novo]
 
 
+def campos_da_pagina_que_giram_junto(pagina: Any, giro: int) -> dict[str, Any]:
+    """O que a pagina leva junto quando ela (ou a folha inteira dela) gira
+    `giro` graus, como uma foto girada (Samuel, 04/11/2026, "girar - sim" a
+    proposta da gerente: "girar a folha inteira é como girar uma foto. A folha
+    larga, com as duas páginas, fica em pé, inteira, sem esticar, sem apertar
+    e sem cortar nada"):
+      - o corte a mao (recorte) continua sobre o MESMO pedaco do papel
+        (recorte_girado); sem isso o corte de antes cortaria outro pedaco;
+      - o tamanho de folha escolhido no "tamanho..." / Mover
+        (tamanho_folha_cm, largura x altura) deita junto num quarto de volta;
+        sem isso a pagina deitada seria apertada dentro da folha em pe;
+      - o lugar do conteudo na area branca (conteudo_deslocamento, fracao a
+        partir do centro) gira junto.
+    So devolve o que a pagina tem diferente do padrao (nada = {}); a escala
+    do conteudo e o angulo do endireitar nao mudam com um giro de 90.
+    Seguro mudar: nada. Arriscado: esquecer um destes campos (a pagina girada
+    sairia cortada, apertada ou fora do lugar)."""
+    g = nova_rotacao(0, giro)
+    if not g:
+        return {}
+    campos: dict[str, Any] = {}
+    recorte = getattr(pagina, "recorte", None)
+    if recorte is not None:
+        campos["recorte"] = recorte_girado(recorte, g)
+    tamanho = getattr(pagina, "tamanho_folha_cm", None)
+    if tamanho is not None and g in (90, 270):
+        campos["tamanho_folha_cm"] = [float(tamanho[1]), float(tamanho[0])]
+    dx, dy = (float(v) for v in (getattr(pagina, "conteudo_deslocamento", None) or (0.0, 0.0)))
+    if dx or dy:
+        # em fracao a partir do centro: (u, v) -> (1 - v, u) a 90 graus
+        novo = {90: (-dy, dx), 180: (-dx, -dy), 270: (dy, -dx)}[g]
+        campos["conteudo_deslocamento"] = [round(v, 6) + 0.0 for v in novo]
+    return campos
+
+
 def campos_do_giro_da_pagina(pagina: Any, giro: int) -> dict[str, Any]:
     """Os campos da acao do desfazer de girar SO esta pagina (alvo "pagina"):
-    o giro novo e, se a pagina tem corte a mao, o corte girado junto. O
+    o giro novo e o que gira junto com ela (campos_da_pagina_que_giram_junto:
+    o corte a mao, o tamanho de folha escolhido, o lugar do conteudo). O
     desfazer (historico_acoes, que ja guarda o "antes" de cada campo) devolve
-    os dois. Seguro mudar: nada. Arriscado: girar sem levar o corte (o corte a
+    tudo. Seguro mudar: nada. Arriscado: girar sem levar o corte (o corte a
     mao cairia em outro pedaco da pagina)."""
     campos: dict[str, Any] = {
         "giro_da_pagina": nova_rotacao(getattr(pagina, "giro_da_pagina", 0) or 0, giro)}
-    recorte = getattr(pagina, "recorte", None)
-    if recorte is not None:
-        campos["recorte"] = recorte_girado(recorte, giro)
+    campos.update(campos_da_pagina_que_giram_junto(pagina, giro))
     return campos
 
 

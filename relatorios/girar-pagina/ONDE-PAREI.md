@@ -10,8 +10,9 @@ Ramo `girar-pagina-2026-11-04` (saiu de `obra-2026-10-26`). Cópia: `.claude/wor
   volta (Propriedades, canto, Ctrl+Seta) giram só a página da tela, já cortada; a outra página e a linha não mudam.
 - **Correção do Samuel na D-618 (04/11, recado da gerente):** "não a folha inteira não continua girando como hoje, pois
   hoje quando gira a folha altera a proporção dela para girar ela, e eu não quero que aconteça isso, não sei como deveria
-  ser a opção girar duas folhas, mas não deveria ser assim." → investigar onde a proporção muda e escrever o teste que
-  mede; **só mudar o comportamento da folha inteira depois da confirmação da gerente.**
+  ser a opção girar duas folhas, mas não deveria ser assim." → proposta da gerente: "girar a folha inteira é como
+  girar uma foto. A folha larga, com as duas páginas, fica em pé, inteira, sem esticar, sem apertar e sem cortar
+  nada. A proporção não muda." → **Samuel: "girar - sim"** (recado da gerente, 04/11). Feito, com teste que mede.
 - D-030 (girar por botões e menu), D-035 ("Todas ficam viradas como a folha da vez"), D-036 / D-556 (aviso "vá a uma
   folha par"), D-049 (bloco no Propriedades + canto), D-053 (canto gira só esta folha), D-361 (R é só Retângulo; girar
   é Ctrl+Seta), D-367 (lista do girar diz "folha"), D-371 ("daqui em diante"), D-487 (girar na grade), D-601 (Dividir
@@ -37,7 +38,7 @@ PDF: `tests/test_pipeline_folha.py`, `tests/test_corte_previa_igual_pdf.py`, `te
 Cadernos: `tests/test_cadernos.py`, `tests/test_caderno_segue_as_etapas.py`, `tests/test_decisoes_montar_cadernos.py`,
 `tests/test_decisoes_caderno_tela_grande.py`, `tests/test_decisoes_impressao.py`.
 
-Regra: nenhum desses muda. A folha inteira (não dividida) continua girando como hoje até a gerente confirmar.
+Regra: nenhum desses muda. A folha inteira (não dividida) continua girando a folha; desde o "girar - sim" a página dela leva junto o corte à mão, o tamanho escolhido e o lugar do conteúdo.
 
 ## Perguntas para o Samuel
 
@@ -57,14 +58,16 @@ Regra: nenhum desses muda. A folha inteira (não dividida) continua girando como
 - [x] teste de reversão: `tests/test_decisoes_girar_pagina.py` (falha em ce086bb6)
 - [x] conserto: commit 93a390ed
 - [x] prints depois, e o que funcionava ao redor: `prints/depois-*.png`
-- [x] investigar a proporção da folha inteira (sem mudar): nada estica; `prints/folha-*.png`
+- [x] folha inteira: medida (`prints/folha-*.png`) e, depois do "girar - sim", gira como foto (`prints/foto-*.png`)
 - [ ] GitHub (suíte e filtro de velocidade)
 
 ## Como cumpri cada decisão
 
 - D-618: `test_reversao_d618_*`, `test_d618_canto_ctrl_seta_e_meia_volta_*`, `test_d618_o_pdf_sai_com_so_a_pagina_girada`;
   prints `depois-02` a `depois-08` (página 13 igual em todos os passos).
-- Correção do Samuel (folha inteira): investigada e medida, nada mudado (`test_d618_folha_inteira_girada_mede_a_proporcao_*`).
+- "girar - sim" (folha inteira como foto): `test_reversao_d618_folha_inteira_com_corte_a_mao_gira_como_foto`,
+  `test_reversao_d618_folha_inteira_com_tamanho_escolhido_nao_aperta` (falham em ce086bb6 pela proporção),
+  `test_d618_folha_inteira_girada_mede_a_proporcao_na_previa_e_no_pdf`; prints `foto-01` a `foto-04`.
 - D-030, D-035, D-036, D-049, D-053, D-361, D-367, D-371, D-556: `tests/test_girar.py` e `tests/test_girar_na_tela.py`
   passam sem mudança; textos da tela não mudaram.
 - D-487: o girar da grade não foi mexido (fica na pergunta 1). D-601 / D-609: `test_decisoes_dividir_*` passam.

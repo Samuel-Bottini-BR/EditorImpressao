@@ -34,3 +34,16 @@ test_decisoes_ver.py :: 11 passed in 20.07s
 test_previa_composta.py :: 10 passed in 3.37s
 test_decisoes_tela.py :: 35 passed, 4 warnings in 30.47s
 FIM
+--- depois do 'girar - sim' ---
+test_decisoes_girar_pagina.py :: 19 passed in 15.28s
+test_girar.py :: 53 passed in 11.17s
+test_girar_na_tela.py :: 22 passed in 93.24s (0:01:33)
+test_girar_cartoes_e_previas.py :: 23 passed in 53.45s
+test_decisoes_automatico.py :: 29 passed in 72.50s (0:01:12)
+test_decisoes_dividir.py :: 21 passed in 45.44s
+test_decisoes_dividir_arrastar.py :: 16 passed in 24.98s
+test_decisoes_mover.py :: 13 passed in 11.43s
+test_decisoes_mover_lado.py :: 7 passed in 5.35s
+test_decisoes.py :: 26 passed in 5.51s
+test_decisoes_tela.py :: 35 passed, 4 warnings in 38.91s
+FIM

@@ -31,9 +31,9 @@ pela mesma fração da largura.
 - O giro da página entra em tudo que desenha a página: a prévia, o PDF de saída (e por ele os cadernos), a tira de
   baixo, a grade "ver todas", o Dividir em "Uma página", o "antes" do Automático e as marcações (zonas) da aba Marcar.
 - Projeto antigo: não tem o campo, abre com 0 e sai igual.
-- Folha inteira (não dividida): continua girando a folha, como antes.
+- Folha inteira (não dividida): continua girando a folha, agora como uma foto (ver abaixo).
 
-Arquivos: `core/girar.py`, `core/pipeline.py`, `core/zonas_na_folha.py`, `core/automatico.py`, `modelos.py`,
+Arquivos: `core/girar.py` (também `campos_da_pagina_que_giram_junto`), `core/pipeline.py`, `core/zonas_na_folha.py`, `core/automatico.py`, `modelos.py`,
 `ui/tela_conferir.py`, `ui/tarefas.py`, `ui/widgets/tira_miniaturas.py`; teste novo
 `tests/test_decisoes_girar_pagina.py`.
 
@@ -48,20 +48,26 @@ Mesmo caminho (prints `prints/depois-*.png`, números em `anotacoes-depois.txt`)
 - Ao redor: página 13, Endireitar, Dividir em "Uma página" (a metade girada) e em "Duas lado a lado" (a folha
   inteira com a linha, sem giro: a folha não girou) - prints 09 a 13.
 
-## A folha inteira (correção do Samuel, só investigação)
+## A folha inteira: gira como uma foto ("girar - sim", 04/11)
 
-Ele disse: "hoje quando gira a folha altera a proporção dela para girar ela". Medi a folha 1 do Gradus (capa e
-contracapa juntas, 29,7 x 21 cm) antes e depois de "¼ à esquerda" (prints `prints/folha-*.png`, `anotacoes-folha.txt`):
+Ele disse: "hoje quando gira a folha altera a proporção dela para girar ela". A gerente levou a proposta ("girar a
+folha inteira é como girar uma foto. A folha larga, com as duas páginas, fica em pé, inteira, sem esticar, sem
+apertar e sem cortar nada") e ele respondeu "girar - sim".
 
-- Na conta do programa: 702 x 496 → 496 x 702 (proporção 1,415 → 0,707, exatamente o inverso).
-- Na tela (Cortar, Mover, "Duas lado a lado"): o desenho passa de 855 x 605 para 427 x 605 pontos (1,41 → 0,71).
-  O Mover diz "A própria página (29,7 × 21,0 cm)" antes e "(21,0 × 29,7 cm)" depois.
-- No PDF gravado (teste novo): a proporção também se inverte exatamente.
+O que a medida mostrou (folha 1 do Gradus, capa e contracapa, 29,7 x 21 cm; prints `prints/folha-*.png`):
 
-Ou seja: **na folha inteira nada estica nem aperta; ela já gira como uma foto** (a folha larga fica em pé, inteira,
-menor na tela para caber). A mudança de proporção que ele viu era a da folha dividida (a página virando uma tira
-estreita, 0,71 → 0,35), que este conserto tira. Nada foi mudado na folha inteira; o teste
-`test_d618_folha_inteira_girada_mede_a_proporcao_na_previa_e_no_pdf` guarda a medida.
+- Sem corte à mão e sem tamanho escolhido, a folha **já** girava como foto: 702 x 496 → 496 x 702 na conta, 855 x 605
+  → 427 x 605 na tela, e o PDF também (proporção exatamente invertida). O Mover diz "29,7 × 21,0 cm" antes e
+  "21,0 × 29,7 cm" depois.
+- Onde a proporção mudava de verdade: (1) **o corte feito à mão** ficava com os mesmos números e passava a cortar
+  outro pedaço da folha deitada (no teste, a página sai com proporção 0,36 em vez de 1,37); (2) **o tamanho de folha
+  escolhido** ("tamanho..." / Mover) ficava deitado e a folha em pé era apertada dentro dele (a página do PDF não
+  mudava de forma: 1,42 em vez de 0,71); e, na folha dividida, o defeito da D-618 (a página virando tira).
+
+O conserto: ao girar a folha inteira (Propriedades, canto, Ctrl+Seta, "aplicar em" e a grade "ver todas"), a página
+dela leva junto, na mesma ação do desfazer, o corte à mão (sobre o mesmo pedaço do papel), o tamanho de folha
+escolhido (deita junto) e o lugar do conteúdo (gira junto). Na janela de verdade (`prints/foto-*.png`): corte à mão só
+na contracapa, "¼ à esquerda" → a folha fica em pé e o corte continua na contracapa; Ctrl+Z volta o corte e o giro.
 
 ## Testes
 
@@ -101,7 +107,23 @@ No PC, um arquivo por vez (`rodar_testes.ps1`; saída em `resultado-testes.txt`)
 - `test_previa_composta.py`: 10 passed in 3.37s
 - `test_decisoes_tela.py`: 35 passed, 4 warnings in 30.47s
 
-O teste novo `tests/test_decisoes_girar_pagina.py` foi rodado também no código de antes (ce086bb6, numa cópia à parte): os de reversão falham lá pelo defeito ("a folha não gira: 270 == 0"; "é a página da direita de cabeça para baixo - não a outra página").
+De novo depois do "girar - sim" (a folha inteira como foto):
+
+- `test_decisoes_girar_pagina.py`: 19 passed in 15.28s
+- `test_girar.py`: 53 passed in 11.17s
+- `test_girar_na_tela.py`: 22 passed in 93.24s (0:01:33)
+- `test_girar_cartoes_e_previas.py`: 23 passed in 53.45s
+- `test_decisoes_automatico.py`: 29 passed in 72.50s (0:01:12)
+- `test_decisoes_dividir.py`: 21 passed in 45.44s
+- `test_decisoes_dividir_arrastar.py`: 16 passed in 24.98s
+- `test_decisoes_mover.py`: 13 passed in 11.43s
+- `test_decisoes_mover_lado.py`: 7 passed in 5.35s
+- `test_decisoes.py`: 26 passed in 5.51s
+- `test_decisoes_tela.py`: 35 passed, 4 warnings in 38.91s
+
+O teste novo `tests/test_decisoes_girar_pagina.py` foi rodado também no código de antes (ce086bb6, numa cópia à parte): os de reversão falham lá pelo defeito ("a folha não gira: 270 == 0"; "é a página da direita de cabeça para baixo - não a outra página"). Os dois da folha inteira
+(`test_reversao_d618_folha_inteira_com_*`) também falham lá pela medida: com o corte à mão a página sai com proporção
+0,36 em vez de 1,37; com o tamanho escolhido, 1,42 em vez de 0,71 (apertada).
 
 GitHub: GITHUB
 

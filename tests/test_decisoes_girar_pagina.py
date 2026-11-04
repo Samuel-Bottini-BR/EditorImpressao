@@ -231,8 +231,7 @@ def test_d618_canto_ctrl_seta_e_meia_volta_tambem_giram_so_a_pagina(janela, tmp_
 
 def test_d618_folha_inteira_continua_girando_a_folha(janela, tmp_path):
     """Folha NÃO dividida (a folha 2 do livro): "¼ à esquerda" gira a folha, como antes (D-035,
-    tests/test_girar_na_tela.py). A correção do Samuel sobre a folha inteira (04/11) ainda não
-    foi confirmada: nada muda nela por enquanto."""
+    tests/test_girar_na_tela.py); como uma foto ("girar - sim", 04/11: os testes abaixo)."""
     tela, projeto = _livro_com_a_folha_1_dividida(janela, tmp_path)
     tela.ir_para_pagina(2)
     assert tela.indice_folha == 1
@@ -247,8 +246,9 @@ def test_d618_folha_inteira_girada_mede_a_proporcao_na_previa_e_no_pdf(janela, t
     proporção dela para girar ela". Medida, sem mudar nada: a folha inteira (larga, 29,7 x 21)
     girada ¼ fica 21 x 29,7 - a proporção exatamente invertida, sem esticar nem apertar - na
     imagem da ferramenta Cortar e na página do PDF gravado; e o conteúdo é a mesma imagem,
-    girada. (Se a gerente confirmar outro jeito de girar a folha inteira, este teste diz o que
-    era antes.)"""
+    girada. Ele confirmou a proposta ("girar - sim": "como girar uma foto [...] A proporção não
+    muda"); sem corte nem tamanho escolhido isto já valia antes (os casos com corte e tamanho são
+    os testes de reversão abaixo)."""
     tela, projeto = _livro_com_a_folha_1_dividida(janela, tmp_path)
     tela.ir_para_pagina(2)
 
@@ -267,6 +267,77 @@ def test_d618_folha_inteira_girada_mede_a_proporcao_na_previa_e_no_pdf(janela, t
     assert proporcao(base_depois) == pytest.approx(1 / proporcao(base_antes), rel=0.01)
     assert proporcao(pdf_depois) == pytest.approx(1 / proporcao(pdf_antes), rel=0.01)
     assert np.array_equal(base_depois, girar_90(base_antes, girar.GIRO_ESQUERDA))
+
+
+def _gerar_pagina(projeto, tmp_path, nome, indice):
+    copia = copy.copy(projeto)
+    copia.caminho_saida = str(tmp_path / f"{nome}.pdf")
+    return _paginas_do_pdf(pipeline.processar(copia))[indice]
+
+
+def _parecidas(a: np.ndarray, b: np.ndarray, tolerancia: float = 4.0) -> bool:
+    """Mesma imagem (a mesma folha desenhada duas vezes muda um ponto ou dois de tamanho)."""
+    if abs(a.shape[0] - b.shape[0]) > 2 or abs(a.shape[1] - b.shape[1]) > 2:
+        return False
+    h, w = min(a.shape[0], b.shape[0]), min(a.shape[1], b.shape[1])
+    return float(np.abs(a[:h, :w].astype(int) - b[:h, :w].astype(int)).mean()) < tolerancia
+
+
+def test_reversao_d618_folha_inteira_com_corte_a_mao_gira_como_foto(janela, tmp_path):
+    """"girar - sim" (Samuel, 04/11/2026: "girar a folha inteira é como girar uma foto. A folha
+    larga, com as duas páginas, fica em pé, inteira, sem esticar, sem apertar e sem cortar nada").
+    Folha inteira com um corte à mão (só a página da esquerda dela): girar ¼ à esquerda deixa no
+    PDF o MESMO pedaço do papel, girado - a proporção exatamente invertida. No código de antes o
+    corte ficava com as mesmas frações e cortava outro pedaço da folha deitada (a metade de cima
+    dela, com pedaços das duas páginas): falha lá. O Ctrl+Z devolve o corte."""
+    tela, projeto = _livro_com_a_folha_1_dividida(janela, tmp_path)
+    tela.ir_para_pagina(2)
+    corte = [0.02, 0.05, 0.46, 0.9]
+    tela._registrar("recortar", "pagina", [2], {"recorte": corte}, "Corte")
+    antes = _gerar_pagina(projeto, tmp_path, "corte_antes", 2)
+    tela.barra_girar.botoes_de_giro[girar.GIRO_ESQUERDA].click()
+    assert projeto.folhas[1].rotacao == girar.GIRO_ESQUERDA
+    depois = _gerar_pagina(projeto, tmp_path, "corte_depois", 2)
+    assert depois.shape[1] / depois.shape[0] == pytest.approx(antes.shape[0] / antes.shape[1], rel=0.02)
+    assert _parecidas(depois, girar_90(antes, girar.GIRO_ESQUERDA)), "o mesmo pedaço, girado"
+    tela.desfazer()
+    assert list(projeto.paginas[2].recorte) == pytest.approx(corte)
+    assert projeto.folhas[1].rotacao == 0
+
+
+def test_reversao_d618_folha_inteira_com_tamanho_escolhido_nao_aperta(janela, tmp_path):
+    """"girar - sim": "sem apertar". Folha inteira (larga) com o tamanho de folha escolhido no
+    "tamanho..." (29,7 x 21 cm, deitada como ela): girar ¼ deixa a folha em pé, 21 x 29,7, com o
+    conteúdo do mesmo tamanho, girado. No código de antes o tamanho escolhido ficava deitado e a
+    folha em pé era apertada dentro dele (a proporção da página do PDF não mudava): falha lá."""
+    tela, projeto = _livro_com_a_folha_1_dividida(janela, tmp_path)
+    tela.ir_para_pagina(2)
+    tela._registrar("tamanho", "pagina", [2], {"tamanho_folha_cm": [29.7, 21.0]}, "Tamanho")
+    antes = _gerar_pagina(projeto, tmp_path, "tamanho_antes", 2)
+    assert antes.shape[1] > antes.shape[0]
+    tela.barra_girar.botoes_de_giro[girar.GIRO_ESQUERDA].click()
+    depois = _gerar_pagina(projeto, tmp_path, "tamanho_depois", 2)
+    assert depois.shape[1] / depois.shape[0] == pytest.approx(antes.shape[0] / antes.shape[1], rel=0.02)
+    assert tuple(projeto.paginas[2].tamanho_folha_cm) == pytest.approx((21.0, 29.7))
+    assert _parecidas(depois, girar_90(antes, girar.GIRO_ESQUERDA))
+
+
+def test_d618_conta_do_que_gira_junto_com_a_pagina():
+    """core/girar.campos_da_pagina_que_giram_junto: o corte, o tamanho escolhido e o lugar do
+    conteúdo giram como numa foto; página sem nada disso não leva campo nenhum."""
+    from modelos import ConfigPagina
+
+    vazia = ConfigPagina(indice=0, folha=0)
+    assert girar.campos_da_pagina_que_giram_junto(vazia, girar.GIRO_DIREITA) == {}
+    p = ConfigPagina(indice=0, folha=0, recorte=(0.1, 0.2, 0.3, 0.4), tamanho_folha_cm=(21.0, 29.7),
+                     conteudo_deslocamento=(0.1, -0.05))
+    c = girar.campos_da_pagina_que_giram_junto(p, girar.GIRO_DIREITA)
+    assert c["recorte"] == pytest.approx([1 - 0.6, 0.1, 0.4, 0.3])
+    assert c["tamanho_folha_cm"] == [29.7, 21.0]
+    assert c["conteudo_deslocamento"] == pytest.approx([0.05, 0.1])
+    meia = girar.campos_da_pagina_que_giram_junto(p, girar.GIRO_MEIA_VOLTA)
+    assert "tamanho_folha_cm" not in meia
+    assert meia["conteudo_deslocamento"] == pytest.approx([-0.1, 0.05])
 
 
 def test_d618_no_dividir_em_duas_lado_a_lado_a_folha_inteira_gira(janela, tmp_path):

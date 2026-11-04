@@ -229,7 +229,9 @@ def girar_canto(j, giro):
 
 
 def abrir():
-    base.preparar(str(RAIZ), str(SCRATCH), limpar=False)
+    # limpar=True: a pasta de trabalho deste piloto (no scratchpad) comeca vazia a cada fase;
+    # com limpar=False o historico.json de uma fase anterior fazia o livro abrir outro trabalho
+    base.preparar(str(RAIZ), str(SCRATCH), limpar=True)
     import projetos
     pasta = preparar_copia()
     resumo = projetos.ler_resumo(pasta)
@@ -356,10 +358,35 @@ def fase_tecla(j):
     passo(j, "ctrl-seta-direita")
 
 
+def fase_foto(j):
+    """"girar - sim" (04/11): a folha inteira gira como uma foto, com o corte a mao e o tamanho
+    escolhido. O Gradus abre aqui como livro novo (folhas inteiras). Na folha 1 (capa e
+    contracapa), um corte a mao so na contracapa (posto pelo programa, como o arrasto o
+    gravaria: _mover_recorte) e o "¼ à esquerda" do Propriedades (clique)."""
+    from core import girar
+    t = j.tela_conferir
+    ferramenta(j, "D"); mostrar(j, "duas"); esperar_previa(j)
+    ir_pagina(j, 1)
+    if j.projeto.folhas[t.indice_folha].dividir:
+        base.clique(j, t.botao_nao_dividir); base.esperar(2.0)      # "não dividir esta"
+    anotar("folha-1", {"dividida": j.projeto.folhas[0].dividir, "estado": estado(j)})
+    mostrar(j, "uma")
+    ferramenta(j, "X"); esperar_previa(j)
+    ir_pagina(j, 1)
+    t._mover_recorte((0.02, 0.03, 0.45, 0.94)); esperar_previa(j)
+    anotar("corte-a-mao", {"estado": estado(j), "medidas": medir_paginas(j, (0,))}); p(j, "corte-a-mao")
+    girar_painel(j, girar.GIRO_ESQUERDA)
+    anotar("corte-girado", {"estado": estado(j), "medidas": medir_paginas(j, (0,))}); p(j, "corte-girado")
+    ferramenta(j, "F"); esperar_previa(j); p(j, "mover-depois-de-girar")
+    ctrl(j, ord("Z")); esperar_previa(j)
+    ferramenta(j, "X"); esperar_previa(j)
+    anotar("ctrl-z", {"estado": estado(j), "medidas": medir_paginas(j, (0,))}); p(j, "ctrl-z")
+
+
 def main():
     j, _porteiro = abrir()
     anotar("inicio", estado(j))
-    {"antes": fase_antes, "depois": fase_depois, "folha": fase_folha, "tecla": fase_tecla}[FASE](j)
+    {"antes": fase_antes, "depois": fase_depois, "folha": fase_folha, "tecla": fase_tecla, "foto": fase_foto}[FASE](j)
     base.fechar(j)
 
 
