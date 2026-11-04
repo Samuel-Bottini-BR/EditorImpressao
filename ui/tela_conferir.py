@@ -3892,6 +3892,35 @@ class TelaConferir(QWidget):
         """(Lombada, tampa) já lida desta folha, como ela está agora, ou None."""
         return self._linhas_do_motor.get(self._chave_da_linha(indice))
 
+    def _linha_com_o_motor(self, indice: int, jeito: str):
+        """D-606 (Samuel, 03/11/2026: "Ele deve fazer a conta novamente com o
+        novo motor"): a Lombada onde o motor `jeito` corta a folha `indice`,
+        como ela está girada - a leitura já feita (_linhas_do_motor) ou feita
+        agora, no fio da tela, com o cursor de espera (uns décimos de
+        segundo, como a troca de motor na folha dividida). A leitura fica
+        guardada com a chave do motor novo, e a tela a mostra sem ler de novo.
+        Se o motor acha a folha de uma página só, a conta forçada do "dividir
+        esta" (a linha fica escondida, como na folha nunca dividida; é onde
+        o "dividir esta" cortaria). Levanta ErroPDF se o livro não abre."""
+        from PySide6.QtWidgets import QApplication
+
+        assert self.projeto is not None
+        folha = self.projeto.folhas[indice]
+        chave = (int(indice), int(folha.rotacao) % 360, dividir_scantailor.jeito_valido(jeito))
+        lida = self._linhas_do_motor.get(chave)
+        QApplication.setOverrideCursor(Qt.WaitCursor)
+        try:
+            if lida is None:
+                lida = dividir_a_mao.ler_a_linha(self.projeto.caminho_entrada, *chave)
+                self._linhas_do_motor[chave] = lida
+            lombada = lida[0]
+            if not lombada.e_paisagem:
+                lombada = dividir_a_mao.ler_a_linha(self.projeto.caminho_entrada, *chave,
+                                                    forcar=True)[0]
+        finally:
+            QApplication.restoreOverrideCursor()
+        return lombada
+
     def _volta_como_estava(self, indice: int) -> bool:
         """A folha inteira que o "dividir esta" devolve como estava, na linha de
         antes (D-498: a pessoa juntou; ou duas páginas não divididas)."""
@@ -5752,6 +5781,14 @@ class TelaConferir(QWidget):
         Folha ainda inteira (D-602; antes a lista ficava cinza nela - a "lista
         travada"): grava so o motor desta folha, numa acao do desfazer, e a
         linha azul e lida de novo pelo motor novo, por tras; nada e cortado.
+        Folha JUNTADA de volta ("não dividir esta" / "juntar todas", D-498:
+        mostra a linha de antes) - D-606 (Samuel, 03/11/2026: "Ele deve fazer
+        a conta novamente com o novo motor"): a folha é lida pelo motor novo
+        (_linha_com_o_motor: a mesma conta da folha nunca dividida) e a linha
+        de antes passa a ser a dele (posicao_corte, na MESMA ação do desfazer:
+        o Ctrl+Z devolve o motor e a linha de antes). "dividir esta" depois
+        devolve as páginas de antes, nessa linha. Enquanto o motor não é
+        trocado, a D-498 continua: a linha de antes.
         Escolher o motor do livro volta a "seguir o livro"
         (ConfigFolha.dividir_como None)."""
         assert self.projeto is not None
@@ -5761,9 +5798,13 @@ class TelaConferir(QWidget):
             return
         do_livro = dividir_scantailor.jeito_valido(getattr(self.projeto, "dividir_como", None))
         if not folha.dividir:
+            campos: dict = {"dividir_como": None if jeito == do_livro else jeito}
+            if self._volta_como_estava(self.indice_folha):          # D-606
+                lombada = self._linha_com_o_motor(self.indice_folha, jeito)
+                campos["posicao_corte"] = round(float(lombada.posicao), 4)
+                campos["confianca_corte"] = float(lombada.confianca)
             self._registrar(
-                "jeito_de_dividir", "folha", [self.indice_folha],
-                {"dividir_como": None if jeito == do_livro else jeito},
+                "jeito_de_dividir", "folha", [self.indice_folha], campos,
                 f"Folha {self.indice_folha + 1}: motor de corte "
                 f"“{nome_do_jeito_de_dividir(jeito)}”",
             )

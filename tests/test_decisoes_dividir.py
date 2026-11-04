@@ -646,3 +646,92 @@ def test_d016_dividida_a_mao_sai_igual_a_dividida_pelo_automatico(janela, tmp_pa
     assert len(paginas) == 4
     for a, b in ((paginas[0], paginas[2]), (paginas[1], paginas[3])):
         assert a.shape == b.shape and int(np.abs(a.astype(int) - b.astype(int)).max()) <= 2
+
+
+# --- D-606 (03/11/2026): trocar o motor na folha juntada refaz a conta -------------------
+
+def test_reversao_d606_trocar_o_motor_na_folha_juntada_move_a_linha(janela, tmp_path):
+    """D-606. Pergunta ao Samuel: "Na folha que você juntou de volta, trocar o motor de corte
+    deve mover a linha? Hoje ela fica onde estava." → "Ele deve fazer a conta novamente com o
+    novo motor".
+    Achado do verificador clicando (03/11/2026, ressalva 1 do teste 1, Gradus Primus): folha 5
+    dividida e juntada com "não dividir esta" (e folha 7 depois de "juntar todas"): trocar o
+    motor não mudava a linha, "nos dois motores".
+    Agora: a folha juntada mostra a linha de antes (D-498) enquanto o motor não é trocado;
+    trocar o motor lê a folha com o motor novo e a linha vai para onde ele acha (a mesma conta
+    da folha nunca dividida, core.dividir_a_mao.ler_a_linha); "dividir esta" corta nela, com
+    as páginas de antes de volta (D-498); o Ctrl+Z devolve o motor e a linha de antes.
+    No código de antes (75ed04af) a linha ficava em 0,47: este teste falha lá."""
+    from core import dividir_a_mao
+    from core import dividir_scantailor as ds
+    from tests.test_decisoes_dividir_linha import _aberto_torto, _linha_lida, _no_dividir
+    from ui.tela_conferir import ABA_CORTE
+    from ui.widgets.paginas_rolando import DUAS, UMA
+
+    tela = _no_dividir(janela, tmp_path, [_aberto_torto(), _aberto_torto()])
+    projeto, vista = janela.projeto, tela.visualizadores[ABA_CORTE]
+    _linha_lida(tela)
+    tela.botao_nao_dividir.click()                       # dividir esta
+    tela.botoes_mostrar[DUAS].click()
+    vista.corte_movido.emit(0.47)                        # a linha acertada à mão
+    tela.botoes_mostrar[UMA].click()
+    tela.botao_nao_dividir.click()                       # não dividir esta (juntada)
+    _linha_lida(tela)
+    assert vista.posicao_corte == pytest.approx(0.47), "D-498: a linha de antes, até trocar o motor"
+
+    combo = tela.combo_jeito_da_folha
+    agora = combo.currentData()
+    outro = next(j for j in ds.JEITOS if j != agora)
+    esperada = dividir_a_mao.ler_a_linha(projeto.caminho_entrada, 0, 0, outro)[0]
+    assert esperada.e_paisagem and abs(esperada.posicao - 0.47) > 0.01
+    combo.setCurrentIndex(combo.findData(outro))
+    _linha_lida(tela)
+    assert projeto.folhas[0].dividir_como == outro and not projeto.folhas[0].dividir
+    assert vista.corte_visivel
+    assert vista.posicao_corte == pytest.approx(esperada.posicao, abs=1e-3), \
+        "D-606: a linha vai para onde o motor novo acha"
+    assert projeto.folhas[1].dividir_como is None, "só nesta folha"
+
+    tela.botao_nao_dividir.click()                       # dividir esta: na linha nova
+    folha = projeto.folhas[0]
+    assert folha.dividir and folha.posicao_corte == pytest.approx(esperada.posicao, abs=1e-3)
+    assert [p.metade for p in projeto.paginas if p.folha == 0] == ["esquerda", "direita"]
+
+    tela.desfazer()                                      # volta a juntada com o motor novo
+    tela.desfazer()                                      # volta o motor e a linha de antes
+    _linha_lida(tela)
+    assert projeto.folhas[0].dividir_como is None and not projeto.folhas[0].dividir
+    assert vista.posicao_corte == pytest.approx(0.47)
+
+
+def test_d606_depois_do_juntar_todas_trocar_o_motor_tambem_move_a_linha(janela, tmp_path):
+    """D-606, o outro caminho do verificador (folha 7 depois de "juntar todas"): as folhas
+    juntadas pelo "juntar todas" mostram a linha de antes; trocar o motor numa delas move a
+    linha dela para a do motor novo, e só a dela."""
+    from core import dividir_a_mao
+    from core import dividir_scantailor as ds
+    from tests.test_decisoes_dividir_linha import _aberto_torto, _linha_lida, _no_dividir
+    from ui.tela_conferir import ABA_CORTE
+    from ui.widgets.paginas_rolando import DUAS, UMA
+
+    tela = _no_dividir(janela, tmp_path, [_aberto_torto(), _aberto_torto()])
+    projeto, vista = janela.projeto, tela.visualizadores[ABA_CORTE]
+    for folha in (0, 1):                                  # dividir esta, linha em 0,47
+        tela._ir_para(folha)
+        _linha_lida(tela)
+        tela.botao_nao_dividir.click()
+        tela.botoes_mostrar[DUAS].click()
+        vista.corte_movido.emit(0.47)
+        tela.botoes_mostrar[UMA].click()
+    tela.botao_juntar_todas.click()
+    assert not any(f.dividir for f in projeto.folhas)
+    tela._ir_para(1)
+    _linha_lida(tela)
+    assert vista.posicao_corte == pytest.approx(0.47)
+    combo = tela.combo_jeito_da_folha
+    outro = next(j for j in ds.JEITOS if j != combo.currentData())
+    esperada = dividir_a_mao.ler_a_linha(projeto.caminho_entrada, 1, 0, outro)[0]
+    combo.setCurrentIndex(combo.findData(outro))
+    _linha_lida(tela)
+    assert vista.posicao_corte == pytest.approx(esperada.posicao, abs=1e-3)
+    assert projeto.folhas[0].posicao_corte == pytest.approx(0.47), "a outra folha fica"
