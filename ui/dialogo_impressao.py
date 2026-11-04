@@ -63,6 +63,15 @@ VER AS FOLHAS ANTES DE GRAVAR (D-574, 31/10/2026)
     livro); dois fios do MuPDF ao mesmo tempo (a prévia espera o "gravar" e o
     fio do "gravar" espera a prévia soltar, _Tarefa.esperar).
 
+AS PÁGINAS DE CADA LADO (D-604, 03/11 e 04/11/2026)
+    Samuel (print a-52): "o verso da folha 1 e 19 não podem ter a numeração de
+    folha 1 - e 19 tem que dizer a numeração que elas realmente teriam." ·
+    "Folha 1 de 19, frente: páginas 20 e 1 [...] verso: páginas 2 e 19" →
+    "acredito que sim". Logo depois do "Folha N de M — frente", na mesma linha,
+    ": páginas 20 e 1" (paginas_da_folha_do_livreto; "em branco" no lugar sem
+    página). O rótulo de sempre fica igual (as provas da D-574 o comparam
+    inteiro, D-605); as páginas têm o rótulo delas (`paginas_da_face`).
+
 IMPRIMIR AGORA (D-012, 26/10/2026: "2" - conserto na etapa 9)
     Antes, o botão da tela "Ficou pronto!" mandava o PDF inteiro para a
     impressora padrão do Windows num clique, sem escolher nada nem perguntar
@@ -113,6 +122,7 @@ from core import impressao as imp
 from registro import registrar_erro
 from ui import estilo, rodinha
 from ui.widgets.bolinha import BolinhaDeCarregamento
+from ui.widgets.folhas_do_caderno import rotulo_das_paginas, texto_das_paginas
 
 CHAVE_DAS_CONFIGURACOES = "impressao"
 OPCOES_CADERNO = [8, 12, 16, 20, 24, 32, 40]
@@ -192,6 +202,36 @@ def paginas_do_pdf(caminho: str) -> int:
     except Exception:  # noqa: BLE001 - só serve para o texto; nunca fecha a janela
         registrar_erro("contar as páginas do PDF", traceback.format_exc())
         return 0
+
+
+def paginas_da_folha_do_livreto(total_paginas: int, opcoes: imp.OpcoesDeImpressao,
+                                numero: int) -> dict[str, tuple]:
+    """D-604: as páginas do livro em cada lado da folha `numero` do livreto (1 = a primeira),
+    da esquerda para a direita como estão no papel: {"frente": (20, 1), "verso": (2, 19)};
+    None = lugar em branco (o fim do último caderno, ou a branca que vai antes de um intervalo
+    que começa numa página par). O número é o da página no PDF que a janela monta (o livro já
+    processado: a ordem dele já é a que sai, D-615/D-616/D-603).
+
+    É a MESMA conta que monta a folha (core/impressao._paginas_escolhidas e
+    _lados_do_livreto, como previa_da_folha faz: folhas de/até = esta folha, sem reverter):
+    a encadernação à direita troca os lados, e os números trocam junto. Conta pura, sem abrir o
+    PDF. Arriscado: contar de outro jeito (o texto deixaria de bater com o desenho)."""
+    so_esta = imp.OpcoesDeImpressao.de_dicionario(opcoes.para_dicionario())
+    so_esta.folhas_de = so_esta.folhas_ate = int(numero)
+    so_esta.reverter = False
+    so_esta.lados = imp.AMBOS
+    escolhidas = imp._paginas_escolhidas(max(1, int(total_paginas)), so_esta)
+    lados = imp._lados_do_livreto(len(escolhidas), so_esta)
+    if len(lados) < 2:
+        return {}
+
+    def pagina(posicao):
+        if posicao is None or not 0 <= posicao < len(escolhidas) or escolhidas[posicao] is None:
+            return None
+        return escolhidas[posicao] + 1
+
+    return {lado: (pagina(l.esquerda), pagina(l.direita))
+            for lado, l in ((imp.FRENTE, lados[0]), (imp.VERSO, lados[1]))}
 
 
 def listar_impressoras() -> list[str]:
@@ -711,16 +751,25 @@ class DialogoImpressao(QDialog):
         coluna.addLayout(titulo)
 
         self.rotulos_da_face: dict[str, QLabel] = {}
+        self.paginas_da_face: dict[str, QLabel] = {}        # D-604: ": páginas 20 e 1"
         self.imagens_da_face: dict[str, QLabel] = {}
         for lado in (imp.FRENTE, imp.VERSO):
             rotulo = QLabel("")
             rotulo.setStyleSheet("font-weight: 700;")
+            paginas = rotulo_das_paginas()
             imagem = QLabel()
             imagem.setAlignment(Qt.AlignmentFlag.AlignCenter)
             estilo.estilizar(imagem, lambda: f"background: {estilo.cor('bar2')};")
-            coluna.addWidget(rotulo)
+            linha = QHBoxLayout()               # "Folha 1 de 32 — frente" + ": páginas 20 e 1"
+            linha.setContentsMargins(0, 0, 0, 0)
+            linha.setSpacing(0)
+            linha.addWidget(rotulo)
+            linha.addWidget(paginas)
+            linha.addStretch()
+            coluna.addLayout(linha)
             coluna.addWidget(imagem)
             self.rotulos_da_face[lado], self.imagens_da_face[lado] = rotulo, imagem
+            self.paginas_da_face[lado] = paginas
 
         setas = QHBoxLayout()
         setas.setSpacing(4)
@@ -929,6 +978,18 @@ class DialogoImpressao(QDialog):
         """ "Folha 1 de 32 — frente" (o texto da opção 1 da D-574)."""
         return f"Folha {numero} de {total} — {lado}"
 
+    def _por_as_paginas(self, numero: int) -> None:
+        """D-604: logo depois de "Folha N de M — lado", as páginas do livro daquele lado
+        (": páginas 20 e 1"; "em branco" no lugar sem página). Conta pura, sem abrir o PDF
+        (paginas_da_folha_do_livreto); falhando, o lugar fica vazio (o desenho continua)."""
+        try:
+            paginas = paginas_da_folha_do_livreto(self.paginas_do_livro, self.opcoes(), numero)
+        except Exception:  # noqa: BLE001 - só o texto
+            registrar_erro("as páginas da folha do livreto", traceback.format_exc())
+            paginas = {}
+        for lado, rotulo in self.paginas_da_face.items():
+            rotulo.setText(texto_das_paginas(*paginas[lado]) if lado in paginas else "")
+
     def _mostrar_carregando(self) -> None:
         """Enquanto o fio monta: a bolinha gira (D-064; o balão diz o que está
         montando), o desenho velho sai (valia para outra folha ou outras
@@ -950,6 +1011,7 @@ class DialogoImpressao(QDialog):
             numero = numeros[max(0, min(self.posicao_da_previa, len(numeros) - 1))]
             for lado, rotulo in self.rotulos_da_face.items():
                 rotulo.setText(self.texto_da_face(numero, total_de_folhas, lado))
+            self._por_as_paginas(numero)                      # D-604, também na hora
             self.rotulo_da_folha.setText(f"folha {numero}")
         largura_pt, altura_pt = imp.tamanho_do_papel_pt(self.opcoes())
         altura = round(self.LARGURA_DA_FOLHA * altura_pt / max(1.0, largura_pt))
@@ -971,10 +1033,12 @@ class DialogoImpressao(QDialog):
         self.folha_na_tela = folha          # a única folha guardada (CLAUDE.md §3)
         self.posicao_da_previa = folha.posicao
         razao = self._razao_da_tela()
+        self._por_as_paginas(folha.numero)                    # D-604
         for lado, imagem in self.imagens_da_face.items():
             rotulo = self.rotulos_da_face[lado]
             face = next((f for f in folha.faces if f.lado == lado), None)
             rotulo.setVisible(face is not None)
+            self.paginas_da_face[lado].setVisible(face is not None)
             imagem.setVisible(face is not None)
             if face is None:
                 continue
@@ -1001,6 +1065,7 @@ class DialogoImpressao(QDialog):
         for lado in self.rotulos_da_face:
             self.imagens_da_face[lado].setVisible(False)
             self.rotulos_da_face[lado].setVisible(False)
+            self.paginas_da_face[lado].setVisible(False)          # D-604: só o aviso fica
         self.rotulos_da_face[imp.FRENTE].setText("Não consegui mostrar esta folha.")
         self.rotulos_da_face[imp.FRENTE].setVisible(True)
 

@@ -50,6 +50,20 @@ AS PÁGINAS SÃO AS DO LIVRO DEPOIS DAS ETAPAS MARCADAS (D-603, 03/11/2026)
     Etapa desmarcada não entra (D-589); Dividir desmarcado não junta nada (D-590): a lista é a
     do livro como está. Continua sendo desenhada só a folha à vista (frente e verso).
 
+CADA LADO DIZ AS PÁGINAS QUE ESTÃO NELE (D-604, 03/11 e 04/11/2026)
+    Samuel (print a-52): "o verso da folha 1 e 19 não podem ter a numeração de folha 1 - e 19
+    tem que dizer a numeração que elas realmente teriam." · "Folha 1 de 19, frente: páginas 20 e
+    1 [...] verso: páginas 2 e 19 [...]" → "acredito que sim" · (a-79) "é melhor colocar a
+    numeração das paginas verdadeiras aqui". Logo depois do "Folha N de M — frente", na mesma
+    linha e no mesmo negrito, ": páginas 20 e 1" (da esquerda para a direita, como está no papel).
+    O número é a posição da página no livro COMO VAI SAIR (a lista `_depois`: a ordem mudada à
+    mão, D-615; a capa aberta, D-616; o Dividir marcado, D-603), a mesma posição que escolhe o
+    desenho daquele lugar. Lugar sem página (o fim do último caderno): "em branco" no lugar do
+    número (a gerente, 04/11; D-604: "a confirmar com ele se aparecer").
+    O "Folha N de M — frente" continua sozinho no rótulo de sempre (`rotulos`); as páginas
+    ficam num rótulo só delas (`numeros_das_paginas`). Arriscado: juntar os dois num rótulo (as
+    provas da D-574 comparam o rótulo inteiro, D-605).
+
 A TELA NUNCA PARA (CLAUDE.md §3)
     A folha inteira (o "depois" das páginas e a montagem) é feita no servidor de páginas, fora do
     processo da janela (core/automatico.folha_do_caderno -> core/paginas_em_outro_processo.
@@ -90,6 +104,26 @@ DPI_DA_FOLHA = 180
 # Python 0,1 a 0,2 s). Seguro mudar (mais = mais nítido no zoom da tela grande, mais memória).
 LARGURA_MAXIMA_DA_FOLHA = 2400
 FRENTE, VERSO = "frente", "verso"
+# D-604: o lugar da folha sem página do livro (o fim do último caderno, ou a branca que o
+# "Montar para imprimir" põe antes de um intervalo que começa numa página par)
+EM_BRANCO = "em branco"
+
+
+def texto_das_paginas(esquerda: int | None, direita: int | None) -> str:
+    """D-604: o que vem logo depois de "Folha N de M — frente": ": páginas 20 e 1" (os números
+    das páginas do livro, da esquerda para a direita; None = "em branco"). Usado aqui e no
+    "Montar para imprimir" (ui/dialogo_impressao), para os dois dizerem igual."""
+    def numero(pagina):
+        return EM_BRANCO if pagina is None else str(pagina)
+
+    return f": páginas {numero(esquerda)} e {numero(direita)}"
+
+
+def rotulo_das_paginas() -> QLabel:
+    """O rótulo das páginas (D-604), no mesmo negrito do "Folha N de M — lado" que vem antes."""
+    rotulo = QLabel("")
+    rotulo.setStyleSheet("font-weight: 700;")
+    return rotulo
 
 
 # ---------------------------------------------------------------------------
@@ -228,17 +262,26 @@ class FolhasDoCaderno(QWidget):
         dentro.setContentsMargins(0, 0, 0, 0)
         dentro.setSpacing(4)
         self.rotulos: dict[str, QLabel] = {}
+        self.numeros_das_paginas: dict[str, QLabel] = {}     # D-604: ": páginas 20 e 1"
         self.imagens: dict[str, QLabel] = {}
         for lado in (FRENTE, VERSO):
             rotulo = QLabel("")
             rotulo.setStyleSheet("font-weight: 700;")
+            numeros = rotulo_das_paginas()
             imagem = QLabel()
             imagem.setAlignment(Qt.AlignCenter)
             imagem.setMinimumSize(40, 30)
             estilo.estilizar(imagem, lambda: f"background: {estilo.cor('bar2')};")
-            dentro.addWidget(rotulo)
+            linha = QHBoxLayout()                # "Folha 1 de 19 — frente" + ": páginas 20 e 1"
+            linha.setContentsMargins(0, 0, 0, 0)
+            linha.setSpacing(0)
+            linha.addWidget(rotulo)
+            linha.addWidget(numeros)
+            linha.addStretch()
+            dentro.addLayout(linha)
             dentro.addWidget(imagem, 1)
             self.rotulos[lado], self.imagens[lado] = rotulo, imagem
+            self.numeros_das_paginas[lado] = numeros
         col.addWidget(self.area, 1)
 
         barra = QHBoxLayout()
@@ -321,12 +364,31 @@ class FolhasDoCaderno(QWidget):
         """O mesmo texto do "Montar para imprimir" (DialogoImpressao.texto_da_face)."""
         return f"Folha {numero} de {total} — {lado}"
 
+    def paginas_da_folha(self) -> dict[str, tuple]:
+        """D-604: as páginas do livro em cada lado da folha à vista, da esquerda para a direita:
+        {"frente": (20, 1), "verso": (2, 19)}; None = lugar em branco. O número é a posição no
+        livro como vai sair (a lista `_depois`, D-603/D-615/D-616) mais 1: a mesma posição que
+        escolhe o desenho daquele lugar (_calcular_agora). Vazio sem folhas."""
+        folhas = self.folhas()
+        if not folhas:
+            return {}
+        frente, verso = folhas[max(0, min(self.posicao, len(folhas) - 1))]
+
+        def numero(posicao):
+            return None if posicao is None else posicao + 1
+
+        return {lado: (numero(l.esquerda), numero(l.direita))
+                for lado, l in ((FRENTE, frente), (VERSO, verso))}
+
     def _acertar_textos(self) -> None:
         total = self.total()
         self.posicao = max(0, min(self.posicao, max(0, total - 1)))
         numero = self.posicao + 1
+        paginas = self.paginas_da_folha() if total else {}
         for lado in (FRENTE, VERSO):
             self.rotulos[lado].setText(self.texto_da_face(numero, total, lado) if total else "")
+            self.numeros_das_paginas[lado].setText(
+                texto_das_paginas(*paginas[lado]) if lado in paginas else "")
         self.rotulo_da_folha.setText(f"folha {numero}" if total else "")
         self.botao_anterior.setEnabled(total > 0 and self.posicao > 0)
         self.botao_seguinte.setEnabled(total > 0 and self.posicao < total - 1)
@@ -495,10 +557,13 @@ class FolhasDoCaderno(QWidget):
                 self.imagens[lado]._feito_de = None
             self.imagens[lado].setVisible(True)
             self.rotulos[lado].setVisible(True)
+            self.numeros_das_paginas[lado].setVisible(True)
         if erro:
             self.imagens[VERSO].setVisible(False)
             self.rotulos[VERSO].setVisible(False)
             self.rotulos[FRENTE].setText("Não consegui mostrar esta folha.")
+            for numeros in self.numeros_das_paginas.values():   # D-604: só o aviso fica
+                numeros.setVisible(False)
         self._desenhar()
         if self.tela_grande is not None and self.tela_grande.aberta:
             self.tela_grande.acertar()
@@ -617,7 +682,8 @@ class TelaGrandeDoCaderno(QDialog):
     """A tela grande que já existe (a do antes e depois do Automático, TelaCheiaDoAntesEDepois:
     maximizada, "<" ">", o contador, a bolinha, –, +, "ajustar à tela", "fechar"), na versão de
     caderno (D-574, 31/10): a frente e embaixo o verso da folha, grandes, com "Folha N de M —
-    frente/verso" em cima de cada uma. Mostra a MESMA folha de FolhasDoCaderno (nada é calculado
+    frente/verso" em cima de cada uma, seguido das páginas daquele lado (D-604, ": páginas 20 e
+    1", copiado do lado direito). Mostra a MESMA folha de FolhasDoCaderno (nada é calculado
     aqui); passar a folha aqui é passar lá. Sem o "comparar" (é do antes e depois da página)."""
 
     def __init__(self, painel: FolhasDoCaderno) -> None:
@@ -646,16 +712,26 @@ class TelaGrandeDoCaderno(QDialog):
         col.setContentsMargins(0, 0, 0, 0)
         col.setSpacing(4)
         self.rotulos: dict[str, QLabel] = {}
+        self.numeros_das_paginas: dict[str, QLabel] = {}     # D-604: ": páginas 20 e 1"
         self.imagens: dict[str, QLabel] = {}
         for lado in (FRENTE, VERSO):
             rotulo = QLabel("")
             rotulo.setStyleSheet("font-weight: 700;")
             rotulo.setAlignment(Qt.AlignCenter)
+            numeros = rotulo_das_paginas()
             imagem = QLabel()
             imagem.setAlignment(Qt.AlignCenter)
-            col.addWidget(rotulo)
+            linha = QHBoxLayout()                # no meio: "Folha N de M — lado: páginas A e B"
+            linha.setContentsMargins(0, 0, 0, 0)
+            linha.setSpacing(0)
+            linha.addStretch()
+            linha.addWidget(rotulo)
+            linha.addWidget(numeros)
+            linha.addStretch()
+            col.addLayout(linha)
             col.addWidget(imagem, 1)
             self.rotulos[lado], self.imagens[lado] = rotulo, imagem
+            self.numeros_das_paginas[lado] = numeros
         self.rolagem.setWidget(dentro)
         self._roda = _RodaNaFolha(self)
         self.rolagem.viewport().installEventFilter(self._roda)
@@ -705,6 +781,9 @@ class TelaGrandeDoCaderno(QDialog):
         for lado in (FRENTE, VERSO):
             self.rotulos[lado].setText(p.rotulos[lado].text())
             self.rotulos[lado].setVisible(p.rotulos[lado].isVisibleTo(p))
+            numeros = p.numeros_das_paginas[lado]                       # D-604
+            self.numeros_das_paginas[lado].setText(numeros.text())
+            self.numeros_das_paginas[lado].setVisible(numeros.isVisibleTo(p))
         total = p.total()
         self.contador.setText(f"Folha {p.posicao + 1} de {total}" if total else "")
         self.botao_anterior.setEnabled(p.botao_anterior.isEnabled())
