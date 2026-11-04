@@ -274,11 +274,15 @@ def _clicar_no_aviso(texto_do_botao: str, visto: dict) -> None:
     QTimer.singleShot(20, clicar)
 
 
-@pytest.mark.parametrize("quantas,pular,frase", [
-    (1, "Pular esta", "1 folha foi juntada à mão no Dividir. Pular essa folha?"),
-    (2, "Pular as 2", "2 folhas foram juntadas à mão no Dividir. Pular essas folhas?"),
+@pytest.mark.parametrize("quantas,pular,frase,explicacao", [
+    (1, "Pular esta", "1 folha foi juntada à mão no Dividir. Pular essa folha?",
+     "Pular: ela fica inteira, como você deixou. Dividir também: ela é dividida junto com as "
+     "outras (o Desfazer traz de volta). As outras folhas são divididas nos dois casos."),
+    (2, "Pular as 2", "2 folhas foram juntadas à mão no Dividir. Pular essas folhas?",
+     "Pular: elas ficam inteiras, como você deixou. Dividir também: elas são divididas junto "
+     "com as outras (o Desfazer traz de volta). As outras folhas são divididas nos dois casos."),
 ])
-def test_d613_o_aviso_como_o_da_d004(janela, tmp_path, quantas, pular, frase):
+def test_d613_o_aviso_como_o_da_d004(janela, tmp_path, quantas, pular, frase, explicacao):
     """O aviso no jeito da D-004: título, a frase com quantas folhas, a explicação, os botões
     "Pular as N"/"Pular esta", "Dividir também" e "cancelar"; o de fábrica é o "Pular"."""
     tela = _no_dividir(janela, tmp_path, [_aberto_torto()])
@@ -288,10 +292,7 @@ def test_d613_o_aviso_como_o_da_d004(janela, tmp_path, quantas, pular, frase):
         assert tela._perguntar_as_juntadas(quantas) is esperado
         assert visto["titulo"] == "Folhas juntadas à mão"
         assert visto["texto"] == frase
-        assert visto["explicacao"] == (
-            "Pular: elas ficam inteiras, como você deixou. Dividir também: elas são divididas "
-            "junto com as outras (o Desfazer traz de volta). As outras folhas são divididas "
-            "nos dois casos.")
+        assert visto["explicacao"] == explicacao
         # a ordem na tela é a do Qt (pelo papel de cada botão), a mesma do aviso da D-004
         assert sorted(visto["botoes"]) == sorted([pular, "Dividir também", "cancelar"])
         assert visto["padrao"] == pular

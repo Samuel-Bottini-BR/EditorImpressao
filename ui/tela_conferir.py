@@ -5805,13 +5805,17 @@ class TelaConferir(QWidget):
         caixa.setIcon(QMessageBox.Question)
         if quantas == 1:
             caixa.setText("1 folha foi juntada à mão no Dividir. Pular essa folha?")
+            caixa.setInformativeText(
+                "Pular: ela fica inteira, como você deixou. Dividir também: ela é dividida "
+                "junto com as outras (o Desfazer traz de volta). As outras folhas são divididas "
+                "nos dois casos.")
         else:
             caixa.setText(f"{quantas} folhas foram juntadas à mão no Dividir. "
                           "Pular essas folhas?")
-        caixa.setInformativeText(
-            "Pular: elas ficam inteiras, como você deixou. Dividir também: elas são divididas "
-            "junto com as outras (o Desfazer traz de volta). As outras folhas são divididas "
-            "nos dois casos.")
+            caixa.setInformativeText(
+                "Pular: elas ficam inteiras, como você deixou. Dividir também: elas são "
+                "divididas junto com as outras (o Desfazer traz de volta). As outras folhas são "
+                "divididas nos dois casos.")
         pular = caixa.addButton(f"Pular as {quantas}" if quantas > 1 else "Pular esta",
                                 QMessageBox.AcceptRole)
         dividir = caixa.addButton("Dividir também", QMessageBox.DestructiveRole)
