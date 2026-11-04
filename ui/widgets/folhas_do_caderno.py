@@ -285,8 +285,10 @@ class FolhasDoCaderno(QWidget):
         from core import automatico as A
 
         pedido = self.estado.pedido(pular_mexidas=False)   # como a página da direita (D-577)
-        if pedido.desligar or A.DIVIDIR not in pedido.etapas:
-            return A.paginas_do_pdf_depois(self.projeto, pedido)   # o livro como está
+        if pedido.desligar or A.DIVIDIR not in pedido.etapas or not self.ligada:
+            # o livro como está. Com a etapa 7 fechada nada aparece: a conta do Dividir (que lê
+            # o PDF) só é feita quando as folhas estão à vista (ligar(True) refaz os textos)
+            return [(p.indice, p.folha, p.metade) for p in self.projeto.paginas_ativas]
         chave = (id(self.projeto), json.dumps(
             [pedido.paginas, (pedido.opcoes or {}).get("dividir_como"),
              [(p.folha, p.metade, p.apagada, p.mexida_a_mao) for p in self.projeto.paginas],
