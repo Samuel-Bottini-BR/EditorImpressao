@@ -316,3 +316,44 @@ tinha sido refeita por trás quando o teste olhou: `'scantailor|...' == 'refazer
 inteiro 3 vezes seguidas (8 de 8) e nas rodadas 2, 3 e 4; na rodada 41886245180 do GitHub (em `07c051fb`,
 com tudo menos o tamanho da prévia) também passou. O teste não usa os pares, o "antes / depois" nem a barra
 de cima. Parece de tempo; ressalva para a gerente decidir se roda de novo.
+
+---
+
+# Consertos do teste do Samuel de 04/11 (prints a-74 a a-78) e a ordem dos pares da tira
+
+Commits (cada um separado, ramo `mover-lado-2026-11-04`, depois de juntar a obra duas vezes):
+- A, a-75/a-76 (a miniatura marcada): primeiro marquei as duas metades da folha, mas um teste antigo da D-611
+  pede uma só. Voltei atrás e fiz o que o Samuel respondeu depois (a D-611 atualizada, abaixo): uma só marcada,
+  dentro do par da folha que está na tela.
+- B, a-77/a-78 (`"D-612 (a-77/a-78)..."`): com Mover, Cortar e Endireitar, o "antes / depois" sempre compara,
+  também com a página em Original e sem o aviso. O "depois" mostra o que a ferramenta fez (131%, por exemplo).
+  O "antes" mostra a página como veio: a metade da folha do PDF no Original, sem endireitar, cortar nem mover.
+  Nas outras ferramentas (Mão, Zoom, marcar, Filtro), o aviso "Escolha outro filtro..." continua, porque ali a
+  comparação é só do filtro. Prova: `tests/test_decisoes_antes_depois_da_ferramenta.py` (5; em `d2567fab`
+  falharam 4).
+- (a), resposta "ok": nos pares, o mesmo aperto na outra página escolhe e já arrasta, no Mover, no Cortar e nas
+  de marcar; no Endireitar só escolhe. Prova: `tests/test_decisoes_par_escolhe_e_arrasta.py` (4; em `d2567fab`
+  falharam 3).
+- C, D-622: no Mover, clicar no cinza fora da página larga a escolha: somem os cantos azuis e o contorno e, nos
+  pares, o quadro azul da página da vez. Clicar na página escolhe de novo, e o arrasto continua movendo. Outra
+  página chega escolhida. Fora do Mover, como antes. Prova: `tests/test_decisoes_d622_clicar_fora.py` (3; em
+  `d2567fab` falharam).
+- D-611 atualizada ("SIm, mas tem que verificar se vai ficar assim em todo os lugares né? a miniatura
+  corresponder com o numero real"):
+  - no Dividir com "Duas lado a lado", a tira junta as duas metades da mesma folha, igual à tela grande;
+  - o número embaixo de cada miniatura é o da página (o mesmo de "página N de M");
+  - fora do Dividir, os pares da tira são os da tela grande; a página tirada do livro fica sozinha;
+  - prova que percorre Mão, Mover, Cortar, Endireitar, Retângulo e Dividir, em "Uma página" e "Duas lado a
+    lado", com a capa aberta (D-616) e a ordem mudada à mão (D-615): `tests/test_decisoes_tira_numero_real.py`
+    (3). No código antes do conserto falharam 2: os pares com uma página tirada, e no Dividir duas miniaturas
+    marcadas ao mesmo tempo depois da ordem mudada.
+  - testes antigos mudados com autorização da gerente, só a parte do Dividir:
+    `test_decisoes_tira_em_pares.py::test_reversao_d611_tira_em_pares_no_dividir_em_duas_lado_a_lado` e
+    `test_decisoes_tira_pares_juntas.py::test_reversao_d611_par_junto_no_dividir_em_duas_lado_a_lado`.
+
+Janela de verdade (Gradus): `piloto_consertos.py` 10/10, prints `p501` a `p508`. Os pilotos anteriores, refeitos
+no código final: 20/20, 15/15 e 16/16. Testes no PC, um arquivo por vez: 47 arquivos, todos passaram
+(`testes-pc-6.txt`).
+
+Pergunta (c), o rótulo do "antes / depois", no print `p507`: o rótulo "antes: Original" fica no canto esquerdo,
+em cima do lado onde a ferramenta age (o "depois").

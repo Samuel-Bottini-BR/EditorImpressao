@@ -1,0 +1,11 @@
+ok   Dividir/Duas lado a lado: a tira junta as duas páginas da mesma folha
+ok   Dividir/Duas lado a lado: clique na miniatura 11 → folha 6, marcada [11] (a folha: [11, 12])
+ok   Dividir/Duas lado a lado: clique na miniatura 10 → folha 5, marcada [10] (a folha: [9, 10])
+ok   pares: o mesmo aperto na outra página escolhe e já arrasta
+ok   pares: clique no cinza larga a escolha (sem quadro, sem cantos)
+ok   pares: clique na página escolhe de novo
+ok   Uma página: clique no cinza larga (sem cantos)
+ok   Uma página: clique na página escolhe de novo
+ok   antes / depois do Mover em Original: compara, sem o aviso
+ok   antes / depois do Cortar: compara
+10 de 10
