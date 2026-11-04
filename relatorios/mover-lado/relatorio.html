@@ -1,0 +1,257 @@
+<!doctype html>
+<html lang="pt-BR">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>D-612: o Mover em Duas lado a lado</title>
+<style>
+:root { color-scheme: light dark; }
+* { box-sizing: border-box; }
+body {
+  font: 17px/1.65 "Segoe UI", system-ui, sans-serif;
+  max-width: 46rem; margin: 0 auto; padding: 2.5rem 1.5rem 6rem;
+  color: #1c1c1e; background: #fdfdfc;
+}
+h1 { font-size: 2rem; line-height: 1.2; margin: 0 0 .3em; letter-spacing: -.02em; }
+h2 { font-size: 1.35rem; margin: 2.4em 0 .6em; padding-top: .8em;
+     border-top: 1px solid #e6e4e0; letter-spacing: -.01em; }
+h3 { font-size: 1.1rem; margin: 1.8em 0 .4em; }
+h1 + p, h2 + p { margin-top: .4em; }
+p, li { margin: 0 0 .9em; }
+ul, ol { padding-left: 1.3em; }
+strong { font-weight: 640; }
+code {
+  font: .88em ui-monospace, "Cascadia Code", Consolas, monospace;
+  background: #f1efec; padding: .12em .35em; border-radius: 4px;
+}
+pre {
+  background: #f1efec; padding: 1em 1.1em; border-radius: 8px;
+  overflow-x: auto; line-height: 1.5;
+}
+pre code { background: none; padding: 0; }
+blockquote {
+  margin: 1.2em 0; padding: .1em 0 .1em 1.1em;
+  border-left: 3px solid #c9c5be; color: #55524d;
+}
+table {
+  border-collapse: collapse; width: 100%; margin: 1.2em 0;
+  font-size: .95rem; display: block; overflow-x: auto;
+}
+th, td { padding: .5em .8em; text-align: left; border-bottom: 1px solid #e6e4e0; }
+th { font-weight: 620; background: #f7f5f2; white-space: nowrap; }
+tr:last-child td { border-bottom: none; }
+img { max-width: 100%; height: auto; border-radius: 6px; margin: 1em 0;
+      border: 1px solid #e6e4e0; }
+hr { border: none; border-top: 1px solid #e6e4e0; margin: 2.5em 0; }
+.rodape { margin-top: 4em; padding-top: 1.2em; border-top: 1px solid #e6e4e0;
+          font-size: .85rem; color: #86827c; }
+@media (prefers-color-scheme: dark) {
+  body { color: #e8e6e3; background: #1a1917; }
+  h2 { border-top-color: #35332f; }
+  code, pre, th { background: #262421; }
+  th, td { border-bottom-color: #35332f; }
+  blockquote { border-left-color: #4a4741; color: #b0aca6; }
+  img { border-color: #35332f; }
+  .rodape { border-top-color: #35332f; color: #7d7973; }
+}
+@media print {
+  body { max-width: none; padding: 0; color: #000; background: #fff; }
+  h2 { page-break-after: avoid; }
+  table, img { page-break-inside: avoid; }
+}
+</style>
+</head>
+<body>
+<h1>D-612: o Mover funciona em "Duas lado a lado" — relatório do implementador (04/11/2026)</h1>
+<p>Ramo <code>mover-lado-2026-11-04</code> (saiu de <code>obra-2026-10-26</code> em <code>dd7a648c</code>). Teste de <strong>máquina</strong> (testes
+automáticos e piloto da janela de verdade). O teste de <strong>olho</strong> é do Samuel.</p>
+<h2>O que mudou, em uma frase</h2>
+<p>Com a ferramenta Mover e a vista em "Duas lado a lado", a página da vez dentro dos pares passa a ser o
+próprio Mover: arrastar move, puxar o canto muda o tamanho, o número e a tecla F valem. A vista não muda
+sozinha.</p>
+<h2>Palavras do Samuel</h2>
+<p>Pergunta: "Ao escolher Mover, Cortar, Endireitar ou marcar, a tela passa sozinha para Uma página?" →
+"1 - ele tem que funcionar com paginas lado a lado também".</p>
+<h2>Como ficou</h2>
+<ul>
+<li>Nos pares, a página da vez mostra o Mover como na "Uma página": a área branca, a página por cima, os
+  quatro cantos azuis, a parte que passa da beirada apagada com listras vermelhas (D-543). A vista se
+  ajusta para caber a área branca e a página inteira (D-541), dentro do lugar da página no par.</li>
+<li>A outra página do par continua a prévia de sempre. Clicar nela faz dela a página da vez (como já era);
+  o Mover passa para ela.</li>
+<li>A roda do mouse em cima da página do Mover faz o mesmo que no resto dos pares: Ctrl+roda dá zoom no par
+  (D-570), sem Ctrl rola.</li>
+<li>"Uma página", outra ferramenta, "antes / depois", Dividir: o Mover volta para o lugar de sempre, com o
+  zoom que tinha. Nada muda nesses.</li>
+<li>Cortar, Endireitar, marcar e "antes / depois": <strong>não mexidos</strong> (esperando a resposta do Samuel). Para
+  estender, basta pôr a ferramenta na lista <code>FERRAMENTAS_NO_PAR</code> (<code>ui/tela_conferir.py</code>); a de marcar
+  precisa também de um lugar de volta.</li>
+</ul>
+<h2>Onde (arquivos)</h2>
+<ul>
+<li><code>ui/tela_conferir.py</code>: <code>FERRAMENTAS_NO_PAR</code>; <code>_acertar_a_vista_da_pagina</code> chama
+  <code>_acertar_a_ferramenta_no_par</code>; novas <code>_acertar_a_ferramenta_no_par</code>, <code>_devolver_a_peca_do_par</code>,
+  <code>_roda_na_peca_do_par</code>; <code>eventFilter</code> (a roda da peça vai aos pares); <code>_limpar_abas</code> (devolve a peça
+  antes de fechar o livro).</li>
+<li><code>ui/widgets/paginas_lado_a_lado.py</code>: <code>definir_ferramenta</code>, <code>tirar_ferramenta</code>,
+  <code>_por_a_ferramenta_no_lugar</code>; <code>_arrumar</code> e <code>ir_para</code> acertam o lugar da peça.</li>
+<li><code>ui/widgets/visualizador.py</code>: <code>folga_da_moldura</code> (de fábrica a de sempre, 32; 8 só nos pares).</li>
+<li><code>tests/test_decisoes_mover_lado.py</code> (novo, 7 provas).</li>
+</ul>
+<h2>Prints (janela de verdade, Gradus, cópia dos dados de teste)</h2>
+<ul>
+<li><code>prints/p02-dividir-duas-lado-a-lado-folha-inteira.png</code>: Dividir em "Duas lado a lado", a folha inteira
+  com a linha (D-601); a linha anda com o mouse (D-609).</li>
+<li><code>prints/p03-F-mover-nos-pares.png</code>: tecla F, a vista continua nos pares, a página da vez com os cantos
+  azuis; a tira embaixo em pares (D-611).</li>
+<li><code>prints/p04-arrastou-nos-pares.png</code>: arrastada 12% para a esquerda; a parte de fora vermelha com
+  listras; o aviso "Parte do que está impresso vai ficar de fora".</li>
+<li><code>prints/p05-ctrl-z-ctrl-y.png</code>: Ctrl+Z desfaz, Ctrl+Y refaz.</li>
+<li><code>prints/p06-canto-nos-pares.png</code>: canto puxado, 85%, o número acompanha.</li>
+<li><code>prints/p07-numero-80-nos-pares.png</code>: 80 digitado no número.</li>
+<li><code>prints/p08-ctrl-roda-zoom-nos-pares.png</code>: Ctrl+roda em cima da página do Mover dá zoom no par.</li>
+<li><code>prints/p09-outra-pagina-do-par.png</code>: clique na outra página do par, ela vira a da vez com o Mover.</li>
+<li><code>prints/p10-uma-pagina-mover.png</code>: "Uma página", o Mover de sempre.</li>
+<li><code>prints/p11-cortar-nos-pares.png</code>: Cortar em "Duas lado a lado", os pares de sempre.</li>
+<li>Piloto: <code>piloto.py</code>, <strong>20 de 20</strong> conferências (<code>conferencias.txt</code>, <code>anotacoes-piloto.txt</code>).</li>
+</ul>
+<h2>Testes no PC (um arquivo por vez)</h2>
+<table>
+<thead>
+<tr>
+<th>arquivo</th>
+<th>resultado</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>test_decisoes_mover</td>
+<td>13 passaram</td>
+</tr>
+<tr>
+<td>test_decisoes_mover_lado (novo)</td>
+<td>7 passaram</td>
+</tr>
+<tr>
+<td>test_decisoes_ver</td>
+<td>11 passaram</td>
+</tr>
+<tr>
+<td>test_decisoes_dividir_metade</td>
+<td>6 passaram</td>
+</tr>
+<tr>
+<td>test_decisoes_dividir_arrastar</td>
+<td>16 passaram</td>
+</tr>
+<tr>
+<td>test_decisoes_tira_em_pares</td>
+<td>4 passaram</td>
+</tr>
+<tr>
+<td>test_previa_composta</td>
+<td>10 passaram</td>
+</tr>
+<tr>
+<td>test_paineis_na_tela</td>
+<td>22 passaram</td>
+</tr>
+<tr>
+<td>test_visualizador</td>
+<td>70 passaram</td>
+</tr>
+<tr>
+<td>test_zoom_no_ponteiro</td>
+<td>5 passaram</td>
+</tr>
+<tr>
+<td>test_decisoes_9b2</td>
+<td>30 passaram</td>
+</tr>
+<tr>
+<td>test_livro_aberto</td>
+<td>14 passaram</td>
+</tr>
+<tr>
+<td>test_decisoes_dividir_linha</td>
+<td>13 passaram</td>
+</tr>
+<tr>
+<td>test_decisoes_dividir</td>
+<td>21 passaram</td>
+</tr>
+<tr>
+<td>test_dividir_na_tela</td>
+<td>9 passaram</td>
+</tr>
+<tr>
+<td>test_decisoes_marcacoes</td>
+<td>19 passaram</td>
+</tr>
+<tr>
+<td>test_guias</td>
+<td>14 passaram</td>
+</tr>
+<tr>
+<td>test_decisoes_shift_todas_as_telas</td>
+<td>10 passaram</td>
+</tr>
+<tr>
+<td>test_decisoes</td>
+<td>26 passaram</td>
+</tr>
+</tbody>
+</table>
+<p>Depois do segundo conserto (a roda), rodados de novo: test_decisoes_mover_lado 7, test_zoom_no_ponteiro 5,
+test_decisoes_9b2 30, test_decisoes_ver 11 — todos passaram. <strong>Nenhum teste antigo foi mudado.</strong></p>
+<p><strong>Teste de reversão:</strong> <code>tests/test_decisoes_mover_lado.py</code> no código antigo (<code>dd7a648c</code>, os três arquivos de
+<code>ui/</code> voltados): <strong>5 falharam</strong> (arrastar nos pares, vindo do Dividir, canto, número/peça nos pares, outra
+página do par) e 2 passaram (são guardas do que já funcionava: "Uma página"/outra ferramenta/Dividir, e o
+Ctrl+roda nos pares).</p>
+<h2>Rodada do GitHub</h2>
+<p>Rodada <strong>41856247413</strong> (ramo <code>mover-lado-2026-11-04</code> em <code>bb11ff93</code>): <strong>passou inteira</strong> — as 5 partes da
+suíte, os botões e prints da janela real, e o resumo.</p>
+<h2>Ressalvas</h2>
+<ul>
+<li><strong>Achado do piloto, já consertado:</strong> na janela de verdade, Ctrl+roda em cima da página do Mover dava zoom
+  mas pulava para a última página (a conta do ponto passava pela tela inteira). Consertado (commit
+  <code>1aa98650</code>); a prova automática confere que a página da vez não muda, mas na janela de teste do PC (sem
+  tela) a conta errada não aparecia: quem pegou foi o piloto (<code>piloto_roda.py</code>: Cortar e Mover agora iguais).</li>
+<li>Nos pares, a página do Mover fica com 8 pontos de folga em volta (para os cantos azuis aparecerem
+  inteiros): ela sai um pouco menor que a outra página do par. Com o conteúdo passando da beirada, a área
+  branca fica ainda menor, porque a vista mostra a página inteira (D-541), como na "Uma página".</li>
+<li>Página da vez tirada do livro (não aparece nos pares): o Mover fica fora dos pares, como antes.</li>
+<li>Com o foco do teclado no número "Tamanho do conteúdo" (depois de digitar nele), as letras X e F viram
+  texto do número e não trocam de ferramenta. Já era assim; não mexi.</li>
+</ul>
+<h2>Bugs para a Lista de bugs (não consertados, já eram assim)</h2>
+<ul>
+<li><strong>Área branca muda de 29,7 × 21,0 para 31,7 × 22,0 cm</strong> no Gradus (página 39, "margens iguais" ligado pelo
+  Automático) depois de Ctrl+Z e Ctrl+Y de um arrasto, com o mesmo estado da página. Acontece também na "Uma
+  página" (<code>piloto_area.py</code>, <code>anotacoes-piloto-area.txt</code>, print <code>p201</code>), caminho que este conserto não mexe.
+  Parece a conta das margens iguais chegando depois; não investigado a fundo.</li>
+</ul>
+<h2>Perguntas para o Samuel (escolhas que mantive como já eram)</h2>
+<ol>
+<li>Clicar na outra página do par: hoje (como já era nos pares) o clique só a escolhe; o arrasto vale a
+   partir do próximo aperto. Quer que já arraste no mesmo aperto? (print <code>p09</code>)</li>
+<li>Os cantos azuis aparecem só na página da vez, não nas duas (como na "Uma página", que mostra uma).
+   Está bom? (print <code>p03</code>)</li>
+<li>"usar em todas..." nos pares: igual à "Uma página" (leva o tamanho e o lugar da página da vez). Não muda.</li>
+</ol>
+<h2>Decisões: como cumpri cada uma</h2>
+<ul>
+<li>D-612: provas <code>test_reversao_d612_*</code> e <code>test_d612_*</code>; piloto 20/20; prints p03 a p09.</li>
+<li>D-008/D-541 (arrastar, canto, número, a vista se ajusta): <code>test_reversao_d612_arrastar...</code> (tela = PDF até
+  1%), <code>..._puxar_o_canto...</code>, <code>test_d612_numero_do_tamanho...</code>; p04, p06, p07.</li>
+<li>D-540 (F): <code>test_reversao_d612_vindo_do_dividir...</code>, <code>test_d612_numero_do_tamanho_e_tecla_f...</code>; p03.</li>
+<li>D-543/D-017: a parte de fora vermelha com listras e o aviso nos pares (p04).</li>
+<li>D-006/D-015/D-570 (pares, zoom do par): <code>test_d612_os_pares_continuam_pares</code>,
+  <code>test_d612_ctrl_roda...</code>; p08, p09, p11.</li>
+<li>D-601/D-609/D-610/D-611: provas antigas passando; piloto (linha arrastada no Dividir em "Duas lado a
+  lado", p02; tira em pares, p03).</li>
+<li>D-605: nenhum teste antigo mudado; 19 arquivos de teste passando; "Uma página" igual (p10).</li>
+</ul>
+<p class="rodape">Editor de Impressão &middot; gerado em 04/11/2026 às 11:40</p>
+</body>
+</html>

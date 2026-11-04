@@ -3,7 +3,9 @@
 Ramo `mover-lado-2026-11-04` (saiu de `obra-2026-10-26`, ponta `dd7a648c`). Cópia:
 `D:\programas\EditorImpressao\.claude\worktrees\mover-lado`.
 
-**Situação:** lendo e planejando (nenhuma linha do programa mudada ainda).
+**Situação (04/11, fim):** feito e testado no PC (19 arquivos de teste, piloto 20/20). Commits `6d503cde`
+(o conserto), `1aa98650` (a roda nos pares, achado do piloto), `bb11ff93` (piloto e prints). Rodada do GitHub
+41856247413 (ver `relatorio.md`). Relatório: `relatorio.md` (.html/.pdf).
 
 ## Decisões que esta tarefa precisa cumprir
 
@@ -66,4 +68,13 @@ linha; os pares continuam pares (clicar numa página faz dela a da vez, a roda r
 
 ## Perguntas para o Samuel
 
-(nenhuma ainda)
+Mantive como já era nos pares e na "Uma página" (nada novo decidido); perguntar para confirmar:
+
+1. Clicar na outra página do par só a escolhe (como já era); o arrasto vale do próximo aperto. Quer que já
+   arraste no mesmo aperto? (print `prints/p09-outra-pagina-do-par.png`)
+2. Os cantos azuis só na página da vez (como na "Uma página"). Está bom? (print `prints/p03-F-mover-nos-pares.png`)
+3. Ainda em aberto, da gerente: o mesmo vale para Cortar, Endireitar, marcar e "antes / depois"? (não mexidos)
+
+## Como cumpri cada decisão
+
+Ver `relatorio.md`, seção "Decisões: como cumpri cada uma".
