@@ -167,7 +167,11 @@ def test_desligar_o_dividir_nao_recomeca_e_o_ctrl_z_continua_certo(janela, pasta
     _desligar_o_dividir(janela)
 
     assert not any("Comecei a conferência" in a for a in janela.avisos)
-    assert janela.projeto.folhas[0].rotacao == 90                # o trabalho ficou
+    # D-618 (Samuel, 04/11/2026: "ele deveria girar o conteudo só que é da pagina
+    # cortada, mas ele gira a pagina verdadeira do scan"): o giro mora na pagina 1,
+    # nao na folha; o trabalho fica (ate 04/11: folhas[0].rotacao == 90; troca
+    # autorizada pela gerente)
+    assert janela.projeto.paginas[0].giro_da_pagina == 90        # o trabalho ficou
     assert janela.projeto.paginas[0].filtro == MELHORAR
     assert not list(Path(janela.resumo.pasta).glob("projeto.antigo-*.json"))
 
