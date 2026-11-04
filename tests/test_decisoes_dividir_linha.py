@@ -123,8 +123,10 @@ def test_reversao_d602_linha_azul_na_folha_dupla_inteira_em_uma_pagina(janela, t
     assert vista.posicao_corte == pytest.approx(DOBRA, abs=0.03)
     assert not projeto.folhas[0].dividir and len(projeto.paginas) == 2, "nada foi cortado"
     assert not janela.acoes.pode_desfazer, "abrir o Dividir não grava nada"
-    # a linha da folha inteira é só para ver: arrastar não muda nada (pergunta ao Samuel)
-    assert not vista.corte_arrastavel
+    # (03/11) a linha da folha inteira era só para ver, até a resposta da pergunta ao Samuel
+    # (`d602-arrastar`). D-609 (04/11, a-54: "não consigo mover a linha azul manualmente." →
+    # "Sim"): agora ela se arrasta; as provas estão em tests/test_decisoes_dividir_arrastar.py.
+    assert vista.corte_arrastavel
 
 
 def test_d602_folha_de_uma_pagina_nao_mostra_linha(janela, tmp_path):
