@@ -1,4 +1,4 @@
-# ONDE PAREI — D-617, escrever o número da folha na prévia do Automático
+﻿# ONDE PAREI — D-617, escrever o número da folha na prévia do Automático
 
 Ramo `previa-numero-2026-11-04` (saiu de `obra-2026-10-26`), cópia `.claude/worktrees/previa-numero`.
 Mexo só no contador da prévia (`ui/automatico.py`, `PaginaAntesEDepois`). Outro agente mexe na etapa
@@ -52,7 +52,7 @@ exatamente "página N de M" (os testes antigos leem assim). O tela cheia não mu
 - [x] código (`fa32c0a0`)
 - [x] testes da prévia, um arquivo por vez (todos passaram)
 - [x] janela de verdade com o Gradus (13 de 13; prints `prints/novo-*`)
-- [ ] GitHub
+- [x] GitHub: rodada 41884336233 passou (23 min)
 - [x] relatório (`relatorio.md`)
 
 ## Perguntas para o Samuel

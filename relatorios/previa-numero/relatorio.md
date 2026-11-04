@@ -60,3 +60,7 @@ rodou nem fechou a janela.
 
 1. Gradus, Automático: clique no número de "página 30 de 70", escreva 45 e Enter: a prévia mostra a página 45.
 2. Marque "Dividir folhas ao meio" e use < >: as setas continuam andando pelas metades.
+
+## GitHub
+
+Rodada 41884336233 (Testes no Windows, ramo previa-numero-2026-11-04): passou, todos os testes.
