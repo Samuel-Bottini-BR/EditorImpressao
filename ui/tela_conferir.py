@@ -298,6 +298,10 @@ ORDEM_DAS_FERRAMENTAS = ("corte", "bordas", "angulo", "mover", "marcar", "filtro
 # vista de sempre (_onde_vai_a_peca). O Dividir nunca (D-601: lá o "Duas lado
 # a lado" é a folha inteira com a linha); o Filtro não tem peça de mexer.
 FERRAMENTAS_NO_PAR = (ABA_BORDAS, ABA_ANGULO, ABA_MOVER, ABA_MARCAR)
+# D-612 (a-77/a-78): as ferramentas cujo "antes / depois" compara a página como
+# veio com como vai sair (o que a ferramenta fez), e não só o filtro
+# (_mostrar_antes_depois). Seguro mudar: nada sem perguntar ao Samuel.
+FERRAMENTAS_DE_PAGINA_NO_ANTES_DEPOIS = (ABA_BORDAS, ABA_ANGULO, ABA_MOVER)
 
 TITULOS = {
     ABA_CORTE: "Onde cortar",
@@ -5413,7 +5417,13 @@ class TelaConferir(QWidget):
         visivel = self.vista_da_pagina.currentWidget()
         if visivel is self.lado_a_lado:
             self.lado_a_lado.atualizar_imagens()
-        elif visivel is self.vista_antes_depois and chave.startswith(f"{self.indice_pagina}:"):
+        elif visivel is self.vista_antes_depois and (
+                chave.startswith(f"{self.indice_pagina}:")
+                or (self.aba_atual in FERRAMENTAS_DE_PAGINA_NO_ANTES_DEPOIS
+                    and 0 <= self.indice_pagina < len(self.projeto.paginas)
+                    and chave == self.previas.chave_folha(
+                        self.projeto.paginas[self.indice_pagina].folha, DPI_PREVIA))):
+            # D-612: o "antes" das ferramentas de página é a folha como veio
             self._mostrar_antes_depois()
         esperadas = (
             self.previas.chave(self.indice_pagina, self._dpi_atual),
@@ -8068,6 +8078,18 @@ class TelaConferir(QWidget):
         # etapa 9b-2 (D-547): as duas como saem no PDF (movidas, na folha)
         depois = self._como_sai_no_pdf(self.previas.pegar(indice, self._dpi_atual), indice)
         rotulos = ("antes: Original", f"depois: {nome}")
+        if self.aba_atual in FERRAMENTAS_DE_PAGINA_NO_ANTES_DEPOIS:
+            # D-612 (Samuel, 04/11/2026, a-77/a-78: "aparece uma mensagem pedindo
+            # para escolher filtro, esse era o objetivo? [...] não mostra o depois
+            # mesmo movendo a pagina ou aumentando ela"; e "Ok, pode ser assim o
+            # antes e depois"): com Mover, Cortar e Endireitar, o "depois" é a
+            # página como vai sair, com o que a ferramenta fez, e o "antes" é a
+            # página como veio (a metade da folha do PDF, sem endireitar, cortar
+            # nem mover, no Original) - também com o filtro em Original, sem o
+            # aviso. Nas outras ferramentas (marcar, Mão, Zoom, Filtro) continua a
+            # comparação do filtro, com o aviso quando a página é Original.
+            self.vista_antes_depois.definir(self._pagina_como_veio(pagina), depois, True, rotulos)
+            return
         if filtro == ORIGINAL:
             self.vista_antes_depois.definir(
                 None, depois, False, rotulos, "Escolha outro filtro para comparar com o Original.")
@@ -8075,6 +8097,21 @@ class TelaConferir(QWidget):
         antes = self._como_sai_no_pdf(
             self.previas.pegar_com_filtro(indice, self._dpi_atual, ORIGINAL), indice)
         self.vista_antes_depois.definir(antes, depois, True, rotulos)
+
+    def _pagina_como_veio(self, pagina):
+        """D-612: a página como veio do PDF, para o "antes" das ferramentas de
+        página no "antes / depois": a folha (girada de 90 em 90, como o Dividir
+        a mostra) partida na linha, a metade desta página; a folha inteira se
+        ela não é dividida. None enquanto a folha não chegou (a prévia da folha
+        é pedida aqui e chega em _previa_chegou)."""
+        assert self.projeto is not None and self.previas is not None
+        img = self.previas.pegar_folha(pagina.folha, DPI_PREVIA)
+        if img is None:
+            return None
+        folha = self.projeto.folhas[pagina.folha]
+        if folha.dividir and pagina.metade in (METADE_ESQUERDA, METADE_DIREITA):
+            img = dividir_imagem(img, folha.posicao_corte)[0 if pagina.metade == METADE_ESQUERDA else 1]
+        return img
 
     def _roda_na_pagina(self, vista, evento) -> bool:
         """D-021 e o pedido da etapa 6 (27/10: "roda do mouse troca de página

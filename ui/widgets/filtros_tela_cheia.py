@@ -253,6 +253,20 @@ class VistaAntesDepois(QWidget):
         super().resizeEvent(evento)
         self._por_a_ferramenta_no_lugar()
 
+    def _lugar_do_antes(self, area: QRectF) -> QRectF:
+        """Onde o "antes" é desenhado: a área do "depois" (o de sempre, as duas
+        do mesmo formato) ou, se o "antes" tem outro formato (mais de 1%), o
+        maior retângulo no formato dele dentro dela, no meio (D-612: o "antes"
+        das ferramentas de página é a página como veio)."""
+        if self.antes is None or self.antes.height() <= 0 or area.height() <= 0:
+            return area
+        formato = self.antes.width() / self.antes.height()
+        if abs(formato - area.width() / area.height()) <= 0.01 * formato:
+            return area
+        escala = min(area.width() / self.antes.width(), area.height() / self.antes.height())
+        w, h = self.antes.width() * escala, self.antes.height() * escala
+        return QRectF(area.center().x() - w / 2, area.center().y() - h / 2, w, h)
+
     def _area(self, pix: QPixmap) -> QRectF:
         escala = min((self.width() - 20) / pix.width(), (self.height() - 20) / pix.height())
         w, h = pix.width() * escala, pix.height() * escala
@@ -271,8 +285,11 @@ class VistaAntesDepois(QWidget):
         area = self._area(self.depois)
         if self.comparando and self.antes is not None:
             # D-577 (30/10): o antes por baixo, a página toda (o que fica à direita da
-            # linha), e o depois por cima, da beirada esquerda até a linha
-            pintor.drawPixmap(area, self.antes, QRectF(self.antes.rect()))
+            # linha), e o depois por cima, da beirada esquerda até a linha. D-612
+            # (04/11): o "antes" de uma ferramenta de página é a página como veio
+            # (sem o corte, o giro e o mover), que pode ter outro formato: fica no
+            # formato dele, no meio do lugar (antes ficaria esticada)
+            pintor.drawPixmap(self._lugar_do_antes(area), self.antes, QRectF(self.antes.rect()))
             x = area.left() + area.width() * self.posicao
             parte = QRectF(area.left(), area.top(), x - area.left(), area.height())
             fonte = QRectF(0, 0, self.depois.width() * self.posicao, self.depois.height())
