@@ -1,0 +1,12 @@
+{"qual": "antes", "abrir_s": 0.293, "marcar_dividir_s": 0.991, "seta_s": 0.929, "largura_do_depois": 2117, "contador": "página 69 de 70", "indice_depois_da_seta": 68, "lista_fria_e_guardada_s": null}
+{"qual": "agora", "abrir_s": 0.249, "marcar_dividir_s": 0.894, "seta_s": 0.069, "largura_do_depois": 1074, "contador": "página 68 de 70", "indice_depois_da_seta": 67, "lista_fria_e_guardada_s": null}
+{"qual": "antes", "abrir_s": 0.23, "marcar_dividir_s": 0.737, "seta_s": 0.646, "largura_do_depois": 2117, "contador": "página 69 de 70", "indice_depois_da_seta": 68, "lista_fria_e_guardada_s": null}
+{"qual": "agora", "abrir_s": 0.216, "marcar_dividir_s": 0.777, "seta_s": 0.056, "largura_do_depois": 1074, "contador": "página 68 de 70", "indice_depois_da_seta": 67, "lista_fria_e_guardada_s": null}
+{"qual": "antes", "abrir_s": 0.248, "marcar_dividir_s": 0.83, "seta_s": 0.871, "largura_do_depois": 2117, "contador": "página 69 de 70", "indice_depois_da_seta": 68, "lista_fria_e_guardada_s": null}
+{"qual": "agora", "abrir_s": 0.23, "marcar_dividir_s": 0.909, "seta_s": 0.066, "largura_do_depois": 1074, "contador": "página 68 de 70", "indice_depois_da_seta": 67, "lista_fria_e_guardada_s": null}
+{"qual": "antes", "abrir_s": 0.244, "marcar_dividir_s": 0.913, "seta_s": 0.835, "largura_do_depois": 2117, "contador": "página 69 de 70", "indice_depois_da_seta": 68, "lista_fria_e_guardada_s": null}
+{"qual": "agora", "abrir_s": 0.288, "marcar_dividir_s": 0.923, "seta_s": 0.073, "largura_do_depois": 1074, "contador": "página 68 de 70", "indice_depois_da_seta": 67, "lista_fria_e_guardada_s": null}
+{"qual": "antes", "abrir_s": 0.299, "marcar_dividir_s": 0.946, "seta_s": 0.905, "largura_do_depois": 2117, "contador": "página 69 de 70", "indice_depois_da_seta": 68, "lista_fria_e_guardada_s": null}
+{"qual": "agora", "abrir_s": 0.268, "marcar_dividir_s": 0.949, "seta_s": 0.061, "largura_do_depois": 1074, "contador": "página 68 de 70", "indice_depois_da_seta": 67, "lista_fria_e_guardada_s": null}
+{"qual": "antes", "abrir_s": 0.321, "marcar_dividir_s": 0.948, "seta_s": 0.886, "largura_do_depois": 2117, "contador": "página 69 de 70", "indice_depois_da_seta": 68, "lista_fria_e_guardada_s": null}
+{"qual": "agora", "abrir_s": 0.293, "marcar_dividir_s": 0.93, "seta_s": 0.061, "largura_do_depois": 1074, "contador": "página 68 de 70", "indice_depois_da_seta": 67, "lista_fria_e_guardada_s": null}

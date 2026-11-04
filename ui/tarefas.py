@@ -651,7 +651,8 @@ class TarefaPreviaDoAutomatico(QThread):
     Arriscado: desenhar no projeto aberto (o desenho anota avisos e a
     marcacao provisoria na pagina); emitir `pronta` depois de cancelada."""
 
-    # chave, indice, antes (ou None), [depois], {"do_livro": imagem ou None, "filtro_depois": str}
+    # chave, indice, antes (ou None), [depois], {"do_livro": imagem ou None, "filtro_depois": str,
+    # "metades": [a metade de cada imagem do depois]} (D-614: a janela mostra uma metade so)
     pronta = Signal(str, int, object, object, object)
     falhou = Signal(str, str)                     # chave, mensagem
     terminou = Signal(object)                     # a tarefa
@@ -708,11 +709,16 @@ class TarefaPreviaDoAutomatico(QThread):
                     doc, self.copia, self.pedido, self.indice, self.dpi,
                     cancelado=lambda: self._cancelar, andamento=self._avisar_andamento)
                 filtro = automatico.filtro_depois(self.copia, folha, metade)
+                # D-614 (04/11/2026): a metade ("esquerda", "direita" ou "inteira") de cada
+                # imagem do depois, na mesma ordem (a copia ja tem o pedido aplicado: a mesma
+                # lista que depois_da_pagina desenhou). A janela mostra so a metade da vez.
+                metades = [p.metade for p in automatico.paginas_depois(self.copia, folha, metade)]
             finally:
                 doc.close()
             if not self._cancelar:
                 self.pronta.emit(self.chave, self.indice, antes, depois,
-                                 {"do_livro": do_livro, "filtro_depois": filtro})
+                                 {"do_livro": do_livro, "filtro_depois": filtro,
+                                  "metades": metades})
         except Cancelou:
             pass
         except Exception as erro:  # noqa: BLE001 - nada pode derrubar o programa
