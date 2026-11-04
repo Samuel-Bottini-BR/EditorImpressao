@@ -407,7 +407,7 @@ Juntados no `obra-2026-10-26` nesta noite: balão do cinza (`99e7c6b`), D-574 se
 | `a1bfe001aa3299d74` | `.claude\worktrees\caderno-etapas` | `caderno-etapas-2026-11-04` (de `016ec37a`) | D-603: folhas do caderno (etapa 7) seguem as etapas marcadas antes do Rodar, montando só a folha à vista; regra D-605; Samuel: "pode começar a fazer mais esse concerto" · **entregue e juntado** (`8c40dad8`, 04/11; GitHub 41780218098; velocidade igual) |
 | `ab51c85b21054d53a` | `.claude\worktrees\dividir-arrastar` | `dividir-arrastar-2026-11-04` (de `e17410fe`) | D-609: arrastar a linha azul na folha inteira, "dividir esta" corta onde ficou; regra D-605; Samuel: "sim"; + D-610 e D-611 · **entregue e juntado** (`2af68a60`, 04/11; GitHub 41788480788) |
 | `ac80c97236ffce747` | `.claude\worktrees\mover-parou` | `mover-parou-2026-11-04` (de `249922d2`) | "Mover e redimensionar" para de funcionar (reproduzir pelo `acoes.jsonl` do Gradus de 04/11, achar a causa, consertar); regra D-605; Samuel: "pode colocar um agente para concertar isso" · **causa achada, sem mudar código** (vista Duas lado a lado / antes-depois cobre a ferramenta); esperando o Samuel (04/11) |
-- `mover-lado-2026-11-04` (04/11): D-612, Mover funciona em “Duas lado a lado”. Agente trabalhando.
+- `mover-lado-2026-11-04` (04/11): D-612, Mover funciona em “Duas lado a lado”. Mover entregue e juntado (`2c0f05ef`); Cortar, Endireitar e marcar em andamento.
 - `dividir-aviso-2026-11-04` (04/11): D-613, “dividir todas” pergunta sobre as folhas juntadas à mão. Entregue e juntado (`77cccc09`).
-- `tira-pares-2026-11-04` (04/11): D-611 não funcionou para o Samuel no Dividir (print a-57). Agente achando a causa.
-- `previa-dividida-2026-11-04` (04/11): D-614, prévia do Dividir no Automático como se já tivesse dividido. Agente trabalhando.
+- `tira-pares-2026-11-04` (04/11): D-611 não funcionou para o Samuel no Dividir (print a-57). Entregue e juntado (`d216819d`).
+- `previa-dividida-2026-11-04` (04/11): D-614, prévia do Dividir no Automático como se já tivesse dividido. Agente ajustando 4 testes da D-577 que a D-614 substitui.
