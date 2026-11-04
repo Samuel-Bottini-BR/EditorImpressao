@@ -91,5 +91,5 @@ Obra juntada no ramo antes de começar (`git merge obra-2026-10-26`, avanço dir
 - [x] testes antigos autorizados: D-614 (`9ad1d87c`), D-617 parte 1 (`3007f97d`)
 - [x] arquivos de teste no PC, um por vez: todos passaram (também D-615 e D-616)
 - [x] janela de verdade com o Gradus: 11 de 11 (`anotacoes-dividir.txt`, prints `dividir-*`)
-- [ ] GitHub
+- [x] GitHub 41913269201: só o test_d148 por tempo; no PC passou (5 de 5)
 - [x] relatório (`relatorio.md`/`.html`/`.pdf`, parte 2 no fim)

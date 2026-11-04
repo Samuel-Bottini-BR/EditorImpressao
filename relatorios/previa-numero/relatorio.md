@@ -122,3 +122,7 @@ Janela de verdade: 11 de 11 conferências certas (`anotacoes-dividir.txt`).
 1. Gradus, Automático, marque "Dividir folhas ao meio", escreva 135 e Enter: aparece a metade da
    esquerda da folha 68 como "página 135 de 140"; ">" mostra "136 de 140".
 2. Marque também "A 1ª folha é a capa aberta" e escreva 1: a capa aparece como "página 1".
+
+## GitHub (parte 2)
+
+Rodada 41913269201: só `test_d148_desfazer_o_automatico_devolve_o_so_as_letras_do_livro` falhou, por tempo ("não aconteceu a tempo"); no PC o arquivo `tests/test_decisoes_so_as_letras.py` passou inteiro (5 de 5). Todo o resto passou.
