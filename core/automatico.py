@@ -388,6 +388,29 @@ def paginas_mexidas(projeto, pedido: Pedido) -> list[int]:
     return sorted(achadas)
 
 
+def paginas_juntadas(projeto, pedido: Pedido, mexidas: list[int]) -> list[int]:
+    """D-607 (Samuel, 03/11/2026: "só temos que mudar o aviso, avisar que as
+    páginas foram juntadas e que vão ser separadas se o processar
+    continuar."): das `mexidas` (paginas_mexidas), as que são de folha
+    JUNTADA de volta no Dividir ("não dividir esta" ou "juntar todas": a folha
+    não está dividida e guarda as duas páginas de antes, ConfigFolha.
+    metades_guardadas, D-498/D-590), quando o pedido tem o Dividir. Só muda o
+    TEXTO da pergunta da D-004 (ui/janela_principal._perguntar_mexidas): a
+    contagem, os botões e o que "pular" faz continuam os de paginas_mexidas.
+    Seguro mudar: nada além do critério de "juntada". Arriscado: usar isto
+    para decidir o que pular (a D-607 manda só mudar o aviso)."""
+    if pedido.desligar or DIVIDIR not in pedido.etapas or not mexidas:
+        return []
+    juntadas = {f.indice for f in projeto.folhas
+                if not f.dividir and getattr(f, "metades_guardadas", None)
+                and E.mexida_a_mao(projeto, f, E.DIVIDIR)}
+    if not juntadas:
+        return []
+    alvo = set(mexidas)
+    return sorted(p.indice for p in projeto.paginas
+                  if p.indice in alvo and p.folha in juntadas)
+
+
 def _filtro_trocado_na_pagina(projeto, pagina) -> bool:
     """A pagina tem um filtro diferente do filtro do livro, com o "Limpar a
     folha" valendo nela, e nao por o Automatico ter rodado so nela? Conta

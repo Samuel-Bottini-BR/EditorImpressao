@@ -751,3 +751,115 @@ def test_livro_aberto_rodar_o_automatico_abre_o_automatico_e_mostra_revisar_e_re
     assert livro.para_revisar.text().startswith("Para revisar:")
     janela._abrir_e_mostrar_o_automatico(resumo)
     assert janela.janela_do_automatico is not None
+
+
+# --- D-607 (03/11/2026): o aviso das mexidas fala das folhas juntadas -------------------------
+
+def _caixa_das_mexidas(monkeypatch, responder: str = "Pular") -> list[dict]:
+    """Troca o exec da caixa "Páginas mexidas à mão" por um que anota o que ela diz e clica no
+    botão `responder` (como a pessoa faria)."""
+    from PySide6.QtWidgets import QMessageBox
+
+    vistas: list[dict] = []
+
+    def exec_(caixa):
+        vistas.append({"titulo": caixa.windowTitle(), "texto": caixa.text(),
+                       "mais": caixa.informativeText(),
+                       "botoes": [b.text() for b in caixa.buttons()]})
+        next(b for b in caixa.buttons() if b.text().startswith(responder)).click()
+        return 0
+
+    monkeypatch.setattr(QMessageBox, "exec", exec_)
+    return vistas
+
+
+def _tres_folhas_juntadas(janela, tmp_path, mais_uma_em_pe: bool = False):
+    """3 folhas de livro aberto divididas à mão ("dividir esta") e juntadas de volta com
+    "juntar todas" - o caminho do verificador no Gradus (teste 3). `mais_uma_em_pe`: uma 4ª
+    folha, de uma página só, que não é dividida nem juntada."""
+    from core import dividir_a_mao
+
+    aberto = np.concatenate([_pagina(), _pagina()], axis=1)
+    janela.abrir_livro(_pdf(tmp_path / "juntadas.pdf",
+                            [aberto] * 3 + ([_pagina()] if mais_uma_em_pe else [])))
+    tela, projeto = janela.tela_conferir, janela.projeto
+    tela.escolher_ferramenta("dividir")
+    for folha in range(3):
+        tela._ir_para(folha)
+        tela._registrar("dividir_a_mao", "folha", [folha],
+                        dividir_a_mao.campos_para_dividir(projeto, folha, 0.5),
+                        f"Folha {folha + 1}: dividir")
+    tela.botao_juntar_todas.click()
+    assert not any(f.dividir for f in projeto.folhas)
+    assert len(projeto.paginas) == 3 + (1 if mais_uma_em_pe else 0)
+    return tela, projeto
+
+
+def test_reversao_d607_juntar_todas_e_rodar_dividir_o_aviso_fala_das_juntadas(janela, tmp_path,
+                                                                              monkeypatch):
+    """D-607. Pergunta: "Depois do "juntar todas", rodar o Automático com o Dividir pergunta "70
+    páginas mexidas à mão". [...] O "juntar todas" deve contar como mexida à mão?" → "só temos
+    que mudar o aviso, avisar que as páginas foram juntadas e que vão ser separadas se o
+    processar continuar."
+    Achado do verificador clicando (03/11/2026, teste 3, Gradus Primus): "juntar todas" e depois
+    o Automático com "1 Dividir" → "70 páginas foram mexidas à mão nas etapas que vão rodar.
+    Pular essas páginas?".
+    Agora o aviso diz que as páginas foram juntadas e vão ser separadas se continuar. O resto
+    fica como está (D-004): o título, a explicação de baixo, os três botões, a contagem ("Pular
+    as 3") e o que "Pular" faz (as folhas continuam juntadas). O ANTIGO SAIU: "mexidas à mão"
+    não aparece mais quando só há folhas juntadas. No código de antes (75ed04af) falha."""
+    _tela, projeto = _tres_folhas_juntadas(janela, tmp_path)
+    vistas = _caixa_das_mexidas(monkeypatch, "Pular")
+    assert _rodar(janela, [A.DIVIDIR])
+    assert len(vistas) == 1
+    caixa = vistas[0]
+    assert caixa["texto"] == ("3 páginas foram juntadas no Dividir e vão ser separadas se o "
+                              "processar continuar nelas. Pular essas páginas?")
+    assert "mexida" not in caixa["texto"]
+    # o resto da caixa fica como era (D-004)
+    assert caixa["titulo"] == "Páginas mexidas à mão"
+    assert sorted(caixa["botoes"]) == ["Pular as 3", "Rodar nelas também", "cancelar"]
+    assert caixa["mais"].startswith("Pular: elas ficam como você deixou nessas etapas.")
+    assert len(projeto.paginas) == 3 and not any(f.dividir for f in janela.projeto.folhas), \
+        "Pular: as folhas continuam juntadas (D-004)"
+
+
+def test_d607_rodar_nelas_tambem_separa_as_juntadas(janela, tmp_path, monkeypatch):
+    """D-607 ("vão ser separadas se o processar continuar"): o "Rodar nelas também" continua
+    fazendo o que fazia (D-004): as folhas juntadas são divididas."""
+    _tela, _projeto = _tres_folhas_juntadas(janela, tmp_path)
+    vistas = _caixa_das_mexidas(monkeypatch, "Rodar nelas")
+    assert _rodar(janela, [A.DIVIDIR])
+    assert "juntadas" in vistas[0]["texto"]
+    assert len(janela.projeto.paginas) == 6 and all(f.dividir for f in janela.projeto.folhas)
+
+
+def test_d607_mistura_de_juntadas_e_mexidas_diz_as_duas_partes(janela, tmp_path, monkeypatch):
+    """D-607 com mistura: 3 folhas juntadas e 1 página (de outra folha) com o ângulo mexido à
+    mão; rodar Dividir e Endireitar → o aviso diz as duas coisas, na mesma caixa; a contagem é a
+    de sempre (4)."""
+    from ui.tela_conferir import FERRAMENTA_ENDIREITAR
+
+    tela, projeto = _tres_folhas_juntadas(janela, tmp_path, mais_uma_em_pe=True)
+    tela.escolher_ferramenta(FERRAMENTA_ENDIREITAR)
+    tela.ir_para_pagina(3)
+    tela._gravar_angulo(3, 1.5)
+    assert etapas.ENDIREITAR in projeto.paginas[3].mexida_a_mao
+    vistas = _caixa_das_mexidas(monkeypatch, "cancelar")
+    assert not _rodar(janela, [A.DIVIDIR, A.ENDIREITAR])
+    assert vistas[0]["texto"] == (
+        "3 páginas foram juntadas no Dividir e vão ser separadas se o processar continuar nelas. "
+        "1 página foi mexida à mão nas etapas que vão rodar. Pular essas páginas?")
+    assert "Pular as 4" in vistas[0]["botoes"]
+
+
+def test_d607_sem_juntadas_o_aviso_e_o_de_sempre(janela, tmp_path, monkeypatch):
+    """D-607 não muda o aviso de quem não juntou nada (D-004): uma página com o ângulo à mão →
+    "1 página foi mexida à mão nas etapas que vão rodar. Pular essas páginas?"."""
+    janela.abrir_livro(_livro(tmp_path))
+    _mexer_no_angulo(janela, 2, 1.5)
+    vistas = _caixa_das_mexidas(monkeypatch, "cancelar")
+    assert not _rodar(janela, [A.ENDIREITAR])
+    assert vistas[0]["texto"] == ("1 página foi mexida à mão nas etapas que vão rodar. "
+                                  "Pular essas páginas?")
+    assert sorted(vistas[0]["botoes"]) == ["Pular esta", "Rodar nelas também", "cancelar"]
