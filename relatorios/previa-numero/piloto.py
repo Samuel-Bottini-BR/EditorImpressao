@@ -38,6 +38,7 @@ FASE = sys.argv[1] if len(sys.argv) > 1 else "base"
 LOG = open(AQUI / f"anotacoes-{FASE}.txt", "w", encoding="utf-8")
 N = [0]
 VK_LEFT, VK_RIGHT, VK_UP, VK_DOWN, VK_BACK, VK_END = 0x25, 0x27, 0x26, 0x28, 0x08, 0x23
+VK_PRIOR, VK_NEXT = 0x21, 0x22                  # Page Up, Page Down
 
 
 def anotar(chave, valor=None):
@@ -97,7 +98,7 @@ def esperar_previa(painel, limite=120):
 def estado(grande) -> dict:
     from PySide6.QtWidgets import QApplication
     painel = grande.antes_e_depois
-    foco = QApplication.focusWidget()
+    foco = QApplication.focusWidget() or grande.focusWidget()   # o da janela, se o app não está ativo
     campo = getattr(painel, "campo_pagina", None)
     return {
         "indice": painel._indice, "pagina": painel._indice + 1, "metade": painel._metade,
@@ -114,9 +115,15 @@ def abrir():
     base.preparar(str(RAIZ), str(SCRATCH), limpar=False)
     import projetos
     pasta = preparar_copia()
-    resumo = projetos.ler_resumo(pasta)
     j = base.nova_janela(LARGURA, ALTURA)
-    j.abrir_livro(resumo.caminho_entrada, resumo=resumo)
+    if FASE == "novo":
+        # o Gradus como no print a-63: 70 páginas, folhas ainda inteiras (a cópia do projeto de
+        # teste já está dividida, 140); a cópia do PDF aberta como livro novo, sem o projeto
+        shutil.rmtree(pasta)                 # só a cópia, na pasta de trabalho deste script
+        j.abrir_livro(str(base.TRAB / "livros" / GRADUS.name))
+    else:
+        resumo = projetos.ler_resumo(pasta)
+        j.abrir_livro(resumo.caminho_entrada, resumo=resumo)
     anotar("abriu-em-s", esperar_tela(j))
     j.tela_conferir.ir_para_pagina(29)          # a página 30, como no print a-63
     base.esperar(1.0)
@@ -138,6 +145,10 @@ def setas(grande, nome):
     anotar(f"{nome}-depois-de-Direita-2", estado(grande))
     base.tecla(grande, VK_LEFT)
     anotar(f"{nome}-depois-de-Esquerda", estado(grande))
+    base.tecla(grande, VK_NEXT)
+    anotar(f"{nome}-depois-de-PageDown", estado(grande))
+    base.tecla(grande, VK_PRIOR)
+    anotar(f"{nome}-depois-de-PageUp", estado(grande))
     esperar_previa(painel)
 
 
@@ -166,7 +177,10 @@ def escrever(grande, texto, nome, enter=True):
     base.clique(grande, campo)
     base.tecla(grande, VK_END)
     base.tecla(grande, VK_BACK, vezes=4)
-    base.digitar(grande, texto, enter=enter)
+    base.digitar(grande, texto, enter=False)
+    anotar(nome + "-escrito-antes-do-Enter", campo.text())
+    if enter:
+        base.tecla(grande, 0x0D)
     esperar_previa(painel)
     anotar(nome, estado(grande))
 
@@ -182,22 +196,26 @@ def fase_novo(j, grande):
     base.conferir(painel._indice == 44 and painel.contador.text() == "página 45 de 70",
                   "45 + Enter mostra a página 45")
     p(grande, "escreveu-45")
-    # as setas do teclado depois de escrever
+    # o teclado depois de escrever: como hoje depois de clicar num botão da barra da prévia
+    # (Direita/Esquerda não viram a página; Page Down/Up viram e voltam; anotacoes-base.txt)
     setas(grande, "depois-de-escrever")
-    base.conferir(painel._indice == 45, "as setas do teclado continuam depois de escrever (Direita, Direita, Esquerda = 46)")
+    base.conferir(painel._indice == 44, "depois de escrever, as setas e o Page Down/Up deixam na 45 (Page Down vai e Page Up volta)")
     # vazio e fora do intervalo: volta ao número atual, sem mensagem
     escrever(grande, "", "vazio-enter")
-    base.conferir(painel._indice == 45 and painel.campo_pagina.text() == "46", "vazio + Enter: fica na 46")
+    base.conferir(painel._indice == 44 and painel.campo_pagina.text() == "45", "vazio + Enter: fica na 45")
     escrever(grande, "0", "zero-enter")
-    base.conferir(painel._indice == 45 and painel.campo_pagina.text() == "46", "0 + Enter: fica na 46")
+    base.conferir(painel._indice == 44 and painel.campo_pagina.text() == "45", "0 + Enter: fica na 45")
     escrever(grande, "99", "noventa-e-nove-enter")
-    base.conferir(painel._indice == 45 and painel.campo_pagina.text() == "46", "99 + Enter: fica na 46")
+    base.conferir(painel._indice == 44 and painel.campo_pagina.text() == "45", "99 + Enter (o livro tem 70): fica na 45")
+    escrever(grande, "abc", "letras-enter")
+    base.conferir(painel._indice == 44 and painel.campo_pagina.text() == "45", "letras + Enter: fica na 45")
+    base.conferir(not grande.isHidden() and j.janela_do_automatico is grande, "nenhum Enter fechou a janela nem rodou")
     p(grande, "fora-do-intervalo-fica")
     # < > com o mouse
     base.clique(grande, painel.botao_anterior)
     esperar_previa(painel)
     anotar("clicou-<", estado(grande))
-    base.conferir(painel._indice == 44, "< com o mouse volta uma")
+    base.conferir(painel._indice == 43, "< com o mouse volta uma (44)")
     # D-614: com o Dividir marcado, < > andam pelas metades
     item = grande.lista.item_da_etapa(A.DIVIDIR)
     from PySide6.QtCore import Qt
@@ -205,16 +223,21 @@ def fase_novo(j, grande):
         item.setCheckState(Qt.Checked)
     esperar_previa(painel)
     escrever(grande, "30", "dividir-escreveu-30")
+    base.conferir((painel._indice, painel._metade) == (29, "esquerda"), "com o Dividir, 30 + Enter: a metade da esquerda da 30")
     p(grande, "dividir-30-esquerda")
     passos = []
     for k in range(3):
         base.clique(grande, painel.botao_proxima)
         esperar_previa(painel)
         passos.append(estado(grande))
-        anotar(f"dividir-clicou->-{k + 1}", passos[-1])
-        p(grande, f"dividir-depois-de->-{k + 1}")
-    base.conferir([(s["indice"], s["metade"]) for s in passos][:1] == [(29, "direita")] or passos[0]["indice"] == 29,
+        anotar(f"dividir-clicou-proxima-{k + 1}", passos[-1])
+        p(grande, f"dividir-depois-de-proxima-{k + 1}")
+    base.conferir((passos[0]["indice"], passos[0]["metade"]) == (29, "direita"),
                   "com o Dividir, o > da 30 mostra a outra metade da mesma folha")
+    base.conferir((passos[1]["indice"], passos[1]["metade"]) == (30, "esquerda"),
+                  "o > seguinte vai à metade da esquerda da 31")
+    base.conferir(all(s["contador"] == f"página {s['pagina']} de 70" for s in passos),
+                  "o contador continua 'página N de 70' nas metades")
     setas(grande, "dividir-teclado")
 
 

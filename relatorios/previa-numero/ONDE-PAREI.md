@@ -48,12 +48,12 @@ exatamente "página N de M" (os testes antigos leem assim). O tela cheia não mu
 
 ## Andamento
 
-- [ ] teste novo que falha antes
-- [ ] código
-- [ ] testes da prévia, um arquivo por vez
-- [ ] janela de verdade com o Gradus (prints)
+- [x] teste novo que falha antes (`tests/test_decisoes_previa_numero.py`, 5 falham em `945505b2`)
+- [x] código (`fa32c0a0`)
+- [x] testes da prévia, um arquivo por vez (todos passaram)
+- [x] janela de verdade com o Gradus (13 de 13; prints `prints/novo-*`)
 - [ ] GitHub
-- [ ] relatório
+- [x] relatório (`relatorio.md`)
 
 ## Perguntas para o Samuel
 
