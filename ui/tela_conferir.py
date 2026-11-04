@@ -5321,6 +5321,12 @@ class TelaConferir(QWidget):
                              conferida=bool(item.revisada))
         self.tira.definir_giros(self._giros_das_folhas())      # D2: so as que mudaram
         self._acertar_as_miniaturas_movidas()
+        # D-611 atualizada (04/11/2026, "a miniatura corresponder com o numero
+        # real"): o número é a posição da página no livro (o de "página N de
+        # M"), e com "Duas lado a lado" a tira junta os mesmos pares da tela
+        # grande (os do livro que vai sair: a página tirada fica sozinha)
+        self.tira.definir_numeros(None)
+        self.tira.definir_grupos(self._grupos_do_livro_aberto() if self.mostrar == DUAS else None)
         self.tira.selecionar(self.indice_atual)
 
     def _atualizar_tira_do_dividir(self) -> None:
@@ -5345,16 +5351,61 @@ class TelaConferir(QWidget):
             self.tira.definir_como_sai(i, "", None)
         self.tira.definir_cortes(self._cortes_da_tira_do_dividir(passos))
         self.tira.definir_giros(self._giros_das_folhas())      # D2: so as que mudaram
-        # D-612 (Samuel, 04/11/2026, prints a-75/a-76: "deveria escolher
-        # exatamente a pagina que eu estou clicando, isso confunde muito"): com
-        # a folha inteira na tela ("Duas lado a lado", D-601), as miniaturas das
-        # duas metades dela ficam marcadas; com "Uma página", só a da metade à
-        # vista (como antes)
-        junto = ()
-        if self._metade_no_dividir() is None:
-            junto = tuple(i for i, posicao in enumerate(passos)
-                          if self.projeto.paginas[posicao].folha == self.indice_folha)
-        self.tira.selecionar(self._passo_do_dividir_atual(passos), junto)
+        # D-611 (atualizada 04/11/2026, Samuel: "SIm, mas tem que verificar se vai
+        # ficar assim em todo os lugares né? a miniatura corresponder com o numero
+        # real"; prints a-75/a-76): o número embaixo de cada miniatura é o da
+        # página de verdade (a posição dela no livro, o mesmo de "página N de M"),
+        # e com "Duas lado a lado" a tira junta pela folha, como a tela grande
+        # (as duas metades da folha lado a lado). Marcada: a da página da vez,
+        # que fica dentro do par da folha que está na tela.
+        self.tira.definir_numeros({i: posicao + 1 for i, posicao in enumerate(passos)})
+        self.tira.definir_grupos(self._grupos_por_folha(passos) if self.mostrar == DUAS else None)
+        self.tira.selecionar(self._passo_do_dividir_atual(passos))
+
+    def _grupos_por_folha(self, passos: list[int]) -> list[list[int | None]]:
+        """D-611 atualizada (Samuel, 04/11/2026: "SIm" a juntar a tira do Dividir
+        "igual à tela grande, a 11 com a 12"): os pares da tira do Dividir com
+        "Duas lado a lado" - os quadros seguidos da mesma folha juntos (as duas
+        metades da folha dividida, esquerda e direita); a folha inteira, sozinha.
+        Com a ordem mudada à mão (D-615) ou a capa aberta (D-616), as metades
+        que ficaram longe uma da outra ficam sozinhas, cada uma no lugar dela."""
+        assert self.projeto is not None
+        grupos: list[list[int | None]] = []
+        folha_do_ultimo = None
+        for i, posicao in enumerate(passos):
+            folha = self.projeto.paginas[posicao].folha
+            if (grupos and folha == folha_do_ultimo and len(grupos[-1]) == 1
+                    and self.projeto.folhas[folha].dividir):
+                grupos[-1].append(i)
+            else:
+                grupos.append([i])
+            folha_do_ultimo = folha
+        return grupos
+
+    def _grupos_do_livro_aberto(self) -> list[list[int | None]]:
+        """D-611 atualizada: os pares da tira com "Duas lado a lado" fora do
+        Dividir - os mesmos da tela grande (PaginasLadoALado: as páginas que vão
+        sair, a 1 sozinha à direita, depois 2-3, 4-5...). A página tirada do
+        livro não está na tela grande: na tira fica sozinha, no lugar dela."""
+        assert self.projeto is not None
+        ativas = {p.indice: n for n, p in enumerate(self.projeto.paginas_ativas)}
+        grupos: list[list[int | None]] = []
+        par_do_ultimo = None
+        for i, pagina in enumerate(self.projeto.paginas):
+            n = ativas.get(pagina.indice)
+            if n is None:
+                grupos.append([i])
+                par_do_ultimo = None
+                continue
+            par = (n + 1) // 2
+            if grupos and par == par_do_ultimo and grupos[-1][-1] is None:
+                grupos[-1][-1] = i              # a da direita do par
+            elif n == 0:
+                grupos.append([None, i])        # a 1 sozinha, à direita
+            else:
+                grupos.append([i, None])        # a da esquerda (a da direita vem depois)
+            par_do_ultimo = par
+        return grupos
 
     def _ir_para_o_quadro_da_tira(self, indice: int) -> None:
         """Um clique (ou duplo clique) na miniatura `indice` da tira: vai para

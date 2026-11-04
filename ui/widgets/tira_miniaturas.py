@@ -140,6 +140,10 @@ class Miniatura(QFrame):
     def __init__(self, numero: int, parent=None) -> None:
         super().__init__(parent)
         self.numero = numero
+        # D-611 atualizada (04/11/2026): o número de verdade da página, que a
+        # tela diz (TiraMiniaturas.definir_numeros); None = `numero`. Só o que
+        # aparece embaixo muda: o clique continua dizendo a posição (numero - 1).
+        self.rotulo_numero: int | None = None
         self.selecionada = False
         self.em_alerta = False
         self.apagada = False
@@ -227,7 +231,7 @@ class Miniatura(QFrame):
         if meio_do_desenho is not None:
             rodape.translate(meio_do_desenho - rodape.center().x(), 0)
         pintor.setPen(QColor(estilo.LARANJA) if self.em_alerta else QColor(estilo.TEXTO_FRACO))
-        rotulo = str(self.numero)
+        rotulo = str(self.rotulo_numero if self.rotulo_numero is not None else self.numero)
         if self.em_alerta:
             rotulo += " !"
         if self.apagada:
@@ -393,6 +397,9 @@ class TiraMiniaturas(QWidget):
         self.vertical = False
         self.em_pares = False
         self.pares_pela_vista = False      # D-611: "Duas lado a lado" escolhida
+        # D-611 atualizada (04/11): os pares da tela grande (definir_grupos)
+        self._grupos: list[list[int | None]] | None = None
+        self._lugar_no_grupo: dict[int, tuple[int, int, int]] = {}
         self.definir_arranjo(False, False)
 
     def montar(self, quantidade: int, caminho_pdf: str, folha_de: dict[int, int],
@@ -697,6 +704,54 @@ class TiraMiniaturas(QWidget):
         self._arrumar()
         QTimer.singleShot(0, self._rolar_ate_a_escolhida)
 
+    # --- o número de verdade e os pares da tela (D-611 atualizada, 04/11/2026) ----------
+    #
+    # Samuel, à pergunta "no Dividir, a tela grande mostra a folha 6, com as páginas
+    # 11 e 12, mas a tira junta a 10 com a 11. Quer que a tira junte igual à tela
+    # grande, a 11 com a 12?": "SIm, mas tem que verificar se vai ficar assim em todo
+    # os lugares né? a miniatura corresponder com o numero real". A tela diz o número
+    # de cada quadro (definir_numeros: o número da página no livro, o mesmo de
+    # "página N de M") e, com os pares da vista, como juntar (definir_grupos: os
+    # mesmos pares da tela grande). Sem isso, como sempre: o número é a posição
+    # do quadro + 1 e os pares são os do livro aberto pela posição.
+
+    def definir_numeros(self, numeros: dict[int, int] | None) -> None:
+        """O número embaixo de cada quadro (quadro -> número). None: a posição + 1."""
+        numeros = numeros or {}
+        for i, mini in enumerate(self._miniaturas):
+            numero = numeros.get(i)
+            if mini.rotulo_numero != numero:
+                mini.rotulo_numero = numero
+                mini.update()
+
+    def definir_grupos(self, grupos: list[list[int | None]] | None) -> None:
+        """Como os quadros se juntam com os pares da vista: uma lista de pares,
+        cada um [esquerda, direita] (None = o lado vazio, como a 1 sozinha à
+        direita) ou [sozinho] (no meio do par). None: os pares do livro aberto
+        pela posição, como sempre. Só vale com os pares da vista ligados."""
+        grupos = [list(g) for g in grupos] if grupos else None
+        if grupos == self._grupos:
+            return
+        self._grupos = grupos
+        self._lugar_no_grupo = {}
+        for numero, grupo in enumerate(grupos or []):
+            for lado, indice in enumerate(grupo):
+                if indice is not None:
+                    self._lugar_no_grupo[indice] = (numero, lado, len(grupo))
+        if self.pares_pela_vista:
+            self._arrumar()
+            QTimer.singleShot(0, self._rolar_ate_a_escolhida)
+
+    def _lado_para_encostar(self, indice: int) -> str | None:
+        """Para que lado o desenho do quadro encosta, com os pares da vista."""
+        lugar = self._lugar_no_grupo.get(indice) if self._grupos else None
+        if lugar is None:
+            return "direita" if (indice + 1) % 2 == 0 else "esquerda"
+        _par, lado, tamanho = lugar
+        if tamanho < 2:
+            return None
+        return "direita" if lado == 0 else "esquerda"
+
     @property
     def em_pares_agora(self) -> bool:
         """A tira está em pares: pelo "Ver em pares" do menu ou pela vista
@@ -710,8 +765,13 @@ class TiraMiniaturas(QWidget):
         "Ver em pares" ou pela vista "Duas lado a lado" (D-611)."""
         if not self.em_pares_agora:
             return (indice, 0) if self.vertical else (0, indice)
-        par = (indice + 1) // 2
-        lado = 0 if (indice + 1) % 2 == 0 else 1       # página par à esquerda
+        lugar = (self._lugar_no_grupo.get(indice)
+                 if self._grupos and self.pares_pela_vista else None)
+        if lugar is not None:                           # os pares da tela (definir_grupos)
+            par, lado, _tamanho = lugar
+        else:
+            par = (indice + 1) // 2
+            lado = 0 if (indice + 1) % 2 == 0 else 1   # página par à esquerda
         if self.vertical:
             return par, lado
         return 0, par * 3 + lado                        # coluna 3*par+2 fica vazia (o vão)
@@ -741,7 +801,8 @@ class TiraMiniaturas(QWidget):
             encostar = None
             if juntos:
                 # a página par fica à esquerda do par (posicao): encosta à direita
-                encostar = "direita" if (i + 1) % 2 == 0 else "esquerda"
+                # (com os pares da tela, definir_grupos: a da esquerda do par)
+                encostar = self._lado_para_encostar(i)
             if mini.encostar != encostar:
                 mini.encostar = encostar
                 mini.update()
@@ -771,6 +832,7 @@ class TiraMiniaturas(QWidget):
             mini.setParent(None)
             mini.deleteLater()
         self._miniaturas.clear()
+        self._grupos, self._lugar_no_grupo = None, {}      # D-611: a tela diz de novo
         self._mapa_folha.clear()
         self._cruas.clear()
         self._como_sai.clear()
@@ -883,17 +945,11 @@ class TiraMiniaturas(QWidget):
             mini.em_alerta, mini.apagada, mini.conferida = novo
             mini.update()
 
-    def selecionar(self, indice: int, junto=()) -> None:
-        """Marca a miniatura escolhida (borda grossa) e rola a tira para ela ficar visivel.
-        `junto`: outras miniaturas que também estão na tela agora e ficam
-        marcadas com ela (D-612, Samuel, 04/11/2026, prints a-75/a-76: no
-        Dividir com "Duas lado a lado" a tela mostra a folha inteira, e a tira
-        marcava só uma das duas páginas dela; "A miniatura marcada tem que ser a
-        da página ou folha que está na tela"). A rolagem vai para `indice`."""
-        marcadas = {indice, *junto}
+    def selecionar(self, indice: int) -> None:
+        """Marca a miniatura escolhida (borda grossa) e rola a tira para ela ficar visivel."""
         for i, mini in enumerate(self._miniaturas):
             estava = mini.selecionada
-            mini.selecionada = i in marcadas
+            mini.selecionada = i == indice
             if estava != mini.selecionada:
                 mini.update()
         if 0 <= indice < len(self._miniaturas):

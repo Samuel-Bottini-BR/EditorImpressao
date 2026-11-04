@@ -1,4 +1,4 @@
-"""D-612, conserto do teste do Samuel (04/11/2026, prints a-75 e a-76, Dividir em "Duas lado a
+﻿"""D-612, conserto do teste do Samuel (04/11/2026, prints a-75 e a-76, Dividir em "Duas lado a
 lado"): "quando eu clico em uma pagina estado o lado a lado escolhido, ele não escolhe exatamente
 aquela que eu estou clicando, deveria escolher exatamente a pagina que eu estou clicando, isso
 confunde muito." A tela mostrava a folha 6 (as páginas 11 e 12) e a tira marcava só a 11; depois a
@@ -6,10 +6,13 @@ folha 5 (9 e 10) e a tira marcava só a 10. Pedido da gerente: "A miniatura marc
 página ou folha que está na tela."
 
 O que se mede: com a folha dividida e a vista "Duas lado a lado" no Dividir (a folha inteira na
-tela, D-601), clicar na miniatura de qualquer uma das duas metades leva à folha e marca as DUAS
-miniaturas dela (e nenhuma outra). Com "Uma página", só a da metade à vista (como antes, D-605). Nas
+tela, D-601), a tira junta as duas metades da folha (D-611 atualizada: "SIm, mas tem que verificar
+se vai ficar assim em todo os lugares né? a miniatura corresponder com o numero real"), e clicar
+numa delas leva à folha e marca só ela, dentro do par da folha (a gerente: "Deixar uma só miniatura
+marcada, dentro do par que está na tela, está certo."). Com "Uma página", só a da metade à vista
+(como antes, D-605). Nas
 outras ferramentas com "Duas lado a lado", clicar numa página dos pares escolhe exatamente ela, e a
-miniatura marcada é a dela. Em `d2567fab` o primeiro falha (só uma das duas ficava marcada).
+miniatura marcada é a dela. Em `d2567fab` o primeiro falha (a tira juntava 1 | 2-3, e não as duas metades da folha).
 """
 
 from __future__ import annotations
@@ -34,10 +37,12 @@ def _marcadas(tela) -> list[int]:
 
 
 @precisa_da_dll
-def test_reversao_d612_dividir_duas_lado_a_lado_marca_as_duas_metades_da_folha(janela, tmp_path):
+def test_reversao_d612_dividir_duas_lado_a_lado_a_marcada_fica_no_par_da_folha(janela, tmp_path):
     """Folha 1 dividida (miniaturas 0 e 1), folhas 2 e 3 inteiras (2 e 3). Em "Duas lado a lado":
-    clicar na miniatura da direita da folha 1 → a folha 1 na tela e as miniaturas 0 e 1 marcadas;
-    clicar na da esquerda → as mesmas duas; clicar na folha 2 → só a 2."""
+    a tira junta as duas metades da folha 1 (o par da tela grande, D-611 atualizada); clicar na
+    miniatura da direita da folha 1 → a folha 1 na tela e só ela marcada, dentro do par da folha;
+    clicar na folha 2 → só a 2, sozinha (folha inteira). Resposta da gerente: "Deixar uma só
+    miniatura marcada, dentro do par que está na tela, está certo." """
     tela = _no_dividir_dividida(janela, tmp_path)
     tela.botao_nao_dividir.click()                       # "dividir esta" na folha 1
     _assentar(10)
@@ -45,13 +50,14 @@ def test_reversao_d612_dividir_duas_lado_a_lado_marca_as_duas_metades_da_folha(j
     _assentar(5)
     tira = tela.tira
     assert len(tira._miniaturas) == 4
+    linha0, coluna0 = tira.posicao(0)
+    linha1, coluna1 = tira.posicao(1)
+    assert (linha0, coluna0 // 3) == (linha1, coluna1 // 3), "as duas metades da folha 1 juntas"
+    assert tira.posicao(2)[1] // 3 != coluna1 // 3
     tira.selecionada.emit(1)                             # a metade da direita da folha 1
     _assentar()
     assert tela.indice_folha == 0
-    assert _marcadas(tela) == [0, 1], _marcadas(tela)
-    tira.selecionada.emit(0)                             # a metade da esquerda
-    _assentar()
-    assert tela.indice_folha == 0 and _marcadas(tela) == [0, 1]
+    assert _marcadas(tela) == [1], _marcadas(tela)
     tira.selecionada.emit(2)                             # a folha 2, inteira
     _assentar()
     assert tela.indice_folha == 1 and _marcadas(tela) == [2]
