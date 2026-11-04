@@ -53,9 +53,12 @@ Desfazer e projeto salvo: `test_historico_depois_de_reabrir.py`, `test_recomeco_
 
 ## Andamento
 
-- [ ] Entrega 1 (D-615)
-- [ ] Entrega 2 (D-616)
+- [x] Entrega 1 (D-615): commits 7150504a..c34699d3 (+ relatório `entrega-1.*`); testes no PC ok; janela de
+  verdade ok (prints e1-*); GitHub 41885681255 e velocidade 41885686939 disparados.
+- [ ] Entrega 2 (D-616): código e `tests/test_decisoes_capa_aberta.py` (6 passam; 5 falham na ponta da
+  entrega 1); janela de verdade (piloto e2) em andamento.
 
 ## Perguntas para o Samuel
 
-(nenhuma ainda)
+1. (opcional; tem jeito padrão) Juntar ("não dividir esta") uma folha cujas páginas foram separadas: a folha
+   inteira fica no lugar da primeira das duas. Pode ser assim? Sugestão: sim. (ver `entrega-1.md`)
