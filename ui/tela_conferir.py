@@ -8486,13 +8486,15 @@ class TelaConferir(QWidget):
         Arriscado: tirar a condição "é quem tem o teclado" (a tecla que sobe
         de um filho para o botão seria tomada) ou pôr as caixas de número."""
         try:
-            from PySide6.QtWidgets import QAbstractButton, QApplication, QRadioButton
+            from PySide6.QtWidgets import QAbstractButton, QRadioButton
 
             if evento.modifiers() & (Qt.ControlModifier | Qt.AltModifier | Qt.MetaModifier):
                 return False
             if not isinstance(vigiado, QAbstractButton) or isinstance(vigiado, QRadioButton):
                 return False
-            if vigiado is not QApplication.focusWidget() or not self.isAncestorOf(vigiado):
+            # quem tem o teclado DA JANELA (com a janela por trás de outra, o
+            # Qt ainda manda a tecla a ele, mas o "foco da aplicação" é nenhum)
+            if vigiado.window().focusWidget() is not vigiado or not self.isAncestorOf(vigiado):
                 return False
             if not self.isVisible() or not self._pronta():
                 return False
