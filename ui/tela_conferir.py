@@ -995,6 +995,7 @@ class TelaConferir(QWidget):
         self.tira = self.miniaturas.tira
         self.tira.selecionada.connect(self._escolher_da_tira)
         self.tira.ampliar_pedido.connect(self._ampliar_miniatura)
+        self.tira.mover_pedido.connect(self._mover_da_tira)       # D-615
         self.miniaturas.lugar_pedido.connect(self._por_as_miniaturas)
         self.miniaturas.aberta_mudou.connect(lambda _a: self._por_as_miniaturas(self.miniaturas.lugar))
         self.miniaturas.ver_todas.connect(self.abrir_todas_as_paginas)
@@ -1985,7 +1986,10 @@ class TelaConferir(QWidget):
         self._gravar_no_livro("margens_iguais", ligada,
                               "Margens iguais " + ("ligadas" if ligada else "desligadas"))
         try:
-            self.paineis.automatico.estado.do_projeto(self.projeto)
+            # D-590 (04/11/2026): a caixinha "Margens iguais" não mexe no
+            # Dividir; a caixinha do Dividir desmarcada continua desmarcada
+            self.paineis.automatico.estado.do_projeto(self.projeto,
+                                                      manter_o_dividir_desmarcado=True)
         except Exception:  # noqa: BLE001 - o painel é ajuda; nunca desfaz a mudança
             registrar_erro("margens iguais no Automatico", traceback.format_exc())
 
@@ -3894,7 +3898,26 @@ class TelaConferir(QWidget):
                 self.indice_folha = self.projeto.paginas[destino].folha
                 self.atualizar()
             return
+        if self.trabalha_com_folhas:
+            # D-615: no Dividir com "Duas lado a lado", as setas andam pelas
+            # folhas NA ORDEM DO LIVRO (a da tira), que pode ter sido mudada
+            # arrastando. Livro sem ordem mudada: a folha seguinte, como antes.
+            ordem = self._folhas_na_ordem_do_livro()
+            if self.indice_folha in ordem:
+                agora = ordem.index(self.indice_folha)
+                self._ir_para(ordem[max(0, min(len(ordem) - 1, agora + passo))])
+                return
         self._ir_para(max(0, min(self._total() - 1, self.indice_atual + passo)))
+
+    def _folhas_na_ordem_do_livro(self) -> list[int]:
+        """D-615: as folhas na ordem em que aparecem no livro (a da primeira
+        página de cada uma). Sem ordem mudada: 0, 1, 2... Folha sem página
+        (não acontece) vai para o fim."""
+        assert self.projeto is not None
+        ordem = list(dict.fromkeys(p.folha for p in self.projeto.paginas
+                                   if 0 <= p.folha < len(self.projeto.folhas)))
+        ja = set(ordem)
+        return ordem + [f.indice for f in self.projeto.folhas if f.indice not in ja]
 
     # --- D-601 (02/11/2026): o Dividir com "Uma página" --------------------------
     # Samuel, testando o Dividir no Gradus Primus: "deveria então aparecer só
@@ -5342,6 +5365,59 @@ class TelaConferir(QWidget):
             self.atualizar()
             return
         self._ir_para(indice)
+
+    # --- D-615 (04/11/2026): mudar folhas de lugar arrastando a miniatura ----------
+    # Samuel (prints a-61 e a-62): "eu quero poder mover folhas para onde eu quiser
+    # dentro do app, quero poder arrastar e mover folhas, caso eu precise resolver
+    # esse problema na mão" → "ok" a "arrastar uma miniatura da tira de baixo e soltar
+    # onde quiser; a folha (ou a página, se já dividida) muda de lugar no livro, e o
+    # Ctrl+Z desfaz". A ordem do livro é a da lista de páginas (core/
+    # ordem_das_paginas): a tela, o PDF e os cadernos a seguem. Uma ação do desfazer
+    # (historico_acoes.CAMPO_DA_ORDEM), pelo _registrar de sempre (ele limpa as
+    # prévias e remonta a tira, como o dividir). Depois, a tela fica na página que
+    # mudou de lugar. Arriscado: mudar a lista sem passar pelo _registrar.
+
+    def _posicao_do_quadro(self, quadro: int) -> int | None:
+        """A posição (em projeto.paginas) da página do quadro `quadro` da tira: no
+        Dividir, o passo das setas (D-601); nas outras ferramentas, a página."""
+        assert self.projeto is not None
+        if self.trabalha_com_folhas:
+            passos = self._passos_do_dividir()
+            return passos[quadro] if 0 <= quadro < len(passos) else None
+        return quadro if 0 <= quadro < len(self.projeto.paginas) else None
+
+    @protegido
+    def _mover_da_tira(self, origem: int, destino: int) -> None:
+        """A miniatura `origem` foi arrastada para o vão `destino` da tira (0 =
+        antes da primeira; o número de quadros = depois da última). Muda de lugar
+        a página (folha dividida) ou a folha inteira (não dividida), antes da
+        página do quadro `destino` (core/ordem_das_paginas.bloco e
+        campos_para_mover). Soltou no mesmo lugar: nada."""
+        from core import ordem_das_paginas as O
+
+        if not self._pronta() or self.projeto is None:
+            return
+        posicao = self._posicao_do_quadro(origem)
+        if posicao is None:
+            return
+        andam = O.bloco(self.projeto, posicao)
+        alvo = self._posicao_do_quadro(destino)
+        antes_de = None if alvo is None else O.bloco(self.projeto, alvo)[0]
+        campos = O.campos_para_mover(self.projeto, andam, antes_de)
+        if not campos:
+            return
+        movida = self.projeto.paginas[posicao]
+        folha = movida.folha
+        dividida = len(andam) == 1 and movida.metade != METADE_INTEIRA \
+            and self.projeto.folhas[folha].dividir
+        nome = (f"a página {posicao + 1}" if dividida else f"a folha {folha + 1}")
+        self.indice_folha = folha
+        self._registrar("mudar_de_lugar", "pagina", [], campos, f"Mudar de lugar {nome}")
+        nova = next((n for n, p in enumerate(self.projeto.paginas) if p is movida), None)
+        if nova is not None and nova != self.indice_pagina:
+            self.indice_pagina = nova
+            self.indice_folha = folha
+            self.atualizar()
 
     def _acertar_as_miniaturas_movidas(self) -> None:
         """Etapa 9b-2 (D-547: "Mover uma página → a miniatura [...] mostra
@@ -8789,11 +8865,12 @@ class TelaConferir(QWidget):
         if self.acoes.feitas and self._acoes_esperam_pelas_marcacoes(
                 [self.acoes.feitas[-1]], para_tras=True):
             return                       # pendencia da D2 (_espera_pelas_marcacoes)
-        if self.acoes.desfazer(self.projeto) is not None:
+        acao = self.acoes.desfazer(self.projeto)
+        if acao is not None:
             if self.previas is not None:
                 self.previas.invalidar()
             self.lista_de_paginas_mudou()      # etapa 3: o Automatico muda a lista
-            self._reacertar_as_opcoes()
+            self._reacertar_as_opcoes(acao)
 
     @protegido
     def refazer(self) -> None:
@@ -8807,7 +8884,7 @@ class TelaConferir(QWidget):
             if self.previas is not None:
                 self.previas.invalidar()
             self.lista_de_paginas_mudou()      # etapa 3: o Automatico muda a lista
-            self._reacertar_as_opcoes()
+            self._reacertar_as_opcoes(acao)
             self._medir_o_em_branco_ao_refazer(acao)
 
     def _medir_o_em_branco_ao_refazer(self, acao) -> None:
@@ -8839,13 +8916,27 @@ class TelaConferir(QWidget):
         except Exception:  # noqa: BLE001 - o aviso é ajuda; nunca derruba o refazer
             registrar_erro("medir o em branco ao refazer", traceback.format_exc())
 
-    def _reacertar_as_opcoes(self) -> None:
+    def _reacertar_as_opcoes(self, acao=None) -> None:
         """Depois de desfazer ou refazer, a tela "O que fazer" deste mesmo
         projeto volta a mostrar o que ele tem agora (parecer do verificador,
         30/09, r15: desfeito o "Sim" da pergunta do fundo, ela continuava em
         "Tirar o fundo"). O menu Editar desfaz em qualquer tela, inclusive com
         "O que fazer" a vista; escondida, ela se reacerta sozinha ao aparecer
-        (ui/tela_opcoes.showEvent). Nunca levanta excecao."""
+        (ui/tela_opcoes.showEvent). Nunca levanta excecao.
+
+        `acao`: a ação desfeita ou refeita. D-590 (defeito de 04/11/2026,
+        print a-67: "depois de usar o dividir e voltar ao automatico ele está
+        marcado de novo"): se ela NÃO mexe no Dividir do livro
+        (ui/automatico.mexe_no_dividir_do_livro), a caixinha "1 Dividir folhas ao meio"
+        que a pessoa desmarcou continua desmarcada (EstadoDoAutomatico.
+        do_projeto, manter_o_dividir_desmarcado). Antes, qualquer Ctrl+Z ou
+        Ctrl+Y (do Dividir, do "juntar todas", da linha, do motor, de
+        qualquer ferramenta) relia o livro, que ainda tinha o Dividir ligado,
+        e a caixinha voltava marcada. O Ctrl+Z do "Rodar" que mudou o Dividir
+        do livro continua mostrando o livro (como antes).
+        Arriscado: manter a caixinha também quando a ação muda o Dividir do
+        livro (o desfazer do "Rodar" deixaria a caixinha e o livro diferentes
+        sem a pessoa ter clicado)."""
         # Etapa 3 da obra: a tela "O que fazer" saiu do caminho; o que mostra
         # as escolhas do livro e o painel Automatico, que a atualizacao
         # (atualizar -> _atualizar_paineis) ja acerta. Fica so o aviso do
@@ -8856,7 +8947,11 @@ class TelaConferir(QWidget):
             # etapas ligadas, o filtro do livro...): como a tela "O que fazer"
             # acompanhava o desfazer (verificador, 30/09, r15)
             if self.projeto is not None:
-                self.paineis.automatico.estado.do_projeto(self.projeto)
+                from ui.automatico import mexe_no_dividir_do_livro
+
+                self.paineis.automatico.estado.do_projeto(
+                    self.projeto,
+                    manter_o_dividir_desmarcado=not mexe_no_dividir_do_livro(acao))
         except Exception:  # noqa: BLE001 - reacertar a tela nunca derruba o desfazer
             registrar_erro("reacertar as opcoes", traceback.format_exc())
 

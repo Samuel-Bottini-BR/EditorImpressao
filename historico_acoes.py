@@ -424,7 +424,14 @@ def aplicar(projeto: Projeto, acao: Acao, valores: dict[str, Any]) -> None:
             _trocar_as_paginas_da_folha(projeto, campo, valor)
         elif campo.startswith("livro."):
             nome = campo[len("livro."):]
-            if nome in ("folhas", "paginas"):
+            if campo == CAMPO_DA_ORDEM:
+                # D-615 (04/11/2026): a ordem das paginas mudada a mao (arrastar
+                # a miniatura) ou pela capa aberta (D-616): as mesmas paginas,
+                # em outra ordem (core/ordem_das_paginas.por_na_ordem)
+                from core.ordem_das_paginas import por_na_ordem
+
+                por_na_ordem(projeto, valor)
+            elif nome in ("folhas", "paginas"):
                 # obra 26/10, etapa 3: o Automatico que mudou a lista de
                 # paginas (dividir uma folha que tinha uma pagina so) guarda
                 # as listas inteiras, de antes e de depois
@@ -512,6 +519,16 @@ def _aplicar_numa_folha(projeto: Projeto, campo: str, valor: Any) -> None:
 # mais velhas guardam paginas pela posicao; o desfazer e em pilha).
 PREFIXO_PAGINAS_DA_FOLHA = "paginas_da_folha:"
 
+# Campo "livro.ordem_das_paginas" (D-615, 04/11/2026: mudar folhas de lugar
+# arrastando a miniatura; D-616, a capa aberta): a ordem das paginas do livro,
+# [[folha, metade], ...]. Aplicar poe as MESMAS paginas nessa ordem e renumera
+# (core/ordem_das_paginas.por_na_ordem); montar_acao guarda a ordem de antes.
+# Numa acao que tambem troca as paginas de uma folha (o "nao dividir esta" de
+# uma folha com as paginas separadas), vem DEPOIS do campo das paginas: o
+# desfazer devolve as paginas e depois a ordem. Arquivo de acoes antigo nao tem
+# o campo. Arriscado: aplicar fora de ordem (como os outros campos de lista).
+CAMPO_DA_ORDEM = "livro.ordem_das_paginas"
+
 
 def _trocar_as_paginas_da_folha(projeto: Projeto, campo: str, valor: Any) -> None:
     from core.dividir_a_mao import trocar_as_paginas_da_folha
@@ -589,6 +606,11 @@ def montar_acao(
 
     antes: dict[str, Any] = {}
     for campo in campos:
+        if campo == CAMPO_DA_ORDEM:                         # D-615 (ver CAMPO_DA_ORDEM)
+            from core.ordem_das_paginas import chaves
+
+            antes[campo] = chaves(projeto)
+            continue
         if campo.startswith(PREFIXO_PAGINAS_DA_FOLHA):     # etapa 4 (ver o prefixo)
             from core.dividir_a_mao import em_dicionarios, paginas_da_folha
 
