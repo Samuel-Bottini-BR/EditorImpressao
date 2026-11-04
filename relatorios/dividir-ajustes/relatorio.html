@@ -1,0 +1,230 @@
+<!doctype html>
+<html lang="pt-BR">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Ajustes do Dividir e da janela do Automático (03/11/2026)</title>
+<style>
+:root { color-scheme: light dark; }
+* { box-sizing: border-box; }
+body {
+  font: 17px/1.65 "Segoe UI", system-ui, sans-serif;
+  max-width: 46rem; margin: 0 auto; padding: 2.5rem 1.5rem 6rem;
+  color: #1c1c1e; background: #fdfdfc;
+}
+h1 { font-size: 2rem; line-height: 1.2; margin: 0 0 .3em; letter-spacing: -.02em; }
+h2 { font-size: 1.35rem; margin: 2.4em 0 .6em; padding-top: .8em;
+     border-top: 1px solid #e6e4e0; letter-spacing: -.01em; }
+h3 { font-size: 1.1rem; margin: 1.8em 0 .4em; }
+h1 + p, h2 + p { margin-top: .4em; }
+p, li { margin: 0 0 .9em; }
+ul, ol { padding-left: 1.3em; }
+strong { font-weight: 640; }
+code {
+  font: .88em ui-monospace, "Cascadia Code", Consolas, monospace;
+  background: #f1efec; padding: .12em .35em; border-radius: 4px;
+}
+pre {
+  background: #f1efec; padding: 1em 1.1em; border-radius: 8px;
+  overflow-x: auto; line-height: 1.5;
+}
+pre code { background: none; padding: 0; }
+blockquote {
+  margin: 1.2em 0; padding: .1em 0 .1em 1.1em;
+  border-left: 3px solid #c9c5be; color: #55524d;
+}
+table {
+  border-collapse: collapse; width: 100%; margin: 1.2em 0;
+  font-size: .95rem; display: block; overflow-x: auto;
+}
+th, td { padding: .5em .8em; text-align: left; border-bottom: 1px solid #e6e4e0; }
+th { font-weight: 620; background: #f7f5f2; white-space: nowrap; }
+tr:last-child td { border-bottom: none; }
+img { max-width: 100%; height: auto; border-radius: 6px; margin: 1em 0;
+      border: 1px solid #e6e4e0; }
+hr { border: none; border-top: 1px solid #e6e4e0; margin: 2.5em 0; }
+.rodape { margin-top: 4em; padding-top: 1.2em; border-top: 1px solid #e6e4e0;
+          font-size: .85rem; color: #86827c; }
+@media (prefers-color-scheme: dark) {
+  body { color: #e8e6e3; background: #1a1917; }
+  h2 { border-top-color: #35332f; }
+  code, pre, th { background: #262421; }
+  th, td { border-bottom-color: #35332f; }
+  blockquote { border-left-color: #4a4741; color: #b0aca6; }
+  img { border-color: #35332f; }
+  .rodape { border-top-color: #35332f; color: #7d7973; }
+}
+@media print {
+  body { max-width: none; padding: 0; color: #000; background: #fff; }
+  h2 { page-break-after: avoid; }
+  table, img { page-break-inside: avoid; }
+}
+</style>
+</head>
+<body>
+<h1>Ajustes do Dividir e da janela do Automático (03/11/2026)</h1>
+<p><strong>Os seis achados do verificador clicando de 03/11 estão resolvidos ou respondidos, sem mudar o que já estava
+escolhido.</strong> Cinco foram consertados (motor na folha juntada, aviso do "juntar todas", setas depois da lista, tira
+depois do Ctrl+Z, etapa 6 cortada). O sexto ("7 com dúvida") não é defeito: são as páginas em branco do livro, e o
+"dividir esta" folha a folha dá as mesmas 7. PRONTO PARA CONFERIR (quem confere é o verificador e o Samuel).</p>
+<p>Ramo <code>dividir-ajustes-2026-11-03</code> (saiu de <code>75ed04af</code>). Testes: de máquina. Prints: na janela de verdade do Windows,
+posta fora da tela, no Gradus Primus copiado para uma pasta de dados só desta tarefa
+(<code>piloto.py</code>, anotações em <code>anotacoes.txt</code>).</p>
+<h2>Decisões que esta tarefa precisava cumprir — como cumpri cada uma</h2>
+<table>
+<thead>
+<tr>
+<th>Decisão</th>
+<th>Como cumpri</th>
+<th>Prova</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><strong>D-606</strong> "Ele deve fazer a conta novamente com o novo motor"</td>
+<td>Na folha juntada, trocar o motor lê a folha pelo motor novo e a linha vai para onde ele acha; o Ctrl+Z devolve motor e linha</td>
+<td>Gradus folha 5: linha de antes 0,44 → motor "o do Editor" → 0,5033 (p02, p03). <code>tests/test_decisoes_dividir.py::test_reversao_d606_*</code> e <code>test_d606_depois_do_juntar_todas_*</code></td>
+</tr>
+<tr>
+<td><strong>D-607</strong> "só temos que mudar o aviso, avisar que as páginas foram juntadas e que vão ser separadas se o processar continuar."</td>
+<td>Só o texto muda. Título, explicação de baixo, botões, contagem e o que cada botão faz ficam iguais</td>
+<td>p07 (Gradus, 70 juntadas). <code>tests/test_decisoes_automatico.py::test_*d607*</code> (4)</td>
+</tr>
+<tr>
+<td><strong>D-605</strong> o novo não estraga o escolhido</td>
+<td>Lista "O que já está escolhido e testado" no ONDE-PAREI antes de mexer; nenhum teste antigo mudou; todos passam no PC (um por um) e no GitHub</td>
+<td>ver "Testes"</td>
+</tr>
+<tr>
+<td><strong>D-602</strong> linha azul, "dividir esta", "dividir todas", lista nunca trava</td>
+<td>Nada mudou nisso; <code>tests/test_decisoes_dividir_linha.py</code> passa sem mudança (13)</td>
+<td>PC e GitHub</td>
+</tr>
+<tr>
+<td><strong>D-498</strong> "não dividir esta" devolve a linha de antes</td>
+<td>Continua enquanto o motor não é trocado (p02: 0,44 depois de juntar)</td>
+<td><code>test_d602_folha_juntada_mostra_a_linha_de_antes</code> e o novo teste D-606</td>
+</tr>
+<tr>
+<td><strong>D-090</strong> "usar em todas" copia a linha desta folha · <strong>D-601</strong> arrastar em "Duas lado a lado"</td>
+<td>Não mexidos</td>
+<td><code>test_d602_usar_em_todas_*</code>, <code>test_decisoes_dividir_metade.py</code></td>
+</tr>
+<tr>
+<td><strong>D-004</strong> pular as mexidas · <strong>D-590</strong> caixinha desmarcada fica</td>
+<td>Contagem, botões e o pular iguais; caixinha não mexida</td>
+<td><code>test_d004_*</code>, <code>test_decisoes_juntar_todas.py</code>, <code>test_dividir_desmarcada_caixinha.py</code></td>
+</tr>
+</tbody>
+</table>
+<h2>Item por item</h2>
+<ol>
+<li><strong>D-606, motor na folha juntada.</strong> Antes a linha ficava parada nos dois motores. Agora a troca do motor na folha
+   juntada refaz a conta (a mesma da folha nunca dividida) e grava a linha nova na mesma ação do desfazer. "dividir
+   esta" depois corta nela e devolve as páginas de antes (D-498). Se o motor novo achar a folha de uma página só, a
+   linha some (como na folha nunca dividida) e o "dividir esta" usaria a conta forçada.
+   Arquivo: <code>ui/tela_conferir.py</code> (<code>_trocar_jeito_da_folha</code>, <code>_linha_com_o_motor</code>).</li>
+<li><strong>D-607, o aviso.</strong> Texto exato quando só há folhas juntadas:<blockquote>
+<p>70 páginas foram juntadas no Dividir e vão ser separadas se o processar continuar nelas. Pular essas páginas?</p>
+</blockquote>
+</li>
+</ol>
+<p>Uma só: "1 página foi juntada no Dividir e vai ser separada se o processar continuar nela. Pular essas páginas?"
+   Mistura (3 juntadas e 1 mexida de outro jeito):</p>
+<blockquote>
+<p>3 páginas foram juntadas no Dividir e vão ser separadas se o processar continuar nelas. 1 página foi mexida à mão nas etapas que vão rodar. Pular essas páginas?</p>
+</blockquote>
+<p>Sem juntadas: o texto de sempre, letra por letra. Botões "Pular as N" / "Rodar nelas também" / "cancelar" e a
+   explicação de baixo, iguais. "Juntada" = folha não dividida que guarda as duas páginas de antes ("não dividir
+   esta" ou "juntar todas") e o pedido tem o Dividir. Arquivos: <code>core/automatico.py</code> (<code>paginas_juntadas</code>),
+   <code>ui/janela_principal.py</code> (<code>texto_das_mexidas</code>, <code>_perguntar_mexidas</code>).
+3. <strong>Setas depois da lista "motor de corte".</strong> A lista pegava o teclado ao ser clicada. Agora não pega (como as
+   outras listas da área de trabalho). No Gradus: → da folha 6 para a 7, troca do motor na 7, → foi para a 8, ← voltou
+   à 7 (p01). Arquivo: <code>ui/tela_conferir.py</code> (uma linha).
+4. <strong>Tira depois do Ctrl+Z.</strong> A tira rolava antes de os quadros novos estarem no lugar e caía no começo. Agora rola
+   de novo quando estão. Gradus: folha 60, Ctrl+Z do "dividir todas" → miniatura 60 à vista (p05); refazer →
+   miniatura 119 (folha 60) à vista (p06). Arquivo: <code>ui/widgets/tira_miniaturas.py</code>.
+5. <strong>"7 com dúvida" — não é defeito, nada mudou.</strong> São os avisos "Parece em branco" das metades esquerdas que são
+   páginas em branco no livro: folhas 2, 3, 7, 8, 62, 63 e 69 (páginas 3, 5, 13, 15, 123, 125, 137 depois de dividir).
+   Desfazendo e dando "dividir esta" só nessas 7 folhas, saem os mesmos 7 avisos, nas mesmas metades. Ao abrir o livro,
+   0 dúvidas (a folha inteira não tem página branca). Print da folha 7 (metade esquerda branca, "7 com dúvida"): p04.
+6. <strong>Etapa 6 cortada.</strong> A janela principal de 1536 x 824 abre a do Automático com 92% (1413 x 758): a coluna do meio
+   tinha 674 pontos e a linha "página menor, de cima a baixo: [no meio] de um lado ao outro: [no meio]" pedia 732.
+   Agora essa linha dobra em duas só quando não cabe (mesmos textos, controles e ordem); onde cabe (janela de 1536
+   de largura) fica numa linha, como era. Medido na janela de verdade: rolagem de lado 58 → 0 (p08).
+   Arquivo: <code>ui/automatico.py</code> (<code>_LinhaQueDobra</code>, <code>_opcoes_margens</code>).</p>
+<h2>Testes</h2>
+<ul>
+<li>Testes de reversão (todos falham no código de <code>75ed04af</code> e passam no novo): D-606 (2), D-607 (3 de 4; o 4º é a
+  guarda "sem juntadas, texto de sempre"), setas, tira, etapa 6 (<code>tests/test_dividir_ajustes_03_11.py</code>; mais uma
+  guarda: onde cabe, a linha fica como era).</li>
+<li>PC, um arquivo por vez: todos passaram (23 arquivos, nenhum teste antigo mudou):</li>
+<li><code>tests/test_decisoes_dividir_linha.py</code>: 13 passed in 16.36s</li>
+<li><code>tests/test_decisoes_dividir.py</code>: 21 passed in 74.94s (0:01:14)</li>
+<li><code>tests/test_decisoes_dividir_metade.py</code>: 6 passed in 11.33s</li>
+<li><code>tests/test_decisoes_juntar_todas.py</code>: 4 passed in 10.11s</li>
+<li><code>tests/test_dividir_desmarcada_caixinha.py</code>: 3 passed in 14.31s</li>
+<li><code>tests/test_dividir_na_tela.py</code>: 9 passed in 32.96s</li>
+<li><code>tests/test_dividir_no_programa.py</code>: 19 passed in 21.41s</li>
+<li><code>tests/test_automatico_pular_depois_de_dividir.py</code>: 4 passed in 0.51s</li>
+<li><code>tests/test_decisoes_automatico.py</code>: 29 passed in 73.16s (0:01:13)</li>
+<li><code>tests/test_decisoes_automatico_margens_no_depois.py</code>: 5 passed in 19.84s</li>
+<li><code>tests/test_decisoes_automatico_opcoes_do_filtro.py</code>: 21 passed in 123.80s (0:02:03)</li>
+<li><code>tests/test_decisoes_automatico_ver_como_fica.py</code>: 22 passed in 105.34s (0:01:45)</li>
+<li><code>tests/test_decisoes_9b1.py</code>: 25 passed, 16 warnings in 38.36s</li>
+<li><code>tests/test_decisoes_9b2.py</code>: 30 passed in 58.89s</li>
+<li><code>tests/test_miniaturas_novas.py</code>: 5 passed in 4.42s</li>
+<li><code>tests/test_decisoes_avisos.py</code>: 22 passed in 50.07s</li>
+<li><code>tests/test_decisoes_caderno_tela_grande.py</code>: 11 passed in 41.06s</li>
+<li><code>tests/test_decisoes.py</code>: 26 passed in 5.48s</li>
+<li><code>tests/test_decisoes_tela.py</code>: 35 passed, 4 warnings in 46.96s</li>
+<li><code>tests/test_dividir_ajustes_03_11.py</code>: 4 passed in 12.91s</li>
+<li><code>tests/test_decisoes_filtro_automatico.py</code>: 4 passed in 15.42s</li>
+<li><code>tests/test_decisoes_montar_cadernos.py</code>: 13 passed in 95.21s (0:01:35)</li>
+<li><code>tests/test_menu_paineis.py</code>: 3 passed in 1.76s</li>
+<li>GitHub, conjunto inteiro + <code>teste_botoes.py</code> (rodada <strong>41759151010</strong>, ramo no commit <code>abd8cd0a</code>; depois disso só
+  mudaram arquivos de relatório): <strong>passou</strong>. Na 1ª tentativa a parte 5 falhou em um teste de outra área
+  (<code>test_gravura_na_aba_marcar.py::test_pagina_de_projeto_antigo_que_muda_de_forma_e_refeita</code>, Marcar/gravura, que
+  esta tarefa não tocou); ele passa 3 de 3 no PC e passou ao repetir só a parte que falhou. Fica como ressalva:
+  falha às vezes, por tempo.</li>
+<li>GitHub, filtro de velocidade <code>75ed04af</code> → <code>abd8cd0a</code> (rodada <strong>41759125497</strong>, mexi em <code>core/automatico.py</code>):
+  <strong>ainda rodando na entrega</strong> (começou às 02:11 UTC; os de hoje levaram cerca de 1 h 40). Não consegui esperar até
+  o fim: meus próprios vigias gastaram o limite por hora de consultas ao GitHub. A gerente precisa conferir o
+  resultado. A mudança em <code>core/</code> só acrescenta uma função chamada uma vez quando se aperta "Rodar" (e só quando há
+  páginas mexidas); não fica no caminho do processamento.</li>
+</ul>
+<h2>Ressalvas</h2>
+<ul>
+<li>Item 1: a linha "acertada à mão" da folha 5 (0,44) foi posta pelo sinal da linha (como o arrastar), não com o
+  mouse; o resto foi clique e tecla do Windows.</li>
+<li>Item 2: página que é de folha juntada e também foi mexida de outro jeito entra na parte das "juntadas" (a soma das
+  duas partes é sempre a contagem dos botões). A palavra "processar" é a do Samuel; o botão da janela diz "Rodar".</li>
+<li>Item 3: a lista não pega mais o teclado. Mas os <strong>botões</strong> do painel ("dividir esta", "não dividir esta", "juntar
+  todas", "dividir todas", "usar em todas" — e os das outras ferramentas, como "não cortar esta") ainda pegam: depois
+  de clicar num deles, a seta passa de um botão a outro em vez de trocar de folha. Na sequência do verificador ele
+  tinha clicado nesses botões antes da lista. Não consertei (é de todas as ferramentas, vai como pergunta/bug).</li>
+<li>Item 5: no Dividir a faixa da folha 7 mostra a frase do Dividir, não o "Parece em branco" (o aviso é da página e
+  aparece no "Para revisar" e nas outras ferramentas). Isso já era assim.</li>
+</ul>
+<h2>Bugs para a Lista de bugs (não consertados)</h2>
+<ul>
+<li>03/11/2026, Dividir: depois de <strong>refazer</strong> (Ctrl+Y) o "dividir todas", os 7 "Parece em branco" somem (contador
+  0 com dúvida); antes do Ctrl+Z eram 7. O refazer devolve as páginas como estavam na hora do corte, antes da
+  medida do em branco por trás, e não mede de novo. Anotações em <code>anotacoes.txt</code> ("depois do refazer").</li>
+<li>03/11/2026, todas as ferramentas: botão do painel clicado fica com o teclado e as setas passam a andar entre os
+  botões (ver ressalva do item 3).</li>
+</ul>
+<h2>Prints (pasta <code>relatorios/dividir-ajustes/</code>)</h2>
+<ul>
+<li>p01 — item 3: depois de trocar o motor na folha 7, a seta → foi para a folha 8.</li>
+<li>p02 — item 1: folha 5 juntada, linha de antes (0,44), motor "o do ScanTailor".</li>
+<li>p03 — item 1: a mesma folha com o motor "o do Editor": linha em 0,5033.</li>
+<li>p04 — item 5: folha 7 depois do "dividir todas", metade esquerda em branco, "7 com dúvida".</li>
+<li>p05 — item 4: folha 60 depois do Ctrl+Z, a miniatura 60 escolhida e à vista.</li>
+<li>p06 — item 4: depois do refazer, a miniatura da folha 60 à vista.</li>
+<li>p07 — item 2: o aviso novo depois do "juntar todas" (70 páginas).</li>
+<li>p08 — item 6: a etapa 6 inteira, janela do Automático aberta da janela de 1536 x 824.</li>
+</ul>
+<p class="rodape">Editor de Impressão &middot; gerado em 03/11/2026 às 23:04</p>
+</body>
+</html>

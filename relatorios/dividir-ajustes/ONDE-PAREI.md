@@ -59,7 +59,7 @@ Testes que já existem e têm de continuar passando sem mudança:
 - [x] GitHub, conjunto inteiro + teste_botoes: 41759151010 passou (na 1ª tentativa a parte 5 falhou em
   `test_gravura_na_aba_marcar.py::test_pagina_de_projeto_antigo_que_muda_de_forma_e_refeita`, que passa 3 de 3 no PC
   e passou ao repetir só a parte que falhou: tempo, área não tocada)
-- [ ] GitHub, filtro de velocidade 41759125497 (esperando)
+- [ ] GitHub, filtro de velocidade 41759125497: rodando na entrega (limite de consultas do GitHub esgotado pelos meus vigias); a gerente confere
 - [x] prints na janela de verdade (Gradus): p01 a p08
 - [x] relatório: relatorio.md
 

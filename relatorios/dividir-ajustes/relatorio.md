@@ -84,7 +84,16 @@ posta fora da tela, no Gradus Primus copiado para uma pasta de dados só desta t
   - `tests/test_decisoes_filtro_automatico.py`: 4 passed in 15.42s
   - `tests/test_decisoes_montar_cadernos.py`: 13 passed in 95.21s (0:01:35)
   - `tests/test_menu_paineis.py`: 3 passed in 1.76s
-- GitHub: RESULTADOS_GH
+- GitHub, conjunto inteiro + `teste_botoes.py` (rodada **41759151010**, ramo no commit `abd8cd0a`; depois disso só
+  mudaram arquivos de relatório): **passou**. Na 1ª tentativa a parte 5 falhou em um teste de outra área
+  (`test_gravura_na_aba_marcar.py::test_pagina_de_projeto_antigo_que_muda_de_forma_e_refeita`, Marcar/gravura, que
+  esta tarefa não tocou); ele passa 3 de 3 no PC e passou ao repetir só a parte que falhou. Fica como ressalva:
+  falha às vezes, por tempo.
+- GitHub, filtro de velocidade `75ed04af` → `abd8cd0a` (rodada **41759125497**, mexi em `core/automatico.py`):
+  **ainda rodando na entrega** (começou às 02:11 UTC; os de hoje levaram cerca de 1 h 40). Não consegui esperar até
+  o fim: meus próprios vigias gastaram o limite por hora de consultas ao GitHub. A gerente precisa conferir o
+  resultado. A mudança em `core/` só acrescenta uma função chamada uma vez quando se aperta "Rodar" (e só quando há
+  páginas mexidas); não fica no caminho do processamento.
 
 ## Ressalvas
 
