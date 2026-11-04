@@ -68,13 +68,34 @@ eles). Tudo numa ação só do Histórico.
 
 ## Andamento
 
-- [ ] ONDE-PAREI (este arquivo)
-- [ ] testes novos que falham agora
-- [ ] código
-- [ ] testes no PC, arquivo por arquivo
-- [ ] janela de verdade com prints
-- [ ] relatório, push, GitHub
+- [x] ONDE-PAREI (este arquivo)
+- [x] testes novos (`tests/test_decisoes_desfazer_pagina.py`, 14; falham no código de antes:
+  `reversao.txt`)
+- [x] código (`ui/desfazer_nesta_pagina.py`; ligações em `ui/tela_conferir.py` e
+  `ui/widgets/visualizador.py`; `core/` não muda) — commit `5f081246`
+- [x] testes no PC, arquivo por arquivo (`testes-no-pc.txt`)
+- [x] janela de verdade com prints (`piloto.py`, `anotacoes.txt`, `prints/`)
+- [x] relatório (`relatorio-d621.md/.html/.pdf`)
+- [ ] push e GitHub
+- [ ] SEGUNDA entrega: D-623 (página em branco pelo botão direito na tira), pedida pela gerente
+  em 04/11 durante a D-621. Traz a obra (`git merge obra-2026-10-26`, D-615) e mexe em `core/` e
+  `modelos.py` (filtro de velocidade no GitHub).
+
+## Como cumpri cada decisão (D-621)
+
+- D-621: botão direito na página (Uma página, Duas lado a lado, antes/depois, Dividir) e na
+  miniatura → "Desfazer nesta página" com as 5 etapas em caixinhas (apagadas as que não mexeram)
+  e o botão "desfazer"; uma ação só. Provas: `test_d621_*` (14). Prints `03` a `16`.
+- D-004/D-368: a página fica como com "deixar como veio"/"não cortar esta" (mesmo valor, marca
+  "mexida à mão", "conferida"): `test_d621_a_pagina_fica_igual_a_deixar_como_veio_e_nao_cortar_esta`.
+- D-586/D-587: Gravuras desfeitas = sem marcações e "Respeitar as gravuras achadas" desligada;
+  com "Só as letras", o "Só as letras" manda (ressalva no relatório).
+- D-590: a divisão não entra; a outra página e a folha não mudam (provas comparam campo a campo e
+  o PDF ponto a ponto).
+- D-612: nos pares vale a página clicada; com a peça da ferramenta no par, a página da vez.
+- D-605: o menu das linhas de apoio do Mover continua igual (prova e print); nenhum teste antigo
+  mudou.
 
 ## Perguntas para o Samuel
 
-(nenhuma por enquanto)
+(nenhuma aberta)

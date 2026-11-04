@@ -1,0 +1,7 @@
+
+===== menu mover-menu-das-linhas =====
+Pôr uma linha de pé aqui
+Pôr uma linha deitada aqui
+----
+Desfazer nesta página
+  
