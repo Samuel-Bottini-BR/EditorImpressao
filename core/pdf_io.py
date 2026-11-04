@@ -220,19 +220,199 @@ def limitar_altura(img: np.ndarray, altura_max: int) -> np.ndarray:
     return cv2.resize(img, novo, interpolation=cv2.INTER_AREA)
 
 
+# Quanto do PDF em montagem pode ficar na memoria antes de ir para o disco
+# (PDFQueVaiParaODisco). Conserto de 04/11/2026, pergunta 2-12 da Central e
+# D-591: o PDF novo era montado INTEIRO na memoria e so ia para o disco no fim
+# (doc.save). Medido no Rhetorica, livro novo de fabrica, uma pagina por vez:
+# 30 folhas -> pico de 1.665 MB; 90 folhas -> 1.891 MB (o PDF de 301 MB estava
+# todo na memoria); com 270 folhas a medida caiu por falta de memoria - era o
+# "Este livro ficou grande demais". Com o limite, o pico fica parado, seja
+# qual for o tamanho do livro (90 folhas: 1.664 MB; tests/
+# test_memoria_nao_cresce_com_o_livro.py; relatorios/memoria-pdf/).
+# Seguro mudar: o numero (mais alto = menos idas ao disco e mais memoria;
+# mais baixo = o contrario). O PDF final sai o mesmo com qualquer valor.
+LIMITE_DO_PDF_NA_MEMORIA = 64 * 1024 * 1024
+
+
+class PDFQueVaiParaODisco:
+    """Um PDF novo (vazio) que vai sendo montado e, de tempos em tempos, vai
+    para o disco: a memoria guarda so as ultimas paginas, nunca o livro todo.
+
+    POR QUE EXISTE (conserto de 04/11/2026, D-591 e regra "uma pagina por vez
+    na memoria" do CLAUDE.md §3): um `fitz.open()` guarda na memoria cada
+    imagem posta nele ate o `save` do fim. Num livro grande isso era o PDF
+    inteiro na memoria - o pico crescia com o tamanho do livro.
+
+    COMO: quem monta chama `acrescentou(bytes)` depois de cada pagina (quanto
+    ela pesa, mais ou menos). Passou de `limite`, `esvaziar()` grava o que ha
+    num arquivo AO LADO (`<caminho>.paginas`: a primeira vez inteiro, depois so
+    o acrescimo, "incremental"), fecha e reabre o documento a partir desse
+    arquivo - reaberto, o MuPDF le as imagens do disco so quando alguem pede.
+    No fim, `gravar(**opcoes)` faz UM `save` normal (o mesmo de antes, com as
+    mesmas opcoes) para o caminho final e apaga o arquivo ao lado. O PDF final
+    tem as mesmas paginas, as mesmas imagens byte a byte e a mesma estrutura
+    (o `save` com garbage refaz a numeracao); muda so a identidade aleatoria
+    (/ID) que todo `save` sorteia. Livro pequeno (menos que `limite`) nunca
+    vai ao disco antes do fim: e exatamente o caminho de antes.
+
+    `descartar()` (cancelar, erro) fecha sem gravar nada e apaga o arquivo ao
+    lado. O arquivo ao lado de uma queda anterior (mesmo nome exato) e apagado
+    ao comecar.
+
+    `doc` e o documento da vez: MUDA a cada `esvaziar()`. Nunca guardar
+    `doc` nem uma pagina dele de uma pagina para a outra. Os outros atributos
+    (`page_count`, `[n]`, ...) vao direto para `doc`, para quem so le.
+
+    Arriscado mudar: gravar o arquivo ao lado em outro disco (a troca do fim
+    ficaria lenta) ou com nome que possa ser de um arquivo do Kaique (seria
+    apagado); esvaziar sem reabrir (o MuPDF continua com tudo na memoria
+    depois do `saveIncr`).
+    """
+
+    def __init__(self, caminho: str | Path, limite: int | None = None) -> None:
+        self.caminho = Path(caminho)
+        self.lado = self.caminho.with_name(f"{self.caminho.name}.paginas")
+        self.limite = LIMITE_DO_PDF_NA_MEMORIA if limite is None else limite
+        try:
+            self.lado.unlink(missing_ok=True)      # sobra de uma queda anterior
+        except OSError:
+            pass
+        with _TRANCA:
+            self.doc = fitz.open()
+        self._na_memoria = 0
+        self._no_disco = False
+        self.idas_ao_disco = 0                     # quantas vezes esvaziou (testes)
+        # Para quem monta por new_page sem contar o peso (as folhas do
+        # livreto, core/impressao.py): quanto pesa, mais ou menos, cada
+        # folha. Com ele, new_page conta a folha ANTERIOR (ja pronta) antes de
+        # abrir a proxima. 0 = quem monta conta sozinho (acrescentou).
+        self.peso_por_folha = 0
+        self._folha_aberta = False
+
+    def __getattr__(self, nome):
+        # so e chamado para o que esta classe nao tem: vai para o documento
+        # da vez (page_count, load_page, [n] via __getitem__ abaixo...)
+        doc = self.__dict__.get("doc")
+        if doc is None:
+            raise AttributeError(nome)
+        return getattr(doc, nome)
+
+    def __getitem__(self, indice):
+        return self.doc[indice]
+
+    def __len__(self) -> int:
+        return len(self.doc)
+
+    def new_page(self, *args, **kwargs):
+        """Pagina nova no documento da vez. Quem monta em cima disto (as
+        folhas do livreto, core/impressao.py) pede cada folha por aqui; as
+        idas ao disco acontecem em `acrescentou`, nunca no meio de uma folha.
+        Com `peso_por_folha`, a folha anterior (ja pronta, ninguem mais mexe
+        nela) e contada aqui, antes de abrir a nova."""
+        if self.peso_por_folha and self._folha_aberta:
+            self.acrescentou(self.peso_por_folha)
+        self._folha_aberta = True
+        return self.doc.new_page(*args, **kwargs)
+
+    def acrescentou(self, tamanho: int) -> None:
+        """Mais `tamanho` bytes de pagina na memoria; passou do limite, vai
+        para o disco. Chamar DEPOIS de terminar a pagina (nunca no meio)."""
+        self._na_memoria += max(0, int(tamanho))
+        if self._na_memoria >= self.limite:
+            self.esvaziar()
+
+    def esvaziar(self) -> None:
+        """Grava no arquivo ao lado o que esta na memoria e reabre o documento
+        a partir dele (ver o docstring da classe). Disco cheio, pasta que sumiu:
+        ErroPDF em portugues."""
+        if self.doc is None:
+            return
+        try:
+            self.lado.parent.mkdir(parents=True, exist_ok=True)
+            with _TRANCA:
+                if self._no_disco:
+                    self.doc.saveIncr()
+                else:
+                    self.doc.save(self.lado)
+                velho, self.doc = self.doc, None
+                velho.close()
+                self.doc = fitz.open(self.lado)
+                fitz.TOOLS.store_shrink(100)
+        except OSError as exc:
+            # (falta de memoria NAO entra aqui: sobe como veio, para o aviso
+            # certo - ui/tarefas.faltou_memoria)
+            raise ErroPDF(
+                "Não consegui gravar o arquivo final. O disco pode estar "
+                "cheio, a pasta pode ter sido removida ou você pode não "
+                "ter permissão para gravar nela. Escolha outra pasta e "
+                "tente de novo."
+            ) from exc
+        self._no_disco = True
+        self._na_memoria = 0
+        self.idas_ao_disco += 1
+
+    def gravar(self, para: str | Path | None = None, **opcoes) -> None:
+        """O `save` do fim, para `para` (de fabrica, `caminho`), com as
+        `opcoes` de sempre; depois fecha e apaga o arquivo ao lado. OSError
+        sobe como veio (quem chama traduz, como antes)."""
+        try:
+            with _TRANCA:
+                self.doc.save(para if para is not None else self.caminho, **opcoes)
+        finally:
+            self.descartar()
+
+    def descartar(self) -> None:
+        """Fecha sem gravar e apaga o arquivo ao lado. Seguro chamar mais de
+        uma vez."""
+        doc, self.doc = self.doc, None
+        try:
+            if doc is not None:
+                with _TRANCA:
+                    doc.close()
+        finally:
+            try:
+                self.lado.unlink(missing_ok=True)
+            except OSError:
+                pass
+
+
+def _peso_medio_da_pagina(origem: fitz.Document) -> int:
+    """Quanto pesa, em media, uma pagina do PDF `origem` no disco (o tamanho
+    do arquivo dividido pelas paginas). E a conta de PDFQueVaiParaODisco para
+    as paginas COPIADAS de outro PDF (insert_pdf, show_pdf_page), em que nao
+    da para saber o peso exato de cada uma. Documento sem arquivo: 0 (nunca
+    vai ao disco antes do fim, como antes)."""
+    try:
+        nome = getattr(origem, "name", "") or ""
+        if not nome or not Path(nome).is_file() or origem.page_count <= 0:
+            return 0
+        return int(Path(nome).stat().st_size / origem.page_count)
+    except Exception:  # noqa: BLE001 - so uma estimativa
+        return 0
+
+
 class EscritorPDF:
     """Monta o PDF de saida página por página.
 
     Uso:
         with EscritorPDF("saida.pdf") as saida:
             saida.escrever_imagem(img, dpi=300)
+
+    Desde 04/11/2026 (D-591) o documento e um PDFQueVaiParaODisco: as paginas
+    ja escritas vao para o disco de tempos em tempos, e a memoria nao cresce
+    com o tamanho do livro. `self.doc` e o documento da vez (muda quando vai
+    ao disco).
     """
 
     def __init__(self, caminho: str | Path) -> None:
         self.caminho = Path(caminho)
-        with _TRANCA:
-            self.doc = fitz.open()
+        self._montagem = PDFQueVaiParaODisco(self.caminho)
         self._paginas = 0
+
+    @property
+    def doc(self):
+        """O documento da vez (None depois de fechar ou descartar)."""
+        return self._montagem.doc
 
     def __enter__(self) -> "EscritorPDF":
         return self
@@ -273,7 +453,9 @@ class EscritorPDF:
             self.doc.xref_set_key(xref, "Filter", "/FlateDecode")
             pagina = self.doc.new_page(width=largura_pt, height=altura_pt)
             pagina.insert_image(fitz.Rect(0, 0, largura_pt, altura_pt), xref=xref)
+            del pagina
         self._paginas += 1
+        self._montagem.acrescentou(len(dados))     # D-591: vai ao disco aos poucos
 
     def escrever_em_duas_camadas(self, img: np.ndarray, dpi: int = DPI_PADRAO) -> None:
         """Itens 2.10 e 1.6 (opção, desmarcada de fábrica): a página em duas
@@ -289,7 +471,9 @@ class EscritorPDF:
             pagina = self.doc.new_page(width=retangulo.width, height=retangulo.height)
             pagina.insert_image(retangulo, stream=de_baixo)
             pagina.insert_image(retangulo, stream=cima, mask=mascara)
+            del pagina
         self._paginas += 1
+        self._montagem.acrescentou(len(de_baixo) + len(cima) + len(mascara or b""))
 
     def copiar_pagina(self, origem: fitz.Document, indice: int) -> None:
         """Copia a página do PDF de origem sem rasterizar.
@@ -300,6 +484,7 @@ class EscritorPDF:
         with _TRANCA:
             self.doc.insert_pdf(origem, from_page=indice, to_page=indice)
         self._paginas += 1
+        self._montagem.acrescentou(_peso_medio_da_pagina(origem))
 
     def descartar(self) -> None:
         """Solta o documento SEM gravar nada no disco.
@@ -310,13 +495,8 @@ class EscritorPDF:
         logo depois) e, quando o destino era o PDF antigo, o destruia. Depois
         de descartar, fechar() (e o __exit__) nao fazem nada.
         """
-        if self.doc is None:
-            return
-        try:
-            with _TRANCA:
-                self.doc.close()
-        finally:
-            self.doc = None  # type: ignore[assignment]
+        # D-591: fecha e apaga tambem o arquivo ao lado (PDFQueVaiParaODisco)
+        self._montagem.descartar()
 
     def fechar(self) -> None:
         """Grava o PDF no disco (se alguma página foi escrita) e solta o documento.
@@ -330,11 +510,12 @@ class EscritorPDF:
             if self._paginas:
                 # A gravacao e o momento em que disco cheio, pendrive arrancado
                 # e pasta sem permissao aparecem. Nada disso pode chegar na tela
-                # como erro tecnico.
+                # como erro tecnico. O save e o mesmo de sempre (garbage=3,
+                # deflate); desde 04/11/2026 (D-591) ele le do disco as paginas
+                # que ja tinham ido para la (PDFQueVaiParaODisco.gravar).
                 try:
                     self.caminho.parent.mkdir(parents=True, exist_ok=True)
-                    with _TRANCA:
-                        self.doc.save(self.caminho, garbage=3, deflate=True)
+                    self._montagem.gravar(garbage=3, deflate=True)
                 except OSError as exc:
                     raise ErroPDF(
                         "Não consegui gravar o arquivo final. O disco pode estar "
@@ -343,9 +524,7 @@ class EscritorPDF:
                         "tente de novo."
                     ) from exc
         finally:
-            with _TRANCA:
-                self.doc.close()
-            self.doc = None  # type: ignore[assignment]
+            self._montagem.descartar()     # ja fechado depois de gravar: nada
 
 
 # Nivel do zlib das imagens do PDF (_imagem_comprimida). Medido em 06/10/2026
