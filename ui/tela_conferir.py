@@ -289,14 +289,14 @@ ABA_MOVER = "mover"
 # aba usa _abas_ativas.index(...), nunca a posição. Seguro mudar: a ordem.
 ORDEM_DAS_FERRAMENTAS = ("corte", "bordas", "angulo", "mover", "marcar", "filtro")
 # D-612 (Samuel, 04/11/2026: "1 - ele tem que funcionar com paginas lado a lado
-# também"): as ferramentas cuja peça (o visualizador delas) passa a morar no
-# lugar da página da vez dentro dos pares do "Duas lado a lado", para o mouse
-# mexer nela ali (_acertar_a_ferramenta_no_par). Hoje só o Mover; Cortar,
-# Endireitar e as de marcar estão perguntadas ao Samuel (não pôr aqui sem a
-# resposta dele: D-605/D-612). Pôr uma aba aqui basta para as que têm
-# visualizador (Bordas, Endireitar); a de marcar (editor_selecao) precisaria
-# também de um lugar de volta em _devolver_a_peca_do_par.
-FERRAMENTAS_NO_PAR = (ABA_MOVER,)
+# também"; e para Cortar, Endireitar e marcar: "1- sim"): as ferramentas cuja
+# peça (o visualizador delas; na de marcar, o editor) passa a morar no lugar
+# da página da vez dentro dos pares do "Duas lado a lado", para o mouse mexer
+# nela ali (_acertar_a_ferramenta_no_par). Na de marcar, só com uma
+# ferramenta que marca: a Mão e o Zoom só olham e ficam nos pares de sempre
+# (_a_ferramenta_vai_no_par). O Dividir nunca (D-601: lá o "Duas lado a lado"
+# é a folha inteira com a linha); o Filtro não tem peça de mexer.
+FERRAMENTAS_NO_PAR = (ABA_BORDAS, ABA_ANGULO, ABA_MOVER, ABA_MARCAR)
 
 TITULOS = {
     ABA_CORTE: "Onde cortar",
@@ -1528,6 +1528,11 @@ class TelaConferir(QWidget):
         if ABA_MARCAR in self._abas_ativas and self.aba_atual != ABA_MARCAR:
             self.barra_abas.setCurrentIndex(self._abas_ativas.index(ABA_MARCAR))
         self._acertar_as_propriedades()     # o painel Propriedades segue a ferramenta
+        # D-612: nos pares, trocar entre a Mão/Zoom e uma de marcar (sem trocar
+        # de "aba") põe ou tira o editor do lugar da página da vez
+        if (hasattr(self, "lado_a_lado")
+                and self.vista_da_pagina.currentWidget() is self.lado_a_lado):
+            self._acertar_a_ferramenta_no_par(self._a_ferramenta_vai_no_par())
 
     def _ferramenta_da_trilha(self, ferramenta: str) -> None:
         """Clique na trilha (ou no menu Ferramentas). As de pagina (Dividir,
@@ -3641,8 +3646,10 @@ class TelaConferir(QWidget):
         if vigiado is self.area_imagem and evento.type() == QEvent.Resize:
             self._por_o_girar_no_canto()
         # D-612: a peça da ferramenta que mora nos pares passa a roda aos pares
+        # (menos a roda sozinha do Pincel/Varinha/Cor, que é da ferramenta)
         if (evento.type() == QEvent.Wheel and hasattr(self, "lado_a_lado")
-                and vigiado is not None and vigiado is self.lado_a_lado.ferramenta):
+                and vigiado is not None and vigiado is self.lado_a_lado.ferramenta
+                and not self._roda_da_peca_e_da_ferramenta(vigiado, evento)):
             try:
                 self._roda_na_peca_do_par(vigiado, evento)
             except Exception:  # noqa: BLE001 - a roda nunca fecha a janela
@@ -7706,7 +7713,7 @@ class TelaConferir(QWidget):
         elif pronta and not no_dividir and self.mostrar == DUAS:
             self._acertar_o_lado_a_lado()
             self.vista_da_pagina.setCurrentWidget(self.lado_a_lado)
-            no_par = self.aba_atual in FERRAMENTAS_NO_PAR
+            no_par = self._a_ferramenta_vai_no_par()
         else:
             self.vista_da_pagina.setCurrentWidget(self.area_imagem)
         self._acertar_a_ferramenta_no_par(no_par)
@@ -7754,17 +7761,42 @@ class TelaConferir(QWidget):
 
     FOLGA_NO_PAR = 8      # pontos em volta da página nos pares (os cantos azuis inteiros)
 
+    def _a_ferramenta_vai_no_par(self) -> bool:
+        """Se a peça da ferramenta da vez deve morar nos pares agora: livro
+        pronto, fora do Dividir, sem "antes / depois", "Duas lado a lado", e a
+        ferramenta em FERRAMENTAS_NO_PAR; na de marcar, só com uma ferramenta
+        que marca (a Mão e o Zoom só olham: os pares de sempre)."""
+        from ui.widgets.editor_selecao import FERRAMENTAS_DE_MARCAR
+
+        if not (self._pronta() and self.projeto is not None):
+            return False
+        if self.trabalha_com_folhas or self.comparando or self.mostrar != DUAS:
+            return False
+        if self.aba_atual not in FERRAMENTAS_NO_PAR:
+            return False
+        if self.aba_atual == ABA_MARCAR:
+            editor = getattr(self, "editor_selecao", None)
+            return editor is not None and editor.ferramenta in FERRAMENTAS_DE_MARCAR
+        return True
+
+    def _peca_da_aba(self, aba: str | None):
+        """A peça de mexer na página da ferramenta `aba`: o editor na de
+        marcar, o visualizador nas outras (None se não há)."""
+        if aba == ABA_MARCAR:
+            return getattr(self, "editor_selecao", None)
+        return self.visualizadores.get(aba) if aba is not None else None
+
     def _acertar_a_ferramenta_no_par(self, no_par: bool) -> None:
         """Põe a peça da ferramenta da vez no lugar da página da vez dentro
-        dos pares (no_par True e a ferramenta em FERRAMENTAS_NO_PAR) ou a
-        devolve para a casa dela. Página da vez fora do livro que vai sair
-        (tirada): os pares não a mostram, e a peça fica em casa (como antes)."""
+        dos pares (no_par True: _a_ferramenta_vai_no_par) ou a devolve para a
+        casa dela. Página da vez fora do livro que vai sair (tirada): os pares
+        não a mostram, e a peça fica em casa (como antes)."""
         from PySide6.QtCore import QPoint
 
         if not hasattr(self, "lado_a_lado"):
             return
         pares = self.lado_a_lado
-        peca = self.visualizadores.get(self.aba_atual) if no_par else None
+        peca = self._peca_da_aba(self.aba_atual) if no_par else None
         if peca is not None and self.indice_pagina not in pares.indices:
             peca = None
         atual = pares.ferramenta
@@ -7774,21 +7806,34 @@ class TelaConferir(QWidget):
         if peca is None:
             return
         if atual is not peca:
-            # o zoom da "Uma página" fica guardado; nos pares o zoom é o do par
+            # o zoom da "Uma página" fica guardado; nos pares o zoom é o do par.
+            # Direto nos campos (sem ajustar_a_tela: o editor de marcar avisaria
+            # "Zoom: 100%" na faixa)
             self._vista_da_peca_em_casa = (peca.zoom, QPoint(peca.deslocamento))
             peca.folga_da_moldura = self.FOLGA_NO_PAR
-            peca.ajustar_a_tela()
+            self._por_a_vista_da_peca(peca, 1.0, QPoint(0, 0))
         pares.definir_ferramenta(peca)
+
+    @staticmethod
+    def _por_a_vista_da_peca(peca, zoom: float, deslocamento) -> None:
+        """O zoom e o deslocamento da peça, sem aviso nem sinal (o mesmo que
+        Visualizador.aplicar_vista; o editor de marcar não tem essa função)."""
+        from PySide6.QtCore import QPoint
+
+        peca.zoom = float(zoom)
+        peca.deslocamento = QPoint(deslocamento)
+        peca.update()
 
     def _devolver_a_peca_do_par(self, peca) -> None:
         """A peça volta para a casa dela na área de imagem (o meio da linha
-        das setas escondidas, _area_de_visualizador), com a folga e o zoom de
-        antes. Peça que não é de nenhuma ferramenta (livro já trocado): sai."""
+        das setas escondidas: _area_de_visualizador, _montar_aba_marcar), com
+        a folga e o zoom de antes. Peça que não é de nenhuma ferramenta (livro
+        já trocado): sai."""
         from PySide6.QtCore import QPoint
 
         from ui.widgets.visualizador import PADDING_MOLDURA
 
-        aba = next((a for a, v in self.visualizadores.items() if v is peca), None)
+        aba = next((a for a in ORDEM_DAS_FERRAMENTAS if self._peca_da_aba(a) is peca), None)
         casa = self.paginas_de_imagem.get(aba) if aba is not None else None
         if casa is None or casa.layout() is None:
             peca.setParent(None)
@@ -7797,8 +7842,20 @@ class TelaConferir(QWidget):
         casa.layout().insertWidget(1, peca, 1)
         peca.folga_da_moldura = PADDING_MOLDURA
         zoom, deslocamento = getattr(self, "_vista_da_peca_em_casa", (1.0, QPoint(0, 0)))
-        peca.aplicar_vista(zoom, deslocamento)
+        self._por_a_vista_da_peca(peca, zoom, deslocamento)
         peca.show()
+
+    def _roda_da_peca_e_da_ferramenta(self, peca, evento) -> bool:
+        """D-600 ("a roda sozinha continua mudando o pincel") nos pares: com o
+        Pincel, a Varinha ou a Cor, a roda sem Ctrl e sem Shift continua da
+        ferramenta (espessura, tolerância), como na "Uma página"."""
+        from ui.widgets.editor_selecao import FERRAMENTA_COR, FERRAMENTA_PINCEL, FERRAMENTA_VARINHA
+
+        if peca is not getattr(self, "editor_selecao", None):
+            return False
+        if evento.modifiers() & (Qt.ControlModifier | Qt.ShiftModifier):
+            return False
+        return peca.ferramenta in (FERRAMENTA_PINCEL, FERRAMENTA_VARINHA, FERRAMENTA_COR)
 
     def _roda_na_peca_do_par(self, peca, evento) -> None:
         """A roda do mouse em cima da peça da ferramenta nos pares vai para os
