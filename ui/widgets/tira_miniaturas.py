@@ -24,6 +24,19 @@ tira (definir_pares_pela_vista), o mesmo arranjo do "em pares". É separado do
 "Ver em pares" do menu (em_pares, a escolha da pessoa, guardada para o
 próximo livro): um não mexe no outro, e a tira fica em pares se um dos dois
 estiver ligado.
+
+D-611 refeita (04/11/2026; Samuel, testando: "4- não está ok coloquei no
+primeiro print", print a-57): a grade já punha 1 | 2-3 | 4-5, mas com as
+folhas divididas cada miniatura é uma página em pé, estreita, no meio de um
+quadro de largura fixa - o vão entre os dois desenhos do par ficava igual ao de
+"Uma página" (22 pontos), e a tira parecia uma a uma. Agora, com os pares da
+vista ligados, as duas miniaturas do par ficam ENCOSTADAS como as duas páginas
+do livro aberto: a da esquerda encosta o desenho no lado direito do quadro, a
+da direita no lado esquerdo (Miniatura.encostar), sem vão entre os quadros do
+par, e um vão entre um par e outro (ESPACO_ENTRE_PARES_DA_VISTA). O "Ver em
+pares" sozinho (D-032, aprovado "Está bom" em 21/10) e "Uma página" ficam com
+o jeito de antes. Arriscado: encostar também no "Ver em pares" do menu (muda
+um jeito já aprovado, D-605).
 """
 
 from __future__ import annotations
@@ -56,6 +69,10 @@ LARGURA_MAXIMA = 62
 LARGURA_DO_QUADRO = 50
 ALTURA_DO_NUMERO = 16
 ESPACO_ENTRE_PARES = 10     # o vão entre um par e outro, "em pares"
+ESPACO_ENTRE_OS_QUADROS = 6  # o vão entre um quadro e outro (uma a uma e "Ver em pares")
+# D-611 refeita (04/11): com "Duas lado a lado", os quadros do par encostam (vão
+# 0) e entre um par e outro fica este vão - o mesmo total de antes (6 + 10 + 6).
+ESPACO_ENTRE_PARES_DA_VISTA = 22
 
 # Altura da folha guardada (como veio no PDF). Maior que o quadro de
 # proposito: a folha em pe, girada 1/4, fica deitada, e a altura guardada
@@ -117,6 +134,11 @@ class Miniatura(QFrame):
         # etapa 7 da obra (D-010, o exemplo do Samuel: "a folha fica
         # conferida, tique na miniatura"): o "está certo" deixa um tique verde
         self.conferida = False
+        # D-611 refeita (04/11/2026): "direita" = a página da esquerda do par,
+        # o desenho encosta no lado direito do quadro; "esquerda" = a página da
+        # direita, encosta no lado esquerdo; None = no meio, como sempre.
+        # Quem põe é a TiraMiniaturas (_arrumar), só com os pares da vista.
+        self.encostar: str | None = None
         self._pixmap: QPixmap | None = None
 
         self.setFixedSize(QSize(LARGURA_DO_QUADRO, ALTURA_MINIATURA + ALTURA_DO_NUMERO + 4))
@@ -129,12 +151,16 @@ class Miniatura(QFrame):
 
     def paintEvent(self, evento) -> None:  # noqa: N802
         """Desenha a imagem (ou cinza, se ainda nao chegou), a moldura
-        (azul=selecionada, laranja=alerta) e o número/rótulo embaixo."""
+        (azul=selecionada, laranja=alerta) e o número/rótulo embaixo.
+        Com `encostar` (D-611 refeita, os pares da vista "Duas lado a lado")
+        o desenho vai para um lado do quadro, com a moldura na beirada dele,
+        e o número fica embaixo do desenho; o tamanho do desenho não muda."""
         pintor = QPainter(self)
         pintor.setRenderHint(QPainter.Antialiasing)
 
         # o desenho em cima; o número embaixo, fora dele
         area = self.rect().adjusted(2, 2, -2, -(ALTURA_DO_NUMERO + 2))
+        meio_do_desenho = None          # D-611 refeita: o número embaixo do desenho
 
         if self._pixmap is not None:
             # nos pixels de verdade (escala do Windows), para não sair mole
@@ -148,6 +174,15 @@ class Miniatura(QFrame):
             largura = round(escalado.width() / razao)
             altura = round(escalado.height() / razao)
             x = area.left() + (area.width() - largura) // 2
+            # D-611 refeita: a moldura (2 pontos à esquerda do desenho e 1 à
+            # direita, ver o adjusted abaixo) fica na beirada do quadro, e os
+            # dois desenhos do par se encostam
+            if self.encostar == "direita":
+                x = self.width() - 2 - largura
+            elif self.encostar == "esquerda":
+                x = 2
+            if self.encostar is not None:
+                meio_do_desenho = x + largura // 2
             y = area.top() + (area.height() - altura) // 2
             pintor.drawPixmap(x, y, escalado)
             area = area.adjusted(x - area.left() - 2, y - area.top() - 2,
@@ -175,6 +210,8 @@ class Miniatura(QFrame):
         pintor.drawRect(area)
 
         rodape = self.rect().adjusted(0, self.height() - ALTURA_DO_NUMERO - 1, 0, -1)
+        if meio_do_desenho is not None:
+            rodape.translate(meio_do_desenho - rodape.center().x(), 0)
         pintor.setPen(QColor(estilo.LARANJA) if self.em_alerta else QColor(estilo.TEXTO_FRACO))
         rotulo = str(self.numero)
         if self.em_alerta:
@@ -292,7 +329,7 @@ class TiraMiniaturas(QWidget):
         interno.setObjectName("dentroDaTira")
         self.linha = QGridLayout(interno)
         self.linha.setContentsMargins(4, 2, 4, 2)
-        self.linha.setSpacing(6)
+        self.linha.setSpacing(ESPACO_ENTRE_OS_QUADROS)
         self.rolagem.setWidget(interno)
         fora.addWidget(self.rolagem)
         self.vertical = False
@@ -384,7 +421,13 @@ class TiraMiniaturas(QWidget):
         return 0, par * 3 + lado                        # coluna 3*par+2 fica vazia (o vão)
 
     def _arrumar(self) -> None:
-        """Põe cada quadro no lugar da grade (posicao) e o espaço que sobra no fim."""
+        """Põe cada quadro no lugar da grade (posicao) e o espaço que sobra no fim.
+
+        D-611 refeita (04/11/2026): com os pares da vista ("Duas lado a lado"),
+        os dois quadros do par ficam sem vão e com o desenho encostado no
+        outro (Miniatura.encostar), e entre um par e outro fica
+        ESPACO_ENTRE_PARES_DA_VISTA. Sem eles ("Uma página", ou só o "Ver em
+        pares" do menu), o vão e o desenho no meio, como antes."""
         grade = self.linha
         while grade.count():
             grade.takeAt(0)
@@ -394,14 +437,24 @@ class TiraMiniaturas(QWidget):
         for coluna in range(grade.columnCount()):
             grade.setColumnStretch(coluna, 0)
             grade.setColumnMinimumWidth(coluna, 0)
+        juntos = self.pares_pela_vista
+        grade.setHorizontalSpacing(0 if juntos else ESPACO_ENTRE_OS_QUADROS)
         ultima_linha = ultima_coluna = 0
         for i, mini in enumerate(self._miniaturas):
             linha, coluna = self.posicao(i)
+            encostar = None
+            if juntos:
+                # a página par fica à esquerda do par (posicao): encosta à direita
+                encostar = "direita" if (i + 1) % 2 == 0 else "esquerda"
+            if mini.encostar != encostar:
+                mini.encostar = encostar
+                mini.update()
             grade.addWidget(mini, linha, coluna, Qt.AlignCenter)
             ultima_linha, ultima_coluna = max(ultima_linha, linha), max(ultima_coluna, coluna)
         if self.em_pares_agora and not self.vertical:
+            vao = ESPACO_ENTRE_PARES_DA_VISTA if juntos else ESPACO_ENTRE_PARES
             for coluna in range(2, ultima_coluna + 1, 3):
-                grade.setColumnMinimumWidth(coluna, ESPACO_ENTRE_PARES)
+                grade.setColumnMinimumWidth(coluna, vao)
         if self.vertical:
             grade.setRowStretch(ultima_linha + 1, 1)
         else:
