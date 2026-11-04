@@ -1,0 +1,2 @@
+pincel-roda => {"espessura": 0.029282000000000006, "tamanho_de_cima": 29, "painel": "Pincel: 2.9% da página"}
+pincel-tamanho => {"espessura": 0.2, "tamanho_de_cima": 200, "painel": "Pincel: 20.0% da página"}
