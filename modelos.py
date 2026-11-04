@@ -863,6 +863,10 @@ class Projeto:
             # Arriscado: tirar esta linha (os cadernos sairiam com a folha
             # inteira no lugar das duas paginas).
             and not _tem_metade_de_folha_dividida(self)
+            # D-615 (04/11/2026): com a ordem mudada a mao (arrastar a
+            # miniatura), o caminho rapido montaria os cadernos com as folhas
+            # na ordem do PDF. Livro sem ordem mudada: como antes.
+            and not _fora_da_ordem_do_pdf(self)
         )
 
     @property
@@ -997,6 +1001,14 @@ def _tem_metade_de_folha_dividida(projeto: "Projeto") -> bool:
     folhas = projeto.folhas
     return any(p.metade != METADE_INTEIRA and 0 <= p.folha < len(folhas)
                and folhas[p.folha].dividir for p in projeto.paginas)
+
+
+def _fora_da_ordem_do_pdf(projeto: "Projeto") -> bool:
+    """core.ordem_das_paginas.fora_da_ordem_do_pdf (import tardio): a ordem das
+    paginas foi mudada (D-615)? Usado por Projeto.so_cadernos."""
+    from core.ordem_das_paginas import fora_da_ordem_do_pdf
+
+    return fora_da_ordem_do_pdf(projeto)
 
 
 def _tem_automatico_por_pagina(projeto: "Projeto") -> bool:
