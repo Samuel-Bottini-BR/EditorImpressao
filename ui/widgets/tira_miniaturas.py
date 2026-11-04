@@ -15,6 +15,15 @@ grade (definir_arranjo): numa fila (embaixo) ou numa coluna (de lado); "em
 pares" junta as páginas como no livro aberto - a 1 sozinha à direita, depois
 2 e 3, 4 e 5. O número da página fica embaixo do desenho, sem cobri-lo (antes
 o número e o "!" do aviso saíam por cima da página e cortados).
+
+D-611 (Samuel, 04/11/2026, print a-56: "quando estiver duas lado a lado
+escolhido os icones embaixo tem que estar em duas folhas" → "Sim" a "as
+miniaturas embaixo também aparecem de duas em duas, juntas como no livro
+aberto?"): com a vista "Duas lado a lado" escolhida, a tela liga os pares da
+tira (definir_pares_pela_vista), o mesmo arranjo do "em pares". É separado do
+"Ver em pares" do menu (em_pares, a escolha da pessoa, guardada para o
+próximo livro): um não mexe no outro, e a tira fica em pares se um dos dois
+estiver ligado.
 """
 
 from __future__ import annotations
@@ -288,6 +297,7 @@ class TiraMiniaturas(QWidget):
         fora.addWidget(self.rolagem)
         self.vertical = False
         self.em_pares = False
+        self.pares_pela_vista = False      # D-611: "Duas lado a lado" escolhida
         self.definir_arranjo(False, False)
 
     def montar(self, quantidade: int, caminho_pdf: str, folha_de: dict[int, int],
@@ -341,11 +351,31 @@ class TiraMiniaturas(QWidget):
             rolagem.setFixedHeight(altura_do_quadro + 18)
         self._arrumar()
 
+    def definir_pares_pela_vista(self, ligado: bool) -> None:
+        """D-611 (ver o começo do arquivo): a tela liga os pares da tira com a
+        vista "Duas lado a lado" e desliga com "Uma página". Só reposiciona os
+        quadros que já existem (nada é lido do PDF) e rola até a escolhida de
+        novo, com a grade já arrumada. Não toca no "Ver em pares" (em_pares).
+        Arriscado: gravar isto como a escolha da pessoa (o próximo livro
+        abriria em pares em "Uma página")."""
+        if bool(ligado) == self.pares_pela_vista:
+            return
+        self.pares_pela_vista = bool(ligado)
+        self._arrumar()
+        QTimer.singleShot(0, self._rolar_ate_a_escolhida)
+
+    @property
+    def em_pares_agora(self) -> bool:
+        """A tira está em pares: pelo "Ver em pares" do menu ou pela vista
+        "Duas lado a lado" (D-611)."""
+        return self.em_pares or self.pares_pela_vista
+
     def posicao(self, indice: int) -> tuple[int, int]:
         """(linha, coluna) do quadro `indice` na grade. "Em pares", como no
         livro aberto: a página 1 sozinha, do lado direito; depois 2 e 3, 4 e
-        5... Na fila, um vão (uma coluna vazia) separa cada par."""
-        if not self.em_pares:
+        5... Na fila, um vão (uma coluna vazia) separa cada par. Em pares pelo
+        "Ver em pares" ou pela vista "Duas lado a lado" (D-611)."""
+        if not self.em_pares_agora:
             return (indice, 0) if self.vertical else (0, indice)
         par = (indice + 1) // 2
         lado = 0 if (indice + 1) % 2 == 0 else 1       # página par à esquerda
@@ -369,7 +399,7 @@ class TiraMiniaturas(QWidget):
             linha, coluna = self.posicao(i)
             grade.addWidget(mini, linha, coluna, Qt.AlignCenter)
             ultima_linha, ultima_coluna = max(ultima_linha, linha), max(ultima_coluna, coluna)
-        if self.em_pares and not self.vertical:
+        if self.em_pares_agora and not self.vertical:
             for coluna in range(2, ultima_coluna + 1, 3):
                 grade.setColumnMinimumWidth(coluna, ESPACO_ENTRE_PARES)
         if self.vertical:

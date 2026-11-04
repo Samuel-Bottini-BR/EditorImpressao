@@ -7685,6 +7685,11 @@ class TelaConferir(QWidget):
             self.vista_da_pagina.setCurrentWidget(self.area_imagem)
         # os botões mostram a escolha (no Dividir também valem: D-601)
         self.botoes_mostrar[self.mostrar].setChecked(True)
+        # D-611 (Samuel, 04/11/2026: "quando estiver duas lado a lado escolhido
+        # os icones embaixo tem que estar em duas folhas" → "Sim"): com "Duas
+        # lado a lado" escolhida, a tira em pares como no livro aberto, em toda
+        # ferramenta; "Uma página", como está. Não mexe no "Ver em pares" do menu.
+        self.tira.definir_pares_pela_vista(pronta and self.mostrar == DUAS)
         self.botao_antes_depois.setChecked(self.comparando)
         for jeito, _texto, dica in self.JEITOS_DE_MOSTRAR:
             self.botoes_mostrar[jeito].setEnabled(pronta)
