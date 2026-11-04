@@ -117,16 +117,16 @@ def test_d617_com_dividir_as_setas_continuam_pelas_metades(janela, app, tmp_path
     painel.botao_proxima.click()
     _esperar(app, painel)
     assert (painel._indice, painel._metade) == (0, "direita")
-    assert painel.contador.text() == "página 1 de 3"
-    _escrever(painel, "1")                           # a mesma folha: fica na metade da direita
+    assert painel.contador.text() == "página 2 de 4"  # D-617, 04/11: "com o dividir marcado o numero de pagina tem que corresponder com a pagina que está sendo passada"
+    _escrever(painel, "2")  # a mesma página: fica na metade da direita. D-617, 04/11: "com o dividir marcado o numero de pagina tem que corresponder com a pagina que está sendo passada"
     assert (painel._indice, painel._metade) == (0, "direita")
-    _escrever(painel, "2")
+    _escrever(painel, "3")  # D-617, 04/11: "com o dividir marcado o numero de pagina tem que corresponder com a pagina que está sendo passada"
     _esperar(app, painel)
-    assert painel._indice == 1 and painel.contador.text() == "página 2 de 3"
+    assert painel._indice == 1 and painel.contador.text() == "página 3 de 4"  # D-617, 04/11: "com o dividir marcado o numero de pagina tem que corresponder com a pagina que está sendo passada"
     painel.botao_anterior.click()
     _esperar(app, painel)
     assert (painel._indice, painel._metade) == (0, "direita"), "o < não andou pela metade"
-    assert painel.campo_pagina.text() == "1"
+    assert painel.campo_pagina.text() == "2"  # D-617, 04/11: "com o dividir marcado o numero de pagina tem que corresponder com a pagina que está sendo passada"
 
 
 def test_d617_o_campo_nao_muda_o_teclado_da_janela(janela, app, tmp_path):
