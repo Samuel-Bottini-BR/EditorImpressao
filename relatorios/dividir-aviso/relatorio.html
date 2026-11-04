@@ -144,7 +144,7 @@ Situação: <strong>feito, a testar pelo Samuel.</strong> Nada foi juntado em ou
 <h2>Testes (PC, um arquivo por vez)</h2>
 <p>Novo: <code>tests/test_decisoes_dividir_aviso.py</code>, <strong>11 passaram</strong>. No código de antes (<code>dd7a648c</code>) <strong>10 falham</strong> (os de pular, dividir também, cancelar, mistura, o aviso de verdade; o de reversão acusa "o aviso não aparece": <code>[] == [1]</code>); só o "sem juntada não pergunta" passa lá, como deve.</p>
 <p>Antigos, sem nenhuma mudança: <code>test_decisoes_dividir</code> 21 · <code>test_decisoes_dividir_linha</code> 13 · <code>test_decisoes_dividir_arrastar</code> 16 · <code>test_decisoes_dividir_metade</code> 6 · <code>test_decisoes_juntar_todas</code> 4 · <code>test_decisoes_tira_em_pares</code> 4 · <code>test_dividir_ajustes_03_11</code> 9 · <code>test_dividir_na_tela</code> 9 · <code>test_dividir_no_programa</code> 19 · <code>test_dividir_desmarcada_caixinha</code> 3 · <code>test_dividir_scantailor</code> 13 · <code>test_caderno_segue_as_etapas</code> 11 · <code>test_automatico_pular_depois_de_dividir</code> 4 · <code>test_historico_depois_de_reabrir</code> 11 · <code>test_recomeco_limpa_o_historico</code> 13 · <code>test_promessas</code> (Dividir: P-212, P-059, juntar) 10. Todos passaram. <strong>Nenhum teste antigo foi mudado.</strong></p>
-<p>GitHub: rodada <strong>41851955352</strong> (resultado no fim deste relatório, quando chegar).</p>
+<p>GitHub: rodada <strong>41851955352</strong>: as partes 2 a 5 e os botões/prints da janela real passaram; a parte 1 acusou só 2 erros, os dois em <code>test_promessas::test_p083_*</code> (os que às vezes estouram lá: uma prévia que procurava o PDF de um teste já fechado). No PC, <code>test_promessas -k p083</code>: <strong>6 passaram</strong>.</p>
 <h2>Ressalvas</h2>
 <ul>
 <li>Se o histórico do desfazer foi recomeçado, uma folha juntada sem ação no histórico conta como juntada à mão (o aviso pergunta: é o lado seguro).</li>
@@ -152,6 +152,6 @@ Situação: <strong>feito, a testar pelo Samuel.</strong> Nada foi juntado em ou
 <li>O aviso aparece antes de ler as folhas; uma folha juntada que o motor ache de uma página só entra na conta do aviso, mas mesmo com "Dividir também" ela fica inteira (como já era).</li>
 <li>A ordem dos botões na tela é a do Windows/Qt, igual à do aviso da D-004 ("Pular", "Dividir também", "cancelar").</li>
 </ul>
-<p class="rodape">Editor de Impressão &middot; gerado em 04/11/2026 às 10:54</p>
+<p class="rodape">Editor de Impressão &middot; gerado em 04/11/2026 às 11:15</p>
 </body>
 </html>

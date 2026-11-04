@@ -79,7 +79,7 @@ caminho fica igual, e nenhum teste antigo contradiz a D-613.
 - [x] código (commits 725764c6, 58aa4cbf)
 - [x] testes do Dividir e do desfazer no PC (todos passaram, nenhum mudado)
 - [x] janela de verdade (piloto.py, 16 prints)
-- [ ] GitHub: rodada 41851955352 disparada
+- [x] GitHub: rodada 41851955352: tudo passou, menos 2 erros em test_p083_* (conhecidos); no PC, p083: 6 passaram
 - [x] relatório (`relatorio.md/.html/.pdf`)
 
 ## Como cumpri cada uma

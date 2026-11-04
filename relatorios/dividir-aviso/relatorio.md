@@ -67,7 +67,7 @@ Novo: `tests/test_decisoes_dividir_aviso.py`, **11 passaram**. No código de ant
 
 Antigos, sem nenhuma mudança: `test_decisoes_dividir` 21 · `test_decisoes_dividir_linha` 13 · `test_decisoes_dividir_arrastar` 16 · `test_decisoes_dividir_metade` 6 · `test_decisoes_juntar_todas` 4 · `test_decisoes_tira_em_pares` 4 · `test_dividir_ajustes_03_11` 9 · `test_dividir_na_tela` 9 · `test_dividir_no_programa` 19 · `test_dividir_desmarcada_caixinha` 3 · `test_dividir_scantailor` 13 · `test_caderno_segue_as_etapas` 11 · `test_automatico_pular_depois_de_dividir` 4 · `test_historico_depois_de_reabrir` 11 · `test_recomeco_limpa_o_historico` 13 · `test_promessas` (Dividir: P-212, P-059, juntar) 10. Todos passaram. **Nenhum teste antigo foi mudado.**
 
-GitHub: rodada **41851955352** (resultado no fim deste relatório, quando chegar).
+GitHub: rodada **41851955352**: as partes 2 a 5 e os botões/prints da janela real passaram; a parte 1 acusou só 2 erros, os dois em `test_promessas::test_p083_*` (os que às vezes estouram lá: uma prévia que procurava o PDF de um teste já fechado). No PC, `test_promessas -k p083`: **6 passaram**.
 
 ## Ressalvas
 
