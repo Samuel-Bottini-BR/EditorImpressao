@@ -19,7 +19,21 @@ Saiu de `obra-2026-10-26` em `e17410fe`.
   onde o motor acha).
 - **D-608 (03/11):** depois de clicar num botão do painel, as setas continuam passando de folha.
 
+- **D-610 (04/11, pedido da gerente no meio da tarefa):** print a-56: "quando eu dividir uma folha que estiver em duas
+  lado a lado ela tem que ir para opção uma pagina, se não quando eu usar seta ela vai pular uma folha." → no Dividir,
+  "dividir esta" e "dividir todas" em "Duas lado a lado" passam a vista para "Uma página". Mais nova que a D-601.
+- **D-611 (04/11, idem):** "quando estiver duas lado a lado escolhido os icones embaixo tem que estar em duas folhas" ·
+  "Quer dizer que, com 'Duas lado a lado' escolhido, as miniaturas embaixo também aparecem de duas em duas, juntas como
+  no livro aberto?" → "Sim". Em "Uma página", a tira fica como está.
+
 ## O que já está escolhido e testado aqui (antes de mexer)
+
+- (D-610) D-601: em "Duas lado a lado" a vista ficava depois de dividir → `tests/test_dividir_na_tela.py::
+  test_linha_azul_some_quando_a_folha_nao_e_dividida` (o fim dele contava com isso: ver Situação), D-608 (setas).
+- (D-611) A tira: "Ver em pares" do menu dos três pontinhos (etapa 5 do layout, guardado para o próximo livro) →
+  `tests/test_miniaturas_novas.py`; a tira do Dividir (D-601: dividida = duas miniaturas, inteira = uma dupla) →
+  `tests/test_decisoes_dividir_metade.py`; rolar até a escolhida depois do Ctrl+Z (03/11) →
+  `tests/test_dividir_ajustes_03_11.py`. A tira da tela inicial (de lado) não muda.
 
 - D-602: linha do motor na folha inteira, "Uma página" e "Duas lado a lado"; sem linha na de uma página só; "dividir
   esta" corta na linha mostrada; "dividir todas"; lista do motor acesa → `tests/test_decisoes_dividir_linha.py`.

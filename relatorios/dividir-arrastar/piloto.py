@@ -90,6 +90,39 @@ def main():
     P.p(j, "folha4-duas-lado-a-lado-linha-arrastada-para-55")
     b.tecla(j, 0x27); P.esperar_linha(j)                           # seta → (D-608)
     P.anotar("seta direita depois de arrastar (D-608)", estado(j))
+
+    # --- D-610: folha 1 inteira em "Duas lado a lado", "dividir esta" → "Uma página" ----------
+    P.ir_folha(j, 1)
+    P.anotar("folha 1 inteira, Duas lado a lado", {**estado(j), "vista": t.mostrar})
+    P.p(j, "d610-folha1-inteira-duas-lado-a-lado")
+    b.clique(j, t.botao_nao_dividir); b.esperar(2)                 # dividir esta
+    P.anotar("folha 1 depois do dividir esta (D-610)", {**estado(j), "vista": t.mostrar,
+                                                         "metade": t._metade_no_dividir()})
+    P.p(j, "d610-folha1-dividida-foi-para-uma-pagina")
+    b.tecla(j, 0x27); P.esperar_linha(j)                           # →
+    P.anotar("seta direita (uma página por vez)", {**estado(j), "metade": t._metade_no_dividir()})
+    b.tecla(j, 0x27); P.esperar_linha(j)                           # →
+    P.anotar("seta direita de novo (a folha 2, sem pular)", estado(j))
+
+    # --- D-611: a tira em pares com "Duas lado a lado" ----------------------------------------
+    P.ir_folha(j, 1)
+    P.anotar("tira em Uma página", {"vista": t.mostrar, "pares": t.tira.em_pares_agora,
+                                    "posicoes": [t.tira.posicao(i) for i in range(6)]})
+    P.p(j, "d611-tira-uma-a-uma-em-uma-pagina")
+    P.mostrar(j, "duas")
+    P.anotar("tira em Duas lado a lado", {"vista": t.mostrar, "pares": t.tira.em_pares_agora,
+                                          "posicoes": [t.tira.posicao(i) for i in range(6)],
+                                          "ver_em_pares_do_menu": j.tela_conferir.miniaturas.em_pares})
+    P.p(j, "d611-tira-em-pares-em-duas-lado-a-lado")
+    # o mesmo no Cortar (outra ferramenta), com o livro dividido
+    b.clique(j, t.botao_dividir_todas); P.esperar_dividir_todas(j)
+    P.mostrar(j, "duas")
+    t.escolher_ferramenta("cortar"); b.esperar(3)
+    P.anotar("Cortar, Duas lado a lado", {"vista": t.mostrar, "pares": t.tira.em_pares_agora,
+                                          "miniaturas": len(t.tira._miniaturas)})
+    P.p(j, "d611-cortar-duas-lado-a-lado-tira-em-pares")
+    P.mostrar(j, "uma")
+    P.p(j, "d611-cortar-uma-pagina-tira-uma-a-uma")
     j.close(); b.esperar(2)
     P.LOG.close()
 
