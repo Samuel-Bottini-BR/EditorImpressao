@@ -164,3 +164,84 @@ def test_reversao_tira_mostra_a_folha_da_vez_depois_do_ctrl_z(janela, tmp_path):
     _assentar(10)
     assert all(f.dividir for f in projeto.folhas) and tela.indice_folha == 19
     assert _a_vista_na_tira(tela), "depois do refazer a tira mostra a folha da vez"
+
+
+# --- a etapa 6 inteira na janela do Automático da tela do Samuel ----------------------------------
+
+def test_reversao_margens_iguais_inteira_na_janela_do_automatico_1536x824(app):
+    """Achado do verificador clicando (03/11/2026, ressalva 3 do teste 2, print t2m-02; o print
+    a-51 do Samuel mostra o mesmo): "Na janela grande do Automático, na etapa 6, a coluna do meio
+    fica cortada à direita nesse tamanho de janela: "5,0 mm" e "no meio" aparecem pela metade,
+    com barra de rolagem". A janela principal do tamanho da dele (1536 x 824) abre a do
+    Automático com 92% (1413 x 758): na janela de verdade a coluna do meio tem 674 pontos e a
+    linha "página menor, de cima a baixo: [no meio] de um lado ao outro: [no meio]" pedia 732.
+    Agora a linha dobra em duas quando não cabe; textos, controles e a ordem são os mesmos.
+    O teste não depende das letras da máquina: a coluna é posta numa largura em que as duas
+    linhas das margens cabem e a linha do alinhamento inteira não (como na janela dele), medida
+    pelo próprio Qt. No código de antes (75ed04af) aparece a rolagem de lado: falha lá."""
+    from PySide6.QtWidgets import QComboBox, QDoubleSpinBox, QLabel
+
+    from core import automatico as A
+    from ui.automatico import EstadoDoAutomatico, PainelDeOpcoes
+
+    painel = PainelDeOpcoes(EstadoDoAutomatico())
+    rolagem = painel.paginas_das_etapas[A.MARGENS]
+    dentro = rolagem.widget()
+    rotulos = {r.text(): r for r in dentro.findChildren(QLabel)}
+    larg = lambda w: w.minimumSizeHint().width()          # noqa: E731
+    espaco, margens = 6, 36
+    caixas = [painel.margens_mm[k] for k in ("esquerda", "cima", "direita", "baixo")]
+    duas_linhas = max(larg(rotulos["margem esquerda:"]) + larg(caixas[0])
+                      + larg(rotulos["margem em cima:"]) + larg(caixas[1]),
+                      larg(rotulos["margem direita:"]) + larg(caixas[2])
+                      + larg(rotulos["margem embaixo:"]) + larg(caixas[3])) + 3 * espaco
+    alinhamento = (larg(rotulos["página menor, de cima a baixo:"]) + larg(painel.combo_vertical)
+                   + larg(rotulos["de um lado ao outro:"]) + larg(painel.combo_horizontal)
+                   + 3 * espaco)
+    largura = margens + max(duas_linhas, alinhamento - 80)      # na janela dele faltavam 58
+    assert largura < margens + alinhamento, "a largura da janela dele: o alinhamento não cabe"
+    # a coluna do meio da janela grande (a pilha das etapas), aberta na etapa 6
+    painel.mostrar_etapa(A.MARGENS)
+    painel.pilha.resize(largura + rolagem.verticalScrollBar().sizeHint().width(), 900)
+    painel.pilha.show()
+    _assentar(10)
+    assert rolagem.horizontalScrollBar().maximum() == 0, "a coluna do meio cabe sem rolar de lado"
+    vista = rolagem.viewport()
+    textos = []
+    for w in dentro.findChildren(QLabel) + dentro.findChildren(QComboBox)             + dentro.findChildren(QDoubleSpinBox):
+        if not w.isVisibleTo(painel.pilha):
+            continue
+        canto = w.mapTo(vista, w.rect().topLeft())
+        assert canto.x() >= 0 and canto.x() + w.width() <= vista.width(), w
+        assert w.width() >= w.minimumSizeHint().width(), w
+        if isinstance(w, QLabel) and w.text().endswith(":"):
+            textos.append((canto.y(), canto.x(), w.text()))
+    # os mesmos textos de sempre, na mesma ordem de leitura
+    assert [t for _y, _x, t in sorted(textos)] == [
+        "margem esquerda:", "margem em cima:", "margem direita:", "margem embaixo:",
+        "página menor, de cima a baixo:", "de um lado ao outro:"]
+    painel.pilha.close()
+
+
+def test_margens_iguais_onde_cabe_fica_numa_linha_como_era(app):
+    """D-605 ("nenhuma [...] nova escolha [...] pode alterar o que já está escolhido e
+    testado"): onde a linha do alinhamento cabe (a janela maior), ela fica como era, numa
+    linha só: "página menor, de cima a baixo:" e "de um lado ao outro:" lado a lado."""
+    from PySide6.QtWidgets import QLabel
+
+    from core import automatico as A
+    from ui.automatico import EstadoDoAutomatico, PainelDeOpcoes
+
+    painel = PainelDeOpcoes(EstadoDoAutomatico())
+    painel.mostrar_etapa(A.MARGENS)
+    linha = painel.linha_do_alinhamento
+    painel.pilha.resize(36 + linha.largura_numa_linha() + 80, 900)
+    painel.pilha.show()
+    _assentar(10)
+    rotulos = {r.text(): r for r in linha.findChildren(QLabel)}
+    a, b = rotulos["página menor, de cima a baixo:"], rotulos["de um lado ao outro:"]
+    assert not linha.dobrada
+    assert a.mapTo(linha, a.rect().topLeft()).y() == b.mapTo(linha, b.rect().topLeft()).y()
+    assert b.mapTo(linha, b.rect().topLeft()).x() > painel.combo_vertical.mapTo(
+        linha, painel.combo_vertical.rect().topLeft()).x(), "a ordem de sempre"
+    painel.pilha.close()
