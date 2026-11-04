@@ -76,8 +76,20 @@ def esperar(painel, seg: float = 600.0) -> float:
 
 
 def foto(widget, nome: str) -> None:
+    """O print. O relógio da parada não conta o próprio grab() (é deste script, não do programa)."""
     rodar(0.2)
+    ligado = relogio.isActive()
+    relogio.stop()
     widget.grab().save(str(AQUI / nome))
+    if ligado:
+        PARADA["ultimo"] = time.monotonic()
+        relogio.start()
+
+
+def parada(chave: str) -> None:
+    """Guarda a maior parada da tela desde a última marca, e zera."""
+    MED[chave] = round(PARADA["maior"], 3)
+    PARADA["maior"] = 0.0
 
 
 def caixinha(grande, etapa: str, marcada: bool) -> None:
@@ -108,6 +120,7 @@ estado = janela.estado_do_automatico
 estado.marcadas = {A.DIVIDIR}                 # como no print a-49: só a etapa 1 marcada
 grande = janela.abrir_o_automatico(A.CADERNOS)
 grande.move(FORA[0] + 10, FORA[1] + 10)
+grande.resize(1470, 900)          # a lista das 7 etapas inteira à vista, como no print a-49
 rodar(0.3)
 folhas = grande.folhas_do_caderno
 relogio.start()
@@ -116,6 +129,7 @@ MED["01_montando_bolinha"] = folhas.calculando()
 foto(grande, "01-etapa-1-marcada-montando.png")
 MED["02_primeira_folha_dividida_s"] = esperar(folhas)
 MED["02_textos"] = textos(folhas)
+parada("parada_02_abrir_com_dividir_s")
 foto(grande, "02-etapa-1-marcada-folha-1-dividida.png")
 
 caixinha(grande, A.DIVIDIR, False)
@@ -123,6 +137,7 @@ rodar(0.05)
 MED["03_desmarcar_bolinha"] = folhas.calculando()
 MED["03_desmarcar_s"] = esperar(folhas)
 MED["03_textos"] = textos(folhas)
+parada("parada_03_desmarcar_s")
 foto(grande, "03-etapa-1-desmarcada-scans-inteiros.png")
 
 caixinha(grande, A.DIVIDIR, True)
@@ -132,13 +147,15 @@ rodar(0.05)
 MED["04_margens_bolinha"] = folhas.calculando()
 MED["04_margens_s"] = esperar(folhas)
 MED["04_textos"] = textos(folhas)
+parada("parada_04_margens_s")
 foto(grande, "04-etapas-1-e-6-marcadas-com-margens.png")
 
 folhas.passar_folha(1)
 MED["05_seta_com_margens_s"] = esperar(folhas)
+parada("parada_05_seta_s")
 foto(grande, "05-etapas-1-e-6-folha-2.png")
 relogio.stop()
-MED["maior_parada_da_tela_s"] = round(PARADA["maior"], 3)
+MED["maior_parada_da_tela_s"] = max(v for k, v in MED.items() if k.startswith("parada_"))
 MED["projeto_nao_mudou_paginas"] = len(janela.projeto.paginas_ativas)
 
 grande.reject()
