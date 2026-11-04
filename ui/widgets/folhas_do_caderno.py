@@ -37,6 +37,19 @@ A FOLHA É A QUE A ETAPA 7 FAZ (D-473, "tela e PDF saem da mesma conta")
     MAIOR página do livro inteiro; aqui, da maior página DESTA folha (medir o livro inteiro a
     cada troca levaria minutos). Livro com páginas do mesmo tamanho: igual.
 
+AS PÁGINAS SÃO AS DO LIVRO DEPOIS DAS ETAPAS MARCADAS (D-603, 03/11/2026)
+    Samuel (print a-49, "Dividir" marcado e a etapa 7 com os scans inteiros): "eu fui lá e
+    apertei o botão de dividir e nos cadernos ainda aparece a folha sem divisão, era para ser
+    com divisão, já que eu cliquei lá em cima, mesmo que eu não tenha processado ainda, pois é o
+    preview." -> "pode ser assim nos cadernos". Até 04/11 a lista das páginas do caderno era a
+    do livro COMO ESTÁ (Projeto.paginas_ativas): com o Dividir marcado num livro sem dividir, a
+    conta das folhas usava uma página por folha do scan e cada lugar recebia as duas metades
+    coladas (a folha aberta). Agora a lista é a do livro DEPOIS do pedido (core/automatico.
+    paginas_do_pdf_depois: quais folhas o Dividir parte, pelo tamanho delas no PDF, sem desenhar
+    nada) e cada lugar recebe só a sua metade (`metades`, core/automatico.folha_do_caderno).
+    Etapa desmarcada não entra (D-589); Dividir desmarcado não junta nada (D-590): a lista é a
+    do livro como está. Continua sendo desenhada só a folha à vista (frente e verso).
+
 A TELA NUNCA PARA (CLAUDE.md §3)
     A folha inteira (o "depois" das páginas e a montagem) é feita no servidor de páginas, fora do
     processo da janela (core/automatico.folha_do_caderno -> core/paginas_em_outro_processo.
@@ -115,11 +128,13 @@ class TarefaFolhaDoCaderno(QThread):
     terminou = Signal(object)
 
     def __init__(self, copia, pedido, folha: tuple, indices: dict, dpi: int, numero: int,
-                 tamanho_pequeno: tuple = (400, 300)) -> None:
+                 tamanho_pequeno: tuple = (400, 300), metades: dict | None = None) -> None:
         """`tamanho_pequeno`: o tamanho do quadro de cada face no lado direito (a imagem já vem
-        reduzida para ele, feita aqui: reduzir uma folha grande no fio da tela parava a tela)."""
+        reduzida para ele, feita aqui: reduzir uma folha grande no fio da tela parava a tela).
+        `metades` (D-603): posição no PDF -> a metade da página depois do pedido."""
         super().__init__()
         self.tamanho_pequeno = tamanho_pequeno
+        self.metades = metades
         self.copia, self.pedido, self.folha, self.indices = copia, pedido, folha, indices
         self.dpi, self.numero = dpi, numero
         self._cancelar = False
@@ -139,7 +154,8 @@ class TarefaFolhaDoCaderno(QThread):
             # folha_do_caderno). Este fio só espera o cano, com o Python solto.
             frente, verso = automatico.folha_do_caderno(
                 self.copia, self.pedido, self.folha, self.indices, self.dpi,
-                cancelado=lambda: self._cancelar, largura_maxima=LARGURA_MAXIMA_DA_FOLHA)
+                cancelado=lambda: self._cancelar, largura_maxima=LARGURA_MAXIMA_DA_FOLHA,
+                metades=self.metades)
             if self._cancelar:
                 raise Cancelou()
             # as imagens da tela feitas aqui, fora do fio da tela, e sem o QImage.scaled (ele
@@ -195,6 +211,7 @@ class FolhasDoCaderno(QWidget):
         self._qimagens: dict | None = None  # as QImage feitas no fio da conta (inteiras e pequenas)
         self._fechada = False
         self.tela_grande: TelaGrandeDoCaderno | None = None
+        self._lista_depois: tuple | None = None   # (chave, lista) de _depois (D-603)
 
         col = QVBoxLayout(self)
         col.setContentsMargins(0, 0, 0, 0)
@@ -258,18 +275,38 @@ class FolhasDoCaderno(QWidget):
 
     # --- as contas da folha -------------------------------------------------------
 
-    def _ativas(self) -> list[int]:
-        """Os índices (em projeto.paginas) das páginas que vão para o PDF, na ordem do PDF."""
+    def _depois(self) -> list[tuple]:
+        """D-603: as páginas que vão para o PDF com as etapas marcadas na janela, na ordem do PDF:
+        (índice em projeto.paginas da página de que ela sai, folha, metade depois). Feita sem
+        desenhar nada (core/automatico.paginas_do_pdf_depois) e guardada enquanto o pedido e o
+        livro não mudam (a conta é pedida a cada texto e a cada seta)."""
         if self.projeto is None:
             return []
-        return [p.indice for p in self.projeto.paginas_ativas]
+        from core import automatico as A
+
+        pedido = self.estado.pedido(pular_mexidas=False)   # como a página da direita (D-577)
+        if pedido.desligar or A.DIVIDIR not in pedido.etapas:
+            return A.paginas_do_pdf_depois(self.projeto, pedido)   # o livro como está
+        chave = (id(self.projeto), json.dumps(
+            [pedido.paginas, (pedido.opcoes or {}).get("dividir_como"),
+             [(p.folha, p.metade, p.apagada, p.mexida_a_mao) for p in self.projeto.paginas],
+             [(f.dividir, f.rotacao, f.posicao_corte, f.mexida_a_mao) for f in self.projeto.folhas],
+             str(self.projeto.caminho_entrada), self.projeto.dividir_como],
+            default=str))
+        if self._lista_depois is None or self._lista_depois[0] != chave:
+            self._lista_depois = (chave, A.paginas_do_pdf_depois(self.projeto, pedido))
+        return self._lista_depois[1]
+
+    def _ativas(self) -> list[int]:
+        """Os índices (em projeto.paginas) de onde sai cada página do PDF depois do pedido."""
+        return [origem for origem, _folha, _metade in self._depois()]
 
     def paginas_por_caderno(self) -> int:
         return cadernos.paginas_por_caderno_valido(int(self.estado.opcoes.get("paginas_por_caderno", 20)))
 
     def folhas(self) -> list[tuple]:
         """As folhas do livro com as páginas por caderno escolhidas na janela agora."""
-        return ordem_das_folhas(len(self._ativas()), self.paginas_por_caderno())
+        return ordem_das_folhas(len(self._depois()), self.paginas_por_caderno())
 
     def total(self) -> int:
         return len(self.folhas())
@@ -318,7 +355,7 @@ class FolhasDoCaderno(QWidget):
 
     def _chave(self, pedido) -> str:
         return json.dumps([self.posicao, self.paginas_por_caderno(), pedido.etapas, pedido.opcoes,
-                           pedido.paginas, pedido.ordem, pedido.desligar, self._ativas()],
+                           pedido.paginas, pedido.ordem, pedido.desligar, self._depois()],
                           sort_keys=True, default=str)
 
     def calculando(self) -> bool:
@@ -364,16 +401,17 @@ class FolhasDoCaderno(QWidget):
             self._acertar_bolinha()
             return
         self._na_espera = False
-        ativas = self._ativas()
+        depois = self._depois()             # D-603: o livro depois das etapas marcadas
         folha = folhas[self.posicao]
-        indices = {}
+        indices, metades = {}, {}
         for lado in folha:
             for posicao in (lado.esquerda, lado.direita):
-                if posicao is not None and 0 <= posicao < len(ativas):
-                    indices[posicao] = ativas[posicao]
+                if posicao is not None and 0 <= posicao < len(depois):
+                    indices[posicao], _folha, metades[posicao] = depois[posicao]
         self._numero += 1
         tarefa = TarefaFolhaDoCaderno(copia_para_a_previa(self.projeto), pedido, folha, indices,
-                                      DPI_DA_FOLHA, self._numero, self._tamanho_do_quadro())
+                                      DPI_DA_FOLHA, self._numero, self._tamanho_do_quadro(),
+                                      metades=metades)
         tarefa.chave = chave
         tarefa.pronta.connect(self._chegou)
         tarefa.falhou.connect(self._falhou)
