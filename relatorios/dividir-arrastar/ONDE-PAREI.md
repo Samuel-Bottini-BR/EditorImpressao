@@ -67,6 +67,15 @@ Saiu de `obra-2026-10-26` em `e17410fe`.
 - Prints na janela de verdade (Gradus): p01 a p06 nesta pasta, anotações em `anotacoes.txt`.
 - GitHub: rodada 41785344022 (em andamento ao escrever). Testes do Dividir no PC, um por vez: `_tmp/um_por_vez.txt`.
 
+- 04/11, depois: D-610 (`bbecf4f7`; fim de um teste antigo em `784a5bf6`) e D-611 (`2fccd164`) feitas; prints p07 a
+  p12; reversão das três decisões conferida em `e17410fe`. Testes do Dividir e da tira no PC, um por vez: todos
+  passaram. GitHub rodada 2: `41788480788` verde (parte 1 repetida por um erro intermitente do p083 do Automático, ver o relatório). Relatório: `relatorio.md` (.html, .pdf). Entregue à gerente.
+
 ## Perguntas para o Samuel
 
-(nenhuma por enquanto)
+1. D-611 no Dividir, com folhas ainda inteiras: a tira junta de dois em dois pela ordem (1 sozinha; 2-3; 4-5); no
+   Dividir a miniatura de folha inteira já é a folha dupla, então junta, p. ex., a capa (metade da folha 1) com a folha
+   2 inteira (print p10b). Quer assim, ou no Dividir cada folha junta (as duas metades da dividida lado a lado, como a
+   vista grande mostra)?
+2. D-611, aparência: os pares têm um vão pequeno dentro do par e um maior entre pares (o mesmo "Ver em pares" que já
+   existia, p10b). Quer as duas miniaturas do par encostadas?
