@@ -453,13 +453,6 @@ QPushButton#jeitoDaBarraDeBaixo:hover {{ background: {c["botao_h"]}; }}
 QPushButton#jeitoDaBarraDeBaixo:checked {{ background: {c["sel"]}; border: 1px solid {c["azul"]};
     color: {c["forte"]}; }}
 QPushButton#jeitoDaBarraDeBaixo:disabled {{ color: {c["desligado"]}; background: transparent; }}
-/* D-620 (04/11/2026): a lista da "Qualidade da prévia" na barra de baixo, ao lado do zoom, no
-   tamanho, na letra e no passar do mouse dos botões da barra (jeitoDaBarraDeBaixo), com a borda
-   fina de sempre para se ver que é uma lista. Seguro mudar: o espaço de dentro. */
-QComboBox#listaDaBarraDeBaixo {{ background: transparent; border: 1px solid {c["sep"]};
-    border-radius: 4px; padding: 0px 6px; min-height: 20px; max-height: 22px; font-size: 12px;
-    color: {c["texto"]}; }}
-QComboBox#listaDaBarraDeBaixo:hover {{ background: {c["botao_h"]}; }}
 QStackedWidget#areaDaPagina {{ background: {c["tela"]}; }}
 /* os botões da ferramenta embaixo da página (provisório até a etapa 4): mais
    enxutos, para caber a fila inteira entre a trilha e os painéis */

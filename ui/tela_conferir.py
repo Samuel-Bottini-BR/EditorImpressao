@@ -1242,41 +1242,88 @@ class TelaConferir(QWidget):
         """D-620 (Samuel, 04/11/2026, print a-69: "essa opção de qualidade não
         deveria ser para todas as ferramentas?" -> "2- Pode"): a "Qualidade da
         prévia" (Rápida / Média / Alta) mora na barra de baixo, logo depois do
-        zoom, e por isso aparece em todas as ferramentas. Antes ficava só no
-        painel do Cortar (_montar_aba_bordas).
+        "ajustar à tela", e por isso aparece em todas as ferramentas. Antes
+        ficava só no painel do Cortar (_montar_aba_bordas).
 
-        É a MESMA escolha de antes, uma só para o programa inteiro: a lista
+        O jeito (Samuel, 04/11, ao ver que o nome inteiro não cabia: "não tem
+        como colocar só uma setinha e quando aperta nela aparece as opções de
+        qualidade?"): um botão pequeno, sem texto, só com a setinha desenhada
+        (_icone_da_barra("qualidade"), como os ícones da barra; nada de
+        emoji). Apertar abre o menu Rápida / Média / Alta, com a escolhida
+        marcada (_abrir_o_menu_da_qualidade). O balão diz "Qualidade da prévia:
+        <a escolhida>" (_acertar_o_balao_da_qualidade).
+
+        É a MESMA escolha de antes, uma só para o programa inteiro: cada item
         chama _mudar_qualidade_da_previa, que grava em configuracoes
         ("qualidade_previa") e troca a resolução da prévia. A barra nasce uma
-        vez (no __init__), então a lista é uma só para todos os livros e todas
+        vez (no __init__), então o menu é um só para todos os livros e todas
         as ferramentas, e mostra o que estava gravado ao abrir.
 
-        O nome e os balões são os de antes. O visual segue o dos outros botões
-        da barra (ui/estilo.py, QComboBox#listaDaBarraDeBaixo). Seguro mudar:
-        os textos. Arriscado: guardar a escolha em outro lugar (deixaria de
-        valer no programa todo) ou criar uma segunda lista em algum painel (as
-        duas deixariam de concordar)."""
-        linha.addSpacing(RESPIRO_DA_BARRA_DE_BAIXO)
-        self.rotulo_da_qualidade = QLabel("Qualidade da prévia")
-        self.rotulo_da_qualidade.setObjectName("rotuloDaBarraDeBaixo")
-        dica = "Rápida: abre logo. Alta: mais nítida no zoom, demora mais por página."
-        self.rotulo_da_qualidade.setToolTip(dica)
-        linha.addWidget(self.rotulo_da_qualidade)
-        seletor_qualidade = QComboBox()
-        seletor_qualidade.setObjectName("listaDaBarraDeBaixo")
+        Seguro mudar: o desenho da setinha e o texto do balão. Arriscado:
+        guardar a escolha em outro lugar (deixaria de valer no programa todo),
+        criar uma segunda escolha em algum painel (as duas deixariam de
+        concordar) ou pôr texto no botão (a barra não cabe em 1366 com o
+        Propriedades aberto: relatorios/painel-livro/)."""
+        from PySide6.QtGui import QAction, QActionGroup
+        from PySide6.QtWidgets import QMenu
+
+        botao = QPushButton("")
+        botao.setObjectName("botaoDaBarraDeBaixo")     # ui/estilo.py: o dos ícones da barra
+        botao.setIcon(_icone_da_barra("qualidade"))
+        # estreito de propósito (sem o respiro antes e mais fino que os outros
+        # ícones): em 1536 com o Propriedades aberto e as miniaturas fechadas,
+        # cada ponto a mais cortava a conta "N de M conferidas" (medido na
+        # janela de verdade, relatorios/painel-livro/). Seguro mudar: nada.
+        botao.setIconSize(QSize(12, 12))
+        botao.setFixedWidth(20)
+        botao.setCursor(Qt.PointingHandCursor)
+        botao.setFocusPolicy(Qt.NoFocus)                # o teclado continua da página (D-021)
+        self.botao_qualidade = botao
+        menu = QMenu(self)
+        grupo = QActionGroup(menu)
+        grupo.setExclusive(True)
+        self.acoes_da_qualidade: dict[str, QAction] = {}
         for chave, nome in NOMES_DA_QUALIDADE.items():
-            seletor_qualidade.addItem(nome, chave)
-        seletor_qualidade.setCurrentIndex(
-            seletor_qualidade.findData(self._qualidade_da_previa))
-        seletor_qualidade.setToolTip(dica)
-        seletor_qualidade.setCursor(Qt.PointingHandCursor)
-        # o teclado continua da página (D-021), como os botões da barra
-        seletor_qualidade.setFocusPolicy(Qt.NoFocus)
-        seletor_qualidade.setSizeAdjustPolicy(QComboBox.AdjustToContents)
-        seletor_qualidade.currentIndexChanged.connect(
-            lambda i: self._mudar_qualidade_da_previa(seletor_qualidade.itemData(i)))
-        self.seletor_qualidade = seletor_qualidade
-        linha.addWidget(seletor_qualidade)
+            acao = QAction(nome, menu)
+            acao.setCheckable(True)
+            acao.setChecked(chave == self._qualidade_da_previa)
+            acao.triggered.connect(functools.partial(self._escolher_qualidade_no_menu, chave))
+            grupo.addAction(acao)
+            menu.addAction(acao)
+            self.acoes_da_qualidade[chave] = acao
+        self.menu_da_qualidade = menu
+        _ligar(botao, self._abrir_o_menu_da_qualidade)
+        self._acertar_o_balao_da_qualidade()
+        linha.addWidget(botao)
+
+    def _abrir_o_menu_da_qualidade(self) -> None:
+        """D-620: o botão da setinha abre o menu Rápida / Média / Alta logo
+        acima dele (a barra fica no pé da janela). popup, não exec: a tela
+        não fica parada esperando."""
+        from PySide6.QtCore import QPoint
+
+        botao, menu = self.botao_qualidade, self.menu_da_qualidade
+        altura = menu.sizeHint().height()
+        menu.popup(botao.mapToGlobal(QPoint(0, -altura)))
+
+    def _escolher_qualidade_no_menu(self, chave: str, _marcado: bool = True) -> None:
+        """D-620: um item do menu da qualidade: a mesma troca de sempre
+        (_mudar_qualidade_da_previa) e o balão do botão acompanha."""
+        self._mudar_qualidade_da_previa(chave)
+        self._acertar_o_balao_da_qualidade()
+
+    def _acertar_o_balao_da_qualidade(self) -> None:
+        """D-620: o balão do botão da setinha diz a qualidade escolhida, e o
+        menu deixa marcada a mesma (a que está valendo no programa)."""
+        if not hasattr(self, "botao_qualidade"):
+            return
+        nome = NOMES_DA_QUALIDADE.get(self._qualidade_da_previa, "")
+        self.botao_qualidade.setToolTip(
+            f"Qualidade da prévia: {nome}\n"
+            "Rápida: abre logo. Alta: mais nítida no zoom, demora mais por página.")
+        acao = self.acoes_da_qualidade.get(self._qualidade_da_previa)
+        if acao is not None and not acao.isChecked():
+            acao.setChecked(True)
 
     def _icones_das_setas_do_angulo(self) -> str:
         """(Re)desenha as setinhas dos botoes de 0,1 grau da ferramenta
@@ -1294,6 +1341,7 @@ class TelaConferir(QWidget):
         self.botao_desfazer_embaixo.setIcon(_icone_da_barra("desfazer"))
         self.botao_refazer_embaixo.setIcon(_icone_da_barra("refazer"))
         self.botao_historico_embaixo.setIcon(_icone_da_barra("historico"))
+        self.botao_qualidade.setIcon(_icone_da_barra("qualidade"))      # D-620
         # os dois botoes do painel Historico levam os mesmos desenhos
         self.paineis.historico.definir_icones(
             _icone_da_barra("desfazer"), _icone_da_barra("refazer"))
@@ -9090,8 +9138,9 @@ FOLGA_DO_GIRAR_NO_CANTO = (12, 10)
 
 
 def _icone_da_barra(qual: str):
-    """Os icones da barra de baixo (desfazer, refazer, historico), desenhados a
-    mao na cor do texto do tema (nada de emoji em rotulo)."""
+    """Os icones da barra de baixo (desfazer, refazer, historico e, desde a
+    D-620, a setinha da qualidade da previa), desenhados a mao na cor do texto
+    do tema (nada de emoji em rotulo)."""
     from PySide6.QtCore import QPointF, QRectF
     from PySide6.QtGui import QColor, QIcon, QPainter, QPainterPath, QPen, QPixmap
 
@@ -9118,6 +9167,11 @@ def _icone_da_barra(qual: str):
             imagem = imagem.transformed(QTransform().scale(-1, 1))
             imagem.setDevicePixelRatio(escala)
             return QIcon(imagem)
+    elif qual == "qualidade":
+        # D-620: a setinha para baixo do botão da qualidade da prévia (o
+        # Samuel: "só uma setinha e quando aperta nela aparece as opções")
+        p.drawLine(QPointF(4, 6.5), QPointF(8, 10.5))
+        p.drawLine(QPointF(8, 10.5), QPointF(12, 6.5))
     else:
         p.drawEllipse(QRectF(2.5, 2.5, 11, 11))
         p.drawLine(QPointF(8, 5), QPointF(8, 8))
