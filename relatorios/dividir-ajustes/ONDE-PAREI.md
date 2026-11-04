@@ -69,3 +69,43 @@ Testes que já existem e têm de continuar passando sem mudança:
    outras ferramentas, como "não cortar esta"), as setas passam de um botão a outro em vez de trocar de folha. A lista
    "motor de corte" já não faz isso. Fazer os botões do painel também deixarem o teclado com a página, em todas as
    ferramentas? (Não feito: muda todas as ferramentas.)
+
+---
+
+# Tarefa nova (03/11/2026, pedido da gerente depois da leitura do Samuel)
+
+Samuel: "cara, ele burlou a regra, colocou um defeito novo, concerta isso ai, pode fazer o teste no meu pc mesmo se
+não está dando certo no git hub".
+
+## 1. Ctrl+Y depois do "dividir todas" perdia os 7 "Parece em branco"
+
+- Prova de onde vem (Gradus, mesmo caminho, offscreen, pasta própria):
+  - `75ed04af`: dividir todas 7 → Ctrl+Z 0 → Ctrl+Y **0** (perdia).
+  - `abd8cd0a`: dividir todas 7 → Ctrl+Z 0 → Ctrl+Y **0** (perdia igual).
+  - "dividir esta" só na folha 7 (abd8cd0a): 1 → 0 → **0**. Ou seja: já existia antes destes ajustes e antes da
+    D-602; vem da etapa 7 (27/10), quando a medida do em branco por trás entrou (o refazer nunca mediu).
+- Conserto: `TelaConferir.refazer` → `_medir_o_em_branco_ao_refazer` (mede como o `_registrar`). Commit `046c5b3b`.
+  Depois: Ctrl+Y 7 de novo, nas mesmas folhas. Teste `test_reversao_refazer_devolve_o_parece_em_branco` (2 casos),
+  falha em abd8cd0a/75ed04af.
+- Ida e volta completa (14 Ctrl+Z/Ctrl+Y comparando páginas, avisos, linha e motor): no novo, 14 de 14 iguais; em
+  75ed04af, 5 diferentes (todas pela mesma causa). Print p09.
+
+## 2. D-608 (03/11): botões do painel não seguram as setas
+
+Pergunta: "Quer que, depois de clicar num botão do painel, as setas continuem passando de página, em todas as
+ferramentas? As caixas de número continuam como estão." → "ok".
+
+### O que já está escolhido e testado sobre teclado (escrito antes de mexer)
+- D-021: Page Up/Down andam 10 páginas, Home/End, a roda; `tests/test_decisoes_ver.py::test_d021_*`.
+- Etapa 9b-1 (foco preso): a lista do painel Automático e a tira não seguram o teclado;
+  `tests/test_decisoes_9b1.py::test_teclas_chegam_a_pagina_depois_de_clicar_na_lista_do_automatico`,
+  `test_page_down_chega_a_pagina_depois_de_clicar_numa_miniatura`.
+- Lista única 1.10 (etapa 9b-2): Tab vai à próxima dúvida mesmo com o foco num botão (filtro único `_FiltroDaTab`);
+  `tests/test_decisoes_9b2.py::test_lista_1_10_*`.
+- Botões dos avisos não ficam com o teclado (13/10); `tests/test_para_revisar_na_tela.py::test_os_botoes_do_aviso_nao_ficam_com_o_teclado`.
+- D-083: Endireitar com o ângulo em número (setas de 0,1°); `tests/test_endireitar_g5.py` (inclui
+  `test_setas_giram_e_gravam_numa_acao_so`, `test_numero_digitado_grava`).
+- Atalhos e teclas: `tests/test_atalhos.py`, `tests/test_girar_na_tela.py::test_as_teclas_do_giro_*`,
+  `tests/test_decisoes_mover.py::test_letra_f_*`, `tests/test_promessas.py` (p163, p211 setas),
+  `tests/test_decisoes_dividir_metade.py::test_d601_*_setas_andam_pelas_paginas`.
+- Espaço = "Marcar como certo e avançar" (atalho); num botão com o teclado, o Espaço aperta o botão (do Qt). Não muda.
