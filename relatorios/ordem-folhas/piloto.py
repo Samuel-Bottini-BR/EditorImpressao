@@ -274,9 +274,97 @@ def fase_dbg(j, resumo):
     anotar("depois", estado(j))
 
 
+def clicar_etapa(jan, etapa):
+    """Clica no nome da etapa na lista da janela do Automático (abre as opções dela)."""
+    lista = jan.painel_de_opcoes.lista
+    item = lista.item_da_etapa(etapa)
+    centro = lista.visualItemRect(item).center()
+    base.clique(jan, lista.viewport(), centro); base.esperar(1.5)
+
+
+def esperar_caderno(jan, limite=240):
+    """Espera a folha do caderno da etapa 7 ficar pronta (a bolinha some)."""
+    folhas = jan.folhas_do_caderno
+    t = time.time()
+    base.esperar(1.0)
+    while time.time() - t < limite and (folhas.calculando() or folhas._folha is None):
+        base.esperar(0.5)
+    base.esperar(1.0)
+    return round(time.time() - t, 1)
+
+
+def esperar_previa_do_auto(jan, limite=120):
+    """Espera o "depois" da prévia da janela do Automático chegar."""
+    ver = jan.antes_e_depois
+    t = time.time()
+    base.esperar(1.0)
+    while time.time() - t < limite and getattr(ver, "_depois", None) is None:
+        base.esperar(0.5)
+    base.esperar(1.5)
+    return round(time.time() - t, 1)
+
+
+def fase_e2(j, resumo):
+    """D-616: a caixinha "A 1ª folha é a capa aberta" no Dividir do Automático; a etapa 7 sem e
+    com ela (o print a-61 era sem); a prévia; Rodar; a ordem, o PDF e o Ctrl+Z."""
+    from PySide6.QtCore import Qt
+
+    from core import automatico as A
+    anotar("inicio", estado(j)); p(j, "abriu")
+    jan = j.abrir_o_automatico(A.DIVIDIR); base.esperar(2.5)
+    caixa = jan.controles["capa_aberta"]
+    anotar("caixinha", {"texto": caixa.text(), "marcada": caixa.isChecked(), "a_vista": caixa.isVisible()})
+    p(jan, "dividir-caixinha-desmarcada")
+    item = jan.painel_de_opcoes.lista.item_da_etapa(A.DIVIDIR)
+    item.setCheckState(Qt.Checked); base.esperar(1.0)
+    anotar("marcadas", sorted(j.estado_do_automatico.marcadas))
+    # a etapa 7 sem a caixinha: a folha 1 do caderno como no print a-61
+    clicar_etapa(jan, A.CADERNOS)
+    anotar("caderno-sem-a-caixinha-em-s", esperar_caderno(jan))
+    anotar("lista-sem", [(f + 1, m) for _o, f, m in jan.folhas_do_caderno._depois()][:3])
+    p(jan, "etapa7-sem-a-caixinha")
+    # marca a caixinha (clique de verdade)
+    clicar_etapa(jan, A.DIVIDIR)
+    from PySide6.QtCore import QPoint
+    base.clique(jan, caixa, QPoint(10, caixa.height() // 2)); base.esperar(1.0)   # no quadradinho
+    anotar("caixinha-depois-do-clique", {"marcada": caixa.isChecked(),
+                                         "estado": j.estado_do_automatico.opcoes.get("capa_aberta")})
+    passos = jan.antes_e_depois._passos()
+    anotar("previa-passos", passos[:2] + passos[-1:])
+    jan.antes_e_depois.ir_para(*passos[0])                 # o 1o passo da prévia: a capa
+    anotar("previa-em-s", esperar_previa_do_auto(jan))
+    anotar("previa-contador", jan.antes_e_depois.contador.text())
+    p(jan, "dividir-caixinha-marcada-previa-primeira")
+    jan.antes_e_depois.ir_para(*passos[-1])                # o último: a contracapa
+    anotar("previa-ultima-em-s", esperar_previa_do_auto(jan))
+    anotar("previa-contador-ultima", jan.antes_e_depois.contador.text())
+    p(jan, "dividir-caixinha-marcada-previa-ultima")
+    # a etapa 7 com a caixinha: a capa na frente da folha 1
+    clicar_etapa(jan, A.CADERNOS)
+    anotar("caderno-com-a-caixinha-em-s", esperar_caderno(jan))
+    anotar("lista-com", [(f + 1, m) for _o, f, m in jan.folhas_do_caderno._depois()][:3])
+    p(jan, "etapa7-com-a-caixinha-capa-na-frente")
+    # Rodar (só o Dividir marcado)
+    feitas = len(j.acoes.feitas)
+    base.clique(jan, jan.botao_rodar)
+    t0 = time.time()
+    while time.time() - t0 < 120 and len(j.acoes.feitas) == feitas:
+        base.esperar(0.5)
+        if time.time() - t0 > 8 and int(time.time() - t0) % 30 == 0:
+            from PySide6.QtWidgets import QApplication
+            anotar("esperando", [type(w).__name__ + ":" + w.windowTitle() for w in QApplication.topLevelWidgets()
+                                 if w.isVisible()])
+    base.esperar(3.0)
+    anotar("rodou", {"feitas": len(j.acoes.feitas), "capa_no_livro": j.projeto.capa_aberta, **estado(j)})
+    p(j, "depois-de-rodar")
+    gerar_pdf(j, "e2")
+    ctrl(j, ord("Z"))
+    anotar("ctrl-z", {"capa_no_livro": j.projeto.capa_aberta, **estado(j)}); p(j, "ctrl-z")
+
+
 def main():
     j, _porteiro, resumo = abrir()
-    {"e1": fase_e1, "dbg": fase_dbg}.get(FASE, fase_e1)(j, resumo)
+    {"e1": fase_e1, "e2": fase_e2, "dbg": fase_dbg}.get(FASE, fase_e1)(j, resumo)
     base.fechar(j)
 
 
