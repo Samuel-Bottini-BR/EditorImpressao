@@ -647,6 +647,12 @@ Valem para a gerente, para todos os agentes (`.claude/agents/`) e para qualquer 
    a D-304, "o tamanho do arquivo depois não importa"). "Escolha da gerente" (D-014) só serve para detalhe técnico do
    que ele mandou; o que o Livro não responde fica como está e vira pergunta na Central.
 
+8. **O novo não estraga o que já está escolhido e testado (Samuel, 03/11/2026).** "A partir de agora, nenhuma função nova, ou nova escolha dentro do programa pode alterar o que já está escolhido e testado, coisas novas não podem criar novos problemas, essa é uma nova regra que todos os agentes precisam ler". Vale para a gerente e para todos os agentes. Na prática:
+   - Antes de mexer, escreva no ONDE-PAREI "O que já está escolhido e testado aqui": as decisões do Livro e os testes que já existem para a tela ou o arquivo que você vai tocar.
+   - Se a coisa nova mudaria uma dessas escolhas, pare e pergunte (a gerente leva à Central). Nunca mude em silêncio, nem "por enquanto".
+   - Antes de entregar, rode as provas das decisões (`tests/test_decisoes*.py`) e os testes dos arquivos que tocou; o GitHub roda todos. Teste antigo que quebra faz a entrega voltar: nunca mude um teste antigo para ele passar.
+   - O verificador confere também o que já funcionava ao redor (clicando, nos trabalhos de tela), não só o item novo.
+
 **Obra de 26/10/2026 (D-014):** o Samuel mandou fazer a obra inteira (plano de 26/10, etapas 0 a 11) "até o final sem
 pausas" e conferir tudo no fim. Durante essa obra **não valem** as regras de conferir cada item antes do próximo e de
 uma fase por vez (§10, item 2; regras de 19/10): cada etapa é feita, testada e juntada no ramo `obra-2026-10-26`; nada
