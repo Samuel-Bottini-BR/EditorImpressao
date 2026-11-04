@@ -457,3 +457,68 @@ def test_d609_girar_a_folha_depois_de_arrastar_mostra_a_linha_do_motor(janela, t
     tela.desfazer()
     _linha_lida(tela)
     assert vista.posicao_corte == pytest.approx(ARRASTADA, abs=0.01)
+
+
+# --- D-610: dividir em "Duas lado a lado" passa a vista para "Uma página" --------------------
+# Samuel, 04/11/2026 (print a-56, Gradus folha 1 dividida em "Duas lado a lado"): "quando eu
+# dividir uma folha que estiver em duas lado a lado ela tem que ir para opção uma pagina, se não
+# quando eu usar seta ela vai pular uma folha." Livro de decisões: "No Dividir, ao dividir uma
+# folha ("dividir esta"; e "dividir todas") com a vista em "Duas lado a lado", a vista passa
+# sozinha para "Uma página", para a seta andar uma página por vez sem pular folha. Mais nova que
+# a D-601 (lá a vista "Duas lado a lado" ficava)."
+
+def test_reversao_d610_dividir_esta_em_duas_lado_a_lado_passa_para_uma_pagina(janela, tmp_path):
+    """D-610 (a-56): folha 1 inteira em "Duas lado a lado" → "dividir esta" → a vista passa para
+    "Uma página" (o botão da barra também), aparece a metade esquerda; a seta → anda UMA página
+    (a metade direita da mesma folha) e a seguinte vai à folha 2, sem pular. No código de antes
+    (e17410fe) a vista ficava em "Duas lado a lado" e a seta pulava para a folha 2: falha lá."""
+    from PySide6.QtCore import Qt
+    from PySide6.QtTest import QTest
+
+    from ui.widgets.paginas_rolando import DUAS, UMA
+
+    tela = _no_dividir(janela, tmp_path, [_aberto_torto(), _aberto_torto(), _aberto_torto()],
+                       mostrar=DUAS)
+    projeto = janela.projeto
+    assert tela.mostrar == DUAS
+    tela.botao_nao_dividir.click()                         # "dividir esta"
+    _assentar(5)
+    assert projeto.folhas[0].dividir
+    assert tela.mostrar == UMA and tela.botoes_mostrar[UMA].isChecked(), "foi para Uma página"
+    assert tela._metade_no_dividir() == "esquerda"
+    QTest.keyClick(janela.focusWidget() or janela, Qt.Key_Right)
+    _assentar(5)
+    assert (tela.indice_folha, tela._metade_no_dividir()) == (0, "direita"), "uma página por vez"
+    QTest.keyClick(janela.focusWidget() or janela, Qt.Key_Right)
+    _assentar(5)
+    assert tela.indice_folha == 1, "não pulou a folha 2"
+
+
+def test_reversao_d610_dividir_todas_em_duas_lado_a_lado_passa_para_uma_pagina(janela, tmp_path):
+    """D-610 ("e "dividir todas""): em "Duas lado a lado", "dividir todas" → "Uma página"."""
+    from ui.widgets.paginas_rolando import DUAS, UMA
+
+    tela = _no_dividir(janela, tmp_path, [_aberto_torto(), _aberto_torto()], mostrar=DUAS)
+    projeto = janela.projeto
+    tela.botao_dividir_todas.click()
+    _esperar(lambda: all(f.dividir for f in projeto.folhas), motivo="dividir todas")
+    _assentar(5)
+    assert tela.mostrar == UMA and tela.botoes_mostrar[UMA].isChecked()
+
+
+def test_d610_arrastar_em_duas_lado_a_lado_nao_troca_a_vista(janela, tmp_path):
+    """D-609 com a D-610: na folha inteira, em "Duas lado a lado", arrastar a linha continua
+    possível e a vista NÃO troca (só troca ao cortar); "juntar"/"não dividir esta" também não
+    troca. Em "Uma página", dividir continua em "Uma página"."""
+    from ui.widgets.paginas_rolando import DUAS, UMA
+
+    tela = _no_dividir(janela, tmp_path, [_aberto_torto(), _aberto_torto()], mostrar=DUAS)
+    projeto = janela.projeto
+    _arrastar_com_o_mouse(tela, ARRASTADA)
+    assert tela.mostrar == DUAS and not projeto.folhas[0].dividir
+    tela.botao_nao_dividir.click()                         # dividir esta → Uma página
+    assert tela.mostrar == UMA
+    assert projeto.folhas[0].posicao_corte == pytest.approx(ARRASTADA, abs=0.01)
+    tela.botoes_mostrar[DUAS].click()
+    tela.botao_nao_dividir.click()                         # não dividir esta: a vista fica
+    assert not projeto.folhas[0].dividir and tela.mostrar == DUAS

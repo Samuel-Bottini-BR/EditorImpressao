@@ -5830,6 +5830,8 @@ class TelaConferir(QWidget):
         if not medidas or not self._dividir_as_medidas(folhas, medidas, " (dividir todas)",
                                                        conferidas=False):
             self._avisar("Nenhuma folha dupla para dividir: as que faltam são de uma página só.")
+            return
+        self._uma_pagina_depois_de_dividir()               # D-610
 
     @protegido
     def _dividir_esta(self) -> None:
@@ -5885,6 +5887,21 @@ class TelaConferir(QWidget):
                     self.projeto, self.indice_folha, lombada.posicao, lombada.confianca, tampa)
         self._registrar("dividir_a_mao", "folha", [self.indice_folha], campos,
                         f"Folha {self.indice_folha + 1}: dividir")
+        if self.projeto.folhas[self.indice_folha].dividir:
+            self._uma_pagina_depois_de_dividir()
+
+    def _uma_pagina_depois_de_dividir(self) -> None:
+        """D-610 (Samuel, 04/11/2026, print a-56: "quando eu dividir uma folha
+        que estiver em duas lado a lado ela tem que ir para opção uma pagina,
+        se não quando eu usar seta ela vai pular uma folha."): no Dividir,
+        depois de cortar ("dividir esta" ou "dividir todas") com a vista em
+        "Duas lado a lado", a vista passa sozinha para "Uma página" (o mesmo
+        que clicar no botão da barra de baixo), e a seta anda uma página por
+        vez. Mais nova que a D-601 (lá a vista ficava). Só ao cortar:
+        arrastar a linha (D-609), juntar e o desfazer não trocam a vista.
+        Arriscado: trocar fora do Dividir ou sem ter cortado."""
+        if self.trabalha_com_folhas and self.mostrar == DUAS:
+            self.definir_mostrar(UMA)
 
     @protegido
     def _trocar_jeito_da_folha(self) -> None:
