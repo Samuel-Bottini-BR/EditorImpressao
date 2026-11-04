@@ -417,3 +417,4 @@ Juntados no `obra-2026-10-26` nesta noite: balão do cinza (`99e7c6b`), D-574 se
 - `girar-pagina-2026-11-04` (04/11): D-618, girar só a página numa folha dividida. Agente trabalhando.
 - `painel-livro-2026-11-04` (04/11): D-619 e D-620. Agente trabalhando.
 - `desfazer-pagina-2026-11-04` (04/11): D-621, desfazer nesta página pelo botão direito. Agente trabalhando.
+- `memoria-pdf-2026-11-04` (04/11): falta de memória ao processar (causa) + D-591. Agente trabalhando.
