@@ -39,3 +39,23 @@ D-590, 03/11: "Sim a caixinha continua desmacada."
    Com "Dividir" desmarcado SEM Rodar: qualquer Ctrl+Z ou Ctrl+Y (de qualquer ação) e o fechar e abrir
    voltam a marcar (o painel relê o livro, que ainda tem o Dividir ligado).
 2. A seguir: piloto na janela de verdade com a cópia do Gradus.
+3. Piloto na janela de verdade (Gradus copiado), código de antes: com Rodar, tudo certo; sem Rodar, o
+   1º Ctrl+Z já marca a caixinha, e um "Desligar as marcadas" depois disso juntou as 70 folhas.
+4. Conserto (`ce8ff1d2`): `EstadoDoAutomatico.do_projeto(manter_o_dividir_desmarcado=...)` usado no
+   desfazer/refazer (quando a ação não mexe em `livro.dividir_folhas`), no "Margens iguais" do Cortar e
+   no fim do Rodar / "Desligar as marcadas". Teste novo `tests/test_caixinha_do_dividir_nao_volta.py`
+   (8 falham em 50b242c7, 9 passam no conserto). Piloto depois: só "fechar e abrir sem Rodar" volta a
+   marcar (pergunta 1 do RELATORIO.md).
+
+## Como cumpri cada uma
+
+- D-590: a caixinha desmarcada fica desmarcada em todos os caminhos da ferramenta e do Ctrl+Z/Ctrl+Y
+  (teste novo + piloto `anotacoes-depois-*.txt`); as folhas divididas continuam divididas
+  (o teste confere as folhas antes e depois do Rodar).
+- D-589: a regra "não volta marcada sozinha" agora vale também sem Rodar, no Dividir.
+- D-601/602/606/607/609/610/613: nenhuma linha da ferramenta Dividir mudou; os testes delas passam.
+- D-605: nenhum teste antigo mudou; os testes antigos tocados passam (RELATORIO.md).
+
+## Perguntas para o Samuel
+
+Ver RELATORIO.md, "Perguntas abertas".
