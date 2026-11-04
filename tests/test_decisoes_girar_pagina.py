@@ -340,6 +340,27 @@ def test_d618_conta_do_que_gira_junto_com_a_pagina():
     assert meia["conteudo_deslocamento"] == pytest.approx([-0.1, 0.05])
 
 
+def test_d618_juntar_e_dividir_noutra_linha_nao_herda_o_giro_da_metade(janela, tmp_path):
+    """Achado no teste antigo do recomeço (04/11): girar a página da esquerda, "não dividir esta"
+    e dividir de novo NOUTRA linha fazia as duas metades novas nascerem giradas (a página inteira
+    herdava o giro da metade, e as metades novas o da inteira). Agora o giro só fica na metade que
+    a pessoa girou: juntar e "dividir esta" na mesma linha devolve as metades como estavam (a da
+    esquerda girada); partir noutra linha dá metades sem giro."""
+    from core.dividir_a_mao import campos_para_juntar
+
+    tela, projeto = _livro_com_a_folha_1_dividida(janela, tmp_path)
+    tela.ir_para_pagina(0)
+    tela.barra_girar.botoes_de_giro[girar.GIRO_ESQUERDA].click()
+    assert [p.giro_da_pagina for p in projeto.paginas if p.folha == 0] == [270, 0]
+    tela._registrar("dividir", "folha", [0], campos_para_juntar(projeto, 0), "Juntar")
+    assert projeto.paginas[0].giro_da_pagina == 0, "a página inteira não herda o giro da metade"
+    tela._registrar("dividir", "folha", [0], campos_para_dividir(projeto, 0), "Dividir de novo")
+    assert [p.giro_da_pagina for p in projeto.paginas if p.folha == 0] == [270, 0]
+    tela._registrar("dividir", "folha", [0], campos_para_juntar(projeto, 0), "Juntar")
+    tela._registrar("dividir", "folha", [0], campos_para_dividir(projeto, 0, 0.45), "Noutra linha")
+    assert [p.giro_da_pagina for p in projeto.paginas if p.folha == 0] == [0, 0]
+
+
 def test_d618_no_dividir_em_duas_lado_a_lado_a_folha_inteira_gira(janela, tmp_path):
     """No Dividir com "Duas lado a lado" a tela mostra a FOLHA inteira com a linha (D-601): ali o
     giro continua sendo o da folha, como antes (o que aparece na tela é a folha). Ressalva escrita

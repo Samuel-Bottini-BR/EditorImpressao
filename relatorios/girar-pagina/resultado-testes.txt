@@ -47,3 +47,13 @@ test_decisoes_mover_lado.py :: 7 passed in 5.35s
 test_decisoes.py :: 26 passed in 5.51s
 test_decisoes_tela.py :: 35 passed, 4 warnings in 38.91s
 FIM
+--- depois do achado juntar/dividir ---
+test_decisoes_girar_pagina.py :: 20 passed in 74.85s (0:01:14)
+test_decisoes_dividir.py :: 21 passed in 150.78s (0:02:30)
+test_dividir_no_programa.py :: 19 passed in 55.32s
+test_dividir_na_tela.py :: 9 passed in 76.01s (0:01:16)
+test_decisoes_dividir_metade.py :: 6 passed in 35.48s
+test_decisoes_automatico.py :: 29 passed in 167.46s (0:02:47)
+test_recomeco_limpa_o_historico.py :: 1 failed, 12 passed in 80.46s (0:01:20)
+    FAILED tests/test_recomeco_limpa_o_historico.py::test_desligar_o_dividir_nao_recomeca_e_o_ctrl_z_continua_certo
+FIM

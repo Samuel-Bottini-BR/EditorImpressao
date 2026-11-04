@@ -87,7 +87,14 @@ LIMPAR_AO_PARTIR: dict[str, Any] = dict(
     recorte=None, angulo_manual=None, selecao=[], geometria_das_zonas=None,
     alertas=[], alertas_aceitos=[], revisada=False, conteudo_escala=1.0,
     conteudo_deslocamento=(0.0, 0.0), tamanho_folha_cm=None, gravura_feita_com="",
-    marcacao_provisoria=False)
+    marcacao_provisoria=False,
+    # D-618 (04/11/2026): o giro SO de uma metade nao passa para a pagina
+    # inteira nem para as metades novas partidas dela (achado ao juntar e
+    # dividir noutra linha: as duas metades novas nasciam giradas como a da
+    # esquerda). "dividir esta" sem linha nova devolve as metades guardadas,
+    # com o giro de cada uma. Arriscado: tirar daqui (a pagina nova herdaria um
+    # giro que ninguem deu a ela).
+    giro_da_pagina=0)
 
 
 def _limpos(pagina: ConfigPagina) -> dict[str, Any]:
