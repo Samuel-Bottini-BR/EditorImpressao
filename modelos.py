@@ -148,6 +148,21 @@ class ConfigPagina:
     recorte: tuple[float, float, float, float] | None = None  # None = automatico
     angulo_manual: float | None = None                        # None = automatico
 
+    # D-618 (Samuel, 04/11/2026, prints a-70 a a-73: "ele deveria girar o
+    # conteudo só que é da pagina cortada, mas ele gira a pagina verdadeira do
+    # scan [...] Ele gira as duas folhas ao mesmo tempo"): o giro de 90 em 90
+    # SO desta pagina (0, 90, 180, 270, no sentido do relogio, como
+    # ConfigFolha.rotacao), aplicado DEPOIS de dividir (core/pipeline.
+    # preparar_para_recorte; contas em core/girar.giro_da_pagina). So vale
+    # quando a pagina e metade de uma folha dividida; na folha inteira quem
+    # gira e a folha. Quem grava: o girar da tela numa folha dividida
+    # (ui/tela_conferir._girar_folhas), numa acao do desfazer. MUDANCA DE
+    # FORMATO pedida pelo Samuel (conserto da D-618): projeto gravado antes nao
+    # tem a chave e abre com 0 (sai igual ponto por ponto); o programa de antes
+    # que abrir um projeto novo descarta a chave. Arriscado: aplicar este giro
+    # antes de dividir (o defeito voltaria).
+    giro_da_pagina: int = 0
+
     # Item 2.2 (decisao G4 (b) do Samuel, 05/10/2026: "O do ScanTailor de
     # fabrica; [...] mas eu vou ter a opcao de escolher"): a conta do
     # endireitar AUTOMATICO so desta pagina, por cima do livro

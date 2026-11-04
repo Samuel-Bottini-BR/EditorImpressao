@@ -20,6 +20,9 @@ O QUE ESTE MODULO FAZ (so contas; nada de tela, nada de imagem)
   tinha, que podia ser diferente em cada folha).
 - descricao_do_giro: a frase do historico ("Girar 1/4 a direita: todas as
   12 folhas, viradas como a folha 3").
+- D-618 (04/11/2026): numa folha ja dividida gira so a pagina da tela
+  (gira_so_a_pagina, giro_da_pagina, recorte_girado, campos_do_giro_da_pagina;
+  ver o bloco "D-618" mais abaixo).
 
 COMO O GIRO VALE NO RESTO DO PROGRAMA (nada disto e novo; so conferido)
 ----------------------------------------------------------------------
@@ -192,6 +195,89 @@ def campos_do_giro(folhas: Sequence[Any], indices: Sequence[int], giro: int,
         if 0 <= int(i) < len(folhas):
             novos[str(int(i))] = final
     return {"rotacao": novos}
+
+
+# ---------------------------------------------------------------------------
+# D-618 (Samuel, 04/11/2026): numa folha JA DIVIDIDA gira so a pagina da tela
+# ---------------------------------------------------------------------------
+# Palavras dele (prints a-70 a a-73, Gradus pagina 14): "ele deveria girar o
+# conteudo só que é da pagina cortada, mas ele gira a pagina verdadeira do
+# scan. tanto que quando você vai girando ele cai na folha branca. Ele gira as
+# duas folhas ao mesmo tempo, faz uma confusão com as paginas."
+#
+# A causa (provada em relatorios/girar-pagina/): o giro morava so na FOLHA
+# (ConfigFolha.rotacao, o scan inteiro) e vinha antes de dividir; a folha
+# girada era dividida de novo pela MESMA linha (fracao da largura), entao cada
+# "pagina" virava meia folha deitada com pedacos das duas paginas, e com meia
+# volta a pagina 14 mostrava a 13 (a branca).
+#
+# O conserto: o giro de uma metade de folha dividida mora na PAGINA
+# (ConfigPagina.giro_da_pagina, 0/90/180/270 no sentido do relogio) e e
+# aplicado DEPOIS de dividir (core/pipeline.preparar_para_recorte), antes do
+# endireitar e do corte. A outra pagina e a linha nao mudam. Folha inteira (nao
+# dividida): o giro continua na folha, como antes. O corte a mao da pagina
+# (pagina.recorte, fracao da pagina antes do corte) gira junto na mesma acao
+# (recorte_girado), para continuar sobre o mesmo pedaco do papel.
+# Projeto antigo nao tem o campo: 0 (sai igual).
+# Arriscado: aplicar giro_da_pagina numa pagina "inteira" (a folha ja gira) ou
+# antes de dividir (voltaria o defeito); mudar o sentido (o mesmo de
+# core/endireitar.girar_90 e de core/zonas_na_folha).
+
+def gira_so_a_pagina(folha: Any, pagina: Any) -> bool:
+    """A pagina e metade de uma folha dividida? Ai o giro e so dela (D-618)."""
+    return bool(getattr(folha, "dividir", False)) and getattr(pagina, "metade", "") in (
+        "esquerda", "direita")
+
+
+def giro_da_pagina(folha: Any, pagina: Any) -> int:
+    """O giro de 90 em 90 SO desta pagina que vale agora (0, 90, 180, 270):
+    o pagina.giro_da_pagina quando ela e metade de uma folha dividida; 0 em
+    pagina inteira (ali quem gira e a folha) e em projeto antigo (sem o campo)."""
+    if not gira_so_a_pagina(folha, pagina):
+        return 0
+    return nova_rotacao(getattr(pagina, "giro_da_pagina", 0) or 0, 0)
+
+
+def recorte_girado(recorte: Sequence[float] | None, giro: int) -> list[float] | None:
+    """O corte a mao (x, y, largura, altura em fracao da pagina) depois de a
+    pagina girar `giro` graus no sentido do relogio: o MESMO pedaco do papel,
+    nas fracoes da pagina girada. None continua None (corte automatico, que e
+    medido de novo na pagina girada). Mesmo sentido de core/endireitar.girar_90:
+    a 90 graus o ponto (u, v) vai para (1 - v, u)."""
+    if recorte is None:
+        return None
+    x, y, w, h = (float(v) for v in recorte)
+    g = nova_rotacao(0, giro)
+    if g == 90:
+        novo = (1.0 - (y + h), x, h, w)
+    elif g == 180:
+        novo = (1.0 - (x + w), 1.0 - (y + h), w, h)
+    elif g == 270:
+        novo = (y, 1.0 - (x + w), h, w)
+    else:
+        novo = (x, y, w, h)
+    return [round(min(1.0, max(0.0, v)), 6) for v in novo]
+
+
+def campos_do_giro_da_pagina(pagina: Any, giro: int) -> dict[str, Any]:
+    """Os campos da acao do desfazer de girar SO esta pagina (alvo "pagina"):
+    o giro novo e, se a pagina tem corte a mao, o corte girado junto. O
+    desfazer (historico_acoes, que ja guarda o "antes" de cada campo) devolve
+    os dois. Seguro mudar: nada. Arriscado: girar sem levar o corte (o corte a
+    mao cairia em outro pedaco da pagina)."""
+    campos: dict[str, Any] = {
+        "giro_da_pagina": nova_rotacao(getattr(pagina, "giro_da_pagina", 0) or 0, giro)}
+    recorte = getattr(pagina, "recorte", None)
+    if recorte is not None:
+        campos["recorte"] = recorte_girado(recorte, giro)
+    return campos
+
+
+def descricao_do_giro_da_pagina(giro: int, pagina: int) -> str:
+    """A frase do historico de girar so a pagina (pagina: o indice; a frase
+    mostra o numero). Seguro mudar: o texto."""
+    nome = NOMES_DOS_GIROS.get(giro, f"{giro} graus")
+    return f"Girar {nome}: a página {int(pagina) + 1}"
 
 
 def descricao_do_giro(giro: int, alcance: str, atual: int, quantas: int) -> str:

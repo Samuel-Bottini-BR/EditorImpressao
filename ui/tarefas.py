@@ -21,6 +21,7 @@ from core.misto import escolhas_da_pagina as escolhas_do_misto
 from core.pontinhos_scantailor import escolha_da_pagina as pontinhos_da_pagina
 from core.pipeline import acertar_no_tamanho_do_pdf, faixa_da_sobra, precisa_do_desenho_do_pdf
 from core.dividir_a_mao import assinatura_da_tampa   # obra 26/10, etapas 4 e 9b-2 (D-495, D-559)
+from core.girar import giro_da_pagina   # D-618: o giro so da pagina entra nas chaves das previas
 from core.pdf_io import ErroPDF, abrir_pdf
 from core.pipeline import (
     Cancelou,
@@ -1102,6 +1103,8 @@ class GerenciadorPrevias(QObject):
             f"{p.clareza_melhorar}:{p.intensidade_magico}:{p.metade}:"
             f"{p.angulo_manual}:{p.recorte}:"
             f"{f.posicao_corte:.4f}:{f.rotacao}:{f.dividir}:"
+            # D-618: o giro so desta pagina (metade de folha dividida)
+            f"{giro_da_pagina(f, p)}:"
             # obra 26/10, etapa 3: o automatico que vale NESTA pagina (o do
             # livro, ou o rodado so nela: core/etapas)
             f"{etapas.limpa_sozinho(self.projeto, p)}:{etapas.endireita_sozinho(self.projeto, p)}:"
@@ -1359,6 +1362,7 @@ class GerenciadorPrevias(QObject):
         p = self.projeto.paginas[indice]
         f = self.projeto.folhas[p.folha]
         return (f"{indice}:recorte:{dpi}:{p.metade}:{f.posicao_corte:.4f}:{f.rotacao}:{f.dividir}:"
+                f"{giro_da_pagina(f, p)}:"                     # D-618: o giro so da pagina"
                 f"{faixa_da_sobra(f, p, self.projeto)}"       # item 2.1
                 f"{assinatura_da_tampa(f, self.projeto)}")    # etapas 4 e 9b-2 (D-495, D-559)
 

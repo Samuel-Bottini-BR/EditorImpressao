@@ -56,6 +56,7 @@ from core import borda_preta           # item 2.13 (so com Projeto.borda_preta)
 from core import recortar              # etapa 10a: _caixa_sem_comer usa as contas do corte comum
 from core import etapas                # obra 26/10 etapa 1: "esta etapa vale nesta pagina?" (D-009)
 from core import dividir_a_mao         # obra 26/10 etapa 4: a tampa do scanner (D-495)
+from core.girar import giro_da_pagina  # D-618: o giro so da pagina, depois de dividir
 from core.ordem_do_preparo import endireita_antes, ordem_do_livro
 from core.filtros import (MAGICO_PRO, MELHORAR, ORIGINAL, PRETO_E_BRANCO, TIRAR_FUNDO, aplicar_filtro,
                           aplicar_filtro_com_selecao, aplicar_so_os_pedacos)
@@ -548,6 +549,13 @@ def preparar_para_recorte(
     if folha.dividir and pagina.metade != METADE_INTEIRA:
         esq, dir_ = dividir_imagem(img, folha.posicao_corte)
         img = esq if pagina.metade == METADE_ESQUERDA else dir_
+    # D-618 (Samuel, 04/11/2026: "ele deveria girar o conteudo só que é da
+    # pagina cortada"): o giro SO desta metade, DEPOIS de dividir; a outra
+    # metade e a linha nao mudam. 0 em pagina inteira e em projeto antigo (a
+    # mesma imagem). Arriscado: levar este giro para antes de dividir.
+    giro = giro_da_pagina(folha, pagina)
+    if giro:
+        img = girar_90(img, giro)
     # Item 2.1 (G3 (b)): o corte da sobra do ScanTailor, ainda na etapa
     # "dividir" (onde o ScanTailor o faz), antes de cortar as bordas. Sem o
     # projeto (quem chama de fora), nada muda.
@@ -704,7 +712,8 @@ def _preparar_metade_e_geometria(
             folha.posicao_corte if dividida else None,
             pagina.metade if dividida else METADE_INTEIRA,
             tuple(recorte) if cortou else None, float(angulo) if girar else 0.0,
-            sobra=faixa_da_sobra(folha, pagina, projeto), ordem=ordem_do_livro(projeto))
+            sobra=faixa_da_sobra(folha, pagina, projeto), ordem=ordem_do_livro(projeto),
+            giro_pagina=giro_da_pagina(folha, pagina))                  # D-618
         return img, desenho
 
     if desentortar:
@@ -720,7 +729,8 @@ def _preparar_metade_e_geometria(
             folha.posicao_corte if dividida else None,
             pagina.metade if dividida else METADE_INTEIRA,
             tuple(recorte) if cortou else None, float(angulo) if girar else 0.0,
-            sobra=faixa_da_sobra(folha, pagina, projeto))
+            sobra=faixa_da_sobra(folha, pagina, projeto),
+            giro_pagina=giro_da_pagina(folha, pagina))                  # D-618
         return img, desenho
 
     # 2. cortar bordas (o recorte ja vem com a folga do giro, se houver giro)
@@ -750,7 +760,8 @@ def _preparar_metade_e_geometria(
         folha.posicao_corte if dividida else None,
         pagina.metade if dividida else METADE_INTEIRA,
         tuple(recorte) if cortou else None, float(angulo) if girar else 0.0,
-        sobra=faixa_da_sobra(folha, pagina, projeto))
+        sobra=faixa_da_sobra(folha, pagina, projeto),
+        giro_pagina=giro_da_pagina(folha, pagina))                      # D-618
     return img, desenho
 
 
@@ -1431,6 +1442,7 @@ def _chave_da_geometria(folha: ConfigFolha, pagina: ConfigPagina, projeto: Proje
         caminho, info.st_mtime_ns, info.st_size, int(projeto.qualidade_dpi),
         folha.indice, int(folha.rotacao) % 360,
         dividir, round(float(folha.posicao_corte), 6) if dividir else None,
+        giro_da_pagina(folha, pagina),                 # D-618: o giro so da pagina
         pagina.metade if dividir else None, etapas.corta_sozinho(projeto, pagina),
         etapas.endireita_sozinho(projeto, pagina), recorte, etapas.angulo_a_mao(projeto, pagina),
         faixa_da_sobra(folha, pagina, projeto),        # item 2.1
@@ -2838,7 +2850,8 @@ def _divisao_da_pagina(folha: ConfigFolha, pagina: ConfigPagina) -> tuple:
     tampa = getattr(folha, "tampa_do_scanner", None) or ()
     return (bool(folha.dividir), round(float(folha.posicao_corte), 4),
             int(folha.rotacao or 0) % 360, str(pagina.metade),
-            tuple(round(float(v), 4) for v in tampa))
+            tuple(round(float(v), 4) for v in tampa),
+            giro_da_pagina(folha, pagina))             # D-618: o giro so da pagina
 
 
 def precisa_medir_o_em_branco(projeto: Projeto, pagina: ConfigPagina) -> bool:
@@ -3030,7 +3043,8 @@ def _entradas_do_preparo(folha: ConfigFolha, pagina: ConfigPagina, projeto: Proj
             etapas.corta_sozinho(projeto, pagina), etapas.endireita_sozinho(projeto, pagina),
             int(projeto.qualidade_dpi),
             faixa_da_sobra(folha, pagina, projeto),       # item 2.1
-            endireitar_scantailor.jeito_da_pagina(projeto, pagina)) + _com_a_tampa(folha, projeto)
+            endireitar_scantailor.jeito_da_pagina(projeto, pagina),
+            giro_da_pagina(folha, pagina)) + _com_a_tampa(folha, projeto)   # D-618
 
 
 def converter_zonas_do_livro(
@@ -3704,7 +3718,8 @@ def _chave_das_linhas(projeto: Projeto, pagina: ConfigPagina):
             round(float(folha.posicao_corte), 4), recorte, etapas.angulo_a_mao(projeto, pagina),
             projeto.dividir_folhas, etapas.corta_sozinho(projeto, pagina),
             etapas.endireita_sozinho(projeto, pagina),
-            faixa_da_sobra(folha, pagina, projeto)) + _com_a_tampa(folha, projeto)   # itens 2.1; D-495
+            faixa_da_sobra(folha, pagina, projeto),
+            giro_da_pagina(folha, pagina)) + _com_a_tampa(folha, projeto)   # itens 2.1; D-495; D-618
 
 
 def _filtrar_no_misto(projeto: Projeto, pagina: ConfigPagina, img: np.ndarray, selecao,
