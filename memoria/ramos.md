@@ -410,3 +410,4 @@ Juntados no `obra-2026-10-26` nesta noite: balão do cinza (`99e7c6b`), D-574 se
 - `mover-lado-2026-11-04` (04/11): D-612, Mover funciona em “Duas lado a lado”. Agente trabalhando.
 - `dividir-aviso-2026-11-04` (04/11): D-613, “dividir todas” pergunta sobre as folhas juntadas à mão. Entregue e juntado (`77cccc09`).
 - `tira-pares-2026-11-04` (04/11): D-611 não funcionou para o Samuel no Dividir (print a-57). Agente achando a causa.
+- `previa-dividida-2026-11-04` (04/11): D-614, prévia do Dividir no Automático como se já tivesse dividido. Agente trabalhando.
