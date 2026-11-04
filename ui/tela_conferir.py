@@ -1789,19 +1789,29 @@ class TelaConferir(QWidget):
         return caixinha
 
     def _parte_do_livro(self, linhas: list[str], etapa: str = "") -> QFrame:
-        """A parte "Para o livro todo" do Propriedades (rodada 12, 706 B).
+        """A parte do livro do Propriedades (rodada 12, 706 B; D-051), no
+        Dividir, no Cortar e no Endireitar.
 
         Mostra o que vale para o livro inteiro e, desde a etapa 3 da obra
         (26/10/2026), abre o Automatico na etapa (`etapa`, codigo de
         core/automatico), que e onde o livro todo se muda (a tela "O que
-        fazer" saiu do caminho: D-002)."""
+        fazer" saiu do caminho: D-002).
+
+        D-619 (Samuel, 04/11/2026, print a-69: "para o livro todo, não
+        entendi essa mensagem, elas não deveriam ser opções para se
+        escolher[...]?" -> "1- B"): o titulo era "Para o livro todo" e passou
+        a ser "Já feito no livro todo", para ficar claro que o quadro so
+        mostra o que o Automatico ja fez. Nada mais mudou: as linhas, o
+        "mudar no Automático..." e, no Cortar, a caixinha "Margens iguais"
+        (D-554, posta por _montar_aba_bordas). Seguro mudar: o titulo, com
+        o Samuel. Arriscado: por escolhas aqui (D-619 B: so mostra)."""
         caixa = QFrame()
         caixa.setObjectName("parteDoLivro")
         caixa.setAttribute(Qt.WA_StyledBackground, True)
         coluna = QVBoxLayout(caixa)
         coluna.setContentsMargins(10, 8, 10, 9)
         coluna.setSpacing(5)
-        coluna.addWidget(titulo_de_parte("Para o livro todo"))
+        coluna.addWidget(titulo_de_parte("Já feito no livro todo"))
         for texto in linhas:
             rotulo = QLabel(texto)
             rotulo.setObjectName("rotuloDoPainel")
@@ -1948,7 +1958,8 @@ class TelaConferir(QWidget):
         # "Também na tela do corte"; confirma a D-494; D-075: a caixinha
         # "Margens iguais", desmarcada de fábrica): a MESMA caixinha da etapa
         # "Margens iguais" do Automático, aqui na parte "Para o livro todo" do
-        # Cortar. Mexe no mesmo valor do livro (Projeto.margens_iguais), numa
+        # Cortar (desde a D-619, 04/11/2026, o título é "Já feito no livro todo";
+        # a caixinha fica). Mexe no mesmo valor do livro (Projeto.margens_iguais), numa
         # ação do desfazer (_mudar_margens_iguais); o Automático mostra o que o
         # livro tem depois. Arriscado: guardar o valor em outro lugar (as duas
         # caixinhas deixariam de concordar).
