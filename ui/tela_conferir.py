@@ -3957,15 +3957,33 @@ class TelaConferir(QWidget):
         return (len(dividir_a_mao.paginas_da_folha(self.projeto, indice)) >= 2
                 or bool(self.projeto.folhas[indice].metades_guardadas))
 
+    def _linha_arrastada(self, indice: int) -> bool:
+        """D-609: a linha desta folha ainda inteira foi arrastada à mão, na
+        rotação e com o motor de corte que ela tem agora (ConfigFolha.
+        linha_a_mao)? Então a linha que vale é posicao_corte, e não a do
+        motor. Girar a folha ou trocar o motor a deixa sem valer."""
+        assert self.projeto is not None
+        folha = self.projeto.folhas[indice]
+        marca = getattr(folha, "linha_a_mao", None)
+        if folha.dividir or not isinstance(marca, (list, tuple)) or len(marca) != 2:
+            return False
+        rotacao, jeito = self._chave_da_linha(indice)[1:]
+        return int(marca[0]) % 360 == rotacao and dividir_scantailor.jeito_valido(marca[1]) == jeito
+
     def _acertar_a_linha_do_dividir(self) -> None:
         """Põe a linha da folha da vez na vista do Dividir.
 
         - Folha dividida: a linha dela, para arrastar, só com a folha inteira na
           tela ("Duas lado a lado", D-601).
-        - Folha ainda inteira (D-602): a linha onde o motor cortaria, só para
-          ver, se o motor acha a folha dupla (a de uma página só fica sem
-          linha); na folha que volta como estava, a linha de antes. Ainda não
-          lida: sem linha, o selo "atualizando..." e a leitura pedida."""
+        - Folha ainda inteira (D-602): a linha onde o motor cortaria, se o
+          motor acha a folha dupla (a de uma página só fica sem linha); na
+          folha que volta como estava, a linha de antes. Ainda não lida: sem
+          linha, o selo "atualizando..." e a leitura pedida.
+        - D-609 (Samuel, 04/11/2026, a-54: "não consigo mover a linha azul
+          manualmente." → "Sim"): na folha dupla inteira a linha se arrasta,
+          com a mesma pega "arraste" da folha dividida, em "Uma página" e em
+          "Duas lado a lado"; depois de arrastada, a tela mostra onde a pessoa
+          a deixou (_linha_arrastada), sem esperar a leitura do motor."""
         if self.projeto is None or ABA_CORTE not in self.visualizadores:
             return
         vis = self.visualizadores[ABA_CORTE]
@@ -3974,6 +3992,10 @@ class TelaConferir(QWidget):
         if folha.dividir:
             vis.definir_lendo_a_linha(False)
             vis.definir_corte(folha.posicao_corte, visivel=self._metade_no_dividir() is None)
+            return
+        if self._linha_arrastada(indice):          # D-609: onde a pessoa deixou
+            vis.definir_lendo_a_linha(False)
+            vis.definir_corte(folha.posicao_corte, visivel=True, arrastavel=True)
             return
         lida = self._linha_do_motor(indice)
         if lida is None:
@@ -3984,7 +4006,9 @@ class TelaConferir(QWidget):
         lombada, _tampa = lida
         posicao = folha.posicao_corte if self._volta_como_estava(indice) else lombada.posicao
         vis.definir_lendo_a_linha(False)
-        vis.definir_corte(posicao, visivel=bool(lombada.e_paisagem), arrastavel=False)
+        # D-609: a linha da folha dupla inteira se arrasta (antes, D-602, era só para ver)
+        dupla = bool(lombada.e_paisagem)
+        vis.definir_corte(posicao, visivel=dupla, arrastavel=dupla)
 
     def _pedir_a_linha(self, indice: int) -> None:
         """Lê a folha `indice` pelo motor, por trás. Uma leitura por vez: se já
@@ -5443,8 +5467,12 @@ class TelaConferir(QWidget):
                 self._medir_o_em_branco_por_tras(self._paginas_das_folhas(indices))
             return
         if alvo == "folha" and "posicao_corte" in campos:
-            # D-497 (etapa 7): mover a linha pode deixar uma metade só margem
-            self._medir_o_em_branco_por_tras(self._paginas_das_folhas(indices))
+            # D-497 (etapa 7): mover a linha pode deixar uma metade só margem.
+            # D-609: só nas folhas divididas - a linha da folha ainda inteira
+            # não muda a página dela (medir de novo só pararia a medida que já
+            # anda, e poderia pôr um aviso que o arrasto não criou)
+            self._medir_o_em_branco_por_tras(
+                self._paginas_das_folhas(self._so_as_divididas(indices)))
         afetadas = indices if alvo == "pagina" else self._paginas_das_folhas(indices)
         if self.previas is not None and not set(campos) <= CAMPOS_SO_DO_MOVER:
             # etapa 5 da obra: mover/aumentar nao muda o desenho da pagina (a
@@ -5515,6 +5543,13 @@ class TelaConferir(QWidget):
             marcas[str(indice)] = lista
         return {**campos, "mexida_a_mao": marcas}
 
+    def _so_as_divididas(self, folhas: list[int]) -> list[int]:
+        """As `folhas` que estão divididas agora (D-609: a linha da folha ainda
+        inteira não muda a página dela; ver _registrar)."""
+        assert self.projeto is not None
+        return [f for f in folhas
+                if 0 <= f < len(self.projeto.folhas) and self.projeto.folhas[f].dividir]
+
     def _paginas_das_folhas(self, folhas: list[int]) -> list[int]:
         assert self.projeto is not None
         alvo = set(folhas)
@@ -5529,8 +5564,11 @@ class TelaConferir(QWidget):
         mão; na primeira vez nesta rotação, procura a tampa do scanner da
         folha (uns décimos de segundo; depois não procura de novo)."""
         assert self.projeto is not None
-        campos = {"posicao_corte": round(posicao, 4), "revisada": True}
         folha = self.projeto.folhas[self.indice_folha]
+        if not folha.dividir:                       # D-609: a folha ainda inteira
+            self._mover_a_linha_da_folha_inteira(posicao)
+            return
+        campos = {"posicao_corte": round(posicao, 4), "revisada": True}
         if folha.dividir and not dividir_a_mao.tampa_ja_medida(folha):
             from PySide6.QtWidgets import QApplication
 
@@ -5543,6 +5581,39 @@ class TelaConferir(QWidget):
         self._registrar(
             "mover_corte", "folha", [self.indice_folha], campos,
             f"Linha de corte da folha {self.indice_folha + 1}",
+        )
+
+    def _mover_a_linha_da_folha_inteira(self, posicao: float) -> None:
+        """D-609 (Samuel, 04/11/2026, print a-54: "não consigo mover a linha
+        azul manualmente." → "Sim" a "Quer poder arrastar a linha já na folha
+        inteira, antes de dividir, e o "dividir esta" cortar onde você
+        deixou?"): a linha arrastada na folha AINDA INTEIRA. Nada é cortado:
+        o lugar vai para posicao_corte, com a marca linha_a_mao = [rotação,
+        motor] (modelos.ConfigFolha), numa ação do desfazer (o Ctrl+Z devolve
+        a linha de antes); o "dividir esta" e o "dividir todas" cortam nela.
+        Como o arrasto da folha dividida, grava a marca "mexida à mão" do
+        Dividir (o "usar em todas", D-090, a deixa desmarcada). Diferente
+        dele: não marca a folha como conferida (ela ainda não foi dividida; o
+        "dividir esta" marca) e não procura a tampa do scanner agora (o
+        "dividir esta" a procura, como sempre). Soltar a linha onde ela já
+        estava não grava nada.
+        Arriscado: gravar sem a marca (a tela e o "dividir esta" voltariam à
+        linha do motor) ou sem conferir a rotação e o motor na marca."""
+        assert self.projeto is not None
+        indice = self.indice_folha
+        posicao = round(float(posicao), 4)
+        mostrada = None
+        if self._linha_arrastada(indice) or self._volta_como_estava(indice):
+            mostrada = self.projeto.folhas[indice].posicao_corte
+        elif self._linha_do_motor(indice) is not None:
+            mostrada = self._linha_do_motor(indice)[0].posicao
+        if mostrada is not None and round(float(mostrada), 4) == posicao:
+            return
+        rotacao, jeito = self._chave_da_linha(indice)[1:]
+        self._registrar(
+            "mover_corte", "folha", [indice],
+            {"posicao_corte": posicao, "linha_a_mao": [rotacao, jeito]},
+            f"Linha de corte da folha {indice + 1}",
         )
 
     @protegido
@@ -5739,20 +5810,28 @@ class TelaConferir(QWidget):
     def _dividir_as_lidas(self, folhas: list[int]) -> None:
         """Corta as `folhas` já lidas pelo motor: cada dupla na sua linha, as
         de uma página só ficam inteiras (ver o comentário do "dividir todas")."""
+        from core.dividir import Lombada
+
         assert self.projeto is not None
         medidas: dict[int, tuple] = {}
         for f in folhas:
             folha = self.projeto.folhas[f]
             lida = self._linha_do_motor(f)
-            if folha.dividir or lida is None or not lida[0].e_paisagem:
+            arrastada = self._linha_arrastada(f)            # D-609
+            if folha.dividir or lida is None or not (lida[0].e_paisagem or arrastada):
                 continue
             if self._volta_como_estava(f) and dividir_a_mao.tampa_ja_medida(folha):
                 medidas[f] = (None, None)            # volta como estava, sem medir
+            elif arrastada and not self._volta_como_estava(f):
+                # D-609: a linha que a pessoa arrastou nesta folha (a tampa, a do motor)
+                medidas[f] = (Lombada(float(folha.posicao_corte), lida[0].confianca, True), lida[1])
             else:
                 medidas[f] = lida
         if not medidas or not self._dividir_as_medidas(folhas, medidas, " (dividir todas)",
                                                        conferidas=False):
             self._avisar("Nenhuma folha dupla para dividir: as que faltam são de uma página só.")
+            return
+        self._uma_pagina_depois_de_dividir()               # D-610
 
     @protegido
     def _dividir_esta(self) -> None:
@@ -5768,8 +5847,14 @@ class TelaConferir(QWidget):
           motor acha a folha de uma página só (sem linha na tela), a conta
           forçada de antes (core/dividir_a_mao.medir_para_dividir: "'dividir
           esta' sempre ativo", P-059). Uns décimos de segundo.
+        - D-609 (04/11/2026: "e o "dividir esta" cortar onde você deixou?" →
+          "Sim"): a linha arrastada na folha inteira (_linha_arrastada) vale
+          no lugar da do motor; na folha que volta como estava, as páginas de
+          antes voltam cortadas nela (posicao_corte já é a arrastada).
         Uma ação do desfazer; grava a marca "mexida à mão" (_registrar)."""
         from PySide6.QtWidgets import QApplication
+
+        from core.dividir import Lombada
 
         assert self.projeto is not None
         folha = self.projeto.folhas[self.indice_folha]
@@ -5786,7 +5871,10 @@ class TelaConferir(QWidget):
                     lida = dividir_a_mao.ler_a_linha(self.projeto.caminho_entrada, *chave)
                     self._linhas_do_motor[chave] = lida
                 lombada, tampa = lida
-                if not devolve and not lombada.e_paisagem:
+                if not devolve and self._linha_arrastada(self.indice_folha):
+                    # D-609: onde a pessoa deixou a linha (a tampa, a do motor)
+                    lombada = Lombada(float(folha.posicao_corte), lombada.confianca, True)
+                elif not devolve and not lombada.e_paisagem:
                     lombada, tampa = dividir_a_mao.medir_para_dividir(
                         self.projeto, self.indice_folha, jeito_de_dividir(self.projeto, folha))
             finally:
@@ -5799,6 +5887,21 @@ class TelaConferir(QWidget):
                     self.projeto, self.indice_folha, lombada.posicao, lombada.confianca, tampa)
         self._registrar("dividir_a_mao", "folha", [self.indice_folha], campos,
                         f"Folha {self.indice_folha + 1}: dividir")
+        if self.projeto.folhas[self.indice_folha].dividir:
+            self._uma_pagina_depois_de_dividir()
+
+    def _uma_pagina_depois_de_dividir(self) -> None:
+        """D-610 (Samuel, 04/11/2026, print a-56: "quando eu dividir uma folha
+        que estiver em duas lado a lado ela tem que ir para opção uma pagina,
+        se não quando eu usar seta ela vai pular uma folha."): no Dividir,
+        depois de cortar ("dividir esta" ou "dividir todas") com a vista em
+        "Duas lado a lado", a vista passa sozinha para "Uma página" (o mesmo
+        que clicar no botão da barra de baixo), e a seta anda uma página por
+        vez. Mais nova que a D-601 (lá a vista ficava). Só ao cortar:
+        arrastar a linha (D-609), juntar e o desfazer não trocam a vista.
+        Arriscado: trocar fora do Dividir ou sem ter cortado."""
+        if self.trabalha_com_folhas and self.mostrar == DUAS:
+            self.definir_mostrar(UMA)
 
     @protegido
     def _trocar_jeito_da_folha(self) -> None:
@@ -5828,6 +5931,9 @@ class TelaConferir(QWidget):
         do_livro = dividir_scantailor.jeito_valido(getattr(self.projeto, "dividir_como", None))
         if not folha.dividir:
             campos: dict = {"dividir_como": None if jeito == do_livro else jeito}
+            if getattr(folha, "linha_a_mao", None) is not None:
+                # D-609 com a D-606: a linha arrastada sai, a conta é do motor novo
+                campos["linha_a_mao"] = None
             if self._volta_como_estava(self.indice_folha):          # D-606
                 lombada = self._linha_com_o_motor(self.indice_folha, jeito)
                 campos["posicao_corte"] = round(float(lombada.posicao), 4)
@@ -7579,6 +7685,11 @@ class TelaConferir(QWidget):
             self.vista_da_pagina.setCurrentWidget(self.area_imagem)
         # os botões mostram a escolha (no Dividir também valem: D-601)
         self.botoes_mostrar[self.mostrar].setChecked(True)
+        # D-611 (Samuel, 04/11/2026: "quando estiver duas lado a lado escolhido
+        # os icones embaixo tem que estar em duas folhas" → "Sim"): com "Duas
+        # lado a lado" escolhida, a tira em pares como no livro aberto, em toda
+        # ferramenta; "Uma página", como está. Não mexe no "Ver em pares" do menu.
+        self.tira.definir_pares_pela_vista(pronta and self.mostrar == DUAS)
         self.botao_antes_depois.setChecked(self.comparando)
         for jeito, _texto, dica in self.JEITOS_DE_MOSTRAR:
             self.botoes_mostrar[jeito].setEnabled(pronta)
@@ -8429,8 +8540,11 @@ class TelaConferir(QWidget):
             if self.projeto is None or getattr(acao, "alvo", None) != "folha":
                 return
             depois = getattr(acao, "depois", None) or {}
-            if dividir_a_mao.muda_a_lista(depois) or "posicao_corte" in depois:
+            if dividir_a_mao.muda_a_lista(depois):
                 self._medir_o_em_branco_por_tras(self._paginas_das_folhas(list(acao.indices)))
+            elif "posicao_corte" in depois:          # como o _registrar (D-609)
+                self._medir_o_em_branco_por_tras(
+                    self._paginas_das_folhas(self._so_as_divididas(list(acao.indices))))
         except Exception:  # noqa: BLE001 - o aviso é ajuda; nunca derruba o refazer
             registrar_erro("medir o em branco ao refazer", traceback.format_exc())
 

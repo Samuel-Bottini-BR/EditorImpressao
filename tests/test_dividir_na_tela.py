@@ -271,4 +271,9 @@ def test_linha_azul_some_quando_a_folha_nao_e_dividida(janela, pasta):
     tela._alternar_dividir()
     assert not vis.corte_visivel
     tela._alternar_dividir()
+    # D-610 (04/11/2026, a-56: "quando eu dividir uma folha que estiver em duas lado a lado
+    # ela tem que ir para opção uma pagina"): dividir em "Duas lado a lado" passa a vista para
+    # "Uma página" (antes, D-601, ela ficava); de volta ao "Duas lado a lado", a linha está lá.
+    assert tela.mostrar != DUAS
+    tela.definir_mostrar(DUAS)
     assert vis.corte_visivel

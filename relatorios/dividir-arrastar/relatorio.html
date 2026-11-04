@@ -1,0 +1,240 @@
+<!doctype html>
+<html lang="pt-BR">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Dividir: D-609, D-610 e D-611</title>
+<style>
+:root { color-scheme: light dark; }
+* { box-sizing: border-box; }
+body {
+  font: 17px/1.65 "Segoe UI", system-ui, sans-serif;
+  max-width: 46rem; margin: 0 auto; padding: 2.5rem 1.5rem 6rem;
+  color: #1c1c1e; background: #fdfdfc;
+}
+h1 { font-size: 2rem; line-height: 1.2; margin: 0 0 .3em; letter-spacing: -.02em; }
+h2 { font-size: 1.35rem; margin: 2.4em 0 .6em; padding-top: .8em;
+     border-top: 1px solid #e6e4e0; letter-spacing: -.01em; }
+h3 { font-size: 1.1rem; margin: 1.8em 0 .4em; }
+h1 + p, h2 + p { margin-top: .4em; }
+p, li { margin: 0 0 .9em; }
+ul, ol { padding-left: 1.3em; }
+strong { font-weight: 640; }
+code {
+  font: .88em ui-monospace, "Cascadia Code", Consolas, monospace;
+  background: #f1efec; padding: .12em .35em; border-radius: 4px;
+}
+pre {
+  background: #f1efec; padding: 1em 1.1em; border-radius: 8px;
+  overflow-x: auto; line-height: 1.5;
+}
+pre code { background: none; padding: 0; }
+blockquote {
+  margin: 1.2em 0; padding: .1em 0 .1em 1.1em;
+  border-left: 3px solid #c9c5be; color: #55524d;
+}
+table {
+  border-collapse: collapse; width: 100%; margin: 1.2em 0;
+  font-size: .95rem; display: block; overflow-x: auto;
+}
+th, td { padding: .5em .8em; text-align: left; border-bottom: 1px solid #e6e4e0; }
+th { font-weight: 620; background: #f7f5f2; white-space: nowrap; }
+tr:last-child td { border-bottom: none; }
+img { max-width: 100%; height: auto; border-radius: 6px; margin: 1em 0;
+      border: 1px solid #e6e4e0; }
+hr { border: none; border-top: 1px solid #e6e4e0; margin: 2.5em 0; }
+.rodape { margin-top: 4em; padding-top: 1.2em; border-top: 1px solid #e6e4e0;
+          font-size: .85rem; color: #86827c; }
+@media (prefers-color-scheme: dark) {
+  body { color: #e8e6e3; background: #1a1917; }
+  h2 { border-top-color: #35332f; }
+  code, pre, th { background: #262421; }
+  th, td { border-bottom-color: #35332f; }
+  blockquote { border-left-color: #4a4741; color: #b0aca6; }
+  img { border-color: #35332f; }
+  .rodape { border-top-color: #35332f; color: #7d7973; }
+}
+@media print {
+  body { max-width: none; padding: 0; color: #000; background: #fff; }
+  h2 { page-break-after: avoid; }
+  table, img { page-break-inside: avoid; }
+}
+</style>
+</head>
+<body>
+<h1>Dividir: D-609, D-610 e D-611 (04/11/2026)</h1>
+<p>Ramo <code>dividir-arrastar-2026-11-04</code> (saiu de <code>obra-2026-10-26</code>, <code>e17410fe</code>). Nada foi juntado.</p>
+<h2>O que foi feito</h2>
+<ul>
+<li><strong>D-609:</strong> na folha dupla ainda inteira, a linha azul agora se arrasta com o mouse (mesma pega "arraste"), em "Uma
+  página" e em "Duas lado a lado". "dividir esta" e "dividir todas" cortam onde ela ficou; sem arrastar, na linha do
+  motor, como antes.</li>
+<li><strong>D-610:</strong> dividir ("dividir esta" ou "dividir todas") com a vista em "Duas lado a lado" passa a vista sozinha para
+  "Uma página"; a seta anda uma página por vez.</li>
+<li><strong>D-611:</strong> com "Duas lado a lado" escolhida, a tira de miniaturas fica em pares (a 1 sozinha à direita, 2-3, 4-5...),
+  em toda ferramenta; em "Uma página", como está.</li>
+</ul>
+<p>Commits: <code>ecf5e3a1</code> (D-609), <code>6e5b4cdd</code> (uma linha de teste antigo, Ressalva 1), <code>2c169489</code> (prints D-609),
+<code>bbecf4f7</code> (D-610), <code>784a5bf6</code> (fim de um teste antigo, Ressalva 1), <code>2fccd164</code> (D-611), <code>d7f1082f</code> (prints D-610/611).</p>
+<h2>Arquivos</h2>
+<ul>
+<li><code>modelos.py</code>: campo novo <code>ConfigFolha.linha_a_mao</code> = [rotação, motor] do arrasto na folha inteira (None = não
+  arrastada; projeto antigo: None, sai igual).</li>
+<li><code>ui/tela_conferir.py</code> (só o Dividir e a barra Uma página / Duas lado a lado; nada do Mover): <code>_linha_arrastada</code>,
+  <code>_acertar_a_linha_do_dividir</code>, <code>_mover_a_linha_da_folha_inteira</code>, <code>_dividir_esta</code>, <code>_dividir_as_lidas</code>,
+  <code>_trocar_jeito_da_folha</code>, <code>_so_as_divididas</code>, <code>_uma_pagina_depois_de_dividir</code>, uma linha em
+  <code>_acertar_a_vista_da_pagina</code> (D-611).</li>
+<li><code>ui/widgets/tira_miniaturas.py</code>: <code>definir_pares_pela_vista</code>, <code>em_pares_agora</code> (D-611).</li>
+<li>Testes novos: <code>tests/test_decisoes_dividir_arrastar.py</code> (16), <code>tests/test_decisoes_tira_em_pares.py</code> (4).</li>
+<li>Testes antigos mudados: uma linha em <code>tests/test_decisoes_dividir_linha.py</code>, o fim de um teste em
+  <code>tests/test_dividir_na_tela.py</code> (Ressalva 1).</li>
+<li><code>relatorios/dividir-arrastar/</code>: ONDE-PAREI, piloto, anotações, prints p01 a p12.</li>
+</ul>
+<h2>Como cumpri cada uma</h2>
+<table>
+<thead>
+<tr>
+<th>Decisão</th>
+<th>Como</th>
+<th>Prova</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>D-609 arrastar na folha inteira</td>
+<td>pega "arraste" e arrasto em "Uma página" e "Duas"</td>
+<td><code>test_reversao_d609_linha_se_arrasta_na_folha_dupla_inteira[uma/duas]</code>; p02 (Uma página, folha 2 em 40%), p06 (Duas, folha 4 em 55%)</td>
+</tr>
+<tr>
+<td>D-609 "dividir esta" corta onde ficou</td>
+<td>usa a linha arrastada</td>
+<td><code>test_reversao_d609_dividir_esta_corta_onde_a_linha_ficou</code>; p03 (metade esquerda estreita), p04 (corte em 40%)</td>
+</tr>
+<tr>
+<td>D-602 sem arrastar, linha do motor; uma página só sem linha</td>
+<td>igual</td>
+<td>mesmos testes + <code>test_d609_folha_de_uma_pagina_continua_sem_linha_e_o_mouse_nao_mexe</code> + <code>test_decisoes_dividir_linha.py</code></td>
+</tr>
+<tr>
+<td>Desfazer/refazer</td>
+<td>o arrasto é 1 ação; Ctrl+Z/Ctrl+Y duas vezes devolvem páginas, folhas, linha, avisos, "com dúvida" e o botão iguais</td>
+<td><code>test_d609_desfazer_e_refazer_...</code>, <code>test_d609_ctrl_z_do_teclado_volta_a_linha</code>; piloto com Ctrl+Z/Ctrl+Y do Windows (anotacoes.txt, p05)</td>
+</tr>
+<tr>
+<td>D-606 trocar o motor depois de arrastar</td>
+<td>refaz a conta; Ctrl+Z devolve motor e linha arrastada</td>
+<td><code>test_d609_trocar_o_motor_depois_de_arrastar_refaz_a_conta</code></td>
+</tr>
+<tr>
+<td>"dividir todas"</td>
+<td>a arrastada na sua linha; as outras na do motor</td>
+<td><code>test_d609_dividir_todas_corta_a_arrastada_...</code></td>
+</tr>
+<tr>
+<td>D-090 "usar em todas"</td>
+<td>copia a linha desta folha; a arrastada vem desmarcada</td>
+<td><code>test_d609_usar_em_todas_*</code></td>
+</tr>
+<tr>
+<td>D-498 folha juntada</td>
+<td>se arrasta; volta como estava, cortada onde ficou</td>
+<td><code>test_d609_folha_juntada_arrastada_volta_como_estava_na_linha_nova</code></td>
+</tr>
+<tr>
+<td>D-608 setas</td>
+<td>depois de arrastar, → passa de folha</td>
+<td><code>test_d609_seta_passa_de_folha_depois_de_arrastar</code>; piloto (folha 4 → 5)</td>
+</tr>
+<tr>
+<td>D-610</td>
+<td>"dividir esta"/"dividir todas" em Duas → Uma página; seta: metade direita, depois folha 2; arrastar e juntar não trocam a vista</td>
+<td><code>test_reversao_d610_*</code>, <code>test_d610_arrastar_em_duas_lado_a_lado_nao_troca_a_vista</code>; p07 → p08, anotações (seta: página 2, depois folha 2)</td>
+</tr>
+<tr>
+<td>D-611</td>
+<td>tira em pares com Duas (Dividir e Cortar); uma a uma com Uma página; "Ver em pares" do menu não muda nem é gravado; escolhida marcada, à vista, clique vai a ela</td>
+<td><code>test_decisoes_tira_em_pares.py</code> (4); p09/p09b, p10/p10b (Dividir), p11/p12 (Cortar)</td>
+</tr>
+<tr>
+<td>Item 7 (nada além)</td>
+<td>nenhuma frase, botão ou lugar mudou</td>
+<td>prints</td>
+</tr>
+<tr>
+<td>D-605</td>
+<td>"O que já está escolhido e testado" no ONDE-PAREI; testes do Dividir e da tira passando</td>
+<td>Rodadas</td>
+</tr>
+</tbody>
+</table>
+<p>Reversão (código de <code>e17410fe</code>): 14 das 16 provas do arrastar/D-610 falham e as 2 de reversão da tira falham; as que
+passam lá são as das escolhas que continuam (folha de uma página sem linha, seta depois de arrastar, "Ver em pares" do
+menu, a escolhida). Saída em <code>_tmp/reversao_todas.txt</code> (fora do git).</p>
+<h2>Ressalvas</h2>
+<ol>
+<li><strong>Dois testes antigos tiveram de mudar, porque provavam justamente o que as decisões novas tiram</strong> (commits
+   separados, para a gerente conferir ou tirar):
+   - <code>test_decisoes_dividir_linha.py</code>, linha 127: <code>assert not vista.corte_arrastavel</code>, comentada "a linha da folha
+     inteira é só para ver: arrastar não muda nada (pergunta ao Samuel)". A D-609 respondeu "Sim" a essa pergunta
+     (<code>d602-arrastar</code>). Agora <code>assert vista.corte_arrastavel</code>. Só essa linha.
+   - <code>test_dividir_na_tela.py::test_linha_azul_some_quando_a_folha_nao_e_dividida</code>: dividia de novo em "Duas lado a
+     lado" e esperava a linha à vista porque a vista ficava (D-601). Pela D-610 a vista vai para "Uma página"; o teste
+     agora confere isso e volta ao "Duas lado a lado" para ver a linha. O que ele prova (a linha some ao juntar e volta
+     ao dividir) continua.</li>
+<li><strong>Escolhas técnicas minhas (D-014), para conferir:</strong>
+   - Arrastar na folha inteira <strong>não</strong> marca a folha como conferida (na dividida, marca): ela ainda não foi dividida;
+     o "dividir esta" marca. Assim "N de M conferidas" e "com dúvida" não mudam só por arrastar.
+   - A linha arrastada vale na rotação e no motor em que foi arrastada: girar a folha mostra a linha do motor na folha
+     girada (o Ctrl+Z do giro devolve a arrastada).
+   - Soltar a linha onde ela já estava não grava nada.
+   - A medida do "Parece em branco" (D-497) não roda mais quando só a linha de uma folha <strong>inteira</strong> muda (arrasto,
+     refazer, "usar em todas" em folhas inteiras): a página dela não muda, e medir pararia a medida que já andava.
+   - Folha juntada, arrastada e dividida: as páginas voltam como estavam (D-498), cortadas na linha nova (D-609).
+   - D-610: o Ctrl+Z do corte não volta a vista para "Duas lado a lado" (a vista não entra no desfazer, como sempre).
+   - D-611: os pares são o mesmo arranjo do "Ver em pares" que já existia (6 px dentro do par, 22 px entre pares; p10b).
+     O item "Ver em pares" do menu continua mostrando a escolha da pessoa (desmarcado), mesmo com a tira em pares por
+     causa do "Duas lado a lado".</li>
+<li><strong>GitHub, rodada 1 (<code>41785344022</code>, só a D-609):</strong> parte 1 falhou com um ERRO no fim de
+   <code>test_promessas.py::test_p083_jeitos_no_automatico[Guardar tudo-tudo]</code>: uma prévia por trás procurou o PDF do teste
+   depois de ele ser apagado ("Não consegui achar esse arquivo"). É do Automático, não do Dividir. No PC, o <code>-k p083</code>
+   deu 1 erro do mesmo tipo (noutro caso, <code>p083_jeitos_do_so_as_letras[rede]</code>) em 8 rodadas com o código novo e 0 em 3
+   com o antigo. O mesmo ERRO aconteceu no ramo de outro agente, sem nada destas mudanças (<code>caderno-etapas</code>, rodada
+   <code>41777456037</code>), e na rodada 2 deste ramo (os dois casos); repetida só a parte 1 da rodada 2, passou. Leio como
+   intermitente e anterior a esta tarefa, mas fica a ressalva: apareceu nas duas primeiras tentativas daqui.</li>
+<li>Não rodei o filtro de velocidade: não mexi em <code>core/</code> (só <code>modelos.py</code>, um campo novo).</li>
+<li>O desfazer do "dividir esta" devolve <code>conteudo_deslocamento</code> das páginas como lista em vez de tupla (mesmo valor);
+   já era assim. A prova compara como o projeto.json grava.</li>
+</ol>
+<h2>Perguntas para o Samuel (também no ONDE-PAREI)</h2>
+<ol>
+<li><strong>D-611 no Dividir, com folhas ainda inteiras:</strong> a tira junta de dois em dois pela ordem (1 sozinha; 2-3; 4-5).
+   No Dividir, cada miniatura de folha inteira já é a folha dupla; então a tira junta, por exemplo, a capa (metade da
+   folha 1) com a folha 2 inteira, e a folha 3 inteira com a folha 4 inteira (p10b). Quer assim, ou no Dividir prefere
+   que cada folha fique junta (as duas metades da folha dividida lado a lado, como a vista grande mostra a folha
+   inteira)?</li>
+<li><strong>D-611, aparência:</strong> os pares ficam com um vão pequeno entre as duas miniaturas do par e um vão um pouco maior entre
+   um par e outro (o mesmo do "Ver em pares" que já existia; p10b). Quer as duas miniaturas do par encostadas, como no
+   livro aberto?</li>
+</ol>
+<h2>Ideias / bugs</h2>
+<ul>
+<li>(Observação, não mexi) Numa folha inteira <strong>sem arrastar</strong>, o "usar em todas" copia o <code>posicao_corte</code> guardado (0,5
+  de fábrica), não a linha do motor que a tela mostra; e nas folhas inteiras que recebem a linha, a tela continua
+  mostrando a do motor (D-602 "fica como está"). Pode valer uma pergunta.</li>
+</ul>
+<h2>Rodadas</h2>
+<ul>
+<li>PC, um arquivo por vez (código final): <code>test_decisoes_dividir_arrastar</code> 16, <code>test_decisoes_dividir_linha</code> 13,
+  <code>test_decisoes_dividir</code> 21, <code>test_dividir_ajustes_03_11</code> 9, <code>test_decisoes_juntar_todas</code> 4, <code>test_dividir_na_tela</code> 9,
+  <code>test_decisoes_dividir_metade</code> 6, <code>test_dividir_no_programa</code> 19, <code>test_dividir_scantailor</code> 13,
+  <code>test_dividir_desmarcada_caixinha</code> 3, <code>test_automatico_pular_depois_de_dividir</code> 4, <code>test_decisoes_9b2</code> 30,
+  <code>test_decisoes_avisos</code> 22, <code>test_visualizador</code> 70, <code>test_decisoes</code> 26, <code>test_decisoes_tira_em_pares</code> 4,
+  <code>test_miniaturas_novas</code> 5 — todos passaram.</li>
+<li>GitHub rodada 1 <code>41785344022</code> (D-609, <code>6e5b4cdd</code>): partes 2-5 e "Botões e prints da janela real" passaram; parte 1
+  com 1 erro (Ressalva 3).</li>
+<li>GitHub rodada 2 <code>41788480788</code> (tudo, <code>d7f1082f</code>): 1ª tentativa, parte 1 com os 2 erros do p083 (Ressalva 3), o
+  resto passou; 2ª tentativa (só a parte 1 de novo): <strong>passou</strong>. Conjunto inteiro + <code>teste_botoes.py</code> verdes.</li>
+</ul>
+<p class="rodape">Editor de Impressão &middot; gerado em 04/11/2026 às 03:34</p>
+</body>
+</html>
