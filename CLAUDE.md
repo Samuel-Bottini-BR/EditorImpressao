@@ -559,8 +559,14 @@ atualize esse arquivo (ou crie um novo) quando o Samuel pedir explicitamente.
     - **"Central de decisões"** (era "Andamento do programa"; refeita em 21/10/2026 a pedido do Samuel:
       "tem que ser como uma central de decições, para tornar as coisas mais rapidas e mais faceis"):
       https://claude.ai/artifact/XNFrsdVR7q4K8cBcxNftZy
-      - **O que mostra:** Decidir agora · Quadro dos trabalhos · Etapas · Agentes · Defeitos · Velocidade
-        · Ordens e ideias. Fonte: `docs/plano/central/fonte.json` (a gerente mantém) +
+      - **O que mostra:** Decidir agora · Conferência · Respostas · Quadro dos trabalhos · Etapas · Agentes · Defeitos
+        · Velocidade · Ordens e ideias.
+      - **Aba Respostas (Samuel, 04/11/2026: "faça uma aba só para respostas lá na central").** Junta todas as respostas
+        dele (coleção `respostas`), a mais nova primeiro, com a pergunta, o que ele escolheu e o comentário. A gerente
+        responde **no próprio documento da resposta**: campos `gerente` (o texto, em português simples) e `gerenteEm`
+        (data), e `lida: true`. Resposta sem `gerente` e sem `lida` aparece em "Esperando a gerente", com o número na aba.
+        Continua valendo responder também na pergunta (refazer a explicação, `historico` fixado), quando o comentário
+        dele pedir pergunta nova. O código da página não está no git: lê-se com Artifact `read` antes de mudar. Fonte: `docs/plano/central/fonte.json` (a gerente mantém) +
         `docs/plano/para_a_central.py` (junta com o plano, `memoria/bugs.md` e o git; avisa se um
         trabalho "no programa" não estiver no `fase-1`). Gravar o banco com ArtifactData `batch` a partir
         dos arquivos que o script gera (`D:\programas\EditorImpressao-arquivos\central-banco\`).
