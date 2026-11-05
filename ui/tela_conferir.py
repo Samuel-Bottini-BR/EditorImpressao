@@ -289,14 +289,15 @@ ABA_MOVER = "mover"
 # aba usa _abas_ativas.index(...), nunca a posição. Seguro mudar: a ordem.
 ORDEM_DAS_FERRAMENTAS = ("corte", "bordas", "angulo", "mover", "marcar", "filtro")
 # D-612 (Samuel, 04/11/2026: "1 - ele tem que funcionar com paginas lado a lado
-# também"): as ferramentas cuja peça (o visualizador delas) passa a morar no
-# lugar da página da vez dentro dos pares do "Duas lado a lado", para o mouse
-# mexer nela ali (_acertar_a_ferramenta_no_par). Hoje só o Mover; Cortar,
-# Endireitar e as de marcar estão perguntadas ao Samuel (não pôr aqui sem a
-# resposta dele: D-605/D-612). Pôr uma aba aqui basta para as que têm
-# visualizador (Bordas, Endireitar); a de marcar (editor_selecao) precisaria
-# também de um lugar de volta em _devolver_a_peca_do_par.
-FERRAMENTAS_NO_PAR = (ABA_MOVER,)
+# também"; e para Cortar, Endireitar e marcar: "1- sim"): as ferramentas cuja
+# peça (o visualizador delas; na de marcar, o editor) passa a morar no lugar
+# da página da vez dentro dos pares do "Duas lado a lado" e, no "antes /
+# depois", por cima do lado do "depois" ("Ok, pode ser assim o antes e
+# depois"), para o mouse mexer nela ali (_acertar_a_casa_da_peca). Na de
+# marcar, só com uma ferramenta que marca: a Mão e o Zoom só olham e ficam na
+# vista de sempre (_onde_vai_a_peca). O Dividir nunca (D-601: lá o "Duas lado
+# a lado" é a folha inteira com a linha); o Filtro não tem peça de mexer.
+FERRAMENTAS_NO_PAR = (ABA_BORDAS, ABA_ANGULO, ABA_MOVER, ABA_MARCAR)
 
 TITULOS = {
     ABA_CORTE: "Onde cortar",
@@ -993,6 +994,7 @@ class TelaConferir(QWidget):
         self.tira = self.miniaturas.tira
         self.tira.selecionada.connect(self._escolher_da_tira)
         self.tira.ampliar_pedido.connect(self._ampliar_miniatura)
+        self.tira.mover_pedido.connect(self._mover_da_tira)       # D-615
         self.miniaturas.lugar_pedido.connect(self._por_as_miniaturas)
         self.miniaturas.aberta_mudou.connect(lambda _a: self._por_as_miniaturas(self.miniaturas.lugar))
         self.miniaturas.ver_todas.connect(self.abrir_todas_as_paginas)
@@ -1475,10 +1477,28 @@ class TelaConferir(QWidget):
 
     def _mudar_no_editor(self, campo: str, valor) -> None:
         """Muda um ajuste do editor de marcar do livro aberto (tolerância,
-        espessura), se houver um."""
+        espessura), se houver um. Bug de 04/11/2026 (o caminho contrário do
+        print a-65): o número do painel ("Pincel: N% da página") acompanha,
+        com a mesma frase da roda (EditorSelecao.frase_do_ajuste)."""
         editor = getattr(self, "editor_selecao", None)
         if editor is not None:
             setattr(editor, campo, valor)
+            editor.aviso.emit(editor.frase_do_ajuste(campo))
+
+    def _acertar_a_barra_pelo_editor(self) -> None:
+        """Bug de 04/11/2026 (Samuel, print a-65: "quando eu giro o scrool ele
+        fica aumentando e diminuindo o tamnho do pincel no painel direito mas
+        no painel de cima 'tamanho' ele não muda nada"): o deslizante da barra
+        de cima ("tamanho" do Pincel, "tolerância"/"variação" da Varinha e da
+        Cor) mostra o valor de agora do editor. Chamado quando o editor avisa
+        (a roda muda o ajuste e avisa, D-600) e quando a barra é refeita
+        (escolher a ferramenta). A roda continua mudando o pincel; só a barra
+        passa a acompanhar."""
+        editor = getattr(self, "editor_selecao", None)
+        if editor is None or not hasattr(self, "barra_opcoes"):
+            return
+        self.barra_opcoes.mostrar_ajuste("espessura", editor.espessura)
+        self.barra_opcoes.mostrar_ajuste("tolerancia", editor.tolerancia)
 
     def _ligar_ferramentas(self) -> None:
         """A trilha manda na barra de opcoes e no editor, nesta ordem.
@@ -1523,11 +1543,17 @@ class TelaConferir(QWidget):
             return
         self.trilha.definir_ferramenta(ferramenta)
         self.barra_opcoes.definir_ferramenta(ferramenta)
+        self._acertar_a_barra_pelo_editor()      # bug de 04/11: o "tamanho" de agora
         self._ao_editor("definir_ferramenta", ferramenta)
         self._marcacoes_pela_ferramenta(ferramenta)     # D-584
         if ABA_MARCAR in self._abas_ativas and self.aba_atual != ABA_MARCAR:
             self.barra_abas.setCurrentIndex(self._abas_ativas.index(ABA_MARCAR))
         self._acertar_as_propriedades()     # o painel Propriedades segue a ferramenta
+        # D-612: nos pares e no "antes / depois", trocar entre a Mão/Zoom e uma
+        # de marcar (sem trocar de "aba") põe ou tira o editor de cima da página
+        if hasattr(self, "lado_a_lado") and self.vista_da_pagina.currentWidget() in (
+                self.lado_a_lado, self.vista_antes_depois):
+            self._acertar_a_casa_da_peca(self._onde_vai_a_peca())
 
     def _ferramenta_da_trilha(self, ferramenta: str) -> None:
         """Clique na trilha (ou no menu Ferramentas). As de pagina (Dividir,
@@ -1571,6 +1597,7 @@ class TelaConferir(QWidget):
             self.barra_opcoes.definir_ferramenta_da_pagina(NOMES_DA_TRILHA[ferramenta])
         elif aba == ABA_MARCAR and hasattr(self, "editor_selecao"):
             self.barra_opcoes.definir_ferramenta(self.barra_opcoes.ferramenta)
+            self._acertar_a_barra_pelo_editor()  # bug de 04/11: o "tamanho" de agora
         self._acertar_as_propriedades()
         self._por_o_girar_no_canto()
 
@@ -1952,7 +1979,10 @@ class TelaConferir(QWidget):
         self._gravar_no_livro("margens_iguais", ligada,
                               "Margens iguais " + ("ligadas" if ligada else "desligadas"))
         try:
-            self.paineis.automatico.estado.do_projeto(self.projeto)
+            # D-590 (04/11/2026): a caixinha "Margens iguais" não mexe no
+            # Dividir; a caixinha do Dividir desmarcada continua desmarcada
+            self.paineis.automatico.estado.do_projeto(self.projeto,
+                                                      manter_o_dividir_desmarcado=True)
         except Exception:  # noqa: BLE001 - o painel é ajuda; nunca desfaz a mudança
             registrar_erro("margens iguais no Automatico", traceback.format_exc())
 
@@ -2687,6 +2717,9 @@ class TelaConferir(QWidget):
         # acompanha o zoom da ferramenta de marcar (ela avisa "Zoom: N%")
         self.editor_selecao.installEventFilter(self)
         self.editor_selecao.aviso.connect(lambda *_: self._acertar_o_zoom_da_barra())
+        # bug de 04/11/2026 (print a-65): a roda muda o pincel e avisa; a barra
+        # de cima acompanha
+        self.editor_selecao.aviso.connect(lambda *_: self._acertar_a_barra_pelo_editor())
         # D-578/D-580/D-584 (decisão da gerente, 29/10/2026, sobre o caminho que
         # o verificador achou): abrir QUALQUER livro, o primeiro ou outro na
         # mesma sessão, começa com "marcações" apagado e a página limpa, mesmo
@@ -3641,12 +3674,21 @@ class TelaConferir(QWidget):
         if vigiado is self.area_imagem and evento.type() == QEvent.Resize:
             self._por_o_girar_no_canto()
         # D-612: a peça da ferramenta que mora nos pares passa a roda aos pares
+        # (menos a roda sozinha do Pincel/Varinha/Cor, que é da ferramenta)
         if (evento.type() == QEvent.Wheel and hasattr(self, "lado_a_lado")
-                and vigiado is not None and vigiado is self.lado_a_lado.ferramenta):
+                and vigiado is not None and vigiado is self.lado_a_lado.ferramenta
+                and not self._roda_da_peca_e_da_ferramenta(vigiado, evento)):
             try:
                 self._roda_na_peca_do_par(vigiado, evento)
             except Exception:  # noqa: BLE001 - a roda nunca fecha a janela
                 registrar_erro("roda na pagina nos pares", traceback.format_exc())
+            evento.accept()
+            return True
+        # D-612: no "antes / depois" (sem zoom) a roda em cima da peça não dá
+        # zoom nem troca de página, como sem ela; só a do Pincel/Varinha/Cor
+        if (evento.type() == QEvent.Wheel and hasattr(self, "vista_antes_depois")
+                and vigiado is not None and vigiado is self.vista_antes_depois.ferramenta
+                and not self._roda_da_peca_e_da_ferramenta(vigiado, evento)):
             evento.accept()
             return True
         # etapa 6: a roda do mouse na página (_roda_na_pagina)
@@ -3692,7 +3734,7 @@ class TelaConferir(QWidget):
         """Descarta as abas de um projeto anterior antes de montar as novas.
         D-612: a peça que estiver morando nos pares volta para casa antes (e
         sai junto com a página dela)."""
-        self._acertar_a_ferramenta_no_par(False)
+        self._acertar_a_casa_da_peca(None)
         while self.barra_abas.count():
             self.barra_abas.removeTab(0)
         for pilha in (self.area_imagem, self.barra_botoes):
@@ -3867,7 +3909,26 @@ class TelaConferir(QWidget):
                 self.indice_folha = self.projeto.paginas[destino].folha
                 self.atualizar()
             return
+        if self.trabalha_com_folhas:
+            # D-615: no Dividir com "Duas lado a lado", as setas andam pelas
+            # folhas NA ORDEM DO LIVRO (a da tira), que pode ter sido mudada
+            # arrastando. Livro sem ordem mudada: a folha seguinte, como antes.
+            ordem = self._folhas_na_ordem_do_livro()
+            if self.indice_folha in ordem:
+                agora = ordem.index(self.indice_folha)
+                self._ir_para(ordem[max(0, min(len(ordem) - 1, agora + passo))])
+                return
         self._ir_para(max(0, min(self._total() - 1, self.indice_atual + passo)))
+
+    def _folhas_na_ordem_do_livro(self) -> list[int]:
+        """D-615: as folhas na ordem em que aparecem no livro (a da primeira
+        página de cada uma). Sem ordem mudada: 0, 1, 2... Folha sem página
+        (não acontece) vai para o fim."""
+        assert self.projeto is not None
+        ordem = list(dict.fromkeys(p.folha for p in self.projeto.paginas
+                                   if 0 <= p.folha < len(self.projeto.folhas)))
+        ja = set(ordem)
+        return ordem + [f.indice for f in self.projeto.folhas if f.indice not in ja]
 
     # --- D-601 (02/11/2026): o Dividir com "Uma página" --------------------------
     # Samuel, testando o Dividir no Gradus Primus: "deveria então aparecer só
@@ -5326,6 +5387,59 @@ class TelaConferir(QWidget):
             return
         self._ir_para(indice)
 
+    # --- D-615 (04/11/2026): mudar folhas de lugar arrastando a miniatura ----------
+    # Samuel (prints a-61 e a-62): "eu quero poder mover folhas para onde eu quiser
+    # dentro do app, quero poder arrastar e mover folhas, caso eu precise resolver
+    # esse problema na mão" → "ok" a "arrastar uma miniatura da tira de baixo e soltar
+    # onde quiser; a folha (ou a página, se já dividida) muda de lugar no livro, e o
+    # Ctrl+Z desfaz". A ordem do livro é a da lista de páginas (core/
+    # ordem_das_paginas): a tela, o PDF e os cadernos a seguem. Uma ação do desfazer
+    # (historico_acoes.CAMPO_DA_ORDEM), pelo _registrar de sempre (ele limpa as
+    # prévias e remonta a tira, como o dividir). Depois, a tela fica na página que
+    # mudou de lugar. Arriscado: mudar a lista sem passar pelo _registrar.
+
+    def _posicao_do_quadro(self, quadro: int) -> int | None:
+        """A posição (em projeto.paginas) da página do quadro `quadro` da tira: no
+        Dividir, o passo das setas (D-601); nas outras ferramentas, a página."""
+        assert self.projeto is not None
+        if self.trabalha_com_folhas:
+            passos = self._passos_do_dividir()
+            return passos[quadro] if 0 <= quadro < len(passos) else None
+        return quadro if 0 <= quadro < len(self.projeto.paginas) else None
+
+    @protegido
+    def _mover_da_tira(self, origem: int, destino: int) -> None:
+        """A miniatura `origem` foi arrastada para o vão `destino` da tira (0 =
+        antes da primeira; o número de quadros = depois da última). Muda de lugar
+        a página (folha dividida) ou a folha inteira (não dividida), antes da
+        página do quadro `destino` (core/ordem_das_paginas.bloco e
+        campos_para_mover). Soltou no mesmo lugar: nada."""
+        from core import ordem_das_paginas as O
+
+        if not self._pronta() or self.projeto is None:
+            return
+        posicao = self._posicao_do_quadro(origem)
+        if posicao is None:
+            return
+        andam = O.bloco(self.projeto, posicao)
+        alvo = self._posicao_do_quadro(destino)
+        antes_de = None if alvo is None else O.bloco(self.projeto, alvo)[0]
+        campos = O.campos_para_mover(self.projeto, andam, antes_de)
+        if not campos:
+            return
+        movida = self.projeto.paginas[posicao]
+        folha = movida.folha
+        dividida = len(andam) == 1 and movida.metade != METADE_INTEIRA \
+            and self.projeto.folhas[folha].dividir
+        nome = (f"a página {posicao + 1}" if dividida else f"a folha {folha + 1}")
+        self.indice_folha = folha
+        self._registrar("mudar_de_lugar", "pagina", [], campos, f"Mudar de lugar {nome}")
+        nova = next((n for n, p in enumerate(self.projeto.paginas) if p is movida), None)
+        if nova is not None and nova != self.indice_pagina:
+            self.indice_pagina = nova
+            self.indice_folha = folha
+            self.atualizar()
+
     def _acertar_as_miniaturas_movidas(self) -> None:
         """Etapa 9b-2 (D-547: "Mover uma página → a miniatura [...] mostra
         igual ao PDF"): a miniatura da página movida/redimensionada ou posta
@@ -5405,6 +5519,10 @@ class TelaConferir(QWidget):
             self._acertar_as_miniaturas_movidas()      # etapa 9b-2 (D-547)
         if chave in esperadas or chave.startswith("folha:"):
             self._atualizar_previa()
+            # D-612: a imagem da peça nos pares chegou (a do editor de marcar
+            # decide a largura dela no par): acerta o lugar
+            if visivel is self.lado_a_lado and self.lado_a_lado.ferramenta is not None:
+                self.lado_a_lado.definir_ferramenta(self.lado_a_lado.ferramenta)
         elif (not self.trabalha_com_folhas
               and chave.startswith(f"{self.indice_pagina}:{self._dpi_atual}:")):
             # "Força do preto sozinha" (12/10/2026): a prévia que chegou é
@@ -7863,24 +7981,23 @@ class TelaConferir(QWidget):
         dividida e "Duas lado a lado" a folha inteira com a linha
         (_atualizar_previa, _metade_no_dividir). O "antes / depois" continua
         apagado no Dividir. Barato quando nada mudou.
-        D-612 (04/11/2026): nos pares, com uma ferramenta de FERRAMENTAS_NO_PAR
-        (hoje o Mover), a peça dela fica no lugar da página da vez
-        (_acertar_a_ferramenta_no_par); a vista não muda sozinha."""
+        D-612 (04/11/2026): nos pares e no "antes / depois", com uma ferramenta
+        de FERRAMENTAS_NO_PAR, a peça dela fica no lugar da página da vez (no
+        "antes / depois", só no lado do "depois"): _acertar_a_casa_da_peca. A
+        vista não muda sozinha."""
         if not hasattr(self, "vista_da_pagina"):
             return
         pronta = self._pronta() and self.projeto is not None
         no_dividir = pronta and self.trabalha_com_folhas
-        no_par = False
         if pronta and not no_dividir and self.comparando:
             self._mostrar_antes_depois()
             self.vista_da_pagina.setCurrentWidget(self.vista_antes_depois)
         elif pronta and not no_dividir and self.mostrar == DUAS:
             self._acertar_o_lado_a_lado()
             self.vista_da_pagina.setCurrentWidget(self.lado_a_lado)
-            no_par = self.aba_atual in FERRAMENTAS_NO_PAR
         else:
             self.vista_da_pagina.setCurrentWidget(self.area_imagem)
-        self._acertar_a_ferramenta_no_par(no_par)
+        self._acertar_a_casa_da_peca(self._onde_vai_a_peca())
         # os botões mostram a escolha (no Dividir também valem: D-601)
         self.botoes_mostrar[self.mostrar].setChecked(True)
         # D-611 (Samuel, 04/11/2026: "quando estiver duas lado a lado escolhido
@@ -7922,54 +8039,124 @@ class TelaConferir(QWidget):
     # livro) a peça volta para a casa dela, com o zoom que tinha.
     # Arriscado: deixar a peça fora de casa ao fechar o livro (_limpar_abas a
     # devolve antes de apagar as páginas da área de imagem).
+    #
+    # O mesmo no "antes / depois" (Samuel, 04/11/2026: "1- sim" e, explicado de
+    # novo, "Ok, pode ser assim o antes e depois": as ferramentas mexem na
+    # imagem do "depois", o "antes" fica parado, só para comparar): a peça fica
+    # por cima da página, só à esquerda da linha (VistaAntesDepois, "A
+    # FERRAMENTA NO DEPOIS"). O "antes / depois" não tem zoom: a roda em cima
+    # da peça ali não dá zoom nem troca de página (como antes, sem a peça).
 
     FOLGA_NO_PAR = 8      # pontos em volta da página nos pares (os cantos azuis inteiros)
 
-    def _acertar_a_ferramenta_no_par(self, no_par: bool) -> None:
-        """Põe a peça da ferramenta da vez no lugar da página da vez dentro
-        dos pares (no_par True e a ferramenta em FERRAMENTAS_NO_PAR) ou a
-        devolve para a casa dela. Página da vez fora do livro que vai sair
-        (tirada): os pares não a mostram, e a peça fica em casa (como antes)."""
+    def _onde_vai_a_peca(self):
+        """Onde a peça da ferramenta da vez deve morar agora: no "antes /
+        depois" (self.vista_antes_depois), nos pares (self.lado_a_lado) ou em
+        casa (None). Fora de casa só com o livro pronto, fora do Dividir, a
+        ferramenta em FERRAMENTAS_NO_PAR e, na de marcar, uma ferramenta que
+        marca (a Mão e o Zoom só olham: a vista de sempre)."""
+        from ui.widgets.editor_selecao import FERRAMENTAS_DE_MARCAR
+
+        if not (self._pronta() and self.projeto is not None) or self.trabalha_com_folhas:
+            return None
+        if self.aba_atual not in FERRAMENTAS_NO_PAR:
+            return None
+        if self.aba_atual == ABA_MARCAR:
+            editor = getattr(self, "editor_selecao", None)
+            if editor is None or editor.ferramenta not in FERRAMENTAS_DE_MARCAR:
+                return None
+        if self.comparando:
+            return self.vista_antes_depois
+        if self.mostrar == DUAS:
+            return self.lado_a_lado
+        return None
+
+    def _peca_da_aba(self, aba: str | None):
+        """A peça de mexer na página da ferramenta `aba`: o editor na de
+        marcar, o visualizador nas outras (None se não há)."""
+        if aba == ABA_MARCAR:
+            return getattr(self, "editor_selecao", None)
+        return self.visualizadores.get(aba) if aba is not None else None
+
+    def _acertar_a_casa_da_peca(self, destino) -> None:
+        """Põe a peça da ferramenta da vez em `destino` (os pares ou o "antes /
+        depois", _onde_vai_a_peca) ou, com None, a devolve para a casa dela.
+        Nos pares, página da vez fora do livro que vai sair (tirada): os pares
+        não a mostram, e a peça fica em casa (como antes)."""
         from PySide6.QtCore import QPoint
 
-        if not hasattr(self, "lado_a_lado"):
+        if not (hasattr(self, "lado_a_lado") and hasattr(self, "vista_antes_depois")):
             return
-        pares = self.lado_a_lado
-        peca = self.visualizadores.get(self.aba_atual) if no_par else None
-        if peca is not None and self.indice_pagina not in pares.indices:
+        peca = self._peca_da_aba(self.aba_atual) if destino is not None else None
+        if (peca is not None and destino is self.lado_a_lado
+                and self.indice_pagina not in self.lado_a_lado.indices):
             peca = None
-        atual = pares.ferramenta
-        if atual is not None and atual is not peca:
-            pares.tirar_ferramenta()
-            self._devolver_a_peca_do_par(atual)
+        fora_de_casa = set()
+        for vista in (self.lado_a_lado, self.vista_antes_depois):
+            atual = vista.ferramenta
+            if atual is None:
+                continue
+            fora_de_casa.add(atual)
+            if vista is not destino or atual is not peca:
+                vista.tirar_ferramenta()
+                if atual is not peca:
+                    self._devolver_a_peca_do_par(atual)
         if peca is None:
             return
-        if atual is not peca:
-            # o zoom da "Uma página" fica guardado; nos pares o zoom é o do par
+        if peca not in fora_de_casa:
+            # o zoom da "Uma página" fica guardado; fora de casa o zoom é o da
+            # vista (o par) ou nenhum ("antes / depois"). Direto nos campos (sem
+            # ajustar_a_tela: o editor de marcar avisaria "Zoom: 100%" na faixa)
             self._vista_da_peca_em_casa = (peca.zoom, QPoint(peca.deslocamento))
-            peca.folga_da_moldura = self.FOLGA_NO_PAR
-            peca.ajustar_a_tela()
-        pares.definir_ferramenta(peca)
+            if hasattr(peca, "folga_da_moldura"):   # só o Visualizador tem moldura
+                peca.folga_da_moldura = self.FOLGA_NO_PAR
+            self._por_a_vista_da_peca(peca, 1.0, QPoint(0, 0))
+        destino.definir_ferramenta(peca)
+
+    @staticmethod
+    def _por_a_vista_da_peca(peca, zoom: float, deslocamento) -> None:
+        """O zoom e o deslocamento da peça, sem aviso nem sinal (o mesmo que
+        Visualizador.aplicar_vista; o editor de marcar não tem essa função)."""
+        from PySide6.QtCore import QPoint
+
+        peca.zoom = float(zoom)
+        peca.deslocamento = QPoint(deslocamento)
+        peca.update()
 
     def _devolver_a_peca_do_par(self, peca) -> None:
         """A peça volta para a casa dela na área de imagem (o meio da linha
-        das setas escondidas, _area_de_visualizador), com a folga e o zoom de
-        antes. Peça que não é de nenhuma ferramenta (livro já trocado): sai."""
+        das setas escondidas: _area_de_visualizador, _montar_aba_marcar), com
+        a folga e o zoom de antes. Peça que não é de nenhuma ferramenta (livro
+        já trocado): sai."""
         from PySide6.QtCore import QPoint
 
         from ui.widgets.visualizador import PADDING_MOLDURA
 
-        aba = next((a for a, v in self.visualizadores.items() if v is peca), None)
+        aba = next((a for a in ORDEM_DAS_FERRAMENTAS if self._peca_da_aba(a) is peca), None)
         casa = self.paginas_de_imagem.get(aba) if aba is not None else None
         if casa is None or casa.layout() is None:
             peca.setParent(None)
             peca.deleteLater()
             return
+        peca.clearMask()                  # a do "antes / depois", se veio de lá
         casa.layout().insertWidget(1, peca, 1)
-        peca.folga_da_moldura = PADDING_MOLDURA
+        if hasattr(peca, "folga_da_moldura"):
+            peca.folga_da_moldura = PADDING_MOLDURA
         zoom, deslocamento = getattr(self, "_vista_da_peca_em_casa", (1.0, QPoint(0, 0)))
-        peca.aplicar_vista(zoom, deslocamento)
+        self._por_a_vista_da_peca(peca, zoom, deslocamento)
         peca.show()
+
+    def _roda_da_peca_e_da_ferramenta(self, peca, evento) -> bool:
+        """D-600 ("a roda sozinha continua mudando o pincel") nos pares: com o
+        Pincel, a Varinha ou a Cor, a roda sem Ctrl e sem Shift continua da
+        ferramenta (espessura, tolerância), como na "Uma página"."""
+        from ui.widgets.editor_selecao import FERRAMENTA_COR, FERRAMENTA_PINCEL, FERRAMENTA_VARINHA
+
+        if peca is not getattr(self, "editor_selecao", None):
+            return False
+        if evento.modifiers() & (Qt.ControlModifier | Qt.ShiftModifier):
+            return False
+        return peca.ferramenta in (FERRAMENTA_PINCEL, FERRAMENTA_VARINHA, FERRAMENTA_COR)
 
     def _roda_na_peca_do_par(self, peca, evento) -> None:
         """A roda do mouse em cima da peça da ferramenta nos pares vai para os
@@ -8781,11 +8968,12 @@ class TelaConferir(QWidget):
         if self.acoes.feitas and self._acoes_esperam_pelas_marcacoes(
                 [self.acoes.feitas[-1]], para_tras=True):
             return                       # pendencia da D2 (_espera_pelas_marcacoes)
-        if self.acoes.desfazer(self.projeto) is not None:
+        acao = self.acoes.desfazer(self.projeto)
+        if acao is not None:
             if self.previas is not None:
                 self.previas.invalidar()
             self.lista_de_paginas_mudou()      # etapa 3: o Automatico muda a lista
-            self._reacertar_as_opcoes()
+            self._reacertar_as_opcoes(acao)
 
     @protegido
     def refazer(self) -> None:
@@ -8799,7 +8987,7 @@ class TelaConferir(QWidget):
             if self.previas is not None:
                 self.previas.invalidar()
             self.lista_de_paginas_mudou()      # etapa 3: o Automatico muda a lista
-            self._reacertar_as_opcoes()
+            self._reacertar_as_opcoes(acao)
             self._medir_o_em_branco_ao_refazer(acao)
 
     def _medir_o_em_branco_ao_refazer(self, acao) -> None:
@@ -8831,13 +9019,27 @@ class TelaConferir(QWidget):
         except Exception:  # noqa: BLE001 - o aviso é ajuda; nunca derruba o refazer
             registrar_erro("medir o em branco ao refazer", traceback.format_exc())
 
-    def _reacertar_as_opcoes(self) -> None:
+    def _reacertar_as_opcoes(self, acao=None) -> None:
         """Depois de desfazer ou refazer, a tela "O que fazer" deste mesmo
         projeto volta a mostrar o que ele tem agora (parecer do verificador,
         30/09, r15: desfeito o "Sim" da pergunta do fundo, ela continuava em
         "Tirar o fundo"). O menu Editar desfaz em qualquer tela, inclusive com
         "O que fazer" a vista; escondida, ela se reacerta sozinha ao aparecer
-        (ui/tela_opcoes.showEvent). Nunca levanta excecao."""
+        (ui/tela_opcoes.showEvent). Nunca levanta excecao.
+
+        `acao`: a ação desfeita ou refeita. D-590 (defeito de 04/11/2026,
+        print a-67: "depois de usar o dividir e voltar ao automatico ele está
+        marcado de novo"): se ela NÃO mexe no Dividir do livro
+        (ui/automatico.mexe_no_dividir_do_livro), a caixinha "1 Dividir folhas ao meio"
+        que a pessoa desmarcou continua desmarcada (EstadoDoAutomatico.
+        do_projeto, manter_o_dividir_desmarcado). Antes, qualquer Ctrl+Z ou
+        Ctrl+Y (do Dividir, do "juntar todas", da linha, do motor, de
+        qualquer ferramenta) relia o livro, que ainda tinha o Dividir ligado,
+        e a caixinha voltava marcada. O Ctrl+Z do "Rodar" que mudou o Dividir
+        do livro continua mostrando o livro (como antes).
+        Arriscado: manter a caixinha também quando a ação muda o Dividir do
+        livro (o desfazer do "Rodar" deixaria a caixinha e o livro diferentes
+        sem a pessoa ter clicado)."""
         # Etapa 3 da obra: a tela "O que fazer" saiu do caminho; o que mostra
         # as escolhas do livro e o painel Automatico, que a atualizacao
         # (atualizar -> _atualizar_paineis) ja acerta. Fica so o aviso do
@@ -8848,7 +9050,11 @@ class TelaConferir(QWidget):
             # etapas ligadas, o filtro do livro...): como a tela "O que fazer"
             # acompanhava o desfazer (verificador, 30/09, r15)
             if self.projeto is not None:
-                self.paineis.automatico.estado.do_projeto(self.projeto)
+                from ui.automatico import mexe_no_dividir_do_livro
+
+                self.paineis.automatico.estado.do_projeto(
+                    self.projeto,
+                    manter_o_dividir_desmarcado=not mexe_no_dividir_do_livro(acao))
         except Exception:  # noqa: BLE001 - reacertar a tela nunca derruba o desfazer
             registrar_erro("reacertar as opcoes", traceback.format_exc())
 

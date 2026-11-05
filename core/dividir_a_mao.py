@@ -259,14 +259,38 @@ def campos_para_juntar(projeto, indice_folha: int) -> dict[str, Any]:
     """O que "não dividir esta" muda, para UMA ação do desfazer: as páginas da
     folha viram uma só (pagina_inteira_das) e as duas ficam guardadas na
     folha (ConfigFolha.metades_guardadas) para o "dividir esta" devolver.
-    Folha com uma página só: nada muda na lista (só fica conferida)."""
-    pags = paginas_da_folha(projeto, indice_folha)
+    Folha com uma página só: nada muda na lista (só fica conferida).
+
+    D-615 (04/11/2026, mudar folhas de lugar arrastando): as duas páginas vão
+    para a guarda e para a página inteira na ordem esquerda, direita (antes: na
+    ordem do livro, que era sempre essa; com a direita arrastada para antes da
+    esquerda, o "dividir esta" trocaria as duas). A página inteira fica no
+    lugar da PRIMEIRA página da folha no livro (trocar_as_paginas_da_folha); se
+    as páginas da folha estavam separadas, a ação leva também a ordem
+    (CAMPO_DA_ORDEM, depois das páginas), para o Ctrl+Z devolver cada uma ao
+    seu lugar. Folha com as páginas seguidas (todo projeto sem ordem mudada): a
+    ação sai igual a antes."""
+    from core import ordem_das_paginas as O
+
+    pags = _esquerda_primeiro(paginas_da_folha(projeto, indice_folha))
     campos: dict[str, Any] = {"dividir": False, "revisada": True}
     if len(pags) < 2:
         return campos
     campos["metades_guardadas"] = em_dicionarios(pags[:2])
-    campos[chave_das_paginas(indice_folha)] = em_dicionarios([pagina_inteira_das(pags)])
+    inteira = em_dicionarios([pagina_inteira_das(pags)])
+    campos[chave_das_paginas(indice_folha)] = inteira
+    if O.folha_espalhada(projeto, indice_folha):
+        campos[O.CAMPO_DA_ORDEM] = O.ordem_depois_de_trocar(
+            projeto, {indice_folha: [[indice_folha, METADE_INTEIRA]]})
     return campos
+
+
+def _esquerda_primeiro(paginas: list[ConfigPagina]) -> list[ConfigPagina]:
+    """As páginas da folha na ordem esquerda, direita (a inteira e outras no
+    fim, na ordem do livro). Na ordem de sempre do livro, a mesma lista (D-615:
+    só muda quando a pessoa arrastou a direita para antes da esquerda)."""
+    peso = {METADE_ESQUERDA: 0, METADE_DIREITA: 1}
+    return sorted(paginas, key=lambda p: peso.get(p.metade, 2))
 
 
 def campos_para_juntar_todas(projeto) -> tuple[list[int], dict[str, Any]]:
@@ -287,12 +311,20 @@ def campos_para_juntar_todas(projeto) -> tuple[list[int], dict[str, Any]]:
                if len(paginas_da_folha(projeto, f.indice)) >= 2]
     if not indices:
         return [], {}
+    from core import ordem_das_paginas as O
+
     campos: dict[str, Any] = {"dividir": False, "metades_guardadas": {}}
     for indice in indices:
         uma = campos_para_juntar(projeto, indice)
         campos["metades_guardadas"][str(indice)] = uma["metades_guardadas"]
         chave = chave_das_paginas(indice)
         campos[chave] = uma[chave]
+    # D-615: alguma folha com as páginas separadas (uma foi mudada de lugar): a
+    # ordem vai junto, no fim, para o Ctrl+Z devolver cada página ao seu lugar
+    # (ver campos_para_juntar). Sem nenhuma: a ação sai igual a antes.
+    if any(O.folha_espalhada(projeto, i) for i in indices):
+        campos[O.CAMPO_DA_ORDEM] = O.ordem_depois_de_trocar(
+            projeto, {i: [[i, METADE_INTEIRA]] for i in indices})
     return indices, campos
 
 
@@ -368,9 +400,13 @@ def folhas_juntadas_a_mao(projeto, feitas, contar_o_juntar_todas: bool | None = 
 
 
 def muda_a_lista(campos: dict) -> bool:
-    """A ação troca páginas de alguma folha (a tela redesenha a tira e as
-    prévias de todas, porque os números das páginas andam)?"""
-    return any(str(c).startswith(PREFIXO_PAGINAS_DA_FOLHA) for c in campos)
+    """A ação troca páginas de alguma folha, ou muda a ordem delas (D-615,
+    historico_acoes.CAMPO_DA_ORDEM)? A tela redesenha a tira e as prévias de
+    todas, porque os números das páginas andam."""
+    from historico_acoes import CAMPO_DA_ORDEM
+
+    return any(str(c).startswith(PREFIXO_PAGINAS_DA_FOLHA) or c == CAMPO_DA_ORDEM
+               for c in campos)
 
 
 # --- D-495: a faixa da tampa do scanner ---------------------------------------

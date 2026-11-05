@@ -1,0 +1,192 @@
+<!doctype html>
+<html lang="pt-BR">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Entrega 1 - D-615</title>
+<style>
+:root { color-scheme: light dark; }
+* { box-sizing: border-box; }
+body {
+  font: 17px/1.65 "Segoe UI", system-ui, sans-serif;
+  max-width: 46rem; margin: 0 auto; padding: 2.5rem 1.5rem 6rem;
+  color: #1c1c1e; background: #fdfdfc;
+}
+h1 { font-size: 2rem; line-height: 1.2; margin: 0 0 .3em; letter-spacing: -.02em; }
+h2 { font-size: 1.35rem; margin: 2.4em 0 .6em; padding-top: .8em;
+     border-top: 1px solid #e6e4e0; letter-spacing: -.01em; }
+h3 { font-size: 1.1rem; margin: 1.8em 0 .4em; }
+h1 + p, h2 + p { margin-top: .4em; }
+p, li { margin: 0 0 .9em; }
+ul, ol { padding-left: 1.3em; }
+strong { font-weight: 640; }
+code {
+  font: .88em ui-monospace, "Cascadia Code", Consolas, monospace;
+  background: #f1efec; padding: .12em .35em; border-radius: 4px;
+}
+pre {
+  background: #f1efec; padding: 1em 1.1em; border-radius: 8px;
+  overflow-x: auto; line-height: 1.5;
+}
+pre code { background: none; padding: 0; }
+blockquote {
+  margin: 1.2em 0; padding: .1em 0 .1em 1.1em;
+  border-left: 3px solid #c9c5be; color: #55524d;
+}
+table {
+  border-collapse: collapse; width: 100%; margin: 1.2em 0;
+  font-size: .95rem; display: block; overflow-x: auto;
+}
+th, td { padding: .5em .8em; text-align: left; border-bottom: 1px solid #e6e4e0; }
+th { font-weight: 620; background: #f7f5f2; white-space: nowrap; }
+tr:last-child td { border-bottom: none; }
+img { max-width: 100%; height: auto; border-radius: 6px; margin: 1em 0;
+      border: 1px solid #e6e4e0; }
+hr { border: none; border-top: 1px solid #e6e4e0; margin: 2.5em 0; }
+.rodape { margin-top: 4em; padding-top: 1.2em; border-top: 1px solid #e6e4e0;
+          font-size: .85rem; color: #86827c; }
+@media (prefers-color-scheme: dark) {
+  body { color: #e8e6e3; background: #1a1917; }
+  h2 { border-top-color: #35332f; }
+  code, pre, th { background: #262421; }
+  th, td { border-bottom-color: #35332f; }
+  blockquote { border-left-color: #4a4741; color: #b0aca6; }
+  img { border-color: #35332f; }
+  .rodape { border-top-color: #35332f; color: #7d7973; }
+}
+@media print {
+  body { max-width: none; padding: 0; color: #000; background: #fff; }
+  h2 { page-break-after: avoid; }
+  table, img { page-break-inside: avoid; }
+}
+</style>
+</head>
+<body>
+<h1>Entrega 1 — D-615: mudar folhas de lugar arrastando a miniatura</h1>
+<p>Ramo <code>ordem-folhas-2026-11-04</code> (saiu de <code>obra-2026-10-26</code>, <code>d66a588b</code>). PRONTO PARA CONFERIR (teste de
+máquina e janela de verdade; o "está bom" é do Samuel).</p>
+<h2>O que o Samuel pediu</h2>
+<p>"eu quero poder mover folhas para onde eu quiser dentro do app, quero poder arrastar e mover folhas, caso eu
+precise resolver esse problema na mão" → proposta (arrastar uma miniatura da tira e soltar onde quiser) → "ok".</p>
+<h2>O que mudou, em português simples</h2>
+<ul>
+<li>Na tira de baixo, aperte uma miniatura e arraste. Ela fica apagadinha e uma <strong>linha azul</strong> aparece no vão
+  onde ela vai cair. Soltou, a página muda de lugar no livro.</li>
+<li>Folha <strong>não dividida</strong> anda inteira. Folha <strong>dividida</strong>: anda só a página arrastada.</li>
+<li>Perto da beirada da tira, ela <strong>rola sozinha</strong> (mais depressa quanto mais tempo parado ali), para levar a
+  página longe. Soltar bem acima ou abaixo da tira não muda nada.</li>
+<li>O <strong>clique</strong> continua igual (vai para a página na hora). Soltar no mesmo lugar não muda nada.</li>
+<li><strong>Ctrl+Z</strong> desfaz, <strong>Ctrl+Y</strong> refaz; o Histórico mostra "Mudar de lugar a página N".</li>
+<li>A nova ordem vale na tela (tira, setas, "página N de M"), no <strong>PDF de saída</strong> e nos <strong>cadernos</strong> (etapa 7 e
+  "Montar para imprimir", que monta a partir do PDF de saída).</li>
+<li><strong>Fechar e abrir</strong> mantém a ordem (e o Ctrl+Z dela).</li>
+<li>Funciona também na ferramenta Dividir e com "Duas lado a lado" (tira em pares, D-611).</li>
+</ul>
+<h2>Como cumpri cada decisão</h2>
+<table>
+<thead>
+<tr>
+<th>Decisão</th>
+<th>Como</th>
+<th>Prova</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>D-615 arrastar e soltar</td>
+<td>tira: apertar, andar, soltar (sem o arrastar do Windows)</td>
+<td><code>test_d615_arrastar_a_miniatura...</code>, prints e1-03 a e1-06</td>
+</tr>
+<tr>
+<td>D-615 folha ou página</td>
+<td><code>core/ordem_das_paginas.bloco</code></td>
+<td><code>test_d615_pagina_de_folha_dividida...</code>, <code>test_d615_folha_nao_dividida...</code></td>
+</tr>
+<tr>
+<td>D-615 tela, PDF, cadernos</td>
+<td>a ordem é a da lista de páginas</td>
+<td><code>test_d615_a_nova_ordem_vale_no_pdf</code>, <code>..._nos_cadernos</code>, print e1-pdf-e1-pagina-1</td>
+</tr>
+<tr>
+<td>D-615 Ctrl+Z / Ctrl+Y</td>
+<td>ação <code>livro.ordem_das_paginas</code></td>
+<td>testes + prints e1-07, e1-08</td>
+</tr>
+<tr>
+<td>D-615 reabrir</td>
+<td>lista gravada no projeto.json</td>
+<td><code>test_d615_fechar_e_abrir_mantem_a_ordem</code>, print e1-14</td>
+</tr>
+<tr>
+<td>Projeto antigo igual</td>
+<td>nada novo é gravado; sem ordem mudada nada muda</td>
+<td><code>test_d615_projeto_antigo_abre_como_hoje</code></td>
+</tr>
+<tr>
+<td>D-611 pares</td>
+<td>arrastar com "Duas lado a lado"</td>
+<td>prints e1-10 a e1-12</td>
+</tr>
+<tr>
+<td>D-601 Dividir</td>
+<td>tira do Dividir também arrasta; setas em "Duas lado a lado" seguem a ordem</td>
+<td><code>test_d615_no_dividir...</code>, print e1-13</td>
+</tr>
+<tr>
+<td>Livro grande</td>
+<td>conta, ação e desfazer em 1010 páginas &lt; 0,5 s; a tira só troca os quadros de lugar</td>
+<td><code>test_d615_livro_de_1010_paginas...</code></td>
+</tr>
+<tr>
+<td>D-605</td>
+<td>testes antigos dos arquivos tocados passaram sem mudança</td>
+<td>lista abaixo</td>
+</tr>
+</tbody>
+</table>
+<h2>Decisões técnicas (minhas)</h2>
+<ul>
+<li>A ordem do livro é a ordem da lista de páginas, que já ia para o <code>projeto.json</code>. Nenhum campo novo no projeto.
+  O desfazer ganhou o campo <code>livro.ordem_das_paginas</code> (a lista folha/metade de cada página, ~20 KB numa ação
+  de um livro de 1010 páginas).</li>
+<li>Arrastar à mão (não o arrastar do Windows): funciona igual com o mouse e com o piloto da janela.</li>
+<li>"não dividir esta" numa folha com as páginas separadas: a folha inteira fica no lugar da <strong>primeira</strong> página
+  dela no livro; o Ctrl+Z devolve cada página ao lugar em que estava. As duas metades guardadas ficam sempre
+  na ordem esquerda, direita (antes era a ordem do livro, que era sempre essa).</li>
+<li>Depois de mudar de lugar, as prévias são refeitas (como depois de dividir uma folha).</li>
+<li>Achado na janela de verdade e consertado: passar um pouco da beirada esquerda cancelava; agora vale como a
+  beirada (<code>test_d615_passar_da_beirada...</code>).</li>
+</ul>
+<h2>Testes no PC (um arquivo por vez)</h2>
+<p>Novo: <code>tests/test_decisoes_ordem_folhas.py</code> — 12 passaram; no código de antes (<code>d66a588b</code>) os 11 primeiros
+falharam (o 12º foi escrito depois do achado).</p>
+<p>Antigos, sem mudança: test_decisoes_tira_em_pares 4, test_decisoes_tira_pares_juntas 3, test_miniaturas_novas 5,
+test_decisoes_dividir 21, test_decisoes_dividir_metade 6, test_decisoes_dividir_arrastar 16,
+test_decisoes_dividir_linha 13, test_decisoes_dividir_aviso 11, test_dividir_na_tela 9, test_dividir_no_programa 19,
+test_dividir_ajustes_03_11 9, test_dividir_desmarcada_caixinha 3, test_automatico_pular_depois_de_dividir 4,
+test_caderno_segue_as_etapas 11, test_decisoes_montar_cadernos 13, test_cadernos 28,
+test_historico_depois_de_reabrir 11, test_recomeco_limpa_o_historico 13, test_projetos 24, test_decisoes_9b1 25,
+test_decisoes_avisos 22, test_girar_cartoes_e_previas 23, test_decisoes 26, test_salva_sozinho 11,
+test_trabalho_nao_se_perde 82. Todos passaram. Nenhum teste antigo foi mudado.</p>
+<h2>Janela de verdade (Gradus Primus, cópia no scratchpad)</h2>
+<p><code>relatorios/ordem-folhas/piloto.py e1</code>, anotações em <code>anotacoes-e1.txt</code>, prints em <code>prints/</code>:
+e1-02 clique na miniatura 3 (vai à página 3, nada muda) · e1-03 arrastando a capa (linha azul antes da 1) ·
+e1-04 capa na frente · e1-05 arrastando a contracapa até o fim (a tira rolou sozinha) · e1-06 contracapa na
+página 140 · e1-07 Ctrl+Z · e1-08 Ctrl+Y · e1-09 seta depois da capa (página 2 = folha 2) · e1-10/11/12 pares ·
+e1-13 Dividir (a tira do Dividir já com a capa na frente) · e1-14 reaberto (a ordem ficou) ·
+e1-pdf-e1-pagina-1 (o PDF de saída começa pela capa) e -pagina-140 (a contracapa).</p>
+<h2>Ressalvas</h2>
+<ul>
+<li>Home/End no Dividir em "Duas lado a lado" continuam indo à folha 1 e à última pelo número (não mexi).</li>
+<li>Uma página por vez: arrastar várias de uma vez não existe (não foi pedido).</li>
+</ul>
+<h2>Perguntas para o Samuel</h2>
+<ol>
+<li>(opcional, já tem jeito padrão) Se uma página de uma folha dividida foi levada para longe da irmã e depois a
+   folha é juntada ("não dividir esta"), a folha inteira fica no lugar da primeira das duas. Ex.: com a capa
+   na página 1 e a contracapa na 140 (print e1-06), juntar a folha 1 põe a folha inteira na página 1. Pode ser
+   assim? Sugestão: sim.</li>
+</ol>
+<p class="rodape">Editor de Impressão &middot; gerado em 04/11/2026 às 14:18</p>
+</body>
+</html>

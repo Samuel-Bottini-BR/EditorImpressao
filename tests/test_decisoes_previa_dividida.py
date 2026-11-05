@@ -60,9 +60,10 @@ def test_d614_com_dividir_o_depois_e_uma_pagina_e_as_setas_andam_pelas_paginas(j
     """Folha dupla ainda inteira, "Dividir" marcado: o depois é UMA página (a metade da
     esquerda, cortada na linha, igual ao "Rodar" de verdade, ponto por ponto); ">" mostra a
     outra metade (a da direita, sem conta nova); ">" de novo vai para a folha seguinte; "<"
-    volta para a metade da direita. O contador não muda nas duas metades ("página 1 de 3"),
-    como o rodapé da área de trabalho no Dividir (D-601). O antes continua a folha inteira
-    crua (D-577)."""
+    volta para a metade da direita. O contador é o da página como o livro vai sair ("página 1
+    de 4", "2 de 4", "3 de 4"; D-617, 04/11: "com o dividir marcado o numero de pagina tem que
+    corresponder com a pagina que está sendo passada"; até então não mudava nas duas metades).
+    O antes continua a folha inteira crua (D-577)."""
     grande = _abrir(janela, app, tmp_path, pagina=0)
     painel = grande.antes_e_depois
     crua = _folha_crua(janela, 0)
@@ -73,7 +74,7 @@ def test_d614_com_dividir_o_depois_e_uma_pagina_e_as_setas_andam_pelas_paginas(j
     assert esquerda.shape[1] < crua.shape[1] * 0.6, (
         f"o depois não é uma página só: {esquerda.shape} (folha {crua.shape})")
     assert painel.visor._crus[1] is esquerda, "a vista não mostra a metade"
-    assert painel.contador.text() == "página 1 de 3"
+    assert painel.contador.text() == "página 1 de 4"  # D-617, 04/11: "com o dividir marcado o numero de pagina tem que corresponder com a pagina que está sendo passada"
     assert painel.botao_proxima.isEnabled() and not painel.botao_anterior.isEnabled()
     painel.botao_proxima.click()
     assert painel._indice == 0, "o > pulou a outra metade da folha"
@@ -81,12 +82,12 @@ def test_d614_com_dividir_o_depois_e_uma_pagina_e_as_setas_andam_pelas_paginas(j
     antes2, direita = _imagens(painel)
     assert np.array_equal(antes2, crua)
     assert direita.shape[1] < crua.shape[1] * 0.6 and not np.array_equal(direita, esquerda)
-    assert painel.contador.text() == "página 1 de 3"
+    assert painel.contador.text() == "página 2 de 4"  # D-617, 04/11: "com o dividir marcado o numero de pagina tem que corresponder com a pagina que está sendo passada"
     assert painel.botao_anterior.isEnabled()
     painel.botao_proxima.click()
     assert painel._indice == 1, "o > não foi para a folha seguinte"
     _esperar(app, painel)
-    assert painel.contador.text() == "página 2 de 3"
+    assert painel.contador.text() == "página 3 de 4"  # D-617, 04/11: "com o dividir marcado o numero de pagina tem que corresponder com a pagina que está sendo passada"
     painel.botao_anterior.click()
     assert painel._indice == 0
     _esperar(app, painel)
@@ -134,7 +135,7 @@ def test_d614_tela_cheia_e_comparar_mostram_a_mesma_metade(janela, app, tmp_path
     tela = painel.tela_cheia
     _, esquerda = _imagens(painel)
     assert tela.visor._crus[1] is esquerda, "a tela cheia não mostra a metade"
-    assert tela.contador.text() == "página 1 de 3"
+    assert tela.contador.text() == "página 1 de 4"  # D-617, 04/11: "com o dividir marcado o numero de pagina tem que corresponder com a pagina que está sendo passada"
     tela.botao_comparar.click()
     _esperar(app, painel)
     _assentar(app)

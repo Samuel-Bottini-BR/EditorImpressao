@@ -224,7 +224,8 @@ def de_fabrica_da_pagina() -> dict[str, Any]:
 # "O que fazer" (ui/tela_opcoes._mudou), agora dentro da etapa a que pertence.
 # D-594: o "Limpar a folha" tem tambem os CAMPOS_DA_PAGINA (gravados nas paginas).
 OPCOES = {
-    DIVIDIR: ("dividir_como",),
+    # D-616 (04/11/2026): "A 1ª folha é a capa aberta" (Projeto.capa_aberta)
+    DIVIDIR: ("dividir_como", "capa_aberta"),
     ENDIREITAR: ("endireitar_como", "retangulo_do_corte"),
     CORTAR: ("cortar_sobra", "cortar_pelo_conteudo", "borda_preta", "borda_preta_ate",
              "borda_preta_fazer"),
@@ -931,6 +932,7 @@ def _dividir(projeto, pedido: Pedido, medidas, pular: _Puladas, g: _Gravador) ->
 
     if pedido.no_livro_todo:
         g.no_livro("dividir_folhas", True)
+    feitas: set[int] = set()
     for folha in projeto.folhas:
         medida = medidas.get(folha.indice)
         if medida is None:
@@ -938,6 +940,7 @@ def _dividir(projeto, pedido: Pedido, medidas, pular: _Puladas, g: _Gravador) ->
         pags = [p for p in projeto.paginas if p.folha == folha.indice]
         if any(p in pular for p in pags):     # pela pagina, nao pelo numero (_Puladas)
             continue
+        feitas.add(folha.indice)
         g.na_folha(folha, "posicao_corte", round(float(medida.posicao_corte), 4))
         g.na_folha(folha, "confianca_corte", float(medida.confianca_corte))
         g.na_folha(folha, "e_paisagem", bool(medida.e_paisagem))
@@ -970,6 +973,38 @@ def _dividir(projeto, pedido: Pedido, medidas, pular: _Puladas, g: _Gravador) ->
             g.na_folha(folha, "dividir", False)
         if medida.sobra is not None or getattr(folha, "sobra", None) is not None:
             g.na_folha(folha, "sobra", medida.sobra)
+    _capa_aberta(projeto, feitas, g)
+
+
+# --- D-616: a 1a folha e a capa aberta ------------------------------------------
+# Samuel, 04/11/2026 (print a-61, a folha 1 do caderno com a contracapa na frente e a
+# capa atras: "essa capa está no lugar certo?") -> "ok" a: caixinha "A 1ª folha é a
+# capa aberta" na etapa Dividir (desmarcada de fabrica; vale por livro); marcada, ao
+# dividir, a metade da direita da 1a folha (a capa) vira a pagina 1 e a da esquerda
+# (a contracapa) vai para a ultima pagina. O mecanismo e o da D-615 (a ordem da lista
+# de paginas, core/ordem_das_paginas.capa_na_frente), dentro da acao do Automatico
+# (o Ctrl+Z devolve). A 1a folha = a folha 1 do PDF. So quando o Dividir rodou nela
+# agora (com medida e nao pulada pela D-004) e ela ficou dividida. A previa (D-614) e
+# o caderno da etapa 7 (D-603) mostram o mesmo antes do "Rodar": paginas_do_pdf_depois
+# (sem copiar o projeto) e depois_da_pagina (aplicar numa copia). Desmarcada: nada
+# (D-589), nem desfaz uma capa posta antes (o Ctrl+Z ou o arrastar fazem isso).
+# Arriscado: mudar a regra aqui sem mudar a de paginas_do_pdf_depois.
+
+FOLHA_DA_CAPA = 0
+
+
+def _capa_aberta(projeto, feitas: set[int], g: _Gravador) -> None:
+    """D-616 (ver acima): com Projeto.capa_aberta, a 1a folha dividida agora vai com a
+    capa na frente e a contracapa no fim. A lista muda: o Gravador guarda as listas de
+    antes (o Ctrl+Z devolve)."""
+    from core import ordem_das_paginas as O
+
+    if not getattr(projeto, "capa_aberta", False) or FOLHA_DA_CAPA not in feitas:
+        return
+    if O.ordem_com_a_capa_na_frente(projeto, FOLHA_DA_CAPA) is None:
+        return                                    # ja esta assim (ou a folha nao dividiu)
+    g.guardar_a_estrutura()
+    O.capa_na_frente(projeto, FOLHA_DA_CAPA)
 
 
 def _ligar_na_pagina(projeto, pedido: Pedido, etapa: str, escopo: list, pular: _Puladas,
@@ -1380,7 +1415,9 @@ _TRANCA_DAS_MEDIDAS = threading.Lock()
 _FORA_DA_CHAVE_DA_MEDIDA = frozenset(
     OPCOES[LIMPAR] + OPCOES[GRAVURAS] + OPCOES[MARGENS] + OPCOES[CADERNOS]
     + (CAMPO_DO_LIVRO[LIMPAR], CAMPO_DO_LIVRO[MARGENS], CAMPO_DO_LIVRO[CADERNOS],
-       "detectar_regioes", "folhas", "paginas"))
+       "detectar_regioes", "folhas", "paginas",
+       # D-616: a capa aberta so muda a ORDEM das paginas, nunca a medida de uma folha
+       "capa_aberta"))
 
 
 def _margens_ligadas_depois(copia, pedido: Pedido) -> bool:
@@ -1675,6 +1712,12 @@ def paginas_do_pdf_depois(projeto, pedido: Pedido) -> list[tuple[int, int, str]]
             novas.append((p.indice, f, METADE_DIREITA, p.apagada))
         else:
             novas.append((p.indice, f, p.metade, p.apagada))
+    # D-616: a capa aberta, a mesma regra do _capa_aberta do "Rodar"
+    capa = (pedido.opcoes or {}).get("capa_aberta", getattr(projeto, "capa_aberta", False))
+    if capa and FOLHA_DA_CAPA in divide and dividida.get(FOLHA_DA_CAPA, False):
+        from core.ordem_das_paginas import capa_na_frente_na_lista
+
+        novas = capa_na_frente_na_lista(novas, FOLHA_DA_CAPA)
     # Projeto.paginas_ativas, na lista de depois
     lista, ja_sairam = [], set()
     for origem, f, metade, apagada in novas:

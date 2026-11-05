@@ -116,7 +116,7 @@ def abrir():
     import projetos
     pasta = preparar_copia()
     j = base.nova_janela(LARGURA, ALTURA)
-    if FASE == "novo":
+    if FASE in ("novo", "dividir"):
         # o Gradus como no print a-63: 70 páginas, folhas ainda inteiras (a cópia do projeto de
         # teste já está dividida, 140); a cópia do PDF aberta como livro novo, sem o projeto
         shutil.rmtree(pasta)                 # só a cópia, na pasta de trabalho deste script
@@ -241,9 +241,76 @@ def fase_novo(j, grande):
     setas(grande, "dividir-teclado")
 
 
+def fase_dividir(j, grande):
+    """D-617, parte 2: com o Dividir marcado, o número é o da página como o livro vai sair (o
+    Gradus inteiro, 70 folhas, sai com 140 páginas); o tela cheia diz o mesmo; a capa aberta
+    marcada faz da capa a "página 1"; sem o Dividir, como sempre."""
+    from PySide6.QtCore import Qt
+    from core import automatico as A
+    painel = grande.antes_e_depois
+    anotar("sem-dividir", estado(grande))
+    base.conferir(painel.contador.text() == "página 30 de 70", "sem o Dividir: 'página 30 de 70', como sempre")
+    p(grande, "sem-dividir-30-de-70")
+    item = grande.lista.item_da_etapa(A.DIVIDIR)
+    item.setCheckState(Qt.Checked)
+    esperar_previa(painel)
+    anotar("marcou-dividir", estado(grande))
+    base.conferir(painel.contador.text() == "página 59 de 140" and painel._metade == "esquerda",
+                  "marcar o Dividir na 30: a metade da esquerda é a 'página 59 de 140'")
+    escrever(grande, "135", "dividir-escreveu-135")
+    base.conferir((painel._indice, painel._metade) == (67, "esquerda") and painel.contador.text() == "página 135 de 140",
+                  "135 + Enter: a metade da esquerda da folha 68, 'página 135 de 140'")
+    p(grande, "folha-68-esquerda-135-de-140")
+    base.clique(grande, painel.botao_proxima)
+    esperar_previa(painel)
+    anotar("dividir-proxima", estado(grande))
+    base.conferir((painel._indice, painel._metade) == (67, "direita") and painel.contador.text() == "página 136 de 140",
+                  "> : a metade da direita da folha 68, 'página 136 de 140'")
+    p(grande, "folha-68-direita-136-de-140")
+    base.clique(grande, painel.botao_tela_cheia)
+    base.esperar(2.0)
+    tela = painel.tela_cheia
+    anotar("tela-cheia", tela.contador.text())
+    base.conferir(tela is not None and tela.contador.text() == "página 136 de 140", "o tela cheia diz 'página 136 de 140'")
+    tela.showNormal(); tela.resize(1400, 780); base.esperar(1.5)
+    # o grab do Qt (o PrintWindow da janela maximizada fora da tela corta a barra de baixo)
+    N[0] += 1
+    tela.grab().save(str(AQUI / "prints" / f"{FASE}-{N[0]:02d}-tela-cheia-136-de-140.png"))
+    tela.done(0)
+    base.esperar(0.8)
+    escrever(grande, "45", "dividir-escreveu-45")
+    base.conferir((painel._indice, painel._metade) == (22, "esquerda") and painel.contador.text() == "página 45 de 140",
+                  "45 + Enter: a metade da esquerda da folha 23, 'página 45 de 140'")
+    p(grande, "dividir-45-de-140")
+    # D-616: a capa aberta marcada, a capa (metade da direita da 1ª folha) é a página 1
+    grande.mostrar_etapa(A.DIVIDIR)
+    base.esperar(0.5)
+    caixa = grande.controles["capa_aberta"]
+    from PySide6.QtCore import QPoint
+    no_quadrado = QPoint(9, caixa.height() // 2)        # o quadradinho (o meio pode ser vão)
+    base.clique(grande, caixa, no_quadrado)
+    esperar_previa(painel)
+    anotar("capa-aberta-marcada", {"caixa": caixa.isChecked(), **estado(grande)})
+    base.conferir(caixa.isChecked(), "a caixinha 'A 1ª folha é a capa aberta' ficou marcada")
+    escrever(grande, "1", "capa-escreveu-1")
+    base.conferir((painel._indice, painel._metade) == (0, "direita") and painel.contador.text() == "página 1 de 140",
+                  "capa aberta: 1 + Enter mostra a capa (metade da direita da 1ª folha), 'página 1 de 140'")
+    p(grande, "capa-aberta-pagina-1")
+    escrever(grande, "140", "capa-escreveu-140")
+    base.conferir((painel._indice, painel._metade) == (0, "esquerda"), "capa aberta: a 140 é a contracapa (metade da esquerda da 1ª folha)")
+    p(grande, "capa-aberta-pagina-140-contracapa")
+    base.clique(grande, caixa, no_quadrado)    # desmarca a caixinha (fica como estava)
+    esperar_previa(painel)
+    grande.lista.item_da_etapa(A.DIVIDIR).setCheckState(Qt.Unchecked)
+    esperar_previa(painel)
+    anotar("desmarcou-dividir", estado(grande))
+    base.conferir(painel.contador.text().endswith(" de 70"), "desmarcar o Dividir volta ao número de sempre ('de 70')")
+    p(grande, "desmarcou-dividir")
+
+
 def main():
     j, grande = abrir()
-    {"base": fase_base, "novo": fase_novo}[FASE](j, grande)
+    {"base": fase_base, "novo": fase_novo, "dividir": fase_dividir}[FASE](j, grande)
     j._fechar_a_janela_do_automatico()
     base.esperar(1.0)
     base.fechar(j)
