@@ -27,6 +27,7 @@ pytest.importorskip("cv2")
 pytest.importorskip("PySide6")
 
 from core import automatico as A  # noqa: E402
+from tests.test_decisoes_automatico import _livro  # noqa: E402
 from tests.test_decisoes_automatico_ver_como_fica import (  # noqa: E402,F401
     _abrir, _assentar, _esperar, _marcar, app, janela, pasta)
 
@@ -116,16 +117,16 @@ def test_d617_com_dividir_as_setas_continuam_pelas_metades(janela, app, tmp_path
     painel.botao_proxima.click()
     _esperar(app, painel)
     assert (painel._indice, painel._metade) == (0, "direita")
-    assert painel.contador.text() == "página 1 de 3"
-    _escrever(painel, "1")                           # a mesma folha: fica na metade da direita
+    assert painel.contador.text() == "página 2 de 4"  # D-617, 04/11: "com o dividir marcado o numero de pagina tem que corresponder com a pagina que está sendo passada"
+    _escrever(painel, "2")  # a mesma página: fica na metade da direita. D-617, 04/11: "com o dividir marcado o numero de pagina tem que corresponder com a pagina que está sendo passada"
     assert (painel._indice, painel._metade) == (0, "direita")
-    _escrever(painel, "2")
+    _escrever(painel, "3")  # D-617, 04/11: "com o dividir marcado o numero de pagina tem que corresponder com a pagina que está sendo passada"
     _esperar(app, painel)
-    assert painel._indice == 1 and painel.contador.text() == "página 2 de 3"
+    assert painel._indice == 1 and painel.contador.text() == "página 3 de 4"  # D-617, 04/11: "com o dividir marcado o numero de pagina tem que corresponder com a pagina que está sendo passada"
     painel.botao_anterior.click()
     _esperar(app, painel)
     assert (painel._indice, painel._metade) == (0, "direita"), "o < não andou pela metade"
-    assert painel.campo_pagina.text() == "1"
+    assert painel.campo_pagina.text() == "2"  # D-617, 04/11: "com o dividir marcado o numero de pagina tem que corresponder com a pagina que está sendo passada"
 
 
 def test_d617_o_campo_nao_muda_o_teclado_da_janela(janela, app, tmp_path):
@@ -140,3 +141,97 @@ def test_d617_o_campo_nao_muda_o_teclado_da_janela(janela, app, tmp_path):
     assert painel.campo_pagina.focusPolicy() == Qt.ClickFocus
     assert QApplication.focusWidget() is not painel.campo_pagina
     assert grande.focusWidget() is not painel.campo_pagina
+
+
+# --- D-617, parte 2 (04/11/2026): com o Dividir marcado, o número é o da página como sai -------
+# Samuel, testando a D-617: "funciona , mas com o dividir marcado o numero de pagina tem que
+# corresponder com a pagina que está sendo passada." Pedido da gerente: com o Dividir marcado, a
+# metade da esquerda da folha 68 aparece como "página 135 de 140" e a da direita "136 de 140";
+# escrever o número leva a essa página; sem o Dividir, tudo como está; a ordem é a do livro como
+# vai sair (D-615, ordem mudada à mão; D-616, capa aberta = "página 1"); o "tela cheia" mostra o
+# mesmo número. Reversão: no código da parte 1 (`501cc1de`) o contador dizia "página 1 de 3" nas
+# duas metades.
+
+def test_d617_com_dividir_o_numero_e_a_pagina_como_o_livro_vai_sair(janela, app, tmp_path):
+    """Livro sintético com o Dividir marcado: sai com 4 páginas (a folha 0 vira duas). A metade da
+    esquerda da folha 0 é "página 1 de 4", a da direita "2 de 4", a folha 1 "3 de 4"; o "tela
+    cheia" diz o mesmo. Escrever 2 leva à metade da direita da folha 0; 4, à folha 2; 5 (fora)
+    fica. Desmarcar o Dividir volta ao número de sempre ("página 3 de 3" na folha 2)."""
+    grande = _abrir(janela, app, tmp_path, pagina=0)
+    painel = grande.antes_e_depois
+    assert painel.contador.text() == "página 1 de 3"            # sem o Dividir: como sempre
+    _marcar(grande, {A.DIVIDIR})
+    _esperar(app, painel)
+    assert (painel._indice, painel._metade) == (0, "esquerda")
+    assert painel.contador.text() == "página 1 de 4" and painel.campo_pagina.text() == "1"
+    painel.botao_proxima.click()
+    assert (painel._indice, painel._metade) == (0, "direita")
+    assert painel.contador.text() == "página 2 de 4" and painel.campo_pagina.text() == "2"
+    painel.botao_proxima.click()
+    assert painel._indice == 1 and painel.contador.text() == "página 3 de 4"
+    painel.botao_tela_cheia.click()
+    _assentar(app)
+    assert painel.tela_cheia.contador.text() == "página 3 de 4", "o tela cheia diz outro número"
+    painel.tela_cheia.done(0)
+    _escrever(painel, "2")
+    assert (painel._indice, painel._metade) == (0, "direita"), "o 2 não foi à metade da direita"
+    assert painel.contador.text() == "página 2 de 4"
+    _escrever(painel, "4")
+    assert painel._indice == 2 and painel.contador.text() == "página 4 de 4"
+    _escrever(painel, "5")
+    assert painel._indice == 2 and painel.campo_pagina.text() == "4"
+    _esperar(app, painel)
+    _marcar(grande, set())
+    _esperar(app, painel)
+    assert painel._indice == 2 and painel.contador.text() == "página 3 de 3", (
+        "sem o Dividir o número não voltou ao de sempre")
+
+
+def test_d617_com_dividir_o_numero_segue_a_ordem_mudada_a_mao(janela, app, tmp_path):
+    """D-615: com a última folha posta à mão na frente, o livro sai folha 2, folha 0 (duas
+    metades), folha 1. A metade da esquerda da folha 0 é "página 2 de 4"; escrever 1 leva à
+    folha 2, que está na frente."""
+    from core import ordem_das_paginas as O
+
+    janela.abrir_livro(_livro(tmp_path))
+    _assentar(app)
+    projeto = janela.projeto
+    O.por_na_ordem(projeto, [[2, "inteira"], [0, "inteira"], [1, "inteira"]])
+    assert [p.folha for p in projeto.paginas] == [2, 0, 1]
+    janela.tela_conferir.ir_para_pagina(1)                      # a folha 0
+    grande = janela.abrir_o_automatico()
+    painel = grande.antes_e_depois
+    _esperar(app, painel)
+    _marcar(grande, {A.DIVIDIR})
+    _esperar(app, painel)
+    assert projeto.paginas[painel._indice].folha == 0 and painel._metade == "esquerda"
+    assert painel.contador.text() == "página 2 de 4"
+    _escrever(painel, "1")
+    assert projeto.paginas[painel._indice].folha == 2 and painel.contador.text() == "página 1 de 4"
+    _escrever(painel, "4")
+    assert projeto.paginas[painel._indice].folha == 1 and painel.contador.text() == "página 4 de 4"
+
+
+def test_d617_com_dividir_e_a_capa_aberta_a_capa_e_a_pagina_1(janela, app, tmp_path):
+    """D-616: livro de folhas abertas com "A 1ª folha é a capa aberta" marcada: a capa (metade da
+    direita da 1ª folha) é "página 1 de 6" e a contracapa (a da esquerda) "página 6 de 6"."""
+    from tests.test_decisoes_capa_aberta import DO_EDITOR, _livro as _livro_aberto
+
+    janela.abrir_livro(_livro_aberto(tmp_path))
+    _assentar(app)
+    janela.tela_conferir.ir_para_pagina(0)
+    grande = janela.abrir_o_automatico(A.DIVIDIR)
+    painel = grande.antes_e_depois
+    estado = janela.estado_do_automatico
+    estado.opcoes["dividir_como"] = DO_EDITOR
+    grande.controles["capa_aberta"].setChecked(True)
+    _marcar(grande, {A.DIVIDIR})
+    _esperar(app, painel)
+    painel.ir_para(0)
+    assert (painel._indice, painel._metade) == (0, "direita"), "a prévia não começa pela capa"
+    assert painel.contador.text() == "página 1 de 6"
+    _escrever(painel, "6")
+    assert (painel._indice, painel._metade) == (0, "esquerda")
+    assert painel.contador.text() == "página 6 de 6"
+    _escrever(painel, "2")
+    assert (painel._indice, painel._metade) == (1, "esquerda")
