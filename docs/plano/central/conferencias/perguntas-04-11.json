@@ -1,0 +1,169 @@
+{
+ "nome": "Perguntas novas (04/11)",
+ "trabalho": "respostas-04-11",
+ "ordem": 62,
+ "origem": "Comentários do Samuel na Central, 04/11/2026",
+ "resumo": {
+  "titulo": "5 perguntas que saíram dos seus comentários",
+  "paragrafos": [
+   "Cada uma saiu de um comentário seu de 04/11. Enquanto você não responde, nada muda no programa."
+  ]
+ },
+ "quadros": [],
+ "perguntas": [
+  {
+   "id": "n0411-caixinhas-depois-de-rodar",
+   "titulo": "Automático: depois de rodar, todas as caixinhas voltam desmarcadas?",
+   "explicacao": [
+    "Você disse (04/11): \"sempre que eu rodo uma coisa no automatico, quando volto no automatico as coisas que rodaram estão marcadas, elas tem que voltar todas desmarcadas.\"",
+    "Hoje, caixinha marcada quer dizer \"esta etapa está no livro\". Por isso ela volta marcada (foto).",
+    "E desmarcar e rodar tira a etapa do livro. Foi o que você decidiu em 30/10, pelo relato do Kaique dos cadernos que voltavam sozinhos.",
+    "Se as caixinhas voltarem todas desmarcadas, o próximo Rodar tiraria do livro tudo o que já foi feito. Então o sentido da caixinha precisa mudar."
+   ],
+   "primeira_imagem": {
+    "src": "/_blob/45dff64d45dee37eb2b189f0bdc8072f",
+    "legenda": "Hoje: Endireitar rodado, janela aberta de novo, a caixinha voltou marcada."
+   },
+   "exemplos": [],
+   "sugestao": "A primeira. É o que você pediu, e o que já foi feito não se perde.",
+   "opcoes": [
+    {
+     "id": "desmarcadas",
+     "nome": "Voltam desmarcadas; desmarcada = não mexer agora",
+     "texto": "Depois de rodar, todas voltam desmarcadas. Rodar só faz as etapas marcadas; o que já foi feito fica no livro. Para tirar uma etapa do livro todo (ex.: cadernos), aparece um botão \"tirar do livro\" ao lado dela."
+    },
+    {
+     "id": "como-hoje",
+     "nome": "Fica como hoje",
+     "texto": "Marcada = está no livro. Desmarcar e rodar tira a etapa do livro."
+    }
+   ]
+  },
+  {
+   "id": "n0411-folhas-de-todas",
+   "titulo": "Montar para imprimir: trocar o \"Folhas de (0 = todas)\"?",
+   "explicacao": [
+    "Esses dois campos (foto, embaixo à esquerda) servem para imprimir só um pedaço do livreto. Exemplo: só as folhas 5 a 8, se uma delas saiu errada.",
+    "\"todas\" quer dizer sem limite: sai o livreto inteiro. Você achou \"0 = todas\" horrível.",
+    "O mesmo jeito aparece em \"Páginas do livro de (0 = todas)\", mais abaixo na janela."
+   ],
+   "primeira_imagem": {
+    "src": "/_blob/b688ce71c6205355be684e763522c2a8",
+    "legenda": "Janela \"Montar para imprimir\" (Palatino). Embaixo à esquerda: \"Folhas de (0 = todas): todas até todas\"."
+   },
+   "exemplos": [],
+   "sugestao": "A primeira: some o \"0 = todas\", e os números só aparecem quando você quer um pedaço.",
+   "opcoes": [
+    {
+     "id": "caixinha",
+     "nome": "Caixinha \"Imprimir só algumas folhas\"",
+     "texto": "Desmarcada, sai tudo e não aparece número nenhum. Marcada, aparecem \"da folha [1] até a folha [32]\", já com o livreto inteiro escrito. O mesmo para as páginas do livro."
+    },
+    {
+     "id": "outro",
+     "nome": "Outro jeito",
+     "texto": "Escreva no comentário como quer."
+    }
+   ]
+  },
+  {
+   "id": "n0411-o-que-vai-sair",
+   "titulo": "Montar para imprimir: o quadro \"O que vai sair\" fica embaixo?",
+   "explicacao": [
+    "No lado direito da janela, embaixo das duas folhas, há um quadro chamado \"O que vai sair\".",
+    "Ele resume o livreto: papel A4, quantas páginas do livro entram, quantas folhas e quantos cadernos saem.",
+    "Com a janela no tamanho de fábrica, ele fica escondido embaixo. Na foto, só aparece o título \"O QUE VAI SAIR\", no pé. Para ler, é preciso rolar."
+   ],
+   "primeira_imagem": {
+    "src": "/_blob/b688ce71c6205355be684e763522c2a8",
+    "legenda": "Lado direito: as folhas em cima; o \"O QUE VAI SAIR\" aparece só no pé, cortado."
+   },
+   "exemplos": [],
+   "opcoes": [
+    {
+     "id": "embaixo",
+     "nome": "Fica embaixo",
+     "texto": "Para ler o resumo, rola-se o lado direito."
+    },
+    {
+     "id": "em-cima",
+     "nome": "Sobe para cima das folhas",
+     "texto": "O resumo aparece sem rolar; as folhas ficam logo abaixo."
+    }
+   ]
+  },
+  {
+   "id": "n0411-recuperar",
+   "titulo": "\"Recuperar o trabalho anterior\" no menu do livro?",
+   "explicacao": [
+    "Sua dúvida: \"a copia que ele guarda é um pdf pronto com as mudanças que foram feitas? ou é um arquivo que diz só como o pdf era antes?\"",
+    "Não é um PDF. É o arquivo das suas escolhas naquele livro: onde dividiu, cortou e endireitou, os filtros, o que marcou e o histórico.",
+    "Quando o programa precisa recomeçar a conferência (por exemplo, o PDF ganhou ou perdeu uma folha), ele guarda essa cópia antes. Com ela, dá para voltar o livro como você tinha deixado. O PDF do livro não muda.",
+    "Hoje não há botão para isso: só mexendo nos arquivos à mão (segunda foto)."
+   ],
+   "primeira_imagem": {
+    "src": "vt28/perguntas/c-recuperar-1.jpg",
+    "legenda": "O aviso do recomeço (Boécio, cópia, PDF com uma página a menos)."
+   },
+   "exemplos": [
+    {
+     "src": "vt28/perguntas/c-recuperar-2.jpg",
+     "legenda": "O menu do livro hoje: nenhum item para recuperar."
+    }
+   ],
+   "sugestao": "Sim, mas depois desta rodada de consertos.",
+   "opcoes": [
+    {
+     "id": "depois",
+     "nome": "Sim, mas depois desta rodada de consertos",
+     "texto": "Fica na Lista de espera; agora só entra o que você já mandou."
+    },
+    {
+     "id": "sim",
+     "nome": "Sim, quero já",
+     "texto": "O menu do livro ganha \"Recuperar o trabalho anterior\", com as cópias por data e hora."
+    },
+    {
+     "id": "nao",
+     "nome": "Não precisa",
+     "texto": "A cópia continua guardada; recuperar fica só à mão."
+    }
+   ]
+  },
+  {
+   "id": "n0411-inverter-letra-clara",
+   "titulo": "Letra branca em fundo escuro: como virar letra preta em papel branco?",
+   "explicacao": [
+    "Você pediu (04/11): \"a gente tem que ter uma maneira de inverter isso né de forma perfeita, agora veja como o scantailor faz isso, eu acho que faz.\"",
+    "O ScanTailor não faz. Ele tem uma caixinha igual à nossa \"Letra clara em fundo escuro\": limpa a página, mas ela sai com letra branca em fundo escuro, como entrou.",
+    "Quem faz é a Leptonica, uma biblioteca que já vem com o leitor de texto instalado no seu PC. Ela acha sozinha as partes escuras da página e vira só elas.",
+    "Na foto, uma página de teste montada (não é de livro). Primeira coluna: como entra. Segunda: a Leptonica, que vira só as partes escuras. Terceira: virar a página inteira.",
+    "Veja a faixa do meio: virando a página inteira, o papel branco em volta vira preto. Com a Leptonica, não.",
+    "Nas três opções, você continua marcando à mão, página por página, como escolheu em 21/10. Vale só no Preto e branco: em cor, virar troca as cores (azul vira amarelo)."
+   ],
+   "primeira_imagem": {
+    "src": "fotos/inverter/painel.png",
+    "legenda": "Página de teste. Coluna 1: como entra. Coluna 2: Leptonica, só as partes escuras viram. Coluna 3: página inteira virada (a faixa ficou certa, mas o papel em volta ficou preto)."
+   },
+   "exemplos": [],
+   "sugestao": "A primeira. É a única que acerta o slide e a faixa escura. Cuidado: uma foto escura também viraria negativo, então a gravura marcada fica de fora.",
+   "opcoes": [
+    {
+     "id": "partes-escuras",
+     "nome": "Virar só as partes escuras (Leptonica)",
+     "texto": "Você marca a página; o programa acha as partes escuras e vira só elas. A gravura marcada fica como está."
+    },
+    {
+     "id": "pagina-inteira",
+     "nome": "Virar a página inteira",
+     "texto": "Bom para slide todo escuro. Numa página com só uma faixa escura, o papel branco vira preto."
+    },
+    {
+     "id": "area",
+     "nome": "Virar só uma área que eu marcar",
+     "texto": "Nada automático: você marca o pedaço escuro em cada página."
+    }
+   ]
+  }
+ ]
+}
