@@ -236,3 +236,67 @@ def test_d604_montar_para_imprimir_costura_a_direita_e_branca(app, pasta):
         assert _paginas_na_tela(dialogo) == {imp.FRENTE: (4, None), imp.VERSO: (2, 3)}
     finally:
         dialogo.reject()
+
+
+
+def _linha_do_lado(janela, rotulo, paginas):
+    """O arranjo (layout) que tem o "Folha N de M — lado" e as páginas daquele lado."""
+    from PySide6.QtWidgets import QLayout
+
+    for arranjo in janela.findChildren(QLayout):
+        if arranjo.indexOf(rotulo) >= 0 and arranjo.indexOf(paginas) >= 0:
+            return arranjo
+    return None
+
+
+def _confere_que_desce_e_nao_corta(linha, rotulo, paginas):
+    """Coluna larga: tudo numa linha só (como antes). Coluna estreita: as páginas descem para a
+    linha de baixo, começando na beirada, e nada passa da largura da coluna."""
+    from PySide6.QtCore import QRect
+
+    assert type(linha).__name__ == "LinhaQueQuebra",         f"a linha é um {type(linha).__name__}: o que não cabe é cortado"
+    largura = rotulo.sizeHint().width() + paginas.sizeHint().width()
+    linha.setGeometry(QRect(0, 0, largura + 20, 200))
+    assert paginas.geometry().y() == rotulo.geometry().y()            # a mesma linha
+    assert paginas.geometry().x() == rotulo.geometry().right() + 1    # logo depois
+    estreita = max(rotulo.sizeHint().width(), paginas.sizeHint().width()) + 5
+    assert estreita < largura
+    assert linha.minimumSize().width() <= estreita    # a coluna não é obrigada a alargar
+    linha.setGeometry(QRect(0, 0, estreita, 200))
+    assert paginas.geometry().y() > rotulo.geometry().y()             # desceu
+    assert paginas.geometry().x() == 0
+    assert rotulo.geometry().right() < estreita and paginas.geometry().right() < estreita
+    assert linha.heightForWidth(estreita) > linha.heightForWidth(largura + 20)
+
+
+def test_d604_montar_para_imprimir_livro_grande_o_numero_nao_e_cortado(app, pasta):
+    """Achado 05/11/2026 (D-604, D-605): num livro de 300 páginas a coluna estreita do "Montar
+    para imprimir" (cartão de largura fixa, sem barra para o lado) cortava o fim: "Folha 60 de
+    75 — frente: páginas 222 e 2". Agora, quando não cabe numa linha, as páginas descem para a
+    linha de baixo; quando cabe, fica numa linha só, como antes. Falha no código de 04/11
+    (cd5dc539): lá a linha não quebra."""
+    caminho = pasta / "grande.pdf"
+    doc = fitz.open()
+    for _ in range(300):
+        doc.new_page(width=300, height=450)
+    doc.save(str(caminho))
+    doc.close()
+    dialogo = _dialogo(caminho, paginas_por_caderno=40)
+    try:
+        dialogo.passar_folha(59)                  # as setas, 59 folhas de uma vez
+        assert _linha_do_dialogo(dialogo, imp.FRENTE) == "Folha 60 de 75 — frente: páginas 222 e 219"
+        assert _esperar_que(lambda: _previa_quieta(dialogo) and dialogo.folha_na_tela.numero == 60)
+        for lado in (imp.FRENTE, imp.VERSO):
+            rotulo, paginas = dialogo.rotulos_da_face[lado], dialogo.paginas_da_face[lado]
+            _confere_que_desce_e_nao_corta(_linha_do_lado(dialogo, rotulo, paginas), rotulo, paginas)
+    finally:
+        dialogo.reject()
+
+
+def test_d604_etapa_7_a_linha_tambem_desce_quando_nao_cabe(janela, app, tmp_path):
+    """O mesmo na etapa 7 (o lado direito pode ficar estreito numa janela menor)."""
+    folhas = _abrir_etapa_7(janela, app, _livro_cinza(tmp_path / "livro.pdf", 40))
+    _esperar(app, folhas)
+    for lado in ("frente", "verso"):
+        rotulo, numeros = folhas.rotulos[lado], folhas.numeros_das_paginas[lado]
+        _confere_que_desce_e_nao_corta(_linha_do_lado(folhas, rotulo, numeros), rotulo, numeros)

@@ -122,7 +122,7 @@ from core import impressao as imp
 from registro import registrar_erro
 from ui import estilo, rodinha
 from ui.widgets.bolinha import BolinhaDeCarregamento
-from ui.widgets.folhas_do_caderno import rotulo_das_paginas, texto_das_paginas
+from ui.widgets.folhas_do_caderno import LinhaQueQuebra, rotulo_das_paginas, texto_das_paginas
 
 CHAVE_DAS_CONFIGURACOES = "impressao"
 OPCOES_CADERNO = [8, 12, 16, 20, 24, 32, 40]
@@ -760,12 +760,9 @@ class DialogoImpressao(QDialog):
             imagem = QLabel()
             imagem.setAlignment(Qt.AlignmentFlag.AlignCenter)
             estilo.estilizar(imagem, lambda: f"background: {estilo.cor('bar2')};")
-            linha = QHBoxLayout()               # "Folha 1 de 32 — frente" + ": páginas 20 e 1"
-            linha.setContentsMargins(0, 0, 0, 0)
-            linha.setSpacing(0)
-            linha.addWidget(rotulo)
+            linha = LinhaQueQuebra()            # "Folha 1 de 32 — frente" + ": páginas 20 e 1"
+            linha.addWidget(rotulo)             # (o que não cabe desce, nunca é cortado)
             linha.addWidget(paginas)
-            linha.addStretch()
             coluna.addLayout(linha)
             coluna.addWidget(imagem)
             self.rotulos_da_face[lado], self.imagens_da_face[lado] = rotulo, imagem

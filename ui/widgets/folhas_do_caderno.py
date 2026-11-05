@@ -80,13 +80,14 @@ from __future__ import annotations
 import json
 import traceback
 
-from PySide6.QtCore import QEvent, QObject, Qt, QThread, QTimer, Signal
+from PySide6.QtCore import QEvent, QObject, QPoint, QRect, QSize, Qt, QThread, QTimer, Signal
 from PySide6.QtGui import QPixmap
 from PySide6.QtWidgets import (
     QDialog,
     QFrame,
     QHBoxLayout,
     QLabel,
+    QLayout,
     QPushButton,
     QScrollArea,
     QVBoxLayout,
@@ -124,6 +125,75 @@ def rotulo_das_paginas() -> QLabel:
     rotulo = QLabel("")
     rotulo.setStyleSheet("font-weight: 700;")
     return rotulo
+
+
+class LinhaQueQuebra(QLayout):
+    """D-604: põe "Folha N de M — frente" e ": páginas 20 e 1" lado a lado, da esquerda para a
+    direita, e desce o que não cabe para a linha de baixo, em vez de cortar. É o "Flow Layout" dos
+    exemplos oficiais do Qt (doc.qt.io, "Flow Layout Example"), só com espaço 0 e sem margem.
+
+    Por que existe: na coluna estreita do "Montar para imprimir" (cartão de largura fixa, sem
+    barra de rolar para o lado), um livro de 300 páginas dava "Folha 60 de 75 — frente: páginas
+    222 e 2" com o fim cortado (achado 05/11/2026). Numa linha que cabe, fica igual a antes (uma
+    linha só). Seguro mudar: o espaço. Arriscado: o tamanho mínimo voltar a ser a soma dos dois
+    rótulos (a coluna alarga e o texto é cortado de novo)."""
+
+    def __init__(self, parent=None) -> None:
+        super().__init__(parent)
+        self._itens = []
+        self.setContentsMargins(0, 0, 0, 0)
+        self.setSpacing(0)
+
+    def addItem(self, item) -> None:  # noqa: N802 (nome do Qt)
+        self._itens.append(item)
+
+    def count(self) -> int:
+        return len(self._itens)
+
+    def itemAt(self, indice):  # noqa: N802
+        return self._itens[indice] if 0 <= indice < len(self._itens) else None
+
+    def takeAt(self, indice):  # noqa: N802
+        return self._itens.pop(indice) if 0 <= indice < len(self._itens) else None
+
+    def expandingDirections(self):  # noqa: N802
+        return Qt.Orientation(0)
+
+    def hasHeightForWidth(self) -> bool:  # noqa: N802
+        return True
+
+    def heightForWidth(self, largura: int) -> int:  # noqa: N802
+        return self._arrumar(QRect(0, 0, largura, 0), so_medir=True)
+
+    def setGeometry(self, retangulo) -> None:  # noqa: N802
+        super().setGeometry(retangulo)
+        self._arrumar(retangulo, so_medir=False)
+
+    def sizeHint(self):  # noqa: N802
+        return self.minimumSize()
+
+    def minimumSize(self):  # noqa: N802
+        """O maior dos rótulos visíveis (nunca a soma: a linha pode quebrar)."""
+        tamanho = QSize()
+        for item in self._itens:
+            if not item.isEmpty():
+                tamanho = tamanho.expandedTo(item.minimumSize())
+        return tamanho
+
+    def _arrumar(self, retangulo, so_medir: bool) -> int:
+        x, y, altura_da_linha = retangulo.x(), retangulo.y(), 0
+        for item in self._itens:
+            if item.isEmpty():               # rótulo escondido não ocupa lugar
+                continue
+            tamanho = item.sizeHint()
+            if x + tamanho.width() > retangulo.right() + 1 and altura_da_linha > 0:
+                x, y = retangulo.x(), y + altura_da_linha
+                altura_da_linha = 0
+            if not so_medir:
+                item.setGeometry(QRect(QPoint(x, y), tamanho))
+            x += tamanho.width()
+            altura_da_linha = max(altura_da_linha, tamanho.height())
+        return y + altura_da_linha - retangulo.y()
 
 
 # ---------------------------------------------------------------------------
@@ -272,12 +342,9 @@ class FolhasDoCaderno(QWidget):
             imagem.setAlignment(Qt.AlignCenter)
             imagem.setMinimumSize(40, 30)
             estilo.estilizar(imagem, lambda: f"background: {estilo.cor('bar2')};")
-            linha = QHBoxLayout()                # "Folha 1 de 19 — frente" + ": páginas 20 e 1"
-            linha.setContentsMargins(0, 0, 0, 0)
-            linha.setSpacing(0)
+            linha = LinhaQueQuebra()             # "Folha 1 de 19 — frente" + ": páginas 20 e 1"
             linha.addWidget(rotulo)
             linha.addWidget(numeros)
-            linha.addStretch()
             dentro.addLayout(linha)
             dentro.addWidget(imagem, 1)
             self.rotulos[lado], self.imagens[lado] = rotulo, imagem
