@@ -4,7 +4,7 @@
  "ordem": 62,
  "origem": "Comentários do Samuel na Central, 04/11/2026",
  "resumo": {
-  "titulo": "5 perguntas que saíram dos seus comentários",
+  "titulo": "6 perguntas de hoje (04/11)",
   "paragrafos": [
    "Cada uma saiu de um comentário seu de 04/11. Enquanto você não responde, nada muda no programa."
   ]
@@ -162,6 +162,33 @@
      "id": "area",
      "nome": "Virar só uma área que eu marcar",
      "texto": "Nada automático: você marca o pedaço escuro em cada página."
+    }
+   ]
+  },
+  {
+   "id": "n0411-caderno-pagina-em-branco",
+   "titulo": "Folha do caderno com lugar sem página: como escrever?",
+   "explicacao": [
+    "Os números das páginas nas folhas do caderno estão prontos (D-604). Exemplo: \"Folha 1 de 18 — frente: páginas 20 e 1\".",
+    "No fim do livro, o caderno às vezes tem lugar sem página, que sai em branco. No Gradus, é a folha 16 (foto).",
+    "Hoje está escrito \"frente: páginas em branco e 61\" e \"verso: páginas 62 e em branco\"."
+   ],
+   "primeira_imagem": {
+    "src": "fotos/caderno-numeros/folha-16.png",
+    "legenda": "Automático, etapa 7, Gradus, folha 16 de 18: \"frente: páginas em branco e 61\" / \"verso: páginas 62 e em branco\"."
+   },
+   "exemplos": [],
+   "sugestao": "A segunda: fica mais claro qual lado sai branco.",
+   "opcoes": [
+    {
+     "id": "como-esta",
+     "nome": "Fica como está",
+     "texto": "\"frente: páginas em branco e 61\""
+    },
+    {
+     "id": "em-branco-e-pagina",
+     "nome": "\"frente: em branco e página 61\"",
+     "texto": "E no verso: \"página 62 e em branco\"."
     }
    ]
   }
