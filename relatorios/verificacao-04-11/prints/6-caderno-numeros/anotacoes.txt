@@ -1,0 +1,28 @@
+abriu-em-s => 2.3
+livro => {"pdf": "Sobre_a_Consolao_da_Filosofia_-_Severino_Bocio.pdf", "paginas": 50, "folhas": 50, "worktree": "D:\\programas\\EditorImpressao\\.claude\\worktrees\\caderno-numeros"}
+conta feita a mao => {"paginas": 50, "folhas": 13, "folha 1": [["20", "1"], ["2", "19"]], "folha 2": [["18", "3"], ["4", "17"]], "ultimas": [[["em branco", "41"], ["42", "em branco"]], [["50", "43"], ["44", "49"]], [["48", "45"], ["46", "47"]]]}
+etapa 7 folha 1 => {"frente": "Folha 1 de 13 — frente: páginas 20 e 1", "verso": "Folha 1 de 13 — verso: páginas 2 e 19"}
+OK      etapa 7, folha 1: {'frente': 'Folha 1 de 13 — frente: páginas 20 e 1', 'verso': 'Folha 1 de 13 — verso: páginas 2 e 19'}
+OK      o 'Folha 1 de N — frente' continua
+etapa 7 folha 2 logo depois do clique => {"frente": "Folha 2 de 13 — frente: páginas 18 e 3", "verso": "Folha 2 de 13 — verso: páginas 4 e 17"}
+OK      etapa 7, folha 2: {'frente': 'Folha 2 de 13 — frente: páginas 18 e 3', 'verso': 'Folha 2 de 13 — verso: páginas 4 e 17'}
+OK      a folha 2 troca na hora (logo depois do clique)
+etapa 7 folha 6 => {"frente": "Folha 6 de 13 — frente: páginas 40 e 21", "verso": "Folha 6 de 13 — verso: páginas 22 e 39"}
+OK      etapa 7, folha 6: {'frente': 'Folha 6 de 13 — frente: páginas 40 e 21', 'verso': 'Folha 6 de 13 — verso: páginas 22 e 39'} (esperado (('40', '21'), ('22', '39')))
+etapa 7 folha 13 => {"frente": "Folha 13 de 13 — frente: páginas 48 e 45", "verso": "Folha 13 de 13 — verso: páginas 46 e 47"}
+OK      etapa 7, folha 13: {'frente': 'Folha 13 de 13 — frente: páginas 48 e 45', 'verso': 'Folha 13 de 13 — verso: páginas 46 e 47'} (esperado (('48', '45'), ('46', '47')))
+etapa 7 folha 12 => {"frente": "Folha 12 de 13 — frente: páginas 50 e 43", "verso": "Folha 12 de 13 — verso: páginas 44 e 49"}
+OK      etapa 7, folha 12: {'frente': 'Folha 12 de 13 — frente: páginas 50 e 43', 'verso': 'Folha 12 de 13 — verso: páginas 44 e 49'} (esperado (('50', '43'), ('44', '49')))
+tela grande folha 1 => {"frente": "Folha 1 de 13 — frente: páginas 20 e 1", "verso": "Folha 1 de 13 — verso: páginas 2 e 19"}
+OK      tela grande, folha 1: {'frente': 'Folha 1 de 13 — frente: páginas 20 e 1', 'verso': 'Folha 1 de 13 — verso: páginas 2 e 19'}
+OK      tela grande, folha 2: {'frente': 'Folha 2 de 13 — frente: páginas 18 e 3', 'verso': 'Folha 2 de 13 — verso: páginas 4 e 17'}
+janela 'Antes de processar' => {"titulo": "Antes de processar", "botao": "continuar assim mesmo"}
+janela Processar => {"caminho": "C:\\Users\\fotog\\AppData\\Local\\Temp\\claude\\195a7ef9582f81cd\\e4fd3df2-ffc2-4ff8-9d6b-c5c2f4b2d0ca\\scratchpad\\trab\\6-caderno-numeros\\saida\\Boecio-pronto.pdf"}
+processar terminou => {"tela": 3, "s": 14.8}
+OK      processou: Boecio-pronto.pdf existe
+montar: opcoes de fabrica => {"formato": "livreto", "por caderno": 20}
+montar folha 1 => {"texto": {"frente": "Folha 1 de 13 — frente: páginas 20 e 1", "verso": "Folha 1 de 13 — verso: páginas 2 e 19"}, "paginas do pdf": 50}
+OK      montar para imprimir, folha 1: {'frente': 'Folha 1 de 13 — frente: páginas 20 e 1', 'verso': 'Folha 1 de 13 — verso: páginas 2 e 19'}
+montar folha 2 => {"logo": {"frente": "Folha 2 de 13 — frente: páginas 18 e 3", "verso": "Folha 2 de 13 — verso: páginas 4 e 17"}, "depois": {"frente": "Folha 2 de 13 — frente: páginas 18 e 3", "verso": "Folha 2 de 13 — verso: páginas 4 e 17"}}
+OK      montar para imprimir, folha 2: {'frente': 'Folha 2 de 13 — frente: páginas 18 e 3', 'verso': 'Folha 2 de 13 — verso: páginas 4 e 17'}
+resultado => "13 de 13 certas; falhas: []"

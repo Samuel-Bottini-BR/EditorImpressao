@@ -1,0 +1,46 @@
+caixa => {"titulo": "Fundo separado", "texto": "Este livro tem fundo separado. Quer tirar o fundo?", "botoes": ["Sim, tirar o fundo", "Não, deixar como está"]}
+abriu-em-s => 4.0
+livro => {"pdf": "Rhetorica_Christiana_-__Fray_Diego_Valads.pdf", "paginas": 446, "folhas": 446, "worktree": "D:\\programas\\EditorImpressao\\.claude\\worktrees\\painel-livro"}
+quadro cortar => ["JÁ FEITO NO LIVRO TODO", "Cortar a beirada da folha vizinha: não", "Cortar seguindo o conteúdo (como o ScanTailor): não", "Página dentro da borda preta: não", "mudar no Automático...", "Margens iguais"]
+OK      cortar: o quadro se chama 'Já feito no livro todo'
+OK      cortar: o titulo antigo saiu
+OK      cortar: 'mudar no Automático...' ficou
+OK      cortar: a caixinha 'Margens iguais' (D-554) ficou
+OK      cortar: a 'Qualidade da prévia' saiu do painel
+quadro dividir => ["JÁ FEITO NO LIVRO TODO", "Motor de corte: o do ScanTailor", "mudar no Automático..."]
+OK      dividir: o quadro se chama 'Já feito no livro todo'
+OK      dividir: o titulo antigo saiu
+OK      dividir: 'mudar no Automático...' ficou
+quadro endireitar => ["JÁ FEITO NO LIVRO TODO", "Conta do endireitar: a do ScanTailor", "Corte quando o ângulo muda: o das Configurações", "mudar no Automático..."]
+OK      endireitar: o quadro se chama 'Já feito no livro todo'
+OK      endireitar: o titulo antigo saiu
+OK      endireitar: 'mudar no Automático...' ficou
+setinha no cortar => {"aba": "bordas", "visivel": true, "texto": "", "balao": "Qualidade da prévia: Rápida"}
+OK      D-620: a setinha da qualidade aparece no cortar
+setinha no dividir => {"aba": "corte", "visivel": true, "texto": "", "balao": "Qualidade da prévia: Rápida"}
+OK      D-620: a setinha da qualidade aparece no dividir
+setinha no endireitar => {"aba": "angulo", "visivel": true, "texto": "", "balao": "Qualidade da prévia: Rápida"}
+OK      D-620: a setinha da qualidade aparece no endireitar
+setinha no mover => {"aba": "mover", "visivel": true, "texto": "", "balao": "Qualidade da prévia: Rápida"}
+OK      D-620: a setinha da qualidade aparece no mover
+setinha no retangulo => {"aba": "marcar", "visivel": true, "texto": "", "balao": "Qualidade da prévia: Rápida"}
+OK      D-620: a setinha da qualidade aparece no retangulo
+setinha no mao => {"aba": "marcar", "visivel": true, "texto": "", "balao": "Qualidade da prévia: Rápida"}
+OK      D-620: a setinha da qualidade aparece no mao
+setinha no zoom => {"aba": "marcar", "visivel": true, "texto": "", "balao": "Qualidade da prévia: Rápida"}
+OK      D-620: a setinha da qualidade aparece no zoom
+OK      D-620: a setinha aparece no Filtro
+menu => {"visivel": true, "itens": [["Rápida", true], ["Média", false], ["Alta", false]]}
+OK      a setinha abre Rápida / Média / Alta
+clique no menu nao pegou: teclado => null
+depois de Alta => {"gravada": "alta", "dpi": 300, "balao": "Qualidade da prévia: Alta\nRápida: abre logo. Alta: mais nítida no zoom, demora mais por página."}
+OK      Alta ficou gravada para o programa todo
+alta no endireitar => {"balao": "Qualidade da prévia: Alta", "dpi": 300}
+OK      Alta vale no endireitar
+alta no mover => {"balao": "Qualidade da prévia: Alta", "dpi": 300}
+OK      Alta vale no mover
+alta no dividir => {"balao": "Qualidade da prévia: Alta", "dpi": 300}
+OK      Alta vale no dividir
+contador => {"na tela": "Rheto… · 0 de 446 conferidas · 0 com dúvida", "inteiro": "Rhetorica_Christiana_-__Fray_Diego_Valads · 0 de 446 conferidas · 0 com dúvida"}
+1366: contador => {"na tela": "0 de 446 c…", "setinha visivel": true}
+resultado => "25 de 25 certas; falhas: []"

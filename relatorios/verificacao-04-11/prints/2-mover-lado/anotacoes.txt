@@ -1,0 +1,35 @@
+caixa => {"titulo": "Fundo separado", "texto": "Este livro tem fundo separado. Quer tirar o fundo?", "botoes": ["Sim, tirar o fundo", "Não, deixar como está"]}
+abriu-em-s => 3.9
+livro => {"pdf": "Giovambattista_Palatino_cittadino_romano.pdf", "paginas": 134, "folhas": 134, "worktree": "D:\\programas\\EditorImpressao\\.claude\\worktrees\\mover-lado"}
+estado => {"aba": "mover", "pagina": 4, "folha": 4, "mostrar": "duas", "feitas": 0, "desfazer": "Nada para desfazer"}
+OK      Mover + Duas lado a lado: a vista fica nos pares
+retangulos 4 e 5 => ["PySide6.QtCore.QRect(232, 18, 336, 512)", "PySide6.QtCore.QRect(568, 18, 336, 512)"]
+depois de arrastar a 5 => {"da vez": 5, "desloc 5": [0.1786, -0.0012], "desloc 4": [0.0, 0.0]}
+OK      o aperto na pagina 5 escolheu a 5
+OK      e no mesmo aperto a 5 andou para a direita
+OK      a 4 nao andou
+depois do clique no cinza => {"sem_escolha": true, "da vez": 5}
+OK      D-622: clique no cinza tirou a selecao
+OK      D-622: clique na pagina escolheu de novo
+OK      Ctrl+Z desfez o arrasto da 5
+OK      Cortar: continua em Duas lado a lado
+cortar nos pares => {"da vez": 5, "recorte antes": [0, 0, 1, 1], "depois": [0.0, 0.0, 0.8512, 1.0]}
+OK      Cortar: puxar a beirada da 5 nos pares cortou a 5
+retangulo nos pares => {"aba": "marcar", "da vez": 4, "regioes antes/depois": [0, 1]}
+OK      Retangulo: marcou na pagina 4 nos pares
+OK      Endireitar: continua em Duas lado a lado
+antes/depois ligado => {"comparando": true, "aviso": "", "na tela": "VistaAntesDepois"}
+antes/depois depois do arrasto => {"desloc 6": [0.0, 0.0], "comparando": true, "depois mudou": false}
+FALHOU  antes/depois: o arrasto moveu a pagina 6 (agiu no depois)
+OK      antes/depois continua ligado
+OK      Uma pagina: o Mover arrasta como antes
+OK      Mao nos pares: clique no cinza nao tira a pagina da vez (como antes)
+caixa => {"titulo": "Fundo separado", "texto": "Este livro tem fundo separado. Quer tirar o fundo?", "botoes": ["Sim, tirar o fundo", "Não, deixar como está"]}
+abriu Siebmacher => 4.1
+paginas => [[1, 1, "inteira"], [2, 2, "esquerda"], [3, 2, "direita"], [4, 3, "esquerda"], [5, 3, "direita"], [6, 4, "esquerda"], [7, 4, "direita"], [8, 5, "inteira"], [9, 6, "inteira"]]
+tira no Dividir, Duas lado a lado => {"rotulos (12)": [1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12], "pares": [[1], [2, 3], [4, 5], [6, 7], [8], [9], [10], [11], [12]]}
+OK      a miniatura tem o numero real da pagina
+OK      no Dividir a tira junta pela folha (2-3, 4-5, 6-7 = folhas 2, 3, 4)
+FALHOU  clique na miniatura 5 -> folha 3 de 134
+tira no Cortar, Duas lado a lado => [[1], [2, 3], [4, 5], [6, 7], [8, 9], [10, 11], [12]]
+resultado => "17 de 19 certas; falhas: ['antes/depois: o arrasto moveu a pagina 6 (agiu no depois)', 'clique na miniatura 5 -> folha 3 de 134']"

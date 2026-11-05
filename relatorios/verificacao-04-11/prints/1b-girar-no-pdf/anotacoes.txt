@@ -1,0 +1,12 @@
+caixa => {"titulo": "Fundo separado", "texto": "Este livro tem fundo separado. Quer tirar o fundo?", "botoes": ["Sim, tirar o fundo", "Não, deixar como está"]}
+abriu-em-s => 4.0
+livro => {"pdf": "Schn_Neues_Modell_Buch_-_Johann_Siebmacher.pdf", "paginas": 134, "folhas": 134, "worktree": "D:\\programas\\EditorImpressao\\.claude\\worktrees\\girar-pagina"}
+projeto => {"p3 giro": 270, "folha5 rotacao": 270}
+janela Processar => {"caminho": "C:\\Users\\fotog\\AppData\\Local\\Temp\\claude\\195a7ef9582f81cd\\e4fd3df2-ffc2-4ff8-9d6b-c5c2f4b2d0ca\\scratchpad\\trab\\1b-girar-no-pdf\\saida\\Siebmacher-girado.pdf"}
+processar terminou => {"tela": 3, "s": 198.1}
+proporcao larg/alt no PDF => {"3": 0.979, "4": 0.271, "5": 1.28, "6": 0.774, "7": 1.295}
+proporcao da folha no PDF de entrada (folhas 3 e 5) => {"3": 1.292, "5": 1.292}
+OK      PDF com 135 paginas (134 folhas + 1 dividida)
+OK      pagina 6 (folha inteira girada) sai em pe sem mudar a proporcao: 0.774 ~ 0.774
+OK      anotado
+resultado => "4 de 4 certas; falhas: []"

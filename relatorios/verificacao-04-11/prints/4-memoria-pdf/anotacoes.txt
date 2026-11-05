@@ -1,0 +1,28 @@
+abriu-em-s => 2.3
+livro => {"pdf": "Sobre_a_Consolao_da_Filosofia_-_Severino_Bocio.pdf", "paginas": 50, "folhas": 50, "worktree": "D:\\programas\\EditorImpressao\\.claude\\worktrees\\memoria-pdf"}
+janela Processar => {"caminho": "C:\\Users\\fotog\\AppData\\Local\\Temp\\claude\\195a7ef9582f81cd\\e4fd3df2-ffc2-4ff8-9d6b-c5c2f4b2d0ca\\scratchpad\\trab\\4-memoria-pdf\\saida\\Boecio.pdf"}
+processar terminou => {"tela": 3, "s": 12.3}
+OK      1a vez: processou
+janela 'Antes de processar' => {"titulo": "Antes de processar", "botao": "continuar assim mesmo"}
+janela Processar => {"caminho": "C:\\Users\\fotog\\AppData\\Local\\Temp\\claude\\195a7ef9582f81cd\\e4fd3df2-ffc2-4ff8-9d6b-c5c2f4b2d0ca\\scratchpad\\trab\\4-memoria-pdf\\saida\\Boecio.pdf"}
+caixa => {"titulo": "Já existe um arquivo com esse nome", "texto": "Já existe um arquivo chamado:\nBoecio.pdf", "botoes": ["salvar como Boecio (2).pdf", "cancelar", "substituir o antigo"]}
+caixa => {"titulo": "Um momento", "texto": "Faltou memória no computador: outros programas abertos estão usando quase toda a memória. Feche o que não estiver usando. Nada do seu trabalho no livro se perdeu.", "botoes": ["tentar de novo", "entendi"]}
+processar terminou => {"tela": 2, "s": 11.5}
+aviso (entendi) => {"titulo": "Um momento", "texto": "Faltou memória no computador: outros programas abertos estão usando quase toda a memória. Feche o que não estiver usando. Nada do seu trabalho no livro se perdeu.", "botoes": ["tentar de novo", "entendi"]}
+OK      D-591: a frase palavra por palavra
+OK      botoes: ['tentar de novo', 'entendi']
+OK      'entendi': ficou na area de trabalho
+OK      o PDF antigo de mesmo nome ficou inteiro
+arquivos na pasta de saida => []
+OK      nenhum arquivo de trabalho sobrou
+janela 'Antes de processar' => {"titulo": "Antes de processar", "botao": "continuar assim mesmo"}
+janela Processar => {"caminho": "C:\\Users\\fotog\\AppData\\Local\\Temp\\claude\\195a7ef9582f81cd\\e4fd3df2-ffc2-4ff8-9d6b-c5c2f4b2d0ca\\scratchpad\\trab\\4-memoria-pdf\\saida\\Boecio.pdf"}
+caixa => {"titulo": "Já existe um arquivo com esse nome", "texto": "Já existe um arquivo chamado:\nBoecio.pdf", "botoes": ["salvar como Boecio (2).pdf", "cancelar", "substituir o antigo"]}
+caixa => {"titulo": "Um momento", "texto": "Faltou memória no computador: outros programas abertos estão usando quase toda a memória. Feche o que não estiver usando. Nada do seu trabalho no livro se perdeu.", "botoes": ["tentar de novo", "entendi"]}
+processar terminou => {"tela": 3, "s": 18.7}
+depois do tentar de novo => {"caixas": [{"titulo": "Já existe um arquivo com esse nome", "texto": "Já existe um arquivo chamado:\nBoecio.pdf", "botoes": ["salvar como Boecio (2).pdf", "cancelar", "substituir o antigo"]}, {"titulo": "Um momento", "texto": "Faltou memória no computador: outros programas abertos estão usando quase toda a memória. Feche o que não estiver usando. Nada do seu trabalho no livro se perdeu.", "botoes": ["tentar de novo", "entendi"]}], "tela": 3, "pdf mudou": true, "caminho_saida": "C:\\Users\\fotog\\AppData\\Local\\Temp\\claude\\195a7ef9582f81cd\\e4fd3df2-ffc2-4ff8-9d6b-c5c2f4b2d0ca\\scratchpad\\trab\\4-memoria-pdf\\saida\\Boecio.pdf"}
+OK      'tentar de novo': processou de novo ate o fim
+OK      o PDF novo saiu no mesmo nome e lugar
+OK      PDF com 50 paginas
+OK      nenhum arquivo de trabalho sobrou ([])
+resultado => "11 de 11 certas; falhas: []"

@@ -1,0 +1,27 @@
+caixa => {"titulo": "Fundo separado", "texto": "Este livro tem fundo separado. Quer tirar o fundo?", "botoes": ["Sim, tirar o fundo", "Não, deixar como está"]}
+abriu-em-s => 4.1
+livro => {"pdf": "Schn_Neues_Modell_Buch_-_Johann_Siebmacher.pdf", "paginas": 134, "folhas": 134, "worktree": "D:\\programas\\EditorImpressao\\.claude\\worktrees\\desfazer-pagina"}
+OK      folha 3 dividida
+Automatico => {"ok": true, "s": 174.8}
+OK      a folha 3 continua dividida depois do Automatico
+antes => [{"pag": 3, "folha": 3, "metade": "esquerda", "ang": null, "recorte": null, "filtro": "preto_e_branco", "escala": 1.0, "desloc": [0.0, 0.0], "inserida": 0, "apagada": false}, {"pag": 4, "folha": 3, "metade": "direita", "ang": null, "recorte": null, "filtro": "preto_e_branco", "escala": 1.0, "desloc": [0.0, 0.0], "inserida": 0, "apagada": false}]
+pagina-3: itens do menu => ["Desfazer nesta página"]
+pagina-3: caixinhas => {"Endireitar": {"acesa": true, "marcada": false}, "Corte das bordas": {"acesa": true, "marcada": false}, "Mover e tamanho": {"acesa": false, "marcada": false}, "Filtro": {"acesa": true, "marcada": false}, "Gravuras e fotos": {"acesa": false, "marcada": false}}
+pagina-3: marcadas => ["cortar", "filtro"]
+depois => [{"pag": 3, "folha": 3, "metade": "esquerda", "ang": null, "recorte": [0.0, 0.0, 1.0, 1.0], "filtro": "original", "escala": 1.0, "desloc": [0.0, 0.0], "inserida": 0, "apagada": false}, {"pag": 4, "folha": 3, "metade": "direita", "ang": null, "recorte": null, "filtro": "preto_e_branco", "escala": 1.0, "desloc": [0.0, 0.0], "inserida": 0, "apagada": false}, {"acoes": [2, 3], "ultima": "Desfazer na página 3: Corte das bordas e Filtro"}]
+OK      pagina 3 sem corte
+OK      pagina 3 em Original
+OK      pagina 3: o Endireitar (nao marcado) ficou
+OK      pagina 4 (a outra da folha) nao mudou
+OK      a folha continua dividida
+OK      uma acao so no Historico
+OK      Ctrl+Z volta a pagina 3 como estava
+OK      Ctrl+Y refaz
+miniatura-6: itens do menu => ["Desfazer nesta página", "", "adicionar página em branco antes", "adicionar página em branco depois"]
+miniatura-6: caixinhas => {"Endireitar": {"acesa": false, "marcada": false}, "Corte das bordas": {"acesa": true, "marcada": false}, "Mover e tamanho": {"acesa": false, "marcada": false}, "Filtro": {"acesa": true, "marcada": false}, "Gravuras e fotos": {"acesa": false, "marcada": false}}
+miniatura-6: marcadas => []
+OK      D-623: a miniatura tem 'adicionar pagina em branco antes/depois' no mesmo menu
+duas lado a lado: pagina do menu => {"clicada": 1, "menu": 5}
+pagina em branco => {"antes": 135, "depois": 135, "p7": {"pag": 7, "folha": 6, "metade": "inteira", "ang": null, "recorte": null, "filtro": "preto_e_branco", "escala": 1.0, "desloc": [0.0, 0.0], "inserida": 0, "apagada": false}, "da vez": 3, "rotulo": "página 3 de 135"}
+FALHOU  a pagina em branco entrou como a 7
+OK      Ctrl+Z tira a pagina em branco

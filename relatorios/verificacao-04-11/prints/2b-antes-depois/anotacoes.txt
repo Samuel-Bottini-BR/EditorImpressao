@@ -1,0 +1,11 @@
+caixa => {"titulo": "Fundo separado", "texto": "Este livro tem fundo separado. Quer tirar o fundo?", "botoes": ["Sim, tirar o fundo", "Não, deixar como está"]}
+abriu-em-s => 4.2
+livro => {"pdf": "Giovambattista_Palatino_cittadino_romano.pdf", "paginas": 134, "folhas": 134, "worktree": "D:\\programas\\EditorImpressao\\.claude\\worktrees\\mover-lado"}
+Filtro com antes/depois: cor de cada lado (0 = preto e branco) => {"esquerda": 0.0, "direita": 36.0, "linha": 0.5}
+Mover com antes/depois: cor de cada lado => {"esquerda": 0.0, "direita": 36.8, "linha": 0.5}
+arrasto do lado direito (rotulo 'depois') => {"desloc": [0.0, 0.0]}
+arrasto do lado esquerdo (rotulo 'antes') => {"desloc": [-0.1734, 0.0]}
+OK      arrastar do lado com o rotulo 'depois' nao move nada
+OK      arrastar do lado com o rotulo 'antes' move a pagina
+rotulos => {"esquerda": null, "textos": []}
+resultado => "3 de 3 certas; falhas: []"

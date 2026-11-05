@@ -1,0 +1,35 @@
+caixa => {"titulo": "Fundo separado", "texto": "Este livro tem fundo separado. Quer tirar o fundo?", "botoes": ["Sim, tirar o fundo", "Não, deixar como está"]}
+abriu-em-s => 4.3
+livro => {"pdf": "Schn_Neues_Modell_Buch_-_Johann_Siebmacher.pdf", "paginas": 134, "folhas": 134, "worktree": "D:\\programas\\EditorImpressao\\.claude\\worktrees\\girar-pagina"}
+botao dividir/nao dividir => "dividir esta"
+OK      a folha 3 ficou dividida pelo 'dividir esta'
+depois de dividir => [{"pagina": 3, "folha": 3, "metade": "esquerda", "giro_da_pagina": 0, "rotacao_da_folha": 0, "dividir": true, "linha": 0.7904, "recorte": null}, {"pagina": 4, "folha": 3, "metade": "direita", "giro_da_pagina": 0, "rotacao_da_folha": 0, "dividir": true, "linha": 0.7904, "recorte": null}]
+estado => {"aba": "bordas", "pagina": 3, "folha": 3, "mostrar": "uma", "feitas": 1, "desfazer": "Desfazer: Folha 3: dividir"}
+pagina 3 antes => {"tela": {"larg": 481, "alt": 471, "prop": 1.021, "md5": "c2bde355"}, "campos": {"pagina": 3, "folha": 3, "metade": "esquerda", "giro_da_pagina": 0, "rotacao_da_folha": 0, "dividir": true, "linha": 0.7904, "recorte": null}}
+pagina 4 antes => {"tela": {"larg": 128, "alt": 471, "prop": 0.272, "md5": "ee486574"}, "campos": {"pagina": 4, "folha": 3, "metade": "direita", "giro_da_pagina": 0, "rotacao_da_folha": 0, "dividir": true, "linha": 0.7904, "recorte": null}}
+botao => "¼ à esquerda"
+pagina 3 depois de 1/4 a esquerda => {"tela": {"larg": 471, "alt": 481, "prop": 0.979, "md5": "e2c04283"}, "campos": {"pagina": 3, "folha": 3, "metade": "esquerda", "giro_da_pagina": 270, "rotacao_da_folha": 0, "dividir": true, "linha": 0.7904, "recorte": null}, "estado": {"aba": "bordas", "pagina": 3, "folha": 3, "mostrar": "uma", "feitas": 2, "desfazer": "Desfazer: Girar ¼ à esquerda: a página 3"}}
+OK      a pagina 3 ficou girada (giro_da_pagina)
+OK      a folha 3 NAO girou (rotacao 0)
+OK      a pagina 3 so deitou (proporcao 1.021 -> 0.979, esperado ~0.979)
+OK      a pagina 4 e a linha da divisao nao mudaram (campos)
+OK      a pagina 4 na tela igual a antes ({'larg': 128, 'alt': 471, 'prop': 0.272, 'md5': 'ee486574'} / {'larg': 128, 'alt': 471, 'prop': 0.272, 'md5': 'ee486574'})
+pagina 3 depois de 2x esquerda => {"tela": {"larg": 481, "alt": 471, "prop": 1.021, "md5": "3c23d005"}, "campos": {"pagina": 3, "folha": 3, "metade": "esquerda", "giro_da_pagina": 180, "rotacao_da_folha": 0, "dividir": true, "linha": 0.7904, "recorte": null}}
+pagina 3 depois do canto a direita => {"tela": {"larg": 471, "alt": 481, "prop": 0.979, "md5": "e2c04283"}, "campos": {"pagina": 3, "folha": 3, "metade": "esquerda", "giro_da_pagina": 270, "rotacao_da_folha": 0, "dividir": true, "linha": 0.7904, "recorte": null}}
+pagina 3 depois de Ctrl+Seta direita => {"tela": {"larg": 481, "alt": 471, "prop": 1.021, "md5": "c2bde355"}, "campos": {"pagina": 3, "folha": 3, "metade": "esquerda", "giro_da_pagina": 0, "rotacao_da_folha": 0, "dividir": true, "linha": 0.7904, "recorte": null}, "estado": {"aba": "bordas", "pagina": 3, "folha": 3, "mostrar": "uma", "feitas": 5, "desfazer": "Desfazer: Girar ¼ à direita: a página 3"}}
+OK      esq+esq+dir+dir = volta a 0, folha sem giro
+depois de 3 Ctrl+Z => {"campos": {"pagina": 3, "folha": 3, "metade": "esquerda", "giro_da_pagina": 270, "rotacao_da_folha": 0, "dividir": true, "linha": 0.7904, "recorte": null}, "estado": {"aba": "bordas", "pagina": 3, "folha": 3, "mostrar": "uma", "feitas": 2, "desfazer": "Desfazer: Girar ¼ à esquerda: a página 3"}}
+OK      3 Ctrl+Z voltam ao 1/4 a esquerda
+OK      mais um Ctrl+Z volta a pagina como veio
+pagina 6 => {"pagina": 6, "folha": 5, "metade": "inteira", "giro_da_pagina": 0, "rotacao_da_folha": 0, "dividir": false, "linha": 0.5, "recorte": null}
+folha inteira girada => {"antes": {"larg": 609, "alt": 471, "prop": 1.293, "md5": "82c714f3"}, "depois": {"larg": 471, "alt": 609, "prop": 0.773, "md5": "356c1012"}, "campos": {"pagina": 6, "folha": 5, "metade": "inteira", "giro_da_pagina": 0, "rotacao_da_folha": 270, "dividir": false, "linha": 0.5, "recorte": null}}
+OK      folha inteira: a folha girou
+OK      folha inteira: so deitou, sem esticar (proporcao 1.293 -> 0.773)
+folha inteira girada no mover => {"tela": {"larg": 471, "alt": 609, "prop": 0.773, "md5": "356c1012"}, "estado": {"aba": "mover", "pagina": 6, "folha": 5, "mostrar": "uma", "feitas": 2, "desfazer": "Desfazer: Girar ¼ à esquerda: a folha 5"}}
+folha inteira girada no endireitar => {"tela": null, "estado": {"aba": "marcar", "pagina": 6, "folha": 5, "mostrar": "uma", "feitas": 2, "desfazer": "Desfazer: Girar ¼ à esquerda: a folha 5"}}
+OK      Ctrl+Z desgira a folha inteira
+dividir duas lado a lado => {"aba": "corte", "pagina": 3, "folha": 3, "mostrar": "duas", "feitas": 1, "desfazer": "Desfazer: Folha 3: dividir"}
+endireitar com a pagina 3 girada => {"tela": null, "estado": {"aba": "marcar", "pagina": 3, "folha": 3, "mostrar": "uma", "feitas": 2, "desfazer": "Desfazer: Girar ¼ à direita: a página 3"}, "campos": {"pagina": 3, "folha": 3, "metade": "esquerda", "giro_da_pagina": 90, "rotacao_da_folha": 0, "dividir": true, "linha": 0.7904, "recorte": null}}
+bloco girar: textos => ["Girar a folha", "aplicar em:"]
+bloco girar: listas => [["só esta folha", "todas as folhas", "daqui em diante", "só as pares", "só as ímpares"]]
+resultado => "13 de 13 certas; falhas: []"
