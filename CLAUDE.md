@@ -659,6 +659,10 @@ Valem para a gerente, para todos os agentes (`.claude/agents/`) e para qualquer 
    - Antes de entregar, rode as provas das decisões (`tests/test_decisoes*.py`) e os testes dos arquivos que tocou; o GitHub roda todos. Teste antigo que quebra faz a entrega voltar: nunca mude um teste antigo para ele passar.
    - O verificador confere também o que já funcionava ao redor (clicando, nos trabalhos de tela), não só o item novo.
 
+9. **Pensar em quem usa e no livro pronto, e deixar anotado (Samuel, 05/11/2026, D-637).** "só garanta que não crie mais problemas fazendo isso, você tem que pensar na experiencia do usario e no resultado final do livro dentro do programa, quando vai mudar algo, deixe isso anotado." Vale para a gerente e para todos os agentes. Na prática:
+   - Antes de mexer, escreva no ONDE-PAREI a seção "Como fica para quem usa e no livro": o que o Kaique vê e faz, passo a passo, antes e depois da mudança, e o que muda (ou não) no PDF que sai.
+   - Na entrega, confira essa seção clicando no programa e olhando o PDF, e diga se a mudança criou algum problema novo. Sem essa seção, a entrega não se junta.
+
 **Obra de 26/10/2026 (D-014):** o Samuel mandou fazer a obra inteira (plano de 26/10, etapas 0 a 11) "até o final sem
 pausas" e conferir tudo no fim. Durante essa obra **não valem** as regras de conferir cada item antes do próximo e de
 uma fase por vez (§10, item 2; regras de 19/10): cada etapa é feita, testada e juntada no ramo `obra-2026-10-26`; nada

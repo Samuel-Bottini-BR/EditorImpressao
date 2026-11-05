@@ -162,3 +162,5 @@ Detalhe em `CLAUDE.md` §4.6 a §4.9.
 - Se a coisa nova mudaria uma dessas escolhas, pare e pergunte (a gerente leva à Central). Nunca mude em silêncio, nem "por enquanto".
 - Antes de entregar, rode as provas das decisões (`tests/test_decisoes*.py`) e os testes dos arquivos que tocou; o GitHub roda todos. Teste antigo que quebra faz a entrega voltar: nunca mude um teste antigo para ele passar.
 - O verificador confere também o que já funcionava ao redor (clicando, nos trabalhos de tela), não só o item novo.
+
+**Regra D-637 (Samuel, 05/11/2026):** "você tem que pensar na experiencia do usario e no resultado final do livro dentro do programa, quando vai mudar algo, deixe isso anotado." Antes de mexer, escreva no ONDE-PAREI a seção "Como fica para quem usa e no livro" (o que o Kaique vê e faz, passo a passo, e o que muda no PDF); na entrega, confira clicando e olhando o PDF, e diga se criou problema novo. Ver `CLAUDE.md` §11.9.
