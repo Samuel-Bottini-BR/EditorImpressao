@@ -134,6 +134,16 @@ todos passaram.
 GitHub ("Testes no Windows"): rodada 41948429688 (merge `9e21350b`) passou. Depois do conserto:
 rodada 41958485208 (ponta `76329644`, com o conserto) passou.
 
+05/11, depois do achado C (sem os dois pontos, `b0e2edb1`): no PC, um por vez, passaram
+`test_decisoes_caderno_numeros` 9, `test_decisoes_caderno_tela_grande` 14 (+1 pulado), `test_decisoes_livreto_ver`
+13 (+1 pulado), `test_dialogo_impressao` 5, `test_decisoes_impressao` 22, `test_impressao` 17,
+`test_caderno_segue_as_etapas` 11, `test_decisoes_capa_aberta` 6, `test_decisoes_ordem_folhas` 12,
+`test_decisoes_montar_cadernos` 13, `test_decisoes_9b1` 25, `test_cadernos` 28,
+`test_decisoes_automatico_ver_como_fica` 22, `test_decisoes_automatico` 29, `test_decisoes_9b2` 30,
+`test_decisoes_automatico_opcoes_do_filtro` 21, `test_decisoes_gravuras_cinza` 20, `test_decisoes_previa_dividida` 4,
+`test_decisoes_previa_numero` 8, `test_decisoes_so_as_letras` 5, `test_decisoes_tela` 35.
+GitHub: rodada 41974099823 (ponta `45d7a5e7`) passou.
+
 ## Perguntas para o Samuel
 
 1. **Lugar sem página no fim do caderno** (D-604: "a confirmar com ele se aparecer" — apareceu).
