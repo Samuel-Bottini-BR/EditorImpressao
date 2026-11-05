@@ -69,6 +69,8 @@ folha (ou girar com o livro ainda não dividido).
   Automático. Com a D-618 o giro está na página 1 (`giro_da_pagina == 90`, guardado; a folha não está mais dividida,
   então ele não aparece até o Ctrl+Z dividir de novo, e aí volta). Não mexi (só o ajudante foi autorizado).
   Proposta: `assert janela.projeto.paginas[0].giro_da_pagina == 90  # o trabalho ficou (D-618: na página)`.
+- Depois, a gerente autorizou também a linha 170: trocada em commit separado (064b2e4e), com comentário citando a
+  D-618. Agora os 13 testes do arquivo passam (PC 05/11 e GitHub 41948211799).
 - Achado e consertado (b12d6f61): juntar a folha e dividir noutra linha fazia as metades novas herdarem o giro.
 
 ## Andamento
@@ -80,6 +82,14 @@ folha (ou girar com o livro ainda não dividido).
 - [x] prints depois, e o que funcionava ao redor: `prints/depois-*.png`
 - [x] folha inteira: medida (`prints/folha-*.png`) e, depois do "girar - sim", gira como foto (`prints/foto-*.png`)
 - [x] GitHub: suíte 41903363460 (só o teste antigo que contradiz a D-618 falha); velocidade 41900198976 igual
+- [x] linha 170 do teste do recomeço trocada em commit separado (064b2e4e), autorizada pela gerente, comentário cita a D-618
+- [x] 05/11: juntei o `obra-2026-10-26` (f06e0c15) sem conflito (merge b23ad645). O giro da página anda junto com
+  a página quando a ordem das páginas muda (core/ordem_das_paginas move os mesmos objetos).
+- [x] 05/11, PC (um arquivo por vez, `resultado-testes.txt`): os 40 `test_decisoes*.py` e 15 arquivos do girar,
+  Dividir, PDF, camadas e recomeço passam. Na série, `test_d148` (instável conhecido) falhou uma vez; de novo,
+  sozinho e com o arquivo inteiro, passou (5 passed). `test_recomeco_limpa_o_historico.py`: 13 passed.
+- [x] 05/11, GitHub: rodada **41948211799** em b23ad645, **passou inteira** (success).
+- [ ] falta: resposta do Samuel à pergunta 1; depois disso, a gerente junta
 
 ## Como cumpri cada decisão
 
@@ -93,3 +103,8 @@ folha (ou girar com o livro ainda não dividido).
 - D-487: o girar da grade não foi mexido (fica na pergunta 1). D-601 / D-609: `test_decisoes_dividir_*` passam.
 - Projeto antigo abre igual: `test_d618_projeto_antigo_sem_o_campo_abre_igual` e
   `test_d618_a_geometria_das_zonas_de_antes_continua_igual`.
+- D-605 (o novo não estraga o testado): nenhum teste antigo mudou, fora a exceção autorizada da D-618
+  (ajudante em b4a5538c e linha 170 em 064b2e4e, os dois com comentário citando a D-618). Depois do merge com o
+  `obra-2026-10-26`: PC e GitHub (41948211799) passam.
+- Pergunta 1 (nome do bloco e "aplicar em" numa folha dividida; girar da grade "ver todas"): NÃO decidida, o
+  código continua como estava; espera o Samuel.

@@ -57,3 +57,62 @@ test_decisoes_automatico.py :: 29 passed in 167.46s (0:02:47)
 test_recomeco_limpa_o_historico.py :: 1 failed, 12 passed in 80.46s (0:01:20)
     FAILED tests/test_recomeco_limpa_o_historico.py::test_desligar_o_dividir_nao_recomeca_e_o_ctrl_z_continua_certo
 FIM
+--- depois do merge do obra-2026-10-26 (05/11) ---
+test_decisoes.py :: 26 passed in 89.73s (0:01:29)
+test_decisoes_9b1.py :: 25 passed, 16 warnings in 91.10s (0:01:31)
+test_decisoes_9b2.py :: 30 passed in 111.13s (0:01:51)
+test_decisoes_automatico.py :: 29 passed in 194.54s (0:03:14)
+test_decisoes_automatico_margens_no_depois.py :: 5 passed in 35.86s
+test_decisoes_automatico_opcoes_do_filtro.py :: 21 passed in 148.45s (0:02:28)
+test_decisoes_automatico_ver_como_fica.py :: 22 passed in 149.21s (0:02:29)
+test_decisoes_avisos.py :: 22 passed in 92.00s (0:01:31)
+test_decisoes_caderno_tela_grande.py :: 14 passed, 1 skipped in 74.55s (0:01:14)
+test_decisoes_capa_aberta.py :: 6 passed in 22.80s
+test_decisoes_dividir.py :: 21 passed in 82.90s (0:01:22)
+test_decisoes_dividir_arrastar.py :: 16 passed in 38.84s
+test_decisoes_dividir_aviso.py :: 11 passed in 27.87s
+test_decisoes_dividir_linha.py :: 13 passed in 20.38s
+test_decisoes_dividir_metade.py :: 6 passed in 11.71s
+test_decisoes_ferramentas_antes_depois.py :: 12 passed in 23.51s
+test_decisoes_ferramentas_lado.py :: 9 passed in 13.69s
+test_decisoes_filtro_automatico.py :: 4 passed in 24.77s
+test_decisoes_girar_pagina.py :: 20 passed in 33.24s
+test_decisoes_gravuras_cinza.py :: 20 passed in 101.39s (0:01:41)
+test_decisoes_impressao.py :: 22 passed in 22.98s
+test_decisoes_juntar_todas.py :: 4 passed in 14.02s
+test_decisoes_livreto_ver.py :: 13 passed, 1 skipped in 34.11s
+test_decisoes_marcacoes.py :: 19 passed in 23.85s
+test_decisoes_montar_cadernos.py :: 13 passed in 128.72s (0:02:08)
+test_decisoes_mover.py :: 13 passed in 49.92s
+test_decisoes_mover_lado.py :: 7 passed in 16.93s
+test_decisoes_nucleo.py :: 38 passed in 9.25s
+test_decisoes_nucleo2.py :: 21 passed in 33.22s
+test_decisoes_ordem_folhas.py :: 12 passed in 24.44s
+test_decisoes_previa_dividida.py :: 4 passed in 29.40s
+test_decisoes_previa_numero.py :: 8 passed in 23.81s
+test_decisoes_respeitar_gravuras.py :: 19 passed in 146.29s (0:02:26)
+test_decisoes_shift_todas_as_telas.py :: 10 passed in 27.25s
+test_decisoes_so_as_letras.py :: 1 failed, 4 passed in 61.74s (0:01:01)
+    FAILED tests/test_decisoes_so_as_letras.py::test_d148_desfazer_o_automatico_devolve_o_so_as_letras_do_livro
+test_decisoes_tamanho_no_par.py :: 5 passed in 22.92s
+test_decisoes_tela.py :: 35 passed, 4 warnings in 131.00s (0:02:11)
+test_decisoes_tira_em_pares.py :: 4 passed in 27.79s
+test_decisoes_tira_pares_juntas.py :: 3 passed in 12.08s
+test_decisoes_ver.py :: 11 passed in 59.71s
+test_recomeco_limpa_o_historico.py :: 13 passed in 62.14s (0:01:02)
+test_girar.py :: 53 passed in 26.44s
+test_girar_na_tela.py :: 22 passed in 83.24s (0:01:23)
+test_girar_cartoes_e_previas.py :: 23 passed in 78.77s (0:01:18)
+test_ajustar_pedaco_na_folha_girada.py :: 8 passed in 15.67s
+test_dividir_no_programa.py :: 19 passed in 80.52s (0:01:20)
+test_dividir_na_tela.py :: 9 passed in 68.47s (0:01:08)
+test_caixinha_do_dividir_nao_volta.py :: 9 passed in 75.91s (0:01:15)
+test_bug_04_11_pincel_tamanho.py :: 4 passed in 10.65s
+test_pipeline_folha.py :: 7 passed in 7.03s
+test_corte_previa_igual_pdf.py :: 4 passed in 7.24s
+test_paineis_na_tela.py :: 22 passed in 90.88s (0:01:30)
+test_camadas.py :: 90 passed in 236.92s (0:03:56)
+test_borda_preta.py :: 29 passed in 19.36s
+test_impressao.py :: 17 passed in 7.53s
+FIM
+test_decisoes_so_as_letras.py (de novo, sozinho, 05/11) :: 5 passed in 20.47s  (o test_d148 e instavel conhecido; passou tambem sozinho: 1 passed)
