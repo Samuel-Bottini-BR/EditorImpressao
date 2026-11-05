@@ -1,0 +1,8 @@
+02:50:12 código de D:\programas\EditorImpressao\.claude\worktrees\memoria-pdf-antes (core.pipeline em D:\programas\EditorImpressao\.claude\worktrees\memoria-pdf-antes\core\pipeline.py); tem PDFQueVaiParaODisco: False
+02:50:12 livro Sobre a Consolação da Filosofia - Severino Boécio.pdf: 50 folhas copiadas
+02:50:21 análise pronta em 8 s; páginas esperadas no PDF: 50
+02:50:21 0/50 Página 1 de 50
+02:50:52 20/50 Página 21 de 50
+02:51:23 40/50 Página 41 de 50
+02:51:36 gravando o PDF
+02:51:38 fim: {"paginas_esperadas": 50, "paginas_no_pdf": 50, "pdf_mb": 115.0, "erro": null, "segundos": {"analisar": 8.4, "processar": 76.7}, "pico_total": {"privado_mb": 1640, "rss_mb": 655, "filhos_mb": 1106, "privado_mais_filhos_mb": 2740, "menor_livre_no_windows_mb": 3086}}

@@ -32,9 +32,20 @@ Pedido do Samuel (04/11/2026): "o teste foi feito com um pdf só?" — foi (só 
 ## Andamento
 
 - [x] Scripts e ensaio de 5 folhas (Boécio, novo e antigo: iguais).
-- [ ] Código novo, 9 livros (`rodar_novo.sh`), do maior para o menor.
-- [ ] Código antigo em 2 livros (um pequeno, um grande que não caia) e comparação.
-- [ ] Relatório nos três formatos em `../nove-livros/`, commit e push.
+- [x] Código novo, 9 livros (`rodar_novo.sh`, 04-05/11, 23:59 a 02:49): os 9 terminaram, páginas certas.
+  Marial em pedaço de 500 de 907 folhas, Graduale de 300 de 750. Memória de base sobe 24 a 69 MB no livro todo.
+- [x] Código antigo em 5 livros (Boécio, Pesel, Siebmacher, Palatino; `rodar_antigo.sh`) e no Na escola de Jesus
+  (PDF de 1,2 GB; `rodar_antigo_grande.sh`): os 5 PDFs iguais ao novo (todas as páginas byte a byte nas
+  imagens, 12 páginas pixel a pixel). Prova do comparador: Palatino x Siebmacher, tudo diferente.
+- [x] Relatório nos três formatos em `../nove-livros/relatorio.(md|html|pdf)`.
+
+## Como cumpri cada decisão
+
+- **CLAUDE.md §3 (o pico não pode crescer com o livro):** medido nos 9 livros (tabela "começo contra fim" do
+  relatório). Cumprida no processar, uma página por vez.
+- **D-304 / D-605 (sem perda; o novo não muda o testado):** PDF novo igual ao antigo em 5 livros.
+- Acervo só lido; nenhum código do programa mudado. Os PDFs de saída ficam em `trabalho/` (fora do git, por
+  `*.pdf`); a cópia `.claude/worktrees/memoria-pdf-antes` (código antigo) foi criada por mim.
 
 ## Perguntas para o Samuel
 

@@ -1,0 +1,14 @@
+03:04:08 código de D:\programas\EditorImpressao\.claude\worktrees\memoria-pdf-antes (core.pipeline em D:\programas\EditorImpressao\.claude\worktrees\memoria-pdf-antes\core\pipeline.py); tem PDFQueVaiParaODisco: False
+03:04:09 livro Giovambattista Palatino cittadino romano.pdf: 134 folhas copiadas
+03:05:17 análise pronta em 69 s; páginas esperadas no PDF: 134
+03:05:18 0/134 Página 1 de 134
+03:05:49 17/134 Página 18 de 134
+03:06:20 32/134 Página 33 de 134
+03:06:52 48/134 Página 49 de 134
+03:07:23 63/134 Página 64 de 134
+03:07:54 77/134 Página 78 de 134
+03:08:25 94/134 Página 95 de 134
+03:08:55 110/134 Página 111 de 134
+03:09:26 126/134 Página 127 de 134
+03:09:40 gravando o PDF
+03:09:49 fim: {"paginas_esperadas": 134, "paginas_no_pdf": 134, "pdf_mb": 368.0, "erro": null, "segundos": {"analisar": 68.6, "processar": 270.6}, "pico_total": {"privado_mb": 1967, "rss_mb": 974, "filhos_mb": 1270, "privado_mais_filhos_mb": 3158, "menor_livre_no_windows_mb": 3240}}

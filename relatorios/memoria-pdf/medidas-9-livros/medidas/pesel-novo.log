@@ -1,0 +1,13 @@
+02:43:08 código de D:\programas\EditorImpressao\.claude\worktrees\memoria-pdf (core.pipeline em D:\programas\EditorImpressao\.claude\worktrees\memoria-pdf\core\pipeline.py); tem PDFQueVaiParaODisco: True
+02:43:09 livro POINTS d´ANCIENNES BRODERIES ANGLAISES - Louisa F. Pesel.pdf: 92 folhas copiadas
+02:44:33 análise pronta em 84 s; páginas esperadas no PDF: 92
+02:44:33 0/92 Página 1 de 92
+02:45:04 15/92 Página 16 de 92
+02:45:36 27/92 Página 28 de 92
+02:46:10 39/92 Página 40 de 92
+02:46:43 51/92 Página 52 de 92
+02:47:15 63/92 Página 64 de 92
+02:47:46 75/92 Página 76 de 92
+02:48:16 90/92 Página 91 de 92
+02:48:20 gravando o PDF
+02:48:25 fim: {"paginas_esperadas": 92, "paginas_no_pdf": 92, "pdf_mb": 237.7, "erro": null, "segundos": {"analisar": 83.8, "processar": 231.3}, "pico_total": {"privado_mb": 1729, "rss_mb": 731, "filhos_mb": 1432, "privado_mais_filhos_mb": 3111, "menor_livre_no_windows_mb": 2725}}
