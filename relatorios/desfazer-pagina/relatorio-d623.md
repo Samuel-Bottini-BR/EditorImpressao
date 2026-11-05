@@ -47,7 +47,18 @@ Arquivos: `core/paginas_em_branco.py` (novo), `modelos.py`, `historico_acoes.py`
   lugar dela e a lista da etapa 7); a folha dividida e o "não dividir esta"; arrastar a página em
   branco; fechar e abrir o projeto; projeto antigo.
 - Reversão: os 9 falham no código de antes (`reversao-d623.txt`).
-- Antigos no PC, um arquivo por vez: `testes-no-pc-d623.txt`. Nenhum teste antigo foi mudado.
+- **Projeto antigo de verdade abre igual** (`prova-projeto-antigo.txt`): o projeto do Gradus
+  gravado antes da D-623 (sem o campo novo), aberto pelo código de antes e pelo de agora: o
+  projeto gravado de novo, as 70 páginas que vão para o PDF, o caminho rápido dos cadernos, a
+  lista de 140 do caderno da etapa 7 e o desenho final das 70 páginas: tudo igual.
+- Antigos no PC, um arquivo por vez (os 41 `test_decisoes*.py` e os dos arquivos tocados):
+  `testes-no-pc-d623.txt`, todos passam (um erro de tempo com o PC carregado passou sozinho).
+  Nenhum teste antigo foi mudado.
+- Antes de testar, a obra de 04/11 (D-617 parte 2) foi juntada neste ramo: sem conflito.
+- GitHub: a primeira rodada (41949496078) acusou só um teste novo da D-621, por tempo (o
+  botão apertado antes de a prévia ficar pronta, na máquina lenta); o teste passou a esperar a
+  prévia, como a pessoa espera. Nada do programa mudou. Rodada nova e filtro de velocidade: no
+  ONDE-PAREI.
 
 ## Janela de verdade (Gradus Primus, cópia)
 

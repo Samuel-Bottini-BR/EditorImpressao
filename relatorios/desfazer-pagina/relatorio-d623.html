@@ -1,0 +1,147 @@
+<!doctype html>
+<html lang="pt-BR">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Página em branco pelo botão direito (D-623)</title>
+<style>
+:root { color-scheme: light dark; }
+* { box-sizing: border-box; }
+body {
+  font: 17px/1.65 "Segoe UI", system-ui, sans-serif;
+  max-width: 46rem; margin: 0 auto; padding: 2.5rem 1.5rem 6rem;
+  color: #1c1c1e; background: #fdfdfc;
+}
+h1 { font-size: 2rem; line-height: 1.2; margin: 0 0 .3em; letter-spacing: -.02em; }
+h2 { font-size: 1.35rem; margin: 2.4em 0 .6em; padding-top: .8em;
+     border-top: 1px solid #e6e4e0; letter-spacing: -.01em; }
+h3 { font-size: 1.1rem; margin: 1.8em 0 .4em; }
+h1 + p, h2 + p { margin-top: .4em; }
+p, li { margin: 0 0 .9em; }
+ul, ol { padding-left: 1.3em; }
+strong { font-weight: 640; }
+code {
+  font: .88em ui-monospace, "Cascadia Code", Consolas, monospace;
+  background: #f1efec; padding: .12em .35em; border-radius: 4px;
+}
+pre {
+  background: #f1efec; padding: 1em 1.1em; border-radius: 8px;
+  overflow-x: auto; line-height: 1.5;
+}
+pre code { background: none; padding: 0; }
+blockquote {
+  margin: 1.2em 0; padding: .1em 0 .1em 1.1em;
+  border-left: 3px solid #c9c5be; color: #55524d;
+}
+table {
+  border-collapse: collapse; width: 100%; margin: 1.2em 0;
+  font-size: .95rem; display: block; overflow-x: auto;
+}
+th, td { padding: .5em .8em; text-align: left; border-bottom: 1px solid #e6e4e0; }
+th { font-weight: 620; background: #f7f5f2; white-space: nowrap; }
+tr:last-child td { border-bottom: none; }
+img { max-width: 100%; height: auto; border-radius: 6px; margin: 1em 0;
+      border: 1px solid #e6e4e0; }
+hr { border: none; border-top: 1px solid #e6e4e0; margin: 2.5em 0; }
+.rodape { margin-top: 4em; padding-top: 1.2em; border-top: 1px solid #e6e4e0;
+          font-size: .85rem; color: #86827c; }
+@media (prefers-color-scheme: dark) {
+  body { color: #e8e6e3; background: #1a1917; }
+  h2 { border-top-color: #35332f; }
+  code, pre, th { background: #262421; }
+  th, td { border-bottom-color: #35332f; }
+  blockquote { border-left-color: #4a4741; color: #b0aca6; }
+  img { border-color: #35332f; }
+  .rodape { border-top-color: #35332f; color: #7d7973; }
+}
+@media print {
+  body { max-width: none; padding: 0; color: #000; background: #fff; }
+  h2 { page-break-after: avoid; }
+  table, img { page-break-inside: avoid; }
+}
+</style>
+</head>
+<body>
+<h1>Página em branco pelo botão direito (D-623): entrega</h1>
+<p><strong>Em uma frase:</strong> o botão direito numa miniatura da tira de baixo mostra, embaixo do "Desfazer
+nesta página", "adicionar página em branco antes" e "adicionar página em branco depois"; a página
+em branco tem o tamanho da clicada, entra no livro, no PDF e nos cadernos, "tirar do livro" a
+tira, e o Ctrl+Z desfaz.</p>
+<p>Teste de <strong>máquina</strong> (provas em <code>tests/test_decisoes_pagina_em_branco.py</code>) e janela de verdade
+pilotada por mensagens do Windows no Gradus Primus (cópia), com prints. Nada aqui está aprovado.</p>
+<h2>O pedido (palavras do Samuel)</h2>
+<p>Print a-80: "as paginas ainda estão em lugar errado né? eu queria conseguir com botão direito
+apertando no meio das paginas aperece opção de adicionar folha em branco."</p>
+<h2>Como ficou</h2>
+<ul>
+<li>Botão direito numa miniatura da tira: o menu tem "Desfazer nesta página &gt;" (D-621), uma linha, e
+  os dois itens novos (print <code>prints-d623/03-menu-com-o-item-em-destaque.png</code>). Na página da área
+  de trabalho o menu continua só com o "Desfazer nesta página" (a D-623 fala da tira).</li>
+<li>"depois" põe a página em branco logo depois da clicada; "antes", logo antes. Na ferramenta
+  Dividir, a miniatura de uma folha inteira vale pela folha: antes da folha ou depois dela.</li>
+<li>A página em branco copia o tamanho da clicada (a folha, a metade, o corte, o ângulo, o tamanho
+  de folha e o mover) e sai toda branca. Na tira ela aparece branca. A tela fica na página em que
+  estava.</li>
+<li>Uma ação só no Histórico ("Página em branco depois da página 2"). Ctrl+Z tira, Ctrl+Y põe de
+  novo. "tirar do livro" a tira do PDF, como qualquer página.</li>
+<li>Pode ser mudada de lugar arrastando (D-615), como as outras.</li>
+</ul>
+<h2>O modelo de dados (a mudança que a D-623 autorizou)</h2>
+<p>Cada página ganhou o campo <code>inserida</code>: 0 = veio do PDF (o de sempre); um número = página em branco
+posta à mão. O projeto antigo não tem o campo e abre com 0: igual ponto por ponto (prova
+<code>test_d623_projeto_antigo_abre_igual</code>). A página posta não é "da folha": dividir ou juntar a folha
+à mão, o Dividir do Automático e mudar a folha de lugar não a levam junto (prova com a folha
+dividida e o "não dividir esta").</p>
+<p>Arquivos: <code>core/paginas_em_branco.py</code> (novo), <code>modelos.py</code>, <code>historico_acoes.py</code>,
+<code>core/ordem_das_paginas.py</code>, <code>core/dividir_a_mao.py</code>, <code>core/automatico.py</code>, <code>core/pipeline.py</code>
+(a página posta sai sempre branca), <code>ui/tela_conferir.py</code>, <code>ui/desfazer_nesta_pagina.py</code>.</p>
+<h2>Testes</h2>
+<ul>
+<li>Novos, <code>tests/test_decisoes_pagina_em_branco.py</code>: 9 casos, todos passam. O menu da miniatura;
+  "depois" na 2 vira a 3 do tamanho da 2 (o exemplo do Livro); "antes" na 1; Ctrl+Z (o PDF volta
+  igual ponto por ponto) e Ctrl+Y; "tirar do livro"; os cadernos (PDF com a página em branco no
+  lugar dela e a lista da etapa 7); a folha dividida e o "não dividir esta"; arrastar a página em
+  branco; fechar e abrir o projeto; projeto antigo.</li>
+<li>Reversão: os 9 falham no código de antes (<code>reversao-d623.txt</code>).</li>
+<li><strong>Projeto antigo de verdade abre igual</strong> (<code>prova-projeto-antigo.txt</code>): o projeto do Gradus
+  gravado antes da D-623 (sem o campo novo), aberto pelo código de antes e pelo de agora: o
+  projeto gravado de novo, as 70 páginas que vão para o PDF, o caminho rápido dos cadernos, a
+  lista de 140 do caderno da etapa 7 e o desenho final das 70 páginas: tudo igual.</li>
+<li>Antigos no PC, um arquivo por vez (os 41 <code>test_decisoes*.py</code> e os dos arquivos tocados):
+  <code>testes-no-pc-d623.txt</code>, todos passam (um erro de tempo com o PC carregado passou sozinho).
+  Nenhum teste antigo foi mudado.</li>
+<li>Antes de testar, a obra de 04/11 (D-617 parte 2) foi juntada neste ramo: sem conflito.</li>
+<li>GitHub: a primeira rodada (41949496078) acusou só um teste novo da D-621, por tempo (o
+  botão apertado antes de a prévia ficar pronta, na máquina lenta); o teste passou a esperar a
+  prévia, como a pessoa espera. Nada do programa mudou. Rodada nova e filtro de velocidade: no
+  ONDE-PAREI.</li>
+</ul>
+<h2>Janela de verdade (Gradus Primus, cópia)</h2>
+<p>Anotações em <code>anotacoes-d623.txt</code>, prints em <code>prints-d623/</code>. A cópia de teste do Gradus mudou desde
+a D-621 (alguém a deixou com as folhas juntas e o "dividir" para refazer): o livro abriu com 70
+páginas, e o Ctrl+Y da primeira vez refez esse "dividir" (140 páginas). Não mexe no que se testa.</p>
+<ul>
+<li><code>02</code>, <code>03</code>: botão direito na miniatura 2 e o menu.</li>
+<li><code>04</code>: a tira com a página em branco na 3 (71 páginas, 71 no PDF, 141 no caderno da etapa 7).</li>
+<li><code>05</code>: a página 3: "Esta página vai sair em branco"; do tamanho da folha 2 (inteira, deitada).</li>
+<li><code>06</code>, <code>07</code>: Ctrl+Z (some) e Ctrl+Y (volta).</li>
+<li><code>09</code>: "antes" na miniatura 1: a página em branco vira a 1.</li>
+<li><code>10</code>: "tirar do livro" na página em branco: sai do PDF.</li>
+</ul>
+<h2>Ressalvas</h2>
+<ul>
+<li>No piloto, o clique esquerdo por mensagem do Windows num item comum do menu (com a janelinha do
+  menu posta fora da tela) fechava o menu sem escolher; o item foi escolhido pelo teclado do
+  mesmo menu (setas e Enter, também por mensagens). As caixinhas da D-621 foram clicadas
+  normalmente. Na mão do Samuel o clique comum deve valer: é um menu do Qt como os outros.</li>
+<li>A página em branco copia o tamanho da vizinha na hora em que é posta. Se depois a folha da
+  vizinha for dividida, a página em branco continua do tamanho de antes (a folha inteira).</li>
+<li>O botão "voltar a página" aparece na página em branco (é o do "deixar em branco"); apertar não a
+  faz mostrar a folha da vizinha: ela continua saindo branca.</li>
+</ul>
+<h2>Perguntas abertas</h2>
+<p>Nenhuma bloqueou. Escolhas de detalhe, pelo que o programa já faz: os dois itens vêm embaixo do
+"Desfazer nesta página", com uma linha entre eles; a tela não muda de página.</p>
+<p class="rodape">Editor de Impressão &middot; gerado em 04/11/2026 às 22:28</p>
+</body>
+</html>

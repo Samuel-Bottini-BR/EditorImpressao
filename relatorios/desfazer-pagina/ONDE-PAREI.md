@@ -116,9 +116,36 @@ eles). Tudo numa ação só do Histórico.
   em comum com a D-623
 - [x] reversão: os 9 falham no código de antes (`reversao-d623.txt`)
 - [x] projeto antigo de verdade (Gradus) abre igual (`prova-projeto-antigo.txt`, `prova_projeto_antigo.py`)
-- [ ] testes no PC, arquivo por arquivo (`testes-no-pc-d623.txt`)
-- [ ] GitHub: testes 41949496078, velocidade 41949515821
-- [ ] relatório nos três formatos (`relatorio-d623.md/.html/.pdf`)
+- [x] testes no PC, arquivo por arquivo (`testes-no-pc-d623.txt`): todos passam (o
+  `test_decisoes_montar_cadernos.py` teve um erro de tempo com o PC carregado; sozinho, passa)
+- [x] GitHub testes 41949496078: falhou só `test_d621_a_pagina_fica_igual_a_deixar_como_veio_e_nao_cortar_esta`
+  (teste novo desta tarefa) por tempo: o botão foi apertado antes de a prévia prender a marcação
+  ("Um momento"). Conserto só no teste (`2222f348`), nada do programa
+- [ ] GitHub testes de novo: 41955321135
+- [ ] GitHub filtro de velocidade: 41949515821 (código de `33a45365`; depois disso só mudou teste)
+- [x] relatório nos três formatos (`relatorio-d623.md/.html/.pdf`)
+
+## Como cumpri cada decisão (D-623)
+
+- D-623 "botão direito [...] no meio das paginas [...] adicionar folha em branco": botão direito
+  numa miniatura da tira → "adicionar página em branco antes" / "depois", embaixo do "Desfazer
+  nesta página" (mesmo menu da D-621). Prova: `test_d623_menu_da_miniatura_tem_antes_e_depois_junto_do_desfazer`;
+  prints `prints-d623/02`, `03`, `08`.
+- "tamanho das vizinhas": a página em branco copia o tamanho da clicada (folha, metade, corte,
+  ângulo, folha de papel, mover). Print `05` (a página 3 do tamanho da folha 2).
+- "entra no livro, no PDF e nos cadernos": `test_d623_entra_nos_cadernos` (PDF com cadernos e a
+  lista da etapa 7); prints `04` (71 páginas, 71 no PDF, 141 no caderno).
+- "'tirar do livro' a remove": `test_d623_tirar_do_livro_remove_a_pagina_em_branco`; print `10`.
+- "Ctrl+Z desfaz": `test_d623_ctrl_z_tira_e_ctrl_y_poe_de_novo` (o PDF volta igual ponto por
+  ponto); prints `06`, `07`.
+- "projeto antigo abre igual": `test_d623_projeto_antigo_abre_igual` e o projeto de verdade do
+  Gradus aberto pelo código de antes e pelo de agora, tudo igual (`prova-projeto-antigo.txt`).
+- D-615/D-616: a página em branco anda arrastando
+  (`test_d623_mudar_de_lugar_arrastando_vale_para_a_pagina_em_branco`) e não anda com a folha;
+  dividir/juntar e o "não dividir esta" não a levam (`test_d623_folha_dividida_a_pagina_em_branco_nao_e_da_folha`).
+- D-605: toda mudança em `core/`, `modelos.py` e `historico_acoes.py` só vale para a página posta
+  à mão; nenhum teste antigo mudou; os 41 arquivos de provas das decisões passam no PC.
+- Reversão: os 9 testes novos falham no código de antes (`reversao-d623.txt`).
 
 ## Como cumpri cada decisão (D-621)
 
