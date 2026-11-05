@@ -19,6 +19,54 @@ Ramo `girar-pagina-2026-11-04` (saiu de `obra-2026-10-26`). Cópia: `.claude/wor
   "Uma página" mostra a metade), D-609 (linha arrastada na folha inteira, com a rotação anotada).
 - CLAUDE.md §6 (campo novo no projeto só com aprovação: o Samuel pediu o conserto; projeto antigo tem de abrir igual),
   §7 (recorte e ângulo moram na página; o giro de 90 vem antes de tudo), §11.8 / D-605.
+- **D-636** (05/11, resposta à pergunta 1): "1- pode ser, só garanta que não crie mais problemas fazendo isso, você tem
+  que pensar na experiencia do usario e no resultado final do livro dentro do programa, quando vai mudar algo, deixe
+  isso anotado." → numa folha dividida, o quadro do girar se chama "Girar a página" e o "aplicar em" diz "só esta
+  página / todas as páginas / daqui em diante / pares / ímpares"; cada página gira sozinha, como a da tela (D-618),
+  também na tela "ver todas". As outras ficam viradas igual à da vez (D-035). Folha inteira (não dividida): fica como
+  está.
+- **D-637** (05/11, CLAUDE.md §11.9): antes de mexer, a seção "Como fica para quem usa e no livro" (abaixo); na
+  entrega, conferir clicando e olhando o PDF, e dizer se a mudança criou problema novo.
+
+## Como fica para quem usa e no livro (D-637; escrito ANTES de mexer, 05/11)
+
+Exemplo: Gradus, livro dividido (cada folha do scan virou duas páginas), o Kaique está na página 14.
+
+**Antes (hoje, depois da D-618):**
+1. No Propriedades o quadro diz "Girar a folha" e a lista "aplicar em" diz "só esta folha / todas as folhas / daqui
+   em diante / só as pares / só as ímpares".
+2. Com "só esta folha", ¼ à esquerda deita só a página 14 (D-618). Certo.
+3. Com "todas as folhas", ¼ à esquerda gira as FOLHAS do scan: cada folha larga fica em pé e a linha da divisão corta
+   a folha deitada; cada "página" vira meia folha com pedaços das duas, e com meia volta a 14 mostra a 13 (a branca).
+   É a confusão do a-70, ainda viva nessas opções. O PDF sai com essas páginas misturadas.
+4. Na tela "ver todas", escolher as páginas 14 e 20 e "girar ¼ →" gira as folhas inteiras delas (a 13 e a 19 giram
+   junto, e a confusão é a mesma).
+
+**Depois:**
+1. Numa página de folha dividida, o quadro diz "Girar a página" e a lista diz "só esta página / todas as páginas /
+   daqui em diante / só as pares / só as ímpares" (o menu Página > "Aplicar o giro em" diz o mesmo; o balão dos
+   botões do canto diz "só esta página"). Numa folha inteira (não dividida, ou o Dividir em "Duas lado a lado"),
+   tudo continua dizendo "folha", como hoje.
+2. "só esta página": igual a hoje (D-618).
+3. "todas as páginas", ¼ à esquerda na 14: a 14 deita (a partir de onde estava) e TODAS as páginas de folhas
+   divididas ficam deitadas igual a ela (D-035), cada uma sozinha, inteira, sem pedaço da vizinha; a linha da
+   divisão de cada folha não muda. "daqui em diante": da página 14 até a última. "só as pares"/"só as ímpares":
+   contam o número da PÁGINA; numa página ímpar com "só as pares" o programa avisa ("Você está numa página ímpar.
+   Para girar só as pares, vá a uma página par e gire de lá.") e não gira nada (D-036, com "página").
+4. Um Ctrl+Z desfaz o giro de todas de uma vez, e cada página volta ao giro que tinha.
+5. Páginas de folhas que NÃO estão divididas (ex.: a capa aberta inteira) não giram com "todas as páginas": ficam
+   como estão (D-636: "Folha inteira: fica como está"). Vira pergunta 2 abaixo.
+6. Na tela "ver todas": escolher a 14 e a 20 e "girar ¼ →" gira só a 14 e a 20 (cada uma ¼ a partir de onde está,
+   como a grade faz hoje); a 13 e a 19 não mudam. Página escolhida de folha inteira gira a folha dela, como hoje.
+   O balão do botão diz "Gira as páginas escolhidas ¼ à direita."
+7. A prévia, a tira de miniaturas e a página na tela mostram cada página deitada, inteira.
+
+**No PDF que sai:** as páginas giradas saem deitadas, inteiras, cada uma com o seu conteúdo (a mesma imagem que
+sairia sem o giro, girada); as outras páginas e a linha da divisão saem iguais. Folha inteira: nada muda.
+
+**O que pode dar problema (conferir na entrega):** corte à mão, tamanho escolhido e lugar do conteúdo de cada página
+girada têm de girar junto (como na D-618); o Ctrl+Z tem de devolver tudo; a palavra do quadro tem de trocar ao ir
+de uma página dividida para uma folha inteira e de volta; o menu tem de dizer o mesmo que o quadro.
 
 ## O que já está escolhido e testado aqui
 
@@ -50,6 +98,16 @@ Regra: nenhum desses muda. A folha inteira (não dividida) continua girando a fo
    todas" (hoje gira as folhas das páginas escolhidas). Pode ser assim?
    Print para a pergunta: `prints/antes-02-esquerda-1.png` (o defeito) e `prints/depois-02-painel-esquerda.png`
    (com "só esta folha", já consertado).
+   **Respondida em 05/11 (D-636): "1- pode ser [...]".** Em construção.
+2. **"todas as páginas" e as folhas que não foram divididas.** Livro dividido, mas com uma folha inteira (ex.: a capa
+   aberta). Na página 14 (dividida), "todas as páginas" + ¼ à esquerda deita todas as páginas das folhas divididas;
+   a capa inteira fica como está (não gira). Fiz assim porque a D-636 diz "Folha inteira (não dividida): fica como
+   está" e porque girar a capa aberta deixaria a folha larga em pé, o que ninguém pediu. Pode ser assim, ou a capa
+   também deve girar?
+3. **Numa folha inteira, "todas as folhas" ainda gira as folhas já divididas como folha.** Ex.: na capa inteira, com
+   "todas as folhas", ¼ à esquerda gira também as folhas divididas do resto do livro como folha inteira, e nelas
+   volta a confusão do a-70 (cada página com pedaços das duas). Não mexi (D-636: folha inteira "fica como está").
+   Sugestão: nesse caso as folhas divididas giram página por página, como na pergunta 1. Pode ser assim?
 
 ## Para a gerente: um teste antigo contradiz a D-618 (não mexi nele)
 
