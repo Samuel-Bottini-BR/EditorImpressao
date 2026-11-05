@@ -76,10 +76,49 @@ eles). Tudo numa ação só do Histórico.
 - [x] testes no PC, arquivo por arquivo (`testes-no-pc.txt`)
 - [x] janela de verdade com prints (`piloto.py`, `anotacoes.txt`, `prints/`)
 - [x] relatório (`relatorio-d621.md/.html/.pdf`)
-- [ ] push e GitHub
-- [ ] SEGUNDA entrega: D-623 (página em branco pelo botão direito na tira), pedida pela gerente
+- [x] push e GitHub (junto com a D-623, abaixo)
+- [x] SEGUNDA entrega: D-623 (página em branco pelo botão direito na tira), pedida pela gerente
   em 04/11 durante a D-621. Traz a obra (`git merge obra-2026-10-26`, D-615) e mexe em `core/` e
-  `modelos.py` (filtro de velocidade no GitHub).
+  `modelos.py` (filtro de velocidade no GitHub). Andamento dela na seção D-623 abaixo.
+
+# D-623: página em branco pelo botão direito na tira (segunda entrega)
+
+## Decisões que esta parte precisa cumprir
+
+- **D-623** (04/11/2026), print a-80: "as paginas ainda estão em lugar errado né? eu queria
+  conseguir com botão direito apertando no meio das paginas aperece opção de adicionar folha em
+  branco." → botão direito numa miniatura da tira: "adicionar página em branco antes" /
+  "depois"; tamanho das vizinhas; entra no livro, no PDF e nos cadernos; "tirar do livro" remove;
+  Ctrl+Z desfaz; mesmo menu da D-621. Muda o modelo de dados: projeto antigo abre igual.
+- **D-487** (27/10): "'Inserir' página não foi feito nesta etapa (precisa de páginas que não vêm
+  do PDF de entrada: muda o modelo de dados)". A D-623 autoriza essa mudança.
+- **D-621** (acima): o mesmo menu do botão direito.
+- **D-615 / D-616** (04/11): ordem das páginas mudada arrastando; a página em branco também anda.
+- **§6 do CLAUDE.md**: formato dos arquivos de dados e desfazer: autorizados pela D-623 ("Muda o
+  modelo de dados", "Ctrl+Z desfaz").
+
+## O que já está escolhido e testado aqui (D-605)
+
+- `modelos.py`, `core/ordem_das_paginas.py`, `core/dividir_a_mao.py`, `core/automatico.py`,
+  `core/pipeline.py`, `historico_acoes.py`: toda mudança só vale para página com `inserida > 0`;
+  página que veio do PDF (`inserida = 0`, a de todo projeto antigo) segue o caminho de antes.
+  Testes de antes que têm de continuar: `test_decisoes*.py`, `test_core.py`,
+  `test_historico_depois_de_reabrir.py`, `test_recomeco_limpa_o_historico.py`, `test_projetos.py`,
+  `test_caderno_segue_as_etapas.py`, `test_dividir_desmarcada_caixinha.py`,
+  `test_trabalho_nao_se_perde.py`, `test_salva_sozinho.py` e os da tira/tela da D-621.
+- Menu da área de trabalho: continua só com o "Desfazer nesta página" (D-621).
+
+## Andamento (D-623)
+
+- [x] código e 9 testes novos (`tests/test_decisoes_pagina_em_branco.py`) — `d3550841`
+- [x] janela de verdade no Gradus (`piloto_d623.py`, `anotacoes-d623.txt`, `prints-d623/`) — `dd1fb46b`
+- [x] 05/11: `git merge obra-2026-10-26` (f06e0c15, D-617 parte 2): sem conflito, nenhum arquivo
+  em comum com a D-623
+- [x] reversão: os 9 falham no código de antes (`reversao-d623.txt`)
+- [x] projeto antigo de verdade (Gradus) abre igual (`prova-projeto-antigo.txt`, `prova_projeto_antigo.py`)
+- [ ] testes no PC, arquivo por arquivo (`testes-no-pc-d623.txt`)
+- [ ] GitHub: testes 41949496078, velocidade 41949515821
+- [ ] relatório nos três formatos (`relatorio-d623.md/.html/.pdf`)
 
 ## Como cumpri cada decisão (D-621)
 
