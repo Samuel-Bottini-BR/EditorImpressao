@@ -1,0 +1,42 @@
+{
+ "nome": "Pergunta: rótulo do antes / depois",
+ "trabalho": "mover-lado",
+ "ordem": 61,
+ "origem": "ONDE-PAREI do ramo mover-lado-2026-11-04 (pergunta 4)",
+ "resumo": {
+  "titulo": "Mover, Cortar e Endireitar no antes / depois (D-612)",
+  "paragrafos": [
+   "O agente terminou os consertos dos seus prints a-74 a a-78. Os testes no PC e no GitHub passaram.",
+   "Ficou uma pergunta pequena, logo abaixo. Enquanto isso, o rótulo fica onde está hoje."
+  ]
+ },
+ "quadros": [],
+ "perguntas": [
+  {
+   "id": "mover-rotulo-antes",
+   "titulo": "No antes / depois, o rótulo \"antes: Original\" fica onde está?",
+   "explicacao": [
+    "Você decidiu em 04/11 que, no antes / depois, as ferramentas mexem no depois e o antes fica só para olhar.",
+    "Com Mover, Cortar ou Endireitar ligados, o rótulo \"antes: Original\" fica no canto de cima, à esquerda. Na foto, ele fica em cima da página que o Mover está mexendo.",
+    "Quer o rótulo em outro lugar? Se sim, diga onde no comentário."
+   ],
+   "primeira_imagem": {
+    "src": "fotos/mover-lado/mover-antes-depois.png",
+    "legenda": "Mover com antes / depois ligado (página 11 do Gradus, 131%). O rótulo \"antes: Original\" fica no alto, à esquerda."
+   },
+   "exemplos": [],
+   "opcoes": [
+    {
+     "id": "fica",
+     "nome": "Fica onde está",
+     "texto": "Nada muda."
+    },
+    {
+     "id": "mudar",
+     "nome": "Quero em outro lugar",
+     "texto": "Diga onde no comentário."
+    }
+   ]
+  }
+ ]
+}
