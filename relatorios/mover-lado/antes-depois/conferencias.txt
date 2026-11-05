@@ -1,0 +1,17 @@
+ok   Mover com antes / depois: o Mover no lado do depois
+ok   arrastar no depois move ((0.0, 0.0) -> (-0.1009, 0.0))
+ok   arrastar no antes não mexe em nada
+ok   a linha continua se arrastando (posição 0.75)
+ok   Ctrl+Z desfaz o arrasto do Mover
+ok   Cortar com antes / depois: o Cortar no lado do depois
+ok   Cortar no depois: a beirada anda (0.000 -> 0.098)
+ok   Ctrl+Z desfaz o corte
+ok   Endireitar com antes / depois: no lado do depois
+ok   Endireitar no depois: a linha torta gira (None -> -3.16)
+ok   Ctrl+Z desfaz o giro
+ok   Retângulo com antes / depois: no lado do depois
+ok   Retângulo no depois: marca uma região
+ok   antes / depois desligado: Uma página de sempre
+ok   Pincel: a roda muda o pincel e o tamanho de cima acompanha (29)
+ok   Pincel: mexer no tamanho de cima muda o pincel e o número do painel
+16 de 16

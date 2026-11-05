@@ -338,6 +338,14 @@ class Visualizador(QWidget):
         # (TelaConferir.FOLGA_NO_PAR). Arriscado: mudar o de fábrica (a
         # "Uma página" de todas as ferramentas mudaria de tamanho).
         self.folga_da_moldura = PADDING_MOLDURA
+        # D-612 (Samuel, 04/11/2026, testando o Mover nos pares: "ela deveria
+        # continuar o preview das duas do mesmo tamanho"): nos pares do "Duas
+        # lado a lado" o visualizador cobre o desenho dos pares inteiro, sem
+        # fundo, e desenha a página no LUGAR dela no par (definir_lugar_no_par):
+        # do mesmo tamanho da prévia da outra página. None (de fábrica): como
+        # sempre. Arriscado: deixar um lugar posto ao voltar para a "Uma
+        # página" (a tela tira em _devolver_a_peca_do_par).
+        self._lugar_no_par: QRect | None = None
         self._arrastando_vista = False
         self._deslocamento_inicial = QPoint(0, 0)
 
@@ -384,6 +392,48 @@ class Visualizador(QWidget):
         self.zoom = float(zoom)
         self.deslocamento = QPoint(deslocamento)
         self.update()
+
+    def definir_lugar_no_par(self, lugar: QRect | None) -> None:
+        """D-612: o retângulo (nas coordenadas deste visualizador) da página da
+        vez dentro dos pares. Com ele, a página é desenhada ali, do tamanho da
+        prévia (_area_no_lugar), sem fundo fora dele, e o clique que não pega
+        nada da ferramenta passa para os pares (mousePressEvent). None: o
+        visualizador de sempre (ajusta a página à tela, com a moldura)."""
+        self._lugar_no_par = QRect(lugar) if lugar is not None else None
+        if self._lugar_no_par is not None and self._pixmap is not None:
+            self._area = self._area_no_lugar(self._lugar_no_par)   # já, antes de pintar
+        self.update()
+
+    def retangulos_das_pegas(self) -> list[QRect]:
+        """D-612: onde ficam as pegas da ferramenta (os cantos azuis do Mover,
+        as alças do corte, a bolinha do Endireitar), nas coordenadas deste
+        visualizador. Os pares as deixam por cima da outra página (a máscara),
+        para os cantos aparecerem inteiros e se pegarem."""
+        if self._pixmap is None or self._area.width() <= 0:
+            return []
+        lado = 2 * DISTANCIA_PEGA + 2
+        if self.modo == MODO_CONTEUDO:
+            pontos = [p for n, p in self._alcas(self._area_do_conteudo()).items()
+                      if n in ("no", "ne", "so", "se")]
+        elif self.modo == MODO_RECORTE:
+            pontos = list(self._alcas(self._retangulo_recorte()).values())
+        elif self.modo == MODO_ANGULO:
+            pontos = [self.centro_da_alca().toPoint()]
+            lado = 2 * (RAIO_DA_ALCA + 6) + 2
+        else:
+            pontos = []
+        return [QRect(p.x() - lado // 2, p.y() - lado // 2, lado, lado) for p in pontos]
+
+    def _area_no_lugar(self, lugar: QRect) -> QRect:
+        """Onde a página fica nos pares: no Mover, a área branca é o próprio
+        lugar (a prévia do par é a página como sai, do tamanho da área
+        branca); nas outras, a imagem da ferramenta na ALTURA do lugar (no par
+        as duas páginas têm a mesma altura, D-347), no meio dele."""
+        if self._em_modo_mover() or self._pixmap is None or self._pixmap.height() <= 0:
+            return QRect(lugar)
+        altura = lugar.height()
+        largura = max(1, round(altura * self._pixmap.width() / self._pixmap.height()))
+        return QRect(lugar.center().x() - largura // 2, lugar.top(), largura, altura)
 
     def _em_modo_mover(self) -> bool:
         """A ferramenta Mover (etapa 5): o modo do conteúdo com a área branca
@@ -660,25 +710,34 @@ class Visualizador(QWidget):
         pintor = QPainter(self)
         pintor.setRenderHint(QPainter.Antialiasing)
         # Etapa 1 do layout (temas): o fundo atrás da página é o do tema da
-        # vez (FUNDO_DA_AREA fica só para quem ainda o importa)
-        pintor.fillRect(self.rect(), QColor(estilo.cor("tela")))
+        # vez (FUNDO_DA_AREA fica só para quem ainda o importa). D-612 (nos
+        # pares, definir_lugar_no_par): só o lugar da página; o resto fica
+        # transparente (as outras páginas do par aparecem por baixo).
+        lugar = self._lugar_no_par
+        pintor.fillRect(lugar if lugar is not None else self.rect(), QColor(estilo.cor("tela")))
 
         if self._pixmap is None:
             pintor.setPen(QColor(estilo.TEXTO_FRACO))
             texto = "Preparando a prévia..." if self.carregando else "Sem prévia"
-            pintor.drawText(self.rect(), Qt.AlignCenter, texto)
+            pintor.drawText(lugar if lugar is not None else self.rect(), Qt.AlignCenter, texto)
             return
 
-        largura = max(1, int(self._largura_base() * self.zoom))
-        altura = max(1, int(self._altura_base() * self.zoom))
-        x = (self.width() - largura) // 2 + self.deslocamento.x()
-        y = (self.height() - altura) // 2 + self.deslocamento.y()
-        self._area = QRect(x, y, largura, altura)
+        if lugar is not None:
+            self._area = self._area_no_lugar(lugar)
+        else:
+            largura = max(1, int(self._largura_base() * self.zoom))
+            altura = max(1, int(self._altura_base() * self.zoom))
+            x = (self.width() - largura) // 2 + self.deslocamento.x()
+            y = (self.height() - altura) // 2 + self.deslocamento.y()
+            self._area = QRect(x, y, largura, altura)
         if self._em_modo_mover():
             # etapa 5 (ferramenta Mover): o retangulo de cima e o MUNDO; a
-            # area branca (_area, o referencial de todo o resto) fica dentro
+            # area branca (_area, o referencial de todo o resto) fica dentro.
+            # Nos pares (D-612) a área branca é o próprio lugar da página, e a
+            # parte de fora passa do lugar (fica à vista em volta dele).
             self._area_do_mundo = QRect(self._area)
-            self._area = self._area_branca_no_mundo(self._area_do_mundo)
+            if lugar is None:
+                self._area = self._area_branca_no_mundo(self._area_do_mundo)
             self._desenhar_o_mover(pintor)
             if self.carregando:
                 self._desenhar_aviso_de_espera(pintor)
@@ -1013,10 +1072,23 @@ class Visualizador(QWidget):
     # --- mouse ------------------------------------------------------------
 
     def mouseDoubleClickEvent(self, evento: QMouseEvent) -> None:  # noqa: N802
+        if self._lugar_no_par is not None and not self._area.contains(evento.position().toPoint()):
+            evento.ignore()          # D-612: fora da página, nos pares, é dos pares
+            return
         if evento.button() == Qt.LeftButton and self._pixmap is not None:
             self.ampliar_pedido.emit()
 
     def mousePressEvent(self, evento: QMouseEvent) -> None:  # noqa: N802
+        """O apertar do mouse (_apertar). D-612: nos pares (definir_lugar_no_par),
+        o aperto que não pegou nada da ferramenta (outra página do par, o
+        espaço entre elas) é ignorado e passa para os pares, como antes."""
+        self._apertar(evento)
+        if (self._lugar_no_par is not None and self._arrastando is None
+                and not self._arrastando_vista):
+            evento.ignore()
+
+    def _apertar(self, evento: QMouseEvent) -> None:
+        """O que o aperto faz em cada modo (era o mousePressEvent)."""
         if self._pixmap is None:
             return
         ponto = evento.position().toPoint()

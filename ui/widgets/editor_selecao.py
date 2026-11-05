@@ -964,18 +964,28 @@ class EditorSelecao(QWidget):
             self._pontos_poligono.clear()
             self.update()
 
+    def frase_do_ajuste(self, campo: str) -> str:
+        """A frase do painel para o ajuste de agora: "Pincel: N% da página"
+        (campo "espessura") ou "Varinha: tolerância N" ("tolerancia"). A mesma
+        para a roda e para o deslizante da barra de cima (bug de 04/11/2026:
+        o deslizante mudava o pincel e o painel ficava com o número velho).
+        Seguro mudar: as palavras (nos dois lugares de uma vez)."""
+        if campo == "espessura":
+            return f"Pincel: {self.espessura * 100:.1f}% da página"
+        return f"Varinha: tolerância {self.tolerancia}"
+
     def wheelEvent(self, evento) -> None:  # noqa: N802
         """A roda muda a espessura do pincel, ou a tolerancia da varinha."""
         passo = 1.1 if evento.angleDelta().y() > 0 else 1 / 1.1
         if self.ferramenta == FERRAMENTA_PINCEL:
             self.espessura = min(max(self.espessura * passo,
                                      ESPESSURA_MIN), ESPESSURA_MAX)
-            self.aviso.emit(f"Pincel: {self.espessura * 100:.1f}% da página")
+            self.aviso.emit(self.frase_do_ajuste("espessura"))
             self.update()
         elif self.ferramenta in (FERRAMENTA_VARINHA, FERRAMENTA_COR):
             self.tolerancia = int(min(max(self.tolerancia * passo,
                                           TOLERANCIA_MIN), TOLERANCIA_MAX))
-            self.aviso.emit(f"Varinha: tolerância {self.tolerancia}")
+            self.aviso.emit(self.frase_do_ajuste("tolerancia"))
         elif self.ferramenta in FERRAMENTAS_DE_NAVEGACAO:
             self.definir_zoom(self.zoom * (PASSO_DO_ZOOM if passo > 1
                                            else 1 / PASSO_DO_ZOOM))

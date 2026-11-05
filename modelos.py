@@ -524,6 +524,16 @@ class Projeto:
     # Arriscado: trocar o setdefault de de_dicionario junto (o projeto
     # antigo reaberto mudaria de jeito).
     dividir_como: str = DIVIDIR_DO_LIVRO_NOVO
+    # D-616 (Samuel, 04/11/2026, print a-61: "essa capa está no lugar certo?" ->
+    # "ok" a caixinha "A 1ª folha é a capa aberta" na etapa Dividir do
+    # Automatico, desmarcada de fabrica, por livro): marcada, ao DIVIDIR pelo
+    # Automatico, a metade da direita da 1a folha (a capa) vira a pagina 1 e a
+    # da esquerda (a contracapa) vai para a ultima pagina (core/automatico.
+    # _dividir, core/ordem_das_paginas.capa_na_frente). So o Dividir rodado
+    # muda a ordem (D-589: desmarcada, nada e feito; marcar sem rodar nao mexe
+    # no livro). Nao vai na receita (e do livro, nao do jeito de trabalhar).
+    # Projeto antigo nao tem o campo: False (abre igual). Seguro mudar: nada.
+    capa_aberta: bool = False
     # Item 2.1, decisao G3 (b): o "corte da sobra" do ScanTailor (tira a
     # beirada da folha vizinha que entrou na foto), DESLIGADO de fabrica. So
     # nas folhas que nao sao divididas. Ver ConfigFolha.sobra.
@@ -863,6 +873,10 @@ class Projeto:
             # Arriscado: tirar esta linha (os cadernos sairiam com a folha
             # inteira no lugar das duas paginas).
             and not _tem_metade_de_folha_dividida(self)
+            # D-615 (04/11/2026): com a ordem mudada a mao (arrastar a
+            # miniatura), o caminho rapido montaria os cadernos com as folhas
+            # na ordem do PDF. Livro sem ordem mudada: como antes.
+            and not _fora_da_ordem_do_pdf(self)
         )
 
     @property
@@ -997,6 +1011,14 @@ def _tem_metade_de_folha_dividida(projeto: "Projeto") -> bool:
     folhas = projeto.folhas
     return any(p.metade != METADE_INTEIRA and 0 <= p.folha < len(folhas)
                and folhas[p.folha].dividir for p in projeto.paginas)
+
+
+def _fora_da_ordem_do_pdf(projeto: "Projeto") -> bool:
+    """core.ordem_das_paginas.fora_da_ordem_do_pdf (import tardio): a ordem das
+    paginas foi mudada (D-615)? Usado por Projeto.so_cadernos."""
+    from core.ordem_das_paginas import fora_da_ordem_do_pdf
+
+    return fora_da_ordem_do_pdf(projeto)
 
 
 def _tem_automatico_por_pagina(projeto: "Projeto") -> bool:

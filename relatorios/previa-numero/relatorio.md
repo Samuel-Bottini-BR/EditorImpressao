@@ -64,3 +64,65 @@ rodou nem fechou a janela.
 ## GitHub
 
 Rodada 41884336233 (Testes no Windows, ramo previa-numero-2026-11-04): passou, todos os testes.
+
+---
+
+# Parte 2 (04/11/2026): com o Dividir marcado, o número é o da página como o livro vai sair
+
+**Em uma frase:** com o Dividir marcado, cada metade tem o seu número, o da página no livro como vai
+sair; no Gradus, a metade da esquerda da folha 68 é a "página 135 de 140" e a da direita a "136 de 140".
+
+Pedido do Samuel, testando a parte 1: "funciona , mas com o dividir marcado o numero de pagina tem que
+corresponder com a pagina que está sendo passada."
+
+## Como cumpri cada ponto do pedido
+
+- **Número da página como sai, com o Dividir marcado.** Gradus (70 folhas, sai com 140 páginas):
+  135 + Enter mostra a metade da esquerda da folha 68, "página 135 de 140"; ">" mostra a da direita,
+  "136 de 140" (prints `dividir-02` e `dividir-03`). Marcar o Dividir estando na página 30 já mostra
+  "página 59 de 140". Prova `test_d617_com_dividir_o_numero_e_a_pagina_como_o_livro_vai_sair`.
+- **Escrever um número leva a essa página.** 45 + Enter com o Dividir: a metade da esquerda da folha
+  23, "página 45 de 140" (print `dividir-05`). Fora do intervalo continua ficando onde está.
+- **Sem o Dividir marcado, como sempre.** "página 30 de 70"; desmarcar o Dividir volta a "de 70"
+  (prints `dividir-01` e `dividir-08`).
+- **A ordem do livro como vai sair.** É a mesma lista das setas e do caderno
+  (`core/automatico.paginas_do_pdf_depois`). Ordem mudada à mão (D-615): prova
+  `test_d617_com_dividir_o_numero_segue_a_ordem_mudada_a_mao`. Capa aberta (D-616): a capa é a
+  "página 1 de 140" e a contracapa a "140 de 140" (prints `dividir-06` e `dividir-07`; prova
+  `test_d617_com_dividir_e_a_capa_aberta_a_capa_e_a_pagina_1`).
+- **O "tela cheia" mostra o mesmo número:** "página 136 de 140" (print `dividir-04`).
+
+Janela de verdade: 11 de 11 conferências certas (`anotacoes-dividir.txt`).
+
+## Testes antigos mudados (com autorização da gerente, em commits separados)
+
+- `tests/test_decisoes_previa_dividida.py` (D-614), linhas 76, 84, 89 e 137 e uma frase da docstring:
+  "página 1 de 3" nas duas metades passou a "1 de 4", "2 de 4", "3 de 4" (commit `9ad1d87c`).
+- `tests/test_decisoes_previa_numero.py` (D-617 parte 1),
+  `test_d617_com_dividir_as_setas_continuam_pelas_metades`: só os números (commit `3007f97d`).
+- Cada linha tem um comentário com a D-617 de 04/11 e as palavras dele. Nenhum outro teste mudou.
+
+## Arquivos
+
+- `ui/automatico.py`: `PaginaAntesEDepois._com_o_dividir`, `_numero_e_total` (novas), `ir_para`,
+  `_numero_escrito`, `_acertar_o_passo` (o número se acerta ao marcar ou desmarcar o Dividir ou a capa
+  aberta, e o "tela cheia" acompanha).
+- `tests/test_decisoes_previa_numero.py`: 3 provas novas, que falham no código da parte 1.
+
+## Ressalvas
+
+- Com o Dividir marcado, numa página tirada do livro (que não vai para o PDF), o número de
+  escrever é sempre o de uma página que sai; não dá para ir a uma página tirada. Sem o Dividir,
+  como antes.
+- Com o Dividir marcado num livro já dividido, a numeração é a do PDF: se houver página tirada do
+  livro, os números passam a não contar com ela (antes contavam). No Gradus nenhuma foi tirada.
+
+## Para o Samuel testar
+
+1. Gradus, Automático, marque "Dividir folhas ao meio", escreva 135 e Enter: aparece a metade da
+   esquerda da folha 68 como "página 135 de 140"; ">" mostra "136 de 140".
+2. Marque também "A 1ª folha é a capa aberta" e escreva 1: a capa aparece como "página 1".
+
+## GitHub (parte 2)
+
+Rodada 41913269201: só `test_d148_desfazer_o_automatico_devolve_o_so_as_letras_do_livro` falhou, por tempo ("não aconteceu a tempo"); no PC o arquivo `tests/test_decisoes_so_as_letras.py` passou inteiro (5 de 5). Todo o resto passou.
