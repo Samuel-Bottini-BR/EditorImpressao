@@ -510,6 +510,6 @@ na Central (aba "O que você não gostou: alternativas").
   `girar-pagina`); folha inteira mudava de proporção com corte à mão ou tamanho escolhido (mesmo ramo); clique no par não
   escolhe a página clicada e tira marca a miniatura errada no Dividir (a-75, a-76, ramo `mover-lado`); "antes / depois" não
   mostra o depois do Mover (a-77, a-78, ramo `mover-lado`).
-- **Abertos:** falta de memória ao processar (agente `memoria-pdf`, pausado); vista das margens na janela grande "estranha"
+- **Abertos:** falta de memória ao processar (consertada no ramo `memoria-pdf-2026-11-04`, falta juntar); "imprimir agora" e "extrair as páginas escolhidas" põem o PDF inteiro na memória (04/11, Lista de bugs); vista das margens na janela grande "estranha"
   (Lista de bugs do plano, 04/11); "Área branca" 29,7×21,0 → 31,7×22,0 cm depois de Ctrl+Z/Ctrl+Y com margens iguais (achado do
   agente mover-lado, não mexido); prévia lenta com "Margens iguais" (mede o livro todo; fase de desempenho).
