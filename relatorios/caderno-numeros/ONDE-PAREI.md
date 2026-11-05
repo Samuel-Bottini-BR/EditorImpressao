@@ -49,6 +49,24 @@ esses testes quebrariam. Jeito escolhido (detalhe técnico, sem mudar nada que e
 "Folha N de M — frente" fica como está, e logo depois dele, na mesma linha e no mesmo negrito, um
 rótulo novo com ": páginas 20 e 1". Na tela lê-se "Folha 1 de 35 — frente: páginas 20 e 1".
 
+## Como fica para quem usa e no livro (D-637, CLAUDE.md §11.9; escrito em 05/11 antes de mexer)
+
+Pedido da gerente (05/11, achado C do verificador): quando a linha da frente não cabe no "Montar para
+imprimir", a linha de baixo começava com ":" (": páginas 20 e 1"). Só a quebra muda; as palavras não.
+
+- **O que o Kaique vê, antes desta mudança:** abre "Montar para imprimir" com o Gradus, Livreto 20 por
+  caderno. Em cima da frente: "Folha 1 de 18 — frente" e, na linha de baixo, ": páginas 20 e 1". Em cima
+  do verso, numa linha só: "Folha 1 de 18 — verso: páginas 2 e 19".
+- **Depois:** a frente fica "Folha 1 de 18 — frente" e, na linha de baixo, "páginas 20 e 1" (sem os dois
+  pontos). O verso, que cabe, continua "Folha 1 de 18 — verso: páginas 2 e 19", numa linha só. Ao
+  apertar a seta, o texto troca na hora como antes (D-574). Na etapa 7 e na tela grande, onde a linha
+  cabe, nada muda.
+- **No PDF que sai:** nada muda. É só o texto em cima do desenho na tela; a conta que monta as folhas
+  (core/impressao, core/cadernos) não é tocada.
+- **Risco de problema novo:** a linha decidir "cabe / não cabe" de um jeito que fique pulando
+  (tirar os dois pontos deixa o texto mais curto). Cuidado: a decisão usa sempre a largura do texto
+  inteiro, com os dois pontos.
+
 ## Passos
 
 1. [x] Ler CLAUDE.md, agentes, DECISOES (D-604, D-574, D-603, D-614, D-615, D-616).

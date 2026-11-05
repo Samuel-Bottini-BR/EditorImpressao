@@ -300,3 +300,53 @@ def test_d604_etapa_7_a_linha_tambem_desce_quando_nao_cabe(janela, app, tmp_path
     for lado in ("frente", "verso"):
         rotulo, numeros = folhas.rotulos[lado], folhas.numeros_das_paginas[lado]
         _confere_que_desce_e_nao_corta(_linha_do_lado(folhas, rotulo, numeros), rotulo, numeros)
+
+
+def _confere_a_linha_de_baixo_sem_dois_pontos(linha, rotulo, paginas):
+    """Achado C do verificador (05/11/2026): quando as páginas descem, a linha de baixo não pode
+    começar com ":"; lê-se "páginas 20 e 1". Na mesma linha continua "frente: páginas 20 e 1".
+    As palavras não mudam (text() é o mesmo); só o que aparece na linha de baixo."""
+    from PySide6.QtCore import QRect
+    from PySide6.QtWidgets import QApplication, QLabel
+
+    inteiro = paginas.text()
+    assert inteiro.startswith(": páginas ")
+    largura_inteira = getattr(paginas, "largura_na_mesma_linha", paginas.sizeHint().width)()
+    larga = rotulo.sizeHint().width() + largura_inteira + 20
+    estreita = max(rotulo.sizeHint().width(), largura_inteira) + 5
+    linha.setGeometry(QRect(0, 0, larga, 200))
+    assert QLabel.text(paginas) == inteiro                             # mesma linha: ": páginas"
+    assert paginas.geometry().y() == rotulo.geometry().y()
+    for _ in range(2):                                                 # e não fica pulando
+        linha.setGeometry(QRect(0, 0, estreita, 200))
+        QApplication.processEvents()
+        assert paginas.geometry().y() > rotulo.geometry().y()          # desceu
+        assert QLabel.text(paginas) == inteiro[2:], \
+            f"a linha de baixo começa com {QLabel.text(paginas)!r}"
+        assert paginas.text() == inteiro                               # as palavras não mudam
+        assert paginas.geometry().right() < estreita
+    linha.setGeometry(QRect(0, 0, larga, 200))                         # volta a caber: volta
+    assert QLabel.text(paginas) == inteiro
+    assert paginas.geometry().y() == rotulo.geometry().y()
+
+
+def test_d604_montar_para_imprimir_linha_de_baixo_sem_dois_pontos(app, pasta):
+    """No "Montar para imprimir" (a coluna estreita, onde a frente já desce no Gradus). Falha no
+    código de 05/11 (23d2b157): lá a linha de baixo era ": páginas 20 e 1"."""
+    dialogo = _dialogo(_livro_a5(pasta / "livro.pdf"))
+    try:
+        for lado in (imp.FRENTE, imp.VERSO):
+            rotulo, paginas = dialogo.rotulos_da_face[lado], dialogo.paginas_da_face[lado]
+            _confere_a_linha_de_baixo_sem_dois_pontos(
+                _linha_do_lado(dialogo, rotulo, paginas), rotulo, paginas)
+        assert _linha_do_dialogo(dialogo, imp.FRENTE) == "Folha 1 de 10 — frente: páginas 20 e 1"
+    finally:
+        dialogo.reject()
+
+
+def test_d604_etapa_7_linha_de_baixo_sem_dois_pontos(janela, app, tmp_path):
+    folhas = _abrir_etapa_7(janela, app, _livro_cinza(tmp_path / "livro.pdf", 40))
+    _esperar(app, folhas)
+    for lado in ("frente", "verso"):
+        rotulo, numeros = folhas.rotulos[lado], folhas.numeros_das_paginas[lado]
+        _confere_a_linha_de_baixo_sem_dois_pontos(_linha_do_lado(folhas, rotulo, numeros), rotulo, numeros)

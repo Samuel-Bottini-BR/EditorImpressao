@@ -120,11 +120,68 @@ def texto_das_paginas(esquerda: int | None, direita: int | None) -> str:
     return f": páginas {numero(esquerda)} e {numero(direita)}"
 
 
-def rotulo_das_paginas() -> QLabel:
-    """O rótulo das páginas (D-604), no mesmo negrito do "Folha N de M — lado" que vem antes."""
-    rotulo = QLabel("")
-    rotulo.setStyleSheet("font-weight: 700;")
-    return rotulo
+class RotuloDasPaginas(QLabel):
+    """O rótulo das páginas (D-604), no mesmo negrito do "Folha N de M — lado" que vem antes.
+
+    `text()` devolve sempre as palavras inteiras (": páginas 20 e 1"). Na tela, quando a
+    LinhaQueQuebra o desce para a linha de baixo (não coube ao lado do "Folha N de M — frente"),
+    mostra sem os dois pontos: "páginas 20 e 1" (a gerente, 05/11/2026, achado C do verificador:
+    "a linha de baixo não pode começar com ':' [...] Só a quebra muda; as palavras não mudam").
+    `texto_na_tela()` diz o que aparece. Arriscado: decidir "cabe / não cabe" pela largura do texto
+    mostrado (sem os dois pontos ele fica mais curto e a linha ficaria pulando); a decisão usa
+    `largura_na_mesma_linha()`, a do texto inteiro."""
+
+    def __init__(self) -> None:
+        super().__init__("")
+        self._inteiro = ""
+        self._na_linha_de_baixo = False
+        self.setStyleSheet("font-weight: 700;")
+
+    def setText(self, texto: str) -> None:  # noqa: N802 (nome do Qt)
+        self._inteiro = texto
+        super().setText(self._mostrado())
+
+    def text(self) -> str:
+        return self._inteiro
+
+    def texto_na_tela(self) -> str:
+        return super().text()
+
+    def _mostrado(self) -> str:
+        if self._na_linha_de_baixo and self._inteiro.startswith(": "):
+            return self._inteiro[2:]
+        return self._inteiro
+
+    def _a_mais(self) -> int:
+        """Quanto o texto inteiro é mais largo que o mostrado (os dois pontos e o espaço)."""
+        metrica = self.fontMetrics()
+        return max(0, metrica.horizontalAdvance(self._inteiro)
+                   - metrica.horizontalAdvance(self.texto_na_tela()))
+
+    def sizeHint(self):  # noqa: N802 (nome do Qt)
+        """Sempre a largura do texto inteiro, mesmo na linha de baixo: assim a decisão "cabe / não
+        cabe" da LinhaQueQuebra é a mesma antes e depois de tirar os dois pontos (não fica pulando)."""
+        tamanho = super().sizeHint()
+        return QSize(tamanho.width() + self._a_mais(), tamanho.height())
+
+    def minimumSizeHint(self):  # noqa: N802
+        tamanho = super().minimumSizeHint()
+        return QSize(tamanho.width() + self._a_mais(), tamanho.height())
+
+    def largura_na_mesma_linha(self) -> int:
+        """A largura com o texto inteiro (": páginas 20 e 1"), mesmo quando está na linha de baixo."""
+        return self.sizeHint().width()
+
+    def descer(self, na_linha_de_baixo: bool) -> None:
+        """A LinhaQueQuebra avisa se ele ficou na linha de baixo (sem os dois pontos) ou não."""
+        if na_linha_de_baixo != self._na_linha_de_baixo:
+            self._na_linha_de_baixo = na_linha_de_baixo
+            super().setText(self._mostrado())
+
+
+def rotulo_das_paginas() -> RotuloDasPaginas:
+    """O rótulo das páginas (D-604): ": páginas 20 e 1"."""
+    return RotuloDasPaginas()
 
 
 class LinhaQueQuebra(QLayout):
@@ -186,9 +243,12 @@ class LinhaQueQuebra(QLayout):
             if item.isEmpty():               # rótulo escondido não ocupa lugar
                 continue
             tamanho = item.sizeHint()
-            if x + tamanho.width() > retangulo.right() + 1 and altura_da_linha > 0:
+            desce = x + tamanho.width() > retangulo.right() + 1 and altura_da_linha > 0
+            if desce:
                 x, y = retangulo.x(), y + altura_da_linha
                 altura_da_linha = 0
+            if isinstance(item.widget(), RotuloDasPaginas) and not so_medir:
+                item.widget().descer(desce)  # na linha de baixo, sem os dois pontos (05/11)
             if not so_medir:
                 item.setGeometry(QRect(QPoint(x, y), tamanho))
             x += tamanho.width()
