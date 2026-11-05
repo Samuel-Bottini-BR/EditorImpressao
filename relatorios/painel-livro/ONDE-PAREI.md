@@ -50,7 +50,31 @@ Arquivos que vou tocar: `ui/tela_conferir.py` (só `_parte_do_livro`, `_montar_a
   aplicativo está mal diagramado, não tem como colocar só uma setinha e quando aperta nela aparece as opções de
   qualidade?" -> feito (`c6e73beb`): botão só com a setinha, menu com a escolhida marcada, balão
   "Qualidade da prévia: X". Medidas e ressalva da barra em 1366 no `RELATORIO.md`.
-- [ ] Testes por arquivo de novo, push, GitHub.
+- [x] 05/11 (retomada): os 2 arquivos sem commit (`tests/promessas/promessas.md` e `tests/test_promessas.py`) eram
+  desta tarefa: a promessa P-213 da setinha nova e a prova dela. Só acrescentam (botão novo precisa de promessa,
+  D-010); nenhuma conferência antiga mudou. Troquei só o jeito de ler o projeto na prova nova para o ajudante de
+  sempre (`aj.projeto_gravado`). Commit `0accc9bb`.
+- [x] Juntei `obra-2026-10-26` (`f06e0c15`) sem conflito (`04b0ff8c`).
+- [x] PC, um arquivo por vez: os 40 `tests/test_decisoes*.py`, `test_paineis_na_tela.py`, `test_promessas.py`
+  (268 passaram, 1 xfail), `test_zoom_no_ponteiro.py`, `test_miniaturas_novas.py`,
+  `test_desentortar_medida_por_tras.py`: todos passaram. `test_decisoes_respeitar_gravuras.py` falhou uma vez por
+  falta de memória do PC (outros agentes rodando); de novo, 19 passaram.
+- [x] GitHub, rodada 41949243543: 3.331 passaram, 1 falhou: `test_decisoes_so_as_letras::test_d148` (instável
+  conhecido; no PC passou, 5 de 5). Botões e prints da janela real: passou.
+
+## Como cumpri cada decisão
+
+- **D-619**: o quadro do livro do Propriedades se chama "Já feito no livro todo" no Dividir, no Cortar e no
+  Endireitar; continua só mostrando (D-051); o "mudar no Automático..." e a caixinha "Margens iguais" (D-554)
+  ficaram. Prova: `tests/test_decisoes_painel_livro.py::test_d619_*` (falham no código antigo). Prints:
+  `prints/1536-01..03`, `prints/1366-01..03`, `prints/quadros-ja-feito-no-livro-todo-1920.png`.
+- **D-620**: a "Qualidade da prévia" saiu do painel do Cortar e está na barra de baixo, logo depois de "ajustar à
+  tela", em todas as ferramentas: só uma setinha que abre Rápida / Média / Alta, com a escolhida marcada e o balão
+  "Qualidade da prévia: X". Continua uma escolha só (`qualidade_previa`). Provas:
+  `tests/test_decisoes_painel_livro.py::test_d620_*` e `tests/test_promessas.py::test_p213_*`. Prints:
+  `prints/barra-com-a-setinha-1536-e-1366.png`, `prints/15xx-06..10`.
+- **Ressalva**: em 1366 com o Propriedades aberto, a conta da barra vira "0 de 140 co..." (inteira no balão); com
+  as miniaturas fechadas a barra já não cabia antes. Detalhe no `RELATORIO.md`.
 
 ## Perguntas para o Samuel
 
