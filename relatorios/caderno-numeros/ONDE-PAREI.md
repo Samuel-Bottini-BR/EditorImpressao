@@ -80,6 +80,9 @@ imprimir", a linha de baixo começava com ":" (": páginas 20 e 1"). Só a quebr
    imprimir" (coluna de largura fixa). Consertado: o que não cabe desce para a linha de baixo
    (`12407cd7`, 2 provas novas que falham em `cd5dc539`).
 9. [x] Push e GitHub (abaixo).
+10. [x] 05/11, achado C do verificador (pedido da gerente): na linha de baixo, sem os dois pontos.
+    Juntei de novo o `obra-2026-10-26` (`d3b613b6`, só documentos) sem conflito; conserto em
+    `b0e2edb1` (2 provas novas que falham em `23d2b157`); piloto de novo com o Gradus.
 
 ## Como cumpri cada decisão
 
@@ -91,7 +94,10 @@ imprimir", a linha de baixo começava com ":" (": páginas 20 e 1"). Só a quebr
   - tela grande: "Folha 2 de 35 — frente: páginas 18 e 3" (`prints/09-tela-grande-folha-2.png`).
   - "Montar para imprimir": as mesmas palavras (`prints/10-...folha-1.png`, `prints/11-...folha-2.png`).
   - Livro de 300 páginas no "Montar para imprimir": as páginas descem para a linha de baixo, sem
-    cortar (`prints/12-montar-para-imprimir-livro-300-paginas.png`).
+    cortar e sem os dois pontos: "Folha 43 de 75 — frente" / "páginas 196 e 165"
+    (`prints/12-montar-para-imprimir-livro-300-paginas.png`).
+  - Gradus no "Montar para imprimir" (05/11, depois do achado C): "Folha 1 de 18 — frente" e embaixo
+    "páginas 20 e 1"; o verso cabe: "Folha 1 de 18 — verso: páginas 2 e 19" (`prints/10-...folha-1.png`).
   - Provas: `tests/test_decisoes_caderno_numeros.py` (7): folhas 1 e 2 com a ordem mudada à mão, o
     lugar em branco do fim, Dividir + capa aberta, "Montar para imprimir" (folhas 1 e 2, costura à
     direita, branca de paridade), e a linha que desce nos dois lugares. O número escrito é conferido
@@ -105,6 +111,12 @@ imprimir", a linha de baixo começava com ":" (": páginas 20 e 1"). Só a quebr
 - **D-615 / D-616** — os números seguem a ordem mudada à mão e a capa aberta (provas acima);
   `test_decisoes_ordem_folhas.py` e `test_decisoes_capa_aberta.py` passam.
 - **D-605** — nenhum teste antigo foi mudado; todos os que tocam estas telas passam (abaixo).
+- **D-637** (Como fica para quem usa e no livro, conferido em 05/11): clicando na janela de verdade
+  (piloto com o Gradus, prints 02 a 11) a tela é a descrita lá em cima: a linha de baixo diz
+  "páginas 20 e 1", a que cabe continua numa linha só, a seta troca o texto na hora. O PDF que sai não
+  muda: nenhum arquivo de `core/` foi tocado (`git diff obra-2026-10-26 -- core` vazio); as provas de
+  "gravar" do "Montar para imprimir" (`test_decisoes_impressao`, `test_impressao`) passam. Problema
+  novo: nenhum achado.
 
 ## Testes
 
@@ -142,8 +154,7 @@ rodada 41958485208 (ponta `76329644`, com o conserto) passou.
    (anotado no `anotacoes.txt`: "logo depois do clique"). O que a D-604 NÃO cobre: tirar o
    "Folha 2 de 32" (ele escolheu esse texto na D-574, opção 1) e o contador de baixo da tela grande.
    A gerente responde a ele.
-3. (Só para a gerente ver, detalhe técnico do conserto) quando a linha desce, a linha de baixo
-   começa com ": páginas 222 e 219" (print 12). Não mudei o texto para não mexer no que já está
-   testado. No Gradus, no "Montar para imprimir", a frente da folha 1 já desce (": páginas 20 e 1" na
-   linha de baixo) e o verso cabe numa linha (print 10): a coluna tem só uns 310 pontos. Antes do
+3. (Resolvido em 05/11, achado C) a linha de baixo começava com ": páginas 222 e 219"; agora é
+   "páginas 196 e 165" na linha de baixo (print 12). No Gradus, no "Montar para imprimir", a
+   frente da folha 1 desce ("páginas 20 e 1" na linha de baixo) e o verso cabe numa linha (print 10): a coluna tem só uns 310 pontos. Antes do
    conserto o texto empurrava a coluna para a direita, para fora da parte visível.
