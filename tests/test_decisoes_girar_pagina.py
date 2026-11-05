@@ -389,14 +389,17 @@ def test_d618_no_dividir_em_uma_pagina_gira_so_a_metade_da_tela(janela, tmp_path
     assert projeto.paginas[1].giro_da_pagina == girar.GIRO_ESQUERDA
 
 
-def test_d618_aplicar_em_todas_continua_como_antes_ate_o_samuel_responder(janela, tmp_path):
-    """Pergunta aberta (ONDE-PAREI): o "aplicar em" com mais de uma folha, numa folha dividida,
-    continua girando as folhas como antes (D-035) até o Samuel dizer como deve ser."""
+def test_d618_d636_aplicar_em_todas_numa_folha_dividida_gira_as_paginas(janela, tmp_path):
+    """Até 05/11 esta prova dizia "continua como antes até o Samuel responder" (pergunta 1 do
+    ONDE-PAREI; escrita nesta mesma tarefa, provisória). Ele respondeu (D-636, 05/11/2026: "1- pode
+    ser [...]"): numa folha dividida o "aplicar em" com mais de uma página gira PÁGINAS, cada uma
+    sozinha; nenhuma folha gira. A folha 2 (inteira) fica como está. Mais provas em
+    tests/test_decisoes_girar_paginas_aplicar_em.py."""
     tela, projeto = _livro_com_a_folha_1_dividida(janela, tmp_path)
     tela.barra_girar.definir_alcance(girar.ALCANCE_TODAS)
     tela.barra_girar.botoes_de_giro[girar.GIRO_DIREITA].click()
-    assert [f.rotacao for f in projeto.folhas] == [90, 90]
-    assert all(p.giro_da_pagina == 0 for p in projeto.paginas)
+    assert [f.rotacao for f in projeto.folhas] == [0, 0]
+    assert [p.giro_da_pagina for p in projeto.paginas] == [90, 90, 0]
 
 
 # --- o PDF de saída ----------------------------------------------------------------------------
