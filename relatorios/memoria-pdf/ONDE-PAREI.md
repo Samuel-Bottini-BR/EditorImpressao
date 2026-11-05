@@ -43,10 +43,18 @@ esse problema."
 
 ## Andamento
 
-- [ ] 1. Medir (3 tamanhos, processar + cadernos + livreto)
-- [ ] 2. Consertar a causa (se for do programa)
-- [ ] 3. D-591 (aviso + "tentar de novo")
-- [ ] 4. Testes no PC, push, GitHub
+- [x] 1. Medir. **Causa achada:** o PDF novo era montado inteiro na memória até o save do fim
+  (`core/pdf_io.EscritorPDF`, `core/cadernos.impor_pdf`, `core/impressao.montar_para_impressao` e `_achatar`).
+  Rhetorica, uma página por vez: 30 folhas 1.665 MB, 90 folhas 1.891 MB, 270 folhas caiu por falta de memória
+  (`_ArrayMemoryError`, 16:21). Livreto: 30 folhas 2.142 MB, 90 folhas 3.102 MB. Mais: `caixa_da_tinta` (avisos
+  do livreto) enchia o armazém do MuPDF (até 256 MB).
+- [x] 2. Conserto: `core/pdf_io.PDFQueVaiParaODisco` (vai ao disco a cada 64 MB e reabre; um save normal no
+  fim, mesmas opções). Depois: 30 folhas 1.652 MB, 90 folhas 1.664 MB.
+- [x] 3. D-591: frase em `ui/tarefas.FRASE_FALTOU_MEMORIA`, `faltou_memoria()`, `TarefaProcessar.faltou_memoria`,
+  `JanelaPrincipal._avisar_falta_de_memoria` ("tentar de novo" / "entendi") e `_comecar_a_processar`.
+- [x] Testes novos: `tests/test_memoria_nao_cresce_com_o_livro.py` (11, os 4 de pico falham no código antigo:
+  +46, +46, +46, +99 MB) e `tests/test_decisoes_aviso_de_memoria.py` (15; 14 falham no antigo).
+- [ ] 4. Medidas "depois" (rodando), push, GitHub
 - [ ] 5. Relatório em três formatos
 
 ## Perguntas para o Samuel
