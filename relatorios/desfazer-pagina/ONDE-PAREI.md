@@ -226,8 +226,10 @@ a página nova.
   do Cortar sai branca), `ui/tela_conferir.py` (os cartões do Filtro brancos; a frase da faixa).
   `core/` não mudou
 - [x] janela de verdade no Gradus com prints e o PDF
-- [ ] testes no PC (`testes-no-pc-defeito-b.txt`)
-- [ ] GitHub
+- [x] testes no PC (`testes-no-pc-defeito-b.txt`): os 41 `test_decisoes*.py` e 17 dos arquivos
+  tocados passam; um teste (`test_desentortar_conferir_de_novo.py::test_destino_do_socialismo_18_*`)
+  falha igual no `obra-2026-10-26` (d3b613b6): não é deste ramo
+- [x] GitHub 41973822273 (ponta `1fa0c850`): passou inteira. `core/` não mudou: sem filtro de velocidade
 
 ## Como cumpri (defeito B)
 
