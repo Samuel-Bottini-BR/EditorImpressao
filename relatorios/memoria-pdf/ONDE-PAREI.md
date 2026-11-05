@@ -59,8 +59,25 @@ esse problema."
 - [x] 4b. **Lentidão achada e consertada (05/11).** Ao comparar a velocidade, o conserto de 04/11 deixava
   livro grande mais lento: o `saveIncr` do MuPDF relê o arquivo ao lado inteiro a cada ida ao disco. Agora
   `core/pdf_io._acrescentar_so_o_novo` acrescenta só o que entrou (detalhe abaixo). Commit `df514cb4`.
+  Conferido no livro de verdade (05/11): Rhetorica 90 folhas pelo caminho novo, pronto, 90 páginas, 301 MB,
+  pico 1.653 MB (antes do conserto 1.891 MB), processar 185 s (código antigo, ontem: 222 s; PC carregado).
 - [x] 5. Junção com `obra-2026-10-26` (05/11, sem conflito; a obra não mexeu nos arquivos do conserto).
-- [ ] 6. GitHub: testes 41951184818, velocidade 41951188321 (ver "Testes").
+- [x] 6. Testes (05/11, ponta `df514cb4` para o código; depois só documentos):
+  - **PC, um arquivo por vez:** os 40 `tests/test_decisoes*.py` e os dos arquivos tocados
+    (`test_memoria_nao_cresce_com_o_livro` 15, `test_gravar_pdf_sem_parar_a_janela` 5, `test_etapa10b_imagem` 23,
+    `test_duas_camadas` 4, `test_substituir_e_cancelar` 21, `test_nucleos` 8, `test_cadernos` 28,
+    `test_impressao` 17): todos passaram. Na primeira volta, com o PC carregado por outros agentes, caiu 1 caso em
+    `test_decisoes_automatico_opcoes_do_filtro` e 1 em `test_decisoes_livreto_ver`; rodados de novo sozinhos,
+    passaram inteiros (o do livreto, duas vezes). Nenhum teste antigo foi mudado.
+  - **Reversão no código antigo** (cópia da obra sem o conserto, com os testes novos): os 4 de pico falham
+    ("o pico cresceu 46 MB com 20 páginas a mais"), os 4 do acréscimo falham, e 14 dos 15 da D-591 falham.
+  - **GitHub, rodada normal 41951184818:** passou (success).
+  - **Filtro de velocidade 41951188321** (obra-2026-10-26 → memoria-pdf): **"igual (dentro do vai-e-vem)"**.
+    Abrir o livro +0,0%; Mágico pro 10 páginas +1,0%; Preto e branco +1,4%; trocar de página (média) −6,7%.
+    Só "trocar de página, a pior das 20" deu +2,1% "(mais lento, só informativo)" — caminho que este trabalho
+    não toca (a leitura de páginas em `core/pdf_io` não mudou).
+  - **Ressalva:** o filtro processa só 10 páginas (PDF bem menor que 64 MB), então não passa pela ida ao
+    disco. A velocidade do livro grande foi medida por partes no PC (acima) e no Rhetorica de 90 folhas.
 
 ## A causa, em português simples
 
