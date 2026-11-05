@@ -1985,7 +1985,8 @@ class JanelaPrincipal(QMainWindow):
         entendi = caixa.addButton("entendi", QMessageBox.RejectRole)
         caixa.setDefaultButton(entendi)
         caixa.exec()
-        if caixa.clickedButton() is tentar and self.projeto is not None                 and self.projeto.caminho_saida:
+        if (caixa.clickedButton() is tentar and self.projeto is not None
+                and self.projeto.caminho_saida):
             self._comecar_a_processar(Path(self.projeto.caminho_saida))
 
     def cancelar(self) -> None:

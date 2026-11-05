@@ -246,8 +246,11 @@ class PDFQueVaiParaODisco:
     COMO: quem monta chama `acrescentou(bytes)` depois de cada pagina (quanto
     ela pesa, mais ou menos). Passou de `limite`, `esvaziar()` grava o que ha
     num arquivo AO LADO (`<caminho>.paginas`: a primeira vez inteiro, depois so
-    o acrescimo, "incremental"), fecha e reabre o documento a partir desse
-    arquivo - reaberto, o MuPDF le as imagens do disco so quando alguem pede.
+    o acrescimo, "incremental" - desde 05/11/2026 gravado por
+    _acrescentar_so_o_novo, que custa so o que entrou; o `saveIncr` do MuPDF
+    relia o arquivo inteiro a cada vez e ficou de reserva), fecha e reabre o
+    documento a partir desse arquivo - reaberto, o MuPDF le as imagens do
+    disco so quando alguem pede.
     No fim, `gravar(**opcoes)` faz UM `save` normal (o mesmo de antes, com as
     mesmas opcoes) para o caminho final e apaga o arquivo ao lado. O PDF final
     tem as mesmas paginas, as mesmas imagens byte a byte e a mesma estrutura
@@ -266,7 +269,8 @@ class PDFQueVaiParaODisco:
     Arriscado mudar: gravar o arquivo ao lado em outro disco (a troca do fim
     ficaria lenta) ou com nome que possa ser de um arquivo do Kaique (seria
     apagado); esvaziar sem reabrir (o MuPDF continua com tudo na memoria
-    depois do `saveIncr`).
+    depois do `saveIncr`); voltar a usar o `saveIncr` em toda ida (o tempo a
+    mais cresce com o quadrado do livro: 21 s num de 935 MB, contra 1,4 s).
     """
 
     def __init__(self, caminho: str | Path, limite: int | None = None) -> None:
@@ -281,6 +285,9 @@ class PDFQueVaiParaODisco:
             self.doc = fitz.open()
         self._na_memoria = 0
         self._no_disco = False
+        # o arquivo ao lado: (tamanho em bytes, onde comeca a ultima tabela
+        # de objetos "xref") - o ponto de partida do proximo acrescimo
+        self._no_lado = (0, 0)
         self.idas_ao_disco = 0                     # quantas vezes esvaziou (testes)
         # Para quem monta por new_page sem contar o peso (as folhas do
         # livreto, core/impressao.py): quanto pesa, mais ou menos, cada
@@ -331,12 +338,14 @@ class PDFQueVaiParaODisco:
             self.lado.parent.mkdir(parents=True, exist_ok=True)
             with _TRANCA:
                 if self._no_disco:
-                    self.doc.saveIncr()
+                    novo = self._acrescentar_ou_reserva()
                 else:
                     self.doc.save(self.lado)
+                    novo = fitz.open(self.lado)
+                    self._no_lado = (self.lado.stat().st_size, _fim_da_ultima_xref(self.lado))
                 velho, self.doc = self.doc, None
                 velho.close()
-                self.doc = fitz.open(self.lado)
+                self.doc = novo
                 fitz.TOOLS.store_shrink(100)
         except OSError as exc:
             # (falta de memoria NAO entra aqui: sobe como veio, para o aviso
@@ -350,6 +359,42 @@ class PDFQueVaiParaODisco:
         self._no_disco = True
         self._na_memoria = 0
         self.idas_ao_disco += 1
+
+    def _acrescentar_ou_reserva(self) -> fitz.Document:
+        """Da segunda ida ao disco em diante: acrescenta ao arquivo ao lado SO
+        o que e novo (_acrescentar_so_o_novo) e devolve o documento reaberto
+        dele. Chamar com a _TRANCA.
+
+        POR QUE (achado de 05/11/2026, ao medir a velocidade do conserto): o
+        `saveIncr` do MuPDF compara o arquivo ao lado INTEIRO, byte a byte,
+        antes de acrescentar - cada ida custava o tamanho do arquivo todo (num
+        livro de 935 MB, de 0,05 s a 3 s por ida, 21 s no total), e o tempo a
+        mais crescia com o quadrado do livro. Acrescentando so o novo, cada ida
+        custa o que entrou (~0,05 s a cada 64 MB) e o programa nao fica mais
+        lento que antes do conserto.
+
+        RESERVA: se o acrescimo der qualquer erro, ou se o arquivo reaberto
+        nao bater (o MuPDF precisou consertar a tabela, ou o numero de paginas
+        mudou), o arquivo ao lado volta ao tamanho de antes e o acrescimo e
+        feito pelo `saveIncr` do MuPDF - mais lento, mas certo. O PDF final e
+        o mesmo nos dois caminhos (o `save` do fim reescreve tudo).
+        Disco cheio (OSError) sobe como veio: vira o ErroPDF de esvaziar."""
+        tamanho, fim_da_xref = self._no_lado
+        try:
+            self._no_lado = _acrescentar_so_o_novo(self.doc, self.lado, tamanho, fim_da_xref)
+            novo = fitz.open(self.lado)
+            if novo.is_repaired or novo.page_count != self.doc.page_count:
+                novo.close()
+                raise ValueError("o arquivo ao lado reaberto nao bate")
+            return novo
+        except Exception as exc:  # noqa: BLE001 - qualquer erro: a reserva
+            if isinstance(exc, (MemoryError, OSError)):
+                raise       # faltou memoria / disco: o aviso de sempre (o lado e apagado)
+            with open(self.lado, "r+b") as arquivo:   # desfaz o que entrou
+                arquivo.truncate(tamanho)
+            self.doc.saveIncr()
+            self._no_lado = (self.lado.stat().st_size, _fim_da_ultima_xref(self.lado))
+            return fitz.open(self.lado)
 
     def gravar(self, para: str | Path | None = None, **opcoes) -> None:
         """O `save` do fim, para `para` (de fabrica, `caminho`), com as
@@ -374,6 +419,88 @@ class PDFQueVaiParaODisco:
                 self.lado.unlink(missing_ok=True)
             except OSError:
                 pass
+
+
+def _fim_da_ultima_xref(caminho: Path) -> int:
+    """Onde comeca a ultima tabela de objetos ("startxref" do fim) do PDF
+    `caminho`. Le so o fim do arquivo. Sem "startxref": ValueError."""
+    import re
+
+    with open(caminho, "rb") as arquivo:
+        arquivo.seek(0, 2)
+        tamanho = arquivo.tell()
+        arquivo.seek(max(0, tamanho - 2048))
+        fim = arquivo.read()
+    achados = re.findall(rb"startxref\s+(\d+)", fim)
+    if not achados:
+        raise ValueError("PDF sem startxref no fim")
+    return int(achados[-1])
+
+
+def _acrescentar_so_o_novo(doc: fitz.Document, lado: Path, tamanho: int,
+                           fim_da_xref: int) -> tuple[int, int]:
+    """Acrescenta ao fim do PDF `lado` (de onde `doc` foi aberto, com
+    `tamanho` bytes e a ultima tabela de objetos em `fim_da_xref`) os objetos
+    que mudaram ou entraram em `doc` desde que foi aberto, como uma
+    "atualizacao incremental" comum de PDF (norma ISO 32000, 7.5.6): os
+    objetos, uma tabela "xref" so com eles e um "trailer" apontando para a
+    tabela anterior (/Prev). Devolve (tamanho novo, onde comeca a tabela nova).
+
+    E o mesmo que o `saveIncr` do MuPDF grava, sem a comparacao do arquivo
+    inteiro que ele faz antes (ver PDFQueVaiParaODisco._acrescentar_ou_reserva).
+    Quem decide O QUE vai e o proprio MuPDF (`pdf_xref_is_incremental`: a
+    mesma lista que o saveIncr gravaria); o texto de cada objeto tambem vem
+    dele (`xref_object`); os dados das imagens vao como estao guardados
+    (`xref_stream_raw`), sem mexer em nada - D-304, sem perda.
+
+    Arriscado mudar: gravar texto de objeto que nao seja ASCII (sai ValueError
+    de proposito: um acento mal convertido estragaria o objeto em silencio; a
+    reserva grava pelo MuPDF); esquecer o /Prev do trailer (as paginas
+    anteriores sumiriam). Usa duas partes internas do PyMuPDF
+    (`_as_pdf_document`, `mupdf.pdf_xref_is_incremental`): se uma versao nova
+    as tirar, sai AttributeError e a reserva cobre."""
+    import pymupdf
+
+    pdf = pymupdf._as_pdf_document(doc)
+    total = doc.xref_length()
+    novos = [x for x in range(1, total) if pymupdf.mupdf.pdf_xref_is_incremental(pdf, x)]
+    if not novos:
+        return tamanho, fim_da_xref
+    onde: dict[int, int] = {}
+    with open(lado, "r+b") as arquivo:
+        arquivo.seek(tamanho)
+        arquivo.truncate()
+        arquivo.write(b"\n")
+        for xref in novos:
+            onde[xref] = arquivo.tell()
+            if doc.xref_is_stream(xref):
+                dados = doc.xref_stream_raw(xref) or b""
+                doc.xref_set_key(xref, "Length", str(len(dados)))
+                cabeca = doc.xref_object(xref, compressed=True).encode("ascii")
+                arquivo.write(b"%d 0 obj\n%s\nstream\n" % (xref, cabeca))
+                arquivo.write(dados)
+                arquivo.write(b"\nendstream\nendobj\n")
+            else:
+                cabeca = doc.xref_object(xref, compressed=True).encode("ascii")
+                arquivo.write(b"%d 0 obj\n%s\nendobj\n" % (xref, cabeca))
+        tabela = arquivo.tell()
+        linhas = [b"xref\n"]
+        inicio = 0
+        while inicio < len(novos):            # trechos de numeros seguidos
+            fim = inicio
+            while fim + 1 < len(novos) and novos[fim + 1] == novos[fim] + 1:
+                fim += 1
+            linhas.append(b"%d %d\n" % (novos[inicio], fim - inicio + 1))
+            linhas += [b"%010d 00000 n\r\n" % onde[x] for x in novos[inicio:fim + 1]]
+            inicio = fim + 1
+        trailer = f"/Size {total}/Root {doc.xref_get_key(-1, 'Root')[1]}/Prev {fim_da_xref}"
+        for chave in ("Info", "ID"):
+            tipo, valor = doc.xref_get_key(-1, chave)
+            if tipo not in ("null", "undefined"):
+                trailer += f"/{chave} {valor}"
+        linhas.append(b"trailer\n<<%s>>\nstartxref\n%d\n%%%%EOF\n" % (trailer.encode("ascii"), tabela))
+        arquivo.write(b"".join(linhas))
+        return arquivo.tell(), tabela
 
 
 def _peso_medio_da_pagina(origem: fitz.Document) -> int:

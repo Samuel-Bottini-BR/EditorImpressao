@@ -356,3 +356,113 @@ def test_sobra_de_queda_do_arquivo_ao_lado_e_apagada(tmp_path):
         escritor.escrever_imagem(_ruido(1, 100, 80), dpi=72)
     assert not sobra.exists()
     assert outro.exists()
+
+
+# --- ir ao disco não relê o arquivo inteiro (lentidão achada em 05/11/2026) -------
+#
+# Achado ao medir a velocidade do conserto (relatorios/memoria-pdf/ONDE-PAREI.md):
+# o `saveIncr` do MuPDF (gravar "acrescentando no fim") compara o arquivo ao lado
+# INTEIRO, byte a byte, antes de acrescentar. Cada ida ao disco custava o tamanho
+# do arquivo inteiro: num livro de 935 MB as idas passaram de 0,05 s para 3 s
+# cada (21 s no total; no código de antes, ~0,5 s). O tempo extra crescia com o
+# quadrado do livro. Desde então, cada ida acrescenta só o que é novo
+# (core.pdf_io._acrescentar_so_o_novo); o saveIncr fica só de reserva.
+
+
+def _proibir_o_save_incremental(monkeypatch) -> None:
+    original = fitz.Document.save
+
+    def save(self, *a, **k):
+        assert not k.get("incremental"), "usou o save incremental do MuPDF (relê o arquivo inteiro)"
+        return original(self, *a, **k)
+
+    monkeypatch.setattr(fitz.Document, "save", save)
+    monkeypatch.setattr(fitz.Document, "saveIncr",
+                        lambda self: pytest.fail("usou o saveIncr do MuPDF (relê o arquivo inteiro)"))
+
+
+def _livro_com_texto(caminho: Path, paginas: int) -> None:
+    """PDF com texto de verdade (fonte, acento, link): o caminho do
+    copiar_pagina (insert_pdf), que leva fontes e textos para o PDF novo."""
+    doc = fitz.open()
+    for i in range(paginas):
+        pagina = doc.new_page(width=400, height=600)
+        pagina.insert_text((40, 80), f"Página {i + 1}: ação, coração (é) \ [x] <y>", fontsize=14)
+        pagina.insert_link({"kind": fitz.LINK_URI, "from": fitz.Rect(40, 100, 200, 120),
+                            "uri": f"https://exemplo.org/{i}"})
+    doc.set_metadata({"title": "Título (com parênteses) e acentuação"})
+    doc.save(str(caminho))
+    doc.close()
+
+
+def _textos(caminho: Path) -> list[str]:
+    with fitz.open(str(caminho)) as doc:
+        return [pagina.get_text() for pagina in doc]
+
+
+def test_ir_ao_disco_acrescenta_so_o_novo_sem_o_save_incremental(tmp_path, monkeypatch):
+    """Reversão: no código de 04/11 cada ida ao disco era um saveIncr (relê o
+    arquivo inteiro); agora nenhuma é - e o PDF sai o mesmo."""
+    imagens = [_ruido(i, 300, 200) for i in range(6)]
+    origem = tmp_path / "texto.pdf"
+    _livro_com_texto(origem, 3)
+
+    def gravar(nome, limite):
+        _limite(monkeypatch, limite)
+        with fitz.open(str(origem)) as doc_origem, EscritorPDF(tmp_path / nome) as escritor:
+            for i, img in enumerate(imagens):
+                escritor.escrever_imagem(img, dpi=150, monocromatico=(i == 2))
+                if i % 2:
+                    escritor.copiar_pagina(doc_origem, i // 2)
+            return escritor._montagem.idas_ao_disco
+
+    assert gravar("sem.pdf", 10**12) == 0
+    _proibir_o_save_incremental(monkeypatch)
+    assert gravar("com.pdf", 1) >= 8                 # vai ao disco a cada página
+    assert _retrato(tmp_path / "sem.pdf") == _retrato(tmp_path / "com.pdf")
+    assert _textos(tmp_path / "sem.pdf") == _textos(tmp_path / "com.pdf")
+    assert sorted(p.name for p in tmp_path.iterdir()) == ["com.pdf", "sem.pdf", "texto.pdf"]
+
+
+def test_cadernos_e_livreto_vao_ao_disco_sem_o_save_incremental(tmp_path, monkeypatch):
+    entrada = tmp_path / "livro.pdf"
+    _livro_de_ruido(entrada, 10)
+    _limite(monkeypatch, 10**12)
+    cadernos.impor_pdf(entrada, tmp_path / "cadernos-sem.pdf", 8)
+    impressao.montar_para_impressao(entrada, tmp_path / "livreto-sem.pdf", _opcoes_do_livreto())
+    _limite(monkeypatch, 1)
+    _proibir_o_save_incremental(monkeypatch)
+    cadernos.impor_pdf(entrada, tmp_path / "cadernos-com.pdf", 8)
+    impressao.montar_para_impressao(entrada, tmp_path / "livreto-com.pdf", _opcoes_do_livreto())
+    for tipo in ("cadernos", "livreto"):
+        assert _retrato(tmp_path / f"{tipo}-sem.pdf") == _retrato(tmp_path / f"{tipo}-com.pdf"), tipo
+
+
+@pytest.mark.parametrize("como_falha", ["antes", "no_meio"])
+def test_se_o_acrescimo_falhar_volta_ao_do_mupdf_e_o_pdf_sai_o_mesmo(tmp_path, monkeypatch, como_falha):
+    """A reserva: se acrescentar só o novo der errado (antes de escrever ou
+    no meio, com o arquivo ao lado já mexido), o arquivo volta ao tamanho de
+    antes e vai pelo saveIncr do MuPDF - mais lento, mas o PDF sai o mesmo."""
+    imagens = [_ruido(i, 300, 200) for i in range(5)]
+
+    def gravar(nome, limite):
+        _limite(monkeypatch, limite)
+        with EscritorPDF(tmp_path / nome) as escritor:
+            for img in imagens:
+                escritor.escrever_imagem(img, dpi=150)
+            return escritor._montagem.idas_ao_disco
+
+    gravar("sem.pdf", 10**12)
+    original = pdf_io._acrescentar_so_o_novo
+
+    def falha(doc, lado, *a, **k):
+        if como_falha == "no_meio":
+            with open(lado, "ab") as f:
+                f.write(b"\n99 0 obj\n<< /lixo pela metade")
+        raise RuntimeError("de mentira")
+
+    monkeypatch.setattr(pdf_io, "_acrescentar_so_o_novo", falha)
+    assert gravar("com.pdf", 1) >= 4
+    assert _retrato(tmp_path / "sem.pdf") == _retrato(tmp_path / "com.pdf")
+    assert sorted(p.name for p in tmp_path.iterdir()) == ["com.pdf", "sem.pdf"]
+    assert original is not falha
