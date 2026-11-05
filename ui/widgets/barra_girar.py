@@ -33,6 +33,10 @@ lugar provisório. As duas peças:
   do layout, 709 B: ver nomes_dos_alcances), com a setinha da lista como
   pista visual. Vale até a pessoa trocar (nesta sessão do programa); começa
   em "só esta folha", o mais seguro.
+- D-636 (Samuel, 05/11/2026: "pode ser"): numa página de folha dividida o
+  bloco diz "Girar a página", a lista "só esta página / todas as páginas /
+  ..." e o balão do canto "só esta página" (definir_coisa, chamado pela tela
+  a cada atualização); o menu Página acompanha pelo sinal coisa_mudou.
 - Ícones desenhados à mão (QPainter), nunca emoji nem símbolo de fonte (regra
   do projeto: emoji quebrou no Windows; a seta de fonte depende da fonte).
 
@@ -188,11 +192,13 @@ class BarraGirar(QWidget):
 
     girar_pedido = Signal(int)        # giro em graus, sentido do relogio
     alcance_mudou = Signal(str)       # core/girar.ALCANCE_*
+    coisa_mudou = Signal(str)         # D-636: "folha" ou "página" (o menu Página acompanha)
 
     def __init__(self, parent=None) -> None:
         """Monta o bloco com "só esta folha" escolhido."""
         super().__init__(parent)
         self.setObjectName("barraGirar")
+        self.coisa = "folha"
         # a troca de tema refaz a folha e, por ela, os ícones (changeEvent)
         estilo.estilizar(self, _estilo)
         coluna = QVBoxLayout(self)
@@ -273,6 +279,28 @@ class BarraGirar(QWidget):
         if indice >= 0 and indice != self.combo_alcance.currentIndex():
             self.combo_alcance.setCurrentIndex(indice)
 
+    def definir_coisa(self, coisa: str) -> None:
+        """D-636 (Samuel, 05/11/2026: "pode ser"): numa página de folha
+        dividida o bloco diz "Girar a página" e a lista "só esta página /
+        todas as páginas / ..."; nas outras, "folha", como sempre (D-367).
+        Só troca as palavras: os códigos da lista e a escolha feita ficam
+        (a pessoa não perde o "todas" ao passar de uma para a outra). Avisa
+        (coisa_mudou) para o menu Página dizer o mesmo. Seguro mudar: as
+        palavras."""
+        coisa = "página" if coisa == "página" else "folha"
+        if coisa == self.coisa:
+            return
+        self.coisa = coisa
+        self.rotulo.setText(f"Girar a {coisa}")
+        nomes = nomes_dos_alcances(coisa)
+        for i in range(self.combo_alcance.count()):
+            alcance = self.combo_alcance.itemData(i)
+            if alcance in nomes:
+                self.combo_alcance.setItemText(i, nomes[alcance])
+        self.combo_alcance.setToolTip(
+            f"Em quais {coisa}s o giro vale. Todas ficam viradas como esta {coisa}.")
+        self.coisa_mudou.emit(coisa)
+
     def definir_teclas(self, teclas: dict[int, str]) -> None:
         """Põe a tecla de cada giro no balão do botão (vem do menu Página,
         que é quem tem os atalhos; ver ui/barra_de_menu.py)."""
@@ -301,6 +329,8 @@ class GirarDoCanto(QFrame):
         linha.setContentsMargins(7, 6, 7, 6)
         linha.setSpacing(3)
         self.botoes_de_giro: dict[int, QPushButton] = {}
+        self.coisa = "folha"                  # D-636: "página" numa folha dividida
+        self._teclas: dict[int, str] = {}
         for giro in (GIRO_ESQUERDA, GIRO_DIREITA, GIRO_MEIA_VOLTA):
             botao = QPushButton()
             botao.setFixedSize(*self.LADO_DO_BOTAO)
@@ -323,8 +353,19 @@ class GirarDoCanto(QFrame):
                 botao.setIcon(icone_de_giro(giro))
 
     def definir_teclas(self, teclas: dict[int, str]) -> None:
-        """O balão de cada botão: o que faz, que é só nesta folha, e a tecla."""
+        """O balão de cada botão: o que faz, que é só nesta folha (ou página,
+        D-636), e a tecla."""
+        self._teclas = dict(teclas)
         for giro, botao in self.botoes_de_giro.items():
             tecla = teclas.get(giro, "")
-            dica = f"Girar {NOMES_DOS_GIROS[giro]} (só esta folha)"
+            dica = f"Girar {NOMES_DOS_GIROS[giro]} (só esta {self.coisa})"
             botao.setToolTip(f"{dica}  ({tecla})" if tecla else dica)
+
+    def definir_coisa(self, coisa: str) -> None:
+        """D-636: o balão diz "só esta página" numa página de folha dividida
+        (os botões do canto giram só ela, D-618) e "só esta folha" nas
+        outras. Seguro mudar: as palavras."""
+        coisa = "página" if coisa == "página" else "folha"
+        if coisa != self.coisa:
+            self.coisa = coisa
+            self.definir_teclas(self._teclas)

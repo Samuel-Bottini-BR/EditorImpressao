@@ -625,6 +625,19 @@ def montar_acao(
             if partes is not None and 0 <= partes[0] < len(projeto.paginas):
                 antes[campo] = _serializavel(getattr(projeto.paginas[partes[0]], partes[1]))
             continue
+        if campo.startswith(PREFIXO_FOLHA):           # D-636 (ver PREFIXO_FOLHA)
+            # o girar da grade numa acao de pagina: as escolhidas de folha
+            # inteira giram a folha junto (ui/tela_conferir.
+            # _girar_as_escolhidas_que_sao_metade). Antes disto nenhum chamador
+            # passava este prefixo aqui (dava erro): nada antigo muda.
+            try:
+                folha, nome = campo[len(PREFIXO_FOLHA):].split(".", 1)
+                folha = int(folha)
+            except ValueError:
+                continue
+            if 0 <= folha < len(projeto.folhas):
+                antes[campo] = _serializavel(getattr(projeto.folhas[folha], nome))
+            continue
         antes[campo] = {
             str(i): _serializavel(getattr(itens[i], campo))
             for i in indices

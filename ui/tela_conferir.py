@@ -4382,6 +4382,7 @@ class TelaConferir(QWidget):
         self._atualizar_previa()
         self._atualizar_faixa()
         self._atualizar_botoes()
+        self._acertar_as_palavras_do_girar()     # D-636: "folha" ou "página"
         self._atualizar_tira()
         self._atualizar_contador()
         self._atualizar_paineis()
@@ -6221,10 +6222,10 @@ class TelaConferir(QWidget):
 
         D-618 (04/11/2026): com "so esta" (e sempre nos botoes do canto),
         numa folha JA DIVIDIDA gira so a pagina da tela
-        (_pagina_que_gira_sozinha, _girar_so_a_pagina). O "aplicar em" com
-        mais de uma folha continua girando folhas, como antes: o que ele faz
-        numa folha dividida e pergunta aberta ao Samuel
-        (relatorios/girar-pagina/ONDE-PAREI.md).
+        (_pagina_que_gira_sozinha, _girar_so_a_pagina).
+        D-636 (05/11/2026, Samuel: "pode ser"): ali o "aplicar em" com mais de
+        uma pagina conta PAGINAS e cada uma gira sozinha (_girar_as_paginas).
+        Folha inteira: como antes (gira folhas).
         """
         if not self._pronta():
             return
@@ -6232,9 +6233,12 @@ class TelaConferir(QWidget):
         # so_esta: os botoes do canto da pagina, que giram sempre so a folha
         # da vez, qualquer que seja o "aplicar em" do painel (rodada 13, 803 B)
         alcance = girar.ALCANCE_ESTA if so_esta else self.barra_girar.alcance()
-        if alcance == girar.ALCANCE_ESTA and self._pagina_que_gira_sozinha() is not None:
-            # D-618: numa folha ja dividida gira so a pagina da tela
-            self._girar_so_a_pagina(giro)
+        if self._pagina_que_gira_sozinha() is not None:
+            if alcance == girar.ALCANCE_ESTA:
+                # D-618: numa folha ja dividida gira so a pagina da tela
+                self._girar_so_a_pagina(giro)
+            else:
+                self._girar_as_paginas(giro, alcance)            # D-636
             return
         aviso = girar.aviso_fora_do_alcance(self.indice_folha, alcance)
         if aviso:
@@ -6320,6 +6324,47 @@ class TelaConferir(QWidget):
             girar.campos_do_giro_da_pagina(pagina, giro),
             girar.descricao_do_giro_da_pagina(giro, indice),
         )
+
+    def _girar_as_paginas(self, giro: int, alcance: str) -> None:
+        """D-636 (Samuel, 05/11/2026, à pergunta "nessa lista, cada página
+        gira sozinha, igual à da tela [...] Pode ser assim?": "1- pode ser,
+        só garanta que não crie mais problemas fazendo isso"): na página de
+        uma folha dividida, o "aplicar em" (todas / daqui em diante / pares /
+        ímpares) conta PÁGINAS e cada página do alcance que é metade de folha
+        dividida gira sozinha (giro_da_pagina, D-618), virada como a da vez
+        (D-035); nenhuma folha do scan gira e a linha da divisão não muda.
+        Páginas de folha inteira ficam como estão (pergunta 2 do ONDE-PAREI).
+        "só as pares" numa página ímpar (e o contrário): avisa e não gira
+        (D-036, contado em páginas). Uma ação só do desfazer; o Ctrl+Z devolve
+        a cada página o giro e o corte que tinha. Arriscado: pôr "rotacao" de
+        folha aqui (volta a confusão do a-70)."""
+        assert self.projeto is not None
+        aviso = girar.aviso_fora_do_alcance_das_paginas(self.indice_pagina, alcance)
+        if aviso:
+            janela = self.window()
+            if janela is not self and hasattr(janela, "avisar"):
+                janela.avisar(aviso)
+            return
+        paginas = self.projeto.paginas
+        indices = girar.paginas_do_alcance(self.projeto.folhas, paginas, self.indice_pagina, alcance)
+        if self.indice_pagina not in indices:
+            return
+        self._registrar(
+            "girar", "pagina", indices,
+            girar.campos_do_giro_das_paginas(paginas, indices, giro, self.indice_pagina),
+            girar.descricao_do_giro_das_paginas(giro, alcance, self.indice_pagina, len(indices)),
+        )
+
+    def _acertar_as_palavras_do_girar(self) -> None:
+        """D-636: o bloco do girar, a lista "aplicar em", o menu Página e o
+        balão dos botões do canto dizem "página" quando o giro vai girar só
+        páginas (a página da tela é metade de folha dividida e a tela a mostra
+        sozinha: _pagina_que_gira_sozinha), e "folha" nas outras (D-367).
+        Barato: só lê campos. Seguro mudar: nada (as palavras moram em
+        ui/widgets/barra_girar.py)."""
+        coisa = "página" if self._pagina_que_gira_sozinha() is not None else "folha"
+        self.barra_girar.definir_coisa(coisa)
+        self.girar_do_canto.definir_coisa(coisa)
 
     def _marcacoes_ainda_no_formato_antigo(self, folhas: list[int]) -> bool:
         """Alguma pagina destas folhas tem zonas da aba Marcar que ainda nao
@@ -6745,6 +6790,8 @@ class TelaConferir(QWidget):
         plural = "página" if n == 1 else "páginas"
         if acao in ("girar_esquerda", "girar_direita"):
             giro = GIRO_ESQUERDA if acao == "girar_esquerda" else GIRO_DIREITA
+            if self._girar_as_escolhidas_que_sao_metade(giro, indices):
+                return self._voltar_a_escolher(indices)          # D-636
             folhas = sorted({self.projeto.paginas[i].folha for i in indices})
             novos = {str(f): (int(self.projeto.folhas[f].rotacao) + giro) % 360 for f in folhas}
             # "girar - sim" (04/11): a pagina da folha inteira gira como uma foto
@@ -6773,8 +6820,52 @@ class TelaConferir(QWidget):
             self.pilha_da_tela.setCurrentWidget(self.trabalho)
             self.escolhidas_para_o_automatico.emit(indices)
             return
+        self._voltar_a_escolher(indices)
+
+    def _voltar_a_escolher(self, indices: list) -> None:
+        """Depois de uma ação da grade, a grade volta com as mesmas escolhidas."""
         self.abrir_todas_as_paginas()
         self.todas.comecar_a_escolher(indices)
+
+    def _girar_as_escolhidas_que_sao_metade(self, giro: int, indices: list[int]) -> bool:
+        """D-636 (Samuel, 05/11/2026: "pode ser" a "O mesmo valeria na tela
+        'ver todas'"): no "girar" da grade, cada página escolhida que é metade
+        de folha dividida gira SOZINHA (giro_da_pagina, D-618), ¼ a partir de
+        onde está (a grade sempre girou assim cada escolhida); a outra página
+        da folha e a linha não mudam. Escolhida de folha inteira gira a folha
+        dela, como antes ("girar - sim": como uma foto), na MESMA ação (campo
+        "folha:<i>.rotacao" e os campos da página que giram junto), para um
+        Ctrl+Z desfazer tudo. Devolve False (e não faz nada) quando nenhuma
+        escolhida é metade: aí o caminho de antes, sem mudança (D-487/D-334).
+        Arriscado: girar a folha de uma metade (volta o a-70)."""
+        from historico_acoes import PREFIXO_FOLHA
+
+        assert self.projeto is not None
+        folhas, paginas = self.projeto.folhas, self.projeto.paginas
+
+        def metade(i: int) -> bool:
+            f = paginas[i].folha
+            return 0 <= f < len(folhas) and girar.gira_so_a_pagina(folhas[f], paginas[i])
+
+        metades = [i for i in indices if metade(i)]
+        if not metades:
+            return False
+        campos: dict = girar.campos_do_giro_relativo_das_paginas(paginas, metades, giro)
+        inteiras = sorted({paginas[i].folha for i in indices if not metade(i)})
+        if inteiras:
+            rotacao = {str(f): (int(folhas[f].rotacao) + giro) % 360 for f in inteiras}
+            junto = self._com_as_paginas_que_giram_junto({"rotacao": rotacao})
+            for chave, valor in junto.items():
+                if chave != "rotacao":
+                    campos[chave] = valor            # "pagina:<i>.<campo>" das folhas inteiras
+            for f, valor in rotacao.items():
+                campos[f"{PREFIXO_FOLHA}{f}.rotacao"] = valor
+        alvo = sorted(set(metades) | {i for i in indices if paginas[i].folha in inteiras})
+        n = len(alvo)
+        self._registrar("girar", "pagina", alvo, campos,
+                        f"Girar {n} página" + ("" if n == 1 else "s")
+                        + " (escolhidas em Todas as páginas)")
+        return True
 
     # --- etapa 9b-2 da obra: "dividir" na grade (D-558) ----------------------
     #
