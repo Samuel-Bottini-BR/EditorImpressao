@@ -3,7 +3,7 @@
 Ramo `mover-lado-2026-11-04` (saiu de `obra-2026-10-26`, ponta `dd7a648c`). Cópia:
 `D:\programas\EditorImpressao\.claude\worktrees\mover-lado`.
 
-**Situação (04/11, fim):** feito e testado no PC (19 arquivos de teste, piloto 20/20). Commits `6d503cde`
+**Situação (05/11): tudo feito; junção da obra, PC e GitHub feitos — ver a última seção.** Antes: **Situação (04/11, fim):** feito e testado no PC (19 arquivos de teste, piloto 20/20). Commits `6d503cde`
 (o conserto), `1aa98650` (a roda nos pares, achado do piloto), `bb11ff93` (piloto e prints). Rodada do GitHub
 41856247413 (ver `relatorio.md`). Relatório: `relatorio.md` (.html/.pdf). Entrega do Mover mandada à gerente.
 
@@ -80,10 +80,17 @@ linha; os pares continuam pares (clicar numa página faz dela a da vez, a roda r
 
 Mantive como já era nos pares e na "Uma página" (nada novo decidido); perguntar para confirmar:
 
-1. Clicar na outra página do par só a escolhe (como já era); o arrasto vale do próximo aperto. Quer que já
-   arraste no mesmo aperto? (print `prints/p09-outra-pagina-do-par.png`)
-2. Os cantos azuis só na página da vez (como na "Uma página"). Está bom? (print `prints/p03-F-mover-nos-pares.png`)
-3. Ainda em aberto, da gerente: o mesmo vale para Cortar, Endireitar, marcar e "antes / depois"? (não mexidos)
+1. ~~Clicar na outra página do par só a escolhe (como já era); o arrasto vale do próximo aperto. Quer que já
+   arraste no mesmo aperto? (print `prints/p09-outra-pagina-do-par.png`)~~ — respondida ("ok"; D-612 a-75/a-76):
+   feito em `d80f0380`.
+2. ~~Os cantos azuis só na página da vez (como na "Uma página"). Está bom? (print `prints/p03-F-mover-nos-pares.png`)~~
+   — respondida (D-612: os cantos só na página escolhida).
+3. ~~Ainda em aberto, da gerente: o mesmo vale para Cortar, Endireitar, marcar e "antes / depois"? (não mexidos)~~
+   — respondida ("1- sim"; "Ok, pode ser assim o antes e depois"): feito.
+4. **Ainda aberta (o Livro não responde; mantive como já era):** no "antes / depois" com Mover, Cortar ou
+   Endireitar, o rótulo "antes: Original" fica no canto esquerdo, em cima do lado onde a ferramenta age (o
+   "depois"). Quer o rótulo em outro lugar? (prints `prints/p406-retangulo-no-depois.png` e
+   `prints/p507-B-mover-131-antes-depois.png`)
 
 ## Como cumpri cada decisão
 
@@ -94,3 +101,47 @@ ferramenta fica do tamanho da prévia"), teste `tests/test_decisoes_tamanho_no_p
 (20/20, 15/15, 16/16), testes no PC em `testes-pc-4.txt`. GitHub final: ver `relatorio.md`.
 
 GitHub final 41892321210 (em 4ede8fd5): 1 falha de tempo em test_gravura_na_aba_marcar (passa no PC 3/3). Entregue a gerente.
+
+## Consertos do teste do Samuel (a-74 a a-78) e D-611 atualizada — retomado em 05/11
+
+**Situação:** código feito em 04/11 (commits `18521ce8` B, `d80f0380` (a), `a5a6caa8` C/D-622, `6d62dd47` e
+`3a78c5dd` D-611, `d7d08837` os dois testes antigos do Dividir com autorização da gerente; `af4005d2` piloto 10/10
+e prints p501-p508). GitHub em `af4005d2`: rodada 41917141935 **passou inteira**. Pausado no fim da sessão; em 05/11
+retomado: juntei a `obra-2026-10-26` (`37926156`, sem conflito: D-590 caixinha e D-617 parte 2), rodei de novo no
+PC e no GitHub (resultado abaixo).
+
+### Como cumpri cada decisão (consertos)
+
+- **D-612** ("1 - ele tem que funcionar com paginas lado a lado também"; "Ok, pode ser assim o antes e depois"):
+  - Mover, Cortar, Endireitar e marcar nos pares e no "antes / depois", agindo no "depois", sem a vista mudar:
+    `test_decisoes_mover_lado` (7), `test_decisoes_ferramentas_lado` (9), `test_decisoes_ferramentas_antes_depois`
+    (12), `test_decisoes_tamanho_no_par` (5); prints p03-p11, p301-p307, p401-p406.
+  - Um clique escolhe a página clicada e já arrasta (a-75/a-76; no Endireitar só escolhe):
+    `test_decisoes_par_escolhe_e_arrasta` (4; falharam 3 em `d2567fab`); print p503.
+  - Os cantos só na página escolhida: `test_decisoes_mover_lado`; print p03.
+  - O "antes / depois" mostra o depois do Mover, Cortar e Endireitar (a-77/a-78):
+    `test_decisoes_antes_depois_da_ferramenta` (5; falharam 4 em `d2567fab`); prints p507, p508.
+- **D-622** ("quando eu clicar fora da folha ele desseleciona [...] como no photoshop"): no Mover, clicar no cinza
+  larga a escolha (cantos, contorno e o quadro azul do par somem); clicar na página escolhe de novo:
+  `test_decisoes_d622_clicar_fora` (3; falharam em `d2567fab`); prints p504, p505, p506.
+- **D-611** ("SIm, mas tem que verificar se vai ficar assim em todo os lugares né? a miniatura corresponder com o
+  numero real"): no Dividir a tira junta pela folha; o número de cada miniatura é o da página; em Mão, Mover,
+  Cortar, Endireitar, Retângulo e Dividir, nas duas vistas, com capa aberta e ordem mudada:
+  `test_decisoes_tira_numero_real` (3; falharam 2 no código antigo), `test_decisoes_tira_marca_a_tela` (3);
+  prints p501, p502. Testes antigos mudados (só a parte do Dividir, autorizado pela gerente, commit separado
+  `d7d08837` com comentário citando a D-611): `test_decisoes_tira_em_pares.py` e
+  `test_decisoes_tira_pares_juntas.py`. Nenhum outro teste antigo mudou (conferido com `git diff` contra a obra).
+- **D-605**: provas das decisões (`tests/test_decisoes*.py`) e os testes dos arquivos tocados rodados no PC depois
+  da junção: `testes-pc-7.txt`.
+
+### Testes depois da junção (05/11)
+
+PC (um arquivo por vez, Python do projeto principal `D:\programas\EditorImpressao\.venv`, a cópia não tem
+.venv próprio): os 44 `tests/test_decisoes*.py` e mais 18 arquivos das telas tocadas (com o novo da obra
+`test_caixinha_do_dividir_nao_volta`): **62 arquivos, todos passaram** (`testes-pc-7.txt`).
+
+GitHub, rodada **41948184684** (em `37926156`): na 1ª tentativa a parte 4 caiu porque o Python travou
+(código 3221225477, "access violation") em `test_dividir_ajustes_03_11.py`, depois de 6,5 s, sem falha de
+teste. Esse arquivo não é da lista de instáveis conhecidos, mas passou nas rodadas 41917141935 (esta cópia),
+41919662837 (obra) e 41918456756, e no PC 3 de 3 (9 passed cada). Repeti só a parte que caiu (tentativa 2):
+**passou inteira** (o arquivo: 9 passed). Ressalva para a gerente: um travamento solto no GitHub, não repetido.
