@@ -1,0 +1,17 @@
+abriu-em-s => 2.3
+inicio => {"aba": "marcar", "pagina": 74, "folha": 37, "mostrar": "uma", "feitas": 9, "ordem": {"comeco": ["1e", "1d", "2e", "2d", "3e", "3d"], "fim": ["68e", "68d", "69e", "69d", "70e", "70d"], "total": 140}, "quadros": 140, "selecionado": 74}
+caixinha => {"texto": "A 1ª folha é a capa aberta", "marcada": false, "a_vista": true}
+marcadas => ["dividir"]
+caderno-sem-a-caixinha-em-s => 2.0
+lista-sem => [[1, "esquerda"], [1, "direita"], [2, "esquerda"]]
+caixinha-depois-do-clique => {"marcada": true, "estado": true}
+previa-passos => [[1, null], [2, null], [0, null]]
+previa-em-s => 2.5
+previa-contador => "página 2 de 140"
+previa-ultima-em-s => 2.5
+previa-contador-ultima => "página 1 de 140"
+caderno-com-a-caixinha-em-s => 2.0
+lista-com => [[1, "direita"], [2, "esquerda"], [2, "direita"]]
+rodou => {"feitas": 10, "capa_no_livro": true, "aba": "marcar", "pagina": 72, "folha": 37, "mostrar": "uma", "ordem": {"comeco": ["1d", "2e", "2d", "3e", "3d", "4e"], "fim": ["68d", "69e", "69d", "70e", "70d", "1e"], "total": 140}, "quadros": 140, "selecionado": 72}
+pdf-e2 => {"paginas": 140, "arquivo": "C:\\Users\\fotog\\AppData\\Local\\Temp\\claude\\C--Users-fotog\\05fa28dc-c2f5-4152-b355-e6ab76bb386f\\scratchpad\\ordem-folhas-dados\\e2.pdf"}
+ctrl-z => {"capa_no_livro": false, "aba": "marcar", "pagina": 73, "folha": 37, "mostrar": "uma", "feitas": 9, "ordem": {"comeco": ["1e", "1d", "2e", "2d", "3e", "3d"], "fim": ["68e", "68d", "69e", "69d", "70e", "70d"], "total": 140}, "quadros": 140, "selecionado": 73}
