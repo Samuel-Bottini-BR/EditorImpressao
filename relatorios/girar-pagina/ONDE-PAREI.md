@@ -147,7 +147,15 @@ folha (ou girar com o livro ainda não dividido).
   Dividir, PDF, camadas e recomeço passam. Na série, `test_d148` (instável conhecido) falhou uma vez; de novo,
   sozinho e com o arquivo inteiro, passou (5 passed). `test_recomeco_limpa_o_historico.py`: 13 passed.
 - [x] 05/11, GitHub: rodada **41948211799** em b23ad645, **passou inteira** (success).
-- [ ] falta: resposta do Samuel à pergunta 1; depois disso, a gerente junta
+- [x] 05/11: resposta à pergunta 1 (D-636) e regra D-637; juntei de novo o `obra-2026-10-26` (d3b613b6, só o
+  Livro); "Como fica para quem usa e no livro" escrita antes de mexer (10f74f65); provas de reversão; código
+  (78f2e025); prova provisória trocada (18b24395); piloto na janela real e PDF (93e5228d).
+- [x] PC (série "D-636 (05/11)" em `resultado-testes.txt`, um arquivo por vez): os 41 `test_decisoes*.py` e 16
+  arquivos do girar, Dividir, Endireitar, histórico, recomeço, promessas (267 + 1 falha já esperada), painéis,
+  PDF, camadas e impressão: todos passam. Antes, `test_paineis_na_tela::test_a_faixa_tem_esta_certo_e_proxima_duvida`
+  caiu uma vez com a máquina carregada; sozinho e com o arquivo inteiro passou (22 passed).
+- [x] GitHub: rodada **41970202273** em 93e5228d, **passou inteira**.
+- [ ] respostas às perguntas 2 e 3; depois, a gerente junta
 
 ## Como cumpri cada decisão
 
@@ -158,11 +166,40 @@ folha (ou girar com o livro ainda não dividido).
   `test_d618_folha_inteira_girada_mede_a_proporcao_na_previa_e_no_pdf`; prints `foto-01` a `foto-04`.
 - D-030, D-035, D-036, D-049, D-053, D-361, D-367, D-371, D-556: `tests/test_girar.py` e `tests/test_girar_na_tela.py`
   passam sem mudança; textos da tela não mudaram.
-- D-487: o girar da grade não foi mexido (fica na pergunta 1). D-601 / D-609: `test_decisoes_dividir_*` passam.
+- D-487 / D-334: com escolhidas só de folhas inteiras a grade gira as folhas como antes
+  (`test_d334_acoes_nas_escolhidas_girar_e_tirar` sem mudança; `test_d636_ver_todas_so_folhas_inteiras_*`); com
+  metades, cada uma gira sozinha (D-636). D-601 / D-609: `test_decisoes_dividir_*` passam.
 - Projeto antigo abre igual: `test_d618_projeto_antigo_sem_o_campo_abre_igual` e
   `test_d618_a_geometria_das_zonas_de_antes_continua_igual`.
 - D-605 (o novo não estraga o testado): nenhum teste antigo mudou, fora a exceção autorizada da D-618
   (ajudante em b4a5538c e linha 170 em 064b2e4e, os dois com comentário citando a D-618). Depois do merge com o
   `obra-2026-10-26`: PC e GitHub (41948211799) passam.
-- Pergunta 1 (nome do bloco e "aplicar em" numa folha dividida; girar da grade "ver todas"): NÃO decidida, o
-  código continua como estava; espera o Samuel.
+- Pergunta 1: respondida (D-636), ver abaixo.
+- **D-636** (05/11): `tests/test_decisoes_girar_paginas_aplicar_em.py` (10 provas; 8 falham em 10f74f65, o código
+  de antes: lá "todas" girava as folhas e a grade girava a folha inteira; as 2 que passavam lá são as da folha
+  inteira, que não podia mudar). Código: 78f2e025 (`core/girar.py` bloco D-636, `ui/widgets/barra_girar.py`
+  `definir_coisa`, `ui/tela_conferir.py` `_girar_as_paginas`, `_acertar_as_palavras_do_girar`,
+  `_girar_as_escolhidas_que_sao_metade`, `ui/janela_principal.py` o menu, `ui/widgets/todas_as_paginas.py` o
+  balão, `historico_acoes.montar_acao` guarda o "antes" de `folha:<i>.<campo>`).
+  A prova provisória da D-618 "continua como antes até o Samuel responder" (escrita nesta tarefa, 04/11) virou
+  `test_d618_d636_aplicar_em_todas_numa_folha_dividida_gira_as_paginas`, em commit separado (18b24395).
+- **D-637** (conferência clicando e no PDF, 05/11): `piloto.py aplicar`, `anotacoes-aplicar.txt`,
+  `prints/aplicar-*.png`. Gradus aberto, "dividir todas" na ferramenta Dividir (70 folhas, 140 páginas), folha 1
+  juntada ("não dividir esta", a capa inteira; 139 páginas), Cortar as bordas:
+  - página 1 (folha inteira): quadro "Girar a folha", lista e menu "só esta folha / todas as folhas / ...",
+    canto "só esta folha" (`aplicar-01`). Página 14: "Girar a página", "só esta página / todas as páginas /
+    ...", menu e canto iguais (`aplicar-02`).
+  - "todas as páginas" (pelo menu Página) + ¼ à esquerda (clique no Propriedades): "Girar ¼ à esquerda: todas
+    as 138 páginas, viradas como a página 14"; páginas 13 a 16 deitadas, inteiras, nenhuma folha girou, as
+    linhas da divisão iguais, a capa igual (mesmo resumo da imagem) (`aplicar-03`, `-04`, `-05`). Ctrl+Z:
+    todas voltam (mesmos resumos de antes) (`aplicar-06`).
+  - "só as pares" na página 14 + meia volta: 69 páginas pares; na página 3: a caixa "Você está numa página
+    ímpar. Para girar só as pares, vá a uma página par e gire de lá." e nada gira (`aplicar-07`, `-08`).
+  - "ver todas": escolhidas a 1 (capa inteira) e a 14, "girar ¼ →": só a 14 deitou e a folha da capa girou; a
+    13 ficou igual; "Girar 2 páginas (escolhidas em Todas as páginas)"; Ctrl+Z devolve tudo (`aplicar-09`,
+    `-10`).
+  - PDF (só as páginas 1, 13 a 16, numa cópia do projeto): antes 842x595 (capa) e ~421x595 (as outras);
+    depois a capa igual (o mesmo arquivo de imagem) e as outras ~595x421, cada uma deitada e inteira, sem pedaço
+    da vizinha (`aplicar-pdf-antes-*`, `aplicar-pdf-depois-*`; olhei as imagens).
+  - **Problema novo: nenhum visto.** O aviso "Esta página parece estar em branco" na 14 já existia (a página
+    14 do Gradus é branca).
