@@ -9,6 +9,13 @@ Como manter: quando ele responder, registre no plano (as duas cópias) e na fich
 daqui** (ou mova para "Respondidas recentemente" com a data). O `conferir_memoria.py` avisa quando uma pergunta desta
 lista com nome entre crases já aparece como decidida no Registro.
 
+## 0000. Atualização de 05/11/2026 (vale sobre o resto; [PARTE -30](../../historico/Editor%20de%20Impressao%20-%20resumo%20para%20o%20Claude.md) §4)
+
+- **Respondidas em 04-05/11:** as 25 respostas de 04/11 (aba Respostas da Central; D-624 a D-635); `perg-girar-pagina` → D-636; as 3 do agente caixinha-volta continuam (PARTE -29 §4). 
+- **No chat, sem resposta:** A ("todas as páginas" não gira a capa inteira?), B (na capa inteira, "todas as folhas" gira as divididas página por página?), C (esconder "voltar a página" na página posta em branco?). Texto exato na PARTE -30 §4.
+- **Mostrar ao vivo no teste (ele não entendeu por escrito):** rótulo "antes" no Mover (D-577); "páginas em branco e 61".
+- **Central, "Perguntas novas (04/11)":** 6 perguntas (`n0411-*`): caixinhas depois de rodar, "0 = todas", "O que vai sair", recuperar o trabalho, inverter letra clara, página em branco do caderno. E `perg-mover-rotulo`.
+
 ## 000. Atualização de 28/10/2026 (vale sobre o resto; [PARTE -23](../../historico/Editor%20de%20Impressao%20-%20resumo%20para%20o%20Claude.md) §3)
 
 - Central, aba `nao-gostei-28-10`: 12 perguntas (2-1 a 2-12 da sessão 2), entre elas as três opções de ver o livreto (D-574) e sair em livreto ao processar (D-575).

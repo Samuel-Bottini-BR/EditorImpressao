@@ -1,6 +1,6 @@
 # Editor de Impressão — documento para colar no Claude
 
-Atualizado em 04/11/2026 (PARTE -29; a anterior, PARTE -28, é de 02-03/11). Desde 19/10 a memória por assunto fica em `memoria/` (índice `memoria/INDICE.md`). Versão **máxima**: reúne o histórico institucional, o
+Atualizado em 05/11/2026 (PARTE -30; a anterior, PARTE -29, é de 03-04/11). Desde 19/10 a memória por assunto fica em `memoria/` (índice `memoria/INDICE.md`). Versão **máxima**: reúne o histórico institucional, o
 que o programa é, todas as funcionalidades pedidas, os 68 pedidos feitos até
 hoje **palavra por palavra**, o que foi feito, o que falta, e os dois
 documentos-fonte inteiros (a especificação original e o prompt de testes) em
@@ -13,6 +13,144 @@ o backup). Repositório git ligado a
 `https://github.com/Samuel-Bottini-BR/EditorImpressao`.
 
 ---
+
+# PARTE -30 — Checkpoint de 04-05/11/2026 (noite): os 6 agentes entregues, aba Respostas, D-624 a D-637 (leia isto primeiro)
+
+Sessão no PC, gerente Claude Opus 5.5. Detalhe de cada ramo (pontas, ids do GitHub): `memoria/ramos.md`, no fim do arquivo ("04/11 noite" e "05/11").
+Fichas mudadas: `memoria/ramos.md`, `memoria/bugs.md`, `memoria/geral/perguntas-abertas.md`, `memoria/LINHA-DO-TEMPO.md`.
+
+## 0. Para recomeçar
+
+1. `git -C D:\programas\EditorImpressao fetch origin`. Na Central, ler: `ordens` com estado diferente de vista/feita; `respostas` com
+   `lida != true` (é o que a aba Respostas mostra em "Esperando a gerente"); e as respostas das perguntas `n0411-*`, `perg-mover-rotulo`
+   e `perg-girar-pagina`.
+2. **Nada das 6 entregas está na versão de teste ainda.** Elas estão prontas, cada uma no seu ramo, já com o obra juntado. Para juntar,
+   falta isto, na ordem:
+   - a medida de memória nos 9 livros. O agente ainda rodava no fim; o resultado vai para
+     `.claude\worktrees\memoria-pdf\relatorios\memoria-pdf\nove-livros\` no ramo `memoria-pdf-2026-11-04`;
+   - investigar `tests/test_desentortar_conferir_de_novo.py::test_destino_do_socialismo_18_o_botao_traz_a_deformacao_e_aparece_a_pergunta`,
+     que falha (`assert 2292 == 0`) **no próprio obra** `d3b613b6` (achado do agente desfazer-pagina);
+   - as respostas A, B e C do Samuel (§4);
+   - a rodada inteira no PC, com os agentes parados (§4.6). Depois, juntar no `obra-2026-10-26`.
+   - **Conflito conhecido:** girar-pagina e mover-lado mexem na mesma linha da tira, em `ui/tela_conferir.py`. As duas linhas
+     ficam; depois, testar a tira de novo.
+
+   | Ramo | Ponta | O que é | Situação |
+   |---|---|---|---|
+   | `girar-pagina-2026-11-04` | `ac36f58f` | D-618 + D-636 (cada página gira sozinha em todas as opções; "Girar a página") | pronto; perguntas A e B |
+   | `mover-lado-2026-11-04` | `fd2eee9e` | D-612, D-622, D-611 | pronto; pergunta do rótulo "antes" (§4) |
+   | `painel-livro-2026-11-04` | `41120c0b` | D-619, D-620 | pronto |
+   | `memoria-pdf-2026-11-04` | `45005116`+ | falta de memória ao processar + D-591 | pronto; medida dos 9 livros rodando |
+   | `desfazer-pagina-2026-11-04` | `e1b6d8eb` | D-621, D-623 + defeito B consertado | pronto; pergunta C |
+   | `caderno-numeros-2026-11-04` | `5f29d87d` | D-604 + defeito C consertado | pronto; pergunta da página em branco |
+
+3. **Na versão de teste, ainda sem teste do Samuel** (lista dada a ele em 05/11): D-616 capa aberta; D-617 parte 2 (número na prévia
+   com o Dividir); D-590 caixinha do Dividir sem rodar; D-589 Montar cadernos desmarcado; D-004 pular as folhas mexidas à mão; D-574
+   livreto; D-601 Dividir em "Uma página". Antes de testar, fechar e abrir o programa.
+
+## 1. O que se fez
+
+- **Os 6 agentes pausados em 04/11 foram retomados e entregaram** (Samuel: "pode colocar os agentes para começar"). Todos passaram
+  no PC e no GitHub. A causa da falta de memória: o livro novo inteiro ficava na memória até gravar o PDF. Agora as páginas vão
+  ao disco de 64 em 64 MB, com o acréscimo só do que é novo. O Rhetorica de 270 folhas, que antes caía, terminou com pico de
+  1.674 MB. A velocidade ficou igual.
+- **Verificador separado** das 6 (`relatorios/verificacao-04-11/`, commit `4c42b4bb`, no fase-1). Achou 2 defeitos, já consertados:
+  - B: a página posta em branco mostrava a imagem da vizinha na tela;
+  - C: a quebra de linha do livreto começava com ":".
+
+  O "defeito A" dele (rótulos trocados no antes/depois) **não é defeito**: é a D-577 de 30/10. Os rótulos ficam parados ("antes" à
+  esquerda, "depois" à direita), e com a linha no meio o lado esquerdo mostra o depois.
+- **Aba nova "Respostas" na Central** (Samuel: "faça uma aba só para respostas lá na central"). Ela junta todas as respostas dele.
+  A gerente responde no próprio documento da resposta: campos `gerente`, `gerenteEm` e `lida: true` (`CLAUDE.md` §10).
+  - O código da página não está no git. Lê-se com Artifact `read`; a cópia desta sessão ficou no scratchpad.
+  - As fotos novas foram publicadas como arquivos da página: `fotos/girar-pagina/`, `fotos/mover-lado/`, `fotos/inverter/` e
+    `fotos/caderno-numeros/`.
+- **As 25 respostas dele de 04/11 (15h a 16h50) foram respondidas** na aba Respostas. Viraram as decisões D-624 a D-635, e as
+  D-332, D-372, D-374 e D-575 foram atualizadas. A D-575 ficou **URGENTE**: "quero ver as opções antes de fazer, e a opção de ver
+  só o pdf como ele está e de ver como fica em livreto". Antes de fazer, levar as opções com desenho.
+- **Regra nova D-637** (`CLAUDE.md` §11.9 e o fim de cada `.claude/agents/*.md`). Palavras dele: "você tem que pensar na
+  experiencia do usario e no resultado final do livro dentro do programa, quando vai mudar algo, deixe isso anotado". Todo
+  ONDE-PAREI ganha a seção "Como fica para quem usa e no livro", e sem ela a entrega não se junta.
+- **Pesquisa** (`docs/pesquisa/inverter-letra-clara-2026-11-04.md`):
+  - o ScanTailor **não** vira letra clara em fundo escuro: ele inverte, limpa e desinverte;
+  - a Leptonica `pixAutoPhotoinvert` (BSD-2), já instalada em `C:\Program Files\Tesseract-OCR\libleptonica-6.dll`, vira só os
+    blocos escuros;
+  - a pergunta 5 está na Central.
+- **Os avisos "Sua vez" vinham do hook do próprio Samuel** (`C:\Users\fotog\.claude\notificar.ps1`, nos hooks Stop e Notification do
+  `settings.json`). A pedido dele, "só por essa conversa", o script ganhou uma lista `$conversasSemAviso` com o id desta sessão
+  (`e4fd3df2-...`). As outras conversas avisam como antes. Nesta sessão, nem abrir a Central no navegador nem mandar notificação.
+
+## 2. Decisões novas (todas no Livro; as duas cópias conferidas iguais com `cmp`)
+
+- D-624: frase "Achei a lombada. Aperte "dividir esta"..." na folha dupla inteira.
+- D-625: explicação ao passar o mouse no "usar em todas".
+- D-626 e D-627: ficam como estão.
+- D-628: Endireitar, Cortar e Limpar desmarcados e rodados ficam desmarcados. **Espera a pergunta das caixinhas.**
+- D-629: Gravuras sozinha fica marcada. **Mesma espera.**
+- D-630: "Folhas de N" leva a prévia à folha N.
+- D-631: "Folha N de M" troca na hora.
+- D-632: a porcentagem fica dentro da bolinha, que enche de azul.
+- D-633: fica como está.
+- D-634: Endireitar mostra a página inteira enquanto gira.
+- D-635: a "Área" fica; "Igualar a luz" também no Original.
+- D-636: girar a página em todas as opções do "aplicar em".
+- D-637: a regra do §1.
+
+## 3. Descobertas (não redescobrir)
+
+- **PC cheio de agentes = testes soltos que caem.** Com 6 agentes, caíram testes por falta de memória ou demora. Rodados
+  sozinhos, passaram. Os arquivos atingidos: `test_decisoes_respeitar_gravuras`, `test_decisoes_montar_cadernos`, `test_promessas`
+  ("cannot get C stack") e `test_paineis_na_tela`.
+- **Travamento solto no GitHub:** uma vez, o Python travou (access violation) em `test_dividir_ajustes_03_11.py`. Na repetição, passou.
+- **Agentes de conversa anterior não voltam pelo id.** Foram recriados com o ONDE-PAREI. Nesta conversa, os ids (em `memoria/ramos.md`)
+  voltam com SendMessage.
+- **`git worktree` da versão de teste:** `.claude\worktrees\obra-juncao` (ramo `obra-2026-10-26`). O Livro (DECISOES.md) do git mora
+  **no obra**, e o PLANO-DEFINITIVO no **fase-1**. Cada um fica igual à cópia em `EditorImpressao-arquivos\plano-24-09-2026\`.
+- **O acervo não tem livro de folhas duplas.** O verificador testou o Dividir com o Siebmacher, dividindo à mão.
+- **Bugs novos na Lista de bugs:** "Imprimir agora" e "Extrair as páginas escolhidas" põem o PDF inteiro na memória.
+- **A Central (Quadro dos trabalhos, fonte.json) não foi regenerada nesta sessão.** Os cartões novos foram gravados direto no banco:
+  `perg-girar-pagina`, `perg-mover-rotulo` e `perguntas-04-11`.
+
+## 4. Perguntas abertas (exatas)
+
+- **No chat, sem resposta (05/11):**
+  - A: "Você está numa página do miolo e escolhe girar "todas as páginas". Todas as páginas do livro giram, menos a capa inteira,
+    que fica como está. Pode ser assim?"
+  - B: "Agora você está na capa inteira e escolhe girar "todas as folhas". Hoje, as outras folhas do livro giram inteiras, e
+    volta a confusão do seu print: cada página com um pedaço da vizinha. Sugestão: elas giram página por página, sem confusão.
+    Pode ser assim?"
+  - C: "Nessa página em branco que você acrescentou aparece o botão "voltar a página". Mas não existe página para voltar, e ela
+    continua branca. Sugestão: esconder esse botão só nessa página. Pode ser?"
+- **Ele disse "não entendi" duas vezes. Mostrar ao vivo quando ele testar, sem perguntar de novo por escrito:**
+  - o rótulo "antes: Original" fica em cima da página que o Mover arrasta (é a D-577);
+  - "páginas em branco e 61" → sugestão "em branco e página 61".
+- **Na Central, "Perguntas novas (04/11)" (6):**
+  1. caixinhas do Automático voltam todas desmarcadas depois de rodar? (muda o sentido da caixinha; D-628 e D-629 esperam);
+  2. trocar o "0 = todas" do livreto;
+  3. "O que vai sair" fica embaixo?
+  4. recuperar o trabalho anterior;
+  5. como virar letra branca em fundo escuro (Leptonica, página inteira ou área);
+  6. "páginas em branco e 61".
+- **Também na Central:** `perg-girar-pagina` (respondida no chat → D-636) e `perg-mover-rotulo`.
+- **Antigas:** D-154 (urgente) e o resto de `memoria/geral/perguntas-abertas.md`.
+
+## 5. Próximo passo
+
+Ler o resultado da medida de memória e investigar o teste do Desentortar que falha no obra. Com as respostas A, B e C, rodar a suíte
+inteira no PC com os agentes parados e juntar as 6 entregas no `obra-2026-10-26`, resolvendo o conflito da tira. Depois, chamar o
+Samuel para testar.
+
+## 6. Como rodar e testar
+
+- Programa: `.venv\Scripts\python.exe main.py`.
+- Um arquivo de teste: `.venv\Scripts\python.exe -m pytest tests\<arquivo> -q`.
+- Os testes nas cópias usam o Python do projeto principal (as cópias não têm `.venv`).
+- GitHub: `gh workflow run "Testes no Windows" -R Samuel-Bottini-BR/EditorImpressao --ref claude/list-server-files-gkos8v -f ramo=<ramo>`.
+  Acompanhar com um só `gh run watch <id> --interval 120`. O gh fica em `C:\Program Files\GitHub CLI`.
+- Testes instáveis conhecidos no GitHub (passam no PC): `test_decisoes_so_as_letras::test_d148`, `test_promessas::test_p083_*` e
+  `test_gravura_na_aba_marcar::test_pagina_de_projeto_antigo_que_muda_de_forma_e_refeita`.
+- **A suíte inteira não foi rodada no PC nesta sessão**: é o passo antes de juntar.
+
 
 # PARTE -29 — Checkpoint de 03-04/11/2026: regra D-605, Dividir, Mover nos pares, capa, ordem das folhas, girar (leia isto primeiro)
 
