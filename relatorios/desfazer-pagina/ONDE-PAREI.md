@@ -121,8 +121,9 @@ eles). Tudo numa ação só do Histórico.
 - [x] GitHub testes 41949496078: falhou só `test_d621_a_pagina_fica_igual_a_deixar_como_veio_e_nao_cortar_esta`
   (teste novo desta tarefa) por tempo: o botão foi apertado antes de a prévia prender a marcação
   ("Um momento"). Conserto só no teste (`2222f348`), nada do programa
-- [ ] GitHub testes de novo: 41955321135
-- [ ] GitHub filtro de velocidade: 41949515821 (código de `33a45365`; depois disso só mudou teste)
+- [x] GitHub testes de novo: 41955321135, passou inteiro (as 5 partes e os botões e prints)
+- [x] GitHub filtro de velocidade: 41949515821, "igual (dentro do vai-e-vem)" (código de
+  `33a45365`; depois disso só mudou teste e relatório)
 - [x] relatório nos três formatos (`relatorio-d623.md/.html/.pdf`)
 
 ## Como cumpri cada decisão (D-623)

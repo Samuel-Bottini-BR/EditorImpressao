@@ -57,8 +57,8 @@ Arquivos: `core/paginas_em_branco.py` (novo), `modelos.py`, `historico_acoes.py`
 - Antes de testar, a obra de 04/11 (D-617 parte 2) foi juntada neste ramo: sem conflito.
 - GitHub: a primeira rodada (41949496078) acusou só um teste novo da D-621, por tempo (o
   botão apertado antes de a prévia ficar pronta, na máquina lenta); o teste passou a esperar a
-  prévia, como a pessoa espera. Nada do programa mudou. Rodada nova e filtro de velocidade: no
-  ONDE-PAREI.
+  prévia, como a pessoa espera. Nada do programa mudou. Rodada nova (41955321135): passou
+  inteira. Filtro de velocidade (41949515821): igual (dentro do vai-e-vem).
 
 ## Janela de verdade (Gradus Primus, cópia)
 
