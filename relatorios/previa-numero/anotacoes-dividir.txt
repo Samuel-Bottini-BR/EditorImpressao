@@ -1,0 +1,15 @@
+abriu-em-s => 2.3
+sem-dividir => {"indice": 29, "pagina": 30, "metade": null, "contador": "página 30 de 70", "campo": "30", "foco": "QComboBox", "anterior": true, "proxima": true}
+marcou-dividir => {"indice": 29, "pagina": 30, "metade": "esquerda", "contador": "página 59 de 140", "campo": "59", "foco": "QComboBox", "anterior": true, "proxima": true}
+dividir-escreveu-135-escrito-antes-do-Enter => "135"
+dividir-escreveu-135 => {"indice": 67, "pagina": 68, "metade": "esquerda", "contador": "página 135 de 140", "campo": "135", "foco": "_CampoDoNumero '135'", "anterior": true, "proxima": true}
+dividir-proxima => {"indice": 67, "pagina": 68, "metade": "direita", "contador": "página 136 de 140", "campo": "136", "foco": "QPushButton '>'", "anterior": true, "proxima": true}
+tela-cheia => "página 136 de 140"
+dividir-escreveu-45-escrito-antes-do-Enter => "45"
+dividir-escreveu-45 => {"indice": 22, "pagina": 23, "metade": "esquerda", "contador": "página 45 de 140", "campo": "45", "foco": "_CampoDoNumero '45'", "anterior": true, "proxima": true}
+capa-aberta-marcada => {"caixa": true, "indice": 22, "pagina": 23, "metade": "esquerda", "contador": "página 44 de 140", "campo": "44", "foco": "QCheckBox 'A 1ª folha é a capa aberta'", "anterior": true, "proxima": true}
+capa-escreveu-1-escrito-antes-do-Enter => "1"
+capa-escreveu-1 => {"indice": 0, "pagina": 1, "metade": "direita", "contador": "página 1 de 140", "campo": "1", "foco": "_CampoDoNumero '1'", "anterior": false, "proxima": true}
+capa-escreveu-140-escrito-antes-do-Enter => "140"
+capa-escreveu-140 => {"indice": 0, "pagina": 1, "metade": "esquerda", "contador": "página 140 de 140", "campo": "140", "foco": "_CampoDoNumero '140'", "anterior": true, "proxima": false}
+desmarcou-dividir => {"indice": 0, "pagina": 1, "metade": null, "contador": "página 1 de 70", "campo": "1", "foco": "QCheckBox 'A 1ª folha é a capa aberta'", "anterior": false, "proxima": true}

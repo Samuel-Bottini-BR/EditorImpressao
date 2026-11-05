@@ -1,0 +1,12 @@
+ok   sem o Dividir: 'página 30 de 70', como sempre
+ok   marcar o Dividir na 30: a metade da esquerda é a 'página 59 de 140'
+ok   135 + Enter: a metade da esquerda da folha 68, 'página 135 de 140'
+ok   > : a metade da direita da folha 68, 'página 136 de 140'
+ok   o tela cheia diz 'página 136 de 140'
+ok   45 + Enter: a metade da esquerda da folha 23, 'página 45 de 140'
+ok   a caixinha 'A 1ª folha é a capa aberta' ficou marcada
+ok   capa aberta: 1 + Enter mostra a capa (metade da direita da 1ª folha), 'página 1 de 140'
+ok   capa aberta: a 140 é a contracapa (metade da esquerda da 1ª folha)
+ok   desmarcar o Dividir volta ao número de sempre ('de 70')
+ok   WM_CLOSE fechou a janela
+11 de 11

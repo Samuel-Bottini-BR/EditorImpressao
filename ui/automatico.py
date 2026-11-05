@@ -235,6 +235,23 @@ def _texto_das_opcoes_da_pagina(filtro: str, o: dict) -> str:
 # o estado (o mesmo para o painel e para a janela)
 # ---------------------------------------------------------------------------
 
+def mexe_no_dividir_do_livro(acao) -> bool:
+    """A ação (do Histórico) muda o "Dividir ligado no livro todo" (o campo
+    "livro.dividir_folhas", que só o "Rodar" do Automático grava)? Sem ação
+    (None): False. Usado no desfazer/refazer (ui/tela_conferir.
+    _reacertar_as_opcoes) e no fim do "Rodar" e do "Desligar as marcadas"
+    (ui/janela_principal._aplicar_o_automatico), D-590 de 04/11/2026: só a
+    ação que muda o Dividir do livro faz a caixinha do Dividir desmarcada
+    seguir o livro. As ações da ferramenta Dividir (dividir, juntar, linha,
+    motor) mudam as folhas, nunca esse campo.
+    Seguro mudar: nada. Arriscado: olhar outro campo (as folhas divididas não
+    são o "ligado no livro todo", D-590)."""
+    if acao is None:
+        return False
+    chave = "livro.dividir_folhas"
+    return chave in (getattr(acao, "antes", None) or {}) or chave in (getattr(acao, "depois", None) or {})
+
+
 class EstadoDoAutomatico(QObject):
     """O que está escolhido no Automático: as etapas marcadas, a ordem, as
     opções, a receita e onde rodar. Não grava nada no livro: só monta o
@@ -258,7 +275,7 @@ class EstadoDoAutomatico(QObject):
     # --- de onde vem ---------------------------------------------------------
 
     def do_projeto(self, projeto, receita: str | None = None, da_pagina: bool = False,
-                   indice: int | None = None) -> None:
+                   indice: int | None = None, manter_o_dividir_desmarcado: bool = False) -> None:
         """Começa do livro: as opções e a ordem dele, e as etapas que já estão
         ligadas (no livro ou em alguma página). Com `receita`, a receita por
         cima (o aviso do livro novo marca a receita de sempre, D-018).
@@ -275,10 +292,27 @@ class EstadoDoAutomatico(QObject):
         "comparar", que é "como está no livro" (D-577), e lê a página que o
         comparar MOSTRA (defeito 1 do verificador, 31/10: lia a da área de
         trabalho). Arriscado: a janela voltar a ler da página da vez (ela mudaria
-        conforme a página aberta)."""
+        conforme a página aberta).
+
+        `manter_o_dividir_desmarcado` (D-590, defeito de 04/11/2026, print a-67: "depois de
+        usar o dividir e voltar ao automatico ele está marcado de novo"; Samuel, 03/11: "Sim a
+        caixinha continua desmacada."): com a caixinha "1 Dividir folhas ao meio" DESMARCADA
+        pela pessoa, ela continua desmarcada depois desta releitura, mesmo com o Dividir ainda
+        ligado no livro (desmarcada e ainda sem "Rodar", ou depois do "Desligar as marcadas",
+        que não mexe nas desmarcadas). Quem relê o livro sem que o Dividir do livro tenha
+        mudado passa True: o Ctrl+Z / Ctrl+Y de uma ação que não mexe no Dividir do livro
+        (ui/tela_conferir._reacertar_as_opcoes), a caixinha "Margens iguais" do Cortar e o fim
+        do "Rodar" (ui/janela_principal._aplicar_o_automatico). Só o Dividir, e só o
+        desmarcado: a caixinha marcada e as outras etapas seguem o livro como sempre (D-605).
+        Abrir o livro e o Ctrl+Z do próprio "Rodar" que mudou o Dividir do livro (False)
+        continuam lendo o livro. Arriscado: passar True ao abrir outro livro (a caixinha de um
+        livro passaria para o outro)."""
+        dividir_desmarcado = A.DIVIDIR not in self.marcadas
         self.opcoes = A.opcoes_do_livro(projeto)
         self.ordem = A.ordem(projeto)
         self.marcadas = set(A.etapas_ligadas(projeto))
+        if manter_o_dividir_desmarcado and dividir_desmarcado:
+            self.marcadas.discard(A.DIVIDIR)
         self.receita = getattr(projeto, "receita_usada", "") or ""
         if da_pagina:
             self.opcoes.update(A.opcoes_da_pagina(
@@ -1688,8 +1722,8 @@ class PaginaAntesEDepois(QWidget):
     # "esquerda") e (página, "direita"): a MESMA página do livro e a mesma conta (a chave não
     # tem a metade), só a imagem mostrada muda. Toda outra página é um passo (página, None),
     # como antes. Sem o Dividir marcado: as páginas ativas, como sempre (nada muda). O
-    # contador continua "página N de M" (N = a página do livro), como o rodapé da área de
-    # trabalho continua "folha N de M" nas duas metades (D-601).
+    # contador: ver _numero_e_total (D-617, 04/11: com o Dividir marcado, o número da página
+    # como o livro vai sair; até então era a página do livro nas duas metades).
     # Arriscado: pôr a metade na chave (a outra metade faria a conta de novo); folhear pelas
     # ativas com o Dividir marcado (a seta pularia a metade da direita, como antes).
 
@@ -1769,7 +1803,7 @@ class PaginaAntesEDepois(QWidget):
             self._feito = None
         self._indice, self._metade = indice, metade
         self._escolher_o_depois()
-        self.contador.definir(indice + 1, len(self.projeto.paginas))
+        self.contador.definir(*self._numero_e_total(passos))
         self._acertar_botoes(passos)
         self._mostrar()
         self.pedir(agora=True)
@@ -1785,12 +1819,42 @@ class PaginaAntesEDepois(QWidget):
         lugar = max(0, min(len(passos) - 1, passos.index(atual) + passo))
         self.ir_para(*passos[lugar])
 
+    # --- D-617, parte 2 (04/11/2026): o número com o Dividir marcado ------------------------
+    # Samuel, testando a D-617: "funciona , mas com o dividir marcado o numero de pagina tem que
+    # corresponder com a pagina que está sendo passada." Com o Dividir marcado, "página N de M"
+    # é a página como o livro vai sair: N = a posição do passo da vez nos passos (que são a lista
+    # do PDF depois do pedido, core/automatico.paginas_do_pdf_depois: já na ordem mudada à mão,
+    # D-615, e com a capa aberta na frente, D-616), M = quantas páginas o livro vai ter. Ex.: a
+    # metade da esquerda da folha 68 do Gradus é "página 135 de 140", a da direita "136 de 140".
+    # Sem o Dividir marcado (ou desligando): como sempre, N = a página do livro, M = as páginas
+    # do livro. Escrever um número usa a mesma conta, ao contrário.
+    # Arriscado: contar pelas páginas do livro com o Dividir marcado (as duas metades teriam o
+    # mesmo número, como até 04/11); contar pelos passos sem o Dividir (página tirada do livro
+    # mudaria a numeração de sempre).
+
+    def _com_o_dividir(self) -> bool:
+        """O pedido da janela tem o Dividir marcado (e não está desligando)?"""
+        pedido = self.estado.pedido(pular_mexidas=False)
+        return not pedido.desligar and A.DIVIDIR in pedido.etapas
+
+    def _numero_e_total(self, passos: list) -> tuple[int, int]:
+        """(N, M) do "página N de M" do passo da vez (ver acima)."""
+        atual = (self._indice, self._metade)
+        if self._com_o_dividir() and atual in passos:
+            return passos.index(atual) + 1, len(passos)
+        return self._indice + 1, len(self.projeto.paginas)
+
     def _numero_escrito(self, numero: int) -> None:
         """D-617: a pessoa escreveu o número `numero` (1 a M, diferente do atual) e apertou Enter:
-        a prévia vai direto para essa página (ir_para: com o Dividir marcado, a metade da
-        esquerda, como as setas chegam nela; página que não vai para o PDF: a mais perto, como
-        ao abrir a janela nela). As setas < > não mudam."""
-        self.ir_para(numero - 1)
+        a prévia vai direto para essa página. Com o Dividir marcado, `numero` é a página como o
+        livro vai sair (o passo `numero`, a metade certa); sem ele, a página do livro (ir_para:
+        página que não vai para o PDF leva à mais perto, como ao abrir a janela nela). As setas
+        < > não mudam."""
+        passos = self._passos()
+        if self._com_o_dividir() and 1 <= numero <= len(passos):
+            self.ir_para(*passos[numero - 1])
+        else:
+            self.ir_para(numero - 1)
 
     def _acertar_botoes(self, passos: list) -> None:
         atual = (self._indice, self._metade)
@@ -1815,6 +1879,13 @@ class PaginaAntesEDepois(QWidget):
             self._escolher_o_depois()
             self._mostrar()
         self._acertar_botoes(passos)
+        # D-617, parte 2: marcar ou desmarcar o Dividir (ou a capa aberta) muda o número da
+        # mesma página; o "tela cheia" acompanha
+        if passos:
+            antes = self.contador.text()
+            self.contador.definir(*self._numero_e_total(passos))
+            if self.contador.text() != antes:
+                self._acertar_tela_cheia()
         return False
 
     def _na_lista(self) -> bool:
