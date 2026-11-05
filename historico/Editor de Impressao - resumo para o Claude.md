@@ -26,8 +26,11 @@ Fichas mudadas: `memoria/ramos.md`, `memoria/bugs.md`, `memoria/geral/perguntas-
    e `perg-girar-pagina`.
 2. **Nada das 6 entregas está na versão de teste ainda.** Elas estão prontas, cada uma no seu ramo, já com o obra juntado. Para juntar,
    falta isto, na ordem:
-   - a medida de memória nos 9 livros. O agente ainda rodava no fim; o resultado vai para
-     `.claude\worktrees\memoria-pdf\relatorios\memoria-pdf\nove-livros\` no ramo `memoria-pdf-2026-11-04`;
+   - ~~a medida de memória nos 9 livros~~ **feita (05/11)**: o pico ficou parado nos 9; nenhum caiu; nos 5 comparados com o
+     código antigo, o PDF saiu igual byte a byte (relatório `.claude\worktrees\memoria-pdf\relatorios\memoria-pdf\nove-livros\relatorio.html`,
+     commits `f821e66c`/`bfe98c3e`). Ressalvas: Marial e Graduale medidos em pedaço; só o "Confirmar e processar", uma página por vez.
+     Sobrou a cópia `.claude\worktrees\memoria-pdf-antes`, criada pelo agente, com uma junção `modelos`: conferir antes de apagar.
+     **Achado a investigar:** em agosto o Siebmacher saía com 268 páginas (cada folha dividida); hoje sai com 134;
    - investigar `tests/test_desentortar_conferir_de_novo.py::test_destino_do_socialismo_18_o_botao_traz_a_deformacao_e_aparece_a_pergunta`,
      que falha (`assert 2292 == 0`) **no próprio obra** `d3b613b6` (achado do agente desfazer-pagina);
    - as respostas A, B e C do Samuel (§4);
