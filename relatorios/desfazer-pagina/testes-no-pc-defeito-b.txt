@@ -1,0 +1,3 @@
+Testes no PC, um arquivo por vez (05/11/2026, conserto do defeito B, sobre f83e5fb8 + ui/tarefas.py e ui/tela_conferir.py), com outros agentes no PC (um medindo memoria).
+
+tests/test_decisoes.py :: 26 passed in 8.80s [11s]

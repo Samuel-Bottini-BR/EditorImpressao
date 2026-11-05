@@ -163,6 +163,87 @@ eles). Tudo numa ação só do Histórico.
 - D-605: o menu das linhas de apoio do Mover continua igual (prova e print); nenhum teste antigo
   mudou.
 
+# Defeito B do verificador (05/11/2026): a página posta em branco, na tela
+
+Relatório: `D:\programas\EditorImpressao\relatorios\verificacao-04-11\relatorio.md` §5, prints
+`prints/5c-pagina-em-branco-voltar/02`, `03`, `04`. "A página posta em branco, no Cortar, mostra a
+imagem da página vizinha [...] Se o Kaique apertar "voltar a página", [...] a faixa diz "Esta
+página vai sair em Original" — mas o PDF continua saindo branco."
+Pedido da gerente (05/11): "a página posta em branco aparece branca na tela, em todas as
+ferramentas, igual ao PDF (D-623). A faixa não pode dizer que ela vai sair diferente do que sai.
+NÃO tire nem acrescente botão (§6)".
+
+## Decisões que esta parte precisa cumprir
+
+- **D-623** (acima): a página em branco "entra no livro, no PDF e nos cadernos".
+- **D-637** (05/11, CLAUDE.md §11.9): "você tem que pensar na experiencia do usario e no
+  resultado final do livro dentro do programa, quando vai mudar algo, deixe isso anotado."
+- **D-547 / D-066** ("precisamos que o pdf saia que nem está na tela").
+- **§6**: nenhum botão sai nem entra; o "voltar a página" continua igual.
+
+## O que já está escolhido e testado aqui (D-605)
+
+- A página que veio do PDF com "deixar em branco": a tela continua mostrando a página dela no
+  Cortar e nos cartões (não mexi; o conserto só vale com `inserida > 0`).
+- O "voltar a página" / "deixar em branco" (`_deixar_em_branco`, `deixar_em_branco_ou_voltar`):
+  código não mudou; o botão continua aparecendo e fazendo o que fazia.
+- O Dividir mostra FOLHAS (D-601; a tira diz "FOLHAS", "folha 2 de 70"): a página posta não é
+  folha e não aparece nele; nada mudou ali (print `prints-defeito-b/09`).
+- Testes de antes que têm de continuar: os 41 `test_decisoes*.py` e os que usam a faixa, os
+  cartões e a imagem do Cortar (lista em `testes-no-pc-defeito-b.txt`).
+
+## Como fica para quem usa e no livro (D-637)
+
+O Kaique, no Gradus: botão direito na miniatura 2 → "adicionar página em branco depois" → a 3 é
+a página nova.
+
+- **Antes do conserto:** na página 3, o Cortar mostrava a página 2 (a vizinha) com o retângulo
+  verde, e o painel Filtros mostrava a página 2 nos cartões Preto e branco, Melhorar e Mágico pro.
+  Se ele apertasse "voltar a página", a tela continuava com a página 2 e a faixa dizia "Esta
+  página vai sair em Original". O PDF sempre saiu com a página 3 branca: ele via uma coisa e o
+  livro saía com outra.
+- **Depois do conserto:** na página 3, Cortar, Endireitar, Mover e os quatro cartões do Filtro
+  mostram a folha branca, do tamanho da página 2 (prints `prints-defeito-b/03` a `06`); a faixa
+  diz "Esta página vai sair em branco (uma folha branca no lugar dela)." com o "voltar a
+  página" de sempre. Se ele apertar "voltar a página", a tela continua branca e a faixa continua
+  dizendo que ela sai em branco (`07`, `08`); o botão do painel passa a "deixar em branco", como
+  sempre faz.
+- **No PDF:** nada muda. O PDF das 6 primeiras páginas do Gradus com a página posta, depois do
+  "voltar a página": a página 3 sai sem tinta (0,0%), as outras com a tinta delas
+  (`anotacoes-defeito-b.txt`).
+- **Problema novo?** Nenhum visto. O que fica estranho e não é meu decidir: o "voltar a página"
+  numa página posta não traz nada de volta (ela não tem página para voltar); vai para o Histórico
+  como "Voltar a página 3" e a página continua branca. Pergunta abaixo.
+- Conferido clicando no programa (janela de verdade, Gradus, `piloto_defeito_b.py`,
+  `anotacoes-defeito-b.txt`, `prints-defeito-b/`) e olhando o PDF (a tinta de cada página).
+
+## Andamento (defeito B)
+
+- [x] `git merge obra-2026-10-26` (só documentos: DECISOES.md), sem conflito — `f83e5fb8`
+- [x] 2 testes novos em `tests/test_decisoes_pagina_em_branco.py`; falham no código de antes
+  (`reversao-defeito-b.txt`)
+- [x] conserto só na tela, só para a página posta (`inserida > 0`): `ui/tarefas.py` (a imagem
+  do Cortar sai branca), `ui/tela_conferir.py` (os cartões do Filtro brancos; a frase da faixa).
+  `core/` não mudou
+- [x] janela de verdade no Gradus com prints e o PDF
+- [ ] testes no PC (`testes-no-pc-defeito-b.txt`)
+- [ ] GitHub
+
+## Como cumpri (defeito B)
+
+- "aparece branca na tela, em todas as ferramentas": `test_d623_a_pagina_posta_aparece_branca_no_cortar_e_nos_cartoes_do_filtro`
+  (Cortar, Endireitar, Mover e os 4 cartões); prints `prints-defeito-b/03` a `06`.
+- "A faixa não pode dizer que ela vai sair diferente do que sai": `test_d623_voltar_a_pagina_na_posta_a_faixa_diz_como_ela_sai`
+  (depois do "voltar a página", Cortar e Filtros dizem "vai sair em branco"; o PDF sai branco);
+  prints `07`, `08`.
+- "NÃO tire nem acrescente botão": nenhum botão mudou; o teste aperta o mesmo "voltar a página"
+  e confere que ele fez o que sempre fez (`em_branco` desligado).
+
 ## Perguntas para o Samuel
 
-(nenhuma aberta)
+1. **O "voltar a página" na página posta em branco.** Numa página que veio do PDF, "voltar a
+   página" desfaz o "deixar em branco" e a página volta a sair. Na página posta à mão (D-623) não
+   há página para voltar: hoje o botão aparece, vai para o Histórico ("Voltar a página 3"), o
+   botão vira "deixar em branco", e a página continua branca na tela e no PDF. O que o senhor
+   prefere: (a) deixar como está; (b) esconder o "voltar a página" só na página posta à mão;
+   (c) outra coisa? (Mudar o botão é mudança de tela: não mexi.)

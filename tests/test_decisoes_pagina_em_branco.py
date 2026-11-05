@@ -234,3 +234,101 @@ def test_d623_projeto_antigo_abre_igual(tmp_path):
     aberto = Projeto.de_dicionario(copy.deepcopy(dados))
     assert [p.inserida for p in aberto.paginas] == [0, 0]
     assert len(aberto.paginas_ativas) == 2
+
+
+# --- a tela mostra a página posta como ela sai: branca (defeito B do verificador, 05/11/2026) ----
+# relatorios/verificacao-04-11/relatorio.md, §5: "A página posta em branco, no Cortar, mostra a
+# imagem da página vizinha [...] Se o Kaique apertar "voltar a página", [...] a faixa diz "Esta
+# página vai sair em Original" — mas o PDF continua saindo branco". Gerente (05/11): "a página
+# posta em branco aparece branca na tela, em todas as ferramentas, igual ao PDF (D-623). A faixa
+# não pode dizer que ela vai sair diferente do que sai." (D-637: a tela e o PDF concordam.)
+
+FRASE_DO_BRANCO = "Esta página vai sair em branco (uma folha branca no lugar dela)."
+
+
+def _imagem_do(vis) -> np.ndarray:
+    from PySide6.QtGui import QImage
+
+    img = vis._pixmap.toImage().convertToFormat(QImage.Format_RGB32)
+    largura, altura = img.width(), img.height()
+    pontos = np.frombuffer(img.constBits(), np.uint8).reshape(altura, img.bytesPerLine() // 4, 4)
+    return pontos[:, :largura, :3]
+
+
+def _esperar(condicao, limite: float = 90.0) -> bool:
+    import time
+
+    fim = time.time() + limite
+    while time.time() < fim:
+        _assentar()
+        if condicao():
+            return True
+        time.sleep(0.05)
+    return False
+
+
+def _na_ferramenta(tela, ferramenta: str, indice: int):
+    """Escolhe a ferramenta, vai à página `indice` e espera a imagem dela chegar na tela."""
+    from ui.tela_conferir import ABA_DA_FERRAMENTA
+
+    tela.show()
+    tela.window().show()
+    tela.escolher_ferramenta(ferramenta)
+    tela.ir_para_pagina(indice)
+    vis = tela.visualizadores[ABA_DA_FERRAMENTA[ferramenta]]
+    assert _esperar(lambda: vis._pixmap is not None and not vis.carregando), \
+        f"a imagem da página não chegou no {ferramenta}"
+    return vis
+
+
+def _branca_na_tela(img: np.ndarray) -> bool:
+    return float((np.asarray(img).reshape(-1, img.shape[-1] if img.ndim == 3 else 1)
+                  .mean(axis=1) < 200).mean()) < 0.001
+
+
+def test_d623_a_pagina_posta_aparece_branca_no_cortar_e_nos_cartoes_do_filtro(janela, tmp_path):
+    """Defeito B (05/11): no Cortar a página posta mostrava a imagem da vizinha, e os cartões
+    Preto e branco / Melhorar / Mágico pro mostravam a vizinha com o filtro. O PDF sai branco: a
+    tela também (em todas as ferramentas da página: Cortar, Endireitar, Mover, Filtros)."""
+    from ui.widgets.trilha_agrupada import (FERRAMENTA_CORTAR, FERRAMENTA_ENDIREITAR,
+                                            FERRAMENTA_FILTROS, FERRAMENTA_MOVER)
+
+    janela.abrir_livro(_livro(tmp_path, folhas=3))
+    tela = janela.tela_conferir
+    tela.adicionar_pagina_em_branco(1, depois=True)
+    for ferramenta in (FERRAMENTA_CORTAR, FERRAMENTA_ENDIREITAR, FERRAMENTA_MOVER):
+        vis = _na_ferramenta(tela, ferramenta, 2)
+        assert _branca_na_tela(_imagem_do(vis)), f"no {ferramenta} a página posta não é branca"
+        assert tela.texto_faixa.text().startswith(FRASE_DO_BRANCO)
+    # a vizinha (página 2) continua com a imagem dela no Cortar
+    assert not _branca_na_tela(_imagem_do(_na_ferramenta(tela, FERRAMENTA_CORTAR, 1)))
+    tela.escolher_ferramenta(FERRAMENTA_FILTROS)
+    tela.ir_para_pagina(2)
+    assert _esperar(lambda: all(c.ultima_amostra is not None for c in tela.cartoes.values()))
+    for chave, cartao in tela.cartoes.items():
+        assert _branca_na_tela(cartao.ultima_amostra), f"o cartão {chave} não é branco"
+    assert _quais(_gerar(janela, tmp_path, "pdf")) == [0, 1, "branca", 2]
+
+
+def test_d623_voltar_a_pagina_na_posta_a_faixa_diz_como_ela_sai(janela, tmp_path):
+    """Defeito B (05/11): na página posta, depois do "voltar a página" a faixa dizia "Esta página
+    vai sair em Original" e a tela mostrava a vizinha, mas o PDF sai branco. A faixa e a tela dizem
+    o que sai: branca. O botão continua o mesmo (não se tira nem se põe botão: §6)."""
+    from ui.widgets.trilha_agrupada import FERRAMENTA_CORTAR, FERRAMENTA_FILTROS
+
+    janela.abrir_livro(_livro(tmp_path, folhas=3))
+    tela, projeto = janela.tela_conferir, janela.projeto
+    tela.adicionar_pagina_em_branco(1, depois=True)
+    _na_ferramenta(tela, FERRAMENTA_CORTAR, 2)
+    assert tela.botao_em_branco.text() == "voltar a página"
+    tela.botao_em_branco.click()
+    _assentar()
+    assert projeto.paginas[2].em_branco is False         # o botão fez o que sempre fez
+    vis = _na_ferramenta(tela, FERRAMENTA_CORTAR, 2)
+    assert _branca_na_tela(_imagem_do(vis))
+    assert tela.texto_faixa.text().startswith(FRASE_DO_BRANCO), tela.texto_faixa.text()
+    tela.escolher_ferramenta(FERRAMENTA_FILTROS)
+    tela.ir_para_pagina(2)
+    _assentar()
+    assert tela.texto_faixa.text().startswith(FRASE_DO_BRANCO), tela.texto_faixa.text()
+    assert _quais(_gerar(janela, tmp_path, "pdf")) == [0, 1, "branca", 2]

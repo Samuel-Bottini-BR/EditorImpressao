@@ -4693,6 +4693,17 @@ class TelaConferir(QWidget):
             if chave == pagina.filtro:
                 cartao.definir_amostra(limitar_altura(self._como_sai_no_pdf(img), 260))
 
+        if getattr(pagina, "inserida", 0):
+            # D-623 (defeito B do verificador, 05/11/2026): a pagina em branco
+            # posta a mao sai branca em qualquer filtro (core/pipeline._filtrar);
+            # os outros cartoes mostram a mesma folha branca do escolhido (antes:
+            # a vizinha, de quem ela copia o tamanho, com o filtro).
+            branca = limitar_altura(self._como_sai_no_pdf(img), 260)
+            for chave, cartao in self.cartoes.items():
+                if chave != pagina.filtro:
+                    cartao.definir_amostra(np.full_like(branca, 255))
+            return
+
         outros = [chave for chave in self.cartoes if chave != pagina.filtro]
         if TIRAR_FUNDO in outros:
             outros.remove(TIRAR_FUNDO)
@@ -5183,6 +5194,12 @@ class TelaConferir(QWidget):
                         "“Duas lado a lado” e arraste a linha.")
             return ("Achei a lombada e vou cortar na linha azul. "
                     "Se estiver errado, arraste a linha.")
+        if getattr(self.projeto.paginas[self.indice_pagina], "inserida", 0):
+            # D-623 (defeito B do verificador, 05/11/2026): a página em branco
+            # posta à mão sai sempre branca (core/pipeline._filtrar), mesmo
+            # depois do "voltar a página"; a faixa diz o que sai (antes: "vai
+            # sair em Original"). A mesma frase do "deixar em branco".
+            return "Esta página vai sair em branco (uma folha branca no lugar dela)."
         if aba == ABA_BORDAS:
             pagina = self.projeto.paginas[self.indice_pagina]
             if pagina.recorte is None:

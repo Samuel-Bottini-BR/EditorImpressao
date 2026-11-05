@@ -1,0 +1,17 @@
+abriu-em-s => 2.3
+na página 2 => 2
+página 2 no Cortar (a vizinha) => {"ferramenta": "bordas", "pagina": 2, "faixa": "Vou cortar a borda sozinho. Arraste o retângulo se quiser mudar.", "tinta_na_tela": 0.0134, "botao_da_pagina": "deixar em branco"}
+item em destaque antes do Enter => "adicionar página em branco depois"
+'adicionar página em branco depois' escolhido => true
+depois de adicionar => {"paginas": 71, "no_pdf": 71, "postas_a_mao": [3], "caderno_etapa7": 141, "acoes": 1, "ultima": "Página em branco depois da página 2"}
+na página 3 => 3
+página 3 posta, cortar => {"ferramenta": "bordas", "pagina": 3, "faixa": "Esta página vai sair em branco (uma folha branca no lugar dela).", "tinta_na_tela": 0.0, "botao_da_pagina": "voltar a página"}
+página 3 posta, endireitar => {"ferramenta": "angulo", "pagina": 3, "faixa": "Esta página vai sair em branco (uma folha branca no lugar dela).", "tinta_na_tela": 0.0, "botao_da_pagina": "voltar a página"}
+página 3 posta, mover => {"ferramenta": "mover", "pagina": 3, "faixa": "Esta página vai sair em branco (uma folha branca no lugar dela).", "tinta_na_tela": 0.0, "botao_da_pagina": "voltar a página"}
+página 3 posta, filtros => {"ferramenta": "filtro", "pagina": 3, "faixa": "Esta página vai sair em branco (uma folha branca no lugar dela).", "cartoes": {"original": 0.0, "preto_e_branco": 0.0, "melhorar": 0.0, "magico_pro": 0.0}, "botao_da_pagina": "voltar a página"}
+em_branco depois do voltar => false
+página 3 depois do voltar, cortar => {"ferramenta": "bordas", "pagina": 3, "faixa": "Esta página vai sair em branco (uma folha branca no lugar dela).", "tinta_na_tela": 0.0, "botao_da_pagina": "deixar em branco"}
+página 3 depois do voltar, filtros => {"ferramenta": "filtro", "pagina": 3, "faixa": "Esta página vai sair em branco (uma folha branca no lugar dela).", "cartoes": {"original": 0.0, "preto_e_branco": 0.0, "melhorar": 0.0, "magico_pro": 0.0}, "botao_da_pagina": "deixar em branco"}
+página 3, dividir (ferramenta das folhas) => {"ferramenta": "corte", "pagina": 3, "faixa": "Esta folha não vai ser dividida.", "tinta_na_tela": 0.0134, "botao_da_pagina": "deixar em branco"}
+PDF das 6 primeiras (tinta de cada página) => {"segundos": 5.0, "tinta": [0.4953, 0.0145, 0.0, 0.0033, 0.0545, 0.1554]}
+fim => {"paginas": 71, "no_pdf": 71, "postas_a_mao": [3], "caderno_etapa7": 141, "acoes": 2, "ultima": "Voltar a página 3 (não fica mais em branco)"}

@@ -1,0 +1,14 @@
+Teste de reversao do defeito B do verificador (05/11/2026): a pagina posta em branco mostrava a
+vizinha no Cortar e nos cartoes do filtro, e depois do "voltar a pagina" a faixa dizia "vai sair
+em Original" (o PDF sai branco). relatorios/verificacao-04-11/relatorio.md, secao 5.
+
+No codigo de ANTES do conserto (f83e5fb8, a obra de 05/11 ja junta), os dois testes novos:
+  test_d623_a_pagina_posta_aparece_branca_no_cortar_e_nos_cartoes_do_filtro   FALHA: "no cortar a pagina posta nao e branca"
+  test_d623_voltar_a_pagina_na_posta_a_faixa_diz_como_ela_sai                 FALHA: a imagem do Cortar depois do "voltar a pagina" nao e branca
+  2 failed in 5.55s
+
+Sonda no codigo de antes (mesmo livro sintetico, pagina posta depois da 2): Cortar 3% de tinta
+(a vizinha), cartoes Preto e branco/Melhorar/Magico pro 2,9 a 3,1% (a vizinha com o filtro);
+Endireitar, Mover e o cartao Original ja eram brancos.
+
+No codigo novo: tests/test_decisoes_pagina_em_branco.py :: 11 passed.
