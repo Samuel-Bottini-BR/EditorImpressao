@@ -1,0 +1,16 @@
+Teste de reversao da D-623 (05/11/2026): tests/test_decisoes_pagina_em_branco.py rodado no codigo
+de ANTES da D-623 (ed758424, a obra ja com a D-615, sem a pagina posta a mao), numa copia separada.
+
+9 failed in 15.05s
+
+test_d623_menu_da_miniatura_tem_antes_e_depois_junto_do_desfazer   o menu so tem ['Desfazer nesta pagina']
+test_d623_antes_poe_a_pagina_antes_da_clicada                       o menu nao tem 'adicionar pagina em branco antes'
+test_d623_ctrl_z_tira_e_ctrl_y_poe_de_novo                          TelaConferir sem adicionar_pagina_em_branco
+test_d623_tirar_do_livro_remove_a_pagina_em_branco                  idem
+test_d623_entra_nos_cadernos                                        idem
+test_d623_folha_dividida_a_pagina_em_branco_nao_e_da_folha          idem
+test_d623_mudar_de_lugar_arrastando_vale_para_a_pagina_em_branco    idem
+test_d623_fechar_e_abrir_mantem_a_pagina_em_branco                  idem
+test_d623_projeto_antigo_abre_igual                                 ConfigPagina sem o campo 'inserida'
+
+No codigo novo (depois de juntar a obra f06e0c15): 9 passed in 65.01s.

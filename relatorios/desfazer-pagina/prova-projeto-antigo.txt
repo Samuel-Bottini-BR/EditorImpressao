@@ -1,0 +1,16 @@
+D-623: projeto antigo abre igual (05/11/2026). "Muda o modelo de dados [...]: projeto antigo abre igual."
+
+Projeto de verdade gravado antes da D-623 (sem o campo "inserida"): o do Gradus Primus em
+dados-teste-rodada-de-consertos (so lido; copiado para uma pasta de trabalho no scratchpad), com o
+PDF do Gradus (so lido). O mesmo script (prova_projeto_antigo.py) rodou no codigo de ANTES
+(ed758424) e no de DEPOIS (esta ponta, ja com a obra f06e0c15), e os dois resultados comparados:
+
+campo "inserida": antes = falta (o projeto e de antes); depois = 0 em todas as 70 paginas
+projeto gravado de novo (sem o campo novo)            IGUAL
+paginas que vao para o PDF (70)                        IGUAL
+caminho rapido dos cadernos (so_cadernos)              IGUAL
+lista do caderno da etapa 7, com o Dividir (140)       IGUAL
+desenho final das 70 paginas (100 dpi, sha256 dos pontos; 70 desenhos diferentes entre si)  IGUAL
+
+Junto: tests/test_decisoes_pagina_em_branco.py::test_d623_projeto_antigo_abre_igual (projeto sem o
+campo abre com 0) e ::test_d623_fechar_e_abrir_mantem_a_pagina_em_branco.
