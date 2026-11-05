@@ -1,0 +1,72 @@
+Testes no PC, um arquivo por vez (05/11/2026, codigo 33a45365, D-623 + obra f06e0c15), com outros agentes rodando no mesmo PC.
+
+tests/test_decisoes.py :: 26 passed in 9.88s [13s]
+tests/test_decisoes_9b1.py :: 25 passed, 16 warnings in 74.00s (0:01:13) [78s]
+tests/test_decisoes_9b2.py :: 30 passed in 81.93s (0:01:21) [86s]
+tests/test_decisoes_automatico.py :: 29 passed in 73.53s (0:01:13) [78s]
+tests/test_decisoes_automatico_margens_no_depois.py :: 5 passed in 12.86s [15s]
+tests/test_decisoes_automatico_opcoes_do_filtro.py :: 21 passed in 105.46s (0:01:45) [112s]
+tests/test_decisoes_automatico_ver_como_fica.py :: 22 passed in 82.90s (0:01:22) [86s]
+tests/test_decisoes_avisos.py :: 22 passed in 55.79s [58s]
+tests/test_decisoes_caderno_tela_grande.py :: 14 passed, 1 skipped in 60.93s (0:01:00) [65s]
+tests/test_decisoes_capa_aberta.py :: 6 passed in 24.42s [29s]
+tests/test_decisoes_desfazer_pagina.py :: 14 passed in 56.80s [60s]
+tests/test_decisoes_dividir.py :: 21 passed in 67.03s (0:01:07) [71s]
+tests/test_decisoes_dividir_arrastar.py :: 16 passed in 25.91s [29s]
+tests/test_decisoes_dividir_aviso.py :: 11 passed in 18.07s [20s]
+tests/test_decisoes_dividir_linha.py :: 13 passed in 15.51s [17s]
+tests/test_decisoes_dividir_metade.py :: 6 passed in 8.52s [11s]
+tests/test_decisoes_ferramentas_antes_depois.py :: 12 passed in 15.54s [18s]
+tests/test_decisoes_ferramentas_lado.py :: 9 passed in 11.61s [14s]
+tests/test_decisoes_filtro_automatico.py :: 4 passed in 27.75s [32s]
+tests/test_decisoes_gravuras_cinza.py :: 20 passed in 107.16s (0:01:47) [112s]
+tests/test_decisoes_impressao.py :: 22 passed in 35.02s [38s]
+tests/test_decisoes_juntar_todas.py :: 4 passed in 10.99s [13s]
+tests/test_decisoes_livreto_ver.py :: 13 passed, 1 skipped in 42.87s [45s]
+tests/test_decisoes_marcacoes.py :: 19 passed in 20.90s [23s]
+tests/test_decisoes_montar_cadernos.py :: 13 passed, 1 error in 160.35s (0:02:40) [168s]
+ERROR    core.pipeline:pipeline.py:2462 a deteccao de gravura e letra falhou
+ERROR    core.pipeline:pipeline.py:2462 a deteccao de gravura e letra falhou
+ERROR tests/test_decisoes_montar_cadernos.py::test_p4_1_cinza_com_gravuras_desmarcada_acha_as_figuras_e_a_caixinha_nao_volta_marcada
+tests/test_decisoes_mover.py :: 13 passed in 56.42s [66s]
+tests/test_decisoes_mover_lado.py :: 7 passed in 15.88s [20s]
+tests/test_decisoes_nucleo.py :: 38 passed in 21.68s [26s]
+tests/test_decisoes_nucleo2.py :: 21 passed in 59.99s [68s]
+tests/test_decisoes_ordem_folhas.py :: 12 passed in 47.89s [54s]
+tests/test_decisoes_pagina_em_branco.py :: 9 passed in 45.52s [57s]
+tests/test_decisoes_previa_dividida.py :: 4 passed in 33.98s [40s]
+tests/test_decisoes_previa_numero.py :: 8 passed in 30.38s [36s]
+tests/test_decisoes_respeitar_gravuras.py :: 19 passed in 102.16s (0:01:42) [107s]
+tests/test_decisoes_shift_todas_as_telas.py :: 10 passed in 22.26s [25s]
+tests/test_decisoes_so_as_letras.py :: 5 passed in 27.28s [30s]
+tests/test_decisoes_tamanho_no_par.py :: 5 passed in 10.95s [13s]
+tests/test_decisoes_tela.py :: 35 passed, 4 warnings in 78.56s (0:01:18) [84s]
+tests/test_decisoes_tira_em_pares.py :: 4 passed in 16.97s [20s]
+tests/test_decisoes_tira_pares_juntas.py :: 3 passed in 18.07s [22s]
+tests/test_decisoes_ver.py :: 11 passed in 79.31s (0:01:19) [89s]
+tests/test_core.py :: 62 passed in 41.64s [51s]
+tests/test_historico_depois_de_reabrir.py :: 11 passed in 1.24s [4s]
+tests/test_recomeco_limpa_o_historico.py :: 13 passed in 77.42s (0:01:17) [82s]
+tests/test_projetos.py :: 24 passed in 2.67s [5s]
+tests/test_caderno_segue_as_etapas.py :: 11 passed in 20.55s [28s]
+tests/test_dividir_desmarcada_caixinha.py :: 3 passed in 20.79s [24s]
+tests/test_marcacao_em_todas.py :: 4 passed in 6.36s [10s]
+tests/test_salva_sozinho.py :: 11 passed in 7.22s [10s]
+tests/test_trabalho_nao_se_perde.py :: 82 passed in 359.51s (0:05:59) [383s]
+tests/test_miniaturas_novas.py :: 5 passed in 13.91s [18s]
+tests/test_girar.py :: 53 passed in 37.16s [40s]
+tests/test_avisos.py :: 34 passed in 7.74s [13s]
+tests/test_substituir_e_cancelar.py :: 21 passed in 6.75s [8s]
+tests/test_endireitar_na_tela.py :: 5 passed in 11.94s [15s]
+tests/test_paineis_na_tela.py :: 22 passed in 76.54s (0:01:16) [81s]
+FIM
+
+Rodado de novo sozinho (o erro acima foi da deteccao de gravura com o PC carregado; no GitHub 41949496078 o arquivo passou):
+tests/test_decisoes_montar_cadernos.py -k test_p4_1_cinza :: 1 passed
+
+GitHub 41949496078: falhou SO tests/test_decisoes_desfazer_pagina.py::test_d621_a_pagina_fica_igual_a_deixar_como_veio_e_nao_cortar_esta
+(teste novo desta tarefa, D-621): na maquina lenta o botao "deixar como veio" da pagina 4 foi apertado antes de a previa
+prender a gravura marcada a mao a folha, e o programa respondeu "Um momento" (_espera_pelas_marcacoes, como faz na mao do
+Samuel). Medido no PC: logo depois de mexer, a pagina 4 esta na lista das por prender; ao chegar nela, ja saiu. Conserto
+SO no teste: espera a previa (_esperar_as_marcacoes) antes do botao, como a pessoa. Nenhum codigo do programa mudou.
+tests/test_decisoes_desfazer_pagina.py :: 14 passed in 43.35s (depois do conserto do teste)

@@ -58,6 +58,22 @@ def _assentar(vezes: int = 6) -> None:
         QApplication.processEvents()
 
 
+def _esperar_as_marcacoes(tela, projeto, indice: int, limite: float = 120.0) -> None:
+    """Espera (deixando a janela trabalhar) a página `indice` sair da lista das que têm a marcação
+    ainda solta da folha (core/zonas_na_folha.paginas_por_converter): a prévia dela prende."""
+    import time
+
+    from core.zonas_na_folha import paginas_por_converter
+
+    fim = time.time() + limite
+    while time.time() < fim:
+        if all(p.indice != indice for p in paginas_por_converter(projeto)):
+            return
+        _assentar()
+        time.sleep(0.05)
+    raise AssertionError(f"a marcação da página {indice + 1} não ficou pronta em {limite:.0f} s")
+
+
 def _regiao_a_mao():
     from core.selecao import GRAVURA, MAO, RETANGULO, Regiao, Selecao
 
@@ -219,6 +235,10 @@ def test_d621_a_pagina_fica_igual_a_deixar_como_veio_e_nao_cortar_esta(janela, t
     tela, projeto = _livro_com_as_duas_paginas_mexidas(janela, tmp_path)
     tela.desfazer_nesta_pagina(ESQUERDA, ["endireitar", "cortar"])
     tela.ir_para_pagina(DIREITA)
+    # Os botões da ferramenta esperam a prévia da página prender a gravura marcada à mão à
+    # folha (o "Um momento" de _espera_pelas_marcacoes, como na mão do Samuel). Na máquina lenta
+    # do GitHub (rodada 41949496078) o botão foi apertado antes: espera a prévia, como a pessoa.
+    _esperar_as_marcacoes(tela, projeto, DIREITA)
     tela._angulo_zero()
     tela._sem_recorte()
     pagina, pelos_botoes = projeto.paginas[ESQUERDA], projeto.paginas[DIREITA]
