@@ -102,7 +102,7 @@ Depois do conserto da linha que desce (`12407cd7`), um por vez: `test_decisoes_c
 todos passaram.
 
 GitHub ("Testes no Windows"): rodada 41948429688 (merge `9e21350b`) passou. Depois do conserto:
-RESULTADO_GH2
+rodada 41958485208 (ponta `76329644`, com o conserto) passou.
 
 ## Perguntas para o Samuel
 
