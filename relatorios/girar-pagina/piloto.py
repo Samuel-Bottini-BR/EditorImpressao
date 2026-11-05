@@ -30,7 +30,8 @@ RAIZ = AQUI.parents[1]
 sys.path.insert(0, str(RAIZ / "relatorios" / "obra-etapa3" / "roteiro"))
 import base  # noqa: E402
 
-SCRATCH = Path(r"C:\Users\fotog\AppData\Local\Temp\claude\C--Users-fotog\05fa28dc-c2f5-4152-b355-e6ab76bb386f\scratchpad\girar-pagina-dados")
+# a pasta de trabalho (apagada e refeita a cada fase): só a deste piloto, no scratchpad da sessão
+SCRATCH = Path(r"C:\Users\fotog\AppData\Local\Temp\claude\195a7ef9582f81cd\e4fd3df2-ffc2-4ff8-9d6b-c5c2f4b2d0ca\scratchpad\girar-pagina-dados")
 GRADUS = Path(r"C:\Users\fotog\Desktop\Estudos\Latim\pdfcoffee.com_gradus-primus-pdf-pdf-free.pdf")
 PROJ_ORIGEM = Path(r"D:\programas\EditorImpressao-arquivos\dados-teste-rodada-de-consertos\EditorImpressao"
                    r"\projetos\pdfcoffee-com_gradus-primus-pdf-pdf-free")
@@ -383,10 +384,125 @@ def fase_foto(j):
     anotar("ctrl-z", {"estado": estado(j), "medidas": medir_paginas(j, (0,))}); p(j, "ctrl-z")
 
 
+def textos_do_girar(j) -> dict:
+    """O que o quadro do girar, a lista, o menu e o canto dizem agora (D-636)."""
+    t = j.tela_conferir
+    combo = t.barra_girar.combo_alcance
+    return {"quadro": t.barra_girar.rotulo.text(),
+            "lista": [combo.itemText(i) for i in range(combo.count())],
+            "escolhida": combo.currentText(),
+            "menu": [j.menu.acoes[f"giro_em_{a}"].text() for a in
+                     ("esta", "todas", "daqui_em_diante", "pares", "impares")],
+            "canto": [b.toolTip() for b in t.girar_do_canto.botoes_de_giro.values()][:1]}
+
+
+def gerar_pdf(j, indices, nome) -> list:
+    """O PDF que sai, só com as páginas `indices` (as outras tiradas numa CÓPIA do projeto),
+    pela conta do programa (core/pipeline.processar); cada página vira um PNG para olhar."""
+    import copy as _copy
+
+    import fitz
+
+    from core import pipeline
+    copia = _copy.deepcopy(j.projeto)
+    for pg in copia.paginas:
+        if pg.indice not in indices:
+            pg.apagada = True
+    destino = base.TRAB / f"{nome}.pdf"
+    copia.caminho_saida = str(destino)
+    caminho = pipeline.processar(copia)
+    saida = []
+    with fitz.open(caminho) as doc:
+        for n, pagina in enumerate(doc):
+            png = AQUI / "prints" / f"{FASE}-pdf-{nome}-{n + 1}.png"
+            pagina.get_pixmap(dpi=40).save(str(png))
+            saida.append({"png": png.name, "larg x alt (pt)": [round(pagina.rect.width), round(pagina.rect.height)]})
+    return saida
+
+
+def fase_aplicar(j):
+    """D-636 (05/11/2026): numa folha dividida o "aplicar em" gira PÁGINAS, cada uma sozinha;
+    na grade "ver todas" também. O Gradus abre com as folhas inteiras: o livro é dividido pelo
+    "dividir todas" da ferramenta Dividir (como o Kaique) e a folha 1 é juntada ("não dividir
+    esta") para ter uma folha inteira no livro, como uma capa aberta."""
+    from core import girar
+    t = j.tela_conferir
+    ferramenta(j, "D"); mostrar(j, "duas"); esperar_previa(j)
+    base.clique(j, t.botao_dividir_todas)
+    t0 = time.time()
+    while time.time() - t0 < 600 and not all(f.dividir for f in j.projeto.folhas[1:]):
+        base.esperar(1.0)
+    base.esperar(3.0)
+    anotar("dividiu-todas", {"s": round(time.time() - t0, 1), "paginas": len(j.projeto.paginas),
+                             "divididas": sum(f.dividir for f in j.projeto.folhas)})
+    ir_pagina(j, 1)
+    if j.projeto.folhas[t.indice_folha].dividir:
+        base.clique(j, t.botao_nao_dividir); base.esperar(2.0)      # "não dividir esta"
+    anotar("juntou-a-folha-1", {"folha 1 dividida": j.projeto.folhas[0].dividir,
+                                "paginas": len(j.projeto.paginas)})
+    mostrar(j, "uma")
+    ferramenta(j, "X"); esperar_previa(j)
+    ir_pagina(j, 1)
+    anotar("folha-inteira-textos", textos_do_girar(j)); p(j, "folha-inteira-quadro")
+    ir_pagina(j, 14)
+    numero = t.indice_pagina + 1
+    anotar("pagina-dividida-textos", {"pagina": numero, **textos_do_girar(j)})
+    vizinhas = tuple(i for i in (0, t.indice_pagina - 1, t.indice_pagina, t.indice_pagina + 1,
+                                 t.indice_pagina + 2) if 0 <= i < len(j.projeto.paginas))
+    anotar("antes", {"estado": estado(j), "medidas": medir_paginas(j, vizinhas)})
+    p(j, "pagina-dividida-quadro")
+    anotar("pdf-antes", gerar_pdf(j, vizinhas, "antes"))
+    # a lista "aplicar em": pelo menu Página (o mesmo da lista; abrir a lista por mensagens do
+    # Windows não é confiável com a janela fora da tela)
+    j.menu.acoes["giro_em_todas"].trigger(); base.esperar(0.5)
+    anotar("escolheu-todas", textos_do_girar(j))
+    girar_painel(j, girar.GIRO_ESQUERDA)
+    anotar("todas-esquerda", {"estado": estado(j), "medidas": medir_paginas(j, vizinhas),
+                              "giros": [pg.giro_da_pagina for pg in j.projeto.paginas][:20],
+                              "rotacoes": sorted({f.rotacao for f in j.projeto.folhas})})
+    p(j, "todas-esquerda")
+    anotar("pdf-depois", gerar_pdf(j, vizinhas, "depois"))
+    ir_pagina(j, numero - 1); p(j, "todas-esquerda-pagina-anterior")
+    ir_pagina(j, 1); anotar("capa-depois", {"estado": estado(j), **textos_do_girar(j)})
+    p(j, "todas-esquerda-capa-inteira")
+    ir_pagina(j, numero)
+    ctrl(j, ord("Z")); esperar_previa(j)
+    anotar("ctrl-z", {"estado": estado(j), "medidas": medir_paginas(j, vizinhas),
+                      "giros": sorted({pg.giro_da_pagina for pg in j.projeto.paginas})})
+    p(j, "ctrl-z")
+    # pares: na página par gira as pares; na ímpar avisa
+    j.menu.acoes["giro_em_pares"].trigger(); base.esperar(0.5)
+    ir_pagina(j, numero if numero % 2 == 0 else numero + 1)
+    girar_painel(j, girar.GIRO_MEIA_VOLTA)
+    anotar("pares-meia-volta", {"estado": estado(j),
+                                "giros": [pg.giro_da_pagina for pg in j.projeto.paginas][:12]})
+    p(j, "pares-meia-volta")
+    ir_pagina(j, 3)
+    girar_painel(j, girar.GIRO_MEIA_VOLTA)
+    anotar("pares-na-impar", {"estado": estado(j), "avisos": getattr(j, "avisos_anotados", None)})
+    p(j, "pares-na-impar-aviso")
+    ctrl(j, ord("Z")); esperar_previa(j)
+    j.menu.acoes["giro_em_esta"].trigger(); base.esperar(0.5)
+    # a grade "ver todas": escolher a página do Samuel e a capa inteira, "girar ¼ →"
+    t.abrir_todas_as_paginas(); base.esperar(2.0)
+    grade = t.todas
+    grade.marcar(numero - 1); grade.marcar(0); base.esperar(0.5)
+    p(j, "ver-todas-escolhidas")
+    base.clique(j, grade.botoes_da_escolha["girar_direita"]); base.esperar(2.5)
+    anotar("ver-todas-girar", {"giros": [pg.giro_da_pagina for pg in j.projeto.paginas][:16],
+                               "rotacoes": [f.rotacao for f in j.projeto.folhas][:8],
+                               "desfazer": t.acoes.descricao_desfazer()})
+    p(j, "ver-todas-girada")
+    ctrl(j, ord("Z")); base.esperar(2.0)
+    anotar("ver-todas-ctrl-z", {"giros": sorted({pg.giro_da_pagina for pg in j.projeto.paginas}),
+                                "rotacoes": sorted({f.rotacao for f in j.projeto.folhas})})
+
+
 def main():
     j, _porteiro = abrir()
     anotar("inicio", estado(j))
-    {"antes": fase_antes, "depois": fase_depois, "folha": fase_folha, "tecla": fase_tecla, "foto": fase_foto}[FASE](j)
+    {"antes": fase_antes, "depois": fase_depois, "folha": fase_folha, "tecla": fase_tecla, "foto": fase_foto,
+     "aplicar": fase_aplicar}[FASE](j)
     base.fechar(j)
 
 
