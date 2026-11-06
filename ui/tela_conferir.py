@@ -1238,6 +1238,94 @@ class TelaConferir(QWidget):
                                      objeto="botaoDaBarraDeBaixo")
         self.botao_ajustar_a_tela = botao("ajustar à tela", "A página inteira cabe na tela (Ctrl+0)",
                                           lambda: self.mudar_o_zoom(None))
+        self._montar_a_qualidade_da_barra_de_baixo(linha)
+
+    def _montar_a_qualidade_da_barra_de_baixo(self, linha: QHBoxLayout) -> None:
+        """D-620 (Samuel, 04/11/2026, print a-69: "essa opção de qualidade não
+        deveria ser para todas as ferramentas?" -> "2- Pode"): a "Qualidade da
+        prévia" (Rápida / Média / Alta) mora na barra de baixo, logo depois do
+        "ajustar à tela", e por isso aparece em todas as ferramentas. Antes
+        ficava só no painel do Cortar (_montar_aba_bordas).
+
+        O jeito (Samuel, 04/11, ao ver que o nome inteiro não cabia: "não tem
+        como colocar só uma setinha e quando aperta nela aparece as opções de
+        qualidade?"): um botão pequeno, sem texto, só com a setinha desenhada
+        (_icone_da_barra("qualidade"), como os ícones da barra; nada de
+        emoji). Apertar abre o menu Rápida / Média / Alta, com a escolhida
+        marcada (_abrir_o_menu_da_qualidade). O balão diz "Qualidade da prévia:
+        <a escolhida>" (_acertar_o_balao_da_qualidade).
+
+        É a MESMA escolha de antes, uma só para o programa inteiro: cada item
+        chama _mudar_qualidade_da_previa, que grava em configuracoes
+        ("qualidade_previa") e troca a resolução da prévia. A barra nasce uma
+        vez (no __init__), então o menu é um só para todos os livros e todas
+        as ferramentas, e mostra o que estava gravado ao abrir.
+
+        Seguro mudar: o desenho da setinha e o texto do balão. Arriscado:
+        guardar a escolha em outro lugar (deixaria de valer no programa todo),
+        criar uma segunda escolha em algum painel (as duas deixariam de
+        concordar) ou pôr texto no botão (a barra não cabe em 1366 com o
+        Propriedades aberto: relatorios/painel-livro/)."""
+        from PySide6.QtGui import QAction, QActionGroup
+        from PySide6.QtWidgets import QMenu
+
+        botao = QPushButton("")
+        botao.setObjectName("botaoDaBarraDeBaixo")     # ui/estilo.py: o dos ícones da barra
+        botao.setIcon(_icone_da_barra("qualidade"))
+        # estreito de propósito (sem o respiro antes e mais fino que os outros
+        # ícones): em 1536 com o Propriedades aberto e as miniaturas fechadas,
+        # cada ponto a mais cortava a conta "N de M conferidas" (medido na
+        # janela de verdade, relatorios/painel-livro/). Seguro mudar: nada.
+        botao.setIconSize(QSize(12, 12))
+        botao.setFixedWidth(20)
+        botao.setCursor(Qt.PointingHandCursor)
+        botao.setFocusPolicy(Qt.NoFocus)                # o teclado continua da página (D-021)
+        self.botao_qualidade = botao
+        menu = QMenu(self)
+        grupo = QActionGroup(menu)
+        grupo.setExclusive(True)
+        self.acoes_da_qualidade: dict[str, QAction] = {}
+        for chave, nome in NOMES_DA_QUALIDADE.items():
+            acao = QAction(nome, menu)
+            acao.setCheckable(True)
+            acao.setChecked(chave == self._qualidade_da_previa)
+            acao.triggered.connect(functools.partial(self._escolher_qualidade_no_menu, chave))
+            grupo.addAction(acao)
+            menu.addAction(acao)
+            self.acoes_da_qualidade[chave] = acao
+        self.menu_da_qualidade = menu
+        _ligar(botao, self._abrir_o_menu_da_qualidade)
+        self._acertar_o_balao_da_qualidade()
+        linha.addWidget(botao)
+
+    def _abrir_o_menu_da_qualidade(self) -> None:
+        """D-620: o botão da setinha abre o menu Rápida / Média / Alta logo
+        acima dele (a barra fica no pé da janela). popup, não exec: a tela
+        não fica parada esperando."""
+        from PySide6.QtCore import QPoint
+
+        botao, menu = self.botao_qualidade, self.menu_da_qualidade
+        altura = menu.sizeHint().height()
+        menu.popup(botao.mapToGlobal(QPoint(0, -altura)))
+
+    def _escolher_qualidade_no_menu(self, chave: str, _marcado: bool = True) -> None:
+        """D-620: um item do menu da qualidade: a mesma troca de sempre
+        (_mudar_qualidade_da_previa) e o balão do botão acompanha."""
+        self._mudar_qualidade_da_previa(chave)
+        self._acertar_o_balao_da_qualidade()
+
+    def _acertar_o_balao_da_qualidade(self) -> None:
+        """D-620: o balão do botão da setinha diz a qualidade escolhida, e o
+        menu deixa marcada a mesma (a que está valendo no programa)."""
+        if not hasattr(self, "botao_qualidade"):
+            return
+        nome = NOMES_DA_QUALIDADE.get(self._qualidade_da_previa, "")
+        self.botao_qualidade.setToolTip(
+            f"Qualidade da prévia: {nome}\n"
+            "Rápida: abre logo. Alta: mais nítida no zoom, demora mais por página.")
+        acao = self.acoes_da_qualidade.get(self._qualidade_da_previa)
+        if acao is not None and not acao.isChecked():
+            acao.setChecked(True)
 
     def _icones_das_setas_do_angulo(self) -> str:
         """(Re)desenha as setinhas dos botoes de 0,1 grau da ferramenta
@@ -1255,6 +1343,7 @@ class TelaConferir(QWidget):
         self.botao_desfazer_embaixo.setIcon(_icone_da_barra("desfazer"))
         self.botao_refazer_embaixo.setIcon(_icone_da_barra("refazer"))
         self.botao_historico_embaixo.setIcon(_icone_da_barra("historico"))
+        self.botao_qualidade.setIcon(_icone_da_barra("qualidade"))      # D-620
         # os dois botoes do painel Historico levam os mesmos desenhos
         self.paineis.historico.definir_icones(
             _icone_da_barra("desfazer"), _icone_da_barra("refazer"))
@@ -1775,19 +1864,29 @@ class TelaConferir(QWidget):
         return caixinha
 
     def _parte_do_livro(self, linhas: list[str], etapa: str = "") -> QFrame:
-        """A parte "Para o livro todo" do Propriedades (rodada 12, 706 B).
+        """A parte do livro do Propriedades (rodada 12, 706 B; D-051), no
+        Dividir, no Cortar e no Endireitar.
 
         Mostra o que vale para o livro inteiro e, desde a etapa 3 da obra
         (26/10/2026), abre o Automatico na etapa (`etapa`, codigo de
         core/automatico), que e onde o livro todo se muda (a tela "O que
-        fazer" saiu do caminho: D-002)."""
+        fazer" saiu do caminho: D-002).
+
+        D-619 (Samuel, 04/11/2026, print a-69: "para o livro todo, não
+        entendi essa mensagem, elas não deveriam ser opções para se
+        escolher[...]?" -> "1- B"): o titulo era "Para o livro todo" e passou
+        a ser "Já feito no livro todo", para ficar claro que o quadro so
+        mostra o que o Automatico ja fez. Nada mais mudou: as linhas, o
+        "mudar no Automático..." e, no Cortar, a caixinha "Margens iguais"
+        (D-554, posta por _montar_aba_bordas). Seguro mudar: o titulo, com
+        o Samuel. Arriscado: por escolhas aqui (D-619 B: so mostra)."""
         caixa = QFrame()
         caixa.setObjectName("parteDoLivro")
         caixa.setAttribute(Qt.WA_StyledBackground, True)
         coluna = QVBoxLayout(caixa)
         coluna.setContentsMargins(10, 8, 10, 9)
         coluna.setSpacing(5)
-        coluna.addWidget(titulo_de_parte("Para o livro todo"))
+        coluna.addWidget(titulo_de_parte("Já feito no livro todo"))
         for texto in linhas:
             rotulo = QLabel(texto)
             rotulo.setObjectName("rotuloDoPainel")
@@ -1916,23 +2015,9 @@ class TelaConferir(QWidget):
             "Para mover ou mudar o tamanho do conteúdo na folha, use a ferramenta Mover "
             f"(tecla {tecla_de(FERRAMENTA_MOVER)})."))
 
-        coluna.addWidget(risco_do_painel())
-        coluna.addWidget(titulo_de_secao("Qualidade da prévia"))
-        seletor_qualidade = QComboBox()
-        for chave, nome in NOMES_DA_QUALIDADE.items():
-            seletor_qualidade.addItem(nome, chave)
-        seletor_qualidade.setCurrentIndex(
-            seletor_qualidade.findData(self._qualidade_da_previa))
-        seletor_qualidade.setToolTip(
-            "Rápida: abre logo. Alta: mais nítida no zoom, demora mais por página."
-        )
-        seletor_qualidade.currentIndexChanged.connect(
-            lambda i: self._mudar_qualidade_da_previa(seletor_qualidade.itemData(i)))
-        self.seletor_qualidade = seletor_qualidade
-        coluna.addWidget(seletor_qualidade)
-        lista_estreita(seletor_qualidade)
-        coluna.addWidget(frase_do_painel(
-            "Rápida: abre logo. Alta: mais nítida no zoom, demora mais por página."))
+        # D-620 (04/11/2026, "2- Pode"): a "Qualidade da prévia" que ficava
+        # aqui foi para a barra de baixo, ao lado do zoom, e vale em todas as
+        # ferramentas (_montar_a_qualidade_da_barra_de_baixo). A mesma escolha.
         coluna.addSpacing(6)
         parte = self._parte_do_livro(
             ["Cortar a beirada da folha vizinha: "
@@ -1948,7 +2033,8 @@ class TelaConferir(QWidget):
         # "Também na tela do corte"; confirma a D-494; D-075: a caixinha
         # "Margens iguais", desmarcada de fábrica): a MESMA caixinha da etapa
         # "Margens iguais" do Automático, aqui na parte "Para o livro todo" do
-        # Cortar. Mexe no mesmo valor do livro (Projeto.margens_iguais), numa
+        # Cortar (desde a D-619, 04/11/2026, o título é "Já feito no livro todo";
+        # a caixinha fica). Mexe no mesmo valor do livro (Projeto.margens_iguais), numa
         # ação do desfazer (_mudar_margens_iguais); o Automático mostra o que o
         # livro tem depois. Arriscado: guardar o valor em outro lugar (as duas
         # caixinhas deixariam de concordar).
@@ -2096,7 +2182,10 @@ class TelaConferir(QWidget):
         """Troca a resolução da prévia (estilo After Effects: Rápida/Média/Alta).
 
         Fica salvo (configuracoes.py) e vale para a próxima vez que o
-        programa abrir também.
+        programa abrir também. Desde a D-620 (04/11/2026) quem chama é a
+        lista da barra de baixo (_montar_a_qualidade_da_barra_de_baixo), em
+        todas as ferramentas; antes era a do painel do Cortar. O efeito é o
+        mesmo. Arriscado: mudar a chave "qualidade_previa".
         """
         import configuracoes
 
@@ -9255,8 +9344,9 @@ FOLGA_DO_GIRAR_NO_CANTO = (12, 10)
 
 
 def _icone_da_barra(qual: str):
-    """Os icones da barra de baixo (desfazer, refazer, historico), desenhados a
-    mao na cor do texto do tema (nada de emoji em rotulo)."""
+    """Os icones da barra de baixo (desfazer, refazer, historico e, desde a
+    D-620, a setinha da qualidade da previa), desenhados a mao na cor do texto
+    do tema (nada de emoji em rotulo)."""
     from PySide6.QtCore import QPointF, QRectF
     from PySide6.QtGui import QColor, QIcon, QPainter, QPainterPath, QPen, QPixmap
 
@@ -9283,6 +9373,11 @@ def _icone_da_barra(qual: str):
             imagem = imagem.transformed(QTransform().scale(-1, 1))
             imagem.setDevicePixelRatio(escala)
             return QIcon(imagem)
+    elif qual == "qualidade":
+        # D-620: a setinha para baixo do botão da qualidade da prévia (o
+        # Samuel: "só uma setinha e quando aperta nela aparece as opções")
+        p.drawLine(QPointF(4, 6.5), QPointF(8, 10.5))
+        p.drawLine(QPointF(8, 10.5), QPointF(12, 6.5))
     else:
         p.drawEllipse(QRectF(2.5, 2.5, 11, 11))
         p.drawLine(QPointF(8, 5), QPointF(8, 8))

@@ -1084,6 +1084,19 @@ programa), a partir do **nome do botão**, da **dica** (o balão do mouse) e das
   clique esconde. Escolher uma ferramenta de marcar acende o botão sozinho (as cores aparecem); escolher o Zoom ou a
   Mão apaga. **no projeto:** nada muda. **no PDF:** nada muda.
 
+### P-213 · a setinha da "Qualidade da prévia" (barra de baixo)
+- **chaves:** `área de trabalho/barra de baixo/Qualidade da prévia`
+- **dica:** "Qualidade da prévia: Rápida" (a escolhida) e, embaixo, "Rápida: abre logo. Alta: mais nítida no zoom,
+  demora mais por página."
+- **decisões:** D-620 (04/11, print a-69: "essa opção de qualidade não deveria ser para todas as ferramentas?" → "2-
+  Pode"; e, ao ver que o nome inteiro não cabia: "não tem como colocar só uma setinha e quando aperta nela aparece
+  as opções de qualidade?")
+- **feita:** 04/11/2026 (`tests/test_decisoes_painel_livro.py`)
+- **na tela:** um botão pequeno sem texto, só a setinha, logo depois de "ajustar à tela", em todas as ferramentas.
+  Apertar abre o menu Rápida / Média / Alta com a escolhida marcada; escolher troca a nitidez da página na tela (a
+  mesma escolha que ficava no painel do Cortar) e o balão passa a dizer a nova. **no projeto:** nada muda (fica
+  nas configurações do programa, "qualidade_previa", para todos os livros). **no PDF:** nada muda.
+
 ### P-147 · Ver > "Tema": Escuro / Cinza / Claro
 - **chaves:** `menu/tema_escuro`, `menu/tema_cinza`, `menu/tema_claro`
 - **decisões:** D-359 ("Os três: escuro, cinza e claro"), D-360 (o escolhido fica guardado), D-362

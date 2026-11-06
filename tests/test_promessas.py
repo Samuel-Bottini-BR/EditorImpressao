@@ -3385,6 +3385,32 @@ def test_p195_antes_depois(janela, tela):
     assert aj.projeto_gravado(janela)["paginas"] == antes["paginas"]
 
 
+@prova("P-213")
+def test_p213_qualidade_da_previa_na_barra_de_baixo(janela, tela):
+    """D-620 (04/11/2026). A setinha da barra de baixo abre o menu Rápida / Média / Alta com a
+    escolhida marcada; escolher "Alta" troca a prévia para 300 DPI e grava nas configurações; o
+    balão diz a escolhida; o projeto não muda."""
+    import configuracoes
+    from ui.tela_conferir import QUALIDADES_DA_PREVIA
+
+    botao, menu = tela.botao_qualidade, tela.menu_da_qualidade
+    assert botao.isVisible() and botao.text() == ""
+    assert botao.toolTip().startswith("Qualidade da prévia: Rápida")
+    antes = aj.projeto_gravado(janela)
+    botao.click()
+    aj.assentar()
+    assert menu.isVisible(), "a setinha não abriu o menu"
+    assert [(a.text(), a.isChecked()) for a in menu.actions()] == [
+        ("Rápida", True), ("Média", False), ("Alta", False)]
+    tela.acoes_da_qualidade["alta"].trigger()
+    menu.close()
+    aj.assentar()
+    assert configuracoes.ler("qualidade_previa") == "alta"
+    assert tela._dpi_normal == QUALIDADES_DA_PREVIA["alta"]
+    assert botao.toolTip().startswith("Qualidade da prévia: Alta")
+    assert aj.projeto_gravado(janela) == antes, "o projeto não muda"
+
+
 @prova("P-197")
 def test_p197_marcacoes(janela, tela):
     """D-578/D-580/D-584 (29/10/2026). Página marcada como o Automático deixa (gravura, letra, papel),

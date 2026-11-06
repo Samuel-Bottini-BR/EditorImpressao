@@ -9,7 +9,8 @@ as palavras dele estão no "Plano de layout (rascunho).md"):
     botões embaixo da página não cabia em 1280 x 657);
   - rodada 12, 702 C: a linha dos menus mostra só o nome da ferramenta;
   - rodada 12, 706 B: o Propriedades tem duas partes, "Só nesta página" e
-    "Para o livro todo";
+    "Para o livro todo" (D-051); desde a D-619 (04/11/2026, "1- B") o título da
+    segunda é "Já feito no livro todo";
   - rodada 12, 709 B: as listas "aplicar em" dizem folha (girar) ou página
     (endireitar);
   - rodada 12, 710 B: "deixar como veio", "usar o ângulo do programa" e "usar
@@ -252,7 +253,7 @@ def test_os_botoes_do_cortar_sairam_da_fila_e_moram_no_propriedades(janela, past
     # da janela real: sem janela na tela a letra de mentira é larga demais)
     # as duas partes (rodada 12, 706 B)
     partes = [r.text() for r in conteudo.findChildren(QLabel)]
-    assert "SÓ NESTA PÁGINA" in partes and "PARA O LIVRO TODO" in partes
+    assert "SÓ NESTA PÁGINA" in partes and "JÁ FEITO NO LIVRO TODO" in partes  # D-619 (04/11/2026): era "PARA O LIVRO TODO"
     assert any(t.startswith("Cortar a beirada da folha vizinha:") for t in partes)
 
 
@@ -375,7 +376,7 @@ def test_o_propriedades_do_endireitar_tem_os_nomes_novos(janela, pasta):
     botoes["usar o ângulo do programa"].click()
     assert pagina.angulo_manual is None
     partes = [r.text() for r in conteudo.findChildren(QLabel)]
-    assert "SÓ NESTA PÁGINA" in partes and "PARA O LIVRO TODO" in partes
+    assert "SÓ NESTA PÁGINA" in partes and "JÁ FEITO NO LIVRO TODO" in partes  # D-619 (04/11/2026): era "PARA O LIVRO TODO"
     assert any(t.startswith("Conta do endireitar:") for t in partes)
     # a mesma conta com uma palavra so no painel (805 C: "Editor")
     lista = tela.combo_conta_do_endireitar
@@ -422,7 +423,7 @@ def test_o_propriedades_do_dividir(janela, pasta):
     assert tela.botao_nao_dividir in botoes.values()
     assert conteudo.isAncestorOf(tela.combo_jeito_da_folha)
     partes = [r.text() for r in conteudo.findChildren(QLabel)]
-    assert "SÓ NESTA FOLHA" in partes and "PARA O LIVRO TODO" in partes
+    assert "SÓ NESTA FOLHA" in partes and "JÁ FEITO NO LIVRO TODO" in partes  # D-619 (04/11/2026): era "PARA O LIVRO TODO"
     assert any(t.startswith("Motor de corte:") for t in partes)      # D-602: era "Jeito de dividir:"
     tela.paineis.abrir("props")
     assert tela.paineis.propriedades.cabecalho.subtitulo.text() == "Dividir a folha"
