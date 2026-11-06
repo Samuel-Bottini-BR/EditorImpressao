@@ -1,0 +1,27 @@
+Reversao (04/11/2026): tests/test_decisoes_desfazer_pagina.py rodado no codigo de antes (1d2ed264, obra-2026-10-26, sem o Desfazer nesta pagina).
+
+FAILED tests/test_decisoes_desfazer_pagina.py::test_d621_cada_etapa_sozinha_volta_so_ela_so_nesta_pagina[endireitar]
+FAILED tests/test_decisoes_desfazer_pagina.py::test_d621_cada_etapa_sozinha_volta_so_ela_so_nesta_pagina[cortar]
+FAILED tests/test_decisoes_desfazer_pagina.py::test_d621_cada_etapa_sozinha_volta_so_ela_so_nesta_pagina[mover]
+FAILED tests/test_decisoes_desfazer_pagina.py::test_d621_cada_etapa_sozinha_volta_so_ela_so_nesta_pagina[filtro]
+FAILED tests/test_decisoes_desfazer_pagina.py::test_d621_cada_etapa_sozinha_volta_so_ela_so_nesta_pagina[marcar]
+FAILED tests/test_decisoes_desfazer_pagina.py::test_d621_varias_juntas_numa_acao_e_o_ctrl_z_volta_tudo
+FAILED tests/test_decisoes_desfazer_pagina.py::test_d621_o_pdf_sai_com_a_pagina_desfeita_e_a_vizinha_igual
+FAILED tests/test_decisoes_desfazer_pagina.py::test_d621_a_pagina_fica_igual_a_deixar_como_veio_e_nao_cortar_esta
+FAILED tests/test_decisoes_desfazer_pagina.py::test_d621_etapas_do_automatico_sem_valor_a_mao_tambem_aparecem_e_voltam
+FAILED tests/test_decisoes_desfazer_pagina.py::test_d621_gravuras_desfeitas_nao_voltam_pela_procura_da_maquina
+FAILED tests/test_decisoes_desfazer_pagina.py::test_d621_botao_direito_na_pagina_abre_a_lista_e_o_desfazer_funciona
+FAILED tests/test_decisoes_desfazer_pagina.py::test_d621_botao_direito_na_miniatura_e_da_pagina_dela
+FAILED tests/test_decisoes_desfazer_pagina.py::test_d621_no_duas_lado_a_lado_vale_a_pagina_clicada
+FAILED tests/test_decisoes_desfazer_pagina.py::test_d621_no_mover_o_menu_das_linhas_continua_e_ganha_o_desfazer
+14 failed in 37.90s
+
+Motivos:
+      7 E       ImportError: cannot import name 'desfazer_nesta_pagina' from 'ui' (C:\Users\fotog\AppData\Local\Temp\claude\C--Users-fotog\05fa28dc-c2f5-4152-b355-e6ab76bb386f\scratchpad\base-desfazer\ui\__init__.py)
+      3 E       assert None is not None
+      3 E       AttributeError: 'TelaConferir' object has no attribute 'desfazer_nesta_pagina'
+      3 E       AssertionError: o botão direito não abriu menu
+      1 E       AssertionError: assert 'Pôr uma linha deitada aqui' == 'Desfazer nesta página'
+      1 E         - Desfazer nesta página
+
+No codigo novo (5f081246): 14 passed.

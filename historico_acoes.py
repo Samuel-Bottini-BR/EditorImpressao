@@ -424,7 +424,13 @@ def aplicar(projeto: Projeto, acao: Acao, valores: dict[str, Any]) -> None:
             _trocar_as_paginas_da_folha(projeto, campo, valor)
         elif campo.startswith("livro."):
             nome = campo[len("livro."):]
-            if campo == CAMPO_DA_ORDEM:
+            if campo == CAMPO_DAS_INSERIDAS:
+                # D-623 (04/11/2026): as paginas em branco postas a mao, cada
+                # uma no lugar dela (core/paginas_em_branco.por_as_inseridas)
+                from core.paginas_em_branco import por_as_inseridas
+
+                por_as_inseridas(projeto, valor)
+            elif campo == CAMPO_DA_ORDEM:
                 # D-615 (04/11/2026): a ordem das paginas mudada a mao (arrastar
                 # a miniatura) ou pela capa aberta (D-616): as mesmas paginas,
                 # em outra ordem (core/ordem_das_paginas.por_na_ordem)
@@ -529,6 +535,15 @@ PREFIXO_PAGINAS_DA_FOLHA = "paginas_da_folha:"
 # o campo. Arriscado: aplicar fora de ordem (como os outros campos de lista).
 CAMPO_DA_ORDEM = "livro.ordem_das_paginas"
 
+# Campo "livro.paginas_inseridas" (D-623, 04/11/2026: "adicionar página em
+# branco antes/depois" pelo botao direito na tira): TODAS as paginas em branco
+# postas a mao, [{"posicao": n, "pagina": {...}}, ...], na ordem. Aplicar deixa
+# no livro exatamente essas, cada uma na posicao dela, e renumera (core/
+# paginas_em_branco.por_as_inseridas); montar_acao guarda as de antes. Arquivo
+# de acoes antigo nao tem o campo. Arriscado: aplicar fora de ordem (as
+# posicoes valem na hora da acao; o desfazer e em pilha).
+CAMPO_DAS_INSERIDAS = "livro.paginas_inseridas"
+
 
 def _trocar_as_paginas_da_folha(projeto: Projeto, campo: str, valor: Any) -> None:
     from core.dividir_a_mao import trocar_as_paginas_da_folha
@@ -606,6 +621,11 @@ def montar_acao(
 
     antes: dict[str, Any] = {}
     for campo in campos:
+        if campo == CAMPO_DAS_INSERIDAS:                    # D-623 (ver CAMPO_DAS_INSERIDAS)
+            from core.paginas_em_branco import lista
+
+            antes[campo] = lista(projeto)
+            continue
         if campo == CAMPO_DA_ORDEM:                         # D-615 (ver CAMPO_DA_ORDEM)
             from core.ordem_das_paginas import chaves
 

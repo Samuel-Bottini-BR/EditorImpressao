@@ -1,0 +1,160 @@
+<!doctype html>
+<html lang="pt-BR">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Desfazer nesta página (D-621)</title>
+<style>
+:root { color-scheme: light dark; }
+* { box-sizing: border-box; }
+body {
+  font: 17px/1.65 "Segoe UI", system-ui, sans-serif;
+  max-width: 46rem; margin: 0 auto; padding: 2.5rem 1.5rem 6rem;
+  color: #1c1c1e; background: #fdfdfc;
+}
+h1 { font-size: 2rem; line-height: 1.2; margin: 0 0 .3em; letter-spacing: -.02em; }
+h2 { font-size: 1.35rem; margin: 2.4em 0 .6em; padding-top: .8em;
+     border-top: 1px solid #e6e4e0; letter-spacing: -.01em; }
+h3 { font-size: 1.1rem; margin: 1.8em 0 .4em; }
+h1 + p, h2 + p { margin-top: .4em; }
+p, li { margin: 0 0 .9em; }
+ul, ol { padding-left: 1.3em; }
+strong { font-weight: 640; }
+code {
+  font: .88em ui-monospace, "Cascadia Code", Consolas, monospace;
+  background: #f1efec; padding: .12em .35em; border-radius: 4px;
+}
+pre {
+  background: #f1efec; padding: 1em 1.1em; border-radius: 8px;
+  overflow-x: auto; line-height: 1.5;
+}
+pre code { background: none; padding: 0; }
+blockquote {
+  margin: 1.2em 0; padding: .1em 0 .1em 1.1em;
+  border-left: 3px solid #c9c5be; color: #55524d;
+}
+table {
+  border-collapse: collapse; width: 100%; margin: 1.2em 0;
+  font-size: .95rem; display: block; overflow-x: auto;
+}
+th, td { padding: .5em .8em; text-align: left; border-bottom: 1px solid #e6e4e0; }
+th { font-weight: 620; background: #f7f5f2; white-space: nowrap; }
+tr:last-child td { border-bottom: none; }
+img { max-width: 100%; height: auto; border-radius: 6px; margin: 1em 0;
+      border: 1px solid #e6e4e0; }
+hr { border: none; border-top: 1px solid #e6e4e0; margin: 2.5em 0; }
+.rodape { margin-top: 4em; padding-top: 1.2em; border-top: 1px solid #e6e4e0;
+          font-size: .85rem; color: #86827c; }
+@media (prefers-color-scheme: dark) {
+  body { color: #e8e6e3; background: #1a1917; }
+  h2 { border-top-color: #35332f; }
+  code, pre, th { background: #262421; }
+  th, td { border-bottom-color: #35332f; }
+  blockquote { border-left-color: #4a4741; color: #b0aca6; }
+  img { border-color: #35332f; }
+  .rodape { border-top-color: #35332f; color: #7d7973; }
+}
+@media print {
+  body { max-width: none; padding: 0; color: #000; background: #fff; }
+  h2 { page-break-after: avoid; }
+  table, img { page-break-inside: avoid; }
+}
+</style>
+</head>
+<body>
+<h1>Desfazer nesta página (D-621): entrega</h1>
+<p><strong>Em uma frase:</strong> o botão direito na página (em qualquer vista) ou na miniatura dela abre
+"Desfazer nesta página", com as etapas que mexeram nela em caixinhas; só as marcadas voltam ao
+que veio do scan, só nessa página, e o Ctrl+Z volta tudo de uma vez.</p>
+<p>Teste de <strong>máquina</strong> (provas em <code>tests/test_decisoes_desfazer_pagina.py</code>) e janela de verdade
+pilotada por mensagens do Windows no Gradus Primus (cópia), com prints. <strong>PRONTO PARA CONFERIR</strong>
+fica com o verificador e o Samuel; nada aqui está aprovado.</p>
+<h2>O pedido (palavras do Samuel)</h2>
+<p>"eu quero um botão para desfazer ajustes em uma pagina só, por exemplo, vamos supor que eu passei
+o automatico e só uma pagina veio com defeito, e eu gostaria de tirar algumas etapas que foram
+feitas somente com ela, eu quero poder clicar e falar quais coisas eu quero que sejam tirar [...]
+e eu quero fazer só em uma." · jeito escolhido: "A2" (botão direito, caixinhas).</p>
+<h2>Como ficou</h2>
+<ul>
+<li>Botão direito na página, na área de trabalho: "Uma página", "Duas lado a lado" (vale a página
+  clicada), "antes / depois" e no Dividir (com a folha inteira à vista, vale a metade do lado da
+  linha em que se clicou). Também na miniatura da tira de baixo (vale a página da miniatura; a
+  tela não muda de página).</li>
+<li>Abre um menu com "Desfazer nesta página &gt;". Ao passar o mouse (ou clicar), aparece a lista:
+  Endireitar, Corte das bordas, Mover e tamanho, Filtro, Gravuras e fotos. As que não mexeram na
+  página ficam apagadas. As caixinhas começam desmarcadas (o exemplo do Livro: "marcar Corte e
+  Filtro"). O botão "desfazer" só acende com alguma marcada.</li>
+<li>No Mover, o botão direito já abria o menu das linhas de apoio: ele continua igual, com o
+  "Desfazer nesta página" embaixo (print <code>mover-menu-das-linhas.png</code>).</li>
+<li>Clicar fora do menu fecha sem mudar nada (é o jeito de todo menu do programa, como o das linhas
+  de apoio).</li>
+</ul>
+<p>O que cada etapa grava ao ser desfeita (o mesmo valor do botão que a ferramenta já tem):</p>
+<ul>
+<li>Endireitar: ângulo 0, igual a "deixar como veio".</li>
+<li>Corte das bordas: sem corte, igual a "não cortar esta".</li>
+<li>Mover e tamanho: 100% e sem mover, igual a "voltar como veio" do Mover (o tamanho de folha
+  escolhido em "tamanho..." fica, como lá).</li>
+<li>Filtro: Original.</li>
+<li>Gravuras e fotos: tira todas as marcações e desliga "Respeitar as gravuras achadas" só nessa
+  página. Sem isso, com "Gravuras e fotos" ligada no livro, a máquina acharia as gravuras de novo
+  no próximo desenho e elas voltariam. Com a caixinha desligada o filtro da página vale na página
+  inteira (D-586).</li>
+</ul>
+<h2>Mexida à mão (D-004)</h2>
+<p>Segui o que o programa já faz com "deixar como veio" e "não cortar esta": a página fica com a
+marca "mexida à mão" de cada etapa desfeita e fica "conferida". Assim, se o Automático rodar de
+novo, a pergunta "Pular as páginas mexidas" inclui essa página, e o que foi desfeito não volta
+sozinho. A marca é só das etapas desfeitas (a caixinha das gravuras não faz o filtro contar como
+escolhido à mão).</p>
+<h2>A outra página da folha</h2>
+<p>Nada da folha muda (a divisão, a linha, o giro). A prova compara a página vizinha campo a campo
+antes e depois, e o PDF ponto a ponto.</p>
+<h2>Testes</h2>
+<ul>
+<li>Novos, <code>tests/test_decisoes_desfazer_pagina.py</code>: 14 casos, todos passam. Cada etapa sozinha (5);
+  as cinco juntas numa ação, Ctrl+Z e Ctrl+Y; o PDF (a página desfeita sai sem corte e em
+  Original, a vizinha e as outras saem iguais ponto por ponto); igual ao "deixar como veio" e ao
+  "não cortar esta"; etapas do Automático sem valor à mão; gravuras que não voltam pela procura da
+  máquina; botão direito na página, na miniatura, em "Duas lado a lado" e no Mover.</li>
+<li>Reversão: os 14 falham no código de antes (<code>1d2ed264</code>): <code>relatorios/desfazer-pagina/reversao.txt</code>.</li>
+<li>Antigos rodados no PC, um arquivo por vez (<code>testes-no-pc.txt</code>): os 38 <code>test_decisoes*.py</code> e os
+  do desfazer, da tira, do Cortar, do Endireitar, do Mover, do Filtro e das marcações. Todos
+  passam. Duas falhas apareceram com o PC carregado de outros agentes
+  (<code>test_corte_pelo_conteudo_na_tela.py</code>, <code>test_decisoes_livreto_ver.py</code>, este de tempo) e
+  passaram rodando de novo sozinhos. Nenhum teste antigo foi mudado.</li>
+</ul>
+<h2>Janela de verdade (Gradus Primus, cópia, Automático rodado antes)</h2>
+<p>Anotações em <code>anotacoes.txt</code>, prints em <code>prints/</code>:</p>
+<ul>
+<li><code>03</code>: o menu aberto pelo botão direito na página 14 (ferramenta Cortar).</li>
+<li><code>04</code>, <code>05</code>: a lista; na 14 estavam acesas Corte das bordas, Filtro e Gravuras e fotos (o
+  Endireitar não girou a 14). Marcadas Corte e Filtro.</li>
+<li><code>06</code>: a 14 depois: sem corte, em Original ("Esta página vai sair em Original").</li>
+<li><code>07</code>: a 13 (a outra página da mesma folha) igual: os campos dela não mudaram.</li>
+<li><code>08</code>, <code>09</code>: Ctrl+Z (a 14 volta cortada e em Preto e branco) e Ctrl+Y.</li>
+<li><code>10</code> a <code>12</code>: botão direito na miniatura 13 com a 14 na tela: a lista é da 13.</li>
+<li><code>13</code> a <code>16</code>: em "Duas lado a lado", botão direito na página 15 (a da direita do par, com a 14
+  sendo a da vez): a lista é da 15.</li>
+<li><code>mover-menu-das-linhas.png</code>: no Mover, as linhas de apoio continuam, com o item embaixo.</li>
+</ul>
+<h2>Ressalvas</h2>
+<ul>
+<li>O print <code>02-pagina-14-antes.png</code> saiu preto (o PC estava sem memória livre naquela hora, com
+  outros agentes rodando; o log mostra "Unable to allocate"). O "antes" está no <code>08</code> (depois do
+  Ctrl+Z, a página volta exatamente como era).</li>
+<li>"Gravuras e fotos" com "Só as letras" ligado na página: as figuras continuam coloridas, porque o
+  "Só as letras" manda (D-587). Para tirar, desfazer também o Filtro.</li>
+<li>Com "Gravuras e fotos" ligada no livro, a ferramenta Marcar ainda mostra as áreas que a máquina
+  achar de novo na página; o filtro dessa página não as usa (a caixinha "Respeitar as gravuras
+  achadas" fica desligada nela).</li>
+<li>Endireitar ainda não medido (a página nunca desenhada) conta como "mexeu" quando o Endireitar
+  está ligado: a caixinha fica acesa.</li>
+</ul>
+<h2>Perguntas abertas</h2>
+<p>Nenhuma bloqueou o trabalho. Escolhas que o Livro não diz por extenso e que segui pelo programa:
+as caixinhas começam desmarcadas (o exemplo da D-621); clicar fora fecha sem mudar (como os outros
+menus); o botão direito na miniatura não muda a página da tela.</p>
+<p class="rodape">Editor de Impressão &middot; gerado em 04/11/2026 às 17:01</p>
+</body>
+</html>

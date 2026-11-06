@@ -439,6 +439,18 @@ class ConfigPagina:
     # Codigos de core/pipeline.RETANGULO_*. Quem usa: a ferramenta Endireitar
     # (ui/tela_conferir), ao mudar o angulo.
     retangulo_do_corte: str | None = None
+    # D-623 (Samuel, 04/11/2026, print a-80: "eu queria conseguir com botão
+    # direito apertando no meio das paginas aperece opção de adicionar folha em
+    # branco."): 0 = a pagina veio do PDF (o de sempre); um numero > 0 = pagina
+    # em branco POSTA A MAO (botao direito na tira: "adicionar página em branco
+    # antes/depois"), unico no livro. Ela copia o tamanho da vizinha (folha,
+    # metade, corte, angulo...) e sai toda branca (em_branco); nao e "da folha"
+    # (core/paginas_em_branco.py). MUDANCA DE FORMATO autorizada pela D-623
+    # ("Muda o modelo de dados [...]: projeto antigo abre igual"): projeto
+    # gravado antes nao tem a chave e abre com 0 (campo que falta ganha o
+    # padrao), igual ponto por ponto. Arriscado: mudar o numero de uma pagina
+    # posta (a ordem guardada pelo D-615 a acha por ele).
+    inserida: int = 0
 
     @property
     def alertas_pendentes(self) -> list[str]:
@@ -823,6 +835,8 @@ class Projeto:
         esta dividida? (ela desenha a folha inteira)"""
         if pagina.metade == METADE_INTEIRA or not 0 <= pagina.folha < len(self.folhas):
             return False
+        if getattr(pagina, "inserida", 0):
+            return False    # D-623: a pagina em branco posta a mao sai sempre (nao e da folha)
         return not self.folhas[pagina.folha].dividir
 
     def metade_sobrando(self, pagina: ConfigPagina) -> bool:
@@ -877,6 +891,9 @@ class Projeto:
             # miniatura), o caminho rapido montaria os cadernos com as folhas
             # na ordem do PDF. Livro sem ordem mudada: como antes.
             and not _fora_da_ordem_do_pdf(self)
+            # D-623 (04/11/2026): pagina em branco posta a mao nao vem do PDF;
+            # o caminho rapido monta so com as folhas do PDF
+            and not any(getattr(p, "inserida", 0) and not p.apagada for p in self.paginas)
         )
 
     @property

@@ -157,9 +157,15 @@ def pagina_inteira_das(paginas: list[ConfigPagina]) -> ConfigPagina:
     return inteira
 
 
+def _da_folha(pagina, indice_folha: int) -> bool:
+    """A página é da folha? D-623 (04/11/2026): a página em branco posta à mão copia a folha
+    da vizinha (para ter o tamanho dela), mas não é da folha: dividir e juntar não a levam."""
+    return pagina.folha == indice_folha and not getattr(pagina, "inserida", 0)
+
+
 def paginas_da_folha(projeto, indice_folha: int) -> list[ConfigPagina]:
-    """As páginas da folha, na ordem do livro."""
-    return [p for p in projeto.paginas if p.folha == indice_folha]
+    """As páginas da folha, na ordem do livro (sem as páginas em branco postas à mão, D-623)."""
+    return [p for p in projeto.paginas if _da_folha(p, indice_folha)]
 
 
 def em_dicionarios(paginas: list[ConfigPagina]) -> list[dict]:
@@ -183,13 +189,13 @@ def trocar_as_paginas_da_folha(projeto, indice_folha: int, novas: list[ConfigPag
     página de uma folha seguinte."""
     for pagina in novas:
         pagina.folha = indice_folha
-    lugares = [n for n, p in enumerate(projeto.paginas) if p.folha == indice_folha]
+    lugares = [n for n, p in enumerate(projeto.paginas) if _da_folha(p, indice_folha)]
     if lugares:
         lugar = lugares[0]
     else:
         lugar = next((n for n, p in enumerate(projeto.paginas) if p.folha > indice_folha),
                      len(projeto.paginas))
-    resto = [p for p in projeto.paginas if p.folha != indice_folha]
+    resto = [p for p in projeto.paginas if not _da_folha(p, indice_folha)]   # D-623
     antes = [p for p in resto[:lugar]]
     projeto.paginas = antes + list(novas) + resto[lugar:]
     for n, pagina in enumerate(projeto.paginas):
@@ -396,9 +402,10 @@ def muda_a_lista(campos: dict) -> bool:
     """A ação troca páginas de alguma folha, ou muda a ordem delas (D-615,
     historico_acoes.CAMPO_DA_ORDEM)? A tela redesenha a tira e as prévias de
     todas, porque os números das páginas andam."""
-    from historico_acoes import CAMPO_DA_ORDEM
+    from historico_acoes import CAMPO_DA_ORDEM, CAMPO_DAS_INSERIDAS
 
-    return any(str(c).startswith(PREFIXO_PAGINAS_DA_FOLHA) or c == CAMPO_DA_ORDEM
+    # D-623: pôr ou tirar uma página em branco também muda os números das páginas
+    return any(str(c).startswith(PREFIXO_PAGINAS_DA_FOLHA) or c in (CAMPO_DA_ORDEM, CAMPO_DAS_INSERIDAS)
                for c in campos)
 
 

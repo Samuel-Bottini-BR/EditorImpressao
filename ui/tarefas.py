@@ -999,6 +999,12 @@ class _TarefaPrevia(QRunnable):
             img = renderizar_pagina_para_recorte(doc, self.projeto, pagina, dpi=self.dpi)
         finally:
             doc.close()
+        if getattr(pagina, "inserida", 0):
+            # D-623 (defeito B do verificador, 05/11/2026): a pagina em branco
+            # posta a mao copia a folha da vizinha so pelo tamanho; o PDF a
+            # deixa sempre branca (core/pipeline._filtrar), e a tela tambem:
+            # do mesmo tamanho, toda branca (antes mostrava a vizinha).
+            img = np.full_like(img, 255)
         _emitir_se_vivo(self.sinais, self.sinais.pronta, self.chave, img, self.geracao)
 
     def _folha_crua(self) -> None:
