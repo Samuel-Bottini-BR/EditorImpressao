@@ -169,7 +169,9 @@ class _Folhas(QWidget):
                 pintor.setRenderHint(QPainter.SmoothPixmapTransform, True)
                 pintor.drawPixmap(QRectF(px.left() / razao, px.top() / razao,
                                          px.width() / razao, px.height() / razao), pix, QRectF(pix.rect()))
-            if indice == self.dono.atual and self.dono.continuo:
+            # D-622: sem escolha (clique fora, no "Duas lado a lado" da área de
+            # trabalho), a página da vez fica sem o quadro azul
+            if indice == self.dono.atual and self.dono.continuo and not self.dono.sem_escolha:
                 pintor.setPen(QColor(estilo.cor("azul")))
                 pintor.drawRect(ret.adjusted(-2, -2, 1, 1))
         pintor.end()
@@ -191,6 +193,9 @@ class PaginasRolando(QScrollArea):
         self.continuo = True
         self.caber = CABER_PAGINA
         self.atual = 0
+        # D-622 (04/11/2026): a página da vez largada pelo clique fora (só os
+        # pares da área de trabalho mudam isto; o livro aberto fica sempre False)
+        self.sem_escolha = False
         self.guardadas: OrderedDict[int, QPixmap] = OrderedDict()
         self._pedidas: dict[int, tuple[int, int]] = {}
         self._pool = QThreadPool(self)

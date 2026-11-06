@@ -299,6 +299,10 @@ ORDEM_DAS_FERRAMENTAS = ("corte", "bordas", "angulo", "mover", "marcar", "filtro
 # vista de sempre (_onde_vai_a_peca). O Dividir nunca (D-601: lá o "Duas lado
 # a lado" é a folha inteira com a linha); o Filtro não tem peça de mexer.
 FERRAMENTAS_NO_PAR = (ABA_BORDAS, ABA_ANGULO, ABA_MOVER, ABA_MARCAR)
+# D-612 (a-77/a-78): as ferramentas cujo "antes / depois" compara a página como
+# veio com como vai sair (o que a ferramenta fez), e não só o filtro
+# (_mostrar_antes_depois). Seguro mudar: nada sem perguntar ao Samuel.
+FERRAMENTAS_DE_PAGINA_NO_ANTES_DEPOIS = (ABA_BORDAS, ABA_ANGULO, ABA_MOVER)
 
 TITULOS = {
     ABA_CORTE: "Onde cortar",
@@ -865,6 +869,8 @@ class TelaConferir(QWidget):
         self.lado_a_lado.pagina_da_vez_mudou.connect(self._pagina_do_lado_a_lado)
         # D-570 (etapa 9b-2): o Ctrl+roda nos pares muda o "N%" da barra de baixo
         self.lado_a_lado.zoom_mudou.connect(lambda _z: self._acertar_o_zoom_da_barra())
+        # D-622: o clique fora larga a escolha, o clique na página escolhe
+        self.lado_a_lado.escolha_mudou.connect(self._escolha_dos_pares)
         self.vista_da_pagina.addWidget(self.lado_a_lado)
         from ui.widgets.filtros_tela_cheia import VistaAntesDepois
         self.vista_antes_depois = VistaAntesDepois()
@@ -2318,6 +2324,7 @@ class TelaConferir(QWidget):
         vis = self._area_de_visualizador(ABA_MOVER, MODO_CONTEUDO)
         vis.conteudo_movido.connect(self._mover_conteudo)
         vis.guias_mudaram.connect(self._mudar_as_linhas_de_apoio)    # item 2.5, g8-guias
+        vis.escolha_mudou.connect(self._escolha_do_mover)             # D-622
         assert self.projeto is not None
 
         coluna = self._conteudo_de_propriedades(ABA_MOVER)
@@ -5460,6 +5467,12 @@ class TelaConferir(QWidget):
         self.tira.definir_giros_das_paginas(self._giros_das_paginas(
             range(len(self.projeto.paginas))))
         self._acertar_as_miniaturas_movidas()
+        # D-611 atualizada (04/11/2026, "a miniatura corresponder com o numero
+        # real"): o número é a posição da página no livro (o de "página N de
+        # M"), e com "Duas lado a lado" a tira junta os mesmos pares da tela
+        # grande (os do livro que vai sair: a página tirada fica sozinha)
+        self.tira.definir_numeros(None)
+        self.tira.definir_grupos(self._grupos_do_livro_aberto() if self.mostrar == DUAS else None)
         self.tira.selecionar(self.indice_atual)
 
     def _atualizar_tira_do_dividir(self) -> None:
@@ -5485,7 +5498,61 @@ class TelaConferir(QWidget):
         self.tira.definir_cortes(self._cortes_da_tira_do_dividir(passos))
         self.tira.definir_giros(self._giros_das_folhas())      # D2: so as que mudaram
         self.tira.definir_giros_das_paginas(self._giros_das_paginas(passos))   # D-618
+        # D-611 (atualizada 04/11/2026, Samuel: "SIm, mas tem que verificar se vai
+        # ficar assim em todo os lugares né? a miniatura corresponder com o numero
+        # real"; prints a-75/a-76): o número embaixo de cada miniatura é o da
+        # página de verdade (a posição dela no livro, o mesmo de "página N de M"),
+        # e com "Duas lado a lado" a tira junta pela folha, como a tela grande
+        # (as duas metades da folha lado a lado). Marcada: a da página da vez,
+        # que fica dentro do par da folha que está na tela.
+        self.tira.definir_numeros({i: posicao + 1 for i, posicao in enumerate(passos)})
+        self.tira.definir_grupos(self._grupos_por_folha(passos) if self.mostrar == DUAS else None)
         self.tira.selecionar(self._passo_do_dividir_atual(passos))
+
+    def _grupos_por_folha(self, passos: list[int]) -> list[list[int | None]]:
+        """D-611 atualizada (Samuel, 04/11/2026: "SIm" a juntar a tira do Dividir
+        "igual à tela grande, a 11 com a 12"): os pares da tira do Dividir com
+        "Duas lado a lado" - os quadros seguidos da mesma folha juntos (as duas
+        metades da folha dividida, esquerda e direita); a folha inteira, sozinha.
+        Com a ordem mudada à mão (D-615) ou a capa aberta (D-616), as metades
+        que ficaram longe uma da outra ficam sozinhas, cada uma no lugar dela."""
+        assert self.projeto is not None
+        grupos: list[list[int | None]] = []
+        folha_do_ultimo = None
+        for i, posicao in enumerate(passos):
+            folha = self.projeto.paginas[posicao].folha
+            if (grupos and folha == folha_do_ultimo and len(grupos[-1]) == 1
+                    and self.projeto.folhas[folha].dividir):
+                grupos[-1].append(i)
+            else:
+                grupos.append([i])
+            folha_do_ultimo = folha
+        return grupos
+
+    def _grupos_do_livro_aberto(self) -> list[list[int | None]]:
+        """D-611 atualizada: os pares da tira com "Duas lado a lado" fora do
+        Dividir - os mesmos da tela grande (PaginasLadoALado: as páginas que vão
+        sair, a 1 sozinha à direita, depois 2-3, 4-5...). A página tirada do
+        livro não está na tela grande: na tira fica sozinha, no lugar dela."""
+        assert self.projeto is not None
+        ativas = {p.indice: n for n, p in enumerate(self.projeto.paginas_ativas)}
+        grupos: list[list[int | None]] = []
+        par_do_ultimo = None
+        for i, pagina in enumerate(self.projeto.paginas):
+            n = ativas.get(pagina.indice)
+            if n is None:
+                grupos.append([i])
+                par_do_ultimo = None
+                continue
+            par = (n + 1) // 2
+            if grupos and par == par_do_ultimo and grupos[-1][-1] is None:
+                grupos[-1][-1] = i              # a da direita do par
+            elif n == 0:
+                grupos.append([None, i])        # a 1 sozinha, à direita
+            else:
+                grupos.append([i, None])        # a da esquerda (a da direita vem depois)
+            par_do_ultimo = par
+        return grupos
 
     def _ir_para_o_quadro_da_tira(self, indice: int) -> None:
         """Um clique (ou duplo clique) na miniatura `indice` da tira: vai para
@@ -5642,7 +5709,13 @@ class TelaConferir(QWidget):
         visivel = self.vista_da_pagina.currentWidget()
         if visivel is self.lado_a_lado:
             self.lado_a_lado.atualizar_imagens()
-        elif visivel is self.vista_antes_depois and chave.startswith(f"{self.indice_pagina}:"):
+        elif visivel is self.vista_antes_depois and (
+                chave.startswith(f"{self.indice_pagina}:")
+                or (self.aba_atual in FERRAMENTAS_DE_PAGINA_NO_ANTES_DEPOIS
+                    and 0 <= self.indice_pagina < len(self.projeto.paginas)
+                    and chave == self.previas.chave_folha(
+                        self.projeto.paginas[self.indice_pagina].folha, DPI_PREVIA))):
+            # D-612: o "antes" das ferramentas de página é a folha como veio
             self._mostrar_antes_depois()
         esperadas = (
             self.previas.chave(self.indice_pagina, self._dpi_atual),
@@ -8363,6 +8436,7 @@ class TelaConferir(QWidget):
                 if atual is not peca:
                     self._devolver_a_peca_do_par(atual)
         if peca is None:
+            self._ligar_o_desescolher(False)
             return
         if peca not in fora_de_casa:
             # o zoom da "Uma página" fica guardado; fora de casa o zoom é o da
@@ -8372,7 +8446,38 @@ class TelaConferir(QWidget):
             if hasattr(peca, "folga_da_moldura"):   # só o Visualizador tem moldura
                 peca.folga_da_moldura = self.FOLGA_NO_PAR
             self._por_a_vista_da_peca(peca, 1.0, QPoint(0, 0))
+        # D-612 (a), Samuel "ok": na outra página do par, o mesmo aperto escolhe e
+        # já arrasta - no Mover, no Cortar e nas de marcar (no Endireitar não)
+        self.lado_a_lado.arrastar_ao_escolher = self.aba_atual in (ABA_MOVER, ABA_BORDAS, ABA_MARCAR)
+        self._ligar_o_desescolher(destino is self.lado_a_lado and self.aba_atual == ABA_MOVER)
         destino.definir_ferramenta(peca)
+
+    def _ligar_o_desescolher(self, ligado: bool) -> None:
+        """D-622 (Samuel, 04/11/2026: "quando eu clicar fora da folha ele
+        desseleciona o que está selecionado [...] como no photoshop"): nos
+        pares com o Mover, o clique no cinza larga a escolha (o quadro da página
+        da vez e os cantos azuis); fora disso, os pares ficam como sempre (o
+        quadro aceso)."""
+        pares = self.lado_a_lado
+        pares.desescolher_ao_clicar_fora = bool(ligado)
+        if not ligado:
+            pares.definir_sem_escolha(False)
+        else:
+            vis = self.visualizadores.get(ABA_MOVER)
+            pares.definir_sem_escolha(vis is not None and not vis.conteudo_escolhido)
+
+    def _escolha_dos_pares(self, escolhida: bool) -> None:
+        """D-622: os pares escolheram (clique numa página) ou largaram (clique
+        no cinza): os cantos do Mover acompanham."""
+        vis = self.visualizadores.get(ABA_MOVER)
+        if vis is not None and self.aba_atual == ABA_MOVER:
+            vis.definir_escolhido(escolhida)
+
+    def _escolha_do_mover(self, escolhida: bool) -> None:
+        """D-622: o Mover foi escolhido (clique na página) ou largado (clique
+        fora dela): nos pares, o quadro da página da vez acompanha."""
+        if self.lado_a_lado.desescolher_ao_clicar_fora:
+            self.lado_a_lado.definir_sem_escolha(not escolhida)
 
     @staticmethod
     def _por_a_vista_da_peca(peca, zoom: float, deslocamento) -> None:
@@ -8515,6 +8620,18 @@ class TelaConferir(QWidget):
         # etapa 9b-2 (D-547): as duas como saem no PDF (movidas, na folha)
         depois = self._como_sai_no_pdf(self.previas.pegar(indice, self._dpi_atual), indice)
         rotulos = ("antes: Original", f"depois: {nome}")
+        if self.aba_atual in FERRAMENTAS_DE_PAGINA_NO_ANTES_DEPOIS:
+            # D-612 (Samuel, 04/11/2026, a-77/a-78: "aparece uma mensagem pedindo
+            # para escolher filtro, esse era o objetivo? [...] não mostra o depois
+            # mesmo movendo a pagina ou aumentando ela"; e "Ok, pode ser assim o
+            # antes e depois"): com Mover, Cortar e Endireitar, o "depois" é a
+            # página como vai sair, com o que a ferramenta fez, e o "antes" é a
+            # página como veio (a metade da folha do PDF, sem endireitar, cortar
+            # nem mover, no Original) - também com o filtro em Original, sem o
+            # aviso. Nas outras ferramentas (marcar, Mão, Zoom, Filtro) continua a
+            # comparação do filtro, com o aviso quando a página é Original.
+            self.vista_antes_depois.definir(self._pagina_como_veio(pagina), depois, True, rotulos)
+            return
         if filtro == ORIGINAL:
             self.vista_antes_depois.definir(
                 None, depois, False, rotulos, "Escolha outro filtro para comparar com o Original.")
@@ -8522,6 +8639,21 @@ class TelaConferir(QWidget):
         antes = self._como_sai_no_pdf(
             self.previas.pegar_com_filtro(indice, self._dpi_atual, ORIGINAL), indice)
         self.vista_antes_depois.definir(antes, depois, True, rotulos)
+
+    def _pagina_como_veio(self, pagina):
+        """D-612: a página como veio do PDF, para o "antes" das ferramentas de
+        página no "antes / depois": a folha (girada de 90 em 90, como o Dividir
+        a mostra) partida na linha, a metade desta página; a folha inteira se
+        ela não é dividida. None enquanto a folha não chegou (a prévia da folha
+        é pedida aqui e chega em _previa_chegou)."""
+        assert self.projeto is not None and self.previas is not None
+        img = self.previas.pegar_folha(pagina.folha, DPI_PREVIA)
+        if img is None:
+            return None
+        folha = self.projeto.folhas[pagina.folha]
+        if folha.dividir and pagina.metade in (METADE_ESQUERDA, METADE_DIREITA):
+            img = dividir_imagem(img, folha.posicao_corte)[0 if pagina.metade == METADE_ESQUERDA else 1]
+        return img
 
     def _roda_na_pagina(self, vista, evento) -> bool:
         """D-021 e o pedido da etapa 6 (27/10: "roda do mouse troca de página

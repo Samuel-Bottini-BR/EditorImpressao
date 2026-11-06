@@ -1,0 +1,8 @@
+livro => {"folhas": 70, "paginas": 70, "divididas": 0}
+dividiu => {"divididas": 70, "paginas": 140}
+A-pares-da-tira => [[1, 2], [3, 4], [5, 6], [7, 8], [9, 10], [11, 12], [13, 14], [15, 16]]
+A-miniatura-11 => {"folha": 6, "marcadas": [11], "da_folha": [11, 12]}
+A-miniatura-10 => {"folha": 5, "marcadas": [10], "da_folha": [9, 10]}
+a-outra-pagina => {"pagina": 11, "esperada": 11, "antes": [0.0, 0.0], "depois": [0.1114, 0.0]}
+B-filtro => "original"
+B-antes-depois => {"comparando": true, "aviso": "", "antes": true, "depois": true, "rotulos": ["antes: Original", "depois: Original"]}

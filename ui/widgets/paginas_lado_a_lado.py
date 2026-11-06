@@ -223,7 +223,9 @@ class PaginasLadoALado(PaginasRolando):
 
     def ir_para(self, indice: int) -> None:
         """Como sempre (PaginasRolando.ir_para), e a peça da ferramenta vai
-        junto para a página da vez (D-612)."""
+        junto para a página da vez (D-612). Outra página chega escolhida (D-622)."""
+        if indice != self.atual:
+            self.definir_sem_escolha(False)
         super().ir_para(indice)
         self._por_a_ferramenta_no_lugar()
 
@@ -395,10 +397,100 @@ class PaginasLadoALado(PaginasRolando):
             ponto = self.folhas.mapFrom(self.viewport(), evento.position().toPoint())
             for posicao, ret in self._ret:
                 if ret.adjusted(-MARGEM / 2, 0, MARGEM / 2, 0).contains(QPointF(ponto)):
+                    self.definir_sem_escolha(False, avisar=True)       # D-622
                     if posicao != self.atual:
                         self.atual = posicao
                         self.folhas.update()
                         self.pagina_mudou.emit(posicao)
+                        self._passar_o_aperto_a_peca(evento)
                     evento.accept()
                     return
+            # D-622: o clique no cinza, fora das páginas, larga a escolha
+            if self.desescolher_ao_clicar_fora:
+                self.definir_sem_escolha(True, avisar=True)
         super().mousePressEvent(evento)
+
+    # --- D-622: clicar fora larga a escolha ------------------------------------------
+    #
+    # Samuel, 04/11/2026 (print a-74): "quando eu clicar fora da folha ele
+    # desseleciona o que está selecionado, para eu selecionar de novo tenho que
+    # clicar de novo na coisa selecionada como no photoshop." Com a tela ligando
+    # desescolher_ao_clicar_fora (o Mover), o clique no cinza apaga o quadro azul
+    # da página da vez (e a tela apaga os cantos do Mover, escolha_mudou);
+    # clicar numa página escolhe de novo. Andar de página escolhe a nova.
+
+    escolha_mudou = Signal(bool)
+    desescolher_ao_clicar_fora = False
+
+    def definir_sem_escolha(self, sem: bool, avisar: bool = False) -> None:
+        """Apaga (True) ou acende (False) o quadro da página da vez. Com
+        `avisar`, conta à tela (escolha_mudou) quando muda."""
+        sem = bool(sem)
+        if sem == self.sem_escolha:
+            return
+        self.sem_escolha = sem
+        self.folhas.update()
+        if avisar:
+            self.escolha_mudou.emit(not sem)
+
+    # --- D-612 (a): escolher a outra página do par e já arrastar ---------------------
+    #
+    # Samuel, 04/11/2026, à pergunta "O mesmo clique na outra página do par já
+    # escolhe e arrasta?": "ok". Vale para o Mover, o Cortar e as de marcar (a
+    # tela liga arrastar_ao_escolher; no Endireitar não). O aperto na outra
+    # página a escolhe (a tela põe a peça da ferramenta em cima dela, na hora,
+    # pelo pagina_mudou) e é passado à peça: o arrasto começa no mesmo aperto, e
+    # o resto do arrasto (mover, soltar) vai para ela também. Se a imagem da
+    # página nova ainda não chegou, a peça não pega o aperto: só escolhe (como
+    # antes). Arriscado: passar o aperto quando a peça não está em cima do ponto.
+
+    arrastar_ao_escolher = False
+    _peca_no_arrasto = None
+
+    def _passar_o_aperto_a_peca(self, evento) -> None:
+        from PySide6.QtCore import QEvent
+        from PySide6.QtGui import QMouseEvent
+
+        peca = getattr(self, "ferramenta", None)
+        if peca is None or not self.arrastar_ao_escolher or not peca.isVisible():
+            return
+        ponto = peca.mapFrom(self.viewport(), evento.position().toPoint())
+        mascara = peca.mask()
+        if not peca.rect().contains(ponto) or (not mascara.isEmpty() and not mascara.contains(ponto)):
+            return
+        aperto = QMouseEvent(QEvent.MouseButtonPress, QPointF(ponto), evento.globalPosition(),
+                             evento.button(), evento.buttons(), evento.modifiers())
+        aperto.accept()
+        peca.mousePressEvent(aperto)            # direto: o aperto que ela recusa não volta aqui
+        if aperto.isAccepted():
+            self._peca_no_arrasto = peca
+
+    def _passar_a_peca(self, evento, tipo) -> bool:
+        """O resto do arrasto começado na peça (_passar_o_aperto_a_peca)."""
+        from PySide6.QtGui import QMouseEvent
+
+        peca = self._peca_no_arrasto
+        if peca is None:
+            return False
+        ponto = peca.mapFrom(self.viewport(), evento.position().toPoint())
+        copia = QMouseEvent(tipo, QPointF(ponto), evento.globalPosition(), evento.button(),
+                            evento.buttons(), evento.modifiers())
+        if tipo == copia.Type.MouseButtonRelease:
+            self._peca_no_arrasto = None
+            peca.mouseReleaseEvent(copia)
+        else:
+            peca.mouseMoveEvent(copia)
+        evento.accept()
+        return True
+
+    def mouseMoveEvent(self, evento) -> None:  # noqa: N802 - nome do Qt
+        from PySide6.QtCore import QEvent
+
+        if not self._passar_a_peca(evento, QEvent.MouseMove):
+            super().mouseMoveEvent(evento)
+
+    def mouseReleaseEvent(self, evento) -> None:  # noqa: N802 - nome do Qt
+        from PySide6.QtCore import QEvent
+
+        if not self._passar_a_peca(evento, QEvent.MouseButtonRelease):
+            super().mouseReleaseEvent(evento)

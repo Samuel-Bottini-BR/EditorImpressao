@@ -1,0 +1,48 @@
+﻿
+test_decisoes_d622_clicar_fora : 3 passed in 3.85s
+test_decisoes_par_escolhe_e_arrasta : 4 passed in 4.12s
+test_decisoes_antes_depois_da_ferramenta : 5 passed in 5.89s
+test_decisoes_tira_marca_a_tela : 3 passed in 4.93s
+test_decisoes_tamanho_no_par : 5 passed in 5.95s
+test_bug_04_11_pincel_tamanho : 4 passed in 4.09s
+test_decisoes_ferramentas_antes_depois : 12 passed in 19.17s
+test_decisoes_ferramentas_lado : 9 passed in 11.65s
+test_decisoes_mover_lado : 7 passed in 10.78s
+test_decisoes_mover : 13 passed in 17.43s
+test_decisoes_ver : 11 passed in 32.56s
+test_decisoes_dividir_metade : 6 passed in 9.47s
+test_decisoes_dividir_arrastar : 16 passed in 29.48s
+test_decisoes_tira_em_pares : 1 failed, 3 passed in 11.03s
+   FAILED tests/test_decisoes_tira_em_pares.py::test_d611_escolhida_e_clique_continuam
+test_decisoes_tira_pares_juntas : 3 passed in 10.96s
+test_decisoes_previa_dividida : 4 passed in 22.91s
+test_decisoes_previa_numero : 5 passed in 14.93s
+test_decisoes_dividir_aviso : 11 passed in 33.07s
+test_previa_composta : 10 passed in 9.48s
+test_paineis_na_tela : 22 passed in 165.17s (0:02:45)
+test_visualizador : 70 passed, 9 warnings in 6.01s
+test_zoom_no_ponteiro : 5 passed in 41.94s
+test_decisoes_9b2 : 30 passed in 93.27s (0:01:33)
+test_livro_aberto : 14 passed in 25.27s
+test_decisoes_dividir_linha : 13 passed in 24.18s
+test_decisoes_dividir : 21 passed in 94.70s (0:01:34)
+test_dividir_na_tela : 9 passed in 42.54s
+test_decisoes_marcacoes : 19 passed in 22.56s
+test_guias : 14 passed in 0.84s
+test_decisoes_shift_todas_as_telas : 10 passed in 22.00s
+test_decisoes : 26 passed in 9.99s
+test_endireitar_no_programa : 15 passed in 27.29s
+test_gravura_na_aba_marcar : 8 passed in 12.77s
+test_trilha_e_opcoes : 29 passed, 1 warning in 2.47s
+test_selecao : 24 passed in 0.89s
+test_decisoes_nucleo : 38 passed in 15.30s
+test_decisoes_nucleo2 : 1 failed, 20 passed in 59.70s
+   FAILED tests/test_decisoes_nucleo2.py::test_d528_a_marcacao_fica_no_lugar_na_previa_da_metade
+test_corte_previa_igual_pdf : 4 passed in 15.96s
+test_filtros_tela_cheia : 11 passed in 25.48s
+test_decisoes_automatico_ver_como_fica : 22 passed in 95.21s (0:01:35)
+test_decisoes_9b1 : 25 passed, 16 warnings in 40.72s
+test_atalhos : 15 passed in 0.30s
+test_barra_de_menu : 20 passed in 9.17s
+test_opcoes_da_gravura_na_tela : 15 passed in 38.83s
+FIM

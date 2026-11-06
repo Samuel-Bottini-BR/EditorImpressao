@@ -1,3 +1,3 @@
-cortar => {"antes": [0, 0, 1, 1], "depois": [0.0, 0.0, 0.8995, 1.0]}
-endireitar => {"antes": null, "depois": -2.65}
-retangulo => {"antes": 7, "depois": 8}
+cortar => {"antes": [0, 0, 1, 1], "depois": [0.0, 0.0, 0.9271, 1.0]}
+endireitar => {"antes": null, "depois": -2.78}
+retangulo => {"antes": 0, "depois": 1}
