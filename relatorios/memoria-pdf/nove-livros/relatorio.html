@@ -1,0 +1,374 @@
+<!doctype html>
+<html lang="pt-BR">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Memória nos 9 livros do acervo</title>
+<style>
+:root { color-scheme: light dark; }
+* { box-sizing: border-box; }
+body {
+  font: 17px/1.65 "Segoe UI", system-ui, sans-serif;
+  max-width: 46rem; margin: 0 auto; padding: 2.5rem 1.5rem 6rem;
+  color: #1c1c1e; background: #fdfdfc;
+}
+h1 { font-size: 2rem; line-height: 1.2; margin: 0 0 .3em; letter-spacing: -.02em; }
+h2 { font-size: 1.35rem; margin: 2.4em 0 .6em; padding-top: .8em;
+     border-top: 1px solid #e6e4e0; letter-spacing: -.01em; }
+h3 { font-size: 1.1rem; margin: 1.8em 0 .4em; }
+h1 + p, h2 + p { margin-top: .4em; }
+p, li { margin: 0 0 .9em; }
+ul, ol { padding-left: 1.3em; }
+strong { font-weight: 640; }
+code {
+  font: .88em ui-monospace, "Cascadia Code", Consolas, monospace;
+  background: #f1efec; padding: .12em .35em; border-radius: 4px;
+}
+pre {
+  background: #f1efec; padding: 1em 1.1em; border-radius: 8px;
+  overflow-x: auto; line-height: 1.5;
+}
+pre code { background: none; padding: 0; }
+blockquote {
+  margin: 1.2em 0; padding: .1em 0 .1em 1.1em;
+  border-left: 3px solid #c9c5be; color: #55524d;
+}
+table {
+  border-collapse: collapse; width: 100%; margin: 1.2em 0;
+  font-size: .95rem; display: block; overflow-x: auto;
+}
+th, td { padding: .5em .8em; text-align: left; border-bottom: 1px solid #e6e4e0; }
+th { font-weight: 620; background: #f7f5f2; white-space: nowrap; }
+tr:last-child td { border-bottom: none; }
+img { max-width: 100%; height: auto; border-radius: 6px; margin: 1em 0;
+      border: 1px solid #e6e4e0; }
+hr { border: none; border-top: 1px solid #e6e4e0; margin: 2.5em 0; }
+.rodape { margin-top: 4em; padding-top: 1.2em; border-top: 1px solid #e6e4e0;
+          font-size: .85rem; color: #86827c; }
+@media (prefers-color-scheme: dark) {
+  body { color: #e8e6e3; background: #1a1917; }
+  h2 { border-top-color: #35332f; }
+  code, pre, th { background: #262421; }
+  th, td { border-bottom-color: #35332f; }
+  blockquote { border-left-color: #4a4741; color: #b0aca6; }
+  img { border-color: #35332f; }
+  .rodape { border-top-color: #35332f; color: #7d7973; }
+}
+@media print {
+  body { max-width: none; padding: 0; color: #000; background: #fff; }
+  h2 { page-break-after: avoid; }
+  table, img { page-break-inside: avoid; }
+}
+</style>
+</head>
+<body>
+<h1>Memória ao processar: os 9 livros do acervo</h1>
+<p>Pedido do Samuel (04/11/2026): "o teste foi feito com um pdf só?". Foi, só com o Rhetorica. Ele aceitou medir
+nos 9 livros do acervo: "pode". Verificador, 04 e 05/11/2026. <strong>Teste de máquina</strong> (medida e comparação de
+arquivos; ninguém precisa olhar imagem para decidir isto).</p>
+<h2>A resposta, em português simples</h2>
+<p><strong>A memória ficou parada nos 9 livros.</strong> Do começo ao fim de cada livro, a memória do programa subiu no máximo
+uns 70 MB, e isso não acompanha o tamanho do livro: no Graduale, com um PDF de 6,4 GB, subiu 40 MB; no Boécio,
+com 115 MB, subiu 48 MB. No código antigo, a memória subia junto com o PDF: no Na escola de Jesus subiu 888 MB.</p>
+<p><strong>Nenhum livro caiu.</strong> Os 9 terminaram, e o PDF de cada um tem exatamente o número de páginas que o programa
+planejou.</p>
+<p><strong>Os PDFs saíram iguais aos do código antigo</strong>, nos 5 livros em que rodei os dois. Todas as páginas têm as
+mesmas imagens, byte a byte. Em 12 páginas espalhadas de cada livro, a página desenhada é igual pixel a pixel.</p>
+<h2>Os 9 livros, com o código novo</h2>
+<table>
+<thead>
+<tr>
+<th>Livro</th>
+<th>Folhas</th>
+<th>Pico do programa</th>
+<th>PDF</th>
+<th>Tempo</th>
+<th>Terminou?</th>
+<th>Igual ao antigo?</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>Marial de sermoens</td>
+<td>500 de 907 (pedaço)</td>
+<td>1.938 MB</td>
+<td>2,5 GB</td>
+<td>37 min 19 s</td>
+<td>sim</td>
+<td>não comparado</td>
+</tr>
+<tr>
+<td>Graduale - Saeculum XIV</td>
+<td>300 de 750 (pedaço)</td>
+<td>2.238 MB</td>
+<td>6,4 GB</td>
+<td>54 min 30 s</td>
+<td>sim</td>
+<td>não comparado</td>
+</tr>
+<tr>
+<td>Rhetorica Christiana</td>
+<td>446</td>
+<td>1.693 MB</td>
+<td>1,4 GB</td>
+<td>25 min 20 s</td>
+<td>sim</td>
+<td>não comparado</td>
+</tr>
+<tr>
+<td>Na escola de Jesus</td>
+<td>199</td>
+<td>1.748 MB</td>
+<td>1,2 GB</td>
+<td>13 min 10 s</td>
+<td>sim</td>
+<td>sim (199 páginas; 12 páginas pixel a pixel)</td>
+</tr>
+<tr>
+<td>Livro de Horas - Luís XIV</td>
+<td>191</td>
+<td>2.493 MB</td>
+<td>1,9 GB</td>
+<td>22 min 36 s</td>
+<td>sim</td>
+<td>não comparado</td>
+</tr>
+<tr>
+<td>Palatino</td>
+<td>134</td>
+<td>1.645 MB</td>
+<td>368 MB</td>
+<td>3 min 34 s</td>
+<td>sim</td>
+<td>sim (134 páginas; 12 páginas pixel a pixel)</td>
+</tr>
+<tr>
+<td>Siebmacher</td>
+<td>134</td>
+<td>1.656 MB</td>
+<td>293 MB</td>
+<td>5 min 29 s</td>
+<td>sim</td>
+<td>sim (134 páginas; 12 páginas pixel a pixel)</td>
+</tr>
+<tr>
+<td>Pesel (broderies anglaises)</td>
+<td>92</td>
+<td>1.729 MB</td>
+<td>238 MB</td>
+<td>5 min 15 s</td>
+<td>sim</td>
+<td>sim (92 páginas; 12 páginas pixel a pixel)</td>
+</tr>
+<tr>
+<td>Boécio</td>
+<td>50</td>
+<td>1.572 MB</td>
+<td>115 MB</td>
+<td>1 min 14 s</td>
+<td>sim</td>
+<td>sim (50 páginas; 12 páginas pixel a pixel)</td>
+</tr>
+</tbody>
+</table>
+<p>"Pico do programa" é a memória mais alta que o programa usou no livro inteiro (análise, processar e gravar).
+Cada livro rodou sozinho, um depois do outro, do maior para o menor.</p>
+<h2>A memória sobe com o livro? Começo contra fim</h2>
+<p>Cada livro foi dividido em quatro partes iguais de páginas. A "memória de base" é a mediana da memória durante
+aquela parte: se o programa guardasse o livro na memória, ela subiria parte a parte.</p>
+<table>
+<thead>
+<tr>
+<th>Livro</th>
+<th>Pico no 1º quarto</th>
+<th>no 4º quarto</th>
+<th>Memória "de base" no 1º quarto</th>
+<th>no 4º quarto</th>
+<th>Páginas: esperadas / no PDF</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>Marial de sermoens</td>
+<td>1.905 MB</td>
+<td>1.938 MB</td>
+<td>1.674 MB</td>
+<td>1.743 MB</td>
+<td>500 / 500</td>
+</tr>
+<tr>
+<td>Graduale - Saeculum XIV</td>
+<td>2.203 MB</td>
+<td>2.238 MB</td>
+<td>1.793 MB</td>
+<td>1.833 MB</td>
+<td>300 / 300</td>
+</tr>
+<tr>
+<td>Rhetorica Christiana</td>
+<td>1.669 MB</td>
+<td>1.693 MB</td>
+<td>1.589 MB</td>
+<td>1.618 MB</td>
+<td>446 / 446</td>
+</tr>
+<tr>
+<td>Na escola de Jesus</td>
+<td>1.728 MB</td>
+<td>1.748 MB</td>
+<td>1.624 MB</td>
+<td>1.648 MB</td>
+<td>199 / 199</td>
+</tr>
+<tr>
+<td>Livro de Horas - Luís XIV</td>
+<td>2.244 MB</td>
+<td>2.493 MB</td>
+<td>1.809 MB</td>
+<td>1.865 MB</td>
+<td>191 / 191</td>
+</tr>
+<tr>
+<td>Palatino</td>
+<td>1.619 MB</td>
+<td>1.645 MB</td>
+<td>1.548 MB</td>
+<td>1.585 MB</td>
+<td>134 / 134</td>
+</tr>
+<tr>
+<td>Siebmacher</td>
+<td>1.608 MB</td>
+<td>1.656 MB</td>
+<td>1.530 MB</td>
+<td>1.572 MB</td>
+<td>134 / 134</td>
+</tr>
+<tr>
+<td>Pesel (broderies anglaises)</td>
+<td>1.699 MB</td>
+<td>1.729 MB</td>
+<td>1.540 MB</td>
+<td>1.605 MB</td>
+<td>92 / 92</td>
+</tr>
+<tr>
+<td>Boécio</td>
+<td>1.524 MB</td>
+<td>1.558 MB</td>
+<td>1.488 MB</td>
+<td>1.536 MB</td>
+<td>50 / 50</td>
+</tr>
+</tbody>
+</table>
+<p>O pico absoluto muda de um livro para outro porque depende do tamanho da página (Graduale e Livro de Horas têm
+páginas muito maiores), não do número de páginas.</p>
+<p><strong>Livro de Horas:</strong> o pico do último quarto (2.493 MB) vem das 5 últimas páginas (187 a 191), que são muito mais
+altas que as outras: até 5.558 pontos de altura, contra cerca de 1.400 no resto do livro. A memória de base não
+subiu: 1.809 MB no começo e 1.865 MB no fim.</p>
+<h2>Código antigo contra o novo (os mesmos livros)</h2>
+<p>Código antigo: a obra logo antes do conserto (<code>f06e0c15</code>). Código novo: ramo <code>memoria-pdf-2026-11-04</code>
+(<code>45005116</code>). Entre os dois, só mudou o conserto da memória (<code>core/pdf_io.py</code>, <code>core/cadernos.py</code>,
+<code>core/impressao.py</code> e o aviso na tela).</p>
+<table>
+<thead>
+<tr>
+<th>Livro</th>
+<th>PDF</th>
+<th>Pico antigo</th>
+<th>Pico novo</th>
+<th>Base antiga 1º → 4º quarto</th>
+<th>Base nova 1º → 4º quarto</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>Na escola de Jesus</td>
+<td>1.198 MB</td>
+<td>2.871 MB</td>
+<td>1.748 MB</td>
+<td>1.727 → 2.615 MB (+888)</td>
+<td>1.624 → 1.648 MB (+24)</td>
+</tr>
+<tr>
+<td>Palatino</td>
+<td>368 MB</td>
+<td>1.967 MB</td>
+<td>1.645 MB</td>
+<td>1.584 → 1.869 MB (+285)</td>
+<td>1.548 → 1.585 MB (+37)</td>
+</tr>
+<tr>
+<td>Siebmacher</td>
+<td>293 MB</td>
+<td>1.879 MB</td>
+<td>1.656 MB</td>
+<td>1.554 → 1.795 MB (+241)</td>
+<td>1.530 → 1.572 MB (+42)</td>
+</tr>
+<tr>
+<td>Pesel (broderies anglaises)</td>
+<td>238 MB</td>
+<td>1.900 MB</td>
+<td>1.729 MB</td>
+<td>1.560 → 1.774 MB (+214)</td>
+<td>1.540 → 1.605 MB (+65)</td>
+</tr>
+<tr>
+<td>Boécio</td>
+<td>115 MB</td>
+<td>1.640 MB</td>
+<td>1.572 MB</td>
+<td>1.506 → 1.611 MB (+105)</td>
+<td>1.488 → 1.536 MB (+48)</td>
+</tr>
+</tbody>
+</table>
+<p>Os 5 PDFs de saída são iguais nos dois códigos:</p>
+<ul>
+<li>mesmo número de páginas;</li>
+<li>em <strong>todas</strong> as páginas, as mesmas imagens (os dados, byte a byte, com o mesmo tamanho e as mesmas cores) e o
+  mesmo desenho da página;</li>
+<li>em 12 páginas espalhadas de cada livro (a primeira, a última e as do meio), a página desenhada a 150 dpi é igual
+  pixel a pixel, e cada imagem da página, aberta na resolução dela, também.</li>
+</ul>
+<p>Para saber se a comparação acusa diferença quando ela existe, comparei o Palatino com o Siebmacher (os dois
+com 134 páginas). Todas as páginas saíram diferentes, como devia.</p>
+<h2>Ressalvas</h2>
+<ul>
+<li><strong>Dois livros foram medidos em pedaço.</strong> Ensaio de 20 folhas: o Graduale inteiro levaria cerca de 1 h 45 e
+  daria um PDF de cerca de 16 GB. O Marial inteiro levaria cerca de 1 h 15. Medi o <strong>Graduale com 300 de 750
+  folhas</strong> (6,4 GB) e o <strong>Marial com 500 de 907 folhas</strong> (2,5 GB): as primeiras folhas, pelo mesmo caminho.</li>
+<li><strong>Os tempos não são de confiança, a memória é.</strong> O PC estava com outros agentes trabalhando, e pode haver um
+  verificador separado pilotando a janela ao mesmo tempo. Durante o Rhetorica o Windows chegou a ficar com só
+  22 MB livres. Isso muda os tempos, mas não a memória que o próprio programa usa.</li>
+<li><strong>A medida é das funções do programa, sem a janela,</strong> como o <code>medir_memoria.py</code> do Rhetorica: "Confirmar e
+  processar" de fábrica, <strong>uma página por vez</strong>. Com várias páginas ao mesmo tempo (o de fábrica no programa),
+  o pico é maior, porque cada trabalhador tem a sua página; isso não foi medido aqui.</li>
+<li><strong>A memória de base ainda sobe um pouco</strong> (24 a 69 MB no livro inteiro). Essa subida não acompanha o tamanho do
+  livro: o maior PDF (6,4 GB) subiu menos que o menor (115 MB). Por isso não é o livro se acumulando na memória.
+  Não investiguei de onde vem.</li>
+<li><strong>Os quatro livros maiores (Marial, Graduale, Rhetorica e Horas) não foram rodados com o código antigo.</strong> O
+  antigo já caiu no Rhetorica com 270 folhas (medida anterior); no Na escola de Jesus (PDF de 1,2 GB) ele terminou,
+  com 2.871 MB, porque desta vez havia memória livre.</li>
+<li>Só medi o "Confirmar e processar". "Montar cadernos" e o livreto não foram medidos nos 9 livros (só no
+  Rhetorica, no relatório anterior).</li>
+<li><strong>Observação fora do pedido:</strong> em agosto, o Siebmacher saía com 268 páginas (cada folha dividida em duas).
+  Hoje, de fábrica, sai com 134. O PDF bate com o que o próprio programa planejou. Não investiguei por quê.</li>
+<li>"Memória do programa" é a do processo principal. O servidor de páginas (o outro processo do programa) fica
+  à parte, entre 1.100 e 1.580 MB, e também não cresceu.</li>
+</ul>
+<h2>Onde estão as coisas</h2>
+<p>Na cópia <code>memoria-pdf</code> (ramo <code>memoria-pdf-2026-11-04</code>), pasta <code>relatorios/memoria-pdf/</code>:</p>
+<ul>
+<li><code>medidas-9-livros/medir_livro.py</code>: mede um livro, com o código novo ou o antigo;</li>
+<li><code>medidas-9-livros/comparar_pdfs.py</code>: compara os PDFs;</li>
+<li><code>medidas-9-livros/rodar_novo.sh</code>, <code>rodar_antigo.sh</code> e <code>rodar_antigo_grande.sh</code>: a ordem dos livros;</li>
+<li><code>medidas-9-livros/medidas/</code>: uma medida por livro e uma comparação por livro;</li>
+<li><code>nove-livros/gerar_relatorio.py</code> e <code>texto.md</code>: este relatório.</li>
+</ul>
+<p>Os PDFs de saída não entram no git.</p>
+<p class="rodape">Editor de Impressão &middot; gerado em 05/11/2026 às 03:24</p>
+</body>
+</html>

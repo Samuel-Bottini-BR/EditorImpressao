@@ -1,0 +1,232 @@
+{
+ "antigo": "trabalho\\boecio-antigo\\saida.pdf",
+ "novo": "trabalho\\boecio-novo\\saida.pdf",
+ "paginas_antigo": 50,
+ "paginas_novo": 50,
+ "mesmo_numero_de_paginas": true,
+ "todas_as_paginas": {
+  "paginas": 50,
+  "imagens_conferidas": 50,
+  "paginas_com_imagem_diferente": [],
+  "paginas_com_desenho_diferente": []
+ },
+ "amostra": [
+  {
+   "pagina": 1,
+   "tamanho_px": [
+    767,
+    532
+   ],
+   "pagina_desenhada_igual": true,
+   "pixels_diferentes": 0,
+   "imagens": 1,
+   "imagens_px": [
+    [
+     1533,
+     1063,
+     3
+    ]
+   ],
+   "imagens_iguais_pixel_a_pixel": true
+  },
+  {
+   "pagina": 5,
+   "tamanho_px": [
+    733,
+    503
+   ],
+   "pagina_desenhada_igual": true,
+   "pixels_diferentes": 0,
+   "imagens": 1,
+   "imagens_px": [
+    [
+     1465,
+     1005,
+     3
+    ]
+   ],
+   "imagens_iguais_pixel_a_pixel": true
+  },
+  {
+   "pagina": 10,
+   "tamanho_px": [
+    692,
+    460
+   ],
+   "pagina_desenhada_igual": true,
+   "pixels_diferentes": 0,
+   "imagens": 1,
+   "imagens_px": [
+    [
+     1383,
+     919,
+     3
+    ]
+   ],
+   "imagens_iguais_pixel_a_pixel": true
+  },
+  {
+   "pagina": 14,
+   "tamanho_px": [
+    720,
+    439
+   ],
+   "pagina_desenhada_igual": true,
+   "pixels_diferentes": 0,
+   "imagens": 1,
+   "imagens_px": [
+    [
+     1440,
+     878,
+     3
+    ]
+   ],
+   "imagens_iguais_pixel_a_pixel": true
+  },
+  {
+   "pagina": 19,
+   "tamanho_px": [
+    718,
+    445
+   ],
+   "pagina_desenhada_igual": true,
+   "pixels_diferentes": 0,
+   "imagens": 1,
+   "imagens_px": [
+    [
+     1435,
+     890,
+     3
+    ]
+   ],
+   "imagens_iguais_pixel_a_pixel": true
+  },
+  {
+   "pagina": 23,
+   "tamanho_px": [
+    722,
+    438
+   ],
+   "pagina_desenhada_igual": true,
+   "pixels_diferentes": 0,
+   "imagens": 1,
+   "imagens_px": [
+    [
+     1443,
+     876,
+     3
+    ]
+   ],
+   "imagens_iguais_pixel_a_pixel": true
+  },
+  {
+   "pagina": 28,
+   "tamanho_px": [
+    722,
+    527
+   ],
+   "pagina_desenhada_igual": true,
+   "pixels_diferentes": 0,
+   "imagens": 1,
+   "imagens_px": [
+    [
+     1444,
+     1053,
+     3
+    ]
+   ],
+   "imagens_iguais_pixel_a_pixel": true
+  },
+  {
+   "pagina": 32,
+   "tamanho_px": [
+    713,
+    477
+   ],
+   "pagina_desenhada_igual": true,
+   "pixels_diferentes": 0,
+   "imagens": 1,
+   "imagens_px": [
+    [
+     1425,
+     953,
+     3
+    ]
+   ],
+   "imagens_iguais_pixel_a_pixel": true
+  },
+  {
+   "pagina": 37,
+   "tamanho_px": [
+    714,
+    448
+   ],
+   "pagina_desenhada_igual": true,
+   "pixels_diferentes": 0,
+   "imagens": 1,
+   "imagens_px": [
+    [
+     1427,
+     896,
+     3
+    ]
+   ],
+   "imagens_iguais_pixel_a_pixel": true
+  },
+  {
+   "pagina": 41,
+   "tamanho_px": [
+    748,
+    487
+   ],
+   "pagina_desenhada_igual": true,
+   "pixels_diferentes": 0,
+   "imagens": 1,
+   "imagens_px": [
+    [
+     1495,
+     974,
+     3
+    ]
+   ],
+   "imagens_iguais_pixel_a_pixel": true
+  },
+  {
+   "pagina": 46,
+   "tamanho_px": [
+    772,
+    464
+   ],
+   "pagina_desenhada_igual": true,
+   "pixels_diferentes": 0,
+   "imagens": 1,
+   "imagens_px": [
+    [
+     1544,
+     927,
+     3
+    ]
+   ],
+   "imagens_iguais_pixel_a_pixel": true
+  },
+  {
+   "pagina": 50,
+   "tamanho_px": [
+    776,
+    502
+   ],
+   "pagina_desenhada_igual": true,
+   "pixels_diferentes": 0,
+   "imagens": 1,
+   "imagens_px": [
+    [
+     1552,
+     1003,
+     3
+    ]
+   ],
+   "imagens_iguais_pixel_a_pixel": true
+  }
+ ],
+ "tudo_igual": true
+}

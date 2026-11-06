@@ -1,0 +1,15 @@
+02:57:28 código de D:\programas\EditorImpressao\.claude\worktrees\memoria-pdf-antes (core.pipeline em D:\programas\EditorImpressao\.claude\worktrees\memoria-pdf-antes\core\pipeline.py); tem PDFQueVaiParaODisco: False
+02:57:28 livro Schön Neues Modell Buch - Johann Siebmacher.pdf: 134 folhas copiadas
+02:58:56 análise pronta em 87 s; páginas esperadas no PDF: 134
+02:58:56 0/134 Página 1 de 134
+02:59:27 14/134 Página 15 de 134
+02:59:58 28/134 Página 29 de 134
+03:00:29 42/134 Página 43 de 134
+03:00:59 56/134 Página 57 de 134
+03:01:29 69/134 Página 70 de 134
+03:02:01 83/134 Página 84 de 134
+03:02:32 98/134 Página 99 de 134
+03:03:04 112/134 Página 113 de 134
+03:03:35 125/134 Página 126 de 134
+03:03:56 gravando o PDF
+03:04:01 fim: {"paginas_esperadas": 134, "paginas_no_pdf": 134, "pdf_mb": 292.8, "erro": null, "segundos": {"analisar": 87.3, "processar": 304.8}, "pico_total": {"privado_mb": 1879, "rss_mb": 897, "filhos_mb": 1264, "privado_mais_filhos_mb": 3100, "menor_livre_no_windows_mb": 3146}}

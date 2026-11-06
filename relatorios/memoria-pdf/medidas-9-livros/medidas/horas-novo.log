@@ -1,0 +1,41 @@
+02:11:10 código de D:\programas\EditorImpressao\.claude\worktrees\memoria-pdf (core.pipeline em D:\programas\EditorImpressao\.claude\worktrees\memoria-pdf\core\pipeline.py); tem PDFQueVaiParaODisco: True
+02:11:15 livro Livro de Horas - Luís XIV.pdf: 191 folhas copiadas
+02:12:49 análise pronta em 94 s; páginas esperadas no PDF: 191
+02:12:49 0/191 Página 1 de 191
+02:13:21 6/191 Página 7 de 191
+02:13:51 14/191 Página 15 de 191
+02:14:27 22/191 Página 23 de 191
+02:14:59 28/191 Página 29 de 191
+02:15:31 33/191 Página 34 de 191
+02:16:06 39/191 Página 40 de 191
+02:16:40 44/191 Página 45 de 191
+02:17:13 49/191 Página 50 de 191
+02:17:50 55/191 Página 56 de 191
+02:18:20 59/191 Página 60 de 191
+02:18:54 64/191 Página 65 de 191
+02:19:29 69/191 Página 70 de 191
+02:20:04 74/191 Página 75 de 191
+02:20:37 79/191 Página 80 de 191
+02:21:12 84/191 Página 85 de 191
+02:21:46 89/191 Página 90 de 191
+02:22:17 94/191 Página 95 de 191
+02:22:47 99/191 Página 100 de 191
+02:23:21 104/191 Página 105 de 191
+02:23:54 109/191 Página 110 de 191
+02:24:28 114/191 Página 115 de 191
+02:25:00 119/191 Página 120 de 191
+02:25:32 124/191 Página 125 de 191
+02:26:05 129/191 Página 130 de 191
+02:26:39 135/191 Página 136 de 191
+02:27:10 140/191 Página 141 de 191
+02:27:42 145/191 Página 146 de 191
+02:28:19 151/191 Página 152 de 191
+02:28:54 156/191 Página 157 de 191
+02:29:29 161/191 Página 162 de 191
+02:30:04 166/191 Página 167 de 191
+02:30:38 173/191 Página 174 de 191
+02:31:10 181/191 Página 182 de 191
+02:31:41 188/191 Página 189 de 191
+02:31:59 gravando o PDF
+02:33:51 191/191 Pronto
+02:33:52 fim: {"paginas_esperadas": 191, "paginas_no_pdf": 191, "pdf_mb": 1922.7, "erro": null, "segundos": {"analisar": 93.9, "processar": 1262.2}, "pico_total": {"privado_mb": 2493, "rss_mb": 1287, "filhos_mb": 1576, "privado_mais_filhos_mb": 3818, "menor_livre_no_windows_mb": 275}}

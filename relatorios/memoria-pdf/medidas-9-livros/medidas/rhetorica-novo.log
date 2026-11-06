@@ -1,0 +1,40 @@
+01:32:09 código de D:\programas\EditorImpressao\.claude\worktrees\memoria-pdf (core.pipeline em D:\programas\EditorImpressao\.claude\worktrees\memoria-pdf\core\pipeline.py); tem PDFQueVaiParaODisco: True
+01:32:14 livro Rhetorica Christiana -  Fray Diego Valadés.pdf: 446 folhas copiadas
+01:39:08 análise pronta em 413 s; páginas esperadas no PDF: 446
+01:39:08 0/446 Página 1 de 446
+01:39:40 13/446 Página 14 de 446
+01:40:12 25/446 Página 26 de 446
+01:40:43 37/446 Página 38 de 446
+01:41:14 49/446 Página 50 de 446
+01:41:46 62/446 Página 63 de 446
+01:42:19 74/446 Página 75 de 446
+01:42:50 87/446 Página 88 de 446
+01:43:22 100/446 Página 101 de 446
+01:43:53 115/446 Página 116 de 446
+01:44:25 131/446 Página 132 de 446
+01:44:55 146/446 Página 147 de 446
+01:45:27 158/446 Página 159 de 446
+01:45:58 173/446 Página 174 de 446
+01:46:29 188/446 Página 189 de 446
+01:47:01 203/446 Página 204 de 446
+01:47:33 214/446 Página 215 de 446
+01:48:06 225/446 Página 226 de 446
+01:48:36 232/446 Página 233 de 446
+01:49:07 243/446 Página 244 de 446
+01:49:38 256/446 Página 257 de 446
+01:50:10 270/446 Página 271 de 446
+01:50:43 284/446 Página 285 de 446
+01:51:13 297/446 Página 298 de 446
+01:51:44 311/446 Página 312 de 446
+01:52:16 325/446 Página 326 de 446
+01:52:46 340/446 Página 341 de 446
+01:53:17 352/446 Página 353 de 446
+01:53:48 364/446 Página 365 de 446
+01:54:22 377/446 Página 378 de 446
+01:54:53 392/446 Página 393 de 446
+01:55:23 406/446 Página 407 de 446
+01:55:55 423/446 Página 424 de 446
+01:56:25 440/446 Página 441 de 446
+01:56:30 gravando o PDF
+01:57:34 446/446 Pronto
+01:57:35 fim: {"paginas_esperadas": 446, "paginas_no_pdf": 446, "pdf_mb": 1416.9, "erro": null, "segundos": {"analisar": 413.4, "processar": 1106.3}, "pico_total": {"privado_mb": 1693, "rss_mb": 648, "filhos_mb": 1317, "privado_mais_filhos_mb": 2988, "menor_livre_no_windows_mb": 22}}

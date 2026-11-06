@@ -1,0 +1,230 @@
+<!doctype html>
+<html lang="pt-BR">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Falta de memória ao processar</title>
+<style>
+:root { color-scheme: light dark; }
+* { box-sizing: border-box; }
+body {
+  font: 17px/1.65 "Segoe UI", system-ui, sans-serif;
+  max-width: 46rem; margin: 0 auto; padding: 2.5rem 1.5rem 6rem;
+  color: #1c1c1e; background: #fdfdfc;
+}
+h1 { font-size: 2rem; line-height: 1.2; margin: 0 0 .3em; letter-spacing: -.02em; }
+h2 { font-size: 1.35rem; margin: 2.4em 0 .6em; padding-top: .8em;
+     border-top: 1px solid #e6e4e0; letter-spacing: -.01em; }
+h3 { font-size: 1.1rem; margin: 1.8em 0 .4em; }
+h1 + p, h2 + p { margin-top: .4em; }
+p, li { margin: 0 0 .9em; }
+ul, ol { padding-left: 1.3em; }
+strong { font-weight: 640; }
+code {
+  font: .88em ui-monospace, "Cascadia Code", Consolas, monospace;
+  background: #f1efec; padding: .12em .35em; border-radius: 4px;
+}
+pre {
+  background: #f1efec; padding: 1em 1.1em; border-radius: 8px;
+  overflow-x: auto; line-height: 1.5;
+}
+pre code { background: none; padding: 0; }
+blockquote {
+  margin: 1.2em 0; padding: .1em 0 .1em 1.1em;
+  border-left: 3px solid #c9c5be; color: #55524d;
+}
+table {
+  border-collapse: collapse; width: 100%; margin: 1.2em 0;
+  font-size: .95rem; display: block; overflow-x: auto;
+}
+th, td { padding: .5em .8em; text-align: left; border-bottom: 1px solid #e6e4e0; }
+th { font-weight: 620; background: #f7f5f2; white-space: nowrap; }
+tr:last-child td { border-bottom: none; }
+img { max-width: 100%; height: auto; border-radius: 6px; margin: 1em 0;
+      border: 1px solid #e6e4e0; }
+hr { border: none; border-top: 1px solid #e6e4e0; margin: 2.5em 0; }
+.rodape { margin-top: 4em; padding-top: 1.2em; border-top: 1px solid #e6e4e0;
+          font-size: .85rem; color: #86827c; }
+@media (prefers-color-scheme: dark) {
+  body { color: #e8e6e3; background: #1a1917; }
+  h2 { border-top-color: #35332f; }
+  code, pre, th { background: #262421; }
+  th, td { border-bottom-color: #35332f; }
+  blockquote { border-left-color: #4a4741; color: #b0aca6; }
+  img { border-color: #35332f; }
+  .rodape { border-top-color: #35332f; color: #7d7973; }
+}
+@media print {
+  body { max-width: none; padding: 0; color: #000; background: #fff; }
+  h2 { page-break-after: avoid; }
+  table, img { page-break-inside: avoid; }
+}
+</style>
+</head>
+<body>
+<h1>Falta de memória ao processar: causa e conserto</h1>
+<p><strong>O programa guardava o livro novo inteiro na memória até o fim, e só então gravava o PDF no disco.</strong>
+Quanto maior o livro, mais memória. No Rhetorica a memória do computador acabava e aparecia
+"Este livro ficou grande demais para a memória do computador". Era defeito do programa.</p>
+<p><strong>Agora as páginas prontas vão para o disco aos poucos, e a memória fica parada</strong>, seja o livro pequeno ou
+grande. O PDF sai igual, sem perda. Com 270 folhas do Rhetorica, que antes caía, o processamento terminou.</p>
+<p><strong>O aviso também mudou (sua escolha na Central, 2-12):</strong> "Faltou memória no computador: outros programas
+abertos estão usando quase toda a memória. Feche o que não estiver usando. Nada do seu trabalho no livro se
+perdeu.", com os botões "tentar de novo" e "entendi". Agora ele só deve aparecer quando outros programas
+ocupam a memória.</p>
+<h2>O gráfico</h2>
+<p>Linha cheia: antes do conserto (sobe com o livro). Tracejada: depois (parada em ~1.650 MB).</p>
+<p><img alt="Memória do programa ao processar o Rhetorica" src="grafico.png" /></p>
+<h2>As medidas (Rhetorica, uma página por vez)</h2>
+<table>
+<thead>
+<tr>
+<th>Caminho</th>
+<th>Folhas</th>
+<th>Código</th>
+<th>Pico do programa</th>
+<th>PDF</th>
+<th>Resultado</th>
+<th>Onde foi o pico</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>Processar</td>
+<td>30</td>
+<td>antes</td>
+<td>1.665 MB</td>
+<td>87 MB</td>
+<td>pronto</td>
+<td>processar as páginas</td>
+</tr>
+<tr>
+<td>Processar</td>
+<td>30</td>
+<td>depois</td>
+<td>1.652 MB</td>
+<td>87 MB</td>
+<td>pronto</td>
+<td>processar as páginas</td>
+</tr>
+<tr>
+<td>Processar</td>
+<td>90</td>
+<td>antes</td>
+<td>1.891 MB</td>
+<td>301 MB</td>
+<td>pronto</td>
+<td>processar as páginas</td>
+</tr>
+<tr>
+<td>Processar</td>
+<td>90</td>
+<td>depois</td>
+<td>1.664 MB</td>
+<td>301 MB</td>
+<td>pronto</td>
+<td>processar as páginas</td>
+</tr>
+<tr>
+<td>Processar</td>
+<td>270</td>
+<td>depois</td>
+<td>1.674 MB</td>
+<td>921 MB</td>
+<td>pronto</td>
+<td>processar as páginas</td>
+</tr>
+<tr>
+<td>Processar + Montar cadernos</td>
+<td>30</td>
+<td>antes</td>
+<td>1.659 MB</td>
+<td>87 MB</td>
+<td>pronto</td>
+<td>processar as páginas</td>
+</tr>
+<tr>
+<td>Processar + Montar cadernos</td>
+<td>30</td>
+<td>depois</td>
+<td>1.644 MB</td>
+<td>87 MB</td>
+<td>pronto</td>
+<td>processar as páginas</td>
+</tr>
+<tr>
+<td>Processar + Montar cadernos</td>
+<td>90</td>
+<td>antes</td>
+<td>1.889 MB</td>
+<td>301 MB</td>
+<td>pronto</td>
+<td>processar as páginas</td>
+</tr>
+<tr>
+<td>Processar + Montar cadernos</td>
+<td>90</td>
+<td>depois</td>
+<td>1.656 MB</td>
+<td>301 MB</td>
+<td>pronto</td>
+<td>processar as páginas</td>
+</tr>
+<tr>
+<td>Processar + livreto (Montar para imprimir)</td>
+<td>30</td>
+<td>antes</td>
+<td>2.142 MB</td>
+<td>87 MB</td>
+<td>pronto</td>
+<td>montar o livreto</td>
+</tr>
+<tr>
+<td>Processar + livreto (Montar para imprimir)</td>
+<td>30</td>
+<td>depois</td>
+<td>1.655 MB</td>
+<td>87 MB</td>
+<td>pronto</td>
+<td>processar as páginas</td>
+</tr>
+<tr>
+<td>Processar + livreto (Montar para imprimir)</td>
+<td>90</td>
+<td>antes</td>
+<td>3.102 MB</td>
+<td>301 MB</td>
+<td>pronto</td>
+<td>montar o livreto</td>
+</tr>
+<tr>
+<td>Processar + livreto (Montar para imprimir)</td>
+<td>90</td>
+<td>depois</td>
+<td>1.656 MB</td>
+<td>301 MB</td>
+<td>pronto</td>
+<td>processar as páginas</td>
+</tr>
+</tbody>
+</table>
+<p>"Pico do programa" é a memória mais alta que o programa usou. Antes, com 270 folhas, caiu por falta de
+memória (não há linha "antes" de 270: não terminou).</p>
+<h2>Velocidade</h2>
+<p>Ao comparar a velocidade, achei que a primeira versão do conserto deixava livro grande mais lento: a cada ida
+ao disco o programa relia o arquivo de trabalho inteiro (num livro de 935 MB, 21 segundos a mais no total).
+Consertei: agora cada ida grava só o que é novo (1,4 segundo no total no mesmo livro, mais ~2 segundos no fim).
+Num livro que leva ~14 minutos, isso é perto de 0,4%. Livro com PDF de menos de 64 MB não muda nada.
+O filtro de velocidade do GitHub confere isso (rodada 41951188321).</p>
+<h2>Ressalvas</h2>
+<ul>
+<li>As medidas do Rhetorica "depois" foram feitas com a primeira versão do conserto; a segunda muda só a
+  velocidade da ida ao disco, não a memória (os testes de máquina conferem as duas coisas).</li>
+<li>O PC estava com outros agentes rodando: os tempos totais das medidas variam muito (o mesmo código deu 52 s
+  e 91 s). Por isso a velocidade foi medida por partes e vai ao filtro do GitHub.</li>
+<li>Ainda copiam o PDF inteiro para a memória, na tela: "Imprimir agora" com o livro todo e "Extrair as
+  páginas escolhidas". Ficaram anotados para a Lista de bugs, sem mexer.</li>
+</ul>
+<p class="rodape">Editor de Impressão &middot; gerado em 04/11/2026 às 21:55</p>
+</body>
+</html>

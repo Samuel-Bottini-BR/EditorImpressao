@@ -1,0 +1,27 @@
+03:10:27 código de D:\programas\EditorImpressao\.claude\worktrees\memoria-pdf-antes (core.pipeline em D:\programas\EditorImpressao\.claude\worktrees\memoria-pdf-antes\core\pipeline.py); tem PDFQueVaiParaODisco: False
+03:10:29 livro Na escola de Jesus - Catecismo explicado com imagens..pdf: 199 folhas copiadas
+03:11:26 análise pronta em 56 s; páginas esperadas no PDF: 199
+03:11:26 0/199 Página 1 de 199
+03:11:59 9/199 Página 10 de 199
+03:12:31 18/199 Página 19 de 199
+03:13:04 27/199 Página 28 de 199
+03:13:36 36/199 Página 37 de 199
+03:14:08 45/199 Página 46 de 199
+03:14:39 54/199 Página 55 de 199
+03:15:12 63/199 Página 64 de 199
+03:15:46 72/199 Página 73 de 199
+03:16:17 80/199 Página 81 de 199
+03:16:48 89/199 Página 90 de 199
+03:17:20 99/199 Página 100 de 199
+03:17:50 108/199 Página 109 de 199
+03:18:23 117/199 Página 118 de 199
+03:18:56 127/199 Página 128 de 199
+03:19:28 135/199 Página 136 de 199
+03:19:59 143/199 Página 144 de 199
+03:20:31 154/199 Página 155 de 199
+03:21:02 166/199 Página 167 de 199
+03:21:33 179/199 Página 180 de 199
+03:22:05 193/199 Página 194 de 199
+03:22:19 gravando o PDF
+03:22:37 199/199 Pronto
+03:22:38 fim: {"paginas_esperadas": 199, "paginas_no_pdf": 199, "pdf_mb": 1198.3, "erro": null, "segundos": {"analisar": 56.5, "processar": 671.4}, "pico_total": {"privado_mb": 2871, "rss_mb": 1880, "filhos_mb": 1208, "privado_mais_filhos_mb": 4009, "menor_livre_no_windows_mb": 2796}}

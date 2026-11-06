@@ -282,9 +282,18 @@ def margem_costura_mm(opcoes: OpcoesDeImpressao) -> float:
 
 def caixa_da_tinta(doc: fitz.Document, indice: int) -> tuple[float, float, float, float] | None:
     """Onde há tinta na página, em fração dela (x0, y0, x1, y1); None se a
-    página é branca. Desenhada pequena (DPI_DA_TINTA), uma por vez."""
+    página é branca. Desenhada pequena (DPI_DA_TINTA), uma por vez.
+
+    Memória (04/11/2026, D-591): depois de desenhar, o armazém do MuPDF é
+    esvaziado (como em core.pdf_io.pagina_para_array). Sem isso, cada página
+    desenhada deixava a imagem dela, inteira e aberta, guardada lá - até 256 MB
+    por livro (medido: 16 páginas de 2,4 MB, +147 MB; 48 páginas, +256 MB).
+    A medida é a mesma. Quem mede várias vezes a mesma página guarda o
+    resultado (montar_para_impressao: `tintas`)."""
     pagina = doc[indice]
     pix = pagina.get_pixmap(dpi=DPI_DA_TINTA, colorspace=fitz.csGRAY, alpha=False)
+    del pagina
+    fitz.TOOLS.store_shrink(100)
     cinza = np.frombuffer(pix.samples, np.uint8).reshape(pix.height, pix.stride)[:, :pix.width]
     tinta = cinza < LIMIAR_DA_TINTA
     linhas = np.flatnonzero(tinta.sum(axis=1) >= MINIMO_DE_PONTOS)
@@ -607,18 +616,23 @@ def _marcas_de_corte(folha: fitz.Page, r: fitz.Rect) -> None:
 # --------------------------------------------------------------- os avisos
 
 def _avisos_de_margem(origem, colocadas: list[Colocada], opcoes: OpcoesDeImpressao,
-                      papel: fitz.Rect) -> list[Aviso]:
+                      papel: fitz.Rect, tintas: dict | None = None) -> list[Aviso]:
     """O aviso de margem abaixo de 1 cm (14/10/2026): onde a tinta de cada
     página cai na folha e quanto sobra até a beirada do papel (precisa de
     1,3 cm: 1 cm de onde a impressora imprime) e até a dobra (1 cm). Só no
     livreto e na página inteira (os dois de encadernar). Mede a tinta uma vez
-    por página do livro (pequena, uma por vez)."""
+    por página do livro (pequena, uma por vez). `tintas` (04/11/2026): as
+    medidas já feitas, número da página -> caixa da tinta, repartidas com
+    _avisos_de_corte para cada página ser desenhada uma vez só (o armazém do
+    MuPDF é esvaziado a cada desenho, ver caixa_da_tinta); None = só desta
+    chamada, como antes."""
     if opcoes.formato not in (LIVRETO, PAGINA_INTEIRA):
         return []
     precisa_fora = opcoes.margem_mm + opcoes.borda_da_impressora_mm
     precisa_dobra = opcoes.margem_mm
     avisos: list[Aviso] = []
-    tintas: dict[int, tuple | None] = {}
+    if tintas is None:
+        tintas = {}
     for c in colocadas:
         if c.numero not in tintas:
             tintas[c.numero] = caixa_da_tinta(origem, c.numero - 1)
@@ -700,12 +714,15 @@ def _tinta_na_folha(tinta, c: Colocada) -> tuple[float, float, float, float]:
 CORTE_TOLERADO_MM = 0.5
 
 
-def _avisos_de_corte(origem, colocadas: list[Colocada], opcoes: OpcoesDeImpressao) -> list[Aviso]:
-    """Aviso de impresso cortado na folha (ver o comentário acima)."""
+def _avisos_de_corte(origem, colocadas: list[Colocada], opcoes: OpcoesDeImpressao,
+                     tintas: dict | None = None) -> list[Aviso]:
+    """Aviso de impresso cortado na folha (ver o comentário acima). `tintas`:
+    ver _avisos_de_margem."""
     if opcoes.formato == POSTER:
         return []
     avisos: list[Aviso] = []
-    tintas: dict[int, tuple | None] = {}
+    if tintas is None:
+        tintas = {}
     ja: set[int] = set()
     for c in colocadas:
         if c.numero not in tintas:
@@ -750,7 +767,16 @@ def montar_para_impressao(entrada: str | Path, saida: str | Path,
     para a impressora. Devolve o Resultado (folhas, avisos, instruções).
 
     Grava num arquivo à parte ao lado e só troca no fim (como o processar):
-    cancelar ou dar erro nunca estraga um arquivo antigo de mesmo nome."""
+    cancelar ou dar erro nunca estraga um arquivo antigo de mesmo nome.
+
+    Memória (conserto de 04/11/2026, D-591): as folhas montadas e as folhas
+    desenhadas como imagem ("Imprimir como imagem", de fábrica) ficam num
+    core.pdf_io.PDFQueVaiParaODisco cada - vão para o disco (arquivos ao lado,
+    começando com "~", apagados no fim) de tempos em tempos, e a memória não
+    cresce com o tamanho do livro. Antes as duas ficavam inteiras na memória
+    até o save do fim. O arquivo final é o mesmo (mesmo save, mesmas opções)."""
+    from core.pdf_io import PDFQueVaiParaODisco, _peso_medio_da_pagina
+
     opcoes = opcoes or OpcoesDeImpressao()
     saida = Path(saida)
     parcial = saida.with_name(f"~{saida.name}.parcial")
@@ -763,10 +789,16 @@ def montar_para_impressao(entrada: str | Path, saida: str | Path,
             progresso(feito, total, f"{texto}: {feito + 1} de {total}")
 
     origem = fitz.open(str(entrada))
-    montado = fitz.open()
+    montado = PDFQueVaiParaODisco(parcial.with_name(f"{parcial.name}.montado"))
+    final = montado
     try:
         if origem.page_count == 0:
             raise ValueError("O arquivo do livro não tem páginas.")
+        # quantas páginas do livro cabem numa folha, no máximo (a conta do
+        # peso de cada folha para ir ao disco; passar da conta é só ir antes)
+        por_folha = {LIVRETO: 2, MULTIPLO: max(1, int(opcoes.multiplo_por_folha))}.get(
+            opcoes.formato, 1)
+        montado.peso_por_folha = _peso_medio_da_pagina(origem) * por_folha
         escolhidas = _paginas_escolhidas(origem.page_count, opcoes)
         colocadas: list[Colocada] = []
         montar = {LIVRETO: _montar_livreto, PAGINA_INTEIRA: _montar_pagina_inteira,
@@ -775,8 +807,10 @@ def montar_para_impressao(entrada: str | Path, saida: str | Path,
 
         largura, altura = tamanho_do_papel_pt(opcoes)
         papel = fitz.Rect(0, 0, largura, altura)
-        resultado.avisos = (_avisos_de_giro(colocadas) + _avisos_de_corte(origem, colocadas, opcoes)
-                            + _avisos_de_margem(origem, colocadas, opcoes, papel))
+        tintas: dict = {}       # cada página medida uma vez só (ver caixa_da_tinta)
+        resultado.avisos = (_avisos_de_giro(colocadas)
+                            + _avisos_de_corte(origem, colocadas, opcoes, tintas)
+                            + _avisos_de_margem(origem, colocadas, opcoes, papel, tintas))
         if opcoes.formato == LIVRETO:
             quantas = len(escolhidas)
             resultado.cadernos = len(cadernos.tamanhos_dos_cadernos(quantas, opcoes.paginas_por_caderno))
@@ -785,26 +819,35 @@ def montar_para_impressao(entrada: str | Path, saida: str | Path,
         elif opcoes.formato == PAGINA_INTEIRA:
             resultado.instrucoes = ["Imprima frente e verso, virando na borda comprida."]
 
-        final = montado
-        if opcoes.como_imagem or opcoes.cinza:
-            final = _achatar(montado, opcoes, checar)
-        resultado.paginas_do_arquivo = final.page_count
         saida.parent.mkdir(parents=True, exist_ok=True)
-        final.save(str(parcial), garbage=3, deflate=True)
-        if final is not montado:
-            final.close()
+        if opcoes.como_imagem or opcoes.cinza:
+            final = PDFQueVaiParaODisco(parcial)
+            _achatar(montado, opcoes, checar, final)
+        resultado.paginas_do_arquivo = final.page_count
+        final.gravar(para=str(parcial), garbage=3, deflate=True)
         parcial.replace(saida)
         return resultado
     finally:
-        montado.close()
+        montado.descartar()
+        if final is not montado:
+            final.descartar()
         origem.close()
         parcial.unlink(missing_ok=True)
 
 
-def _achatar(montado: fitz.Document, opcoes: OpcoesDeImpressao, checar) -> fitz.Document:
+def _achatar(montado, opcoes: OpcoesDeImpressao, checar, plano=None):
     """"Imprimir como imagem" (imp-6) e "escala de cinza": cada folha montada
-    vira UMA imagem (sem perda, PNG), uma por vez."""
-    plano = fitz.open()
+    vira UMA imagem (sem perda, PNG), uma por vez. Devolve `plano` (de
+    fábrica, um documento novo na memória, como antes).
+
+    Memória (04/11/2026, D-591): `plano` pode ser um
+    core.pdf_io.PDFQueVaiParaODisco (montar_para_impressao): cada folha
+    desenhada é contada pelo tamanho da imagem, e o que passa do limite vai
+    para o disco. Depois de cada folha o armazém do MuPDF é esvaziado (como em
+    core.pdf_io.pagina_para_array): cada folha é desenhada uma vez só. A imagem
+    é a mesma de antes, ponto por ponto."""
+    if plano is None:
+        plano = fitz.open()
     espaco = fitz.csGRAY if opcoes.cinza else fitz.csRGB
     for n in range(montado.page_count):
         checar(n, montado.page_count, "Desenhando as folhas como imagem")
@@ -812,7 +855,11 @@ def _achatar(montado: fitz.Document, opcoes: OpcoesDeImpressao, checar) -> fitz.
         pix = pagina.get_pixmap(dpi=max(72, int(opcoes.dpi_da_imagem)), colorspace=espaco, alpha=False)
         nova = plano.new_page(width=pagina.rect.width, height=pagina.rect.height)
         nova.insert_image(nova.rect, pixmap=pix)
-        del pix
+        tamanho = pix.width * pix.height * pix.n
+        del pix, nova, pagina
+        fitz.TOOLS.store_shrink(100)
+        if hasattr(plano, "acrescentou"):
+            plano.acrescentou(tamanho)
     return plano
 
 

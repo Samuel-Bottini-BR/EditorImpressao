@@ -152,9 +152,20 @@ def impor_pdf(
 
     A copia e feita com show_pdf_page, que preserva texto vetorial e não
     rasteriza nada. E tambem o caminho rapido do modo "só cadernos".
+
+    Memoria (conserto de 04/11/2026, D-591): a saida e um
+    core.pdf_io.PDFQueVaiParaODisco - as folhas montadas vao para o disco de
+    tempos em tempos (pela conta do peso medio das paginas da entrada), e a
+    memoria nao cresce com o tamanho do livro. Antes, cada folha copiava as
+    imagens das suas paginas para a memoria e o livro inteiro ficava la ate o
+    save do fim. O arquivo final e o mesmo (mesmo save, mesmas opcoes).
+    Arriscado: guardar `saida.doc` ou uma pagina de uma folha para a outra
+    (o documento da vez muda ao ir para o disco).
     """
+    from core.pdf_io import PDFQueVaiParaODisco, _peso_medio_da_pagina
+
     entrada = fitz.open(caminho_entrada)
-    saida = fitz.open()
+    saida = PDFQueVaiParaODisco(caminho_saida)
 
     try:
         total = entrada.page_count
@@ -167,19 +178,24 @@ def impor_pdf(
         altura = max(entrada[i].rect.height for i in range(total))
 
         lados = montar_ordem(total, paginas_por_caderno)
+        peso = _peso_medio_da_pagina(entrada)
 
+        Path(caminho_saida).parent.mkdir(parents=True, exist_ok=True)
         for numero, lado in enumerate(lados):
             folha = saida.new_page(width=largura * 2, height=altura)
             _colocar(folha, entrada, lado.esquerda, fitz.Rect(0, 0, largura, altura))
             _colocar(folha, entrada, lado.direita, fitz.Rect(largura, 0, largura * 2, altura))
+            del folha
+            saida.acrescentou(peso * sum(1 for i in (lado.esquerda, lado.direita)
+                                         if _existe(i, total)))
             if progresso is not None:
                 progresso(numero + 1, len(lados))
 
-        Path(caminho_saida).parent.mkdir(parents=True, exist_ok=True)
-        saida.save(caminho_saida, garbage=3, deflate=True)
-        return saida.page_count
+        folhas = saida.page_count
+        saida.gravar(garbage=3, deflate=True)
+        return folhas
     finally:
-        saida.close()
+        saida.descartar()
         entrada.close()
 
 

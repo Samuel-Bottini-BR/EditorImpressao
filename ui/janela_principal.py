@@ -1763,7 +1763,19 @@ class JanelaPrincipal(QMainWindow):
         caminho = self._resolver_destino()
         if caminho is None:
             return  # o usuario desistiu ou a pasta nao serve
+        self._comecar_a_processar(caminho)
 
+    def _comecar_a_processar(self, caminho: Path) -> None:
+        """Dispara a TarefaProcessar para `caminho` (o destino ja escolhido e
+        confirmado). Separado de `processar` em 04/11/2026 para o "tentar de
+        novo" do aviso de falta de memoria (D-591: "processa de novo, mesmo
+        nome e mesmo lugar") usar o MESMO caminho, sem perguntar o destino de
+        novo. O conteudo e o de antes, linha por linha. O PDF antigo de mesmo
+        nome continua protegido como sempre (core/pipeline.processar so troca
+        no fim). Arriscado: pular o _salvar_agora (o trabalho tem de estar no
+        disco antes de processar)."""
+        if self.projeto is None:
+            return
         self.projeto.caminho_saida = str(caminho)
         configuracoes.lembrar_pasta_de_saida(caminho.parent)
         # O cartao da tela inicial deixa de dizer "pronto, PDF gerado" enquanto
@@ -1945,9 +1957,37 @@ class JanelaPrincipal(QMainWindow):
 
     def _falhou_no_processamento(self, mensagem: str) -> None:
         """Processamento deu erro: volta para Conferir (o projeto continua
-        intacto) e mostra o aviso amigavel."""
+        intacto) e mostra o aviso amigavel.
+
+        Falta de memoria (D-591, TarefaProcessar.faltou_memoria): o aviso com
+        "tentar de novo" e "entendi" (_avisar_falta_de_memoria)."""
         self.telas.setCurrentIndex(CONFERIR)
+        if getattr(self.tarefa, "faltou_memoria", False) is True:
+            self._avisar_falta_de_memoria(mensagem)
+            return
         self.avisar(mensagem)
+
+    def _avisar_falta_de_memoria(self, mensagem: str) -> None:
+        """D-591 (31/10/2026, Central 2-12, "Frase certa + botão "tentar de
+        novo" (recomendo)"): a frase de ui/tarefas.FRASE_FALTOU_MEMORIA com os
+        botões "tentar de novo" (processa de novo, mesmo nome e mesmo lugar:
+        projeto.caminho_saida, sem a janela do destino) e "entendi" (fecha,
+        fica na area de trabalho). Nada do livro muda em nenhum dos dois: o
+        trabalho ja foi gravado antes de processar, e o PDF antigo de mesmo
+        nome continua inteiro (core/pipeline.processar). Mesmo titulo do
+        aviso de sempre ("Um momento"). Arriscado: tirar o _salvar_agora do
+        caminho do "tentar de novo" (ele passa por _comecar_a_processar)."""
+        caixa = QMessageBox(self)
+        caixa.setWindowTitle("Um momento")
+        caixa.setIcon(QMessageBox.Information)
+        caixa.setText(mensagem)
+        tentar = caixa.addButton("tentar de novo", QMessageBox.AcceptRole)
+        entendi = caixa.addButton("entendi", QMessageBox.RejectRole)
+        caixa.setDefaultButton(entendi)
+        caixa.exec()
+        if (caixa.clickedButton() is tentar and self.projeto is not None
+                and self.projeto.caminho_saida):
+            self._comecar_a_processar(Path(self.projeto.caminho_saida))
 
     def cancelar(self) -> None:
         """Botão "cancelar" da tela de progresso: pede pra thread parar e volta

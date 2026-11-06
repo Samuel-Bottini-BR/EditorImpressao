@@ -1,0 +1,675 @@
+{
+ "livro": "Sobre a Consolação da Filosofia - Severino Boécio.pdf",
+ "folhas": 50,
+ "folhas_do_livro_inteiro": 50,
+ "codigo": "D:\\programas\\EditorImpressao\\.claude\\worktrees\\memoria-pdf",
+ "modo": "processar",
+ "paginas_esperadas": 50,
+ "paginas_no_pdf": 50,
+ "pdf_mb": 115.0,
+ "erro": null,
+ "comecou_em": "05/11/2026 02:48",
+ "segundos": {
+  "analisar": 7.0,
+  "processar": 66.9
+ },
+ "pico_total": {
+  "privado_mb": 1572,
+  "rss_mb": 586,
+  "filhos_mb": 1101,
+  "privado_mais_filhos_mb": 2673,
+  "menor_livre_no_windows_mb": 3138
+ },
+ "pico_por_fase": {
+  "começo": {
+   "privado_mb": 547,
+   "rss_mb": 74,
+   "filhos_mb": 0,
+   "privado_mais_filhos_mb": 547,
+   "menor_livre_no_windows_mb": 3758
+  },
+  "analisar": {
+   "privado_mb": 588,
+   "rss_mb": 120,
+   "filhos_mb": 1094,
+   "privado_mais_filhos_mb": 1679,
+   "menor_livre_no_windows_mb": 3617
+  },
+  "processar as páginas": {
+   "privado_mb": 1572,
+   "rss_mb": 586,
+   "filhos_mb": 1101,
+   "privado_mais_filhos_mb": 2673,
+   "menor_livre_no_windows_mb": 3138
+  },
+  "gravar o PDF": {
+   "privado_mb": 1518,
+   "rss_mb": 532,
+   "filhos_mb": 1100,
+   "privado_mais_filhos_mb": 2618,
+   "menor_livre_no_windows_mb": 3188
+  },
+  "pronto": {
+   "privado_mb": 1470,
+   "rss_mb": 484,
+   "filhos_mb": 1100,
+   "privado_mais_filhos_mb": 2570,
+   "menor_livre_no_windows_mb": 3205
+  }
+ },
+ "pico_por_quarto_do_livro": {
+  "1o_quarto": {
+   "paginas": [
+    1,
+    12
+   ],
+   "privado_mb": 1524,
+   "rss_mb": 538,
+   "filhos_mb": 1101,
+   "privado_mais_filhos_mb": 2625,
+   "menor_livre_no_windows_mb": 3202
+  },
+  "2o_quarto": {
+   "paginas": [
+    13,
+    24
+   ],
+   "privado_mb": 1560,
+   "rss_mb": 573,
+   "filhos_mb": 1101,
+   "privado_mais_filhos_mb": 2661,
+   "menor_livre_no_windows_mb": 3170
+  },
+  "3o_quarto": {
+   "paginas": [
+    25,
+    36
+   ],
+   "privado_mb": 1572,
+   "rss_mb": 586,
+   "filhos_mb": 1101,
+   "privado_mais_filhos_mb": 2673,
+   "menor_livre_no_windows_mb": 3156
+  },
+  "4o_quarto": {
+   "paginas": [
+    37,
+    50
+   ],
+   "privado_mb": 1558,
+   "rss_mb": 573,
+   "filhos_mb": 1101,
+   "privado_mais_filhos_mb": 2658,
+   "menor_livre_no_windows_mb": 3138
+  }
+ },
+ "amostras": [
+  [
+   0.0,
+   "começo",
+   0,
+   547,
+   74,
+   0,
+   3758
+  ],
+  [
+   1.1,
+   "analisar",
+   0,
+   549,
+   77,
+   1088,
+   3645
+  ],
+  [
+   2.2,
+   "analisar",
+   0,
+   564,
+   97,
+   1091,
+   3631
+  ],
+  [
+   3.3,
+   "analisar",
+   0,
+   574,
+   106,
+   1094,
+   3632
+  ],
+  [
+   4.4,
+   "analisar",
+   0,
+   579,
+   111,
+   1091,
+   3619
+  ],
+  [
+   5.5,
+   "analisar",
+   0,
+   583,
+   114,
+   1091,
+   3623
+  ],
+  [
+   6.5,
+   "analisar",
+   0,
+   585,
+   117,
+   1094,
+   3626
+  ],
+  [
+   7.6,
+   "processar as páginas",
+   1,
+   632,
+   163,
+   1100,
+   3570
+  ],
+  [
+   10.4,
+   "processar as páginas",
+   1,
+   1192,
+   258,
+   1100,
+   3482
+  ],
+  [
+   11.5,
+   "processar as páginas",
+   2,
+   1331,
+   376,
+   1100,
+   3369
+  ],
+  [
+   12.7,
+   "processar as páginas",
+   2,
+   1341,
+   380,
+   1100,
+   3362
+  ],
+  [
+   13.8,
+   "processar as páginas",
+   3,
+   1364,
+   430,
+   1100,
+   3329
+  ],
+  [
+   14.9,
+   "processar as páginas",
+   4,
+   1502,
+   510,
+   1101,
+   3249
+  ],
+  [
+   16.0,
+   "processar as páginas",
+   5,
+   1504,
+   513,
+   1101,
+   3241
+  ],
+  [
+   17.1,
+   "processar as páginas",
+   6,
+   1516,
+   525,
+   1101,
+   3226
+  ],
+  [
+   18.2,
+   "processar as páginas",
+   7,
+   1518,
+   531,
+   1101,
+   3219
+  ],
+  [
+   19.4,
+   "processar as páginas",
+   8,
+   1515,
+   526,
+   1101,
+   3219
+  ],
+  [
+   20.5,
+   "processar as páginas",
+   9,
+   1488,
+   499,
+   1101,
+   3252
+  ],
+  [
+   21.6,
+   "processar as páginas",
+   10,
+   1488,
+   501,
+   1101,
+   3238
+  ],
+  [
+   22.8,
+   "processar as páginas",
+   10,
+   1495,
+   508,
+   1101,
+   3244
+  ],
+  [
+   23.9,
+   "processar as páginas",
+   11,
+   1518,
+   531,
+   1101,
+   3210
+  ],
+  [
+   25.0,
+   "processar as páginas",
+   12,
+   1519,
+   533,
+   1101,
+   3206
+  ],
+  [
+   26.1,
+   "processar as páginas",
+   13,
+   1507,
+   518,
+   1101,
+   3215
+  ],
+  [
+   27.2,
+   "processar as páginas",
+   14,
+   1529,
+   542,
+   1101,
+   3190
+  ],
+  [
+   28.4,
+   "processar as páginas",
+   15,
+   1531,
+   544,
+   1101,
+   3189
+  ],
+  [
+   29.5,
+   "processar as páginas",
+   16,
+   1534,
+   547,
+   1101,
+   3185
+  ],
+  [
+   30.6,
+   "processar as páginas",
+   17,
+   1546,
+   559,
+   1101,
+   3181
+  ],
+  [
+   31.7,
+   "processar as páginas",
+   18,
+   1540,
+   552,
+   1101,
+   3187
+  ],
+  [
+   32.8,
+   "processar as páginas",
+   19,
+   1545,
+   557,
+   1101,
+   3178
+  ],
+  [
+   33.9,
+   "processar as páginas",
+   20,
+   1540,
+   544,
+   1101,
+   3195
+  ],
+  [
+   35.1,
+   "processar as páginas",
+   21,
+   1511,
+   524,
+   1100,
+   3207
+  ],
+  [
+   36.2,
+   "processar as páginas",
+   21,
+   1528,
+   538,
+   1100,
+   3202
+  ],
+  [
+   37.3,
+   "processar as páginas",
+   23,
+   1520,
+   533,
+   1101,
+   3208
+  ],
+  [
+   38.4,
+   "processar as páginas",
+   23,
+   1552,
+   565,
+   1101,
+   3175
+  ],
+  [
+   39.6,
+   "processar as páginas",
+   24,
+   1550,
+   562,
+   1101,
+   3183
+  ],
+  [
+   40.7,
+   "processar as páginas",
+   25,
+   1553,
+   566,
+   1101,
+   3178
+  ],
+  [
+   41.8,
+   "processar as páginas",
+   26,
+   1556,
+   568,
+   1101,
+   3176
+  ],
+  [
+   43.0,
+   "processar as páginas",
+   27,
+   1562,
+   577,
+   1101,
+   3166
+  ],
+  [
+   44.1,
+   "processar as páginas",
+   28,
+   1560,
+   574,
+   1101,
+   3172
+  ],
+  [
+   46.1,
+   "processar as páginas",
+   29,
+   1508,
+   521,
+   1101,
+   3234
+  ],
+  [
+   47.3,
+   "processar as páginas",
+   30,
+   1512,
+   523,
+   1101,
+   3198
+  ],
+  [
+   48.4,
+   "processar as páginas",
+   31,
+   1508,
+   522,
+   1101,
+   3192
+  ],
+  [
+   49.6,
+   "processar as páginas",
+   32,
+   1509,
+   523,
+   1101,
+   3190
+  ],
+  [
+   50.7,
+   "processar as páginas",
+   33,
+   1491,
+   504,
+   1101,
+   3207
+  ],
+  [
+   51.8,
+   "processar as páginas",
+   34,
+   1482,
+   497,
+   1101,
+   3212
+  ],
+  [
+   53.0,
+   "processar as páginas",
+   35,
+   1491,
+   505,
+   1101,
+   3208
+  ],
+  [
+   54.1,
+   "processar as páginas",
+   35,
+   1520,
+   530,
+   1101,
+   3181
+  ],
+  [
+   55.2,
+   "processar as páginas",
+   36,
+   1506,
+   517,
+   1101,
+   3194
+  ],
+  [
+   56.4,
+   "processar as páginas",
+   37,
+   1528,
+   541,
+   1101,
+   3178
+  ],
+  [
+   57.5,
+   "processar as páginas",
+   38,
+   1524,
+   537,
+   1100,
+   3168
+  ],
+  [
+   58.6,
+   "processar as páginas",
+   39,
+   1539,
+   551,
+   1100,
+   3155
+  ],
+  [
+   59.8,
+   "processar as páginas",
+   40,
+   1538,
+   547,
+   1100,
+   3149
+  ],
+  [
+   60.9,
+   "processar as páginas",
+   40,
+   1517,
+   526,
+   1100,
+   3173
+  ],
+  [
+   62.1,
+   "processar as páginas",
+   41,
+   1535,
+   549,
+   1100,
+   3160
+  ],
+  [
+   63.2,
+   "processar as páginas",
+   42,
+   1535,
+   549,
+   1100,
+   3153
+  ],
+  [
+   64.4,
+   "processar as páginas",
+   43,
+   1547,
+   561,
+   1100,
+   3157
+  ],
+  [
+   65.5,
+   "processar as páginas",
+   44,
+   1546,
+   557,
+   1100,
+   3164
+  ],
+  [
+   66.7,
+   "processar as páginas",
+   44,
+   1522,
+   536,
+   1100,
+   3182
+  ],
+  [
+   67.8,
+   "processar as páginas",
+   45,
+   1543,
+   558,
+   1100,
+   3158
+  ],
+  [
+   69.0,
+   "processar as páginas",
+   46,
+   1549,
+   564,
+   1100,
+   3150
+  ],
+  [
+   70.1,
+   "processar as páginas",
+   47,
+   1529,
+   543,
+   1100,
+   3172
+  ],
+  [
+   71.3,
+   "processar as páginas",
+   47,
+   1544,
+   555,
+   1100,
+   3157
+  ],
+  [
+   74.3,
+   "pronto",
+   50,
+   1470,
+   484,
+   1100,
+   3215
+  ]
+ ]
+}
