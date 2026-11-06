@@ -1,0 +1,164 @@
+<!doctype html>
+<html lang="pt-BR">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Plano do teste como o Kaique</title>
+<style>
+:root { color-scheme: light dark; }
+* { box-sizing: border-box; }
+body {
+  font: 17px/1.65 "Segoe UI", system-ui, sans-serif;
+  max-width: 46rem; margin: 0 auto; padding: 2.5rem 1.5rem 6rem;
+  color: #1c1c1e; background: #fdfdfc;
+}
+h1 { font-size: 2rem; line-height: 1.2; margin: 0 0 .3em; letter-spacing: -.02em; }
+h2 { font-size: 1.35rem; margin: 2.4em 0 .6em; padding-top: .8em;
+     border-top: 1px solid #e6e4e0; letter-spacing: -.01em; }
+h3 { font-size: 1.1rem; margin: 1.8em 0 .4em; }
+h1 + p, h2 + p { margin-top: .4em; }
+p, li { margin: 0 0 .9em; }
+ul, ol { padding-left: 1.3em; }
+strong { font-weight: 640; }
+code {
+  font: .88em ui-monospace, "Cascadia Code", Consolas, monospace;
+  background: #f1efec; padding: .12em .35em; border-radius: 4px;
+}
+pre {
+  background: #f1efec; padding: 1em 1.1em; border-radius: 8px;
+  overflow-x: auto; line-height: 1.5;
+}
+pre code { background: none; padding: 0; }
+blockquote {
+  margin: 1.2em 0; padding: .1em 0 .1em 1.1em;
+  border-left: 3px solid #c9c5be; color: #55524d;
+}
+table {
+  border-collapse: collapse; width: 100%; margin: 1.2em 0;
+  font-size: .95rem; display: block; overflow-x: auto;
+}
+th, td { padding: .5em .8em; text-align: left; border-bottom: 1px solid #e6e4e0; }
+th { font-weight: 620; background: #f7f5f2; white-space: nowrap; }
+tr:last-child td { border-bottom: none; }
+img { max-width: 100%; height: auto; border-radius: 6px; margin: 1em 0;
+      border: 1px solid #e6e4e0; }
+hr { border: none; border-top: 1px solid #e6e4e0; margin: 2.5em 0; }
+.rodape { margin-top: 4em; padding-top: 1.2em; border-top: 1px solid #e6e4e0;
+          font-size: .85rem; color: #86827c; }
+@media (prefers-color-scheme: dark) {
+  body { color: #e8e6e3; background: #1a1917; }
+  h2 { border-top-color: #35332f; }
+  code, pre, th { background: #262421; }
+  th, td { border-bottom-color: #35332f; }
+  blockquote { border-left-color: #4a4741; color: #b0aca6; }
+  img { border-color: #35332f; }
+  .rodape { border-top-color: #35332f; color: #7d7973; }
+}
+@media print {
+  body { max-width: none; padding: 0; color: #000; background: #fff; }
+  h2 { page-break-after: avoid; }
+  table, img { page-break-inside: avoid; }
+}
+</style>
+</head>
+<body>
+<h1>Plano do "teste como o Kaique" (06/11/2026)</h1>
+<p>Pedido do Samuel (06/11): "quando terminar esse teste, pode pegar esse livro Questionario_sobre_as_duas_primeiras_estrofes_d_Os_Lusiadas e fazer uma restauração nele usando o programa como se fosse o kaique e testar para ver se tem algum problema no aplicativo, alguma coisa que não funciona direito, alguma funcionalidade que não dá para apertar, pode me ajudar a pensar em coisas para fazer para achar erros, erros como esses que eu achei usando o aplicativo, analise os erros que eu já achei para montar um plano de como deve ser esses testes."</p>
+<p>Status: <strong>proposta, esperando o ok do Samuel.</strong> Nada foi rodado ainda.</p>
+<h2>Os erros que você achou, por tipo</h2>
+<p>Levantados pelo agente em 06/11 nos testes guiados (sessões 0 a 3), na Lista de bugs, em <code>memoria/bugs.md</code>, nas queixas do Kaique e no Livro de decisões.</p>
+<table>
+<thead>
+<tr>
+<th>Tipo</th>
+<th>Exemplos seus</th>
+<th>Por que os testes automáticos não pegaram</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>A tela mostra que fez, o PDF sai diferente</td>
+<td>"Preto e branco" saiu igual ao Original; o Mover não chegou ao PDF; "Cortar" desmarcado e o PDF saiu cortado; margem que não aparece na prévia</td>
+<td>os testes não vão do clique até abrir o PDF que sai</td>
+</tr>
+<tr>
+<td>Caixinha que volta marcada, ou desmarcada que é feita</td>
+<td>"Montar cadernos" desmarcado e montou (Kaique, 30/10); Dividir marcado de novo depois de rodar (04/11 e 06/11); Gravuras ligada junto com Limpar</td>
+<td>os testes rodam uma vez; ninguém faz rodar, voltar, rodar de novo</td>
+</tr>
+<tr>
+<td>Botão que não responde</td>
+<td>"está certo" sem mudar nada (4 vezes); caixinhas do painel que não fazem nada; Mover que para</td>
+<td>o teste dos botões só vê se o clique dá erro, não se faz o que promete</td>
+</tr>
+<tr>
+<td>Funciona numa vista e não em outra</td>
+<td>Mover, Cortar e Endireitar em "Duas lado a lado"; zoom; clique na página do par que escolhe a outra</td>
+<td>os testes usam só a vista de fábrica</td>
+</tr>
+<tr>
+<td>Ordem das páginas e cadernos</td>
+<td>folhas puladas erradas depois de dividir; a capa no caderno; "Folha 1 de 19"</td>
+<td>os testes usam PDFs pequenos fabricados, sem capa aberta</td>
+</tr>
+<tr>
+<td>Desfazer que não volta tudo</td>
+<td>marcações que ficam; Retângulo que sai impresso; "Área branca" que muda depois de Ctrl+Z e Ctrl+Y</td>
+<td>o teste faz uma ação e desfaz uma</td>
+</tr>
+<tr>
+<td>Número ou texto errado</td>
+<td>contagem de dúvidas diferente no sino, no rodapé e no processar; "parece em branco" em página com texto; nomes cortados</td>
+<td>nenhum teste lê a frase e compara com o que se vê</td>
+</tr>
+<tr>
+<td>Lento ou recalcula</td>
+<td>"Montar cadernos" recalcula a folha já vista (06/11); "Ver de perto" esperando 14 s</td>
+<td>os testes usam poucas páginas, com o PC parado</td>
+</tr>
+<tr>
+<td>Livro grande</td>
+<td>falta de memória no Rhetorica</td>
+<td>nenhum teste processa um livro grande inteiro</td>
+</tr>
+<tr>
+<td>Qualidade da imagem</td>
+<td>pixelado, amarelado, verso aparecendo, borda branca (Kaique)</td>
+<td>as medidas são números; ninguém amplia a página e olha</td>
+</tr>
+</tbody>
+</table>
+<h2>Como o teste é feito</h2>
+<ul>
+<li>Um agente usa o programa de verdade, <strong>com o mouse e o teclado na janela</strong>, sem mexer no código por dentro. Usa a versão que você vai testar: a de hoje com as 6 mudanças, depois que os testes passarem.</li>
+<li>Trabalha numa <strong>cópia</strong> do livro. O original não muda.</li>
+<li>Em cada passo confere três coisas: <strong>o que a tela mostra, o que fica salvo no projeto e o PDF que sai.</strong> Cada erro vai com print e o passo a passo para repetir.</li>
+<li><strong>Não conserta nada.</strong> Só anota. Os erros vêm para você numa página da Central, e você decide o que consertar.</li>
+<li>Antes de anotar um erro, confere no Livro de decisões. Se algo é uma escolha sua, não conta como erro.</li>
+</ul>
+<h2>Os passos, na ordem do trabalho de verdade</h2>
+<ol>
+<li><strong>Abrir o livro</strong> pela janela de escolher arquivo.</li>
+<li><strong>Automático</strong> com algumas etapas desmarcadas. Rodar. Conferir que a desmarcada não foi feita no PDF e que a caixinha continua como estava ao voltar.</li>
+<li><strong>Rodar o Automático de novo</strong>, com outra escolha. As páginas mexidas à mão continuam certas?</li>
+<li><strong>Folhear</strong> em "Uma página", "Duas lado a lado" e "antes / depois". A página clicada é a escolhida? O número da miniatura bate?</li>
+<li><strong>Cada ferramenta</strong> (Dividir, Endireitar, Cortar, Mover, Girar, marcar, Filtro) nas três vistas. Processar e ver no PDF se chegou.</li>
+<li><strong>Avisos</strong>: apertar "está certo" e ver se a faixa responde; comparar a contagem de dúvidas nos três lugares.</li>
+<li><strong>Ctrl+Z em sequência</strong> (10 ações) e Ctrl+Y. Conferir tela, caixinhas, marcações e PDF.</li>
+<li><strong>Fechar o programa no meio e reabrir</strong>: tudo igual?</li>
+<li><strong>Montar para imprimir</strong>: a ordem de todos os cadernos, a capa, os números das páginas, as folhas em branco; a rodinha do mouse por cima dos números.</li>
+<li><strong>Processar</strong> e abrir o PDF final ampliado: letras, papel, gravuras, beiradas.</li>
+<li><strong>Janela pequena</strong> (1280×657): textos cortados ou frases que não batem.</li>
+<li><strong>No fim</strong>, refazer o que você já aprovou, para ver se nada estragou (regra de 03/11).</li>
+</ol>
+<h2>O livro escolhido</h2>
+<p>Correção do Samuel (06/11): "ilide.info-os-lusiadas-contados-as-crianas-e-lembrado-ao-povo-pr_13bcb7fb9d645f5d2653358634815ab8 esse é o livro certo e está na pasta downloads".</p>
+<p>"Os Lusíadas contados às crianças e lembrados ao povo" (João de Barros), em <code>C:\Users\fotog\Downloads\</code>:
+- 67 folhas, todas deitadas, com duas páginas cada (dá para testar o Dividir);
+- a 1ª folha é a capa aberta: contracapa à esquerda, lombada no meio, capa à direita (dá para testar a caixinha da capa e os cadernos);
+- tem ilustrações na capa;
+- ressalva: o scan é de baixa resolução, cerca de 77 pontos por polegada (o programa trabalha bem a partir de 300). As letras podem sair pixeladas no PDF, e isso vem do scan, não do programa. Fica escrito como ressalva, não como erro do programa.</p>
+<p>O teste é feito numa cópia, na pasta de trabalho do agente. O original em Downloads não muda.</p>
+<p class="rodape">Editor de Impressão &middot; gerado em 06/11/2026 às 18:05</p>
+</body>
+</html>
