@@ -1,0 +1,109 @@
+<!doctype html>
+<html lang="pt-BR">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Teste do Samuel, 06/11/2026</title>
+<style>
+:root { color-scheme: light dark; }
+* { box-sizing: border-box; }
+body {
+  font: 17px/1.65 "Segoe UI", system-ui, sans-serif;
+  max-width: 46rem; margin: 0 auto; padding: 2.5rem 1.5rem 6rem;
+  color: #1c1c1e; background: #fdfdfc;
+}
+h1 { font-size: 2rem; line-height: 1.2; margin: 0 0 .3em; letter-spacing: -.02em; }
+h2 { font-size: 1.35rem; margin: 2.4em 0 .6em; padding-top: .8em;
+     border-top: 1px solid #e6e4e0; letter-spacing: -.01em; }
+h3 { font-size: 1.1rem; margin: 1.8em 0 .4em; }
+h1 + p, h2 + p { margin-top: .4em; }
+p, li { margin: 0 0 .9em; }
+ul, ol { padding-left: 1.3em; }
+strong { font-weight: 640; }
+code {
+  font: .88em ui-monospace, "Cascadia Code", Consolas, monospace;
+  background: #f1efec; padding: .12em .35em; border-radius: 4px;
+}
+pre {
+  background: #f1efec; padding: 1em 1.1em; border-radius: 8px;
+  overflow-x: auto; line-height: 1.5;
+}
+pre code { background: none; padding: 0; }
+blockquote {
+  margin: 1.2em 0; padding: .1em 0 .1em 1.1em;
+  border-left: 3px solid #c9c5be; color: #55524d;
+}
+table {
+  border-collapse: collapse; width: 100%; margin: 1.2em 0;
+  font-size: .95rem; display: block; overflow-x: auto;
+}
+th, td { padding: .5em .8em; text-align: left; border-bottom: 1px solid #e6e4e0; }
+th { font-weight: 620; background: #f7f5f2; white-space: nowrap; }
+tr:last-child td { border-bottom: none; }
+img { max-width: 100%; height: auto; border-radius: 6px; margin: 1em 0;
+      border: 1px solid #e6e4e0; }
+hr { border: none; border-top: 1px solid #e6e4e0; margin: 2.5em 0; }
+.rodape { margin-top: 4em; padding-top: 1.2em; border-top: 1px solid #e6e4e0;
+          font-size: .85rem; color: #86827c; }
+@media (prefers-color-scheme: dark) {
+  body { color: #e8e6e3; background: #1a1917; }
+  h2 { border-top-color: #35332f; }
+  code, pre, th { background: #262421; }
+  th, td { border-bottom-color: #35332f; }
+  blockquote { border-left-color: #4a4741; color: #b0aca6; }
+  img { border-color: #35332f; }
+  .rodape { border-top-color: #35332f; color: #7d7973; }
+}
+@media print {
+  body { max-width: none; padding: 0; color: #000; background: #fff; }
+  h2 { page-break-after: avoid; }
+  table, img { page-break-inside: avoid; }
+}
+</style>
+</head>
+<body>
+<h1>Teste do Samuel, 06/11/2026 (versão de teste <code>obra-2026-10-26</code>, livro Gradus Primus)</h1>
+<p>As 7 coisas que já estavam na versão de teste. Palavras dele, como escreveu. Prints em <code>prints/</code>.</p>
+<h2>1. "A 1ª folha é a capa aberta" (D-616), no Automático</h2>
+<ul>
+<li><strong>print-1:</strong> "primeiramente depois de ter divido no automatico e voltar para o painel do automatico o dividir estava marcado, e não deveria estar."</li>
+<li>Liga com a pergunta 1 das "Perguntas novas (04/11)" na Central (caixinhas do Automático depois de rodar; D-628 e D-629 esperam).</li>
+<li><strong>print-2:</strong> "como mandar a capa para ultima folha do cardeno vai resolver o problema , olha o caderno não era para folha da parte de trás estar do lado da capa?"</li>
+<li>No print, Folha 1 de 35, frente: uma página do miolo à esquerda e a capa azul à direita.</li>
+<li><strong>print-3:</strong> "quando se está no montar cadernos no automatico, quando se passa de pagina e carrega, quando volta para a folha anterior que já tinha carregado, ela começa a calcular de novo, deveria ficar carrregado."</li>
+<li><strong>print-5:</strong> "acho que o problema está aqui na hora de fazer os cadernos você deixa a capa sozinha e e junta a contra capa com a folha 2"</li>
+<li>No print, tira em "Duas lado a lado": a 1 sozinha, a 2 (capa azul) junto com a 3.</li>
+</ul>
+<h2>2. Digitar o número na prévia do Automático (D-617, parte 2)</h2>
+<ul>
+<li><strong>print-4:</strong> "eu já falei que queria trocar esse folha 2 de 35, que era para ficar a numeração das paginas verdadeiras. não dá para digitar numero de pagina no montar cadernos. Mas no resto do automatico da certo"</li>
+<li>Os números de verdade das páginas ("frente: páginas 20 e 1") são a D-604. Ela está pronta no ramo <code>caderno-numeros</code>, uma das 6 mudanças que ainda vão entrar na versão de teste.</li>
+<li>Digitar o número no "Montar cadernos": pedido novo.</li>
+</ul>
+<h2>3. "juntar todas" no Dividir (D-590)</h2>
+<ul>
+<li>"funciona"</li>
+</ul>
+<h2>4. Desmarcar "Montar cadernos" (D-589)</h2>
+<ul>
+<li>"funciona"</li>
+</ul>
+<h2>5. Páginas mexidas à mão (D-004)</h2>
+<ul>
+<li><strong>print-6:</strong> "funciona"</li>
+</ul>
+<h2>6. Ver o livreto pronto (D-574)</h2>
+<ul>
+<li>"funciona, mas a maneira de visualizar ainda está muito ruim ainda, deixe anotado para o layout e veja outras observações que eu fiz nessa resposta."</li>
+</ul>
+<h2>7. Dividir em "Uma página" (D-601)</h2>
+<ul>
+<li><strong>print-7:</strong> "quando eu marco o dividir e coloco no depois aparece só uma pagina, funciona"</li>
+</ul>
+<h2>Sobre os itens 8 a 14 (as 6 mudanças)</h2>
+<ul>
+<li>"Estes outros que você falou, tem coisas que eu já testei e já dei resposta."</li>
+</ul>
+<p class="rodape">Editor de Impressão &middot; gerado em 06/11/2026 às 17:22</p>
+</body>
+</html>
