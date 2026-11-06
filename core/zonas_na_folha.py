@@ -130,7 +130,8 @@ TRANCA_DAS_ZONAS = threading.Lock()
 
 def geometria_do_desenho(proporcao_folha: float, rotacao: int, corte: float | None,
                          metade: str, recorte, angulo: float,
-                         sobra=None, ordem: str | None = None) -> dict[str, Any]:
+                         sobra=None, ordem: str | None = None,
+                         giro_pagina: int = 0) -> dict[str, Any]:
     """O preparo da pagina, num dicionario simples (vai para o projeto.json).
 
     proporcao_folha: largura / altura da folha COMO VEIO do PDF (antes do giro
@@ -154,6 +155,10 @@ def geometria_do_desenho(proporcao_folha: float, rotacao: int, corte: float | No
         chave) e a de um projeto "cortar_antes" sao iguais, e sem giro as
         duas ordens dao exatamente o mesmo preparo (a zona nao tem por que
         andar). None = a de sempre.
+    giro_pagina: o giro de 90 em 90 SO da pagina, depois de dividir (D-618,
+        04/11/2026; core/girar.giro_da_pagina). So entra no dicionario quando
+        e diferente de 0: a geometria gravada antes da D-618 (sem a chave) e
+        a de uma pagina sem esse giro sao iguais.
     """
     desenho = {
         "proporcao": float(proporcao_folha),
@@ -167,7 +172,14 @@ def geometria_do_desenho(proporcao_folha: float, rotacao: int, corte: float | No
         desenho["sobra"] = [float(v) for v in sobra]
     if ordem == ENDIREITAR_ANTES and desenho["angulo"]:
         desenho["ordem"] = ENDIREITAR_ANTES
+    if int(giro_pagina or 0) % 360:                   # D-618
+        desenho["giro_pagina"] = int(giro_pagina) % 360
     return desenho
+
+
+def _giro_pagina(g: dict) -> int:
+    """O giro so da pagina desta geometria (D-618; sem a chave = 0)."""
+    return int(g.get("giro_pagina", 0) or 0) % 360
 
 
 def _ordem(g: dict) -> str:
@@ -197,6 +209,8 @@ def geometria_valida(g: Any) -> bool:
         float(g.get("angulo", 0.0))
         if g.get("ordem") is not None and g["ordem"] not in ORDENS:   # G6
             return False
+        if int(g.get("giro_pagina", 0) or 0) % 90 != 0:              # D-618
+            return False
     except (KeyError, TypeError, ValueError):
         return False
     return True
@@ -207,6 +221,8 @@ def mesma_geometria(a: dict | None, b: dict | None) -> bool:
     if a is None or b is None:
         return a is b
     if int(a["rotacao"]) % 360 != int(b["rotacao"]) % 360 or a["metade"] != b["metade"]:
+        return False
+    if _giro_pagina(a) != _giro_pagina(b):            # D-618
         return False
     # G6: com giro, o recorte de uma ordem esta em outra pagina que o da
     # outra; sem giro as duas sao o mesmo preparo
@@ -257,6 +273,8 @@ def _tamanhos(g: dict) -> tuple[tuple[float, float], tuple[float, float], tuple[
     elif g.get("sobra") is not None:            # item 2.1: o corte da sobra
         a, b = (float(v) for v in g["sobra"])
         largura *= b - a
+    if _giro_pagina(g) % 180 == 90:             # D-618: a pagina deitou depois de dividir
+        largura, altura = altura, largura
     if g.get("recorte") is not None:
         _, _, w, h = (float(v) for v in g["recorte"])
         largura *= w
@@ -298,12 +316,26 @@ def _corte_efetivo(g: dict) -> float:
     return float(np.clip(float(g["corte"]), 0.02, 0.98))
 
 
+def _giro_de_90_em_fracao(rotacao: int) -> np.ndarray:
+    """Matriz 3x3 do giro de 90 em 90 (cv2.rotate, sentido do relogio) em
+    fracao da imagem. Serve para o giro da folha e para o da pagina (D-618)."""
+    rotacao = int(rotacao) % 360
+    if rotacao == 90:        # horario: (x, y) -> (H - y, x)
+        return np.array([[0.0, -1.0, 1.0], [1.0, 0.0, 0.0], [0.0, 0.0, 1.0]])
+    if rotacao == 180:
+        return np.array([[-1.0, 0.0, 1.0], [0.0, -1.0, 1.0], [0.0, 0.0, 1.0]])
+    if rotacao == 270:       # anti-horario: (x, y) -> (y, W - x)
+        return np.array([[0.0, 1.0, 0.0], [-1.0, 0.0, 1.0], [0.0, 0.0, 1.0]])
+    return np.eye(3)
+
+
 def _matriz_folha_para_pagina(g: dict) -> np.ndarray:
     """Matriz 3x3 que leva (u, v) em fracao da FOLHA para fracao da PAGINA.
 
     As etapas na ordem de core/pipeline.preparar_metade: girar 90 (cv2.rotate)
     -> dividir (dividir_imagem; ou, em pagina inteira, o corte da sobra do
-    item 2.1, pipeline._cortar_a_sobra) -> cortar (fatiar) -> endireitar
+    item 2.1, pipeline._cortar_a_sobra) -> girar 90 so a pagina (D-618, so na
+    metade de folha dividida) -> cortar (fatiar) -> endireitar
     (rotacionar, em volta do centro, mesmo tamanho). Conta continua (sem o arredondamento
     para pontos inteiros, que muda menos de um ponto).
 
@@ -311,14 +343,7 @@ def _matriz_folha_para_pagina(g: dict) -> np.ndarray:
     ANTES do corte, girando a pagina inteira (dividida, ainda sem corte) em
     volta do centro dela; o corte e depois, em fracao da pagina reta.
     """
-    m = np.eye(3)
-    rotacao = int(g["rotacao"]) % 360
-    if rotacao == 90:        # horario: (x, y) -> (H - y, x)
-        m = np.array([[0.0, -1.0, 1.0], [1.0, 0.0, 0.0], [0.0, 0.0, 1.0]]) @ m
-    elif rotacao == 180:
-        m = np.array([[-1.0, 0.0, 1.0], [0.0, -1.0, 1.0], [0.0, 0.0, 1.0]]) @ m
-    elif rotacao == 270:     # anti-horario: (x, y) -> (y, W - x)
-        m = np.array([[0.0, 1.0, 0.0], [-1.0, 0.0, 1.0], [0.0, 0.0, 1.0]]) @ m
+    m = _giro_de_90_em_fracao(int(g["rotacao"]) % 360)
 
     if g["metade"] != "inteira":
         c = _corte_efetivo(g)
@@ -331,6 +356,10 @@ def _matriz_folha_para_pagina(g: dict) -> np.ndarray:
         a, b = (float(v) for v in g["sobra"])
         m = np.array([[1.0 / (b - a), 0.0, -a / (b - a)], [0.0, 1.0, 0.0],
                       [0.0, 0.0, 1.0]]) @ m
+
+    # D-618: o giro so da pagina, depois de dividir (em fracao, a mesma conta
+    # do giro da folha la em cima)
+    m = _giro_de_90_em_fracao(_giro_pagina(g)) @ m
 
     angulo = float(g.get("angulo", 0.0))
     if angulo and _ordem(g) == ENDIREITAR_ANTES:

@@ -434,8 +434,10 @@ class TodasAsPaginas(QWidget):
         botao("todas", "todas", "Marca todas as páginas que estão à vista.", self.escolher_todas)
         botao("nenhuma", "nenhuma", "Desmarca todas.", self.escolher_nenhuma)
         for chave, texto, dica in (
-                ("girar_esquerda", "girar ¼ ←", "Gira as folhas das páginas escolhidas ¼ à esquerda."),
-                ("girar_direita", "girar ¼ →", "Gira as folhas das páginas escolhidas ¼ à direita."),
+                # D-636 (05/11/2026): cada escolhida gira sozinha (a de folha
+                # inteira gira a folha dela, como antes)
+                ("girar_esquerda", "girar ¼ ←", "Gira as páginas escolhidas ¼ à esquerda."),
+                ("girar_direita", "girar ¼ →", "Gira as páginas escolhidas ¼ à direita."),
                 # etapa 9b-2 da obra (D-558): a conta do "dividir esta"
                 ("dividir", "dividir", "Divide em duas páginas as folhas das escolhidas, na "
                  "lombada (a mesma conta do \"dividir esta\" da ferramenta Dividir)."),

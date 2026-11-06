@@ -313,6 +313,7 @@ class JanelaPrincipal(QMainWindow):
             self.menu.ligar(f"giro_em_{alcance}",
                             lambda _marcado=False, a=alcance: conferir.barra_girar.definir_alcance(a))
         conferir.barra_girar.alcance_mudou.connect(self._alcance_do_giro_mudou)
+        conferir.barra_girar.coisa_mudou.connect(self._palavras_do_giro_mudaram)   # D-636
         conferir.marcacoes_por_converter.connect(self._converter_as_zonas_se_parado)
         self.menu.atalhos_mudaram.connect(self._mostrar_teclas_do_giro)
         # Etapa 2 da obra (Samuel, 07/10/2026): Delete = "Deixar em branco";
@@ -527,6 +528,20 @@ class JanelaPrincipal(QMainWindow):
         tarefa = self.conversao_das_zonas
         if tarefa is None or not tarefa.isRunning():
             self._comecar_a_converter_as_zonas()
+
+    def _palavras_do_giro_mudaram(self, coisa: str) -> None:
+        """D-636 (05/11/2026): o menu Pagina > "Aplicar o giro em" diz as
+        mesmas palavras da lista do bloco do girar ("só esta página / todas
+        as páginas / ..." numa folha dividida; "folha" nas outras). Seguro
+        mudar: nada (as palavras moram em ui/widgets/barra_girar.py)."""
+        from core.girar import ALCANCES
+        from ui.widgets.barra_girar import nomes_dos_alcances
+
+        nomes = nomes_dos_alcances(coisa)
+        for alcance in ALCANCES:
+            item = self.menu.acoes.get(f"giro_em_{alcance}")
+            if item is not None:
+                item.setText(nomes[alcance])
 
     def _alcance_do_giro_mudou(self, alcance: str) -> None:
         """A lista "aplicar em" da barrinha mudou: o menu Pagina acompanha."""

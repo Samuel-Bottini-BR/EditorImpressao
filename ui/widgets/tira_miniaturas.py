@@ -334,6 +334,10 @@ class TiraMiniaturas(QWidget):
         # que cada uma esta sendo mostrada (definir_giros)
         self._cruas: dict[int, np.ndarray] = {}
         self._giros: dict[int, int] = {}
+        # D-618 (04/11/2026): o giro SO da pagina (metade de folha dividida),
+        # por quadro (indice da miniatura -> 0/90/180/270), aplicado depois de
+        # tirar a metade (definir_giros_das_paginas)
+        self._giros_das_paginas: dict[int, int] = {}
         # Etapa 9b-2 da obra (D-547: "Mover uma página → a miniatura [...]
         # mostra igual ao PDF"): a página movida ou posta numa folha escolhida
         # aparece como sai no PDF (a prévia composta, que a tela dá em
@@ -774,6 +778,7 @@ class TiraMiniaturas(QWidget):
         self._mapa_folha.clear()
         self._cruas.clear()
         self._como_sai.clear()
+        self._giros_das_paginas.clear()
 
     def _receber(self, indice_folha: int, img: np.ndarray) -> None:
         """Uma folha chegou pronta: guarda como veio e distribui (girada e
@@ -796,7 +801,11 @@ class TiraMiniaturas(QWidget):
             img = girar_90(img, giro)
         for indice in self._mapa_folha.get(indice_folha, []):
             if 0 <= indice < len(self._miniaturas) and indice not in self._como_sai:
-                self._miniaturas[indice].definir_imagem(self._metade(indice, img))
+                metade = self._metade(indice, img)
+                giro = self._giros_das_paginas.get(indice, 0)      # D-618
+                if giro:
+                    metade = girar_90(metade, giro)
+                self._miniaturas[indice].definir_imagem(metade)
 
     def definir_como_sai(self, indice: int, chave: str = "", img: np.ndarray | None = None) -> bool:
         """Etapa 9b-2 (D-547): a miniatura `indice` passa a mostrar `img` (a
@@ -837,6 +846,22 @@ class TiraMiniaturas(QWidget):
                 self._mostrar_folha(indice_folha)
                 mudaram += 1
         return mudaram
+
+    def definir_giros_das_paginas(self, giros: dict[int, int]) -> int:
+        """D-618 (Samuel, 04/11/2026): o giro SO da pagina de cada quadro
+        (indice da miniatura -> 0/90/180/270; quem falta = 0), na metade de uma
+        folha dividida. Como definir_giros: redesenha so as folhas cujos
+        quadros mudaram, da imagem guardada, sem ler o PDF. Devolve quantas
+        folhas foram redesenhadas. Arriscado: por este giro na assinatura da
+        tira (remontaria a tira inteira a cada giro)."""
+        novos = {int(k): int(v) % 360 for k, v in giros.items() if int(v) % 360}
+        mudaram = {i for i in set(novos) | set(self._giros_das_paginas)
+                   if novos.get(i, 0) != self._giros_das_paginas.get(i, 0)}
+        self._giros_das_paginas = novos
+        folhas = {f for f, itens in self._mapa_folha.items() if mudaram & set(itens)}
+        for indice_folha in folhas:
+            self._mostrar_folha(indice_folha)
+        return len([f for f in folhas if f in self._cruas])
 
     def definir_cortes(self, corte_de: dict[int, tuple[str, float]]) -> int:
         """D-601 (02/11/2026): a metade e a linha de cada miniatura (o mesmo

@@ -1320,7 +1320,7 @@ def antes_da_pagina(doc, copia, indice: int, dpi: int):
     depende do "Dividir" marcado na janela.
     A metade e tirada da folha crua como o programa divide (o giro de 90 da
     folha, que diz para que lado ela fica de pe, e a linha do corte:
-    core.pipeline.girar_90 e dividir_imagem), e mais nada: sem a tampa
+    core.pipeline.girar_90 e dividir_imagem; e o giro so da pagina, D-618), e mais nada: sem a tampa
     pintada, sem a sobra, sem cortar, sem endireitar, sem filtro. A folha
     inteira sai sem giro nenhum (como veio do PDF).
 
@@ -1340,7 +1340,12 @@ def antes_da_pagina(doc, copia, indice: int, dpi: int):
     if folha.rotacao:
         crua = girar_90(crua, folha.rotacao)
     esquerda, direita = dividir_imagem(crua, folha.posicao_corte)
-    return esquerda if pagina.metade == METADE_ESQUERDA else direita
+    metade = esquerda if pagina.metade == METADE_ESQUERDA else direita
+    # D-618 (04/11/2026): a metade girada so ela (o giro da pagina, depois de
+    # dividir) fica de pe como a pessoa a deixou; sem giro, a mesma imagem
+    from core.girar import giro_da_pagina
+    giro = giro_da_pagina(folha, pagina)
+    return girar_90(metade, giro) if giro else metade
 
 
 def pagina_como_esta(doc, copia, indice: int, dpi: int, cancelado: Callable | None = None,

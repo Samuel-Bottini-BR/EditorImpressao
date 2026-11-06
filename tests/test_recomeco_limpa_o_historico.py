@@ -123,7 +123,13 @@ def _conferir_com_o_livro_dividido_e_mexer(janela, livro: Path) -> None:
     conferir._escolher_filtro(PRETO_E_BRANCO)
     conferir._escolher_filtro(MELHORAR)
     assert len(janela.acoes.feitas) == 4          # o Automatico e as tres acoes
-    assert janela.projeto.folhas[0].rotacao == 90
+    # D-618 (Samuel, 04/11/2026: "ele deveria girar o conteudo só que é da pagina
+    # cortada, mas ele gira a pagina verdadeira do scan [...] Ele gira as duas
+    # folhas ao mesmo tempo"): numa folha ja dividida o "girar so esta" gira SO a
+    # pagina da tela. Aqui a pagina 1 (metade esquerda da folha 1) fica girada e a
+    # folha nao; o que o teste prova (o Ctrl+Z depois de recomecar) nao muda.
+    # Ate 04/11 cobrava folhas[0].rotacao == 90 (troca autorizada pela gerente).
+    assert janela.projeto.paginas[0].giro_da_pagina == 90
     assert janela.projeto.paginas[0].filtro == MELHORAR
 
 
@@ -161,7 +167,11 @@ def test_desligar_o_dividir_nao_recomeca_e_o_ctrl_z_continua_certo(janela, pasta
     _desligar_o_dividir(janela)
 
     assert not any("Comecei a conferência" in a for a in janela.avisos)
-    assert janela.projeto.folhas[0].rotacao == 90                # o trabalho ficou
+    # D-618 (Samuel, 04/11/2026: "ele deveria girar o conteudo só que é da pagina
+    # cortada, mas ele gira a pagina verdadeira do scan"): o giro mora na pagina 1,
+    # nao na folha; o trabalho fica (ate 04/11: folhas[0].rotacao == 90; troca
+    # autorizada pela gerente)
+    assert janela.projeto.paginas[0].giro_da_pagina == 90        # o trabalho ficou
     assert janela.projeto.paginas[0].filtro == MELHORAR
     assert not list(Path(janela.resumo.pasta).glob("projeto.antigo-*.json"))
 

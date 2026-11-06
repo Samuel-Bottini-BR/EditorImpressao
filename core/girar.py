@@ -20,6 +20,12 @@ O QUE ESTE MODULO FAZ (so contas; nada de tela, nada de imagem)
   tinha, que podia ser diferente em cada folha).
 - descricao_do_giro: a frase do historico ("Girar 1/4 a direita: todas as
   12 folhas, viradas como a folha 3").
+- D-618 (04/11/2026): numa folha ja dividida gira so a pagina da tela
+  (gira_so_a_pagina, giro_da_pagina, recorte_girado, campos_do_giro_da_pagina;
+  ver o bloco "D-618" mais abaixo).
+- D-636 (05/11/2026): numa folha dividida o "aplicar em" conta PAGINAS e cada
+  pagina gira sozinha (paginas_do_alcance, campos_do_giro_das_paginas; bloco
+  "D-636" mais abaixo).
 
 COMO O GIRO VALE NO RESTO DO PROGRAMA (nada disto e novo; so conferido)
 ----------------------------------------------------------------------
@@ -192,6 +198,232 @@ def campos_do_giro(folhas: Sequence[Any], indices: Sequence[int], giro: int,
         if 0 <= int(i) < len(folhas):
             novos[str(int(i))] = final
     return {"rotacao": novos}
+
+
+# ---------------------------------------------------------------------------
+# D-618 (Samuel, 04/11/2026): numa folha JA DIVIDIDA gira so a pagina da tela
+# ---------------------------------------------------------------------------
+# Palavras dele (prints a-70 a a-73, Gradus pagina 14): "ele deveria girar o
+# conteudo só que é da pagina cortada, mas ele gira a pagina verdadeira do
+# scan. tanto que quando você vai girando ele cai na folha branca. Ele gira as
+# duas folhas ao mesmo tempo, faz uma confusão com as paginas."
+#
+# A causa (provada em relatorios/girar-pagina/): o giro morava so na FOLHA
+# (ConfigFolha.rotacao, o scan inteiro) e vinha antes de dividir; a folha
+# girada era dividida de novo pela MESMA linha (fracao da largura), entao cada
+# "pagina" virava meia folha deitada com pedacos das duas paginas, e com meia
+# volta a pagina 14 mostrava a 13 (a branca).
+#
+# O conserto: o giro de uma metade de folha dividida mora na PAGINA
+# (ConfigPagina.giro_da_pagina, 0/90/180/270 no sentido do relogio) e e
+# aplicado DEPOIS de dividir (core/pipeline.preparar_para_recorte), antes do
+# endireitar e do corte. A outra pagina e a linha nao mudam. Folha inteira (nao
+# dividida): o giro continua na folha, como antes. O corte a mao da pagina
+# (pagina.recorte, fracao da pagina antes do corte) gira junto na mesma acao
+# (recorte_girado), para continuar sobre o mesmo pedaco do papel.
+# Projeto antigo nao tem o campo: 0 (sai igual).
+# Arriscado: aplicar giro_da_pagina numa pagina "inteira" (a folha ja gira) ou
+# antes de dividir (voltaria o defeito); mudar o sentido (o mesmo de
+# core/endireitar.girar_90 e de core/zonas_na_folha).
+
+def gira_so_a_pagina(folha: Any, pagina: Any) -> bool:
+    """A pagina e metade de uma folha dividida? Ai o giro e so dela (D-618)."""
+    return bool(getattr(folha, "dividir", False)) and getattr(pagina, "metade", "") in (
+        "esquerda", "direita")
+
+
+def giro_da_pagina(folha: Any, pagina: Any) -> int:
+    """O giro de 90 em 90 SO desta pagina que vale agora (0, 90, 180, 270):
+    o pagina.giro_da_pagina quando ela e metade de uma folha dividida; 0 em
+    pagina inteira (ali quem gira e a folha) e em projeto antigo (sem o campo)."""
+    if not gira_so_a_pagina(folha, pagina):
+        return 0
+    return nova_rotacao(getattr(pagina, "giro_da_pagina", 0) or 0, 0)
+
+
+def recorte_girado(recorte: Sequence[float] | None, giro: int) -> list[float] | None:
+    """O corte a mao (x, y, largura, altura em fracao da pagina) depois de a
+    pagina girar `giro` graus no sentido do relogio: o MESMO pedaco do papel,
+    nas fracoes da pagina girada. None continua None (corte automatico, que e
+    medido de novo na pagina girada). Mesmo sentido de core/endireitar.girar_90:
+    a 90 graus o ponto (u, v) vai para (1 - v, u)."""
+    if recorte is None:
+        return None
+    x, y, w, h = (float(v) for v in recorte)
+    g = nova_rotacao(0, giro)
+    if g == 90:
+        novo = (1.0 - (y + h), x, h, w)
+    elif g == 180:
+        novo = (1.0 - (x + w), 1.0 - (y + h), w, h)
+    elif g == 270:
+        novo = (y, 1.0 - (x + w), h, w)
+    else:
+        novo = (x, y, w, h)
+    return [round(min(1.0, max(0.0, v)), 6) for v in novo]
+
+
+def campos_da_pagina_que_giram_junto(pagina: Any, giro: int) -> dict[str, Any]:
+    """O que a pagina leva junto quando ela (ou a folha inteira dela) gira
+    `giro` graus, como uma foto girada (Samuel, 04/11/2026, "girar - sim" a
+    proposta da gerente: "girar a folha inteira é como girar uma foto. A folha
+    larga, com as duas páginas, fica em pé, inteira, sem esticar, sem apertar
+    e sem cortar nada"):
+      - o corte a mao (recorte) continua sobre o MESMO pedaco do papel
+        (recorte_girado); sem isso o corte de antes cortaria outro pedaco;
+      - o tamanho de folha escolhido no "tamanho..." / Mover
+        (tamanho_folha_cm, largura x altura) deita junto num quarto de volta;
+        sem isso a pagina deitada seria apertada dentro da folha em pe;
+      - o lugar do conteudo na area branca (conteudo_deslocamento, fracao a
+        partir do centro) gira junto.
+    So devolve o que a pagina tem diferente do padrao (nada = {}); a escala
+    do conteudo e o angulo do endireitar nao mudam com um giro de 90.
+    Seguro mudar: nada. Arriscado: esquecer um destes campos (a pagina girada
+    sairia cortada, apertada ou fora do lugar)."""
+    g = nova_rotacao(0, giro)
+    if not g:
+        return {}
+    campos: dict[str, Any] = {}
+    recorte = getattr(pagina, "recorte", None)
+    if recorte is not None:
+        campos["recorte"] = recorte_girado(recorte, g)
+    tamanho = getattr(pagina, "tamanho_folha_cm", None)
+    if tamanho is not None and g in (90, 270):
+        campos["tamanho_folha_cm"] = [float(tamanho[1]), float(tamanho[0])]
+    dx, dy = (float(v) for v in (getattr(pagina, "conteudo_deslocamento", None) or (0.0, 0.0)))
+    if dx or dy:
+        # em fracao a partir do centro: (u, v) -> (1 - v, u) a 90 graus
+        novo = {90: (-dy, dx), 180: (-dx, -dy), 270: (dy, -dx)}[g]
+        campos["conteudo_deslocamento"] = [round(v, 6) + 0.0 for v in novo]
+    return campos
+
+
+def campos_do_giro_da_pagina(pagina: Any, giro: int) -> dict[str, Any]:
+    """Os campos da acao do desfazer de girar SO esta pagina (alvo "pagina"):
+    o giro novo e o que gira junto com ela (campos_da_pagina_que_giram_junto:
+    o corte a mao, o tamanho de folha escolhido, o lugar do conteudo). O
+    desfazer (historico_acoes, que ja guarda o "antes" de cada campo) devolve
+    tudo. Seguro mudar: nada. Arriscado: girar sem levar o corte (o corte a
+    mao cairia em outro pedaco da pagina)."""
+    campos: dict[str, Any] = {
+        "giro_da_pagina": nova_rotacao(getattr(pagina, "giro_da_pagina", 0) or 0, giro)}
+    campos.update(campos_da_pagina_que_giram_junto(pagina, giro))
+    return campos
+
+
+def descricao_do_giro_da_pagina(giro: int, pagina: int) -> str:
+    """A frase do historico de girar so a pagina (pagina: o indice; a frase
+    mostra o numero). Seguro mudar: o texto."""
+    nome = NOMES_DOS_GIROS.get(giro, f"{giro} graus")
+    return f"Girar {nome}: a página {int(pagina) + 1}"
+
+
+# ---------------------------------------------------------------------------
+# D-636 (Samuel, 05/11/2026): numa folha dividida o "aplicar em" gira PAGINAS
+# ---------------------------------------------------------------------------
+# Pergunta: "nessa lista, cada página gira sozinha, igual à da tela. O quadro
+# passaria a se chamar "Girar a página", e a lista diria "só esta página /
+# todas as páginas / daqui em diante / pares / ímpares". O mesmo valeria na
+# tela "ver todas". Pode ser assim?" -> "1- pode ser, só garanta que não crie
+# mais problemas fazendo isso [...]".
+# Na pratica: com a pagina da tela sendo metade de uma folha dividida, o
+# alcance conta PAGINAS (numero da pagina = indice + 1, como a tela mostra) e
+# cada pagina do alcance que e metade de folha dividida gira SO ela
+# (giro_da_pagina, D-618), terminando virada como a da vez (D-035). Paginas de
+# folha inteira no alcance ficam como estao (D-636: "Folha inteira (nao
+# dividida): fica como esta"; pergunta 2 do ONDE-PAREI). O que gira junto
+# (corte a mao, tamanho escolhido, lugar do conteudo) gira pelo quanto CADA
+# pagina girou. Seguro mudar: os textos. Arriscado: girar a folha de uma
+# pagina dividida (volta o a-70) ou contar folhas em vez de paginas.
+
+AVISO_PARES_NA_IMPAR_GIRAR_PAGINA = ("Você está numa página ímpar. Para girar só as pares, "
+                                     "vá a uma página par e gire de lá.")
+AVISO_IMPARES_NA_PAR_GIRAR_PAGINA = ("Você está numa página par. Para girar só as ímpares, "
+                                     "vá a uma página ímpar e gire de lá.")
+
+
+def aviso_fora_do_alcance_das_paginas(atual: int, alcance: str) -> str:
+    """O aviso da D-036 no girar de PAGINAS (D-636): "so as pares" numa pagina
+    impar (ou "so as impares" numa par) avisa e nao gira; "" se pode girar.
+    atual: o indice da pagina na tela. Seguro mudar: a frase."""
+    numero = int(atual) + 1
+    if alcance == ALCANCE_PARES and numero % 2 == 1:
+        return AVISO_PARES_NA_IMPAR_GIRAR_PAGINA
+    if alcance == ALCANCE_IMPARES and numero % 2 == 0:
+        return AVISO_IMPARES_NA_PAR_GIRAR_PAGINA
+    return ""
+
+
+def paginas_do_alcance(folhas: Sequence[Any], paginas: Sequence[Any], atual: int,
+                       alcance: str) -> list[int]:
+    """Os indices das paginas que o giro de PAGINAS pega (D-636): as do
+    "aplicar em" contado em paginas (folhas_do_alcance sobre a lista de
+    paginas) que sao metade de folha dividida. Folha inteira fica de fora."""
+    saida = []
+    for i in folhas_do_alcance(len(paginas), atual, alcance):
+        pagina = paginas[i]
+        f = getattr(pagina, "folha", -1)
+        if 0 <= f < len(folhas) and gira_so_a_pagina(folhas[f], pagina):
+            saida.append(i)
+    return saida
+
+
+def _juntar_campos_por_pagina(saida: dict[str, dict], indice: int, campos: dict[str, Any]) -> None:
+    for campo, valor in campos.items():
+        saida.setdefault(campo, {})[str(int(indice))] = valor
+
+
+def campos_do_giro_das_paginas(paginas: Sequence[Any], indices: Sequence[int], giro: int,
+                               atual: int) -> dict[str, dict]:
+    """Os campos da acao (alvo "pagina") de girar varias paginas, cada uma
+    sozinha (D-636): todas ficam com o giro final da pagina da vez (`atual`,
+    D-035) e cada uma leva junto o corte a mao, o tamanho escolhido e o lugar
+    do conteudo, girados pelo quanto ELA girou. Um dicionario por campo,
+    {"<indice>": valor} (historico_acoes.aplicar), para o desfazer devolver a
+    cada pagina o que ela tinha. Paginas que ja estao no giro final so entram
+    no "giro_da_pagina" (nada mais muda nelas)."""
+    final = nova_rotacao(getattr(paginas[atual], "giro_da_pagina", 0) or 0, giro)
+    saida: dict[str, dict] = {"giro_da_pagina": {}}
+    for i in indices:
+        pagina = paginas[i]
+        antes = nova_rotacao(getattr(pagina, "giro_da_pagina", 0) or 0, 0)
+        saida["giro_da_pagina"][str(int(i))] = final
+        _juntar_campos_por_pagina(saida, i,
+                                  campos_da_pagina_que_giram_junto(pagina, (final - antes) % 360))
+    return saida
+
+
+def campos_do_giro_relativo_das_paginas(paginas: Sequence[Any], indices: Sequence[int],
+                                        giro: int) -> dict[str, dict]:
+    """Como campos_do_giro_das_paginas, mas cada pagina gira `giro` a partir de
+    onde esta (a grade "ver todas", que sempre girou assim cada escolhida;
+    D-636 so troca a folha pela pagina)."""
+    saida: dict[str, dict] = {"giro_da_pagina": {}}
+    for i in indices:
+        pagina = paginas[i]
+        saida["giro_da_pagina"][str(int(i))] = nova_rotacao(
+            getattr(pagina, "giro_da_pagina", 0) or 0, giro)
+        _juntar_campos_por_pagina(saida, i, campos_da_pagina_que_giram_junto(pagina, giro))
+    return saida
+
+
+def descricao_do_giro_das_paginas(giro: int, alcance: str, atual: int, quantas: int) -> str:
+    """A frase do historico do girar de PAGINAS (D-636), como descricao_do_giro
+    com "pagina" no lugar de "folha". atual: o indice da pagina da vez.
+    Seguro mudar: o texto."""
+    nome = NOMES_DOS_GIROS.get(giro, f"{giro} graus")
+    paginas = "1 página" if quantas == 1 else f"{quantas} páginas"
+    if alcance == ALCANCE_TODAS:
+        onde = "a única página" if quantas == 1 else f"todas as {quantas} páginas"
+    elif alcance == ALCANCE_DAQUI:
+        onde = f"da página {atual + 1} em diante ({paginas})"
+    elif alcance == ALCANCE_PARES:
+        onde = "a única página par" if quantas == 1 else f"as {quantas} páginas pares"
+    elif alcance == ALCANCE_IMPARES:
+        onde = "a única página ímpar" if quantas == 1 else f"as {quantas} páginas ímpares"
+    else:
+        return descricao_do_giro_da_pagina(giro, atual)
+    viradas = "virada" if quantas == 1 else "viradas"
+    return f"Girar {nome}: {onde}, {viradas} como a página {atual + 1}"
 
 
 def descricao_do_giro(giro: int, alcance: str, atual: int, quantas: int) -> str:
