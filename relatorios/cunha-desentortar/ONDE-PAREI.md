@@ -54,3 +54,10 @@ O que o Kaique faz: abre o livro, liga o "Desentortar" (automático), confere a 
 ## Perguntas para o Samuel
 
 (nenhuma até agora)
+
+## Como cumpri cada decisão
+
+- **D-095:** com o Desentortar ligado e a página segurada, o cantinho deixa de ser branco. Prova: `test_d095_d639_...` (beiradas brancas 27% -> menos de 1%) e Destino 18 (13674 pontos brancos -> 0, `destino18-direita-antes-depois.png`).
+- **D-639:** a cor é a mesma conta do caminho desligado (`rotacionar_e_cortar(..., cunha_com_o_papel=True)`: mediana do papel de dentro do corte), nunca o fundo atrás da folha. Prova: a página segurada sai igual à desligada (0 valores diferentes em mais de 64 tons, no teste novo e no `test_desentortar_conferir_de_novo`).
+- **D-105:** a proteção segura a mesma página: o desentortar recebe a mesma página de antes (a troca é feita só depois, na que sai). Prova: `test_desentortar_protecao.py` 15 passando; Destino 18 continua segurado.
+- **D-108:** o aviso continua aparecendo e o botão continua trazendo a pergunta. Prova: `test_desentortar_conferir_de_novo.py` 14 passando; aviso "sim" antes e depois na foto; o teste novo confere o aviso.
