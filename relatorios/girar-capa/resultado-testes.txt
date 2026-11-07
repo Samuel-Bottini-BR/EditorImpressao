@@ -1,0 +1,77 @@
+﻿== depois do conserto 99d7d782 (07/11/2026 10:28), commit 99d7d782 ==
+test_decisoes_girar_capa.py :: 19 passed in 15.42s
+test_girar.py :: 53 passed in 10.46s
+test_girar_na_tela.py :: 22 passed in 69.24s (0:01:09)
+test_girar_cartoes_e_previas.py :: 23 passed in 25.34s
+test_ajustar_pedaco_na_folha_girada.py :: 8 passed in 3.73s
+test_recomeco_limpa_o_historico.py :: 13 passed in 19.76s
+test_paineis_na_tela.py :: 22 passed in 35.06s
+test_pipeline_folha.py :: 7 passed in 2.16s
+test_corte_previa_igual_pdf.py :: 4 passed in 2.40s
+test_zonas_na_folha.py :: 25 passed in 7.18s
+test_camadas.py :: 64 passed, 26 skipped in 52.63s
+test_impressao.py :: 17 passed in 2.34s
+test_borda_preta.py :: 29 passed in 3.95s
+test_dividir_na_tela.py :: 9 passed in 17.79s
+test_dividir_no_programa.py :: 19 passed in 6.01s
+test_cartoes_e_previas.py :: 2 passed in 2.02s
+test_historico_depois_de_reabrir.py :: 11 passed in 0.37s
+test_cadernos.py :: 28 passed in 0.28s
+test_caderno_segue_as_etapas.py :: 11 passed in 4.16s
+test_decisoes.py :: 27 passed in 2.85s
+test_decisoes_9b1.py :: 22 passed, 3 skipped in 18.25s
+test_decisoes_9b2.py :: 30 passed in 32.28s
+test_decisoes_antes_depois_da_ferramenta.py :: 5 passed in 3.28s
+test_decisoes_automatico.py :: 29 passed in 31.88s
+test_decisoes_automatico_margens_no_depois.py :: 5 passed in 8.03s
+test_decisoes_automatico_opcoes_do_filtro.py :: 21 passed in 33.78s
+test_decisoes_automatico_ver_como_fica.py :: 22 passed in 34.76s
+test_decisoes_avisos.py :: 22 passed in 28.49s
+test_decisoes_aviso_de_memoria.py :: 15 passed in 6.42s
+test_decisoes_caderno_numeros.py :: 9 passed in 7.00s
+test_decisoes_caderno_tela_grande.py :: 14 passed, 1 skipped in 24.33s
+test_decisoes_capa_aberta.py :: 6 passed in 6.82s
+test_decisoes_d622_clicar_fora.py :: 3 passed in 2.55s
+test_decisoes_desfazer_pagina.py :: 14 passed in 15.33s
+test_decisoes_dividir.py :: 21 passed in 29.48s
+test_decisoes_dividir_arrastar.py :: 16 passed in 13.94s
+test_decisoes_dividir_aviso.py :: 11 passed in 12.19s
+test_decisoes_dividir_linha.py :: 13 passed in 9.23s
+test_decisoes_dividir_metade.py :: 6 passed in 5.43s
+test_decisoes_ferramentas_antes_depois.py :: 12 passed in 8.24s
+test_decisoes_ferramentas_lado.py :: 9 passed in 6.68s
+test_decisoes_filtro_automatico.py :: 4 passed in 7.15s
+test_decisoes_girar_pagina.py :: 1 failed, 19 passed in 10.95s
+    FAILED tests/test_decisoes_girar_pagina.py::test_d618_d636_aplicar_em_todas_numa_folha_dividida_gira_as_paginas
+test_decisoes_girar_paginas_aplicar_em.py :: 4 failed, 6 passed in 8.08s
+    FAILED tests/test_decisoes_girar_paginas_aplicar_em.py::test_reversao_d636_todas_as_paginas_gira_cada_pagina_sozinha
+    FAILED tests/test_decisoes_girar_paginas_aplicar_em.py::test_d636_todas_ficam_viradas_como_a_da_vez_e_o_ctrl_z_devolve_cada_uma
+    FAILED tests/test_decisoes_girar_paginas_aplicar_em.py::test_d636_folha_inteira_fica_como_esta
+    FAILED tests/test_decisoes_girar_paginas_aplicar_em.py::test_d636_o_pdf_sai_com_cada_pagina_deitada_inteira
+test_decisoes_gravuras_cinza.py :: 20 passed in 30.41s
+test_decisoes_impressao.py :: 22 passed in 21.42s
+test_decisoes_juntar_todas.py :: 4 passed in 5.59s
+test_decisoes_livreto_ver.py :: 13 passed, 1 skipped in 28.16s
+test_decisoes_marcacoes.py :: 19 passed in 6.75s
+test_decisoes_montar_cadernos.py :: 13 passed in 25.95s
+test_decisoes_mover.py :: 13 passed in 8.89s
+test_decisoes_mover_lado.py :: 7 passed in 4.76s
+test_decisoes_nucleo.py :: 38 passed in 9.05s
+test_decisoes_nucleo2.py :: 21 passed in 14.80s
+test_decisoes_ordem_folhas.py :: 12 passed in 7.95s
+test_decisoes_pagina_em_branco.py :: 11 passed in 9.46s
+test_decisoes_painel_livro.py :: 9 passed in 8.05s
+test_decisoes_par_escolhe_e_arrasta.py :: 4 passed in 2.99s
+test_decisoes_previa_dividida.py :: 4 passed in 7.22s
+test_decisoes_previa_numero.py :: 8 passed in 9.60s
+test_decisoes_respeitar_gravuras.py :: 19 passed in 28.75s
+test_decisoes_shift_todas_as_telas.py :: 10 passed in 6.08s
+test_decisoes_so_as_letras.py :: 5 passed in 7.99s
+test_decisoes_tamanho_no_par.py :: 5 passed in 3.46s
+test_decisoes_tela.py :: 35 passed, 4 warnings in 26.36s
+test_decisoes_tira_em_pares.py :: 4 passed in 5.70s
+test_decisoes_tira_marca_a_tela.py :: 3 passed in 3.10s
+test_decisoes_tira_numero_real.py :: 3 passed in 5.85s
+test_decisoes_tira_pares_juntas.py :: 3 passed in 4.21s
+test_decisoes_ver.py :: 11 passed in 16.81s
+FIM

@@ -1,0 +1,53 @@
+--- a/tests/test_decisoes_girar_paginas_aplicar_em.py	2026-11-07 10:18:17.739389200 -0400
++++ b/tests/test_decisoes_girar_paginas_aplicar_em.py (PROPOSTA, nao aplicada)
+@@ -82,7 +82,7 @@
+     linhas = [f.posicao_corte for f in projeto.folhas]
+     tela.barra_girar.definir_alcance(girar.ALCANCE_TODAS)
+     tela.barra_girar.botoes_de_giro[girar.GIRO_ESQUERDA].click()
+-    assert _rotacoes(projeto) == [0, 0, 0]
++    assert _rotacoes(projeto) == [0, 0, 270]      # D-640 (06/11): a folha inteira também gira
+     assert _giros(projeto) == [270, 270, 270, 270, 0]
+     assert [f.posicao_corte for f in projeto.folhas] == linhas
+     assert len([a for a in janela.acoes.feitas if a.tipo == "girar"]) == 1   # uma ação só
+@@ -180,7 +180,8 @@
+     tela.barra_girar.definir_alcance(girar.ALCANCE_TODAS)
+     tela.barra_girar.botoes_de_giro[girar.GIRO_ESQUERDA].click()
+     assert _giros(projeto) == [270, 270, 270, 270, 0]
+-    assert "todas as 4 páginas, viradas como a página 2" in janela.acoes.feitas[-1].descricao
++    # D-640 (06/11): a folha inteira gira junto e conta na frase
++    assert "todas as 5 páginas, viradas como a página 2" in janela.acoes.feitas[-1].descricao
+     tela.desfazer()
+     assert _giros(projeto) == [90, 0, 0, 0, 0]
+     janela.menu.acoes["refazer"].trigger()
+@@ -212,7 +213,8 @@
+     tela.ir_para_pagina(4)
+     tela.barra_girar.definir_alcance(girar.ALCANCE_TODAS)
+     tela.barra_girar.botoes_de_giro[girar.GIRO_DIREITA].click()
+-    assert _rotacoes(projeto) == [90, 90, 90] and _giros(projeto) == [0] * 5
++    # D-638 (06/11): as folhas divididas giram página por página; a inteira gira inteira
++    assert _rotacoes(projeto) == [0, 0, 90] and _giros(projeto) == [90, 90, 90, 90, 0]
+ 
+ 
+ # --- o PDF que sai ------------------------------------------------------------------------------
+@@ -237,5 +239,7 @@
+         assert girada.shape == depois[i].shape, i
+         diferenca = np.abs(girada.astype(int) - depois[i].astype(int)).mean()
+         assert diferenca < 3, (i, diferenca)
+-    assert antes[4].shape == depois[4].shape
+-    assert np.abs(antes[4].astype(int) - depois[4].astype(int)).mean() < 1
++    # D-640 (06/11): a folha inteira (página 5) também sai girada, inteira
++    girada = girar_90(antes[4], girar.GIRO_ESQUERDA)
++    assert girada.shape == depois[4].shape
++    assert np.abs(girada.astype(int) - depois[4].astype(int)).mean() < 3
+--- a/tests/test_decisoes_girar_pagina.py	2026-11-07 10:18:17.700520800 -0400
++++ b/tests/test_decisoes_girar_pagina.py (PROPOSTA, nao aplicada)
+@@ -398,7 +398,8 @@
+     tela, projeto = _livro_com_a_folha_1_dividida(janela, tmp_path)
+     tela.barra_girar.definir_alcance(girar.ALCANCE_TODAS)
+     tela.barra_girar.botoes_de_giro[girar.GIRO_DIREITA].click()
+-    assert [f.rotacao for f in projeto.folhas] == [0, 0]
++    # D-640 (06/11): "todas as páginas" gira também a folha 2 (inteira), como a página da vez
++    assert [f.rotacao for f in projeto.folhas] == [0, 90]
+     assert [p.giro_da_pagina for p in projeto.paginas] == [90, 90, 0]
+ 
+ 

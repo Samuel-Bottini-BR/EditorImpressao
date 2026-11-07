@@ -1,0 +1,117 @@
+<!doctype html>
+<html lang="pt-BR">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Girar com a capa aberta (D-638, D-640)</title>
+<style>
+:root { color-scheme: light dark; }
+* { box-sizing: border-box; }
+body {
+  font: 17px/1.65 "Segoe UI", system-ui, sans-serif;
+  max-width: 46rem; margin: 0 auto; padding: 2.5rem 1.5rem 6rem;
+  color: #1c1c1e; background: #fdfdfc;
+}
+h1 { font-size: 2rem; line-height: 1.2; margin: 0 0 .3em; letter-spacing: -.02em; }
+h2 { font-size: 1.35rem; margin: 2.4em 0 .6em; padding-top: .8em;
+     border-top: 1px solid #e6e4e0; letter-spacing: -.01em; }
+h3 { font-size: 1.1rem; margin: 1.8em 0 .4em; }
+h1 + p, h2 + p { margin-top: .4em; }
+p, li { margin: 0 0 .9em; }
+ul, ol { padding-left: 1.3em; }
+strong { font-weight: 640; }
+code {
+  font: .88em ui-monospace, "Cascadia Code", Consolas, monospace;
+  background: #f1efec; padding: .12em .35em; border-radius: 4px;
+}
+pre {
+  background: #f1efec; padding: 1em 1.1em; border-radius: 8px;
+  overflow-x: auto; line-height: 1.5;
+}
+pre code { background: none; padding: 0; }
+blockquote {
+  margin: 1.2em 0; padding: .1em 0 .1em 1.1em;
+  border-left: 3px solid #c9c5be; color: #55524d;
+}
+table {
+  border-collapse: collapse; width: 100%; margin: 1.2em 0;
+  font-size: .95rem; display: block; overflow-x: auto;
+}
+th, td { padding: .5em .8em; text-align: left; border-bottom: 1px solid #e6e4e0; }
+th { font-weight: 620; background: #f7f5f2; white-space: nowrap; }
+tr:last-child td { border-bottom: none; }
+img { max-width: 100%; height: auto; border-radius: 6px; margin: 1em 0;
+      border: 1px solid #e6e4e0; }
+hr { border: none; border-top: 1px solid #e6e4e0; margin: 2.5em 0; }
+.rodape { margin-top: 4em; padding-top: 1.2em; border-top: 1px solid #e6e4e0;
+          font-size: .85rem; color: #86827c; }
+@media (prefers-color-scheme: dark) {
+  body { color: #e8e6e3; background: #1a1917; }
+  h2 { border-top-color: #35332f; }
+  code, pre, th { background: #262421; }
+  th, td { border-bottom-color: #35332f; }
+  blockquote { border-left-color: #4a4741; color: #b0aca6; }
+  img { border-color: #35332f; }
+  .rodape { border-top-color: #35332f; color: #7d7973; }
+}
+@media print {
+  body { max-width: none; padding: 0; color: #000; background: #fff; }
+  h2 { page-break-after: avoid; }
+  table, img { page-break-inside: avoid; }
+}
+</style>
+</head>
+<body>
+<h1>Girar num livro dividido com a capa aberta inteira (D-638 e D-640)</h1>
+<p>Ramo <code>girar-capa-2026-11-07</code> (saiu do <code>obra-2026-10-26</code>). Teste de <strong>máquina</strong> (provas automáticas e medidas do PDF)
+e de <strong>olho</strong> (as imagens, para o Samuel conferir). PRONTO PARA A CONFERÊNCIA COM A JANELA ABERTA (outro agente).</p>
+<h2>O defeito, em frases simples</h2>
+<ol>
+<li><strong>Na capa aberta</strong>, girar com "todas as folhas" (ou "daqui em diante", "só as pares", "só as ímpares") girava também
+   as folhas divididas como folha inteira. Cada página delas virava uma tira com pedaço da vizinha (a confusão do
+   print a-70), e o PDF saía assim.</li>
+<li><strong>No miolo</strong>, girar com "todas as páginas" deixava a capa aberta sem girar.</li>
+</ol>
+<h2>O que mudou</h2>
+<ol>
+<li>Na capa (folha inteira): as folhas não divididas giram inteiras, como antes; as divididas giram página por página,
+   cada uma sozinha, sem pedaço da vizinha. Todas ficam viradas como a capa. Com ou sem o corte das bordas.</li>
+<li>No miolo, "todas as páginas" gira também a capa aberta, inteira (como uma foto, levando o corte à mão).</li>
+<li>Um Ctrl+Z desfaz tudo de uma vez; Ctrl+Y refaz.</li>
+<li>Não mudou: "só esta", os botões do canto, o menu, a grade "ver todas", as palavras do quadro, o aviso de
+   pares/ímpares, e o giro num livro sem folha dividida.</li>
+</ol>
+<h2>As imagens (Gradus Primus, cópia; janela desenhada na memória, nada abriu na tela)</h2>
+<ul>
+<li><code>s1-pdf-antes-e-depois.png</code>: na capa, "todas as folhas" + ¼ à esquerda. Código de antes: as páginas 2, 3, 14 e 15
+  saem como tiras em pé com metade da folha (a 2 mostra o título que é da 3; a 14 mostra a águia que é da 15). Código
+  novo: cada página deitada, inteira, com o seu conteúdo; a capa em pé.</li>
+<li><code>s2-pdf-antes-e-depois.png</code>: na página 14, "todas as páginas" + ¼ à esquerda. Código de antes: a capa sai igual,
+  sem girar. Código novo: a capa sai girada, como as outras.</li>
+<li><code>s1-janela-antes-e-depois.png</code> e <code>s2-janela-antes-e-depois.png</code>: a janela no mesmo caminho.</li>
+</ul>
+<p>Caminho das imagens: livro novo com os ajustes de fábrica (endireitar e cortar as bordas desligados, filtro Original),
+folhas 2 a 70 divididas pela lombada, folha 1 inteira, ferramenta Cortar as bordas. O PDF com o corte das bordas
+ligado foi conferido pelas provas automáticas (<code>[True]</code>).</p>
+<h2>Testes</h2>
+<ul>
+<li>Prova de reversão: <code>tests/test_decisoes_girar_capa.py</code> (19 provas) no código de antes: 15 falham pelo defeito
+  (ex.: "assert [270, 270, 270, 270] == [270, 270, 0, 0]": as folhas divididas giravam como folha); 4 passam (as que
+  conferem o que não pode mudar). No código novo: 19 passam.</li>
+<li>PC, um arquivo por vez: 72 arquivos; 70 passam inteiros. Falham 5 testes antigos que cobram justamente o
+  comportamento que o Samuel mandou trocar (a capa não girar com "todas as páginas"; as folhas divididas girarem
+  como folha). Não foram mudados; a proposta está em <code>proposta-testes-d636.diff</code> e foi conferida numa cópia à parte.</li>
+<li>GitHub, suíte 42381756807: só esses 5 falham. Velocidade: ver o ONDE-PAREI.</li>
+</ul>
+<h2>Ressalvas</h2>
+<ul>
+<li>Os 5 testes antigos só passam se a gerente autorizar a troca das linhas (decisão nova do Samuel contra prova
+  provisória).</li>
+<li>"daqui em diante", "pares" e "ímpares" no miolo continuam sem girar a capa (a D-640 fala de "todas as páginas"):
+  pergunta 1.</li>
+<li>Dividir em "Duas lado a lado" numa folha dividida: continua como antes (pergunta 2).</li>
+<li>A janela foi desenhada na memória; a conferência com a janela aberta fica para outro agente.</li>
+</ul>
+<p class="rodape">Editor de Impressão &middot; gerado em 07/11/2026 às 10:52</p>
+</body>
+</html>

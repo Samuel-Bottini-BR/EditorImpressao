@@ -49,7 +49,7 @@ Testes que já existem e não podem mudar: `tests/test_girar.py`, `tests/test_gi
 `tests/test_recomeco_limpa_o_historico.py`, `tests/test_pipeline_folha.py`, `tests/test_corte_previa_igual_pdf.py`,
 `tests/test_decisoes_tira_*.py`, e os `tests/test_decisoes*.py` todos.
 
-**Atenção (achado antes de mexer):** três testes do `tests/test_decisoes_girar_paginas_aplicar_em.py`, escritos pelo
+**Atenção (achado antes de mexer; depois do conserto apareceram mais dois, ver "Para a gerente": são cinco):** três testes do `tests/test_decisoes_girar_paginas_aplicar_em.py`, escritos pelo
 agente girar-pagina enquanto as perguntas A e B estavam abertas, cobram justamente o comportamento que a D-638 e a
 D-640 mandam trocar:
 - `test_reversao_d636_todas_as_paginas_gira_cada_pagina_sozinha`: cobra `rotacoes == [0, 0, 0]` (a folha inteira, a
@@ -111,14 +111,65 @@ rotação da folha); o Dividir em "Duas lado a lado" numa folha dividida continu
 
 ## Andamento
 
-- [x] worktree e ramo criados (07/11)
-- [x] lidos CLAUDE.md, implementador.md, o ONDE-PAREI e o relatório do girar-pagina, D-618/D-636/D-638/D-640
-- [ ] teste de reversão escrito e falhando no código de antes
-- [ ] conserto
-- [ ] testes no PC, um arquivo por vez
-- [ ] imagens antes/depois
-- [ ] GitHub (suíte e velocidade)
+- [x] worktree e ramo criados (07/11); lidos CLAUDE.md, implementador.md, o ONDE-PAREI e o relatório do girar-pagina,
+  D-618/D-636/D-638/D-640
+- [x] ONDE-PAREI antes de mexer (d4e8c163)
+- [x] teste novo `tests/test_decisoes_girar_capa.py` (19 provas) rodado no código de antes (6904a634): 15 falham pelo
+  defeito, 4 passam (as que conferem o que não pode mudar) — `reversao-no-codigo-antigo.txt` (e86c5851)
+- [x] conserto (99d7d782): `core/girar.campos_do_giro_numa_folha_inteira` (conta nova) e, em `ui/tela_conferir.py`,
+  `_girar_as_divididas_pagina_por_pagina` (D-638) e `_com_as_folhas_inteiras_tambem` (D-640)
+- [x] PC, um arquivo por vez (`rodar_testes.ps1`, saída em `resultado-testes.txt`): 72 arquivos (o novo, os do girar,
+  da tira, do Dividir, do PDF, dos cadernos e os 52 `test_decisoes*.py`); 70 passam inteiros; falham só os 5 testes
+  antigos da seção abaixo
+- [x] proposta para os 5 testes antigos conferida numa cópia à parte: com ela, 10 passed e 20 passed
+- [x] imagens antes/depois (sem janela na tela; Gradus copiado): `s1-pdf-antes-e-depois.png`,
+  `s2-pdf-antes-e-depois.png`, `s1-janela-antes-e-depois.png`, `s2-janela-antes-e-depois.png`
+- [x] GitHub, suíte 42381756807 (em 99d7d782): partes 1, 2 e 5 e os botões/prints da janela real passaram; as partes 3
+  e 4 falharam só nos mesmos 5 testes antigos
+- [ ] GitHub, filtro de velocidade 42381758932 (obra-2026-10-26 → girar-capa): rodando
 
-## Para a gerente
+## Para a gerente: cinco testes antigos cobram o que a D-638/D-640 trocam (não mexi neles)
 
-(ver "Atenção" acima: três testes antigos cobram o que a D-638/D-640 trocam; proposta no fim, depois do conserto)
+Depois do conserto falham 5 testes antigos, todos pelo motivo da decisão nova (PC e GitHub iguais). Foram escritos
+pelo agente girar-pagina enquanto as perguntas A e B estavam abertas:
+1. `tests/test_decisoes_girar_paginas_aplicar_em.py::test_reversao_d636_todas_as_paginas_gira_cada_pagina_sozinha`:
+   `assert _rotacoes(projeto) == [0, 0, 0]` (a folha inteira não gira com "todas as páginas"). Com a D-640 ela gira:
+   `[0, 0, 270]`.
+2. `...::test_d636_todas_ficam_viradas_como_a_da_vez_e_o_ctrl_z_devolve_cada_uma`: cobra a frase "todas as 4 páginas,
+   viradas como a página 2". Com a D-640 a folha inteira gira junto e a frase conta 5 ("todas as 5 páginas"). O
+   resto do teste (as 4 páginas em 270, Ctrl+Z e refazer) passa.
+3. `...::test_d636_folha_inteira_fica_como_esta`: na folha inteira, "todas as folhas" cobra `rotacoes == [90, 90, 90]`
+   e nenhuma página girada (a confusão do a-70). Com a D-638: `rotacoes == [0, 0, 90]` e `giros == [90, 90, 90, 90, 0]`.
+   A docstring dele já dizia: "o que isso faz nas folhas divididas é a pergunta 3 do ONDE-PAREI".
+4. `...::test_d636_o_pdf_sai_com_cada_pagina_deitada_inteira`: cobra que a página 5 (a folha inteira) sai igual. Com
+   a D-640 ela sai girada.
+5. `tests/test_decisoes_girar_pagina.py::test_d618_d636_aplicar_em_todas_numa_folha_dividida_gira_as_paginas`: cobra
+   `rotacoes == [0, 0]` ("A folha 2 (inteira) fica como está") depois de "todas as páginas". Com a D-640: `[0, 90]`.
+Proposta (só se a gerente autorizar, em commit separado, com comentário citando a D-638/D-640): trocar só essas
+linhas. O diff pronto está em `relatorios/girar-capa/proposta-testes-d636.diff` (5 trechos); com ele os dois arquivos
+passam inteiros (10 passed, 20 passed, numa cópia à parte).
+
+## Como cumpri cada decisão
+
+- **D-638** ("Pode ser, mas isso vai acontecer se elas estiverem cortadas e se não estiverem cortadas né?"):
+  `test_reversao_d638_na_capa_todas_as_folhas_gira_as_divididas_pagina_por_pagina`, `..._daqui_em_diante_...`,
+  `..._so_as_pares_...`, `..._so_as_impares_...` (as quatro escolhas da lista, contadas em folhas);
+  `test_d638_vale_com_e_sem_o_corte_das_bordas_na_tela[cortar|endireitar]` e
+  `test_reversao_d638_o_pdf_sai_com_a_capa_e_cada_pagina_girada[False|True]` (o PDF com o corte das bordas desligado e
+  ligado: cada página sai a mesma imagem girada, sem pedaço da vizinha); `test_d638_todas_ficam_viradas_como_a_capa_e_o_ctrl_z_e_o_ctrl_y`
+  e `test_d638_o_corte_a_mao_gira_junto_e_o_ctrl_z_devolve` (Ctrl+Z e Ctrl+Y pela porta das teclas). Gradus: 70 folhas,
+  na capa "todas as folhas" + ¼ à esquerda → 1 folha girada (a capa) e 138 páginas giradas sozinhas, uma ação só;
+  Ctrl+Z volta tudo, Ctrl+Y refaz (`s1-*.png`).
+- **D-640** ("vamos deixar como gira todas as paginas"): `test_reversao_d640_todas_as_paginas_gira_tambem_a_capa`,
+  `test_d640_ctrl_z_e_ctrl_y_devolvem_a_capa_e_as_paginas`, `test_reversao_d640_o_pdf_sai_com_a_capa_girada[False|True]`.
+  Gradus: na página 14, "todas as páginas" + ¼ à esquerda → a capa gira inteira e as 138 páginas sozinhas
+  ("todas as 139 páginas, viradas como a página 14"); Ctrl+Z/Ctrl+Y (`s2-*.png`).
+- **D-618 / D-636 não mudaram:** `test_d640_so_esta_pagina_no_miolo_continua_girando_so_ela`,
+  `test_d638_so_esta_folha_na_capa_continua_girando_so_a_capa` (e o canto), `test_d640_as_outras_escolhas_do_miolo_continuam_como_antes`,
+  `test_d638_so_as_pares_na_capa_avisa_e_nao_gira` (D-036); `test_decisoes_girar_pagina.py` (19 de 20; o 20º é o item 5
+  acima) e os 6 testes da D-636 que não tratam da folha inteira passam; os do girar, da tira e da grade passam.
+- **D-605 / "só não pode arrumar um problema e criar outro":** num livro sem folha dividida o caminho é exatamente o de
+  antes (a conta nova só entra quando há folha dividida no alcance); nenhum teste antigo foi mudado; os 5 que falham
+  cobram o comportamento que o Samuel mandou trocar (seção acima).
+- **D-637:** a seção "Como fica para quem usa e no livro" foi escrita antes de mexer e conferida nas imagens (janela
+  desenhada na memória e PDF). Problema novo: nenhum visto.
