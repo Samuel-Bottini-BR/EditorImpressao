@@ -26,6 +26,11 @@ O QUE ESTE MODULO FAZ (so contas; nada de tela, nada de imagem)
 - D-636 (05/11/2026): numa folha dividida o "aplicar em" conta PAGINAS e cada
   pagina gira sozinha (paginas_do_alcance, campos_do_giro_das_paginas; bloco
   "D-636" mais abaixo).
+- D-638 (06/11/2026): numa folha INTEIRA (a capa aberta) o "aplicar em" gira
+  as folhas divididas pagina por pagina e as inteiras inteiras
+  (campos_do_giro_numa_folha_inteira; bloco "D-638" mais abaixo). A D-640
+  (no miolo, "todas as paginas" gira tambem a capa inteira) mora na tela:
+  ui/tela_conferir._girar_as_paginas.
 
 COMO O GIRO VALE NO RESTO DO PROGRAMA (nada disto e novo; so conferido)
 ----------------------------------------------------------------------
@@ -330,7 +335,11 @@ def descricao_do_giro_da_pagina(giro: int, pagina: int) -> str:
 # cada pagina do alcance que e metade de folha dividida gira SO ela
 # (giro_da_pagina, D-618), terminando virada como a da vez (D-035). Paginas de
 # folha inteira no alcance ficam como estao (D-636: "Folha inteira (nao
-# dividida): fica como esta"; pergunta 2 do ONDE-PAREI). O que gira junto
+# dividida): fica como esta"; pergunta 2 do ONDE-PAREI) - menos com "todas as
+# paginas", que gira tambem as folhas inteiras desde a D-640 (06/11/2026: "vamos
+# deixar como gira todas as paginas"; quem faz e a tela,
+# ui/tela_conferir._girar_as_paginas: paginas_do_alcance continua devolvendo so
+# as metades, que sao as que ganham giro_da_pagina). O que gira junto
 # (corte a mao, tamanho escolhido, lugar do conteudo) gira pelo quanto CADA
 # pagina girou. Seguro mudar: os textos. Arriscado: girar a folha de uma
 # pagina dividida (volta o a-70) ou contar folhas em vez de paginas.
@@ -424,6 +433,59 @@ def descricao_do_giro_das_paginas(giro: int, alcance: str, atual: int, quantas: 
         return descricao_do_giro_da_pagina(giro, atual)
     viradas = "virada" if quantas == 1 else "viradas"
     return f"Girar {nome}: {onde}, {viradas} como a página {atual + 1}"
+
+
+# ---------------------------------------------------------------------------
+# D-638 (Samuel, 06/11/2026): numa FOLHA INTEIRA (ex.: a capa aberta), o
+# "aplicar em" gira as folhas divididas PAGINA POR PAGINA
+# ---------------------------------------------------------------------------
+# Pergunta: "Agora você está na capa inteira e escolhe girar "todas as
+# folhas". Hoje, as outras folhas do livro giram inteiras, e volta a confusão
+# do seu print: cada página com um pedaço da vizinha. Sugestão: elas giram
+# página por página, sem confusão. Pode ser assim?" -> "Pode ser, mas isso vai
+# acontecer se elas estiverem cortadas e se não estiverem cortadas né?"
+# (o giro vem antes do corte: vale com ou sem o corte das bordas).
+# Na pratica: estando numa folha inteira, o alcance continua contando FOLHAS
+# (a lista ali diz "folha", D-367); de cada folha do alcance, a NAO dividida
+# gira inteira (rotacao, como antes, e a pagina dela leva junto o corte a mao
+# etc.: "girar - sim"); a dividida NAO gira como folha (era a confusao do
+# a-70): cada pagina dela gira sozinha (giro_da_pagina, D-618). Todas terminam
+# viradas como a folha da vez (D-035): a rotacao final da folha da vez vira a
+# rotacao das inteiras e o giro_da_pagina das paginas divididas.
+# A D-640 (o contrario: estando numa pagina dividida, "todas as paginas" gira
+# tambem as folhas inteiras) mora na tela (ui/tela_conferir._girar_as_paginas).
+# Arriscado: por "rotacao" numa folha dividida (volta o a-70); por
+# giro_da_pagina numa pagina de folha inteira (o achado b12d6f61 do
+# girar-pagina: o giro guardado reapareceria se a folha fosse dividida).
+
+def campos_do_giro_numa_folha_inteira(folhas: Sequence[Any], paginas: Sequence[Any],
+                                      indices: Sequence[int], giro: int,
+                                      atual: int) -> tuple[dict[str, int], dict[int, dict[str, Any]]]:
+    """D-638: separa o giro das folhas `indices` (o "aplicar em" contado em
+    folhas, a folha da vez `atual` sendo inteira) em duas partes:
+      - rotacao: {"<folha>": giro final} das folhas que giram inteiras (as que
+        nao tem pagina que seja metade de folha dividida);
+      - por pagina: {<indice da pagina>: {"giro_da_pagina": giro final, e o que
+        gira junto (corte a mao, tamanho escolhido, lugar do conteudo) pelo
+        quanto ESSA pagina girou}} das paginas que sao metade de folha dividida.
+    O giro final e o da folha da vez (rotacao_final, D-035). Sem nenhuma folha
+    dividida no alcance, a rotacao e a mesma de campos_do_giro (nada muda num
+    livro sem folha dividida). Seguro mudar: nada. Arriscado: ver o bloco D-638."""
+    final = rotacao_final(folhas, giro, atual)
+    alvo = {int(i) for i in indices if 0 <= int(i) < len(folhas)}
+    por_pagina: dict[int, dict[str, Any]] = {}
+    divididas: set[int] = set()
+    for posicao, pagina in enumerate(paginas):
+        f = getattr(pagina, "folha", -1)
+        if f not in alvo or not gira_so_a_pagina(folhas[f], pagina):
+            continue
+        divididas.add(f)
+        antes = nova_rotacao(getattr(pagina, "giro_da_pagina", 0) or 0, 0)
+        campos: dict[str, Any] = {"giro_da_pagina": final}
+        campos.update(campos_da_pagina_que_giram_junto(pagina, (final - antes) % 360))
+        por_pagina[posicao] = campos
+    rotacao = {str(f): final for f in sorted(alvo - divididas)}
+    return rotacao, por_pagina
 
 
 def descricao_do_giro(giro: int, alcance: str, atual: int, quantas: int) -> str:
