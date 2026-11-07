@@ -149,7 +149,8 @@ separado (16e752e7), com comentário citando a D-638/D-640 e a autorização.
 - GitHub, suíte 42391132998 (em ece01b15): botões/prints da janela real e as partes 2, 3 e 4 passaram; a parte 1 e a 5
   falharam em: o teste antigo do "daqui em diante" (esperado) e `test_decisoes_so_as_letras.py::test_d148_...` ("não
   aconteceu a tempo", o instável conhecido; no PC passou nas duas séries, 5 passed, e passou na suíte 42381756807).
-  Reenviei só as partes que falharam (mesmo número de rodada).
+  Reenviei só as partes que falharam (mesmo número de rodada): a parte 1 passou (o `test_d148` passou); a parte 5
+  falhou só no teste antigo do "daqui em diante". Resultado final da 42391132998: tudo passa, menos esse teste.
 - Velocidade: não rodei de novo. Nesta parte o `core/` só mudou em comentários; o código mudado é o do clique, em
   `ui/tela_conferir.py`. O filtro 42381758932 (em 99d7d782) deu "nada mais lento".
 - Imagens da situação 3 (Gradus, página 3, "só as ímpares" + ¼ à esquerda): `s3-pdf-antes-e-depois.png` e
