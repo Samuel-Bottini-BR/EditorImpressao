@@ -126,7 +126,10 @@ rotação da folha); o Dividir em "Duas lado a lado" numa folha dividida continu
   `s2-pdf-antes-e-depois.png`, `s1-janela-antes-e-depois.png`, `s2-janela-antes-e-depois.png`
 - [x] GitHub, suíte 42381756807 (em 99d7d782): partes 1, 2 e 5 e os botões/prints da janela real passaram; as partes 3
   e 4 falharam só nos mesmos 5 testes antigos
-- [ ] GitHub, filtro de velocidade 42381758932 (obra-2026-10-26 → girar-capa): rodando
+- [x] GitHub, filtro de velocidade 42381758932 (obra-2026-10-26 → girar-capa 99d7d782): nada mais lento. Veredito
+  "parece mais rápido" (abrir -2,1%, trocar de página -4,9%, no limite do vai-e-vem; Mágico pro -0,4% e Preto e branco
+  -0,9%, iguais). A mudança só roda no clique de girar: a diferença é vai-e-vem, não ganho.
+- [ ] a gerente decide sobre os 5 testes antigos; conferência com a janela aberta (outro agente); depois, a gerente junta
 
 ## Para a gerente: cinco testes antigos cobram o que a D-638/D-640 trocam (não mexi neles)
 
