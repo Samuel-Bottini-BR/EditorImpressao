@@ -534,6 +534,53 @@ def test_d095_cunha_do_giro_nao_fica_branca_na_beirada(tmp_path):
     assert float((beiradas.min(axis=1) >= 254).mean()) < 0.01
 
 
+def test_d095_d639_cunha_da_cor_do_papel_com_o_desentortar_ligado_e_a_pagina_segurada(tmp_path, monkeypatch):
+    """D-095 (ressalvas do G6, 12/10): "cunhas brancas com corte até a beirada";
+    D-639 (06/11/2026): "pode consertar o triangulo" -> o cantinho do giro sai com
+    a cor do papel "também quando o 'Desentortar' está ligado e a página sai sem
+    desentortar". Defeito de 06/11/2026 (achado no Destino do socialismo 18,
+    direita, `test_desentortar_conferir_de_novo.py`, `assert 2292 == 0`): a etapa
+    10a pôs a cor do papel só no caminho com o Desentortar desligado; com ele
+    ligado e a proteção segurando a página, a lasca saía branca.
+
+    Mesma página da prova acima (papel amarelado, giro à mão de 1,5 grau, corte
+    até a beirada), agora com o Desentortar automático e a proteção segurando a
+    página (preparar_no_corte trocado por uma recusa, como em
+    tests/test_desentortar_protecao.py: sem a DLL, roda no GitHub). Prova:
+    (1) o aviso "Desentortar não usado" continua (D-105/D-108); (2) quase nenhum
+    ponto branco puro nas beiradas do PDF; (3) a página sai igual à do
+    Desentortar desligado (nenhum valor diferente em mais de 64 tons)."""
+    from core import analise
+    from core import desentortar_scantailor as ds
+
+    def segurou(reta, caixa, pagina, dpi=None, **_):
+        x0, y0, x1, y1 = caixa
+        return ds.Preparo(reta[y0:y1, x0:x1].copy(), True, 9, 0.0)
+
+    monkeypatch.setattr(ds, "preparar_no_corte", segurou)
+    img = np.full((ALTURA_PX, LARGURA_PX, 3), AMARELADO, np.uint8)
+    img[300:500, 150:450] = 0
+
+    def livro(nome, modo):
+        pasta = tmp_path / nome
+        pasta.mkdir()
+        projeto = _projeto_tudo_desligado(pasta, img=img)
+        projeto.paginas[0].angulo_manual = 1.5
+        projeto.paginas[0].recorte = (0.0, 0.0, 1.0, 1.0)
+        projeto.paginas[0].desentortar = modo
+        return projeto
+
+    ligado = livro("ligado", ds.AUTOMATICO)
+    saida = _gerar(ligado)
+    assert analise.DESENTORTAR_SAIU_SEM in ligado.paginas[0].alertas
+    beiradas = np.concatenate([saida[:, :8].reshape(-1, 3), saida[:, -8:].reshape(-1, 3),
+                               saida[:8].reshape(-1, 3), saida[-8:].reshape(-1, 3)])
+    assert float((beiradas.min(axis=1) >= 254).mean()) < 0.01
+    desligado = _gerar(livro("desligado", ds.DESLIGADO))
+    assert saida.shape == desligado.shape
+    assert int((np.abs(saida.astype(int) - desligado.astype(int)) > 64).sum()) == 0
+
+
 # --- obra de 26/10/2026, etapa 10b (defeitos na imagem final) ------------------
 # As medidas nas páginas de verdade estão em tests/test_etapa10b_imagem.py; aqui,
 # a prova de comportamento de cada decisão tocada (regra 4 do CLAUDE.md §11).
