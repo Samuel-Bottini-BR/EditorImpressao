@@ -398,7 +398,8 @@ def test_d618_d636_aplicar_em_todas_numa_folha_dividida_gira_as_paginas(janela, 
     tela, projeto = _livro_com_a_folha_1_dividida(janela, tmp_path)
     tela.barra_girar.definir_alcance(girar.ALCANCE_TODAS)
     tela.barra_girar.botoes_de_giro[girar.GIRO_DIREITA].click()
-    assert [f.rotacao for f in projeto.folhas] == [0, 0]
+    # D-640 (06/11; troca autorizada pelo Samuel, Central girar-capa-testes-antigos, 07/11): "todas as páginas" gira também a folha 2 (inteira), como a página da vez
+    assert [f.rotacao for f in projeto.folhas] == [0, 90]
     assert [p.giro_da_pagina for p in projeto.paginas] == [90, 90, 0]
 
 

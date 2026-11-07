@@ -82,7 +82,7 @@ def test_reversao_d636_todas_as_paginas_gira_cada_pagina_sozinha(janela, tmp_pat
     linhas = [f.posicao_corte for f in projeto.folhas]
     tela.barra_girar.definir_alcance(girar.ALCANCE_TODAS)
     tela.barra_girar.botoes_de_giro[girar.GIRO_ESQUERDA].click()
-    assert _rotacoes(projeto) == [0, 0, 0]
+    assert _rotacoes(projeto) == [0, 0, 270]      # D-640 (06/11; troca autorizada pelo Samuel, Central girar-capa-testes-antigos, 07/11): a folha inteira também gira
     assert _giros(projeto) == [270, 270, 270, 270, 0]
     assert [f.posicao_corte for f in projeto.folhas] == linhas
     assert len([a for a in janela.acoes.feitas if a.tipo == "girar"]) == 1   # uma ação só
@@ -180,7 +180,8 @@ def test_d636_todas_ficam_viradas_como_a_da_vez_e_o_ctrl_z_devolve_cada_uma(jane
     tela.barra_girar.definir_alcance(girar.ALCANCE_TODAS)
     tela.barra_girar.botoes_de_giro[girar.GIRO_ESQUERDA].click()
     assert _giros(projeto) == [270, 270, 270, 270, 0]
-    assert "todas as 4 páginas, viradas como a página 2" in janela.acoes.feitas[-1].descricao
+    # D-640 (06/11; troca autorizada pelo Samuel, Central girar-capa-testes-antigos, 07/11): a folha inteira gira junto e conta na frase
+    assert "todas as 5 páginas, viradas como a página 2" in janela.acoes.feitas[-1].descricao
     tela.desfazer()
     assert _giros(projeto) == [90, 0, 0, 0, 0]
     janela.menu.acoes["refazer"].trigger()
@@ -212,7 +213,8 @@ def test_d636_folha_inteira_fica_como_esta(janela, tmp_path):
     tela.ir_para_pagina(4)
     tela.barra_girar.definir_alcance(girar.ALCANCE_TODAS)
     tela.barra_girar.botoes_de_giro[girar.GIRO_DIREITA].click()
-    assert _rotacoes(projeto) == [90, 90, 90] and _giros(projeto) == [0] * 5
+    # D-638 (06/11; troca autorizada pelo Samuel, Central girar-capa-testes-antigos, 07/11): as folhas divididas giram página por página; a inteira gira inteira
+    assert _rotacoes(projeto) == [0, 0, 90] and _giros(projeto) == [90, 90, 90, 90, 0]
 
 
 # --- o PDF que sai ------------------------------------------------------------------------------
@@ -237,5 +239,7 @@ def test_d636_o_pdf_sai_com_cada_pagina_deitada_inteira(janela, tmp_path):
         assert girada.shape == depois[i].shape, i
         diferenca = np.abs(girada.astype(int) - depois[i].astype(int)).mean()
         assert diferenca < 3, (i, diferenca)
-    assert antes[4].shape == depois[4].shape
-    assert np.abs(antes[4].astype(int) - depois[4].astype(int)).mean() < 1
+    # D-640 (06/11; troca autorizada pelo Samuel, Central girar-capa-testes-antigos, 07/11): a folha inteira (página 5) também sai girada, inteira
+    girada = girar_90(antes[4], girar.GIRO_ESQUERDA)
+    assert girada.shape == depois[4].shape
+    assert np.abs(girada.astype(int) - depois[4].astype(int)).mean() < 3
