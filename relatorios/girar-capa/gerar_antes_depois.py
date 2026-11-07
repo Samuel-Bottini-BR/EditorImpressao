@@ -15,6 +15,7 @@ de fábrica do livro novo), dividir as folhas 2 a 70 pela conta do "dividir" (a 
 do ScanTailor; a folha 1, capa e contracapa abertas, fica inteira), ferramenta Cortar as bordas.
 Situação 1: na página 1 (a capa inteira), "todas as folhas" + "¼ à esquerda" do Propriedades.
 Situação 2: na página 14 (folha dividida), "todas as páginas" + "¼ à esquerda".
+Situação 3 (resposta "Giram também", 07/11): na página 3 (ímpar), "só as ímpares" + "¼ à esquerda".
 Depois de cada uma: o PDF que sai (só as páginas 1, 2, 3, 14 e 15, numa CÓPIA do projeto), uma
 foto da janela (desenhada na memória) e o Ctrl+Z. Grava PNGs e um estado.json na pasta de saída.
 """
@@ -116,10 +117,13 @@ def test_gerar_antes_depois(janela, tmp_path):
     tela.escolher_ferramenta(FERRAMENTA_CORTAR)
     estado["pdf-original"] = _pdf(projeto, saida, "original")
 
-    for situacao, pagina, palavras in (("s1", 0, "todas as folhas"), ("s2", 13, "todas as páginas")):
+    for situacao, pagina, palavras, alcance in (
+            ("s1", 0, "todas as folhas", girar.ALCANCE_TODAS),
+            ("s2", 13, "todas as páginas", girar.ALCANCE_TODAS),
+            ("s3", 2, "só as ímpares", girar.ALCANCE_IMPARES)):     # resposta "Giram também"
         tela.ir_para_pagina(pagina)
         _esperar_previa(tela)
-        tela.barra_girar.definir_alcance(girar.ALCANCE_TODAS)
+        tela.barra_girar.definir_alcance(alcance)
         assert tela.barra_girar.combo_alcance.currentText() == palavras, (
             tela.barra_girar.combo_alcance.currentText())
         tela.barra_girar.botoes_de_giro[girar.GIRO_ESQUERDA].click()

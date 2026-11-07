@@ -105,9 +105,56 @@ rotação da folha); o Dividir em "Duas lado a lado" numa folha dividida continu
 1. **(D-640, "daqui em diante", "só as pares", "só as ímpares" no miolo.)** A D-640 fala de "todas as páginas". No
    miolo, com "só as ímpares", a capa (página 1, ímpar) continua sem girar, como hoje. Fiz só o "todas as páginas"
    (o que ele mandou). Sugestão: deixar assim. Pode ser?
+   **Respondida (Central, 07/11/2026): "Giram também".** Feito (ver "Segunda parte" abaixo).
 2. **(D-638, a ferramenta Dividir em "Duas lado a lado" numa folha dividida.)** Ali a tela mostra a folha inteira com
    a linha, e o girar continua girando folhas (D-618, ressalva). Com "todas as folhas" ali, continua como hoje (as
    folhas divididas giram inteiras). Não mexi: a D-638 fala de estar "numa folha inteira (ex.: a capa aberta)".
+   **Ainda sem resposta** (ele perguntou "vai ficar como a pagina 1?"). Não mexer.
+
+## Segunda parte (07/11): as respostas do Samuel na Central
+
+**1. "Posso trocar 5 testes antigos que cobram o jeito de girar que você mandou mudar?" → "Sim, pode trocar
+(recomendo)"** (Central, `girar-capa-testes-antigos`, 07/11). Aplicada a proposta, só aquelas linhas, em commit
+separado (16e752e7), com comentário citando a D-638/D-640 e a autorização.
+
+**2. "No miolo, "daqui em diante", "só as pares" e "só as ímpares" giram também a capa aberta?" → "Giram também".**
+- *Como fica para quem usa e no livro (escrito antes de mexer):* no miolo (página de folha dividida), com "daqui em
+  diante", "só as pares" ou "só as ímpares", a folha inteira (a capa aberta, um encarte) cuja página está no grupo
+  escolhido gira também, inteira, como no "todas as páginas", virada como a página da vez. As páginas divididas
+  continuam girando cada uma sozinha. Ex.: Gradus, página 3, "só as ímpares" + ¼ à esquerda → a capa (página 1) gira
+  em pé, e as páginas 3, 5, 7... deitam; a 2, 4, 6... não mudam. Um Ctrl+Z desfaz tudo; Ctrl+Y refaz. No PDF, a capa
+  sai girada junto. Não muda: "só esta página", o canto, a grade, o aviso de pares/ímpares (na página ímpar com "só
+  as pares" avisa e nada gira, nem a capa), a capa com "daqui em diante" a partir de uma página depois dela (não gira:
+  o "daqui em diante" começa onde se está).
+- *A conta de par/ímpar da folha inteira:* não ficou dúvida. No miolo o "aplicar em" já conta PÁGINAS pelo número
+  que a tela mostra ("página 1 de 139"; D-636, `girar.folhas_do_alcance` sobre a lista de páginas). A capa aberta é
+  a página 1 da lista: ímpar. Usei essa mesma conta, sem conta nova.
+- *Feito:* provas novas (3bfa53af; 6 de reversão falham no código de 16e752e7, `reversao-giram-tambem-no-codigo-antigo.txt`)
+  e o código (df8db4ec: `_com_as_folhas_inteiras_tambem` recebe o "aplicar em" e pega as folhas inteiras do grupo).
+  A prova provisória `test_d640_as_outras_escolhas_do_miolo_continuam_como_antes` (escrita nesta tarefa enquanto a
+  pergunta estava aberta) foi trocada pelas novas, no commit das provas.
+- **Mais um teste antigo cobra o jeito antigo (não mexi nele):**
+  `tests/test_decisoes_girar_paginas_aplicar_em.py::test_d636_daqui_em_diante_conta_paginas` cobra
+  `_rotacoes(projeto) == [0, 0, 0]` depois de "daqui em diante" na página 3; nesse livro a folha 3 é inteira (página
+  5), fica DEPOIS da página 3 e, pela resposta "Giram também", gira: `[0, 0, 90]`. Proposta (precisa de autorização,
+  como a primeira): `relatorios/girar-capa/proposta-teste-daqui.diff` (uma linha + comentário); com ela o arquivo
+  passa inteiro (10 passed, numa cópia à parte).
+
+**3. Dividir com "Duas lado a lado":** sem resposta; não mexi.
+
+**Testes da segunda parte (df8db4ec):**
+- PC, um arquivo por vez, sem janela na tela (série "Giram tambem" em `resultado-testes.txt`): 70 arquivos; 69 passam
+  inteiros; no outro (`test_decisoes_girar_paginas_aplicar_em.py`, 9 de 10) falha só o teste antigo do "daqui em
+  diante" acima. `test_decisoes_girar_capa.py`: 26 passed.
+- GitHub, suíte 42391132998 (em ece01b15): botões/prints da janela real e as partes 2, 3 e 4 passaram; a parte 1 e a 5
+  falharam em: o teste antigo do "daqui em diante" (esperado) e `test_decisoes_so_as_letras.py::test_d148_...` ("não
+  aconteceu a tempo", o instável conhecido; no PC passou nas duas séries, 5 passed, e passou na suíte 42381756807).
+  Reenviei só as partes que falharam (mesmo número de rodada).
+- Velocidade: não rodei de novo. Nesta parte o `core/` só mudou em comentários; o código mudado é o do clique, em
+  `ui/tela_conferir.py`. O filtro 42381758932 (em 99d7d782) deu "nada mais lento".
+- Imagens da situação 3 (Gradus, página 3, "só as ímpares" + ¼ à esquerda): `s3-pdf-antes-e-depois.png` e
+  `s3-janela-antes-e-depois.png`. Antes, a capa ficava deitada (sem girar); agora ela gira com as ímpares. Ctrl+Z
+  devolve tudo e Ctrl+Y refaz (`estado.json` da geração: depois do Ctrl+Z nenhuma folha nem página girada).
 
 ## Andamento
 
@@ -118,8 +165,9 @@ rotação da folha); o Dividir em "Duas lado a lado" numa folha dividida continu
   defeito, 4 passam (as que conferem o que não pode mudar) — `reversao-no-codigo-antigo.txt` (e86c5851)
 - [x] conserto (99d7d782): `core/girar.campos_do_giro_numa_folha_inteira` (conta nova) e, em `ui/tela_conferir.py`,
   `_girar_as_divididas_pagina_por_pagina` (D-638) e `_com_as_folhas_inteiras_tambem` (D-640)
-- [x] PC, um arquivo por vez (`rodar_testes.ps1`, saída em `resultado-testes.txt`): 72 arquivos (o novo, os do girar,
-  da tira, do Dividir, do PDF, dos cadernos e os 52 `test_decisoes*.py`); 70 passam inteiros; falham só os 5 testes
+- [x] PC, um arquivo por vez (`rodar_testes.ps1`, saída em `resultado-testes.txt`): 70 arquivos (o novo, os do girar,
+  da tira, do Dividir, do PDF, dos cadernos e os `test_decisoes*.py`; contagem corrigida em 07/11: eram 70, não 72);
+  68 passam inteiros; nos outros 2 falham só os 5 testes
   antigos da seção abaixo
 - [x] proposta para os 5 testes antigos conferida numa cópia à parte: com ela, 10 passed e 20 passed
 - [x] imagens antes/depois (sem janela na tela; Gradus copiado): `s1-pdf-antes-e-depois.png`,

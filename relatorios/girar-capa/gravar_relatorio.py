@@ -50,10 +50,21 @@ ligado foi conferido pelas provas automáticas (`[True]`).
 - Prova de reversão: `tests/test_decisoes_girar_capa.py` (19 provas) no código de antes: 15 falham pelo defeito
   (ex.: "assert [270, 270, 270, 270] == [270, 270, 0, 0]": as folhas divididas giravam como folha); 4 passam (as que
   conferem o que não pode mudar). No código novo: 19 passam.
-- PC, um arquivo por vez: 72 arquivos; 70 passam inteiros. Falham 5 testes antigos que cobram justamente o
+- PC, um arquivo por vez: 70 arquivos; 68 passam inteiros. Falham 5 testes antigos que cobram justamente o
   comportamento que o Samuel mandou trocar (a capa não girar com "todas as páginas"; as folhas divididas girarem
   como folha). Não foram mudados; a proposta está em `proposta-testes-d636.diff` e foi conferida numa cópia à parte.
 - GitHub, suíte 42381756807: só esses 5 falham. Velocidade: ver o ONDE-PAREI.
+
+## Segunda parte (07/11): as respostas do Samuel na Central
+
+- "Posso trocar os 5 testes antigos?" → "Sim, pode trocar (recomendo)": trocadas só aquelas linhas (16e752e7).
+- "No miolo, "daqui em diante", "só as pares" e "só as ímpares" giram também a capa aberta?" → "Giram também": feito
+  (df8db4ec). A folha inteira cuja página está no grupo escolhido gira também, inteira, virada como a página da vez.
+  Par/ímpar pelo número da página que a tela mostra (a capa é a página 1, ímpar). Imagens: `s3-*.png`.
+- Mais um teste antigo cobra o jeito de antes (o "daqui em diante" com uma folha inteira depois da página da vez): não
+  foi trocado, falta autorização (proposta em `proposta-teste-daqui.diff`).
+- PC: 70 arquivos, 69 passam inteiros; falha só esse teste. GitHub 42391132998: esse teste e o instável conhecido
+  `test_d148` (passa no PC).
 
 ## Ressalvas
 

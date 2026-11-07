@@ -96,7 +96,9 @@ def main() -> None:
             ("s1", "Situação 1 (D-638): na capa inteira, \"todas as folhas\" + ¼ à esquerda",
              "na página 1 (capa inteira), quadro \"Girar a folha\", lista \"todas as folhas\""),
             ("s2", "Situação 2 (D-640): no miolo, \"todas as páginas\" + ¼ à esquerda",
-             "na página 14 (folha dividida), quadro \"Girar a página\", lista \"todas as páginas\"")):
+             "na página 14 (folha dividida), quadro \"Girar a página\", lista \"todas as páginas\""),
+            ("s3", "Situação 3 (resposta \"Giram também\", 07/11): na página 3, \"só as ímpares\" + ¼ à esquerda",
+             "na página 3 (folha dividida, ímpar), quadro \"Girar a página\", lista \"só as ímpares\"")):
         _quadro(titulo, [
             (f"PDF que sai ANTES do clique. {caminho}.", _linha(depois, "original")),
             (f"PDF que sai DEPOIS do clique, com o código de ANTES do conserto: {onde}.",
@@ -109,7 +111,9 @@ def main() -> None:
             ("s1", "Situação 1 (D-638) na janela: a página 14 depois de girar \"todas as folhas\" na capa",
              "tela-s1-pagina14.png", "girou na página 1 (capa) com \"todas as folhas\" + ¼ à esquerda e foi à página 14"),
             ("s2", "Situação 2 (D-640) na janela: a capa depois de girar \"todas as páginas\" no miolo",
-             "tela-s2-pagina1.png", "girou na página 14 com \"todas as páginas\" + ¼ à esquerda e foi à página 1 (capa)")):
+             "tela-s2-pagina1.png", "girou na página 14 com \"todas as páginas\" + ¼ à esquerda e foi à página 1 (capa)"),
+            ("s3", "Situação 3 (\"Giram também\") na janela: a capa depois de girar \"só as ímpares\" na página 3",
+             "tela-s3-pagina1.png", "girou na página 3 com \"só as ímpares\" + ¼ à esquerda e foi à página 1 (capa)")):
         _quadro(titulo, [
             (f"Código de ANTES do conserto: {onde}. {caminho}. Janela desenhada na memória "
              f"(nada abriu na tela).", _tela(antes, foto)),
