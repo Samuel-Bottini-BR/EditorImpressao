@@ -55,3 +55,18 @@ Correção do Samuel (06/11): "ilide.info-os-lusiadas-contados-as-crianas-e-lemb
 - ressalva: o scan é de baixa resolução, cerca de 77 pontos por polegada (o programa trabalha bem a partir de 300). As letras podem sair pixeladas no PDF, e isso vem do scan, não do programa. Fica escrito como ressalva, não como erro do programa.
 
 O teste é feito numa cópia, na pasta de trabalho do agente. O original em Downloads não muda.
+
+## 2ª rodada: só funções (06/11/2026)
+
+O que o Samuel quer achar (06/11): "os erros que eu queria que você achasse são do tipo de função que não funciona" e, sobre a lista de 8 erros de função da 1ª rodada, "esses tipos de erros que eu quero que sejam procurados".
+
+Exemplos da 1ª rodada (o tipo certo): marcações que deviam sumir com a Mão e ficam; a Mão mostra a folha espremida; página que sai deitada no arquivo de imprimir sem aviso; miniatura que não fica branca; faixa e janela de salvar que não atualizam; lista que volta ao topo; o sino que muda sozinho.
+
+Não são o foco: a qualidade da imagem (sujeira, ilustração que some) - essa é outra conversa.
+
+Como muda:
+- A janela do programa fica **na tela do Samuel**, para a rodinha do mouse e o Ctrl funcionarem. O PC fica livre por cerca de uma hora.
+- **Cada ferramenta em cada vista:** Dividir, Endireitar, Cortar, Mover, Girar, marcar (retângulo, laço, pincel), Filtro, deixar em branco, tirar do livro - em "Uma página", "Duas lado a lado" e "antes / depois".
+- **Teclado e rodinha:** Ctrl+Z e Ctrl+Y em sequência, Delete, setas, PageUp/PageDown, Ctrl+Seta do girar, Shift+roda, roda sobre campos de número.
+- **Depois de cada ação, conferir que tudo em volta acompanhou:** a tela grande, a miniatura, a faixa de aviso, o painel Propriedades, o sino, o rodapé, o histórico, e o PDF quando a ação deve chegar nele.
+- **Cada botão e menu:** apertar e ver se faz o que diz, também nas situações difíceis (página em branco, página tirada, folha dividida e inteira, capa aberta, primeira e última página).

@@ -41,3 +41,7 @@ As 7 coisas que já estavam na versão de teste. Palavras dele, como escreveu. P
 ## Sobre os itens 8 a 14 (as 6 mudanças)
 
 - "Estes outros que você falou, tem coisas que eu já testei e já dei resposta."
+
+## Depois do teste: a capa nos cadernos (D-641)
+
+- "vamos deixar o montar cadernos assim, se ele adicionar aquela opção ele faz do jeito novo se não continua fazendo como sempre o kaique fez né? com a diferença que tera menos folhas em branco."

@@ -513,3 +513,14 @@ na Central (aba "O que você não gostou: alternativas").
 - **Abertos:** falta de memória ao processar (consertada no ramo `memoria-pdf-2026-11-04`, falta juntar); "imprimir agora" e "extrair as páginas escolhidas" põem o PDF inteiro na memória (04/11, Lista de bugs); vista das margens na janela grande "estranha"
   (Lista de bugs do plano, 04/11); "Área branca" 29,7×21,0 → 31,7×22,0 cm depois de Ctrl+Z/Ctrl+Y com margens iguais (achado do
   agente mover-lado, não mexido); prévia lenta com "Margens iguais" (mede o livro todo; fase de desempenho).
+
+## 06/11/2026 (PARTE -31)
+
+- **Consertados e juntados no obra:** falta de memória ao processar (`memoria-pdf`, junto com as 6 entregas, `51bdcb0b`); cantinho
+  do giro branco com o Desentortar ligado e a página segurada (D-639, `6205a813`; era o teste do Desentortar que falhava no obra).
+- **Novos na Lista de bugs do plano (06/11):** Montar cadernos recalcula a folha já vista (print-3 da sessão 3).
+- **Erros de função do teste como o Kaique, na fila (aprovados um por vez):** marcações laranja à vista com a Mão; a Mão mostra
+  a folha espremida; página deitada no arquivo para imprimir sem aviso; miniatura que não fica branca; faixa velha depois de
+  "tirar do livro"; aviso velho na janela de salvar; lista do Automático volta ao topo; o sino que muda sozinho
+  (`.claude\worktrees\teste-kaique-lusiadas\relatorios\teste-kaique-lusiadas\relatorio.md` §2).
+- **A investigar:** ilustração da pág. 8 dos Lusíadas quase some; remendos nos rostos da pág. 14.

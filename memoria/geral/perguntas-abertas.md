@@ -9,6 +9,12 @@ Como manter: quando ele responder, registre no plano (as duas cópias) e na fich
 daqui** (ou mova para "Respondidas recentemente" com a data). O `conferir_memoria.py` avisa quando uma pergunta desta
 lista com nome entre crases já aparece como decidida no Registro.
 
+## 00000. Atualização de 06/11/2026 (vale sobre o resto; [PARTE -31](../../historico/Editor%20de%20Impressao%20-%20resumo%20para%20o%20Claude.md) §4)
+
+- **Respondidas em 06/11:** A → D-640; B → D-638; C → D-642; as 15 da página `teste-kaique-lusiadas` da Central (8 erros de função "ok"; página suja "não é erro em si"; ilustração da pág. 8 e rostos da pág. 14: investigar; margens → D-643).
+- **Sem resposta:** o cantinho do giro com a cor do papel também quando a página é de fato desentortada, ou quando falta a parte do ScanTailor?
+- **Continuam:** as 6 `n0411-*` da Central; Siebmacher 268 → 134 páginas.
+
 ## 0000. Atualização de 05/11/2026 (vale sobre o resto; [PARTE -30](../../historico/Editor%20de%20Impressao%20-%20resumo%20para%20o%20Claude.md) §4)
 
 - **Respondidas em 04-05/11:** as 25 respostas de 04/11 (aba Respostas da Central; D-624 a D-635); `perg-girar-pagina` → D-636; as 3 do agente caixinha-volta continuam (PARTE -29 §4). 

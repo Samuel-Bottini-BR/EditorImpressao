@@ -1,6 +1,6 @@
 # Editor de Impressão — documento para colar no Claude
 
-Atualizado em 05/11/2026 (PARTE -30; a anterior, PARTE -29, é de 03-04/11). Desde 19/10 a memória por assunto fica em `memoria/` (índice `memoria/INDICE.md`). Versão **máxima**: reúne o histórico institucional, o
+Atualizado em 06/11/2026 (PARTE -31; a anterior, PARTE -30, é de 04-05/11). Desde 19/10 a memória por assunto fica em `memoria/` (índice `memoria/INDICE.md`). Versão **máxima**: reúne o histórico institucional, o
 que o programa é, todas as funcionalidades pedidas, os 68 pedidos feitos até
 hoje **palavra por palavra**, o que foi feito, o que falta, e os dois
 documentos-fonte inteiros (a especificação original e o prompt de testes) em
@@ -13,6 +13,146 @@ o backup). Repositório git ligado a
 `https://github.com/Samuel-Bottini-BR/EditorImpressao`.
 
 ---
+
+# PARTE -31 — Checkpoint de 06/11/2026 (noite): as 6 entregas juntadas, o cantinho do giro, teste como o Kaique, D-638 a D-643 (leia isto primeiro)
+
+Sessão no PC, gerente Claude Opus 5.5. **Pausa pedida pelo Samuel ("vamos pausar todos os trabalhos e dar check point").**
+No fim, nenhum agente e nenhum teste rodando. A fila de consertos **não começou**: nenhum ramo novo.
+Fichas mudadas: `memoria/ramos.md`, `memoria/bugs.md`, `memoria/geral/perguntas-abertas.md`, `memoria/LINHA-DO-TEMPO.md`.
+
+## 0. Para recomeçar
+
+1. `git -C D:\programas\EditorImpressao fetch origin`. Na Central, ler as `ordens` novas, as `respostas` com `lida != true` e
+   a página `conferencias/teste-kaique-lusiadas` (perguntas `k0611-*`).
+2. **Esperando o Samuel testar** (lista dada a ele no chat em 06/11), na versão de teste `obra-2026-10-26`. Antes, fechar e
+   abrir o programa:
+   1. girar só a página numa folha dividida, em todas as opções do "aplicar em" (D-618, D-636);
+   2. Mover e o clique no par em "Duas lado a lado" (D-612, D-622, D-611);
+   3. painel do livro (D-619, D-620);
+   4. falta de memória: livro grande não cai mais. Se faltar, aparece a mensagem da D-591 com "tentar de novo";
+   5. desfazer só nesta página, pelo botão direito (D-621, D-623);
+   6. os números das páginas nas folhas do caderno (D-604);
+   7. o cantinho do giro com a cor do papel quando o Desentortar segura a página (D-639).
+3. **Pergunta aberta dele (o cantinho, D-639), exata:** o cantinho também deve sair com a cor do papel em dois casos que ficaram
+   de fora: (a) quando a página é de fato desentortada; (b) quando falta a parte do ScanTailor? Sem resposta. A D-639 só cobre
+   "Desentortar ligado e a página segurada".
+4. **A fila, um por vez.** Cada item pronto vai para o teste dele antes do próximo. Regra dele: "só não pode arrumar um
+   problema e criar outro."
+   1. Girar: D-638 (na folha inteira, "todas as folhas" gira as divididas página por página) e D-640 ("todas as páginas" gira
+      também a capa aberta).
+   2. D-642: esconder "voltar a página" na página em branco acrescentada à mão.
+   3. Os 8 erros de função do teste como o Kaique, um por vez ("ok"):
+      1. marcações laranja à vista com a Mão;
+      2. a Mão mostra a folha espremida;
+      3. página deitada no arquivo para imprimir, sem aviso;
+      4. miniatura que não fica branca;
+      5. faixa que não atualiza depois de "tirar do livro";
+      6. janela de salvar com aviso velho;
+      7. lista do Automático que volta para o topo;
+      8. o sino que muda sozinho.
+   4. D-643: "Margens iguais" ligado de fábrica ("recomendado").
+   5. Investigar a ilustração da página 8, que quase some. Ele disse: "investigar que tipo de erro é. - como isso está
+      acontecendo, as vezes não reconheceu como imagem ou gravura ou usou filtro errado né". Investigar também os remendos nos
+      rostos da página 14 ("tem que verificar o que aconteu").
+   - A página quase em branco que sai suja **não é erro**: "isso é porque não foi feito manualmente né, mas isso não é um erro em si."
+5. No fim da fila, a rodada inteira no PC, em partes (§3), com o PC livre. Depois, a **2ª rodada do teste como o Kaique, só de
+   funções** (plano em `relatorios/testes-guiados/teste-como-kaique-plano/`): a janela na tela dele e o PC livre por cerca de
+   1 h. **Perguntar antes de começar.**
+
+## 1. O que se fez
+
+- **O teste do Desentortar que falhava no obra** (`test_destino_do_socialismo_18_o_botao_traz_a_deformacao_e_aparece_a_pergunta`,
+  `2292 == 0`) era o cantinho do giro. Com o Desentortar ligado e a página segurada, ele saía branco em vez da cor do papel.
+  - Conserto: ramo `cunha-desentortar-2026-11-06`, juntado no obra em `6205a813` (D-095, D-639).
+  - Em `core/pipeline.py`, nova `_segurada_com_a_cunha_do_papel`.
+  - Teste de reversão: `tests/test_decisoes.py::test_d095_d639_cunha_da_cor_do_papel_com_o_desentortar_ligado_e_a_pagina_segurada`.
+- **As 6 entregas juntadas na versão de teste** (Samuel: "pode colocar para funcionar isso ai"). O ramo `juntar-6-2026-11-06`
+  entrou no obra por avanço direto, até `51bdcb0b`, e foi enviado ao GitHub.
+  - O conflito de `ui/tela_conferir.py` foi resolvido mantendo as duas linhas: `definir_giros_das_paginas` (D-618) e
+    `definir_numeros`/`definir_grupos` (D-611).
+  - Testes: `teste_botoes.py` fez 372 ações, sem falha. A suíte rodou em partes (ver §3).
+- **Teste guiado do Samuel (sessão 3, Gradus)**: `relatorios/testes-guiados/2026-11-06-sessao-3/` (3 formatos, prints 1 a 7).
+  - Funcionam: D-590, D-589, D-004, D-574 e D-601.
+  - D-574: "a maneira de visualizar ainda está muito ruim". Foi para a Lista de espera, para o layout.
+  - Dois bugs foram para a Lista de bugs: o Montar cadernos recalcula a folha já vista, e o cantinho do giro.
+  - Lista de espera: digitar o número da folha no Montar cadernos; ver a fundo o cantinho do giro.
+- **Montar cadernos fica como está (D-641).** Sem a caixinha da capa, faz como o Kaique sempre fez, com menos folhas em branco.
+- **Teste como o Kaique (Os Lusíadas de João de Barros, em Downloads; 67 folhas duplas, capa aberta, ~77 DPI).**
+  - Plano: `relatorios/testes-guiados/teste-como-kaique-plano/plano.*`. Aprovado com "sim"; a seção "2ª rodada: só funções"
+    foi acrescentada.
+  - Resultado: `.claude\worktrees\teste-kaique-lusiadas\relatorios\teste-kaique-lusiadas\`, com relatorio, ONDE-PAREI, prints,
+    conferir e pdfs. **Fica só no PC, fora do git, porque o livro tem direito autoral.**
+  - Foi para a Central (`conferencias/teste-kaique-lusiadas`) com 15 perguntas, já respondidas (ver §0.4).
+- **O que ele quer que os testes achem**: "os erros que eu queria que você achasse são do tipo de função que não funciona" e
+  "esses tipos de erros que eu quero que sejam procurados". A qualidade da imagem é outra conversa.
+- **Perguntas vão para a Central e para o chat ao mesmo tempo** ("faça as perguntas lá e aqui").
+
+## 2. Decisões novas (no Livro, no obra; as duas cópias iguais por `cmp`)
+
+- **D-638:** na folha inteira, "todas as folhas" gira as divididas página por página. Resposta: "Pode ser". Falta construir.
+- **D-639:** o cantinho do giro sai com a cor do papel também com o Desentortar ligado e a página segurada. Construída, falta
+  o teste dele.
+- **D-640:** "todas as páginas" gira também a capa aberta. Resposta: "vamos deixar como gira todas as paginas". Falta construir.
+- **D-641:** Montar cadernos fica como está.
+- **D-642:** esconder "voltar a página" na página em branco acrescentada à mão. Resposta: "Sim". Falta construir.
+- **D-643:** "Margens iguais" ligado de fábrica. Resposta: "recomendado". Falta construir.
+- **D-636 corrigida:** a frase "folha inteira fica como está" era da gerente, não dele.
+
+## 3. Descobertas (não redescobrir)
+
+- **A suíte inteira (~3854 testes) trava no PC rodada de uma vez.** A memória chega a 7 GB no `test_promessas`.
+  - Rodar em partes: `test_promessas` sozinho passa em 12 min; os arquivos depois dele passaram 687 de 687.
+  - Nas partes, 6 falhas passaram ao rodar sozinhas. Vinham do PC ocupado.
+  - As 3 falhas da tira (`test_decisoes_tira_pares_juntas` ×2, `test_tirar_da_lista_nao_volta::test_tirar_OUTRO_livro_nao_solta_o_aberto`)
+    também passaram sozinhas, aqui e nos ramos de origem.
+- **O Mover em "Duas lado a lado" já estava no obra** (`152a750b`). A gerente disse que não e errou; o Samuel corrigiu.
+- **Errei duas vezes ao ler respostas:**
+  - Tomei "1- ok" por aprovação; era para eu responder.
+  - Dei como dele a cor do papel no cantinho; era escolha de agente.
+  - Regra: conferir no registro antes de dizer "você decidiu".
+- **O livro dos Lusíadas certo** é `ilide.info-os-lusiadas-contados-as-crianas-e-lembrado-ao-povo-pr_13bcb7fb9d645f5d2653358634815ab8`,
+  em Downloads, e não o questionário de 2 páginas.
+- **O que o piloto do teste não consegue fazer** (com a janela fora da tela): a rodinha do mouse e o Ctrl+Z ou Ctrl+Y pelo
+  teclado. Por isso a 2ª rodada é com a janela na tela dele.
+- **Falta de memória, a resposta dada a ele ("e se faltar memoria de novo?"):**
+  - Agora as páginas vão ao disco aos poucos; o Rhetorica fez pico de 1,7 GB.
+  - Se faltar memória por causa de outros programas, aparece a mensagem da D-591, com "tentar de novo" e "entendi".
+  - O trabalho no livro não se perde.
+  - "Imprimir agora" e "Extrair as páginas escolhidas" ainda carregam o PDF inteiro (Lista de bugs).
+
+## 4. Perguntas abertas (exatas)
+
+- O cantinho do giro nos dois casos de fora (§0.3).
+- **Central, "Perguntas novas (04/11)"** (`n0411-*`, 6, sem resposta):
+  - caixinhas do Automático voltam desmarcadas depois de rodar? Liga com o print-1 de 06/11, o Dividir que ficou marcado;
+  - trocar o "0 = todas";
+  - "O que vai sair" fica embaixo?;
+  - recuperar o trabalho anterior;
+  - inverter letra clara;
+  - "páginas em branco e 61".
+- Siebmacher: em agosto saía com 268 páginas, hoje com 134. Falta investigar.
+- Antigas: D-154 (urgente), D-575 (urgente: mostrar as opções do livreto com desenho antes de fazer) e
+  `memoria/geral/perguntas-abertas.md`.
+
+## 5. Próximo passo
+
+Esperar o teste do Samuel nas 7 coisas do §0.2 e a resposta do cantinho. Depois começar a fila do §0.4 pelo girar (D-638 e
+D-640), um agente por vez, com o PC livre para os testes.
+
+## 6. Como rodar e testar
+
+- Programa (versão de teste): `D:\programas\EditorImpressao\.venv\Scripts\python.exe main.py`, rodado de dentro de
+  `.claude\worktrees\obra-juncao`.
+- Um arquivo: `D:\programas\EditorImpressao\.venv\Scripts\python.exe -m pytest tests\<arquivo> -q` (na cópia).
+- Suíte inteira: **em partes**, nunca de uma vez. `tests\test_promessas.py` sozinho (~12 min), depois o resto. Rodar com
+  `LOCALAPPDATA` apontando para uma pasta só do teste.
+- Botões: `D:\programas\EditorImpressao\.venv\Scripts\python.exe teste_botoes.py` (06/11: 372 ações, 0 falhas).
+- GitHub: `gh workflow run "Testes no Windows" -R Samuel-Bottini-BR/EditorImpressao --ref claude/list-server-files-gkos8v -f ramo=<ramo>`.
+- Estado do git no fechamento:
+  - `obra-2026-10-26` em `6904a634`;
+  - `fase-1` com o checkpoint;
+  - os dois enviados ao GitHub.
+
 
 # PARTE -30 — Checkpoint de 04-05/11/2026 (noite): os 6 agentes entregues, aba Respostas, D-624 a D-637 (leia isto primeiro)
 
