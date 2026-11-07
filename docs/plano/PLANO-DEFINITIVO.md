@@ -491,6 +491,7 @@ Feito pelo agente de layout, a partir do plano discutido na conversa separada (v
 | 06/11/2026 | **Ver mais a fundo o cantinho que o giro abre na beirada** (a cunha da D-095, D-639): hoje ele sai com a cor do papel da página, escolha do agente da etapa 10a (26/10), nunca conferida pelo Samuel. Palavras dele: "vamos continuar assim, mas deixe anotado que eu quero ver mais afundo essa funcionalidade." | Samuel | a definir |
 | 06/11/2026 | **Digitar o número da folha no "Montar cadernos" do Automático**, como já dá no resto da prévia (D-617). Samuel: "não dá para digitar numero de pagina no montar cadernos. Mas no resto do automatico da certo" | Samuel | a definir |
 | 06/11/2026 | **O jeito de ver o livreto pronto (D-574) ainda está ruim: levar para o layout.** Samuel: "funciona, mas a maneira de visualizar ainda está muito ruim ainda, deixe anotado para o layout e veja outras observações que eu fiz nessa resposta." (as outras: `relatorios/testes-guiados/2026-11-06-sessao-3/prints/print-2.png`, `print-3.png`, `print-4.png`, `print-5.png`, relatório da sessão) | Samuel | layout |
+| 07/11/2026 | **Travar as letras e pintar só por cima do que não é letra** (no "Pintar por cima" das ferramentas de marcar). Samuel, na Central (`b-pintar-outras`, 06/11): "Teria como eu deixar as letras travadas e pintar só por cima do que não é letra? anote isso" | Samuel | a definir
 
 ## 7. Registro de mudanças
 
