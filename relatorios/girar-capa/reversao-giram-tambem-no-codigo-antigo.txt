@@ -1,0 +1,41 @@
+Provas novas da resposta do Samuel 'Giram tambem' (Central, 07/11/2026), rodadas no codigo de ANTES desta parte (16e752e7): as 6 de reversao falham (a folha inteira nao gira), as outras passam.
+
+﻿
+E       assert [0, 0, 0, 0] == [90, 0, 0, 0]
+E       assert [0, 0, 0, 0] == [0, 180, 0, 0]
+E       assert [0, 0, 0] == [0, 0, 90]
+E       assert [90, 0, 0, 0] == [270, 0, 0, 0]
+E           AssertionError: 0
+E           assert (480, 336, 3) == (336, 480, 3)
+E           AssertionError: 0
+E           assert (339, 231, 3) == (231, 339, 3)
+PASSED 
+tests/test_decisoes_girar_capa.py::test_reversao_d638_na_capa_todas_as_folhas_gira_as_divididas_pagina_por_pagina
+PASSED tests/test_decisoes_girar_capa.py::test_reversao_d638_daqui_em_diante_na_folha_inteira
+PASSED tests/test_decisoes_girar_capa.py::test_reversao_d638_so_as_pares_na_folha_inteira
+PASSED tests/test_decisoes_girar_capa.py::test_reversao_d638_so_as_impares_na_capa
+PASSED tests/test_decisoes_girar_capa.py::test_d638_so_as_pares_na_capa_avisa_e_nao_gira
+PASSED tests/test_decisoes_girar_capa.py::test_d638_todas_ficam_viradas_como_a_capa_e_o_ctrl_z_e_o_ctrl_y
+PASSED tests/test_decisoes_girar_capa.py::test_d638_o_corte_a_mao_gira_junto_e_o_ctrl_z_devolve
+PASSED tests/test_decisoes_girar_capa.py::test_d638_vale_com_e_sem_o_corte_das_bordas_na_tela[cortar]
+PASSED tests/test_decisoes_girar_capa.py::test_d638_vale_com_e_sem_o_corte_das_bordas_na_tela[endireitar]
+PASSED tests/test_decisoes_girar_capa.py::test_d638_so_esta_folha_na_capa_continua_girando_so_a_capa
+PASSED tests/test_decisoes_girar_capa.py::test_reversao_d640_todas_as_paginas_gira_tambem_a_capa
+PASSED tests/test_decisoes_girar_capa.py::test_d640_ctrl_z_e_ctrl_y_devolvem_a_capa_e_as_paginas
+PASSED tests/test_decisoes_girar_capa.py::test_d640_daqui_em_diante_nao_volta_para_a_capa_que_ficou_antes
+PASSED tests/test_decisoes_girar_capa.py::test_d640_so_as_pares_na_pagina_impar_avisa_e_nao_gira_nada
+PASSED tests/test_decisoes_girar_capa.py::test_d640_so_esta_pagina_no_miolo_continua_girando_so_ela
+PASSED tests/test_decisoes_girar_capa.py::test_reversao_d638_o_pdf_sai_com_a_capa_e_cada_pagina_girada[False]
+PASSED tests/test_decisoes_girar_capa.py::test_reversao_d638_o_pdf_sai_com_a_capa_e_cada_pagina_girada[True]
+PASSED tests/test_decisoes_girar_capa.py::test_reversao_d640_o_pdf_sai_com_a_capa_girada[False]
+PASSED tests/test_decisoes_girar_capa.py::test_reversao_d640_o_pdf_sai_com_a_capa_girada[True]
+PASSED tests/test_decisoes_girar_capa.py::test_d638_as_contas_separam_folhas_inteiras_e_paginas_divididas
+FAILED tests/test_decisoes_girar_capa.py::test_reversao_d640_so_as_impares_no_miolo_gira_tambem_a_capa
+FAILED tests/test_decisoes_girar_capa.py::test_reversao_d640_so_as_pares_no_miolo_gira_tambem_a_folha_inteira_par
+FAILED tests/test_decisoes_girar_capa.py::test_reversao_d640_daqui_em_diante_gira_a_folha_inteira_que_vem_depois
+FAILED tests/test_decisoes_girar_capa.py::test_d640_impares_no_miolo_ctrl_z_e_ctrl_y_de_uma_vez
+FAILED tests/test_decisoes_girar_capa.py::test_reversao_d640_impares_o_pdf_sai_com_a_capa_girada[False]
+FAILED tests/test_decisoes_girar_capa.py::test_reversao_d640_impares_o_pdf_sai_com_a_capa_girada[True]
+6 failed, 20 passed in 27.33s
+
+

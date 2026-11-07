@@ -15,6 +15,11 @@ capa inteira não gira?" → "Não sei o que responder - vamos deixar como gira 
 Livro: "Numa folha dividida, "todas as páginas" gira também as folhas que não foram divididas, como a
 capa aberta (inteira): todas giram."
 
+Resposta do Samuel à pergunta 1 deste trabalho (Central, 07/11/2026): "No miolo, "daqui em diante",
+"só as pares" e "só as ímpares" giram também a capa aberta?" → "Giram também": a folha inteira que fizer
+parte do grupo escolhido gira também, inteira, como no "todas as páginas" (provas test_*_d640_* no
+bloco "resposta do Samuel"; falham no código de 16e752e7).
+
 Não podem mudar: D-618 / D-636 (numa folha dividida o girar vira só a página; cada página gira sozinha)
 e o "girar - sim" (a folha inteira gira como uma foto, levando o corte à mão). Regra D-605: "coisas
 novas não podem criar novos problemas".
@@ -274,15 +279,95 @@ def test_d640_ctrl_z_e_ctrl_y_devolvem_a_capa_e_as_paginas(janela, tmp_path):
     assert _giros(projeto) == [0, 0, 270, 270, 270, 270]
 
 
-def test_d640_as_outras_escolhas_do_miolo_continuam_como_antes(janela, tmp_path):
-    """A D-640 fala de "todas as páginas". "daqui em diante" e "só as ímpares" no miolo continuam
-    como na D-636 (a capa, página 1 ímpar, não gira; pergunta 1 do ONDE-PAREI)."""
+# --- resposta do Samuel à pergunta 1 (Central, 07/11/2026): "Giram também" ----------------------
+# Pergunta: "No miolo, "daqui em diante", "só as pares" e "só as ímpares" giram também a capa aberta?"
+# → "Giram também". Estando numa página de folha dividida, a folha inteira que fizer parte do grupo
+# escolhido gira também, inteira, como no "todas as páginas" (D-640). Par/ímpar: a mesma conta de
+# páginas da D-636 (o número que a tela mostra, "página 1 de N"): a capa aberta é a página 1, ímpar.
+# (Até 07/11 aqui havia a prova provisória "test_d640_as_outras_escolhas_do_miolo_continuam_como_antes",
+# escrita nesta tarefa enquanto a pergunta estava aberta; trocada por estas.)
+
+def test_reversao_d640_so_as_impares_no_miolo_gira_tambem_a_capa(janela, tmp_path):
+    """Na página 3 (ímpar, folha dividida), "só as ímpares" + ¼ à direita: as páginas 1, 3 e 5. A
+    capa (página 1) gira inteira; as páginas 3 e 5 giram sozinhas; o encarte (página 2, par) e as
+    páginas 4 e 6 não mudam. Uma ação só. REVERSÃO: antes a capa ficava sem girar."""
     tela, projeto = _livro_com_a_capa_inteira(janela, tmp_path)
-    tela.ir_para_pagina(2)                                            # página 3, ímpar
+    tela.ir_para_pagina(2)
+    feitas = len(janela.acoes.feitas)
     _girar(tela, girar.ALCANCE_IMPARES, girar.GIRO_DIREITA)
-    assert _giros(projeto) == [0, 0, 90, 0, 90, 0] and _rotacoes(projeto) == [0] * 4
+    assert _rotacoes(projeto) == [90, 0, 0, 0]
+    assert _giros(projeto) == [0, 0, 90, 0, 90, 0]
+    assert len(janela.acoes.feitas) == feitas + 1
+    assert janela.acoes.feitas[-1].descricao == (
+        "Girar ¼ à direita: as 3 páginas ímpares, viradas como a página 3")
+
+
+def test_reversao_d640_so_as_pares_no_miolo_gira_tambem_a_folha_inteira_par(janela, tmp_path):
+    """Na página 4 (par), "só as pares" + meia volta: as páginas 2, 4 e 6. O encarte (página 2,
+    folha inteira) gira inteiro; as páginas 4 e 6 sozinhas; a capa (página 1) não muda.
+    REVERSÃO: antes o encarte ficava sem girar."""
+    tela, projeto = _livro_com_a_capa_inteira(janela, tmp_path)
+    tela.ir_para_pagina(3)
+    _girar(tela, girar.ALCANCE_PARES, girar.GIRO_MEIA_VOLTA)
+    assert _rotacoes(projeto) == [0, 180, 0, 0]
+    assert _giros(projeto) == [0, 0, 0, 180, 0, 180]
+
+
+def test_reversao_d640_daqui_em_diante_gira_a_folha_inteira_que_vem_depois(janela, tmp_path):
+    """Livro com a folha inteira no FIM (folhas 1 e 2 divididas, folha 3 inteira, página 5): na
+    página 3, "daqui em diante" + ¼ à direita → as páginas 3 e 4 sozinhas e a folha 3 inteira.
+    As páginas 1 e 2 (antes) não mudam. REVERSÃO: antes a folha 3 ficava sem girar."""
+    from tests.test_decisoes_girar_paginas_aplicar_em import _livro_com_duas_folhas_divididas
+
+    tela, projeto = _livro_com_duas_folhas_divididas(janela, tmp_path)
+    tela.ir_para_pagina(2)
     _girar(tela, girar.ALCANCE_DAQUI, girar.GIRO_DIREITA)
-    assert _giros(projeto) == [0, 0, 180, 180, 180, 180] and _rotacoes(projeto) == [0] * 4
+    assert _rotacoes(projeto) == [0, 0, 90]
+    assert _giros(projeto) == [0, 0, 90, 90, 0]
+    assert janela.acoes.feitas[-1].descricao == (
+        "Girar ¼ à direita: da página 3 em diante (3 páginas), viradas como a página 3")
+
+
+def test_d640_daqui_em_diante_nao_volta_para_a_capa_que_ficou_antes(janela, tmp_path):
+    """"daqui em diante" começa onde se está: na página 3, a capa e o encarte (páginas 1 e 2, antes)
+    não giram; as páginas 3 a 6 giram sozinhas."""
+    tela, projeto = _livro_com_a_capa_inteira(janela, tmp_path)
+    tela.ir_para_pagina(2)
+    _girar(tela, girar.ALCANCE_DAQUI, girar.GIRO_DIREITA)
+    assert _rotacoes(projeto) == [0] * 4
+    assert _giros(projeto) == [0, 0, 90, 90, 90, 90]
+
+
+def test_d640_so_as_pares_na_pagina_impar_avisa_e_nao_gira_nada(janela, tmp_path):
+    """D-036 continua: na página 3 (ímpar), "só as pares" avisa ("Você está numa página ímpar") e
+    não gira nada, nem a folha inteira."""
+    tela, projeto = _livro_com_a_capa_inteira(janela, tmp_path)
+    tela.ir_para_pagina(2)
+    feitas = len(janela.acoes.feitas)
+    _girar(tela, girar.ALCANCE_PARES, girar.GIRO_DIREITA)
+    assert janela.avisos[-1] == girar.AVISO_PARES_NA_IMPAR_GIRAR_PAGINA
+    assert len(janela.acoes.feitas) == feitas
+    assert _rotacoes(projeto) == [0] * 4 and _giros(projeto) == [0] * 6
+
+
+def test_d640_impares_no_miolo_ctrl_z_e_ctrl_y_de_uma_vez(janela, tmp_path):
+    """A capa tinha um corte à mão e já estava ¼ à direita; na página 5, "só as ímpares" + ¼ à
+    esquerda → a capa fica virada como a página 5 (270), levando o corte; Ctrl+Z devolve tudo de
+    uma vez (a capa, o corte e as páginas); Ctrl+Y refaz tudo."""
+    tela, projeto = _livro_com_a_capa_inteira(janela, tmp_path)
+    _girar(tela, girar.ALCANCE_ESTA, girar.GIRO_DIREITA)              # a capa: só esta folha
+    projeto.paginas[CAPA].recorte = (0.1, 0.55, 0.8, 0.4)
+    tela.ir_para_pagina(4)                                            # página 5, ímpar
+    _girar(tela, girar.ALCANCE_IMPARES, girar.GIRO_ESQUERDA)
+    assert _rotacoes(projeto) == [270, 0, 0, 0]
+    assert _giros(projeto) == [0, 0, 270, 0, 270, 0]
+    assert list(projeto.paginas[CAPA].recorte) == girar.recorte_girado((0.1, 0.55, 0.8, 0.4), 180)
+    _ctrl_z(tela)
+    assert _rotacoes(projeto) == [90, 0, 0, 0] and _giros(projeto) == [0] * 6
+    assert tuple(projeto.paginas[CAPA].recorte) == (0.1, 0.55, 0.8, 0.4)
+    _ctrl_y(tela)
+    assert _rotacoes(projeto) == [270, 0, 0, 0]
+    assert _giros(projeto) == [0, 0, 270, 0, 270, 0]
 
 
 def test_d640_so_esta_pagina_no_miolo_continua_girando_so_ela(janela, tmp_path):
@@ -342,6 +427,33 @@ def test_reversao_d640_o_pdf_sai_com_a_capa_girada(janela, tmp_path, cortar):
     _ctrl_z(tela)
     _ctrl_y(tela)                                   # o Ctrl+Y refaz o mesmo PDF
     _confere_tudo_girado(antes, _gerar(projeto, tmp_path, "refeito", cortar), girar.GIRO_ESQUERDA)
+
+
+@pytest.mark.parametrize("cortar", [False, True])
+def test_reversao_d640_impares_o_pdf_sai_com_a_capa_girada(janela, tmp_path, cortar):
+    """O PDF (com e sem o corte das bordas): na página 3, "só as ímpares" + ¼ à esquerda → a capa
+    (página 1) e as páginas 3 e 5 saem giradas, cada uma a mesma imagem de antes girada; as páginas
+    2, 4 e 6 saem iguais. Ctrl+Z e Ctrl+Y: o PDF volta e depois sai girado de novo. REVERSÃO: antes
+    a capa saía sem girar."""
+    tela, projeto = _livro_com_a_capa_inteira(janela, tmp_path)
+    tela.ir_para_pagina(2)
+    antes = _gerar(projeto, tmp_path, "antes", cortar)
+
+    def confere(depois):
+        assert len(depois) == 6
+        for i in range(6):
+            esperado = girar_90(antes[i], girar.GIRO_ESQUERDA) if i in (0, 2, 4) else antes[i]
+            assert esperado.shape == depois[i].shape, i
+            assert np.abs(esperado.astype(int) - depois[i].astype(int)).mean() < 3, i
+
+    _girar(tela, girar.ALCANCE_IMPARES, girar.GIRO_ESQUERDA)
+    confere(_gerar(projeto, tmp_path, "depois", cortar))
+    _ctrl_z(tela)
+    de_novo = _gerar(projeto, tmp_path, "de-novo", cortar)
+    for a, b in zip(antes, de_novo):
+        assert a.shape == b.shape and np.abs(a.astype(int) - b.astype(int)).mean() < 1
+    _ctrl_y(tela)
+    confere(_gerar(projeto, tmp_path, "refeito", cortar))
 
 
 # --- as contas (core/girar.py), sem janela ------------------------------------------------------
