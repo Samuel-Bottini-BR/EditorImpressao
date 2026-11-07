@@ -47,7 +47,8 @@ O que o Kaique faz: abre o livro, liga o "Desentortar" (automático), confere a 
   e o teste do Destino 18 falha `assert 2292 == 0`; no novo os dois passam.
 - [x] Testes no PC, um arquivo por vez: conferir_de_novo 14, protecao 15, scantailor 40, decisoes 27, etapa10a 8, borda_preta 29,
   medida_por_tras 6, na_tela 5 (todos passando); os 50 `test_decisoes_*.py`: 655 passando, nenhum falhando.
-- [ ] GitHub: suíte 42315842817, velocidade 42315846002 (rodando)
+- [x] GitHub: suíte 42315842817 verde (test_decisoes 27 passaram; o do Destino pula lá); velocidade 42315846002 "igual" (-0,3% a +0,8%).
+- [x] Relatório nos três formatos: `RELATORIO.md/.html/.pdf`.
 - [x] Antes/depois Destino 18 (`9ac2bc71`): `destino18-direita-antes-depois.png` (13674 pontos brancos -> 0; aviso nos dois).
 
 ## Perguntas para o Samuel

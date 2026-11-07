@@ -1,0 +1,106 @@
+<!doctype html>
+<html lang="pt-BR">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Cantinho do giro na página segurada pelo Desentortar</title>
+<style>
+:root { color-scheme: light dark; }
+* { box-sizing: border-box; }
+body {
+  font: 17px/1.65 "Segoe UI", system-ui, sans-serif;
+  max-width: 46rem; margin: 0 auto; padding: 2.5rem 1.5rem 6rem;
+  color: #1c1c1e; background: #fdfdfc;
+}
+h1 { font-size: 2rem; line-height: 1.2; margin: 0 0 .3em; letter-spacing: -.02em; }
+h2 { font-size: 1.35rem; margin: 2.4em 0 .6em; padding-top: .8em;
+     border-top: 1px solid #e6e4e0; letter-spacing: -.01em; }
+h3 { font-size: 1.1rem; margin: 1.8em 0 .4em; }
+h1 + p, h2 + p { margin-top: .4em; }
+p, li { margin: 0 0 .9em; }
+ul, ol { padding-left: 1.3em; }
+strong { font-weight: 640; }
+code {
+  font: .88em ui-monospace, "Cascadia Code", Consolas, monospace;
+  background: #f1efec; padding: .12em .35em; border-radius: 4px;
+}
+pre {
+  background: #f1efec; padding: 1em 1.1em; border-radius: 8px;
+  overflow-x: auto; line-height: 1.5;
+}
+pre code { background: none; padding: 0; }
+blockquote {
+  margin: 1.2em 0; padding: .1em 0 .1em 1.1em;
+  border-left: 3px solid #c9c5be; color: #55524d;
+}
+table {
+  border-collapse: collapse; width: 100%; margin: 1.2em 0;
+  font-size: .95rem; display: block; overflow-x: auto;
+}
+th, td { padding: .5em .8em; text-align: left; border-bottom: 1px solid #e6e4e0; }
+th { font-weight: 620; background: #f7f5f2; white-space: nowrap; }
+tr:last-child td { border-bottom: none; }
+img { max-width: 100%; height: auto; border-radius: 6px; margin: 1em 0;
+      border: 1px solid #e6e4e0; }
+hr { border: none; border-top: 1px solid #e6e4e0; margin: 2.5em 0; }
+.rodape { margin-top: 4em; padding-top: 1.2em; border-top: 1px solid #e6e4e0;
+          font-size: .85rem; color: #86827c; }
+@media (prefers-color-scheme: dark) {
+  body { color: #e8e6e3; background: #1a1917; }
+  h2 { border-top-color: #35332f; }
+  code, pre, th { background: #262421; }
+  th, td { border-bottom-color: #35332f; }
+  blockquote { border-left-color: #4a4741; color: #b0aca6; }
+  img { border-color: #35332f; }
+  .rodape { border-top-color: #35332f; color: #7d7973; }
+}
+@media print {
+  body { max-width: none; padding: 0; color: #000; background: #fff; }
+  h2 { page-break-after: avoid; }
+  table, img { page-break-inside: avoid; }
+}
+</style>
+</head>
+<body>
+<h1>Cantinho do giro com a cor do papel também na página segurada pelo Desentortar</h1>
+<p>06/11/2026 · ramo <code>cunha-desentortar-2026-11-06</code> · teste de <strong>máquina</strong> (medida) + antes/depois para o <strong>olho</strong> do Samuel.</p>
+<h2>O que mudou, em uma frase</h2>
+<p>Com o "Desentortar" ligado, quando o programa não consegue desentortar a página (aviso "Desentortar não usado"),
+a lasca fina que o giro abre na beirada saía <strong>branca</strong>; agora sai <strong>da cor do papel</strong>, igual à página com o
+Desentortar desligado. O aviso continua aparecendo na mesma página.</p>
+<h2>A foto</h2>
+<p><code>destino18-direita-antes-depois.png</code>: Destino do socialismo, p. 18, página da direita, canto de cima à esquerda, ampliado 5 vezes.</p>
+<p>Caminho: livro novo de fábrica, dividida (página da direita), endireitada, cortada, Desentortar automático
+(a proteção segurou: aviso "Desentortar não usado"), filtro Original. Desenhada na resolução do livro (300 DPI), o mesmo desenho do PDF.</p>
+<ul>
+<li>Antes: lasca branca na beirada esquerda (13674 pontos branco puro nos 12 pontos da esquerda). Aviso: sim.</li>
+<li>Depois: a lasca com a cor do papel (0 pontos brancos). Aviso: sim.</li>
+<li>Referência, Desentortar desligado: 0 pontos brancos. A página "depois" é igual a ela (0 valores diferentes em mais de 64 tons; antes eram 2292).</li>
+</ul>
+<h2>Decisões</h2>
+<ul>
+<li>D-095 (12/10): "cunhas brancas com corte até a beirada" -&gt; consertado também com o Desentortar ligado.</li>
+<li>D-639 (06/11): "pode consertar o triangulo" -&gt; a cor é a mesma conta de antes (a mediana do papel de dentro do corte), nunca a cor do fundo atrás da folha.</li>
+<li>D-105 / D-108 (22/10): a proteção segura a mesma página e o aviso aparece: o desentortar recebe exatamente a mesma página de antes; só a página que sai é trocada.</li>
+</ul>
+<h2>Testes</h2>
+<ul>
+<li>Reversão: prova nova em <code>tests/test_decisoes.py</code> falha no código antigo (27% de branco nas beiradas) e passa no novo;
+  o teste do Destino 18 falha no antigo (<code>2292 == 0</code>) e passa no novo.</li>
+<li>PC, um arquivo por vez: todos passando (ver ONDE-PAREI).</li>
+<li>GitHub: suíte 42315842817, tudo verde.</li>
+<li>Velocidade: filtro do GitHub 42315846002: igual (dentro do vai-e-vem). Abrir o livro -0,3%, trocar de página -0,2%, Mágico pro 10 páginas -0,1%, Preto e branco 10 páginas +0,8%.</li>
+</ul>
+<h2>Ressalvas</h2>
+<ul>
+<li>A página <strong>desentortada de verdade</strong> (a proteção deixou passar, ou "Desentortar aumentando a página") não foi mexida:
+  se tiver cantinho, ele continua branco. O Livro não decide isso; fica como pergunta.</li>
+<li>Se o desentortar não conseguir rodar (a peça do ScanTailor faltando), a página sai sem desentortar e sem aviso, e o
+  cantinho continua branco. Não está no pedido; fica como pergunta.</li>
+<li>Projeto começado antes de 09/10: não muda (lá o caminho desligado também deixa o cantinho branco, idêntico ponto por ponto).</li>
+<li>Antes de a medida por trás terminar, a prévia rápida mostra a página sem desentortar com o cantinho branco por alguns segundos; o PDF não.</li>
+<li>Não abri a janela do programa: medi no desenho do PDF (<code>renderizar_pagina</code> na resolução do livro).</li>
+</ul>
+<p class="rodape">Editor de Impressão &middot; gerado em 06/11/2026 às 21:18</p>
+</body>
+</html>
