@@ -1,0 +1,76 @@
+Teste novo tests/test_decisoes_girar_capa.py rodado no codigo de ANTES do conserto (obra-2026-10-26, 6904a634), 07/11/2026: 15 falham, 4 passam (os 4 que conferem o que nao pode mudar).
+
+﻿
+E       assert [270, 270, 270, 270] == [270, 270, 0, 0]
+E         
+E         At index 2 diff: 270 != 0
+E         Use -v to get more diff
+E       assert [0, 90, 90, 90] == [0, 90, 0, 0]
+E         
+E         At index 2 diff: 90 != 0
+E         Use -v to get more diff
+E       assert [0, 180, 0, 180] == [0, 180, 0, 0]
+E         
+E         At index 3 diff: 180 != 0
+E         Use -v to get more diff
+E       assert [90, 0, 90, 0] == [90, 0, 0, 0]
+E         
+E         At index 2 diff: 90 != 0
+E         Use -v to get more diff
+E       assert [270, 270, 270, 270] == [270, 270, 0, 0]
+E         
+E         At index 2 diff: 270 != 0
+E         Use -v to get more diff
+E       assert [0.1, 0.2, 0.5, 0.6] == [0.4, 0.2, 0.5, 0.6]
+E         
+E         At index 0 diff: 0.1 != 0.4
+E         Use -v to get more diff
+E       assert [90, 90, 90, 90] == [90, 90, 0, 0]
+E         
+E         At index 2 diff: 90 != 0
+E         Use -v to get more diff
+E       assert [90, 90, 90, 90] == [90, 90, 0, 0]
+E         
+E         At index 2 diff: 90 != 0
+E         Use -v to get more diff
+E       assert [0, 0, 0, 0] == [270, 270, 0, 0]
+E         
+E         At index 0 diff: 0 != 270
+E         Use -v to get more diff
+E       assert [90, 0, 0, 0] == [270, 270, 0, 0]
+E         
+E         At index 0 diff: 90 != 270
+E         Use -v to get more diff
+E           AssertionError: 2
+E           assert (240, 336, 3) == (480, 168, 3)
+E             
+E             At index 0 diff: 240 != 480
+E             Use -v to get more diff
+E           AssertionError: 2
+E           assert (159, 231, 3) == (339, 147, 3)
+E             
+E             At index 0 diff: 159 != 339
+E             Use -v to get more diff
+E           AssertionError: 0
+E           assert (480, 336, 3) == (336, 480, 3)
+E             
+E             At index 0 diff: 480 != 336
+E             Use -v to get more diff
+E           AssertionError: 0
+E           assert (339, 231, 3) == (231, 339, 3)
+E             
+E             At index 0 diff: 339 != 231
+E             Use -v to get more diff
+E       AttributeError: module 'core.girar' has no attribute 'campos_do_giro_numa_folha_inteira'
+PASSED tests/test_decisoes_girar_capa.py::test_d638_so_as_pares_na_capa_avisa_e_nao_gira
+PASSED tests/test_decisoes_girar_capa.py::test_d638_so_esta_folha_na_capa_continua_girando_so_a_capa
+PASSED tests/test_decisoes_girar_capa.py::test_d640_as_outras_escolhas_do_miolo_continuam_como_antes
+PASSED tests/test_decisoes_girar_capa.py::test_d640_so_esta_pagina_no_miolo_continua_girando_so_ela
+FAILED 
+tests/test_decisoes_girar_capa.py::test_reversao_d638_na_capa_todas_as_folhas_gira_as_divididas_pagina_por_pagina
+FAILED tests/test_decisoes_girar_capa.py::test_reversao_d638_daqui_em_diante_na_folha_inteira
+FAILED tests/test_decisoes_girar_capa.py::test_reversao_d638_so_as_pares_na_folha_inteira
+FAILED tests/test_decisoes_girar_capa.py::test_reversao_d638_so_as_impares_na_capa
+FAILED tests/test_decisoes_girar_capa.py::test_d638_todas_ficam_viradas_como_a_capa_e_o_ctrl_z_e_o_ctrl_y
+
+
