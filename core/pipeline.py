@@ -805,6 +805,12 @@ def _desentortar_com_o_papel_em_volta(inteira: np.ndarray, recorte, angulo: floa
     mexe nos avisos. `folha` None (quem chama de fora) ou sem chave (arquivo
     que nao existe no disco, filtro "Tirar o fundo"): o caminho de antes
     (desentorta na resolucao que vier). Ver _desentortada_guardada.
+
+    A PAGINA SEGURADA (D-095 / D-639, conserto de 06/11/2026): quando a
+    protecao segura a pagina (saiu_sem), o cantinho do giro sai com a cor do
+    papel, como no Desentortar desligado (_segurada_com_a_cunha_do_papel). O
+    desentortar continua recebendo a `reta` de sempre (cunha branca): a
+    protecao decide igual.
     """
     girar = etapas.endireita(projeto, pagina) and abs(angulo) >= ANGULO_MINIMO
     caixa = None if recorte is None else caixa_em_pontos(inteira.shape, recorte)
@@ -831,12 +837,47 @@ def _desentortar_com_o_papel_em_volta(inteira: np.ndarray, recorte, angulo: floa
             x0, y0, x1, y1 = (0, 0, reta.shape[1], reta.shape[0]) if caixa is None else caixa
             return reta[y0:y1, x0:x1].copy(), cortou, girar
     preparo = desentortar_scantailor.preparar_no_corte(reta, caixa, pagina, dpi)
+    if preparo.saiu_sem and endireita_antes and girar and caixa is not None:
+        preparo = _segurada_com_a_cunha_do_papel(preparo, inteira, angulo, caixa)
     if na_resolucao_do_livro:
         _anotar_desentortar_saiu_sem(pagina, preparo.saiu_sem)
         _anotar_desentortar_ainda_deformada(pagina, preparo.ainda_deformada)
         if chave is not None:
             _guardar_desentortada(chave, preparo, reta.shape)
     return preparo.imagem, cortou, girar
+
+
+def _segurada_com_a_cunha_do_papel(preparo, inteira: np.ndarray, angulo: float, caixa):
+    """A pagina que a protecao SEGUROU (saiu sem desentortar, aviso
+    "Desentortar não usado") com o cantinho do giro da cor do papel, igual a
+    pagina com o Desentortar desligado (_preparar_endireitando_antes).
+
+    Por que (D-095, 12/10/2026: "cunhas brancas com corte até a beirada";
+    D-639, 06/11/2026: "pode consertar o triangulo" -> a cor do papel "passa a
+    ser assim também quando o 'Desentortar' está ligado e a página sai sem
+    desentortar"): a etapa 10a pos a cor do papel so no caminho desligado;
+    aqui a pagina reta vem de rotacionar() com fundo branco e a segurada saia
+    com uma lasca branca na beirada (Destino do socialismo 18, direita:
+    tests/test_desentortar_conferir_de_novo.py dava `2292 == 0`).
+
+    A conta e a MESMA do caminho desligado: rotacionar_e_cortar(inteira,
+    angulo, caixa, cunha_com_o_papel=True) - a pagina inteira girada em volta
+    do centro dela, so o pedaco do corte desenhado, a cunha com a mediana do
+    papel de dentro do corte. Fora da cunha os pontos sao os da segurada (a
+    menos de 1 tom de arredondamento, medido na investigacao de 06/11). So no
+    livro novo ("endireitar_antes"): no projeto de antes de 09/10 o caminho
+    desligado deixa a cunha branca (idêntico ponto por ponto) e aqui fica
+    igual a ele. Custo: um giro so do pedaco do corte, so nas paginas
+    seguradas.
+
+    ARRISCADO: encher a cunha ANTES de entregar a pagina ao desentortar
+    (prova_cunha.py, 06/11: a DLL viu outra pagina, a protecao deixou de
+    segurar o Destino 18 e o aviso sumiu - mexeria na D-105 e na D-108);
+    mudar a conta da cor (a segurada deixaria de sair igual a desligada)."""
+    from dataclasses import replace
+
+    imagem = rotacionar_e_cortar(inteira, angulo, caixa, cunha_com_o_papel=True)
+    return replace(preparo, imagem=imagem)
 
 
 # ---------------------------------------------------------------------------
