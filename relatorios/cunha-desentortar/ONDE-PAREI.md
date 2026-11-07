@@ -41,11 +41,14 @@ O que o Kaique faz: abre o livro, liga o "Desentortar" (automático), confere a 
 ## Andamento
 
 - [x] Cópia e ramo criados.
-- [ ] Conserto
-- [ ] Prova D-095 com o desentortar ligado + reversão no código antigo
-- [ ] Testes no PC
-- [ ] GitHub (suíte + velocidade)
-- [ ] Antes/depois Destino 18
+- [x] Conserto (`58ca13ce`): `core/pipeline.py`, `_segurada_com_a_cunha_do_papel`, chamada só quando `saiu_sem` e livro novo e giro e corte.
+- [x] Prova nova `tests/test_decisoes.py::test_d095_d639_cunha_da_cor_do_papel_com_o_desentortar_ligado_e_a_pagina_segurada`.
+  Reversão: no código antigo (`core/pipeline.py` do `obra-2026-10-26`) falha `assert 0.2687 < 0.01` (27% de branco puro nas beiradas)
+  e o teste do Destino 18 falha `assert 2292 == 0`; no novo os dois passam.
+- [x] Testes no PC, um arquivo por vez: conferir_de_novo 14, protecao 15, scantailor 40, decisoes 27, etapa10a 8, borda_preta 29,
+  medida_por_tras 6, na_tela 5 (todos passando); os 50 `test_decisoes_*.py`: 655 passando, nenhum falhando.
+- [ ] GitHub: suíte 42315842817, velocidade 42315846002 (rodando)
+- [x] Antes/depois Destino 18 (`9ac2bc71`): `destino18-direita-antes-depois.png` (13674 pontos brancos -> 0; aviso nos dois).
 
 ## Perguntas para o Samuel
 
