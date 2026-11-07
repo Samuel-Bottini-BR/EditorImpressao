@@ -29,7 +29,9 @@ O QUE ESTE MODULO FAZ (so contas; nada de tela, nada de imagem)
 - D-638 (06/11/2026): numa folha INTEIRA (a capa aberta) o "aplicar em" gira
   as folhas divididas pagina por pagina e as inteiras inteiras
   (campos_do_giro_numa_folha_inteira; bloco "D-638" mais abaixo). A D-640
-  (no miolo, "todas as paginas" gira tambem a capa inteira) mora na tela:
+  (no miolo, "todas as paginas" - e, pela resposta "Giram tambem" de 07/11,
+  "daqui em diante", pares e impares - gira tambem a capa inteira do grupo)
+  mora na tela:
   ui/tela_conferir._girar_as_paginas.
 
 COMO O GIRO VALE NO RESTO DO PROGRAMA (nada disto e novo; so conferido)
@@ -335,9 +337,10 @@ def descricao_do_giro_da_pagina(giro: int, pagina: int) -> str:
 # cada pagina do alcance que e metade de folha dividida gira SO ela
 # (giro_da_pagina, D-618), terminando virada como a da vez (D-035). Paginas de
 # folha inteira no alcance ficam como estao (D-636: "Folha inteira (nao
-# dividida): fica como esta"; pergunta 2 do ONDE-PAREI) - menos com "todas as
-# paginas", que gira tambem as folhas inteiras desde a D-640 (06/11/2026: "vamos
-# deixar como gira todas as paginas"; quem faz e a tela,
+# dividida): fica como esta"; pergunta 2 do ONDE-PAREI) - menos que a folha
+# inteira do grupo gira tambem desde a D-640 (06/11/2026, "todas as paginas":
+# "vamos deixar como gira todas as paginas") e a resposta "Giram tambem"
+# (07/11/2026, "daqui em diante", pares, impares); quem faz e a tela,
 # ui/tela_conferir._girar_as_paginas: paginas_do_alcance continua devolvendo so
 # as metades, que sao as que ganham giro_da_pagina). O que gira junto
 # (corte a mao, tamanho escolhido, lugar do conteudo) gira pelo quanto CADA

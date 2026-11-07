@@ -6625,8 +6625,10 @@ class TelaConferir(QWidget):
         dividida gira sozinha (giro_da_pagina, D-618), virada como a da vez
         (D-035); nenhuma folha do scan gira e a linha da divisão não muda.
         Páginas de folha inteira ficam como estão (pergunta 2 do ONDE-PAREI),
-        menos com "todas as páginas": desde a D-640 (06/11/2026) a folha inteira
-        (a capa aberta) gira também, inteira (_com_as_folhas_inteiras_tambem).
+        menos que, desde a D-640 (06/11/2026, "todas as páginas") e a resposta
+        "Giram também" (07/11/2026, "daqui em diante", pares, ímpares), a folha
+        inteira do grupo (a capa aberta) gira também, inteira
+        (_com_as_folhas_inteiras_tambem).
         "só as pares" numa página ímpar (e o contrário): avisa e não gira
         (D-036, contado em páginas). Uma ação só do desfazer; o Ctrl+Z devolve
         a cada página o giro e o corte que tinha. Arriscado: pôr "rotacao" de
@@ -6643,15 +6645,15 @@ class TelaConferir(QWidget):
         if self.indice_pagina not in indices:
             return
         campos = girar.campos_do_giro_das_paginas(paginas, indices, giro, self.indice_pagina)
-        alvo = list(indices)
-        if alcance == girar.ALCANCE_TODAS:
-            alvo = self._com_as_folhas_inteiras_tambem(campos, indices)    # D-640
+        # D-640 e a resposta "Giram também" (07/11): a folha inteira do grupo gira junto
+        alvo = self._com_as_folhas_inteiras_tambem(campos, indices, alcance)
         self._registrar(
             "girar", "pagina", alvo, campos,
             girar.descricao_do_giro_das_paginas(giro, alcance, self.indice_pagina, len(alvo)),
         )
 
-    def _com_as_folhas_inteiras_tambem(self, campos: dict, metades: list[int]) -> list[int]:
+    def _com_as_folhas_inteiras_tambem(self, campos: dict, metades: list[int],
+                                       alcance: str) -> list[int]:
         """D-640 (Samuel, 06/11/2026, à pergunta "Todas as páginas do livro
         giram, menos a capa inteira, que fica como está. Pode ser assim?":
         "Todas giram, mas porque a capa inteira não gira?" e "Não sei o que
@@ -6660,9 +6662,15 @@ class TelaConferir(QWidget):
         divididas (a capa aberta), inteiras, como uma foto ("girar - sim": a
         página delas leva junto o corte à mão, o tamanho escolhido e o lugar do
         conteúdo), viradas como a página da vez (D-035: a rotação da folha fica
-        com o giro final da página da vez). Só "todas": "daqui em diante",
-        "pares" e "ímpares" no miolo continuam como na D-636 (pergunta 1 do
-        ONDE-PAREI do girar-capa).
+        com o giro final da página da vez).
+        Resposta do Samuel à pergunta 1 do girar-capa (Central, 07/11/2026:
+        "No miolo, "daqui em diante", "só as pares" e "só as ímpares" giram
+        também a capa aberta?" → "Giram também"): vale para todo o "aplicar em"
+        de páginas. A folha inteira gira quando a página dela está no grupo
+        escolhido (`alcance`), pela MESMA conta de páginas da D-636
+        (girar.folhas_do_alcance sobre a lista de páginas: o número que a tela
+        mostra, "página 1 de N"; a capa aberta é a página 1, ímpar; "daqui em
+        diante" começa na página da vez).
 
         Acrescenta a `campos` (os da ação de página das `metades`) os campos
         "folha:<f>.rotacao" e "pagina:<i>.<campo>", como o girar da grade "ver
@@ -6677,9 +6685,10 @@ class TelaConferir(QWidget):
         assert self.projeto is not None
         folhas, paginas = self.projeto.folhas, self.projeto.paginas
         metade = set(metades)
-        inteiras = sorted({p.folha for i, p in enumerate(paginas)
-                           if i not in metade and 0 <= p.folha < len(folhas)
-                           and not girar.gira_so_a_pagina(folhas[p.folha], p)})
+        no_grupo = girar.folhas_do_alcance(len(paginas), self.indice_pagina, alcance)
+        inteiras = sorted({paginas[i].folha for i in no_grupo
+                           if i not in metade and 0 <= paginas[i].folha < len(folhas)
+                           and not girar.gira_so_a_pagina(folhas[paginas[i].folha], paginas[i])})
         if not inteiras:
             return list(metades)
         final = campos["giro_da_pagina"][str(self.indice_pagina)]   # o da página da vez
