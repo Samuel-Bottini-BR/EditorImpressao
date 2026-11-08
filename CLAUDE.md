@@ -575,8 +575,9 @@ atualize esse arquivo (ou crie um novo) quando o Samuel pedir explicitamente.
         `conversa`, e põe `volta: true`. Nunca apagar `anteriores`.
       - **Um jeito de ver para tudo e celular (Samuel, 08/11/2026).** O seletor "Lista que abre e fecha / Caixa de
         entrada / Um por vez" fica no alto e vale para Decidir agora, Conferência e Respostas. No celular as abas ficam
-        num botão "Menu" e o relatório se escolhe numa lista. Antes de publicar, testar em 360 e 300 px de largura
-        (nada pode passar da borda). O código da página não está no git: lê-se com Artifact `read` antes de mudar. Fonte: `docs/plano/central/fonte.json` (a gerente mantém) +
+        num botão "Menu" e o relatório se escolhe numa lista; o Quadro dos trabalhos e as Etapas ficam numa coluna só.
+        Antes de publicar, testar **todas as 9 abas** (e os três jeitos) em 360 e 300 px de largura: nada pode
+        passar da borda. Falha de 08/11: o primeiro teste deixou o Quadro e as Etapas de fora e o Samuel achou no celular. O código da página não está no git: lê-se com Artifact `read` antes de mudar. Fonte: `docs/plano/central/fonte.json` (a gerente mantém) +
         `docs/plano/para_a_central.py` (junta com o plano, `memoria/bugs.md` e o git; avisa se um
         trabalho "no programa" não estiver no `fase-1`). Gravar o banco com ArtifactData `batch` a partir
         dos arquivos que o script gera (`D:\programas\EditorImpressao-arquivos\central-banco\`).
