@@ -9,6 +9,14 @@ Como manter: quando ele responder, registre no plano (as duas cópias) e na fich
 daqui** (ou mova para "Respondidas recentemente" com a data). O `conferir_memoria.py` avisa quando uma pergunta desta
 lista com nome entre crases já aparece como decidida no Registro.
 
+## 000000. Atualização de 07/11/2026 (vale sobre o resto; [PARTE -32](../../historico/Editor%20de%20Impressao%20-%20resumo%20para%20o%20Claude.md) §4)
+
+- **Respondidas em 07/11 (Central):** as 15 `k0711-*` e 3 do girar → D-644 a D-653; as 7 de 06/11 de `acrescentei-27-10` → D-654 a D-658.
+- **Sem resposta:** `girar-capa-teste-daqui` (trava a junção do girar); `cantinho-outros-casos` (substitui a pergunta de 06/11 do cantinho); "A fila está certa assim?" (chat, 15h42); 6 respostas da gerente com pergunta de volta (`girar-capa-dividir-duas`, `k0711-inclinacao-conferida`, `k0711-rodinha`, `mover-rotulo-antes`, `b-abas-nomes`, `b-pdf-desatualizado`).
+- **Do chat, sem resposta:** "Se você testou em outro lugar, me diga onde que eu leio" e "Tem mais algum erro que você viu?" (13h47 UTC); "Abra a Central e me diga se o jeito novo ficou bom." (20h11 UTC).
+- **Promessa da gerente:** proposta de regra para os agentes não criarem coisas que ele não pediu.
+- **Continuam:** as 6 `n0411-*`; as 3 `a-*` de `acrescentei-27-10`; D-154 e D-575 urgentes; Siebmacher 268 → 134.
+
 ## 00000. Atualização de 06/11/2026 (vale sobre o resto; [PARTE -31](../../historico/Editor%20de%20Impressao%20-%20resumo%20para%20o%20Claude.md) §4)
 
 - **Respondidas em 06/11:** A → D-640; B → D-638; C → D-642; as 15 da página `teste-kaique-lusiadas` da Central (8 erros de função "ok"; página suja "não é erro em si"; ilustração da pág. 8 e rostos da pág. 14: investigar; margens → D-643).

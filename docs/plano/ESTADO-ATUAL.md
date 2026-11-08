@@ -8,6 +8,13 @@ Escrito em 24/09/2026. A ordem de autoridade é:
 
 O resto é histórico. O `PEDIDOS.md` virou histórico em 24/09: a lista que vale é o Plano Definitivo.
 
+> **Onde o projeto está em 07/11/2026 (vale sobre tudo abaixo; detalhe na [PARTE -32](../../historico/Editor%20de%20Impressao%20-%20resumo%20para%20o%20Claude.md) do handoff):**
+> - A versão de teste é o ramo `obra-2026-10-26` (worktree `.claude/worktrees/obra-juncao`), com a obra de 26/10, as 6 entregas de 04-05/11 e o cantinho do giro (D-639). O `fase-1` só guarda o plano.
+> - O Livro de decisões (`docs/plano/DECISOES.md`, no obra) vai até a D-658.
+> - Fila de consertos: item 1 (cantinho) juntado; item 2 (girar com a capa aberta) feito e testado com a janela aberta no ramo `girar-capa-2026-11-07`, esperando a resposta do teste antigo do "daqui" para juntar; itens 3 em diante não começaram (graves: fechar em Livros recentes, folha espremida, Automático e Tirar o fundo).
+> - Regra de 07/11: quando o Samuel não pode testar, um agente testa com a janela aberta na tela, como o Kaique; no máximo dois agentes (um de teste, um de conserto).
+> - Perguntas e respostas: na Central https://claude.ai/artifact/XNFrsdVR7q4K8cBcxNftZy (aba Respostas com três jeitos).
+
 > **Atualização de 02/10/2026:** a seção 3 abaixo ("Onde o projeto está de verdade") é de 23/09 e
 > está desatualizada. O estado de hoje está no **Registro de mudanças** do `PLANO-DEFINITIVO.md`
 > e no resumo da **PARTE -9** do handoff (`historico/Editor de Impressao - resumo para o Claude.md`).

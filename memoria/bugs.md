@@ -524,3 +524,8 @@ na Central (aba "O que você não gostou: alternativas").
   "tirar do livro"; aviso velho na janela de salvar; lista do Automático volta ao topo; o sino que muda sozinho
   (`.claude\worktrees\teste-kaique-lusiadas\relatorios\teste-kaique-lusiadas\relatorio.md` §2).
 - **A investigar:** ilustração da pág. 8 dos Lusíadas quase some; remendos nos rostos da pág. 14.
+
+## 07/11/2026 (PARTE -32)
+
+- **Na Lista de bugs do plano (07/11):** os 15 erros do teste como o Kaique só funções (Central `teste-kaique-funcoes`, D-646 a D-653; graves: fechou em Livros recentes, folha espremida/título que some no PDF, Automático desfaz o Tirar o fundo, e os cartões vazios da tela cheia que o Samuel subiu); a miniatura deitada na grade depois do Ctrl+Z (pré-existente); os avisos "parece em branco" que somem ao desfazer/refazer o "dividir todas"; o cantinho branco nos casos fora da D-639 (pergunta `perg-cantinho`).
+- Consertado e juntado: cantinho (D-639, `6205a813`). Consertado, não juntado: girar com a capa aberta (`girar-capa-2026-11-07`).

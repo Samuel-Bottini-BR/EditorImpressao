@@ -1,6 +1,6 @@
 # Editor de Impressão — documento para colar no Claude
 
-Atualizado em 06/11/2026 (PARTE -31; a anterior, PARTE -30, é de 04-05/11). Desde 19/10 a memória por assunto fica em `memoria/` (índice `memoria/INDICE.md`). Versão **máxima**: reúne o histórico institucional, o
+Atualizado em 07/11/2026 (PARTE -32; a anterior, PARTE -31, é de 06/11 e tem erros corrigidos na -32). Desde 19/10 a memória por assunto fica em `memoria/` (índice `memoria/INDICE.md`). Versão **máxima**: reúne o histórico institucional, o
 que o programa é, todas as funcionalidades pedidas, os 68 pedidos feitos até
 hoje **palavra por palavra**, o que foi feito, o que falta, e os dois
 documentos-fonte inteiros (a especificação original e o prompt de testes) em
@@ -14,7 +14,308 @@ o backup). Repositório git ligado a
 
 ---
 
-# PARTE -31 — Checkpoint de 06/11/2026 (noite): as 6 entregas juntadas, o cantinho do giro, teste como o Kaique, D-638 a D-643 (leia isto primeiro)
+# PARTE -32 — Checkpoint de 07/11/2026: girar pronto e testado com a janela aberta, teste como o Kaique (15 erros), Central nova, /checkpoint refeito (leia isto primeiro)
+
+Sessão no PC, gerente Claude Opus 5.5. Checkpoint pedido pelo Samuel ("vamos dar checkpoint"). É o primeiro feito pelo
+/checkpoint novo. Foi escrito a partir da conversa salva (`falas_da_conversa.py`), do git e da Central, e não do resumo.
+**No fechamento não há nenhum agente nem teste rodando.** Os três agentes do dia (teste como o Kaique, conserto do girar e teste com a janela aberta) terminaram e entregaram; o conferente do checkpoint também.
+Mudados neste checkpoint: `memoria/ramos.md`, `memoria/bugs.md`, `memoria/geral/perguntas-abertas.md`, `memoria/LINHA-DO-TEMPO.md`,
+`memoria/INDICE.md`, `memoria/itens/2.3.md`, `docs/plano/ESTADO-ATUAL.md` e `PLANO-DEFINITIVO.md` (Lista de bugs e Registro), as duas
+cópias; no obra, `docs/plano/DECISOES.md` (situação de D-618 a D-623, D-638, D-640, D-644 e D-645), as duas cópias.
+
+**A PARTE -31 tem erros.** Ela diz que a fila "não começou", que o git estava "em dia" e que o Samuel ainda ia testar 7 coisas.
+Ele corrigiu em 07/11: "1- Esses 7 testes já foram todos feitos, mandei print e respostas sobre eles, procure", "Dessa lista
+tem mais coisa que você colocou que está errada" e "Os concertos já tinham começado e tinham sido pausados". O certo:
+- o 1º conserto da fila (o cantinho, D-639) entrou no obra em 06/11 (`6205a813`);
+- havia muitos arquivos fora do git;
+- os testes dele de 06/11 estão em `relatorios/testes-guiados/2026-11-06-sessao-3/`.
+
+Não há teste dele das 6 mudanças (D-618 a D-623) depois que elas entraram no obra (06/11: junções no `juntar-6` às 16h24 e o obra avançou às 18h45, horário do PC; 20h24 e 22h45 UTC). Os prints de 04/11 são de
+antes da junção. A gerente perguntou "Se você testou em outro lugar, me diga onde que eu leio", e ele não respondeu.
+
+## 0. Para recomeçar
+
+1. `git -C D:\programas\EditorImpressao fetch origin`. Na Central (https://claude.ai/artifact/XNFrsdVR7q4K8cBcxNftZy), ler:
+   - as `respostas` com `volta == true` ("não entendi" ou "comentar" na aba nova);
+   - as que têm `lida != true`;
+   - as respostas novas a `girar-capa-teste-daqui` e `cantinho-outros-casos`.
+2. **O girar destrava com uma resposta.** A pergunta está na Central (`conferencias/perg-girar-capa`, pergunta
+   `girar-capa-teste-daqui`) e foi feita no chat às 18h55 e às 19h11. Texto: "Posso trocar o teste antigo que cobra que,
+   no 'daqui em diante', a folha inteira que vem depois fique sem girar? Ele contradiz a sua resposta 'giram também'.
+   Recomendo: sim." Com o "sim":
+   1. no worktree `.claude\worktrees\girar-capa`, aplicar `relatorios/girar-capa/proposta-teste-daqui.diff`
+      (commit `ece01b15` traz a proposta) num commit separado que cite a D-645 e a autorização;
+   2. rodar `tests\test_decisoes_girar_paginas_aplicar_em.py` e a rodada do GitHub no ramo;
+   3. juntar `girar-capa-2026-11-07` no `obra-2026-10-26`;
+   4. rodar a suíte inteira no PC, **em partes** (§6), com o PC livre;
+   5. dar push.
+   Com o "não", o conserto volta para o agente.
+3. **Depois, a fila (§2), item 3 em diante.** Cada item segue três passos:
+   - um agente de conserto faz;
+   - **se ele avisar que não pode testar**, um agente de teste confere com a **janela aberta na tela**, como o Kaique
+     (a regra veio de "Hoje eu não vou poder estar testando agora"); senão, ele mesmo testa;
+   - a gerente mostra o resultado.
+   Só então começa o próximo. **Antes, confirmar a fila com ele:** a pergunta "A fila está certa assim?" (15h42) não teve
+   um "sim" claro (§4).
+
+## 1. Regras novas do Samuel (07/11), literais
+
+- **Quando ele não pode testar, o agente testa com a janela aberta.** Palavras dele: "Hoje eu não vou poder estar testando
+  agora, então a gente pode fazer assim: você faz o conserto e você testa como está fazendo o teste do Kaique, abrindo a tela,
+  fazendo todas essas coisas." e "Não daquele jeito escondido que a gente sempre faz. É, faça aberta a tela."
+- **O objetivo do teste:** "esses testes têm que ser feitos sempre pensando na usabilidade na experiência da pessoa que vai
+  estar usando o programa, né? Que não pode dar erro naquela função, aquela função tem que funcionar perfeitamente. Pode ser
+  que a função ela não desempenhe 100% o trabalho dela, mas ela funciona o que ela foi feita para fazer [...] Não que vai sair
+  o livro perfeito, mas que as funcionalidades funcionam. E não dão erro uma nas outras e isso aí."
+- **Agentes: no máximo dois ao mesmo tempo.** Primeiro ele disse "É só um agente só por vez". Depois corrigiu: "Não, pode
+  colocar mais um. Um pro Kaique, né? E um para cada coisa que tem que ser arrumada, né?" A gerente entendeu (14h15, sem objeção dele): no máximo
+  dois, um agente de teste e um de conserto, e os consertos um por vez, na ordem da fila.
+- **O teste como o Kaique** tem que "exaurir as possibilidades das funções do APP", e pode usar mais de um livro.
+- **Os prints:** ele perguntou "Ele precisa tirar um print de cada passo?". A gerente respondeu que sim, porque é o único
+  jeito de o agente ver a tela e serve de prova. Ele não contestou.
+- Tudo isso está na memória `feedback_uma_coisa_e_testar.md`.
+
+## 2. Os trabalhos, pelo git
+
+- **Versão de teste `obra-2026-10-26`:** ponta `e1541512`, mais o commit do Livro deste checkpoint. Dentro dela estão:
+  - as 6 entregas (`51bdcb0b`);
+  - o cantinho do giro (`6205a813`);
+  - os commits do Livro `41282ab4` e `e1541512`.
+  O girar **não** está nela.
+- **1. Cantinho do giro (D-639): feito e juntado** em 06/11 (`6205a813`).
+  - Teste com a janela aberta (07/11): funciona **só no caso exato do conserto**. Antes do conserto saíam 13.674 pontos
+    brancos; agora, 0.
+  - Do jeito que o Kaique faz, ainda fica branco: Desentortar ligado, girar 1° à mão e cortar até a beirada (Destino 18,
+    página 36, 27.136 pontos brancos e nenhum aviso).
+  - Girando à mão sem cortar também fica branco, com o Desentortar ligado ou desligado.
+  - Os dois casos já existiam antes do conserto. Pergunta na Central (§4).
+  - Relatório: `.claude\worktrees\testa-girar-capa\relatorios\testa-girar-capa\relatorio.html`, prints 50 a 55.
+- **2. Girar com a capa aberta (D-638, D-640, D-645): feito e testado, falta juntar.** Ramo `girar-capa-2026-11-07`, ponta
+  `80696770`, com push.
+  - Commits:
+    - `d4e8c163`: ONDE-PAREI;
+    - `e86c5851`: provas;
+    - `99d7d782`: conserto da 1ª parte;
+    - `d56946f8`: imagens e relatório;
+    - `367955d4`: velocidade, nada mais lento (GitHub 42381758932);
+    - `16e752e7`: troca dos 5 testes que ele autorizou (D-644: "Sim, pode trocar");
+    - `3bfa53af`: provas do "Giram também";
+    - `df8db4ec`: conserto da 2ª parte;
+    - `ece01b15`: proposta para o teste do "daqui", **não aplicada**;
+    - `f8d4e06d` e `80696770`: relatório e ONDE-PAREI.
+  - Testes de máquina:
+    - `tests/test_decisoes_girar_capa.py`: 26 passam. As provas falham no código antigo.
+    - PC: 70 arquivos, 69 inteiros. Só falha `test_decisoes_girar_paginas_aplicar_em.py::test_d636_daqui_em_diante_conta_paginas`.
+    - GitHub 42391132998: tudo passa, menos esse teste na parte 5. A parte 1 falhou uma vez no `test_d148` instável e
+      passou ao rodar de novo.
+  - **Testado com a janela aberta** (agente de teste, mouse, teclado e rodinha de verdade, Gradus):
+    - 1ª parte em `367955d4`: tudo funcionou, inclusive o PDF de 139 páginas igual à tela, o arquivo para imprimir e
+      fechar e reabrir.
+    - 2ª parte em `80696770`: os 7 passos funcionaram, inclusive o PDF. O arquivo para imprimir não foi testado nessa parte.
+      Achou dois problemas de antes do conserto, já na Lista de bugs: a miniatura continua deitada na grade depois do
+      Ctrl+Z, e os avisos "parece em branco" somem ao desfazer e refazer o "dividir todas".
+    - `erros.log` vazio.
+    - Relatórios: `.claude\worktrees\testa-girar-capa\relatorios\testa-girar-capa\relatorio.html` e `...\parte2\relatorio.html`.
+  - **Testado pelo Samuel: não.**
+- **3 em diante: não começados** (nenhum ramo). A fila, como a gerente propôs às 15h42 (graves depois do item 3), com os
+  acréscimos das respostas dele das 16h18 (D-647, D-650 a D-653):
+  3. esconder "voltar a página" na página acrescentada (D-642). Isso resolve também o N7;
+  4. **grave:** o programa fechou ao abrir "Livros recentes" (`ui/janela_principal.py:494`, QMenu apagado);
+  5. **grave:** a folha espremida no Mover e na Mão, a miniatura e o título que some no PDF (D-547, D-649). O agente
+     primeiro confirma a causa;
+  6. **grave:** o Automático desfaz o "Tirar o fundo" (D-134, D-646). Os cartões vazios em "Filtros em tela cheia"
+     (D-648) entram aqui, porque o Samuel respondeu "Esse é um grave.";
+  7. urgente: D-575, livreto ao processar. Só desenhos na Central, antes de mexer;
+  8. urgente: D-154, no Preto e branco nenhuma letra some ou fura;
+  9. os erros de função de 06/11 que sobraram: laranja com a Mão, página deitada no arquivo para imprimir, miniatura que
+     não fica branca, faixa velha depois de "tirar do livro", janela de salvar (só conferir), lista que volta ao topo, sino;
+  10. os menores de 07/11: "antes / depois" (D-647), "16 folhas", rodinha (ver §4), menu na página tirada (D-650), F1 (D-652),
+      aviso falso na inserida (D-653, primeiro a causa), selecionador (D-651, primeiro mostrar como fica);
+  11. D-643, "Margens iguais" ligado de fábrica;
+  12. os 7 pedidos de 04/11 (D-624, D-625, D-630, D-631, D-632, D-634, D-635);
+  13. investigar as ilustrações dos Lusíadas (página 8 e rostos da 14).
+  - Também na fila, sem posição definida (a Central disse a ele "Foi para a fila"): D-654, duas escolhas separadas para a
+    borda e para a faixa da tampa; D-655, o aviso do "Pintar por cima" em todas as formas.
+- **Lista de espera (`fase-1`, `f7f14780`, com push):** "Travar as letras e pintar só por cima do que não é letra", ideia dele
+  em `b-pintar-outras`: "Teria como eu deixar as letras travadas e pintar só por cima do que não é letra? anote isso".
+- **O teste como o Kaique, só funções:** cópia `.claude\worktrees\teste-kaique-funcoes`, presa em `6904a634`, sem commits.
+  - Livros: Os Lusíadas inteiro, Siebmacher (30 folhas) e Palatino (30 páginas), com a janela na tela.
+  - Resultado: 15 erros de função, que foram para a Central (`conferencias/teste-kaique-funcoes`, prints `k0711-*`) e foram
+    todos respondidos por ele.
+  - Relatório: `relatorios\teste-kaique-funcoes\relatorio.html`.
+  - **Fica fora do git** (os Lusíadas têm direito autoral).
+  - Funcionaram: desfazer e refazer 10 vezes, Dividir, Cortar, Endireitar, girar, janela de salvar, ordem dos cadernos, fechar
+    e reabrir.
+  - Ficaram de fora: "antes / depois" com Endireitar, Mover e marcar; elipse, polígono e varinha; "juntar todas" e "dividir
+    todas"; comparar, Lado direito e Tema; Configurações; impressora; PageUp.
+- **Cópias de teste que podem ser apagadas** (criadas por agentes hoje; perguntar antes):
+  - `.claude\worktrees\testa-girar-capa`, com cerca de 1,5 GB em `saida_teste\` (PDFs, livros copiados, pastas de dados);
+  - `testa-girar-capa-antes`;
+  - `testa-cunha-antes`.
+
+## 3. As falas do Samuel desde o último checkpoint e o destino de cada uma
+
+O último checkpoint foi em 07/11 02h41 UTC (06/11 22h41 no horário do PC). As horas abaixo estão em UTC, como na lista do
+script; no PC são 4 horas a menos.
+
+| Hora | Fala (resumida; literal quando é ordem ou objeção) | Destino |
+|---|---|---|
+| 13:39 | "1" (no /projeto) | Escolheu o Editor de Impressão |
+| 13:45 | "1- Esses 7 testes já foram todos feitos, mandei print e respostas sobre eles, procure" / "Dessa lista tem mais coisa que você colocou que está errada" | Corrigido: sessão 3 de 06/11 achada; erros do checkpoint listados (topo desta parte) |
+| 13:45 | "Os concertos já tinham começado e tinham sido pausados" | Corrigido: o cantinho já estava juntado (`6205a813`) |
+| 13:48 | Pode ler as conversas de ontem e anteontem? | Lidas inteiras |
+| 13:50 | Ver por que os checkpoints erram; teste como o Kaique com mais de um livro, "exaurir as possibilidades"; "confirme aqui antes de começar" | 5 causas achadas; teste começou depois do "Se você leu a conversa de ontem já vai entender o objetivo" |
+| 13:53 | "Temos que incrementar então o comando checkpoint para ele não errar [...] estão sendo usadas pelo comando checkpoint?" | `/checkpoint` e `/projeto` refeitos; script `falas_da_conversa.py` |
+| 13:56 | "Se você leu a conversa de ontem já vai entender o objetivo e o checkpoint pode ser assim" / "Da uma olhada lá" | Aprovação do objetivo e do checkpoint novo; Central lida (nada novo) |
+| 13:58 | "Pera ai, mas como você está fazendo o teste? Colocou um agente para fazer?" | Respondido: sim, um agente com a janela na tela |
+| 14:03 | Onde estamos, a fila de consertos, a lista de bugs, "principalmente os erros que eu achei" | Lista dada no chat (fila, erros dele de 04 e 06/11, pedidos de 04/11, D-575 e D-154 urgentes) |
+| 14:04 | "Tinha uma lista também [...] Eu acho que eram 8 itens." | Os 8 erros de função de 06/11, na fila |
+| 14:10 | "Pode ser sim, me mostra a lista como vai ficar daí [...] um agente só para fazer cada coisa, uma coisa por vez" | "Sim" à sugestão das 14h04 (os 7 pedidos de 04/11 depois do item 5 e os 2 urgentes depois do item 3); fila de 22 itens mostrada às 14h10 |
+| 14:12–14:13 | Testar com a janela aberta; objetivo do teste (§1) | Regra na memória e nos pedidos aos agentes |
+| 14:15 | "É só um agente só por vez." → "Não, pode colocar mais um. Um pro Kaique [...]" | Dois agentes: teste e conserto (§1) |
+| 15:41 | "Espera aí, primeiro vamos analisar esses erros [...] Eles são erros mesmo? E explica melhor como é que vai ficar a fila" | Análise: 12 erros, 1 resolvido pelo item 3, 2 dúvidas; fila nova às 15h42, **sem "sim" claro** (§4) |
+| 15:56 | "Pode continuar o teste" | O teste com a janela aberta continuou |
+| 15:56–15:57 | "Ele está parado aqui" / "Ele precisa tirar um print de cada passo?" | Respondido (§1) |
+| 15:58 | "Me dá o link da central" | Dado |
+| 16:18 | "Respondi" | 19 respostas lidas: D-644 a D-653 no Livro (`41282ab4`); o girar usou D-644 e D-645 |
+| 16:19 | "Quero mudar algumas coisas de como as respostas são respondidas [...] fica tudo muito cheio" | Central nova (§5) |
+| 18:28 | "foi pago, pode retornar os trabalhos." | Os dois agentes retomados. A cobrança tinha parado tudo das 16h26 às 18h28 |
+| 18:34 | "Voltou a trabalhar?" | Sim |
+| 19:17 | "Tem coisas novas para responder e tem respostas novas?" | Respondido: 4 coisas para ele, 19 respostas esperando o jeito novo |
+| 19:18–19:20 | "Vamos falar da central"; "muito texto [...] preciso que seja mais rápido de ler a sua resposta dar a minha resposta"; "Tinha que ter um botão para abrir e fechar"; "Pode me mostrar 3 jeitos novos" | Modelo https://claude.ai/artifact/CfKLWQmvytfLCpjB36J6SP |
+| 20:04–20:05 | "Pode colocar uma opção que eu possa trocar entre os três dentro do artefato?" → "Sim" | Central versão 33 com os três jeitos (§5) |
+| 00:44 (08/11) | "vamos dar checkpoint" | Este checkpoint |
+
+Respostas dele na Central (07/11, páginas `teste-kaique-funcoes`, `perg-girar-capa` e `perg-mover-rotulo`), as que mudam alguma coisa:
+- "Sim, pode trocar" → D-644.
+- "Giram também" → D-645.
+- No Dividir "Duas lado a lado": "vai ficar como a pagina 1?" (respondido com pergunta de volta).
+- `k0711-auto-tira-fundo` → D-646.
+- `k0711-cortar-antes-depois`: "Ele tem que mostrar o antes e depois de acordo com aquela ferramenta..." → D-647.
+- `k0711-f1-vazia`: "Não só abre vazia como a diagramação está horrível." → D-652.
+- `k0711-inserida-qualidade`: "Tem que saber porque a central de avisos reconheceu ele..." → D-653.
+- `k0711-inclinacao-conferida`: "Preciso que explique melhor esse problema." (respondido com pergunta de volta).
+- `k0711-filtros-tela-cheia`: "Esse é um grave." → D-648.
+- `k0711-miniatura-pdf`: "Isso é um erro grave. O preview as miniaturas tem que estar sincronizada..." → D-649.
+- `k0711-rodinha`: "Eu acho que deve mover se estiver em cima da opção [...] mas vamos ter que pensar bem nisso para não
+  dar problema no programa."
+- `k0711-tirada-branco`: "Ela deveria voltar com o conteúdo dela." → D-650.
+- `k0711-reabre-cortar`: o "selecionador" → D-651.
+- `k0711-voltar-inserida`: "Essa opção deveria ter numa página que foi criada?Isso é uma alucinação... Temos que resolver
+  esse tipo de problema."
+- `mover-rotulo-antes`: "não deveria dar para ver o antes/depois enquanto se mexe na folha, no caso do mover".
+
+As respostas dele de 06/11 (`acrescentei-27-10`) foram lidas só em 07/11 e viraram D-654 a D-658 (`e1541512`); a ideia de
+travar as letras foi para a Lista de espera (`f7f14780`).
+
+## 4. Perguntas em aberto (exatas)
+
+1. **O teste antigo do "daqui em diante"**, na Central `perg-girar-capa` (`girar-capa-teste-daqui`, posta no checkpoint)
+   e no chat às 18h55 e 19h11. Ver o texto no §0.2. Sem resposta.
+2. **O cantinho nos outros casos**, na Central `perg-cantinho` (`cantinho-outros-casos`, posta no checkpoint) e no chat às
+   18h45: "o cantinho deve sair da cor do papel também nesses casos? Seriam o caso da janela e o giro à mão sem cortar. Isso
+   se junta à sua pergunta de ontem, sobre a página desentortada de verdade. Minha sugestão: sim, sempre da cor do papel,
+   quando não houver nada impresso ali." Sem resposta.
+3. **A fila**, no chat às 15h42: "A fila está certa assim?" Depois disso ele disse só "Pode continuar o teste" e respondeu
+   na Central. **Não tratar como aprovada sem perguntar.** A fila anterior (14h10) recebeu as instruções dele sobre testar,
+   também sem um "sim" à lista.
+4. **Seis respostas da gerente pedem resposta dele** (Central, aba Respostas, "Para você ler"):
+   - `girar-capa-dividir-duas`: no Dividir, "todas as folhas" gira cada folha inteira, ou página por página?
+   - `k0711-inclinacao-conferida`: mexer na inclinação não deve tirar o aviso da lombada?
+   - `k0711-rodinha`: mostrar antes como fica a rodinha mudando o valor.
+   - `mover-rotulo-antes`: com o Mover, enquanto arrasta, o "antes / depois" some?
+   - `b-abas-nomes`: os nomes curtos das abas ficam, ou vão para a revisão dos nomes?
+   - `b-pdf-desatualizado`: escrever "PDF desatualizado"?
+5. **Perguntas da gerente no chat que ficaram sem resposta:**
+   - 13h47: "Se você testou em outro lugar, me diga onde que eu leio" (o teste das 6 mudanças depois de juntadas) e
+     "Tem mais algum erro que você viu?" (no checkpoint de 06/11);
+   - 20h11: "Abra a Central e me diga se o jeito novo ficou bom."
+6. **Promessa da gerente, ainda não cumprida:** "Sobre os agentes criarem coisas que você não pediu, te trago uma proposta
+   de regra no chat" (resposta a `k0711-voltar-inserida`).
+7. **Antigas, sem mudança:**
+   - as 6 `n0411-*`;
+   - D-154 e D-575 (urgentes);
+   - Siebmacher 268 → 134 páginas;
+   - as 3 `a-*` de `acrescentei-27-10` sem resposta (contador do Dividir, lombada fora, botões nos cartões);
+   - as da auditoria e dos nomes (`memoria/geral/perguntas-abertas.md`).
+
+## 5. A Central nova (versão 33)
+
+- A aba Respostas tem três jeitos, com uma chave no alto: **"Lista que abre e fecha"**, **"Caixa de entrada"** e **"Um por
+  vez"**. A página lembra o último jeito usado (`localStorage` `central-resp-jeito`).
+- Quatro partes, cada uma abre e fecha:
+  - **Para você ler:** respostas da gerente que ele não viu (`gerente` existe, `samuelViu` não é true e `volta` não é true);
+  - **Para você decidir:** perguntas de todas as conferências ainda sem resposta;
+  - **Esperando a gerente:** sem `gerente` e `lida` não é true, ou `volta == true`;
+  - **Já visto**.
+- Botões **ok**, **não entendi** e **comentar** (`reagir()`). O "ok" põe `samuelViu: true`. Os outros dois põem
+  `volta: true` e `lida: false` e acrescentam a fala em `conversa`.
+- Campos novos de `respostas`: `gerente`, `gerenteEm`, `conversa` (lista de `{quem, em, texto}`), `samuelViu`, `volta`,
+  `reacao` e `reacaoEm`. **Responder sempre no formato novo:** duas frases no máximo, em `gerente` e em `conversa`.
+- 26 respostas antigas foram marcadas como vistas. Ficaram 26 respostas curtas da gerente em "Para você ler": as 19 de
+  07/11 e as 7 de 06/11.
+- O código da página não está no git. Antes de publicar de novo, ler a página (`Artifact read`). O rascunho local da sessão
+  ficou na pasta temporária.
+- **No checkpoint:**
+  - `perg-girar-capa` passou à versão 2, com a 4ª pergunta;
+  - foi criada `perg-cantinho`;
+  - novidades em `geral/resumo` (versão 80).
+
+## 6. Descobertas e erros da gerente (não repetir)
+
+- **Por que o checkpoint de 06/11 errou:**
+  1. foi escrito do resumo automático, 10 minutos depois de a conversa ser resumida;
+  2. o estado veio do texto, não do git;
+  3. a Central só era lida no começo;
+  4. a objeção dele ("tem coisas que eu já testei e já dei resposta") sumiu;
+  5. sugestões da gerente entraram como se fossem dele.
+  O /checkpoint e o /projeto foram refeitos por causa disso (`C:\Users\fotog\.claude\commands\`).
+- **A gerente disse que a pergunta do teste do "daqui" "já está lá, em 'Para você ler'". Não estava.** Foi posta no
+  checkpoint. Antes de dizer que algo está na Central, ler a Central.
+- **O roteiro de 11 passos do girar** existia só na mensagem de entrega do agente, e não nos arquivos dele. O agente de teste
+  não o achou e montou outro. Lição: pôr o roteiro dentro do pedido ao agente de teste.
+- **A gerente pôs um segundo agente sem um "ok" claro dele** (tinha perguntado às 14h10 "Com o seu ok, começo o item 2"),
+  parou-o quando ele disse "um por vez" e retomou quando ele liberou dois.
+- **O fechamento sozinho (N12)** não se repetiu em duas tentativas. O registro aponta `ui/janela_principal.py:494` (QMenu
+  apagado ao abrir "Livros recentes" depois de "montar para imprimir").
+- **No caminho da janela, o "dividir todas" corta a folha 1 ponto diferente da prova automática.** Por isso o Desentortar não
+  segura a página do Destino 18, e o conserto do cantinho não vale ali.
+- **A cobrança parou tudo das 16h26 às 18h28.** Os agentes voltam pelo id com SendMessage e continuam de onde estavam.
+- **A gravação em lote na Central precisa de `if_version` em cada documento.** O texto com acento vai num arquivo .json, ou
+  com `\u`. O console do Windows mostra os acentos errado, mas o dado fica certo.
+
+## 7. Como rodar e testar
+
+- Programa (versão de teste): `D:\programas\EditorImpressao\.venv\Scripts\python.exe main.py`, rodado de dentro de
+  `.claude\worktrees\obra-juncao`. Para os testes, apontar `LOCALAPPDATA` para uma pasta só do teste.
+- Um arquivo de teste: `D:\programas\EditorImpressao\.venv\Scripts\python.exe -m pytest tests\<arquivo> -q`, de dentro da
+  cópia.
+- Suíte inteira: **em partes**, nunca de uma vez. Primeiro `tests\test_promessas.py` sozinho (cerca de 12 min), depois o
+  resto.
+- GitHub: `gh workflow run "Testes no Windows" -R Samuel-Bottini-BR/EditorImpressao --ref claude/list-server-files-gkos8v -f ramo=<ramo>`.
+- As falas do Samuel: `python -I C:\Users\fotog\.claude\scripts\falas_da_conversa.py --todas --desde <AAAA-MM-DDTHH:MM UTC>`.
+  Use `--com-respostas` para ver também as respostas da gerente.
+- **Testes neste checkpoint:** a suíte inteira não rodou hoje. A última rodada inteira foi no obra em 06/11, em partes. O
+  único código novo do dia está no ramo do girar, já testado (§2). No obra, hoje só mudaram documentos (o Livro).
+
+## 8. Fora do git, de propósito
+
+- Os resultados do teste como o Kaique (`.claude\worktrees\teste-kaique-funcoes\relatorios\`) e os de 06/11
+  (`teste-kaique-lusiadas`) ficam fora por causa do direito autoral dos Lusíadas.
+- Os relatórios do teste com a janela aberta (`.claude\worktrees\testa-girar-capa\relatorios\`) ficam numa cópia solta, com
+  PDFs grandes. Os prints são do Gradus.
+- No checkout principal (`fase-1`) há relatórios e prints antigos sem guardar, de 30/09 a 02/10 (`relatorios/conferencia-*`,
+  `relatorios/prints-telas-2026-10-02/` e outros), mais `.claude/m.txt`. São anteriores a esta sessão, e ninguém decidiu
+  guardá-los. Não entram neste commit.
+
+## 9. Próximo passo
+
+Pegar a resposta do teste do "daqui". Com o "sim", juntar o girar no obra e rodar a suíte em partes. Depois confirmar a fila
+com ele e começar o item 3 (D-642), com um agente de conserto e outro de teste com a janela aberta.
+
+---
+
+# PARTE -31 — Checkpoint de 06/11/2026 (noite): as 6 entregas juntadas, o cantinho do giro, teste como o Kaique, D-638 a D-643 (corrigida pela PARTE -32)
 
 Sessão no PC, gerente Claude Opus 5.5. **Pausa pedida pelo Samuel ("vamos pausar todos os trabalhos e dar check point").**
 No fim, nenhum agente e nenhum teste rodando. A fila de consertos **não começou**: nenhum ramo novo.
