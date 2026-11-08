@@ -566,7 +566,17 @@ atualize esse arquivo (ou crie um novo) quando o Samuel pedir explicitamente.
         responde **no próprio documento da resposta**: campos `gerente` (o texto, em português simples) e `gerenteEm`
         (data), e `lida: true`. Resposta sem `gerente` e sem `lida` aparece em "Esperando a gerente", com o número na aba.
         Continua valendo responder também na pergunta (refazer a explicação, `historico` fixado), quando o comentário
-        dele pedir pergunta nova. O código da página não está no git: lê-se com Artifact `read` antes de mudar. Fonte: `docs/plano/central/fonte.json` (a gerente mantém) +
+        dele pedir pergunta nova.
+      - **Responder de novo, guardando a antiga (Samuel, 08/11/2026: "tem que poder responder quando precisa responder
+        de novo e a resposta antiga ainda ficar guardada").** Quando a gerente precisa de uma resposta nova numa pergunta
+        já respondida ("não entendi", pergunta de volta), põe `reabrir: true` na resposta: a pergunta volta a "espera
+        você" / "responder de novo", com a resposta antiga mostrada como guardada. Quando ele escolhe de novo, a página
+        passa a resposta antiga para `anteriores` (`[{opcao, opcaoNome, comentario, em}]`), mantém `gerente` e
+        `conversa`, e põe `volta: true`. Nunca apagar `anteriores`.
+      - **Um jeito de ver para tudo e celular (Samuel, 08/11/2026).** O seletor "Lista que abre e fecha / Caixa de
+        entrada / Um por vez" fica no alto e vale para Decidir agora, Conferência e Respostas. No celular as abas ficam
+        num botão "Menu" e o relatório se escolhe numa lista. Antes de publicar, testar em 360 e 300 px de largura
+        (nada pode passar da borda). O código da página não está no git: lê-se com Artifact `read` antes de mudar. Fonte: `docs/plano/central/fonte.json` (a gerente mantém) +
         `docs/plano/para_a_central.py` (junta com o plano, `memoria/bugs.md` e o git; avisa se um
         trabalho "no programa" não estiver no `fase-1`). Gravar o banco com ArtifactData `batch` a partir
         dos arquivos que o script gera (`D:\programas\EditorImpressao-arquivos\central-banco\`).
