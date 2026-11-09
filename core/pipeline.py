@@ -3022,13 +3022,20 @@ def acertar_no_tamanho_do_pdf(doc, projeto: Projeto, pagina: ConfigPagina,
     if precisa_medir_para_revisar(projeto, pagina):
         grande, _mono = renderizar_pagina(doc, projeto, pagina, dpi=projeto.qualidade_dpi)
     elif getattr(pagina, "marcacao_provisoria", False):
+        # Conserto de 09/11/2026 (D-659): aqui a folha CRUA (sem corte nem
+        # filtro) tem nome proprio. Desde a etapa 9b-2 (`4f881001`) ela ficava
+        # em `grande` e era devolvida com com_a_imagem, contra o "ou None nas
+        # outras" de cima: a tela trocava a previa certa pela folha crua
+        # (achado no Preto e branco escolhido a mao com a gravura procurada:
+        # o clique nao mudava a tela; tests/test_decisoes_gravura_a_mao.py).
+        # Arriscado: devolver esta folha (nao e o desenho do PDF).
         folha = projeto.folhas[pagina.folha]
-        grande = pagina_para_array(doc, folha.indice, dpi=projeto.qualidade_dpi)
+        crua = pagina_para_array(doc, folha.indice, dpi=projeto.qualidade_dpi)
         if _precisa_de_geometria(pagina, projeto):
-            _guardar_geometria(folha, pagina, projeto, grande, doc)
-        dpi_desenho = _dpi_do_desenho(doc, folha.indice, grande)
+            _guardar_geometria(folha, pagina, projeto, crua, doc)
+        dpi_desenho = _dpi_do_desenho(doc, folha.indice, crua)
         dpi_scan = _dpi_do_scan(doc, folha)
-        img, desenho = _preparar_metade_e_geometria(grande, folha, pagina, projeto,
+        img, desenho = _preparar_metade_e_geometria(crua, folha, pagina, projeto,
                                                     dpi=projeto.qualidade_dpi)
         _acompanhar_as_zonas(pagina, desenho)
         garantir_selecao(projeto, pagina, img, dpi_desenho, dpi_scan, no_tamanho_do_pdf=True)
