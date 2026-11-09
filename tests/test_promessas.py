@@ -3372,6 +3372,17 @@ def test_p195_antes_depois(janela, tela):
     tela.escolher_ferramenta("mao")
     tela.ir_para_pagina(1)
     tela._escolher_filtro(PRETO_E_BRANCO)
+    # D-659 (Samuel, 09/11/2026): o Preto e branco escolhido à mão procura a gravura desta
+    # página por trás e guarda o que achou (a marcação da página). A foto do "antes" espera essa
+    # procura terminar: o que esta prova guarda é que o "antes / depois" não muda o projeto.
+    # Troca autorizada pelo Samuel (09/11/2026: "1- sim"); antes a foto era tirada logo depois do
+    # clique e a procura, gravando no meio, fazia a comparação acusar.
+    from core.pipeline import precisa_do_desenho_do_pdf
+
+    pagina = janela.projeto.paginas[1]
+    aj.esperar(lambda: janela.previas.ja_pronta(1, tela._dpi_atual) is not None
+               and not precisa_do_desenho_do_pdf(janela.projeto, pagina)
+               and not janela.previas.medida_pendente(1), 60, motivo="a procura da gravura")
     antes = aj.projeto_gravado(janela)
     apertar(janela, "área de trabalho/barra de baixo/antes / depois")
     vista = tela.vista_antes_depois
