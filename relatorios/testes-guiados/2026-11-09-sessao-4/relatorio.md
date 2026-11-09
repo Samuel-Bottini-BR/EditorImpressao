@@ -51,3 +51,15 @@ Destino:
   página' e 'Para o livro todo'") e da D-619 (04/11: o quadro só mostra o que vale para o livro todo, com o botão
   "mudar no Automático..."). Explicado no chat.
 - Zoom que some ao trocar de ferramenta (principalmente ao ir para o Cortar as bordas): defeito novo, para a Lista de bugs.
+
+## Respostas às 2 perguntas da gravura à mão (chat, 09/11, à noite)
+
+Palavras dele: "1- sim / 2-  não entendi"
+
+Destino:
+- Pergunta 1 ("Posso trocar um teste antigo e consertar um defeito que apareceu no caminho?"): **sim**. O agente
+  aplica a troca do `test_p195` e a mudança em `ui/tarefas.py` e roda os testes de novo. Anotado na Central
+  (respostas/gravura-a-mao-testes).
+- Pergunta 2 (o Automático depois do Preto e branco à mão): **não entendi**. A gerente explicou no chat com o caso
+  da página 8 e pediu ao agente as provas (página 8 à mão; depois do Automático sem "Gravuras e fotos"; o mesmo
+  com "Gravuras em tons de cinza"). A pergunta volta na Central com as provas.
