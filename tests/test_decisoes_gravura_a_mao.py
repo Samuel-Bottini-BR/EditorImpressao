@@ -643,3 +643,32 @@ def test_d659_procura_no_meio_do_desenho_recebe_a_resolucao(tmp_path, monkeypatc
     assert all(r and abs(r - 55) < 2 for r in resolucoes), f"procurou sem a resolução: {resolucoes}"
     # e quem chama _filtrar direto, sem renderizar_pagina, continua como antes (sem a conta)
     assert pipeline._resolucao_que_faltava(None, None) == (None, None)
+
+
+def test_d659_gerenciador_parado_nao_comeca_nada(app, tmp_path):
+    """Conserto de 09/11/2026 (autorizado pelo Samuel, 09/11: "1- sim"): depois de
+    ui/tarefas.GerenciadorPrevias.parar() (livro trocado ou fechado), nenhum pedido novo começa
+    (nem o que um resultado atrasado pediria por refazer_previas). Antes, o acerto no tamanho do
+    PDF que passava dos 3 s de espera mandava desenhar de novo as prévias do livro que já saiu
+    (tests/test_promessas.py: o erro caía no teste seguinte). Antes de parar, pede como sempre."""
+    from core import automatico
+    from core.pdf_io import abrir_pdf, info_paginas
+    from modelos import Projeto
+    from ui.tarefas import GerenciadorPrevias
+
+    caminho = R._pdf(tmp_path / "livro.pdf", 2)
+    projeto = Projeto(caminho_entrada=caminho, nome="livro")
+    doc = abrir_pdf(caminho)
+    try:
+        automatico.livro_leve(projeto, [(i.largura_pt, i.altura_pt) for i in info_paginas(doc)])
+    finally:
+        doc.close()
+    previas = GerenciadorPrevias(caminho, projeto)
+    previas.pedir(0, 55)
+    assert previas.chave(0, 55) in previas._pedidas, "antes de parar, o pedido devia começar"
+    previas.parar()
+    previas.pedir(1, 55)
+    previas.refazer_previas(0)
+    assert not previas._pedidas or previas.chave(1, 55) not in previas._pedidas, \
+        "depois de parar, um pedido novo começou"
+    assert previas.chave(1, 55) not in previas._pedidas
