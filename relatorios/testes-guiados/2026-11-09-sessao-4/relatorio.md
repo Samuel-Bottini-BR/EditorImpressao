@@ -63,3 +63,20 @@ Destino:
 - Pergunta 2 (o Automático depois do Preto e branco à mão): **não entendi**. A gerente explicou no chat com o caso
   da página 8 e pediu ao agente as provas (página 8 à mão; depois do Automático sem "Gravuras e fotos"; o mesmo
   com "Gravuras em tons de cinza"). A pergunta volta na Central com as provas.
+
+## O aviso das páginas mexidas e as rodadas do Automático (chat, 09/11, à noite)
+
+Palavras dele:
+- "Se a pagina ou folha já tiver passado por modificações antes de entrar no automatico o automatico vai perguntar se quer mexer nela né, e se já foi procurado gravuras em uma pagina, não precisa procurar de novo."
+- "mas seria bom ter um botão para ele recalcular e procurar novamente as gravuras ou fotos, caso ele erre em alguma pagina."
+- "não, eu falei para dar um aviso, uma mensagem na tela perguntando se quer mexer nessas paginas que já foram mexidas, isso já existe no programa?"
+- "só verifica se ele vai perguntar quando eu tiver feito mudanças no manual ou até em outras rodadas de automatico"
+- "pq as vezes eu rodo automatico em só algumas paginas de filtro e depois que montar caderno em todas, o automatico tem que funcionar certo e não dar erro nessa parte."
+- "mas caso o o automatico for mudar alguma coisa que foi feito na ultima rodada ele deve perguntar."
+
+Destino:
+- O aviso existe (D-004, 28/09: "Páginas mexidas à mão", com "Pular as N" / "Rodar nelas também" / "cancelar"). Hoje vale só para o que foi feito à mão, nas etapas que vão rodar. Os 16 testes do aviso passaram (gerente, sem janela).
+- O botão de procurar de novo já existe: ferramenta Marcar, "detectar automaticamente", e menu Marcar → "Procurar de novo".
+- Perguntar também antes de mudar o que uma rodada anterior do Automático fez: decisão nova, **D-660** (não construída).
+- Verificador testando o caminho de hoje (filtro em algumas páginas, depois cadernos no livro todo), sem janela.
+  Relatório em `relatorios/automatico-mexidas-2026-11-09/` no ramo da versão de teste.
