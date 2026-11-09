@@ -597,3 +597,49 @@ def test_d659_a_tela_nao_troca_a_previa_pela_folha_crua(tmp_path, procuradas):
         doc.close()
     assert not pagina.marcacao_provisoria, "a marcação não virou a definitiva"
     assert imagem is None, "devolveu a folha crua como se fosse o desenho do PDF"
+
+
+def test_d659_procura_no_meio_do_desenho_recebe_a_resolucao(tmp_path, monkeypatch):
+    """Corrida achada no GitHub em 09/11/2026 (rodada 42698444393,
+    test_decisoes_ferramentas_antes_depois: caixa "Gravuras e fotos" sem resposta): a pessoa
+    chega na página e clica no Preto e branco enquanto a prévia ainda é desenhada. O começo do
+    desenho (core/pipeline.renderizar_pagina) via o Original e não media a resolução; o fim
+    (garantir_selecao) via o Preto e branco à mão e procurava SEM a resolução, e o detector
+    deixava pendente o aviso de que o detector de gravuras falhou (a tela o mostraria ao
+    Kaique). Agora a procura recebe a resolução da folha, e nenhum aviso fica pendente."""
+    from core import automatico, detectar_regioes, etapas, pipeline
+    from core.pdf_io import abrir_pdf, info_paginas
+    from modelos import Projeto
+
+    caminho = R._pdf(tmp_path / "livro.pdf", 1)
+    projeto = Projeto(caminho_entrada=caminho, nome="livro")
+    resolucoes = []
+
+    def detectar(img, **kwargs):
+        resolucoes.append(kwargs.get("dpi"))
+        return R._marcacao_da_maquina()
+
+    monkeypatch.setattr(detectar_regioes, "detectar", detectar)
+    preparar = pipeline._preparar_metade_e_geometria
+
+    def preparar_e_o_clique(*args, **kwargs):
+        saida = preparar(*args, **kwargs)
+        pagina = projeto.paginas[0]
+        if pagina.filtro != PRETO_E_BRANCO:            # o clique chega no meio do desenho
+            pagina.filtro = PRETO_E_BRANCO
+            etapas.marcar_mexida_a_mao(pagina, etapas.FILTRO)
+        return saida
+
+    monkeypatch.setattr(pipeline, "_preparar_metade_e_geometria", preparar_e_o_clique)
+    detectar_regioes.aviso_da_gravura_para_a_tela()   # esquece aviso de outro teste
+    doc = abrir_pdf(caminho)
+    try:
+        automatico.livro_leve(projeto, [(i.largura_pt, i.altura_pt) for i in info_paginas(doc)])
+        assert projeto.paginas[0].filtro == ORIGINAL
+        pipeline.renderizar_pagina(doc, projeto, projeto.paginas[0], dpi=55)
+    finally:
+        doc.close()
+    assert resolucoes, "não procurou"
+    assert all(r and abs(r - 55) < 2 for r in resolucoes), f"procurou sem a resolução: {resolucoes}"
+    # e quem chama _filtrar direto, sem renderizar_pagina, continua como antes (sem a conta)
+    assert pipeline._resolucao_que_faltava(None, None) == (None, None)

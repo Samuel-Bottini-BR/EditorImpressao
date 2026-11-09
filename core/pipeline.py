@@ -2509,6 +2509,9 @@ def garantir_selecao(projeto: Projeto, pagina: ConfigPagina, img: np.ndarray,
         from core.detectar_regioes import assinatura_da_gravura, detectar
 
         detector, opcoes = escolha_da_gravura(projeto, pagina)
+        # conserto de 09/11/2026: a pagina mudou no meio do desenho e a procura
+        # nao foi prevista no comeco (ver _resolucao_para_a_procura)
+        dpi, dpi_do_scan = _resolucao_que_faltava(dpi, dpi_do_scan)
         selecao = detectar(img, detector_de_gravura=detector, opcoes_da_gravura=opcoes,
                            dpi=dpi, dpi_do_scan=dpi_do_scan)
     except Exception:  # noqa: BLE001 - sem deteccao o filtro trata a folha toda
@@ -2837,10 +2840,73 @@ def renderizar_pagina(
     if _vai_detectar(projeto, pagina, dpi) or _vai_limpar_pelo_scantailor(projeto, pagina):
         dpi_desenho = _dpi_do_desenho(doc, folha.indice, img_folha)
         dpi_scan = _dpi_do_scan(doc, folha)
+    altura_da_folha, largura_da_folha = img_folha.shape[:2]
     _acertar_o_em_branco(projeto, folha, pagina, img_folha, dpi)   # etapas 9c e 9d (D-497)
     img, desenho = _preparar_metade_e_geometria(img_folha, folha, pagina, projeto, dpi=dpi)
     _acompanhar_as_zonas(pagina, desenho)
-    return _filtrar(projeto, pagina, img, dpi_desenho, dpi_scan, dpi_pedido=dpi)
+
+    def resolucao_para_a_procura():
+        # so e chamada se a procura acontecer sem a resolucao (ver
+        # _resolucao_para_a_procura); guarda so o tamanho da folha, nao a imagem
+        return (_dpi_pela_area(doc, folha.indice, altura_da_folha, largura_da_folha),
+                _dpi_do_scan(doc, folha))
+
+    with _resolucao_para_a_procura(None if dpi_desenho else resolucao_para_a_procura):
+        return _filtrar(projeto, pagina, img, dpi_desenho, dpi_scan, dpi_pedido=dpi)
+
+
+# A resolucao da folha para a procura da gravura, NESTE FIO (conserto de
+# 09/11/2026, achado ao fazer a D-659). renderizar_pagina so mede a resolucao
+# quando _vai_detectar diz "sim" no comeco do desenho. Mas a pagina e lida ao
+# vivo e a tela pode muda-la no meio (a pessoa chega na pagina e clica no Preto
+# e branco enquanto a previa ainda e desenhada): o comeco viu o Original (sem
+# procura, sem resolucao) e garantir_selecao, no fim, ve o Preto e branco e
+# procura. Sem a resolucao, o detector do ScanTailor desiste ("precisa saber a
+# resolução da página") e a tela mostrava ao Kaique o aviso de que o detector
+# de gravuras falhou (no GitHub: tests/test_decisoes_ferramentas_antes_depois.py,
+# caixa "Gravuras e fotos"). A previa desenhada assim e jogada fora (a pagina
+# mudou: ui/tarefas, geracao), entao a unica coisa a acertar e a resolucao.
+# Aqui fica uma conta PREGUICOSA da resolucao, que garantir_selecao so chama se
+# for procurar sem ela. O resto do desenho recebe os mesmos valores de antes (o
+# "suavizar" e os pontinhos usam o dpi: passa-lo sempre mudaria a pagina).
+# Mesmo jeito do luz_scantailor.suavizar_nesta_pagina: um valor por fio.
+# Arriscado: passar a conta para o resto do desenho (mudaria paginas que nao
+# procuram); guardar a imagem da folha na conta (memoria).
+_RESOLUCAO_NESTE_FIO = threading.local()
+
+
+class _resolucao_para_a_procura:
+    """`with _resolucao_para_a_procura(conta):` deixa `conta` (sem argumentos,
+    devolve (dpi do desenho, dpi do scan)) valendo neste fio, e volta a de antes
+    ao sair. None: nenhuma."""
+
+    def __init__(self, conta):
+        self.conta = conta
+        self.anterior = None
+
+    def __enter__(self):
+        self.anterior = getattr(_RESOLUCAO_NESTE_FIO, "conta", None)
+        _RESOLUCAO_NESTE_FIO.conta = self.conta
+        return self
+
+    def __exit__(self, *_erro):
+        _RESOLUCAO_NESTE_FIO.conta = self.anterior
+        return False
+
+
+def _resolucao_que_faltava(dpi, dpi_do_scan):
+    """(dpi, dpi_do_scan) para a procura: os que vieram, ou, sem o `dpi`, os
+    da conta deste fio (_resolucao_para_a_procura), se houver. Nunca levanta."""
+    if dpi:
+        return dpi, dpi_do_scan
+    conta = getattr(_RESOLUCAO_NESTE_FIO, "conta", None)
+    if conta is None:
+        return dpi, dpi_do_scan
+    try:
+        medido, do_scan = conta()
+    except Exception:  # noqa: BLE001 - sem a resolucao, o detector antigo resolve (como antes)
+        return dpi, dpi_do_scan
+    return medido, (dpi_do_scan or do_scan)
 
 
 def _tirar_o_em_branco_falso(projeto: Projeto, folha: ConfigFolha, pagina: ConfigPagina,
@@ -3254,12 +3320,19 @@ def _dpi_do_desenho(doc, indice: int, img_folha: np.ndarray) -> float | None:
     Usado pelo detector de gravura do ScanTailor (item 1.2), que precisa do
     DPI de verdade da imagem.
     """
+    return _dpi_pela_area(doc, indice, img_folha.shape[0], img_folha.shape[1])
+
+
+def _dpi_pela_area(doc, indice: int, altura_px: int, largura_px: int) -> float | None:
+    """A conta de _dpi_do_desenho pelo tamanho em pontos (altura x largura) da
+    folha desenhada, sem precisar da imagem (para _resolucao_para_a_procura).
+    None se nao der para medir."""
     try:
         largura_pt, altura_pt = tamanho_da_pagina_pt(doc, indice)
         area_pol = (largura_pt / 72.0) * (altura_pt / 72.0)
         if area_pol <= 0:
             return None
-        return float((img_folha.shape[0] * img_folha.shape[1] / area_pol) ** 0.5)
+        return float((altura_px * largura_px / area_pol) ** 0.5)
     except Exception:  # noqa: BLE001 - sem o DPI, o detector antigo resolve
         return None
 
