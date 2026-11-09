@@ -572,7 +572,11 @@ atualize esse arquivo (ou crie um novo) quando o Samuel pedir explicitamente.
         já respondida ("não entendi", pergunta de volta), põe `reabrir: true` na resposta: a pergunta volta a "espera
         você" / "responder de novo", com a resposta antiga mostrada como guardada. Quando ele escolhe de novo, a página
         passa a resposta antiga para `anteriores` (`[{opcao, opcaoNome, comentario, em}]`), mantém `gerente` e
-        `conversa`, e põe `volta: true`. Nunca apagar `anteriores`.
+        `conversa`, e põe `volta: true`. Nunca apagar `anteriores`. O comentário dele continua com a resposta nova
+        quando ele só troca de opção. **"Ainda não entendi" não é resposta** (09/11: "precisamos de que apareça para
+        responder novamente quando tiver sido respondido por você"): aparece "esperando a gerente explicar"; quando a
+        gerente grava `gerente`/`gerenteEm` (mais nova que o `em` dele), a pergunta volta sozinha como "responder de
+        novo". Ao responder um "não entendi", refazer também a pergunta (explicação e prints) na conferência.
       - **Um jeito de ver para tudo e celular (Samuel, 08/11/2026).** O seletor "Lista que abre e fecha / Caixa de
         entrada / Um por vez" fica no alto e vale para Decidir agora, Conferência e Respostas. No celular as abas ficam
         num botão "Menu" e o relatório se escolhe numa lista; o Quadro dos trabalhos e as Etapas ficam numa coluna só.
