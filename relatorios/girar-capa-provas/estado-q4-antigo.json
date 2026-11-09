@@ -1,0 +1,209 @@
+{
+ "codigo": "antigo",
+ "antes": {
+  "rotacoes": [
+   0,
+   0,
+   0,
+   0,
+   0,
+   0,
+   0,
+   0,
+   0,
+   0,
+   0,
+   0
+  ],
+  "giros": [
+   0,
+   0,
+   0,
+   0,
+   0,
+   0,
+   0,
+   0,
+   0,
+   0,
+   0,
+   0,
+   0,
+   0,
+   0,
+   0,
+   0,
+   0,
+   0,
+   0,
+   0,
+   0
+  ],
+  "folhas_giradas": 0,
+  "paginas_giradas": 0,
+  "quadro": "Girar a página",
+  "lista": "só esta página",
+  "historico": "Dividir 68 folhas (escolhidas em Todas as páginas)"
+ },
+ "pdf-antes": [
+  {
+   "png": "pdf-q4-antigo-antes-1.png",
+   "pt": [
+    842,
+    595
+   ]
+  },
+  {
+   "png": "pdf-q4-antigo-antes-2.png",
+   "pt": [
+    416,
+    595
+   ]
+  },
+  {
+   "png": "pdf-q4-antigo-antes-3.png",
+   "pt": [
+    426,
+    595
+   ]
+  },
+  {
+   "png": "pdf-q4-antigo-antes-4.png",
+   "pt": [
+    415,
+    595
+   ]
+  },
+  {
+   "png": "pdf-q4-antigo-antes-5.png",
+   "pt": [
+    427,
+    595
+   ]
+  },
+  {
+   "png": "pdf-q4-antigo-antes-6.png",
+   "pt": [
+    842,
+    595
+   ]
+  },
+  {
+   "png": "pdf-q4-antigo-antes-7.png",
+   "pt": [
+    428,
+    595
+   ]
+  },
+  {
+   "png": "pdf-q4-antigo-antes-8.png",
+   "pt": [
+    414,
+    595
+   ]
+  }
+ ],
+ "depois": {
+  "rotacoes": [
+   0,
+   0,
+   0,
+   0,
+   0,
+   0,
+   0,
+   0,
+   0,
+   0,
+   0,
+   0
+  ],
+  "giros": [
+   0,
+   0,
+   90,
+   90,
+   90,
+   0,
+   90,
+   90,
+   90,
+   90,
+   90,
+   90,
+   90,
+   90,
+   90,
+   90,
+   90,
+   90,
+   90,
+   90,
+   90,
+   90
+  ],
+  "folhas_giradas": 0,
+  "paginas_giradas": 135,
+  "quadro": "Girar a página",
+  "lista": "daqui em diante",
+  "historico": "Girar ¼ à direita: da página 3 em diante (135 páginas), viradas como a página 3"
+ },
+ "pdf-depois": [
+  {
+   "png": "pdf-q4-antigo-depois-1.png",
+   "pt": [
+    842,
+    595
+   ]
+  },
+  {
+   "png": "pdf-q4-antigo-depois-2.png",
+   "pt": [
+    416,
+    595
+   ]
+  },
+  {
+   "png": "pdf-q4-antigo-depois-3.png",
+   "pt": [
+    595,
+    426
+   ]
+  },
+  {
+   "png": "pdf-q4-antigo-depois-4.png",
+   "pt": [
+    595,
+    415
+   ]
+  },
+  {
+   "png": "pdf-q4-antigo-depois-5.png",
+   "pt": [
+    595,
+    427
+   ]
+  },
+  {
+   "png": "pdf-q4-antigo-depois-6.png",
+   "pt": [
+    842,
+    595
+   ]
+  },
+  {
+   "png": "pdf-q4-antigo-depois-7.png",
+   "pt": [
+    595,
+    428
+   ]
+  },
+  {
+   "png": "pdf-q4-antigo-depois-8.png",
+   "pt": [
+    595,
+    414
+   ]
+  }
+ ]
+}

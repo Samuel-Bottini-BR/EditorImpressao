@@ -1,0 +1,553 @@
+{
+ "codigo": "novo",
+ "q3-antes-dividir": {
+  "rotacoes": [
+   0,
+   0,
+   0,
+   0,
+   0,
+   0,
+   0,
+   0,
+   0,
+   0,
+   0,
+   0
+  ],
+  "giros": [
+   0,
+   0,
+   0,
+   0,
+   0,
+   0,
+   0,
+   0,
+   0,
+   0,
+   0,
+   0,
+   0,
+   0,
+   0,
+   0,
+   0,
+   0,
+   0,
+   0,
+   0,
+   0
+  ],
+  "folhas_giradas": 0,
+  "paginas_giradas": 0,
+  "quadro": "Girar a folha",
+  "lista": "só esta folha",
+  "historico": "Dividir 69 folhas (escolhidas em Todas as páginas)",
+  "itens_da_lista": [
+   "só esta folha",
+   "todas as folhas",
+   "daqui em diante",
+   "só as pares",
+   "só as ímpares"
+  ]
+ },
+ "q3-antes-paginas": {
+  "rotacoes": [
+   0,
+   0,
+   0,
+   0,
+   0,
+   0,
+   0,
+   0,
+   0,
+   0,
+   0,
+   0
+  ],
+  "giros": [
+   0,
+   0,
+   0,
+   0,
+   0,
+   0,
+   0,
+   0,
+   0,
+   0,
+   0,
+   0,
+   0,
+   0,
+   0,
+   0,
+   0,
+   0,
+   0,
+   0,
+   0,
+   0
+  ],
+  "folhas_giradas": 0,
+  "paginas_giradas": 0,
+  "quadro": "Girar a página",
+  "lista": "só esta página",
+  "historico": "Dividir 69 folhas (escolhidas em Todas as páginas)"
+ },
+ "pdf-q3-antes-paginas": [
+  {
+   "png": "pdf-q3-antes-paginas-1.png",
+   "pt": [
+    842,
+    595
+   ]
+  },
+  {
+   "png": "pdf-q3-antes-paginas-2.png",
+   "pt": [
+    425,
+    595
+   ]
+  },
+  {
+   "png": "pdf-q3-antes-paginas-3.png",
+   "pt": [
+    417,
+    595
+   ]
+  },
+  {
+   "png": "pdf-q3-antes-paginas-4.png",
+   "pt": [
+    421,
+    595
+   ]
+  },
+  {
+   "png": "pdf-q3-antes-paginas-5.png",
+   "pt": [
+    421,
+    595
+   ]
+  }
+ ],
+ "q3-fica-dividir-antes-do-clique": {
+  "rotacoes": [
+   0,
+   0,
+   0,
+   0,
+   0,
+   0,
+   0,
+   0,
+   0,
+   0,
+   0,
+   0
+  ],
+  "giros": [
+   0,
+   0,
+   0,
+   0,
+   0,
+   0,
+   0,
+   0,
+   0,
+   0,
+   0,
+   0,
+   0,
+   0,
+   0,
+   0,
+   0,
+   0,
+   0,
+   0,
+   0,
+   0
+  ],
+  "folhas_giradas": 0,
+  "paginas_giradas": 0,
+  "quadro": "Girar a folha",
+  "lista": "só esta folha",
+  "historico": "Dividir 69 folhas (escolhidas em Todas as páginas)",
+  "itens_da_lista": [
+   "só esta folha",
+   "todas as folhas",
+   "daqui em diante",
+   "só as pares",
+   "só as ímpares"
+  ]
+ },
+ "fica-lista": "todas as folhas",
+ "fica-clique": {
+  "rotacoes": [
+   90,
+   90,
+   90,
+   90,
+   90,
+   90,
+   90,
+   90,
+   90,
+   90,
+   90,
+   90
+  ],
+  "giros": [
+   0,
+   0,
+   0,
+   0,
+   0,
+   0,
+   0,
+   0,
+   0,
+   0,
+   0,
+   0,
+   0,
+   0,
+   0,
+   0,
+   0,
+   0,
+   0,
+   0,
+   0,
+   0
+  ],
+  "folhas_giradas": 70,
+  "paginas_giradas": 0,
+  "quadro": "Girar a folha",
+  "lista": "todas as folhas",
+  "historico": "Girar ¼ à direita: todas as 70 folhas, viradas como a folha 10"
+ },
+ "q3-fica-paginas": {
+  "rotacoes": [
+   90,
+   90,
+   90,
+   90,
+   90,
+   90,
+   90,
+   90,
+   90,
+   90,
+   90,
+   90
+  ],
+  "giros": [
+   0,
+   0,
+   0,
+   0,
+   0,
+   0,
+   0,
+   0,
+   0,
+   0,
+   0,
+   0,
+   0,
+   0,
+   0,
+   0,
+   0,
+   0,
+   0,
+   0,
+   0,
+   0
+  ],
+  "folhas_giradas": 70,
+  "paginas_giradas": 0,
+  "quadro": "Girar a página",
+  "lista": "todas as páginas",
+  "historico": "Girar ¼ à direita: todas as 70 folhas, viradas como a folha 10"
+ },
+ "pdf-q3-fica-paginas": [
+  {
+   "png": "pdf-q3-fica-paginas-1.png",
+   "pt": [
+    595,
+    842
+   ]
+  },
+  {
+   "png": "pdf-q3-fica-paginas-2.png",
+   "pt": [
+    300,
+    842
+   ]
+  },
+  {
+   "png": "pdf-q3-fica-paginas-3.png",
+   "pt": [
+    295,
+    842
+   ]
+  },
+  {
+   "png": "pdf-q3-fica-paginas-4.png",
+   "pt": [
+    298,
+    842
+   ]
+  },
+  {
+   "png": "pdf-q3-fica-paginas-5.png",
+   "pt": [
+    298,
+    842
+   ]
+  }
+ ],
+ "fica-depois-do-ctrl-z": {
+  "rotacoes": [
+   0,
+   0,
+   0,
+   0,
+   0,
+   0,
+   0,
+   0,
+   0,
+   0,
+   0,
+   0
+  ],
+  "giros": [
+   0,
+   0,
+   0,
+   0,
+   0,
+   0,
+   0,
+   0,
+   0,
+   0,
+   0,
+   0,
+   0,
+   0,
+   0,
+   0,
+   0,
+   0,
+   0,
+   0,
+   0,
+   0
+  ],
+  "folhas_giradas": 0,
+  "paginas_giradas": 0,
+  "quadro": "Girar a página",
+  "lista": "todas as páginas",
+  "historico": "Dividir 69 folhas (escolhidas em Todas as páginas)"
+ },
+ "pagina-lista": "todas as páginas",
+ "pagina-clique": {
+  "rotacoes": [
+   90,
+   0,
+   0,
+   0,
+   0,
+   0,
+   0,
+   0,
+   0,
+   0,
+   0,
+   0
+  ],
+  "giros": [
+   0,
+   90,
+   90,
+   90,
+   90,
+   90,
+   90,
+   90,
+   90,
+   90,
+   90,
+   90,
+   90,
+   90,
+   90,
+   90,
+   90,
+   90,
+   90,
+   90,
+   90,
+   90
+  ],
+  "folhas_giradas": 1,
+  "paginas_giradas": 138,
+  "quadro": "Girar a página",
+  "lista": "todas as páginas",
+  "historico": "Girar ¼ à direita: todas as 139 páginas, viradas como a página 18"
+ },
+ "q3-pagina-paginas": {
+  "rotacoes": [
+   90,
+   0,
+   0,
+   0,
+   0,
+   0,
+   0,
+   0,
+   0,
+   0,
+   0,
+   0
+  ],
+  "giros": [
+   0,
+   90,
+   90,
+   90,
+   90,
+   90,
+   90,
+   90,
+   90,
+   90,
+   90,
+   90,
+   90,
+   90,
+   90,
+   90,
+   90,
+   90,
+   90,
+   90,
+   90,
+   90
+  ],
+  "folhas_giradas": 1,
+  "paginas_giradas": 138,
+  "quadro": "Girar a página",
+  "lista": "todas as páginas",
+  "historico": "Girar ¼ à direita: todas as 139 páginas, viradas como a página 18"
+ },
+ "pdf-q3-pagina-paginas": [
+  {
+   "png": "pdf-q3-pagina-paginas-1.png",
+   "pt": [
+    595,
+    842
+   ]
+  },
+  {
+   "png": "pdf-q3-pagina-paginas-2.png",
+   "pt": [
+    595,
+    425
+   ]
+  },
+  {
+   "png": "pdf-q3-pagina-paginas-3.png",
+   "pt": [
+    595,
+    417
+   ]
+  },
+  {
+   "png": "pdf-q3-pagina-paginas-4.png",
+   "pt": [
+    595,
+    421
+   ]
+  },
+  {
+   "png": "pdf-q3-pagina-paginas-5.png",
+   "pt": [
+    595,
+    421
+   ]
+  }
+ ],
+ "q3-pagina-dividir": {
+  "rotacoes": [
+   90,
+   0,
+   0,
+   0,
+   0,
+   0,
+   0,
+   0,
+   0,
+   0,
+   0,
+   0
+  ],
+  "giros": [
+   0,
+   90,
+   90,
+   90,
+   90,
+   90,
+   90,
+   90,
+   90,
+   90,
+   90,
+   90,
+   90,
+   90,
+   90,
+   90,
+   90,
+   90,
+   90,
+   90,
+   90,
+   90
+  ],
+  "folhas_giradas": 1,
+  "paginas_giradas": 138,
+  "quadro": "Girar a folha",
+  "lista": "todas as folhas",
+  "historico": "Girar ¼ à direita: todas as 139 páginas, viradas como a página 18",
+  "itens_da_lista": [
+   "só esta folha",
+   "todas as folhas",
+   "daqui em diante",
+   "só as pares",
+   "só as ímpares"
+  ]
+ },
+ "dividir-uma-pagina": {
+  "quadro": "Girar a página",
+  "itens_da_lista": [
+   "só esta página",
+   "todas as páginas",
+   "daqui em diante",
+   "só as pares",
+   "só as ímpares"
+  ],
+  "gira_so_a_pagina": 17
+ }
+}
