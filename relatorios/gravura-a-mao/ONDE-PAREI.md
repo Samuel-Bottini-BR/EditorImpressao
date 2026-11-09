@@ -118,7 +118,7 @@ valiam com ele ligado).
   (`reversao-no-a0c99cc7.txt`).
 - [x] Conserto, commit `88731637` (`core/etapas.py`; e `core/pipeline.py`, o defeito da tela achado no caminho).
 - [x] Testes no PC, um arquivo por vez (lista abaixo).
-- [ ] GitHub: suíte 42698444393 e filtro de velocidade 42698450173 (rodando).
+- [~] GitHub: suítes 42698444393 e 42703188133 vermelhas só no `test_promessas.py` (ver PARADO abaixo); filtro de velocidade 42698450173.
 - [x] Imagens do livro dele (cópia, sem janela) e relatório (`relatorio.md`/`.html`/`.pdf`), commit `a99e0a51`.
 - [-] Prints da janela real: **tirados do pedido** (ordem do Samuel, 09/11: "não é para abrir na minha tela").
   O script abriu a janela duas vezes por volta das 17h, antes da ordem (só o print da página 8 no Original saiu).
@@ -191,6 +191,36 @@ Ver `saida_teste/gravura-a-mao/testes-no-pc.txt` (fora do git). O resumo vai no 
    seria procurada.
 7. A procura no programa de verdade roda em outro processo (`core.paginas_em_outro_processo`). Na única
    execução com janela, a página 8 ficou com a gravura achada: 25 áreas, marcação definitiva.
+
+## PARADO: teste antigo que a D-659 quebra (pergunta à gerente; nada aplicado)
+
+Rodadas do GitHub 42698444393 e 42703188133 (e o mesmo no PC): tudo verde, menos `tests/test_promessas.py`
+(268 passavam no ramo de base, rodada 42391132998).
+
+1. **`test_p195_antes_depois`** (falha): ele clica em Preto e branco na página 2 de um livro novo, tira a foto
+   do projeto na hora e, depois de abrir e fechar o "antes / depois", compara com a de agora. No meio, a procura
+   da D-659 (a "Respeitar" vem marcada) grava na página a gravura e as letras achadas (`selecao`), e a
+   comparação acusa. O "antes / depois" não mudou nada. Quem mudou foi a procura, que é o que a D-659 manda.
+   Proposta (NÃO aplicada): `proposta-test_p195.diff`. A foto do "antes" espera a procura terminar, e o
+   resto da prova fica igual.
+2. **24 a 27 erros "um botão falhou por baixo (erros.log)"** em testes que não têm nada de errado. Eles caem
+   sempre no teste **seguinte** a um que pôs uma página em Preto e branco à mão. Mecanismo: a troca da marcação
+   no tamanho do PDF (por trás) leva mais de 3 s na primeira vez, porque carrega o detector. O
+   `GerenciadorPrevias.parar()` espera só 3 s. Quando o resultado chega, `refazer_previas` pede prévias novas
+   ao gerenciador já parado, do PDF do teste anterior, que já foi apagado. O erro vai para o `erros.log` do
+   teste seguinte. No programa de verdade, isso também desenha por trás páginas do livro anterior depois de
+   trocar de livro, e dá erro se a pessoa moveu o PDF (caso que o próprio `parar()` já cita).
+   Proposta (NÃO aplicada, é `ui/`): `proposta-ui-tarefas-parar.diff`. Depois do `parar()`, o gerenciador
+   não começa nada novo. O gerenciador não é reaproveitado: `janela_principal` cria outro para cada livro.
+   Experimento no PC, sem commit: ver "Resultado do experimento" abaixo.
+
+Resultado do experimento (PC, sem janela; desfeito depois, `ui/tarefas.py` igual ao do ramo):
+- `test_promessas.py` com o conserto e SEM as propostas: 1 falha (`p195`) + 24 erros (igual ao GitHub).
+- Com a proposta de `ui/tarefas.py` aplicada: **1 falha (`p195`), 267 passaram, 0 erros**.
+- `test_p195` com a proposta dele (numa cópia temporária do arquivo, apagada depois): **passou**.
+
+Pergunta: posso (a) aplicar a troca do `test_p195` e (b) a mudança em `ui/tarefas.py`? Sem as duas, a suíte do
+GitHub fica vermelha só no `test_promessas.py`.
 
 ## Perguntas para o Samuel
 
