@@ -1,0 +1,50 @@
+{
+ "p8-respeitar": {
+  "pagina": 8,
+  "segundos_do_desenho": 11.97,
+  "vezes_que_procurou": 1,
+  "segundos_da_procura": 9.55,
+  "outras_paginas_com_marcacao": [],
+  "dpi": 300
+ },
+ "p8-cinza": {
+  "pagina": 8,
+  "segundos_do_desenho": 3.83,
+  "vezes_que_procurou": 1,
+  "segundos_da_procura": 2.37,
+  "outras_paginas_com_marcacao": [],
+  "dpi": 300
+ },
+ "p8-respeitar-e-cinza": {
+  "pagina": 8,
+  "segundos_do_desenho": 3.62,
+  "vezes_que_procurou": 1,
+  "segundos_da_procura": 2.25,
+  "outras_paginas_com_marcacao": [],
+  "dpi": 300
+ },
+ "p8-so-as-letras": {
+  "pagina": 8,
+  "segundos_do_desenho": 23.35,
+  "vezes_que_procurou": 1,
+  "segundos_da_procura": 2.24,
+  "outras_paginas_com_marcacao": [],
+  "dpi": 300
+ },
+ "p8-tres-desmarcadas": {
+  "pagina": 8,
+  "segundos_do_desenho": 0.53,
+  "vezes_que_procurou": 0,
+  "segundos_da_procura": 0,
+  "outras_paginas_com_marcacao": [],
+  "dpi": 300
+ },
+ "p6-sem-gravura-respeitar": {
+  "pagina": 6,
+  "segundos_do_desenho": 3.56,
+  "vezes_que_procurou": 1,
+  "segundos_da_procura": 2.32,
+  "outras_paginas_com_marcacao": [],
+  "dpi": 300
+ }
+}
