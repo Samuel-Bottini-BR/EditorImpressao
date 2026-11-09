@@ -113,13 +113,55 @@ valiam com ele ligado).
 ## Andamento
 
 - [x] Causa conferida (09/11).
-- [ ] Provas novas (`tests/test_decisoes_gravura_a_mao.py`).
-- [ ] Reversão no `a0c99cc7`.
-- [ ] Conserto.
-- [ ] Testes no PC, um arquivo por vez.
-- [ ] GitHub (suíte) e filtro de velocidade.
-- [ ] Imagens do livro dele (cópia) e relatório.
-- [ ] Prints da janela real.
+- [x] Provas novas (`tests/test_decisoes_gravura_a_mao.py`, 15), commit `ca7d2468`.
+- [x] Reversão: com `core/` igual ao `a0c99cc7`, 11 falham e 4 ("nada muda") passam
+  (`reversao-no-a0c99cc7.txt`).
+- [x] Conserto, commit `88731637` (`core/etapas.py`; e `core/pipeline.py`, o defeito da tela achado no caminho).
+- [x] Testes no PC, um arquivo por vez (lista abaixo).
+- [ ] GitHub: suíte 42698444393 e filtro de velocidade 42698450173 (rodando).
+- [x] Imagens do livro dele (cópia, sem janela) e relatório (`relatorio.md`/`.html`/`.pdf`), commit `a99e0a51`.
+- [-] Prints da janela real: **tirados do pedido** (ordem do Samuel, 09/11: "não é para abrir na minha tela").
+  O script abriu a janela duas vezes por volta das 17h, antes da ordem (só o print da página 8 no Original saiu).
+  Os dois processos terminaram sozinhos; o script e o print foram apagados. Os testes do pytest sempre rodaram
+  sem janela (`tests/conftest.py` põe `QT_QPA_PLATFORM=offscreen`; `EDITOR_TESTES_COM_TELA` não está definida).
+
+## O que mudou no código
+
+1. `core/etapas.py`:
+   - `respeitar_procura` (nova): Preto e branco escolhido à mão, "Limpar a folha" desligado e "Respeitar" marcada.
+   - `procura_por_dentro` passa a incluir a nova.
+   - `marca_sozinho`: sem "Limpar a folha", devolve `procura_por_dentro` da página (antes, `False`). Com
+     "Limpar a folha", a conta de antes.
+2. `core/pipeline.py`, `acertar_no_tamanho_do_pdf`: no caso "só trocar a marcação provisória", a folha crua tem
+   nome próprio (`crua`) e não é mais devolvida como "a imagem do PDF". Defeito do `4f881001` (etapa 9b-2): o nome
+   `grande` era usado duas vezes, e a tela trocava a prévia certa pela folha crua, sem corte nem filtro. Ele
+   impedia a tarefa: com o conserto, o clique no Preto e branco deixava a tela no Original. Atingia também
+   páginas depois do Automático com o cinza e a etapa 5 desmarcada (P4). A docstring sempre disse "ou None
+   nas outras". Prova: `test_d659_a_tela_nao_troca_a_previa_pela_folha_crua`.
+
+## Como cumpri cada decisão
+
+- **D-659 e o esclarecimento**: procura só na página da opção. Provas `test_d659_a`, `_b`, `_c` contam as páginas
+  procuradas: só a da tela, inclusive depois de andar pelas outras e ao gerar o PDF. `test_d659_d` ("todas" e
+  "daqui em diante") procura só nas alcançadas. `test_d659_e` (página 1 e 3 escolhidas) procura só nelas. Página
+  8 do livro dele: `relatorio.html`, seções 1 a 4.
+- **D-586 (desligada = página inteira)**: `test_d659_f`, igual byte a byte ao código de antes, nenhuma procura.
+  Imagem da seção 5 (igual ponto por ponto).
+- **D-588 / conserto de 02/11 (o cinza sozinho basta)**: `test_d659_b` e a imagem da seção 2.
+- **D-589 / P4 (etapa 5 não volta marcada; "Só as letras" procura por dentro)**: `test_d659_a` e `test_d659_i`
+  conferem `automatico.ligada_no_livro(GRAVURAS)` desligada. `test_d659_c` e a imagem da seção 4 mostram a
+  gravura como no original.
+- **D-009 (marcação à mão vale)**: não mexi em `garantir_selecao` nem na corrida com a tela;
+  `test_garantir_selecao_corrida.py` e `test_decisoes.py` passam.
+- **D-605 (nada do testado muda)**: com "Limpar a folha" ligado, a conta é provada igual à de antes
+  (`test_d659_a_conta`, `test_d659_i`). Os arquivos de teste antigos passam (lista abaixo), e a suíte roda no
+  GitHub.
+- **D-473 / D-020**: `test_d659_h_o_pdf_sai_como_a_tela` e `test_d659_h_ctrl_z_desfaz_e_ctrl_shift_z_refaz`.
+- **D-637**: "Como fica para quem usa e no livro" (acima), conferido com as imagens e os tempos.
+
+## Testes no PC (um arquivo por vez, sem janela)
+
+Ver `saida_teste/gravura-a-mao/testes-no-pc.txt` (fora do git). O resumo vai no relatório à gerente.
 
 ## Ressalvas e pontos a conferir
 
@@ -134,3 +176,25 @@ valiam com ele ligado).
 2. **Projetos gravados depois de 26/10 com página em Preto e branco à mão e "Respeitar" marcada** (a
    caixinha vem ligada de fábrica) passam a sair com a gravura achada ao abrir de novo: é o conserto
    (o defeito das manchas). Projeto gravado antes da obra (sem a marca FILTRO) sai igual.
+3. **Página procurada à mão e depois o Automático**: a marcação achada fica guardada e acompanha o papel
+   (zonas na folha, D2 de 02/10) se o Automático cortar ou endireitar. Não é procurada de novo, como toda
+   página já procurada. A prova `test_d659_i` confere a conta igual à de antes. Ela não compara com um livro em
+   que a página nunca foi procurada: lá o Automático procuraria do zero, no papel já cortado.
+4. **Depois do Automático com "Limpar a folha" e sem "Gravuras e fotos"**, a página com só a "Respeitar" volta a
+   sair toda em preto e branco: é a D-589 ("sem 'Só as letras' e com Gravuras desmarcada, a página sai toda em
+   preto e branco"). A D-659 fala de "sem o Automático". Não mudei isso. Pergunta abaixo.
+5. **Página sem gravura com "Respeitar" (de fábrica)** também é procurada (cerca de 2 s no tamanho do PDF). Na
+   página 6 do livro dele, o texto saiu igual e só uma marca do scanner no canto de baixo quase sumiu (261
+   pontos de 7 milhões). É a mesma conta do Automático.
+6. **No livro novo o `detectar_regioes` vem True de fábrica** (só o "Limpar a folha" é desligado pelo
+   `livro_leve`). A procura nova NÃO usa esse campo sem o "Limpar a folha"; senão toda página em qualquer filtro
+   seria procurada.
+7. A procura no programa de verdade roda em outro processo (`core.paginas_em_outro_processo`). Na única
+   execução com janela, a página 8 ficou com a gravura achada: 25 áreas, marcação definitiva.
+
+## Perguntas para o Samuel
+
+1. (Ressalva 4) Você escolhe Preto e branco à mão na página 8 (a gravura sai certa) e **depois** roda o
+   Automático com "Limpar a folha", mas sem "Gravuras e fotos". Hoje a página 8 volta a sair toda em preto e
+   branco, como manda a D-589. Fica assim, ou a "Respeitar" também deve procurar nesse caso? A sugestão é
+   **ficar assim**: é o combinado da D-589, e marcar "Gravuras em tons de cinza" já faz procurar.
