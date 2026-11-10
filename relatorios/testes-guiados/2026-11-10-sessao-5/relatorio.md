@@ -80,3 +80,10 @@ Destino:
 Palavras dele: "olha como fica ruim esse girar, não consigo ver direito o que está girando porque fica cortado então não consigo voltar direito para como estava."
 
 Destino: acrescentado ao item do giro na **Lista de bugs** (10/11).
+
+## Cantinho: não é urgente (10/11)
+
+Palavras dele: "olha essa questão do canto não é urgente, pode deixar como branco por enquanto."
+
+Destino: **D-664** (fica como está, nada muda no programa) e **Lista de espera** (refazer a pergunta no modelo do girar).
+Central `cantinho-outros-casos` respondida.
