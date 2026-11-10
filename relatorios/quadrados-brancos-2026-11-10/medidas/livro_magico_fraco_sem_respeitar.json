@@ -1,0 +1,997 @@
+{
+ "1": {
+  "branco_em_pintura_pct": 0.0,
+  "blocos": 0,
+  "pintura_pct": 31.7
+ },
+ "2": {
+  "branco_em_pintura_pct": 0.0,
+  "blocos": 0,
+  "pintura_pct": 4.5
+ },
+ "3": {
+  "branco_em_pintura_pct": 0.0,
+  "blocos": 0,
+  "pintura_pct": 10.3
+ },
+ "4": {
+  "branco_em_pintura_pct": 0.0,
+  "blocos": 0,
+  "pintura_pct": 1.0
+ },
+ "5": {
+  "branco_em_pintura_pct": 1.148,
+  "blocos": 3,
+  "pintura_pct": 2.7
+ },
+ "6": {
+  "branco_em_pintura_pct": 0.606,
+  "blocos": 1,
+  "pintura_pct": 3.7
+ },
+ "7": {
+  "branco_em_pintura_pct": 1.373,
+  "blocos": 19,
+  "pintura_pct": 21.3
+ },
+ "8": {
+  "branco_em_pintura_pct": 11.838,
+  "blocos": 21,
+  "pintura_pct": 24.7
+ },
+ "9": {
+  "branco_em_pintura_pct": 2.192,
+  "blocos": 7,
+  "pintura_pct": 19.4
+ },
+ "10": {
+  "branco_em_pintura_pct": 1.745,
+  "blocos": 15,
+  "pintura_pct": 20.6
+ },
+ "11": {
+  "branco_em_pintura_pct": 1.582,
+  "blocos": 16,
+  "pintura_pct": 19.0
+ },
+ "12": {
+  "branco_em_pintura_pct": 0.668,
+  "blocos": 9,
+  "pintura_pct": 18.2
+ },
+ "13": {
+  "branco_em_pintura_pct": 5.953,
+  "blocos": 39,
+  "pintura_pct": 20.7
+ },
+ "14": {
+  "branco_em_pintura_pct": 0.737,
+  "blocos": 17,
+  "pintura_pct": 14.6
+ },
+ "15": {
+  "branco_em_pintura_pct": 0.727,
+  "blocos": 15,
+  "pintura_pct": 17.3
+ },
+ "16": {
+  "branco_em_pintura_pct": 1.034,
+  "blocos": 9,
+  "pintura_pct": 24.6
+ },
+ "17": {
+  "branco_em_pintura_pct": 0.452,
+  "blocos": 0,
+  "pintura_pct": 20.0
+ },
+ "18": {
+  "branco_em_pintura_pct": 4.686,
+  "blocos": 27,
+  "pintura_pct": 19.9
+ },
+ "19": {
+  "branco_em_pintura_pct": 0.961,
+  "blocos": 10,
+  "pintura_pct": 21.8
+ },
+ "20": {
+  "branco_em_pintura_pct": 1.111,
+  "blocos": 30,
+  "pintura_pct": 19.3
+ },
+ "21": {
+  "branco_em_pintura_pct": 0.333,
+  "blocos": 8,
+  "pintura_pct": 14.2
+ },
+ "22": {
+  "branco_em_pintura_pct": 0.383,
+  "blocos": 1,
+  "pintura_pct": 24.4
+ },
+ "23": {
+  "branco_em_pintura_pct": 1.525,
+  "blocos": 15,
+  "pintura_pct": 23.0
+ },
+ "24": {
+  "branco_em_pintura_pct": 4.758,
+  "blocos": 35,
+  "pintura_pct": 17.4
+ },
+ "25": {
+  "branco_em_pintura_pct": 1.478,
+  "blocos": 33,
+  "pintura_pct": 17.0
+ },
+ "26": {
+  "branco_em_pintura_pct": 1.344,
+  "blocos": 27,
+  "pintura_pct": 21.8
+ },
+ "27": {
+  "branco_em_pintura_pct": 7.211,
+  "blocos": 16,
+  "pintura_pct": 16.5
+ },
+ "28": {
+  "branco_em_pintura_pct": 0.28,
+  "blocos": 0,
+  "pintura_pct": 15.1
+ },
+ "29": {
+  "branco_em_pintura_pct": 5.282,
+  "blocos": 42,
+  "pintura_pct": 21.0
+ },
+ "30": {
+  "branco_em_pintura_pct": 6.439,
+  "blocos": 42,
+  "pintura_pct": 21.2
+ },
+ "31": {
+  "branco_em_pintura_pct": 0.834,
+  "blocos": 26,
+  "pintura_pct": 20.4
+ },
+ "32": {
+  "branco_em_pintura_pct": 2.044,
+  "blocos": 33,
+  "pintura_pct": 14.4
+ },
+ "33": {
+  "branco_em_pintura_pct": 1.757,
+  "blocos": 40,
+  "pintura_pct": 15.6
+ },
+ "34": {
+  "branco_em_pintura_pct": 0.864,
+  "blocos": 13,
+  "pintura_pct": 16.0
+ },
+ "35": {
+  "branco_em_pintura_pct": 1.247,
+  "blocos": 27,
+  "pintura_pct": 24.8
+ },
+ "36": {
+  "branco_em_pintura_pct": 4.012,
+  "blocos": 40,
+  "pintura_pct": 17.1
+ },
+ "37": {
+  "branco_em_pintura_pct": 1.966,
+  "blocos": 49,
+  "pintura_pct": 21.1
+ },
+ "38": {
+  "branco_em_pintura_pct": 0.677,
+  "blocos": 2,
+  "pintura_pct": 20.3
+ },
+ "39": {
+  "branco_em_pintura_pct": 2.209,
+  "blocos": 57,
+  "pintura_pct": 21.8
+ },
+ "40": {
+  "branco_em_pintura_pct": 2.229,
+  "blocos": 33,
+  "pintura_pct": 14.7
+ },
+ "41": {
+  "branco_em_pintura_pct": 1.288,
+  "blocos": 41,
+  "pintura_pct": 19.1
+ },
+ "42": {
+  "branco_em_pintura_pct": 1.244,
+  "blocos": 15,
+  "pintura_pct": 16.5
+ },
+ "43": {
+  "branco_em_pintura_pct": 3.375,
+  "blocos": 77,
+  "pintura_pct": 11.7
+ },
+ "44": {
+  "branco_em_pintura_pct": 1.175,
+  "blocos": 2,
+  "pintura_pct": 18.0
+ },
+ "45": {
+  "branco_em_pintura_pct": 1.41,
+  "blocos": 26,
+  "pintura_pct": 11.6
+ },
+ "46": {
+  "branco_em_pintura_pct": 2.691,
+  "blocos": 64,
+  "pintura_pct": 18.8
+ },
+ "47": {
+  "branco_em_pintura_pct": 1.391,
+  "blocos": 44,
+  "pintura_pct": 17.3
+ },
+ "48": {
+  "branco_em_pintura_pct": 0.841,
+  "blocos": 12,
+  "pintura_pct": 17.3
+ },
+ "49": {
+  "branco_em_pintura_pct": 0.958,
+  "blocos": 19,
+  "pintura_pct": 15.6
+ },
+ "50": {
+  "branco_em_pintura_pct": 4.985,
+  "blocos": 23,
+  "pintura_pct": 17.9
+ },
+ "51": {
+  "branco_em_pintura_pct": 5.034,
+  "blocos": 46,
+  "pintura_pct": 21.4
+ },
+ "52": {
+  "branco_em_pintura_pct": 3.286,
+  "blocos": 38,
+  "pintura_pct": 22.4
+ },
+ "53": {
+  "branco_em_pintura_pct": 4.45,
+  "blocos": 41,
+  "pintura_pct": 19.9
+ },
+ "54": {
+  "branco_em_pintura_pct": 1.752,
+  "blocos": 50,
+  "pintura_pct": 14.6
+ },
+ "55": {
+  "branco_em_pintura_pct": 3.497,
+  "blocos": 39,
+  "pintura_pct": 17.2
+ },
+ "56": {
+  "branco_em_pintura_pct": 1.565,
+  "blocos": 27,
+  "pintura_pct": 24.4
+ },
+ "57": {
+  "branco_em_pintura_pct": 1.67,
+  "blocos": 27,
+  "pintura_pct": 17.3
+ },
+ "58": {
+  "branco_em_pintura_pct": 4.035,
+  "blocos": 95,
+  "pintura_pct": 19.7
+ },
+ "59": {
+  "branco_em_pintura_pct": 0.869,
+  "blocos": 22,
+  "pintura_pct": 12.1
+ },
+ "60": {
+  "branco_em_pintura_pct": 3.366,
+  "blocos": 61,
+  "pintura_pct": 17.7
+ },
+ "61": {
+  "branco_em_pintura_pct": 2.769,
+  "blocos": 40,
+  "pintura_pct": 14.8
+ },
+ "62": {
+  "branco_em_pintura_pct": 0.685,
+  "blocos": 21,
+  "pintura_pct": 13.7
+ },
+ "63": {
+  "branco_em_pintura_pct": 0.972,
+  "blocos": 18,
+  "pintura_pct": 16.3
+ },
+ "64": {
+  "branco_em_pintura_pct": 1.084,
+  "blocos": 11,
+  "pintura_pct": 22.1
+ },
+ "65": {
+  "branco_em_pintura_pct": 7.413,
+  "blocos": 53,
+  "pintura_pct": 17.5
+ },
+ "66": {
+  "branco_em_pintura_pct": 5.43,
+  "blocos": 42,
+  "pintura_pct": 19.4
+ },
+ "67": {
+  "branco_em_pintura_pct": 4.296,
+  "blocos": 56,
+  "pintura_pct": 19.2
+ },
+ "68": {
+  "branco_em_pintura_pct": 2.742,
+  "blocos": 39,
+  "pintura_pct": 18.9
+ },
+ "69": {
+  "branco_em_pintura_pct": 2.529,
+  "blocos": 44,
+  "pintura_pct": 15.6
+ },
+ "70": {
+  "branco_em_pintura_pct": 1.685,
+  "blocos": 35,
+  "pintura_pct": 14.5
+ },
+ "71": {
+  "branco_em_pintura_pct": 1.298,
+  "blocos": 30,
+  "pintura_pct": 18.0
+ },
+ "72": {
+  "branco_em_pintura_pct": 1.998,
+  "blocos": 51,
+  "pintura_pct": 18.3
+ },
+ "73": {
+  "branco_em_pintura_pct": 2.476,
+  "blocos": 29,
+  "pintura_pct": 17.1
+ },
+ "74": {
+  "branco_em_pintura_pct": 6.132,
+  "blocos": 49,
+  "pintura_pct": 21.4
+ },
+ "75": {
+  "branco_em_pintura_pct": 1.095,
+  "blocos": 15,
+  "pintura_pct": 23.6
+ },
+ "76": {
+  "branco_em_pintura_pct": 1.699,
+  "blocos": 43,
+  "pintura_pct": 19.3
+ },
+ "77": {
+  "branco_em_pintura_pct": 4.39,
+  "blocos": 75,
+  "pintura_pct": 18.6
+ },
+ "78": {
+  "branco_em_pintura_pct": 5.771,
+  "blocos": 24,
+  "pintura_pct": 24.2
+ },
+ "79": {
+  "branco_em_pintura_pct": 4.339,
+  "blocos": 67,
+  "pintura_pct": 22.8
+ },
+ "80": {
+  "branco_em_pintura_pct": 1.957,
+  "blocos": 59,
+  "pintura_pct": 17.7
+ },
+ "81": {
+  "branco_em_pintura_pct": 0.986,
+  "blocos": 30,
+  "pintura_pct": 22.2
+ },
+ "82": {
+  "branco_em_pintura_pct": 1.181,
+  "blocos": 32,
+  "pintura_pct": 14.5
+ },
+ "83": {
+  "branco_em_pintura_pct": 0.821,
+  "blocos": 11,
+  "pintura_pct": 13.8
+ },
+ "84": {
+  "branco_em_pintura_pct": 1.948,
+  "blocos": 28,
+  "pintura_pct": 23.0
+ },
+ "85": {
+  "branco_em_pintura_pct": 1.221,
+  "blocos": 31,
+  "pintura_pct": 23.4
+ },
+ "86": {
+  "branco_em_pintura_pct": 1.641,
+  "blocos": 36,
+  "pintura_pct": 23.1
+ },
+ "87": {
+  "branco_em_pintura_pct": 0.547,
+  "blocos": 4,
+  "pintura_pct": 22.6
+ },
+ "88": {
+  "branco_em_pintura_pct": 1.395,
+  "blocos": 23,
+  "pintura_pct": 16.1
+ },
+ "89": {
+  "branco_em_pintura_pct": 0.691,
+  "blocos": 13,
+  "pintura_pct": 15.3
+ },
+ "90": {
+  "branco_em_pintura_pct": 0.778,
+  "blocos": 19,
+  "pintura_pct": 24.8
+ },
+ "91": {
+  "branco_em_pintura_pct": 0.693,
+  "blocos": 10,
+  "pintura_pct": 11.4
+ },
+ "92": {
+  "branco_em_pintura_pct": 0.436,
+  "blocos": 4,
+  "pintura_pct": 19.8
+ },
+ "93": {
+  "branco_em_pintura_pct": 1.833,
+  "blocos": 53,
+  "pintura_pct": 22.5
+ },
+ "94": {
+  "branco_em_pintura_pct": 0.641,
+  "blocos": 8,
+  "pintura_pct": 17.1
+ },
+ "95": {
+  "branco_em_pintura_pct": 1.571,
+  "blocos": 52,
+  "pintura_pct": 20.8
+ },
+ "96": {
+  "branco_em_pintura_pct": 2.448,
+  "blocos": 65,
+  "pintura_pct": 23.2
+ },
+ "97": {
+  "branco_em_pintura_pct": 3.19,
+  "blocos": 17,
+  "pintura_pct": 18.9
+ },
+ "98": {
+  "branco_em_pintura_pct": 2.498,
+  "blocos": 46,
+  "pintura_pct": 18.4
+ },
+ "99": {
+  "branco_em_pintura_pct": 3.581,
+  "blocos": 16,
+  "pintura_pct": 17.3
+ },
+ "100": {
+  "branco_em_pintura_pct": 2.979,
+  "blocos": 74,
+  "pintura_pct": 21.7
+ },
+ "101": {
+  "branco_em_pintura_pct": 7.137,
+  "blocos": 36,
+  "pintura_pct": 28.3
+ },
+ "102": {
+  "branco_em_pintura_pct": 1.308,
+  "blocos": 34,
+  "pintura_pct": 17.4
+ },
+ "103": {
+  "branco_em_pintura_pct": 2.044,
+  "blocos": 52,
+  "pintura_pct": 20.9
+ },
+ "104": {
+  "branco_em_pintura_pct": 0.947,
+  "blocos": 14,
+  "pintura_pct": 25.7
+ },
+ "105": {
+  "branco_em_pintura_pct": 1.441,
+  "blocos": 21,
+  "pintura_pct": 18.7
+ },
+ "106": {
+  "branco_em_pintura_pct": 3.169,
+  "blocos": 43,
+  "pintura_pct": 24.5
+ },
+ "107": {
+  "branco_em_pintura_pct": 0.757,
+  "blocos": 9,
+  "pintura_pct": 15.5
+ },
+ "108": {
+  "branco_em_pintura_pct": 0.619,
+  "blocos": 3,
+  "pintura_pct": 17.1
+ },
+ "109": {
+  "branco_em_pintura_pct": 1.552,
+  "blocos": 23,
+  "pintura_pct": 14.8
+ },
+ "110": {
+  "branco_em_pintura_pct": 3.424,
+  "blocos": 14,
+  "pintura_pct": 24.1
+ },
+ "111": {
+  "branco_em_pintura_pct": 0.696,
+  "blocos": 3,
+  "pintura_pct": 23.9
+ },
+ "112": {
+  "branco_em_pintura_pct": 2.686,
+  "blocos": 25,
+  "pintura_pct": 15.7
+ },
+ "113": {
+  "branco_em_pintura_pct": 0.932,
+  "blocos": 16,
+  "pintura_pct": 14.3
+ },
+ "114": {
+  "branco_em_pintura_pct": 0.669,
+  "blocos": 4,
+  "pintura_pct": 19.5
+ },
+ "115": {
+  "branco_em_pintura_pct": 0.609,
+  "blocos": 13,
+  "pintura_pct": 11.6
+ },
+ "116": {
+  "branco_em_pintura_pct": 3.328,
+  "blocos": 42,
+  "pintura_pct": 24.3
+ },
+ "117": {
+  "branco_em_pintura_pct": 0.568,
+  "blocos": 13,
+  "pintura_pct": 12.3
+ },
+ "118": {
+  "branco_em_pintura_pct": 2.585,
+  "blocos": 18,
+  "pintura_pct": 18.5
+ },
+ "119": {
+  "branco_em_pintura_pct": 4.792,
+  "blocos": 25,
+  "pintura_pct": 16.3
+ },
+ "120": {
+  "branco_em_pintura_pct": 3.102,
+  "blocos": 32,
+  "pintura_pct": 24.7
+ },
+ "121": {
+  "branco_em_pintura_pct": 3.928,
+  "blocos": 52,
+  "pintura_pct": 22.2
+ },
+ "122": {
+  "branco_em_pintura_pct": 1.072,
+  "blocos": 24,
+  "pintura_pct": 14.4
+ },
+ "123": {
+  "branco_em_pintura_pct": 1.304,
+  "blocos": 25,
+  "pintura_pct": 18.7
+ },
+ "124": {
+  "branco_em_pintura_pct": 1.917,
+  "blocos": 41,
+  "pintura_pct": 16.8
+ },
+ "125": {
+  "branco_em_pintura_pct": 1.825,
+  "blocos": 18,
+  "pintura_pct": 22.1
+ },
+ "126": {
+  "branco_em_pintura_pct": 2.017,
+  "blocos": 28,
+  "pintura_pct": 21.8
+ },
+ "127": {
+  "branco_em_pintura_pct": 1.361,
+  "blocos": 34,
+  "pintura_pct": 18.6
+ },
+ "128": {
+  "branco_em_pintura_pct": 1.811,
+  "blocos": 18,
+  "pintura_pct": 24.6
+ },
+ "129": {
+  "branco_em_pintura_pct": 0.587,
+  "blocos": 7,
+  "pintura_pct": 16.7
+ },
+ "130": {
+  "branco_em_pintura_pct": 0.474,
+  "blocos": 1,
+  "pintura_pct": 9.7
+ },
+ "131": {
+  "branco_em_pintura_pct": 3.455,
+  "blocos": 26,
+  "pintura_pct": 15.8
+ },
+ "132": {
+  "branco_em_pintura_pct": 2.559,
+  "blocos": 18,
+  "pintura_pct": 16.7
+ },
+ "133": {
+  "branco_em_pintura_pct": 0.62,
+  "blocos": 3,
+  "pintura_pct": 10.3
+ },
+ "134": {
+  "branco_em_pintura_pct": 2.091,
+  "blocos": 26,
+  "pintura_pct": 21.2
+ },
+ "135": {
+  "branco_em_pintura_pct": 1.663,
+  "blocos": 27,
+  "pintura_pct": 16.4
+ },
+ "136": {
+  "branco_em_pintura_pct": 1.744,
+  "blocos": 14,
+  "pintura_pct": 20.4
+ },
+ "137": {
+  "branco_em_pintura_pct": 0.851,
+  "blocos": 12,
+  "pintura_pct": 22.6
+ },
+ "138": {
+  "branco_em_pintura_pct": 0.526,
+  "blocos": 5,
+  "pintura_pct": 11.2
+ },
+ "139": {
+  "branco_em_pintura_pct": 0.63,
+  "blocos": 2,
+  "pintura_pct": 15.3
+ },
+ "140": {
+  "branco_em_pintura_pct": 2.571,
+  "blocos": 27,
+  "pintura_pct": 19.6
+ },
+ "141": {
+  "branco_em_pintura_pct": 0.405,
+  "blocos": 1,
+  "pintura_pct": 18.4
+ },
+ "142": {
+  "branco_em_pintura_pct": 1.988,
+  "blocos": 18,
+  "pintura_pct": 14.1
+ },
+ "143": {
+  "branco_em_pintura_pct": 2.573,
+  "blocos": 19,
+  "pintura_pct": 19.9
+ },
+ "144": {
+  "branco_em_pintura_pct": 1.954,
+  "blocos": 18,
+  "pintura_pct": 25.8
+ },
+ "145": {
+  "branco_em_pintura_pct": 2.879,
+  "blocos": 50,
+  "pintura_pct": 25.6
+ },
+ "146": {
+  "branco_em_pintura_pct": 3.942,
+  "blocos": 26,
+  "pintura_pct": 22.2
+ },
+ "147": {
+  "branco_em_pintura_pct": 3.957,
+  "blocos": 30,
+  "pintura_pct": 18.8
+ },
+ "148": {
+  "branco_em_pintura_pct": 1.273,
+  "blocos": 6,
+  "pintura_pct": 17.3
+ },
+ "149": {
+  "branco_em_pintura_pct": 1.09,
+  "blocos": 13,
+  "pintura_pct": 13.2
+ },
+ "150": {
+  "branco_em_pintura_pct": 0.764,
+  "blocos": 8,
+  "pintura_pct": 10.2
+ },
+ "151": {
+  "branco_em_pintura_pct": 1.705,
+  "blocos": 4,
+  "pintura_pct": 28.5
+ },
+ "152": {
+  "branco_em_pintura_pct": 0.872,
+  "blocos": 15,
+  "pintura_pct": 27.1
+ },
+ "153": {
+  "branco_em_pintura_pct": 6.516,
+  "blocos": 27,
+  "pintura_pct": 25.4
+ },
+ "154": {
+  "branco_em_pintura_pct": 0.875,
+  "blocos": 18,
+  "pintura_pct": 21.0
+ },
+ "155": {
+  "branco_em_pintura_pct": 1.002,
+  "blocos": 12,
+  "pintura_pct": 10.9
+ },
+ "156": {
+  "branco_em_pintura_pct": 0.608,
+  "blocos": 6,
+  "pintura_pct": 13.1
+ },
+ "157": {
+  "branco_em_pintura_pct": 0.683,
+  "blocos": 10,
+  "pintura_pct": 13.0
+ },
+ "158": {
+  "branco_em_pintura_pct": 1.014,
+  "blocos": 11,
+  "pintura_pct": 9.8
+ },
+ "159": {
+  "branco_em_pintura_pct": 1.035,
+  "blocos": 4,
+  "pintura_pct": 10.8
+ },
+ "160": {
+  "branco_em_pintura_pct": 3.188,
+  "blocos": 25,
+  "pintura_pct": 17.4
+ },
+ "161": {
+  "branco_em_pintura_pct": 0.651,
+  "blocos": 7,
+  "pintura_pct": 10.9
+ },
+ "162": {
+  "branco_em_pintura_pct": 0.239,
+  "blocos": 0,
+  "pintura_pct": 11.7
+ },
+ "163": {
+  "branco_em_pintura_pct": 1.864,
+  "blocos": 70,
+  "pintura_pct": 20.0
+ },
+ "164": {
+  "branco_em_pintura_pct": 0.498,
+  "blocos": 6,
+  "pintura_pct": 20.6
+ },
+ "165": {
+  "branco_em_pintura_pct": 2.803,
+  "blocos": 69,
+  "pintura_pct": 24.3
+ },
+ "166": {
+  "branco_em_pintura_pct": 0.687,
+  "blocos": 16,
+  "pintura_pct": 13.0
+ },
+ "167": {
+  "branco_em_pintura_pct": 0.753,
+  "blocos": 10,
+  "pintura_pct": 12.9
+ },
+ "168": {
+  "branco_em_pintura_pct": 1.057,
+  "blocos": 17,
+  "pintura_pct": 16.8
+ },
+ "169": {
+  "branco_em_pintura_pct": 1.354,
+  "blocos": 28,
+  "pintura_pct": 16.5
+ },
+ "170": {
+  "branco_em_pintura_pct": 1.275,
+  "blocos": 15,
+  "pintura_pct": 11.1
+ },
+ "171": {
+  "branco_em_pintura_pct": 0.63,
+  "blocos": 4,
+  "pintura_pct": 16.4
+ },
+ "172": {
+  "branco_em_pintura_pct": 1.943,
+  "blocos": 49,
+  "pintura_pct": 21.4
+ },
+ "173": {
+  "branco_em_pintura_pct": 0.702,
+  "blocos": 16,
+  "pintura_pct": 10.2
+ },
+ "174": {
+  "branco_em_pintura_pct": 1.806,
+  "blocos": 15,
+  "pintura_pct": 16.4
+ },
+ "175": {
+  "branco_em_pintura_pct": 4.346,
+  "blocos": 82,
+  "pintura_pct": 22.2
+ },
+ "176": {
+  "branco_em_pintura_pct": 0.384,
+  "blocos": 2,
+  "pintura_pct": 14.0
+ },
+ "177": {
+  "branco_em_pintura_pct": 2.314,
+  "blocos": 39,
+  "pintura_pct": 21.3
+ },
+ "178": {
+  "branco_em_pintura_pct": 0.431,
+  "blocos": 2,
+  "pintura_pct": 19.0
+ },
+ "179": {
+  "branco_em_pintura_pct": 3.362,
+  "blocos": 26,
+  "pintura_pct": 16.5
+ },
+ "180": {
+  "branco_em_pintura_pct": 1.193,
+  "blocos": 32,
+  "pintura_pct": 16.9
+ },
+ "181": {
+  "branco_em_pintura_pct": 3.1,
+  "blocos": 63,
+  "pintura_pct": 22.3
+ },
+ "182": {
+  "branco_em_pintura_pct": 1.573,
+  "blocos": 13,
+  "pintura_pct": 17.4
+ },
+ "183": {
+  "branco_em_pintura_pct": 1.003,
+  "blocos": 22,
+  "pintura_pct": 17.7
+ },
+ "184": {
+  "branco_em_pintura_pct": 0.795,
+  "blocos": 13,
+  "pintura_pct": 13.6
+ },
+ "185": {
+  "branco_em_pintura_pct": 0.575,
+  "blocos": 2,
+  "pintura_pct": 19.9
+ },
+ "186": {
+  "branco_em_pintura_pct": 2.842,
+  "blocos": 9,
+  "pintura_pct": 18.5
+ },
+ "187": {
+  "branco_em_pintura_pct": 0.371,
+  "blocos": 0,
+  "pintura_pct": 9.6
+ },
+ "188": {
+  "branco_em_pintura_pct": 0.994,
+  "blocos": 12,
+  "pintura_pct": 18.0
+ },
+ "189": {
+  "branco_em_pintura_pct": 0.64,
+  "blocos": 17,
+  "pintura_pct": 17.8
+ },
+ "190": {
+  "branco_em_pintura_pct": 1.192,
+  "blocos": 8,
+  "pintura_pct": 20.4
+ },
+ "191": {
+  "branco_em_pintura_pct": 0.514,
+  "blocos": 4,
+  "pintura_pct": 14.7
+ },
+ "192": {
+  "branco_em_pintura_pct": 2.451,
+  "blocos": 12,
+  "pintura_pct": 20.9
+ },
+ "193": {
+  "branco_em_pintura_pct": 0.763,
+  "blocos": 4,
+  "pintura_pct": 15.0
+ },
+ "194": {
+  "branco_em_pintura_pct": 1.841,
+  "blocos": 29,
+  "pintura_pct": 17.6
+ },
+ "195": {
+  "branco_em_pintura_pct": 0.341,
+  "blocos": 0,
+  "pintura_pct": 14.6
+ },
+ "196": {
+  "branco_em_pintura_pct": 1.789,
+  "blocos": 23,
+  "pintura_pct": 16.8
+ },
+ "197": {
+  "branco_em_pintura_pct": 0.741,
+  "blocos": 12,
+  "pintura_pct": 5.1
+ },
+ "198": {
+  "branco_em_pintura_pct": 0.0,
+  "blocos": 0,
+  "pintura_pct": 4.6
+ },
+ "199": {
+  "branco_em_pintura_pct": 0.0,
+  "blocos": 0,
+  "pintura_pct": 5.2
+ }
+}
