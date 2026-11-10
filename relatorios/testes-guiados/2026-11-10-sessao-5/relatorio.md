@@ -35,3 +35,14 @@ Palavras dele: "eu vim no endireitar" (círculo no canto de cima à esquerda, zo
 Destino: a gerente ampliou (05b). O canto de cima está fora da tela por causa do zoom, e a página está com inclinação
 0,00 graus: sem giro não há cantinho. Explicado no chat: girar à mão (ex.: 1,5 grau com os botões de 0,1°) e olhar os
 quatro cantos com "ajustar à tela".
+
+## Pesquisa do Internet Archive (ordem dele, 10/11)
+
+Palavras dele: "eu errei é internet arquive, sim é isso que temos que fazer, coloque um agente para fazer pesquisas de como eles fazem por favor." · sobre o cantinho: "usei ele, mas continua sem ver esse tal cantinho que você"
+
+Destino:
+- Agente pesquisador chamado (10/11): como o Internet Archive deixa a letra preservada e o papel branco, o que serve para
+  nós no Windows, licenças. Entrega em `docs/pesquisa/fase1-1.4-como-o-internet-archive-faz.md` e
+  `relatorios/pesquisa-internet-archive-2026-11-10/`.
+- Cantinho: explicado no chat que, com o conserto, ele fica da cor do papel e não aparece; a página 18 está a 0,00 grau
+  (sem giro, sem cantinho). Oferecida uma prova antes/depois no modelo do girar (esperando o "sim").
