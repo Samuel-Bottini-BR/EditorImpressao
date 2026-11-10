@@ -109,7 +109,11 @@ rotação da folha); o Dividir em "Duas lado a lado" numa folha dividida continu
 2. **(D-638, a ferramenta Dividir em "Duas lado a lado" numa folha dividida.)** Ali a tela mostra a folha inteira com
    a linha, e o girar continua girando folhas (D-618, ressalva). Com "todas as folhas" ali, continua como hoje (as
    folhas divididas giram inteiras). Não mexi: a D-638 fala de estar "numa folha inteira (ex.: a capa aberta)".
-   **Ainda sem resposta** (ele perguntou "vai ficar como a pagina 1?"). Não mexer.
+   **Respondida (Central, 10/11/2026, D-662): "Página por página também".** Feito para "todas as folhas" (ver
+   "Terceira parte" abaixo).
+3. **(nova, 10/11; para a gerente levar à Central, com print)** No Dividir com "Duas lado a lado", "daqui em diante",
+   "só as pares" e "só as ímpares" também giram página por página, como o "todas as folhas"? Hoje continuam girando as
+   folhas inteiras (a confusão das tiras). Sugestão: sim. Não mexi (a D-662 fala só de "todas as folhas").
 
 ## Segunda parte (07/11): as respostas do Samuel na Central
 
@@ -157,6 +161,37 @@ separado (16e752e7), com comentário citando a D-638/D-640 e a autorização.
   `s3-janela-antes-e-depois.png`. Antes, a capa ficava deitada (sem girar); agora ela gira com as ímpares. Ctrl+Z
   devolve tudo e Ctrl+Y refaz (`estado.json` da geração: depois do Ctrl+Z nenhuma folha nem página girada).
 
+## Terceira parte (10/11): D-662 e D-663
+
+Antes de começar: juntado o `obra-2026-10-26` atual (cc5d9850, com o conserto D-659/D-661 da gravura) no ramo, sem
+conflito (8f682eaa).
+
+**D-663** (Central, `girar-capa-teste-daqui`: "Posso trocar o teste antigo do "daqui em diante"?" → "Sim, pode trocar
+(recomendo)"): aplicada só a proposta `proposta-teste-daqui.diff`, num commit (269f05f3). O arquivo passa inteiro (10).
+
+**D-662** (Central, `girar-capa-dividir-duas`: "No Dividir, com "Duas lado a lado", "todas as folhas": gira a folha
+inteira ou página por página?" → "Página por página também").
+- *Como fica para quem usa e no livro (escrito antes de mexer):* no Dividir com "Duas lado a lado", numa folha
+  dividida (ex.: Gradus, folha 10, páginas 18 e 19), "todas as folhas" + ¼ à direita: cada página do livro gira
+  sozinha e inteira, virada como a página da tela; a capa aberta gira inteira; a linha azul não muda. A tela grande do
+  Dividir continua mostrando a folha do scan em pé (é o scan, com a linha); a tira de páginas das outras ferramentas e
+  o PDF mostram as páginas deitadas, cada uma inteira. Um Ctrl+Z desfaz tudo; Ctrl+Y refaz. No PDF: cada página sai a
+  mesma imagem de antes, girada, em vez de uma tira com metade de duas. Não muda: o girar fora do Dividir, o Dividir
+  com "Uma página", "só esta folha" no Dividir (gira a folha, D-618), as palavras "Girar a folha"/"todas as folhas",
+  a D-638 na capa, e "daqui em diante"/pares/ímpares no Dividir (pergunta 3 acima).
+- *Como:* (c76d4b97) em `ui/tela_conferir.py`, `_girar_folhas` desvia o "todas as folhas" para o MESMO
+  `_girar_as_paginas` de fora do Dividir (o caminho da simulação de 09/11), com a página da folha da tela como página da
+  vez (`_pagina_da_folha_dividida_no_dividir_em_duas`). `_girar_as_paginas` e `_com_as_folhas_inteiras_tambem`
+  ganharam o parâmetro `atual` (None = a da tela, o caso de sempre). `core/` não mudou.
+- *Provas:* `tests/test_decisoes_girar_dividir_duas.py` (10). No código sem o conserto (3216b885): 6 de reversão
+  falham, 4 passam (`reversao-d662-no-codigo-antigo.txt`); no novo: 10 passam.
+- *Gradus* (cópia de 70 folhas, a mesma das provas de 09/11; sem janela na tela): `d662-resumo.png`, `d662-1-antes.png`,
+  `d662-2-fica.png` (sem o conserto), `d662-3-pagina.png` (com o conserto); números em `d662-estado-*.json`. Medida no
+  PDF: sem o conserto as páginas 18 a 21 saem tiras (251x702 em vez de 496x354); com o conserto, inteiras e deitadas
+  (diferença 0,02 a 0,09 de 255 para a página de antes girada). A capa gira inteira nos dois. Ctrl+Z: nada girado;
+  Ctrl+Y: de novo 1 folha (a capa) e 138 páginas.
+- *Testes:* PC, um arquivo por vez, sem janela na tela (série "D-662 e D-663 (10/11)" em `resultado-testes.txt`, commit c76d4b97): 73 arquivos (os do girar, do Dividir, da tira, do PDF, dos cadernos e todos os `test_decisoes*.py`), todos passam inteiros, nenhuma falha. GitHub, suíte 42814866808 (as 5 partes e os botões/prints da janela real): tudo passou. Nenhum teste antigo além do autorizado (D-663) foi mudado. Velocidade: filtro 42814872526 (obra-2026-10-26 → girar-capa e8a8fb4c): "igual (dentro do vai-e-vem)"; abrir +0,3%, trocar de página -0,6%, Mágico pro +0,2%, Preto e branco -0,7%. Nada mais lento (o conserto só roda no clique de girar; `core/` não mudou).
+
 ## Andamento
 
 - [x] worktree e ramo criados (07/11); lidos CLAUDE.md, implementador.md, o ONDE-PAREI e o relatório do girar-pagina,
@@ -178,7 +213,10 @@ separado (16e752e7), com comentário citando a D-638/D-640 e a autorização.
 - [x] GitHub, filtro de velocidade 42381758932 (obra-2026-10-26 → girar-capa 99d7d782): nada mais lento. Veredito
   "parece mais rápido" (abrir -2,1%, trocar de página -4,9%, no limite do vai-e-vem; Mágico pro -0,4% e Preto e branco
   -0,9%, iguais). A mudança só roda no clique de girar: a diferença é vai-e-vem, não ganho.
-- [ ] a gerente decide sobre os 5 testes antigos; conferência com a janela aberta (outro agente); depois, a gerente junta
+- [x] a gerente decidiu sobre os 5 testes antigos (D-644, 16e752e7) e o do "daqui em diante" (D-663, 269f05f3)
+- [x] D-662 no Dividir com "Duas lado a lado" ("todas as folhas"): c76d4b97, provas, Gradus, testes (Terceira parte)
+- [ ] pergunta 3 (daqui em diante/pares/ímpares no Dividir com "Duas lado a lado"); conferência com a janela aberta
+  (outro agente); depois, a gerente junta
 
 ## Para a gerente: cinco testes antigos cobram o que a D-638/D-640 trocam (não mexi neles)
 

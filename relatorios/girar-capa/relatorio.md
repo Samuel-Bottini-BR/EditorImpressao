@@ -53,11 +53,60 @@ ligado foi conferido pelas provas automáticas (`[True]`).
 - PC: 70 arquivos, 69 passam inteiros; falha só esse teste. GitHub 42391132998: esse teste e o instável conhecido
   `test_d148` (passa no PC).
 
+## Terceira parte (10/11): as respostas D-662 e D-663
+
+**D-663** — "Posso trocar o teste antigo do "daqui em diante"?" → "Sim, pode trocar (recomendo)". Trocada só a linha
+da proposta `proposta-teste-daqui.diff`, num commit só (269f05f3). O arquivo do teste passa inteiro (10 de 10).
+
+**D-662** — "No Dividir, com "Duas lado a lado", "todas as folhas": gira a folha inteira ou página por página?" →
+"Página por página também".
+
+*O defeito, em frases simples:* no Dividir com "Duas lado a lado", "todas as folhas" girava as folhas do scan
+inteiras. A linha azul ficava no mesmo lugar e cortava as duas páginas deitadas ao meio: no PDF, cada página saía
+como uma tira com metade de duas páginas.
+
+*O que mudou (c76d4b97):* ali, numa folha dividida, "todas as folhas" faz exatamente o mesmo que o "todas as páginas"
+de fora do Dividir (o caminho da simulação de 09/11, que o Samuel viu): cada página gira sozinha e inteira, virada
+como a página da tela; a capa gira inteira; a linha da divisão não muda. Um Ctrl+Z desfaz tudo de uma vez; Ctrl+Y
+refaz. A frase do Histórico diz "todas as 139 páginas, viradas como a página 18".
+
+*Não mudou:* o girar fora do Dividir; o Dividir com "Uma página"; "só esta folha" no Dividir (gira a folha da tela,
+D-618); as palavras do quadro e da lista ("Girar a folha", "todas as folhas"); a D-638 na capa (folha inteira).
+
+*Imagens* (Gradus Primus copiado, 70 folhas, a mesma cópia das provas de 09/11; janela desenhada na memória, nada
+abriu na tela; Dividir, "Duas lado a lado", folha 10, "todas as folhas" + ¼ à direita):
+
+![Resumo da D-662](d662-resumo.png)
+
+![ANTES do clique](d662-1-antes.png)
+
+![DEPOIS, programa de antes do conserto](d662-2-fica.png)
+
+![DEPOIS, com o conserto](d662-3-pagina.png)
+
+*A medida (no PDF):* cada página de depois comparada com a mesma página de antes girada ¼.
+Antes do conserto: a capa sai inteira, deitada; as páginas 18, 19, 20 e 21 saem como **tiras** (251x702 pontos, quando
+a página inteira deitada teria 496x354). Com o conserto: as cinco saem **inteiras, deitadas**, do tamanho certo, com
+diferença de 0,02 a 0,09 (de 255) para a página de antes girada, ou seja, a mesma imagem. Os números estão em
+`d662-estado-antes-do-conserto.json` e `d662-estado-com-o-conserto.json`.
+
+*Provas novas:* `tests/test_decisoes_girar_dividir_duas.py` (10 provas). No código de antes do conserto (3216b885), as
+6 de reversão falham (ex.: no PDF a página 3 do livro de teste sai 339x147 em vez de 159x231) e as 4 que conferem o que
+não pode mudar passam: `reversao-d662-no-codigo-antigo.txt`. No código novo: 10 passam.
+
+*Testes:* PC, um arquivo por vez, sem janela na tela (série "D-662 e D-663 (10/11)" em `resultado-testes.txt`, commit c76d4b97): 73 arquivos (os do girar, do Dividir, da tira, do PDF, dos cadernos e todos os `test_decisoes*.py`), todos passam inteiros, nenhuma falha. GitHub, suíte 42814866808 (as 5 partes e os botões/prints da janela real): tudo passou. Nenhum teste antigo além do autorizado (D-663) foi mudado. Velocidade: filtro 42814872526 (obra-2026-10-26 → girar-capa e8a8fb4c): "igual (dentro do vai-e-vem)"; abrir +0,3%, trocar de página -0,6%, Mágico pro +0,2%, Preto e branco -0,7%. Nada mais lento (o conserto só roda no clique de girar; `core/` não mudou).
+
 ## Ressalvas
 
-- Os 5 testes antigos só passam se a gerente autorizar a troca das linhas (decisão nova do Samuel contra prova
-  provisória).
-- "daqui em diante", "pares" e "ímpares" no miolo continuam sem girar a capa (a D-640 fala de "todas as páginas"):
-  pergunta 1.
-- Dividir em "Duas lado a lado" numa folha dividida: continua como antes (pergunta 2).
+- **Na própria tela do Dividir, depois do clique, nada parece mudar**: a folha grande continua em pé (a tela mostra o
+  scan, com a linha) e as miniaturas de folhas do Dividir também. Só a tira das páginas (nas outras ferramentas) e o
+  PDF mostram as páginas deitadas. A prova de 09/11 já dizia isso ("a tela grande do Dividir continua mostrando a
+  folha em pé"), e o Samuel respondeu vendo essa prova. Mesmo assim, o Kaique pode clicar e achar que não girou.
+  Não mexi na tela (precisa perguntar; seção 6).
+- **"daqui em diante", "só as pares" e "só as ímpares" no Dividir com "Duas lado a lado" continuam girando as folhas
+  inteiras** (a confusão das tiras). A D-662 fala só de "todas as folhas"; não mudei os outros (regra "só o que ele
+  mandou"). Pergunta sugerida para a Central, com print: "No Dividir com "Duas lado a lado", "daqui em diante", "só as
+  pares" e "só as ímpares" também giram página por página, como o "todas as folhas"?" (sugestão: sim).
+- Se as duas páginas da folha da tela estavam viradas diferente, todas ficam viradas como a página da tela (a da
+  esquerda, quando a tela aponta a folha), como no D-035.
 - A janela foi desenhada na memória; a conferência com a janela aberta fica para outro agente.
