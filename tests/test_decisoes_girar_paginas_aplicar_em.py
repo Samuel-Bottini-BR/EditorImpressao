@@ -147,7 +147,9 @@ def test_d636_daqui_em_diante_conta_paginas(janela, tmp_path):
     tela.ir_para_pagina(2)
     tela.barra_girar.definir_alcance(girar.ALCANCE_DAQUI)
     tela.barra_girar.botoes_de_giro[girar.GIRO_DIREITA].click()
-    assert _giros(projeto) == [0, 0, 90, 90, 0] and _rotacoes(projeto) == [0, 0, 0]
+    # resposta do Samuel "Giram também" (Central, 07/11/2026): a folha inteira (página 5) está no
+    # "daqui em diante" da página 3 e gira também, inteira
+    assert _giros(projeto) == [0, 0, 90, 90, 0] and _rotacoes(projeto) == [0, 0, 90]
     assert "da página 3 em diante" in janela.acoes.feitas[-1].descricao
 
 
