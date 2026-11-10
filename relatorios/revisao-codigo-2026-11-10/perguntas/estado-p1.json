@@ -1,0 +1,310 @@
+{
+ "antes": {
+  "15": {
+   "recorte": [
+    0.04,
+    0.1,
+    0.96,
+    0.5
+   ],
+   "marcacao": [
+    [
+     "gravura",
+     "mao",
+     [
+      [
+       0.06,
+       0.218
+      ],
+      [
+       0.759,
+       0.47
+      ]
+     ]
+    ]
+   ],
+   "filtro": "original",
+   "angulo_manual": null,
+   "giro_da_pagina": 0
+  },
+  "16": {
+   "recorte": null,
+   "marcacao": [],
+   "filtro": "original",
+   "angulo_manual": null,
+   "giro_da_pagina": 0
+  },
+  "17": {
+   "recorte": [
+    0.06,
+    0.12,
+    0.94,
+    0.93
+   ],
+   "marcacao": [
+    [
+     "letra",
+     "mao",
+     [
+      [
+       0.029,
+       0.56
+      ],
+      [
+       0.968,
+       0.928
+      ]
+     ]
+    ]
+   ],
+   "filtro": "original",
+   "angulo_manual": null,
+   "giro_da_pagina": 0
+  },
+  "18": {
+   "recorte": null,
+   "marcacao": [],
+   "filtro": "original",
+   "angulo_manual": null,
+   "giro_da_pagina": 0
+  }
+ },
+ "mexida_a_mao_15": [
+  "cortar",
+  "marcar"
+ ],
+ "janela_do_cortar": {
+  "marcadas_de_fabrica_ate_20": [
+   1,
+   2,
+   3,
+   4,
+   5,
+   6,
+   7,
+   8,
+   9,
+   10,
+   11,
+   12,
+   13,
+   14,
+   16,
+   17,
+   18,
+   19,
+   20
+  ],
+  "linhas_13_a_18": [
+   "Página 13",
+   "Página 14",
+   "Página 15  (corte próprio)",
+   "Página 16",
+   "Página 17",
+   "Página 18"
+  ]
+ },
+ "depois_cortar": {
+  "15": {
+   "recorte": [
+    0.04,
+    0.1,
+    0.96,
+    0.5
+   ],
+   "marcacao": [
+    [
+     "gravura",
+     "mao",
+     [
+      [
+       0.06,
+       0.218
+      ],
+      [
+       0.759,
+       0.47
+      ]
+     ]
+    ]
+   ],
+   "filtro": "original",
+   "angulo_manual": null,
+   "giro_da_pagina": 0
+  },
+  "16": {
+   "recorte": [
+    0.06,
+    0.12,
+    0.94,
+    0.93
+   ],
+   "marcacao": [],
+   "filtro": "original",
+   "angulo_manual": null,
+   "giro_da_pagina": 0
+  },
+  "17": {
+   "recorte": [
+    0.06,
+    0.12,
+    0.94,
+    0.93
+   ],
+   "marcacao": [
+    [
+     "letra",
+     "mao",
+     [
+      [
+       0.029,
+       0.56
+      ],
+      [
+       0.968,
+       0.928
+      ]
+     ]
+    ]
+   ],
+   "filtro": "original",
+   "angulo_manual": null,
+   "giro_da_pagina": 0
+  },
+  "18": {
+   "recorte": [
+    0.06,
+    0.12,
+    0.94,
+    0.93
+   ],
+   "marcacao": [],
+   "filtro": "original",
+   "angulo_manual": null,
+   "giro_da_pagina": 0
+  }
+ },
+ "historico_cortar": "Corte de borda em 138 páginas",
+ "depois_marcar": {
+  "15": {
+   "recorte": [
+    0.04,
+    0.1,
+    0.96,
+    0.5
+   ],
+   "marcacao": [
+    [
+     "letra",
+     "mao",
+     [
+      [
+       0.029,
+       0.56
+      ],
+      [
+       0.968,
+       0.928
+      ]
+     ]
+    ]
+   ],
+   "filtro": "original",
+   "angulo_manual": null,
+   "giro_da_pagina": 0
+  },
+  "16": {
+   "recorte": null,
+   "marcacao": [
+    [
+     "letra",
+     "mao",
+     [
+      [
+       0.029,
+       0.56
+      ],
+      [
+       0.968,
+       0.928
+      ]
+     ]
+    ]
+   ],
+   "filtro": "original",
+   "angulo_manual": null,
+   "giro_da_pagina": 0
+  },
+  "17": {
+   "recorte": [
+    0.06,
+    0.12,
+    0.94,
+    0.93
+   ],
+   "marcacao": [
+    [
+     "letra",
+     "mao",
+     [
+      [
+       0.029,
+       0.56
+      ],
+      [
+       0.968,
+       0.928
+      ]
+     ]
+    ]
+   ],
+   "filtro": "original",
+   "angulo_manual": null,
+   "giro_da_pagina": 0
+  },
+  "18": {
+   "recorte": null,
+   "marcacao": [
+    [
+     "letra",
+     "mao",
+     [
+      [
+       0.029,
+       0.56
+      ],
+      [
+       0.968,
+       0.928
+      ]
+     ]
+    ]
+   ],
+   "filtro": "original",
+   "angulo_manual": null,
+   "giro_da_pagina": 0
+  }
+ },
+ "historico_marcar": "Marcação da página 17 em todas as 139 páginas",
+ "outras_ferramentas": {
+  "filtro": {
+   "pagina_15_antes": "melhorar",
+   "pagina_15_depois": "preto_e_branco",
+   "historico": "Preto e branco em todas as 139 páginas"
+  },
+  "endireitar": {
+   "pagina_15_antes": 2.0,
+   "pagina_15_depois": -1.0,
+   "lista": "todas as páginas",
+   "historico": "Ângulo de 139 páginas: -1,00 graus"
+  },
+  "girar": {
+   "pagina_15_antes": 90,
+   "pagina_15_depois": 270,
+   "pagina_17_depois": 270,
+   "pagina_16_depois": 270,
+   "lista": "todas as páginas",
+   "historico": "Girar ¼ à esquerda: todas as 139 páginas, viradas como a página 17"
+  }
+ }
+}

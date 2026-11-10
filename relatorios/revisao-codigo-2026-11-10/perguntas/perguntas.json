@@ -1,0 +1,263 @@
+[
+ {
+  "id": "rev-usar-em-todas",
+  "titulo": "\"Usar em todas\" no Marcar, no Filtro, no Endireitar e no Girar: deixar de fora as páginas mexidas à mão, como o Cortar?",
+  "explicacao": "No Cortar, no Dividir e no Mover, o \"usar em todas\" abre a lista \"Em quais páginas?\" e as páginas que você mexeu à mão vêm desmarcadas: elas ficam como você deixou (D-090). No Marcar, no Filtro, no Endireitar e no Girar, não: o \"todas\" vale em todas as páginas e passa por cima do que você fez à mão. Exemplo de verdade (Gradus, cópia): na página 15 marquei a águia à mão como gravura e cortei a página à mão. Na página 17 apertei \"usar em todas\". Pelo Marcar, a águia marcada na 15 sumiu e no lugar dela veio o retângulo azul (letra) da página 17. Pelo Cortar, a 15 veio desmarcada na lista e ficou como eu deixei. Conferi também, no programa, as outras três: o Filtro trocou o Melhorar que a 15 tinha à mão pelo Preto e branco da 17; o Endireitar trocou os +2 graus da 15 pelos -1 da 17; o Girar deixou a 15, que eu tinha virado à mão, virada igual à 17. A pergunta: essas quatro também deveriam deixar de fora as páginas mexidas à mão, como o Cortar?",
+  "palavras_do_samuel": [
+   {
+    "decisao": "D-090",
+    "data": "08/10/2026",
+    "palavras": "\"Sim, mas nós podemos alterar o corte sugerido, ou fazer um corte e mandar para todas as paginas e alterar em algumas paginas só o corte quando cortamos alguma, assim quando mudar de um não muda de todas, eu devo conseguir abrir uma aba para selecionar as que eu quero ( as paginas) ou também simplismente apertar num botão e selecionar todas.\""
+   },
+   {
+    "decisao": "D-091",
+    "data": "09/10/2026",
+    "palavras": "\"'Selecionar todas' e 'Nenhuma'\""
+   },
+   {
+    "decisao": "D-545",
+    "data": "27/10/2026",
+    "palavras": "(o Mover, escolha da gerente apoiada no pedido dele) \"ter uma opção para passar isso para todas as folhas\""
+   },
+   {
+    "decisao": "D-035",
+    "data": "06/10/2026",
+    "palavras": "\"Todas ficam viradas como a folha da vez\" (o girar: hoje é por isso que o Girar passa por cima da página virada à mão)"
+   },
+   {
+    "decisao": "D-667",
+    "data": "10/11/2026",
+    "palavras": "\"Você devia ter mandado ele mudar a ferramenta, se mudou a ferramenta, muda em todos os lugares.\""
+   }
+  ],
+  "opcoes": [
+   {
+    "id": "sim",
+    "nome": "Sim: nas quatro, as páginas mexidas à mão ficam de fora, como no Cortar (recomendo)",
+    "cor": "verde"
+   },
+   {
+    "id": "nao",
+    "nome": "Não: fica como hoje (o \"todas\" dessas quatro passa por cima do que foi feito à mão)",
+    "cor": "laranja"
+   }
+  ],
+  "imagens": [
+   {
+    "arquivo": "p1-resumo.png",
+    "legenda": "Resumo da pergunta 1: antes, depois pelo Marcar (laranja, como é hoje) e depois pelo Cortar (verde), um embaixo do outro."
+   },
+   {
+    "arquivo": "p1-passo-1-antes.png",
+    "legenda": "ANTES do clique. A página 15 foi mexida à mão nas duas ferramentas: no Cortar, o corte só em volta do título e da águia; no Marcar, a águia marcada como gravura (vermelho). A página 17 também: outro corte e o texto marcado como letra (azul). As páginas 16 e 18 estão como vieram."
+   },
+   {
+    "arquivo": "p1-passo-2-marcar.png",
+    "legenda": "DEPOIS — pelo Marcar (como é hoje). Na página 17, botão \"usar em todas\" do Marcar. A águia que você marcou à mão na página 15 SOME, e no lugar dela vem o retângulo azul da página 17 (no texto). As páginas 16 e 18 também ganham o retângulo azul. O corte não muda."
+   },
+   {
+    "arquivo": "p1-passo-3-cortar.png",
+    "legenda": "DEPOIS — pelo Cortar. Na página 17, botão \"usar em todas\" do Cortar. A janela \"Em quais páginas?\" já vem com a página 15 desmarcada (\"corte próprio\"); com \"Aplicar\", a 15 FICA como você deixou e as páginas 16 e 18 ganham o corte da 17. É o que a opção \"Sim\" faria também no Marcar."
+   },
+   {
+    "arquivo": "p1-passo-4-clique-no-marcar.png",
+    "legenda": "O clique no Marcar: página 17, \"usar em todas\" de \"Marcação desta página\". Não abre lista; vale para todas as 139 páginas."
+   },
+   {
+    "arquivo": "p1-passo-5-clique-no-cortar.png",
+    "legenda": "O clique no Cortar: página 17, \"usar em todas\" abre \"Em quais páginas?\", com a página 15 desmarcada (\"corte próprio\"); \"Aplicar\" sem mudar nada."
+   }
+  ]
+ },
+ {
+  "id": "rev-letra-clara-todas",
+  "titulo": "\"Letra clara em fundo escuro\" deve ir junto no \"todas\" do painel Filtro, como vai pelo Automático?",
+  "explicacao": "A caixinha \"Letra clara em fundo escuro\" (D-177) é de cada página. Pelo Automático (\"Limpar a folha\"), ela vai para todas as páginas em que ele roda. Pelo \"Aplicar em: todas\" do painel Filtro, o filtro e as outras caixinhas vão, mas ESTA não vai. Exemplo de verdade (Siebmacher, cópia; as páginas 11, 13, 15 e 17 são desenhos claros em fundo escuro): na página 13 marquei a caixinha e apertei \"todas\": só a 13 ficou com ela; nas 11, 15 e 17 ela continuou desmarcada. Pelo Automático com a caixinha marcada, as quatro ficaram com ela. A pergunta: no \"todas\" (e no \"daqui em diante\") do painel, a caixinha deve ir junto, como no Automático?",
+  "palavras_do_samuel": [
+   {
+    "decisao": "D-177",
+    "data": "05/10/2026",
+    "palavras": "\"(a) Uma caixinha por página, 'Letra clara em fundo escuro', que o Kaique marca à mão (recomendado)\""
+   },
+   {
+    "decisao": "D-586",
+    "data": "29/10/2026",
+    "palavras": "\"A\" (à pergunta: a caixinha \"Respeitar as gravuras achadas\" [...] \"Vale com o 'Aplicar em: só nesta / todas / daqui em diante' que já existe no painel.\")"
+   },
+   {
+    "decisao": "D-588",
+    "data": "29/10/2026",
+    "palavras": "\"ok\" (à pergunta: a caixinha \"Gravuras em tons de cinza\" [...] \"Ela segue o 'Aplicar em' [...]. Pode ser assim?\")"
+   },
+   {
+    "decisao": "D-594",
+    "data": "31/10/2026",
+    "palavras": "\"Outra coisa, no automatico não tem opções que encontramos nos filtros da aba da area de trabalho.\" · \"mas isso era uma coisa obvia que deveria ter\""
+   },
+   {
+    "decisao": "D-667",
+    "data": "10/11/2026",
+    "palavras": "\"se mudou a ferramenta, muda em todos os lugares.\""
+   }
+  ],
+  "opcoes": [
+   {
+    "id": "sim",
+    "nome": "Sim: a caixinha vai junto no \"todas\" e no \"daqui em diante\" do painel, como no Automático (recomendo)",
+    "cor": "verde"
+   },
+   {
+    "id": "nao",
+    "nome": "Não: fica como hoje (no painel, a caixinha fica só na página em que foi marcada)",
+    "cor": "laranja"
+   }
+  ],
+  "imagens": [
+   {
+    "arquivo": "p2-resumo.png",
+    "legenda": "Resumo da pergunta 2: antes, depois pelo painel Filtro (laranja, como é hoje) e depois pelo Automático (verde), um embaixo do outro."
+   },
+   {
+    "arquivo": "p2-passo-1-antes.png",
+    "legenda": "ANTES do clique. Siebmacher: as páginas 11, 13, 15 e 17 são desenhos de bordado claros em fundo escuro. O livro já passou pelo Automático em Preto e branco, com a caixinha \"Letra clara em fundo escuro\" desmarcada em todas. É o ponto de partida dos dois caminhos."
+   },
+   {
+    "arquivo": "p2-passo-2-painel.png",
+    "legenda": "DEPOIS — pelo painel Filtro (como é hoje). Na página 13, painel \"Filtro da página\": marquei \"Letra clara em fundo escuro\" e apertei \"Aplicar em: todas\". Só a 13 fica com a caixinha (e com o fundo escuro). Nas páginas 11, 15 e 17 a caixinha continua DESMARCADA e elas não mudam."
+   },
+   {
+    "arquivo": "p2-passo-3-automatico.png",
+    "legenda": "DEPOIS — pelo Automático. O mesmo Automático do ANTES (Limpar a folha, Preto e branco), agora com a caixinha \"Letra clara em fundo escuro\" marcada, no livro todo: as quatro páginas ficam com a caixinha MARCADA e saem com o fundo escuro. É o que a opção \"Sim\" faria também no \"todas\" do painel."
+   },
+   {
+    "arquivo": "p2-passo-4-painel.png",
+    "legenda": "O painel \"Filtro da página\": na página 13 a caixinha marcada; na página 15, depois do \"todas\", desmarcada."
+   },
+   {
+    "arquivo": "p2-passo-5-automatico.png",
+    "legenda": "A janela do Automático com a caixinha marcada, e o painel da página 15 depois do \"Rodar\" (caixinha marcada)."
+   }
+  ]
+ },
+ {
+  "id": "rev-dividir-grade-linha",
+  "titulo": "O \"dividir\" da grade \"Todas as páginas\" deve cortar na linha que você arrastou, como o \"dividir esta\"?",
+  "explicacao": "Na ferramenta Dividir, o \"dividir esta\" (e o \"dividir todas\") corta onde você deixou a linha azul (D-609). O \"dividir\" da grade \"Todas as páginas\" mede a folha de novo com o motor e não olha a linha arrastada. Exemplo de verdade (Gradus, cópia, folha 10 ainda inteira, páginas 18 e 19): arrastei a linha azul para 40% da largura (a do motor estava em 50%; arrastei longe do meio de propósito, para ficar fácil de ver). Pelo \"dividir esta\", a folha foi cortada nos 40%. Pela grade (página 18 escolhida, \"dividir\"), foi cortada nos 50%, na linha do motor: a linha que eu arrastei ficou guardada, mas não foi usada. A pergunta: o \"dividir\" da grade deve cortar onde você deixou a linha, como o \"dividir esta\"?",
+  "palavras_do_samuel": [
+   {
+    "decisao": "D-609",
+    "data": "04/11/2026",
+    "palavras": "\"não consigo mover a linha azul manualmente.\" · à pergunta \"Quer poder arrastar a linha já na folha inteira, antes de dividir, e o 'dividir esta' cortar onde você deixou?\" → \"Sim\""
+   },
+   {
+    "decisao": "D-558",
+    "data": "27/10/2026",
+    "palavras": "\"quando falei dividir é dividir a pagina, usando a funcionalidade do scantailor que colocamos no aplicativo, é isso que deveria ser feito.\""
+   },
+   {
+    "decisao": "D-602",
+    "data": "03/11/2026",
+    "palavras": "\"Quando eu estiver na ferramenta de dividir, o programa deveria carregar com a conta que está escolhida, e dai eu conseguir ver a linha e dai eu clicar e dividir esta, dai ele reparte\""
+   },
+   {
+    "decisao": "D-667",
+    "data": "10/11/2026",
+    "palavras": "\"se mudou a ferramenta, muda em todos os lugares.\""
+   }
+  ],
+  "opcoes": [
+   {
+    "id": "sim",
+    "nome": "Sim: a grade corta onde você deixou a linha, como o \"dividir esta\" (recomendo)",
+    "cor": "verde"
+   },
+   {
+    "id": "nao",
+    "nome": "Não: fica como hoje (a grade sempre corta na linha do motor)",
+    "cor": "laranja"
+   }
+  ],
+  "imagens": [
+   {
+    "arquivo": "p3-resumo.png",
+    "legenda": "Resumo da pergunta 3: antes, depois pela grade (laranja, como é hoje) e depois pelo \"dividir esta\" (verde), um embaixo do outro."
+   },
+   {
+    "arquivo": "p3-passo-1-antes.png",
+    "legenda": "ANTES do clique. Gradus, ferramenta Dividir, \"Duas lado a lado\", folha 10 ainda inteira (páginas 18 e 19). Arrastei a linha azul para a esquerda, para longe do meio de propósito (para ficar fácil de ver): ela está em 40% da largura; a do motor estava em 50%."
+   },
+   {
+    "arquivo": "p3-passo-2-grade.png",
+    "legenda": "DEPOIS — pelo \"dividir\" da grade (como é hoje). Grade \"Todas as páginas\": escolhi a página 18 e apertei \"dividir\". A folha é cortada na linha do MOTOR, não onde você deixou a linha: a linha arrastada é esquecida."
+   },
+   {
+    "arquivo": "p3-passo-3-esta.png",
+    "legenda": "DEPOIS — pelo \"dividir esta\". Ferramenta Dividir, botão \"dividir esta\": a folha é cortada ONDE VOCÊ DEIXOU a linha (D-609). É o que a opção \"Sim\" faria também na grade."
+   },
+   {
+    "arquivo": "p3-passo-4-linha-arrastada.png",
+    "legenda": "A linha da folha 10: a do motor (em cima) e a arrastada à mão (embaixo)."
+   },
+   {
+    "arquivo": "p3-passo-5-clique-na-grade.png",
+    "legenda": "O clique na grade: página 18 escolhida e o botão \"dividir\"."
+   }
+  ]
+ },
+ {
+  "id": "rev-girar-grade",
+  "titulo": "O girar da grade \"Todas as páginas\" deve deixar todas viradas como a página da vez, como o painel?",
+  "explicacao": "No painel, o girar com \"aplicar em: todas as páginas\" deixa todas viradas como a página da vez (D-035). Na grade \"Todas as páginas\", o \"girar ¼\" gira cada página escolhida ¼ a partir de onde ela está. Exemplo de verdade (Gradus, cópia, folhas divididas): a página 19 já estava virada ¼ à direita à mão. Pelo painel (página 18, \"todas as páginas\" + ¼ à direita), todas ficaram deitadas como a 18, inclusive a 19. Pela grade (todas escolhidas + \"girar ¼ →\"), as outras deitaram e a 19 ficou de cabeça para baixo. A pergunta: o girar da grade deve seguir o painel?",
+  "palavras_do_samuel": [
+   {
+    "decisao": "D-035",
+    "data": "06/10/2026",
+    "palavras": "\"Todas ficam viradas como a folha da vez\""
+   },
+   {
+    "decisao": "D-636",
+    "data": "05/11/2026",
+    "palavras": "à pergunta \"[...] cada página gira sozinha, igual à da tela. [...] O mesmo valeria na tela 'ver todas'. Pode ser assim?\" → \"1- pode ser, só garanta que não crie mais problemas fazendo isso, você tem que pensar na experiencia do usario e no resultado final do livro dentro do programa, quando vai mudar algo, deixe isso anotado.\""
+   },
+   {
+    "decisao": "D-667",
+    "data": "10/11/2026",
+    "palavras": "\"se mudou a ferramenta, muda em todos os lugares.\""
+   }
+  ],
+  "opcoes": [
+   {
+    "id": "sim",
+    "nome": "Sim: a grade faz como o painel (todas ficam viradas como a página da vez)",
+    "cor": "verde"
+   },
+   {
+    "id": "nao",
+    "nome": "Não: fica como hoje (na grade, cada página gira ¼ a partir de onde está)",
+    "cor": "laranja"
+   }
+  ],
+  "imagens": [
+   {
+    "arquivo": "p4-resumo.png",
+    "legenda": "Resumo da pergunta 4: antes, depois pela grade (laranja, como é hoje) e depois pelo painel (verde), um embaixo do outro."
+   },
+   {
+    "arquivo": "p4-passo-1-antes.png",
+    "legenda": "ANTES do clique. Gradus, folhas divididas. A página 19 foi virada ¼ à direita à mão (\"só esta página\"). As outras estão em pé."
+   },
+   {
+    "arquivo": "p4-passo-2-grade.png",
+    "legenda": "DEPOIS — pela grade \"Todas as páginas\" (como é hoje). Na grade, todas as páginas escolhidas e \"girar ¼ →\". Cada página gira ¼ A PARTIR DE ONDE ESTÁ: as que estavam em pé deitam, e a 19, que já estava deitada, fica DE CABEÇA PARA BAIXO."
+   },
+   {
+    "arquivo": "p4-passo-3-painel.png",
+    "legenda": "DEPOIS — pelo painel. Na página 18, \"aplicar em: todas as páginas\" + \"¼ à direita\". Todas ficam VIRADAS COMO A PÁGINA 18 (D-035): a 19, que já estava deitada, continua deitada, igual às outras. É o que a opção \"Sim\" faria também na grade."
+   },
+   {
+    "arquivo": "p4-passo-4-cliques.png",
+    "legenda": "Os dois cliques: o painel da página 18 (\"todas as páginas\" + ¼ à direita) e a grade com todas escolhidas (\"girar ¼ →\")."
+   }
+  ]
+ }
+]

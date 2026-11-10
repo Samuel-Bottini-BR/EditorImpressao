@@ -1,0 +1,171 @@
+{
+ "antes": {
+  "11": {
+   "filtro": "preto_e_branco",
+   "claro_no_escuro": false
+  },
+  "13": {
+   "filtro": "preto_e_branco",
+   "claro_no_escuro": false
+  },
+  "15": {
+   "filtro": "preto_e_branco",
+   "claro_no_escuro": false
+  },
+  "17": {
+   "filtro": "preto_e_branco",
+   "claro_no_escuro": false
+  }
+ },
+ "pdf_antes": [
+  "pdf-p2-antes-1.png",
+  "pdf-p2-antes-2.png",
+  "pdf-p2-antes-3.png",
+  "pdf-p2-antes-4.png"
+ ],
+ "historico_painel": "Preto e branco em todas as 134 páginas",
+ "depois_painel": {
+  "11": {
+   "filtro": "preto_e_branco",
+   "claro_no_escuro": false
+  },
+  "13": {
+   "filtro": "preto_e_branco",
+   "claro_no_escuro": true
+  },
+  "15": {
+   "filtro": "preto_e_branco",
+   "claro_no_escuro": false
+  },
+  "17": {
+   "filtro": "preto_e_branco",
+   "claro_no_escuro": false
+  }
+ },
+ "caixinha_na_tela": {
+  "13": true,
+  "15": false
+ },
+ "onde_a_caixinha": {
+  "painel-13": [
+   1080,
+   478,
+   1323,
+   498
+  ],
+  "painel-15": [
+   1080,
+   478,
+   1323,
+   498
+  ],
+  "janela-do-automatico": [
+   308,
+   576,
+   866,
+   596
+  ],
+  "automatico-15": [
+   1080,
+   478,
+   1323,
+   498
+  ]
+ },
+ "pdf_painel": [
+  "pdf-p2-painel-1.png",
+  "pdf-p2-painel-2.png",
+  "pdf-p2-painel-3.png",
+  "pdf-p2-painel-4.png"
+ ],
+ "janela_do_automatico_caixinha": {
+  "Letra clara em fundo escuro": true
+ },
+ "pedido": {
+  "etapas": [
+   "limpar"
+  ],
+  "opcoes": {
+   "dividir_folhas": false,
+   "endireitar": false,
+   "cortar_bordas": false,
+   "limpar": true,
+   "margens_iguais": false,
+   "montar_cadernos": false,
+   "detectar_regioes": false,
+   "dividir_como": "scantailor",
+   "capa_aberta": false,
+   "endireitar_como": "scantailor",
+   "retangulo_do_corte": null,
+   "cortar_sobra": false,
+   "cortar_pelo_conteudo": false,
+   "borda_preta": false,
+   "borda_preta_ate": "ate_a_moldura",
+   "borda_preta_fazer": "cortar",
+   "filtro_padrao": "preto_e_branco",
+   "pb_decoracao_em_preto_e_branco": false,
+   "misto_so_as_letras": false,
+   "misto_fora_do_texto": "rede",
+   "misto_papel_da_gravura": "branco",
+   "misto_letras_na_moldura": "cor_papel_branco",
+   "reforcar_texto_falhado": true,
+   "limpar_pontinhos": "desligado",
+   "gravura_forma": "livre",
+   "gravura_sensibilidade": 100,
+   "gravura_mais_sensivel": false,
+   "gravura_normalizar": true,
+   "margens_mm": [
+    10.0,
+    5.0,
+    10.0,
+    5.0
+   ],
+   "margens_alinhamento": [
+    "meio",
+    "meio"
+   ],
+   "paginas_por_caderno": 20,
+   "forca_preto": 50,
+   "clareza_melhorar": 50,
+   "intensidade_magico": 50,
+   "algoritmo_preto_branco": "auto",
+   "claro_no_escuro": true,
+   "letras_com_a_cor": false,
+   "reduzir_cores": false,
+   "luz_igualar": false,
+   "luz_suavizar": false,
+   "luz_chuvisco": 0,
+   "respeitar_gravuras_achadas": true,
+   "gravuras_em_tons_de_cinza": false
+  },
+  "paginas": null
+ },
+ "historico_automatico": "Automático: limpar a folha",
+ "depois_automatico": {
+  "11": {
+   "filtro": "preto_e_branco",
+   "claro_no_escuro": true
+  },
+  "13": {
+   "filtro": "preto_e_branco",
+   "claro_no_escuro": true
+  },
+  "15": {
+   "filtro": "preto_e_branco",
+   "claro_no_escuro": true
+  },
+  "17": {
+   "filtro": "preto_e_branco",
+   "claro_no_escuro": true
+  }
+ },
+ "caixinha_na_tela_automatico": {
+  "15": true
+ },
+ "pdf_automatico": [
+  "pdf-p2-automatico-1.png",
+  "pdf-p2-automatico-2.png",
+  "pdf-p2-automatico-3.png",
+  "pdf-p2-automatico-4.png"
+ ]
+}

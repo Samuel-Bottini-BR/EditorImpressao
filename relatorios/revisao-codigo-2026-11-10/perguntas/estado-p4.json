@@ -1,0 +1,79 @@
+{
+ "antes": {
+  "17": {
+   "giro_da_pagina": 0,
+   "rotacao_da_folha": 0
+  },
+  "18": {
+   "giro_da_pagina": 0,
+   "rotacao_da_folha": 0
+  },
+  "19": {
+   "giro_da_pagina": 90,
+   "rotacao_da_folha": 0
+  },
+  "20": {
+   "giro_da_pagina": 0,
+   "rotacao_da_folha": 0
+  }
+ },
+ "pdf_antes": [
+  "pdf-p4-antes-1.png",
+  "pdf-p4-antes-2.png",
+  "pdf-p4-antes-3.png",
+  "pdf-p4-antes-4.png"
+ ],
+ "lista_do_painel": "todas as páginas",
+ "quadro_do_painel": "Girar a página",
+ "historico_painel": "Girar ¼ à direita: todas as 139 páginas, viradas como a página 18",
+ "depois_painel": {
+  "17": {
+   "giro_da_pagina": 90,
+   "rotacao_da_folha": 0
+  },
+  "18": {
+   "giro_da_pagina": 90,
+   "rotacao_da_folha": 0
+  },
+  "19": {
+   "giro_da_pagina": 90,
+   "rotacao_da_folha": 0
+  },
+  "20": {
+   "giro_da_pagina": 90,
+   "rotacao_da_folha": 0
+  }
+ },
+ "pdf_painel": [
+  "pdf-p4-painel-1.png",
+  "pdf-p4-painel-2.png",
+  "pdf-p4-painel-3.png",
+  "pdf-p4-painel-4.png"
+ ],
+ "grade_escolhidas": 139,
+ "historico_grade": "Girar 139 páginas (escolhidas em Todas as páginas)",
+ "depois_grade": {
+  "17": {
+   "giro_da_pagina": 90,
+   "rotacao_da_folha": 0
+  },
+  "18": {
+   "giro_da_pagina": 90,
+   "rotacao_da_folha": 0
+  },
+  "19": {
+   "giro_da_pagina": 180,
+   "rotacao_da_folha": 0
+  },
+  "20": {
+   "giro_da_pagina": 90,
+   "rotacao_da_folha": 0
+  }
+ },
+ "pdf_grade": [
+  "pdf-p4-grade-1.png",
+  "pdf-p4-grade-2.png",
+  "pdf-p4-grade-3.png",
+  "pdf-p4-grade-4.png"
+ ]
+}

@@ -1,0 +1,78 @@
+{
+ "motor": {
+  "dividida": false,
+  "posicao_corte": 0.5,
+  "linha_a_mao": null,
+  "linha_do_motor": 0.5043,
+  "paginas_da_folha": [
+   18
+  ]
+ },
+ "antes": {
+  "dividida": false,
+  "posicao_corte": 0.4,
+  "linha_a_mao": [
+   0,
+   "scantailor"
+  ],
+  "linha_do_motor": 0.5043,
+  "paginas_da_folha": [
+   18
+  ]
+ },
+ "historico_arrasto": "Linha de corte da folha 10",
+ "pdf_antes": [
+  "pdf-p3-antes-1.png"
+ ],
+ "historico_esta": "Folha 10: dividir",
+ "depois_esta": {
+  "dividida": true,
+  "posicao_corte": 0.4,
+  "linha_a_mao": [
+   0,
+   "scantailor"
+  ],
+  "linha_do_motor": 0.5043,
+  "paginas_da_folha": [
+   18,
+   19
+  ]
+ },
+ "pdf_esta": [
+  "pdf-p3-esta-1.png",
+  "pdf-p3-esta-2.png"
+ ],
+ "depois_do_ctrl_z": {
+  "dividida": false,
+  "posicao_corte": 0.4,
+  "linha_a_mao": [
+   0,
+   "scantailor"
+  ],
+  "linha_do_motor": 0.5043,
+  "paginas_da_folha": [
+   18
+  ]
+ },
+ "grade_escolhidas": [
+  18
+ ],
+ "historico_grade": "Dividir 1 folha (escolhidas em Todas as páginas)",
+ "depois_grade": {
+  "dividida": true,
+  "posicao_corte": 0.5043,
+  "linha_a_mao": [
+   0,
+   "scantailor"
+  ],
+  "linha_do_motor": 0.5043,
+  "paginas_da_folha": [
+   18,
+   19
+  ]
+ },
+ "pdf_grade": [
+  "pdf-p3-grade-1.png",
+  "pdf-p3-grade-2.png"
+ ]
+}
