@@ -27,3 +27,11 @@ Palavras dele: "deixe anotado, hoje não temos como reconhecer essa partes que s
 
 Destino: **Lista de bugs** (10/11), ligada aos itens 1.4 e 1.5 da Fase 1 (não feitos). O OCR (docTR) hoje só acha as
 linhas do texto para endireitar; o Preto e branco não usa o OCR.
+
+## Endireitar, canto de cima (print 05, 08h38)
+
+Palavras dele: "eu vim no endireitar" (círculo no canto de cima à esquerda, zoom 244%).
+
+Destino: a gerente ampliou (05b). O canto de cima está fora da tela por causa do zoom, e a página está com inclinação
+0,00 graus: sem giro não há cantinho. Explicado no chat: girar à mão (ex.: 1,5 grau com os botões de 0,1°) e olhar os
+quatro cantos com "ajustar à tela".
