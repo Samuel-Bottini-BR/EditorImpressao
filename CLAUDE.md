@@ -576,7 +576,10 @@ atualize esse arquivo (ou crie um novo) quando o Samuel pedir explicitamente.
         quando ele só troca de opção. **"Ainda não entendi" não é resposta** (09/11: "precisamos de que apareça para
         responder novamente quando tiver sido respondido por você"): aparece "esperando a gerente explicar"; quando a
         gerente grava `gerente`/`gerenteEm` (mais nova que o `em` dele), a pergunta volta sozinha como "responder de
-        novo". Ao responder um "não entendi", refazer também a pergunta (explicação e prints) na conferência.
+        novo". **Enquanto espera a gerente, conta como respondida por ele** (09/11, Central v40: "eu acabei de
+        responder e não está como respondido, quando está esperando a sua resposta tem que ficar como respondido, o
+        numero tem que abaixar."): fica verde, "✓ Ainda não entendi · a gerente vai explicar", e sai do número da aba;
+        volta a contar só quando a gerente responde e ela reabre. Ao responder um "não entendi", refazer também a pergunta (explicação e prints) na conferência.
       - **Modelo de print de pergunta ou explicação (Samuel, 10/11/2026: "o jeito como você mostrou o o girar
         pagina ficou muito bom, pode colocar ele como exemplo de como deve ser feito os prints de uma mensagem
         explicativa, ficou rapido de identificar o que precisa ser analisado").** Exemplos em

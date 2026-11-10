@@ -10,7 +10,7 @@ Memória do projeto **organizada por assunto**, decidida pelo Samuel em 19/10/20
 >
 > O histórico por data continua inteiro em
 > [historico/Editor de Impressao - resumo para o Claude.md](../historico/Editor%20de%20Impressao%20-%20resumo%20para%20o%20Claude.md)
-> (PARTE -32, de 07/11/2026, é a mais nova; a -31 tem erros corrigidos na -32). A memória aponta para ele; não o substitui.
+> (PARTE -33, de 10/11/2026, é a mais nova). A memória aponta para ele; não o substitui.
 
 ## Antes de qualquer trabalho (todo agente)
 

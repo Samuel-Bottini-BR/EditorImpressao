@@ -8,7 +8,16 @@ Escrito em 24/09/2026. A ordem de autoridade é:
 
 O resto é histórico. O `PEDIDOS.md` virou histórico em 24/09: a lista que vale é o Plano Definitivo.
 
-> **Onde o projeto está em 07/11/2026 (vale sobre tudo abaixo; detalhe na [PARTE -32](../../historico/Editor%20de%20Impressao%20-%20resumo%20para%20o%20Claude.md) do handoff):**
+> **Onde o projeto está em 10/11/2026 (vale sobre tudo abaixo; detalhe na [PARTE -33](../../historico/Editor%20de%20Impressao%20-%20resumo%20para%20o%20Claude.md) do handoff):**
+> - A versão de teste é o ramo `obra-2026-10-26` (worktree `.claude/worktrees/obra-juncao`, ponta `396c534c` + Livro do checkpoint). Dentro dela, além do que já havia: gravura no Preto e branco à mão (D-659) e o "Pular" que guarda a gravura (D-661), testados pelo Samuel (funcionam); girar com a capa aberta e no Dividir (D-638, D-640, D-645, D-662, D-663), suíte inteira ok, **falta o teste dele**.
+> - O Livro de decisões (`docs/plano/DECISOES.md`, no obra) vai até a D-664.
+> - Fila de consertos: nada começado; a ordem (graves: fechar em Livros recentes, folha espremida, Automático e Tirar o fundo; depois quadrados brancos, D-660, caixinhas) **espera o "sim" dele**.
+> - Na Central esperam a gerente **38 respostas dele de 08 a 10/11** (`relatorios/central-respostas-esperando-2026-11-10.md`) e esperam ele 2 perguntas novas (quadrados brancos: qual conserto; girar no Dividir).
+> - Regras de 09-10/11: nenhum agente abre o programa na tela dele (tudo offscreen); prints de pergunta no modelo do girar (CLAUDE.md §10); todo print dele guardado na hora com relatório nos três formatos; no máximo dois agentes.
+> - Perguntas e respostas: na Central https://claude.ai/artifact/XNFrsdVR7q4K8cBcxNftZy (versão 41).
+>
+> **Antes (07/11), já superado:**
+> Onde o projeto estava em 07/11/2026 (detalhe na [PARTE -32](../../historico/Editor%20de%20Impressao%20-%20resumo%20para%20o%20Claude.md) do handoff):
 > - A versão de teste é o ramo `obra-2026-10-26` (worktree `.claude/worktrees/obra-juncao`), com a obra de 26/10, as 6 entregas de 04-05/11 e o cantinho do giro (D-639). O `fase-1` só guarda o plano.
 > - O Livro de decisões (`docs/plano/DECISOES.md`, no obra) vai até a D-658.
 > - Fila de consertos: item 1 (cantinho) juntado; item 2 (girar com a capa aberta) feito e testado com a janela aberta no ramo `girar-capa-2026-11-07`, esperando a resposta do teste antigo do "daqui" para juntar; itens 3 em diante não começaram (graves: fechar em Livros recentes, folha espremida, Automático e Tirar o fundo).

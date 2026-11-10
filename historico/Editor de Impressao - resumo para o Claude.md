@@ -1,6 +1,6 @@
 # Editor de Impressão — documento para colar no Claude
 
-Atualizado em 07/11/2026 (PARTE -32; a anterior, PARTE -31, é de 06/11 e tem erros corrigidos na -32). Desde 19/10 a memória por assunto fica em `memoria/` (índice `memoria/INDICE.md`). Versão **máxima**: reúne o histórico institucional, o
+Atualizado em 10/11/2026 (PARTE -33; a anterior, PARTE -32, é de 07/11). Desde 19/10 a memória por assunto fica em `memoria/` (índice `memoria/INDICE.md`). Versão **máxima**: reúne o histórico institucional, o
 que o programa é, todas as funcionalidades pedidas, os 68 pedidos feitos até
 hoje **palavra por palavra**, o que foi feito, o que falta, e os dois
 documentos-fonte inteiros (a especificação original e o prompt de testes) em
@@ -14,7 +14,280 @@ o backup). Repositório git ligado a
 
 ---
 
-# PARTE -32 — Checkpoint de 07/11/2026: girar pronto e testado com a janela aberta, teste como o Kaique (15 erros), Central nova, /checkpoint refeito (leia isto primeiro)
+# PARTE -33 — Checkpoint de 10/11/2026: gravura à mão (D-659, D-661) e girar (D-638 a D-663) na versão de teste, sessões 4 e 5 de testes, quadrados brancos A/B/C, Central no celular (leia isto primeiro)
+
+Sessão no PC, de 08/11 a 10/11, gerente Claude Opus 5.5, uma conversa só (resumida automaticamente duas vezes). Checkpoint
+pedido pelo Samuel (`/checkpoint`). Escrito a partir da conversa salva (`falas_da_conversa.py --todas --desde 2026-11-08T00:58`), do git e da Central, não do resumo.
+**No fechamento não há agente nem teste rodando.** O último trabalho foi a suíte inteira do girar no PC (terminou às 12h26
+do PC, tudo passou) e a junção no obra.
+
+## 0. Para recomeçar
+
+1. `git -C D:\programas\EditorImpressao fetch origin`. A versão de teste é `obra-2026-10-26` (worktree
+   `.claude\worktrees\obra-juncao`); o `fase-1` guarda o plano e os relatórios das sessões.
+2. **Ler na Central** (https://claude.ai/artifact/XNFrsdVR7q4K8cBcxNftZy) as `respostas` com `lida != true`. No checkpoint
+   eram **39 (37 de 08 e 09/11 e 2 de 10/11)**; a `au-d-572` foi resolvida no checkpoint (marcada como lida, com resposta);
+   **sobram 38 sem processar**. Estão palavra por palavra, com a pergunta ao lado, em
+   `relatorios/central-respostas-esperando-2026-11-10.md` (no `fase-1`). Ver §4.
+3. Ver se ele respondeu as perguntas novas: `perg-quadrados-brancos` (qual conserto: C, só A, não mexer) e
+   `perg-girar-dividir-2` (2 perguntas). E se ele testou o girar (§2).
+4. **Confirmar a ordem da fila de consertos** (§2, "Fila"): a gerente pediu o "sim" pelo menos cinco vezes em 10/11
+   (10h33, 11h25, 11h26, 12h50 e 13h11 UTC; repetiu às 11h18, 12h05 e 13h02) e ele não respondeu nenhuma. Só depois começar o primeiro conserto (um agente de conserto e,
+   se preciso, um de teste; no máximo dois agentes; nada abre janela na tela dele).
+
+## 1. Regras novas do Samuel, literais
+
+- **Nenhum agente abre o programa na tela dele** (09/11, 21h07 UTC: "você está abrindo o programa na minha tela"). Era o
+  agente da gravura tirando prints com a janela. Desde então tudo roda com `QT_QPA_PLATFORM=offscreen`. Memória
+  `feedback_nao_abrir_na_tela.md`. Isto troca a regra de 07/11 de "testar com a janela aberta" quando ele não pode testar.
+- **Modelo de print das perguntas** (10/11, 12h05 UTC): "o jeito como você mostrou o o girar pagina ficou muito bom, pode
+  colocar ele como exemplo de como deve ser feito os prints de uma mensagem explicativa, ficou rapido de identificar o que
+  precisa ser analisado." Imagem-resumo primeiro; faixas azul ANTES / laranja / verde; as mesmas páginas e o mesmo
+  enquadramento; o alvo circulado em vermelho sem cobrir. Regra no CLAUDE.md §10 (`3939ac1c`), exemplos e script em
+  `docs/plano/central/modelo-de-print/`, memória `feedback_modelo_de_print.md`.
+- **Guardar sempre os prints** (10/11, 12h51 UTC): "é essencial que sempre guarde os meus prints". Todo print dele vai na hora
+  para `prints/NN-nome.png` da sessão, com as palavras dele, e o relatório sai nos três formatos
+  (`relatorio-completo.html/.pdf` com os prints dentro; o .pdf fica fora do git). Memória
+  `feedback_testes_guiados_anotar_e_mostrar.md`.
+- **Pausar quando o PC trava** (10/11, 03h11 UTC): "pode pausar esse teste para continuar exactamente da onde ele esta
+  depois?" / "é porque meu pc está muito travado nesse momento". A gerente pausa o processo (NtSuspendProcess +
+  EmptyWorkingSet via PowerShell) e retoma do mesmo ponto. A suíte agora roda **um arquivo por vez, prioridade baixa**
+  (`rodar_suite_por_arquivo.py`, §7).
+- **Central:** um seletor só dos 3 jeitos de ver, que vale para todas as abas (08/11: "Acho que aquele modo pode ser
+  selecionado para tudo, quando eu mudar muda em tudo o jeito de responder"); responder de novo guardando a resposta
+  antiga (08/11: "tem que poder responder quando precisa responder de novo e a resposta antiga ainda ficar guardada");
+  "Ainda não entendi" conta como respondido e o número desce (09/11: "quando está esperando a sua resposta tem que ficar
+  como respondido, o numero tem que abaixar"); respostas anteriores fechadas num botão (09/11: "pode ser assim, respostas
+  anteriores."). Commits `332e95b3`, `fd493cc6` e `c188db00` (este grava a regra da v39, "Ainda não entendi" espera a
+  gerente). A regra da v40 (conta como respondido) só foi escrita no CLAUDE.md §10 neste checkpoint.
+- Continuam valendo: no máximo dois agentes ao mesmo tempo; uma coisa por vez e chamar o Samuel para testar.
+
+## 2. Os trabalhos, pelo git
+
+- **Versão de teste `obra-2026-10-26`: ponta `396c534c`** (mais o commit do Livro deste checkpoint), com push. Entraram nesta
+  sessão:
+  - **Gravura no Preto e branco escolhido à mão (D-659) e "Pular" guarda a gravura (D-661):** ramo
+    `gravura-a-mao-2026-11-09`, juntado em `cd2e10bc` (10/11). Junto vieram dois defeitos achados no caminho (trabalho
+    por trás que sobrava do livro anterior, `45d56991`; gravura achada no tamanho errado, `f3b97c03`) e a troca do
+    `test_p195` (autorizada: "1- sim"). GitHub 42757519851 verde, velocidade 42757524213 igual.
+    **Testadas pelo Samuel em 10/11: "fiz os dois testes que você pediu e estão funcionando."**
+  - **Girar com a capa aberta (D-638, D-640, D-644, D-645) e girar no Dividir (D-662, D-663):** ramo
+    `girar-capa-2026-11-07`, juntado em `2a034fda` (fast-forward do obra, 10/11). D-662: no Dividir com "Duas lado a
+    lado", "todas as folhas" gira cada página sozinha e inteira (`c76d4b97`); D-663: o teste antigo do "daqui em diante"
+    passou a cobrar a D-645 (`269f05f3`). GitHub 42814866808 verde, velocidade 42814872526 igual. **Suíte inteira no PC,
+    um arquivo por vez, depois de juntar o obra no ramo: 229 arquivos OK e `teste_botoes` com 372 ações e 0 falhas
+    (10/11, 11h19 a 12h26 do PC).** **Falta o Samuel testar** (roteiro dado no chat às 16h27 UTC: Gradus, Dividir, folha
+    10, "Duas lado a lado", girar 90° em "todas as folhas", conferir as páginas 18 e 19 em outra ferramenta, Ctrl+Z).
+    Ressalvas do agente: a tela do Dividir continua mostrando a folha em pé depois de girar; "daqui em diante", "só as
+    pares" e "só as ímpares" não mudaram (perguntas na Central, §4).
+  - Documentos: Livro D-659 a D-664 e situações dos testes; relatórios do verificador (`relatorios/automatico-mexidas-2026-11-09/`, `bf4aa304`) e dos quadrados (`relatorios/quadrados-brancos-2026-11-10/`, `36e0b3b2` e `11818d8a`).
+- **`fase-1`: ponta `2bfae858`** (mais o commit deste checkpoint), com push. Relatórios das sessões 4 e 5, Lista de bugs,
+  Lista de espera, pesquisa do Internet Archive (`95fd1185`), modelo de print (`3939ac1c`).
+- **Feito sem juntar:** nada de código. A comparação A/B/C dos quadrados foi simulação (scripts no relatório), nenhuma
+  linha do programa mudou.
+- **Fila de consertos (nada começado; ordem sem "sim" dele).** A última versão mostrada (13h11 UTC de 10/11), com a sugestão
+  da gerente "1, 2, 3 e 4, depois 5, 6 e 7, depois 8 e 9":
+  1. **grave:** o programa fecha ao abrir "Livros recentes" (`ui/janela_principal.py:494`);
+  2. **grave:** a folha espremida no Mover e na Mão, a miniatura e o título que some no PDF (D-547, D-649);
+  3. **grave:** o Automático desfaz o "Tirar o fundo" (D-134, D-646) e os cartões vazios em "Filtros em tela cheia" (D-648);
+  4. os quadrados brancos no Melhorar e no Mágico pro, **depende da resposta** em `perg-quadrados-brancos`;
+  5. perguntar antes de mudar o que a última rodada do Automático fez (D-660);
+  6. as caixinhas do Automático voltam desmarcadas depois de rodar (resposta dele de 08/11, `n0411-caixinhas-depois-de-rodar`);
+  7. as caixinhas das etapas são difíceis de clicar (print 13: "as vezes preciso de 5 cliques");
+  8. giro na tela: lento, o branco gira junto, a parte de fora fica cortada (prints 06 a 08) — **ele ainda não disse se entra agora**;
+  9. mudar a folha de lugar faz a página recarregar (print 11, D-615);
+  10. ao dividir em "Duas lado a lado", a vista não passa para "Uma página" (D-610; ele: "não é um erro grave, pode ficar para depois");
+  11. urgentes do plano: livreto ao processar (D-575, desenhos antes na Central) e nenhuma letra some no Preto e branco (D-154);
+  12. os outros, na ordem: esconder "voltar a página" na acrescentada (D-642); os erros de 06/11 que sobraram (ele pediu
+      provas e explicação antes); os menores de 07/11 (D-647, "16 folhas", rodinha, D-650, D-652, D-653, D-651); "Margens
+      iguais" (refazer a explicação); os 7 pedidos de 04/11; ilustrações dos Lusíadas; "Desentortar aumentando a página"
+      traz a página de fora; manchas pretas laterais no P&B (Fase 1, itens 1.4/1.5); **novo:** Melhorar e Mágico pro quebram
+      o "i" e o "t" (a C dos quadrados conserta).
+- **Lista de espera (novos):** a setinha de seleção para girar várias páginas na área de trabalho (09/11: "não entra na fila
+  agora a setinha."); a pergunta do cantinho no modelo do girar (D-664).
+- **Cópias que podem ser apagadas (perguntar antes):** `provas-girar-antigo`, `testa-girar-capa` (≈1,5 GB),
+  `testa-girar-capa-antes`, `testa-cunha-antes`; o ramo `gravura-a-mao-2026-11-09` e o `girar-capa-2026-11-07` já estão
+  dentro do obra.
+
+## 3. As falas do Samuel desde o último checkpoint e o destino de cada uma
+
+Horas em UTC (no PC, 4 horas a menos). As de 10/11 estão também, com os prints, em
+`relatorios/testes-guiados/2026-11-10-sessao-5/relatorio-completo.html`; as de 09/11 em `...2026-11-09-sessao-4/`.
+
+| Hora | Fala (resumida; literal quando é ordem ou objeção) | Destino |
+|---|---|---|
+| 08/11 16:14 | "1" (no /projeto) | Escolheu o Editor de Impressão |
+| 08/11 18:29–18:31 | "O que estar por fazer?" · "1- está na central?" · "Os testes e os prints estão lá?" · "Aonde na central?" · "Em que parte da central?" | Respondido; a gerente admitiu que o relatório do teste com a janela aberta não estava na Central |
+| 08/11 18:33 | [print] "Tem que diagramar para ficar melhor para ler no celular está muito ruim, tem que aparecer diferente no PC e em celular" | Central v34 (celular) |
+| 08/11 18:33–18:34 | Os 3 jeitos não achados · "Acho que aquele modo pode ser selecionado para tudo..." | Um seletor só, v34 (`332e95b3`) |
+| 08/11 19:00 | "Ficou bom" | — |
+| 08/11 19:01 | "...tem que poder responder quando precisa responder de novo e a resposta antiga ainda ficar guardada." | v35 (`fd493cc6`), regra no CLAUDE.md |
+| 08/11 19:10 | [print] "Achei mais erros de diagramação." | v36: Quadro e Etapas numa coluna no celular; as 9 abas testadas (`7813797a`) |
+| 09/11 19:08 | "opa, onde paramos?" | Respondido |
+| 09/11 19:41 | "acabei de responder varias coisas lá, o que mais falta?" | 28 respostas lidas e resumidas no chat; **as que não eram do girar ficaram sem processar** (§4) |
+| 09/11 19:54 | "quero saber o que falta eu testar" | Lista pelo Livro dada no chat |
+| 09/11 20:00 | [2 prints] "acabei de achar um problema no filtro preto e branco [...] no manual não está funcionando, isso é um grande erro, porque aconteceu?" | Causa achada (`marca_sozinho` só roda com "Limpar a folha"); sessão 4 §1; conserto D-659 |
+| 09/11 20:09 | [2 prints] girar funciona, quer girar duas juntas; "eu não mexi em nada no automatico e fica esse aviso ai do lado, para que serve? eu pedi isso?"; zoom some ao trocar de ferramenta; "pagina em branco funciona" | D-618 e D-623 testadas ok; quadro explicado (D-051, D-619); zoom na Lista de bugs; girar duas → Lista de espera |
+| 09/11 20:13 | "1- ele vai procurar a gravura quando eu selecionar a opção ali no filtro né? [...] 2- [...] vai procuar na pagina que está ou nas paginas que foram selecionadas entendeu?" | **D-659** (`a0c99cc7`, `a34c09bc`); agente do conserto |
+| 09/11 20:19 | (no meio do trabalho) "1- você não entendeu ainda, leia minha mensagem de novo [...] se eu optar para que ele faça aquele ajuste em varias paginas ai sim [...]" · "2- eu quero só poder selecionar duas paginas ao mesmo tempo na area de trabalho [...] ferramenta de seleção como a do photoshop" | 1: esclarecimento da D-659 (`a34c09bc`); 2: Lista de espera (`a6c56e14`) |
+| 09/11 20:26–20:28 | [print] "quando eu troco o botão ele apaga meu comentario que foi salvo." · "ele sai dali quando você for responder né?" · "não entra na fila agora a setinha." · "pode ser assim, respostas anteriores." | Central v37 e v38; setinha na Lista de espera (`5fb4f55a`) |
+| 09/11 20:28 | "o que falta testar ainda?" | Lista do que falta testar dada no chat (v38, 20:29) |
+| 09/11 20:32 | "onde está essa pergunta da capa aberta e qual era a fila dos consertos para fazer?" | Respondido |
+| 09/11 20:36 | [print] "girar com a capa aberta mostra tudo respondido, precisamos de que apareceça para responder novamente..." | v39 (`c188db00`) |
+| 09/11 20:44 | [print] "eu acabei de responder e não está como respondido [...] o numero tem que abaixar." | v40; regra escrita no CLAUDE.md só no checkpoint |
+| 09/11 21:07 | "você está abrindo o programa na minha tela" · "não é para abrir na minha tela" | Agente parado; regra nova (§1) |
+| 09/11 21:25 | "Sim pode refazer as pergutnas" | Provas das perguntas 3 e 4 do girar (`d25e2b76`); Central refeita |
+| 09/11 23:42 | "1- sim 2- não entendi" | 1: troca do p195 e `ui/tarefas.py` (`0f947c0a`, `45d56991`); 2: explicada com a página 8 |
+| 09/11 23:47–23:56 | O aviso das páginas mexidas; "seria bom ter um botão para ele recalcular"; "não, eu falei para dar um aviso [...] isso já existe no programa?"; "só verifica se ele vai perguntar..."; "pq as vezes eu rodo automatico em só algumas paginas [...] não dar erro nessa parte."; "mas caso o o automatico for mudar alguma coisa que foi feito na ultima rodada ele deve perguntar." | O aviso existe (D-004); o botão existe (Marcar → "Procurar de novo"); **D-660** (`40a77901`); verificador (`bf4aa304`) |
+| 10/11 01:27 | "1- pode" | **D-661** (`bf27f6d4`), construída |
+| 10/11 01:29 | "an? preto e branco?" · "ataa" · "ok" | Esclarecido no chat |
+| 10/11 02:51–03:57 | "tais rodando teste?" · "e agora?" · pausar · "não tem como salvar sem ser na ram?" · "pode voltar a fazer os testes" · "pode pausar novamente" · "cancela o pause" | Suíte pausada e retomada; depois o jeito "um arquivo por vez" |
+| 10/11 10:25 | "pode rodar agora, mas me mostra a lista consertos antes" | Lista mostrada; suíte rodada |
+| 10/11 10:32 | "1- ele aplica em todas se eu mandar? 2- 3- anote para arrumar na proxima rodada - já entra na lista 4- não entendi · Quando vão entrar as outras mudanças? e cade aquela lista..." | D-660 e caixinhas na fila (sessão 4, fim). **Leitura da gerente:** o "3- anote" respondia ao item 3 da lista das 10:26 (os dois defeitos achados no caminho); ela ligou à D-660 e às caixinhas e escreveu às 10:33 "Se o seu 'anote' era para outra coisa, me diga." Ele não confirmou |
+| 10/11 11:25–11:26 | "liste eles para mim" · "agora liste todos, aquela lista grande" | Fila mostrada; "Pode ser?" sem resposta |
+| 10/11 11:58–12:04 | "1- como eu testo? 2- vou responer" · "2- girar respondido" | Roteiro de teste; **D-662 e D-663** (`cc5d9850`) |
+| 10/11 12:05 | Modelo de print (§1) | CLAUDE.md §10, memória |
+| 10/11 12:06 | "onde está localizado o livro ?" | Respondido às 12:09 com os dois caminhos |
+| 10/11 12:11 | "eu não devia dividir a folha antes de endireita?" · "mas os testes que você fez ? você fez como?" | Explicado |
+| 10/11 12:32–12:34 | [2 prints] "1- apareceu um aviso 2- cliquei nele, era para fazer isso?" · "um pedaçõ da pagina de fora" · "e a parte que o programa pintou" | Lista de bugs: "Desentortar aumentando a página" (`7ca97b23`) |
+| 10/11 12:36 | [2 prints] manchas pretas no P&B; "o ocr está funcionando? [...] acho que ainda não chegamos no padrão do wikipedia." | Lista de bugs (`3ce329d0`), ligada à Fase 1 |
+| 10/11 12:38 | [print] "eu vim no endireitar" · "usei ele, mas continua sem ver esse tal cantinho que você" | Explicado (página a 0,00°) |
+| 10/11 12:40 | "eu errei é internet arquive, sim é isso que temos que fazer, coloque um agente para fazer pesquisas de como eles fazem por favor." | Pesquisa feita (`95fd1185`, §5) |
+| 10/11 12:42–12:44 | [prints 06, 07] giro lento, "tinha que ser tão rápido quanto o photoshop [...] mudar a linguagem pode aumentar a velocidade do programa?"; o branco gira junto | Lista de bugs (`a51fbd9a`, `640a0d49`); linguagem respondida no chat |
+| 10/11 12:45–12:46 | "por favor abre a tela do meu pc e faz o teste para eu ver" · "eu quero que seja rapido" · "você não viu minha resposta na central" · "a cor é diferente da cor do papel." | Prova aberta na tela (imagem); **"eu quero que seja rapido" sem destino: perguntado, sem resposta** (§4); resposta da Central admitida como não lida |
+| 10/11 12:47–12:50 | [print 08] giro cortado; "pode deixar como branco por enquanto."; correção: "esse print você leu errado [...] enquanto eu estou girando ela continua com aquela parte que estava para fora cortada" | **D-664**; Lista de bugs corrigida (`8d07253c`). **Leitura da gerente:** ela gravou "fica como está, nada muda" (o cantinho continua da cor do papel, o creme que ele criticou); ele disse "branco" ("acho que pode ser branca mesmo", 12:42; "pode deixar como branco por enquanto", 12:48). Ver §4.11 |
+| 10/11 12:50–12:51 | "o que mais tem para testar? e manda a lista de problemas de novo." · "você guardou os meus prints também?" · "é essencial que sempre guarde os meus prints" | Lista dada; relatórios em 3 formatos (`8b37c721`) |
+| 10/11 12:55–13:01 | [prints 09, 10] quadrados brancos; "pode colocar um agente para investigar isso." · "o erro não aparece só na pagina 13, aparece em varias." | Lista de bugs; agente investigador (`36e0b3b2`) |
+| 10/11 13:01 | "fiz os dois testes que você pediu e estão funcionando." | D-659 e D-661 testadas (`9bf2fda1`) |
+| 10/11 13:10 | [prints 11–13] testes do Dividir 3 a 10 (literal na sessão 5) | Livro (`527a10df`) e Lista de bugs (`3cddd5d4`) |
+| 10/11 13:11 | (no meio do trabalho) "e agora, o que estamos fazendo e me da a lista de novo de opções do que fazer" | Fila mostrada às 13:11 (§2), sem resposta |
+| 10/11 13:36 | [print 14] "arrumar, para passar para o lado eu tenho que ir lá embaixo na barra [...] bota um agente para resolver isso." | Central v41 (feito pela gerente) |
+| 10/11 13:49–13:53 | "mas como assim , o que parece papel para ele, não estamos usando o scantailor?" · "faça um teste com os dois para ver qual se sai melhor." | Comparação A/B/C (`11818d8a`); pergunta refeita na Central |
+| 10/11 15:21 | "o que ainda está rodando?" | Só a suíte do girar |
+| 10/11 | `/checkpoint` | Este checkpoint |
+
+**Testes que ele fez nesta sessão:** D-618 girar uma página (funciona), D-623 página em branco (funciona), D-659 e D-661
+(funcionam), D-639 cantinho (cor mais clara que o papel → D-664), Dividir 3 a 10 (3: nada a juntar em páginas já separadas;
+4, 7, 9 ok; 5 não achou o botão; 6 não testado; 8 não passou; 10 recarrega). Prints em `relatorios/testes-guiados/2026-11-09-sessao-4/prints/` e `2026-11-10-sessao-5/prints/`.
+
+## 4. Perguntas em aberto (exatas)
+
+1. **A ordem da fila**, no chat, 10/11 13h11 UTC: "A minha sugestão de ordem é 1, 2, 3 e 4, depois 5, 6 e 7, depois 8 e 9.
+   Pode ser?" (pedida também às 10h33, 11h25, 11h26 e 12h50, sem resposta).
+2. **O giro na tela entra agora**, no chat, 10/11 12h50 UTC: "O conserto do giro na tela entra na fila agora, logo depois
+   dos três graves?"
+3. **"eu quero que seja rapido"**, no chat, 10/11 12h46 UTC: "Sobre 'eu quero que seja rápido': é o giro na tela?"
+4. **D-660 na mesma caixa**, no chat, 10/11 01h21 e 01h28 UTC: "o aviso novo das mudanças da última rodada (D-660) pode ser
+   na mesma caixa das páginas mexidas à mão?" (na fila de 11h25 a gerente escreveu "na mesma caixa" como se fosse
+   decidido; **não é decisão dele**).
+5. **"juntar esta"**, no chat, 10/11 13h11 UTC: "Posso anotar uma troca do nome para 'juntar esta'?"
+6. **Central, `perg-quadrados-brancos`** (refeita em 10/11 às 15h16 UTC, versão 2): "Testei os dois jeitos de tirar os quadrados
+   brancos. Qual entra no programa?" Opções: C, os dois juntos (recomendo) / Só a A / Não mexer agora.
+7. **Central, `perg-girar-dividir-2`**: "girar-dividir-tela" (a tela do Dividir deve mostrar as páginas deitadas? recomendo
+   sim) e "girar-dividir-outros" ("daqui em diante", "só as pares" e "só as ímpares" no Dividir também página por página?
+   recomendo sim).
+8. **As respostas da Central sem processar (39 no checkpoint, 37 de 08 e 09/11 e 2 de 10/11; a `au-d-572` foi resolvida no checkpoint)**, palavra por palavra em
+   `relatorios/central-respostas-esperando-2026-11-10.md`. Resumo:
+   - **"Ainda não entendi" (refazer com provas no modelo do girar):** `n0411-o-que-vai-sair`, `n0411-inverter-letra-clara`,
+     `n0411-caderno-pagina-em-branco`, `dv-211-215`, `k0611-margens-de-fabrica`, `au-d-567`, `au-d-565`, `au-d-544`.
+   - **Já tinham resposta da gerente de 05/11 e ele respondeu de novo em 10/11:** `au-d-572` ("Se é erro, tire daqui.";
+     resolvida no checkpoint: não é erro, marcada como lida); `au-d-574` ("No caso já sair em livreto ao processar tem que
+     ser uma opção né?", pergunta nova sobre a D-575, falta responder).
+   - **Escolha clara, passar ao Livro:** `n0411-caixinhas-depois-de-rodar` (já na fila), `n0411-folhas-de-todas`,
+     `n0411-recuperar` ("depois desta rodada de consertos"), `a-botoes-cartoes`, `a-lombada-fora`, `a-contador-dividir`,
+     `au-d-005` ("Está certo assim"), `au-d-523` ("Pôr na lista de fazer"), `k0611-remendos`, `k0611-numeros`,
+     `k0611-miniatura-branco` (as três "Consertar").
+   - **Escolha com pergunta dele para responder na página:** `ac-tampa` (pede print provando), `k0611-oito-de-funcao`
+     ("quero ver esses erros, as provas dele"), `k0611-pagina-suja` e `k0611-ilustracao-some` (investigar mau uso ou bug),
+     `k0611-titulo-partido`, `k0611-mao-espremida` e `k0611-laranja-mao` (o que é a Mão), `k0611-aviso-velho-salvar`
+     ("que regra o agente errou [...] como os prompts tem sido feitos"), `k0611-lista-sobe`, `k0611-frase-tirou`,
+     `k0611-codigo-g2` ("Não se deve usar código na nomeação de coisas"), `k0611-barra-cortada` ("não é urgente."),
+     `v-capa` (aviso: "pense nisso e me traga"), `v-antes` ("vai alterar muito o programa?"), `au-d-566` (aprender com a
+     marcação à mão), `au-d-557`, `au-d-527` (OCR?), `au-d-525` (IA só para isso).
+9. **Promessa antiga ainda não cumprida** (de 07/11): proposta de regra sobre agentes criarem coisas que ele não pediu
+   (`k0711-voltar-inserida`). Liga com `k0611-aviso-velho-salvar`.
+10. **Ainda para ele testar** (lista de 10/11 12h50 UTC): o girar juntado hoje (D-638, D-640, D-645, D-662, D-663); o item 6
+    ("dividir todas" com folhas juntadas, usando "não dividir esta"); do Automático: 11 (D-004 depois de dividir à mão), 12
+    (D-603 e D-614), 13 (D-616) e 14 (D-617); e as 4 que faltam das 6 mudanças de 04/11 (D-619, D-620, D-621, D-622).
+11. **O cantinho do giro: branco ou como está?** Ele disse "acho que pode ser branca mesmo" (10/11 12h42 UTC) e "pode
+    deixar como branco por enquanto." (12h48). A gerente gravou D-664 como "fica como está" (cor do papel, o creme que ele
+    achou diferente). Confirmar com ele se "branco" é branco de verdade (mudaria a D-639) ou "deixa como está".
+
+## 5. Descobertas (não redescobrir)
+
+- **Gravura à mão:** `core/etapas.py` `marca_sozinho` parava em `limpa_sozinho` quando o livro nunca passou pelo Automático;
+  as 17 provas de `test_decisoes_gravuras_cinza.py` começavam todas depois do Automático. O "Pular" (D-004) não guardava a
+  gravura achada à mão (prova da página 8, imagens `q2-*.jpg`).
+- **Quadrados brancos:** vêm de `core/filtros.py` `_limpar_o_papel_de_verdade`, que pinta de branco o que parece papel; a
+  água e o céu claros passam, e os blocos são os 16×16 do JPEG do livro. Sai igual no PDF. Medidas no *Na escola de Jesus*
+  (199 p.): hoje 110 páginas (Melhorar) e 112 (Mágico pro); A 0; B e C 2. Céu claro perto da margem: hoje 113, **A 48**, B e
+  C 16. O mesmo passo quebra o "i" e o "t" (página 97: 4,1% da tinta da letra vira branco); B e C consertam. B e C custam
+  ≈4,4 s a mais na primeira vez de cada página (procura da gravura). Com "Respeitar" desmarcada, B não faz nada. Relatório
+  `relatorios/quadrados-brancos-2026-11-10/relatorio.html` (obra), seção 8.
+- **Internet Archive (pesquisa 1.4):** corta a folha antes de tudo; binariza sensível só dentro das linhas do OCR e cauteloso
+  fora; o que escapa fica com a cor do papel. Proposta de ≈150 linhas com DoxaPy Sauvola + OpenCV + linhas do docTR, sem
+  Linux nem placa de vídeo. `docs/pesquisa/fase1-1.4-como-o-internet-archive-faz.md` e
+  `relatorios/pesquisa-internet-archive-2026-11-10/`. Vai para a Fase 1 (1.4/1.5), depois da obra.
+- **Suíte inteira num processo só trava** em `test_p147_tema` (`reaplicar_em_tudo` sobre milhares de widgets que sobram dos
+  testes anteriores). Rodar **um arquivo por vez** (`rodar_suite_por_arquivo.py`) resolve: 229 arquivos em ≈67 min.
+- **Testes instáveis com o PC carregado** (iguais no obra, sem o conserto): `test_d611` da tira em pares,
+  `test_folhear_com_o_disco_lento_nao_para_a_janela`, d621, d015, girar_na_tela, gravura_na_aba_marcar. Rodados sozinhos,
+  passam.
+- **Cantinho do giro:** a faixa tem ≈12 px; para ver, dividir antes e girar à mão; a página 18 do Destino está a 0,00°.
+- **Central:** o Quadro rolava de lado porque a coluna "Em andamento" tinha um caminho longo sem quebra; consertado com
+  `min-width:0`, `overflow-wrap:anywhere`, abas que quebram em duas linhas e a trilha `minmax(0,1fr)` (v41).
+
+## 6. Erros da gerente nesta sessão (não repetir)
+
+- Disse que o "Pular" guardava a gravura da página 8; a prova do agente mostrou manchas. Corrigido no chat, virou D-661.
+- Disse "nenhum falhou" com a suíte a 81%, sem ler as marcas F/E; a primeira parte tinha 5 falhas e 1 erro (instáveis, ver §5).
+- Deu a página errada para o teste do cantinho ("página 18" em vez da folha 18, lado direito, página ≈35/36 depois de dividir)
+  e não explicou que era preciso dividir antes.
+- Não leu a resposta dele na Central (`cantinho-outros-casos`) entre 40 não lidas. **Ler a Central antes de perguntar no chat.**
+- Leu errado o print 08 (ele corrigiu).
+- Guardou os relatórios das sessões só em .md (ele não abre .md) até ele perguntar.
+- Na primeira versão da pergunta dos quadrados, escreveu "o livro todo ficou sem quadrados" com a regra A; a medida nova
+  mostrou 48 páginas com furo. Corrigido em 10/11 às 15h16 UTC (Central versão 2 da pergunta).
+- Na fila de 11h25 escreveu a D-660 "na mesma caixa" como se estivesse decidido (é pergunta aberta, §4.4).
+- As 28 respostas de 09/11 foram lidas e resumidas no chat, mas não processadas (nem Livro nem resposta na página).
+- A regra da Central v40 ("Ainda não entendi" conta como respondido) não foi escrita no CLAUDE.md na hora; só no checkpoint.
+- A D-618 e a D-623 ficaram como "sem teste do Samuel" no Livro, com ele tendo dito "o girar está funcionando" e "pagina em
+  branco funciona" (09/11); corrigido no checkpoint (e a D-644 ganhou a junção no obra).
+- A D-664 foi gravada como "fica como está" quando ele disse "branco" (§4.11).
+
+## 7. Como rodar e testar
+
+- Programa (versão de teste): `D:\programas\EditorImpressao\.venv\Scripts\python.exe main.py`, de dentro de
+  `.claude\worktrees\obra-juncao`. Agentes: sempre `QT_QPA_PLATFORM=offscreen` e `LOCALAPPDATA` de teste.
+- Suíte inteira: `D:\programas\EditorImpressao\.venv\Scripts\python.exe D:\programas\EditorImpressao\rodar_suite_por_arquivo.py <raiz da cópia> <pasta de saída>`
+  — um processo por arquivo, prioridade baixa, sem janela, depois o `teste_botoes.py`; resumo em `<saída>\resumo.txt`
+  (script guardado no `fase-1` neste checkpoint).
+- GitHub: `gh workflow run "Testes no Windows" -R Samuel-Bottini-BR/EditorImpressao --ref claude/list-server-files-gkos8v -f ramo=<ramo>`.
+- Relatório da sessão nos três formatos: `relatorio.gravar(texto, destino, titulo)`; o completo leva os prints
+  (`relatorio-completo`).
+- **Testes neste checkpoint:** a suíte inteira passou no obra + girar em 10/11 (229 arquivos e `teste_botoes`, 0 falhas).
+  Depois disso só mudaram documentos.
+
+## 8. Fora do git, de propósito
+
+- Os `.pdf` dos relatórios (o `.gitignore` tira `*.pdf`); ficam só no disco.
+- No `fase-1`, arquivos antigos sem guardar, todos de antes desta sessão (ninguém decidiu guardar): relatórios e prints de
+  30/09 a 02/10 (`relatorios/conferencia-*`, `relatorios/resultados-2026-09-30/img*`, `relatorios/Editor-de-Impressao-resultados-2026-09-30.html`),
+  `relatorios/fase1-1.3-comparacao-ocr-2026-09-28/{folhas,zonas}/`, `relatorios/revisar-decisoes/rodada-*/img/`,
+  `relatorios/obra-auditoria-escolhas/`, `relatorios/obra-etapa11/`, `relatorios/testes-guiados/2026-10-28-sessao-2/sessao-2.html`
+  e `.claude/m.txt`.
+- Os resultados dos testes como o Kaique (Lusíadas, direito autoral) e a cópia `testa-girar-capa` com PDFs grandes.
+- O rascunho da Central (`central.html` v41) fica na pasta temporária da sessão; a página publicada é a fonte. Antes de
+  publicar de novo, ler a página (`Artifact read`).
+
+## 9. Próximo passo
+
+Ler as respostas novas da Central e processar as 39 de 08 e 09/11 (Livro + resposta na página, as "não entendi" com provas
+no modelo do girar); pedir ao Samuel o "sim" à ordem da fila e começar o grave 1 (fechar ao abrir "Livros recentes").
+
+---
+
+# PARTE -32 — Checkpoint de 07/11/2026: girar pronto e testado com a janela aberta, teste como o Kaique (15 erros), Central nova, /checkpoint refeito
 
 Sessão no PC, gerente Claude Opus 5.5. Checkpoint pedido pelo Samuel ("vamos dar checkpoint"). É o primeiro feito pelo
 /checkpoint novo. Foi escrito a partir da conversa salva (`falas_da_conversa.py`), do git e da Central, e não do resumo.

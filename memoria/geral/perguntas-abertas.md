@@ -9,6 +9,13 @@ Como manter: quando ele responder, registre no plano (as duas cópias) e na fich
 daqui** (ou mova para "Respondidas recentemente" com a data). O `conferir_memoria.py` avisa quando uma pergunta desta
 lista com nome entre crases já aparece como decidida no Registro.
 
+## 0000000. Atualização de 10/11/2026 (vale sobre o resto; [PARTE -33](../../historico/Editor%20de%20Impressao%20-%20resumo%20para%20o%20Claude.md) §4)
+
+- **Respondidas e construídas:** `girar-capa-teste-daqui` e `girar-capa-dividir-duas` → D-663 e D-662 (juntadas em 10/11); `cantinho-outros-casos` → D-664 (fica branco por enquanto); as 2 da gravura à mão ("1- sim 2- não entendi") e D-661 ("1- pode").
+- **Sem resposta (chat, 10/11):** a ordem da fila; o giro na tela entra agora?; "eu quero que seja rapido" é o giro?; a D-660 na mesma caixa das páginas mexidas?; trocar "não dividir esta" por "juntar esta"?
+- **Sem resposta (Central):** `perg-quadrados-brancos` (C, só A, não mexer); `perg-girar-dividir-2` (tela do Dividir; daqui/pares/ímpares).
+- **38 respostas dele de 08 a 10/11 sem processar** (39 no checkpoint; `au-d-572` resolvida) (as `n0411-*`, `a-*`, `ac-tampa`, `v-*`, `dv-211-215`, as `k0611-*` e as `au-d-*`): palavra por palavra em `relatorios/central-respostas-esperando-2026-11-10.md`.
+
 ## 000000. Atualização de 07/11/2026 (vale sobre o resto; [PARTE -32](../../historico/Editor%20de%20Impressao%20-%20resumo%20para%20o%20Claude.md) §4)
 
 - **Respondidas em 07/11 (Central):** as 15 `k0711-*` e 3 do girar → D-644 a D-653; as 7 de 06/11 de `acrescentei-27-10` → D-654 a D-658.

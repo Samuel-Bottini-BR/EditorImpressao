@@ -529,3 +529,9 @@ na Central (aba "O que você não gostou: alternativas").
 
 - **Na Lista de bugs do plano (07/11):** os 15 erros do teste como o Kaique só funções (Central `teste-kaique-funcoes`, D-646 a D-653; graves: fechou em Livros recentes, folha espremida/título que some no PDF, Automático desfaz o Tirar o fundo, e os cartões vazios da tela cheia que o Samuel subiu); a miniatura deitada na grade depois do Ctrl+Z (pré-existente); os avisos "parece em branco" que somem ao desfazer/refazer o "dividir todas"; o cantinho branco nos casos fora da D-639 (pergunta `perg-cantinho`).
 - Consertado e juntado: cantinho (D-639, `6205a813`). Consertado, não juntado: girar com a capa aberta (`girar-capa-2026-11-07`).
+
+## 10/11/2026 (PARTE -33)
+
+- **Consertados e juntados no obra:** gravura não procurada no Preto e branco escolhido à mão (D-659, testado pelo Samuel: funciona); o "Pular" não guardava a gravura (D-661, testado: funciona); trabalho por trás que sobrava do livro anterior (`45d56991`); gravura achada no tamanho errado (`f3b97c03`).
+- **Novos na Lista de bugs do plano (09-10/11):** zoom some ao trocar de ferramenta; "Desentortar aumentando a página" traz a página de fora e uma faixa pintada; marcas da folha viram manchas pretas no P&B (Fase 1); giro na tela lento, o branco gira junto, a parte de fora fica cortada ao girar de volta; quadrados brancos no Melhorar e no Mágico pro (causa: `_limpar_o_papel_de_verdade`; comparação A/B/C, pergunta na Central); Melhorar e Mágico pro quebram o "i" e o "t" (mesmo passo); página recarrega ao mudar a folha de lugar (D-615); caixinhas do Automático difíceis de clicar; D-610 não passou.
+- **Testes instáveis com o PC carregado** (não são do programa): `test_d611` da tira em pares, `test_folhear_com_o_disco_lento_nao_para_a_janela`, d621, d015, girar_na_tela, gravura_na_aba_marcar.

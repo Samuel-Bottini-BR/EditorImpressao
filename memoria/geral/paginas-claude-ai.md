@@ -126,3 +126,9 @@ Leia-me das fontes no git: [docs/plano/paginas-claude-ai/LEIA-ME.md](../../docs/
 - `rel.pergunta` (decisão final) não mostra `historico`: comentário nela vai para `resumo.paragrafos`.
 - Desenhos SVG próprios em `docs/plano/central/desenhos/` (publicados em `img/`). Foto sem legenda confunde: escrever a legenda na imagem.
 - Fotos publicadas por pasta: `cx22/`, `fr22/`, `lm22/`, `tc23/`, `pa2/`, `pa3/`, `pa4/`, `pb2/`, `pb3/`.
+
+## Central: 08 a 10/11/2026 (versões 34 a 41)
+
+- 08/11/2026: celular (nada passa da borda, abas num botão Menu), um seletor só dos 3 jeitos de ver para todas as abas, "responder de novo" guardando a resposta antiga; Quadro e Etapas numa coluna no celular (v34 a v36).
+- 09/11/2026: o comentário não se apaga ao trocar de opção (v37); respostas anteriores fechadas num botão (v38); "Ainda não entendi" conta como respondido e o número desce (v39, v40).
+- 10/11/2026: no PC o Quadro dos trabalhos não rola mais de lado; abas quebram em duas linhas (v41). Testar sempre as 9 abas em 1366, 1000, 800, 700, 360 e 300 px antes de publicar.
