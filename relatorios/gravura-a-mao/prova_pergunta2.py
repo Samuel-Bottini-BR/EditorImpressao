@@ -129,7 +129,8 @@ def main(pdf: str, pasta: str) -> None:
                     "a_marcacao_da_maquina_vale": etapas.a_marcacao_da_maquina_vale(projeto, pagina),
                     "areas_guardadas_na_pagina": len(pagina.selecao or []),
                     "mexida_a_mao": list(getattr(pagina, "mexida_a_mao", []) or []),
-                    "gravura_feita_com": bool(getattr(pagina, "gravura_feita_com", ""))})
+                    "gravura_feita_com": bool(getattr(pagina, "gravura_feita_com", "")),
+                    "gravura_achada_a_mao": bool(getattr(pagina, "gravura_achada_a_mao", False))})
         finally:
             doc.close()
         imagens[nome] = img
@@ -147,7 +148,7 @@ def main(pdf: str, pasta: str) -> None:
              "B - depois do Automatico, 'Rodar nelas tambem' (Gravuras e fotos desmarcada)",
              (40, 40, 180)),
             ("q2-c-com-cinza", c, "C - como B, com Gravuras em tons de cinza marcada", (140, 90, 30)),
-            ("q2-d-pulou", d, "D - depois do Automatico, 'Pular' a pagina mexida", (110, 60, 110))):
+            ("q2-d-pulou", d, "D - depois do Automatico, 'Pular' a pagina mexida (D-661)", (110, 60, 110))):
         cv2.imwrite(str(saida / f"{nome}.jpg"), _quadro(img, titulo, cor), [cv2.IMWRITE_JPEG_QUALITY, 84])
 
     def igual(x, y):
