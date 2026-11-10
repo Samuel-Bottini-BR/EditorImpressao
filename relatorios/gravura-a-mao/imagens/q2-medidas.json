@@ -1,0 +1,83 @@
+{
+ "A": {
+  "A_procurou": 1,
+  "A_areas_achadas": 25
+ },
+ "B": {
+  "A_procurou": 1,
+  "A_areas_achadas": 25,
+  "mexidas_que_o_automatico_pergunta": [
+   8
+  ],
+  "rodar_segundos": 41.22,
+  "procurou_depois": 0,
+  "limpar_no_livro": true,
+  "gravuras_e_fotos_ligada": false,
+  "pagina_no_automatico": [],
+  "filtro_da_pagina": "preto_e_branco",
+  "respeitar": true,
+  "cinza": false,
+  "a_marcacao_da_maquina_vale": false,
+  "areas_guardadas_na_pagina": 25,
+  "mexida_a_mao": [],
+  "gravura_feita_com": true
+ },
+ "C": {
+  "A_procurou": 1,
+  "A_areas_achadas": 25,
+  "mexidas_que_o_automatico_pergunta": [
+   8
+  ],
+  "rodar_segundos": 31.91,
+  "procurou_depois": 0,
+  "limpar_no_livro": true,
+  "gravuras_e_fotos_ligada": false,
+  "pagina_no_automatico": [],
+  "filtro_da_pagina": "preto_e_branco",
+  "respeitar": true,
+  "cinza": true,
+  "a_marcacao_da_maquina_vale": true,
+  "areas_guardadas_na_pagina": 25,
+  "mexida_a_mao": [],
+  "gravura_feita_com": true
+ },
+ "D": {
+  "A_procurou": 1,
+  "A_areas_achadas": 25,
+  "mexidas_que_o_automatico_pergunta": [
+   8
+  ],
+  "rodar_segundos": 30.95,
+  "procurou_depois": 0,
+  "limpar_no_livro": true,
+  "gravuras_e_fotos_ligada": false,
+  "pagina_no_automatico": [],
+  "filtro_da_pagina": "preto_e_branco",
+  "respeitar": true,
+  "cinza": false,
+  "a_marcacao_da_maquina_vale": false,
+  "areas_guardadas_na_pagina": 25,
+  "mexida_a_mao": [
+   "filtro"
+  ],
+  "gravura_feita_com": true
+ },
+ "D_igual_A": false,
+ "D_pontos_diferentes_de_A": 2182454,
+ "C_igual_A": true,
+ "C_pontos_diferentes_de_A": 0,
+ "B_colorido_ou_cinza_na_gravura": 0.0,
+ "procura_por_pagina_segundos": [
+  2.6,
+  2.49,
+  2.7,
+  2.62,
+  2.72,
+  2.69,
+  2.52,
+  2.37,
+  2.09
+ ],
+ "procura_media_segundos": 2.53,
+ "a_mais_em_199_paginas_segundos": 504.0
+}
