@@ -6471,6 +6471,12 @@ class TelaConferir(QWidget):
         Folha inteira: gira folhas, como antes; desde a D-638 (06/11/2026), as
         folhas DIVIDIDAS do alcance giram pagina por pagina
         (_girar_as_divididas_pagina_por_pagina).
+        D-662 (10/11/2026): no Dividir com "Duas lado a lado", numa folha
+        dividida, "todas as folhas" gira pagina por pagina pelo MESMO caminho
+        do "todas as paginas" de fora do Dividir (_girar_as_paginas, com a
+        pagina da folha da vez como referencia); os outros itens da lista ali
+        ("so esta folha", "daqui em diante", pares, impares) giram folhas,
+        como antes (a D-662 fala so do "todas as folhas").
         """
         if not self._pronta():
             return
@@ -6485,6 +6491,13 @@ class TelaConferir(QWidget):
             else:
                 self._girar_as_paginas(giro, alcance)            # D-636
             return
+        if alcance == girar.ALCANCE_TODAS:
+            # D-662: no Dividir com "Duas lado a lado", numa folha dividida,
+            # "todas as folhas" gira pagina por pagina, como fora do Dividir
+            referencia = self._pagina_da_folha_dividida_no_dividir_em_duas()
+            if referencia is not None:
+                self._girar_as_paginas(giro, alcance, referencia)
+                return
         aviso = girar.aviso_fora_do_alcance(self.indice_folha, alcance)
         if aviso:
             janela = self.window()
@@ -6616,7 +6629,7 @@ class TelaConferir(QWidget):
             girar.descricao_do_giro_da_pagina(giro, indice),
         )
 
-    def _girar_as_paginas(self, giro: int, alcance: str) -> None:
+    def _girar_as_paginas(self, giro: int, alcance: str, atual: int | None = None) -> None:
         """D-636 (Samuel, 05/11/2026, à pergunta "nessa lista, cada página
         gira sozinha, igual à da tela [...] Pode ser assim?": "1- pode ser,
         só garanta que não crie mais problemas fazendo isso"): na página de
@@ -6632,28 +6645,66 @@ class TelaConferir(QWidget):
         "só as pares" numa página ímpar (e o contrário): avisa e não gira
         (D-036, contado em páginas). Uma ação só do desfazer; o Ctrl+Z devolve
         a cada página o giro e o corte que tinha. Arriscado: pôr "rotacao" de
-        folha aqui (volta a confusão do a-70)."""
+        folha aqui (volta a confusão do a-70).
+
+        `atual`: a página da vez, de onde o alcance conta e cujo giro final
+        todas copiam (D-035). None = a da tela (self.indice_pagina), o caso
+        de sempre. A D-662 (Dividir com "Duas lado a lado", só "todas as
+        folhas") passa a página da folha dividida da tela
+        (_pagina_da_folha_dividida_no_dividir_em_duas)."""
         assert self.projeto is not None
-        aviso = girar.aviso_fora_do_alcance_das_paginas(self.indice_pagina, alcance)
+        if atual is None:
+            atual = self.indice_pagina
+        aviso = girar.aviso_fora_do_alcance_das_paginas(atual, alcance)
         if aviso:
             janela = self.window()
             if janela is not self and hasattr(janela, "avisar"):
                 janela.avisar(aviso)
             return
         paginas = self.projeto.paginas
-        indices = girar.paginas_do_alcance(self.projeto.folhas, paginas, self.indice_pagina, alcance)
-        if self.indice_pagina not in indices:
+        indices = girar.paginas_do_alcance(self.projeto.folhas, paginas, atual, alcance)
+        if atual not in indices:
             return
-        campos = girar.campos_do_giro_das_paginas(paginas, indices, giro, self.indice_pagina)
+        campos = girar.campos_do_giro_das_paginas(paginas, indices, giro, atual)
         # D-640 e a resposta "Giram também" (07/11): a folha inteira do grupo gira junto
-        alvo = self._com_as_folhas_inteiras_tambem(campos, indices, alcance)
+        alvo = self._com_as_folhas_inteiras_tambem(campos, indices, alcance, atual)
         self._registrar(
             "girar", "pagina", alvo, campos,
-            girar.descricao_do_giro_das_paginas(giro, alcance, self.indice_pagina, len(alvo)),
+            girar.descricao_do_giro_das_paginas(giro, alcance, atual, len(alvo)),
         )
 
+    def _pagina_da_folha_dividida_no_dividir_em_duas(self) -> int | None:
+        """D-662 (Samuel, Central, 10/11/2026, à pergunta "No Dividir, com
+        "Duas lado a lado", "todas as folhas": gira a folha inteira ou página
+        por página?": "Página por página também"): quando a tela é o Dividir
+        com a folha inteira à mostra (não o "Uma página", D-601) e a folha da
+        vez é DIVIDIDA, devolve a página dela que serve de página da vez para
+        o giro página por página: a da tela, se for metade dessa folha (a
+        tela anda por páginas: ir_para_pagina), senão a primeira metade da
+        folha (a esquerda). None nos outros casos (folha inteira da vez: a
+        D-638 cuida; fora do Dividir: _pagina_que_gira_sozinha cuida).
+        Só lê campos. Arriscado: devolver página fora do Dividir (mudaria o
+        girar de fora, que já está escolhido e testado) ou página de folha
+        inteira (a capa ganharia giro_da_pagina, o achado b12d6f61)."""
+        if self.projeto is None or not self.trabalha_com_folhas:
+            return None
+        if self._metade_no_dividir() is not None:
+            return None                   # "Uma página": já gira página por página
+        folhas, paginas = self.projeto.folhas, self.projeto.paginas
+        da_vez = self.indice_folha
+        if not 0 <= da_vez < len(folhas):
+            return None
+        if 0 <= self.indice_pagina < len(paginas):
+            pagina = paginas[self.indice_pagina]
+            if pagina.folha == da_vez and girar.gira_so_a_pagina(folhas[da_vez], pagina):
+                return self.indice_pagina
+        for posicao, pagina in enumerate(paginas):
+            if pagina.folha == da_vez and girar.gira_so_a_pagina(folhas[da_vez], pagina):
+                return posicao
+        return None
+
     def _com_as_folhas_inteiras_tambem(self, campos: dict, metades: list[int],
-                                       alcance: str) -> list[int]:
+                                       alcance: str, atual: int | None = None) -> list[int]:
         """D-640 (Samuel, 06/11/2026, à pergunta "Todas as páginas do livro
         giram, menos a capa inteira, que fica como está. Pode ser assim?":
         "Todas giram, mas porque a capa inteira não gira?" e "Não sei o que
@@ -6679,19 +6730,22 @@ class TelaConferir(QWidget):
         inteiras, para as prévias delas serem refeitas). A página da folha
         inteira NÃO ganha giro_da_pagina (o giro é da folha; ver
         core/girar.gira_so_a_pagina). Arriscado: girar a folha de uma metade
-        (volta o a-70)."""
+        (volta o a-70).
+        `atual`: a página da vez (None = a da tela); ver _girar_as_paginas."""
         from historico_acoes import PREFIXO_FOLHA
 
         assert self.projeto is not None
+        if atual is None:
+            atual = self.indice_pagina
         folhas, paginas = self.projeto.folhas, self.projeto.paginas
         metade = set(metades)
-        no_grupo = girar.folhas_do_alcance(len(paginas), self.indice_pagina, alcance)
+        no_grupo = girar.folhas_do_alcance(len(paginas), atual, alcance)
         inteiras = sorted({paginas[i].folha for i in no_grupo
                            if i not in metade and 0 <= paginas[i].folha < len(folhas)
                            and not girar.gira_so_a_pagina(folhas[paginas[i].folha], paginas[i])})
         if not inteiras:
             return list(metades)
-        final = campos["giro_da_pagina"][str(self.indice_pagina)]   # o da página da vez
+        final = campos["giro_da_pagina"][str(atual)]                # o da página da vez
         rotacao = {str(f): int(final) for f in inteiras}
         for chave, valor in self._com_as_paginas_que_giram_junto({"rotacao": rotacao}).items():
             if chave != "rotacao":
