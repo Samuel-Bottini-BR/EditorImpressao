@@ -1,0 +1,89 @@
+{
+ "_como": {
+  "raiz": "D:\\programas\\EditorImpressao\\.claude\\worktrees\\quadrados-origem",
+  "livro_leve": true,
+  "limpar": false,
+  "detectar_regioes": true,
+  "desfazer": false,
+  "conserto_c": true
+ },
+ "47": {
+  "gravuras_achadas": 5,
+  "regioes": [
+   [
+    "gravura",
+    "rede"
+   ],
+   [
+    "gravura",
+    "rede"
+   ],
+   [
+    "gravura",
+    "rede"
+   ],
+   [
+    "gravura",
+    "rede"
+   ],
+   [
+    "gravura",
+    "rede"
+   ],
+   [
+    "letra",
+    "rede"
+   ],
+   [
+    "letra",
+    "rede"
+   ],
+   [
+    "letra",
+    "rede"
+   ],
+   [
+    "letra",
+    "rede"
+   ],
+   [
+    "letra",
+    "rede"
+   ],
+   [
+    "letra",
+    "rede"
+   ],
+   [
+    "letra",
+    "rede"
+   ],
+   [
+    "papel",
+    "rede"
+   ],
+   [
+    "papel",
+    "rede"
+   ],
+   [
+    "papel",
+    "rede"
+   ],
+   [
+    "papel",
+    "rede"
+   ],
+   [
+    "papel",
+    "rede"
+   ]
+  ],
+  "segundos": 22.73,
+  "forma": [
+   6267,
+   4267,
+   3
+  ]
+ }
+}

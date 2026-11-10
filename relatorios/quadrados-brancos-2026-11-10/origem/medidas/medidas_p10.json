@@ -1,0 +1,47 @@
+{
+ "p10/hoje:magico_pro": {
+  "13": {
+   "tem_pintura": true,
+   "buraco_pintura_pct": 27.42,
+   "blocos": 43,
+   "tinta_sumida_pct": 2.13,
+   "papel_sujo_pct": 0.25
+  }
+ },
+ "p10/desfeita:magico_pro": {
+  "13": {
+   "tem_pintura": true,
+   "buraco_pintura_pct": 27.42,
+   "blocos": 43,
+   "tinta_sumida_pct": 2.13,
+   "papel_sujo_pct": 0.25
+  }
+ },
+ "p10/conserto_c:magico_pro": {
+  "13": {
+   "tem_pintura": true,
+   "buraco_pintura_pct": 5.82,
+   "blocos": 5,
+   "tinta_sumida_pct": 1.62,
+   "papel_sujo_pct": 0.25
+  }
+ },
+ "p10/auto_respeitar:magico_pro": {
+  "13": {
+   "tem_pintura": true,
+   "buraco_pintura_pct": 1.38,
+   "blocos": 16,
+   "tinta_sumida_pct": 0.1,
+   "papel_sujo_pct": 0.32
+  }
+ },
+ "saida/antes_sem_procurar:melhorar": {
+  "13": {
+   "tem_pintura": true,
+   "buraco_pintura_pct": 22.84,
+   "blocos": 38,
+   "tinta_sumida_pct": 2.06,
+   "papel_sujo_pct": 0.34
+  }
+ }
+}

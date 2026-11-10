@@ -1,0 +1,391 @@
+<!doctype html>
+<html lang="pt-BR">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Quadrados brancos: de onde vieram</title>
+<style>
+:root { color-scheme: light dark; }
+* { box-sizing: border-box; }
+body {
+  font: 17px/1.65 "Segoe UI", system-ui, sans-serif;
+  max-width: 46rem; margin: 0 auto; padding: 2.5rem 1.5rem 6rem;
+  color: #1c1c1e; background: #fdfdfc;
+}
+h1 { font-size: 2rem; line-height: 1.2; margin: 0 0 .3em; letter-spacing: -.02em; }
+h2 { font-size: 1.35rem; margin: 2.4em 0 .6em; padding-top: .8em;
+     border-top: 1px solid #e6e4e0; letter-spacing: -.01em; }
+h3 { font-size: 1.1rem; margin: 1.8em 0 .4em; }
+h1 + p, h2 + p { margin-top: .4em; }
+p, li { margin: 0 0 .9em; }
+ul, ol { padding-left: 1.3em; }
+strong { font-weight: 640; }
+code {
+  font: .88em ui-monospace, "Cascadia Code", Consolas, monospace;
+  background: #f1efec; padding: .12em .35em; border-radius: 4px;
+}
+pre {
+  background: #f1efec; padding: 1em 1.1em; border-radius: 8px;
+  overflow-x: auto; line-height: 1.5;
+}
+pre code { background: none; padding: 0; }
+blockquote {
+  margin: 1.2em 0; padding: .1em 0 .1em 1.1em;
+  border-left: 3px solid #c9c5be; color: #55524d;
+}
+table {
+  border-collapse: collapse; width: 100%; margin: 1.2em 0;
+  font-size: .95rem; display: block; overflow-x: auto;
+}
+th, td { padding: .5em .8em; text-align: left; border-bottom: 1px solid #e6e4e0; }
+th { font-weight: 620; background: #f7f5f2; white-space: nowrap; }
+tr:last-child td { border-bottom: none; }
+img { max-width: 100%; height: auto; border-radius: 6px; margin: 1em 0;
+      border: 1px solid #e6e4e0; }
+hr { border: none; border-top: 1px solid #e6e4e0; margin: 2.5em 0; }
+.rodape { margin-top: 4em; padding-top: 1.2em; border-top: 1px solid #e6e4e0;
+          font-size: .85rem; color: #86827c; }
+@media (prefers-color-scheme: dark) {
+  body { color: #e8e6e3; background: #1a1917; }
+  h2 { border-top-color: #35332f; }
+  code, pre, th { background: #262421; }
+  th, td { border-bottom-color: #35332f; }
+  blockquote { border-left-color: #4a4741; color: #b0aca6; }
+  img { border-color: #35332f; }
+  .rodape { border-top-color: #35332f; color: #7d7973; }
+}
+@media print {
+  body { max-width: none; padding: 0; color: #000; background: #fff; }
+  h2 { page-break-after: avoid; }
+  table, img { page-break-inside: avoid; }
+}
+</style>
+</head>
+<body>
+<h1>Quadrados brancos: de onde vieram</h1>
+<p><strong>Investigador, 10/11/2026.</strong> Só investigação: nenhuma linha do programa mudou. Rodei versões antigas
+do programa e a de hoje nas mesmas páginas, com as mesmas escolhas, em cópias dos livros, sem abrir
+janela na sua tela.</p>
+<p>A sua pergunta (Central, 10/11, "Ainda não entendi"):</p>
+<blockquote>
+<p>"Mas antes ele não fazia isso né, você tentou usar o motor do scantailor para achar gravura e onde achar
+gravura ele não deixar esses pontos brancos assim, pois eu nunca tinha visto o programa fazer isso,
+descubra que agente fez o programa começar a fazer isso, é só você ver os testes que fizemos antes com o
+melhorar e magico pro."</p>
+</blockquote>
+<h2>A resposta curta</h2>
+<ol>
+<li><strong>Você tem razão: antes o programa não fazia isso.</strong> Na versão de 26/10 (a de antes da obra, igual ao
+   programa que você testou em setembro e outubro), o Melhorar e o Mágico pro deixam as pinturas inteiras.</li>
+<li><strong>Começou na obra de 26/10, com duas etapas juntas.</strong> A etapa 1 criou a regra "sem o Automático, o
+   programa não procura a gravura". A etapa 3 fez todo livro novo abrir com o Automático desligado. Desde
+   então, o Melhorar e o Mágico pro escolhidos à mão não protegem mais a pintura.</li>
+<li><strong>A sua ideia está certa:</strong> onde o motor do ScanTailor acha a gravura, os quadrados não aparecem. Hoje,
+   nesse caminho, o motor nem é chamado.</li>
+<li><strong>Desfazendo só aquela regra, os quadrados somem</strong> e as letras finas voltam inteiras. O resultado sai
+   praticamente igual ao conserto C do verificador.</li>
+</ol>
+<p>O verificador também não errou no que mediu: o branco sai mesmo do último passo do Melhorar (a limpeza do
+papel). Mas esse passo existe desde agosto. O que mudou em 26/10 foi que a pintura deixou de ser procurada
+e protegida antes dele.</p>
+<h2>As imagens</h2>
+<p>Cada imagem tem uma faixa por situação, sempre com as mesmas cores:</p>
+<ul>
+<li><strong>azul — ANTES da mudança</strong> (versão de 26/10, commit <code>ddd4d74a</code>);</li>
+<li><strong>laranja — DEPOIS da mudança</strong> (hoje, commit <code>d9f80eb4</code>);</li>
+<li><strong>verde — só essa mudança desfeita</strong> (o programa de hoje com a regra de antes de volta; simulação em cópia);</li>
+<li><strong>roxo — conserto C do verificador</strong> (simulação em cópia, para comparar).</li>
+</ul>
+<p>Em vermelho: as pinturas com buracos brancos (o nome da página e um contorno por fora).</p>
+<h3>Resumo</h3>
+<p><img alt="0-resumo.png" src="imagens/0-resumo.png" /></p>
+<h3>A página 13 em dez versões do programa</h3>
+<p><img alt="1-bissecao-pagina-13.png" src="imagens/1-bissecao-pagina-13.png" /></p>
+<h3>Oito pinturas do livro, Melhorar</h3>
+<p><img alt="2-livro-escola-melhorar.png" src="imagens/2-livro-escola-melhorar.png" /></p>
+<h3>As mesmas oito, Mágico pro</h3>
+<p><img alt="3-livro-escola-magico-pro.png" src="imagens/3-livro-escola-magico-pro.png" /></p>
+<h3>As letras finas (o "i" e o "t")</h3>
+<p><img alt="4-letras-finas-pagina-13.png" src="imagens/4-letras-finas-pagina-13.png" /></p>
+<h3>Outro livro: Livro de Horas, página 47</h3>
+<p><img alt="5-livro-de-horas-47.png" src="imagens/5-livro-de-horas-47.png" /></p>
+<h3>A mancha do verso e o papel (Boécio)</h3>
+<p><img alt="6-boecio-mancha-do-verso.png" src="imagens/6-boecio-mancha-do-verso.png" /></p>
+<h3>Quando a gravura não é usada (o programa de antes sem a procura, e o seu print 10)</h3>
+<p><img alt="7-quando-a-gravura-nao-e-usada.png" src="imagens/7-quando-a-gravura-nao-e-usada.png" /></p>
+<h2>1. Antes o programa fazia isso? Não.</h2>
+<p><strong>Como testei.</strong> Peguei o programa como estava em cada data (do histórico do git, em cópias à parte) e fiz
+a mesma coisa em todos: abrir o <em>Na escola de Jesus</em> como livro novo, escolher o Melhorar "bem forte" (e
+depois o Mágico pro "bem fraco") na página, e desenhar a página do jeito que ela sai no PDF. Para as
+páginas saírem no mesmo enquadramento em todas as versões, deixei desligados o dividir, o endireitar e o
+cortar (o filtro não depende deles).</p>
+<p><strong>Página 13 (Jonas e a baleia), parte da pintura que virou buraco branco:</strong></p>
+<table>
+<thead>
+<tr>
+<th>versão</th>
+<th>Melhorar</th>
+<th>Mágico pro</th>
+<th>gravura achada?</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>28/09 (<code>a329166d</code>, conserto do anjo, Fase 1)</td>
+<td>0,8%</td>
+<td>0,8%</td>
+<td>sim</td>
+</tr>
+<tr>
+<td>26/10, antes da obra (<code>ddd4d74a</code> = o <code>fase-1</code>)</td>
+<td>1,4%</td>
+<td>1,4%</td>
+<td>sim</td>
+</tr>
+<tr>
+<td>hoje (<code>d9f80eb4</code>)</td>
+<td><strong>23,5%</strong></td>
+<td><strong>27,4%</strong></td>
+<td><strong>não procurada</strong></td>
+</tr>
+<tr>
+<td>hoje com só a mudança desfeita</td>
+<td>1,4%</td>
+<td>1,4%</td>
+<td>sim</td>
+</tr>
+<tr>
+<td>hoje com o conserto C</td>
+<td>1,4%</td>
+<td>1,4%</td>
+<td>sim</td>
+</tr>
+</tbody>
+</table>
+<p>O pouco que aparece "antes" (perto de 1%) é o que já é branco no original (a espuma, o brilho da água):
+olhando a imagem, a pintura está inteira.</p>
+<p><strong>Nas oito pinturas medidas</strong> (páginas 13, 18, 29, 36, 51, 66, 97 e 119), antes: de 0,5% a 3,9%; hoje: de
+9% a 29% no Melhorar e de 10% a 42% no Mágico pro.</p>
+<p><strong>No livro inteiro</strong> (199 páginas, as mesmas escolhas, medido página por página):</p>
+<table>
+<thead>
+<tr>
+<th></th>
+<th>Melhorar: páginas com buracos bem visíveis</th>
+<th>Mágico pro: idem</th>
+<th>páginas com letra quebrada</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>antes da obra (<code>ddd4d74a</code>)</td>
+<td>2</td>
+<td>2</td>
+<td>0</td>
+</tr>
+<tr>
+<td>hoje (<code>d9f80eb4</code>)</td>
+<td><strong>65</strong></td>
+<td><strong>83</strong></td>
+<td><strong>25 a 28</strong></td>
+</tr>
+<tr>
+<td>hoje com só a mudança desfeita</td>
+<td>2</td>
+<td>2</td>
+<td>0</td>
+</tr>
+</tbody>
+</table>
+<p>"Bem visíveis" = 6% ou mais da pintura em branco onde o original não era branco. Contando também os casos
+menores (2% ou mais): antes 16, hoje 115 (Melhorar) e 139 (Mágico pro), desfeita 16. As duas do "antes"
+(páginas 43 e 173) são céu claro que vai a branco liso, sem blocos: a basílica da página 43 é desenho de
+traço, e a regra da Fase 1 manda o papel de dentro dele a branco.</p>
+<p><strong>Nos testes de antes.</strong> Os testes do Melhorar e do Mágico pro que vocês fizeram (Fase 1, 28/09 a 02/10;
+conferência de 30/09, "roupa e céu do anjo" marcada BOM) foram todos com o programa de antes da obra, que
+procurava a gravura em toda página mostrada ("Procurar gravura e letra" vinha ligado). O conserto do anjo
+(bug 202, 28/09) protege o que fica <strong>dentro</strong> da gravura achada. Por isso, naquela época, não aparecia.</p>
+<h2>2. Qual mudança fez começar</h2>
+<p>A página 13 em cada versão (imagem 1) mostra exatamente onde virou:</p>
+<table>
+<thead>
+<tr>
+<th>data e hora</th>
+<th>commit</th>
+<th>o que é</th>
+<th>página 13</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>26/10, 21h06</td>
+<td><code>ddd4d74a</code></td>
+<td>o programa antes da obra</td>
+<td>inteira</td>
+</tr>
+<tr>
+<td>26/10, 21h25</td>
+<td><code>175addb7</code></td>
+<td><strong>obra, etapa 1</strong> — livro aberto como na época</td>
+<td>inteira</td>
+</tr>
+<tr>
+<td>26/10, 21h25</td>
+<td><code>175addb7</code></td>
+<td>etapa 1 — com "Limpar a folha" desmarcada</td>
+<td><strong>buracos</strong></td>
+</tr>
+<tr>
+<td>26/10, 23h17</td>
+<td><code>4d535ab6</code></td>
+<td>obra, etapa 3, só a parte de dentro</td>
+<td>inteira</td>
+</tr>
+<tr>
+<td>26/10, 23h33</td>
+<td><code>e2321b16</code></td>
+<td><strong>obra, etapa 3 — o livro abre direto na área de trabalho</strong></td>
+<td><strong>buracos</strong></td>
+</tr>
+<tr>
+<td>29/10, 03/11, 09/11, 10/11</td>
+<td><code>99a3cdc5</code>, <code>9f765d75</code>, <code>d25e2b76</code>, <code>d9f80eb4</code></td>
+<td>depois</td>
+<td>buracos</td>
+</tr>
+</tbody>
+</table>
+<p>São duas mudanças da mesma noite, que só juntas fazem o defeito aparecer:</p>
+<p><strong>A regra — etapa 1 da obra (<code>175addb7</code>, 26/10 às 21h25, ramo <code>obra-etapa1-2026-10-26</code>, agente
+Implementador da etapa 1; juntada à obra às 21h55, <code>11f9ed38</code>).</strong> O que ela queria fazer: cumprir a sua
+<strong>D-009</strong> (sessão 1 dos testes guiados, 26/10): <em>"eu deveria conseguir abrir o livro sem escolher nenhuma
+opção para fazer tudo manualmente."</em> Para isso, o agente fez o que é feito à mão valer no PDF mesmo com o
+Automático desligado. Junto, ele decidiu sozinho um detalhe (escolha técnica nº 5 do ONDE-PAREI dele,
+pela regra D-014, "obra até o fim sem pausas, os detalhes técnicos eu decido"):</p>
+<blockquote>
+<p>"filtro escolhido à mão → caminho inteiro com esse filtro e <strong>só a marcação à mão</strong> (o detector de gravura
+é automático e fica desligado)"</p>
+</blockquote>
+<p>No programa, isso é uma linha em <code>core/pipeline.py</code>, no começo de <code>garantir_selecao</code> (a função que procura
+a gravura, a letra e o papel da página). Antes era: "procura, se 'Procurar gravura e letra' estiver ligado".
+Ficou: "procura só se 'Limpar a folha' (o Automático) <strong>e</strong> 'Procurar gravura e letra' estiverem ligados".
+Isso não foi pedido por você: foi a leitura do agente de que "procurar a gravura" é coisa do Automático.</p>
+<p><strong>O caminho — etapa 3 da obra (<code>e2321b16</code>, 26/10 às 23h33, ramo <code>obra-etapa3-2026-10-26</code>, agente da
+etapa 3; juntada à versão de teste em 27/10 às 11h45, <code>427e3ae2</code>).</strong> O que ela queria fazer: cumprir a sua
+<strong>D-002</strong> (<em>"Trabalho automático = painel 'Automático' que abre e fecha [...] abrir o PDF sem mexer e rodar
+as etapas depois"</em>; o Kaique: <em>"nós tínhamos que abrir direto na área de trabalho"</em>) e o "sempre abre em
+Original, sem mexer". O livro passou a abrir direto na área de trabalho, com todas as etapas do Automático
+desligadas (inclusive "Limpar a folha"), e o filtro escolhido no painel passou a ficar marcado como "mexido
+à mão".</p>
+<p><strong>Juntas:</strong> desde 27/10, o Kaique abre um livro novo, escolhe o Melhorar ou o Mágico pro no painel, e o
+programa cai na regra da etapa 1: não procura a pintura. Sem a pintura achada, o último passo do Melhorar
+(a limpeza do papel) trata a água, o céu e as roupas claras como papel e pinta de branco, em blocos.</p>
+<p><strong>O mesmo defeito já tinha aparecido no Preto e branco</strong>, em 09/11 (página 8, print 01 da sessão 4: "todas
+aquelas mudanças que a gente tinha feito [...] respeitar gravura e tudo mais no manual não está
+funcionando"). A causa era a mesma regra. O conserto D-659 (<code>88731637</code>, 09/11) fez o programa voltar a
+procurar a gravura <strong>só no Preto e branco</strong>. O agente anotou no código: "Melhorar e Magico pro a mao nao
+procuram: a decisao fala do Preto e branco". Por isso o Melhorar e o Mágico pro ficaram de fora.</p>
+<h2>3. A sua ideia: onde o motor do ScanTailor acha a gravura, não há quadrados?</h2>
+<p><strong>Sim.</strong> O "motor do ScanTailor" é o detector de gravura que o programa usa de fábrica desde 30/09 (item
+1.2): ele olha a página e diz onde está a figura. Quando ele acha a figura, o Melhorar trata a figura como
+figura (sem a limpeza do papel por cima) e o resto como página.</p>
+<ul>
+<li><strong>Antes da obra</strong>, o motor rodava em toda página mostrada: achou a gravura em 197 das 199 páginas do
+  <em>Na escola de Jesus</em> (só as páginas 4 e 197, que são só de texto, ficaram sem). Buracos bem visíveis: só
+  2 páginas (43 e 173), as duas com gravura achada, e sem blocos (céu claro que vai a branco liso).</li>
+<li><strong>Hoje</strong>, com o Melhorar ou o Mágico pro escolhido à mão, o motor <strong>não é chamado</strong>: em nenhuma das
+  199 páginas a gravura foi procurada. Por isso os quadrados aparecem em quase toda pintura.</li>
+<li><strong>Hoje, pelo Automático</strong> com "Gravuras e fotos" ligada e "Respeitar as gravuras achadas" marcada, o
+  motor roda e os quadrados não aparecem (o verificador mediu: 0,6% na página 13).</li>
+<li><strong>O seu print 10</strong> (Mágico pro, "Respeitar as gravuras achadas" desmarcada) é outro caso: lá a gravura até
+  é achada, mas a caixinha desmarcada manda o filtro valer na página inteira (D-586, 29/10: "Desligada, o
+  filtro vale na página inteira"). Esse caso não existia antes de 29/10 (não havia a caixinha). Desfazer a
+  mudança da etapa 1 <strong>não</strong> muda o print 10; o conserto C melhora (a regra "em volta é papel" segura a maior parte). Página 13 no caso do print 10:
+  hoje 27,4% de buraco; com só a mudança desfeita, 27,4% (igual); com o conserto C, 5,8% (sobram alguns
+  perto da beirada); pelo Automático com "Respeitar" marcada, 1,4%. Imagem 7.</li>
+<li><strong>O programa de antes também fazia os buracos quando a procura estava desligada</strong>: com "Procurar
+  gravura e letra" desmarcada, a versão de 26/10 dá 22,8% na página 13 (imagem 7, faixa azul). O passo da
+  limpeza é o mesmo desde agosto; o que protegia a pintura era a procura, que de fábrica vinha ligada.</li>
+</ul>
+<h2>4. O que acontece se só aquela mudança for desfeita</h2>
+<p>Simulei, numa cópia e só dentro do processo de teste, o programa de hoje com aquela linha de volta como era
+antes de <code>175addb7</code>: a gravura volta a ser procurada sempre que "Procurar gravura e letra" está ligada (no
+livro novo ela vem ligada). Nada mais mudou.</p>
+<p><strong>O que melhora:</strong></p>
+<ul>
+<li><strong>Os quadrados somem.</strong> Página 13: de 23,5% para 1,4% (Melhorar) e de 27,4% para 1,4% (Mágico pro), o
+  mesmo número do programa de antes. Livro inteiro: de 65 e 83 páginas com buracos bem visíveis para 2 e 2, as mesmas do programa de antes.</li>
+<li><strong>As letras finas voltam inteiras</strong> (o "i" e o "t"; imagem 4). Pontos de tinta que viravam branco, fora
+  da pintura: página 13 de 2,1% para 0,1%; página 97 de 4,8% para 0,4%; página 29 de 6,7% para 0,1%.</li>
+<li><strong>Livro de Horas 47:</strong> o prédio e o céu voltam (de 2,6% para 0,1%).</li>
+<li><strong>O papel fica mais branco nas páginas de texto.</strong> No Boécio, o papel que não ia a branco (as faixas cinza
+  entre as linhas e as manchas na margem) cai de 3% a 17% da área de papel para menos de 0,5%, como no
+  programa de antes (imagem 6). A mancha do verso some igual ou melhor.</li>
+</ul>
+<p><strong>O que custa ou muda:</strong></p>
+<ul>
+<li><strong>Tempo.</strong> A primeira vez que cada página é desenhada fica mais lenta, porque o motor procura a gravura:
+  no livro inteiro, a 300 pontos por polegada, o Melhorar passou de 2,4 s para 7,7 s por página na primeira
+  vez (o programa de antes: 5,9 s), e o Mágico pro na mesma página, com a gravura já achada, de 2,3 s para
+  5,5 s (dentro da gravura o filtro faz mais conta). Da segunda vez em diante a marcação fica guardada na página. O teste de velocidade que vale é o do
+  GitHub (não rodei).</li>
+<li><strong>A procura volta em toda página mostrada</strong>, mesmo nas que ficam no Original, como era antes da obra (o
+  livro novo vem com "Procurar gravura e letra" ligado). Isso é diferente do que você disse para o Preto e
+  branco na D-659 ("não precisa procurar em todas"), e por isso é pergunta para você, não escolha minha.</li>
+<li><strong>As letras no Boécio</strong> perdem um pouco mais da beirada clara (página 33: de 5,6% para 6,3% dos pontos
+  de tinta). Olhando, continuam inteiras.</li>
+<li><strong>O print 10 continua igual</strong> (ver seção 3).</li>
+<li>Não medi: o Preto e branco à mão com "Respeitar" desmarcada, os testes do programa em <code>tests/</code>, a rodada
+  do GitHub e o gabarito inteiro.</li>
+</ul>
+<p><strong>Comparado com o conserto C do verificador:</strong> nas oito pinturas, no Livro de Horas 47 e no Boécio, o
+resultado é praticamente o mesmo (nas pinturas, diferença de no máximo 0,07 ponto percentual; nas letras do
+Boécio, até 0,35). As duas
+diferenças: (1) o C só procura a gravura nas páginas com Melhorar ou Mágico pro e "Respeitar" marcada; o
+desfazer procura em toda página; (2) o C conserta também o print 10 (caixinha desmarcada), com a regra "em
+volta é papel"; o desfazer não.</p>
+<h2>5. Pergunta para você</h2>
+<p><strong>Como o Melhorar e o Mágico pro escolhidos à mão devem voltar a proteger as pinturas?</strong> As cores são as
+das faixas das imagens.</p>
+<ul>
+<li><strong>Verde — voltar como era antes da obra.</strong> O programa volta a procurar a gravura em toda página que
+  mostra, sempre que "Procurar gravura e letra" está ligada (no livro novo ela vem ligada). É o jeito que
+  você testou em setembro e outubro. Custa uns 5 segundos a mais na primeira vez de cada página, inclusive
+  nas que ficam no Original. Não muda o caso do print 10.</li>
+<li><strong>Roxo — o conserto C do verificador.</strong> O programa procura a gravura só nas páginas com Melhorar ou Mágico
+  pro e "Respeitar as gravuras achadas" marcada (como a D-659 já faz no Preto e branco), e a regra "em volta
+  é papel" segura o resto. Nas pinturas sai igual ao verde. Conserta também a maior parte do print 10.</li>
+<li><strong>Laranja — deixar como está</strong> (com os buracos).</li>
+</ul>
+<p>Minha sugestão: o <strong>roxo</strong>, porque segue o que você disse para o Preto e branco ("não precisa procurar em
+todas") e também resolve o print 10. Mas o verde é o que já foi testado por vocês. Qualquer um dos dois é
+mudança no programa e precisa do seu "sim".</p>
+<h2>6. Como medi</h2>
+<ul>
+<li><code>scripts/rodar_versao.py</code> — desenha as páginas como saem no PDF com qualquer versão do programa
+  (<code>DESFAZER=1</code>: só a mudança desfeita; <code>CONSERTO_C=1</code>: o conserto C; <code>LIMPAR</code>, <code>PROCURAR</code>, <code>RESPEITAR</code>:
+  as caixinhas).</li>
+<li><code>scripts/rodar_amostra.sh</code> e <code>scripts/rodar_livro.sh</code> — as páginas e o livro inteiro, uma situação por vez,
+  em prioridade baixa.</li>
+<li><code>scripts/medir.py</code> — as medidas: buraco branco na pintura (pontos que saíram brancos onde o original não
+  era papel, dentro da caixa da pintura); tinta de letra que sumiu; papel que não ficou branco.</li>
+<li><code>scripts/resumir_livro.py</code>, <code>scripts/montar.py</code> (as imagens), <code>scripts/gravar_relatorio.py</code>.</li>
+<li>As medidas estão em <code>medidas/</code>.</li>
+<li>As versões antigas: <code>git worktree</code> (<code>ddd4d74a</code>, <code>175addb7</code>) e <code>git archive</code> (<code>a329166d</code>, <code>4d535ab6</code>,
+  <code>e2321b16</code>, <code>99a3cdc5</code>, <code>9f765d75</code>, <code>d25e2b76</code>), em pastas temporárias apagadas no fim.</li>
+</ul>
+<h2>7. Ressalvas</h2>
+<ol>
+<li>As simulações (desfazer e conserto C) mudam a regra só dentro do processo de teste; o programa não foi
+   tocado. Antes de entrar no programa, precisariam dos testes (<code>tests/test_decisoes*.py</code>, teste de
+   reversão), do GitHub e do gabarito.</li>
+<li>Nas versões antigas, o livro foi aberto do jeito daquela época, mas com dividir, endireitar e cortar
+   desligados, para o enquadramento ser o mesmo. O filtro não depende deles.</li>
+<li>A medida do livro inteiro é feita na cópia pequena da página (um quarto do tamanho): serve para separar
+   páginas com e sem buracos, não para comparar números finos.</li>
+<li>O "pouco" que aparece no ANTES (1% a 4%) é branco que já existe no original (espuma, brilhos, nuvens
+   claras), que a medida conta. Olhando, as pinturas estão inteiras.</li>
+</ol>
+<p class="rodape">Editor de Impressão &middot; gerado em 10/11/2026 às 19:48</p>
+</body>
+</html>

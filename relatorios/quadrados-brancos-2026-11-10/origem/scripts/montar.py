@@ -116,12 +116,13 @@ def _recorte(img: Image.Image, cx) -> Image.Image:
 
 
 def _grade(imgs: list[Image.Image], nomes: list[str], caixas: list, por_linha: int, caixa: int,
-           marcar: set[int]) -> Image.Image:
+           marcar: set[int], caixa_a: int | None = None) -> Image.Image:
     """Recortes em quadros iguais, o nome em cima; os de `marcar` (indices) com o nome em vermelho
     e um contorno vermelho por fora do recorte."""
     f_num = _fonte(28, True)
     topo, margem = 46, 20
-    cel_l, cel_a = caixa + 2 * margem, caixa + topo + 2 * margem
+    caixa_a = caixa_a or caixa
+    cel_l, cel_a = caixa + 2 * margem, caixa_a + topo + 2 * margem
     linhas = (len(imgs) + por_linha - 1) // por_linha
     img = Image.new("RGB", (cel_l * por_linha, cel_a * linhas), FUNDO)
     d = ImageDraw.Draw(img)
@@ -129,8 +130,8 @@ def _grade(imgs: list[Image.Image], nomes: list[str], caixas: list, por_linha: i
         x0, y0 = (n % por_linha) * cel_l, (n // por_linha) * cel_a
         cor = VERMELHO if n in marcar else (30, 30, 30)
         d.text((x0 + cel_l / 2, y0 + 6), nome, fill=cor, font=f_num, anchor="mt")
-        r = _caber(_recorte(pag, cx) if cx else pag, caixa, caixa)
-        px, py = x0 + (cel_l - r.width) // 2, y0 + topo + margem + (caixa - r.height) // 2
+        r = _caber(_recorte(pag, cx) if cx else pag, caixa, caixa_a)
+        px, py = x0 + (cel_l - r.width) // 2, y0 + topo + margem + (caixa_a - r.height) // 2
         img.paste(r, (px, py))
         if n in marcar:
             d.rounded_rectangle([px - 12, py - 12, px + r.width + 11, py + r.height + 11], radius=18,
@@ -140,13 +141,15 @@ def _grade(imgs: list[Image.Image], nomes: list[str], caixas: list, por_linha: i
     return img
 
 
-def _faixa(rotulo_cor, legenda: str, imgs, nomes, caixas, por_linha, caixa, marcar) -> Image.Image:
+def _faixa(rotulo_cor, legenda: str, imgs, nomes, caixas, por_linha, caixa, marcar,
+          caixa_a: int | None = None) -> Image.Image:
     rotulo, cor = rotulo_cor
-    return _empilhar([_cabeca(rotulo, cor, legenda), _grade(imgs, nomes, caixas, por_linha, caixa, marcar)],
+    return _empilhar([_cabeca(rotulo, cor, legenda),
+                      _grade(imgs, nomes, caixas, por_linha, caixa, marcar, caixa_a)],
                      espaco=6)
 
 
-def com_buraco(medidas: dict, chave: str, numero: int, limite: float = 2.0) -> bool:
+def com_buraco(medidas: dict, chave: str, numero: int, limite: float = 6.0) -> bool:
     m = medidas.get(chave, {}).get(str(numero)) or {}
     return (m.get("buraco_pintura_pct") or 0) >= limite
 
@@ -282,24 +285,60 @@ def main() -> None:
         im = _abrir(S / "horas" / versao / "melhorar_p047.png")
         ruim = com_buraco(medidas, f"horas/{versao}:melhorar", 47, 0.5)
         partes.append(_faixa(rc, frase, [im], ["página 47"], [RECORTE_47], 1, 1300,
-                             {0} if ruim else set()))
+                             {0} if ruim else set(), caixa_a=470))
     _salvar(_empilhar(partes), saida / "5-livro-de-horas-47.png", legendas,
             "Livro de Horas 47: antes, hoje, com só a mudança desfeita e com o conserto C.")
 
     # --- 6. Boecio: a mancha do verso --------------------------------------------------------------
     BOE = [3, 7, 8, 22, 33]
-    partes = [_cabeca("Mancha do verso (Boécio)", CINZA,
+    partes = [_cabeca("Mancha do verso e papel (Boécio)", CINZA,
                       "Sobre a Consolação da Filosofia (cópia), páginas 3, 7, 8, 22 e 33, Melhorar \"bem forte\" "
-                      "escolhido à mão, página inteira como sai no PDF. A limpeza da mancha do verso tem de "
-                      "continuar igual.")]
+                      "escolhido à mão, página inteira como sai no PDF, e embaixo o mesmo pedaço da página 33 "
+                      "ampliado. Em vermelho: papel que não ficou branco (manchas cinza).")]
     for versao, rc, frase in (
-            ("hoje", DEPOIS, "Como sai hoje: a mancha do verso some."),
-            ("desfeita", DESFEITA, "Só a mudança desfeita: a mancha do verso some igual."),
-            ("conserto_c", CONSERTO_C, "Conserto C: a mancha do verso some igual.")):
+            ("antes", ANTES, "Papel branco; a mancha do verso quase toda some (sobram pontinhos)."),
+            ("hoje", DEPOIS, "Sobram faixas cinza entre as linhas e manchas cinza na margem (a mancha do verso "
+                             "e o papel que não foi a branco)."),
+            ("desfeita", DESFEITA, "Papel branco e a mancha do verso some, como no ANTES."),
+            ("conserto_c", CONSERTO_C, "Igual ao \"só essa mudança desfeita\".")):
         ims = [_abrir(S / "boecio" / versao / f"melhorar_p{p:03d}.png") for p in BOE]
-        partes.append(_faixa(rc, frase, ims, [f"página {p}" for p in BOE], [None] * 5, 5, 260, set()))
+        sujas = {i for i, p in enumerate(BOE)
+                 if ((medidas.get(f"boecio/{versao}:melhorar", {}).get(str(p)) or {}).get("papel_sujo_pct") or 0) >= 2}
+        faixa = _faixa(rc, frase, ims, [f"página {p}" for p in BOE], [None] * 5, 5, 255, sujas, caixa_a=360)
+        zoom = _caber(_recorte(ims[4], (0.08, 0.25, 0.60, 0.42)), LARGURA - 80, 330)
+        partes.append(_empilhar([faixa, zoom], espaco=4))
     _salvar(_empilhar(partes), saida / "6-boecio-mancha-do-verso.png", legendas,
-            "Boécio: a mancha do verso some igual hoje, com só a mudança desfeita e com o conserto C.")
+            "Boécio: antes, hoje, com só a mudança desfeita e com o conserto C (mancha do verso e papel).")
+
+    # --- 7. quando a gravura nao e usada: o programa de antes sem a procura, e o print 10 ------------
+    p10 = json.loads((trab / "medidas_p10.json").read_text(encoding="utf-8"))
+    medidas.update(p10)
+    partes = [_cabeca("Quando a gravura não é usada (página 13)", CINZA,
+                      "Na escola de Jesus, página 13, só a pintura, como sai no PDF. Em cima, o programa de antes "
+                      "com a caixinha \"Procurar gravura e letra\" desmarcada. Embaixo, o caso do seu print 10: "
+                      "Mágico pro \"bem fraco\" com \"Limpar a folha\" do Automático e \"Respeitar as gravuras "
+                      "achadas\" DESMARCADA. Em vermelho: com buracos brancos.")]
+    casos = (
+        (("ANTES da mudança (26/10, ddd4d74a), \"Procurar gravura e letra\" desmarcada", AZUL),
+         S / "antes_sem_procurar" / "melhorar_p013.png", "saida/antes_sem_procurar:melhorar",
+         "Melhorar \"bem forte\". Sem a procura, o programa de antes também fazia os buracos: o passo da "
+         "limpeza é o mesmo. Só que de fábrica a caixinha vinha marcada."),
+        (("DEPOIS da mudança (hoje): o caso do print 10", LARANJA), S / "p10" / "hoje" / "magico_pro_p013.png",
+         "p10/hoje:magico_pro", "A gravura é achada, mas a caixinha desmarcada manda o filtro valer na página "
+                                "inteira (D-586): buracos."),
+        (("Só essa mudança desfeita: o caso do print 10", VERDE), S / "p10" / "desfeita" / "magico_pro_p013.png",
+         "p10/desfeita:magico_pro", "Igual a hoje: desfazer a mudança não muda este caso."),
+        (("Conserto C do verificador: o caso do print 10", ROXO), S / "p10" / "conserto_c" / "magico_pro_p013.png",
+         "p10/conserto_c:magico_pro", "A regra \"em volta é papel\" tira a maior parte dos buracos; sobram "
+                                      "alguns perto da beirada."),
+    )
+    for rc, arq, chave, frase in casos:
+        ruim = com_buraco(medidas, chave, 13, 4.0)
+        partes.append(_faixa(rc, frase, [_abrir(arq)], ["página 13"], [caixas[13]], 1, 1000,
+                             {0} if ruim else set(), caixa_a=430))
+    _salvar(_empilhar(partes), saida / "7-quando-a-gravura-nao-e-usada.png", legendas,
+            "Página 13: o programa de antes sem a procura da gravura, e o caso do print 10 (caixinha "
+            "\"Respeitar\" desmarcada) hoje, com só a mudança desfeita e com o conserto C.")
 
     (saida / "legendas.json").write_text(json.dumps(legendas, ensure_ascii=False, indent=1), encoding="utf-8")
     print("ok", saida)

@@ -1,0 +1,101 @@
+{
+ "_como": {
+  "raiz": "D:\\programas\\EditorImpressao\\.claude\\worktrees\\qo-trabalho\\versoes\\0928",
+  "livro_leve": false,
+  "limpar": true,
+  "detectar_regioes": true,
+  "desfazer": false,
+  "conserto_c": false
+ },
+ "47": {
+  "gravuras_achadas": 2,
+  "regioes": [
+   [
+    "gravura",
+    "rede"
+   ],
+   [
+    "gravura",
+    "rede"
+   ],
+   [
+    "letra",
+    "rede"
+   ],
+   [
+    "letra",
+    "rede"
+   ],
+   [
+    "letra",
+    "rede"
+   ],
+   [
+    "letra",
+    "rede"
+   ],
+   [
+    "letra",
+    "rede"
+   ],
+   [
+    "letra",
+    "rede"
+   ],
+   [
+    "letra",
+    "rede"
+   ],
+   [
+    "letra",
+    "rede"
+   ],
+   [
+    "letra",
+    "rede"
+   ],
+   [
+    "papel",
+    "rede"
+   ],
+   [
+    "papel",
+    "rede"
+   ],
+   [
+    "papel",
+    "rede"
+   ],
+   [
+    "papel",
+    "rede"
+   ],
+   [
+    "papel",
+    "rede"
+   ],
+   [
+    "papel",
+    "rede"
+   ],
+   [
+    "papel",
+    "rede"
+   ],
+   [
+    "papel",
+    "rede"
+   ],
+   [
+    "papel",
+    "rede"
+   ]
+  ],
+  "segundos": 45.15,
+  "forma": [
+   6267,
+   4267,
+   3
+  ]
+ }
+}

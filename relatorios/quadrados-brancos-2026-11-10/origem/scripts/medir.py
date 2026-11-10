@@ -71,6 +71,11 @@ def medir(orig: np.ndarray, out: np.ndarray) -> dict:
     borda[int(0.04 * h):-int(0.04 * h), int(0.04 * w):-int(0.04 * w)] = True
     tinta = (g < 0.65 * nivel) & fora & borda
     res["tinta_sumida_pct"] = round(100 * float((branco & tinta).sum()) / max(1, int(tinta.sum())), 2)
+    # papel que nao ficou branco: fora da pintura, longe da tinta, onde o original e papel claro
+    k = max(3, int(round(out.shape[1] / 120)) | 1)
+    perto = cv2.dilate((g < 0.65 * nivel).astype(np.uint8), np.ones((k, k), np.uint8)) > 0
+    papel = (g >= 0.75 * nivel) & ~perto & fora & borda
+    res["papel_sujo_pct"] = round(100 * float((out.min(axis=2)[papel] < 235).mean()) if papel.any() else 0.0, 2)
     return res
 
 

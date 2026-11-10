@@ -17,6 +17,8 @@ Como o livro e aberto, em cada versao:
 Ambiente:
   LIMPAR=0      versao de antes: "Limpar a folha" desmarcada no livro (so para a prova da etapa 1)
   PROCURAR=0    versao de antes: "Procurar gravura e letra" desmarcada no livro
+  LIMPAR=1      versao de hoje: "Limpar a folha" do Automatico ligado no livro (o caso do print 10)
+  RESPEITAR=0   "Respeitar as gravuras achadas" desmarcada na pagina (o caso do print 10)
   DESFAZER=1    versao de hoje: so a mudanca da etapa 1 desfeita (a procura da gravura volta a
                 depender so de "Procurar gravura e letra", como antes de 175addb7). So neste processo.
   CONSERTO_C=1  versao de hoje com o conserto C do verificador (so para comparar).
@@ -122,6 +124,8 @@ def livro_novo(pdf: str):
     if leve:
         from core import automatico
         automatico.livro_leve(projeto, tamanhos)
+        if os.environ.get("LIMPAR") == "1":         # "Limpar a folha" do Automatico ligado no livro
+            projeto.limpar = True
     else:
         from core.filtros import ORIGINAL
         from modelos import METADE_INTEIRA, ConfigFolha, ConfigPagina
@@ -147,7 +151,7 @@ def escolher_filtro(projeto, pag, filtro: str, leve: bool) -> None:
     else:
         pag.intensidade_magico = AJUSTE[filtro]
     if hasattr(pag, "respeitar_gravuras_achadas"):
-        pag.respeitar_gravuras_achadas = True
+        pag.respeitar_gravuras_achadas = os.environ.get("RESPEITAR") != "0"
     try:
         from core import etapas
         etapas.marcar_mexida_a_mao(pag, etapas.FILTRO)     # escolhido a mao no painel

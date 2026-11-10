@@ -1,0 +1,1128 @@
+{
+ "escola/v0928:melhorar": {
+  "13": {
+   "tem_pintura": true,
+   "buraco_pintura_pct": 0.76,
+   "blocos": 13,
+   "tinta_sumida_pct": 0.09
+  },
+  "18": {
+   "tem_pintura": true,
+   "buraco_pintura_pct": 0.45,
+   "blocos": 3,
+   "tinta_sumida_pct": 0.0
+  },
+  "29": {
+   "tem_pintura": true,
+   "buraco_pintura_pct": 3.12,
+   "blocos": 31,
+   "tinta_sumida_pct": 0.0
+  },
+  "36": {
+   "tem_pintura": true,
+   "buraco_pintura_pct": 1.24,
+   "blocos": 16,
+   "tinta_sumida_pct": 0.0
+  },
+  "51": {
+   "tem_pintura": true,
+   "buraco_pintura_pct": 1.47,
+   "blocos": 24,
+   "tinta_sumida_pct": 0.0
+  },
+  "66": {
+   "tem_pintura": true,
+   "buraco_pintura_pct": 0.49,
+   "blocos": 18,
+   "tinta_sumida_pct": 0.01
+  },
+  "97": {
+   "tem_pintura": true,
+   "buraco_pintura_pct": 3.4,
+   "blocos": 15,
+   "tinta_sumida_pct": 0.0
+  },
+  "119": {
+   "tem_pintura": true,
+   "buraco_pintura_pct": 3.68,
+   "blocos": 14,
+   "tinta_sumida_pct": 0.0
+  }
+ },
+ "escola/v0928:magico_pro": {
+  "13": {
+   "tem_pintura": true,
+   "buraco_pintura_pct": 0.76,
+   "blocos": 13,
+   "tinta_sumida_pct": 0.09
+  },
+  "18": {
+   "tem_pintura": true,
+   "buraco_pintura_pct": 0.45,
+   "blocos": 3,
+   "tinta_sumida_pct": 0.0
+  },
+  "29": {
+   "tem_pintura": true,
+   "buraco_pintura_pct": 3.12,
+   "blocos": 31,
+   "tinta_sumida_pct": 0.0
+  },
+  "36": {
+   "tem_pintura": true,
+   "buraco_pintura_pct": 1.24,
+   "blocos": 16,
+   "tinta_sumida_pct": 0.0
+  },
+  "51": {
+   "tem_pintura": true,
+   "buraco_pintura_pct": 1.47,
+   "blocos": 24,
+   "tinta_sumida_pct": 0.0
+  },
+  "66": {
+   "tem_pintura": true,
+   "buraco_pintura_pct": 0.5,
+   "blocos": 18,
+   "tinta_sumida_pct": 0.01
+  },
+  "97": {
+   "tem_pintura": true,
+   "buraco_pintura_pct": 3.4,
+   "blocos": 15,
+   "tinta_sumida_pct": 0.0
+  },
+  "119": {
+   "tem_pintura": true,
+   "buraco_pintura_pct": 3.68,
+   "blocos": 14,
+   "tinta_sumida_pct": 0.0
+  }
+ },
+ "escola/antes:melhorar": {
+  "13": {
+   "tem_pintura": true,
+   "buraco_pintura_pct": 1.37,
+   "blocos": 18,
+   "tinta_sumida_pct": 0.09
+  },
+  "18": {
+   "tem_pintura": true,
+   "buraco_pintura_pct": 1.04,
+   "blocos": 5,
+   "tinta_sumida_pct": 0.0
+  },
+  "29": {
+   "tem_pintura": true,
+   "buraco_pintura_pct": 2.24,
+   "blocos": 28,
+   "tinta_sumida_pct": 0.0
+  },
+  "36": {
+   "tem_pintura": true,
+   "buraco_pintura_pct": 1.53,
+   "blocos": 15,
+   "tinta_sumida_pct": 0.0
+  },
+  "51": {
+   "tem_pintura": true,
+   "buraco_pintura_pct": 3.03,
+   "blocos": 27,
+   "tinta_sumida_pct": 0.0
+  },
+  "66": {
+   "tem_pintura": true,
+   "buraco_pintura_pct": 0.48,
+   "blocos": 21,
+   "tinta_sumida_pct": 0.01
+  },
+  "97": {
+   "tem_pintura": true,
+   "buraco_pintura_pct": 3.47,
+   "blocos": 15,
+   "tinta_sumida_pct": 0.0
+  },
+  "119": {
+   "tem_pintura": true,
+   "buraco_pintura_pct": 3.87,
+   "blocos": 14,
+   "tinta_sumida_pct": 0.0
+  }
+ },
+ "escola/antes:magico_pro": {
+  "13": {
+   "tem_pintura": true,
+   "buraco_pintura_pct": 1.39,
+   "blocos": 16,
+   "tinta_sumida_pct": 0.09
+  },
+  "18": {
+   "tem_pintura": true,
+   "buraco_pintura_pct": 1.04,
+   "blocos": 5,
+   "tinta_sumida_pct": 0.0
+  },
+  "29": {
+   "tem_pintura": true,
+   "buraco_pintura_pct": 2.4,
+   "blocos": 28,
+   "tinta_sumida_pct": 0.0
+  },
+  "36": {
+   "tem_pintura": true,
+   "buraco_pintura_pct": 1.54,
+   "blocos": 15,
+   "tinta_sumida_pct": 0.0
+  },
+  "51": {
+   "tem_pintura": true,
+   "buraco_pintura_pct": 3.14,
+   "blocos": 26,
+   "tinta_sumida_pct": 0.0
+  },
+  "66": {
+   "tem_pintura": true,
+   "buraco_pintura_pct": 0.51,
+   "blocos": 20,
+   "tinta_sumida_pct": 0.01
+  },
+  "97": {
+   "tem_pintura": true,
+   "buraco_pintura_pct": 3.47,
+   "blocos": 15,
+   "tinta_sumida_pct": 0.0
+  },
+  "119": {
+   "tem_pintura": true,
+   "buraco_pintura_pct": 3.87,
+   "blocos": 14,
+   "tinta_sumida_pct": 0.0
+  }
+ },
+ "escola/hoje:melhorar": {
+  "13": {
+   "tem_pintura": true,
+   "buraco_pintura_pct": 23.45,
+   "blocos": 41,
+   "tinta_sumida_pct": 2.13
+  },
+  "18": {
+   "tem_pintura": true,
+   "buraco_pintura_pct": 18.77,
+   "blocos": 56,
+   "tinta_sumida_pct": 1.82
+  },
+  "29": {
+   "tem_pintura": true,
+   "buraco_pintura_pct": 25.49,
+   "blocos": 45,
+   "tinta_sumida_pct": 6.66
+  },
+  "36": {
+   "tem_pintura": true,
+   "buraco_pintura_pct": 23.48,
+   "blocos": 86,
+   "tinta_sumida_pct": 2.72
+  },
+  "51": {
+   "tem_pintura": true,
+   "buraco_pintura_pct": 22.82,
+   "blocos": 47,
+   "tinta_sumida_pct": 3.02
+  },
+  "66": {
+   "tem_pintura": true,
+   "buraco_pintura_pct": 9.3,
+   "blocos": 46,
+   "tinta_sumida_pct": 4.18
+  },
+  "97": {
+   "tem_pintura": true,
+   "buraco_pintura_pct": 28.68,
+   "blocos": 4,
+   "tinta_sumida_pct": 4.83
+  },
+  "119": {
+   "tem_pintura": true,
+   "buraco_pintura_pct": 21.22,
+   "blocos": 34,
+   "tinta_sumida_pct": 3.44
+  }
+ },
+ "escola/hoje:magico_pro": {
+  "13": {
+   "tem_pintura": true,
+   "buraco_pintura_pct": 27.42,
+   "blocos": 43,
+   "tinta_sumida_pct": 2.13
+  },
+  "18": {
+   "tem_pintura": true,
+   "buraco_pintura_pct": 23.52,
+   "blocos": 55,
+   "tinta_sumida_pct": 1.82
+  },
+  "29": {
+   "tem_pintura": true,
+   "buraco_pintura_pct": 41.88,
+   "blocos": 47,
+   "tinta_sumida_pct": 6.66
+  },
+  "36": {
+   "tem_pintura": true,
+   "buraco_pintura_pct": 26.17,
+   "blocos": 115,
+   "tinta_sumida_pct": 2.72
+  },
+  "51": {
+   "tem_pintura": true,
+   "buraco_pintura_pct": 27.96,
+   "blocos": 51,
+   "tinta_sumida_pct": 3.02
+  },
+  "66": {
+   "tem_pintura": true,
+   "buraco_pintura_pct": 9.85,
+   "blocos": 43,
+   "tinta_sumida_pct": 4.18
+  },
+  "97": {
+   "tem_pintura": true,
+   "buraco_pintura_pct": 33.78,
+   "blocos": 25,
+   "tinta_sumida_pct": 4.83
+  },
+  "119": {
+   "tem_pintura": true,
+   "buraco_pintura_pct": 22.51,
+   "blocos": 32,
+   "tinta_sumida_pct": 3.44
+  }
+ },
+ "escola/desfeita:melhorar": {
+  "13": {
+   "tem_pintura": true,
+   "buraco_pintura_pct": 1.37,
+   "blocos": 18,
+   "tinta_sumida_pct": 0.1
+  },
+  "18": {
+   "tem_pintura": true,
+   "buraco_pintura_pct": 1.04,
+   "blocos": 5,
+   "tinta_sumida_pct": 0.01
+  },
+  "29": {
+   "tem_pintura": true,
+   "buraco_pintura_pct": 2.24,
+   "blocos": 28,
+   "tinta_sumida_pct": 0.11
+  },
+  "36": {
+   "tem_pintura": true,
+   "buraco_pintura_pct": 1.53,
+   "blocos": 15,
+   "tinta_sumida_pct": 0.02
+  },
+  "51": {
+   "tem_pintura": true,
+   "buraco_pintura_pct": 3.03,
+   "blocos": 27,
+   "tinta_sumida_pct": 0.22
+  },
+  "66": {
+   "tem_pintura": true,
+   "buraco_pintura_pct": 0.5,
+   "blocos": 21,
+   "tinta_sumida_pct": 0.12
+  },
+  "97": {
+   "tem_pintura": true,
+   "buraco_pintura_pct": 3.47,
+   "blocos": 15,
+   "tinta_sumida_pct": 0.41
+  },
+  "119": {
+   "tem_pintura": true,
+   "buraco_pintura_pct": 3.87,
+   "blocos": 14,
+   "tinta_sumida_pct": 0.06
+  }
+ },
+ "escola/desfeita:magico_pro": {
+  "13": {
+   "tem_pintura": true,
+   "buraco_pintura_pct": 1.39,
+   "blocos": 16,
+   "tinta_sumida_pct": 0.1
+  },
+  "18": {
+   "tem_pintura": true,
+   "buraco_pintura_pct": 1.04,
+   "blocos": 5,
+   "tinta_sumida_pct": 0.01
+  },
+  "29": {
+   "tem_pintura": true,
+   "buraco_pintura_pct": 2.4,
+   "blocos": 28,
+   "tinta_sumida_pct": 0.11
+  },
+  "36": {
+   "tem_pintura": true,
+   "buraco_pintura_pct": 1.54,
+   "blocos": 15,
+   "tinta_sumida_pct": 0.02
+  },
+  "51": {
+   "tem_pintura": true,
+   "buraco_pintura_pct": 3.15,
+   "blocos": 26,
+   "tinta_sumida_pct": 0.22
+  },
+  "66": {
+   "tem_pintura": true,
+   "buraco_pintura_pct": 0.53,
+   "blocos": 20,
+   "tinta_sumida_pct": 0.12
+  },
+  "97": {
+   "tem_pintura": true,
+   "buraco_pintura_pct": 3.47,
+   "blocos": 15,
+   "tinta_sumida_pct": 0.41
+  },
+  "119": {
+   "tem_pintura": true,
+   "buraco_pintura_pct": 3.87,
+   "blocos": 14,
+   "tinta_sumida_pct": 0.06
+  }
+ },
+ "escola/conserto_c:melhorar": {
+  "13": {
+   "tem_pintura": true,
+   "buraco_pintura_pct": 1.36,
+   "blocos": 18,
+   "tinta_sumida_pct": 0.1
+  },
+  "18": {
+   "tem_pintura": true,
+   "buraco_pintura_pct": 1.04,
+   "blocos": 5,
+   "tinta_sumida_pct": 0.01
+  },
+  "29": {
+   "tem_pintura": true,
+   "buraco_pintura_pct": 2.24,
+   "blocos": 28,
+   "tinta_sumida_pct": 0.11
+  },
+  "36": {
+   "tem_pintura": true,
+   "buraco_pintura_pct": 1.53,
+   "blocos": 15,
+   "tinta_sumida_pct": 0.02
+  },
+  "51": {
+   "tem_pintura": true,
+   "buraco_pintura_pct": 3.02,
+   "blocos": 27,
+   "tinta_sumida_pct": 0.22
+  },
+  "66": {
+   "tem_pintura": true,
+   "buraco_pintura_pct": 0.43,
+   "blocos": 16,
+   "tinta_sumida_pct": 0.12
+  },
+  "97": {
+   "tem_pintura": true,
+   "buraco_pintura_pct": 3.47,
+   "blocos": 15,
+   "tinta_sumida_pct": 0.41
+  },
+  "119": {
+   "tem_pintura": true,
+   "buraco_pintura_pct": 3.87,
+   "blocos": 14,
+   "tinta_sumida_pct": 0.06
+  }
+ },
+ "escola/conserto_c:magico_pro": {
+  "13": {
+   "tem_pintura": true,
+   "buraco_pintura_pct": 1.39,
+   "blocos": 16,
+   "tinta_sumida_pct": 0.1
+  },
+  "18": {
+   "tem_pintura": true,
+   "buraco_pintura_pct": 1.04,
+   "blocos": 5,
+   "tinta_sumida_pct": 0.01
+  },
+  "29": {
+   "tem_pintura": true,
+   "buraco_pintura_pct": 2.4,
+   "blocos": 28,
+   "tinta_sumida_pct": 0.11
+  },
+  "36": {
+   "tem_pintura": true,
+   "buraco_pintura_pct": 1.54,
+   "blocos": 15,
+   "tinta_sumida_pct": 0.02
+  },
+  "51": {
+   "tem_pintura": true,
+   "buraco_pintura_pct": 3.14,
+   "blocos": 26,
+   "tinta_sumida_pct": 0.22
+  },
+  "66": {
+   "tem_pintura": true,
+   "buraco_pintura_pct": 0.47,
+   "blocos": 17,
+   "tinta_sumida_pct": 0.12
+  },
+  "97": {
+   "tem_pintura": true,
+   "buraco_pintura_pct": 3.47,
+   "blocos": 15,
+   "tinta_sumida_pct": 0.41
+  },
+  "119": {
+   "tem_pintura": true,
+   "buraco_pintura_pct": 3.87,
+   "blocos": 14,
+   "tinta_sumida_pct": 0.06
+  }
+ },
+ "saida/v0928:melhorar": {
+  "13": {
+   "tem_pintura": true,
+   "buraco_pintura_pct": 0.76,
+   "blocos": 13,
+   "tinta_sumida_pct": 0.09
+  }
+ },
+ "saida/v0928:magico_pro": {
+  "13": {
+   "tem_pintura": true,
+   "buraco_pintura_pct": 0.75,
+   "blocos": 12,
+   "tinta_sumida_pct": 0.09
+  }
+ },
+ "saida/antes:melhorar": {
+  "13": {
+   "tem_pintura": true,
+   "buraco_pintura_pct": 1.37,
+   "blocos": 18,
+   "tinta_sumida_pct": 0.09
+  }
+ },
+ "saida/antes:magico_pro": {
+  "13": {
+   "tem_pintura": true,
+   "buraco_pintura_pct": 1.38,
+   "blocos": 16,
+   "tinta_sumida_pct": 0.09
+  }
+ },
+ "saida/etapa1:melhorar": {
+  "13": {
+   "tem_pintura": true,
+   "buraco_pintura_pct": 1.37,
+   "blocos": 18,
+   "tinta_sumida_pct": 0.09
+  }
+ },
+ "saida/etapa1:magico_pro": {
+  "13": {
+   "tem_pintura": true,
+   "buraco_pintura_pct": 1.38,
+   "blocos": 16,
+   "tinta_sumida_pct": 0.09
+  }
+ },
+ "saida/etapa1_semlimpar:melhorar": {
+  "13": {
+   "tem_pintura": true,
+   "buraco_pintura_pct": 22.84,
+   "blocos": 38,
+   "tinta_sumida_pct": 2.06
+  }
+ },
+ "saida/etapa1_semlimpar:magico_pro": {
+  "13": {
+   "tem_pintura": true,
+   "buraco_pintura_pct": 26.85,
+   "blocos": 39,
+   "tinta_sumida_pct": 2.06
+  }
+ },
+ "saida/v4d535:melhorar": {
+  "13": {
+   "tem_pintura": true,
+   "buraco_pintura_pct": 1.37,
+   "blocos": 18,
+   "tinta_sumida_pct": 0.09
+  }
+ },
+ "saida/v4d535:magico_pro": {
+  "13": {
+   "tem_pintura": true,
+   "buraco_pintura_pct": 1.38,
+   "blocos": 16,
+   "tinta_sumida_pct": 0.09
+  }
+ },
+ "saida/e2321:melhorar": {
+  "13": {
+   "tem_pintura": true,
+   "buraco_pintura_pct": 22.84,
+   "blocos": 38,
+   "tinta_sumida_pct": 2.06
+  }
+ },
+ "saida/e2321:magico_pro": {
+  "13": {
+   "tem_pintura": true,
+   "buraco_pintura_pct": 26.85,
+   "blocos": 39,
+   "tinta_sumida_pct": 2.06
+  }
+ },
+ "saida/v1029:melhorar": {
+  "13": {
+   "tem_pintura": true,
+   "buraco_pintura_pct": 23.45,
+   "blocos": 41,
+   "tinta_sumida_pct": 2.13
+  }
+ },
+ "saida/v1029:magico_pro": {
+  "13": {
+   "tem_pintura": true,
+   "buraco_pintura_pct": 27.42,
+   "blocos": 43,
+   "tinta_sumida_pct": 2.13
+  }
+ },
+ "saida/v1103:melhorar": {
+  "13": {
+   "tem_pintura": true,
+   "buraco_pintura_pct": 23.45,
+   "blocos": 41,
+   "tinta_sumida_pct": 2.13
+  }
+ },
+ "saida/v1103:magico_pro": {
+  "13": {
+   "tem_pintura": true,
+   "buraco_pintura_pct": 27.42,
+   "blocos": 43,
+   "tinta_sumida_pct": 2.13
+  }
+ },
+ "saida/v1109:melhorar": {
+  "13": {
+   "tem_pintura": true,
+   "buraco_pintura_pct": 23.45,
+   "blocos": 41,
+   "tinta_sumida_pct": 2.13
+  }
+ },
+ "saida/v1109:magico_pro": {
+  "13": {
+   "tem_pintura": true,
+   "buraco_pintura_pct": 27.42,
+   "blocos": 43,
+   "tinta_sumida_pct": 2.13
+  }
+ },
+ "saida/hoje:melhorar": {
+  "13": {
+   "tem_pintura": true,
+   "buraco_pintura_pct": 23.45,
+   "blocos": 41,
+   "tinta_sumida_pct": 2.13
+  }
+ },
+ "saida/hoje:magico_pro": {
+  "13": {
+   "tem_pintura": true,
+   "buraco_pintura_pct": 27.42,
+   "blocos": 43,
+   "tinta_sumida_pct": 2.13
+  }
+ },
+ "saida/desfeita:melhorar": {
+  "13": {
+   "tem_pintura": true,
+   "buraco_pintura_pct": 1.37,
+   "blocos": 18,
+   "tinta_sumida_pct": 0.1
+  }
+ },
+ "saida/desfeita:magico_pro": {
+  "13": {
+   "tem_pintura": true,
+   "buraco_pintura_pct": 1.38,
+   "blocos": 16,
+   "tinta_sumida_pct": 0.1
+  }
+ },
+ "horas/v0928:melhorar": {
+  "47": {
+   "tem_pintura": true,
+   "buraco_pintura_pct": 0.02,
+   "blocos": 0,
+   "tinta_sumida_pct": 0.0
+  }
+ },
+ "horas/v0928:magico_pro": {
+  "47": {
+   "tem_pintura": true,
+   "buraco_pintura_pct": 0.03,
+   "blocos": 0,
+   "tinta_sumida_pct": 0.0
+  }
+ },
+ "horas/antes:melhorar": {
+  "47": {
+   "tem_pintura": true,
+   "buraco_pintura_pct": 0.01,
+   "blocos": 0,
+   "tinta_sumida_pct": 0.0
+  }
+ },
+ "horas/antes:magico_pro": {
+  "47": {
+   "tem_pintura": true,
+   "buraco_pintura_pct": 0.02,
+   "blocos": 0,
+   "tinta_sumida_pct": 0.0
+  }
+ },
+ "horas/hoje:melhorar": {
+  "47": {
+   "tem_pintura": true,
+   "buraco_pintura_pct": 2.57,
+   "blocos": 47,
+   "tinta_sumida_pct": 0.19
+  }
+ },
+ "horas/hoje:magico_pro": {
+  "47": {
+   "tem_pintura": true,
+   "buraco_pintura_pct": 2.73,
+   "blocos": 51,
+   "tinta_sumida_pct": 0.19
+  }
+ },
+ "horas/desfeita:melhorar": {
+  "47": {
+   "tem_pintura": true,
+   "buraco_pintura_pct": 0.07,
+   "blocos": 0,
+   "tinta_sumida_pct": 0.0
+  }
+ },
+ "horas/desfeita:magico_pro": {
+  "47": {
+   "tem_pintura": true,
+   "buraco_pintura_pct": 0.08,
+   "blocos": 0,
+   "tinta_sumida_pct": 0.0
+  }
+ },
+ "horas/conserto_c:melhorar": {
+  "47": {
+   "tem_pintura": true,
+   "buraco_pintura_pct": 0.07,
+   "blocos": 0,
+   "tinta_sumida_pct": 0.0
+  }
+ },
+ "horas/conserto_c:magico_pro": {
+  "47": {
+   "tem_pintura": true,
+   "buraco_pintura_pct": 0.08,
+   "blocos": 0,
+   "tinta_sumida_pct": 0.0
+  }
+ },
+ "boecio/v0928:melhorar": {
+  "3": {
+   "tem_pintura": true,
+   "buraco_pintura_pct": 20.65,
+   "blocos": 413,
+   "tinta_sumida_pct": 2.05,
+   "papel_sujo_pct": 0.07
+  },
+  "7": {
+   "tem_pintura": true,
+   "buraco_pintura_pct": 22.57,
+   "blocos": 184,
+   "tinta_sumida_pct": 2.08,
+   "papel_sujo_pct": 0.59
+  },
+  "8": {
+   "tem_pintura": true,
+   "buraco_pintura_pct": 17.82,
+   "blocos": 358,
+   "tinta_sumida_pct": 1.49,
+   "papel_sujo_pct": 0.37
+  },
+  "22": {
+   "tem_pintura": true,
+   "buraco_pintura_pct": 25.76,
+   "blocos": 305,
+   "tinta_sumida_pct": 1.96,
+   "papel_sujo_pct": 0.32
+  },
+  "33": {
+   "tem_pintura": true,
+   "buraco_pintura_pct": 14.38,
+   "blocos": 174,
+   "tinta_sumida_pct": 3.76,
+   "papel_sujo_pct": 0.39
+  }
+ },
+ "boecio/v0928:magico_pro": {
+  "3": {
+   "tem_pintura": true,
+   "buraco_pintura_pct": 21.16,
+   "blocos": 425,
+   "tinta_sumida_pct": 2.09,
+   "papel_sujo_pct": 0.06
+  },
+  "7": {
+   "tem_pintura": true,
+   "buraco_pintura_pct": 23.1,
+   "blocos": 193,
+   "tinta_sumida_pct": 2.33,
+   "papel_sujo_pct": 0.54
+  },
+  "8": {
+   "tem_pintura": true,
+   "buraco_pintura_pct": 17.9,
+   "blocos": 359,
+   "tinta_sumida_pct": 1.49,
+   "papel_sujo_pct": 0.35
+  },
+  "22": {
+   "tem_pintura": true,
+   "buraco_pintura_pct": 26.2,
+   "blocos": 317,
+   "tinta_sumida_pct": 2.32,
+   "papel_sujo_pct": 0.31
+  },
+  "33": {
+   "tem_pintura": true,
+   "buraco_pintura_pct": 14.97,
+   "blocos": 175,
+   "tinta_sumida_pct": 4.23,
+   "papel_sujo_pct": 0.37
+  }
+ },
+ "boecio/antes:melhorar": {
+  "3": {
+   "tem_pintura": true,
+   "buraco_pintura_pct": 20.65,
+   "blocos": 413,
+   "tinta_sumida_pct": 2.05,
+   "papel_sujo_pct": 0.07
+  },
+  "7": {
+   "tem_pintura": true,
+   "buraco_pintura_pct": 22.57,
+   "blocos": 184,
+   "tinta_sumida_pct": 2.08,
+   "papel_sujo_pct": 0.59
+  },
+  "8": {
+   "tem_pintura": true,
+   "buraco_pintura_pct": 17.94,
+   "blocos": 361,
+   "tinta_sumida_pct": 1.55,
+   "papel_sujo_pct": 0.05
+  },
+  "22": {
+   "tem_pintura": true,
+   "buraco_pintura_pct": 25.76,
+   "blocos": 305,
+   "tinta_sumida_pct": 2.02,
+   "papel_sujo_pct": 0.31
+  },
+  "33": {
+   "tem_pintura": true,
+   "buraco_pintura_pct": 14.38,
+   "blocos": 174,
+   "tinta_sumida_pct": 3.76,
+   "papel_sujo_pct": 0.39
+  }
+ },
+ "boecio/antes:magico_pro": {
+  "3": {
+   "tem_pintura": true,
+   "buraco_pintura_pct": 21.16,
+   "blocos": 425,
+   "tinta_sumida_pct": 2.09,
+   "papel_sujo_pct": 0.06
+  },
+  "7": {
+   "tem_pintura": true,
+   "buraco_pintura_pct": 23.1,
+   "blocos": 193,
+   "tinta_sumida_pct": 2.33,
+   "papel_sujo_pct": 0.54
+  },
+  "8": {
+   "tem_pintura": true,
+   "buraco_pintura_pct": 18.02,
+   "blocos": 362,
+   "tinta_sumida_pct": 1.55,
+   "papel_sujo_pct": 0.04
+  },
+  "22": {
+   "tem_pintura": true,
+   "buraco_pintura_pct": 26.2,
+   "blocos": 317,
+   "tinta_sumida_pct": 2.41,
+   "papel_sujo_pct": 0.3
+  },
+  "33": {
+   "tem_pintura": true,
+   "buraco_pintura_pct": 14.97,
+   "blocos": 175,
+   "tinta_sumida_pct": 4.23,
+   "papel_sujo_pct": 0.37
+  }
+ },
+ "boecio/hoje:melhorar": {
+  "3": {
+   "tem_pintura": true,
+   "buraco_pintura_pct": 19.84,
+   "blocos": 398,
+   "tinta_sumida_pct": 2.0,
+   "papel_sujo_pct": 2.71
+  },
+  "7": {
+   "tem_pintura": true,
+   "buraco_pintura_pct": 20.17,
+   "blocos": 183,
+   "tinta_sumida_pct": 3.3,
+   "papel_sujo_pct": 5.03
+  },
+  "8": {
+   "tem_pintura": true,
+   "buraco_pintura_pct": 17.27,
+   "blocos": 371,
+   "tinta_sumida_pct": 2.1,
+   "papel_sujo_pct": 3.04
+  },
+  "22": {
+   "tem_pintura": true,
+   "buraco_pintura_pct": 25.09,
+   "blocos": 314,
+   "tinta_sumida_pct": 3.21,
+   "papel_sujo_pct": 17.17
+  },
+  "33": {
+   "tem_pintura": true,
+   "buraco_pintura_pct": 12.12,
+   "blocos": 156,
+   "tinta_sumida_pct": 5.55,
+   "papel_sujo_pct": 8.16
+  }
+ },
+ "boecio/hoje:magico_pro": {
+  "3": {
+   "tem_pintura": true,
+   "buraco_pintura_pct": 20.39,
+   "blocos": 408,
+   "tinta_sumida_pct": 2.05,
+   "papel_sujo_pct": 2.55
+  },
+  "7": {
+   "tem_pintura": true,
+   "buraco_pintura_pct": 21.36,
+   "blocos": 190,
+   "tinta_sumida_pct": 3.55,
+   "papel_sujo_pct": 4.51
+  },
+  "8": {
+   "tem_pintura": true,
+   "buraco_pintura_pct": 17.63,
+   "blocos": 372,
+   "tinta_sumida_pct": 2.1,
+   "papel_sujo_pct": 2.59
+  },
+  "22": {
+   "tem_pintura": true,
+   "buraco_pintura_pct": 25.62,
+   "blocos": 322,
+   "tinta_sumida_pct": 3.59,
+   "papel_sujo_pct": 16.63
+  },
+  "33": {
+   "tem_pintura": true,
+   "buraco_pintura_pct": 12.95,
+   "blocos": 160,
+   "tinta_sumida_pct": 6.04,
+   "papel_sujo_pct": 7.71
+  }
+ },
+ "boecio/desfeita:melhorar": {
+  "3": {
+   "tem_pintura": true,
+   "buraco_pintura_pct": 21.31,
+   "blocos": 406,
+   "tinta_sumida_pct": 2.44,
+   "papel_sujo_pct": 0.05
+  },
+  "7": {
+   "tem_pintura": true,
+   "buraco_pintura_pct": 23.27,
+   "blocos": 187,
+   "tinta_sumida_pct": 3.24,
+   "papel_sujo_pct": 0.47
+  },
+  "8": {
+   "tem_pintura": true,
+   "buraco_pintura_pct": 18.1,
+   "blocos": 369,
+   "tinta_sumida_pct": 1.94,
+   "papel_sujo_pct": 0.04
+  },
+  "22": {
+   "tem_pintura": true,
+   "buraco_pintura_pct": 26.51,
+   "blocos": 312,
+   "tinta_sumida_pct": 3.37,
+   "papel_sujo_pct": 0.19
+  },
+  "33": {
+   "tem_pintura": true,
+   "buraco_pintura_pct": 14.8,
+   "blocos": 179,
+   "tinta_sumida_pct": 6.3,
+   "papel_sujo_pct": 0.27
+  }
+ },
+ "boecio/desfeita:magico_pro": {
+  "3": {
+   "tem_pintura": true,
+   "buraco_pintura_pct": 21.81,
+   "blocos": 414,
+   "tinta_sumida_pct": 2.48,
+   "papel_sujo_pct": 0.04
+  },
+  "7": {
+   "tem_pintura": true,
+   "buraco_pintura_pct": 23.77,
+   "blocos": 193,
+   "tinta_sumida_pct": 3.48,
+   "papel_sujo_pct": 0.42
+  },
+  "8": {
+   "tem_pintura": true,
+   "buraco_pintura_pct": 18.17,
+   "blocos": 369,
+   "tinta_sumida_pct": 1.94,
+   "papel_sujo_pct": 0.03
+  },
+  "22": {
+   "tem_pintura": true,
+   "buraco_pintura_pct": 26.95,
+   "blocos": 322,
+   "tinta_sumida_pct": 3.76,
+   "papel_sujo_pct": 0.18
+  },
+  "33": {
+   "tem_pintura": true,
+   "buraco_pintura_pct": 15.39,
+   "blocos": 180,
+   "tinta_sumida_pct": 6.77,
+   "papel_sujo_pct": 0.25
+  }
+ },
+ "boecio/conserto_c:melhorar": {
+  "3": {
+   "tem_pintura": true,
+   "buraco_pintura_pct": 21.31,
+   "blocos": 406,
+   "tinta_sumida_pct": 2.1,
+   "papel_sujo_pct": 0.07
+  },
+  "7": {
+   "tem_pintura": true,
+   "buraco_pintura_pct": 23.27,
+   "blocos": 187,
+   "tinta_sumida_pct": 3.23,
+   "papel_sujo_pct": 0.47
+  },
+  "8": {
+   "tem_pintura": true,
+   "buraco_pintura_pct": 18.09,
+   "blocos": 368,
+   "tinta_sumida_pct": 1.9,
+   "papel_sujo_pct": 0.04
+  },
+  "22": {
+   "tem_pintura": true,
+   "buraco_pintura_pct": 26.51,
+   "blocos": 312,
+   "tinta_sumida_pct": 3.37,
+   "papel_sujo_pct": 0.19
+  },
+  "33": {
+   "tem_pintura": true,
+   "buraco_pintura_pct": 14.8,
+   "blocos": 179,
+   "tinta_sumida_pct": 6.3,
+   "papel_sujo_pct": 0.27
+  }
+ },
+ "boecio/conserto_c:magico_pro": {
+  "3": {
+   "tem_pintura": true,
+   "buraco_pintura_pct": 21.81,
+   "blocos": 414,
+   "tinta_sumida_pct": 2.15,
+   "papel_sujo_pct": 0.06
+  },
+  "7": {
+   "tem_pintura": true,
+   "buraco_pintura_pct": 23.77,
+   "blocos": 193,
+   "tinta_sumida_pct": 3.47,
+   "papel_sujo_pct": 0.42
+  },
+  "8": {
+   "tem_pintura": true,
+   "buraco_pintura_pct": 18.17,
+   "blocos": 368,
+   "tinta_sumida_pct": 1.9,
+   "papel_sujo_pct": 0.03
+  },
+  "22": {
+   "tem_pintura": true,
+   "buraco_pintura_pct": 26.95,
+   "blocos": 322,
+   "tinta_sumida_pct": 3.76,
+   "papel_sujo_pct": 0.18
+  },
+  "33": {
+   "tem_pintura": true,
+   "buraco_pintura_pct": 15.39,
+   "blocos": 180,
+   "tinta_sumida_pct": 6.77,
+   "papel_sujo_pct": 0.25
+  }
+ }
+}
