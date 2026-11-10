@@ -1,0 +1,154 @@
+<!doctype html>
+<html lang="pt-BR">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Testes guiados 2026-11-09-sessao-4</title>
+<style>
+:root { color-scheme: light dark; }
+* { box-sizing: border-box; }
+body {
+  font: 17px/1.65 "Segoe UI", system-ui, sans-serif;
+  max-width: 46rem; margin: 0 auto; padding: 2.5rem 1.5rem 6rem;
+  color: #1c1c1e; background: #fdfdfc;
+}
+h1 { font-size: 2rem; line-height: 1.2; margin: 0 0 .3em; letter-spacing: -.02em; }
+h2 { font-size: 1.35rem; margin: 2.4em 0 .6em; padding-top: .8em;
+     border-top: 1px solid #e6e4e0; letter-spacing: -.01em; }
+h3 { font-size: 1.1rem; margin: 1.8em 0 .4em; }
+h1 + p, h2 + p { margin-top: .4em; }
+p, li { margin: 0 0 .9em; }
+ul, ol { padding-left: 1.3em; }
+strong { font-weight: 640; }
+code {
+  font: .88em ui-monospace, "Cascadia Code", Consolas, monospace;
+  background: #f1efec; padding: .12em .35em; border-radius: 4px;
+}
+pre {
+  background: #f1efec; padding: 1em 1.1em; border-radius: 8px;
+  overflow-x: auto; line-height: 1.5;
+}
+pre code { background: none; padding: 0; }
+blockquote {
+  margin: 1.2em 0; padding: .1em 0 .1em 1.1em;
+  border-left: 3px solid #c9c5be; color: #55524d;
+}
+table {
+  border-collapse: collapse; width: 100%; margin: 1.2em 0;
+  font-size: .95rem; display: block; overflow-x: auto;
+}
+th, td { padding: .5em .8em; text-align: left; border-bottom: 1px solid #e6e4e0; }
+th { font-weight: 620; background: #f7f5f2; white-space: nowrap; }
+tr:last-child td { border-bottom: none; }
+img { max-width: 100%; height: auto; border-radius: 6px; margin: 1em 0;
+      border: 1px solid #e6e4e0; }
+hr { border: none; border-top: 1px solid #e6e4e0; margin: 2.5em 0; }
+.rodape { margin-top: 4em; padding-top: 1.2em; border-top: 1px solid #e6e4e0;
+          font-size: .85rem; color: #86827c; }
+@media (prefers-color-scheme: dark) {
+  body { color: #e8e6e3; background: #1a1917; }
+  h2 { border-top-color: #35332f; }
+  code, pre, th { background: #262421; }
+  th, td { border-bottom-color: #35332f; }
+  blockquote { border-left-color: #4a4741; color: #b0aca6; }
+  img { border-color: #35332f; }
+  .rodape { border-top-color: #35332f; color: #7d7973; }
+}
+@media print {
+  body { max-width: none; padding: 0; color: #000; background: #fff; }
+  h2 { page-break-after: avoid; }
+  table, img { page-break-inside: avoid; }
+}
+</style>
+</head>
+<body>
+<h1>Teste do Samuel, 09/11/2026 (sessão 4)</h1>
+<p>Versão testada: a versão de teste (<code>obra-2026-10-26</code>), livro de 199 páginas (alexandriacatolica), página 8.</p>
+<h2>1. Preto e branco na área de trabalho estraga a gravura (15h56)</h2>
+<p>Print: <code>prints/01-manual-pb-gravura-estragada.png</code> (painel "Filtro da página", Preto e branco, "Respeitar as gravuras
+achadas" e "Gravuras em tons de cinza" ligados; a gravura sai em manchas pretas).
+Print: <code>prints/02-automatico-pb-gravura-certa.png</code> (janela do Automático, mesma página, mesmas opções: a gravura sai em
+tons de cinza, certa).</p>
+<p>Palavras dele: "acabei de achar um problema no filtro preto e branco, todas aquelas mudanças que a gente tinha feito no
+na questão de respeitar gravura e tudo mais no manual não está funcionando, isso é um grande erro, porque aconteceu?
+porque o gerente, mas como pode ver no automatico está funcionando normalmente, só ficou meio confuso essa questão do
+respeitar gavura, e só as letras fazem a mesma coisa?"</p>
+<p>Investigação da gerente (09/11, só leitura do código da versão de teste <code>obra-2026-10-26</code>):</p>
+<ul>
+<li>Causa: <code>core/etapas.py</code>, <code>marca_sozinho</code>. A procura de gravuras só roda com "Limpar a folha" ligado (o Automático
+  do filtro, no livro ou na página). Com o filtro escolhido à mão num livro que nunca passou pelo Automático
+  ("Livro novo: ainda não passou pelo automático", no print 1), a função para logo na primeira linha
+  (<code>if not limpa_sozinho(...): return False</code>), antes da "procura por dentro" que a caixinha "Gravuras em tons de
+  cinza" (P4, 02/11: "o cinza procura as figuras por conta própria") e o "Só as letras" precisam. Resultado: nenhuma
+  gravura achada, as duas caixinhas não têm o que respeitar, e a página inteira vira preto e branco.</li>
+<li>No Automático funciona porque lá "Limpar a folha" está ligado.</li>
+<li>Por que passou: as 17 provas de <code>tests/test_decisoes_gravuras_cinza.py</code> começam todas depois do Automático
+  (<code>_depois_do_automatico</code>). Nenhuma testa o livro novo com o filtro escolhido à mão. O pedido ao agente do conserto
+  de 02/11 também não citava esse caso.</li>
+<li>Pelo Livro: D-583 diz "<strong>Depois do Automático</strong>, o filtro escolhido numa página pode respeitar a marcação". Ou seja,
+  "Respeitar as gravuras achadas" sozinha, sem Automático, não tem o que respeitar (é o combinado). Já "Gravuras em
+  tons de cinza" ligada deveria achar as gravuras sozinha (P4): isso é defeito.</li>
+</ul>
+<h2>2. Mais testes (16h01 a 16h05)</h2>
+<p>Prints: <code>prints/03-endireitar-girar-duas-lado-a-lado.png</code> (Endireitar, "Duas lado a lado", páginas 8 e 9) e
+<code>prints/04-quadro-ja-feito-no-livro-todo.png</code> (quadro "JÁ FEITO NO LIVRO TODO" do Propriedades).</p>
+<p>Palavras dele (respondendo "1" à pergunta 1 da investigação acima, e depois):
+"- o girar está funcionando, mas gostaria de poder selecionar duas paginas e girar as duas ao mesmo tempo.
+- eu não mexi em nada no automatico e fica esse aviso ai do lado, para que serve? eu pedi isso?
+- as vezes quando eu mudo de ferramenta ele tira o zoom que eu tinha dado, por exemplo quando eu vou de uma ferramenta
+  para outra, principalmente quando eu vou para o cortar bordas.
+- pagina em branco funciona"</p>
+<p>Destino:
+- Girar uma página (D-618): <strong>funciona</strong> (testado pelo Samuel em 09/11).
+- Página em branco pelo botão direito (D-623): <strong>funciona</strong> (testado pelo Samuel em 09/11).
+- Girar duas páginas escolhidas ao mesmo tempo: na grade "ver todas" já existe (D-487, "Na grade, com várias páginas
+  escolhidas: girar ¼ para os dois lados"); na área de trabalho, não. Pergunta ao Samuel se quer também ali.
+- Quadro "JÁ FEITO NO LIVRO TODO": vem da D-051 (12/10, ele escolheu "B — Propriedades com duas partes: 'Só nesta
+  página' e 'Para o livro todo'") e da D-619 (04/11: o quadro só mostra o que vale para o livro todo, com o botão
+  "mudar no Automático..."). Explicado no chat.
+- Zoom que some ao trocar de ferramenta (principalmente ao ir para o Cortar as bordas): defeito novo, para a Lista de bugs.</p>
+<h2>Respostas às 2 perguntas da gravura à mão (chat, 09/11, à noite)</h2>
+<p>Palavras dele: "1- sim / 2-  não entendi"</p>
+<p>Destino:
+- Pergunta 1 ("Posso trocar um teste antigo e consertar um defeito que apareceu no caminho?"): <strong>sim</strong>. O agente
+  aplica a troca do <code>test_p195</code> e a mudança em <code>ui/tarefas.py</code> e roda os testes de novo. Anotado na Central
+  (respostas/gravura-a-mao-testes).
+- Pergunta 2 (o Automático depois do Preto e branco à mão): <strong>não entendi</strong>. A gerente explicou no chat com o caso
+  da página 8 e pediu ao agente as provas (página 8 à mão; depois do Automático sem "Gravuras e fotos"; o mesmo
+  com "Gravuras em tons de cinza"). A pergunta volta na Central com as provas.</p>
+<h2>O aviso das páginas mexidas e as rodadas do Automático (chat, 09/11, à noite)</h2>
+<p>Palavras dele:
+- "Se a pagina ou folha já tiver passado por modificações antes de entrar no automatico o automatico vai perguntar se quer mexer nela né, e se já foi procurado gravuras em uma pagina, não precisa procurar de novo."
+- "mas seria bom ter um botão para ele recalcular e procurar novamente as gravuras ou fotos, caso ele erre em alguma pagina."
+- "não, eu falei para dar um aviso, uma mensagem na tela perguntando se quer mexer nessas paginas que já foram mexidas, isso já existe no programa?"
+- "só verifica se ele vai perguntar quando eu tiver feito mudanças no manual ou até em outras rodadas de automatico"
+- "pq as vezes eu rodo automatico em só algumas paginas de filtro e depois que montar caderno em todas, o automatico tem que funcionar certo e não dar erro nessa parte."
+- "mas caso o o automatico for mudar alguma coisa que foi feito na ultima rodada ele deve perguntar."</p>
+<p>Destino:
+- O aviso existe (D-004, 28/09: "Páginas mexidas à mão", com "Pular as N" / "Rodar nelas também" / "cancelar"). Hoje vale só para o que foi feito à mão, nas etapas que vão rodar. Os 16 testes do aviso passaram (gerente, sem janela).
+- O botão de procurar de novo já existe: ferramenta Marcar, "detectar automaticamente", e menu Marcar → "Procurar de novo".
+- Perguntar também antes de mudar o que uma rodada anterior do Automático fez: decisão nova, <strong>D-660</strong> (não construída).
+- Verificador testando o caminho de hoje (filtro em algumas páginas, depois cadernos no livro todo), sem janela.
+  Relatório em <code>relatorios/automatico-mexidas-2026-11-09/</code> no ramo da versão de teste.</p>
+<h2>Prova da pergunta 2 (agente do conserto, 09/11, à noite) — defeito achado</h2>
+<p>Página 8 do <em>Na escola de Jesus</em>, sem janela, pela conta do programa (imagens em
+<code>relatorios/gravura-a-mao/imagens/q2-*.jpg</code> no ramo <code>gravura-a-mao-2026-11-09</code>):
+- (A) Preto e branco à mão com "Respeitar": gravura em cinza.
+- (B) Depois o Automático só com "Limpar a folha", respondendo "Rodar nelas também": manchas pretas (o aviso diz que passa por cima).
+- (C) O mesmo com "Gravuras em tons de cinza" marcada: igual à (A).
+- (D) O mesmo respondendo <strong>"Pular"</strong>: <strong>manchas pretas</strong>. Defeito pela D-004 ("Pular: elas ficam como você deixou").
+  A gerente tinha dito no chat que o "Pular" guardava a gravura; estava errado, e foi corrigido no chat.</p>
+<h2>Lista do que entra na versão de teste (10/11, de madrugada) e respostas dele</h2>
+<p>Palavras dele: "1- ele aplica em todas se eu mandar? 2- 3- anote para arrumar na proxima rodada - já entra na lista 4- não entendi · Quando vão entrar as outras mudanças? · e cade aquela lista que você tinha me passado de problemas que estavamos resolvendo."</p>
+<p>Destino:
+- Entram agora (depois dos testes no PC): D-659, D-661, os dois defeitos achados no caminho (trabalho por trás no livro anterior; gravura achada no tamanho errado) e a troca do teste p195.
+- Fila de consertos (a de 07/11), acrescentados para a próxima rodada: D-660 (perguntar antes de mudar o que a última rodada do Automático fez) e as caixinhas do Automático voltarem desmarcadas depois de rodar (resposta dele de 08/11, <code>n0411-caixinhas-depois-de-rodar</code>).
+- Testes que ficam instáveis no PC carregado ou em rodada longa (iguais na obra, sem o conserto): <code>test_d611</code> da tira em pares, <code>test_folhear_com_o_disco_lento_nao_para_a_janela</code>, e na rodada de 09/11 também d621, d015, girar_na_tela e gravura_na_aba_marcar. Defeito dos testes, não do programa.</p>
+<h2>Prints desta sessão</h2>
+<p><img alt="01-manual-pb-gravura-estragada.png" src="prints/01-manual-pb-gravura-estragada.png" />
+<img alt="02-automatico-pb-gravura-certa.png" src="prints/02-automatico-pb-gravura-certa.png" />
+<img alt="03-endireitar-girar-duas-lado-a-lado.png" src="prints/03-endireitar-girar-duas-lado-a-lado.png" />
+<img alt="04-quadro-ja-feito-no-livro-todo.png" src="prints/04-quadro-ja-feito-no-livro-todo.png" /></p>
+<p class="rodape">Editor de Impressão &middot; gerado em 10/11/2026 às 08:51</p>
+</body>
+</html>
