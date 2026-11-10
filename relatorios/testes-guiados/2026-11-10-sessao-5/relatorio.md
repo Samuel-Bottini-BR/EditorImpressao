@@ -54,3 +54,9 @@ Palavras dele: "acho que pode ser branca mesmo, só achei muito lento para fazer
 Destino:
 - Cor do cantinho: "acho que pode ser branca" muda a D-639 (hoje: cor do papel). A gerente pergunta antes de mudar.
 - Lentidão do giro: **Lista de bugs** (10/11), para a Fase 5. Resposta sobre a linguagem no chat.
+
+## O giro leva o branco junto (print 07, 08h44)
+
+Palavras dele: "o jeito também como ele gira, olha só, não é que nem o photoshop que vira só a imagem dele, ele gira até a parte branca da area de trablho junto."
+
+Destino: acrescentado ao item da lentidão do giro na **Lista de bugs** (10/11).
