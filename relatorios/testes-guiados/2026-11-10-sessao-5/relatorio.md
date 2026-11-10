@@ -139,3 +139,12 @@ Palavras dele: "arrumar, para passar para o lado eu tenho que ir lá embaixo na 
 Destino: feito pela gerente (os dois agentes estavam ocupados), Central **versão 41**: no PC as colunas do Quadro descem
 para a linha de baixo quando não cabem; as abas também quebram em duas linhas em vez de rolar; as Etapas cabem sem
 rolar. Testado em 1366, 1000, 800, 700, 360 e 300 px, todas as 9 abas: nada passa da borda.
+
+## Quadrados brancos: investigação pronta (agente, 10/11)
+
+Causa: o último passo do Melhorar e do Mágico pro (`core/filtros.py`, `_limpar_o_papel_de_verdade`) pinta de branco o que
+parece papel; a água, o céu e roupas claras passam, e os blocos vêm dos quadradinhos do JPEG do livro. Sai igual no PDF.
+110 páginas (Melhorar) e 112 (Mágico pro) no *Na escola de Jesus*; também Livro de Horas 47. Relatório:
+`relatorios/quadrados-brancos-2026-11-10/relatorio.html` no ramo `obra-2026-10-26` (commit `36e0b3b2`).
+
+Destino: 2 perguntas na Central, Conferência → "Quadrados brancos no Melhorar e no Mágico pro: 2 perguntas (10/11)".
