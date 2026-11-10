@@ -90,3 +90,12 @@ Página 8 do *Na escola de Jesus*, sem janela, pela conta do programa (imagens e
 - (C) O mesmo com "Gravuras em tons de cinza" marcada: igual à (A).
 - (D) O mesmo respondendo **"Pular"**: **manchas pretas**. Defeito pela D-004 ("Pular: elas ficam como você deixou").
   A gerente tinha dito no chat que o "Pular" guardava a gravura; estava errado, e foi corrigido no chat.
+
+## Lista do que entra na versão de teste (10/11, de madrugada) e respostas dele
+
+Palavras dele: "1- ele aplica em todas se eu mandar? 2- 3- anote para arrumar na proxima rodada - já entra na lista 4- não entendi · Quando vão entrar as outras mudanças? · e cade aquela lista que você tinha me passado de problemas que estavamos resolvendo."
+
+Destino:
+- Entram agora (depois dos testes no PC): D-659, D-661, os dois defeitos achados no caminho (trabalho por trás no livro anterior; gravura achada no tamanho errado) e a troca do teste p195.
+- Fila de consertos (a de 07/11), acrescentados para a próxima rodada: D-660 (perguntar antes de mudar o que a última rodada do Automático fez) e as caixinhas do Automático voltarem desmarcadas depois de rodar (resposta dele de 08/11, `n0411-caixinhas-depois-de-rodar`).
+- Testes que ficam instáveis no PC carregado ou em rodada longa (iguais na obra, sem o conserto): `test_d611` da tira em pares, `test_folhear_com_o_disco_lento_nao_para_a_janela`, e na rodada de 09/11 também d621, d015, girar_na_tela e gravura_na_aba_marcar. Defeito dos testes, não do programa.
