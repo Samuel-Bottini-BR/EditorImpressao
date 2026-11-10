@@ -73,15 +73,18 @@ investigar isso." · depois: "o erro não aparece só na pagina 13, aparece em v
 ("o que não é letra e tem cor de papel vira branco") confunde a água, o céu e as roupas claras das
 pinturas com papel, e pinta de branco; os blocos aparecem porque o arquivo do livro guarda a cor em
 quadradinhos, e a resposta "é papel / não é papel" muda de um quadradinho para o outro.</p>
-<p>Opinião: <strong>dá para consertar sem mexer no que já foi aprovado</strong>, mas é mudança de filtro e precisa
-do "sim" do Samuel. O conserto proposto (simulado, não aplicado) some com os quadrados nas 199
-páginas do <em>Na escola de Jesus</em>; no Livro de Horas ele melhora mas não resolve tudo (ressalva 2).</p>
+<p>Opinião (atualizada depois da comparação pedida pelo Samuel, seção 8): <strong>a melhor saída é a C</strong>
+(procurar a gravura no Melhorar e no Mágico pro à mão, como a D-659 faz no Preto e branco, com a regra
+"em volta é papel" como rede de segurança). Na prática a C sai igual à B quando "Respeitar" está
+marcada. A regra sozinha (A) tira os quadrados grandes, mas deixa furos nas partes claras perto da
+margem e não conserta as letras quebradas. Tudo isso é mudança de filtro: precisa do "sim" do Samuel.</p>
 <p>Imagens (no modelo de print, resumo primeiro):</p>
 <ul>
 <li><code>imagens/1-resumo-pagina-13.png</code> — página 13: Original, como sai hoje (Melhorar e Mágico pro) e como sairia consertado.</li>
 <li><code>imagens/2-previa-igual-ao-pdf.png</code> — a prévia da tela e o PDF têm os mesmos quadrados.</li>
 <li><code>imagens/3-livro-escola-melhorar.png</code> e <code>imagens/4-livro-escola-magico-pro.png</code> — oito páginas do livro, nas três situações.</li>
 <li><code>imagens/5-outro-livro-horas-47.png</code> — outro livro do acervo (Livro de Horas, página 47).</li>
+<li><code>imagens/6-comparacao-abc-melhorar.png</code> e <code>imagens/7-comparacao-abc-magico-pro.png</code> — a comparação A, B e C (seção 8).</li>
 </ul>
 <h2>1. Reprodução na página 13 (Jonas e a baleia)</h2>
 <p>Livro novo, aberto como a tela abre (sem o Automático), página 13, desenhada pelos dois caminhos do
@@ -203,7 +206,7 @@ vizinhança é a própria pintura: fica como o Melhorar a deixou.</p>
 <p>Resultado da simulação (o mesmo programa, só com esse passo trocado, num processo à parte):</p>
 <ul>
 <li><strong>Página 13:</strong> 25% da gravura em branco → 0,9% (o que sobra é a espuma, que já é branca no original).</li>
-<li><strong>Livro inteiro, Melhorar e Mágico pro:</strong> de 110 e 112 páginas com quadrados → <strong>nenhuma</strong> (a pior fica em 0,08%, abaixo do "poucos pontos").</li>
+<li><strong>Livro inteiro, Melhorar e Mágico pro:</strong> pela primeira medida, de 110 e 112 páginas com quadrados → nenhuma. <strong>Correção (seção 8):</strong> essa medida só olhava a pintura de tom médio; com uma segunda medida, que olha também as partes claras (céu, nuvens), o A ainda deixa furos em 48 páginas no Melhorar e 92 no Mágico pro (hoje: 113 e 136). Os furos que sobram ficam no céu claro perto da margem (páginas 97, 99, 119).</li>
 <li><strong>Páginas sem quadrados hoje:</strong> mudam pouco, e para melhor: roupas e lençóis brancos das pinturas (páginas 163, 71) passam a guardar a sombra em vez de virar branco chapado.</li>
 <li><strong>Boécio (mancha do verso, páginas 3, 7, 8, 22 e 33):</strong> muda de 0% a 0,4% da página; a mancha do verso some igual. A primeira versão do conserto (sem o "ou traço") deixava a xilogravura da página 3 mais cinza; a versão com o "ou traço" não.</li>
 <li><strong>Livro de Horas 47:</strong> melhora mas não resolve: o prédio volta, ficam riscos brancos nas colunas e na roupa clara da esquerda (a miniatura tem traço fino, e o "ou traço" deixa limpar ali).</li>
@@ -247,6 +250,265 @@ nesta investigação, sem rodar as 32 páginas do gabarito.</p>
 <code>scripts/partes.py</code> (as três perguntas), <code>scripts/varrer.py</code> (livro inteiro), <code>scripts/medir_miniaturas.py</code>
 (a medida por página), <code>scripts/candidato.py</code> (o conserto simulado; <code>CANDIDATO=1</code>), <code>scripts/montar.py</code>
 (as imagens). As medidas por página estão em <code>medidas/</code>.</p>
-<p class="rodape">Editor de Impressão &middot; gerado em 10/11/2026 às 09:45</p>
+<h2>8. Comparação A, B e C (pedido do Samuel, 10/11: "faça um teste com os dois para ver qual se sai melhor")</h2>
+<p>As três saídas foram simuladas em script, pela mesma conta do programa (o corpo do PDF,
+<code>core.pipeline._pagina_pronta</code>, 300 DPI). Livro novo, filtro escolhido à mão e "Respeitar" marcada.
+Nenhuma linha do programa mudou.</p>
+<ul>
+<li><strong>A</strong> — a regra "em volta é papel" no último passo (seção 4), sem procurar a gravura.</li>
+<li><strong>B</strong> — o Melhorar e o Mágico pro à mão procuram a gravura como a D-659 faz no Preto e branco
+  (<code>core/etapas.py</code>, <code>respeitar_procura</code> valendo também nesses dois filtros), e a gravura achada fica
+  protegida. A regra de hoje não muda. A procura é a de sempre do programa (<code>garantir_selecao</code>).</li>
+<li><strong>C</strong> — os dois juntos.</li>
+</ul>
+<h3>Em uma frase</h3>
+<p><strong>O B (e o C, que sai igual a ele) se sai muito melhor que o A.</strong> Some com os quadrados, deixa o céu claro
+inteiro e ainda conserta as letras que o Melhorar de hoje quebra. O preço é tempo: cerca de 4 s a mais
+na primeira vez que cada página é desenhada. Minha escolha é a <strong>C</strong>: é o B, mais a regra como rede de
+segurança para quando a caixinha está desmarcada (o print 10) ou quando a procura não acha a pintura.</p>
+<h3>1. <em>Na escola de Jesus</em> inteiro (199 páginas)</h3>
+<p>Primeira medida: pintura de tom médio que virou branco, a mesma das seções 3 e 4.</p>
+<table>
+<thead>
+<tr>
+<th></th>
+<th>Melhorar "bem forte"</th>
+<th>Mágico pro "bem fraco"</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>hoje</td>
+<td>110 páginas (32 muito, 47 visível, 31 poucos pontos)</td>
+<td>112 (34, 50, 28)</td>
+</tr>
+<tr>
+<td>A</td>
+<td>0</td>
+<td>0</td>
+</tr>
+<tr>
+<td>B</td>
+<td>2 (119 visível, 68 poucos pontos)</td>
+<td>2 (as mesmas)</td>
+</tr>
+<tr>
+<td>C</td>
+<td>2 (as mesmas)</td>
+<td>2 (as mesmas)</td>
+</tr>
+</tbody>
+</table>
+<p>Segunda medida, que também vê as partes claras da pintura (céu, nuvens): dentro da caixa da pintura,
+os pontos que viraram branco puro onde o original não era branco de papel. A primeira medida não via
+isso: é a correção da seção 4.</p>
+<table>
+<thead>
+<tr>
+<th>páginas com furo de 2% ou mais (de 0,5% ou mais)</th>
+<th>Melhorar</th>
+<th>Mágico pro</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>hoje</td>
+<td>113 (154)</td>
+<td>136 (169)</td>
+</tr>
+<tr>
+<td>A</td>
+<td>48 (100)</td>
+<td>92 (139)</td>
+</tr>
+<tr>
+<td>B</td>
+<td>16 (68)</td>
+<td>16 (67)</td>
+</tr>
+<tr>
+<td>C</td>
+<td>16 (68)</td>
+<td>16 (67)</td>
+</tr>
+</tbody>
+</table>
+<p>As 16 do B e do C, olhadas uma a uma, são quase todas brilhos que já são brancos no original e o papel
+de dentro de desenho de traço (a basílica da página 43), que deve mesmo ficar branco. A pior de verdade é
+a 173 (o céu em volta dos anjos). O A deixa furos no céu claro perto da margem: páginas 97, 99, 119.</p>
+<p><strong>As letras:</strong> o Melhorar e o Mágico pro de hoje quebram o "i" e o "t" finos, e o A não muda isso (é o
+mesmo passo; em volta da letra é papel). O B e o C não quebram, porque a letra achada recebe o
+tratamento de letra. Tinta da letra que virou branco:</p>
+<ul>
+<li>página 13: hoje 1,2%, A 1,2%, B e C 0,0%</li>
+<li>página 97: hoje 4,1%, A 4,1%, B e C 0,4%</li>
+<li>página 119: hoje 1,1%, A 1,1%, B e C 0,0%</li>
+</ul>
+<p>Na miniatura, "Assim" vira "Ass m".</p>
+<p><strong>B e C, um contra o outro:</strong> nas 199 páginas, nenhuma difere em mais de 0,05% dos pontos. Com a
+gravura achada em 197 páginas (só as páginas 4 e 197, de texto, ficam sem), a regra do C quase não
+tem onde agir.</p>
+<h3>2. Livro de Horas, página 47</h3>
+<table>
+<thead>
+<tr>
+<th></th>
+<th>hoje</th>
+<th>A</th>
+<th>B</th>
+<th>C</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>branco na pintura (medida 1)</td>
+<td>1,10% (113 blocos)</td>
+<td>0,51% (55)</td>
+<td>0,04% (3)</td>
+<td>0,04% (3)</td>
+</tr>
+</tbody>
+</table>
+<p>Olhado: hoje e A deixam riscos brancos nas colunas e no prédio; <strong>B e C deixam a pintura inteira</strong>,
+com o céu e o prédio de trás.</p>
+<h3>3. Páginas do gabarito com gravura (Melhorar; o Mágico pro dá os mesmos números)</h3>
+<table>
+<thead>
+<tr>
+<th>página</th>
+<th>hoje</th>
+<th>A</th>
+<th>B</th>
+<th>C</th>
+<th>olhado</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>Escola 7</td>
+<td>1,37</td>
+<td>0,20</td>
+<td>0,01</td>
+<td>0,01</td>
+<td>B/C inteiros</td>
+</tr>
+<tr>
+<td>Escola 35</td>
+<td>1,25</td>
+<td>0,25</td>
+<td>0,02</td>
+<td>0,02</td>
+<td>B/C inteiros</td>
+</tr>
+<tr>
+<td>Palatino 5 (retrato)</td>
+<td>1,27</td>
+<td>1,26</td>
+<td>5,17</td>
+<td>5,16</td>
+<td>hoje e A: pontinhos brancos no retrato; B/C: papel branco entre os traços, como pede a regra da Fase 1 (o número sobe porque esse papel vai a branco)</td>
+</tr>
+<tr>
+<td>Palatino 9</td>
+<td>1,82</td>
+<td>1,77</td>
+<td>1,57</td>
+<td>1,53</td>
+<td>parecidos</td>
+</tr>
+<tr>
+<td>Horas 11 / 13</td>
+<td>0 / 0,10</td>
+<td>0 / 0,08</td>
+<td>0,01 / 0,07</td>
+<td>0,01 / 0,06</td>
+<td>parecidos</td>
+</tr>
+<tr>
+<td>Rhetorica 73</td>
+<td>0,10</td>
+<td>0,06</td>
+<td>13,99</td>
+<td>13,97</td>
+<td>hoje e A: papel continua bege (a limpeza não roda nessa página); B/C: papel branco, mas com <strong>contorno bege em volta das letras</strong></td>
+</tr>
+<tr>
+<td>Opus 3 / 165 / 256</td>
+<td>0,17 / 0,18 / 0,88</td>
+<td>igual a hoje</td>
+<td>0,17 / 0 / 0,13</td>
+<td>igual ao B</td>
+<td>parecidos</td>
+</tr>
+<tr>
+<td>Opus 20 (foto)</td>
+<td>0</td>
+<td>0</td>
+<td>0,04</td>
+<td>0,04</td>
+<td>parecidos</td>
+</tr>
+</tbody>
+</table>
+<h3>4. Boécio (mancha do verso)</h3>
+<p>Páginas 3, 7, 8, 22 (gabarito) e 33. No B e no C a limpeza <strong>não piora</strong>: vai a branco um pouco mais do
+que hoje (página 33: 4,5% → 5,4% da página), e a mancha do verso some igual, olhado. No A, quase igual a
+hoje (0% a 0,4% da página muda).</p>
+<h3>5. Tempo por página a 300 DPI</h3>
+<p>Medido alternado, girando a ordem: páginas 13, 8, 27, 119 e 6. Melhorar com duas rodadas (10 medidas
+cada); Mágico pro com uma (5 medidas cada). Nenhum outro processo meu rodando, mas o Samuel estava
+usando o PC.</p>
+<table>
+<thead>
+<tr>
+<th></th>
+<th>hoje</th>
+<th>A</th>
+<th>B</th>
+<th>C</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>Melhorar</td>
+<td>1,51 s</td>
+<td>1,68 s</td>
+<td>5,95 s</td>
+<td>5,83 s</td>
+</tr>
+<tr>
+<td>Mágico pro</td>
+<td>1,91 s</td>
+<td>1,73 s</td>
+<td>6,25 s</td>
+<td>6,20 s</td>
+</tr>
+</tbody>
+</table>
+<p>O A fica dentro do ruído. O B e o C custam uns <strong>4,4 s a mais por página</strong>, que é a procura da gravura,
+feita aqui do zero em cada medida. No programa a marcação achada fica guardada na página, então os
+desenhos seguintes não deveriam pagar de novo (não medi isso). O teste de velocidade que vale é o do GitHub.</p>
+<h3>6. O caso do print 10 (caixinha desmarcada)</h3>
+<p>No <strong>B</strong>, com "Respeitar" desmarcada, nada é procurado (D-586: "Desligada, o filtro vale na página
+inteira"): a página sai <strong>igual a hoje, com os quadrados</strong>. Medido na página 13, Mágico pro: 5,95%,
+o mesmo de hoje. No <strong>C</strong>, a regra segura: sai como o A (0,21%).</p>
+<h3>Opinião e ressalvas</h3>
+<ul>
+<li><strong>Melhor: C</strong> (na prática B + rede de segurança). Conserta os quadrados, o céu claro, as letras
+  quebradas, a página 47 das Horas e o papel de dentro do retrato do Palatino.</li>
+<li><strong>O B e o C mudam a cara de toda página com Melhorar ou Mágico pro à mão e "Respeitar" marcada,
+  não só a das pinturas.</strong> As letras ficam com o tom do original, menos "escurecidas"; o papel em volta
+  da letra vai a branco; a gravura fica com o tratamento da gravura. É o mesmo resultado que esses
+  filtros já dão depois do Automático com a gravura achada. Nas 199 páginas, C e A diferem em 11,6% dos
+  pontos em média no Melhorar e 6% no Mágico pro. Pela D-605 isso é pergunta para o Samuel.</li>
+<li>Rhetorica 73 no B/C: papel branco com contorno bege nas letras. Hoje o papel fica todo bege.</li>
+<li>O B só vale com "Respeitar" marcada. É a D-659 estendida a dois filtros novos: decisão do Samuel.</li>
+<li>Tudo é simulação (<code>scripts/reproduzir.py</code>, <code>instalar_b</code>; <code>scripts/candidato.py</code>; <code>scripts/comparar_paginas.py</code>;
+  <code>scripts/tempo.py</code>; <code>scripts/medir_pintura.py</code>), sem teste em <code>tests/</code> nem rodada do GitHub.</li>
+<li>As letras quebradas do Melhorar de hoje são um <strong>achado novo</strong> desta comparação: vêm do mesmo passo
+  (<code>_limpar_o_papel_de_verdade</code>). Sem esse passo, a página 13 sai com as letras inteiras. Vale também
+  como bug para a Lista.</li>
+</ul>
+<p class="rodape">Editor de Impressão &middot; gerado em 10/11/2026 às 11:15</p>
 </body>
 </html>

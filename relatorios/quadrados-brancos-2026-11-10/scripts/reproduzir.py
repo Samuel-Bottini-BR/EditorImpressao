@@ -39,9 +39,35 @@ VARIANTES = {
     "magico_fraco_sem_respeitar_auto": ("magico_pro", 0, False, True),
     "melhorar_forte_respeitar_auto": ("melhorar", 100, True, True),
     "magico_fraco_respeitar_auto": ("magico_pro", 0, True, True),
+    "magico_fraco_respeitar": ("magico_pro", 0, True, False),
     "melhorar_normal": ("melhorar", 50, True, False),
     "magico_normal": ("magico_pro", 50, True, False),
 }
+
+
+def instalar_b() -> None:
+    """Saida B (simulacao, so neste processo): a "Respeitar as gravuras achadas" do filtro
+    escolhido A MAO faz a pagina procurar a gravura tambem no Melhorar e no Magico pro, como a
+    D-659 faz no Preto e branco (core.etapas.respeitar_procura). Mesma conta da funcao original,
+    so trocando a ultima linha (o filtro) para os tres filtros. A deteccao e a de sempre
+    (core.pipeline.garantir_selecao)."""
+    from core.filtros import MAGICO_PRO, MELHORAR, PRETO_E_BRANCO
+
+    original = etapas.respeitar_procura
+
+    def respeitar_procura_b(projeto, pagina=None):
+        if pagina is None:
+            return False
+        if getattr(pagina, "filtro", None) in (MELHORAR, MAGICO_PRO):
+            filtro = pagina.filtro
+            pagina.filtro = PRETO_E_BRANCO          # a mesma conta, como se fosse Preto e branco
+            try:
+                return original(projeto, pagina)
+            finally:
+                pagina.filtro = filtro
+        return original(projeto, pagina)
+
+    etapas.respeitar_procura = respeitar_procura_b
 
 
 def livro_novo(pdf: str) -> Projeto:
@@ -92,6 +118,8 @@ def main() -> None:
     sem_limpeza = os.environ.get("SEM_LIMPEZA") == "1"
     if sem_limpeza:     # prova da causa: tira so o ultimo passo dos dois filtros
         F._limpar_o_papel_de_verdade = lambda original, saida, dentro_da_gravura=False: saida
+    if os.environ.get("SIM_B") == "1":       # saida B: a D-659 valendo tambem no Melhorar e no Magico pro
+        instalar_b()
     if os.environ.get("CANDIDATO") == "1":   # o conserto candidato (so neste processo)
         sys.path.insert(0, str(AQUI))
         import candidato

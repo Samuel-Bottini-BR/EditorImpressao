@@ -40,6 +40,8 @@ def main():
     saida.mkdir(parents=True, exist_ok=True)
     pdf, variante = sys.argv[2], sys.argv[3]
     paginas = [int(v) for v in sys.argv[4].split(",")] if len(sys.argv) > 4 else None
+    if os.environ.get("SIM_B") == "1":
+        R.instalar_b()
     if os.environ.get("CANDIDATO") == "1":
         import candidato
         candidato.instalar()
@@ -58,7 +60,10 @@ def main():
             if orig.shape[:2] != img.shape[:2]:
                 orig = cv2.resize(orig, (img.shape[1], img.shape[0]), interpolation=cv2.INTER_AREA)
             pct, blocos, nao_papel = medir(orig, img)
-            res[numero] = {"branco_em_pintura_pct": pct, "blocos": blocos, "pintura_pct": nao_papel}
+            sel = pag.selecao or []
+            gravuras = sum(1 for r in sel if isinstance(r, dict) and r.get("tipo") == "gravura")
+            res[numero] = {"branco_em_pintura_pct": pct, "blocos": blocos, "pintura_pct": nao_papel,
+                           "gravuras_achadas": gravuras, "segundos": round(time.monotonic() - t, 2)}
             pequena = cv2.resize(img, (img.shape[1] // 4, img.shape[0] // 4), interpolation=cv2.INTER_AREA)
             cv2.imwrite(str(saida / f"{variante}_p{numero:03d}.jpg"), pequena, [cv2.IMWRITE_JPEG_QUALITY, 85])
             print(numero, res[numero], f"{time.monotonic() - t:.1f}s", flush=True)

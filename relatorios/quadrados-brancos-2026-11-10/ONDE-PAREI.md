@@ -58,3 +58,10 @@ sai com buracos brancos quadrados — na tela e no PDF. Ver o relatório.
    "Respeitar" está marcada, como o Preto e branco (D-659)?
 
 Entregue à gerente em 10/11/2026.
+
+## Comparação A, B e C (pedido do Samuel, 10/11: "faça um teste com os dois para ver qual se sai melhor")
+
+Feita e entregue (seção 8 do relatório; imagens 6 e 7). Vencedor: C (= B na prática, com a regra como
+rede de segurança). Achado novo: o Melhorar/Mágico pro de hoje quebra o "i" e o "t" finos (mesmo passo);
+B e C consertam. Correção: a primeira medida não via o céu claro; o A sozinho deixa furos em 48 páginas
+(Melhorar) e 92 (Mágico pro).
