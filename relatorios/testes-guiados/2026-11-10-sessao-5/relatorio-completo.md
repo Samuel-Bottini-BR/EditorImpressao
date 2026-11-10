@@ -92,6 +92,93 @@ Correção dele sobre o print 08: "esse print você leu errado, o que eu quis mo
 
 Destino: texto do item corrigido na **Lista de bugs** (as duas cópias).
 
+## Quadrados brancos no Melhorar e no Mágico pro (prints 09 e 10, 08h53 e 08h55)
+
+Palavras dele: "anotar erro do filtro melhorar, ele deixa a imagem pixelada, olha esses quadrados brancos. também acontece no automatico e no magico pro, pode colocar um agente para investigar isso."
+
+- Print 09: *Na escola de Jesus*, página 13 (Jonas e a baleia), Melhorar, "Clareza do fundo: bem forte", "Respeitar as
+  gravuras achadas" marcada: quadrados brancos nas partes claras da gravura.
+- Print 10: janela do Automático, Mágico pro "bem fraco", mesma página: os mesmos quadrados no "depois".
+
+Destino: **Lista de bugs** (10/11). Agente investigador: pedido; entra quando um dos 2 agentes de agora terminar (limite de 2).
+
+Mais uma frase dele: "o erro não aparece só na pagina 13, aparece em varias." Destino: repassada ao agente investigador
+(medir o livro inteiro).
+
+## Gravura à mão e "Pular" (D-659, D-661)
+
+Palavras dele: "fiz os dois testes que você pediu e estão funcionando."
+
+Destino: Livro de decisões, D-659 e D-661 "testadas pelo Samuel em 10/11, funciona".
+
+## Testes do Dividir e do Automático (prints 11, 12 e 13, 09h02 a 09h08)
+
+Palavras dele (os números são os da lista de testes da gerente):
+"10- print 1 - quanto eu mudo uma folha de lugar ela começa a recarregar novamente
+3- em páginas que já vieram separadas no pdf não acontece nada
+4- ok
+5- print 2 - não existe um botão para juntar só duas paginas que acabaram de ser juntas, só dá para juntar todas
+6- eu não consegui testar por causa da 5
+7- sim
+print 3 - clicar nas caixinha de selecionar é dificil as vezes preciso de 5 cliques para conseguir.
+8- não passou, mas não é um erro grave, pode ficar para depois
+9- funciona"
+
+Destino (Livro de decisões, coluna de situação, e Lista de bugs):
+- 3 (D-590/D-607): no livro com páginas já separadas no PDF, "juntar todas" não faz nada.
+- 4 (D-602/D-609): ok. 7 (D-608): funciona. 9 (D-611/D-612): funciona.
+- 5 (D-606): ele não achou o botão de juntar uma folha só; esse botão é o "não dividir esta" (print 12). 6 (D-613): não testado.
+- 8 (D-610): não passou, para depois (**Lista de bugs**).
+- 10 (D-615): a página recarrega ao mudar a folha de lugar (print 11, **Lista de bugs**).
+- Caixinhas do Automático difíceis de marcar (print 13, **Lista de bugs**).
+
+## Central: o Quadro dos trabalhos rolava de lado (print 14, 09h12)
+
+Palavras dele: "arrumar, para passar para o lado eu tenho que ir lá embaixo na barra, e dai eu não consigo ler enquanto passo a barra, bota um agente para resolver isso."
+
+Destino: feito pela gerente (os dois agentes estavam ocupados), Central **versão 41**: no PC as colunas do Quadro descem
+para a linha de baixo quando não cabem; as abas também quebram em duas linhas em vez de rolar; as Etapas cabem sem
+rolar. Testado em 1366, 1000, 800, 700, 360 e 300 px, todas as 9 abas: nada passa da borda.
+
+## Quadrados brancos: investigação pronta (agente, 10/11)
+
+Causa: o último passo do Melhorar e do Mágico pro (`core/filtros.py`, `_limpar_o_papel_de_verdade`) pinta de branco o que
+parece papel; a água, o céu e roupas claras passam, e os blocos vêm dos quadradinhos do JPEG do livro. Sai igual no PDF.
+110 páginas (Melhorar) e 112 (Mágico pro) no *Na escola de Jesus*; também Livro de Horas 47. Relatório:
+`relatorios/quadrados-brancos-2026-11-10/relatorio.html` no ramo `obra-2026-10-26` (commit `36e0b3b2`).
+
+Destino: 2 perguntas na Central, Conferência → "Quadrados brancos no Melhorar e no Mágico pro: 2 perguntas (10/11)".
+
+Palavras dele: "mas como assim , o que parece papel para ele, não estamos usando o scantailor?" · "faça um teste com os dois para ver qual se sai melhor."
+
+Destino: explicado no chat (o ScanTailor divide, endireita, desentorta e acha as gravuras; o Melhorar e o Mágico pro são
+nossos e, à mão, não rodam o detector). O agente compara A (regra "em volta é papel"), B (detector do ScanTailor no
+Melhorar e no Mágico pro) e C (os dois), no livro inteiro, Livro de Horas 47, gabarito, Boécio e velocidade.
+
+## Girar no Dividir pronto (D-662, D-663), agente, 10/11
+
+Ramo `girar-capa-2026-11-07` (a7e534c0): cada página gira sozinha e inteira no Dividir com "Duas lado a lado", "todas as
+folhas"; teste antigo trocado (D-663). GitHub 42814866808 verde, velocidade 42814872526 igual, 73 arquivos no PC passaram.
+Falta a suíte inteira no PC antes de juntar à versão de teste.
+
+Destino: 2 perguntas novas na Central, Conferência → "Girar no Dividir: 2 perguntas (10/11)" (a tela do Dividir mostrar
+as páginas deitadas; "daqui em diante", "só as pares" e "só as ímpares" também página por página).
+
+## Quadrados brancos: resultado da comparação A, B e C, agente, 10/11
+
+Pedido do Samuel: "faça um teste com os dois para ver qual se sai melhor." Tudo simulado, sem mudar o programa
+(relatório `relatorios/quadrados-brancos-2026-11-10/relatorio.html`, seção 8, no ramo da versão de teste, commit 11818d8a).
+
+- Quadrados no meio das pinturas, livro inteiro (199 páginas): hoje 110, A 0, B e C 2.
+- Contando o céu claro perto da margem: hoje 113, A 48, B e C 16 (quase todas brilhos que já eram brancos no original).
+- Achado novo: o passo de hoje quebra o "i" e o "t" finos das letras; A não conserta, B e C consertam. Foi para a Lista de bugs.
+- Com "Respeitar" desmarcada (print 10), B não faz nada; C usa a regra A. Recomendação: C.
+- Ressalvas da C: uns 4 s a mais por página na primeira vez; letras no tom do original com "Respeitar" marcada; contorno bege na Rhetorica 73.
+
+Destino: a pergunta da Central foi refeita com a comparação, Conferência → "Quadrados brancos no Melhorar e no Mágico pro:
+qual conserto (10/11)" (opções C, só A, não mexer). A primeira versão dizia "o livro todo ficou sem quadrados" com a regra A;
+a medida nova mostrou 48 páginas com furo no céu claro, e a pergunta foi corrigida.
+
 
 ## Prints desta sessão
 
@@ -106,3 +193,9 @@ Destino: texto do item corrigido na **Lista de bugs** (as duas cópias).
 ![06-girou-11-graus.png](prints/06-girou-11-graus.png)
 ![07-giro-leva-o-branco-junto.png](prints/07-giro-leva-o-branco-junto.png)
 ![08-giro-cortado.png](prints/08-giro-cortado.png)
+![09-melhorar-quadrados-brancos.png](prints/09-melhorar-quadrados-brancos.png)
+![10-automatico-magico-pro-quadrados.png](prints/10-automatico-magico-pro-quadrados.png)
+![11-mudar-folha-de-lugar-recarrega.png](prints/11-mudar-folha-de-lugar-recarrega.png)
+![12-dividir-sem-juntar-esta.png](prints/12-dividir-sem-juntar-esta.png)
+![13-caixinhas-do-automatico-dificeis.png](prints/13-caixinhas-do-automatico-dificeis.png)
+![14-central-quadro-rolar-de-lado.png](prints/14-central-quadro-rolar-de-lado.png)

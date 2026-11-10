@@ -163,3 +163,18 @@ Falta a suíte inteira no PC antes de juntar à versão de teste.
 
 Destino: 2 perguntas novas na Central, Conferência → "Girar no Dividir: 2 perguntas (10/11)" (a tela do Dividir mostrar
 as páginas deitadas; "daqui em diante", "só as pares" e "só as ímpares" também página por página).
+
+## Quadrados brancos: resultado da comparação A, B e C, agente, 10/11
+
+Pedido do Samuel: "faça um teste com os dois para ver qual se sai melhor." Tudo simulado, sem mudar o programa
+(relatório `relatorios/quadrados-brancos-2026-11-10/relatorio.html`, seção 8, no ramo da versão de teste, commit 11818d8a).
+
+- Quadrados no meio das pinturas, livro inteiro (199 páginas): hoje 110, A 0, B e C 2.
+- Contando o céu claro perto da margem: hoje 113, A 48, B e C 16 (quase todas brilhos que já eram brancos no original).
+- Achado novo: o passo de hoje quebra o "i" e o "t" finos das letras; A não conserta, B e C consertam. Foi para a Lista de bugs.
+- Com "Respeitar" desmarcada (print 10), B não faz nada; C usa a regra A. Recomendação: C.
+- Ressalvas da C: uns 4 s a mais por página na primeira vez; letras no tom do original com "Respeitar" marcada; contorno bege na Rhetorica 73.
+
+Destino: a pergunta da Central foi refeita com a comparação, Conferência → "Quadrados brancos no Melhorar e no Mágico pro:
+qual conserto (10/11)" (opções C, só A, não mexer). A primeira versão dizia "o livro todo ficou sem quadrados" com a regra A;
+a medida nova mostrou 48 páginas com furo no céu claro, e a pergunta foi corrigida.
