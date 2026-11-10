@@ -46,3 +46,11 @@ Destino:
   `relatorios/pesquisa-internet-archive-2026-11-10/`.
 - Cantinho: explicado no chat que, com o conserto, ele fica da cor do papel e não aparece; a página 18 está a 0,00 grau
   (sem giro, sem cantinho). Oferecida uma prova antes/depois no modelo do girar (esperando o "sim").
+
+## Girar à mão: cor do cantinho e lentidão (print 06, 08h41)
+
+Palavras dele: "acho que pode ser branca mesmo, só achei muito lento para fazer o carregamento quando eu giro, tinha que ser tão rápido quanto o photoshop, será que isso tem haver com a gente usar phyton e não outra engine para nosso programa? mudar a linguagem pode aumentar a velocidade do programa?"
+
+Destino:
+- Cor do cantinho: "acho que pode ser branca" muda a D-639 (hoje: cor do papel). A gerente pergunta antes de mudar.
+- Lentidão do giro: **Lista de bugs** (10/11), para a Fase 5. Resposta sobre a linguagem no chat.
