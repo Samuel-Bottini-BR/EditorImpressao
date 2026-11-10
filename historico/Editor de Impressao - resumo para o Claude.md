@@ -271,7 +271,8 @@ Horas em UTC (no PC, 4 horas a menos). As de 10/11 estão também, com os prints
 ## 8. Fora do git, de propósito
 
 - Os `.pdf` dos relatórios (o `.gitignore` tira `*.pdf`); ficam só no disco.
-- No `fase-1`, arquivos antigos sem guardar, todos de antes desta sessão (ninguém decidiu guardar): relatórios e prints de
+- **Já guardados (10/11, depois do checkpoint, commit `2688b70d`; Samuel: "pode guardar"):** os 413 arquivos antigos
+  (17 MB) que estavam fora do git no `fase-1`. Eram, todos de antes desta sessão: relatórios e prints de
   30/09 a 02/10 (`relatorios/conferencia-*`, `relatorios/resultados-2026-09-30/img*`, `relatorios/Editor-de-Impressao-resultados-2026-09-30.html`),
   `relatorios/fase1-1.3-comparacao-ocr-2026-09-28/{folhas,zonas}/`, `relatorios/revisar-decisoes/rodada-*/img/`,
   `relatorios/obra-auditoria-escolhas/`, `relatorios/obra-etapa11/`, `relatorios/testes-guiados/2026-10-28-sessao-2/sessao-2.html`
