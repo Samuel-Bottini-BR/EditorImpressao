@@ -124,7 +124,10 @@ valiam com ele ligado).
 - [x] Autorização do Samuel (09/11, "1- sim") às duas propostas: `ui/tarefas.py` (`45d56991`, com prova) e
   `test_p195` (`0f947c0a`). No PC, sem janela: `test_promessas.py` 268 passaram; `test_decisoes_gravura_a_mao.py`
   17; `test_marcacao_por_tras.py` 4; `test_decisoes_9b2.py` 30.
-- [ ] GitHub depois da autorização: suíte 42723078970 e filtro de velocidade 42723083592 (rodando).
+- [x] GitHub depois da autorização (ramo em `59bc58d7`): **suíte 42723078970 verde** (as 5 partes e os botões).
+  **Filtro de velocidade 42723083592: "igual"** (`a0c99cc7` x ramo; trocar de página -1,3%, Preto e branco 10
+  páginas +0,6%, Mágico pro -1,5%, abrir -0,5%; tudo dentro do vai-e-vem).
+- **PARADO aqui** (09/11): falta só a resposta do Samuel à pergunta 1. Não junto nada à obra (é da gerente).
 - [x] Prova da pergunta 2 (sem janela), commit `5e43ab04`: ver "Prova da pergunta 2" abaixo.
 - [x] Imagens do livro dele (cópia, sem janela) e relatório (`relatorio.md`/`.html`/`.pdf`), commit `a99e0a51`.
 - [-] Prints da janela real: **tirados do pedido** (ordem do Samuel, 09/11: "não é para abrir na minha tela").
