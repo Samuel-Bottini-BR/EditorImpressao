@@ -91,3 +91,13 @@ Central `cantinho-outros-casos` respondida.
 Correção dele sobre o print 08: "esse print você leu errado, o que eu quis mostrar é que quando eu estou com a pagina fora da area de trabalho e vou girar ela novamente para dentro, enquanto eu estou girando ela continua com aquela parte que estava para fora cortada, e fica dificil de visualizar o que realmente vai ficar dentro da area de trabalho."
 
 Destino: texto do item corrigido na **Lista de bugs** (as duas cópias).
+
+## Quadrados brancos no Melhorar e no Mágico pro (prints 09 e 10, 08h53 e 08h55)
+
+Palavras dele: "anotar erro do filtro melhorar, ele deixa a imagem pixelada, olha esses quadrados brancos. também acontece no automatico e no magico pro, pode colocar um agente para investigar isso."
+
+- Print 09: *Na escola de Jesus*, página 13 (Jonas e a baleia), Melhorar, "Clareza do fundo: bem forte", "Respeitar as
+  gravuras achadas" marcada: quadrados brancos nas partes claras da gravura.
+- Print 10: janela do Automático, Mágico pro "bem fraco", mesma página: os mesmos quadrados no "depois".
+
+Destino: **Lista de bugs** (10/11). Agente investigador: pedido; entra quando um dos 2 agentes de agora terminar (limite de 2).
