@@ -1,0 +1,315 @@
+<!doctype html>
+<html lang="pt-BR">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Automático e páginas mexidas</title>
+<style>
+:root { color-scheme: light dark; }
+* { box-sizing: border-box; }
+body {
+  font: 17px/1.65 "Segoe UI", system-ui, sans-serif;
+  max-width: 46rem; margin: 0 auto; padding: 2.5rem 1.5rem 6rem;
+  color: #1c1c1e; background: #fdfdfc;
+}
+h1 { font-size: 2rem; line-height: 1.2; margin: 0 0 .3em; letter-spacing: -.02em; }
+h2 { font-size: 1.35rem; margin: 2.4em 0 .6em; padding-top: .8em;
+     border-top: 1px solid #e6e4e0; letter-spacing: -.01em; }
+h3 { font-size: 1.1rem; margin: 1.8em 0 .4em; }
+h1 + p, h2 + p { margin-top: .4em; }
+p, li { margin: 0 0 .9em; }
+ul, ol { padding-left: 1.3em; }
+strong { font-weight: 640; }
+code {
+  font: .88em ui-monospace, "Cascadia Code", Consolas, monospace;
+  background: #f1efec; padding: .12em .35em; border-radius: 4px;
+}
+pre {
+  background: #f1efec; padding: 1em 1.1em; border-radius: 8px;
+  overflow-x: auto; line-height: 1.5;
+}
+pre code { background: none; padding: 0; }
+blockquote {
+  margin: 1.2em 0; padding: .1em 0 .1em 1.1em;
+  border-left: 3px solid #c9c5be; color: #55524d;
+}
+table {
+  border-collapse: collapse; width: 100%; margin: 1.2em 0;
+  font-size: .95rem; display: block; overflow-x: auto;
+}
+th, td { padding: .5em .8em; text-align: left; border-bottom: 1px solid #e6e4e0; }
+th { font-weight: 620; background: #f7f5f2; white-space: nowrap; }
+tr:last-child td { border-bottom: none; }
+img { max-width: 100%; height: auto; border-radius: 6px; margin: 1em 0;
+      border: 1px solid #e6e4e0; }
+hr { border: none; border-top: 1px solid #e6e4e0; margin: 2.5em 0; }
+.rodape { margin-top: 4em; padding-top: 1.2em; border-top: 1px solid #e6e4e0;
+          font-size: .85rem; color: #86827c; }
+@media (prefers-color-scheme: dark) {
+  body { color: #e8e6e3; background: #1a1917; }
+  h2 { border-top-color: #35332f; }
+  code, pre, th { background: #262421; }
+  th, td { border-bottom-color: #35332f; }
+  blockquote { border-left-color: #4a4741; color: #b0aca6; }
+  img { border-color: #35332f; }
+  .rodape { border-top-color: #35332f; color: #7d7973; }
+}
+@media print {
+  body { max-width: none; padding: 0; color: #000; background: #fff; }
+  h2 { page-break-after: avoid; }
+  table, img { page-break-inside: avoid; }
+}
+</style>
+</head>
+<body>
+<h1>Automático e páginas mexidas: o aviso pergunta quando deve?</h1>
+<p>Verificador, 09/11/2026. Teste de <strong>máquina</strong> (não precisa de olho). Ramo <code>obra-2026-10-26</code>
+(cópia <code>obra-juncao</code>). Nenhuma janela abriu na tela: tudo rodou com a janela principal escondida
+(offscreen). Nenhuma linha do programa foi mudada.</p>
+<h2>Em poucas palavras</h2>
+<ul>
+<li><strong>Mexida à mão: o aviso funciona.</strong> Filtro (também o Preto e branco escolhido à mão), cortar,
+  endireitar e dividir: o Automático com aquela etapa pergunta "1 página foi mexida à mão...",
+  "Pular" deixa a página como estava (igual no PDF, ponto por ponto) e "Rodar nelas também" passa
+  por cima. Com a etapa desmarcada, não pergunta e o que foi feito à mão fica.</li>
+<li><strong>Marcar, mover e girar à mão nunca entram no aviso</strong>, mas também não se perdem: o Automático
+  não tem etapa que passe por cima deles (a marcação à mão, o tamanho e lugar do conteúdo e o giro
+  ficaram iguais em todas as rodadas). Uma ressalva no girar, abaixo.</li>
+<li><strong>O caso do Samuel funciona:</strong> filtro em 3 páginas, depois só "Montar cadernos" no livro todo
+  → não pergunta nada, as 3 páginas continuam com o filtro, os cadernos saem com todas as
+  páginas na ordem certa, sem erro. Também no livro de verdade (Boécio, 50 páginas).</li>
+<li><strong>Rodada do Automático por cima de outra rodada: hoje não pergunta.</strong> Filtro em 3 páginas e
+  depois outro filtro no livro todo → as 3 páginas trocam de filtro sem aviso. Pela D-660 (nova,
+  09/11) ele deveria perguntar: <strong>errado pela D-660 (ainda não construída)</strong>.</li>
+<li><strong>Cuidado (sem decisão escrita):</strong> depois da rodada em 3 páginas, ao voltar ao Automático a
+  caixinha "Limpar a folha" já vem marcada. Se só se marcar "Montar cadernos" e rodar no livro
+  todo, o filtro vai para as 24 páginas, sem perguntar.</li>
+<li>Os testes que já existiam do aviso: <strong>16 de 16 passaram</strong>.</li>
+</ul>
+<h2>Como foi testado</h2>
+<p>Pelo caminho de verdade: a janela principal do programa (escondida), o livro aberto como o
+Kaique abre, as mexidas feitas pelos mesmos comandos que os botões da área de trabalho chamam,
+o painel do Automático com as etapas marcadas e o "Rodar". Só a caixa da pergunta foi trocada
+por uma resposta fixa ("Pular" ou "Rodar nelas também"), como os testes do programa já fazem; o
+texto anotado é o que a caixa mostraria. No fim, o PDF foi gerado como o "Confirmar e processar"
+grava. O filtro de cada página foi conferido <strong>no PDF</strong> (comparando com o mesmo livro gerado
+todo em cada filtro), e a ordem dos cadernos lendo o número de cada página impresso nela.
+Erros: o <code>erros.log</code> da rodada (pasta de dados separada) e qualquer erro inesperado.</p>
+<p>Livros: um livro de teste feito para isso (24 páginas, cada uma com o seu número em
+quadradinhos; e um de 4 folhas para o caso 1) e o <strong>Boécio</strong> do acervo (50 páginas, só lido).</p>
+<p>Script: <code>relatorios/automatico-mexidas-2026-11-09/test_verificador_mexidas.py</code> (36 casos;
+todos passaram). O que cada caso viu, em detalhe: <code>resultados.json</code>, na mesma pasta.</p>
+<h2>Caso 1: mudança à mão, uma etapa por vez</h2>
+<p>O que se esperava (D-004, 28/09: "Automático em livro já mexido à mão: o programa pergunta se
+quer pular as páginas mexidas."; D-485: o filtro escolhido à mão conta): com a etapa mexida
+marcada, pergunta; "Pular" mantém; etapa desmarcada, não pergunta e a página fica.</p>
+<table>
+<thead>
+<tr>
+<th>Mexida à mão</th>
+<th>Automático com</th>
+<th>Perguntou?</th>
+<th>"Pular"</th>
+<th>"Rodar nelas também"</th>
+<th>Etapa desmarcada</th>
+<th>Páginas do PDF / erros</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>Filtro (Melhorar à mão)</td>
+<td>Limpar em Preto e branco</td>
+<td>sim, 1 página(s)</td>
+<td>ficou (página igual no PDF)</td>
+<td>passou por cima</td>
+<td>Endireitar + Cortar: não perguntou, o Melhorar ficou</td>
+<td>4 / vazio</td>
+</tr>
+<tr>
+<td>Preto e branco à mão (e força do preto)</td>
+<td>Limpar em Melhorar</td>
+<td>sim, 1 página(s)</td>
+<td>ficou (página igual no PDF)</td>
+<td>passou por cima</td>
+<td>Endireitar + Cortar: não perguntou, o Preto e branco ficou</td>
+<td>4 / vazio</td>
+</tr>
+<tr>
+<td>Cortar (corte à mão)</td>
+<td>Cortar as bordas</td>
+<td>sim, 1 página(s)</td>
+<td>ficou (página igual no PDF)</td>
+<td>passou por cima</td>
+<td>Endireitar + Limpar: não perguntou, o corte ficou</td>
+<td>4 / vazio</td>
+</tr>
+<tr>
+<td>Endireitar (1,5 grau à mão)</td>
+<td>Endireitar</td>
+<td>sim, 1 página(s)</td>
+<td>ficou (página igual no PDF)</td>
+<td>passou por cima</td>
+<td>Cortar + Limpar: não perguntou, o ângulo ficou</td>
+<td>4 / vazio</td>
+</tr>
+<tr>
+<td>Dividir (linha posta à mão)</td>
+<td>Dividir</td>
+<td>sim, 2 página(s)</td>
+<td>ficou (página igual no PDF)</td>
+<td>passou por cima</td>
+<td>Endireitar + Cortar + Limpar: não perguntou, a linha ficou</td>
+<td>5 / vazio</td>
+</tr>
+<tr>
+<td>Marcar (gravura marcada à mão)</td>
+<td>Limpar + Gravuras e fotos</td>
+<td>não</td>
+<td>ficou</td>
+<td>ficou (não há o que passar por cima)</td>
+<td>Endireitar + Cortar: não perguntou, a marcação ficou</td>
+<td>4 / vazio</td>
+</tr>
+<tr>
+<td>Mover (conteúdo em 80%)</td>
+<td>Margens iguais</td>
+<td>não</td>
+<td>ficou</td>
+<td>ficou (não há o que passar por cima)</td>
+<td>Endireitar + Cortar + Limpar: não perguntou, o tamanho ficou</td>
+<td>4 / vazio</td>
+</tr>
+<tr>
+<td>Girar (1/4 à direita)</td>
+<td>Dividir + Endireitar + Cortar + Limpar</td>
+<td>não</td>
+<td>ficou</td>
+<td>ficou (não há o que passar por cima)</td>
+<td>só Montar cadernos: não perguntou, o giro ficou</td>
+<td>6 / vazio</td>
+</tr>
+</tbody>
+</table>
+<p>Notas:</p>
+<ul>
+<li>"Rodar nelas também" (filtro, cortar, endireitar, dividir): o valor à mão sai e a marca de
+  mexida também; o Automático passa a valer na página. Dividir: as 2 páginas da folha dividida à
+  mão contam (pergunta "2 páginas"); com "Pular" a linha fica em 0,47, com "Rodar" o programa põe
+  a dele.</li>
+<li>Marcar, mover e girar: <strong>não perguntam</strong>, mesmo com "Rodar nelas também" não há nada a passar
+  por cima: a gravura marcada à mão, o conteúdo em 80% e o giro ficaram. No Livro não há decisão
+  dizendo que essas três devem entrar no aviso (o código conta só dividir, endireitar, cortar e
+  filtro). <strong>Certo</strong> pelo que está escrito.</li>
+<li><strong>Ressalva do girar (sem decisão escrita):</strong> o giro não entra no aviso do Dividir. Página que
+  veio deitada no PDF e foi posta em pé à mão: o Dividir <strong>não</strong> a partiu (1
+  página, certo). Mas uma página em pé que a pessoa deitou à mão (fica larga, como uma folha
+  aberta) foi partida em 2 pelo Dividir, sem perguntar. É um caso raro
+  (não há motivo para deitar uma página em pé), por isso só fica anotado. É por isso que a linha
+  "Girar" da tabela tem 6 páginas no PDF (a folha dupla e a página deitada, as duas partidas).</li>
+</ul>
+<p>Veredito do caso 1: <strong>certo</strong> (D-004, D-485).</p>
+<h2>Caso 2: o caso do Samuel</h2>
+<p>Automático só nas páginas 4, 8 e 12, só com "Limpar a folha" em Preto e branco. Depois,
+Automático no livro todo só com "Montar cadernos".</p>
+<p>O que se esperava (D-589: o que não está marcado não é feito; D-660: "Rodar no livro todo só o
+'Montar cadernos', depois de um filtro em algumas páginas, funciona sem erro e não mexe no filtro
+delas"): sem pergunta, as 3 páginas com o filtro, cadernos certos, sem erro.</p>
+<p>O que aconteceu:</p>
+<ul>
+<li>Primeira rodada: não perguntou (nada mexido à mão).</li>
+<li>Ao voltar ao Automático: a caixinha "Limpar a folha" vem marcada ("ligada em 3 páginas").</li>
+<li>Segunda rodada (só "Montar cadernos"): não perguntou.</li>
+<li>Filtro no PDF: todas em Original menos pág. 4: Preto e branco, pág. 8: Preto e branco, pág. 12: Preto e branco.</li>
+<li>Cadernos: 12 lados de folha no PDF dos cadernos, na ordem certa da dobra, todas as páginas uma vez só (24 páginas em cadernos de 20: um de 20 e um de 4).</li>
+<li>erros.log vazio, nenhum erro.</li>
+<li>Livro de verdade (Boécio, 50 páginas, o mesmo caminho): não perguntou;
+  as páginas 4, 8 e 12 continuam em Preto e branco e as outras no Original (filtro que vale em cada página do projeto); 26 lados de folha no PDF dos cadernos, na ordem certa da dobra, todas as páginas uma vez só
+  (cadernos de 20, 20 e 12; a ordem conferida achando cada metade entre as páginas do PDF);
+  erros.log vazio, nenhum erro.</li>
+</ul>
+<p>Veredito do caso 2: <strong>certo</strong> (D-589, D-660).</p>
+<h3>Variação 2b: sem desmarcar o "Limpar a folha" que voltou marcado</h3>
+<p>Se depois da primeira rodada a pessoa só marca "Montar cadernos" (o "Limpar a folha" já estava
+marcado) e roda no livro todo: não perguntou; filtro no PDF: todas em Preto e branco;
+12 lados de folha no PDF dos cadernos, na ordem certa da dobra, todas as páginas uma vez só; erros.log vazio, nenhum erro.</p>
+<p>Não estraga as 3 páginas (continuam em Preto e branco), mas o filtro vai para o livro inteiro sem
+aviso. Isso depende da pergunta ainda aberta das caixinhas depois de rodar (D-628,
+<code>n0411-caixinhas-depois-de-rodar</code>; Samuel, 04/11: "elas tem que voltar todas desmarcadas"):
+<strong>sem decisão escrita</strong> até essa resposta.</p>
+<h2>Caso 3: a segunda rodada tem outro filtro</h2>
+<p>O mesmo do caso 2, só que a segunda rodada no livro todo tem "Limpar a folha" em Melhorar +
+"Montar cadernos".</p>
+<p>O que se esperava: D-660 (Samuel, 09/11: "mas caso o o automatico for mudar alguma coisa que foi
+feito na ultima rodada ele deve perguntar."): perguntar antes de trocar o filtro das 3 páginas, e
+"Pular" as manter.</p>
+<p>O que aconteceu: não perguntou. Filtro no PDF: todas em Melhorar: as páginas 4, 8
+e 12 perderam o Preto e branco. 12 lados de folha no PDF dos cadernos, na ordem certa da dobra, todas as páginas uma vez só. erros.log vazio, nenhum erro.</p>
+<p>Veredito do caso 3: <strong>errado pela D-660 (ainda não construída)</strong>. Funciona sem erro, mas troca o
+filtro da rodada anterior sem perguntar.</p>
+<p>Por que (no código): a contagem do aviso (<code>core/automatico.paginas_mexidas</code>) só conta a marca de
+mexida à mão; a página em que o Automático rodou só nela (<code>ConfigPagina.automatico</code>) é tirada da
+conta de propósito (<code>_filtro_trocado_na_pagina</code>). Para reproduzir: abrir um livro, Automático
+"nas escolhidas" (3 páginas) só com "Limpar a folha" em Preto e branco, "Rodar"; depois
+Automático "no livro todo" com "Limpar a folha" em Melhorar, "Rodar" → nenhuma caixa aparece e as
+3 páginas saem em Melhorar.</p>
+<h2>Caso 4: mistura</h2>
+<p>Uma página mexida à mão (Mágico pro escolhido à mão) + as 3 páginas da primeira rodada (Preto e
+branco) + segunda rodada no livro todo com "Limpar a folha" em Melhorar + "Montar cadernos".</p>
+<p>O que se esperava: D-004 pergunta da página mexida à mão; D-660 também das 3 da rodada anterior
+(contagem 4).</p>
+<table>
+<thead>
+<tr>
+<th>Como</th>
+<th>Perguntou</th>
+<th>"Pular"</th>
+<th>"Rodar nelas também"</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>página 6 mexida à mão antes da 1ª rodada</td>
+<td>1 página</td>
+<td>todas em Melhorar menos pág. 6: Mágico pro</td>
+<td>todas em Melhorar</td>
+</tr>
+<tr>
+<td>página 8 (uma das 3) mexida à mão depois da 1ª rodada</td>
+<td>1 página</td>
+<td>todas em Melhorar menos pág. 8: Mágico pro</td>
+<td>todas em Melhorar</td>
+</tr>
+<tr>
+<td>Boécio, página 6 à mão</td>
+<td>1 página</td>
+<td>página 6 em Mágico pro, as outras em Melhorar (no projeto)</td>
+<td>(não rodado)</td>
+</tr>
+</tbody>
+</table>
+<p>Cadernos: em todos, 12 lados de folha no PDF dos cadernos, na ordem certa da dobra, todas as páginas uma vez só; no Boécio, 26 lados de folha no PDF dos cadernos, na ordem certa da dobra, todas as páginas uma vez só.
+Erros: nenhum (erros.log vazio em todos).</p>
+<p>Veredito do caso 4: a parte da mão está <strong>certa</strong> (D-004: conta 1, "Pular" mantém o Mágico pro,
+"Rodar" passa por cima). A parte da rodada anterior está <strong>errada pela D-660 (ainda não
+construída)</strong>: a contagem é 1, não 4, e as páginas 4, 8 e 12 vão para Melhorar mesmo com
+"Pular". A página 8 mexida à mão depois da rodada conta como mexida (certo).</p>
+<h2>Caso 5: os testes que já existiam</h2>
+<p><code>pytest tests/test_decisoes_automatico.py tests/test_decisoes.py
+tests/test_automatico_pular_depois_de_dividir.py -q -k "d004 or mexid or pular or d607"</code>:
+<strong>16 passaram</strong>, 44 de fora pelo filtro (como a gerente viu).</p>
+<h2>Resumo dos vereditos</h2>
+<ul>
+<li>Caso 1 (à mão, uma etapa por vez): <strong>certo</strong>. Marcar, mover e girar não entram no aviso e não
+  se perdem; ressalva do girar + Dividir anotada (sem decisão escrita).</li>
+<li>Caso 2 (filtro em 3 páginas, depois só cadernos): <strong>certo</strong>, também no Boécio.</li>
+<li>Variação 2b ("Limpar" volta marcado e vai para o livro todo): <strong>sem decisão escrita</strong> (espera a
+  pergunta das caixinhas, D-628).</li>
+<li>Caso 3 (outro filtro na segunda rodada): <strong>errado pela D-660 (ainda não construída)</strong>.</li>
+<li>Caso 4 (mistura): mão <strong>certo</strong>; rodada anterior <strong>errado pela D-660 (ainda não construída)</strong>.</li>
+<li>Caso 5: <strong>16 de 16 passaram</strong>.</li>
+<li>Nenhum erro, nenhum <code>erros.log</code>, nenhum PDF com página a mais ou a menos, cadernos sempre na
+  ordem da dobra.</li>
+</ul>
+<p class="rodape">Editor de Impressão &middot; gerado em 09/11/2026 às 20:13</p>
+</body>
+</html>
