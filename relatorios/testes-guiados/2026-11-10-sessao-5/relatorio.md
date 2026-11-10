@@ -154,3 +154,12 @@ Palavras dele: "mas como assim , o que parece papel para ele, não estamos usand
 Destino: explicado no chat (o ScanTailor divide, endireita, desentorta e acha as gravuras; o Melhorar e o Mágico pro são
 nossos e, à mão, não rodam o detector). O agente compara A (regra "em volta é papel"), B (detector do ScanTailor no
 Melhorar e no Mágico pro) e C (os dois), no livro inteiro, Livro de Horas 47, gabarito, Boécio e velocidade.
+
+## Girar no Dividir pronto (D-662, D-663), agente, 10/11
+
+Ramo `girar-capa-2026-11-07` (a7e534c0): cada página gira sozinha e inteira no Dividir com "Duas lado a lado", "todas as
+folhas"; teste antigo trocado (D-663). GitHub 42814866808 verde, velocidade 42814872526 igual, 73 arquivos no PC passaram.
+Falta a suíte inteira no PC antes de juntar à versão de teste.
+
+Destino: 2 perguntas novas na Central, Conferência → "Girar no Dividir: 2 perguntas (10/11)" (a tela do Dividir mostrar
+as páginas deitadas; "daqui em diante", "só as pares" e "só as ímpares" também página por página).
