@@ -702,6 +702,8 @@ Valem para a gerente, para todos os agentes (`.claude/agents/`) e para qualquer 
    - O agente muda **a regra da ferramenta num lugar só do código**, que todas as opções usam. Não acrescenta um desvio para um caso ("se for o Dividir e for 'todas as folhas', vai por aqui"): isso é remendo, e o próximo pedido vira outro remendo.
    - Só vira pergunta o lugar onde a mudança não faz sentido ou mudaria outra decisão dele (§11.8).
 
+11. **Agente não abre agente (10/11/2026).** Falha de 10/11: o revisor de código abriu três ajudantes por conta própria e o Samuel viu cinco agentes rodando ("pera ai, tem 5 agentes trabalhando"). Todo pedido a agente diz: "não abra outros agentes". Quem decide quantos agentes rodam é a gerente, dentro do limite do Samuel (no máximo dois; em 10/11 ele deixou três, com o terceiro só lendo código: "pode deixar assim").
+
 **Obra de 26/10/2026 (D-014):** o Samuel mandou fazer a obra inteira (plano de 26/10, etapas 0 a 11) "até o final sem
 pausas" e conferir tudo no fim. Durante essa obra **não valem** as regras de conferir cada item antes do próximo e de
 uma fase por vez (§10, item 2; regras de 19/10): cada etapa é feita, testada e juntada no ramo `obra-2026-10-26`; nada
