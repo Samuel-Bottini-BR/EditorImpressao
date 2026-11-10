@@ -118,7 +118,14 @@ valiam com ele ligado).
   (`reversao-no-a0c99cc7.txt`).
 - [x] Conserto, commit `88731637` (`core/etapas.py`; e `core/pipeline.py`, o defeito da tela achado no caminho).
 - [x] Testes no PC, um arquivo por vez (lista abaixo).
-- [~] GitHub: suítes 42698444393 e 42703188133 vermelhas só no `test_promessas.py` (ver PARADO abaixo); filtro de velocidade 42698450173.
+- [x] GitHub: suítes 42698444393 e 42703188133 vermelhas só no `test_promessas.py` (ver abaixo). Filtro de
+  velocidade 42698450173 "igual" (mediu o `88731637`, antes da correção da corrida).
+- [x] Corrida "procura sem resolução" (achada no GitHub), commit `f3b97c03`.
+- [x] Autorização do Samuel (09/11, "1- sim") às duas propostas: `ui/tarefas.py` (`45d56991`, com prova) e
+  `test_p195` (`0f947c0a`). No PC, sem janela: `test_promessas.py` 268 passaram; `test_decisoes_gravura_a_mao.py`
+  17; `test_marcacao_por_tras.py` 4; `test_decisoes_9b2.py` 30.
+- [ ] GitHub depois da autorização: suíte 42723078970 e filtro de velocidade 42723083592 (rodando).
+- [x] Prova da pergunta 2 (sem janela), commit `5e43ab04`: ver "Prova da pergunta 2" abaixo.
 - [x] Imagens do livro dele (cópia, sem janela) e relatório (`relatorio.md`/`.html`/`.pdf`), commit `a99e0a51`.
 - [-] Prints da janela real: **tirados do pedido** (ordem do Samuel, 09/11: "não é para abrir na minha tela").
   O script abriu a janela duas vezes por volta das 17h, antes da ordem (só o print da página 8 no Original saiu).
@@ -192,7 +199,7 @@ Ver `saida_teste/gravura-a-mao/testes-no-pc.txt` (fora do git). O resumo vai no 
 7. A procura no programa de verdade roda em outro processo (`core.paginas_em_outro_processo`). Na única
    execução com janela, a página 8 ficou com a gravura achada: 25 áreas, marcação definitiva.
 
-## PARADO: teste antigo que a D-659 quebra (pergunta à gerente; nada aplicado)
+## (RESOLVIDO em 09/11: aplicado com o "1- sim" do Samuel) Teste antigo que a D-659 quebrava
 
 Rodadas do GitHub 42698444393 e 42703188133 (e o mesmo no PC): tudo verde, menos `tests/test_promessas.py`
 (268 passavam no ramo de base, rodada 42391132998).
@@ -222,9 +229,59 @@ Resultado do experimento (PC, sem janela; desfeito depois, `ui/tarefas.py` igual
 Pergunta: posso (a) aplicar a troca do `test_p195` e (b) a mudança em `ui/tarefas.py`? Sem as duas, a suíte do
 GitHub fica vermelha só no `test_promessas.py`.
 
+## Prova da pergunta 2 (pedido da gerente, 09/11; sem janela, pela conta do programa)
+
+Script `prova_pergunta2.py`, numa cópia do *Na escola de Jesus*, página 8. Medidas em `imagens/q2-medidas.json`.
+Imagens com a página inteira e a gravura de perto, no mesmo enquadramento.
+- **(A)** Preto e branco à mão, "Respeitar" marcada: a gravura em tons de cinza (`imagens/q2-a-a-mao.jpg`).
+  Procurou 1 vez, 25 áreas achadas.
+- **(B)** depois o Automático do print 02 (só "Limpar a folha", Preto e branco; as outras etapas desmarcadas,
+  "Gravuras e fotos" incluída), respondendo **"Rodar nelas também"** à pergunta da página mexida (o Automático
+  pergunta pela página 8): **manchas pretas** (`q2-b-depois-do-automatico.jpg`). A gravura achada continua
+  guardada na página (25 áreas), mas não vale: "Limpar a folha" ligado, etapa 5 desligada (D-589). O
+  "Rodar nelas também" tirou a marca FILTRO da página. O Automático levou 31 a 41 s (só Limpar).
+- **(C)** como B, com "Gravuras em tons de cinza" marcada na página: **igual à (A), ponto por ponto**, sem
+  procurar de novo (usa a gravura guardada) (`q2-c-com-cinza.jpg`).
+- **(D)** como B, respondendo **"Pular"**: **NÃO sai igual à (A)**. Também sai em manchas, igual à B
+  (`q2-d-pulou.jpg`, 2,18 milhões de pontos diferentes da A). Causa: o "Pular" deixa a página como estava
+  (a marca FILTRO fica, o filtro fica), mas "Limpar a folha" passa a valer no livro todo, e a procura da D-659
+  (`respeitar_procura`) só vale com "Limpar a folha" desligado. Com isso, a "Respeitar" volta à regra de
+  depois do Automático (D-589).
+- **Tempo, se a "Respeitar" sozinha também procurasse depois do Automático:** a procura leva **2,5 s por
+  página** (9 páginas espalhadas, 300 DPI, PC sem outros testes; de 2,1 a 2,7 s). Em 199 páginas, cerca de
+  **504 s (8,4 min) a mais**. Isso não aconteceria dentro do "Rodar" do Automático, e sim ao gerar o PDF e ao
+  olhar cada página, porque a procura é feita quando a página é desenhada.
+
+### Investigação (sem mudar código): no "Rodar nelas também", usar a gravura já achada naquela página?
+
+Dá, mas precisa de uma marca nova na página. Hoje, depois do "Rodar nelas também", nada distingue a página 8
+de uma página cuja gravura foi achada antes por um Automático com "Gravuras e fotos" ligada e depois
+desligada. As duas têm a marcação da máquina guardada e a assinatura (`gravura_feita_com`). E o "Rodar nelas
+também" tira a marca FILTRO (`core/automatico._ligar_na_pagina`).
+- **Onde mexeria:**
+  1. `core/pipeline.garantir_selecao`: ao procurar por causa da D-659 (`etapas.respeitar_procura`), gravar na
+     página uma marca nova (ex.: `ConfigPagina.gravura_achada_no_filtro_a_mao = True`).
+  2. `modelos.py`: o campo novo, que vai para o `projeto.json`. Isso muda o formato do arquivo de dados, o que
+     pede pergunta (CLAUDE.md §6).
+  3. `core/etapas.respeitar_procura`: com "Limpar a folha" ligado, valer só se a página tiver essa marca e a
+     "Respeitar" marcada. Aí a marcação guardada vale (`a_marcacao_da_maquina_vale`) e `garantir_selecao`
+     devolve a guardada sem procurar. Nenhuma outra página é procurada, porque nenhuma outra tem a marca.
+  4. Para o "Pular" ficar igual à (A), basta o mesmo item 3 (a página pulada guarda a marca FILTRO e a
+     marcação).
+- **Riscos:**
+  - (a) formato do `projeto.json` (campo novo; projeto antigo abre sem ele, de fábrica `False`, e sai igual);
+  - (b) a D-589 ("sem 'Só as letras' e com Gravuras desmarcada, a página sai toda em preto e branco") ganha
+    uma exceção para essas páginas; o Samuel precisa aceitar isso;
+  - (c) a página é procurada de novo, só ela, se a marcação guardada ainda for a provisória (nunca desenhada
+    no tamanho do PDF) ou se as opções de gravura mudarem (assinatura);
+  - (d) se o Automático cortar ou endireitar a página, a marcação acompanha o papel (D2), como hoje;
+  - (e) usar só a assinatura, sem a marca nova, mudaria o que a `test_d589_3_*` e a P4 provam (páginas com
+    gravura de um Automático anterior também voltariam a guardar a cor).
+
 ## Perguntas para o Samuel
 
-1. (Ressalva 4) Você escolhe Preto e branco à mão na página 8 (a gravura sai certa) e **depois** roda o
-   Automático com "Limpar a folha", mas sem "Gravuras e fotos". Hoje a página 8 volta a sair toda em preto e
-   branco, como manda a D-589. Fica assim, ou a "Respeitar" também deve procurar nesse caso? A sugestão é
-   **ficar assim**: é o combinado da D-589, e marcar "Gravuras em tons de cinza" já faz procurar.
+1. (Ressalva 4; a gerente está refazendo a pergunta com a prova acima, não mexer.) Você escolhe Preto e
+   branco à mão na página 8 (a gravura sai certa) e **depois** roda o Automático com "Limpar a folha", mas sem
+   "Gravuras e fotos". Hoje a página 8 volta a sair toda em preto e branco, como manda a D-589, tanto no
+   "Rodar nelas também" quanto no "Pular" (imagens q2-b e q2-d). Com "Gravuras em tons de cinza" ela fica
+   certa (q2-c).
