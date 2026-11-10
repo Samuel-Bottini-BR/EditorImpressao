@@ -80,3 +80,13 @@ Destino:
 - Perguntar também antes de mudar o que uma rodada anterior do Automático fez: decisão nova, **D-660** (não construída).
 - Verificador testando o caminho de hoje (filtro em algumas páginas, depois cadernos no livro todo), sem janela.
   Relatório em `relatorios/automatico-mexidas-2026-11-09/` no ramo da versão de teste.
+
+## Prova da pergunta 2 (agente do conserto, 09/11, à noite) — defeito achado
+
+Página 8 do *Na escola de Jesus*, sem janela, pela conta do programa (imagens em
+`relatorios/gravura-a-mao/imagens/q2-*.jpg` no ramo `gravura-a-mao-2026-11-09`):
+- (A) Preto e branco à mão com "Respeitar": gravura em cinza.
+- (B) Depois o Automático só com "Limpar a folha", respondendo "Rodar nelas também": manchas pretas (o aviso diz que passa por cima).
+- (C) O mesmo com "Gravuras em tons de cinza" marcada: igual à (A).
+- (D) O mesmo respondendo **"Pular"**: **manchas pretas**. Defeito pela D-004 ("Pular: elas ficam como você deixou").
+  A gerente tinha dito no chat que o "Pular" guardava a gravura; estava errado, e foi corrigido no chat.
