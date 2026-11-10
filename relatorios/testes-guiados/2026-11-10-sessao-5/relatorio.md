@@ -104,3 +104,9 @@ Destino: **Lista de bugs** (10/11). Agente investigador: pedido; entra quando um
 
 Mais uma frase dele: "o erro não aparece só na pagina 13, aparece em varias." Destino: repassada ao agente investigador
 (medir o livro inteiro).
+
+## Gravura à mão e "Pular" (D-659, D-661)
+
+Palavras dele: "fiz os dois testes que você pediu e estão funcionando."
+
+Destino: Livro de decisões, D-659 e D-661 "testadas pelo Samuel em 10/11, funciona".
