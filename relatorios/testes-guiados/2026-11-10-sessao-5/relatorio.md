@@ -60,3 +60,17 @@ Destino:
 Palavras dele: "o jeito também como ele gira, olha só, não é que nem o photoshop que vira só a imagem dele, ele gira até a parte branca da area de trablho junto."
 
 Destino: acrescentado ao item da lentidão do giro na **Lista de bugs** (10/11).
+
+## Cantinho: a prova de 06/11 aberta na tela dele (09h)
+
+Palavras dele: "Não estou achando esse cantinho, por favor abre a tela do meu pc e faz o teste para eu ver" · "eu quero que seja rapido" · "você não viu minha resposta na central, pois eu respondi essa foto ai." · "a cor é diferente da cor do papel."
+
+Destino:
+- A gerente abriu `relatorios/cunha-desentortar/destino18-direita-antes-depois.png` (ramo obra) na tela dele. Não há
+  ferramenta de controlar o mouse nesta conversa.
+- A resposta dele na Central (`cantinho-outros-casos`, 09/11 19h18, "Ainda não entendi": "esse teste é totalmente
+  inconslusivo para mim, não consigo ter visão clara do que o programa tentou fazer, ou de qual problema ele tentou
+  reslver.") não tinha sido lida. A pergunta vai ser refeita no modelo do girar (D-639 e os casos que ficaram brancos).
+- "a cor é diferente da cor do papel": no "depois", o creme pintado é mais claro que o papel ao lado. Vai na pergunta
+  refeita, como defeito da D-639.
+- "eu quero que seja rapido": sem saber se é o giro na tela ou o teste; perguntado no chat.
