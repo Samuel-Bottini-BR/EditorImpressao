@@ -148,3 +148,9 @@ parece papel; a água, o céu e roupas claras passam, e os blocos vêm dos quadr
 `relatorios/quadrados-brancos-2026-11-10/relatorio.html` no ramo `obra-2026-10-26` (commit `36e0b3b2`).
 
 Destino: 2 perguntas na Central, Conferência → "Quadrados brancos no Melhorar e no Mágico pro: 2 perguntas (10/11)".
+
+Palavras dele: "mas como assim , o que parece papel para ele, não estamos usando o scantailor?" · "faça um teste com os dois para ver qual se sai melhor."
+
+Destino: explicado no chat (o ScanTailor divide, endireita, desentorta e acha as gravuras; o Melhorar e o Mágico pro são
+nossos e, à mão, não rodam o detector). O agente compara A (regra "em volta é papel"), B (detector do ScanTailor no
+Melhorar e no Mágico pro) e C (os dois), no livro inteiro, Livro de Horas 47, gabarito, Boécio e velocidade.
