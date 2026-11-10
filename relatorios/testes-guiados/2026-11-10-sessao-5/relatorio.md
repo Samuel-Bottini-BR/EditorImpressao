@@ -20,3 +20,10 @@ Destino:
   pedaço da beirada da página de fora; o aviso "A página ainda saiu deformada" não apareceu.
 - Defeito novo na **Lista de bugs** do PLANO-DEFINITIVO (10/11), nas duas cópias. Não é o conserto do cantinho (D-639),
   que vale para a página sem desentortar (print 01).
+
+## Manchas pretas nas laterais no Preto e branco (prints 03 e 04, 08h33 e 08h35)
+
+Palavras dele: "deixe anotado, hoje não temos como reconhecer essa partes que são marcas da folha ou folha meio dobrada ou manchas na folha que quando vão para o preto e branco fica essa mancha, o ocr está funcionando? porque era para ele preservar as letras e passar e deixar a folha branca, acho que ainda não chegamos no padrão do wikipedia."
+
+Destino: **Lista de bugs** (10/11), ligada aos itens 1.4 e 1.5 da Fase 1 (não feitos). O OCR (docTR) hoje só acha as
+linhas do texto para endireitar; o Preto e branco não usa o OCR.
