@@ -74,3 +74,9 @@ Destino:
 - "a cor é diferente da cor do papel": no "depois", o creme pintado é mais claro que o papel ao lado. Vai na pergunta
   refeita, como defeito da D-639.
 - "eu quero que seja rapido": sem saber se é o giro na tela ou o teste; perguntado no chat.
+
+## O giro aparece cortado (print 08, 08h47)
+
+Palavras dele: "olha como fica ruim esse girar, não consigo ver direito o que está girando porque fica cortado então não consigo voltar direito para como estava."
+
+Destino: acrescentado ao item do giro na **Lista de bugs** (10/11).
