@@ -577,6 +577,22 @@ atualize esse arquivo (ou crie um novo) quando o Samuel pedir explicitamente.
         responder novamente quando tiver sido respondido por você"): aparece "esperando a gerente explicar"; quando a
         gerente grava `gerente`/`gerenteEm` (mais nova que o `em` dele), a pergunta volta sozinha como "responder de
         novo". Ao responder um "não entendi", refazer também a pergunta (explicação e prints) na conferência.
+      - **Modelo de print de pergunta ou explicação (Samuel, 10/11/2026: "o jeito como você mostrou o o girar
+        pagina ficou muito bom, pode colocar ele como exemplo de como deve ser feito os prints de uma mensagem
+        explicativa, ficou rapido de identificar o que precisa ser analisado").** Exemplos em
+        `docs/plano/central/modelo-de-print/` (`exemplo-girar-pergunta-4.png` e `-3.png`; o script que montou,
+        `montar_provas_exemplo.py`). Todo print de pergunta segue o mesmo jeito:
+        1. **Uma imagem-resumo primeiro**, com título ("Pergunta 4 — resumo") e uma linha dizendo o livro, a
+           página e o clique feito.
+        2. **Uma faixa por situação, cada uma com sua cor e título grande:** azul "ANTES do clique", laranja
+           "DEPOIS — jeito antigo" (ou a opção 1), verde "DEPOIS — jeito novo" (ou a opção 2). Embaixo do título, uma
+           frase do que acontece ("a página 6 NÃO gira").
+        3. **As mesmas páginas, no mesmo enquadramento e na mesma ordem, em todas as faixas**, com o nome de cada uma
+           em cima ("página 1 ... página 8"), do livro de verdade (cópia), como saem no PDF ou na tela.
+        4. **O que olhar marcado em vermelho**: o nome da página em vermelho e um círculo em volta, sem cobrir o
+           conteúdo (D-421).
+        5. As imagens de cada passo também vão separadas, com legenda, depois do resumo. As cores das faixas batem
+           com as opções da pergunta.
       - **Um jeito de ver para tudo e celular (Samuel, 08/11/2026).** O seletor "Lista que abre e fecha / Caixa de
         entrada / Um por vez" fica no alto e vale para Decidir agora, Conferência e Respostas. No celular as abas ficam
         num botão "Menu" e o relatório se escolhe numa lista; o Quadro dos trabalhos e as Etapas ficam numa coluna só.
