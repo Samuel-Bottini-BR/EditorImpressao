@@ -288,3 +288,46 @@ também" tira a marca FILTRO (`core/automatico._ligar_na_pagina`).
    "Gravuras e fotos". Hoje a página 8 volta a sair toda em preto e branco, como manda a D-589, tanto no
    "Rodar nelas também" quanto no "Pular" (imagens q2-b e q2-d). Com "Gravuras em tons de cinza" ela fica
    certa (q2-c).
+
+---
+
+# D-661 (10/11/2026): o "Pular" guarda a gravura achada no Preto e branco à mão
+
+## Decisão (palavras dele, do Livro no `obra-2026-10-26`, commit `bf27f6d4`)
+Pergunta: "Posso fazer esse conserto do 'Pular'?" (o programa guarda no arquivo do livro que a gravura daquela
+página foi achada no Preto e branco à mão; livros antigos abrem igual) → **"1- pode"**.
+Na prática: no aviso das páginas mexidas (D-004), "Pular" deixa a página em Preto e branco à mão como ele
+deixou. A gravura achada continua valendo, sem procurar de novo e sem procurar nas outras. "Rodar nelas
+também" passa por cima. Fica autorizado um campo novo na página do `projeto.json` (CLAUDE.md §6). Projeto
+antigo abre sem ele e sai igual. Prova: q2-d-pulou igual à q2-a, ponto por ponto. Teste de reversão que falha
+no código de hoje.
+
+## O que já está escolhido e testado aqui (D-605)
+- D-004 (pergunta das páginas mexidas): `core/automatico.paginas_mexidas`, `_ligar_na_pagina` ("Rodar nelas
+  também" tira a marca e o valor à mão). Provas em `tests/test_decisoes_automatico.py`.
+- D-589 / P4 (etapa 5 desmarcada: sem "Só as letras" e sem o cinza, a página sai toda em preto e branco):
+  `tests/test_decisoes_montar_cadernos.py`. Só muda para a página pulada que tem o campo novo.
+- D-659 (este ramo): `tests/test_decisoes_gravura_a_mao.py`.
+- Formato do projeto: campo que falta ganha o padrão (`Projeto.de_dicionario`), como nos campos
+  `respeitar_gravuras_achadas` e `gravuras_em_tons_de_cinza`.
+
+## Como fica para quem usa e no livro (D-637)
+O Kaique põe a página 8 em Preto e branco à mão, e a gravura sai certa. Depois roda o Automático só com
+"Limpar a folha". O programa pergunta pela página mexida:
+- **"Pular"**: a página 8 fica exatamente como estava (gravura em tons de cinza), sem procurar de novo, e nenhuma
+  outra página é procurada por causa disso.
+- **"Rodar nelas também"**: o Automático passa por cima, como hoje (sem "Gravuras e fotos", a página sai toda em
+  preto e branco).
+No PDF, sai como na tela. Projeto antigo sai igual.
+
+## Plano
+1. `modelos.ConfigPagina.gravura_achada_a_mao: bool = False` (campo novo; falta = False).
+2. `core/pipeline.garantir_selecao`: ao procurar numa página em Preto e branco escolhido à mão com "Limpar a
+   folha" desligado (a procura da D-659), grava `gravura_achada_a_mao = True`.
+3. `core/etapas.respeitar_procura`: com "Limpar a folha" ligado, vale só se a página tem a marca FILTRO (o
+   "Pular" a mantém) e `gravura_achada_a_mao`. A gravura guardada vale, e `garantir_selecao` a devolve sem
+   procurar.
+4. `core/automatico._ligar_na_pagina`: no "Rodar nelas também" do Limpar, o campo volta a False (pelo gravador,
+   com Ctrl+Z).
+5. `core/paginas_em_branco._NAO_HERDA` e `core/dividir_a_mao.LIMPAR_AO_PARTIR`: o campo não passa para a página
+   posta nem para as metades (como `gravura_feita_com`).
