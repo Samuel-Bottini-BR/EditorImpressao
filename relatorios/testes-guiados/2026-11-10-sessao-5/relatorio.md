@@ -87,3 +87,7 @@ Palavras dele: "olha essa questão do canto não é urgente, pode deixar como br
 
 Destino: **D-664** (fica como está, nada muda no programa) e **Lista de espera** (refazer a pergunta no modelo do girar).
 Central `cantinho-outros-casos` respondida.
+
+Correção dele sobre o print 08: "esse print você leu errado, o que eu quis mostrar é que quando eu estou com a pagina fora da area de trabalho e vou girar ela novamente para dentro, enquanto eu estou girando ela continua com aquela parte que estava para fora cortada, e fica dificil de visualizar o que realmente vai ficar dentro da area de trabalho."
+
+Destino: texto do item corrigido na **Lista de bugs** (as duas cópias).
