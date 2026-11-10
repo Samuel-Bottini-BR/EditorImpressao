@@ -1,0 +1,30 @@
+Prova de reversao (CLAUDE.md 4.7): tests/test_decisoes_gravura_a_mao.py rodado com core/ IGUAL ao a0c99cc7 (o codigo de antes do conserto; o teste novo e o mesmo que passa depois).
+Data: 09/11/2026 16:51
+
+E       AssertionError: assert False
+E       AssertionError: não aconteceu a tempo: a gravura achada no tamanho do PDF
+E       AssertionError: não aconteceu a tempo: a gravura achada no tamanho do PDF
+E       AssertionError: não aconteceu a tempo: a gravura achada no tamanho do PDF
+E       AssertionError: não aconteceu a tempo: a página 2 procurada
+E       AssertionError: não aconteceu a tempo: a página 2 procurada
+E       AssertionError: não aconteceu a tempo: página 1
+E       AssertionError: não aconteceu a tempo: a página 1 procurada
+E       AssertionError: não aconteceu a tempo: a gravura achada
+E       AssertionError: não aconteceu a tempo: a gravura achada
+E       AssertionError: devolveu a folha crua como se fosse o desenho do PDF
+PASSED tests/test_decisoes_gravura_a_mao.py::test_d659_f_as_tres_desmarcadas_nada_e_procurado_e_sai_igual_ao_de_antes
+PASSED tests/test_decisoes_gravura_a_mao.py::test_d659_g_outros_filtros_a_mao_nada_e_procurado_e_sai_igual_ao_de_antes[melhorar]
+PASSED tests/test_decisoes_gravura_a_mao.py::test_d659_g_outros_filtros_a_mao_nada_e_procurado_e_sai_igual_ao_de_antes[magico_pro]
+PASSED tests/test_decisoes_gravura_a_mao.py::test_d659_g_outros_filtros_a_mao_nada_e_procurado_e_sai_igual_ao_de_antes[original]
+FAILED tests/test_decisoes_gravura_a_mao.py::test_d659_a_conta_quem_procura_com_limpar_desligado
+FAILED tests/test_decisoes_gravura_a_mao.py::test_d659_a_so_nesta_com_respeitar_a_gravura_e_respeitada_e_so_ela_e_procurada
+FAILED tests/test_decisoes_gravura_a_mao.py::test_d659_b_so_nesta_com_o_cinza_a_gravura_sai_em_tons_de_cinza
+FAILED tests/test_decisoes_gravura_a_mao.py::test_d659_c_so_nesta_com_so_as_letras_a_gravura_sai_como_no_original
+FAILED tests/test_decisoes_gravura_a_mao.py::test_d659_d_aplicar_em_procura_so_nas_paginas_alcancadas[todas-esperado0]
+FAILED tests/test_decisoes_gravura_a_mao.py::test_d659_d_aplicar_em_procura_so_nas_paginas_alcancadas[daqui em diante-esperado1]
+FAILED tests/test_decisoes_gravura_a_mao.py::test_d659_e_varias_paginas_escolhidas_procura_so_nelas
+FAILED tests/test_decisoes_gravura_a_mao.py::test_d659_h_o_pdf_sai_como_a_tela
+FAILED tests/test_decisoes_gravura_a_mao.py::test_d659_h_ctrl_z_desfaz_e_ctrl_shift_z_refaz
+FAILED tests/test_decisoes_gravura_a_mao.py::test_d659_i_depois_o_automatico_a_conta_e_a_de_antes
+FAILED tests/test_decisoes_gravura_a_mao.py::test_d659_a_tela_nao_troca_a_previa_pela_folha_crua
+11 failed, 4 passed in 551.73s (0:09:11)

@@ -1,0 +1,3502 @@
+{
+ "caso1/filtro/marcada_pular": {
+  "etapas_rodadas": [
+   "limpar"
+  ],
+  "opcoes": {
+   "filtro_padrao": "preto_e_branco"
+  },
+  "rodou": true,
+  "perguntas": [
+   {
+    "quantas": 1,
+    "texto": "1 página foi mexida à mão nas etapas que vão rodar. Pular essas páginas?"
+   }
+  ],
+  "avisos": [],
+  "antes": {
+   "filtro": "melhorar",
+   "filtro_que_vale": "melhorar",
+   "recorte": null,
+   "angulo_manual": null,
+   "escala": 1.0,
+   "deslocamento": [
+    0.0,
+    0.0
+   ],
+   "regioes_a_mao": 0,
+   "mexida_a_mao": [
+    "filtro"
+   ],
+   "automatico_so_nela": [],
+   "rotacao_da_folha": 0,
+   "folha_dividida": false,
+   "linha_da_folha": 0.5,
+   "marcas_da_folha": []
+  },
+  "depois": {
+   "filtro": "melhorar",
+   "filtro_que_vale": "melhorar",
+   "recorte": null,
+   "angulo_manual": null,
+   "escala": 1.0,
+   "deslocamento": [
+    0.0,
+    0.0
+   ],
+   "regioes_a_mao": 0,
+   "mexida_a_mao": [
+    "filtro"
+   ],
+   "automatico_so_nela": [],
+   "rotacao_da_folha": 0,
+   "folha_dividida": false,
+   "linha_da_folha": 0.5,
+   "marcas_da_folha": []
+  },
+  "o_feito_a_mao_ficou": true,
+  "pagina_igual_no_pdf": true,
+  "paginas_do_pdf": [
+   4,
+   4
+  ],
+  "erros_log_novo": "",
+  "excecoes": []
+ },
+ "caso1/filtro/marcada_rodar_tambem": {
+  "etapas_rodadas": [
+   "limpar"
+  ],
+  "opcoes": {
+   "filtro_padrao": "preto_e_branco"
+  },
+  "rodou": true,
+  "perguntas": [
+   {
+    "quantas": 1,
+    "texto": "1 página foi mexida à mão nas etapas que vão rodar. Pular essas páginas?"
+   }
+  ],
+  "avisos": [],
+  "antes": {
+   "filtro": "melhorar",
+   "filtro_que_vale": "melhorar",
+   "recorte": null,
+   "angulo_manual": null,
+   "escala": 1.0,
+   "deslocamento": [
+    0.0,
+    0.0
+   ],
+   "regioes_a_mao": 0,
+   "mexida_a_mao": [
+    "filtro"
+   ],
+   "automatico_so_nela": [],
+   "rotacao_da_folha": 0,
+   "folha_dividida": false,
+   "linha_da_folha": 0.5,
+   "marcas_da_folha": []
+  },
+  "depois": {
+   "filtro": "preto_e_branco",
+   "filtro_que_vale": "preto_e_branco",
+   "recorte": null,
+   "angulo_manual": null,
+   "escala": 1.0,
+   "deslocamento": [
+    0.0,
+    0.0
+   ],
+   "regioes_a_mao": 0,
+   "mexida_a_mao": [],
+   "automatico_so_nela": [],
+   "rotacao_da_folha": 0,
+   "folha_dividida": false,
+   "linha_da_folha": 0.5,
+   "marcas_da_folha": []
+  },
+  "o_feito_a_mao_ficou": false,
+  "pagina_igual_no_pdf": false,
+  "paginas_do_pdf": [
+   4,
+   4
+  ],
+  "erros_log_novo": "",
+  "excecoes": []
+ },
+ "caso1/filtro/desmarcada": {
+  "etapas_rodadas": [
+   "endireitar",
+   "cortar"
+  ],
+  "opcoes": {},
+  "rodou": true,
+  "perguntas": [],
+  "avisos": [],
+  "antes": {
+   "filtro": "melhorar",
+   "filtro_que_vale": "melhorar",
+   "recorte": null,
+   "angulo_manual": null,
+   "escala": 1.0,
+   "deslocamento": [
+    0.0,
+    0.0
+   ],
+   "regioes_a_mao": 0,
+   "mexida_a_mao": [
+    "filtro"
+   ],
+   "automatico_so_nela": [],
+   "rotacao_da_folha": 0,
+   "folha_dividida": false,
+   "linha_da_folha": 0.5,
+   "marcas_da_folha": []
+  },
+  "depois": {
+   "filtro": "melhorar",
+   "filtro_que_vale": "melhorar",
+   "recorte": null,
+   "angulo_manual": null,
+   "escala": 1.0,
+   "deslocamento": [
+    0.0,
+    0.0
+   ],
+   "regioes_a_mao": 0,
+   "mexida_a_mao": [
+    "filtro"
+   ],
+   "automatico_so_nela": [],
+   "rotacao_da_folha": 0,
+   "folha_dividida": false,
+   "linha_da_folha": 0.5,
+   "marcas_da_folha": []
+  },
+  "o_feito_a_mao_ficou": true,
+  "pagina_igual_no_pdf": false,
+  "paginas_do_pdf": [
+   4,
+   4
+  ],
+  "erros_log_novo": "",
+  "excecoes": []
+ },
+ "caso1/filtro_pb/marcada_pular": {
+  "etapas_rodadas": [
+   "limpar"
+  ],
+  "opcoes": {
+   "filtro_padrao": "melhorar"
+  },
+  "rodou": true,
+  "perguntas": [
+   {
+    "quantas": 1,
+    "texto": "1 página foi mexida à mão nas etapas que vão rodar. Pular essas páginas?"
+   }
+  ],
+  "avisos": [],
+  "antes": {
+   "filtro": "preto_e_branco",
+   "filtro_que_vale": "preto_e_branco",
+   "recorte": null,
+   "angulo_manual": null,
+   "escala": 1.0,
+   "deslocamento": [
+    0.0,
+    0.0
+   ],
+   "regioes_a_mao": 0,
+   "mexida_a_mao": [
+    "filtro"
+   ],
+   "automatico_so_nela": [],
+   "rotacao_da_folha": 0,
+   "folha_dividida": false,
+   "linha_da_folha": 0.5,
+   "marcas_da_folha": []
+  },
+  "depois": {
+   "filtro": "preto_e_branco",
+   "filtro_que_vale": "preto_e_branco",
+   "recorte": null,
+   "angulo_manual": null,
+   "escala": 1.0,
+   "deslocamento": [
+    0.0,
+    0.0
+   ],
+   "regioes_a_mao": 0,
+   "mexida_a_mao": [
+    "filtro"
+   ],
+   "automatico_so_nela": [],
+   "rotacao_da_folha": 0,
+   "folha_dividida": false,
+   "linha_da_folha": 0.5,
+   "marcas_da_folha": []
+  },
+  "o_feito_a_mao_ficou": true,
+  "pagina_igual_no_pdf": true,
+  "paginas_do_pdf": [
+   4,
+   4
+  ],
+  "erros_log_novo": "",
+  "excecoes": []
+ },
+ "caso1/filtro_pb/marcada_rodar_tambem": {
+  "etapas_rodadas": [
+   "limpar"
+  ],
+  "opcoes": {
+   "filtro_padrao": "melhorar"
+  },
+  "rodou": true,
+  "perguntas": [
+   {
+    "quantas": 1,
+    "texto": "1 página foi mexida à mão nas etapas que vão rodar. Pular essas páginas?"
+   }
+  ],
+  "avisos": [],
+  "antes": {
+   "filtro": "preto_e_branco",
+   "filtro_que_vale": "preto_e_branco",
+   "recorte": null,
+   "angulo_manual": null,
+   "escala": 1.0,
+   "deslocamento": [
+    0.0,
+    0.0
+   ],
+   "regioes_a_mao": 0,
+   "mexida_a_mao": [
+    "filtro"
+   ],
+   "automatico_so_nela": [],
+   "rotacao_da_folha": 0,
+   "folha_dividida": false,
+   "linha_da_folha": 0.5,
+   "marcas_da_folha": []
+  },
+  "depois": {
+   "filtro": "melhorar",
+   "filtro_que_vale": "melhorar",
+   "recorte": null,
+   "angulo_manual": null,
+   "escala": 1.0,
+   "deslocamento": [
+    0.0,
+    0.0
+   ],
+   "regioes_a_mao": 0,
+   "mexida_a_mao": [],
+   "automatico_so_nela": [],
+   "rotacao_da_folha": 0,
+   "folha_dividida": false,
+   "linha_da_folha": 0.5,
+   "marcas_da_folha": []
+  },
+  "o_feito_a_mao_ficou": false,
+  "pagina_igual_no_pdf": false,
+  "paginas_do_pdf": [
+   4,
+   4
+  ],
+  "erros_log_novo": "",
+  "excecoes": []
+ },
+ "caso1/filtro_pb/desmarcada": {
+  "etapas_rodadas": [
+   "endireitar",
+   "cortar"
+  ],
+  "opcoes": {},
+  "rodou": true,
+  "perguntas": [],
+  "avisos": [],
+  "antes": {
+   "filtro": "preto_e_branco",
+   "filtro_que_vale": "preto_e_branco",
+   "recorte": null,
+   "angulo_manual": null,
+   "escala": 1.0,
+   "deslocamento": [
+    0.0,
+    0.0
+   ],
+   "regioes_a_mao": 0,
+   "mexida_a_mao": [
+    "filtro"
+   ],
+   "automatico_so_nela": [],
+   "rotacao_da_folha": 0,
+   "folha_dividida": false,
+   "linha_da_folha": 0.5,
+   "marcas_da_folha": []
+  },
+  "depois": {
+   "filtro": "preto_e_branco",
+   "filtro_que_vale": "preto_e_branco",
+   "recorte": null,
+   "angulo_manual": null,
+   "escala": 1.0,
+   "deslocamento": [
+    0.0,
+    0.0
+   ],
+   "regioes_a_mao": 0,
+   "mexida_a_mao": [
+    "filtro"
+   ],
+   "automatico_so_nela": [],
+   "rotacao_da_folha": 0,
+   "folha_dividida": false,
+   "linha_da_folha": 0.5,
+   "marcas_da_folha": []
+  },
+  "o_feito_a_mao_ficou": true,
+  "pagina_igual_no_pdf": false,
+  "paginas_do_pdf": [
+   4,
+   4
+  ],
+  "erros_log_novo": "",
+  "excecoes": []
+ },
+ "caso1/cortar/marcada_pular": {
+  "etapas_rodadas": [
+   "cortar"
+  ],
+  "opcoes": {},
+  "rodou": true,
+  "perguntas": [
+   {
+    "quantas": 1,
+    "texto": "1 página foi mexida à mão nas etapas que vão rodar. Pular essas páginas?"
+   }
+  ],
+  "avisos": [],
+  "antes": {
+   "filtro": "original",
+   "filtro_que_vale": "original",
+   "recorte": [
+    0.1,
+    0.1,
+    0.9,
+    0.9
+   ],
+   "angulo_manual": null,
+   "escala": 1.0,
+   "deslocamento": [
+    0.0,
+    0.0
+   ],
+   "regioes_a_mao": 0,
+   "mexida_a_mao": [
+    "cortar"
+   ],
+   "automatico_so_nela": [],
+   "rotacao_da_folha": 0,
+   "folha_dividida": false,
+   "linha_da_folha": 0.5,
+   "marcas_da_folha": []
+  },
+  "depois": {
+   "filtro": "original",
+   "filtro_que_vale": "original",
+   "recorte": [
+    0.1,
+    0.1,
+    0.9,
+    0.9
+   ],
+   "angulo_manual": null,
+   "escala": 1.0,
+   "deslocamento": [
+    0.0,
+    0.0
+   ],
+   "regioes_a_mao": 0,
+   "mexida_a_mao": [
+    "cortar"
+   ],
+   "automatico_so_nela": [],
+   "rotacao_da_folha": 0,
+   "folha_dividida": false,
+   "linha_da_folha": 0.5,
+   "marcas_da_folha": []
+  },
+  "o_feito_a_mao_ficou": true,
+  "pagina_igual_no_pdf": true,
+  "paginas_do_pdf": [
+   4,
+   4
+  ],
+  "erros_log_novo": "",
+  "excecoes": []
+ },
+ "caso1/cortar/marcada_rodar_tambem": {
+  "etapas_rodadas": [
+   "cortar"
+  ],
+  "opcoes": {},
+  "rodou": true,
+  "perguntas": [
+   {
+    "quantas": 1,
+    "texto": "1 página foi mexida à mão nas etapas que vão rodar. Pular essas páginas?"
+   }
+  ],
+  "avisos": [],
+  "antes": {
+   "filtro": "original",
+   "filtro_que_vale": "original",
+   "recorte": [
+    0.1,
+    0.1,
+    0.9,
+    0.9
+   ],
+   "angulo_manual": null,
+   "escala": 1.0,
+   "deslocamento": [
+    0.0,
+    0.0
+   ],
+   "regioes_a_mao": 0,
+   "mexida_a_mao": [
+    "cortar"
+   ],
+   "automatico_so_nela": [],
+   "rotacao_da_folha": 0,
+   "folha_dividida": false,
+   "linha_da_folha": 0.5,
+   "marcas_da_folha": []
+  },
+  "depois": {
+   "filtro": "original",
+   "filtro_que_vale": "original",
+   "recorte": null,
+   "angulo_manual": null,
+   "escala": 1.0,
+   "deslocamento": [
+    0.0,
+    0.0
+   ],
+   "regioes_a_mao": 0,
+   "mexida_a_mao": [],
+   "automatico_so_nela": [],
+   "rotacao_da_folha": 0,
+   "folha_dividida": false,
+   "linha_da_folha": 0.5,
+   "marcas_da_folha": []
+  },
+  "o_feito_a_mao_ficou": false,
+  "pagina_igual_no_pdf": false,
+  "paginas_do_pdf": [
+   4,
+   4
+  ],
+  "erros_log_novo": "",
+  "excecoes": []
+ },
+ "caso1/cortar/desmarcada": {
+  "etapas_rodadas": [
+   "endireitar",
+   "limpar"
+  ],
+  "opcoes": {
+   "filtro_padrao": "preto_e_branco"
+  },
+  "rodou": true,
+  "perguntas": [],
+  "avisos": [],
+  "antes": {
+   "filtro": "original",
+   "filtro_que_vale": "original",
+   "recorte": [
+    0.1,
+    0.1,
+    0.9,
+    0.9
+   ],
+   "angulo_manual": null,
+   "escala": 1.0,
+   "deslocamento": [
+    0.0,
+    0.0
+   ],
+   "regioes_a_mao": 0,
+   "mexida_a_mao": [
+    "cortar"
+   ],
+   "automatico_so_nela": [],
+   "rotacao_da_folha": 0,
+   "folha_dividida": false,
+   "linha_da_folha": 0.5,
+   "marcas_da_folha": []
+  },
+  "depois": {
+   "filtro": "preto_e_branco",
+   "filtro_que_vale": "preto_e_branco",
+   "recorte": [
+    0.1,
+    0.1,
+    0.9,
+    0.9
+   ],
+   "angulo_manual": null,
+   "escala": 1.0,
+   "deslocamento": [
+    0.0,
+    0.0
+   ],
+   "regioes_a_mao": 0,
+   "mexida_a_mao": [
+    "cortar"
+   ],
+   "automatico_so_nela": [],
+   "rotacao_da_folha": 0,
+   "folha_dividida": false,
+   "linha_da_folha": 0.5,
+   "marcas_da_folha": []
+  },
+  "o_feito_a_mao_ficou": true,
+  "pagina_igual_no_pdf": false,
+  "paginas_do_pdf": [
+   4,
+   4
+  ],
+  "erros_log_novo": "",
+  "excecoes": []
+ },
+ "caso1/endireitar/marcada_pular": {
+  "etapas_rodadas": [
+   "endireitar"
+  ],
+  "opcoes": {},
+  "rodou": true,
+  "perguntas": [
+   {
+    "quantas": 1,
+    "texto": "1 página foi mexida à mão nas etapas que vão rodar. Pular essas páginas?"
+   }
+  ],
+  "avisos": [],
+  "antes": {
+   "filtro": "original",
+   "filtro_que_vale": "original",
+   "recorte": null,
+   "angulo_manual": 1.5,
+   "escala": 1.0,
+   "deslocamento": [
+    0.0,
+    0.0
+   ],
+   "regioes_a_mao": 0,
+   "mexida_a_mao": [
+    "endireitar"
+   ],
+   "automatico_so_nela": [],
+   "rotacao_da_folha": 0,
+   "folha_dividida": false,
+   "linha_da_folha": 0.5,
+   "marcas_da_folha": []
+  },
+  "depois": {
+   "filtro": "original",
+   "filtro_que_vale": "original",
+   "recorte": null,
+   "angulo_manual": 1.5,
+   "escala": 1.0,
+   "deslocamento": [
+    0.0,
+    0.0
+   ],
+   "regioes_a_mao": 0,
+   "mexida_a_mao": [
+    "endireitar"
+   ],
+   "automatico_so_nela": [],
+   "rotacao_da_folha": 0,
+   "folha_dividida": false,
+   "linha_da_folha": 0.5,
+   "marcas_da_folha": []
+  },
+  "o_feito_a_mao_ficou": true,
+  "pagina_igual_no_pdf": true,
+  "paginas_do_pdf": [
+   4,
+   4
+  ],
+  "erros_log_novo": "",
+  "excecoes": []
+ },
+ "caso1/endireitar/marcada_rodar_tambem": {
+  "etapas_rodadas": [
+   "endireitar"
+  ],
+  "opcoes": {},
+  "rodou": true,
+  "perguntas": [
+   {
+    "quantas": 1,
+    "texto": "1 página foi mexida à mão nas etapas que vão rodar. Pular essas páginas?"
+   }
+  ],
+  "avisos": [],
+  "antes": {
+   "filtro": "original",
+   "filtro_que_vale": "original",
+   "recorte": null,
+   "angulo_manual": 1.5,
+   "escala": 1.0,
+   "deslocamento": [
+    0.0,
+    0.0
+   ],
+   "regioes_a_mao": 0,
+   "mexida_a_mao": [
+    "endireitar"
+   ],
+   "automatico_so_nela": [],
+   "rotacao_da_folha": 0,
+   "folha_dividida": false,
+   "linha_da_folha": 0.5,
+   "marcas_da_folha": []
+  },
+  "depois": {
+   "filtro": "original",
+   "filtro_que_vale": "original",
+   "recorte": null,
+   "angulo_manual": null,
+   "escala": 1.0,
+   "deslocamento": [
+    0.0,
+    0.0
+   ],
+   "regioes_a_mao": 0,
+   "mexida_a_mao": [],
+   "automatico_so_nela": [],
+   "rotacao_da_folha": 0,
+   "folha_dividida": false,
+   "linha_da_folha": 0.5,
+   "marcas_da_folha": []
+  },
+  "o_feito_a_mao_ficou": false,
+  "pagina_igual_no_pdf": false,
+  "paginas_do_pdf": [
+   4,
+   4
+  ],
+  "erros_log_novo": "",
+  "excecoes": []
+ },
+ "caso1/endireitar/desmarcada": {
+  "etapas_rodadas": [
+   "cortar",
+   "limpar"
+  ],
+  "opcoes": {
+   "filtro_padrao": "preto_e_branco"
+  },
+  "rodou": true,
+  "perguntas": [],
+  "avisos": [],
+  "antes": {
+   "filtro": "original",
+   "filtro_que_vale": "original",
+   "recorte": null,
+   "angulo_manual": 1.5,
+   "escala": 1.0,
+   "deslocamento": [
+    0.0,
+    0.0
+   ],
+   "regioes_a_mao": 0,
+   "mexida_a_mao": [
+    "endireitar"
+   ],
+   "automatico_so_nela": [],
+   "rotacao_da_folha": 0,
+   "folha_dividida": false,
+   "linha_da_folha": 0.5,
+   "marcas_da_folha": []
+  },
+  "depois": {
+   "filtro": "preto_e_branco",
+   "filtro_que_vale": "preto_e_branco",
+   "recorte": null,
+   "angulo_manual": 1.5,
+   "escala": 1.0,
+   "deslocamento": [
+    0.0,
+    0.0
+   ],
+   "regioes_a_mao": 0,
+   "mexida_a_mao": [
+    "endireitar"
+   ],
+   "automatico_so_nela": [],
+   "rotacao_da_folha": 0,
+   "folha_dividida": false,
+   "linha_da_folha": 0.5,
+   "marcas_da_folha": []
+  },
+  "o_feito_a_mao_ficou": true,
+  "pagina_igual_no_pdf": false,
+  "paginas_do_pdf": [
+   4,
+   4
+  ],
+  "erros_log_novo": "",
+  "excecoes": []
+ },
+ "caso1/marcar/marcada_pular": {
+  "etapas_rodadas": [
+   "limpar",
+   "gravuras"
+  ],
+  "opcoes": {
+   "filtro_padrao": "preto_e_branco"
+  },
+  "rodou": true,
+  "perguntas": [],
+  "avisos": [],
+  "antes": {
+   "filtro": "original",
+   "filtro_que_vale": "original",
+   "recorte": null,
+   "angulo_manual": null,
+   "escala": 1.0,
+   "deslocamento": [
+    0.0,
+    0.0
+   ],
+   "regioes_a_mao": 1,
+   "mexida_a_mao": [
+    "marcar"
+   ],
+   "automatico_so_nela": [],
+   "rotacao_da_folha": 0,
+   "folha_dividida": false,
+   "linha_da_folha": 0.5,
+   "marcas_da_folha": []
+  },
+  "depois": {
+   "filtro": "preto_e_branco",
+   "filtro_que_vale": "preto_e_branco",
+   "recorte": null,
+   "angulo_manual": null,
+   "escala": 1.0,
+   "deslocamento": [
+    0.0,
+    0.0
+   ],
+   "regioes_a_mao": 1,
+   "mexida_a_mao": [
+    "marcar"
+   ],
+   "automatico_so_nela": [],
+   "rotacao_da_folha": 0,
+   "folha_dividida": false,
+   "linha_da_folha": 0.5,
+   "marcas_da_folha": []
+  },
+  "o_feito_a_mao_ficou": true,
+  "pagina_igual_no_pdf": false,
+  "paginas_do_pdf": [
+   4,
+   4
+  ],
+  "erros_log_novo": "",
+  "excecoes": []
+ },
+ "caso1/marcar/marcada_rodar_tambem": {
+  "etapas_rodadas": [
+   "limpar",
+   "gravuras"
+  ],
+  "opcoes": {
+   "filtro_padrao": "preto_e_branco"
+  },
+  "rodou": true,
+  "perguntas": [],
+  "avisos": [],
+  "antes": {
+   "filtro": "original",
+   "filtro_que_vale": "original",
+   "recorte": null,
+   "angulo_manual": null,
+   "escala": 1.0,
+   "deslocamento": [
+    0.0,
+    0.0
+   ],
+   "regioes_a_mao": 1,
+   "mexida_a_mao": [
+    "marcar"
+   ],
+   "automatico_so_nela": [],
+   "rotacao_da_folha": 0,
+   "folha_dividida": false,
+   "linha_da_folha": 0.5,
+   "marcas_da_folha": []
+  },
+  "depois": {
+   "filtro": "preto_e_branco",
+   "filtro_que_vale": "preto_e_branco",
+   "recorte": null,
+   "angulo_manual": null,
+   "escala": 1.0,
+   "deslocamento": [
+    0.0,
+    0.0
+   ],
+   "regioes_a_mao": 1,
+   "mexida_a_mao": [
+    "marcar"
+   ],
+   "automatico_so_nela": [],
+   "rotacao_da_folha": 0,
+   "folha_dividida": false,
+   "linha_da_folha": 0.5,
+   "marcas_da_folha": []
+  },
+  "o_feito_a_mao_ficou": true,
+  "pagina_igual_no_pdf": false,
+  "paginas_do_pdf": [
+   4,
+   4
+  ],
+  "erros_log_novo": "",
+  "excecoes": []
+ },
+ "caso1/marcar/desmarcada": {
+  "etapas_rodadas": [
+   "endireitar",
+   "cortar"
+  ],
+  "opcoes": {},
+  "rodou": true,
+  "perguntas": [],
+  "avisos": [],
+  "antes": {
+   "filtro": "original",
+   "filtro_que_vale": "original",
+   "recorte": null,
+   "angulo_manual": null,
+   "escala": 1.0,
+   "deslocamento": [
+    0.0,
+    0.0
+   ],
+   "regioes_a_mao": 1,
+   "mexida_a_mao": [
+    "marcar"
+   ],
+   "automatico_so_nela": [],
+   "rotacao_da_folha": 0,
+   "folha_dividida": false,
+   "linha_da_folha": 0.5,
+   "marcas_da_folha": []
+  },
+  "depois": {
+   "filtro": "original",
+   "filtro_que_vale": "original",
+   "recorte": null,
+   "angulo_manual": null,
+   "escala": 1.0,
+   "deslocamento": [
+    0.0,
+    0.0
+   ],
+   "regioes_a_mao": 1,
+   "mexida_a_mao": [
+    "marcar"
+   ],
+   "automatico_so_nela": [],
+   "rotacao_da_folha": 0,
+   "folha_dividida": false,
+   "linha_da_folha": 0.5,
+   "marcas_da_folha": []
+  },
+  "o_feito_a_mao_ficou": true,
+  "pagina_igual_no_pdf": false,
+  "paginas_do_pdf": [
+   4,
+   4
+  ],
+  "erros_log_novo": "",
+  "excecoes": []
+ },
+ "caso1/mover/marcada_pular": {
+  "etapas_rodadas": [
+   "margens"
+  ],
+  "opcoes": {},
+  "rodou": true,
+  "perguntas": [],
+  "avisos": [],
+  "antes": {
+   "filtro": "original",
+   "filtro_que_vale": "original",
+   "recorte": null,
+   "angulo_manual": null,
+   "escala": 0.8,
+   "deslocamento": [
+    0.05,
+    0.0
+   ],
+   "regioes_a_mao": 0,
+   "mexida_a_mao": [
+    "mover"
+   ],
+   "automatico_so_nela": [],
+   "rotacao_da_folha": 0,
+   "folha_dividida": false,
+   "linha_da_folha": 0.5,
+   "marcas_da_folha": []
+  },
+  "depois": {
+   "filtro": "original",
+   "filtro_que_vale": "original",
+   "recorte": null,
+   "angulo_manual": null,
+   "escala": 0.8,
+   "deslocamento": [
+    0.05,
+    0.0
+   ],
+   "regioes_a_mao": 0,
+   "mexida_a_mao": [
+    "mover"
+   ],
+   "automatico_so_nela": [],
+   "rotacao_da_folha": 0,
+   "folha_dividida": false,
+   "linha_da_folha": 0.5,
+   "marcas_da_folha": []
+  },
+  "o_feito_a_mao_ficou": true,
+  "pagina_igual_no_pdf": false,
+  "paginas_do_pdf": [
+   4,
+   4
+  ],
+  "erros_log_novo": "",
+  "excecoes": []
+ },
+ "caso1/mover/marcada_rodar_tambem": {
+  "etapas_rodadas": [
+   "margens"
+  ],
+  "opcoes": {},
+  "rodou": true,
+  "perguntas": [],
+  "avisos": [],
+  "antes": {
+   "filtro": "original",
+   "filtro_que_vale": "original",
+   "recorte": null,
+   "angulo_manual": null,
+   "escala": 0.8,
+   "deslocamento": [
+    0.05,
+    0.0
+   ],
+   "regioes_a_mao": 0,
+   "mexida_a_mao": [
+    "mover"
+   ],
+   "automatico_so_nela": [],
+   "rotacao_da_folha": 0,
+   "folha_dividida": false,
+   "linha_da_folha": 0.5,
+   "marcas_da_folha": []
+  },
+  "depois": {
+   "filtro": "original",
+   "filtro_que_vale": "original",
+   "recorte": null,
+   "angulo_manual": null,
+   "escala": 0.8,
+   "deslocamento": [
+    0.05,
+    0.0
+   ],
+   "regioes_a_mao": 0,
+   "mexida_a_mao": [
+    "mover"
+   ],
+   "automatico_so_nela": [],
+   "rotacao_da_folha": 0,
+   "folha_dividida": false,
+   "linha_da_folha": 0.5,
+   "marcas_da_folha": []
+  },
+  "o_feito_a_mao_ficou": true,
+  "pagina_igual_no_pdf": false,
+  "paginas_do_pdf": [
+   4,
+   4
+  ],
+  "erros_log_novo": "",
+  "excecoes": []
+ },
+ "caso1/mover/desmarcada": {
+  "etapas_rodadas": [
+   "endireitar",
+   "cortar",
+   "limpar"
+  ],
+  "opcoes": {
+   "filtro_padrao": "preto_e_branco"
+  },
+  "rodou": true,
+  "perguntas": [],
+  "avisos": [],
+  "antes": {
+   "filtro": "original",
+   "filtro_que_vale": "original",
+   "recorte": null,
+   "angulo_manual": null,
+   "escala": 0.8,
+   "deslocamento": [
+    0.05,
+    0.0
+   ],
+   "regioes_a_mao": 0,
+   "mexida_a_mao": [
+    "mover"
+   ],
+   "automatico_so_nela": [],
+   "rotacao_da_folha": 0,
+   "folha_dividida": false,
+   "linha_da_folha": 0.5,
+   "marcas_da_folha": []
+  },
+  "depois": {
+   "filtro": "preto_e_branco",
+   "filtro_que_vale": "preto_e_branco",
+   "recorte": null,
+   "angulo_manual": null,
+   "escala": 0.8,
+   "deslocamento": [
+    0.05,
+    0.0
+   ],
+   "regioes_a_mao": 0,
+   "mexida_a_mao": [
+    "mover"
+   ],
+   "automatico_so_nela": [],
+   "rotacao_da_folha": 0,
+   "folha_dividida": false,
+   "linha_da_folha": 0.5,
+   "marcas_da_folha": []
+  },
+  "o_feito_a_mao_ficou": true,
+  "pagina_igual_no_pdf": false,
+  "paginas_do_pdf": [
+   4,
+   4
+  ],
+  "erros_log_novo": "",
+  "excecoes": []
+ },
+ "caso1/dividir/marcada_pular": {
+  "etapas_rodadas": [
+   "dividir"
+  ],
+  "opcoes": {},
+  "rodou": true,
+  "perguntas": [
+   {
+    "quantas": 2,
+    "texto": "2 páginas foram mexidas à mão nas etapas que vão rodar. Pular essas páginas?"
+   }
+  ],
+  "avisos": [],
+  "antes": {
+   "filtro": "original",
+   "filtro_que_vale": "original",
+   "recorte": null,
+   "angulo_manual": null,
+   "escala": 1.0,
+   "deslocamento": [
+    0.0,
+    0.0
+   ],
+   "regioes_a_mao": 0,
+   "mexida_a_mao": [],
+   "automatico_so_nela": [],
+   "rotacao_da_folha": 0,
+   "folha_dividida": true,
+   "linha_da_folha": 0.47,
+   "marcas_da_folha": [
+    "dividir"
+   ]
+  },
+  "depois": {
+   "filtro": "original",
+   "filtro_que_vale": "original",
+   "recorte": null,
+   "angulo_manual": null,
+   "escala": 1.0,
+   "deslocamento": [
+    0.0,
+    0.0
+   ],
+   "regioes_a_mao": 0,
+   "mexida_a_mao": [],
+   "automatico_so_nela": [],
+   "rotacao_da_folha": 0,
+   "folha_dividida": true,
+   "linha_da_folha": 0.47,
+   "marcas_da_folha": [
+    "dividir"
+   ]
+  },
+  "o_feito_a_mao_ficou": true,
+  "pagina_igual_no_pdf": true,
+  "paginas_do_pdf": [
+   5,
+   5
+  ],
+  "erros_log_novo": "",
+  "excecoes": []
+ },
+ "caso1/dividir/marcada_rodar_tambem": {
+  "etapas_rodadas": [
+   "dividir"
+  ],
+  "opcoes": {},
+  "rodou": true,
+  "perguntas": [
+   {
+    "quantas": 2,
+    "texto": "2 páginas foram mexidas à mão nas etapas que vão rodar. Pular essas páginas?"
+   }
+  ],
+  "avisos": [],
+  "antes": {
+   "filtro": "original",
+   "filtro_que_vale": "original",
+   "recorte": null,
+   "angulo_manual": null,
+   "escala": 1.0,
+   "deslocamento": [
+    0.0,
+    0.0
+   ],
+   "regioes_a_mao": 0,
+   "mexida_a_mao": [],
+   "automatico_so_nela": [],
+   "rotacao_da_folha": 0,
+   "folha_dividida": true,
+   "linha_da_folha": 0.47,
+   "marcas_da_folha": [
+    "dividir"
+   ]
+  },
+  "depois": {
+   "filtro": "original",
+   "filtro_que_vale": "original",
+   "recorte": null,
+   "angulo_manual": null,
+   "escala": 1.0,
+   "deslocamento": [
+    0.0,
+    0.0
+   ],
+   "regioes_a_mao": 0,
+   "mexida_a_mao": [],
+   "automatico_so_nela": [],
+   "rotacao_da_folha": 0,
+   "folha_dividida": true,
+   "linha_da_folha": 0.4792,
+   "marcas_da_folha": []
+  },
+  "o_feito_a_mao_ficou": false,
+  "pagina_igual_no_pdf": false,
+  "paginas_do_pdf": [
+   5,
+   5
+  ],
+  "erros_log_novo": "",
+  "excecoes": []
+ },
+ "caso1/dividir/desmarcada": {
+  "etapas_rodadas": [
+   "endireitar",
+   "cortar",
+   "limpar"
+  ],
+  "opcoes": {
+   "filtro_padrao": "preto_e_branco"
+  },
+  "rodou": true,
+  "perguntas": [],
+  "avisos": [],
+  "antes": {
+   "filtro": "original",
+   "filtro_que_vale": "original",
+   "recorte": null,
+   "angulo_manual": null,
+   "escala": 1.0,
+   "deslocamento": [
+    0.0,
+    0.0
+   ],
+   "regioes_a_mao": 0,
+   "mexida_a_mao": [],
+   "automatico_so_nela": [],
+   "rotacao_da_folha": 0,
+   "folha_dividida": true,
+   "linha_da_folha": 0.47,
+   "marcas_da_folha": [
+    "dividir"
+   ]
+  },
+  "depois": {
+   "filtro": "preto_e_branco",
+   "filtro_que_vale": "preto_e_branco",
+   "recorte": null,
+   "angulo_manual": null,
+   "escala": 1.0,
+   "deslocamento": [
+    0.0,
+    0.0
+   ],
+   "regioes_a_mao": 0,
+   "mexida_a_mao": [],
+   "automatico_so_nela": [],
+   "rotacao_da_folha": 0,
+   "folha_dividida": true,
+   "linha_da_folha": 0.47,
+   "marcas_da_folha": [
+    "dividir"
+   ]
+  },
+  "o_feito_a_mao_ficou": true,
+  "pagina_igual_no_pdf": false,
+  "paginas_do_pdf": [
+   5,
+   5
+  ],
+  "erros_log_novo": "",
+  "excecoes": []
+ },
+ "caso1/girar/marcada_pular": {
+  "etapas_rodadas": [
+   "dividir",
+   "endireitar",
+   "cortar",
+   "limpar"
+  ],
+  "opcoes": {
+   "filtro_padrao": "preto_e_branco"
+  },
+  "rodou": true,
+  "perguntas": [],
+  "avisos": [],
+  "antes": {
+   "filtro": "original",
+   "filtro_que_vale": "original",
+   "recorte": null,
+   "angulo_manual": null,
+   "escala": 1.0,
+   "deslocamento": [
+    0.0,
+    0.0
+   ],
+   "regioes_a_mao": 0,
+   "mexida_a_mao": [],
+   "automatico_so_nela": [],
+   "rotacao_da_folha": 90,
+   "folha_dividida": false,
+   "linha_da_folha": 0.5,
+   "marcas_da_folha": [
+    "girar"
+   ]
+  },
+  "depois": {
+   "filtro": "preto_e_branco",
+   "filtro_que_vale": "preto_e_branco",
+   "recorte": null,
+   "angulo_manual": null,
+   "escala": 1.0,
+   "deslocamento": [
+    0.0,
+    0.0
+   ],
+   "regioes_a_mao": 0,
+   "mexida_a_mao": [],
+   "automatico_so_nela": [],
+   "rotacao_da_folha": 90,
+   "folha_dividida": true,
+   "linha_da_folha": 0.5,
+   "marcas_da_folha": [
+    "girar"
+   ]
+  },
+  "o_feito_a_mao_ficou": true,
+  "pagina_igual_no_pdf": false,
+  "paginas_do_pdf": [
+   4,
+   6
+  ],
+  "erros_log_novo": "",
+  "excecoes": []
+ },
+ "caso1/girar/marcada_rodar_tambem": {
+  "etapas_rodadas": [
+   "dividir",
+   "endireitar",
+   "cortar",
+   "limpar"
+  ],
+  "opcoes": {
+   "filtro_padrao": "preto_e_branco"
+  },
+  "rodou": true,
+  "perguntas": [],
+  "avisos": [],
+  "antes": {
+   "filtro": "original",
+   "filtro_que_vale": "original",
+   "recorte": null,
+   "angulo_manual": null,
+   "escala": 1.0,
+   "deslocamento": [
+    0.0,
+    0.0
+   ],
+   "regioes_a_mao": 0,
+   "mexida_a_mao": [],
+   "automatico_so_nela": [],
+   "rotacao_da_folha": 90,
+   "folha_dividida": false,
+   "linha_da_folha": 0.5,
+   "marcas_da_folha": [
+    "girar"
+   ]
+  },
+  "depois": {
+   "filtro": "preto_e_branco",
+   "filtro_que_vale": "preto_e_branco",
+   "recorte": null,
+   "angulo_manual": null,
+   "escala": 1.0,
+   "deslocamento": [
+    0.0,
+    0.0
+   ],
+   "regioes_a_mao": 0,
+   "mexida_a_mao": [],
+   "automatico_so_nela": [],
+   "rotacao_da_folha": 90,
+   "folha_dividida": true,
+   "linha_da_folha": 0.5,
+   "marcas_da_folha": [
+    "girar"
+   ]
+  },
+  "o_feito_a_mao_ficou": true,
+  "pagina_igual_no_pdf": false,
+  "paginas_do_pdf": [
+   4,
+   6
+  ],
+  "erros_log_novo": "",
+  "excecoes": []
+ },
+ "caso1/girar/desmarcada": {
+  "etapas_rodadas": [
+   "cadernos"
+  ],
+  "opcoes": {},
+  "rodou": true,
+  "perguntas": [],
+  "avisos": [],
+  "antes": {
+   "filtro": "original",
+   "filtro_que_vale": "original",
+   "recorte": null,
+   "angulo_manual": null,
+   "escala": 1.0,
+   "deslocamento": [
+    0.0,
+    0.0
+   ],
+   "regioes_a_mao": 0,
+   "mexida_a_mao": [],
+   "automatico_so_nela": [],
+   "rotacao_da_folha": 90,
+   "folha_dividida": false,
+   "linha_da_folha": 0.5,
+   "marcas_da_folha": [
+    "girar"
+   ]
+  },
+  "depois": {
+   "filtro": "original",
+   "filtro_que_vale": "original",
+   "recorte": null,
+   "angulo_manual": null,
+   "escala": 1.0,
+   "deslocamento": [
+    0.0,
+    0.0
+   ],
+   "regioes_a_mao": 0,
+   "mexida_a_mao": [],
+   "automatico_so_nela": [],
+   "rotacao_da_folha": 90,
+   "folha_dividida": false,
+   "linha_da_folha": 0.5,
+   "marcas_da_folha": [
+    "girar"
+   ]
+  },
+  "o_feito_a_mao_ficou": true,
+  "pagina_igual_no_pdf": true,
+  "paginas_do_pdf": [
+   4,
+   4
+  ],
+  "erros_log_novo": "",
+  "excecoes": []
+ },
+ "caso1/girar_e_dividir/deitada_endireitada": {
+  "rodou": true,
+  "perguntas": [],
+  "antes": {
+   "filtro": "original",
+   "filtro_que_vale": "original",
+   "recorte": null,
+   "angulo_manual": null,
+   "escala": 1.0,
+   "deslocamento": [
+    0.0,
+    0.0
+   ],
+   "regioes_a_mao": 0,
+   "mexida_a_mao": [],
+   "automatico_so_nela": [],
+   "rotacao_da_folha": 270,
+   "folha_dividida": false,
+   "linha_da_folha": 0.5,
+   "marcas_da_folha": [
+    "girar"
+   ]
+  },
+  "depois": {
+   "filtro": "original",
+   "filtro_que_vale": "original",
+   "recorte": null,
+   "angulo_manual": null,
+   "escala": 1.0,
+   "deslocamento": [
+    0.0,
+    0.0
+   ],
+   "regioes_a_mao": 0,
+   "mexida_a_mao": [],
+   "automatico_so_nela": [],
+   "rotacao_da_folha": 270,
+   "folha_dividida": false,
+   "linha_da_folha": 0.5,
+   "marcas_da_folha": [
+    "girar"
+   ]
+  },
+  "paginas_da_folha_girada_depois": 1,
+  "paginas_do_livro": 3,
+  "paginas_do_pdf": 3,
+  "erros_log_novo": "",
+  "excecoes": []
+ },
+ "caso1/girar_e_dividir/em_pe_deitada": {
+  "rodou": true,
+  "perguntas": [],
+  "antes": {
+   "filtro": "original",
+   "filtro_que_vale": "original",
+   "recorte": null,
+   "angulo_manual": null,
+   "escala": 1.0,
+   "deslocamento": [
+    0.0,
+    0.0
+   ],
+   "regioes_a_mao": 0,
+   "mexida_a_mao": [],
+   "automatico_so_nela": [],
+   "rotacao_da_folha": 90,
+   "folha_dividida": false,
+   "linha_da_folha": 0.5,
+   "marcas_da_folha": [
+    "girar"
+   ]
+  },
+  "depois": {
+   "filtro": "original",
+   "filtro_que_vale": "original",
+   "recorte": null,
+   "angulo_manual": null,
+   "escala": 1.0,
+   "deslocamento": [
+    0.0,
+    0.0
+   ],
+   "regioes_a_mao": 0,
+   "mexida_a_mao": [],
+   "automatico_so_nela": [],
+   "rotacao_da_folha": 90,
+   "folha_dividida": true,
+   "linha_da_folha": 0.5,
+   "marcas_da_folha": [
+    "girar"
+   ]
+  },
+  "paginas_da_folha_girada_depois": 2,
+  "paginas_do_livro": 4,
+  "paginas_do_pdf": 4,
+  "erros_log_novo": "",
+  "excecoes": []
+ },
+ "caso2": {
+  "filtro_de_cada_pagina_no_projeto": [
+   "Original",
+   "Original",
+   "Original",
+   "Preto e branco",
+   "Original",
+   "Original",
+   "Original",
+   "Preto e branco",
+   "Original",
+   "Original",
+   "Original",
+   "Preto e branco",
+   "Original",
+   "Original",
+   "Original",
+   "Original",
+   "Original",
+   "Original",
+   "Original",
+   "Original",
+   "Original",
+   "Original",
+   "Original",
+   "Original"
+  ],
+  "filtro_de_cada_pagina_no_pdf": [
+   "Original",
+   "Original",
+   "Original",
+   "Preto e branco",
+   "Original",
+   "Original",
+   "Original",
+   "Preto e branco",
+   "Original",
+   "Original",
+   "Original",
+   "Preto e branco",
+   "Original",
+   "Original",
+   "Original",
+   "Original",
+   "Original",
+   "Original",
+   "Original",
+   "Original",
+   "Original",
+   "Original",
+   "Original",
+   "Original"
+  ],
+  "paginas_do_pdf_sem_cadernos": 24,
+  "montar_cadernos_no_livro": true,
+  "caminho_rapido_so_cadernos": false,
+  "cadernos": {
+   "folhas_do_pdf": 12,
+   "esperado": [
+    [
+     20,
+     1
+    ],
+    [
+     2,
+     19
+    ],
+    [
+     18,
+     3
+    ],
+    [
+     4,
+     17
+    ],
+    [
+     16,
+     5
+    ],
+    [
+     6,
+     15
+    ],
+    [
+     14,
+     7
+    ],
+    [
+     8,
+     13
+    ],
+    [
+     12,
+     9
+    ],
+    [
+     10,
+     11
+    ],
+    [
+     24,
+     21
+    ],
+    [
+     22,
+     23
+    ]
+   ],
+   "lido": [
+    [
+     20,
+     1
+    ],
+    [
+     2,
+     19
+    ],
+    [
+     18,
+     3
+    ],
+    [
+     4,
+     17
+    ],
+    [
+     16,
+     5
+    ],
+    [
+     6,
+     15
+    ],
+    [
+     14,
+     7
+    ],
+    [
+     8,
+     13
+    ],
+    [
+     12,
+     9
+    ],
+    [
+     10,
+     11
+    ],
+    [
+     24,
+     21
+    ],
+    [
+     22,
+     23
+    ]
+   ],
+   "na_ordem_certa": true,
+   "todas_as_paginas_uma_vez": true
+  },
+  "perguntas": [],
+  "avisos": [],
+  "erros_log_novo": "",
+  "excecoes": [],
+  "perguntas_na_1a_rodada": [],
+  "ao_voltar_ao_automatico": {
+   "caixinhas_marcadas_ao_voltar": [
+    "limpar"
+   ],
+   "situacoes": {
+    "dividir": "desligada",
+    "endireitar": "desligada",
+    "cortar": "desligada",
+    "limpar": "ligada em 3 páginas",
+    "gravuras": "desligada",
+    "margens": "desligada",
+    "cadernos": "desligada"
+   },
+   "filtro_do_livro": "preto_e_branco",
+   "limpar_no_livro": false
+  }
+ },
+ "caso2b": {
+  "filtro_de_cada_pagina_no_projeto": [
+   "Preto e branco",
+   "Preto e branco",
+   "Preto e branco",
+   "Preto e branco",
+   "Preto e branco",
+   "Preto e branco",
+   "Preto e branco",
+   "Preto e branco",
+   "Preto e branco",
+   "Preto e branco",
+   "Preto e branco",
+   "Preto e branco",
+   "Preto e branco",
+   "Preto e branco",
+   "Preto e branco",
+   "Preto e branco",
+   "Preto e branco",
+   "Preto e branco",
+   "Preto e branco",
+   "Preto e branco",
+   "Preto e branco",
+   "Preto e branco",
+   "Preto e branco",
+   "Preto e branco"
+  ],
+  "filtro_de_cada_pagina_no_pdf": [
+   "Preto e branco",
+   "Preto e branco",
+   "Preto e branco",
+   "Preto e branco",
+   "Preto e branco",
+   "Preto e branco",
+   "Preto e branco",
+   "Preto e branco",
+   "Preto e branco",
+   "Preto e branco",
+   "Preto e branco",
+   "Preto e branco",
+   "Preto e branco",
+   "Preto e branco",
+   "Preto e branco",
+   "Preto e branco",
+   "Preto e branco",
+   "Preto e branco",
+   "Preto e branco",
+   "Preto e branco",
+   "Preto e branco",
+   "Preto e branco",
+   "Preto e branco",
+   "Preto e branco"
+  ],
+  "paginas_do_pdf_sem_cadernos": 24,
+  "montar_cadernos_no_livro": true,
+  "caminho_rapido_so_cadernos": false,
+  "cadernos": {
+   "folhas_do_pdf": 12,
+   "esperado": [
+    [
+     20,
+     1
+    ],
+    [
+     2,
+     19
+    ],
+    [
+     18,
+     3
+    ],
+    [
+     4,
+     17
+    ],
+    [
+     16,
+     5
+    ],
+    [
+     6,
+     15
+    ],
+    [
+     14,
+     7
+    ],
+    [
+     8,
+     13
+    ],
+    [
+     12,
+     9
+    ],
+    [
+     10,
+     11
+    ],
+    [
+     24,
+     21
+    ],
+    [
+     22,
+     23
+    ]
+   ],
+   "lido": [
+    [
+     20,
+     1
+    ],
+    [
+     2,
+     19
+    ],
+    [
+     18,
+     3
+    ],
+    [
+     4,
+     17
+    ],
+    [
+     16,
+     5
+    ],
+    [
+     6,
+     15
+    ],
+    [
+     14,
+     7
+    ],
+    [
+     8,
+     13
+    ],
+    [
+     12,
+     9
+    ],
+    [
+     10,
+     11
+    ],
+    [
+     24,
+     21
+    ],
+    [
+     22,
+     23
+    ]
+   ],
+   "na_ordem_certa": true,
+   "todas_as_paginas_uma_vez": true
+  },
+  "perguntas": [],
+  "avisos": [],
+  "erros_log_novo": "",
+  "excecoes": [],
+  "etapas_rodadas_na_2a": [
+   "cadernos",
+   "limpar"
+  ]
+ },
+ "caso3/pular": {
+  "filtro_de_cada_pagina_no_projeto": [
+   "Melhorar",
+   "Melhorar",
+   "Melhorar",
+   "Melhorar",
+   "Melhorar",
+   "Melhorar",
+   "Melhorar",
+   "Melhorar",
+   "Melhorar",
+   "Melhorar",
+   "Melhorar",
+   "Melhorar",
+   "Melhorar",
+   "Melhorar",
+   "Melhorar",
+   "Melhorar",
+   "Melhorar",
+   "Melhorar",
+   "Melhorar",
+   "Melhorar",
+   "Melhorar",
+   "Melhorar",
+   "Melhorar",
+   "Melhorar"
+  ],
+  "filtro_de_cada_pagina_no_pdf": [
+   "Melhorar",
+   "Melhorar",
+   "Melhorar",
+   "Melhorar",
+   "Melhorar",
+   "Melhorar",
+   "Melhorar",
+   "Melhorar",
+   "Melhorar",
+   "Melhorar",
+   "Melhorar",
+   "Melhorar",
+   "Melhorar",
+   "Melhorar",
+   "Melhorar",
+   "Melhorar",
+   "Melhorar",
+   "Melhorar",
+   "Melhorar",
+   "Melhorar",
+   "Melhorar",
+   "Melhorar",
+   "Melhorar",
+   "Melhorar"
+  ],
+  "paginas_do_pdf_sem_cadernos": 24,
+  "montar_cadernos_no_livro": true,
+  "caminho_rapido_so_cadernos": false,
+  "cadernos": {
+   "folhas_do_pdf": 12,
+   "esperado": [
+    [
+     20,
+     1
+    ],
+    [
+     2,
+     19
+    ],
+    [
+     18,
+     3
+    ],
+    [
+     4,
+     17
+    ],
+    [
+     16,
+     5
+    ],
+    [
+     6,
+     15
+    ],
+    [
+     14,
+     7
+    ],
+    [
+     8,
+     13
+    ],
+    [
+     12,
+     9
+    ],
+    [
+     10,
+     11
+    ],
+    [
+     24,
+     21
+    ],
+    [
+     22,
+     23
+    ]
+   ],
+   "lido": [
+    [
+     20,
+     1
+    ],
+    [
+     2,
+     19
+    ],
+    [
+     18,
+     3
+    ],
+    [
+     4,
+     17
+    ],
+    [
+     16,
+     5
+    ],
+    [
+     6,
+     15
+    ],
+    [
+     14,
+     7
+    ],
+    [
+     8,
+     13
+    ],
+    [
+     12,
+     9
+    ],
+    [
+     10,
+     11
+    ],
+    [
+     24,
+     21
+    ],
+    [
+     22,
+     23
+    ]
+   ],
+   "na_ordem_certa": true,
+   "todas_as_paginas_uma_vez": true
+  },
+  "perguntas": [],
+  "avisos": [],
+  "erros_log_novo": "",
+  "excecoes": []
+ },
+ "caso3/rodar_tambem": {
+  "filtro_de_cada_pagina_no_projeto": [
+   "Melhorar",
+   "Melhorar",
+   "Melhorar",
+   "Melhorar",
+   "Melhorar",
+   "Melhorar",
+   "Melhorar",
+   "Melhorar",
+   "Melhorar",
+   "Melhorar",
+   "Melhorar",
+   "Melhorar",
+   "Melhorar",
+   "Melhorar",
+   "Melhorar",
+   "Melhorar",
+   "Melhorar",
+   "Melhorar",
+   "Melhorar",
+   "Melhorar",
+   "Melhorar",
+   "Melhorar",
+   "Melhorar",
+   "Melhorar"
+  ],
+  "filtro_de_cada_pagina_no_pdf": [
+   "Melhorar",
+   "Melhorar",
+   "Melhorar",
+   "Melhorar",
+   "Melhorar",
+   "Melhorar",
+   "Melhorar",
+   "Melhorar",
+   "Melhorar",
+   "Melhorar",
+   "Melhorar",
+   "Melhorar",
+   "Melhorar",
+   "Melhorar",
+   "Melhorar",
+   "Melhorar",
+   "Melhorar",
+   "Melhorar",
+   "Melhorar",
+   "Melhorar",
+   "Melhorar",
+   "Melhorar",
+   "Melhorar",
+   "Melhorar"
+  ],
+  "paginas_do_pdf_sem_cadernos": 24,
+  "montar_cadernos_no_livro": true,
+  "caminho_rapido_so_cadernos": false,
+  "cadernos": {
+   "folhas_do_pdf": 12,
+   "esperado": [
+    [
+     20,
+     1
+    ],
+    [
+     2,
+     19
+    ],
+    [
+     18,
+     3
+    ],
+    [
+     4,
+     17
+    ],
+    [
+     16,
+     5
+    ],
+    [
+     6,
+     15
+    ],
+    [
+     14,
+     7
+    ],
+    [
+     8,
+     13
+    ],
+    [
+     12,
+     9
+    ],
+    [
+     10,
+     11
+    ],
+    [
+     24,
+     21
+    ],
+    [
+     22,
+     23
+    ]
+   ],
+   "lido": [
+    [
+     20,
+     1
+    ],
+    [
+     2,
+     19
+    ],
+    [
+     18,
+     3
+    ],
+    [
+     4,
+     17
+    ],
+    [
+     16,
+     5
+    ],
+    [
+     6,
+     15
+    ],
+    [
+     14,
+     7
+    ],
+    [
+     8,
+     13
+    ],
+    [
+     12,
+     9
+    ],
+    [
+     10,
+     11
+    ],
+    [
+     24,
+     21
+    ],
+    [
+     22,
+     23
+    ]
+   ],
+   "na_ordem_certa": true,
+   "todas_as_paginas_uma_vez": true
+  },
+  "perguntas": [],
+  "avisos": [],
+  "erros_log_novo": "",
+  "excecoes": []
+ },
+ "caso4/mao_antes/pular": {
+  "filtro_de_cada_pagina_no_projeto": [
+   "Melhorar",
+   "Melhorar",
+   "Melhorar",
+   "Melhorar",
+   "Melhorar",
+   "Mágico pro",
+   "Melhorar",
+   "Melhorar",
+   "Melhorar",
+   "Melhorar",
+   "Melhorar",
+   "Melhorar",
+   "Melhorar",
+   "Melhorar",
+   "Melhorar",
+   "Melhorar",
+   "Melhorar",
+   "Melhorar",
+   "Melhorar",
+   "Melhorar",
+   "Melhorar",
+   "Melhorar",
+   "Melhorar",
+   "Melhorar"
+  ],
+  "filtro_de_cada_pagina_no_pdf": [
+   "Melhorar",
+   "Melhorar",
+   "Melhorar",
+   "Melhorar",
+   "Melhorar",
+   "Mágico pro",
+   "Melhorar",
+   "Melhorar",
+   "Melhorar",
+   "Melhorar",
+   "Melhorar",
+   "Melhorar",
+   "Melhorar",
+   "Melhorar",
+   "Melhorar",
+   "Melhorar",
+   "Melhorar",
+   "Melhorar",
+   "Melhorar",
+   "Melhorar",
+   "Melhorar",
+   "Melhorar",
+   "Melhorar",
+   "Melhorar"
+  ],
+  "paginas_do_pdf_sem_cadernos": 24,
+  "montar_cadernos_no_livro": true,
+  "caminho_rapido_so_cadernos": false,
+  "cadernos": {
+   "folhas_do_pdf": 12,
+   "esperado": [
+    [
+     20,
+     1
+    ],
+    [
+     2,
+     19
+    ],
+    [
+     18,
+     3
+    ],
+    [
+     4,
+     17
+    ],
+    [
+     16,
+     5
+    ],
+    [
+     6,
+     15
+    ],
+    [
+     14,
+     7
+    ],
+    [
+     8,
+     13
+    ],
+    [
+     12,
+     9
+    ],
+    [
+     10,
+     11
+    ],
+    [
+     24,
+     21
+    ],
+    [
+     22,
+     23
+    ]
+   ],
+   "lido": [
+    [
+     20,
+     1
+    ],
+    [
+     2,
+     19
+    ],
+    [
+     18,
+     3
+    ],
+    [
+     4,
+     17
+    ],
+    [
+     16,
+     5
+    ],
+    [
+     6,
+     15
+    ],
+    [
+     14,
+     7
+    ],
+    [
+     8,
+     13
+    ],
+    [
+     12,
+     9
+    ],
+    [
+     10,
+     11
+    ],
+    [
+     24,
+     21
+    ],
+    [
+     22,
+     23
+    ]
+   ],
+   "na_ordem_certa": true,
+   "todas_as_paginas_uma_vez": true
+  },
+  "perguntas": [
+   {
+    "quantas": 1,
+    "texto": "1 página foi mexida à mão nas etapas que vão rodar. Pular essas páginas?"
+   }
+  ],
+  "avisos": [],
+  "erros_log_novo": "",
+  "excecoes": []
+ },
+ "caso4/mao_antes/rodar_tambem": {
+  "filtro_de_cada_pagina_no_projeto": [
+   "Melhorar",
+   "Melhorar",
+   "Melhorar",
+   "Melhorar",
+   "Melhorar",
+   "Melhorar",
+   "Melhorar",
+   "Melhorar",
+   "Melhorar",
+   "Melhorar",
+   "Melhorar",
+   "Melhorar",
+   "Melhorar",
+   "Melhorar",
+   "Melhorar",
+   "Melhorar",
+   "Melhorar",
+   "Melhorar",
+   "Melhorar",
+   "Melhorar",
+   "Melhorar",
+   "Melhorar",
+   "Melhorar",
+   "Melhorar"
+  ],
+  "filtro_de_cada_pagina_no_pdf": [
+   "Melhorar",
+   "Melhorar",
+   "Melhorar",
+   "Melhorar",
+   "Melhorar",
+   "Melhorar",
+   "Melhorar",
+   "Melhorar",
+   "Melhorar",
+   "Melhorar",
+   "Melhorar",
+   "Melhorar",
+   "Melhorar",
+   "Melhorar",
+   "Melhorar",
+   "Melhorar",
+   "Melhorar",
+   "Melhorar",
+   "Melhorar",
+   "Melhorar",
+   "Melhorar",
+   "Melhorar",
+   "Melhorar",
+   "Melhorar"
+  ],
+  "paginas_do_pdf_sem_cadernos": 24,
+  "montar_cadernos_no_livro": true,
+  "caminho_rapido_so_cadernos": false,
+  "cadernos": {
+   "folhas_do_pdf": 12,
+   "esperado": [
+    [
+     20,
+     1
+    ],
+    [
+     2,
+     19
+    ],
+    [
+     18,
+     3
+    ],
+    [
+     4,
+     17
+    ],
+    [
+     16,
+     5
+    ],
+    [
+     6,
+     15
+    ],
+    [
+     14,
+     7
+    ],
+    [
+     8,
+     13
+    ],
+    [
+     12,
+     9
+    ],
+    [
+     10,
+     11
+    ],
+    [
+     24,
+     21
+    ],
+    [
+     22,
+     23
+    ]
+   ],
+   "lido": [
+    [
+     20,
+     1
+    ],
+    [
+     2,
+     19
+    ],
+    [
+     18,
+     3
+    ],
+    [
+     4,
+     17
+    ],
+    [
+     16,
+     5
+    ],
+    [
+     6,
+     15
+    ],
+    [
+     14,
+     7
+    ],
+    [
+     8,
+     13
+    ],
+    [
+     12,
+     9
+    ],
+    [
+     10,
+     11
+    ],
+    [
+     24,
+     21
+    ],
+    [
+     22,
+     23
+    ]
+   ],
+   "na_ordem_certa": true,
+   "todas_as_paginas_uma_vez": true
+  },
+  "perguntas": [
+   {
+    "quantas": 1,
+    "texto": "1 página foi mexida à mão nas etapas que vão rodar. Pular essas páginas?"
+   }
+  ],
+  "avisos": [],
+  "erros_log_novo": "",
+  "excecoes": []
+ },
+ "caso4/mao_numa_das_3/pular": {
+  "filtro_de_cada_pagina_no_projeto": [
+   "Melhorar",
+   "Melhorar",
+   "Melhorar",
+   "Melhorar",
+   "Melhorar",
+   "Melhorar",
+   "Melhorar",
+   "Mágico pro",
+   "Melhorar",
+   "Melhorar",
+   "Melhorar",
+   "Melhorar",
+   "Melhorar",
+   "Melhorar",
+   "Melhorar",
+   "Melhorar",
+   "Melhorar",
+   "Melhorar",
+   "Melhorar",
+   "Melhorar",
+   "Melhorar",
+   "Melhorar",
+   "Melhorar",
+   "Melhorar"
+  ],
+  "filtro_de_cada_pagina_no_pdf": [
+   "Melhorar",
+   "Melhorar",
+   "Melhorar",
+   "Melhorar",
+   "Melhorar",
+   "Melhorar",
+   "Melhorar",
+   "Mágico pro",
+   "Melhorar",
+   "Melhorar",
+   "Melhorar",
+   "Melhorar",
+   "Melhorar",
+   "Melhorar",
+   "Melhorar",
+   "Melhorar",
+   "Melhorar",
+   "Melhorar",
+   "Melhorar",
+   "Melhorar",
+   "Melhorar",
+   "Melhorar",
+   "Melhorar",
+   "Melhorar"
+  ],
+  "paginas_do_pdf_sem_cadernos": 24,
+  "montar_cadernos_no_livro": true,
+  "caminho_rapido_so_cadernos": false,
+  "cadernos": {
+   "folhas_do_pdf": 12,
+   "esperado": [
+    [
+     20,
+     1
+    ],
+    [
+     2,
+     19
+    ],
+    [
+     18,
+     3
+    ],
+    [
+     4,
+     17
+    ],
+    [
+     16,
+     5
+    ],
+    [
+     6,
+     15
+    ],
+    [
+     14,
+     7
+    ],
+    [
+     8,
+     13
+    ],
+    [
+     12,
+     9
+    ],
+    [
+     10,
+     11
+    ],
+    [
+     24,
+     21
+    ],
+    [
+     22,
+     23
+    ]
+   ],
+   "lido": [
+    [
+     20,
+     1
+    ],
+    [
+     2,
+     19
+    ],
+    [
+     18,
+     3
+    ],
+    [
+     4,
+     17
+    ],
+    [
+     16,
+     5
+    ],
+    [
+     6,
+     15
+    ],
+    [
+     14,
+     7
+    ],
+    [
+     8,
+     13
+    ],
+    [
+     12,
+     9
+    ],
+    [
+     10,
+     11
+    ],
+    [
+     24,
+     21
+    ],
+    [
+     22,
+     23
+    ]
+   ],
+   "na_ordem_certa": true,
+   "todas_as_paginas_uma_vez": true
+  },
+  "perguntas": [
+   {
+    "quantas": 1,
+    "texto": "1 página foi mexida à mão nas etapas que vão rodar. Pular essas páginas?"
+   }
+  ],
+  "avisos": [],
+  "erros_log_novo": "",
+  "excecoes": []
+ },
+ "caso4/mao_numa_das_3/rodar_tambem": {
+  "filtro_de_cada_pagina_no_projeto": [
+   "Melhorar",
+   "Melhorar",
+   "Melhorar",
+   "Melhorar",
+   "Melhorar",
+   "Melhorar",
+   "Melhorar",
+   "Melhorar",
+   "Melhorar",
+   "Melhorar",
+   "Melhorar",
+   "Melhorar",
+   "Melhorar",
+   "Melhorar",
+   "Melhorar",
+   "Melhorar",
+   "Melhorar",
+   "Melhorar",
+   "Melhorar",
+   "Melhorar",
+   "Melhorar",
+   "Melhorar",
+   "Melhorar",
+   "Melhorar"
+  ],
+  "filtro_de_cada_pagina_no_pdf": [
+   "Melhorar",
+   "Melhorar",
+   "Melhorar",
+   "Melhorar",
+   "Melhorar",
+   "Melhorar",
+   "Melhorar",
+   "Melhorar",
+   "Melhorar",
+   "Melhorar",
+   "Melhorar",
+   "Melhorar",
+   "Melhorar",
+   "Melhorar",
+   "Melhorar",
+   "Melhorar",
+   "Melhorar",
+   "Melhorar",
+   "Melhorar",
+   "Melhorar",
+   "Melhorar",
+   "Melhorar",
+   "Melhorar",
+   "Melhorar"
+  ],
+  "paginas_do_pdf_sem_cadernos": 24,
+  "montar_cadernos_no_livro": true,
+  "caminho_rapido_so_cadernos": false,
+  "cadernos": {
+   "folhas_do_pdf": 12,
+   "esperado": [
+    [
+     20,
+     1
+    ],
+    [
+     2,
+     19
+    ],
+    [
+     18,
+     3
+    ],
+    [
+     4,
+     17
+    ],
+    [
+     16,
+     5
+    ],
+    [
+     6,
+     15
+    ],
+    [
+     14,
+     7
+    ],
+    [
+     8,
+     13
+    ],
+    [
+     12,
+     9
+    ],
+    [
+     10,
+     11
+    ],
+    [
+     24,
+     21
+    ],
+    [
+     22,
+     23
+    ]
+   ],
+   "lido": [
+    [
+     20,
+     1
+    ],
+    [
+     2,
+     19
+    ],
+    [
+     18,
+     3
+    ],
+    [
+     4,
+     17
+    ],
+    [
+     16,
+     5
+    ],
+    [
+     6,
+     15
+    ],
+    [
+     14,
+     7
+    ],
+    [
+     8,
+     13
+    ],
+    [
+     12,
+     9
+    ],
+    [
+     10,
+     11
+    ],
+    [
+     24,
+     21
+    ],
+    [
+     22,
+     23
+    ]
+   ],
+   "na_ordem_certa": true,
+   "todas_as_paginas_uma_vez": true
+  },
+  "perguntas": [
+   {
+    "quantas": 1,
+    "texto": "1 página foi mexida à mão nas etapas que vão rodar. Pular essas páginas?"
+   }
+  ],
+  "avisos": [],
+  "erros_log_novo": "",
+  "excecoes": []
+ },
+ "acervo_boecio/caso2": {
+  "paginas_do_livro": 50,
+  "perguntas_na_1a_rodada": [],
+  "perguntas": [],
+  "filtro_de_cada_pagina_no_projeto": [
+   "Original",
+   "Original",
+   "Original",
+   "Preto e branco",
+   "Original",
+   "Original",
+   "Original",
+   "Preto e branco",
+   "Original",
+   "Original",
+   "Original",
+   "Preto e branco",
+   "Original",
+   "Original",
+   "Original",
+   "Original",
+   "Original",
+   "Original",
+   "Original",
+   "Original",
+   "Original",
+   "Original",
+   "Original",
+   "Original",
+   "Original",
+   "Original",
+   "Original",
+   "Original",
+   "Original",
+   "Original",
+   "Original",
+   "Original",
+   "Original",
+   "Original",
+   "Original",
+   "Original",
+   "Original",
+   "Original",
+   "Original",
+   "Original",
+   "Original",
+   "Original",
+   "Original",
+   "Original",
+   "Original",
+   "Original",
+   "Original",
+   "Original",
+   "Original",
+   "Original"
+  ],
+  "paginas_do_pdf_sem_cadernos": 50,
+  "cadernos": {
+   "folhas_do_pdf": 26,
+   "na_ordem_certa": true,
+   "lido": [
+    [
+     20,
+     1
+    ],
+    [
+     2,
+     19
+    ],
+    [
+     18,
+     3
+    ],
+    [
+     4,
+     17
+    ],
+    [
+     16,
+     5
+    ],
+    [
+     6,
+     15
+    ],
+    [
+     14,
+     7
+    ],
+    [
+     8,
+     13
+    ],
+    [
+     12,
+     9
+    ],
+    [
+     10,
+     11
+    ],
+    [
+     40,
+     21
+    ],
+    [
+     22,
+     39
+    ],
+    [
+     38,
+     23
+    ],
+    [
+     24,
+     37
+    ],
+    [
+     36,
+     25
+    ],
+    [
+     26,
+     35
+    ],
+    [
+     34,
+     27
+    ],
+    [
+     28,
+     33
+    ],
+    [
+     32,
+     29
+    ],
+    [
+     30,
+     31
+    ],
+    [
+     0,
+     41
+    ],
+    [
+     42,
+     0
+    ],
+    [
+     50,
+     43
+    ],
+    [
+     44,
+     49
+    ],
+    [
+     48,
+     45
+    ],
+    [
+     46,
+     47
+    ]
+   ],
+   "esperado": [
+    [
+     20,
+     1
+    ],
+    [
+     2,
+     19
+    ],
+    [
+     18,
+     3
+    ],
+    [
+     4,
+     17
+    ],
+    [
+     16,
+     5
+    ],
+    [
+     6,
+     15
+    ],
+    [
+     14,
+     7
+    ],
+    [
+     8,
+     13
+    ],
+    [
+     12,
+     9
+    ],
+    [
+     10,
+     11
+    ],
+    [
+     40,
+     21
+    ],
+    [
+     22,
+     39
+    ],
+    [
+     38,
+     23
+    ],
+    [
+     24,
+     37
+    ],
+    [
+     36,
+     25
+    ],
+    [
+     26,
+     35
+    ],
+    [
+     34,
+     27
+    ],
+    [
+     28,
+     33
+    ],
+    [
+     32,
+     29
+    ],
+    [
+     30,
+     31
+    ],
+    [
+     0,
+     41
+    ],
+    [
+     42,
+     0
+    ],
+    [
+     50,
+     43
+    ],
+    [
+     44,
+     49
+    ],
+    [
+     48,
+     45
+    ],
+    [
+     46,
+     47
+    ]
+   ]
+  },
+  "avisos": [],
+  "erros_log_novo": "",
+  "excecoes": []
+ },
+ "acervo_boecio/caso4": {
+  "paginas_do_livro": 50,
+  "perguntas_na_1a_rodada": [],
+  "perguntas": [
+   {
+    "quantas": 1,
+    "texto": "1 página foi mexida à mão nas etapas que vão rodar. Pular essas páginas?"
+   }
+  ],
+  "filtro_de_cada_pagina_no_projeto": [
+   "Melhorar",
+   "Melhorar",
+   "Melhorar",
+   "Melhorar",
+   "Melhorar",
+   "Mágico pro",
+   "Melhorar",
+   "Melhorar",
+   "Melhorar",
+   "Melhorar",
+   "Melhorar",
+   "Melhorar",
+   "Melhorar",
+   "Melhorar",
+   "Melhorar",
+   "Melhorar",
+   "Melhorar",
+   "Melhorar",
+   "Melhorar",
+   "Melhorar",
+   "Melhorar",
+   "Melhorar",
+   "Melhorar",
+   "Melhorar",
+   "Melhorar",
+   "Melhorar",
+   "Melhorar",
+   "Melhorar",
+   "Melhorar",
+   "Melhorar",
+   "Melhorar",
+   "Melhorar",
+   "Melhorar",
+   "Melhorar",
+   "Melhorar",
+   "Melhorar",
+   "Melhorar",
+   "Melhorar",
+   "Melhorar",
+   "Melhorar",
+   "Melhorar",
+   "Melhorar",
+   "Melhorar",
+   "Melhorar",
+   "Melhorar",
+   "Melhorar",
+   "Melhorar",
+   "Melhorar",
+   "Melhorar",
+   "Melhorar"
+  ],
+  "paginas_do_pdf_sem_cadernos": 50,
+  "cadernos": {
+   "folhas_do_pdf": 26,
+   "na_ordem_certa": true,
+   "lido": [
+    [
+     20,
+     1
+    ],
+    [
+     2,
+     19
+    ],
+    [
+     18,
+     3
+    ],
+    [
+     4,
+     17
+    ],
+    [
+     16,
+     5
+    ],
+    [
+     6,
+     15
+    ],
+    [
+     14,
+     7
+    ],
+    [
+     8,
+     13
+    ],
+    [
+     12,
+     9
+    ],
+    [
+     10,
+     11
+    ],
+    [
+     40,
+     21
+    ],
+    [
+     22,
+     39
+    ],
+    [
+     38,
+     23
+    ],
+    [
+     24,
+     37
+    ],
+    [
+     36,
+     25
+    ],
+    [
+     26,
+     35
+    ],
+    [
+     34,
+     27
+    ],
+    [
+     28,
+     33
+    ],
+    [
+     32,
+     29
+    ],
+    [
+     30,
+     31
+    ],
+    [
+     0,
+     41
+    ],
+    [
+     42,
+     0
+    ],
+    [
+     50,
+     43
+    ],
+    [
+     44,
+     49
+    ],
+    [
+     48,
+     45
+    ],
+    [
+     46,
+     47
+    ]
+   ],
+   "esperado": [
+    [
+     20,
+     1
+    ],
+    [
+     2,
+     19
+    ],
+    [
+     18,
+     3
+    ],
+    [
+     4,
+     17
+    ],
+    [
+     16,
+     5
+    ],
+    [
+     6,
+     15
+    ],
+    [
+     14,
+     7
+    ],
+    [
+     8,
+     13
+    ],
+    [
+     12,
+     9
+    ],
+    [
+     10,
+     11
+    ],
+    [
+     40,
+     21
+    ],
+    [
+     22,
+     39
+    ],
+    [
+     38,
+     23
+    ],
+    [
+     24,
+     37
+    ],
+    [
+     36,
+     25
+    ],
+    [
+     26,
+     35
+    ],
+    [
+     34,
+     27
+    ],
+    [
+     28,
+     33
+    ],
+    [
+     32,
+     29
+    ],
+    [
+     30,
+     31
+    ],
+    [
+     0,
+     41
+    ],
+    [
+     42,
+     0
+    ],
+    [
+     50,
+     43
+    ],
+    [
+     44,
+     49
+    ],
+    [
+     48,
+     45
+    ],
+    [
+     46,
+     47
+    ]
+   ]
+  },
+  "avisos": [],
+  "erros_log_novo": "",
+  "excecoes": []
+ }
+}

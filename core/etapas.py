@@ -359,9 +359,30 @@ def marca_sozinho(projeto, pagina=None) -> bool:
 
     P4 (Samuel, 02/11/2026, "a"): o mesmo para a caixinha "Gravuras em tons
     de cinza" (D-588): marcada, a procura de dentro acha as figuras so para
-    pinta-las de cinza (cinza_procura)."""
+    pinta-las de cinza (cinza_procura).
+
+    D-659 (Samuel, 09/11/2026), SEM "Limpar a folha" (livro novo, filtro
+    escolhido a mao no painel): "ele vai procurar a gravura quando eu
+    selecionar a opção ali no filtro né? e ai se eu selecionar para o livro
+    todo ou para varias paginas, ele vai procurar nas paginas especificas,
+    não precisa procurar em todas." Aqui so a procura de dentro DESTA pagina
+    (procura_por_dentro: Preto e branco escolhido a mao com "Respeitar as
+    gravuras achadas", "Gravuras em tons de cinza" ou "So as letras"); o
+    "Procurar gravura e letra" do livro (detectar_regioes, que no livro novo
+    vem True de fabrica) NAO conta sem o "Limpar a folha", como antes. Cada
+    pagina responde por si: so e procurada a pagina em que a opcao vale (a da
+    tela, ou as que o "Aplicar em" alcancou). Sem a `pagina`: False, como
+    antes. Defeito que isto conserta (09/11/2026, pagina 8 do *Na escola de
+    Jesus*): aqui devolvia False antes de olhar a procura de dentro, e a
+    gravura saia em manchas pretas (tests/test_decisoes_gravura_a_mao.py).
+
+    Arriscado: (1) mudar o ramo de "Limpar a folha" ligado (o Automatico; a
+    D-605 manda que fique igual: provas test_decisoes_respeitar_gravuras,
+    _gravuras_cinza, _montar_cadernos); (2) deixar o detectar_regioes valer
+    sem o "Limpar a folha" (o livro novo procuraria em toda pagina posta em
+    qualquer filtro, contra "não precisa procurar em todas")."""
     if not limpa_sozinho(projeto, pagina):
-        return False
+        return pagina is not None and procura_por_dentro(projeto, pagina)     # D-659
     return bool(getattr(projeto, "detectar_regioes", False)) or procura_por_dentro(projeto, pagina)
 
 
@@ -374,8 +395,64 @@ def procura_por_dentro(projeto, pagina=None) -> bool:
     remarca a etapa 5 (core/automatico.ligada_no_livro le so o
     detectar_regioes). Barato (so le campos). Arriscado: acrescentar aqui uma
     condicao sem decisao do Samuel ("se algo não está marcado, não é para
-    fazer")."""
-    return so_as_letras_procura(projeto, pagina) or cinza_procura(projeto, pagina)
+    fazer").
+
+    D-659 (09/11/2026): tambem a "Respeitar as gravuras achadas" no Preto e
+    branco escolhido A MAO sem "Limpar a folha" (respeitar_procura). Com o
+    "Limpar a folha" ligado ela nunca conta (a conta de antes fica igual)."""
+    return (so_as_letras_procura(projeto, pagina) or cinza_procura(projeto, pagina)
+            or respeitar_procura(projeto, pagina))
+
+
+def respeitar_procura(projeto, pagina=None) -> bool:
+    """A caixinha "Respeitar as gravuras achadas" (D-586) faz a marcacao
+    procurar nesta pagina? So no Preto e branco escolhido A MAO (marca FILTRO,
+    filtro_a_mao) com o "Limpar a folha" DESLIGADO nela (o livro novo, que
+    nunca passou pelo Automatico) e a caixinha marcada (ela vem marcada de
+    fabrica).
+
+    D-659 (Samuel, 09/11/2026): "No caso de a opção ter sido selecionada sim,
+    vai procuar na pagina que está ou nas paginas que foram selecionadas
+    entendeu?" e, no esclarecimento: "se estamos no manual e eu estou fazendo
+    ajustes em uma pagina, ele vai procurar só naquela pagina se eu optar para
+    que ele faça aquele ajuste em varias paginas ai sim o programa vai ler as
+    outras paginas". Antes, sem o Automatico, a caixinha nao tinha o que
+    respeitar e a gravura saia em manchas pretas (a pagina 8 do *Na escola de
+    Jesus*, print 01 da sessao 4).
+
+    Com o "Limpar a folha" ligado: False (exceto a D-661, abaixo). La a
+    caixinha so escolhe se o filtro usa a marcacao que o Automatico ("Gravuras
+    e fotos") achou
+    (core.pipeline.marcacao_que_o_filtro_usa); fazer ela procurar ali mudaria
+    o que ja esta escolhido e testado (D-605; D-589: "sem 'Só as letras' e com
+    Gravuras desmarcada, a página sai toda em preto e branco"). Excecao D-661
+    (09/11/2026, "1- pode"): a pagina PULADA na pergunta das paginas mexidas
+    (ainda com a marca FILTRO) cuja gravura foi achada a mao
+    (ConfigPagina.gravura_achada_a_mao) continua valendo, com a gravura
+    guardada (tests/test_decisoes_gravura_pular.py). Sem a
+    `pagina`: False (a caixinha so existe na pagina). Barato (so le campos).
+    Arriscado: tirar a condicao do "Limpar a folha" (ver acima), a do Preto e
+    branco (Melhorar e Magico pro a mao nao procuram: a decisao fala do Preto
+    e branco) ou a da marca FILTRO (a pagina que so ficou com o filtro do
+    livro de antes, sem ninguem escolher, seria procurada: D-009)."""
+    from core.filtros import PRETO_E_BRANCO
+
+    if pagina is None or not filtro_a_mao(projeto, pagina):
+        return False
+    if limpa_sozinho(projeto, pagina) and not bool(getattr(pagina, "gravura_achada_a_mao", False)):
+        # D-661 (Samuel, 09/11/2026: "1- pode"): com "Limpar a folha" ligado
+        # so vale na pagina cuja gravura foi achada no Preto e branco a mao
+        # (ConfigPagina.gravura_achada_a_mao) e que ainda tem a marca FILTRO:
+        # a que a pessoa PULOU na pergunta das paginas mexidas (D-004). Ela usa
+        # a gravura guardada (garantir_selecao a devolve sem procurar). O
+        # "Rodar nelas também" tira a marca e o campo (passa por cima). Sem o
+        # campo (as outras paginas, o projeto antigo): False, como antes.
+        # Arriscado: valer sem o campo (toda pagina com a marca FILTRO depois
+        # do Automatico passaria a procurar, contra a D-589).
+        return False
+    if not bool(getattr(pagina, "respeitar_gravuras_achadas", True)):
+        return False
+    return getattr(pagina, "filtro", None) == PRETO_E_BRANCO
 
 
 def cinza_procura(projeto, pagina=None) -> bool:
@@ -426,7 +503,9 @@ def a_marcacao_da_maquina_vale(projeto, pagina=None) -> bool:
     """A marcacao achada pela MAQUINA vale nesta pagina (no filtro por pedaco,
     no papel em branco)? Com "Procurar gravura e letra", ou com o "So as letras"
     ou o "Gravuras em tons de cinza" procurando por dentro (procura_por_dentro;
-    D-589 e P4). Senao, so a feita a mao (marcacao_a_mao)."""
+    D-589 e P4), ou, desde a D-659 (09/11/2026), a "Respeitar as gravuras
+    achadas" no Preto e branco escolhido a mao sem "Limpar a folha"
+    (respeitar_procura). Senao, so a feita a mao (marcacao_a_mao)."""
     return bool(getattr(projeto, "detectar_regioes", False)) or procura_por_dentro(projeto, pagina)
 
 

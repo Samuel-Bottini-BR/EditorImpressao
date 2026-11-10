@@ -236,6 +236,19 @@ class ConfigPagina:
     # ARRISCADO: mudar o padrao para True (todo livro em Preto e branco
     # mudaria de imagem sem ninguem pedir).
     gravuras_em_tons_de_cinza: bool = False
+    # D-661 (Samuel, 09/11/2026: "1- pode", a "Posso fazer esse conserto do
+    # 'Pular'?"): True = a gravura desta pagina foi achada no Preto e branco
+    # ESCOLHIDO A MAO, sem o Automatico (a procura da D-659). Com isso, depois
+    # do Automatico com "Limpar a folha", a pagina que a pessoa PULOU na
+    # pergunta das paginas mexidas (D-004) continua usando a gravura achada,
+    # sem procurar de novo (core/etapas.respeitar_procura). Nao e escolha de
+    # ninguem: quem grava True e core/pipeline.garantir_selecao; quem volta a
+    # False e o "Rodar nelas também" (core/automatico._ligar_na_pagina), que
+    # passa por cima. Campo novo autorizado pela D-661: projeto gravado antes
+    # nao tem a chave e abre com False (campo que falta ganha o padrao),
+    # saindo igual ponto por ponto. ARRISCADO: padrao True (paginas de
+    # projetos antigos passariam a usar a marcacao da maquina guardada).
+    gravura_achada_a_mao: bool = False
     # Item 2.12 (regra da Fase 2, 13/10/2026: igual ao ScanTailor, desligado
     # de fabrica): desentortar a pagina curva perto da lombada, SO desta
     # pagina. Valores: os codigos de core/desentortar_scantailor.MODOS

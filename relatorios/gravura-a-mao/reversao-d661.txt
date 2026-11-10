@@ -1,0 +1,17 @@
+Prova de reversao (CLAUDE.md 4.7) da D-661: tests/test_decisoes_gravura_pular.py no codigo de ANTES do conserto (HEAD b15a6728; so o teste novo acrescentado).
+Data: 10/11/2026 00:27
+
+E       AssertionError: com 'Pular' a página mudou (a gravura voltou a manchas)
+E       AssertionError: no PDF a gravura voltou a manchas
+E       AssertionError: o 'Rodar nelas também' não passou por cima do campo
+E       KeyError: 'gravura_achada_a_mao'
+E       AssertionError: assert 'gravura_achada_a_mao' in ('selecao', 'alertas', 'alertas_aceitos', 'revisada', 'apagada', 'mexida_a_mao', ...)
+E       AssertionError: assert False
+FAILED tests/test_decisoes_gravura_pular.py::test_d661_pular_a_pagina_sai_como_ele_deixou_sem_procurar_de_novo
+FAILED tests/test_decisoes_gravura_pular.py::test_d661_pular_o_pdf_sai_como_a_tela_e_nao_procura
+FAILED tests/test_decisoes_gravura_pular.py::test_d661_rodar_nelas_tambem_passa_por_cima
+FAILED tests/test_decisoes_gravura_pular.py::test_d661_o_campo_vai_e_volta_do_projeto_json
+FAILED tests/test_decisoes_gravura_pular.py::test_d661_projeto_antigo_abre_sem_o_campo_e_sai_igual
+FAILED tests/test_decisoes_gravura_pular.py::test_d661_o_campo_nao_passa_para_a_pagina_posta_nem_para_as_metades
+FAILED tests/test_decisoes_gravura_pular.py::test_d661_sem_o_pular_nada_muda_na_conta_de_quem_procura
+7 failed in 5.44s

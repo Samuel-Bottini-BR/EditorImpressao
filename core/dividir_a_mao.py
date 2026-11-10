@@ -88,6 +88,9 @@ LIMPAR_AO_PARTIR: dict[str, Any] = dict(
     alertas=[], alertas_aceitos=[], revisada=False, conteudo_escala=1.0,
     conteudo_deslocamento=(0.0, 0.0), tamanho_folha_cm=None, gravura_feita_com="",
     marcacao_provisoria=False,
+    # D-661 (09/11/2026): a gravura achada a mao era da pagina inteira (a
+    # marcacao nao passa para as metades), como gravura_feita_com
+    gravura_achada_a_mao=False,
     # D-618 (04/11/2026): o giro SO de uma metade nao passa para a pagina
     # inteira nem para as metades novas partidas dela (achado ao juntar e
     # dividir noutra linha: as duas metades novas nasciam giradas como a da

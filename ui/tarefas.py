@@ -1360,6 +1360,18 @@ class GerenciadorPrevias(QObject):
         """Anota o pedido e poe a tarefa no pool. A folha crua (folha=True)
         nao leva geracao: o giro dela vai no pedido e na chave, e nada mais
         a muda. Prioridade maior sai primeiro (QThreadPool.start)."""
+        if getattr(self, "_parado", False):
+            # Conserto de 09/11/2026 (achado com a D-659; autorizado pelo Samuel,
+            # 09/11: "1- sim"): depois de parar() (livro trocado ou fechado),
+            # nada novo comeca. Um resultado atrasado (o acerto no tamanho do
+            # PDF que passou dos 3 s de espera do parar, como a primeira procura
+            # de gravura, que carrega o detector) mandava refazer as previas do
+            # livro que ja saiu (refazer_previas), e elas abriam o PDF de antes,
+            # que pode ter sido movido (erro no erros.log; nos testes, o erro
+            # caia no teste seguinte: tests/test_promessas.py). Este gerenciador
+            # nao e reaproveitado: janela_principal cria outro para o livro novo.
+            # Arriscado: reaproveitar um gerenciador parado (nada mais comecaria).
+            return
         geracao = None if folha else self._geracao_de(indice)
         if MARCA_DA_MEDIDA in chave:
             # o acerto no tamanho do PDF nao fica velho com a troca da
@@ -1670,7 +1682,10 @@ class GerenciadorPrevias(QObject):
     def parar(self) -> None:
         """Esvazia as filas e espera as tarefas em andamento (ate 3s cada).
         Chamar ao trocar de livro ou fechar, para nao deixar thread orfa
-        escrevendo num projeto que ja foi trocado."""
+        escrevendo num projeto que ja foi trocado. Desde 09/11/2026, depois
+        daqui o gerenciador nao comeca mais nenhuma tarefa (_comecar), nem as
+        que um resultado atrasado pediria: ele nao serve mais."""
+        self._parado = True       # 09/11/2026: nada novo comeca (ver _comecar)
         self._relogio_das_medidas.stop()
         self._medidas_a_espera.clear()
         self._pool.clear()

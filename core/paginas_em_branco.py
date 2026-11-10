@@ -70,7 +70,9 @@ def _proximo_numero(projeto) -> int:
 # vizinha (marcação, avisos, o "está certo") e não do tamanho.
 _NAO_HERDA = ("selecao", "alertas", "alertas_aceitos", "revisada", "apagada", "mexida_a_mao",
               "automatico", "faixa_na_beirada", "marcacao_provisoria", "geometria_das_zonas",
-              "gravura_feita_com", "forca_antes_do_reforco", "reforco_desfeito", "tem_cor")
+              "gravura_feita_com", "forca_antes_do_reforco", "reforco_desfeito", "tem_cor",
+              # D-661 (09/11/2026): a gravura achada a mao e da marcacao da vizinha
+              "gravura_achada_a_mao")
 
 
 def pagina_em_branco_como(vizinha, numero_novo: int):

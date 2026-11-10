@@ -1,0 +1,27 @@
+diff --git a/ui/tarefas.py b/ui/tarefas.py
+index c5553216..1e743808 100644
+--- a/ui/tarefas.py
++++ b/ui/tarefas.py
+@@ -1360,6 +1360,14 @@ class GerenciadorPrevias(QObject):
+         """Anota o pedido e poe a tarefa no pool. A folha crua (folha=True)
+         nao leva geracao: o giro dela vai no pedido e na chave, e nada mais
+         a muda. Prioridade maior sai primeiro (QThreadPool.start)."""
++        if getattr(self, "_parado", False):
++            # Proposta D-659 (09/11/2026): depois de parar() (livro trocado ou
++            # fechado), nada novo comeca. Um resultado atrasado (o acerto no
++            # tamanho do PDF que passou dos 3 s de espera) mandava refazer as
++            # previas do livro que ja saiu (refazer_previas), e elas abriam o
++            # PDF de antes, que pode ter sido movido. Este gerenciador nao e
++            # reaproveitado (janela_principal cria outro para o livro novo).
++            return
+         geracao = None if folha else self._geracao_de(indice)
+         if MARCA_DA_MEDIDA in chave:
+             # o acerto no tamanho do PDF nao fica velho com a troca da
+@@ -1671,6 +1679,7 @@ class GerenciadorPrevias(QObject):
+         """Esvazia as filas e espera as tarefas em andamento (ate 3s cada).
+         Chamar ao trocar de livro ou fechar, para nao deixar thread orfa
+         escrevendo num projeto que ja foi trocado."""
++        self._parado = True       # proposta D-659: nada novo comeca (ver _comecar)
+         self._relogio_das_medidas.stop()
+         self._medidas_a_espera.clear()
+         self._pool.clear()

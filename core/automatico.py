@@ -1039,6 +1039,13 @@ def _ligar_na_pagina(projeto, pedido: Pedido, etapa: str, escopo: list, pular: _
                 g.na_pagina(pagina, "angulo_manual", None)
             if etapa == CORTAR and pagina.recorte is not None:
                 g.na_pagina(pagina, "recorte", None)
+            if etapa == LIMPAR and getattr(pagina, "gravura_achada_a_mao", False):
+                # D-661 (Samuel, 09/11/2026: "1- pode"): "Rodar nelas também"
+                # passa por cima do Preto e branco a mao, inclusive da gravura
+                # achada nele (core/etapas.respeitar_procura). Pelo gravador:
+                # o Ctrl+Z do Automatico a traz de volta. A pagina PULADA nao
+                # chega aqui e continua com ela.
+                g.na_pagina(pagina, "gravura_achada_a_mao", False)
         if etapa == LIMPAR and pagina.filtro != filtro:
             g.na_pagina(pagina, "filtro", filtro)
         if etapa == LIMPAR:
