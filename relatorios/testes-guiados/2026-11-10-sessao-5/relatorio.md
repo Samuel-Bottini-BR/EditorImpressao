@@ -131,3 +131,11 @@ Destino (Livro de decisões, coluna de situação, e Lista de bugs):
 - 8 (D-610): não passou, para depois (**Lista de bugs**).
 - 10 (D-615): a página recarrega ao mudar a folha de lugar (print 11, **Lista de bugs**).
 - Caixinhas do Automático difíceis de marcar (print 13, **Lista de bugs**).
+
+## Central: o Quadro dos trabalhos rolava de lado (print 14, 09h12)
+
+Palavras dele: "arrumar, para passar para o lado eu tenho que ir lá embaixo na barra, e dai eu não consigo ler enquanto passo a barra, bota um agente para resolver isso."
+
+Destino: feito pela gerente (os dois agentes estavam ocupados), Central **versão 41**: no PC as colunas do Quadro descem
+para a linha de baixo quando não cabem; as abas também quebram em duas linhas em vez de rolar; as Etapas cabem sem
+rolar. Testado em 1366, 1000, 800, 700, 360 e 300 px, todas as 9 abas: nada passa da borda.
