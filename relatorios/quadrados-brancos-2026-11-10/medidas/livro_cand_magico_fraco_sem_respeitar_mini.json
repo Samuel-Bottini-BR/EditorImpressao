@@ -1,0 +1,798 @@
+{
+ "1": {
+  "manchas_brancas_pct": 0.0,
+  "tom_medio_pct": 30.0
+ },
+ "2": {
+  "manchas_brancas_pct": 0.0,
+  "tom_medio_pct": 3.4
+ },
+ "3": {
+  "manchas_brancas_pct": 0.0,
+  "tom_medio_pct": 5.2
+ },
+ "4": {
+  "manchas_brancas_pct": 0.0,
+  "tom_medio_pct": 1.3
+ },
+ "5": {
+  "manchas_brancas_pct": 0.0,
+  "tom_medio_pct": 2.8
+ },
+ "6": {
+  "manchas_brancas_pct": 0.0,
+  "tom_medio_pct": 5.8
+ },
+ "7": {
+  "manchas_brancas_pct": 0.0,
+  "tom_medio_pct": 17.9
+ },
+ "8": {
+  "manchas_brancas_pct": 0.0,
+  "tom_medio_pct": 25.0
+ },
+ "9": {
+  "manchas_brancas_pct": 0.0,
+  "tom_medio_pct": 20.5
+ },
+ "10": {
+  "manchas_brancas_pct": 0.0,
+  "tom_medio_pct": 20.9
+ },
+ "11": {
+  "manchas_brancas_pct": 0.0,
+  "tom_medio_pct": 20.4
+ },
+ "12": {
+  "manchas_brancas_pct": 0.0,
+  "tom_medio_pct": 16.0
+ },
+ "13": {
+  "manchas_brancas_pct": 0.0,
+  "tom_medio_pct": 21.4
+ },
+ "14": {
+  "manchas_brancas_pct": 0.0,
+  "tom_medio_pct": 15.4
+ },
+ "15": {
+  "manchas_brancas_pct": 0.0,
+  "tom_medio_pct": 20.7
+ },
+ "16": {
+  "manchas_brancas_pct": 0.0,
+  "tom_medio_pct": 26.2
+ },
+ "17": {
+  "manchas_brancas_pct": 0.0,
+  "tom_medio_pct": 19.0
+ },
+ "18": {
+  "manchas_brancas_pct": 0.0,
+  "tom_medio_pct": 20.8
+ },
+ "19": {
+  "manchas_brancas_pct": 0.003,
+  "tom_medio_pct": 23.4
+ },
+ "20": {
+  "manchas_brancas_pct": 0.0,
+  "tom_medio_pct": 17.0
+ },
+ "21": {
+  "manchas_brancas_pct": 0.0,
+  "tom_medio_pct": 14.9
+ },
+ "22": {
+  "manchas_brancas_pct": 0.0,
+  "tom_medio_pct": 21.9
+ },
+ "23": {
+  "manchas_brancas_pct": 0.0,
+  "tom_medio_pct": 21.8
+ },
+ "24": {
+  "manchas_brancas_pct": 0.0,
+  "tom_medio_pct": 18.0
+ },
+ "25": {
+  "manchas_brancas_pct": 0.0,
+  "tom_medio_pct": 16.8
+ },
+ "26": {
+  "manchas_brancas_pct": 0.0,
+  "tom_medio_pct": 19.4
+ },
+ "27": {
+  "manchas_brancas_pct": 0.003,
+  "tom_medio_pct": 14.9
+ },
+ "28": {
+  "manchas_brancas_pct": 0.0,
+  "tom_medio_pct": 13.6
+ },
+ "29": {
+  "manchas_brancas_pct": 0.0,
+  "tom_medio_pct": 17.8
+ },
+ "30": {
+  "manchas_brancas_pct": 0.002,
+  "tom_medio_pct": 16.3
+ },
+ "31": {
+  "manchas_brancas_pct": 0.0,
+  "tom_medio_pct": 19.8
+ },
+ "32": {
+  "manchas_brancas_pct": 0.0,
+  "tom_medio_pct": 14.8
+ },
+ "33": {
+  "manchas_brancas_pct": 0.0,
+  "tom_medio_pct": 16.2
+ },
+ "34": {
+  "manchas_brancas_pct": 0.0,
+  "tom_medio_pct": 14.9
+ },
+ "35": {
+  "manchas_brancas_pct": 0.0,
+  "tom_medio_pct": 24.1
+ },
+ "36": {
+  "manchas_brancas_pct": 0.0,
+  "tom_medio_pct": 16.1
+ },
+ "37": {
+  "manchas_brancas_pct": 0.0,
+  "tom_medio_pct": 19.8
+ },
+ "38": {
+  "manchas_brancas_pct": 0.0,
+  "tom_medio_pct": 17.5
+ },
+ "39": {
+  "manchas_brancas_pct": 0.0,
+  "tom_medio_pct": 22.3
+ },
+ "40": {
+  "manchas_brancas_pct": 0.0,
+  "tom_medio_pct": 16.8
+ },
+ "41": {
+  "manchas_brancas_pct": 0.0,
+  "tom_medio_pct": 18.9
+ },
+ "42": {
+  "manchas_brancas_pct": 0.0,
+  "tom_medio_pct": 16.8
+ },
+ "43": {
+  "manchas_brancas_pct": 0.081,
+  "tom_medio_pct": 12.3
+ },
+ "44": {
+  "manchas_brancas_pct": 0.0,
+  "tom_medio_pct": 20.1
+ },
+ "45": {
+  "manchas_brancas_pct": 0.022,
+  "tom_medio_pct": 12.6
+ },
+ "46": {
+  "manchas_brancas_pct": 0.0,
+  "tom_medio_pct": 19.3
+ },
+ "47": {
+  "manchas_brancas_pct": 0.0,
+  "tom_medio_pct": 18.5
+ },
+ "48": {
+  "manchas_brancas_pct": 0.0,
+  "tom_medio_pct": 18.1
+ },
+ "49": {
+  "manchas_brancas_pct": 0.0,
+  "tom_medio_pct": 11.3
+ },
+ "50": {
+  "manchas_brancas_pct": 0.0,
+  "tom_medio_pct": 15.4
+ },
+ "51": {
+  "manchas_brancas_pct": 0.0,
+  "tom_medio_pct": 20.5
+ },
+ "52": {
+  "manchas_brancas_pct": 0.0,
+  "tom_medio_pct": 20.9
+ },
+ "53": {
+  "manchas_brancas_pct": 0.0,
+  "tom_medio_pct": 16.9
+ },
+ "54": {
+  "manchas_brancas_pct": 0.0,
+  "tom_medio_pct": 12.7
+ },
+ "55": {
+  "manchas_brancas_pct": 0.0,
+  "tom_medio_pct": 17.5
+ },
+ "56": {
+  "manchas_brancas_pct": 0.0,
+  "tom_medio_pct": 22.7
+ },
+ "57": {
+  "manchas_brancas_pct": 0.0,
+  "tom_medio_pct": 17.0
+ },
+ "58": {
+  "manchas_brancas_pct": 0.0,
+  "tom_medio_pct": 15.6
+ },
+ "59": {
+  "manchas_brancas_pct": 0.0,
+  "tom_medio_pct": 12.5
+ },
+ "60": {
+  "manchas_brancas_pct": 0.0,
+  "tom_medio_pct": 16.6
+ },
+ "61": {
+  "manchas_brancas_pct": 0.0,
+  "tom_medio_pct": 14.8
+ },
+ "62": {
+  "manchas_brancas_pct": 0.0,
+  "tom_medio_pct": 14.9
+ },
+ "63": {
+  "manchas_brancas_pct": 0.0,
+  "tom_medio_pct": 17.7
+ },
+ "64": {
+  "manchas_brancas_pct": 0.0,
+  "tom_medio_pct": 20.8
+ },
+ "65": {
+  "manchas_brancas_pct": 0.0,
+  "tom_medio_pct": 18.9
+ },
+ "66": {
+  "manchas_brancas_pct": 0.0,
+  "tom_medio_pct": 19.8
+ },
+ "67": {
+  "manchas_brancas_pct": 0.0,
+  "tom_medio_pct": 16.8
+ },
+ "68": {
+  "manchas_brancas_pct": 0.0,
+  "tom_medio_pct": 17.9
+ },
+ "69": {
+  "manchas_brancas_pct": 0.0,
+  "tom_medio_pct": 13.9
+ },
+ "70": {
+  "manchas_brancas_pct": 0.0,
+  "tom_medio_pct": 15.3
+ },
+ "71": {
+  "manchas_brancas_pct": 0.0,
+  "tom_medio_pct": 16.6
+ },
+ "72": {
+  "manchas_brancas_pct": 0.0,
+  "tom_medio_pct": 16.6
+ },
+ "73": {
+  "manchas_brancas_pct": 0.0,
+  "tom_medio_pct": 13.6
+ },
+ "74": {
+  "manchas_brancas_pct": 0.0,
+  "tom_medio_pct": 17.8
+ },
+ "75": {
+  "manchas_brancas_pct": 0.0,
+  "tom_medio_pct": 21.1
+ },
+ "76": {
+  "manchas_brancas_pct": 0.0,
+  "tom_medio_pct": 18.2
+ },
+ "77": {
+  "manchas_brancas_pct": 0.0,
+  "tom_medio_pct": 14.0
+ },
+ "78": {
+  "manchas_brancas_pct": 0.0,
+  "tom_medio_pct": 19.2
+ },
+ "79": {
+  "manchas_brancas_pct": 0.0,
+  "tom_medio_pct": 20.8
+ },
+ "80": {
+  "manchas_brancas_pct": 0.0,
+  "tom_medio_pct": 17.6
+ },
+ "81": {
+  "manchas_brancas_pct": 0.0,
+  "tom_medio_pct": 22.4
+ },
+ "82": {
+  "manchas_brancas_pct": 0.0,
+  "tom_medio_pct": 13.2
+ },
+ "83": {
+  "manchas_brancas_pct": 0.0,
+  "tom_medio_pct": 9.9
+ },
+ "84": {
+  "manchas_brancas_pct": 0.002,
+  "tom_medio_pct": 19.5
+ },
+ "85": {
+  "manchas_brancas_pct": 0.0,
+  "tom_medio_pct": 22.7
+ },
+ "86": {
+  "manchas_brancas_pct": 0.0,
+  "tom_medio_pct": 17.5
+ },
+ "87": {
+  "manchas_brancas_pct": 0.0,
+  "tom_medio_pct": 21.9
+ },
+ "88": {
+  "manchas_brancas_pct": 0.0,
+  "tom_medio_pct": 14.8
+ },
+ "89": {
+  "manchas_brancas_pct": 0.0,
+  "tom_medio_pct": 14.4
+ },
+ "90": {
+  "manchas_brancas_pct": 0.0,
+  "tom_medio_pct": 23.8
+ },
+ "91": {
+  "manchas_brancas_pct": 0.0,
+  "tom_medio_pct": 13.0
+ },
+ "92": {
+  "manchas_brancas_pct": 0.0,
+  "tom_medio_pct": 17.5
+ },
+ "93": {
+  "manchas_brancas_pct": 0.0,
+  "tom_medio_pct": 21.3
+ },
+ "94": {
+  "manchas_brancas_pct": 0.0,
+  "tom_medio_pct": 16.7
+ },
+ "95": {
+  "manchas_brancas_pct": 0.0,
+  "tom_medio_pct": 18.4
+ },
+ "96": {
+  "manchas_brancas_pct": 0.0,
+  "tom_medio_pct": 19.4
+ },
+ "97": {
+  "manchas_brancas_pct": 0.0,
+  "tom_medio_pct": 15.2
+ },
+ "98": {
+  "manchas_brancas_pct": 0.0,
+  "tom_medio_pct": 19.0
+ },
+ "99": {
+  "manchas_brancas_pct": 0.0,
+  "tom_medio_pct": 14.4
+ },
+ "100": {
+  "manchas_brancas_pct": 0.0,
+  "tom_medio_pct": 17.9
+ },
+ "101": {
+  "manchas_brancas_pct": 0.0,
+  "tom_medio_pct": 25.0
+ },
+ "102": {
+  "manchas_brancas_pct": 0.0,
+  "tom_medio_pct": 16.2
+ },
+ "103": {
+  "manchas_brancas_pct": 0.0,
+  "tom_medio_pct": 19.1
+ },
+ "104": {
+  "manchas_brancas_pct": 0.0,
+  "tom_medio_pct": 22.0
+ },
+ "105": {
+  "manchas_brancas_pct": 0.0,
+  "tom_medio_pct": 18.7
+ },
+ "106": {
+  "manchas_brancas_pct": 0.0,
+  "tom_medio_pct": 22.7
+ },
+ "107": {
+  "manchas_brancas_pct": 0.0,
+  "tom_medio_pct": 14.7
+ },
+ "108": {
+  "manchas_brancas_pct": 0.0,
+  "tom_medio_pct": 17.6
+ },
+ "109": {
+  "manchas_brancas_pct": 0.0,
+  "tom_medio_pct": 14.8
+ },
+ "110": {
+  "manchas_brancas_pct": 0.0,
+  "tom_medio_pct": 23.5
+ },
+ "111": {
+  "manchas_brancas_pct": 0.0,
+  "tom_medio_pct": 24.7
+ },
+ "112": {
+  "manchas_brancas_pct": 0.0,
+  "tom_medio_pct": 15.7
+ },
+ "113": {
+  "manchas_brancas_pct": 0.0,
+  "tom_medio_pct": 13.4
+ },
+ "114": {
+  "manchas_brancas_pct": 0.0,
+  "tom_medio_pct": 19.4
+ },
+ "115": {
+  "manchas_brancas_pct": 0.0,
+  "tom_medio_pct": 11.8
+ },
+ "116": {
+  "manchas_brancas_pct": 0.0,
+  "tom_medio_pct": 17.9
+ },
+ "117": {
+  "manchas_brancas_pct": 0.0,
+  "tom_medio_pct": 11.8
+ },
+ "118": {
+  "manchas_brancas_pct": 0.0,
+  "tom_medio_pct": 17.3
+ },
+ "119": {
+  "manchas_brancas_pct": 0.0,
+  "tom_medio_pct": 15.7
+ },
+ "120": {
+  "manchas_brancas_pct": 0.0,
+  "tom_medio_pct": 22.8
+ },
+ "121": {
+  "manchas_brancas_pct": 0.0,
+  "tom_medio_pct": 20.0
+ },
+ "122": {
+  "manchas_brancas_pct": 0.0,
+  "tom_medio_pct": 14.2
+ },
+ "123": {
+  "manchas_brancas_pct": 0.0,
+  "tom_medio_pct": 15.1
+ },
+ "124": {
+  "manchas_brancas_pct": 0.0,
+  "tom_medio_pct": 14.7
+ },
+ "125": {
+  "manchas_brancas_pct": 0.0,
+  "tom_medio_pct": 15.7
+ },
+ "126": {
+  "manchas_brancas_pct": 0.0,
+  "tom_medio_pct": 20.2
+ },
+ "127": {
+  "manchas_brancas_pct": 0.0,
+  "tom_medio_pct": 15.7
+ },
+ "128": {
+  "manchas_brancas_pct": 0.0,
+  "tom_medio_pct": 24.0
+ },
+ "129": {
+  "manchas_brancas_pct": 0.0,
+  "tom_medio_pct": 17.5
+ },
+ "130": {
+  "manchas_brancas_pct": 0.0,
+  "tom_medio_pct": 7.7
+ },
+ "131": {
+  "manchas_brancas_pct": 0.0,
+  "tom_medio_pct": 15.3
+ },
+ "132": {
+  "manchas_brancas_pct": 0.0,
+  "tom_medio_pct": 14.6
+ },
+ "133": {
+  "manchas_brancas_pct": 0.0,
+  "tom_medio_pct": 9.2
+ },
+ "134": {
+  "manchas_brancas_pct": 0.0,
+  "tom_medio_pct": 19.1
+ },
+ "135": {
+  "manchas_brancas_pct": 0.0,
+  "tom_medio_pct": 14.2
+ },
+ "136": {
+  "manchas_brancas_pct": 0.0,
+  "tom_medio_pct": 19.3
+ },
+ "137": {
+  "manchas_brancas_pct": 0.0,
+  "tom_medio_pct": 21.9
+ },
+ "138": {
+  "manchas_brancas_pct": 0.0,
+  "tom_medio_pct": 11.9
+ },
+ "139": {
+  "manchas_brancas_pct": 0.0,
+  "tom_medio_pct": 13.5
+ },
+ "140": {
+  "manchas_brancas_pct": 0.0,
+  "tom_medio_pct": 15.3
+ },
+ "141": {
+  "manchas_brancas_pct": 0.0,
+  "tom_medio_pct": 17.4
+ },
+ "142": {
+  "manchas_brancas_pct": 0.0,
+  "tom_medio_pct": 11.8
+ },
+ "143": {
+  "manchas_brancas_pct": 0.0,
+  "tom_medio_pct": 18.3
+ },
+ "144": {
+  "manchas_brancas_pct": 0.0,
+  "tom_medio_pct": 23.0
+ },
+ "145": {
+  "manchas_brancas_pct": 0.0,
+  "tom_medio_pct": 20.9
+ },
+ "146": {
+  "manchas_brancas_pct": 0.007,
+  "tom_medio_pct": 19.3
+ },
+ "147": {
+  "manchas_brancas_pct": 0.0,
+  "tom_medio_pct": 17.6
+ },
+ "148": {
+  "manchas_brancas_pct": 0.0,
+  "tom_medio_pct": 15.7
+ },
+ "149": {
+  "manchas_brancas_pct": 0.0,
+  "tom_medio_pct": 11.7
+ },
+ "150": {
+  "manchas_brancas_pct": 0.0,
+  "tom_medio_pct": 8.7
+ },
+ "151": {
+  "manchas_brancas_pct": 0.0,
+  "tom_medio_pct": 22.7
+ },
+ "152": {
+  "manchas_brancas_pct": 0.0,
+  "tom_medio_pct": 25.6
+ },
+ "153": {
+  "manchas_brancas_pct": 0.0,
+  "tom_medio_pct": 22.1
+ },
+ "154": {
+  "manchas_brancas_pct": 0.0,
+  "tom_medio_pct": 19.5
+ },
+ "155": {
+  "manchas_brancas_pct": 0.0,
+  "tom_medio_pct": 11.5
+ },
+ "156": {
+  "manchas_brancas_pct": 0.0,
+  "tom_medio_pct": 13.9
+ },
+ "157": {
+  "manchas_brancas_pct": 0.0,
+  "tom_medio_pct": 11.6
+ },
+ "158": {
+  "manchas_brancas_pct": 0.0,
+  "tom_medio_pct": 9.7
+ },
+ "159": {
+  "manchas_brancas_pct": 0.0,
+  "tom_medio_pct": 11.3
+ },
+ "160": {
+  "manchas_brancas_pct": 0.0,
+  "tom_medio_pct": 17.2
+ },
+ "161": {
+  "manchas_brancas_pct": 0.0,
+  "tom_medio_pct": 11.3
+ },
+ "162": {
+  "manchas_brancas_pct": 0.0,
+  "tom_medio_pct": 11.8
+ },
+ "163": {
+  "manchas_brancas_pct": 0.0,
+  "tom_medio_pct": 19.6
+ },
+ "164": {
+  "manchas_brancas_pct": 0.0,
+  "tom_medio_pct": 19.5
+ },
+ "165": {
+  "manchas_brancas_pct": 0.0,
+  "tom_medio_pct": 22.3
+ },
+ "166": {
+  "manchas_brancas_pct": 0.0,
+  "tom_medio_pct": 11.7
+ },
+ "167": {
+  "manchas_brancas_pct": 0.0,
+  "tom_medio_pct": 14.1
+ },
+ "168": {
+  "manchas_brancas_pct": 0.0,
+  "tom_medio_pct": 14.3
+ },
+ "169": {
+  "manchas_brancas_pct": 0.0,
+  "tom_medio_pct": 15.6
+ },
+ "170": {
+  "manchas_brancas_pct": 0.002,
+  "tom_medio_pct": 12.6
+ },
+ "171": {
+  "manchas_brancas_pct": 0.0,
+  "tom_medio_pct": 15.0
+ },
+ "172": {
+  "manchas_brancas_pct": 0.0,
+  "tom_medio_pct": 19.1
+ },
+ "173": {
+  "manchas_brancas_pct": 0.0,
+  "tom_medio_pct": 10.3
+ },
+ "174": {
+  "manchas_brancas_pct": 0.0,
+  "tom_medio_pct": 17.3
+ },
+ "175": {
+  "manchas_brancas_pct": 0.0,
+  "tom_medio_pct": 21.6
+ },
+ "176": {
+  "manchas_brancas_pct": 0.0,
+  "tom_medio_pct": 13.3
+ },
+ "177": {
+  "manchas_brancas_pct": 0.0,
+  "tom_medio_pct": 16.6
+ },
+ "178": {
+  "manchas_brancas_pct": 0.0,
+  "tom_medio_pct": 18.4
+ },
+ "179": {
+  "manchas_brancas_pct": 0.0,
+  "tom_medio_pct": 17.2
+ },
+ "180": {
+  "manchas_brancas_pct": 0.0,
+  "tom_medio_pct": 15.2
+ },
+ "181": {
+  "manchas_brancas_pct": 0.0,
+  "tom_medio_pct": 18.7
+ },
+ "182": {
+  "manchas_brancas_pct": 0.0,
+  "tom_medio_pct": 15.5
+ },
+ "183": {
+  "manchas_brancas_pct": 0.0,
+  "tom_medio_pct": 15.0
+ },
+ "184": {
+  "manchas_brancas_pct": 0.0,
+  "tom_medio_pct": 11.4
+ },
+ "185": {
+  "manchas_brancas_pct": 0.0,
+  "tom_medio_pct": 17.7
+ },
+ "186": {
+  "manchas_brancas_pct": 0.0,
+  "tom_medio_pct": 15.8
+ },
+ "187": {
+  "manchas_brancas_pct": 0.0,
+  "tom_medio_pct": 9.3
+ },
+ "188": {
+  "manchas_brancas_pct": 0.0,
+  "tom_medio_pct": 13.9
+ },
+ "189": {
+  "manchas_brancas_pct": 0.0,
+  "tom_medio_pct": 15.1
+ },
+ "190": {
+  "manchas_brancas_pct": 0.0,
+  "tom_medio_pct": 19.1
+ },
+ "191": {
+  "manchas_brancas_pct": 0.0,
+  "tom_medio_pct": 13.1
+ },
+ "192": {
+  "manchas_brancas_pct": 0.0,
+  "tom_medio_pct": 17.5
+ },
+ "193": {
+  "manchas_brancas_pct": 0.0,
+  "tom_medio_pct": 12.5
+ },
+ "194": {
+  "manchas_brancas_pct": 0.0,
+  "tom_medio_pct": 15.3
+ },
+ "195": {
+  "manchas_brancas_pct": 0.0,
+  "tom_medio_pct": 14.7
+ },
+ "196": {
+  "manchas_brancas_pct": 0.0,
+  "tom_medio_pct": 13.1
+ },
+ "197": {
+  "manchas_brancas_pct": 0.0,
+  "tom_medio_pct": 4.0
+ },
+ "198": {
+  "manchas_brancas_pct": 0.0,
+  "tom_medio_pct": 2.7
+ },
+ "199": {
+  "manchas_brancas_pct": 0.0,
+  "tom_medio_pct": 3.5
+ }
+}

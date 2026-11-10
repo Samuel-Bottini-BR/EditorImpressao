@@ -1,0 +1,1395 @@
+{
+ "1": {
+  "branco_em_pintura_pct": 0.001,
+  "blocos": 0,
+  "pintura_pct": 31.7,
+  "gravuras_achadas": 1,
+  "segundos": 12.25
+ },
+ "2": {
+  "branco_em_pintura_pct": 0.008,
+  "blocos": 0,
+  "pintura_pct": 4.5,
+  "gravuras_achadas": 2,
+  "segundos": 8.75
+ },
+ "3": {
+  "branco_em_pintura_pct": 0.001,
+  "blocos": 0,
+  "pintura_pct": 10.3,
+  "gravuras_achadas": 2,
+  "segundos": 9.02
+ },
+ "4": {
+  "branco_em_pintura_pct": 0.0,
+  "blocos": 0,
+  "pintura_pct": 1.0,
+  "gravuras_achadas": 0,
+  "segundos": 2.74
+ },
+ "5": {
+  "branco_em_pintura_pct": 0.015,
+  "blocos": 0,
+  "pintura_pct": 2.7,
+  "gravuras_achadas": 1,
+  "segundos": 8.61
+ },
+ "6": {
+  "branco_em_pintura_pct": 0.008,
+  "blocos": 0,
+  "pintura_pct": 3.7,
+  "gravuras_achadas": 1,
+  "segundos": 8.27
+ },
+ "7": {
+  "branco_em_pintura_pct": 0.009,
+  "blocos": 0,
+  "pintura_pct": 21.3,
+  "gravuras_achadas": 1,
+  "segundos": 8.67
+ },
+ "8": {
+  "branco_em_pintura_pct": 0.017,
+  "blocos": 0,
+  "pintura_pct": 24.7,
+  "gravuras_achadas": 1,
+  "segundos": 9.11
+ },
+ "9": {
+  "branco_em_pintura_pct": 0.003,
+  "blocos": 0,
+  "pintura_pct": 19.4,
+  "gravuras_achadas": 1,
+  "segundos": 8.81
+ },
+ "10": {
+  "branco_em_pintura_pct": 0.008,
+  "blocos": 0,
+  "pintura_pct": 20.6,
+  "gravuras_achadas": 1,
+  "segundos": 8.83
+ },
+ "11": {
+  "branco_em_pintura_pct": 0.004,
+  "blocos": 0,
+  "pintura_pct": 19.0,
+  "gravuras_achadas": 1,
+  "segundos": 8.83
+ },
+ "12": {
+  "branco_em_pintura_pct": 0.019,
+  "blocos": 0,
+  "pintura_pct": 18.2,
+  "gravuras_achadas": 2,
+  "segundos": 9.23
+ },
+ "13": {
+  "branco_em_pintura_pct": 0.026,
+  "blocos": 0,
+  "pintura_pct": 20.7,
+  "gravuras_achadas": 1,
+  "segundos": 9.7
+ },
+ "14": {
+  "branco_em_pintura_pct": 0.012,
+  "blocos": 0,
+  "pintura_pct": 14.6,
+  "gravuras_achadas": 3,
+  "segundos": 9.74
+ },
+ "15": {
+  "branco_em_pintura_pct": 0.002,
+  "blocos": 0,
+  "pintura_pct": 17.3,
+  "gravuras_achadas": 1,
+  "segundos": 9.29
+ },
+ "16": {
+  "branco_em_pintura_pct": 0.006,
+  "blocos": 0,
+  "pintura_pct": 24.6,
+  "gravuras_achadas": 1,
+  "segundos": 8.76
+ },
+ "17": {
+  "branco_em_pintura_pct": 0.004,
+  "blocos": 0,
+  "pintura_pct": 20.0,
+  "gravuras_achadas": 1,
+  "segundos": 8.99
+ },
+ "18": {
+  "branco_em_pintura_pct": 0.007,
+  "blocos": 0,
+  "pintura_pct": 19.9,
+  "gravuras_achadas": 1,
+  "segundos": 8.59
+ },
+ "19": {
+  "branco_em_pintura_pct": 0.006,
+  "blocos": 0,
+  "pintura_pct": 21.8,
+  "gravuras_achadas": 1,
+  "segundos": 6.63
+ },
+ "20": {
+  "branco_em_pintura_pct": 0.017,
+  "blocos": 0,
+  "pintura_pct": 19.3,
+  "gravuras_achadas": 2,
+  "segundos": 8.37
+ },
+ "21": {
+  "branco_em_pintura_pct": 0.002,
+  "blocos": 0,
+  "pintura_pct": 14.2,
+  "gravuras_achadas": 1,
+  "segundos": 8.61
+ },
+ "22": {
+  "branco_em_pintura_pct": 0.024,
+  "blocos": 0,
+  "pintura_pct": 24.4,
+  "gravuras_achadas": 1,
+  "segundos": 9.12
+ },
+ "23": {
+  "branco_em_pintura_pct": 0.048,
+  "blocos": 0,
+  "pintura_pct": 23.0,
+  "gravuras_achadas": 1,
+  "segundos": 9.79
+ },
+ "24": {
+  "branco_em_pintura_pct": 0.005,
+  "blocos": 0,
+  "pintura_pct": 17.4,
+  "gravuras_achadas": 2,
+  "segundos": 9.43
+ },
+ "25": {
+  "branco_em_pintura_pct": 0.008,
+  "blocos": 0,
+  "pintura_pct": 17.0,
+  "gravuras_achadas": 1,
+  "segundos": 9.83
+ },
+ "26": {
+  "branco_em_pintura_pct": 0.01,
+  "blocos": 0,
+  "pintura_pct": 21.8,
+  "gravuras_achadas": 1,
+  "segundos": 9.33
+ },
+ "27": {
+  "branco_em_pintura_pct": 0.005,
+  "blocos": 0,
+  "pintura_pct": 16.5,
+  "gravuras_achadas": 4,
+  "segundos": 10.14
+ },
+ "28": {
+  "branco_em_pintura_pct": 0.011,
+  "blocos": 0,
+  "pintura_pct": 15.1,
+  "gravuras_achadas": 1,
+  "segundos": 9.97
+ },
+ "29": {
+  "branco_em_pintura_pct": 0.01,
+  "blocos": 0,
+  "pintura_pct": 21.0,
+  "gravuras_achadas": 1,
+  "segundos": 9.37
+ },
+ "30": {
+  "branco_em_pintura_pct": 0.003,
+  "blocos": 0,
+  "pintura_pct": 21.2,
+  "gravuras_achadas": 1,
+  "segundos": 9.96
+ },
+ "31": {
+  "branco_em_pintura_pct": 0.012,
+  "blocos": 0,
+  "pintura_pct": 20.4,
+  "gravuras_achadas": 1,
+  "segundos": 10.11
+ },
+ "32": {
+  "branco_em_pintura_pct": 0.013,
+  "blocos": 0,
+  "pintura_pct": 14.4,
+  "gravuras_achadas": 1,
+  "segundos": 8.62
+ },
+ "33": {
+  "branco_em_pintura_pct": 0.006,
+  "blocos": 0,
+  "pintura_pct": 15.6,
+  "gravuras_achadas": 1,
+  "segundos": 8.59
+ },
+ "34": {
+  "branco_em_pintura_pct": 0.008,
+  "blocos": 0,
+  "pintura_pct": 16.0,
+  "gravuras_achadas": 1,
+  "segundos": 8.51
+ },
+ "35": {
+  "branco_em_pintura_pct": 0.02,
+  "blocos": 0,
+  "pintura_pct": 24.8,
+  "gravuras_achadas": 1,
+  "segundos": 9.19
+ },
+ "36": {
+  "branco_em_pintura_pct": 0.003,
+  "blocos": 0,
+  "pintura_pct": 17.1,
+  "gravuras_achadas": 1,
+  "segundos": 8.95
+ },
+ "37": {
+  "branco_em_pintura_pct": 0.037,
+  "blocos": 0,
+  "pintura_pct": 21.1,
+  "gravuras_achadas": 1,
+  "segundos": 9.11
+ },
+ "38": {
+  "branco_em_pintura_pct": 0.018,
+  "blocos": 0,
+  "pintura_pct": 20.3,
+  "gravuras_achadas": 1,
+  "segundos": 10.0
+ },
+ "39": {
+  "branco_em_pintura_pct": 0.021,
+  "blocos": 0,
+  "pintura_pct": 21.8,
+  "gravuras_achadas": 1,
+  "segundos": 8.4
+ },
+ "40": {
+  "branco_em_pintura_pct": 0.001,
+  "blocos": 0,
+  "pintura_pct": 14.7,
+  "gravuras_achadas": 1,
+  "segundos": 8.61
+ },
+ "41": {
+  "branco_em_pintura_pct": 0.001,
+  "blocos": 0,
+  "pintura_pct": 19.1,
+  "gravuras_achadas": 2,
+  "segundos": 8.88
+ },
+ "42": {
+  "branco_em_pintura_pct": 0.013,
+  "blocos": 0,
+  "pintura_pct": 16.5,
+  "gravuras_achadas": 1,
+  "segundos": 9.39
+ },
+ "43": {
+  "branco_em_pintura_pct": 0.047,
+  "blocos": 1,
+  "pintura_pct": 11.7,
+  "gravuras_achadas": 1,
+  "segundos": 9.26
+ },
+ "44": {
+  "branco_em_pintura_pct": 0.007,
+  "blocos": 0,
+  "pintura_pct": 18.0,
+  "gravuras_achadas": 1,
+  "segundos": 9.27
+ },
+ "45": {
+  "branco_em_pintura_pct": 0.009,
+  "blocos": 0,
+  "pintura_pct": 11.6,
+  "gravuras_achadas": 1,
+  "segundos": 7.21
+ },
+ "46": {
+  "branco_em_pintura_pct": 0.007,
+  "blocos": 0,
+  "pintura_pct": 18.8,
+  "gravuras_achadas": 1,
+  "segundos": 9.46
+ },
+ "47": {
+  "branco_em_pintura_pct": 0.01,
+  "blocos": 0,
+  "pintura_pct": 17.3,
+  "gravuras_achadas": 1,
+  "segundos": 8.75
+ },
+ "48": {
+  "branco_em_pintura_pct": 0.004,
+  "blocos": 0,
+  "pintura_pct": 17.3,
+  "gravuras_achadas": 1,
+  "segundos": 9.6
+ },
+ "49": {
+  "branco_em_pintura_pct": 0.002,
+  "blocos": 0,
+  "pintura_pct": 15.6,
+  "gravuras_achadas": 1,
+  "segundos": 10.19
+ },
+ "50": {
+  "branco_em_pintura_pct": 0.029,
+  "blocos": 0,
+  "pintura_pct": 17.9,
+  "gravuras_achadas": 1,
+  "segundos": 10.24
+ },
+ "51": {
+  "branco_em_pintura_pct": 0.024,
+  "blocos": 0,
+  "pintura_pct": 21.4,
+  "gravuras_achadas": 2,
+  "segundos": 10.0
+ },
+ "52": {
+  "branco_em_pintura_pct": 0.01,
+  "blocos": 0,
+  "pintura_pct": 22.4,
+  "gravuras_achadas": 1,
+  "segundos": 8.89
+ },
+ "53": {
+  "branco_em_pintura_pct": 0.002,
+  "blocos": 0,
+  "pintura_pct": 19.9,
+  "gravuras_achadas": 1,
+  "segundos": 8.58
+ },
+ "54": {
+  "branco_em_pintura_pct": 0.024,
+  "blocos": 0,
+  "pintura_pct": 14.6,
+  "gravuras_achadas": 2,
+  "segundos": 9.35
+ },
+ "55": {
+  "branco_em_pintura_pct": 0.022,
+  "blocos": 0,
+  "pintura_pct": 17.2,
+  "gravuras_achadas": 1,
+  "segundos": 8.49
+ },
+ "56": {
+  "branco_em_pintura_pct": 0.012,
+  "blocos": 0,
+  "pintura_pct": 24.4,
+  "gravuras_achadas": 1,
+  "segundos": 9.14
+ },
+ "57": {
+  "branco_em_pintura_pct": 0.005,
+  "blocos": 0,
+  "pintura_pct": 17.3,
+  "gravuras_achadas": 1,
+  "segundos": 9.02
+ },
+ "58": {
+  "branco_em_pintura_pct": 0.042,
+  "blocos": 0,
+  "pintura_pct": 19.7,
+  "gravuras_achadas": 1,
+  "segundos": 8.81
+ },
+ "59": {
+  "branco_em_pintura_pct": 0.022,
+  "blocos": 0,
+  "pintura_pct": 12.1,
+  "gravuras_achadas": 1,
+  "segundos": 8.93
+ },
+ "60": {
+  "branco_em_pintura_pct": 0.005,
+  "blocos": 0,
+  "pintura_pct": 17.7,
+  "gravuras_achadas": 1,
+  "segundos": 9.93
+ },
+ "61": {
+  "branco_em_pintura_pct": 0.004,
+  "blocos": 0,
+  "pintura_pct": 14.8,
+  "gravuras_achadas": 1,
+  "segundos": 8.51
+ },
+ "62": {
+  "branco_em_pintura_pct": 0.002,
+  "blocos": 0,
+  "pintura_pct": 13.7,
+  "gravuras_achadas": 1,
+  "segundos": 8.5
+ },
+ "63": {
+  "branco_em_pintura_pct": 0.004,
+  "blocos": 0,
+  "pintura_pct": 16.3,
+  "gravuras_achadas": 2,
+  "segundos": 8.98
+ },
+ "64": {
+  "branco_em_pintura_pct": 0.005,
+  "blocos": 0,
+  "pintura_pct": 22.1,
+  "gravuras_achadas": 1,
+  "segundos": 8.9
+ },
+ "65": {
+  "branco_em_pintura_pct": 0.028,
+  "blocos": 0,
+  "pintura_pct": 17.5,
+  "gravuras_achadas": 1,
+  "segundos": 8.68
+ },
+ "66": {
+  "branco_em_pintura_pct": 0.019,
+  "blocos": 0,
+  "pintura_pct": 19.4,
+  "gravuras_achadas": 1,
+  "segundos": 8.86
+ },
+ "67": {
+  "branco_em_pintura_pct": 0.065,
+  "blocos": 3,
+  "pintura_pct": 19.2,
+  "gravuras_achadas": 1,
+  "segundos": 9.7
+ },
+ "68": {
+  "branco_em_pintura_pct": 0.07,
+  "blocos": 3,
+  "pintura_pct": 18.9,
+  "gravuras_achadas": 1,
+  "segundos": 9.62
+ },
+ "69": {
+  "branco_em_pintura_pct": 0.015,
+  "blocos": 0,
+  "pintura_pct": 15.6,
+  "gravuras_achadas": 3,
+  "segundos": 9.81
+ },
+ "70": {
+  "branco_em_pintura_pct": 0.024,
+  "blocos": 0,
+  "pintura_pct": 14.5,
+  "gravuras_achadas": 1,
+  "segundos": 8.37
+ },
+ "71": {
+  "branco_em_pintura_pct": 0.037,
+  "blocos": 0,
+  "pintura_pct": 18.0,
+  "gravuras_achadas": 5,
+  "segundos": 9.28
+ },
+ "72": {
+  "branco_em_pintura_pct": 0.031,
+  "blocos": 0,
+  "pintura_pct": 18.3,
+  "gravuras_achadas": 1,
+  "segundos": 8.73
+ },
+ "73": {
+  "branco_em_pintura_pct": 0.014,
+  "blocos": 0,
+  "pintura_pct": 17.1,
+  "gravuras_achadas": 2,
+  "segundos": 9.43
+ },
+ "74": {
+  "branco_em_pintura_pct": 0.055,
+  "blocos": 0,
+  "pintura_pct": 21.4,
+  "gravuras_achadas": 1,
+  "segundos": 8.99
+ },
+ "75": {
+  "branco_em_pintura_pct": 0.056,
+  "blocos": 0,
+  "pintura_pct": 23.6,
+  "gravuras_achadas": 1,
+  "segundos": 9.17
+ },
+ "76": {
+  "branco_em_pintura_pct": 0.002,
+  "blocos": 0,
+  "pintura_pct": 19.3,
+  "gravuras_achadas": 1,
+  "segundos": 10.59
+ },
+ "77": {
+  "branco_em_pintura_pct": 0.021,
+  "blocos": 0,
+  "pintura_pct": 18.6,
+  "gravuras_achadas": 1,
+  "segundos": 9.2
+ },
+ "78": {
+  "branco_em_pintura_pct": 0.049,
+  "blocos": 0,
+  "pintura_pct": 24.2,
+  "gravuras_achadas": 1,
+  "segundos": 9.51
+ },
+ "79": {
+  "branco_em_pintura_pct": 0.045,
+  "blocos": 0,
+  "pintura_pct": 22.8,
+  "gravuras_achadas": 1,
+  "segundos": 8.78
+ },
+ "80": {
+  "branco_em_pintura_pct": 0.006,
+  "blocos": 0,
+  "pintura_pct": 17.7,
+  "gravuras_achadas": 1,
+  "segundos": 9.24
+ },
+ "81": {
+  "branco_em_pintura_pct": 0.014,
+  "blocos": 0,
+  "pintura_pct": 22.2,
+  "gravuras_achadas": 1,
+  "segundos": 8.81
+ },
+ "82": {
+  "branco_em_pintura_pct": 0.048,
+  "blocos": 0,
+  "pintura_pct": 14.5,
+  "gravuras_achadas": 5,
+  "segundos": 8.52
+ },
+ "83": {
+  "branco_em_pintura_pct": 0.045,
+  "blocos": 0,
+  "pintura_pct": 13.8,
+  "gravuras_achadas": 2,
+  "segundos": 8.9
+ },
+ "84": {
+  "branco_em_pintura_pct": 0.019,
+  "blocos": 0,
+  "pintura_pct": 23.0,
+  "gravuras_achadas": 2,
+  "segundos": 9.04
+ },
+ "85": {
+  "branco_em_pintura_pct": 0.026,
+  "blocos": 0,
+  "pintura_pct": 23.4,
+  "gravuras_achadas": 1,
+  "segundos": 8.44
+ },
+ "86": {
+  "branco_em_pintura_pct": 0.044,
+  "blocos": 0,
+  "pintura_pct": 23.1,
+  "gravuras_achadas": 2,
+  "segundos": 8.68
+ },
+ "87": {
+  "branco_em_pintura_pct": 0.019,
+  "blocos": 0,
+  "pintura_pct": 22.6,
+  "gravuras_achadas": 1,
+  "segundos": 8.54
+ },
+ "88": {
+  "branco_em_pintura_pct": 0.012,
+  "blocos": 0,
+  "pintura_pct": 16.1,
+  "gravuras_achadas": 1,
+  "segundos": 10.52
+ },
+ "89": {
+  "branco_em_pintura_pct": 0.01,
+  "blocos": 0,
+  "pintura_pct": 15.3,
+  "gravuras_achadas": 2,
+  "segundos": 9.3
+ },
+ "90": {
+  "branco_em_pintura_pct": 0.011,
+  "blocos": 0,
+  "pintura_pct": 24.8,
+  "gravuras_achadas": 1,
+  "segundos": 9.11
+ },
+ "91": {
+  "branco_em_pintura_pct": 0.003,
+  "blocos": 0,
+  "pintura_pct": 11.4,
+  "gravuras_achadas": 1,
+  "segundos": 8.98
+ },
+ "92": {
+  "branco_em_pintura_pct": 0.021,
+  "blocos": 0,
+  "pintura_pct": 19.8,
+  "gravuras_achadas": 1,
+  "segundos": 8.99
+ },
+ "93": {
+  "branco_em_pintura_pct": 0.045,
+  "blocos": 2,
+  "pintura_pct": 22.5,
+  "gravuras_achadas": 1,
+  "segundos": 9.17
+ },
+ "94": {
+  "branco_em_pintura_pct": 0.023,
+  "blocos": 0,
+  "pintura_pct": 17.1,
+  "gravuras_achadas": 1,
+  "segundos": 9.01
+ },
+ "95": {
+  "branco_em_pintura_pct": 0.026,
+  "blocos": 0,
+  "pintura_pct": 20.8,
+  "gravuras_achadas": 1,
+  "segundos": 10.67
+ },
+ "96": {
+  "branco_em_pintura_pct": 0.015,
+  "blocos": 0,
+  "pintura_pct": 23.2,
+  "gravuras_achadas": 1,
+  "segundos": 9.36
+ },
+ "97": {
+  "branco_em_pintura_pct": 0.027,
+  "blocos": 0,
+  "pintura_pct": 18.9,
+  "gravuras_achadas": 1,
+  "segundos": 9.33
+ },
+ "98": {
+  "branco_em_pintura_pct": 0.079,
+  "blocos": 0,
+  "pintura_pct": 18.4,
+  "gravuras_achadas": 1,
+  "segundos": 9.31
+ },
+ "99": {
+  "branco_em_pintura_pct": 0.024,
+  "blocos": 0,
+  "pintura_pct": 17.3,
+  "gravuras_achadas": 2,
+  "segundos": 10.11
+ },
+ "100": {
+  "branco_em_pintura_pct": 0.013,
+  "blocos": 0,
+  "pintura_pct": 21.7,
+  "gravuras_achadas": 1,
+  "segundos": 9.34
+ },
+ "101": {
+  "branco_em_pintura_pct": 0.032,
+  "blocos": 0,
+  "pintura_pct": 28.3,
+  "gravuras_achadas": 1,
+  "segundos": 10.24
+ },
+ "102": {
+  "branco_em_pintura_pct": 0.034,
+  "blocos": 0,
+  "pintura_pct": 17.4,
+  "gravuras_achadas": 1,
+  "segundos": 9.06
+ },
+ "103": {
+  "branco_em_pintura_pct": 0.017,
+  "blocos": 0,
+  "pintura_pct": 20.9,
+  "gravuras_achadas": 1,
+  "segundos": 9.59
+ },
+ "104": {
+  "branco_em_pintura_pct": 0.041,
+  "blocos": 1,
+  "pintura_pct": 25.7,
+  "gravuras_achadas": 1,
+  "segundos": 11.14
+ },
+ "105": {
+  "branco_em_pintura_pct": 0.005,
+  "blocos": 0,
+  "pintura_pct": 18.7,
+  "gravuras_achadas": 1,
+  "segundos": 10.41
+ },
+ "106": {
+  "branco_em_pintura_pct": 0.04,
+  "blocos": 0,
+  "pintura_pct": 24.5,
+  "gravuras_achadas": 1,
+  "segundos": 9.42
+ },
+ "107": {
+  "branco_em_pintura_pct": 0.013,
+  "blocos": 0,
+  "pintura_pct": 15.5,
+  "gravuras_achadas": 1,
+  "segundos": 8.92
+ },
+ "108": {
+  "branco_em_pintura_pct": 0.005,
+  "blocos": 0,
+  "pintura_pct": 17.1,
+  "gravuras_achadas": 1,
+  "segundos": 7.91
+ },
+ "109": {
+  "branco_em_pintura_pct": 0.009,
+  "blocos": 0,
+  "pintura_pct": 14.8,
+  "gravuras_achadas": 1,
+  "segundos": 7.95
+ },
+ "110": {
+  "branco_em_pintura_pct": 0.022,
+  "blocos": 1,
+  "pintura_pct": 24.1,
+  "gravuras_achadas": 1,
+  "segundos": 7.59
+ },
+ "111": {
+  "branco_em_pintura_pct": 0.002,
+  "blocos": 0,
+  "pintura_pct": 23.9,
+  "gravuras_achadas": 1,
+  "segundos": 8.61
+ },
+ "112": {
+  "branco_em_pintura_pct": 0.021,
+  "blocos": 0,
+  "pintura_pct": 15.7,
+  "gravuras_achadas": 1,
+  "segundos": 8.68
+ },
+ "113": {
+  "branco_em_pintura_pct": 0.014,
+  "blocos": 0,
+  "pintura_pct": 14.3,
+  "gravuras_achadas": 1,
+  "segundos": 9.28
+ },
+ "114": {
+  "branco_em_pintura_pct": 0.031,
+  "blocos": 0,
+  "pintura_pct": 19.5,
+  "gravuras_achadas": 1,
+  "segundos": 9.24
+ },
+ "115": {
+  "branco_em_pintura_pct": 0.006,
+  "blocos": 0,
+  "pintura_pct": 11.6,
+  "gravuras_achadas": 1,
+  "segundos": 8.07
+ },
+ "116": {
+  "branco_em_pintura_pct": 0.015,
+  "blocos": 0,
+  "pintura_pct": 24.3,
+  "gravuras_achadas": 1,
+  "segundos": 8.54
+ },
+ "117": {
+  "branco_em_pintura_pct": 0.027,
+  "blocos": 0,
+  "pintura_pct": 12.3,
+  "gravuras_achadas": 1,
+  "segundos": 8.14
+ },
+ "118": {
+  "branco_em_pintura_pct": 0.011,
+  "blocos": 0,
+  "pintura_pct": 18.5,
+  "gravuras_achadas": 1,
+  "segundos": 10.38
+ },
+ "119": {
+  "branco_em_pintura_pct": 0.059,
+  "blocos": 3,
+  "pintura_pct": 16.3,
+  "gravuras_achadas": 3,
+  "segundos": 9.79
+ },
+ "120": {
+  "branco_em_pintura_pct": 0.017,
+  "blocos": 0,
+  "pintura_pct": 24.7,
+  "gravuras_achadas": 1,
+  "segundos": 9.78
+ },
+ "121": {
+  "branco_em_pintura_pct": 0.019,
+  "blocos": 0,
+  "pintura_pct": 22.2,
+  "gravuras_achadas": 1,
+  "segundos": 9.44
+ },
+ "122": {
+  "branco_em_pintura_pct": 0.019,
+  "blocos": 0,
+  "pintura_pct": 14.4,
+  "gravuras_achadas": 1,
+  "segundos": 7.92
+ },
+ "123": {
+  "branco_em_pintura_pct": 0.052,
+  "blocos": 0,
+  "pintura_pct": 18.7,
+  "gravuras_achadas": 1,
+  "segundos": 8.42
+ },
+ "124": {
+  "branco_em_pintura_pct": 0.015,
+  "blocos": 0,
+  "pintura_pct": 16.8,
+  "gravuras_achadas": 3,
+  "segundos": 8.62
+ },
+ "125": {
+  "branco_em_pintura_pct": 0.028,
+  "blocos": 0,
+  "pintura_pct": 22.1,
+  "gravuras_achadas": 2,
+  "segundos": 8.42
+ },
+ "126": {
+  "branco_em_pintura_pct": 0.035,
+  "blocos": 0,
+  "pintura_pct": 21.8,
+  "gravuras_achadas": 1,
+  "segundos": 8.56
+ },
+ "127": {
+  "branco_em_pintura_pct": 0.032,
+  "blocos": 0,
+  "pintura_pct": 18.6,
+  "gravuras_achadas": 1,
+  "segundos": 8.57
+ },
+ "128": {
+  "branco_em_pintura_pct": 0.012,
+  "blocos": 0,
+  "pintura_pct": 24.6,
+  "gravuras_achadas": 1,
+  "segundos": 8.48
+ },
+ "129": {
+  "branco_em_pintura_pct": 0.006,
+  "blocos": 0,
+  "pintura_pct": 16.7,
+  "gravuras_achadas": 1,
+  "segundos": 7.82
+ },
+ "130": {
+  "branco_em_pintura_pct": 0.045,
+  "blocos": 0,
+  "pintura_pct": 9.7,
+  "gravuras_achadas": 1,
+  "segundos": 8.11
+ },
+ "131": {
+  "branco_em_pintura_pct": 0.021,
+  "blocos": 0,
+  "pintura_pct": 15.8,
+  "gravuras_achadas": 1,
+  "segundos": 7.88
+ },
+ "132": {
+  "branco_em_pintura_pct": 0.012,
+  "blocos": 0,
+  "pintura_pct": 16.7,
+  "gravuras_achadas": 1,
+  "segundos": 8.14
+ },
+ "133": {
+  "branco_em_pintura_pct": 0.023,
+  "blocos": 0,
+  "pintura_pct": 10.3,
+  "gravuras_achadas": 1,
+  "segundos": 8.15
+ },
+ "134": {
+  "branco_em_pintura_pct": 0.023,
+  "blocos": 0,
+  "pintura_pct": 21.2,
+  "gravuras_achadas": 1,
+  "segundos": 8.72
+ },
+ "135": {
+  "branco_em_pintura_pct": 0.026,
+  "blocos": 0,
+  "pintura_pct": 16.4,
+  "gravuras_achadas": 1,
+  "segundos": 8.73
+ },
+ "136": {
+  "branco_em_pintura_pct": 0.024,
+  "blocos": 0,
+  "pintura_pct": 20.4,
+  "gravuras_achadas": 1,
+  "segundos": 8.37
+ },
+ "137": {
+  "branco_em_pintura_pct": 0.012,
+  "blocos": 0,
+  "pintura_pct": 22.6,
+  "gravuras_achadas": 1,
+  "segundos": 8.78
+ },
+ "138": {
+  "branco_em_pintura_pct": 0.012,
+  "blocos": 0,
+  "pintura_pct": 11.2,
+  "gravuras_achadas": 3,
+  "segundos": 8.35
+ },
+ "139": {
+  "branco_em_pintura_pct": 0.025,
+  "blocos": 0,
+  "pintura_pct": 15.3,
+  "gravuras_achadas": 1,
+  "segundos": 7.85
+ },
+ "140": {
+  "branco_em_pintura_pct": 0.068,
+  "blocos": 0,
+  "pintura_pct": 19.6,
+  "gravuras_achadas": 1,
+  "segundos": 9.58
+ },
+ "141": {
+  "branco_em_pintura_pct": 0.033,
+  "blocos": 0,
+  "pintura_pct": 18.4,
+  "gravuras_achadas": 1,
+  "segundos": 8.49
+ },
+ "142": {
+  "branco_em_pintura_pct": 0.032,
+  "blocos": 0,
+  "pintura_pct": 14.1,
+  "gravuras_achadas": 1,
+  "segundos": 8.3
+ },
+ "143": {
+  "branco_em_pintura_pct": 0.022,
+  "blocos": 0,
+  "pintura_pct": 19.9,
+  "gravuras_achadas": 1,
+  "segundos": 8.86
+ },
+ "144": {
+  "branco_em_pintura_pct": 0.062,
+  "blocos": 0,
+  "pintura_pct": 25.8,
+  "gravuras_achadas": 1,
+  "segundos": 9.14
+ },
+ "145": {
+  "branco_em_pintura_pct": 0.076,
+  "blocos": 0,
+  "pintura_pct": 25.6,
+  "gravuras_achadas": 2,
+  "segundos": 9.04
+ },
+ "146": {
+  "branco_em_pintura_pct": 0.015,
+  "blocos": 0,
+  "pintura_pct": 22.2,
+  "gravuras_achadas": 1,
+  "segundos": 9.29
+ },
+ "147": {
+  "branco_em_pintura_pct": 0.035,
+  "blocos": 0,
+  "pintura_pct": 18.8,
+  "gravuras_achadas": 1,
+  "segundos": 8.98
+ },
+ "148": {
+  "branco_em_pintura_pct": 0.039,
+  "blocos": 0,
+  "pintura_pct": 17.3,
+  "gravuras_achadas": 1,
+  "segundos": 8.46
+ },
+ "149": {
+  "branco_em_pintura_pct": 0.055,
+  "blocos": 0,
+  "pintura_pct": 13.2,
+  "gravuras_achadas": 1,
+  "segundos": 8.4
+ },
+ "150": {
+  "branco_em_pintura_pct": 0.101,
+  "blocos": 2,
+  "pintura_pct": 10.2,
+  "gravuras_achadas": 2,
+  "segundos": 8.39
+ },
+ "151": {
+  "branco_em_pintura_pct": 0.051,
+  "blocos": 0,
+  "pintura_pct": 28.5,
+  "gravuras_achadas": 1,
+  "segundos": 8.58
+ },
+ "152": {
+  "branco_em_pintura_pct": 0.022,
+  "blocos": 0,
+  "pintura_pct": 27.1,
+  "gravuras_achadas": 1,
+  "segundos": 8.56
+ },
+ "153": {
+  "branco_em_pintura_pct": 0.059,
+  "blocos": 0,
+  "pintura_pct": 25.4,
+  "gravuras_achadas": 1,
+  "segundos": 8.52
+ },
+ "154": {
+  "branco_em_pintura_pct": 0.033,
+  "blocos": 0,
+  "pintura_pct": 21.0,
+  "gravuras_achadas": 1,
+  "segundos": 8.8
+ },
+ "155": {
+  "branco_em_pintura_pct": 0.012,
+  "blocos": 0,
+  "pintura_pct": 10.9,
+  "gravuras_achadas": 3,
+  "segundos": 8.26
+ },
+ "156": {
+  "branco_em_pintura_pct": 0.01,
+  "blocos": 0,
+  "pintura_pct": 13.1,
+  "gravuras_achadas": 1,
+  "segundos": 9.73
+ },
+ "157": {
+  "branco_em_pintura_pct": 0.033,
+  "blocos": 0,
+  "pintura_pct": 13.0,
+  "gravuras_achadas": 1,
+  "segundos": 9.05
+ },
+ "158": {
+  "branco_em_pintura_pct": 0.022,
+  "blocos": 0,
+  "pintura_pct": 9.8,
+  "gravuras_achadas": 1,
+  "segundos": 8.51
+ },
+ "159": {
+  "branco_em_pintura_pct": 0.004,
+  "blocos": 0,
+  "pintura_pct": 10.8,
+  "gravuras_achadas": 1,
+  "segundos": 8.51
+ },
+ "160": {
+  "branco_em_pintura_pct": 0.029,
+  "blocos": 0,
+  "pintura_pct": 17.4,
+  "gravuras_achadas": 1,
+  "segundos": 8.79
+ },
+ "161": {
+  "branco_em_pintura_pct": 0.006,
+  "blocos": 0,
+  "pintura_pct": 10.9,
+  "gravuras_achadas": 2,
+  "segundos": 8.23
+ },
+ "162": {
+  "branco_em_pintura_pct": 0.01,
+  "blocos": 0,
+  "pintura_pct": 11.7,
+  "gravuras_achadas": 2,
+  "segundos": 8.84
+ },
+ "163": {
+  "branco_em_pintura_pct": 0.028,
+  "blocos": 0,
+  "pintura_pct": 20.0,
+  "gravuras_achadas": 1,
+  "segundos": 8.68
+ },
+ "164": {
+  "branco_em_pintura_pct": 0.041,
+  "blocos": 0,
+  "pintura_pct": 20.6,
+  "gravuras_achadas": 1,
+  "segundos": 8.72
+ },
+ "165": {
+  "branco_em_pintura_pct": 0.04,
+  "blocos": 0,
+  "pintura_pct": 24.3,
+  "gravuras_achadas": 2,
+  "segundos": 8.91
+ },
+ "166": {
+  "branco_em_pintura_pct": 0.038,
+  "blocos": 0,
+  "pintura_pct": 13.0,
+  "gravuras_achadas": 2,
+  "segundos": 8.62
+ },
+ "167": {
+  "branco_em_pintura_pct": 0.006,
+  "blocos": 0,
+  "pintura_pct": 12.9,
+  "gravuras_achadas": 1,
+  "segundos": 8.3
+ },
+ "168": {
+  "branco_em_pintura_pct": 0.029,
+  "blocos": 1,
+  "pintura_pct": 16.8,
+  "gravuras_achadas": 5,
+  "segundos": 9.32
+ },
+ "169": {
+  "branco_em_pintura_pct": 0.017,
+  "blocos": 0,
+  "pintura_pct": 16.5,
+  "gravuras_achadas": 1,
+  "segundos": 8.32
+ },
+ "170": {
+  "branco_em_pintura_pct": 0.004,
+  "blocos": 0,
+  "pintura_pct": 11.1,
+  "gravuras_achadas": 1,
+  "segundos": 7.98
+ },
+ "171": {
+  "branco_em_pintura_pct": 0.03,
+  "blocos": 0,
+  "pintura_pct": 16.4,
+  "gravuras_achadas": 1,
+  "segundos": 8.46
+ },
+ "172": {
+  "branco_em_pintura_pct": 0.04,
+  "blocos": 0,
+  "pintura_pct": 21.4,
+  "gravuras_achadas": 1,
+  "segundos": 8.96
+ },
+ "173": {
+  "branco_em_pintura_pct": 0.067,
+  "blocos": 1,
+  "pintura_pct": 10.2,
+  "gravuras_achadas": 2,
+  "segundos": 6.81
+ },
+ "174": {
+  "branco_em_pintura_pct": 0.009,
+  "blocos": 0,
+  "pintura_pct": 16.4,
+  "gravuras_achadas": 1,
+  "segundos": 8.35
+ },
+ "175": {
+  "branco_em_pintura_pct": 0.01,
+  "blocos": 0,
+  "pintura_pct": 22.2,
+  "gravuras_achadas": 1,
+  "segundos": 9.09
+ },
+ "176": {
+  "branco_em_pintura_pct": 0.008,
+  "blocos": 0,
+  "pintura_pct": 14.0,
+  "gravuras_achadas": 1,
+  "segundos": 8.18
+ },
+ "177": {
+  "branco_em_pintura_pct": 0.045,
+  "blocos": 0,
+  "pintura_pct": 21.3,
+  "gravuras_achadas": 1,
+  "segundos": 8.87
+ },
+ "178": {
+  "branco_em_pintura_pct": 0.027,
+  "blocos": 0,
+  "pintura_pct": 19.0,
+  "gravuras_achadas": 1,
+  "segundos": 9.14
+ },
+ "179": {
+  "branco_em_pintura_pct": 0.01,
+  "blocos": 0,
+  "pintura_pct": 16.5,
+  "gravuras_achadas": 1,
+  "segundos": 9.08
+ },
+ "180": {
+  "branco_em_pintura_pct": 0.056,
+  "blocos": 0,
+  "pintura_pct": 16.9,
+  "gravuras_achadas": 2,
+  "segundos": 7.84
+ },
+ "181": {
+  "branco_em_pintura_pct": 0.032,
+  "blocos": 0,
+  "pintura_pct": 22.3,
+  "gravuras_achadas": 2,
+  "segundos": 9.32
+ },
+ "182": {
+  "branco_em_pintura_pct": 0.032,
+  "blocos": 0,
+  "pintura_pct": 17.4,
+  "gravuras_achadas": 1,
+  "segundos": 8.88
+ },
+ "183": {
+  "branco_em_pintura_pct": 0.046,
+  "blocos": 0,
+  "pintura_pct": 17.7,
+  "gravuras_achadas": 1,
+  "segundos": 8.62
+ },
+ "184": {
+  "branco_em_pintura_pct": 0.011,
+  "blocos": 0,
+  "pintura_pct": 13.6,
+  "gravuras_achadas": 2,
+  "segundos": 8.89
+ },
+ "185": {
+  "branco_em_pintura_pct": 0.024,
+  "blocos": 0,
+  "pintura_pct": 19.9,
+  "gravuras_achadas": 1,
+  "segundos": 8.87
+ },
+ "186": {
+  "branco_em_pintura_pct": 0.034,
+  "blocos": 0,
+  "pintura_pct": 18.5,
+  "gravuras_achadas": 1,
+  "segundos": 8.55
+ },
+ "187": {
+  "branco_em_pintura_pct": 0.011,
+  "blocos": 0,
+  "pintura_pct": 9.6,
+  "gravuras_achadas": 1,
+  "segundos": 8.44
+ },
+ "188": {
+  "branco_em_pintura_pct": 0.055,
+  "blocos": 0,
+  "pintura_pct": 18.0,
+  "gravuras_achadas": 1,
+  "segundos": 8.23
+ },
+ "189": {
+  "branco_em_pintura_pct": 0.021,
+  "blocos": 0,
+  "pintura_pct": 17.8,
+  "gravuras_achadas": 2,
+  "segundos": 9.12
+ },
+ "190": {
+  "branco_em_pintura_pct": 0.027,
+  "blocos": 1,
+  "pintura_pct": 20.4,
+  "gravuras_achadas": 1,
+  "segundos": 8.66
+ },
+ "191": {
+  "branco_em_pintura_pct": 0.01,
+  "blocos": 0,
+  "pintura_pct": 14.7,
+  "gravuras_achadas": 3,
+  "segundos": 7.76
+ },
+ "192": {
+  "branco_em_pintura_pct": 0.038,
+  "blocos": 0,
+  "pintura_pct": 20.9,
+  "gravuras_achadas": 1,
+  "segundos": 6.43
+ },
+ "193": {
+  "branco_em_pintura_pct": 0.051,
+  "blocos": 0,
+  "pintura_pct": 15.0,
+  "gravuras_achadas": 1,
+  "segundos": 6.41
+ },
+ "194": {
+  "branco_em_pintura_pct": 0.007,
+  "blocos": 0,
+  "pintura_pct": 17.6,
+  "gravuras_achadas": 1,
+  "segundos": 6.94
+ },
+ "195": {
+  "branco_em_pintura_pct": 0.016,
+  "blocos": 0,
+  "pintura_pct": 14.6,
+  "gravuras_achadas": 1,
+  "segundos": 6.6
+ },
+ "196": {
+  "branco_em_pintura_pct": 0.053,
+  "blocos": 0,
+  "pintura_pct": 16.8,
+  "gravuras_achadas": 7,
+  "segundos": 8.39
+ },
+ "197": {
+  "branco_em_pintura_pct": 0.076,
+  "blocos": 2,
+  "pintura_pct": 5.1,
+  "gravuras_achadas": 0,
+  "segundos": 5.71
+ },
+ "198": {
+  "branco_em_pintura_pct": 0.04,
+  "blocos": 2,
+  "pintura_pct": 4.6,
+  "gravuras_achadas": 3,
+  "segundos": 7.87
+ },
+ "199": {
+  "branco_em_pintura_pct": 0.0,
+  "blocos": 0,
+  "pintura_pct": 5.2,
+  "gravuras_achadas": 2,
+  "segundos": 9.1
+ }
+}

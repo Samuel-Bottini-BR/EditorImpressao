@@ -1,0 +1,722 @@
+{
+ "palatino_p005|melhorar_forte_respeitar|hoje": {
+  "branco_em_pintura_pct": 1.272,
+  "blocos": 0,
+  "gravuras": 0
+ },
+ "palatino_p005|melhorar_forte_respeitar|A": {
+  "branco_em_pintura_pct": 1.264,
+  "blocos": 0,
+  "gravuras": 0
+ },
+ "palatino_p005|melhorar_forte_respeitar|B": {
+  "branco_em_pintura_pct": 5.165,
+  "blocos": 53,
+  "gravuras": 2
+ },
+ "palatino_p005|melhorar_forte_respeitar|C": {
+  "branco_em_pintura_pct": 5.164,
+  "blocos": 53,
+  "gravuras": 2
+ },
+ "palatino_p005|magico_fraco_respeitar|hoje": {
+  "branco_em_pintura_pct": 1.272,
+  "blocos": 0,
+  "gravuras": 0
+ },
+ "palatino_p005|magico_fraco_respeitar|A": {
+  "branco_em_pintura_pct": 1.264,
+  "blocos": 0,
+  "gravuras": 0
+ },
+ "palatino_p005|magico_fraco_respeitar|B": {
+  "branco_em_pintura_pct": 5.165,
+  "blocos": 53,
+  "gravuras": 2
+ },
+ "palatino_p005|magico_fraco_respeitar|C": {
+  "branco_em_pintura_pct": 5.164,
+  "blocos": 53,
+  "gravuras": 2
+ },
+ "palatino_p009|melhorar_forte_respeitar|hoje": {
+  "branco_em_pintura_pct": 1.823,
+  "blocos": 15,
+  "gravuras": 0
+ },
+ "palatino_p009|melhorar_forte_respeitar|A": {
+  "branco_em_pintura_pct": 1.775,
+  "blocos": 13,
+  "gravuras": 0
+ },
+ "palatino_p009|melhorar_forte_respeitar|B": {
+  "branco_em_pintura_pct": 1.568,
+  "blocos": 12,
+  "gravuras": 0
+ },
+ "palatino_p009|melhorar_forte_respeitar|C": {
+  "branco_em_pintura_pct": 1.53,
+  "blocos": 10,
+  "gravuras": 0
+ },
+ "palatino_p009|magico_fraco_respeitar|hoje": {
+  "branco_em_pintura_pct": 1.823,
+  "blocos": 15,
+  "gravuras": 0
+ },
+ "palatino_p009|magico_fraco_respeitar|A": {
+  "branco_em_pintura_pct": 1.775,
+  "blocos": 13,
+  "gravuras": 0
+ },
+ "palatino_p009|magico_fraco_respeitar|B": {
+  "branco_em_pintura_pct": 1.568,
+  "blocos": 12,
+  "gravuras": 0
+ },
+ "palatino_p009|magico_fraco_respeitar|C": {
+  "branco_em_pintura_pct": 1.53,
+  "blocos": 10,
+  "gravuras": 0
+ },
+ "horas_p011|melhorar_forte_respeitar|hoje": {
+  "branco_em_pintura_pct": 0.0,
+  "blocos": 0,
+  "gravuras": 0
+ },
+ "horas_p011|melhorar_forte_respeitar|A": {
+  "branco_em_pintura_pct": 0.0,
+  "blocos": 0,
+  "gravuras": 0
+ },
+ "horas_p011|melhorar_forte_respeitar|B": {
+  "branco_em_pintura_pct": 0.014,
+  "blocos": 2,
+  "gravuras": 1
+ },
+ "horas_p011|melhorar_forte_respeitar|C": {
+  "branco_em_pintura_pct": 0.014,
+  "blocos": 2,
+  "gravuras": 1
+ },
+ "horas_p011|magico_fraco_respeitar|hoje": {
+  "branco_em_pintura_pct": 0.0,
+  "blocos": 0,
+  "gravuras": 0
+ },
+ "horas_p011|magico_fraco_respeitar|A": {
+  "branco_em_pintura_pct": 0.0,
+  "blocos": 0,
+  "gravuras": 0
+ },
+ "horas_p011|magico_fraco_respeitar|B": {
+  "branco_em_pintura_pct": 0.014,
+  "blocos": 2,
+  "gravuras": 1
+ },
+ "horas_p011|magico_fraco_respeitar|C": {
+  "branco_em_pintura_pct": 0.014,
+  "blocos": 2,
+  "gravuras": 1
+ },
+ "horas_p013|melhorar_forte_respeitar|hoje": {
+  "branco_em_pintura_pct": 0.104,
+  "blocos": 18,
+  "gravuras": 0
+ },
+ "horas_p013|melhorar_forte_respeitar|A": {
+  "branco_em_pintura_pct": 0.076,
+  "blocos": 16,
+  "gravuras": 0
+ },
+ "horas_p013|melhorar_forte_respeitar|B": {
+  "branco_em_pintura_pct": 0.069,
+  "blocos": 11,
+  "gravuras": 3
+ },
+ "horas_p013|melhorar_forte_respeitar|C": {
+  "branco_em_pintura_pct": 0.059,
+  "blocos": 12,
+  "gravuras": 3
+ },
+ "horas_p013|magico_fraco_respeitar|hoje": {
+  "branco_em_pintura_pct": 0.105,
+  "blocos": 18,
+  "gravuras": 0
+ },
+ "horas_p013|magico_fraco_respeitar|A": {
+  "branco_em_pintura_pct": 0.076,
+  "blocos": 16,
+  "gravuras": 0
+ },
+ "horas_p013|magico_fraco_respeitar|B": {
+  "branco_em_pintura_pct": 0.069,
+  "blocos": 11,
+  "gravuras": 3
+ },
+ "horas_p013|magico_fraco_respeitar|C": {
+  "branco_em_pintura_pct": 0.059,
+  "blocos": 12,
+  "gravuras": 3
+ },
+ "horas_p047|melhorar_forte_respeitar|hoje": {
+  "branco_em_pintura_pct": 1.098,
+  "blocos": 113,
+  "gravuras": 0
+ },
+ "horas_p047|melhorar_forte_respeitar|A": {
+  "branco_em_pintura_pct": 0.508,
+  "blocos": 55,
+  "gravuras": 0
+ },
+ "horas_p047|melhorar_forte_respeitar|B": {
+  "branco_em_pintura_pct": 0.036,
+  "blocos": 3,
+  "gravuras": 5
+ },
+ "horas_p047|melhorar_forte_respeitar|C": {
+  "branco_em_pintura_pct": 0.036,
+  "blocos": 3,
+  "gravuras": 5
+ },
+ "horas_p047|magico_fraco_respeitar|hoje": {
+  "branco_em_pintura_pct": 1.099,
+  "blocos": 113,
+  "gravuras": 0
+ },
+ "horas_p047|magico_fraco_respeitar|A": {
+  "branco_em_pintura_pct": 0.509,
+  "blocos": 55,
+  "gravuras": 0
+ },
+ "horas_p047|magico_fraco_respeitar|B": {
+  "branco_em_pintura_pct": 0.036,
+  "blocos": 3,
+  "gravuras": 5
+ },
+ "horas_p047|magico_fraco_respeitar|C": {
+  "branco_em_pintura_pct": 0.036,
+  "blocos": 3,
+  "gravuras": 5
+ },
+ "escola_p007|melhorar_forte_respeitar|hoje": {
+  "branco_em_pintura_pct": 1.37,
+  "blocos": 19,
+  "gravuras": 0
+ },
+ "escola_p007|melhorar_forte_respeitar|A": {
+  "branco_em_pintura_pct": 0.204,
+  "blocos": 0,
+  "gravuras": 0
+ },
+ "escola_p007|melhorar_forte_respeitar|B": {
+  "branco_em_pintura_pct": 0.009,
+  "blocos": 0,
+  "gravuras": 1
+ },
+ "escola_p007|melhorar_forte_respeitar|C": {
+  "branco_em_pintura_pct": 0.009,
+  "blocos": 0,
+  "gravuras": 1
+ },
+ "escola_p007|magico_fraco_respeitar|hoje": {
+  "branco_em_pintura_pct": 1.373,
+  "blocos": 19,
+  "gravuras": 0
+ },
+ "escola_p007|magico_fraco_respeitar|A": {
+  "branco_em_pintura_pct": 0.24,
+  "blocos": 2,
+  "gravuras": 0
+ },
+ "escola_p007|magico_fraco_respeitar|B": {
+  "branco_em_pintura_pct": 0.009,
+  "blocos": 0,
+  "gravuras": 1
+ },
+ "escola_p007|magico_fraco_respeitar|C": {
+  "branco_em_pintura_pct": 0.009,
+  "blocos": 0,
+  "gravuras": 1
+ },
+ "escola_p035|melhorar_forte_respeitar|hoje": {
+  "branco_em_pintura_pct": 1.245,
+  "blocos": 27,
+  "gravuras": 0
+ },
+ "escola_p035|melhorar_forte_respeitar|A": {
+  "branco_em_pintura_pct": 0.25,
+  "blocos": 5,
+  "gravuras": 0
+ },
+ "escola_p035|melhorar_forte_respeitar|B": {
+  "branco_em_pintura_pct": 0.02,
+  "blocos": 0,
+  "gravuras": 1
+ },
+ "escola_p035|melhorar_forte_respeitar|C": {
+  "branco_em_pintura_pct": 0.02,
+  "blocos": 0,
+  "gravuras": 1
+ },
+ "escola_p035|magico_fraco_respeitar|hoje": {
+  "branco_em_pintura_pct": 1.247,
+  "blocos": 27,
+  "gravuras": 0
+ },
+ "escola_p035|magico_fraco_respeitar|A": {
+  "branco_em_pintura_pct": 0.254,
+  "blocos": 5,
+  "gravuras": 0
+ },
+ "escola_p035|magico_fraco_respeitar|B": {
+  "branco_em_pintura_pct": 0.02,
+  "blocos": 0,
+  "gravuras": 1
+ },
+ "escola_p035|magico_fraco_respeitar|C": {
+  "branco_em_pintura_pct": 0.02,
+  "blocos": 0,
+  "gravuras": 1
+ },
+ "rhetorica_p073|melhorar_forte_respeitar|hoje": {
+  "branco_em_pintura_pct": 0.1,
+  "blocos": 0,
+  "gravuras": 0
+ },
+ "rhetorica_p073|melhorar_forte_respeitar|A": {
+  "branco_em_pintura_pct": 0.058,
+  "blocos": 0,
+  "gravuras": 0
+ },
+ "rhetorica_p073|melhorar_forte_respeitar|B": {
+  "branco_em_pintura_pct": 13.991,
+  "blocos": 67,
+  "gravuras": 0
+ },
+ "rhetorica_p073|melhorar_forte_respeitar|C": {
+  "branco_em_pintura_pct": 13.974,
+  "blocos": 67,
+  "gravuras": 0
+ },
+ "rhetorica_p073|magico_fraco_respeitar|hoje": {
+  "branco_em_pintura_pct": 0.101,
+  "blocos": 0,
+  "gravuras": 0
+ },
+ "rhetorica_p073|magico_fraco_respeitar|A": {
+  "branco_em_pintura_pct": 0.058,
+  "blocos": 0,
+  "gravuras": 0
+ },
+ "rhetorica_p073|magico_fraco_respeitar|B": {
+  "branco_em_pintura_pct": 13.991,
+  "blocos": 67,
+  "gravuras": 0
+ },
+ "rhetorica_p073|magico_fraco_respeitar|C": {
+  "branco_em_pintura_pct": 13.974,
+  "blocos": 67,
+  "gravuras": 0
+ },
+ "boecio_p003|melhorar_forte_respeitar|hoje": {
+  "branco_em_pintura_pct": 4.502,
+  "blocos": 12,
+  "gravuras": 0
+ },
+ "boecio_p003|melhorar_forte_respeitar|A": {
+  "branco_em_pintura_pct": 4.286,
+  "blocos": 9,
+  "gravuras": 0
+ },
+ "boecio_p003|melhorar_forte_respeitar|B": {
+  "branco_em_pintura_pct": 4.865,
+  "blocos": 12,
+  "gravuras": 0
+ },
+ "boecio_p003|melhorar_forte_respeitar|C": {
+  "branco_em_pintura_pct": 4.779,
+  "blocos": 11,
+  "gravuras": 0
+ },
+ "boecio_p003|magico_fraco_respeitar|hoje": {
+  "branco_em_pintura_pct": 4.503,
+  "blocos": 12,
+  "gravuras": 0
+ },
+ "boecio_p003|magico_fraco_respeitar|A": {
+  "branco_em_pintura_pct": 4.287,
+  "blocos": 9,
+  "gravuras": 0
+ },
+ "boecio_p003|magico_fraco_respeitar|B": {
+  "branco_em_pintura_pct": 4.889,
+  "blocos": 13,
+  "gravuras": 0
+ },
+ "boecio_p003|magico_fraco_respeitar|C": {
+  "branco_em_pintura_pct": 4.803,
+  "blocos": 11,
+  "gravuras": 0
+ },
+ "opusmajus_p003|melhorar_forte_respeitar|hoje": {
+  "branco_em_pintura_pct": 0.166,
+  "blocos": 3,
+  "gravuras": 0
+ },
+ "opusmajus_p003|melhorar_forte_respeitar|A": {
+  "branco_em_pintura_pct": 0.166,
+  "blocos": 3,
+  "gravuras": 0
+ },
+ "opusmajus_p003|melhorar_forte_respeitar|B": {
+  "branco_em_pintura_pct": 0.166,
+  "blocos": 3,
+  "gravuras": 0
+ },
+ "opusmajus_p003|melhorar_forte_respeitar|C": {
+  "branco_em_pintura_pct": 0.166,
+  "blocos": 3,
+  "gravuras": 0
+ },
+ "opusmajus_p003|magico_fraco_respeitar|hoje": {
+  "branco_em_pintura_pct": 0.166,
+  "blocos": 3,
+  "gravuras": 0
+ },
+ "opusmajus_p003|magico_fraco_respeitar|A": {
+  "branco_em_pintura_pct": 0.166,
+  "blocos": 3,
+  "gravuras": 0
+ },
+ "opusmajus_p003|magico_fraco_respeitar|B": {
+  "branco_em_pintura_pct": 0.166,
+  "blocos": 3,
+  "gravuras": 0
+ },
+ "opusmajus_p003|magico_fraco_respeitar|C": {
+  "branco_em_pintura_pct": 0.166,
+  "blocos": 3,
+  "gravuras": 0
+ },
+ "opusmajus_p020|melhorar_forte_respeitar|hoje": {
+  "branco_em_pintura_pct": 0.0,
+  "blocos": 0,
+  "gravuras": 0
+ },
+ "opusmajus_p020|melhorar_forte_respeitar|A": {
+  "branco_em_pintura_pct": 0.0,
+  "blocos": 0,
+  "gravuras": 0
+ },
+ "opusmajus_p020|melhorar_forte_respeitar|B": {
+  "branco_em_pintura_pct": 0.039,
+  "blocos": 1,
+  "gravuras": 5
+ },
+ "opusmajus_p020|melhorar_forte_respeitar|C": {
+  "branco_em_pintura_pct": 0.039,
+  "blocos": 1,
+  "gravuras": 5
+ },
+ "opusmajus_p020|magico_fraco_respeitar|hoje": {
+  "branco_em_pintura_pct": 0.0,
+  "blocos": 0,
+  "gravuras": 0
+ },
+ "opusmajus_p020|magico_fraco_respeitar|A": {
+  "branco_em_pintura_pct": 0.0,
+  "blocos": 0,
+  "gravuras": 0
+ },
+ "opusmajus_p020|magico_fraco_respeitar|B": {
+  "branco_em_pintura_pct": 0.039,
+  "blocos": 1,
+  "gravuras": 5
+ },
+ "opusmajus_p020|magico_fraco_respeitar|C": {
+  "branco_em_pintura_pct": 0.039,
+  "blocos": 1,
+  "gravuras": 5
+ },
+ "opusmajus_p165|melhorar_forte_respeitar|hoje": {
+  "branco_em_pintura_pct": 0.181,
+  "blocos": 0,
+  "gravuras": 0
+ },
+ "opusmajus_p165|melhorar_forte_respeitar|A": {
+  "branco_em_pintura_pct": 0.181,
+  "blocos": 0,
+  "gravuras": 0
+ },
+ "opusmajus_p165|melhorar_forte_respeitar|B": {
+  "branco_em_pintura_pct": 0.003,
+  "blocos": 0,
+  "gravuras": 0
+ },
+ "opusmajus_p165|melhorar_forte_respeitar|C": {
+  "branco_em_pintura_pct": 0.003,
+  "blocos": 0,
+  "gravuras": 0
+ },
+ "opusmajus_p165|magico_fraco_respeitar|hoje": {
+  "branco_em_pintura_pct": 0.181,
+  "blocos": 0,
+  "gravuras": 0
+ },
+ "opusmajus_p165|magico_fraco_respeitar|A": {
+  "branco_em_pintura_pct": 0.181,
+  "blocos": 0,
+  "gravuras": 0
+ },
+ "opusmajus_p165|magico_fraco_respeitar|B": {
+  "branco_em_pintura_pct": 0.003,
+  "blocos": 0,
+  "gravuras": 0
+ },
+ "opusmajus_p165|magico_fraco_respeitar|C": {
+  "branco_em_pintura_pct": 0.003,
+  "blocos": 0,
+  "gravuras": 0
+ },
+ "opusmajus_p256|melhorar_forte_respeitar|hoje": {
+  "branco_em_pintura_pct": 0.875,
+  "blocos": 0,
+  "gravuras": 0
+ },
+ "opusmajus_p256|melhorar_forte_respeitar|A": {
+  "branco_em_pintura_pct": 0.875,
+  "blocos": 0,
+  "gravuras": 0
+ },
+ "opusmajus_p256|melhorar_forte_respeitar|B": {
+  "branco_em_pintura_pct": 0.134,
+  "blocos": 0,
+  "gravuras": 0
+ },
+ "opusmajus_p256|melhorar_forte_respeitar|C": {
+  "branco_em_pintura_pct": 0.134,
+  "blocos": 0,
+  "gravuras": 0
+ },
+ "opusmajus_p256|magico_fraco_respeitar|hoje": {
+  "branco_em_pintura_pct": 0.875,
+  "blocos": 0,
+  "gravuras": 0
+ },
+ "opusmajus_p256|magico_fraco_respeitar|A": {
+  "branco_em_pintura_pct": 0.875,
+  "blocos": 0,
+  "gravuras": 0
+ },
+ "opusmajus_p256|magico_fraco_respeitar|B": {
+  "branco_em_pintura_pct": 0.134,
+  "blocos": 0,
+  "gravuras": 0
+ },
+ "opusmajus_p256|magico_fraco_respeitar|C": {
+  "branco_em_pintura_pct": 0.134,
+  "blocos": 0,
+  "gravuras": 0
+ },
+ "boecio_p007|melhorar_forte_respeitar|hoje": {
+  "branco_em_pintura_pct": 3.554,
+  "blocos": 2,
+  "gravuras": 0
+ },
+ "boecio_p007|melhorar_forte_respeitar|A": {
+  "branco_em_pintura_pct": 3.481,
+  "blocos": 1,
+  "gravuras": 0
+ },
+ "boecio_p007|melhorar_forte_respeitar|B": {
+  "branco_em_pintura_pct": 4.211,
+  "blocos": 6,
+  "gravuras": 0
+ },
+ "boecio_p007|melhorar_forte_respeitar|C": {
+  "branco_em_pintura_pct": 4.205,
+  "blocos": 6,
+  "gravuras": 0
+ },
+ "boecio_p007|magico_fraco_respeitar|hoje": {
+  "branco_em_pintura_pct": 3.559,
+  "blocos": 2,
+  "gravuras": 0
+ },
+ "boecio_p007|magico_fraco_respeitar|A": {
+  "branco_em_pintura_pct": 3.485,
+  "blocos": 1,
+  "gravuras": 0
+ },
+ "boecio_p007|magico_fraco_respeitar|B": {
+  "branco_em_pintura_pct": 4.211,
+  "blocos": 6,
+  "gravuras": 0
+ },
+ "boecio_p007|magico_fraco_respeitar|C": {
+  "branco_em_pintura_pct": 4.206,
+  "blocos": 6,
+  "gravuras": 0
+ },
+ "boecio_p008|melhorar_forte_respeitar|hoje": {
+  "branco_em_pintura_pct": 1.409,
+  "blocos": 1,
+  "gravuras": 0
+ },
+ "boecio_p008|melhorar_forte_respeitar|A": {
+  "branco_em_pintura_pct": 1.224,
+  "blocos": 0,
+  "gravuras": 0
+ },
+ "boecio_p008|melhorar_forte_respeitar|B": {
+  "branco_em_pintura_pct": 1.784,
+  "blocos": 5,
+  "gravuras": 0
+ },
+ "boecio_p008|melhorar_forte_respeitar|C": {
+  "branco_em_pintura_pct": 1.726,
+  "blocos": 5,
+  "gravuras": 0
+ },
+ "boecio_p008|magico_fraco_respeitar|hoje": {
+  "branco_em_pintura_pct": 1.409,
+  "blocos": 1,
+  "gravuras": 0
+ },
+ "boecio_p008|magico_fraco_respeitar|A": {
+  "branco_em_pintura_pct": 1.224,
+  "blocos": 0,
+  "gravuras": 0
+ },
+ "boecio_p008|magico_fraco_respeitar|B": {
+  "branco_em_pintura_pct": 1.784,
+  "blocos": 5,
+  "gravuras": 0
+ },
+ "boecio_p008|magico_fraco_respeitar|C": {
+  "branco_em_pintura_pct": 1.726,
+  "blocos": 5,
+  "gravuras": 0
+ },
+ "boecio_p022|melhorar_forte_respeitar|hoje": {
+  "branco_em_pintura_pct": 4.43,
+  "blocos": 10,
+  "gravuras": 0
+ },
+ "boecio_p022|melhorar_forte_respeitar|A": {
+  "branco_em_pintura_pct": 4.43,
+  "blocos": 10,
+  "gravuras": 0
+ },
+ "boecio_p022|melhorar_forte_respeitar|B": {
+  "branco_em_pintura_pct": 4.604,
+  "blocos": 12,
+  "gravuras": 0
+ },
+ "boecio_p022|melhorar_forte_respeitar|C": {
+  "branco_em_pintura_pct": 4.604,
+  "blocos": 12,
+  "gravuras": 0
+ },
+ "boecio_p022|magico_fraco_respeitar|hoje": {
+  "branco_em_pintura_pct": 4.431,
+  "blocos": 10,
+  "gravuras": 0
+ },
+ "boecio_p022|magico_fraco_respeitar|A": {
+  "branco_em_pintura_pct": 4.431,
+  "blocos": 10,
+  "gravuras": 0
+ },
+ "boecio_p022|magico_fraco_respeitar|B": {
+  "branco_em_pintura_pct": 4.604,
+  "blocos": 12,
+  "gravuras": 0
+ },
+ "boecio_p022|magico_fraco_respeitar|C": {
+  "branco_em_pintura_pct": 4.604,
+  "blocos": 12,
+  "gravuras": 0
+ },
+ "boecio_p033|melhorar_forte_respeitar|hoje": {
+  "branco_em_pintura_pct": 4.476,
+  "blocos": 5,
+  "gravuras": 0
+ },
+ "boecio_p033|melhorar_forte_respeitar|A": {
+  "branco_em_pintura_pct": 4.432,
+  "blocos": 5,
+  "gravuras": 0
+ },
+ "boecio_p033|melhorar_forte_respeitar|B": {
+  "branco_em_pintura_pct": 5.362,
+  "blocos": 5,
+  "gravuras": 0
+ },
+ "boecio_p033|melhorar_forte_respeitar|C": {
+  "branco_em_pintura_pct": 5.342,
+  "blocos": 5,
+  "gravuras": 0
+ },
+ "boecio_p033|magico_fraco_respeitar|hoje": {
+  "branco_em_pintura_pct": 4.494,
+  "blocos": 5,
+  "gravuras": 0
+ },
+ "boecio_p033|magico_fraco_respeitar|A": {
+  "branco_em_pintura_pct": 4.45,
+  "blocos": 5,
+  "gravuras": 0
+ },
+ "boecio_p033|magico_fraco_respeitar|B": {
+  "branco_em_pintura_pct": 5.362,
+  "blocos": 5,
+  "gravuras": 0
+ },
+ "boecio_p033|magico_fraco_respeitar|C": {
+  "branco_em_pintura_pct": 5.343,
+  "blocos": 5,
+  "gravuras": 0
+ },
+ "escola_p013|melhorar_forte_respeitar|hoje": {
+  "branco_em_pintura_pct": 5.948,
+  "blocos": 38,
+  "gravuras": 0
+ },
+ "escola_p013|melhorar_forte_respeitar|A": {
+  "branco_em_pintura_pct": 0.202,
+  "blocos": 2,
+  "gravuras": 0
+ },
+ "escola_p013|melhorar_forte_respeitar|B": {
+  "branco_em_pintura_pct": 0.026,
+  "blocos": 0,
+  "gravuras": 1
+ },
+ "escola_p013|melhorar_forte_respeitar|C": {
+  "branco_em_pintura_pct": 0.026,
+  "blocos": 0,
+  "gravuras": 1
+ },
+ "escola_p013|magico_fraco_respeitar|hoje": {
+  "branco_em_pintura_pct": 5.953,
+  "blocos": 39,
+  "gravuras": 0
+ },
+ "escola_p013|magico_fraco_respeitar|A": {
+  "branco_em_pintura_pct": 0.209,
+  "blocos": 3,
+  "gravuras": 0
+ },
+ "escola_p013|magico_fraco_respeitar|B": {
+  "branco_em_pintura_pct": 0.026,
+  "blocos": 0,
+  "gravuras": 1
+ },
+ "escola_p013|magico_fraco_respeitar|C": {
+  "branco_em_pintura_pct": 0.026,
+  "blocos": 0,
+  "gravuras": 1
+ }
+}

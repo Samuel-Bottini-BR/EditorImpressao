@@ -1,0 +1,32 @@
+{
+ "11": {
+  "branco_em_pintura_pct": 0.0,
+  "blocos": 0,
+  "pintura_pct": 35.1
+ },
+ "13": {
+  "branco_em_pintura_pct": 0.105,
+  "blocos": 18,
+  "pintura_pct": 6.4
+ },
+ "14": {
+  "branco_em_pintura_pct": 0.121,
+  "blocos": 7,
+  "pintura_pct": 7.3
+ },
+ "26": {
+  "branco_em_pintura_pct": 0.119,
+  "blocos": 12,
+  "pintura_pct": 5.8
+ },
+ "27": {
+  "branco_em_pintura_pct": 0.141,
+  "blocos": 21,
+  "pintura_pct": 4.7
+ },
+ "47": {
+  "branco_em_pintura_pct": 1.099,
+  "blocos": 113,
+  "pintura_pct": 23.6
+ }
+}
