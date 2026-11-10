@@ -110,3 +110,24 @@ Mais uma frase dele: "o erro não aparece só na pagina 13, aparece em varias." 
 Palavras dele: "fiz os dois testes que você pediu e estão funcionando."
 
 Destino: Livro de decisões, D-659 e D-661 "testadas pelo Samuel em 10/11, funciona".
+
+## Testes do Dividir e do Automático (prints 11, 12 e 13, 09h02 a 09h08)
+
+Palavras dele (os números são os da lista de testes da gerente):
+"10- print 1 - quanto eu mudo uma folha de lugar ela começa a recarregar novamente
+3- em páginas que já vieram separadas no pdf não acontece nada
+4- ok
+5- print 2 - não existe um botão para juntar só duas paginas que acabaram de ser juntas, só dá para juntar todas
+6- eu não consegui testar por causa da 5
+7- sim
+print 3 - clicar nas caixinha de selecionar é dificil as vezes preciso de 5 cliques para conseguir.
+8- não passou, mas não é um erro grave, pode ficar para depois
+9- funciona"
+
+Destino (Livro de decisões, coluna de situação, e Lista de bugs):
+- 3 (D-590/D-607): no livro com páginas já separadas no PDF, "juntar todas" não faz nada.
+- 4 (D-602/D-609): ok. 7 (D-608): funciona. 9 (D-611/D-612): funciona.
+- 5 (D-606): ele não achou o botão de juntar uma folha só; esse botão é o "não dividir esta" (print 12). 6 (D-613): não testado.
+- 8 (D-610): não passou, para depois (**Lista de bugs**).
+- 10 (D-615): a página recarrega ao mudar a folha de lugar (print 11, **Lista de bugs**).
+- Caixinhas do Automático difíceis de marcar (print 13, **Lista de bugs**).
