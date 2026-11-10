@@ -331,3 +331,38 @@ No PDF, sai como na tela. Projeto antigo sai igual.
    com Ctrl+Z).
 5. `core/paginas_em_branco._NAO_HERDA` e `core/dividir_a_mao.LIMPAR_AO_PARTIR`: o campo não passa para a página
    posta nem para as metades (como `gravura_feita_com`).
+
+## Investigação das 6 falhas da suíte no PC da gerente (10/11)
+Pergunta: alguma vem da procura por trás da D-659 terminando atrasada (corrida)?
+- Método: o mesmo conjunto de 33 arquivos em volta das falhas (posições 50-60, 88-97 e 128-139 na ordem da
+  suíte: `test_decisoes_automatico` até `test_decisoes_desfazer_pagina`, `test_decisoes_respeitar_gravuras` até
+  `test_decisoes_ver`, `test_filtros_tela_cheia` até `test_gravura_na_aba_marcar`), num processo só, sem janela,
+  com o PC em uso pelo Samuel, no meu ramo (`237b4ec6`) e numa cópia temporária do `obra-2026-10-26`
+  (`bf27f6d4`, apagada depois). Um plugin de pytest meu, fora do repositório, anotou cada procura e o teste em
+  que ela começou e terminou.
+- **Meu ramo:** 3 falhas, 426 passaram. O caminho novo da D-659 disparou em 6 arquivos (205 vezes). **Nenhuma
+  procura terminou em outro teste.**
+- **Obra (sem a D-659):** as **mesmas 3 falhas**, 426 passaram.
+- As 3: `test_d611_uma_pagina_continua_uma_a_uma_com_o_mesmo_vao` e
+  `test_d611_ver_em_pares_do_menu_continua_com_o_jeito_aprovado` (vãos da tira [31, 21, ...]: estado de um
+  teste anterior na mesma sessão) e `test_folhear_com_o_disco_lento_nao_para_a_janela` (0,72 s contra 0,5 s: PC
+  carregado).
+- As outras 4 da gerente (`d621`, `d015`, `girar_na_tela`, `gravura_na_aba_marcar`) não se repetiram aqui.
+- **Conclusão: não é corrida da D-659.** Acontece igual na obra. Só relatado; nada consertado.
+
+## D-661 feita
+- Provas `tests/test_decisoes_gravura_pular.py` (7), commit `b4d4b043`. Reversão: as 7 falham no código de antes
+  (`reversao-d661.txt`), inclusive pela imagem ("com 'Pular' a página mudou", "no PDF a gravura voltou a
+  manchas").
+- Conserto `33f6dc54`: `modelos.py` (campo `gravura_achada_a_mao`), `core/pipeline.py` (`garantir_selecao` liga),
+  `core/etapas.py` (`respeitar_procura`), `core/automatico.py` ("Rodar nelas também" desliga),
+  `core/paginas_em_branco.py` e `core/dividir_a_mao.py` (não passa adiante).
+- `test_d659_i` (prova minha da D-659, deste ramo, ainda não juntada) mudou: o ajudante do Automático responde
+  "Pular", e a página pulada agora segue a D-661. As outras páginas continuam com a conta de antes, byte a byte.
+- No livro dele (`prova_pergunta2.py`, commit `e4c06cda`): **q2-d-pulou igual à q2-a, ponto por ponto (0
+  pontos)**, sem procurar de novo; q2-b ("Rodar nelas também") continua em manchas; q2-c (cinza) igual à A.
+- PC, sem janela, um arquivo por vez: gravura_a_mao 17, gravura_pular 7, automatico 29, montar_cadernos 13,
+  gravuras_cinza 20, respeitar_gravuras 19, decisoes 27, nucleo 38, pagina_em_branco 11, dividir 21,
+  dividir_metade 6, trabalho_nao_se_perde 82, automatico_opcoes_do_filtro 21, gravura_no_processamento 43;
+  nenhuma falha.
+- GitHub: suíte 42757519851 e filtro de velocidade 42757524213 (rodando).
