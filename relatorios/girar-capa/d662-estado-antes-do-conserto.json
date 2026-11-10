@@ -1,0 +1,394 @@
+{
+ "antes-dividir": {
+  "rotacoes": [
+   0,
+   0,
+   0,
+   0,
+   0,
+   0,
+   0,
+   0,
+   0,
+   0,
+   0,
+   0
+  ],
+  "giros": [
+   0,
+   0,
+   0,
+   0,
+   0,
+   0,
+   0,
+   0,
+   0,
+   0,
+   0,
+   0,
+   0,
+   0,
+   0,
+   0,
+   0,
+   0,
+   0,
+   0,
+   0,
+   0
+  ],
+  "folhas_giradas": 0,
+  "paginas_giradas": 0,
+  "linhas_10": 0.5043,
+  "quadro": "Girar a folha",
+  "lista": "só esta folha",
+  "historico": "Dividir 69 folhas (escolhidas em Todas as páginas)"
+ },
+ "pdf-antes": [
+  {
+   "png": "pdf-antes-1.png",
+   "pt": [
+    842,
+    595
+   ]
+  },
+  {
+   "png": "pdf-antes-2.png",
+   "pt": [
+    425,
+    595
+   ]
+  },
+  {
+   "png": "pdf-antes-3.png",
+   "pt": [
+    417,
+    595
+   ]
+  },
+  {
+   "png": "pdf-antes-4.png",
+   "pt": [
+    421,
+    595
+   ]
+  },
+  {
+   "png": "pdf-antes-5.png",
+   "pt": [
+    421,
+    595
+   ]
+  }
+ ],
+ "clique-dividir": {
+  "rotacoes": [
+   0,
+   0,
+   0,
+   0,
+   0,
+   0,
+   0,
+   0,
+   0,
+   0,
+   0,
+   0
+  ],
+  "giros": [
+   0,
+   0,
+   0,
+   0,
+   0,
+   0,
+   0,
+   0,
+   0,
+   0,
+   0,
+   0,
+   0,
+   0,
+   0,
+   0,
+   0,
+   0,
+   0,
+   0,
+   0,
+   0
+  ],
+  "folhas_giradas": 0,
+  "paginas_giradas": 0,
+  "linhas_10": 0.5043,
+  "quadro": "Girar a folha",
+  "lista": "só esta folha",
+  "historico": "Dividir 69 folhas (escolhidas em Todas as páginas)"
+ },
+ "lista-do-clique": "todas as folhas",
+ "depois-do-clique": {
+  "rotacoes": [
+   90,
+   90,
+   90,
+   90,
+   90,
+   90,
+   90,
+   90,
+   90,
+   90,
+   90,
+   90
+  ],
+  "giros": [
+   0,
+   0,
+   0,
+   0,
+   0,
+   0,
+   0,
+   0,
+   0,
+   0,
+   0,
+   0,
+   0,
+   0,
+   0,
+   0,
+   0,
+   0,
+   0,
+   0,
+   0,
+   0
+  ],
+  "folhas_giradas": 70,
+  "paginas_giradas": 0,
+  "linhas_10": 0.5043,
+  "quadro": "Girar a folha",
+  "lista": "todas as folhas",
+  "historico": "Girar ¼ à direita: todas as 70 folhas, viradas como a folha 10"
+ },
+ "pdf-depois": [
+  {
+   "png": "pdf-depois-1.png",
+   "pt": [
+    595,
+    842
+   ]
+  },
+  {
+   "png": "pdf-depois-2.png",
+   "pt": [
+    300,
+    842
+   ]
+  },
+  {
+   "png": "pdf-depois-3.png",
+   "pt": [
+    295,
+    842
+   ]
+  },
+  {
+   "png": "pdf-depois-4.png",
+   "pt": [
+    298,
+    842
+   ]
+  },
+  {
+   "png": "pdf-depois-5.png",
+   "pt": [
+    298,
+    842
+   ]
+  }
+ ],
+ "medida": [
+  {
+   "pagina": 1,
+   "antes": [
+    496,
+    702
+   ],
+   "depois": [
+    702,
+    496
+   ],
+   "antes_girada": [
+    702,
+    496
+   ],
+   "diferenca_media": 0.06,
+   "veredito": "inteira, deitada"
+  },
+  {
+   "pagina": 18,
+   "antes": [
+    496,
+    354
+   ],
+   "depois": [
+    702,
+    251
+   ],
+   "antes_girada": [
+    354,
+    496
+   ],
+   "diferenca_media": null,
+   "veredito": "outra forma (tira com pedaço da vizinha)"
+  },
+  {
+   "pagina": 19,
+   "antes": [
+    496,
+    348
+   ],
+   "depois": [
+    702,
+    246
+   ],
+   "antes_girada": [
+    348,
+    496
+   ],
+   "diferenca_media": null,
+   "veredito": "outra forma (tira com pedaço da vizinha)"
+  },
+  {
+   "pagina": 20,
+   "antes": [
+    496,
+    351
+   ],
+   "depois": [
+    702,
+    248
+   ],
+   "antes_girada": [
+    351,
+    496
+   ],
+   "diferenca_media": null,
+   "veredito": "outra forma (tira com pedaço da vizinha)"
+  },
+  {
+   "pagina": 21,
+   "antes": [
+    496,
+    351
+   ],
+   "depois": [
+    702,
+    248
+   ],
+   "antes_girada": [
+    351,
+    496
+   ],
+   "diferenca_media": null,
+   "veredito": "outra forma (tira com pedaço da vizinha)"
+  }
+ ],
+ "depois-do-ctrl-z": {
+  "rotacoes": [
+   0,
+   0,
+   0,
+   0,
+   0,
+   0,
+   0,
+   0,
+   0,
+   0,
+   0,
+   0
+  ],
+  "giros": [
+   0,
+   0,
+   0,
+   0,
+   0,
+   0,
+   0,
+   0,
+   0,
+   0,
+   0,
+   0,
+   0,
+   0,
+   0,
+   0,
+   0,
+   0,
+   0,
+   0,
+   0,
+   0
+  ],
+  "folhas_giradas": 0,
+  "paginas_giradas": 0,
+  "linhas_10": 0.5043,
+  "quadro": "Girar a página",
+  "lista": "todas as páginas",
+  "historico": "Dividir 69 folhas (escolhidas em Todas as páginas)"
+ },
+ "depois-do-ctrl-y": {
+  "rotacoes": [
+   90,
+   90,
+   90,
+   90,
+   90,
+   90,
+   90,
+   90,
+   90,
+   90,
+   90,
+   90
+  ],
+  "giros": [
+   0,
+   0,
+   0,
+   0,
+   0,
+   0,
+   0,
+   0,
+   0,
+   0,
+   0,
+   0,
+   0,
+   0,
+   0,
+   0,
+   0,
+   0,
+   0,
+   0,
+   0,
+   0
+  ],
+  "folhas_giradas": 70,
+  "paginas_giradas": 0,
+  "linhas_10": 0.5043,
+  "quadro": "Girar a página",
+  "lista": "todas as páginas",
+  "historico": "Girar ¼ à direita: todas as 70 folhas, viradas como a folha 10"
+ }
+}
