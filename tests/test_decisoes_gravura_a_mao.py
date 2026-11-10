@@ -536,7 +536,14 @@ def test_d659_i_depois_o_automatico_a_conta_e_a_de_antes(janela, tmp_path, procu
     (marca_sozinho e a marcação da máquina valem como no `a0c99cc7`), cada página do PDF sai
     igual, byte a byte, ao desenho com o código de antes, e a etapa 5 continua desmarcada.
     (A página 1 guarda a gravura achada antes, que acompanha o papel no corte, como toda
-    página já procurada: ONDE-PAREI, ressalva 3.)"""
+    página já procurada: ONDE-PAREI, ressalva 3.)
+
+    Mudado em 10/11/2026 pela D-661 (Samuel, 09/11: "1- pode"): o Automático daqui
+    (tests/ajudante_do_automatico.rodar_como_o_conferir) responde "Pular" à pergunta das páginas
+    mexidas, e a página 1, PULADA, agora continua com a gravura achada à mão (respeitada, sem
+    procurar de novo); antes esta prova exigia a conta do `a0c99cc7` também nela. As outras
+    páginas continuam com a conta de antes, byte a byte (tests/test_decisoes_gravura_pular.py
+    prova o "Pular" e o "Rodar nelas também")."""
     from core import etapas as E
     from tests.ajudante_do_automatico import rodar_como_o_conferir
 
@@ -546,7 +553,10 @@ def test_d659_i_depois_o_automatico_a_conta_e_a_de_antes(janela, tmp_path, procu
     _esperar(lambda: _definitiva(projeto.paginas[0]), motivo="a gravura achada")
     assert rodar_como_o_conferir(janela, limpar=True)
     assert projeto.limpar and projeto.passou_pelo_automatico and not _etapa_5_ligada(projeto)
-    for p in projeto.paginas:
+    pulada = projeto.paginas[0]
+    assert pulada.gravura_achada_a_mao and E.filtro_a_mao(projeto, pulada)     # D-661: pulada
+    assert E.marca_sozinho(projeto, pulada) and E.a_marcacao_da_maquina_vale(projeto, pulada)
+    for p in projeto.paginas[1:]:
         assert E.marca_sozinho(projeto, p) == _marca_sozinho_de_antes(projeto, p)
         assert E.a_marcacao_da_maquina_vale(projeto, p) == (
             projeto.detectar_regioes or _procura_por_dentro_de_antes(projeto, p))
@@ -562,7 +572,12 @@ def test_d659_i_depois_o_automatico_a_conta_e_a_de_antes(janela, tmp_path, procu
     finally:
         contexto.__exit__(None, None, None)
     for k, (a, b) in enumerate(zip(agora, antes)):
+        if k == 0:
+            continue                     # a pulada segue a D-661 (abaixo)
         assert np.array_equal(a, b), f"a página {k + 1} mudou depois do Automático"
+    procuradas.clear()
+    assert _colorido(_miolo_da_iluminura(_desenho(projeto, pulada, 110))) > 0.5,         "D-661: a página pulada perdeu a gravura achada à mão"
+    assert procuradas == [], f"D-661: a página pulada foi procurada de novo: {procuradas}"
 
 
 # --- o defeito da tela achado no caminho (core/pipeline.acertar_no_tamanho_do_pdf) -------------

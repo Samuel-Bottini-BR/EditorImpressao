@@ -2538,6 +2538,14 @@ def garantir_selecao(projeto: Projeto, pagina: ConfigPagina, img: np.ndarray,
                                     no_tamanho_do_pdf=True, _de_novo=True)
         return pagina.obter_selecao()
     pagina.gravura_feita_com = _assinatura_da_gravura_da_pagina(projeto, pagina)   # item 2.9
+    if not etapas.limpa_sozinho(projeto, pagina) and etapas.filtro_a_mao(projeto, pagina):
+        # D-661 (Samuel, 09/11/2026: "1- pode"): a gravura desta pagina foi
+        # achada no Preto e branco escolhido a mao, sem o Automatico (a procura
+        # da D-659). Se depois o Automatico rodar e a pessoa PULAR esta pagina,
+        # ela continua usando esta gravura (core/etapas.respeitar_procura).
+        # So liga aqui; quem desliga e o "Rodar nelas também". Arriscado: ligar
+        # na procura do Automatico (com "Limpar a folha"): a D-589 mudaria.
+        pagina.gravura_achada_a_mao = True
 
     # A deteccao pode acabar sem certeza se a folha e desenho ou escrita.
     # Quando isso acontece a pagina fica laranja, para a pessoa conferir na

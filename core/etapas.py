@@ -420,11 +420,16 @@ def respeitar_procura(projeto, pagina=None) -> bool:
     respeitar e a gravura saia em manchas pretas (a pagina 8 do *Na escola de
     Jesus*, print 01 da sessao 4).
 
-    Com o "Limpar a folha" ligado: False, sempre. La a caixinha so escolhe se
-    o filtro usa a marcacao que o Automatico ("Gravuras e fotos") achou
+    Com o "Limpar a folha" ligado: False (exceto a D-661, abaixo). La a
+    caixinha so escolhe se o filtro usa a marcacao que o Automatico ("Gravuras
+    e fotos") achou
     (core.pipeline.marcacao_que_o_filtro_usa); fazer ela procurar ali mudaria
     o que ja esta escolhido e testado (D-605; D-589: "sem 'Só as letras' e com
-    Gravuras desmarcada, a página sai toda em preto e branco"). Sem a
+    Gravuras desmarcada, a página sai toda em preto e branco"). Excecao D-661
+    (09/11/2026, "1- pode"): a pagina PULADA na pergunta das paginas mexidas
+    (ainda com a marca FILTRO) cuja gravura foi achada a mao
+    (ConfigPagina.gravura_achada_a_mao) continua valendo, com a gravura
+    guardada (tests/test_decisoes_gravura_pular.py). Sem a
     `pagina`: False (a caixinha so existe na pagina). Barato (so le campos).
     Arriscado: tirar a condicao do "Limpar a folha" (ver acima), a do Preto e
     branco (Melhorar e Magico pro a mao nao procuram: a decisao fala do Preto
@@ -432,7 +437,18 @@ def respeitar_procura(projeto, pagina=None) -> bool:
     livro de antes, sem ninguem escolher, seria procurada: D-009)."""
     from core.filtros import PRETO_E_BRANCO
 
-    if pagina is None or limpa_sozinho(projeto, pagina) or not filtro_a_mao(projeto, pagina):
+    if pagina is None or not filtro_a_mao(projeto, pagina):
+        return False
+    if limpa_sozinho(projeto, pagina) and not bool(getattr(pagina, "gravura_achada_a_mao", False)):
+        # D-661 (Samuel, 09/11/2026: "1- pode"): com "Limpar a folha" ligado
+        # so vale na pagina cuja gravura foi achada no Preto e branco a mao
+        # (ConfigPagina.gravura_achada_a_mao) e que ainda tem a marca FILTRO:
+        # a que a pessoa PULOU na pergunta das paginas mexidas (D-004). Ela usa
+        # a gravura guardada (garantir_selecao a devolve sem procurar). O
+        # "Rodar nelas também" tira a marca e o campo (passa por cima). Sem o
+        # campo (as outras paginas, o projeto antigo): False, como antes.
+        # Arriscado: valer sem o campo (toda pagina com a marca FILTRO depois
+        # do Automatico passaria a procurar, contra a D-589).
         return False
     if not bool(getattr(pagina, "respeitar_gravuras_achadas", True)):
         return False
