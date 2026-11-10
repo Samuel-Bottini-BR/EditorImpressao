@@ -101,3 +101,6 @@ Palavras dele: "anotar erro do filtro melhorar, ele deixa a imagem pixelada, olh
 - Print 10: janela do Automático, Mágico pro "bem fraco", mesma página: os mesmos quadrados no "depois".
 
 Destino: **Lista de bugs** (10/11). Agente investigador: pedido; entra quando um dos 2 agentes de agora terminar (limite de 2).
+
+Mais uma frase dele: "o erro não aparece só na pagina 13, aparece em varias." Destino: repassada ao agente investigador
+(medir o livro inteiro).
