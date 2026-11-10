@@ -1,0 +1,338 @@
+{
+  "sobre": {
+    "o_que_e": "Gabarito do item 1.3 (comparar OCRs so para ACHAR o texto): em cada pagina, as zonas que TEM DE SER TEXTO e as que NAO PODEM TER LINHA (gravura, iluminura, moldura, foto, carimbo). Usado por relatorios/fase1-1.3-comparacao-ocr-2026-09-28/medir_ocr.py.",
+    "data": "28/09/2026",
+    "quem_desenhou": "implementador (agente), OLHANDO a pagina com uma grade por cima. Nunca a partir do que um OCR devolveu.",
+    "A_CONFERIR_PELO_SAMUEL": true,
+    "aviso": "PROPOSTA. O Samuel ainda precisa conferir estas zonas antes de elas valerem. Ate la, os numeros do 1.3 sao provisorios. As imagens das zonas por cima de cada pagina estao em relatorios/fase1-1.3-comparacao-ocr-2026-09-28/zonas/.",
+    "coordenadas": "fracao da pagina renderizada do PDF de uma pagina em gabarito/paginas/ (0 = esquerda/topo, 1 = direita/baixo), [x0, y0, x1, y1], como o campo 'detalhe' da lista.json.",
+    "forma": "'ret' (padrao) ou 'elipse' (a elipse inscrita no retangulo). 'buraco' tira uma area de dentro da zona (moldura = retangulo de fora menos o de dentro).",
+    "prioridade": "neutro > texto > nao_pode. Onde um retangulo de texto cai dentro de uma gravura (texto dentro da iluminura), vale texto. 'neutro' nao conta para nada: filete fino colado no texto, capitular grande de manuscrito, rotulo de diagrama.",
+    "tabela": "zona de texto com 'tabela': true -> a tinta das linhas retas compridas da grade (horizontais e verticais) nao conta; so os numeros e letras.",
+    "pequeno": "true = item pequeno (numero de pagina, reclamo, assinatura de caderno, legenda, nota de margem): conta em 'itens pequenos perdidos'.",
+    "fora_de_toda_zona": "nao conta (margem, mancha do verso, borda do scan, pauta musical do Graduale).",
+    "paginas_extra": "graduale_p221 a p223 nao estao nas 19 da pesquisa: entraram para ver o comportamento em MANUSCRITO (pedido da gerente). No Graduale so as palavras cantadas sao texto; a pauta e as notas ficam fora de toda zona."
+  },
+  "paginas": {
+    "palatino_p005": {
+      "a_conferir_pelo_samuel": true,
+      "texto": [
+        {"ret": [0.07, 0.030, 0.885, 0.293], "o_que": "titulo e dizeres (9 linhas)"},
+        {"ret": [0.21, 0.933, 0.730, 0.968], "o_que": "CON GRATIE, ET PRIVILEGI."}
+      ],
+      "nao_pode": [
+        {"ret": [0.085, 0.296, 0.875, 0.932], "forma": "elipse", "o_que": "retrato (gravura oval)"}
+      ]
+    },
+    "palatino_p007": {
+      "a_conferir_pelo_samuel": true,
+      "texto": [
+        {"ret": [0.26, 0.055, 0.710, 0.085], "o_que": "PAVLVS PAPA III."},
+        {"ret": [0.07, 0.093, 0.885, 0.497], "o_que": "corpo (com a inicial V)"},
+        {"ret": [0.11, 0.497, 0.840, 0.575], "o_que": "corpo centrado, parte 1"},
+        {"ret": [0.22, 0.575, 0.730, 0.678], "o_que": "corpo centrado, parte 2"},
+        {"ret": [0.685, 0.683, 0.785, 0.703], "o_que": "Blosius."},
+        {"ret": [0.065, 0.733, 0.870, 0.832], "o_que": "Anchora con priuilegio..."},
+        {"ret": [0.715, 0.832, 0.800, 0.853], "o_que": "assinatura A ii", "pequeno": true}
+      ],
+      "nao_pode": []
+    },
+    "palatino_p009": {
+      "a_conferir_pelo_samuel": true,
+      "texto": [
+        {"ret": [0.10, 0.075, 0.875, 0.152], "o_que": "titulo (3 linhas)"},
+        {"ret": [0.305, 0.172, 0.665, 0.208], "o_que": "Giouanbattista Palatino."},
+        {"ret": [0.42, 0.228, 0.878, 0.452], "o_que": "texto ao lado da capitular"},
+        {"ret": [0.105, 0.452, 0.878, 0.782], "o_que": "corpo"},
+        {"ret": [0.69, 0.838, 0.835, 0.868], "o_que": "assinatura A iii", "pequeno": true}
+      ],
+      "nao_pode": [
+        {"ret": [0.118, 0.253, 0.418, 0.448], "o_que": "capitular Q (xilogravura)"},
+        {"ret": [0.035, 0.028, 0.940, 0.842], "buraco": {"ret": [0.090, 0.060, 0.892, 0.800]}, "o_que": "moldura preta"}
+      ]
+    },
+    "palatino_p010": {
+      "a_conferir_pelo_samuel": true,
+      "texto": [
+        {"ret": [0.103, 0.060, 0.892, 0.772], "o_que": "corpo"}
+      ],
+      "nao_pode": [
+        {"ret": [0.050, 0.018, 0.945, 0.830], "buraco": {"ret": [0.098, 0.053, 0.897, 0.790]}, "o_que": "moldura preta"}
+      ]
+    },
+    "palatino_p057": {
+      "a_conferir_pelo_samuel": true,
+      "texto": [
+        {"ret": [0.285, 0.115, 0.620, 0.155], "o_que": "Lettera Notaresca."},
+        {"ret": [0.090, 0.280, 0.815, 0.432], "o_que": "In nomine domini... (com o J grande)"},
+        {"ret": [0.105, 0.448, 0.800, 0.518], "o_que": "alfabeto minusculo"},
+        {"ret": [0.105, 0.525, 0.805, 0.630], "o_que": "alfabeto maiusculo"},
+        {"ret": [0.140, 0.665, 0.765, 0.738], "o_que": "Palatinus Ciuis Romanus..."},
+        {"ret": [0.145, 0.742, 0.730, 0.803], "o_que": "Anno Domini 1545."},
+        {"ret": [0.690, 0.858, 0.815, 0.888], "o_que": "assinatura D iii", "pequeno": true}
+      ],
+      "nao_pode": [
+        {"ret": [0.040, 0.028, 0.900, 0.856], "buraco": {"ret": [0.080, 0.065, 0.862, 0.830]}, "o_que": "moldura"},
+        {"ret": [0.110, 0.055, 0.820, 0.245], "o_que": "ornamento de lacos em volta do titulo"}
+      ]
+    },
+    "escola_p007": {
+      "a_conferir_pelo_samuel": true,
+      "texto": [
+        {"ret": [0.040, 0.072, 0.945, 0.107], "o_que": "titulo"},
+        {"ret": [0.040, 0.128, 0.365, 0.170], "o_que": "pergunta 1 e resposta"},
+        {"ret": [0.040, 0.183, 0.945, 0.362], "o_que": "paragrafos de largura cheia"},
+        {"ret": [0.033, 0.363, 0.348, 0.957], "o_que": "coluna da esquerda"},
+        {"ret": [0.375, 0.936, 0.505, 0.955], "o_que": "legenda O Paraiso terrestre", "pequeno": true},
+        {"ret": [0.815, 0.938, 0.940, 0.957], "o_que": "legenda Benvenuti - Alinari", "pequeno": true},
+        {"ret": [0.885, 0.962, 0.940, 0.990], "o_que": "numero da pagina 9", "pequeno": true},
+        {"ret": [0.155, 0.965, 0.870, 1.000], "o_que": "endereco do site (texto, mesmo que o R8 va apagar)"}
+      ],
+      "nao_pode": [
+        {"ret": [0.378, 0.386, 0.940, 0.934], "o_que": "gravura colorida (Paraiso)"}
+      ]
+    },
+    "escola_p035": {
+      "a_conferir_pelo_samuel": true,
+      "texto": [
+        {"ret": [0.105, 0.440, 0.305, 0.458], "o_que": "legenda Adao e Eva expulsos do Paraiso", "pequeno": true},
+        {"ret": [0.810, 0.437, 0.865, 0.452], "o_que": "legenda Schnorr", "pequeno": true},
+        {"ret": [0.055, 0.460, 0.900, 0.527], "o_que": "pergunta 30 e resposta"},
+        {"ret": [0.058, 0.533, 0.905, 0.930], "o_que": "corpo"},
+        {"ret": [0.855, 0.933, 0.915, 0.955], "o_que": "numero da pagina 37", "pequeno": true},
+        {"ret": [0.110, 0.962, 0.780, 0.997], "o_que": "endereco do site"}
+      ],
+      "nao_pode": [
+        {"ret": [0.095, 0.052, 0.862, 0.436], "o_que": "gravura colorida (anjo)"}
+      ]
+    },
+    "horas_p011": {
+      "a_conferir_pelo_samuel": true,
+      "texto": [
+        {"ret": [0.375, 0.308, 0.590, 0.332], "o_que": "HEURES"},
+        {"ret": [0.435, 0.343, 0.525, 0.367], "o_que": "DE"},
+        {"ret": [0.315, 0.377, 0.630, 0.423], "o_que": "LOUIS"},
+        {"ret": [0.295, 0.433, 0.655, 0.473], "o_que": "LE GRAND,"},
+        {"ret": [0.395, 0.478, 0.565, 0.497], "o_que": "FAITES"},
+        {"ret": [0.305, 0.506, 0.665, 0.529], "o_que": "DANS L'HOSTEL"},
+        {"ret": [0.375, 0.538, 0.590, 0.567], "o_que": "ROYAL"},
+        {"ret": [0.435, 0.576, 0.525, 0.597], "o_que": "DES"},
+        {"ret": [0.340, 0.607, 0.620, 0.634], "o_que": "INVALIDES."},
+        {"ret": [0.375, 0.643, 0.595, 0.662], "o_que": "M. DC.LXXXVIII."}
+      ],
+      "nao_pode": [
+        {"ret": [0.100, 0.020, 0.895, 0.955], "buraco": {"ret": [0.280, 0.283, 0.685, 0.688], "forma": "elipse"}, "o_que": "iluminura (o papel claro do centro oval fica fora)"}
+      ]
+    },
+    "horas_p013": {
+      "a_conferir_pelo_samuel": true,
+      "texto": [
+        {"ret": [0.320, 0.148, 0.565, 0.177], "o_que": "TABLE"},
+        {"ret": [0.140, 0.183, 0.740, 0.237], "o_que": "DE CE QUI EST"},
+        {"ret": [0.170, 0.239, 0.710, 0.267], "o_que": "CONTENU EN CE LIVRE."},
+        {"ret": [0.120, 0.273, 0.758, 0.792], "o_que": "entradas 1 a 7"}
+      ],
+      "nao_pode": [
+        {"ret": [0.085, 0.104, 0.805, 0.834], "buraco": {"ret": [0.118, 0.128, 0.764, 0.803]}, "o_que": "moldura dourada"}
+      ]
+    },
+    "horas_p047": {
+      "a_conferir_pelo_samuel": true,
+      "texto": [
+        {"ret": [0.212, 0.257, 0.731, 0.724], "o_que": "texto do quadro central (azul, dourado e preto), por dentro do filete vermelho"},
+        {"ret": [0.828, 0.895, 0.875, 0.916], "o_que": "numero 20", "pequeno": true}
+      ],
+      "nao_pode": [
+        {"ret": [0.075, 0.035, 0.875, 0.945], "buraco": {"ret": [0.211, 0.256, 0.732, 0.725]}, "o_que": "iluminura (moldura pintada com cenas; o filete vermelho em volta do texto e parte dela)"}
+      ]
+    },
+    "horas_p026": {
+      "a_conferir_pelo_samuel": true,
+      "texto": [
+        {"ret": [0.365, 0.133, 0.805, 0.168], "o_que": "NOVEMBRE."},
+        {"ret": [0.250, 0.170, 0.915, 0.722], "o_que": "lista dos dias"}
+      ],
+      "nao_pode": [
+        {"ret": [0.210, 0.100, 0.955, 0.836], "buraco": {"ret": [0.240, 0.127, 0.928, 0.805]}, "o_que": "moldura dourada do calendario"}
+      ]
+    },
+    "horas_p027": {
+      "a_conferir_pelo_samuel": true,
+      "texto": [
+        {"ret": [0.230, 0.133, 0.640, 0.172], "o_que": "DECEMBRE."},
+        {"ret": [0.110, 0.172, 0.762, 0.737], "o_que": "lista dos dias"}
+      ],
+      "nao_pode": [
+        {"ret": [0.075, 0.100, 0.790, 0.836], "buraco": {"ret": [0.107, 0.127, 0.765, 0.808]}, "o_que": "moldura dourada do calendario"}
+      ]
+    },
+    "opusmajus_p011": {
+      "a_conferir_pelo_samuel": true,
+      "texto": [
+        {"ret": [0.325, 0.118, 0.625, 0.147], "o_que": "INTRODUCTION"},
+        {"ret": [0.108, 0.158, 0.848, 0.855], "o_que": "corpo"},
+        {"ret": [0.440, 0.856, 0.520, 0.877], "o_que": "numero [ xi ]", "pequeno": true}
+      ],
+      "nao_pode": []
+    },
+    "opusmajus_p003": {
+      "a_conferir_pelo_samuel": true,
+      "texto": [
+        {"ret": [0.385, 0.086, 0.500, 0.110], "o_que": "THE"},
+        {"ret": [0.135, 0.128, 0.750, 0.177], "o_que": "OPUS MAJUS"},
+        {"ret": [0.410, 0.190, 0.475, 0.212], "o_que": "OF"},
+        {"ret": [0.215, 0.228, 0.665, 0.262], "o_que": "ROGER BACON"},
+        {"ret": [0.330, 0.308, 0.550, 0.332], "o_que": "A Translation by"},
+        {"ret": [0.225, 0.343, 0.655, 0.367], "o_que": "ROBERT BELLE BURKE"},
+        {"ret": [0.215, 0.376, 0.670, 0.392], "o_que": "PROFESSOR OF LATIN...", "pequeno": true},
+        {"ret": [0.300, 0.394, 0.585, 0.410], "o_que": "UNIVERSITY OF PENNSYLVANIA", "pequeno": true},
+        {"ret": [0.365, 0.461, 0.520, 0.485], "o_que": "VOLUME I"},
+        {"ret": [0.335, 0.733, 0.560, 0.754], "o_que": "PHILADELPHIA"},
+        {"ret": [0.165, 0.760, 0.730, 0.784], "o_que": "UNIVERSITY OF PENNSYLVANIA PRESS"},
+        {"ret": [0.275, 0.788, 0.620, 0.804], "o_que": "LONDON: HUMPHREY MILFORD", "pequeno": true},
+        {"ret": [0.295, 0.809, 0.600, 0.826], "o_que": "OXFORD UNIVERSITY PRESS", "pequeno": true},
+        {"ret": [0.360, 0.831, 0.535, 0.854], "o_que": "MCMXXVIII"}
+      ],
+      "nao_pode": [
+        {"ret": [0.378, 0.553, 0.512, 0.658], "o_que": "emblema da editora (gravura)"},
+        {"ret": [0.705, 0.025, 0.985, 0.125], "o_que": "carimbo da biblioteca"}
+      ]
+    },
+    "opusmajus_p020": {
+      "a_conferir_pelo_samuel": true,
+      "texto": [
+        {"ret": [0.440, 0.803, 0.625, 0.822], "o_que": "ROGER BACON (legenda)", "pequeno": true},
+        {"ret": [0.255, 0.824, 0.810, 0.845], "o_que": "The Hope-Pinker Statue... (legenda)", "pequeno": true}
+      ],
+      "nao_pode": [
+        {"ret": [0.178, 0.093, 0.893, 0.790], "o_que": "foto da estatua"}
+      ]
+    },
+    "opusmajus_p165": {
+      "a_conferir_pelo_samuel": true,
+      "texto": [
+        {"ret": [0.340, 0.053, 0.545, 0.087], "o_que": "Mathematics"},
+        {"ret": [0.355, 0.098, 0.535, 0.122], "o_que": "CHAPTER II"},
+        {"ret": [0.080, 0.130, 0.805, 0.154], "o_que": "subtitulo em italico"},
+        {"ret": [0.055, 0.157, 0.832, 0.300], "o_que": "corpo de largura cheia (alto)"},
+        {"ret": [0.055, 0.300, 0.622, 0.582], "o_que": "coluna ao lado da Fig. 7"},
+        {"ret": [0.055, 0.584, 0.832, 0.655], "o_que": "corpo de largura cheia (meio)"},
+        {"ret": [0.055, 0.655, 0.607, 0.862], "o_que": "coluna ao lado da Fig. 8"},
+        {"ret": [0.705, 0.548, 0.780, 0.565], "o_que": "FIG. 7.", "pequeno": true},
+        {"ret": [0.690, 0.846, 0.770, 0.862], "o_que": "FIG. 8.", "pequeno": true},
+        {"ret": [0.390, 0.866, 0.495, 0.890], "o_que": "numero [ 143 ]", "pequeno": true}
+      ],
+      "nao_pode": [
+        {"ret": [0.650, 0.318, 0.830, 0.543], "o_que": "diagrama Fig. 7 (traco fino)"},
+        {"ret": [0.630, 0.670, 0.828, 0.842], "o_que": "diagrama Fig. 8 (traco fino)"}
+      ],
+      "neutro": [
+        {"ret": [0.725, 0.365, 0.775, 0.408], "o_que": "rotulos a e f b da Fig. 7"},
+        {"ret": [0.725, 0.483, 0.775, 0.537], "o_que": "rotulos c l h d da Fig. 7"},
+        {"ret": [0.630, 0.672, 0.658, 0.692], "o_que": "rotulo a da Fig. 8"},
+        {"ret": [0.795, 0.672, 0.825, 0.692], "o_que": "rotulo b da Fig. 8"},
+        {"ret": [0.630, 0.820, 0.658, 0.840], "o_que": "rotulo c da Fig. 8"},
+        {"ret": [0.795, 0.820, 0.828, 0.840], "o_que": "rotulo d da Fig. 8"}
+      ]
+    },
+    "opusmajus_p256": {
+      "a_conferir_pelo_samuel": true,
+      "texto": [
+        {"ret": [0.165, 0.070, 0.915, 0.265], "o_que": "cabecalhos das colunas (texto em pe)"},
+        {"ret": [0.150, 0.265, 0.960, 0.905], "o_que": "corpo da tabela (numeros e letras)", "tabela": true},
+        {"ret": [0.062, 0.383, 0.152, 0.417], "o_que": "nota de margem Principium cycli alia via", "pequeno": true},
+        {"ret": [0.062, 0.583, 0.152, 0.614], "o_que": "nota de margem Principium cycli secundum computistas", "pequeno": true},
+        {"ret": [0.092, 0.795, 0.123, 0.811], "o_que": "nota de margem Hic.", "pequeno": true},
+        {"ret": [0.962, 0.265, 0.998, 0.880], "o_que": "notas de margem April./Mart. (claras, cortadas)", "pequeno": true}
+      ],
+      "nao_pode": []
+    },
+    "rhetorica_p018": {
+      "a_conferir_pelo_samuel": true,
+      "texto": [
+        {"ret": [0.500, 0.043, 0.635, 0.069], "o_que": "Praefatio"},
+        {"ret": [0.215, 0.076, 0.928, 0.842], "o_que": "corpo"},
+        {"ret": [0.103, 0.203, 0.203, 0.234], "o_que": "nota de margem Totius operis partitio", "pequeno": true},
+        {"ret": [0.103, 0.733, 0.212, 0.792], "o_que": "nota de margem Cur Imaginibus...", "pequeno": true},
+        {"ret": [0.890, 0.846, 0.945, 0.863], "o_que": "reclamo lunt", "pequeno": true}
+      ],
+      "nao_pode": [],
+      "neutro": [
+        {"ret": [0.203, 0.060, 0.2275, 0.862], "o_que": "filete vertical da esquerda (colado no texto)"},
+        {"ret": [0.921, 0.035, 0.935, 0.872], "o_que": "filete vertical da direita (colado no texto)"},
+        {"ret": [0.205, 0.066, 0.935, 0.077], "o_que": "filete embaixo do titulo"}
+      ]
+    },
+    "siebmacher_p009": {
+      "a_conferir_pelo_samuel": true,
+      "texto": [
+        {"ret": [0.158, 0.082, 0.568, 0.648], "o_que": "poema em Fraktur"},
+        {"ret": [0.425, 0.652, 0.625, 0.718], "o_que": "assinatura J. Sibmacher."}
+      ],
+      "nao_pode": [
+        {"ret": [0.038, 0.018, 0.808, 0.825], "buraco": {"ret": [0.108, 0.073, 0.735, 0.738]}, "o_que": "moldura ornamental"}
+      ]
+    },
+    "graduale_p221": {
+      "a_conferir_pelo_samuel": true,
+      "manuscrito": true,
+      "texto": [
+        {"ret": [0.125, 0.153, 0.865, 0.185], "o_que": "palavras, linha 1"},
+        {"ret": [0.125, 0.263, 0.835, 0.297], "o_que": "palavras, linha 2"},
+        {"ret": [0.120, 0.373, 0.825, 0.407], "o_que": "palavras, linha 3"},
+        {"ret": [0.120, 0.490, 0.775, 0.527], "o_que": "palavras, linha 4 (com rubrica vermelha)"},
+        {"ret": [0.185, 0.598, 0.865, 0.637], "o_que": "palavras, linha 5"},
+        {"ret": [0.112, 0.713, 0.840, 0.752], "o_que": "palavras, linha 6"},
+        {"ret": [0.108, 0.838, 0.860, 0.877], "o_que": "palavras, linha 7"},
+        {"ret": [0.900, 0.033, 1.000, 0.062], "o_que": "folio C vij", "pequeno": true}
+      ],
+      "nao_pode": [],
+      "neutro": [
+        {"ret": [0.405, 0.405, 0.505, 0.522], "o_que": "capitular A decorada"},
+        {"ret": [0.310, 0.590, 0.405, 0.640], "o_que": "capitular D de Deus"},
+        {"ret": [0.485, 0.752, 0.560, 0.875], "o_que": "capitular E decorada"}
+      ]
+    },
+    "graduale_p222": {
+      "a_conferir_pelo_samuel": true,
+      "manuscrito": true,
+      "texto": [
+        {"ret": [0.215, 0.157, 0.525, 0.187], "o_que": "palavras, linha 1 (a)"},
+        {"ret": [0.745, 0.154, 0.850, 0.187], "o_que": "palavras, linha 1 (b)"},
+        {"ret": [0.218, 0.261, 0.485, 0.291], "o_que": "palavras, linha 2 (a)"},
+        {"ret": [0.625, 0.261, 0.805, 0.291], "o_que": "palavras, linha 2 (b)"},
+        {"ret": [0.218, 0.367, 0.440, 0.398], "o_que": "palavras, linha 3 (a)"},
+        {"ret": [0.505, 0.367, 0.815, 0.398], "o_que": "palavras, linha 3 (b)"},
+        {"ret": [0.222, 0.477, 0.470, 0.511], "o_que": "palavras, linha 4 (a)"},
+        {"ret": [0.655, 0.477, 0.955, 0.511], "o_que": "palavras, linha 4 (b)"},
+        {"ret": [0.222, 0.588, 0.930, 0.622], "o_que": "palavras, linha 5 (com rubrica vermelha)"},
+        {"ret": [0.390, 0.703, 0.945, 0.732], "o_que": "palavras, linha 6"},
+        {"ret": [0.222, 0.820, 0.625, 0.852], "o_que": "palavras, linha 7 (a)"},
+        {"ret": [0.705, 0.820, 0.795, 0.852], "o_que": "palavras, linha 7 (b)"}
+      ],
+      "nao_pode": []
+    },
+    "graduale_p223": {
+      "a_conferir_pelo_samuel": true,
+      "manuscrito": true,
+      "texto": [
+        {"ret": [0.125, 0.150, 0.240, 0.181], "o_que": "palavras, linha 1 (a)"},
+        {"ret": [0.345, 0.150, 0.400, 0.181], "o_que": "palavras, linha 1 (b)"},
+        {"ret": [0.460, 0.150, 0.755, 0.181], "o_que": "palavras, linha 1 (c)"},
+        {"ret": [0.125, 0.260, 0.178, 0.292], "o_que": "palavras, linha 2 (a)"},
+        {"ret": [0.290, 0.260, 0.735, 0.292], "o_que": "palavras, linha 2 (b, com rubrica vermelha)"},
+        {"ret": [0.118, 0.366, 0.865, 0.401], "o_que": "palavras, linha 3"},
+        {"ret": [0.118, 0.484, 0.512, 0.517], "o_que": "palavras, linha 4"},
+        {"ret": [0.108, 0.597, 0.862, 0.631], "o_que": "palavras, linha 5 (com rubrica vermelha)"},
+        {"ret": [0.108, 0.716, 0.835, 0.748], "o_que": "palavras, linha 6"},
+        {"ret": [0.103, 0.836, 0.848, 0.868], "o_que": "palavras, linha 7"},
+        {"ret": [0.900, 0.033, 1.000, 0.062], "o_que": "folio C viij", "pequeno": true}
+      ],
+      "nao_pode": [],
+      "neutro": [
+        {"ret": [0.455, 0.183, 0.518, 0.296], "o_que": "capitular C grande"},
+        {"ret": [0.285, 0.512, 0.350, 0.628], "o_que": "capitular A decorada"}
+      ]
+    }
+  }
+}

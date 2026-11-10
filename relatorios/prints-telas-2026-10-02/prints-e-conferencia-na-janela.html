@@ -1,0 +1,540 @@
+<!doctype html>
+<html lang="pt-BR">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Prints das telas e conferência na janela (02/10/2026)</title>
+<style>
+:root { color-scheme: light dark; }
+* { box-sizing: border-box; }
+body {
+  font: 17px/1.65 "Segoe UI", system-ui, sans-serif;
+  max-width: 46rem; margin: 0 auto; padding: 2.5rem 1.5rem 6rem;
+  color: #1c1c1e; background: #fdfdfc;
+}
+h1 { font-size: 2rem; line-height: 1.2; margin: 0 0 .3em; letter-spacing: -.02em; }
+h2 { font-size: 1.35rem; margin: 2.4em 0 .6em; padding-top: .8em;
+     border-top: 1px solid #e6e4e0; letter-spacing: -.01em; }
+h3 { font-size: 1.1rem; margin: 1.8em 0 .4em; }
+h1 + p, h2 + p { margin-top: .4em; }
+p, li { margin: 0 0 .9em; }
+ul, ol { padding-left: 1.3em; }
+strong { font-weight: 640; }
+code {
+  font: .88em ui-monospace, "Cascadia Code", Consolas, monospace;
+  background: #f1efec; padding: .12em .35em; border-radius: 4px;
+}
+pre {
+  background: #f1efec; padding: 1em 1.1em; border-radius: 8px;
+  overflow-x: auto; line-height: 1.5;
+}
+pre code { background: none; padding: 0; }
+blockquote {
+  margin: 1.2em 0; padding: .1em 0 .1em 1.1em;
+  border-left: 3px solid #c9c5be; color: #55524d;
+}
+table {
+  border-collapse: collapse; width: 100%; margin: 1.2em 0;
+  font-size: .95rem; display: block; overflow-x: auto;
+}
+th, td { padding: .5em .8em; text-align: left; border-bottom: 1px solid #e6e4e0; }
+th { font-weight: 620; background: #f7f5f2; white-space: nowrap; }
+tr:last-child td { border-bottom: none; }
+img { max-width: 100%; height: auto; border-radius: 6px; margin: 1em 0;
+      border: 1px solid #e6e4e0; }
+hr { border: none; border-top: 1px solid #e6e4e0; margin: 2.5em 0; }
+.rodape { margin-top: 4em; padding-top: 1.2em; border-top: 1px solid #e6e4e0;
+          font-size: .85rem; color: #86827c; }
+@media (prefers-color-scheme: dark) {
+  body { color: #e8e6e3; background: #1a1917; }
+  h2 { border-top-color: #35332f; }
+  code, pre, th { background: #262421; }
+  th, td { border-bottom-color: #35332f; }
+  blockquote { border-left-color: #4a4741; color: #b0aca6; }
+  img { border-color: #35332f; }
+  .rodape { border-top-color: #35332f; color: #7d7973; }
+}
+@media print {
+  body { max-width: none; padding: 0; color: #000; background: #fff; }
+  h2 { page-break-after: avoid; }
+  table, img { page-break-inside: avoid; }
+}
+</style>
+</head>
+<body>
+<h1>Prints das telas e conferência na janela de verdade (02/10/2026)</h1>
+<p><strong>Em uma frase:</strong> abri o programa de verdade na tela, no tamanho do notebook do Kaique (1280 × 657 pontos), tirei os prints que faltavam e conferi os achados "a conferir" do inventário com clique e tecla nativos: <strong>6 dos 7 achados pedidos se confirmaram; o "salvar como (2)" está consertado</strong>, e apareceram <strong>dois defeitos novos que travam ou confundem o Kaique</strong> (a segunda gravação do mesmo livro não deixa processar sem escolher a pasta de novo; o cartão do livro nunca mostra "pronto, PDF gerado").</p>
+<p>Todos os itens abaixo foram vistos por <strong>olho</strong>, na janela real, com print; os números (valor gravado no projeto, nome do erro) foram lidos por <strong>máquina</strong> ao lado, só para confirmar o que a tela mostrou. Ramo <code>fase-1</code>, commit <code>2ff2d90</code>. Nenhum código, plano ou commit foi mexido.</p>
+<hr />
+<h2>1. Como foi feito</h2>
+<p><strong>Escala deste PC:</strong> Windows a <strong>125 %</strong> (120 dpi), tela 1920 × 1080, área útil 1920 × 1020 pixels (= 1536 × 816 pontos).</p>
+<p><strong>Tamanho da janela:</strong> a moldura visível da janela foi posta em <strong>1600 × 821 pixels = 1280 × 657 pontos</strong> (pontos = pixels ÷ 1,25), que é a área útil do notebook do Kaique a 150 %. A conta foi feita pela moldura que se vê (sem a borda invisível do Windows 11). O Qt confirmou a área de dentro em 1278 × 626 pontos (o resto é a barra de título). No notebook do Kaique o mesmo arranjo sai em 1920 × 985 pixels: <strong>a disposição é a mesma, as letras só ficam mais nítidas lá</strong>. Os prints têm 1600 × 821 pixels.</p>
+<p><strong>Sem atrapalhar o Samuel e sem tocar no acervo:</strong></p>
+<ul>
+<li>Instância nova do programa (<code>main.py</code> do ramo <code>fase-1</code>), com <strong>pasta de dados própria</strong> (<code>LOCALAPPDATA</code> e a pasta do usuário trocadas para <code>dados/</code> dentro desta pasta) e <strong>cópias</strong> montadas a partir das páginas-gabarito (livro A: 5 folhas duplas; livro C: 5 folhas de uma página). Os PDFs de saída foram gravados só em <code>dados/saida/</code>.</li>
+<li>Antes de começar não havia nenhuma janela "Editor de Impressão" aberta. Fechei só a minha (WM_CLOSE), duas vezes, e ela fechou normalmente.</li>
+<li>Cliques, arrastos e teclas: <strong>mensagens nativas do Windows</strong> mandadas direto para a janela de teste. A janela aparecia sem tomar o foco, para não roubar o teclado do Samuel. As duas caixas do Windows (abrir PDF, escolher pasta) foram respondidas por um arquivo, sempre com caminhos da minha pasta.</li>
+<li>No meio do teste a janela foi <strong>minimizada</strong> (não fui eu; provavelmente o Samuel, porque ela estava na tela dele). Eu a restaurei sem tomar o foco e repeti os dois prints que tinham saído errados.</li>
+</ul>
+<p><strong>Duas coisas que aprendi pilotando (valem para os próximos testes):</strong></p>
+<ol>
+<li><strong>Atalho de menu só funciona com a janela ativa.</strong> Com a janela inativa, Ctrl+Enter caía em outro caminho do código e mostrava "Antes de processar". Isso dava um resultado diferente do uso real. Para imitar a janela ativa do Kaique sem tomar o foco do Windows, mandei a mensagem nativa "ganhou o foco" (WM_SETFOCUS) só para a janela de teste. Assim o Qt passa a tratá-la como ativa. Os testes de tecla que dependem disso foram refeitos assim.</li>
+<li><strong>O mouse simulado não aciona item de menu suspenso do Qt</strong> (nem o "passar por cima" acende o item). O controle "Ir para a página..." não abriu pelo mouse simulado. Pelo <strong>teclado</strong> (clique no menu, setas, Enter), abriu. Por isso os itens de menu foram escolhidos com setas + Enter, conferindo antes do Enter qual item estava aceso. Isso também é uso real.</li>
+</ol>
+<hr />
+<h2>2. Os achados "a conferir"</h2>
+<h3>(a) Cabeçalho escondido com as observações do livro e o contador de dúvidas: <strong>CONFIRMADO</strong></h3>
+<p><strong>Como testei:</strong> livro C (5 folhas de uma página, com "Dividir folhas ao meio" ligado). A análise gerou a observação <strong>"este livro tem uma página por folha, não duas"</strong> (gravada no projeto). Procurei esse texto em todas as janelas visíveis, em todos os rótulos, botões e dicas do mouse, nas três abas: <strong>não aparece em lugar nenhum</strong>. O rótulo existe, com o texto, mas dentro de uma caixa escondida. No livro A, o contador escondido dizia "5 páginas para você olhar", e também não aparece.</p>
+<p><img alt="Livro C: a observação não aparece em nenhum lugar" src="conferir-livro-c-sem-aba-marcar-1280x657.png" /></p>
+<h3>(b) Tecla R em cada aba: <strong>CONFIRMADO, R vira Retângulo e nunca gira</strong></h3>
+<p><strong>Como testei:</strong> em cada aba (Onde cortar, Bordas, Endireitar, Marcar, Filtro), apertei O e depois R (teclas nativas). Fiz isso com a janela inativa e repeti com ela ativa. Em todas as abas a barra de opções foi de "Oval:" para "Retângulo:", e o giro das 5 folhas continuou 0, 0, 0, 0, 0. Para controle, o botão "girar" girou a folha 1 para 90 graus (desfeito com Ctrl+Z).</p>
+<p><img alt="antes (tecla O)" src="tecla-o-antes-do-r-na-aba-onde-cortar-1280x657.png" /></p>
+<p><img alt="depois (tecla R): Retângulo, folha não girou" src="tecla-r-na-aba-onde-cortar-1280x657.png" /></p>
+<h3>(c) Livro sem a aba Marcar ("Limpar a folha" desmarcada): <strong>CONFIRMADO, dá "Aconteceu um problema inesperado"</strong></h3>
+<p><strong>Como testei:</strong> livro C com "Limpar a folha" desmarcada (abas: Onde cortar, Bordas, Endireitar).</p>
+<ul>
+<li><strong>As 9 letras das ferramentas (R O L P B V C Z E):</strong> cada uma abriu a caixa "Um momento / Aconteceu um problema inesperado, mas o programa continua funcionando." O programa continuou aberto.</li>
+<li><strong>Marcar &gt; "Limpar tudo"</strong>, <strong>Marcar &gt; "Deixar a folha em branco"</strong> e também <strong>Marcar &gt; "Procurar de novo"</strong>: a mesma caixa.</li>
+<li>Testei de dois jeitos. (1) Na mesma sessão, depois de ter aberto o livro A, que tinha a aba Marcar: o erro foi "o editor já foi apagado". (2) Numa <strong>sessão nova</strong>, abrindo direto o livro C: o erro foi "o editor não existe". Os dois dão a mesma caixa para o Kaique.</li>
+<li><strong>Clique de mouse</strong> numa ferramenta da trilha não dá erro: só troca a ferramenta, sem efeito.</li>
+</ul>
+<p><img alt="A caixa que aparece" src="sem-aba-marcar-tecla-r-caixa-de-erro-sessao-nova.png" /></p>
+<p>Linhas do <code>erros.log</code> (pasta de dados própria), uma de cada tipo:</p>
+<pre><code>===== 2026-10-02T21:01:49 | não tratado =====   (tecla R, mesma sessão do livro A)
+  File &quot;ui\tela_conferir.py&quot;, line 2419, in tratar_tecla
+  File &quot;ui\tela_conferir.py&quot;, line 390, in escolher_ferramenta
+  File &quot;ui\widgets\editor_selecao.py&quot;, line 295, in definir_ferramenta
+RuntimeError: Signal source has been deleted
+
+===== 2026-10-02T21:02:23 | não tratado =====   (Marcar &gt; Limpar tudo)
+  File &quot;ui\tela_conferir.py&quot;, line 943, in _limpar_marcacao
+  File &quot;ui\widgets\editor_selecao.py&quot;, line 287, in definir_selecao
+RuntimeError: libshiboken: Internal C++ object (EditorSelecao) already deleted.
+
+===== 2026-10-02T21:02:29 | não tratado =====   (Marcar &gt; Deixar a folha em branco)
+  File &quot;ui\tela_conferir.py&quot;, line 964, in _folha_em_branco
+RuntimeError: libshiboken: Internal C++ object (EditorSelecao) already deleted.
+
+===== 2026-10-02T21:02:35 | não tratado =====   (Marcar &gt; Procurar de novo)
+  File &quot;ui\tela_conferir.py&quot;, line 991, in _detectar_de_novo
+  File &quot;ui\widgets\editor_selecao.py&quot;, line 343, in limpar_o_que_a_maquina_marcou
+RuntimeError: Signal source has been deleted
+
+===== 2026-10-02T21:03:59 | não tratado =====   (sessão nova, tecla R)
+  File &quot;ui\tela_conferir.py&quot;, line 390, in escolher_ferramenta
+AttributeError: 'TelaConferir' object has no attribute 'editor_selecao'
+
+===== 2026-10-02T21:04:04 / 21:04:10 =====   (sessão nova, Limpar tudo / Deixar a folha em branco)
+  File &quot;ui\tela_conferir.py&quot;, line 943 / 964
+AttributeError: 'TelaConferir' object has no attribute 'editor_selecao'
+</code></pre>
+<p>No total foram 15 registros, todos deste teste: 9 letras, 3 itens do menu Marcar, e 3 da sessão nova.</p>
+<h3>(d) Os 11 itens de menu que parecem não fazer nada: <strong>CONFIRMADO, os 11</strong></h3>
+<p><strong>Como testei:</strong> na aba Bordas, cada item escolhido pelo teclado do menu. Antes e depois de cada um, comparei o print inteiro (pixel por pixel) e o estado do programa: tela, aba, painéis visíveis, janelas abertas, páginas apagadas, <code>erros.log</code>.</p>
+<table>
+<thead>
+<tr>
+<th>Item</th>
+<th>O que aconteceu</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>Arquivo &gt; "Livros recentes"</td>
+<td>Submenu com <strong>0 itens</strong>, mesmo com um livro aberto na sessão (a seta para a direita não abre nada)</td>
+</tr>
+<tr>
+<td>Editar &gt; "Mostrar o histórico"</td>
+<td>Nada (print idêntico, estado igual)</td>
+</tr>
+<tr>
+<td>Página &gt; "Restaurar página apagada"</td>
+<td>Página 1 apagada com Del; depois do item ela <strong>continuou apagada</strong>. Del de novo restaurou</td>
+</tr>
+<tr>
+<td>Ver &gt; "Aproximar", "Afastar", "Ajustar à tela"</td>
+<td>Nada. As teclas <strong>Ctrl++ (numérico e do teclado), Ctrl+=, Ctrl+- e Ctrl+0</strong> também não fazem nada, mesmo com a janela ativa</td>
+</tr>
+<tr>
+<td>Ver &gt; "Painel: Para revisar", "Painel: Marcar como", "Painel: Filtro da página", "Painel: Histórico"</td>
+<td>A marca do menu <strong>some</strong>, o que prova que o item foi acionado, mas os <strong>quatro painéis continuam na tela</strong></td>
+</tr>
+<tr>
+<td>Ver &gt; "Modo comparar"</td>
+<td>A marca aparece, mas a tela não muda nada</td>
+</tr>
+</tbody>
+</table>
+<p>Nenhum desses itens gravou erro no <code>erros.log</code>. Os pares antes/depois estão em <code>menus-antes-depois/</code>.</p>
+<p><img alt="Menu Ver depois: painéis desmarcados, comparar marcado" src="menu-ver-paineis-desmarcados-mas-paineis-na-tela.png" /></p>
+<p><img alt="A tela no mesmo momento: os painéis continuam lá" src="menu-ver-paineis-desmarcados-tela.png" /></p>
+<p><img alt="Livros recentes: submenu vazio" src="menu-arquivo-livros-recentes.png" /></p>
+<h3>(e) "salvar como … (2).pdf" (consertado no commit <code>25d916e</code>): <strong>NÃO CONFIRMADO, o conserto funciona</strong></h3>
+<p><strong>Como testei:</strong> gerei <code>livro-teste-a - cadernos.pdf</code> em <code>dados/saida/</code> e anotei a impressão digital (sha256 <code>867d37ec…</code>, 27 187 249 bytes, e a data). Depois continuei o mesmo livro, gerei de novo com o mesmo nome e escolhi <strong>"salvar como livro-teste-a - cadernos (2).pdf"</strong>. Resultado: chegou em "Ficou pronto!" com o nome <strong>(2)</strong>, o <code>(2).pdf</code> tem 10 páginas como o primeiro, e <strong>o antigo ficou intacto</strong> (mesma impressão digital e mesma data). Nada no <code>erros.log</code>.</p>
+<p><img alt="A caixa" src="ja-existe-um-arquivo-com-esse-nome-1280x657.png" /></p>
+<p><img alt="Pronto com o (2)" src="pronto-depois-de-salvar-como-2-1280x657.png" /></p>
+<p>Para chegar nessa caixa tive de passar por um <strong>defeito novo</strong> (ver N1 abaixo).</p>
+<h3>(f) Ctrl+Enter pula "Antes de processar"? <strong>CONFIRMADO (com a janela ativa, como no uso real)</strong></h3>
+<p><strong>Como testei:</strong> livro A com 5 páginas em dúvida.</p>
+<ul>
+<li><strong>Botão "Confirmar e processar":</strong> mostra "Antes de processar" ("Ainda tem 5 páginas que eu não tive certeza.").</li>
+<li><strong>Ctrl+Enter com a janela ativa:</strong> abre <strong>direto</strong> a janela "Confirmar e processar", sem a caixa.</li>
+<li><strong>Menu Arquivo &gt; "Confirmar e processar":</strong> também abre direto, sem a caixa.</li>
+<li>Ressalva: com a janela <strong>inativa</strong>, o Ctrl+Enter mostrou a caixa. O atalho do menu não vale fora da janela ativa, e aí a tecla cai em outro caminho do código. Para o Kaique, que usa a janela ativa, vale a primeira observação: <strong>pula</strong>.</li>
+</ul>
+<p><img alt="Pelo botão" src="antes-de-processar-1280x657.png" /></p>
+<p><img alt="Pelo Ctrl+Enter (janela ativa)" src="ctrl-enter-janela-ativa-abre-direto-confirmar-e-processar.png" /></p>
+<h3>(g) Deslizante do painel "Filtro da página" grava? <strong>CONFIRMADO, não grava</strong></h3>
+<p><strong>Como testei:</strong> página 1 em Preto e branco. Arrastei o cabo do deslizante "força do preto" do painel da direita (de 50 para cerca de 90) com o mouse nativo, e depois cliquei no trilho. O cabo <strong>nem acompanha o mouse</strong>: ele volta na hora para 50. O valor gravado continuou 50, e o Histórico não ganhou ação nenhuma. Para controle, o mesmo arrasto no deslizante do bloco "AJUSTE" da aba Filtro gravou 60 ("forte"), entrou no Histórico, e o do painel acompanhou. Desfiz com Ctrl+Z.</p>
+<p><img alt="Painel: soltei em ~90, ficou 50" src="painel-filtro-deslizante-depois-de-soltar-1280x657.png" /></p>
+<p><img alt="Controle: o do AJUSTE grava (60, &quot;forte&quot;)" src="controle-ajuste-deslizante-grava-1280x657.png" /></p>
+<h3>Outros itens do inventário vistos de passagem</h3>
+<table>
+<thead>
+<tr>
+<th>Item (seção 4 do inventário)</th>
+<th>Resultado</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>7. A marca do menu Filtro não acompanha a página</td>
+<td><strong>CONFIRMADO.</strong> Página 1 em Preto e branco, nenhum item marcado no menu (print <code>menu-filtro-sem-marca-pagina-em-preto-e-branco.png</code>)</td>
+</tr>
+<tr>
+<td>11. Digitar um nome que já existe não acende a faixa laranja</td>
+<td><strong>CONFIRMADO.</strong> Digitei "livro-teste-a - cadernos.pdf" (que existe): aparece só a frase cinza pequena, sem a faixa laranja (print <code>confirmar-nome-digitado-ja-existe.png</code>). Trocando a pasta, a faixa acende (print <code>confirmar-e-processar-depois-de-escolher-a-pasta-1280x657.png</code>)</td>
+</tr>
+<tr>
+<td>14. Botão em inglês na "Lista de atalhos" (F1)</td>
+<td><strong>CONFIRMADO.</strong> "Show Details..." ao lado de "fechar" (print <code>lista-de-atalhos-f1.png</code>)</td>
+</tr>
+<tr>
+<td>12. Texto sem acento</td>
+<td>Visto na tela: "Arraste o retangulo...", "girar na mao", "inclinacao: +0.0 graus", "mantem a cor"</td>
+</tr>
+<tr>
+<td>2. Botões "usar mais fraco" / "usar mais escuro"</td>
+<td><strong>Não testado.</strong> Não consegui uma página com o alerta "Ficou escura" ou "Texto quase sumiu" nos livros pequenos</td>
+</tr>
+</tbody>
+</table>
+<hr />
+<h2>3. Coisas novas encontradas (não estão no inventário)</h2>
+<p><strong>N1. Gerar o mesmo livro de novo trava a janela "Confirmar e processar" (grave para o Kaique).</strong> Na segunda vez, "Salvar em:" mostra o <strong>caminho do PDF antigo</strong> no lugar da pasta, aparece em vermelho <strong>"Esse caminho não é uma pasta."</strong>, e o botão <strong>"Processar" fica apagado</strong>. Só destrava escolhendo a pasta de novo em "Escolher pasta". Pela leitura do código, a janela recebe o caminho do arquivo onde espera uma pasta (<code>ui/janela_confirmar.py</code>, linha 57, <code>destino.definir(projeto.caminho_saida ...)</code>; o <code>caminho_saida</code> guarda o arquivo inteiro, ver <code>ui/janela_principal.py</code> linha 944).</p>
+<p><img alt="Segunda vez: &quot;Esse caminho não é uma pasta.&quot; e Processar apagado" src="confirmar-e-processar-arquivo-ja-existe-1280x657.png" /></p>
+<p><strong>N2. O cartão do livro nunca mostra "pronto, PDF gerado" nem o botão "abrir a pasta".</strong> Depois de gerar o PDF (duas vezes), o cartão continua "1 de 9 conferidas" com "continuar". No <code>resumo.json</code> do projeto, <code>pdf_gerado</code> ficou <code>false</code>. No código, nada põe esse valor em verdadeiro (só um script de prints e um teste).</p>
+<p><img alt="Cartão depois de gerar o PDF" src="inicio-com-cartao-1280x657.png" /></p>
+<p><strong>N3. Aba Filtro: uma vez, o bloco "AJUSTE" sumiu (altura zero) e os botões "Aplicar em" ficaram sem texto.</strong> Aconteceu logo depois de trocar a página de Original para Preto e branco com a tecla 2, com a aba Filtro aberta, na primeira vez em que o bloco apareceu. Aconteceu também com a janela maior (1536 × 816). Voltou ao normal ao trocar de aba. Tentei repetir (teclas 1, 2, 3) e <strong>não consegui</strong>. Na mesma hora, o cartão "Original" ficou mais de 30 s em "preparando...". Prints: <code>painel-filtro-deslizante-arrastando-1280x657.png</code> e <code>referencia-conferir-filtro-preto-e-branco-1536x816-maximizada-neste-pc.png</code>.</p>
+<p><img alt="Bloco AJUSTE espremido e &quot;Aplicar em&quot; sem texto" src="painel-filtro-deslizante-arrastando-1280x657.png" /></p>
+<p><strong>N4. "Tamanho da folha" já abre com o aviso laranja errado.</strong> A janela abre com o tamanho igual ao corte (11,41 × 18,70 cm) e já avisa "Esse tamanho é menor que o corte que você já fez (11.4 × 18.7 cm)". O número do aviso usa ponto, e o dos campos usa vírgula. Print <code>tamanho-da-folha-1280x657.png</code>.</p>
+<p><strong>N5. Painel "Para revisar" diz "nada pendente" com 5 folhas em dúvida.</strong> Na aba Onde cortar, as 5 miniaturas estavam laranja com "!", e a faixa dizia "Não tenho certeza de onde cortar". O contador escondido dizia "5 páginas para você olhar", mas o painel ficou em "nada pendente". Print <code>conferir-onde-cortar-1280x657.png</code>.</p>
+<p><strong>N6. Nomes de tecla em inglês</strong> em Configurações e no menu: "Left", "Right", "Space", "Tab", "Ctrl+Return", "Del". Prints <code>configuracoes-1280x657.png</code>, <code>configuracoes-rolada-1280x657.png</code>, <code>menu-arquivo-livros-recentes.png</code>.</p>
+<p><strong>N7. A caixa "Aconteceu um problema inesperado" sai com fundo preto</strong> (tema escuro do Windows), diferente do resto do programa, que é claro.</p>
+<p><strong>N8. Tela "Pronto":</strong> "1 cadernos" e "são 1 cadernos prontos" (plural errado). Ao lado de "Separe as folhas em grupos de 5", o "10 folhas para imprimir" pode confundir. O PDF imposto tem 10 páginas, então o número parece contar páginas do PDF e não folhas de papel.</p>
+<p><strong>N9. Dois avisos que se contradizem:</strong> a faixa da janela "Confirmar e processar" diz "Se continuar, ele será substituído", mas a caixa seguinte oferece "salvar como (2)" como padrão. Na mesma janela, "Antes de processar" fala em "5 páginas que eu não tive certeza" e a faixa em "8 página(s) que você não conferiu": são duas contas diferentes, e o Kaique pode achar que uma está errada.</p>
+<p><strong>N10. A 1280 × 657, a trilha de ferramentas não cabe:</strong> na aba Marcar some o "E" (Mão), e com o bloco AJUSTE aberto na aba Filtro ela corta depois do "C". O painel da direita só mostra "Para revisar", "Marcar como" e o começo de "Filtro da página"; o resto precisa de rolagem.</p>
+<p><strong>N11. Fora da conferência, os menus desligados não parecem desligados.</strong> "Editar", "Marcar", "Filtro" e "Página" estão desligados na tela inicial e em "O que fazer", mas têm o mesmo tom de preto que "Arquivo" (medido no print: tom 42 nos dois casos). O inventário diz que "aparecem apagados".</p>
+<hr />
+<h2>4. Tabela de prints (todos em <code>relatorios/prints-telas-2026-10-02/</code>, abertos e olhados um por um)</h2>
+<table>
+<thead>
+<tr>
+<th>Arquivo</th>
+<th>Tela</th>
+<th>O que mostra</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><code>inicio-vazia-1280x657.png</code></td>
+<td>Tela inicial</td>
+<td>Sem nenhum livro</td>
+</tr>
+<tr>
+<td><code>inicio-com-cartao-1280x657.png</code></td>
+<td>Tela inicial</td>
+<td>Cartão do livro A depois de gerar o PDF (ainda "continuar", N2)</td>
+</tr>
+<tr>
+<td><code>inicio-com-dois-cartoes-1280x657.png</code></td>
+<td>Tela inicial</td>
+<td>Dois cartões (sessão nova)</td>
+</tr>
+<tr>
+<td><code>o-que-fazer-1280x657.png</code></td>
+<td>O que fazer</td>
+<td>De fábrica, livro A</td>
+</tr>
+<tr>
+<td><code>o-que-fazer-rolada-cadernos-1280x657.png</code></td>
+<td>O que fazer</td>
+<td>Rolada até o fim, "Montar cadernos" marcado</td>
+</tr>
+<tr>
+<td><code>o-que-fazer-livro-c-sem-limpar-1280x657.png</code></td>
+<td>O que fazer</td>
+<td>Livro C com "Limpar a folha" desmarcada</td>
+</tr>
+<tr>
+<td><code>folhear-o-livro-1280x657.png</code></td>
+<td>Folhear o livro</td>
+<td>No tamanho do Kaique</td>
+</tr>
+<tr>
+<td><code>folhear-o-livro-maximizada-neste-pc-1536x816.png</code></td>
+<td>Folhear o livro</td>
+<td>Como abre aqui (maximizada neste PC), só de referência</td>
+</tr>
+<tr>
+<td><code>progresso-olhando-o-livro-1280x657.png</code></td>
+<td>Progresso</td>
+<td>"Olhando o livro..."</td>
+</tr>
+<tr>
+<td><code>progresso-processando-o-livro-1280x657.png</code></td>
+<td>Progresso</td>
+<td>"Processando o livro..."</td>
+</tr>
+<tr>
+<td><code>conferir-onde-cortar-1280x657.png</code></td>
+<td>Conferir, Onde cortar</td>
+<td>Linha da lombada, alerta, "Para revisar" com "nada pendente" (N5)</td>
+</tr>
+<tr>
+<td><code>conferir-bordas-1280x657.png</code></td>
+<td>Conferir, Bordas</td>
+<td>Retângulo verde, "Mover conteúdo" apagado</td>
+</tr>
+<tr>
+<td><code>conferir-bordas-folha-a5-1280x657.png</code></td>
+<td>Conferir, Bordas</td>
+<td>Depois de escolher A5: "Mover conteúdo" aceso</td>
+</tr>
+<tr>
+<td><code>conferir-bordas-mover-conteudo-ligado-1280x657.png</code></td>
+<td>Conferir, Bordas</td>
+<td><strong>"Mover conteúdo" ligado</strong>: página na folha branca, contorno azul</td>
+</tr>
+<tr>
+<td><code>conferir-bordas-mover-conteudo-arrastando-1280x657.png</code></td>
+<td>Conferir, Bordas</td>
+<td>No meio do arrasto, com a linha-guia laranja</td>
+</tr>
+<tr>
+<td><code>conferir-bordas-mover-conteudo-depois-de-arrastar-1280x657.png</code></td>
+<td>Conferir, Bordas</td>
+<td>Depois de soltar (conteúdo à direita)</td>
+</tr>
+<tr>
+<td><code>conferir-endireitar-1280x657.png</code></td>
+<td>Conferir, Endireitar</td>
+<td>Linhas laranja, "inclinacao" sobreposto no alto</td>
+</tr>
+<tr>
+<td><code>conferir-marcar-1280x657.png</code></td>
+<td>Conferir, Marcar</td>
+<td>Marcas pintadas, trilha cortada (N10)</td>
+</tr>
+<tr>
+<td><code>conferir-filtro-1280x657.png</code></td>
+<td>Conferir, Filtro</td>
+<td>Página em Original (sem AJUSTE)</td>
+</tr>
+<tr>
+<td><code>conferir-filtro-preto-e-branco-1280x657.png</code></td>
+<td>Conferir, Filtro</td>
+<td>Preto e branco com o AJUSTE normal</td>
+</tr>
+<tr>
+<td><code>referencia-conferir-filtro-preto-e-branco-1536x816-maximizada-neste-pc.png</code></td>
+<td>Conferir, Filtro</td>
+<td>AJUSTE espremido mesmo em janela maior (N3)</td>
+</tr>
+<tr>
+<td><code>conferir-livro-c-sem-aba-marcar-1280x657.png</code></td>
+<td>Conferir (livro C)</td>
+<td>Só 3 abas; a observação do livro não aparece (a)</td>
+</tr>
+<tr>
+<td><code>tecla-o-antes-do-r-na-aba-onde-cortar-1280x657.png</code></td>
+<td>Conferir</td>
+<td>Tecla O: "Oval:" na aba Onde cortar (b)</td>
+</tr>
+<tr>
+<td><code>tecla-r-na-aba-onde-cortar-1280x657.png</code></td>
+<td>Conferir</td>
+<td>Tecla R: "Retângulo:", folha não girou (b)</td>
+</tr>
+<tr>
+<td><code>painel-filtro-deslizante-antes-1280x657.png</code></td>
+<td>Conferir, Filtro</td>
+<td>Painel rolado até o deslizante, valor 50 (g)</td>
+</tr>
+<tr>
+<td><code>painel-filtro-deslizante-arrastando-1280x657.png</code></td>
+<td>Conferir, Filtro</td>
+<td>Arrastando: o cabo não sai do 50; AJUSTE espremido (g, N3)</td>
+</tr>
+<tr>
+<td><code>painel-filtro-deslizante-depois-de-soltar-1280x657.png</code></td>
+<td>Conferir, Filtro</td>
+<td>Depois de soltar: continua 50 (g)</td>
+</tr>
+<tr>
+<td><code>controle-ajuste-deslizante-grava-1280x657.png</code></td>
+<td>Conferir, Filtro</td>
+<td>Controle: o AJUSTE grava 60, "forte" (g)</td>
+</tr>
+<tr>
+<td><code>tamanho-da-folha-1280x657.png</code></td>
+<td>Tamanho da folha</td>
+<td>Como abre, com o aviso laranja (N4)</td>
+</tr>
+<tr>
+<td><code>tamanho-da-folha-a5-1280x657.png</code></td>
+<td>Tamanho da folha</td>
+<td>Depois de clicar A5</td>
+</tr>
+<tr>
+<td><code>configuracoes-1280x657.png</code></td>
+<td>Configurações</td>
+<td>Início da lista de atalhos</td>
+</tr>
+<tr>
+<td><code>configuracoes-rolada-1280x657.png</code></td>
+<td>Configurações</td>
+<td>Fim da lista ("Del", "Ctrl++"...)</td>
+</tr>
+<tr>
+<td><code>antes-de-processar-1280x657.png</code></td>
+<td>Antes de processar</td>
+<td>Pelo botão (f)</td>
+</tr>
+<tr>
+<td><code>antes-de-processar-pelo-ctrl-enter-janela-inativa.png</code></td>
+<td>Antes de processar</td>
+<td>Ctrl+Enter com a janela inativa (ressalva de (f))</td>
+</tr>
+<tr>
+<td><code>ctrl-enter-janela-ativa-abre-direto-confirmar-e-processar.png</code></td>
+<td>Confirmar e processar</td>
+<td>Ctrl+Enter com a janela ativa: sem a caixa (f)</td>
+</tr>
+<tr>
+<td><code>confirmar-e-processar-1280x657.png</code></td>
+<td>Confirmar e processar</td>
+<td>Primeira gravação</td>
+</tr>
+<tr>
+<td><code>confirmar-e-processar-arquivo-ja-existe-1280x657.png</code></td>
+<td>Confirmar e processar</td>
+<td>Segunda vez: "Esse caminho não é uma pasta." (N1)</td>
+</tr>
+<tr>
+<td><code>confirmar-e-processar-depois-de-escolher-a-pasta-1280x657.png</code></td>
+<td>Confirmar e processar</td>
+<td>Depois de "Escolher pasta": faixa "Já existe" acesa</td>
+</tr>
+<tr>
+<td><code>confirmar-nome-digitado-ja-existe.png</code></td>
+<td>Confirmar e processar</td>
+<td>Nome digitado que já existe: sem faixa laranja (item 11)</td>
+</tr>
+<tr>
+<td><code>ja-existe-um-arquivo-com-esse-nome-1280x657.png</code></td>
+<td>Já existe um arquivo</td>
+<td>As três opções (e)</td>
+</tr>
+<tr>
+<td><code>pronto-1280x657.png</code></td>
+<td>Pronto</td>
+<td>"Ficou pronto!" com cadernos</td>
+</tr>
+<tr>
+<td><code>pronto-depois-de-salvar-como-2-1280x657.png</code></td>
+<td>Pronto</td>
+<td>Com o nome "(2)" (e)</td>
+</tr>
+<tr>
+<td><code>menu-arquivo-livros-recentes.png</code></td>
+<td>Menu Arquivo</td>
+<td>"Livros recentes" com submenu vazio (d)</td>
+</tr>
+<tr>
+<td><code>menu-filtro-sem-marca-pagina-em-preto-e-branco.png</code></td>
+<td>Menu Filtro</td>
+<td>Nenhum item marcado (item 7)</td>
+</tr>
+<tr>
+<td><code>menu-ver-paineis-desmarcados-mas-paineis-na-tela.png</code></td>
+<td>Menu Ver</td>
+<td>Painéis desmarcados, comparar marcado (d)</td>
+</tr>
+<tr>
+<td><code>menu-ver-paineis-desmarcados-tela.png</code></td>
+<td>Conferir, Bordas</td>
+<td>No mesmo momento, os painéis na tela (d)</td>
+</tr>
+<tr>
+<td><code>controle-menu-ir-para-a-pagina.png</code></td>
+<td>Ir para a página</td>
+<td>Controle: item de menu escolhido pelo teclado abre</td>
+</tr>
+<tr>
+<td><code>lista-de-atalhos-f1.png</code></td>
+<td>Lista de atalhos</td>
+<td>"Show Details..." em inglês</td>
+</tr>
+<tr>
+<td><code>sem-aba-marcar-tecla-r-caixa-de-erro.png</code></td>
+<td>Um momento</td>
+<td>Tecla R sem a aba Marcar (c)</td>
+</tr>
+<tr>
+<td><code>sem-aba-marcar-tecla-r-caixa-de-erro-sessao-nova.png</code></td>
+<td>Um momento</td>
+<td>Mesma coisa na sessão nova (c)</td>
+</tr>
+<tr>
+<td><code>sem-aba-marcar-marcar-limpar-tudo-caixa.png</code></td>
+<td>Um momento</td>
+<td>Marcar &gt; Limpar tudo (c)</td>
+</tr>
+<tr>
+<td><code>sem-aba-marcar-marcar-deixar-a-folha-em-branco-caixa.png</code></td>
+<td>Um momento</td>
+<td>Marcar &gt; Deixar a folha em branco (c)</td>
+</tr>
+<tr>
+<td><code>sem-aba-marcar-marcar-procurar-de-novo-caixa.png</code></td>
+<td>Um momento</td>
+<td>Marcar &gt; Procurar de novo (c)</td>
+</tr>
+<tr>
+<td><code>menus-antes-depois/</code> (21 arquivos)</td>
+<td>Conferir, Bordas/Filtro</td>
+<td>Antes e depois de cada item de menu de (d) e das teclas de zoom. Todos os pares são iguais pixel por pixel, menos o "Restaurar página apagada", em que a página continua "apagada"</td>
+</tr>
+</tbody>
+</table>
+<p><strong>Telas sem print:</strong> "Ver de perto" (não foi pedida); as caixas "Fundo separado", "Começar de novo?", "Tirar da lista?" e "Renomear" (fora do pedido).</p>
+<hr />
+<h2>5. O que não deu para testar e ressalvas</h2>
+<ul>
+<li><strong>Roda do mouse:</strong> não funciona sem a janela em foco (conhecido desde 16/09). Zoom pela roda não foi testado.</li>
+<li><strong>Botões "usar mais fraco" / "usar mais escuro":</strong> sem página com esses alertas nos livros pequenos.</li>
+<li><strong>"imprimir agora" e "abrir a pasta"</strong> da tela Pronto não foram clicados, para não mandar nada para a impressora nem abrir janela do Explorer na tela do Samuel.</li>
+<li>A janela foi tratada como "ativa" pelo Qt com WM_SETFOCUS, sem tomar o foco do Windows. É uma imitação. No uso com teclado de verdade o resultado deve ser o mesmo, mas fica dito.</li>
+<li><strong>Estranho, mas não foi esta instância:</strong> a data da pasta de saída verdadeira do Samuel (<code>Documentos\Editor de Impressao</code>) mudou às 20:51:45, sem nenhum arquivo novo nem apagado (os PDFs de lá são de julho). Minha instância tinha a pasta do usuário trocada para <code>dados/home</code>, que ficou vazia, e nesse horário eu não estava em nenhuma janela de salvar. O mais provável é a conferência "dá para gravar nesta pasta?" (cria e apaga um arquivo temporário), rodada pelos testes do outro agente, que corriam ao mesmo tempo. Fica registrado, sem afirmar.</li>
+<li>Prints em 1600 × 821 pixels (este PC a 125 %). No notebook do Kaique a 150 % o arranjo é o mesmo, em 1920 × 985 pixels.</li>
+</ul>
+<h2>6. Arquivos</h2>
+<ul>
+<li>Relatório: <code>relatorios/prints-telas-2026-10-02/prints-e-conferencia-na-janela.html</code> (e <code>.pdf</code>, <code>.md</code>).</li>
+<li>Scripts usados para pilotar (só do verificador, não mexem no programa): <code>relatorios/prints-telas-2026-10-02/scripts/</code>.</li>
+<li>A pasta <code>dados/</code> (pasta de dados própria, cópias de livros e PDFs gerados) foi apagada no fim.</li>
+</ul>
+<p class="rodape">Editor de Impressão &middot; gerado em 02/10/2026 às 21:10</p>
+</body>
+</html>

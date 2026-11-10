@@ -1,0 +1,170 @@
+<!doctype html>
+<html lang="pt-BR">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Testes guiados - sessao 2</title>
+<style>
+:root { color-scheme: light dark; }
+* { box-sizing: border-box; }
+body {
+  font: 17px/1.65 "Segoe UI", system-ui, sans-serif;
+  max-width: 46rem; margin: 0 auto; padding: 2.5rem 1.5rem 6rem;
+  color: #1c1c1e; background: #fdfdfc;
+}
+h1 { font-size: 2rem; line-height: 1.2; margin: 0 0 .3em; letter-spacing: -.02em; }
+h2 { font-size: 1.35rem; margin: 2.4em 0 .6em; padding-top: .8em;
+     border-top: 1px solid #e6e4e0; letter-spacing: -.01em; }
+h3 { font-size: 1.1rem; margin: 1.8em 0 .4em; }
+h1 + p, h2 + p { margin-top: .4em; }
+p, li { margin: 0 0 .9em; }
+ul, ol { padding-left: 1.3em; }
+strong { font-weight: 640; }
+code {
+  font: .88em ui-monospace, "Cascadia Code", Consolas, monospace;
+  background: #f1efec; padding: .12em .35em; border-radius: 4px;
+}
+pre {
+  background: #f1efec; padding: 1em 1.1em; border-radius: 8px;
+  overflow-x: auto; line-height: 1.5;
+}
+pre code { background: none; padding: 0; }
+blockquote {
+  margin: 1.2em 0; padding: .1em 0 .1em 1.1em;
+  border-left: 3px solid #c9c5be; color: #55524d;
+}
+table {
+  border-collapse: collapse; width: 100%; margin: 1.2em 0;
+  font-size: .95rem; display: block; overflow-x: auto;
+}
+th, td { padding: .5em .8em; text-align: left; border-bottom: 1px solid #e6e4e0; }
+th { font-weight: 620; background: #f7f5f2; white-space: nowrap; }
+tr:last-child td { border-bottom: none; }
+img { max-width: 100%; height: auto; border-radius: 6px; margin: 1em 0;
+      border: 1px solid #e6e4e0; }
+hr { border: none; border-top: 1px solid #e6e4e0; margin: 2.5em 0; }
+.rodape { margin-top: 4em; padding-top: 1.2em; border-top: 1px solid #e6e4e0;
+          font-size: .85rem; color: #86827c; }
+@media (prefers-color-scheme: dark) {
+  body { color: #e8e6e3; background: #1a1917; }
+  h2 { border-top-color: #35332f; }
+  code, pre, th { background: #262421; }
+  th, td { border-bottom-color: #35332f; }
+  blockquote { border-left-color: #4a4741; color: #b0aca6; }
+  img { border-color: #35332f; }
+  .rodape { border-top-color: #35332f; color: #7d7973; }
+}
+@media print {
+  body { max-width: none; padding: 0; color: #000; background: #fff; }
+  h2 { page-break-after: avoid; }
+  table, img { page-break-inside: avoid; }
+}
+</style>
+</head>
+<body>
+<h1>Testes guiados — sessão 2 (ele testando sozinho pelo atalho, 28/10/2026)</h1>
+<p>Programa: atalho "Editor de Impressao (rodada de consertos)" → worktree <code>.claude\worktrees\obra-juncao</code>, ramo
+<code>obra-2026-10-26</code> (<code>fc38afd</code>), dados de teste em <code>D:\programas\EditorImpressao-arquivos\dados-teste-rodada-de-consertos</code>.</p>
+<p>Tipos: <strong>erro</strong> (faz errado ou não faz nada) · <strong>confuso</strong> (faz, mas não dá para entender) · <strong>falta</strong> ·
+<strong>a conferir</strong>.</p>
+<h2>Achados</h2>
+<table>
+<thead>
+<tr>
+<th>#</th>
+<th>O que ele escreveu</th>
+<th>Print</th>
+<th>Tipo</th>
+<th>O que a gerente achou (só leitura, nada mudado)</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>2-1</td>
+<td>"eu cheguei a abrir o aplicativo, mas ele está bem travado"</td>
+<td>—</td>
+<td>erro (a conferir)</td>
+<td>Livro aberto de manhã: <em>Cursus philosophicus. Tomo 2</em> (402 páginas). Pelo <code>acoes.jsonl</code>: aberto ~10:32, primeira ação 10:36, Mover na página 1 (10:36), <strong>Marcação na página 1</strong> (10:37–10:38), fechado 10:44. A página 1 tem <strong>302 marcações de letra</strong> feitas pelo programa; cada mexida na Marcação grava as 302 de novo (antes + depois, 140 a 565 mil caracteres por ação; ação comum ~500). Suspeita, não provada: a Marcação pesa a cada clique. Também no PC: League of Legends aberto desde 27/10 22:16 (1,6 GB de memória), só 2 GB livres de 16. Perguntado a ele onde travou mais (abrir / passar páginas / Marcação ou Mover / travou tudo); sem resposta ainda.</td>
+</tr>
+<tr>
+<td>2-2</td>
+<td>"quando eu clico em tirar do livro a pagina fica como apagada, mas não é tirada do pc"</td>
+<td><img alt="" src="s2-01-tirar-do-livro-fica-apagada.png" /></td>
+<td>a conferir</td>
+<td>Print: Palatino, página 6 de 134; as 4 primeiras miniaturas com "apagada". <strong>O que o programa faz hoje:</strong> "Tirar do livro" marca a página como tirada; ela <strong>continua na tira de miniaturas com a palavra "apagada"</strong> (para poder "trazer de volta") e <strong>não vai para o PDF final</strong> (<code>ui/tela_conferir.py</code> <code>apagar_pagina</code>; <code>core/avisos.py</code>). O arquivo do PDF de entrada no computador nunca é mexido. <strong>Decidido (D-046, 07/10):</strong> "Tirar do livro" = "o que não é página do livro sai de vez". Nada decidido sobre a página sumir da tira na tela. Perguntado a ele o que esperava (sumir da tira? sair do PDF? apagar do PDF de entrada?).</td>
+</tr>
+<tr>
+<td>2-3</td>
+<td>"está pedindo para conferir o fundo tirado, mas onde eu vejo se o fundo foi tirado? em qual botão eu olho o fundo tirado anteriormente." (círculo dele no cartão "Página 6 — Conferir o fundo tirado · Parece em branco", que só tem "está bom assim")</td>
+<td>print só no chat, sem arquivo para copiar (Palatino, página 6 de 134, "Para revisar" 10, aba "Por página")</td>
+<td>confuso</td>
+<td>O aviso (<code>core/analise.py</code> CONFERIR_FUNDO_TIRADO) só tem "está bom assim"; <strong>nada no cartão diz onde comparar</strong>. O jeito que existe: botão <strong>"antes / depois"</strong> na barra de baixo (ao lado de "Duas lado a lado"): Original à esquerda da linha, como vai sair à direita, linha que se arrasta (<code>ui/tela_conferir.py</code>, etapa 6, D-184). Respondido a ele no chat. <strong>No mesmo print:</strong> a faixa diz "Livro novo: ainda não passou pelo automático", mas já há avisos de "fundo tirado" (a conferir).</td>
+</tr>
+<tr>
+<td>2-4</td>
+<td>"ele só da a opção está bom assim" (círculo dele no cartão "Página 134 — Tamanho diferente", a contracapa marmorizada, Palatino)</td>
+<td>print só no chat, sem arquivo para copiar (página 134 de 134, "Para revisar" 11)</td>
+<td>confuso / falta (a conferir)</td>
+<td>Os avisos "Conferir o fundo tirado" e "Tamanho diferente" foram feitos com um botão só, "está bom assim" (<code>core/analise.py</code>, CONFERIR_FUNDO_TIRADO e TAMANHO_DIFERENTE). <strong>Livro de decisões: nada decidido</strong> sobre outros botões nesses dois avisos (regra 7: não inventar). Vira pergunta a ele: o que cada um deve oferecer.</td>
+</tr>
+<tr>
+<td>2-5</td>
+<td>"Outra pergunta, quando eu excluo paginas, isso altera em alguma coisa na ordem certa do livro, no caso excluir a capa e contra capa, folhas que não importam do começo e do fim."</td>
+<td>—</td>
+<td>pergunta (respondida)</td>
+<td>Código: as tiradas só são puladas (<code>core/avisos.py</code> <code>_paginas_vivas_por_folha</code>); as que ficam seguem na mesma ordem e os cadernos são montados com elas (<code>core/cadernos.py</code>), completando com branco só no fim do último caderno. Ponto de atenção explicado a ele: tirar número <strong>ímpar</strong> de páginas antes do texto troca o lado (direita/esquerda) de todas as seguintes; tirar número par (como as 4 do começo do Palatino) não troca. Nada no Livro sobre avisar isso.</td>
+</tr>
+<tr>
+<td>2-6</td>
+<td>"nessa pagina que é capa não aparece nenhum botão para deixar em branco. só aparece em outras paginas, eu devia conseguir fazer isso em qualquer pagina, anote todas as fotos e guarde todos os prints que eu mandar, pois são apontamentos sobre o aplicativo" (círculos dele: cartão da página 134, "Tamanho diferente", só "está bom assim"; cartão da página 133, "Parece em branco", com "Deixar em branco", "Tirar do livro" e "está bom assim")</td>
+<td><img alt="" src="s2-02-capa-134-so-esta-bom-assim.png" /> <img alt="" src="s2-03-pagina-133-tem-deixar-em-branco.png" /></td>
+<td>confuso (escondido)</td>
+<td><strong>Decidido, D-046 (07/10 e 09/10):</strong> "Deixar em branco" e "Tirar do livro" em qualquer página ("Essa opção de tirar do livro ou deixar folha em branco eu quero ter em outras paginas"). <strong>Existe na rodada de consertos (etapa 2), mas fora da vista:</strong> bloco "Esta página" no alto do painel <strong>Propriedades</strong> (ícone dos controles deslizantes, à direita), com os dois botões em toda página (<code>ui/tela_conferir.py</code> "Esta página"; <code>ui/widgets/paineis.py</code>); também tecla <strong>Delete</strong> (deixar em branco), <strong>Shift+Del</strong> (tirar do livro, D-561) e menu Página. No cartão do "Para revisar" e na faixa de baixo, os dois botões só aparecem nos avisos de página em branco/sem conteúdo (D-269, D-271). Ele não achou: o lugar não aparece onde ele está olhando. Dois prints anteriores dele desta sessão (2-3 e 2-4, 17:13 e 17:14) chegaram só no chat, sem arquivo: pedido a ele para mandar de novo.</td>
+</tr>
+<tr>
+<td>2-7</td>
+<td>"eu cliquei está certo mas o livro continua com o aviso naquela folha, não devia ter mais aviso se eu apertei está certo" (círculo dele na faixa de baixo: "Vou tirar o fundo desta página. Onde não der, ela sai como veio." com "está certo" e "próxima dúvida"; Palatino, página 7, ferramenta Mover e redimensionar)</td>
+<td><img alt="" src="s2-04-esta-certo-faixa-continua.png" /></td>
+<td>confuso</td>
+<td><strong>O "está certo" funcionou:</strong> tique verde na miniatura 7, rodapé "7 de 134 conferidas", "Para revisar" de 20 para 18. A frase que ficou <strong>não é aviso</strong>: é a frase "tranquila" que a faixa mostra quando a página não tem aviso (<code>ui/tela_conferir.py</code> <code>_texto_tranquilo</code>, filtro Tirar o fundo), com os botões "está certo" / "próxima dúvida" que ficam sempre ali. Como a frase fala de "tirar o fundo" (o mesmo assunto do aviso "Conferir o fundo tirado"), parece que o aviso continua. <strong>Correção dele (a gerente leu errado):</strong> "você está vendo errado , o está certo deixou o tique verde mas continuou com o aviso na pagina, dá para ver que a opção esta certo continua aparecendo, deveria sumir quando eu aperto está certo." (print da página 13, 17:23, círculos na miniatura 13 com tique e na faixa com "está certo" / "próxima dúvida"; só no chat, sem arquivo). Virou <strong>D-572</strong> no Livro de decisões: depois de "está certo", a faixa não mostra mais aviso nem o botão "está certo"; o que ela mostra no lugar fica como pergunta.</td>
+</tr>
+<tr>
+<td>2-8</td>
+<td>"demora muito para carregar a pagina na visão de imagem grande." (janela "Ver de perto", página 13 de 134, "Tirar o fundo", só "Preparando a prévia...")</td>
+<td><img alt="" src="s2-05-ver-de-perto-preparando.png" /></td>
+<td>erro (lentidão, a conferir)</td>
+<td>Medido fora da tela, na mesma página e nos mesmos ajustes (cópia, nada gravado): 1,1 s a 220 DPI (o tamanho do "Ver de perto", <code>ui/tela_ampliada.py</code> DPI_AMPLIADA), 1 a 2 s a 300 DPI (o PDF). <strong>A conta da imagem não explica a demora</strong>: a suspeita é a fila de prévias do programa (2 de cada vez, <code>ui/tarefas.py</code>), com pré-carregamento e medidas do tamanho do PDF na frente. Programa aberto: 1,7 GB de memória, 808 s de processador em ~25 min. Para provar, a gerente vai olhar o programa por dentro (py-spy, numa pasta temporária, sem mexer no programa) enquanto ele abre o "Ver de perto" de novo. <strong>Primeira medição (17:23–17:26):</strong> o "Ver de perto" não foi aberto nesses 3 minutos; o programa estava em "Confirmar e processar" (5 páginas ao mesmo tempo; muito tempo em <code>core/detectar_regioes.achar</code>). Medir de novo quando ele disser "pode medir".</td>
+</tr>
+<tr>
+<td>2-9</td>
+<td>"quero poder colocar varios livros para processar, no caso eu fazer toda a restauração, salvar e depois lá na area de trabalho do aplicativo, a home, que não tem botão para voltar para ela hoje, eu escolho todos os livros que eu quiser e mando para fazer o processamento em massa." (print: "Processando o livro...", 19%, página 25 de 126, "faltam cerca de 90 segundos")</td>
+<td><img alt="" src="s2-06-processando-o-livro.png" /></td>
+<td>pedido novo + falta</td>
+<td><strong>Processar vários livros de uma vez:</strong> não existe e não estava no Livro: virou <strong>D-573</strong> (quando entra: perguntar). <strong>Voltar para a tela dos livros:</strong> existe só no menu <strong>Arquivo &gt; "Voltar para os livros"</strong> (<code>ui/barra_de_menu.py</code>); na área de trabalho não há botão à vista (o "Voltar para os livros" com Esc é do livro aberto da tela inicial, D-340). Perguntado se ele quer um botão à vista.</td>
+</tr>
+<tr>
+<td>2-10</td>
+<td>"eu deveria conseguir ver o livreto pronto aqui nessa tela para que eu possa ver se ficou certo, quero tres opções, e eu queria conseguir na hora de processa o livro já poder transformar ele em livreto." (print: "Montar para imprimir", Palatino "sem fundo (2).pdf", 126 páginas, Livreto A4, 20 por caderno; à direita só o texto "O que vai sair": 32 folhas, 7 cadernos)</td>
+<td><img alt="" src="s2-07-montar-para-imprimir.png" /></td>
+<td>falta + pedido novo</td>
+<td>A janela não mostra imagem nenhuma do livreto (<code>ui/dialogo_impressao.py</code>). Viraram <strong>D-574</strong> (ver o livreto pronto na janela; três opções apresentadas no chat) e <strong>D-575</strong> (sair em livreto já ao processar; não contradiz a D-314, perguntar como fica depois).</td>
+</tr>
+<tr>
+<td>2-11</td>
+<td>"eu queria poder nessa etapa do automatico poder ver como iria ficar conforme as opções que eu fosse escolhendo." (print: janela "Automático", livro <em>Rhetorica Christiana</em>, 446 páginas; etapa 4 "Limpar a folha" aberta em Preto e branco; à direita "O livro, como está agora", folha 6 de 446, ainda amarelada)</td>
+<td>print só no chat, sem arquivo (mandado enquanto a gerente trabalhava)</td>
+<td>pedido</td>
+<td>Só anotado. A imagem da direita mostra o livro como está, não como vai ficar com as opções escolhidas. Liga-se à D-070 ("Laboratório" no Automático em tela cheia, 21/10: "poderemos passar as paginas e ir adicionando filtro e coisas e vendo como a pagina"), que está na Lista de espera.</td>
+</tr>
+<tr>
+<td>2-12</td>
+<td>"mais um erro" (print: <em>Rhetorica Christiana</em>, 446 páginas, página 17 com a área azul por cima; janela "Um momento": "Este livro ficou grande demais para a memória do computador. Tente de novo em qualidade normal.")</td>
+<td><img alt="" src="s2-08-grande-demais-para-a-memoria.png" /></td>
+<td>erro</td>
+<td>Só anotado. <code>erros.log</code> (dados de teste): dois "processar" falharam por falta de memória, <strong>18:27:30</strong> (OpenCV não conseguiu 3,6 MB, ao endireitar) e <strong>18:40:46</strong> (numpy não conseguiu 18,1 MB, ao pôr as margens, <code>core/margens_scantailor.compor_com_margens</code>). Pedaços pequenos: faltou memória no <strong>computador inteiro</strong>, não "o livro grande demais" como a frase diz. Nessa hora estavam abertos o League of Legends, o Chrome, o próprio Editor (1,2 GB) e, a partir de ~18:45, os agentes da gerente rodando testes e prints (vários GB): a gerente pode ter contribuído. A frase do aviso (<code>ui/tarefas.py</code>) culpa o livro. <strong>Pergunta dele depois:</strong> "porque os testes não pegaram esse erro? de não processar o arquivo." Resposta (gerente, do código e dos testes): (1) nenhum teste processa um livro grande inteiro (446 páginas) com o PC ocupado; os testes usam poucas páginas, numa máquina calma (o GitHub e a suíte do PC rodada sem agentes); (2) o programa decide no começo quantas páginas faz ao mesmo tempo (até 16, pelos 16 núcleos, com 900 MB por página e 1,5 GB de reserva, <code>core/nucleos.quantos_trabalhadores</code>) pela memória livre daquela hora; se a memória cai no meio, ele não diminui nem tenta de novo, para; nenhum teste simula a memória acabando no meio (o único teste de pouca memória, <code>test_mesma_imagem_com_pouca_memoria.py</code>, é do detector de figuras); (3) nenhum teste confere se a frase do aviso diz a causa certa. Os agentes da gerente rodavam desde ~18:25: as duas falhas (18:27 e 18:40) foram com eles rodando.</td>
+</tr>
+</tbody>
+</table>
+<p class="rodape">Editor de Impressão &middot; gerado em 28/10/2026 às 19:24</p>
+</body>
+</html>
