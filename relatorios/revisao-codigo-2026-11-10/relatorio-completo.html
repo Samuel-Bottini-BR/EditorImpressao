@@ -1,0 +1,346 @@
+<!doctype html>
+<html lang="pt-BR">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Revisão do código (10/11/2026)</title>
+<style>
+:root { color-scheme: light dark; }
+* { box-sizing: border-box; }
+body {
+  font: 17px/1.65 "Segoe UI", system-ui, sans-serif;
+  max-width: 46rem; margin: 0 auto; padding: 2.5rem 1.5rem 6rem;
+  color: #1c1c1e; background: #fdfdfc;
+}
+h1 { font-size: 2rem; line-height: 1.2; margin: 0 0 .3em; letter-spacing: -.02em; }
+h2 { font-size: 1.35rem; margin: 2.4em 0 .6em; padding-top: .8em;
+     border-top: 1px solid #e6e4e0; letter-spacing: -.01em; }
+h3 { font-size: 1.1rem; margin: 1.8em 0 .4em; }
+h1 + p, h2 + p { margin-top: .4em; }
+p, li { margin: 0 0 .9em; }
+ul, ol { padding-left: 1.3em; }
+strong { font-weight: 640; }
+code {
+  font: .88em ui-monospace, "Cascadia Code", Consolas, monospace;
+  background: #f1efec; padding: .12em .35em; border-radius: 4px;
+}
+pre {
+  background: #f1efec; padding: 1em 1.1em; border-radius: 8px;
+  overflow-x: auto; line-height: 1.5;
+}
+pre code { background: none; padding: 0; }
+blockquote {
+  margin: 1.2em 0; padding: .1em 0 .1em 1.1em;
+  border-left: 3px solid #c9c5be; color: #55524d;
+}
+table {
+  border-collapse: collapse; width: 100%; margin: 1.2em 0;
+  font-size: .95rem; display: block; overflow-x: auto;
+}
+th, td { padding: .5em .8em; text-align: left; border-bottom: 1px solid #e6e4e0; }
+th { font-weight: 620; background: #f7f5f2; white-space: nowrap; }
+tr:last-child td { border-bottom: none; }
+img { max-width: 100%; height: auto; border-radius: 6px; margin: 1em 0;
+      border: 1px solid #e6e4e0; }
+hr { border: none; border-top: 1px solid #e6e4e0; margin: 2.5em 0; }
+.rodape { margin-top: 4em; padding-top: 1.2em; border-top: 1px solid #e6e4e0;
+          font-size: .85rem; color: #86827c; }
+@media (prefers-color-scheme: dark) {
+  body { color: #e8e6e3; background: #1a1917; }
+  h2 { border-top-color: #35332f; }
+  code, pre, th { background: #262421; }
+  th, td { border-bottom-color: #35332f; }
+  blockquote { border-left-color: #4a4741; color: #b0aca6; }
+  img { border-color: #35332f; }
+  .rodape { border-top-color: #35332f; color: #7d7973; }
+}
+@media print {
+  body { max-width: none; padding: 0; color: #000; background: #fff; }
+  h2 { page-break-after: avoid; }
+  table, img { page-break-inside: avoid; }
+}
+</style>
+</head>
+<body>
+<h1>Revisão do código: remendos parecidos com o do Girar (10/11/2026)</h1>
+<p>Ramo lido: <code>obra-2026-10-26</code> (a versão de teste), commit <code>bc766007</code>. Só leitura: nenhuma linha do programa nem dos testes mudou.
+Quem fez: o agente revisor, a pedido da gerente, depois de o Samuel dizer: "se mudou a ferramenta, muda em todos os lugares." · "Eu não quero remendos nesse código, gambiarras [...] eu quero as praticas de um programador senior na hora de codar" (D-667, <code>CLAUDE.md</code> §11.10).</p>
+<h2>Resumo em 5 linhas</h2>
+<ol>
+<li>O defeito do Girar não é o único: achei <strong>17 remendos parecidos</strong> (4 de gravidade alta, 9 média, 4 baixa).</li>
+<li>O padrão é sempre o mesmo: a mesma ferramenta tem dois, três ou sete caminhos, e cada decisão nova ganhou um caminho novo em vez de mudar a regra.</li>
+<li>Quatro já saem diferentes para quem usa: o <strong>Girar</strong>, as <strong>figurinhas do Filtro</strong> (mostram outra coisa que a página vai ter), o <strong>"usar em todas"</strong> (umas ferramentas protegem o que você fez à mão, outras apagam) e o <strong>"não dividir" do Automático</strong> (deixa a folha de um jeito diferente do botão da tela).</li>
+<li>Os de gravidade média ainda não aparecem na tela, mas cada um é o lugar onde o próximo pedido vai virar outro remendo.</li>
+<li>No fim há 10 regras de código propostas para os agentes e 4 perguntas para o Samuel.</li>
+</ol>
+<h2>Os de gravidade alta (já sai diferente para quem usa)</h2>
+<ul>
+<li><strong>A1. O Girar tem sete caminhos.</strong> No Dividir com "Duas lado a lado" (Gradus, folha 10), "todas as folhas" gira as páginas 18 e 19 cada uma sozinha, mas "só as pares" gira a folha inteira com as duas juntas.</li>
+<li><strong>A2. As figurinhas do painel Filtro e o "comparar" da tela grande usam uma conta mais simples que a da página.</strong> Numa página com gravura, a figurinha "Preto e branco" mostra a gravura virando mancha preta, mas ao escolher, a página sai com a gravura guardada.</li>
+<li><strong>A3. "Usar em todas" quer dizer uma coisa em cada ferramenta.</strong> No Cortar, no Dividir e no Mover, as páginas que você mexeu à mão vêm desmarcadas e ficam como estão. No Marcar, o "usar em todas" apaga a gravura que você marcou à mão na página 12 e põe por cima as áreas da página onde você está.</li>
+<li><strong>A4. O Automático e o botão "não dividir esta" deixam a folha inteira de dois jeitos.</strong> Pelo botão, a folha vira uma página só. Pelo Automático, fica uma página escondida "tirada do livro": o contador passa a dizer "1 apagadas" sem você ter tirado nada.</li>
+</ul>
+<hr />
+<h2>Como li o código</h2>
+<ul>
+<li>Li, pelo código de verdade, <code>ui/tela_conferir.py</code>, <code>ui/janela_principal.py</code>, <code>ui/tarefas.py</code>, <code>ui/tela_ampliada.py</code>, <code>ui/desfazer_nesta_pagina.py</code>, <code>core/pipeline.py</code>, <code>core/filtros.py</code>, <code>core/automatico.py</code>, <code>core/etapas.py</code>, <code>core/girar.py</code>, <code>core/dividir_a_mao.py</code>, <code>core/perfis.py</code> e <code>modelos.py</code>.</li>
+<li>Cada achado abaixo foi conferido lendo as linhas citadas. Nada de suspeita sem conferir.</li>
+<li>Um achado (A4) foi provado com um script curto, sem janela, com prioridade baixa e um <code>LOCALAPPDATA</code> à parte (script em "Prova do A4", no fim). Não rodei a suíte.</li>
+<li>As linhas são as do commit <code>bc766007</code>.</li>
+</ul>
+<hr />
+<h2>Achados de gravidade ALTA</h2>
+<h3>A1. O Girar tem sete caminhos, um por decisão</h3>
+<p><strong>Onde:</strong> <code>ui/tela_conferir.py</code> 6444-6756 (<code>_girar_folhas</code> e as seis funções que ela chama) e 7179-7268 (o girar da grade "Todas as páginas"); <code>core/girar.py</code> 236-491.</p>
+<p><strong>O que faz hoje.</strong> Para o mesmo clique em "girar", o programa escolhe um entre sete caminhos, cada um com a sua conta:</p>
+<ol>
+<li>botões do canto e "só esta" numa página de folha dividida: gira só a página (<code>_girar_so_a_pagina</code>, D-618);</li>
+<li>página de folha dividida com "todas / daqui em diante / pares / ímpares": conta <strong>páginas</strong>, gira cada uma sozinha (<code>_girar_as_paginas</code>, D-636) e ainda gira a capa inteira do grupo (<code>_com_as_folhas_inteiras_tambem</code>, D-640/D-645);</li>
+<li>Dividir com "Duas lado a lado", folha dividida, <strong>só "todas"</strong>: vai pelo caminho 2, com outra página de referência (<code>_pagina_da_folha_dividida_no_dividir_em_duas</code>, D-662);</li>
+<li>Dividir com "Duas lado a lado", folha dividida, "só esta / daqui em diante / pares / ímpares": gira a <strong>folha</strong> do scan com as duas páginas juntas (o caminho de antes da D-618);</li>
+<li>folha inteira (a capa) com mais de uma folha no "aplicar em": as inteiras giram como folha, as divididas página por página (<code>_girar_as_divididas_pagina_por_pagina</code>, D-638);</li>
+<li>folha inteira sem nenhuma dividida no alcance: o giro de sempre (<code>campos_do_giro</code>, D-035);</li>
+<li>a grade "Todas as páginas": cada escolhida gira <strong>a partir de onde está</strong> (<code>_girar_as_escolhidas_que_sao_metade</code>), enquanto o painel faz todas ficarem <strong>viradas como a da vez</strong> (D-035). A grade ainda soma o giro da folha com outra fórmula (<code>(rotacao + giro) % 360</code>, linha 7196) em vez de <code>girar.nova_rotacao</code>.</li>
+</ol>
+<p>O caminho é escolhido pelo <strong>jeito de ver a tela</strong> ("Uma página" ou "Duas lado a lado", linhas 6612 e 6691), e não pelo que a folha é.</p>
+<p><strong>O que o Kaique vê.</strong> Gradus, Dividir, "Duas lado a lado", folha 10 (páginas 18 e 19): com "todas as folhas" as duas páginas deitam cada uma sozinha. Com "só as pares", a folha 10 inteira deita, com as duas páginas juntas e com pedaço da vizinha: a confusão que o Samuel mostrou nos prints a-70 a a-73.</p>
+<p><strong>Decisões que tocam aqui.</strong> D-035 ("Todas ficam viradas como a folha da vez") · D-036 ("O programa avisa: 'vá a uma folha par'") · D-618 ("Ele gira as duas folhas ao mesmo tempo, faz uma confusão com as paginas") · D-636 ("1- pode ser, só garanta que não crie mais problemas fazendo isso") · D-638 ("Pode ser, mas isso vai acontecer se elas estiverem cortadas e se não estiverem cortadas né?") · D-640 ("vamos deixar como gira todas as paginas") · D-645 ("Giram também") · D-662 ("Página por página também") · D-666 ("Sim, os três também", ainda não construída) · D-667 ("se mudou a ferramenta, muda em todos os lugares").</p>
+<p><strong>O jeito certo, em uma frase.</strong> Uma regra só, em <code>core/girar.py</code>: "página de folha dividida gira sozinha, folha inteira gira como foto, e o 'aplicar em' só escolhe <strong>quais</strong> páginas entram", usada igual pelo painel, pelo menu, pelas teclas, pelos botões do canto, pelo Dividir e pela grade, sem olhar o jeito de ver a tela.</p>
+<p><strong>Gravidade:</strong> alta.</p>
+<hr />
+<h3>A2. As figurinhas do Filtro e o "comparar" da tela grande não usam a conta da página</h3>
+<p><strong>Onde:</strong> <code>core/pipeline.py</code> 3523-3547 (<code>filtro_com_as_caixinhas</code>); <code>ui/tarefas.py</code> 824-849 (a tarefa das figurinhas); <code>ui/tela_conferir.py</code> 4778-4862 e 5095-5116 (<code>_atualizar_cartoes</code>, <code>_imagem_sem_filtro</code>), e os dois desvios 4990-5026 (<code>_cartao_pb_pelo_misto</code>, <code>_cartao_do_misto</code>) e 4972 (<code>_cartao_sem_fundo</code>); <code>ui/tela_ampliada.py</code> 304-347 (<code>_imagem_do_outro_filtro</code>).</p>
+<p><strong>O que faz hoje.</strong> A página da tela e o PDF passam pela conta inteira (<code>_filtrar_a_pagina</code>, linha 3414): a marcação das gravuras, a caixinha "Respeitar as gravuras achadas", "Gravuras em tons de cinza", "Só as letras", "Igualar a luz", "Tirar o chuvisco" e "Suavizar as letras". As figurinhas dos <strong>outros</strong> filtros e o "comparar" da tela grande passam por uma conta à parte, <code>filtro_com_as_caixinhas</code>, que só sabe três caixinhas ("Letra clara em fundo escuro", "Letras com a cor delas", "Reduzir cores") e aplica o filtro na página inteira, sem a marcação.</p>
+<p>Quando isso deu defeito, cada vez o conserto foi um desvio para um caso só: "Tirar o fundo" (item 1.1) e "Só as letras" (bug Misto 2, 05/10) vão pela conta de verdade (<code>renderizar_com_filtro</code>); todo o resto continua pela conta simples. O desvio do "Só as letras" foi posto só nas figurinhas: o "comparar" da tela grande não o tem (não há nenhuma linha sobre o Misto em <code>ui/tela_ampliada.py</code>). A tela cheia dos filtros já usa a conta de verdade (<code>ui/widgets/filtros_tela_cheia.py</code> 85-100). São três jeitos de mostrar "como fica com este filtro".</p>
+<p>O "comparar" ainda faz o filtro na hora, na própria janela (linha 342), e o Preto e branco pode levar segundos numa página de traço fino (o próprio código diz isso na linha 4782).</p>
+<p><strong>O que o Kaique vê.</strong> Página com gravura, no "Melhorar": a figurinha "Preto e branco" mostra a gravura virando manchas pretas. Ele não escolhe o Preto e branco por causa disso, mas a página sairia com a gravura guardada (a caixinha "Respeitar as gravuras achadas" vem ligada). Com "Igualar a luz" ligada, nenhuma figurinha mostra a luz igualada. No "comparar" da tela grande, numa página com "Só as letras", o Preto e branco mostra a gravura em preto e branco e a página sai com ela em cor: o mesmo defeito que foi consertado só nas figurinhas.</p>
+<p><strong>Decisões que tocam aqui.</strong> D-066 ("precisamos que o pdf saia que nem está na tela") · D-473 ("Tela e PDF diferentes é defeito, nunca escolha") · D-547 (cartões do Filtro mostram como sai no PDF) · D-586 (a caixinha "Respeitar as gravuras achadas") · D-588 ("Gravuras em tons de cinza") · D-649 ("o resultado final tem que sair como a edição foi mostrada no preview").</p>
+<p><strong>O jeito certo, em uma frase.</strong> "Como fica esta página com o filtro X" tem uma conta só (a de <code>_filtrar_a_pagina</code>, numa cópia da página), feita por trás, e as figurinhas, o "comparar" e a tela cheia pedem todos a ela, menor se precisar.</p>
+<p><strong>Gravidade:</strong> alta.</p>
+<hr />
+<h3>A3. "Aplicar em" e "usar em todas" querem dizer uma coisa em cada ferramenta</h3>
+<p><strong>Onde (<code>ui/tela_conferir.py</code>):</strong></p>
+<table>
+<thead>
+<tr>
+<th>Ferramenta</th>
+<th>Função (linha)</th>
+<th>Pergunta "Em quais páginas?"</th>
+<th>Respeita o que foi feito à mão</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>Cortar</td>
+<td><code>_recorte_em_todas</code> (6938)</td>
+<td>sim</td>
+<td>sim, vem desmarcada</td>
+</tr>
+<tr>
+<td>Dividir (linha)</td>
+<td><code>_corte_em_todas</code> (6031)</td>
+<td>sim, por folha</td>
+<td>sim</td>
+</tr>
+<tr>
+<td>Mover</td>
+<td><code>_mover_em_todas</code> (2556)</td>
+<td>sim</td>
+<td>sim</td>
+</tr>
+<tr>
+<td>Filtro</td>
+<td><code>_filtro_em_todas</code> (9001), <code>_filtro_nas_proximas</code> (9038)</td>
+<td>não, só "todas / daqui em diante"</td>
+<td>não, troca o filtro de todas</td>
+</tr>
+<tr>
+<td>Endireitar</td>
+<td><code>_mudar_o_angulo</code> (7007)</td>
+<td>não, lista de 5 opções contadas em páginas</td>
+<td>não</td>
+</tr>
+<tr>
+<td>Girar</td>
+<td><code>_girar_folhas</code> (6444)</td>
+<td>não, lista de 5 opções em folhas <strong>ou</strong> páginas (A1)</td>
+<td>não</td>
+</tr>
+<tr>
+<td>Marcar (marcação)</td>
+<td><code>_marcacao_em_todas</code> (3310), <code>_marcacao_nas_proximas</code> (3330)</td>
+<td>não</td>
+<td><strong>não: copia a marcação inteira por cima</strong></td>
+</tr>
+<tr>
+<td>Marcar ("tem foto")</td>
+<td><code>_forma_nas</code> (3260)</td>
+<td>não</td>
+<td>não</td>
+</tr>
+</tbody>
+</table>
+<p><strong>O que faz hoje.</strong> Cada ferramenta escreveu o seu "aplicar em". Três seguem a D-090 (a lista com as exceções desmarcadas). As outras sobrescrevem tudo. No Marcar, o "usar em todas" grava em todas as páginas uma <strong>cópia da marcação desta página</strong> (<code>{"selecao": copy.deepcopy(pagina.selecao)}</code>, linha 3325), com as áreas nos lugares desta página, e o que as outras páginas tinham marcado à mão some. O comentário do próprio Filtro (linha 9004) diz "nunca apaga exceção" (D-090/D-545), e o Marcar, logo acima, apaga.</p>
+<p><strong>O que o Kaique vê.</strong> Ele marca à mão a gravura da página 12. Vai à página 3, marca a letra capitular, aperta "usar em todas" no Marcar: a página 12 perde a gravura marcada e ganha um retângulo no lugar da capitular da página 3. No Cortar, o mesmo "usar em todas" teria deixado a página 12 desmarcada e como ele fez.</p>
+<p><strong>Decisões que tocam aqui.</strong> D-090 ("eu devo conseguir abrir uma aba para selecionar as que eu quero ( as paginas) ou também simplismente apertar num botão e selecionar todas") · D-091 ("'Selecionar todas' e 'Nenhuma'") · D-545 (o Mover) · D-367 (as palavras "folha" e "página" da lista).</p>
+<p><strong>O jeito certo, em uma frase.</strong> Um "aplicar em" só (quais páginas, e como as mexidas à mão são tratadas), escrito uma vez e chamado por todas as ferramentas, que só dizem <strong>o que</strong> levam. Se o Samuel quiser que alguma ferramenta se comporte diferente, isso vira uma escolha escrita, não um jeito por acidente (ver Pergunta 1).</p>
+<p><strong>Gravidade:</strong> alta. <strong>Contra decisão?</strong> O Marcar apaga trabalho feito à mão, e o próprio programa promete que isso não acontece: vira a Pergunta 1.</p>
+<hr />
+<h3>A4. O Automático e o "não dividir esta" deixam a folha inteira de dois jeitos</h3>
+<p><strong>Onde:</strong> <code>core/automatico.py</code> 952-956 (<code>_dividir</code>) e <code>core/dividir_a_mao.py</code> 267-294 (<code>campos_para_juntar</code>); contador em <code>modelos.py</code> 885 (<code>total_apagadas</code>) e <code>ui/tela_conferir.py</code> 5673-5682.</p>
+<p><strong>O que faz hoje.</strong> Desde a etapa 4 da obra, "não dividir esta" troca as duas páginas da folha por <strong>uma</strong> página inteira e guarda as duas para o "dividir esta" devolver. O Automático, quando mede uma folha que já tinha duas páginas e acha que ela é de uma página só, ainda usa o jeito de antes da etapa 4: deixa as duas na lista e marca a da direita como <strong>"tirada do livro"</strong> (<code>g.na_pagina(direita, "apagada", not medida.dividir)</code>). O comentário da função diz "como o 'não dividir esta' da ferramenta", e isso deixou de ser verdade na etapa 4. O próprio <code>ui/tela_conferir.py</code> (linha 6104) conta que esse jeito antigo "mostrava a folha duas vezes".</p>
+<p><strong>Prova</strong> (script no fim, sem janela):</p>
+<pre><code>A MAO : 1 paginas na lista; [('inteira', False)] ; ativas: 1
+AUTO  : 2 paginas na lista; [('esquerda', False), ('direita', True)] ; ativas: 1
+</code></pre>
+<p>O PDF sai igual (uma página), mas a tela não.</p>
+<p><strong>O que o Kaique vê.</strong> Ele roda o Automático com o Dividir num livro já dividido, e a capa é medida como de uma página só. O contador passa a dizer "… 1 apagadas" sem ele ter tirado nada; "página N de M" conta uma página a mais; a página escondida aparece como "tirada" na grade e pode ser "trazida de volta". Se ele tivesse apertado "não dividir esta", nada disso aconteceria.</p>
+<p><strong>Decisões que tocam aqui.</strong> D-590 ("pode ser assim": "juntar todas"; "desmarcar o Dividir no Automático não junta nada") · D-498 (a folha juntada guarda as duas páginas) · D-605 ("nenhuma função nova [...] pode alterar o que já está escolhido e testado").</p>
+<p><strong>O jeito certo, em uma frase.</strong> "Juntar uma folha" mora num lugar só (<code>core/dividir_a_mao</code>), e o Automático chama a mesma função que o botão.</p>
+<p><strong>Gravidade:</strong> alta.</p>
+<hr />
+<h2>Achados de gravidade MÉDIA (vai dar defeito no próximo pedido)</h2>
+<h3>M1. Seis caminhos para gravar uma mudança no Histórico, cada um com um pedaço dos passos</h3>
+<p><strong>Onde:</strong> <code>ui/tela_conferir.py</code> 5816 (<code>_registrar</code>, o caminho "oficial"), 3097 (<code>_registrar_a_marcacao</code>), 2261 (<code>_gravar_no_livro</code>), 9328 (<code>_aceitar_avisos</code>); <code>ui/desfazer_nesta_pagina.py</code> 182-223; <code>ui/janela_principal.py</code> 924-962 (<code>_tirar_o_fundo_do_livro_inteiro</code>); <code>core/automatico.py</code> 827 (<code>aplicar</code>).</p>
+<p><strong>O que faz hoje.</strong> <code>_registrar</code> faz cinco coisas: espera as marcações antigas serem convertidas, grava a marca "mexida à mão", guarda os avisos de agora (para o Ctrl+Z devolvê-los), aplica, e joga fora as prévias. Os outros caminhos copiam só parte disso. O "Desfazer nesta página" copia o <code>_registrar</code> à mão ("É o caminho do TelaConferir._registrar, sem a marca automática dele") e chama 3 funções internas da tela. O "Tirar o fundo" da pergunta do fundo e o "está bom" (<code>_aceitar_avisos</code>) pulam o <code>_registrar</code>. O "está bom" diz por quê: o <code>_registrar</code> sempre joga fora as prévias e refaria todas. Isso é remendo do sintoma: o certo seria o <code>_registrar</code> saber quais campos mudam a imagem (ele já tem uma exceção à mão para o Mover, <code>CAMPOS_SO_DO_MOVER</code>, linha 9908).</p>
+<p><strong>O que o Kaique vê.</strong> Nada visível comprovado hoje. Mas cada passo novo que alguém puser no <code>_registrar</code> (como foi a D-020 dos avisos) não vale nos outros cinco caminhos, e o defeito aparece só ali.</p>
+<p><strong>Decisões.</strong> D-020 ("Ctrl+Z desfaz qualquer alteração, sem limite de quantidade"); D-004 e D-009 (a marca "mexida à mão").</p>
+<p><strong>O jeito certo.</strong> Um caminho só para gravar mudança, que recebe "esta mudança muda a imagem?" e "marca como mexida à mão?" como informação da mudança, sem ninguém ter de copiar o caminho.</p>
+<p><strong>Gravidade:</strong> média.</p>
+<hr />
+<h3>M2. "Como sai no PDF" está escrito três vezes, e a prévia e o PDF são duas listas de passos feitas à mão</h3>
+<p><strong>Onde:</strong> <code>core/pipeline.py</code> 4778-4812 (o PDF: margens iguais e depois a folha escolhida), <code>ui/tela_conferir.py</code> 4881-4921 (<code>_como_sai_no_pdf</code>) e <code>core/automatico.py</code> 1280-1299 (<code>como_sai_na_tela</code>, que diz ser "A MESMA conta da tela de conferir"). E <code>core/pipeline.py</code> 2791 (<code>renderizar_pagina</code>, a prévia) contra 4711 (<code>_pagina_pronta</code>, o PDF), dois roteiros dos mesmos passos ("a conta e a mesma, linha por linha", linha 4717), que já não são iguais (só a prévia mede o "parece em branco", linha 2852).</p>
+<p><strong>O que o Kaique vê.</strong> Nada visível comprovado hoje. Quando alguém mudar a composição num lugar (ex.: a D-649, "a miniatura mostrava o título no lugar e o PDF saía sem ele", ainda a fazer), os outros dois ficam do jeito antigo.</p>
+<p><strong>Decisões.</strong> D-473, D-547, D-649.</p>
+<p><strong>O jeito certo.</strong> Uma função em <code>core/</code> faz "a página pronta" (filtro, margens, folha), e a prévia, a tela de conferir, o Automático e o PDF a chamam, mudando só a resolução.</p>
+<p><strong>Gravidade:</strong> média.</p>
+<hr />
+<h3>M3. A prévia lê o livro enquanto a tela muda o livro (e o conserto de 09/11 tratou o sintoma)</h3>
+<p><strong>Onde:</strong> <code>ui/tarefas.py</code> 947-981 (a tarefa da prévia, num fio por trás, usa <code>self.projeto</code>, o livro aberto, e não uma cópia); <code>core/pipeline.py</code> 2866-2917 (<code>_resolucao_para_a_procura</code>, o conserto de 09/11).</p>
+<p><strong>O que faz hoje.</strong> A prévia é desenhada por trás lendo a página "ao vivo", e ainda escreve nela (avisos, marcação provisória, zonas). Se a pessoa muda a página no meio do desenho, metade do desenho vê o valor velho e metade vê o novo. Em 09/11 isso fez aparecer o aviso falso "o detector de gravuras falhou". O conserto não tirou a causa (ler o livro ao vivo): pôs uma conta "preguiçosa" da resolução guardada no fio, só para esse caso. A prévia do Automático, ao contrário, desenha numa cópia (<code>copy.deepcopy</code>, linha 743): dois jeitos no mesmo arquivo.</p>
+<p><strong>O que o Kaique vê.</strong> Hoje, nada (o desenho velho é jogado fora e o aviso foi consertado). Amanhã, qualquer outro valor lido no meio do desenho pode dar outro aviso falso, e vai ganhar outro remendo.</p>
+<p><strong>Decisões.</strong> D-659 (o conserto de 09/11 nasceu dela); CLAUDE.md §3 ("Interface nunca congela").</p>
+<p><strong>O jeito certo.</strong> A tarefa da prévia recebe uma cópia da página e do que ela precisa no momento do pedido, como a do Automático e a das figurinhas já fazem, e devolve os avisos para a tela gravar no fio da janela.</p>
+<p><strong>Gravidade:</strong> média.</p>
+<hr />
+<h3>M4. Trocar o motor de corte numa folha dividida mede sem pintar a tampa do scanner</h3>
+<p><strong>Onde:</strong> <code>core/pipeline.py</code> 461-476 (<code>recalcular_divisao</code>, usada em <code>ui/tela_conferir.py</code> 6416) contra <code>core/dividir_a_mao.py</code> 589-628 (<code>ler_a_linha</code>, usada pela linha azul, pelo "dividir esta" e pelo "dividir todas").</p>
+<p><strong>O que faz hoje.</strong> São duas contas de "onde fica a linha desta folha". A de <code>ler_a_linha</code> pinta de branco a faixa preta da tampa do scanner antes de procurar a linha (D-495/D-559) e avisa no comentário: "Arriscado: mudar a imagem lida (DPI, giro, tampa) só aqui - a linha mostrada deixaria de ser a do 'dividir esta'". A de <code>recalcular_divisao</code> não pinta a tampa. A folha <strong>inteira</strong> usa a primeira; a folha <strong>dividida</strong>, ao trocar o motor, usa a segunda.</p>
+<p><strong>O que o Kaique vê.</strong> Num livro com a faixa preta da tampa (ex.: o Righetti), o mesmo motor pode pôr a linha num lugar na folha inteira e em outro na folha já dividida. Não provei num livro: conferido lendo as duas funções.</p>
+<p><strong>Decisões.</strong> D-495 / D-559 (a tampa), D-602 ("o programa deveria carregar com a conta que está escolhida"), D-606 ("Ele deve fazer a conta novamente com o novo motor").</p>
+<p><strong>O jeito certo.</strong> Uma conta só para "a linha desta folha com este motor" (<code>ler_a_linha</code>), chamada também ao trocar o motor.</p>
+<p><strong>Gravidade:</strong> média.</p>
+<hr />
+<h3>M5. Dividir: três caminhos que tratam a linha arrastada de jeitos diferentes</h3>
+<p><strong>Onde:</strong> <code>ui/tela_conferir.py</code> 6302-6356 ("dividir esta"), 6275-6299 ("dividir todas"), 7285-7336 (o "dividir" da grade "Todas as páginas", que manda medir de novo por <code>dividir_a_mao.medir_para_dividir</code>).</p>
+<p><strong>O que faz hoje.</strong> O "dividir esta" e o "dividir todas" cortam na linha que a pessoa arrastou (D-609). O "dividir" da grade sempre mede de novo, com a conta forçada, e não olha a linha arrastada. O comentário do bloco (linhas 7276-7279) diz "pela MESMA conta do 'dividir esta'", e isso deixou de ser verdade quando a D-609 entrou só nos outros dois.</p>
+<p><strong>O que o Kaique vê.</strong> Ele arrasta a linha da folha 5 no Dividir, vai à grade, escolhe a página dessa folha e aperta "dividir": a folha é cortada na linha do motor, não onde ele deixou.</p>
+<p><strong>Decisões.</strong> D-558 (o "dividir" na grade), D-602, D-609 ("'dividir esta' corta onde a linha ficou"), D-667.</p>
+<p><strong>O jeito certo.</strong> Uma função "a linha com que esta folha vai ser cortada" (a arrastada, a de antes ou a do motor), usada pelos três botões.</p>
+<p><strong>Gravidade:</strong> média. <strong>Contra decisão?</strong> A D-609 fala só do "dividir esta"; vira a Pergunta 3.</p>
+<hr />
+<h3>M6. A página girada sozinha (D-618) não chegou a todos os lugares</h3>
+<p><strong>Onde:</strong> <code>ui/tela_conferir.py</code> 10000-10029 (<code>MARCAS_DA_PAGINA</code>, sem <code>giro_da_pagina</code>); <code>core/etapas.py</code> 100-103 (<code>GIRAR</code> só existe para a folha); <code>ui/janela_principal.py</code> 1644 (a capa do cartão segue só <code>folhas[0].rotacao</code>); <code>ui/tela_conferir.py</code> 7035-7066 e 8703-8739 (duas cópias da conta do tamanho da página, cada uma recebeu o seu "# D-618: a pagina deitou", e já diferem num limite: <code>min(0.95, parte)</code> só numa).</p>
+<p><strong>O que faz hoje.</strong> Quando o giro de uma página passou a morar na página (D-618), ele entrou em cada lugar por cópia. Faltaram: a marca "mexida à mão" (girar uma página sozinha não conta como mexida), e a capa do cartão na tela inicial (só acompanha o giro da folha 1 inteira).</p>
+<p><strong>O que o Kaique vê.</strong> Se a capa é metade de uma folha dividida e ele a gira sozinha, a capa do livro na tela inicial continua em pé. O resto, nada visível hoje.</p>
+<p><strong>Decisões.</strong> D-618, D-004, D-667.</p>
+<p><strong>O jeito certo.</strong> Uma pergunta só, "quanto esta página está girada no fim" (folha + página), em <code>core/girar.py</code>, usada pela marca, pela capa, pelas contas de tamanho e pela tira.</p>
+<p><strong>Gravidade:</strong> média.</p>
+<hr />
+<h3>M7. "Página em branco posta à mão" (D-623) é conferida em 31 lugares</h3>
+<p><strong>Onde:</strong> 31 testes <code>getattr(p, "inserida", 0)</code> e parecidos, em 8 arquivos (<code>ui/tarefas.py</code>, <code>ui/tela_conferir.py</code>, <code>core/automatico.py</code>, <code>core/dividir_a_mao.py</code>, <code>core/ordem_das_paginas.py</code>, <code>core/paginas_em_branco.py</code>, <code>core/pipeline.py</code>, <code>modelos.py</code>); 30 citações da D-623. Ex.: <code>core/pipeline.py</code> 3406, <code>core/automatico.py</code> 389, 943, 1697, 1714, 1742; <code>ui/tela_conferir.py</code> 4817.</p>
+<p><strong>O que faz hoje.</strong> Em vez de a página posta à mão ser um tipo de página que já sai branca e não pertence a nenhuma folha, cada função que lida com páginas ganhou o seu <code>if</code> para ela.</p>
+<p><strong>O que o Kaique vê.</strong> Nada visível hoje. A próxima ferramenta que lidar com páginas (ou a próxima mudança numa delas) tem 31 lugares para lembrar; esquecer um é um defeito novo, como o "defeito B do verificador" da linha 4817.</p>
+<p><strong>Decisões.</strong> D-623.</p>
+<p><strong>O jeito certo.</strong> A regra "página posta à mão" mora num lugar (<code>core/paginas_em_branco</code>), com perguntas como "esta página vem de uma folha?", e as outras funções usam essas perguntas.</p>
+<p><strong>Gravidade:</strong> média.</p>
+<hr />
+<h3>M8. Erros engolidos onde o defeito devia aparecer</h3>
+<p><strong>Onde e o que cada um esconde:</strong></p>
+<ul>
+<li><code>core/pipeline.py</code> 2637-2643: "Tirar o fundo" deu erro → a página sai <strong>como veio</strong>, só no registro de erros. A frase "Não consegui tirar o fundo desta página; ela sai como veio." é montada, mas não vira aviso: o "conferir" fica falso (linha 4730) e nada entra no "Para revisar".</li>
+<li><code>core/pipeline.py</code> 2517-2519: a procura de gravura deu erro → o filtro trata a folha toda (a gravura pode virar mancha preta no PDF), só no registro. O detector tem um aviso de "uma vez por sessão" (<code>core/detectar_regioes.py</code> 1306), mas este erro de fora não passa por ele.</li>
+<li><code>ui/tela_conferir.py</code> 4919-4921 e <code>core/automatico.py</code> 1298-1299: se a conta "como sai no PDF" falha, a tela mostra a página <strong>sem</strong> a composição, e o PDF sai <strong>com</strong> ela; no Automático nem vai para o registro.</li>
+<li><code>ui/tarefas.py</code> 848-849: figurinha que falha fica "preparando..." para sempre.</li>
+</ul>
+<p><strong>O que o Kaique vê.</strong> No primeiro caso: ele escolhe "Tirar o fundo", o PDF sai com o fundo numa página, e nada no programa diz isso.</p>
+<p><strong>Decisões.</strong> D-473 ("Tela e PDF diferentes é defeito, nunca escolha"); CLAUDE.md §3 ("Nenhuma exceção fecha a janela. Vira aviso em português").</p>
+<p><strong>O jeito certo.</strong> Erro que muda o que sai no PDF vira aviso da página no "Para revisar" (como o "conferir" já é), em vez de só ir para o registro.</p>
+<p><strong>Gravidade:</strong> média.</p>
+<hr />
+<h3>M9. A lista "o que é do filtro" está escrita à mão em pelo menos seis lugares, e já diverge</h3>
+<p><strong>Onde:</strong> <code>ui/tela_conferir.py</code> 9010-9033 e 9047-9070 (<code>_filtro_em_todas</code> e <code>_filtro_nas_proximas</code>: o mesmo dicionário copiado e colado), 10000-10029 (<code>MARCAS_DA_PAGINA</code>); <code>core/automatico.py</code> 146-151 (<code>CAMPOS_DA_PAGINA</code>); <code>core/perfis.py</code> 60-66 (a receita); <code>ui/widgets/filtros_tela_cheia.py</code> 620-629; <code>ui/tarefas.py</code> 1135-1196 (a chave das prévias: cada campo entrou à mão, e o próprio comentário lembra o defeito de 21/10, quando faltou um).</p>
+<p><strong>O que faz hoje.</strong> Cada lugar diz por conta própria quais campos são "do filtro". Já diverge: "Letra clara em fundo escuro" vai junto no Automático ("Limpar a folha") e na receita, mas <strong>não</strong> no "Aplicar em" do painel Filtro.</p>
+<p><strong>O que o Kaique vê.</strong> Ele marca "Letra clara em fundo escuro" na página 5 e aperta "todas" no painel Filtro: as outras páginas ganham o filtro, mas não a caixinha. Se fizesse o mesmo pelo Automático, ganhariam (ver Pergunta 2). E quem acrescentar uma opção nova ao filtro tem seis lugares para lembrar.</p>
+<p><strong>Decisões.</strong> D-177 ("Uma caixinha por página, 'Letra clara em fundo escuro'"), D-586 e D-588 ("Vale com o 'Aplicar em'"), D-594 (as opções do Filtro no Automático).</p>
+<p><strong>O jeito certo.</strong> Uma lista só, em <code>core/</code>, "os campos do filtro da página" (com o que cada um precisa), usada pelo painel, pelo Automático, pela receita, pela tela cheia, pela marca e pela chave das prévias.</p>
+<p><strong>Gravidade:</strong> média.</p>
+<hr />
+<h2>Achados de gravidade BAIXA (arrumação)</h2>
+<h3>B1. O jeito de desenhar escolhido por um pedaço de texto da chave</h3>
+<p><code>ui/tarefas.py</code> 944 (<code>if ":recorte:" in self.chave</code>) e 952 (<code>if MARCA_DA_MEDIDA in self.chave</code>): a tarefa da prévia decide o que fazer procurando um pedaço de texto dentro da chave do guardado. Nada visível hoje; uma chave nova que contenha esse texto por acaso mudaria o desenho. <strong>Jeito certo:</strong> o pedido diz o que quer num campo próprio. <strong>Gravidade:</strong> baixa.</p>
+<h3>B2. A tela de conferir é um arquivo de 10.041 linhas com 406 funções e estado espalhado</h3>
+<p><code>ui/tela_conferir.py</code>: a classe <code>TelaConferir</code> vai da linha 649 ao fim; 374 citações de decisão; 19 lugares guardam estado com <code>getattr(self, "_algo", None)</code> (ex.: <code>_tarefa_de_dividir</code>, <code>_caixa_de_dividir</code>, <code>_tarefa_de_dividir_todas</code>, duas tarefas quase iguais com caixas quase iguais, 6156-6273 e 7285-7368). <code>_tamanhos_das_folhas</code> é a mesma memória usada por duas funções que a leem de jeitos diferentes (7035 e 8703). Nada visível hoje; é o motivo de cada decisão nova virar um <code>if</code> aqui dentro. <strong>Jeito certo:</strong> as regras das ferramentas vão para <code>core/</code> (como o <code>core/girar.py</code> começou), e a tela só chama. <strong>Gravidade:</strong> baixa.</p>
+<h3>B3. Duas perguntas "mexida à mão?"</h3>
+<p><code>core/etapas.py</code> 170 (<code>mexida_a_mao</code>) e <code>core/automatico.py</code> 382 e 416 (<code>_filtro_trocado_na_pagina</code>, uma regra a mais que só a pergunta do Automático usa). Está explicado no comentário (projeto antigo), mas são duas respostas para a mesma pergunta. <strong>Jeito certo:</strong> a regra a mais mora dentro de <code>core/etapas</code>. <strong>Gravidade:</strong> baixa.</p>
+<h3>B4. Erros escondidos na janela principal</h3>
+<p><code>ui/janela_principal.py</code> 1898-1899 (<code>except Exception: return</code>, sem registro) e 1928-1929 (<code>folhas_de_saida = 0</code> sem registro: a tela "Ficou pronto!" pode dizer 0 páginas sem ninguém saber por quê). <strong>Jeito certo:</strong> todo erro engolido vai pelo menos para o <code>erros.log</code>. <strong>Gravidade:</strong> baixa.</p>
+<hr />
+<h2>Regras de código para os agentes (proposta para o Samuel aprovar)</h2>
+<p>São uma proposta. Nada foi mudado no <code>CLAUDE.md</code>. Cada regra diz o que fazer, por que, e um exemplo tirado dos achados acima.</p>
+<ol>
+<li>
+<p><strong>Uma ferramenta, uma regra, num lugar só.</strong> A regra de cada ferramenta (girar, cortar, dividir, filtro, marcar, mover, desfazer) mora numa função de <code>core/</code>, e a tela, o menu, as teclas, a grade, a tela grande e o Automático só a chamam. <em>Por quê:</em> se cada botão tem a sua conta, mudar a ferramenta exige achar todos os botões, e um sempre fica de fora. <em>Exemplo:</em> A1, o Girar com sete caminhos.</p>
+</li>
+<li>
+<p><strong>Nada de desvio por decisão, por tela ou por opção.</strong> É proibido acrescentar <code>if</code> do tipo "se for o Dividir e for 'todas as folhas', vai por aqui". Se uma decisão nova muda a ferramenta, muda-se a regra, e todas as opções passam a segui-la. <em>Por quê:</em> cada desvio deixa as outras opções do jeito antigo, e o próximo pedido vira outro desvio. <em>Exemplo:</em> A1 (D-662 feita só no "todas"); A2 (o "Só as letras" consertado só nas figurinhas).</p>
+</li>
+<li>
+<p><strong>A tela, a prévia, as miniaturas e o PDF usam a mesma conta.</strong> O que muda é só o tamanho da imagem. Nunca escrever uma "conta parecida" para a tela. <em>Por quê:</em> D-473, "Tela e PDF diferentes é defeito, nunca escolha". <em>Exemplo:</em> A2 (figurinhas), M2 ("como sai no PDF" escrito três vezes).</p>
+</li>
+<li>
+<p><strong>Uma lista, um lugar.</strong> Lista de campos, de etapas, de opções: escrita uma vez, em <code>core/</code>, e importada. Nunca copiar e colar um dicionário. <em>Por quê:</em> cópias divergem sem ninguém ver. <em>Exemplo:</em> M9 (os campos do filtro em seis lugares, já diferentes); <code>_filtro_em_todas</code> e <code>_filtro_nas_proximas</code>, iguais linha por linha.</p>
+</li>
+<li>
+<p><strong>Consertar a causa, não o sintoma.</strong> Antes de consertar, escrever no ONDE-PAREI <strong>por que</strong> o defeito aconteceu. Se o conserto só evita que o sintoma apareça naquele caso, não é conserto. <em>Por quê:</em> remendo do sintoma deixa a causa pronta para outro defeito. <em>Exemplo:</em> M3 (a prévia lê o livro ao vivo; o conserto de 09/11 só tratou o aviso); M1 (o "está bom" pula o <code>_registrar</code> em vez de o <code>_registrar</code> saber que a imagem não mudou).</p>
+</li>
+<li>
+<p><strong>Nunca engolir erro que muda o que sai.</strong> <code>except Exception</code> só onde a falha não muda o PDF (uma bolinha, um enfeite), e sempre com registro no <code>erros.log</code>. Se a falha muda a página que sai, vira aviso da página no "Para revisar". <em>Por quê:</em> o Kaique não lê o registro de erros; se a página sai diferente, ele precisa saber. <em>Exemplo:</em> M8 (o "Tirar o fundo" que falha e a página sai como veio, calada).</p>
+</li>
+<li>
+<p><strong>Mudou a ferramenta: listar todos os lugares antes de codar, e provar cada um.</strong> Antes de mexer, procurar com <code>grep</code> todos os lugares que usam o campo ou a função (as opções da lista, as telas, a grade, a tela grande, o Automático, a tira, o PDF) e escrever essa lista no ONDE-PAREI. A entrega tem um teste para cada lugar. <em>Por quê:</em> D-667, "se mudou a ferramenta, muda em todos os lugares". <em>Exemplo:</em> M6 (a D-618 ficou de fora da marca "mexida à mão" e da capa do cartão); M5 (a D-609 ficou de fora da grade).</p>
+</li>
+<li>
+<p><strong>Mudança grande vem com o plano antes.</strong> Se a mudança mexe em mais de uma ferramenta, junta caminhos ou tira código, o agente escreve o plano (o que junta, o que sai, o que o Kaique vê antes e depois, quais testes provam que nada mudou) e espera a aprovação antes de codar. <em>Por quê:</em> juntar os sete caminhos do Girar ou as três contas das figurinhas mexe em coisas já testadas pelo Samuel (D-605). <em>Exemplo:</em> A1, A2, A3.</p>
+</li>
+<li>
+<p><strong>Um dado, um jeito de guardar.</strong> A mesma situação do livro (ex.: "folha não dividida") é sempre guardada do mesmo jeito, por qualquer caminho que a crie. <em>Por quê:</em> dois jeitos fazem a tela contar diferente. <em>Exemplo:</em> A4 (o Automático deixa uma página "tirada" escondida; o botão deixa uma página só).</p>
+</li>
+<li>
+<p><strong>O comentário diz a verdade, ou sai.</strong> Quando o código muda, os comentários que dizem "é a mesma conta de…" ou "como o botão X" são conferidos na hora. <em>Por quê:</em> o próximo agente confia no comentário e não confere. <em>Exemplo:</em> A4 ("como o 'não dividir esta'", falso desde a etapa 4); M5 ("pela MESMA conta do 'dividir esta'", falso desde a D-609).</p>
+</li>
+</ol>
+<hr />
+<h2>Perguntas para o Samuel</h2>
+<ol>
+<li><strong>"Usar em todas" no Marcar, no Filtro, no Endireitar e no Girar.</strong> No Cortar, no Dividir e no Mover, as páginas em que você mexeu à mão vêm desmarcadas e ficam como estão (D-090). No Marcar, o "usar em todas" apaga a gravura que você marcou à mão nas outras páginas. Essas quatro também deveriam deixar de fora as páginas mexidas à mão? (Sugestão do revisor: sim, igual ao Cortar.)</li>
+<li><strong>"Letra clara em fundo escuro" e o "Aplicar em".</strong> Pelo Automático, essa caixinha vai para todas as páginas escolhidas; pelo "todas" do painel Filtro, não vai. Ela deve ir junto no "todas" do painel? (Sugestão: sim, igual ao Automático.)</li>
+<li><strong>Dividir pela grade "Todas as páginas".</strong> Se você arrastou a linha de uma folha no Dividir e depois a divide pela grade, ela deve ser cortada onde você deixou a linha, como no "dividir esta"? (Sugestão: sim.)</li>
+<li><strong>Girar pela grade "Todas as páginas".</strong> Na grade, cada página escolhida gira a partir de onde está. No painel, todas ficam viradas como a página da vez (D-035). A grade deve seguir o painel? (Sem sugestão: é a escolha dele.)</li>
+</ol>
+<hr />
+<h2>Prova do A4</h2>
+<p>Script <code>prova/juntar.py</code>, rodado com <code>.venv\Scripts\python.exe</code>, <code>nice -n 19</code>, <code>QT_QPA_PLATFORM=offscreen</code> e um <code>LOCALAPPDATA</code> à parte, sem abrir janela:</p>
+<pre><code class="language-python">p = livro()   # 1 folha dividida, paginas esquerda e direita
+campos = D.campos_para_juntar(p, 0)                      # &quot;nao dividir esta&quot;
+acao = montar_acao(p, &quot;nao_dividir&quot;, &quot;folha&quot;, [0], campos, &quot;x&quot;); aplicar(p, acao, acao.depois)
+# -&gt; 1 pagina na lista: inteira
+
+p = livro()
+m = A.MedidaDaFolha(indice=0, dividir=False, ...)        # o Automatico acha &quot;uma pagina so&quot;
+A._dividir(p, A.Pedido(etapas=[A.DIVIDIR]), {0: m}, A._Puladas(p, []), A._Gravador(p))
+# -&gt; 2 paginas na lista: esquerda e direita &quot;tirada do livro&quot;
+</code></pre>
+<p class="rodape">Editor de Impressão &middot; gerado em 10/11/2026 às 18:09</p>
+</body>
+</html>
