@@ -43,7 +43,7 @@ from __future__ import annotations
 import atalhos
 from PySide6.QtCore import Signal
 from PySide6.QtGui import QAction, QKeySequence
-from PySide6.QtWidgets import QMenuBar
+from PySide6.QtWidgets import QMenu, QMenuBar
 
 # Os menus que valem em cada tela. Fora da tela de trabalho, o resto fica
 # apagado - e nao escondido.
@@ -400,6 +400,16 @@ class BarraDeMenu(QMenuBar):
 
         Duas listas separadas divergem na primeira mudanca, e a ajuda passa a
         mentir sobre o programa.
+
+        Os submenus ("Livros recentes", "Tema"...) ficam de fora. Para saber se
+        um item e um submenu usa-se QMenu.menuInAction(a), NUNCA a.menu():
+        no PySide6 6.11.1 o a.menu() faz o submenu virar "filho", do lado do
+        Python, do item temporario `a`, e quando o item some o Python da o
+        submenu como apagado (o Qt continua com ele). Foi o que derrubou o
+        programa no teste do Kaique de 07/11/2026: depois do F1, abrir
+        Arquivo > "Livros recentes" dava erro e o programa fechava
+        (tests/test_livros_recentes_depois_do_f1.py). Arriscado: voltar ao
+        a.menu() aqui ou em qualquer laco sobre menu.actions().
         """
         linhas = []
         for titulo, menu in self.menus.items():
@@ -407,7 +417,7 @@ class BarraDeMenu(QMenuBar):
                 f"    {a.text().replace('&', '').replace(chr(9), '  —  ')}"
                 f"{'  —  ' + a.shortcut().toString() if not a.shortcut().isEmpty() else ''}"
                 for a in menu.actions()
-                if not a.isSeparator() and not a.menu()
+                if not a.isSeparator() and QMenu.menuInAction(a) is None
             ]
             if do_menu:
                 linhas.append(titulo)
