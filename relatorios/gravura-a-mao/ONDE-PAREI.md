@@ -365,4 +365,7 @@ Pergunta: alguma vem da procura por trás da D-659 terminando atrasada (corrida)
   gravuras_cinza 20, respeitar_gravuras 19, decisoes 27, nucleo 38, pagina_em_branco 11, dividir 21,
   dividir_metade 6, trabalho_nao_se_perde 82, automatico_opcoes_do_filtro 21, gravura_no_processamento 43;
   nenhuma falha.
-- GitHub: suíte 42757519851 e filtro de velocidade 42757524213 (rodando).
+- GitHub (ramo em `e4c06cda`): **suíte 42757519851 verde** (as 5 partes e os botões). **Filtro de velocidade
+  42757524213: "igual"** (`a0c99cc7` x ramo; trocar de página +0,1%, Preto e branco +0,2%, Mágico pro -0,1%,
+  abrir -0,5%).
+- **PARADO aqui (10/11).** Não juntei nada à obra (é da gerente).
