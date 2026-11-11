@@ -1,0 +1,78 @@
+OK    test_decisoes (10s) 27 passed in 8.44s
+OK    test_decisoes_9b1 (45s) 25 passed, 16 warnings in 42.44s
+OK    test_decisoes_9b2 (56s) 30 passed in 53.92s
+OK    test_decisoes_antes_depois_da_ferramenta (6s) 5 passed in 5.09s
+OK    test_decisoes_automatico (76s) 29 passed in 71.92s (0:01:11)
+OK    test_decisoes_automatico_margens_no_depois (17s) 5 passed in 14.31s
+OK    test_decisoes_automatico_opcoes_do_filtro (131s) 21 passed in 126.49s (0:02:06)
+OK    test_decisoes_automatico_ver_como_fica (73s) 22 passed in 70.02s (0:01:10)
+OK    test_decisoes_aviso_de_memoria (15s) 15 passed in 12.99s
+OK    test_decisoes_avisos (60s) 22 passed in 56.68s
+OK    test_decisoes_caderno_numeros (15s) 9 passed in 13.05s
+OK    test_decisoes_caderno_tela_grande (57s) 14 passed, 1 skipped in 54.02s
+OK    test_decisoes_capa_aberta (15s) 6 passed in 13.16s
+OK    test_decisoes_d622_clicar_fora (7s) 3 passed in 5.20s
+OK    test_decisoes_desfazer_pagina (43s) 14 passed in 41.39s
+OK    test_decisoes_dividir (68s) 21 passed in 65.47s (0:01:05)
+OK    test_decisoes_dividir_arrastar (27s) 16 passed in 23.99s
+OK    test_decisoes_dividir_aviso (21s) 11 passed in 18.25s
+OK    test_decisoes_dividir_linha (16s) 13 passed in 13.96s
+OK    test_decisoes_dividir_metade (10s) 6 passed in 8.91s
+OK    test_decisoes_ferramentas_antes_depois (47s) 12 passed in 44.70s
+OK    test_decisoes_ferramentas_lado (13s) 9 passed in 11.36s
+OK    test_decisoes_filtro_automatico (28s) 4 passed in 25.30s
+OK    test_decisoes_girar_capa (51s) 26 passed in 43.55s
+OK    test_decisoes_girar_dividir_duas (19s) 10 passed in 17.23s
+OK    test_decisoes_girar_pagina (20s) 20 passed in 17.53s
+OK    test_decisoes_girar_paginas_aplicar_em (15s) 10 passed in 12.56s
+FALHA test_decisoes_gravura_a_mao (35s) 3 failed, 14 passed in 32.58s
+OK    test_decisoes_gravura_pular (9s) 7 passed in 7.01s
+OK    test_decisoes_gravuras_cinza (58s) 20 passed in 55.47s
+OK    test_decisoes_impressao (27s) 22 passed in 25.27s
+OK    test_decisoes_juntar_todas (11s) 4 passed in 8.86s
+OK    test_decisoes_livreto_ver (42s) 13 passed, 1 skipped in 40.42s
+OK    test_decisoes_marcacoes (16s) 19 passed in 13.40s
+OK    test_decisoes_montar_cadernos (95s) 13 passed in 92.15s (0:01:32)
+OK    test_decisoes_mover (20s) 13 passed in 17.17s
+OK    test_decisoes_mover_lado (14s) 7 passed in 11.63s
+OK    test_decisoes_nucleo (12s) 38 passed in 9.75s
+OK    test_decisoes_nucleo2 (25s) 21 passed in 23.48s
+OK    test_decisoes_ordem_folhas (15s) 12 passed in 12.81s
+OK    test_decisoes_pagina_em_branco (16s) 11 passed in 14.37s
+OK    test_decisoes_painel_livro (18s) 9 passed in 16.25s
+OK    test_decisoes_par_escolhe_e_arrasta (8s) 4 passed in 6.36s
+OK    test_decisoes_previa_dividida (12s) 4 passed in 10.52s
+OK    test_decisoes_previa_numero (17s) 8 passed in 15.57s
+OK    test_decisoes_quadrados_brancos (69s) 17 passed in 66.40s (0:01:06)
+OK    test_decisoes_respeitar_gravuras (63s) 19 passed in 59.08s
+OK    test_decisoes_shift_todas_as_telas (22s) 10 passed in 17.63s
+OK    test_decisoes_so_as_letras (26s) 5 passed in 24.11s
+OK    test_decisoes_tamanho_no_par (9s) 5 passed in 7.35s
+OK    test_decisoes_tela (46s) 35 passed, 4 warnings in 43.30s
+OK    test_decisoes_tira_em_pares (9s) 4 passed in 8.06s
+OK    test_decisoes_tira_marca_a_tela (6s) 3 passed in 5.11s
+OK    test_decisoes_tira_numero_real (11s) 3 passed in 9.84s
+OK    test_decisoes_tira_pares_juntas (10s) 3 passed in 7.77s
+OK    test_decisoes_ver (36s) 11 passed in 34.29s
+OK    test_papel_dentro_da_gravura (10s) 12 passed in 8.69s
+OK    test_core (72s) 62 passed in 70.20s (0:01:10)
+OK    test_limpar_papel (4s) 5 passed in 2.37s
+OK    test_melhorar_em_volta_da_gravura (13s) 12 passed in 11.38s
+OK    test_filtro_com_selecao (3s) 22 passed in 2.25s
+OK    test_etapa10b_imagem (136s) 23 passed in 134.06s (0:02:14)
+OK    test_tinta_papel_da_pagina (28s) 10 passed in 24.93s
+OK    test_luz_scantailor (10s) 14 passed in 8.11s
+OK    test_misto (7s) 31 passed in 5.73s
+OK    test_misto_no_programa (14s) 41 passed in 13.07s
+OK    test_marcacao_por_tras (11s) 4 passed in 10.26s
+OK    test_conferencia (12s) 55 passed in 11.08s
+OK    test_conferencia_5 (5s) 13 passed in 3.85s
+OK    test_conferencia_6 (6s) 9 passed in 4.94s
+OK    test_pipeline_folha (4s) 7 passed in 3.06s
+OK    test_preto_e_branco_regra_30_09 (5s) 15 passed in 4.42s
+OK    test_decoracao_no_preto_e_branco (16s) 12 passed in 14.72s
+OK    test_so_neste_pedaco_no_original (4s) 22 passed in 3.02s
+OK    test_so_neste_pedaco_no_preto_e_branco (3s) 8 passed in 2.12s
+OK    test_cores_scantailor (3s) 7 passed in 1.88s
+OK    test_claro_no_escuro (3s) 8 passed in 1.65s
+OK    test_promessas (1057s) 268 passed, 1 xfailed, 74 warnings in 969.64s (0:16:09)

@@ -110,7 +110,23 @@ depois do Automático** (gravura com o tratamento de gravura, letra no tom do or
 
 ## Provas e testes
 
-{TESTES}
+- **Prova nova** `tests/test_decisoes_quadrados_brancos.py` (17 provas: a conta, a página sintética, a tela no livro
+  novo com clique de verdade, a página 13 do livro dele). **Reversão** (CLAUDE.md §4.7): no código de antes
+  (`58806f81`) 12 falham e 5 passam (as 5 guardam o que não pode mudar: página de texto igual, nada procurado com a
+  caixinha desmarcada, Preto e branco igual ponto por ponto); no ramo, 17 passam. As medidas que falham no código de
+  antes: água sintética 48,4% em branco; água da página 13 64,0%; a gravura nunca procurada no Melhorar e no Mágico
+  pro (`reversao-no-58806f81.txt`).
+- **No PC, um arquivo por vez** (prioridade baixa, sem janela): os 56 `tests/test_decisoes*.py` e mais 22 dos arquivos
+  tocados (`test_papel_dentro_da_gravura`, `test_core`, `test_limpar_papel`, `test_melhorar_em_volta_da_gravura`,
+  `test_filtro_com_selecao`, `test_etapa10b_imagem`, `test_misto*`, `test_conferencia*`, `test_promessas` e outros):
+  **1419 passaram, 2 pularam, 3 falharam** — só as 3 provas antigas da D-659 da ressalva 1 (`medidas/testes_no_pc.txt`).
+- **GitHub, todos os testes** (rodada 42932052865): as partes 1, 2, 3 e 5 e os botões e prints da janela real
+  passaram; na parte 4, só as mesmas 3 provas da D-659. A prova nova: 13 passaram, 4 pularam (o livro dele não está
+  no GitHub).
+- **GitHub, filtro de velocidade** (rodada 42932057632, `obra-2026-10-26` × este ramo, mesma máquina, alternado):
+  **"igual (dentro do vai-e-vem)"**. Abrir o livro +0,1%; trocar de página +0,7%; Mágico pro 10 páginas +3,5%
+  (vai-e-vem 4,1%); Preto e branco 10 páginas +1,1%. Ele mede o livro com "Limpar a folha" ligado, que já procurava a
+  gravura; a primeira vez do filtro escolhido à mão está na seção "Tempo".
 
 ## Ressalvas
 

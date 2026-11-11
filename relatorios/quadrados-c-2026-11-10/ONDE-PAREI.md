@@ -57,7 +57,8 @@ também sai sem os buracos grandes (o "i" fino, nesse caso, fica como hoje). Nen
 - [x] GitHub, testes: rodada 42932052865 — só as 3 provas antigas da D-659 falham (ver Perguntas); a prova nova 13
       passam e 4 pulam (sem acervo no GitHub); botões e prints da janela real: ok
 - [x] GitHub, velocidade: rodada 42932057632 — **"igual (dentro do vai-e-vem)"**
-- [x] testes no PC, um por vez: {PC}
+- [x] testes no PC, um por vez: 78 arquivos (os 56 `test_decisoes*.py` e 22 dos arquivos tocados): 1419 passaram, 2 pularam, 3
+      falharam (as mesmas 3 provas antigas da D-659; `medidas/testes_no_pc.txt`)
 - [x] relatório nos três formatos; `relatorios/melhorias.md`
 
 ## Como cumpri cada uma
