@@ -4405,10 +4405,19 @@ def renderizar_com_filtro(
     (_DECISOES_DO_FUNDO), e a pagina de verdade ganha o alerta quando passar
     para esse filtro (acertar_alertas_do_fundo). Arriscado: desenhar a pagina
     de verdade aqui mudaria os alertas dela sem ela ter mudado de filtro.
+
+    "Como sairia" = como sai se a pessoa ESCOLHER esse filtro: a copia leva a
+    marca de filtro escolhido a mao (core/etapas.FILTRO), a mesma que a tela
+    grava ao escolher (TelaConferir._registrar). Sem ela, num livro com
+    "Limpar a folha" desligado (o livro novo) a copia saia em Original, e os
+    cartoes da tela cheia e a pagina grande dela mostravam a pagina sem o
+    filtro que ela teria (D-648, 10/11/2026). Com "Limpar a folha" ligado a
+    marca nao muda nada (o filtro da pagina ja vale).
     """
     from dataclasses import replace
 
     copia = replace(pagina, filtro=filtro, alertas=list(pagina.alertas))
+    etapas.marcar_mexida_a_mao(copia, etapas.FILTRO)
     return renderizar_pagina(doc, projeto, copia, dpi=dpi)
 
 
