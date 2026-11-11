@@ -176,7 +176,7 @@ segundos. Nada muda no PDF.</p>
 <li>[x] Defeito 2: causa achada; parado na pergunta.</li>
 <li>[x] Defeito 3: código, reversão.</li>
 <li>[x] Prints (pasta <code>prints/</code>), testes de decisões, <code>teste_botoes.py</code>.</li>
-<li>[ ] GitHub: rodada final dos testes e filtro de velocidade (números abaixo; a gerente confere o fim).</li>
+<li>[x] GitHub: testes verdes e velocidade igual (números abaixo).</li>
 </ul>
 <h2>Testes</h2>
 <p>No PC (um arquivo por vez, sem janela, prioridade baixa, <code>LOCALAPPDATA</code> à parte):
@@ -196,9 +196,10 @@ segundos. Nada muda no PDF.</p>
 <p>No GitHub:
 - <code>42936381314</code> (commit <code>bcd49735</code>): verde na 2ª tentativa. Na 1ª, só <code>test_dialogo_impressao.py</code> caiu com o código
   3221226505 (o processo fechou DEPOIS dos 5 testes passarem; não toca nada deste conserto).
-- <code>42944019482</code> (commit <code>6d13ccfc</code>, o final do código): ver o resultado na entrega.
+- <code>42944019482</code> (commit <code>6d13ccfc</code>, o final do código): <strong>verde</strong> na 1ª tentativa (suíte nas 5 partes + botões e prints).
 - Filtro de velocidade <code>42936386218</code> (obra-2026-10-26 -&gt; graves-2026-11-10, disparado no <code>bcd49735</code>; o <code>6d13ccfc</code> só
-  muda a miniatura e o desenho dos cartões, nada do PDF): ver o resultado na entrega.</p>
+  muda a miniatura e o desenho dos cartões, nada do PDF): <strong>"igual (dentro do vai-e-vem)"</strong> (abrir o livro -0,8%,
+  trocar de página -0,4%, Mágico pro +0,2%, Preto e branco -1,1%).</p>
 <h2>Como cumpri cada uma</h2>
 <ul>
 <li><strong>D-649 / D-547</strong> (miniatura igual ao PDF): <code>tests/test_graves_d649_miniatura_igual_ao_pdf.py::
@@ -293,6 +294,6 @@ programa desenhar o livro inteiro por trás ao abrir, e deixa a primeira abertur
 <p><img alt="d648-1-antes.png" src="prints/d648-1-antes.png" /></p>
 <p><img alt="d648-2-depois.png" src="prints/d648-2-depois.png" /></p>
 <p><img alt="d646-pergunta.png" src="prints/d646-pergunta.png" /></p>
-<p class="rodape">Editor de Impressão &middot; gerado em 10/11/2026 às 22:19</p>
+<p class="rodape">Editor de Impressão &middot; gerado em 10/11/2026 às 22:33</p>
 </body>
 </html>

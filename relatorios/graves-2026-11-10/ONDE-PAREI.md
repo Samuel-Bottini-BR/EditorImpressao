@@ -103,7 +103,7 @@ segundos. Nada muda no PDF.
 - [x] Defeito 2: causa achada; parado na pergunta.
 - [x] Defeito 3: código, reversão.
 - [x] Prints (pasta `prints/`), testes de decisões, `teste_botoes.py`.
-- [ ] GitHub: rodada final dos testes e filtro de velocidade (números abaixo; a gerente confere o fim).
+- [x] GitHub: testes verdes e velocidade igual (números abaixo).
 
 ## Testes
 
@@ -125,9 +125,10 @@ No PC (um arquivo por vez, sem janela, prioridade baixa, `LOCALAPPDATA` à parte
 No GitHub:
 - `42936381314` (commit `bcd49735`): verde na 2ª tentativa. Na 1ª, só `test_dialogo_impressao.py` caiu com o código
   3221226505 (o processo fechou DEPOIS dos 5 testes passarem; não toca nada deste conserto).
-- `42944019482` (commit `6d13ccfc`, o final do código): ver o resultado na entrega.
+- `42944019482` (commit `6d13ccfc`, o final do código): **verde** na 1ª tentativa (suíte nas 5 partes + botões e prints).
 - Filtro de velocidade `42936386218` (obra-2026-10-26 -> graves-2026-11-10, disparado no `bcd49735`; o `6d13ccfc` só
-  muda a miniatura e o desenho dos cartões, nada do PDF): ver o resultado na entrega.
+  muda a miniatura e o desenho dos cartões, nada do PDF): **"igual (dentro do vai-e-vem)"** (abrir o livro -0,8%,
+  trocar de página -0,4%, Mágico pro +0,2%, Preto e branco -1,1%).
 
 ## Como cumpri cada uma
 
