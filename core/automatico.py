@@ -58,11 +58,14 @@ from __future__ import annotations
 
 import copy
 import dataclasses
+import logging
 import threading
 from dataclasses import dataclass, field
 from typing import Any, Callable
 
 from core import etapas as E
+
+_log = logging.getLogger(__name__)
 
 # --- as etapas do Automatico (codigos internos, nunca texto de tela) ---------
 
@@ -1279,23 +1282,20 @@ def paginas_depois(projeto, folha: int, metade: str) -> list:
 
 def como_sai_na_tela(img, projeto, pagina, dpi: float):
     """A pagina desenhada `img` como ela sai no PDF: com as margens iguais (se
-    ja medidas) e movida na folha. A MESMA conta da tela de conferir
-    (ui/tela_conferir._como_sai_no_pdf, D-547), sem pedir medida nenhuma.
-    Nunca levanta (devolve `img`)."""
-    from core.etapas import conteudo_mexido
-    from core.folha import compor_na_folha
-    from core.pipeline import conta_das_margens_para_a_tela, margens_na_tela
+    ja medidas) e movida na folha, pela conta unica da composicao
+    (core.pipeline.compor_como_no_pdf, a mesma do PDF e da tela de conferir;
+    D-547, D-649), sem pedir medida nenhuma.
+    Nunca levanta (devolve `img`), mas a falha vai para o erros.log: a previa
+    mostraria a pagina sem a composicao que o PDF tem (revisao de 10/11, M8)."""
+    from core.pipeline import compor_como_no_pdf, conta_das_margens_para_a_tela
 
     if img is None:
         return img
     try:
-        conta = conta_das_margens_para_a_tela(projeto)
-        com_margens = margens_na_tela(img, projeto, pagina, conta) if conta is not None else img
-        return compor_na_folha(com_margens, pagina.tamanho_folha_cm, dpi,
-                               escala=pagina.conteudo_escala,
-                               deslocamento=pagina.conteudo_deslocamento,
-                               mexido_a_mao=conteudo_mexido(projeto, pagina))
+        return compor_como_no_pdf(img, projeto, pagina, dpi,
+                                  conta_das_margens=conta_das_margens_para_a_tela(projeto))
     except Exception:  # noqa: BLE001 - a previa mostra a pagina como veio do desenho
+        _log.exception("como sai na tela (previa do Automatico)")
         return img
 
 

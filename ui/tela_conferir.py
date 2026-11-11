@@ -4860,20 +4860,30 @@ class TelaConferir(QWidget):
             chave=chave_cache, dpi=DPI_AMOSTRA_DOS_CARTOES,
         )
 
-    def _com_as_margens(self, img, indice: int | None = None):
-        """Item 2.4 (Samuel, 22/10/2026: "Sim, a tela mostra igual ao que
-        sai"): com as margens iguais ligadas, a pagina dos cartoes aparece com
-        elas, como no PDF. Enquanto as paginas nao foram medidas, pede a
-        medida por tras (TarefaMedirAsMargens) e mostra sem margem; quando
-        termina, os cartoes sao pintados de novo. Desligadas: `img` mesmo.
-        indice: a pagina (None = a da vez; etapa 9b-2, o lado a lado)."""
-        from core.pipeline import conta_das_margens_para_a_tela, margens_na_tela
+    def _conta_das_margens(self):
+        """Item 2.4: a conta das margens iguais para a tela, ou None (desligadas,
+        ou ainda nao medidas). Enquanto as paginas nao foram medidas, pede a
+        medida por tras (TarefaMedirAsMargens): quando termina, os cartoes e as
+        miniaturas sao pintados de novo (_margens_medidas)."""
+        from core.pipeline import conta_das_margens_para_a_tela
 
-        if img is None or self.projeto is None or not getattr(self.projeto, "margens_iguais", False):
-            return img
+        if self.projeto is None or not getattr(self.projeto, "margens_iguais", False):
+            return None
         conta = conta_das_margens_para_a_tela(self.projeto)
         if conta is None:
             self._medir_as_margens()
+        return conta
+
+    def _com_as_margens(self, img, indice: int | None = None):
+        """Item 2.4 (Samuel, 22/10/2026: "Sim, a tela mostra igual ao que
+        sai"): a pagina com as margens iguais, se ligadas e ja medidas (a
+        ferramenta Mover mostra a pagina assim e poe por cima a area branca).
+        Desligadas, ou ainda sem a medida: `img` mesmo.
+        indice: a pagina (None = a da vez)."""
+        from core.pipeline import margens_na_tela
+
+        conta = self._conta_das_margens()
+        if img is None or conta is None:
             return img
         indice = self.indice_pagina if indice is None else indice
         return margens_na_tela(img, self.projeto, self.projeto.paginas[indice], conta)
@@ -4881,22 +4891,25 @@ class TelaConferir(QWidget):
     def _como_sai_no_pdf(self, img, indice: int | None = None, dpi: float | None = None):
         """Etapa 9b-2 da obra (D-547, apoiada em D-473/D-066: "precisamos que
         o pdf saia que nem está na tela"; o Livro: "Mover uma página → a
-        miniatura, a tela cheia e o lado a lado mostram igual ao PDF"): a
-        página `img` (a prévia, ou uma amostra dela) como ela sai no PDF -
-        com as margens iguais, se ligadas, e MOVIDA/REDIMENSIONADA na área
-        branca (a folha escolhida ou, sem folha, a própria página), pela
-        MESMA conta do PDF (core.folha.compor_na_folha, depois do filtro e das
-        margens, como core.pipeline._pagina_pronta). Página que ninguém moveu
-        nem pôs numa folha: a mesma imagem (as margens à parte).
+        miniatura, a tela cheia e o lado a lado mostram igual ao PDF") e D-649
+        (Samuel, 07/11/2026: "O preview as miniaturas tem que estar
+        sincronizada e o resultado final tem que sair como a edição foi
+        mostrada no preview"): a página `img` (a prévia, ou uma amostra dela)
+        como ela sai no PDF - com as margens iguais, se ligadas, e
+        MOVIDA/REDIMENSIONADA na área branca (a folha escolhida ou, sem folha, a
+        própria página), pela conta ÚNICA da composição, a do PDF
+        (core.pipeline.compor_como_no_pdf). Página que ninguém moveu nem pôs
+        numa folha: a mesma imagem (as margens à parte).
         dpi: a resolução de `img`; None = a da prévia, contada pela altura da
         prévia guardada desta página (as amostras dos cartões são menores).
         Onde vale: os cartões do painel Filtro, o lado a lado, o "antes /
-        depois", a tela cheia dos filtros e as miniaturas da página movida.
-        Não vale nas ferramentas em que se marca, corta, divide ou endireita
-        SOBRE a página (Marcar, Cortar, Dividir, Endireitar): lá a marcação e o
-        corte são frações da página (D-546). A ferramenta Mover compõe sozinha.
-        Nunca levanta (a tela mostra a página como veio)."""
-        from core.folha import compor_na_folha
+        depois", a tela cheia dos filtros e as miniaturas (tira e grade) da
+        página movida. Não vale nas ferramentas em que se marca, corta, divide
+        ou endireita SOBRE a página (Marcar, Cortar, Dividir, Endireitar): lá a
+        marcação e o corte são frações da página (D-546). A ferramenta Mover
+        compõe sozinha. Nunca levanta (a tela mostra a página como veio, e o
+        erro vai para o erros.log)."""
+        from core.pipeline import compor_como_no_pdf
 
         if img is None or self.projeto is None:
             return img
@@ -4911,11 +4924,8 @@ class TelaConferir(QWidget):
                           if self.previas is not None else None)
                 if previa is not None and previa.shape[0] > 0 and previa.shape[0] != img.shape[0]:
                     dpi *= img.shape[0] / previa.shape[0]
-            com_margens = self._com_as_margens(img, indice)
-            return compor_na_folha(
-                com_margens, pagina.tamanho_folha_cm, dpi,
-                escala=pagina.conteudo_escala, deslocamento=pagina.conteudo_deslocamento,
-                mexido_a_mao=etapas_core.conteudo_mexido(self.projeto, pagina))
+            return compor_como_no_pdf(img, self.projeto, pagina, dpi,
+                                      conta_das_margens=self._conta_das_margens())
         except Exception:  # noqa: BLE001 - a tela mostra a página como veio
             registrar_erro("como sai no PDF (tela)", traceback.format_exc())
             return img
@@ -5636,35 +5646,85 @@ class TelaConferir(QWidget):
         if self.tira._como_sai.get(indice, ("",))[0] != chave:
             self.tira.definir_como_sai(indice, chave, branca)
 
-    def _acertar_as_miniaturas_movidas(self) -> None:
+    def _pagina_sai_movida(self, pagina) -> bool:
+        """A página sai no PDF movida/redimensionada ou numa folha escolhida
+        (a composição muda o que se vê)? Barato: só lê campos."""
+        return bool(pagina.tamanho_folha_cm is not None
+                    or etapas_core.conteudo_mexido(self.projeto, pagina))
+
+    def _chave_da_miniatura(self, indice: int) -> str:
+        """De que estado é a miniatura composta da página `indice`: a prévia
+        de que ela sai (o filtro, o corte, o giro...) e o lugar, o tamanho, a
+        folha e as margens (_assinatura_do_como_sai)."""
+        assert self.previas is not None
+        return self.previas.chave(indice, self._dpi_normal) + self._assinatura_do_como_sai(indice)
+
+    def miniatura_como_sai(self, indice: int):
+        """D-649: a miniatura composta da página `indice` (a prévia como sai no
+        PDF), se ela sai movida e a miniatura do estado de agora já está
+        pronta; senão None (a tira e a grade mostram a folha como veio). É a
+        MESMA imagem na tira e na grade "Todas as páginas"."""
+        if self.projeto is None or self.previas is None or not 0 <= indice < len(self.projeto.paginas):
+            return None
+        if not self._pagina_sai_movida(self.projeto.paginas[indice]):
+            return None
+        chave, img = self.tira._como_sai.get(indice, ("", None))
+        return img if chave == self._chave_da_miniatura(indice) else None
+
+    def _acertar_as_miniaturas_movidas(self, indices=None) -> None:
         """Etapa 9b-2 (D-547: "Mover uma página → a miniatura [...] mostra
-        igual ao PDF"): a miniatura da página movida/redimensionada ou posta
-        numa folha escolhida mostra a página como sai no PDF (a prévia já
-        guardada, composta na área branca: _como_sai_no_pdf); a que voltou ao
-        lugar volta à folha crua. Página movida cuja prévia ainda não foi
-        desenhada fica com a folha crua até a prévia chegar (_previa_chegou).
-        No Dividir a tira mostra folhas: nada muda. Barato: só lê campos, e
-        só compõe o que mudou (a chave)."""
+        igual ao PDF") e D-649 (Samuel, 07/11/2026: "O preview as miniaturas
+        tem que estar sincronizada e o resultado final tem que sair como a
+        edição foi mostrada no preview"): a miniatura da página
+        movida/redimensionada ou posta numa folha escolhida mostra a página
+        como sai no PDF (a prévia composta na área branca, pela conta do PDF:
+        _como_sai_no_pdf), na tira e na grade "Todas as páginas"; a que voltou
+        ao lugar volta à folha crua.
+
+        O defeito de 07/11 (Lusíadas, página 5, teste como o Kaique, N8): a
+        miniatura só era composta se a prévia da página ainda estivesse
+        guardada (as últimas 30 visitadas). Depois de reabrir o livro, ou longe
+        da página, ela ficava com a folha crua, com o título no lugar, e o PDF
+        saía com o conteúdo subido e sem o título; a grade nunca compunha.
+        Agora a prévia que falta é PEDIDA (por trás, depois da página da vez:
+        PRIORIDADE_ADIANTADA) e, quando chega (_previa_chegou), a miniatura é
+        composta; a composta fica na tira mesmo depois de a prévia sair do
+        guardado (a chave diz de que estado ela é).
+        indices: só essas páginas (None = todas). No Dividir a tira mostra
+        folhas: nada muda. Barato: só lê campos e compõe o que mudou."""
+        from ui.tarefas import PRIORIDADE_ADIANTADA
+
         if self.projeto is None or self.previas is None or self.trabalha_com_folhas:
             return
-        for indice, pagina in enumerate(self.projeto.paginas):
+        todas = range(len(self.projeto.paginas)) if indices is None else indices
+        mudaram = []
+        for indice in todas:
+            if not 0 <= indice < len(self.projeto.paginas):
+                continue
+            pagina = self.projeto.paginas[indice]
             if getattr(pagina, "inserida", 0):
                 # D-623: a página em branco posta à mão aparece branca (não a folha
                 # da vizinha, de quem ela copia só o tamanho)
                 self._miniatura_branca(indice)
                 continue
-            movida = (pagina.tamanho_folha_cm is not None
-                      or etapas_core.conteudo_mexido(self.projeto, pagina))
-            if not movida:
-                self.tira.definir_como_sai(indice, "", None)
+            if not self._pagina_sai_movida(pagina):
+                if self.tira.definir_como_sai(indice, "", None):
+                    mudaram.append(indice)
                 continue
-            previa = self.previas.ja_pronta(indice, self._dpi_atual)
-            if previa is None:
-                continue
-            chave = self.previas.chave(indice, self._dpi_atual) + self._assinatura_do_como_sai(indice)
+            chave = self._chave_da_miniatura(indice)
             if self.tira._como_sai.get(indice, ("",))[0] == chave:
                 continue
-            self.tira.definir_como_sai(indice, chave, self._como_sai_no_pdf(previa, indice))
+            previa = self.previas.ja_pronta(indice, self._dpi_normal)
+            if previa is None:
+                # a prévia desta página ainda não foi desenhada (ou já saiu do
+                # guardado): é pedida, e a miniatura fica como está até ela chegar
+                self.previas.pedir(indice, self._dpi_normal, prioridade=PRIORIDADE_ADIANTADA)
+                continue
+            if self.tira.definir_como_sai(indice, chave, self._como_sai_no_pdf(
+                    previa, indice, float(self._dpi_normal))):
+                mudaram.append(indice)
+        if mudaram and self.pilha_da_tela.currentWidget() is self.todas:
+            self.todas.atualizar_paginas(mudaram)
 
     def _atualizar_contador(self) -> None:
         assert self.projeto is not None
@@ -5699,6 +5759,20 @@ class TelaConferir(QWidget):
         # só atualizar() o refazia. Arriscado: tirar esta linha.
         self._atualizar_barra_de_baixo()
 
+    def _pagina_da_previa(self, chave: str) -> int | None:
+        """A página de que `chave` é a prévia normal de agora, na resolução da
+        tela (GerenciadorPrevias.chave), ou None (outra resolução, outro
+        filtro, a folha crua, a medida, ou um estado que já passou)."""
+        if self.projeto is None or self.previas is None:
+            return None
+        cabeca = chave.split(":", 1)[0]
+        if not cabeca.isdigit():
+            return None
+        indice = int(cabeca)
+        if not 0 <= indice < len(self.projeto.paginas):
+            return None
+        return indice if chave == self.previas.chave(indice, self._dpi_normal) else None
+
     @protegido
     def _previa_chegou(self, chave: str, _img: np.ndarray) -> None:
         """Uma prévia ficou pronta; se for a que estamos vendo, redesenha."""
@@ -5724,6 +5798,11 @@ class TelaConferir(QWidget):
         )
         if chave == esperadas[0]:
             self._acertar_as_miniaturas_movidas()      # etapa 9b-2 (D-547)
+        else:
+            # D-649: a prévia pedida para a miniatura de outra página movida
+            outra = self._pagina_da_previa(chave)
+            if outra is not None:
+                self._acertar_as_miniaturas_movidas([outra])
         if chave in esperadas or chave.startswith("folha:"):
             self._atualizar_previa()
             # D-612: a imagem da peça nos pares chegou (a do editor de marcar
@@ -8308,10 +8387,16 @@ class TelaConferir(QWidget):
     def _pagina_dentro_da_folha(self, indice: int, img):
         """A página `indice` dentro da folha pequena `img` (como veio no PDF):
         gira a folha como ela está e pega a metade da página (a mesma conta da
-        tira: core/pipeline.preparar_metade gira e depois divide)."""
+        tira: core/pipeline.preparar_metade gira e depois divide).
+        D-649 (07/11/2026): a página que sai movida, ou numa folha escolhida,
+        aparece na grade como na tira, como sai no PDF (miniatura_como_sai);
+        enquanto a composta não chega, a folha como veio."""
         from core.endireitar import girar_90
 
         assert self.projeto is not None
+        composta = self.miniatura_como_sai(indice)
+        if composta is not None:
+            return composta
         pagina = self.projeto.paginas[indice]
         giro = self._giros_das_folhas().get(pagina.folha, 0)
         if giro:

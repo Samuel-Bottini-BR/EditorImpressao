@@ -4775,42 +4775,66 @@ def _pagina_pronta(projeto: Projeto, doc, folha: ConfigFolha, pagina: ConfigPagi
         img, mono = _filtrar(projeto, pagina, img, dpi_desenho, dpi_scan,
                              dpi_pedido=projeto.qualidade_dpi)
 
-    # Item 2.4: as margens iguais do ScanTailor (so com a conta feita, isto
-    # e, ligadas). Antes do tamanho de folha escolhido a mao, que continua
-    # valendo por cima (e nao corta nada se nao couber).
-    if conta_das_margens is not None:
-        img = _por_as_margens(img, conta_das_margens, posicao, projeto)
+    # Margens iguais (item 2.4) e a pagina movida/redimensionada na area branca
+    # (D-008/D-017): a conta UNICA de "como a pagina pronta sai" (D-649),
+    # a mesma que a tela, as miniaturas, os cartoes e o Automatico usam.
+    img = compor_como_no_pdf(img, projeto, pagina, projeto.qualidade_dpi,
+                             conta_das_margens=conta_das_margens, posicao=posicao,
+                             anotar_o_de_fora=True)
+    return img, mono
 
-    # Item 2/4 do teste do Boecio (secao 3a do plano): cola o conteudo (ja
-    # filtrado) dentro do tamanho de folha escolhido, com a margem branca ao
-    # redor - nunca antes daqui, porque `preparar_metade` tambem alimenta
-    # `avaliar.py` (a regua de qualidade dos filtros) e padding ali
-    # contaminaria as metricas. Sem `tamanho_folha_cm` (None, o padrao)
-    # devolve `img` sem nenhuma alteracao - comportamento de sempre.
-    #
-    # Obra 26/10, etapa 1 (D-008/D-009): o conteudo movido ou redimensionado A
-    # MAO chega ao PDF tambem sem tamanho de folha, e nunca e jogado fora por
-    # 1 ponto de arredondamento (core/etapas.conteudo_mexido; projeto antigo
-    # sem a marca: a conta de sempre). Vem depois do filtro e das margens: a
-    # pagina pronta e que anda (a montagem continua endireitar -> cortar ->
-    # filtro, D-016).
-    #
-    # Etapa 5 da obra (D-017): antes de colar, mede pela MESMA conta se parte
-    # do que esta impresso fica fora da area branca, e poe ou tira o aviso
-    # (nada e diminuido sozinho). Pagina que fica inteira na area branca (quase
-    # todas) nao mede nada (core.folha.parte_impressa_de_fora).
+
+def compor_como_no_pdf(img: np.ndarray, projeto: Projeto, pagina: ConfigPagina, dpi: float,
+                       conta_das_margens=None, posicao: int | None = None,
+                       anotar_o_de_fora: bool = False) -> np.ndarray:
+    """A pagina ja desenhada (dividida, endireitada, cortada e filtrada) COMO
+    ELA SAI NO PDF: com as margens iguais (item 2.4, so com a conta feita) e
+    colada na area branca, movida e no tamanho que a pessoa deixou na
+    ferramenta Mover, ou na folha escolhida (core.folha.compor_na_folha;
+    D-008, D-017). Vale em qualquer resolucao: `dpi` e a de `img`.
+
+    E A conta da composicao, num lugar so (D-649, Samuel, 07/11/2026: "O
+    preview as miniaturas tem que estar sincronizada e o resultado final tem
+    que sair como a edição foi mostrada no preview"; D-547; D-473 "Tela e PDF
+    diferentes é defeito, nunca escolha"). Usada pelo PDF (_pagina_pronta), pela
+    tela de conferir (os cartoes, o lado a lado, o "antes / depois", a tela
+    cheia dos filtros e as miniaturas da tira e da grade:
+    ui/tela_conferir._como_sai_no_pdf) e pela previa do Automatico
+    (core/automatico.como_sai_na_tela). Antes de 10/11/2026 a mesma sequencia
+    estava escrita nesses tres lugares (revisao de codigo de 10/11, M2).
+
+    conta_das_margens: a conta das margens iguais (None = desligadas ou ainda
+    nao medidas: sem margens). posicao: o lugar da pagina na lista de paginas
+    ativas, quando quem chama ja sabe (o PDF, com a conta que ele mesmo mediu,
+    na resolucao do livro); None: a pagina e achada na lista e a resolucao das
+    margens sai do tamanho medido dela (margens_na_tela).
+    anotar_o_de_fora: poe ou tira o aviso "parte do impresso fica de fora"
+    (D-017) pela mesma medida, antes de colar - so o PDF anota aqui (a
+    ferramenta Mover anota na tela, com a pagina que ela mostra).
+
+    Arriscado: mudar a ordem (margens antes da folha escolhida, sempre depois
+    do filtro, D-016); compor antes daqui (preparar_metade tambem alimenta o
+    avaliar.py, e a margem branca contaminaria as medidas dos filtros); ou
+    fazer a tela compor por outra conta - a tela, as miniaturas e o PDF
+    deixariam de sair iguais. Sem folha escolhida e sem mover, devolve `img`
+    como esta (so as margens, se ligadas)."""
+    if conta_das_margens is not None:
+        if posicao is not None:
+            img = _por_as_margens(img, conta_das_margens, posicao, projeto)
+        else:
+            img = margens_na_tela(img, projeto, pagina, conta_das_margens)
     mexido = etapas.conteudo_mexido(projeto, pagina)
-    anotar_o_impresso_de_fora(pagina, parte_impressa_de_fora(
-        img, pagina.tamanho_folha_cm, projeto.qualidade_dpi,
-        escala=pagina.conteudo_escala, deslocamento=pagina.conteudo_deslocamento,
-        mexido_a_mao=mexido))
-    img = compor_na_folha(
-        img, pagina.tamanho_folha_cm, projeto.qualidade_dpi,
+    if anotar_o_de_fora:
+        anotar_o_impresso_de_fora(pagina, parte_impressa_de_fora(
+            img, pagina.tamanho_folha_cm, dpi,
+            escala=pagina.conteudo_escala, deslocamento=pagina.conteudo_deslocamento,
+            mexido_a_mao=mexido))
+    return compor_na_folha(
+        img, pagina.tamanho_folha_cm, dpi,
         escala=pagina.conteudo_escala,
         deslocamento=pagina.conteudo_deslocamento,
         mexido_a_mao=mexido,
     )
-    return img, mono
 
 
 def anotar_o_impresso_de_fora(pagina: ConfigPagina, fracao: float) -> bool:
