@@ -1,0 +1,443 @@
+{
+ "palatino_p005|melhorar_forte_respeitar": {
+  "branco_em_pintura_pct": 1.272,
+  "blocos": 0,
+  "papel_branco_pct": 57.31,
+  "papel_saturacao_media": 8.81,
+  "tinta_apagada_pct": 0.104,
+  "segundos": 11.0,
+  "gravuras": 0
+ },
+ "palatino_p005|magico_fraco_respeitar": {
+  "branco_em_pintura_pct": 1.272,
+  "blocos": 0,
+  "papel_branco_pct": 70.41,
+  "papel_saturacao_media": 7.99,
+  "tinta_apagada_pct": 0.104,
+  "segundos": 1.4,
+  "gravuras": 0
+ },
+ "palatino_p007|melhorar_forte_respeitar": {
+  "branco_em_pintura_pct": 1.433,
+  "blocos": 4,
+  "papel_branco_pct": 94.6,
+  "papel_saturacao_media": 0.15,
+  "tinta_apagada_pct": 2.442,
+  "segundos": 1.8,
+  "gravuras": 0
+ },
+ "palatino_p007|magico_fraco_respeitar": {
+  "branco_em_pintura_pct": 1.433,
+  "blocos": 4,
+  "papel_branco_pct": 94.8,
+  "papel_saturacao_media": 0.14,
+  "tinta_apagada_pct": 2.442,
+  "segundos": 1.4,
+  "gravuras": 0
+ },
+ "palatino_p009|melhorar_forte_respeitar": {
+  "branco_em_pintura_pct": 1.823,
+  "blocos": 15,
+  "papel_branco_pct": 95.68,
+  "papel_saturacao_media": 0.15,
+  "tinta_apagada_pct": 0.431,
+  "segundos": 1.6,
+  "gravuras": 0
+ },
+ "palatino_p009|magico_fraco_respeitar": {
+  "branco_em_pintura_pct": 1.823,
+  "blocos": 15,
+  "papel_branco_pct": 96.14,
+  "papel_saturacao_media": 0.14,
+  "tinta_apagada_pct": 0.431,
+  "segundos": 1.4,
+  "gravuras": 0
+ },
+ "palatino_p010|melhorar_forte_respeitar": {
+  "branco_em_pintura_pct": 2.241,
+  "blocos": 17,
+  "papel_branco_pct": 96.03,
+  "papel_saturacao_media": 0.03,
+  "tinta_apagada_pct": 0.558,
+  "segundos": 0.8,
+  "gravuras": 0
+ },
+ "palatino_p010|magico_fraco_respeitar": {
+  "branco_em_pintura_pct": 2.241,
+  "blocos": 17,
+  "papel_branco_pct": 96.72,
+  "papel_saturacao_media": 0.03,
+  "tinta_apagada_pct": 0.558,
+  "segundos": 1.3,
+  "gravuras": 0
+ },
+ "escola_p007|melhorar_forte_respeitar": {
+  "branco_em_pintura_pct": 1.37,
+  "blocos": 19,
+  "papel_branco_pct": 88.45,
+  "papel_saturacao_media": 3.24,
+  "tinta_apagada_pct": 0.587,
+  "segundos": 1.9,
+  "gravuras": 0
+ },
+ "escola_p007|magico_fraco_respeitar": {
+  "branco_em_pintura_pct": 1.373,
+  "blocos": 19,
+  "papel_branco_pct": 92.09,
+  "papel_saturacao_media": 1.89,
+  "tinta_apagada_pct": 0.587,
+  "segundos": 1.5,
+  "gravuras": 0
+ },
+ "horas_p011|melhorar_forte_respeitar": {
+  "branco_em_pintura_pct": 0.0,
+  "blocos": 0,
+  "papel_branco_pct": 58.27,
+  "papel_saturacao_media": 5.57,
+  "tinta_apagada_pct": 0.0,
+  "segundos": 5.8,
+  "gravuras": 0
+ },
+ "horas_p011|magico_fraco_respeitar": {
+  "branco_em_pintura_pct": 0.0,
+  "blocos": 0,
+  "papel_branco_pct": 83.26,
+  "papel_saturacao_media": 5.06,
+  "tinta_apagada_pct": 0.0,
+  "segundos": 6.0,
+  "gravuras": 0
+ },
+ "horas_p013|melhorar_forte_respeitar": {
+  "branco_em_pintura_pct": 0.104,
+  "blocos": 18,
+  "papel_branco_pct": 86.8,
+  "papel_saturacao_media": 0.9,
+  "tinta_apagada_pct": 0.17,
+  "segundos": 6.0,
+  "gravuras": 0
+ },
+ "horas_p013|magico_fraco_respeitar": {
+  "branco_em_pintura_pct": 0.105,
+  "blocos": 18,
+  "papel_branco_pct": 95.45,
+  "papel_saturacao_media": 0.71,
+  "tinta_apagada_pct": 0.17,
+  "segundos": 8.1,
+  "gravuras": 0
+ },
+ "horas_p047|melhorar_forte_respeitar": {
+  "branco_em_pintura_pct": 1.098,
+  "blocos": 113,
+  "papel_branco_pct": 81.65,
+  "papel_saturacao_media": 8.79,
+  "tinta_apagada_pct": 0.219,
+  "segundos": 6.5,
+  "gravuras": 0
+ },
+ "horas_p047|magico_fraco_respeitar": {
+  "branco_em_pintura_pct": 1.099,
+  "blocos": 113,
+  "papel_branco_pct": 86.16,
+  "papel_saturacao_media": 7.01,
+  "tinta_apagada_pct": 0.219,
+  "segundos": 7.3,
+  "gravuras": 0
+ },
+ "opusmajus_p011|melhorar_forte_respeitar": {
+  "branco_em_pintura_pct": 0.156,
+  "blocos": 0,
+  "papel_branco_pct": 95.03,
+  "papel_saturacao_media": 0.0,
+  "tinta_apagada_pct": 0.486,
+  "segundos": 2.1,
+  "gravuras": 0
+ },
+ "opusmajus_p011|magico_fraco_respeitar": {
+  "branco_em_pintura_pct": 0.156,
+  "blocos": 0,
+  "papel_branco_pct": 95.08,
+  "papel_saturacao_media": 0.0,
+  "tinta_apagada_pct": 0.486,
+  "segundos": 2.4,
+  "gravuras": 0
+ },
+ "opusmajus_p003|melhorar_forte_respeitar": {
+  "branco_em_pintura_pct": 0.166,
+  "blocos": 3,
+  "papel_branco_pct": 98.61,
+  "papel_saturacao_media": 0.09,
+  "tinta_apagada_pct": 1.302,
+  "segundos": 2.7,
+  "gravuras": 0
+ },
+ "opusmajus_p003|magico_fraco_respeitar": {
+  "branco_em_pintura_pct": 0.166,
+  "blocos": 3,
+  "papel_branco_pct": 98.75,
+  "papel_saturacao_media": 0.07,
+  "tinta_apagada_pct": 1.302,
+  "segundos": 2.8,
+  "gravuras": 0
+ },
+ "opusmajus_p020|melhorar_forte_respeitar": {
+  "branco_em_pintura_pct": 0.0,
+  "blocos": 0,
+  "papel_branco_pct": 30.02,
+  "papel_saturacao_media": 0.0,
+  "tinta_apagada_pct": 0.0,
+  "segundos": 2.8,
+  "gravuras": 0
+ },
+ "opusmajus_p020|magico_fraco_respeitar": {
+  "branco_em_pintura_pct": 0.0,
+  "blocos": 0,
+  "papel_branco_pct": 50.88,
+  "papel_saturacao_media": 0.0,
+  "tinta_apagada_pct": 0.0,
+  "segundos": 1.8,
+  "gravuras": 0
+ },
+ "opusmajus_p165|melhorar_forte_respeitar": {
+  "branco_em_pintura_pct": 0.181,
+  "blocos": 0,
+  "papel_branco_pct": 94.48,
+  "papel_saturacao_media": 0.0,
+  "tinta_apagada_pct": 0.759,
+  "segundos": 2.0,
+  "gravuras": 0
+ },
+ "opusmajus_p165|magico_fraco_respeitar": {
+  "branco_em_pintura_pct": 0.181,
+  "blocos": 0,
+  "papel_branco_pct": 94.59,
+  "papel_saturacao_media": 0.0,
+  "tinta_apagada_pct": 0.759,
+  "segundos": 2.2,
+  "gravuras": 0
+ },
+ "opusmajus_p256|melhorar_forte_respeitar": {
+  "branco_em_pintura_pct": 0.875,
+  "blocos": 0,
+  "papel_branco_pct": 78.27,
+  "papel_saturacao_media": 0.01,
+  "tinta_apagada_pct": 5.396,
+  "segundos": 2.6,
+  "gravuras": 0
+ },
+ "opusmajus_p256|magico_fraco_respeitar": {
+  "branco_em_pintura_pct": 0.875,
+  "blocos": 0,
+  "papel_branco_pct": 93.8,
+  "papel_saturacao_media": 0.0,
+  "tinta_apagada_pct": 5.396,
+  "segundos": 2.7,
+  "gravuras": 0
+ },
+ "horas_p026|melhorar_forte_respeitar": {
+  "branco_em_pintura_pct": 0.118,
+  "blocos": 12,
+  "papel_branco_pct": 78.49,
+  "papel_saturacao_media": 3.67,
+  "tinta_apagada_pct": 0.227,
+  "segundos": 7.8,
+  "gravuras": 0
+ },
+ "horas_p026|magico_fraco_respeitar": {
+  "branco_em_pintura_pct": 0.119,
+  "blocos": 12,
+  "papel_branco_pct": 92.41,
+  "papel_saturacao_media": 3.3,
+  "tinta_apagada_pct": 0.227,
+  "segundos": 9.4,
+  "gravuras": 0
+ },
+ "horas_p027|melhorar_forte_respeitar": {
+  "branco_em_pintura_pct": 0.141,
+  "blocos": 21,
+  "papel_branco_pct": 74.9,
+  "papel_saturacao_media": 4.63,
+  "tinta_apagada_pct": 0.688,
+  "segundos": 6.9,
+  "gravuras": 0
+ },
+ "horas_p027|magico_fraco_respeitar": {
+  "branco_em_pintura_pct": 0.141,
+  "blocos": 21,
+  "papel_branco_pct": 88.78,
+  "papel_saturacao_media": 3.95,
+  "tinta_apagada_pct": 0.688,
+  "segundos": 7.0,
+  "gravuras": 0
+ },
+ "escola_p035|melhorar_forte_respeitar": {
+  "branco_em_pintura_pct": 1.245,
+  "blocos": 27,
+  "papel_branco_pct": 93.54,
+  "papel_saturacao_media": 0.63,
+  "tinta_apagada_pct": 0.579,
+  "segundos": 2.9,
+  "gravuras": 0
+ },
+ "escola_p035|magico_fraco_respeitar": {
+  "branco_em_pintura_pct": 1.247,
+  "blocos": 27,
+  "papel_branco_pct": 94.95,
+  "papel_saturacao_media": 0.45,
+  "tinta_apagada_pct": 0.579,
+  "segundos": 1.9,
+  "gravuras": 0
+ },
+ "boecio_p003|melhorar_forte_respeitar": {
+  "branco_em_pintura_pct": 4.502,
+  "blocos": 12,
+  "papel_branco_pct": 90.83,
+  "papel_saturacao_media": 0.12,
+  "tinta_apagada_pct": 0.871,
+  "segundos": 0.6,
+  "gravuras": 0
+ },
+ "boecio_p003|magico_fraco_respeitar": {
+  "branco_em_pintura_pct": 4.503,
+  "blocos": 12,
+  "papel_branco_pct": 92.52,
+  "papel_saturacao_media": 0.1,
+  "tinta_apagada_pct": 0.871,
+  "segundos": 0.4,
+  "gravuras": 0
+ },
+ "boecio_p007|melhorar_forte_respeitar": {
+  "branco_em_pintura_pct": 3.554,
+  "blocos": 2,
+  "papel_branco_pct": 89.24,
+  "papel_saturacao_media": 0.08,
+  "tinta_apagada_pct": 0.403,
+  "segundos": 0.7,
+  "gravuras": 0
+ },
+ "boecio_p007|magico_fraco_respeitar": {
+  "branco_em_pintura_pct": 3.559,
+  "blocos": 2,
+  "papel_branco_pct": 92.24,
+  "papel_saturacao_media": 0.05,
+  "tinta_apagada_pct": 0.403,
+  "segundos": 0.4,
+  "gravuras": 0
+ },
+ "boecio_p008|melhorar_forte_respeitar": {
+  "branco_em_pintura_pct": 1.409,
+  "blocos": 1,
+  "papel_branco_pct": 95.36,
+  "papel_saturacao_media": 0.04,
+  "tinta_apagada_pct": 0.092,
+  "segundos": 0.4,
+  "gravuras": 0
+ },
+ "boecio_p008|magico_fraco_respeitar": {
+  "branco_em_pintura_pct": 1.409,
+  "blocos": 1,
+  "papel_branco_pct": 96.77,
+  "papel_saturacao_media": 0.02,
+  "tinta_apagada_pct": 0.092,
+  "segundos": 0.4,
+  "gravuras": 0
+ },
+ "boecio_p022|melhorar_forte_respeitar": {
+  "branco_em_pintura_pct": 4.43,
+  "blocos": 10,
+  "papel_branco_pct": 86.97,
+  "papel_saturacao_media": 0.25,
+  "tinta_apagada_pct": 0.239,
+  "segundos": 0.5,
+  "gravuras": 0
+ },
+ "boecio_p022|magico_fraco_respeitar": {
+  "branco_em_pintura_pct": 4.431,
+  "blocos": 10,
+  "papel_branco_pct": 89.57,
+  "papel_saturacao_media": 0.24,
+  "tinta_apagada_pct": 0.239,
+  "segundos": 0.4,
+  "gravuras": 0
+ },
+ "escola_p013|melhorar_forte_respeitar": {
+  "branco_em_pintura_pct": 5.948,
+  "blocos": 38,
+  "papel_branco_pct": 90.06,
+  "papel_saturacao_media": 3.56,
+  "tinta_apagada_pct": 3.307,
+  "segundos": 2.6,
+  "gravuras": 0
+ },
+ "escola_p013|magico_fraco_respeitar": {
+  "branco_em_pintura_pct": 5.953,
+  "blocos": 39,
+  "papel_branco_pct": 93.79,
+  "papel_saturacao_media": 1.19,
+  "tinta_apagada_pct": 3.307,
+  "segundos": 2.0,
+  "gravuras": 0
+ },
+ "escola_p097|melhorar_forte_respeitar": {
+  "branco_em_pintura_pct": 3.166,
+  "blocos": 16,
+  "papel_branco_pct": 90.01,
+  "papel_saturacao_media": 3.38,
+  "tinta_apagada_pct": 0.834,
+  "segundos": 1.7,
+  "gravuras": 0
+ },
+ "escola_p097|magico_fraco_respeitar": {
+  "branco_em_pintura_pct": 3.19,
+  "blocos": 17,
+  "papel_branco_pct": 94.29,
+  "papel_saturacao_media": 1.89,
+  "tinta_apagada_pct": 0.834,
+  "segundos": 2.1,
+  "gravuras": 0
+ },
+ "escola_p119|melhorar_forte_respeitar": {
+  "branco_em_pintura_pct": 4.78,
+  "blocos": 25,
+  "papel_branco_pct": 92.72,
+  "papel_saturacao_media": 0.55,
+  "tinta_apagada_pct": 0.774,
+  "segundos": 2.5,
+  "gravuras": 0
+ },
+ "escola_p119|magico_fraco_respeitar": {
+  "branco_em_pintura_pct": 4.792,
+  "blocos": 25,
+  "papel_branco_pct": 94.21,
+  "papel_saturacao_media": 0.42,
+  "tinta_apagada_pct": 0.774,
+  "segundos": 2.5,
+  "gravuras": 0
+ },
+ "boecio_p033|melhorar_forte_respeitar": {
+  "branco_em_pintura_pct": 4.476,
+  "blocos": 5,
+  "papel_branco_pct": 88.44,
+  "papel_saturacao_media": 0.08,
+  "tinta_apagada_pct": 0.279,
+  "segundos": 0.7,
+  "gravuras": 0
+ },
+ "boecio_p033|magico_fraco_respeitar": {
+  "branco_em_pintura_pct": 4.494,
+  "blocos": 5,
+  "papel_branco_pct": 91.17,
+  "papel_saturacao_media": 0.06,
+  "tinta_apagada_pct": 0.279,
+  "segundos": 0.5,
+  "gravuras": 0
+ },
+ "escola_p013|magico_fraco_sem_respeitar": {
+  "branco_em_pintura_pct": 5.953,
+  "blocos": 39,
+  "papel_branco_pct": 93.79,
+  "papel_saturacao_media": 1.19,
+  "tinta_apagada_pct": 3.307,
+  "segundos": 5.6,
+  "gravuras": 0
+ }
+}

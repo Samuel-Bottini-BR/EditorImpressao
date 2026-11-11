@@ -1,0 +1,27 @@
+Reversao (CLAUDE.md 4.7): tests/test_decisoes_quadrados_brancos.py rodado no 58806f81 (o codigo de antes), 10/11/2026
+FALHA test_decisoes_quadrados_brancos (411s) 12 failed, 5 passed in 408.96s (0:06:48)
+E       AssertionError: a água ainda vai a branco: 48.4%
+E       AssertionError: a água ainda vai a branco: 48.4%
+E       AssertionError: não aconteceu a tempo: a gravura achada no tamanho do PDF
+E       AssertionError: não aconteceu a tempo: a gravura achada no tamanho do PDF
+E       AssertionError: não aconteceu a tempo: a página 2 procurada
+E       AssertionError: não aconteceu a tempo: a página 2 procurada
+E       AssertionError: não aconteceu a tempo: a página 2 procurada
+E       AssertionError: não aconteceu a tempo: a página 2 procurada
+E       AssertionError: buracos na água: 64.0%
+E       AssertionError: buracos na água: 64.0%
+FAILED tests/test_decisoes_quadrados_brancos.py::test_d668_a_conta_os_tres_filtros_procuram_pela_mesma_regra
+FAILED tests/test_decisoes_quadrados_brancos.py::test_d668_a_agua_da_pintura_nao_vai_mais_a_branco_em_quadrados[melhorar]
+FAILED tests/test_decisoes_quadrados_brancos.py::test_d668_a_agua_da_pintura_nao_vai_mais_a_branco_em_quadrados[magico_pro]
+FAILED tests/test_decisoes_quadrados_brancos.py::test_d668_so_nesta_com_respeitar_procura_so_esta_pagina_e_respeita_a_gravura[melhorar]
+FAILED tests/test_decisoes_quadrados_brancos.py::test_d668_so_nesta_com_respeitar_procura_so_esta_pagina_e_respeita_a_gravura[magico_pro]
+FAILED tests/test_decisoes_quadrados_brancos.py::test_d668_aplicar_em_procura_so_nas_paginas_alcancadas[todas-esperado0-melhorar]
+FAILED tests/test_decisoes_quadrados_brancos.py::test_d668_aplicar_em_procura_so_nas_paginas_alcancadas[todas-esperado0-magico_pro]
+FAILED tests/test_decisoes_quadrados_brancos.py::test_d668_aplicar_em_procura_so_nas_paginas_alcancadas[daqui em diante-esperado1-melhorar]
+FAILED tests/test_decisoes_quadrados_brancos.py::test_d668_aplicar_em_procura_so_nas_paginas_alcancadas[daqui em diante-esperado1-magico_pro]
+FAILED tests/test_decisoes_quadrados_brancos.py::test_d668_pagina_13_sem_buracos_e_vivia_com_o_i_inteiro[melhorar]
+FAILED tests/test_decisoes_quadrados_brancos.py::test_d668_pagina_13_sem_buracos_e_vivia_com_o_i_inteiro[magico_pro]
+FAILED tests/test_decisoes_quadrados_brancos.py::test_d668_print_10_magico_pro_com_respeitar_desmarcada
+
+No ramo quadrados-c-2026-11-10:
+FALHA test_decisoes_quadrados_brancos (63s) 1 failed, 16 passed in 60.81s (0:01:00)
