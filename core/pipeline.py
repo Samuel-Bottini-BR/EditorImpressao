@@ -4406,18 +4406,23 @@ def renderizar_com_filtro(
     para esse filtro (acertar_alertas_do_fundo). Arriscado: desenhar a pagina
     de verdade aqui mudaria os alertas dela sem ela ter mudado de filtro.
 
-    "Como sairia" = como sai se a pessoa ESCOLHER esse filtro: a copia leva a
-    marca de filtro escolhido a mao (core/etapas.FILTRO), a mesma que a tela
-    grava ao escolher (TelaConferir._registrar). Sem ela, num livro com
-    "Limpar a folha" desligado (o livro novo) a copia saia em Original, e os
-    cartoes da tela cheia e a pagina grande dela mostravam a pagina sem o
-    filtro que ela teria (D-648, 10/11/2026). Com "Limpar a folha" ligado a
-    marca nao muda nada (o filtro da pagina ja vale).
+    "Como sairia" = como sai se a pessoa ESCOLHER esse filtro: se ele nao e o
+    que ja vale na pagina (etapas.filtro_que_vale), a copia leva a marca de
+    filtro escolhido a mao (core/etapas.FILTRO), a mesma que a tela grava ao
+    escolher (TelaConferir._registrar). Sem ela, num livro com "Limpar a
+    folha" desligado (o livro novo) a copia saia em Original, e os cartoes da
+    tela cheia e a pagina grande dela mostravam a pagina sem o filtro que ela
+    teria (D-648, 10/11/2026). Com "Limpar a folha" ligado a marca nao muda
+    nada. Pedido com o filtro que ja vale: a pagina como ela sai hoje, numa
+    copia (a miniatura da pagina movida, D-649: o desenho por tras nao mexe na
+    pagina de verdade, ver ui/tela_conferir._acertar_as_miniaturas_movidas).
     """
     from dataclasses import replace
 
+    vale = etapas.filtro_que_vale(projeto, pagina)
     copia = replace(pagina, filtro=filtro, alertas=list(pagina.alertas))
-    etapas.marcar_mexida_a_mao(copia, etapas.FILTRO)
+    if filtro != vale:
+        etapas.marcar_mexida_a_mao(copia, etapas.FILTRO)
     return renderizar_pagina(doc, projeto, copia, dpi=dpi)
 
 

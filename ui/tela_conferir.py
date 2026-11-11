@@ -5686,14 +5686,13 @@ class TelaConferir(QWidget):
         guardada (as últimas 30 visitadas). Depois de reabrir o livro, ou longe
         da página, ela ficava com a folha crua, com o título no lugar, e o PDF
         saía com o conteúdo subido e sem o título; a grade nunca compunha.
-        Agora a prévia que falta é PEDIDA (por trás, depois da página da vez:
-        PRIORIDADE_ADIANTADA) e, quando chega (_previa_chegou), a miniatura é
-        composta; a composta fica na tira mesmo depois de a prévia sair do
-        guardado (a chave diz de que estado ela é).
+        Agora, sem a prévia guardada, a página como sai hoje é desenhada por
+        trás numa CÓPIA (GerenciadorPrevias.pegar_com_filtro, depois da página
+        da vez) e, quando chega (_previa_chegou), a miniatura é composta; a
+        composta fica na tira mesmo depois de a imagem sair do guardado (a
+        chave diz de que estado ela é).
         indices: só essas páginas (None = todas). No Dividir a tira mostra
         folhas: nada muda. Barato: só lê campos e compõe o que mudou."""
-        from ui.tarefas import PRIORIDADE_ADIANTADA
-
         if self.projeto is None or self.previas is None or self.trabalha_com_folhas:
             return
         todas = range(len(self.projeto.paginas)) if indices is None else indices
@@ -5717,9 +5716,14 @@ class TelaConferir(QWidget):
             previa = self.previas.ja_pronta(indice, self._dpi_normal)
             if previa is None:
                 # a prévia desta página ainda não foi desenhada (ou já saiu do
-                # guardado): é pedida, e a miniatura fica como está até ela chegar
-                self.previas.pedir(indice, self._dpi_normal, prioridade=PRIORIDADE_ADIANTADA)
-                continue
+                # guardado): a página como sai hoje é pedida por trás NUMA CÓPIA
+                # (pegar_com_filtro com o filtro que já vale: o desenho por trás
+                # não mexe na página de verdade - marcação, zonas, avisos; revisão
+                # de 10/11, M3), e a miniatura fica como está até ela chegar
+                previa = self.previas.pegar_com_filtro(
+                    indice, self._dpi_normal, etapas_core.filtro_que_vale(self.projeto, pagina))
+                if previa is None:
+                    continue
             if self.tira.definir_como_sai(indice, chave, self._como_sai_no_pdf(
                     previa, indice, float(self._dpi_normal))):
                 mudaram.append(indice)
@@ -5760,9 +5764,11 @@ class TelaConferir(QWidget):
         self._atualizar_barra_de_baixo()
 
     def _pagina_da_previa(self, chave: str) -> int | None:
-        """A página de que `chave` é a prévia normal de agora, na resolução da
-        tela (GerenciadorPrevias.chave), ou None (outra resolução, outro
-        filtro, a folha crua, a medida, ou um estado que já passou)."""
+        """A página de que `chave` é a prévia de agora, na resolução da tela: a
+        normal (GerenciadorPrevias.chave) ou a desenhada numa cópia com o filtro
+        que vale (a da miniatura, chave_com_filtro); None se for outra coisa
+        (outra resolução, outro filtro, a folha crua, a medida, ou um estado que
+        já passou)."""
         if self.projeto is None or self.previas is None:
             return None
         cabeca = chave.split(":", 1)[0]
@@ -5771,7 +5777,10 @@ class TelaConferir(QWidget):
         indice = int(cabeca)
         if not 0 <= indice < len(self.projeto.paginas):
             return None
-        return indice if chave == self.previas.chave(indice, self._dpi_normal) else None
+        pagina = self.projeto.paginas[indice]
+        da_copia = self.previas.chave_com_filtro(
+            indice, self._dpi_normal, etapas_core.filtro_que_vale(self.projeto, pagina))
+        return indice if chave in (self.previas.chave(indice, self._dpi_normal), da_copia) else None
 
     @protegido
     def _previa_chegou(self, chave: str, _img: np.ndarray) -> None:
