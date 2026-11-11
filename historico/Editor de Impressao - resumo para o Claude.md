@@ -1,6 +1,6 @@
 # Editor de Impressão — documento para colar no Claude
 
-Atualizado em 10/11/2026 (PARTE -33; a anterior, PARTE -32, é de 07/11). Desde 19/10 a memória por assunto fica em `memoria/` (índice `memoria/INDICE.md`). Versão **máxima**: reúne o histórico institucional, o
+Atualizado em 10/11/2026, noite (PARTE -34; a anterior, PARTE -33, é de 10/11 à tarde). Desde 19/10 a memória por assunto fica em `memoria/` (índice `memoria/INDICE.md`). Versão **máxima**: reúne o histórico institucional, o
 que o programa é, todas as funcionalidades pedidas, os 68 pedidos feitos até
 hoje **palavra por palavra**, o que foi feito, o que falta, e os dois
 documentos-fonte inteiros (a especificação original e o prompt de testes) em
@@ -11,6 +11,183 @@ Pasta do projeto: `D:\programas\EditorImpressao` (mudou de
 `C:\Users\fotog\Desktop\EditorImpressao` em 07/09/2026; essa pasta antiga virou
 o backup). Repositório git ligado a
 `https://github.com/Samuel-Bottini-BR/EditorImpressao`.
+
+---
+
+# PARTE -34 — Checkpoint de 10/11/2026, noite: Livros recentes consertado, graves D-649/D-648 e quadrados C prontos (não juntados), revisão do código, regra "muda em todos os lugares" (leia isto primeiro)
+
+Sessão no PC, 10/11 (20h35 UTC) a 11/11 (02h53 UTC), gerente Claude Opus 5.5, uma conversa (resumida uma vez). Checkpoint
+pedido pelo Samuel ("vou terminar depois, vamos dar checkpoint"). Escrito a partir da conversa salva
+(`falas_da_conversa.py --todas --desde 2026-11-10T18:24`), do git e da Central, não do resumo.
+**No fechamento não há agente rodando.** Os agentes do dia (Livros recentes, origem dos quadrados, revisão do código,
+prints da revisão, graves, quadrados C) entregaram. As provas da gerente terminaram.
+
+## 0. Para recomeçar
+
+1. `git -C D:\programas\EditorImpressao fetch origin`. Versão de teste: `obra-2026-10-26` (worktree `.claude\worktrees\obra-juncao`).
+2. Perguntar ao Samuel se testou o **Livros recentes** (roteiro certo no §7). Ele disse "quero" e, perguntado "Deu certo?", respondeu "vou terminar depois, vamos dar checkpoint". **O roteiro dado a ele às 01h38 UTC tinha um passo errado** ("fechar o livro": sem livro aberto não há barra de menus, `ui/janela_principal.py` l.587-591). Dar o roteiro certo.
+2b. Levar ao obra as regras §11.10 e §11.11 do CLAUDE.md (`7a6deb43`, `28d7c349`): estão só no `fase-1`; os worktrees que saem do obra leem um CLAUDE.md sem elas.
+3. Ler na Central as respostas de `perg-desfazer-fundo`, `perg-quadrados-provas` e `perg-revisao-codigo` (§4).
+4. **Depois do teste dele, juntar no obra** `graves-2026-11-10` e `quadrados-c-2026-11-10` (juntam sem conflito,
+   `git merge-tree` limpo). O quadrados C só junta depois do "sim" de `perg-quadrados-provas` (3 provas antigas falham).
+   Antes de juntar: rodar a suíte por arquivo; depois, prints na Central e roteiro de teste a ele (um item por vez).
+
+## 1. Regras novas do Samuel, literais
+
+- **Mudou a ferramenta, muda em todos os lugares** (21h46 UTC): "Você devia ter mandado ele mudar a ferramenta, se mudou a
+  ferramenta, muda em todos os lugares." · "Isso me faz parecer que você está fazendo gambiarra no codigo" · "Como a mesma
+  função pode fazer coisas diferentes". → D-667, CLAUDE.md §11.10 (`7a6deb43`, só no `fase-1`, ainda não no obra), memória `feedback_ferramenta_muda_em_tudo.md`.
+- **Código de programador sênior** (21h48): "Eu não quero remendos nesse código, gambiarras, pode botar um agente para revisar o
+  codigo e achar coisas parecidas, eu quero as praticas de um programador senior na hora de codar" → revisão do código (§2).
+  As 10 regras de código propostas pelo revisor **não foram aprovadas** nem escritas no CLAUDE.md.
+- **Agente não abre agente** (21h56: "pera ai, tem 5 agentes trabalhando"; 22h06: "pode deixar assim") → CLAUDE.md §11.11
+  (`28d7c349`, só no `fase-1`, ainda não no obra). Ele deixou três agentes nesse dia.
+- **Ler tudo ao começar** (00h26 UTC de 11/11): "o que mais será que você não leu quando começou essa conversa e porque cometeu
+  esse erro de não ler tem que existir um mecanismo para você não cometer esse erro, quando eu chamar o projeto" · "pode" →
+  `C:\Users\fotog\.claude\commands\projeto.md` passos 3, 4 e 6 (ler o CLAUDE.md inteiro, o "Leia primeiro", `.claude/agents/`,
+  `memoria/INDICE.md`, a PARTE mais nova inteira; recibo do que leu) e a lista antes de abrir agente. Memória
+  `feedback_pedido_agente_completo.md` (00h10: "são só essas regras? tem certeza que leu tudo que um agente deve ou não fazer?").
+
+## 2. Os trabalhos, pelo git
+
+- **Juntado no obra:** Livros recentes (`4de59c37`, junção `d777370c`): o programa fechava ao abrir Arquivo > "Livros
+  recentes" depois do F1 (`a.menu()` trocado por `QMenu.menuInAction`). Prova `tests/test_livros_recentes_depois_do_f1.py`,
+  conferida pela gerente (falha no antigo, passa no novo). GitHub 42909616068 verde. **Falta o teste do Samuel** ("quero", depois "vou terminar depois").
+- **Livro no obra:** D-665, D-666 (`d9f80eb4`), D-667 (`bc766007`), D-668 (`58806f81`); situações de D-646, D-648, D-649, D-662 e
+  D-668 atualizadas neste checkpoint.
+- **Pronto, conferido, não juntado — `graves-2026-11-10` (`96cb1dd1`, worktree `graves`):**
+  - D-649 (`1e04573b`, `6d13ccfc`): a miniatura da página mexida sai igual ao PDF, na tira e no "ver todas", também depois de
+    reabrir; a conta "como sai no PDF" ficou num lugar só (`core/pipeline.compor_como_no_pdf`, usada pelo PDF, pela tela e
+    pelo Automático). A "folha espremida" de 07/11 já tinha sido consertada na origem em 09/11 (`88731637`).
+  - D-648 (`bcd49735`): cartões de "Filtros em tela cheia" mostram a página da vez em cada filtro (antes vazios ou outra
+    página); a conta da cópia leva a marca "filtro escolhido à mão".
+  - Provas `tests/test_graves_d649_*.py` e `test_graves_d648_*.py`: **a gerente rodou** no `58806f81` (falham 1 e 2) e no
+    ramo (passam 2 e 2). GitHub 42944019482 verde; velocidade 42936386218 igual.
+  - D-646 **não feito**: parado no lugar do botão (§4).
+- **Pronto, conferido, não juntado — `quadrados-c-2026-11-10` (`adf35fbf`, worktree `quadrados-c`), D-668:** lista única
+  `FILTROS_QUE_RESPEITAM_AS_GRAVURAS` em `core/filtros.py`; `core/etapas.respeitar_procura` e
+  `core/pipeline.marcacao_que_o_filtro_usa` leem a lista; `_em_volta_e_papel` na limpeza do papel. Escola inteira: quadrados
+  110→2 (Melhorar) e 112→2 (Mágico pro); página 13: 23,5%→1,4%; "i" de "Vivia" inteiro. Prova
+  `tests/test_decisoes_quadrados_brancos.py` (17): **a gerente rodou** no `58806f81` (12 falham, 5 passam) e no ramo (17
+  passam). GitHub 42932052865: só as 3 provas antigas da D-659 falham (§4); velocidade 42932057632 igual.
+- **Só relatório:** `revisao-codigo-2026-11-10` (`ab9ba273`): 17 remendos (A1 girar com 7 caminhos; A2 figurinhas e "comparar"
+  com conta mais simples; A3 "usar em todas" diferente por ferramenta; A4 o Automático deixa a folha inteira diferente do "não
+  dividir esta"; M1 a M9; 4 baixos) e provas em imagem das 4 perguntas. `quadrados-origem-2026-11-10` (`57ae00b1`): antes da obra
+  não havia quadrados; começaram com `175addb7` (etapa 1, escolha técnica do agente) + `e2321b16` (etapa 3, livro abre sem o
+  Automático).
+- **Fila depois disso** (ordem que ele aprovou às 00h03 de 11/11, "pode ser"): 1) graves; 2) conserto C; 3) "O girar numa regra
+  só, com a D-665 e a D-666 e o girar da grade". (Esperar as respostas da revisão antes do 3 é sugestão da gerente, não dele.) Depois, a fila antiga da PARTE -33 §2 (D-660,
+  caixinhas, giro na tela etc.).
+- **Cópias para tirar** (fora do projeto, no scratchpad da sessão `2ec556d3`): `antes`, `antigo` (`58806f81`) e `v6904`
+  (`6904a634`), registradas no `git worktree list` (`git worktree remove`). Mais as da PARTE -33 §2.
+
+## 3. As falas do Samuel desde o último checkpoint e o destino de cada uma
+
+Horas em UTC.
+
+| Hora | Fala | Destino |
+|---|---|---|
+| 10/11 20:07–20:28 (outra conversa) | "como assim relatorios antigos?" · "pode guardar" | Já no checkpoint complementar (`2688b70d`) |
+| 20:35 | "1" (/projeto) | Editor de Impressão |
+| 20:37–21:02 | "quero relembrar onde estamos que problemas faltam e em que problemas estavamos trabalhando" · "no que estavamos falta o que?" | Respondido |
+| 21:24–21:28 | "acabei de responder tudo, e agora, qual o proximo na fila" | Central (21:24): girar no Dividir "Sim, mostrar como vai sair (recomendo)" → **D-665**; "Sim, os três também (recomendo)" → **D-666**; quadrados "Ainda não entendi" (21:28) |
+| 21:34 | "vamos colocar dois, 1 para isso e um para o branco dos filtros que está aparecendo" | Agentes do Livros recentes e da origem dos quadrados |
+| 21:36 (no meio do trabalho) | "veja a minha resposta sobre lá na central" · "sobre o magico pro" · comentário: "Mas antes ele não fazia isso né... descubra que agente fez o programa começar a fazer isso, é só você ver os testes que fizemos antes com o melhorar e magico pro." | Investigação da origem (§2, §5) |
+| 21:38–21:39 | "o girar no dividir já está pronto não está?" · "da uma olha no programa, pois eu testei e o girar no dividir estava funcionando" | **D-662 testada por ele** (Livro atualizado neste checkpoint) |
+| 21:44–21:48 | "a pergunta é, quando eu mandei fazer, porque o gerente não fez em tudo?" · "Você devia ter mandado [...]" · "Isso me faz parecer que você está fazendo gambiarra no codigo" · "Como a mesma função pode fazer coisas diferentes" · "Eu não quero remendos [...]" | D-667, §11.10, revisão do código |
+| 21:56 · 22:06 | "pera ai, tem 5 agentes trabalhando" · "pode deixar assim" | Ajudantes do revisor parados; §11.11 |
+| 22:16 | "pode preparar os prints agora para eu ver" | Prints das 4 perguntas (`ab9ba273`); Central `perg-revisao-codigo` (ordem 73) |
+| 22:26 | "o revisor do que?" | Explicado |
+| 23:56 | "c, o que mais tem para responder?" | Central "Roxo: o conserto C (recomendo)" → **D-668** |
+| 11/11 00:03 | "3- explica pra mim os 3 concertos" · "pode ser" | Ordem da fila aprovada (§2) |
+| 00:10 · 00:26 · 00:28 | "são só essas regras? [...]" · "o que mais será que você não leu [...]" · "pode" | Regras completas mandadas aos 2 agentes; /projeto refeito; memória |
+| 00:31 · 01:36 | "an.₢omo assim por cima das minha copias?" · "ok" | Cópias do plano na pasta dele atualizadas (§5) |
+| 01:37 | "quero" (testar o Livros recentes) | Roteiro dado às 01:38 (com o passo errado "fechar o livro", ver §7); teste não feito |
+| 02:53 | "vou terminar depois, vamos dar checkpoint" | Este checkpoint |
+
+**Testes que ele fez:** girar no Dividir (D-662), "estava funcionando". Nenhum print novo nesta sessão.
+
+## 4. Perguntas em aberto (exatas)
+
+1. **Central `perg-desfazer-fundo`** (ordem 74, 11/11 ≈02h40 UTC): "O botão "Desfazer o tirar o fundo" pode ficar logo abaixo do
+   "Tirar o fundo", no menu Filtro e no painel Filtro da página?" Opções exatas: "Sim: abaixo do \"Tirar o fundo\", no menu Filtro e no painel, com o \"Aplicar em\" (recomendo)" / "Outro lugar ou
+   outro nome". A explicação diz que três provas antigas mudam e que projetos salvos com "Tirar o fundo" abrem com o fundo tirado e o
+   filtro Original. **A mudança no formato do projeto (campo "fundo tirado", CLAUDE.md §6) foi acrescentada à pergunta no checkpoint**,
+   depois que o conferente apontou que faltava.
+2. **Central `perg-quadrados-provas`** (ordem 75): "Três provas antigas dizem que Melhorar e Mágico pro não procuram a gravura.
+   Podem passar a dizer o que você escolheu no C?" (`test_decisoes_gravura_a_mao.py`: `test_d659_a_conta_quem_procura_com_limpar_desligado`
+   l.242-243 e `test_d659_g_..._[melhorar]`/`[magico_pro]`). Opções exatas: "Sim: as três provas deixam de cobrar o jeito velho no Melhorar e no Mágico pro (recomendo)" / "Não: quero ver antes". Avisos dados: a 1ª vez
+   demora ≈5 s a mais (8 a 11 s no Livro de Horas); com "Respeitar" desmarcada o "i" fino continua quebrado.
+3. **Central `perg-revisao-codigo`** (ordem 73), textos exatos: 1) "\"Usar em todas\" no Marcar, no Filtro, no Endireitar e no Girar:
+   deixar de fora as páginas mexidas à mão, como o Cortar?"; 2) "\"Letra clara em fundo escuro\" deve ir junto no \"todas\" do painel
+   Filtro, como vai pelo Automático?"; 3) "O \"dividir\" da grade \"Todas as páginas\" deve cortar na linha que você arrastou, como o
+   \"dividir esta\"?"; 4) "O girar da grade \"Todas as páginas\" deve deixar todas viradas como a página da vez, como o painel?". Cada uma
+   com "Sim: ... (recomendo)" / "Não: fica como hoje (...)"; 2 a 4 marcadas como já decididas por D-177/D-609/D-035/D-636 + D-667.
+4. **Pergunta do agente dos graves NÃO levada a ele**, de propósito: "TODAS as miniaturas devem mostrar o filtro e o corte?" — a D-547
+   já decide (só as mexidas).
+5. Continuam da PARTE -33 §4: as **38 respostas da Central de 08 a 10/11** (`relatorios/central-respostas-esperando-2026-11-10.md`),
+   "eu quero que seja rapido", D-660 na mesma caixa, "juntar esta", cantinho branco (D-664), o que falta ele testar.
+
+## 5. Descobertas (não redescobrir)
+
+- **Livros recentes:** no PySide6 6.11.1, `QAction.menu()` faz o Python dar o submenu como apagado quando o item temporário some
+  (reproduzido com 4 linhas de PySide puro). Usar `QMenu.menuInAction(a)`. Os submenus "Aplicar o giro em" e "Lado direito" também
+  ficavam apagados depois do F1.
+- **Quadrados brancos, origem:** antes da obra o programa procurava a gravura em toda página mostrada; `175addb7` (etapa 1, o agente
+  decidiu sozinho que sem o Automático não procura) + `e2321b16` (livro abre com o Automático desligado) tiraram a proteção. A
+  D-659 devolveu só no Preto e branco. Simulação "desfazer só a regra": volta a 2 e 2, custa ≈5 s.
+- **D-646:** "Tirar o fundo" é um filtro (D-134); qualquer outro filtro, inclusive o "Original" que o Automático põe, troca o
+  filtro e o papel volta. Cumprir a D-646 pede um campo "fundo tirado" separado do filtro.
+- **D-649:** a miniatura só saía como o PDF se a prévia estivesse entre as últimas 30 guardadas.
+- **D-648:** os cartões copiavam as figurinhas do painel Filtro, que só existem com ele aberto.
+- **Cópias do plano (CLAUDE.md §10.4):** a pasta dele `EditorImpressao-arquivos\plano-24-09-2026` estava sem D-665 a D-668 e com
+  o ESTADO-ATUAL de 07/11 (no Livro, a outra diferença era só o fim de linha CRLF). Atualizadas com o "ok" dele; os velhos
+  guardados como `DECISOES.antes-2026-11-10.md` e `ESTADO-ATUAL.antes-2026-11-10.md`. **Atualizadas de novo neste checkpoint.**
+- O worktree `quadrados-c` precisa das junções `modelos\` e `gabarito\paginas\` (sem `modelos\` o detector cai no antigo).
+
+## 6. Erros da gerente nesta sessão (não repetir)
+
+- Perguntou e mandou fazer a D-662 só no "todas as folhas" (como na D-640/D-645). Ele: "Você devia ter mandado ele mudar a
+  ferramenta [...]". → D-667.
+- O revisor abriu 3 ajudantes e ficaram 5 agentes. → §11.11.
+- Mandou dois agentes de conserto com um resumo das regras (faltaram §3, §5, §6, §4.10, `implementador.md`, memória). Mandou as regras
+  depois por mensagem. → memória `feedback_pedido_agente_completo.md`.
+- Começou a sessão sem ler o CLAUDE.md inteiro, o Livro, o Plano, os agentes, a memória e a PARTE -33 inteira, e sem comparar as duas
+  cópias do plano. → /projeto refeito.
+- Tentou copiar os arquivos do git por cima das cópias dele sem explicar; ele perguntou "como assim por cima das minha copias?".
+  Explicar antes e guardar o velho com outro nome.
+
+## 7. Como rodar e testar
+
+- Programa de teste: atalho **"Editor de Impressao (rodada de consertos)"** na área de trabalho (abre o `obra-juncao` via
+  `EditorImpressao-arquivos\atalho-rodada-de-consertos\abrir.vbs`). Agentes: sempre `QT_QPA_PLATFORM=offscreen` e `LOCALAPPDATA` à parte.
+- **Roteiro certo do Livros recentes** (o do agente): fechar o programa se estiver aberto; abrir um livro; F1 e fechar a ajuda;
+  **com o livro aberto**, Arquivo > Livros recentes 2 ou 3 vezes; clicar num livro da lista. Antes: fechava ao abrir o menu. Agora: a
+  lista aparece e o livro clicado abre. (O roteiro dado no chat às 01h38 UTC mandava "fechar o livro" antes do menu: errado.)
+- **Roteiros dos agentes, para depois de juntar:** graves — Mover numa página do meio para cima, ir à página 1, fechar e reabrir:
+  a miniatura (tira e "ver todas") mostra o conteúdo subido igual ao PDF; Cortar com o painel Filtro fechado → Ver > "Filtros em
+  tela cheia": cada cartão mostra a página atual no seu filtro. Quadrados — *Na escola de Jesus* livro novo, página 13, Melhorar
+  com "Respeitar" marcada (esperar ≈5 s): água sem quadrados e "Vivia" com o "i" inteiro; Mágico pro igual; desmarcar "Respeitar":
+  sem buracos grandes, "i" quebrado; "Aplicar em: todas": páginas 97 e 119 inteiras; PDF igual à tela.
+- Suíte por arquivo e GitHub: como na PARTE -33 §7.
+- **Testes neste checkpoint:** a gerente rodou as provas novas nos dois ramos e no código antigo (acima). Suítes dos ramos rodadas
+  pelos agentes (graves: 55 `test_decisoes*` + vizinhos + `teste_botoes` 374 ações, 0 falhas; quadrados: 78 arquivos, 1419
+  passaram, 3 falharam = as 3 da D-659). Suíte inteira do obra: a última é a de 10/11 de manhã (229 arquivos ok); depois entrou só
+  o Livros recentes (rodou `test_decisoes*`, `test_promessas` e `teste_botoes` no ramo).
+
+## 8. Fora do git, de propósito
+
+- Os `.pdf` dos relatórios (`*.pdf` no `.gitignore`): o `relatorio.pdf` dos graves (32 MB) ficou **fora** do git, só no worktree `graves`
+  (o agente disse o contrário; conferido com `git ls-tree`). No git estão só os PDFs forçados do quadrados-c (`adf35fbf`, 250 KB) e da
+  origem dos quadrados (362 KB).
+- O `relatorio-completo.pdf` da origem dos quadrados (107 MB).
+- As cópias de trabalho no scratchpad (§2).
+- **O Quadro dos trabalhos da Central não foi atualizado** (fonte `docs/plano/central/fonte.json` parada desde 26/10, `66a91d44`); o andamento hoje vive nas abas Conferência e Respostas. As respostas desta sessão estão com `gerente` e `lida`; as perguntas novas são `perg-desfazer-fundo` (74) e `perg-quadrados-provas` (75).
+
+## 9. Próximo passo
+
+Perguntar se o Livros recentes funcionou; com isso, juntar os graves no obra (e o quadrados C depois do "sim" das provas), rodar a
+suíte por arquivo, pôr os prints na Central e dar a ele um teste por vez.
 
 ---
 

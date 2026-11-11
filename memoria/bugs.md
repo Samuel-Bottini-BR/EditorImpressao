@@ -6,6 +6,8 @@ tem teste de reversão. Onde esta ficha e o plano discordarem, vale o plano e a 
 mudanças (seção 7). Conferido em 20/10/2026.
 
 > **Atualização de 21/10/2026 ([PARTE -17](../historico/Editor%20de%20Impressao%20-%20resumo%20para%20o%20Claude.md)):** as contagens e tabelas abaixo são de 20/10/2026. O que mudou depois está em "Atualização de 21/10/2026" no fim deste arquivo (bugs de 20/10 e o que foi consertado).
+> **Atualização de 10/11/2026, noite ([PARTE -34](../historico/Editor%20de%20Impressao%20-%20resumo%20para%20o%20Claude.md)):** Livros recentes consertado (`d777370c`, falta teste dele). D-649 e D-648 prontos no ramo `graves-2026-11-10`, D-668 (quadrados) no `quadrados-c-2026-11-10`, com teste de reversão; não juntados. Achados novos na Lista de bugs do plano (erro em menu abrindo derruba o programa; `a.menu()` em testes; tela estica imagem do PDF; M8; revisão do código com 17 remendos).
+
 ## Contagens (20/10/2026)
 
 | | quantos |

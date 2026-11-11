@@ -8,7 +8,14 @@ Escrito em 24/09/2026. A ordem de autoridade é:
 
 O resto é histórico. O `PEDIDOS.md` virou histórico em 24/09: a lista que vale é o Plano Definitivo.
 
-> **Onde o projeto está em 10/11/2026 (vale sobre tudo abaixo; detalhe na [PARTE -33](../../historico/Editor%20de%20Impressao%20-%20resumo%20para%20o%20Claude.md) do handoff):**
+> **Onde o projeto está em 10/11/2026, noite (vale sobre tudo abaixo; detalhe na [PARTE -34](../../historico/Editor%20de%20Impressao%20-%20resumo%20para%20o%20Claude.md) do handoff):**
+> - Versão de teste: ramo `obra-2026-10-26` (worktree `.claude/worktrees/obra-juncao`, ponta `58806f81` + Livro do checkpoint). Entrou o conserto do "Livros recentes" (fechava o programa depois do F1, `d777370c`): **o Samuel começou o teste e disse "vou terminar depois"**.
+> - Prontos e conferidos pela gerente, **não juntados** (esperam o fim desse teste): ramo `graves-2026-11-10` (D-649 miniatura = PDF; D-648 cartões da tela cheia) e ramo `quadrados-c-2026-11-10` (D-668, quadrados brancos). Juntam sem conflito.
+> - Livro de decisões (no obra) até a D-668. Regras novas: D-667 / CLAUDE.md §11.10 ("se mudou a ferramenta, muda em todos os lugares") e §11.11 (agente não abre agente).
+> - Esperam o Samuel na Central: `perg-desfazer-fundo` (lugar do botão da D-646), `perg-quadrados-provas` (3 provas antigas da D-659), `perg-revisao-codigo` (4 perguntas da revisão). Esperam a gerente: as mesmas 38 respostas de 08 a 10/11.
+> - Depois: girar numa regra só (D-665, D-666 e o girar da grade), depois das respostas da revisão.
+>
+> **Antes (10/11, tarde), já superado:**
 > - A versão de teste é o ramo `obra-2026-10-26` (worktree `.claude/worktrees/obra-juncao`, ponta `396c534c` + Livro do checkpoint). Dentro dela, além do que já havia: gravura no Preto e branco à mão (D-659) e o "Pular" que guarda a gravura (D-661), testados pelo Samuel (funcionam); girar com a capa aberta e no Dividir (D-638, D-640, D-645, D-662, D-663), suíte inteira ok, **falta o teste dele**.
 > - O Livro de decisões (`docs/plano/DECISOES.md`, no obra) vai até a D-664.
 > - Fila de consertos: nada começado; a ordem (graves: fechar em Livros recentes, folha espremida, Automático e Tirar o fundo; depois quadrados brancos, D-660, caixinhas) **espera o "sim" dele**.

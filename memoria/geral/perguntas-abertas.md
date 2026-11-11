@@ -9,7 +9,13 @@ Como manter: quando ele responder, registre no plano (as duas cópias) e na fich
 daqui** (ou mova para "Respondidas recentemente" com a data). O `conferir_memoria.py` avisa quando uma pergunta desta
 lista com nome entre crases já aparece como decidida no Registro.
 
-## 0000000. Atualização de 10/11/2026 (vale sobre o resto; [PARTE -33](../../historico/Editor%20de%20Impressao%20-%20resumo%20para%20o%20Claude.md) §4)
+## 0000000a. Atualização de 10/11/2026, noite (vale sobre o resto; [PARTE -34](../../historico/Editor%20de%20Impressao%20-%20resumo%20para%20o%20Claude.md) §4)
+
+- **Respondidas:** `girar-dividir-tela` → D-665, `girar-dividir-outros` → D-666, `quadrados-qual` ("c") → D-668.
+- **Esperam o Samuel na Central:** `perg-desfazer-fundo` (lugar do botão "Desfazer o tirar o fundo", D-646); `perg-quadrados-provas` (3 provas antigas da D-659); `perg-revisao-codigo` (4: usar em todas, letra clara no todas, dividir da grade, girar da grade).
+- **Esperam a gerente:** as 38 respostas de 08 a 10/11 (`relatorios/central-respostas-esperando-2026-11-10.md`).
+
+## 0000000. Atualização de 10/11/2026 (tarde; [PARTE -33](../../historico/Editor%20de%20Impressao%20-%20resumo%20para%20o%20Claude.md) §4)
 
 - **Respondidas e construídas:** `girar-capa-teste-daqui` e `girar-capa-dividir-duas` → D-663 e D-662 (juntadas em 10/11); `cantinho-outros-casos` → D-664 (fica branco por enquanto); as 2 da gravura à mão ("1- sim 2- não entendi") e D-661 ("1- pode").
 - **Sem resposta (chat, 10/11):** a ordem da fila; o giro na tela entra agora?; "eu quero que seja rapido" é o giro?; a D-660 na mesma caixa das páginas mexidas?; trocar "não dividir esta" por "juntar esta"?
