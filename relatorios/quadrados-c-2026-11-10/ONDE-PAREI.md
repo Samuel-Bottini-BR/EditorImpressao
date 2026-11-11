@@ -38,7 +38,14 @@ dados num `LOCALAPPDATA` à parte, acervo só lido.
       desmarcada; a quarta pergunta da limpeza (`_em_volta_e_papel`)
 - [x] conferido: página 13 sai IGUAL ponto por ponto à simulação C (prévia e PDF, Melhorar com "Respeitar" e Mágico
       pro sem "Respeitar")
-- [ ] teste de reversão
-- [ ] medidas antes/depois (gabarito, livro inteiro, Horas 47, Boécio)
-- [ ] testes no PC, GitHub, velocidade
-- [ ] prints e relatório
+- [x] teste de reversão: `tests/test_decisoes_quadrados_brancos.py` (17 provas); no `58806f81` 12 falham, 5 passam
+      (as que guardam o que não muda); no ramo, 17 passam (`reversao-no-58806f81.txt`)
+- [x] páginas do gabarito (fase 1 e fase 3) + Escola 13/97/119 + Boécio 33, antes e depois (`medidas/paginas_*.json`)
+- [x] prints (`imagens/1` a `5`)
+- [x] GitHub, rodada 42932052865: só as 3 provas antigas da D-659 que dizem "Melhorar e Mágico pro à mão não
+      procuram" falham (ver Perguntas); `teste_botoes` e prints da janela: ok; a prova nova: 13 passam, 4 pulam (sem acervo)
+- [ ] livro inteiro (Melhorar e Mágico pro) no programa consertado — rodando
+- [ ] a medida da investigação da origem (print 10: 27,4% → ?) — na fila
+- [ ] filtro de velocidade do GitHub, rodada 42932057632 — rodando
+- [ ] testes no PC (test_decisoes*.py e os dos arquivos tocados), um por vez
+- [ ] relatório nos três formatos
