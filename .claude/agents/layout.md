@@ -139,3 +139,16 @@ Detalhe em `CLAUDE.md` §4.6 a §4.9.
 
 "Lembre de que o agente não pode fazer gambiarras como na outra ferramenta nossa que fazia várias gambiarras e funcionava
 de maneira diferente em vários lugares." Leia a regra inteira no CLAUDE.md §11.12. Em resumo: a tela não faz conta própria: botões, menus e painéis que fazem a mesma coisa chamam a mesma função (de preferência em `core/`). Nada de desvio na tela para um caso. Se só der remendo, pare e pergunte.
+
+## Regra de 13/11/2026 — como perguntar e responder ao Samuel (decisão do Samuel; CLAUDE.md §11.13; vale sobre o que estiver diferente acima)
+
+Toda pergunta, relatório ou resposta para o Samuel segue o CLAUDE.md §11.13 (sete regras tiradas de 106 casos de "Ainda não entendi"):
+1. comece pelo que é e onde fica;
+2. nenhuma palavra de dentro (código, número de decisão, nome de etapa);
+3. print que prova, no modelo do girar;
+4. exemplo do caso real, conferido antes;
+5. o caminho da página e se é defeito ou escolha;
+6. "O que você escolhe" e o que muda em cada opção;
+7. curto, sem ficha técnica, respondendo o que ele perguntou.
+
+A seção "Perguntas para o Samuel" do ONDE-PAREI já vem nesse formato. A gerente devolve a que não vier.
