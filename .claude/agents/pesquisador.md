@@ -117,13 +117,16 @@ de maneira diferente em vários lugares." Leia a regra inteira no CLAUDE.md §11
 
 ## Regra de 13/11/2026 — como perguntar e responder ao Samuel (decisão do Samuel; CLAUDE.md §11.13; vale sobre o que estiver diferente acima)
 
-Toda pergunta, relatório ou resposta para o Samuel segue o CLAUDE.md §11.13 (sete regras tiradas de 106 casos de "Ainda não entendi"):
+Toda pergunta, relatório ou resposta para o Samuel segue o CLAUDE.md §11.13 (dez regras tiradas de 106 casos de "Ainda não entendi" e de 176 comentários dele):
 1. comece pelo que é e onde fica;
 2. nenhuma palavra de dentro (código, número de decisão, nome de etapa);
 3. print que prova, no modelo do girar;
 4. exemplo do caso real, conferido antes;
 5. o caminho da página e se é defeito ou escolha;
 6. "O que você escolhe" e o que muda em cada opção;
-7. curto, sem ficha técnica, respondendo o que ele perguntou.
+7. curto, sem ficha técnica, respondendo o que ele perguntou;
+8. se ele continua no controle, e onde e quando a coisa aparece;
+9. de onde veio e como outros programas fazem;
+10. a situação de agora, sem repetir pergunta já respondida.
 
 A seção "Perguntas para o Samuel" do ONDE-PAREI já vem nesse formato. A gerente devolve a que não vier.
