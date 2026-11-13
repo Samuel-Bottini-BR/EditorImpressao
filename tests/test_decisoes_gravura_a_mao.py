@@ -239,7 +239,9 @@ def test_d659_a_conta_quem_procura_com_limpar_desligado():
                                            misto_so_as_letras=True))
     # não procuram
     assert not E.marca_sozinho(projeto, pagina(respeitar_gravuras_achadas=False))
-    for filtro in (ORIGINAL, MELHORAR, MAGICO_PRO):
+    # D-698 (Samuel, 13/11/2026: "pode mudar"): o Melhorar e o Mágico pro saíram daqui; desde a
+    # D-668 eles procuram a gravura como o Preto e branco (prova: test_decisoes_quadrados_brancos.py)
+    for filtro in (ORIGINAL,):
         assert not E.marca_sozinho(projeto, pagina(filtro=filtro)), filtro
         assert not E.marca_sozinho(projeto, pagina(filtro=filtro, gravuras_em_tons_de_cinza=True))
     assert not E.marca_sozinho(projeto, pagina(a_mao=False)), "Preto e branco sem a marca (D-009)"
@@ -247,7 +249,7 @@ def test_d659_a_conta_quem_procura_com_limpar_desligado():
     projeto.detectar_regioes = True                   # o de fábrica do livro novo
     assert E.marca_sozinho(projeto, pagina())
     assert not E.marca_sozinho(projeto, pagina(respeitar_gravuras_achadas=False))
-    assert not E.marca_sozinho(projeto, pagina(filtro=MELHORAR))
+    assert not E.marca_sozinho(projeto, pagina(filtro=ORIGINAL))   # D-698: era MELHORAR
     assert not _etapa_5_ligada(projeto), "a etapa 5 foi remarcada"
 
     # com "Limpar a folha" ligado: a conta de antes, em todos os casos
@@ -440,7 +442,9 @@ def test_d659_f_as_tres_desmarcadas_nada_e_procurado_e_sai_igual_ao_de_antes(
     assert procuradas == []
 
 
-@pytest.mark.parametrize("filtro", [MELHORAR, MAGICO_PRO, ORIGINAL])
+# D-698 (Samuel, 13/11/2026: "pode mudar"): só o Original fica aqui; o Melhorar e o Mágico pro
+# procuram a gravura desde a D-668 (prova: tests/test_decisoes_quadrados_brancos.py)
+@pytest.mark.parametrize("filtro", [ORIGINAL])
 def test_d659_g_outros_filtros_a_mao_nada_e_procurado_e_sai_igual_ao_de_antes(
         janela, tmp_path, procuradas, monkeypatch, filtro):
     """Melhorar, Mágico pro e Original escolhidos à mão (com as caixinhas de fábrica, "Respeitar"
