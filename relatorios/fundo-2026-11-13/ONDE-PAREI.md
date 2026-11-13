@@ -110,11 +110,12 @@ voltava a usar a folha com o papel velho. O Automático não era o culpado: ele 
 | "Aplicar em": todas / daqui em diante | `_filtro_em_todas` / `_filtro_nas_proximas` → `_campos_do_aplicar_em` (lista única, juntada) → `montar_acao` | `campos_do_aplicar_em` (leva o True ou o False da página) ou `depois_da_troca` |
 | "Sim, tirar o fundo" | `janela._tirar_o_fundo_do_livro_inteiro` → `montar_acao` | `depois_da_troca` |
 | Automático (e "Ver como fica", na cópia) | `core/automatico._ligar_na_pagina` → `_Gravador.na_pagina("filtro")` | `depois_da_troca` |
-| "Desfazer nesta página" (Filtro) | `ui/desfazer_nesta_pagina` → `_registrar` → `montar_acao` | `depois_da_troca` (o fundo fica) |
+| "Desfazer nesta página" (Filtro) | `ui/desfazer_nesta_pagina.desfazer` (monta a ação sem `montar_acao`; passou a chamar a mesma função) | `com_o_fundo_que_fica` → `depois_da_troca` (o fundo fica) |
 | Desfazer / refazer (Ctrl+Z / Ctrl+Shift+Z) | `historico_acoes.aplicar` com o `antes`/`depois` da ação | o campo vai na mesma ação |
 | "Desfazer o tirar o fundo": menu e painel | `TelaConferir.desfazer_o_tirar_o_fundo` (a MESMA para os dois) | `campos_para_desfazer` |
 | Prévia, tela, PDF | `pipeline.renderizar_pagina` / `_pagina_pronta` → `usa_tirar_fundo`; filtro por cima → `_filtrar_a_pagina_sem_fundo` (uma função para os dois) | `esta_sem_o_fundo`, `filtro_por_cima` |
 | Figurinha "Tirar o fundo", tela cheia, "comparar" Tirar o fundo, miniatura composta (D-649) | `pipeline.renderizar_com_filtro` (cópia da página) | `depois_da_troca` |
+| Tela cheia com opções mexidas e ainda não gravadas | `filtros_tela_cheia.pagina_com_as_opcoes` (a cópia) → `renderizar_com_filtro` | `depois_da_troca` na página de verdade |
 | Figurinhas Original/PB/Melhorar/Mágico e o "comparar" da tela grande | `TelaConferir._imagem_sem_filtro` (a tela grande passou a chamar a mesma) | `usa_tirar_fundo` |
 | Chave das prévias (cache) | `GerenciadorPrevias.chave` | `depois_da_troca` |
 | Procurar gravura/letra pulada, marcação provisória | `precisa_do_desenho_do_pdf`, `_vai_detectar`, `_filtrar_preto_no_branco` | `so_o_fundo_tirado` |
@@ -208,6 +209,8 @@ de 29/09: "'Tirar o fundo' no menu Filtro, tecla 5").
 - No Automático, se o "Limpar a folha" estava desligado e a página estava em "Tirar o fundo" sem valer, rodar
   "Limpar a folha" com outro filtro deixa o fundo tirado (o "Limpar" é ligado antes da troca). Caso raro.
 - O "Desfazer o tirar o fundo" com "todas" não muda o filtro do livro (o que o Automático abre).
+- Projeto antigo: o Ctrl+Z de um "Sim, tirar o fundo" gravado ANTES do conserto (no histórico de ações da sessão
+  antiga) não traz o fundo de volta (aquela ação não tem o campo novo). Para isso há o botão.
 - A frase de explicação do "Original" no Automático ("a página como veio") não mudou.
 - `test_decisoes_desfazer_pagina.py::test_d621_botao_direito...` falhou uma vez na bateria (a marcação da página
   vizinha mudou de lugar) e passou nas duas rodadas seguintes, no código novo e no de antes. É a instabilidade que o
