@@ -1,0 +1,299 @@
+<!doctype html>
+<html lang="pt-BR">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Três defeitos graves (10/11/2026)</title>
+<style>
+:root { color-scheme: light dark; }
+* { box-sizing: border-box; }
+body {
+  font: 17px/1.65 "Segoe UI", system-ui, sans-serif;
+  max-width: 46rem; margin: 0 auto; padding: 2.5rem 1.5rem 6rem;
+  color: #1c1c1e; background: #fdfdfc;
+}
+h1 { font-size: 2rem; line-height: 1.2; margin: 0 0 .3em; letter-spacing: -.02em; }
+h2 { font-size: 1.35rem; margin: 2.4em 0 .6em; padding-top: .8em;
+     border-top: 1px solid #e6e4e0; letter-spacing: -.01em; }
+h3 { font-size: 1.1rem; margin: 1.8em 0 .4em; }
+h1 + p, h2 + p { margin-top: .4em; }
+p, li { margin: 0 0 .9em; }
+ul, ol { padding-left: 1.3em; }
+strong { font-weight: 640; }
+code {
+  font: .88em ui-monospace, "Cascadia Code", Consolas, monospace;
+  background: #f1efec; padding: .12em .35em; border-radius: 4px;
+}
+pre {
+  background: #f1efec; padding: 1em 1.1em; border-radius: 8px;
+  overflow-x: auto; line-height: 1.5;
+}
+pre code { background: none; padding: 0; }
+blockquote {
+  margin: 1.2em 0; padding: .1em 0 .1em 1.1em;
+  border-left: 3px solid #c9c5be; color: #55524d;
+}
+table {
+  border-collapse: collapse; width: 100%; margin: 1.2em 0;
+  font-size: .95rem; display: block; overflow-x: auto;
+}
+th, td { padding: .5em .8em; text-align: left; border-bottom: 1px solid #e6e4e0; }
+th { font-weight: 620; background: #f7f5f2; white-space: nowrap; }
+tr:last-child td { border-bottom: none; }
+img { max-width: 100%; height: auto; border-radius: 6px; margin: 1em 0;
+      border: 1px solid #e6e4e0; }
+hr { border: none; border-top: 1px solid #e6e4e0; margin: 2.5em 0; }
+.rodape { margin-top: 4em; padding-top: 1.2em; border-top: 1px solid #e6e4e0;
+          font-size: .85rem; color: #86827c; }
+@media (prefers-color-scheme: dark) {
+  body { color: #e8e6e3; background: #1a1917; }
+  h2 { border-top-color: #35332f; }
+  code, pre, th { background: #262421; }
+  th, td { border-bottom-color: #35332f; }
+  blockquote { border-left-color: #4a4741; color: #b0aca6; }
+  img { border-color: #35332f; }
+  .rodape { border-top-color: #35332f; color: #7d7973; }
+}
+@media print {
+  body { max-width: none; padding: 0; color: #000; background: #fff; }
+  h2 { page-break-after: avoid; }
+  table, img { page-break-inside: avoid; }
+}
+</style>
+</head>
+<body>
+<h1>ONDE-PAREI: três defeitos graves (10/11/2026)</h1>
+<p>Ramo <code>graves-2026-11-10</code> (a partir do <code>obra-2026-10-26</code> em <code>58806f81</code>), worktree
+<code>.claude/worktrees/graves</code>. Pedido da gerente de 10/11 (Samuel: "pode ser"). Achados no teste como o
+Kaique de 07/11 (versão <code>6904a634</code>; relatório fora do git em
+<code>.claude/worktrees/teste-kaique-funcoes/relatorios/teste-kaique-funcoes/</code>). Nenhuma página dos
+Lusíadas foi copiada para o git: os prints usam o Palatino e o Siebmacher (domínio público).</p>
+<h2>Resumo</h2>
+<table>
+<thead>
+<tr>
+<th>Defeito</th>
+<th>Situação</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>1. Tela, miniaturas e PDF diferentes; a folha espremida (D-649, D-547, D-473)</td>
+<td><strong>consertado</strong> (<code>1e04573b</code>, <code>6d13ccfc</code>)</td>
+</tr>
+<tr>
+<td>2. O Automático desfaz o "Tirar o fundo" (D-646, D-134)</td>
+<td><strong>parado: pergunta ao Samuel</strong> (nome e lugar da opção; muda o formato do projeto e testes antigos)</td>
+</tr>
+<tr>
+<td>3. Cartões de "Filtros em tela cheia" vazios (D-648, D-184, D-192)</td>
+<td><strong>consertado</strong> (<code>bcd49735</code>)</td>
+</tr>
+</tbody>
+</table>
+<h2>Decisões que esta tarefa precisa cumprir</h2>
+<ul>
+<li><strong>D-649</strong> (07/11): "Consertar" · "Isso é um erro grave. O preview as miniaturas tem que estar sincronizada e o
+  resultado final tem que sair como a edição foi mostrada no preview ."</li>
+<li><strong>D-547</strong> (27/10, escolha da gerente apoiada na D-473): "Todas as telas e miniaturas mostram a página já
+  movida/redimensionada, como sai no PDF".</li>
+<li><strong>D-473</strong> (26/10, apoiada na D-066 "precisamos que o pdf saia que nem está na tela"): "Tela e PDF diferentes é
+  defeito, nunca escolha".</li>
+<li><strong>D-646</strong> (07/11): "Consertar" · "É só criar uma opção para desfazer o tirar fundo, e só vai desfazer o tirar fundo
+  quando apertar ela. E via de regra, nenhum filtro deve fazer o fundo voltar."</li>
+<li><strong>D-134</strong> (29/09): "Página sempre abre em 'Original', sem mexer. Em PDF com camadas, 'Tirar o fundo' vira mais uma
+  opção na lista de filtros [...] Assim eu decido se tiro ou não, e o Kaique escolhe um filtro só, sem mudança
+  escondida." · "eu quero poder escolher tirar o fundo sem colocar nenhum filtro."</li>
+<li><strong>D-069</strong> (30/09, F5): "BOM - mas eu quero poder ter essa opção dentro do app depois de abrir o livro, e também a
+  opção de voltar ao original." (pela metade)</li>
+<li><strong>D-648</strong> (07/11): "Consertar" · "Esse é um grave."</li>
+<li><strong>D-184</strong> (07/10): "A — A “um grande”, com a chave “Comparar com o Original”".</li>
+<li><strong>D-192</strong> (22/10): "faça o recomendado." · "Está bom".</li>
+<li><strong>D-605</strong> (03/11): "nenhuma função nova, ou nova escolha dentro do programa pode alterar o que já está escolhido e
+  testado".</li>
+<li><strong>D-667</strong> (10/11): "se mudou a ferramenta, muda em todos os lugares".</li>
+</ul>
+<h2>O que já está escolhido e testado aqui</h2>
+<ul>
+<li>D-546: nas ferramentas de marcar, cortar, dividir e endireitar a página aparece SEM a composição (o Mover compõe
+  sozinho). Não mudou.</li>
+<li>D-547: só a miniatura da página movida (ou numa folha escolhida) é composta; as outras ficam com a folha como veio
+  (<code>tests/test_decisoes_9b2.py::test_d547_*</code>, que confere "as outras: cruas"). Não mudou.</li>
+<li>D-473/D-064: a prévia é trocada pela imagem do PDF reduzida (<code>test_d473_d064_*</code>). Não mudou.</li>
+<li>D-659 (09/11): o acerto por trás não devolve mais a folha crua
+  (<code>tests/test_decisoes_gravura_a_mao.py::test_d659_a_tela_nao_troca_a_previa_pela_folha_crua</code>).</li>
+<li>D-184/D-192: a tela cheia (<code>tests/test_filtros_tela_cheia.py</code>, 11 provas); a página grande já usava a conta do PDF.</li>
+<li>D-134, D-136, D-490 e o filtro "Tirar o fundo" (<code>tests/test_tirar_fundo_no_programa.py</code>, 54 provas, entre elas
+  <code>test_original_nao_mexe_na_pagina</code>, <code>test_outro_filtro_nao_tira_o_fundo</code>, <code>test_alerta_sai_quando_a_pagina_sai_do_filtro</code>).</li>
+</ul>
+<h2>Como fica para quem usa e no livro</h2>
+<p><strong>Defeito 1.</strong> Antes: Kaique move o conteúdo da página 5 para cima no Mover, fecha e reabre o livro; a miniatura da
+página 5 (embaixo e em "ver todas") mostra o título no lugar; o PDF sai sem o título. Depois: a miniatura da página
+movida mostra o que vai sair no PDF (o título fora), embaixo e em "ver todas", mesmo sem visitar a página (a prévia
+dela é feita por trás, depois da página da vez; leva um ou dois segundos). As páginas que ninguém moveu ficam como
+sempre. O PDF não muda (a conta é a mesma, agora num lugar só). A folha espremida no Mover e na Mão (que fez o
+"Centralizar" gravar errado) já tinha sido consertada em 09/11 e não volta.</p>
+<p><strong>Defeito 3.</strong> Antes: Ver &gt; "Filtros em tela cheia" com outra ferramenta e o painel do Filtro fechado: os quatro
+cartões da esquerda cinza para sempre (ou, se o painel Filtro mostrou outra página antes, as figurinhas DAQUELA
+página: no Palatino, a capa de couro no lugar da página 9). Depois: cada cartão aparece com a página no seu filtro, a mesma imagem da
+página grande quando ele é escolhido (com o "Só as letras", a gravura respeitada, a página movida), em poucos
+segundos. Nada muda no PDF.</p>
+<p><strong>Defeito 2.</strong> Não mudou nada (ver "Perguntas para o Samuel").</p>
+<h2>A causa de cada um</h2>
+<ol>
+<li><strong>Miniatura x PDF.</strong> Duas causas. (a) A folha espremida: no <code>6904a634</code>, o acerto por trás da página com a marcação
+   provisória devolvia a FOLHA CRUA como "a imagem do PDF", e a tela a esticava para a forma da página; o
+   "Centralizar" mediu essa imagem e gravou o conteúdo 17% para cima: por isso o PDF saiu sem o título. Consertada na
+   origem em 09/11 (<code>88731637</code>); a prova do D-659 falha no <code>6904a634</code> ("devolveu a folha crua como se fosse o desenho
+   do PDF"). (b) A miniatura só era composta como no PDF se a prévia da página ainda estivesse guardada (as últimas
+   30 visitadas): depois de reabrir o livro ela ficava com a página como veio, e a grade "Todas as páginas" nunca
+   compunha. Além disso a conta "como sai no PDF" estava escrita três vezes (PDF, tela, Automático: revisão M2).</li>
+<li><strong>Automático x "Tirar o fundo".</strong> "Tirar o fundo" é um FILTRO da página (D-134): escolher qualquer outro filtro,
+   inclusive pelo "Limpar a folha" do Automático (que abre com a receita, "Original"), troca o filtro e o fundo volta.
+   A regra da D-646 ("nenhum filtro deve fazer o fundo voltar") pede que o fundo tirado vire uma coisa da página
+   SEPARADA do filtro, com os filtros feitos por cima da página sem o fundo.</li>
+<li><strong>Cartões da tela cheia.</strong> Não tinham conta própria: copiavam a figurinha do painel "Filtro da página", que só é
+   desenhada com esse painel aberto ou com a ferramenta Filtro. Aberta pelo menu Ver com outra ferramenta, nada era
+   desenhado. Com o painel aberto, mostravam a conta mais simples das figurinhas (revisão A2), não a da página grande.
+   E um segundo defeito, achado ao provar: num livro com "Limpar a folha" desligado (livro novo), a conta "como sai
+   com o filtro X" (<code>core/pipeline.renderizar_com_filtro</code>, a da página grande da tela cheia, do cartão "Tirar o
+   fundo" e do "comparar") desenhava a cópia sem a marca de "filtro escolhido à mão" que a tela grava ao escolher: o
+   Preto e branco aparecia em Original, e depois de "Usar" a página saía em Preto e branco. Agora a cópia leva a
+   marca (o mesmo que escolher).</li>
+</ol>
+<h2>O que juntei num lugar só</h2>
+<ul>
+<li><code>core/pipeline.compor_como_no_pdf</code>: margens iguais + página movida/na folha escolhida. Usada pelo PDF
+  (<code>_pagina_pronta</code>), pela tela (<code>ui/tela_conferir._como_sai_no_pdf</code>, que serve cartões, lado a lado, antes/depois,
+  tela cheia e miniaturas) e pela prévia do Automático (<code>core/automatico.como_sai_na_tela</code>). Antes: três cópias.</li>
+<li>Miniatura composta: uma só (<code>TelaConferir.miniatura_como_sai</code>), a mesma na tira e na grade.</li>
+<li>Cartões da tela cheia: a mesma imagem da página grande (<code>FiltrosEmTelaCheia._imagem</code>).</li>
+<li>Não mexi em <code>core/pipeline.garantir_selecao</code> nem em <code>core/filtros._limpar_o_papel_de_verdade</code> (outro agente).</li>
+</ul>
+<h2>Andamento</h2>
+<ul>
+<li>[x] Defeito 1: código, reversão, testes dos arquivos tocados.</li>
+<li>[x] Defeito 2: causa achada; parado na pergunta.</li>
+<li>[x] Defeito 3: código, reversão.</li>
+<li>[x] Prints (pasta <code>prints/</code>), testes de decisões, <code>teste_botoes.py</code>.</li>
+<li>[x] GitHub: testes verdes e velocidade igual (números abaixo).</li>
+</ul>
+<h2>Testes</h2>
+<p>No PC (um arquivo por vez, sem janela, prioridade baixa, <code>LOCALAPPDATA</code> à parte):
+- <code>tests/test_decisoes*.py</code>: os 55 arquivos passam. Um deles,
+  <code>test_decisoes_desfazer_pagina.py::test_d621_cada_etapa_sozinha_volta_so_ela_so_nesta_pagina[cortar]</code>, falhou UMA
+  vez com a primeira versão do conserto 1 ("selecao" mudou): a miniatura que faltava era pedida pela prévia normal,
+  que desenha na página de verdade e remonta a marcação. Causa tirada no <code>6d13ccfc</code> (a miniatura é desenhada numa
+  cópia); o teste antigo não foi mexido e passa (duas vezes seguidas).
+- Arquivos tocados e vizinhos: <code>test_decisoes_9b2</code> (30), <code>test_filtros_tela_cheia</code> (11), <code>test_tirar_fundo_no_programa</code>
+  (54), <code>test_misto_no_programa</code> (41), <code>test_misto_consertos</code> (25), <code>test_miniaturas_novas</code> (5), <code>test_margens_na_tela</code>
+  (4), <code>test_core</code> (62), <code>test_camadas</code> (64 + 26 pulados), <code>test_promessas</code> (268 + 1 xfail), <code>test_etapa10b_imagem</code>,
+  <code>test_para_revisar_na_tela</code>, <code>test_livro_aberto</code>, <code>test_cadernos</code>, <code>test_avisos</code>, <code>test_corte_pelo_conteudo_livro</code>,
+  <code>test_margens_scantailor</code>, <code>test_girar_cartoes_e_previas</code>, <code>test_menus_que_nao_faziam_nada</code>: todos passam.
+  <code>test_decisoes_girar_capa.py</code> caiu uma vez sem mensagem (o processo fechou depois do 1º teste) e passou inteiro
+  (26) ao rodar de novo: instabilidade, sem relação achada.
+- <code>teste_botoes.py</code>: 374 ações, 0 falhas.</p>
+<p>No GitHub:
+- <code>42936381314</code> (commit <code>bcd49735</code>): verde na 2ª tentativa. Na 1ª, só <code>test_dialogo_impressao.py</code> caiu com o código
+  3221226505 (o processo fechou DEPOIS dos 5 testes passarem; não toca nada deste conserto).
+- <code>42944019482</code> (commit <code>6d13ccfc</code>, o final do código): <strong>verde</strong> na 1ª tentativa (suíte nas 5 partes + botões e prints).
+- Filtro de velocidade <code>42936386218</code> (obra-2026-10-26 -&gt; graves-2026-11-10, disparado no <code>bcd49735</code>; o <code>6d13ccfc</code> só
+  muda a miniatura e o desenho dos cartões, nada do PDF): <strong>"igual (dentro do vai-e-vem)"</strong> (abrir o livro -0,8%,
+  trocar de página -0,4%, Mágico pro +0,2%, Preto e branco -1,1%).</p>
+<h2>Como cumpri cada uma</h2>
+<ul>
+<li><strong>D-649 / D-547</strong> (miniatura igual ao PDF): <code>tests/test_graves_d649_miniatura_igual_ao_pdf.py::
+  test_d649_b_a_miniatura_da_pagina_movida_sai_como_o_pdf_depois_de_reabrir</code> (medida: onde começa a tinta na
+  miniatura da tira e da grade = no PDF, até 3% da altura). Falha no obra <code>58806f81</code> ("não aconteceu a tempo: a
+  miniatura da página movida composta como no PDF"), passa no novo. Prints <code>d649-*.png</code>.</li>
+<li><strong>D-649 (a folha espremida)</strong>: causa consertada em 09/11; a prova
+  <code>tests/test_decisoes_gravura_a_mao.py::test_d659_a_tela_nao_troca_a_previa_pela_folha_crua</code> falha no <code>6904a634</code>
+  (a versão do teste de 07/11: "devolveu a folha crua como se fosse o desenho do PDF") e passa hoje. Guarda nova:
+  <code>test_d649_a_o_mover_mostra_a_pagina_e_nao_a_folha_espremida</code>.</li>
+<li><strong>D-473</strong> (tela = PDF): a composição é UMA conta (<code>core/pipeline.compor_como_no_pdf</code>) para o PDF, a tela e o
+  Automático; as provas antigas da D-547/D-473 (<code>tests/test_decisoes_9b2.py</code>, 30) passam.</li>
+<li><strong>D-648 / D-184 / D-192</strong>: <code>tests/test_graves_d648_cartoes_da_tela_cheia.py</code> (medida: cada cartão recebe a página
+  com tinta; Preto e branco com menos de 5% de meios-tons, Original com o papel amarelado). A prova da janela falha
+  no obra <code>58806f81</code> ("não aconteceu a tempo: os quatro cartões com a página"); a da conta no livro novo também
+  (o Preto e branco saía em Original). As 11 provas antigas da tela cheia passam. Prints <code>d648-*.png</code>.</li>
+<li><strong>D-646 / D-134 / D-069</strong>: não construído; pergunta 1 com print <code>d646-pergunta.png</code>.</li>
+<li><strong>D-605</strong>: nenhum teste antigo foi mudado; os testes dos arquivos tocados passam (lista em "Testes").</li>
+<li><strong>D-667</strong>: a regra mudou num lugar só (composição; "como sai com o filtro X"); nenhum desvio por ferramenta.</li>
+</ul>
+<h2>Perguntas para o Samuel</h2>
+<p><strong>Pergunta 1 (D-646, o fundo que volta).</strong> Print: <code>relatorios/graves-2026-11-10/prints/d646-pergunta.png</code>.
+Hoje "Tirar o fundo" é um filtro da página. Por isso qualquer outro filtro, inclusive o "Original" que o Automático
+põe, traz o papel velho de volta. Para cumprir "nenhum filtro deve fazer o fundo voltar", proposta:</p>
+<ul>
+<li>"Tirar o fundo" continua onde está (lista de filtros, pergunta ao abrir). Depois dele, Preto e branco, Melhorar,
+  Mágico pro e Original passam a ser feitos em cima da página já sem o fundo, e o Automático também.</li>
+<li>Para trazer o fundo de volta: um item <strong>"Desfazer o tirar o fundo"</strong> no menu <strong>Filtro</strong>, logo abaixo de "Tirar o
+  fundo", e o mesmo botão no painel "Filtro da página", embaixo das figurinhas, com o "Aplicar em" de sempre (só
+  nesta / todas / daqui em diante). Só ele traz o fundo.</li>
+</ul>
+<p>Pode ser assim (nome e lugar)? Sim ou não; se não, diga o nome e onde.</p>
+<p>O que isso muda no que já foi escolhido e testado (D-605), e por isso não fiz sem perguntar:
+- Hoje escolher "Original" numa página em "Tirar o fundo" traz o fundo de volta (é assim que a D-069, "voltar ao
+  original", funciona hoje: pelo Automático com Original). Com a proposta, "Original" vira "sem filtro, sem o fundo".
+- Provas antigas que cobram o jeito de hoje e passariam a falhar: <code>tests/test_tirar_fundo_no_programa.py</code>
+  (<code>test_original_nao_mexe_na_pagina</code>, <code>test_outro_filtro_nao_tira_o_fundo</code>,
+  <code>test_alerta_sai_quando_a_pagina_sai_do_filtro</code>) e a frase de <code>ui/janela_principal._tirar_o_fundo_do_livro_inteiro</code>
+  ("Original volta ao como veio").
+- O projeto ganha um campo por página ("fundo tirado"), separado do filtro (CLAUDE.md §6: mudar o formato dos
+  arquivos de dados). Projetos antigos: a página em "Tirar o fundo" abre com o fundo tirado e o filtro Original.</p>
+<p><strong>Pergunta 2 (D-649, só para confirmar o alcance).</strong> Consertei a miniatura da página MEXIDA (movida, aumentada ou
+numa folha escolhida): agora ela sai igual ao PDF. As miniaturas das outras páginas continuam mostrando a página como
+foi escaneada (colorida, sem o filtro e sem o corte), como foi decidido na D-547 e como os testes cobram. Quer que
+TODAS as miniaturas mostrem a página já com o filtro e o corte, como no PDF? (Sugestão: não por agora; isso faz o
+programa desenhar o livro inteiro por trás ao abrir, e deixa a primeira abertura mais lenta.)</p>
+<h2>Achados para a gerente</h2>
+<ol>
+<li><strong>A tela estica qualquer "imagem do PDF" para a forma da prévia, calada</strong> (<code>ui/tarefas.GerenciadorPrevias.
+   _por_a_imagem_do_pdf</code>, <code>cv2.resize</code> para o tamanho da prévia). Foi isso que transformou o erro de 07/11 (a folha
+   crua devolvida no lugar da página) numa "folha espremida" em vez de um erro visível. Sugestão: recusar uma imagem
+   de outra proporção (registrar no <code>erros.log</code> e manter a prévia). Não fiz: não é a causa, e muda o caminho da D-473.</li>
+<li><strong>As figurinhas do painel "Filtro da página" e o "comparar" da tela grande continuam com a conta mais simples</strong>
+   (revisão A2): podem mostrar a gravura em manchas que a página não terá. Só a tela cheia passou a usar a conta da
+   página grande. Juntar as outras duas mexe no aviso "Ficou escura" (medido nas figurinhas) e em provas antigas:
+   pede pedido próprio.</li>
+<li><strong>As miniaturas das páginas que ninguém moveu mostram a página como foi escaneada</strong> (sem filtro, sem corte, sem
+   as margens iguais), de propósito desde a D-547 (há prova que cobra isso). Se a D-649 ("sempre mostram a mesma
+   coisa") valer para todas, é a Pergunta 2.</li>
+<li><strong>M8 continua</strong>: se o "Tirar o fundo" dá erro, a página sai com o fundo e nada avisa (<code>core/pipeline.
+   _sem_fundo_da_folha</code>). Não mexi (não pedido; aviso novo pede decisão).</li>
+<li><strong>Custo da miniatura composta</strong>: com o "usar em todas" do Mover em muitas páginas, cada uma é desenhada por trás
+   numa cópia (depois da página da vez). Enquanto isso, a troca pela imagem do PDF (D-473) da página da vez espera a
+   fila acabar. Num livro de 134 páginas todas movidas isso pode levar minutos. Não medi num livro grande.</li>
+<li>O agente dos quadrados brancos mexe em <code>core/pipeline.garantir_selecao</code> e <code>core/filtros</code>: eu não toquei nessas
+   funções; meu <code>core/pipeline.py</code> muda só o fim de <code>_pagina_pronta</code>, acrescenta <code>compor_como_no_pdf</code> e mexe em
+   <code>renderizar_com_filtro</code> (a marca de filtro escolhido à mão na cópia).</li>
+</ol>
+<h2>Roteiro para o Samuel testar (pelo atalho da versão de teste)</h2>
+<ol>
+<li><strong>Miniatura (D-649).</strong> Abra um livro, vá a uma página do meio, ferramenta Mover, arraste o conteúdo bem para cima
+   (o alto da página sai da folha, em vermelho). Vá para a página 1, feche o programa e abra o livro de novo. Olhe a
+   miniatura daquela página embaixo e em "ver todas": em um ou dois segundos ela mostra o conteúdo subido, igual ao
+   PDF. Gere o PDF e compare.</li>
+<li><strong>Tela cheia (D-648).</strong> Num livro aberto, escolha a ferramenta Cortar, feche o painel do Filtro e abra Ver &gt;
+   "Filtros em tela cheia". Os cartões da esquerda mostram a página em que você está, um em cada filtro. Vale também
+   num livro novo, que ainda não passou pelo Automático (o Preto e branco aparece em preto e branco).</li>
+<li><strong>Fundo (D-646).</strong> Nada a testar ainda: falta a resposta da Pergunta 1.</li>
+</ol>
+<h2>Ideias para a Lista de espera</h2>
+<ul>
+<li>A tarefa "conferir o impresso de fora" (<code>ui/tarefas.TarefaConferirOImpressoDeFora</code>) faz a sua própria conta de
+  margens + medida; poderia chamar <code>compor_como_no_pdf(anotar_o_de_fora=...)</code>.</li>
+</ul>
+<h2>Bugs para a Lista de bugs</h2>
+<p>(nenhum novo além dos achados acima)</p>
+<h2>Os prints</h2>
+<p><img alt="d649-0-resumo.png" src="prints/d649-0-resumo.png" /></p>
+<p><img alt="d649-1-antes.png" src="prints/d649-1-antes.png" /></p>
+<p><img alt="d649-2-depois.png" src="prints/d649-2-depois.png" /></p>
+<p><img alt="d648-0-resumo.png" src="prints/d648-0-resumo.png" /></p>
+<p><img alt="d648-1-antes.png" src="prints/d648-1-antes.png" /></p>
+<p><img alt="d648-2-depois.png" src="prints/d648-2-depois.png" /></p>
+<p><img alt="d646-pergunta.png" src="prints/d646-pergunta.png" /></p>
+<p class="rodape">Editor de Impressão &middot; gerado em 10/11/2026 às 22:33</p>
+</body>
+</html>

@@ -38,6 +38,8 @@ O QUE FAZ, E O QUE NÃO FAZ
     CÓPIA da página com as opções mexidas aqui; sem nada mexido, é a própria pegar_com_filtro.
     Antes (21/10) o ajuste mexido aqui mostrava a página só com o filtro, sem o "Só as letras".
     O antes e depois não tem zoom (a página inteira, lado a lado na mesma imagem).
+    Os cartões da fila, à esquerda, são essa mesma imagem, pequena (D-648, 10/11/2026: antes
+    copiavam as figurinhas do painel Filtro e ficavam vazios com ele fechado).
 
 Seguro mudar: tamanhos, textos e o DPI_DA_TELA_CHEIA. Arriscado: aplicar o filtro na página ao
 escolher (o "Fechar sem mudar" perderia o sentido) ou desenhar a página no fio da tela (trava).
@@ -71,6 +73,7 @@ from ui.estilo import estilo_da_caixinha_com_quadrado
 from ui.widgets.visualizador import numpy_para_qimage
 
 DPI_DA_TELA_CHEIA = 150          # nítido na tela cheia, sem demorar demais (a prévia é 110)
+ALTURA_DO_CARTAO = 260           # a página pequena dos cartões da fila (a mesma do painel Filtro)
 LARGURA_DAS_OPCOES = 300         # a coluna das opções, à direita (com a barra de rolar)
 TECLAS = {Qt.Key_1: ORIGINAL, Qt.Key_2: PRETO_E_BRANCO, Qt.Key_3: MELHORAR, Qt.Key_4: MAGICO_PRO}
 SO_NESTA, TODAS, DAQUI_EM_DIANTE = "nesta", "todas", "daqui"
@@ -378,6 +381,9 @@ class FiltrosEmTelaCheia(QDialog):
         self.opcoes: dict[str, object] = {}       # as outras opções mexidas aqui (campo -> valor)
         self.alcance = SO_NESTA
         self._imagens: dict = {}                  # as feitas aqui (ajuste mexido)
+        # D-648: o que cada cartão da fila já mostra (filtro -> id da imagem de
+        # origem), para não refazer o desenho pequeno a cada atualização
+        self._nos_cartoes: dict[str, int | None] = {}
         self._pedidas: set = set()
         self._pool = QThreadPool(self)
         self._pool.setMaxThreadCount(1)
@@ -429,10 +435,6 @@ class FiltrosEmTelaCheia(QDialog):
             cartao.desenho.LADO = QSize(78, 104)
             cartao.desenho.setFixedSize(cartao.desenho.LADO)
             cartao.escolhido.connect(self.escolher)
-            amostra = getattr(conferir.cartoes.get(chave), "ultima_amostra", None)
-            cartao.definir_amostra(amostra)
-            if chave in conferir.cartoes:
-                conferir.cartoes[chave].amostra_mudou.connect(self._amostra_mudou)
             self.cartoes[chave] = cartao
             coluna.addWidget(cartao)
         coluna.addStretch()
@@ -754,8 +756,40 @@ class FiltrosEmTelaCheia(QDialog):
                 antes = como_sai(antes, indice, DPI_DA_TELA_CHEIA)
             self.vista.definir(antes, depois, comparando,
                                ("antes: Original", f"depois: {nome}"), aviso)
+            self._pintar_os_cartoes()
         except Exception:  # noqa: BLE001 - nada aqui fecha a janela
             registrar_erro("filtros em tela cheia (atualizar)", traceback.format_exc())
+
+    def _pintar_os_cartoes(self) -> None:
+        """D-648 (Samuel, 07/11/2026: "Consertar" · "Esse é um grave."; D-184, D-192): cada
+        cartão da fila mostra a página com o filtro dele, a MESMA imagem que a página grande
+        mostra quando ele é escolhido (_imagem: o caminho do PDF, core.pipeline.
+        renderizar_com_filtro, com o que foi mexido aqui), como sai no PDF (_como_sai_no_pdf:
+        movida, na folha, com as margens), só que pequena. Enquanto não chega, o cartão fica
+        cinza ("preparando") e é pintado quando chega (_previa_chegou / _chegou).
+
+        O defeito de 07/11 (Lusíadas, teste como o Kaique, N9): os quatro cartões ficavam
+        vazios, mesmo depois de 20 s. Eles não tinham conta própria: copiavam a figurinha do
+        painel "Filtro da página", que só é desenhada com o painel aberto ou a ferramenta
+        Filtro; aberta pelo menu Ver com outra ferramenta, nada era desenhado. E, com o painel
+        aberto, mostravam a conta mais simples das figurinhas (revisão de 10/11, A2), não a da
+        página grande. Arriscado: voltar a copiar as figurinhas do painel."""
+        from core.pdf_io import limitar_altura
+
+        conferir = self.conferir
+        indice = conferir.indice_pagina
+        como_sai = getattr(conferir, "_como_sai_no_pdf", None)
+        for chave, cartao in self.cartoes.items():
+            img = self._imagem(chave)
+            marca = None if img is None else id(img)
+            if self._nos_cartoes.get(chave, -1) == marca:
+                continue
+            self._nos_cartoes[chave] = marca
+            if img is not None:
+                if como_sai is not None:
+                    img = como_sai(img, indice, DPI_DA_TELA_CHEIA)
+                img = limitar_altura(img, ALTURA_DO_CARTAO)
+            cartao.definir_amostra(img)
 
     def _imagem(self, filtro: str):
         """A página grande no `filtro`, como vai sair: sem nada mexido aqui, a de
@@ -791,11 +825,6 @@ class FiltrosEmTelaCheia(QDialog):
     def _previa_chegou(self, *_args) -> None:
         self.atualizar()
 
-    def _amostra_mudou(self, chave: str, img) -> None:
-        cartao = self.cartoes.get(chave)
-        if cartao is not None:
-            cartao.definir_amostra(img)
-
     # --- ações -------------------------------------------------------------------
 
     def escolher(self, filtro: str) -> None:
@@ -827,6 +856,7 @@ class FiltrosEmTelaCheia(QDialog):
         self.ajustes.clear()
         self.opcoes.clear()
         self.escolhido = self.pagina.filtro
+        self._nos_cartoes.clear()            # outra página: os cartões são pintados de novo
         self.atualizar()
 
     def usar(self) -> None:
@@ -854,8 +884,6 @@ class FiltrosEmTelaCheia(QDialog):
         try:
             if self.conferir.previas is not None:
                 self.conferir.previas.pronta.disconnect(self._previa_chegou)
-            for cartao in self.conferir.cartoes.values():
-                cartao.amostra_mudou.disconnect(self._amostra_mudou)
         except (RuntimeError, TypeError):
             pass
         self.fechou.emit()

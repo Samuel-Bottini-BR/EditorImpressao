@@ -707,6 +707,18 @@ class TodasAsPaginas(QWidget):
                 return None
         return QPixmap.fromImage(numpy_para_qimage(np.ascontiguousarray(img)))
 
+    def atualizar_paginas(self, indices) -> None:
+        """D-649: a imagem das páginas `indices` mudou (a miniatura composta da
+        página movida chegou): pinta de novo só os quadros delas, a partir da
+        folha guardada (nada é lido do PDF)."""
+        quais = set(indices)
+        for quadro in self.quadros:
+            for n, item in enumerate(quadro.itens):
+                if item.indice in quais:
+                    pix = self._pixmap_da_pagina(item)
+                    if pix is not None:
+                        quadro.definir_pixmap(n, pix)
+
     def _folha_chegou(self, folha: int, img) -> None:
         self._folhas[folha] = img
         if len(self._folhas) > MAXIMO_GUARDADAS:
