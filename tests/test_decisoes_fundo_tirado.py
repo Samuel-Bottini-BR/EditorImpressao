@@ -417,3 +417,22 @@ def test_d699_projeto_antigo_abre_pelo_disco(tmp_path, monkeypatch):
     assert lido is not None
     assert (lido.paginas[0].filtro, lido.paginas[0].fundo_tirado) == (ORIGINAL, True)
     assert _sem_fundo(_desenho(lido))
+
+
+def test_d699_as_figurinhas_e_o_comparar_partem_da_pagina_sem_o_fundo(janela, tmp_path):
+    """D-699/D-473: as figurinhas do painel (e o "comparar" da tela grande, que usa a mesma
+    imagem) mostram cada filtro feito em cima da página SEM o fundo, como ela sai se o
+    filtro for escolhido. Antes, partiam da folha como veio: a figurinha "Original" mostrava
+    o papel velho e a página saía branca. Depois do "Desfazer o tirar o fundo", voltam a
+    partir da folha como veio."""
+    from tests.test_tirar_fundo_no_programa import _esperar
+
+    conferir = _abrir_com_o_fundo_tirado(janela, tmp_path)
+    assert _esperar(lambda: conferir._imagem_sem_filtro() is not None)
+    base = conferir._imagem_sem_filtro()
+    assert _sem_fundo(base)
+    assert _esperar(lambda: conferir._imagem_sem_filtro(90) is not None)   # o "comparar"
+    assert _sem_fundo(conferir._imagem_sem_filtro(90))
+    conferir.desfazer_o_tirar_o_fundo()
+    assert _esperar(lambda: conferir._imagem_sem_filtro() is not None)
+    assert _com_fundo(conferir._imagem_sem_filtro())

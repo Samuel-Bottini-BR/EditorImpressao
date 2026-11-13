@@ -309,26 +309,30 @@ class TelaAmpliada(QDialog):
         Vem do GerenciadorPrevias (pegar_com_filtro), em segundo plano: None
         ate chegar, e _previa_chegou redesenha. E o resultado de verdade
         (pagina intacta aparece como veio). Os outros filtros sao aplicados
-        aqui na folha como veio, como sempre - e o que eles dariam tambem numa
-        pagina que esta em "Tirar o fundo".
+        aqui na pagina sem filtro.
+
+        MUDOU em 13/11/2026 (D-699: "Depois do 'Tirar o fundo', o Preto e
+        branco, o Melhorar, o Mágico pro [...] trabalham em cima da página já
+        sem o fundo"): a pagina sem filtro e a MESMA das figurinhas
+        (TelaConferir._imagem_sem_filtro, no DPI desta tela): na pagina sem o
+        fundo, a pagina sem o fundo; nas outras, a folha como veio, preparada
+        (como antes). Antes, aqui, o filtro ia sempre sobre a folha como veio.
         """
         from core.filtros import aplicar_filtro
-        from core.pipeline import pontinhos_da_pagina, preparar_metade
+        from core.pipeline import pontinhos_da_pagina
 
         outro = self.combo_comparar.currentData()
         pagina = self.projeto.paginas[self.conferir.indice_pagina]
-        folha = self.projeto.folhas[pagina.folha]
 
         if outro == TIRAR_FUNDO and self.projeto.limpar:
             return self.conferir.previas.pegar_com_filtro(
                 self.conferir.indice_pagina, DPI_AMPLIADA, TIRAR_FUNDO)
 
-        # como veio no PDF: quem gira e o preparar_metade (D1, 06/10/2026 -
-        # a folha ja girada saia girada duas vezes no "comparar")
-        bruta = self.conferir.previas.pegar_folha(pagina.folha, DPI_AMPLIADA, girada=False)
-        if bruta is None:
+        # a pagina sem filtro, a mesma das figurinhas (D-699; quem gira e o
+        # preparar_metade, la: D1, 06/10/2026)
+        preparada = self.conferir._imagem_sem_filtro(DPI_AMPLIADA)
+        if preparada is None:
             return None
-        preparada = preparar_metade(bruta, folha, pagina, self.projeto)
         if not self.projeto.limpar or outro == ORIGINAL:
             return preparada
         # "Limpar pontinhos" da pagina (06/10/2026): a escolha dela, com o DPI

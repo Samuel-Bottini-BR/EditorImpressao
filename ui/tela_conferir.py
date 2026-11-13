@@ -170,7 +170,7 @@ from core import fundo_tirado as fundo_tirado_core   # D-646/D-699: o fundo tira
 from core.pipeline import (FORCA_DO_REFORCO, acertar_alertas_de_cor, acertar_alertas_do_fundo,
                            acertar_faixa_do_livro, angulo_aplicado,
                            angulo_da_pagina, angulos_medidos, corte_alargado, jeito_de_dividir,
-                           marcas_do_aviso, recalcular_divisao)
+                           marcas_do_aviso, recalcular_divisao, usa_tirar_fundo)
 from core.filtros import (
     ALGORITMOS_PB,
     MAGICO_PRO,
@@ -5121,16 +5121,27 @@ class TelaConferir(QWidget):
             self._atualizar_tira()
             self._atualizar_contador()
 
-    def _imagem_sem_filtro(self) -> np.ndarray | None:
-        """Versao pequena e sem filtro da página atual, para os outros cartoes.
+    def _imagem_sem_filtro(self, dpi: int = DPI_AMOSTRA_DOS_CARTOES) -> np.ndarray | None:
+        """Versao pequena e sem filtro da página atual, para os outros cartoes
+        (e, em `dpi` maior, para o "comparar" da tela grande: TelaAmpliada).
 
         A folha vem COMO VEIO NO PDF (girada=False): o preparar_metade é que
         a gira, divide, corta e endireita. D1 do verificador (06/10/2026):
         vinha a folha já girada, e os cartões mostravam a folha girada duas
-        vezes. Arriscado: pedir a folha girada aqui."""
+        vezes. Arriscado: pedir a folha girada aqui.
+
+        D-699 (13/11/2026: "Depois do 'Tirar o fundo', o Preto e branco, o
+        Melhorar, o Mágico pro [...] trabalham em cima da página já sem o
+        fundo"): na página sem o fundo (core.pipeline.usa_tirar_fundo, a mesma
+        regra do desenho), a página "sem filtro" é a página SEM O FUNDO (a do
+        cartão "Tirar o fundo", pelo caminho do programa; None até chegar, e
+        _previa_chegou pede os cartões de novo). Antes as figurinhas mostravam
+        o filtro sobre o papel velho, e a página saía sem ele."""
         assert self.projeto is not None and self.previas is not None
         pagina = self.projeto.paginas[self.indice_pagina]
-        img_folha = self.previas.pegar_folha(pagina.folha, DPI_AMOSTRA_DOS_CARTOES,
+        if usa_tirar_fundo(self.projeto, pagina):
+            return self.previas.pegar_com_filtro(self.indice_pagina, dpi, TIRAR_FUNDO)
+        img_folha = self.previas.pegar_folha(pagina.folha, dpi,
                                              girada=False)
         if img_folha is None:
             return None
@@ -5864,7 +5875,15 @@ class TelaConferir(QWidget):
         if (self._cartoes_a_vista() and TIRAR_FUNDO in self.cartoes
                 and chave == self.previas.chave_com_filtro(
                     self.indice_pagina, DPI_CARTAO_SEM_FUNDO, TIRAR_FUNDO)):
-            self._cartao_sem_fundo(_img)
+            pagina = self.projeto.paginas[self.indice_pagina]
+            if pagina.filtro != TIRAR_FUNDO:
+                self._cartao_sem_fundo(_img)
+            if usa_tirar_fundo(self.projeto, pagina):
+                # D-699: na pagina sem o fundo, os outros cartoes saem desta
+                # imagem (_imagem_sem_filtro): agora da para pedi-los
+                previa = self.previas.ja_pronta(self.indice_pagina, self._dpi_atual)
+                if previa is not None:
+                    self._atualizar_cartoes(previa)
         # Modo Misto (bug Misto 2): chegou o cartao "Preto e branco" com o
         # "So as letras" da pagina da vez (a chave inclui as escolhas do
         # Misto: uma que chegue atrasada, de antes de uma mudanca, nao serve)

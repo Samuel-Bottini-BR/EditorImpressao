@@ -16,7 +16,7 @@ import numpy as np
 import shiboken6
 from PySide6.QtCore import QObject, QRunnable, QThread, QThreadPool, QTimer, Signal
 
-from core import etapas, luz_scantailor
+from core import etapas, fundo_tirado, luz_scantailor
 from core.misto import escolhas_da_pagina as escolhas_do_misto
 from core.pontinhos_scantailor import escolha_da_pagina as pontinhos_da_pagina
 from core.pipeline import acertar_no_tamanho_do_pdf, faixa_da_sobra, precisa_do_desenho_do_pdf
@@ -1192,6 +1192,13 @@ class GerenciadorPrevias(QObject):
             # MARCADA: desmarcada (o de fabrica), a chave e a de sempre.
             # Arriscado: tirar daqui (a tela mostraria a imagem velha).
             f"{':gravuras_cinza' if getattr(p, 'gravuras_em_tons_de_cinza', False) else ''}"
+            # D-646/D-699: o fundo tirado (separado do filtro) muda a pagina
+            # desenhada: com este filtro, a pagina fica sem o fundo? (a MESMA
+            # regra do desenho: core/fundo_tirado.depois_da_troca). So entra na
+            # chave quando sim: sem o fundo tirado, a chave e a de sempre.
+            # Arriscado: tirar daqui (o "Desfazer o tirar o fundo" mostraria a
+            # imagem velha).
+            f"{':sem_fundo' if fundo_tirado.depois_da_troca(self.projeto, p, filtro or p.filtro) is True else ''}"
         )
 
     # --- uso --------------------------------------------------------------
