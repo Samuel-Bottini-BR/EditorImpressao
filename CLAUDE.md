@@ -581,6 +581,11 @@ atualize esse arquivo (ou crie um novo) quando o Samuel pedir explicitamente.
         seção "Perguntas para o Samuel" do ONDE-PAREI de cada ramo ativo; pergunta nova vira aba na Conferência
         (`conferencias/perg-<agente>`), cartão em "Decidir agora", novidade no topo, aviso no celular e a página aberta
         no navegador dele com `start ""`.
+      - **Tudo o que se escreve na Central segue o §11.13** (Samuel, 13/11/2026: "confira que todo agente que for escrever nela tenha que ver as regras para que não escreva coisas dubias, queremos as informações mais diretas lá e de forma clara e rapida").
+        - Agente não grava na Central. Ele entrega a pergunta pronta no ONDE-PAREI, no formato do §11.13, com os prints.
+        - A gerente confere a lista do §11.13 antes de publicar e devolve ao agente o que não passar.
+        - Ao gravar, a gerente usa o horário de verdade e lê a versão atual do documento logo antes.
+        - O que já foi respondido ou resolvido sai da lista "para decidir", com uma frase dizendo onde ficou.
       - **Aba Conferência (21/10, pedido dele: "os tipos de relatorio para conferencia tem que estar separados por abas
         dentro da aba de conferencia"; quadros grandes como na página de conferência antiga):** os relatórios ficam na
         coleção `conferencias` (um documento por aba), tirados por `docs/plano/central/extrair_conferencia.py` da página de
