@@ -2,5 +2,12 @@
  "1-print-13-01.png": "13-01: os retângulos brancos no alto da capa só existem na faixa laranja (hoje); antes da obra e sem o passo da sombra, a capa é preta lisa.",
  "2-print-13-02.png": "13-02: a caixa sobre \"ÓNAI\" era preta antes da obra e ficou branca hoje; tirando o passo da sombra ela volta a ser preta; o conserto C não muda.",
  "3-de-onde-vem-o-buraco.png": "O pedaço \"ÓNAI\" achado como letra (vermelho) fura a gravura da capa (verde): é ali que o 13-02 abre a caixa.",
- "4-tela-cartao-pdf.png": "O mesmo retângulo branco na tela, no cartão do filtro e no PDF: não é diferença de tela, sai assim no livro."
+ "4-tela-cartao-pdf.png": "O mesmo retângulo branco na tela, no cartão do filtro e no PDF: não é diferença de tela, sai assim no livro.",
+ "10-escola-capa-preto-e-branco.png": "Capa da Escola, Preto e branco sem \"Respeitar\": os quadradinhos brancos só existem hoje (laranja); antes e sem o passo da sombra, não.",
+ "11-matematica-e-o-conserto-c.png": "Matemática, Melhorar: o amarelo vira branco quando a marcação vale (Automático hoje; à mão com o conserto C). À mão hoje, fica amarelo.",
+ "5-gradus-todas-as-escolhas.png": "Gradus Primus, capa (p. 1): todas as escolhas como saem no PDF; circuladas as que têm quadrado ou caixa que não existe no original (Auto: Só as letras, Auto: P&B, Resp. não, Auto: P&B, Resp. não + cinza, Auto: P&B, Resp. sim, P&B + Só as letras, Só as letras, Guardar tudo, P&B, Respeitar não, P&B, Resp. não + cinza, P&B, Respeitar sim, P&B, Resp. sim + cinza).",
+ "6-escola-todas-as-escolhas.png": "Na escola de Jesus, capa (p. 1): todas as escolhas como saem no PDF; circuladas as que têm quadrado ou caixa que não existe no original (Auto: P&B, Resp. não, P&B, Respeitar não).",
+ "7-matematica-todas-as-escolhas.png": "Matemática para vencer, capa (p. 1): todas as escolhas como saem no PDF; circuladas as que têm quadrado ou caixa que não existe no original (Auto: Só as letras, Auto: P&B, Resp. não + cinza, Auto: P&B, Resp. sim, P&B + Só as letras, Só as letras, Guardar tudo, P&B, Resp. não + cinza, P&B, Respeitar sim, P&B, Resp. sim + cinza).",
+ "8-pesel-todas-as-escolhas.png": "Pesel, capa (p. 1): todas as escolhas como saem no PDF; circuladas as que têm quadrado ou caixa que não existe no original (nenhuma).",
+ "9-destino-todas-as-escolhas.png": "Destino do socialismo, capa (p. 1): todas as escolhas como saem no PDF; circuladas as que têm quadrado ou caixa que não existe no original (nenhuma)."
 }

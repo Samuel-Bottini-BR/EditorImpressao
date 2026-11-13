@@ -1,0 +1,3473 @@
+{
+ "quadrados-capa/gradus": {
+  "auto+magico+resp0": {
+   "pdf": {
+    "blocos_pct": 0.04,
+    "blocos_n": 0,
+    "nao_papel_pct": 48.7
+   },
+   "previa": {
+    "blocos_pct": 0.28,
+    "blocos_n": 0,
+    "nao_papel_pct": 49.0
+   },
+   "cartao": {
+    "blocos_pct": 0.42,
+    "blocos_n": 0,
+    "nao_papel_pct": 49.5
+   }
+  },
+  "auto+magico+resp1": {
+   "pdf": {
+    "blocos_pct": 0.03,
+    "blocos_n": 0,
+    "nao_papel_pct": 48.7
+   },
+   "previa": {
+    "blocos_pct": 0.17,
+    "blocos_n": 0,
+    "nao_papel_pct": 49.0
+   },
+   "cartao": {
+    "blocos_pct": 0.33,
+    "blocos_n": 0,
+    "nao_papel_pct": 49.5
+   }
+  },
+  "auto+melhorar+resp0": {
+   "pdf": {
+    "blocos_pct": 0.03,
+    "blocos_n": 0,
+    "nao_papel_pct": 48.7
+   },
+   "previa": {
+    "blocos_pct": 0.2,
+    "blocos_n": 0,
+    "nao_papel_pct": 49.0
+   },
+   "cartao": {
+    "blocos_pct": 0.32,
+    "blocos_n": 0,
+    "nao_papel_pct": 49.5
+   }
+  },
+  "auto+melhorar+resp1": {
+   "pdf": {
+    "blocos_pct": 0.02,
+    "blocos_n": 0,
+    "nao_papel_pct": 48.7
+   },
+   "previa": {
+    "blocos_pct": 0.12,
+    "blocos_n": 0,
+    "nao_papel_pct": 49.0
+   },
+   "cartao": {
+    "blocos_pct": 0.24,
+    "blocos_n": 0,
+    "nao_papel_pct": 49.5
+   }
+  },
+  "auto+pb+letras1": {
+   "pdf": {
+    "blocos_pct": 1.11,
+    "blocos_n": 1,
+    "nao_papel_pct": 48.7
+   },
+   "previa": {
+    "blocos_pct": 2.77,
+    "blocos_n": 2,
+    "nao_papel_pct": 49.0
+   },
+   "cartao": {
+    "blocos_pct": 3.06,
+    "blocos_n": 2,
+    "nao_papel_pct": 49.5
+   }
+  },
+  "auto+pb+resp0": {
+   "pdf": {
+    "blocos_pct": 12.16,
+    "blocos_n": 4,
+    "nao_papel_pct": 48.7
+   },
+   "previa": {
+    "blocos_pct": 13.01,
+    "blocos_n": 4,
+    "nao_papel_pct": 49.0
+   },
+   "cartao": {
+    "blocos_pct": 13.45,
+    "blocos_n": 3,
+    "nao_papel_pct": 49.5
+   }
+  },
+  "auto+pb+resp0+cinza1": {
+   "pdf": {
+    "blocos_pct": 1.02,
+    "blocos_n": 1,
+    "nao_papel_pct": 48.7
+   },
+   "previa": {
+    "blocos_pct": 2.77,
+    "blocos_n": 2,
+    "nao_papel_pct": 49.0
+   },
+   "cartao": {
+    "blocos_pct": 2.72,
+    "blocos_n": 2,
+    "nao_papel_pct": 49.5
+   }
+  },
+  "auto+pb+resp1": {
+   "pdf": {
+    "blocos_pct": 1.02,
+    "blocos_n": 1,
+    "nao_papel_pct": 48.7
+   },
+   "previa": {
+    "blocos_pct": 2.77,
+    "blocos_n": 2,
+    "nao_papel_pct": 49.0
+   },
+   "cartao": {
+    "blocos_pct": 2.72,
+    "blocos_n": 2,
+    "nao_papel_pct": 49.5
+   }
+  },
+  "fundo": {
+   "pdf": {
+    "blocos_pct": 0.0,
+    "blocos_n": 0,
+    "nao_papel_pct": 48.7
+   },
+   "previa": {
+    "blocos_pct": 0.01,
+    "blocos_n": 0,
+    "nao_papel_pct": 49.0
+   },
+   "cartao": {
+    "blocos_pct": 0.05,
+    "blocos_n": 0,
+    "nao_papel_pct": 49.5
+   }
+  },
+  "magico+resp0": {
+   "pdf": {
+    "blocos_pct": 0.04,
+    "blocos_n": 0,
+    "nao_papel_pct": 48.7
+   },
+   "previa": {
+    "blocos_pct": 0.28,
+    "blocos_n": 0,
+    "nao_papel_pct": 49.0
+   },
+   "cartao": {
+    "blocos_pct": 0.42,
+    "blocos_n": 0,
+    "nao_papel_pct": 49.5
+   }
+  },
+  "magico+resp1": {
+   "pdf": {
+    "blocos_pct": 0.04,
+    "blocos_n": 0,
+    "nao_papel_pct": 48.7
+   },
+   "previa": {
+    "blocos_pct": 0.28,
+    "blocos_n": 0,
+    "nao_papel_pct": 49.0
+   },
+   "cartao": {
+    "blocos_pct": 0.42,
+    "blocos_n": 0,
+    "nao_papel_pct": 49.5
+   }
+  },
+  "melhorar+resp0": {
+   "pdf": {
+    "blocos_pct": 0.03,
+    "blocos_n": 0,
+    "nao_papel_pct": 48.7
+   },
+   "previa": {
+    "blocos_pct": 0.2,
+    "blocos_n": 0,
+    "nao_papel_pct": 49.0
+   },
+   "cartao": {
+    "blocos_pct": 0.32,
+    "blocos_n": 0,
+    "nao_papel_pct": 49.5
+   }
+  },
+  "melhorar+resp1": {
+   "pdf": {
+    "blocos_pct": 0.03,
+    "blocos_n": 0,
+    "nao_papel_pct": 48.7
+   },
+   "previa": {
+    "blocos_pct": 0.2,
+    "blocos_n": 0,
+    "nao_papel_pct": 49.0
+   },
+   "cartao": {
+    "blocos_pct": 0.32,
+    "blocos_n": 0,
+    "nao_papel_pct": 49.5
+   }
+  },
+  "original": {
+   "pdf": {
+    "blocos_pct": 0.0,
+    "blocos_n": 0,
+    "nao_papel_pct": 48.7
+   },
+   "previa": {
+    "blocos_pct": 0.01,
+    "blocos_n": 0,
+    "nao_papel_pct": 49.0
+   },
+   "cartao": {
+    "blocos_pct": 0.05,
+    "blocos_n": 0,
+    "nao_papel_pct": 49.5
+   }
+  },
+  "pb+letras1": {
+   "pdf": {
+    "blocos_pct": 1.11,
+    "blocos_n": 1,
+    "nao_papel_pct": 48.7
+   },
+   "previa": {
+    "blocos_pct": 2.77,
+    "blocos_n": 2,
+    "nao_papel_pct": 49.0
+   },
+   "cartao": {
+    "blocos_pct": 3.06,
+    "blocos_n": 2,
+    "nao_papel_pct": 49.5
+   }
+  },
+  "pb+letras_tudo": {
+   "pdf": {
+    "blocos_pct": 1.02,
+    "blocos_n": 1,
+    "nao_papel_pct": 48.7
+   },
+   "previa": {
+    "blocos_pct": 2.77,
+    "blocos_n": 2,
+    "nao_papel_pct": 49.0
+   },
+   "cartao": {
+    "blocos_pct": 2.72,
+    "blocos_n": 2,
+    "nao_papel_pct": 49.5
+   }
+  },
+  "pb+resp0": {
+   "pdf": {
+    "blocos_pct": 12.16,
+    "blocos_n": 4,
+    "nao_papel_pct": 48.7
+   },
+   "previa": {
+    "blocos_pct": 13.01,
+    "blocos_n": 4,
+    "nao_papel_pct": 49.0
+   },
+   "cartao": {
+    "blocos_pct": 13.45,
+    "blocos_n": 3,
+    "nao_papel_pct": 49.5
+   }
+  },
+  "pb+resp0+cinza1": {
+   "pdf": {
+    "blocos_pct": 1.02,
+    "blocos_n": 1,
+    "nao_papel_pct": 48.7
+   },
+   "previa": {
+    "blocos_pct": 2.77,
+    "blocos_n": 2,
+    "nao_papel_pct": 49.0
+   },
+   "cartao": {
+    "blocos_pct": 2.72,
+    "blocos_n": 2,
+    "nao_papel_pct": 49.5
+   }
+  },
+  "pb+resp1": {
+   "pdf": {
+    "blocos_pct": 1.02,
+    "blocos_n": 1,
+    "nao_papel_pct": 48.7
+   },
+   "previa": {
+    "blocos_pct": 2.77,
+    "blocos_n": 2,
+    "nao_papel_pct": 49.0
+   },
+   "cartao": {
+    "blocos_pct": 2.72,
+    "blocos_n": 2,
+    "nao_papel_pct": 49.5
+   }
+  },
+  "pb+resp1+cinza1": {
+   "pdf": {
+    "blocos_pct": 1.02,
+    "blocos_n": 1,
+    "nao_papel_pct": 48.7
+   },
+   "previa": {
+    "blocos_pct": 2.77,
+    "blocos_n": 2,
+    "nao_papel_pct": 49.0
+   },
+   "cartao": {
+    "blocos_pct": 2.72,
+    "blocos_n": 2,
+    "nao_papel_pct": 49.5
+   }
+  },
+  "pb+samuel+resp0": {
+   "pdf": {
+    "blocos_pct": 12.16,
+    "blocos_n": 4,
+    "nao_papel_pct": 48.7
+   },
+   "previa": {
+    "blocos_pct": 13.01,
+    "blocos_n": 4,
+    "nao_papel_pct": 49.0
+   },
+   "cartao": {
+    "blocos_pct": 13.45,
+    "blocos_n": 3,
+    "nao_papel_pct": 49.5
+   }
+  },
+  "pb+samuel+resp0+letras1": {
+   "pdf": {
+    "blocos_pct": 1.11,
+    "blocos_n": 1,
+    "nao_papel_pct": 48.7
+   },
+   "previa": {
+    "blocos_pct": 1.48,
+    "blocos_n": 1,
+    "nao_papel_pct": 49.0
+   },
+   "cartao": {
+    "blocos_pct": 1.77,
+    "blocos_n": 1,
+    "nao_papel_pct": 49.5
+   }
+  }
+ },
+ "quadrados-capa/escola": {
+  "auto+magico+resp0": {
+   "pdf": {
+    "blocos_pct": 3.24,
+    "blocos_n": 3,
+    "nao_papel_pct": 85.3
+   },
+   "previa": {
+    "blocos_pct": 3.89,
+    "blocos_n": 4,
+    "nao_papel_pct": 85.4
+   },
+   "cartao": {
+    "blocos_pct": 3.89,
+    "blocos_n": 4,
+    "nao_papel_pct": 85.6
+   }
+  },
+  "auto+magico+resp1": {
+   "pdf": {
+    "blocos_pct": 4.16,
+    "blocos_n": 3,
+    "nao_papel_pct": 85.3
+   },
+   "previa": {
+    "blocos_pct": 4.61,
+    "blocos_n": 3,
+    "nao_papel_pct": 85.4
+   },
+   "cartao": {
+    "blocos_pct": 4.61,
+    "blocos_n": 3,
+    "nao_papel_pct": 85.6
+   }
+  },
+  "auto+melhorar+resp0": {
+   "pdf": {
+    "blocos_pct": 1.4,
+    "blocos_n": 2,
+    "nao_papel_pct": 85.3
+   },
+   "previa": {
+    "blocos_pct": 1.87,
+    "blocos_n": 3,
+    "nao_papel_pct": 85.4
+   },
+   "cartao": {
+    "blocos_pct": 2.02,
+    "blocos_n": 3,
+    "nao_papel_pct": 85.6
+   }
+  },
+  "auto+melhorar+resp1": {
+   "pdf": {
+    "blocos_pct": 3.96,
+    "blocos_n": 3,
+    "nao_papel_pct": 85.3
+   },
+   "previa": {
+    "blocos_pct": 4.45,
+    "blocos_n": 3,
+    "nao_papel_pct": 85.4
+   },
+   "cartao": {
+    "blocos_pct": 4.51,
+    "blocos_n": 3,
+    "nao_papel_pct": 85.6
+   }
+  },
+  "auto+pb+letras1": {
+   "pdf": {
+    "blocos_pct": 4.51,
+    "blocos_n": 3,
+    "nao_papel_pct": 85.3
+   },
+   "previa": {
+    "blocos_pct": 4.76,
+    "blocos_n": 4,
+    "nao_papel_pct": 85.4
+   },
+   "cartao": {
+    "blocos_pct": 4.8,
+    "blocos_n": 3,
+    "nao_papel_pct": 85.6
+   }
+  },
+  "auto+pb+resp0": {
+   "pdf": {
+    "blocos_pct": 21.84,
+    "blocos_n": 24,
+    "nao_papel_pct": 85.3
+   },
+   "previa": {
+    "blocos_pct": 17.62,
+    "blocos_n": 16,
+    "nao_papel_pct": 85.4
+   },
+   "cartao": {
+    "blocos_pct": 15.93,
+    "blocos_n": 15,
+    "nao_papel_pct": 85.6
+   }
+  },
+  "auto+pb+resp0+cinza1": {
+   "pdf": {
+    "blocos_pct": 0.71,
+    "blocos_n": 1,
+    "nao_papel_pct": 85.3
+   },
+   "previa": {
+    "blocos_pct": 1.24,
+    "blocos_n": 3,
+    "nao_papel_pct": 85.4
+   },
+   "cartao": {
+    "blocos_pct": 1.38,
+    "blocos_n": 3,
+    "nao_papel_pct": 85.6
+   }
+  },
+  "auto+pb+resp1": {
+   "pdf": {
+    "blocos_pct": 4.5,
+    "blocos_n": 3,
+    "nao_papel_pct": 85.3
+   },
+   "previa": {
+    "blocos_pct": 4.76,
+    "blocos_n": 4,
+    "nao_papel_pct": 85.4
+   },
+   "cartao": {
+    "blocos_pct": 4.8,
+    "blocos_n": 3,
+    "nao_papel_pct": 85.6
+   }
+  },
+  "fundo": {
+   "pdf": {
+    "blocos_pct": 0.0,
+    "blocos_n": 0,
+    "nao_papel_pct": 85.3
+   },
+   "previa": {
+    "blocos_pct": 0.0,
+    "blocos_n": 0,
+    "nao_papel_pct": 85.4
+   },
+   "cartao": {
+    "blocos_pct": 0.0,
+    "blocos_n": 0,
+    "nao_papel_pct": 85.6
+   }
+  },
+  "magico+resp0": {
+   "pdf": {
+    "blocos_pct": 3.24,
+    "blocos_n": 3,
+    "nao_papel_pct": 85.3
+   },
+   "previa": {
+    "blocos_pct": 3.89,
+    "blocos_n": 4,
+    "nao_papel_pct": 85.4
+   },
+   "cartao": {
+    "blocos_pct": 3.89,
+    "blocos_n": 4,
+    "nao_papel_pct": 85.6
+   }
+  },
+  "magico+resp1": {
+   "pdf": {
+    "blocos_pct": 3.24,
+    "blocos_n": 3,
+    "nao_papel_pct": 85.3
+   },
+   "previa": {
+    "blocos_pct": 3.89,
+    "blocos_n": 4,
+    "nao_papel_pct": 85.4
+   },
+   "cartao": {
+    "blocos_pct": 3.89,
+    "blocos_n": 4,
+    "nao_papel_pct": 85.6
+   }
+  },
+  "melhorar+resp0": {
+   "pdf": {
+    "blocos_pct": 1.4,
+    "blocos_n": 2,
+    "nao_papel_pct": 85.3
+   },
+   "previa": {
+    "blocos_pct": 1.87,
+    "blocos_n": 3,
+    "nao_papel_pct": 85.4
+   },
+   "cartao": {
+    "blocos_pct": 2.02,
+    "blocos_n": 3,
+    "nao_papel_pct": 85.6
+   }
+  },
+  "melhorar+resp1": {
+   "pdf": {
+    "blocos_pct": 1.4,
+    "blocos_n": 2,
+    "nao_papel_pct": 85.3
+   },
+   "previa": {
+    "blocos_pct": 1.87,
+    "blocos_n": 3,
+    "nao_papel_pct": 85.4
+   },
+   "cartao": {
+    "blocos_pct": 2.02,
+    "blocos_n": 3,
+    "nao_papel_pct": 85.6
+   }
+  },
+  "original": {
+   "pdf": {
+    "blocos_pct": 0.0,
+    "blocos_n": 0,
+    "nao_papel_pct": 85.3
+   },
+   "previa": {
+    "blocos_pct": 0.0,
+    "blocos_n": 0,
+    "nao_papel_pct": 85.4
+   },
+   "cartao": {
+    "blocos_pct": 0.0,
+    "blocos_n": 0,
+    "nao_papel_pct": 85.6
+   }
+  },
+  "pb+letras1": {
+   "pdf": {
+    "blocos_pct": 4.51,
+    "blocos_n": 3,
+    "nao_papel_pct": 85.3
+   },
+   "previa": {
+    "blocos_pct": 4.76,
+    "blocos_n": 4,
+    "nao_papel_pct": 85.4
+   },
+   "cartao": {
+    "blocos_pct": 4.8,
+    "blocos_n": 3,
+    "nao_papel_pct": 85.6
+   }
+  },
+  "pb+letras_tudo": {
+   "pdf": {
+    "blocos_pct": 4.5,
+    "blocos_n": 3,
+    "nao_papel_pct": 85.3
+   },
+   "previa": {
+    "blocos_pct": 4.76,
+    "blocos_n": 4,
+    "nao_papel_pct": 85.4
+   },
+   "cartao": {
+    "blocos_pct": 4.8,
+    "blocos_n": 3,
+    "nao_papel_pct": 85.6
+   }
+  },
+  "pb+resp0": {
+   "pdf": {
+    "blocos_pct": 21.84,
+    "blocos_n": 24,
+    "nao_papel_pct": 85.3
+   },
+   "previa": {
+    "blocos_pct": 17.62,
+    "blocos_n": 16,
+    "nao_papel_pct": 85.4
+   },
+   "cartao": {
+    "blocos_pct": 15.93,
+    "blocos_n": 15,
+    "nao_papel_pct": 85.6
+   }
+  },
+  "pb+resp0+cinza1": {
+   "pdf": {
+    "blocos_pct": 0.71,
+    "blocos_n": 1,
+    "nao_papel_pct": 85.3
+   },
+   "previa": {
+    "blocos_pct": 1.24,
+    "blocos_n": 3,
+    "nao_papel_pct": 85.4
+   },
+   "cartao": {
+    "blocos_pct": 1.38,
+    "blocos_n": 3,
+    "nao_papel_pct": 85.6
+   }
+  },
+  "pb+resp1": {
+   "pdf": {
+    "blocos_pct": 4.5,
+    "blocos_n": 3,
+    "nao_papel_pct": 85.3
+   },
+   "previa": {
+    "blocos_pct": 4.76,
+    "blocos_n": 4,
+    "nao_papel_pct": 85.4
+   },
+   "cartao": {
+    "blocos_pct": 4.8,
+    "blocos_n": 3,
+    "nao_papel_pct": 85.6
+   }
+  },
+  "pb+resp1+cinza1": {
+   "pdf": {
+    "blocos_pct": 0.71,
+    "blocos_n": 1,
+    "nao_papel_pct": 85.3
+   },
+   "previa": {
+    "blocos_pct": 1.24,
+    "blocos_n": 3,
+    "nao_papel_pct": 85.4
+   },
+   "cartao": {
+    "blocos_pct": 1.38,
+    "blocos_n": 3,
+    "nao_papel_pct": 85.6
+   }
+  },
+  "pb+samuel+resp0": {
+   "pdf": {
+    "blocos_pct": 21.84,
+    "blocos_n": 24,
+    "nao_papel_pct": 85.3
+   },
+   "previa": {
+    "blocos_pct": 17.62,
+    "blocos_n": 16,
+    "nao_papel_pct": 85.4
+   },
+   "cartao": {
+    "blocos_pct": 15.93,
+    "blocos_n": 15,
+    "nao_papel_pct": 85.6
+   }
+  },
+  "pb+samuel+resp0+letras1": {
+   "pdf": {
+    "blocos_pct": 4.51,
+    "blocos_n": 3,
+    "nao_papel_pct": 85.3
+   },
+   "previa": {
+    "blocos_pct": 4.61,
+    "blocos_n": 3,
+    "nao_papel_pct": 85.4
+   },
+   "cartao": {
+    "blocos_pct": 4.02,
+    "blocos_n": 3,
+    "nao_papel_pct": 85.6
+   }
+  }
+ },
+ "quadrados-capa/matematica": {
+  "auto+magico+resp0": {
+   "pdf": {
+    "blocos_pct": 11.68,
+    "blocos_n": 2,
+    "nao_papel_pct": 98.1
+   },
+   "previa": {
+    "blocos_pct": 11.95,
+    "blocos_n": 2,
+    "nao_papel_pct": 98.1
+   },
+   "cartao": {
+    "blocos_pct": 11.96,
+    "blocos_n": 2,
+    "nao_papel_pct": 98.2
+   }
+  },
+  "auto+magico+resp1": {
+   "pdf": {
+    "blocos_pct": 14.38,
+    "blocos_n": 14,
+    "nao_papel_pct": 98.1
+   },
+   "previa": {
+    "blocos_pct": 15.01,
+    "blocos_n": 13,
+    "nao_papel_pct": 98.1
+   },
+   "cartao": {
+    "blocos_pct": 15.38,
+    "blocos_n": 15,
+    "nao_papel_pct": 98.2
+   }
+  },
+  "auto+melhorar+resp0": {
+   "pdf": {
+    "blocos_pct": 11.68,
+    "blocos_n": 2,
+    "nao_papel_pct": 98.1
+   },
+   "previa": {
+    "blocos_pct": 11.95,
+    "blocos_n": 2,
+    "nao_papel_pct": 98.1
+   },
+   "cartao": {
+    "blocos_pct": 11.96,
+    "blocos_n": 2,
+    "nao_papel_pct": 98.2
+   }
+  },
+  "auto+melhorar+resp1": {
+   "pdf": {
+    "blocos_pct": 14.38,
+    "blocos_n": 14,
+    "nao_papel_pct": 98.1
+   },
+   "previa": {
+    "blocos_pct": 15.01,
+    "blocos_n": 13,
+    "nao_papel_pct": 98.1
+   },
+   "cartao": {
+    "blocos_pct": 15.38,
+    "blocos_n": 15,
+    "nao_papel_pct": 98.2
+   }
+  },
+  "auto+pb+letras1": {
+   "pdf": {
+    "blocos_pct": 41.97,
+    "blocos_n": 16,
+    "nao_papel_pct": 98.1
+   },
+   "previa": {
+    "blocos_pct": 42.94,
+    "blocos_n": 17,
+    "nao_papel_pct": 98.1
+   },
+   "cartao": {
+    "blocos_pct": 42.99,
+    "blocos_n": 18,
+    "nao_papel_pct": 98.2
+   }
+  },
+  "auto+pb+resp0": {
+   "pdf": {
+    "blocos_pct": 23.71,
+    "blocos_n": 10,
+    "nao_papel_pct": 98.1
+   },
+   "previa": {
+    "blocos_pct": 24.07,
+    "blocos_n": 12,
+    "nao_papel_pct": 98.1
+   },
+   "cartao": {
+    "blocos_pct": 24.34,
+    "blocos_n": 13,
+    "nao_papel_pct": 98.2
+   }
+  },
+  "auto+pb+resp0+cinza1": {
+   "pdf": {
+    "blocos_pct": 41.92,
+    "blocos_n": 16,
+    "nao_papel_pct": 98.1
+   },
+   "previa": {
+    "blocos_pct": 42.87,
+    "blocos_n": 17,
+    "nao_papel_pct": 98.1
+   },
+   "cartao": {
+    "blocos_pct": 42.87,
+    "blocos_n": 18,
+    "nao_papel_pct": 98.2
+   }
+  },
+  "auto+pb+resp1": {
+   "pdf": {
+    "blocos_pct": 41.93,
+    "blocos_n": 16,
+    "nao_papel_pct": 98.1
+   },
+   "previa": {
+    "blocos_pct": 42.93,
+    "blocos_n": 17,
+    "nao_papel_pct": 98.1
+   },
+   "cartao": {
+    "blocos_pct": 42.96,
+    "blocos_n": 18,
+    "nao_papel_pct": 98.2
+   }
+  },
+  "fundo": {
+   "pdf": {
+    "blocos_pct": 0.0,
+    "blocos_n": 0,
+    "nao_papel_pct": 98.1
+   },
+   "previa": {
+    "blocos_pct": 0.0,
+    "blocos_n": 0,
+    "nao_papel_pct": 98.1
+   },
+   "cartao": {
+    "blocos_pct": 0.0,
+    "blocos_n": 0,
+    "nao_papel_pct": 98.2
+   }
+  },
+  "magico+resp0": {
+   "pdf": {
+    "blocos_pct": 11.68,
+    "blocos_n": 2,
+    "nao_papel_pct": 98.1
+   },
+   "previa": {
+    "blocos_pct": 11.95,
+    "blocos_n": 2,
+    "nao_papel_pct": 98.1
+   },
+   "cartao": {
+    "blocos_pct": 11.96,
+    "blocos_n": 2,
+    "nao_papel_pct": 98.2
+   }
+  },
+  "magico+resp1": {
+   "pdf": {
+    "blocos_pct": 11.68,
+    "blocos_n": 2,
+    "nao_papel_pct": 98.1
+   },
+   "previa": {
+    "blocos_pct": 11.95,
+    "blocos_n": 2,
+    "nao_papel_pct": 98.1
+   },
+   "cartao": {
+    "blocos_pct": 11.96,
+    "blocos_n": 2,
+    "nao_papel_pct": 98.2
+   }
+  },
+  "melhorar+resp0": {
+   "pdf": {
+    "blocos_pct": 11.68,
+    "blocos_n": 2,
+    "nao_papel_pct": 98.1
+   },
+   "previa": {
+    "blocos_pct": 11.95,
+    "blocos_n": 2,
+    "nao_papel_pct": 98.1
+   },
+   "cartao": {
+    "blocos_pct": 11.96,
+    "blocos_n": 2,
+    "nao_papel_pct": 98.2
+   }
+  },
+  "melhorar+resp1": {
+   "pdf": {
+    "blocos_pct": 11.68,
+    "blocos_n": 2,
+    "nao_papel_pct": 98.1
+   },
+   "previa": {
+    "blocos_pct": 11.95,
+    "blocos_n": 2,
+    "nao_papel_pct": 98.1
+   },
+   "cartao": {
+    "blocos_pct": 11.96,
+    "blocos_n": 2,
+    "nao_papel_pct": 98.2
+   }
+  },
+  "original": {
+   "pdf": {
+    "blocos_pct": 0.0,
+    "blocos_n": 0,
+    "nao_papel_pct": 98.1
+   },
+   "previa": {
+    "blocos_pct": 0.0,
+    "blocos_n": 0,
+    "nao_papel_pct": 98.1
+   },
+   "cartao": {
+    "blocos_pct": 0.0,
+    "blocos_n": 0,
+    "nao_papel_pct": 98.2
+   }
+  },
+  "pb+letras1": {
+   "pdf": {
+    "blocos_pct": 41.97,
+    "blocos_n": 16,
+    "nao_papel_pct": 98.1
+   },
+   "previa": {
+    "blocos_pct": 42.94,
+    "blocos_n": 17,
+    "nao_papel_pct": 98.1
+   },
+   "cartao": {
+    "blocos_pct": 42.99,
+    "blocos_n": 18,
+    "nao_papel_pct": 98.2
+   }
+  },
+  "pb+letras_tudo": {
+   "pdf": {
+    "blocos_pct": 41.93,
+    "blocos_n": 16,
+    "nao_papel_pct": 98.1
+   },
+   "previa": {
+    "blocos_pct": 42.93,
+    "blocos_n": 17,
+    "nao_papel_pct": 98.1
+   },
+   "cartao": {
+    "blocos_pct": 42.96,
+    "blocos_n": 18,
+    "nao_papel_pct": 98.2
+   }
+  },
+  "pb+resp0": {
+   "pdf": {
+    "blocos_pct": 23.71,
+    "blocos_n": 10,
+    "nao_papel_pct": 98.1
+   },
+   "previa": {
+    "blocos_pct": 24.07,
+    "blocos_n": 12,
+    "nao_papel_pct": 98.1
+   },
+   "cartao": {
+    "blocos_pct": 24.34,
+    "blocos_n": 13,
+    "nao_papel_pct": 98.2
+   }
+  },
+  "pb+resp0+cinza1": {
+   "pdf": {
+    "blocos_pct": 41.92,
+    "blocos_n": 16,
+    "nao_papel_pct": 98.1
+   },
+   "previa": {
+    "blocos_pct": 42.87,
+    "blocos_n": 17,
+    "nao_papel_pct": 98.1
+   },
+   "cartao": {
+    "blocos_pct": 42.87,
+    "blocos_n": 18,
+    "nao_papel_pct": 98.2
+   }
+  },
+  "pb+resp1": {
+   "pdf": {
+    "blocos_pct": 41.93,
+    "blocos_n": 16,
+    "nao_papel_pct": 98.1
+   },
+   "previa": {
+    "blocos_pct": 42.93,
+    "blocos_n": 17,
+    "nao_papel_pct": 98.1
+   },
+   "cartao": {
+    "blocos_pct": 42.96,
+    "blocos_n": 18,
+    "nao_papel_pct": 98.2
+   }
+  },
+  "pb+resp1+cinza1": {
+   "pdf": {
+    "blocos_pct": 41.92,
+    "blocos_n": 16,
+    "nao_papel_pct": 98.1
+   },
+   "previa": {
+    "blocos_pct": 42.87,
+    "blocos_n": 17,
+    "nao_papel_pct": 98.1
+   },
+   "cartao": {
+    "blocos_pct": 42.87,
+    "blocos_n": 18,
+    "nao_papel_pct": 98.2
+   }
+  },
+  "pb+samuel+resp0": {
+   "pdf": {
+    "blocos_pct": 23.71,
+    "blocos_n": 10,
+    "nao_papel_pct": 98.1
+   },
+   "previa": {
+    "blocos_pct": 24.07,
+    "blocos_n": 12,
+    "nao_papel_pct": 98.1
+   },
+   "cartao": {
+    "blocos_pct": 24.34,
+    "blocos_n": 13,
+    "nao_papel_pct": 98.2
+   }
+  },
+  "pb+samuel+resp0+letras1": {
+   "pdf": {
+    "blocos_pct": 41.97,
+    "blocos_n": 16,
+    "nao_papel_pct": 98.1
+   },
+   "previa": {
+    "blocos_pct": 42.41,
+    "blocos_n": 18,
+    "nao_papel_pct": 98.1
+   },
+   "cartao": {
+    "blocos_pct": 42.59,
+    "blocos_n": 20,
+    "nao_papel_pct": 98.2
+   }
+  }
+ },
+ "quadrados-capa/pesel": {
+  "auto+magico+resp0": {
+   "pdf": {
+    "blocos_pct": 0.0,
+    "blocos_n": 0,
+    "nao_papel_pct": 95.9
+   },
+   "previa": {
+    "blocos_pct": 0.0,
+    "blocos_n": 0,
+    "nao_papel_pct": 97.6
+   },
+   "cartao": {
+    "blocos_pct": 0.0,
+    "blocos_n": 0,
+    "nao_papel_pct": 98.6
+   }
+  },
+  "auto+magico+resp1": {
+   "pdf": {
+    "blocos_pct": 0.0,
+    "blocos_n": 0,
+    "nao_papel_pct": 95.9
+   },
+   "previa": {
+    "blocos_pct": 0.0,
+    "blocos_n": 0,
+    "nao_papel_pct": 97.6
+   },
+   "cartao": {
+    "blocos_pct": 0.94,
+    "blocos_n": 1,
+    "nao_papel_pct": 98.6
+   }
+  },
+  "auto+melhorar+resp0": {
+   "pdf": {
+    "blocos_pct": 0.0,
+    "blocos_n": 0,
+    "nao_papel_pct": 95.9
+   },
+   "previa": {
+    "blocos_pct": 0.0,
+    "blocos_n": 0,
+    "nao_papel_pct": 97.6
+   },
+   "cartao": {
+    "blocos_pct": 0.0,
+    "blocos_n": 0,
+    "nao_papel_pct": 98.6
+   }
+  },
+  "auto+melhorar+resp1": {
+   "pdf": {
+    "blocos_pct": 0.0,
+    "blocos_n": 0,
+    "nao_papel_pct": 95.9
+   },
+   "previa": {
+    "blocos_pct": 0.0,
+    "blocos_n": 0,
+    "nao_papel_pct": 97.6
+   },
+   "cartao": {
+    "blocos_pct": 0.94,
+    "blocos_n": 1,
+    "nao_papel_pct": 98.6
+   }
+  },
+  "auto+pb+letras1": {
+   "pdf": {
+    "blocos_pct": 0.0,
+    "blocos_n": 0,
+    "nao_papel_pct": 95.9
+   },
+   "previa": {
+    "blocos_pct": 0.0,
+    "blocos_n": 0,
+    "nao_papel_pct": 97.6
+   },
+   "cartao": {
+    "blocos_pct": 0.28,
+    "blocos_n": 0,
+    "nao_papel_pct": 98.6
+   }
+  },
+  "auto+pb+resp0": {
+   "pdf": {
+    "blocos_pct": 0.1,
+    "blocos_n": 0,
+    "nao_papel_pct": 95.9
+   },
+   "previa": {
+    "blocos_pct": 6.24,
+    "blocos_n": 7,
+    "nao_papel_pct": 97.6
+   },
+   "cartao": {
+    "blocos_pct": 30.04,
+    "blocos_n": 5,
+    "nao_papel_pct": 98.6
+   }
+  },
+  "auto+pb+resp0+cinza1": {
+   "pdf": {
+    "blocos_pct": 0.0,
+    "blocos_n": 0,
+    "nao_papel_pct": 95.9
+   },
+   "previa": {
+    "blocos_pct": 0.0,
+    "blocos_n": 0,
+    "nao_papel_pct": 97.6
+   },
+   "cartao": {
+    "blocos_pct": 0.0,
+    "blocos_n": 0,
+    "nao_papel_pct": 98.6
+   }
+  },
+  "auto+pb+resp1": {
+   "pdf": {
+    "blocos_pct": 0.26,
+    "blocos_n": 0,
+    "nao_papel_pct": 95.9
+   },
+   "previa": {
+    "blocos_pct": 28.22,
+    "blocos_n": 6,
+    "nao_papel_pct": 97.6
+   },
+   "cartao": {
+    "blocos_pct": 35.44,
+    "blocos_n": 7,
+    "nao_papel_pct": 98.6
+   }
+  },
+  "fundo": {
+   "pdf": {
+    "blocos_pct": 0.0,
+    "blocos_n": 0,
+    "nao_papel_pct": 95.9
+   },
+   "previa": {
+    "blocos_pct": 0.0,
+    "blocos_n": 0,
+    "nao_papel_pct": 97.6
+   },
+   "cartao": {
+    "blocos_pct": 0.0,
+    "blocos_n": 0,
+    "nao_papel_pct": 98.6
+   }
+  },
+  "magico+resp0": {
+   "pdf": {
+    "blocos_pct": 0.0,
+    "blocos_n": 0,
+    "nao_papel_pct": 95.9
+   },
+   "previa": {
+    "blocos_pct": 0.0,
+    "blocos_n": 0,
+    "nao_papel_pct": 97.6
+   },
+   "cartao": {
+    "blocos_pct": 0.0,
+    "blocos_n": 0,
+    "nao_papel_pct": 98.6
+   }
+  },
+  "magico+resp1": {
+   "pdf": {
+    "blocos_pct": 0.0,
+    "blocos_n": 0,
+    "nao_papel_pct": 95.9
+   },
+   "previa": {
+    "blocos_pct": 0.0,
+    "blocos_n": 0,
+    "nao_papel_pct": 97.6
+   },
+   "cartao": {
+    "blocos_pct": 0.0,
+    "blocos_n": 0,
+    "nao_papel_pct": 98.6
+   }
+  },
+  "melhorar+resp0": {
+   "pdf": {
+    "blocos_pct": 0.0,
+    "blocos_n": 0,
+    "nao_papel_pct": 95.9
+   },
+   "previa": {
+    "blocos_pct": 0.0,
+    "blocos_n": 0,
+    "nao_papel_pct": 97.6
+   },
+   "cartao": {
+    "blocos_pct": 0.0,
+    "blocos_n": 0,
+    "nao_papel_pct": 98.6
+   }
+  },
+  "melhorar+resp1": {
+   "pdf": {
+    "blocos_pct": 0.0,
+    "blocos_n": 0,
+    "nao_papel_pct": 95.9
+   },
+   "previa": {
+    "blocos_pct": 0.0,
+    "blocos_n": 0,
+    "nao_papel_pct": 97.6
+   },
+   "cartao": {
+    "blocos_pct": 0.0,
+    "blocos_n": 0,
+    "nao_papel_pct": 98.6
+   }
+  },
+  "original": {
+   "pdf": {
+    "blocos_pct": 0.0,
+    "blocos_n": 0,
+    "nao_papel_pct": 95.9
+   },
+   "previa": {
+    "blocos_pct": 0.0,
+    "blocos_n": 0,
+    "nao_papel_pct": 97.6
+   },
+   "cartao": {
+    "blocos_pct": 0.0,
+    "blocos_n": 0,
+    "nao_papel_pct": 98.6
+   }
+  },
+  "pb+letras1": {
+   "pdf": {
+    "blocos_pct": 0.0,
+    "blocos_n": 0,
+    "nao_papel_pct": 95.9
+   },
+   "previa": {
+    "blocos_pct": 0.0,
+    "blocos_n": 0,
+    "nao_papel_pct": 97.6
+   },
+   "cartao": {
+    "blocos_pct": 0.28,
+    "blocos_n": 0,
+    "nao_papel_pct": 98.6
+   }
+  },
+  "pb+letras_tudo": {
+   "pdf": {
+    "blocos_pct": 0.0,
+    "blocos_n": 0,
+    "nao_papel_pct": 95.9
+   },
+   "previa": {
+    "blocos_pct": 0.0,
+    "blocos_n": 0,
+    "nao_papel_pct": 97.6
+   },
+   "cartao": {
+    "blocos_pct": 0.23,
+    "blocos_n": 0,
+    "nao_papel_pct": 98.6
+   }
+  },
+  "pb+resp0": {
+   "pdf": {
+    "blocos_pct": 0.1,
+    "blocos_n": 0,
+    "nao_papel_pct": 95.9
+   },
+   "previa": {
+    "blocos_pct": 6.24,
+    "blocos_n": 7,
+    "nao_papel_pct": 97.6
+   },
+   "cartao": {
+    "blocos_pct": 30.04,
+    "blocos_n": 5,
+    "nao_papel_pct": 98.6
+   }
+  },
+  "pb+resp0+cinza1": {
+   "pdf": {
+    "blocos_pct": 0.0,
+    "blocos_n": 0,
+    "nao_papel_pct": 95.9
+   },
+   "previa": {
+    "blocos_pct": 0.0,
+    "blocos_n": 0,
+    "nao_papel_pct": 97.6
+   },
+   "cartao": {
+    "blocos_pct": 0.0,
+    "blocos_n": 0,
+    "nao_papel_pct": 98.6
+   }
+  },
+  "pb+resp1": {
+   "pdf": {
+    "blocos_pct": 0.26,
+    "blocos_n": 0,
+    "nao_papel_pct": 95.9
+   },
+   "previa": {
+    "blocos_pct": 28.22,
+    "blocos_n": 6,
+    "nao_papel_pct": 97.6
+   },
+   "cartao": {
+    "blocos_pct": 35.44,
+    "blocos_n": 7,
+    "nao_papel_pct": 98.6
+   }
+  },
+  "pb+resp1+cinza1": {
+   "pdf": {
+    "blocos_pct": 0.0,
+    "blocos_n": 0,
+    "nao_papel_pct": 95.9
+   },
+   "previa": {
+    "blocos_pct": 0.0,
+    "blocos_n": 0,
+    "nao_papel_pct": 97.6
+   },
+   "cartao": {
+    "blocos_pct": 0.0,
+    "blocos_n": 0,
+    "nao_papel_pct": 98.6
+   }
+  },
+  "pb+samuel+resp0": {
+   "pdf": {
+    "blocos_pct": 0.1,
+    "blocos_n": 0,
+    "nao_papel_pct": 95.9
+   },
+   "previa": {
+    "blocos_pct": 6.24,
+    "blocos_n": 7,
+    "nao_papel_pct": 97.6
+   },
+   "cartao": {
+    "blocos_pct": 30.04,
+    "blocos_n": 5,
+    "nao_papel_pct": 98.6
+   }
+  },
+  "pb+samuel+resp0+letras1": {
+   "pdf": {
+    "blocos_pct": 0.0,
+    "blocos_n": 0,
+    "nao_papel_pct": 95.9
+   },
+   "previa": {
+    "blocos_pct": 0.0,
+    "blocos_n": 0,
+    "nao_papel_pct": 97.6
+   },
+   "cartao": {
+    "blocos_pct": 0.23,
+    "blocos_n": 0,
+    "nao_papel_pct": 98.6
+   }
+  }
+ },
+ "quadrados-capa/destino": {
+  "auto+magico+resp0": {
+   "pdf": {
+    "blocos_pct": 0.0,
+    "blocos_n": 0,
+    "nao_papel_pct": 99.6
+   },
+   "previa": {
+    "blocos_pct": 0.0,
+    "blocos_n": 0,
+    "nao_papel_pct": 99.7
+   },
+   "cartao": {
+    "blocos_pct": 0.0,
+    "blocos_n": 0,
+    "nao_papel_pct": 99.7
+   }
+  },
+  "auto+magico+resp1": {
+   "pdf": {
+    "blocos_pct": 63.99,
+    "blocos_n": 25,
+    "nao_papel_pct": 99.6
+   },
+   "previa": {
+    "blocos_pct": 65.23,
+    "blocos_n": 21,
+    "nao_papel_pct": 99.7
+   },
+   "cartao": {
+    "blocos_pct": 65.44,
+    "blocos_n": 20,
+    "nao_papel_pct": 99.7
+   }
+  },
+  "auto+melhorar+resp0": {
+   "pdf": {
+    "blocos_pct": 0.0,
+    "blocos_n": 0,
+    "nao_papel_pct": 99.6
+   },
+   "previa": {
+    "blocos_pct": 0.0,
+    "blocos_n": 0,
+    "nao_papel_pct": 99.7
+   },
+   "cartao": {
+    "blocos_pct": 0.0,
+    "blocos_n": 0,
+    "nao_papel_pct": 99.7
+   }
+  },
+  "auto+melhorar+resp1": {
+   "pdf": {
+    "blocos_pct": 64.43,
+    "blocos_n": 24,
+    "nao_papel_pct": 99.6
+   },
+   "previa": {
+    "blocos_pct": 65.77,
+    "blocos_n": 21,
+    "nao_papel_pct": 99.7
+   },
+   "cartao": {
+    "blocos_pct": 65.96,
+    "blocos_n": 20,
+    "nao_papel_pct": 99.7
+   }
+  },
+  "auto+pb+letras1": {
+   "pdf": {
+    "blocos_pct": 81.68,
+    "blocos_n": 12,
+    "nao_papel_pct": 99.6
+   },
+   "previa": {
+    "blocos_pct": 82.15,
+    "blocos_n": 9,
+    "nao_papel_pct": 99.7
+   },
+   "cartao": {
+    "blocos_pct": 82.1,
+    "blocos_n": 9,
+    "nao_papel_pct": 99.7
+   }
+  },
+  "auto+pb+resp0": {
+   "pdf": {
+    "blocos_pct": 82.65,
+    "blocos_n": 18,
+    "nao_papel_pct": 99.6
+   },
+   "previa": {
+    "blocos_pct": 84.23,
+    "blocos_n": 15,
+    "nao_papel_pct": 99.7
+   },
+   "cartao": {
+    "blocos_pct": 84.17,
+    "blocos_n": 14,
+    "nao_papel_pct": 99.7
+   }
+  },
+  "auto+pb+resp0+cinza1": {
+   "pdf": {
+    "blocos_pct": 78.66,
+    "blocos_n": 17,
+    "nao_papel_pct": 99.6
+   },
+   "previa": {
+    "blocos_pct": 79.57,
+    "blocos_n": 14,
+    "nao_papel_pct": 99.7
+   },
+   "cartao": {
+    "blocos_pct": 79.58,
+    "blocos_n": 13,
+    "nao_papel_pct": 99.7
+   }
+  },
+  "auto+pb+resp1": {
+   "pdf": {
+    "blocos_pct": 78.66,
+    "blocos_n": 17,
+    "nao_papel_pct": 99.6
+   },
+   "previa": {
+    "blocos_pct": 79.57,
+    "blocos_n": 14,
+    "nao_papel_pct": 99.7
+   },
+   "cartao": {
+    "blocos_pct": 79.58,
+    "blocos_n": 13,
+    "nao_papel_pct": 99.7
+   }
+  },
+  "fundo": {
+   "pdf": {
+    "blocos_pct": 0.0,
+    "blocos_n": 0,
+    "nao_papel_pct": 99.6
+   },
+   "previa": {
+    "blocos_pct": 0.0,
+    "blocos_n": 0,
+    "nao_papel_pct": 99.7
+   },
+   "cartao": {
+    "blocos_pct": 0.0,
+    "blocos_n": 0,
+    "nao_papel_pct": 99.7
+   }
+  },
+  "magico+resp0": {
+   "pdf": {
+    "blocos_pct": 0.0,
+    "blocos_n": 0,
+    "nao_papel_pct": 99.6
+   },
+   "previa": {
+    "blocos_pct": 0.0,
+    "blocos_n": 0,
+    "nao_papel_pct": 99.7
+   },
+   "cartao": {
+    "blocos_pct": 0.0,
+    "blocos_n": 0,
+    "nao_papel_pct": 99.7
+   }
+  },
+  "magico+resp1": {
+   "pdf": {
+    "blocos_pct": 0.0,
+    "blocos_n": 0,
+    "nao_papel_pct": 99.6
+   },
+   "previa": {
+    "blocos_pct": 0.0,
+    "blocos_n": 0,
+    "nao_papel_pct": 99.7
+   },
+   "cartao": {
+    "blocos_pct": 0.0,
+    "blocos_n": 0,
+    "nao_papel_pct": 99.7
+   }
+  },
+  "melhorar+resp0": {
+   "pdf": {
+    "blocos_pct": 0.0,
+    "blocos_n": 0,
+    "nao_papel_pct": 99.6
+   },
+   "previa": {
+    "blocos_pct": 0.0,
+    "blocos_n": 0,
+    "nao_papel_pct": 99.7
+   },
+   "cartao": {
+    "blocos_pct": 0.0,
+    "blocos_n": 0,
+    "nao_papel_pct": 99.7
+   }
+  },
+  "melhorar+resp1": {
+   "pdf": {
+    "blocos_pct": 0.0,
+    "blocos_n": 0,
+    "nao_papel_pct": 99.6
+   },
+   "previa": {
+    "blocos_pct": 0.0,
+    "blocos_n": 0,
+    "nao_papel_pct": 99.7
+   },
+   "cartao": {
+    "blocos_pct": 0.0,
+    "blocos_n": 0,
+    "nao_papel_pct": 99.7
+   }
+  },
+  "original": {
+   "pdf": {
+    "blocos_pct": 0.0,
+    "blocos_n": 0,
+    "nao_papel_pct": 99.6
+   },
+   "previa": {
+    "blocos_pct": 0.0,
+    "blocos_n": 0,
+    "nao_papel_pct": 99.7
+   },
+   "cartao": {
+    "blocos_pct": 0.0,
+    "blocos_n": 0,
+    "nao_papel_pct": 99.7
+   }
+  },
+  "pb+letras1": {
+   "pdf": {
+    "blocos_pct": 81.68,
+    "blocos_n": 12,
+    "nao_papel_pct": 99.6
+   },
+   "previa": {
+    "blocos_pct": 82.15,
+    "blocos_n": 9,
+    "nao_papel_pct": 99.7
+   },
+   "cartao": {
+    "blocos_pct": 82.1,
+    "blocos_n": 9,
+    "nao_papel_pct": 99.7
+   }
+  },
+  "pb+letras_tudo": {
+   "pdf": {
+    "blocos_pct": 78.56,
+    "blocos_n": 17,
+    "nao_papel_pct": 99.6
+   },
+   "previa": {
+    "blocos_pct": 79.46,
+    "blocos_n": 14,
+    "nao_papel_pct": 99.7
+   },
+   "cartao": {
+    "blocos_pct": 79.46,
+    "blocos_n": 13,
+    "nao_papel_pct": 99.7
+   }
+  },
+  "pb+resp0": {
+   "pdf": {
+    "blocos_pct": 82.65,
+    "blocos_n": 18,
+    "nao_papel_pct": 99.6
+   },
+   "previa": {
+    "blocos_pct": 84.23,
+    "blocos_n": 15,
+    "nao_papel_pct": 99.7
+   },
+   "cartao": {
+    "blocos_pct": 84.17,
+    "blocos_n": 14,
+    "nao_papel_pct": 99.7
+   }
+  },
+  "pb+resp0+cinza1": {
+   "pdf": {
+    "blocos_pct": 78.66,
+    "blocos_n": 17,
+    "nao_papel_pct": 99.6
+   },
+   "previa": {
+    "blocos_pct": 79.57,
+    "blocos_n": 14,
+    "nao_papel_pct": 99.7
+   },
+   "cartao": {
+    "blocos_pct": 79.58,
+    "blocos_n": 13,
+    "nao_papel_pct": 99.7
+   }
+  },
+  "pb+resp1": {
+   "pdf": {
+    "blocos_pct": 78.66,
+    "blocos_n": 17,
+    "nao_papel_pct": 99.6
+   },
+   "previa": {
+    "blocos_pct": 79.57,
+    "blocos_n": 14,
+    "nao_papel_pct": 99.7
+   },
+   "cartao": {
+    "blocos_pct": 79.58,
+    "blocos_n": 13,
+    "nao_papel_pct": 99.7
+   }
+  },
+  "pb+resp1+cinza1": {
+   "pdf": {
+    "blocos_pct": 78.66,
+    "blocos_n": 17,
+    "nao_papel_pct": 99.6
+   },
+   "previa": {
+    "blocos_pct": 79.57,
+    "blocos_n": 14,
+    "nao_papel_pct": 99.7
+   },
+   "cartao": {
+    "blocos_pct": 79.58,
+    "blocos_n": 13,
+    "nao_papel_pct": 99.7
+   }
+  },
+  "pb+samuel+resp0": {
+   "pdf": {
+    "blocos_pct": 82.65,
+    "blocos_n": 18,
+    "nao_papel_pct": 99.6
+   },
+   "previa": {
+    "blocos_pct": 84.23,
+    "blocos_n": 15,
+    "nao_papel_pct": 99.7
+   },
+   "cartao": {
+    "blocos_pct": 84.17,
+    "blocos_n": 14,
+    "nao_papel_pct": 99.7
+   }
+  },
+  "pb+samuel+resp0+letras1": {
+   "pdf": {
+    "blocos_pct": 81.68,
+    "blocos_n": 12,
+    "nao_papel_pct": 99.6
+   },
+   "previa": {
+    "blocos_pct": 82.68,
+    "blocos_n": 9,
+    "nao_papel_pct": 99.7
+   },
+   "cartao": {
+    "blocos_pct": 82.67,
+    "blocos_n": 9,
+    "nao_papel_pct": 99.7
+   }
+  }
+ },
+ "quadrados-c/gradus": {
+  "auto+magico+resp0": {
+   "pdf": {
+    "blocos_pct": 0.04,
+    "blocos_n": 0,
+    "nao_papel_pct": 48.7
+   },
+   "previa": {
+    "blocos_pct": 0.28,
+    "blocos_n": 0,
+    "nao_papel_pct": 49.0
+   },
+   "cartao": {
+    "blocos_pct": 0.42,
+    "blocos_n": 0,
+    "nao_papel_pct": 49.5
+   }
+  },
+  "auto+magico+resp1": {
+   "pdf": {
+    "blocos_pct": 0.03,
+    "blocos_n": 0,
+    "nao_papel_pct": 48.7
+   },
+   "previa": {
+    "blocos_pct": 0.17,
+    "blocos_n": 0,
+    "nao_papel_pct": 49.0
+   },
+   "cartao": {
+    "blocos_pct": 0.33,
+    "blocos_n": 0,
+    "nao_papel_pct": 49.5
+   }
+  },
+  "auto+melhorar+resp0": {
+   "pdf": {
+    "blocos_pct": 0.03,
+    "blocos_n": 0,
+    "nao_papel_pct": 48.7
+   },
+   "previa": {
+    "blocos_pct": 0.19,
+    "blocos_n": 0,
+    "nao_papel_pct": 49.0
+   },
+   "cartao": {
+    "blocos_pct": 0.32,
+    "blocos_n": 0,
+    "nao_papel_pct": 49.5
+   }
+  },
+  "auto+melhorar+resp1": {
+   "pdf": {
+    "blocos_pct": 0.02,
+    "blocos_n": 0,
+    "nao_papel_pct": 48.7
+   },
+   "previa": {
+    "blocos_pct": 0.12,
+    "blocos_n": 0,
+    "nao_papel_pct": 49.0
+   },
+   "cartao": {
+    "blocos_pct": 0.24,
+    "blocos_n": 0,
+    "nao_papel_pct": 49.5
+   }
+  },
+  "auto+pb+letras1": {
+   "pdf": {
+    "blocos_pct": 1.11,
+    "blocos_n": 1,
+    "nao_papel_pct": 48.7
+   },
+   "previa": {
+    "blocos_pct": 2.77,
+    "blocos_n": 2,
+    "nao_papel_pct": 49.0
+   },
+   "cartao": {
+    "blocos_pct": 3.06,
+    "blocos_n": 2,
+    "nao_papel_pct": 49.5
+   }
+  },
+  "auto+pb+resp0": {
+   "pdf": {
+    "blocos_pct": 12.16,
+    "blocos_n": 4,
+    "nao_papel_pct": 48.7
+   },
+   "previa": {
+    "blocos_pct": 13.01,
+    "blocos_n": 4,
+    "nao_papel_pct": 49.0
+   },
+   "cartao": {
+    "blocos_pct": 13.45,
+    "blocos_n": 3,
+    "nao_papel_pct": 49.5
+   }
+  },
+  "auto+pb+resp0+cinza1": {
+   "pdf": {
+    "blocos_pct": 1.02,
+    "blocos_n": 1,
+    "nao_papel_pct": 48.7
+   },
+   "previa": {
+    "blocos_pct": 2.77,
+    "blocos_n": 2,
+    "nao_papel_pct": 49.0
+   },
+   "cartao": {
+    "blocos_pct": 2.72,
+    "blocos_n": 2,
+    "nao_papel_pct": 49.5
+   }
+  },
+  "auto+pb+resp1": {
+   "pdf": {
+    "blocos_pct": 1.02,
+    "blocos_n": 1,
+    "nao_papel_pct": 48.7
+   },
+   "previa": {
+    "blocos_pct": 2.77,
+    "blocos_n": 2,
+    "nao_papel_pct": 49.0
+   },
+   "cartao": {
+    "blocos_pct": 2.72,
+    "blocos_n": 2,
+    "nao_papel_pct": 49.5
+   }
+  },
+  "fundo": {
+   "pdf": {
+    "blocos_pct": 0.0,
+    "blocos_n": 0,
+    "nao_papel_pct": 48.7
+   },
+   "previa": {
+    "blocos_pct": 0.01,
+    "blocos_n": 0,
+    "nao_papel_pct": 49.0
+   },
+   "cartao": {
+    "blocos_pct": 0.05,
+    "blocos_n": 0,
+    "nao_papel_pct": 49.5
+   }
+  },
+  "magico+resp0": {
+   "pdf": {
+    "blocos_pct": 0.04,
+    "blocos_n": 0,
+    "nao_papel_pct": 48.7
+   },
+   "previa": {
+    "blocos_pct": 0.28,
+    "blocos_n": 0,
+    "nao_papel_pct": 49.0
+   },
+   "cartao": {
+    "blocos_pct": 0.42,
+    "blocos_n": 0,
+    "nao_papel_pct": 49.5
+   }
+  },
+  "magico+resp1": {
+   "pdf": {
+    "blocos_pct": 0.03,
+    "blocos_n": 0,
+    "nao_papel_pct": 48.7
+   },
+   "previa": {
+    "blocos_pct": 0.17,
+    "blocos_n": 0,
+    "nao_papel_pct": 49.0
+   },
+   "cartao": {
+    "blocos_pct": 0.33,
+    "blocos_n": 0,
+    "nao_papel_pct": 49.5
+   }
+  },
+  "melhorar+resp0": {
+   "pdf": {
+    "blocos_pct": 0.03,
+    "blocos_n": 0,
+    "nao_papel_pct": 48.7
+   },
+   "previa": {
+    "blocos_pct": 0.19,
+    "blocos_n": 0,
+    "nao_papel_pct": 49.0
+   },
+   "cartao": {
+    "blocos_pct": 0.32,
+    "blocos_n": 0,
+    "nao_papel_pct": 49.5
+   }
+  },
+  "melhorar+resp1": {
+   "pdf": {
+    "blocos_pct": 0.02,
+    "blocos_n": 0,
+    "nao_papel_pct": 48.7
+   },
+   "previa": {
+    "blocos_pct": 0.12,
+    "blocos_n": 0,
+    "nao_papel_pct": 49.0
+   },
+   "cartao": {
+    "blocos_pct": 0.24,
+    "blocos_n": 0,
+    "nao_papel_pct": 49.5
+   }
+  },
+  "original": {
+   "pdf": {
+    "blocos_pct": 0.0,
+    "blocos_n": 0,
+    "nao_papel_pct": 48.7
+   },
+   "previa": {
+    "blocos_pct": 0.01,
+    "blocos_n": 0,
+    "nao_papel_pct": 49.0
+   },
+   "cartao": {
+    "blocos_pct": 0.05,
+    "blocos_n": 0,
+    "nao_papel_pct": 49.5
+   }
+  },
+  "pb+letras1": {
+   "pdf": {
+    "blocos_pct": 1.11,
+    "blocos_n": 1,
+    "nao_papel_pct": 48.7
+   },
+   "previa": {
+    "blocos_pct": 2.77,
+    "blocos_n": 2,
+    "nao_papel_pct": 49.0
+   },
+   "cartao": {
+    "blocos_pct": 3.06,
+    "blocos_n": 2,
+    "nao_papel_pct": 49.5
+   }
+  },
+  "pb+letras_tudo": {
+   "pdf": {
+    "blocos_pct": 1.02,
+    "blocos_n": 1,
+    "nao_papel_pct": 48.7
+   },
+   "previa": {
+    "blocos_pct": 2.77,
+    "blocos_n": 2,
+    "nao_papel_pct": 49.0
+   },
+   "cartao": {
+    "blocos_pct": 2.72,
+    "blocos_n": 2,
+    "nao_papel_pct": 49.5
+   }
+  },
+  "pb+resp0": {
+   "pdf": {
+    "blocos_pct": 12.16,
+    "blocos_n": 4,
+    "nao_papel_pct": 48.7
+   },
+   "previa": {
+    "blocos_pct": 13.01,
+    "blocos_n": 4,
+    "nao_papel_pct": 49.0
+   },
+   "cartao": {
+    "blocos_pct": 13.45,
+    "blocos_n": 3,
+    "nao_papel_pct": 49.5
+   }
+  },
+  "pb+resp0+cinza1": {
+   "pdf": {
+    "blocos_pct": 1.02,
+    "blocos_n": 1,
+    "nao_papel_pct": 48.7
+   },
+   "previa": {
+    "blocos_pct": 2.77,
+    "blocos_n": 2,
+    "nao_papel_pct": 49.0
+   },
+   "cartao": {
+    "blocos_pct": 2.72,
+    "blocos_n": 2,
+    "nao_papel_pct": 49.5
+   }
+  },
+  "pb+resp1": {
+   "pdf": {
+    "blocos_pct": 1.02,
+    "blocos_n": 1,
+    "nao_papel_pct": 48.7
+   },
+   "previa": {
+    "blocos_pct": 2.77,
+    "blocos_n": 2,
+    "nao_papel_pct": 49.0
+   },
+   "cartao": {
+    "blocos_pct": 2.72,
+    "blocos_n": 2,
+    "nao_papel_pct": 49.5
+   }
+  },
+  "pb+resp1+cinza1": {
+   "pdf": {
+    "blocos_pct": 1.02,
+    "blocos_n": 1,
+    "nao_papel_pct": 48.7
+   },
+   "previa": {
+    "blocos_pct": 2.77,
+    "blocos_n": 2,
+    "nao_papel_pct": 49.0
+   },
+   "cartao": {
+    "blocos_pct": 2.72,
+    "blocos_n": 2,
+    "nao_papel_pct": 49.5
+   }
+  },
+  "pb+samuel+resp0": {
+   "pdf": {
+    "blocos_pct": 12.16,
+    "blocos_n": 4,
+    "nao_papel_pct": 48.7
+   },
+   "previa": {
+    "blocos_pct": 13.01,
+    "blocos_n": 4,
+    "nao_papel_pct": 49.0
+   },
+   "cartao": {
+    "blocos_pct": 13.45,
+    "blocos_n": 3,
+    "nao_papel_pct": 49.5
+   }
+  },
+  "pb+samuel+resp0+letras1": {
+   "pdf": {
+    "blocos_pct": 1.11,
+    "blocos_n": 1,
+    "nao_papel_pct": 48.7
+   },
+   "previa": {
+    "blocos_pct": 1.48,
+    "blocos_n": 1,
+    "nao_papel_pct": 49.0
+   },
+   "cartao": {
+    "blocos_pct": 1.77,
+    "blocos_n": 1,
+    "nao_papel_pct": 49.5
+   }
+  }
+ },
+ "quadrados-c/escola": {
+  "auto+magico+resp0": {
+   "pdf": {
+    "blocos_pct": 3.24,
+    "blocos_n": 3,
+    "nao_papel_pct": 85.3
+   },
+   "previa": {
+    "blocos_pct": 3.89,
+    "blocos_n": 4,
+    "nao_papel_pct": 85.4
+   },
+   "cartao": {
+    "blocos_pct": 3.89,
+    "blocos_n": 4,
+    "nao_papel_pct": 85.6
+   }
+  },
+  "auto+magico+resp1": {
+   "pdf": {
+    "blocos_pct": 4.16,
+    "blocos_n": 3,
+    "nao_papel_pct": 85.3
+   },
+   "previa": {
+    "blocos_pct": 4.61,
+    "blocos_n": 3,
+    "nao_papel_pct": 85.4
+   },
+   "cartao": {
+    "blocos_pct": 4.61,
+    "blocos_n": 3,
+    "nao_papel_pct": 85.6
+   }
+  },
+  "auto+melhorar+resp0": {
+   "pdf": {
+    "blocos_pct": 1.4,
+    "blocos_n": 2,
+    "nao_papel_pct": 85.3
+   },
+   "previa": {
+    "blocos_pct": 1.87,
+    "blocos_n": 3,
+    "nao_papel_pct": 85.4
+   },
+   "cartao": {
+    "blocos_pct": 2.02,
+    "blocos_n": 3,
+    "nao_papel_pct": 85.6
+   }
+  },
+  "auto+melhorar+resp1": {
+   "pdf": {
+    "blocos_pct": 3.96,
+    "blocos_n": 3,
+    "nao_papel_pct": 85.3
+   },
+   "previa": {
+    "blocos_pct": 4.45,
+    "blocos_n": 3,
+    "nao_papel_pct": 85.4
+   },
+   "cartao": {
+    "blocos_pct": 4.51,
+    "blocos_n": 3,
+    "nao_papel_pct": 85.6
+   }
+  },
+  "auto+pb+letras1": {
+   "pdf": {
+    "blocos_pct": 4.51,
+    "blocos_n": 3,
+    "nao_papel_pct": 85.3
+   },
+   "previa": {
+    "blocos_pct": 4.76,
+    "blocos_n": 4,
+    "nao_papel_pct": 85.4
+   },
+   "cartao": {
+    "blocos_pct": 4.8,
+    "blocos_n": 3,
+    "nao_papel_pct": 85.6
+   }
+  },
+  "auto+pb+resp0": {
+   "pdf": {
+    "blocos_pct": 21.84,
+    "blocos_n": 24,
+    "nao_papel_pct": 85.3
+   },
+   "previa": {
+    "blocos_pct": 17.62,
+    "blocos_n": 16,
+    "nao_papel_pct": 85.4
+   },
+   "cartao": {
+    "blocos_pct": 15.93,
+    "blocos_n": 15,
+    "nao_papel_pct": 85.6
+   }
+  },
+  "auto+pb+resp0+cinza1": {
+   "pdf": {
+    "blocos_pct": 0.71,
+    "blocos_n": 1,
+    "nao_papel_pct": 85.3
+   },
+   "previa": {
+    "blocos_pct": 1.24,
+    "blocos_n": 3,
+    "nao_papel_pct": 85.4
+   },
+   "cartao": {
+    "blocos_pct": 1.38,
+    "blocos_n": 3,
+    "nao_papel_pct": 85.6
+   }
+  },
+  "auto+pb+resp1": {
+   "pdf": {
+    "blocos_pct": 4.5,
+    "blocos_n": 3,
+    "nao_papel_pct": 85.3
+   },
+   "previa": {
+    "blocos_pct": 4.76,
+    "blocos_n": 4,
+    "nao_papel_pct": 85.4
+   },
+   "cartao": {
+    "blocos_pct": 4.8,
+    "blocos_n": 3,
+    "nao_papel_pct": 85.6
+   }
+  },
+  "fundo": {
+   "pdf": {
+    "blocos_pct": 0.0,
+    "blocos_n": 0,
+    "nao_papel_pct": 85.3
+   },
+   "previa": {
+    "blocos_pct": 0.0,
+    "blocos_n": 0,
+    "nao_papel_pct": 85.4
+   },
+   "cartao": {
+    "blocos_pct": 0.0,
+    "blocos_n": 0,
+    "nao_papel_pct": 85.6
+   }
+  },
+  "magico+resp0": {
+   "pdf": {
+    "blocos_pct": 3.24,
+    "blocos_n": 3,
+    "nao_papel_pct": 85.3
+   },
+   "previa": {
+    "blocos_pct": 3.89,
+    "blocos_n": 4,
+    "nao_papel_pct": 85.4
+   },
+   "cartao": {
+    "blocos_pct": 3.89,
+    "blocos_n": 4,
+    "nao_papel_pct": 85.6
+   }
+  },
+  "magico+resp1": {
+   "pdf": {
+    "blocos_pct": 4.16,
+    "blocos_n": 3,
+    "nao_papel_pct": 85.3
+   },
+   "previa": {
+    "blocos_pct": 4.61,
+    "blocos_n": 3,
+    "nao_papel_pct": 85.4
+   },
+   "cartao": {
+    "blocos_pct": 4.61,
+    "blocos_n": 3,
+    "nao_papel_pct": 85.6
+   }
+  },
+  "melhorar+resp0": {
+   "pdf": {
+    "blocos_pct": 1.4,
+    "blocos_n": 2,
+    "nao_papel_pct": 85.3
+   },
+   "previa": {
+    "blocos_pct": 1.87,
+    "blocos_n": 3,
+    "nao_papel_pct": 85.4
+   },
+   "cartao": {
+    "blocos_pct": 2.02,
+    "blocos_n": 3,
+    "nao_papel_pct": 85.6
+   }
+  },
+  "melhorar+resp1": {
+   "pdf": {
+    "blocos_pct": 3.96,
+    "blocos_n": 3,
+    "nao_papel_pct": 85.3
+   },
+   "previa": {
+    "blocos_pct": 4.45,
+    "blocos_n": 3,
+    "nao_papel_pct": 85.4
+   },
+   "cartao": {
+    "blocos_pct": 4.51,
+    "blocos_n": 3,
+    "nao_papel_pct": 85.6
+   }
+  },
+  "original": {
+   "pdf": {
+    "blocos_pct": 0.0,
+    "blocos_n": 0,
+    "nao_papel_pct": 85.3
+   },
+   "previa": {
+    "blocos_pct": 0.0,
+    "blocos_n": 0,
+    "nao_papel_pct": 85.4
+   },
+   "cartao": {
+    "blocos_pct": 0.0,
+    "blocos_n": 0,
+    "nao_papel_pct": 85.6
+   }
+  },
+  "pb+letras1": {
+   "pdf": {
+    "blocos_pct": 4.51,
+    "blocos_n": 3,
+    "nao_papel_pct": 85.3
+   },
+   "previa": {
+    "blocos_pct": 4.76,
+    "blocos_n": 4,
+    "nao_papel_pct": 85.4
+   },
+   "cartao": {
+    "blocos_pct": 4.8,
+    "blocos_n": 3,
+    "nao_papel_pct": 85.6
+   }
+  },
+  "pb+letras_tudo": {
+   "pdf": {
+    "blocos_pct": 4.5,
+    "blocos_n": 3,
+    "nao_papel_pct": 85.3
+   },
+   "previa": {
+    "blocos_pct": 4.76,
+    "blocos_n": 4,
+    "nao_papel_pct": 85.4
+   },
+   "cartao": {
+    "blocos_pct": 4.8,
+    "blocos_n": 3,
+    "nao_papel_pct": 85.6
+   }
+  },
+  "pb+resp0": {
+   "pdf": {
+    "blocos_pct": 21.84,
+    "blocos_n": 24,
+    "nao_papel_pct": 85.3
+   },
+   "previa": {
+    "blocos_pct": 17.62,
+    "blocos_n": 16,
+    "nao_papel_pct": 85.4
+   },
+   "cartao": {
+    "blocos_pct": 15.93,
+    "blocos_n": 15,
+    "nao_papel_pct": 85.6
+   }
+  },
+  "pb+resp0+cinza1": {
+   "pdf": {
+    "blocos_pct": 0.71,
+    "blocos_n": 1,
+    "nao_papel_pct": 85.3
+   },
+   "previa": {
+    "blocos_pct": 1.24,
+    "blocos_n": 3,
+    "nao_papel_pct": 85.4
+   },
+   "cartao": {
+    "blocos_pct": 1.38,
+    "blocos_n": 3,
+    "nao_papel_pct": 85.6
+   }
+  },
+  "pb+resp1": {
+   "pdf": {
+    "blocos_pct": 4.5,
+    "blocos_n": 3,
+    "nao_papel_pct": 85.3
+   },
+   "previa": {
+    "blocos_pct": 4.76,
+    "blocos_n": 4,
+    "nao_papel_pct": 85.4
+   },
+   "cartao": {
+    "blocos_pct": 4.8,
+    "blocos_n": 3,
+    "nao_papel_pct": 85.6
+   }
+  },
+  "pb+resp1+cinza1": {
+   "pdf": {
+    "blocos_pct": 0.71,
+    "blocos_n": 1,
+    "nao_papel_pct": 85.3
+   },
+   "previa": {
+    "blocos_pct": 1.24,
+    "blocos_n": 3,
+    "nao_papel_pct": 85.4
+   },
+   "cartao": {
+    "blocos_pct": 1.38,
+    "blocos_n": 3,
+    "nao_papel_pct": 85.6
+   }
+  },
+  "pb+samuel+resp0": {
+   "pdf": {
+    "blocos_pct": 21.84,
+    "blocos_n": 24,
+    "nao_papel_pct": 85.3
+   },
+   "previa": {
+    "blocos_pct": 17.62,
+    "blocos_n": 16,
+    "nao_papel_pct": 85.4
+   },
+   "cartao": {
+    "blocos_pct": 15.93,
+    "blocos_n": 15,
+    "nao_papel_pct": 85.6
+   }
+  },
+  "pb+samuel+resp0+letras1": {
+   "pdf": {
+    "blocos_pct": 4.51,
+    "blocos_n": 3,
+    "nao_papel_pct": 85.3
+   },
+   "previa": {
+    "blocos_pct": 4.61,
+    "blocos_n": 3,
+    "nao_papel_pct": 85.4
+   },
+   "cartao": {
+    "blocos_pct": 4.02,
+    "blocos_n": 3,
+    "nao_papel_pct": 85.6
+   }
+  }
+ },
+ "quadrados-c/matematica": {
+  "auto+magico+resp0": {
+   "pdf": {
+    "blocos_pct": 0.0,
+    "blocos_n": 0,
+    "nao_papel_pct": 98.1
+   },
+   "previa": {
+    "blocos_pct": 0.0,
+    "blocos_n": 0,
+    "nao_papel_pct": 98.1
+   },
+   "cartao": {
+    "blocos_pct": 0.0,
+    "blocos_n": 0,
+    "nao_papel_pct": 98.2
+   }
+  },
+  "auto+magico+resp1": {
+   "pdf": {
+    "blocos_pct": 14.38,
+    "blocos_n": 14,
+    "nao_papel_pct": 98.1
+   },
+   "previa": {
+    "blocos_pct": 15.01,
+    "blocos_n": 13,
+    "nao_papel_pct": 98.1
+   },
+   "cartao": {
+    "blocos_pct": 15.38,
+    "blocos_n": 15,
+    "nao_papel_pct": 98.2
+   }
+  },
+  "auto+melhorar+resp0": {
+   "pdf": {
+    "blocos_pct": 0.0,
+    "blocos_n": 0,
+    "nao_papel_pct": 98.1
+   },
+   "previa": {
+    "blocos_pct": 0.0,
+    "blocos_n": 0,
+    "nao_papel_pct": 98.1
+   },
+   "cartao": {
+    "blocos_pct": 0.0,
+    "blocos_n": 0,
+    "nao_papel_pct": 98.2
+   }
+  },
+  "auto+melhorar+resp1": {
+   "pdf": {
+    "blocos_pct": 14.38,
+    "blocos_n": 14,
+    "nao_papel_pct": 98.1
+   },
+   "previa": {
+    "blocos_pct": 15.01,
+    "blocos_n": 13,
+    "nao_papel_pct": 98.1
+   },
+   "cartao": {
+    "blocos_pct": 15.38,
+    "blocos_n": 15,
+    "nao_papel_pct": 98.2
+   }
+  },
+  "auto+pb+letras1": {
+   "pdf": {
+    "blocos_pct": 41.97,
+    "blocos_n": 16,
+    "nao_papel_pct": 98.1
+   },
+   "previa": {
+    "blocos_pct": 42.94,
+    "blocos_n": 17,
+    "nao_papel_pct": 98.1
+   },
+   "cartao": {
+    "blocos_pct": 42.99,
+    "blocos_n": 18,
+    "nao_papel_pct": 98.2
+   }
+  },
+  "auto+pb+resp0": {
+   "pdf": {
+    "blocos_pct": 23.71,
+    "blocos_n": 10,
+    "nao_papel_pct": 98.1
+   },
+   "previa": {
+    "blocos_pct": 24.07,
+    "blocos_n": 12,
+    "nao_papel_pct": 98.1
+   },
+   "cartao": {
+    "blocos_pct": 24.34,
+    "blocos_n": 13,
+    "nao_papel_pct": 98.2
+   }
+  },
+  "auto+pb+resp0+cinza1": {
+   "pdf": {
+    "blocos_pct": 41.92,
+    "blocos_n": 16,
+    "nao_papel_pct": 98.1
+   },
+   "previa": {
+    "blocos_pct": 42.87,
+    "blocos_n": 17,
+    "nao_papel_pct": 98.1
+   },
+   "cartao": {
+    "blocos_pct": 42.87,
+    "blocos_n": 18,
+    "nao_papel_pct": 98.2
+   }
+  },
+  "auto+pb+resp1": {
+   "pdf": {
+    "blocos_pct": 41.93,
+    "blocos_n": 16,
+    "nao_papel_pct": 98.1
+   },
+   "previa": {
+    "blocos_pct": 42.93,
+    "blocos_n": 17,
+    "nao_papel_pct": 98.1
+   },
+   "cartao": {
+    "blocos_pct": 42.96,
+    "blocos_n": 18,
+    "nao_papel_pct": 98.2
+   }
+  },
+  "fundo": {
+   "pdf": {
+    "blocos_pct": 0.0,
+    "blocos_n": 0,
+    "nao_papel_pct": 98.1
+   },
+   "previa": {
+    "blocos_pct": 0.0,
+    "blocos_n": 0,
+    "nao_papel_pct": 98.1
+   },
+   "cartao": {
+    "blocos_pct": 0.0,
+    "blocos_n": 0,
+    "nao_papel_pct": 98.2
+   }
+  },
+  "magico+resp0": {
+   "pdf": {
+    "blocos_pct": 0.0,
+    "blocos_n": 0,
+    "nao_papel_pct": 98.1
+   },
+   "previa": {
+    "blocos_pct": 0.0,
+    "blocos_n": 0,
+    "nao_papel_pct": 98.1
+   },
+   "cartao": {
+    "blocos_pct": 0.0,
+    "blocos_n": 0,
+    "nao_papel_pct": 98.2
+   }
+  },
+  "magico+resp1": {
+   "pdf": {
+    "blocos_pct": 14.38,
+    "blocos_n": 14,
+    "nao_papel_pct": 98.1
+   },
+   "previa": {
+    "blocos_pct": 15.01,
+    "blocos_n": 13,
+    "nao_papel_pct": 98.1
+   },
+   "cartao": {
+    "blocos_pct": 15.38,
+    "blocos_n": 15,
+    "nao_papel_pct": 98.2
+   }
+  },
+  "melhorar+resp0": {
+   "pdf": {
+    "blocos_pct": 0.0,
+    "blocos_n": 0,
+    "nao_papel_pct": 98.1
+   },
+   "previa": {
+    "blocos_pct": 0.0,
+    "blocos_n": 0,
+    "nao_papel_pct": 98.1
+   },
+   "cartao": {
+    "blocos_pct": 0.0,
+    "blocos_n": 0,
+    "nao_papel_pct": 98.2
+   }
+  },
+  "melhorar+resp1": {
+   "pdf": {
+    "blocos_pct": 14.38,
+    "blocos_n": 14,
+    "nao_papel_pct": 98.1
+   },
+   "previa": {
+    "blocos_pct": 15.01,
+    "blocos_n": 13,
+    "nao_papel_pct": 98.1
+   },
+   "cartao": {
+    "blocos_pct": 15.38,
+    "blocos_n": 15,
+    "nao_papel_pct": 98.2
+   }
+  },
+  "original": {
+   "pdf": {
+    "blocos_pct": 0.0,
+    "blocos_n": 0,
+    "nao_papel_pct": 98.1
+   },
+   "previa": {
+    "blocos_pct": 0.0,
+    "blocos_n": 0,
+    "nao_papel_pct": 98.1
+   },
+   "cartao": {
+    "blocos_pct": 0.0,
+    "blocos_n": 0,
+    "nao_papel_pct": 98.2
+   }
+  },
+  "pb+letras1": {
+   "pdf": {
+    "blocos_pct": 41.97,
+    "blocos_n": 16,
+    "nao_papel_pct": 98.1
+   },
+   "previa": {
+    "blocos_pct": 42.94,
+    "blocos_n": 17,
+    "nao_papel_pct": 98.1
+   },
+   "cartao": {
+    "blocos_pct": 42.99,
+    "blocos_n": 18,
+    "nao_papel_pct": 98.2
+   }
+  },
+  "pb+letras_tudo": {
+   "pdf": {
+    "blocos_pct": 41.93,
+    "blocos_n": 16,
+    "nao_papel_pct": 98.1
+   },
+   "previa": {
+    "blocos_pct": 42.93,
+    "blocos_n": 17,
+    "nao_papel_pct": 98.1
+   },
+   "cartao": {
+    "blocos_pct": 42.96,
+    "blocos_n": 18,
+    "nao_papel_pct": 98.2
+   }
+  },
+  "pb+resp0": {
+   "pdf": {
+    "blocos_pct": 23.71,
+    "blocos_n": 10,
+    "nao_papel_pct": 98.1
+   },
+   "previa": {
+    "blocos_pct": 24.07,
+    "blocos_n": 12,
+    "nao_papel_pct": 98.1
+   },
+   "cartao": {
+    "blocos_pct": 24.34,
+    "blocos_n": 13,
+    "nao_papel_pct": 98.2
+   }
+  },
+  "pb+resp0+cinza1": {
+   "pdf": {
+    "blocos_pct": 41.92,
+    "blocos_n": 16,
+    "nao_papel_pct": 98.1
+   },
+   "previa": {
+    "blocos_pct": 42.87,
+    "blocos_n": 17,
+    "nao_papel_pct": 98.1
+   },
+   "cartao": {
+    "blocos_pct": 42.87,
+    "blocos_n": 18,
+    "nao_papel_pct": 98.2
+   }
+  },
+  "pb+resp1": {
+   "pdf": {
+    "blocos_pct": 41.93,
+    "blocos_n": 16,
+    "nao_papel_pct": 98.1
+   },
+   "previa": {
+    "blocos_pct": 42.93,
+    "blocos_n": 17,
+    "nao_papel_pct": 98.1
+   },
+   "cartao": {
+    "blocos_pct": 42.96,
+    "blocos_n": 18,
+    "nao_papel_pct": 98.2
+   }
+  },
+  "pb+resp1+cinza1": {
+   "pdf": {
+    "blocos_pct": 41.92,
+    "blocos_n": 16,
+    "nao_papel_pct": 98.1
+   },
+   "previa": {
+    "blocos_pct": 42.87,
+    "blocos_n": 17,
+    "nao_papel_pct": 98.1
+   },
+   "cartao": {
+    "blocos_pct": 42.87,
+    "blocos_n": 18,
+    "nao_papel_pct": 98.2
+   }
+  },
+  "pb+samuel+resp0": {
+   "pdf": {
+    "blocos_pct": 23.71,
+    "blocos_n": 10,
+    "nao_papel_pct": 98.1
+   },
+   "previa": {
+    "blocos_pct": 24.07,
+    "blocos_n": 12,
+    "nao_papel_pct": 98.1
+   },
+   "cartao": {
+    "blocos_pct": 24.34,
+    "blocos_n": 13,
+    "nao_papel_pct": 98.2
+   }
+  },
+  "pb+samuel+resp0+letras1": {
+   "pdf": {
+    "blocos_pct": 41.97,
+    "blocos_n": 16,
+    "nao_papel_pct": 98.1
+   },
+   "previa": {
+    "blocos_pct": 42.41,
+    "blocos_n": 18,
+    "nao_papel_pct": 98.1
+   },
+   "cartao": {
+    "blocos_pct": 42.59,
+    "blocos_n": 20,
+    "nao_papel_pct": 98.2
+   }
+  }
+ },
+ "quadrados-c/pesel": {
+  "auto+magico+resp0": {
+   "pdf": {
+    "blocos_pct": 0.0,
+    "blocos_n": 0,
+    "nao_papel_pct": 95.9
+   },
+   "previa": {
+    "blocos_pct": 0.0,
+    "blocos_n": 0,
+    "nao_papel_pct": 97.6
+   },
+   "cartao": {
+    "blocos_pct": 0.0,
+    "blocos_n": 0,
+    "nao_papel_pct": 98.6
+   }
+  },
+  "auto+magico+resp1": {
+   "pdf": {
+    "blocos_pct": 0.0,
+    "blocos_n": 0,
+    "nao_papel_pct": 95.9
+   },
+   "previa": {
+    "blocos_pct": 0.0,
+    "blocos_n": 0,
+    "nao_papel_pct": 97.6
+   },
+   "cartao": {
+    "blocos_pct": 0.94,
+    "blocos_n": 1,
+    "nao_papel_pct": 98.6
+   }
+  },
+  "auto+melhorar+resp0": {
+   "pdf": {
+    "blocos_pct": 0.0,
+    "blocos_n": 0,
+    "nao_papel_pct": 95.9
+   },
+   "previa": {
+    "blocos_pct": 0.0,
+    "blocos_n": 0,
+    "nao_papel_pct": 97.6
+   },
+   "cartao": {
+    "blocos_pct": 0.0,
+    "blocos_n": 0,
+    "nao_papel_pct": 98.6
+   }
+  },
+  "auto+melhorar+resp1": {
+   "pdf": {
+    "blocos_pct": 0.0,
+    "blocos_n": 0,
+    "nao_papel_pct": 95.9
+   },
+   "previa": {
+    "blocos_pct": 0.0,
+    "blocos_n": 0,
+    "nao_papel_pct": 97.6
+   },
+   "cartao": {
+    "blocos_pct": 0.94,
+    "blocos_n": 1,
+    "nao_papel_pct": 98.6
+   }
+  },
+  "auto+pb+letras1": {
+   "pdf": {
+    "blocos_pct": 0.0,
+    "blocos_n": 0,
+    "nao_papel_pct": 95.9
+   },
+   "previa": {
+    "blocos_pct": 0.0,
+    "blocos_n": 0,
+    "nao_papel_pct": 97.6
+   },
+   "cartao": {
+    "blocos_pct": 0.28,
+    "blocos_n": 0,
+    "nao_papel_pct": 98.6
+   }
+  },
+  "auto+pb+resp0": {
+   "pdf": {
+    "blocos_pct": 0.1,
+    "blocos_n": 0,
+    "nao_papel_pct": 95.9
+   },
+   "previa": {
+    "blocos_pct": 6.24,
+    "blocos_n": 7,
+    "nao_papel_pct": 97.6
+   },
+   "cartao": {
+    "blocos_pct": 30.04,
+    "blocos_n": 5,
+    "nao_papel_pct": 98.6
+   }
+  },
+  "auto+pb+resp0+cinza1": {
+   "pdf": {
+    "blocos_pct": 0.0,
+    "blocos_n": 0,
+    "nao_papel_pct": 95.9
+   },
+   "previa": {
+    "blocos_pct": 0.0,
+    "blocos_n": 0,
+    "nao_papel_pct": 97.6
+   },
+   "cartao": {
+    "blocos_pct": 0.0,
+    "blocos_n": 0,
+    "nao_papel_pct": 98.6
+   }
+  },
+  "auto+pb+resp1": {
+   "pdf": {
+    "blocos_pct": 0.26,
+    "blocos_n": 0,
+    "nao_papel_pct": 95.9
+   },
+   "previa": {
+    "blocos_pct": 28.22,
+    "blocos_n": 6,
+    "nao_papel_pct": 97.6
+   },
+   "cartao": {
+    "blocos_pct": 35.44,
+    "blocos_n": 7,
+    "nao_papel_pct": 98.6
+   }
+  },
+  "fundo": {
+   "pdf": {
+    "blocos_pct": 0.0,
+    "blocos_n": 0,
+    "nao_papel_pct": 95.9
+   },
+   "previa": {
+    "blocos_pct": 0.0,
+    "blocos_n": 0,
+    "nao_papel_pct": 97.6
+   },
+   "cartao": {
+    "blocos_pct": 0.0,
+    "blocos_n": 0,
+    "nao_papel_pct": 98.6
+   }
+  },
+  "magico+resp0": {
+   "pdf": {
+    "blocos_pct": 0.0,
+    "blocos_n": 0,
+    "nao_papel_pct": 95.9
+   },
+   "previa": {
+    "blocos_pct": 0.0,
+    "blocos_n": 0,
+    "nao_papel_pct": 97.6
+   },
+   "cartao": {
+    "blocos_pct": 0.0,
+    "blocos_n": 0,
+    "nao_papel_pct": 98.6
+   }
+  },
+  "magico+resp1": {
+   "pdf": {
+    "blocos_pct": 0.0,
+    "blocos_n": 0,
+    "nao_papel_pct": 95.9
+   },
+   "previa": {
+    "blocos_pct": 0.0,
+    "blocos_n": 0,
+    "nao_papel_pct": 97.6
+   },
+   "cartao": {
+    "blocos_pct": 0.94,
+    "blocos_n": 1,
+    "nao_papel_pct": 98.6
+   }
+  },
+  "melhorar+resp0": {
+   "pdf": {
+    "blocos_pct": 0.0,
+    "blocos_n": 0,
+    "nao_papel_pct": 95.9
+   },
+   "previa": {
+    "blocos_pct": 0.0,
+    "blocos_n": 0,
+    "nao_papel_pct": 97.6
+   },
+   "cartao": {
+    "blocos_pct": 0.0,
+    "blocos_n": 0,
+    "nao_papel_pct": 98.6
+   }
+  },
+  "melhorar+resp1": {
+   "pdf": {
+    "blocos_pct": 0.0,
+    "blocos_n": 0,
+    "nao_papel_pct": 95.9
+   },
+   "previa": {
+    "blocos_pct": 0.0,
+    "blocos_n": 0,
+    "nao_papel_pct": 97.6
+   },
+   "cartao": {
+    "blocos_pct": 0.94,
+    "blocos_n": 1,
+    "nao_papel_pct": 98.6
+   }
+  },
+  "original": {
+   "pdf": {
+    "blocos_pct": 0.0,
+    "blocos_n": 0,
+    "nao_papel_pct": 95.9
+   },
+   "previa": {
+    "blocos_pct": 0.0,
+    "blocos_n": 0,
+    "nao_papel_pct": 97.6
+   },
+   "cartao": {
+    "blocos_pct": 0.0,
+    "blocos_n": 0,
+    "nao_papel_pct": 98.6
+   }
+  },
+  "pb+letras1": {
+   "pdf": {
+    "blocos_pct": 0.0,
+    "blocos_n": 0,
+    "nao_papel_pct": 95.9
+   },
+   "previa": {
+    "blocos_pct": 0.0,
+    "blocos_n": 0,
+    "nao_papel_pct": 97.6
+   },
+   "cartao": {
+    "blocos_pct": 0.28,
+    "blocos_n": 0,
+    "nao_papel_pct": 98.6
+   }
+  },
+  "pb+letras_tudo": {
+   "pdf": {
+    "blocos_pct": 0.0,
+    "blocos_n": 0,
+    "nao_papel_pct": 95.9
+   },
+   "previa": {
+    "blocos_pct": 0.0,
+    "blocos_n": 0,
+    "nao_papel_pct": 97.6
+   },
+   "cartao": {
+    "blocos_pct": 0.23,
+    "blocos_n": 0,
+    "nao_papel_pct": 98.6
+   }
+  },
+  "pb+resp0": {
+   "pdf": {
+    "blocos_pct": 0.1,
+    "blocos_n": 0,
+    "nao_papel_pct": 95.9
+   },
+   "previa": {
+    "blocos_pct": 6.24,
+    "blocos_n": 7,
+    "nao_papel_pct": 97.6
+   },
+   "cartao": {
+    "blocos_pct": 30.04,
+    "blocos_n": 5,
+    "nao_papel_pct": 98.6
+   }
+  },
+  "pb+resp0+cinza1": {
+   "pdf": {
+    "blocos_pct": 0.0,
+    "blocos_n": 0,
+    "nao_papel_pct": 95.9
+   },
+   "previa": {
+    "blocos_pct": 0.0,
+    "blocos_n": 0,
+    "nao_papel_pct": 97.6
+   },
+   "cartao": {
+    "blocos_pct": 0.0,
+    "blocos_n": 0,
+    "nao_papel_pct": 98.6
+   }
+  },
+  "pb+resp1": {
+   "pdf": {
+    "blocos_pct": 0.26,
+    "blocos_n": 0,
+    "nao_papel_pct": 95.9
+   },
+   "previa": {
+    "blocos_pct": 28.22,
+    "blocos_n": 6,
+    "nao_papel_pct": 97.6
+   },
+   "cartao": {
+    "blocos_pct": 35.44,
+    "blocos_n": 7,
+    "nao_papel_pct": 98.6
+   }
+  },
+  "pb+resp1+cinza1": {
+   "pdf": {
+    "blocos_pct": 0.0,
+    "blocos_n": 0,
+    "nao_papel_pct": 95.9
+   },
+   "previa": {
+    "blocos_pct": 0.0,
+    "blocos_n": 0,
+    "nao_papel_pct": 97.6
+   },
+   "cartao": {
+    "blocos_pct": 0.0,
+    "blocos_n": 0,
+    "nao_papel_pct": 98.6
+   }
+  },
+  "pb+samuel+resp0": {
+   "pdf": {
+    "blocos_pct": 0.1,
+    "blocos_n": 0,
+    "nao_papel_pct": 95.9
+   },
+   "previa": {
+    "blocos_pct": 6.24,
+    "blocos_n": 7,
+    "nao_papel_pct": 97.6
+   },
+   "cartao": {
+    "blocos_pct": 30.04,
+    "blocos_n": 5,
+    "nao_papel_pct": 98.6
+   }
+  },
+  "pb+samuel+resp0+letras1": {
+   "pdf": {
+    "blocos_pct": 0.0,
+    "blocos_n": 0,
+    "nao_papel_pct": 95.9
+   },
+   "previa": {
+    "blocos_pct": 0.0,
+    "blocos_n": 0,
+    "nao_papel_pct": 97.6
+   },
+   "cartao": {
+    "blocos_pct": 0.23,
+    "blocos_n": 0,
+    "nao_papel_pct": 98.6
+   }
+  }
+ },
+ "quadrados-c/destino": {
+  "original": {
+   "pdf": {
+    "blocos_pct": 0.0,
+    "blocos_n": 0,
+    "nao_papel_pct": 99.6
+   },
+   "previa": {
+    "blocos_pct": 0.0,
+    "blocos_n": 0,
+    "nao_papel_pct": 99.7
+   },
+   "cartao": {
+    "blocos_pct": 0.0,
+    "blocos_n": 0,
+    "nao_papel_pct": 99.7
+   }
+  },
+  "pb+resp0": {
+   "pdf": {
+    "blocos_pct": 82.65,
+    "blocos_n": 18,
+    "nao_papel_pct": 99.6
+   },
+   "previa": {
+    "blocos_pct": 84.23,
+    "blocos_n": 15,
+    "nao_papel_pct": 99.7
+   },
+   "cartao": {
+    "blocos_pct": 84.17,
+    "blocos_n": 14,
+    "nao_papel_pct": 99.7
+   }
+  },
+  "pb+resp0+cinza1": {
+   "pdf": {
+    "blocos_pct": 78.66,
+    "blocos_n": 17,
+    "nao_papel_pct": 99.6
+   },
+   "previa": {
+    "blocos_pct": 79.57,
+    "blocos_n": 14,
+    "nao_papel_pct": 99.7
+   },
+   "cartao": {
+    "blocos_pct": 79.58,
+    "blocos_n": 13,
+    "nao_papel_pct": 99.7
+   }
+  },
+  "pb+resp1": {
+   "pdf": {
+    "blocos_pct": 78.66,
+    "blocos_n": 17,
+    "nao_papel_pct": 99.6
+   },
+   "previa": {
+    "blocos_pct": 79.57,
+    "blocos_n": 14,
+    "nao_papel_pct": 99.7
+   },
+   "cartao": {
+    "blocos_pct": 79.58,
+    "blocos_n": 13,
+    "nao_papel_pct": 99.7
+   }
+  },
+  "pb+resp1+cinza1": {
+   "pdf": {
+    "blocos_pct": 78.66,
+    "blocos_n": 17,
+    "nao_papel_pct": 99.6
+   },
+   "previa": {
+    "blocos_pct": 79.57,
+    "blocos_n": 14,
+    "nao_papel_pct": 99.7
+   },
+   "cartao": {
+    "blocos_pct": 79.58,
+    "blocos_n": 13,
+    "nao_papel_pct": 99.7
+   }
+  }
+ }
+}

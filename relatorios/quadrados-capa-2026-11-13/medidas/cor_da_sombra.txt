@@ -1,0 +1,6 @@
+scripts/cor_da_sombra.py (versao de teste, 150 pontos por polegada): os quadradinhos que o passo da sombra chama
+de "sombra" e a cor (saturacao 0-255) do original neles.
+  gradus p.1    14,8% da pagina e "sombra"   cor media 168,3   cor p90 247
+  escola p.1    29,9%                         cor media 115,9   cor p90 166
+  razoes p.57   34,9%  (foto de celular)      cor media  38,8   cor p90  77
+  atanasio p.8  21,5%  (foto de celular)      cor media  80,0   cor p90 102

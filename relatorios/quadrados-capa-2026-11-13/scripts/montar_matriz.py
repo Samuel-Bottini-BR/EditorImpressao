@@ -11,25 +11,25 @@ import pecas_imagem as P
 
 NOMES = {
     "original": "Original",
-    "pb+resp1": "P&B, Respeitar ✓",
-    "pb+resp0": "P&B, Respeitar ✗",
-    "pb+resp1+cinza1": "P&B, Resp. ✓ + cinza",
-    "pb+resp0+cinza1": "P&B, Resp. ✗ + cinza",
+    "pb+resp1": "P&B, Respeitar sim",
+    "pb+resp0": "P&B, Respeitar não",
+    "pb+resp1+cinza1": "P&B, Resp. sim + cinza",
+    "pb+resp0+cinza1": "P&B, Resp. não + cinza",
     "pb+letras1": "P&B + Só as letras",
     "pb+letras_tudo": "Só as letras, Guardar tudo",
-    "melhorar+resp1": "Melhorar, Resp. ✓",
-    "melhorar+resp0": "Melhorar, Resp. ✗",
-    "magico+resp1": "Mágico pro, Resp. ✓",
-    "magico+resp0": "Mágico pro, Resp. ✗",
+    "melhorar+resp1": "Melhorar, Resp. sim",
+    "melhorar+resp0": "Melhorar, Resp. não",
+    "magico+resp1": "Mágico pro, Resp. sim",
+    "magico+resp0": "Mágico pro, Resp. não",
     "fundo": "Tirar o fundo",
-    "auto+pb+resp1": "Auto: P&B, Resp. ✓",
-    "auto+pb+resp0": "Auto: P&B, Resp. ✗",
+    "auto+pb+resp1": "Auto: P&B, Resp. sim",
+    "auto+pb+resp0": "Auto: P&B, Resp. não",
     "auto+pb+letras1": "Auto: Só as letras",
-    "auto+pb+resp0+cinza1": "Auto: P&B ✗ + cinza",
-    "auto+melhorar+resp1": "Auto: Melhorar ✓",
-    "auto+melhorar+resp0": "Auto: Melhorar ✗",
-    "auto+magico+resp1": "Auto: Mágico ✓",
-    "auto+magico+resp0": "Auto: Mágico ✗",
+    "auto+pb+resp0+cinza1": "Auto: P&B, Resp. não + cinza",
+    "auto+melhorar+resp1": "Auto: Melhorar, Resp. sim",
+    "auto+melhorar+resp0": "Auto: Melhorar, Resp. não",
+    "auto+magico+resp1": "Auto: Mágico, Resp. sim",
+    "auto+magico+resp0": "Auto: Mágico, Resp. não",
 }
 GRUPOS = (
     ("À mão — Preto e branco", ["pb+resp1", "pb+resp0", "pb+resp1+cinza1", "pb+resp0+cinza1",
@@ -43,11 +43,33 @@ GRUPOS = (
 LIVROS = {"gradus": "Gradus Primus, capa (p. 1)", "escola": "Na escola de Jesus, capa (p. 1)",
           "matematica": "Matemática para vencer, capa (p. 1)", "pesel": "Pesel, capa (p. 1)",
           "destino": "Destino do socialismo, capa (p. 1)"}
+CAUSA = {
+    "gradus": "Em vermelho: todo o Preto e branco. Com a marcação valendo, a caixa branca sobre \"ÓNAI\" "
+              "(imagens 2 e 3); sem ela (\"Respeitar\" não), os retângulos da \"sombra\" (imagem 1). "
+              "Melhorar, Mágico pro, Original e Tirar o fundo: sem quadrados.",
+    "escola": "Em vermelho: o Preto e branco SEM marcação (\"Respeitar\" não): quadradinhos brancos retos na "
+              "pintura, à direita (a mesma \"sombra\" do 13-01). Com a marcação, o céu claro vai a branco "
+              "seguindo a forma dele: não é quadrado.",
+    "matematica": "Em vermelho: o Preto e branco COM a marcação: manchas brancas em volta do título, no azul "
+                  "escuro. OUTRA causa: o programa achou \"papel\" ali (já era assim antes da obra). A mesa "
+                  "escura em volta do livro (foto) também ganha manchas no Melhorar e no Mágico pro.",
+    "pesel": "Nenhum quadrado em nenhuma escolha (capa de tecido).",
+    "destino": "Nenhum quadrado: o papel creme vai a branco, como deve.",
+}
 # o que eu vi, olhando cada imagem (preenchido depois de olhar; ver o relatorio)
-CIRCULAR: dict = {}
+_PB_COM_MARCACAO = {"pb+resp1", "pb+resp1+cinza1", "pb+resp0+cinza1", "pb+letras1", "pb+letras_tudo",
+                    "auto+pb+resp1", "auto+pb+letras1", "auto+pb+resp0+cinza1"}
+CIRCULAR: dict = {
+    # Gradus: todo Preto e branco (a caixa sobre "ONAI" com a marcacao; os retangulos sem ela)
+    ("quadrados-capa", "gradus"): _PB_COM_MARCACAO | {"pb+resp0", "auto+pb+resp0"},
+    # Escola: so o Preto e branco sem marcacao (os quadradinhos de "sombra" na pintura)
+    ("quadrados-capa", "escola"): {"pb+resp0", "auto+pb+resp0"},
+    # Matematica: o Preto e branco COM marcacao (o "papel" achado no azul escuro: outra causa)
+    ("quadrados-capa", "matematica"): set(_PB_COM_MARCACAO),
+}
 
 
-def _celula(pasta: Path, livro: str, variante: str, circ: set, caixa: int = 220):
+def _celula(pasta: Path, livro: str, variante: str, circ: set, caixa: int = 205):
     arq = pasta / livro / variante / "pdf.png"
     if not arq.exists():
         return None
@@ -55,6 +77,9 @@ def _celula(pasta: Path, livro: str, variante: str, circ: set, caixa: int = 220)
     if livro == "gradus":                      # so a capa (a metade da direita)
         img = P.recorte(img, (0.5, 0.0, 1.0, 1.0))
     img = P.caber(img, caixa, int(caixa * 1.45))
+    if variante in circ:                       # moldura vermelha POR FORA: nao cobre a pagina
+        from PIL import ImageOps
+        img = ImageOps.expand(img, border=7, fill=P.VERMELHO)
     return P.com_titulo(img, NOMES.get(variante, variante), vermelho=variante in circ, tamanho=17)
 
 
@@ -78,16 +103,15 @@ def montar(T: Path, SAIDA: Path, LEG: dict) -> None:
         for livro, nome in LIVROS.items():
             circ = CIRCULAR.get((versao, livro), set())
             partes = [P.cabeca(f"{nome} — {rot}", P.CINZA,
-                               "Livro novo; cada quadro é uma escolha, como sai no PDF. Em vermelho e "
-                               "circulado: onde aparecem quadrados ou caixas que não existem no original.")]
+                               "Livro novo; cada quadro é uma escolha, como sai no PDF. " + CAUSA[livro])]
             for titulo, variantes in GRUPOS:
                 cel = []
                 for v in variantes:
                     c = _celula(base / versao, livro, v, circ)
                     if c is not None:
-                        cel.append(_circular_celula(c) if v in circ else c)
+                        cel.append(c)
                 if cel:
-                    partes.append(P.empilhar([P.cabeca(titulo, cor, ""), _grade(cel, 8)], espaco=4))
+                    partes.append(P.empilhar([P.cabeca(titulo, cor, ""), _grade(cel, 6)], espaco=4))
             img = P.empilhar(partes, espaco=8)
             if img.width > 1600:
                 img = img.resize((1600, round(img.height * 1600 / img.width)))

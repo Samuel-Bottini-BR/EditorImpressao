@@ -1,0 +1,39 @@
+{
+ "algoritmo": "otsu",
+ "janela": 49,
+ "k_meio": 0.12,
+ "k": 0.12,
+ "dpi": 300,
+ "forma": [
+  2480,
+  3509
+ ],
+ "2-binarizar": {
+  "preto_na_capa": 0.9853,
+  "mudou_na_capa": null
+ },
+ "3-sem_sombra_lombada": {
+  "preto_na_capa": 0.8289,
+  "mudou_na_capa": 0.1564045827422439
+ },
+ "4-com_tinta_colorida": {
+  "preto_na_capa": 0.8271,
+  "mudou_na_capa": 0.002007905178971607
+ },
+ "5a-otsu_com_borda_sauvola": {
+  "preto_na_capa": 0.8271,
+  "mudou_na_capa": 3.083944982421514e-06
+ },
+ "5b-borda_no_medidor": {
+  "preto_na_capa": 0.8271,
+  "mudou_na_capa": 3.083944982421514e-06
+ },
+ "6-suavizado": {
+  "preto_na_capa": 0.8271,
+  "mudou_na_capa": 0.0
+ },
+ "7-filtro_inteiro": {
+  "preto_na_capa": 0.827,
+  "mudou_na_capa": 8.763543658381135e-05
+ }
+}

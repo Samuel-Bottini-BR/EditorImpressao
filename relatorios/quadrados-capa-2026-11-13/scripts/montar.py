@@ -141,12 +141,73 @@ def imagem_tela_cartao_pdf():
                                     "diferença de tela, sai assim no livro.")
 
 
+def _faixa_pagina(rotulo, cor, legenda, arquivo: Path, alvo, zoom, circular=True, titulo="a capa"):
+    img = P.abrir(arquivo)
+    inteira = P.caber(img, 520, 520)
+    if circular:
+        inteira = P.circular(inteira, alvo, folga=0.15, espessura=5)
+    pedaco = P.caber(P.recorte(img, zoom), 860, 520)
+    if circular:
+        pedaco = P.circular(pedaco, no_zoom(alvo, zoom), folga=0.1)
+    linha = P.lado_a_lado([P.com_titulo(inteira, titulo),
+                           P.com_titulo(pedaco, "o pedaço ampliado", vermelho=circular)])
+    return P.empilhar([P.cabeca(rotulo, cor, legenda), linha], espaco=6)
+
+
+def imagem_escola():
+    alvo, zoom = (0.62, 0.12, 0.98, 0.55), (0.45, 0.05, 1.0, 0.60)
+    partes = [P.cabeca("Outra capa: Na escola de Jesus", P.CINZA,
+                       "Capa (página 1), Preto e branco com \"Respeitar as gravuras achadas\" desmarcada (o "
+                       "caso da D-588, \"parece que está dando um negativo\"). Olhe a direita da pintura, "
+                       "circulada.")]
+    partes.append(_faixa_pagina("ANTES da obra (programa de 26/10)", P.AZUL,
+                                "A pintura em preto e branco puro, seguindo as formas. Sem quadrados.",
+                                T / "pbversoes" / "escola-antes.png", alvo, zoom))
+    partes.append(_faixa_pagina("HOJE (versão de teste)", P.LARANJA,
+                                "Quadradinhos brancos retos no tronco e na direita da pintura: o mesmo "
+                                "passo da sombra do 13-01.",
+                                T / "matriz" / "quadrados-capa" / "escola" / "pb+resp0" / "pdf.png", alvo, zoom))
+    partes.append(_faixa_pagina("HOJE sem o passo da \"sombra\" (simulação)", P.VERDE,
+                                "Os quadradinhos somem; o resto igual a hoje.",
+                                T / "sem_quadros_outras" / "escola" / "pb+resp0" / "pdf.png", alvo, zoom))
+    P.salvar(P.empilhar(partes, espaco=10), SAIDA / "10-escola-capa-preto-e-branco.png")
+    LEG["10-escola-capa-preto-e-branco.png"] = ("Capa da Escola, Preto e branco sem \"Respeitar\": os quadradinhos "
+                                                "brancos só existem hoje (laranja); antes e sem o passo da sombra, não.")
+
+
+def imagem_matematica_c():
+    alvo, zoom = (0.0, 0.12, 0.78, 0.72), (0.0, 0.05, 0.80, 0.80)
+    base = T / "matriz"
+    partes = [P.cabeca("Atenção ao conserto C: capa da Matemática", P.CINZA,
+                       "Capa (página 1), Melhorar com \"Respeitar as gravuras achadas\" marcada. Olhe o "
+                       "amarelo atrás de \"VENCER\" e o quadro amarelo do texto, circulados.")]
+    partes.append(_faixa_pagina("HOJE, Melhorar à mão", P.LARANJA,
+                                "O amarelo fica amarelo (à mão a gravura não é procurada hoje). A mesa escura "
+                                "em volta do livro ganha manchas brancas (o defeito da D-668).",
+                                base / "quadrados-capa" / "matematica" / "melhorar+resp1" / "pdf.png", alvo, zoom,
+                                circular=False))
+    partes.append(_faixa_pagina("HOJE, Melhorar pelo Automático", P.LARANJA,
+                                "Com a marcação, o amarelo atrás de \"VENCER\" e o quadro do texto viram BRANCO: "
+                                "o programa achou \"papel\" e \"letra\" em cima da cor.",
+                                base / "quadrados-capa" / "matematica" / "auto+melhorar+resp1" / "pdf.png",
+                                alvo, zoom))
+    partes.append(_faixa_pagina("Conserto C (D-668), Melhorar à mão", P.ROXO,
+                                "O conserto C tira as manchas da mesa, mas, como passa a procurar a gravura à "
+                                "mão, traz o branco no amarelo também para o Melhorar escolhido à mão.",
+                                base / "quadrados-c" / "matematica" / "melhorar+resp1" / "pdf.png", alvo, zoom))
+    P.salvar(P.empilhar(partes, espaco=10), SAIDA / "11-matematica-e-o-conserto-c.png")
+    LEG["11-matematica-e-o-conserto-c.png"] = ("Matemática, Melhorar: o amarelo vira branco quando a marcação vale "
+                                               "(Automático hoje; à mão com o conserto C). À mão hoje, fica amarelo.")
+
+
 def main():
     SAIDA.mkdir(exist_ok=True)
     imagem_13_01()
     imagem_13_02()
     imagem_marcacao()
     imagem_tela_cartao_pdf()
+    imagem_escola()
+    imagem_matematica_c()
     try:
         import montar_matriz
         montar_matriz.montar(T, SAIDA, LEG)

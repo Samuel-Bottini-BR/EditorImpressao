@@ -11,6 +11,7 @@ Livro aberto como naquela versao:
   - sem ele (antes da obra): o livro novo com as opcoes de fabrica daquela versao ("Limpar a
     folha" e "Procurar gravura e letra" ligadas), Preto e branco e "So as letras" na pagina.
   Dividir, endireitar, cortar, margens e cadernos desligados (o enquadramento e o mesmo).
+Ambiente FILTRO=melhorar ou magico_pro: esse filtro em vez do Preto e branco com "So as letras".
 Escreve uma linha JSON com as regioes achadas (caixas) e grava a pagina (300 pontos)."""
 from __future__ import annotations
 
@@ -67,8 +68,9 @@ def main() -> None:
     projeto.limpar = True
     projeto.detectar_regioes = True
     pag = projeto.paginas[numero - 1]
-    pag.filtro = "preto_e_branco"
-    pag.misto_so_as_letras = True
+    pag.filtro = os.environ.get("FILTRO", "preto_e_branco")     # FILTRO=melhorar: o Melhorar
+    if pag.filtro == "preto_e_branco":
+        pag.misto_so_as_letras = True
     try:
         img, _ = pipeline._pagina_pronta(projeto, doc, projeto.folhas[pag.folha], pag,
                                          pipeline._FolhaDaVez(), 0)

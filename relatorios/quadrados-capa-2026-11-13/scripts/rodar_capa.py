@@ -187,6 +187,18 @@ def provas_da_causa() -> None:
         F._sombra_em_quadros = lambda cinza: None
     if os.environ.get("SEM_FAIXA") == "1":
         F._faixa_da_sombra_da_lombada = lambda cinza: None
+    if os.environ.get("SEM_PAPEL_ACHADO") == "1":
+        # o filtro recebe a marcacao SEM as areas de "papel" que a maquina achou (so a prova)
+        from core.selecao import MAO, PAPEL, Selecao
+        antes = pipeline.marcacao_que_o_filtro_usa
+
+        def sem_papel(projeto, pagina, selecao):
+            sel = antes(projeto, pagina, selecao)
+            if sel is None:
+                return sel
+            return Selecao(regioes=[r for r in sel.regioes if not (r.tipo == PAPEL and r.origem != MAO)])
+
+        pipeline.marcacao_que_o_filtro_usa = sem_papel
 
 
 def main() -> None:

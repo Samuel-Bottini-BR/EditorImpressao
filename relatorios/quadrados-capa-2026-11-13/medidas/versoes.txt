@@ -1,0 +1,21 @@
+Gradus p. 1, Preto e branco na pagina inteira (sem marcacao = "Respeitar" desmarcada), scripts/pb_da_versao.py
+branco liso na capa azul (pontos da capa azul que sairam em bloco branco):
+  obra-etapa1-antes (ddd4d74a, 26/10, antes da obra)   preto 98,66%  branco liso 0,05%
+  obra-etapa10b-antes (ab38208c)                       preto 98,66%  branco liso 0,05%
+  50f03701 (sombra da lombada, 27/10 11h45)            preto 98,14%  branco liso 0,07%
+  c8844671 (sombra em quadradinhos, 27/10 12h02)       preto 83,00%  branco liso 13,21%
+  7ffba04 (limiar da sombra)                           preto 83,10%  branco liso 12,90%
+  hoje (84b32df8, versao de teste)                     preto 82,70%  branco liso 13,56%
+  conserto C (adf35fbf)                                preto 82,70%  branco liso 13,56%
+Escola p. 1, mesmo caso: antes da obra branco liso 6,08% (o ceu claro, sem quadrados); hoje x sem o passo dos
+quadradinhos: 7,43% dos pontos diferentes (os quadradinhos). Matematica p. 1: 0,00% diferente.
+
+Gradus p. 1, "So as letras" (scripts/misto_da_versao.py): a mesma marcacao em todas as versoes
+(gravura com o degrau; letra "ONAI" x 0,769-0,847, y 0,010-0,073). Antes da obra e antes da 10b: caixa PRETA;
+hoje e conserto C: caixa BRANCA. Sem o passo dos quadradinhos (simulacao): caixa PRETA.
+"Guardar tudo" e "Guardar so o texto": a mesma caixa branca.
+
+Hoje x conserto C, as 20 escolhas (diferenca de mais de 30 tons em mais de 0,01% dos pontos):
+  Preto e branco (todas): IGUAIS nas tres capas (Gradus, Escola, Matematica).
+  Diferem: Melhorar/Magico pro com "Respeitar" marcada (a gravura passa a ser procurada) e, na Matematica, o
+  Melhorar/Magico sem "Respeitar" (a mesa escura sem as manchas: 12,2% dos pontos).
