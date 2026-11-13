@@ -109,14 +109,25 @@ class _TarefaDasOpcoes(QRunnable):
             registrar_erro("filtros em tela cheia", traceback.format_exc())
 
 
-def pagina_com_as_opcoes(pagina, filtro: str, ajuste_campo: str | None, ajuste, opcoes: dict):
+def pagina_com_as_opcoes(pagina, filtro: str, ajuste_campo: str | None, ajuste, opcoes: dict,
+                         projeto=None):
     """A cópia da página com o `filtro`, o ajuste e as `opcoes` mexidas na tela
-    cheia (campo da ConfigPagina -> valor). A página de verdade não muda."""
+    cheia (campo da ConfigPagina -> valor). A página de verdade não muda.
+
+    D-646/D-699: com o `projeto`, a cópia leva o fundo tirado que a página teria
+    com este filtro (core/fundo_tirado.depois_da_troca, a MESMA regra do "Usar"),
+    calculado na página de verdade: sem isso, a página em "Tirar o fundo" que vira
+    a cópia em outro filtro perderia a marca e a tela cheia mostraria o papel
+    velho que o "Usar" não traz."""
     from dataclasses import replace
 
     campos = dict(opcoes)
     if ajuste_campo is not None and ajuste is not None:
         campos[ajuste_campo] = int(ajuste)
+    if projeto is not None:
+        from core.fundo_tirado import depois_da_troca
+
+        campos["fundo_tirado"] = depois_da_troca(projeto, pagina, filtro)
     return replace(pagina, filtro=filtro, alertas=list(pagina.alertas), **campos)
 
 
@@ -815,7 +826,8 @@ class FiltrosEmTelaCheia(QDialog):
         """A cópia da página com o `filtro` e tudo o que foi mexido aqui."""
         campo = self._campo(filtro)
         opcoes = self.opcoes if filtro != ORIGINAL else {}
-        return pagina_com_as_opcoes(self.pagina, filtro, campo, self.ajustes.get(filtro), opcoes)
+        return pagina_com_as_opcoes(self.pagina, filtro, campo, self.ajustes.get(filtro), opcoes,
+                                    projeto=getattr(self.conferir, "projeto", None))
 
     def _chegou(self, chave, img) -> None:
         self._imagens = {k: v for k, v in self._imagens.items() if k[0] == chave[0]}
