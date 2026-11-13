@@ -36,6 +36,18 @@ Prints e frases do Samuel, guardados na hora. Programa: o da versão de teste (r
 - "sobre o livros recentes, ele não trava mas demora para carregar, quando eu volto para um livro que já tinha sido aberto, ele nem carrega, como se já tivesse sido carregado, isso pesa o programa? será que o programa está deixando dois arquivos carregados?"
 - Resultado: **não fecha mais** (o conserto funcionou). Resposta da gerente (pelo código, `ui/janela_principal.py` `abrir_livro`): abrir troca o livro, não deixa dois abertos. O livro já aberto antes volta rápido porque o trabalho dele está salvo no disco e não é analisado de novo; o livro novo faz a passada leve e a medida por trás. O programa guarda na memória algumas páginas já feitas (com teto, até uns 400 MB das páginas desentortadas, `core/pipeline.py`), e esse guardado não é esvaziado ao trocar de livro: a medir.
 
+## Girar: o "aplicar em" escondido (chat)
+
+- Ele não testou o girar com a capa aberta: "eu não testei o girar, pois não sabia como testar, nem sei onde fica esse botão girar todas".
+- Depois da explicação: "Para escolher aplicar em todas tem que estar dentro de um painel de outras funções, não existe um painel do girar"
+- Onde foi decidido assim: layout, rodada 12, 703 ("Quero a opção B e D": girar no painel Propriedades e nos botões do canto) e rodada 13, 803 B ("Só no painel": o "aplicar em" só no bloco do painel). Ver `ui/widgets/barra_girar.py`.
+- Proposta da gerente (setinha do "aplicar em" também nos botões do canto, junto com o girar numa regra só, com print na Central) → ele: "Pode ser, e ai as opções dele apareceriam em propriedades quando fosse selecionado né?"
+
+## Regra lembrada por ele (chat)
+
+- "Lembre de que o agente não pode fazer gambiarras como na outra ferramenta nossa que fazia várias gambiarras e funcionava de maneira diferente em vários lugares." Repassada ao agente do "Tirar o fundo" na hora (uma regra só no código; CLAUDE.md §11.10, D-667).
+- Preto e branco: o "Ok" foi lido como sim e o agente da D-700 foi aberto; ele: "Não estou falando disso, estou falando do branco e preto" · "Não quero consertar isso agora, quero saber o que estava em execução". Agente parado, D-700 suspensa.
+
 ## Ideia nova (chat)
 
 - "deixe anotado, eu quero poder abrir varias abas no programa, deixe como ideia, de varios livros." → Lista de espera do plano (13/11).
