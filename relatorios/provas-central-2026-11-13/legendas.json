@@ -1,0 +1,13 @@
+{
+ "1-tampa-a-onde-fica-a-escolha.png": "Onde fica a escolha: Automático, etapa 3 \"Cortar as bordas\", \"O que fica fora da página: cortar fora / pintar de branco\" (vale para a borda preta e para a faixa da tampa).",
+ "1-tampa-b-na-tela.png": "Na tela: antes (azul) a faixa preta da tampa em cima da folha 96; depois do Automático, com \"cortar fora\" e com \"pintar de branco\" (verde), a faixa sumiu nas páginas 452 e 453.",
+ "1-tampa-c-no-pdf.png": "No PDF: antes (azul) a faixa preta da tampa em cima da folha 96; depois do Automático, com \"cortar fora\" e com \"pintar de branco\" (verde), as páginas 452 e 453 saem sem a faixa.",
+ "1-tampa-d-preto-do-lado.png": "Página 452: a faixa da tampa sumiu, mas o preto do lado (fundo do scanner) continua com a caixinha da borda preta desligada (fábrica); com ela ligada, sai também.",
+ "2-cores-a-palavras-antes-e-hoje.png": "Horas 26, \"S. Leonard\" e \"Theodore\" no PDF (Preto e branco + Letras com a cor delas + Reduzir cores): antes, metade preta e metade clara; hoje nada sai preto, mas a palavra ainda sai em duas cores (azul e bege).",
+ "2-cores-b-onde-ficam-as-caixinhas.png": "Onde ficam as caixinhas hoje: painel \"Filtro da página\" > Preto e branco > \"Mais ajustes\": \"Letras com a cor delas\" e \"Reduzir cores\" à vista.",
+ "3-caderno-a-gradus-dividido-sem-lugar-vazio.png": "Gradus dividido pelo Automático: 140 páginas = 7 cadernos de 20 cheios; a última folha (35 de 35) é \"frente: páginas 132 e 129 / verso: páginas 130 e 131\". Não há lugar sem página nesse livro.",
+ "3-caderno-b-righetti-folha-com-lugar-sem-pagina.png": "Righetti dividido (270 páginas), etapa 7, folha 66 de 68: \"frente: páginas em branco e 261\" e \"verso: páginas 262 e em branco\"; os dois lugares sem página saem brancos.",
+ "4-o-que-vai-sair-a-como-abre.png": "Como abre o \"Montar para imprimir\" (tamanho de fábrica): o quadro \"O que vai sair\" fica fora da vista, no pé do lado direito; nem o título aparece, só a barra de rolagem indica.",
+ "4-o-que-vai-sair-b-rolado.png": "O lado direito rolado até embaixo: o quadro \"O que vai sair\" inteiro. Exemplo do Palatino: Livreto (cadernos) em papel A4. Entram as 134 páginas do livro. Saem 34 folhas de papel (frente e verso), 7 cadernos; o último com 4 folhas. Ao gravar, os passos para imprimir e dobrar aparecem aqui.",
+ "5-pares-trocados-duas-lado-a-lado.png": "La vida eterna dividido, \"Duas lado a lado\": nos pares 6-7, 8-9 e 10-11 do PDF a página de número impresso ímpar (7, 9, 11) aparece à esquerda; num livro aberto ela fica à direita."
+}
