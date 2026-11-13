@@ -1937,6 +1937,44 @@ def test_p085_o_menu_filtro_marca_o_filtro_da_pagina(janela, tela):
         not janela.menu.acoes["filtro_preto_e_branco"].isChecked(), "o menu Filtro não acompanha a página"
 
 
+@prova("P-214")
+def test_p214_desfazer_o_tirar_o_fundo(janela, pasta, monkeypatch):
+    """D-646/D-699: num livro com camadas, depois do "Sim, tirar o fundo", o item do menu Filtro
+    traz o fundo de volta na página 1 e o botão do painel (logo abaixo das figurinhas) na página
+    2; a página 3 continua sem o fundo. No PDF gerado: 1 e 2 com o papel amarelado, 3 branca."""
+    from PySide6.QtWidgets import QAbstractButton
+
+    from core import camadas
+    from tests.test_camadas import sem_figuras
+    from tests.test_tirar_fundo_no_programa import _papel, _pdf_camadas
+
+    monkeypatch.setattr(camadas, "DETECTOR_DE_FIGURAS", sem_figuras)
+    janela.abrir_livro(_pdf_camadas(pasta, paginas=3))
+    next(b for b in janela.aviso_do_fundo.findChildren(QAbstractButton)
+         if b.text() == "Sim, tirar o fundo").click()
+    aj.assentar()
+    tela = janela.tela_conferir
+    janela.projeto.detectar_regioes = False
+    janela._marcar_o_filtro_no_menu()
+    item = janela.menu.acoes["desfazer_tirar_fundo"]
+    assert item.isVisible() and item.isEnabled()
+    item.trigger()
+    aj.assentar()
+    tela.ir_para_pagina(1)
+    aj.assentar()
+    botao = tela.botao_desfazer_fundo
+    assert botao is not None and botao.isEnabled()
+    botao.click()
+    aj.assentar()
+    paginas = janela.projeto.paginas
+    assert [p.fundo_tirado for p in paginas] == [False, False, True]
+    assert tela.acoes.pode_desfazer
+    saida = _gerar(janela, monkeypatch, pasta)
+    assert len(saida) == 3
+    claros = [bool(_papel(p.imagem).min() > 250) for p in saida]
+    assert claros == [False, False, True], f"papel branco por página no PDF: {claros}"
+
+
 @prova("P-084")
 def test_p084_so_neste_pedaco(janela, tela, monkeypatch, pasta):
     """D-188: nenhum aceso de fábrica; clicar escolhe o filtro do próximo pedaço; clicar de novo no

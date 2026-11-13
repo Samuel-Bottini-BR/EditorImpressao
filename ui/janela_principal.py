@@ -288,6 +288,9 @@ class JanelaPrincipal(QMainWindow):
             # (o Qt alterna); a marca volta a dizer o filtro da pagina
             self.menu.acoes[f"filtro_{chave}"].triggered.connect(
                 lambda _marcado=False: self._marcar_o_filtro_no_menu())
+        # D-699: o "Desfazer o tirar o fundo" do menu Filtro é a MESMA ação do
+        # botão do painel "Filtro da página"
+        self.menu.ligar("desfazer_tirar_fundo", trabalho(conferir.desfazer_o_tirar_o_fundo))
         # D-492 (27/10/2026; P-085): o tique do menu Filtro acompanha o filtro
         # da pagina aberta - ao trocar de pagina, ao trocar o filtro (por
         # qualquer lugar: cartao, tecla, menu, desfazer) e ao abrir o menu
@@ -425,6 +428,18 @@ class JanelaPrincipal(QMainWindow):
             item.blockSignals(True)
             item.setChecked(chave == filtro)
             item.blockSignals(False)
+        # D-699: o "Desfazer o tirar o fundo" só aparece no livro com o "Tirar o
+        # fundo" (o mesmo critério da figurinha) e só fica aceso na página sem o
+        # fundo (core/fundo_tirado.pode_desfazer, o mesmo do botão do painel)
+        from core import fundo_tirado
+        from core.filtros import TIRAR_FUNDO, filtros_do_livro
+
+        item = self.menu.acoes["desfazer_tirar_fundo"]
+        com_fundo = projeto is not None and TIRAR_FUNDO in filtros_do_livro(projeto)
+        item.setVisible(com_fundo)
+        self.menu.separador_do_fundo.setVisible(com_fundo)
+        item.setEnabled(bool(com_fundo and filtro is not None and fundo_tirado.pode_desfazer(
+            projeto, projeto.paginas[conferir.indice_pagina])))
 
     def _trocar_lado_direito(self, jeito: str) -> None:
         """Menu Ver > "Lado direito" e Configurações > Aparência (R14 902 C):
@@ -928,7 +943,10 @@ class JanelaPrincipal(QMainWindow):
         desfazer devolve tambem o filtro e o "Limpar" do livro (campos
         "livro." da acao, historico_acoes.aplicar). D-069 (30/09): depois de
         aberto, o mesmo da pelo Automatico, etapa "Limpar a folha", filtro
-        "Tirar o fundo" (e "Original" volta ao como veio).
+        "Tirar o fundo". MUDOU em 13/11/2026 (D-646/D-699): o "Original" NÃO traz
+        mais o fundo de volta (nenhum filtro traz); só o "Desfazer o tirar o
+        fundo" do menu Filtro e do painel. Esta ação grava também o fundo tirado
+        de cada página (historico_acoes.montar_acao -> core/fundo_tirado).
         """
         from core.filtros import ORIGINAL, TIRAR_FUNDO
         from historico_acoes import aplicar, montar_acao

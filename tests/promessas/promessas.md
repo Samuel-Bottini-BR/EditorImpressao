@@ -540,6 +540,20 @@ programa), a partir do **nome do botão**, da **dica** (o balão do mouse) e das
   (D-057); um tique que não acompanha a página diz o filtro errado.
 - **na tela:** o menu Filtro mostra marcado o filtro da página que está na tela, e acompanha ao trocar de página.
 
+### P-214 · "Desfazer o tirar o fundo" (painel Filtro e menu Filtro)
+- **chaves:** `menu/desfazer_tirar_fundo`, `área de trabalho/filtro da página/Desfazer o tirar o fundo`
+- **dica:** sem balão; o nome diz o que faz
+- **decisões:** D-646 ("É só criar uma opção para desfazer o tirar fundo, e só vai desfazer o tirar fundo quando
+  apertar ela. E via de regra, nenhum filtro deve fazer o fundo voltar."), D-699 (logo abaixo do "Tirar o fundo", no
+  menu Filtro e no painel, com o "Aplicar em" de sempre)
+- **na tela:** só aparece em livro com camadas (com o "Tirar o fundo"); aceso só na página sem o fundo. O botão do
+  painel fica logo abaixo das figurinhas.
+- **no projeto:** a página da vez fica com o fundo de volta ("fundo_tirado" falso; a que estava em "Tirar o fundo"
+  fica no Original), numa ação do desfazer; as outras não mudam.
+- **no PDF:** essa página sai com o papel como foi escaneado; as outras continuam sem o fundo.
+- **fora da varredura:** o livro da varredura não tem camadas; o item do menu é achado, o botão do painel não (só
+  existe em livro com camadas). A prova abre um livro com camadas.
+
 ### P-084 · "Só neste pedaço": os quatro filtros do pedaço
 - **chaves:** `área de trabalho/filtro da página/só neste pedaço: Original`,
   `área de trabalho/filtro da página/só neste pedaço: Preto e branco`,

@@ -1,0 +1,26 @@
+Reversao (CLAUDE.md 4.7) - tests/test_decisoes_fundo_tirado.py -k "d646_sim or nenhum_caminho"
+
+== No codigo de antes (863cdde3, copia em worktree a parte) ==
+E   AssertionError: o fundo voltou na página 1
+E   AssertionError: figurinha: o fundo voltou na página 1
+E   AssertionError: figurinha_do_painel: o fundo voltou na página 1
+E   AssertionError: tecla_1: o fundo voltou na página 1
+E   AssertionError: menu_filtro: o fundo voltou na página 1
+E   AssertionError: tela_cheia: o fundo voltou na página 1
+E   AssertionError: aplicar_em_todas: o fundo voltou na página 1
+E   AssertionError: aplicar_daqui_em_diante: o fundo voltou na página 1
+E   AssertionError: automatico: o fundo voltou na página 1
+FAILED tests/test_decisoes_fundo_tirado.py::test_d646_sim_tirar_o_fundo_e_o_automatico_nao_traz_o_fundo_de_volta
+FAILED tests/test_decisoes_fundo_tirado.py::test_d699_o_original_nao_traz_o_fundo_em_nenhum_caminho[figurinha]
+FAILED tests/test_decisoes_fundo_tirado.py::test_d699_o_original_nao_traz_o_fundo_em_nenhum_caminho[figurinha_do_painel]
+FAILED tests/test_decisoes_fundo_tirado.py::test_d699_o_original_nao_traz_o_fundo_em_nenhum_caminho[tecla_1]
+FAILED tests/test_decisoes_fundo_tirado.py::test_d699_o_original_nao_traz_o_fundo_em_nenhum_caminho[menu_filtro]
+FAILED tests/test_decisoes_fundo_tirado.py::test_d699_o_original_nao_traz_o_fundo_em_nenhum_caminho[tela_cheia]
+FAILED tests/test_decisoes_fundo_tirado.py::test_d699_o_original_nao_traz_o_fundo_em_nenhum_caminho[aplicar_em_todas]
+FAILED tests/test_decisoes_fundo_tirado.py::test_d699_o_original_nao_traz_o_fundo_em_nenhum_caminho[aplicar_daqui_em_diante]
+FAILED tests/test_decisoes_fundo_tirado.py::test_d699_o_original_nao_traz_o_fundo_em_nenhum_caminho[automatico]
+9 failed, 11 deselected in 6.39s
+
+== No codigo novo (ramo fundo-2026-11-13) ==
+.........                                                                [100%]
+9 passed, 11 deselected in 9.11s

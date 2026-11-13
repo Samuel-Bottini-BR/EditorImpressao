@@ -190,6 +190,17 @@ class ConfigPagina:
     # de `filtro_valido()`, que é outra coisa (corrigir valor inválido salvo).
     filtro: str = ORIGINAL
 
+    # D-646/D-699 (13/11/2026): o fundo tirado desta pagina, SEPARADO do filtro
+    # ("nenhum filtro deve fazer o fundo voltar"). True = tirado; False = a
+    # pessoa apertou "Desfazer o tirar o fundo"; None = nunca tirado nem desfeito.
+    # Lido e gravado SO por core/fundo_tirado.py (a regra, num lugar so). MUDANCA
+    # DE FORMATO aprovada na D-699 ("o projeto ganha em cada pagina 'fundo tirado:
+    # sim ou nao', separado do filtro"): projeto gravado antes nao tem a chave;
+    # a pagina que estava em "Tirar o fundo" abre com o fundo tirado e o filtro
+    # Original (core/fundo_tirado.migrar_projeto_antigo, em Projeto.de_dicionario),
+    # e o PDF sai igual. Arriscado: gravar este campo fora de core/fundo_tirado.
+    fundo_tirado: bool | None = None
+
     # Problema 5 do plano: qual dos 3 algoritmos o Preto e branco usa nesta
     # página - "auto" deixa o programa decidir sozinho pela espessura do
     # traço (ver core/filtros.py::escolher_algoritmo_automatico); os outros
@@ -1000,8 +1011,13 @@ class Projeto:
         # D2 (02/10/2026): "zonas_na_folha" volta para fracao da pagina aqui,
         # com a geometria anotada (core/zonas_na_folha.do_disco). Pagina de
         # projeto antigo (sem o campo) passa como sempre.
+        dados_das_paginas = dados.pop("paginas", [])
         paginas = [ConfigPagina(**_so_campos_conhecidos(ConfigPagina, _migrar(do_disco(p))))
-                   for p in dados.pop("paginas", [])]
+                   for p in dados_das_paginas]
+        # D-699 (13/11/2026): as paginas gravadas antes do campo "fundo_tirado"
+        # (migradas no fim, depois das marcas: core/fundo_tirado.migrar_projeto_antigo)
+        sem_o_campo_do_fundo = [pagina for pagina, p in zip(paginas, dados_das_paginas)
+                                if isinstance(p, dict) and "fundo_tirado" not in p]
         # "Limpar pontinhos" (06/10/2026): projeto gravado antes deste campo
         # usava o nosso - continua com ele (a pagina que tinha a caixinha
         # "limpar poeirinha" desligada ja voltou "desligado", em _migrar).
@@ -1036,6 +1052,11 @@ class Projeto:
         from core.etapas import marcar_pelos_valores
 
         marcar_pelos_valores(projeto)
+        # ... e a pagina antiga em "Tirar o fundo" abre com o fundo tirado e o
+        # filtro Original (D-699; o PDF sai igual)
+        from core.fundo_tirado import migrar_projeto_antigo
+
+        migrar_projeto_antigo(projeto, sem_o_campo_do_fundo)
         return projeto
 
 

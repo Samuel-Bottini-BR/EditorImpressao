@@ -708,6 +708,15 @@ class _Gravador:
         setattr(folha, campo, valor)
 
     def na_pagina(self, pagina, campo: str, valor) -> None:
+        if campo == "filtro" and valor != pagina.filtro:
+            # D-646/D-699: a troca de filtro leva o fundo tirado que a regra
+            # manda (core/fundo_tirado.depois_da_troca, a MESMA da tela:
+            # historico_acoes.montar_acao), na mesma acao do desfazer
+            from core import fundo_tirado
+
+            fundo = fundo_tirado.depois_da_troca(self.projeto, pagina, valor)
+            if fundo != fundo_tirado.valor(pagina):
+                self.na_pagina(pagina, fundo_tirado.CAMPO, fundo)
         chave = (pagina.indice, campo)
         if self.estrutura is None and chave not in self.paginas:
             self.paginas[chave] = copy.deepcopy(getattr(pagina, campo))

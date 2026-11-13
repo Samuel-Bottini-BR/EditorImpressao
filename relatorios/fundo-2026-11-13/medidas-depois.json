@@ -1,0 +1,106 @@
+{
+ "1-com-o-fundo-tirado": {
+  "3": {
+   "filtro": "tirar_fundo",
+   "fundo_tirado": true,
+   "papel_azul": 255.0,
+   "tempo_s": null
+  },
+  "4": {
+   "filtro": "tirar_fundo",
+   "fundo_tirado": true,
+   "papel_azul": 255.0,
+   "tempo_s": null
+  },
+  "5": {
+   "filtro": "tirar_fundo",
+   "fundo_tirado": true,
+   "papel_azul": 255.0,
+   "tempo_s": null
+  },
+  "6": {
+   "filtro": "tirar_fundo",
+   "fundo_tirado": true,
+   "papel_azul": 255.0,
+   "tempo_s": null
+  }
+ },
+ "2-depois-do-automatico-original": {
+  "3": {
+   "filtro": "original",
+   "fundo_tirado": true,
+   "papel_azul": 255.0,
+   "tempo_s": null
+  },
+  "4": {
+   "filtro": "original",
+   "fundo_tirado": true,
+   "papel_azul": 255.0,
+   "tempo_s": null
+  },
+  "5": {
+   "filtro": "original",
+   "fundo_tirado": true,
+   "papel_azul": 255.0,
+   "tempo_s": null
+  },
+  "6": {
+   "filtro": "original",
+   "fundo_tirado": true,
+   "papel_azul": 255.0,
+   "tempo_s": null
+  }
+ },
+ "3-desfazer-o-tirar-o-fundo-na-pagina-3": {
+  "3": {
+   "filtro": "original",
+   "fundo_tirado": false,
+   "papel_azul": 146.0,
+   "tempo_s": null
+  },
+  "4": {
+   "filtro": "original",
+   "fundo_tirado": true,
+   "papel_azul": 255.0,
+   "tempo_s": null
+  },
+  "5": {
+   "filtro": "original",
+   "fundo_tirado": true,
+   "papel_azul": 255.0,
+   "tempo_s": null
+  },
+  "6": {
+   "filtro": "original",
+   "fundo_tirado": true,
+   "papel_azul": 255.0,
+   "tempo_s": null
+  }
+ },
+ "4-depois-do-automatico-preto-e-branco": {
+  "3": {
+   "filtro": "preto_e_branco",
+   "fundo_tirado": false,
+   "papel_azul": 255.0,
+   "tempo_s": null
+  },
+  "4": {
+   "filtro": "preto_e_branco",
+   "fundo_tirado": true,
+   "papel_azul": 255.0,
+   "tempo_s": null
+  },
+  "5": {
+   "filtro": "preto_e_branco",
+   "fundo_tirado": true,
+   "papel_azul": 255.0,
+   "tempo_s": null
+  },
+  "6": {
+   "filtro": "preto_e_branco",
+   "fundo_tirado": true,
+   "papel_azul": 255.0,
+   "tempo_s": null
+  }
+ }
+}

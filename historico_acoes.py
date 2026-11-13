@@ -616,7 +616,18 @@ def montar_acao(
     """Fotografa os valores atuais dos campos e monta a acao a registrar.
 
     Chamar ANTES de alterar o projeto: e daqui que sai o 'antes' do desfazer.
+
+    D-646/D-699 (13/11/2026): toda acao de PAGINA que troca o filtro leva junto
+    o "fundo_tirado" que a regra manda (core/fundo_tirado.com_o_fundo_que_fica:
+    nenhum filtro traz o fundo de volta). E aqui, e nao em cada botao, porque
+    todas as trocas de filtro da tela passam por aqui (cartao, tecla, menu, tela
+    cheia, "Aplicar em", "Sim" da pergunta do fundo): uma regra, um lugar. O
+    'antes' guarda o fundo de antes, entao o Ctrl+Z o devolve.
     """
+    if alvo == "pagina":
+        from core.fundo_tirado import com_o_fundo_que_fica
+
+        campos = com_o_fundo_que_fica(projeto, indices, campos)
     itens = projeto.folhas if alvo == "folha" else projeto.paginas
 
     antes: dict[str, Any] = {}

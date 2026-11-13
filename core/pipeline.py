@@ -55,6 +55,7 @@ from core import corte_pelo_conteudo   # item 2.5 (so com Projeto.cortar_pelo_co
 from core import borda_preta           # item 2.13 (so com Projeto.borda_preta)
 from core import recortar              # etapa 10a: _caixa_sem_comer usa as contas do corte comum
 from core import etapas                # obra 26/10 etapa 1: "esta etapa vale nesta pagina?" (D-009)
+from core import fundo_tirado          # D-646/D-699: o fundo tirado da pagina, separado do filtro
 from core import dividir_a_mao         # obra 26/10 etapa 4: a tampa do scanner (D-495)
 from core.girar import giro_da_pagina  # D-618: o giro so da pagina, depois de dividir
 from core.ordem_do_preparo import endireita_antes, ordem_do_livro
@@ -2577,6 +2578,13 @@ def garantir_selecao(projeto: Projeto, pagina: ConfigPagina, img: np.ndarray,
 # so, sem mudanca escondida." E: "eu quero poder escolher tirar o fundo sem
 # colocar nenhum filtro." A pagina duvidosa continua saindo "conferir".
 #
+# MUDOU em 13/11/2026 (D-646/D-699: "nenhum filtro deve fazer o fundo
+# voltar"): o fundo tirado virou um dado da pagina separado do filtro
+# (ConfigPagina.fundo_tirado, regra em core/fundo_tirado.py). Onde abaixo se le
+# "a pagina com o filtro 'Tirar o fundo'", vale "a pagina sem o fundo"
+# (usa_tirar_fundo); com Preto e branco, Melhorar ou Magico pro o filtro passa
+# por cima da pagina sem o fundo (_filtrar_a_pagina_sem_fundo).
+#
 # Entao: so a pagina com o filtro "Tirar o fundo" (TIRAR_FUNDO) usa o
 # core/camadas.py. Se ele diz "fundo tirado" ou "conferir", sai o resultado
 # dele; se diz "intacta" (ou o PDF nao tem camadas, ou deu erro), a pagina
@@ -2612,7 +2620,10 @@ def usa_tirar_fundo(projeto: Projeto, pagina: ConfigPagina) -> bool:
     """
     # obra 26/10, etapa 1: o filtro que VALE (core/etapas.filtro_que_vale: o
     # da pagina com "Limpar a folha" ligado, ou escolhido a mao)
-    return bool(projeto.tem_camadas and etapas.filtro_que_vale(projeto, pagina) == TIRAR_FUNDO
+    # D-646/D-699 (13/11/2026): "sem o fundo" e o fundo tirado da pagina OU o
+    # filtro "Tirar o fundo" valendo nela - a regra num lugar so
+    # (core/fundo_tirado.esta_sem_o_fundo); nenhum filtro traz o fundo de volta
+    return bool(projeto.tem_camadas and fundo_tirado.esta_sem_o_fundo(projeto, pagina)
                 and not getattr(pagina, "em_branco", False))
 
 
@@ -2811,6 +2822,11 @@ def renderizar_pagina(
     cortada e endireitada como o PDF final (processar faz a mesma coisa), sem
     filtro. Se ele deixa a pagina intacta, ela sai como veio (_filtrar). O
     alerta "conferir" da pagina e acertado aqui (_anotar_conferir).
+
+    D-646/D-699 (13/11/2026): a pagina com o fundo tirado e OUTRO filtro
+    (Preto e branco, Melhorar, Magico pro) sai com esse filtro feito em cima da
+    pagina sem o fundo (_filtrar_a_pagina_sem_fundo); no Original, como no
+    "Tirar o fundo" (core/fundo_tirado.filtro_por_cima).
     """
     folha = projeto.folhas[pagina.folha]
     if usa_tirar_fundo(projeto, pagina):
@@ -2823,6 +2839,10 @@ def renderizar_pagina(
             # as zonas sao levadas para o preparo de agora ANTES de os
             # pedacos de "so neste pedaco" serem lidos (decisao D2)
             _acompanhar_as_zonas(pagina, desenho)
+            if fundo_tirado.filtro_por_cima(projeto, pagina):
+                # D-699: o filtro trabalha em cima da pagina ja sem o fundo
+                return _filtrar_a_pagina_sem_fundo(doc, projeto, folha, pagina, img,
+                                                   resultado.imagem.shape, dpi)
             return _pedacos_na_pagina_sem_fundo(
                 doc, projeto, folha, pagina, img, resultado.imagem.shape, geometria,
                 dpi, None), False
@@ -3062,7 +3082,7 @@ def precisa_do_desenho_do_pdf(projeto: Projeto, pagina: ConfigPagina) -> bool:
         return False
     provisoria = bool(getattr(pagina, "marcacao_provisoria", False)
                       and etapas.marca_sozinho(projeto, pagina)
-                      and pagina.filtro != TIRAR_FUNDO)
+                      and not fundo_tirado.so_o_fundo_tirado(pagina))
     return provisoria or precisa_medir_para_revisar(projeto, pagina)
 
 
@@ -3266,7 +3286,7 @@ def _vai_detectar(projeto: Projeto, pagina: ConfigPagina, dpi_pedido: float | No
     trocar de filtro - por isso o Original NAO fica de fora aqui.
     dpi_pedido: a resolucao do desenho; no do tamanho do PDF a marcacao
     provisoria (a da previa) tambem e procurada de novo (13/10/2026)."""
-    if not (etapas.marca_sozinho(projeto, pagina) and pagina.filtro != TIRAR_FUNDO):
+    if not (etapas.marca_sozinho(projeto, pagina) and not fundo_tirado.so_o_fundo_tirado(pagina)):
         return False
     if not pagina.selecao or _gravura_a_refazer(projeto, pagina):
         return True
@@ -3559,7 +3579,9 @@ def _filtrar_preto_no_branco(projeto: Projeto, pagina: ConfigPagina, img: np.nda
     (item 2.9). dpi_pedido: o do "Para revisar" (ver _filtrar), repassado
     pela juncao de 23/10/2026 (os dois ramos mexeram no mesmo corpo). Arriscado: chamar daqui fora sem passar por _filtrar (a
     caixinha "Letra clara em fundo escuro" deixaria de valer)."""
-    if pagina.filtro == TIRAR_FUNDO:
+    if fundo_tirado.so_o_fundo_tirado(pagina):
+        # D-699: tambem o Original com o fundo tirado (o mesmo caminho do
+        # "Tirar o fundo"; core/fundo_tirado.so_o_fundo_tirado)
         # Conferencia 14 (Samuel, "FUNDO: Sim, do mesmo jeito (só muda se
         # alguém marcar um pedaço)"): o pedaco vale aqui como no Original. A
         # marcacao usada e a GUARDADA (pagina.obter_selecao), sem chamar o
@@ -4374,6 +4396,33 @@ def _pedacos_na_pagina_sem_fundo(doc, projeto: Projeto, folha: ConfigFolha,
         projeto, pagina, _so_os_pedacos_no_tirar_o_fundo(projeto, pagina, img, como_veio))
 
 
+def _filtrar_a_pagina_sem_fundo(doc, projeto: Projeto, folha: ConfigFolha, pagina: ConfigPagina,
+                                img: np.ndarray, forma_da_folha: tuple, dpi: float
+                                ) -> tuple[np.ndarray, bool]:
+    """D-699 (Samuel, 13/11/2026: "Depois do 'Tirar o fundo', o Preto e branco,
+    o Melhorar, o Mágico pro [...] trabalham em cima da página já sem o fundo"):
+    o filtro da pagina (o caminho de sempre, _filtrar, com a marcacao, o "so
+    neste pedaco", as caixinhas) sobre a pagina SEM o fundo (`img`, ja
+    dividida, cortada e endireitada com o corte da folha como veio).
+    `forma_da_folha`: o tamanho da folha sem o fundo (para medir a resolucao,
+    como o caminho de sempre mede na folha). A MESMA conta para a previa
+    (renderizar_pagina) e o PDF (_pagina_pronta): previa = PDF. So chamada
+    quando core/fundo_tirado.filtro_por_cima diz sim (o Original e o "Tirar o
+    fundo" seguem o caminho do "Tirar o fundo", _pedacos_na_pagina_sem_fundo).
+    Arriscado: chamar com a folha como veio (o fundo voltaria)."""
+    altura, largura = forma_da_folha[:2]
+    dpi_desenho = dpi_scan = None
+    if _vai_detectar(projeto, pagina, dpi) or _vai_limpar_pelo_scantailor(projeto, pagina):
+        dpi_desenho = _dpi_pela_area(doc, folha.indice, altura, largura)
+        dpi_scan = _dpi_do_scan(doc, folha)
+
+    def resolucao_para_a_procura():
+        return (_dpi_pela_area(doc, folha.indice, altura, largura), _dpi_do_scan(doc, folha))
+
+    with _resolucao_para_a_procura(None if dpi_desenho else resolucao_para_a_procura):
+        return _filtrar(projeto, pagina, img, dpi_desenho, dpi_scan, dpi_pedido=dpi)
+
+
 def _papel_a_mao_sem_fundo(projeto: Projeto, pagina: ConfigPagina, img: np.ndarray) -> np.ndarray:
     """A pagina de que o fundo FOI tirado com o papel marcado A MAO em branco
     (etapa 9d da obra, 27/10/2026; bug achado na 9c: "'Deixar a folha em
@@ -4423,7 +4472,11 @@ def renderizar_com_filtro(
     from dataclasses import replace
 
     vale = etapas.filtro_que_vale(projeto, pagina)
-    copia = replace(pagina, filtro=filtro, alertas=list(pagina.alertas))
+    # D-646/D-699: a copia leva o fundo tirado que a pagina teria com este
+    # filtro (a MESMA regra da troca de verdade: core/fundo_tirado.depois_da_troca);
+    # assim a figurinha, a tela cheia e o "comparar" mostram o que sai
+    copia = replace(pagina, filtro=filtro, alertas=list(pagina.alertas),
+                    fundo_tirado=fundo_tirado.depois_da_troca(projeto, pagina, filtro))
     if filtro != vale:
         etapas.marcar_mexida_a_mao(copia, etapas.FILTRO)
     return renderizar_pagina(doc, projeto, copia, dpi=dpi)
@@ -4760,21 +4813,29 @@ def _pagina_pronta(projeto: Projeto, doc, folha: ConfigFolha, pagina: ConfigPagi
 
     if imagem_sem_fundo is not None:
         # dividir, cortar e endireitar a folha sem o fundo, com o
-        # corte da folha como veio; o filtro fica de fora
+        # corte da folha como veio; o filtro fica de fora, a nao ser o que
+        # passa por cima da pagina sem o fundo (D-699, abaixo)
         geometria = _geometria_da_folha_como_veio(doc, folha, pagina, projeto, img_folha)
         img, desenho = _preparar_metade_e_geometria(
             imagem_sem_fundo, folha, pagina, projeto, geometria=geometria)
         # as zonas sao levadas para o preparo de agora ANTES de os
         # pedacos de "so neste pedaco" serem lidos (decisao D2)
         _acompanhar_as_zonas(pagina, desenho)
-        # conferencia 14 ("FUNDO"): o "so neste pedaco" vale aqui tambem.
-        # Sem pedaco, `img` volta como esta e nada mais e desenhado.
-        if _tem_pedaco_com_filtro(projeto, pagina) and img_folha is None:
-            da_vez.img = img_folha = pagina_para_array(doc, folha.indice, dpi=projeto.qualidade_dpi)
-        img = _pedacos_na_pagina_sem_fundo(
-            doc, projeto, folha, pagina, img, imagem_sem_fundo.shape, geometria,
-            projeto.qualidade_dpi, img_folha)
-        mono = False
+        if fundo_tirado.filtro_por_cima(projeto, pagina):
+            # D-699: o filtro trabalha em cima da pagina ja sem o fundo (a mesma
+            # conta da previa: _filtrar_a_pagina_sem_fundo)
+            img, mono = _filtrar_a_pagina_sem_fundo(doc, projeto, folha, pagina, img,
+                                                    imagem_sem_fundo.shape, projeto.qualidade_dpi)
+        else:
+            # conferencia 14 ("FUNDO"): o "so neste pedaco" vale aqui tambem.
+            # Sem pedaco, `img` volta como esta e nada mais e desenhado.
+            if _tem_pedaco_com_filtro(projeto, pagina) and img_folha is None:
+                da_vez.img = img_folha = pagina_para_array(doc, folha.indice,
+                                                           dpi=projeto.qualidade_dpi)
+            img = _pedacos_na_pagina_sem_fundo(
+                doc, projeto, folha, pagina, img, imagem_sem_fundo.shape, geometria,
+                projeto.qualidade_dpi, img_folha)
+            mono = False
     else:
         # o corte e calculado nesta mesma imagem (a do PDF) e
         # guardado: a previa, se vier depois, mostra este (ver

@@ -207,6 +207,13 @@ def desfazer(tela, indice: int, etapas) -> bool:
     if tela._espera_pelas_marcacoes("pagina", [indice], campos):
         return False
     campos = tela._com_os_avisos_de_agora("pagina", [indice], campos)
+    # D-646/D-699: o Filtro desfeito volta ao Original sem trazer o fundo de volta
+    # (só o "Desfazer o tirar o fundo" traz): a MESMA regra das outras trocas de
+    # filtro (core/fundo_tirado.com_o_fundo_que_fica, a de historico_acoes.montar_acao;
+    # esta ação é montada aqui, sem passar por lá)
+    from core.fundo_tirado import com_o_fundo_que_fica
+
+    campos = com_o_fundo_que_fica(projeto, [indice], campos)
     chave = str(indice)
     antes = {campo: {chave: _como_no_arquivo(getattr(pagina, campo, None))} for campo in campos}
     depois = {campo: _como_no_arquivo(valor.get(chave) if isinstance(valor, dict) else valor)
