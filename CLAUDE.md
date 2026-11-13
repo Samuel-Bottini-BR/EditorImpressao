@@ -751,7 +751,7 @@ Valem para a gerente, para todos os agentes (`.claude/agents/`) e para qualquer 
 
     As outras regras de código propostas pelo revisor em 10/11 (erro engolido, plano antes de mudança grande, etc.) continuam só como proposta, esperando o Samuel.
 
-13. **Como perguntar e responder ao Samuel (Samuel, 13/11/2026).** Pedido dele: "precisa ajeitar para isso como regra, consegue pegar as perguntas e respostas que tu fez que eu não entendi, ver um padrão e fazer um conjunto de regras para responder e fazer perguntas." A gerente leu os 106 casos de "Ainda não entendi" e de reclamação da explicação na Central (21/10 a 13/11) e achou sete padrões. Cada regra abaixo tem as palavras dele que a originaram. Vale para a gerente e para todo agente que escreve pergunta, relatório ou resposta para ele: Central, chat e relatórios.
+13. **Como perguntar e responder ao Samuel (Samuel, 13/11/2026).** Pedido dele: "precisa ajeitar para isso como regra, consegue pegar as perguntas e respostas que tu fez que eu não entendi, ver um padrão e fazer um conjunto de regras para responder e fazer perguntas." A gerente leu os 106 casos de "Ainda não entendi" e de reclamação da explicação e, a pedido dele ("veja os comentarios que eu fiz nessas perguntas para que tenha mais conteudo para saber por onde alinhar as regras novas"), os 176 comentários dele na Central (21/10 a 13/11), e achou dez padrões. Cada regra abaixo tem as palavras dele que a originaram. Vale para a gerente e para todo agente que escreve pergunta, relatório ou resposta para ele: Central, chat e relatórios.
 
     **1. Comece pelo que é e onde fica.** A primeira frase diz de que tela, botão ou ferramenta se trata, com o caminho de clique (ex.: "Na janela Montar para imprimir, que abre em Arquivo > Montar para imprimir, há um quadro chamado..."), e para que ela serve. Só depois vem o problema.
     - Origem: "Que grade?" · "Que Obra?" · "Não sei de que arranjos está falando" · "Essa ferramenta é uma mão?" · "Como assim, o que vai sair? Quero um exemplo disso." · "e porque tem esse aviso [...] para que serve, e em que situação é disparado?" · "eu nem entendi para que serve esse botão" · "Você ainda não explicou o que está acontecendo".
@@ -768,8 +768,9 @@ Valem para a gerente, para todos os agentes (`.claude/agents/`) e para qualquer 
     **4. O exemplo é o caso que o Kaique encontra, e o print é conferido antes de mandar.**
     - Use o livro e a página onde o problema acontece de verdade, no estado em que o Kaique os teria (dividido, se o caso pede dividido).
     - Nunca use uma página que nem vai ser impressa, nem um print com coisa cortada ou fora do lugar que distraia.
+    - Rode o caminho inteiro, na ordem em que o Kaique faria, porque uma ferramenta depende da outra (ex.: endireitar antes de cortar a faixa preta).
     - Abra o print e confira se ele mostra o que a frase diz.
-    - Origem: "está fazendo teste com pagina de lombada que nem iria ser impressa" · "Porque usou uma folha sem estar divida?" · "Só não entendi porque cortou parte do livro ali no canto superior direito" · "Tem uma pagina maior que outra ali".
+    - Origem: "está fazendo teste com pagina de lombada que nem iria ser impressa" · "Porque usou uma folha sem estar divida?" · "Só não entendi porque cortou parte do livro ali no canto superior direito" · "Tem uma pagina maior que outra ali" · "o resultado de uma funcionalidade depende de ter passado por outra [...] e você faz os testes sem pensar nisso" · "não faça mais testes com lombadas de livros".
 
     **5. Diga o caminho e se é defeito ou escolha.**
     - Escreva o caminho que a página fez: livro, página, o que foi ligado, o filtro e as caixinhas, à mão ou pelo Automático.
@@ -782,8 +783,10 @@ Valem para a gerente, para todos os agentes (`.claude/agents/`) e para qualquer 
     - Diga se a coisa é nova ou se já existe hoje, se muda muito o programa e se dá para ligar e desligar.
     - Se é um erro, diga que é erro e o que vai acontecer com ele (entra na fila? quando?).
     - Uma pergunta é uma decisão. Lista de vários erros não é pergunta: cada erro vem com o seu print e com a explicação simples de como acontece.
+    - Diga o que muda no que já funciona (D-605). Se nada muda, diga "nada do que já funciona muda".
+    - Quando a pergunta é de nome ou de texto de tela, traga duas ou três opções de nome. O agente sugere, quem escolhe é ele.
     - Toda pergunta tem a opção "Só comentário" e a sugestão da gerente.
-    - Origem: "não entendi o que tem que ser escolhido" · "então isso entra na lista de coisas para fazer?" · "No caso, isso é uma opção a mais do que a que temos hoje?" · "Isso que eu escolhi vai alterar muito o programa?" · "vai ser uma opção que eu posso desligar e ligar né?" · "isso é um erro? vai ser resolvido?" · "eu quero ver esses erros, as provas dele e uma explicação de como acontece".
+    - Origem: "não entendi o que tem que ser escolhido" · "então isso entra na lista de coisas para fazer?" · "No caso, isso é uma opção a mais do que a que temos hoje?" · "Isso que eu escolhi vai alterar muito o programa?" · "vai ser uma opção que eu posso desligar e ligar né?" · "isso é um erro? vai ser resolvido?" · "eu quero ver esses erros, as provas dele e uma explicação de como acontece" · "Isso vai alterar alguma coisa, tirar essa linha preta?" · "não pode afetar o programa e suas funcionalidades ou dar erros" · "não tem outro nome para recomendar?" · "o agente não vai escolher os nomes ele pode sugerir opções".
 
     **7. Curto, sem ficha técnica, e respondendo o que ele perguntou.**
     - Poucas frases, uma ideia por frase, primeiro a frase que se entende, o número depois.
@@ -791,6 +794,23 @@ Valem para a gerente, para todos os agentes (`.claude/agents/`) e para qualquer 
     - Se o comentário dele tem perguntas, responda cada uma, na ordem, repetindo a pergunta antes da resposta.
     - Toda resposta se explica sozinha, porque no "para responder" ele só vê a última fala dele e a da gerente. Formato: **Do que se trata · O que acontece hoje · Sua dúvida: "..." → resposta · O que você escolhe**.
     - Origem: "Um monte de texto e não consigo saber o que era para saber realmente" · "os relatorios continuam muito ruins e dificeis de entender" · "esse teste é totalmente inconslusivo para mim, não consigo ter visão clara do que o programa tentou fazer, ou de qual problema ele tentou reslver" · "nos para responder, não tem explicações sobre o que precisa ser respondido".
+
+    **8. Diga se ele continua no controle, e onde e quando a coisa aparece.**
+    - Diga se é uma opção que dá para ligar e desligar, se dá para ajustar (escala, tamanho, força) e se o jeito à mão continua existindo.
+    - Diga em todos os lugares onde ela aparece: Automático, painel, menu, só nesta página ou no livro todo, dentro ou fora do Dividir.
+    - Diga quando ela age: sozinha, ou só quando ele clica, e com qual clique.
+    - Origem: "mas vai ser uma opção que eu posso desligar e ligar né?" · "mas eu vou poder escolher a escala né?" · "Mas se eu quiser redimensionar isso dentro do programa eu vou conseguir né?" · "a opção não vai sumir?" · "eu posso ter as duas opções?" · "segundo esse painel embaixo abre quando?" · "o aviso vai ficar em todo livro, vai ficar quando entrar na pagina de dividir?" · "Essa opção vai estar no automático também? Vai estar nas opções dos filtros para rodar no livro todo e também em uma só página?" · "eu escolho essa opção no automatico ou ele faz sem eu precisar clicar em nada".
+
+    **9. Diga de onde veio, e como outros programas fazem.**
+    - Diga a origem: um pedido dele (com a data e as palavras), o ScanTailor (código original ou recriado por nós) ou uma escolha de agente sem pedido dele (aí é preciso dizer isso com todas as letras).
+    - Quando ajuda a decidir, diga como fazem o ScanTailor, o Acrobat, o uPDF, o Photoshop e o Internet Archive.
+    - Origem: "quando foi que eu pedi para fazer isso? isso é do scantailor?" · "essa funcionalidade você trouxe do scantailor exactamente como é lá? ou tu recriou em outra linguagem?" · "como é feito no scantailor e que dá certo?" · "como outros programas fazem isso? adobe acrobat, updf" · "como o photoshop faz" · "Isso é uma alucinação [...] criar funcionalidades e elas fazem coisas que não deveriam".
+
+    **10. Diga a situação de agora, e não pergunte de novo o que ele já respondeu.**
+    - Toda pergunta e toda resposta dizem em que pé está: só ideia, na fila, sendo feito, na versão de teste esperando o teste dele, ou já testado por ele.
+    - Antes de perguntar, procure no Livro e na Central se ele já respondeu. Se já respondeu, cite a data e as palavras dele, e não pergunte de novo.
+    - O que já está resolvido sai da lista "para decidir".
+    - Origem: "Já foi resolvido?" · "Isso já está no programa?" · "Foi resolvido? o programa parou de confundir?" · "eu já respondi, não deveria estar aqui como não respondido" · "Se é erro, tire daqui" · "Nós acabamos de fazer escolhas sobre isso agora a pouco no chat".
 
     **Depois de um "Ainda não entendi": mude o jeito, não só as palavras.**
     - Responda primeiro o que ele perguntou.
@@ -806,7 +826,7 @@ Valem para a gerente, para todos os agentes (`.claude/agents/`) e para qualquer 
     - (4) o exemplo é o caso real e o print foi aberto e conferido;
     - (5) há o caminho e se é defeito ou escolha;
     - (6) há "O que você escolhe" e o que muda em cada opção;
-    - (7) está curto, responde o comentário dele e se explica sozinho.
+    - (7) está curto, responde o comentário dele e se explica sozinho; (8) diz se ele continua no controle e onde e quando aparece; (9) diz de onde veio; (10) diz a situação de agora e não repete pergunta já respondida.
 
     Pergunta de agente que não passa nessa lista volta para o agente antes de ir à Central.
 
