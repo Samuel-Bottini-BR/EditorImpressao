@@ -58,8 +58,9 @@ from core import etapas                # obra 26/10 etapa 1: "esta etapa vale ne
 from core import dividir_a_mao         # obra 26/10 etapa 4: a tampa do scanner (D-495)
 from core.girar import giro_da_pagina  # D-618: o giro so da pagina, depois de dividir
 from core.ordem_do_preparo import endireita_antes, ordem_do_livro
-from core.filtros import (MAGICO_PRO, MELHORAR, ORIGINAL, PRETO_E_BRANCO, TIRAR_FUNDO, aplicar_filtro,
-                          aplicar_filtro_com_selecao, aplicar_so_os_pedacos)
+from core.filtros import (FILTROS_QUE_RESPEITAM_AS_GRAVURAS, MAGICO_PRO, MELHORAR, ORIGINAL,
+                          PRETO_E_BRANCO, TIRAR_FUNDO, aplicar_filtro, aplicar_filtro_com_selecao,
+                          aplicar_so_os_pedacos)
 from core.folha import compor_na_folha, impresso_fica_de_fora, parte_impressa_de_fora
 from core import editar_zonas, luz_scantailor, margens_scantailor, nucleos
 from core.pdf_io import (
@@ -2540,9 +2541,11 @@ def garantir_selecao(projeto: Projeto, pagina: ConfigPagina, img: np.ndarray,
     pagina.gravura_feita_com = _assinatura_da_gravura_da_pagina(projeto, pagina)   # item 2.9
     if not etapas.limpa_sozinho(projeto, pagina) and etapas.filtro_a_mao(projeto, pagina):
         # D-661 (Samuel, 09/11/2026: "1- pode"): a gravura desta pagina foi
-        # achada no Preto e branco escolhido a mao, sem o Automatico (a procura
-        # da D-659). Se depois o Automatico rodar e a pessoa PULAR esta pagina,
-        # ela continua usando esta gravura (core/etapas.respeitar_procura).
+        # achada no filtro escolhido a mao, sem o Automatico (a procura da
+        # D-659; desde a D-668, 10/11/2026, no Preto e branco, no Melhorar e
+        # no Magico pro, pela mesma regra: core/etapas.respeitar_procura). Se
+        # depois o Automatico rodar e a pessoa PULAR esta pagina, ela continua
+        # usando esta gravura (core/etapas.respeitar_procura).
         # So liga aqui; quem desliga e o "Rodar nelas também". Arriscado: ligar
         # na procura do Automatico (com "Limpar a folha"): a D-589 mudaria.
         pagina.gravura_achada_a_mao = True
@@ -3674,7 +3677,7 @@ def marcacao_que_o_filtro_usa(projeto: Projeto, pagina: ConfigPagina, selecao):
     `selecao` None (nenhuma marcacao) passa como veio."""
     if selecao is None or respeita_as_gravuras_achadas(pagina):
         return selecao
-    if pagina.filtro not in (PRETO_E_BRANCO, MELHORAR, MAGICO_PRO):
+    if pagina.filtro not in FILTROS_QUE_RESPEITAM_AS_GRAVURAS:
         return selecao
     if pagina.filtro == PRETO_E_BRANCO and misto.opcoes_da_pagina(projeto, pagina) is not None:
         return selecao                       # "So as letras" manda (D-587)

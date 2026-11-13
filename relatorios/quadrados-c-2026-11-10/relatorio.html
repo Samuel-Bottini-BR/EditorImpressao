@@ -1,0 +1,230 @@
+<!doctype html>
+<html lang="pt-BR">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Quadrados brancos: o conserto C (D-668)</title>
+<style>
+:root { color-scheme: light dark; }
+* { box-sizing: border-box; }
+body {
+  font: 17px/1.65 "Segoe UI", system-ui, sans-serif;
+  max-width: 46rem; margin: 0 auto; padding: 2.5rem 1.5rem 6rem;
+  color: #1c1c1e; background: #fdfdfc;
+}
+h1 { font-size: 2rem; line-height: 1.2; margin: 0 0 .3em; letter-spacing: -.02em; }
+h2 { font-size: 1.35rem; margin: 2.4em 0 .6em; padding-top: .8em;
+     border-top: 1px solid #e6e4e0; letter-spacing: -.01em; }
+h3 { font-size: 1.1rem; margin: 1.8em 0 .4em; }
+h1 + p, h2 + p { margin-top: .4em; }
+p, li { margin: 0 0 .9em; }
+ul, ol { padding-left: 1.3em; }
+strong { font-weight: 640; }
+code {
+  font: .88em ui-monospace, "Cascadia Code", Consolas, monospace;
+  background: #f1efec; padding: .12em .35em; border-radius: 4px;
+}
+pre {
+  background: #f1efec; padding: 1em 1.1em; border-radius: 8px;
+  overflow-x: auto; line-height: 1.5;
+}
+pre code { background: none; padding: 0; }
+blockquote {
+  margin: 1.2em 0; padding: .1em 0 .1em 1.1em;
+  border-left: 3px solid #c9c5be; color: #55524d;
+}
+table {
+  border-collapse: collapse; width: 100%; margin: 1.2em 0;
+  font-size: .95rem; display: block; overflow-x: auto;
+}
+th, td { padding: .5em .8em; text-align: left; border-bottom: 1px solid #e6e4e0; }
+th { font-weight: 620; background: #f7f5f2; white-space: nowrap; }
+tr:last-child td { border-bottom: none; }
+img { max-width: 100%; height: auto; border-radius: 6px; margin: 1em 0;
+      border: 1px solid #e6e4e0; }
+hr { border: none; border-top: 1px solid #e6e4e0; margin: 2.5em 0; }
+.rodape { margin-top: 4em; padding-top: 1.2em; border-top: 1px solid #e6e4e0;
+          font-size: .85rem; color: #86827c; }
+@media (prefers-color-scheme: dark) {
+  body { color: #e8e6e3; background: #1a1917; }
+  h2 { border-top-color: #35332f; }
+  code, pre, th { background: #262421; }
+  th, td { border-bottom-color: #35332f; }
+  blockquote { border-left-color: #4a4741; color: #b0aca6; }
+  img { border-color: #35332f; }
+  .rodape { border-top-color: #35332f; color: #7d7973; }
+}
+@media print {
+  body { max-width: none; padding: 0; color: #000; background: #fff; }
+  h2 { page-break-after: avoid; }
+  table, img { page-break-inside: avoid; }
+}
+</style>
+</head>
+<body>
+<h1>Quadrados brancos: o conserto C (D-668) no programa</h1>
+<p><strong>Agente de conserto, 10/11/2026.</strong> Ramo <code>quadrados-c-2026-11-10</code>, a partir do <code>obra-2026-10-26</code> (<code>58806f81</code>).
+Tudo sem janela, em cópia, com dados à parte; o acervo só foi lido. Teste de <strong>máquina</strong> (medidas e provas em
+<code>tests/</code>); as imagens são para o <strong>olho</strong> do Samuel. PRONTO PARA CONFERIR (só ele aprova).</p>
+<h2>Em uma frase</h2>
+<p><strong>O Melhorar e o Mágico pro não fazem mais buracos brancos nas pinturas, e o "i" e o "t" finos voltam inteiros.</strong>
+O programa consertado saiu igual, ponto por ponto, à simulação C que o Samuel escolheu: na página 13 (tela e PDF)
+e no livro inteiro, com os mesmos números.</p>
+<p>Decisão: D-668 (Central <code>quadrados-qual</code>: "Roxo: o conserto C (recomendo)"; no chat: "c").</p>
+<h2>O que mudou no programa</h2>
+<ol>
+<li><strong>Uma regra só para os três filtros</strong> (D-667: "se mudou a ferramenta, muda em todos os lugares"). Com
+   "Respeitar as gravuras achadas" marcada, num filtro escolhido à mão, a página procura a gravura no Preto e
+   branco, no Melhorar e no Mágico pro (antes, só no Preto e branco, D-659). Só a página onde a opção vale é
+   procurada (a da tela, ou as que o "Aplicar em" alcançou), como a D-659 manda. A lista dos três filtros mora num
+   lugar só (<code>core/filtros.py</code>, <code>FILTROS_QUE_RESPEITAM_AS_GRAVURAS</code>) e responde às duas perguntas da caixinha:
+   "marcada, procura?" (<code>core/etapas.respeitar_procura</code>) e "desmarcada, o que a máquina achou sai do filtro?"
+   (<code>core/pipeline.marcacao_que_o_filtro_usa</code>). Não há desvio "se for Melhorar". No Preto e branco nada muda.</li>
+<li><strong>A limpeza do papel do Melhorar e do Mágico pro ganhou uma quarta pergunta: "em volta também é papel?"</strong>
+   (<code>core/filtros.py</code>, <code>_em_volta_e_papel</code>, no fim de <code>_limpar_o_papel_de_verdade</code>, fora da gravura). Vale com a
+   caixinha marcada ou desmarcada (o print 10).</li>
+<li>Não mudou: a tela (<code>ui/</code>), o Original, as páginas com gravura marcada à mão (conferido: iguais ponto por ponto),
+   a correção do "magic color" (CLAUDE.md §9) e o papel de dentro da gravura (bug 202).</li>
+</ol>
+<h2>As medidas, antes e depois</h2>
+<p>"Antes" = o programa do <code>obra-2026-10-26</code> (<code>58806f81</code>). "Depois" = este ramo. Livro novo, sem o Automático, filtro
+escolhido à mão (Melhorar "bem forte" e Mágico pro "bem fraco", os ajustes dos prints 09 e 10), página dividida,
+endireitada e cortada como o programa faz, como sai no PDF (300 DPI). "Respeitar" marcada, menos onde está escrito.</p>
+<h3>Página 13 do <em>Na escola de Jesus</em> (Jonas e a baleia)</h3>
+<ul>
+<li><strong>A água da baleia não tem mais buracos.</strong> Pintura de tom médio que virou branco puro, na água: antes 63,9%,
+  depois 0,2% (Melhorar e Mágico pro).</li>
+<li><strong>O "i" de "Vivia" e de "dia" voltou inteiro.</strong> Tinta dessas letras que virou branco: antes 3,3%, depois 0,0%.</li>
+<li><strong>Pela medida da investigação da origem</strong> (a pintura inteira, sem dividir nem cortar): Melhorar 23,5% → 1,4%;
+  Mágico pro 27,4% → 1,4% (a simulação dava 1,4%; antes da obra, 1,4%).</li>
+<li><strong>Print 10</strong> (Mágico pro, "Respeitar" desmarcada: nada é procurado, D-586): <strong>27,4% → 5,8%</strong>, como a simulação. Na
+  água ampliada, 63,9% → 0,0%; os 5,8% que sobram ficam perto da beirada da pintura. <strong>As letras, nesse caso, ficam
+  como hoje</strong> (o "i" continua quebrado: 3,3%), porque sem a gravura achada a letra não recebe o tratamento de
+  letra. Era o que a simulação já mostrava (imagem 4).</li>
+<li><strong>Igual à simulação C, ponto por ponto</strong>, na tela (prévia) e no PDF, com "Respeitar" marcada (Melhorar) e
+  desmarcada (Mágico pro).</li>
+</ul>
+<h3>O livro inteiro (<em>Na escola de Jesus</em>, 199 páginas)</h3>
+<table>
+<thead>
+<tr>
+<th></th>
+<th>Melhorar</th>
+<th>Mágico pro</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>páginas com quadrados, antes (investigação)</td>
+<td>110 (32 muito, 47 visível, 31 poucos pontos)</td>
+<td>112 (34, 50, 28)</td>
+</tr>
+<tr>
+<td>simulação C</td>
+<td>2 (119 visível, 68 poucos pontos)</td>
+<td>2 (as mesmas)</td>
+</tr>
+<tr>
+<td><strong>depois (o programa)</strong></td>
+<td><strong>2 (119 visível, 68 poucos pontos)</strong></td>
+<td><strong>2 (as mesmas)</strong></td>
+</tr>
+<tr>
+<td>furo de 2% ou mais na pintura, com o céu claro (medida 2): antes / C / <strong>depois</strong></td>
+<td>113 / 16 / <strong>16</strong></td>
+<td>136 / 16 / <strong>16</strong></td>
+</tr>
+<tr>
+<td>furo de 0,5% ou mais: antes / C / <strong>depois</strong></td>
+<td>154 / 68 / <strong>68</strong></td>
+<td>169 / 67 / <strong>67</strong></td>
+</tr>
+</tbody>
+</table>
+<p>As 16 que sobram são as mesmas da simulação: quase todas brilhos que já são brancos no original e o papel de dentro
+de desenho de traço (a basílica da página 43). A pior de verdade é a 173 (o céu em volta dos anjos).</p>
+<p>As oito pinturas da investigação da origem (páginas 13, 18, 29, 36, 51, 66, 97 e 119): depois, de 0,4% a 3,9% —
+a faixa de antes da obra ("de 0,5% a 3,9%").</p>
+<h3>Livro de Horas 47 e as páginas do gabarito do assunto</h3>
+<ul>
+<li><strong>Livro de Horas 47: a pintura sai inteira, com o prédio e o céu de trás.</strong> Medida da origem: 2,6% → 0,07%
+  (Melhorar) e 0,08% (Mágico pro). Medida 1: 1,10% → 0,04%.</li>
+<li><strong>Gabarito da Fase 1 e da Fase 3 (Boécio)</strong>, mais Escola 13, 97, 119 e Boécio 33 (24 páginas, <code>medidas/paginas_*.json</code>).
+  Pintura que virou branco caiu em quase todas (Escola 7: 1,37% → 0,01%; Escola 35: 1,25% → 0,02%; Escola 97:
+  3,2% → 0,03%; Escola 119: 4,8% → 0,06%). A tinta das letras que virou branco caiu em todas (Palatino 7: 2,4% →
+  0,2%; Opus Majus 256: 5,4% → 0,2%; Escola 13: 3,3% → 0,01%).</li>
+</ul>
+<h3>Tempo (a ressalva já dita ao Samuel)</h3>
+<p>A primeira vez que cada página é desenhada com Melhorar ou Mágico pro e "Respeitar" marcada, o programa procura a
+gravura. <strong>Nas páginas do <em>Na escola de Jesus</em>, uns 5 segundos a mais</strong> (ex.: página 13, 2,6 s → 7,4 s). Nas 24
+páginas do gabarito, 3,5 s a mais em média; <strong>nas grandes do Livro de Horas, até 10 a 11 s a mais</strong> (Horas 47:
+6,5 s → 16,6 s). Livro inteiro, depois: 8,6 s (Melhorar) e 9,1 s (Mágico pro) por página na primeira vez, como na
+simulação (9,0 s e 9,3 s). Da segunda vez em diante a gravura fica guardada na página. Medido no PC do Samuel, com
+prioridade baixa; a medida que vale é o filtro de velocidade do GitHub (abaixo).</p>
+<h2>Números que pioraram (CLAUDE.md §5: os dois resultados, sem decidir sozinho)</h2>
+<p>Todos vêm da mesma coisa que o Samuel já aceitou na D-668: com "Respeitar" marcada, a página sai <strong>como sai hoje
+depois do Automático</strong> (gravura com o tratamento de gravura, letra no tom do original).</p>
+<ol>
+<li><strong>"Papel branco" mais baixo em algumas páginas com pintura</strong> (Escola 7: 88% → 86%; Escola 97: 90% → 80%; Horas
+   47: 82% → 78%). Olhado: não é papel amarelado; é a parte clara da pintura (céu, nuvens) que a medida conta como
+   "papel" e que agora fica com o tom dela em vez de virar branco. É o conserto.</li>
+<li><strong>"Pintura que virou branco" sobe no Palatino 5 (1,3% → 5,2%) e no Boécio (página 7: 3,6% → 4,2%; página 33: 4,5% → 5,3%).</strong>
+   Olhado: no Palatino 5, é o papel entre os traços do retrato que vai a branco (a regra da Fase 1: "todo o papel
+   totalmente branco, inclusive o papel dentro da gravura"); no Boécio, é <strong>mais</strong> mancha do verso indo a branco (a
+   faixa cinza entre as linhas some; imagem 5). As duas mudanças são para melhor.</li>
+<li><strong>A cor do papel sobe um pouco em páginas de texto com letra achada</strong> (saturação média do papel: Opus Majus 11 e
+   165: 0,0 → 0,8 e 0,5). Olhado: as letras ficam no tom do original, um pouco menos escuras, e a orla delas tem um
+   pouco do tom do papel. É a ressalva da investigação (Rhetorica 73: "papel branco, mas com contorno bege em volta
+   das letras"). Pequena, mas existe.</li>
+<li><strong>Tempo</strong>: ver acima.</li>
+</ol>
+<h2>Imagens (no modelo do girar: azul = antes, verde = depois, o que olhar circulado em vermelho)</h2>
+<ul>
+<li><code>imagens/1-resumo-pagina-13.png</code> — resumo: página 13, Melhorar, página inteira, a água e "Vivia".</li>
+<li><code>imagens/2-melhorar.png</code> e <code>imagens/3-magico-pro.png</code> — água (Escola 13), céu (Escola 97), "Vivia" (Escola 13) e
+  o prédio (Horas 47), com a faixa do original para comparar.</li>
+<li><code>imagens/4-print-10-respeitar-desmarcada.png</code> — o print 10.</li>
+<li><code>imagens/5-o-que-ja-estava-bom.png</code> — mancha do verso (Boécio 33), xilogravura (Boécio 3), retrato (Palatino 5)
+  e o anjo (Escola 35).</li>
+</ul>
+<h2>Provas e testes</h2>
+<ul>
+<li><strong>Prova nova</strong> <code>tests/test_decisoes_quadrados_brancos.py</code> (17 provas: a conta, a página sintética, a tela no livro
+  novo com clique de verdade, a página 13 do livro dele). <strong>Reversão</strong> (CLAUDE.md §4.7): no código de antes
+  (<code>58806f81</code>) 12 falham e 5 passam (as 5 guardam o que não pode mudar: página de texto igual, nada procurado com a
+  caixinha desmarcada, Preto e branco igual ponto por ponto); no ramo, 17 passam. As medidas que falham no código de
+  antes: água sintética 48,4% em branco; água da página 13 64,0%; a gravura nunca procurada no Melhorar e no Mágico
+  pro (<code>reversao-no-58806f81.txt</code>).</li>
+<li><strong>No PC, um arquivo por vez</strong> (prioridade baixa, sem janela): os 56 <code>tests/test_decisoes*.py</code> e mais 22 dos arquivos
+  tocados (<code>test_papel_dentro_da_gravura</code>, <code>test_core</code>, <code>test_limpar_papel</code>, <code>test_melhorar_em_volta_da_gravura</code>,
+  <code>test_filtro_com_selecao</code>, <code>test_etapa10b_imagem</code>, <code>test_misto*</code>, <code>test_conferencia*</code>, <code>test_promessas</code> e outros):
+  <strong>1419 passaram, 2 pularam, 3 falharam</strong> — só as 3 provas antigas da D-659 da ressalva 1 (<code>medidas/testes_no_pc.txt</code>).</li>
+<li><strong>GitHub, todos os testes</strong> (rodada 42932052865): as partes 1, 2, 3 e 5 e os botões e prints da janela real
+  passaram; na parte 4, só as mesmas 3 provas da D-659. A prova nova: 13 passaram, 4 pularam (o livro dele não está
+  no GitHub).</li>
+<li><strong>GitHub, filtro de velocidade</strong> (rodada 42932057632, <code>obra-2026-10-26</code> × este ramo, mesma máquina, alternado):
+  <strong>"igual (dentro do vai-e-vem)"</strong>. Abrir o livro +0,1%; trocar de página +0,7%; Mágico pro 10 páginas +3,5%
+  (vai-e-vem 4,1%); Preto e branco 10 páginas +1,1%. Ele mede o livro com "Limpar a folha" ligado, que já procurava a
+  gravura; a primeira vez do filtro escolhido à mão está na seção "Tempo".</li>
+</ul>
+<h2>Ressalvas</h2>
+<ol>
+<li><strong>Três provas antigas da D-659 falham, e não foram mudadas</strong> (CLAUDE.md §11.8). Elas guardam justamente o que a
+   D-668 manda mudar: "Melhorar e Mágico pro escolhidos à mão não procuram" (<code>tests/test_decisoes_gravura_a_mao.py</code>:
+   <code>test_d659_a_conta_quem_procura_com_limpar_desligado</code>, linha 242-243, e
+   <code>test_d659_g_outros_filtros_a_mao_nada_e_procurado_e_sai_igual_ao_de_antes[melhorar]</code> e <code>[magico_pro]</code>). A do
+   Original (<code>[original]</code>) continua passando. Ver "Perguntas para o Samuel" no ONDE-PAREI.</li>
+<li><strong>Com "Respeitar" desmarcada, o "i" e o "t" continuam quebrados</strong> (print 10): a quarta pergunta tira os buracos
+   da pintura, mas a letra só volta inteira quando a gravura é achada. É o que a simulação mostrava; não acrescentei
+   nada além do C.</li>
+<li><strong>Página com gravura marcada à mão DEPOIS de escolher o Melhorar</strong> (a gravura da máquina já foi achada): a
+   marcação à mão vai por cima da achada, como no Preto e branco (D-659). Marcada ANTES de escolher o filtro, a
+   página sai igual, ponto por ponto, à de hoje (medido na página 13, Melhorar e Mágico pro).</li>
+<li>Os números 80% e "uns 2% da página" da quarta pergunta são os da simulação (o Samuel escolheu o C com eles);
+   ficaram em constantes com o porquê escrito (<code>VIZINHANCA_DE_PAPEL</code>, <code>VIZINHANCA_JANELA</code>).</li>
+<li>Não pilotei a janela. A tela desenha pela mesma conta (<code>renderizar_pagina</code>), e as provas de tela rodaram sem
+   janela (offscreen), com clique de verdade nos botões do painel.</li>
+</ol>
+<p class="rodape">Editor de Impressão &middot; gerado em 10/11/2026 às 22:40</p>
+</body>
+</html>

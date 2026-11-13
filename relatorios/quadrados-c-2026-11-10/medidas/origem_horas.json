@@ -1,0 +1,20 @@
+{
+ "horas/depois:melhorar": {
+  "47": {
+   "tem_pintura": true,
+   "buraco_pintura_pct": 0.07,
+   "blocos": 0,
+   "tinta_sumida_pct": 0.0,
+   "papel_sujo_pct": 0.73
+  }
+ },
+ "horas/depois:magico_pro": {
+  "47": {
+   "tem_pintura": true,
+   "buraco_pintura_pct": 0.08,
+   "blocos": 0,
+   "tinta_sumida_pct": 0.0,
+   "papel_sujo_pct": 0.66
+  }
+ }
+}

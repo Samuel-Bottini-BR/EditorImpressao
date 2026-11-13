@@ -3310,3 +3310,29 @@ medidas) dão 0% a 5% e saem em cinza.
 
 Medidas: `_tmp` (não vai ao git) e `relatorios/automatico-pintura/medida-pintura-x-enfeite.txt`; imagens
 `relatorios/automatico-pintura/d585-*.jpg`.
+
+---
+
+## 10/11/2026 - D-668, o conserto C dos quadrados brancos (ramo `quadrados-c-2026-11-10`)
+
+**Situação:** no ramo, PRONTO PARA CONFERIR (o Samuel escolheu o C na Central em 10/11: "Roxo: o conserto C (recomendo)").
+**Número atacado:** buracos brancos nas pinturas no Melhorar e no Mágico pro escolhidos à mão (*Na escola de Jesus*: 110 e
+112 de 199 páginas) e o "i" e o "t" finos quebrados.
+
+**O que entrou:** (1) a "Respeitar as gravuras achadas" faz o Melhorar e o Mágico pro escolhidos à mão procurarem a gravura,
+pela mesma regra do Preto e branco (D-659, D-667; `core.filtros.FILTROS_QUE_RESPEITAM_AS_GRAVURAS`); (2) a limpeza do papel
+(`_limpar_o_papel_de_verdade`) só pinta de branco onde em volta também é papel (`_em_volta_e_papel`: mediana da luz numa
+vizinhança de 1/45 da cópia reduzida a 400 pontos, acima de 80% do nível do papel, ou área de traço sobre papel).
+
+**Resultado (o programa, igual ponto por ponto à simulação C):** livro inteiro 110 → 2 páginas com quadrados (Melhorar), 112 →
+2 (Mágico pro); página 13: 23,5% → 1,4% (Melhorar), 27,4% → 1,4% (Mágico pro); print 10 ("Respeitar" desmarcada): 27,4% →
+5,8%; Horas 47: 2,6% → 0,07%; letras: tinta que virava branco cai em todas as páginas do gabarito.
+
+**O que piorou (apresentado ao Samuel, sem decidir sozinho):** a primeira vez de cada página fica uns 5 s mais lenta no
+*Na escola* (até 10 a 11 s nas páginas grandes do Livro de Horas): é a procura da gravura; letras de páginas de texto com a
+letra achada ficam no tom do original, com uma orla levemente do tom do papel (saturação média do papel 0,0 → 0,5 a 0,8 no
+Opus Majus 11 e 165). Com "Respeitar" desmarcada o "i" continua quebrado (só a quarta pergunta age).
+
+**Tentado e descartado antes (investigação, `relatorios/quadrados-brancos-2026-11-10/`):** só a regra "em volta é papel"
+(A): deixa furos no céu claro perto da margem (48 e 92 páginas) e não conserta as letras; só a procura (B): não conserta o
+print 10. Relatório: `relatorios/quadrados-c-2026-11-10/relatorio.html`.

@@ -51,6 +51,19 @@ TIRAR_FUNDO = "tirar_fundo"
 # Os quatro filtros de sempre, que valem em qualquer livro.
 FILTROS_COMUNS = (ORIGINAL, PRETO_E_BRANCO, MELHORAR, MAGICO_PRO)
 
+# Os filtros que usam a gravura achada pela maquina (gravura com o tratamento
+# de gravura, letra com o de letra, papel em branco) e por isso obedecem a
+# caixinha "Respeitar as gravuras achadas" (D-583/D-586). E UMA lista so para
+# as duas perguntas sobre essa caixinha: "desmarcada, o que a maquina achou sai
+# do filtro?" (core.pipeline.marcacao_que_o_filtro_usa) e "marcada, num filtro
+# escolhido a mao, a pagina procura a gravura?" (core.etapas.respeitar_procura,
+# D-659; desde a D-668, 10/11/2026, nos tres, pela D-667: "se mudou a
+# ferramenta, muda em todos os lugares"). O Original e o "Tirar o fundo" nao
+# usam a marcacao da maquina. Arriscado: tirar um filtro daqui (ele deixaria
+# de procurar a gravura e as pinturas voltariam a ganhar buracos brancos, o
+# defeito da D-668) ou por o Original (passaria a procurar sem usar).
+FILTROS_QUE_RESPEITAM_AS_GRAVURAS = (PRETO_E_BRANCO, MELHORAR, MAGICO_PRO)
+
 # Todos os nomes que ConfigPagina.filtro aceita. O "Tirar o fundo" so aparece
 # na tela em livro com camadas: ver filtros_do_livro.
 FILTROS = FILTROS_COMUNS + (TIRAR_FUNDO,)
@@ -2150,6 +2163,12 @@ def _limpar_o_papel_de_verdade(original: np.ndarray, saida: np.ndarray,
     tinta de menos ou de mais, poucas pecas de letra) e o "nao escuro" valem
     igual nos dois casos; o "longe da letra" e a trava de cor fixa, nao - la o
     papel e o ponto no nivel do fundo em volta, com a cor do papel DELA.
+
+    Fora da gravura, desde a D-668 (10/11/2026), ha uma quarta pergunta: em
+    volta do ponto tambem e papel? (_em_volta_e_papel). Sem ela a agua, o ceu
+    e a roupa clara de uma pintura que o programa nao achou iam a branco em
+    quadrados. Arriscado: tira-la (os quadrados voltam) ou faze-la sobre a cor
+    crua do JPEG.
     """
     if _e_capa_e_nao_papel(original) or _quase_sem_tinta(original):
         return saida
@@ -2207,8 +2226,8 @@ def _limpar_o_papel_de_verdade(original: np.ndarray, saida: np.ndarray,
     # perguntado a saida dele, o proprio realce promovia a mancha a "escura
     # demais para ser mancha" e a protegia. Medido nesta pagina, era a unica
     # diferenca entre o Melhorar sair limpo e o Magico pro sair com fantasma.
-    escuro = cinza < _percentil(cinza, BRANCO_PERCENTIL) \
-        * ESCURO_DEMAIS_PARA_SER_MANCHA
+    nivel_do_papel = _percentil(cinza, BRANCO_PERCENTIL)
+    escuro = cinza < nivel_do_papel * ESCURO_DEMAIS_PARA_SER_MANCHA
 
     # E so entra onde a cor e a do PAPEL. A mancha do verso e amarelo-pardo,
     # do mesmo tom do resto da folha; ceu de estampa, rubricacao vermelha,
@@ -2228,9 +2247,78 @@ def _limpar_o_papel_de_verdade(original: np.ndarray, saida: np.ndarray,
     if hsv is not None:
         papel_limpo |= _graos_do_papel(hsv, matiz, cor_de_papel, perto_da_tinta, escuro, corte)
 
+    # E so onde EM VOLTA tambem e papel (D-668, 10/11/2026; ver
+    # _em_volta_e_papel): a agua, o ceu e a roupa clara de uma pintura que o
+    # programa nao achou passavam nas tres perguntas de cima e iam a branco em
+    # quadrados (a cor crua do JPEG).
+    if papel_limpo.any():
+        papel_limpo &= _em_volta_e_papel(original, cinza, nivel_do_papel)
+
     limpa = saida.copy()
     _pintar_de_branco(limpa, papel_limpo)               # limpa[papel_limpo] = 255
     return limpa
+
+
+# --- a quarta pergunta da limpeza do papel: "em volta e papel?" (D-668) -----
+#
+# Decisao do Samuel (10/11/2026, Central "quadrados-qual": "Roxo: o conserto C
+# (recomendo)"; no chat: "c"). Defeito: no Melhorar e no Magico pro, sem a
+# gravura achada (livro novo com o filtro escolhido a mao, ou "Respeitar as
+# gravuras achadas" desmarcada), _limpar_o_papel_de_verdade pintava de branco a
+# agua, o ceu e as roupas claras das pinturas: longe de letra, nem claros nem
+# escuros e com pouca cor, passavam por papel. Em quadrados, porque a pergunta
+# da cor e feita sobre a cor crua do JPEG, guardada em blocos de 16x16 pontos
+# (24x24 a 300 DPI). Medido (relatorios/quadrados-brancos-2026-11-10, ramo
+# obra-2026-10-26): pagina 13 do *Na escola de Jesus*, 25% da pintura em branco.
+#
+# A pergunta nova olha a VIZINHANCA, que e lisa por construcao (mediana numa
+# copia reduzida, como o fundo dos filtros: nao herda a grade do JPEG). Na
+# mancha do verso, no grao e entre as letras, em volta e papel: vai a branco
+# como sempre. No meio de uma pintura, em volta e a propria pintura: fica com o
+# tom que o filtro deu. A area de TRACO sobre papel (xilogravura, tabela,
+# texto; a medida da tentativa 20, _peso_de_traco) tambem conta como papel em
+# volta: ali o papel entre os tracos continua indo a branco, como sempre.
+
+# A mediana da luz em volta tem de passar desta fracao do nivel do papel. O
+# papel de verdade medido na pagina 13 fica entre 94% e 101% do nivel; o que
+# ia a branco na pintura, entre 49% e 66%. Arriscado: subir (a mancha do verso
+# grande e escura deixaria de sair) ou baixar (as partes claras da pintura,
+# como o ceu, voltariam a furar).
+VIZINHANCA_DE_PAPEL = 0.80
+
+# O tamanho da vizinhanca, em fracao do maior lado da copia reduzida (uns 2% da
+# pagina). Arriscado: pequena demais e a vizinhanca de um ponto de ceu e o
+# proprio ceu claro (volta a furar); grande demais e a margem branca entra na
+# conta da beirada da pintura (furos de uns 2 a 3 mm na beirada que encosta na
+# margem ja acontecem com este valor: paginas 27 e 74 do *Na escola*).
+VIZINHANCA_JANELA = 1 / 45
+
+
+def _em_volta_e_papel(original: np.ndarray, cinza: np.ndarray, nivel: float) -> np.ndarray:
+    """Booleano do tamanho da pagina: em volta deste ponto e papel? (D-668)
+
+    Sim quando a mediana da luz numa vizinhanca de VIZINHANCA_JANELA passa de
+    VIZINHANCA_DE_PAPEL do `nivel` do papel (o percentil BRANCO_PERCENTIL da
+    pagina, o mesmo de _limpar_o_papel_de_verdade), OU quando o ponto esta numa
+    area de traco sobre papel (_peso_de_traco, so na imagem colorida). A
+    mediana e feita na copia reduzida a LADO_DOS_MAPAS_LISOS e esticada de
+    volta: lisa, sem a grade do JPEG, e barata (uns 0,05 s por pagina a 300 DPI,
+    medido na investigacao). Seguro mudar: nada sem medir de novo o livro
+    inteiro e o Boecio (a mancha do verso). Arriscado: ver as duas constantes;
+    tirar o "ou traco" deixa a xilogravura de pagina inteira (Boecio 3) mais
+    cinza; fazer a conta sobre a cor crua traz os quadrados de volta."""
+    altura, largura = cinza.shape[:2]
+    escala = _escala_dos_mapas(cinza.shape)
+    pequena = cv2.resize(cinza, (max(8, round(largura * escala)), max(8, round(altura * escala))),
+                         interpolation=cv2.INTER_AREA)
+    lado = max(3, int(round(max(pequena.shape) * VIZINHANCA_JANELA)) | 1)
+    mediana = cv2.resize(cv2.medianBlur(pequena, lado), (largura, altura),
+                         interpolation=cv2.INTER_LINEAR)
+    papel = mediana >= VIZINHANCA_DE_PAPEL * nivel
+    if original.ndim == 3:
+        luz, fundo, nivel_da_luz = _fundo_e_nivel(cv2.cvtColor(original, cv2.COLOR_BGR2LAB))
+        papel |= _peso_de_traco(luz, fundo, nivel_da_luz) >= 128
+    return papel
 
 
 # Etapa 10b da obra (lista unica 4.12, 23/10/2026, Antiphon 56 no Magico pro:

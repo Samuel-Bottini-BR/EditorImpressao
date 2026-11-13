@@ -1,0 +1,18 @@
+melhorar_forte_respeitar
+  hoje (investigacao)    com quadrados: 110 (muito 32, visivel 47, poucos 31) {}
+  C (simulacao)          com quadrados:   2 (muito 0, visivel 1, poucos 1) {'muito': [], 'visivel': [119], 'poucos': [68]}
+  DEPOIS (programa)      com quadrados:   2 (muito 0, visivel 1, poucos 1) {'muito': [], 'visivel': [119], 'poucos': [68]}
+  medida 2 hoje   : >=2%: 113  >=0,5%: 154  de 195
+  medida 2 C sim  : >=2%:  16  >=0,5%:  68  de 195
+  medida 2 DEPOIS : >=2%:  16  >=0,5%:  68  de 195
+  segundos por pagina (depois, primeira vez, com a procura): media 8.6, max 17.6
+  sem tempo de hoje 'segundos'
+magico_fraco_respeitar
+  hoje (investigacao)    com quadrados: 112 (muito 34, visivel 50, poucos 28) {}
+  C (simulacao)          com quadrados:   2 (muito 0, visivel 1, poucos 1) {'muito': [], 'visivel': [119], 'poucos': [68]}
+  DEPOIS (programa)      com quadrados:   2 (muito 0, visivel 1, poucos 1) {'muito': [], 'visivel': [119], 'poucos': [68]}
+  medida 2 hoje   : >=2%: 136  >=0,5%: 169  de 195
+  medida 2 C sim  : >=2%:  16  >=0,5%:  67  de 195
+  medida 2 DEPOIS : >=2%:  16  >=0,5%:  67  de 195
+  segundos por pagina (depois, primeira vez, com a procura): media 9.1, max 26.0
+  sem tempo de hoje 'segundos'
