@@ -42,7 +42,12 @@ Nada é mexido (só investigação). As provas que guardam o assunto: `tests/tes
       obra (caixa preta); o branco dentro dele é o passo acima.
 - [x] Versões: antes da obra (`ddd4d74a`) e antes da etapa 10b (`ab38208c`) sem branco; desde `c8844671`, branco.
 - [x] Conserto C (`adf35fbf`): não muda nada nos dois casos.
-- [ ] Matriz: outros filtros, caixinhas, à mão × Automático, tela/cartão/PDF, outras capas.
+- [x] Quem desmarcou a "Respeitar": o Samuel (acoes.jsonl, 16:09:49, "antes" true → "depois" false).
+- [x] Tela (prévia), cartão e PDF: o mesmo defeito nos três (imagem 4).
+- [x] Capa do *Na escola de Jesus*, Preto e branco com "Respeitar" desmarcada: os mesmos quadrados (7,4% dos
+      pontos mudam sem o passo da sombra). Matemática: nada muda.
+- [x] Cor na "sombra": fotos de celular 39-80 (média), capas 116-168: dá para separar (sugestão de conserto).
+- [ ] Matriz (rodando em segundo plano, `scripts/rodar_matriz.sh`, log em `_trabalho/matriz.log`).
 - [ ] Imagens no modelo do girar, relatório em três formatos, perguntas.
 
 ## Perguntas para o Samuel
