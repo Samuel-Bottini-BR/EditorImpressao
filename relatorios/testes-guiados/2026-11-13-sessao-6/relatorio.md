@@ -48,6 +48,10 @@ Prints e frases do Samuel, guardados na hora. Programa: o da versão de teste (r
 - "Lembre de que o agente não pode fazer gambiarras como na outra ferramenta nossa que fazia várias gambiarras e funcionava de maneira diferente em vários lugares." Repassada ao agente do "Tirar o fundo" na hora (uma regra só no código; CLAUDE.md §11.10, D-667).
 - Preto e branco: o "Ok" foi lido como sim e o agente da D-700 foi aberto; ele: "Não estou falando disso, estou falando do branco e preto" · "Não quero consertar isso agora, quero saber o que estava em execução". Agente parado, D-700 suspensa.
 
+## Teste dos três consertos juntados (chat)
+
+- Miniatura igual ao PDF, cartões da tela cheia e quadrados do Melhorar/Mágico pro: "1- funcionando 2- funcionando 3- funcionando" · "estou falando dos testes que tinha que fazer".
+
 ## Ideia nova (chat)
 
 - "deixe anotado, eu quero poder abrir varias abas no programa, deixe como ideia, de varios livros." → Lista de espera do plano (13/11).
