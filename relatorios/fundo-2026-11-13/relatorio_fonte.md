@@ -55,7 +55,7 @@ Brilho do papel (255 = branco; o papel velho fica entre 146 e 175):
 | Passo | Antes do conserto | Depois do conserto |
 |---|---|---|
 | "Sim, tirar o fundo" | 255 · 255 · 255 · 255 | 255 · 255 · 255 · 255 |
-| Automático em Original | 147 · 165 · 171 · 175 | 255 · 255 · 255 · 255 |
+| Automático em Original | 147 · 166 · 171 · 175 | 255 · 255 · 255 · 255 |
 | "Desfazer o tirar o fundo" na página 3 | (não existia) | 146 na página 3; 255 nas outras |
 
 {{TESTES}}

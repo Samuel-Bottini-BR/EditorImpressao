@@ -1,0 +1,20 @@
+Fundo tirado separado do filtro: nenhum filtro traz o fundo de volta (D-646, D-699)
+
+O defeito: no Siebmacher, depois de "Sim, tirar o fundo", rodar o Automatico
+(que abre com "Limpar a folha" em Original) trazia o papel velho de volta em
+todas as paginas, sem aviso. A causa: o fundo tirado era guardado SO no
+filtro da pagina ("tirar_fundo"); qualquer troca de filtro apagava a marca.
+
+O conserto, numa regra so (core/fundo_tirado.py, CLAUDE.md 11.12):
+- ConfigPagina.fundo_tirado (True / False = desfeito / None), separado do filtro;
+- toda troca de filtro passa pela regra: historico_acoes.montar_acao (painel,
+  figurinhas, teclas, menu, tela cheia, Aplicar em, "Sim") e o gravador do
+  Automatico; o desfazer/refazer devolve o campo junto;
+- o pipeline (previa, figurinhas, PDF) le o fundo pela mesma funcao; Preto e
+  branco, Melhorar e Magico pro passam por cima da pagina sem o fundo;
+- "Desfazer o tirar o fundo" no menu Filtro e no painel (a mesma acao);
+- projeto antigo em "Tirar o fundo" abre com o fundo tirado e o Original.
+
+Prova nova: tests/test_decisoes_fundo_tirado.py (a reversao falha no 863cdde3).
+
+Co-Authored-By: Claude Opus 5.5 <noreply@anthropic.com>

@@ -160,7 +160,7 @@ Brilho do papel (mediana do canal azul da página desenhada; papel branco = 255,
 | Passo | Antes (863cdde3) | Depois |
 |---|---|---|
 | "Sim, tirar o fundo" | 255, 255, 255, 255 | 255, 255, 255, 255 |
-| Automático em Original | **147, 165, 171, 175** (o fundo voltou) | **255, 255, 255, 255** |
+| Automático em Original | **147, 166, 171, 175** (o fundo voltou) | **255, 255, 255, 255** |
 | "Desfazer o tirar o fundo" na página 3 | (não existia) | 146 na 3; 255 nas outras |
 | Automático em Preto e branco | (não existia) | 4 a 6 sem o fundo; a 3 sobre a página como veio |
 
