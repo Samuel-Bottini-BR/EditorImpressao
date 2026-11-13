@@ -1714,6 +1714,7 @@ class PainelFiltroDaPagina(Painel):
         self._fila = self._apagar = self._aplicar = self._espaco = self._risco = None
         self._respeitar = None           # D-586: a caixinha logo abaixo da fila
         self._cinza = None               # D-588: a caixinha logo abaixo da D-586
+        self._desfazer_fundo = None      # D-699: o botão logo abaixo das figurinhas
         self.sem_filtro = frase_do_painel(
             "Este livro não passa pelos filtros: a etapa “Limpar a folha” está desligada.")
         self.dentro.addWidget(self.sem_filtro)
@@ -1744,6 +1745,15 @@ class PainelFiltroDaPagina(Painel):
             linha.addWidget(cartao, 1)
         self.dentro.addWidget(fila)
         self._fila = fila
+
+        # D-699 (13/11/2026, "Ok"): o botão "Desfazer o tirar o fundo" fica "logo
+        # abaixo do 'Tirar o fundo' [...] no painel 'Filtro da página' (embaixo
+        # das figurinhas)". O botão é da tela (a ação do desfazer, a mesma do menu
+        # Filtro: TelaConferir.desfazer_o_tirar_o_fundo); aqui só o lugar dele.
+        desfazer_fundo = pecas.get("desfazer_fundo")
+        if desfazer_fundo is not None:
+            self.dentro.addWidget(desfazer_fundo)
+            self._desfazer_fundo = desfazer_fundo
 
         # D-586 (29/10/2026): "Uma caixinha no painel "Filtro da página", logo
         # abaixo das figurinhas dos filtros: "Respeitar as gravuras achadas"".
@@ -1805,13 +1815,14 @@ class PainelFiltroDaPagina(Painel):
 
     def desmontar(self) -> None:
         """Tira as peças do livro anterior (as da tela são destruídas com ele)."""
-        for widget in (self._fila, self._respeitar, self._cinza, self._espaco, self._risco,
-                       self._apagar, self._aplicar, *self.partes.values()):
+        for widget in (self._fila, self._desfazer_fundo, self._respeitar, self._cinza,
+                       self._espaco, self._risco, self._apagar, self._aplicar,
+                       *self.partes.values()):
             if widget is not None:
                 widget.setParent(None)
                 widget.deleteLater()
         self._fila = self._apagar = self._aplicar = self._espaco = self._risco = None
-        self._respeitar = self._cinza = None
+        self._respeitar = self._cinza = self._desfazer_fundo = None
         self.cartoes.clear()
         self.partes.clear()
         self.botoes_do_pedaco.clear()

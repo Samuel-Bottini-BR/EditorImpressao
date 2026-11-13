@@ -211,6 +211,13 @@ class BarraDeMenu(QMenuBar):
         ):
             item = self._acao(menu, f"filtro_{chave}", nome, str(numero))
             item.setCheckable(True)
+        # D-699 (13/11/2026, "Ok"): "Desfazer o tirar o fundo" no menu Filtro, logo
+        # abaixo dos filtros (o menu não tem "Tirar o fundo": ver o ONDE-PAREI do
+        # ramo fundo-2026-11-13). A janela o liga à MESMA ação do botão do painel
+        # (TelaConferir.desfazer_o_tirar_o_fundo) e o mostra só no livro com o
+        # "Tirar o fundo" (janela_principal._marcar_o_filtro_no_menu).
+        self.separador_do_fundo = menu.addSeparator()
+        self._acao(menu, "desfazer_tirar_fundo", "Desfazer o tirar o fundo")
 
     def _montar_pagina(self) -> None:
         """Menu Pagina. Item 2.3 (girar, conferencia 14, G1 (c) "Os dois"): os

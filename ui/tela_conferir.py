@@ -166,6 +166,7 @@ from core import claro_no_escuro, cores_scantailor, desentortar_scantailor
 from core import luz_scantailor
 from core import etapas as etapas_core       # obra 26/10, etapa 3: a marca "mexida a mao"
 from core import dividir_a_mao              # obra 26/10, etapa 4: dividir a mao folha por folha
+from core import fundo_tirado as fundo_tirado_core   # D-646/D-699: o fundo tirado da pagina
 from core.pipeline import (FORCA_DO_REFORCO, acertar_alertas_de_cor, acertar_alertas_do_fundo,
                            acertar_faixa_do_livro, angulo_aplicado,
                            angulo_da_pagina, angulos_medidos, corte_alargado, jeito_de_dividir,
@@ -3618,13 +3619,26 @@ class TelaConferir(QWidget):
         _ligar(self.botao_apagar, self.apagar_pagina)
         par_da_pagina.addWidget(self.botao_apagar)
 
+        # --- Desfazer o tirar o fundo (D-646/D-699, 13/11/2026) ---
+        # "o botão 'Desfazer o tirar o fundo' fica logo abaixo do 'Tirar o fundo'
+        # no menu Filtro e no painel 'Filtro da página' (embaixo das figurinhas),
+        # com o 'Aplicar em' de sempre". Só no livro que tem o "Tirar o fundo"
+        # (o mesmo critério da figurinha, filtros_do_livro). A ação é a mesma do
+        # menu (desfazer_o_tirar_o_fundo); aceso só na página sem o fundo
+        # (_atualizar_paineis, core/fundo_tirado.pode_desfazer).
+        self.botao_desfazer_fundo = None
+        if TIRAR_FUNDO in filtros:
+            self.botao_desfazer_fundo = QPushButton("Desfazer o tirar o fundo")
+            _ligar(self.botao_desfazer_fundo, self.desfazer_o_tirar_o_fundo)
+
         self.paineis.filtro_da_pagina.montar(
             [(chave, nome, TECLAS_DOS_FILTROS.get(chave, ""))
              for chave, nome, _explica in CARTOES if chave in filtros],
             {"ajuste": corpo_ajuste, "letras": self.escolhas_misto, "limpar": corpo_limpar,
              "mais": corpo_mais, "aplicar": aplicar, "apagar": pagina_toda,
              "respeitar": self.caixa_respeitar_gravuras,           # D-586
-             "cinza": self.caixa_gravuras_cinza})                  # D-588
+             "cinza": self.caixa_gravuras_cinza,                   # D-588
+             "desfazer_fundo": self.botao_desfazer_fundo})         # D-699
         # a amostra de cada cartao grande vai tambem para a fila do painel
         for cartao in self.cartoes.values():
             cartao.amostra_mudou.connect(self.paineis.filtro_da_pagina.definir_amostra)
@@ -4512,6 +4526,11 @@ class TelaConferir(QWidget):
         pagina = (self.projeto.paginas[self.indice_pagina]
                   if 0 <= self.indice_pagina < len(self.projeto.paginas) else None)
         self.paineis.filtro_da_pagina.atualizar(pagina)
+        # D-699: o "Desfazer o tirar o fundo" aceso só na página sem o fundo
+        botao = getattr(self, "botao_desfazer_fundo", None)
+        if botao is not None:
+            botao.setEnabled(pagina is not None
+                             and fundo_tirado_core.pode_desfazer(self.projeto, pagina))
 
     def _atualizar_previa(self) -> None:
         assert self.previas is not None and self.projeto is not None
@@ -9091,6 +9110,56 @@ class TelaConferir(QWidget):
         self.previas.invalidar(self.indice_pagina)
         self._atualizar_previa()
 
+    @staticmethod
+    def _campos_do_aplicar_em(pagina) -> dict:
+        """O que o "Aplicar em" (todas / daqui em diante) do painel Filtro leva
+        desta página: o filtro e os ajustes dele. Era escrito igual, à mão, em
+        _filtro_em_todas e em _filtro_nas_proximas; juntado em 13/11/2026
+        (CLAUDE.md §11.12: uma lista, um lugar) ao acrescentar o fundo tirado
+        (D-699: "com o 'Aplicar em' de sempre"; core/fundo_tirado.
+        campos_do_aplicar_em). Arriscado: tirar daqui um campo do painel (ele
+        deixaria de seguir o "Aplicar em")."""
+        return {
+            "filtro": pagina.filtro, "forca_preto": pagina.forca_preto,
+            "clareza_melhorar": pagina.clareza_melhorar,
+            "intensidade_magico": pagina.intensidade_magico,
+            "algoritmo_preto_branco": pagina.algoritmo_preto_branco,
+            # "Limpar pontinhos" DESTA pagina (None = segue o livro)
+            "limpar_pontinhos": pagina.limpar_pontinhos,
+            # item 2.11: as cores desta pagina
+            "letras_com_a_cor": pagina.letras_com_a_cor,
+            "reduzir_cores": pagina.reduzir_cores,
+            # D-586: "Vale com o "Aplicar em"": a caixinha "Respeitar as
+            # gravuras achadas" desta pagina vai junto
+            "respeitar_gravuras_achadas": pagina.respeitar_gravuras_achadas,
+            # D-588: "Ela segue o "Aplicar em"": a caixinha "Gravuras em
+            # tons de cinza" desta pagina vai junto
+            "gravuras_em_tons_de_cinza": pagina.gravuras_em_tons_de_cinza,
+            # modo Misto: as escolhas DESTA pagina (None = segue o livro)
+            **{campo: getattr(pagina, campo) for campo in misto.CAMPOS_DO_MISTO},
+            # item 2.17: igualar a luz, suavizar e chuvisco DESTA pagina
+            **{campo: getattr(pagina, campo) for campo in luz_scantailor.CAMPOS},
+            # D-699: o fundo tirado (ou desfeito) desta pagina vai junto
+            **fundo_tirado_core.campos_do_aplicar_em(pagina),
+        }
+
+    @protegido
+    def desfazer_o_tirar_o_fundo(self) -> None:
+        """O "Desfazer o tirar o fundo" (D-646, Samuel 07/11/2026: "É só criar uma
+        opção para desfazer o tirar fundo, e só vai desfazer o tirar fundo quando
+        apertar ela"; D-699: logo abaixo do "Tirar o fundo", no menu Filtro e no
+        painel "Filtro da página", com o "Aplicar em" de sempre). O MESMO para o
+        menu e para o botão do painel: o fundo volta na página da vez, numa ação
+        do desfazer; depois o "Aplicar em" (todas / daqui em diante) leva às
+        outras. A conta mora em core/fundo_tirado.campos_para_desfazer."""
+        if not self._pronta() or self.projeto is None:
+            return
+        campos = fundo_tirado_core.campos_para_desfazer(self.projeto, [self.indice_pagina])
+        if not campos:
+            return
+        self._registrar("desfazer_tirar_fundo", "pagina", [self.indice_pagina], campos,
+                        f"Desfazer o tirar o fundo na página {self.indice_pagina + 1}")
+
     @protegido
     def _filtro_em_todas(self) -> None:
         """O "Aplicar em" do painel Filtro: leva o filtro desta página e os
@@ -9106,25 +9175,7 @@ class TelaConferir(QWidget):
         nome = NOMES_AMIGAVEIS.get(pagina.filtro, pagina.filtro)
         self._registrar(
             "aplicar_em_todas", "pagina", indices,
-            {"filtro": pagina.filtro, "forca_preto": pagina.forca_preto,
-             "clareza_melhorar": pagina.clareza_melhorar,
-             "intensidade_magico": pagina.intensidade_magico,
-             "algoritmo_preto_branco": pagina.algoritmo_preto_branco,
-             # "Limpar pontinhos" DESTA pagina (None = segue o livro)
-             "limpar_pontinhos": pagina.limpar_pontinhos,
-             # item 2.11: as cores desta pagina
-             "letras_com_a_cor": pagina.letras_com_a_cor,
-             "reduzir_cores": pagina.reduzir_cores,
-             # D-586: "Vale com o "Aplicar em"": a caixinha "Respeitar as
-             # gravuras achadas" desta pagina vai junto
-             "respeitar_gravuras_achadas": pagina.respeitar_gravuras_achadas,
-             # D-588: "Ela segue o "Aplicar em"": a caixinha "Gravuras em
-             # tons de cinza" desta pagina vai junto
-             "gravuras_em_tons_de_cinza": pagina.gravuras_em_tons_de_cinza,
-             # modo Misto: as escolhas DESTA pagina (None = segue o livro)
-             **{campo: getattr(pagina, campo) for campo in misto.CAMPOS_DO_MISTO},
-             # item 2.17: igualar a luz, suavizar e chuvisco DESTA pagina
-             **{campo: getattr(pagina, campo) for campo in luz_scantailor.CAMPOS}},
+            self._campos_do_aplicar_em(pagina),
             f"{nome} em todas as {len(indices)} páginas",
         )
 
@@ -9143,25 +9194,7 @@ class TelaConferir(QWidget):
         nome = NOMES_AMIGAVEIS.get(pagina.filtro, pagina.filtro)
         self._registrar(
             "aplicar_em_todas", "pagina", indices,
-            {"filtro": pagina.filtro, "forca_preto": pagina.forca_preto,
-             "clareza_melhorar": pagina.clareza_melhorar,
-             "intensidade_magico": pagina.intensidade_magico,
-             "algoritmo_preto_branco": pagina.algoritmo_preto_branco,
-             # "Limpar pontinhos" DESTA pagina (None = segue o livro)
-             "limpar_pontinhos": pagina.limpar_pontinhos,
-             # item 2.11: as cores desta pagina
-             "letras_com_a_cor": pagina.letras_com_a_cor,
-             "reduzir_cores": pagina.reduzir_cores,
-             # D-586: "Vale com o "Aplicar em"": a caixinha "Respeitar as
-             # gravuras achadas" desta pagina vai junto
-             "respeitar_gravuras_achadas": pagina.respeitar_gravuras_achadas,
-             # D-588: "Ela segue o "Aplicar em"": a caixinha "Gravuras em
-             # tons de cinza" desta pagina vai junto
-             "gravuras_em_tons_de_cinza": pagina.gravuras_em_tons_de_cinza,
-             # modo Misto: as escolhas DESTA pagina (None = segue o livro)
-             **{campo: getattr(pagina, campo) for campo in misto.CAMPOS_DO_MISTO},
-             # item 2.17: igualar a luz, suavizar e chuvisco DESTA pagina
-             **{campo: getattr(pagina, campo) for campo in luz_scantailor.CAMPOS}},
+            self._campos_do_aplicar_em(pagina),
             f"{nome} da página {self.indice_pagina + 1} em diante ({len(indices)} páginas)",
         )
 
