@@ -1,0 +1,54 @@
+{
+ "1-com-o-fundo-tirado": {
+  "3": {
+   "filtro": "tirar_fundo",
+   "fundo_tirado": "(não existe)",
+   "papel_azul": 255.0,
+   "tempo_s": 2.123
+  },
+  "4": {
+   "filtro": "tirar_fundo",
+   "fundo_tirado": "(não existe)",
+   "papel_azul": 255.0,
+   "tempo_s": 0.69
+  },
+  "5": {
+   "filtro": "tirar_fundo",
+   "fundo_tirado": "(não existe)",
+   "papel_azul": 255.0,
+   "tempo_s": 0.755
+  },
+  "6": {
+   "filtro": "tirar_fundo",
+   "fundo_tirado": "(não existe)",
+   "papel_azul": 255.0,
+   "tempo_s": 0.731
+  }
+ },
+ "2-depois-do-automatico-original": {
+  "3": {
+   "filtro": "original",
+   "fundo_tirado": "(não existe)",
+   "papel_azul": 147.0,
+   "tempo_s": 1.589
+  },
+  "4": {
+   "filtro": "original",
+   "fundo_tirado": "(não existe)",
+   "papel_azul": 165.0,
+   "tempo_s": 1.034
+  },
+  "5": {
+   "filtro": "original",
+   "fundo_tirado": "(não existe)",
+   "papel_azul": 171.0,
+   "tempo_s": 1.037
+  },
+  "6": {
+   "filtro": "original",
+   "fundo_tirado": "(não existe)",
+   "papel_azul": 175.0,
+   "tempo_s": 0.969
+  }
+ }
+}
