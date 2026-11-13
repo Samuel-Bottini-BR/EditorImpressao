@@ -848,8 +848,13 @@ def test_escolher_o_filtro_na_pagina_mostra_o_alerta(conferir):
     # aparece na página, depois do dela: a faixa diz "(aviso 1 de 2 desta página)" no fim
     assert _esperar(lambda: conferir.texto_faixa.text().startswith(mensagem))
     assert projeto.pendentes_de_revisao() >= 1
+    # D-703 (Samuel, 13/11/2026: "Sim, pode"): desde a D-646/D-699, escolher "Original" NÃO traz o fundo de
+    # volta, então o aviso do fundo tirado continua; só o botão "Desfazer o tirar o fundo" o tira. Antes esta
+    # prova cobrava que o aviso sumisse ao escolher "Original" (o jeito velho, em que o fundo voltava).
     conferir._escolher_filtro(ORIGINAL)
-    assert analise.CONFERIR_FUNDO_TIRADO not in pagina.alertas
+    assert pagina.filtro == ORIGINAL
+    conferir.desfazer_o_tirar_o_fundo()
+    assert _esperar(lambda: analise.CONFERIR_FUNDO_TIRADO not in pagina.alertas)
     assert conferir.texto_faixa.text() != mensagem
 
 
