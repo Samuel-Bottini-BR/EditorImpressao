@@ -653,6 +653,29 @@ Valem para a gerente, para todos os agentes (`.claude/agents/`) e para qualquer 
    - Antes de entregar, rode as provas das decisões (`tests/test_decisoes*.py`) e os testes dos arquivos que tocou; o GitHub roda todos. Teste antigo que quebra faz a entrega voltar: nunca mude um teste antigo para ele passar.
    - O verificador confere também o que já funcionava ao redor (clicando, nos trabalhos de tela), não só o item novo.
 
+9. **Pensar em quem usa e no livro pronto, e deixar anotado (Samuel, 05/11/2026, D-637).** "só garanta que não crie mais problemas fazendo isso, você tem que pensar na experiencia do usario e no resultado final do livro dentro do programa, quando vai mudar algo, deixe isso anotado." Vale para a gerente e para todos os agentes. Na prática:
+   - Antes de mexer, escreva no ONDE-PAREI a seção "Como fica para quem usa e no livro": o que o Kaique vê e faz, passo a passo, antes e depois da mudança, e o que muda (ou não) no PDF que sai.
+   - Na entrega, confira essa seção clicando no programa e olhando o PDF, e diga se a mudança criou algum problema novo. Sem essa seção, a entrega não se junta.
+
+10. **Mudou a ferramenta, muda em todos os lugares (Samuel, 10/11/2026, D-667).** "Você devia ter mandado ele mudar a ferramenta, se mudou a ferramenta, muda em todos os lugares." · "Isso me faz parecer que você está fazendo gambiarra no codigo". Falha de 10/11: a D-662 foi pedida e feita só no "todas as folhas" do Dividir; "daqui em diante", "só as pares" e "só as ímpares" ficaram do jeito antigo e precisaram de outra pergunta (D-666), como já tinha acontecido com a D-640/D-645. Na prática:
+   - A gerente pergunta e pede **sobre a ferramenta inteira**, nunca sobre um item da lista dela. O pedido ao agente lista todos os lugares: todas as opções (ex.: todos os itens do "aplicar em"), todas as telas e ferramentas onde ela aparece (dentro e fora do Dividir), a tela grande, a tira de páginas e o PDF.
+   - O agente muda **a regra da ferramenta num lugar só do código**, que todas as opções usam. Não acrescenta um desvio para um caso ("se for o Dividir e for 'todas as folhas', vai por aqui"): isso é remendo, e o próximo pedido vira outro remendo.
+   - Só vira pergunta o lugar onde a mudança não faz sentido ou mudaria outra decisão dele (§11.8).
+
+11. **Agente não abre agente (10/11/2026).** Falha de 10/11: o revisor de código abriu três ajudantes por conta própria e o Samuel viu cinco agentes rodando ("pera ai, tem 5 agentes trabalhando"). Todo pedido a agente diz: "não abra outros agentes". Quem decide quantos agentes rodam é a gerente, dentro do limite do Samuel (no máximo dois; em 10/11 ele deixou três, com o terceiro só lendo código: "pode deixar assim").
+
+12. **Sem gambiarra: uma ferramenta, uma regra, um lugar só no código (Samuel, 13/11/2026).** "Lembre de que o agente não pode fazer gambiarras como na outra ferramenta nossa que fazia várias gambiarras e funcionava de maneira diferente em vários lugares." · "Faça disso uma regra bem explica para os agentes". Vale para a gerente e para todos os agentes. Completa a regra 10.
+    - **O que é gambiarra aqui.** Consertar o defeito só no lugar onde ele apareceu, com um desvio para aquele caso ("se veio do Automático, faça X"; "se for o Dividir e for 'todas as folhas', vai por aqui"), ou copiar a mesma conta para outro arquivo e mudar só a cópia. Passa no teste daquele caso, mas a ferramenta fica fazendo coisas diferentes em lugares diferentes, e o Samuel acha o mesmo defeito no lugar seguinte.
+    - **O caso que fez esta regra: o Girar.** O girar do painel Propriedades, o da grade "Todas as páginas", o do Dividir e o dos botões do canto tinham, cada um, a sua própria conta. Cada conserto mudava um lugar só, e o defeito voltava no próximo (D-638, D-640, D-645, D-662, D-666). A revisão do código de 10/11 (ramo `revisao-codigo-2026-11-10`) achou 17 remendos parecidos no programa.
+    - **Antes de mexer, o agente escreve no ONDE-PAREI:**
+      1. qual é **a regra da ferramenta**: a função que decide o comportamento (ex.: quais páginas giram; se o fundo tirado fica quando o filtro muda);
+      2. **todos os caminhos** que chegam nela: botões, menus, teclas, painéis, "aplicar em" e cada item dele, Automático, grade "Todas as páginas", tela cheia, "só neste pedaço", desfazer e refazer, prévia, miniaturas e PDF;
+      3. para cada caminho, **se usa essa mesma função ou tem conta própria**.
+    - **Como conserta.** Muda a regra **num lugar só** (de preferência em `core/`) e faz os caminhos que tinham conta própria passarem a chamar essa função. Um dado novo da página (ex.: "fundo tirado: sim ou não") é lido e gravado por uma função só. Dois botões que fazem a mesma coisa (menu e painel) chamam a mesma função.
+    - **Como prova.** Na entrega, a lista "caminho → função que ele usa", e uma prova em `tests/` que passa pelos caminhos principais e cobra **o mesmo resultado em todos**.
+    - **Quando não dá.** Se a única saída for um remendo num lugar só (ex.: mudar a regra mudaria outra decisão dele, regra 8), o agente **para** e escreve o porquê em "Perguntas para o Samuel"; a gerente leva à Central. Remendo nunca entra calado, nem "por enquanto".
+    - **A gerente.** Pede sempre sobre a ferramenta inteira (regra 10), põe esta regra em todo pedido de conserto e **não aceita a entrega** que tiver desvio para um caso ou conta duplicada. O verificador procura isso de propósito.
+
 **Obra de 26/10/2026 (D-014):** o Samuel mandou fazer a obra inteira (plano de 26/10, etapas 0 a 11) "até o final sem
 pausas" e conferir tudo no fim. Durante essa obra **não valem** as regras de conferir cada item antes do próximo e de
 uma fase por vez (§10, item 2; regras de 19/10): cada etapa é feita, testada e juntada no ramo `obra-2026-10-26`; nada
