@@ -11,7 +11,7 @@ Pedido da gerente de 13/11 (D-646, D-699). Nenhuma página dos Lusíadas no git:
 - [x] Prints no modelo do girar (`prints/fundo-1` a `fundo-4`) e medidas (`medidas-antes.json`, `medidas-depois.json`).
 - [ ] **Uma prova antiga quebra** (fora das 3 autorizadas): `test_escolher_o_filtro_na_pagina_mostra_o_alerta`.
   Não mexi nela. Ver "Perguntas para o Samuel", pergunta 1.
-- Testes no PC, GitHub e velocidade: ver "Testes" e "Velocidade".
+- [x] Testes no PC, GitHub (`43518526963`: só a falha da pergunta 1) e velocidade ("igual").
 
 ## Decisões que esta tarefa precisa cumprir
 
@@ -168,11 +168,32 @@ Velocidade: ver abaixo.
 
 ## Testes
 
-(preenchido no fim)
+No PC (um arquivo por vez, sem janela, prioridade baixa, `LOCALAPPDATA` à parte): os 57 `tests/test_decisoes*.py` e
+24 arquivos dos lugares tocados (81 arquivos):
+- 78 passam inteiros.
+- `test_tirar_fundo_no_programa.py`: 53 passam, **1 falha de propósito** (`test_escolher_o_filtro_na_pagina_mostra_o_alerta`,
+  o jeito velho; pergunta 1). As 3 citadas pelo agente anterior passam sem mudança.
+- `test_promessas.py`: faltava a promessa do item novo do menu (D-010); escrita a **P-214** e a prova dela (nenhuma
+  promessa antiga mudou). Depois: as provas das promessas tocadas e as da varredura (20) passam.
+- `test_decisoes_desfazer_pagina.py`: falhou 1 vez (`test_d621_botao_direito...`, a marcação da página vizinha mudou de
+  lugar) e passou nas duas rodadas seguintes, no código novo e no de antes: instabilidade antiga desse arquivo.
+- Prova nova `tests/test_decisoes_fundo_tirado.py`: 21 passam.
+
+No GitHub:
+- `43514400674` (commit `4747a6a0`): só 2 falhas: a prova antiga da pergunta 1 e `test_todo_botao_tem_promessa`
+  (a promessa que faltava). Botões e prints da janela real: verde.
+- `43518526963` (commit `6240a265`, com a P-214): **só 1 falha, a prova antiga da pergunta 1**. Partes 1, 2, 4 e 5
+  da suíte verdes; botões e prints da janela real: verde.
 
 ## Velocidade
 
-(preenchido no fim)
+- Filtro do GitHub `43514405131` (`863cdde3` -> `4747a6a0`, o código final; os commits depois só mexem em testes e
+  relatório): **"igual (dentro do vai-e-vem)"**. Abrir o livro -0,5%, trocar de página -1,1%, Mágico pro -0,1%, Preto
+  e branco -0,6%.
+- No PC, alternado (antes, depois, três vezes), Siebmacher (cópia) páginas 3 a 6 na resolução do livro
+  (`medir_tempo.py`, `tempos/`): a página em "Tirar o fundo" leva o mesmo tempo (1,615 s antes, 1,614 s depois, média
+  de 12 desenhos). A página em Original depois do "Sim" leva 1,61 s em vez de 0,56 s: é o tempo de tirar o fundo,
+  que antes não acontecia (era o defeito); o mesmo da página em "Tirar o fundo".
 
 ## Perguntas para o Samuel
 

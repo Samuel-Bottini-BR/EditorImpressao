@@ -1,0 +1,162 @@
+<!doctype html>
+<html lang="pt-BR">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>O fundo tirado não volta mais</title>
+<style>
+:root { color-scheme: light dark; }
+* { box-sizing: border-box; }
+body {
+  font: 17px/1.65 "Segoe UI", system-ui, sans-serif;
+  max-width: 46rem; margin: 0 auto; padding: 2.5rem 1.5rem 6rem;
+  color: #1c1c1e; background: #fdfdfc;
+}
+h1 { font-size: 2rem; line-height: 1.2; margin: 0 0 .3em; letter-spacing: -.02em; }
+h2 { font-size: 1.35rem; margin: 2.4em 0 .6em; padding-top: .8em;
+     border-top: 1px solid #e6e4e0; letter-spacing: -.01em; }
+h3 { font-size: 1.1rem; margin: 1.8em 0 .4em; }
+h1 + p, h2 + p { margin-top: .4em; }
+p, li { margin: 0 0 .9em; }
+ul, ol { padding-left: 1.3em; }
+strong { font-weight: 640; }
+code {
+  font: .88em ui-monospace, "Cascadia Code", Consolas, monospace;
+  background: #f1efec; padding: .12em .35em; border-radius: 4px;
+}
+pre {
+  background: #f1efec; padding: 1em 1.1em; border-radius: 8px;
+  overflow-x: auto; line-height: 1.5;
+}
+pre code { background: none; padding: 0; }
+blockquote {
+  margin: 1.2em 0; padding: .1em 0 .1em 1.1em;
+  border-left: 3px solid #c9c5be; color: #55524d;
+}
+table {
+  border-collapse: collapse; width: 100%; margin: 1.2em 0;
+  font-size: .95rem; display: block; overflow-x: auto;
+}
+th, td { padding: .5em .8em; text-align: left; border-bottom: 1px solid #e6e4e0; }
+th { font-weight: 620; background: #f7f5f2; white-space: nowrap; }
+tr:last-child td { border-bottom: none; }
+img { max-width: 100%; height: auto; border-radius: 6px; margin: 1em 0;
+      border: 1px solid #e6e4e0; }
+hr { border: none; border-top: 1px solid #e6e4e0; margin: 2.5em 0; }
+.rodape { margin-top: 4em; padding-top: 1.2em; border-top: 1px solid #e6e4e0;
+          font-size: .85rem; color: #86827c; }
+@media (prefers-color-scheme: dark) {
+  body { color: #e8e6e3; background: #1a1917; }
+  h2 { border-top-color: #35332f; }
+  code, pre, th { background: #262421; }
+  th, td { border-bottom-color: #35332f; }
+  blockquote { border-left-color: #4a4741; color: #b0aca6; }
+  img { border-color: #35332f; }
+  .rodape { border-top-color: #35332f; color: #7d7973; }
+}
+@media print {
+  body { max-width: none; padding: 0; color: #000; background: #fff; }
+  h2 { page-break-after: avoid; }
+  table, img { page-break-inside: avoid; }
+}
+</style>
+</head>
+<body>
+<h1>O fundo tirado não volta mais (D-646, D-699)</h1>
+<p>13/11/2026 · ramo <code>fundo-2026-11-13</code> · teste de máquina (provas automáticas) e de olho (prints). Só o Samuel aprova.</p>
+<h2>Em uma frase</h2>
+<p>Depois de "Sim, tirar o fundo", nenhum filtro e nenhum Automático trazem mais o papel velho de volta; só o botão novo
+"Desfazer o tirar o fundo" traz.</p>
+<h2>O que estava errado e por quê</h2>
+<p>No Siebmacher, depois do "Sim, tirar o fundo", o papel ficava branco. Rodando o Automático, o papel velho voltava em
+todas as páginas, sem aviso. A causa: o programa guardava o "fundo tirado" só no filtro da página. Qualquer troca de
+filtro (o "Original" que o Automático põe, a figurinha, a tecla, o menu, a tela cheia, o "Aplicar em") apagava essa
+marca, e o fundo voltava.</p>
+<h2>O que mudou</h2>
+<ul>
+<li>Cada página guarda agora "fundo tirado: sim ou não", separado do filtro. Uma regra só no programa decide o que
+  acontece quando o filtro muda: o fundo tirado fica.</li>
+<li>Preto e branco, Melhorar e Mágico pro passam a ser feitos em cima da página já sem o fundo. O Original é a página
+  sem o fundo, sem filtro.</li>
+<li>As figurinhas do painel, a tela cheia dos filtros e o "comparar" da tela grande mostram isso mesmo.</li>
+<li>Botão novo <strong>"Desfazer o tirar o fundo"</strong>: no painel "Filtro da página", logo abaixo das figurinhas, e no menu
+  Filtro, embaixo dos quatro filtros. Os dois fazem a mesma coisa, na página da vez; o "Aplicar em" leva às outras.
+  Só aparecem em livro com o "Tirar o fundo" e só ficam acesos na página sem o fundo. Ctrl+Z desfaz.</li>
+<li>Projeto antigo com páginas em "Tirar o fundo" abre com o fundo tirado e o filtro Original, e sai igual.</li>
+</ul>
+<h2>Como fica para quem usa e no livro</h2>
+<ol>
+<li>O Kaique abre o livro com camadas e responde "Sim, tirar o fundo": papel branco (como antes).</li>
+<li>Roda o Automático: o filtro vira Original e o papel continua branco (antes, o papel velho voltava).</li>
+<li>Troca para Preto e branco (figurinha, tecla 2, menu, tela cheia, "Aplicar em" ou Automático): o preto e branco
+   sai da página sem o fundo.</li>
+<li>Quer o papel de volta numa página: botão "Desfazer o tirar o fundo" (painel, embaixo das figurinhas) ou menu
+   Filtro &gt; "Desfazer o tirar o fundo". Para várias: depois do botão, "Aplicar em" &gt; "todas" ou "daqui em diante".</li>
+<li>No PDF: as páginas sem o fundo saem sem o fundo, com o filtro escolhido por cima; as outras não mudam. Tela e PDF
+   saem da mesma conta.</li>
+</ol>
+<p>Problema novo visto: numa página "Original com o fundo tirado" (todo projeto antigo em "Tirar o fundo" abre assim),
+a faixa de baixo diz "Esta página vai sair em Original." (pergunta 3).</p>
+<h2>Prints</h2>
+<ul>
+<li><code>prints/fundo-1-automatico.png</code>: Siebmacher 3 a 6, Automático em Original. Azul (antes): o papel velho voltou.
+  Verde (depois): continua branco.</li>
+<li><code>prints/fundo-2-desfazer.png</code>: "Desfazer o tirar o fundo" na página 3: só ela volta com o papel.</li>
+<li><code>prints/fundo-3-preto-e-branco.png</code>: Preto e branco em cima da página sem o fundo.</li>
+<li><code>prints/fundo-4-botao-e-menu.png</code>: onde ficam o botão e o item do menu.</li>
+</ul>
+<h2>Medidas (Siebmacher, páginas 3 a 6)</h2>
+<p>Brilho do papel (255 = branco; o papel velho fica entre 146 e 175):</p>
+<table>
+<thead>
+<tr>
+<th>Passo</th>
+<th>Antes do conserto</th>
+<th>Depois do conserto</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>"Sim, tirar o fundo"</td>
+<td>255 · 255 · 255 · 255</td>
+<td>255 · 255 · 255 · 255</td>
+</tr>
+<tr>
+<td>Automático em Original</td>
+<td>147 · 166 · 171 · 175</td>
+<td>255 · 255 · 255 · 255</td>
+</tr>
+<tr>
+<td>"Desfazer o tirar o fundo" na página 3</td>
+<td>(não existia)</td>
+<td>146 na página 3; 255 nas outras</td>
+</tr>
+</tbody>
+</table>
+<h2>Testes e velocidade</h2>
+<ul>
+<li>Prova nova (21 provas). A prova do defeito falha no programa de antes ("o fundo voltou na página 1", nos 9
+  caminhos) e passa no novo.</li>
+<li>No PC: 81 arquivos de teste, um por vez. Tudo passa, menos a prova antiga da pergunta 1.</li>
+<li>GitHub <code>43518526963</code>: só a prova antiga da pergunta 1 falha; botões e prints da janela real verdes.</li>
+<li>Velocidade (GitHub <code>43514405131</code>): <strong>igual</strong> (abrir o livro -0,5%, trocar de página -1,1%, Mágico pro -0,1%,
+  Preto e branco -0,6%). No PC, a página em "Tirar o fundo" leva o mesmo tempo (1,6 s); a página em Original depois
+  do "Sim" passa de 0,6 s para 1,6 s, porque agora o fundo é tirado nela (antes não era: era o defeito).</li>
+</ul>
+<h2>Perguntas para o Samuel</h2>
+<ol>
+<li>Uma prova antiga do jeito velho quebrou (fora das três autorizadas): ela cobra que, depois de "Tirar o fundo",
+   escolher "Original" tire o aviso "Conferir o fundo tirado". Agora o fundo fica, e o aviso também. Posso mudar essa
+   prova também? Sugestão: sim.</li>
+<li>O "só neste pedaço": numa página em "Tirar o fundo", um pedaço marcado em "Original" mostra o papel velho dentro
+   do pedaço (decidido em 05/10, com prova). Deve deixar de trazer o papel velho, como manda "nenhum filtro deve fazer
+   o fundo voltar"? Sugestão: sim.</li>
+<li>Na página "Original com o fundo tirado", a faixa diz "Esta página vai sair em Original." Quer que diga a frase do
+   fundo ("Vou tirar o fundo desta página...")? Sugestão: sim.</li>
+<li>O menu Filtro não tem "Tirar o fundo"; o "Desfazer o tirar o fundo" ficou no fim do menu. Quer também o "Tirar o
+   fundo" no menu, logo acima? Sugestão: sim.</li>
+</ol>
+<p>Detalhe técnico (a regra, todos os caminhos, a reversão): <code>ONDE-PAREI.md</code>.</p>
+<p class="rodape">Editor de Impressão &middot; gerado em 13/11/2026 às 19:09</p>
+</body>
+</html>

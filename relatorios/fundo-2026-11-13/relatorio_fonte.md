@@ -58,7 +58,15 @@ Brilho do papel (255 = branco; o papel velho fica entre 146 e 175):
 | Automático em Original | 147 · 166 · 171 · 175 | 255 · 255 · 255 · 255 |
 | "Desfazer o tirar o fundo" na página 3 | (não existia) | 146 na página 3; 255 nas outras |
 
-{{TESTES}}
+## Testes e velocidade
+
+- Prova nova (21 provas). A prova do defeito falha no programa de antes ("o fundo voltou na página 1", nos 9
+  caminhos) e passa no novo.
+- No PC: 81 arquivos de teste, um por vez. Tudo passa, menos a prova antiga da pergunta 1.
+- GitHub `43518526963`: só a prova antiga da pergunta 1 falha; botões e prints da janela real verdes.
+- Velocidade (GitHub `43514405131`): **igual** (abrir o livro -0,5%, trocar de página -1,1%, Mágico pro -0,1%,
+  Preto e branco -0,6%). No PC, a página em "Tirar o fundo" leva o mesmo tempo (1,6 s); a página em Original depois
+  do "Sim" passa de 0,6 s para 1,6 s, porque agora o fundo é tirado nela (antes não era: era o defeito).
 
 ## Perguntas para o Samuel
 
