@@ -711,6 +711,65 @@ Valem para a gerente, para todos os agentes (`.claude/agents/`) e para qualquer 
 
     As outras regras de código propostas pelo revisor em 10/11 (erro engolido, plano antes de mudança grande, etc.) continuam só como proposta, esperando o Samuel.
 
+13. **Como perguntar e responder ao Samuel (Samuel, 13/11/2026).** Pedido dele: "precisa ajeitar para isso como regra, consegue pegar as perguntas e respostas que tu fez que eu não entendi, ver um padrão e fazer um conjunto de regras para responder e fazer perguntas." A gerente leu os 106 casos de "Ainda não entendi" e de reclamação da explicação na Central (21/10 a 13/11) e achou sete padrões. Cada regra abaixo tem as palavras dele que a originaram. Vale para a gerente e para todo agente que escreve pergunta, relatório ou resposta para ele: Central, chat e relatórios.
+
+    **1. Comece pelo que é e onde fica.** A primeira frase diz de que tela, botão ou ferramenta se trata, com o caminho de clique (ex.: "Na janela Montar para imprimir, que abre em Arquivo > Montar para imprimir, há um quadro chamado..."), e para que ela serve. Só depois vem o problema.
+    - Origem: "Que grade?" · "Que Obra?" · "Não sei de que arranjos está falando" · "Essa ferramenta é uma mão?" · "Como assim, o que vai sair? Quero um exemplo disso." · "e porque tem esse aviso [...] para que serve, e em que situação é disparado?" · "eu nem entendi para que serve esse botão" · "Você ainda não explicou o que está acontecendo".
+
+    **2. Nenhuma palavra de dentro.** Para ele, nada de número de decisão (D-567), código (G2, 2.11, 601), nome de etapa ou de agente ("obra", "etapa 4", "agente de layout", "implementador B"), nome de arquivo ou de função, nem "escolha da gerente". Use o nome que aparece na tela do programa, e o livro e a página. O número da decisão só pode ir no fim, entre parênteses, para consulta.
+    - Origem: "Que Obra?" · "Não sei de que obra está falando" · "Não se deve usar código na nomeação de coisas".
+
+    **3. Toda pergunta e todo "está feito" têm prova em imagem, e a imagem prova exatamente o que o texto diz.**
+    - Print do caso real, no modelo do girar (CLAUDE.md §10): faixas com nome (azul = antes ou como é hoje, verde = depois ou a outra opção), as mesmas páginas lado a lado, o que olhar circulado em vermelho e uma frase em cada imagem dizendo o que olhar.
+    - Quando as opções dão resultados diferentes, há uma imagem para cada opção.
+    - "Já funciona" ou "já existe" também vem com print.
+    - Origem: "como eu vou responder algo sem provas ou exemplos?" · "Não estou vendo provas do que você diz" · "prints inconclusivos, qual é antes e depois?" · "Os prints não tem nada haver com a pergunta" · "não entendi nada, não tem exemplos" · "preciso de exemplos, não consegui visualizar" · "essa resposta não tem print provando que esse modo funciona".
+
+    **4. O exemplo é o caso que o Kaique encontra, e o print é conferido antes de mandar.**
+    - Use o livro e a página onde o problema acontece de verdade, no estado em que o Kaique os teria (dividido, se o caso pede dividido).
+    - Nunca use uma página que nem vai ser impressa, nem um print com coisa cortada ou fora do lugar que distraia.
+    - Abra o print e confira se ele mostra o que a frase diz.
+    - Origem: "está fazendo teste com pagina de lombada que nem iria ser impressa" · "Porque usou uma folha sem estar divida?" · "Só não entendi porque cortou parte do livro ali no canto superior direito" · "Tem uma pagina maior que outra ali".
+
+    **5. Diga o caminho e se é defeito ou escolha.**
+    - Escreva o caminho que a página fez: livro, página, o que foi ligado, o filtro e as caixinhas, à mão ou pelo Automático.
+    - Diga com todas as letras se é **defeito do programa** ou **efeito de uma escolha**. Se ainda não se sabe, diga "ainda não se sabe; vou investigar".
+    - Origem: "qual opção foi pedida para ser feita que tirou a letra? anote ai para explicar melhor o processo que a pagina passou para poder me perguntar" · "que opção foi escolhida para sair assim?" · "não sei se foi erro seu ou do programa" · "tem que saber diferenciar bugue de erro".
+
+    **6. Diga o que ele está escolhendo e o que muda em cada opção.**
+    - Antes das opções, uma frase: "O que você escolhe: ...".
+    - Cada opção diz o que acontece depois, para o Kaique e no livro que sai.
+    - Diga se a coisa é nova ou se já existe hoje, se muda muito o programa e se dá para ligar e desligar.
+    - Se é um erro, diga que é erro e o que vai acontecer com ele (entra na fila? quando?).
+    - Uma pergunta é uma decisão. Lista de vários erros não é pergunta: cada erro vem com o seu print e com a explicação simples de como acontece.
+    - Toda pergunta tem a opção "Só comentário" e a sugestão da gerente.
+    - Origem: "não entendi o que tem que ser escolhido" · "então isso entra na lista de coisas para fazer?" · "No caso, isso é uma opção a mais do que a que temos hoje?" · "Isso que eu escolhi vai alterar muito o programa?" · "vai ser uma opção que eu posso desligar e ligar né?" · "isso é um erro? vai ser resolvido?" · "eu quero ver esses erros, as provas dele e uma explicação de como acontece".
+
+    **7. Curto, sem ficha técnica, e respondendo o que ele perguntou.**
+    - Poucas frases, uma ideia por frase, primeiro a frase que se entende, o número depois.
+    - Nada de ficha com campos ("Situação", "Você pediu", "Solução na versão de teste", "Parte do programa"). Essas fichas da auditoria de 29/10 a 09/11 foram as que mais voltaram com "Ainda não entendi".
+    - Se o comentário dele tem perguntas, responda cada uma, na ordem, repetindo a pergunta antes da resposta.
+    - Toda resposta se explica sozinha, porque no "para responder" ele só vê a última fala dele e a da gerente. Formato: **Do que se trata · O que acontece hoje · Sua dúvida: "..." → resposta · O que você escolhe**.
+    - Origem: "Um monte de texto e não consigo saber o que era para saber realmente" · "os relatorios continuam muito ruins e dificeis de entender" · "esse teste é totalmente inconslusivo para mim, não consigo ter visão clara do que o programa tentou fazer, ou de qual problema ele tentou reslver" · "nos para responder, não tem explicações sobre o que precisa ser respondido".
+
+    **Depois de um "Ainda não entendi": mude o jeito, não só as palavras.**
+    - Responda primeiro o que ele perguntou.
+    - Faça a prova que faltou: print novo, exemplo de verdade, caso certo.
+    - Confira no programa ou no print tudo o que afirmar (em 13/11, a gerente afirmou duas vezes que a palavra saía numa cor só, e o print mostrou que não).
+    - Use o horário de verdade ao gravar na Central (em 13/11, um horário inventado sumiu com o comentário dele).
+    - Se ele disse "não entendi" duas vezes na mesma pergunta, a gerente para e pergunta no chat qual parte não ficou clara.
+
+    **Antes de mandar, a gerente confere a lista:**
+    - (1) a primeira frase diz o que é e onde fica;
+    - (2) nenhum código nem palavra de dentro;
+    - (3) há print que prova, no modelo do girar;
+    - (4) o exemplo é o caso real e o print foi aberto e conferido;
+    - (5) há o caminho e se é defeito ou escolha;
+    - (6) há "O que você escolhe" e o que muda em cada opção;
+    - (7) está curto, responde o comentário dele e se explica sozinho.
+
+    Pergunta de agente que não passa nessa lista volta para o agente antes de ir à Central.
+
 **Obra de 26/10/2026 (D-014):** o Samuel mandou fazer a obra inteira (plano de 26/10, etapas 0 a 11) "até o final sem
 pausas" e conferir tudo no fim. Durante essa obra **não valem** as regras de conferir cada item antes do próximo e de
 uma fase por vez (§10, item 2; regras de 19/10): cada etapa é feita, testada e juntada no ramo `obra-2026-10-26`; nada
