@@ -79,6 +79,41 @@ def erro11():
            P / "erro11-pagina-suja-p22.jpg")
 
 
+def erro5():
+    from PIL import Image, ImageDraw
+    def com_linha(arq, pos):
+        im = Image.open(arq).convert("RGB"); d = ImageDraw.Draw(im)
+        x = round(im.width * pos)
+        for k in range(-2, 3):
+            d.line((x + k, 0, x + k, im.height), fill=(30, 90, 230))
+        return im
+    montar("Erro 5 - página deitada no arquivo para imprimir - resumo",
+           "Os Lusíadas (cópia): Automático com Dividir + \"A 1ª folha é a capa aberta\" (o resto como a "
+           "rodada 1 do Kaique), processado, e \"montar para imprimir em A4\" com o Livreto de fábrica. "
+           "Versão de teste de hoje. A linha azul é onde o programa cortou a folha.",
+           [Faixa("azul", "COMO É HOJE: FOLHA 2", "o programa cortou a folha muito à esquerda (ele mesmo avisou "
+                  "\"Não tenho certeza de onde cortar\"): a página 3 ficou mais larga que alta e, no arquivo "
+                  "para imprimir, foi deitada",
+                  [Peca("folha 2 como veio", com_linha(A / "original-folha2.png", 0.2391), altura=380,
+                        circulos=[(252, 380, 60)]),
+                   Peca("face 3 do arquivo para imprimir", A / "imprimir-face3.png", altura=380,
+                        circulos=[(790, 370, 260)], nome_vermelho=True)]),
+            Faixa("azul", "COMO É HOJE: FOLHA 7 (A DO KAIQUE)", "a linha caiu no meio do título "
+                  "\"PERIGOS E TRAIÇÕES\": \"PERIGOS\" ficou numa página e \"E TRAIÇÕES\" na outra; "
+                  "nesta rodada a página 12 saiu quase quadrada e não foi deitada, na do Kaique foi",
+                  [Peca("folha 7 como veio", com_linha(A / "original-folha7.png", 0.7321), altura=380,
+                        circulos=[(770, 365, 120)], nome_vermelho=True),
+                   Peca("face 8", A / "imprimir-face8.png", altura=380, circulos=[(780, 300, 150)]),
+                   Peca("face 9", A / "imprimir-face9.png", altura=380, circulos=[(440, 350, 110)])]),
+            Faixa("azul", "O AVISO EXISTE, MAS FICA ESCONDIDO", "o aviso \"Página 3: era deitada e foi girada "
+                  "de pé...\" só aparece depois de gravar, embaixo de \"Como imprimir\", fora da vista "
+                  "(é preciso rolar a barra marcada); antes de gravar não há aviso nenhum",
+                  [Peca("janela Montar para imprimir, depois de gravar", C / "a-21-montar-depois-de-gravar.png",
+                        recorte=(1190, 580, 1560, 960), altura=420, circulos=[(1538, 760, 45)],
+                        nome_vermelho=True)])],
+           P / "erro5-pagina-deitada.jpg")
+
+
 if __name__ == "__main__":
     for nome in sys.argv[1:]:
         globals()[nome]()
