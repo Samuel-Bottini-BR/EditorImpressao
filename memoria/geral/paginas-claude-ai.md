@@ -132,3 +132,10 @@ Leia-me das fontes no git: [docs/plano/paginas-claude-ai/LEIA-ME.md](../../docs/
 - 08/11/2026: celular (nada passa da borda, abas num botão Menu), um seletor só dos 3 jeitos de ver para todas as abas, "responder de novo" guardando a resposta antiga; Quadro e Etapas numa coluna no celular (v34 a v36).
 - 09/11/2026: o comentário não se apaga ao trocar de opção (v37); respostas anteriores fechadas num botão (v38); "Ainda não entendi" conta como respondido e o número desce (v39, v40).
 - 10/11/2026: no PC o Quadro dos trabalhos não rola mais de lado; abas quebram em duas linhas (v41). Testar sempre as 9 abas em 1366, 1000, 800, 700, 360 e 300 px antes de publicar.
+
+## Central: 13/11/2026 (versões 42 e 43; [PARTE -35](../../historico/Editor%20de%20Impressao%20-%20resumo%20para%20o%20Claude.md) §1 e §6)
+
+- O comentário vale como resposta; opção nova "Só comentário" (`SO_COMENTARIO`, conta como respondida); o "comentar" junto com uma opção continua (ele: "você tirou a opção de comentar e responder nos botões").
+- As que voltam mostram "Do que se trata" no alto (ele: "como eu vou concatenar as coisas?").
+- `gerenteEm` sempre com `date -u`: horário no futuro esconde o comentário dele e deixa a pergunta reaberta.
+- 169 perguntas reescritas no §11.13 (`relatorios/central-reescrita-2026-11-13/`, `a4ed18ed`).

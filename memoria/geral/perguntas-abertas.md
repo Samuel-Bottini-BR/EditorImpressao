@@ -9,6 +9,15 @@ Como manter: quando ele responder, registre no plano (as duas cópias) e na fich
 daqui** (ou mova para "Respondidas recentemente" com a data). O `conferir_memoria.py` avisa quando uma pergunta desta
 lista com nome entre crases já aparece como decidida no Registro.
 
+## 0000000b. Atualização de 14/11/2026 (vale sobre o resto; [PARTE -35](../../historico/Editor%20de%20Impressao%20-%20resumo%20para%20o%20Claude.md) §8)
+
+- **Respondidas:** `perg-desfazer-fundo` ("Ok" → D-699); `perg-quadrados-provas` ("pode mudar" → D-698); as 38 de 08 a 10/11 (D-669 a D-697); au-d-523, au-d-544, au-d-565, au-d-567 e au-d-574 → D-704.
+- **Sem resposta (chat, 14/11):** arquivar as conferências antigas que funcionam (89) e as para depois (10), ficando na lista as 32 com defeito e as 17 escolhas da gerente; "Quer responder essas primeiro?" (as 4 da revisão do código).
+- **Esperam ele na Central:** `perg-revisao-codigo` (4, destravam o girar numa regra só); `v-capa-aviso` (aviso dos pares, D-693); `nomes-28-10`; as conferências das auditorias.
+- **Voltaram para ele na Central (10):** `v-capa-aviso`, `b-abas-nomes`, `b-pdf-desatualizado`, `mover-rotulo-antes`, `k0611-margens-de-fabrica`, `n0411-caderno-pagina-em-branco`, `n0411-inverter-letra-clara`, `nm-jeito-pb`, `nm-desligar-marcadas`, `nm-tela-livros`.
+- **Comentário dele sem resposta (au-d-523, 13/11 22h58):** "Não pode ser usado somente para achar texto e aplicar filtros e tirar o fundo como o internet archive, por que não chegamos ainda no resultado que o internet arquive faz." Falta responder na página, com print.
+- **Não levadas à Central ainda:** as perguntas 2 a 4 do agente do Tirar o fundo (`relatorios/fundo-2026-11-13/relatorio.md`); as 1, 3 e 4 do agente dos quadrados na capa (`relatorios/quadrados-capa-2026-11-13/ONDE-PAREI.md`; a 2 virou a D-700, suspensa). A proposta "Girar como ferramenta": ele disse "Não" a levar à Central em 13/11 21h10.
+
 ## 0000000a. Atualização de 10/11/2026, noite (vale sobre o resto; [PARTE -34](../../historico/Editor%20de%20Impressao%20-%20resumo%20para%20o%20Claude.md) §4)
 
 - **Respondidas:** `girar-dividir-tela` → D-665, `girar-dividir-outros` → D-666, `quadrados-qual` ("c") → D-668.

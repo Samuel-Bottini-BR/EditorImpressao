@@ -61,3 +61,29 @@ Prints e frases do Samuel, guardados na hora. Programa: o da versão de teste (r
 "investigar esses quadrados , coloque agora um agente para pesquisar isso e ver se acontece em outros filtros ou partes do programa."
 
 - Agente aberto em 13/11 (investigação, sem mudar o programa). Relatório dele: `relatorios/quadrados-capa-2026-11-13/` no ramo dele.
+
+## 13-05 — Central: o comentário sumiu e a pergunta não saiu do "para decidir" (22h52 UTC)
+
+![13-05](prints/13-05-central-comentario-sumiu.png)
+
+- Frase dele: "eu comentei e coloquei ainda não entendi e não saiu do para decidir, e meu comentario sumiu, não consigo mais ver ele arrume isso"
+- O que se vê: a pergunta "Folha do caderno com lugar sem página: como escrever?" na aba Respostas, com o "Ainda não entendi" dele duas vezes (18h50 e 18h51 no horário do print) e "espera a sua escolha".
+- Causa: a gerente gravou a resposta com horário no futuro, e a página escondia o comentário dele. O comentário foi devolvido e os horários corrigidos.
+
+## A Central e as regras de perguntar (chat, 22h53 a 23h30 UTC)
+
+- 22h53: "nos para responder, não tem explicações sobre o que precisa ser respondido, tem minha ultima resposta e uma resposta que não explica do que se estava falando antes e você está motrando agora, como eu vou concatenar as coisas?"
+- 22h56: "comentario também deve servir como resposta, porque se não eu tenho que colocar ainda não entendi se não querer nenhuma das opções ou se quero uma opção com adição." · "tem que ter uma opção a mais quando for só comentario"
+- 23h00: "fez todas as mudanças que eu pedi" · "?"
+- 23h05: "precisa ajeitar para isso como regra, consegue pegar as perguntas e respostas que tu fez que eu não entendi, ver um padrão e fazer um conjunto de regras para responder e fazer perguntas."
+- 23h07: "veja os comentarios que eu fiz nessas perguntas para que tenha mais conteudo para saber por onde alinhar as regras novas"
+- 23h08: "você tirou a opção de comentar e responder nos botões"
+- 23h23: "Sim, pode, mas tu fez as mudanças na central? revisa as minhas respostas e perguntas porque eu não estou conseguindo entender o que você falou lá e o que eu tenho que responder, revise conforme as novas regras, e confira que todo agente que for escrever nela tenha que ver as regras para que não escreva coisas dubias, queremos as informações mais diretas lá e de forma clara e rapida."
+- 23h30: "bota um agente para rever as perguntas segundo as novas regras, ver as perguntas que eu coloquei não entendi, onde eu pedi novas explicações para ele pegar a ideia, esse agente tem que ter acesso ao historico né, para ele se informar do que ele vai mudar lá nas perguntas, para todas as perguntas ficarem conforme o que fica mais facil de eu entender."
+- Destino: a opção "Só comentário" e o "comentar" mantido (Central, versão 43); CLAUDE.md §11.13 e §10; o "Sim, pode" juntou o "Tirar o fundo" (D-703); 169 perguntas reescritas (`a4ed18ed`).
+
+## Andamento (chat, 14/11)
+
+- 00h09: "os consertos em que pé estamos?"
+- 02h23: "acabou tudo?"
+- 02h25: "essas 133 já foram tudo feitas?" Resposta: não; das 148 abertas, 89 funcionam, 32 funcionam com defeito, 17 são escolhas da gerente e 10 ficaram para depois. A proposta de arquivar só as 89 e as 10 espera a resposta dele.

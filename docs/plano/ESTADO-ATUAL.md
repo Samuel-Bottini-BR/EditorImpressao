@@ -8,7 +8,16 @@ Escrito em 24/09/2026. A ordem de autoridade é:
 
 O resto é histórico. O `PEDIDOS.md` virou histórico em 24/09: a lista que vale é o Plano Definitivo.
 
-> **Onde o projeto está em 10/11/2026, noite (vale sobre tudo abaixo; detalhe na [PARTE -34](../../historico/Editor%20de%20Impressao%20-%20resumo%20para%20o%20Claude.md) do handoff):**
+> **Onde o projeto está em 14/11/2026 (vale sobre tudo abaixo; detalhe na [PARTE -35](../../historico/Editor%20de%20Impressao%20-%20resumo%20para%20o%20Claude.md) do handoff):**
+> - Versão de teste: ramo `obra-2026-10-26` (worktree `.claude/worktrees/obra-juncao`, ponta `4c48e899` + Livro do checkpoint). Entraram em 13/11 os graves (D-649, D-648), os quadrados C (D-668) e o Tirar o fundo (D-646, D-699).
+> - **Testados pelo Samuel ("funcionando"):** D-649, D-648, D-668. **Falta o teste dele:** Tirar o fundo e girar com a capa aberta.
+> - Suspenso por ordem dele: conserto da sombra do Preto e branco (D-700, retângulos na capa do *Gradus*).
+> - Regras novas: CLAUDE.md §11.12 (sem gambiarra) e §11.13 (como perguntar e responder); §10: agente não grava na Central.
+> - Livro de decisões (no obra) até a D-704. Central (página versão 43) com as perguntas reescritas no §11.13; nenhuma resposta esperando a gerente.
+> - Pergunta aberta no chat: arquivar as conferências antigas que funcionam (89) e as para depois (10). Esperam ele na Central: as 4 da revisão do código (destravam o girar numa regra só) e o aviso dos pares.
+>
+> **Antes (10/11, noite), já superado:**
+> **Onde o projeto estava em 10/11/2026, noite (vale sobre tudo abaixo; detalhe na [PARTE -34](../../historico/Editor%20de%20Impressao%20-%20resumo%20para%20o%20Claude.md) do handoff):**
 > - Versão de teste: ramo `obra-2026-10-26` (worktree `.claude/worktrees/obra-juncao`, ponta `58806f81` + Livro do checkpoint). Entrou o conserto do "Livros recentes" (fechava o programa depois do F1, `d777370c`): **o Samuel começou o teste e disse "vou terminar depois"**.
 > - Prontos e conferidos pela gerente, **não juntados** (esperam o fim desse teste): ramo `graves-2026-11-10` (D-649 miniatura = PDF; D-648 cartões da tela cheia) e ramo `quadrados-c-2026-11-10` (D-668, quadrados brancos). Juntam sem conflito.
 > - Livro de decisões (no obra) até a D-668. Regras novas: D-667 / CLAUDE.md §11.10 ("se mudou a ferramenta, muda em todos os lugares") e §11.11 (agente não abre agente).

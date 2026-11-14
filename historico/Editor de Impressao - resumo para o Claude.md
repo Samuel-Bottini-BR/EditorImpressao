@@ -1,6 +1,6 @@
 # Editor de Impressão — documento para colar no Claude
 
-Atualizado em 10/11/2026, noite (PARTE -34; a anterior, PARTE -33, é de 10/11 à tarde). Desde 19/10 a memória por assunto fica em `memoria/` (índice `memoria/INDICE.md`). Versão **máxima**: reúne o histórico institucional, o
+Atualizado em 14/11/2026 (PARTE -35; a anterior, PARTE -34, é de 10/11 à noite). Desde 19/10 a memória por assunto fica em `memoria/` (índice `memoria/INDICE.md`). Versão **máxima**: reúne o histórico institucional, o
 que o programa é, todas as funcionalidades pedidas, os 68 pedidos feitos até
 hoje **palavra por palavra**, o que foi feito, o que falta, e os dois
 documentos-fonte inteiros (a especificação original e o prompt de testes) em
@@ -11,6 +11,257 @@ Pasta do projeto: `D:\programas\EditorImpressao` (mudou de
 `C:\Users\fotog\Desktop\EditorImpressao` em 07/09/2026; essa pasta antiga virou
 o backup). Repositório git ligado a
 `https://github.com/Samuel-Bottini-BR/EditorImpressao`.
+
+---
+
+# PARTE -35 — Checkpoint de 13-14/11/2026: Tirar o fundo, graves e quadrados C juntados (3 testados), regras §11.12 e §11.13, Central reescrita (leia isto primeiro)
+
+Sessão no PC, 13/11 (17h34 UTC) a 14/11 (03h45 UTC), gerente Claude Opus 5.5, uma conversa (resumida duas vezes).
+O Samuel pediu o checkpoint com `/checkpoint`. Fontes: a conversa salva, o git e a Central, não o resumo.
+
+- A lista das falas foi tirada com `falas_da_conversa.py --todas --desde 2026-11-11T03:10`.
+- **Defeito do script achado:** ele não lista as mensagens mandadas no meio do trabalho. No arquivo da conversa, elas são do tipo `queue-operation`, com `operation: "remove"`.
+- Por isso, 12 falas dele foram buscadas à mão no `.jsonl`, pelo campo `content` das `queue-operation`.
+- **Falta consertar o script** (pendência §9).
+
+**No fechamento não há agente rodando** (conferido). Os agentes do dia entregaram ou foram parados:
+
+- quadrados na capa: entregou;
+- conserto da sombra do Preto e branco: **parado pela gerente**, por ordem dele;
+- Tirar o fundo: entregou;
+- provas da Central (`f05237ee`): entregou;
+- reescrita da Central: entregou;
+- conferente deste checkpoint: entregou; os 12 achados foram corrigidos.
+
+## 0. Para recomeçar
+
+1. `git -C D:\programas\EditorImpressao fetch origin`.
+   - Versão de teste: ramo `obra-2026-10-26`, worktree `.claude\worktrees\obra-juncao`, ponta `4c48e899` mais o Livro deste checkpoint.
+   - Ramo do plano: `fase-1`.
+2. **Pergunta em aberto, a última da sessão (chat, 14/11 02h25 UTC).** O texto exato da gerente:
+   "A sugestão nova é arquivar só as 89 que funcionam e as 10 para depois. As 10 já estão anotadas no plano, então nada se perde. Na lista "para decidir" ficariam as 32 com defeito e as 17 escolhas da gerente. Posso fazer assim? Eu sugiro que sim."
+   - Ele ainda não respondeu. Era sobre as conferências antigas das auditorias 3 a 6 na Central.
+   - Conta de 14/11: estão abertas 32 com defeito, 89 que funcionam, 17 escolhas da gerente e 10 para depois. São 148, não as "133" que a gerente tinha dito antes.
+3. Ler na Central as respostas novas, com `lida != true`. No fechamento não havia nenhuma: as 5 que faltavam foram respondidas (§4).
+4. Testes que ele deve (§5): o **Tirar o fundo** e o **girar com a capa aberta**.
+5. Não começar conserto novo sem o "sim" dele (memória `feedback_organizar_nao_e_executar`).
+
+## 1. Regras novas do Samuel, literais (13/11)
+
+- **Sem gambiarra** (21h13-21h16 UTC):
+  - "Lembre de que o agente não pode fazer gambiarras como na outra ferramenta nossa que fazia várias gambiarras e funcionava de maneira diferente em vários lugares."
+  - "Faça disso uma regra bem explica para os agentes"
+  - "Mas para saber bem o que aconteceu leia o histórico ou a conversa antiga ou relatório que foi feito sobre isso no passado / Para a regra ficar bem escrita"
+  - Virou o **CLAUDE.md §11.12**, "Sem gambiarra: uma ferramenta, uma regra, um lugar só no código". A regra foi reescrita com a história de 10/11: o girar com 7 caminhos e os 17 remendos da revisão do código.
+  - Commits: `d40315e4` e `b31c67e4` no fase-1; `f698ccd9` e `3a721bf8` no obra. Mais os avisos nos `.claude/agents/*.md`.
+- **Como perguntar e responder** (23h05 e 23h07):
+  - "precisa ajeitar para isso como regra, consegue pegar as perguntas e respostas que tu fez que eu não entendi, ver um padrão e fazer um conjunto de regras para responder e fazer perguntas."
+  - "veja os comentarios que eu fiz nessas perguntas para que tenha mais conteudo para saber por onde alinhar as regras novas"
+  - Virou o **CLAUDE.md §11.13**, com 10 regras e uma lista de conferência. As regras vieram de 106 casos de "Ainda não entendi" e de 176 comentários dele.
+  - Commits: `0c5566e4` e `40a4dced` no fase-1; `bb3c7377` e `8f70de16` no obra; `931acf9b` nos agentes.
+- **Todo agente que escreve na Central segue as regras** (23h23):
+  - "confira que todo agente que for escrever nela tenha que ver as regras para que não escreva coisas dubias, queremos as informações mais diretas lá e de forma clara e rapida."
+  - Virou o CLAUDE.md §10: agente não grava na Central; a gerente confere a lista do §11.13 antes de publicar.
+  - Commits: `f82cddab` no fase-1 e `4c48e899` no obra.
+- **Comentário vale como resposta** (22h52-23h08):
+  - "eu comentei e coloquei ainda não entendi e não saiu do para decidir, e meu comentario sumiu, não consigo mais ver ele arrume isso" (com print)
+  - "nos para responder, não tem explicações sobre o que precisa ser respondido [...] como eu vou concatenar as coisas?"
+  - "comentario também deve servir como resposta, porque se não eu tenho que colocar ainda não entendi se não querer nenhuma das opções ou se quero uma opção com adição."
+  - "tem que ter uma opção a mais quando for só comentario"
+  - "você tirou a opção de comentar e responder nos botões"
+  - O que foi feito na página da Central (versão 43):
+    - opção "Só comentário" (`SO_COMENTARIO`), que conta como respondida;
+    - "comentar" junto com uma opção, mantido;
+    - "Do que se trata" no alto das que voltam.
+  - Memória `feedback_central_resposta_se_explica.md`.
+- **Ideia, não urgente** (20h18): "deixe anotado, eu quero poder abrir varias abas no programa, deixe como ideia, de varios livros." Está na Lista de espera do plano (13/11).
+
+## 2. Os trabalhos, pelo git
+
+- **Juntado no obra e testado por ele ("funcionando", 22h34):**
+  - `ffb1eb8f`: graves. Miniatura igual ao PDF (D-649) e cartões da tela cheia (D-648).
+  - `c5fae111`: quadrados C. Melhorar e Mágico pro protegem as pinturas (D-668).
+  - As 3 provas antigas da D-659 mudaram (`f11df9d2`, D-698). Ele respondeu: "pode mudar, mas porque antes, ele não procurar gravura e saia certo?"
+  - A ordem de juntar foi "pode juntar agora, não precisa rodar teste, eu vou rodar no manual" (20h32). Por isso a suíte não rodou no PC.
+  - A resposta exata dele ao teste: "1- funcionando 2- funcionando 3- funcionando" e "estou falando dos testes que tinha que fazer" / "os tres consertos que você fez hoje".
+- **Juntado no obra, falta o teste dele:**
+  - `8ae6321e`: Tirar o fundo (D-646 e D-699).
+    - Ramo `fundo-2026-11-13`, `69fe9567`.
+    - Nenhum filtro nem o Automático trazem o fundo de volta.
+    - Botão novo "Desfazer o tirar o fundo", embaixo do "Tirar o fundo", no menu Filtro e no painel. Para o lugar, ele respondeu "Ok" (D-699).
+  - `8b603916`: a prova antiga `test_escolher_o_filtro_na_pagina_mostra_o_alerta` mudou, com o "Sim, pode" dele (D-703). A gerente rodou e passou.
+  - Medidas do agente:
+    - GitHub `43518526963`: só essa prova antiga falhava (já mudada).
+    - Velocidade `43514405131`: igual.
+  - Relatório: `relatorios/fundo-2026-11-13/relatorio.md` e `.html`, no ramo e no obra. O `.pdf` não está no git; fica só na worktree `.claude/worktrees/fundo`.
+- **Investigação, nenhuma linha do programa mudou:** `quadrados-capa-2026-11-13` (`2aec9494`).
+  - Os retângulos brancos na capa do *Gradus*, no Preto e branco, vêm do passo da sombra `_sombra_em_quadros` (`c8844671`).
+  - O amarelo da capa da *Matemática* é defeito antigo e também aparece no conserto C.
+  - Relatório e 11 imagens em `relatorios/quadrados-capa-2026-11-13/`.
+- **Suspenso:** D-700, conserto da sombra do Preto e branco.
+  - A gerente perguntou "Posso mandar consertar assim?" (21h08). Depois leu o "Ok, e o que está sendo feito agora?" (21h09) como sim e abriu um agente. **Erro.** Ele disse: "Não estou falando disso, estou falando do branco e preto" e "Não quero consertar isso agora, quero saber o que estava em execução".
+  - O agente foi parado. O ramo `sombra-cor-2026-11-13` (`3c758c70`) só tem a linha do Livro. Registro em `c13ec987`.
+- **Central reescrita no §11.13** (`a4ed18ed`, no fase-1, pasta `relatorios/central-reescrita-2026-11-13/`):
+  - 8 que destravam consertos e 20 de nomes de botão, reescritas uma por uma. Print novo em 4 das 8 e em 3 das 20 (as três do "não entendi").
+  - 141 conferências das auditorias, reescritas em boa parte de forma automática a partir das fichas e do Livro. Sem a ficha "Situação / Você pediu / Solução".
+  - 16 fechadas por já resolvidas ou repetidas.
+  - **Ressalva:** as das auditorias continuam parecidas entre si e algumas compridas. A gerente conferiu só por amostra.
+- **Provas da Central** (`f05237ee`, `relatorios/provas-central-2026-11-13/`, 11 imagens). Pedido dele: "Pode fazer agora essas provas".
+  - Uma afirmação errada da gerente foi corrigida: "palavra numa cor só". A prova mostrou duas cores.
+- **Livro no obra (igual à cópia dele):**
+  - D-669 a D-698 (`5062d031`), D-699, D-700 (suspensa), D-701, D-702, D-703.
+  - **D-704** (este checkpoint): D-523, D-565 e D-567 "Fica para depois"; D-544 "Concordo, fica assim" (passa a ser decisão dele); a dúvida do livreto ao processar.
+  - Situações atualizadas: D-648, D-649 e D-668 testadas, "funcionando"; D-646 e D-699 juntadas.
+- **Relatório da sessão 6 de testes:** `relatorios/testes-guiados/2026-11-13-sessao-6/`, com os prints 13-01 a 13-04 e as frases dele até o teste das 22h34. As frases de 22h52 em diante e o print das 22h52 foram acrescentados neste checkpoint.
+
+## 3. As falas do Samuel desde o último checkpoint e o destino (UTC)
+
+| Hora | Fala (literal) | Destino |
+|---|---|---|
+| 13/11 17h38 | "quero ver os concertos a se fazer e quero saber o que precisa ser respondido" | Respondido no chat |
+| 17h39 | "sobre as leituras que você fez, como assim é grande demais para ler inteiro? será que não tem coisas que você perdeu?" | Leitura refeita em parte. A gerente disse que ficaram sem ler as decisões antigas até a D-639, as fases e a Lista de espera do Plano e três fichas da memória. Ela perguntou "Quer que eu leia agora as três fichas da memória?", e ele não respondeu (§8) |
+| 19h52 | "o que estava sendo feito que foi pausado e o que tem para testar e qual a proxima coisa a ser colocada para fazer?" | Respondido |
+| 20h01 | "o que foi feito para arrumar os quadros brancos, explique" | Explicado o conserto C |
+| 20h04 | "pode mudar, mas porque antes, ele não procurar gravura e saia certo?" | D-698 |
+| 20h04 | "responda minhas perguntas na central também" | 37 respostas passadas (D-669 a D-697); Registro 13/11 |
+| 20h11 | "1- novo problema achado no branco e preto 2- quadrado branco na capa? investigar esses quadrados , coloque agora um agente para pesquisar isso e ver se acontece em outros filtros ou partes do programa." (2 prints) | Investigação `2aec9494`; prints 13-01 e 13-02 |
+| 20h15 | "1- f1 livros recentes está mal diagramado. 2- não tem um botão para aplicar o filtro só em uma pagina / o que tem para terminar em livros recentes?" (prints) | Prints 13-03 (F1) e 13-04 (filtro numa página); F1 anotado (não urgente); o botão do filtro numa página foi respondido |
+| 20h15 | "você deu acesso aos prints que eu mandei no prompt para o gerente?" | Respondido; prints guardados na sessão 6 |
+| 20h18 | "deixe anotado, eu quero poder abrir varias abas no programa, deixe como ideia, de varios livros." | Lista de espera |
+| 20h20 | "sobre o livros recentes, ele não trava mas demora para carregar, quando eu volto para um livro que já tinha sido aberto, ele nem carrega, como se já tivesse sido carregado, isso pesa o programa? será que o programa está deixando dois arquivos carregados?" | Teste do Livros recentes: não fecha mais. A memória ao trocar de livro foi anotada para medir (não urgente) |
+| 20h32 | "pode juntar agora, não precisa rodar teste, eu vou rodar no manual" | Junções `ffb1eb8f` e `c5fae111` |
+| 20h34 | "eu não testei o girar, pois não sabia como testar, nem sei onde fica esse botão girar todas" | Girar com a capa aberta continua sem o teste dele |
+| 20h35 | "por favor enumere os topicos que eu falei de problemas aqui nessa conversa" | Lista dada no chat |
+| 20h55 | "Não é urgente, quero resolver os problemas urgentes" | Resposta a "Quer que eu ponha um agente para o problema 3, o da lista de atalhos do F1?" (20h35): sem agente para o F1; os urgentes primeiro |
+| 20h55-20h59 | "Para escolher aplicar em todas tem que estar dentro de um painel de outras funções, não existe um painel do girar" · "Pode ser, e ai as opções dele apareceriam em propriedades quando fosse selecionado né?" · "Como o propriedades funciona hoje? Ele funciona através da escolha de ferramentas né?" | Proposta "Girar como ferramenta" (as opções em Propriedades). Não foi à Central porque ele respondeu "Não" às 21h10 (§8) |
+| 21h04 | "Pera ai, vamos recapitular de forma mais simples, quais os consertos que tem que fazer?" | Respondido |
+| 21h06 | "Ok" (ao lugar do botão do Tirar o fundo) | D-699 |
+| 21h07 | "O problema do filtro foi resolvido do mágico pro e tudo mais?" | Respondido (quadrados C) |
+| 21h09-21h11 | "Ok, e o que está sendo feito agora?" · "Não" · "Não estou falando disso, estou falando do branco e preto" · "Não quero consertar isso agora, quero saber o que estava em execução" | D-700 suspensa; agente parado (**erro da gerente**, §7) |
+| 21h13-21h16 | Regra "sem gambiarra" (§1) | CLAUDE.md §11.12 |
+| 21h36 | "Respondeu a central?" | Respondido |
+| 21h44 | "Pode fazer agora essas provas" | `f05237ee` |
+| 21h50 | "Quantos agentes estão trabalhando e no que?" | Respondido |
+| 22h34-22h37 | "1- funcionando 2- funcionando 3- funcionando" · "estou falando dos testes que tinha que fazer" · "os tres consertos que você fez hoje" | Livro D-648, D-649 e D-668 testadas (`fa1b4ae7`, `e7276f72`) |
+| 22h52-23h08 | Comentário vale como resposta (§1) | Página da Central versão 43 |
+| 23h00 | "fez todas as mudanças que eu pedi" · "?" | Respondido às 23h01: "Sim, fiz as mudanças que você pediu na Central." |
+| 22h50-23h19 (Central) | Comentários nas perguntas: `n0411-caderno-pagina-em-branco` ("Você ainda não explicou o que está acontecendo"), `v-capa-aviso` ("mas vai ter um botão para fazer isso antes do imprimir livros?"), `nm-jeito-pb`, `nm-desligar-marcadas` ("Eu não entendi o que você quis dizer."), `nm-tela-livros` ("Suas respostas ainda não são claras...") | Respondidos na página, entre 22h55 e 00h03; voltaram para ele (§4) |
+| 22h58 (Central) | au-d-523, com "Pôr na lista de fazer": "Não pode ser usado somente para achar texto e aplicar filtros e tirar o fundo como o internet archive, por que não chegamos ainda no resultado que o internet arquive faz." Um segundo depois trocou para "Fica para depois" | **Sem destino:** a resposta da gerente e a D-704 só falam do "Fica para depois" (§8) |
+| 23h05-23h07 | Regras de perguntar (§1) | CLAUDE.md §11.13 |
+| 23h23 | "Sim, pode, mas tu fez as mudanças na central? revisa as minhas respostas e perguntas porque eu não estou conseguindo entender o que você falou lá e o que eu tenho que responder, revise conforme as novas regras, e confira que todo agente que for escrever nela tenha que ver as regras [...]" | "Sim, pode" = juntar o Tirar o fundo (D-703, `8ae6321e`); §10; reescrita |
+| 23h30 | "bota um agente para rever as perguntas segundo as novas regras, ver as perguntas que eu coloquei não entendi, onde eu pedi novas explicações para ele pegar a ideia, esse agente tem que ter acesso ao historico né [...]" | Reescrita `a4ed18ed` |
+| 14/11 00h09 | "os consertos em que pé estamos?" | Respondido; pergunta "Quer responder essas primeiro?" (§8) |
+| 02h23 | "acabou tudo?" | Respondido |
+| 02h25 | "essas 133 já foram tudo feitas?" | Respondido: não, são 4 grupos; pergunta de arquivar (§0) |
+| 03h3x | `/checkpoint` | Esta parte |
+
+## 4. Central (https://claude.ai/artifact/XNFrsdVR7q4K8cBcxNftZy, página versão 43)
+
+- **Respondidas neste checkpoint (14/11, 03h42 UTC):**
+  - au-d-523, au-d-565 e au-d-567, "Fica para depois";
+  - au-d-544, "Concordo, fica assim" (as quatro respondidas por ele entre 22h58 e 23h03 de 13/11);
+  - au-d-574: dúvida de 10/11 que nunca tinha sido respondida, "No caso já sair em livreto ao processar tem que ser uma opção né?" Resposta: sim, é a caixinha do "Confirmar e processar" que ele escolheu em 31/10 (D-575), ainda não feita. Fechada.
+  - Tudo isso está no Livro como D-704.
+- **Ordens:** nenhuma nova.
+- **Esperam ele na Central:**
+  - as 4 da revisão do código (`perg-revisao-codigo`, reescritas), que destravam o girar numa regra só;
+  - **10 que voltaram para ele**, com a resposta da gerente depois do comentário dele:
+    - `v-capa-aviso`: aviso dos pares trocados;
+    - `b-abas-nomes`, `b-pdf-desatualizado` e `mover-rotulo-antes`: entre as 8 que destravam;
+    - `k0611-margens-de-fabrica`, `n0411-caderno-pagina-em-branco` e `n0411-inverter-letra-clara`;
+    - `nm-jeito-pb`, `nm-desligar-marcadas` e `nm-tela-livros`: nomes de botão;
+  - as outras de `nomes-28-10` e as conferências das auditorias.
+
+## 5. Testes que ele deve (com prova)
+
+- **Tirar o fundo** (`8ae6321e`, depois do último teste dele, às 22h34). Roteiro em `relatorios/fundo-2026-11-13/relatorio.md`:
+  1. Siebmacher, páginas 3 a 6.
+  2. "Tirar o fundo".
+  3. Trocar o filtro, ou rodar o Automático: o papel continua branco.
+  4. "Desfazer o tirar o fundo" numa página: só essa página volta com o papel.
+- **Girar com a capa aberta** (D-638, D-640, D-645). Ele disse em 20h34: "eu não testei o girar, pois não sabia como testar, nem sei onde fica esse botão girar todas". Dar o roteiro passo a passo, com onde fica cada botão.
+
+## 6. Descobertas de comportamento real
+
+- **Central, gravação:**
+  - Um `gerenteEm` no futuro esconde o comentário dele e deixa a pergunta reaberta. Usar sempre `date -u`.
+  - Ler a versão logo antes de gravar. Ele responde ao vivo, e o lote falha por versão; aí é ler de novo e refazer.
+- **Central, lógica da página:**
+  - `reaberta(r) = r.reabrir || (opcao=="nao-entendi" && gerente && gerenteEm > em)`.
+  - `esperando = (!gerente && !lida) || volta===true`.
+  - Para fechar, a gerente usa `opcao: "encerrada"`.
+- **Python no Windows:**
+  - Heredoc com python vazio abre um REPL que trava. Escrever o script com a ferramenta Write.
+  - Impressão em cp1252 quebra; usar `-X utf8`.
+
+## 7. Erros da gerente nesta sessão (não repetir)
+
+- Perguntou "Posso mandar consertar assim?" (21h08), leu o "Ok, e o que está sendo feito agora?" (21h09) como sim e abriu o agente do Preto e branco. Ele: "Não quero consertar isso agora". Um "Ok" no começo de outra pergunta não é sim.
+- Disse "Vou pôr as 4 na Central agora" (20h59, as perguntas do agente dos quadrados na capa) e não pôs.
+- Deixou o relatório da sessão 6 sem as frases dele de 22h52 em diante, até este checkpoint (memória `feedback_testes_guiados_anotar_e_mostrar`).
+- Gravou `gerenteEm` no futuro; o comentário dele sumiu da página. Ele: "meu comentario sumiu, não consigo mais ver ele arrume isso".
+- Tirou o botão "comentar" junto com a opção. Ele: "você tirou a opção de comentar e responder nos botões". O botão voltou.
+- Afirmou "palavra numa cor só" sem prova; a prova mostrou duas cores. Corrigido na Central.
+- Disse "133" conferências e sugeriu arquivar tudo. A conta certa é 148, e 49 delas (32 com defeito e 17 escolhas da gerente) precisam dele. Ele perguntou: "essas 133 já foram tudo feitas?"
+
+## 8. Perguntas em aberto (texto exato, onde, quando)
+
+- **Chat, 14/11 02h25:** arquivar as conferências antigas (texto no §0, passo 2). Sem resposta.
+- **Chat, 14/11 00h09:** "O que mais destrava agora são as 4 perguntas da revisão do código, já reescritas na Central: com elas, o girar numa regra só pode começar. Quer responder essas primeiro? Eu sugiro que sim." Sem resposta.
+- **Chat, 13/11 21h10:** "Posso levar essas perguntas à Central agora? Eu sugiro que sim." Era sobre as duas da capa e a proposta do Girar como ferramenta. **Ele respondeu "Não" (21h10)**, e a gerente: "Certo, não levo nada à Central agora". Se for para levar, tem de ser pergunta nova, numa hora em que ele queira.
+- **Chat, 13/11 17h40:** "Quer que eu leia agora as três fichas da memória?" Sem resposta. Provavelmente superada, porque a sessão seguiu.
+- **Central, au-d-523, 13/11 22h58, comentário dele sem resposta:** "Não pode ser usado somente para achar texto e aplicar filtros e tirar o fundo como o internet archive, por que não chegamos ainda no resultado que o internet arquive faz."
+  - Leitura da gerente, não confirmada: ele quer usar o leitor de texto agora, para achar onde está a letra e tratar a letra e o papel separados, como o Internet Archive faz (archive-pdf-tools).
+  - Falta responder na página, com print, pelo §11.13.
+- **Do agente do Tirar o fundo, não levadas à Central.** Texto em `relatorios/fundo-2026-11-13/relatorio.md`, perguntas 2 a 4; a 1 já foi respondida (D-703):
+  - 2: "O 'só neste pedaço': numa página em 'Tirar o fundo', um pedaço marcado em 'Original' mostra o papel velho dentro do pedaço (decidido em 05/10, com prova). Deve deixar de trazer o papel velho, como manda 'nenhum filtro deve fazer o fundo voltar'? Sugestão: sim."
+  - 3: "Na página 'Original com o fundo tirado', a faixa diz 'Esta página vai sair em Original.' Quer que diga a frase do fundo ('Vou tirar o fundo desta página...')? Sugestão: sim."
+  - 4: "O menu Filtro não tem 'Tirar o fundo'; o 'Desfazer o tirar o fundo' ficou no fim do menu. Quer também o 'Tirar o fundo' no menu, logo acima? Sugestão: sim."
+- **Do agente dos quadrados na capa** (`relatorios/quadrados-capa-2026-11-13/ONDE-PAREI.md`, perguntas 1 a 4):
+  - a 2 virou a D-700, que está suspensa;
+  - **a 1, a 3 e a 4 não foram à Central** e não foram respondidas;
+  - a 1: "13-01: com 'Respeitar' desmarcada, a capa azul sai toda preta, como a D-586 diz. Está certo assim, sendo defeito só os retângulos brancos?";
+  - a 3: o título escrito em cima da capa colorida;
+  - a 4: o amarelo da *Matemática* e o conserto C.
+  - A pergunta 4 mudou: o C já foi juntado e testado por ele.
+
+## 9. Fila e pendências
+
+- **Decididos, na fila, não começados:**
+  - D-701: cada palavra numa cor só;
+  - D-702: o "fechar" do "Montar para imprimir" vira um X e o "O que vai sair" fica à vista;
+  - D-669: as caixinhas do Automático voltam desmarcadas;
+  - D-670: "Imprimir só algumas folhas";
+  - D-693: o aviso dos pares trocados (falta a resposta);
+  - D-678 a D-690: os 11 erros do Lusíadas, com prova antes de cada um (D-691).
+- **Depois das 4 respostas da revisão:** girar numa regra só (D-665, D-666, o girar da grade).
+- **Anotados, não urgentes:**
+  - a lista de atalhos do F1, mal diagramada;
+  - os textos cortados na barra de baixo;
+  - medir a memória ao trocar de livro;
+  - "Abas no alto" esconde a barra de menus (conferir);
+  - "desligar as marcadas" deixa páginas "apagada";
+  - o amarelo da *Matemática*.
+- **Consertar `C:\Users\fotog\.claude\scripts\falas_da_conversa.py`:** listar também as mensagens do meio do trabalho (`queue-operation` com `content`).
+- **Limpar os worktrees velhos** (há mais de 150): perguntar antes (CLAUDE.md §10.9).
+
+## 10. Próximo passo recomendado
+
+Pegar a resposta da pergunta de arquivar (§0). Depois pedir que ele responda as 4 da revisão do código, que destravam o girar numa regra só.
+
+## 11. Como rodar e testar
+
+- Programa (versão de teste): `D:\programas\EditorImpressao\.claude\worktrees\obra-juncao`, com `..\..\..\.venv\Scripts\python.exe main.py`. Ele abre pelo atalho "(desenvolvimento)".
+- Um arquivo de teste: `.venv\Scripts\python.exe -m pytest tests\<arquivo> -q`, rodado dentro do obra.
+- **Última rodada desta sessão:**
+  - `tests/test_decisoes_gravura_a_mao.py`: 15 passaram.
+  - `tests/test_tirar_fundo_no_programa.py`: passou.
+  - GitHub do fundo `43518526963`: só a prova antiga que depois mudou.
+  - **A suíte inteira não rodou no PC depois das junções**, por ordem dele: "não precisa rodar teste, eu vou rodar no manual".
+
+## 12. Ambiente
+
+Nada instalado nesta sessão. A Central está na versão 43 da página. Os worktrees de provas desta sessão são `provas-central` e `prints-central` (detached).
 
 ---
 

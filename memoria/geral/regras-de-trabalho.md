@@ -155,3 +155,9 @@ filtro, mudar tela, pôr ou tirar controle, mudar formato dos dados, mexer no de
 - **Só páginas que vão ser impressas:** nunca lombada, capa ou contracapa de couro/papelão.
 - Quantos agentes: dois implementadores (as 4 ferramentas começadas; as 7 não começadas) + verificador quando entregarem (Samuel, 22/10).
 - Juntar no fim: quando o layout 4 a 7 e as 11 ferramentas terminarem, junta tudo num ramo de junção → GitHub → PC → `fase-1` (Samuel, 22/10; ajuste de segurança da gerente no plano aprovado).
+
+## Regras de 13/11/2026 ([PARTE -35](../../historico/Editor%20de%20Impressao%20-%20resumo%20para%20o%20Claude.md) §1)
+
+- **Sem gambiarra (CLAUDE.md §11.12):** uma ferramenta, uma regra, um lugar só no código. Pedido: "Lembre de que o agente não pode fazer gambiarras como na outra ferramenta nossa que fazia várias gambiarras e funcionava de maneira diferente em vários lugares." A regra conta a história do girar com 7 caminhos e dos 17 remendos de 10/11.
+- **Como perguntar e responder ao Samuel (CLAUDE.md §11.13):** 10 regras e uma lista de conferência, tiradas de 106 "Ainda não entendi" e 176 comentários dele. Vale para o chat e para a Central.
+- **Central (CLAUDE.md §10):** agente não grava na Central; entrega a pergunta pronta no ONDE-PAREI; a gerente confere o §11.13 antes de publicar.
