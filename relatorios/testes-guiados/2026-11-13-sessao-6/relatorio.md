@@ -46,7 +46,7 @@ Prints e frases do Samuel, guardados na hora. Programa: o da versão de teste (r
 ## Regra lembrada por ele (chat)
 
 - "Lembre de que o agente não pode fazer gambiarras como na outra ferramenta nossa que fazia várias gambiarras e funcionava de maneira diferente em vários lugares." Repassada ao agente do "Tirar o fundo" na hora (uma regra só no código; CLAUDE.md §11.10, D-667).
-- Preto e branco: o "Ok" foi lido como sim e o agente da D-700 foi aberto; ele: "Não estou falando disso, estou falando do branco e preto" · "Não quero consertar isso agora, quero saber o que estava em execução". Agente parado, D-700 suspensa.
+- Preto e branco: o "Ok" foi lido como sim; quando a gerente disse que ia abrir o agente da D-700, ele respondeu "Não" (21h10), mas o agente foi aberto; ele: "Não estou falando disso, estou falando do branco e preto" · "Não quero consertar isso agora, quero saber o que estava em execução". Agente parado, D-700 suspensa.
 
 ## Teste dos três consertos juntados (chat)
 
@@ -87,3 +87,7 @@ Prints e frases do Samuel, guardados na hora. Programa: o da versão de teste (r
 - 00h09: "os consertos em que pé estamos?"
 - 02h23: "acabou tudo?"
 - 02h25: "essas 133 já foram tudo feitas?" Resposta: não; das 148 abertas, 89 funcionam, 32 funcionam com defeito, 17 são escolhas da gerente e 10 ficaram para depois. A proposta de arquivar só as 89 e as 10 espera a resposta dele.
+
+## Correção dele no checkpoint (chat, 14/11)
+
+- "eu não escrevi a levar a central, veja bem para o que foi o meu não" → o "Não" de 21h10 era para não abrir o agente do Preto e branco, não sobre a Central. Corrigido no handoff (PARTE -35), no Livro (D-700) e na memória.

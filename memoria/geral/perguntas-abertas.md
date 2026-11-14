@@ -16,7 +16,7 @@ lista com nome entre crases já aparece como decidida no Registro.
 - **Esperam ele na Central:** `perg-revisao-codigo` (4, destravam o girar numa regra só); `v-capa-aviso` (aviso dos pares, D-693); `nomes-28-10`; as conferências das auditorias.
 - **Voltaram para ele na Central (10):** `v-capa-aviso`, `b-abas-nomes`, `b-pdf-desatualizado`, `mover-rotulo-antes`, `k0611-margens-de-fabrica`, `n0411-caderno-pagina-em-branco`, `n0411-inverter-letra-clara`, `nm-jeito-pb`, `nm-desligar-marcadas`, `nm-tela-livros`.
 - **Comentário dele sem resposta (au-d-523, 13/11 22h58):** "Não pode ser usado somente para achar texto e aplicar filtros e tirar o fundo como o internet archive, por que não chegamos ainda no resultado que o internet arquive faz." Falta responder na página, com print.
-- **Não levadas à Central ainda:** as perguntas 2 a 4 do agente do Tirar o fundo (`relatorios/fundo-2026-11-13/relatorio.md`); as 1, 3 e 4 do agente dos quadrados na capa (`relatorios/quadrados-capa-2026-11-13/ONDE-PAREI.md`; a 2 virou a D-700, suspensa). A proposta "Girar como ferramenta": ele disse "Não" a levar à Central em 13/11 21h10.
+- **Não levadas à Central ainda:** as perguntas 2 a 4 do agente do Tirar o fundo (`relatorios/fundo-2026-11-13/relatorio.md`); as 1, 3 e 4 do agente dos quadrados na capa (`relatorios/quadrados-capa-2026-11-13/ONDE-PAREI.md`; a 2 virou a D-700, suspensa). A proposta "Girar como ferramenta" e as duas da capa: a pergunta "Posso levar essas perguntas à Central agora?" (13/11 21h10) está sem resposta (o "Não" dele das 21h10 era sobre não abrir o agente do Preto e branco).
 
 ## 0000000a. Atualização de 10/11/2026, noite (vale sobre o resto; [PARTE -34](../../historico/Editor%20de%20Impressao%20-%20resumo%20para%20o%20Claude.md) §4)
 

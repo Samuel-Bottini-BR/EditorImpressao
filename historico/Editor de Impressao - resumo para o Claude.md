@@ -99,7 +99,7 @@ O Samuel pediu o checkpoint com `/checkpoint`. Fontes: a conversa salva, o git e
   - O amarelo da capa da *Matemática* é defeito antigo e também aparece no conserto C.
   - Relatório e 11 imagens em `relatorios/quadrados-capa-2026-11-13/`.
 - **Suspenso:** D-700, conserto da sombra do Preto e branco.
-  - A gerente perguntou "Posso mandar consertar assim?" (21h08). Depois leu o "Ok, e o que está sendo feito agora?" (21h09) como sim e abriu um agente. **Erro.** Ele disse: "Não estou falando disso, estou falando do branco e preto" e "Não quero consertar isso agora, quero saber o que estava em execução".
+  - A gerente perguntou "Posso mandar consertar assim?" (21h08). Depois leu o "Ok, e o que está sendo feito agora?" (21h09) como sim e disse que ia abrir o agente. Ele respondeu "Não" (21h10), mas o agente foi aberto mesmo assim. **Erro.** Ele disse ainda: "Não estou falando disso, estou falando do branco e preto" e "Não quero consertar isso agora, quero saber o que estava em execução".
   - O agente foi parado. O ramo `sombra-cor-2026-11-13` (`3c758c70`) só tem a linha do Livro. Registro em `c13ec987`.
 - **Central reescrita no §11.13** (`a4ed18ed`, no fase-1, pasta `relatorios/central-reescrita-2026-11-13/`):
   - 8 que destravam consertos e 20 de nomes de botão, reescritas uma por uma. Print novo em 4 das 8 e em 3 das 20 (as três do "não entendi").
@@ -133,7 +133,7 @@ O Samuel pediu o checkpoint com `/checkpoint`. Fontes: a conversa salva, o git e
 | 20h34 | "eu não testei o girar, pois não sabia como testar, nem sei onde fica esse botão girar todas" | Girar com a capa aberta continua sem o teste dele |
 | 20h35 | "por favor enumere os topicos que eu falei de problemas aqui nessa conversa" | Lista dada no chat |
 | 20h55 | "Não é urgente, quero resolver os problemas urgentes" | Resposta a "Quer que eu ponha um agente para o problema 3, o da lista de atalhos do F1?" (20h35): sem agente para o F1; os urgentes primeiro |
-| 20h55-20h59 | "Para escolher aplicar em todas tem que estar dentro de um painel de outras funções, não existe um painel do girar" · "Pode ser, e ai as opções dele apareceriam em propriedades quando fosse selecionado né?" · "Como o propriedades funciona hoje? Ele funciona através da escolha de ferramentas né?" | Proposta "Girar como ferramenta" (as opções em Propriedades). Não foi à Central porque ele respondeu "Não" às 21h10 (§8) |
+| 20h55-20h59 | "Para escolher aplicar em todas tem que estar dentro de um painel de outras funções, não existe um painel do girar" · "Pode ser, e ai as opções dele apareceriam em propriedades quando fosse selecionado né?" · "Como o propriedades funciona hoje? Ele funciona através da escolha de ferramentas né?" | Proposta "Girar como ferramenta" (as opções em Propriedades). **Não foi à Central e ele não respondeu se pode levar** (§8) |
 | 21h04 | "Pera ai, vamos recapitular de forma mais simples, quais os consertos que tem que fazer?" | Respondido |
 | 21h06 | "Ok" (ao lugar do botão do Tirar o fundo) | D-699 |
 | 21h07 | "O problema do filtro foi resolvido do mágico pro e tudo mais?" | Respondido (quadrados C) |
@@ -197,6 +197,7 @@ O Samuel pediu o checkpoint com `/checkpoint`. Fontes: a conversa salva, o git e
 ## 7. Erros da gerente nesta sessão (não repetir)
 
 - Perguntou "Posso mandar consertar assim?" (21h08), leu o "Ok, e o que está sendo feito agora?" (21h09) como sim e abriu o agente do Preto e branco. Ele: "Não quero consertar isso agora". Um "Ok" no começo de outra pergunta não é sim.
+- Leu o "Não" dele (21h10m19s, que dizia "não abra o agente do Preto e branco") como resposta a uma pergunta da Central feita 15 segundos depois, e abriu o agente mesmo assim. Antes de ler uma resposta curta, conferir a hora dela e a pergunta que veio logo antes.
 - Disse "Vou pôr as 4 na Central agora" (20h59, as perguntas do agente dos quadrados na capa) e não pôs.
 - Deixou o relatório da sessão 6 sem as frases dele de 22h52 em diante, até este checkpoint (memória `feedback_testes_guiados_anotar_e_mostrar`).
 - Gravou `gerenteEm` no futuro; o comentário dele sumiu da página. Ele: "meu comentario sumiu, não consigo mais ver ele arrume isso".
@@ -208,7 +209,7 @@ O Samuel pediu o checkpoint com `/checkpoint`. Fontes: a conversa salva, o git e
 
 - **Chat, 14/11 02h25:** arquivar as conferências antigas (texto no §0, passo 2). Sem resposta.
 - **Chat, 14/11 00h09:** "O que mais destrava agora são as 4 perguntas da revisão do código, já reescritas na Central: com elas, o girar numa regra só pode começar. Quer responder essas primeiro? Eu sugiro que sim." Sem resposta.
-- **Chat, 13/11 21h10:** "Posso levar essas perguntas à Central agora? Eu sugiro que sim." Era sobre as duas da capa e a proposta do Girar como ferramenta. **Ele respondeu "Não" (21h10)**, e a gerente: "Certo, não levo nada à Central agora". Se for para levar, tem de ser pergunta nova, numa hora em que ele queira.
+- **Chat, 13/11 21h10m34s:** "Posso levar essas perguntas à Central agora? Eu sugiro que sim." Era sobre as duas da capa e a proposta do Girar como ferramenta. **Sem resposta.** O "Não" dele (21h10m19s) veio antes dessa pergunta. Ele respondia à frase da gerente das 21h09: "Vou anotar o seu 'ok' e abrir o agente dos blocos brancos". Ou seja: não abrir o agente do Preto e branco. A gerente leu esse "Não" como resposta à Central, duas vezes: na hora (21h10m40s, "Certo, não levo nada à Central agora") e no checkpoint. Ele corrigiu em 14/11: "eu não escrevi a levar a central, veja bem para o que foi o meu não".
 - **Chat, 13/11 17h40:** "Quer que eu leia agora as três fichas da memória?" Sem resposta. Provavelmente superada, porque a sessão seguiu.
 - **Central, au-d-523, 13/11 22h58, comentário dele sem resposta:** "Não pode ser usado somente para achar texto e aplicar filtros e tirar o fundo como o internet archive, por que não chegamos ainda no resultado que o internet arquive faz."
   - Leitura da gerente, não confirmada: ele quer usar o leitor de texto agora, para achar onde está a letra e tratar a letra e o papel separados, como o Internet Archive faz (archive-pdf-tools).
