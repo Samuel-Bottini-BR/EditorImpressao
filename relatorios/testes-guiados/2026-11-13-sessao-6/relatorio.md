@@ -46,7 +46,7 @@ Prints e frases do Samuel, guardados na hora. Programa: o da versão de teste (r
 ## Regra lembrada por ele (chat)
 
 - "Lembre de que o agente não pode fazer gambiarras como na outra ferramenta nossa que fazia várias gambiarras e funcionava de maneira diferente em vários lugares." Repassada ao agente do "Tirar o fundo" na hora (uma regra só no código; CLAUDE.md §11.10, D-667).
-- Preto e branco: o "Ok" foi lido como sim; quando a gerente disse que ia abrir o agente da D-700, ele respondeu "Não" (21h10), mas o agente foi aberto; ele: "Não estou falando disso, estou falando do branco e preto" · "Não quero consertar isso agora, quero saber o que estava em execução". Agente parado, D-700 suspensa.
+- Preto e branco: o "Ok" foi lido como sim; quando a gerente disse que ia abrir o agente da D-700, ele escreveu "Não" às 21h10m19s; o agente foi aberto 10 segundos depois (21h10m29s), porque o "Não" só chegou à gerente no fim da resposta, e ela o leu como resposta a outra pergunta; ele: "Não estou falando disso, estou falando do branco e preto" · "Não quero consertar isso agora, quero saber o que estava em execução". Agente parado, D-700 suspensa.
 
 ## Teste dos três consertos juntados (chat)
 
@@ -91,3 +91,4 @@ Prints e frases do Samuel, guardados na hora. Programa: o da versão de teste (r
 ## Correção dele no checkpoint (chat, 14/11)
 
 - "eu não escrevi a levar a central, veja bem para o que foi o meu não" → o "Não" de 21h10 era para não abrir o agente do Preto e branco, não sobre a Central. Corrigido no handoff (PARTE -35), no Livro (D-700) e na memória.
+- "procure você para ver se tem algo errado" (14/11, 05h23) → a gerente conferiu pelas horas da conversa salva: o "Não" foi escrito às 21h10m19s, o agente foi aberto às 21h10m29s e o "Não" só chegou à gerente às 21h10m38s. O texto "abriu mesmo assim" estava errado e foi corrigido.
