@@ -507,39 +507,58 @@ def fase_b():
 
 
 def sino_que_muda(j):
-    """D-679, o caminho do Kaique: na "Antes de processar", "Selecionar todas" + "está bom nas
-    marcadas" (todos os avisos dados por vistos), fechar a janela sem processar; depois, sem
-    mexer em nada, esperar; e depois só andar pelas páginas (setas). Anota o sino a cada passo."""
+    """D-679, o caminho do Kaique: na "Antes de processar", "Mostrar: Qualidade baixa" +
+    "Selecionar todas" + "está bom nas marcadas"; a janela volta com o que sobrou: print e fechar no
+    X (não processa). Depois, sem mexer em nada, esperar; e depois só andar pelas páginas (setas).
+    Anota o sino a cada passo."""
     from PySide6.QtCore import QTimer
     from PySide6.QtWidgets import QApplication
+    from ui.janela_confirmar import JanelaConfirmar
     from ui.janela_dos_avisos import JanelaDosAvisos
-    feito = {"fim": False}
+    feito = {"vezes": 0, "fim": False}
 
     def olhar():
         for w in QApplication.topLevelWidgets():
             try:
-                if not w.isVisible() or w.property("_visto") or not isinstance(w, JanelaDosAvisos):
+                if not w.isVisible() or w.property("_visto"):
                     continue
             except RuntimeError:
                 continue
+            if isinstance(w, JanelaConfirmar):          # não era para chegar aqui: "voltar"
+                w.setProperty("_visto", True)
+                anotar("AVISO-confirmar-abriu-no-teste-do-sino", True)
+                w.reject()
+                return
+            if not isinstance(w, JanelaDosAvisos):
+                continue
             w.setProperty("_visto", True)
+            feito["vezes"] += 1
             base.esperar(1.0)
-            base.clique(w, w.botao_todas); base.esperar(0.8)
-            base.clique(w, w.botao_aceitar); base.esperar(2.0)
-            p(w, "avisos-depois-de-esta-bom-nas-marcadas")
-            anotar("avisos-depois-de-esta-bom", base.textos(w)[:4])
-            base.user32.PostMessageW(int(w.winId()), base.WM_CLOSE, 0, 0)
-            feito["fim"] = True
+            if feito["vezes"] == 1:
+                anotar("avisos-1", {"frase": w.rotulo.text(),
+                                    "motivos": [w.combo_motivo.itemText(i) for i in range(w.combo_motivo.count())]})
+                qual = next((i for i in range(w.combo_motivo.count())
+                             if "ualidade" in w.combo_motivo.itemText(i)), 0)
+                w.combo_motivo.setCurrentIndex(qual); base.esperar(0.8)
+                base.clique(w, w.botao_todas); base.esperar(0.8)
+                anotar("avisos-1-marcadas", len(w.avisos_marcados()))
+                p(w, "avisos-qualidade-baixa-todas-marcadas")
+                base.clique(w, w.botao_aceitar); base.esperar(1.5)
+            else:
+                p(w, "avisos-o-que-sobrou")
+                anotar("avisos-2", {"frase": w.rotulo.text()})
+                base.user32.PostMessageW(int(w.winId()), base.WM_CLOSE, 0, 0)
+                feito["fim"] = True
             return
 
     relogio = QTimer(); relogio.setInterval(300); relogio.timeout.connect(olhar); relogio.start()
     anotar("sino-antes-do-esta-bom", sino(j))
     base.clique(j, j.tela_conferir.botao_processar)
     comeco = time.time()
-    while time.time() - comeco < 60 and not feito["fim"]:
+    while time.time() - comeco < 90 and not feito["fim"]:
         base.esperar(0.5)
-    relogio.stop()
     base.esperar(2)
+    relogio.stop()
     anotar("sino-logo-depois-do-esta-bom", sino(j))
     p(j, "sino-logo-depois-do-esta-bom")
     for s in (10, 30, 60):
@@ -547,7 +566,7 @@ def sino_que_muda(j):
         anotar(f"sino-parado-{s}s-depois-do-esta-bom", sino(j))
     ir_pagina(j, 1)
     for n in range(1, 41):
-        base.tecla(j, 0x27); base.esperar(0.7)
+        base.tecla(j, 0x27); base.esperar(0.8)
         if n % 10 == 0:
             anotar(f"sino-depois-de-{n}-setas", {**sino(j), "pagina": j.tela_conferir.indice_pagina + 1})
     base.esperar(20)
@@ -669,12 +688,49 @@ def resto_da_fase_a(j):
     processar(j, nome_novo="rodada-2.pdf", prints="proc2-")
 
 
+def fase_c():
+    """D-686 com a Mão (o caso do Kaique): reabre, escolhe a Mão na trilha, vai à página 133 (já
+    tirada do livro na fase b) e à 132 (no livro), e fotografa a faixa das duas."""
+    from ui.widgets.editor_selecao import FERRAMENTA_MAO
+    j = base.nova_janela(LARGURA, ALTURA)
+    _porteiro = Porteiro()
+    abrir(j)
+    ferramenta(j, FERRAMENTA_MAO)
+    for n1 in (132, 133):
+        ir_pagina(j, n1)
+        base.esperar(2)
+        anotar(f"mao-p{n1}", estado(j))
+        p(j, f"mao-p{n1}")
+    # D-688: a janela do Automático do tamanho da tela do notebook do Kaique (1280 x 657), onde
+    # a lista das etapas não cabe; rolar a lista até o fim (a roda do mouse não chega fora da
+    # tela: a barra é posta no fim, como a roda faria) e marcar "6 Margens iguais" com o clique
+    from core import automatico as A
+    jan = abrir_janela_grande(j)
+    jan.resize(1280, 657); base.esperar(3)
+    lista = jan.painel_de_opcoes.lista
+    barra = lista.verticalScrollBar()
+    for etapa in (A.MARGENS, A.CADERNOS):
+        barra.setValue(barra.maximum()); base.esperar(1.0)
+        antes = barra.value()
+        anotar(f"lista-{etapa}-rolada", {"barra": antes, "max": barra.maximum()})
+        p(jan, f"lista-rolada-antes-de-marcar-{etapa}")
+        item = lista.item_da_etapa(etapa)
+        marcado_antes = item.checkState()
+        marcar_etapa(jan, etapa, item.checkState() != 2, rolar=False)
+        base.esperar(1.5)
+        anotar(f"lista-depois-de-marcar-{etapa}", {"antes": antes, "depois": barra.value(),
+                                                     "max": barra.maximum(), "estado_antes": int(marcado_antes.value) if hasattr(marcado_antes, "value") else int(marcado_antes)})
+        p(jan, f"lista-depois-de-marcar-{etapa}")
+    jan.reject(); base.esperar(1.5)
+    base.fechar(j)
+
+
 def main():
     global LOG
     base.preparar(str(RAIZ), str(TRAB), limpar=False)
     LOG = open(PASTA / "scripts" / f"anotacoes-{FASE}.txt", "a", encoding="utf-8")
     anotar("comeco", {"fase": FASE, "raiz": str(RAIZ)})
-    {"a": fase_a, "mao": fase_a, "b": fase_b}[FASE]()
+    {"a": fase_a, "mao": fase_a, "b": fase_b, "c": fase_c}[FASE]()
     anotar("fim", FASE)
     LOG.close()
 

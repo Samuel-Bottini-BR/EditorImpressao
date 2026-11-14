@@ -1,0 +1,10 @@
+13:20:35 comeco => {"fase": "c", "raiz": "D:\\programas\\EditorImpressao\\.claude\\worktrees\\lusiadas-provas"}
+13:20:52 abriu-em-s => 2.3
+13:21:00 mao-p132 => {"pagina": 132, "folha": 67, "aba": "marcar", "ferramenta_trilha": "mao", "ferramenta_editor": "mao", "mostrar": "uma", "comparando": false, "marcacoes_botao": false, "editor_mostra_marcacao": false, "editor_mostra_achadas": false, "faixa": "Esta página vai sair em Preto e branco.", "paginas": 134, "vao_ao_pdf": 133, "folhas_divididas": 67, "pixmap_editor": [551, 935], "area_editor": [0, 0], "sino": 0, "quantas_com_duvida": 0, "botao_alertas": "tudo certo  -  1 apagadas", "rodape": "página 132 de 134"}
+13:21:06 mao-p133 => {"pagina": 133, "folha": 67, "aba": "marcar", "ferramenta_trilha": "mao", "ferramenta_editor": "mao", "mostrar": "uma", "comparando": false, "marcacoes_botao": false, "editor_mostra_marcacao": false, "editor_mostra_achadas": false, "faixa": "Esta página vai sair em Preto e branco.", "paginas": 134, "vao_ao_pdf": 133, "folhas_divididas": 67, "pixmap_editor": [735, 935], "area_editor": [485, 618], "sino": 0, "quantas_com_duvida": 0, "botao_alertas": "tudo certo  -  1 apagadas", "rodape": "página 133 de 134"}
+13:21:09 abri-pelo-painel => true
+13:21:16 lista-margens-rolada => {"barra": 2, "max": 2}
+13:21:19 lista-depois-de-marcar-margens => {"antes": 2, "depois": 0, "max": 2, "estado_antes": 0}
+13:21:21 lista-cadernos-rolada => {"barra": 2, "max": 2}
+13:21:24 lista-depois-de-marcar-cadernos => {"antes": 2, "depois": 0, "max": 2, "estado_antes": 0}
+13:21:28 fim => "c"
