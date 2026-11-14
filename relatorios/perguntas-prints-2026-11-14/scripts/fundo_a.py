@@ -38,8 +38,8 @@ LIVRO, SAIDA = sys.argv[1], Path(sys.argv[2])
 SAIDA.mkdir(parents=True, exist_ok=True)
 os.environ["QT_QPA_PLATFORM"] = "offscreen"
 os.environ.setdefault("QT_QPA_FONTDIR", "C:/Windows/Fonts")
-dados = AQUI / "_dados" / "fundo"
-dados.mkdir(parents=True, exist_ok=True)
+(AQUI / "_dados").mkdir(exist_ok=True)
+dados = Path(tempfile.mkdtemp(prefix="fundo-", dir=AQUI / "_dados"))  # nova a cada rodada: livro sempre novo
 os.environ["LOCALAPPDATA"] = str(dados)
 os.environ["TEMP"] = os.environ["TMP"] = tempfile.mkdtemp(prefix="t-", dir=dados)
 sys.path.insert(0, str(RAIZ))
@@ -107,27 +107,29 @@ next(b for b in janela.aviso_do_fundo.findChildren(QAbstractButton)
 assentar(1)
 conferir = janela.tela_conferir
 
-# ---- A3: a frase da faixa (página 4)
-conferir.ir_para_pagina(3)
-conferir.paineis.abrir(PAINEL_FILTRO)
-assentar(10)
-janela.grab().save(str(SAIDA / "a3-janela-tirar-o-fundo.png"))
-info["a3_faixa_antes"] = textos_da_faixa(conferir)
-desenhar(janela, 3, "a3-pagina-tirar-o-fundo")
-conferir._escolher_filtro(ORIGINAL)          # a figurinha "Original" (tecla 1, menu: o mesmo caminho)
-assentar(10)
-janela.grab().save(str(SAIDA / "a3-janela-original.png"))
-info["a3_faixa_depois"] = textos_da_faixa(conferir)
-desenhar(janela, 3, "a3-pagina-original")
+if "so_a2" not in sys.argv:
+    # ---- A3: a frase da faixa (página 4)
+    conferir.ir_para_pagina(3)
+    conferir.paineis.abrir(PAINEL_FILTRO)
+    assentar(10)
+    janela.grab().save(str(SAIDA / "a3-janela-tirar-o-fundo.png"))
+    info["a3_faixa_antes"] = textos_da_faixa(conferir)
+    desenhar(janela, 3, "a3-pagina-tirar-o-fundo")
+    conferir._escolher_filtro(ORIGINAL)          # a figurinha "Original" (tecla 1, menu: o mesmo caminho)
+    assentar(10)
+    janela.grab().save(str(SAIDA / "a3-janela-original.png"))
+    info["a3_faixa_depois"] = textos_da_faixa(conferir)
+    desenhar(janela, 3, "a3-pagina-original")
 
-# ---- A4: o menu Filtro (página 4)
-janela._marcar_o_filtro_no_menu()
-menu = janela.menu.menus["Filtro"]
-menu.popup(janela.mapToGlobal(janela.rect().topLeft()))
-assentar(0.5)
-menu.grab().save(str(SAIDA / "a4-menu-filtro.png"))
-info["a4_menu"] = [a.text() for a in menu.actions()]
-menu.hide()
+    # ---- A4: o menu Filtro (página 4)
+    janela._marcar_o_filtro_no_menu()
+    menu = janela.menu.menus["Filtro"]
+    menu.popup(janela.mapToGlobal(janela.rect().topLeft()))
+    assentar(0.5)
+    menu.grab().save(str(SAIDA / "a4-menu-filtro.png"))
+    info["a4_menu"] = [a.text() for a in menu.actions()]
+    menu.hide()
+
 
 # ---- A2: o pedaço em Original (página 5)
 conferir.ir_para_pagina(4)
@@ -145,15 +147,16 @@ s = pagina.obter_selecao() or Selecao()
 s.acrescentar(Regiao(tipo=GRAVURA, forma=RETANGULO, pontos=[PEDACO[:2], PEDACO[2:]],
                      origem=MAO, filtro=ORIGINAL))
 pagina.guardar_selecao(s)
-conferir._selecao_mudou()
-assentar(6)
-janela.grab().save(str(SAIDA / "a2-janela-com-pedaco.png"))
+# (o pedaço é gravado direto na página, como tests/test_so_neste_pedaco_no_tirar_o_fundo.py faz;
+# a tela, se avisada, regravaria a marcação do editor por cima. O desenho é o do PDF.)
 desenhar(janela, 4, "a2-1-tirar-o-fundo-com-pedaco")
 conferir._escolher_filtro(ORIGINAL)
 assentar(4)
+pagina.guardar_selecao(s)
 desenhar(janela, 4, "a2-2-original-com-pedaco")
 conferir._escolher_filtro(PRETO_E_BRANCO)
 assentar(4)
+pagina.guardar_selecao(s)
 desenhar(janela, 4, "a2-3-preto-e-branco-com-pedaco")
 
 (SAIDA / "info.json").write_text(json.dumps(info, ensure_ascii=False, indent=1), encoding="utf-8")

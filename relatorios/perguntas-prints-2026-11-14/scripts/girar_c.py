@@ -23,8 +23,8 @@ LIVRO, SAIDA = sys.argv[1], Path(sys.argv[2])
 SAIDA.mkdir(parents=True, exist_ok=True)
 os.environ["QT_QPA_PLATFORM"] = "offscreen"
 os.environ.setdefault("QT_QPA_FONTDIR", "C:/Windows/Fonts")
-dados = AQUI / "_dados" / "girar"
-dados.mkdir(parents=True, exist_ok=True)
+(AQUI / "_dados").mkdir(exist_ok=True)
+dados = Path(tempfile.mkdtemp(prefix="girar-", dir=AQUI / "_dados"))  # nova a cada rodada: livro sempre novo
 os.environ["LOCALAPPDATA"] = str(dados)
 os.environ["TEMP"] = os.environ["TMP"] = tempfile.mkdtemp(prefix="t-", dir=dados)
 sys.path.insert(0, str(RAIZ))
