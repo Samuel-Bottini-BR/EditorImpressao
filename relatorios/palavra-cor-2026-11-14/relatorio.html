@@ -1,0 +1,384 @@
+<!doctype html>
+<html lang="pt-BR">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Estudo: cada palavra numa cor só</title>
+<style>
+:root { color-scheme: light dark; }
+* { box-sizing: border-box; }
+body {
+  font: 17px/1.65 "Segoe UI", system-ui, sans-serif;
+  max-width: 46rem; margin: 0 auto; padding: 2.5rem 1.5rem 6rem;
+  color: #1c1c1e; background: #fdfdfc;
+}
+h1 { font-size: 2rem; line-height: 1.2; margin: 0 0 .3em; letter-spacing: -.02em; }
+h2 { font-size: 1.35rem; margin: 2.4em 0 .6em; padding-top: .8em;
+     border-top: 1px solid #e6e4e0; letter-spacing: -.01em; }
+h3 { font-size: 1.1rem; margin: 1.8em 0 .4em; }
+h1 + p, h2 + p { margin-top: .4em; }
+p, li { margin: 0 0 .9em; }
+ul, ol { padding-left: 1.3em; }
+strong { font-weight: 640; }
+code {
+  font: .88em ui-monospace, "Cascadia Code", Consolas, monospace;
+  background: #f1efec; padding: .12em .35em; border-radius: 4px;
+}
+pre {
+  background: #f1efec; padding: 1em 1.1em; border-radius: 8px;
+  overflow-x: auto; line-height: 1.5;
+}
+pre code { background: none; padding: 0; }
+blockquote {
+  margin: 1.2em 0; padding: .1em 0 .1em 1.1em;
+  border-left: 3px solid #c9c5be; color: #55524d;
+}
+table {
+  border-collapse: collapse; width: 100%; margin: 1.2em 0;
+  font-size: .95rem; display: block; overflow-x: auto;
+}
+th, td { padding: .5em .8em; text-align: left; border-bottom: 1px solid #e6e4e0; }
+th { font-weight: 620; background: #f7f5f2; white-space: nowrap; }
+tr:last-child td { border-bottom: none; }
+img { max-width: 100%; height: auto; border-radius: 6px; margin: 1em 0;
+      border: 1px solid #e6e4e0; }
+hr { border: none; border-top: 1px solid #e6e4e0; margin: 2.5em 0; }
+.rodape { margin-top: 4em; padding-top: 1.2em; border-top: 1px solid #e6e4e0;
+          font-size: .85rem; color: #86827c; }
+@media (prefers-color-scheme: dark) {
+  body { color: #e8e6e3; background: #1a1917; }
+  h2 { border-top-color: #35332f; }
+  code, pre, th { background: #262421; }
+  th, td { border-bottom-color: #35332f; }
+  blockquote { border-left-color: #4a4741; color: #b0aca6; }
+  img { border-color: #35332f; }
+  .rodape { border-top-color: #35332f; color: #7d7973; }
+}
+@media print {
+  body { max-width: none; padding: 0; color: #000; background: #fff; }
+  h2 { page-break-after: avoid; }
+  table, img { page-break-inside: avoid; }
+}
+</style>
+</head>
+<body>
+<h1>Estudo: cada palavra numa cor só ("Letras com a cor delas" + "Reduzir cores")</h1>
+<p>Implementador, 14/11/2026. <strong>Só estudo: nenhuma linha do programa mudou</strong> (<code>core/</code>, <code>ui/</code> e raiz intactos; tudo o
+que está aqui são scripts de medida em <code>scripts/</code> e prints em <code>prints/</code>). Ramo <code>palavra-cor-2026-11-14</code>, saído da
+versão de teste <code>obra-2026-10-26</code> (<code>c7e34fd8</code>). Pedido do Samuel: "bota o 13 para ser estudado"; decisão D-701
+(13/11): "Consertar: cada palavra sai numa cor só, como no scan (recomendo)".</p>
+<h2>Em uma frase</h2>
+<p><strong>A mesma palavra sai em duas cores porque o programa pinta cada letra com a média dela e depois corta as cores em
+caixas fixas cuja divisa cai bem no meio da tinta do texto; cada caixa ainda pega emprestada a cor de outra coisa da
+página (o azul do título, o bege da beirada da folha).</strong> É defeito do programa, não escolha do Kaique. E há um
+segundo defeito junto: <strong>a tela e o PDF não mostram as mesmas cores</strong>, porque essa conta muda com a resolução.</p>
+<h2>1. Decisões que esta tarefa precisa cumprir</h2>
+<ul>
+<li><strong>D-701</strong> (13/11): "Consertar: cada palavra sai numa cor só, como no scan (recomendo)".</li>
+<li><strong>D-178</strong>: "(a) Trazer como opção, desligada de fábrica (recomendado)" · "Aprovado" · "Está bom".</li>
+<li><strong>D-189</strong> (21/10): "Ele está apagando as letras, isso sim, e quando foi que eu pedi para fazer isso? isso é do
+  scantailor?" · "aprovado, mas ainda tem que melhorar, em alguns casos, ele acaba apagando a letra."</li>
+<li><strong>D-191</strong>: "entra no programa e a caixinha não fica escondida."</li>
+<li><strong>D-192</strong>: tela cheia com as mesmas opções do painel e a página do meio igual ao que sai.</li>
+<li><strong>D-594</strong>: o "Limpar a folha" do Automático tem todas as opções do painel.</li>
+<li><strong>D-649</strong>: "o resultado final tem que sair como a edição foi mostrada no preview".</li>
+<li><strong>D-605 / §11.8</strong>: "nenhuma função nova, ou nova escolha dentro do programa pode alterar o que já está escolhido e
+  testado".</li>
+<li><strong>D-147</strong> (achada na busca do Livro): no Preto e branco, foto e pintura em tons de cinza.</li>
+</ul>
+<h2>2. O que já está escolhido e testado aqui</h2>
+<ul>
+<li>"Letras com a cor delas": opção do Preto e branco, desligada de fábrica; letra vermelha sai vermelha, letra preta
+  sai escura, papel branco (D-178; <code>tests/test_cores_scantailor.py</code>, <code>tests/test_cores_scantailor_na_tela.py</code>).</li>
+<li>"Reduzir cores": à vista no painel Filtro, desligada de fábrica (D-191); nos filtros de cor posteriza a página
+  inteira (<code>test_reduzir_cores_na_pagina_de_cor</code>).</li>
+<li>"Reduzir cores" não apaga letra (D-189, etapa 10b de 27/10, <code>c8844671</code>): no Preto e branco a redução vai sem o
+  "forçar preto e branco" (<code>tests/test_decisoes.py::test_d189_reduzir_cores_no_preto_e_branco_nao_forca_preto</code>), e
+  menos de 2% das letras da Horas 26 viram preto
+  (<code>tests/test_etapa10b_imagem.py::test_reversao_d189_reduzir_cores_nao_apaga_meia_palavra</code>).</li>
+<li>Figurinhas seguem as caixinhas (<code>tests/test_cartoes_seguem_as_caixinhas.py</code>); tela cheia com as mesmas opções
+  (<code>tests/test_filtros_tela_cheia.py</code>); Automático com as duas opções
+  (<code>tests/test_decisoes_automatico_opcoes_do_filtro.py</code>); sem a DLL a página sai como sem as caixinhas
+  (<code>test_sem_a_dll_sai_como_sem_as_caixinhas</code>, <code>tests/test_falha_do_scantailor_vai_ao_erros_log.py</code>).</li>
+<li>"No Preto e branco o vermelho sai preto" de fábrica (V1, 30/09) e foto em cinza (D-147): o conserto não toca.</li>
+</ul>
+<h2>3. Por que a mesma palavra sai em duas cores (a causa, medida)</h2>
+<p>Caminho da página em todas as medidas: <strong>Livro de Horas, página 26, livro novo de fábrica, endireitada, cortada,
+Preto e branco + "Letras com a cor delas" + "Reduzir cores"</strong>, pelo corpo do programa (<code>core.pipeline</code>), sem janela.</p>
+<p><img alt="Por que duas cores" src="prints/1-por-que-duas-cores.png" /></p>
+<ol>
+<li><strong>"Letras com a cor delas"</strong> é a segmentação de cor do ScanTailor (<code>ColorSegmenter.cpp</code>, copiado sem mudança na
+   nossa DLL). Ela pinta <strong>cada peça</strong> de tinta com a <strong>média</strong> das cores dela. Letra de traço grosso dá média mais
+   escura (vermelho entre 131 e 150); letra fina, mais clara (155 a 182), porque tem proporcionalmente mais beirada
+   misturada com o papel. A mesma tinta vira dezenas de cores próximas. Sozinha, a diferença é pequena.</li>
+<li><strong>"Reduzir cores"</strong> é a posterização do ScanTailor (<code>Posterizer.cpp</code>, sem mudança). Ela estica as cores da página
+   entre a mais escura (122) e o branco e corta cada canal em 4 faixas fixas. Na Horas 26 a primeira divisa cai em
+   155: <strong>no meio da faixa das letras</strong>. Letra com média até 155 vai para uma caixa; acima, para outra.</li>
+<li>Cada caixa sai com <strong>a cor que mais aparece dentro dela</strong>, venha de onde vier. A caixa das letras escuras pega o
+   azul-acinzentado (115,127,146) do "N" do título azul "NOVEMBRE."; a das letras claras pega o bege (179,171,140) de
+   uma faixa da beirada direita da folha. Por isso uma diferença pequena vira azul contra bege.</li>
+</ol>
+<p><strong>Prova.</strong> Refiz a conta do ScanTailor em numpy (<code>scripts/m2_causa.py</code>) e ela dá exatamente a cor da DLL em <strong>100%</strong>
+dos pontos de letra. Em "S. Leonard": "S", "L", "o", "n", "a" com média até 155 saem azuis; "e" (158) e o "r" final
+(168) saem bege. Medida "palavra em duas cores" (<code>scripts/m3_palavras.py</code>: as letras juntadas em palavras; a palavra
+conta como "duas cores" se a segunda cor ocupa mais de 10% dela): <strong>48%</strong> das palavras do calendário no PDF hoje;
+32% com só "Letras com a cor delas" (variação suave, de claridade).</p>
+<p><strong>De onde veio a conta.</strong> É do ScanTailor (código original dele, dentro da nossa DLL). No ScanTailor, com o "forçar
+preto e branco" de fábrica, a caixa escura vira <strong>preto</strong>: era o "ANTES" do print da Central (metade preta, metade
+clara), igual ao ScanTailor. O conserto de 27/10 (D-189) tirou o "forçar" para a letra clara não sumir; com isso a
+caixa escura passou a sair azul. Ele tratou o sintoma (o preto e a letra apagada), não a causa (a divisa no meio da
+tinta). <strong>O ScanTailor não tem "uma cor por palavra"</strong>: ele trabalha cor a cor, ponto a ponto; a mesma divisão de
+palavra acontece nele.</p>
+<h3>Achado junto: a tela e o PDF não mostram as mesmas cores (D-649)</h3>
+<p><img alt="Tela diferente do PDF" src="prints/2-hoje-tela-diferente-do-pdf.png" /></p>
+<p>As duas contas do ScanTailor olham a página inteira (o limiar de cada canal na segmentação; "a mais escura" e "a mais
+frequente de cada caixa" na redução), e a página tem outro tamanho em cada lugar. Parte azul da tinta do
+calendário: <strong>69%</strong> na prévia (110 pontos por polegada), <strong>59%</strong> na tela cheia (150), <strong>63%</strong> na prévia do Automático
+(180), <strong>43%</strong> a 220 (a resolução do "comparar"), <strong>50%</strong> no PDF (300). Pontos de letra com cor visivelmente
+diferente entre a prévia e o PDF: <strong>36%</strong>.</p>
+<h2>4. A regra da ferramenta e todos os caminhos (§11.12)</h2>
+<p><strong>A função que decide a cor de cada letra:</strong> <code>core/cores_scantailor.aplicar(...)</code> → <code>cores()</code> → DLL
+<code>st_ferramentas_cores</code> (segmentação + posterização). Ela é chamada em dois lugares do <code>core/pipeline.py</code>, <strong>os dois
+com a mesma função</strong> (nenhuma conta copiada): <code>_filtrar</code> (a página com marcação, "Só as letras", "só neste pedaço")
+e <code>filtro_com_as_caixinhas</code> (o filtro numa imagem solta).</p>
+<table>
+<thead>
+<tr>
+<th>Caminho</th>
+<th>Por onde passa</th>
+<th>Usa a função?</th>
+<th>Resolução</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>PDF ("Confirmar e processar")</td>
+<td><code>processar</code> → <code>_pagina_pronta</code> → <code>_filtrar</code></td>
+<td>sim</td>
+<td>300</td>
+</tr>
+<tr>
+<td>Prévia e miniaturas da tira</td>
+<td><code>GerenciadorPrevias</code> → <code>renderizar_pagina</code> → <code>_filtrar</code></td>
+<td>sim</td>
+<td>110</td>
+</tr>
+<tr>
+<td>Grade "Todas as páginas", folhear, folhas do caderno</td>
+<td>as prévias (<code>renderizar_pagina</code>)</td>
+<td>sim</td>
+<td>até 160 / 90 / 180</td>
+</tr>
+<tr>
+<td>Tela cheia dos filtros</td>
+<td><code>renderizar_com_filtro</code> → <code>renderizar_pagina</code> → <code>_filtrar</code></td>
+<td>sim</td>
+<td>150</td>
+</tr>
+<tr>
+<td>Figurinhas do painel Filtro</td>
+<td><code>_TarefaCartoes</code> → <code>filtro_com_as_caixinhas</code></td>
+<td>sim (sem a marcação)</td>
+<td>70</td>
+</tr>
+<tr>
+<td>"Comparar" da tela ampliada</td>
+<td><code>filtro_com_as_caixinhas</code></td>
+<td>sim (sem a marcação)</td>
+<td>220</td>
+</tr>
+<tr>
+<td>Automático / "Limpar a folha"</td>
+<td>grava os dois campos; prévia por <code>renderizar_pagina</code> + <code>compor_como_no_pdf</code></td>
+<td>sim</td>
+<td>180 e 300</td>
+</tr>
+<tr>
+<td>Caixinhas do painel e da tela cheia, "Aplicar em" (só nesta / todas / daqui em diante), desfazer, refazer</td>
+<td>só gravam <code>letras_com_a_cor</code> / <code>reduzir_cores</code> na página (<code>_mudar_cores</code>, <code>_gravar_opcao_da_tela_cheia</code>, <code>MARCAS_DA_PAGINA</code>); a imagem vem dos caminhos acima</td>
+<td>—</td>
+<td>—</td>
+</tr>
+<tr>
+<td>"Só neste pedaço"</td>
+<td>o pedaço é composto antes; as cores valem na página composta</td>
+<td>sim</td>
+<td>a do caminho</td>
+</tr>
+<tr>
+<td>"Tirar o fundo"</td>
+<td><code>aplicar</code> devolve "nada muda"</td>
+<td>sim</td>
+<td>—</td>
+</tr>
+</tbody>
+</table>
+<p><strong>Conclusão:</strong> a regra já mora num lugar só (bom). O defeito está <strong>dentro</strong> dela, e ela dá resultado diferente em
+cada resolução. Consertando dentro de <code>aplicar</code>, todos os caminhos acima passam a ter o conserto sem tocar em <code>ui/</code>.
+(Figurinhas e "comparar" recebem a página sem a marcação: entrada diferente, mesma regra; já era assim.)</p>
+<h2>5. O plano do conserto</h2>
+<p><strong>O que muda, num lugar só: <code>core/cores_scantailor.py</code>, no ramo do Preto e branco de <code>aplicar</code>.</strong></p>
+<ol>
+<li>A segmentação do ScanTailor continua igual (cada peça com a sua cor: é o que "Letras com a cor delas" já faz e foi
+   aprovado).</li>
+<li>Quando "Reduzir cores" está marcada <strong>no Preto e branco</strong>, no lugar da posterização por caixas do ScanTailor entra
+   uma função nova, <code>uma_cor_por_tinta(...)</code>:
+   - junta as letras em palavras (as peças de tinta juntadas na horizontal, com uma folga proporcional à altura das
+     letras: o espaço entre letras some, o entre palavras fica);
+   - dentro de cada palavra, junta as peças da <strong>mesma tinta</strong> (cor parecida; a claridade pesa pouco, porque é ela que
+     muda entre letra grossa e fina). Peça de outra tinta (capitular vermelha, pauta vermelha encostada nas notas)
+     fica separada;
+   - na página, junta as palavras da mesma tinta numa cor só (a média pesada delas);
+   - pontinhos pequenos (ponto final, apóstrofo, pedaço de acento) seguem a cor da palavra deles.</li>
+<li>Nos filtros de cor (Original, Melhorar, Mágico pro), "Reduzir cores" continua a posterização do ScanTailor, sem
+   mudança. Sem "Reduzir cores", nada muda (a pergunta 2 abaixo decide se muda).</li>
+<li>Os limites (quanto é "cor parecida", folga entre letras, tamanho de pontinho) ficam como constantes nomeadas no
+   topo do arquivo, com comentário. A lista dos dois campos não muda; nenhum caminho de <code>ui/</code> muda.</li>
+</ol>
+<p><strong>Simulação, fora do programa</strong> (<code>scripts/m5_prototipo.py</code> com <code>M5_PESO_L=0.15 M5_LIMIAR=10</code>, a partir das páginas que o programa de hoje desenha; resultados em <code>_dados/m5-v3</code>):</p>
+<p><img alt="Opções na Horas 26" src="prints/3-opcoes-horas-26.png" /></p>
+<table>
+<thead>
+<tr>
+<th>Medida</th>
+<th>Hoje</th>
+<th>Opção 1 (a mesma tinta, a mesma cor)</th>
+<th>Opção 2 (cada palavra, com as caixas do ScanTailor)</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>Horas 26, palavras em duas cores, PDF</td>
+<td>48%</td>
+<td>5%</td>
+<td>4%</td>
+</tr>
+<tr>
+<td>Horas 26, palavras em duas cores, prévia</td>
+<td>44%</td>
+<td>7%</td>
+<td>25%</td>
+</tr>
+<tr>
+<td>Horas 26, pontos com cor diferente tela x PDF</td>
+<td>36%</td>
+<td>2%</td>
+<td>32%</td>
+</tr>
+<tr>
+<td>Horas 13, palavras em duas cores, PDF</td>
+<td>36%</td>
+<td>3%</td>
+<td>3%</td>
+</tr>
+<tr>
+<td>Horas 13, pontos diferentes tela x PDF</td>
+<td>19%</td>
+<td>4%</td>
+<td>6%</td>
+</tr>
+<tr>
+<td>Graduale 223, palavras em duas cores, PDF</td>
+<td>18%</td>
+<td>1%</td>
+<td>3%</td>
+</tr>
+</tbody>
+</table>
+<p>A opção 2 junta cada palavra mas mantém as caixas do ScanTailor: a palavra vizinha ainda pode sair de outra cor, e a
+tela continua diferente do PDF. Por isso o plano segue a <strong>opção 1</strong>.</p>
+<p><img alt="O que funciona continua" src="prints/4-o-que-funciona-continua.png" /></p>
+<p>O que sobra na simulação (5% na Horas 26): pontinhos (ponto final, apóstrofo, pedaço de acento) que saem de outra cor
+que a palavra, e a letra azul da coluna da esquerda. Na Graduale, a prévia (110) ainda difere do PDF em 18% dos
+pontos: nessa resolução a própria segmentação parte as notas e as letras de outro jeito (já era assim com só "Letras
+com a cor delas"). Testei também decidir a tinta pela cor do miolo da letra (<code>scripts/m7_miolo.py</code>): deixa o texto
+mais escuro, mais perto do scan, mas pinta pontos finais de laranja; descartado como está.</p>
+<p><strong>A prova que vai cobrar o mesmo resultado em todos os caminhos</strong> (arquivo novo <code>tests/test_d701_palavra_numa_cor.py</code>,
+com a medida "palavra em duas cores" do <code>scripts/m3_palavras.py</code> passada para os testes):</p>
+<ul>
+<li><strong>Reversão, página desenhada (roda no GitHub):</strong> palavras de letras grossas e finas da mesma tinta, um título azul
+  grande e uma palavra vermelha; Preto e branco + as duas caixinhas por <code>_filtrar</code>. Cobra: nenhuma palavra em duas
+  cores; o vermelho continua vermelho e o azul continua azul; nenhuma letra vira preto nem branco (D-189). Tem de
+  falhar no código de hoje (vou conferir isso antes de consertar).</li>
+<li><strong>Mesmo resultado nos caminhos (GitHub, página desenhada):</strong> a mesma página por <code>_filtrar</code> (prévia e PDF),
+  <code>filtro_com_as_caixinhas</code> (figurinhas e "comparar") e em duas resoluções; cobra a mesma cor de cada palavra em todos
+  (diferença menor que a que se vê).</li>
+<li><strong>Caso real (no PC; pula no GitHub, a página fica fora do git):</strong> Horas 26 pelo caminho inteiro de livro novo,
+  <code>_pagina_pronta</code> (PDF), <code>renderizar_pagina</code> a 110, 150 e 180 e <code>renderizar_com_filtro</code> (tela cheia): palavras em
+  duas cores abaixo de 8% em todas (hoje 44% a 54%); pontos com cor diferente entre a prévia e o PDF abaixo de 5%
+  (hoje 36%); a medida da D-189 (letra que vira preto) continua abaixo de 2%.</li>
+<li>Os testes antigos continuam como estão. O <code>test_d189_...nao_forca_preto</code> continua valendo: o plano mantém o
+  "forçar preto e branco" desligado no Preto e branco.</li>
+</ul>
+<p><strong>Riscos.</strong>
+- <em>Velocidade:</em> só as páginas com "Reduzir cores" no Preto e branco pagam a conta nova (juntar peças e palavras numa
+  página de 300 pontos por polegada; estimo 0,3 a 0,6 segundo por página, a medir); as outras não fazem conta nenhuma
+  a mais. A posterização do ScanTailor deixa de rodar nessas páginas (economiza 20 a 30 ms). Filtro de velocidade do
+  GitHub antes e depois.
+- <em>Letra apagada (D-189):</em> a cor nova é a média da própria tinta; não há "forçar preto e branco", então nenhuma letra
+  vai para o branco. A medida da D-189 fica na prova.
+- <em>Duas tintas parecidas:</em> se uma rubrica muito desbotada tiver cor perto da tinta do texto, as duas podem virar uma
+  só. É o limite de "cor parecida"; a prova da Horas 13 e da Graduale cobra que o vermelho e o azul ficam.
+- <em>Não é mais o ScanTailor:</em> no Preto e branco, "Reduzir cores" deixa de ser a conta do ScanTailor (a regra da Fase 2
+  era "igual ao ScanTailor"). A D-701 é mais nova e pede uma coisa que o ScanTailor não faz; está dito na pergunta 1.</p>
+<h2>6. Como fica para quem usa e no livro (§11.9)</h2>
+<ul>
+<li><strong>O que o Kaique faz:</strong> nada muda. As mesmas caixinhas, nos mesmos lugares (painel Filtro em "Mais ajustes", tela
+  cheia, Automático em "Limpar a folha"), desligadas de fábrica, com "Aplicar em" e desfazer como hoje.</li>
+<li><strong>O que ele vê, antes:</strong> com as duas marcadas, a mesma palavra sai metade azul, metade bege; e a tela mostra
+  palavras azuis diferentes das do PDF.</li>
+<li><strong>Depois:</strong> cada palavra numa cor só, e o texto da mesma tinta todo da mesma cor (cinza-esverdeado claro na Horas
+  26); título azul azul, rubrica vermelha vermelha; a tela, as miniaturas, a tela cheia, o Automático e o PDF mostram
+  a mesma cor.</li>
+<li><strong>No PDF:</strong> só mudam as páginas em Preto e branco com as duas caixinhas marcadas. Livro sem elas sai idêntico.</li>
+<li>Problema novo conhecido: nenhum medido; o que sobra está dito no fim da seção 5.</li>
+</ul>
+<h2>7. Perguntas para o Samuel</h2>
+<p><strong>Pergunta 1 (pode já estar respondida: se a gerente achar que "como no scan" já decide, não precisa perguntar).</strong></p>
+<p>No painel "Filtro da página", em "Mais ajustes", com o Preto e branco, as caixinhas "Letras com a cor delas" e "Reduzir
+cores" marcadas fazem as letras saírem coloridas e com poucas cores. Hoje, no Livro de Horas página 26, a mesma
+palavra sai metade azul e metade bege, e a tela mostra outras cores que o PDF. É <strong>defeito do programa</strong>: a conta veio
+do ScanTailor, que trabalha cor a cor e não palavra a palavra. Você mandou consertar em 13/11 ("cada palavra sai numa
+cor só, como no scan"). O print acima ("COMO É HOJE", "OPÇÃO 1", "OPÇÃO 2", "O SCAN") mostra as duas saídas.</p>
+<p>O que você escolhe:
+- <strong>Opção 1 (recomendo): a mesma tinta, a mesma cor.</strong> Cada palavra numa cor só, e todo o texto da mesma tinta na
+  mesma cor, como no scan. A tela e o PDF passam a mostrar a mesma cor. O vermelho e o azul continuam. No Preto e
+  branco, "Reduzir cores" deixa de usar a conta do ScanTailor (nos outros filtros continua igual).
+- <strong>Opção 2: cada palavra numa cor, mantendo a conta do ScanTailor.</strong> A palavra fica inteira, mas a vizinha pode sair
+  azul enquanto esta sai bege, e a tela continua mostrando outras cores que o PDF.
+- <strong>Só comentário.</strong></p>
+<p>As caixinhas continuam desligadas de fábrica e no mesmo lugar. Nada muda em livro que não usa as duas. Situação: em
+estudo; nada foi mudado no programa.</p>
+<p><strong>Pergunta 2.</strong></p>
+<p><img alt="Só letras com a cor delas" src="prints/5-so-letras-com-a-cor.png" /></p>
+<p>No mesmo lugar, com só "Letras com a cor delas" marcada (sem "Reduzir cores"), cada letra sai com a cor média dela: em
+"Godefroy", o "Go" sai um pouco mais escuro que o "defroy". Você aprovou essa caixinha assim ("Está bom"); a diferença
+é pequena. Não é defeito: é como a conta do ScanTailor pinta cada letra.</p>
+<p>O que você escolhe:
+- <strong>Deixar como está (recomendo):</strong> só muda quando "Reduzir cores" também estiver marcada. Nada do que você já testou
+  muda.
+- <strong>Também "cada palavra numa cor só" com só "Letras com a cor delas":</strong> a palavra inteira com a cor média dela; uma
+  palavra pode ser um pouco mais clara que a outra.
+- <strong>Só comentário.</strong></p>
+<p>Situação: em estudo; nada foi mudado.</p>
+<h2>8. Bugs para a Lista de bugs (não consertados; fora desta tarefa)</h2>
+<ul>
+<li><strong>14/11/2026 — faixa preta na beirada direita do Livro de Horas 26 no Preto e branco</strong> (livro novo de fábrica,
+  endireitada, cortada, Preto e branco sem caixinha): a sombra da beirada da folha vira uma faixa preta de uns 7 mm
+  ao longo da página (64% de preto nas colunas da beirada; no scan, 1%). Com "Letras com a cor delas" ela fica bege
+  e é de onde vem o bege da caixa clara. Print: <code>prints/bug-beirada-direita-horas26-pb.png</code> (à esquerda o scan, à
+  direita o Preto e branco). Pode já ser conhecido (faixa da beirada, CLAUDE.md §9); a gerente confere.</li>
+</ul>
+<h2>9. Arquivos</h2>
+<ul>
+<li><code>ONDE-PAREI.md</code> (o andamento), este relatório (<code>relatorio.md/.html/.pdf</code>), <code>prints/</code> (5 prints + o do bug).</li>
+<li><code>scripts/m1_pagina.py</code> (a página pelo caminho inteiro), <code>m2_causa.py</code> (a conta refeita = DLL), <code>m3_palavras.py</code> (a
+  medida "palavra em duas cores" e a tela x PDF), <code>m4_render.py</code> (as páginas em cada resolução), <code>m5_prototipo.py</code> (as
+  duas opções), <code>m7_miolo.py</code> (a variante descartada), <code>m6_prints.py</code> (os prints). Os dados ficam em <code>_dados/</code> (fora
+  do git).</li>
+<li>Nenhuma janela foi aberta; pasta de dados própria (<code>_dados/local</code>). Nenhum teste do programa foi rodado: nada do
+  programa mudou.</li>
+</ul>
+<p class="rodape">Editor de Impressão &middot; gerado em 14/11/2026 às 13:28</p>
+</body>
+</html>

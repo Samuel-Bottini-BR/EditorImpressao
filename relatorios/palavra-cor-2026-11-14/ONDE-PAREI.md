@@ -3,13 +3,30 @@
 **Tarefa só de estudo** (Samuel: "bota o 13 para ser estudado"). Nenhuma linha do programa muda (`core/`, `ui/`, raiz).
 Ramo `palavra-cor-2026-11-14` (sai do `obra-2026-10-26`, `c7e34fd8`).
 
-## Situação
+## Situação: **TERMINADO (estudo entregue à gerente)**. Nenhuma linha do programa mudou.
 - [x] Lidas as regras (implementador.md, CLAUDE.md inteiro, INDICE, fichas 2.11 e 1.5, decisões do Livro).
 - [x] Abertos os dois prints da prova (ramo `fase-1`, `relatorios/provas-central-2026-11-13/2-cores-*`).
-- [ ] Causa medida no Livro de Horas 26 (caminho inteiro).
-- [ ] Caminhos que chegam na função.
-- [ ] Plano do conserto.
-- [ ] Relatório em três formatos.
+- [x] Causa medida no Livro de Horas 26 (caminho inteiro).
+- [x] Caminhos que chegam na função.
+- [x] Plano do conserto (simulação fora do programa, `scripts/m5_prototipo.py`).
+- [x] Relatório em três formatos: `relatorio.md/.html/.pdf` (o plano, as perguntas e os prints estão lá).
+
+**Plano, curto:** no Preto e branco com "Reduzir cores", trocar (dentro de `core/cores_scantailor.aplicar`, um lugar
+só) a posterização por caixas do ScanTailor por "uma cor por tinta": peças da segmentação juntadas em palavras, dentro
+da palavra as da mesma tinta com uma cor, e na página as palavras da mesma tinta com a mesma cor; pontinhos seguem a
+palavra. Simulação: Horas 26, palavras em duas cores 48% → 5% no PDF; tela x PDF 36% → 2%. Prova nova:
+`tests/test_d701_palavra_numa_cor.py` (ver relatório §5).
+
+## Perguntas para o Samuel
+Prontas no formato do §11.13 no relatório, seção 7 (com `prints/3-opcoes-horas-26.png` e
+`prints/5-so-letras-com-a-cor.png`):
+1. A mesma tinta, a mesma cor (recomendo) x cada palavra numa cor com a conta do ScanTailor (pode já estar
+   respondida pelo "como no scan" da D-701; a gerente decide).
+2. Com só "Letras com a cor delas", também uma cor por palavra? (recomendo deixar como está: D-605.)
+
+## Bugs para a Lista de bugs
+- 14/11: faixa preta na beirada direita do Livro de Horas 26 no Preto e branco de fábrica
+  (`prints/bug-beirada-direita-horas26-pb.png`).
 
 ## Decisões que esta tarefa precisa cumprir
 - **D-701** (13/11/2026), Central `dv-211-215`: "Consertar: cada palavra sai numa cor só, como no scan (recomendo)".

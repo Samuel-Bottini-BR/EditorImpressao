@@ -4,6 +4,7 @@ a 300 é igual ao PDF, conferido no m3) em Preto e branco:
   pb       sem caixinha (os pontos de letra são os pretos);
   letras   + "Letras com a cor delas";
   reduzir  + "Letras com a cor delas" + "Reduzir cores" (o de hoje).
+Também grava o filtro Original ("original": a página preparada, para a cor do miolo da tinta).
 Páginas: Livro de Horas 26 (o caso), Horas 13 (títulos vermelho e azul), Graduale 223 (rubricas
 vermelhas e notas pretas). Livro novo de fábrica, caminho inteiro. Grava em _dados/m4/.
 
@@ -28,7 +29,7 @@ import cv2  # noqa: E402
 
 SAI = DADOS / "m4"
 SAI.mkdir(parents=True, exist_ok=True)
-PAGINAS = ["horas_p026", "horas_p013", "graduale_p223"]
+PAGINAS = (__import__("os").environ.get("M4_PAGINAS") or "horas_p026,horas_p013,graduale_p223").split(",")
 
 
 def main():
@@ -51,6 +52,14 @@ def main():
             pagina.filtro = F.PRETO_E_BRANCO
             doc = abrir_pdf(str(copia))
             try:
+                pagina.filtro = F.ORIGINAL
+                pagina.letras_com_a_cor = pagina.reduzir_cores = False
+                img, _ = pipeline.renderizar_pagina(doc, projeto, pagina, dpi=dpi)
+                cv2.imwrite(str(SAI / f"{nome}_{dpi}_original.png"), img if img.ndim == 3 else
+                            cv2.cvtColor(img, cv2.COLOR_GRAY2BGR))
+                pagina.filtro = F.PRETO_E_BRANCO
+                if __import__("os").environ.get("M4_SO_ORIGINAL"):
+                    continue
                 for jeito, campos in (("pb", {}), ("letras", {"letras_com_a_cor": True}),
                                       ("reduzir", {"letras_com_a_cor": True, "reduzir_cores": True})):
                     pagina.letras_com_a_cor = campos.get("letras_com_a_cor", False)

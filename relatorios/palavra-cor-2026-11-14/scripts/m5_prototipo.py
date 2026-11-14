@@ -9,7 +9,8 @@ Lê as páginas do m4 (pb, letras, reduzir em cada resolução) e monta dois jei
     juntadas numa cor só (sem a conta de cubos do ScanTailor).
 
 Uma palavra com uma letra de outra tinta (capitular vermelha encostada) não se mistura: dentro
-da palavra, as peças só se juntam se a cor for parecida (distância < LIMIAR).
+da palavra, as peças da segmentação só se juntam se a cor for parecida (distância < LIMIAR).
+(1ª versão juntava pela tinta encostada e misturava a pauta vermelha com as notas do Graduale.)
 
 Medidas por página e resolução (região do texto):
   - fração das palavras em duas cores (a medida do m3);
@@ -31,10 +32,10 @@ from m2_causa import chave, posterizar  # noqa: E402
 from m3_palavras import palavras_em_duas_cores  # noqa: E402
 
 M4 = AQUI.parent / "_dados" / "m4"
-SAI = AQUI.parent / "_dados" / "m5"
+SAI = AQUI.parent / "_dados" / __import__("os").environ.get("M5_SAIDA", "m5")
 SAI.mkdir(parents=True, exist_ok=True)
-LIMIAR = 12.0          # distância de "mesma tinta" (LAB, claridade pesando metade)
-PESO_L = 0.5
+LIMIAR = float(__import__("os").environ.get("M5_LIMIAR", "12"))   # distância de "mesma tinta" (LAB)
+PESO_L = float(__import__("os").environ.get("M5_PESO_L", "0.5"))   # quanto a claridade pesa
 # a região do texto, em fração da página (sem moldura, título e faixa da beirada)
 REGIOES = {"horas_p026": (0.149, 0.788, 0.037, 0.915), "horas_p013": (0.05, 0.95, 0.05, 0.95),
            "graduale_p223": (0.05, 0.95, 0.05, 0.95)}
@@ -84,7 +85,11 @@ def agrupar(cores_lab, pesos):
 
 
 def cor_por_palavra(letras, tinta):
-    """Jeito A, parte 1: cada palavra (e, dentro dela, cada tinta) com a cor média."""
+    """Jeito A, parte 1: dentro de cada palavra, as peças da MESMA tinta com a cor média delas.
+
+    Peça = a peça da segmentação do ScanTailor (cada uma já sai com uma cor exata só); assim
+    uma pauta vermelha encostada nas notas pretas continua separada delas (são peças de cor
+    diferente), mesmo que a tinta se toque. Palavra = a tinta juntada na horizontal."""
     t8 = tinta.astype(np.uint8)
     n, rot, caixas, _ = cv2.connectedComponentsWithStats(t8, connectivity=8)
     alt = caixas[1:, 3][caixas[1:, 4] > 20]
@@ -92,26 +97,21 @@ def cor_por_palavra(letras, tinta):
     junto = cv2.morphologyEx(t8, cv2.MORPH_CLOSE,
                              cv2.getStructuringElement(cv2.MORPH_RECT, (max(3, int(0.35 * h)), 1)))
     _, rotp = cv2.connectedComponents(junto, connectivity=8)
-    # cor média de cada peça (a segmentação já pinta a peça com a média dela)
-    soma = np.zeros((n, 3), np.float64)
-    np.add.at(soma, rot[tinta], letras[tinta].astype(np.float64))
-    area = caixas[:, 4].astype(np.float64)
-    media = soma / np.maximum(area, 1)[:, None]
-    palavra_da_peca = np.zeros(n, int)
-    palavra_da_peca[rot[tinta]] = rotp[tinta]
-    lab = lab_de(media.round())
-    nova = np.zeros((n, 3), np.float32)
-    for p in np.unique(palavra_da_peca[1:]):
-        pecas = np.nonzero(palavra_da_peca == p)[0]
-        pecas = pecas[pecas != 0]
-        if pecas.size == 0:
-            continue
-        g, centros = agrupar(lab[pecas], area[pecas])
-        for i, peca in enumerate(pecas):
-            nova[peca] = centros[g[i]]
+    k = chave(letras)[tinta].astype(np.int64)
+    w = rotp[tinta].astype(np.int64)
+    unidade, inv, cont = np.unique((w << 24) | k, return_inverse=True, return_counts=True)
+    palavra_u = unidade >> 24
+    cor_u = unidade & 0xFFFFFF
+    bgr_u = np.stack([cor_u & 255, (cor_u >> 8) & 255, (cor_u >> 16) & 255], 1).astype(np.uint8)
+    lab_u = lab_de(bgr_u)
+    nova_u = np.zeros_like(lab_u)
+    ordem = np.argsort(palavra_u, kind="stable")
+    limites = np.flatnonzero(np.diff(palavra_u[ordem])) + 1
+    for bloco in np.split(ordem, limites):
+        g, centros = agrupar(lab_u[bloco], cont[bloco].astype(np.float64))
+        nova_u[bloco] = np.asarray(centros)[g]
     saida = letras.copy()
-    cores = bgr_de(nova)
-    saida[tinta] = cores[rot[tinta]]
+    saida[tinta] = bgr_de(nova_u)[inv.ravel()]
     return saida, rot, rotp
 
 
@@ -133,7 +133,8 @@ def posterizar_imagem(img, tinta):
     seg[tinta] = img[tinta]
     mapa, *_ = posterizar(seg)
     k = chave(seg)[tinta]
-    novo = np.vectorize(lambda c: mapa.get(int(c), int(c)), otypes=[np.uint32])(k)
+    unicas, inv = np.unique(k, return_inverse=True)
+    novo = np.array([mapa.get(int(c), int(c)) for c in unicas], np.uint32)[inv.ravel()]
     saida = img.copy()
     saida[tinta] = np.stack([novo & 255, (novo >> 8) & 255, (novo >> 16) & 255], 1).astype(np.uint8)
     return saida
