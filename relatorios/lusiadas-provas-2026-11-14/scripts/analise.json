@@ -1,0 +1,389 @@
+{
+ "dpi": 300,
+ "paginas": 134,
+ "p8": {
+  "folha": 5,
+  "metade": "esquerda",
+  "filtro": "preto_e_branco",
+  "algoritmo_pb": "auto",
+  "forca": 50,
+  "respeitar": true,
+  "gravuras_cinza": false,
+  "so_as_letras": null,
+  "alertas": [
+   "contas_do_endireitar_discordam"
+  ],
+  "provisoria_antes": null,
+  "regioes": [
+   {
+    "tipo": "gravura",
+    "origem": "rede",
+    "operacao": "somar",
+    "forma": "poligono"
+   },
+   {
+    "tipo": "gravura",
+    "origem": "rede",
+    "operacao": "somar",
+    "forma": "poligono"
+   },
+   {
+    "tipo": "gravura",
+    "origem": "rede",
+    "operacao": "subtrair",
+    "forma": "poligono"
+   },
+   {
+    "tipo": "gravura",
+    "origem": "rede",
+    "operacao": "subtrair",
+    "forma": "poligono"
+   },
+   {
+    "tipo": "gravura",
+    "origem": "rede",
+    "operacao": "subtrair",
+    "forma": "poligono"
+   },
+   {
+    "tipo": "letra",
+    "origem": "rede",
+    "operacao": "somar",
+    "forma": "poligono"
+   },
+   {
+    "tipo": "letra",
+    "origem": "rede",
+    "operacao": "somar",
+    "forma": "poligono"
+   },
+   {
+    "tipo": "letra",
+    "origem": "rede",
+    "operacao": "somar",
+    "forma": "poligono"
+   },
+   {
+    "tipo": "letra",
+    "origem": "rede",
+    "operacao": "somar",
+    "forma": "poligono"
+   },
+   {
+    "tipo": "letra",
+    "origem": "rede",
+    "operacao": "somar",
+    "forma": "poligono"
+   },
+   {
+    "tipo": "letra",
+    "origem": "rede",
+    "operacao": "somar",
+    "forma": "poligono"
+   },
+   {
+    "tipo": "letra",
+    "origem": "rede",
+    "operacao": "somar",
+    "forma": "poligono"
+   },
+   {
+    "tipo": "letra",
+    "origem": "rede",
+    "operacao": "somar",
+    "forma": "poligono"
+   },
+   {
+    "tipo": "letra",
+    "origem": "rede",
+    "operacao": "somar",
+    "forma": "poligono"
+   },
+   {
+    "tipo": "letra",
+    "origem": "rede",
+    "operacao": "somar",
+    "forma": "poligono"
+   },
+   {
+    "tipo": "papel",
+    "origem": "rede",
+    "operacao": "somar",
+    "forma": "poligono"
+   },
+   {
+    "tipo": "papel",
+    "origem": "rede",
+    "operacao": "somar",
+    "forma": "poligono"
+   },
+   {
+    "tipo": "papel",
+    "origem": "rede",
+    "operacao": "somar",
+    "forma": "poligono"
+   },
+   {
+    "tipo": "papel",
+    "origem": "rede",
+    "operacao": "somar",
+    "forma": "poligono"
+   },
+   {
+    "tipo": "papel",
+    "origem": "rede",
+    "operacao": "somar",
+    "forma": "poligono"
+   },
+   {
+    "tipo": "papel",
+    "origem": "rede",
+    "operacao": "somar",
+    "forma": "poligono"
+   },
+   {
+    "tipo": "papel",
+    "origem": "rede",
+    "operacao": "somar",
+    "forma": "poligono"
+   },
+   {
+    "tipo": "papel",
+    "origem": "rede",
+    "operacao": "somar",
+    "forma": "poligono"
+   },
+   {
+    "tipo": "papel",
+    "origem": "rede",
+    "operacao": "somar",
+    "forma": "poligono"
+   },
+   {
+    "tipo": "papel",
+    "origem": "rede",
+    "operacao": "somar",
+    "forma": "poligono"
+   },
+   {
+    "tipo": "papel",
+    "origem": "rede",
+    "operacao": "somar",
+    "forma": "poligono"
+   },
+   {
+    "tipo": "papel",
+    "origem": "rede",
+    "operacao": "somar",
+    "forma": "poligono"
+   },
+   {
+    "tipo": "papel",
+    "origem": "rede",
+    "operacao": "somar",
+    "forma": "poligono"
+   },
+   {
+    "tipo": "papel",
+    "origem": "rede",
+    "operacao": "subtrair",
+    "forma": "poligono"
+   },
+   {
+    "tipo": "papel",
+    "origem": "rede",
+    "operacao": "somar",
+    "forma": "poligono"
+   },
+   {
+    "tipo": "papel",
+    "origem": "rede",
+    "operacao": "somar",
+    "forma": "poligono"
+   },
+   {
+    "tipo": "papel",
+    "origem": "rede",
+    "operacao": "subtrair",
+    "forma": "poligono"
+   },
+   {
+    "tipo": "papel",
+    "origem": "rede",
+    "operacao": "somar",
+    "forma": "poligono"
+   }
+  ],
+  "fracao": {
+   "gravura": 0.5521,
+   "letra": 0.143,
+   "papel": 0.2679
+  },
+  "tamanho": [
+   1826,
+   2550
+  ]
+ },
+ "p14": {
+  "folha": 8,
+  "metade": "esquerda",
+  "filtro": "preto_e_branco",
+  "algoritmo_pb": "auto",
+  "forca": 50,
+  "respeitar": true,
+  "gravuras_cinza": false,
+  "so_as_letras": null,
+  "alertas": [
+   "contas_do_endireitar_discordam",
+   "angulo_diferente_das_outras"
+  ],
+  "provisoria_antes": null,
+  "regioes": [
+   {
+    "tipo": "gravura",
+    "origem": "rede",
+    "operacao": "somar",
+    "forma": "poligono"
+   },
+   {
+    "tipo": "gravura",
+    "origem": "rede",
+    "operacao": "somar",
+    "forma": "poligono"
+   },
+   {
+    "tipo": "letra",
+    "origem": "rede",
+    "operacao": "somar",
+    "forma": "poligono"
+   },
+   {
+    "tipo": "letra",
+    "origem": "rede",
+    "operacao": "somar",
+    "forma": "poligono"
+   },
+   {
+    "tipo": "letra",
+    "origem": "rede",
+    "operacao": "somar",
+    "forma": "poligono"
+   },
+   {
+    "tipo": "letra",
+    "origem": "rede",
+    "operacao": "somar",
+    "forma": "poligono"
+   },
+   {
+    "tipo": "papel",
+    "origem": "rede",
+    "operacao": "somar",
+    "forma": "poligono"
+   },
+   {
+    "tipo": "papel",
+    "origem": "rede",
+    "operacao": "somar",
+    "forma": "poligono"
+   },
+   {
+    "tipo": "papel",
+    "origem": "rede",
+    "operacao": "subtrair",
+    "forma": "poligono"
+   },
+   {
+    "tipo": "papel",
+    "origem": "rede",
+    "operacao": "somar",
+    "forma": "poligono"
+   },
+   {
+    "tipo": "papel",
+    "origem": "rede",
+    "operacao": "somar",
+    "forma": "poligono"
+   },
+   {
+    "tipo": "papel",
+    "origem": "rede",
+    "operacao": "somar",
+    "forma": "poligono"
+   }
+  ],
+  "fracao": {
+   "gravura": 0.5771,
+   "letra": 0.0618,
+   "papel": 0.3399
+  },
+  "tamanho": [
+   1836,
+   2550
+  ]
+ },
+ "p22": {
+  "folha": 12,
+  "metade": "esquerda",
+  "filtro": "preto_e_branco",
+  "algoritmo_pb": "auto",
+  "forca": 50,
+  "respeitar": true,
+  "gravuras_cinza": false,
+  "so_as_letras": null,
+  "alertas": [
+   "em_branco"
+  ],
+  "provisoria_antes": null,
+  "regioes": [],
+  "fracao": {
+   "gravura": 0.0,
+   "letra": 0.0,
+   "papel": 0.0
+  },
+  "tamanho": [
+   1754,
+   2550
+  ]
+ },
+ "p22-jeitos-de-preto-pct-preto": {
+  "auto": 10.72,
+  "sauvola": 0.0,
+  "otsu": 10.72,
+  "wolf": 6.57
+ },
+ "p22-cinza": {
+  "min": 249,
+  "p1": 251.0,
+  "p50": 254.0,
+  "max": 255
+ },
+ "folha7": {
+  "dividir": true,
+  "posicao_corte": 0.7321,
+  "confianca": 1.0,
+  "alertas": [
+   "lombada_incerta",
+   "resolucao_baixa"
+  ]
+ },
+ "p12-tamanho": [
+  2567,
+  2550
+ ],
+ "p13-tamanho": [
+  940,
+  2550
+ ],
+ "pdf": {
+  "paginas": 134,
+  "p12_pt": [
+   616,
+   612
+  ],
+  "p13_pt": [
+   226,
+   612
+  ]
+ }
+}
