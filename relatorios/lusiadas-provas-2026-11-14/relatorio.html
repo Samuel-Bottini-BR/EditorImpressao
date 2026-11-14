@@ -1,0 +1,537 @@
+<!doctype html>
+<html lang="pt-BR">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Os erros do teste do Lusíadas: provas e como acontecem</title>
+<style>
+:root { color-scheme: light dark; }
+* { box-sizing: border-box; }
+body {
+  font: 17px/1.65 "Segoe UI", system-ui, sans-serif;
+  max-width: 46rem; margin: 0 auto; padding: 2.5rem 1.5rem 6rem;
+  color: #1c1c1e; background: #fdfdfc;
+}
+h1 { font-size: 2rem; line-height: 1.2; margin: 0 0 .3em; letter-spacing: -.02em; }
+h2 { font-size: 1.35rem; margin: 2.4em 0 .6em; padding-top: .8em;
+     border-top: 1px solid #e6e4e0; letter-spacing: -.01em; }
+h3 { font-size: 1.1rem; margin: 1.8em 0 .4em; }
+h1 + p, h2 + p { margin-top: .4em; }
+p, li { margin: 0 0 .9em; }
+ul, ol { padding-left: 1.3em; }
+strong { font-weight: 640; }
+code {
+  font: .88em ui-monospace, "Cascadia Code", Consolas, monospace;
+  background: #f1efec; padding: .12em .35em; border-radius: 4px;
+}
+pre {
+  background: #f1efec; padding: 1em 1.1em; border-radius: 8px;
+  overflow-x: auto; line-height: 1.5;
+}
+pre code { background: none; padding: 0; }
+blockquote {
+  margin: 1.2em 0; padding: .1em 0 .1em 1.1em;
+  border-left: 3px solid #c9c5be; color: #55524d;
+}
+table {
+  border-collapse: collapse; width: 100%; margin: 1.2em 0;
+  font-size: .95rem; display: block; overflow-x: auto;
+}
+th, td { padding: .5em .8em; text-align: left; border-bottom: 1px solid #e6e4e0; }
+th { font-weight: 620; background: #f7f5f2; white-space: nowrap; }
+tr:last-child td { border-bottom: none; }
+img { max-width: 100%; height: auto; border-radius: 6px; margin: 1em 0;
+      border: 1px solid #e6e4e0; }
+hr { border: none; border-top: 1px solid #e6e4e0; margin: 2.5em 0; }
+.rodape { margin-top: 4em; padding-top: 1.2em; border-top: 1px solid #e6e4e0;
+          font-size: .85rem; color: #86827c; }
+@media (prefers-color-scheme: dark) {
+  body { color: #e8e6e3; background: #1a1917; }
+  h2 { border-top-color: #35332f; }
+  code, pre, th { background: #262421; }
+  th, td { border-bottom-color: #35332f; }
+  blockquote { border-left-color: #4a4741; color: #b0aca6; }
+  img { border-color: #35332f; }
+  .rodape { border-top-color: #35332f; color: #7d7973; }
+}
+@media print {
+  body { max-width: none; padding: 0; color: #000; background: #fff; }
+  h2 { page-break-after: avoid; }
+  table, img { page-break-inside: avoid; }
+}
+</style>
+</head>
+<body>
+<h1>Os erros do teste do Lusíadas: provas e como acontecem</h1>
+<p>Verificador, 14/11/2026. Versão testada: a versão de teste de hoje. Livro: uma cópia do <em>Os Lusíadas contados às
+crianças</em> (o mesmo do teste do Kaique de 06/11). Nenhuma linha do programa foi mudada: aqui só se mostra o erro, a
+prova e a explicação, como você pediu ("eu quero ver esses erros, as provas dele e uma explicação de como acontece,
+explique de forma simples. quero antes de dar inicio.").</p>
+<h2>Resumo</h2>
+<p><strong>Ainda acontecem, na versão de teste de hoje (12):</strong></p>
+<ul>
+<li>1 — remendos pretos e brancos nos rostos da página 14 (defeito: o programa tomou pedaços da pintura por letra);</li>
+<li>2 — "de 134" no Automático com 133 indo para o PDF, e o sino que muda só de andar pelas páginas;</li>
+<li>3 — a miniatura não fica branca depois de "deixar em branco";</li>
+<li>4 — textos cortados na barra de baixo com o Propriedades aberto (na janela do tamanho do notebook do Kaique);</li>
+<li>5 — página que sai deitada no arquivo para imprimir; o aviso existe, mas fica escondido e só depois de gravar;</li>
+<li>7 — contornos laranja com a Mão (duas regras suas que se cruzam: precisa da sua escolha);</li>
+<li>8 — o aviso "será substituído" que não some ao trocar o nome;</li>
+<li>9 — "vai sair em Preto e branco" numa página tirada do livro;</li>
+<li>10 — o código "(G2)" na tela (e mais dois códigos em balões);</li>
+<li>11 — a lista do Automático que volta para o topo;</li>
+<li>12 — a página 22 quase em branco que sai suja: <strong>é defeito</strong> (o jeito de preto automático escolhe errado);</li>
+<li>13 — a pintura da página 8 que quase some: <strong>é defeito</strong> (a pintura foi achada, mas tratada como desenho de traço);
+  a caixinha "Gravuras em tons de cinza", que já existe, resolve nesta página.</li>
+</ul>
+<p><strong>Já não acontece (1):</strong></p>
+<ul>
+<li>6 — a folha espremida com a Mão: consertada na versão de teste em 09/11.</li>
+</ul>
+<p>Nenhum conserto foi começado: cada um espera o seu sim, um por vez.</p>
+<h2>Como testei</h2>
+<p>Fiz o caminho do Kaique na janela de verdade do programa, posta fora da sua tela: abrir o livro, "Rodar o
+automático..." com Dividir e "A 1ª folha é a capa aberta", Endireitar, Limpar em Preto e branco, Gravuras e fotos (como
+vêm de fábrica), sem Cortar; depois olhar as páginas com a Mão, deixar uma página em branco, tirar a contracapa
+repetida do livro, abrir o painel Propriedades, processar, montar para imprimir em A4, abrir o Automático de novo e a
+janela de salvar. Os cliques foram feitos como se fossem do mouse. Cada prova tem um resumo em cima e faixas com cor:
+azul = como é hoje; laranja = a mesma coisa com outra opção, para comparar. O que olhar está circulado em vermelho.</p>
+<p>Uma coisa que não consegui fazer como o Kaique: a roda do mouse não funciona com a janela fora da tela (na lista do
+Automático, a lista foi posta no fim pelo programa de teste, como a roda faria). E um erro eu não consegui repetir nem
+na versão do teste do Kaique: a folha espremida (erro 6), que dependia do tempo.</p>
+<h2>Parte 1 — Para você: um erro por vez</h2>
+<h3>Erro 1 — Remendos pretos e brancos nos rostos (página 14)</h3>
+<p><strong>Do que se trata.</strong> É a página 14 do Lusíadas, a pintura dos homens de chapéu com os barcos ao fundo. No PDF, o peito
+do homem da direita e a cabeça do homem da frente saem com retângulos pretos e brancos duros, como remendos.</p>
+<p><strong>O que acontece hoje.</strong> Ainda acontece, igual ao teste do Kaique.</p>
+<p><img alt="Erro 1" src="prints/erro1-remendos-p14.jpg" /></p>
+<p><strong>Como acontece.</strong> Quando a página está em Preto e branco, o programa primeiro procura o que é pintura e o que é letra.
+A pintura ele deixa em cinza; a letra ele passa para preto e branco puro. Nesta página ele achou a pintura quase
+inteira (verde na imagem do meio), mas tomou dois pedaços dela por letra (azul). Nesses dois pedaços a pintura vira
+preto e branco de texto: são os remendos.</p>
+<p><strong>Defeito ou escolha.</strong> Defeito do programa: quem marcou "letra" no meio da pintura foi a procura automática. A
+caixinha "Gravuras em tons de cinza" não resolve (faixa laranja).</p>
+<p><strong>De onde veio.</strong> Da procura de letra e pintura que o programa faz sozinho, ligada desde o começo de outubro.</p>
+<p><strong>Situação.</strong> Você escolheu "Consertar" em 09/11. Ainda não começou: espera o seu sim, um erro por vez.</p>
+<h3>Erro 2 — Números que não batem</h3>
+<p><strong>Do que se trata.</strong> São dois números: o "página 132 de 134" e o "(134 páginas)" na janela do Automático, e o sino
+(o triângulo de aviso no alto da coluna da direita, com o número de páginas que pedem um olhar).</p>
+<p><strong>O que acontece hoje.</strong></p>
+<ul>
+<li><strong>"de 134" e saem 133: ainda acontece.</strong> Com uma página tirada do livro, o Automático continua dizendo 134. A
+  janela de salvar, logo depois, diz certo: "133 páginas vão para o PDF, e 1 foi apagada". A barra de baixo da área de
+  trabalho também diz "página 133 de 134".</li>
+<li><strong>O sino que muda sozinho: ainda acontece.</strong> Com o livro aberto do zero, logo depois do Automático, fiz como o
+  Kaique ("Qualidade baixa" + "Selecionar todas" + "está bom nas marcadas"): o sino ficou em 25, parado, por dois
+  minutos. Depois só andei com a seta para a direita da página 1 até a 41, sem mexer em nada: o sino passou para 26.</li>
+</ul>
+<p><img alt="Erro 2" src="prints/erro2-numeros.jpg" /></p>
+<p><strong>Como acontece (o "de 134").</strong> A página tirada do livro continua na lista do programa, só marcada como "não vai para
+o PDF" (para dar para trazer de volta). O Automático e a barra de baixo contam a lista inteira; a janela de salvar
+conta só as que vão para o PDF. Quem escreveu a conta do Automático deixou de propósito ("para a numeração não mudar
+quando uma página é tirada"), mas não escreveu em lugar nenhum que o número inclui a página tirada.</p>
+<p><strong>Como o sino muda sem ninguém mexer.</strong> Um dos avisos, "Endireitar: as contas discordam" (o programa tem duas contas
+para saber quanto a página está torta, e avisa quando elas não concordam), é medido de novo quando a página é
+desenhada no tamanho do PDF. Esse desenho acontece por trás, sozinho, quando a pessoa passa pela página (ou perto
+dela). Se a medida nova discorda, o aviso aparece numa página que não o tinha, e o sino sobe; se passa a concordar, o
+aviso some e o sino desce. Na minha rodada, a página nova com aviso foi a 19 (entre as que eu passei). É o que o
+Kaique viu (24 → 25 → 28). A mesma medida também roda no processar, por isso o número pode mudar de novo depois de processar.</p>
+<p><strong>Defeito ou escolha.</strong> Defeito: o mesmo livro tem dois números diferentes, conforme a tela.</p>
+<p><strong>Situação.</strong> "Consertar" (09/11). Ainda não começou.</p>
+<h3>Erro 3 — A miniatura não fica branca depois de "deixar em branco"</h3>
+<p><strong>Do que se trata.</strong> É a tira de miniaturas embaixo da área de trabalho, e o botão "deixar em branco" (no painel
+Propriedades, em "Esta página"), que põe uma folha branca no lugar da página.</p>
+<p><strong>O que acontece hoje.</strong> Ainda acontece: a página grande fica branca, a miniatura continua mostrando o título.</p>
+<p><img alt="Erro 3" src="prints/erro3-miniatura-branco.jpg" /></p>
+<p><strong>Como acontece.</strong> A miniatura mostra a folha como veio do scanner, cortada no lugar da página. Ela só é redesenhada
+"como sai no PDF" em dois casos: quando a página foi mudada de lugar ou de tamanho, e quando é uma página em branco
+acrescentada à mão (essa sai branca). A página "deixada em branco" não entrou nessa regra. Na grade "Todas as
+páginas" acontece o mesmo.</p>
+<p><strong>Defeito ou escolha.</strong> Defeito. Vai contra o que você pediu em 07/11: "O preview as miniaturas tem que estar
+sincronizada e o resultado final tem que sair como a edição foi mostrada no preview."</p>
+<p><strong>Situação.</strong> "Consertar" (09/11). Ainda não começou.</p>
+<h3>Erro 4 — Textos cortados na barra de baixo (não é urgente)</h3>
+<p><strong>Do que se trata.</strong> É a barra do pé da área de trabalho: "página N de M", desfazer, refazer, "Uma página", "Duas
+lado a lado", "antes / depois", "marcações", zoom.</p>
+<p><strong>O que acontece hoje.</strong> Ainda acontece na janela do tamanho do notebook do Kaique (1280 x 657) com o painel
+Propriedades aberto: "uas lado a lad" e "página 133 de 13". Na janela grande, com o mesmo painel aberto, coube
+inteira nesta rodada.</p>
+<p><img alt="Erro 4" src="prints/erro4-barra-cortada.jpg" /></p>
+<p><strong>Como acontece.</strong> O painel aberto ocupa a direita, e a barra de baixo fica mais estreita. Os botões não sabem
+encolher nem ir para outra linha: quando falta lugar, o Windows corta o texto do botão.</p>
+<p><strong>Defeito ou escolha.</strong> Defeito de tela (o que se aperta continua funcionando; o PDF não muda).</p>
+<p><strong>Situação.</strong> "Consertar" (09/11), no fim da fila, como você disse: "não é urgente".</p>
+<h3>Erro 5 — Página que sai deitada no arquivo para imprimir</h3>
+<p><strong>Do que se trata.</strong> É o arquivo que sai de "montar para imprimir em A4" (na tela de "Ficou pronto!"), com o Livreto
+de fábrica: duas páginas de cada lado de uma folha A4 deitada.</p>
+<p><strong>O que acontece hoje.</strong> Ainda acontece. Nesta rodada foi a página 3 (a folha de rosto), que saiu deitada na face 3.
+Na folha 7, a do Kaique, o corte caiu de novo no meio do título "PERIGOS E TRAIÇÕES".</p>
+<p><img alt="Erro 5" src="prints/erro5-pagina-deitada.jpg" /></p>
+<p><strong>Como acontece.</strong> São duas coisas em fila.</p>
+<ol>
+<li>Na folha que tem só uma página impressa (a outra metade em branco), o Dividir não acha a dobra e corta fora do
+   meio. Ele mesmo avisa "Não tenho certeza de onde cortar" (folhas 2 e 7). Uma das páginas fica mais larga que alta.</li>
+<li>Na montagem, toda página mais larga que alta é girada de lado para caber na metade da folha A4. O programa escreve
+   um aviso ("Página 3: era deitada e foi girada de pé e diminuída"), mas só depois de gravar, lá embaixo, fora da
+   vista. Antes de gravar não aparece nada.</li>
+</ol>
+<p><strong>Defeito ou escolha.</strong> As duas coisas. O corte errado é defeito do Dividir, mas ele avisou, e o Kaique (como no
+teste) disse "continuar assim mesmo". O giro escondido é defeito: o aviso existe e ninguém vê.</p>
+<p><strong>De onde veio.</strong> O girar sozinho e o aviso são do "montar para imprimir" (22/10); o aviso nasceu do seu pedido de
+20/10 ("Quero que o programa avise quando isso estiver acontecendo"), mas ficou só depois de gravar. A sua pergunta de 09/11 já foi respondida na
+Central: dá para arrastar a linha só naquela folha, e o resto fica como o Automático fez.</p>
+<p><strong>Situação.</strong> "Consertar" (09/11). Ainda não começou.</p>
+<h3>Erro 6 — Com a Mão e "Uma página", a folha aparece espremida</h3>
+<p><strong>Do que se trata.</strong> Logo depois de dividir o livro no Automático, com a ferramenta Mão escolhida e a vista "Uma
+página", a página aparecia com a folha inteira (as duas páginas) apertada na largura de uma.</p>
+<p><strong>O que acontece hoje.</strong> Já não acontece. Na versão de teste de hoje, pelo mesmo caminho, as páginas 1, 2, 5, 8 e 14
+aparecem certas com a Mão e "Uma página".</p>
+<p><img alt="Erro 6" src="prints/erro6-folha-espremida.jpg" /></p>
+<p><strong>Como acontecia.</strong> Era um desenho errado que a tela mostrava enquanto o desenho certo não chegava: o programa
+entregava, por um caminho, a folha inteira como veio do scanner no lugar da página já dividida, e a tela a esticava
+para a forma de uma página. Isso foi consertado em 09/11, no conserto do Preto e branco escolhido à mão (a mesma
+causa fazia o PDF sair sem o título na página 5, que você testou em 13/11: "funcionando"). Há duas provas automáticas
+que guardam isso e as duas passam hoje.</p>
+<p><strong>Ressalva.</strong> Rodei o mesmo caminho também na versão do teste do Kaique (06/11) e lá também não apareceu: o defeito
+dependia de quanto o desenho demorava. Por isso a prova do "antes" é o print do próprio Kaique. Ainda há um ponto
+fraco: a tela continua esticando, sem avisar, qualquer imagem que chegue com outra forma; se outro caminho entregar a
+imagem errada, o espremido volta. Fica anotado na parte da gerente.</p>
+<p><strong>Defeito ou escolha.</strong> Defeito de tela (o PDF saía certo).</p>
+<p><strong>Situação.</strong> Consertado na versão de teste em 09/11. Falta você conferir pelo caminho do Kaique (dividir no
+Automático, Mão, "Uma página").</p>
+<h3>Erro 7 — Marcações laranja à vista com a Mão</h3>
+<p><strong>Do que se trata.</strong> A Mão é a última ferramenta da coluna da esquerda (o desenho de uma mãozinha, logo abaixo da
+lupa). Ela serve só para olhar a página e arrastá-la quando está ampliada; não muda nada. Os contornos laranja são
+o programa mostrando onde ele achou letra e pintura.</p>
+<p><strong>O que acontece hoje.</strong> Ainda acontece: com a Mão escolhida e o botão "marcações" desligado, os contornos laranja
+continuam em volta do texto e da pintura.</p>
+<p><img alt="Erro 7" src="prints/erro7-laranja-com-a-mao.jpg" /></p>
+<p><strong>Como acontece.</strong> Existem duas coisas diferentes na tela, e elas seguem regras diferentes:</p>
+<ul>
+<li>as cores das marcações (o rosa, o azul...): seguem o botão "marcações", e esse obedece o que você decidiu em 29/10
+  (some com a Zoom e com a Mão);</li>
+<li>os contornos laranja ("Mostrar as áreas achadas"): você pediu em 08/10 que "no para revisar, elas já vão aparecer
+  laranjas". O programa liga esse laranja sozinho em toda página que tem aviso, com qualquer ferramenta. Logo depois
+  do Automático quase todas as páginas têm aviso, então quase todas ficam com laranja.</li>
+</ul>
+<p><strong>Defeito ou escolha.</strong> As duas regras foram pedidas por você, e elas se cruzam. Não é um defeito de conta: falta
+dizer qual vale quando as duas batem.</p>
+<p><strong>O que você escolhe.</strong></p>
+<ul>
+<li><strong>Opção 1 — a Mão e a Zoom escondem também o laranja</strong> (a página limpa, como vai sair). O laranja aparece com as
+  ferramentas de marcar, e com a caixinha "Mostrar as áreas achadas". Muda o que você pediu em 08/10 só para a Mão e a
+  Zoom.</li>
+<li><strong>Opção 2 — o botão "marcações" passa a mostrar e esconder o laranja também.</strong> Um botão só para tudo o que é
+  marcação; desligado, nenhuma cor e nenhum contorno.</li>
+<li><strong>Opção 3 — fica como está</strong> (laranja sempre nas páginas com aviso).</li>
+<li>Sugestão da verificação: opção 2 (um botão só, que você já conhece). Nada mais do que já funciona muda.</li>
+</ul>
+<p><strong>Situação.</strong> "Consertar" (09/11), mas precisa desta escolha antes.</p>
+<h3>Erro 8 — Na janela de salvar, o aviso "será substituído" não some</h3>
+<p><strong>Do que se trata.</strong> É a janela "Onde salvar o livro pronto", que abre ao clicar em "Confirmar e processar". Quando já
+existe um PDF com o mesmo nome na pasta, aparece a faixa "Já existe um arquivo chamado ... Se continuar, ele será
+substituído."</p>
+<p><strong>O que acontece hoje.</strong> Ainda acontece: troquei o nome para "rodada-2.pdf" (que não existe) e a faixa continuou
+dizendo que o outro arquivo seria substituído. Nada é apagado: o programa só substitui o arquivo que tem o nome
+escrito, e pergunta antes.</p>
+<p><img alt="Erro 8" src="prints/erro8-aviso-velho-salvar.jpg" /></p>
+<p><strong>Como acontece.</strong> A janela confere o nome em dois lugares. Um aviso pequeno, embaixo do nome, é refeito a cada letra
+digitada. A faixa grande só é refeita quando se troca a pasta, nunca quando se troca o nome. Por isso ela fica
+falando do nome velho.</p>
+<p><strong>Sua pergunta: "porque aconteceu esse bugue, que regra o agente errou".</strong></p>
+<ul>
+<li><strong>Quem fez e quando.</strong> A faixa grande entrou em 08/08/2026, quando o "Salvar em" e o "Nome do arquivo" saíram da
+  tela de trabalho e foram para esta janela (um trabalho do Claude daquela época, antes das regras dos agentes). O
+  pedido era o seu de 18/07: "avisar se já existir arquivo com o mesmo nome, oferecendo substituir ou renomear". O
+  agente ligou a faixa só ao "escolher pasta" e esqueceu o campo do nome.</li>
+<li><strong>Por que ninguém viu.</strong> O teste que confere a faixa não digita um nome: ele manda a janela se conferir direto, por
+  dentro. Por isso passa, e o defeito ficou. Em 25/09, outro trabalho escreveu no código o comentário "a faixa é
+  refeita toda vez que o destino muda", o que não era verdade, e ninguém conferiu.</li>
+<li><strong>Que regra faltou.</strong> Na época, nenhuma. Hoje três regras pegariam: o teste tem que fazer o caminho de quem usa (o
+  clique simulado por dentro não vale como prova, 22/09); o conserto tem que passar por todos os caminhos da mesma
+  coisa (aqui, mudar a pasta e mudar o nome; regra de 13/11); e todo comentário que diz "isto acontece sempre que..."
+  é conferido na hora (regra de 13/11).</li>
+<li>O modelo de pedido aos agentes que você também pediu para ver é da gerente: ela mostra junto com este erro.</li>
+</ul>
+<p><strong>Situação.</strong> "Consertar" (09/11). Ainda não começou.</p>
+<h3>Erro 9 — Depois de "tirar do livro", a faixa ainda diz "vai sair em Preto e branco"</h3>
+<p><strong>Do que se trata.</strong> A faixa é a tarja logo acima da tira de miniaturas, com uma frase e os botões "está certo" e
+"próxima dúvida".</p>
+<p><strong>Sua pergunta: "para que serve, e em que situação é disparado?"</strong> A faixa sempre diz uma frase sobre a página da
+vez:</p>
+<ul>
+<li>se a página tem um aviso, mostra o aviso (com os botões para resolver);</li>
+<li>se não tem aviso e você ainda não deu "está certo", mostra uma frase da ferramenta escolhida. Com a Mão, a Zoom, as
+  de marcar, o Mover e o Filtro, a frase é "Esta página vai sair em [filtro]": serve para dizer com que filtro a
+  página vai para o PDF. Com o Endireitar, diz "Vou endireitar sozinho..."; com o Cortar, "Vou cortar a borda
+  sozinho...";</li>
+<li>se a página foi deixada em branco, diz "Esta página vai sair em branco";</li>
+<li>se você já deu "está certo", diz "Página N conferida".
+Ela não é disparada por nenhum clique: muda sozinha a cada página e a cada ferramenta.</li>
+</ul>
+<p><strong>O que acontece hoje.</strong> Ainda acontece: a miniatura diz "apagada", e a faixa diz "Esta página vai sair em Preto e
+branco." Com o Endireitar escolhido, ela diz "Vou endireitar sozinho...", também errado.</p>
+<p><img alt="Erro 9" src="prints/erro9-frase-depois-de-tirar.jpg" /></p>
+<p><strong>Como acontece.</strong> A frase da faixa tem um caso para a página "deixada em branco", mas não tem para a página "tirada do
+livro". Quando os dois botões foram postos em toda página (26/10), só um ganhou frase.</p>
+<p><strong>Defeito ou escolha.</strong> Defeito.</p>
+<p><strong>Situação.</strong> "Consertar" (09/11). Ainda não começou.</p>
+<h3>Erro 10 — O código "(G2)" na tela</h3>
+<p><strong>Do que se trata.</strong> Na janela do Automático, na etapa "1 Dividir folhas ao meio", embaixo de "Motor de corte", está
+escrito "Livro novo não divide sozinho: só quando esta etapa roda (G2)".</p>
+<p><strong>O que acontece hoje.</strong> Ainda acontece.</p>
+<p><img alt="Erro 10" src="prints/erro10-codigo-g2.jpg" /></p>
+<p><strong>Como acontece.</strong> "G2" é o nome que a sua pergunta tinha numa conferência antiga (05/10). Quem escreveu o texto da
+tela copiou o código junto.</p>
+<p><strong>Onde mais tem código na tela.</strong> Procurei em todos os textos do programa. Além do "(G2)", há dois em balões (o
+texto que aparece quando o mouse para em cima):</p>
+<ul>
+<li>no botão "desligar as marcadas" do Automático: "(D-068: toda função automática liga e desliga)";</li>
+<li>na lista "Quando o ângulo muda depois do corte à mão, o corte:" (etapa Endireitar do Automático): "D-094: a mesma
+  escolha existe nas Configurações...".</li>
+</ul>
+<p><strong>Defeito ou escolha.</strong> Defeito: contra a sua regra "Não se deve usar código na nomeação de coisas". Os três entraram
+juntos em 26/10, na obra.</p>
+<p><strong>Situação.</strong> "Consertar" (09/11). Ainda não começou.</p>
+<h3>Erro 11 — A lista de etapas do Automático volta para o topo</h3>
+<p><strong>Do que se trata.</strong> É a lista "Etapas, na ordem" da janela grande do Automático (1 Dividir ... 7 Montar cadernos),
+com uma caixinha em cada etapa.</p>
+<p><strong>O que acontece hoje.</strong> Ainda acontece quando a lista não cabe na janela (no tamanho do notebook do Kaique): rolei
+até o fim, marquei "6 Margens iguais", e a lista pulou para o topo. O mesmo com "7 Montar cadernos".</p>
+<p><img alt="Erro 11" src="prints/erro11-lista-volta-ao-topo.jpg" /></p>
+<p><strong>Como acontece.</strong> Cada vez que qualquer coisa muda no Automático (uma caixinha, uma opção), a lista é apagada e
+montada de novo, do começo. Montada de novo, ela volta para o alto. O clique seguinte cai na etapa que estiver
+naquele lugar (no teste do Kaique, "Cortar as bordas").</p>
+<p><strong>Defeito ou escolha.</strong> Defeito. Acontece também no painel Automático da direita, que usa a mesma lista.</p>
+<p><strong>Situação.</strong> "Consertar" (09/11). Ainda não começou. A sua ideia da ferramenta que descreve tudo sem precisar de
+foto foi para a Lista de espera.</p>
+<h3>Erro 12 — Página 22 quase em branco sai suja (investigar)</h3>
+<p><strong>Do que se trata.</strong> É a página 22, o verso de uma folha que não tem nada impresso; só se vê, bem fraquinho, o texto
+da outra face por transparência. No PDF ela sai com tracinhos pretos pela página toda e um bloco preto embaixo.</p>
+<p><strong>O que acontece hoje.</strong> Ainda acontece.</p>
+<p><img alt="Erro 12" src="prints/erro12-pagina-suja-p22.jpg" /></p>
+<p><strong>Sua pergunta: defeito ou escolha das ferramentas?</strong> As duas coisas, mas o principal é defeito.</p>
+<ul>
+<li><strong>O defeito:</strong> o Preto e branco tem jeitos diferentes de decidir o que é tinta. De fábrica, o programa escolhe
+  sozinho o jeito de cada página. Numa página sem tinta, ele mede as manchinhas do papel como se fossem letra grossa e
+  escolhe o jeito de letra grossa. Esse jeito sempre acha "tinta" em algum lugar: separa o papel em dois tons e pinta
+  o mais escuro de preto. Com o jeito de sempre (o de letra fina), a mesma página sai toda branca (faixa laranja).
+  Medido: 10,7% da página em preto no jeito que o programa escolheu; 0% no outro.</li>
+<li><strong>A escolha:</strong> o programa avisou "Parece em branco" nessa página, e o aviso estava certo. Se o Kaique apertasse
+  "deixar em branco", a página sairia branca. Mas ninguém deveria precisar disso para não sair sujeira.</li>
+</ul>
+<p><strong>De onde veio.</strong> A escolha sozinha do jeito de preto é antiga (setembro, antes do plano de 24/09); o jeito de
+letra grossa existe por causa das letras góticas pesadas (Graduale, Palatino).</p>
+<p><strong>Situação.</strong> Você pediu "investigar antes" (09/11). Investigado: é defeito. O conserto espera o seu sim.</p>
+<h3>Erro 13 — A pintura das bandeiras quase some (página 8) (investigar)</h3>
+<p><strong>Do que se trata.</strong> É a página 8, a pintura das bandeiras e dos navios. No PDF quase tudo vira branco, com riscos
+soltos.</p>
+<p><strong>O que acontece hoje.</strong> Ainda acontece.</p>
+<p><img alt="Erro 13" src="prints/erro13-pintura-p8.jpg" /></p>
+<p><strong>Suas perguntas.</strong></p>
+<ul>
+<li><strong>"a gravura foi achada?"</strong> Sim. O programa achou a pintura (verde na imagem do meio), mais da metade da página.</li>
+<li><strong>"mau uso ou bugue?"</strong> Defeito do programa. Depois de achar, ele decide se é pintura (sai em cinza) ou desenho de
+  traço (sai em preto e branco, só as linhas). Aqui ele errou: tomou a pintura de pincel, clarinha, por desenho de
+  traço, e o cinza claro foi para branco. Também marcou pedaços do céu e do mar como papel, que vão a branco.</li>
+<li><strong>Tem jeito hoje?</strong> Tem: a caixinha "Gravuras em tons de cinza" (no Preto e branco, painel "Filtro da página" e
+  Automático), que você aprovou em 01/11. Com ela, a página sai inteira em cinza (faixa laranja). Ela vem desmarcada, e
+  o Kaique não tinha como saber que precisava dela nessa página.</li>
+</ul>
+<p><strong>De onde veio.</strong> É da mesma família do defeito que você aceitou deixar para depois em 29/10 (pintura confundida com
+enfeite no <em>Na escola de Jesus</em>). A sua ideia de 09/11 (o aviso com as marcações para aumentar, diminuir ou trocar o
+filtro só naquele pedaço) foi para a Lista de espera, na Fase 3.</p>
+<p><strong>O que você escolhe (para quando o conserto começar).</strong></p>
+<ul>
+<li><strong>Opção 1 — consertar a conta</strong> que separa pintura de desenho de traço, para a pintura clara de pincel sair em cinza
+  sozinha. É conserto de imagem: precisa ser medido em outros livros antes, porque a mesma conta decide as gravuras de
+  traço (que devem continuar em preto e branco).</li>
+<li><strong>Opção 2 — o programa avisar</strong> nas páginas onde ele achou a pintura e a transformou em traço, com o botão
+  "Gravuras em tons de cinza" no próprio aviso (a caixinha já existe; só passa a ser oferecida na hora certa).</li>
+<li><strong>Opção 3 — as duas.</strong></li>
+<li>Sugestão da verificação: opção 3, começando pela 2 (mais rápida e não muda nenhuma outra página).</li>
+<li>Nada do que já funciona muda na opção 2; na 1, as gravuras de traço precisam ser conferidas de novo.</li>
+</ul>
+<p><strong>Situação.</strong> Investigado: defeito. O conserto espera o seu sim.</p>
+<hr />
+<h2>Parte 2 — Para a gerente: a causa no código (não vai para o Samuel)</h2>
+<p>Versão lida e rodada: <code>obra-2026-10-26</code> em <code>c7e34fd8</code> (cópia <code>lusiadas-provas</code>). Teste de máquina = log e medidas do
+piloto (<code>scripts/anotacoes-*.txt</code>, <code>scripts/analise*.json</code>); teste de olho = os prints abertos um por um.</p>
+<h3>Erro 1 (D-678) — remendos na página 14</h3>
+<ul>
+<li><strong>Causa:</strong> a marcação da página 14 tem 4 regiões <code>LETRA</code> de origem <code>rede</code> (o modelo de regiões, <code>core/rede_selecao.py</code>
+  / <code>core/detectar_regioes.py</code>) dentro da pintura: peito do homem da direita e nuca/rosto do da frente
+  (<code>prints/analise/p14-2-marcado.jpg</code>). Em <code>core/filtros.aplicar_filtro_com_selecao</code> → <code>_preto_e_branco_com_gravura</code>, a
+  pintura vira cinza só onde <code>peso_gravura &gt; 0</code>; o resto recebe a <code>binaria</code> da página inteira. As regiões de letra
+  ficam fora da zona de gravura → retângulos em 1 bit no meio do cinza.</li>
+<li><strong>Outros caminhos:</strong> a mesma marcação vale na prévia, nas figurinhas, no "antes / depois", na tela cheia e no PDF
+  (<code>_filtrar_com_a_marcacao</code> é o ponto único). "Gravuras em tons de cinza" NÃO resolve
+  (<code>prints/analise/p14-5-com-gravuras-em-cinza.png</code>): a regra continua "letra fora da gravura". "Só as letras" não
+  testado aqui.</li>
+<li><strong>Ideia de conserto:</strong> num ponto só (<code>garantir_selecao</code> ou a união das regiões da máquina), letra achada pela rede
+  que fica cercada por gravura e não tem forma de linha de texto passa a contar como gravura.</li>
+</ul>
+<h3>Erro 2 (D-679) — números</h3>
+<ul>
+<li><strong>"de 134":</strong> <code>ui/automatico.py</code> — <code>EstadoDoAutomatico.do_projeto</code> (<code>self.total_paginas = len(projeto.paginas)</code>, ~l.322 e
+  l.343) alimenta <code>A.resumo(...)</code> ("no livro todo (N páginas)"); <code>PaginaAntesEDepois._numero_e_total</code> (~l.1840) devolve
+  <code>len(self.projeto.paginas)</code> sem o Dividir, e <code>len(passos)</code> com ele (os passos também incluem a tirada: print b-10 "132
+  de 134"; c-03 mostra a 133 tirada como "página 133 de 134"). O comentário logo acima diz que é de propósito
+  ("contar pelos passos sem o Dividir (página tirada do livro mudaria a numeração de sempre)"). A barra de baixo
+  (<code>rotulo_da_pagina</code>: "página 133 de 134") conta igual; a <code>JanelaConfirmar._frase_do_livro</code> conta <code>paginas_ativas</code>
+  (133). Três telas, duas contas.</li>
+<li><strong>Sino:</strong> reproduzido na fase d (abaixo). Antes, sem repetir: fase a, 134 parado 60 s e andando; fase b (todos os
+  avisos aceitos), 0 parado 60 s e em 40 setas. <code>scripts/sino.py</code>: desenhar as 133 páginas no tamanho do PDF (<code>renderizar_pagina</code>) numa cópia do projeto
+  não criou nenhum aviso pendente novo (<code>scripts/sino.json</code>; ali nenhum aviso C1 "nasceu" porque todos já estavam aceitos). Fase d (livro do zero, <code>_dados-d</code>, <code>scripts/anotacoes-d.txt</code>): logo depois do Automático, "Qualidade baixa" (67) + todas + "está bom" -&gt; 134 para 25 (igual ao Kaique); parado 120 s: 25; 10 setas: 25; 20 setas: 26; 40 setas: 26. Avisos pendentes no fim (<code>scripts/sino_d.json</code>): nas páginas 11 a 21, só a 14 (contas discordam + ângulo diferente, já existiam na fase a) e a 19 (contas discordam): a 19 é a nova. Causa: <code>core/pipeline</code> (~l.1551) <code>_anotar_contas_discordam(pagina, bool(medidas.get("discordam")))</code> roda a cada medida da geometria no tamanho do PDF (prévia por trás, medida do "Para revisar", processar) e põe ou tira o aviso C1 (e põe a página como não conferida). Caminhos que acrescentam avisos depois de
+  abrir: <code>ui/tela_conferir._alertas_da_previa</code> (prévia e medida do "Para revisar" que chegam por trás), a medida por
+  trás ao abrir (D-284) e <code>_medir_o_em_branco_por_tras</code> (<code>ui/tarefas.py</code>); o cartão da tela inicial lê o
+  <code>resumo.json</code> gravado num momento anterior (por isso 27 × 25).</li>
+<li><strong>Ideia de conserto (sino):</strong> medir o C1 uma vez (na análise do Automático, no tamanho do PDF) e não pôr nem tirar
+  o aviso escondido depois; ou, se a medida por trás muda, avisar na faixa daquela página ("este aviso apareceu agora").</li>
+<li><strong>Ideia de conserto:</strong> uma função só para "páginas do livro que vão para o PDF" (já existe <code>Projeto.paginas_ativas</code>),
+  usada no Automático, na barra de baixo e na janela de salvar; se a tirada continuar numerada, dizer na tela
+  ("134, 1 fora do livro").</li>
+</ul>
+<h3>Erro 3 (D-680) — miniatura da página em branco</h3>
+<ul>
+<li><strong>Causa:</strong> <code>ui/tela_conferir._acertar_as_miniaturas_movidas</code> só troca a miniatura em dois casos: <code>inserida</code> (D-623,
+  <code>_miniatura_branca</code>) e <code>_pagina_sai_movida</code> (D-547/D-649). <code>em_branco</code> não entra; a tira fica com a folha crua.
+  A grade "Todas as páginas" (<code>_pagina_dentro_da_folha</code> → <code>miniatura_como_sai</code>) tem a mesma falta.</li>
+<li><strong>Gambiarra a evitar (§11.12):</strong> é o caso típico de duas regras para a mesma coisa ("sai branca": <code>inserida</code> e
+  <code>em_branco</code>). <code>core/pipeline._filtrar</code> já trata as duas juntas (<code>em_branco or inserida</code>); a tela não.</li>
+<li><strong>Ideia de conserto:</strong> uma função "a página sai branca?" (a mesma do <code>_filtrar</code>) usada pela tira e pela grade.</li>
+</ul>
+<h3>Erro 4 (D-681) — barra de baixo</h3>
+<ul>
+<li><strong>Causa:</strong> a barra (<code>ui/tela_conferir.py</code>, montagem ~l.1200-1250: <code>botoes_mostrar</code>, "antes / depois", "marcações",
+  zoom, qualidade) é um <code>QHBoxLayout</code> sem regra de encolher/quebrar; com o painel da direita aberto a 1280 × 657 o
+  espaço fica menor que a soma dos botões e o Qt corta o texto. Nesta rodada a janela grande (1582 lógicos) coube.</li>
+<li><strong>Ideia de conserto:</strong> decidir o que some ou encolhe primeiro (ex.: "página N de M" vira "N/M"; textos dos botões
+  com largura mínima garantida), na montagem da barra, para todas as ferramentas.</li>
+</ul>
+<h3>Erro 5 (D-682) — página deitada no arquivo para imprimir</h3>
+<ul>
+<li><strong>Causa (duas peças):</strong> (1) o Dividir (<code>core/dividir_scantailor</code> / motor "o do ScanTailor") pôs a linha fora do meio
+  nas folhas sem lombada visível (folha 2 em 0,239; folha 7 em 0,732, ambas com <code>lombada_incerta</code>, <code>confianca_corte</code>
+  1,0 gravada mesmo assim); a página que sobra fica mais larga que alta. (2) <code>core/impressao._gira</code> gira 90° toda
+  página "deitada" (largura &gt; 1,02 × altura) numa vaga em pé (<code>rotacao_automatica=True</code> de fábrica). O aviso
+  <code>_avisos_de_giro</code> existe, mas <code>ui/dialogo_impressao._terminou</code> só o mostra depois de gravar, no fim da coluna da
+  direita, abaixo de "Como imprimir" (fora da vista; <code>prints/crus/a-21</code>).</li>
+<li><strong>Outros caminhos:</strong> qualquer página larga (folha não dividida, página com "Mover" para folha deitada) gira igual;
+  "mandar para a impressora" também (mesma <code>montar_para_impressao</code>).</li>
+<li><strong>Ideia de conserto:</strong> o aviso aparecer antes de gravar (na prévia da janela, junto da folha) e a página larga que
+  veio de uma folha dividida com "Lombada incerta" ser apontada no "Antes de processar" — sem girar escondido.</li>
+</ul>
+<h3>Erro 6 (D-683) — folha espremida</h3>
+<ul>
+<li><strong>Situação:</strong> não reproduzido hoje (p.1, 2, 5, 8, 14 com a Mão: <code>pixmap_editor</code> na forma da página) nem na versão
+  <code>51bdcb0b</code> (cópia <code>teste-kaique-lusiadas</code>, mesma rota; <code>_dados/saida-mao.txt</code>, prints <code>mao-*</code>). Depende de tempo.</li>
+<li><strong>Causa achada antes (agente graves, <code>relatorios/graves-2026-11-10/ONDE-PAREI.md</code>):</strong> a folha crua devolvida como
+  "imagem do PDF" pela procura da gravura por trás, esticada pela tela (<code>ui/tarefas.GerenciadorPrevias.
+  _por_a_imagem_do_pdf</code>, <code>cv2.resize</code>). Consertada na origem em <code>88731637</code> (09/11), depois da versão do Kaique.
+  Provas <code>tests/test_decisoes_gravura_a_mao.py::test_d659_a_tela_nao_troca_a_previa_pela_folha_crua</code> e
+  <code>tests/test_graves_d649_miniatura_igual_ao_pdf.py::test_d649_a_o_mover_mostra_a_pagina_e_nao_a_folha_espremida</code>:
+  rodei as duas hoje, passam (2 passed). A prova de que a primeira falha no código antigo é do agente graves, não
+  refeita por mim.</li>
+<li><strong>Ponto fraco que continua:</strong> o <code>cv2.resize</code> calado em <code>_por_a_imagem_do_pdf</code> (achado 1 do agente graves): qualquer
+  outro caminho que entregue imagem de outra forma vira "folha espremida" em vez de erro visível.</li>
+</ul>
+<h3>Erro 7 (D-684) — laranja com a Mão</h3>
+<ul>
+<li><strong>Causa:</strong> <code>ui/tela_conferir._mostrar_as_achadas</code> liga <code>editor_selecao.mostrar_achadas</code> quando
+  <code>pagina.precisa_revisao</code> (D-237, 08/10: "no para revisar, elas já vão aparecer laranjas"), qualquer que seja a
+  ferramenta. O botão "marcações" (D-580/D-584) só controla <code>mostrar_marcacao</code> (as cores); o <code>paintEvent</code> de
+  <code>ui/widgets/editor_selecao.py</code> pinta o laranja das achadas sempre, de propósito (docstring: "Arriscado: pôr o
+  _pintar_achadas_e_escolhida de volta dentro do if"). Depois do Automático quase toda página tem aviso → laranja em
+  quase todas. São duas decisões que se cruzam: precisa da escolha do Samuel.</li>
+<li><strong>Outros caminhos:</strong> Zoom igual à Mão; "Duas lado a lado" e "antes / depois" com a peça do editor (D-612).</li>
+</ul>
+<h3>Erro 8 (D-685) — aviso velho na janela de salvar</h3>
+<ul>
+<li><strong>Causa:</strong> <code>ui/widgets/destino.py</code>: <code>campo_nome.textEdited</code> → só <code>_conferir()</code> (o aviso pequeno do seletor); o sinal
+  <code>alterado</code> só é emitido em <code>escolher_pasta</code>. <code>ui/janela_confirmar.JanelaConfirmar</code> liga <code>destino.alterado</code> a
+  <code>_reavaliar</code>, que é quem mostra/esconde <code>aviso_existe</code>. Trocar o nome nunca chama <code>_reavaliar</code>.</li>
+<li><strong>Origem (git):</strong> seletor e <code>alterado</code> de <code>c3840ebd</code> (18/07, "Escolher onde salvar..."); a faixa <code>aviso_existe</code> e a
+  ligação só ao <code>alterado</code> de <code>765a56f3</code> (08/08, "Secao 2, etapa 1 - barra de menu, e o destino sai da tela de
+  trabalho", autor Claude); a docstring falsa "Chamado toda vez que o destino muda (sinal <code>alterado</code>)" de <code>c8ae8b6a</code>
+  (25/09, "Comentarios explicativos no codigo"). O pedido: Pedido 5 de 18/07 ("avisar se já existir arquivo com o
+  mesmo nome, oferecendo substituir ou renomear"; <code>historico/arquivo-morto/...68 pedidos).md</code> l.68).</li>
+<li><strong>Por que o teste não pegou:</strong> <code>tests/test_barra_de_menu.py::test_a_janela_de_confirmar_avisa_que_vai_substituir</code>
+  chama <code>janela.destino.definir(...)</code> e depois <code>janela._reavaliar()</code> à mão; nenhum teste digita no campo.</li>
+<li><strong>Outros caminhos:</strong> a mesma faixa não aparece no caso contrário (abrir com nome livre e digitar o nome de um
+  arquivo que existe): só o aviso pequeno cinza aparece; a pergunta "substituir / salvar como (2)" de
+  <code>JanelaPrincipal._perguntar_sobre_substituir</code> continua protegendo o arquivo. O menu Arquivo &gt; "Nome do arquivo..."
+  não usa este seletor.</li>
+<li><strong>Ideia de conserto:</strong> o seletor emite <code>alterado</code> também quando o nome muda (um sinal só para "o destino mudou"),
+  e a prova digita no campo.</li>
+</ul>
+<h3>Erro 9 (D-686) — frase velha depois de "tirar do livro"</h3>
+<ul>
+<li><strong>Causa:</strong> <code>ui/tela_conferir._atualizar_faixa</code> tem ramo para <code>em_branco</code> e para a conferida, não para <code>apagada</code>; cai
+  em <code>_texto_tranquilo(aba)</code> ("Esta página vai sair em {filtro}" na Mão/marcar/Filtro/Mover; "Vou endireitar
+  sozinho..." no Endireitar; "Vou cortar a borda sozinho..." no Cortar). <code>_conferida_na_faixa</code> já exclui <code>apagada</code>,
+  e <code>_atualizar_os_botoes_da_pagina</code> já troca o botão para "trazer de volta": só a frase ficou.</li>
+<li><strong>Origem:</strong> a frase "vai sair em" é de <code>d9fae8c2</code> (18/07); "tirar do livro" em toda página é de <code>82cdadae</code> (26/10,
+  etapa 2 da obra), sem tocar a faixa.</li>
+<li><strong>Outros caminhos:</strong> menu Página, grade "Todas as páginas" (tirar várias), no Dividir (folha <code>apagada</code>: o
+  <code>_texto_tranquilo</code> do Dividir também não olha).</li>
+<li><strong>Ideia de conserto:</strong> um ramo <code>apagada</code> em <code>_atualizar_faixa</code> (antes do texto da ferramenta), com o botão "trazer
+  de volta", como o do <code>em_branco</code>.</li>
+</ul>
+<h3>Erro 10 (D-687) — códigos na tela</h3>
+<p>Busca em todos os textos de <code>ui/</code> (<code>scripts/codigos_na_tela.py</code> → <code>scripts/codigos_na_tela.txt</code>; strings que não são
+docstring nem comentário):</p>
+<ul>
+<li><code>ui/automatico.py:2285</code> — texto à vista na etapa Dividir: "só quando esta etapa roda <strong>(G2)</strong>".</li>
+<li><code>ui/automatico.py:765-767</code> — balão do botão "desligar as marcadas": "(<strong>D-068</strong>: toda função automática liga e
+  desliga)".</li>
+<li><code>ui/automatico.py:2304-2305</code> — balão da lista "Quando o ângulo muda depois do corte à mão, o corte:": "<strong>D-094</strong>: a
+  mesma escolha existe nas Configurações...".</li>
+<li>Não são código interno: "(F1)" (<code>ui/tela_inicio.py:183</code>, é a tecla) e "A4" (tamanho de papel). Em <code>core/</code>, os textos
+  com "item 2.11", "item 2.12", "item 1.2", "item 2.2", "item 2.8" vão só para o <code>erros.log</code>, não para a tela.</li>
+<li>Os três vieram juntos no commit <code>e2321b16</code> (26/10, "Etapa 3: ... painel Automático e janela grande de verdade").</li>
+<li><strong>Ideia de conserto:</strong> tirar os três e pôr em <code>tests/test_decisoes*.py</code> uma prova que varre os textos de <code>ui/</code> com o
+  mesmo padrão (pedido da própria D-687).</li>
+</ul>
+<h3>Erro 11 (D-688) — a lista volta ao topo</h3>
+<ul>
+<li><strong>Causa:</strong> <code>ui/automatico.ListaDeEtapas.refazer</code> (ligado a <code>estado.mudou</code>) faz <code>clear()</code> e recria todos os itens a
+  cada mudança; o <code>QListWidget</code> volta a barra para 0. Medido: barra 2 → 0 ao marcar "6 Margens iguais" e "7 Montar
+  cadernos" na janela a 1280 × 657.</li>
+<li><strong>Outros caminhos:</strong> qualquer opção que mude o estado (caixinhas de dentro, combos, receita) e o painel Automático
+  compacto (mesma classe).</li>
+<li><strong>Ideia de conserto:</strong> em <code>refazer</code>, atualizar texto e caixinha dos itens que já existem (ou guardar e devolver a
+  posição da barra), recriando só quando a ordem muda.</li>
+</ul>
+<h3>Erro 12 (D-689) — página 22 suja</h3>
+<ul>
+<li><strong>Causa:</strong> página quase branca (cinza 249 a 255 no desenho de 300 DPI). <code>algoritmo_preto_branco = "auto"</code> →
+  <code>core/filtros.escolher_algoritmo_automatico</code> limiariza a página com Otsu e mede a "espessura do traço" dessas manchas
+  de papel; dá traço grosso → escolhe Otsu. Otsu numa página sem tinta separa dois tons de papel: 10,7% de preto.
+  Sauvola na mesma página: 0,0%; Wolf: 6,6% (<code>scripts/analise.json</code>, <code>prints/analise/p22-pb-*.png</code>). Não há
+  verificação de contraste mínimo antes de escolher.</li>
+<li><strong>Outros caminhos:</strong> toda página em Preto e branco "auto" sem gravura e quase vazia (versos em branco do livro todo;
+  o aviso "Parece em branco" marcou 7 no teste do Kaique). O aviso <code>em_branco</code> acerta, mas não muda nada sozinho.</li>
+<li><strong>Ideia de conserto:</strong> em <code>escolher_algoritmo_automatico</code>, página sem contraste de tinta (ex.: diferença entre os
+  percentis claros e escuros menor que um limite) fica no Sauvola; a mesma regra serve a prévia e o PDF (já é uma
+  função só).</li>
+</ul>
+<h3>Erro 13 (D-690) — pintura da página 8</h3>
+<ul>
+<li><strong>Causa:</strong> a pintura FOI achada (gravura 55% da página, origem <code>rede</code>). <code>_tipos_das_zonas</code> classificou a zona
+  única como "desenho" (nem foto/pintura, nem enfeite) → <code>_desenho_em_preto_e_branco</code> (traço em 1 bit): o cinza
+  claro vai a branco. Além disso, partes do céu e do mar claros foram marcadas <code>PAPEL</code> (amarelo em
+  <code>p8-2-marcado.jpg</code>) → branco. Com <code>gravuras_em_tons_de_cinza=True</code> (D-588) a página sai inteira em cinza
+  (<code>p8-5-com-gravuras-em-cinza.png</code>). Mesma família da D-585 (pintura confundida com enfeite, aceita até depois).</li>
+<li><strong>Outros caminhos:</strong> prévia, figurinhas e PDF passam pela mesma função; vale para toda pintura clara de pincel.</li>
+<li><strong>Ideia de conserto:</strong> é decisão do Samuel (ver o que ele escolhe): ou a pintura clara passa a contar como pintura
+  em <code>_tipos_das_zonas</code> (regra de imagem, precisa medida e teste em mais livros), ou o aviso da página leva a
+  "Gravuras em tons de cinza".</li>
+</ul>
+<h3>Arquivo gravado fora do projeto</h3>
+<p>O 1º processar da fase a gravou <code>C:/Users/fotog/Documents/Editor de Impressao/lusiadas - preto e branco.pdf</code>
+(18,7 MB, 14/11 13:07): com uma pasta de dados nova, a pasta de saída sugerida é Documentos. Nada dele foi substituído
+(a pasta só tinha três PDFs do Gradus de 18/07). Não apaguei. A gerente pergunta ao Samuel se pode apagar.</p>
+<p class="rodape">Editor de Impressão &middot; gerado em 14/11/2026 às 13:32</p>
+</body>
+</html>

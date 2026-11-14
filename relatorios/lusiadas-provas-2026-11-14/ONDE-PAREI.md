@@ -35,10 +35,11 @@ Nada muda: tarefa sem código.
 - [x] lista de códigos na tela: `scripts/codigos_na_tela.py` -> `scripts/codigos_na_tela.txt`
 - [x] fase a: abrir, Automático como a rodada 1 (Dividir + capa aberta, sem Cortar, PB, Gravuras), Mão nas p.1/2/5/8/14, processar, montar para imprimir. O "deixar em branco"/"tirar do livro" e o Propriedades não aconteceram (o clique no ícone do painel não abriu): refeitos na fase b. O 2º processar foi interrompido de propósito (ver ATENÇÃO).
 - [x] análise das páginas 8, 14, 22 e folha 7 (`scripts/analise.py`, `analise_p8.py`; json ao lado)
-- [ ] fase b: sino, branco, tirar, Propriedades, Automático (contagem e lista), janela de salvar
-- [ ] fase mao no código do teste do Kaique (51bdcb0b, cópia teste-kaique-lusiadas) para o erro 6
-- [ ] erro por erro (abaixo)
-- [ ] relatório nos três formatos
+- [x] fase b: branco (D-680), tirar (D-686), Propriedades na janela pequena (D-681), Automático com a página tirada (D-679), janela de salvar trocando o nome (D-685)
+- [x] fase c: D-686 com a Mão; D-688 com a janela do Automático a 1280 x 657
+- [x] fase mao: o mesmo caminho no código do teste do Kaique (51bdcb0b): erro 6 também não apareceu (depende de tempo)
+- [x] fase d: sino logo depois do Automático (25 -> 26 só andando)
+- [x] relatório nos três formatos: `relatorio.md/.html/.pdf` (montado por `scripts/montar_relatorio.py scripts/partes`)
 
 ## Erro por erro
 Achados de código (antes de rodar):
@@ -57,10 +58,39 @@ Achados de código (antes de rodar):
 - D-689 (p.22): AINDA ACONTECE. Página quase branca (cinza 249-255). O "jeito de preto" automático escolhe Otsu (letra grossa) e inventa tinta: 10,7% preto. Sauvola: 0%. Wolf: 6,6%. `filtros.escolher_algoritmo_automatico` mede a "espessura do traço" sobre o Otsu da própria página, sem olhar se há contraste. O aviso "Parece em branco" acertou.
 - D-690 (p.8): AINDA ACONTECE. A pintura FOI achada (gravura 55%), mas `_tipos_das_zonas` a classificou como "desenho de traço" (zona única) -> vira linhas; parte do mar/céu claro foi marcada papel. Com "Gravuras em tons de cinza" (D-588, já existe, desmarcada) sai inteira em cinza.
 - D-682: AINDA ACONTECE. Nesta rodada a folha 2 (linha em 0,239, "Lombada incerta") deixou a página 3 larga e ela saiu deitada na face 3; a folha 7 (linha em 0,732) partiu "PERIGOS E TRAIÇÕES" (p.12 quase quadrada, 616x612 pt, não girou). O aviso "Página 3: era deitada e foi girada..." existe, mas só depois de gravar e fora da vista (embaixo de "Como imprimir").
-- D-683: na versão de hoje NÃO aconteceu (p.1, 2, 5, 8, 14 com a Mão e "Uma página": página certa). Falta provar no código antigo.
+- D-683: JÁ NÃO ACONTECE hoje (p.1, 2, 5, 8, 14 certas). Também não apareceu no 51bdcb0b pelo mesmo caminho (depende do tempo). Causa achada e consertada em 88731637 (09/11, agente graves); as 2 provas dele passam hoje.
 - D-684: AINDA ACONTECE (laranja nas p.1, 2, 8, 14 com a Mão; é o "Mostrar as áreas achadas" ligado sozinho nas páginas com aviso, D-237).
 - D-687: AINDA ACONTECE (print a-02).
-- D-679 (prévia "de 134"): a contagem conta a página tirada de propósito (comentário em `ui/automatico.py` ~1830). Sino: na fase a ficou 134 parado 60 s e andando (tudo com aviso). A fase b testa depois do "está bom nas marcadas".
+- D-679: AINDA ACONTECE. "de 134"/"(134 páginas)" conta a página tirada (de propósito, comentário em `ui/automatico.py` ~1830). Sino: fase d, 25 -> 26 só andando (aviso "contas discordam" posto na p.19 pela medida por trás, `core/pipeline._anotar_contas_discordam`).
+- D-680, D-681 (só a 1280x657), D-685, D-686, D-688: AINDA ACONTECEM (provas `prints/erro3,4,8,9,11-*.jpg`).
+
+## Como cumpri cada decisão
+- D-691 ("eu quero ver esses erros, as provas dele e uma explicação de como acontece, explique de forma simples. quero
+  antes de dar inicio"): relatório `relatorio.html/.pdf/.md`, Parte 1, um erro por seção, cada um com print no modelo do
+  girar (`prints/erroN-*.jpg`, todos abertos e conferidos) e a explicação no formato do §11.13. Nenhum conserto feito.
+- D-678 a D-690: cada um reproduzido na versão de teste `c7e34fd8` pelo caminho do Kaique (piloto `scripts/piloto.py`,
+  fases a, b, c, d; prints crus em `prints/crus/`; anotações em `scripts/anotacoes-*.txt`), com a situação "ainda
+  acontece / já não acontece" (resumo no topo do relatório).
+- D-685 (a pergunta "que regra o agente errou"): git blame + log achados (765a56f3, c3840ebd, c8ae8b6a) e o pedido de
+  18/07; respondido no erro 8. O "modelo de pedido aos agentes" fica com a gerente.
+- D-686 (a pergunta "para que serve, e em que situação é disparado?"): respondido no erro 9.
+- D-687 (lista de códigos na tela): `scripts/codigos_na_tela.txt` e Parte 2.
+- D-689 e D-690 (investigar antes): erros 12 e 13, com medida (`scripts/analise.json`, `analise_p8.json`).
+- D-605 / regras de tela: nenhum código mudou; nada na tela do Samuel (janela em -32000, PrintWindow); pasta de dados
+  própria; o acervo não foi tocado (livro copiado).
+
+## Ressalvas
+- Um arquivo foi gravado fora do projeto, em Documentos (ver ATENÇÃO acima). Não apaguei.
+- Roda do mouse: não funciona fora da tela; a lista do Automático foi rolada pondo a barra no fim (equivalente).
+- O "clique" no ícone do painel Propriedades falhou na fase a (o painel não abriu) e funcionou na fase b; a função
+  `abrir_painel` tem o `paineis.alternar` como reserva, que não precisou ser usada na fase b.
+- Erro 6: não reproduzido nem na versão do Kaique (51bdcb0b): depende de tempo. A prova do "antes" é o print do Kaique.
+  A prova automática que falha no código antigo é do agente graves (não refeita).
+- Os prints crus (`prints/crus/`) e as imagens da análise (`prints/analise/`) ficam na pasta, fora do git (27 MB); as provas montadas (`prints/erro*.jpg`) estão no git.
+- Testes do programa: rodei só os dois testes do erro 6 (passam). Tarefa sem código: sem rodada no GitHub.
 
 ## Perguntas para o Samuel
-(nenhuma por enquanto)
+Prontas no relatório, no formato do §11.13, para a gerente levar quando for a vez de cada erro:
+- Erro 7 (D-684): o laranja das áreas achadas com a Mão — opção 1 (Mão e Zoom escondem), 2 (o botão "marcações" manda em tudo, sugestão), 3 (fica como está).
+- Erro 13 (D-690): como consertar — 1 (a conta pintura × traço), 2 (o aviso oferece "Gravuras em tons de cinza"), 3 (as duas, sugestão começando pela 2).
+- Arquivo em Documentos: pode apagar `C:/Users/fotog/Documents/Editor de Impressao/lusiadas - preto e branco.pdf`? (gravado por este teste)

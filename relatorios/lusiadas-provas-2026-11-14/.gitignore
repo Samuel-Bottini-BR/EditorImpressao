@@ -2,3 +2,5 @@ _dados/
 _livro/
 *.pdf.tmp
 _dados-*/
+prints/crus/
+prints/analise/

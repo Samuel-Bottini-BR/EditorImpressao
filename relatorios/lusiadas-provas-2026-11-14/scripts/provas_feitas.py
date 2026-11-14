@@ -132,13 +132,23 @@ def erro7():
 def erro2():
     montar("Erro 2 - números que não batem - resumo",
            "Os Lusíadas (cópia), 134 páginas depois do Dividir com a capa aberta; a página 133 (a contracapa "
-           "repetida do scan) foi tirada do livro. Depois, o Automático aberto de novo. Versão de teste de hoje.",
+           "repetida do scan) foi tirada do livro. Depois, o Automático aberto de novo. Versão de teste de hoje. "
+           "Embaixo, o sino, numa rodada com o livro aberto do zero.",
            [Faixa("azul", "COMO É HOJE", "o Automático diz \"de 134\" e \"(134 páginas)\", mas para o PDF vão "
                   "133: ele conta também a página tirada do livro",
                   [Peca("janela do Automático", C / "b-10-automatico-2-contagem.png", altura=520,
                         circulos=[(1525, 795, 95), (840, 918, 75)], nome_vermelho=True),
                    Peca("janela de salvar, logo depois", C / "b-15-salvar-depois-de-trocar-o-nome.png",
-                        altura=520, retangulos=[(30, 342, 382, 376)])])],
+                        altura=520, retangulos=[(30, 342, 382, 376)])]),
+            Faixa("azul", "O SINO QUE MUDA SOZINHO (OUTRA RODADA, LIVRO NOVO)", "logo depois do Automático, "
+                  "\"Qualidade baixa\" + \"Selecionar todas\" + \"está bom nas marcadas\": o sino fica em 25. Sem "
+                  "mexer em nada, só andando com a seta para a direita da página 1 à 41, ele passa para 26",
+                  [Peca("antes de andar: 25", C / "d-06-sino-logo-depois-do-esta-bom.png",
+                        recorte=(1560, 90, 1942, 300), altura=230, circulos=[(1916, 143, 26)], nome_vermelho=True),
+                   Peca("depois: 26", C / "d-07-sino-depois-de-andar.png",
+                        recorte=(1560, 90, 1942, 300), altura=230, circulos=[(1916, 143, 26)], nome_vermelho=True),
+                   Peca("rodapé, depois", C / "d-07-sino-depois-de-andar.png",
+                        recorte=(420, 1058, 780, 1092), altura=60)])],
            P / "erro2-numeros.jpg")
 
 

@@ -1,0 +1,1 @@
+A mesma medida também roda no processar, por isso o número pode mudar de novo depois de processar.

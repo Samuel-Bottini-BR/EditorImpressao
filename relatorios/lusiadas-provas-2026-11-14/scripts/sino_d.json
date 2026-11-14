@@ -1,0 +1,254 @@
+[
+ {
+  "onde": "Página 1",
+  "alvo": "pagina",
+  "indice": 1,
+  "codigo": "cor",
+  "titulo": "Tem cor"
+ },
+ {
+  "onde": "Páginas 2 e 3",
+  "alvo": "folha",
+  "indice": 2,
+  "codigo": "lombada_incerta",
+  "titulo": "Lombada incerta"
+ },
+ {
+  "onde": "Página 2",
+  "alvo": "pagina",
+  "indice": 2,
+  "codigo": "cor",
+  "titulo": "Tem cor"
+ },
+ {
+  "onde": "Página 2",
+  "alvo": "pagina",
+  "indice": 2,
+  "codigo": "contas_do_endireitar_discordam",
+  "titulo": "Endireitar: as contas discordam"
+ },
+ {
+  "onde": "Página 8",
+  "alvo": "pagina",
+  "indice": 8,
+  "codigo": "contas_do_endireitar_discordam",
+  "titulo": "Endireitar: as contas discordam"
+ },
+ {
+  "onde": "Páginas 12 e 13",
+  "alvo": "folha",
+  "indice": 7,
+  "codigo": "lombada_incerta",
+  "titulo": "Lombada incerta"
+ },
+ {
+  "onde": "Página 14",
+  "alvo": "pagina",
+  "indice": 14,
+  "codigo": "contas_do_endireitar_discordam",
+  "titulo": "Endireitar: as contas discordam"
+ },
+ {
+  "onde": "Página 14",
+  "alvo": "pagina",
+  "indice": 14,
+  "codigo": "angulo_diferente_das_outras",
+  "titulo": "Inclinação diferente das outras"
+ },
+ {
+  "onde": "Página 19",
+  "alvo": "pagina",
+  "indice": 19,
+  "codigo": "contas_do_endireitar_discordam",
+  "titulo": "Endireitar: as contas discordam"
+ },
+ {
+  "onde": "Página 22",
+  "alvo": "pagina",
+  "indice": 22,
+  "codigo": "em_branco",
+  "titulo": "Parece em branco"
+ },
+ {
+  "onde": "Páginas 32 e 33",
+  "alvo": "folha",
+  "indice": 17,
+  "codigo": "angulo_suspeito",
+  "titulo": "Alinhamento duvidoso"
+ },
+ {
+  "onde": "Página 32",
+  "alvo": "pagina",
+  "indice": 32,
+  "codigo": "contas_do_endireitar_discordam",
+  "titulo": "Endireitar: as contas discordam"
+ },
+ {
+  "onde": "Página 32",
+  "alvo": "pagina",
+  "indice": 32,
+  "codigo": "angulo_diferente_das_outras",
+  "titulo": "Inclinação diferente das outras"
+ },
+ {
+  "onde": "Página 48",
+  "alvo": "pagina",
+  "indice": 48,
+  "codigo": "em_branco",
+  "titulo": "Parece em branco"
+ },
+ {
+  "onde": "Página 50",
+  "alvo": "pagina",
+  "indice": 50,
+  "codigo": "contas_do_endireitar_discordam",
+  "titulo": "Endireitar: as contas discordam"
+ },
+ {
+  "onde": "Página 50",
+  "alvo": "pagina",
+  "indice": 50,
+  "codigo": "angulo_diferente_das_outras",
+  "titulo": "Inclinação diferente das outras"
+ },
+ {
+  "onde": "Página 62",
+  "alvo": "pagina",
+  "indice": 62,
+  "codigo": "contas_do_endireitar_discordam",
+  "titulo": "Endireitar: as contas discordam"
+ },
+ {
+  "onde": "Página 62",
+  "alvo": "pagina",
+  "indice": 62,
+  "codigo": "angulo_diferente_das_outras",
+  "titulo": "Inclinação diferente das outras"
+ },
+ {
+  "onde": "Páginas 70 e 71",
+  "alvo": "folha",
+  "indice": 36,
+  "codigo": "angulo_suspeito",
+  "titulo": "Alinhamento duvidoso"
+ },
+ {
+  "onde": "Página 70",
+  "alvo": "pagina",
+  "indice": 70,
+  "codigo": "em_branco",
+  "titulo": "Parece em branco"
+ },
+ {
+  "onde": "Página 71",
+  "alvo": "pagina",
+  "indice": 71,
+  "codigo": "contas_do_endireitar_discordam",
+  "titulo": "Endireitar: as contas discordam"
+ },
+ {
+  "onde": "Página 72",
+  "alvo": "pagina",
+  "indice": 72,
+  "codigo": "contas_do_endireitar_discordam",
+  "titulo": "Endireitar: as contas discordam"
+ },
+ {
+  "onde": "Página 72",
+  "alvo": "pagina",
+  "indice": 72,
+  "codigo": "angulo_diferente_das_outras",
+  "titulo": "Inclinação diferente das outras"
+ },
+ {
+  "onde": "Página 80",
+  "alvo": "pagina",
+  "indice": 80,
+  "codigo": "contas_do_endireitar_discordam",
+  "titulo": "Endireitar: as contas discordam"
+ },
+ {
+  "onde": "Página 80",
+  "alvo": "pagina",
+  "indice": 80,
+  "codigo": "angulo_diferente_das_outras",
+  "titulo": "Inclinação diferente das outras"
+ },
+ {
+  "onde": "Página 94",
+  "alvo": "pagina",
+  "indice": 94,
+  "codigo": "contas_do_endireitar_discordam",
+  "titulo": "Endireitar: as contas discordam"
+ },
+ {
+  "onde": "Página 94",
+  "alvo": "pagina",
+  "indice": 94,
+  "codigo": "angulo_diferente_das_outras",
+  "titulo": "Inclinação diferente das outras"
+ },
+ {
+  "onde": "Página 98",
+  "alvo": "pagina",
+  "indice": 98,
+  "codigo": "em_branco",
+  "titulo": "Parece em branco"
+ },
+ {
+  "onde": "Página 98",
+  "alvo": "pagina",
+  "indice": 98,
+  "codigo": "contas_do_endireitar_discordam",
+  "titulo": "Endireitar: as contas discordam"
+ },
+ {
+  "onde": "Página 100",
+  "alvo": "pagina",
+  "indice": 100,
+  "codigo": "contas_do_endireitar_discordam",
+  "titulo": "Endireitar: as contas discordam"
+ },
+ {
+  "onde": "Página 100",
+  "alvo": "pagina",
+  "indice": 100,
+  "codigo": "angulo_diferente_das_outras",
+  "titulo": "Inclinação diferente das outras"
+ },
+ {
+  "onde": "Página 120",
+  "alvo": "pagina",
+  "indice": 120,
+  "codigo": "em_branco",
+  "titulo": "Parece em branco"
+ },
+ {
+  "onde": "Página 121",
+  "alvo": "pagina",
+  "indice": 121,
+  "codigo": "contas_do_endireitar_discordam",
+  "titulo": "Endireitar: as contas discordam"
+ },
+ {
+  "onde": "Página 122",
+  "alvo": "pagina",
+  "indice": 122,
+  "codigo": "em_branco",
+  "titulo": "Parece em branco"
+ },
+ {
+  "onde": "Página 130",
+  "alvo": "pagina",
+  "indice": 130,
+  "codigo": "em_branco",
+  "titulo": "Parece em branco"
+ },
+ {
+  "onde": "Página 132",
+  "alvo": "pagina",
+  "indice": 132,
+  "codigo": "contas_do_endireitar_discordam",
+  "titulo": "Endireitar: as contas discordam"
+ }
+]
