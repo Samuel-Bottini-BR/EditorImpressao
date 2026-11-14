@@ -140,8 +140,12 @@ cada resolução. Consertando dentro de `aplicar`, todos os caminhos acima passa
 | Horas 13, pontos diferentes tela x PDF | 19% | 4% | 6% |
 | Graduale 223, palavras em duas cores, PDF | 18% | 1% | 3% |
 
-A opção 2 junta cada palavra mas mantém as caixas do ScanTailor: a palavra vizinha ainda pode sair de outra cor, e a
-tela continua diferente do PDF. Por isso o plano segue a **opção 1**.
+**No PDF, as duas opções ficam quase iguais**: entre palavras vizinhas, a maior diferença de cor na opção 2 é 4,5
+(medida no LAB; abaixo de uns 5 não se vê), `scripts/m8_vizinhas.py`. A diferença aparece **na tela** (prévia, 110):
+na opção 2 a letra grande do começo ("N" de "Neocefarée", "M" de "Martyr") sai mais escura que o resto da palavra e
+que as vizinhas (diferença 10 a 13, vê-se ampliado), e 32% dos pontos de letra têm cor diferente entre a tela e o PDF
+(opção 1: 2%). Por isso o plano segue a **opção 1**: pelo PDF sozinho as duas empatam; pela regra "a tela igual ao
+PDF" (D-649), não.
 
 ![O que funciona continua](prints/4-o-que-funciona-continua.png)
 
@@ -200,14 +204,17 @@ No painel "Filtro da página", em "Mais ajustes", com o Preto e branco, as caixi
 cores" marcadas fazem as letras saírem coloridas e com poucas cores. Hoje, no Livro de Horas página 26, a mesma
 palavra sai metade azul e metade bege, e a tela mostra outras cores que o PDF. É **defeito do programa**: a conta veio
 do ScanTailor, que trabalha cor a cor e não palavra a palavra. Você mandou consertar em 13/11 ("cada palavra sai numa
-cor só, como no scan"). O print acima ("COMO É HOJE", "OPÇÃO 1", "OPÇÃO 2", "O SCAN") mostra as duas saídas.
+cor só, como no scan"). O print das opções (a imagem-resumo no alto e, embaixo, as mesmas palavras ampliadas na
+tela e no PDF) mostra as duas saídas. **No PDF a diferença entre as duas opções é pequena demais para se ver**; ela
+aparece na tela.
 
 O que você escolhe:
 - **Opção 1 (recomendo): a mesma tinta, a mesma cor.** Cada palavra numa cor só, e todo o texto da mesma tinta na
   mesma cor, como no scan. A tela e o PDF passam a mostrar a mesma cor. O vermelho e o azul continuam. No Preto e
   branco, "Reduzir cores" deixa de usar a conta do ScanTailor (nos outros filtros continua igual).
-- **Opção 2: cada palavra numa cor, mantendo a conta do ScanTailor.** A palavra fica inteira, mas a vizinha pode sair
-  azul enquanto esta sai bege, e a tela continua mostrando outras cores que o PDF.
+- **Opção 2: cada palavra numa cor, mantendo a conta do ScanTailor.** No PDF sai quase igual à opção 1. Na tela, a
+  letra grande do começo da palavra ("N" de "Neocefarée", "M" de "Martyr") ainda sai um pouco mais escura que o resto,
+  e a tela continua mostrando cores um pouco diferentes das do PDF.
 - **Só comentário.**
 
 As caixinhas continuam desligadas de fábrica e no mesmo lugar. Nada muda em livro que não usa as duas. Situação: em
@@ -243,7 +250,8 @@ Situação: em estudo; nada foi mudado.
 - `ONDE-PAREI.md` (o andamento), este relatório (`relatorio.md/.html/.pdf`), `prints/` (5 prints + o do bug).
 - `scripts/m1_pagina.py` (a página pelo caminho inteiro), `m2_causa.py` (a conta refeita = DLL), `m3_palavras.py` (a
   medida "palavra em duas cores" e a tela x PDF), `m4_render.py` (as páginas em cada resolução), `m5_prototipo.py` (as
-  duas opções), `m7_miolo.py` (a variante descartada), `m6_prints.py` (os prints). Os dados ficam em `_dados/` (fora
+  duas opções), `m7_miolo.py` (a variante descartada), `m8_vizinhas.py` (palavras vizinhas: a diferença entre as opções),
+  `m6_prints.py` (os prints). Os dados ficam em `_dados/` (fora
   do git).
 - Nenhuma janela foi aberta; pasta de dados própria (`_dados/local`). Nenhum teste do programa foi rodado: nada do
   programa mudou.

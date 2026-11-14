@@ -179,7 +179,7 @@ def main():
          lado_a_lado(trecho(a110, largura_px=700), trecho(a300, largura_px=700), "na tela", "no PDF"),
          faixa("O SCAN", "", "escuro"),
          lado_a_lado(trecho(scan, largura_px=700), trecho(scan, largura_px=700), "", "")]
-    empilhar(p, "3-opcoes-horas-26.png")
+    empilhar(p, "3-opcoes-horas-26-antigo.png")
 
     # 4) o que já funciona continua: título vermelho e azul (Horas 13), pauta e rubrica vermelhas (Graduale)
     h13h, h13b = ler(M4 / "horas_p013_300_reduzir.png"), ler(M5 / "horas_p013_300_B.png")
@@ -218,5 +218,93 @@ def main():
     empilhar(p, "5-so-letras-com-a-cor.png")
 
 
+
+
+# --- Print 3, refeito em 14/11 a pedido da gerente (§11.13 regra 3: a imagem prova o que o texto diz) ---
+# Medida em m8_vizinhas.py: no PDF a diferença entre as opções é de no máximo 4,5 (LAB) entre palavras
+# vizinhas - pequena demais para se ver; na tela (prévia, 110) a opção 2 deixa a letra grande do começo
+# ("N" de "Neocefarée", "M" de "Martyr") mais escura que o resto (diferença 10 a 13), e a opção 1 não.
+RECORTES = {  # frações da página (y0, y1, x0, x1): "de Neocefarée." e "& Martyr."
+    "neocefaree": (0.4847, 0.5180, 0.682, 0.925),
+    "martyr": (0.6065, 0.6400, 0.430, 0.680),
+}
+ALVO = {"neocefaree": (0.22, 0.02, 1.0, 1.0), "martyr": (0.27, 0.02, 1.0, 1.0)}
+
+
+def recorte(img, nome, largura=700):
+    y0, y1, x0, x1 = RECORTES[nome]
+    H, W = img.shape[:2]
+    c = img[int(y0 * H):int(y1 * H), int(x0 * W):int(x1 * W)]
+    return cv2.resize(c, (largura, int(largura * c.shape[0] / c.shape[1])), interpolation=cv2.INTER_CUBIC)
+
+
+def par(img, rot_e="", rot_d=""):
+    e, d = recorte(img, "neocefaree"), recorte(img, "martyr")
+    h = max(e.shape[0], d.shape[0])
+    e = cv2.copyMakeBorder(e, 0, h - e.shape[0], 0, 0, cv2.BORDER_CONSTANT, value=(255, 255, 255))
+    d = cv2.copyMakeBorder(d, 0, h - d.shape[0], 0, 0, cv2.BORDER_CONSTANT, value=(255, 255, 255))
+    # elipses: a palavra em cada recorte (o lado esquerdo vai de 0 a 0,489 da largura junta)
+    a1, a2 = ALVO["neocefaree"], ALVO["martyr"]
+    alvos = [(a1[0] * 0.489, a1[1], a1[2] * 0.489, a1[3]),
+             (0.511 + a2[0] * 0.489, a2[1], 0.511 + a2[2] * 0.489, a2[3])]
+    return lado_a_lado(e, d, rot_e, rot_d, alvos)
+
+
+def resumo(scan, hoje, op1, op2):
+    """A imagem-resumo: título, a linha do caminho e as três saídas no PDF, pequenas, lado a lado."""
+    f_t, f_f, f_r = fonte(40, True), fonte(26), fonte(24, True)
+    topo = Image.new("RGB", (LARG, 170), (250, 248, 243))
+    d = ImageDraw.Draw(topo)
+    d.rectangle([0, 0, LARG, 72], fill=CORES["escuro"])
+    d.text((20, 12), "CADA PALAVRA NUMA COR SÓ: AS DUAS OPÇÕES", font=f_t, fill="white")
+    for i, l in enumerate(quebrar("Livro de Horas, página 26, livro novo de fábrica (endireitada, cortada) · Preto e "
+                                  "branco + \"Letras com a cor delas\" + \"Reduzir cores\" · as opções 1 e 2 são "
+                                  "simulação do conserto, fora do programa.", f_f, LARG - 40, d)):
+        d.text((20, 84 + 36 * i), l, font=f_f, fill=(30, 30, 30))
+    cols = []
+    for img in (hoje, op1, op2):
+        c = trecho(img, largura_px=470)
+        cols.append(cv2.copyMakeBorder(c, 0, 0, 10, 10, cv2.BORDER_CONSTANT, value=(255, 255, 255)))
+    junto = np.hstack(cols)
+    meio = quadro(junto, largura=1460)
+    dm = ImageDraw.Draw(meio)
+    for i, (t, cor) in enumerate((("hoje", CORES["azul"]), ("opção 1", CORES["verde"]), ("opção 2", CORES["laranja"]))):
+        dm.text((30 + i * 487, 0), t + " (no PDF)", font=f_r, fill=cor)
+    frase = faixa("O QUE O RESUMO MOSTRA",
+                  "Hoje a mesma palavra sai azul e bege. Nas duas opções cada palavra sai numa cor só. No PDF as "
+                  "opções 1 e 2 ficam quase iguais: a diferença entre elas é pequena demais para se ver. Ela "
+                  "aparece na tela (a prévia), ampliada abaixo.", "escuro")
+    return [topo, meio, frase]
+
+
+def print3_novo():
+    scan = ler(M1 / "original.png")
+    hoje300, hoje110 = ler(M4 / "horas_p026_300_reduzir.png"), ler(M4 / "horas_p026_110_reduzir.png")
+    b110, b300 = ler(M5 / "horas_p026_110_B.png"), ler(M5 / "horas_p026_300_B.png")
+    a110, a300 = ler(M5 / "horas_p026_110_A.png"), ler(M5 / "horas_p026_300_A.png")
+    p = resumo(scan, hoje300, b300, a300)
+    p += [faixa("NA TELA, COMO É HOJE",
+                "\"de Neocefarée.\" e \"& Martyr.\", ampliados. Letras azuis e letras bege na mesma palavra.", "azul"),
+          par(hoje110),
+          faixa("NA TELA, OPÇÃO 1 (recomendo): A MESMA TINTA, A MESMA COR",
+                "As mesmas palavras: \"Neocefarée\" e \"Martyr\" saem inteiras numa cor só, a mesma das palavras "
+                "vizinhas \"de\" e \"&\". O \"N\" e o \"M\", de traço grosso, parecem um pouco mais "
+                "escuros só por serem grossos: a cor é a mesma (medida).", "verde"),
+          par(b110),
+          faixa("NA TELA, OPÇÃO 2: CADA PALAVRA, COM A CONTA DO SCANTAILOR",
+                "As mesmas palavras: a letra grande do começo (o \"N\" e o \"M\") ainda sai mais escura que o resto "
+                "da palavra e que as vizinhas \"de\" e \"&\". A diferença é pequena, mas se vê ampliada.", "laranja"),
+          par(a110),
+          faixa("NO PDF: OPÇÃO 1 (esquerda) E OPÇÃO 2 (direita)",
+                "\"Neocefarée\" no PDF. Aqui a diferença entre as duas opções é pequena demais para se ver: as "
+                "duas saem numa cor só.", "escuro"),
+          lado_a_lado(recorte(b300, "neocefaree"), recorte(a300, "neocefaree"), "opção 1", "opção 2",
+                      [(0.11, 0.02, 0.49, 1.0), (0.62, 0.02, 1.0, 1.0)]),
+          faixa("O SCAN", "As mesmas palavras no scan (filtro Original): uma tinta só.", "escuro"),
+          par(scan)]
+    empilhar(p, "3-opcoes-horas-26.png")
+
+
 if __name__ == "__main__":
     main()
+    print3_novo()

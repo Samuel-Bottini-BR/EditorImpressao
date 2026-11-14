@@ -21,7 +21,9 @@ palavra. Simulação: Horas 26, palavras em duas cores 48% → 5% no PDF; tela x
 Prontas no formato do §11.13 no relatório, seção 7 (com `prints/3-opcoes-horas-26.png` e
 `prints/5-so-letras-com-a-cor.png`):
 1. A mesma tinta, a mesma cor (recomendo) x cada palavra numa cor com a conta do ScanTailor (pode já estar
-   respondida pelo "como no scan" da D-701; a gerente decide).
+   respondida pelo "como no scan" da D-701; a gerente decide). Print refeito em 14/11 a pedido da gerente (§11.13
+   regra 3): imagem-resumo + as mesmas palavras ampliadas; no PDF a diferença entre as opções é pequena demais para se
+   ver (dito na imagem e na pergunta); na tela, a opção 2 deixa o "N"/"M" do começo mais escuro.
 2. Com só "Letras com a cor delas", também uma cor por palavra? (recomendo deixar como está: D-605.)
 
 ## Bugs para a Lista de bugs

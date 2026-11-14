@@ -285,8 +285,12 @@ cada resolução. Consertando dentro de <code>aplicar</code>, todos os caminhos 
 </tr>
 </tbody>
 </table>
-<p>A opção 2 junta cada palavra mas mantém as caixas do ScanTailor: a palavra vizinha ainda pode sair de outra cor, e a
-tela continua diferente do PDF. Por isso o plano segue a <strong>opção 1</strong>.</p>
+<p><strong>No PDF, as duas opções ficam quase iguais</strong>: entre palavras vizinhas, a maior diferença de cor na opção 2 é 4,5
+(medida no LAB; abaixo de uns 5 não se vê), <code>scripts/m8_vizinhas.py</code>. A diferença aparece <strong>na tela</strong> (prévia, 110):
+na opção 2 a letra grande do começo ("N" de "Neocefarée", "M" de "Martyr") sai mais escura que o resto da palavra e
+que as vizinhas (diferença 10 a 13, vê-se ampliado), e 32% dos pontos de letra têm cor diferente entre a tela e o PDF
+(opção 1: 2%). Por isso o plano segue a <strong>opção 1</strong>: pelo PDF sozinho as duas empatam; pela regra "a tela igual ao
+PDF" (D-649), não.</p>
 <p><img alt="O que funciona continua" src="prints/4-o-que-funciona-continua.png" /></p>
 <p>O que sobra na simulação (5% na Horas 26): pontinhos (ponto final, apóstrofo, pedaço de acento) que saem de outra cor
 que a palavra, e a letra azul da coluna da esquerda. Na Graduale, a prévia (110) ainda difere do PDF em 18% dos
@@ -339,13 +343,16 @@ com a medida "palavra em duas cores" do <code>scripts/m3_palavras.py</code> pass
 cores" marcadas fazem as letras saírem coloridas e com poucas cores. Hoje, no Livro de Horas página 26, a mesma
 palavra sai metade azul e metade bege, e a tela mostra outras cores que o PDF. É <strong>defeito do programa</strong>: a conta veio
 do ScanTailor, que trabalha cor a cor e não palavra a palavra. Você mandou consertar em 13/11 ("cada palavra sai numa
-cor só, como no scan"). O print acima ("COMO É HOJE", "OPÇÃO 1", "OPÇÃO 2", "O SCAN") mostra as duas saídas.</p>
+cor só, como no scan"). O print das opções (a imagem-resumo no alto e, embaixo, as mesmas palavras ampliadas na
+tela e no PDF) mostra as duas saídas. <strong>No PDF a diferença entre as duas opções é pequena demais para se ver</strong>; ela
+aparece na tela.</p>
 <p>O que você escolhe:
 - <strong>Opção 1 (recomendo): a mesma tinta, a mesma cor.</strong> Cada palavra numa cor só, e todo o texto da mesma tinta na
   mesma cor, como no scan. A tela e o PDF passam a mostrar a mesma cor. O vermelho e o azul continuam. No Preto e
   branco, "Reduzir cores" deixa de usar a conta do ScanTailor (nos outros filtros continua igual).
-- <strong>Opção 2: cada palavra numa cor, mantendo a conta do ScanTailor.</strong> A palavra fica inteira, mas a vizinha pode sair
-  azul enquanto esta sai bege, e a tela continua mostrando outras cores que o PDF.
+- <strong>Opção 2: cada palavra numa cor, mantendo a conta do ScanTailor.</strong> No PDF sai quase igual à opção 1. Na tela, a
+  letra grande do começo da palavra ("N" de "Neocefarée", "M" de "Martyr") ainda sai um pouco mais escura que o resto,
+  e a tela continua mostrando cores um pouco diferentes das do PDF.
 - <strong>Só comentário.</strong></p>
 <p>As caixinhas continuam desligadas de fábrica e no mesmo lugar. Nada muda em livro que não usa as duas. Situação: em
 estudo; nada foi mudado no programa.</p>
@@ -374,11 +381,12 @@ estudo; nada foi mudado no programa.</p>
 <li><code>ONDE-PAREI.md</code> (o andamento), este relatório (<code>relatorio.md/.html/.pdf</code>), <code>prints/</code> (5 prints + o do bug).</li>
 <li><code>scripts/m1_pagina.py</code> (a página pelo caminho inteiro), <code>m2_causa.py</code> (a conta refeita = DLL), <code>m3_palavras.py</code> (a
   medida "palavra em duas cores" e a tela x PDF), <code>m4_render.py</code> (as páginas em cada resolução), <code>m5_prototipo.py</code> (as
-  duas opções), <code>m7_miolo.py</code> (a variante descartada), <code>m6_prints.py</code> (os prints). Os dados ficam em <code>_dados/</code> (fora
+  duas opções), <code>m7_miolo.py</code> (a variante descartada), <code>m8_vizinhas.py</code> (palavras vizinhas: a diferença entre as opções),
+  <code>m6_prints.py</code> (os prints). Os dados ficam em <code>_dados/</code> (fora
   do git).</li>
 <li>Nenhuma janela foi aberta; pasta de dados própria (<code>_dados/local</code>). Nenhum teste do programa foi rodado: nada do
   programa mudou.</li>
 </ul>
-<p class="rodape">Editor de Impressão &middot; gerado em 14/11/2026 às 13:28</p>
+<p class="rodape">Editor de Impressão &middot; gerado em 14/11/2026 às 13:33</p>
 </body>
 </html>
