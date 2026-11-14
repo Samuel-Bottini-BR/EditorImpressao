@@ -240,7 +240,7 @@ def b1() -> None:
         P.empilhar([P.cabeca("Como o livro foi escaneado", P.CINZA, ""),
                     linha_capa(capa("hoje", "original"), ALVO_RETANGULOS, circular=False)], espaco=6),
         P.empilhar([P.cabeca("HOJE — caixinha marcada (como vem)", P.AZUL,
-                             "A capa fica em tons de cinza (é tratada como pintura)."),
+                             "A capa fica em tons de cinza (é tratada como pintura). A caixa branca perto de \"RÓNAI\" é assunto da pergunta seguinte (o nome em cima da capa)."),
                     linha_capa(capa("hoje", "pb+resp1"), ALVO_RETANGULOS, circular=False)], espaco=6),
         P.empilhar([P.cabeca("HOJE — caixinha desmarcada (seu print 13-01)", P.LARANJA,
                              "O Preto e branco vale na página inteira: a capa azul sai toda preta, com as letras "

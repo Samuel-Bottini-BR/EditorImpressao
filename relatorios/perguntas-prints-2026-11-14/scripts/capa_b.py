@@ -206,8 +206,10 @@ def provas_da_causa() -> None:
     if os.environ.get("SEM_LETRA_NA_GRAVURA") == "1":
         # SIMULACAO da opcao (a) da pergunta B3 (so neste processo; o programa nao muda): a letra
         # que a MAQUINA achou dentro de uma gravura que a maquina achou (o "ONAI" sobre a capa
-        # azul) nao recorta a gravura: o filtro recebe a marcacao sem essas letras, e o pedaco
-        # fica como a gravura em volta (com a cor).
+        # azul) nao recorta a gravura: o filtro recebe a marcacao sem essas letras e com a
+        # gravura sem o dente que a letra abriu (o retangulo em volta dela), e o pedaco fica como
+        # a gravura em volta (com a cor). So serve para o desenho da pergunta; o conserto de
+        # verdade seria no detector (core/detectar_regioes.py, "Legenda impressa sobre a foto").
         from core.selecao import GRAVURA, LETRA, MAO, Selecao
         antes_l = pipeline.marcacao_que_o_filtro_usa
 
@@ -227,8 +229,23 @@ def provas_da_causa() -> None:
                 x0, y0, x1, y1 = _caixa(r)
                 return any(g[0] <= x0 and g[1] <= y0 and x1 <= g[2] and y1 <= g[3] for g in gravuras)
 
-            return Selecao(regioes=[r for r in sel.regioes
-                                    if not (r.tipo == LETRA and r.origem != MAO and dentro(r))])
+            # a letra sai, e o recorte que ela deixou no contorno da pintura (o "dente" em volta de
+            # "ONAI") e fechado: a pintura achada vira o retangulo em volta dela
+            import dataclasses
+            from core.selecao import RETANGULO
+            fica = []
+            for r in sel.regioes:
+                if r.tipo == LETRA and r.origem != MAO and dentro(r):
+                    continue
+                if r.tipo == GRAVURA and r.origem != MAO and r.operacao != "subtrair":
+                    x0, y0, x1, y1 = _caixa(r)
+                    r = dataclasses.replace(r, forma=RETANGULO, pontos=[(x0, y0), (x1, y1)])
+                fica.append(r)
+            if os.environ.get("MOSTRAR_REGIOES") == "1":
+                for r in sel.regioes:
+                    print("REGIAO", r.tipo, r.origem, r.operacao, r.forma, [round(v, 3) for v in _caixa(r)],
+                          "tirada" if (r.tipo == LETRA and r not in fica) else "", flush=True)
+            return Selecao(regioes=fica)
 
         pipeline.marcacao_que_o_filtro_usa = sem_letra
 

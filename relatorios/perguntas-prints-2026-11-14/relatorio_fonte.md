@@ -196,3 +196,56 @@ prints 13-01 e 13-02 (13/11).
 (Para consulta: D-148, D-147, D-586, D-587, D-700; item 1.2.)
 
 ---
+
+## Pergunta C — o Girar como ferramenta (proposta)
+
+**Do que se trata.** Hoje o **Girar** fica em dois lugares da área de trabalho:
+- o bloco **"Girar a página"** (ou "Girar a folha", numa folha inteira), **no alto do painel Propriedades, em todas as
+  ferramentas** (Cortar, Endireitar, Mover, as de marcar...), com as três setas e o **"aplicar em"** (só esta / todas /
+  daqui em diante / só as pares / só as ímpares);
+- os **três botões pequenos no canto de cima, à direita da página**, que giram **só a página da vez**.
+
+Foi o que você escolheu em 12/10: "Quero a opção B e D" (o bloco no alto do Propriedades e os botões do canto) e
+"B — Só no painel" (o "aplicar em" só no Propriedades; o canto gira só a página da vez). Em 13/10, "Está bom".
+
+**O que você disse em 13/11.** "Para escolher aplicar em todas tem que estar dentro de um painel de outras funções,
+não existe um painel do girar" · "Pode ser, e ai as opções dele apareceriam em propriedades quando fosse selecionado
+né?" · "Como o propriedades funciona hoje? Ele funciona através da escolha de ferramentas né?"
+
+**Como o Propriedades funciona hoje.** Sim: ele mostra as opções da ferramenta escolhida na barra da esquerda. A
+exceção é o alto do painel: o bloco do Girar e, embaixo dele, os botões "Esta página" (deixar em branco / tirar do
+livro) aparecem em todas as ferramentas. Os botões "Esta página" não mudam nesta proposta.
+
+**A proposta da gerente (desenho, ainda não existe).**
+1. O Girar vira uma **ferramenta na barra da esquerda**, junto do Dividir, Cortar, Endireitar e Mover.
+2. Escolhendo o Girar, o **Propriedades mostra só as opções dele**: as três setas e o "aplicar em".
+3. Nas outras ferramentas, o bloco do Girar **sai do alto do Propriedades** (sobra espaço para as opções delas).
+4. Os **três botões do canto continuam**, para girar rápido só a página da vez, **com uma setinha ao lado** que abre o
+   "aplicar em".
+
+![C](imagens/c-girar-ferramenta.png)
+
+**O que você escolhe:** se o Girar passa a ser uma ferramenta, com as opções no Propriedades só quando ele está
+escolhido.
+
+- **Sim, a proposta inteira (sugestão da gerente).** Para o Kaique: para girar uma página só, continua o canto (ou
+  Ctrl+setas, ou o menu Página). Para girar várias, escolhe o Girar na barra e usa o "aplicar em" no Propriedades, ou a
+  setinha do canto. No PDF nada muda: o giro é o mesmo. O que já funciona e muda: as suas escolhas de 12/10 (o bloco
+  sai do alto do Propriedades) e a de "Só no painel" (o canto ganha o "aplicar em" pela setinha). As provas dessas
+  escolhas passam a cobrar o jeito novo.
+- **Sim, mas sem a setinha no canto.** O Girar vira ferramenta como acima; os botões do canto continuam girando só a
+  página da vez, como hoje ("Só no painel" continua valendo).
+- **Não, fica como hoje.** Bloco no alto do Propriedades em todas as ferramentas e os botões do canto.
+- **Só comentário.**
+
+**Você continua no controle?** Sim: girar só acontece quando se clica numa seta (no Propriedades ou no canto) ou se
+usa a tecla. O "aplicar em" começa em "só esta", o mais seguro, como hoje.
+
+**De onde veio.** Da sua conversa de 13/11 no chat (as frases acima). O lugar da ferramenta na barra, no desenho, é só
+um exemplo.
+
+**Situação de agora.** Só proposta; nada foi feito. Se você disser sim, ela entra **junto com o conserto do girar numa
+regra só** (o girar que hoje faz coisas diferentes em lugares diferentes), que espera as suas respostas às 4 perguntas
+da revisão do código, na Central.
+
+(Para consulta: D-049, D-053, D-367, D-618, D-636; CLAUDE.md §11.12.)
