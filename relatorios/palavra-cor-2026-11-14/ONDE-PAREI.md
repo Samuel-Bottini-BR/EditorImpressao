@@ -59,3 +59,29 @@ delas" + "Reduzir cores"), a página como sai no PDF (300 pontos por polegada).
   fábrica, a caixa escura vira PRETO: era o "ANTES" (metade preta, metade clara). A etapa 10b (27/10, D-189,
   `c8844671`) tirou o "forçar" para não apagar letra: a caixa escura passou a sair azul. Tratou o sintoma (o preto e a
   letra apagada), não a causa (a divisa no meio da tinta). Defeito do programa, não efeito de escolha do Kaique.
+
+## A regra da ferramenta e os caminhos (§11.12, item 3; achados com grep por `cores_scantailor`, `letras_com_a_cor`, `reduzir_cores`, `filtro_com_as_caixinhas`, `renderizar_pagina`, `_filtrar`)
+**A função que decide a cor de cada letra:** `core/cores_scantailor.aplicar(preparada, saida, filtro, letras, reduzir, dpi)`
+→ `cores()` → DLL `st_ferramentas_cores` (segmentação + posterização do ScanTailor). Ela é chamada em **dois** lugares
+do `core/pipeline.py`, os dois com a mesma função (nenhuma conta copiada):
+- `_filtrar` (linha ~3514): o corpo da página com a marcação, o "Só as letras", o "só neste pedaço";
+- `filtro_com_as_caixinhas` (linha ~3564): o filtro numa imagem solta (sem a marcação), para cartões e "comparar".
+
+| Caminho | Por onde passa | Usa a função? | Resolução |
+|---|---|---|---|
+| PDF ("Confirmar e processar") | `processar` → `_pagina_pronta` → `_filtrar` | sim | 300 |
+| Prévia da página e miniaturas da tira | `GerenciadorPrevias` → `renderizar_pagina` → `_filtrar` | sim | 110 |
+| Grade "Todas as páginas", folhear, folhas do caderno | as prévias (`renderizar_pagina`) | sim | até 160 / 90 / 180 |
+| Tela cheia dos filtros (D-192) | `renderizar_com_filtro` → `renderizar_pagina` → `_filtrar` | sim | 150 |
+| Figurinhas (cartões) do painel Filtro | `_TarefaCartoes` → `filtro_com_as_caixinhas` | sim, **sem a marcação** | 70 (amostra) |
+| "Comparar" da tela ampliada | `tela_ampliada` → `filtro_com_as_caixinhas` | sim, **sem a marcação** | 220 |
+| Automático / "Limpar a folha" (D-594) | grava os dois campos nas páginas; prévia por `renderizar_pagina` + `compor_como_no_pdf` | sim | 180 (prévia) e 300 (PDF) |
+| Painel Filtro (caixinhas), tela cheia (caixinhas), "Aplicar em" (só nesta / todas / daqui em diante), desfazer e refazer | só gravam `letras_com_a_cor` / `reduzir_cores` na página (`_mudar_cores`, `_gravar_opcao_da_tela_cheia`, `MARCAS_DA_PAGINA`); a imagem vem dos caminhos acima | — | — |
+| "Só neste pedaço" | o pedaço é composto dentro de `_filtrar_preto_no_branco`; as cores valem depois, na página composta | sim | a do caminho |
+| "Tirar o fundo" (e Original com o fundo tirado) | `aplicar` devolve None (nada muda) | sim (sai sem cor) | — |
+
+**Conclusão:** a regra já está num lugar só (bom). O defeito está **dentro** dela, e ela dá resultado diferente em cada
+resolução porque as duas contas do ScanTailor olham a página inteira (o limiar de cada canal na segmentação; o
+"mais escuro da página" e "a cor mais frequente de cada caixa" na redução). Por isso a prévia (110), a tela cheia
+(150), o Automático (180), o "comparar" (220) e o PDF (300) pintam palavras diferentes de azul. Cartões e "comparar"
+ainda recebem uma página sem a marcação (outra entrada, mesma regra) — já era assim, fora do escopo.
