@@ -36,7 +36,7 @@ O Samuel pediu o checkpoint com `/checkpoint`. Fontes: a conversa salva, o git e
 ## 0. Para recomeçar
 
 1. `git -C D:\programas\EditorImpressao fetch origin`.
-   - Versão de teste: ramo `obra-2026-10-26`, worktree `.claude\worktrees\obra-juncao`, ponta `c9645e3b` (o código é o mesmo do `4c48e899`; depois dele, só o Livro).
+   - Versão de teste: ramo `obra-2026-10-26`, worktree `.claude\worktrees\obra-juncao`, ponta `c7e34fd8` (o código é o mesmo do `4c48e899`; depois dele, só o Livro).
    - Ramo do plano: `fase-1`.
 2. **Pergunta em aberto, a última da sessão (chat, 14/11 02h25 UTC).** O texto exato da gerente:
    "A sugestão nova é arquivar só as 89 que funcionam e as 10 para depois. As 10 já estão anotadas no plano, então nada se perde. Na lista "para decidir" ficariam as 32 com defeito e as 17 escolhas da gerente. Posso fazer assim? Eu sugiro que sim."

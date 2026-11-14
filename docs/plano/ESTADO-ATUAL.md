@@ -9,7 +9,7 @@ Escrito em 24/09/2026. A ordem de autoridade é:
 O resto é histórico. O `PEDIDOS.md` virou histórico em 24/09: a lista que vale é o Plano Definitivo.
 
 > **Onde o projeto está em 14/11/2026 (vale sobre tudo abaixo; detalhe na [PARTE -35](../../historico/Editor%20de%20Impressao%20-%20resumo%20para%20o%20Claude.md) do handoff):**
-> - Versão de teste: ramo `obra-2026-10-26` (worktree `.claude/worktrees/obra-juncao`, ponta `c9645e3b`; o código é o do `4c48e899`, depois só o Livro). Entraram em 13/11 os graves (D-649, D-648), os quadrados C (D-668) e o Tirar o fundo (D-646, D-699).
+> - Versão de teste: ramo `obra-2026-10-26` (worktree `.claude/worktrees/obra-juncao`, ponta `c7e34fd8`; o código é o do `4c48e899`, depois só o Livro). Entraram em 13/11 os graves (D-649, D-648), os quadrados C (D-668) e o Tirar o fundo (D-646, D-699).
 > - **Testados pelo Samuel ("funcionando"):** D-649, D-648, D-668. **Falta o teste dele:** Tirar o fundo e girar com a capa aberta.
 > - Suspenso por ordem dele: conserto da sombra do Preto e branco (D-700, retângulos na capa do *Gradus*).
 > - Regras novas: CLAUDE.md §11.12 (sem gambiarra) e §11.13 (como perguntar e responder); §10: agente não grava na Central.
