@@ -1,0 +1,30 @@
+{
+  "comentario": "",
+  "conversa": [
+    {
+      "em": "2026-11-08T19:16:46.375Z",
+      "quem": "samuel",
+      "texto": "Essa opção vai estar no automático também? Vai estar nas opções dos filtros para rodar no livro todo e também em uma só página? Se essa função nova ser colocada não pode afetar o programa e suas funcionalidades ou dar erros."
+    },
+    {
+      "em": "2026-11-13T20:40:00Z",
+      "quem": "gerente",
+      "texto": "No Automático, não: em 21/10 você decidiu que se marca à mão, página por página. No filtro, vale na página que você marcar. Se quiser também \"todas\" e \"daqui em diante\", é uma escolha nova: escreva no comentário. E não afeta o resto do programa: só muda a página marcada, e as provas do que já foi testado continuam rodando a cada mudança."
+    },
+    {
+      "em": "2026-11-13T22:55:15Z",
+      "quem": "gerente",
+      "texto": "Do que se trata: em 04/11 você pediu um jeito de transformar letra branca em fundo escuro (slide, faixa escura) em letra preta em papel branco. A proposta tem três jeitos: virar só as partes escuras da página (recomendo), virar a página inteira, ou virar só uma área que você marcar (foto: as três colunas). Suas dúvidas: vai estar no Automático? Vai dar para rodar no livro todo e numa página só? Não pode estragar o resto. Respostas: no Automático não, porque em 21/10 você decidiu que isso se marca à mão, página por página. Vale na página que você marcar; se quiser também \"todas\" e \"daqui em diante\", escreva no comentário. Não estraga o resto: só muda a página marcada, e os testes do que já foi aprovado continuam rodando. O que você escolhe: qual dos três jeitos."
+    }
+  ],
+  "em": "2026-11-08T19:16:46.375Z",
+  "gerente": "Do que se trata: em 04/11 você pediu um jeito de transformar letra branca em fundo escuro (slide, faixa escura) em letra preta em papel branco. A proposta tem três jeitos: virar só as partes escuras da página (recomendo), virar a página inteira, ou virar só uma área que você marcar (foto: as três colunas). Suas dúvidas: vai estar no Automático? Vai dar para rodar no livro todo e numa página só? Não pode estragar o resto. Respostas: no Automático não, porque em 21/10 você decidiu que isso se marca à mão, página por página. Vale na página que você marcar; se quiser também \"todas\" e \"daqui em diante\", escreva no comentário. Não estraga o resto: só muda a página marcada, e os testes do que já foi aprovado continuam rodando. O que você escolhe: qual dos três jeitos.",
+  "gerenteEm": "2026-11-13T22:55:15Z",
+  "lida": true,
+  "opcao": "nao-entendi",
+  "opcaoNome": "Ainda não entendi",
+  "reabrir": false,
+  "relatorio": "perguntas-04-11",
+  "samuelViu": false,
+  "volta": false
+}

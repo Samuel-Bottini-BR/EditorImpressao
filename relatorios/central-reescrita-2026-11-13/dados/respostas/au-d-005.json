@@ -1,0 +1,18 @@
+{
+  "conversa": [
+    {
+      "em": "2026-11-13T20:40:00Z",
+      "quem": "gerente",
+      "texto": "Anotado no Livro como D-675: o aviso do livro novo fica como está."
+    }
+  ],
+  "em": "2026-11-09T20:35:11.596Z",
+  "gerente": "Anotado no Livro como D-675: o aviso do livro novo fica como está.",
+  "gerenteEm": "2026-11-13T20:40:00Z",
+  "lida": true,
+  "opcao": "certo",
+  "opcaoNome": "Está certo assim",
+  "reabrir": false,
+  "relatorio": "auditoria-3-com-ressalva",
+  "volta": false
+}

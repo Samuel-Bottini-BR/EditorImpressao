@@ -1,0 +1,19 @@
+{
+  "comentario": "Tem que saber porque a central de avisos reconheceu ele como paina com baixa qualidade de scan.",
+  "conversa": [
+    {
+      "em": "2026-11-07T19:30:00Z",
+      "quem": "gerente",
+      "texto": "Anotado (D-653): antes de consertar, o agente descobre por que o programa viu a página como scan ruim e te conta."
+    }
+  ],
+  "em": "2026-11-07T16:06:53.569Z",
+  "gerente": "Anotado (D-653): antes de consertar, o agente descobre por que o programa viu a página como scan ruim e te conta.",
+  "gerenteEm": "2026-11-07T19:30:00Z",
+  "lida": true,
+  "opcao": "consertar",
+  "opcaoNome": "Consertar",
+  "relatorio": "teste-kaique-funcoes",
+  "samuelViu": false,
+  "volta": false
+}

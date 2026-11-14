@@ -1,0 +1,19 @@
+{
+  "comentario": "Teria como eu deixar as letras travadas e pintar só por cima do que não é letra? anote isso",
+  "conversa": [
+    {
+      "em": "2026-11-07T19:30:00Z",
+      "quem": "gerente",
+      "texto": "Anotado: o aviso vale para todas as formas. A sua ideia de travar as letras e pintar só o que não é letra foi para a Lista de espera, com as suas palavras."
+    }
+  ],
+  "em": "2026-11-06T21:31:44.255Z",
+  "gerente": "Anotado: o aviso vale para todas as formas. A sua ideia de travar as letras e pintar só o que não é letra foi para a Lista de espera, com as suas palavras.",
+  "gerenteEm": "2026-11-07T19:30:00Z",
+  "lida": true,
+  "opcao": "todas",
+  "opcaoNome": "Sim, em todas as formas (recomendo)",
+  "relatorio": "acrescentei-27-10",
+  "samuelViu": false,
+  "volta": false
+}

@@ -1,0 +1,19 @@
+{
+  "comentario": "Isso é um erro grave. O preview as miniaturas tem que estar sincronizada e o resultado final tem que sair como a edição foi mostrada no preview .",
+  "conversa": [
+    {
+      "em": "2026-11-07T19:30:00Z",
+      "quem": "gerente",
+      "texto": "Anotado como grave (D-649): tela, miniaturas e PDF sempre iguais. Vai junto com o conserto da folha espremida."
+    }
+  ],
+  "em": "2026-11-07T16:17:26.141Z",
+  "gerente": "Anotado como grave (D-649): tela, miniaturas e PDF sempre iguais. Vai junto com o conserto da folha espremida.",
+  "gerenteEm": "2026-11-07T19:30:00Z",
+  "lida": true,
+  "opcao": "consertar",
+  "opcaoNome": "Consertar",
+  "relatorio": "teste-kaique-funcoes",
+  "samuelViu": false,
+  "volta": false
+}

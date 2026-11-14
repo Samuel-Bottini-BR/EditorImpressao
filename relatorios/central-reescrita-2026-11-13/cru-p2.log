@@ -1,0 +1,6 @@
+abrir (s) => 0.1
+rodou o dividir => true
+paginas => 140
+antes_depois ligado? => false
+antes_depois ligado depois do clique? => true
+jeito de fabrica => "icones"

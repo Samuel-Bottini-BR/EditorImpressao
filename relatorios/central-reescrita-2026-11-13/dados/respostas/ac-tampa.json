@@ -1,0 +1,29 @@
+{
+  "comentario": "O jeito como ela some deveria poder ser escolhido no automático, pintar de branco ou cortar. E essa resposta não tem print provando que esse modo funciona.",
+  "conversa": [
+    {
+      "em": "2026-11-08T19:31:21.988Z",
+      "quem": "samuel",
+      "texto": "O jeito como ela some deveria poder ser escolhido no automático, pintar de branco ou cortar. E essa resposta não tem print provando que esse modo funciona."
+    },
+    {
+      "em": "2026-11-13T20:40:00Z",
+      "quem": "gerente",
+      "texto": "Isso já existe: no Automático, na etapa Cortar, \"O que fica fora da página: Cortar fora ou Pintar de branco\", e vale também para a faixa da tampa. Anotado no Livro como D-692. Falta o print que prova no Righetti 96: ele vem na próxima leva de prints."
+    },
+    {
+      "em": "2026-11-13T22:40:00Z",
+      "quem": "gerente",
+      "texto": "Os prints que faltavam estão na pergunta: a escolha \"cortar fora / pintar de branco\" fica no Automático (etapa Cortar as bordas), e a faixa da tampa some nos dois jeitos, na tela e no PDF (Righetti 96). Aviso: a tira de miniaturas ainda mostra a faixa, porque mostra a folha como veio do scan."
+    }
+  ],
+  "em": "2026-11-08T19:31:21.988Z",
+  "gerente": "Os prints que faltavam estão na pergunta: a escolha \"cortar fora / pintar de branco\" fica no Automático (etapa Cortar as bordas), e a faixa da tampa some nos dois jeitos, na tela e no PDF (Righetti 96). Aviso: a tira de miniaturas ainda mostra a faixa, porque mostra a folha como veio do scan.",
+  "gerenteEm": "2026-11-13T22:40:00Z",
+  "lida": true,
+  "opcao": "como-decidido",
+  "opcaoNome": "Como eu decidi: sumir em todo o livro, e o Kaique escolhe por livro cortar ou pintar de branco (recomendo)",
+  "relatorio": "acrescentei-27-10",
+  "samuelViu": false,
+  "volta": false
+}

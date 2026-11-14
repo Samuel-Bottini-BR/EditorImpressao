@@ -1,0 +1,24 @@
+{
+  "comentario": "Esse é o espirito que eu busco na hora de buscar problemas dentro do programa, se pudessemos fazer esse tipo de busca sem que o agente precisasse ficar tirando prints o tempo inteiro, se existisse alguma ferramenta ou plugin que ajudasse o agente a testar o programa de forma mais rapida sem ter que ficar tirando print o tempo inteiro, alguma coisa que transcrevesse tudo que está acontecendo para ele sem ele precisar ficar vendo foto.",
+  "conversa": [
+    {
+      "em": "2026-11-09T19:36:38.362Z",
+      "quem": "samuel",
+      "texto": "Esse é o espirito que eu busco na hora de buscar problemas dentro do programa, se pudessemos fazer esse tipo de busca sem que o agente precisasse ficar tirando prints o tempo inteiro, se existisse alguma ferramenta ou plugin que ajudasse o agente a testar o programa de forma mais rapida sem ter que ficar tirando print o tempo inteiro, alguma coisa que transcrevesse tudo que está acontecendo para ele sem ele precisar ficar vendo foto."
+    },
+    {
+      "em": "2026-11-13T20:40:00Z",
+      "quem": "gerente",
+      "texto": "Anotado no Livro como D-688, na fila. A sua ideia foi para a Lista de espera: o programa escrever em texto tudo o que está na tela a cada passo (botões, textos, avisos), para o agente testar sem tirar print. Hoje os testes já clicam nos botões sem abrir janela, mas ainda não leem a tela inteira assim."
+    }
+  ],
+  "em": "2026-11-09T19:36:38.362Z",
+  "gerente": "Anotado no Livro como D-688, na fila. A sua ideia foi para a Lista de espera: o programa escrever em texto tudo o que está na tela a cada passo (botões, textos, avisos), para o agente testar sem tirar print. Hoje os testes já clicam nos botões sem abrir janela, mas ainda não leem a tela inteira assim.",
+  "gerenteEm": "2026-11-13T20:40:00Z",
+  "lida": true,
+  "opcao": "consertar",
+  "opcaoNome": "Consertar",
+  "reabrir": false,
+  "relatorio": "teste-kaique-lusiadas",
+  "volta": false
+}

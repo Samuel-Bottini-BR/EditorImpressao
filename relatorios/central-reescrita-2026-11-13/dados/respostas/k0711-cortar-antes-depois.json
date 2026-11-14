@@ -1,0 +1,19 @@
+{
+  "comentario": "Ele tem que mostrar o antes e depois de acordo com aquela ferramenta que vai ser usada né? Talvez esse erro aconteça em outros lugares também.",
+  "conversa": [
+    {
+      "em": "2026-11-07T19:30:00Z",
+      "quem": "gerente",
+      "texto": "Anotado (D-647): o \"depois\" vai mostrar o resultado da ferramenta em uso. O conserto confere todas as ferramentas, não só o Cortar."
+    }
+  ],
+  "em": "2026-11-07T16:16:25.880Z",
+  "gerente": "Anotado (D-647): o \"depois\" vai mostrar o resultado da ferramenta em uso. O conserto confere todas as ferramentas, não só o Cortar.",
+  "gerenteEm": "2026-11-07T19:30:00Z",
+  "lida": true,
+  "opcao": "consertar",
+  "opcaoNome": "Consertar",
+  "relatorio": "teste-kaique-funcoes",
+  "samuelViu": false,
+  "volta": false
+}

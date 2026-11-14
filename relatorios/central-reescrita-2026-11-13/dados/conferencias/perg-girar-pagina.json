@@ -1,0 +1,49 @@
+{
+  "nome": "Pergunta: girar numa folha dividida",
+  "ordem": 60,
+  "origem": "ONDE-PAREI do ramo girar-pagina-2026-11-04 (D-618)",
+  "perguntas": [
+    {
+      "exemplos": [
+        {
+          "legenda": "Depois, com \"só esta folha\": a página gira sozinha e fica certa. É assim que as outras opções ficariam.",
+          "src": "fotos/girar-pagina/depois.png"
+        }
+      ],
+      "explicacao": [
+        "Com \"só esta folha\" o conserto já funciona: a página gira sozinha e fica do tamanho certo (segunda foto).",
+        "As outras opções da lista \"aplicar em\" ainda giram a folha inteira: todas as folhas, daqui em diante, só as pares e só as ímpares. O girar da tela \"ver todas\" também. Numa folha dividida, isso faz a mesma confusão da primeira foto.",
+        "A proposta: numa folha dividida, o quadro passa a se chamar \"Girar a página\". A lista diz \"só esta página / todas as páginas / daqui em diante / pares / ímpares\", e cada página gira sozinha, como a da tela. O mesmo vale na tela \"ver todas\".",
+        "Como você decidiu em 06/10, as outras páginas ficam viradas igual à da vez, sem somar giro."
+      ],
+      "id": "girar-aplicar-em-pagina",
+      "opcoes": [
+        {
+          "id": "sim",
+          "nome": "Sim, pode ser assim (recomendo)",
+          "texto": "Numa folha dividida, todas as opções giram só a página, inclusive na tela \"ver todas\"."
+        },
+        {
+          "id": "nao",
+          "nome": "Não, as outras opções continuam como hoje",
+          "texto": "Só \"só esta folha\" gira a página sozinha; as outras giram a folha inteira."
+        }
+      ],
+      "primeira_imagem": {
+        "legenda": "Antes do conserto: a página girada fica espremida e cai na metade branca (o defeito do seu print a-70).",
+        "src": "fotos/girar-pagina/antes.png"
+      },
+      "sugestao": "Sim. Assim todas as opções do girar fazem a mesma coisa que a página da tela.",
+      "titulo": "Numa folha dividida, as outras opções do \"aplicar em\" também giram só a página?"
+    }
+  ],
+  "quadros": [],
+  "resumo": {
+    "paragrafos": [
+      "O agente terminou o conserto do girar que você pediu em 04/11. Os testes no PC e no GitHub passaram.",
+      "Falta uma resposta sua para ele terminar. Ela está logo abaixo."
+    ],
+    "titulo": "Girar só a página (D-618)"
+  },
+  "trabalho": "girar-pagina"
+}

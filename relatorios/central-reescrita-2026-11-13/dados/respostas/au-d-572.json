@@ -1,0 +1,23 @@
+{
+  "comentario": "Se é erro, tire daqui.",
+  "conversa": [
+    {
+      "em": "2026-11-10T12:08:05.335Z",
+      "quem": "samuel",
+      "texto": "Se é erro, tire daqui."
+    },
+    {
+      "em": "2026-11-10T17:30:00Z",
+      "quem": "gerente",
+      "texto": "Não é erro: já funciona (você testou em 03/11). Tirei daqui, não precisa responder mais nada."
+    }
+  ],
+  "em": "2026-11-10T12:08:05.335Z",
+  "gerente": "Não é erro: já funciona (você testou em 03/11). Tirei daqui, não precisa responder mais nada.",
+  "gerenteEm": "2026-11-10T17:30:00Z",
+  "lida": true,
+  "opcao": "nao-entendi",
+  "opcaoNome": "Ainda não entendi",
+  "relatorio": "auditoria-1-nao-funciona",
+  "samuelViu": false
+}

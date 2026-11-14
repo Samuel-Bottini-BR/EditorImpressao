@@ -1,0 +1,11 @@
+{
+  "comentario": "Os prints não tem nada haver com a pergunta, e as respostas são inconslusivas.\n2- sobre essa questão das letras brancas em fundo escuro, a gente tem que ter uma maneira de inverter isso né de forma perfeita, agora veja como o scantailor faz isso, eu acho que faz.",
+  "em": "2026-11-04T19:33:27.340Z",
+  "gerente": "Você tem razão: os prints não mostravam o que a pergunta dizia, e a resposta não fechou nada. Desculpe.\nPesquisei o ScanTailor: ele não vira a letra. Ele limpa a página e ela sai com letra branca em fundo escuro, como entrou.\nAchei quem faz: a Leptonica, que já está no seu PC. Fiz a pergunta com a foto: aba Conferência, \"Perguntas novas (04/11)\", pergunta 5.",
+  "gerenteEm": "2026-11-05T02:52:14Z",
+  "lida": true,
+  "opcao": "nao-entendi",
+  "opcaoNome": "Ainda não entendi",
+  "relatorio": "duvidas",
+  "samuelViu": true
+}

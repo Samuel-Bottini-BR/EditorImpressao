@@ -1,0 +1,19 @@
+{
+  "comentario": "Não tem um jeito onde o programa fica sem nenhuma ferramenta selecionada ou com um selecionador como é no Photoshop, deveria ter isso, quero que isso seja feito junto com esse concerto.",
+  "conversa": [
+    {
+      "em": "2026-11-07T19:30:00Z",
+      "quem": "gerente",
+      "texto": "Anotado (D-651): o programa ganha o \"selecionador\", sem ferramenta, e o livro abre nele. Antes de fazer, te mostro como fica."
+    }
+  ],
+  "em": "2026-11-07T16:01:22.700Z",
+  "gerente": "Anotado (D-651): o programa ganha o \"selecionador\", sem ferramenta, e o livro abre nele. Antes de fazer, te mostro como fica.",
+  "gerenteEm": "2026-11-07T19:30:00Z",
+  "lida": true,
+  "opcao": "consertar",
+  "opcaoNome": "Consertar",
+  "relatorio": "teste-kaique-funcoes",
+  "samuelViu": false,
+  "volta": false
+}

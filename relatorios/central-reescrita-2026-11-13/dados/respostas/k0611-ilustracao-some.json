@@ -1,0 +1,24 @@
+{
+  "comentario": "Tem que ser investigada a causa , se foi por mal uso ou bugue, se o programa não reconheceu a gravura, tem que ver porque né, inclusive tem que ver ai nas anotações se tem uma ideia minha anotada, que vai depender do modo de seleção mais qualificado que eu quero importar do photoshop, pois hoje nossa ferramentas de seleção e mascaramento são muito ruins, mas por exemplo, quando o computador errasse nessas imagens o programa iria dar um aviso nos iriamos nesses aviso e iriamos conseguir ver as marcações que tem naquela pagina e aumentar ou diminuir elas para que o filtro que deixou ou erro , ou aquilo cortou errado( tem que pensar nas possibilidades do que pode acontecer.) possa ser desfeito pontuamente ali, ou ser trocado o filtro pontuamente somente naquele espaço onde a imagem foi tiarada apagada.",
+  "conversa": [
+    {
+      "em": "2026-11-09T19:24:12.575Z",
+      "quem": "samuel",
+      "texto": "Tem que ser investigada a causa , se foi por mal uso ou bugue, se o programa não reconheceu a gravura, tem que ver porque né, inclusive tem que ver ai nas anotações se tem uma ideia minha anotada, que vai depender do modo de seleção mais qualificado que eu quero importar do photoshop, pois hoje nossa ferramentas de seleção e mascaramento são muito ruins, mas por exemplo, quando o computador errasse nessas imagens o programa iria dar um aviso nos iriamos nesses aviso e iriamos conseguir ver as marcações que tem naquela pagina e aumentar ou diminuir elas para que o filtro que deixou ou erro , ou aquilo cortou errado( tem que pensar nas possibilidades do que pode acontecer.) possa ser desfeito pontuamente ali, ou ser trocado o filtro pontuamente somente naquele espaço onde a imagem foi tiarada apagada."
+    },
+    {
+      "em": "2026-11-13T20:40:00Z",
+      "quem": "gerente",
+      "texto": "Anotado no Livro como D-690: primeiro investigar se a gravura não foi achada, se foi o filtro escolhido ou um defeito. A sua ideia (um aviso com as marcações à vista para aumentar, diminuir ou trocar o filtro só naquele pedaço) está ligada à Fase 3 do plano, a seleção no nível do Photoshop, e foi para a Lista de espera com as suas palavras."
+    }
+  ],
+  "em": "2026-11-09T19:24:12.575Z",
+  "gerente": "Anotado no Livro como D-690: primeiro investigar se a gravura não foi achada, se foi o filtro escolhido ou um defeito. A sua ideia (um aviso com as marcações à vista para aumentar, diminuir ou trocar o filtro só naquele pedaço) está ligada à Fase 3 do plano, a seleção no nível do Photoshop, e foi para a Lista de espera com as suas palavras.",
+  "gerenteEm": "2026-11-13T20:40:00Z",
+  "lida": true,
+  "opcao": "consertar",
+  "opcaoNome": "Consertar",
+  "reabrir": false,
+  "relatorio": "teste-kaique-lusiadas",
+  "volta": false
+}

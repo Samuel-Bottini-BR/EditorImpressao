@@ -1,0 +1,24 @@
+{
+  "comentario": "eu quero ver esses erros, as provas dele e uma explicação de como acontece, explique de forma simples. quero antes de dar inicio.",
+  "conversa": [
+    {
+      "em": "2026-11-09T19:19:32.966Z",
+      "quem": "samuel",
+      "texto": "eu quero ver esses erros, as provas dele e uma explicação de como acontece, explique de forma simples. quero antes de dar inicio."
+    },
+    {
+      "em": "2026-11-13T20:40:00Z",
+      "quem": "gerente",
+      "texto": "Anotado no Livro como D-691: antes de começar cada conserto, eu te mostro o erro, a prova e uma explicação simples de como ele acontece. Cada erro em que você marcou \"Consertar\" aqui embaixo entra na fila assim."
+    }
+  ],
+  "em": "2026-11-09T19:19:32.966Z",
+  "gerente": "Anotado no Livro como D-691: antes de começar cada conserto, eu te mostro o erro, a prova e uma explicação simples de como ele acontece. Cada erro em que você marcou \"Consertar\" aqui embaixo entra na fila assim.",
+  "gerenteEm": "2026-11-13T20:40:00Z",
+  "lida": true,
+  "opcao": "escolher",
+  "opcaoNome": "Quero escolher um por um",
+  "reabrir": false,
+  "relatorio": "teste-kaique-lusiadas",
+  "volta": false
+}

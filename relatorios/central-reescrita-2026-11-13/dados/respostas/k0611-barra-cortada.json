@@ -1,0 +1,24 @@
+{
+  "comentario": "não é urgente.",
+  "conversa": [
+    {
+      "em": "2026-11-09T19:40:35.376Z",
+      "quem": "samuel",
+      "texto": "não é urgente."
+    },
+    {
+      "em": "2026-11-13T20:40:00Z",
+      "quem": "gerente",
+      "texto": "Anotado no Livro como D-681, no fim da fila de consertos, porque não é urgente."
+    }
+  ],
+  "em": "2026-11-09T19:40:35.376Z",
+  "gerente": "Anotado no Livro como D-681, no fim da fila de consertos, porque não é urgente.",
+  "gerenteEm": "2026-11-13T20:40:00Z",
+  "lida": true,
+  "opcao": "consertar",
+  "opcaoNome": "Consertar",
+  "reabrir": false,
+  "relatorio": "teste-kaique-lusiadas",
+  "volta": false
+}

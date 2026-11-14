@@ -1,0 +1,19 @@
+{
+  "comentario": "",
+  "conversa": [
+    {
+      "em": "2026-11-07T19:30:00Z",
+      "quem": "gerente",
+      "texto": "Na fila, entre os graves."
+    }
+  ],
+  "em": "2026-11-07T15:52:41.780Z",
+  "gerente": "Na fila, entre os graves.",
+  "gerenteEm": "2026-11-07T19:30:00Z",
+  "lida": true,
+  "opcao": "consertar",
+  "opcaoNome": "Consertar",
+  "relatorio": "teste-kaique-funcoes",
+  "samuelViu": false,
+  "volta": false
+}

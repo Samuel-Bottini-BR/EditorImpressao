@@ -1,0 +1,87 @@
+auditoria-4-funciona: 88
+    sem resposta | au-d-342 | D-342 · Projeto antigo sempre abre, com o mesmo trabalho
+    sem resposta | au-d-483 | D-483 · A medida por trás só roda no livro NOVO
+    sem resposta | au-d-490 | D-490 · O "Sim" do aviso do fundo vale na hora: como o livro já está na área de trabalho, 
+    sem resposta | au-d-002-rodar | D-002 (rodar) · O Automático roda no livro todo, em páginas escolhidas, numa página ou uma
+    sem resposta | au-d-004 | D-004 · Marca "mexida à mão" por página; o Automático pergunta antes
+    sem resposta | au-d-068 | D-068 · Regra geral: tudo que o programa faz sozinho pode ser desligado ou trocado pela pe
+    sem resposta | au-d-071 | D-071 · Melhorar a caixa de escolher o que entra numa receita
+    sem resposta | au-d-080 | D-080 · Livro novo não divide; dividir só quando o Kaique pede, escolhendo o jeito por liv
+    sem resposta | au-d-081 | D-081 · "Corte da sobra" (beirada da folha vizinha) do ScanTailor como opção desligada de 
+    sem resposta | au-d-101 | D-101 · Borda preta: por livro, o corte tira só o preto ou vai até a moldura impressa (com
+    sem resposta | au-d-144 | D-144 · No Preto e branco, moldura e iluminura ficam com a cor de fábrica; traço preto só 
+    sem resposta | au-d-148 | D-148 · Marcada, só as letras viram preto e branco e gravura, foto, moldura e iluminura fi
+auditoria-3-com-ressalva: 31
+    sem resposta | au-d-003 | D-003 · Ordem das etapas do Automático arrastável
+    sem resposta | au-d-016 | D-016 · Escolha pela regra D-014: arrastar as etapas no Automático muda a ordem em que ela
+    sem resposta | au-d-033 | D-033 · O lado direito troca entre 4 jeitos dentro do programa, escolhidos no menu Ver e e
+    sem resposta | au-d-021 | D-021 · Andar pelas páginas pelo teclado e pelo mouse
+    sem resposta | au-d-046 | D-046 · Dois botões em qualquer página: "Deixar em branco" (tecla Delete; página branca no
+    sem resposta | au-d-074 | D-074 · Não tentar dividir folha que é claramente uma página só
+    sem resposta | au-d-334 | D-334 · Grade "Todas as páginas" com várias escolhidas e ações sobre elas
+    sem resposta | au-d-097 | D-097 · A borda preta do scanner some por inteiro na página torta: o corte fica rente ao p
+    sem resposta | au-d-559 | D-559 · A faixa preta da tampa do scanner some em todo o livro, também no Automático; o Ka
+    sem resposta | au-d-104 | D-104 · Os 8 outros lugares que podem comer a página (endireitar antigo, corte à mão, cort
+    sem resposta | au-d-113 | D-113 · Página curva com moldura escura do scanner: pintar a moldura de branco (2.13/2.14 
+    sem resposta | au-d-466 | D-466 · Antes de consertar os 8 lugares que podem comer a página, o verificador acha no ac
+nomes-28-10: 17
+    sem resposta | nm-esta-bom | Os botões parecidos: "está certo", "está bom assim", "aceitar o corte", "está bom: todas",
+    sem resposta | nm-antes-de-processar | Janela "Antes de processar": os nomes dos botões
+    sem resposta | nm-folha-pagina | Folha e página misturadas
+    sem resposta | nm-nao-esta | "não dividir esta", "não cortar esta" e "voltar como veio": o mesmo nome do "deixar como v
+    sem resposta | nm-limpar-a-folha | "Limpar a folha" no Automático, e o painel "Filtro da página"
+    sem resposta | nm-scantailor | "ScanTailor" nos nomes das caixinhas e no aviso das contas
+    sem resposta | nm-tirada | Página "apagada" ou "tirada do livro"?
+    sem resposta | nm-frase-salvar | A frase da janela de salvar: "Ainda há N páginas que você não conferiu"
+    sem resposta | nm-historico | O Histórico usa nomes antigos dos botões
+    sem resposta | nm-dois-mover | Duas ferramentas "Mover" na barra da esquerda
+    sem resposta | nm-menu-marcar | Menu "Marcar": "Procurar de novo", "Limpar tudo" e "Deixar a folha em branco"
+    sem resposta | nm-manter-cor-tinta | "manter a cor da tinta": o nome provisório
+auditoria-5-escolhas-da-gerente: 16
+    sem resposta | au-d-486 | D-486 · A página que aparece à direita na janela grande do Automático é a original (folhea
+    sem resposta | au-d-546 | D-546 · Onde a tela mostra a página na área branca: a ferramenta Mover mostra a página com
+    sem resposta | au-d-547 | D-547 · Todas as telas e miniaturas mostram a página já movida/redimensionada, como sai no
+    sem resposta | au-d-018 | D-018 · "Rodar o automático…" do aviso de livro novo (D-005) abre a janela grande do Autom
+    sem resposta | au-d-482 | D-482 · "agora não" no aviso do livro novo fecha o aviso de vez para aquele livro (o livro
+    sem resposta | au-d-488 | D-488 · A tela "O que fazer" sai do caminho, mas o arquivo ui/tela_opcoes.py fica no repos
+    sem resposta | au-d-489 | D-489 · "Começar a conferência de novo" (o recomeço, com cópia do trabalho e do histórico)
+    sem resposta | au-d-484 | D-484 · Onde cada etapa roda: Dividir, Endireitar, Cortar e Limpar rodam no livro todo, nu
+    sem resposta | au-d-492 | D-492 · O tique do menu Filtro acompanha o filtro da página aberta (Original, Tirar o fund
+    sem resposta | au-d-498 | D-498 · "não dividir esta" junta as duas páginas da folha numa só e as guarda; "dividir es
+    sem resposta | au-d-500 | D-500 · O corte de duas páginas que o ScanTailor põe na beirada da folha (fora de 20% a 80
+    sem resposta | au-d-501 | D-501 · Como a D-007 fica na tela: o livro nunca abre na ferramenta Dividir (abre na de Co
+auditoria-6-para-depois: 6
+    sem resposta | au-d-026 | D-026 · Zoom confiável
+    sem resposta | au-d-070 | D-070 · "Laboratório" no Automático em tela cheia: folhear, provar 2 a 4 receitas lado a l
+    sem resposta | au-d-476 | D-476 · "Marcar como" com "iluminura ou pintura" e "moldura" (D-242) entra na Fase 1.5 do 
+    sem resposta | au-d-477 | D-477 · Ferrugem rosada da Pesel 2 no "Tirar o fundo": deve sumir, não só mudar de cor, co
+    sem resposta | au-d-478 | D-478 · Espaços "Limpo / Completo" (decisão 4, 28/09) não viram dois botões fixos: passam 
+    sem resposta | au-d-480 | D-480 · Item 7.3: os manuscritos (Graduale, Palatino) entram na transcrição da Fase 7, com
+perg-revisao-codigo: 4
+    sem resposta | rev-usar-em-todas | "Usar em todas" no Marcar, no Filtro, no Endireitar e no Girar: deixar de fora as páginas 
+    sem resposta | rev-letra-clara-todas | "Letra clara em fundo escuro" deve ir junto no "todas" do painel Filtro, como vai pelo Aut
+    sem resposta | rev-dividir-grade-linha | O "dividir" da grade "Todas as páginas" deve cortar na linha que você arrastou, como o "di
+    sem resposta | rev-girar-grade | O girar da grade "Todas as páginas" deve deixar todas viradas como a página da vez, como o
+acrescentei-27-10: 3
+    reaberta | b-abas-nomes | Jeito "Abas no alto": os nomes das abas
+    reaberta | b-pdf-desatualizado | O que o livro mostra depois de você mudar um livro que já virou PDF
+    reaberta | c-recuperar | "Recuperar o trabalho anterior" no menu do livro?
+duvidas: 2
+    reaberta | dv-29-horas | Letra clara (2.9): "não faça mais testes com lombadas de livros"
+    reaberta | dv-29-ressalvas | Letra clara (2.9): "veja as minhas ressalvas para melhoramentos"
+perguntas-04-11: 2
+    reaberta | n0411-inverter-letra-clara | Letra branca em fundo escuro: como virar letra preta em papel branco?
+    reaberta | n0411-caderno-pagina-em-branco | Folha do caderno com lugar sem página: como escrever?
+agora: 1
+    reaberta | d574-o-que-vai-sair | "O que vai sair" embaixo da folha: fica assim?
+auditoria-1-nao-funciona: 1
+    reaberta | au-d-572 | D-572 · Depois de "está certo", a faixa da página não mostra mais aviso nem o botão "está 
+perg-mover-rotulo: 1
+    reaberta | mover-rotulo-antes | No antes / depois, o rótulo "antes: Original" fica onde está?
+teste-kaique-lusiadas: 1
+    reaberta | k0611-margens-de-fabrica | Cortar ligado e "Margens iguais" desligado: cada página sai de um tamanho
+TOTAL 173
+nm-desligar-marcadas {"comentario": "Eu não entendi o que você quis dizer.", "em": "2026-11-13T23:16:24.087Z", "lida": false, "opcao": "so-comentario", "opcaoNome": "Só comentário", "reabrir": false, "relatorio": "nomes-28-10"}
+nm-jeito-pb {"em": "2026-11-13T23:13:08.371Z", "lida": false, "opcao": "nao-entendi", "opcaoNome": "Ainda não entendi", "reabrir": false, "relatorio": "nomes-28-10"}
+nm-tela-livros {"comentario": "Suas respostas ainda não são claras, tem que rever isso, não consegui entender, tem que ser de fácil entendimento.", "em": "2026-11-13T23:19:09.649Z", "lida": false, "opcao": "so-comentario", "opcaoNome": "Só comentário", "reabrir": false, "relatorio": "nomes-28-10"}
+v-capa-aviso {"comentario": "mas vai ter um botão para fazer isso antes do imprimir livros?", "em": "2026-11-13T23:11:53.827Z", "lida": false, "opcao": "so-comentario", "opcaoNome": "Só comentário", "reabrir": false, "relatorio": "acrescentei-27-10"}

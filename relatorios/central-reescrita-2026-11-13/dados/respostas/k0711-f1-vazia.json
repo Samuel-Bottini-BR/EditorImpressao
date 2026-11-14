@@ -1,0 +1,19 @@
+{
+  "comentario": "Não só abre vazia como a diagramação está horrível.",
+  "conversa": [
+    {
+      "em": "2026-11-07T19:30:00Z",
+      "quem": "gerente",
+      "texto": "Anotado (D-652): a lista vai abrir cheia e fácil de ler. Antes de fazer, te mostro como fica."
+    }
+  ],
+  "em": "2026-11-07T16:02:01.908Z",
+  "gerente": "Anotado (D-652): a lista vai abrir cheia e fácil de ler. Antes de fazer, te mostro como fica.",
+  "gerenteEm": "2026-11-07T19:30:00Z",
+  "lida": true,
+  "opcao": "consertar",
+  "opcaoNome": "Consertar",
+  "relatorio": "teste-kaique-funcoes",
+  "samuelViu": false,
+  "volta": false
+}

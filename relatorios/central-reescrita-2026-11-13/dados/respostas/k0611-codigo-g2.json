@@ -1,0 +1,24 @@
+{
+  "comentario": "Não se deve usar código na nomeação de coisas. Existe algum plugin ou skill que ajude Ias a nomear botoes e fazer explicações em programas?",
+  "conversa": [
+    {
+      "em": "2026-11-09T19:40:04.136Z",
+      "quem": "samuel",
+      "texto": "Não se deve usar código na nomeação de coisas. Existe algum plugin ou skill que ajude Ias a nomear botoes e fazer explicações em programas?"
+    },
+    {
+      "em": "2026-11-13T20:40:00Z",
+      "quem": "gerente",
+      "texto": "Anotado no Livro como D-687: nenhum código interno aparece na tela, e vai ter uma prova que procura esses códigos em todos os textos do programa. Sobre ajuda para nomear: existe uma habilidade para escrever textos de tela (\"ux-copy\"). Ela ajuda, mas quem garante é a prova."
+    }
+  ],
+  "em": "2026-11-09T19:40:04.136Z",
+  "gerente": "Anotado no Livro como D-687: nenhum código interno aparece na tela, e vai ter uma prova que procura esses códigos em todos os textos do programa. Sobre ajuda para nomear: existe uma habilidade para escrever textos de tela (\"ux-copy\"). Ela ajuda, mas quem garante é a prova.",
+  "gerenteEm": "2026-11-13T20:40:00Z",
+  "lida": true,
+  "opcao": "consertar",
+  "opcaoNome": "Consertar",
+  "reabrir": false,
+  "relatorio": "teste-kaique-lusiadas",
+  "volta": false
+}

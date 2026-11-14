@@ -1,0 +1,24 @@
+{
+  "comentario": "Eu gostaria de fazer uma inteligencia artificial só para isso, iriamos precisar de mais processamento, mas tudo bem.",
+  "conversa": [
+    {
+      "em": "2026-11-09T20:25:07.754Z",
+      "quem": "samuel",
+      "texto": "Eu gostaria de fazer uma inteligencia artificial só para isso, iriamos precisar de mais processamento, mas tudo bem."
+    },
+    {
+      "em": "2026-11-13T20:40:00Z",
+      "quem": "gerente",
+      "texto": "Anotado no Livro como D-696, e a ideia de uma inteligência só para a leitura do texto foi para a Lista de espera. Um cuidado: inteligência que corrige texto pode inventar palavra. Por isso a regra de hoje é que ela só aponte onde está a dúvida, e o Kaique decide."
+    }
+  ],
+  "em": "2026-11-09T20:25:07.754Z",
+  "gerente": "Anotado no Livro como D-696, e a ideia de uma inteligência só para a leitura do texto foi para a Lista de espera. Um cuidado: inteligência que corrige texto pode inventar palavra. Por isso a regra de hoje é que ela só aponte onde está a dúvida, e o Kaique decide.",
+  "gerenteEm": "2026-11-13T20:40:00Z",
+  "lida": true,
+  "opcao": "depois",
+  "opcaoNome": "Fica para depois",
+  "reabrir": false,
+  "relatorio": "auditoria-6-para-depois",
+  "volta": false
+}

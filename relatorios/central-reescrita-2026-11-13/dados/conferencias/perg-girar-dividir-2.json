@@ -1,0 +1,67 @@
+{
+  "nome": "Girar no Dividir: 2 perguntas (10/11)",
+  "ordem": 71,
+  "origem": "Conserto D-662 (\"Página por página também\") pronto no ramo do girar, 10/11. Relatório: .claude/worktrees/girar-capa/relatorios/girar-capa/relatorio.html",
+  "perguntas": [
+    {
+      "exemplos": [
+        {
+          "legenda": "Com o conserto: a tela do Dividir (em pé) e as páginas do PDF (deitadas).",
+          "src": "/_blob/caad5619be99f4a64810c917f353f850"
+        }
+      ],
+      "explicacao": [
+        "O conserto da sua resposta \"Página por página também\" está pronto: cada página deita sozinha e inteira, e a capa gira inteira (faixa verde, embaixo).",
+        "Só que, na própria tela do Dividir, nada parece mudar depois do clique: a folha grande e as miniaturas de folhas continuam em pé. As páginas deitadas aparecem nas outras ferramentas e no PDF.",
+        "O Kaique pode achar que o giro não funcionou. Mudar a tela precisa da sua licença, por isso a pergunta."
+      ],
+      "historico": [],
+      "id": "girar-dividir-tela",
+      "opcoes": [
+        {
+          "id": "mostrar",
+          "nome": "Sim, mostrar como vai sair (recomendo)",
+          "texto": "Depois do giro, a tela do Dividir e as miniaturas mostram as páginas deitadas, como vão sair."
+        },
+        {
+          "id": "fica",
+          "nome": "Fica como está",
+          "texto": "A tela do Dividir continua mostrando a folha em pé; o giro aparece nas outras ferramentas e no PDF."
+        }
+      ],
+      "primeira_imagem": {
+        "legenda": "Gradus, Dividir com \"Duas lado a lado\", \"todas as folhas\" + ¼ à direita. Em cada faixa: em cima a tela do Dividir, embaixo as páginas como saem no PDF. Na faixa verde (com o conserto), as páginas saem deitadas no PDF, mas a tela do Dividir em cima continua com a folha em pé.",
+        "src": "/_blob/e2e43c667c84360512f3c677ecbd2d0f"
+      },
+      "sugestao": "Sim, mostrar como vai sair: a tela tem que bater com o PDF.",
+      "titulo": "Depois de girar no Dividir, a tela do Dividir deve mostrar as páginas deitadas?"
+    },
+    {
+      "exemplos": [],
+      "explicacao": [
+        "A sua resposta de hoje (D-662) falou do \"todas as folhas\". O agente consertou só ele.",
+        "Com \"daqui em diante\", \"só as pares\" e \"só as ímpares\", no Dividir com \"Duas lado a lado\", as folhas ainda giram inteiras, e cada página sai no PDF como a tira da faixa laranja."
+      ],
+      "historico": [],
+      "id": "girar-dividir-outros",
+      "opcoes": [
+        {
+          "id": "sim",
+          "nome": "Sim, os três também (recomendo)",
+          "texto": "Os três giram página por página, como o \"todas as folhas\"."
+        },
+        {
+          "id": "nao",
+          "nome": "Não, só o \"todas as folhas\"",
+          "texto": "Os três continuam girando a folha inteira."
+        }
+      ],
+      "primeira_imagem": {
+        "legenda": "Hoje só o \"todas as folhas\" gira página por página (faixa verde). Os outros três ainda giram a folha inteira e as páginas saem como tiras misturadas (faixa laranja).",
+        "src": "/_blob/e2e43c667c84360512f3c677ecbd2d0f"
+      },
+      "sugestao": "Sim: assim nenhuma página sai misturada com a vizinha.",
+      "titulo": "No Dividir com \"Duas lado a lado\", \"daqui em diante\", \"só as pares\" e \"só as ímpares\" também giram página por página?"
+    }
+  ]
+}

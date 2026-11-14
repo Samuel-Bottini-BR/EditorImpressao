@@ -1,0 +1,24 @@
+{
+  "comentario": "Precisa ser investigado o porque disso acontecer, pois as vezes foi um erro de configuração na hora de usar as ferramentas do programa, tem que saber diferenciar bugue de erro. vamos investigar.",
+  "conversa": [
+    {
+      "em": "2026-11-09T19:20:59.316Z",
+      "quem": "samuel",
+      "texto": "Precisa ser investigado o porque disso acontecer, pois as vezes foi um erro de configuração na hora de usar as ferramentas do programa, tem que saber diferenciar bugue de erro. vamos investigar."
+    },
+    {
+      "em": "2026-11-13T20:40:00Z",
+      "quem": "gerente",
+      "texto": "Anotado no Livro como D-689: primeiro investigar se é defeito do programa ou a escolha das ferramentas. Só depois consertar, e você vê a prova antes."
+    }
+  ],
+  "em": "2026-11-09T19:20:59.316Z",
+  "gerente": "Anotado no Livro como D-689: primeiro investigar se é defeito do programa ou a escolha das ferramentas. Só depois consertar, e você vê a prova antes.",
+  "gerenteEm": "2026-11-13T20:40:00Z",
+  "lida": true,
+  "opcao": "consertar",
+  "opcaoNome": "Consertar",
+  "reabrir": false,
+  "relatorio": "teste-kaique-lusiadas",
+  "volta": false
+}

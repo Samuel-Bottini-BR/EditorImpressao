@@ -1,0 +1,82 @@
+{
+  "nome": "Quadrados brancos: a causa achada e qual conserto (10/11)",
+  "ordem": 70,
+  "origem": "Investigação pedida por você em 10/11 (\"descubra que agente fez o programa começar a fazer isso\"). Nenhuma linha do programa mudou; tudo em cópias. Relatório: .claude/worktrees/quadrados-origem/relatorios/quadrados-brancos-2026-11-10/origem/relatorio-completo.html",
+  "perguntas": [
+    {
+      "exemplos": [
+        {
+          "legenda": "Bisseção: a página 13 em dez versões do programa; os buracos aparecem a partir da etapa 3 da obra (26/10, e2321b16), com a regra da etapa 1 (175addb7).",
+          "src": "/_blob/d1a7c2244c19b32d286cc606e739454d"
+        },
+        {
+          "legenda": "Na escola de Jesus, Melhorar: oito pinturas antes, hoje, com só a mudança desfeita e com o conserto C.",
+          "src": "/_blob/dc5667d9e2cd65807fa5a9edbf0a0c10"
+        },
+        {
+          "legenda": "Na escola de Jesus, Mágico pro: oito pinturas antes, hoje, com só a mudança desfeita e com o conserto C.",
+          "src": "/_blob/6b8789b15117420c9a75072dead9540d"
+        },
+        {
+          "legenda": "As letras finas da página 13: antes, hoje, com só a mudança desfeita e com o conserto C.",
+          "src": "/_blob/3f454d713c20cff1f04f930cd04b9f42"
+        },
+        {
+          "legenda": "Livro de Horas 47: antes, hoje, com só a mudança desfeita e com o conserto C.",
+          "src": "/_blob/ff0a3b0c27bb93681b13486b71bd9c6d"
+        },
+        {
+          "legenda": "Boécio: antes, hoje, com só a mudança desfeita e com o conserto C (mancha do verso e papel).",
+          "src": "/_blob/924e0a5fd26c0fcf9e23889631f0ffd1"
+        },
+        {
+          "legenda": "Página 13: o programa de antes sem a procura da gravura, e o caso do print 10 (caixinha \"Respeitar\" desmarcada) hoje, com só a mudança desfeita e com o conserto C.",
+          "src": "/_blob/3a6f4dadb16830e332d96d9db574fff2"
+        }
+      ],
+      "explicacao": [
+        "Você tinha razão: antes o programa não fazia isso. Rodei a versão de antes da obra (26/10) e a de hoje no \"Na escola de Jesus\" inteiro (199 páginas), com as mesmas escolhas. Antes: 2 páginas com um furo pequeno de céu claro. Hoje: 65 páginas no Melhorar e 83 no Mágico pro com quadrados brancos, e 25 a 28 páginas com o \"i\" e o \"t\" quebrados. Na página 13: 1,4% da pintura branca antes, 23,5% hoje.",
+        "Sua ideia do motor do ScanTailor está certa. Antes, o programa procurava a gravura em toda página (achou em 197 das 199) e não pintava de branco dentro dela. Por isso não havia quadrados. Hoje, no Melhorar e no Mágico pro escolhidos à mão, ele não procura a gravura em nenhuma página, e a limpeza do papel pinta o céu e a água das pinturas de branco.",
+        "Quem fez começar: duas mudanças da obra, na mesma noite (26/10). (1) O agente da etapa 1, cumprindo a D-009 (\"eu deveria conseguir abrir o livro sem escolher nenhuma opção para fazer tudo manualmente\"), decidiu sozinho que sem o Automático o programa não procura a gravura. Você não pediu isso. (2) A etapa 3 (D-002, o livro abre direto na área de trabalho) fez todo livro novo abrir com o Automático desligado. Juntas, as duas tiraram a proteção das pinturas.",
+        "É o mesmo defeito do Preto e branco de 09/11. O conserto D-659 voltou a procurar a gravura só no Preto e branco, e deixou o Melhorar e o Mágico pro de fora. Pela sua regra de hoje (D-667, \"se mudou a ferramenta, muda em todos os lugares\"), devia ter valido para os três.",
+        "Duas saídas medidas, em cópia. Verde, voltar como era antes: procura a gravura em toda página, como você já testou; volta ao que era (2 páginas), as letras ficam inteiras e o papel do Boécio fica mais branco. Custa uns 5 segundos a mais na primeira vez de cada página e não conserta o print 10 (a caixinha \"Respeitar as gravuras achadas\" desmarcada). Roxo, o conserto C: procura só nas páginas com Melhorar ou Mágico pro e \"Respeitar\" marcada, como a D-659 faz no Preto e branco, mais a regra \"só pinta de branco se em volta também for papel\". Nas pinturas sai igual ao verde e conserta também a maior parte do print 10 (de 27,4% para 5,8%)."
+      ],
+      "historico": [
+        {
+          "em": "2026-11-10T21:28:44.607Z",
+          "quem": "samuel",
+          "texto": "Mas antes ele não fazia isso né, você tentou usar o motor do scantailor para achar gravura e onde achar gravura ele não deixar esses pontos brancos assim, pois eu nunca tinha visto o programa fazer isso, descubra que agente fez o programa começar a fazer isso, é só você ver os testes que fizemos antes com o melhorar e magico pro."
+        },
+        {
+          "em": "2026-11-10T23:59:00Z",
+          "quem": "gerente",
+          "texto": "Você tinha razão: antes não fazia. Refiz a pergunta com as provas da investigação (versão antiga x versão de hoje, nas mesmas páginas)."
+        }
+      ],
+      "id": "quadrados-qual",
+      "opcoes": [
+        {
+          "id": "c",
+          "nome": "Roxo: o conserto C (recomendo)",
+          "texto": "Procura a gravura nas páginas com Melhorar ou Mágico pro e \"Respeitar\" marcada (como o Preto e branco, D-659), mais a regra \"em volta é papel\". Tira os quadrados, conserta o \"i\" e o \"t\" e a maior parte do print 10."
+        },
+        {
+          "id": "antes",
+          "nome": "Verde: voltar como era antes da obra",
+          "texto": "Procura a gravura em toda página mostrada, como você já testou. Tira os quadrados e conserta as letras; uns 5 s a mais na primeira vez de cada página; não conserta o print 10."
+        },
+        {
+          "id": "nao",
+          "nome": "Laranja: deixar como está",
+          "texto": "As pinturas claras continuam com os quadrados brancos."
+        }
+      ],
+      "primeira_imagem": {
+        "legenda": "Resumo, as mesmas 4 pinturas em todas as faixas. Azul: ANTES da mudança (versão de 26/10). Laranja: HOJE. Verde: só a mudança desfeita (voltar como era). Roxo: o conserto C.",
+        "src": "/_blob/63f1219972d1013c2e61f689ffae3d5a"
+      },
+      "sugestao": "Roxo (C): sai igual ao de antes nas pinturas, segue o que você decidiu na D-659 e conserta também o print 10.",
+      "titulo": "Antes não fazia: os quadrados começaram na obra de 26/10. Como o Melhorar e o Mágico pro voltam a proteger as pinturas?"
+    }
+  ]
+}

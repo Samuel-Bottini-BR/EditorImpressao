@@ -1,0 +1,1191 @@
+{
+ "nome": "Auditoria 3: funciona com ressalva (32)",
+ "ordem": -3,
+ "origem": "Auditoria de 28/10 (linhas por decisão, provas rodadas em fc38afd) e Livro de decisões do ramo da rodada de consertos; refeita em 29/10 a pedido do Samuel, sem reavaliar nada",
+ "perguntas": [
+  {
+   "exemplos": [
+    {
+     "legenda": "O que você escolheu em 12/10 (layout, rodada 13, opção B): a faixa \"Livro novo: ainda não passou pelo automático\" com \"Rodar o automático…\" e \"agora não\".",
+     "src": "/_blob/7dcb22c9d051bdee6035c59400149d7f"
+    }
+   ],
+   "explicacao": [
+    "Situação na versão de teste: Funciona com ressalva.",
+    "Você pediu (12/10/2026): \"B — Um aviso embaixo da página\" (\"Livro novo: ainda não passou pelo automático\", \"Rodar o automático…\", \"agora não\")",
+    "O que isso quer dizer: Livro novo mostra o aviso convidando a rodar o automático.",
+    "Solução na versão de teste: a faixa azul aparece em todo livro novo com os dois botões.",
+    "Parte do programa: Abrir o livro (direto na área de trabalho).",
+    "Ressalva: Em 28/10 ficou embaixo o tempo todo, junto com 9 a 20 avisos, e confundiu (2-3)"
+   ],
+   "id": "au-d-005",
+   "opcoes": [
+    {
+     "id": "certo",
+     "nome": "Está certo assim",
+     "texto": "A solução fica como está."
+    },
+    {
+     "id": "mudar",
+     "nome": "Quero mudar: pôr na lista de fazer",
+     "texto": "Escreva no comentário o que quer diferente; entra na fila de trabalho."
+    },
+    {
+     "id": "testar",
+     "nome": "Vou testar no programa antes de responder",
+     "texto": "Fica marcada para você testar pelo atalho da versão de teste."
+    }
+   ],
+   "titulo": "D-005 · Livro novo mostra o aviso convidando a rodar o automático"
+  },
+  {
+   "exemplos": [
+    {
+     "legenda": "O desenho do Automático que você viu no layout (rodada 3): \"Etapas, na ordem · arraste para mudar\", receita e \"Rodar 5 etapas\".",
+     "src": "/_blob/081ac9922b8edc1a5591da5ed76da8a2"
+    }
+   ],
+   "explicacao": [
+    "Onde fica: O Automático (painel e janela grande). O que é: A ordem das etapas do Automático pode ser mudada arrastando com o mouse. Ainda está em aberto se isso muda também a ordem em que a página é montada.",
+    "O que você pediu (28/09/2026): \"Ordem das etapas: livre. [...] muda arrastando com o mouse. Sem cadeados.\"",
+    "Como está hoje (versão de teste): Arrastar muda a ordem em que rodam; a montagem da página não muda. Na auditoria de 29/10: funciona com ressalva. O que ainda não está bom: Regra escolhida pela gerente; a pergunta não foi feita a você.",
+    "Você ainda não testou isto depois da auditoria de 29/10 (não há teste seu no Livro de decisões).",
+    "O que você escolhe: se fica como está, se entra na lista de fazer (escreva no comentário o que quer diferente) ou se você testa antes de responder.",
+    "(Para consulta: D-003; resolvida junto com D-016.)"
+   ],
+   "id": "au-d-003",
+   "opcoes": [
+    {
+     "id": "certo",
+     "nome": "Está certo assim",
+     "texto": "Fica como está hoje na versão de teste."
+    },
+    {
+     "id": "mudar",
+     "nome": "Quero mudar: pôr na lista de fazer",
+     "texto": "Escreva no comentário o que quer diferente; entra na fila de trabalho."
+    },
+    {
+     "id": "testar",
+     "nome": "Vou testar antes de responder",
+     "texto": "Fica marcada para você testar pelo atalho da versão de teste."
+    }
+   ],
+   "titulo": "Ordem das etapas do Automático arrastável"
+  },
+  {
+   "exemplos": [
+    {
+     "legenda": "O que você viu em 09/10 na pergunta Graduale 222, hoje (corta e depois endireita) e a simulação endireitando antes de cortar.",
+     "src": "/_blob/56dbe4f64c23f89dd2873de6679d1f93"
+    },
+    {
+     "legenda": "O desenho do Automático que você viu no layout (rodada 3): \"Etapas, na ordem · arraste para mudar\", receita e \"Rodar 5 etapas\".",
+     "src": "/_blob/081ac9922b8edc1a5591da5ed76da8a2"
+    }
+   ],
+   "explicacao": [
+    "Onde fica: O Automático (painel e janela grande). O que é: Arrastar as etapas no Automático muda a ordem em que elas rodam (o que o programa procura e decide primeiro). A montagem da página segue sempre a mesma ordem (endireita, depois corta uma vez só, no fim), para não comer a página.",
+    "O que você pediu (09/10/2026 (mais recente que 28/09)): \"Ordem das etapas: livre. [...] muda arrastando com o mouse. Sem cadeados.\" (28/09) e, em 09/10, endireitar antes de cortar, como o ScanTailor.",
+    "Como está hoje (versão de teste): Arrastar muda a ordem em que rodam; a montagem da página não muda. Na auditoria de 29/10: funciona com ressalva. O que ainda não está bom: Regra escolhida pela gerente; a pergunta não foi feita a você.",
+    "Você ainda não testou isto depois da auditoria de 29/10 (não há teste seu no Livro de decisões).",
+    "O que você escolhe: se fica como está, se entra na lista de fazer (escreva no comentário o que quer diferente) ou se você testa antes de responder.",
+    "(Para consulta: D-016; resolvida junto com D-003.)"
+   ],
+   "id": "au-d-016",
+   "opcoes": [
+    {
+     "id": "certo",
+     "nome": "Está certo assim",
+     "texto": "Fica como está hoje na versão de teste."
+    },
+    {
+     "id": "mudar",
+     "nome": "Quero mudar: pôr na lista de fazer",
+     "texto": "Escreva no comentário o que quer diferente; entra na fila de trabalho."
+    },
+    {
+     "id": "testar",
+     "nome": "Vou testar antes de responder",
+     "texto": "Fica marcada para você testar pelo atalho da versão de teste."
+    }
+   ],
+   "titulo": "Arrastar as etapas do Automático muda a ordem em que rodam, mas não a montagem da página"
+  },
+  {
+   "exemplos": [
+    {
+     "legenda": "O que você viu em 20/10 (layout, rodada 14): o menu Ver com \"Lado direito\" e os quatro jeitos.",
+     "src": "/_blob/19aa42f140a20a244cc2240136603b31"
+    }
+   ],
+   "explicacao": [
+    "Onde fica: Todas as ferramentas à vista e o lado direito. O que é: O lado direito troca entre 4 jeitos dentro do programa, escolhidos no menu Ver e em Configurações > Aparência.",
+    "O que você pediu (05/10/2026): (resumo, sem as suas palavras exatas) \"Quer os quatro jeitos no app, escolhendo dentro dele: sanfona (o primeiro), abas no alto, ícones na borda, painel flutuante\" · 20/10 \"C — Nos dois lugares\"",
+    "Como está hoje (versão de teste): Os quatro no menu Ver e nas Configurações. Na auditoria de 29/10: funciona com ressalva. O que ainda não está bom: Dois detalhes esperam a sua resposta (ícones sem nome no painel solto; cabeçalho nas abas)",
+    "Você ainda não testou isto depois da auditoria de 29/10 (não há teste seu no Livro de decisões).",
+    "O que você escolhe: se fica como está, se entra na lista de fazer (escreva no comentário o que quer diferente) ou se você testa antes de responder.",
+    "(Para consulta: D-033.)"
+   ],
+   "id": "au-d-033",
+   "opcoes": [
+    {
+     "id": "certo",
+     "nome": "Está certo assim",
+     "texto": "Fica como está hoje na versão de teste."
+    },
+    {
+     "id": "mudar",
+     "nome": "Quero mudar: pôr na lista de fazer",
+     "texto": "Escreva no comentário o que quer diferente; entra na fila de trabalho."
+    },
+    {
+     "id": "testar",
+     "nome": "Vou testar antes de responder",
+     "texto": "Fica marcada para você testar pelo atalho da versão de teste."
+    }
+   ],
+   "titulo": "O lado direito troca entre 4 jeitos dentro do programa, escolhidos no menu Ver e em Configurações > Aparência"
+  },
+  {
+   "exemplos": [
+    {
+     "legenda": "Hoje (02/11, versão de teste): Depois de apertar Page Down: a página andou (veja 'página N de 12' embaixo à esquerda e a miniatura azul).",
+     "src": "/_blob/1f7438a5e3f095189b5504dcc7bf1975"
+    },
+    {
+     "legenda": "Hoje (02/11, versão de teste): Depois de apertar End: foi para a última página (12 de 12).",
+     "src": "/_blob/21e9088b2b362cfe53e7d28a24fb2c70"
+    },
+    {
+     "legenda": "Hoje (02/11, versão de teste): Depois de apertar Home: voltou para a primeira página. (Faltam as setas fixas na tira e a barra mais alta, como diz a ressalva.)",
+     "src": "/_blob/d18e988c81824c6c71342db396be7086"
+    },
+    {
+     "legenda": "Hoje (02/11, versão de teste): Menu Ver: 'Ir para a página...' (Ctrl+G), no contorno vermelho.",
+     "src": "/_blob/ec6c3a8277b9cc76c800cf5f5b362ee0"
+    }
+   ],
+   "explicacao": [
+    "Onde fica: Menus, teclas e janelas. O que é: Andar pelas páginas pelo teclado e pelo mouse.",
+    "O que você pediu (29/07/2026): (resumo, sem as suas palavras exatas) navegação: setas fixas na tira, roda do mouse, \"ir para página\", Page Up/Down, Home/End, barra de rolagem mais alta.",
+    "Como está hoje (versão de teste): Roda troca de página, Page Up/Down pulam 10, Home/End. Na auditoria de 29/10: funciona com ressalva. O que ainda não está bom: Faltam as setas fixas na tira e a barra mais alta; roda de verdade não provada.",
+    "Já testado por você: Você testou em 10/11 que as setas continuam passando de página depois de clicar num botão do painel (\"sim\"). As setas fixas na tira e a barra mais alta ainda faltam.",
+    "O que você escolhe: se fica como está, se entra na lista de fazer (escreva no comentário o que quer diferente) ou se você testa antes de responder.",
+    "(Para consulta: D-021.)"
+   ],
+   "id": "au-d-021",
+   "opcoes": [
+    {
+     "id": "certo",
+     "nome": "Está certo assim",
+     "texto": "Fica como está hoje na versão de teste."
+    },
+    {
+     "id": "mudar",
+     "nome": "Quero mudar: pôr na lista de fazer",
+     "texto": "Escreva no comentário o que quer diferente; entra na fila de trabalho."
+    },
+    {
+     "id": "testar",
+     "nome": "Vou testar antes de responder",
+     "texto": "Fica marcada para você testar pelo atalho da versão de teste."
+    }
+   ],
+   "titulo": "Andar pelas páginas pelo teclado e pelo mouse"
+  },
+  {
+   "exemplos": [
+    {
+     "legenda": "O desenho de 07/10 da pergunta dividir-sem página branca no lugar da apagada, o rosto vai para o verso e as seguintes trocam de lado.",
+     "src": "/_blob/3666b53e7200a6f158cf50dba87f1f80"
+    },
+    {
+     "legenda": "Do mesmo dia: Gradus Primus, folha 2, o verso em branco da capa e a página de rosto.",
+     "src": "/_blob/dea1993675dcc24361d84ebe2a3e9627"
+    }
+   ],
+   "explicacao": [
+    "Onde fica: Deixar em branco e tirar do livro. O que é: Dois botões em qualquer página: \"Deixar em branco\" (tecla Delete; página branca no lugar, cadernos certos) e \"Tirar do livro\".",
+    "O que você pediu (07/10/2026): \"quando é apagada uma folha, tem que ser colocada uma no lugar dele né, pois se não a encadernação vai ficar errada\" · \"Dois botões; a tecla Delete deixa em branco\" · 09/10 \"Essa opção de tirar do livro ou deixar folha em branco eu quero ter em outras paginas [...]\"",
+    "Como está hoje (versão de teste): \"deixar em branco\" / \"tirar do livro\" em toda página (Propriedades, menu Página, Delete, Shift+Del). Na auditoria de 29/10: funciona com ressalva. O que ainda não está bom: Escondido: em 28/10 você não achou na capa (seu print 2-6); \"tirar\" deixa \"apagada\" na tira (seu print 2-2)",
+    "Você ainda não testou isto depois da auditoria de 29/10 (não há teste seu no Livro de decisões).",
+    "O que você escolhe: se fica como está, se entra na lista de fazer (escreva no comentário o que quer diferente) ou se você testa antes de responder.",
+    "(Para consulta: D-046.)"
+   ],
+   "id": "au-d-046",
+   "opcoes": [
+    {
+     "id": "certo",
+     "nome": "Está certo assim",
+     "texto": "Fica como está hoje na versão de teste."
+    },
+    {
+     "id": "mudar",
+     "nome": "Quero mudar: pôr na lista de fazer",
+     "texto": "Escreva no comentário o que quer diferente; entra na fila de trabalho."
+    },
+    {
+     "id": "testar",
+     "nome": "Vou testar antes de responder",
+     "texto": "Fica marcada para você testar pelo atalho da versão de teste."
+    }
+   ],
+   "titulo": "Dois botões em qualquer página: \"Deixar em branco\" (tecla Delete; página branca no lugar, cadernos certos) e \"Tirar do livro\""
+  },
+  {
+   "exemplos": [
+    {
+     "legenda": "O que você viu em 05/10 (conferência 9): o Siebmacher 7, uma página só e deitada, que o nosso e o ScanTailor dividiram.",
+     "src": "/_blob/4fca92da635d74e84449846615e18ea2"
+    }
+   ],
+   "explicacao": [
+    "Onde fica: Dividir as folhas. O que é: Não tentar dividir folha que é claramente uma página só.",
+    "O que você pediu (24/09/2026): (resumo, sem as suas palavras exatas) dividir a folha sabendo quando é uma página só.",
+    "Como está hoje (versão de teste): Righetti girado divide à mão e no Automático; \"dividir esta\" aceso em toda folha. Na auditoria de 29/10: funciona com ressalva. O que ainda não está bom: O caso do Siebmacher não foi mexido.",
+    "Você ainda não testou isto depois da auditoria de 29/10 (não há teste seu no Livro de decisões).",
+    "O que você escolhe: se fica como está, se entra na lista de fazer (escreva no comentário o que quer diferente) ou se você testa antes de responder.",
+    "(Para consulta: D-074.)"
+   ],
+   "id": "au-d-074",
+   "opcoes": [
+    {
+     "id": "certo",
+     "nome": "Está certo assim",
+     "texto": "Fica como está hoje na versão de teste."
+    },
+    {
+     "id": "mudar",
+     "nome": "Quero mudar: pôr na lista de fazer",
+     "texto": "Escreva no comentário o que quer diferente; entra na fila de trabalho."
+    },
+    {
+     "id": "testar",
+     "nome": "Vou testar antes de responder",
+     "texto": "Fica marcada para você testar pelo atalho da versão de teste."
+    }
+   ],
+   "titulo": "Não tentar dividir folha que é claramente uma página só"
+  },
+  {
+   "exemplos": [
+    {
+     "legenda": "O desenho da grade \"Todas as páginas\" (em pares) que você viu no layout (rodada 3).",
+     "src": "/_blob/dcb2268bc4a83850b7520093f6eb684d"
+    }
+   ],
+   "explicacao": [
+    "Onde fica: A grade \"Todas as páginas\". O que é: Grade \"Todas as páginas\" com várias escolhidas e ações sobre elas.",
+    "O que você pediu (24/09/2026): (resumo, sem as suas palavras exatas) \"Ver todas as páginas do livro em grade, como o 'Organizar páginas' do UPDF: seleção múltipla, girar, apagar, extrair, inserir, dividir.\"",
+    "Como está hoje (versão de teste): Girar, deixar em branco, tirar, trazer de volta, extrair, rodar o automático e dividir nas escolhidas. Na auditoria de 29/10: funciona com ressalva. O que ainda não está bom: Sem \"inserir\" (combinado para depois, a decisão de 27/10)",
+    "Já testado por você: O \"inserir\" que faltava aqui foi feito depois como \"adicionar página em branco\" (botão direito na miniatura) e você testou em 09/11: \"pagina em branco funciona\". Os botões da grade não foram testados depois da auditoria.",
+    "O que você escolhe: se fica como está, se entra na lista de fazer (escreva no comentário o que quer diferente) ou se você testa antes de responder.",
+    "(Para consulta: D-334.)"
+   ],
+   "id": "au-d-334",
+   "opcoes": [
+    {
+     "id": "certo",
+     "nome": "Está certo assim",
+     "texto": "Fica como está hoje na versão de teste."
+    },
+    {
+     "id": "mudar",
+     "nome": "Quero mudar: pôr na lista de fazer",
+     "texto": "Escreva no comentário o que quer diferente; entra na fila de trabalho."
+    },
+    {
+     "id": "testar",
+     "nome": "Vou testar antes de responder",
+     "texto": "Fica marcada para você testar pelo atalho da versão de teste."
+    }
+   ],
+   "titulo": "Grade \"Todas as páginas\" com várias escolhidas e ações sobre elas"
+  },
+  {
+   "exemplos": [
+    {
+     "legenda": "O que você viu em 20/10 (Cursus 3): hoje, a faixa preta da borda na página; com o conserto, ela some.",
+     "src": "fotos/cg6b-cursus-3.jpg"
+    },
+    {
+     "legenda": "O que você viu em 13/10 (Antiphon 260): antes do endireitar novo, hoje (faixa preta embaixo) e com o conserto.",
+     "src": "/_blob/73bfd328fb88fb665951d28d351defec"
+    }
+   ],
+   "explicacao": [
+    "Onde fica: A faixa preta da tampa do scanner e a borda preta. O que é: A borda preta do scanner some por inteiro na página torta: o corte fica rente ao papel.",
+    "O que você pediu (13/10/2026; 20/10 e 21/10/2026): 13/10: \"Era para sumir completamente né?\" · 20/10: \"tem que cortar a faixa inteira.\" (Antiphon 260) · \"Tem que cortar em cima e embaixo e dos lados ainda tem um fio preto.\" (Antiphon 88) · \"É para sumir totalmente.\" (Camões 104) · \"tem que ficar rente a folha de papel, não pode ter preto ali.\" (Cursus 3) · \"ainda estou vendo a faixa preta.\" (Matemática 32) · 21/10 \"Está bom\"",
+    "Como está hoje (versão de teste): Righetti 96 e Cursus 3 sem a faixa; a cunha do giro não pinta mais de preto. Na auditoria de 29/10: funciona com ressalva. O que ainda não está bom: Antiphon 260 sem prova nesta rodada; fio preto no Cursus 3.",
+    "Você ainda não testou isto depois da auditoria de 29/10 (não há teste seu no Livro de decisões).",
+    "O que você escolhe: se fica como está, se entra na lista de fazer (escreva no comentário o que quer diferente) ou se você testa antes de responder.",
+    "(Para consulta: D-097.)"
+   ],
+   "id": "au-d-097",
+   "opcoes": [
+    {
+     "id": "certo",
+     "nome": "Está certo assim",
+     "texto": "Fica como está hoje na versão de teste."
+    },
+    {
+     "id": "mudar",
+     "nome": "Quero mudar: pôr na lista de fazer",
+     "texto": "Escreva no comentário o que quer diferente; entra na fila de trabalho."
+    },
+    {
+     "id": "testar",
+     "nome": "Vou testar antes de responder",
+     "texto": "Fica marcada para você testar pelo atalho da versão de teste."
+    }
+   ],
+   "titulo": "A borda preta do scanner some por inteiro na página torta: o corte fica rente ao papel"
+  },
+  {
+   "exemplos": [
+    {
+     "legenda": "Da Central de 28/10 (pergunta c-tampa-ao-abrir, mesmo assunto): o Righetti 95-96 recém-aberto, com a faixa preta da tampa em cima.",
+     "src": "vt28/perguntas/c-tampa-ao-abrir-1.jpg"
+    }
+   ],
+   "explicacao": [
+    "Onde fica: A faixa preta da tampa do scanner e a borda preta. O que é: A faixa preta da tampa do scanner some em todo o livro, também no Automático; o Kaique escolhe por livro se corta ou pinta de branco. Substitui as decisões de 27/10 (só à mão).",
+    "O que você pediu (27/10/2026): Central \"Como eu decidi: sumir em todo o livro, e o Kaique escolhe por livro cortar ou pintar de branco (recomendo)\"",
+    "Como está hoje (versão de teste): O Automático tira a tampa em toda folha; escolha \"cortar fora / pintar de branco\". Na auditoria de 29/10: funciona com ressalva. O que ainda não está bom: Livro que nunca passa pelo Automático continua com a faixa.",
+    "Você ainda não testou isto depois da auditoria de 29/10 (não há teste seu no Livro de decisões).",
+    "O que você escolhe: se fica como está, se entra na lista de fazer (escreva no comentário o que quer diferente) ou se você testa antes de responder.",
+    "(Para consulta: D-559.)"
+   ],
+   "id": "au-d-559",
+   "opcoes": [
+    {
+     "id": "certo",
+     "nome": "Está certo assim",
+     "texto": "Fica como está hoje na versão de teste."
+    },
+    {
+     "id": "mudar",
+     "nome": "Quero mudar: pôr na lista de fazer",
+     "texto": "Escreva no comentário o que quer diferente; entra na fila de trabalho."
+    },
+    {
+     "id": "testar",
+     "nome": "Vou testar antes de responder",
+     "texto": "Fica marcada para você testar pelo atalho da versão de teste."
+    }
+   ],
+   "titulo": "A faixa preta da tampa do scanner some em todo o livro, também no Automático; o Kaique escolhe por livro se corta ou pinta de branco"
+  },
+  {
+   "exemplos": [
+    {
+     "legenda": "O que você viu em 22/10 na pergunta o Egenloff 3, em que o corte parte o carimbo de cima e o da direita.",
+     "src": "cx22/img/egenloff_p003_beiradas_perto.jpg"
+    },
+    {
+     "legenda": "Da mesma pergunta (22/10): o \"Reduzir cores\" apagando parte das letras no Livro de Horas 26.",
+     "src": "conf/img/211-horas_p026.jpg"
+    }
+   ],
+   "explicacao": [
+    "Onde fica: O corte não come a página. O que é: Os 8 outros lugares que podem comer a página (endireitar antigo, corte à mão, corte automático, tinta na beirada, dividir reto, Melhorar/Mágico pro, borda preta, impressão >100%): provar em páginas reais, depois consertar.",
+    "O que você pediu (22/10/2026): \"Tem mais alguma função que pode fazer essa mesma coisa de comer parte da pagina sem que a gente queira no nosso programa?\" → \"B — Só o desentortar agora; o resto para o começo da próxima fase\" + \"escolhi a B, mas quando for feito o teste de bug, ele tem que fazer a C — Primeiro provar em páginas de verdade, depois decidir\"",
+    "Como está hoje (versão de teste): 8 lugares olhados; 7 consertos provados em páginas de verdade. Na auditoria de 29/10: funciona com ressalva. O que ainda não está bom: Lugares 1, 3, 4 e 7 não provados; sobras pequenas listadas.",
+    "Você ainda não testou isto depois da auditoria de 29/10 (não há teste seu no Livro de decisões).",
+    "O que você escolhe: se fica como está, se entra na lista de fazer (escreva no comentário o que quer diferente) ou se você testa antes de responder.",
+    "(Para consulta: D-104.)"
+   ],
+   "id": "au-d-104",
+   "opcoes": [
+    {
+     "id": "certo",
+     "nome": "Está certo assim",
+     "texto": "Fica como está hoje na versão de teste."
+    },
+    {
+     "id": "mudar",
+     "nome": "Quero mudar: pôr na lista de fazer",
+     "texto": "Escreva no comentário o que quer diferente; entra na fila de trabalho."
+    },
+    {
+     "id": "testar",
+     "nome": "Vou testar antes de responder",
+     "texto": "Fica marcada para você testar pelo atalho da versão de teste."
+    }
+   ],
+   "titulo": "Os outros 8 lugares que podem comer a página: provar em páginas reais, depois consertar"
+  },
+  {
+   "exemplos": [
+    {
+     "legenda": "O que você viu em 23/10 na pergunta a página curva com a moldura escura do scanner, original e o desentortar com três marcações.",
+     "src": "d212/img/causa-curvada2-moldura.jpg"
+    }
+   ],
+   "explicacao": [
+    "Onde fica: O corte não come a página. O que é: Página curva com moldura escura do scanner: o programa pinta a moldura de branco antes de desentortar, para o desentortador não confundir a moldura com as letras.",
+    "O que você pediu (23/10/2026): \"C — Deixar como está\" + \"Mas fica anotado para depois de juntar as frentes isso ser resolvido, porque na verdade, eu acho que o primeiro passo em uma pagina dessas seria tirar essa moldura preta transformando a pagina em totalmente branca sem mexer nas letras, ai o desentortador não iria confundir as letras com moldura preta. não é?\"",
+    "Como está hoje (versão de teste): A moldura é tirada antes de medir o desentortar. Na auditoria de 29/10: funciona com ressalva. O que ainda não está bom: Na página de teste a curva continua sem ser achada.",
+    "Você ainda não testou isto depois da auditoria de 29/10 (não há teste seu no Livro de decisões).",
+    "O que você escolhe: se fica como está, se entra na lista de fazer (escreva no comentário o que quer diferente) ou se você testa antes de responder.",
+    "(Para consulta: D-113.)"
+   ],
+   "id": "au-d-113",
+   "opcoes": [
+    {
+     "id": "certo",
+     "nome": "Está certo assim",
+     "texto": "Fica como está hoje na versão de teste."
+    },
+    {
+     "id": "mudar",
+     "nome": "Quero mudar: pôr na lista de fazer",
+     "texto": "Escreva no comentário o que quer diferente; entra na fila de trabalho."
+    },
+    {
+     "id": "testar",
+     "nome": "Vou testar antes de responder",
+     "texto": "Fica marcada para você testar pelo atalho da versão de teste."
+    }
+   ],
+   "titulo": "Página curva com moldura escura do scanner: pintar a moldura de branco antes de desentortar"
+  },
+  {
+   "exemplos": [
+    {
+     "legenda": "O que você viu em 22/10 na pergunta o Egenloff 3, caso de verdade de corte comendo carimbo.",
+     "src": "cx22/img/egenloff_p003_beiradas_perto.jpg"
+    },
+    {
+     "legenda": "Da mesma pergunta (22/10): o \"Reduzir cores\" apagando letras no Livro de Horas 26.",
+     "src": "conf/img/211-horas_p026.jpg"
+    }
+   ],
+   "explicacao": [
+    "Onde fica: O corte não come a página. O que é: Antes de consertar os 8 lugares que podem comer a página, o verificador acha no acervo páginas onde cada um acontece, traz as fotos e ele decide vendo.",
+    "O que você pediu (22/10/2026): \"escolhi a B, mas quando for feito o teste de bug, ele tem que fazer a C — Primeiro provar em páginas de verdade, depois decidir\"",
+    "Como está hoje (versão de teste): Feito assim nas etapas 10a e 10b. Na auditoria de 29/10: funciona com ressalva. O que ainda não está bom: Lugares 5 e 6 provados só no Preto e branco.",
+    "Você ainda não testou isto depois da auditoria de 29/10 (não há teste seu no Livro de decisões).",
+    "O que você escolhe: se fica como está, se entra na lista de fazer (escreva no comentário o que quer diferente) ou se você testa antes de responder.",
+    "(Para consulta: D-466.)"
+   ],
+   "id": "au-d-466",
+   "opcoes": [
+    {
+     "id": "certo",
+     "nome": "Está certo assim",
+     "texto": "Fica como está hoje na versão de teste."
+    },
+    {
+     "id": "mudar",
+     "nome": "Quero mudar: pôr na lista de fazer",
+     "texto": "Escreva no comentário o que quer diferente; entra na fila de trabalho."
+    },
+    {
+     "id": "testar",
+     "nome": "Vou testar antes de responder",
+     "texto": "Fica marcada para você testar pelo atalho da versão de teste."
+    }
+   ],
+   "titulo": "Antes de consertar os 8 lugares que podem comer a página, o verificador acha no acervo páginas onde cada um acontece, traz as fotos e ele decide vendo"
+  },
+  {
+   "exemplos": [
+    {
+     "legenda": "O que você viu em 13/10 na pergunta a página cheia e a pequena do mesmo livro, como vieram do scanner.",
+     "src": "/_blob/be19206c9492e4ee71c1f6914adfda9b"
+    }
+   ],
+   "explicacao": [
+    "Onde fica: Mover e redimensionar. O que é: Escolha da gerente: aumentar o conteúdo além da beirada não corta nada escondido: a página fica do mesmo tamanho, o que passa da beirada aparece marcado na tela e a página ganha aviso no \"Para revisar\".",
+    "O que você pediu (13/10/2026 (mais recente que 05/10)): \"(b) Avisar e não reduzir - avisar para eu reduzir manualmente\" · \"Cada página até encher a folha\"",
+    "Como está hoje (versão de teste): Parte de fora em vermelho e aviso; nada é diminuído. Na auditoria de 29/10: funciona com ressalva. O que ainda não está bom: Cabeçalho rente à beirada avisa em qualquer mover para cima.",
+    "Você ainda não testou isto depois da auditoria de 29/10 (não há teste seu no Livro de decisões).",
+    "O que você escolhe: se fica como está, se entra na lista de fazer (escreva no comentário o que quer diferente) ou se você testa antes de responder.",
+    "(Para consulta: D-017; resolvida junto com D-543.)"
+   ],
+   "id": "au-d-017",
+   "opcoes": [
+    {
+     "id": "certo",
+     "nome": "Está certo assim",
+     "texto": "Fica como está hoje na versão de teste."
+    },
+    {
+     "id": "mudar",
+     "nome": "Quero mudar: pôr na lista de fazer",
+     "texto": "Escreva no comentário o que quer diferente; entra na fila de trabalho."
+    },
+    {
+     "id": "testar",
+     "nome": "Vou testar antes de responder",
+     "texto": "Fica marcada para você testar pelo atalho da versão de teste."
+    }
+   ],
+   "titulo": "Aumentar o conteúdo além da beirada não corta nada escondido: a parte de fora fica marcada e a página ganha aviso"
+  },
+  {
+   "exemplos": [
+    {
+     "legenda": "O que você viu em 13/10 na pergunta a página cheia e a pequena do mesmo livro, como vieram do scanner.",
+     "src": "/_blob/be19206c9492e4ee71c1f6914adfda9b"
+    }
+   ],
+   "explicacao": [
+    "Onde fica: Mover e redimensionar. O que é: Como fica a decisão de 13/10 no programa: o aviso \"Parte do impresso fica de fora\" aparece quando 0,05% ou mais do que está IMPRESSO sai da área branca (o papel em branco da margem saindo não avisa). Peça colada na beirada da página não conta (ressalva: a letra que já vinha cortada na beirada também não). A mesma conta em três lugares: a ferramenta Mover (ao mexer), a conferência por trás depois do \"usar em todas...\" e o PDF. A parte de fora aparece na ferramenta Mover apagada, puxada para o vermelho e com listras; uma frase vermelha no painel. Botões do aviso: \"ver no Mover\" (leva à ferramenta) e \"está bom assim\". Nada é diminuído sozinho.",
+    "De onde veio: ninguém perguntou a você. A gerente escolheu sozinha em 27/10, durante a rodada de consertos. Ela se apoiou em: a decisão de 13/10 (\"Avisar e não reduzir - avisar para eu reduzir manualmente\")",
+    "Como está hoje (versão de teste): Parte de fora em vermelho e aviso; nada é diminuído. Na auditoria de 29/10: funciona com ressalva. O que ainda não está bom: Cabeçalho rente à beirada avisa em qualquer mover para cima.",
+    "Você ainda não testou isto depois da auditoria de 29/10 (não há teste seu no Livro de decisões).",
+    "O que você escolhe: se fica como está, se entra na lista de fazer (escreva no comentário o que quer diferente) ou se você testa antes de responder.",
+    "(Para consulta: D-543; resolvida junto com D-017.)"
+   ],
+   "id": "au-d-543",
+   "opcoes": [
+    {
+     "id": "certo",
+     "nome": "Está certo assim",
+     "texto": "Fica como está hoje na versão de teste."
+    },
+    {
+     "id": "mudar",
+     "nome": "Quero mudar: pôr na lista de fazer",
+     "texto": "Escreva no comentário o que quer diferente; entra na fila de trabalho."
+    },
+    {
+     "id": "testar",
+     "nome": "Vou testar antes de responder",
+     "texto": "Fica marcada para você testar pelo atalho da versão de teste."
+    }
+   ],
+   "titulo": "Quando aparece o aviso \"Parte do impresso fica de fora\" (ferramenta Mover)"
+  },
+  {
+   "exemplos": [
+    {
+     "legenda": "O que você viu em 22/10 no quadro lu-barra (livro aberto): depois de 3 voltinhas da roda, o livro passou de par em par.",
+     "src": "lyupdf/img/lu-roda.jpg"
+    }
+   ],
+   "explicacao": [
+    "Onde fica: Uma página / Duas lado a lado e o zoom. O que é: Roda do mouse: sem zoom troca de página; com zoom anda pela página; Ctrl + roda dá zoom. Vale contra o \"a roda sempre dá zoom\" da decisão de 24/09.",
+    "O que você pediu (27/10/2026): Central \"Como ficou: sem zoom troca de página; Ctrl + roda dá zoom\"",
+    "Como está hoje (versão de teste): Com zoom a roda anda pela página (Shift para os lados). Na auditoria de 29/10: funciona com ressalva. O que ainda não está bom: Roda do mouse de verdade não provada.",
+    "Já testado por você: Você testou o zoom junto com a roda: em 01/11, Ctrl + roda (\"1- funcionando\"); em 02/11, Shift + roda (\"shift funcionando\"). A roda sem Ctrl (trocar de página) não foi testada sozinha.",
+    "O que você escolhe: se fica como está, se entra na lista de fazer (escreva no comentário o que quer diferente) ou se você testa antes de responder.",
+    "(Para consulta: D-568.)"
+   ],
+   "id": "au-d-568",
+   "opcoes": [
+    {
+     "id": "certo",
+     "nome": "Está certo assim",
+     "texto": "Fica como está hoje na versão de teste."
+    },
+    {
+     "id": "mudar",
+     "nome": "Quero mudar: pôr na lista de fazer",
+     "texto": "Escreva no comentário o que quer diferente; entra na fila de trabalho."
+    },
+    {
+     "id": "testar",
+     "nome": "Vou testar antes de responder",
+     "texto": "Fica marcada para você testar pelo atalho da versão de teste."
+    }
+   ],
+   "titulo": "Roda do mouse: sem zoom troca de página; com zoom anda pela página; Ctrl + roda dá zoom"
+  },
+  {
+   "exemplos": [
+    {
+     "legenda": "O que você viu em 21/10 no quadro a letra mais grossa na tela cheia que no PDF (vermelho = só na tela, azul = só no PDF).",
+     "src": "lyupdf/img/lu-tc-igual-zoom.jpg"
+    }
+   ],
+   "explicacao": [
+    "Onde fica: Tela igual ao PDF. O que é: A tela mostra a página igual ao PDF, já na rodada de consertos (não só na fase de velocidade).",
+    "O que você pediu (23/10/2026): \"precisamos que o pdf saia que nem está na tela\"",
+    "Como está hoje (versão de teste): A tela troca pela imagem do PDF quando ela fica pronta. Na auditoria de 29/10: funciona com ressalva. O que ainda não está bom: Não em toda página; a tela cheia dos filtros não troca.",
+    "Você ainda não testou isto depois da auditoria de 29/10 (não há teste seu no Livro de decisões).",
+    "O que você escolhe: se fica como está, se entra na lista de fazer (escreva no comentário o que quer diferente) ou se você testa antes de responder.",
+    "(Para consulta: D-066; resolvida junto com D-473.)"
+   ],
+   "id": "au-d-066",
+   "opcoes": [
+    {
+     "id": "certo",
+     "nome": "Está certo assim",
+     "texto": "Fica como está hoje na versão de teste."
+    },
+    {
+     "id": "mudar",
+     "nome": "Quero mudar: pôr na lista de fazer",
+     "texto": "Escreva no comentário o que quer diferente; entra na fila de trabalho."
+    },
+    {
+     "id": "testar",
+     "nome": "Vou testar antes de responder",
+     "texto": "Fica marcada para você testar pelo atalho da versão de teste."
+    }
+   ],
+   "titulo": "Tela e PDF iguais, já na rodada de consertos (não só na fase de velocidade)"
+  },
+  {
+   "exemplos": [
+    {
+     "legenda": "O que você viu em 21/10 no quadro a letra mais grossa na tela cheia que no PDF (vermelho = só na tela, azul = só no PDF).",
+     "src": "lyupdf/img/lu-tc-igual-zoom.jpg"
+    }
+   ],
+   "explicacao": [
+    "Onde fica: Tela igual ao PDF. O que é: A tela cheia e a prévia do painel mostram a letra com a mesma grossura do PDF, nos 10 jeitos do ScanTailor.",
+    "O que você pediu (22/10/2026): lu-tc-igual \"Melhorar\": \"O pdf está saindo diferente da tela gerada, na tela gerada a letra está mais grossa, isso é um perigo, porque pode parecer que se quer a letra mais grossa e ter ela mais fina, ou vice e versa e ainda pode acontecer em outras situações.\" · 23/10, \"ok, então deixe isso anotado, precisamos que o pdf saia que nem está na tela.\"",
+    "Como está hoje (versão de teste): A conta da tela cheia é feita no tamanho do PDF; o T do Antiphonal não some mais. Na auditoria de 29/10: funciona com ressalva. O que ainda não está bom: Tela cheia 4 a 9% mais fina que o PDF.",
+    "Você ainda não testou isto depois da auditoria de 29/10 (não há teste seu no Livro de decisões).",
+    "O que você escolhe: se fica como está, se entra na lista de fazer (escreva no comentário o que quer diferente) ou se você testa antes de responder.",
+    "(Para consulta: D-193; resolvida junto com D-327.)"
+   ],
+   "id": "au-d-193",
+   "opcoes": [
+    {
+     "id": "certo",
+     "nome": "Está certo assim",
+     "texto": "Fica como está hoje na versão de teste."
+    },
+    {
+     "id": "mudar",
+     "nome": "Quero mudar: pôr na lista de fazer",
+     "texto": "Escreva no comentário o que quer diferente; entra na fila de trabalho."
+    },
+    {
+     "id": "testar",
+     "nome": "Vou testar antes de responder",
+     "texto": "Fica marcada para você testar pelo atalho da versão de teste."
+    }
+   ],
+   "titulo": "A tela cheia e a prévia do painel mostram a letra com a mesma grossura do PDF, nos 10 jeitos do ScanTailor"
+  },
+  {
+   "exemplos": [
+    {
+     "legenda": "O que você viu em 21/10 no quadro a letra mais grossa na tela cheia que no PDF (vermelho = só na tela, azul = só no PDF).",
+     "src": "lyupdf/img/lu-tc-igual-zoom.jpg"
+    },
+    {
+     "legenda": "O que você viu em 21/10 na pergunta o Antiphonal 46 com a letra T na tela e sem ela no PDF que saiu.",
+     "src": "conf/img/tela-engana-1-comparacao.jpg"
+    }
+   ],
+   "explicacao": [
+    "Onde fica: Tela igual ao PDF. O que é: A tela mostra a página igual ao PDF (letra, margens, desentortar).",
+    "O que você pediu (21/10/2026): \"O pdf está saindo diferente da tela gerada, na tela gerada a letra está mais grossa, isso é um perigo [...]\" · \"precisamos que o pdf saia que nem está na tela.\" · \"B — como o ScanTailor, a tela igual ao PDF\"",
+    "Como está hoje (versão de teste): A conta da tela cheia é feita no tamanho do PDF; o T do Antiphonal não some mais. Na auditoria de 29/10: funciona com ressalva. O que ainda não está bom: Tela cheia 4 a 9% mais fina que o PDF.",
+    "Você ainda não testou isto depois da auditoria de 29/10 (não há teste seu no Livro de decisões).",
+    "O que você escolhe: se fica como está, se entra na lista de fazer (escreva no comentário o que quer diferente) ou se você testa antes de responder.",
+    "(Para consulta: D-327; resolvida junto com D-193.)"
+   ],
+   "id": "au-d-327",
+   "opcoes": [
+    {
+     "id": "certo",
+     "nome": "Está certo assim",
+     "texto": "Fica como está hoje na versão de teste."
+    },
+    {
+     "id": "mudar",
+     "nome": "Quero mudar: pôr na lista de fazer",
+     "texto": "Escreva no comentário o que quer diferente; entra na fila de trabalho."
+    },
+    {
+     "id": "testar",
+     "nome": "Vou testar antes de responder",
+     "texto": "Fica marcada para você testar pelo atalho da versão de teste."
+    }
+   ],
+   "titulo": "A tela mostra a página igual ao PDF (letra, margens, desentortar)"
+  },
+  {
+   "exemplos": [
+    {
+     "legenda": "O que você viu em 21/10 no quadro a letra mais grossa na tela cheia que no PDF (vermelho = só na tela, azul = só no PDF).",
+     "src": "lyupdf/img/lu-tc-igual-zoom.jpg"
+    },
+    {
+     "legenda": "O que você viu em 21/10 na pergunta o Antiphonal 46 com a letra T na tela e sem ela no PDF que saiu.",
+     "src": "conf/img/tela-engana-1-comparacao.jpg"
+    }
+   ],
+   "explicacao": [
+    "Onde fica: Tela igual ao PDF. O que é: Tela e PDF saem da mesma conta. Quando a página fica pronta, a tela mostra a mesma imagem que vai para o PDF (só reduzida); enquanto não fica, mostra a prévia com a bolinha de carregamento. Tela e PDF diferentes é defeito, nunca escolha: o PDF tem de sair como a tela que ele aprovou. Responde a pergunta 1 (a decisão de 22/10 × a decisão de 23/10 × \"a tela decide, o PDF obedece\").",
+    "De onde veio: ninguém perguntou a você. A gerente escolheu sozinha em 26/10, durante a rodada de consertos. Ela se apoiou em: mais recente, a decisão de 23/10: \"precisamos que o pdf saia que nem está na tela\"; e a decisão de 22/10.",
+    "Como está hoje (versão de teste): A tela troca pela imagem do PDF quando ela fica pronta. Na auditoria de 29/10: funciona com ressalva. O que ainda não está bom: Não em toda página; a tela cheia dos filtros não troca.",
+    "Você ainda não testou isto depois da auditoria de 29/10 (não há teste seu no Livro de decisões).",
+    "O que você escolhe: se fica como está, se entra na lista de fazer (escreva no comentário o que quer diferente) ou se você testa antes de responder.",
+    "(Para consulta: D-473; resolvida junto com D-066.)"
+   ],
+   "id": "au-d-473",
+   "opcoes": [
+    {
+     "id": "certo",
+     "nome": "Está certo assim",
+     "texto": "Fica como está hoje na versão de teste."
+    },
+    {
+     "id": "mudar",
+     "nome": "Quero mudar: pôr na lista de fazer",
+     "texto": "Escreva no comentário o que quer diferente; entra na fila de trabalho."
+    },
+    {
+     "id": "testar",
+     "nome": "Vou testar antes de responder",
+     "texto": "Fica marcada para você testar pelo atalho da versão de teste."
+    }
+   ],
+   "titulo": "Tela e PDF saem da mesma conta"
+  },
+  {
+   "exemplos": [
+    {
+     "legenda": "O que você viu em 21/10 na pergunta os três números do Camões que não batiam (39, 75 e 106).",
+     "src": "conf/img/contagens-1-lado-a-lado.jpg"
+    }
+   ],
+   "explicacao": [
+    "Onde fica: \"está certo\" e o número de dúvidas. O que é: Os números batem: painel, \"Antes de processar\" e janela de salvar contam as páginas com aviso pendente (hoje no Camões: 39 × 75 × 106).",
+    "O que você pediu (21/10/2026): \"A janela de salvar passa a contar as páginas com aviso pendente\"",
+    "Como está hoje (versão de teste): Um número só de dúvidas em todo lugar. Na auditoria de 29/10: funciona com ressalva. O que ainda não está bom: O número que muda ao folhear não foi feito.",
+    "Você ainda não testou isto depois da auditoria de 29/10 (não há teste seu no Livro de decisões).",
+    "O que você escolhe: se fica como está, se entra na lista de fazer (escreva no comentário o que quer diferente) ou se você testa antes de responder.",
+    "(Para consulta: D-285.)"
+   ],
+   "id": "au-d-285",
+   "opcoes": [
+    {
+     "id": "certo",
+     "nome": "Está certo assim",
+     "texto": "Fica como está hoje na versão de teste."
+    },
+    {
+     "id": "mudar",
+     "nome": "Quero mudar: pôr na lista de fazer",
+     "texto": "Escreva no comentário o que quer diferente; entra na fila de trabalho."
+    },
+    {
+     "id": "testar",
+     "nome": "Vou testar antes de responder",
+     "texto": "Fica marcada para você testar pelo atalho da versão de teste."
+    }
+   ],
+   "titulo": "Os números batem: painel, \"Antes de processar\" e janela de salvar contam as páginas com aviso pendente (hoje no Camões: 39 × 75 × 106)"
+  },
+  {
+   "exemplos": [
+    {
+     "legenda": "Hoje (02/11, versão de teste): O registro no Livro de decisões: situação e dono (fica para depois / ainda não construída). Não há tela para mostrar.",
+     "src": "/_blob/02a5ba7f031b609cd3e15d421d620289"
+    }
+   ],
+   "explicacao": [
+    "Onde fica: \"está certo\" e o número de dúvidas. O que é: Livro com muitas páginas em branco (versos): um aviso só do livro em vez de um por página. \"Muitas\" = 40% ou mais das páginas: o número foi a gerente que pôs, porque você não disse.",
+    "O que você pediu (27/10/2026): Central, \"Juntar num aviso só do livro quando forem muitas\"",
+    "Como está hoje (versão de teste): A conta está pronta, mas desligada. Na auditoria de 29/10: funciona com ressalva. O que ainda não está bom: Espera você dizer o número (40%?)",
+    "Você ainda não testou isto depois da auditoria de 29/10 (não há teste seu no Livro de decisões).",
+    "O que você escolhe: se fica como está, se entra na lista de fazer (escreva no comentário o que quer diferente) ou se você testa antes de responder.",
+    "(Para consulta: D-522.)"
+   ],
+   "id": "au-d-522",
+   "opcoes": [
+    {
+     "id": "certo",
+     "nome": "Está certo assim",
+     "texto": "Fica como está hoje na versão de teste."
+    },
+    {
+     "id": "mudar",
+     "nome": "Quero mudar: pôr na lista de fazer",
+     "texto": "Escreva no comentário o que quer diferente; entra na fila de trabalho."
+    },
+    {
+     "id": "testar",
+     "nome": "Vou testar antes de responder",
+     "texto": "Fica marcada para você testar pelo atalho da versão de teste."
+    }
+   ],
+   "titulo": "Livro com muitas páginas em branco (versos): um aviso só do livro em vez de um por página"
+  },
+  {
+   "exemplos": [
+    {
+     "legenda": "Hoje (02/11, versão de teste): Filtro Preto e branco: o medidor 'Força do preto' (mais fraco a mais escuro, 50 no meio, hoje 'normal'), e a página já em preto e branco ao lado (contorno vermelho no valor).",
+     "src": "/_blob/25ebf0bc71ec2100d809cc2426c75689"
+    }
+   ],
+   "explicacao": [
+    "Onde fica: Filtros e imagem final: o que foi consertado. O que é: Um medidor por filtro, 0 a 100 com 50 no meio, e a prévia muda na hora.",
+    "O que você pediu (18/07/2026): \"PRETO E BRANCO → slider \"Força do preto\", 0 a 100, padrão 50 [...] MÁGICO PRO → slider \"Intensidade\" [...] MELHORAR → slider \"Clareza do fundo\" [...] Ao arrastar o slider a prévia atualiza em tempo real.\"",
+    "Como está hoje (versão de teste): O aviso da força do preto só na página de Preto e branco; a rodinha não muda número sem clique. Na auditoria de 29/10: funciona com ressalva. O que ainda não está bom: \"deslizante que volta a 50\" (02/10) sem conserto registrado.",
+    "Você ainda não testou isto depois da auditoria de 29/10 (não há teste seu no Livro de decisões).",
+    "O que você escolhe: se fica como está, se entra na lista de fazer (escreva no comentário o que quer diferente) ou se você testa antes de responder.",
+    "(Para consulta: D-114.)"
+   ],
+   "id": "au-d-114",
+   "opcoes": [
+    {
+     "id": "certo",
+     "nome": "Está certo assim",
+     "texto": "Fica como está hoje na versão de teste."
+    },
+    {
+     "id": "mudar",
+     "nome": "Quero mudar: pôr na lista de fazer",
+     "texto": "Escreva no comentário o que quer diferente; entra na fila de trabalho."
+    },
+    {
+     "id": "testar",
+     "nome": "Vou testar antes de responder",
+     "texto": "Fica marcada para você testar pelo atalho da versão de teste."
+    }
+   ],
+   "titulo": "Um medidor por filtro, 0 a 100 com 50 no meio, e a prévia muda na hora"
+  },
+  {
+   "exemplos": [
+    {
+     "legenda": "O que você viu em 22/10 (fr-218 e fr-218-aviso): Marial 7, o retângulo de \"Pintar por cima\" cobrindo o começo das linhas, que somem.",
+     "src": "fr22/img/218_marial_p007_mancha.jpg"
+    }
+   ],
+   "explicacao": [
+    "Onde fica: Marcar e desfazer. O que é: Quando o retângulo de \"Pintar por cima\" cobre letras, aviso com \"Pintar assim mesmo\" e \"Voltar\"; nada é pintado sem confirmar.",
+    "O que você pediu (22/10/2026): \"A — Avisar (recomendo)\" · no chat: \"1- sim\"",
+    "Como está hoje (versão de teste): O retângulo pergunta \"Pintar assim mesmo\" / \"Voltar\". Na auditoria de 29/10: funciona com ressalva. O que ainda não está bom: Oval, laço e pincel não perguntam.",
+    "Você ainda não testou isto depois da auditoria de 29/10 (não há teste seu no Livro de decisões).",
+    "O que você escolhe: se fica como está, se entra na lista de fazer (escreva no comentário o que quer diferente) ou se você testa antes de responder.",
+    "(Para consulta: D-250.)"
+   ],
+   "id": "au-d-250",
+   "opcoes": [
+    {
+     "id": "certo",
+     "nome": "Está certo assim",
+     "texto": "Fica como está hoje na versão de teste."
+    },
+    {
+     "id": "mudar",
+     "nome": "Quero mudar: pôr na lista de fazer",
+     "texto": "Escreva no comentário o que quer diferente; entra na fila de trabalho."
+    },
+    {
+     "id": "testar",
+     "nome": "Vou testar antes de responder",
+     "texto": "Fica marcada para você testar pelo atalho da versão de teste."
+    }
+   ],
+   "titulo": "Quando o retângulo de \"Pintar por cima\" cobre letras, aviso com \"Pintar assim mesmo\" e \"Voltar\"; nada é pintado sem confirmar"
+  },
+  {
+   "explicacao": [
+    "Onde fica: Processar e salvar o PDF. O que é: Gerar o mesmo livro de novo não trava; o cartão só diz \"PDF gerado\" depois de gravar.",
+    "O que você pediu (05/10/2026): \"pode mandar concertar, mas continue com a fase 2 em paralelo\"",
+    "Como está hoje (versão de teste): O cartão deixa de dizer pronto quando o trabalho muda. Na auditoria de 29/10: funciona com ressalva. O que ainda não está bom: Sem texto de \"desatualizado\" (pergunta aberta)",
+    "Você ainda não testou isto depois da auditoria de 29/10 (não há teste seu no Livro de decisões).",
+    "O que você escolhe: se fica como está, se entra na lista de fazer (escreva no comentário o que quer diferente) ou se você testa antes de responder.",
+    "(Para consulta: D-309.)"
+   ],
+   "id": "au-d-309",
+   "opcoes": [
+    {
+     "id": "certo",
+     "nome": "Está certo assim",
+     "texto": "Fica como está hoje na versão de teste."
+    },
+    {
+     "id": "mudar",
+     "nome": "Quero mudar: pôr na lista de fazer",
+     "texto": "Escreva no comentário o que quer diferente; entra na fila de trabalho."
+    },
+    {
+     "id": "testar",
+     "nome": "Vou testar antes de responder",
+     "texto": "Fica marcada para você testar pelo atalho da versão de teste."
+    }
+   ],
+   "titulo": "Gerar o mesmo livro de novo não trava; o cartão só diz \"PDF gerado\" depois de gravar"
+  },
+  {
+   "exemplos": [
+    {
+     "legenda": "O print que você mandou em 22/10: a janela \"Montar para imprimir\" com o texto do resultado espremido.",
+     "src": "/_blob/a274fdeaf958bf5daa0eaea38a05ff88"
+    },
+    {
+     "legenda": "O que você viu em 22/10 no quadro a janela \"Montar para imprimir\".",
+     "src": "fr22/img/janela_26_montar_para_imprimir.jpg"
+    }
+   ],
+   "explicacao": [
+    "Onde fica: Montar para imprimir e imprimir. O que é: Janela \"Montar para imprimir\" refeita: organizada, o texto do resultado separado das opções.",
+    "O que você pediu (22/10/2026): \"Está bom\" + \"Só tem que melhorar esse layout, cheio de letras uma em cima da outra, tudo bagunçado e dificil de saber o que é o que.\" · \"2- mandei o print.\"",
+    "Como está hoje (versão de teste): Duas colunas, nada por cima; nomes de antes de volta. Na auditoria de 29/10: funciona com ressalva. O que ainda não está bom: \"todas até todas\" redundante.",
+    "Você ainda não testou isto depois da auditoria de 29/10 (não há teste seu no Livro de decisões).",
+    "O que você escolhe: se fica como está, se entra na lista de fazer (escreva no comentário o que quer diferente) ou se você testa antes de responder.",
+    "(Para consulta: D-333.)"
+   ],
+   "id": "au-d-333",
+   "opcoes": [
+    {
+     "id": "certo",
+     "nome": "Está certo assim",
+     "texto": "Fica como está hoje na versão de teste."
+    },
+    {
+     "id": "mudar",
+     "nome": "Quero mudar: pôr na lista de fazer",
+     "texto": "Escreva no comentário o que quer diferente; entra na fila de trabalho."
+    },
+    {
+     "id": "testar",
+     "nome": "Vou testar antes de responder",
+     "texto": "Fica marcada para você testar pelo atalho da versão de teste."
+    }
+   ],
+   "titulo": "Janela \"Montar para imprimir\" refeita: organizada, o texto do resultado separado das opções"
+  },
+  {
+   "exemplos": [
+    {
+     "legenda": "Hoje (02/11, versão de teste): A janela inteira do programa (1280 x 657, a tela do Kaique), versão de teste atual, com um livro aberto. Todos os textos estão com acento.",
+     "src": "/_blob/3eeab8e2d7808c6b6a56c8a81e526940"
+    }
+   ],
+   "explicacao": [
+    "Onde fica: Nomes e textos. O que é: Todo texto da tela com acento certo.",
+    "O que você pediu (18/07/2026): \"3. ACENTOS (já pedi duas vezes e continua errado) [...] Corrija TODOS os textos da interface para português correto\"",
+    "Como está hoje (versão de teste): Acentos e plurais achados foram consertados. Na auditoria de 29/10: funciona com ressalva. O que ainda não está bom: A varredura da tela toda é da revisão de nomes.",
+    "Você ainda não testou isto depois da auditoria de 29/10 (não há teste seu no Livro de decisões).",
+    "O que você escolhe: se fica como está, se entra na lista de fazer (escreva no comentário o que quer diferente) ou se você testa antes de responder.",
+    "(Para consulta: D-365.)"
+   ],
+   "id": "au-d-365",
+   "opcoes": [
+    {
+     "id": "certo",
+     "nome": "Está certo assim",
+     "texto": "Fica como está hoje na versão de teste."
+    },
+    {
+     "id": "mudar",
+     "nome": "Quero mudar: pôr na lista de fazer",
+     "texto": "Escreva no comentário o que quer diferente; entra na fila de trabalho."
+    },
+    {
+     "id": "testar",
+     "nome": "Vou testar antes de responder",
+     "texto": "Fica marcada para você testar pelo atalho da versão de teste."
+    }
+   ],
+   "titulo": "Todo texto da tela com acento certo"
+  },
+  {
+   "exemplos": [
+    {
+     "legenda": "O que você escolheu em 20/10 (layout, rodada 14): \"o do Editor\" no Dividir.",
+     "src": "/_blob/797443e5f4f7bad384c6fb1946d0296d"
+    },
+    {
+     "legenda": "O que você viu em 21/10 no quadro o Dividir com \"jeito: o do Editor\".",
+     "src": "conf/img/c-dividir.jpg"
+    }
+   ],
+   "explicacao": [
+    "Onde fica: Nomes e textos. O que é: No Dividir, \"o do programa\" vira \"o do Editor\" (lista \"jeito:\", \"Para o livro todo\" e \"O que fazer\").",
+    "O que você pediu (20/10/2026): \"B — “o do Editor”\" · 21/10 \"Está bom\"",
+    "Como está hoje (versão de teste): \"o do Editor\" no núcleo e no resumo do livro. Na auditoria de 29/10: funciona com ressalva. O que ainda não está bom: Na tela, parte espera a revisão de nomes.",
+    "Já testado por você: Você testou a ferramenta Dividir em 10/11 (\"ok\"), com esses nomes na lista; o nome em si não foi perguntado de novo.",
+    "O que você escolhe: se fica como está, se entra na lista de fazer (escreva no comentário o que quer diferente) ou se você testa antes de responder.",
+    "(Para consulta: D-373; resolvida junto com D-479.)"
+   ],
+   "id": "au-d-373",
+   "opcoes": [
+    {
+     "id": "certo",
+     "nome": "Está certo assim",
+     "texto": "Fica como está hoje na versão de teste."
+    },
+    {
+     "id": "mudar",
+     "nome": "Quero mudar: pôr na lista de fazer",
+     "texto": "Escreva no comentário o que quer diferente; entra na fila de trabalho."
+    },
+    {
+     "id": "testar",
+     "nome": "Vou testar antes de responder",
+     "texto": "Fica marcada para você testar pelo atalho da versão de teste."
+    }
+   ],
+   "titulo": "No Dividir, \"o do programa\" vira \"o do Editor\" (lista \"jeito:\", \"Para o livro todo\" e \"O que fazer\")"
+  },
+  {
+   "exemplos": [
+    {
+     "legenda": "O que você viu em 21/10 no quadro o Dividir com \"jeito: o do Editor\".",
+     "src": "conf/img/c-dividir.jpg"
+    },
+    {
+     "legenda": "Do mesmo quadro (21/10): o Endireitar com \"ScanTailor +0,2° · Editor +0,3°\".",
+     "src": "conf/img/c-endireitar-conta.jpg"
+    }
+   ],
+   "explicacao": [
+    "Onde fica: Nomes e textos. O que é: \"o do Editor\" / \"a do Editor\" em todo lugar onde aparece o jeito ou a conta do próprio programa: painel Automático, Histórico, Propriedades e a frase de resumo que ainda dizia \"o do programa\".",
+    "De onde veio: ninguém perguntou a você. A gerente escolheu sozinha em 26/10, durante a rodada de consertos. Ela se apoiou em: 907 (20/10): \"B — “o do Editor”\" e ly-editor \"Está bom\" (21/10)",
+    "Como está hoje (versão de teste): \"o do Editor\" no núcleo e no resumo do livro. Na auditoria de 29/10: funciona com ressalva. O que ainda não está bom: Na tela, parte espera a revisão de nomes.",
+    "Você ainda não testou isto depois da auditoria de 29/10 (não há teste seu no Livro de decisões).",
+    "O que você escolhe: se fica como está, se entra na lista de fazer (escreva no comentário o que quer diferente) ou se você testa antes de responder.",
+    "(Para consulta: D-479; resolvida junto com D-373.)"
+   ],
+   "id": "au-d-479",
+   "opcoes": [
+    {
+     "id": "certo",
+     "nome": "Está certo assim",
+     "texto": "Fica como está hoje na versão de teste."
+    },
+    {
+     "id": "mudar",
+     "nome": "Quero mudar: pôr na lista de fazer",
+     "texto": "Escreva no comentário o que quer diferente; entra na fila de trabalho."
+    },
+    {
+     "id": "testar",
+     "nome": "Vou testar antes de responder",
+     "texto": "Fica marcada para você testar pelo atalho da versão de teste."
+    }
+   ],
+   "titulo": "\"o do Editor\" / \"a do Editor\" em todo lugar onde aparece a conta do próprio programa"
+  },
+  {
+   "exemplos": [
+    {
+     "legenda": "Hoje (02/11, versão de teste): O arquivo de promessas escrito (cada botão com o que tem de fazer) e como o teste confere. Prova de que a regra a decisão de 26/10 existe na versão de teste.",
+     "src": "/_blob/2acd8a6cbd752b1014fb5c9e019e554d"
+    },
+    {
+     "legenda": "Hoje (02/11, versão de teste): A regra a decisão de 26/10 no Livro de decisões, com as palavras dele.",
+     "src": "/_blob/36c43a7d7a8aa15f8b0fb21f970cba05"
+    }
+   ],
+   "explicacao": [
+    "Onde fica: Provas automáticas e a forma de trabalhar. O que é: Cada botão tem uma promessa escrita; o teste confere a promessa na tela, no projeto e no PDF.",
+    "O que você pediu (26/10/2026): \"eu acho que o botão tem que ser provado que ele faz o que se diz que se faz, e não só se ele muda algo na tela.\"",
+    "Como está hoje (versão de teste): Promessas escritas por botão, com prova na tela, no projeto e no PDF. Na auditoria de 29/10: funciona com ressalva. O que ainda não está bom: Em 28/10 259 de 260 cumpriram; a varredura \"todo botão tem promessa\" falhou esperando 30 s a página de marcar.",
+    "Você ainda não testou isto depois da auditoria de 29/10 (não há teste seu no Livro de decisões).",
+    "O que você escolhe: se fica como está, se entra na lista de fazer (escreva no comentário o que quer diferente) ou se você testa antes de responder.",
+    "(Para consulta: D-010.)"
+   ],
+   "id": "au-d-010",
+   "opcoes": [
+    {
+     "id": "certo",
+     "nome": "Está certo assim",
+     "texto": "Fica como está hoje na versão de teste."
+    },
+    {
+     "id": "mudar",
+     "nome": "Quero mudar: pôr na lista de fazer",
+     "texto": "Escreva no comentário o que quer diferente; entra na fila de trabalho."
+    },
+    {
+     "id": "testar",
+     "nome": "Vou testar antes de responder",
+     "texto": "Fica marcada para você testar pelo atalho da versão de teste."
+    }
+   ],
+   "titulo": "Cada botão tem uma promessa escrita; o teste confere a promessa na tela, no projeto e no PDF"
+  },
+  {
+   "exemplos": [
+    {
+     "legenda": "Hoje (02/11, versão de teste): A bateria a decisão de 26/10 no Livro de decisões.",
+     "src": "/_blob/b06d053dca0107ad9087139bb5f8d375"
+    }
+   ],
+   "explicacao": [
+    "Onde fica: Provas automáticas e a forma de trabalhar. O que é: Ver Registro de mudanças, 26/10/2026.",
+    "O que você pediu (26/10/2026): \"Sim\" (nova bateria de testes: teste do Kaique, tarefas, decisões, promessas, conferência em caminho)",
+    "Como está hoje (versão de teste): Decisões e promessas feitas. Na auditoria de 29/10: funciona com ressalva. O que ainda não está bom: Faltam o teste do Kaique de novo e o verificador contra o Livro.",
+    "Você ainda não testou isto depois da auditoria de 29/10 (não há teste seu no Livro de decisões).",
+    "O que você escolhe: se fica como está, se entra na lista de fazer (escreva no comentário o que quer diferente) ou se você testa antes de responder.",
+    "(Para consulta: D-011.)"
+   ],
+   "id": "au-d-011",
+   "opcoes": [
+    {
+     "id": "certo",
+     "nome": "Está certo assim",
+     "texto": "Fica como está hoje na versão de teste."
+    },
+    {
+     "id": "mudar",
+     "nome": "Quero mudar: pôr na lista de fazer",
+     "texto": "Escreva no comentário o que quer diferente; entra na fila de trabalho."
+    },
+    {
+     "id": "testar",
+     "nome": "Vou testar antes de responder",
+     "texto": "Fica marcada para você testar pelo atalho da versão de teste."
+    }
+   ],
+   "titulo": "Bateria nova de provas: teste do Kaique, tarefas, decisões, promessas e conferência em caminho"
+  },
+  {
+   "exemplos": [
+    {
+     "legenda": "Hoje (02/11, versão de teste): O CLAUDE.md, seção 11, regra 7 ('só o que ele mandou'): está escrita e vale para todos os agentes hoje.",
+     "src": "/_blob/9d3fe8d720c22479d218263ca3a11905"
+    },
+    {
+     "legenda": "Hoje (02/11, versão de teste): A a decisão de 27/10 no Livro de decisões.",
+     "src": "/_blob/47f686c5039ed78c690a19c0580bb908"
+    }
+   ],
+   "explicacao": [
+    "Onde fica: Provas automáticas e a forma de trabalhar. O que é: Só o que você mandou: por isso o limite de resolução foi cancelado e o PDF voltou a sair sem perda, como você decidiu (\"o tamanho do arquivo depois não importa\"); o \"PDF gigante\" era achado de agente, não pedido seu. As escolhas da gerente que acrescentam ou mudam algo voltam a você como pergunta.",
+    "O que você pediu (27/10/2026): \"os agentes estão mudando coisas que eu já tinha definido, é só para fazer o que eu já tinha mandado, fazer as ferramentas que colocamos no programa funcionem como deveriam e como eu tinha escolhido.\" + pergunta \"vai diminuir a qualidade do pdf ?\"",
+    "Como está hoje (versão de teste): Auditoria das escolhas: o PDF com perda desfeito, os nomes do \"Montar para imprimir\" de volta, os quatro jeitos do lado direito feitos. Na auditoria de 29/10: funciona com ressalva. O que ainda não está bom: 13 perguntas da aba \"acrescentei\" e 20 de nomes sem resposta.",
+    "Você ainda não testou isto depois da auditoria de 29/10 (não há teste seu no Livro de decisões).",
+    "O que você escolhe: se fica como está, se entra na lista de fazer (escreva no comentário o que quer diferente) ou se você testa antes de responder.",
+    "(Para consulta: D-549.)"
+   ],
+   "id": "au-d-549",
+   "opcoes": [
+    {
+     "id": "certo",
+     "nome": "Está certo assim",
+     "texto": "Fica como está hoje na versão de teste."
+    },
+    {
+     "id": "mudar",
+     "nome": "Quero mudar: pôr na lista de fazer",
+     "texto": "Escreva no comentário o que quer diferente; entra na fila de trabalho."
+    },
+    {
+     "id": "testar",
+     "nome": "Vou testar antes de responder",
+     "texto": "Fica marcada para você testar pelo atalho da versão de teste."
+    }
+   ],
+   "titulo": "Só o que você mandou: os agentes não mudam o que você já decidiu"
+  }
+ ],
+ "quadros": [],
+ "resumo": {
+  "titulo": "Auditoria 3: funciona, mas com um senão (31 esperando você)",
+  "paragrafos": [
+   "Decisões suas que funcionam na versão de teste, mas com algo que ainda não está bom.",
+   "Cada quadro diz: onde fica e o que é; o que você pediu, com a data e as suas palavras; como está hoje; e se você já testou depois da auditoria de 29/10. As que você já testou e funcionam dizem \"Pode sair da lista\".",
+   "As imagens são as que já existiam (prints de quando o assunto foi decidido)."
+  ]
+ },
+ "trabalho": "Auditoria da versão de teste (rodada de consertos), uma decisão por quadro"
+}

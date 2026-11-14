@@ -1,0 +1,24 @@
+{
+  "comentario": "Eu quero saber porque aconteceu esse bugue, que regra o agente errou ou que boa pratica de programação o gerente errou, gostaria de entender melhor como os prompts tem sido feitos para os agentes pelo gerente, precisamos padronizar isso para quando formos fazer os pedidos, pois estamos fazendo muito retrabalho.",
+  "conversa": [
+    {
+      "em": "2026-11-09T19:31:24.509Z",
+      "quem": "samuel",
+      "texto": "Eu quero saber porque aconteceu esse bugue, que regra o agente errou ou que boa pratica de programação o gerente errou, gostaria de entender melhor como os prompts tem sido feitos para os agentes pelo gerente, precisamos padronizar isso para quando formos fazer os pedidos, pois estamos fazendo muito retrabalho."
+    },
+    {
+      "em": "2026-11-13T20:40:00Z",
+      "quem": "gerente",
+      "texto": "Anotado no Livro como D-685. Antes de consertar, vou achar qual agente fez essa janela e que regra faltou, e te mostro. Sobre os pedidos aos agentes: desde 10/11 todo pedido segue um modelo fixo (ler as regras do agente, o CLAUDE.md inteiro e o índice da memória, levar as suas decisões que tocam o trabalho, não abrir outros agentes e nunca abrir janela na sua tela). Vou te mostrar esse modelo numa página, para você conferir e mudar o que quiser."
+    }
+  ],
+  "em": "2026-11-09T19:31:24.509Z",
+  "gerente": "Anotado no Livro como D-685. Antes de consertar, vou achar qual agente fez essa janela e que regra faltou, e te mostro. Sobre os pedidos aos agentes: desde 10/11 todo pedido segue um modelo fixo (ler as regras do agente, o CLAUDE.md inteiro e o índice da memória, levar as suas decisões que tocam o trabalho, não abrir outros agentes e nunca abrir janela na sua tela). Vou te mostrar esse modelo numa página, para você conferir e mudar o que quiser.",
+  "gerenteEm": "2026-11-13T20:40:00Z",
+  "lida": true,
+  "opcao": "consertar",
+  "opcaoNome": "Consertar",
+  "reabrir": false,
+  "relatorio": "teste-kaique-lusiadas",
+  "volta": false
+}

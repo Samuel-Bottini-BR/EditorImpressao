@@ -1,0 +1,30 @@
+{
+  "comentario": "Mas tem que dar um aviso né, mas quando esse aviso vai aparecer, na hora de montar cadernos? pense nisso e me traga.",
+  "conversa": [
+    {
+      "em": "2026-11-09T19:51:54.618Z",
+      "quem": "samuel",
+      "texto": "Mas tem que dar um aviso né, mas quando esse aviso vai aparecer, na hora de montar cadernos? pense nisso e me traga."
+    },
+    {
+      "em": "2026-11-13T20:40:00Z",
+      "quem": "gerente",
+      "texto": "Anotado no Livro como D-693: fazer o botão. Sobre o aviso: o programa não sabe sozinho se os pares estão trocados, porque não lê o número impresso. Minha proposta: ao montar os cadernos, se o livro nunca foi conferido no \"Duas lado a lado\", o programa mostra os dois primeiros pares e pergunta \"As páginas da direita são as ímpares, como no livro?\", com o botão de acertar ali mesmo. Vou trazer isso como pergunta, com print."
+    },
+    {
+      "em": "2026-11-13T22:40:00Z",
+      "quem": "gerente",
+      "texto": "Anotado como D-693 (fazer o botão). Pus o print do problema de verdade (La vida eterna) e a proposta do aviso como pergunta nova, logo abaixo desta."
+    }
+  ],
+  "em": "2026-11-09T19:51:54.618Z",
+  "gerente": "Anotado como D-693 (fazer o botão). Pus o print do problema de verdade (La vida eterna) e a proposta do aviso como pergunta nova, logo abaixo desta.",
+  "gerenteEm": "2026-11-13T22:40:00Z",
+  "lida": true,
+  "opcao": "opcao",
+  "opcaoNome": "Fazer o botão de acertar os pares",
+  "reabrir": false,
+  "relatorio": "acrescentei-27-10",
+  "samuelViu": false,
+  "volta": false
+}

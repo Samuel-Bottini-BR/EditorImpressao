@@ -1,0 +1,23 @@
+{
+  "comentario": "",
+  "conversa": [
+    {
+      "em": "2026-11-13T19:00:00Z",
+      "quem": "samuel",
+      "texto": "No chat: \"pode mudar, mas porque antes, ele não procurar gravura e saia certo?\""
+    },
+    {
+      "em": "2026-11-13T22:30:00Z",
+      "quem": "gerente",
+      "texto": "Anotado como D-698, e as três provas já foram mudadas (o Original continua nelas). Antes da obra o programa procurava a gravura em toda página que mostrava; essas provas foram escritas em 09/11 e guardavam o jeito de depois da obra."
+    }
+  ],
+  "em": "2026-11-13T19:00:00Z",
+  "gerente": "Você respondeu no chat: \"pode mudar, mas porque antes, ele não procurar gravura e saia certo?\". Anotado como D-698, e as três provas já foram mudadas (o Original continua nelas). Resposta à pergunta: antes da obra o programa procurava a gravura em toda página que mostrava; essas provas foram escritas em 09/11 e guardavam o jeito de depois da obra.",
+  "gerenteEm": "2026-11-13T22:30:00Z",
+  "lida": true,
+  "opcao": "sim",
+  "opcaoNome": "Sim: as três provas deixam de cobrar o jeito velho no Melhorar e no Mágico pro (recomendo)",
+  "relatorio": "perg-quadrados-provas",
+  "samuelViu": false
+}

@@ -1,0 +1,42 @@
+{
+  "nome": "Quadrados brancos: o conserto C ficou pronto (10/11)",
+  "ordem": 75,
+  "origem": "Conserto C que você escolheu (D-668), agente quadrados-c-2026-11-10. Conferido pela gerente: as 17 provas novas passam; no código antigo, 12 falham. Relatório: .claude/worktrees/quadrados-c/relatorios/quadrados-c-2026-11-10/relatorio.html",
+  "perguntas": [
+    {
+      "exemplos": [
+        {
+          "legenda": "O seu print 10 (\"Respeitar\" desmarcada, Mágico pro): os buracos grandes somem (27,4% para 5,8%), mas o \"i\" fino continua quebrado.",
+          "src": "/_blob/cca35d7ba1bfb0bac1d6590428779103"
+        }
+      ],
+      "explicacao": [
+        "O conserto C está pronto (print: página 13 do Na escola de Jesus). A água da baleia sai inteira, sem quadrados, e o \"i\" de \"Vivia\" sai inteiro. No livro todo, as páginas com quadrados caíram de 110 para 2 no Melhorar e de 112 para 2 no Mágico pro, como antes da obra.",
+        "Três provas antigas, feitas na D-659 (09/11), garantem o jeito velho: \"Melhorar e Mágico pro escolhidos à mão NÃO procuram a gravura\". O conserto C faz exatamente o contrário, porque foi isso que você escolheu. Por isso essas três provas falham agora.",
+        "A regra diz que agente não muda prova antiga sem você. A sugestão é tirar dessas três provas só o Melhorar e o Mágico pro e deixar nelas o Original, que continua sem procurar. O jeito novo dos dois filtros já está guardado nas 17 provas novas.",
+        "Duas coisas para você saber, sem precisar responder: (1) a primeira vez que o Melhorar ou o Mágico pro roda numa página demora mais, uns 5 segundos a mais no Na escola de Jesus e 8 a 11 segundos nas páginas grandes do Livro de Horas; (2) com \"Respeitar as gravuras achadas\" DESMARCADA (o seu print 10), os buracos grandes somem, mas o \"i\" fino continua quebrado, como na simulação do C (segundo print).",
+        "Suas palavras no Livro: D-668 (10/11/2026): \"Roxo: o conserto C (recomendo)\" · chat: \"c\" · D-659 (09/11/2026), a procura da gravura no Preto e branco à mão · D-667 (10/11/2026): \"se mudou a ferramenta, muda em todos os lugares.\""
+      ],
+      "historico": [],
+      "id": "quadrados-provas-d659",
+      "opcoes": [
+        {
+          "id": "sim",
+          "nome": "Sim: as três provas deixam de cobrar o jeito velho no Melhorar e no Mágico pro (recomendo)",
+          "texto": "Elas continuam cobrando o Original. O conserto C entra na versão de teste para você testar."
+        },
+        {
+          "id": "nao",
+          "nome": "Não: quero ver antes",
+          "texto": "Escreva no comentário o que quer ver."
+        }
+      ],
+      "primeira_imagem": {
+        "legenda": "Na escola de Jesus, página 13, Melhorar à mão com \"Respeitar\" marcada, como sai no PDF. Azul: antes (quadrados na água, \"i\" quebrado). Verde: depois do conserto C.",
+        "src": "/_blob/6fe3544cc108a65fa448e6d99809cac6"
+      },
+      "sugestao": "Sugestão da gerente: Sim.",
+      "titulo": "Três provas antigas dizem que Melhorar e Mágico pro não procuram a gravura. Podem passar a dizer o que você escolheu no C?"
+    }
+  ]
+}

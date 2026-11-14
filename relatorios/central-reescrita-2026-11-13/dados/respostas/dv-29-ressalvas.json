@@ -1,0 +1,11 @@
+{
+  "comentario": "O que foi aprovado? os relatorios continuam muito ruins e dificeis de entender.",
+  "em": "2026-11-04T19:35:15.612Z",
+  "gerente": "Em 21/10 você aprovou a caixinha \"Letra clara em fundo escuro\". Ela serve para página com letra branca em fundo preto, como um slide. Você marca à mão, uma página por vez, e ela vem desligada. Ela está na versão de teste.\nSuas duas ressalvas viraram regra e pedido:\n1) não testar em lombada nem em capa (regra de 21/10);\n2) achar um jeito de virar letra preta em papel branco, para gastar menos tinta. Ainda não foi feito: é a pesquisa do ScanTailor da pergunta ao lado.\nSobre os relatórios: vou escrever mais curto, uma ideia por frase, com o print certo ao lado.",
+  "gerenteEm": "2026-11-05T02:50:50Z",
+  "lida": true,
+  "opcao": "nao-entendi",
+  "opcaoNome": "Ainda não entendi",
+  "relatorio": "duvidas",
+  "samuelViu": true
+}

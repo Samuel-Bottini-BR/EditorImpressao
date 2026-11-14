@@ -1,0 +1,539 @@
+## 2026-10-21 29-cartoes (?) img=False
+TÍTULO: 29-cartoes
+ELE: [ainda não entendi] está fazendo teste com pagina de lombada que nem iria ser impressa, e no caso é uma lombada de uma capa de livro.
+PERGUNTA: 
+
+## 2026-10-21 29 (?) img=False
+TÍTULO: 29
+ELE: aprovado, mas veja as minhas ressalvas para melhoramentos.
+PERGUNTA: 
+
+## 2026-10-21 dv-29-ressalvas (duvidas) img=True
+TÍTULO: Letra clara (2.9): "veja as minhas ressalvas para melhoramentos"
+ELE: aprovado, mas veja as minhas ressalvas para melhoramentos.
+PERGUNTA: Você respondeu em 21/10 ("Aprovado") com este comentário, que ficou sem resposta. A resposta está logo acima; as fotos mostram como está hoje na versão de teste.
+
+## 2026-10-21 211-215 (?) img=False
+TÍTULO: 211-215
+ELE: aprovado, mas ainda tem que melhorar, em alguns casos, ele acaba apagando a letra.
+PERGUNTA: 
+
+## 2026-10-21 dv-211-215 (duvidas) img=True
+TÍTULO: Cores no Preto e branco (2.11): a letra não some mais, mas a palavra ainda sai em duas cores. Consertar?
+ELE: aprovado, mas ainda tem que melhorar, em alguns casos, ele acaba apagando a letra.
+PERGUNTA: Você aprovou em 21/10 com a ressalva: "em alguns casos, ele acaba apagando a letra." / Isso foi consertado em 27/10: com "Letras com a cor delas" + "Reduzir cores", nenhuma letra sai mais preta nem some (faixa azul = antes, verde = hoje). / Mas o print novo mostra outra coisa: a mesma palavra ainda sai em duas cores (azul-acinzentado e bege). No sc
+
+## 2026-10-21 pr-tela-igual-ao-pdf (?) img=False
+TÍTULO: pr-tela-igual-ao-pdf
+ELE: [ainda não entendi] mas o kaique pediu para tirar a letra ou não? porque a letra foi tirada, qual opção foi pedida para ser feita que tirou a letra? anote ai para explicar melhor o processo que a pagina passou para poder me perguntar.
+PERGUNTA: 
+
+## 2026-10-21 dv-tela-igual (duvidas) img=True
+TÍTULO: Antiphonal 46: o Kaique pediu para tirar a letra T? Qual opção tirou?
+ELE: mas o kaique pediu para tirar a letra ou não? porque a letra foi tirada, qual opção foi pedida para ser feita que tirou a letra? anote ai para explicar melhor o processo que a pagina passou para poder me perguntar.
+PERGUNTA: Você perguntou se o Kaique pediu para tirar a letra T e qual opção tirou. / Ninguém pediu: foi defeito. O caminho da página: livro novo de fábrica, dividir, endireitar, cortar, Preto e branco com "Só as letras" (Guardar a tinta forte). / Consertado em 27/10: hoje o T aparece na tela e no PDF, e a tela troca sozinha pela imagem do PDF quando ela fic
+
+## 2026-10-21 pr-janela-diferente (?) img=False
+TÍTULO: pr-janela-diferente
+ELE: [ainda não entendi] 
+PERGUNTA: 
+
+## 2026-10-21 pr-opus-20 (?) img=False
+TÍTULO: pr-opus-20
+ELE: [ainda não entendi] o que eu estou olhando? e porque a foto sai assim? que opção foi escolhida para sair assim?
+PERGUNTA: 
+
+## 2026-10-21 dv-opus-20 (duvidas) img=True
+TÍTULO: Opus Majus 20: o que você está olhando, por que a foto sai assim e qual opção
+ELE: o que eu estou olhando? e porque a foto sai assim? que opção foi escolhida para sair assim?
+PERGUNTA: O que você está olhando: a página 20 do Opus Majus, com a foto da estátua de Roger Bacon. De um lado, como está no livro; do outro, como saiu no PDF que o programa gerou. / Qual opção: o mesmo caminho do teste, escolhido pelo verificador: livro novo, de fábrica → dividir → endireitar → cortar → Preto e branco com "Só as letras" ("Guardar a tinta fo
+
+## 2026-10-22 l67-tela-cheia (respondidos) img=True
+TÍTULO: [Layout 6 e 7] Filtros em tela cheia
+ELE: [ainda não entendi] esse aqui é para mostrar só o antes e depois? mas no programa vai aparecer as opções dos filtros né? o agente de layout fez já as opções de preto e branco que trouxemos do scan?
+PERGUNTA: O que você está escolhendo: se a tela cheia dos filtros ficou como você escolheu na rodada 11 (601). / O ícone no canto do título do painel "Filtro da página" (e o menu Ver > "Filtros em tela cheia") abre a tela: a fila dos filtros à esquerda, o escolhido grande no meio, o ajuste dele à direita. A chave "Comparar com o Original" começa desligada; l
+
+## 2026-10-22 l67-livro-aberto (respondidos) img=True
+TÍTULO: [Layout 6 e 7] O livro aberto na tela inteira
+ELE: Eu não consigo ver a página direito, e elas estão  de maneira muito ruim, da uma na internet como o updf faz. Tem uma pagina maior que outra ali
+PERGUNTA: O que você está escolhendo: se o livro aberto ficou como você escolheu na rodada 6. / As páginas rolam uma embaixo da outra, com a coluna de miniaturas à esquerda e a pílula "página 4 de 6 · ir para" embaixo. No alto: "Voltar para os livros (Esc)", "Continuar", "Rodar o automático…", "Ver todas as páginas", "Confirmar e processar…", "Mais…" (contin
+
+## 2026-10-22 dv-l67-livro-aberto (duvidas) img=True
+TÍTULO: O livro aberto: página ruim de ver e uma maior que a outra
+ELE: Eu não consigo ver a página direito, e elas estão  de maneira muito ruim, da uma na internet como o updf faz. Tem uma pagina maior que outra ali
+PERGUNTA: Você disse que não conseguia ver a página direito e que uma página estava maior que a outra; pediu para ver como o UPDF faz. / Refeito como no UPDF (D-347), aprovado em 22/10. Hoje: as duas páginas do par na mesma altura.
+
+## 2026-10-22 l67-acertos (respondidos) img=True
+TÍTULO: [Layout 6 e 7] Os três acertos da conferência anterior
+ELE: Mas explica melhor essa ressalva, isso é um erro? vai ser resolvido?
+PERGUNTA: O que você está escolhendo: se os três acertos que eu pedi ficaram bons. / 1) O nome "Melhorar" cabe inteiro na fila do painel Filtro. 2) As páginas de "Todas as páginas" ficaram mais nítidas. 3) A frase de resumo da tela "O que fazer" diz "(jeito: o do Editor)", como a lista (907 B), com teste de reversão que falha no código de antes.
+
+## 2026-10-22 dv-l67-acertos (duvidas) img=True
+TÍTULO: Layout 6 e 7: a ressalva dos três acertos. É um erro? Vai ser resolvido?
+ELE: Mas explica melhor essa ressalva, isso é um erro? vai ser resolvido?
+PERGUNTA: Você perguntou se a ressalva era um erro e se ia ser resolvida. / Era erro (a grade "Todas as páginas" borrada) e foi resolvido em 22/10 (D-349). Hoje a grade sai nítida.
+
+## 2026-10-22 b-6-igualar-luz (respondidos) img=True
+TÍTULO: [Perguntas do Implementador B (11)] "Igualar a luz" (2.17) deixa a tinta lavada no Melhorar e no Mágico pro
+ELE: mas vai ser uma opção que eu posso desligar e ligar né?
+PERGUNTA: Usado antes do Melhorar ou do Mágico pro, deixa a tinta lavada (Graduale 221, Horas 47). No Preto e branco e no Original ajuda.
+
+## 2026-10-22 b-8-tinta-com-cor (respondidos) img=True
+TÍTULO: [Perguntas do Implementador B (11)] "Tinta com a cor original" numa página em Preto e branco: fica como está (A) ou escurece a tinta (B)?
+ELE: Não entendi o que estou olhando.
+uma está o preto e branco bem melhor, a outra apagou as letras.
+PERGUNTA: O que você está escolhendo: como fica a cor de uma área que o Kaique marca à mão como "Tinta com a cor original, papel branco", numa página em Preto e branco. / Para que serve: no Preto e branco toda tinta vira preta, inclusive o título vermelho e azul. Com essa marcação, só aquela área guarda a cor da tinta do livro, com o papel branco em volta. O
+
+## 2026-10-22 b-3-cadernos-antigo (respondidos) img=True
+TÍTULO: [Perguntas do Implementador B (11)] O "Montar cadernos" antigo: tirar ou deixar junto do novo?
+ELE: Pera ai, mas ele monta em formato livreto também? como assim monta com dobro de largura explique melhor.
+PERGUNTA: O que você está escolhendo: se o programa continua com a montagem de cadernos antiga, além da nova. / As duas montam em livreto: põem as páginas na ordem da dobra, em cadernos de 20 páginas. A diferença é só o tamanho da folha que sai. / A antiga (a que existe hoje no programa, vinda do embaralhador) põe as duas páginas lado a lado no tamanho em qu
+
+## 2026-10-22 lu-tamanho (respondidos) img=True
+TÍTULO: [Livro aberto e tela cheia] A página ocupa a janela toda e sai nítida
+ELE: Só não entendi porque cortou parte do livro ali no canto superior direito.
+PERGUNTA: O que você está escolhendo: se a página aparece grande e nítida, como você pediu ("Eu não consigo ver a página direito"). / Antes a página tinha sempre 620 pixels de altura, mesmo com a janela maximizada. Agora ela ocupa a altura que a janela tem (746 pixels maximizada). A nitidez, comparada com o PDF desenhado direto no mesmo tamanho, ficou em 0,9
+
+## 2026-10-22 a-212-desentortar (respondidos) img=True
+TÍTULO: [Pergunta do Implementador A (desentortar)] Desentortar perto da lombada (2.12): como evitar que corte as letras?
+ELE: A causa: no ScanTailor a página tem uns 10 mm de papel em volta quando ele desentorta, então o que estica cai no papel. No nosso programa o desentortar vem depois do corte rente de 1 mm, então o que estica sai da página. porque a gente não resolve isso? não era para ter mais tamanho de pagina?
+
+ainda não consegui perceber se ficou melhor.
+
+essa funcionalidade você trouxe do scantailor exactamente 
+PERGUNTA: Como o ScanTailor faz (conferi no código dele, OutputGenerator.cpp): ele nunca corta a imagem antes da hora. O corte que você ajusta na tela é só uma medida, um retângulo guardado. Na hora de gerar a página, ele pega o escaneamento inteiro, desentorta com o papel de verdade do próprio scan em volta e só no fim recorta pelo retângulo, uma vez só. O 
+
+## 2026-10-22 a-comer-pagina (respondidos) img=True
+TÍTULO: [Pergunta do Implementador A (desentortar)] Outros lugares que podem comer parte da página: o que fazer?
+ELE: escolhi a B, mas quando for feito o teste de bug, ele tem que fazer a C — Primeiro provar em páginas de verdade, depois decidir
+PERGUNTA: Resposta à sua pergunta. Achei 8 lugares, além do desentortar, onde o programa pode tirar um pedaço do livro sem a gente pedir. Isso foi lendo o código, ainda não testado em página de verdade. / Os mais graves, ligados de fábrica e sem aviso: / 1. Endireitar no livro antigo (começado antes de 09/10). Ele corta primeiro e depois gira dentro do mesmo
+
+## 2026-10-22 cx-avisos-demais (respondidos) img=True
+TÍTULO: [Caixa do conteúdo: etiqueta, Marial e velocidade] O aviso de corte aparece em quase todas as páginas
+ELE: Eu não entendi, o programa está dando avisos sem precisar? 
+Se está dando avisos sem precisar, precisamos investigar o que ele está confundindo, me explique melhor.
+PERGUNTA: Sim: o aviso "Corte deixou algo de fora" está tocando sem precisar. Ele aparece em 82 de 100 páginas do Marial e em 12 de 14 do Egenloff. Já era assim antes deste trabalho. / O que ele está confundindo com conteúdo do livro (o verificador abriu 37 dessas páginas): / • a beirada do papel e a sombra dela. Quando a sombra encosta no texto, vira um ped
+
+## 2026-10-22 fr-218 (respondidos) img=True
+TÍTULO: [As 7 ferramentas do ScanTailor (Implementador B)] 2.18 Mudar à mão as áreas de gravura
+ELE: Ele fez, mas apagou as letras juntos, não sei se foi erro seu ou do programa.
+PERGUNTA: O que você está olhando: a página com a marcação que o programa acha sozinho e uma área mudada à mão por cima. Caminho: girar (automático) → não dividiu (uma página por folha) → endireitada → cortada (automático) → Preto e branco → área à mão.
+
+## 2026-10-22 fr-26 (respondidos) img=True
+TÍTULO: [As 7 ferramentas do ScanTailor (Implementador B)] 2.6 Montar para imprimir (livreto A4) e as duas montagens de cadernos
+ELE: Só tem que melhorar esse layout, cheio de letras uma em cima da outra , tudo bagunçado e dificil de saber o que é o que.
+PERGUNTA: O que você está olhando: 23 páginas de miolo do Marial (11 a 33 do PDF), pelo caminho girar (automático) → não dividiu (uma página por folha) → endireitada → cortada (automático) → Original, montadas para imprimir. Cada metade de cada folha tem em vermelho a página do livro que eu reconheci. / Eu conferi a dobra sem usar a conta do programa: empilh
+
+## 2026-10-22 tc23-janela (respondidos) img=True
+TÍTULO: ["Tinta com a cor original" em dois jeitos: "cor como no livro" (A) e "cor escurecida" (B)] 1. Os dois botões na janela do programa
+ELE: Pode explicar como eu vou usar isso? 
+segundo esse painel embaixo abre quando?
+o painel está muito bagunçado.
+PERGUNTA: O que você está olhando: o Livro de Horas 13 aberto no programa, a ferramenta Retângulo e o painel Propriedades. Cliquei em "tinta com a cor, papel branco" (clique do Windows). / Depois: "cor escurecida" e um retângulo no título; "cor como no livro" e outro retângulo. Por fim, a página em Original e o programa fechado e aberto de novo.
+
+## 2026-10-22 tc23-1 (respondidos) img=True
+TÍTULO: ["Tinta com a cor original" em dois jeitos: "cor como no livro" (A) e "cor escurecida" (B)] No Original, a área "tinta com a cor" fica com o papel branco no meio do papel creme. Fica assim?
+ELE: não entendi nada, não tem exemplos.
+PERGUNTA: Exemplo: veja a primeira foto. É a mesma página, o Livro de Horas 13, com o filtro Original (as cores e o papel como no livro). / Coluna da esquerda: sem área marcada. O papel é todo creme. / Colunas do meio e da direita: com uma área "tinta com a cor, papel branco" marcada no título. Repare que, em volta de "TABLE / DE CE QUI EST / CONTENU EN CE L
+
+## 2026-10-23 a-212-p4 (respondidos) img=True
+TÍTULO: [Pergunta do Implementador A (desentortar)] Livros fotografados com o celular: o desentortar não mexe. O que fazer?
+ELE: não entendi.
+PERGUNTA: Explicando de outro jeito. / Quando um livro é passado no scanner, o PDF guarda junto o tamanho de verdade da página (por exemplo, "esta página tem 14 cm de largura"). Uma foto de celular não guarda isso: o PDF só sabe que a foto tem tantos pontos, e o programa acha que a página é enorme, do tamanho de um cartaz. / O desentortar do ScanTailor procu
+
+## 2026-10-23 b-10-contorno (respondidos) img=True
+TÍTULO: [Perguntas do Implementador B (11)] Preto e branco: com "papel como o resto da página" aparece uma linha preta fina em volta da letra colorida. Tirar?
+ELE: (Ainda não entendi, sem comentário)
+PERGUNTA: Explicando de outro jeito, com a foto legendada abaixo (o título "PRINCIPAIS" da Escola 7, numa página em Preto e branco, com uma área de "tinta com a cor" no título). / Linha 1 da foto, com "papel branco": a letra sai marrom, limpa. / Linha 2, com "papel como o resto da página": a mesma letra sai com uma linha preta fina em volta de cada letra, co
+
+## 2026-10-23 b-11-nome (respondidos) img=True
+TÍTULO: [Perguntas do Implementador B (11)] O botão "tinta com a cor, papel branco": para que serve e que nome dar?
+ELE: não tem outro nome para recomendar? eu nem entendi para que serve esse botão.
+PERGUNTA: Para que serve: numa página que vai sair em Preto e branco, tudo vira preto, inclusive um título vermelho e azul. Com este botão você marca um pedaço da página (por exemplo, o título) e diz: "aqui a tinta sai colorida, como no livro". O resto da página continua em Preto e branco. / Exemplo na foto: o Livro de Horas 13 em Preto e branco. Sem a área,
+
+## 2026-10-23 b-11-nome (respondidos) img=True
+TÍTULO: [Perguntas do Implementador B (11)] O botão "tinta com a cor, papel branco": para que serve e que nome dar?
+ELE: esse botão ainda é bem confuso, mas por enquanto pode ficar assim.
+PERGUNTA: Para que serve: numa página que vai sair em Preto e branco, tudo vira preto, inclusive um título vermelho e azul. Com este botão você marca um pedaço da página (por exemplo, o título) e diz: "aqui a tinta sai colorida, como no livro". O resto da página continua em Preto e branco. / Exemplo na foto: o Livro de Horas 13 em Preto e branco. Sem a área,
+
+## 2026-10-23 a-212-p6 (respondidos) img=True
+TÍTULO: [Pergunta do Implementador A (desentortar)] Desentortar: na tela ele não aparece (só no PDF). Mostrar na tela igual ao PDF?
+ELE: Respondida no chat: "sim" (quer que a tela mostre a página reta, igual ao PDF).
+PERGUNTA: O ajuste do botão está feito como você pediu: se, depois do clique, a página ainda sair deformada, aparece "Mesmo aumentando a página, o desentortar deixou esta página deformada. Quer desfazer...?" com "Desfazer" e "Manter assim" (primeira foto). / O que o implementador achou: para ser rápida, a tela mostra a página numa imagem pequena. Nessa image
+
+## 2026-10-27 pd-escala-kaique (respondidos) img=False
+TÍTULO: [Perguntas que ficaram sem resposta] Qual é a escala da tela do notebook do Kaique?
+ELE: Não está usando no photoshop, está usando em um programa que se propõe a fazer o que ele faz.
+PERGUNTA: Respondendo ao seu comentário: o Photoshop (e o PhotoCraft, que você mandou) desenham tudo numa medida "em pontos" e multiplicam pela escala do Windows na hora de mostrar. Por isso ficam certos em qualquer computador. / O Editor já faz igual: a biblioteca de telas dele (Qt) multiplica sozinha pela escala do Windows. Botões e letras ficam do mesmo t
+
+## 2026-10-27 pd-escala-kaique (respondidos) img=False
+TÍTULO: [Perguntas que ficaram sem resposta] Qual é a escala da tela do notebook do Kaique?
+ELE: Escolheu "Só continuar desenhando para 150%". Comentário: Não está usando no photoshop, está usando em um programa que se propõe a fazer o que ele faz.
+PERGUNTA: Respondendo ao seu comentário: o Photoshop (e o PhotoCraft, que você mandou) desenham tudo numa medida "em pontos" e multiplicam pela escala do Windows na hora de mostrar. Por isso ficam certos em qualquer computador. / O Editor já faz igual: a biblioteca de telas dele (Qt) multiplica sozinha pela escala do Windows. Botões e letras ficam do mesmo t
+
+## 2026-10-27 ac-fase-espacos (acrescentei-27-10) img=False
+TÍTULO: Os botões "Limpo" e "Completo" da área de trabalho
+ELE: Ainda não entendi. "Não sei de que arranjos está falando."
+PERGUNTA: Em 28/09 apareceu no desenho da tela a ideia de dois botões: "Limpo" (só a página e poucas ferramentas à vista) e "Completo" (todos os painéis abertos). Ficou "a confirmar" por você. / Em 05/10 você escolheu "C — tudo livre, como o Photoshop": a pessoa abre, fecha e arrasta os painéis como quiser. / O que eu escolhi sem perguntar: em vez de dois bo
+
+## 2026-10-27 ac-fase-marcar-como (acrescentei-27-10) img=False
+TÍTULO: Quando fazer o "Marcar como: iluminura ou pintura / moldura"?
+ELE: Ainda não entendi. "Que Obra?"
+PERGUNTA: "Obra" é o nome que eu dei, sem explicar, para a rodada grande de consertos que você mandou fazer em 26/10 (depois da sessão de testes: abrir direto na área de trabalho, todas as ferramentas à vista, Automático de verdade, dividir à mão, mover e redimensionar, lado a lado...). Desculpe a palavra. Daqui para a frente escrevo "esta rodada de conserto
+
+## 2026-10-27 ac-grade-inserir (acrescentei-27-10) img=False
+TÍTULO: Grade "Todas as páginas": "inserir página" pode ficar para depois?
+ELE: Ainda não entendi. "Não sei de que obra está falando, quando falei dividir é dividir a pagina, usando a funcionalidade do scantailor que colocamos no aplicativo, é isso que deveria ser feito."
+PERGUNTA: "Obra" é o nome que eu dei, sem explicar, para a rodada grande de consertos que você mandou fazer em 26/10 (depois da sessão de testes: abrir direto na área de trabalho, todas as ferramentas à vista, Automático de verdade, dividir à mão, mover e redimensionar, lado a lado...). Desculpe a palavra. Daqui para a frente escrevo "esta rodada de conserto
+
+## 2026-10-27 v-capa (acrescentei-27-10) img=True
+TÍTULO: Lado a lado: botão para acertar os pares quando o PDF começa no meio da numeração?
+ELE: Ainda não entendi. "explique melhor"
+PERGUNTA: Num livro de verdade aberto, a página da direita é sempre ímpar (1, 3, 5...) e a da esquerda é par (2, 4, 6...). A capa ou a página 1 fica sozinha, à direita. / No "Duas lado a lado" o programa monta os pares assim, contando pela ordem do PDF: [ — | 1 ]  [ 2 | 3 ]  [ 4 | 5 ] ... / O problema: alguns PDFs escaneados não começam na página 1 do livro.
+
+## 2026-10-27 v-antes (acrescentei-27-10) img=False
+TÍTULO: "antes / depois" na barra de baixo da área de trabalho: fica?
+ELE: Ainda não entendi. "antes e depois foi uma coisa que decidimos para usar no filtro né?"
+PERGUNTA: Você tem razão: em 13/10 (pergunta 601, "A") o antes e depois que você escolheu é o do filtro, na tela cheia dos filtros: a chave "Comparar com o Original", com a linha arrastável. / Na barra de baixo da área de trabalho a etapa de ver o livro pôs também um botão "antes / depois", que mostra a página inteira como veio × como vai sair (com corte, en
+
+## 2026-10-27 ac-fase-marcar-como (acrescentei-27-10) img=False
+TÍTULO: Quando fazer o "Marcar como: iluminura ou pintura / moldura"?
+ELE: Escolheu "Depois desta rodada de consertos". Comentário: "Mas eu ainda não entendi onde vai ser colocado essas opções, do que você está falando."
+PERGUNTA: "Obra" é o nome que eu dei, sem explicar, para a rodada grande de consertos que você mandou fazer em 26/10 (depois da sessão de testes: abrir direto na área de trabalho, todas as ferramentas à vista, Automático de verdade, dividir à mão, mover e redimensionar, lado a lado...). Desculpe a palavra. Daqui para a frente escrevo "esta rodada de conserto
+
+## 2026-10-29 au-d-087 (auditoria-2-nao-feito) img=True
+TÍTULO: D-087 · Folga do corte ajustável para o livro todo, mais aviso nas páginas onde o corte encosta em tinta
+ELE: então isso entra na lista de coisas para fazer? não entendi.
+PERGUNTA: Situação na versão de teste: Não feito. / Você pediu (05/10/2026): S1: "É, acho que ele está cortando em cima demais, mas eu consigo configurar isso né?" · S2: "eu tenho como configurar esse corte para todas as paginas e o programa me avisar onde o corte pode ter ficado ruim" · CORTE: "(a) Folga do corte ajustável para o livro inteiro + aviso autom
+
+## 2026-10-29 au-d-110 (auditoria-2-nao-feito) img=True
+TÍTULO: D-110 · O problema apontado na caixa do conteúdo (defeito do Egenloff 3) fica para investigar depois da entrada
+ELE: então isso entra na lista de coisas para fazer? não entendi.
+PERGUNTA: Situação na versão de teste: Não feito. / Você pediu (22/10/2026): cx22: "vai para o programa assim, mas vai ser investigado no futuro, esse problema." / O que isso quer dizer: O problema apontado na caixa do conteúdo (defeito do Egenloff 3) fica para investigar depois da entrada. / Solução na versão de teste: nada investigado. / Parte do programa:
+
+## 2026-10-31 ng-2-1-marcacao-travada (respondidos) img=True
+TÍTULO: [O que você não gostou: alternativas] 2-1 · Programa travado no Cursus (Marcação com 302 marcas): o que fazer?
+ELE: [ainda não entendi] Eu ainda não consegui entender, mas dá para saber que é por causa da lentidão quando se move uma pagina que está com marcação em cima, pode explicar melhor.
+PERGUNTA: Você escreveu: "eu cheguei a abrir o aplicativo, mas ele está bem travado". O livro era o Cursus philosophicus, Tomo 2 (402 páginas). Pelo histórico do livro, você mexeu na página 1 com Mover e depois com a Marcação, das 10:36 às 10:38. / O que eu medi (rodando a versão de teste fora da tela, numa cópia dos seus dados; nada do seu foi mexido): na p
+
+## 2026-10-31 au-d-548 (auditoria-5-escolhas-da-gerente) img=False
+TÍTULO: D-548 · O aviso "Parte do impresso fica de fora" não ignora o que já estava perto da beirada; o "está bom assim"…
+ELE: [ainda não entendi] Ele dá o aviso só por ter algo perto da borda?
+PERGUNTA: Situação na versão de teste: Funciona. / Escolha da gerente (27/10/2026): (escolha da gerente, D-014) apoiada na recomendação da etapa 5 / O que isso quer dizer: O aviso "Parte do impresso fica de fora" não ignora o que já estava perto da beirada; o "está bom assim" resolve em um clique. / Solução na versão de teste: "está bom assim" resolve em um 
+
+## 2026-11-02 au-d-254 (auditoria-2-nao-feito) img=False
+TÍTULO: D-254 · Num livro bem escaneado, menos de 10% das páginas vão para o "Para revisar"
+ELE: [ainda não entendi] 
+PERGUNTA: Situação na versão de teste: Não feito. / Você pediu (18/07/2026): "8. Num livro bem escaneado, menos de 10% das páginas são marcadas para revisão — o alerta não vira ruído" / O que isso quer dizer: Num livro bem escaneado, menos de 10% das páginas vão para o "Para revisar". / Solução na versão de teste: nada medido nem mudado nesta rodada. / Resol
+
+## 2026-11-02 au-d-275 (auditoria-2-nao-feito) img=True
+TÍTULO: D-275 · Pauta com pouca falha não vai ao "Para revisar"; o Kaique usa "Guardar tudo" se quiser
+ELE: [ainda não entendi] não entendi o que tem que ser escolhido, ou porque essa pauta não deveria ir para revisar. Isso é para criar uma regra para as pautas sobre revisão?
+PERGUNTA: Situação na versão de teste: Não feito. / Você pediu (08/10/2026): rv4-pag-antiphonal1547-006: "Entendi; a página não precisa ir" / O que isso quer dizer: Pauta com pouca falha não vai ao "Para revisar"; o Kaique usa "Guardar tudo" se quiser. / Solução na versão de teste: não conferido. / Parte do programa: Avisos: botões que faltam e avisos demais
+
+## 2026-11-02 au-d-474 (auditoria-2-nao-feito) img=False
+TÍTULO: D-474 · A meta de 18/07 (D-254, "menos de 10% das páginas" no "Para revisar" num livro bem escaneado) continua…
+ELE: [ainda não entendi] Na verdade a regra tem que ser, avisos somente quando necessarios, e aumentar a acuracidade do programa de avisar exactamente o que deveria ser avisado, ele não se confundir e nem deixar passar erros graves.
+PERGUNTA: Situação na versão de teste: Não feito. / Você pediu (26/10/2026): (escolha da gerente, D-014) / O que isso quer dizer: A meta de 18/07 (D-254, "menos de 10% das páginas" no "Para revisar" num livro bem escaneado) continua valendo, medida na etapa 9 junto da D-295 (78 de 89). O Boécio (34%) é o caso a baixar; versos em branco de verdade (Egenloff, 
+
+## 2026-11-02 au-d-427 (auditoria-2-nao-feito) img=True
+TÍTULO: D-427 · Refazer o exemplo da estátua quando a foto do Opus 20 melhorar
+ELE: [ainda não entendi] 
+PERGUNTA: Situação na versão de teste: Não feito. / Você pediu (02/10/2026): O3: manter a estátua no arquivo do Kaique, "Mas precisa ser melhorado" / O que isso quer dizer: Refazer o exemplo da estátua quando a foto do Opus 20 melhorar. / Solução na versão de teste: não mexido. / Parte do programa: Filtros: pedidos antigos que não entraram.
+
+## 2026-11-02 au-d-421 (auditoria-2-nao-feito) img=True
+TÍTULO: D-421 · Imagem de conferência nunca cobre o conteúdo com moldura ou retângulo
+ELE: [ainda não entendi] preciso de exemplos, não consegui visualizar o que está sendo feito errado que precisa de concerto.
+PERGUNTA: Situação na versão de teste: Não feito. / Você pediu (29/09/2026): (paráfrase da fonte) exigência do Samuel: "nunca desenhar retângulo por cima do conteúdo" (o retângulo escondeu o "A" de CRISTÃ) / O que isso quer dizer: Imagem de conferência nunca cobre o conteúdo com moldura ou retângulo. / Solução na versão de teste: as páginas de conferência ai
+
+## 2026-11-04 d602-arrastar (dividir-03-11) img=True
+TÍTULO: Dividir: a linha azul da folha ainda inteira deve poder ser arrastada?
+ELE: (respondido no chat, 04/11, print a-54) "não consigo mover a linha azul manualmente." → "Sim"
+PERGUNTA: Onde: ferramenta Dividir (primeiro botão da barra da esquerda), versão de teste. Livro: Gradus Primus. / O que você decidiu (D-602, 03/11): "eu conseguir ver a linha e dai eu clicar e dividir esta" → a folha dupla ainda inteira já mostra a linha azul onde o motor cortaria; "dividir esta" corta nela. / Como ficou: na folha inteira a linha é só para 
+
+## 2026-11-04 d602-lugar-botao (dividir-03-11) img=True
+TÍTULO: Dividir: o botão novo "dividir todas" ficou ao lado do "usar em todas". Está bom aí?
+ELE: Poderia ter a explicação no botão usar em todas quando passa o mouse em cima, que vai usar aquele corte em todos.
+PERGUNTA: Onde: ferramenta Dividir (primeiro botão da barra da esquerda), versão de teste. Livro: Gradus Primus. / O botão novo "dividir todas" (D-602: o motor lê cada folha do livro e corta cada folha dupla na sua própria linha) ficou na direita, embaixo de "juntar todas" e ao lado de "usar em todas". / Lembrete: "usar em todas" é outra coisa (D-090): copia
+
+## 2026-11-04 d574-folhas-de (agora) img=True
+TÍTULO: "Folhas de/até": a prévia vai para a primeira folha escolhida?
+ELE: ok, só não entendi esse todas, e esse 0=todas ficou horrivel.
+PERGUNTA: Você está olhando a folha 2 e escreve "Folhas de 3". Hoje a prévia pula para a folha 4 (ela guarda a posição, não o número da folha).
+
+## 2026-11-04 d574-o-que-vai-sair (agora) img=True
+TÍTULO: "O que vai sair" embaixo da folha: fica assim?
+ELE: [ainda não entendi] 
+PERGUNTA: Com a janela do tamanho de fábrica, a folha fica em cima e o texto "O que vai sair" só aparece rolando o cartão.
+
+## 2026-11-04 dv-29-horas (duvidas) img=True
+TÍTULO: Letra clara (2.9): "não faça mais testes com lombadas de livros"
+ELE: [ainda não entendi] Os prints não tem nada haver com a pergunta, e as respostas são inconslusivas.
+2- sobre essa questão das letras brancas em fundo escuro, a gente tem que ter uma maneira de inverter isso né de forma perfeita, agora veja como o scantailor faz isso, eu acho que faz.
+PERGUNTA: Você respondeu em 21/10 ("Está pior") com este comentário, que ficou sem resposta. A resposta está logo acima; as fotos mostram como está hoje na versão de teste.
+
+## 2026-11-04 dv-29-ressalvas (duvidas) img=True
+TÍTULO: Letra clara (2.9): "veja as minhas ressalvas para melhoramentos"
+ELE: [ainda não entendi] O que foi aprovado? os relatorios continuam muito ruins e dificeis de entender.
+PERGUNTA: Você respondeu em 21/10 ("Aprovado") com este comentário, que ficou sem resposta. A resposta está logo acima; as fotos mostram como está hoje na versão de teste.
+
+## 2026-11-04 c-recuperar (acrescentei-27-10) img=True
+TÍTULO: "Recuperar o trabalho anterior" no menu do livro?
+ELE: [ainda não entendi] Mas a copia que ele guarda é um pdf pronto com as mudanças que foram feitas? ou é um arquivo que diz só como o pdf era antes?
+PERGUNTA: O que é: às vezes o programa recomeça a conferência de um livro: quando o PDF mudou (outro número de folhas), quando o arquivo do trabalho não dá para ler ou quando falta página. Antes de recomeçar, ele guarda uma cópia do trabalho anterior na pasta do livro e mostra um aviso com o caminho dessa cópia. / O que acontece hoje (Boécio, cópia: abri, ro
+
+## 2026-11-06 k0611-pagina-suja (teste-kaique-lusiadas) img=True
+TÍTULO: Página quase em branco sai suja no PDF
+ELE: não entendi
+PERGUNTA: A página 22 do livro é uma página em branco. / Só aparece nela, bem fraquinho, o texto da página de trás, que passa pelo papel (primeira imagem da foto). / No PDF, esse texto fraquinho virou manchas pretas, e embaixo saiu um bloco preto (segunda e terceira imagens). / O certo seria a página sair branca.
+
+## 2026-11-06 k0611-remendos (teste-kaique-lusiadas) img=True
+TÍTULO: Remendos pretos e brancos nos rostos da página 14
+ELE: não entendi
+PERGUNTA: Na página 14 há um desenho de pessoas. / No PDF, nos rostos, apareceram quadrados pretos e brancos que não existem no livro (foto, à direita). / Isso aconteceu porque o programa confundiu um pedaço do desenho com letras, e tratou aquele pedaço como texto.
+
+## 2026-11-06 b-pdf-desatualizado (acrescentei-27-10) img=True
+TÍTULO: O que o livro mostra depois de você mudar um livro que já virou PDF
+ELE: [ainda não entendi] Isso se aplica só se eu fizer alterações né?
+PERGUNTA: O que é: na tela dos livros (a primeira tela; da área de trabalho, menu Arquivo > "Voltar para os livros"), cada livro tem um cartão, e clicando nele abre o "livro aberto". Quando o PDF já foi gerado, os dois dizem "pronto, PDF gerado" e o botão é "abrir a pasta". / O que acontece hoje (Palatino, cópia do seu: você gerou "... - sem fundo (2).pdf" h
+
+## 2026-11-06 b-abas-nomes (acrescentei-27-10) img=True
+TÍTULO: Jeito "Abas no alto": os nomes das abas
+ELE: [ainda não entendi] No caso, isso é uma opção a mais do que a que temos hoje?
+PERGUNTA: O que é: no jeito "Abas no alto" (menu Ver > "Lado direito" > "Abas no alto"), os painéis viram abas no alto da coluna da direita, com o desenho e um nome curto: "Revisar", "Automático", "Propriedades", "Filtro", "Histórico". Embaixo das abas fica o cabeçalho do painel aberto, que repete o nome inteiro ("Para revisar") e guarda o "x" de fechar e, n
+
+## 2026-11-07 mover-rotulo-antes (perg-mover-rotulo) img=True
+TÍTULO: No antes / depois, o rótulo "antes: Original" fica onde está?
+ELE: [ainda não entendi] Isso ficou bem estranho né, acho que não deveria dar para ver o antes/depois enquanto se mexe na folha, no caso do mover.
+PERGUNTA: Você decidiu em 04/11 que, no antes / depois, as ferramentas mexem no depois e o antes fica só para olhar. / Com Mover, Cortar ou Endireitar ligados, o rótulo "antes: Original" fica no canto de cima, à esquerda. Na foto, ele fica em cima da página que o Mover está mexendo. / Quer o rótulo em outro lugar? Se sim, diga onde no comentário.
+
+## 2026-11-07 k0711-inclinacao-conferida (teste-kaique-funcoes) img=True
+TÍTULO: Mexer na inclinação dá a página como conferida e some o aviso da lombada
+ELE: Preciso que explique melhor esse problema.
+PERGUNTA: Nos Lusíadas, página 13: mexer na inclinação marcou a página como conferida e tirou o aviso "Não tenho certeza de onde cortar". / Mas a lombada continua incerta.
+
+## 2026-11-08 n0411-o-que-vai-sair (perguntas-04-11) img=True
+TÍTULO: Montar para imprimir: o quadro "O que vai sair" fica embaixo?
+ELE: Como assim, o que vai sair? Quero um exemplo disso.
+PERGUNTA: No lado direito da janela "Montar para imprimir", embaixo das folhas, há um quadro chamado "O que vai sair". / Ele diz, antes de gravar, o que vai sair da impressora. Exemplo de verdade (Palatino): "Livreto (cadernos) em papel A4. Entram as 134 páginas do livro. Saem 34 folhas de papel (frente e verso), 7 cadernos; o último com 4 folhas. Ao gravar,
+
+## 2026-11-08 n0411-o-que-vai-sair (perguntas-04-11) img=True
+TÍTULO: Montar para imprimir: o quadro "O que vai sair" fica embaixo?
+ELE: Como assim, o que vai sair? Quero um exemplo disso.
+PERGUNTA: No lado direito da janela "Montar para imprimir", embaixo das folhas, há um quadro chamado "O que vai sair". / Ele diz, antes de gravar, o que vai sair da impressora. Exemplo de verdade (Palatino): "Livreto (cadernos) em papel A4. Entram as 134 páginas do livro. Saem 34 folhas de papel (frente e verso), 7 cadernos; o último com 4 folhas. Ao gravar,
+
+## 2026-11-08 n0411-inverter-letra-clara (perguntas-04-11) img=True
+TÍTULO: Letra branca em fundo escuro: como virar letra preta em papel branco?
+ELE: [ainda não entendi] 
+PERGUNTA: Você pediu (04/11): "a gente tem que ter uma maneira de inverter isso né de forma perfeita, agora veja como o scantailor faz isso, eu acho que faz." / O ScanTailor não faz. Ele tem uma caixinha igual à nossa "Letra clara em fundo escuro": limpa a página, mas ela sai com letra branca em fundo escuro, como entrou. / Quem faz é a Leptonica, uma biblio
+
+## 2026-11-08 dv-211-215 (duvidas) img=True
+TÍTULO: Cores no Preto e branco (2.11): a letra não some mais, mas a palavra ainda sai em duas cores. Consertar?
+ELE: [ainda não entendi] 
+PERGUNTA: Você aprovou em 21/10 com a ressalva: "em alguns casos, ele acaba apagando a letra." / Isso foi consertado em 27/10: com "Letras com a cor delas" + "Reduzir cores", nenhuma letra sai mais preta nem some (faixa azul = antes, verde = hoje). / Mas o print novo mostra outra coisa: a mesma palavra ainda sai em duas cores (azul-acinzentado e bege). No sc
+
+## 2026-11-08 dv-211-215 (duvidas) img=True
+TÍTULO: Cores no Preto e branco (2.11): a letra não some mais, mas a palavra ainda sai em duas cores. Consertar?
+ELE: Continuo sem entender o que aconteceu, prints inconclusivos, qual é antes e depois? Um monte de texto e não consigo saber o que era para saber realmente, se está funcionando como eu quero ou não.
+PERGUNTA: Você aprovou em 21/10 com a ressalva: "em alguns casos, ele acaba apagando a letra." / Isso foi consertado em 27/10: com "Letras com a cor delas" + "Reduzir cores", nenhuma letra sai mais preta nem some (faixa azul = antes, verde = hoje). / Mas o print novo mostra outra coisa: a mesma palavra ainda sai em duas cores (azul-acinzentado e bege). No sc
+
+## 2026-11-08 dv-211-215 (duvidas) img=True
+TÍTULO: Cores no Preto e branco (2.11): a letra não some mais, mas a palavra ainda sai em duas cores. Consertar?
+ELE: Continuo sem entender o que aconteceu, prints inconclusivos, qual é antes e depois? Um monte de texto e não consigo saber o que era para saber realmente, se está funcionando como eu quero ou não.
+PERGUNTA: Você aprovou em 21/10 com a ressalva: "em alguns casos, ele acaba apagando a letra." / Isso foi consertado em 27/10: com "Letras com a cor delas" + "Reduzir cores", nenhuma letra sai mais preta nem some (faixa azul = antes, verde = hoje). / Mas o print novo mostra outra coisa: a mesma palavra ainda sai em duas cores (azul-acinzentado e bege). No sc
+
+## 2026-11-08 ac-tampa (acrescentei-27-10) img=True
+TÍTULO: Faixa preta da tampa do scanner (Righetti 96): quando ela sai?
+ELE: O jeito como ela some deveria poder ser escolhido no automático, pintar de branco ou cortar. E essa resposta não tem print provando que esse modo funciona.
+PERGUNTA: O que foi feito sem você pedir (etapa 4): a faixa preta só sai quando a pessoa divide ou acerta a linha à mão; o Automático nunca tira; ela é pintada de branco, não cortada. / O que você tinha decidido: 13-21/10 "É para sumir totalmente." e "tem que ficar rente a folha de papel, não pode ter preto ali."; 09/10: tarja e moldura do scanner — "O Kaiqu
+
+## 2026-11-08 ac-tampa (acrescentei-27-10) img=True
+TÍTULO: Faixa preta da tampa do scanner (Righetti 96): quando ela sai?
+ELE: O jeito como ela some deveria poder ser escolhido no automático, pintar de branco ou cortar. E essa resposta não tem print provando que esse modo funciona.
+PERGUNTA: O que foi feito sem você pedir (etapa 4): a faixa preta só sai quando a pessoa divide ou acerta a linha à mão; o Automático nunca tira; ela é pintada de branco, não cortada. / O que você tinha decidido: 13-21/10 "É para sumir totalmente." e "tem que ficar rente a folha de papel, não pode ter preto ali."; 09/10: tarja e moldura do scanner — "O Kaiqu
+
+## 2026-11-09 girar-capa-dividir-duas (perg-girar-capa) img=True
+TÍTULO: No Dividir, com "Duas lado a lado", "todas as folhas": gira a folha inteira ou página por página?
+ELE: [ainda não entendi] Você colocou só um exemplo de como seria uma folha duas lado a lado sendo girada, como eu vou responder algo sem provas ou exemplos?
+PERGUNTA: Na imagem: em cima, ANTES do clique; no meio, o jeito de hoje; embaixo, página por página. Gradus, folha 10 (páginas 18 e 19, em vermelho), "todas as folhas" + ¼. / "Fica como está" (hoje): a folha gira inteira e a linha azul fica no mesmo lugar. No PDF, cada página sai como uma tira com metade de duas páginas misturadas. / "Página por página també
+
+## 2026-11-09 girar-capa-teste-daqui (perg-girar-capa) img=True
+TÍTULO: Posso trocar o teste antigo do "daqui em diante"?
+ELE: [ainda não entendi] Não estou vendo provas do que você diz, o exemplo da pagina que gira do miolo, eu ainda não entendi.
+PERGUNTA: Na imagem: Gradus com a folha 4 sem dividir (é a página 6, em vermelho). Na página 3, "daqui em diante" + ¼. / Jeito antigo (laranja): as páginas 3, 4, 5, 7 e 8 deitam, mas a página 6 fica em pé. É isso que o teste antigo cobra. / Jeito novo (verde), a sua resposta "Giram também" da pergunta 2: a página 6 gira junto. / O teste antigo falha no progr
+
+## 2026-11-09 girar-capa-teste-daqui (perg-girar-capa) img=True
+TÍTULO: Posso trocar o teste antigo do "daqui em diante"?
+ELE: Ainda não entendi · "Não estou vendo provas do que você diz, o exemplo da pagina que gira do miolo, eu ainda não entendi."
+PERGUNTA: Na imagem: Gradus com a folha 4 sem dividir (é a página 6, em vermelho). Na página 3, "daqui em diante" + ¼. / Jeito antigo (laranja): as páginas 3, 4, 5, 7 e 8 deitam, mas a página 6 fica em pé. É isso que o teste antigo cobra. / Jeito novo (verde), a sua resposta "Giram também" da pergunta 2: a página 6 gira junto. / O teste antigo falha no progr
+
+## 2026-11-09 girar-capa-dividir-duas (perg-girar-capa) img=True
+TÍTULO: No Dividir, com "Duas lado a lado", "todas as folhas": gira a folha inteira ou página por página?
+ELE: [ainda não entendi] 
+PERGUNTA: Na imagem: em cima, ANTES do clique; no meio, o jeito de hoje; embaixo, página por página. Gradus, folha 10 (páginas 18 e 19, em vermelho), "todas as folhas" + ¼. / "Fica como está" (hoje): a folha gira inteira e a linha azul fica no mesmo lugar. No PDF, cada página sai como uma tira com metade de duas páginas misturadas. / "Página por página també
+
+## 2026-11-09 cantinho-outros-casos (perg-cantinho) img=True
+TÍTULO: O cantinho do giro sai da cor do papel também nos casos que ficaram de fora?
+ELE: [ainda não entendi] esse teste é totalmente inconslusivo para mim, não consigo ter visão clara do que o programa tentou fazer, ou de qual problema ele tentou reslver.
+PERGUNTA: Quando a página é girada, abre um triângulo fino na beirada. O conserto (D-639) pinta esse triângulo da cor do papel quando o Desentortar está ligado e desiste de desentortar. / No teste com a janela aberta, isso funcionou só no caso exato do conserto (quadro 2 da imagem). / Do jeito que o Kaique faria, ficou branco (quadro 3): Desentortar ligado, 
+
+## 2026-11-09 cantinho-outros-casos (perg-cantinho) img=True
+TÍTULO: O cantinho do giro sai da cor do papel também nos casos que ficaram de fora?
+ELE: Ainda não entendi · "esse teste é totalmente inconslusivo para mim, não consigo ter visão clara do que o programa tentou fazer, ou de qual problema ele tentou reslver."
+PERGUNTA: Quando a página é girada, abre um triângulo fino na beirada. O conserto (D-639) pinta esse triângulo da cor do papel quando o Desentortar está ligado e desiste de desentortar. / No teste com a janela aberta, isso funcionou só no caso exato do conserto (quadro 2 da imagem). / Do jeito que o Kaique faria, ficou branco (quadro 3): Desentortar ligado, 
+
+## 2026-11-09 k0611-oito-de-funcao (teste-kaique-lusiadas) img=False
+TÍTULO: Consertar agora os 8 erros de função, um por vez?
+ELE: eu quero ver esses erros, as provas dele e uma explicação de como acontece, explique de forma simples. quero antes de dar inicio.
+PERGUNTA: São os erros em que a pessoa usa uma função e ela não faz o que devia: / 1) marcações laranja à vista com a Mão; 2) a Mão mostra a folha espremida; 3) página deitada no arquivo para imprimir, sem aviso; 4) miniatura que não fica branca; 5) faixa que não atualiza depois de "tirar do livro"; 6) janela de salvar com aviso velho; 7) lista do Automático
+
+## 2026-11-09 k0611-oito-de-funcao (teste-kaique-lusiadas) img=False
+TÍTULO: Consertar agora os 8 erros de função, um por vez?
+ELE: eu quero ver esses erros, as provas dele e uma explicação de como acontece, explique de forma simples. quero antes de dar inicio.
+PERGUNTA: São os erros em que a pessoa usa uma função e ela não faz o que devia: / 1) marcações laranja à vista com a Mão; 2) a Mão mostra a folha espremida; 3) página deitada no arquivo para imprimir, sem aviso; 4) miniatura que não fica branca; 5) faixa que não atualiza depois de "tirar do livro"; 6) janela de salvar com aviso velho; 7) lista do Automático
+
+## 2026-11-09 k0611-ilustracao-some (teste-kaique-lusiadas) img=True
+TÍTULO: A ilustração da página 8 quase some
+ELE: Tem que ser investigada a causa , se foi por mal uso ou bugue, se o programa não reconheceu a gravura, tem que ver porque né, inclusive tem que ver ai nas anotações se tem uma ideia minha anotada, que vai depender do modo de seleção mais qualificado que eu quero importar do photoshop, pois hoje nossa ferramentas de seleção e mascaramento são muito ruins, mas por exemplo, quando o computador errass
+PERGUNTA: A pintura das bandeiras vira pontinhos brancos no PDF, mesmo com "Gravuras e fotos" ligada.
+
+## 2026-11-09 k0611-ilustracao-some (teste-kaique-lusiadas) img=True
+TÍTULO: A ilustração da página 8 quase some
+ELE: Tem que ser investigada a causa , se foi por mal uso ou bugue, se o programa não reconheceu a gravura, tem que ver porque né, inclusive tem que ver ai nas anotações se tem uma ideia minha anotada, que vai depender do modo de seleção mais qualificado que eu quero importar do photoshop, pois hoje nossa ferramentas de seleção e mascaramento são muito ruins, mas por exemplo, quando o computador errass
+PERGUNTA: A pintura das bandeiras vira pontinhos brancos no PDF, mesmo com "Gravuras e fotos" ligada.
+
+## 2026-11-09 k0611-mao-espremida (teste-kaique-lusiadas) img=True
+TÍTULO: Com a Mão, a folha inteira aparece espremida na largura de uma página
+ELE: Essa ferramenta é uma mão?, isso é uma coisa que eu não entendi, isso é uma mão essa ferramenta selecioanda?
+PERGUNTA: Logo depois de dividir no Automático, com a Mão e "Uma página", a tela mostra a folha inteira (as duas páginas) espremida. / Com o Dividir ou o Cortar escolhidos aparece certo. O PDF sai certo: é só na tela.
+
+## 2026-11-09 k0611-mao-espremida (teste-kaique-lusiadas) img=True
+TÍTULO: Com a Mão, a folha inteira aparece espremida na largura de uma página
+ELE: Essa ferramenta é uma mão?, isso é uma coisa que eu não entendi, isso é uma mão essa ferramenta selecioanda?
+PERGUNTA: Logo depois de dividir no Automático, com a Mão e "Uma página", a tela mostra a folha inteira (as duas páginas) espremida. / Com o Dividir ou o Cortar escolhidos aparece certo. O PDF sai certo: é só na tela.
+
+## 2026-11-09 k0611-margens-de-fabrica (teste-kaique-lusiadas) img=True
+TÍTULO: Cortar ligado e "Margens iguais" desligado: cada página sai de um tamanho
+ELE: [ainda não entendi] 
+PERGUNTA: Pergunta do agente. O Cortar vem ligado de fábrica, e o "Margens iguais" vem desligado. / Assim, cada página sai de um tamanho. Nos cadernos, a folha de rosto sai com o título enorme (foto). / Com "Margens iguais" ligado, ficou certo. Nenhuma decisão do Livro responde isso.
+
+## 2026-11-09 k0611-lista-sobe (teste-kaique-lusiadas) img=True
+TÍTULO: A lista do Automático volta para o topo
+ELE: Esse é o espirito que eu busco na hora de buscar problemas dentro do programa, se pudessemos fazer esse tipo de busca sem que o agente precisasse ficar tirando prints o tempo inteiro, se existisse alguma ferramenta ou plugin que ajudasse o agente a testar o programa de forma mais rapida sem ter que ficar tirando print o tempo inteiro, alguma coisa que transcrevesse tudo que está acontecendo para e
+PERGUNTA: Ao marcar "Margens iguais", a lista de etapas volta para o alto, e é preciso rolar de novo.
+
+## 2026-11-09 k0611-lista-sobe (teste-kaique-lusiadas) img=True
+TÍTULO: A lista do Automático volta para o topo
+ELE: Esse é o espirito que eu busco na hora de buscar problemas dentro do programa, se pudessemos fazer esse tipo de busca sem que o agente precisasse ficar tirando prints o tempo inteiro, se existisse alguma ferramenta ou plugin que ajudasse o agente a testar o programa de forma mais rapida sem ter que ficar tirando print o tempo inteiro, alguma coisa que transcrevesse tudo que está acontecendo para e
+PERGUNTA: Ao marcar "Margens iguais", a lista de etapas volta para o alto, e é preciso rolar de novo.
+
+## 2026-11-09 k0611-frase-tirou (teste-kaique-lusiadas) img=True
+TÍTULO: Frase velha depois de "tirar do livro"
+ELE: e porque tem esse aviso de a pagina vai sair em preto e branco, para que serve , e em que situação é disparado?
+PERGUNTA: Depois de tirar a página do livro, a faixa continua dizendo "vai sair em Preto e branco".
+
+## 2026-11-09 k0611-frase-tirou (teste-kaique-lusiadas) img=True
+TÍTULO: Frase velha depois de "tirar do livro"
+ELE: e porque tem esse aviso de a pagina vai sair em preto e branco, para que serve , e em que situação é disparado?
+PERGUNTA: Depois de tirar a página do livro, a faixa continua dizendo "vai sair em Preto e branco".
+
+## 2026-11-09 k0611-codigo-g2 (teste-kaique-lusiadas) img=True
+TÍTULO: Código interno "(G2)" na tela do Dividir
+ELE: Não se deve usar código na nomeação de coisas. Existe algum plugin ou skill que ajude Ias a nomear botoes e fazer explicações em programas?
+PERGUNTA: O texto do Dividir, no Automático, mostra "(G2)". É um código nosso, que o Kaique não entende.
+
+## 2026-11-09 k0611-codigo-g2 (teste-kaique-lusiadas) img=True
+TÍTULO: Código interno "(G2)" na tela do Dividir
+ELE: Não se deve usar código na nomeação de coisas. Existe algum plugin ou skill que ajude Ias a nomear botoes e fazer explicações em programas?
+PERGUNTA: O texto do Dividir, no Automático, mostra "(G2)". É um código nosso, que o Kaique não entende.
+
+## 2026-11-09 k0611-laranja-mao (teste-kaique-lusiadas) img=True
+TÍTULO: Marcações laranja à vista com a Mão
+ELE: Eu não sei que ferramenta é essa da mão e para que serve.
+PERGUNTA: Com a Mão, as marcações laranja continuam à vista. A sua decisão D-584 diz que elas se escondem com a Mão.
+
+## 2026-11-09 k0611-laranja-mao (teste-kaique-lusiadas) img=True
+TÍTULO: Marcações laranja à vista com a Mão
+ELE: Eu não sei que ferramenta é essa da mão e para que serve.
+PERGUNTA: Com a Mão, as marcações laranja continuam à vista. A sua decisão D-584 diz que elas se escondem com a Mão.
+
+## 2026-11-09 v-antes (acrescentei-27-10) img=False
+TÍTULO: "antes / depois" na barra de baixo da área de trabalho: fica?
+ELE: Isso que eu escolhi vai alterar muito o programa? preste atenção nisso.
+PERGUNTA: Você tem razão: em 13/10 (pergunta 601, "A") o antes e depois que você escolheu é o do filtro, na tela cheia dos filtros: a chave "Comparar com o Original", com a linha arrastável. / Na barra de baixo da área de trabalho a etapa de ver o livro pôs também um botão "antes / depois", que mostra a página inteira como veio × como vai sair (com corte, en
+
+## 2026-11-09 v-antes (acrescentei-27-10) img=False
+TÍTULO: "antes / depois" na barra de baixo da área de trabalho: fica?
+ELE: Isso que eu escolhi vai alterar muito o programa? preste atenção nisso.
+PERGUNTA: Você tem razão: em 13/10 (pergunta 601, "A") o antes e depois que você escolheu é o do filtro, na tela cheia dos filtros: a chave "Comparar com o Original", com a linha arrastável. / Na barra de baixo da área de trabalho a etapa de ver o livro pôs também um botão "antes / depois", que mostra a página inteira como veio × como vai sair (com corte, en
+
+## 2026-11-09 au-d-567 (auditoria-6-para-depois) img=True
+TÍTULO: D-567 · "Inserir página" na grade fica para depois desta rodada
+ELE: [ainda não entendi] 
+PERGUNTA: Situação na versão de teste: Combinado para depois. / Você pediu (27/10/2026): Central ac-grade-inserir: "Pode ficar para depois desta rodada de consertos" / O que isso quer dizer: "Inserir página" na grade fica para depois desta rodada. / Solução na versão de teste: não feito.
+
+## 2026-11-09 au-d-567 (auditoria-6-para-depois) img=True
+TÍTULO: D-567 · "Inserir página" na grade fica para depois desta rodada
+ELE: Que grade? não entendi.
+PERGUNTA: Situação na versão de teste: Combinado para depois. / Você pediu (27/10/2026): Central ac-grade-inserir: "Pode ficar para depois desta rodada de consertos" / O que isso quer dizer: "Inserir página" na grade fica para depois desta rodada. / Solução na versão de teste: não feito.
+
+## 2026-11-09 au-d-567 (auditoria-6-para-depois) img=True
+TÍTULO: D-567 · "Inserir página" na grade fica para depois desta rodada
+ELE: Que grade? não entendi.
+PERGUNTA: Situação na versão de teste: Combinado para depois. / Você pediu (27/10/2026): Central ac-grade-inserir: "Pode ficar para depois desta rodada de consertos" / O que isso quer dizer: "Inserir página" na grade fica para depois desta rodada. / Solução na versão de teste: não feito.
+
+## 2026-11-09 au-d-565 (auditoria-6-para-depois) img=True
+TÍTULO: D-565 · Espaços de trabalho: a pessoa salva o jeito dos painéis com um nome, e o programa já vem com alguns jeitos…
+ELE: [ainda não entendi] 
+PERGUNTA: Situação na versão de teste: Combinado para depois. / Você pediu (27/10/2026): Central ac-fase-espacos: "Salvar o jeito dos painéis com um nome, como no Photoshop" + "Ai seria bom que já viesse de fabrica alguma configurações desses paineis prontas." / O que isso quer dizer: Espaços de trabalho: a pessoa salva o jeito dos painéis com um nome, e o p
+
+## 2026-11-09 au-d-523 (auditoria-6-para-depois) img=True
+TÍTULO: D-523 · Ler o texto (OCR): o programa pergunta a língua do livro ao abrir o livro (não descobre sozinho)
+ELE: [ainda não entendi] 
+PERGUNTA: Situação na versão de teste: Combinado para depois. / Você pediu (27/10/2026): Central, pd-idioma-ocr: "O programa pergunta sempre, ao abrir o livro" / O que isso quer dizer: Ler o texto (OCR): o programa pergunta a língua do livro ao abrir o livro (não descobre sozinho). / Solução na versão de teste: não feito. / Resolvida junto com: D-525 (cada u
+
+## 2026-11-09 au-d-544 (auditoria-5-escolhas-da-gerente) img=True
+TÍTULO: D-544 · O "Mover conteúdo" e as linhas de apoio saem do Cortar e moram só na ferramenta Mover (o Cortar ganha a frase…
+ELE: [ainda não entendi] 
+PERGUNTA: Situação na versão de teste: Funciona. / Escolha da gerente (27/10/2026): (escolha da gerente, D-014; etapa 5) apoiada em D-008 ("deveriam ser duas coisas independentes") / O que isso quer dizer: O "Mover conteúdo" e as linhas de apoio saem do Cortar e moram só na ferramenta Mover (o Cortar ganha a frase "Para mover ou mudar o tamanho do conteúdo n
+
+## 2026-11-09 gravura-a-mao-automatico (perg-gravura-a-mao) img=True
+TÍTULO: Se depois você rodar o Automático, a página com só "Respeitar" marcada deve procurar a gravura também?
+ELE: No chat: "2- não entendi"
+PERGUNTA: Caso: você pôs Preto e branco à mão na página 8 com "Respeitar" (a gravura saiu certa). Depois roda o Automático com "Limpar a folha" e com a etapa "Gravuras e fotos" desmarcada. / Hoje, nesse caso, o Automático não procura gravura, e a página volta a sair toda em preto e branco: a gravura vira mancha, como na foto ANTES. Com "Gravuras em tons de c
+
+## 2026-11-10 au-d-572 (auditoria-1-nao-funciona) img=True
+TÍTULO: D-572 · Depois de "está certo", a faixa da página não mostra mais aviso nem o botão "está certo" (hoje fica a frase…
+ELE: [ainda não entendi] Se é erro, tire daqui.
+PERGUNTA: Situação na versão de teste: Não funciona bem. / Você pediu (28/10/2026): Sessão 2 dos testes, 2-7: "eu cliquei está certo mas o livro continua com o aviso naquela folha, não devia ter mais aviso se eu apertei está certo" · "o está certo deixou o tique verde mas continuou com o aviso na pagina, dá para ver que a opção esta certo continua aparecendo
+
+## 2026-11-10 au-d-574 (auditoria-2-nao-feito) img=True
+TÍTULO: D-574 · hoje (2-10): "eu deveria conseguir ver o livreto pronto aqui nessa tela [...] quero tres opções"
+ELE: [ainda não entendi] No caso já sair em livreto ao processar tem que ser uma opção né?
+PERGUNTA: Situação na versão de teste: Não feito. / Você pediu (28/10/2026): Sessão 2 dos testes, 2-10: "eu deveria conseguir ver o livreto pronto aqui nessa tela para que eu possa ver se ficou certo, quero tres opções, e eu queria conseguir na hora de processa o livro já poder transformar ele em livreto." / O que isso quer dizer: Ver o livreto pronto dentro
+
+## 2026-11-10 quadrados-qual (perg-quadrados-brancos) img=True
+TÍTULO: Antes não fazia: os quadrados começaram na obra de 26/10. Como o Melhorar e o Mágico pro voltam a proteger as pinturas?
+ELE: [ainda não entendi] 
+PERGUNTA: Você tinha razão: antes o programa não fazia isso. Rodei a versão de antes da obra (26/10) e a de hoje no "Na escola de Jesus" inteiro (199 páginas), com as mesmas escolhas. Antes: 2 páginas com um furo pequeno de céu claro. Hoje: 65 páginas no Melhorar e 83 no Mágico pro com quadrados brancos, e 25 a 28 páginas com o "i" e o "t" quebrados. Na pági
+
+## 2026-11-13 n0411-caderno-pagina-em-branco (perguntas-04-11) img=True
+TÍTULO: Folha do caderno com lugar sem página: como escrever?
+ELE: [ainda não entendi] Você ainda não explicou o que está acontecendo
+PERGUNTA: Os números das páginas nas folhas do caderno estão prontos (D-604). Exemplo: "Folha 1 de 18 — frente: páginas 20 e 1". / Você perguntou por que o print usou uma folha sem estar dividida: tinha razão, o Gradus estava sem dividir. Dividido, o Gradus não tem lugar sem página (140 páginas = 7 cadernos de 20 cheios), por isso o exemplo novo é o Righetti
+
+## 2026-11-13 n0411-caderno-pagina-em-branco (perguntas-04-11) img=True
+TÍTULO: Folha do caderno com lugar sem página: como escrever?
+ELE: Ainda não entendi · "Você ainda não explicou o que está acontecendo"
+PERGUNTA: Os números das páginas nas folhas do caderno estão prontos (D-604). Exemplo: "Folha 1 de 18 — frente: páginas 20 e 1". / Você perguntou por que o print usou uma folha sem estar dividida: tinha razão, o Gradus estava sem dividir. Dividido, o Gradus não tem lugar sem página (140 páginas = 7 cadernos de 20 cheios), por isso o exemplo novo é o Righetti
+
+## 2026-11-13 n0411-caderno-pagina-em-branco (perguntas-04-11) img=True
+TÍTULO: Folha do caderno com lugar sem página: como escrever?
+ELE: Ainda não entendi · "Você ainda não explicou o que está acontecendo"
+PERGUNTA: Os números das páginas nas folhas do caderno estão prontos (D-604). Exemplo: "Folha 1 de 18 — frente: páginas 20 e 1". / Você perguntou por que o print usou uma folha sem estar dividida: tinha razão, o Gradus estava sem dividir. Dividido, o Gradus não tem lugar sem página (140 páginas = 7 cadernos de 20 cheios), por isso o exemplo novo é o Righetti
+
+## 2026-11-13 n0411-caderno-pagina-em-branco (perguntas-04-11) img=True
+TÍTULO: Folha do caderno com lugar sem página: como escrever?
+ELE: [ainda não entendi] 
+PERGUNTA: Os números das páginas nas folhas do caderno estão prontos (D-604). Exemplo: "Folha 1 de 18 — frente: páginas 20 e 1". / Você perguntou por que o print usou uma folha sem estar dividida: tinha razão, o Gradus estava sem dividir. Dividido, o Gradus não tem lugar sem página (140 páginas = 7 cadernos de 20 cheios), por isso o exemplo novo é o Righetti
+

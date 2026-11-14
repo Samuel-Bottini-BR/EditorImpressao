@@ -1,0 +1,19 @@
+{
+  "comentario": "Preciso que explique melhor esse problema.",
+  "conversa": [
+    {
+      "em": "2026-11-07T19:30:00Z",
+      "quem": "gerente",
+      "texto": "A página 13 tinha o aviso \"Não tenho certeza de onde cortar\". O agente só mexeu na inclinação, e o programa deu a página como conferida e tirou esse aviso, mas a lombada continua duvidosa. Quer que mexer na inclinação não tire o aviso da lombada?"
+    }
+  ],
+  "em": "2026-11-07T16:03:22.900Z",
+  "gerente": "A página 13 tinha o aviso \"Não tenho certeza de onde cortar\". O agente só mexeu na inclinação, e o programa deu a página como conferida e tirou esse aviso, mas a lombada continua duvidosa. Quer que mexer na inclinação não tire o aviso da lombada?",
+  "gerenteEm": "2026-11-07T19:30:00Z",
+  "lida": true,
+  "opcao": "consertar",
+  "opcaoNome": "Consertar",
+  "relatorio": "teste-kaique-funcoes",
+  "samuelViu": false,
+  "volta": false
+}

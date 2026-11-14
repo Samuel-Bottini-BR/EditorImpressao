@@ -1,0 +1,19 @@
+{
+  "comentario": "É só criar uma opção para desfazer o tirar fundo, e só vai desfazer o tirar fundo quando apertar ela. E via de regra, nenhum filtro deve fazer o fundo voltar.",
+  "conversa": [
+    {
+      "em": "2026-11-07T19:30:00Z",
+      "quem": "gerente",
+      "texto": "Anotado (D-646): nenhum filtro nem o Automático trazem o fundo de volta. Só um botão próprio, \"desfazer o tirar o fundo\". Está entre os graves da fila."
+    }
+  ],
+  "em": "2026-11-07T15:56:07.800Z",
+  "gerente": "Anotado (D-646): nenhum filtro nem o Automático trazem o fundo de volta. Só um botão próprio, \"desfazer o tirar o fundo\". Está entre os graves da fila.",
+  "gerenteEm": "2026-11-07T19:30:00Z",
+  "lida": true,
+  "opcao": "consertar",
+  "opcaoNome": "Consertar",
+  "relatorio": "teste-kaique-funcoes",
+  "samuelViu": false,
+  "volta": false
+}

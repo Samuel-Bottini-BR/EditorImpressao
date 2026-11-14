@@ -1,0 +1,19 @@
+{
+  "comentario": "Isso ficou bem estranho né, acho que não deveria dar para ver o antes/depois enquanto se mexe na folha, no caso do mover.",
+  "conversa": [
+    {
+      "em": "2026-11-07T19:30:00Z",
+      "quem": "gerente",
+      "texto": "Entendi assim: com o Mover, enquanto você arrasta a página, o \"antes / depois\" some e aparece só a página. Ao soltar, ele volta. Pode ser assim?"
+    }
+  ],
+  "em": "2026-11-07T15:49:48.704Z",
+  "gerente": "Entendi assim: com o Mover, enquanto você arrasta a página, o \"antes / depois\" some e aparece só a página. Ao soltar, ele volta. Pode ser assim?",
+  "gerenteEm": "2026-11-07T19:30:00Z",
+  "lida": true,
+  "opcao": "nao-entendi",
+  "opcaoNome": "Ainda não entendi",
+  "relatorio": "perg-mover-rotulo",
+  "samuelViu": false,
+  "volta": false
+}

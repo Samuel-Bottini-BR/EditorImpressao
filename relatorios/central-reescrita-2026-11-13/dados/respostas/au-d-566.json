@@ -1,0 +1,24 @@
+{
+  "comentario": "Teriamos como treinar o programa para cada vez que marcassemos algo a mão ele pudesse aprender com aquilo para que em outro livro ele conseguisse reconhecer automaticamente?",
+  "conversa": [
+    {
+      "em": "2026-11-09T20:21:50.427Z",
+      "quem": "samuel",
+      "texto": "Teriamos como treinar o programa para cada vez que marcassemos algo a mão ele pudesse aprender com aquilo para que em outro livro ele conseguisse reconhecer automaticamente?"
+    },
+    {
+      "em": "2026-11-13T20:40:00Z",
+      "quem": "gerente",
+      "texto": "Dá, sim: o programa pode aprender com as gravuras que você marca à mão, para achar melhor em outros livros. Isso cabe na regra de que a inteligência só aponta, não desenha. Anotado no Livro como D-695, e a ideia foi para a Lista de espera."
+    }
+  ],
+  "em": "2026-11-09T20:21:50.427Z",
+  "gerente": "Dá, sim: o programa pode aprender com as gravuras que você marca à mão, para achar melhor em outros livros. Isso cabe na regra de que a inteligência só aponta, não desenha. Anotado no Livro como D-695, e a ideia foi para a Lista de espera.",
+  "gerenteEm": "2026-11-13T20:40:00Z",
+  "lida": true,
+  "opcao": "depois",
+  "opcaoNome": "Fica para depois",
+  "reabrir": false,
+  "relatorio": "auditoria-6-para-depois",
+  "volta": false
+}

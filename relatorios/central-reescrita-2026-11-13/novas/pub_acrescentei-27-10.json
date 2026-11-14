@@ -1,0 +1,1424 @@
+{
+ "id": "acrescentei-27-10",
+ "nome": "Coisas que eu acrescentei sem você pedir",
+ "ordem": -6,
+ "origem": "auditoria de 27/10 (relatorios/obra-auditoria-escolhas/auditoria.html), pedida pela regra 7 do CLAUDE.md §11",
+ "perguntas": [
+  {
+   "exemplos": [
+    {
+     "legenda": "Onde fica a escolha: Automático, etapa 3 \"Cortar as bordas\", \"O que fica fora da página: cortar fora / pintar de branco\". Vale para a borda preta e para a faixa da tampa. Prints de 13/11, programa de hoje (versão de teste), cópias dos livros, janela de 1280 x 657.",
+     "src": "/_blob/5d23cf25799d510fe3826c6219a71cd6"
+    },
+    {
+     "legenda": "Na tela, Righetti folha 96 (páginas 452 e 453). Azul: antes do Automático, a faixa preta da tampa em cima. Verde: depois, com \"cortar fora\" e com \"pintar de branco\": a faixa sumiu nas duas páginas.",
+     "src": "/_blob/61fb86117a346ea065bbb9b1a7af24aa"
+    },
+    {
+     "legenda": "No PDF, as mesmas páginas: com \"cortar fora\" e com \"pintar de branco\", saem sem a faixa.",
+     "src": "/_blob/c7beb50c73e8a29b68e37c449976b89b"
+    },
+    {
+     "legenda": "Página 452: a faixa da tampa sumiu, mas o preto do lado esquerdo (o fundo do scanner, não a tampa) continua, porque a caixinha \"Achar a página dentro da borda preta\" vem desligada de fábrica. Com ela ligada, sai também.",
+     "src": "/_blob/9694d71c6a8cf6d7b5b60ffc1b8291a5"
+    }
+   ],
+   "explicacao": [
+    "O que foi feito sem você pedir (etapa 4): a faixa preta só sai quando a pessoa divide ou acerta a linha à mão; o Automático nunca tira; ela é pintada de branco, não cortada.",
+    "O que você tinha decidido: 13-21/10 \"É para sumir totalmente.\" e \"tem que ficar rente a folha de papel, não pode ter preto ali.\"; 09/10: tarja e moldura do scanner — \"O Kaique escolhe por livro\" entre cortar e pintar de branco.",
+    "Prints para comparar: relatorios/obra-etapa4/prints/depois-08 (sem a faixa) e depois-09 (com a faixa, pelo Automático)."
+   ],
+   "historico": [
+    {
+     "em": "2026-11-13T22:40:00Z",
+     "quem": "gerente",
+     "texto": "Aqui estão os prints que faltavam: a escolha fica no Automático e a faixa some nos dois jeitos, na tela e no PDF. Dois avisos: no Righetti os dois jeitos saem quase iguais, porque o Cortar já corta a página abaixo da tampa; e a tira de miniaturas ainda mostra a faixa, porque mostra a folha como veio do scan."
+    }
+   ],
+   "id": "ac-tampa",
+   "opcoes": [
+    {
+     "id": "como-decidido",
+     "imgs": [],
+     "nome": "Como eu decidi: sumir em todo o livro, e o Kaique escolhe por livro cortar ou pintar de branco (recomendo)",
+     "texto": "O Automático também tira."
+    },
+    {
+     "id": "so-a-mao",
+     "imgs": [],
+     "nome": "Só quando dividir à mão, como o agente fez",
+     "texto": ""
+    },
+    {
+     "id": "nao-entendi",
+     "imgs": [],
+     "nome": "Ainda não entendi",
+     "texto": "Explique de outro jeito."
+    }
+   ],
+   "titulo": "Faixa preta da tampa do scanner (Righetti 96): quando ela sai?"
+  },
+  {
+   "exemplos": [],
+   "explicacao": [
+    "O que foi feito sem você pedir (etapa 4): no \"La vida eterna\" o jeito do ScanTailor cortava as folhas 4 e 5 a 10% da largura. Agora, quando o corte cai fora do meio da folha (20% a 80%), o programa usa sozinho a conta do Editor naquela folha e marca \"Lombada incerta\".",
+    "O que você tinha decidido (05/10, G2): escolher \"o do programa\" ou \"o do ScanTailor\", \"e trocando numa folha se um ficar ruim\" — a troca era do Kaique; de fábrica, \"O do ScanTailor\"."
+   ],
+   "id": "ac-lombada-sozinha",
+   "opcoes": [
+    {
+     "id": "manter",
+     "imgs": [],
+     "nome": "Manter (recomendo)",
+     "texto": "O programa troca sozinho e avisa com \"Lombada incerta\"."
+    },
+    {
+     "id": "tirar",
+     "imgs": [],
+     "nome": "Tirar, voltar como era antes",
+     "texto": "O ScanTailor corta onde cortar; o aviso \"Lombada incerta\" aparece e o Kaique troca à mão."
+    },
+    {
+     "id": "nao-entendi",
+     "imgs": [],
+     "nome": "Ainda não entendi",
+     "texto": "Explique de outro jeito."
+    }
+   ],
+   "titulo": "Quando o ScanTailor corta a folha perto da beirada, o programa pode trocar sozinho para a conta do Editor?"
+  },
+  {
+   "exemplos": [],
+   "explicacao": [
+    "O que foi feito sem você pedir (etapas 2, 3 e 5): essas cinco teclas.",
+    "O que você tinha decidido: 06/10 (R8 302) \"quando eu passar em cima da agrupada tem que mostrar a letra dela de atalho\" — sem escolher as letras. 07 e 09/10: \"a tecla Delete deixa em branco\" (sem tecla para \"Tirar do livro\").",
+    "Trocar depois é fácil (as teclas são remapeáveis). Se quiser outras letras, escreva no comentário."
+   ],
+   "id": "ac-letras",
+   "opcoes": [
+    {
+     "id": "manter",
+     "imgs": [],
+     "nome": "Manter (recomendo)",
+     "texto": "Ficam as cinco teclas."
+    },
+    {
+     "id": "tirar",
+     "imgs": [],
+     "nome": "Tirar, voltar como era antes",
+     "texto": "Sem essas teclas (Delete continua deixando em branco)."
+    },
+    {
+     "id": "nao-entendi",
+     "imgs": [],
+     "nome": "Ainda não entendi",
+     "texto": "Explique de outro jeito."
+    }
+   ],
+   "titulo": "Teclas novas: D Dividir, X Cortar, I Endireitar, F Mover, Shift+Del Tirar do livro"
+  },
+  {
+   "exemplos": [],
+   "explicacao": [
+    "O que foi feito sem você pedir (etapa 2): um menu entre Editar e Marcar com Dividir, Cortar, Endireitar, as de marcar, Zoom e Mão (print relatorios/obra-etapa2/prints/depois-05-menu-ferramentas.png).",
+    "O que você tinha decidido: os menus das rodadas 12 a 14 (903 B: menu novo \"Painéis\"; 904 A: itens do Ver). O teste do Kaique achou que nenhum menu tinha Endireitar/Cortar/Dividir."
+   ],
+   "id": "ac-menu-ferramentas",
+   "opcoes": [
+    {
+     "id": "manter",
+     "imgs": [],
+     "nome": "Manter (recomendo)",
+     "texto": "Fica o menu \"Ferramentas\"."
+    },
+    {
+     "id": "tirar",
+     "imgs": [],
+     "nome": "Tirar, voltar como era antes",
+     "texto": "Sem o menu; as ferramentas continuam na trilha da esquerda."
+    },
+    {
+     "id": "nao-entendi",
+     "imgs": [],
+     "nome": "Ainda não entendi",
+     "texto": "Explique de outro jeito."
+    }
+   ],
+   "titulo": "Menu novo \"Ferramentas\" na barra de cima"
+  },
+  {
+   "exemplos": [],
+   "explicacao": [
+    "O que foi feito sem você pedir (etapa 10b): uma conta que desentorta seguindo só as linhas do texto, sem as notas da margem. Ligada para todo livro, entortava a Marial 41 (reta); por isso virou opção da página, desligada.",
+    "O que você tinha decidido (23/10): \"o primeiro passo [...] seria tirar essa moldura preta [...] ai o desentortador não iria confundir as letras com moldura preta\" — isso já foi feito (etapa 10a)."
+   ],
+   "id": "ac-desentortar-texto",
+   "opcoes": [
+    {
+     "id": "manter",
+     "imgs": [],
+     "nome": "Manter",
+     "texto": "Fica a opção na página, desligada de fábrica."
+    },
+    {
+     "id": "tirar",
+     "imgs": [],
+     "nome": "Tirar, voltar como era antes (recomendo)",
+     "texto": "Sem a opção; o desentortar fica como você aprovou."
+    },
+    {
+     "id": "nao-entendi",
+     "imgs": [],
+     "nome": "Ainda não entendi",
+     "texto": "Explique de outro jeito."
+    }
+   ],
+   "titulo": "Opção nova no desentortar: \"seguir só o bloco do texto\""
+  },
+  {
+   "exemplos": [],
+   "explicacao": [
+    "O que foi proposto sem você pedir (etapa 10b; ainda não construído): gravura de fundo escuro (Palatino 70 e 74, fotos de retícula do Righetti) sairia em tons de cinza no Preto e branco, em vez de preto e branco puro.",
+    "O que você tinha decidido (30/09): para foto e pintura, \"Cinza (tons de cinza): BOM\" e pontilhados \"RUIM\". Para gravura de traço você nunca disse cinza.",
+    "Fotos: relatorios/obra-etapa10b/conferencia/conferencia-etapa10b.html (Palatino 74)."
+   ],
+   "id": "ac-gravura-cinza",
+   "opcoes": [
+    {
+     "id": "nao",
+     "imgs": [],
+     "nome": "Não fazer: gravura continua em preto e branco (recomendo)",
+     "texto": ""
+    },
+    {
+     "id": "cinza",
+     "imgs": [],
+     "nome": "Fazer: gravura de fundo escuro em cinza",
+     "texto": ""
+    },
+    {
+     "id": "nao-entendi",
+     "imgs": [],
+     "nome": "Ainda não entendi",
+     "texto": "Explique de outro jeito."
+    }
+   ],
+   "titulo": "Gravura de fundo escuro no Preto e branco: sair em tons de cinza?"
+  },
+  {
+   "exemplos": [],
+   "explicacao": [
+    "O que foi proposto sem você pedir (ainda não construído): a caixinha \"Margens iguais\", que hoje mora no Automático (Saída), também apareceria na tela do Cortar.",
+    "O que você tinha decidido (05/10, G9): caixinha desmarcada de fábrica, \"Mas eu vou conseguir alterar isso né?\" — o lugar na tela você não escolheu."
+   ],
+   "id": "ac-margens-iguais",
+   "opcoes": [
+    {
+     "id": "so-automatico",
+     "imgs": [],
+     "nome": "Só no Automático, como está (recomendo)",
+     "texto": ""
+    },
+    {
+     "id": "tambem-corte",
+     "imgs": [],
+     "nome": "Também na tela do corte",
+     "texto": ""
+    },
+    {
+     "id": "nao-entendi",
+     "imgs": [],
+     "nome": "Ainda não entendi",
+     "texto": "Explique de outro jeito."
+    }
+   ],
+   "titulo": "Caixinha \"Margens iguais\" também na tela do corte?"
+  },
+  {
+   "exemplos": [],
+   "explicacao": [
+    "O que foi feito sem você pedir (etapa 9a): antes de mandar para a impressora, uma janela mostra impressora, lados, cópias e folhas e pede confirmação.",
+    "O que você tinha decidido: 21/10 (imp-5) \"Também manda direto para a impressora\"; a confirmação você pediu só para o \"imprimir agora\" (26/10, \"2\")."
+   ],
+   "id": "ac-impressora-pergunta",
+   "opcoes": [
+    {
+     "id": "manter",
+     "imgs": [],
+     "nome": "Manter (recomendo)",
+     "texto": "Pergunta antes de mandar (segurança, como no \"imprimir agora\")."
+    },
+    {
+     "id": "tirar",
+     "imgs": [],
+     "nome": "Tirar, voltar como era antes",
+     "texto": "Manda direto, como você decidiu em 21/10."
+    },
+    {
+     "id": "nao-entendi",
+     "imgs": [],
+     "nome": "Ainda não entendi",
+     "texto": "Explique de outro jeito."
+    }
+   ],
+   "titulo": "\"mandar para a impressora\" do \"Montar para imprimir\" pergunta antes"
+  },
+  {
+   "exemplos": [],
+   "explicacao": [
+    "O que foi feito sem você pedir (etapa 9a): embaixo dos botões apareceu \"Para imprimir em cadernos, use 'montar para imprimir em A4' [...]\".",
+    "O que você tinha decidido (22/10): \"Deixar os dois\" (os dois botões, sem frase)."
+   ],
+   "id": "ac-frase-pronto",
+   "opcoes": [
+    {
+     "id": "manter",
+     "imgs": [],
+     "nome": "Manter",
+     "texto": "Fica a frase."
+    },
+    {
+     "id": "tirar",
+     "imgs": [],
+     "nome": "Tirar, voltar como era antes (recomendo)",
+     "texto": "Só os dois botões, sem frase."
+    },
+    {
+     "id": "nao-entendi",
+     "imgs": [],
+     "nome": "Ainda não entendi",
+     "texto": "Explique de outro jeito."
+    }
+   ],
+   "titulo": "Frase nova na tela \"Ficou pronto!\""
+  },
+  {
+   "exemplos": [],
+   "explicacao": [
+    "O que foi feito sem você pedir (etapa 10a): ao imprimir com mais de 100%, aparece esse aviso na janela de imprimir.",
+    "O que você tinha decidido (22/10): \"Primeiro provar em páginas de verdade, depois decidir\". Já existia o aviso de margem.",
+    "Foto: relatorios/obra-etapa10a/conferencia/img/imprimir140.jpg (Escola 7 a 140%)."
+   ],
+   "id": "ac-aviso-cortado",
+   "opcoes": [
+    {
+     "id": "manter",
+     "imgs": [],
+     "nome": "Manter (recomendo)",
+     "texto": "Fica o aviso."
+    },
+    {
+     "id": "tirar",
+     "imgs": [],
+     "nome": "Tirar, voltar como era antes",
+     "texto": "Sem o aviso novo; fica só o aviso de margem de antes."
+    },
+    {
+     "id": "nao-entendi",
+     "imgs": [],
+     "nome": "Ainda não entendi",
+     "texto": "Explique de outro jeito."
+    }
+   ],
+   "titulo": "Aviso \"o que está impresso fica CORTADO\" ao imprimir acima de 100%"
+  },
+  {
+   "exemplos": [],
+   "explicacao": [
+    "O que foi feito sem você pedir (etapa 3): na caixa de salvar receita, uma opção para escolher qual receita aparece marcada no aviso de livro novo.",
+    "O que você tinha decidido: 25/09 \"salvar como receita com nome e reusar\"; fr-219 \"pode melhorar a caixa de como escolhemos o que vai dentro da receita\"."
+   ],
+   "id": "ac-receita-padrao",
+   "opcoes": [
+    {
+     "id": "manter",
+     "imgs": [],
+     "nome": "Manter (recomendo)",
+     "texto": "Fica a caixinha."
+    },
+    {
+     "id": "tirar",
+     "imgs": [],
+     "nome": "Tirar, voltar como era antes",
+     "texto": "Sem a caixinha; o aviso usa sempre a receita de fábrica."
+    },
+    {
+     "id": "nao-entendi",
+     "imgs": [],
+     "nome": "Ainda não entendi",
+     "texto": "Explique de outro jeito."
+    }
+   ],
+   "titulo": "Caixinha \"Usar esta receita no aviso de todo livro novo\""
+  },
+  {
+   "exemplos": [],
+   "explicacao": [
+    "O que foi feito sem você pedir (etapas 9a e 9c): \"Ofício da Imaculada Conceição - mágico pro.pdf\" passou a ser sugerido como \"Oficio da Imaculada Conceicao - magico pro.pdf\".",
+    "O que você tinha decidido (18/07): \"Corrija TODOS os textos da interface para português correto\". A regra \"caminho sem acento\" é técnica, do código; o nome do livro é do Kaique."
+   ],
+   "id": "ac-nome-sem-acento",
+   "opcoes": [
+    {
+     "id": "com-acento",
+     "imgs": [],
+     "nome": "Voltar com acento (recomendo)",
+     "texto": ""
+    },
+    {
+     "id": "sem-acento",
+     "imgs": [],
+     "nome": "Sem acento",
+     "texto": ""
+    },
+    {
+     "id": "nao-entendi",
+     "imgs": [],
+     "nome": "Ainda não entendi",
+     "texto": "Explique de outro jeito."
+    }
+   ],
+   "titulo": "Nome sugerido do PDF pronto: com ou sem acento?"
+  },
+  {
+   "exemplos": [],
+   "explicacao": [
+    "O que foi proposto sem você pedir (não construído): texto novo para livro dividido: \"A página 2 fica na folha 1, que é ímpar. Para girar só as folhas pares, vá para a folha 2 (páginas 3 e 4).\"",
+    "O que você aprovou (06/10): \"Você está numa folha ímpar. Para girar só as pares, vá a uma folha par e gire de lá.\""
+   ],
+   "id": "ac-texto-pares",
+   "opcoes": [
+    {
+     "id": "aprovado",
+     "imgs": [],
+     "nome": "Fica o texto que eu aprovei (recomendo)",
+     "texto": ""
+    },
+    {
+     "id": "novo",
+     "imgs": [],
+     "nome": "Usar o texto novo",
+     "texto": ""
+    },
+    {
+     "id": "nao-entendi",
+     "imgs": [],
+     "nome": "Ainda não entendi",
+     "texto": "Explique de outro jeito."
+    }
+   ],
+   "titulo": "Texto do aviso \"girar só as folhas pares\""
+  },
+  {
+   "exemplos": [],
+   "explicacao": [
+    "\"Obra\" é o nome que eu dei, sem explicar, para a rodada grande de consertos que você mandou fazer em 26/10 (depois da sessão de testes: abrir direto na área de trabalho, todas as ferramentas à vista, Automático de verdade, dividir à mão, mover e redimensionar, lado a lado...). Desculpe a palavra. Daqui para a frente escrevo \"esta rodada de consertos\".",
+    "Anotado da sua resposta: o \"dividir\" da grade é dividir a página com a função do ScanTailor que já está no programa. Vai ser feito agora, nesta rodada de consertos.",
+    "Falta só o \"inserir\": colocar no livro uma página que não está no PDF escaneado (por exemplo, uma folha em branco ou uma página de outro PDF). Isso muda o jeito de o programa guardar o livro, por isso ficou de fora. Pode ficar para depois desta rodada de consertos?"
+   ],
+   "historico": [
+    {
+     "em": "2026-10-27T21:53:40.474Z",
+     "quem": "samuel",
+     "texto": "Ainda não entendi. \"Não sei de que obra está falando, quando falei dividir é dividir a pagina, usando a funcionalidade do scantailor que colocamos no aplicativo, é isso que deveria ser feito.\""
+    },
+    {
+     "em": "2026-10-27T22:30:00.000Z",
+     "quem": "gerente",
+     "texto": "Entendido: \"dividir\" na grade é dividir a página com a função do ScanTailor que já está no programa. Isso vai ser feito agora, nesta rodada de consertos. \"Obra\" é o nome que eu dei, sem explicar, para a rodada grande de consertos que você mandou fazer em 26/10 (depois da sessão de testes: abrir direto na área de trabalho, todas as ferramentas à vista, Automático de verdade, dividir à mão, mover e redimensionar, lado a lado...). Desculpe a palavra. Daqui para a frente escrevo \"esta rodada de consertos\". Ficou só a pergunta do \"inserir\"."
+    }
+   ],
+   "id": "ac-grade-inserir",
+   "opcoes": [
+    {
+     "id": "depois",
+     "imgs": [],
+     "nome": "Pode ficar para depois desta rodada de consertos",
+     "texto": ""
+    },
+    {
+     "id": "agora",
+     "imgs": [],
+     "nome": "Quero agora, nesta rodada",
+     "texto": ""
+    },
+    {
+     "id": "nao-entendi",
+     "imgs": [],
+     "nome": "Ainda não entendi",
+     "texto": "Explique de outro jeito."
+    }
+   ],
+   "titulo": "Grade \"Todas as páginas\": \"inserir página\" pode ficar para depois?"
+  },
+  {
+   "exemplos": [],
+   "explicacao": [
+    "\"Obra\" é o nome que eu dei, sem explicar, para a rodada grande de consertos que você mandou fazer em 26/10 (depois da sessão de testes: abrir direto na área de trabalho, todas as ferramentas à vista, Automático de verdade, dividir à mão, mover e redimensionar, lado a lado...). Desculpe a palavra. Daqui para a frente escrevo \"esta rodada de consertos\".",
+    "A pergunta: em 12/10 (705) você aprovou \"Marcar como\" com \"iluminura ou pintura\" e \"moldura\" (\"A — Sim, os dois\"), mas não disse quando fazer. Eu pus para depois desta rodada de consertos, sem perguntar."
+   ],
+   "historico": [
+    {
+     "em": "2026-10-27T21:52:09.618Z",
+     "quem": "samuel",
+     "texto": "Ainda não entendi. \"Que Obra?\""
+    },
+    {
+     "em": "2026-10-27T22:30:00.000Z",
+     "quem": "gerente",
+     "texto": "\"Obra\" é o nome que eu dei, sem explicar, para a rodada grande de consertos que você mandou fazer em 26/10 (depois da sessão de testes: abrir direto na área de trabalho, todas as ferramentas à vista, Automático de verdade, dividir à mão, mover e redimensionar, lado a lado...). Desculpe a palavra. Daqui para a frente escrevo \"esta rodada de consertos\"."
+    },
+    {
+     "em": "2026-10-27T22:53:42.985Z",
+     "quem": "samuel",
+     "texto": "Escolheu \"Depois desta rodada de consertos\". Comentário: \"Mas eu ainda não entendi onde vai ser colocado essas opções, do que você está falando.\""
+    },
+    {
+     "em": "2026-10-27T23:30:00.000Z",
+     "quem": "gerente",
+     "texto": "Onde fica: no painel \"Propriedades\" da área de trabalho, quando você marca uma área da página com as ferramentas de marcar (retângulo, laço, varinha), aparece \"Marcar como:\" com os jeitos de tratar aquela área. Hoje são três: \"gravura ou foto\", \"letra e traço\" e \"papel\". Em 12/10 você aprovou mais dois: \"iluminura ou pintura\" (sai com todas as cores) e \"moldura\" (o enfeite em volta da página). Eles aparecem nessa mesma lista. Anotado: entram depois desta rodada de consertos."
+    }
+   ],
+   "id": "ac-fase-marcar-como",
+   "opcoes": [
+    {
+     "id": "depois",
+     "imgs": [],
+     "nome": "Depois desta rodada de consertos",
+     "texto": ""
+    },
+    {
+     "id": "agora",
+     "imgs": [],
+     "nome": "Agora, junto desta rodada de consertos",
+     "texto": ""
+    },
+    {
+     "id": "nao-entendi",
+     "imgs": [],
+     "nome": "Ainda não entendi",
+     "texto": "Explique de outro jeito."
+    }
+   ],
+   "titulo": "Quando fazer o \"Marcar como: iluminura ou pintura / moldura\"?"
+  },
+  {
+   "exemplos": [],
+   "explicacao": [
+    "Em 28/09 apareceu no desenho da tela a ideia de dois botões: \"Limpo\" (só a página e poucas ferramentas à vista) e \"Completo\" (todos os painéis abertos). Ficou \"a confirmar\" por você.",
+    "Em 05/10 você escolheu \"C — tudo livre, como o Photoshop\": a pessoa abre, fecha e arrasta os painéis como quiser.",
+    "O que eu escolhi sem perguntar: em vez de dois botões fixos, a pessoa arruma os painéis do jeito dela e salva esse jeito com um nome — por exemplo \"Para conferir\" ou \"Para limpar\" — e depois volta a ele com um clique. É o que o Photoshop chama de \"espaço de trabalho\". Nada disso foi feito ainda; seria depois desta rodada de consertos."
+   ],
+   "historico": [
+    {
+     "em": "2026-10-27T21:51:46.658Z",
+     "quem": "samuel",
+     "texto": "Ainda não entendi. \"Não sei de que arranjos está falando.\""
+    },
+    {
+     "em": "2026-10-27T22:30:00.000Z",
+     "quem": "gerente",
+     "texto": "Expliquei de novo abaixo, com exemplo."
+    },
+    {
+     "em": "2026-10-27T22:52:34.776Z",
+     "quem": "samuel",
+     "texto": "Escolheu \"Salvar o jeito dos painéis com um nome, como no Photoshop\". Comentário: \"Ai seria bom que já viesse de fabrica alguma configurações desses paineis prontas.\""
+    },
+    {
+     "em": "2026-10-27T23:30:00.000Z",
+     "quem": "gerente",
+     "texto": "Anotado: salvar o jeito dos painéis com nome, e o programa já vem com alguns jeitos prontos de fábrica (por exemplo \"Limpo\" e \"Completo\"). Fica para a fase do layout, depois desta rodada de consertos."
+    }
+   ],
+   "id": "ac-fase-espacos",
+   "opcoes": [
+    {
+     "id": "salvar-jeito",
+     "imgs": [],
+     "nome": "Salvar o jeito dos painéis com um nome, como no Photoshop",
+     "texto": ""
+    },
+    {
+     "id": "dois-botoes",
+     "imgs": [],
+     "nome": "Dois botões fixos: Limpo e Completo",
+     "texto": ""
+    },
+    {
+     "id": "nenhum",
+     "imgs": [],
+     "nome": "Nenhum dos dois; só o \"tudo livre\"",
+     "texto": ""
+    },
+    {
+     "id": "nao-entendi",
+     "imgs": [],
+     "nome": "Ainda não entendi",
+     "texto": "Explique de outro jeito."
+    }
+   ],
+   "titulo": "Os botões \"Limpo\" e \"Completo\" da área de trabalho"
+  },
+  {
+   "exemplos": [],
+   "explicacao": [
+    "A gerente escolheu (sem perguntar) que os manuscritos entram na Fase 7.3, com o Kraken e modelos de manuscrito. O plano dizia \"decidir se os manuscritos entram\". Nada mudou no programa."
+   ],
+   "id": "ac-fase-manuscritos",
+   "opcoes": [
+    {
+     "id": "sim",
+     "imgs": [],
+     "nome": "Sim, entram na Fase 7",
+     "texto": ""
+    },
+    {
+     "id": "nao",
+     "imgs": [],
+     "nome": "Não entram",
+     "texto": ""
+    },
+    {
+     "id": "depois",
+     "imgs": [],
+     "nome": "Decidir quando chegar a Fase 7",
+     "texto": ""
+    },
+    {
+     "id": "nao-entendi",
+     "imgs": [],
+     "nome": "Ainda não entendi",
+     "texto": "Explique de outro jeito."
+    }
+   ],
+   "titulo": "Manuscritos (Graduale, Palatino) entram na leitura do texto da Fase 7?"
+  },
+  {
+   "exemplos": [],
+   "explicacao": [
+    "Em 29/07 você pediu andar pelas páginas com a roda do mouse, Page Up/Down e Home/End. Num item de 24 e 28/09 (consertar o zoom) ficou escrito \"a roda do mouse sempre dá zoom\". As duas coisas não cabem juntas.",
+    "Como ficou agora (sem você escolher): sem zoom, a roda troca de página; com zoom, a roda continua dando zoom; Ctrl + roda dá zoom sempre. Page Up/Down pulam 10 páginas; Home/End vão ao começo e ao fim.",
+    "Prints: relatorios/obra-etapa6/prints/ (rodada de consertos, etapa \"ver o livro\")."
+   ],
+   "id": "v-roda",
+   "opcoes": [
+    {
+     "id": "como-ficou",
+     "imgs": [],
+     "nome": "Como ficou: sem zoom troca de página; Ctrl + roda dá zoom",
+     "texto": "Com zoom, a roda anda pela página (como o UPDF) em vez de dar zoom."
+    },
+    {
+     "id": "sempre-zoom",
+     "imgs": [],
+     "nome": "A roda sempre dá zoom; troca de página só pelas teclas e setas",
+     "texto": ""
+    },
+    {
+     "id": "nao-entendi",
+     "imgs": [],
+     "nome": "Ainda não entendi",
+     "texto": "Explique de outro jeito."
+    }
+   ],
+   "titulo": "Roda do mouse na página: trocar de página ou dar zoom?"
+  },
+  {
+   "exemplos": [],
+   "explicacao": [
+    "A barra de baixo tem \"Uma página / Duas lado a lado\". Hoje todo livro abre em \"Uma página\" (D-007)."
+   ],
+   "id": "v-lembrar",
+   "opcoes": [
+    {
+     "id": "nao",
+     "imgs": [],
+     "nome": "Não lembrar: todo livro abre em \"Uma página\" (recomendo)",
+     "texto": ""
+    },
+    {
+     "id": "sim",
+     "imgs": [],
+     "nome": "Lembrar o último jeito escolhido",
+     "texto": ""
+    },
+    {
+     "id": "nao-entendi",
+     "imgs": [],
+     "nome": "Ainda não entendi",
+     "texto": "Explique de outro jeito."
+    }
+   ],
+   "titulo": "\"Uma página / Duas lado a lado\": lembrar de um livro para o outro?"
+  },
+  {
+   "exemplos": [],
+   "explicacao": [
+    "Hoje o zoom \"– N% +\" vale em \"Uma página\". No \"Duas lado a lado\" as duas páginas aparecem do tamanho que cabe."
+   ],
+   "id": "v-zoom-pares",
+   "opcoes": [
+    {
+     "id": "depois",
+     "imgs": [],
+     "nome": "Não por agora (recomendo)",
+     "texto": ""
+    },
+    {
+     "id": "sim",
+     "imgs": [],
+     "nome": "Sim, zoom também no lado a lado",
+     "texto": ""
+    },
+    {
+     "id": "nao-entendi",
+     "imgs": [],
+     "nome": "Ainda não entendi",
+     "texto": "Explique de outro jeito."
+    }
+   ],
+   "titulo": "Zoom também no \"Duas lado a lado\"?"
+  },
+  {
+   "exemplos": [],
+   "explicacao": [
+    "Exemplo: numa página A5, \"100%\" pode ser a página inteira cabendo na tela, ou o tamanho real do papel (como uma régua encostada na tela)."
+   ],
+   "id": "v-100",
+   "opcoes": [
+    {
+     "id": "cabe",
+     "imgs": [],
+     "nome": "A página inteira cabendo na tela (recomendo)",
+     "texto": ""
+    },
+    {
+     "id": "real",
+     "imgs": [],
+     "nome": "O tamanho real do papel",
+     "texto": ""
+    },
+    {
+     "id": "nao-entendi",
+     "imgs": [],
+     "nome": "Ainda não entendi",
+     "texto": "Explique de outro jeito."
+    }
+   ],
+   "titulo": "O que é \"100%\" no zoom?"
+  },
+  {
+   "exemplos": [],
+   "explicacao": [
+    "Você tem razão: em 13/10 (pergunta 601, \"A\") o antes e depois que você escolheu é o do filtro, na tela cheia dos filtros: a chave \"Comparar com o Original\", com a linha arrastável.",
+    "Na barra de baixo da área de trabalho a etapa de ver o livro pôs também um botão \"antes / depois\", que mostra a página inteira como veio × como vai sair (com corte, endireitar, filtro). Ele veio de pedidos seus de 18/07 (\"Ver de perto\": \"Modo COMPARAR\") e 08/08 (faixa de baixo com zoom e \"ajustar à tela\"), mas o lugar na barra de baixo você nunca escolheu."
+   ],
+   "historico": [
+    {
+     "em": "2026-10-27T22:49:31.159Z",
+     "quem": "samuel",
+     "texto": "Ainda não entendi. \"antes e depois foi uma coisa que decidimos para usar no filtro né?\""
+    },
+    {
+     "em": "2026-10-27T23:30:00.000Z",
+     "quem": "gerente",
+     "texto": "Sim. Em 13/10 (rodada 11, pergunta 601, \"A\") você decidiu que a tela cheia dos filtros tem a chave \"Comparar com o Original\", que vira o antes e depois com a linha arrastável. O \"antes / depois\" na barra de baixo da área de trabalho veio de outro pedido seu, de 18/07 (\"Ver de perto\": zoom, \"+ / - / ajustar à tela\" e \"Modo COMPARAR\") e de 08/08 (faixa de baixo com página, zoom e \"ajustar à tela\"). A etapa de ver o livro pôs esse \"comparar\" na barra de baixo, para a página inteira (não só o filtro)."
+    }
+   ],
+   "id": "v-antes",
+   "opcoes": [
+    {
+     "id": "so-filtro",
+     "imgs": [],
+     "nome": "Só no filtro, como decidi em 13/10: tirar da barra de baixo",
+     "texto": ""
+    },
+    {
+     "id": "os-dois",
+     "imgs": [],
+     "nome": "Nos dois: no filtro e na barra de baixo",
+     "texto": "Na barra de baixo, o \"antes\" é a página em Original (já dividida, sem filtro)."
+    },
+    {
+     "id": "nao-entendi",
+     "imgs": [],
+     "nome": "Ainda não entendi",
+     "texto": "Explique de outro jeito."
+    }
+   ],
+   "titulo": "\"antes / depois\" na barra de baixo da área de trabalho: fica?"
+  },
+  {
+   "exemplos": [
+    {
+     "legenda": "O problema, de verdade: La vida eterna dividido, \"Duas lado a lado\". Nos pares do PDF, a página de número impresso ímpar (7, 9, 11) aparece à esquerda; num livro aberto, ela fica à direita. Prints de 13/11, programa de hoje (versão de teste), cópias dos livros, janela de 1280 x 657.",
+     "src": "/_blob/805737af35e3356b8450dada0c0b097a"
+    }
+   ],
+   "explicacao": [
+    "Num livro de verdade aberto, a página da direita é sempre ímpar (1, 3, 5...) e a da esquerda é par (2, 4, 6...). A capa ou a página 1 fica sozinha, à direita.",
+    "No \"Duas lado a lado\" o programa monta os pares assim, contando pela ordem do PDF: [ — | 1 ]  [ 2 | 3 ]  [ 4 | 5 ] ...",
+    "O problema: alguns PDFs escaneados não começam na página 1 do livro. No \"La vida eterna\" a primeira página do PDF já é uma página par impressa. Aí os pares saem trocados: a página com número ímpar impresso aparece à esquerda, ao contrário do livro.",
+    "A opção seria um botão para \"empurrar\" os pares uma página, para esse tipo de livro: [ 1 | 2 ]  [ 3 | 4 ] ... e assim a ímpar impressa volta para a direita."
+   ],
+   "historico": [
+    {
+     "em": "2026-10-27T22:48:43.135Z",
+     "quem": "samuel",
+     "texto": "Ainda não entendi. \"explique melhor\""
+    },
+    {
+     "em": "2026-10-27T23:30:00.000Z",
+     "quem": "gerente",
+     "texto": "Expliquei de novo abaixo, com um desenho em texto."
+    },
+    {
+     "em": "2026-11-13T22:40:00Z",
+     "quem": "gerente",
+     "texto": "Pus o print do problema de verdade (La vida eterna). A proposta do aviso está na pergunta nova logo abaixo."
+    }
+   ],
+   "id": "v-capa",
+   "opcoes": [
+    {
+     "id": "esperar",
+     "imgs": [],
+     "nome": "Não agora: deixar como está",
+     "texto": ""
+    },
+    {
+     "id": "opcao",
+     "imgs": [],
+     "nome": "Fazer o botão de acertar os pares",
+     "texto": ""
+    },
+    {
+     "id": "nao-entendi",
+     "imgs": [],
+     "nome": "Ainda não entendi",
+     "texto": "Explique de outro jeito."
+    }
+   ],
+   "titulo": "Lado a lado: botão para acertar os pares quando o PDF começa no meio da numeração?"
+  },
+  {
+   "exemplos": [
+    {
+     "src": "/_blob/805737af35e3356b8450dada0c0b097a",
+     "legenda": "O problema em mais pares: La vida eterna dividido, \"Duas lado a lado\". Nos pares 6-7, 8-9 e 10-11 do PDF, a página de número ímpar impresso (7, 9, 11) aparece à esquerda. Print de 13/11, versão de teste, cópia do livro."
+    }
+   ],
+   "explicacao": [
+    "Do que se trata: na área de trabalho, o botão \"Duas lado a lado\" (barra de baixo) mostra as páginas em pares, como o livro aberto. Num livro de verdade, a página da direita é sempre ímpar. Alguns PDFs começam no meio da numeração, e aí os pares saem trocados: a ímpar fica à esquerda (La vida eterna, faixa azul).",
+    "Sua dúvida: \"mas vai ter um botão para fazer isso antes do imprimir livros?\" → Sim. Em 09/11 você mandou fazer o botão de acertar os pares. Ele vai ficar no \"Duas lado a lado\", e você usa quando quiser, antes de \"Montar para imprimir\". Ainda não está feito: espera esta resposta sobre o aviso.",
+    "E já hoje dá para acertar à mão (faixa verde): botão direito na miniatura da capa, na tira de baixo, \"adicionar página em branco depois\". Os pares andam uma página e a ímpar passa para a direita. Essa página em branco entra também no PDF e nos cadernos. Você testou essa função em 09/11 (\"pagina em branco funciona\").",
+    "O que falta decidir: quando o programa avisa. Ele não sabe sozinho se os pares estão trocados, porque não lê o número impresso nas páginas. Por isso o aviso é uma pergunta para você olhar.",
+    "Como outros programas fazem: o Acrobat tem, no modo de duas páginas, a escolha \"Mostrar a capa\" sozinha ou não, que anda os pares uma página. Ele também não avisa sozinho.",
+    "O que você escolhe: em que momento o programa pergunta se os pares estão certos.",
+    "(Para consulta: decisões D-693 e D-623.)"
+   ],
+   "historico": [
+    {
+     "quem": "samuel",
+     "em": "2026-11-13T23:11:53.827Z",
+     "texto": "mas vai ter um botão para fazer isso antes do imprimir livros?"
+    }
+   ],
+   "id": "v-capa-aviso",
+   "opcoes": [
+    {
+     "id": "montar",
+     "nome": "Na hora de montar os cadernos (recomendo)",
+     "texto": "Ao abrir \"Montar para imprimir\", uma vez por livro, só se você nunca olhou o livro no \"Duas lado a lado\": o programa mostra os dois primeiros pares e pergunta \"As páginas da direita são as ímpares, como no livro?\". Se não forem, o botão de acertar fica ali mesmo."
+    },
+    {
+     "id": "abrir",
+     "nome": "Ao abrir o \"Duas lado a lado\" pela primeira vez no livro",
+     "texto": "A pergunta aparece antes, mas aparece também quando você só quer olhar as páginas."
+    },
+    {
+     "id": "outro",
+     "nome": "Outro jeito",
+     "texto": "Escreva no comentário."
+    }
+   ],
+   "primeira_imagem": {
+    "src": "/_blob/86d1ecf2c38de636105ca422f5c618c4",
+    "legenda": "La vida eterna (cópia), dividido, \"Duas lado a lado\". Azul (como é hoje): a página de número ímpar impresso (7) fica à esquerda. Verde: botão direito na miniatura da capa, \"adicionar página em branco depois\": o 7 passa para a direita, como no livro."
+   },
+   "sugestao": "Na hora de montar os cadernos: é quando o erro faria diferença no livro impresso.",
+   "titulo": "Pares trocados (página ímpar à esquerda): quando o programa avisa?"
+  },
+  {
+   "exemplos": [
+    {
+     "legenda": "Dividir, folha 4 (antes): \"folha 4 de 180\" e \"0 de 180 conferidas\". Prints tirados hoje (28/10) da versão de teste (a da rodada de consertos), numa CÓPIA dos livros, na janela de 1280 x 657 do notebook do Kaique. O contorno vermelho mostra onde olhar.",
+     "src": "vt28/perguntas/a-contador-dividir-1.jpg"
+    },
+    {
+     "legenda": "Dividir, depois de \"está certo\" na folha 4: tique na miniatura 4, a tela foi para a folha 5 e o contador diz \"1 de 180 conferidas\".",
+     "src": "vt28/perguntas/a-contador-dividir-2.jpg"
+    },
+    {
+     "legenda": "Logo depois, na ferramenta Cortar: o contador volta a contar páginas, \"0 de 360 conferidas\" (as páginas 7 e 8 da folha 4 não contaram).",
+     "src": "vt28/perguntas/a-contador-dividir-3.jpg"
+    }
+   ],
+   "explicacao": [
+    "O que é: o contador fica na barra de baixo da área de trabalho, ao lado do número da página (ex.: \"0 de 360 conferidas · 18 com dúvida\"). Ele sobe quando você clica \"está certo\" (botão azul da faixa embaixo da página) ou aperta a barra de espaço.",
+    "O que acontece hoje (La vida eterna, cópia, dividido pelo Automático: 180 folhas viraram 360 páginas): na ferramenta Dividir (primeiro ícone da barra da esquerda, tecla D) a barra diz \"folha 4 de 180\" e o contador conta FOLHAS: \"0 de 180 conferidas\". Clicando \"está certo\" na folha 4, ela ganha o tique e o contador vai a \"1 de 180\". Saindo do Dividir (ex.: ferramenta Cortar), o contador volta a contar PÁGINAS e mostra \"0 de 360\": as páginas 7 e 8 (as duas metades da folha 4) continuam sem conferir, porque no Dividir você conferiu a divisão da folha, não as páginas.",
+    "O que já foi decidido: 21/10 (D-285, `pr-contagens`): \"A janela de salvar passa a contar as páginas com aviso pendente\" — um número só de dúvidas em todo lugar (isso já está assim: \"18 com dúvida\" dentro e fora do Dividir). Sobre o número de CONFERIDAS no Dividir não há decisão sua: foi o agente da etapa 7 que escolheu contar folhas ali.",
+    "O que você escolhe: no Dividir o contador conta folhas (como hoje) ou sempre páginas (o \"está certo\" numa folha dá as duas páginas dela por conferidas)."
+   ],
+   "id": "a-contador-dividir",
+   "opcoes": [
+    {
+     "id": "folhas",
+     "imgs": [],
+     "nome": "No Dividir conta folhas, fora dele páginas (recomendo)",
+     "texto": "Como nos prints: no Dividir \"1 de 180\", fora dele \"0 de 360\". O \"está certo\" do Dividir confere só a divisão; as páginas continuam para você conferir uma a uma."
+    },
+    {
+     "id": "paginas",
+     "imgs": [],
+     "nome": "Sempre páginas",
+     "texto": "O \"está certo\" numa folha do Dividir dá as duas páginas dela por conferidas: o contador vai de \"0 de 360\" a \"2 de 360\", no Dividir e fora dele. As páginas 7 e 8 ficam com tique sem você ter olhado cada uma."
+    },
+    {
+     "id": "nao-entendi",
+     "imgs": [],
+     "nome": "Ainda não entendi",
+     "texto": "Explique de outro jeito."
+    }
+   ],
+   "titulo": "Contador \"N de M conferidas\": no Dividir conta folhas, fora dele páginas. Fica assim?"
+  },
+  {
+   "exemplos": [
+    {
+     "legenda": "Página 7, fora do Dividir: a faixa com o aviso e \"aceitar o corte\", e o cartão \"Página 7 — Lombada incerta\". A linha azul não aparece aqui. Prints tirados hoje (28/10) da versão de teste (a da rodada de consertos), numa CÓPIA dos livros, na janela de 1280 x 657 do notebook do Kaique. O contorno vermelho mostra onde olhar.",
+     "src": "vt28/perguntas/a-lombada-fora-1.jpg"
+    },
+    {
+     "legenda": "A mesma folha 4 na ferramenta Dividir (ícone contornado à esquerda): aqui se vê a linha azul tracejada (\"arraste\") e o mesmo aviso.",
+     "src": "vt28/perguntas/a-lombada-fora-2.jpg"
+    }
+   ],
+   "explicacao": [
+    "O que é: \"Lombada incerta\" é o aviso de que o programa não tem certeza de onde dividir a folha (a linha azul tracejada do Dividir). Na faixa embaixo da página aparece \"Não tenho certeza de onde cortar. Confira a linha.\" com o botão laranja \"aceitar o corte\"; no painel \"Para revisar\" (triângulo laranja na coluna da direita) aparece um cartão para cada página.",
+    "O que acontece hoje (La vida eterna, cópia, depois do Automático só com \"Dividir\"): a folha 4 virou as páginas 7 e 8, e as duas aparecem no \"Para revisar\" com \"Lombada incerta\". Clicando no cartão \"Página 7\", a tela vai para a página 7 (fora do Dividir) e a faixa mostra o aviso com \"aceitar o corte\", \"está certo\" e \"próxima dúvida\" — mas ali a linha azul não aparece. Para ver a linha é preciso ir ao Dividir (tecla D), onde a folha 4 aparece inteira, com a linha.",
+    "Por que ficou assim: antes da etapa 7 este aviso só aparecia dentro do Dividir e não entrava na conta, por isso a conta de dúvidas não batia (no teste do Kaique de 26/10 a janela disse \"Ainda há 356 páginas\" depois de \"nada pendente\"). Decisões que tocam: 21/10 (D-285): um número só de dúvidas; 26/10 (D-007): \"o livro tem que aparecer em uma pagina por vez para mim\" (por isso o livro nunca abre no Dividir, D-501). Sobre ONDE este aviso aparece não há decisão sua.",
+    "O que você escolhe: o aviso continua aparecendo também na página (como hoje) ou só dentro do Dividir."
+   ],
+   "id": "a-lombada-fora",
+   "opcoes": [
+    {
+     "id": "aparece",
+     "imgs": [],
+     "nome": "Aparece também na página, como está (recomendo)",
+     "texto": "O aviso aparece na página e no \"Para revisar\", e conta no número de dúvidas (o mesmo número em todo lugar). Para ver a linha, tecla D."
+    },
+    {
+     "id": "so-dividir",
+     "imgs": [],
+     "nome": "Só dentro do Dividir",
+     "texto": "Fora do Dividir a página não mostra o aviso nem o conta. Atenção: o número de dúvidas volta a ser diferente dentro e fora do Dividir (o problema do \"356\")."
+    },
+    {
+     "id": "nao-entendi",
+     "imgs": [],
+     "nome": "Ainda não entendi",
+     "texto": "Explique de outro jeito."
+    }
+   ],
+   "titulo": "Aviso \"Lombada incerta\": aparece também na página, fora do Dividir?"
+  },
+  {
+   "exemplos": [
+    {
+     "legenda": "Painel \"Para revisar\", La vida eterna, na página 7: o cartão da página 7 tem \"aceitar o corte\"; o cartão da página 2 não tem botão. Prints tirados hoje (28/10) da versão de teste (a da rodada de consertos), numa CÓPIA dos livros, na janela de 1280 x 657 do notebook do Kaique. O contorno vermelho mostra onde olhar.",
+     "src": "vt28/perguntas/a-botoes-cartoes-1.jpg"
+    }
+   ],
+   "explicacao": [
+    "O que é: o painel \"Para revisar\" (triângulo laranja na coluna da direita) mostra um cartão para cada página com aviso. O cartão da página que está na tela fica com contorno laranja e traz os mesmos botões da faixa de baixo (ex.: \"aceitar o corte\", \"está bom assim\", \"Deixar em branco\"). Os outros cartões só mostram o aviso: clicar num deles leva até a página, e aí os botões aparecem nele.",
+    "O que acontece hoje (La vida eterna, cópia, página 7): o cartão \"Página 7 — Lombada incerta\" tem o botão \"aceitar o corte\"; o cartão \"Página 2 — Parece em branco\", logo acima, não tem botão nenhum até você clicar nele.",
+    "O que já foi decidido: 08/10 (D-268, `rv4-conserto-desenho`): \"(a) Botão no aviso\" — cada aviso traz o conserto rápido como botão no cartão; 27/07 (D-255, pedido do Kaique): \"Colocar botão clicavel nas paginas que o programa não tem certeza\". Não foi decidido se o botão vai em todos os cartões ao mesmo tempo.",
+    "O que você escolhe: botões só no cartão da página da vez (como hoje) ou em todos os cartões."
+   ],
+   "id": "a-botoes-cartoes",
+   "opcoes": [
+    {
+     "id": "so-da-vez",
+     "imgs": [],
+     "nome": "Só no cartão da página em que estou (recomendo)",
+     "texto": "Como hoje. Para usar o botão de outra página, clique no cartão dela primeiro: a tela vai até a página (você vê o que vai consertar) e os botões aparecem."
+    },
+    {
+     "id": "todos",
+     "imgs": [],
+     "nome": "Em todos os cartões",
+     "texto": "Cada cartão já vem com os seus botões. Dá para consertar sem ir até a página (sem vê-la), e o painel fica mais comprido (no La vida eterna são 18 cartões)."
+    },
+    {
+     "id": "nao-entendi",
+     "imgs": [],
+     "nome": "Ainda não entendi",
+     "texto": "Explique de outro jeito."
+    }
+   ],
+   "titulo": "Botões do aviso em todos os cartões do \"Para revisar\", ou só no da página em que você está?"
+  },
+  {
+   "exemplos": [
+    {
+     "legenda": "Antes: página 72, \"30 de 134 conferidas\", \"Para revisar\" com 7. Prints tirados hoje (28/10) da versão de teste (a da rodada de consertos), numa CÓPIA dos livros, na janela de 1280 x 657 do notebook do Kaique. O contorno vermelho mostra onde olhar.",
+     "src": "vt28/perguntas/a-aviso-curto-1.jpg"
+    },
+    {
+     "legenda": "Depois de \"está certo\": tique na miniatura 72, a tela foi para a 73, \"31 de 134\", \"Para revisar\" com 6. Nenhuma mensagem.",
+     "src": "vt28/perguntas/a-aviso-curto-2.jpg"
+    },
+    {
+     "legenda": "O seu print de hoje (sessão 2, 2-7, Palatino 7): o tique apareceu, mas a faixa continuou com o \"está certo\" (é a D-572).",
+     "src": "vt28/perguntas/a-aviso-curto-3.jpg"
+    }
+   ],
+   "explicacao": [
+    "O que é: \"está certo\" é o botão azul da faixa embaixo da página (ou a barra de espaço). Ele dá a página por conferida.",
+    "O que acontece hoje (Palatino, cópia do seu livro, página 72, aviso \"Conferir o fundo tirado\"): clicando \"está certo\", a miniatura 72 ganha o tique verde, o contador de baixo sobe de 30 para 31 de 134, o \"Para revisar\" desce de 7 para 6 e a tela vai sozinha para a próxima dúvida (página 73). Não aparece mensagem nenhuma.",
+    "O que já foi decidido: 05/10 (D-259, rodada 2): a faixa com \"está certo\" e \"próxima dúvida\" (\"Aprovado\"). Hoje, 28/10 (D-572, sessão 2, 2-7): \"o está certo deixou o tique verde mas continuou com o aviso na pagina, dá para ver que a opção esta certo continua aparecendo, deveria sumir quando eu aperto está certo.\" Isso vai ser feito; o que a faixa mostra no lugar ainda vai ser perguntado à parte. A mensagem curta desta pergunta veio do desenho da rodada 13 (13/10): \"Página N: conferida. Saiu do 'Para revisar'.\" Ela nunca foi aprovada nem feita.",
+    "O que você escolhe: se quer também essa mensagem por um instante, além do tique, do contador e da ida para a próxima dúvida."
+   ],
+   "id": "a-aviso-curto",
+   "opcoes": [
+    {
+     "id": "nao",
+     "imgs": [],
+     "nome": "Não precisa: o tique, o contador e a próxima dúvida bastam (recomendo)",
+     "texto": "Fica como no segundo print (com a mudança da D-572 na faixa)."
+    },
+    {
+     "id": "sim",
+     "imgs": [],
+     "nome": "Quero a mensagem curta também",
+     "texto": "Por um instante, perto da faixa, aparece \"Página 72: conferida. Saiu do 'Para revisar'.\" e some sozinha."
+    },
+    {
+     "id": "nao-entendi",
+     "imgs": [],
+     "nome": "Ainda não entendi",
+     "texto": "Explique de outro jeito."
+    }
+   ],
+   "titulo": "Mensagem curta (\"Página 72: conferida\") ao clicar \"está certo\"?"
+  },
+  {
+   "exemplos": [
+    {
+     "legenda": "Jeito \"Painel solto\": os cinco botões dos painéis na linha dos menus, só com o desenho; o \"Para revisar\" aberto por cima da página. Prints tirados hoje (28/10) da versão de teste (a da rodada de consertos), numa CÓPIA dos livros, na janela de 1280 x 657 do notebook do Kaique. O contorno vermelho mostra onde olhar.",
+     "src": "vt28/perguntas/b-solto-icones-1.jpg"
+    }
+   ],
+   "explicacao": [
+    "O que é: o lado direito tem quatro jeitos de mostrar os painéis (menu Ver > \"Lado direito\", ou Configurações > Aparência): \"Ícones na borda\" (de fábrica), \"Sanfona\", \"Abas no alto\" e \"Painel solto\". No \"Painel solto\", os botões dos cinco painéis (Para revisar, Automático, Propriedades, Filtro da página, Histórico) vão para a linha dos menus, em cima à direita, e o painel abre por cima da página, sem encolher a página.",
+    "O que acontece hoje (Palatino, cópia, página 73, \"Para revisar\" aberto no painel solto): os cinco botões de cima têm só o desenho (triângulo, linhas, controles, meia-lua, relógio); o nome aparece ao passar o mouse. Com o nome escrito, eles não cabem na janela de 1280 do notebook do Kaique.",
+    "O que já foi decidido: 05/10 (D-033, rodada 2 nº 9): \"Quer os quatro jeitos no app, escolhendo dentro dele: sanfona (o primeiro), abas no alto, ícones na borda, painel flutuante\"; 20/10 (R14 902): \"C — Nos dois lugares\" (menu Ver e Configurações). Como ficam os botões no painel solto não foi decidido.",
+    "O que você escolhe: só o desenho (como hoje) ou o nome escrito."
+   ],
+   "id": "b-solto-icones",
+   "opcoes": [
+    {
+     "id": "icone",
+     "imgs": [],
+     "nome": "Só o desenho, com o nome ao passar o mouse (recomendo)",
+     "texto": "Como no print. É igual ao jeito \"Ícones na borda\", que também só tem desenhos."
+    },
+    {
+     "id": "nome",
+     "imgs": [],
+     "nome": "Com o nome escrito, mesmo que precise rolar",
+     "texto": "Os botões mostram \"Para revisar\", \"Automático\"... Na tela de 1280 não cabem todos: uma parte fica escondida e é preciso rolar a linha."
+    },
+    {
+     "id": "nao-entendi",
+     "imgs": [],
+     "nome": "Ainda não entendi",
+     "texto": "Explique de outro jeito."
+    }
+   ],
+   "titulo": "Jeito \"Painel solto\": os botões dos painéis, na linha de cima, só com o desenho?"
+  },
+  {
+   "exemplos": [
+    {
+     "src": "vt28/perguntas/b-abas-nomes-1.jpg",
+     "legenda": "Jeito \"Abas no alto\" no Palatino (cópia), página 73: as cinco abas com nome curto e, embaixo, \"Para revisar\" com o \"x\". O contorno vermelho mostra onde olhar. Print de 28/10, versão de teste."
+    }
+   ],
+   "explicacao": [
+    "Do que se trata: o lado direito da área de trabalho tem os painéis Para revisar, Automático, Propriedades, Filtro da página e Histórico. No menu Ver > Lado direito você escolhe entre quatro jeitos de mostrá-los. O de fábrica é \"Ícones na borda\": desenhos sem nome. Um dos outros é \"Abas no alto\": cada painel vira uma aba com um nome curto.",
+    "Sua dúvida: \"No caso, isso é uma opção a mais do que a que temos hoje?\" → Não. O jeito \"Abas no alto\" já existe hoje no programa (print). Os quatro jeitos são pedido seu, de 05/10: \"Quer os quatro jeitos no app, escolhendo dentro dele\". Nada novo entra. A pergunta é só sobre os nomes escritos nas abas.",
+    "Como é hoje: as abas dizem \"Revisar\", \"Automático\", \"Propriedades\", \"Filtro\" e \"Histórico\". Embaixo delas, o nome inteiro do painel aberto (\"Para revisar\"). Esses nomes curtos foram escolhidos por um agente, a partir do desenho das abas que você viu no layout, sem perguntar a você.",
+    "O que muda: só o que está escrito nas abas, e só para quem escolher \"Abas no alto\". O jeito de fábrica não muda.",
+    "Situação: já está no programa (versão de teste).",
+    "O que você escolhe: se os nomes curtos ficam, se as abas mostram o nome inteiro do painel, ou se vira uma pergunta de nomes com sugestões para cada aba."
+   ],
+   "id": "b-abas-nomes",
+   "opcoes": [
+    {
+     "id": "manter",
+     "imgs": [],
+     "nome": "Ficam como estão (recomendo)",
+     "texto": "Revisar · Automático · Propriedades · Filtro · Histórico, com o nome inteiro do painel embaixo."
+    },
+    {
+     "id": "nomes-inteiros",
+     "nome": "As abas com o nome inteiro do painel",
+     "texto": "Para revisar · Automático · Propriedades · Filtro da página · Histórico. Antes de fazer, o agente confere se cabe na janela do notebook do Kaique (1280 de largura).",
+     "imgs": []
+    },
+    {
+     "id": "revisar",
+     "imgs": [],
+     "nome": "Levar à revisão dos nomes",
+     "texto": "Vira uma pergunta na aba \"Revisão dos nomes\", com duas ou três sugestões para cada aba."
+    },
+    {
+     "id": "nao-entendi",
+     "imgs": [],
+     "nome": "Ainda não entendi",
+     "texto": "Explique de outro jeito."
+    }
+   ],
+   "titulo": "Lado direito no jeito \"Abas no alto\": os nomes curtos das abas ficam assim?",
+   "historico": [
+    {
+     "quem": "samuel",
+     "em": "2026-11-06T21:36:15.177Z",
+     "texto": "Ainda não entendi. No caso, isso é uma opção a mais do que a que temos hoje?"
+    }
+   ],
+   "sugestao": "Ficam como estão: o jeito de fábrica não usa esses nomes, e o nome inteiro aparece logo embaixo.",
+   "primeira_imagem": {
+    "src": "/_blob/4df8e3022e142918f6fa7b1852c3d660",
+    "legenda": "Gradus (cópia), versão de teste. O menu Ver > Lado direito já tem quatro jeitos. Azul: o de fábrica, ícones na borda, sem nome. Verde: \"Abas no alto\", com os nomes curtos (no círculo vermelho)."
+   }
+  },
+  {
+   "exemplos": [
+    {
+     "legenda": "O aviso de hoje, só no Retângulo (print da etapa 9b-1, Marial 7).",
+     "src": "vt28/perguntas/b-pintar-outras-1.jpg"
+    },
+    {
+     "legenda": "Palatino, cópia, página 9: \"pintar por cima\" no \"Marcar como\" do painel Propriedades, e as formas de marcar na barra da esquerda. Prints tirados hoje (28/10) da versão de teste (a da rodada de consertos), numa CÓPIA dos livros, na janela de 1280 x 657 do notebook do Kaique. O contorno vermelho mostra onde olhar.",
+     "src": "vt28/perguntas/b-pintar-outras-2.jpg"
+    }
+   ],
+   "explicacao": [
+    "O que é: \"pintar por cima\" é um dos jeitos de \"Marcar como\" (painel Propriedades, com uma ferramenta de marcar escolhida na barra da esquerda: Retângulo, Oval, Laço, Ponto a ponto ou Pincel). A área marcada assim é pintada com a \"cor de pintar\" (de fábrica, branco).",
+    "O que acontece hoje: com o Retângulo, quando a área cobre letras, aparece antes a pergunta \"Este retângulo cobre letras; elas vão ser pintadas também.\" com \"Pintar assim mesmo\" e \"Voltar\" (print da etapa 9b-1, Marial 7). Com Oval, Laço, Ponto a ponto e Pincel a área é pintada na hora, sem perguntar, mesmo em cima das letras (conferido no código: o aviso só olha o retângulo).",
+    "O que já foi decidido: 22/10 (D-250, `fr-218-aviso`): \"A — Avisar (recomendo)\" e no chat \"1- sim\". A pergunta de então mostrava o retângulo.",
+    "O que você escolhe: o aviso vale para todas as formas ou só para o retângulo."
+   ],
+   "id": "b-pintar-outras",
+   "opcoes": [
+    {
+     "id": "todas",
+     "imgs": [],
+     "nome": "Sim, em todas as formas (recomendo)",
+     "texto": "Oval, laço, ponto a ponto e pincel também perguntam antes de pintar em cima de letras, com o mesmo aviso (o texto diria \"Esta área cobre letras...\")."
+    },
+    {
+     "id": "so-retangulo",
+     "imgs": [],
+     "nome": "Só no retângulo",
+     "texto": "Como hoje: as outras formas pintam sem perguntar."
+    },
+    {
+     "id": "nao-entendi",
+     "imgs": [],
+     "nome": "Ainda não entendi",
+     "texto": "Explique de outro jeito."
+    }
+   ],
+   "titulo": "O aviso do \"Pintar por cima\" também no oval, no laço, no ponto a ponto e no pincel?"
+  },
+  {
+   "exemplos": [],
+   "explicacao": [
+    "Do que se trata: na tela dos livros (a primeira tela do programa), cada livro tem um cartão. Clicando nele, abre o livro, com uma barra no alto que diz em que pé ele está. Depois que você gera o PDF, os dois dizem \"pronto, PDF gerado\".",
+    "Sua dúvida: \"Isso se aplica só se eu fizer alterações né?\" → Sim. Só quando você muda alguma página depois de gerar o PDF (filtro, corte, giro, Automático, desfazer...). Se só olhar as páginas, continua \"pronto, PDF gerado\".",
+    "Como é hoje (Palatino, cópia, versão de teste): depois de mudar, o cartão e a barra voltam a dizer \"32 de 134 conferidas\" e \"Continuar\", como um livro que ainda está sendo feito. Nada diz que o PDF que já está na pasta ficou mais velho que o trabalho. Gerar o PDF de novo volta para \"pronto, PDF gerado\".",
+    "É defeito? Não. É o conserto que você mandou fazer em 05/10 (\"pode mandar concertar\": antes, o cartão dizia \"PDF gerado\" mesmo depois de mudar). O conserto usou as duas frases que o cartão já tinha. A frase \"PDF desatualizado\" nunca foi pedida nem existe hoje.",
+    "O que muda: com \"PDF desatualizado\", só a frase do cartão e da barra muda, e o botão \"abrir a pasta\" continua à vista. O PDF que sai não muda.",
+    "O que você escolhe: o que o cartão diz depois de você mudar um livro que já virou PDF.",
+    "(Para consulta: decisão D-309.)"
+   ],
+   "id": "b-pdf-desatualizado",
+   "opcoes": [
+    {
+     "id": "como-esta",
+     "imgs": [],
+     "nome": "Como está: \"32 de 134 conferidas\" (recomendo)",
+     "texto": "O livro volta a parecer \"em andamento\". Gerar o PDF de novo devolve o \"pronto, PDF gerado\". É a faixa laranja."
+    },
+    {
+     "id": "desatualizado",
+     "imgs": [],
+     "nome": "Escrever \"PDF desatualizado\"",
+     "texto": "O cartão e a barra diriam \"PDF desatualizado: gere de novo\", com \"continuar\" e também \"abrir a pasta\". É coisa nova (a faixa verde, sem print porque ainda não existe)."
+    },
+    {
+     "id": "nao-entendi",
+     "imgs": [],
+     "nome": "Ainda não entendi",
+     "texto": "Explique de outro jeito."
+    }
+   ],
+   "titulo": "Livro que já virou PDF e depois foi mudado: o programa deve dizer que o PDF ficou velho?",
+   "historico": [
+    {
+     "quem": "samuel",
+     "em": "2026-11-06T21:29:57.774Z",
+     "texto": "Ainda não entendi. Isso se aplica só se eu fizer alterações né?"
+    }
+   ],
+   "sugestao": "Como está: já não engana mais (não diz \"pronto\" depois de mudar), e nada novo entra.",
+   "primeira_imagem": {
+    "src": "/_blob/37361fa884a8c87ac9e776fa857c17d0",
+    "legenda": "Palatino (cópia), versão de teste. Azul: logo depois de gerar o PDF, \"pronto, PDF gerado\". Laranja (como é hoje): depois de mudar uma página, \"32 de 134 conferidas\" e nada fala do PDF velho. Verde: a outra opção, que ainda não existe."
+   }
+  },
+  {
+   "exemplos": [
+    {
+     "legenda": "Livro recém-aberto (Righetti 95-96, cópia girada): a faixa preta da tampa em cima. Print da etapa 9b-2, desta versão.",
+     "src": "vt28/perguntas/c-tampa-ao-abrir-1.jpg"
+    },
+    {
+     "legenda": "O mesmo livro depois do Automático: a página sai sem a faixa. Print da etapa 9b-2.",
+     "src": "vt28/perguntas/c-tampa-ao-abrir-2.jpg"
+    }
+   ],
+   "explicacao": [
+    "O que é: em livros escaneados com a tampa do scanner aparecendo fica uma faixa preta larga numa beirada da folha (Righetti, folhas 95 e 96, com o livro deitado: a faixa fica em cima).",
+    "O que acontece hoje (prints da etapa 9b-2, cópia com as duas folhas do Righetti): ao abrir o livro (\"Livro novo: ainda não passou pelo automático\") a faixa aparece; depois do Automático, as páginas saem sem ela. A faixa some quando o Automático roda (qualquer etapa que olhe as páginas), quando se divide à mão e no \"dividir\" da grade \"Todas as páginas\". Um livro que nunca passa pelo Automático nem é dividido continua com a faixa.",
+    "O que já foi decidido: 27/10 (D-559, `ac-tampa`): \"Como eu decidi: sumir em todo o livro, e o Kaique escolhe por livro cortar ou pintar de branco\" — feito. E 29/09 (D-134): \"Página sempre abre em 'Original', sem mexer [...] sem mudança escondida.\" (a medida feita ao abrir só põe avisos, não muda página — D-483).",
+    "O que você escolhe: se abrir o livro também tira a faixa. Isso mudaria a página só de abrir, uma exceção ao \"sem mexer\" de 29/09."
+   ],
+   "id": "c-tampa-ao-abrir",
+   "opcoes": [
+    {
+     "id": "nao",
+     "imgs": [],
+     "nome": "Não: só no Automático e ao dividir (recomendo)",
+     "texto": "Como hoje. Abrir não muda nenhuma página; o \"Rodar o automático...\" que aparece no livro novo já tira a faixa."
+    },
+    {
+     "id": "sim",
+     "imgs": [],
+     "nome": "Sim, já ao abrir o livro",
+     "texto": "A faixa some assim que o livro abre, antes de qualquer clique (a página muda sem você pedir)."
+    },
+    {
+     "id": "nao-entendi",
+     "imgs": [],
+     "nome": "Ainda não entendi",
+     "texto": "Explique de outro jeito."
+    }
+   ],
+   "titulo": "Faixa preta da tampa do scanner: some também só de abrir o livro?"
+  },
+  {
+   "exemplos": [
+    {
+     "legenda": "Automático, janela grande, etapa \"Cortar as bordas\": a lista \"O que fica fora da página: cortar fora\". Prints tirados hoje (28/10) da versão de teste (a da rodada de consertos), numa CÓPIA dos livros, na janela de 1280 x 657 do notebook do Kaique. O contorno vermelho mostra onde olhar.",
+     "src": "vt28/perguntas/c-borda-e-tampa-1.jpg"
+    }
+   ],
+   "explicacao": [
+    "O que é: no Automático, etapa \"Cortar as bordas\" (painel Automático > \"abrir em janela grande\" > \"3 Cortar as bordas\"), há a lista \"O que fica fora da página:\" com \"cortar fora\" (de fábrica) e \"pintar de branco\". Ela decide o que acontece com o preto do scanner em volta da página: cortar fora (a página fica menor) ou pintar de branco (a página fica do mesmo tamanho).",
+    "O que acontece hoje (Boécio, cópia, livro novo): essa mesma lista vale para as duas coisas: a borda/moldura preta do scanner e a faixa da tampa.",
+    "O que já foi decidido: 09/10 (D-092, `rv5-pag-egenloff-047`): tarja e moldura do scanner — \"O Kaique escolhe por livro\" entre cortar e pintar de branco. 27/10 (D-559): a faixa da tampa — \"o Kaique escolhe por livro cortar ou pintar de branco\". As duas dizem \"por livro\"; nenhuma diz se é a mesma escolha ou duas.",
+    "O que você escolhe: uma lista para as duas (como hoje) ou duas listas."
+   ],
+   "id": "c-borda-e-tampa",
+   "opcoes": [
+    {
+     "id": "uma",
+     "imgs": [],
+     "nome": "Uma escolha só para as duas (recomendo)",
+     "texto": "Como hoje: \"O que fica fora da página\" vale para a borda e para a faixa da tampa."
+    },
+    {
+     "id": "duas",
+     "imgs": [],
+     "nome": "Duas escolhas separadas",
+     "texto": "Duas listas na etapa Cortar: uma para a borda preta, outra para a faixa da tampa (ex.: cortar a borda e pintar a faixa de branco)."
+    },
+    {
+     "id": "nao-entendi",
+     "imgs": [],
+     "nome": "Ainda não entendi",
+     "texto": "Explique de outro jeito."
+    }
+   ],
+   "titulo": "Uma escolha só (\"cortar fora\" ou \"pintar de branco\") para a borda preta e para a faixa da tampa?"
+  },
+  {
+   "exemplos": [
+    {
+     "legenda": "Hoje: Palatino 9 girada 8 graus (número contornado à direita). Os cantos contornados mostram onde a página some ao passar do retângulo. Prints tirados hoje (28/10) da versão de teste (a da rodada de consertos), numa CÓPIA dos livros, na janela de 1280 x 657 do notebook do Kaique. O contorno vermelho mostra onde olhar.",
+     "src": "vt28/perguntas/c-girar-inteira-1.jpg"
+    },
+    {
+     "legenda": "O seu print de 23/10 (sessão 0, achado 0-10; versão de antes da rodada de consertos): o mesmo corte a 45°.",
+     "src": "vt28/perguntas/c-girar-inteira-2.jpg"
+    }
+   ],
+   "explicacao": [
+    "O que é: ferramenta Endireitar (terceiro ícone da barra da esquerda, tecla I). Gira-se pela bolinha azul, pela linha laranja ou pelo número \"graus\" do painel Propriedades.",
+    "O que acontece hoje (Palatino, cópia, página 9 girada 8 graus pelo número): a página gira presa dentro do retângulo branco; os cantos que saem do retângulo somem (ex.: o canto de cima à esquerda da moldura). Fica difícil ver se ficou reta. O que gira para fora do retângulo também sai do PDF.",
+    "O que você disse: 23/10, sessão 0, achado 0-10 (La vida eterna p. 55, Endireitar a 45°): \"quando eu vou girando a folha era para ela aparecer com no photoshop para fora do quadrado, mas ela corta ele\". Está na lista única de 23/10 (3.2), mas não virou decisão no Livro de decisões.",
+    "O que você escolhe: a proposta do agente da etapa 9b-2 é, enquanto você gira, mostrar a página inteira (sem o corte), passando para fora do retângulo, como no Photoshop; ao soltar, a tela volta a mostrar como a página vai sair. Muda o que a ferramenta mostra; o PDF não muda."
+   ],
+   "id": "c-girar-inteira",
+   "opcoes": [
+    {
+     "id": "sim",
+     "imgs": [],
+     "nome": "Sim, a página inteira enquanto gira (recomendo)",
+     "texto": "Enquanto o botão do mouse está apertado (ou o número muda), a página aparece inteira, com os cantos por fora do retângulo. Ao soltar, volta a mostrar como sai no PDF."
+    },
+    {
+     "id": "nao",
+     "imgs": [],
+     "nome": "Não, deixar como está",
+     "texto": "A página continua presa no retângulo enquanto gira."
+    },
+    {
+     "id": "nao-entendi",
+     "imgs": [],
+     "nome": "Ainda não entendi",
+     "texto": "Explique de outro jeito."
+    }
+   ],
+   "titulo": "Endireitar: ver a página inteira enquanto gira, como no Photoshop?"
+  },
+  {
+   "exemplos": [
+    {
+     "legenda": "Página 9 em Preto e branco: a Luz dentro de \"Mais ajustes\" (painel rolado). Prints tirados hoje (28/10) da versão de teste (a da rodada de consertos), numa CÓPIA dos livros, na janela de 1280 x 657 do notebook do Kaique. O contorno vermelho mostra onde olhar.",
+     "src": "vt28/perguntas/c-luz-area-1.jpg"
+    },
+    {
+     "legenda": "Página 10 em Original: no lugar contornado não há \"Mais ajustes\", então não há Luz.",
+     "src": "vt28/perguntas/c-luz-area-2.jpg"
+    },
+    {
+     "legenda": "Propriedades com o Retângulo, rolado até o fim: a parte \"Área\" é a última.",
+     "src": "vt28/perguntas/c-luz-area-3.jpg"
+    }
+   ],
+   "explicacao": [
+    "O que são: (1) \"Igualar a luz da página\" é uma caixinha do painel \"Filtro da página\" (meia-lua na coluna da direita) > parte \"Mais ajustes\", ao lado de \"Suavizar as letras\" e \"Tirar o chuvisco\". (2) \"Área\" é a parte do painel Propriedades com \"Mostrar as áreas achadas\", \"apagar a área\", \"pintar de branco\", \"copiar\" e \"colar\"; aparece com uma ferramenta de marcar escolhida (ex.: Retângulo).",
+    "O que acontece hoje (Palatino, cópia): numa página em Preto e branco (página 9) a parte \"Mais ajustes\" existe e a Luz está nela, rolando o painel (no meu print os três nomes saem cortados: \"Igua\", \"Suav\", \"Tirar o ch\"; não sei se na janela de verdade também). Numa página em Original (página 10) a parte \"Mais ajustes\" nem aparece: não há como ligar a Luz. A \"Área\" fica no fim do Propriedades, depois de \"Marcar como\", \"Marcação desta página\" e \"Foto\": a 1280 só aparece rolando o painel.",
+    "O que já foi decidido: 22/10 (D-195, `b-6-igualar-luz`): \"Em todos, com aviso\" + \"mas vai ser uma opção que eu posso desligar e ligar né?\"; a gerente respondeu que, com essa escolha, \"ela aparece em todos os filtros\" (a pergunta dizia \"No Preto e branco e no Original ajuda\"). Ou seja: a Luz no Original já é decisão sua, e hoje o programa não cumpre. Sobre o lugar da Área não há decisão; o painel Propriedades foi aprovado em 21/10 (D-059, `ly-4a5`: \"Aprovado\"). O achado 2.6 é dos testes do agente (23/10).",
+    "O que você escolhe: principalmente se a Área sobe no painel. A primeira opção cumpre a sua D-195 e deixa a Área onde você aprovou."
+   ],
+   "id": "c-luz-area",
+   "opcoes": [
+    {
+     "id": "so-luz",
+     "imgs": [],
+     "nome": "\"Igualar a luz\" também no Original, como decidi em 22/10; a \"Área\" fica onde está (recomendo)",
+     "texto": "Cumpre a D-195 e não mexe no Propriedades que você aprovou em 21/10."
+    },
+    {
+     "id": "os-dois",
+     "imgs": [],
+     "nome": "\"Igualar a luz\" também no Original e \"Área\" mais para cima",
+     "texto": "Além da Luz, a parte Área sobe (por exemplo, logo depois de \"Marcar como\"), para aparecer sem rolar."
+    },
+    {
+     "id": "so-area",
+     "imgs": [],
+     "nome": "Só subir o \"Área\"",
+     "texto": "A Área sobe; a Luz continua sem aparecer no Original (diferente do seu \"Em todos\" de 22/10)."
+    },
+    {
+     "id": "nada",
+     "imgs": [],
+     "nome": "Deixar como está",
+     "texto": "A Luz continua sem aparecer no Original e a Área continua no fim (diferente do seu \"Em todos\" de 22/10)."
+    },
+    {
+     "id": "nao-entendi",
+     "imgs": [],
+     "nome": "Ainda não entendi",
+     "texto": "Explique de outro jeito."
+    }
+   ],
+   "titulo": "\"Igualar a luz\" no Original, e o lugar da \"Área\" no Propriedades (lista de 23/10, 2.6)"
+  },
+  {
+   "exemplos": [
+    {
+     "legenda": "O aviso do recomeço (Boécio, cópia, PDF com uma página a menos): diz que a cópia \"pode ser recuperada\", mas não há como. Prints tirados hoje (28/10) da versão de teste (a da rodada de consertos), numa CÓPIA dos livros, na janela de 1280 x 657 do notebook do Kaique. O contorno vermelho mostra onde olhar.",
+     "src": "vt28/perguntas/c-recuperar-1.jpg"
+    },
+    {
+     "legenda": "O menu do livro hoje: nenhum item para recuperar.",
+     "src": "vt28/perguntas/c-recuperar-2.jpg"
+    }
+   ],
+   "explicacao": [
+    "O que é: às vezes o programa recomeça a conferência de um livro: quando o PDF mudou (outro número de folhas), quando o arquivo do trabalho não dá para ler ou quando falta página. Antes de recomeçar, ele guarda uma cópia do trabalho anterior na pasta do livro e mostra um aviso com o caminho dessa cópia.",
+    "O que acontece hoje (Boécio, cópia: abri, rodei o Automático, tirei uma página do PDF e cliquei \"continuar\"): o aviso diz \"Comecei a conferência deste livro de novo: o arquivo tinha 50 folhas quando o trabalho foi salvo e agora tem 49 [...] Guardei uma cópia dele, que pode ser recuperada:\" e um caminho comprido. Mas não há botão para recuperar: o menu do livro (botão direito no cartão, ou \"Mais...\" no livro aberto) só tem \"continuar\", \"começar de novo\", \"renomear\", \"abrir a pasta de saída\" e \"remover da lista\". Voltar à cópia só mexendo nos arquivos à mão — o Kaique não consegue.",
+    "O que já foi decidido: nada seu sobre isso. A ideia é de um agente (29/09, Lista de espera: \"'Recuperar o trabalho anterior' no menu do cartão do projeto [...]\", situação \"a definir\"). Relacionadas: 05/10 (D-342): \"o programa [...] vai ter que ser capaz de abrir arquivos de versões anteriores\"; D-489 (27/10): o recomeço só acontece nesses três casos.",
+    "O que você escolhe: se quer esse item, e quando."
+   ],
+   "id": "c-recuperar",
+   "opcoes": [
+    {
+     "id": "depois",
+     "imgs": [],
+     "nome": "Sim, mas depois desta rodada de consertos (recomendo)",
+     "texto": "Fica anotado na Lista de espera para uma fase seguinte; nesta rodada só entra o que você mandou."
+    },
+    {
+     "id": "sim",
+     "imgs": [],
+     "nome": "Sim, quero o item no menu do cartão",
+     "texto": "O menu ganha \"Recuperar o trabalho anterior\", com as cópias guardadas (data e hora); escolher uma volta o livro àquele trabalho."
+    },
+    {
+     "id": "nao",
+     "imgs": [],
+     "nome": "Não precisa",
+     "texto": "A cópia continua guardada e o aviso continua dizendo onde; recuperar fica só à mão."
+    },
+    {
+     "id": "nao-entendi",
+     "imgs": [],
+     "nome": "Ainda não entendi",
+     "texto": "Explique de outro jeito."
+    }
+   ],
+   "titulo": "\"Recuperar o trabalho anterior\" no menu do livro?"
+  }
+ ],
+ "quadros": 0,
+ "resumo": {
+  "paragrafos": [
+   "Você disse em 27/10: \"os agentes estão mudando coisas que eu já tinha definido, é só para fazer o que eu já tinha mandado\". Um conferente revisou as 78 escolhas e mudanças da rodada de consertos contra as suas decisões.",
+   "55 só fazem funcionar o que você mandou. 4 mudavam o que você tinha decidido e estão sendo desfeitas sem perguntar: o PDF volta a sair sem perda (sem JPEG), o aviso \"as contas discordam\" volta à sua regra de 0,3 grau, os nomes do \"Montar para imprimir\" voltam aos de antes (a disposição nova fica) e os dois jeitos que faltavam do lado direito (\"abas no alto\" e \"painel solto\") vão ser feitos.",
+   "Estas perguntas são o resto: coisas que acrescentamos sem você pedir, ou fases que escolhemos no seu lugar. Até você responder, nada disso entra no programa principal. A relação completa está em relatorios/obra-auditoria-escolhas/auditoria.html."
+  ],
+  "titulo": "36 perguntas: o que eu e os agentes acrescentamos ou escolhemos sem você"
+ },
+ "trabalho": "acrescentei-27-10"
+}

@@ -1,0 +1,18 @@
+{
+  "conversa": [
+    {
+      "em": "2026-11-13T20:40:00Z",
+      "quem": "gerente",
+      "texto": "Anotado no Livro como D-669: depois de rodar, todas as caixinhas voltam desmarcadas, e cada etapa ganha o botão \"tirar do livro\". Entra na fila de consertos."
+    }
+  ],
+  "em": "2026-11-08T19:10:57.264Z",
+  "gerente": "Anotado no Livro como D-669: depois de rodar, todas as caixinhas voltam desmarcadas, e cada etapa ganha o botão \"tirar do livro\". Entra na fila de consertos.",
+  "gerenteEm": "2026-11-13T20:40:00Z",
+  "lida": true,
+  "opcao": "desmarcadas",
+  "opcaoNome": "Voltam desmarcadas; desmarcada = não mexer agora",
+  "reabrir": false,
+  "relatorio": "perguntas-04-11",
+  "volta": false
+}

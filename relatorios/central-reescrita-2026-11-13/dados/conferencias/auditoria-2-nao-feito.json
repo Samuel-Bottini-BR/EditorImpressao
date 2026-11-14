@@ -1,0 +1,901 @@
+{
+  "id": "auditoria-2-nao-feito",
+  "nome": "Auditoria 2: não feito (24)",
+  "ordem": -7,
+  "origem": "Auditoria de 28/10 (linhas por decisão, provas rodadas em fc38afd) e Livro de decisões do ramo da rodada de consertos; refeita em 29/10 a pedido do Samuel, sem reavaliar nada",
+  "perguntas": [
+    {
+      "exemplos": [
+        {
+          "legenda": "O que você viu em 05/10 na pergunta S1 (conferência 9): a Escola 7 com a linha vermelha do corte comendo a última letra das linhas.",
+          "src": "/_blob/c0f61a624ea3877832c6f10fc6434ba2"
+        },
+        {
+          "legenda": "O que você viu em 05/10 na pergunta S2: o Graduale 221 com o corte passando por cima do número da folha e das guias das pautas.",
+          "src": "/_blob/e62e9887a1e4234c68a6c665f63204ab"
+        }
+      ],
+      "explicacao": [
+        "Situação na versão de teste: Não feito.",
+        "Você pediu (05/10/2026): S1: \"É, acho que ele está cortando em cima demais, mas eu consigo configurar isso né?\" · S2: \"eu tenho como configurar esse corte para todas as paginas e o programa me avisar onde o corte pode ter ficado ruim\" · CORTE: \"(a) Folga do corte ajustável para o livro inteiro + aviso automático nas páginas onde o corte encosta em tinta (recomendado)\"",
+        "O que isso quer dizer: Folga do corte ajustável para o livro todo, mais aviso nas páginas onde o corte encosta em tinta.",
+        "Solução na versão de teste: a folga do corte continua fixa.",
+        "Parte do programa: Endireitar e cortar."
+      ],
+      "historico": [
+        {
+          "em": "2026-10-29T18:07:20.881Z",
+          "quem": "samuel",
+          "texto": "então isso entra na lista de coisas para fazer? não entendi."
+        },
+        {
+          "em": "2026-10-29T18:20:00Z",
+          "quem": "gerente",
+          "texto": "Não entrava: os botões de antes (\"Está bom\", \"Melhorar\"...) servem para conferir coisa feita e não diziam o que fazer com uma decisão que ainda não foi feita. Troquei por três escolhas: \"Pôr na lista de fazer\" (entra na fila de trabalho; faço uma coisa de cada vez e te chamo para testar), \"Fica para depois\" ou \"Não quero mais\". É só escolher uma."
+        }
+      ],
+      "id": "au-d-087",
+      "opcoes": [
+        {
+          "id": "fazer",
+          "nome": "Pôr na lista de fazer",
+          "texto": "Entra na fila de trabalho. A gerente faz uma coisa de cada vez e te chama para testar."
+        },
+        {
+          "id": "depois",
+          "nome": "Fica para depois",
+          "texto": "Continua anotada no Livro de decisões, sem prazo."
+        },
+        {
+          "id": "nao-quero",
+          "nome": "Não quero mais",
+          "texto": "A decisão fica marcada como descartada no Livro, com a sua resposta."
+        }
+      ],
+      "titulo": "D-087 · Folga do corte ajustável para o livro todo, mais aviso nas páginas onde o corte encosta em tinta"
+    },
+    {
+      "exemplos": [
+        {
+          "legenda": "O que você viu em 22/10 na Central (caixa do conteúdo): seis páginas com o que o aviso \"Corte deixou algo de fora\" contou; só o Egenloff 3 é de verdade, as outras são beirada, sombra e pontinhos.",
+          "src": "cx22/img/avisos_o_que_fica_fora.jpg"
+        },
+        {
+          "legenda": "Também de 22/10: o Egenloff 3 ampliado, a etiqueta e os carimbos antes e depois do corte (o caso que o aviso pega certo).",
+          "src": "cx22/img/egenloff_p003_beiradas_perto.jpg"
+        }
+      ],
+      "explicacao": [
+        "Situação na versão de teste: Não feito.",
+        "Você pediu (22/10/2026): cx22: \"vai para o programa assim, mas vai ser investigado no futuro, esse problema.\"",
+        "O que isso quer dizer: O problema apontado na caixa do conteúdo (defeito do Egenloff 3) fica para investigar depois da entrada.",
+        "Solução na versão de teste: nada investigado.",
+        "Parte do programa: Endireitar e cortar."
+      ],
+      "historico": [
+        {
+          "em": "2026-10-29T18:07:51.208Z",
+          "quem": "samuel",
+          "texto": "então isso entra na lista de coisas para fazer? não entendi."
+        },
+        {
+          "em": "2026-10-29T18:20:00Z",
+          "quem": "gerente",
+          "texto": "Não entrava: os botões de antes (\"Está bom\", \"Melhorar\"...) servem para conferir coisa feita e não diziam o que fazer com uma decisão que ainda não foi feita. Troquei por três escolhas: \"Pôr na lista de fazer\" (entra na fila de trabalho; faço uma coisa de cada vez e te chamo para testar), \"Fica para depois\" ou \"Não quero mais\". É só escolher uma."
+        }
+      ],
+      "id": "au-d-110",
+      "opcoes": [
+        {
+          "id": "fazer",
+          "nome": "Pôr na lista de fazer",
+          "texto": "Entra na fila de trabalho. A gerente faz uma coisa de cada vez e te chama para testar."
+        },
+        {
+          "id": "depois",
+          "nome": "Fica para depois",
+          "texto": "Continua anotada no Livro de decisões, sem prazo."
+        },
+        {
+          "id": "nao-quero",
+          "nome": "Não quero mais",
+          "texto": "A decisão fica marcada como descartada no Livro, com a sua resposta."
+        }
+      ],
+      "titulo": "D-110 · O problema apontado na caixa do conteúdo (defeito do Egenloff 3) fica para investigar depois da entrada"
+    },
+    {
+      "exemplos": [
+        {
+          "legenda": "O seu print de 28/10 (sessão 2, 2-8): a janela \"Ver de perto\" parada em \"Preparando a prévia...\" na página 13, a página pronta demorando a aparecer.",
+          "src": "vt28/alternativas/s2-05-ver-de-perto-preparando.jpg"
+        }
+      ],
+      "explicacao": [
+        "Situação na versão de teste: Não feito.",
+        "Você pediu (22/10/2026): \"concordo\" (adiantar as páginas vizinhas + guardar a página pronta no disco)",
+        "O que isso quer dizer: Página pronta aparece mais rápido: o programa prepara as vizinhas e guarda a pronta no disco.",
+        "Solução na versão de teste: adianta as vizinhas; guarda só 30 páginas na memória, nada no disco.",
+        "Parte do programa: Rapidez: abrir, folhear e ver de perto."
+      ],
+      "id": "au-d-065",
+      "opcoes": [
+        {
+          "id": "fazer",
+          "nome": "Pôr na lista de fazer",
+          "texto": "Entra na fila de trabalho. A gerente faz uma coisa de cada vez e te chama para testar."
+        },
+        {
+          "id": "depois",
+          "nome": "Fica para depois",
+          "texto": "Continua anotada no Livro de decisões, sem prazo."
+        },
+        {
+          "id": "nao-quero",
+          "nome": "Não quero mais",
+          "texto": "A decisão fica marcada como descartada no Livro, com a sua resposta."
+        }
+      ],
+      "titulo": "D-065 · Página pronta aparece mais rápido: o programa prepara as vizinhas e guarda a pronta no disco"
+    },
+    {
+      "explicacao": [
+        "Situação na versão de teste: Não feito.",
+        "Você pediu (18/07/2026): \"8. Num livro bem escaneado, menos de 10% das páginas são marcadas para revisão — o alerta não vira ruído\"",
+        "O que isso quer dizer: Num livro bem escaneado, menos de 10% das páginas vão para o \"Para revisar\".",
+        "Solução na versão de teste: nada medido nem mudado nesta rodada.",
+        "Resolvida junto com: D-474 (cada uma tem o seu quadro).",
+        "Parte do programa: Avisos: botões que faltam e avisos demais."
+      ],
+      "id": "au-d-254",
+      "opcoes": [
+        {
+          "id": "fazer",
+          "nome": "Pôr na lista de fazer",
+          "texto": "Entra na fila de trabalho. A gerente faz uma coisa de cada vez e te chama para testar."
+        },
+        {
+          "id": "depois",
+          "nome": "Fica para depois",
+          "texto": "Continua anotada no Livro de decisões, sem prazo."
+        },
+        {
+          "id": "nao-quero",
+          "nome": "Não quero mais",
+          "texto": "A decisão fica marcada como descartada no Livro, com a sua resposta."
+        }
+      ],
+      "titulo": "D-254 · Num livro bem escaneado, menos de 10% das páginas vão para o \"Para revisar\""
+    },
+    {
+      "exemplos": [
+        {
+          "legenda": "O que você viu em 08/10 na rodada 4 do \"Para revisar\": o Antiphonal 6, com as pautas vermelhas que o jeito de fábrica apagou e o \"Guardar tudo\" de um clique.",
+          "src": "/_blob/f26801dd936806720cdf087d32d212ed"
+        }
+      ],
+      "explicacao": [
+        "Situação na versão de teste: Não feito.",
+        "Você pediu (08/10/2026): rv4-pag-antiphonal1547-006: \"Entendi; a página não precisa ir\"",
+        "O que isso quer dizer: Pauta com pouca falha não vai ao \"Para revisar\"; o Kaique usa \"Guardar tudo\" se quiser.",
+        "Solução na versão de teste: não conferido.",
+        "Parte do programa: Avisos: botões que faltam e avisos demais."
+      ],
+      "id": "au-d-275",
+      "opcoes": [
+        {
+          "id": "fazer",
+          "nome": "Pôr na lista de fazer",
+          "texto": "Entra na fila de trabalho. A gerente faz uma coisa de cada vez e te chama para testar."
+        },
+        {
+          "id": "depois",
+          "nome": "Fica para depois",
+          "texto": "Continua anotada no Livro de decisões, sem prazo."
+        },
+        {
+          "id": "nao-quero",
+          "nome": "Não quero mais",
+          "texto": "A decisão fica marcada como descartada no Livro, com a sua resposta."
+        }
+      ],
+      "titulo": "D-275 · Pauta com pouca falha não vai ao \"Para revisar\"; o Kaique usa \"Guardar tudo\" se quiser"
+    },
+    {
+      "exemplos": [
+        {
+          "legenda": "O que você viu em 21-22/10 no quadro pr-janela-diferente: o Graduale 221 na tela nova, sem aviso (o quadro dizia que a regra dá 22 e 75, contra 21 e 78 do estudo).",
+          "src": "/_blob/5a37fbe556d10bb0ecc165c4d180698c"
+        },
+        {
+          "legenda": "Da mesma conferência do \"Para revisar\" (21-22/10): o Opus Majus 20 com o aviso, uma das cinco páginas que decidem diferente do estudo.",
+          "src": "conf/img/a4n-opus-20.jpg"
+        }
+      ],
+      "explicacao": [
+        "Situação na versão de teste: Não feito.",
+        "Você pediu (22/10/2026): (paráfrase da fonte) junto com o \"A\" de pr-janela-diferente: voltar aos 78 de 89 do estudo vai para as melhorias",
+        "O que isso quer dizer: Melhorar a regra do \"Para revisar\" para voltar a acertar 78 das 89 páginas, como no estudo.",
+        "Solução na versão de teste: não feito.",
+        "Parte do programa: Avisos: botões que faltam e avisos demais."
+      ],
+      "id": "au-d-295",
+      "opcoes": [
+        {
+          "id": "fazer",
+          "nome": "Pôr na lista de fazer",
+          "texto": "Entra na fila de trabalho. A gerente faz uma coisa de cada vez e te chama para testar."
+        },
+        {
+          "id": "depois",
+          "nome": "Fica para depois",
+          "texto": "Continua anotada no Livro de decisões, sem prazo."
+        },
+        {
+          "id": "nao-quero",
+          "nome": "Não quero mais",
+          "texto": "A decisão fica marcada como descartada no Livro, com a sua resposta."
+        }
+      ],
+      "titulo": "D-295 · Melhorar a regra do \"Para revisar\" para voltar a acertar 78 das 89 páginas, como no estudo"
+    },
+    {
+      "exemplos": [
+        {
+          "legenda": "O que você viu em 22/10 nas perguntas cx-avisos e cx-avisos-demais: o que o aviso conta como \"ficou de fora\" (retângulos azuis); só o Egenloff 3 é de verdade.",
+          "src": "cx22/img/avisos_o_que_fica_fora.jpg"
+        },
+        {
+          "legenda": "Também de 22/10: o Marial 8 na janela, com o aviso falando em moldura, título ou carimbo, por causa de três pontinhos na beirada.",
+          "src": "cx22/img/janela_marial_p008.jpg"
+        },
+        {
+          "legenda": "O que você viu em 28/10 na dúvida dv-cx-avisos (\"Foi resolvido?\"): na versão de teste, Marial 8, 28 e 43 ainda com o aviso por beirada, pontinhos e mancha.",
+          "src": "vt28/duvidas/aviso-corte-marial.jpg"
+        }
+      ],
+      "explicacao": [
+        "Situação na versão de teste: Não feito.",
+        "Você pediu (22/10/2026): cx-avisos: \"O aviso só conta o que parece impresso\" + \"Mas se precisa melhorar a acuracidade desse aviso\" + \"ok, deixe isso anotado pois vai precisar ser resolvido\" · cx-avisos-demais: \"Eu não entendi, o programa está dando avisos sem precisar? Se está dando avisos sem precisar, precisamos investigar o que ele está confundindo\" + \"vai para o programa assim, mas vai ser investigado no futuro, esse problema.\" · \"Foi resolvido? o programa parou de confundir?\"",
+        "O que isso quer dizer: O aviso \"Corte deixou algo de fora\" só conta o que parece impresso (não beirada do papel, sombra, pontinhos menores que ~2 mm, verso transparente, faixa SLUB); o carimbo do Egenloff 3 continua avisando; investigar os avisos demais.",
+        "Solução na versão de teste: não feito.",
+        "Parte do programa: Avisos: botões que faltam e avisos demais."
+      ],
+      "id": "au-d-296",
+      "opcoes": [
+        {
+          "id": "fazer",
+          "nome": "Pôr na lista de fazer",
+          "texto": "Entra na fila de trabalho. A gerente faz uma coisa de cada vez e te chama para testar."
+        },
+        {
+          "id": "depois",
+          "nome": "Fica para depois",
+          "texto": "Continua anotada no Livro de decisões, sem prazo."
+        },
+        {
+          "id": "nao-quero",
+          "nome": "Não quero mais",
+          "texto": "A decisão fica marcada como descartada no Livro, com a sua resposta."
+        }
+      ],
+      "titulo": "D-296 · O aviso \"Corte deixou algo de fora\" só conta o que parece impresso (não beirada do papel, sombra, pontinhos…"
+    },
+    {
+      "exemplos": [
+        {
+          "legenda": "O que você viu em 23/10 na pergunta d212-2: o Righetti 96 em seis colunas; na 3 e na 6, com o botão \"Desentortar aumentando a página\", as linhas de cima ficam maiores e a margem ondula, sem aviso.",
+          "src": "d212/img/ligado-righetti96-pagina.jpg"
+        }
+      ],
+      "explicacao": [
+        "Situação na versão de teste: Não feito.",
+        "Você pediu (23/10/2026): d212-2: \"A — Está bom assim\" + \"Eu quero o aviso, mas isso fica para depois.\"",
+        "O que isso quer dizer: Righetti 96: depois de \"Desentortar aumentando a página\", se sair um pouco deformado, o programa deve avisar e perguntar \"Desfazer / Manter assim\".",
+        "Solução na versão de teste: não feito.",
+        "Parte do programa: Avisos: botões que faltam e avisos demais."
+      ],
+      "id": "au-d-297",
+      "opcoes": [
+        {
+          "id": "fazer",
+          "nome": "Pôr na lista de fazer",
+          "texto": "Entra na fila de trabalho. A gerente faz uma coisa de cada vez e te chama para testar."
+        },
+        {
+          "id": "depois",
+          "nome": "Fica para depois",
+          "texto": "Continua anotada no Livro de decisões, sem prazo."
+        },
+        {
+          "id": "nao-quero",
+          "nome": "Não quero mais",
+          "texto": "A decisão fica marcada como descartada no Livro, com a sua resposta."
+        }
+      ],
+      "titulo": "D-297 · Righetti 96: depois de \"Desentortar aumentando a página\", se sair um pouco deformado, o programa deve avisar…"
+    },
+    {
+      "explicacao": [
+        "Situação na versão de teste: Não feito.",
+        "Você pediu (26/10/2026): (escolha da gerente, D-014)",
+        "O que isso quer dizer: A meta de 18/07 (D-254, \"menos de 10% das páginas\" no \"Para revisar\" num livro bem escaneado) continua valendo, medida na etapa 9 junto da D-295 (78 de 89). O Boécio (34%) é o caso a baixar; versos em branco de verdade (Egenloff, 49%) dependem da pergunta pd-versos-em-branco na Central e não contam como ruído.",
+        "Solução na versão de teste: nada medido nem mudado nesta rodada.",
+        "Resolvida junto com: D-254 (cada uma tem o seu quadro).",
+        "Parte do programa: Avisos: botões que faltam e avisos demais."
+      ],
+      "id": "au-d-474",
+      "opcoes": [
+        {
+          "id": "fazer",
+          "nome": "Pôr na lista de fazer",
+          "texto": "Entra na fila de trabalho. A gerente faz uma coisa de cada vez e te chama para testar."
+        },
+        {
+          "id": "depois",
+          "nome": "Fica para depois",
+          "texto": "Continua anotada no Livro de decisões, sem prazo."
+        },
+        {
+          "id": "nao-quero",
+          "nome": "Não quero mais",
+          "texto": "A decisão fica marcada como descartada no Livro, com a sua resposta."
+        }
+      ],
+      "titulo": "D-474 · A meta de 18/07 (D-254, \"menos de 10% das páginas\" no \"Para revisar\" num livro bem escaneado) continua…"
+    },
+    {
+      "exemplos": [
+        {
+          "legenda": "O print do Kaique de 27/07 (pasta \"teste 4\"), junto da queixa \"as letras estão ficando pixeladas\": letras em preto e branco com a borda em degraus.",
+          "src": "/_blob/0f4cab6873f934c366c07fb0616a3a65"
+        }
+      ],
+      "explicacao": [
+        "Situação na versão de teste: Não feito.",
+        "Você pediu (29/07/2026): Kaique: \"as letras estão ficando pixeladas, precisamos que fiquem mais arredondadas\" · \"o mágico pro está deixando muito pixelado a imagem\"",
+        "O que isso quer dizer: Letra e imagem sem serrilhado.",
+        "Solução na versão de teste: não mexido.",
+        "Parte do programa: Filtros: pedidos antigos que não entraram."
+      ],
+      "id": "au-d-117",
+      "opcoes": [
+        {
+          "id": "fazer",
+          "nome": "Pôr na lista de fazer",
+          "texto": "Entra na fila de trabalho. A gerente faz uma coisa de cada vez e te chama para testar."
+        },
+        {
+          "id": "depois",
+          "nome": "Fica para depois",
+          "texto": "Continua anotada no Livro de decisões, sem prazo."
+        },
+        {
+          "id": "nao-quero",
+          "nome": "Não quero mais",
+          "texto": "A decisão fica marcada como descartada no Livro, com a sua resposta."
+        }
+      ],
+      "titulo": "D-117 · Letra e imagem sem serrilhado"
+    },
+    {
+      "exemplos": [
+        {
+          "legenda": "O que você viu em 30/09 no quadro Z20 (conferência 2): o Graduale 221 antes e depois, com o resultado no Mágico pro e o detalhe da linha 4, onde o traço fraco sumiu.",
+          "src": "/_blob/e725717b7b134fb81182df451f4866ce"
+        }
+      ],
+      "explicacao": [
+        "Situação na versão de teste: Não feito.",
+        "Você pediu (30/09/2026): (paráfrase da fonte) Z20, Graduale 221: RUIM, apagou um detalhe que já estava fraco no original.",
+        "O que isso quer dizer: Não apagar traço fraco que existe no original.",
+        "Solução na versão de teste: não mexido.",
+        "Parte do programa: Filtros: pedidos antigos que não entraram."
+      ],
+      "id": "au-d-153",
+      "opcoes": [
+        {
+          "id": "fazer",
+          "nome": "Pôr na lista de fazer",
+          "texto": "Entra na fila de trabalho. A gerente faz uma coisa de cada vez e te chama para testar."
+        },
+        {
+          "id": "depois",
+          "nome": "Fica para depois",
+          "texto": "Continua anotada no Livro de decisões, sem prazo."
+        },
+        {
+          "id": "nao-quero",
+          "nome": "Não quero mais",
+          "texto": "A decisão fica marcada como descartada no Livro, com a sua resposta."
+        }
+      ],
+      "titulo": "D-153 · Não apagar traço fraco que existe no original"
+    },
+    {
+      "exemplos": [
+        {
+          "legenda": "O que você viu em 01/10 (conferência 5, I2): Horas 47 no Preto e branco, a iluminura boa, mas os \"JESUS\" e letras douradas falhando.",
+          "src": "/_blob/4f1db829dea1132620d2eebc341689a1"
+        },
+        {
+          "legenda": "O que você viu em 02/10 (conferência 6, A1): Horas 47, original, antes e agora; as letras da página ainda finas e falhadas (\"o original está muito melhor para ler\").",
+          "src": "/_blob/1cd3be2d445db98e5bb4bd034bfecd86"
+        }
+      ],
+      "explicacao": [
+        "Situação na versão de teste: Não feito.",
+        "Você pediu (01/10/2026): I2: \"O enfeite ficou bom, mas está apagando letras né, isso não pode acontecer, tem que reconhecer as letras mesmo em outras cores\" · A1: \"eu preciso conseguir enxergar todas as letras da folha\" · 02/10: \"Ainda está apagando as letras, o original está muito melhor para ler\" · 05/10: \"continuam apresentando falhas, pixels apagados no meio das letras.\" · H13: \"ainda fica cortando algumas letras como o E de Exercisse [...] o programa está comendo tinta.\"",
+        "O que isso quer dizer: No Preto e branco (e no Misto) nenhuma letra some, fura ou perde perna, nem colorida, nem encostada na moldura.",
+        "Solução na versão de teste: não mexido.",
+        "Parte do programa: Filtros: pedidos antigos que não entraram."
+      ],
+      "id": "au-d-154",
+      "opcoes": [
+        {
+          "id": "fazer",
+          "nome": "Pôr na lista de fazer",
+          "texto": "Entra na fila de trabalho. A gerente faz uma coisa de cada vez e te chama para testar."
+        },
+        {
+          "id": "depois",
+          "nome": "Fica para depois",
+          "texto": "Continua anotada no Livro de decisões, sem prazo."
+        },
+        {
+          "id": "nao-quero",
+          "nome": "Não quero mais",
+          "texto": "A decisão fica marcada como descartada no Livro, com a sua resposta."
+        }
+      ],
+      "titulo": "D-154 · No Preto e branco (e no Misto) nenhuma letra some, fura ou perde perna, nem colorida, nem encostada na moldura"
+    },
+    {
+      "exemplos": [
+        {
+          "legenda": "A penúltima imagem que você viu em 06/10 no conserto-desenho-apagado: o ljs47 103, com as linhas vermelhas compridas e claras ainda picotadas.",
+          "src": "/_blob/b506b287a5c269c437260c3b09b95301"
+        },
+        {
+          "legenda": "A última imagem do mesmo quadro (06/10): o Siebmacher 9, onde o conserto passou a pegar uma linha fina da beirada da folha.",
+          "src": "/_blob/183bc939a4c2f1750a4bf5066ec98dcf"
+        }
+      ],
+      "explicacao": [
+        "Situação na versão de teste: Não feito.",
+        "Você pediu (06/10/2026): conserto-desenho-apagado: \"Bom por enquanto\" + \"Na penultima imagem ele ainda está apagando as linhas vermelhas. na ultima imagem está pegando borda de folha.\"",
+        "O que isso quer dizer: Conserto do desenho claro que sumia no \"Guardar a tinta forte\" entrou; faltam as linhas vermelhas finas (ljs47 103) e a borda de folha (Siebmacher 9).",
+        "Solução na versão de teste: não mexido.",
+        "Parte do programa: Filtros: pedidos antigos que não entraram."
+      ],
+      "id": "au-d-180",
+      "opcoes": [
+        {
+          "id": "fazer",
+          "nome": "Pôr na lista de fazer",
+          "texto": "Entra na fila de trabalho. A gerente faz uma coisa de cada vez e te chama para testar."
+        },
+        {
+          "id": "depois",
+          "nome": "Fica para depois",
+          "texto": "Continua anotada no Livro de decisões, sem prazo."
+        },
+        {
+          "id": "nao-quero",
+          "nome": "Não quero mais",
+          "texto": "A decisão fica marcada como descartada no Livro, com a sua resposta."
+        }
+      ],
+      "titulo": "D-180 · Conserto do desenho claro que sumia no \"Guardar a tinta forte\" entrou; faltam as linhas vermelhas finas…"
+    },
+    {
+      "exemplos": [
+        {
+          "legenda": "O que você viu em 06/10 na rodada 1 do \"Para revisar\": o Graduale 588, com a letra S azul e vermelha que sai preta.",
+          "src": "/_blob/9f7845d3526c01e1073e5c8c38dedd13"
+        },
+        {
+          "legenda": "O que você viu na rodada 2 (06/10): a letra marcada como \"gravura ou foto\" fica colorida, mas o retângulo inteiro fica amarelado (\"o resultado não é bom\").",
+          "src": "/_blob/b23b63f96da8a566ac30d7145402f960"
+        },
+        {
+          "legenda": "O que você viu na rodada 3 (07/10): a simulação \"cor + papel branco\" para a mesma letra.",
+          "src": "/_blob/c73f43cceb3ec666c7ce24a8edbb9b3a"
+        }
+      ],
+      "explicacao": [
+        "Situação na versão de teste: Não feito.",
+        "Você pediu (06/10/2026): Graduale 588: \"ela não vai, mas caso eu queira mudar ela para figura e deixar ela colorida, gostaria de conseguir fazer isso.\" · rodada 2: \"ficou claro, mas o resultado não é bom.\"",
+        "O que isso quer dizer: Marcar à mão uma letra colorida como figura e ela sair colorida.",
+        "Solução na versão de teste: não reconferido.",
+        "Parte do programa: Filtros: pedidos antigos que não entraram."
+      ],
+      "id": "au-d-238",
+      "opcoes": [
+        {
+          "id": "fazer",
+          "nome": "Pôr na lista de fazer",
+          "texto": "Entra na fila de trabalho. A gerente faz uma coisa de cada vez e te chama para testar."
+        },
+        {
+          "id": "depois",
+          "nome": "Fica para depois",
+          "texto": "Continua anotada no Livro de decisões, sem prazo."
+        },
+        {
+          "id": "nao-quero",
+          "nome": "Não quero mais",
+          "texto": "A decisão fica marcada como descartada no Livro, com a sua resposta."
+        }
+      ],
+      "titulo": "D-238 · Marcar à mão uma letra colorida como figura e ela sair colorida"
+    },
+    {
+      "exemplos": [
+        {
+          "legenda": "A imagem da pergunta O3 (formulário de decisões de 01-02/10): a estátua do Opus Majus 20 antes e depois com \"Este livro tem fotos\", ainda com manchas claras na parede e no rosto.",
+          "src": "/_blob/0c61f23c1117db4f0440dd6fc92f102d"
+        }
+      ],
+      "explicacao": [
+        "Situação na versão de teste: Não feito.",
+        "Você pediu (02/10/2026): O3: manter a estátua no arquivo do Kaique, \"Mas precisa ser melhorado\"",
+        "O que isso quer dizer: Refazer o exemplo da estátua quando a foto do Opus 20 melhorar.",
+        "Solução na versão de teste: não mexido.",
+        "Parte do programa: Filtros: pedidos antigos que não entraram."
+      ],
+      "id": "au-d-427",
+      "opcoes": [
+        {
+          "id": "fazer",
+          "nome": "Pôr na lista de fazer",
+          "texto": "Entra na fila de trabalho. A gerente faz uma coisa de cada vez e te chama para testar."
+        },
+        {
+          "id": "depois",
+          "nome": "Fica para depois",
+          "texto": "Continua anotada no Livro de decisões, sem prazo."
+        },
+        {
+          "id": "nao-quero",
+          "nome": "Não quero mais",
+          "texto": "A decisão fica marcada como descartada no Livro, com a sua resposta."
+        }
+      ],
+      "titulo": "D-427 · Refazer o exemplo da estátua quando a foto do Opus 20 melhorar"
+    },
+    {
+      "exemplos": [
+        {
+          "legenda": "O que você viu em 06/10 na rodada 1: o Marial 454, com o remendo de papel e a mancha do verso achados como gravura (em verde).",
+          "src": "/_blob/b506ca1c5733f02ec64b1108d35fb82b"
+        },
+        {
+          "legenda": "O que você viu em 08/10 na rodada 4 (rv4-conserto-gravura): as áreas achadas como gravura com contorno tracejado laranja e verde, numeradas.",
+          "src": "/_blob/e047add7253bc8f57e3af09b0f3f311c"
+        }
+      ],
+      "explicacao": [
+        "Situação na versão de teste: Não feito.",
+        "Você pediu (06/10/2026): Marial 454: \"o programa deveria mostrar para o usuario aonde ele selecionou como gravura para ele poder clicar e simplimente apagar e deixar branco.\" · 08/10, rv4-conserto-gravura: \"Só nas páginas do 'Para revisar'\" + \"mas quando eu quiser ver as areas achadas, deve ter um botão ou aba para eu fazer isso, apertar nele e mostrar as areas achadas delineadas, no para revisar, elas já vão aparecer laranjas e nós vamos conseguir modificar essas areas, aumentar ou diminuir elas.\"",
+        "O que isso quer dizer: Áreas achadas em laranja já ligadas nas páginas do \"Para revisar\"; caixinha \"Mostrar as áreas achadas\" para as outras.",
+        "Solução na versão de teste: funciona no painel (lugar provisório); o lugar definitivo não foi feito.",
+        "Parte do programa: Marcar e desfazer."
+      ],
+      "id": "au-d-237",
+      "opcoes": [
+        {
+          "id": "fazer",
+          "nome": "Pôr na lista de fazer",
+          "texto": "Entra na fila de trabalho. A gerente faz uma coisa de cada vez e te chama para testar."
+        },
+        {
+          "id": "depois",
+          "nome": "Fica para depois",
+          "texto": "Continua anotada no Livro de decisões, sem prazo."
+        },
+        {
+          "id": "nao-quero",
+          "nome": "Não quero mais",
+          "texto": "A decisão fica marcada como descartada no Livro, com a sua resposta."
+        }
+      ],
+      "titulo": "D-237 · Áreas achadas em laranja já ligadas nas páginas do \"Para revisar\"; caixinha \"Mostrar as áreas achadas\" para…"
+    },
+    {
+      "exemplos": [
+        {
+          "legenda": "O que você viu em 23/10 no quadro tc23-janela: o painel \"Marcar como\" e a parte de baixo da aba Marcar (Marcação, Foto, Área).",
+          "src": "tc23/img/jan_01_marcar_como_de_fabrica.jpg"
+        },
+        {
+          "legenda": "Também de 23/10: o mesmo painel com \"tinta com a cor\" e os dois botões A/B abertos embaixo.",
+          "src": "tc23/img/jan_04_pb_area_B_e_area_A.jpg"
+        }
+      ],
+      "explicacao": [
+        "Situação na versão de teste: Não feito.",
+        "Você pediu (22/10/2026): tc23-janela: \"Está bom\" + \"Pode explicar como eu vou usar isso? segundo esse painel embaixo abre quando? o painel está muito bagunçado.\" · \"entendi agora, só temos que deixar anotado para melhorar esse painel.\"",
+        "O que isso quer dizer: O painel da aba Marcar (\"Marcar como\" e a parte de baixo) precisa ficar organizado.",
+        "Solução na versão de teste: não mexido.",
+        "Parte do programa: Marcar e desfazer."
+      ],
+      "id": "au-d-251",
+      "opcoes": [
+        {
+          "id": "fazer",
+          "nome": "Pôr na lista de fazer",
+          "texto": "Entra na fila de trabalho. A gerente faz uma coisa de cada vez e te chama para testar."
+        },
+        {
+          "id": "depois",
+          "nome": "Fica para depois",
+          "texto": "Continua anotada no Livro de decisões, sem prazo."
+        },
+        {
+          "id": "nao-quero",
+          "nome": "Não quero mais",
+          "texto": "A decisão fica marcada como descartada no Livro, com a sua resposta."
+        }
+      ],
+      "titulo": "D-251 · O painel da aba Marcar (\"Marcar como\" e a parte de baixo) precisa ficar organizado"
+    },
+    {
+      "exemplos": [
+        {
+          "legenda": "A prova de 01/10 (cartão B6, Escola 7): o retângulo rosa de destaque desenhado por cima cobre a perna do \"A\" de CRISTÃ.",
+          "src": "/_blob/662d6651e58c4e039f7d4f6ef0108b33"
+        }
+      ],
+      "explicacao": [
+        "Situação na versão de teste: Não feito.",
+        "Você pediu (29/09/2026): (paráfrase da fonte) exigência do Samuel: \"nunca desenhar retângulo por cima do conteúdo\" (o retângulo escondeu o \"A\" de CRISTÃ)",
+        "O que isso quer dizer: Imagem de conferência nunca cobre o conteúdo com moldura ou retângulo.",
+        "Solução na versão de teste: as páginas de conferência ainda desenham o contorno rosa.",
+        "Parte do programa: Marcar e desfazer."
+      ],
+      "id": "au-d-421",
+      "opcoes": [
+        {
+          "id": "fazer",
+          "nome": "Pôr na lista de fazer",
+          "texto": "Entra na fila de trabalho. A gerente faz uma coisa de cada vez e te chama para testar."
+        },
+        {
+          "id": "depois",
+          "nome": "Fica para depois",
+          "texto": "Continua anotada no Livro de decisões, sem prazo."
+        },
+        {
+          "id": "nao-quero",
+          "nome": "Não quero mais",
+          "texto": "A decisão fica marcada como descartada no Livro, com a sua resposta."
+        }
+      ],
+      "titulo": "D-421 · Imagem de conferência nunca cobre o conteúdo com moldura ou retângulo"
+    },
+    {
+      "exemplos": [
+        {
+          "legenda": "O seu print de 28/10 (sessão 2, 2-9): \"Processando o livro...\", um livro por vez.",
+          "src": "vt28/alternativas/s2-06-processando-o-livro.jpg"
+        },
+        {
+          "legenda": "O seu print de 28/10 da área de trabalho: na barra de cima não há botão para voltar à tela dos livros.",
+          "src": "vt28/alternativas/s2-04-esta-certo-faixa-continua.jpg"
+        }
+      ],
+      "explicacao": [
+        "Situação na versão de teste: Não feito.",
+        "Você pediu (28/10/2026): Sessão 2 dos testes, 2-9: \"quero poder colocar varios livros para processar, no caso eu fazer toda a restauração, salvar e depois lá na area de trabalho do aplicativo, a home, que não tem botão para voltar para ela hoje, eu escolho todos os livros que eu quiser e mando para fazer o processamento em massa.\"",
+        "O que isso quer dizer: Processar vários livros de uma vez: ele restaura e salva cada livro; depois, na tela dos livros, escolhe quantos quiser e manda processar todos em seguida. (O botão visível para voltar à tela dos livros: ver a pergunta do 2-9; hoje só existe Arquivo > \"Voltar para os livros\".)",
+        "Solução na versão de teste: não existe.",
+        "Parte do programa: Processar e salvar o PDF.",
+        "Ressalva: Decisão nova de 28/10"
+      ],
+      "id": "au-d-573",
+      "opcoes": [
+        {
+          "id": "fazer",
+          "nome": "Pôr na lista de fazer",
+          "texto": "Entra na fila de trabalho. A gerente faz uma coisa de cada vez e te chama para testar."
+        },
+        {
+          "id": "depois",
+          "nome": "Fica para depois",
+          "texto": "Continua anotada no Livro de decisões, sem prazo."
+        },
+        {
+          "id": "nao-quero",
+          "nome": "Não quero mais",
+          "texto": "A decisão fica marcada como descartada no Livro, com a sua resposta."
+        }
+      ],
+      "titulo": "D-573 · Processar vários livros de uma vez: ele restaura e salva cada livro; depois, na tela dos livros, escolhe…"
+    },
+    {
+      "exemplos": [
+        {
+          "legenda": "O que você viu em 22/10 na pergunta b-5-imprimir-direto: a folha A4 do livreto (Horas, lado 1) que vai para a impressora.",
+          "src": "pb/livreto-de-fabrica-folha1.png"
+        }
+      ],
+      "explicacao": [
+        "Situação na versão de teste: Não feito.",
+        "Você pediu (22/10/2026): b-5-imprimir-direto: \"Testo uma folha na EPSON quando a conferência chegar (recomendado)\"",
+        "O que isso quer dizer: Ele testa uma folha na EPSON de verdade; o programa mostra \"Falando com a impressora\" enquanto espera.",
+        "Solução na versão de teste: roteiro pronto; nada impresso.",
+        "Parte do programa: Montar para imprimir e imprimir.",
+        "Ressalva: Espera você"
+      ],
+      "id": "au-d-332",
+      "opcoes": [
+        {
+          "id": "fazer",
+          "nome": "Pôr na lista de fazer",
+          "texto": "Entra na fila de trabalho. A gerente faz uma coisa de cada vez e te chama para testar."
+        },
+        {
+          "id": "depois",
+          "nome": "Fica para depois",
+          "texto": "Continua anotada no Livro de decisões, sem prazo."
+        },
+        {
+          "id": "nao-quero",
+          "nome": "Não quero mais",
+          "texto": "A decisão fica marcada como descartada no Livro, com a sua resposta."
+        }
+      ],
+      "titulo": "D-332 · Ele testa uma folha na EPSON de verdade; o programa mostra \"Falando com a impressora\" enquanto espera"
+    },
+    {
+      "exemplos": [
+        {
+          "legenda": "O seu print de 28/10 (sessão 2, 2-10): a janela \"Montar para imprimir\" do Palatino, Livreto A4, só com texto à direita, sem ver o livreto pronto.",
+          "src": "vt28/alternativas/s2-07-montar-para-imprimir.jpg"
+        }
+      ],
+      "explicacao": [
+        "Situação na versão de teste: Não feito.",
+        "Você pediu (28/10/2026): Sessão 2 dos testes, 2-10: \"eu deveria conseguir ver o livreto pronto aqui nessa tela para que eu possa ver se ficou certo, quero tres opções, e eu queria conseguir na hora de processa o livro já poder transformar ele em livreto.\"",
+        "O que isso quer dizer: Ver o livreto pronto dentro do \"Montar para imprimir\", para conferir se ficou certo antes de gravar ou mandar à impressora. Como mostrar: ele pediu três opções (perguntado no chat, 28/10).",
+        "Solução na versão de teste: a janela não mostra o livreto.",
+        "Parte do programa: Montar para imprimir e imprimir.",
+        "Ressalva: Decisão nova de 28/10"
+      ],
+      "id": "au-d-574",
+      "opcoes": [
+        {
+          "id": "fazer",
+          "nome": "Pôr na lista de fazer",
+          "texto": "Entra na fila de trabalho. A gerente faz uma coisa de cada vez e te chama para testar."
+        },
+        {
+          "id": "depois",
+          "nome": "Fica para depois",
+          "texto": "Continua anotada no Livro de decisões, sem prazo."
+        },
+        {
+          "id": "nao-quero",
+          "nome": "Não quero mais",
+          "texto": "A decisão fica marcada como descartada no Livro, com a sua resposta."
+        }
+      ],
+      "titulo": "D-574 · hoje (2-10): \"eu deveria conseguir ver o livreto pronto aqui nessa tela [...] quero tres opções\""
+    },
+    {
+      "exemplos": [
+        {
+          "legenda": "O seu print de 28/10 (sessão 2, 2-10): a janela \"Montar para imprimir\", que hoje só se abre depois de processar o livro.",
+          "src": "vt28/alternativas/s2-07-montar-para-imprimir.jpg"
+        }
+      ],
+      "explicacao": [
+        "Situação na versão de teste: Não feito.",
+        "Você pediu (28/10/2026): Sessão 2 dos testes, 2-10: \"eu deveria conseguir ver o livreto pronto aqui nessa tela para que eu possa ver se ficou certo, quero tres opções, e eu queria conseguir na hora de processa o livro já poder transformar ele em livreto.\"",
+        "O que isso quer dizer: Poder já sair em livreto na hora de processar o livro (sem abrir o \"Montar para imprimir\" depois). Liga-se à D-314 (formato só na fase de gerar o arquivo para impressão): processar é essa fase, então não contradiz; como fica na tela: perguntar.",
+        "Solução na versão de teste: não existe.",
+        "Parte do programa: Montar para imprimir e imprimir.",
+        "Ressalva: Decisão nova de 28/10"
+      ],
+      "id": "au-d-575",
+      "opcoes": [
+        {
+          "id": "fazer",
+          "nome": "Pôr na lista de fazer",
+          "texto": "Entra na fila de trabalho. A gerente faz uma coisa de cada vez e te chama para testar."
+        },
+        {
+          "id": "depois",
+          "nome": "Fica para depois",
+          "texto": "Continua anotada no Livro de decisões, sem prazo."
+        },
+        {
+          "id": "nao-quero",
+          "nome": "Não quero mais",
+          "texto": "A decisão fica marcada como descartada no Livro, com a sua resposta."
+        }
+      ],
+      "titulo": "D-575 · Poder já sair em livreto na hora de processar o livro (sem abrir o \"Montar para imprimir\" depois)"
+    },
+    {
+      "exemplos": [
+        {
+          "legenda": "O que você viu em 13/10 no quadro layout3-historico (onde comentou a hora): o painel Histórico com a lista de ações, sem hora.",
+          "src": "/_blob/2b93fe8f0ebe3ad99df20aef09458a3e"
+        }
+      ],
+      "explicacao": [
+        "Situação na versão de teste: Não feito.",
+        "Você pediu (13/10/2026): \"a gente poderia mostrar o horario que a ação foi feita ou desfeita.\"",
+        "O que isso quer dizer: O Histórico mostra a hora de cada ação feita ou desfeita.",
+        "Solução na versão de teste: o Histórico não mostra a hora.",
+        "Parte do programa: Nomes e textos."
+      ],
+      "id": "au-d-372",
+      "opcoes": [
+        {
+          "id": "fazer",
+          "nome": "Pôr na lista de fazer",
+          "texto": "Entra na fila de trabalho. A gerente faz uma coisa de cada vez e te chama para testar."
+        },
+        {
+          "id": "depois",
+          "nome": "Fica para depois",
+          "texto": "Continua anotada no Livro de decisões, sem prazo."
+        },
+        {
+          "id": "nao-quero",
+          "nome": "Não quero mais",
+          "texto": "A decisão fica marcada como descartada no Livro, com a sua resposta."
+        }
+      ],
+      "titulo": "D-372 · O Histórico mostra a hora de cada ação feita ou desfeita"
+    },
+    {
+      "exemplos": [
+        {
+          "legenda": "A janela de que você falou em 22/10 (dv-pr-antes): \"Antes de processar\", com os botões \"está bom nas marcadas\", \"ver\" e \"continuar assim mesmo\".",
+          "src": "conf/img/a4n-antes-de-processar.jpg"
+        }
+      ],
+      "explicacao": [
+        "Situação na versão de teste: Não feito.",
+        "Você pediu (22/10/2026): dv-pr-antes: \"os nomes dos botões são horriveis, na verdade em todo o programa, a nomeação dos botões é horrivel. Anote a ideia de depois revisarmos todos os nomes de botão com um novo agente que vai ser criado.\"",
+        "O que isso quer dizer: Um agente novo revisa o nome de todos os botões; ele decide um por um.",
+        "Solução na versão de teste: 20 perguntas na Central; nenhum nome trocado.",
+        "Parte do programa: Nomes e textos.",
+        "Ressalva: Espera as suas respostas"
+      ],
+      "id": "au-d-374",
+      "opcoes": [
+        {
+          "id": "fazer",
+          "nome": "Pôr na lista de fazer",
+          "texto": "Entra na fila de trabalho. A gerente faz uma coisa de cada vez e te chama para testar."
+        },
+        {
+          "id": "depois",
+          "nome": "Fica para depois",
+          "texto": "Continua anotada no Livro de decisões, sem prazo."
+        },
+        {
+          "id": "nao-quero",
+          "nome": "Não quero mais",
+          "texto": "A decisão fica marcada como descartada no Livro, com a sua resposta."
+        }
+      ],
+      "titulo": "D-374 · Um agente novo revisa o nome de todos os botões; ele decide um por um"
+    }
+  ],
+  "quadros": [],
+  "resumo": {
+    "paragrafos": [
+      "Decisões suas que eram desta rodada de consertos e não foram feitas. São 24, uma por quadro, na ordem em que se usa o programa (abrir, Automático, ferramentas, dividir, cortar, filtros, marcar, processar, imprimir).",
+      "Cada decisão tem três escolhas: \"Pôr na lista de fazer\" (entra na fila de trabalho; a gerente faz uma coisa de cada vez e te chama para testar), \"Fica para depois\" (continua anotada, sem prazo) ou \"Não quero mais\" (fica descartada no Livro, com a sua resposta). Quando existe, o print de quando o assunto foi decidido aparece junto, para lembrar.",
+      "As seis abas \"Auditoria\" substituem a antiga \"Auditoria da versão de teste\" (25 quadros misturados). Os achados do seu teste de 28/10 (2-1 a 2-12) não estão aqui: estão na aba \"O que você não gostou: alternativas\"."
+    ],
+    "titulo": "Auditoria 2: não feito: 24"
+  },
+  "trabalho": "Auditoria da versão de teste (rodada de consertos), uma decisão por quadro"
+}

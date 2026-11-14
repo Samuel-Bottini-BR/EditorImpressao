@@ -1,0 +1,14 @@
+{
+ "abrir (s)": 1.6,
+ "rodou o dividir": true,
+ "paginas depois de dividir": 360,
+ "menu": [
+  "Desfazer nesta página",
+  "",
+  "adicionar página em branco antes",
+  "adicionar página em branco depois"
+ ],
+ "pos a pagina em branco": true,
+ "paginas depois": 361,
+ "historico": "Página em branco depois da página 1"
+}

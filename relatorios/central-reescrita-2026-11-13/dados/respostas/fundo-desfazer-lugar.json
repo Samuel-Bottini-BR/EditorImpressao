@@ -1,0 +1,23 @@
+{
+  "comentario": "",
+  "conversa": [
+    {
+      "em": "2026-11-13T21:30:00Z",
+      "quem": "samuel",
+      "texto": "Respondeu no chat: \"Ok\""
+    },
+    {
+      "em": "2026-11-13T21:31:00Z",
+      "quem": "gerente",
+      "texto": "Você respondeu no chat: \"Ok\". Anotado no Livro como D-699. O agente do conserto começou: depois dele, nenhum filtro nem o Automático trazem o fundo de volta; só o botão novo."
+    }
+  ],
+  "em": "2026-11-13T21:30:00Z",
+  "gerente": "Você respondeu no chat: \"Ok\". Anotado no Livro como D-699. O agente do conserto começou: depois dele, nenhum filtro nem o Automático trazem o fundo de volta; só o botão novo.",
+  "gerenteEm": "2026-11-13T21:31:00Z",
+  "lida": true,
+  "opcao": "sim",
+  "opcaoNome": "Sim: abaixo do \"Tirar o fundo\", no menu Filtro e no painel, com o \"Aplicar em\" (recomendo)",
+  "relatorio": "perg-desfazer-fundo",
+  "samuelViu": false
+}

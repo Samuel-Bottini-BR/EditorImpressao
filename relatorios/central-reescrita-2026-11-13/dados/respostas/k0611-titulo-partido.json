@@ -1,0 +1,24 @@
+{
+  "comentario": "mas o programa da a opção de naquele lugar onde a lombada está incerta a gente conseguir mudar e fazer o resto automatico?",
+  "conversa": [
+    {
+      "em": "2026-11-09T19:28:40.659Z",
+      "quem": "samuel",
+      "texto": "mas o programa da a opção de naquele lugar onde a lombada está incerta a gente conseguir mudar e fazer o resto automatico?"
+    },
+    {
+      "em": "2026-11-13T20:40:00Z",
+      "quem": "gerente",
+      "texto": "Sim. No Dividir, você arrasta a linha azul só naquela folha, e o resto do livro fica como o Automático fez. O conserto (D-682, na fila) é a página que saía deitada no arquivo para imprimir, sem aviso nenhum."
+    }
+  ],
+  "em": "2026-11-09T19:28:40.659Z",
+  "gerente": "Sim. No Dividir, você arrasta a linha azul só naquela folha, e o resto do livro fica como o Automático fez. O conserto (D-682, na fila) é a página que saía deitada no arquivo para imprimir, sem aviso nenhum.",
+  "gerenteEm": "2026-11-13T20:40:00Z",
+  "lida": true,
+  "opcao": "consertar",
+  "opcaoNome": "Consertar",
+  "reabrir": false,
+  "relatorio": "teste-kaique-lusiadas",
+  "volta": false
+}

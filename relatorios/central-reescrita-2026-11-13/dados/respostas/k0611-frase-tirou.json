@@ -1,0 +1,24 @@
+{
+  "comentario": "e porque tem esse aviso de a pagina vai sair em preto e branco, para que serve , e em que situação é disparado?",
+  "conversa": [
+    {
+      "em": "2026-11-09T19:38:29.377Z",
+      "quem": "samuel",
+      "texto": "e porque tem esse aviso de a pagina vai sair em preto e branco, para que serve , e em que situação é disparado?"
+    },
+    {
+      "em": "2026-11-13T20:40:00Z",
+      "quem": "gerente",
+      "texto": "A frase \"Esta página vai sair em Preto e branco\" aparece embaixo da página quando ela não tem aviso: diz em que filtro a página vai sair. Depois de \"tirar do livro\" ela devia dizer que a página não sai mais, e é isso que o conserto faz (D-686, na fila)."
+    }
+  ],
+  "em": "2026-11-09T19:38:29.377Z",
+  "gerente": "A frase \"Esta página vai sair em Preto e branco\" aparece embaixo da página quando ela não tem aviso: diz em que filtro a página vai sair. Depois de \"tirar do livro\" ela devia dizer que a página não sai mais, e é isso que o conserto faz (D-686, na fila).",
+  "gerenteEm": "2026-11-13T20:40:00Z",
+  "lida": true,
+  "opcao": "consertar",
+  "opcaoNome": "Consertar",
+  "reabrir": false,
+  "relatorio": "teste-kaique-lusiadas",
+  "volta": false
+}

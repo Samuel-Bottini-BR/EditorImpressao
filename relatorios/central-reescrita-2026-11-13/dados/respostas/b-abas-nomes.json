@@ -1,0 +1,19 @@
+{
+  "comentario": "No caso, isso é uma opção a mais do que a que temos hoje?",
+  "conversa": [
+    {
+      "em": "2026-11-07T19:30:00Z",
+      "quem": "gerente",
+      "texto": "Não é opção nova: o jeito \"Abas no alto\" já existe (menu Ver > Lado direito). A pergunta é só se os nomes curtos das abas (\"Revisar\", \"Filtro\"...) ficam assim. Ficam, ou vão para a revisão dos nomes?"
+    }
+  ],
+  "em": "2026-11-06T21:36:15.177Z",
+  "gerente": "Não é opção nova: o jeito \"Abas no alto\" já existe (menu Ver > Lado direito). A pergunta é só se os nomes curtos das abas (\"Revisar\", \"Filtro\"...) ficam assim. Ficam, ou vão para a revisão dos nomes?",
+  "gerenteEm": "2026-11-07T19:30:00Z",
+  "lida": true,
+  "opcao": "nao-entendi",
+  "opcaoNome": "Ainda não entendi",
+  "relatorio": "acrescentei-27-10",
+  "samuelViu": false,
+  "volta": false
+}

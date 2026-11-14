@@ -1,0 +1,508 @@
+{
+  "nome": "Auditoria 6: combinado para depois (13)",
+  "ordem": -2,
+  "origem": "Auditoria de 28/10 (linhas por decisão, provas rodadas em fc38afd) e Livro de decisões do ramo da rodada de consertos; refeita em 29/10 a pedido do Samuel, sem reavaliar nada",
+  "perguntas": [
+    {
+      "exemplos": [
+        {
+          "legenda": "Hoje (02/11, versão de teste): O registro no Livro de decisões: situação e dono (fica para depois / ainda não construída). Não há tela para mostrar.",
+          "src": "/_blob/b952ad6ad3833fa80bdbb0ecb503b1fe"
+        }
+      ],
+      "explicacao": [
+        "Situação na versão de teste: Combinado para depois.",
+        "Você pediu (24/09/2026 e 28/09/2026): (paráfrase da fonte) 3.8: consertar o zoom que às vezes não funciona e o travamento com muitos cliques (bugs de 15-16/09 e 24/09)",
+        "O que isso quer dizer: Zoom confiável.",
+        "Solução na versão de teste: não feito."
+      ],
+      "id": "au-d-026",
+      "opcoes": [
+        {
+          "id": "fazer",
+          "nome": "Pôr na lista de fazer",
+          "texto": "Entra na fila de trabalho. A gerente faz uma coisa de cada vez e te chama para testar."
+        },
+        {
+          "id": "depois",
+          "nome": "Fica para depois",
+          "texto": "Continua anotada no Livro de decisões, sem prazo."
+        },
+        {
+          "id": "nao-quero",
+          "nome": "Não quero mais",
+          "texto": "A decisão fica marcada como descartada no Livro, com a sua resposta."
+        }
+      ],
+      "titulo": "D-026 · Zoom confiável"
+    },
+    {
+      "exemplos": [
+        {
+          "legenda": "Hoje (02/11, versão de teste): O registro no Livro de decisões: situação e dono (fica para depois / ainda não construída). Não há tela para mostrar.",
+          "src": "/_blob/c4a9ddc0419f17717f9febdc29c4c256"
+        }
+      ],
+      "explicacao": [
+        "Situação na versão de teste: Combinado para depois.",
+        "Você pediu (21/10/2026): \"quero adicionar uma coisa no automatico, quando abrirmos o painel em tela cheia do automatico, ele mostra o livro e nós poderemos passar as paginas e ir adicionando filtro e coisas e vendo como a pagina [...] seria bom se o programa desse sugestões e tivesse um botão para delisgar ou ligar sugestões nesse painel do automatico em tela cheia.\" · 22/10: \"eu aceito a recomendação com as ideias\"",
+        "O que isso quer dizer: \"Laboratório\" no Automático em tela cheia: folhear, provar 2 a 4 receitas lado a lado, sugestões com liga/desliga, receitas com nome, previsão, exceções, antes/depois com zoom.",
+        "Solução na versão de teste: não feito."
+      ],
+      "id": "au-d-070",
+      "opcoes": [
+        {
+          "id": "fazer",
+          "nome": "Pôr na lista de fazer",
+          "texto": "Entra na fila de trabalho. A gerente faz uma coisa de cada vez e te chama para testar."
+        },
+        {
+          "id": "depois",
+          "nome": "Fica para depois",
+          "texto": "Continua anotada no Livro de decisões, sem prazo."
+        },
+        {
+          "id": "nao-quero",
+          "nome": "Não quero mais",
+          "texto": "A decisão fica marcada como descartada no Livro, com a sua resposta."
+        }
+      ],
+      "titulo": "D-070 · \"Laboratório\" no Automático em tela cheia: folhear, provar 2 a 4 receitas lado a lado, sugestões com…"
+    },
+    {
+      "exemplos": [
+        {
+          "legenda": "O que você viu em 12/10 na rodada 12 do layout (pergunta 705, opção A): o \"Marcar como\" com \"iluminura ou pintura\" e \"moldura\" a mais.",
+          "src": "/_blob/89ed34ca3741359e8518dd9919e6e1f3"
+        }
+      ],
+      "explicacao": [
+        "Situação na versão de teste: Combinado para depois.",
+        "Você pediu (26/10/2026): (escolha da gerente, D-014)",
+        "O que isso quer dizer: \"Marcar como\" com \"iluminura ou pintura\" e \"moldura\" (D-242) entra na Fase 1.5 do plano, depois da obra, junto com separar o texto de dentro da iluminura, porque muda o processamento (não é só tela). A obra não mexe nisso.",
+        "Solução na versão de teste: não feito.",
+        "Resolvida junto com: D-566 (cada uma tem o seu quadro)."
+      ],
+      "id": "au-d-476",
+      "opcoes": [
+        {
+          "id": "fazer",
+          "nome": "Pôr na lista de fazer",
+          "texto": "Entra na fila de trabalho. A gerente faz uma coisa de cada vez e te chama para testar."
+        },
+        {
+          "id": "depois",
+          "nome": "Fica para depois",
+          "texto": "Continua anotada no Livro de decisões, sem prazo."
+        },
+        {
+          "id": "nao-quero",
+          "nome": "Não quero mais",
+          "texto": "A decisão fica marcada como descartada no Livro, com a sua resposta."
+        }
+      ],
+      "titulo": "D-476 · \"Marcar como\" com \"iluminura ou pintura\" e \"moldura\" (D-242) entra na Fase 1.5 do plano, depois da obra,…"
+    },
+    {
+      "exemplos": [
+        {
+          "legenda": "A conferência de 29/09 (item 1.1): o ex-libris da Pesel 2 no original e depois; a ferrugem fica rosada em vez de sumir.",
+          "src": "/_blob/8433576f633470f661ee3f22afabe37a"
+        }
+      ],
+      "explicacao": [
+        "Situação na versão de teste: Combinado para depois.",
+        "Você pediu (26/10/2026): (escolha da gerente, D-014) apoiada na regra R4 do plano (manchas somem, Fase 6)",
+        "O que isso quer dizer: Ferrugem rosada da Pesel 2 no \"Tirar o fundo\": deve sumir, não só mudar de cor, como as outras manchas (R4). Entra no 6.2 (manchas vermelhas e marrons). Até lá fica como defeito pequeno conhecido, aprovado assim em 02/10 (M1).",
+        "Solução na versão de teste: não feito."
+      ],
+      "id": "au-d-477",
+      "opcoes": [
+        {
+          "id": "fazer",
+          "nome": "Pôr na lista de fazer",
+          "texto": "Entra na fila de trabalho. A gerente faz uma coisa de cada vez e te chama para testar."
+        },
+        {
+          "id": "depois",
+          "nome": "Fica para depois",
+          "texto": "Continua anotada no Livro de decisões, sem prazo."
+        },
+        {
+          "id": "nao-quero",
+          "nome": "Não quero mais",
+          "texto": "A decisão fica marcada como descartada no Livro, com a sua resposta."
+        }
+      ],
+      "titulo": "D-477 · Ferrugem rosada da Pesel 2 no \"Tirar o fundo\": deve sumir, não só mudar de cor, como as outras manchas (R4)"
+    },
+    {
+      "exemplos": [
+        {
+          "legenda": "O que você viu em 28/09 no layout (área de trabalho, opção 2): o espaço \"Limpo\", escolhido no canto de cima.",
+          "src": "/_blob/52853a6ae6ad5b051e514a869b921f07"
+        },
+        {
+          "legenda": "A mesma tela de 28/09 no espaço \"Completo\", com todos os painéis abertos.",
+          "src": "/_blob/8ad98a479af1965aadafa0cdff946992"
+        }
+      ],
+      "explicacao": [
+        "Situação na versão de teste: Combinado para depois.",
+        "Você pediu (26/10/2026): (escolha da gerente, D-014) apoiada nas mais recentes: \"C — tudo livre, como o Photoshop\" (05/10) e \"área de trabalho 1 nos dois lugares\" (20/10)",
+        "O que isso quer dizer: Espaços \"Limpo / Completo\" (decisão 4, 28/09) não viram dois botões fixos: passam a ser arranjos salvos dentro do \"tudo livre\": a pessoa arruma os painéis e guarda o arranjo com um nome (D-034).",
+        "Solução na versão de teste: não feito.",
+        "Resolvida junto com: D-565 (cada uma tem o seu quadro)."
+      ],
+      "id": "au-d-478",
+      "opcoes": [
+        {
+          "id": "fazer",
+          "nome": "Pôr na lista de fazer",
+          "texto": "Entra na fila de trabalho. A gerente faz uma coisa de cada vez e te chama para testar."
+        },
+        {
+          "id": "depois",
+          "nome": "Fica para depois",
+          "texto": "Continua anotada no Livro de decisões, sem prazo."
+        },
+        {
+          "id": "nao-quero",
+          "nome": "Não quero mais",
+          "texto": "A decisão fica marcada como descartada no Livro, com a sua resposta."
+        }
+      ],
+      "titulo": "D-478 · Espaços \"Limpo / Completo\" (decisão 4, 28/09) não viram dois botões fixos: passam a ser arranjos salvos…"
+    },
+    {
+      "exemplos": [
+        {
+          "legenda": "Hoje (02/11, versão de teste): O registro no Livro de decisões: situação e dono (fica para depois / ainda não construída). Não há tela para mostrar.",
+          "src": "/_blob/9454e0e81f9fe6115411c2000d7a4ef0"
+        }
+      ],
+      "explicacao": [
+        "Situação na versão de teste: Combinado para depois.",
+        "Você pediu (26/10/2026): (escolha da gerente, D-014) apoiada em D-132 (28/09): \"OCR de manuscrito desde o começo\" e no item 7.2 (treinar o Kraken)",
+        "O que isso quer dizer: Item 7.3: os manuscritos (Graduale, Palatino) entram na transcrição da Fase 7, com o Kraken e modelos de manuscrito (CREMMA), porque o Tesseract não lê manuscrito (OCR-PESQUISA, seção 2). Ele confirma quando a Fase 7 chegar.",
+        "Solução na versão de teste: não feito.",
+        "Resolvida junto com: D-557 (cada uma tem o seu quadro)."
+      ],
+      "id": "au-d-480",
+      "opcoes": [
+        {
+          "id": "fazer",
+          "nome": "Pôr na lista de fazer",
+          "texto": "Entra na fila de trabalho. A gerente faz uma coisa de cada vez e te chama para testar."
+        },
+        {
+          "id": "depois",
+          "nome": "Fica para depois",
+          "texto": "Continua anotada no Livro de decisões, sem prazo."
+        },
+        {
+          "id": "nao-quero",
+          "nome": "Não quero mais",
+          "texto": "A decisão fica marcada como descartada no Livro, com a sua resposta."
+        }
+      ],
+      "titulo": "D-480 · Item 7.3: os manuscritos (Graduale, Palatino) entram na transcrição da Fase 7, com o Kraken e modelos de…"
+    },
+    {
+      "exemplos": [
+        {
+          "legenda": "Hoje (02/11, versão de teste): O registro no Livro de decisões: situação e dono (fica para depois / ainda não construída). Não há tela para mostrar.",
+          "src": "/_blob/58c35282374c64d066b93e59d8036b1c"
+        }
+      ],
+      "explicacao": [
+        "Situação na versão de teste: Combinado para depois.",
+        "Você pediu (27/10/2026): Central, pd-idioma-ocr: \"O programa pergunta sempre, ao abrir o livro\"",
+        "O que isso quer dizer: Ler o texto (OCR): o programa pergunta a língua do livro ao abrir o livro (não descobre sozinho).",
+        "Solução na versão de teste: não feito.",
+        "Resolvida junto com: D-525 (cada uma tem o seu quadro)."
+      ],
+      "historico": [
+        {
+          "em": "2026-11-13T20:40:00Z",
+          "quem": "gerente",
+          "texto": "Hoje o programa já usa um leitor de texto (OCR), mas só para achar onde está o texto (por exemplo, para endireitar as linhas), não para ler as palavras. Livro com duas línguas: o leitor aceita mais de uma ao mesmo tempo (português e latim, por exemplo), se a gente disser quais. Anotado no Livro como D-676. Uma pergunta: a língua só serve quando o programa ler o texto, na Fase 7. Se quer a pergunta da língua já agora, escolha de novo \"Pôr na lista de fazer\"; se for junto com a Fase 7, escolha \"Fica para depois\"."
+        },
+        {
+          "em": "2026-11-13T22:55:15Z",
+          "quem": "gerente",
+          "texto": "Do que se trata: quando o programa for ler o texto do livro (a leitura do texto, Fase 7), ele precisa saber a língua. Em 27/10 você decidiu que o programa pergunta a língua ao abrir o livro, e isso estava \"para depois\". Agora você marcou \"Pôr na lista de fazer\" e perguntou se o leitor erra quando há duas línguas e se já usamos leitor de texto. Respostas: hoje o programa usa o leitor só para achar onde está o texto (por exemplo, para endireitar as linhas), não para ler as palavras. O leitor aceita mais de uma língua ao mesmo tempo (português e latim, por exemplo), se a gente disser quais. O que falta você escolher: como a língua só serve quando o programa ler o texto, a pergunta da língua entra já (\"Pôr na lista de fazer\") ou junto com a Fase 7 (\"Fica para depois\")?"
+        }
+      ],
+      "id": "au-d-523",
+      "opcoes": [
+        {
+          "id": "fazer",
+          "nome": "Pôr na lista de fazer",
+          "texto": "Entra na fila de trabalho. A gerente faz uma coisa de cada vez e te chama para testar."
+        },
+        {
+          "id": "depois",
+          "nome": "Fica para depois",
+          "texto": "Continua anotada no Livro de decisões, sem prazo."
+        },
+        {
+          "id": "nao-quero",
+          "nome": "Não quero mais",
+          "texto": "A decisão fica marcada como descartada no Livro, com a sua resposta."
+        }
+      ],
+      "titulo": "D-523 · Ler o texto (OCR): o programa pergunta a língua do livro ao abrir o livro (não descobre sozinho)"
+    },
+    {
+      "exemplos": [
+        {
+          "legenda": "Hoje (02/11, versão de teste): O registro no Livro de decisões: situação e dono (fica para depois / ainda não construída). Não há tela para mostrar.",
+          "src": "/_blob/2bda5cbd6eefb4e0ed8d761948d91614"
+        }
+      ],
+      "explicacao": [
+        "Situação na versão de teste: Combinado para depois.",
+        "Você pediu (27/10/2026): Central, pd-ia-no-ocr: \"Sem IA nenhuma: os dois leitores votam e, onde discordam, o Kaique revisa\"",
+        "O que isso quer dizer: OCR sem inteligência artificial corrigindo: os dois leitores votam; onde discordam, a linha vai para o Kaique revisar.",
+        "Solução na versão de teste: não feito.",
+        "Resolvida junto com: D-523 (cada uma tem o seu quadro)."
+      ],
+      "id": "au-d-525",
+      "opcoes": [
+        {
+          "id": "fazer",
+          "nome": "Pôr na lista de fazer",
+          "texto": "Entra na fila de trabalho. A gerente faz uma coisa de cada vez e te chama para testar."
+        },
+        {
+          "id": "depois",
+          "nome": "Fica para depois",
+          "texto": "Continua anotada no Livro de decisões, sem prazo."
+        },
+        {
+          "id": "nao-quero",
+          "nome": "Não quero mais",
+          "texto": "A decisão fica marcada como descartada no Livro, com a sua resposta."
+        }
+      ],
+      "titulo": "D-525 · OCR sem inteligência artificial corrigindo: os dois leitores votam; onde discordam, a linha vai para o Kaique…"
+    },
+    {
+      "exemplos": [
+        {
+          "legenda": "Hoje (02/11, versão de teste): O registro no Livro de decisões: situação e dono (fica para depois / ainda não construída). Não há tela para mostrar.",
+          "src": "/_blob/203599db53d159737b77f3a385a3fa76"
+        }
+      ],
+      "explicacao": [
+        "Situação na versão de teste: Combinado para depois.",
+        "Você pediu (27/10/2026): Central, pd-sequencia (2ª volta): \"Só o aviso de número\" (antes: \"Mas tem livros que não tem numero de pagina.\")",
+        "O que isso quer dizer: Conferir a ordem das páginas: só o aviso de número fora de ordem (\"depois da 36 vem a 38 → falta a 37?\"); livro sem número fica com a grade de todas as páginas e a tela Pronto. Reclamo e frase que continua: não.",
+        "Solução na versão de teste: não feito."
+      ],
+      "id": "au-d-527",
+      "opcoes": [
+        {
+          "id": "fazer",
+          "nome": "Pôr na lista de fazer",
+          "texto": "Entra na fila de trabalho. A gerente faz uma coisa de cada vez e te chama para testar."
+        },
+        {
+          "id": "depois",
+          "nome": "Fica para depois",
+          "texto": "Continua anotada no Livro de decisões, sem prazo."
+        },
+        {
+          "id": "nao-quero",
+          "nome": "Não quero mais",
+          "texto": "A decisão fica marcada como descartada no Livro, com a sua resposta."
+        }
+      ],
+      "titulo": "D-527 · Conferir a ordem das páginas: só o aviso de número fora de ordem (\"depois da 36 vem a 38 → falta a 37?\");…"
+    },
+    {
+      "exemplos": [
+        {
+          "legenda": "Hoje (02/11, versão de teste): O registro no Livro de decisões: situação e dono (fica para depois / ainda não construída). Não há tela para mostrar.",
+          "src": "/_blob/21c9a88b2bc64284c6e9007fe22a42aa"
+        }
+      ],
+      "explicacao": [
+        "Situação na versão de teste: Combinado para depois.",
+        "Você pediu (27/10/2026): Central ac-fase-manuscritos: \"Decidir quando chegar a Fase 7\"",
+        "O que isso quer dizer: Se os manuscritos entram na leitura do texto fica para decidir na Fase 7. A D-480 (escolha da gerente) vira só sugestão.",
+        "Solução na versão de teste: não feito.",
+        "Resolvida junto com: D-480 (cada uma tem o seu quadro)."
+      ],
+      "id": "au-d-557",
+      "opcoes": [
+        {
+          "id": "fazer",
+          "nome": "Pôr na lista de fazer",
+          "texto": "Entra na fila de trabalho. A gerente faz uma coisa de cada vez e te chama para testar."
+        },
+        {
+          "id": "depois",
+          "nome": "Fica para depois",
+          "texto": "Continua anotada no Livro de decisões, sem prazo."
+        },
+        {
+          "id": "nao-quero",
+          "nome": "Não quero mais",
+          "texto": "A decisão fica marcada como descartada no Livro, com a sua resposta."
+        }
+      ],
+      "titulo": "D-557 · Se os manuscritos entram na leitura do texto fica para decidir na Fase 7"
+    },
+    {
+      "exemplos": [
+        {
+          "legenda": "O desenho de 28/09 que deu origem à pergunta ac-fase-espacos: a área de trabalho no espaço \"Limpo\".",
+          "src": "/_blob/52853a6ae6ad5b051e514a869b921f07"
+        },
+        {
+          "legenda": "A mesma tela de 28/09 no espaço \"Completo\".",
+          "src": "/_blob/8ad98a479af1965aadafa0cdff946992"
+        }
+      ],
+      "explicacao": [
+        "Situação na versão de teste: Combinado para depois.",
+        "Você pediu (27/10/2026): Central ac-fase-espacos: \"Salvar o jeito dos painéis com um nome, como no Photoshop\" + \"Ai seria bom que já viesse de fabrica alguma configurações desses paineis prontas.\"",
+        "O que isso quer dizer: Espaços de trabalho: a pessoa salva o jeito dos painéis com um nome, e o programa já vem com alguns jeitos prontos de fábrica.",
+        "Solução na versão de teste: não feito.",
+        "Resolvida junto com: D-478 (cada uma tem o seu quadro)."
+      ],
+      "historico": [
+        {
+          "em": "2026-11-09T20:22:43.115Z",
+          "quem": "samuel",
+          "texto": "No caso salva o jeito como os paineis e ferramentas ficam diagramados né?"
+        },
+        {
+          "em": "2026-11-13T20:40:00Z",
+          "quem": "gerente",
+          "texto": "Sim, é isso: você arruma os painéis e as ferramentas do jeito que quer e salva com um nome, como os Espaços de trabalho do Photoshop; e o programa já vem com alguns jeitos prontos. A pergunta é se isso fica para depois desta rodada de consertos."
+        },
+        {
+          "em": "2026-11-13T22:55:15Z",
+          "quem": "gerente",
+          "texto": "Do que se trata: um item da auditoria das suas decisões. Em 27/10 você pediu \"Espaços de trabalho\": salvar o jeito dos painéis com um nome, como no Photoshop, e o programa já vir com alguns jeitos prontos de fábrica; isso ficou para depois. Sua dúvida: \"salva o jeito como os painéis e ferramentas ficam diagramados né?\". Resposta: sim, é isso. O que você escolhe: entra na lista de fazer, fica para depois, ou você não quer mais."
+        }
+      ],
+      "id": "au-d-565",
+      "opcoes": [
+        {
+          "id": "fazer",
+          "nome": "Pôr na lista de fazer",
+          "texto": "Entra na fila de trabalho. A gerente faz uma coisa de cada vez e te chama para testar."
+        },
+        {
+          "id": "depois",
+          "nome": "Fica para depois",
+          "texto": "Continua anotada no Livro de decisões, sem prazo."
+        },
+        {
+          "id": "nao-quero",
+          "nome": "Não quero mais",
+          "texto": "A decisão fica marcada como descartada no Livro, com a sua resposta."
+        }
+      ],
+      "titulo": "D-565 · Espaços de trabalho: a pessoa salva o jeito dos painéis com um nome, e o programa já vem com alguns jeitos…"
+    },
+    {
+      "exemplos": [
+        {
+          "legenda": "O que você aprovou em 12/10 (rodada 12, pergunta 705): o \"Marcar como\" com \"iluminura ou pintura\" e \"moldura\".",
+          "src": "/_blob/89ed34ca3741359e8518dd9919e6e1f3"
+        }
+      ],
+      "explicacao": [
+        "Situação na versão de teste: Combinado para depois.",
+        "Você pediu (27/10/2026): Central ac-fase-marcar-como: \"Depois desta rodada de consertos\"",
+        "O que isso quer dizer: \"Marcar como: iluminura ou pintura / moldura\" (D-242) entra depois desta rodada de consertos.",
+        "Solução na versão de teste: não feito.",
+        "Resolvida junto com: D-476 (cada uma tem o seu quadro)."
+      ],
+      "id": "au-d-566",
+      "opcoes": [
+        {
+          "id": "fazer",
+          "nome": "Pôr na lista de fazer",
+          "texto": "Entra na fila de trabalho. A gerente faz uma coisa de cada vez e te chama para testar."
+        },
+        {
+          "id": "depois",
+          "nome": "Fica para depois",
+          "texto": "Continua anotada no Livro de decisões, sem prazo."
+        },
+        {
+          "id": "nao-quero",
+          "nome": "Não quero mais",
+          "texto": "A decisão fica marcada como descartada no Livro, com a sua resposta."
+        }
+      ],
+      "titulo": "D-566 · \"Marcar como: iluminura ou pintura / moldura\" (D-242) entra depois desta rodada de consertos"
+    },
+    {
+      "exemplos": [
+        {
+          "legenda": "Hoje (02/11, versão de teste): O registro no Livro de decisões: situação e dono (fica para depois / ainda não construída). Não há tela para mostrar.",
+          "src": "/_blob/19c23a3e8ee653d02615b76b9cdae85e"
+        }
+      ],
+      "explicacao": [
+        "Situação na versão de teste: Combinado para depois.",
+        "Você pediu (27/10/2026): Central ac-grade-inserir: \"Pode ficar para depois desta rodada de consertos\"",
+        "O que isso quer dizer: \"Inserir página\" na grade fica para depois desta rodada.",
+        "Solução na versão de teste: não feito."
+      ],
+      "historico": [
+        {
+          "em": "2026-11-09T20:20:32.386Z",
+          "quem": "samuel",
+          "texto": "Que grade? não entendi."
+        },
+        {
+          "em": "2026-11-13T20:40:00Z",
+          "quem": "gerente",
+          "texto": "A grade é a janela \"Todas as páginas\": as miniaturas de todas as páginas do livro de uma vez, como no \"Organizar páginas\" do uPDF. Ela abre no menu Ver > \"Todas as páginas\", ou no \"ver todas\", em cima da tira de miniaturas. A pergunta: o \"Inserir página\" dentro dessa janela fica para depois desta rodada de consertos?"
+        },
+        {
+          "em": "2026-11-13T22:55:15Z",
+          "quem": "gerente",
+          "texto": "Do que se trata: um item da auditoria das suas decisões. Em 27/10 você disse que o \"Inserir página\" dentro da grade \"Todas as páginas\" podia ficar para depois desta rodada de consertos. Sua dúvida: \"Que grade?\". Resposta: a grade é a janela \"Todas as páginas\": as miniaturas de todas as páginas do livro de uma vez, como o \"Organizar páginas\" do uPDF. Ela abre no menu Ver > \"Todas as páginas\", ou no \"ver todas\", em cima da tira de miniaturas. O que você escolhe: o \"Inserir página\" nessa janela entra na lista de fazer, fica para depois, ou você não quer mais."
+        }
+      ],
+      "id": "au-d-567",
+      "opcoes": [
+        {
+          "id": "fazer",
+          "nome": "Pôr na lista de fazer",
+          "texto": "Entra na fila de trabalho. A gerente faz uma coisa de cada vez e te chama para testar."
+        },
+        {
+          "id": "depois",
+          "nome": "Fica para depois",
+          "texto": "Continua anotada no Livro de decisões, sem prazo."
+        },
+        {
+          "id": "nao-quero",
+          "nome": "Não quero mais",
+          "texto": "A decisão fica marcada como descartada no Livro, com a sua resposta."
+        }
+      ],
+      "titulo": "D-567 · \"Inserir página\" na grade fica para depois desta rodada"
+    }
+  ],
+  "quadros": [],
+  "resumo": {
+    "paragrafos": [
+      "Decisões suas que ficaram combinadas para depois desta rodada (não eram para ser feitas agora). São 13, uma por quadro, na ordem em que se usa o programa (abrir, Automático, ferramentas, dividir, cortar, filtros, marcar, processar, imprimir).",
+      "Cada decisão tem três escolhas: \"Pôr na lista de fazer\" (entra na fila de trabalho; a gerente faz uma coisa de cada vez e te chama para testar), \"Fica para depois\" (continua anotada, sem prazo) ou \"Não quero mais\" (fica descartada no Livro, com a sua resposta). Quando existe, o print de quando o assunto foi decidido aparece junto, para lembrar.",
+      "As seis abas \"Auditoria\" substituem a antiga \"Auditoria da versão de teste\" (25 quadros misturados). Os achados do seu teste de 28/10 (2-1 a 2-12) não estão aqui: estão na aba \"O que você não gostou: alternativas\"."
+    ],
+    "titulo": "Auditoria 6: combinado para depois: 13"
+  },
+  "trabalho": "Auditoria da versão de teste (rodada de consertos), uma decisão por quadro"
+}

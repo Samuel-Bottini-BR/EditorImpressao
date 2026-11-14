@@ -1,0 +1,43 @@
+{
+  "anteriores": [
+    {
+      "comentario": "",
+      "em": "2026-11-09T20:20:32.386Z",
+      "opcao": "nao-entendi",
+      "opcaoNome": "Ainda não entendi"
+    }
+  ],
+  "comentario": "",
+  "conversa": [
+    {
+      "em": "2026-11-09T20:20:32.386Z",
+      "quem": "samuel",
+      "texto": "Que grade? não entendi."
+    },
+    {
+      "em": "2026-11-13T20:40:00Z",
+      "quem": "gerente",
+      "texto": "A grade é a janela \"Todas as páginas\": as miniaturas de todas as páginas do livro de uma vez, como no \"Organizar páginas\" do uPDF. Ela abre no menu Ver > \"Todas as páginas\", ou no \"ver todas\", em cima da tira de miniaturas. A pergunta: o \"Inserir página\" dentro dessa janela fica para depois desta rodada de consertos?"
+    },
+    {
+      "em": "2026-11-13T22:55:15Z",
+      "quem": "gerente",
+      "texto": "Do que se trata: um item da auditoria das suas decisões. Em 27/10 você disse que o \"Inserir página\" dentro da grade \"Todas as páginas\" podia ficar para depois desta rodada de consertos. Sua dúvida: \"Que grade?\". Resposta: a grade é a janela \"Todas as páginas\": as miniaturas de todas as páginas do livro de uma vez, como o \"Organizar páginas\" do uPDF. Ela abre no menu Ver > \"Todas as páginas\", ou no \"ver todas\", em cima da tira de miniaturas. O que você escolhe: o \"Inserir página\" nessa janela entra na lista de fazer, fica para depois, ou você não quer mais."
+    },
+    {
+      "em": "2026-11-13T23:03:44.401Z",
+      "quem": "samuel",
+      "texto": "Respondi de novo: Fica para depois"
+    }
+  ],
+  "em": "2026-11-13T23:03:44.401Z",
+  "gerente": "Do que se trata: um item da auditoria das suas decisões. Em 27/10 você disse que o \"Inserir página\" dentro da grade \"Todas as páginas\" podia ficar para depois desta rodada de consertos. Sua dúvida: \"Que grade?\". Resposta: a grade é a janela \"Todas as páginas\": as miniaturas de todas as páginas do livro de uma vez, como o \"Organizar páginas\" do uPDF. Ela abre no menu Ver > \"Todas as páginas\", ou no \"ver todas\", em cima da tira de miniaturas. O que você escolhe: o \"Inserir página\" nessa janela entra na lista de fazer, fica para depois, ou você não quer mais.",
+  "gerenteEm": "2026-11-13T22:55:15Z",
+  "lida": false,
+  "opcao": "depois",
+  "opcaoNome": "Fica para depois",
+  "reabrir": false,
+  "relatorio": "auditoria-6-para-depois",
+  "samuelViu": true,
+  "volta": true
+}

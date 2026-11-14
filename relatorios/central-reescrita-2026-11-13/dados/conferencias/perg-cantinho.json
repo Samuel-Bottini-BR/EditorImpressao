@@ -1,0 +1,37 @@
+{
+  "nome": "Cantinho do giro: 1 pergunta (07/11)",
+  "ordem": 66,
+  "origem": "Teste com a janela aberta do conserto do cantinho (D-639), 07/11/2026. Relatório: .claude/worktrees/testa-girar-capa/relatorios/testa-girar-capa/relatorio.html",
+  "perguntas": [
+    {
+      "exemplos": [],
+      "explicacao": [
+        "Quando a página é girada, abre um triângulo fino na beirada. O conserto (D-639) pinta esse triângulo da cor do papel quando o Desentortar está ligado e desiste de desentortar.",
+        "No teste com a janela aberta, isso funcionou só no caso exato do conserto (quadro 2 da imagem).",
+        "Do jeito que o Kaique faria, ficou branco (quadro 3): Desentortar ligado, girar a página 1° à mão e cortar até a beirada. Já era assim antes do conserto.",
+        "Também fica branco quando se gira à mão sem cortar, com o Desentortar ligado ou desligado.",
+        "Ontem você também perguntou sobre a página que é desentortada de verdade. A pergunta junta os três casos."
+      ],
+      "historico": [],
+      "id": "cantinho-outros-casos",
+      "opcoes": [
+        {
+          "id": "sempre",
+          "nome": "Sim, sempre da cor do papel (recomendo)",
+          "texto": "Nos três casos o triângulo sai da cor do papel, quando não há nada impresso ali."
+        },
+        {
+          "id": "so-assim",
+          "nome": "Fica como está",
+          "texto": "Só o caso do conserto sai da cor do papel; os outros continuam brancos."
+        }
+      ],
+      "primeira_imagem": {
+        "legenda": "Destino do socialismo 18, beirada esquerda no PDF, ampliada. 1: código antes do conserto (branco). 2: com o conserto, no caso exato dele (cor do papel). 3: na janela, Desentortar ligado, girada 1° à mão e cortada até a beirada (branco). 4: o mesmo com o Desentortar desligado (cor do papel).",
+        "src": "/_blob/6f5410ea855bbb3a35579063746b14f0"
+      },
+      "sugestao": "Sim, sempre da cor do papel.",
+      "titulo": "O cantinho do giro sai da cor do papel também nos casos que ficaram de fora?"
+    }
+  ]
+}

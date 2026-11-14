@@ -1,0 +1,40 @@
+{
+  "comentario": "o fechar poderia virar um x no lado superior direito e sobraria espaço para aparecer essa mensagem em baixo sem ter que rolar.",
+  "conversa": [
+    {
+      "em": "2026-11-08T19:13:08.023Z",
+      "quem": "samuel",
+      "texto": "Como assim, o que vai sair? Quero um exemplo disso."
+    },
+    {
+      "em": "2026-11-13T20:40:00Z",
+      "quem": "gerente",
+      "texto": "É o quadro que diz, antes de gravar, o que vai sair da impressora. Exemplo: \"Livreto em papel A4. Entram as 64 páginas do livro. Saem 16 folhas de papel (frente e verso), 4 cadernos.\" Hoje ele fica escondido no pé da janela, e é preciso rolar para ler. A pergunta é se ele sobe para cima das folhas, para ler sem rolar."
+    },
+    {
+      "em": "2026-11-13T22:40:00Z",
+      "quem": "gerente",
+      "texto": "Pus o exemplo de verdade (Palatino): como a janela abre, com o quadro escondido, e o quadro inteiro com o texto."
+    },
+    {
+      "em": "2026-11-13T22:55:31.960Z",
+      "quem": "samuel",
+      "texto": "\"o fechar poderia virar um x no lado superior direito e sobraria espaço para aparecer essa mensagem em baixo sem ter que rolar.\""
+    },
+    {
+      "em": "2026-11-13T22:56:27Z",
+      "quem": "gerente",
+      "texto": "Do que se trata: o quadro \"O que vai sair\" da janela \"Montar para imprimir\" (o resumo do que sai da impressora) fica escondido no pé da janela. Sua proposta: \"o fechar poderia virar um x no lado superior direito e sobraria espaço para aparecer essa mensagem em baixo sem ter que rolar.\" Anotado no Livro como D-702: o botão \"fechar\" vira um X no canto de cima à direita, e o quadro \"O que vai sair\" fica embaixo, à vista sem rolar. Entra na fila de consertos. Se mesmo assim não couber, eu te mostro com print antes."
+    }
+  ],
+  "em": "2026-11-13T22:55:31.960Z",
+  "gerente": "Do que se trata: o quadro \"O que vai sair\" da janela \"Montar para imprimir\" (o resumo do que sai da impressora) fica escondido no pé da janela. Sua proposta: \"o fechar poderia virar um x no lado superior direito e sobraria espaço para aparecer essa mensagem em baixo sem ter que rolar.\" Anotado no Livro como D-702: o botão \"fechar\" vira um X no canto de cima à direita, e o quadro \"O que vai sair\" fica embaixo, à vista sem rolar. Entra na fila de consertos. Se mesmo assim não couber, eu te mostro com print antes.",
+  "gerenteEm": "2026-11-13T22:56:27Z",
+  "lida": true,
+  "opcao": "x-no-canto",
+  "opcaoNome": "Proposta dele: o \"fechar\" vira um X no canto de cima e o quadro fica embaixo, sem rolar",
+  "reabrir": false,
+  "relatorio": "perguntas-04-11",
+  "samuelViu": false,
+  "volta": false
+}

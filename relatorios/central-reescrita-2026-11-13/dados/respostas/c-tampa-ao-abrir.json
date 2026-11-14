@@ -1,0 +1,19 @@
+{
+  "comentario": "Hoje temos opção de fazer isso manualmente caso o automatico não funcione? eu escolho essa opção no automatico ou ele faz sem eu precisar clicar em nada só rodando qualquer etapa do painel do automatico.",
+  "conversa": [
+    {
+      "em": "2026-11-07T19:30:00Z",
+      "quem": "gerente",
+      "texto": "Anotado: abrir o livro não mexe na faixa. À mão, dividir a folha também tira a faixa. No Automático você não escolhe nada: qualquer etapa que rode já tira a faixa."
+    }
+  ],
+  "em": "2026-11-06T21:25:11.860Z",
+  "gerente": "Anotado: abrir o livro não mexe na faixa. À mão, dividir a folha também tira a faixa. No Automático você não escolhe nada: qualquer etapa que rode já tira a faixa.",
+  "gerenteEm": "2026-11-07T19:30:00Z",
+  "lida": true,
+  "opcao": "nao",
+  "opcaoNome": "Não: só no Automático e ao dividir (recomendo)",
+  "relatorio": "acrescentei-27-10",
+  "samuelViu": false,
+  "volta": false
+}

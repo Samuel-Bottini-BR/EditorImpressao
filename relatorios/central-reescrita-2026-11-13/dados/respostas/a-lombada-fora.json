@@ -1,0 +1,18 @@
+{
+  "conversa": [
+    {
+      "em": "2026-11-13T20:40:00Z",
+      "quem": "gerente",
+      "texto": "Anotado no Livro como D-673. Já é assim hoje: nada muda no programa."
+    }
+  ],
+  "em": "2026-11-08T19:33:26.893Z",
+  "gerente": "Anotado no Livro como D-673. Já é assim hoje: nada muda no programa.",
+  "gerenteEm": "2026-11-13T20:40:00Z",
+  "lida": true,
+  "opcao": "aparece",
+  "opcaoNome": "Aparece também na página, como está (recomendo)",
+  "reabrir": false,
+  "relatorio": "acrescentei-27-10",
+  "volta": false
+}

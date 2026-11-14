@@ -1,0 +1,141 @@
+auditoria-3- au-d-003 D-003 |  | pronta para conferir, com ressalva (auditoria 28/10: arrastar muda a ordem em que as etapas rodam, não a montagem da página — regra da gerente, pergunta P2 nunc
+auditoria-3- au-d-016 D-016 |  | pronta para conferir, com ressalva (auditoria 28/10: como a D-003)
+auditoria-3- au-d-033 D-033 |  | construída (etapa 9b-1: os quatro jeitos no menu Ver > "Lado direito" e em Configurações > Aparência; `ui/widgets/paineis.py` FilaDePaineis, _MolduraDoSolto; `t
+auditoria-3- au-d-021 D-021 | MEN1 | pela metade (etapa 6: na área de trabalho a roda troca de página sem zoom, Page Up/Down pulam 10, Home/End, `test_d021_*`; faltam as setas fixas na tira e a bar
+auditoria-3- au-d-046 D-046 |  | pronta para conferir, com ressalva (auditoria 28/10: "deixar em branco" / "tirar do livro" em toda página — Propriedades > Esta página, menu Página, Delete, Shi
+auditoria-3- au-d-074 D-074 |  | pela metade (bugs PD l.367 Siebmacher e l.400 Righetti não girado nem dividido; etapa 4: o Righetti girado divide, à mão e no Automático, `test_lista_3_1_*`; o 
+auditoria-3- au-d-334 D-334 |  | pela metade (grade existe; sem seleção múltipla nem ações)
+auditoria-3- au-d-097 D-097 |  | pela metade (testes das 5 páginas em tests/test_borda_preta_paginas_do_samuel.py; Cursus 3 aprovado 21/10; Antiphon 260 segue na lista da Etapa 10)
+auditoria-3- au-d-559 D-559 |  | pronta para conferir (etapa 9b-2: o Automático acha a tampa em toda folha; "cortar fora" / "pintar de branco" do livro, a escolha da D-092; `tests/test_decisoes
+auditoria-3- au-d-104 D-104 |  | não construída (8 entradas na Lista de bugs, PD l.401-408)
+auditoria-3- au-d-113 D-113 |  | não construída (Lista de bugs PD l.416)
+auditoria-3- au-d-466 D-466 |  | pela metade (etapa 10b: lugares 5 e 6 provados em páginas de verdade - Matemática 40 e 66 era o Preto e branco na sombra da lombada, consertado; Melhorar/Mágico
+auditoria-3- au-d-017 D-017 |  | pronta para conferir (etapa 5: D-543; `test_d017_*`)
+auditoria-3- au-d-543 D-543 |  | pronta para conferir (etapa 5; etapa 7: "ver no Mover" e "está bom assim" também no cartão do "Para revisar", `test_1_8_*`)
+auditoria-3- au-d-568 D-568 | MEN2 | pronta para conferir (etapa 9b-2: com zoom a roda anda pela página, Shift para os lados; `tests/test_decisoes_9b2.py`::test_d568_*)
+auditoria-3- au-d-066 D-066 |  | pronta para conferir (etapa 9b-2: a troca da tela pela imagem do PDF, ver D-473)
+auditoria-3- au-d-193 D-193 |  | construída, a conferir (etapa 10b: na prévia/tela cheia os jeitos do ScanTailor fazem a conta no DPI do PDF; tinta da tela 0,92 a 0,96 da do PDF, antes 1,10 a 1
+auditoria-3- au-d-327 D-327 |  | pela metade (etapa 10b: T do Antiphonal 46 e letra da tela cheia consertados no núcleo; falta a troca da tela pela imagem do PDF, ui/tarefas.py)
+auditoria-3- au-d-473 D-473 |  | pronta para conferir (etapa 9b-2: quando a imagem do tamanho do PDF chega, a tela troca por ela reduzida; `tests/test_decisoes_9b2.py`::test_d473_d064_*)
+auditoria-3- au-d-285 D-285 |  | pronta para conferir (etapa 7: uma conta só, `core/avisos.quantas_com_duvida`, no rodapé, no painel, na "Antes de processar", na janela de salvar, na grade e no
+auditoria-3- au-d-522 D-522 |  | pela metade (etapa 9d: a conta dos 40% está pronta e DESLIGADA; etapa 7: a tela mostra todo aviso do livro na linha da D-521 - quando a conta for ligada, a fras
+auditoria-3- au-d-114 D-114 |  | construída (`ui/widgets/medidor.py:68`; defeito aberto "deslizante que volta a 50", Lista de bugs 02/10)
+auditoria-3- au-d-250 D-250 |  | construída (etapa 9b-1: `core/editar_zonas.cobre_letras` + `ui/widgets/editor_selecao._pintar_mesmo_sobre_letras`; P-079; `tests/test_decisoes_9b1.py` test_d250
+auditoria-3- au-d-309 D-309 |  | construída (etapa 9b-1: o cartão deixa de dizer "PDF gerado" quando o trabalho muda depois do PDF, bug 332; `ui/janela_principal._ver_se_o_pdf_ficou_velho`; `te
+auditoria-3- au-d-333 D-333 |  | construída (etapa 9a: duas colunas, sem nada por cima; etapa 9b-1: os nomes das opções voltaram aos do `fase-1`, auditoria C3; `tests/test_decisoes_9b1.py` test
+auditoria-3- au-d-365 D-365 |  | pela metade (sobra "mantem a cor" em `ui/tela_conferir.py:312`; "Conferir a pagina 5" na Lista de bugs)
+auditoria-3- au-d-373 D-373 | MEN1 | construída (`ui/tela_conferir.py:1304`; `ui/tela_opcoes.py:237-240`; junção `c8963cf`)
+auditoria-3- au-d-479 D-479 |  | pela metade (etapa 9c: núcleo feito, `core/dividir_scantailor` e `core/endireitar_scantailor` dizem "o/a do Editor"; tela: etapa 11)
+auditoria-3- au-d-010 D-010 |  | não construída
+auditoria-3- au-d-011 D-011 | MEN1 | em andamento (1ª rodada do teste do Kaique feita em 26/10)
+auditoria-3- au-d-549 D-549 |  | construída (regra) / desfazer JPEG na etapa 9d
+auditoria-4- au-d-342 D-342 |  | construída (`ui/janela_principal.py:819-860`; `projetos.py:653`; etapa 9c: projeto.json ilegível guarda cópia e devolve aviso, `projetos.ler_estado` — a frase n
+auditoria-4- au-d-483 D-483 |  | pronta para conferir
+auditoria-4- au-d-490 D-490 |  | pronta para conferir
+auditoria-4- au-d-002-rodar D-002 |  | pronta para conferir (auditoria 28/10: abre direto na área de trabalho; Rodar no livro todo / só nesta página / nas escolhidas; prova passou)
+auditoria-4- au-d-004 D-004 | MEN3 | pronta para conferir (auditoria 28/10: pergunta "Pular as N" / "Rodar nelas também" / "cancelar"; prova passou) · **03/11, defeito consertado** (Gradus Primus; 
+auditoria-4- au-d-068 D-068 |  | pela metade (várias caixinhas, ex. força sozinha `ui/tela_opcoes.py:544`, borda preta `core/borda_preta.py`; sem lista conferida)
+auditoria-4- au-d-071 D-071 |  | não construída (`core/perfis.py:1`; caixa igual)
+auditoria-4- au-d-080 D-080 |  | construída (`ui/tela_opcoes.py:230`; `ui/tela_conferir.py:1304`)
+auditoria-4- au-d-081 D-081 |  | construída (`modelos.py:426`; `ui/tela_opcoes.py:250`)
+auditoria-4- au-d-101 D-101 |  | construída (`ui/tela_opcoes.py:300-319`; `core/borda_preta.py:10-24`)
+auditoria-4- au-d-144 D-144 |  | construída (a caixinha do livro mora na tela "O que fazer": a Etapa 3 não pode perdê-la)
+auditoria-4- au-d-148 D-148 |  | construída (a do livro mora na tela "O que fazer": Etapa 3 não pode perder)
+auditoria-4- au-d-168 D-168 | MEN1 | construída (mora na tela "O que fazer": Etapa 3 não pode perder)
+auditoria-4- au-d-175 D-175 |  | construída (a do livro mora na tela "O que fazer": Etapa 3 não pode perder)
+auditoria-4- au-d-186 D-186 |  | construída (`ce2b835`; a caixinha mora na tela "O que fazer")
+auditoria-4- au-d-195 D-195 |  | construída (a caixa também mora na tela "O que fazer": Etapa 3 não pode perder)
+auditoria-4- au-d-212 D-212 |  | construída (hoje mora na tela "O que fazer", que sai pela D-002)
+auditoria-4- au-d-485 D-485 |  | pronta para conferir
+auditoria-4- au-d-553 D-553 |  | construída
+auditoria-4- au-d-009 D-009 |  | pronta para conferir (auditoria 28/10: o feito à mão vale no PDF com tudo desligado; prova passou)
+auditoria-4- au-d-298 D-298 |  | a conferir (`ConfigPagina.filtro` existe; "Nunca conferido ponta a ponta", PEDIDOS BLOCO 4)
+auditoria-4- au-d-001 D-001 |  | pronta para conferir (auditoria 28/10: as 10 ferramentas na trilha e todos os menus acesos, com ou sem caixinha; prova passou)
+auditoria-4- au-d-029 D-029 |  | pela metade (o padrão existe; as trocas não)
+auditoria-4- au-d-037 D-037 |  | pela metade (ícones + seta: `ui/widgets/paineis.py:6-10`; "área de trabalho 1" não existe)
+auditoria-4- au-d-057 D-057 |  | construída (`ui/barra_de_menu.py:224`)
+auditoria-4- au-d-181 D-181 |  | construída (a tela antiga "Os quatro filtros" ainda está na trilha, `ui/widgets/trilha_agrupada.py:21`, sai na Etapa 2)
+auditoria-4- au-d-301 D-301 |  | construída (`configuracoes.py` l19, l113 `ultima_pasta_de_saida`)
+auditoria-4- au-d-341 D-341 |  | a conferir (mínimo da janela pensado para 150%, `ui/janela_principal.py:66-73`, `b05fa7d`; escala real nunca conferida)
+auditoria-4- au-d-481 D-481 |  | pronta para conferir
+auditoria-4- au-d-526 D-526 |  | construída
+auditoria-4- au-d-540 D-540 |  | pronta para conferir
+auditoria-4- au-d-561 D-561 |  | construída
+auditoria-4- au-d-562 D-562 |  | construída
+auditoria-4- au-d-027 D-027 |  | construída (menu Marcar > "Deixar a folha em branco", `ui/barra_de_menu.py:132` → `ui/tela_conferir.py:2061`; no Original só chegou ao PDF na etapa 9c, `core/fi
+auditoria-4- au-d-227 D-227 |  | construída (no Original, desde a etapa 9c: `core/filtros._papel_a_mao_em_branco`; tests/test_decisoes_nucleo.py, P-075)
+auditoria-4- au-d-271 D-271 |  | construída (`core/analise.py:146`; etapa 9c: aviso falso em página com texto medido de novo na prévia, `core/pipeline._tirar_o_em_branco_falso`; beirada do livr
+auditoria-4- au-d-007 D-007 |  | pronta para conferir (etapa 4: o livro nunca abre no Dividir e o Automático que divide leva à página; ver D-501; `test_d007_*`)
+auditoria-4- au-d-090 D-090 | MEN1 | pronta para conferir (etapa 9b-2: o Dividir também abre a lista, com a linha própria desmarcada; `tests/test_decisoes_9b2.py`::test_d090_*)
+auditoria-4- au-d-558 D-558 |  | pronta para conferir (etapa 9b-2: "dividir" na grade, conta do "dividir esta", por trás com andamento; `tests/test_decisoes_9b2.py`::test_d558_*)
+auditoria-4- au-d-092 D-092 |  | construída (`ui/janela_principal.py:828`, `:1447`; aprovado em `cx22`)
+auditoria-4- au-d-082 D-082 |  | construída (`core/analise.py:78`; `ui/tela_conferir.py:5682`; etapa 9d, 27/10: a exceção D-496 da 9c saiu; `tests/test_decisoes_nucleo.py::test_d082_*`)
+auditoria-4- au-d-093 D-093 |  | pela metade (padrão feito, `core/pipeline.py:1146`; "Acompanha o texto" pronta na conta, sem controle na tela, `:1226`)
+auditoria-4- au-d-094 D-094 |  | não construída (nenhum "Acompanha o texto" em `ui/`; `ui/tela_configuracoes.py:13` "Ainda não entram")
+auditoria-4- au-d-098 D-098 |  | construída (`core/analise.py:295`; `ui/tela_conferir.py:4019`; bug 23/10: o alargado deixa a página menor)
+auditoria-4- au-d-491 D-491 |  | pronta para conferir
+auditoria-4- au-d-494 D-494 |  | pronta para conferir (etapa 9b-2, pela D-554)
+auditoria-4- au-d-554 D-554 |  | pronta para conferir (etapa 9b-2: caixinha no "Para o livro todo" do Cortar; `tests/test_decisoes_9b2.py`::test_d554_*)
+auditoria-4- au-d-563 D-563 |  | descartada (etapa 9b-2: a conta saiu, com os testes dela; `tests/test_decisoes_9b2.py`::test_d563_*)
+auditoria-4- au-d-095 D-095 | MEN1 | não construída
+auditoria-4- au-d-008 D-008 |  | pronta para conferir (etapa 5: ferramenta própria "Mover e redimensionar", tecla F; D-540 a D-546; `tests/test_decisoes_mover.py`)
+auditoria-4- au-d-025 D-025 |  | construída (`core/guias.py`, `core/corte_pelo_conteudo.py`)
+auditoria-4- au-d-056 D-056 |  | construída (`Projeto.guias_automaticas`, `ui/tela_conferir.py:1647`; `core/guias.py:11`)
+auditoria-4- au-d-303 D-303 |  | pela metade (costura par/ímpar na impressão feita, `core/impressao.py:18-20`; centralizar à mão não)
+auditoria-4- au-d-542 D-542 |  | pronta para conferir
+auditoria-4- au-d-545 D-545 |  | pronta para conferir
+auditoria-4- au-d-006 D-006 |  | pronta para conferir (etapa 6: "Duas lado a lado" na barra de baixo e no menu Ver, pares rolando das prévias; `test_d015_*`, P-136)
+auditoria-4- au-d-015 D-015 |  | pronta para conferir (etapa 6: `ui/tela_conferir.py` `_montar_o_ver_da_barra_de_baixo`, `ui/widgets/paginas_lado_a_lado.py`; `tests/test_decisoes_ver.py`)
+auditoria-4- au-d-058 D-058 |  | pronta para conferir (etapa 6: o 5º item, "Ver lado a lado", `menu/lado_a_lado`; `test_d058_*`)
+auditoria-4- au-d-343 D-343 |  | pronta para conferir (etapa 6: o clique num par da grade abre o "Duas lado a lado" nele; `test_d343_*`)
+auditoria-4- au-d-569 D-569 |  | construída
+auditoria-4- au-d-570 D-570 |  | pronta para conferir (etapa 9b-2: "– N% +", "ajustar à tela" e Ctrl+roda nos pares; `tests/test_decisoes_9b2.py`::test_d570_*)
+auditoria-4- au-d-571 D-571 |  | conferida na etapa 9b-2: 100% já era a página inteira cabendo (`tests/test_decisoes_9b2.py`::test_d571_*)
+auditoria-4- au-d-064 D-064 |  | pronta para conferir (etapa 9b-2: as duas bolinhas na barra de baixo, a da página e a do livro, com % no balão; `tests/test_decisoes_9b2.py`::test_d473_d064_*)
+auditoria-4- au-d-255 D-255 |  | construída (`ui/widgets/paineis.py:885, 921`; botões em `core/analise.py:211-231`); etapa 7: o clique no cartão sai do Dividir e deixa o aviso com os botões à v
+auditoria-4- au-d-259 D-259 |  | pronta para conferir (etapa 7: "está certo" na faixa responde - conferida, tique, contador, próxima dúvida; "ver as N em tela cheia" no pé do "Para revisar" abr
+auditoria-4- au-d-268 D-268 |  | construída (`core/analise.py:211-231`; `ui/tela_conferir.py:651, 5110-5140`); etapa 7: os botões do aviso também no cartão da página da vez no "Para revisar" (l
+auditoria-4- au-d-521 D-521 |  | pronta para conferir (etapa 7: todos os avisos do livro numa linha no alto do "Para revisar" e no livro aberto; `test_d521_*`)
+auditoria-4- au-d-263 D-263 |  | a conferir (aviso por página existe, `core/analise.py:69, 226`; aviso único do livro não achado)
+auditoria-4- au-d-276 D-276 |  | pela metade (`core/revisar.py:200` existe; Lista de bugs 13/10, PD l.391: Camões 66 sem aviso nem na página nem no livro)
+auditoria-4- au-d-288 D-288 |  | construída
+auditoria-4- au-d-292 D-292 |  | construída
+auditoria-4- au-d-293 D-293 |  | construída
+auditoria-4- au-d-189 D-189 |  | construída, a conferir (etapa 10b: sem o "forçar preto e branco" no Preto e branco com "Letras com a cor delas"; tests/test_etapa10b_imagem.py, test_decisoes.py
+auditoria-4- au-d-564 D-564 |  | descartada (etapa 9b-2: a chave e a conta saíram; `tests/test_decisoes_9b2.py`::test_d564_*, `test_decisoes_nucleo2.py::test_d564_*`)
+auditoria-4- au-d-020 D-020 |  | pela metade (sem limite fixo em `historico_acoes.py`; etapa 9b-2: a marcação e os avisos entram no desfazer, `tests/test_decisoes_9b2.py`::test_p129_*, test_lis
+auditoria-4- au-d-156 D-156 |  | pronta para conferir (conferida na etapa 9b-2: o pedaço vale no Preto e branco e sem "Limpar a folha"; `tests/test_decisoes_9b2.py`::test_d156_*)
+auditoria-4- au-d-233 D-233 |  | construída (commit `60d8c58`)
+auditoria-4- au-d-274 D-274 |  | construída (`ui/janela_dos_avisos.py:9-10`, VER, "continuar assim mesmo")
+auditoria-4- au-d-283 D-283 |  | construída (etapa 9b-1: `138e425` trazido; o "Mostrar" com a largura do motivo mais comprido; `tests/test_decisoes_9b1.py` test_d283_*)
+auditoria-4- au-d-304 D-304 |  | construída (`ui/janela_confirmar.py:119`; junção `99c2ce2`; etapa 9d, 27/10: o JPEG 92 da 10b foi desfeito, a página de tons vai sem perda; `test_d304_pagina_de
+auditoria-4- au-d-555 D-555 |  | construída (etapa 9b-1: `modelos.nome_de_saida_sugerido` e `ui/dialogo_impressao.destino_sugerido` com acento; `tests/test_decisoes_9b1.py` test_d555_*)
+auditoria-4- au-d-012 D-012 |  | não construída
+auditoria-4- au-d-315 D-315 |  | construída (`core/impressao.py:92-98`, `:166-180`)
+auditoria-4- au-d-550 D-550 |  | construída
+auditoria-4- au-d-551 D-551 |  | construída
+auditoria-4- au-d-552 D-552 |  | construída
+auditoria-4- au-d-475 D-475 |  | não construída
+auditoria-4- au-d-556 D-556 |  | construída
+auditoria-5- au-d-486 D-486 | MEN1 | pronta para conferir
+auditoria-5- au-d-546 D-546 |  | pronta para conferir
+auditoria-5- au-d-547 D-547 | MEN1 | pronta para conferir (etapa 9b-2: lado a lado, antes/depois, tela cheia, cartões do Filtro e miniatura da página movida; as ferramentas de marcar/cortar/dividir
+auditoria-5- au-d-018 D-018 |  | pronta para conferir (auditoria 28/10: "Rodar o automático…" abre a janela grande; nada muda até "Rodar"; prova passou)
+auditoria-5- au-d-482 D-482 |  | pronta para conferir
+auditoria-5- au-d-488 D-488 |  | pronta para conferir
+auditoria-5- au-d-489 D-489 |  | pronta para conferir
+auditoria-5- au-d-484 D-484 |  | pronta para conferir
+auditoria-5- au-d-492 D-492 |  | construída (etapa 9b-1: `ui/janela_principal._marcar_o_filtro_no_menu`; P-085 sem "defeito"; `tests/test_decisoes_9b1.py` test_d492_*)
+auditoria-5- au-d-498 D-498 |  | pronta para conferir
+auditoria-5- au-d-500 D-500 |  | pronta para conferir
+auditoria-5- au-d-501 D-501 |  | pronta para conferir
+auditoria-5- au-d-528 D-528 |  | pronta para conferir (etapa 9d; `tests/test_decisoes_nucleo2.py::test_*d528*`)
+auditoria-5- au-d-560 D-560 |  | construída
+auditoria-5- au-d-487 D-487 | MEN1 | pronta para conferir (sem "inserir")
+auditoria-5- au-d-541 D-541 |  | pronta para conferir
+auditoria-6- au-d-026 D-026 |  | a conferir (item 3.8 `[ ]`)
+auditoria-6- au-d-070 D-070 |  | pela metade (só receitas com nome, `core/perfis.py`; `PainelAutomatico` não existe)
+auditoria-6- au-d-476 D-476 |  | não construída
+auditoria-6- au-d-477 D-477 |  | não construída
+auditoria-6- au-d-478 D-478 |  | não construída
+auditoria-6- au-d-480 D-480 |  | não construída

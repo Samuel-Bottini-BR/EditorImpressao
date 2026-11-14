@@ -1,0 +1,24 @@
+{
+ "abrir (s)": 0.1,
+ "menu lado direito": [
+  [
+   "Ícones na borda (de fábrica)",
+   true
+  ],
+  [
+   "Sanfona (a área de trabalho 1)",
+   false
+  ],
+  [
+   "Abas no alto",
+   false
+  ],
+  [
+   "Painel solto",
+   false
+  ]
+ ],
+ "barra de menu visivel (abas)": [
+  false
+ ]
+}

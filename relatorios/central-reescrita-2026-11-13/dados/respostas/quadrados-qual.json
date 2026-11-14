@@ -1,0 +1,38 @@
+{
+  "anteriores": [
+    {
+      "comentario": "",
+      "em": "2026-11-10T21:28:44.607Z",
+      "opcao": "nao-entendi",
+      "opcaoNome": "Ainda não entendi"
+    }
+  ],
+  "comentario": "",
+  "conversa": [
+    {
+      "em": "2026-11-10T23:59:00Z",
+      "quem": "gerente",
+      "texto": "Você tinha razão: antes o programa não fazia isso. Os quadrados começaram na obra de 26/10, quando um agente decidiu sozinho que, sem o Automático, o programa não procura a gravura, e o livro passou a abrir com o Automático desligado. Refiz a pergunta com as provas: azul é antes, laranja é hoje, verde é voltar como era e roxo é o conserto C."
+    },
+    {
+      "em": "2026-11-10T23:56:33.414Z",
+      "quem": "samuel",
+      "texto": "Respondi de novo: Roxo: o conserto C (recomendo)"
+    },
+    {
+      "em": "2026-11-13T22:30:00Z",
+      "quem": "gerente",
+      "texto": "Anotado no Livro como D-668. O conserto C entrou hoje (13/11) na versão de teste, como você mandou (\"pode juntar agora\"). Para testar: feche e abra o programa, abra o Na escola de Jesus como livro novo, vá à página 13 e escolha o Melhorar e depois o Mágico pro."
+    }
+  ],
+  "em": "2026-11-10T23:56:33.414Z",
+  "gerente": "Anotado no Livro como D-668. O conserto C entrou hoje (13/11) na versão de teste, como você mandou (\"pode juntar agora\"). Para testar: feche e abra o programa, abra o Na escola de Jesus como livro novo, vá à página 13 e escolha o Melhorar e depois o Mágico pro.",
+  "gerenteEm": "2026-11-13T22:30:00Z",
+  "lida": true,
+  "opcao": "c",
+  "opcaoNome": "Roxo: o conserto C (recomendo)",
+  "reabrir": false,
+  "relatorio": "perg-quadrados-brancos",
+  "samuelViu": false,
+  "volta": false
+}

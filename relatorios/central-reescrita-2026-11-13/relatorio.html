@@ -1,0 +1,363 @@
+<!doctype html>
+<html lang="pt-BR">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Central: perguntas reescritas (13/11/2026)</title>
+<style>
+:root { color-scheme: light dark; }
+* { box-sizing: border-box; }
+body {
+  font: 17px/1.65 "Segoe UI", system-ui, sans-serif;
+  max-width: 46rem; margin: 0 auto; padding: 2.5rem 1.5rem 6rem;
+  color: #1c1c1e; background: #fdfdfc;
+}
+h1 { font-size: 2rem; line-height: 1.2; margin: 0 0 .3em; letter-spacing: -.02em; }
+h2 { font-size: 1.35rem; margin: 2.4em 0 .6em; padding-top: .8em;
+     border-top: 1px solid #e6e4e0; letter-spacing: -.01em; }
+h3 { font-size: 1.1rem; margin: 1.8em 0 .4em; }
+h1 + p, h2 + p { margin-top: .4em; }
+p, li { margin: 0 0 .9em; }
+ul, ol { padding-left: 1.3em; }
+strong { font-weight: 640; }
+code {
+  font: .88em ui-monospace, "Cascadia Code", Consolas, monospace;
+  background: #f1efec; padding: .12em .35em; border-radius: 4px;
+}
+pre {
+  background: #f1efec; padding: 1em 1.1em; border-radius: 8px;
+  overflow-x: auto; line-height: 1.5;
+}
+pre code { background: none; padding: 0; }
+blockquote {
+  margin: 1.2em 0; padding: .1em 0 .1em 1.1em;
+  border-left: 3px solid #c9c5be; color: #55524d;
+}
+table {
+  border-collapse: collapse; width: 100%; margin: 1.2em 0;
+  font-size: .95rem; display: block; overflow-x: auto;
+}
+th, td { padding: .5em .8em; text-align: left; border-bottom: 1px solid #e6e4e0; }
+th { font-weight: 620; background: #f7f5f2; white-space: nowrap; }
+tr:last-child td { border-bottom: none; }
+img { max-width: 100%; height: auto; border-radius: 6px; margin: 1em 0;
+      border: 1px solid #e6e4e0; }
+hr { border: none; border-top: 1px solid #e6e4e0; margin: 2.5em 0; }
+.rodape { margin-top: 4em; padding-top: 1.2em; border-top: 1px solid #e6e4e0;
+          font-size: .85rem; color: #86827c; }
+@media (prefers-color-scheme: dark) {
+  body { color: #e8e6e3; background: #1a1917; }
+  h2 { border-top-color: #35332f; }
+  code, pre, th { background: #262421; }
+  th, td { border-bottom-color: #35332f; }
+  blockquote { border-left-color: #4a4741; color: #b0aca6; }
+  img { border-color: #35332f; }
+  .rodape { border-top-color: #35332f; color: #7d7973; }
+}
+@media print {
+  body { max-width: none; padding: 0; color: #000; background: #fff; }
+  h2 { page-break-after: avoid; }
+  table, img { page-break-inside: avoid; }
+}
+</style>
+</head>
+<body>
+<h1>Central de decisões: perguntas reescritas para o Samuel (13/11/2026)</h1>
+<p>Trabalho do verificador, só de texto: <strong>nenhuma linha do programa mudou</strong>. As perguntas foram reescritas no formato
+das dez regras de "Como perguntar e responder ao Samuel" (CLAUDE.md §11.13). Os ids das perguntas e das opções
+continuam os mesmos; nenhuma opção que ele já escolheu saiu. A página da Central acrescenta sozinha a opção "Só
+comentário"; a opção "Ainda não entendi" ficou só onde ela já existia.</p>
+<ul>
+<li><strong>Arquivos prontos para publicar</strong> (documento inteiro de cada aba, para <code>set</code>): <code>novas/&lt;aba&gt;.json</code>.</li>
+<li><strong>Imagens novas:</strong> <code>novas/imagens/</code>. O <code>src</code> delas é <code>imagens/&lt;arquivo&gt;.png</code>; a gerente sobe e troca pelo endereço
+  da Central. As legendas estão também em <code>novas/imagens/legendas.json</code>.</li>
+<li><strong>Como os prints novos foram tirados:</strong> programa da versão de teste (ramo <code>obra-2026-10-26</code>, commit <code>4c48e899</code>), numa
+  worktree própria (<code>.claude/worktrees/central-reescrita</code>), sem janela na tela (modo sem tela do Qt, janela de 1280 x
+  657 a 125%), prioridade baixa, cópias dos livros e pasta de dados à parte. Scripts em <code>scripts/</code>.</li>
+</ul>
+<h2>Parte 1: as perguntas que destravam consertos (8 perguntas mudaram)</h2>
+<p>Arquivos: <code>novas/perg-revisao-codigo.json</code> (4), <code>novas/acrescentei-27-10.json</code> (3 das 37; as outras 34 iguais),
+<code>novas/perg-mover-rotulo.json</code> (1).</p>
+<p>Em todas: a primeira frase diz o que é e onde fica, com o caminho de clique; saíram os números de decisão do meio do
+texto (ficam só no fim, entre parênteses, "para consulta"), "motor", "escolha da gerente" e as citações longas do
+Livro; entrou "O que muda no que já funciona", "Situação" e "O que você escolhe"; cada opção diz o que acontece.</p>
+<h3>rev-usar-em-todas ("usar em todas" deixa de fora as páginas mexidas à mão?)</h3>
+<ul>
+<li><strong>Mudou:</strong> título e texto; o nome do botão em cada ferramenta ("usar em todas" / "aplicar em: todas"); o caso real
+  numa frase por ferramenta; <strong>acrescentei o que muda no que já funciona</strong>: com "Sim", no Girar a página virada à mão
+  deixa de acompanhar as outras (muda em parte a decisão de 06/10, "Todas ficam viradas como a folha da vez"). Isso
+  não estava dito e é regra 6 / D-605.</li>
+<li><strong>Por quê:</strong> ele ainda não respondeu; o texto antigo tinha um parágrafo só de citações com números (D-090, D-091,
+  D-545, D-035, D-667), o padrão de "Não sei de que obra está falando" e "Não se deve usar código na nomeação".</li>
+<li><strong>Prints:</strong> os de 10/11 continuam valendo (conferi: nenhuma mudança no código do "usar em todas" desde então). Já
+  estão no modelo do girar (azul antes, laranja como é hoje, verde a outra opção).</li>
+</ul>
+<h3>rev-letra-clara-todas ("Letra clara em fundo escuro" vai junto no "Aplicar em: todas"?)</h3>
+<ul>
+<li><strong>Mudou:</strong> título e texto; onde fica a caixinha ("Mais ajustes" do painel "Filtro da página"); "é defeito";
+  <strong>acrescentei</strong>: com "Sim", a caixinha vai como está na página da vez, então também DESMARCA nas outras se nela
+  estiver desmarcada (é como o Automático já faz: conferido em <code>core/automatico.py</code>, que grava o valor em todas as
+  páginas em que roda).</li>
+<li><strong>Conferido no programa hoje:</strong> a lista do "Aplicar em" (<code>ui/tela_conferir._campos_do_aplicar_em</code>, juntada em 13/11)
+  ainda não tem a caixinha. O fato da pergunta continua verdadeiro.</li>
+</ul>
+<h3>rev-dividir-grade-linha (o "dividir" da grade corta onde você deixou a linha?)</h3>
+<ul>
+<li><strong>Mudou:</strong> título e texto; "linha do motor" virou "onde o programa acha a lombada" (também nas legendas); tirei a
+  afirmação de que o "dividir todas" também corta na linha arrastada (não conferi); acrescentei que na folha sem linha
+  arrastada nada muda.</li>
+</ul>
+<h3>rev-girar-grade (o girar da grade deixa todas viradas do mesmo jeito?)</h3>
+<ul>
+<li><strong>Mudou:</strong> título ("como a página da vez" na grade é ambíguo: na grade não há página da vez; troquei por "todas
+  viradas do mesmo jeito"); acrescentei a perda: quem usa a grade para girar cada página ¼ a partir de onde está perde
+  esse jeito com "Sim".</li>
+</ul>
+<h3>b-abas-nomes (os nomes curtos das abas do "Abas no alto")</h3>
+<ul>
+<li><strong>Motivo:</strong> "Ainda não entendi" + "No caso, isso é uma opção a mais do que a que temos hoje?" (06/11). A gerente
+  respondeu no chat da pergunta em 07/11, mas a pergunta continuou igual (com o código de rodada
+  <code>7-paineis-da-direita-opcao-1</code>, "402 C" e "D-033" no texto).</li>
+<li><strong>Mudou:</strong> responde primeiro a dúvida dele ("Não: já existe hoje; é um dos quatro jeitos que você pediu em 05/10");
+  diz onde fica (menu Ver &gt; Lado direito) e que o de fábrica é outro ("Ícones na borda"); diz com todas as letras que
+  os nomes curtos foram escolhidos por um agente sem perguntar a ele (regra 9).</li>
+<li><strong>Opção nova:</strong> <code>nomes-inteiros</code> ("As abas com o nome inteiro do painel"), como segunda sugestão de nome (regra 6:
+  duas ou três opções de nome). Avisa que precisa conferir se cabe em 1280 de largura.</li>
+<li><strong>Print novo:</strong> <code>b-abas-nomes-resumo.png</code>: o menu Ver &gt; Lado direito (versão de teste, hoje), o lado de fábrica
+  (Gradus, cópia, hoje) e o "Abas no alto" (print de 28/10, Palatino).</li>
+<li><strong>Achado ao tirar o print (não confirmado em janela de verdade):</strong> no programa de hoje, sem janela na tela, ao
+  trocar para "Abas no alto" a barra de menu (Arquivo, Editar...) some: <code>menuBar().isVisible()</code> = falso, nas duas
+  vezes que tentei (<code>cru/p2/e-abas-no-alto.png</code>, <code>cru/p3/4-abas-depois-de-redimensionar.png</code>). No print de 28/10 ela
+  aparecia. Pode ser só do modo sem tela; precisa conferir na janela de verdade. Por isso usei o print de 28/10 nessa
+  faixa.</li>
+</ul>
+<h3>b-pdf-desatualizado (o cartão deve dizer "PDF desatualizado"?)</h3>
+<ul>
+<li><strong>Motivo:</strong> "Ainda não entendi" + "Isso se aplica só se eu fizer alterações né?" (06/11).</li>
+<li><strong>Mudou:</strong> responde primeiro ("Sim, só quando você muda alguma página; folhear não conta", conferido na regra do
+  programa <code>ui/janela_principal._ver_se_o_pdf_ficou_velho</code>); diz que não é defeito, de onde veio (o conserto que ele
+  mandou em 05/10), que "PDF desatualizado" é coisa nova e o que muda em cada opção. Tirei o "etapa 9b-1", "Lista de
+  bugs 332" e "D-309" do meio do texto.</li>
+<li><strong>Print novo:</strong> <code>b-pdf-desatualizado-resumo.png</code>, montado com os prints de 28/10 (a regra do programa não mudou
+  desde então), cortados só na barra do alto e no cartão, para tirar as páginas cinzas ainda carregando e o botão
+  cortado "ontinua" que distraíam.</li>
+</ul>
+<h3>v-capa-aviso (pares trocados: quando o programa avisa?)</h3>
+<ul>
+<li><strong>Motivo:</strong> comentário de 13/11: "mas vai ter um botão para fazer isso antes do imprimir livros?"</li>
+<li><strong>Mudou:</strong> responde primeiro: sim, o botão que ele mandou fazer em 09/11 vai ficar no "Duas lado a lado" e ele usa
+  quando quiser, antes de "Montar para imprimir"; ainda não está feito. <strong>Acrescentei que já hoje dá para acertar à
+  mão</strong>: botão direito na miniatura da capa, "adicionar página em branco depois" (função que ele testou em 09/11:
+  "pagina em branco funciona"). Disse como o Acrobat faz (a escolha de mostrar a capa sozinha no modo de duas páginas).</li>
+<li><strong>Print novo:</strong> <code>v-capa-aviso-resumo.png</code> (La vida eterna, cópia, dividido pelo Automático, "Duas lado a lado"):
+  azul, a página 7 impressa à esquerda; verde, o menu do botão direito e, depois do clique, a 7 à direita.</li>
+<li><strong>Não conferido:</strong> que a página em branco anda também os cadernos do "Montar para imprimir". Está escrito no
+  Livro (D-623: "entra no livro, no PDF e nos cadernos") e ele testou a página em branco, mas não montei os cadernos
+  deste livro.</li>
+</ul>
+<h3>mover-rotulo-antes (o Mover com o "antes / depois")</h3>
+<ul>
+<li><strong>Motivo:</strong> "Ainda não entendi" + "Isso ficou bem estranho né, acho que não deveria dar para ver o antes/depois
+  enquanto se mexe na folha, no caso do mover." (07/11). A pergunta antiga era sobre o lugar do rótulo; o comentário
+  dele pede outra coisa.</li>
+<li><strong>Mudou:</strong> título, texto e opções. Diz o que é o "antes / depois" e o Mover, como é hoje (o que ele aprovou em
+  04/11) e que as opções novas mudam essa decisão só no Mover.</li>
+<li><strong>Opções novas:</strong> <code>so-a-pagina</code> ("Com o Mover, só a página", sugestão) e <code>some-ao-arrastar</code> (a proposta da
+  gerente de 07/11). As antigas <code>fica</code> e <code>mudar</code> continuam, com texto mais claro.</li>
+<li><strong>Print novo:</strong> <code>mover-rotulo-antes-resumo.png</code> (Gradus, cópia, dividido, página 11, ferramenta Mover): azul, com
+  "antes / depois" ligado; verde, só a página.</li>
+</ul>
+<h3>Fatos que não consegui confirmar no programa (Parte 1)</h3>
+<ol>
+<li>Cadernos com a página em branco posta à mão (v-capa-aviso): não montei os cadernos; vale o Livro e o teste dele.</li>
+<li>"dividir todas" com a linha arrastada (rev-dividir-grade-linha): não conferi; tirei a frase.</li>
+<li>Se as abas com o nome inteiro cabem na coluna da direita em 1280 de largura (b-abas-nomes): escrito como algo a
+   conferir antes de fazer.</li>
+<li>A barra de menu que some no "Abas no alto" sem tela: não conferi na janela de verdade.</li>
+</ol>
+<h2>Parte 2: a aba "Revisão dos nomes" (20 perguntas mudaram)</h2>
+<p>Arquivo: <code>novas/nomes-28-10.json</code> (as 20; o resumo da aba também, que tinha "D-374", "D-365"
+e caminhos de arquivo).</p>
+<p><strong>Em todas:</strong>
+- A primeira frase diz onde o botão fica e o que ele faz ("Do que se trata").
+- Depois, por que o nome confunde, com o caso real e as palavras do Kaique.
+- Depois, de onde veio, com data e palavras dele. Saíram os números de decisão, os códigos de rodada (<code>pr-esta-bom</code>,
+  <code>b-11-nome</code>, <code>fr-26</code>...), "etapa 9a/9b-1" e "escolha da gerente" (agora: "escolhido pela gerente, sem perguntar a
+  você", regra 9).
+- No fim, a mesma frase de situação: nada mudou; o que o botão faz não muda; o nome escolhido entra junto com a
+  arrumação nova do layout, como ele pediu em 04/11 ("Isso deveria ser feito junto com a repaginação do layout [...]
+  o agente não vai escolher os nomes ele pode sugerir opções"). Isso não estava dito e é regra 10.
+- Cada pergunta tem duas sugestões de nome, "Deixar como está" e "Ainda não entendi" (ids mantidos). A sugestão
+  passou para o campo "sugestão", com o porquê em uma frase.
+- <strong>Conferido no programa de hoje</strong> (busca dos textos de tela em <code>ui/</code> e <code>core/</code>): todos os nomes citados continuam
+  lá. Únicas diferenças: o subtítulo da etapa agora é "tira o amarelado" (minúsculo); o "Show Details..." da Lista de
+  atalhos é o botão que o próprio Qt põe (vem do <code>setDetailedText</code>), não um texto escrito no código.</p>
+<h3>As três que voltaram com "não entendi"</h3>
+<p><strong>nm-desligar-marcadas</strong> — ele: "Eu não entendi o que você quis dizer." (13/11)
+- O texto antigo dizia o que o botão faz só em palavras ("o programa deixa de fazer sozinho..."). Agora diz que ele
+  <strong>desfaz</strong> o que o Automático fez nas etapas marcadas, e mostra.
+- <strong>Print novo</strong> <code>nm-desligar-marcadas-resumo.png</code> (Gradus, cópia, hoje): azul, depois do Automático só com
+  "Dividir folhas ao meio" (140 páginas); verde, depois de "desligar as marcadas" (as folhas voltam inteiras; a
+  caixinha da etapa fica desmarcada; na tira, a metade que sobrou aparece como "apagada"). Conferido pelo Histórico:
+  "Automático desligado: dividir folhas ao meio".
+- As opções viraram "desfazer estas etapas" e "tirar o automático das etapas marcadas" (ids <code>estas-etapas</code> e
+  <code>nao-fazer</code> mantidos; ele não tinha escolhido nenhuma).
+- <strong>Achado no print (não é desta pergunta):</strong> depois de desligar o Dividir, a barra de baixo continua "página 11 de
+  140" e a tira mostra "apagada" no lugar das metades. Pode confundir o Kaique; não investiguei.</p>
+<p><strong>nm-jeito-pb</strong> — ele: "Ainda não entendi" (13/11), sem comentário.
+- Agora explica primeiro o que é a lista (maneiras de decidir o que vira preto e o que vira branco) e por que
+  "Sauvola", "Otsu" e "Wolf" não dizem nada (são sobrenomes dos inventores).
+- <strong>Print novo</strong> <code>nm-jeito-pb-resumo.png</code>: a lista (print de 28/10) e a mesma página do Palatino (cópia, página 9),
+  desenhada pela conta do PDF com cada jeito, o mesmo pedaço aumentado. Aviso honesto na imagem: nesta página a
+  diferença é pequena (a moldura da direita e a grossura das letras). O "Automático" escolheu o Sauvola nela.
+- Segunda opção (<code>so-padrao</code>) ganhou o texto que faltava.</p>
+<p><strong>nm-tela-livros</strong> — ele: "Suas respostas ainda não são claras, tem que rever isso, não consegui entender, tem que
+ser de fácil entendimento." (13/11)
+- O texto antigo juntava três assuntos num parágrafo só. Agora são três itens numerados (1. tirar da lista;
+  2. achar o PDF que mudou de pasta; 3. "projeto" no lugar de "livro"), e a imagem tem uma faixa para cada um.
+- <strong>Imagem nova</strong> <code>nm-tela-livros-resumo.png</code>, montada com os quatro prints de 28/10 (os textos continuam iguais no
+  programa de hoje).
+- A opção <code>so-botoes</code> ganhou o texto que faltava.</p>
+<h3>As outras 17 (reescritas no mesmo formato, sem print novo; os prints de 28/10 continuam)</h3>
+<ul>
+<li><strong>nm-codigos:</strong> ele já decidiu em 09/11 ("Não se deve usar código na nomeação de coisas"; mandou consertar). A
+  pergunta agora diz isso, diz que está na fila, e pergunta só o que falta (tirar só o código ou a frase da regra). A
+  opção "Deixar como está" ficou (o id não sai), mas avisa que é contra o que ele decidiu. Conferi hoje: os três
+  códigos ainda estão na tela.</li>
+<li><strong>nm-montar-nomes:</strong> tirei das opções o "Folhas de (0 = todas)" e o "Páginas do livro de (0 = todas)", porque ele
+  já decidiu em 08/11 a caixinha "Imprimir só algumas folhas" (regra 10: não perguntar de novo).</li>
+<li><strong>nm-montar-frases:</strong> diz com todas as letras que as frases foram escolha de agente, sem pedido dele.</li>
+<li><strong>nm-dois-mover, nm-desligar-marcadas:</strong> dizem que o nome foi escolhido pela gerente, sem perguntar.</li>
+<li>Opções que estavam sem texto ganharam texto: <code>aumentar</code> (nm-dois-mover), <code>nao-fazer</code>, <code>so-padrao</code>, <code>so-botoes</code>.</li>
+<li><strong>nm-esta-bom, nm-antes-de-processar, nm-folha-pagina, nm-nao-esta, nm-limpar-a-folha, nm-scantailor, nm-tirada,
+  nm-frase-salvar, nm-historico, nm-menu-marcar, nm-manter-cor-tinta, nm-montar-dois, nm-atalhos:</strong> mesmo conteúdo,
+  no formato novo; nomes de decisão e de rodada tirados do meio do texto.</li>
+</ul>
+<h3>Fatos que não consegui confirmar (Parte 2)</h3>
+<ol>
+<li>Os números dos exemplos (54 avisos, 8 páginas, "6 páginas", "12 das 50") são dos prints e testes de 26-28/10;
+   não refiz as contas hoje.</li>
+<li>Se o Kaique ainda vê "Show Details..." em inglês: depende do Qt instalado no notebook dele; no PC, conferi só no
+   código que a lista vem pelo "detalhe" da caixa de mensagem.</li>
+</ol>
+<h2>Parte 3: as abas de auditoria (141 perguntas mudaram)</h2>
+<p>Arquivos: <code>novas/auditoria-3-com-ressalva.json</code> (31 das 32), <code>novas/auditoria-4-funciona.json</code> (88 das 92),
+<code>novas/auditoria-5-escolhas-da-gerente.json</code> (16 das 19), <code>novas/auditoria-6-para-depois.json</code> (6 das 13). As que
+ele já respondeu (15) ficaram iguais, letra por letra (conferido por script). O resumo de cada aba foi reescrito.</p>
+<p><strong>Motivo (para todas):</strong> as fichas "Situação / Você pediu / O que isso quer dizer / Solução na versão de teste / Parte
+do programa / Ressalva" são, nas palavras da regra nova, as que mais voltaram com "Ainda não entendi" (CLAUDE.md
+§11.13, regra 7: "Nada de ficha com campos"). Os comentários dele que motivaram a regra: "Um monte de texto e não
+consigo saber o que era para saber realmente" · "os relatorios continuam muito ruins e dificeis de entender" · "nos
+para responder, não tem explicações sobre o que precisa ser respondido".</p>
+<p><strong>O que mudou em cada uma (o mesmo molde para as 141):</strong>
+1. <strong>Onde fica e o que é</strong>, numa frase só ("Onde fica: Dividir as folhas. O que é: ...").
+2. <strong>O que ele pediu, com a data e as palavras dele.</strong> Quando a ficha dizia "Você pediu" mas era "(escolha da
+   gerente, D-014)", agora diz com todas as letras: "ninguém perguntou a você; a gerente escolheu sozinha em 27/10"
+   (regra 9). Isso acontecia em várias da aba 4 e da aba 6, não só na aba 5.
+3. <strong>Como está hoje</strong> na versão de teste e, quando havia ressalva, "O que ainda não está bom".
+4. <strong>Se ele já testou depois da auditoria de 29/10</strong>, procurado no Livro de decisões (ver a lista abaixo).
+5. <strong>O que ele escolhe</strong>, com as mesmas opções (ids iguais), e o texto de cada opção dizendo o que acontece.
+6. O número da decisão só no fim, "(Para consulta: D-xxx)".</p>
+<p><strong>Palavras de dentro tiradas</strong> (por script, <code>scripts/parte3.py</code>, função <code>limpar</code>, e conferidas por busca no
+resultado): números de decisão no meio do texto (viraram "a decisão de 05/10"), códigos de pergunta e de rodada
+("G2:", "P6:", "F5", "R7 203 D", "904 A", "rv4-...", "dv-..."), números de item do plano ("2.13", "1.6/2.10",
+"item 7.3"), "etapa 9b-2", "obra", "junção", nomes de arquivo e de função, "escolha da gerente" como rótulo. Os
+títulos que vinham cortados com "…" foram refeitos (à mão; os outros pela primeira frase do "o que é"). A busca
+final não acha mais nenhum desses códigos nos textos reescritos ("A4" é o papel e ficou).</p>
+<p><strong>O que não mudou:</strong> as imagens (são as que já existiam, prints de quando o assunto foi decidido; a tarefa não pedia
+print novo aqui); as palavras dele entre aspas (só tirei os códigos que vinham grudados nelas).</p>
+<p><strong>Ressalva desta parte:</strong> o texto é montado por script a partir das fichas antigas e do Livro, com 32 títulos e 22
+explicações ou pedidos reescritos à mão. Li as 141 por amostra e por busca de padrões estranhos, não uma por uma com o mesmo
+cuidado das Partes 1 e 2. Algumas explicações continuam compridas porque a decisão é comprida (ex.: a ferramenta
+Mover). A gerente pode querer encurtar essas antes de publicar.</p>
+<h3>Já testado ou já respondido por ele depois da auditoria (o que achei no Livro)</h3>
+<ul>
+<li><strong>Testado em parte (ficam na lista, com a frase "Já testado por você" dizendo o que falta):</strong> au-d-021 (setas,
+  10/11 "sim"), au-d-334 e au-d-487 (o "inserir" virou "adicionar página em branco", 09/11 "pagina em branco
+  funciona"), au-d-568 (Ctrl + roda 01/11 "1- funcionando"; Shift + roda 02/11 "shift funcionando"), au-d-373 e
+  au-d-007 e au-d-090 (Dividir testado em 10/11, "ok"), au-d-168 (caixinha irmã testada em 29/10), au-d-095 (cantinho
+  do giro, 10/11: "a cor é diferente da cor do papel").</li>
+<li><strong>Não achei teste dele no Livro</strong> para as outras 124. O Livro pode não ter anotado algum teste feito no chat;
+  quando é assim, a pergunta diz "Você ainda não testou isto depois da auditoria de 29/10 (não há teste seu no Livro
+  de decisões)".</li>
+</ul>
+<h2>Pode sair da lista (já resolvida ou já testada por ele)</h2>
+<p>Oito perguntas das abas de auditoria. Em cada uma o texto novo já diz por quê, e a sugestão é "Pode sair da lista".
+A gerente decide se tira; nada foi gravado na Central.</p>
+<table>
+<thead>
+<tr>
+<th>Pergunta</th>
+<th>Aba</th>
+<th>Por que pode sair</th>
+<th>Prova</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>au-d-004 (o Automático pergunta antes de mexer nas páginas mexidas à mão)</td>
+<td>Auditoria 4</td>
+<td>Ele usou e testou esse aviso duas vezes depois da auditoria.</td>
+<td>Livro, D-607: "04/11: testada pelo Samuel: '7- ok'"; D-661: "testada pelo Samuel em 10/11, funciona" ("fiz os dois testes que você pediu e estão funcionando.")</td>
+</tr>
+<tr>
+<td>au-d-486 (página da direita da janela grande do Automático = a original)</td>
+<td>Auditoria 5</td>
+<td>A escolha da gerente foi trocada por um pedido dele, já testado.</td>
+<td>Livro, D-577: "Substitui a D-486 (escolha da gerente)" · "testada pelo Samuel em 01/11: 'está funcionando'"</td>
+</tr>
+<tr>
+<td>au-d-547 (todas as telas mostram a página já movida)</td>
+<td>Auditoria 5</td>
+<td>Ele pediu de novo e testou.</td>
+<td>Livro, D-649: "Reforça a D-547" · "Testada pelo Samuel em 13/11: 'funcionando'"</td>
+</tr>
+<tr>
+<td>au-d-483 (a medida por trás só roda no livro novo)</td>
+<td>Auditoria 4</td>
+<td>Resolvida junto com outra que ele já respondeu.</td>
+<td>Central, resposta <code>au-d-284</code> (29/10): "Está certo assim"</td>
+</tr>
+<tr>
+<td>au-d-490 (o "Sim" do aviso do fundo vale na hora)</td>
+<td>Auditoria 4</td>
+<td>Resolvida junto com duas que ele já respondeu.</td>
+<td>Central, respostas <code>au-d-135</code> e <code>au-d-069</code> (29/10): "Está certo assim" · "Eu consigo usar essa opção sem ter que começar de novo."</td>
+</tr>
+<tr>
+<td>au-d-476 ("Marcar como" iluminura e moldura, para depois)</td>
+<td>Auditoria 6</td>
+<td>A pergunta irmã já foi respondida.</td>
+<td>Central, resposta <code>au-d-566</code> (09/11): "Fica para depois"; Livro, D-695</td>
+</tr>
+<tr>
+<td>au-d-478 (espaços "Limpo / Completo" viram arranjos salvos)</td>
+<td>Auditoria 6</td>
+<td>A pergunta irmã já foi respondida.</td>
+<td>Central, resposta <code>au-d-565</code> (13/11): "Fica para depois"</td>
+</tr>
+<tr>
+<td>au-d-480 (manuscritos na leitura do texto, Fase 7)</td>
+<td>Auditoria 6</td>
+<td>A pergunta irmã já foi respondida.</td>
+<td>Central, resposta <code>au-d-557</code> (09/11): "Fica para depois" · "Vai entrar sim."; Livro, D-677</td>
+</tr>
+</tbody>
+</table>
+<p><strong>Também vale olhar (não tirei):</strong> a Parte 2, <code>nm-codigos</code>, já foi decidida por ele em 09/11 (D-687, "Consertar").
+A pergunta ficou só para o resto da frase; se a gerente achar que "tirar só o código" é detalhe técnico do que ele
+mandou, ela pode sair também.</p>
+<h2>O que ficou criado e o que foi apagado</h2>
+<ul>
+<li><strong>Fica</strong> nesta pasta: <code>novas/</code> (a entrega), <code>relatorio.*</code>, <code>ONDE-PAREI.md</code>, <code>scripts/</code> (para refazer as imagens e
+  os textos), <code>cru/</code> (as fotos cruas dos prints novos, os textos de conferência e as anotações dos scripts),
+  <code>partes/</code> (as seções deste relatório) e os registros <code>cru-p*.log</code>.</li>
+<li>Os scripts de montagem das imagens leem os prints antigos da Central que baixei para a pasta de rascunho desta
+  sessão (<code>ANTIGAS</code> em <code>scripts/montar.py</code>); para refazer depois, é preciso baixá-los de novo.</li>
+<li><strong>Apagado no fim:</strong> a worktree <code>.claude/worktrees/central-reescrita</code> (junções <code>modelos</code> e <code>gabarito\paginas</code>
+  tiradas antes, e conferido que as pastas originais continuam inteiras), com as cópias dos livros e as pastas de
+  dados dos scripts que estavam dentro dela.</li>
+</ul>
+<p class="rodape">Editor de Impressão &middot; gerado em 13/11/2026 às 20:12</p>
+</body>
+</html>

@@ -1,0 +1,1128 @@
+===== au-d-003 | Ordem das etapas do Automático arrastável
+  - Onde fica: O Automático (painel e janela grande). O que é: A ordem das etapas do Automático pode ser mudada arrastando com o mouse. Ainda está em aberto se isso muda também a ordem em que a página é montada.
+  - O que você pediu (28/09/2026): "Ordem das etapas: livre. [...] muda arrastando com o mouse. Sem cadeados."
+  - Como está hoje (versão de teste): Arrastar muda a ordem em que rodam; a montagem da página não muda. Na auditoria de 29/10: funciona com ressalva. O que ainda não está bom: Regra escolhida pela gerente; a pergunta não foi feita a você.
+  - Você ainda não testou isto depois da auditoria de 29/10 (não há teste seu no Livro de decisões).
+  - O que você escolhe: se fica como está, se entra na lista de fazer (escreva no comentário o que quer diferente) ou se você testa antes de responder.
+  - (Para consulta: D-003; resolvida junto com D-016.)
+  S: None
+===== au-d-016 | Arrastar as etapas do Automático muda a ordem em que rodam, mas não a montagem da página
+  - Onde fica: O Automático (painel e janela grande). O que é: Arrastar as etapas no Automático muda a ordem em que elas rodam (o que o programa procura e decide primeiro). A montagem da página segue sempre a mesma ordem (endireita, depois corta uma vez só, no fim), para não comer a página.
+  - O que você pediu (09/10/2026 (mais recente que 28/09)): "Ordem das etapas: livre. [...] muda arrastando com o mouse. Sem cadeados." (28/09) e, em 09/10, endireitar antes de cortar, como o ScanTailor.
+  - Como está hoje (versão de teste): Arrastar muda a ordem em que rodam; a montagem da página não muda. Na auditoria de 29/10: funciona com ressalva. O que ainda não está bom: Regra escolhida pela gerente; a pergunta não foi feita a você.
+  - Você ainda não testou isto depois da auditoria de 29/10 (não há teste seu no Livro de decisões).
+  - O que você escolhe: se fica como está, se entra na lista de fazer (escreva no comentário o que quer diferente) ou se você testa antes de responder.
+  - (Para consulta: D-016; resolvida junto com D-003.)
+  S: None
+===== au-d-033 | O lado direito troca entre 4 jeitos dentro do programa, escolhidos no menu Ver e em Configurações > Aparência
+  - Onde fica: Todas as ferramentas à vista e o lado direito. O que é: O lado direito troca entre 4 jeitos dentro do programa, escolhidos no menu Ver e em Configurações > Aparência.
+  - O que você pediu (05/10/2026): (resumo, sem as suas palavras exatas) "Quer os quatro jeitos no app, escolhendo dentro dele: sanfona (o primeiro), abas no alto, ícones na borda, painel flutuante" · 20/10 "C — Nos dois lugares"
+  - Como está hoje (versão de teste): Os quatro no menu Ver e nas Configurações. Na auditoria de 29/10: funciona com ressalva. O que ainda não está bom: Dois detalhes esperam a sua resposta (ícones sem nome no painel solto; cabeçalho nas abas)
+  - Você ainda não testou isto depois da auditoria de 29/10 (não há teste seu no Livro de decisões).
+  - O que você escolhe: se fica como está, se entra na lista de fazer (escreva no comentário o que quer diferente) ou se você testa antes de responder.
+  - (Para consulta: D-033.)
+  S: None
+===== au-d-021 | Andar pelas páginas pelo teclado e pelo mouse
+  - Onde fica: Menus, teclas e janelas. O que é: Andar pelas páginas pelo teclado e pelo mouse.
+  - O que você pediu (29/07/2026): (resumo, sem as suas palavras exatas) navegação: setas fixas na tira, roda do mouse, "ir para página", Page Up/Down, Home/End, barra de rolagem mais alta.
+  - Como está hoje (versão de teste): Roda troca de página, Page Up/Down pulam 10, Home/End. Na auditoria de 29/10: funciona com ressalva. O que ainda não está bom: Faltam as setas fixas na tira e a barra mais alta; roda de verdade não provada.
+  - Já testado por você: Você testou em 10/11 que as setas continuam passando de página depois de clicar num botão do painel ("sim"). As setas fixas na tira e a barra mais alta ainda faltam.
+  - O que você escolhe: se fica como está, se entra na lista de fazer (escreva no comentário o que quer diferente) ou se você testa antes de responder.
+  - (Para consulta: D-021.)
+  S: None
+===== au-d-046 | Dois botões em qualquer página: "Deixar em branco" (tecla Delete; página branca no lugar, cadernos certos) e "Tirar do livro"
+  - Onde fica: Deixar em branco e tirar do livro. O que é: Dois botões em qualquer página: "Deixar em branco" (tecla Delete; página branca no lugar, cadernos certos) e "Tirar do livro".
+  - O que você pediu (07/10/2026): "quando é apagada uma folha, tem que ser colocada uma no lugar dele né, pois se não a encadernação vai ficar errada" · "Dois botões; a tecla Delete deixa em branco" · 09/10 "Essa opção de tirar do livro ou deixar folha em branco eu quero ter em outras paginas [...]"
+  - Como está hoje (versão de teste): "deixar em branco" / "tirar do livro" em toda página (Propriedades, menu Página, Delete, Shift+Del). Na auditoria de 29/10: funciona com ressalva. O que ainda não está bom: Escondido: em 28/10 você não achou na capa (seu print 2-6); "tirar" deixa "apagada" na tira (seu print 2-2)
+  - Você ainda não testou isto depois da auditoria de 29/10 (não há teste seu no Livro de decisões).
+  - O que você escolhe: se fica como está, se entra na lista de fazer (escreva no comentário o que quer diferente) ou se você testa antes de responder.
+  - (Para consulta: D-046.)
+  S: None
+===== au-d-074 | Não tentar dividir folha que é claramente uma página só
+  - Onde fica: Dividir as folhas. O que é: Não tentar dividir folha que é claramente uma página só.
+  - O que você pediu (24/09/2026): (resumo, sem as suas palavras exatas) dividir a folha sabendo quando é uma página só.
+  - Como está hoje (versão de teste): Righetti girado divide à mão e no Automático; "dividir esta" aceso em toda folha. Na auditoria de 29/10: funciona com ressalva. O que ainda não está bom: O caso do Siebmacher não foi mexido.
+  - Você ainda não testou isto depois da auditoria de 29/10 (não há teste seu no Livro de decisões).
+  - O que você escolhe: se fica como está, se entra na lista de fazer (escreva no comentário o que quer diferente) ou se você testa antes de responder.
+  - (Para consulta: D-074.)
+  S: None
+===== au-d-334 | Grade "Todas as páginas" com várias escolhidas e ações sobre elas
+  - Onde fica: A grade "Todas as páginas". O que é: Grade "Todas as páginas" com várias escolhidas e ações sobre elas.
+  - O que você pediu (24/09/2026): (resumo, sem as suas palavras exatas) "Ver todas as páginas do livro em grade, como o 'Organizar páginas' do UPDF: seleção múltipla, girar, apagar, extrair, inserir, dividir."
+  - Como está hoje (versão de teste): Girar, deixar em branco, tirar, trazer de volta, extrair, rodar o automático e dividir nas escolhidas. Na auditoria de 29/10: funciona com ressalva. O que ainda não está bom: Sem "inserir" (combinado para depois, a decisão de 27/10)
+  - Já testado por você: O "inserir" que faltava aqui foi feito depois como "adicionar página em branco" (botão direito na miniatura) e você testou em 09/11: "pagina em branco funciona". Os botões da grade não foram testados depois da auditoria.
+  - O que você escolhe: se fica como está, se entra na lista de fazer (escreva no comentário o que quer diferente) ou se você testa antes de responder.
+  - (Para consulta: D-334.)
+  S: None
+===== au-d-097 | A borda preta do scanner some por inteiro na página torta: o corte fica rente ao papel
+  - Onde fica: A faixa preta da tampa do scanner e a borda preta. O que é: A borda preta do scanner some por inteiro na página torta: o corte fica rente ao papel.
+  - O que você pediu (13/10/2026; 20/10 e 21/10/2026): 13/10: "Era para sumir completamente né?" · 20/10: "tem que cortar a faixa inteira." (Antiphon 260) · "Tem que cortar em cima e embaixo e dos lados ainda tem um fio preto." (Antiphon 88) · "É para sumir totalmente." (Camões 104) · "tem que ficar rente a folha de papel, não pode ter preto ali." (Cursus 3) · "ainda estou vendo a faixa preta." (Matemática 32) · 21/10 "Está bom"
+  - Como está hoje (versão de teste): Righetti 96 e Cursus 3 sem a faixa; a cunha do giro não pinta mais de preto. Na auditoria de 29/10: funciona com ressalva. O que ainda não está bom: Antiphon 260 sem prova nesta rodada; fio preto no Cursus 3.
+  - Você ainda não testou isto depois da auditoria de 29/10 (não há teste seu no Livro de decisões).
+  - O que você escolhe: se fica como está, se entra na lista de fazer (escreva no comentário o que quer diferente) ou se você testa antes de responder.
+  - (Para consulta: D-097.)
+  S: None
+===== au-d-559 | A faixa preta da tampa do scanner some em todo o livro, também no Automático; o Kaique escolhe por livro se corta ou pinta de branco
+  - Onde fica: A faixa preta da tampa do scanner e a borda preta. O que é: A faixa preta da tampa do scanner some em todo o livro, também no Automático; o Kaique escolhe por livro se corta ou pinta de branco. Substitui as decisões de 27/10 (só à mão).
+  - O que você pediu (27/10/2026): Central "Como eu decidi: sumir em todo o livro, e o Kaique escolhe por livro cortar ou pintar de branco (recomendo)"
+  - Como está hoje (versão de teste): O Automático tira a tampa em toda folha; escolha "cortar fora / pintar de branco". Na auditoria de 29/10: funciona com ressalva. O que ainda não está bom: Livro que nunca passa pelo Automático continua com a faixa.
+  - Você ainda não testou isto depois da auditoria de 29/10 (não há teste seu no Livro de decisões).
+  - O que você escolhe: se fica como está, se entra na lista de fazer (escreva no comentário o que quer diferente) ou se você testa antes de responder.
+  - (Para consulta: D-559.)
+  S: None
+===== au-d-104 | Os outros 8 lugares que podem comer a página: provar em páginas reais, depois consertar
+  - Onde fica: O corte não come a página. O que é: Os 8 outros lugares que podem comer a página (endireitar antigo, corte à mão, corte automático, tinta na beirada, dividir reto, Melhorar/Mágico pro, borda preta, impressão >100%): provar em páginas reais, depois consertar.
+  - O que você pediu (22/10/2026): "Tem mais alguma função que pode fazer essa mesma coisa de comer parte da pagina sem que a gente queira no nosso programa?" → "B — Só o desentortar agora; o resto para o começo da próxima fase" + "escolhi a B, mas quando for feito o teste de bug, ele tem que fazer a C — Primeiro provar em páginas de verdade, depois decidir"
+  - Como está hoje (versão de teste): 8 lugares olhados; 7 consertos provados em páginas de verdade. Na auditoria de 29/10: funciona com ressalva. O que ainda não está bom: Lugares 1, 3, 4 e 7 não provados; sobras pequenas listadas.
+  - Você ainda não testou isto depois da auditoria de 29/10 (não há teste seu no Livro de decisões).
+  - O que você escolhe: se fica como está, se entra na lista de fazer (escreva no comentário o que quer diferente) ou se você testa antes de responder.
+  - (Para consulta: D-104.)
+  S: None
+===== au-d-113 | Página curva com moldura escura do scanner: pintar a moldura de branco antes de desentortar
+  - Onde fica: O corte não come a página. O que é: Página curva com moldura escura do scanner: o programa pinta a moldura de branco antes de desentortar, para o desentortador não confundir a moldura com as letras.
+  - O que você pediu (23/10/2026): "C — Deixar como está" + "Mas fica anotado para depois de juntar as frentes isso ser resolvido, porque na verdade, eu acho que o primeiro passo em uma pagina dessas seria tirar essa moldura preta transformando a pagina em totalmente branca sem mexer nas letras, ai o desentortador não iria confundir as letras com moldura preta. não é?"
+  - Como está hoje (versão de teste): A moldura é tirada antes de medir o desentortar. Na auditoria de 29/10: funciona com ressalva. O que ainda não está bom: Na página de teste a curva continua sem ser achada.
+  - Você ainda não testou isto depois da auditoria de 29/10 (não há teste seu no Livro de decisões).
+  - O que você escolhe: se fica como está, se entra na lista de fazer (escreva no comentário o que quer diferente) ou se você testa antes de responder.
+  - (Para consulta: D-113.)
+  S: None
+===== au-d-466 | Antes de consertar os 8 lugares que podem comer a página, o verificador acha no acervo páginas onde cada um acontece, traz as fotos e ele decide vendo
+  - Onde fica: O corte não come a página. O que é: Antes de consertar os 8 lugares que podem comer a página, o verificador acha no acervo páginas onde cada um acontece, traz as fotos e ele decide vendo.
+  - O que você pediu (22/10/2026): "escolhi a B, mas quando for feito o teste de bug, ele tem que fazer a C — Primeiro provar em páginas de verdade, depois decidir"
+  - Como está hoje (versão de teste): Feito assim nas etapas 10a e 10b. Na auditoria de 29/10: funciona com ressalva. O que ainda não está bom: Lugares 5 e 6 provados só no Preto e branco.
+  - Você ainda não testou isto depois da auditoria de 29/10 (não há teste seu no Livro de decisões).
+  - O que você escolhe: se fica como está, se entra na lista de fazer (escreva no comentário o que quer diferente) ou se você testa antes de responder.
+  - (Para consulta: D-466.)
+  S: None
+===== au-d-017 | Aumentar o conteúdo além da beirada não corta nada escondido: a parte de fora fica marcada e a página ganha aviso
+  - Onde fica: Mover e redimensionar. O que é: Escolha da gerente: aumentar o conteúdo além da beirada não corta nada escondido: a página fica do mesmo tamanho, o que passa da beirada aparece marcado na tela e a página ganha aviso no "Para revisar".
+  - O que você pediu (13/10/2026 (mais recente que 05/10)): "(b) Avisar e não reduzir - avisar para eu reduzir manualmente" · "Cada página até encher a folha"
+  - Como está hoje (versão de teste): Parte de fora em vermelho e aviso; nada é diminuído. Na auditoria de 29/10: funciona com ressalva. O que ainda não está bom: Cabeçalho rente à beirada avisa em qualquer mover para cima.
+  - Você ainda não testou isto depois da auditoria de 29/10 (não há teste seu no Livro de decisões).
+  - O que você escolhe: se fica como está, se entra na lista de fazer (escreva no comentário o que quer diferente) ou se você testa antes de responder.
+  - (Para consulta: D-017; resolvida junto com D-543.)
+  S: None
+===== au-d-543 | Quando aparece o aviso "Parte do impresso fica de fora" (ferramenta Mover)
+  - Onde fica: Mover e redimensionar. O que é: Como fica a decisão de 13/10 no programa: o aviso "Parte do impresso fica de fora" aparece quando 0,05% ou mais do que está IMPRESSO sai da área branca (o papel em branco da margem saindo não avisa). Peça colada na beirada da página não conta (ressalva: a letra que já vinha cortada na beirada também não). A mesma conta em três lugares: a ferramenta Mover (ao mexer), a conferência por trás depois do "usar em todas..." e o PDF. A parte de fora aparece na ferramenta Mover apagada, puxada para o vermelho e com listras; uma frase vermelha no painel. Botões do aviso: "ver no Mover" (leva à ferramenta) e "está bom assim". Nada é diminuído sozinho.
+  - De onde veio: ninguém perguntou a você. A gerente escolheu sozinha em 27/10, durante a rodada de consertos. Ela se apoiou em: a decisão de 13/10 ("Avisar e não reduzir - avisar para eu reduzir manualmente")
+  - Como está hoje (versão de teste): Parte de fora em vermelho e aviso; nada é diminuído. Na auditoria de 29/10: funciona com ressalva. O que ainda não está bom: Cabeçalho rente à beirada avisa em qualquer mover para cima.
+  - Você ainda não testou isto depois da auditoria de 29/10 (não há teste seu no Livro de decisões).
+  - O que você escolhe: se fica como está, se entra na lista de fazer (escreva no comentário o que quer diferente) ou se você testa antes de responder.
+  - (Para consulta: D-543; resolvida junto com D-017.)
+  S: None
+===== au-d-568 | Roda do mouse: sem zoom troca de página; com zoom anda pela página; Ctrl + roda dá zoom
+  - Onde fica: Uma página / Duas lado a lado e o zoom. O que é: Roda do mouse: sem zoom troca de página; com zoom anda pela página; Ctrl + roda dá zoom. Vale contra o "a roda sempre dá zoom" da decisão de 24/09.
+  - O que você pediu (27/10/2026): Central "Como ficou: sem zoom troca de página; Ctrl + roda dá zoom"
+  - Como está hoje (versão de teste): Com zoom a roda anda pela página (Shift para os lados). Na auditoria de 29/10: funciona com ressalva. O que ainda não está bom: Roda do mouse de verdade não provada.
+  - Já testado por você: Você testou o zoom junto com a roda: em 01/11, Ctrl + roda ("1- funcionando"); em 02/11, Shift + roda ("shift funcionando"). A roda sem Ctrl (trocar de página) não foi testada sozinha.
+  - O que você escolhe: se fica como está, se entra na lista de fazer (escreva no comentário o que quer diferente) ou se você testa antes de responder.
+  - (Para consulta: D-568.)
+  S: None
+===== au-d-066 | Tela e PDF iguais, já na rodada de consertos (não só na fase de velocidade)
+  - Onde fica: Tela igual ao PDF. O que é: A tela mostra a página igual ao PDF, já na rodada de consertos (não só na fase de velocidade).
+  - O que você pediu (23/10/2026): "precisamos que o pdf saia que nem está na tela"
+  - Como está hoje (versão de teste): A tela troca pela imagem do PDF quando ela fica pronta. Na auditoria de 29/10: funciona com ressalva. O que ainda não está bom: Não em toda página; a tela cheia dos filtros não troca.
+  - Você ainda não testou isto depois da auditoria de 29/10 (não há teste seu no Livro de decisões).
+  - O que você escolhe: se fica como está, se entra na lista de fazer (escreva no comentário o que quer diferente) ou se você testa antes de responder.
+  - (Para consulta: D-066; resolvida junto com D-473.)
+  S: None
+===== au-d-193 | A tela cheia e a prévia do painel mostram a letra com a mesma grossura do PDF, nos 10 jeitos do ScanTailor
+  - Onde fica: Tela igual ao PDF. O que é: A tela cheia e a prévia do painel mostram a letra com a mesma grossura do PDF, nos 10 jeitos do ScanTailor.
+  - O que você pediu (22/10/2026): lu-tc-igual "Melhorar": "O pdf está saindo diferente da tela gerada, na tela gerada a letra está mais grossa, isso é um perigo, porque pode parecer que se quer a letra mais grossa e ter ela mais fina, ou vice e versa e ainda pode acontecer em outras situações." · 23/10, "ok, então deixe isso anotado, precisamos que o pdf saia que nem está na tela."
+  - Como está hoje (versão de teste): A conta da tela cheia é feita no tamanho do PDF; o T do Antiphonal não some mais. Na auditoria de 29/10: funciona com ressalva. O que ainda não está bom: Tela cheia 4 a 9% mais fina que o PDF.
+  - Você ainda não testou isto depois da auditoria de 29/10 (não há teste seu no Livro de decisões).
+  - O que você escolhe: se fica como está, se entra na lista de fazer (escreva no comentário o que quer diferente) ou se você testa antes de responder.
+  - (Para consulta: D-193; resolvida junto com D-327.)
+  S: None
+===== au-d-327 | A tela mostra a página igual ao PDF (letra, margens, desentortar)
+  - Onde fica: Tela igual ao PDF. O que é: A tela mostra a página igual ao PDF (letra, margens, desentortar).
+  - O que você pediu (21/10/2026): "O pdf está saindo diferente da tela gerada, na tela gerada a letra está mais grossa, isso é um perigo [...]" · "precisamos que o pdf saia que nem está na tela." · "B — como o ScanTailor, a tela igual ao PDF"
+  - Como está hoje (versão de teste): A conta da tela cheia é feita no tamanho do PDF; o T do Antiphonal não some mais. Na auditoria de 29/10: funciona com ressalva. O que ainda não está bom: Tela cheia 4 a 9% mais fina que o PDF.
+  - Você ainda não testou isto depois da auditoria de 29/10 (não há teste seu no Livro de decisões).
+  - O que você escolhe: se fica como está, se entra na lista de fazer (escreva no comentário o que quer diferente) ou se você testa antes de responder.
+  - (Para consulta: D-327; resolvida junto com D-193.)
+  S: None
+===== au-d-473 | Tela e PDF saem da mesma conta
+  - Onde fica: Tela igual ao PDF. O que é: Tela e PDF saem da mesma conta. Quando a página fica pronta, a tela mostra a mesma imagem que vai para o PDF (só reduzida); enquanto não fica, mostra a prévia com a bolinha de carregamento. Tela e PDF diferentes é defeito, nunca escolha: o PDF tem de sair como a tela que ele aprovou. Responde a pergunta 1 (a decisão de 22/10 × a decisão de 23/10 × "a tela decide, o PDF obedece").
+  - De onde veio: ninguém perguntou a você. A gerente escolheu sozinha em 26/10, durante a rodada de consertos. Ela se apoiou em: mais recente, a decisão de 23/10: "precisamos que o pdf saia que nem está na tela"; e a decisão de 22/10.
+  - Como está hoje (versão de teste): A tela troca pela imagem do PDF quando ela fica pronta. Na auditoria de 29/10: funciona com ressalva. O que ainda não está bom: Não em toda página; a tela cheia dos filtros não troca.
+  - Você ainda não testou isto depois da auditoria de 29/10 (não há teste seu no Livro de decisões).
+  - O que você escolhe: se fica como está, se entra na lista de fazer (escreva no comentário o que quer diferente) ou se você testa antes de responder.
+  - (Para consulta: D-473; resolvida junto com D-066.)
+  S: None
+===== au-d-285 | Os números batem: painel, "Antes de processar" e janela de salvar contam as páginas com aviso pendente (hoje no Camões: 39 × 75 × 106)
+  - Onde fica: "está certo" e o número de dúvidas. O que é: Os números batem: painel, "Antes de processar" e janela de salvar contam as páginas com aviso pendente (hoje no Camões: 39 × 75 × 106).
+  - O que você pediu (21/10/2026): "A janela de salvar passa a contar as páginas com aviso pendente"
+  - Como está hoje (versão de teste): Um número só de dúvidas em todo lugar. Na auditoria de 29/10: funciona com ressalva. O que ainda não está bom: O número que muda ao folhear não foi feito.
+  - Você ainda não testou isto depois da auditoria de 29/10 (não há teste seu no Livro de decisões).
+  - O que você escolhe: se fica como está, se entra na lista de fazer (escreva no comentário o que quer diferente) ou se você testa antes de responder.
+  - (Para consulta: D-285.)
+  S: None
+===== au-d-522 | Livro com muitas páginas em branco (versos): um aviso só do livro em vez de um por página
+  - Onde fica: "está certo" e o número de dúvidas. O que é: Livro com muitas páginas em branco (versos): um aviso só do livro em vez de um por página. "Muitas" = 40% ou mais das páginas: o número foi a gerente que pôs, porque você não disse.
+  - O que você pediu (27/10/2026): Central, "Juntar num aviso só do livro quando forem muitas"
+  - Como está hoje (versão de teste): A conta está pronta, mas desligada. Na auditoria de 29/10: funciona com ressalva. O que ainda não está bom: Espera você dizer o número (40%?)
+  - Você ainda não testou isto depois da auditoria de 29/10 (não há teste seu no Livro de decisões).
+  - O que você escolhe: se fica como está, se entra na lista de fazer (escreva no comentário o que quer diferente) ou se você testa antes de responder.
+  - (Para consulta: D-522.)
+  S: None
+===== au-d-114 | Um medidor por filtro, 0 a 100 com 50 no meio, e a prévia muda na hora
+  - Onde fica: Filtros e imagem final: o que foi consertado. O que é: Um medidor por filtro, 0 a 100 com 50 no meio, e a prévia muda na hora.
+  - O que você pediu (18/07/2026): "PRETO E BRANCO → slider "Força do preto", 0 a 100, padrão 50 [...] MÁGICO PRO → slider "Intensidade" [...] MELHORAR → slider "Clareza do fundo" [...] Ao arrastar o slider a prévia atualiza em tempo real."
+  - Como está hoje (versão de teste): O aviso da força do preto só na página de Preto e branco; a rodinha não muda número sem clique. Na auditoria de 29/10: funciona com ressalva. O que ainda não está bom: "deslizante que volta a 50" (02/10) sem conserto registrado.
+  - Você ainda não testou isto depois da auditoria de 29/10 (não há teste seu no Livro de decisões).
+  - O que você escolhe: se fica como está, se entra na lista de fazer (escreva no comentário o que quer diferente) ou se você testa antes de responder.
+  - (Para consulta: D-114.)
+  S: None
+===== au-d-250 | Quando o retângulo de "Pintar por cima" cobre letras, aviso com "Pintar assim mesmo" e "Voltar"; nada é pintado sem confirmar
+  - Onde fica: Marcar e desfazer. O que é: Quando o retângulo de "Pintar por cima" cobre letras, aviso com "Pintar assim mesmo" e "Voltar"; nada é pintado sem confirmar.
+  - O que você pediu (22/10/2026): "A — Avisar (recomendo)" · no chat: "1- sim"
+  - Como está hoje (versão de teste): O retângulo pergunta "Pintar assim mesmo" / "Voltar". Na auditoria de 29/10: funciona com ressalva. O que ainda não está bom: Oval, laço e pincel não perguntam.
+  - Você ainda não testou isto depois da auditoria de 29/10 (não há teste seu no Livro de decisões).
+  - O que você escolhe: se fica como está, se entra na lista de fazer (escreva no comentário o que quer diferente) ou se você testa antes de responder.
+  - (Para consulta: D-250.)
+  S: None
+===== au-d-309 | Gerar o mesmo livro de novo não trava; o cartão só diz "PDF gerado" depois de gravar
+  - Onde fica: Processar e salvar o PDF. O que é: Gerar o mesmo livro de novo não trava; o cartão só diz "PDF gerado" depois de gravar.
+  - O que você pediu (05/10/2026): "pode mandar concertar, mas continue com a fase 2 em paralelo"
+  - Como está hoje (versão de teste): O cartão deixa de dizer pronto quando o trabalho muda. Na auditoria de 29/10: funciona com ressalva. O que ainda não está bom: Sem texto de "desatualizado" (pergunta aberta)
+  - Você ainda não testou isto depois da auditoria de 29/10 (não há teste seu no Livro de decisões).
+  - O que você escolhe: se fica como está, se entra na lista de fazer (escreva no comentário o que quer diferente) ou se você testa antes de responder.
+  - (Para consulta: D-309.)
+  S: None
+===== au-d-333 | Janela "Montar para imprimir" refeita: organizada, o texto do resultado separado das opções
+  - Onde fica: Montar para imprimir e imprimir. O que é: Janela "Montar para imprimir" refeita: organizada, o texto do resultado separado das opções.
+  - O que você pediu (22/10/2026): "Está bom" + "Só tem que melhorar esse layout, cheio de letras uma em cima da outra, tudo bagunçado e dificil de saber o que é o que." · "2- mandei o print."
+  - Como está hoje (versão de teste): Duas colunas, nada por cima; nomes de antes de volta. Na auditoria de 29/10: funciona com ressalva. O que ainda não está bom: "todas até todas" redundante.
+  - Você ainda não testou isto depois da auditoria de 29/10 (não há teste seu no Livro de decisões).
+  - O que você escolhe: se fica como está, se entra na lista de fazer (escreva no comentário o que quer diferente) ou se você testa antes de responder.
+  - (Para consulta: D-333.)
+  S: None
+===== au-d-365 | Todo texto da tela com acento certo
+  - Onde fica: Nomes e textos. O que é: Todo texto da tela com acento certo.
+  - O que você pediu (18/07/2026): "3. ACENTOS (já pedi duas vezes e continua errado) [...] Corrija TODOS os textos da interface para português correto"
+  - Como está hoje (versão de teste): Acentos e plurais achados foram consertados. Na auditoria de 29/10: funciona com ressalva. O que ainda não está bom: A varredura da tela toda é da revisão de nomes.
+  - Você ainda não testou isto depois da auditoria de 29/10 (não há teste seu no Livro de decisões).
+  - O que você escolhe: se fica como está, se entra na lista de fazer (escreva no comentário o que quer diferente) ou se você testa antes de responder.
+  - (Para consulta: D-365.)
+  S: None
+===== au-d-373 | No Dividir, "o do programa" vira "o do Editor" (lista "jeito:", "Para o livro todo" e "O que fazer")
+  - Onde fica: Nomes e textos. O que é: No Dividir, "o do programa" vira "o do Editor" (lista "jeito:", "Para o livro todo" e "O que fazer").
+  - O que você pediu (20/10/2026): "B — “o do Editor”" · 21/10 "Está bom"
+  - Como está hoje (versão de teste): "o do Editor" no núcleo e no resumo do livro. Na auditoria de 29/10: funciona com ressalva. O que ainda não está bom: Na tela, parte espera a revisão de nomes.
+  - Já testado por você: Você testou a ferramenta Dividir em 10/11 ("ok"), com esses nomes na lista; o nome em si não foi perguntado de novo.
+  - O que você escolhe: se fica como está, se entra na lista de fazer (escreva no comentário o que quer diferente) ou se você testa antes de responder.
+  - (Para consulta: D-373; resolvida junto com D-479.)
+  S: None
+===== au-d-479 | "o do Editor" / "a do Editor" em todo lugar onde aparece a conta do próprio programa
+  - Onde fica: Nomes e textos. O que é: "o do Editor" / "a do Editor" em todo lugar onde aparece o jeito ou a conta do próprio programa: painel Automático, Histórico, Propriedades e a frase de resumo que ainda dizia "o do programa".
+  - De onde veio: ninguém perguntou a você. A gerente escolheu sozinha em 26/10, durante a rodada de consertos. Ela se apoiou em: 907 (20/10): "B — “o do Editor”" e ly-editor "Está bom" (21/10)
+  - Como está hoje (versão de teste): "o do Editor" no núcleo e no resumo do livro. Na auditoria de 29/10: funciona com ressalva. O que ainda não está bom: Na tela, parte espera a revisão de nomes.
+  - Você ainda não testou isto depois da auditoria de 29/10 (não há teste seu no Livro de decisões).
+  - O que você escolhe: se fica como está, se entra na lista de fazer (escreva no comentário o que quer diferente) ou se você testa antes de responder.
+  - (Para consulta: D-479; resolvida junto com D-373.)
+  S: None
+===== au-d-010 | Cada botão tem uma promessa escrita; o teste confere a promessa na tela, no projeto e no PDF
+  - Onde fica: Provas automáticas e a forma de trabalhar. O que é: Cada botão tem uma promessa escrita; o teste confere a promessa na tela, no projeto e no PDF.
+  - O que você pediu (26/10/2026): "eu acho que o botão tem que ser provado que ele faz o que se diz que se faz, e não só se ele muda algo na tela."
+  - Como está hoje (versão de teste): Promessas escritas por botão, com prova na tela, no projeto e no PDF. Na auditoria de 29/10: funciona com ressalva. O que ainda não está bom: Em 28/10 259 de 260 cumpriram; a varredura "todo botão tem promessa" falhou esperando 30 s a página de marcar.
+  - Você ainda não testou isto depois da auditoria de 29/10 (não há teste seu no Livro de decisões).
+  - O que você escolhe: se fica como está, se entra na lista de fazer (escreva no comentário o que quer diferente) ou se você testa antes de responder.
+  - (Para consulta: D-010.)
+  S: None
+===== au-d-011 | Bateria nova de provas: teste do Kaique, tarefas, decisões, promessas e conferência em caminho
+  - Onde fica: Provas automáticas e a forma de trabalhar. O que é: Ver Registro de mudanças, 26/10/2026.
+  - O que você pediu (26/10/2026): "Sim" (nova bateria de testes: teste do Kaique, tarefas, decisões, promessas, conferência em caminho)
+  - Como está hoje (versão de teste): Decisões e promessas feitas. Na auditoria de 29/10: funciona com ressalva. O que ainda não está bom: Faltam o teste do Kaique de novo e o verificador contra o Livro.
+  - Você ainda não testou isto depois da auditoria de 29/10 (não há teste seu no Livro de decisões).
+  - O que você escolhe: se fica como está, se entra na lista de fazer (escreva no comentário o que quer diferente) ou se você testa antes de responder.
+  - (Para consulta: D-011.)
+  S: None
+===== au-d-549 | Só o que você mandou: os agentes não mudam o que você já decidiu
+  - Onde fica: Provas automáticas e a forma de trabalhar. O que é: Só o que você mandou: por isso o limite de resolução foi cancelado e o PDF voltou a sair sem perda, como você decidiu ("o tamanho do arquivo depois não importa"); o "PDF gigante" era achado de agente, não pedido seu. As escolhas da gerente que acrescentam ou mudam algo voltam a você como pergunta.
+  - O que você pediu (27/10/2026): "os agentes estão mudando coisas que eu já tinha definido, é só para fazer o que eu já tinha mandado, fazer as ferramentas que colocamos no programa funcionem como deveriam e como eu tinha escolhido." + pergunta "vai diminuir a qualidade do pdf ?"
+  - Como está hoje (versão de teste): Auditoria das escolhas: o PDF com perda desfeito, os nomes do "Montar para imprimir" de volta, os quatro jeitos do lado direito feitos. Na auditoria de 29/10: funciona com ressalva. O que ainda não está bom: 13 perguntas da aba "acrescentei" e 20 de nomes sem resposta.
+  - Você ainda não testou isto depois da auditoria de 29/10 (não há teste seu no Livro de decisões).
+  - O que você escolhe: se fica como está, se entra na lista de fazer (escreva no comentário o que quer diferente) ou se você testa antes de responder.
+  - (Para consulta: D-549.)
+  S: None
+===== au-d-342 | Projeto antigo sempre abre, com o mesmo trabalho
+  - Onde fica: Abrir o livro (direto na área de trabalho). O que é: Projeto antigo sempre abre, com o mesmo trabalho.
+  - O que você pediu (05/10/2026): "o programa quando estiver pronto, ele vai ter que ser capaz de abrir arquivos de versões anteriores."
+  - Como está hoje (versão de teste): Trabalho antigo abre; trabalho salvo estragado: aviso e cópia guardada.
+  - Você ainda não testou isto depois da auditoria de 29/10 (não há teste seu no Livro de decisões).
+  - O que você escolhe: se fica como está, se entra na lista de fazer (escreva no comentário o que quer diferente) ou se você testa antes de responder.
+  - (Para consulta: D-342.)
+  S: None
+===== au-d-483 | A medida por trás só roda no livro NOVO
+  - Onde fica: Abrir o livro (direto na área de trabalho). O que é: A medida por trás só roda no livro NOVO. O livro com trabalho salvo já tem os avisos da conferência de antes e volta como estava, sem medir de novo (abrir fica rápido). A medida só põe avisos; nenhuma página muda.
+  - De onde veio: ninguém perguntou a você. A gerente escolheu sozinha em 27/10, durante a rodada de consertos. Ela se apoiou em: a decisão de 21/10 ("Medir o livro inteiro por trás, depois de abrir")
+  - Como está hoje (versão de teste): Livro novo é medido por trás e só ganha avisos; a página abre em Original.
+  - Já respondido por você: esta pergunta foi resolvida junto com outra, que você respondeu em 29/10: "Está certo assim". Vale o mesmo aqui.
+  - O que você escolhe: se fica como está, se entra na lista de fazer (escreva no comentário o que quer diferente) ou se você testa antes de responder.
+  - (Para consulta: D-483; resolvida junto com D-284.)
+  S: Pode sair da lista: você já respondeu a mesma coisa na pergunta irmã.
+===== au-d-490 | O "Sim" do aviso do fundo, ao abrir o livro, vale na hora (e dá para desfazer)
+  - Onde fica: Abrir o livro (direto na área de trabalho). O que é: O "Sim" do aviso do fundo vale na hora: como o livro já está na área de trabalho, o "Sim" liga "Limpar a folha" com "Tirar o fundo" no livro todo, numa ação do desfazer (antes, marcava a escolha na tela "O que fazer" e valia no "Conferir").
+  - De onde veio: ninguém perguntou a você. A gerente escolheu sozinha em 27/10, durante a rodada de consertos. Ela se apoiou em: a pergunta "Quer tirar o fundo?" ao abrir o livro, que você aprovou.
+  - Como está hoje (versão de teste): A pergunta continua ao abrir e o "Sim" vale na hora (uma ação que se desfaz); depois de aberto, pelo Automático, etapa "Limpar a folha".
+  - Já respondido por você: esta pergunta foi resolvida junto com outra, que você respondeu em 29/10: "Está certo assim" ("Eu consigo usar essa opção sem ter que começar de novo."). Vale o mesmo aqui.
+  - O que você escolhe: se fica como está, se entra na lista de fazer (escreva no comentário o que quer diferente) ou se você testa antes de responder.
+  - (Para consulta: D-490; resolvida junto com D-135, D-069.)
+  S: Pode sair da lista: você já respondeu a mesma coisa na pergunta irmã.
+===== au-d-002-rodar | O Automático roda no livro todo, em páginas escolhidas, numa página ou uma etapa só
+  - Onde fica: O Automático (painel e janela grande). O que é: O livro abre direto na área de trabalho; a tela "Marque o que você quer fazer" sai; o automático é um painel (+ janela grande) que roda no livro todo, em páginas escolhidas, numa página ou uma etapa só, quando ele quiser.
+  - O que você pediu (25/09/2026): "Trabalho automático = painel 'Automático' que abre e fecha (substitui a tela 7). [...] Funciona antes/ao abrir o livro e depois, na área de trabalho (ex.: abrir o PDF sem mexer e rodar as etapas depois)." · Kaique, 22/09: "Essa pagina não era mais para aparecer – nós tínhamos que abrir direto na área de trabalho" · 26/10: "eu quero poder sim fazer automatico para todo livro, mas também quero pode fazer uma a uma."
+  - Como está hoje (versão de teste): "Rodar em: no livro todo / só nesta página / nas páginas escolhidas"; cada etapa com caixinha.
+  - Você ainda não testou isto depois da auditoria de 29/10 (não há teste seu no Livro de decisões).
+  - O que você escolhe: se fica como está, se entra na lista de fazer (escreva no comentário o que quer diferente) ou se você testa antes de responder.
+  - (Para consulta: D-002.)
+  S: None
+===== au-d-004 | Marca "mexida à mão" por página; o Automático pergunta antes
+  - Onde fica: O Automático (painel e janela grande). O que é: Marca "mexida à mão" por página; o Automático pergunta antes.
+  - O que você pediu (28/09/2026): "Automático em livro já mexido à mão: o programa pergunta se quer pular as páginas mexidas."
+  - Como está hoje (versão de teste): Pergunta "Pular as N" / "Rodar nelas também" / "cancelar".
+  - Já testado por você: Você já usou e testou este aviso: em 04/11, o aviso depois do "juntar todas" ("7- ok"); e em 10/11, o "Pular" que deixa a página como você deixou ("fiz os dois testes que você pediu e estão funcionando").
+  - O que você escolhe: se fica como está, se entra na lista de fazer (escreva no comentário o que quer diferente) ou se você testa antes de responder.
+  - (Para consulta: D-004; resolvida junto com D-485.)
+  S: Pode sair da lista: já testado e funcionando (ver "Já testado por você").
+===== au-d-068 | Regra geral: tudo que o programa faz sozinho pode ser desligado ou trocado pela pessoa
+  - Onde fica: O Automático (painel e janela grande). O que é: Regra geral: tudo que o programa faz sozinho pode ser desligado ou trocado pela pessoa.
+  - O que você pediu (24/09/2026): (resumo, sem as suas palavras exatas) "Toda função automática tem botão de ligar e desligar." · 05/10: "esse programa deve presar por dar opções, pois nunca teremos sempre os mesmos casos, então temos que ter opções de contornar novos problemas."
+  - Como está hoje (versão de teste): "desligar as marcadas" no painel e "Desligar" na janela.
+  - Você ainda não testou isto depois da auditoria de 29/10 (não há teste seu no Livro de decisões).
+  - O que você escolhe: se fica como está, se entra na lista de fazer (escreva no comentário o que quer diferente) ou se você testa antes de responder.
+  - (Para consulta: D-068.)
+  S: None
+===== au-d-071 | Melhorar a caixa de escolher o que entra numa receita
+  - Onde fica: O Automático (painel e janela grande). O que é: Melhorar a caixa de escolher o que entra numa receita.
+  - O que você pediu (22/10/2026): "Está bom" + "Mas ainda pode melhorar a caixa de como escolhemos o que vai dentro da receita."
+  - Como está hoje (versão de teste): Caixa da receita com uma caixinha por etapa, em português; "Usar esta receita no aviso de todo livro novo".
+  - Você ainda não testou isto depois da auditoria de 29/10 (não há teste seu no Livro de decisões).
+  - O que você escolhe: se fica como está, se entra na lista de fazer (escreva no comentário o que quer diferente) ou se você testa antes de responder.
+  - (Para consulta: D-071; resolvida junto com D-553.)
+  S: None
+===== au-d-080 | Livro novo não divide; dividir só quando o Kaique pede, escolhendo o jeito por livro, com troca numa folha
+  - Onde fica: O Automático (painel e janela grande). O que é: Livro novo não divide; dividir só quando o Kaique pede, escolhendo o jeito por livro, com troca numa folha.
+  - O que você pediu (05/10/2026): "(a) Só quando o Kaique pedir, livro a livro, escolhendo 'o do programa' ou 'o do ScanTailor', e trocando numa folha se um ficar ruim (recomendado)" · conferência 9: "Tem livros que não tem que dividir folha, e ai como faz? [...] se um ficar ruim, ele usa o outro."
+  - Como está hoje (versão de teste): Todas estão na janela grande do Automático.
+  - Você ainda não testou isto depois da auditoria de 29/10 (não há teste seu no Livro de decisões).
+  - O que você escolhe: se fica como está, se entra na lista de fazer (escreva no comentário o que quer diferente) ou se você testa antes de responder.
+  - (Para consulta: D-080; resolvida junto com D-081, D-101, D-144, D-148, D-168, D-175, D-186, D-195, D-212.)
+  S: None
+===== au-d-081 | "Corte da sobra" (beirada da folha vizinha) do ScanTailor como opção desligada de fábrica
+  - Onde fica: O Automático (painel e janela grande). O que é: "Corte da sobra" (beirada da folha vizinha) do ScanTailor como opção desligada de fábrica.
+  - O que você pediu (05/10/2026): "(b) Trazer como opção, desligada"
+  - Como está hoje (versão de teste): Todas estão na janela grande do Automático.
+  - Você ainda não testou isto depois da auditoria de 29/10 (não há teste seu no Livro de decisões).
+  - O que você escolhe: se fica como está, se entra na lista de fazer (escreva no comentário o que quer diferente) ou se você testa antes de responder.
+  - (Para consulta: D-081; resolvida junto com D-080, D-101, D-144, D-148, D-168, D-175, D-186, D-195, D-212.)
+  S: None
+===== au-d-101 | Borda preta: por livro, o corte tira só o preto ou vai até a moldura impressa (começa em "até a moldura")
+  - Onde fica: O Automático (painel e janela grande). O que é: Borda preta: por livro, o corte tira só o preto ou vai até a moldura impressa (começa em "até a moldura").
+  - O que você pediu (20/10/2026): 13/10: "Vai depender do livro, mas se tivessemos maneira de embranquecer esse preto depois poderia ser usa a busca do scantailor, hoje no programa temos o motor de busca só do scantailor?" · "O Kaique escolhe por livro: só o preto, ou até a moldura"
+  - Como está hoje (versão de teste): Todas estão na janela grande do Automático.
+  - Você ainda não testou isto depois da auditoria de 29/10 (não há teste seu no Livro de decisões).
+  - O que você escolhe: se fica como está, se entra na lista de fazer (escreva no comentário o que quer diferente) ou se você testa antes de responder.
+  - (Para consulta: D-101; resolvida junto com D-080, D-081, D-144, D-148, D-168, D-175, D-186, D-195, D-212.)
+  S: None
+===== au-d-144 | No Preto e branco, moldura e iluminura ficam com a cor de fábrica; traço preto só marcando a caixinha do livro
+  - Onde fica: O Automático (painel e janela grande). O que é: No Preto e branco, moldura e iluminura ficam com a cor de fábrica; traço preto só marcando a caixinha do livro.
+  - O que você pediu (30/09/2026): "não tem porque jogar preto e branco nela, acho que o melhor seria, mas gostaria de ter a opção de fazer isso em outras ocasiões e em outros livros" · conferência 3: "Mantém a cor original (como o ANTES); traço preto só se eu escolher" · 01/10, "Sim, mantém a cor - [...] o resultado do preto e branco da iluminura não está bom."
+  - Como está hoje (versão de teste): Todas estão na janela grande do Automático.
+  - Você ainda não testou isto depois da auditoria de 29/10 (não há teste seu no Livro de decisões).
+  - O que você escolhe: se fica como está, se entra na lista de fazer (escreva no comentário o que quer diferente) ou se você testa antes de responder.
+  - (Para consulta: D-144; resolvida junto com D-080, D-081, D-101, D-148, D-168, D-175, D-186, D-195, D-212.)
+  S: None
+===== au-d-148 | Marcada, só as letras viram preto e branco e gravura, foto, moldura e iluminura ficam como no original
+  - Onde fica: O Automático (painel e janela grande). O que é: Marcada, só as letras viram preto e branco e gravura, foto, moldura e iluminura ficam como no original.
+  - O que você pediu (30/09/2026): (resumo, sem as suas palavras exatas) Caixinha "Só as letras" dentro do Preto e branco, como o Misto do ScanTailor, por livro ou por página · 05/10, "(a) Uma caixinha 'Só as letras' dentro do Preto e branco, para o livro (tela 'O que fazer') e para a página (aba Filtro) (recomendado)"
+  - Como está hoje (versão de teste): Todas estão na janela grande do Automático.
+  - Você ainda não testou isto depois da auditoria de 29/10 (não há teste seu no Livro de decisões).
+  - O que você escolhe: se fica como está, se entra na lista de fazer (escreva no comentário o que quer diferente) ou se você testa antes de responder.
+  - (Para consulta: D-148; resolvida junto com D-080, D-081, D-101, D-144, D-168, D-175, D-186, D-195, D-212.)
+  S: None
+===== au-d-168 | A caixinha das molduras fica cinza com "Só as letras" ligada e volta como estava ao desligar
+  - Onde fica: O Automático (painel e janela grande). O que é: A caixinha das molduras fica cinza com "Só as letras" ligada e volta como estava ao desligar.
+  - O que você pediu (05/10/2026): "(a) Fica apagada (cinza) enquanto 'Só as letras' estiver marcada, e volta como estava ao desligar (recomendado)" · antes: "acho que se eu ativar o misto a caixinha já desmarca né? vamos falar mais sobre"
+  - Como está hoje (versão de teste): Todas estão na janela grande do Automático.
+  - Já testado por você: Você testou em 29/10 uma caixinha que funciona do mesmo jeito ("Respeitar as gravuras achadas" fica cinza com "Só as letras"): "o programa está mudando de efeito como deveria". A caixinha das molduras não foi testada sozinha.
+  - O que você escolhe: se fica como está, se entra na lista de fazer (escreva no comentário o que quer diferente) ou se você testa antes de responder.
+  - (Para consulta: D-168; resolvida junto com D-080, D-081, D-101, D-144, D-148, D-175, D-186, D-195, D-212.)
+  S: None
+===== au-d-175 | "Limpar a sujeira" com cinco escolhas, por livro e por página: Sem limpeza, bruta, cuidadosa leve/média/forte
+  - Onde fica: O Automático (painel e janela grande). O que é: "Limpar a sujeira" com cinco escolhas, por livro e por página: Sem limpeza, bruta, cuidadosa leve/média/forte.
+  - O que você pediu (05/10/2026): "acho que podemos ter opções para escolher né, por isso gostaria de ver lado a lado." · 06/10: "Eu vou poder ligar e desligar esse apagador de pingos? e selecionar o pouco, normal ou muito, ou selecionar o nosso" · 07/10: "eu quero poder usar o pouco o o medio e muito."
+  - Como está hoje (versão de teste): Todas estão na janela grande do Automático.
+  - Você ainda não testou isto depois da auditoria de 29/10 (não há teste seu no Livro de decisões).
+  - O que você escolhe: se fica como está, se entra na lista de fazer (escreva no comentário o que quer diferente) ou se você testa antes de responder.
+  - (Para consulta: D-175; resolvida junto com D-080, D-081, D-101, D-144, D-148, D-168, D-186, D-195, D-212.)
+  S: None
+===== au-d-186 | Texto falhado → o programa escurece a força do preto só naquela página, avisa e oferece "Desfazer"
+  - Onde fica: O Automático (painel e janela grande). O que é: Texto falhado → o programa escurece a força do preto só naquela página, avisa e oferece "Desfazer".
+  - O que você pediu (08/10/2026): "Força sozinha"
+  - Como está hoje (versão de teste): Todas estão na janela grande do Automático.
+  - Você ainda não testou isto depois da auditoria de 29/10 (não há teste seu no Livro de decisões).
+  - O que você escolhe: se fica como está, se entra na lista de fazer (escreva no comentário o que quer diferente) ou se você testa antes de responder.
+  - (Para consulta: D-186; resolvida junto com D-080, D-081, D-101, D-144, D-148, D-168, D-175, D-195, D-212.)
+  S: None
+===== au-d-195 | "Igualar a luz" em todos os filtros, desligado de fábrica, com aviso de tinta lavada no Melhorar e no Mágico pro
+  - Onde fica: O Automático (painel e janela grande). O que é: "Igualar a luz" em todos os filtros, desligado de fábrica, com aviso de tinta lavada no Melhorar e no Mágico pro.
+  - O que você pediu (22/10/2026): "Em todos, com aviso" + "mas vai ser uma opção que eu posso desligar e ligar né?"
+  - Como está hoje (versão de teste): Todas estão na janela grande do Automático.
+  - Você ainda não testou isto depois da auditoria de 29/10 (não há teste seu no Livro de decisões).
+  - O que você escolhe: se fica como está, se entra na lista de fazer (escreva no comentário o que quer diferente) ou se você testa antes de responder.
+  - (Para consulta: D-195; resolvida junto com D-080, D-081, D-101, D-144, D-148, D-168, D-175, D-186, D-212.)
+  S: None
+===== au-d-212 | Opções de achar as gravuras na tela, por livro, com os valores de fábrica do ScanTailor
+  - Onde fica: O Automático (painel e janela grande). O que é: Opções do detector (forma do contorno, sensibilidade, imagens claras, igualar a luz) na tela, por livro, com os valores de fábrica do ScanTailor; a aba Marcar usa o mesmo detector.
+  - O que você pediu (30/09/2026): "o programa tem que ter essas opções para o usuário conseguir usar" · grupo "Gravuras e fotos": BOM · "Procurar também imagens claras" desmarcada de fábrica: BOM · 02/10, "[x] Aprovado"
+  - Como está hoje (versão de teste): Todas estão na janela grande do Automático.
+  - Você ainda não testou isto depois da auditoria de 29/10 (não há teste seu no Livro de decisões).
+  - O que você escolhe: se fica como está, se entra na lista de fazer (escreva no comentário o que quer diferente) ou se você testa antes de responder.
+  - (Para consulta: D-212; resolvida junto com D-080, D-081, D-101, D-144, D-148, D-168, D-175, D-186, D-195.)
+  S: None
+===== au-d-485 | O que conta como "mexida à mão" no aviso do Automático (inclusive em livro antigo)
+  - Onde fica: O Automático (painel e janela grande). O que é: Conta como "mexida à mão" na pergunta da decisão de 28/09: a página com a marca de mexida e também a página de trabalho antigo cujo filtro é diferente do filtro do livro (de antes da marca existir). Assim um filtro escolhido à mão em livro antigo não é apagado sem perguntar.
+  - De onde veio: ninguém perguntou a você. A gerente escolheu sozinha em 27/10, durante a rodada de consertos. Ela se apoiou em: a decisão de 28/09 ("Perguntar" se pula as páginas mexidas à mão)
+  - Como está hoje (versão de teste): Pergunta "Pular as N" / "Rodar nelas também" / "cancelar".
+  - Você ainda não testou isto depois da auditoria de 29/10 (não há teste seu no Livro de decisões).
+  - O que você escolhe: se fica como está, se entra na lista de fazer (escreva no comentário o que quer diferente) ou se você testa antes de responder.
+  - (Para consulta: D-485; resolvida junto com D-004.)
+  S: None
+===== au-d-553 | Fica a caixinha "Usar esta receita no aviso de todo livro novo" na caixa de salvar receita
+  - Onde fica: O Automático (painel e janela grande). O que é: Fica a caixinha "Usar esta receita no aviso de todo livro novo" na caixa de salvar receita.
+  - O que você pediu (27/10/2026): Central "Manter (recomendo)"
+  - Como está hoje (versão de teste): Caixa da receita com uma caixinha por etapa, em português; "Usar esta receita no aviso de todo livro novo".
+  - Você ainda não testou isto depois da auditoria de 29/10 (não há teste seu no Livro de decisões).
+  - O que você escolhe: se fica como está, se entra na lista de fazer (escreva no comentário o que quer diferente) ou se você testa antes de responder.
+  - (Para consulta: D-553; resolvida junto com D-071.)
+  S: None
+===== au-d-009 | Feito à mão sempre vale no PDF, com o automático ligado ou não
+  - Onde fica: O que é feito à mão vale no PDF. O que é: Feito à mão sempre vale no PDF, com o automático ligado ou não.
+  - O que você pediu (26/10/2026): "eu deveria conseguir abrir o livro sem escolher nenhuma opção para fazer tudo manualmente."
+  - Como está hoje (versão de teste): O feito à mão vale no PDF com tudo desligado (corte, ângulo, filtro, marcação, mover).
+  - Você ainda não testou isto depois da auditoria de 29/10 (não há teste seu no Livro de decisões).
+  - O que você escolhe: se fica como está, se entra na lista de fazer (escreva no comentário o que quer diferente) ou se você testa antes de responder.
+  - (Para consulta: D-009.)
+  S: None
+===== au-d-298 | Cada página pode ter o seu filtro; no fim sai um PDF só
+  - Onde fica: O que é feito à mão vale no PDF. O que é: Cada página pode ter o seu filtro; no fim sai um PDF só.
+  - O que você pediu (18/07/2026): "6. É possível aplicar filtros diferentes em páginas diferentes do mesmo livro, gerando um PDF só"
+  - Como está hoje (versão de teste): O filtro de cada página vale no PDF.
+  - Você ainda não testou isto depois da auditoria de 29/10 (não há teste seu no Livro de decisões).
+  - O que você escolhe: se fica como está, se entra na lista de fazer (escreva no comentário o que quer diferente) ou se você testa antes de responder.
+  - (Para consulta: D-298.)
+  S: None
+===== au-d-001 | Todas as ferramentas sempre à vista na área de trabalho, sem depender de caixinha
+  - Onde fica: Todas as ferramentas à vista e o lado direito. O que é: Todas as ferramentas sempre à vista na área de trabalho, sem depender de caixinha.
+  - O que você pediu (25/09/2026): "Estrutura: Photoshop puro, sem abas. Uma única tela com todas as ferramentas."
+  - Como está hoje (versão de teste): As 10 ferramentas na trilha e todos os menus acesos, com ou sem caixinha.
+  - Você ainda não testou isto depois da auditoria de 29/10 (não há teste seu no Livro de decisões).
+  - O que você escolhe: se fica como está, se entra na lista de fazer (escreva no comentário o que quer diferente) ou se você testa antes de responder.
+  - (Para consulta: D-001.)
+  S: None
+===== au-d-029 | Primeiro a tela padrão funcionando; as trocas de layout (4 jeitos da direita, área de trabalho 1, "tudo livre") só depois
+  - Onde fica: Todas as ferramentas à vista e o lado direito. O que é: Primeiro a tela padrão funcionando; as trocas de layout (4 jeitos da direita, área de trabalho 1, "tudo livre") só depois.
+  - O que você pediu (05/10/2026): "A — primeiro o padrão funcionando, depois as trocas"
+  - Como está hoje (versão de teste): O padrão funciona e as trocas (os quatro jeitos) foram feitas.
+  - Você ainda não testou isto depois da auditoria de 29/10 (não há teste seu no Livro de decisões).
+  - O que você escolhe: se fica como está, se entra na lista de fazer (escreva no comentário o que quer diferente) ou se você testa antes de responder.
+  - (Para consulta: D-029.)
+  S: None
+===== au-d-037 | Ao abrir: ícones na borda direita, nenhum painel aberto; seta esconde/mostra os ícones; a "área de trabalho 1" continua como opção
+  - Onde fica: Todas as ferramentas à vista e o lado direito. O que é: Ao abrir: ícones na borda direita, nenhum painel aberto; seta esconde/mostra os ícones; a "área de trabalho 1" continua como opção.
+  - O que você pediu (06/10/2026): "D — Ícones na borda, tudo fechado" + "Mas eu ainda gostaria de ter a opção de ter fechado ou aberto os icones a direita. tipo uma seta de dropdown que eu abro ou fecho. Mas eu também quero ter a opção da area de trabalho 1."
+  - Como está hoje (versão de teste): De fábrica ícones na borda, tudo fechado, com a seta "»".
+  - Você ainda não testou isto depois da auditoria de 29/10 (não há teste seu no Livro de decisões).
+  - O que você escolhe: se fica como está, se entra na lista de fazer (escreva no comentário o que quer diferente) ou se você testa antes de responder.
+  - (Para consulta: D-037.)
+  S: None
+===== au-d-057 | Menu "Painéis" entre Ver e Ajuda, com os 5 painéis, "Fechar o painel" e os ícones da direita
+  - Onde fica: Todas as ferramentas à vista e o lado direito. O que é: Menu "Painéis" entre Ver e Ajuda, com os 5 painéis, "Fechar o painel" e os ícones da direita.
+  - O que você pediu (20/10/2026): "B — Um menu novo, “Painéis”" · 21/10 "Está bom"
+  - Como está hoje (versão de teste): O menu Painéis abre cada painel; o Ver não tem mais "Painel".
+  - Você ainda não testou isto depois da auditoria de 29/10 (não há teste seu no Livro de decisões).
+  - O que você escolhe: se fica como está, se entra na lista de fazer (escreva no comentário o que quer diferente) ou se você testa antes de responder.
+  - (Para consulta: D-057.)
+  S: None
+===== au-d-181 | Painel Filtro com fila de filtros e partes que abrem e fecham, mais um botão para os filtros em tela cheia
+  - Onde fica: Todas as ferramentas à vista e o lado direito. O que é: Painel Filtro com fila de filtros e partes que abrem e fecham, mais um botão para os filtros em tela cheia.
+  - O que você pediu (06/10/2026): "B — Filtros numa fila + partes que abrem e fecham" + "Mas eu vou querer uma opção para conseguir abrir os filtros para ver um review de como ficaria com cada filtro, abrir em tela cheia, com as opções de cada filtro nessa tela cheia."
+  - Como está hoje (versão de teste): "Os quatro filtros" saiu da trilha; o painel "Filtro da página" faz o mesmo.
+  - Você ainda não testou isto depois da auditoria de 29/10 (não há teste seu no Livro de decisões).
+  - O que você escolhe: se fica como está, se entra na lista de fazer (escreva no comentário o que quer diferente) ou se você testa antes de responder.
+  - (Para consulta: D-181.)
+  S: None
+===== au-d-301 | Escolher a pasta, lembrar a última, avisar arquivo repetido e pasta sem permissão
+  - Onde fica: Menus, teclas e janelas. O que é: Escolher a pasta, lembrar a última, avisar arquivo repetido e pasta sem permissão.
+  - O que você pediu (18/07/2026): "FALTOU uma função importante: escolher onde salvar o PDF. [...] lembrar a última pasta usada [...] avisar se já existir arquivo com o mesmo nome, oferecendo substituir ou renomear - se a pasta não tiver permissão de escrita, avisar em português"
+  - Como está hoje (versão de teste): Janelas de abrir/salvar em português, abrem na última pasta e avisam caminho errado.
+  - Você ainda não testou isto depois da auditoria de 29/10 (não há teste seu no Livro de decisões).
+  - O que você escolhe: se fica como está, se entra na lista de fazer (escreva no comentário o que quer diferente) ou se você testa antes de responder.
+  - (Para consulta: D-301.)
+  S: None
+===== au-d-341 | Conferir se a janela cabe no notebook do Kaique na escala dele (125% ou 150%)
+  - Onde fica: Menus, teclas e janelas. O que é: Conferir se a janela cabe no notebook do Kaique na escala dele (125% ou 150%).
+  - O que você pediu (05/10/2026): Escala do notebook do Kaique: "Isso pode ser resolvido depois"
+  - Como está hoje (versão de teste): As janelas foram conferidas no tamanho do notebook a 150% (1280 × 657).
+  - Você ainda não testou isto depois da auditoria de 29/10 (não há teste seu no Livro de decisões).
+  - O que você escolhe: se fica como está, se entra na lista de fazer (escreva no comentário o que quer diferente) ou se você testa antes de responder.
+  - (Para consulta: D-341; resolvida junto com D-526.)
+  S: None
+===== au-d-481 | Atalhos de letra: D = Dividir, X = Cortar, I = Endireitar
+  - Onde fica: Menus, teclas e janelas. O que é: Atalhos de letra: D = Dividir, X = Cortar, I = Endireitar. C e E já eram do "Marcar como" (R O L P B V C A Z E), por isso Cortar ficou com X (tesoura) e Endireitar com I (de "inclinar"). Remapeáveis nas Configurações como os outros (ferramenta_dividir/cortar/endireitar).
+  - De onde veio: ninguém perguntou a você. A gerente escolheu sozinha em 27/10, durante a rodada de consertos. Ela se apoiou em: pedido dos atalhos de letra para Dividir, Cortar e Endireitar.
+  - Como está hoje (versão de teste): As letras escolhem Dividir, Cortar, Endireitar, Mover; Shift+Del tira a página; dá para trocar nas Configurações.
+  - Você ainda não testou isto depois da auditoria de 29/10 (não há teste seu no Livro de decisões).
+  - O que você escolhe: se fica como está, se entra na lista de fazer (escreva no comentário o que quer diferente) ou se você testa antes de responder.
+  - (Para consulta: D-481; resolvida junto com D-540, D-561.)
+  S: None
+===== au-d-526 | As telas continuam desenhadas para a escala de 150% (1280 × 657 pontos), sem prints em três escalas
+  - Onde fica: Menus, teclas e janelas. O que é: As telas continuam desenhadas para a escala de 150% (1280 × 657 pontos), sem prints em três escalas. O Qt já multiplica pela escala do Windows, como o Photoshop/PhotoCraft.
+  - O que você pediu (27/10/2026): Central, pd-escala-kaique (2ª volta): "Só continuar desenhando para 150%" + "Não está usando no photoshop, está usando em um programa que se propõe a fazer o que ele faz."
+  - Como está hoje (versão de teste): As janelas foram conferidas no tamanho do notebook a 150% (1280 × 657).
+  - Você ainda não testou isto depois da auditoria de 29/10 (não há teste seu no Livro de decisões).
+  - O que você escolhe: se fica como está, se entra na lista de fazer (escreva no comentário o que quer diferente) ou se você testa antes de responder.
+  - (Para consulta: D-526; resolvida junto com D-341.)
+  S: None
+===== au-d-540 | Atalho F = "Mover e redimensionar" ("F de folha": põe o conteúdo no lugar da folha)
+  - Onde fica: Menus, teclas e janelas. O que é: Atalho F = "Mover e redimensionar" ("F de folha": põe o conteúdo no lugar da folha). O V do Photoshop já é a Varinha mágica e o M é o "Recorte: espelhado"; as letras livres eram F G H J K N Q S U W Y. Remapeável nas Configurações (ferramenta_mover).
+  - De onde veio: ninguém perguntou a você. A gerente escolheu sozinha em 27/10, durante a rodada de consertos. Ela se apoiou em: a decisão de 27/10 (letras D, X, I) e no pedido "Atalho de letra" da rodada de consertos.
+  - Como está hoje (versão de teste): As letras escolhem Dividir, Cortar, Endireitar, Mover; Shift+Del tira a página; dá para trocar nas Configurações.
+  - Você ainda não testou isto depois da auditoria de 29/10 (não há teste seu no Livro de decisões).
+  - O que você escolhe: se fica como está, se entra na lista de fazer (escreva no comentário o que quer diferente) ou se você testa antes de responder.
+  - (Para consulta: D-540; resolvida junto com D-481, D-561.)
+  S: None
+===== au-d-561 | Ficam as teclas D Dividir, X Cortar, I Endireitar, F Mover e Shift+Del Tirar do livro
+  - Onde fica: Menus, teclas e janelas. O que é: Ficam as teclas D Dividir, X Cortar, I Endireitar, F Mover e Shift+Del Tirar do livro.
+  - O que você pediu (27/10/2026): Central "Manter (recomendo)"
+  - Como está hoje (versão de teste): As letras escolhem Dividir, Cortar, Endireitar, Mover; Shift+Del tira a página; dá para trocar nas Configurações.
+  - Você ainda não testou isto depois da auditoria de 29/10 (não há teste seu no Livro de decisões).
+  - O que você escolhe: se fica como está, se entra na lista de fazer (escreva no comentário o que quer diferente) ou se você testa antes de responder.
+  - (Para consulta: D-561; resolvida junto com D-481, D-540.)
+  S: None
+===== au-d-562 | Fica o menu "Ferramentas"
+  - Onde fica: Menus, teclas e janelas. O que é: Fica o menu "Ferramentas".
+  - O que você pediu (27/10/2026): Central "Manter (recomendo)"
+  - Como está hoje (versão de teste): Menu Ferramentas com as ferramentas e a letra de cada uma.
+  - Você ainda não testou isto depois da auditoria de 29/10 (não há teste seu no Livro de decisões).
+  - O que você escolhe: se fica como está, se entra na lista de fazer (escreva no comentário o que quer diferente) ou se você testa antes de responder.
+  - (Para consulta: D-562.)
+  S: None
+===== au-d-027 | Comando para a página sair como folha branca, sem tirar do livro
+  - Onde fica: Deixar em branco e tirar do livro. O que é: Comando para a página sair como folha branca, sem tirar do livro.
+  - O que você pediu (30/09/2026): (Siebmacher 106): "essa é uma página que eu poderia simplesmente escolher a opção para virar uma folha branca, pois não tem nenhum conteúdo."
+  - Como está hoje (versão de teste): "Deixar a folha em branco" sai branca também em Original e em "Tirar o fundo".
+  - Você ainda não testou isto depois da auditoria de 29/10 (não há teste seu no Livro de decisões).
+  - O que você escolhe: se fica como está, se entra na lista de fazer (escreva no comentário o que quer diferente) ou se você testa antes de responder.
+  - (Para consulta: D-027.)
+  S: None
+===== au-d-227 | Clicar numa área que o programa achou (ex.: mancha do Marial 7) e apagar a área ou pintar de branco
+  - Onde fica: Deixar em branco e tirar do livro. O que é: Clicar numa área que o programa achou (ex.: mancha do Marial 7) e apagar a área ou pintar de branco.
+  - O que você pediu (05/10/2026): "gostaria de poder usar as seleções que o proprio programa já fez, das gravuras e das coisas, porque as vezes ele consegue selecionar essas manchas e coisas como gravuras e eu poderia ir lá e apagar ou botar branco por cima" · Marial 7: "Temos que ter uma opção para retirar essas manchas" · P11b: "Sim"
+  - Como está hoje (versão de teste): "pintar de branco" sai branco em Original, só na área.
+  - Você ainda não testou isto depois da auditoria de 29/10 (não há teste seu no Livro de decisões).
+  - O que você escolhe: se fica como está, se entra na lista de fazer (escreva no comentário o que quer diferente) ou se você testa antes de responder.
+  - (Para consulta: D-227.)
+  S: None
+===== au-d-271 | "Parece em branco" e "Página sem conteúdo" são avisos separados, cada um com "Deixar em branco" e "Tirar do livro"
+  - Onde fica: Deixar em branco e tirar do livro. O que é: "Parece em branco" e "Página sem conteúdo" são avisos separados, cada um com "Deixar em branco" e "Tirar do livro".
+  - O que você pediu (08/10/2026): "Tem que ter um tipo de aviso para cada coisa, e um botão de apagar folha e outro realmente de só mudar para um folha branca." · "Fica assim"
+  - Como está hoje (versão de teste): "Parece em branco" com "Deixar em branco" e "Tirar do livro"; o aviso falso em página com texto sai.
+  - Você ainda não testou isto depois da auditoria de 29/10 (não há teste seu no Livro de decisões).
+  - O que você escolhe: se fica como está, se entra na lista de fazer (escreva no comentário o que quer diferente) ou se você testa antes de responder.
+  - (Para consulta: D-271.)
+  S: None
+===== au-d-007 | A folha inteira com a linha fica só dentro da ferramenta Dividir; dividido, o livro aparece uma página por vez
+  - Onde fica: Dividir as folhas. O que é: A folha inteira com a linha fica só dentro da ferramenta Dividir; dividido, o livro aparece uma página por vez.
+  - O que você pediu (26/10/2026): "quando eu escolher para começar no automatico e dividir as folhas o livro tem que aparecer em uma pagina por vez para mim."
+  - Como está hoje (versão de teste): Uma página por vez; a folha inteira com a linha só no Dividir.
+  - Já testado por você: Isto mudou em 02/11, a seu pedido, dentro da ferramenta Dividir (com "Uma página", a folha dividida mostra só uma metade). Você testou o Dividir em 10/11 ("ok").
+  - O que você escolhe: se fica como está, se entra na lista de fazer (escreva no comentário o que quer diferente) ou se você testa antes de responder.
+  - (Para consulta: D-007.)
+  S: None
+===== au-d-090 | O programa sugere o corte, o Kaique aceita ou muda; "usar em todas" abre a lista das páginas com as exceções desmarcadas e nunca apaga exceção
+  - Onde fica: Dividir as folhas. O que é: O programa sugere o corte, o Kaique aceita ou muda; "usar em todas" abre a lista das páginas com as exceções desmarcadas e nunca apaga exceção.
+  - O que você pediu (08/10/2026): "[...] no caso o programa avisa e o kaique diz se vai ou não aceitar?" · "O programa sugere, o Kaique aceita" + "Sim, mas nós podemos alterar o corte sugerido, ou fazer um corte e mandar para todas as paginas e alterar em algumas paginas só o corte quando cortamos alguma, assim quando mudar de um não muda de todas, eu devo conseguir abrir uma aba para selecionar as que eu quero ( as paginas) ou também simplismente apertar num botão e selecionar todas."
+  - Como está hoje (versão de teste): "usar em todas" do Dividir pergunta em quais folhas; a de linha própria vem desmarcada.
+  - Já testado por você: Você testou o Dividir em 10/11 ("ok"). O "usar em todas" do Cortar não foi testado sozinho depois da auditoria.
+  - O que você escolhe: se fica como está, se entra na lista de fazer (escreva no comentário o que quer diferente) ou se você testa antes de responder.
+  - (Para consulta: D-090.)
+  S: None
+===== au-d-558 | "Dividir" na grade "Todas as páginas" = dividir a página com a função do ScanTailor do programa, nas folhas escolhidas, feito agora
+  - Onde fica: A grade "Todas as páginas". O que é: "Dividir" na grade "Todas as páginas" = dividir a página com a função do ScanTailor do programa, nas folhas escolhidas, feito agora. A a decisão de 27/10 (deixar para depois) sai. O "inserir" voltou como pergunta.
+  - O que você pediu (27/10/2026): Central ac-grade-inserir (comentário): "quando falei dividir é dividir a pagina, usando a funcionalidade do scantailor que colocamos no aplicativo, é isso que deveria ser feito."
+  - Como está hoje (versão de teste): Botão "dividir" com andamento e "parar"; uma ação do desfazer.
+  - Você ainda não testou isto depois da auditoria de 29/10 (não há teste seu no Livro de decisões).
+  - O que você escolhe: se fica como está, se entra na lista de fazer (escreva no comentário o que quer diferente) ou se você testa antes de responder.
+  - (Para consulta: D-558.)
+  S: None
+===== au-d-092 | Tarja da biblioteca e moldura do scanner: o Kaique escolhe por livro entre cortar fora e pintar de branco
+  - Onde fica: A faixa preta da tampa do scanner e a borda preta. O que é: Tarja da biblioteca e moldura do scanner: o Kaique escolhe por livro entre cortar fora e pintar de branco.
+  - O que você pediu (09/10/2026): rodada 4: "É a moldura preta / a tarja" + "ela deveria tirar essa tarja do livro né?" · "O Kaique escolhe por livro"
+  - Como está hoje (versão de teste): A mesma escolha vale para a borda preta e a tampa.
+  - Você ainda não testou isto depois da auditoria de 29/10 (não há teste seu no Livro de decisões).
+  - O que você escolhe: se fica como está, se entra na lista de fazer (escreva no comentário o que quer diferente) ou se você testa antes de responder.
+  - (Para consulta: D-092.)
+  S: None
+===== au-d-082 | Endireitar pela conta do ScanTailor de fábrica; diferença acima de 0,3° vira "conferir"; dá para trocar a conta
+  - Onde fica: Endireitar e cortar. O que é: Endireitar pela conta do ScanTailor de fábrica; diferença acima de 0,3° vira "conferir"; dá para trocar a conta.
+  - O que você pediu (05/10/2026): "(b) O do ScanTailor de fábrica; quando os dois discordarem mais de 0,3 grau, a página fica marcada 'conferir' - mas eu vou ter a opção de escolher." · "Sim"
+  - Como está hoje (versão de teste): Voltou a avisar como você disse.
+  - Você ainda não testou isto depois da auditoria de 29/10 (não há teste seu no Livro de decisões).
+  - O que você escolhe: se fica como está, se entra na lista de fazer (escreva no comentário o que quer diferente) ou se você testa antes de responder.
+  - (Para consulta: D-082.)
+  S: None
+===== au-d-093 | Ao mudar o ângulo depois do corte à mão, o retângulo fica no mesmo lugar (padrão); "Acompanha o texto" é a outra opção
+  - Onde fica: Endireitar e cortar. O que é: Ao mudar o ângulo depois do corte à mão, o retângulo fica no mesmo lugar (padrão); "Acompanha o texto" é a outra opção.
+  - O que você pediu (09/10/2026): "Fica no mesmo lugar da página (como no ScanTailor)" + "Posso ter as duas opções mas a opção do scantailor ficar como padrão?"
+  - Como está hoje (versão de teste): Retângulo do corte nas Configurações, no livro e na página.
+  - Você ainda não testou isto depois da auditoria de 29/10 (não há teste seu no Livro de decisões).
+  - O que você escolhe: se fica como está, se entra na lista de fazer (escreva no comentário o que quer diferente) ou se você testa antes de responder.
+  - (Para consulta: D-093; resolvida junto com D-094, D-491.)
+  S: None
+===== au-d-094 | A troca "Fica no mesmo lugar / Acompanha o texto" aparece em Configurações, no livro e na ferramenta Endireitar (página)
+  - Onde fica: Endireitar e cortar. O que é: A troca "Fica no mesmo lugar / Acompanha o texto" aparece em Configurações, no livro e na ferramenta Endireitar (página).
+  - O que você pediu (09/10/2026): "Na ferramenta Endireitar, por página" + "quero a b e c juntas."
+  - Como está hoje (versão de teste): Retângulo do corte nas Configurações, no livro e na página.
+  - Você ainda não testou isto depois da auditoria de 29/10 (não há teste seu no Livro de decisões).
+  - O que você escolhe: se fica como está, se entra na lista de fazer (escreva no comentário o que quer diferente) ou se você testa antes de responder.
+  - (Para consulta: D-094; resolvida junto com D-093, D-491.)
+  S: None
+===== au-d-098 | Aviso "Corte deixou algo de fora", com opção de usar o corte alargado mostrando o que foi tirado
+  - Onde fica: Endireitar e cortar. O que é: Aviso "Corte deixou algo de fora", com opção de usar o corte alargado mostrando o que foi tirado.
+  - O que você pediu (13/10/2026): "Só avisa" + "ele avisa e da opção e de mudar o corte e mostrar ele alargado com o que foi tirado."
+  - Como está hoje (versão de teste): O "alargado" nunca fica menor que o corte de agora.
+  - Você ainda não testou isto depois da auditoria de 29/10 (não há teste seu no Livro de decisões).
+  - O que você escolhe: se fica como está, se entra na lista de fazer (escreva no comentário o que quer diferente) ou se você testa antes de responder.
+  - (Para consulta: D-098.)
+  S: None
+===== au-d-491 | O corte de página endireitada: "fica" ou "acompanha", em três lugares (Configurações, livro e página)
+  - Onde fica: Endireitar e cortar. O que é: O retângulo do corte, quando a página é endireitada, tem três lugares: Configurações > Medidas e receitas (vale para todo livro que não escolheu; de fábrica "fica", a decisão de 09/10), o livro e a página (aba Endireitar: "segue o livro" / "fica" / "acompanha"). A página manda sobre o livro, o livro sobre as Configurações.
+  - De onde veio: ninguém perguntou a você. A gerente escolheu sozinha em 27/10, durante a rodada de consertos. Ela se apoiou em: a decisão de 09/10 (retângulo do corte nas Configurações, no livro e na página)
+  - Como está hoje (versão de teste): Retângulo do corte nas Configurações, no livro e na página.
+  - Você ainda não testou isto depois da auditoria de 29/10 (não há teste seu no Livro de decisões).
+  - O que você escolhe: se fica como está, se entra na lista de fazer (escreva no comentário o que quer diferente) ou se você testa antes de responder.
+  - (Para consulta: D-491; resolvida junto com D-093, D-094.)
+  S: None
+===== au-d-494 | No corte "até a moldura", as páginas não são forçadas ao mesmo tamanho
+  - Onde fica: Endireitar e cortar. O que é: No corte "até a moldura", as páginas não são forçadas ao mesmo tamanho; a caixinha "Margens iguais" fica à vista na tela do corte para quem quiser.
+  - De onde veio: ninguém perguntou a você. A gerente escolheu sozinha em 27/10, durante a rodada de consertos. Ela se apoiou em: a decisão de 24/09 ("Margens iguais", aprovada)
+  - Como está hoje (versão de teste): Caixinha "Margens iguais" no Cortar; páginas não forçadas ao mesmo tamanho.
+  - Você ainda não testou isto depois da auditoria de 29/10 (não há teste seu no Livro de decisões).
+  - O que você escolhe: se fica como está, se entra na lista de fazer (escreva no comentário o que quer diferente) ou se você testa antes de responder.
+  - (Para consulta: D-494; resolvida junto com D-554.)
+  S: None
+===== au-d-554 | A caixinha "Margens iguais" aparece também na tela do Cortar (além do Automático)
+  - Onde fica: Endireitar e cortar. O que é: A caixinha "Margens iguais" aparece também na tela do Cortar (além do Automático). Confirma a decisão de 27/10.
+  - O que você pediu (27/10/2026): Central "Também na tela do corte"
+  - Como está hoje (versão de teste): Caixinha "Margens iguais" no Cortar; páginas não forçadas ao mesmo tamanho.
+  - Você ainda não testou isto depois da auditoria de 29/10 (não há teste seu no Livro de decisões).
+  - O que você escolhe: se fica como está, se entra na lista de fazer (escreva no comentário o que quer diferente) ou se você testa antes de responder.
+  - (Para consulta: D-554; resolvida junto com D-494.)
+  S: None
+===== au-d-563 | Sem a opção "desentortar seguindo só o bloco do texto" (as decisões de 27/10 saem; a conta não ligada pode ser apagada)
+  - Onde fica: Endireitar e cortar. O que é: Sem a opção "desentortar seguindo só o bloco do texto" (as decisões de 27/10 saem; a conta não ligada pode ser apagada).
+  - O que você pediu (27/10/2026): Central "Tirar, voltar como era antes (recomendo)"
+  - Como está hoje (versão de teste): A conta saiu.
+  - Você ainda não testou isto depois da auditoria de 29/10 (não há teste seu no Livro de decisões).
+  - O que você escolhe: se fica como está, se entra na lista de fazer (escreva no comentário o que quer diferente) ou se você testa antes de responder.
+  - (Para consulta: D-563.)
+  S: None
+===== au-d-095 | Consertos que ficaram do corte de 12/10 (moldura colada, título colado, cantinhos brancos)
+  - Onde fica: O corte não come a página. O que é: Consertos que ficaram da conferência do corte de 12/10: moldura colada em cima (Siebmacher 9), título colado (Escola 7) e cantinhos brancos com o corte até a beirada (Boécio 8, Marial 7, Graduale 221).
+  - O que você pediu (12/10/2026): "Se esse trabalho não mexe nele, porque estamos avaliando isso? o resultado aqui dessa pagina não seria cortar as bordas pretas?" (depois "Está bom")
+  - Como está hoje (versão de teste): A cunha do giro sai com a cor do papel; a faixa escura da beirada sai.
+  - Já testado por você: O cantinho que o giro abre na beirada foi mexido em 06/11 e você testou em 10/11: "a cor é diferente da cor do papel" (fica como está por enquanto). O resto desta lista não foi testado.
+  - O que você escolhe: se fica como está, se entra na lista de fazer (escreva no comentário o que quer diferente) ou se você testa antes de responder.
+  - (Para consulta: D-095.)
+  S: None
+===== au-d-008 | Mover e redimensionar o conteúdo: ferramenta própria, sempre ativa, e o resultado sai no PDF
+  - Onde fica: Mover e redimensionar. O que é: Mover e redimensionar o conteúdo: ferramenta própria, sempre ativa, e o resultado sai no PDF.
+  - O que você pediu (22/09/2026 e 26/10/2026): "quero conseguir redimensionar o conteudo tambem" · "a ferramenta de mover não deveria estar vinculada ao corte de bordas, deveriam ser duas coisas independentes" · "como é no photoshope, que você arrasta a hora que quiser e aumenta a hora que quiser"
+  - Como está hoje (versão de teste): Ferramenta própria (F), sem tamanho de folha; sai no PDF no lugar da tela.
+  - Você ainda não testou isto depois da auditoria de 29/10 (não há teste seu no Livro de decisões).
+  - O que você escolhe: se fica como está, se entra na lista de fazer (escreva no comentário o que quer diferente) ou se você testa antes de responder.
+  - (Para consulta: D-008.)
+  S: None
+===== au-d-025 | Caixa do conteúdo e linhas de apoio na página
+  - Onde fica: Mover e redimensionar. O que é: Caixa do conteúdo e linhas de apoio na página.
+  - O que você pediu (24/09/2026): (resumo, sem as suas palavras exatas) caixa da página e guias.
+  - Como está hoje (versão de teste): Linhas de apoio no Mover, também sem folha.
+  - Você ainda não testou isto depois da auditoria de 29/10 (não há teste seu no Livro de decisões).
+  - O que você escolhe: se fica como está, se entra na lista de fazer (escreva no comentário o que quer diferente) ou se você testa antes de responder.
+  - (Para consulta: D-025; resolvida junto com D-056.)
+  S: None
+===== au-d-056 | Linhas de apoio à mão (valendo no livro todo) e automáticas, que se desligam quando ele quiser
+  - Onde fica: Mover e redimensionar. O que é: Linhas de apoio à mão (valendo no livro todo) e automáticas, que se desligam quando ele quiser.
+  - O que você pediu (13/10/2026): "As duas" + "Mas ele vai poder tirar a automatica a hora que ele quiser."
+  - Como está hoje (versão de teste): Linhas de apoio no Mover, também sem folha.
+  - Você ainda não testou isto depois da auditoria de 29/10 (não há teste seu no Livro de decisões).
+  - O que você escolhe: se fica como está, se entra na lista de fazer (escreva no comentário o que quer diferente) ou se você testa antes de responder.
+  - (Para consulta: D-056; resolvida junto com D-025.)
+  S: None
+===== au-d-303 | Margem da costura diferente em página par e ímpar; poder centralizar o texto na folha
+  - Onde fica: Mover e redimensionar. O que é: Margem da costura diferente em página par e ímpar; poder centralizar o texto na folha.
+  - O que você pediu (12/09/2026): "o programa tem que conseguir perceber quando aumentar margem do lado direito e do lado esquerdo" · "cada pagina vai precisar de adequação diferente por serem lados diferentes (esquerdo e direito)" · "precisamos centralizar"
+  - Como está hoje (versão de teste): "Centralizar" põe o impresso no meio nas duas direções.
+  - Você ainda não testou isto depois da auditoria de 29/10 (não há teste seu no Livro de decisões).
+  - O que você escolhe: se fica como está, se entra na lista de fazer (escreva no comentário o que quer diferente) ou se você testa antes de responder.
+  - (Para consulta: D-303; resolvida junto com D-542.)
+  S: None
+===== au-d-542 | "Centralizar" e o ímã do Mover olham o que está impresso, não a moldura da página
+  - Onde fica: Mover e redimensionar. O que é: "Centralizar" e o ímã olham o que está IMPRESSO, não a moldura da página: "Centralizar" põe a caixa do impresso no meio da área branca nas duas direções (no tamanho de agora); ao arrastar, é o impresso que gruda no meio, nas beiradas e nas linhas do Kaique (como o Photoshop gruda a camada pelos pontos que têm desenho). "Impresso" = tinta bem mais escura que o papel (abaixo de 75% do papel), sem a poeira e sem nenhuma peça colada na beirada da página (fundo do scanner, marca-d'água cortada, restos escuros). Para o "Centralizar", as letras são juntadas em blocos e só entram os blocos com 2% ou mais do impresso (fica de fora a marca-d'água do site e o resto de cabeçalho cortado: achado nos prints do "La vida eterna").
+  - De onde veio: ninguém perguntou a você. A gerente escolheu sozinha em 27/10, durante a rodada de consertos. Ela se apoiou em: a decisão de 12/09 ("precisamos centralizar") e no teste do Kaique ("mover ele para o meio da folha"; margens 15 × 53)
+  - Como está hoje (versão de teste): "Centralizar" põe o impresso no meio nas duas direções.
+  - Você ainda não testou isto depois da auditoria de 29/10 (não há teste seu no Livro de decisões).
+  - O que você escolhe: se fica como está, se entra na lista de fazer (escreva no comentário o que quer diferente) ou se você testa antes de responder.
+  - (Para consulta: D-542; resolvida junto com D-303.)
+  S: None
+===== au-d-545 | "usar em todas..." do Mover leva o tamanho e o lugar do conteúdo às páginas escolhidas
+  - Onde fica: Mover e redimensionar. O que é: "usar em todas..." da ferramenta Mover leva o tamanho e o lugar do conteúdo desta página às páginas escolhidas na janela "Em quais páginas?" (a mesma do Cortar), com as páginas já mexidas (tamanho ou lugar próprio) desmarcadas; numa ação do desfazer; depois confere por trás cada página.
+  - De onde veio: ninguém perguntou a você. A gerente escolheu sozinha em 27/10, durante a rodada de consertos. Ela se apoiou em: (05/10: "ter uma opção para passar isso para todas as folhas"), a decisão de 08/10 e a decisão de 09/10.
+  - Como está hoje (versão de teste): "usar em todas..." com "Em quais páginas?"; as mexidas vêm desmarcadas.
+  - Você ainda não testou isto depois da auditoria de 29/10 (não há teste seu no Livro de decisões).
+  - O que você escolhe: se fica como está, se entra na lista de fazer (escreva no comentário o que quer diferente) ou se você testa antes de responder.
+  - (Para consulta: D-545.)
+  S: None
+===== au-d-006 | Botão "Ver lado a lado" em cima das páginas, canto direito, pares rolando — também na área de trabalho
+  - Onde fica: Uma página / Duas lado a lado e o zoom. O que é: Botão "Ver lado a lado" em cima das páginas, canto direito, pares rolando — também na área de trabalho.
+  - O que você pediu (06/10/2026): "eu não quero padrão eu quero como opção um botão que eu clique e veja pagina lado a lado" · 26/10: "eu tinha escolhido para poder trocar de duas paginas para duas"
+  - Como está hoje (versão de teste): "Duas lado a lado" na barra de baixo, pares rolando.
+  - Você ainda não testou isto depois da auditoria de 29/10 (não há teste seu no Livro de decisões).
+  - O que você escolhe: se fica como está, se entra na lista de fazer (escreva no comentário o que quer diferente) ou se você testa antes de responder.
+  - (Para consulta: D-006.)
+  S: None
+===== au-d-015 | "Ver lado a lado" na área de trabalho fica na barra de baixo, igual ao livro aberto, e também no menu Ver
+  - Onde fica: Uma página / Duas lado a lado e o zoom. O que é: "Ver lado a lado" na área de trabalho fica na barra de baixo, igual ao livro aberto, e também no menu Ver. (Substitui o lugar de; os pares rolando de continuam.)
+  - O que você pediu (22/10/2026 (mais recente que 06/10)): Livro aberto como no UPDF aprovado: "Uma página / Duas lado a lado" na barra de baixo · 20/10, : "A — Sim, no menu Ver"
+  - Como está hoje (versão de teste): Igual ao livro aberto aprovado.
+  - Você ainda não testou isto depois da auditoria de 29/10 (não há teste seu no Livro de decisões).
+  - O que você escolhe: se fica como está, se entra na lista de fazer (escreva no comentário o que quer diferente) ou se você testa antes de responder.
+  - (Para consulta: D-015.)
+  S: None
+===== au-d-058 | Miniaturas, Ícones da direita, Ver lado a lado, Todas as páginas e Filtros em tela cheia ganham item no menu Ver
+  - Onde fica: Uma página / Duas lado a lado e o zoom. O que é: Miniaturas, Ícones da direita, Ver lado a lado, Todas as páginas e Filtros em tela cheia ganham item no menu Ver.
+  - O que você pediu (20/10/2026): "A — Sim, no menu Ver" · 21/10 "Está bom"
+  - Como está hoje (versão de teste): Ver > "Ver lado a lado".
+  - Você ainda não testou isto depois da auditoria de 29/10 (não há teste seu no Livro de decisões).
+  - O que você escolhe: se fica como está, se entra na lista de fazer (escreva no comentário o que quer diferente) ou se você testa antes de responder.
+  - (Para consulta: D-058.)
+  S: None
+===== au-d-343 | "Todas as páginas" com uma a uma e em pares, filtro "só as que precisam de atenção"; clicar num par abre as duas lado a lado
+  - Onde fica: Uma página / Duas lado a lado e o zoom. O que é: "Todas as páginas" com uma a uma e em pares, filtro "só as que precisam de atenção"; clicar num par abre as duas lado a lado.
+  - O que você pediu (05/10/2026): (resumo, sem as suas palavras exatas) "Ter as opções 1 e 2. Na opção 2 (pares), clicar abre as duas páginas lado a lado, como vai ser impresso." · Rodada 2: "Aprovado"
+  - Como está hoje (versão de teste): Clique num par da grade abre o lado a lado nele.
+  - Você ainda não testou isto depois da auditoria de 29/10 (não há teste seu no Livro de decisões).
+  - O que você escolhe: se fica como está, se entra na lista de fazer (escreva no comentário o que quer diferente) ou se você testa antes de responder.
+  - (Para consulta: D-343.)
+  S: None
+===== au-d-569 | Todo livro abre em "Uma página"
+  - Onde fica: Uma página / Duas lado a lado e o zoom. O que é: Todo livro abre em "Uma página".
+  - O que você pediu (27/10/2026): Central "Não lembrar: todo livro abre em \"Uma página\" (recomendo)"
+  - Como está hoje (versão de teste): Todo livro abre em "Uma página".
+  - Você ainda não testou isto depois da auditoria de 29/10 (não há teste seu no Livro de decisões).
+  - O que você escolhe: se fica como está, se entra na lista de fazer (escreva no comentário o que quer diferente) ou se você testa antes de responder.
+  - (Para consulta: D-569.)
+  S: None
+===== au-d-570 | O zoom "– N% +" também vale no "Duas lado a lado"
+  - Onde fica: Uma página / Duas lado a lado e o zoom. O que é: O zoom "– N% +" também vale no "Duas lado a lado".
+  - O que você pediu (27/10/2026): Central "Sim, zoom também no lado a lado"
+  - Como está hoje (versão de teste): "– N% +", "ajustar à tela" e Ctrl+roda nos pares.
+  - Você ainda não testou isto depois da auditoria de 29/10 (não há teste seu no Livro de decisões).
+  - O que você escolhe: se fica como está, se entra na lista de fazer (escreva no comentário o que quer diferente) ou se você testa antes de responder.
+  - (Para consulta: D-570.)
+  S: None
+===== au-d-571 | "100%" no zoom = a página inteira cabendo na tela
+  - Onde fica: Uma página / Duas lado a lado e o zoom. O que é: "100%" no zoom = a página inteira cabendo na tela.
+  - O que você pediu (27/10/2026): Central "A página inteira cabendo na tela (recomendo)"
+  - Como está hoje (versão de teste): 100% = a página inteira cabendo (conferido).
+  - Você ainda não testou isto depois da auditoria de 29/10 (não há teste seu no Livro de decisões).
+  - O que você escolhe: se fica como está, se entra na lista de fazer (escreva no comentário o que quer diferente) ou se você testa antes de responder.
+  - (Para consulta: D-571.)
+  S: None
+===== au-d-064 | A tela troca sozinha pela imagem do PDF quando fica pronta, sem frase; duas bolinhas (livro e página) com % e páginas ao passar o mouse
+  - Onde fica: Tela igual ao PDF. O que é: A tela troca sozinha pela imagem do PDF quando fica pronta, sem frase; duas bolinhas (livro e página) com % e páginas ao passar o mouse.
+  - O que você pediu (22/10/2026): "não precisa do mostrado como sai no pdf, é só colocar uma bolinha de carregamento, pode ter uma pro livro inteiro e outra para a pagina que estamos, quando passsamos o mouse em cima mostra a mensagem de porcentagem e quantas paginas carregaram já." · pr-tela-engana "Está pior"
+  - Como está hoje (versão de teste): Duas bolinhas na barra de baixo, com % no balão.
+  - Você ainda não testou isto depois da auditoria de 29/10 (não há teste seu no Livro de decisões).
+  - O que você escolhe: se fica como está, se entra na lista de fazer (escreva no comentário o que quer diferente) ou se você testa antes de responder.
+  - (Para consulta: D-064.)
+  S: None
+===== au-d-255 | A página com dúvida é clicável no "Para revisar" (leva até ela) e traz botão de conserto
+  - Onde fica: "está certo" e o número de dúvidas. O que é: A página com dúvida é clicável no "Para revisar" (leva até ela) e traz botão de conserto.
+  - O que você pediu (27/07/2026): Kaique: "Colocar botão clicavel nas paginas que o programa não tem certeza" (marcado "sim")
+  - Como está hoje (versão de teste): Os botões do aviso na faixa e no cartão da página da vez.
+  - Você ainda não testou isto depois da auditoria de 29/10 (não há teste seu no Livro de decisões).
+  - O que você escolhe: se fica como está, se entra na lista de fazer (escreva no comentário o que quer diferente) ou se você testa antes de responder.
+  - (Para consulta: D-255; resolvida junto com D-268.)
+  S: None
+===== au-d-259 | Aviso, "está certo" e "próxima dúvida" numa faixa fina embaixo da página; e um botão que abre em tela cheia só as páginas com dúvida
+  - Onde fica: "está certo" e o número de dúvidas. O que é: Aviso, "está certo" e "próxima dúvida" numa faixa fina embaixo da página; e um botão que abre em tela cheia só as páginas com dúvida.
+  - O que você pediu (05/10/2026): (resumo, sem as suas palavras exatas) "Opção 1 (faixa fina). Mais: abrir todas as páginas em tela cheia (como no UPDF) mostrando as que precisam de atenção." · Rodada 2: "Aprovado"
+  - Como está hoje (versão de teste): "está certo" com tique, contador e próxima dúvida; "ver as N em tela cheia".
+  - Você ainda não testou isto depois da auditoria de 29/10 (não há teste seu no Livro de decisões).
+  - O que você escolhe: se fica como está, se entra na lista de fazer (escreva no comentário o que quer diferente) ou se você testa antes de responder.
+  - (Para consulta: D-259.)
+  S: None
+===== au-d-268 | Cada aviso traz o conserto rápido como botão no próprio cartão do aviso
+  - Onde fica: "está certo" e o número de dúvidas. O que é: Cada aviso traz o conserto rápido como botão no próprio cartão do aviso.
+  - O que você pediu (07/10/2026 e 08/10/2026): "Quero mais opções de como vai ser concertado esses erros [...] como resolver da forma mais rapida possivel, e qual seria a forma manual de resolver." · "(a) Botão no aviso"
+  - Como está hoje (versão de teste): Os botões do aviso na faixa e no cartão da página da vez.
+  - Você ainda não testou isto depois da auditoria de 29/10 (não há teste seu no Livro de decisões).
+  - O que você escolhe: se fica como está, se entra na lista de fazer (escreva no comentário o que quer diferente) ou se você testa antes de responder.
+  - (Para consulta: D-268; resolvida junto com D-255.)
+  S: None
+===== au-d-521 | Avisos que valem para o livro inteiro aparecem numa linha no alto do painel "Para revisar" e no livro aberto da tela inicial
+  - Onde fica: "está certo" e o número de dúvidas. O que é: Avisos que valem para o livro inteiro aparecem numa linha no alto do painel "Para revisar" e no livro aberto da tela inicial.
+  - O que você pediu (27/10/2026): Central, "No alto do painel \"Para revisar\" e no livro aberto da tela inicial (recomendo)"
+  - Como está hoje (versão de teste): Linha "No livro inteiro: …" nos dois lugares.
+  - Você ainda não testou isto depois da auditoria de 29/10 (não há teste seu no Livro de decisões).
+  - O que você escolhe: se fica como está, se entra na lista de fazer (escreva no comentário o que quer diferente) ou se você testa antes de responder.
+  - (Para consulta: D-521.)
+  S: None
+===== au-d-263 | No "Guardar só o texto": um aviso do livro e, além dele, a página que perdeu algo vai para a lista
+  - Onde fica: Avisos: botões que faltam e avisos demais. O que é: No "Guardar só o texto": um aviso do livro e, além dele, a página que perdeu algo vai para a lista.
+  - O que você pediu (06/10/2026): Rodada 2: "Os dois" (aviso no livro e página na lista) + texto do aviso "Fica assim"
+  - Como está hoje (versão de teste): Linha "No livro inteiro" no alto do Para revisar.
+  - Você ainda não testou isto depois da auditoria de 29/10 (não há teste seu no Livro de decisões).
+  - O que você escolhe: se fica como está, se entra na lista de fazer (escreva no comentário o que quer diferente) ou se você testa antes de responder.
+  - (Para consulta: D-263.)
+  S: None
+===== au-d-276 | Linhas pretas da beirada no livro todo: um aviso só, do livro, não em cada página
+  - Onde fica: Avisos: botões que faltam e avisos demais. O que é: Linhas pretas da beirada no livro todo: um aviso só, do livro, não em cada página.
+  - O que você pediu (08/10/2026): "São as linhas pretas: aviso no livro basta"
+  - Como está hoje (versão de teste): Continuam como você aprovou.
+  - Você ainda não testou isto depois da auditoria de 29/10 (não há teste seu no Livro de decisões).
+  - O que você escolhe: se fica como está, se entra na lista de fazer (escreva no comentário o que quer diferente) ou se você testa antes de responder.
+  - (Para consulta: D-276; resolvida junto com D-288, D-292, D-293.)
+  S: None
+===== au-d-288 | Página com título ("DA ORAÇÃO") não recebe "Parece em branco"
+  - Onde fica: Avisos: botões que faltam e avisos demais. O que é: Página com título ("DA ORAÇÃO") não recebe "Parece em branco".
+  - O que você pediu (21/10/2026): "Está bom" (Gladstone 18)
+  - Como está hoje (versão de teste): Continuam como você aprovou.
+  - Você ainda não testou isto depois da auditoria de 29/10 (não há teste seu no Livro de decisões).
+  - O que você escolhe: se fica como está, se entra na lista de fazer (escreva no comentário o que quer diferente) ou se você testa antes de responder.
+  - (Para consulta: D-288; resolvida junto com D-292, D-293, D-276.)
+  S: None
+===== au-d-292 | Figura que passa da gravura achada dá o aviso "Figura além da gravura"
+  - Onde fica: Avisos: botões que faltam e avisos demais. O que é: Figura que passa da gravura achada dá o aviso "Figura além da gravura".
+  - O que você pediu (21/10/2026): "Está bom" (agora vai para a lista)
+  - Como está hoje (versão de teste): Continuam como você aprovou.
+  - Você ainda não testou isto depois da auditoria de 29/10 (não há teste seu no Livro de decisões).
+  - O que você escolhe: se fica como está, se entra na lista de fazer (escreva no comentário o que quer diferente) ou se você testa antes de responder.
+  - (Para consulta: D-292; resolvida junto com D-288, D-293, D-276.)
+  S: None
+===== au-d-293 | Fio fino preto na beirada não vira aviso de faixa na página (fica só o aviso do Endireitar)
+  - Onde fica: Avisos: botões que faltam e avisos demais. O que é: Fio fino preto na beirada não vira aviso de faixa na página (fica só o aviso do Endireitar).
+  - O que você pediu (21/10/2026): "Está bom" (as linhas pretas da beirada, sem aviso)
+  - Como está hoje (versão de teste): Continuam como você aprovou.
+  - Você ainda não testou isto depois da auditoria de 29/10 (não há teste seu no Livro de decisões).
+  - O que você escolhe: se fica como está, se entra na lista de fazer (escreva no comentário o que quer diferente) ou se você testa antes de responder.
+  - (Para consulta: D-293; resolvida junto com D-288, D-292, D-276.)
+  S: None
+===== au-d-189 | "Reduzir cores" não pode apagar parte da letra (Horas 26, "S
+  - Onde fica: Filtros e imagem final: o que foi consertado. O que é: "Reduzir cores" não pode apagar parte da letra (Horas 26, "S. Leonard", "Theodore").
+  - O que você pediu (21/10/2026): 211-reduzir: "Está pior" + "Ele está apagando as letras, isso sim, e quando foi que eu pedi para fazer isso? isso é do scantailor?" · 211-215: "aprovado, mas ainda tem que melhorar, em alguns casos, ele acaba apagando a letra."
+  - Como está hoje (versão de teste): Reduzir cores no Preto e branco não joga mais meia palavra no preto.
+  - Você ainda não testou isto depois da auditoria de 29/10 (não há teste seu no Livro de decisões).
+  - O que você escolhe: se fica como está, se entra na lista de fazer (escreva no comentário o que quer diferente) ou se você testa antes de responder.
+  - (Para consulta: D-189.)
+  S: None
+===== au-d-564 | Gravura de fundo escuro continua em preto e branco no Preto e branco (a decisão de 27/10 sai; a chave GRAVURA_ESCURA_EM_CINZA fica desligada ou sai)
+  - Onde fica: Filtros e imagem final: o que foi consertado. O que é: Gravura de fundo escuro continua em preto e branco no Preto e branco (a decisão de 27/10 sai; a chave GRAVURA_ESCURA_EM_CINZA fica desligada ou sai).
+  - O que você pediu (27/10/2026): Central "Não fazer: gravura continua em preto e branco (recomendo)"
+  - Como está hoje (versão de teste): A conta da gravura em cinza saiu.
+  - Você ainda não testou isto depois da auditoria de 29/10 (não há teste seu no Livro de decisões).
+  - O que você escolhe: se fica como está, se entra na lista de fazer (escreva no comentário o que quer diferente) ou se você testa antes de responder.
+  - (Para consulta: D-564.)
+  S: None
+===== au-d-020 | Desfazer sem limite; refazer com Ctrl+Shift+Z
+  - Onde fica: Marcar e desfazer. O que é: Desfazer sem limite; refazer com Ctrl+Shift+Z.
+  - O que você pediu (18/07/2026): "13. Ctrl+Z desfaz qualquer alteração, sem limite de quantidade, e Ctrl+Shift+Z refaz"
+  - Como está hoje (versão de teste): A marcação e os avisos entram no desfazer; Desfazer do menu apagado sem nada.
+  - Você ainda não testou isto depois da auditoria de 29/10 (não há teste seu no Livro de decisões).
+  - O que você escolhe: se fica como está, se entra na lista de fazer (escreva no comentário o que quer diferente) ou se você testa antes de responder.
+  - (Para consulta: D-020.)
+  S: None
+===== au-d-156 | Foto em Original dentro de página em Preto e branco
+  - Onde fica: Marcar e desfazer. O que é: Foto em Original dentro de página em Preto e branco.
+  - O que você pediu (01/10/2026): "espero ter a escolha de conseguir deixar a foto em original, caso precise."
+  - Como está hoje (versão de teste): "Só neste pedaço" vale no Preto e branco e sem "Limpar a folha".
+  - Você ainda não testou isto depois da auditoria de 29/10 (não há teste seu no Livro de decisões).
+  - O que você escolhe: se fica como está, se entra na lista de fazer (escreva no comentário o que quer diferente) ou se você testa antes de responder.
+  - (Para consulta: D-156; resolvida junto com D-233.)
+  S: None
+===== au-d-233 | O "Só neste pedaço" passa a valer inteiro no Preto e branco
+  - Onde fica: Marcar e desfazer. O que é: O "Só neste pedaço" passa a valer inteiro no Preto e branco.
+  - O que você pediu (05/10/2026): "(a) Consertar já (só mudam as páginas que têm pedaço marcado; as outras ficam iguais)" · conferência 13, e BOM.
+  - Como está hoje (versão de teste): "Só neste pedaço" vale no Preto e branco e sem "Limpar a folha".
+  - Você ainda não testou isto depois da auditoria de 29/10 (não há teste seu no Livro de decisões).
+  - O que você escolhe: se fica como está, se entra na lista de fazer (escreva no comentário o que quer diferente) ou se você testa antes de responder.
+  - (Para consulta: D-233; resolvida junto com D-156.)
+  S: None
+===== au-d-274 | Ao processar com avisos pendentes, a janela "Antes de processar" lista "Página N - motivo", com "ver" e "continuar assim mesmo"
+  - Onde fica: Processar e salvar o PDF. O que é: Ao processar com avisos pendentes, a janela "Antes de processar" lista "Página N - motivo", com "ver" e "continuar assim mesmo".
+  - O que você pediu (08/10/2026): "quando alguém tentar imprimir sem ver os alertas o programa para e mostra os alertas e a pessoa diz se quer ver ou continuar" · "Lista as páginas e os motivos" · "Fica assim"
+  - Como está hoje (versão de teste): O menu e Ctrl+Return passam pela "Antes de processar".
+  - Você ainda não testou isto depois da auditoria de 29/10 (não há teste seu no Livro de decisões).
+  - O que você escolhe: se fica como está, se entra na lista de fazer (escreva no comentário o que quer diferente) ou se você testa antes de responder.
+  - (Para consulta: D-274.)
+  S: None
+===== au-d-283 | Janela "Antes de processar" menor e mais clara (frase em duas linhas, uma fila de botões), sem cortar o motivo no "Mostrar"
+  - Onde fica: Processar e salvar o PDF. O que é: Janela "Antes de processar" menor e mais clara (frase em duas linhas, uma fila de botões), sem cortar o motivo no "Mostrar".
+  - O que você pediu (21/10/2026): "Melhorar" + "ficou meio embolado, deve ficar mais claro e não tão grande." · 22/10 "Está bom" / lm22 "Aprovado" (com o "Mostrar" cortado a consertar)
+  - Como está hoje (versão de teste): "Antes de processar" aprovada; o "Mostrar" não corta.
+  - Você ainda não testou isto depois da auditoria de 29/10 (não há teste seu no Livro de decisões).
+  - O que você escolhe: se fica como está, se entra na lista de fazer (escreva no comentário o que quer diferente) ou se você testa antes de responder.
+  - (Para consulta: D-283.)
+  S: None
+===== au-d-304 | PDF em duas camadas só como opção, desligada de fábrica; sem ela o PDF sai como hoje
+  - Onde fica: Processar e salvar o PDF. O que é: PDF em duas camadas só como opção, desligada de fábrica; sem ela o PDF sai como hoje.
+  - O que você pediu (24/09/2026): (resumo) PDF em duas camadas (letra em cima, fundo embaixo) · 01/10: "(b) Deixar como está até o PDF em camadas chegar na ordem - Eu quero ter a opção, mas eu quero poder deixar como está também, o tamanho do arquivo depois não importa" · "Está bom"
+  - Como está hoje (versão de teste): PDF sem perda de novo.
+  - Você ainda não testou isto depois da auditoria de 29/10 (não há teste seu no Livro de decisões).
+  - O que você escolhe: se fica como está, se entra na lista de fazer (escreva no comentário o que quer diferente) ou se você testa antes de responder.
+  - (Para consulta: D-304.)
+  S: None
+===== au-d-555 | O nome sugerido do PDF pronto volta a ter acento ("Ofício da Imaculada Conceição - mágico pro.pdf"); desfaz a troca das etapas 9a/9c
+  - Onde fica: Processar e salvar o PDF. O que é: O nome sugerido do PDF pronto volta a ter acento ("Ofício da Imaculada Conceição - mágico pro.pdf"); desfaz a troca das etapas 9a/9c.
+  - O que você pediu (27/10/2026): Central "Voltar com acento (recomendo)"
+  - Como está hoje (versão de teste): Nome do PDF e do "para imprimir" com acento.
+  - Você ainda não testou isto depois da auditoria de 29/10 (não há teste seu no Livro de decisões).
+  - O que você escolhe: se fica como está, se entra na lista de fazer (escreva no comentário o que quer diferente) ou se você testa antes de responder.
+  - (Para consulta: D-555.)
+  S: None
+===== au-d-012 | Conserto do "imprimir agora" (manda o livro inteiro à impressora sem perguntar) na rodada de consertos
+  - Onde fica: Montar para imprimir e imprimir. O que é: Conserto do "imprimir agora" (manda o livro inteiro à impressora sem perguntar) na rodada de consertos.
+  - O que você pediu (26/10/2026): "2"
+  - Como está hoje (versão de teste): "imprimir agora..." só abre a confirmação.
+  - Você ainda não testou isto depois da auditoria de 29/10 (não há teste seu no Livro de decisões).
+  - O que você escolhe: se fica como está, se entra na lista de fazer (escreva no comentário o que quer diferente) ou se você testa antes de responder.
+  - (Para consulta: D-012.)
+  S: None
+===== au-d-315 | Todas as opções da janela de imprimir do UPDF dentro do programa
+  - Onde fica: Montar para imprimir e imprimir. O que é: Todas as opções da janela de imprimir do UPDF dentro do programa.
+  - O que você pediu (14/10/2026): "Eu quero poder escolher: - Livreto na horizontal [...] ou - Página inteira A4 na vertical, ou - todas as outras opções que aparecem nos prints do PDF que mandei. Quero TODAS essas opções dentro do programa, para ter bastante escolha." · fr22: APROVADO.
+  - Como está hoje (versão de teste): Nenhuma opção sumiu.
+  - Você ainda não testou isto depois da auditoria de 29/10 (não há teste seu no Livro de decisões).
+  - O que você escolhe: se fica como está, se entra na lista de fazer (escreva no comentário o que quer diferente) ou se você testa antes de responder.
+  - (Para consulta: D-315.)
+  S: None
+===== au-d-550 | Fica o aviso "o que está impresso fica CORTADO" ao imprimir acima de 100%
+  - Onde fica: Montar para imprimir e imprimir. O que é: Fica o aviso "o que está impresso fica CORTADO" ao imprimir acima de 100%.
+  - O que você pediu (27/10/2026): Central "Manter (recomendo)"
+  - Como está hoje (versão de teste): Continuam.
+  - Você ainda não testou isto depois da auditoria de 29/10 (não há teste seu no Livro de decisões).
+  - O que você escolhe: se fica como está, se entra na lista de fazer (escreva no comentário o que quer diferente) ou se você testa antes de responder.
+  - (Para consulta: D-550; resolvida junto com D-551.)
+  S: None
+===== au-d-551 | Fica a frase da tela "Ficou pronto!" sobre montar para imprimir em A4
+  - Onde fica: Montar para imprimir e imprimir. O que é: Fica a frase da tela "Ficou pronto!" sobre montar para imprimir em A4.
+  - O que você pediu (27/10/2026): Central "Manter"
+  - Como está hoje (versão de teste): Continuam.
+  - Você ainda não testou isto depois da auditoria de 29/10 (não há teste seu no Livro de decisões).
+  - O que você escolhe: se fica como está, se entra na lista de fazer (escreva no comentário o que quer diferente) ou se você testa antes de responder.
+  - (Para consulta: D-551; resolvida junto com D-550.)
+  S: None
+===== au-d-552 | "mandar para a impressora" do "Montar para imprimir" pergunta antes (impressora, lados, cópias, folhas), como o "imprimir agora"
+  - Onde fica: Montar para imprimir e imprimir. O que é: "mandar para a impressora" do "Montar para imprimir" pergunta antes (impressora, lados, cópias, folhas), como o "imprimir agora".
+  - O que você pediu (27/10/2026): Central "Manter (recomendo)"
+  - Como está hoje (versão de teste): Pergunta impressora, lados, cópias, folhas.
+  - Você ainda não testou isto depois da auditoria de 29/10 (não há teste seu no Livro de decisões).
+  - O que você escolhe: se fica como está, se entra na lista de fazer (escreva no comentário o que quer diferente) ou se você testa antes de responder.
+  - (Para consulta: D-552.)
+  S: None
+===== au-d-475 | "Só as pares" num livro dividido: o aviso fala da página e da folha que o Kaique vê
+  - Onde fica: Nomes e textos. O que é: "Só as pares" num livro dividido: o comportamento da decisão de 06/10 fica (numa folha ímpar nada gira), mas o aviso fala do que o Kaique vê na tela: o número da página e a folha dela. Ex.: "A página 2 fica na folha 1, que é ímpar. Para girar só as folhas pares, vá para a folha 2 (páginas 3 e 4)."
+  - De onde veio: ninguém perguntou a você. A gerente escolheu sozinha em 26/10, durante a rodada de consertos.
+  - Como está hoje (versão de teste): Fica o texto aprovado.
+  - Você ainda não testou isto depois da auditoria de 29/10 (não há teste seu no Livro de decisões).
+  - O que você escolhe: se fica como está, se entra na lista de fazer (escreva no comentário o que quer diferente) ou se você testa antes de responder.
+  - (Para consulta: D-475; resolvida junto com D-556.)
+  S: None
+===== au-d-556 | O aviso de girar só as pares fica com o texto aprovado em 06/10: "Você está numa folha ímpar
+  - Onde fica: Nomes e textos. O que é: O aviso de girar só as pares fica com o texto aprovado em 06/10: "Você está numa folha ímpar. Para girar só as pares, vá a uma folha par e gire de lá." A a decisão de 26/10 (texto novo) sai.
+  - O que você pediu (27/10/2026): Central "Fica o texto que eu aprovei (recomendo)"
+  - Como está hoje (versão de teste): Fica o texto aprovado.
+  - Você ainda não testou isto depois da auditoria de 29/10 (não há teste seu no Livro de decisões).
+  - O que você escolhe: se fica como está, se entra na lista de fazer (escreva no comentário o que quer diferente) ou se você testa antes de responder.
+  - (Para consulta: D-556; resolvida junto com D-475.)
+  S: None
+===== au-d-486 | A página que aparece à direita na janela grande do Automático é a original (folhear o livro, com zoom)
+  - Onde fica: O Automático (painel e janela grande). O que é: A página que aparece à direita na janela grande do Automático é a original (folhear o livro, com zoom). O "antes e depois" ao vivo de cada opção fica para a Lista de espera (seria um laboratório; a rodada de consertos não pede).
+  - De onde veio: ninguém perguntou a você. A gerente escolheu sozinha em 27/10, durante a rodada de consertos.
+  - Como está hoje (versão de teste): Mostra o livro como está, com folhear e zoom. Na auditoria de 29/10: funciona com ressalva. O que ainda não está bom: Em 28/10 (seu print 2-11) você pediu ver como vai ficar com as opções escolhidas.
+  - Já testado por você: Isto foi trocado por um pedido seu: em 29/10 você pediu que a página da direita mostre o antes e depois com as opções escolhidas, e testou em 01/11: "está funcionando". Esta escolha da gerente não vale mais.
+  - O que você escolhe: se concorda (aí passa a valer como decisão sua), se quer diferente (entra na lista de fazer) ou se testa antes de responder.
+  - (Para consulta: D-486.)
+  S: Pode sair da lista: já testado e funcionando (ver "Já testado por você").
+===== au-d-546 | Onde a tela mostra a página na área branca: a ferramenta Mover mostra a página como sai no PDF (mesma conta, com as margens iguais quando ligadas)
+  - Onde fica: Mover e redimensionar. O que é: Onde a tela mostra a página na área branca: a ferramenta Mover mostra a página como sai no PDF (mesma conta, com as margens iguais quando ligadas). As outras ferramentas (Marcar, Endireitar, Cortar, Filtro) continuam mostrando a página sem o mover, porque nelas se marca e se corta SOBRE a página (a marcação é em fração da página). Levar o mover às outras telas é a rodada de consertos. Página com a folha escolhida MENOR que o conteúdo e ainda não mexida: o PDF não a corta (rede de segurança) e o Mover mostra assim, com a frase "A folha escolhida [...] é menor que o conteúdo: a página sai do tamanho dele até você mover ou diminuir"; o primeiro mover passa a valer na folha.
+  - De onde veio: ninguém perguntou a você. A gerente escolheu sozinha em 27/10, durante a rodada de consertos. Ela se apoiou em: a decisão de 26/10.
+  - Como está hoje (versão de teste): Lado a lado, antes/depois, tela cheia, cartões do Filtro e miniatura mostram a página movida. Na auditoria de 29/10: funciona com ressalva. O que ainda não está bom: Nas ferramentas de marcar/cortar aparece sem o mover; miniatura só depois de aberta.
+  - Você ainda não testou isto depois da auditoria de 29/10 (não há teste seu no Livro de decisões).
+  - O que você escolhe: se concorda (aí passa a valer como decisão sua), se quer diferente (entra na lista de fazer) ou se testa antes de responder.
+  - (Para consulta: D-546; resolvida junto com D-547.)
+  S: None
+===== au-d-547 | Todas as telas e miniaturas mostram a página já movida/redimensionada, como sai no PDF (hoje só a ferramenta Mover mostra)
+  - Onde fica: Mover e redimensionar. O que é: Todas as telas e miniaturas mostram a página já movida/redimensionada, como sai no PDF (hoje só a ferramenta Mover mostra).
+  - De onde veio: ninguém perguntou a você. A gerente escolheu sozinha em 27/10, durante a rodada de consertos. Ela se apoiou em: a decisão de 26/10 ("precisamos que o pdf saia que nem está na tela") e na pergunta 1 da rodada de consertos.
+  - Como está hoje (versão de teste): Lado a lado, antes/depois, tela cheia, cartões do Filtro e miniatura mostram a página movida. Na auditoria de 29/10: funciona com ressalva. O que ainda não está bom: Nas ferramentas de marcar/cortar aparece sem o mover; miniatura só depois de aberta.
+  - Já testado por você: Você pediu de novo em 07/11 ("o pdf do final tem que sair como a edição foi mostrada no preview"), foi consertado e você testou em 13/11: "funcionando".
+  - O que você escolhe: se concorda (aí passa a valer como decisão sua), se quer diferente (entra na lista de fazer) ou se testa antes de responder.
+  - (Para consulta: D-547; resolvida junto com D-546.)
+  S: Pode sair da lista: já testado e funcionando (ver "Já testado por você").
+===== au-d-018 | "Rodar o automático…" do aviso de livro novo abre a janela grande do Automático já com a receita de sempre marcada; um clique em "Rodar" começa
+  - Onde fica: Abrir o livro (direto na área de trabalho). O que é: "Rodar o automático…" do aviso de livro novo abre a janela grande do Automático já com a receita de sempre marcada; um clique em "Rodar" começa.
+  - De onde veio: ninguém perguntou a você. A gerente escolheu sozinha em 26/10, durante a rodada de consertos.
+  - Como está hoje (versão de teste): Abre; nada muda até você clicar "Rodar".
+  - Você ainda não testou isto depois da auditoria de 29/10 (não há teste seu no Livro de decisões).
+  - O que você escolhe: se concorda (aí passa a valer como decisão sua), se quer diferente (entra na lista de fazer) ou se testa antes de responder.
+  - (Para consulta: D-018.)
+  S: None
+===== au-d-482 | "agora não" no aviso do livro novo fecha o aviso de vez para aquele livro (o livro passa a contar como "já passou pelo automático"; o aviso não volta ao reabrir)
+  - Onde fica: Abrir o livro (direto na área de trabalho). O que é: "agora não" no aviso do livro novo fecha o aviso de vez para aquele livro (o livro passa a contar como "já passou pelo automático"; o aviso não volta ao reabrir). O Automático continua no painel e no menu Arquivo > "Automático...".
+  - De onde veio: ninguém perguntou a você. A gerente escolheu sozinha em 27/10, durante a rodada de consertos. Ela se apoiou em: as decisões de 12/10 e 26/10 ("Rodar o automático…" e "agora não")
+  - Como está hoje (versão de teste): Fecha e não volta ao reabrir.
+  - Você ainda não testou isto depois da auditoria de 29/10 (não há teste seu no Livro de decisões).
+  - O que você escolhe: se concorda (aí passa a valer como decisão sua), se quer diferente (entra na lista de fazer) ou se testa antes de responder.
+  - (Para consulta: D-482.)
+  S: None
+===== au-d-488 | A tela antiga "O que fazer" sai do caminho (o arquivo dela continua guardado, sem uso)
+  - Onde fica: Abrir o livro (direto na área de trabalho). O que é: A tela "O que fazer" não abre mais: tudo o que ela tinha mora no Automático. O arquivo do programa com essa tela continua guardado, sem uso; apagar fica para depois.
+  - De onde veio: ninguém perguntou a você. A gerente escolheu sozinha em 27/10, durante a rodada de consertos. Ela se apoiou em: a decisão de 25/09 ("tela O que fazer fora do caminho")
+  - Como está hoje (versão de teste): Nada abre mais essa tela; o que ela tinha mora no Automático.
+  - Você ainda não testou isto depois da auditoria de 29/10 (não há teste seu no Livro de decisões).
+  - O que você escolhe: se concorda (aí passa a valer como decisão sua), se quer diferente (entra na lista de fazer) ou se testa antes de responder.
+  - (Para consulta: D-488.)
+  S: None
+===== au-d-489 | "Começar a conferência de novo" só acontece quando o PDF mudou ou o trabalho não dá para ler
+  - Onde fica: Abrir o livro (direto na área de trabalho). O que é: "Começar a conferência de novo" (o recomeço, com cópia do trabalho e do histórico) só acontece quando o PDF mudou, o projeto.json não dá para ler ou faltam páginas de alguma folha. Mudar uma etapa no Automático nunca recomeça: grava no trabalho aberto, numa ação do desfazer. "Começar de novo" no cartão abre o livro limpo direto na área de trabalho.
+  - De onde veio: ninguém perguntou a você. A gerente escolheu sozinha em 27/10, durante a rodada de consertos. Ela se apoiou em: defeito de 29/09 e no a decisão de 25/09.
+  - Como está hoje (versão de teste): Mudar uma etapa nunca recomeça a conferência.
+  - Você ainda não testou isto depois da auditoria de 29/10 (não há teste seu no Livro de decisões).
+  - O que você escolhe: se concorda (aí passa a valer como decisão sua), se quer diferente (entra na lista de fazer) ou se testa antes de responder.
+  - (Para consulta: D-489.)
+  S: None
+===== au-d-484 | Onde cada etapa roda: Dividir, Endireitar, Cortar e Limpar rodam no livro todo, numa página ou nas escolhidas
+  - Onde fica: O Automático (painel e janela grande). O que é: Onde cada etapa roda: Dividir, Endireitar, Cortar e Limpar rodam no livro todo, numa página ou nas escolhidas. Gravuras e fotos, Margens iguais e Montar cadernos valem sempre para o livro todo (são do livro, não de uma página); a frase de baixo da janela diz isso. "Desligar as marcadas" nas escolhidas: se a etapa estava ligada no livro todo, ela passa a valer só nas outras páginas.
+  - De onde veio: ninguém perguntou a você. A gerente escolheu sozinha em 27/10, durante a rodada de consertos. Ela se apoiou em: a decisão de 25/09 (rodar no livro todo, nas escolhidas, numa página)
+  - Como está hoje (versão de teste): Dividir, Endireitar, Cortar, Limpar: livro, página ou escolhidas; Gravuras, Margens iguais e Cadernos: sempre o livro todo.
+  - Você ainda não testou isto depois da auditoria de 29/10 (não há teste seu no Livro de decisões).
+  - O que você escolhe: se concorda (aí passa a valer como decisão sua), se quer diferente (entra na lista de fazer) ou se testa antes de responder.
+  - (Para consulta: D-484.)
+  S: None
+===== au-d-492 | O tique do menu Filtro acompanha o filtro da página aberta
+  - Onde fica: Menus, teclas e janelas. O que é: O tique do menu Filtro acompanha o filtro da página aberta (Original, Tirar o fundo, Preto e branco, Mágico pro): ao trocar de página o tique muda; ao escolher no menu, a página muda e o tique fica nela.
+  - De onde veio: ninguém perguntou a você. A gerente escolheu sozinha em 27/10, durante a rodada de consertos. Ela se apoiou em: padrão dos menus do Windows e no pedido de 26/10 "o botão tem que ser provado que ele faz o que se diz"
+  - Como está hoje (versão de teste): O tique fica no filtro da página aberta.
+  - Você ainda não testou isto depois da auditoria de 29/10 (não há teste seu no Livro de decisões).
+  - O que você escolhe: se concorda (aí passa a valer como decisão sua), se quer diferente (entra na lista de fazer) ou se testa antes de responder.
+  - (Para consulta: D-492.)
+  S: None
+===== au-d-498 | "não dividir esta" junta as duas páginas; "dividir esta" devolve as duas como estavam
+  - Onde fica: Dividir as folhas. O que é: "não dividir esta" junta as duas páginas da folha numa só e as guarda; "dividir esta" de novo devolve as duas como estavam (corte, ângulo, filtro, "tirar do livro"), na linha de antes. A folha que nunca foi dividida é partida na lombada achada na hora; as duas páginas herdam o filtro e os ajustes dele, mas não o corte, o ângulo, a marcação e o mover, que eram da folha inteira (a mesma regra do Automático). Antes a página da direita ficava na lista como "apagada" (a tira mostrava a folha duas vezes).
+  - De onde veio: ninguém perguntou a você. A gerente escolheu sozinha em 27/10, durante a rodada de consertos. Ela se apoiou em: pedido da rodada de consertos ("Dividir, desfazer a divisão e mover a linha de UMA folha refaz a lista de páginas só daquela folha") e em a decisão de 27/10.
+  - Como está hoje (versão de teste): Junta e devolve as páginas como estavam.
+  - Você ainda não testou isto depois da auditoria de 29/10 (não há teste seu no Livro de decisões).
+  - O que você escolhe: se concorda (aí passa a valer como decisão sua), se quer diferente (entra na lista de fazer) ou se testa antes de responder.
+  - (Para consulta: D-498.)
+  S: None
+===== au-d-500 | Corte do ScanTailor na beirada da folha não é a lombada: vale a conta do Editor e a folha vai para "Lombada incerta"
+  - Onde fica: Dividir as folhas. O que é: O corte de duas páginas que o ScanTailor põe na beirada da folha (fora de 20% a 80% da largura) não é a lombada: nessa folha vale a conta do Editor (que procura perto do meio) e a folha vai para o "Para revisar" como "Lombada incerta". A regra é a que o ScanTailor já usa para as linhas que ele acha; ele não a aplicava ao corte tirado do espaço em branco.
+  - De onde veio: ninguém perguntou a você. A gerente escolheu sozinha em 27/10, durante a rodada de consertos. Ela se apoiou em: defeito da rodada de consertos ("La vida eterna", folhas 4 e 5) e na regra do próprio ScanTailor (BadTwoPageSplitter)
+  - Como está hoje (versão de teste): Vale a conta do Editor e a folha vai para "Lombada incerta".
+  - Você ainda não testou isto depois da auditoria de 29/10 (não há teste seu no Livro de decisões).
+  - O que você escolhe: se concorda (aí passa a valer como decisão sua), se quer diferente (entra na lista de fazer) ou se testa antes de responder.
+  - (Para consulta: D-500; resolvida junto com D-560.)
+  S: None
+===== au-d-501 | O livro nunca abre na ferramenta Dividir; o Dividir fica a um clique
+  - Onde fica: Dividir as folhas. O que é: Como a decisão de 26/10 fica na tela: o livro nunca abre na ferramenta Dividir (abre na de Cortar, Endireitar ou na página, como antes, sem o Dividir na frente); rodar o Automático com "Dividir" estando no Dividir leva à página (a ferramenta de marcar, com a Mão ou o Retângulo de sempre); "ver" num aviso de folha só leva ao Dividir quando o aviso é da divisão ("Lombada incerta", "Não parece dupla"), os outros levam à página. O Dividir continua a um clique (trilha ou tecla D) para consertar.
+  - De onde veio: ninguém perguntou a você. A gerente escolheu sozinha em 27/10, durante a rodada de consertos. Ela se apoiou em: a decisão de 26/10.
+  - Como está hoje (versão de teste): Abre em Cortar, Endireitar ou na página; o Automático que divide leva à página.
+  - Você ainda não testou isto depois da auditoria de 29/10 (não há teste seu no Livro de decisões).
+  - O que você escolhe: se concorda (aí passa a valer como decisão sua), se quer diferente (entra na lista de fazer) ou se testa antes de responder.
+  - (Para consulta: D-501.)
+  S: None
+===== au-d-528 | Ao dividir uma folha pela primeira vez, as marcações feitas na folha inteira vão para a metade em que estão (hoje se perdem, como no Automático)
+  - Onde fica: Dividir as folhas. O que é: Ao dividir uma folha pela primeira vez, as marcações feitas na folha inteira vão para a metade em que estão (hoje se perdem, como no Automático).
+  - De onde veio: ninguém perguntou a você. A gerente escolheu sozinha em 27/10, durante a rodada de consertos. Ela se apoiou em: recomendação a rodada de consertos (pergunta 1)
+  - Como está hoje (versão de teste): A marcação feita à mão vai para a metade certa, à mão e no Automático.
+  - Você ainda não testou isto depois da auditoria de 29/10 (não há teste seu no Livro de decisões).
+  - O que você escolhe: se concorda (aí passa a valer como decisão sua), se quer diferente (entra na lista de fazer) ou se testa antes de responder.
+  - (Para consulta: D-528.)
+  S: None
+===== au-d-560 | Fica a troca sozinha para a conta do Editor quando o ScanTailor corta fora do meio da folha, com "Lombada incerta"
+  - Onde fica: Dividir as folhas. O que é: Fica a troca sozinha para a conta do Editor quando o ScanTailor corta fora do meio da folha, com "Lombada incerta".
+  - De onde veio: ninguém perguntou a você. A gerente escolheu sozinha em 27/10, durante a rodada de consertos. Ela se apoiou em: Central "Manter (recomendo)"
+  - Como está hoje (versão de teste): Vale a conta do Editor e a folha vai para "Lombada incerta".
+  - Você ainda não testou isto depois da auditoria de 29/10 (não há teste seu no Livro de decisões).
+  - O que você escolhe: se concorda (aí passa a valer como decisão sua), se quer diferente (entra na lista de fazer) ou se testa antes de responder.
+  - (Para consulta: D-560; resolvida junto com D-500.)
+  S: None
+===== au-d-487 | Na grade, com várias páginas escolhidas: girar ¼ para os dois lados, deixar em branco, tirar do livro, trazer de volta, extrair e rodar o automático nelas
+  - Onde fica: A grade "Todas as páginas". O que é: Na grade, com várias páginas escolhidas: girar ¼ para os dois lados, deixar em branco, tirar do livro, trazer de volta, extrair e rodar o automático nelas. "Extrair" grava as folhas escolhidas como estão no PDF de entrada (sem os ajustes), num PDF novo. "Inserir" página não foi feito nesta etapa (precisa de páginas que não vêm do PDF de entrada: muda o modelo de dados) e fica como ressalva para a gerente.
+  - De onde veio: ninguém perguntou a você. A gerente escolheu sozinha em 27/10, durante a rodada de consertos. Ela se apoiou em: a decisão de 24/09 (grade com várias escolhidas: girar, apagar, extrair, inserir…)
+  - Como está hoje (versão de teste): As ações acima, "extrair" grava como estão no PDF de entrada.
+  - Já testado por você: O "inserir página", que faltava aqui, foi feito depois como "adicionar página em branco" (botão direito na miniatura) e você testou em 09/11: "pagina em branco funciona". Os outros botões da grade não foram testados depois da auditoria.
+  - O que você escolhe: se concorda (aí passa a valer como decisão sua), se quer diferente (entra na lista de fazer) ou se testa antes de responder.
+  - (Para consulta: D-487.)
+  S: None
+===== au-d-541 | Como a ferramenta Mover mexe: arrastar, puxar o canto e o número do tamanho
+  - Onde fica: Mover e redimensionar. O que é: Como a ferramenta Mover mexe: arrastar em qualquer lugar da área branca ou da página move (ao vivo, a página anda na tela); o conteúdo pode passar da beirada, mas o MEIO dele fica sempre dentro da área branca (para não se perder da vista); puxar um dos quatro cantos aumenta ou diminui sempre na mesma proporção, em volta do meio, de 5% até 4 vezes a área branca; o número "Tamanho do conteúdo (%)" faz o mesmo. A área branca é a folha escolhida ou, sem folha, a própria página (a página do PDF não muda de tamanho). A vista se ajusta para mostrar a área branca e a página inteira, e fica parada durante o arrasto.
+  - De onde veio: ninguém perguntou a você. A gerente escolheu sozinha em 27/10, durante a rodada de consertos. Ela se apoiou em: a decisão de 22/09 ("como é no photoshope, que você arrasta a hora que quiser e aumenta a hora que quiser") e a decisão de 13/10.
+  - Como está hoje (versão de teste): Arrasta em qualquer lugar; o meio fica dentro; canto aumenta até 4×.
+  - Você ainda não testou isto depois da auditoria de 29/10 (não há teste seu no Livro de decisões).
+  - O que você escolhe: se concorda (aí passa a valer como decisão sua), se quer diferente (entra na lista de fazer) ou se testa antes de responder.
+  - (Para consulta: D-541.)
+  S: None
+===== au-d-026 | Zoom confiável
+  - O que é: Zoom confiável.
+  - O que você pediu (24/09/2026 e 28/09/2026): (resumo, sem as suas palavras exatas) consertar o zoom que às vezes não funciona e o travamento com muitos cliques (defeitos de 15-16/09 e 24/09).
+  - Como está hoje: combinado para depois desta rodada; na versão de teste: não feito.
+  - Você ainda não testou isto depois da auditoria de 29/10 (não há teste seu no Livro de decisões).
+  - O que você escolhe: se entra agora na lista de fazer (a gerente faz uma coisa de cada vez e chama você para testar), se continua para depois ou se você não quer mais.
+  - (Para consulta: D-026.)
+  S: None
+===== au-d-070 | "Laboratório" no Automático em tela cheia: provar receitas lado a lado
+  - O que é: "Laboratório" no Automático em tela cheia: folhear, provar 2 a 4 receitas lado a lado, sugestões com liga/desliga, receitas com nome, previsão, exceções, antes/depois com zoom.
+  - O que você pediu (21/10/2026): "quero adicionar uma coisa no automatico, quando abrirmos o painel em tela cheia do automatico, ele mostra o livro e nós poderemos passar as paginas e ir adicionando filtro e coisas e vendo como a pagina [...] seria bom se o programa desse sugestões e tivesse um botão para delisgar ou ligar sugestões nesse painel do automatico em tela cheia." · 22/10: "eu aceito a recomendação com as ideias"
+  - Como está hoje: combinado para depois desta rodada; na versão de teste: não feito.
+  - Você ainda não testou isto depois da auditoria de 29/10 (não há teste seu no Livro de decisões).
+  - O que você escolhe: se entra agora na lista de fazer (a gerente faz uma coisa de cada vez e chama você para testar), se continua para depois ou se você não quer mais.
+  - (Para consulta: D-070.)
+  S: None
+===== au-d-476 | "Marcar como" com "iluminura ou pintura" e "moldura" fica para depois da rodada de consertos
+  - O que é: "Marcar como" com "iluminura ou pintura" e "moldura" entra depois da rodada de consertos, junto com separar o texto de dentro da iluminura, porque muda o processamento (não é só tela).
+  - De onde veio: ninguém perguntou a você. A gerente escolheu sozinha em 26/10, durante a rodada de consertos.
+  - Como está hoje: combinado para depois desta rodada; na versão de teste: não feito.
+  - Já respondido por você: esta pergunta foi resolvida junto com outra, que você respondeu em 09/11: "Fica para depois" ("Teriamos como treinar o programa para cada vez que marcassemos algo a mão ele pudesse aprender com aquilo para que em outro livro ele conseguisse reconhecer automaticamente?"). Vale o mesmo aqui.
+  - O que você escolhe: se entra agora na lista de fazer (a gerente faz uma coisa de cada vez e chama você para testar), se continua para depois ou se você não quer mais.
+  - (Para consulta: D-476; resolvida junto com D-566.)
+  S: Pode sair da lista: você já respondeu a mesma coisa na pergunta irmã.
+===== au-d-477 | Ferrugem rosada da Pesel 2 no "Tirar o fundo": deve sumir, como as outras manchas
+  - O que é: Ferrugem rosada da Pesel 2 no "Tirar o fundo": deve sumir, não só mudar de cor, como as outras manchas. Entra junto com as manchas vermelhas e marrons (Fase 6). Até lá fica como defeito pequeno conhecido, como você aprovou em 02/10.
+  - De onde veio: ninguém perguntou a você. A gerente escolheu sozinha em 26/10, durante a rodada de consertos. Ela se apoiou em: regra do plano (manchas somem, Fase 6)
+  - Como está hoje: combinado para depois desta rodada; na versão de teste: não feito.
+  - Você ainda não testou isto depois da auditoria de 29/10 (não há teste seu no Livro de decisões).
+  - O que você escolhe: se entra agora na lista de fazer (a gerente faz uma coisa de cada vez e chama você para testar), se continua para depois ou se você não quer mais.
+  - (Para consulta: D-477.)
+  S: None
+===== au-d-478 | Espaços "Limpo / Completo" viram arranjos de painéis salvos com nome
+  - O que é: Espaços "Limpo / Completo" (decisão 4, 28/09) não viram dois botões fixos: passam a ser arranjos salvos dentro do "tudo livre": a pessoa arruma os painéis e guarda o arranjo com um nome.
+  - De onde veio: ninguém perguntou a você. A gerente escolheu sozinha em 26/10, durante a rodada de consertos. Ela se apoiou em: mais recentes: "C — tudo livre, como o Photoshop" (05/10) e "área de trabalho 1 nos dois lugares" (20/10)
+  - Como está hoje: combinado para depois desta rodada; na versão de teste: não feito.
+  - Já respondido por você: esta pergunta foi resolvida junto com outra, que você respondeu em 13/11: "Fica para depois". Vale o mesmo aqui.
+  - O que você escolhe: se entra agora na lista de fazer (a gerente faz uma coisa de cada vez e chama você para testar), se continua para depois ou se você não quer mais.
+  - (Para consulta: D-478; resolvida junto com D-565.)
+  S: Pode sair da lista: você já respondeu a mesma coisa na pergunta irmã.
+===== au-d-480 | Os manuscritos (Graduale, Palatino) entram na leitura do texto da Fase 7
+  - O que é: Os manuscritos (Graduale, Palatino) entram na leitura do texto (Fase 7), com um leitor de manuscrito, porque o leitor de hoje não lê letra à mão.
+  - De onde veio: ninguém perguntou a você. A gerente escolheu sozinha em 26/10, durante a rodada de consertos. Ela se apoiou em: sua decisão de 28/09: "OCR de manuscrito desde o começo", e o item do plano de treinar o leitor de manuscrito.
+  - Como está hoje: combinado para depois desta rodada; na versão de teste: não feito.
+  - Já respondido por você: esta pergunta foi resolvida junto com outra, que você respondeu em 09/11: "Fica para depois" ("Vai entrar sim."). Vale o mesmo aqui.
+  - O que você escolhe: se entra agora na lista de fazer (a gerente faz uma coisa de cada vez e chama você para testar), se continua para depois ou se você não quer mais.
+  - (Para consulta: D-480; resolvida junto com D-557.)
+  S: Pode sair da lista: você já respondeu a mesma coisa na pergunta irmã.

@@ -1,0 +1,43 @@
+{
+  "anteriores": [
+    {
+      "comentario": "",
+      "em": "2026-11-09T20:43:06.702Z",
+      "opcao": "nao-entendi",
+      "opcaoNome": "Ainda não entendi"
+    }
+  ],
+  "comentario": "",
+  "conversa": [
+    {
+      "em": "2026-11-09T20:43:06.702Z",
+      "quem": "samuel",
+      "texto": "Eu acho que já é assim hoje, não é?"
+    },
+    {
+      "em": "2026-11-13T20:40:00Z",
+      "quem": "gerente",
+      "texto": "Sim, já é assim hoje: o \"Mover conteúdo\" mora só na ferramenta Mover, e o Cortar tem a frase que manda para lá. A pergunta é só se você concorda que fique assim."
+    },
+    {
+      "em": "2026-11-13T22:55:15Z",
+      "quem": "gerente",
+      "texto": "Do que se trata: um item da auditoria, uma escolha que um agente fez sozinho em 27/10: o \"Mover conteúdo\" e as linhas de apoio saíram da ferramenta Cortar e ficaram só na ferramenta Mover; o Cortar ganhou a frase \"Para mover ou mudar o tamanho do conteúdo na folha, use a ferramenta Mover (tecla F)\". Sua dúvida: \"acho que já é assim hoje, não é?\". Resposta: sim, já é assim hoje. O que você escolhe: concorda que fique assim (vira decisão sua), quer diferente, ou vai testar antes."
+    },
+    {
+      "em": "2026-11-13T23:01:21.438Z",
+      "quem": "samuel",
+      "texto": "Respondi de novo: Concordo, fica assim"
+    }
+  ],
+  "em": "2026-11-13T23:01:21.438Z",
+  "gerente": "Do que se trata: um item da auditoria, uma escolha que um agente fez sozinho em 27/10: o \"Mover conteúdo\" e as linhas de apoio saíram da ferramenta Cortar e ficaram só na ferramenta Mover; o Cortar ganhou a frase \"Para mover ou mudar o tamanho do conteúdo na folha, use a ferramenta Mover (tecla F)\". Sua dúvida: \"acho que já é assim hoje, não é?\". Resposta: sim, já é assim hoje. O que você escolhe: concorda que fique assim (vira decisão sua), quer diferente, ou vai testar antes.",
+  "gerenteEm": "2026-11-13T22:55:15Z",
+  "lida": false,
+  "opcao": "concordo",
+  "opcaoNome": "Concordo, fica assim",
+  "reabrir": false,
+  "relatorio": "auditoria-5-escolhas-da-gerente",
+  "samuelViu": true,
+  "volta": true
+}

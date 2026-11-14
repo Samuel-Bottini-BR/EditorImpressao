@@ -1,0 +1,49 @@
+{
+  "anteriores": [
+    {
+      "comentario": "Você colocou só um exemplo de como seria uma folha duas lado a lado sendo girada, como eu vou responder algo sem provas ou exemplos?",
+      "em": "2026-11-09T19:13:26.075Z",
+      "opcao": "nao-entendi",
+      "opcaoNome": "Ainda não entendi"
+    },
+    {
+      "comentario": "",
+      "em": "2026-11-09T19:18:13.831Z",
+      "opcao": "nao-entendi",
+      "opcaoNome": "Ainda não entendi"
+    }
+  ],
+  "comentario": "",
+  "conversa": [
+    {
+      "em": "2026-11-07T19:30:00Z",
+      "quem": "gerente",
+      "texto": "Sim: no Dividir, com \"Duas lado a lado\", \"todas as folhas\" gira cada folha inteira, como a capa gira hoje. Fica assim, ou ali também deve girar página por página?"
+    },
+    {
+      "em": "2026-11-09T19:18:13.831Z",
+      "quem": "samuel",
+      "texto": "Respondi de novo: Ainda não entendi"
+    },
+    {
+      "em": "2026-11-09T21:00:00Z",
+      "quem": "gerente",
+      "texto": "Refiz a pergunta com provas: imagens de antes e dos dois jeitos, com as páginas 18 e 19 marcadas. Escolha de novo."
+    },
+    {
+      "em": "2026-11-10T12:03:26.197Z",
+      "quem": "samuel",
+      "texto": "Respondi de novo: Página por página também"
+    }
+  ],
+  "em": "2026-11-10T12:03:26.197Z",
+  "gerente": "Anotado (D-662): no Dividir, cada página vai girar sozinha e inteira. O agente vai fazer, e te chamo para testar.",
+  "gerenteEm": "2026-11-10T12:30:00Z",
+  "lida": true,
+  "opcao": "pagina",
+  "opcaoNome": "Página por página também",
+  "reabrir": false,
+  "relatorio": "perg-girar-capa",
+  "samuelViu": true,
+  "volta": false
+}

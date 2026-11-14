@@ -1,0 +1,29 @@
+{
+  "comentario": "",
+  "conversa": [
+    {
+      "em": "2026-11-09T22:30:00Z",
+      "quem": "samuel",
+      "texto": "No chat: \"2- não entendi\""
+    },
+    {
+      "em": "2026-11-09T23:30:00Z",
+      "quem": "samuel",
+      "texto": "No chat: \"Se a pagina ou folha já tiver passado por modificações antes de entrar no automatico o automatico vai perguntar se quer mexer nela né, e se já foi procurado gravuras em uma pagina, não precisa procurar de novo.\" ... \"1- pode\" (conserto do Pular)"
+    },
+    {
+      "em": "2026-11-09T23:30:00Z",
+      "quem": "gerente",
+      "texto": "Resolvida no chat: o aviso das páginas mexidas já pergunta (D-004). Com \"Pular\", a página vai sair como você deixou (D-661)."
+    }
+  ],
+  "em": "2026-11-09T23:30:00Z",
+  "gerente": "Resolvida no chat: o aviso das páginas mexidas já pergunta (D-004). Com \"Pular\", a página vai sair como você deixou (D-661, conserto autorizado: \"1- pode\").",
+  "gerenteEm": "2026-11-09T23:30:00Z",
+  "lida": true,
+  "opcao": "pular-guarda",
+  "opcaoNome": "\"Pular\" guarda a gravura; \"Rodar nelas também\" passa por cima",
+  "relatorio": "perg-gravura-a-mao",
+  "samuelViu": false,
+  "volta": false
+}

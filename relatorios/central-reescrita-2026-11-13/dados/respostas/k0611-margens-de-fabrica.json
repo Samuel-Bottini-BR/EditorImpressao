@@ -1,0 +1,30 @@
+{
+  "comentario": "",
+  "conversa": [
+    {
+      "em": "2026-11-09T19:33:21.008Z",
+      "quem": "samuel",
+      "texto": "Isso ira afetar na hora de imprimir? como outros programas fazem isso? adobe acrobat, updf esses programas que ligam com pdf."
+    },
+    {
+      "em": "2026-11-13T20:40:00Z",
+      "quem": "gerente",
+      "texto": "Sim, afeta a impressão. Com o Cortar ligado, cada página fica do tamanho do que está impresso nela. Na hora de montar, cada página é aumentada para encher a meia folha, e uma página com pouco texto, como a folha de rosto, sai com letra enorme (o print). O Acrobat e o uPDF não cortam as páginas: elas ficam do tamanho do scan, todas iguais, por isso lá isso não acontece. Com \"Margens iguais\" ligado, o nosso sai certo."
+    },
+    {
+      "em": "2026-11-13T22:55:15Z",
+      "quem": "gerente",
+      "texto": "Do que se trata: no teste do Lusíadas, o agente viu que, com \"Cortar\" ligado e \"Margens iguais\" desligado (como vem de fábrica), cada página sai de um tamanho; nos cadernos, a folha de rosto saiu com o título enorme (foto). Suas dúvidas: isso afeta a impressão? Como fazem o Acrobat e o uPDF? Respostas: sim, afeta. O Cortar deixa cada página do tamanho do que está impresso nela; na hora de montar, cada página é aumentada para encher a meia folha, e uma página com pouco texto sai com letra enorme. O Acrobat e o uPDF não cortam as páginas: elas ficam do tamanho do scan, todas iguais, por isso lá isso não acontece. Com \"Margens iguais\" ligado, o nosso sai certo. O que você escolhe: \"Margens iguais\" vem ligado de fábrica (recomendo), fica desligado com um aviso ao montar os cadernos, ou fica como está."
+    }
+  ],
+  "em": "2026-11-09T19:33:21.008Z",
+  "gerente": "Do que se trata: no teste do Lusíadas, o agente viu que, com \"Cortar\" ligado e \"Margens iguais\" desligado (como vem de fábrica), cada página sai de um tamanho; nos cadernos, a folha de rosto saiu com o título enorme (foto). Suas dúvidas: isso afeta a impressão? Como fazem o Acrobat e o uPDF? Respostas: sim, afeta. O Cortar deixa cada página do tamanho do que está impresso nela; na hora de montar, cada página é aumentada para encher a meia folha, e uma página com pouco texto sai com letra enorme. O Acrobat e o uPDF não cortam as páginas: elas ficam do tamanho do scan, todas iguais, por isso lá isso não acontece. Com \"Margens iguais\" ligado, o nosso sai certo. O que você escolhe: \"Margens iguais\" vem ligado de fábrica (recomendo), fica desligado com um aviso ao montar os cadernos, ou fica como está.",
+  "gerenteEm": "2026-11-13T22:55:15Z",
+  "lida": true,
+  "opcao": "nao-entendi",
+  "opcaoNome": "Ainda não entendi",
+  "reabrir": false,
+  "relatorio": "teste-kaique-lusiadas",
+  "samuelViu": false,
+  "volta": false
+}

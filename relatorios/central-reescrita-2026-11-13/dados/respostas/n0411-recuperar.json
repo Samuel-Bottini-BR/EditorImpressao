@@ -1,0 +1,18 @@
+{
+  "conversa": [
+    {
+      "em": "2026-11-13T20:40:00Z",
+      "quem": "gerente",
+      "texto": "Anotado no Livro como D-671: o \"Recuperar o trabalho anterior\" fica na Lista de espera, para depois desta rodada de consertos."
+    }
+  ],
+  "em": "2026-11-08T19:13:28.670Z",
+  "gerente": "Anotado no Livro como D-671: o \"Recuperar o trabalho anterior\" fica na Lista de espera, para depois desta rodada de consertos.",
+  "gerenteEm": "2026-11-13T20:40:00Z",
+  "lida": true,
+  "opcao": "depois",
+  "opcaoNome": "Sim, mas depois desta rodada de consertos",
+  "reabrir": false,
+  "relatorio": "perguntas-04-11",
+  "volta": false
+}

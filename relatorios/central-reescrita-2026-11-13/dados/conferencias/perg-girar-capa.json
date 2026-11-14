@@ -1,0 +1,175 @@
+{
+  "nome": "Girar com a capa aberta: 4 perguntas (07/11)",
+  "ordem": 65,
+  "origem": "Conserto do item 2 da fila (D-638 e D-640), ramo girar-capa-2026-11-07, 07/11/2026.",
+  "perguntas": [
+    {
+      "exemplos": [
+        {
+          "legenda": "Gradus (cópia), página 14, \"todas as páginas\" + ¼ à esquerda. Com o código antigo a capa aberta não girava; com o conserto, gira junto.",
+          "src": "/_blob/a6d06cafd27d4cc963bd044539f28428"
+        }
+      ],
+      "explicacao": [
+        "O conserto do girar (D-638 e D-640) ficou pronto e passou em todos os testes, menos em 5 antigos.",
+        "Esses 5 foram escritos em 05/11, quando as perguntas A e B ainda estavam sem resposta. Eles cobram o jeito antigo: a capa aberta não gira com \"todas as páginas\", e as folhas divididas giram como folha inteira.",
+        "Você mandou mudar exatamente isso. A regra é nunca mudar teste antigo para ele passar; por isso o agente não mexeu e pede a sua autorização.",
+        "A troca seria só nessas linhas, com um comentário citando a D-638 e a D-640. Todos os outros testes do girar continuam iguais."
+      ],
+      "historico": [],
+      "id": "girar-capa-testes-antigos",
+      "opcoes": [
+        {
+          "id": "sim",
+          "nome": "Sim, pode trocar (recomendo)",
+          "texto": "Os 5 passam a cobrar o jeito novo que você decidiu."
+        },
+        {
+          "id": "nao",
+          "nome": "Não",
+          "texto": "O conserto não entra na versão de teste."
+        }
+      ],
+      "primeira_imagem": {
+        "legenda": "Gradus (cópia), capa aberta inteira, \"todas as folhas\" + ¼ à esquerda. Em cima, o PDF antes do clique; no meio, depois do clique com o código antigo (páginas viram tiras com pedaço da vizinha); embaixo, com o conserto (cada página deitada e inteira).",
+        "src": "/_blob/fdf429cf01f0076015effc20a05e0514"
+      },
+      "sugestao": "Sim.",
+      "titulo": "Posso trocar 5 testes antigos que cobram o jeito de girar que você mandou mudar?"
+    },
+    {
+      "exemplos": [],
+      "explicacao": [
+        "Você decidiu que, no miolo, \"todas as páginas\" gira também a capa aberta (D-640).",
+        "As outras escolhas da lista (\"daqui em diante\", \"só as pares\", \"só as ímpares\") continuam sem girar a capa, porque a sua decisão fala só de \"todas as páginas\".",
+        "A capa é a primeira folha, então \"daqui em diante\" a partir do miolo nunca chega nela."
+      ],
+      "historico": [],
+      "id": "girar-capa-miolo-outras",
+      "opcoes": [
+        {
+          "id": "fica",
+          "nome": "Fica assim (recomendo)",
+          "texto": "Só \"todas as páginas\" gira a capa."
+        },
+        {
+          "id": "giram",
+          "nome": "Giram também",
+          "texto": "Essas escolhas passam a girar a capa quando ela estiver no grupo."
+        }
+      ],
+      "primeira_imagem": {
+        "legenda": "Gradus (cópia), página 14, \"todas as páginas\" + ¼ à esquerda. Com o código antigo a capa aberta não girava; com o conserto, gira junto.",
+        "src": "/_blob/a6d06cafd27d4cc963bd044539f28428"
+      },
+      "sugestao": "Fica assim.",
+      "titulo": "No miolo, \"daqui em diante\", \"só as pares\" e \"só as ímpares\" giram também a capa aberta?"
+    },
+    {
+      "exemplos": [
+        {
+          "legenda": "ANTES do clique: tela do Dividir e páginas 1, 18, 19, 20 e 21 em pé.",
+          "src": "/_blob/393bf190f1df3f32d5e172d59022bfeb"
+        },
+        {
+          "legenda": "DEPOIS — \"Fica como está\": cada página vira uma tira com metade de duas páginas.",
+          "src": "/_blob/a1cbb4fd269fdd5cb9fa443c4bce12eb"
+        },
+        {
+          "legenda": "DEPOIS — \"Página por página também\" (simulação): cada página deita inteira.",
+          "src": "/_blob/355576dacb1d90cfacb566ae0be6ead3"
+        }
+      ],
+      "explicacao": [
+        "Na imagem: em cima, ANTES do clique; no meio, o jeito de hoje; embaixo, página por página. Gradus, folha 10 (páginas 18 e 19, em vermelho), \"todas as folhas\" + ¼.",
+        "\"Fica como está\" (hoje): a folha gira inteira e a linha azul fica no mesmo lugar. No PDF, cada página sai como uma tira com metade de duas páginas misturadas.",
+        "\"Página por página também\": cada página deita sozinha e inteira, sem pedaço da vizinha. É uma simulação feita pelo caminho que já existe fora do Dividir; no Dividir esse jeito ainda não existe.",
+        "Nas duas, a capa gira inteira."
+      ],
+      "historico": [],
+      "id": "girar-capa-dividir-duas",
+      "opcoes": [
+        {
+          "id": "fica",
+          "nome": "Fica como está",
+          "texto": "No Dividir, a folha gira inteira (as páginas saem como tiras misturadas, foto do meio)."
+        },
+        {
+          "id": "pagina",
+          "nome": "Página por página também",
+          "texto": "No Dividir também, cada página gira sozinha e inteira (foto de baixo)."
+        }
+      ],
+      "primeira_imagem": {
+        "legenda": "Resumo: ANTES (azul), \"Fica como está\" (laranja) e \"Página por página também\" (verde). Tela do Dividir e páginas do PDF.",
+        "src": "/_blob/3b18bd1379ff758b359d2b50cc14962c"
+      },
+      "sugestao": "Página por página também: é o jeito em que nenhuma página sai misturada com a vizinha.",
+      "titulo": "No Dividir, com \"Duas lado a lado\", \"todas as folhas\": gira a folha inteira ou página por página?"
+    },
+    {
+      "exemplos": [
+        {
+          "legenda": "ANTES do clique: miniaturas das páginas 1 a 8; página 6 (folha inteira) em vermelho.",
+          "src": "/_blob/49a3a6e8ac98f2971871f97f6bf08689"
+        },
+        {
+          "legenda": "DEPOIS — jeito antigo: a página 6 NÃO gira.",
+          "src": "/_blob/914ebfc4bd03480cfb112195f49f3523"
+        },
+        {
+          "legenda": "DEPOIS — jeito novo: a página 6 gira junto.",
+          "src": "/_blob/c15d6d22ecc313bf3f71d541a8580331"
+        },
+        {
+          "legenda": "ANTES, no PDF.",
+          "src": "/_blob/c8f173fc67815d025a9516ab75fa5bcc"
+        },
+        {
+          "legenda": "DEPOIS — jeito antigo, no PDF: a página 6 fica em pé.",
+          "src": "/_blob/789c956e740693a5feeb9b1d5983989b"
+        },
+        {
+          "legenda": "DEPOIS — jeito novo, no PDF: a página 6 sai deitada, junto com as outras.",
+          "src": "/_blob/4ddd82cc5a9a9461f45f947e5d46e7a7"
+        }
+      ],
+      "explicacao": [
+        "Na imagem: Gradus com a folha 4 sem dividir (é a página 6, em vermelho). Na página 3, \"daqui em diante\" + ¼.",
+        "Jeito antigo (laranja): as páginas 3, 4, 5, 7 e 8 deitam, mas a página 6 fica em pé. É isso que o teste antigo cobra.",
+        "Jeito novo (verde), a sua resposta \"Giram também\" da pergunta 2: a página 6 gira junto.",
+        "O teste antigo falha no programa novo. Trocar uma linha faz ele cobrar o jeito novo. Sem a troca, o girar não entra na versão de teste."
+      ],
+      "historico": [],
+      "id": "girar-capa-teste-daqui",
+      "opcoes": [
+        {
+          "id": "sim",
+          "nome": "Sim, pode trocar (recomendo)",
+          "texto": "O teste passa a cobrar o jeito novo: a folha inteira gira junto (verde)."
+        },
+        {
+          "id": "nao",
+          "nome": "Não",
+          "texto": "A folha inteira fica em pé (laranja), e o conserto volta para o agente."
+        }
+      ],
+      "primeira_imagem": {
+        "legenda": "Resumo: ANTES (azul), jeito antigo (laranja) e jeito novo (verde). Páginas 1 a 8 como saem no PDF.",
+        "src": "/_blob/5658e148a6ce54d76550e6d0286ee311"
+      },
+      "sugestao": "Sim.",
+      "titulo": "Posso trocar o teste antigo do \"daqui em diante\"?"
+    }
+  ],
+  "quadros": [],
+  "resumo": {
+    "paragrafos": [
+      "Na capa aberta, \"todas as folhas\" agora gira as folhas divididas página por página, sem pedaço da vizinha. No miolo, \"todas as páginas\" gira também a capa.",
+      "Passou nos testes do PC e do GitHub, e não ficou mais lento. Só 5 testes antigos, que cobram o jeito antigo, precisam da sua autorização (pergunta 1).",
+      "Antes de entrar na versão de teste, um agente vai testar com a janela aberta na tela, como o Kaique."
+    ],
+    "titulo": "O girar da capa aberta está pronto; falta o teste com a janela aberta"
+  },
+  "trabalho": "girar-capa"
+}

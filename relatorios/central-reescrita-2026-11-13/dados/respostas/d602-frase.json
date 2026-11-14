@@ -1,0 +1,11 @@
+{
+  "comentario": "No automatico eu consigo selecionar paginas para não serem divididas?",
+  "em": "2026-11-04T18:59:11.593Z",
+  "gerente": "Anotado: a frase vai trocar (D-624, na lista de fazer).\nSua pergunta: sim, no Automático dá de dois jeitos.\n1) Em \"Rodar em\", escolha \"nas páginas escolhidas\" e marque só as folhas que quer dividir.\n2) Uma folha que você juntou com \"não dividir esta\" fica guardada: ao rodar, o programa pergunta \"Pular essas páginas?\". Com \"Pular\", ela fica como você deixou.",
+  "gerenteEm": "2026-11-05T02:50:50Z",
+  "lida": true,
+  "opcao": "trocar",
+  "opcaoNome": "Trocar por: \"Achei a lombada. Aperte \"dividir esta\" para cortar nessa linha.\" (recomendo)",
+  "relatorio": "agora",
+  "samuelViu": true
+}

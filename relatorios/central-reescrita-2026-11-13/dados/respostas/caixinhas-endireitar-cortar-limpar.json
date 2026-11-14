@@ -1,0 +1,11 @@
+{
+  "comentario": "Só que no programa agora, sempre que eu rodo uma coisa no automatico, quando volto no automatico as coisas que rodaram estão marcadas, elas tem que voltar todas desmarcadas.",
+  "em": "2026-11-04T19:19:44.212Z",
+  "gerente": "Anotado: desmarcada e rodada, a etapa fica desmarcada e não é feita (D-628).\nSeu comentário muda mais coisa, por isso virou pergunta nova. Hoje, caixinha marcada quer dizer \"esta etapa está no livro\". Se todas voltarem desmarcadas, o próximo Rodar tiraria do livro o que já foi feito.\nExpliquei com print na aba Conferência, \"Perguntas novas (04/11)\", pergunta 1. Nada muda antes da sua resposta.",
+  "gerenteEm": "2026-11-05T02:50:50Z",
+  "lida": true,
+  "opcao": "desligar",
+  "opcaoNome": "Desmarcada fica desmarcada e não é feita (recomendo, igual às outras)",
+  "relatorio": "agora",
+  "samuelViu": true
+}

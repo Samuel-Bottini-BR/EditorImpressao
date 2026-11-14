@@ -1,0 +1,19 @@
+{
+  "comentario": "",
+  "conversa": [
+    {
+      "em": "2026-11-07T19:30:00Z",
+      "quem": "gerente",
+      "texto": "Feito e testado com a janela aberta: no miolo, \"só as ímpares\" agora gira a capa junto (D-645)."
+    }
+  ],
+  "em": "2026-11-07T15:50:48.433Z",
+  "gerente": "Feito e testado com a janela aberta: no miolo, \"só as ímpares\" agora gira a capa junto (D-645).",
+  "gerenteEm": "2026-11-07T19:30:00Z",
+  "lida": true,
+  "opcao": "giram",
+  "opcaoNome": "Giram também",
+  "relatorio": "perg-girar-capa",
+  "samuelViu": false,
+  "volta": false
+}

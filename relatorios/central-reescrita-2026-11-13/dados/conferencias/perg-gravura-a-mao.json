@@ -1,0 +1,86 @@
+{
+  "id": "perg-gravura-a-mao",
+  "nome": "Gravura no Preto e branco à mão: 2 perguntas (09/11)",
+  "ordem": 67,
+  "origem": "Conserto da D-659 (seu teste de 09/11, página 8), ramo gravura-a-mao-2026-11-09.",
+  "perguntas": [
+    {
+      "exemplos": [],
+      "explicacao": [
+        "1) Um teste antigo do \"antes / depois\" tira uma foto do livro logo depois do clique no Preto e branco. Agora, nesse mesmo instante, o programa guarda a gravura que achou, e o teste acusa diferença. O \"antes / depois\" não mudou nada. A troca: o teste espera a procura terminar antes de tirar a foto.",
+        "2) Ao fechar um livro e abrir outro, um trabalho de fundo que demora (a primeira procura leva uns 9 segundos) continua rodando e tenta refazer a prévia do livro que já foi fechado. Não aparece para o Kaique, mas enche o registro de erros. O conserto: depois de fechar o livro, nada novo começa.",
+        "As duas só mexem nisso. Sem elas, o conserto da gravura não pode entrar na versão de teste."
+      ],
+      "historico": [],
+      "id": "gravura-a-mao-testes",
+      "opcoes": [
+        {
+          "id": "sim",
+          "nome": "Sim, pode as duas (recomendo)",
+          "texto": "O teste antigo espera a procura terminar, e o trabalho de fundo para quando o livro fecha."
+        },
+        {
+          "id": "nao",
+          "nome": "Não",
+          "texto": "O conserto da gravura fica parado até achar outro jeito."
+        }
+      ],
+      "primeira_imagem": {
+        "legenda": "O conserto que essas duas trocas destravam: página 8 com \"Respeitar\" marcada. ANTES (vermelho), manchas pretas; DEPOIS (verde), a gravura em tons de cinza.",
+        "src": "/_blob/6acd71db8cda8a81e56d20158dde7f19"
+      },
+      "sugestao": "Sim.",
+      "titulo": "Posso trocar um teste antigo e consertar um defeito que apareceu no caminho?"
+    },
+    {
+      "exemplos": [
+        {
+          "legenda": "Com \"Só as letras\": a gravura fica colorida, como no original.",
+          "src": "/_blob/df8bc2052d54729e895f317472721984"
+        },
+        {
+          "legenda": "Com as três desmarcadas: igual a antes (a página toda em preto e branco).",
+          "src": "/_blob/f6272e2c24ebccf38f30c0561e17b1e6"
+        },
+        {
+          "legenda": "Página 6, sem gravura, com \"Respeitar\": o texto fica igual.",
+          "src": "/_blob/6e77f0a329258b76ad9f4e27b4247af9"
+        }
+      ],
+      "explicacao": [
+        "Caso: você pôs Preto e branco à mão na página 8 com \"Respeitar\" (a gravura saiu certa). Depois roda o Automático com \"Limpar a folha\" e com a etapa \"Gravuras e fotos\" desmarcada.",
+        "Hoje, nesse caso, o Automático não procura gravura, e a página volta a sair toda em preto e branco: a gravura vira mancha, como na foto ANTES. Com \"Gravuras em tons de cinza\" ou \"Só as letras\" marcadas isso não acontece: elas procuram sempre.",
+        "Se o Automático também procurar com \"Respeitar\", como ela vem marcada de fábrica, ele procura em todas as páginas do livro: cerca de 2 segundos por página (uns 7 minutos num livro de 199 páginas)."
+      ],
+      "historico": [],
+      "id": "gravura-a-mao-automatico",
+      "opcoes": [
+        {
+          "id": "fica",
+          "nome": "Fica assim: o Automático não procura",
+          "texto": "No Automático, quem acha as gravuras é a etapa \"Gravuras e fotos\". Se quiser a gravura certa ali, marque essa etapa (ou \"Gravuras em tons de cinza\")."
+        },
+        {
+          "id": "procura",
+          "nome": "O Automático procura também",
+          "texto": "Com \"Respeitar\" marcada, o Automático procura a gravura em cada página (mais lento: uns 7 minutos a mais num livro de 199 páginas)."
+        }
+      ],
+      "primeira_imagem": {
+        "legenda": "Página 8: ANTES (vermelho) é como fica se o Automático não procurar; DEPOIS (verde) é como fica se procurar.",
+        "src": "/_blob/6acd71db8cda8a81e56d20158dde7f19"
+      },
+      "sugestao": "Fica assim: o Automático já tem a etapa \"Gravuras e fotos\" para isso, e procurar em todas as páginas deixaria todo Automático bem mais lento.",
+      "titulo": "Se depois você rodar o Automático, a página com só \"Respeitar\" marcada deve procurar a gravura também?"
+    }
+  ],
+  "resumo": {
+    "paragrafos": [
+      "Com o Preto e branco escolhido à mão, sem o Automático, \"Respeitar as gravuras achadas\", \"Gravuras em tons de cinza\" e \"Só as letras\" agora procuram a gravura sozinhas, só na página em que você está (ou nas que o \"Aplicar em\" escolher).",
+      "Página 8: antes, manchas pretas; agora, a gravura em tons de cinza (ou colorida, com \"Só as letras\"). Com as três desmarcadas, fica igual a antes. A procura leva cerca de 2 segundos por página (a primeira, uns 9).",
+      "Os testes passam, menos um teste antigo. O agente parou para perguntar a você antes de mexer nele (pergunta 1)."
+    ],
+    "titulo": "A gravura da página 8 não sai mais em manchas pretas"
+  },
+  "trabalho": "gravura-a-mao"
+}

@@ -1,0 +1,24 @@
+{
+  "comentario": "Isso que eu escolhi vai alterar muito o programa? preste atenção nisso.",
+  "conversa": [
+    {
+      "em": "2026-11-09T19:53:02.650Z",
+      "quem": "samuel",
+      "texto": "Isso que eu escolhi vai alterar muito o programa? preste atenção nisso."
+    },
+    {
+      "em": "2026-11-13T20:40:00Z",
+      "quem": "gerente",
+      "texto": "Não muda nada: \"nos dois\" é como o programa já está hoje. Anotado no Livro como D-694."
+    }
+  ],
+  "em": "2026-11-09T19:53:02.650Z",
+  "gerente": "Não muda nada: \"nos dois\" é como o programa já está hoje. Anotado no Livro como D-694.",
+  "gerenteEm": "2026-11-13T20:40:00Z",
+  "lida": true,
+  "opcao": "os-dois",
+  "opcaoNome": "Nos dois: no filtro e na barra de baixo",
+  "reabrir": false,
+  "relatorio": "acrescentei-27-10",
+  "volta": false
+}

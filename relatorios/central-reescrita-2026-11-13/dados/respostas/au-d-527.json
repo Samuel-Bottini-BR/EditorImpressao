@@ -1,0 +1,24 @@
+{
+  "comentario": "Nós iriamos usar um ocr para isso?",
+  "conversa": [
+    {
+      "em": "2026-11-09T20:24:20.887Z",
+      "quem": "samuel",
+      "texto": "Nós iriamos usar um ocr para isso?"
+    },
+    {
+      "em": "2026-11-13T20:40:00Z",
+      "quem": "gerente",
+      "texto": "Sim: para conferir a ordem, o programa precisa ler o número impresso em cada página. É uma leitura de texto (OCR) pequena, só do número. Anotado no Livro como D-697; continua para depois."
+    }
+  ],
+  "em": "2026-11-09T20:24:20.887Z",
+  "gerente": "Sim: para conferir a ordem, o programa precisa ler o número impresso em cada página. É uma leitura de texto (OCR) pequena, só do número. Anotado no Livro como D-697; continua para depois.",
+  "gerenteEm": "2026-11-13T20:40:00Z",
+  "lida": true,
+  "opcao": "depois",
+  "opcaoNome": "Fica para depois",
+  "reabrir": false,
+  "relatorio": "auditoria-6-para-depois",
+  "volta": false
+}

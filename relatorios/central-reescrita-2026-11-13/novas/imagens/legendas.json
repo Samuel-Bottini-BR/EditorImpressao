@@ -1,0 +1,9 @@
+{
+ "b-pdf-desatualizado-resumo.png": "Palatino (cópia). Azul: logo depois de gerar o PDF, o livro diz \"pronto, PDF gerado\". Laranja (como é hoje): depois de mudar uma página, diz \"32 de 134 conferidas\" e nada fala do PDF velho. Verde: a outra opção, que ainda não existe.",
+ "v-capa-aviso-resumo.png": "La vida eterna (cópia), dividido, \"Duas lado a lado\". Azul (como é hoje): a página de número impresso ímpar fica à esquerda. Verde: botão direito na miniatura da capa, \"adicionar página em branco depois\": a ímpar passa para a direita, como no livro.",
+ "mover-rotulo-antes-resumo.png": "Gradus (cópia), dividido, página 11, ferramenta Mover. Azul (como é hoje): com o \"antes / depois\" ligado aparecem as duas, o antes e o depois. Verde: só a página que o Mover mexe.",
+ "b-abas-nomes-resumo.png": "O menu Ver > Lado direito já tem quatro jeitos. Azul: o de fábrica, ícones na borda, sem nome (Gradus, cópia). Verde: \"Abas no alto\", com os nomes curtos das abas (Palatino, cópia, 28/10).",
+ "nm-desligar-marcadas-resumo.png": "Gradus (cópia). Azul: depois do Automático só com \"Dividir folhas ao meio\", 140 páginas. Verde: com a etapa marcada, \"desligar as marcadas\" desfaz o dividir e as folhas voltam inteiras.",
+ "nm-jeito-pb-resumo.png": "Palatino (cópia), página 9, Preto e branco: a lista \"Jeito do preto e branco\" e o mesmo pedaço da página com Sauvola, Otsu e Wolf. A diferença está na moldura da direita e na grossura das letras.",
+ "nm-tela-livros-resumo.png": "Tela dos livros (prints de 28/10). 1: \"remover da lista\" no menu e \"Tirar da lista\" na janela. 2: \"procurar de novo\" no cartão e \"procurar o livro\" no menu. 3: \"projeto\" na busca."
+}

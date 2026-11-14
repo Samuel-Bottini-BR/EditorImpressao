@@ -1,0 +1,515 @@
+{
+  "nome": "Teste como o Kaique, só funções (07/11)",
+  "ordem": 64,
+  "origem": "Teste do agente, 07/11/2026, com a janela aberta na tela, em 3 livros (Os Lusíadas, Siebmacher 30 folhas, Palatino 30 páginas). Pedido do Samuel: \"Cada teste tem que exaurir as possibilidades das funções do APP.\"",
+  "perguntas": [
+    {
+      "exemplos": [],
+      "explicacao": [
+        "No Palatino: processar, abrir \"montar para imprimir\", gravar, fechar essa janela e abrir Arquivo > Livros recentes.",
+        "Apareceu \"Aconteceu um problema inesperado\" e o programa fechou. Nada do trabalho se perdeu.",
+        "Não se repetiu em duas tentativas. O registro de erros mostra que o menu \"Livros recentes\" foi usado depois de já ter sido apagado por dentro."
+      ],
+      "historico": [],
+      "id": "k0711-fechou",
+      "opcoes": [
+        {
+          "id": "consertar",
+          "nome": "Consertar",
+          "texto": "Vai para a fila de consertos."
+        },
+        {
+          "id": "nao-e-erro",
+          "nome": "Não é erro",
+          "texto": "Fica como está."
+        },
+        {
+          "id": "depois",
+          "nome": "Fica para depois",
+          "texto": "Vai para a Lista de espera."
+        }
+      ],
+      "primeira_imagem": {
+        "legenda": "O aviso que apareceu antes de o programa fechar (Palatino, 30 primeiras páginas).",
+        "src": "/_blob/99d62130bd3d7f839ccf08443a20423b"
+      },
+      "sugestao": "Consertar.",
+      "titulo": "GRAVE: o programa fechou sozinho"
+    },
+    {
+      "exemplos": [
+        {
+          "legenda": "As páginas do PDF. A p5 (quarta) começa em \"O autor desta...\", sem o título \"PREFÁCIO\".",
+          "src": "/_blob/02e1b3b77fb1904c75961889ac725c0d"
+        }
+      ],
+      "explicacao": [
+        "Os Lusíadas, folha dividida, página 5, ferramenta Mover.",
+        "Na tela aparecem as duas páginas da folha apertadas na largura de uma (o texto da página 4 à esquerda e o \"PREFÁCIO\" à direita).",
+        "Apertei \"Centralizar\" ali, e no PDF a página 5 saiu sem o título \"PREFÁCIO\".",
+        "O Retângulo, o Laço e o Pincel, na mesma situação, gravaram as marcas em cima da ilustração da página 8."
+      ],
+      "historico": [],
+      "id": "k0711-mover-espremida",
+      "opcoes": [
+        {
+          "id": "consertar",
+          "nome": "Consertar",
+          "texto": "Vai para a fila de consertos."
+        },
+        {
+          "id": "nao-e-erro",
+          "nome": "Não é erro",
+          "texto": "Fica como está."
+        },
+        {
+          "id": "depois",
+          "nome": "Fica para depois",
+          "texto": "Vai para a Lista de espera."
+        }
+      ],
+      "primeira_imagem": {
+        "legenda": "A tela do Mover na página 5: a folha inteira espremida.",
+        "src": "/_blob/700ddaec571a2eccb5e47abf71449be0"
+      },
+      "sugestao": "Consertar.",
+      "titulo": "GRAVE: o Mover mostra a folha inteira espremida, e o que se faz ali sai errado no PDF"
+    },
+    {
+      "exemplos": [
+        {
+          "legenda": "Depois de rodar: as páginas voltaram para Original.",
+          "src": "/_blob/8701d3db19fe58f2c663a3c53cbd5096"
+        }
+      ],
+      "explicacao": [
+        "No Siebmacher, ao abrir o livro, respondi \"Sim, tirar o fundo\". As 30 páginas ficaram em \"Tirar o fundo\".",
+        "O Automático abriu com \"Limpar a folha: Original\". Rodei como veio, e as 30 páginas voltaram para Original, sem aviso nenhum.",
+        "Isso vai contra a sua decisão D-134: nada de mudança escondida."
+      ],
+      "historico": [],
+      "id": "k0711-auto-tira-fundo",
+      "opcoes": [
+        {
+          "id": "consertar",
+          "nome": "Consertar",
+          "texto": "Vai para a fila de consertos."
+        },
+        {
+          "id": "nao-e-erro",
+          "nome": "Não é erro",
+          "texto": "Fica como está."
+        },
+        {
+          "id": "depois",
+          "nome": "Fica para depois",
+          "texto": "Vai para a Lista de espera."
+        }
+      ],
+      "primeira_imagem": {
+        "legenda": "O Automático abriu com \"Original\" marcado, mesmo com o livro em \"Tirar o fundo\".",
+        "src": "/_blob/8497eabddf699d826fa08ccc2dd06b88"
+      },
+      "sugestao": "Consertar.",
+      "titulo": "GRAVE: o Automático desfaz o \"Tirar o fundo\" sem avisar"
+    },
+    {
+      "exemplos": [],
+      "explicacao": [
+        "Com a ferramenta Cortar e a vista \"antes / depois\", o lado \"depois\" mostra a página colorida e sem corte, e não o Preto e branco que vai sair.",
+        "Com a Mão, a mesma página aparece certa. Aconteceu nos Lusíadas e no Palatino."
+      ],
+      "historico": [],
+      "id": "k0711-cortar-antes-depois",
+      "opcoes": [
+        {
+          "id": "consertar",
+          "nome": "Consertar",
+          "texto": "Vai para a fila de consertos."
+        },
+        {
+          "id": "nao-e-erro",
+          "nome": "Não é erro",
+          "texto": "Fica como está."
+        },
+        {
+          "id": "depois",
+          "nome": "Fica para depois",
+          "texto": "Vai para a Lista de espera."
+        }
+      ],
+      "primeira_imagem": {
+        "legenda": "Cortar com \"antes / depois\": o lado \"depois\" igual ao antes.",
+        "src": "/_blob/c66a86dc485fe30d897614d0ad4069d5"
+      },
+      "sugestao": "Consertar.",
+      "titulo": "No \"antes / depois\" com o Cortar, o lado \"depois\" mostra a página original"
+    },
+    {
+      "exemplos": [],
+      "explicacao": [
+        "É a página 5 do erro do Mover. Na tira de baixo e em \"Todas as páginas\", a miniatura mostra a página com o título, no lugar.",
+        "O PDF sai sem o título. A tela engana: vai contra a D-547 (o que se vê é o que sai)."
+      ],
+      "historico": [],
+      "id": "k0711-miniatura-pdf",
+      "opcoes": [
+        {
+          "id": "consertar",
+          "nome": "Consertar",
+          "texto": "Vai para a fila de consertos."
+        },
+        {
+          "id": "nao-e-erro",
+          "nome": "Não é erro",
+          "texto": "Fica como está."
+        },
+        {
+          "id": "depois",
+          "nome": "Fica para depois",
+          "texto": "Vai para a Lista de espera."
+        }
+      ],
+      "primeira_imagem": {
+        "legenda": "\"Todas as páginas\": a miniatura da página 5 com o título.",
+        "src": "/_blob/541461b5d01efe73a7e2fd1bae7b3b13"
+      },
+      "sugestao": "Consertar.",
+      "titulo": "A miniatura mostra a página certa, e o PDF sai diferente"
+    },
+    {
+      "exemplos": [],
+      "explicacao": [
+        "Acrescentei uma página em branco depois da 11 e apertei \"voltar a página\" nela.",
+        "Em \"Todas as páginas\", ela passou a mostrar o texto da página 11, mas o PDF saiu branco.",
+        "O conserto do item 3 da fila (esconder esse botão nessa página) deve resolver isto também."
+      ],
+      "historico": [],
+      "id": "k0711-voltar-inserida",
+      "opcoes": [
+        {
+          "id": "consertar",
+          "nome": "Consertar",
+          "texto": "Vai para a fila de consertos."
+        },
+        {
+          "id": "nao-e-erro",
+          "nome": "Não é erro",
+          "texto": "Fica como está."
+        },
+        {
+          "id": "depois",
+          "nome": "Fica para depois",
+          "texto": "Vai para a Lista de espera."
+        }
+      ],
+      "primeira_imagem": {
+        "legenda": "A página acrescentada mostrando o texto da vizinha.",
+        "src": "/_blob/46c74a58801fb064d028a5dded912309"
+      },
+      "sugestao": "Consertar.",
+      "titulo": "\"Voltar a página\" na página acrescentada mostra o texto da vizinha"
+    },
+    {
+      "exemplos": [],
+      "explicacao": [
+        "Numa página tirada do livro, o botão \"deixar em branco\" fica apagado, mas no menu Página o item (e a tecla Delete) continua funcionando.",
+        "Ao trazer a página de volta, ela volta em branco."
+      ],
+      "historico": [],
+      "id": "k0711-tirada-branco",
+      "opcoes": [
+        {
+          "id": "consertar",
+          "nome": "Consertar",
+          "texto": "Vai para a fila de consertos."
+        },
+        {
+          "id": "nao-e-erro",
+          "nome": "Não é erro",
+          "texto": "Fica como está."
+        },
+        {
+          "id": "depois",
+          "nome": "Fica para depois",
+          "texto": "Vai para a Lista de espera."
+        }
+      ],
+      "primeira_imagem": {
+        "legenda": "Menu Página aceso numa página tirada do livro.",
+        "src": "/_blob/19a7173e2884d4bc68688426cde1b5d1"
+      },
+      "sugestao": "Consertar.",
+      "titulo": "Página tirada do livro: o menu ainda deixa pôr em branco, e ela volta branca"
+    },
+    {
+      "exemplos": [],
+      "explicacao": [
+        "No Automático, passar a rodinha sobre \"páginas por caderno\" mudou de 20 para 24.",
+        "No Mover, a rodinha sobre \"Tamanho do conteúdo\" mudou de 100% para 98%.",
+        "Na janela \"Montar para imprimir\" isso já não acontece: lá está certo."
+      ],
+      "historico": [],
+      "id": "k0711-rodinha",
+      "opcoes": [
+        {
+          "id": "consertar",
+          "nome": "Consertar",
+          "texto": "Vai para a fila de consertos."
+        },
+        {
+          "id": "nao-e-erro",
+          "nome": "Não é erro",
+          "texto": "Fica como está."
+        },
+        {
+          "id": "depois",
+          "nome": "Fica para depois",
+          "texto": "Vai para a Lista de espera."
+        }
+      ],
+      "primeira_imagem": {
+        "legenda": "\"páginas por caderno\" mudou só com a rodinha.",
+        "src": "/_blob/511844a110265aa49158b307d2394143"
+      },
+      "sugestao": "Consertar.",
+      "titulo": "Só passar a rodinha muda números sem clicar"
+    },
+    {
+      "exemplos": [],
+      "explicacao": [
+        "Acrescentei uma página em branco, e ela ganhou o aviso \"Esta página foi escaneada em qualidade baixa\".",
+        "O sino passou de 129 para 130."
+      ],
+      "historico": [],
+      "id": "k0711-inserida-qualidade",
+      "opcoes": [
+        {
+          "id": "consertar",
+          "nome": "Consertar",
+          "texto": "Vai para a fila de consertos."
+        },
+        {
+          "id": "nao-e-erro",
+          "nome": "Não é erro",
+          "texto": "Fica como está."
+        },
+        {
+          "id": "depois",
+          "nome": "Fica para depois",
+          "texto": "Vai para a Lista de espera."
+        }
+      ],
+      "primeira_imagem": {
+        "legenda": "O aviso de qualidade baixa na página acrescentada.",
+        "src": "/_blob/def8cd44122796cd4efb88fcf7ab7d04"
+      },
+      "sugestao": "Consertar.",
+      "titulo": "A página em branco acrescentada diz \"qualidade baixa\" e conta no sino"
+    },
+    {
+      "exemplos": [],
+      "explicacao": [
+        "Os quatro cartões da esquerda ficam cinza, vazios, mesmo depois de 20 segundos.",
+        "A tecla 4 e o botão \"Usar Mágico pro\" funcionam."
+      ],
+      "historico": [],
+      "id": "k0711-filtros-tela-cheia",
+      "opcoes": [
+        {
+          "id": "consertar",
+          "nome": "Consertar",
+          "texto": "Vai para a fila de consertos."
+        },
+        {
+          "id": "nao-e-erro",
+          "nome": "Não é erro",
+          "texto": "Fica como está."
+        },
+        {
+          "id": "depois",
+          "nome": "Fica para depois",
+          "texto": "Vai para a Lista de espera."
+        }
+      ],
+      "primeira_imagem": {
+        "legenda": "Os cartões vazios em \"Filtros em tela cheia\".",
+        "src": "/_blob/85707d7ea6a1dbace8d638fd9bfda85d"
+      },
+      "sugestao": "Consertar.",
+      "titulo": "Em \"Filtros em tela cheia\", os cartões ficam vazios"
+    },
+    {
+      "exemplos": [],
+      "explicacao": [
+        "No Siebmacher, a janela \"Ficou pronto!\" diz \"16 folhas para imprimir\".",
+        "Logo abaixo diz \"Separe as folhas em grupos de 5; o último grupo tem 3 folhas\", que dá 8 folhas. O arquivo tem 16 faces."
+      ],
+      "historico": [],
+      "id": "k0711-pronto-conta",
+      "opcoes": [
+        {
+          "id": "consertar",
+          "nome": "Consertar",
+          "texto": "Vai para a fila de consertos."
+        },
+        {
+          "id": "nao-e-erro",
+          "nome": "Não é erro",
+          "texto": "Fica como está."
+        },
+        {
+          "id": "depois",
+          "nome": "Fica para depois",
+          "texto": "Vai para a Lista de espera."
+        }
+      ],
+      "primeira_imagem": {
+        "legenda": "A janela \"Ficou pronto!\" com as duas contas.",
+        "src": "/_blob/6f5f71b99cec5156c26cd8f48b2c8117"
+      },
+      "sugestao": "Consertar.",
+      "titulo": "\"Ficou pronto!\" diz 16 folhas, e logo abaixo a conta dá 8"
+    },
+    {
+      "exemplos": [],
+      "explicacao": [
+        "Nos Lusíadas, página 13: mexer na inclinação marcou a página como conferida e tirou o aviso \"Não tenho certeza de onde cortar\".",
+        "Mas a lombada continua incerta."
+      ],
+      "historico": [],
+      "id": "k0711-inclinacao-conferida",
+      "opcoes": [
+        {
+          "id": "consertar",
+          "nome": "Consertar",
+          "texto": "Vai para a fila de consertos."
+        },
+        {
+          "id": "nao-e-erro",
+          "nome": "Não é erro",
+          "texto": "Fica como está."
+        },
+        {
+          "id": "depois",
+          "nome": "Fica para depois",
+          "texto": "Vai para a Lista de espera."
+        }
+      ],
+      "primeira_imagem": {
+        "legenda": "Depois de mexer na inclinação, o aviso da lombada sumiu.",
+        "src": "/_blob/945fe1ebc523c1d18e459e1ae9c26419"
+      },
+      "sugestao": "Consertar.",
+      "titulo": "Mexer na inclinação dá a página como conferida e some o aviso da lombada"
+    },
+    {
+      "exemplos": [],
+      "explicacao": [
+        "A lista só aparece em \"Mostrar detalhes...\", numa caixinha de 5 linhas.",
+        "Faltam Ctrl+Y, as setas, PageUp/PageDown, Home/End, Espaço e Tab, que funcionam."
+      ],
+      "historico": [],
+      "id": "k0711-f1-vazia",
+      "opcoes": [
+        {
+          "id": "consertar",
+          "nome": "Consertar",
+          "texto": "Vai para a fila de consertos."
+        },
+        {
+          "id": "nao-e-erro",
+          "nome": "Não é erro",
+          "texto": "Fica como está."
+        },
+        {
+          "id": "depois",
+          "nome": "Fica para depois",
+          "texto": "Vai para a Lista de espera."
+        }
+      ],
+      "primeira_imagem": {
+        "legenda": "A janela do F1.",
+        "src": "/_blob/803874742acc36c207e62d82bb018bc8"
+      },
+      "sugestao": "Consertar.",
+      "titulo": "A lista de atalhos (F1) abre vazia"
+    },
+    {
+      "exemplos": [],
+      "explicacao": [
+        "Fechei o programa com a Mão escolhida. Ao reabrir, a ferramenta estava em \"Cortar as bordas\"."
+      ],
+      "historico": [],
+      "id": "k0711-reabre-cortar",
+      "opcoes": [
+        {
+          "id": "consertar",
+          "nome": "Consertar",
+          "texto": "Vai para a fila de consertos."
+        },
+        {
+          "id": "nao-e-erro",
+          "nome": "Não é erro",
+          "texto": "Fica como está."
+        },
+        {
+          "id": "depois",
+          "nome": "Fica para depois",
+          "texto": "Vai para a Lista de espera."
+        }
+      ],
+      "primeira_imagem": {
+        "legenda": "O livro reaberto com o Cortar escolhido.",
+        "src": "/_blob/bf04b2bf97de1e05e1bd39ea442a58b6"
+      },
+      "sugestao": "Consertar.",
+      "titulo": "Ao fechar e reabrir, a ferramenta volta como \"Cortar as bordas\""
+    },
+    {
+      "exemplos": [],
+      "explicacao": [
+        "Nas páginas escolhidas da grade, \"deixar em branco\" grava as páginas em branco, mas as miniaturas continuam com texto.",
+        "É o mesmo tipo do erro da miniatura que já está na fila (item 9), agora na grade."
+      ],
+      "historico": [],
+      "id": "k0711-grade-branco",
+      "opcoes": [
+        {
+          "id": "consertar",
+          "nome": "Consertar",
+          "texto": "Vai para a fila de consertos."
+        },
+        {
+          "id": "nao-e-erro",
+          "nome": "Não é erro",
+          "texto": "Fica como está."
+        },
+        {
+          "id": "depois",
+          "nome": "Fica para depois",
+          "texto": "Vai para a Lista de espera."
+        }
+      ],
+      "primeira_imagem": {
+        "legenda": "A grade com as miniaturas ainda com texto.",
+        "src": "/_blob/81100b5fc74ee0376a27876527ebdc8e"
+      },
+      "sugestao": "Consertar.",
+      "titulo": "Na grade \"Todas as páginas\", \"deixar em branco\" não deixa a miniatura branca"
+    }
+  ],
+  "quadros": [],
+  "resumo": {
+    "paragrafos": [
+      "O agente levou os três livros até o PDF final, usando mouse, teclado e rodinha, com a janela na tela.",
+      "Os 3 graves estão em cima: o programa fechou sozinho uma vez; o Mover estraga uma página no PDF; o Automático desfaz o \"Tirar o fundo\" sem avisar. A gerente conferiu os três nos prints e no registro de erros.",
+      "Já conhecidos, vistos de novo (já estão na fila): o Dividir volta marcado; a folha espremida com a Mão; as marcações laranja com a Mão; a miniatura que não fica branca; a frase velha na página tirada; a lista do Automático que pula para o topo.",
+      "Funcionou bem: desfazer e refazer pelo teclado (10 seguidos), o Dividir, o Cortar e o Endireitar, o girar com o \"aplicar em\", \"desfazer nesta página\", o \"está certo\", a janela de salvar, a ordem dos cadernos, fechar e reabrir.",
+      "Ficou de fora: \"antes / depois\" com o Endireitar, o Mover e o marcar; elipse, polígono e varinha; \"juntar todas\" e \"dividir todas\"; o modo comparar; as Configurações; mandar para a impressora.",
+      "Para cada erro, escolha: consertar, não é erro, ou fica para depois. Nada muda no programa antes da sua escolha."
+    ],
+    "titulo": "15 erros novos de função, do mais grave ao menor"
+  },
+  "trabalho": "teste-kaique-funcoes"
+}

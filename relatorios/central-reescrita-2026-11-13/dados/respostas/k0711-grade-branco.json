@@ -1,0 +1,19 @@
+{
+  "comentario": "",
+  "conversa": [
+    {
+      "em": "2026-11-07T19:30:00Z",
+      "quem": "gerente",
+      "texto": "Na fila, junto com a miniatura que não fica branca."
+    }
+  ],
+  "em": "2026-11-07T16:00:24.512Z",
+  "gerente": "Na fila, junto com a miniatura que não fica branca.",
+  "gerenteEm": "2026-11-07T19:30:00Z",
+  "lida": true,
+  "opcao": "consertar",
+  "opcaoNome": "Consertar",
+  "relatorio": "teste-kaique-funcoes",
+  "samuelViu": false,
+  "volta": false
+}

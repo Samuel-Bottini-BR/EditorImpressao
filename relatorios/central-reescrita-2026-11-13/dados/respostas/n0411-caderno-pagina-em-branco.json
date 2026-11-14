@@ -1,0 +1,59 @@
+{
+  "anteriores": [
+    {
+      "comentario": "Você ainda não explicou o que está acontecendo",
+      "em": "2026-11-13T22:50:51.267Z",
+      "opcao": "nao-entendi",
+      "opcaoNome": "Ainda não entendi"
+    },
+    {
+      "comentario": "",
+      "em": "2026-11-13T22:50:54.707Z",
+      "opcao": "nao-entendi",
+      "opcaoNome": "Ainda não entendi"
+    }
+  ],
+  "comentario": "",
+  "conversa": [
+    {
+      "em": "2026-11-08T19:21:30.895Z",
+      "quem": "samuel",
+      "texto": "Porque usou uma folha sem estar divida?  E essa mensagem em cima de folha em branco, porque? Ali em cima é para ter só a numeração das páginas."
+    },
+    {
+      "em": "2026-11-13T20:40:00Z",
+      "quem": "gerente",
+      "texto": "Você tem razão: nesse print o livro não estava dividido (a etapa Dividir estava desligada), por isso cada lado mostra a folha inteira. O texto em cima é a numeração: o \"em branco\" diz qual lado do papel sai sem página. Pus uma opção nova, só com o número. O print com o livro dividido vem na próxima leva."
+    },
+    {
+      "em": "2026-11-13T22:40:00Z",
+      "quem": "gerente",
+      "texto": "Print refeito com o livro dividido. O Gradus dividido não tem lugar sem página, então o exemplo é o Righetti, folha 66 de 68."
+    },
+    {
+      "em": "2026-11-13T22:50:51.267Z",
+      "quem": "samuel",
+      "texto": "Ainda não entendi · \"Você ainda não explicou o que está acontecendo\""
+    },
+    {
+      "em": "2026-11-13T22:51:08.123Z",
+      "quem": "samuel",
+      "texto": "Respondi de novo: Ainda não entendi"
+    },
+    {
+      "em": "2026-11-13T22:55:15Z",
+      "quem": "gerente",
+      "texto": "Do que se trata: o que está acontecendo é isto. O livro é impresso em cadernos de folhas dobradas, e cada folha de papel leva 4 páginas: 2 na frente e 2 no verso. Quando o número de páginas não fecha certinho o último caderno, sobram lugares sem página numa folha, e eles saem em branco. No Automático, na etapa \"Montar cadernos\", em cima de cada folha está escrito quais páginas vão nela, por exemplo \"Folha 1 de 18 — frente: páginas 20 e 1\". No Righetti (foto), a folha 66 tem dois lugares sem página, e hoje está escrito \"frente: páginas em branco e 261\" e \"verso: páginas 262 e em branco\". Seu comentário: \"Você ainda não explicou o que está acontecendo\" — é isso: a pergunta é só como escrever, em cima da folha, o lugar que fica sem página. O que você escolhe: só o número (\"frente: página 261\"), como está hoje, ou \"frente: em branco e página 261\"."
+    }
+  ],
+  "em": "2026-11-13T22:51:08.123Z",
+  "gerente": "Do que se trata: o que está acontecendo é isto. O livro é impresso em cadernos de folhas dobradas, e cada folha de papel leva 4 páginas: 2 na frente e 2 no verso. Quando o número de páginas não fecha certinho o último caderno, sobram lugares sem página numa folha, e eles saem em branco. No Automático, na etapa \"Montar cadernos\", em cima de cada folha está escrito quais páginas vão nela, por exemplo \"Folha 1 de 18 — frente: páginas 20 e 1\". No Righetti (foto), a folha 66 tem dois lugares sem página, e hoje está escrito \"frente: páginas em branco e 261\" e \"verso: páginas 262 e em branco\". Seu comentário: \"Você ainda não explicou o que está acontecendo\" — é isso: a pergunta é só como escrever, em cima da folha, o lugar que fica sem página. O que você escolhe: só o número (\"frente: página 261\"), como está hoje, ou \"frente: em branco e página 261\".",
+  "gerenteEm": "2026-11-13T22:55:15Z",
+  "lida": true,
+  "opcao": "nao-entendi",
+  "opcaoNome": "Ainda não entendi",
+  "reabrir": false,
+  "relatorio": "perguntas-04-11",
+  "samuelViu": false,
+  "volta": false
+}

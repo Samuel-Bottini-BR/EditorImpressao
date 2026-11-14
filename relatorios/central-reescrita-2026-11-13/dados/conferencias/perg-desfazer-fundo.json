@@ -1,0 +1,46 @@
+{
+  "nome": "Onde fica o \"Desfazer o tirar o fundo\" (10/11)",
+  "ordem": 74,
+  "origem": "Conserto dos graves de 10/11 (agente graves-2026-11-10). Os outros dois graves já estão consertados: miniatura igual ao PDF (D-649) e cartões da tela cheia (D-648). Este parou só no lugar do botão. Relatório: .claude/worktrees/graves/relatorios/graves-2026-11-10/relatorio.html",
+  "perguntas": [
+    {
+      "exemplos": [
+        {
+          "legenda": "Já consertado, só para você ver (D-649): página 9 do Palatino movida para cima, depois de reabrir o livro. Antes, a miniatura mostrava outra coisa que o PDF; agora sai igual ao PDF.",
+          "src": "/_blob/c84c38491fe88d36e76cb4bc70b223d7"
+        },
+        {
+          "legenda": "Já consertado, só para você ver (D-648): cartões de \"Filtros em tela cheia\". Antes mostravam outra página (ou vazios); agora a página da vez em cada filtro.",
+          "src": "/_blob/712de86962a88e8ac01bed9498bb0df7"
+        }
+      ],
+      "explicacao": [
+        "O defeito (print, Siebmacher, cópia): depois do \"Sim, tirar o fundo\", o papel fica branco. Rodando o Automático, o papel velho volta em todas as páginas, sem aviso. Isso acontece porque hoje o \"Tirar o fundo\" é um filtro igual aos outros: trocar de filtro (até o \"Original\" que o Automático põe) desfaz o fundo tirado.",
+        "Você já decidiu o que fazer (D-646): nenhum filtro traz o fundo de volta; só um botão próprio, \"desfazer o tirar o fundo\". Então, depois do \"Tirar o fundo\", Preto e branco, Melhorar, Mágico pro, Original e o Automático passam a trabalhar em cima da página já sem o fundo.",
+        "Falta só uma coisa que o Livro não diz: ONDE fica esse botão. Sugestão: no mesmo lugar do \"Tirar o fundo\" (D-667, a ferramenta igual em todo lugar): no menu Filtro, logo abaixo de \"Tirar o fundo\", e no painel \"Filtro da página\", embaixo das figurinhas, com o \"Aplicar em\" de sempre (só nesta / todas / daqui em diante).",
+        "O que muda junto, para você saber: três provas antigas cobravam o jeito velho (o \"Original\" trazia o fundo de volta). Elas passam a cobrar o seu jeito novo. Projetos já salvos com \"Tirar o fundo\" abrem com o fundo tirado e o filtro Original. E o arquivo do projeto ganha uma informação nova em cada página, \"fundo tirado: sim ou não\", separada do filtro: é isso que deixa o fundo tirado ficar quando o filtro muda. O seu \"Sim\" vale também para essa mudança.",
+        "Suas palavras no Livro: D-646 (07/11/2026): \"Consertar\" · \"É só criar uma opção para desfazer o tirar fundo, e só vai desfazer o tirar fundo quando apertar ela. E via de regra, nenhum filtro deve fazer o fundo voltar.\" · D-134 (29/09/2026): \"eu quero poder escolher tirar o fundo sem colocar nenhum filtro.\" · D-667 (10/11/2026): \"se mudou a ferramenta, muda em todos os lugares.\""
+      ],
+      "historico": [],
+      "id": "fundo-desfazer-lugar",
+      "opcoes": [
+        {
+          "id": "sim",
+          "nome": "Sim: abaixo do \"Tirar o fundo\", no menu Filtro e no painel, com o \"Aplicar em\" (recomendo)",
+          "texto": "O agente faz o botão nesses dois lugares e muda as três provas antigas para o seu jeito novo."
+        },
+        {
+          "id": "outro",
+          "nome": "Outro lugar ou outro nome",
+          "texto": "Escreva no comentário onde quer o botão ou como ele se chama."
+        }
+      ],
+      "primeira_imagem": {
+        "legenda": "Siebmacher (cópia). Azul: páginas 3 a 6 com o fundo tirado. Laranja: as mesmas páginas depois de rodar o Automático; o papel velho voltou nas quatro (vermelho).",
+        "src": "/_blob/c38ed916558c26fb07c1264b59074d96"
+      },
+      "sugestao": "Sugestão da gerente: Sim, abaixo do \"Tirar o fundo\", nos dois lugares.",
+      "titulo": "O botão \"Desfazer o tirar o fundo\" pode ficar logo abaixo do \"Tirar o fundo\", no menu Filtro e no painel Filtro da página?"
+    }
+  ]
+}

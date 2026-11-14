@@ -1,0 +1,19 @@
+{
+  "comentario": "Isso se aplica só se eu fizer alterações né?",
+  "conversa": [
+    {
+      "em": "2026-11-07T19:30:00Z",
+      "quem": "gerente",
+      "texto": "Sim, só quando você muda alguma página depois de gerar o PDF. Aí o cartão volta a dizer \"N de M conferidas\" e não avisa que o PDF ficou velho. Fica assim, ou escreve \"PDF desatualizado\"?"
+    }
+  ],
+  "em": "2026-11-06T21:29:57.774Z",
+  "gerente": "Sim, só quando você muda alguma página depois de gerar o PDF. Aí o cartão volta a dizer \"N de M conferidas\" e não avisa que o PDF ficou velho. Fica assim, ou escreve \"PDF desatualizado\"?",
+  "gerenteEm": "2026-11-07T19:30:00Z",
+  "lida": true,
+  "opcao": "nao-entendi",
+  "opcaoNome": "Ainda não entendi",
+  "relatorio": "acrescentei-27-10",
+  "samuelViu": false,
+  "volta": false
+}

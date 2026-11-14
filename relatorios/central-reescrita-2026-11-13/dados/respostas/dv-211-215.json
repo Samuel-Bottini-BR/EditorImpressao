@@ -1,0 +1,48 @@
+{
+  "anteriores": [
+    {
+      "comentario": "",
+      "em": "2026-11-08T19:29:17.189Z",
+      "opcao": "nao-entendi",
+      "opcaoNome": "Ainda não entendi"
+    }
+  ],
+  "comentario": "",
+  "conversa": [
+    {
+      "em": "2026-11-08T19:29:17.189Z",
+      "quem": "samuel",
+      "texto": "Continuo sem entender o que aconteceu, prints inconclusivos, qual é antes e depois? Um monte de texto e não consigo saber o que era para saber realmente, se está funcionando como eu quero ou não."
+    },
+    {
+      "em": "2026-11-13T20:40:00Z",
+      "quem": "gerente",
+      "texto": "Você tem razão: o print não deixava claro o que era antes e o que era depois. Em poucas palavras: no Preto e branco com \"Reduzir cores\", metade da palavra virava preta e metade ficava clara. Isso foi consertado em 27/10, e hoje a palavra sai inteira numa cor só. Vou refazer o print com faixa azul para antes, verde para depois e o defeito circulado."
+    },
+    {
+      "em": "2026-11-13T22:40:00Z",
+      "quem": "gerente",
+      "texto": "Correção minha: eu tinha escrito que hoje a palavra sai inteira numa cor só, e isso não é verdade. O print novo mostra: antes do conserto de 27/10, parte das letras saía preta e parte clara (azul). Hoje nenhuma letra sai preta nem some, mas a palavra ainda sai em duas cores: em \"S. Leonard\", o \"S.\", o \"L\" e o \"n\" saem azul-acinzentados e o resto bege; no scan, a palavra é de uma tinta só (faixa de baixo). Por isso a pergunta mudou. A pergunta voltou com o print novo e opções novas."
+    },
+    {
+      "em": "2026-11-13T22:49:44.059Z",
+      "quem": "samuel",
+      "texto": "Respondi de novo: Consertar: cada palavra sai numa cor só, como no scan (recomendo)"
+    },
+    {
+      "em": "2026-11-13T22:55:15Z",
+      "quem": "gerente",
+      "texto": "Do que se trata: no Preto e branco com \"Letras com a cor delas\" + \"Reduzir cores\" (Livro de Horas 26), a letra não some mais desde 27/10, mas a mesma palavra ainda sai em duas cores (azul e bege), quando no scan ela é de uma tinta só. Você escolheu \"Consertar: cada palavra sai numa cor só, como no scan\". Anotado no Livro como D-701; entra na fila de consertos."
+    }
+  ],
+  "em": "2026-11-13T22:49:44.059Z",
+  "gerente": "Do que se trata: no Preto e branco com \"Letras com a cor delas\" + \"Reduzir cores\" (Livro de Horas 26), a letra não some mais desde 27/10, mas a mesma palavra ainda sai em duas cores (azul e bege), quando no scan ela é de uma tinta só. Você escolheu \"Consertar: cada palavra sai numa cor só, como no scan\". Anotado no Livro como D-701; entra na fila de consertos.",
+  "gerenteEm": "2026-11-13T22:55:15Z",
+  "lida": true,
+  "opcao": "consertar",
+  "opcaoNome": "Consertar: cada palavra sai numa cor só, como no scan (recomendo)",
+  "reabrir": false,
+  "relatorio": "duvidas",
+  "samuelViu": false,
+  "volta": false
+}

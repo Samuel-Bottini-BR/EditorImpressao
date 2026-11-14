@@ -1,0 +1,19 @@
+{
+  "comentario": "Ela deveria voltar com o conteúdo dela.",
+  "conversa": [
+    {
+      "em": "2026-11-07T19:30:00Z",
+      "quem": "gerente",
+      "texto": "Anotado (D-650): trazida de volta, a página volta com o conteúdo dela, e o menu não deixa pôr em branco uma página tirada."
+    }
+  ],
+  "em": "2026-11-07T16:11:36.283Z",
+  "gerente": "Anotado (D-650): trazida de volta, a página volta com o conteúdo dela, e o menu não deixa pôr em branco uma página tirada.",
+  "gerenteEm": "2026-11-07T19:30:00Z",
+  "lida": true,
+  "opcao": "consertar",
+  "opcaoNome": "Consertar",
+  "relatorio": "teste-kaique-funcoes",
+  "samuelViu": false,
+  "volta": false
+}

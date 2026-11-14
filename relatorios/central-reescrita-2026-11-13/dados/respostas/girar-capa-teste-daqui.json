@@ -1,0 +1,38 @@
+{
+  "anteriores": [
+    {
+      "comentario": "Não estou vendo provas do que você diz, o exemplo da pagina que gira do miolo, eu ainda não entendi.",
+      "em": "2026-11-09T19:17:57.091Z",
+      "opcao": "nao-entendi",
+      "opcaoNome": "Ainda não entendi"
+    }
+  ],
+  "comentario": "",
+  "conversa": [
+    {
+      "em": "2026-11-09T19:17:57.091Z",
+      "quem": "samuel",
+      "texto": "Ainda não entendi · \"Não estou vendo provas do que você diz, o exemplo da pagina que gira do miolo, eu ainda não entendi.\""
+    },
+    {
+      "em": "2026-11-09T21:00:00Z",
+      "quem": "gerente",
+      "texto": "Refiz a pergunta com provas: a página 6 (folha inteira) no jeito antigo e no novo. Escolha de novo."
+    },
+    {
+      "em": "2026-11-10T12:03:52.942Z",
+      "quem": "samuel",
+      "texto": "Respondi de novo: Sim, pode trocar (recomendo)"
+    }
+  ],
+  "em": "2026-11-10T12:03:52.942Z",
+  "gerente": "Anotado (D-663): o teste vai ser trocado junto com o conserto acima.",
+  "gerenteEm": "2026-11-10T12:30:00Z",
+  "lida": true,
+  "opcao": "sim",
+  "opcaoNome": "Sim, pode trocar (recomendo)",
+  "reabrir": false,
+  "relatorio": "perg-girar-capa",
+  "samuelViu": true,
+  "volta": false
+}

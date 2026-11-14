@@ -1,0 +1,56 @@
+{
+  "id": "auditoria-1-nao-funciona",
+  "nome": "Auditoria 1: não funciona (1)",
+  "ordem": -8,
+  "origem": "Auditoria de 28/10 (linhas por decisão, provas rodadas em fc38afd) e Livro de decisões do ramo da rodada de consertos; refeita em 29/10 a pedido do Samuel, sem reavaliar nada",
+  "perguntas": [
+    {
+      "exemplos": [
+        {
+          "legenda": "O seu print de 28/10 (sessão 2, 2-7, Palatino 7): depois do \"está certo\" a faixa continua com o aviso e o botão.",
+          "src": "vt28/alternativas/s2-04-esta-certo-faixa-continua.jpg"
+        }
+      ],
+      "explicacao": [
+        "Situação na versão de teste: Não funciona bem.",
+        "Você pediu (28/10/2026): Sessão 2 dos testes, 2-7: \"eu cliquei está certo mas o livro continua com o aviso naquela folha, não devia ter mais aviso se eu apertei está certo\" · \"o está certo deixou o tique verde mas continuou com o aviso na pagina, dá para ver que a opção esta certo continua aparecendo, deveria sumir quando eu aperto está certo.\"",
+        "O que isso quer dizer: Depois de \"está certo\", a faixa da página não mostra mais aviso nem o botão \"está certo\" (hoje fica a frase da ferramenta, ex.: \"Vou tirar o fundo desta página...\", com \"está certo\" e \"próxima dúvida\"). O que a faixa mostra no lugar não foi dito: perguntar.",
+        "Solução na versão de teste: o botão continua na faixa depois de clicado.",
+        "Parte do programa: \"está certo\" e o número de dúvidas.",
+        "Ressalva: Decisão nova de 28/10, ainda não feita"
+      ],
+      "id": "au-d-572",
+      "opcoes": [
+        {
+          "id": "fazer",
+          "nome": "Pôr na lista de fazer",
+          "texto": "Entra na fila de trabalho. A gerente faz uma coisa de cada vez e te chama para testar."
+        },
+        {
+          "id": "depois",
+          "nome": "Fica para depois",
+          "texto": "Continua anotada no Livro de decisões, sem prazo."
+        },
+        {
+          "id": "nao-quero",
+          "nome": "Não quero mais",
+          "texto": "A decisão fica marcada como descartada no Livro, com a sua resposta."
+        }
+      ],
+      "titulo": "D-572 · Depois de \"está certo\", a faixa da página não mostra mais aviso nem o botão \"está certo\" (hoje fica a frase…"
+    }
+  ],
+  "quadros": [],
+  "ressalvas": [
+    "Fora das decisões — testes automáticos no PC: Suíte do PC, 28/10: 3310 passaram, 6 falharam, 1 erro (precisa ficar verde antes de entrar no programa de verdade)"
+  ],
+  "resumo": {
+    "paragrafos": [
+      "Decisões suas que foram feitas, mas não funcionam bem para você. São 1, uma por quadro, na ordem em que se usa o programa (abrir, Automático, ferramentas, dividir, cortar, filtros, marcar, processar, imprimir).",
+      "Cada decisão tem três escolhas: \"Pôr na lista de fazer\" (entra na fila de trabalho; a gerente faz uma coisa de cada vez e te chama para testar), \"Fica para depois\" (continua anotada, sem prazo) ou \"Não quero mais\" (fica descartada no Livro, com a sua resposta). Quando existe, o print de quando o assunto foi decidido aparece junto, para lembrar.",
+      "As seis abas \"Auditoria\" substituem a antiga \"Auditoria da versão de teste\" (25 quadros misturados). Os achados do seu teste de 28/10 (2-1 a 2-12) não estão aqui: estão na aba \"O que você não gostou: alternativas\"."
+    ],
+    "titulo": "Auditoria 1: não funciona: 1"
+  },
+  "trabalho": "Auditoria da versão de teste (rodada de consertos), uma decisão por quadro"
+}

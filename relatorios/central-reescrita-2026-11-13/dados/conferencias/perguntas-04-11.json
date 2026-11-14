@@ -1,0 +1,284 @@
+{
+  "nome": "Perguntas novas (04/11)",
+  "ordem": 62,
+  "origem": "Comentários do Samuel na Central, 04/11/2026",
+  "perguntas": [
+    {
+      "exemplos": [],
+      "explicacao": [
+        "Você disse (04/11): \"sempre que eu rodo uma coisa no automatico, quando volto no automatico as coisas que rodaram estão marcadas, elas tem que voltar todas desmarcadas.\"",
+        "Hoje, caixinha marcada quer dizer \"esta etapa está no livro\". Por isso ela volta marcada (foto).",
+        "E desmarcar e rodar tira a etapa do livro. Foi o que você decidiu em 30/10, pelo relato do Kaique dos cadernos que voltavam sozinhos.",
+        "Se as caixinhas voltarem todas desmarcadas, o próximo Rodar tiraria do livro tudo o que já foi feito. Então o sentido da caixinha precisa mudar."
+      ],
+      "id": "n0411-caixinhas-depois-de-rodar",
+      "opcoes": [
+        {
+          "id": "desmarcadas",
+          "nome": "Voltam desmarcadas; desmarcada = não mexer agora",
+          "texto": "Depois de rodar, todas voltam desmarcadas. Rodar só faz as etapas marcadas; o que já foi feito fica no livro. Para tirar uma etapa do livro todo (ex.: cadernos), aparece um botão \"tirar do livro\" ao lado dela."
+        },
+        {
+          "id": "como-hoje",
+          "nome": "Fica como hoje",
+          "texto": "Marcada = está no livro. Desmarcar e rodar tira a etapa do livro."
+        }
+      ],
+      "primeira_imagem": {
+        "legenda": "Hoje: Endireitar rodado, janela aberta de novo, a caixinha voltou marcada.",
+        "src": "/_blob/45dff64d45dee37eb2b189f0bdc8072f"
+      },
+      "sugestao": "A primeira. É o que você pediu, e o que já foi feito não se perde.",
+      "titulo": "Automático: depois de rodar, todas as caixinhas voltam desmarcadas?"
+    },
+    {
+      "exemplos": [],
+      "explicacao": [
+        "Esses dois campos (foto, embaixo à esquerda) servem para imprimir só um pedaço do livreto. Exemplo: só as folhas 5 a 8, se uma delas saiu errada.",
+        "\"todas\" quer dizer sem limite: sai o livreto inteiro. Você achou \"0 = todas\" horrível.",
+        "O mesmo jeito aparece em \"Páginas do livro de (0 = todas)\", mais abaixo na janela."
+      ],
+      "id": "n0411-folhas-de-todas",
+      "opcoes": [
+        {
+          "id": "caixinha",
+          "nome": "Caixinha \"Imprimir só algumas folhas\"",
+          "texto": "Desmarcada, sai tudo e não aparece número nenhum. Marcada, aparecem \"da folha [1] até a folha [32]\", já com o livreto inteiro escrito. O mesmo para as páginas do livro."
+        },
+        {
+          "id": "outro",
+          "nome": "Outro jeito",
+          "texto": "Escreva no comentário como quer."
+        }
+      ],
+      "primeira_imagem": {
+        "legenda": "Janela \"Montar para imprimir\" (Palatino). Embaixo à esquerda: \"Folhas de (0 = todas): todas até todas\".",
+        "src": "/_blob/b688ce71c6205355be684e763522c2a8"
+      },
+      "sugestao": "A primeira: some o \"0 = todas\", e os números só aparecem quando você quer um pedaço.",
+      "titulo": "Montar para imprimir: trocar o \"Folhas de (0 = todas)\"?"
+    },
+    {
+      "exemplos": [
+        {
+          "legenda": "O lado direito rolado até embaixo: o quadro \"O que vai sair\" inteiro, com o texto do Palatino (circulado).",
+          "src": "/_blob/a71f5f995ccda67c1b3deff8fd253bba"
+        }
+      ],
+      "explicacao": [
+        "No lado direito da janela \"Montar para imprimir\", embaixo das folhas, há um quadro chamado \"O que vai sair\".",
+        "Ele diz, antes de gravar, o que vai sair da impressora. Exemplo de verdade (Palatino): \"Livreto (cadernos) em papel A4. Entram as 134 páginas do livro. Saem 34 folhas de papel (frente e verso), 7 cadernos; o último com 4 folhas. Ao gravar, os passos para imprimir e dobrar aparecem aqui.\"",
+        "Com a janela no tamanho de fábrica, ele fica fora da vista: nem o título aparece; só a barra de rolagem mostra que há mais coisa embaixo (primeira foto).",
+        "A pergunta: ele fica embaixo (rolando para ler) ou sobe para cima das folhas?"
+      ],
+      "historico": [
+        {
+          "em": "2026-11-08T19:13:08.023Z",
+          "quem": "samuel",
+          "texto": "Como assim, o que vai sair? Quero um exemplo disso."
+        },
+        {
+          "em": "2026-11-13T20:40:00Z",
+          "quem": "gerente",
+          "texto": "É o quadro que diz, antes de gravar, o que vai sair da impressora. Exemplo: \"Livreto em papel A4. Entram as 64 páginas do livro. Saem 16 folhas de papel (frente e verso), 4 cadernos.\" Hoje ele fica escondido no pé da janela, e é preciso rolar para ler. A pergunta é se ele sobe para cima das folhas, para ler sem rolar."
+        },
+        {
+          "em": "2026-11-13T22:40:00Z",
+          "quem": "gerente",
+          "texto": "Pus o exemplo de verdade (Palatino), com o quadro inteiro."
+        },
+        {
+          "em": "2026-11-13T22:55:31.960Z",
+          "quem": "samuel",
+          "texto": "\"o fechar poderia virar um x no lado superior direito e sobraria espaço para aparecer essa mensagem em baixo sem ter que rolar.\""
+        },
+        {
+          "em": "2026-11-13T22:56:27Z",
+          "quem": "gerente",
+          "texto": "Do que se trata: o quadro \"O que vai sair\" da janela \"Montar para imprimir\" (o resumo do que sai da impressora) fica escondido no pé da janela. Sua proposta: \"o fechar poderia virar um x no lado superior direito e sobraria espaço para aparecer essa mensagem em baixo sem ter que rolar.\" Anotado no Livro como D-702: o botão \"fechar\" vira um X no canto de cima à direita, e o quadro \"O que vai sair\" fica embaixo, à vista sem rolar. Entra na fila de consertos. Se mesmo assim não couber, eu te mostro com print antes."
+        }
+      ],
+      "id": "n0411-o-que-vai-sair",
+      "opcoes": [
+        {
+          "id": "embaixo",
+          "nome": "Fica embaixo",
+          "texto": "Para ler o resumo, rola-se o lado direito."
+        },
+        {
+          "id": "em-cima",
+          "nome": "Sobe para cima das folhas",
+          "texto": "O resumo aparece sem rolar; as folhas ficam logo abaixo."
+        }
+      ],
+      "primeira_imagem": {
+        "legenda": "Como abre o \"Montar para imprimir\" (Palatino, tamanho de fábrica): o quadro \"O que vai sair\" fica fora da vista, no pé do lado direito. Prints de 13/11, programa de hoje (versão de teste), cópias dos livros, janela de 1280 x 657.",
+        "src": "/_blob/013ca75f090371837d0ce00d3cf65885"
+      },
+      "titulo": "Montar para imprimir: o quadro \"O que vai sair\" fica embaixo?"
+    },
+    {
+      "exemplos": [
+        {
+          "legenda": "O menu do livro hoje: nenhum item para recuperar.",
+          "src": "vt28/perguntas/c-recuperar-2.jpg"
+        }
+      ],
+      "explicacao": [
+        "Sua dúvida: \"a copia que ele guarda é um pdf pronto com as mudanças que foram feitas? ou é um arquivo que diz só como o pdf era antes?\"",
+        "Não é um PDF. É o arquivo das suas escolhas naquele livro: onde dividiu, cortou e endireitou, os filtros, o que marcou e o histórico.",
+        "Quando o programa precisa recomeçar a conferência (por exemplo, o PDF ganhou ou perdeu uma folha), ele guarda essa cópia antes. Com ela, dá para voltar o livro como você tinha deixado. O PDF do livro não muda.",
+        "Hoje não há botão para isso: só mexendo nos arquivos à mão (segunda foto)."
+      ],
+      "id": "n0411-recuperar",
+      "opcoes": [
+        {
+          "id": "depois",
+          "nome": "Sim, mas depois desta rodada de consertos",
+          "texto": "Fica na Lista de espera; agora só entra o que você já mandou."
+        },
+        {
+          "id": "sim",
+          "nome": "Sim, quero já",
+          "texto": "O menu do livro ganha \"Recuperar o trabalho anterior\", com as cópias por data e hora."
+        },
+        {
+          "id": "nao",
+          "nome": "Não precisa",
+          "texto": "A cópia continua guardada; recuperar fica só à mão."
+        }
+      ],
+      "primeira_imagem": {
+        "legenda": "O aviso do recomeço (Boécio, cópia, PDF com uma página a menos).",
+        "src": "vt28/perguntas/c-recuperar-1.jpg"
+      },
+      "sugestao": "Sim, mas depois desta rodada de consertos.",
+      "titulo": "\"Recuperar o trabalho anterior\" no menu do livro?"
+    },
+    {
+      "exemplos": [],
+      "explicacao": [
+        "Você pediu (04/11): \"a gente tem que ter uma maneira de inverter isso né de forma perfeita, agora veja como o scantailor faz isso, eu acho que faz.\"",
+        "O ScanTailor não faz. Ele tem uma caixinha igual à nossa \"Letra clara em fundo escuro\": limpa a página, mas ela sai com letra branca em fundo escuro, como entrou.",
+        "Quem faz é a Leptonica, uma biblioteca que já vem com o leitor de texto instalado no seu PC. Ela acha sozinha as partes escuras da página e vira só elas.",
+        "Na foto, uma página de teste montada (não é de livro). Primeira coluna: como entra. Segunda: a Leptonica, que vira só as partes escuras. Terceira: virar a página inteira.",
+        "Veja a faixa do meio: virando a página inteira, o papel branco em volta vira preto. Com a Leptonica, não.",
+        "Nas três opções, você continua marcando à mão, página por página, como escolheu em 21/10. Vale só no Preto e branco: em cor, virar troca as cores (azul vira amarelo)."
+      ],
+      "historico": [
+        {
+          "em": "2026-11-08T19:16:46.375Z",
+          "quem": "samuel",
+          "texto": "Essa opção vai estar no automático também? Vai estar nas opções dos filtros para rodar no livro todo e também em uma só página? Se essa função nova ser colocada não pode afetar o programa e suas funcionalidades ou dar erros."
+        },
+        {
+          "em": "2026-11-13T20:40:00Z",
+          "quem": "gerente",
+          "texto": "No Automático, não: em 21/10 você decidiu que se marca à mão, página por página. No filtro, vale na página que você marcar. Se quiser também \"todas\" e \"daqui em diante\", é uma escolha nova: escreva no comentário. E não afeta o resto do programa: só muda a página marcada, e as provas do que já foi testado continuam rodando a cada mudança."
+        },
+        {
+          "em": "2026-11-13T22:55:15Z",
+          "quem": "gerente",
+          "texto": "Do que se trata: em 04/11 você pediu um jeito de transformar letra branca em fundo escuro (slide, faixa escura) em letra preta em papel branco. A proposta tem três jeitos: virar só as partes escuras da página (recomendo), virar a página inteira, ou virar só uma área que você marcar (foto: as três colunas). Suas dúvidas: vai estar no Automático? Vai dar para rodar no livro todo e numa página só? Não pode estragar o resto. Respostas: no Automático não, porque em 21/10 você decidiu que isso se marca à mão, página por página. Vale na página que você marcar; se quiser também \"todas\" e \"daqui em diante\", escreva no comentário. Não estraga o resto: só muda a página marcada, e os testes do que já foi aprovado continuam rodando. O que você escolhe: qual dos três jeitos."
+        }
+      ],
+      "id": "n0411-inverter-letra-clara",
+      "opcoes": [
+        {
+          "id": "partes-escuras",
+          "nome": "Virar só as partes escuras (Leptonica)",
+          "texto": "Você marca a página; o programa acha as partes escuras e vira só elas. A gravura marcada fica como está."
+        },
+        {
+          "id": "pagina-inteira",
+          "nome": "Virar a página inteira",
+          "texto": "Bom para slide todo escuro. Numa página com só uma faixa escura, o papel branco vira preto."
+        },
+        {
+          "id": "area",
+          "nome": "Virar só uma área que eu marcar",
+          "texto": "Nada automático: você marca o pedaço escuro em cada página."
+        }
+      ],
+      "primeira_imagem": {
+        "legenda": "Página de teste. Coluna 1: como entra. Coluna 2: Leptonica, só as partes escuras viram. Coluna 3: página inteira virada (a faixa ficou certa, mas o papel em volta ficou preto).",
+        "src": "fotos/inverter/painel.png"
+      },
+      "sugestao": "A primeira. É a única que acerta o slide e a faixa escura. Cuidado: uma foto escura também viraria negativo, então a gravura marcada fica de fora.",
+      "titulo": "Letra branca em fundo escuro: como virar letra preta em papel branco?"
+    },
+    {
+      "exemplos": [
+        {
+          "legenda": "Gradus dividido: a última folha (35 de 35) é \"frente: páginas 132 e 129 / verso: páginas 130 e 131\"; não há lugar sem página nesse livro.",
+          "src": "/_blob/8413b537301e436a1d7f79e88013da4d"
+        }
+      ],
+      "explicacao": [
+        "Os números das páginas nas folhas do caderno estão prontos (D-604). Exemplo: \"Folha 1 de 18 — frente: páginas 20 e 1\".",
+        "Você perguntou por que o print usou uma folha sem estar dividida: tinha razão, o Gradus estava sem dividir. Dividido, o Gradus não tem lugar sem página (140 páginas = 7 cadernos de 20 cheios), por isso o exemplo novo é o Righetti dividido.",
+        "No Righetti (270 páginas), a folha 66 de 68 tem dois lugares sem página, que saem brancos. Hoje em cima está escrito: \"frente: páginas em branco e 261\" e \"verso: páginas 262 e em branco\".",
+        "O texto em cima é a numeração das páginas. A pergunta é como escrever o lado do papel que não tem página."
+      ],
+      "historico": [
+        {
+          "em": "2026-11-08T19:21:30.895Z",
+          "quem": "samuel",
+          "texto": "Porque usou uma folha sem estar divida?  E essa mensagem em cima de folha em branco, porque? Ali em cima é para ter só a numeração das páginas."
+        },
+        {
+          "em": "2026-11-13T20:40:00Z",
+          "quem": "gerente",
+          "texto": "Você tem razão: nesse print o livro não estava dividido (a etapa Dividir estava desligada), por isso cada lado mostra a folha inteira. O texto em cima é a numeração: o \"em branco\" diz qual lado do papel sai sem página. Pus uma opção nova, só com o número. O print com o livro dividido vem na próxima leva."
+        },
+        {
+          "em": "2026-11-13T22:40:00Z",
+          "quem": "gerente",
+          "texto": "Print refeito com o livro dividido (Righetti, folha 66 de 68)."
+        },
+        {
+          "em": "2026-11-13T22:50:51.267Z",
+          "quem": "samuel",
+          "texto": "Ainda não entendi · \"Você ainda não explicou o que está acontecendo\""
+        },
+        {
+          "em": "2026-11-13T22:55:15Z",
+          "quem": "gerente",
+          "texto": "Do que se trata: o que está acontecendo é isto. O livro é impresso em cadernos de folhas dobradas, e cada folha de papel leva 4 páginas: 2 na frente e 2 no verso. Quando o número de páginas não fecha certinho o último caderno, sobram lugares sem página numa folha, e eles saem em branco. No Automático, na etapa \"Montar cadernos\", em cima de cada folha está escrito quais páginas vão nela, por exemplo \"Folha 1 de 18 — frente: páginas 20 e 1\". No Righetti (foto), a folha 66 tem dois lugares sem página, e hoje está escrito \"frente: páginas em branco e 261\" e \"verso: páginas 262 e em branco\". Seu comentário: \"Você ainda não explicou o que está acontecendo\" — é isso: a pergunta é só como escrever, em cima da folha, o lugar que fica sem página. O que você escolhe: só o número (\"frente: página 261\"), como está hoje, ou \"frente: em branco e página 261\"."
+        }
+      ],
+      "id": "n0411-caderno-pagina-em-branco",
+      "opcoes": [
+        {
+          "id": "so-numero",
+          "nome": "Só o número: \"frente: página 61\"",
+          "texto": "Em cima fica só a numeração. O lado do papel sem página não aparece escrito."
+        },
+        {
+          "id": "como-esta",
+          "nome": "Fica como está",
+          "texto": "\"frente: páginas em branco e 61\""
+        },
+        {
+          "id": "em-branco-e-pagina",
+          "nome": "\"frente: em branco e página 61\"",
+          "texto": "E no verso: \"página 62 e em branco\"."
+        }
+      ],
+      "primeira_imagem": {
+        "legenda": "Righetti dividido, Automático, etapa 7, folha 66 de 68: \"frente: páginas em branco e 261\" / \"verso: páginas 262 e em branco\". Prints de 13/11, programa de hoje (versão de teste), cópias dos livros, janela de 1280 x 657.",
+        "src": "/_blob/d5a1c48649d797130f1e454d994d8de5"
+      },
+      "sugestao": "A segunda: fica mais claro qual lado sai branco.",
+      "titulo": "Folha do caderno com lugar sem página: como escrever?"
+    }
+  ],
+  "quadros": [],
+  "resumo": {
+    "paragrafos": [
+      "Cada uma saiu de um comentário seu de 04/11. Enquanto você não responde, nada muda no programa."
+    ],
+    "titulo": "6 perguntas de hoje (04/11)"
+  },
+  "trabalho": "respostas-04-11"
+}

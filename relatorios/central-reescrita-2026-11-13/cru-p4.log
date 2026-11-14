@@ -1,0 +1,13 @@
+A abrir (s) => 0.1
+A rodou o dividir => true
+A paginas depois de dividir => 140
+A marcadas antes => ["dividir"]
+A desligou => true
+A paginas depois de desligar => 70
+A historico => "Automático desligado: dividir folhas ao meio"
+B abrir (s) => 0.1
+B auto => [1104, 724, 3]
+B sauvola => [1104, 724, 3]
+B otsu => [1104, 724, 3]
+B wolf => [1104, 724, 3]
+B o automatico escolheria => "sauvola"

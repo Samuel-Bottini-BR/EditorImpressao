@@ -1,0 +1,19 @@
+{
+  "comentario": "",
+  "conversa": [
+    {
+      "em": "2026-11-07T19:30:00Z",
+      "quem": "gerente",
+      "texto": "Anotado: fica como está, sem mensagem. O tique, o contador e a próxima dúvida bastam."
+    }
+  ],
+  "em": "2026-11-06T21:38:38.963Z",
+  "gerente": "Anotado: fica como está, sem mensagem. O tique, o contador e a próxima dúvida bastam.",
+  "gerenteEm": "2026-11-07T19:30:00Z",
+  "lida": true,
+  "opcao": "nao",
+  "opcaoNome": "Não precisa: o tique, o contador e a próxima dúvida bastam (recomendo)",
+  "relatorio": "acrescentei-27-10",
+  "samuelViu": false,
+  "volta": false
+}

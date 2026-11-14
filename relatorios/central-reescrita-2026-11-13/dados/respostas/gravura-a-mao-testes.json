@@ -1,0 +1,24 @@
+{
+  "comentario": "",
+  "conversa": [
+    {
+      "em": "2026-11-09T22:30:00Z",
+      "quem": "samuel",
+      "texto": "No chat: \"1- sim\""
+    },
+    {
+      "em": "2026-11-09T22:30:00Z",
+      "quem": "gerente",
+      "texto": "Anotado. O agente já está aplicando as duas e vai rodar os testes de novo."
+    }
+  ],
+  "em": "2026-11-09T22:30:00Z",
+  "gerente": "Anotado (você respondeu no chat: \"1- sim\"). O agente já está aplicando as duas e vai rodar os testes de novo.",
+  "gerenteEm": "2026-11-09T22:30:00Z",
+  "lida": true,
+  "opcao": "sim",
+  "opcaoNome": "Sim, pode as duas",
+  "relatorio": "perg-gravura-a-mao",
+  "samuelViu": false,
+  "volta": false
+}

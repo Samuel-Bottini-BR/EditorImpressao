@@ -1,0 +1,56 @@
+{
+  "anteriores": [
+    {
+      "comentario": "Mas e quando tiver mais de uma lingua dentro do livro, por exemplo sitações em latim em um livro em portugues, o ocr vai fazer cagada?",
+      "em": "2026-11-09T20:26:02.955Z",
+      "opcao": "depois",
+      "opcaoNome": "Fica para depois"
+    },
+    {
+      "comentario": "Nós já usamos ocr?",
+      "em": "2026-11-09T20:26:19.274Z",
+      "opcao": "fazer",
+      "opcaoNome": "Pôr na lista de fazer"
+    },
+    {
+      "comentario": "",
+      "em": "2026-11-09T20:26:21.467Z",
+      "opcao": "nao-entendi",
+      "opcaoNome": "Ainda não entendi"
+    },
+    {
+      "comentario": "Não pode ser usado somente para achar texto e aplicar filtros e tirar o fundo como o internet archive, por que não chegamos ainda no resultado que o internet arquive faz.",
+      "em": "2026-11-13T22:58:32.147Z",
+      "opcao": "fazer",
+      "opcaoNome": "Pôr na lista de fazer"
+    }
+  ],
+  "comentario": "",
+  "conversa": [
+    {
+      "em": "2026-11-13T20:40:00Z",
+      "quem": "gerente",
+      "texto": "Hoje o programa já usa um leitor de texto (OCR), mas só para achar onde está o texto (por exemplo, para endireitar as linhas), não para ler as palavras. Livro com duas línguas: o leitor aceita mais de uma ao mesmo tempo (português e latim, por exemplo), se a gente disser quais. Anotado no Livro como D-676. Uma pergunta: a língua só serve quando o programa ler o texto, na Fase 7. Se quer a pergunta da língua já agora, escolha de novo \"Pôr na lista de fazer\"; se for junto com a Fase 7, escolha \"Fica para depois\"."
+    },
+    {
+      "em": "2026-11-13T22:55:15Z",
+      "quem": "gerente",
+      "texto": "Do que se trata: quando o programa for ler o texto do livro (a leitura do texto, Fase 7), ele precisa saber a língua. Em 27/10 você decidiu que o programa pergunta a língua ao abrir o livro, e isso estava \"para depois\". Agora você marcou \"Pôr na lista de fazer\" e perguntou se o leitor erra quando há duas línguas e se já usamos leitor de texto. Respostas: hoje o programa usa o leitor só para achar onde está o texto (por exemplo, para endireitar as linhas), não para ler as palavras. O leitor aceita mais de uma língua ao mesmo tempo (português e latim, por exemplo), se a gente disser quais. O que falta você escolher: como a língua só serve quando o programa ler o texto, a pergunta da língua entra já (\"Pôr na lista de fazer\") ou junto com a Fase 7 (\"Fica para depois\")?"
+    },
+    {
+      "em": "2026-11-13T22:58:33.451Z",
+      "quem": "samuel",
+      "texto": "Respondi de novo: Fica para depois"
+    }
+  ],
+  "em": "2026-11-13T22:58:33.451Z",
+  "gerente": "Do que se trata: quando o programa for ler o texto do livro (a leitura do texto, Fase 7), ele precisa saber a língua. Em 27/10 você decidiu que o programa pergunta a língua ao abrir o livro, e isso estava \"para depois\". Agora você marcou \"Pôr na lista de fazer\" e perguntou se o leitor erra quando há duas línguas e se já usamos leitor de texto. Respostas: hoje o programa usa o leitor só para achar onde está o texto (por exemplo, para endireitar as linhas), não para ler as palavras. O leitor aceita mais de uma língua ao mesmo tempo (português e latim, por exemplo), se a gente disser quais. O que falta você escolher: como a língua só serve quando o programa ler o texto, a pergunta da língua entra já (\"Pôr na lista de fazer\") ou junto com a Fase 7 (\"Fica para depois\")?",
+  "gerenteEm": "2026-11-13T22:55:15Z",
+  "lida": false,
+  "opcao": "depois",
+  "opcaoNome": "Fica para depois",
+  "reabrir": false,
+  "relatorio": "auditoria-6-para-depois",
+  "samuelViu": true,
+  "volta": true
+}

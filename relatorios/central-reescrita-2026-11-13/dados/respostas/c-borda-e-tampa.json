@@ -1,0 +1,19 @@
+{
+  "comentario": "",
+  "conversa": [
+    {
+      "em": "2026-11-07T19:30:00Z",
+      "quem": "gerente",
+      "texto": "Anotado: a borda preta e a faixa da tampa vão ter duas escolhas separadas no Automático. Foi para a fila."
+    }
+  ],
+  "em": "2026-11-06T21:22:45.424Z",
+  "gerente": "Anotado: a borda preta e a faixa da tampa vão ter duas escolhas separadas no Automático. Foi para a fila.",
+  "gerenteEm": "2026-11-07T19:30:00Z",
+  "lida": true,
+  "opcao": "duas",
+  "opcaoNome": "Duas escolhas separadas",
+  "relatorio": "acrescentei-27-10",
+  "samuelViu": false,
+  "volta": false
+}

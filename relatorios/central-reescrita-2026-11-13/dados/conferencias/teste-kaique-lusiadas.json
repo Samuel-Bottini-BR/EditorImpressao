@@ -1,0 +1,545 @@
+{
+  "nome": "Teste como o Kaique: Os Lusíadas (06/11)",
+  "ordem": 63,
+  "origem": "Teste do agente, 06/11/2026, pedido do Samuel: \"fazer uma restauração nele usando o programa como se fosse o kaique\"",
+  "perguntas": [
+    {
+      "exemplos": [],
+      "explicacao": [
+        "São os erros em que a pessoa usa uma função e ela não faz o que devia:",
+        "1) marcações laranja à vista com a Mão; 2) a Mão mostra a folha espremida; 3) página deitada no arquivo para imprimir, sem aviso; 4) miniatura que não fica branca; 5) faixa que não atualiza depois de \"tirar do livro\"; 6) janela de salvar com aviso velho; 7) lista do Automático que volta para o topo; 8) o sino que muda sozinho.",
+        "Eles entram depois dos 3 consertos que já estão na fila (o cantinho branco, o girar e o botão \"voltar a página\").",
+        "Os 3 erros de qualidade da imagem e a pergunta das margens ficam aqui embaixo para você escolher um por um."
+      ],
+      "gerente": "Confirmei a lista no chat. Começo depois dos 3 consertos que já estão na fila.",
+      "historico": [
+        {
+          "em": "2026-11-06",
+          "quem": "samuel",
+          "texto": "ok - antes de começar, me confirma quais erros zçao"
+        }
+      ],
+      "id": "k0611-oito-de-funcao",
+      "opcoes": [
+        {
+          "id": "sim",
+          "nome": "Sim, os 8, um por vez",
+          "texto": "Cada um pronto, você testa antes do próximo."
+        },
+        {
+          "id": "escolher",
+          "nome": "Quero escolher um por um",
+          "texto": "Respondo cada erro aqui embaixo."
+        }
+      ],
+      "sugestao": "A primeira.",
+      "titulo": "Consertar agora os 8 erros de função, um por vez?"
+    },
+    {
+      "exemplos": [],
+      "explicacao": [
+        "A página 22 do livro é uma página em branco.",
+        "Só aparece nela, bem fraquinho, o texto da página de trás, que passa pelo papel (primeira imagem da foto).",
+        "No PDF, esse texto fraquinho virou manchas pretas, e embaixo saiu um bloco preto (segunda e terceira imagens).",
+        "O certo seria a página sair branca."
+      ],
+      "gerente": "Anotado: não é erro. O aviso \"Parece em branco\" apareceu nessa página; é só apertar \"deixar em branco\".",
+      "historico": [
+        {
+          "em": "2026-11-06",
+          "quem": "samuel",
+          "texto": "não entendi"
+        },
+        {
+          "em": "2026-11-06",
+          "quem": "samuel",
+          "texto": "isso é porque não foi feito manualmente né, mas isso não é um erro em si."
+        }
+      ],
+      "id": "k0611-pagina-suja",
+      "opcoes": [
+        {
+          "id": "consertar",
+          "nome": "Consertar",
+          "texto": "Vai para a lista de consertos."
+        },
+        {
+          "id": "nao-e-erro",
+          "nome": "Não é erro",
+          "texto": "Fica como está."
+        },
+        {
+          "id": "depois",
+          "nome": "Fica para depois",
+          "texto": "Vai para a Lista de espera."
+        }
+      ],
+      "primeira_imagem": {
+        "legenda": "Da esquerda para a direita: o scan da página 22, o PDF da 1ª rodada, o da 2ª rodada, e a página 14. Caminho: dividida (capa aberta marcada), endireitada, sem cortar, Preto e branco com Gravuras e fotos.",
+        "src": "/_blob/8fdcc2853719be9876733195865879a3"
+      },
+      "sugestao": "Consertar.",
+      "titulo": "Página quase em branco sai suja no PDF"
+    },
+    {
+      "exemplos": [
+        {
+          "legenda": "No PDF: à esquerda a página 8 (pintura quase sumiu), à direita a 14. Caminho: dividida (capa aberta marcada), endireitada, sem cortar, Preto e branco com Gravuras e fotos.",
+          "src": "/_blob/2917a3cc68b3fe6b3bb3d5179f30fd2f"
+        }
+      ],
+      "explicacao": [
+        "A pintura das bandeiras vira pontinhos brancos no PDF, mesmo com \"Gravuras e fotos\" ligada."
+      ],
+      "gerente": "Anotado: vou investigar a causa antes de consertar e trago aqui o que achar.",
+      "historico": [
+        {
+          "em": "2026-11-06",
+          "quem": "samuel",
+          "texto": "investigar que tipo de erro é. - como isso está acontecendo, as vezes não reconheceu como imagem ou gravura ou usou filtro errado né"
+        }
+      ],
+      "id": "k0611-ilustracao-some",
+      "opcoes": [
+        {
+          "id": "consertar",
+          "nome": "Consertar",
+          "texto": "Vai para a lista de consertos."
+        },
+        {
+          "id": "nao-e-erro",
+          "nome": "Não é erro",
+          "texto": "Fica como está."
+        },
+        {
+          "id": "depois",
+          "nome": "Fica para depois",
+          "texto": "Vai para a Lista de espera."
+        }
+      ],
+      "primeira_imagem": {
+        "legenda": "Como está no scan (folha 5, à direita a página 8).",
+        "src": "/_blob/5941a49469e2a9d573746b138be74ddd"
+      },
+      "sugestao": "Consertar.",
+      "titulo": "A ilustração da página 8 quase some"
+    },
+    {
+      "exemplos": [],
+      "explicacao": [
+        "Na página 14 há um desenho de pessoas.",
+        "No PDF, nos rostos, apareceram quadrados pretos e brancos que não existem no livro (foto, à direita).",
+        "Isso aconteceu porque o programa confundiu um pedaço do desenho com letras, e tratou aquele pedaço como texto."
+      ],
+      "gerente": "Anotado: investigo a causa junto com a da página 8 (as duas são de ilustração) e trago aqui antes de consertar.",
+      "historico": [
+        {
+          "em": "2026-11-06",
+          "quem": "samuel",
+          "texto": "não entendi"
+        },
+        {
+          "em": "2026-11-06",
+          "quem": "samuel",
+          "texto": "tem que verificar o que aconteu"
+        }
+      ],
+      "id": "k0611-remendos",
+      "opcoes": [
+        {
+          "id": "consertar",
+          "nome": "Consertar",
+          "texto": "Vai para a lista de consertos."
+        },
+        {
+          "id": "nao-e-erro",
+          "nome": "Não é erro",
+          "texto": "Fica como está."
+        },
+        {
+          "id": "depois",
+          "nome": "Fica para depois",
+          "texto": "Vai para a Lista de espera."
+        }
+      ],
+      "primeira_imagem": {
+        "legenda": "À esquerda o scan, à direita o PDF. Caminho: dividida (capa aberta marcada), endireitada, sem cortar, Preto e branco com Gravuras e fotos.",
+        "src": "/_blob/57cf481d1954ab961d17b04df6a81ea5"
+      },
+      "sugestao": "Consertar.",
+      "titulo": "Remendos pretos e brancos nos rostos da página 14"
+    },
+    {
+      "exemplos": [
+        {
+          "legenda": "No arquivo para imprimir: \"PERIGOS\" sai deitado.",
+          "src": "/_blob/193c168ca5efcf2062942d0f3daa6119"
+        }
+      ],
+      "explicacao": [
+        "Na folha 7, a linha do Dividir ficou no meio de \"II PERIGOS E TRAIÇÕES\". A página 12 saiu só com \"PERIGOS\", e a 13 com \"E TRAIÇÕES\".",
+        "O programa avisou \"Lombada incerta\". O agente, como o Kaique, seguiu assim mesmo.",
+        "No arquivo para imprimir, essa página sai deitada de lado, sem aviso nenhum."
+      ],
+      "id": "k0611-titulo-partido",
+      "opcoes": [
+        {
+          "id": "consertar",
+          "nome": "Consertar",
+          "texto": "Vai para a lista de consertos."
+        },
+        {
+          "id": "nao-e-erro",
+          "nome": "Não é erro",
+          "texto": "Fica como está."
+        },
+        {
+          "id": "depois",
+          "nome": "Fica para depois",
+          "texto": "Vai para a Lista de espera."
+        }
+      ],
+      "primeira_imagem": {
+        "legenda": "No PDF: páginas 12 e 13, o título partido.",
+        "src": "/_blob/ed53298c5c1e1b095b770a3394004f50"
+      },
+      "sugestao": "Consertar.",
+      "titulo": "O Dividir partiu um título ao meio, e a página sai deitada no caderno"
+    },
+    {
+      "exemplos": [],
+      "explicacao": [
+        "Logo depois de dividir no Automático, com a Mão e \"Uma página\", a tela mostra a folha inteira (as duas páginas) espremida.",
+        "Com o Dividir ou o Cortar escolhidos aparece certo. O PDF sai certo: é só na tela."
+      ],
+      "id": "k0611-mao-espremida",
+      "opcoes": [
+        {
+          "id": "consertar",
+          "nome": "Consertar",
+          "texto": "Vai para a lista de consertos."
+        },
+        {
+          "id": "nao-e-erro",
+          "nome": "Não é erro",
+          "texto": "Fica como está."
+        },
+        {
+          "id": "depois",
+          "nome": "Fica para depois",
+          "texto": "Vai para a Lista de espera."
+        }
+      ],
+      "primeira_imagem": {
+        "legenda": "Página 1 de 134, com a Mão: aparece a capa aberta inteira, espremida.",
+        "src": "/_blob/ca59627f3f223dfba44c08461063a5c2"
+      },
+      "sugestao": "Consertar.",
+      "titulo": "Com a Mão, a folha inteira aparece espremida na largura de uma página"
+    },
+    {
+      "exemplos": [],
+      "explicacao": [
+        "O agente trocou o nome do arquivo, e continuou o aviso de que o arquivo antigo \"será substituído\". Não substituiu."
+      ],
+      "id": "k0611-aviso-velho-salvar",
+      "opcoes": [
+        {
+          "id": "consertar",
+          "nome": "Consertar",
+          "texto": "Vai para a lista de consertos."
+        },
+        {
+          "id": "nao-e-erro",
+          "nome": "Não é erro",
+          "texto": "Fica como está."
+        },
+        {
+          "id": "depois",
+          "nome": "Fica para depois",
+          "texto": "Vai para a Lista de espera."
+        }
+      ],
+      "primeira_imagem": {
+        "legenda": "A janela de salvar, depois de trocar o nome.",
+        "src": "/_blob/72b75104ca63a237bafe95c85e7ed5c4"
+      },
+      "sugestao": "Consertar.",
+      "titulo": "Aviso velho na janela de onde salvar"
+    },
+    {
+      "exemplos": [],
+      "explicacao": [
+        "O texto do Dividir, no Automático, mostra \"(G2)\". É um código nosso, que o Kaique não entende."
+      ],
+      "id": "k0611-codigo-g2",
+      "opcoes": [
+        {
+          "id": "consertar",
+          "nome": "Consertar",
+          "texto": "Vai para a lista de consertos."
+        },
+        {
+          "id": "nao-e-erro",
+          "nome": "Não é erro",
+          "texto": "Fica como está."
+        },
+        {
+          "id": "depois",
+          "nome": "Fica para depois",
+          "texto": "Vai para a Lista de espera."
+        }
+      ],
+      "primeira_imagem": {
+        "legenda": "Automático, etapa Dividir.",
+        "src": "/_blob/c4ecf284eaac2f79f264dfe99b4aef51"
+      },
+      "sugestao": "Consertar.",
+      "titulo": "Código interno \"(G2)\" na tela do Dividir"
+    },
+    {
+      "exemplos": [],
+      "explicacao": [
+        "Com o painel Propriedades aberto, a barra de baixo corta os nomes: \"uas lado a lad\", \"antes / depois\"."
+      ],
+      "id": "k0611-barra-cortada",
+      "opcoes": [
+        {
+          "id": "consertar",
+          "nome": "Consertar",
+          "texto": "Vai para a lista de consertos."
+        },
+        {
+          "id": "nao-e-erro",
+          "nome": "Não é erro",
+          "texto": "Fica como está."
+        },
+        {
+          "id": "depois",
+          "nome": "Fica para depois",
+          "texto": "Vai para a Lista de espera."
+        }
+      ],
+      "primeira_imagem": {
+        "legenda": "Barra de baixo com o Propriedades aberto.",
+        "src": "/_blob/4c586323a1a33c23db1cdeb085d34a0b"
+      },
+      "sugestao": "Consertar.",
+      "titulo": "Textos cortados na barra de baixo"
+    },
+    {
+      "exemplos": [],
+      "explicacao": [
+        "Com a Mão, as marcações laranja continuam à vista. A sua decisão D-584 diz que elas se escondem com a Mão."
+      ],
+      "id": "k0611-laranja-mao",
+      "opcoes": [
+        {
+          "id": "consertar",
+          "nome": "Consertar",
+          "texto": "Vai para a lista de consertos."
+        },
+        {
+          "id": "nao-e-erro",
+          "nome": "Não é erro",
+          "texto": "Fica como está."
+        },
+        {
+          "id": "depois",
+          "nome": "Fica para depois",
+          "texto": "Vai para a Lista de espera."
+        }
+      ],
+      "primeira_imagem": {
+        "legenda": "Com a Mão, depois do Automático.",
+        "src": "/_blob/4d746a34ed5e625c0848fd876e6fe958"
+      },
+      "sugestao": "Consertar.",
+      "titulo": "Marcações laranja à vista com a Mão"
+    },
+    {
+      "exemplos": [],
+      "explicacao": [
+        "Depois de tirar a página do livro, a faixa continua dizendo \"vai sair em Preto e branco\"."
+      ],
+      "id": "k0611-frase-tirou",
+      "opcoes": [
+        {
+          "id": "consertar",
+          "nome": "Consertar",
+          "texto": "Vai para a lista de consertos."
+        },
+        {
+          "id": "nao-e-erro",
+          "nome": "Não é erro",
+          "texto": "Fica como está."
+        },
+        {
+          "id": "depois",
+          "nome": "Fica para depois",
+          "texto": "Vai para a Lista de espera."
+        }
+      ],
+      "primeira_imagem": {
+        "legenda": "Página 133, depois de \"tirar do livro\".",
+        "src": "/_blob/13fa915e6fc66f91d6bfdb1aa3c2d0be"
+      },
+      "sugestao": "Consertar.",
+      "titulo": "Frase velha depois de \"tirar do livro\""
+    },
+    {
+      "exemplos": [],
+      "explicacao": [
+        "A página foi \"deixada em branco\", mas a miniatura na tira de baixo continua mostrando o texto."
+      ],
+      "id": "k0611-miniatura-branco",
+      "opcoes": [
+        {
+          "id": "consertar",
+          "nome": "Consertar",
+          "texto": "Vai para a lista de consertos."
+        },
+        {
+          "id": "nao-e-erro",
+          "nome": "Não é erro",
+          "texto": "Fica como está."
+        },
+        {
+          "id": "depois",
+          "nome": "Fica para depois",
+          "texto": "Vai para a Lista de espera."
+        }
+      ],
+      "primeira_imagem": {
+        "legenda": "Tira de baixo, depois de \"deixar em branco\".",
+        "src": "/_blob/14c6a8e3aeec0a1ae00d3606ffb4d58f"
+      },
+      "sugestao": "Consertar.",
+      "titulo": "A miniatura não mostra a página deixada em branco"
+    },
+    {
+      "exemplos": [],
+      "explicacao": [
+        "Ao marcar \"Margens iguais\", a lista de etapas volta para o alto, e é preciso rolar de novo."
+      ],
+      "id": "k0611-lista-sobe",
+      "opcoes": [
+        {
+          "id": "consertar",
+          "nome": "Consertar",
+          "texto": "Vai para a lista de consertos."
+        },
+        {
+          "id": "nao-e-erro",
+          "nome": "Não é erro",
+          "texto": "Fica como está."
+        },
+        {
+          "id": "depois",
+          "nome": "Fica para depois",
+          "texto": "Vai para a Lista de espera."
+        }
+      ],
+      "primeira_imagem": {
+        "legenda": "Automático, ao marcar \"Margens iguais\".",
+        "src": "/_blob/102f12b1e6d9e39f4c130ea28c814d2e"
+      },
+      "sugestao": "Consertar.",
+      "titulo": "A lista do Automático volta para o topo"
+    },
+    {
+      "exemplos": [],
+      "explicacao": [
+        "A prévia do Automático diz \"de 134\", mas saem 133 páginas. (O agente tirou uma página repetida do scan antes de processar.)",
+        "O sino passou de 24 para 28 avisos sem o agente mexer em nada."
+      ],
+      "id": "k0611-numeros",
+      "opcoes": [
+        {
+          "id": "consertar",
+          "nome": "Consertar",
+          "texto": "Vai para a lista de consertos."
+        },
+        {
+          "id": "nao-e-erro",
+          "nome": "Não é erro",
+          "texto": "Fica como está."
+        },
+        {
+          "id": "depois",
+          "nome": "Fica para depois",
+          "texto": "Vai para a Lista de espera."
+        }
+      ],
+      "sugestao": "Consertar.",
+      "titulo": "Números que não batem"
+    },
+    {
+      "exemplos": [],
+      "explicacao": [
+        "Pergunta do agente. O Cortar vem ligado de fábrica, e o \"Margens iguais\" vem desligado.",
+        "Assim, cada página sai de um tamanho. Nos cadernos, a folha de rosto sai com o título enorme (foto).",
+        "Com \"Margens iguais\" ligado, ficou certo. Nenhuma decisão do Livro responde isso."
+      ],
+      "gerente": "Anotado (D-643): \"Margens iguais\" passa a vir ligado de fábrica.",
+      "historico": [
+        {
+          "em": "2026-11-06",
+          "quem": "samuel",
+          "texto": "recomendado"
+        },
+        {
+          "em": "2026-11-09T19:33:21.008Z",
+          "quem": "samuel",
+          "texto": "Isso ira afetar na hora de imprimir? como outros programas fazem isso? adobe acrobat, updf esses programas que ligam com pdf."
+        },
+        {
+          "em": "2026-11-13T20:40:00Z",
+          "quem": "gerente",
+          "texto": "Sim, afeta a impressão. Com o Cortar ligado, cada página fica do tamanho do que está impresso nela. Na hora de montar, cada página é aumentada para encher a meia folha, e uma página com pouco texto, como a folha de rosto, sai com letra enorme (o print). O Acrobat e o uPDF não cortam as páginas: elas ficam do tamanho do scan, todas iguais, por isso lá isso não acontece. Com \"Margens iguais\" ligado, o nosso sai certo."
+        },
+        {
+          "em": "2026-11-13T22:55:15Z",
+          "quem": "gerente",
+          "texto": "Do que se trata: no teste do Lusíadas, o agente viu que, com \"Cortar\" ligado e \"Margens iguais\" desligado (como vem de fábrica), cada página sai de um tamanho; nos cadernos, a folha de rosto saiu com o título enorme (foto). Suas dúvidas: isso afeta a impressão? Como fazem o Acrobat e o uPDF? Respostas: sim, afeta. O Cortar deixa cada página do tamanho do que está impresso nela; na hora de montar, cada página é aumentada para encher a meia folha, e uma página com pouco texto sai com letra enorme. O Acrobat e o uPDF não cortam as páginas: elas ficam do tamanho do scan, todas iguais, por isso lá isso não acontece. Com \"Margens iguais\" ligado, o nosso sai certo. O que você escolhe: \"Margens iguais\" vem ligado de fábrica (recomendo), fica desligado com um aviso ao montar os cadernos, ou fica como está."
+        }
+      ],
+      "id": "k0611-margens-de-fabrica",
+      "opcoes": [
+        {
+          "id": "margens-ligado",
+          "nome": "\"Margens iguais\" vem ligado de fábrica",
+          "texto": "Quando o Cortar está ligado, as páginas saem do mesmo tamanho sem precisar marcar."
+        },
+        {
+          "id": "aviso",
+          "nome": "Fica desligado, com um aviso",
+          "texto": "Ao montar os cadernos com páginas de tamanhos diferentes, o programa avisa."
+        },
+        {
+          "id": "como-esta",
+          "nome": "Fica como está",
+          "texto": "Quem quiser marca o \"Margens iguais\"."
+        }
+      ],
+      "primeira_imagem": {
+        "legenda": "Arquivo para imprimir, folhas 1 e 2, com Cortar ligado e Margens iguais desligado: o título da folha de rosto sai enorme.",
+        "src": "/_blob/74621b88e6b6ae584a9d72486416c7ca"
+      },
+      "sugestao": "A primeira: o livro sai certo sem o Kaique precisar saber disso.",
+      "titulo": "Cortar ligado e \"Margens iguais\" desligado: cada página sai de um tamanho"
+    }
+  ],
+  "quadros": [],
+  "resumo": {
+    "paragrafos": [
+      "O agente restaurou o livro inteiro pelo programa, com mouse e teclado, até o PDF e os cadernos. O programa não travou nem fechou.",
+      "Funcionou bem: a capa aberta, o Cortar desmarcado respeitado, arrastar a linha do Dividir, pular as páginas mexidas à mão, desfazer e refazer, fechar e reabrir, a ordem dos 7 cadernos.",
+      "Já conhecidos, vistos de novo: o Dividir volta marcado depois de rodar; a contagem de dúvidas diferente em cada lugar.",
+      "Ressalva: o scan é de baixa resolução; letra pixelada vem do scan, não do programa.",
+      "Para cada erro, escolha: consertar, não é erro, ou fica para depois. Nada muda no programa antes da sua escolha."
+    ],
+    "titulo": "13 erros e 2 perguntas, do mais grave ao menor"
+  },
+  "trabalho": "teste-kaique-lusiadas"
+}

@@ -1,0 +1,8 @@
+{
+  "comentario": "O pdf está saindo diferente da tela gerada, na tela gerada a letra está mais grossa, isso é um perigo, porque pode parecer que se quer a letra mais grossa e ter ela mais fina, ou vice e versa e ainda pode acontecer em outras situações.",
+  "em": "2026-10-22T18:13:22.735Z",
+  "lida": true,
+  "opcao": "melhorar",
+  "opcaoNome": "Melhorar",
+  "relatorio": "lyupdf"
+}

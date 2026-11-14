@@ -1,0 +1,823 @@
+{
+  "atualizado": "2026-10-28T21:30:00Z",
+  "id": "duvidas",
+  "nome": "Suas dúvidas sem resposta",
+  "ordem": -9,
+  "origem": "comentários das conferências de 21/10",
+  "perguntas": [
+    {
+      "exemplos": [
+        {
+          "legenda": "Livro de Horas 26, livro novo de fábrica (dividir, endireitar, cortar), Preto e branco + \"Letras com a cor delas\" + \"Reduzir cores\". Meio: como era (metade da palavra preta, metade clara). Direita: hoje, cada palavra inteira numa cor só.",
+          "src": "vt28/duvidas/horas26-reduzir-cores-antes-agora.jpg"
+        },
+        {
+          "legenda": "A janela de hoje (1280 x 657): as caixinhas ficam à vista em \"Mais ajustes\" do painel Filtro, desligadas de fábrica.",
+          "src": "vt28/duvidas/janela-filtro-horas26.jpg"
+        },
+        {
+          "legenda": "Como era (foto antiga): Livro de Horas 26: \"S. Leonard\" e \"Theodore\" com parte das letras apagada.",
+          "src": "conf/img/211-horas_p026.jpg"
+        }
+      ],
+      "explicacao": [
+        "Você perguntou: \"quando foi que eu pedi para fazer isso? isso é do scantailor?\" e disse que ela apaga as letras.",
+        "Não foi pedida em separado: veio com as ferramentas do ScanTailor que você mandou trazer em 13/10 (D-451). É do ScanTailor (\"Posterize\").",
+        "O defeito de apagar a letra foi consertado em 27/10 (D-189). No Livro de Horas 26, hoje cada palavra sai inteira numa cor só. A caixinha fica à vista e desligada de fábrica (D-191)."
+      ],
+      "historico": [
+        {
+          "em": "2026-10-21T20:11:42Z",
+          "quem": "samuel",
+          "texto": "Ele está apagando as letras, isso sim, e quando foi que eu pedi para fazer isso? isso é do scantailor?"
+        },
+        {
+          "em": "2026-10-28T21:01:00Z",
+          "quem": "gerente",
+          "texto": "Respondendo às três perguntas. 1) Quando você pediu: não pediu esta em separado. Ela veio na lista das ferramentas do ScanTailor (item 2.11, \"Segmentação de cor / reduzir cores\"), que você mandou trazer em 13/10 com a regra \"igual ao ScanTailor, sem perguntar antes\" (Livro de decisões D-451: \"não dá para simplismente implementar no programa?\" + \"ok\"). 2) É do ScanTailor, sim: lá ela se chama \"Posterize\" e junta cores parecidas em poucas cores. 3) Apagar a letra era defeito e foi consertado na rodada de consertos (27/10; D-189, com as suas palavras). A causa: no Preto e branco com \"Letras com a cor delas\", o \"Reduzir cores\" jogava a cor mais escura de cada letra no preto e deixava o resto claro, e metade da palavra parecia apagada (\"S. Leonard\", \"Theodore\"). Para consertar, nesse caso o programa deixa de fazer uma coisa que o ScanTailor faz de fábrica (o \"forçar preto e branco\" da redução de cores); nos outros filtros continua igual ao ScanTailor. Medida no Livro de Horas 26: letras que viravam preto, 20% antes, 0,1% hoje (primeira foto). Hoje, na versão de teste, a caixinha fica à vista em \"Mais ajustes\" do painel Filtro, desligada de fábrica (D-191; segunda foto). Falta você conferir a foto na conferência final."
+        }
+      ],
+      "id": "dv-211-reduzir",
+      "opcoes": [
+        {
+          "id": "entendi",
+          "imgs": [],
+          "nome": "Entendi",
+          "texto": ""
+        },
+        {
+          "id": "nao-entendi",
+          "imgs": [],
+          "nome": "Ainda não entendi",
+          "texto": "Explique de outro jeito."
+        }
+      ],
+      "titulo": "\"Reduzir cores\": quando você pediu? É do ScanTailor?"
+    },
+    {
+      "exemplos": [
+        {
+          "legenda": "Antiphonal 46, livro novo de fábrica (dividir, endireitar, cortar), Preto e branco + \"Só as letras\" (Guardar a tinta forte). Em cima, como era: o T na tela e não no PDF. Embaixo, hoje: o T na tela e no PDF.",
+          "src": "vt28/duvidas/antiphonal46-tela-e-pdf.jpg"
+        },
+        {
+          "legenda": "Como era (foto antiga): A mesma página 46: a tela (com a letra T) e o PDF que saiu (sem ela).",
+          "src": "conf/img/tela-engana-1-comparacao.jpg"
+        }
+      ],
+      "explicacao": [
+        "Você perguntou se o Kaique pediu para tirar a letra T e qual opção tirou.",
+        "Ninguém pediu: foi defeito. O caminho da página: livro novo de fábrica, dividir, endireitar, cortar, Preto e branco com \"Só as letras\" (Guardar a tinta forte).",
+        "Consertado em 27/10: hoje o T aparece na tela e no PDF, e a tela troca sozinha pela imagem do PDF quando ela fica pronta (D-064, D-473)."
+      ],
+      "historico": [
+        {
+          "em": "2026-10-21T21:09:17Z",
+          "quem": "samuel",
+          "texto": "mas o kaique pediu para tirar a letra ou não? porque a letra foi tirada, qual opção foi pedida para ser feita que tirou a letra? anote ai para explicar melhor o processo que a pagina passou para poder me perguntar."
+        },
+        {
+          "em": "2026-10-28T21:02:00Z",
+          "quem": "gerente",
+          "texto": "Não, o Kaique não pediu, e nenhuma opção \"tirar a letra\" foi escolhida. Quem escolheu as opções foi o verificador, para o teste: livro novo de fábrica, dividir, endireitar, cortar e Preto e branco com \"Só as letras\" no jeito de fábrica (\"Guardar a tinta forte\"). O T sumiu por defeito: a conta que decide o que é tinta forte dava uma resposta no tamanho da tela e outra no tamanho do PDF. Na tela o T ficava; no PDF, não. O que aconteceu desde então, na rodada de consertos: (1) 27/10, etapa 10b: a conta passou a dar o mesmo nos dois tamanhos. Hoje o T está na tela e no PDF (foto: em cima como era, embaixo hoje). (2) 27/10, etapa 9b-2: quando a imagem do tamanho do PDF fica pronta, a tela troca por ela, com as duas bolinhas de carregamento que você pediu (D-064; D-473: \"Tela e PDF saem da mesma conta\"). As duas coisas estão na versão de teste e esperam a sua conferência final. Sobre explicar o processo: desde 22/10 toda foto diz por onde a página passou e com quais opções, como a legenda desta."
+        }
+      ],
+      "id": "dv-tela-igual",
+      "opcoes": [
+        {
+          "id": "entendi",
+          "imgs": [],
+          "nome": "Entendi",
+          "texto": ""
+        },
+        {
+          "id": "nao-entendi",
+          "imgs": [],
+          "nome": "Ainda não entendi",
+          "texto": "Explique de outro jeito."
+        }
+      ],
+      "titulo": "Antiphonal 46: o Kaique pediu para tirar a letra T? Qual opção tirou?"
+    },
+    {
+      "exemplos": [
+        {
+          "legenda": "Opus Majus 20: a estátua inteira no livro, branca e manchada no PDF.",
+          "src": "conf/img/a4n-opus-20.jpg"
+        }
+      ],
+      "explicacao": [
+        "O que você está olhando: a página 20 do Opus Majus, com a foto da estátua de Roger Bacon. De um lado, como está no livro; do outro, como saiu no PDF que o programa gerou.",
+        "Qual opção: o mesmo caminho do teste, escolhido pelo verificador: livro novo, de fábrica → dividir → endireitar → cortar → Preto e branco com \"Só as letras\" (\"Guardar a tinta forte\").",
+        "Por que a foto sai assim: o Preto e branco transforma tudo em só preto ou só branco. Uma foto tem centenas de tons de cinza, e sem eles vira manchas e blocos pretos. O \"Só as letras\" serve justamente para guardar as fotos como no original, mas só guarda o que o programa reconhece como figura. Ele não reconheceu a estátua como figura e tratou a foto como se fosse texto.",
+        "O que este quadro mostrava: que o aviso agora pega essa página e manda conferir (o certo). O conserto de verdade, achar a foto inteira, é o item 1.5 (detector de figuras), que você deixou no plano."
+      ],
+      "historico": [
+        {
+          "em": "2026-10-21T21:45:57Z",
+          "quem": "samuel",
+          "texto": "o que eu estou olhando? e porque a foto sai assim? que opção foi escolhida para sair assim?"
+        },
+        {
+          "em": "2026-10-22T18:24:10Z",
+          "quem": "samuel",
+          "texto": "o scantailor tem um detector de figuras também né?"
+        },
+        {
+          "em": "2026-10-22T19:50:00Z",
+          "quem": "gerente",
+          "texto": "Tem, sim. No modo Misto, o ScanTailor acha sozinho as figuras da página e as deixa como no original, passando só o texto para preto e branco. O nosso \"Só as letras\" veio desse modo. O dele também erra às vezes, e por isso ele deixa a pessoa desenhar a área da figura à mão. No nosso programa isso é a aba Marcar. Melhorar o detector é o item 1.5 do plano."
+        }
+      ],
+      "id": "dv-opus-20",
+      "opcoes": [
+        {
+          "id": "entendi",
+          "imgs": [],
+          "nome": "Entendi",
+          "texto": ""
+        },
+        {
+          "id": "nao-entendi",
+          "imgs": [],
+          "nome": "Ainda não entendi",
+          "texto": "Explique de outro jeito."
+        }
+      ],
+      "titulo": "Opus Majus 20: o que você está olhando, por que a foto sai assim e qual opção"
+    },
+    {
+      "exemplos": [
+        {
+          "legenda": "A janela de hoje, numa página que vai ser impressa (slide do \"O meio ambiente hoje\", p. 27): com \"Letra clara em fundo escuro\" marcada, os quatro cartões mostram a página como ela sai.",
+          "src": "vt28/duvidas/janela-cartoes-slide.jpg"
+        },
+        {
+          "legenda": "Como era (foto antiga): Os cartões depois do conserto (na lombada, que não devia ter sido usada).",
+          "src": "conf/img/29-cartoes-certos.jpg"
+        }
+      ],
+      "explicacao": [
+        "Você reclamou que o teste foi feito na lombada da capa, que nunca vai ser impressa.",
+        "Virou regra (D-462): só páginas que vão ser impressas. A Horas 187 saiu.",
+        "A mesma coisa mostrada numa página que vai ser impressa: os quatro cartões seguem a caixinha \"Letra clara em fundo escuro\"."
+      ],
+      "historico": [
+        {
+          "em": "2026-10-21T20:08:38Z",
+          "quem": "samuel",
+          "texto": "está fazendo teste com pagina de lombada que nem iria ser impressa, e no caso é uma lombada de uma capa de livro."
+        },
+        {
+          "em": "2026-10-28T21:03:00Z",
+          "quem": "gerente",
+          "texto": "Você tem razão, e virou regra em 21/10: teste só com página que vai ser impressa, nada de lombada, capa ou contracapa de couro ou papelão (Livro de decisões D-462, com as suas palavras: \"não faça mais testes com lombadas de livros\"; escrita para todos os agentes no CLAUDE.md §4.10). A Horas 187 saiu dos testes. O que o quadro queria mostrar: com a caixinha \"Letra clara em fundo escuro\" marcada, os quatro cartões do painel Filtro (Original, Preto e branco, Melhorar, Mágico pro) têm de mostrar a página como ela vai sair; antes, só o cartão escolhido seguia a caixinha. Isso foi consertado em 21/10 e está na versão de teste. Mostro agora numa página que vai ser impressa: um slide de letra branca em fundo escuro (\"O meio ambiente hoje\", p. 27). Na janela de hoje os quatro cartões mostram a página com a caixinha (foto)."
+        }
+      ],
+      "id": "dv-29-cartoes",
+      "opcoes": [
+        {
+          "id": "entendi",
+          "imgs": [],
+          "nome": "Entendi",
+          "texto": ""
+        },
+        {
+          "id": "nao-entendi",
+          "imgs": [],
+          "nome": "Ainda não entendi",
+          "texto": "Explique de outro jeito."
+        }
+      ],
+      "titulo": "Livro de Horas 187: teste em lombada que nunca vai ser impressa"
+    },
+    {
+      "exemplos": [
+        {
+          "legenda": "\"Montar para imprimir\" na versão de teste: \"Escala de cada lado\" com 115% nas páginas da esquerda e da direita (Palatino, páginas 7 a 18, Livreto A4).",
+          "src": "vt28/duvidas/imprimir-escala-115.jpg"
+        },
+        {
+          "legenda": "Depois de gravar com 115%: o programa avisa, página por página, onde a margem ficou pequena e diz o que fazer.",
+          "src": "vt28/duvidas/imprimir-aviso-margem.jpg"
+        }
+      ],
+      "explicacao": [
+        "Você perguntou: \"Mas eu ainda vou poder aumentar né?\"",
+        "Vai. O de fábrica põe a página dentro das margens; a escala sobe e desce à mão: o livro todo, cada lado, ou uma página só. Se passar da margem, o programa avisa."
+      ],
+      "historico": [
+        {
+          "em": "2026-10-21T20:34:32Z",
+          "quem": "samuel",
+          "texto": "Mas eu ainda vou poder aumentar né?"
+        },
+        {
+          "em": "2026-10-28T21:04:00Z",
+          "quem": "gerente",
+          "texto": "Sim, vai. O \"Ajustar\" de fábrica só decide como a página começa: dentro das margens (D-322). Para aumentar, a janela \"Montar para imprimir\" da versão de teste tem três jeitos: (1) \"Tamanho\" > \"Escala personalizada (%)\", para o livro todo; (2) \"Escala de cada lado\": um % para as páginas da esquerda (pares) e outro para as da direita (ímpares); (3) \"Só uma página\", por exemplo \"12=110\". Se a página aumentada passar da margem (1,3 cm da beirada do papel e 1 cm na costura, D-318), o programa avisa depois de gravar, página por página, e diz o que fazer. Testei hoje: Palatino, páginas 7 a 18, as duas escalas em 115%. O arquivo saiu e vieram os avisos (\"a margem ficou abaixo de 1 cm\"; numa página, \"o que está impresso fica CORTADO\"). As duas fotos mostram."
+        }
+      ],
+      "id": "dv-imp-2",
+      "opcoes": [
+        {
+          "id": "entendi",
+          "imgs": [],
+          "nome": "Entendi",
+          "texto": ""
+        },
+        {
+          "id": "nao-entendi",
+          "imgs": [],
+          "nome": "Ainda não entendi",
+          "texto": "Explique de outro jeito."
+        }
+      ],
+      "titulo": "Livreto: \"Mas eu ainda vou poder aumentar né?\""
+    },
+    {
+      "exemplos": [
+        {
+          "legenda": "O mesmo slide como sai no PDF hoje. Com a caixinha a letra sai inteira, mas 71% da folha é preto: é a tinta que a impressora gastaria.",
+          "src": "vt28/duvidas/slide-tinta-hoje.jpg"
+        }
+      ],
+      "explicacao": [
+        "Você pediu para anotar: trocar a letra branca por preta e o fundo por branco, porque a impressora gastaria tinta imprimindo todo aquele preto.",
+        "Anotado (D-190, Lista de espera). Ainda não foi feito. Hoje, com a caixinha, o slide sai com 71% da folha em preto."
+      ],
+      "historico": [
+        {
+          "em": "2026-10-21T20:05:59Z",
+          "quem": "samuel",
+          "texto": "eu acho que aqui até resolve, mas o que gostariamos de fazer é selecionar a cor branca das letras e transformar em preto e dai então transformar a pagina em branco, porque quando imprimir a impressora vai imprimir todo esse preto, fica isso para ser solucionado mais para frente, precisamos pesquisar como fazer isso, deixe anotado."
+        },
+        {
+          "em": "2026-10-28T21:05:00Z",
+          "quem": "gerente",
+          "texto": "Ficou anotado, sim: no Livro de decisões, D-190 (21/10), com as suas palavras, na Lista de espera: pesquisar um jeito de transformar a letra branca em preta e o fundo preto em branco, para gastar menos tinta. Ainda não foi pesquisado nem feito; não faz parte da rodada de consertos. Como está hoje na versão de teste: a caixinha \"Letra clara em fundo escuro\" deixa a letra inteira, mas a página sai como é, letra branca em fundo preto. Medi no slide (\"O meio ambiente hoje\", p. 27): com a caixinha, 71% da folha sai preta, que é tinta na impressora; sem a caixinha, 37%, mas as letras saem vazadas (foto). Ou seja: o problema da tinta que você apontou continua."
+        }
+      ],
+      "id": "dv-29-slide",
+      "opcoes": [
+        {
+          "id": "entendi",
+          "imgs": [],
+          "nome": "Entendi",
+          "texto": ""
+        },
+        {
+          "id": "nao-entendi",
+          "imgs": [],
+          "nome": "Ainda não entendi",
+          "texto": "Explique de outro jeito."
+        }
+      ],
+      "titulo": "Slide de letras brancas em fundo preto: ficou anotado?"
+    },
+    {
+      "exemplos": [
+        {
+          "legenda": "Uma foto da conferência da rodada de consertos (27/10): a linha vermelha de baixo diz por onde a página passou e com quais opções.",
+          "src": "vt28/duvidas/foto-com-o-caminho.jpg"
+        }
+      ],
+      "explicacao": [
+        "Você pediu que os testes levem em conta a ordem das etapas (ex.: endireitar antes de cortar a faixa preta).",
+        "É regra desde 21/10 (D-461): o teste passa pelo caminho inteiro e a foto diz o caminho. Falta a bateria nova que roda o programa inteiro sozinho (D-011)."
+      ],
+      "historico": [
+        {
+          "em": "2026-10-21T21:52:21Z",
+          "quem": "samuel",
+          "texto": "Precisamos melhorar nossos testes porque as vezes o resultado de uma funcionalidade depende de ter passado por outra, por exemplo o cortar faixa preta, as vezes a folha precisa ter passado por endireitar antes de cortar, e você faz os testes sem pensar nisso, por favor o proximos testes tem que levar essa questão em conta."
+        },
+        {
+          "em": "2026-10-28T21:06:00Z",
+          "quem": "gerente",
+          "texto": "Virou regra em 21/10 (Livro de decisões D-461, com as suas palavras), escrita para todos os agentes no CLAUDE.md §4.10: todo teste de imagem e toda conferência levam a página pelo caminho inteiro do livro novo (dividir, endireitar, cortar, filtro), com os ajustes de fábrica, até a ferramenta testada. Testar a ferramenta sozinha só vale para achar a causa de um defeito, nunca na conferência. E cada foto diz o caminho e as opções. Hoje as fotos da rodada de consertos já saem assim (exemplo: a linha vermelha embaixo da foto do Livro de Horas 26). O que ainda falta, e por isso no Livro está \"pela metade\": a bateria nova de testes que você aprovou em 26/10 (D-011), que roda o programa inteiro sozinho, página por página, do jeito que o Kaique usa. A primeira parte (o teste do Kaique) rodou em 26/10; o resto ainda está sendo montado."
+        }
+      ],
+      "id": "dv-pr-testes",
+      "opcoes": [
+        {
+          "id": "entendi",
+          "imgs": [],
+          "nome": "Entendi",
+          "texto": ""
+        },
+        {
+          "id": "nao-entendi",
+          "imgs": [],
+          "nome": "Ainda não entendi",
+          "texto": "Explique de outro jeito."
+        }
+      ],
+      "titulo": "Testes que levam em conta a ordem das etapas"
+    },
+    {
+      "exemplos": [
+        {
+          "legenda": "Hoje: \"Ver todas as páginas\" do Boécio a 125% do Windows, com as miniaturas nítidas.",
+          "src": "vt28/duvidas/livro-aberto-todas-as-paginas.jpg"
+        },
+        {
+          "legenda": "Hoje, painel Filtro a 1280 x 657: \"Melhorar\" inteiro; mas a linha \"Igualar a luz da página / Suavizar as letras / Tirar o chuvisco\" sai cortada.",
+          "src": "vt28/duvidas/painel-filtro-nomes.jpg"
+        },
+        {
+          "legenda": "Como era (foto antiga): \"Todas as páginas\": antes borrada (esquerda), depois nítida (direita).",
+          "src": "lyupdf/img/lu-grade-zoom.jpg"
+        }
+      ],
+      "explicacao": [
+        "Você perguntou se a ressalva era um erro e se ia ser resolvida.",
+        "Era erro (a grade \"Todas as páginas\" borrada) e foi resolvido em 22/10 (D-349). Hoje a grade sai nítida."
+      ],
+      "historico": [
+        {
+          "em": "2026-10-22T12:48:42.713Z",
+          "quem": "samuel",
+          "texto": "Mas explica melhor essa ressalva, isso é um erro? vai ser resolvido?"
+        },
+        {
+          "em": "2026-10-28T21:07:00Z",
+          "quem": "gerente",
+          "texto": "Era erro, sim, e foi resolvido. A ressalva era do segundo acerto: a grade \"Todas as páginas\" saía mole (borrada), porque cada página era desenhada no tamanho certo, encolhida e depois aumentada de novo pela escala de 125% do Windows. O agente de layout consertou em 22/10 (D-349, com teste que confere a grade nítida a 125%) e você marcou \"Está bom\" (lu-grade). Como estão os três acertos hoje, na versão de teste: 1) \"Melhorar\" inteiro no painel Filtro: sim. 2) Grade nítida: sim (foto do Boécio). 3) A frase \"(jeito: o do Editor)\" ficava na tela \"O que fazer\", que saiu na rodada de consertos (o livro abre direto na área de trabalho, D-002). O \"o do Editor\" nos outros lugares é a D-479, ainda pela metade: falta a parte das telas, na etapa dos nomes e textos."
+        }
+      ],
+      "id": "dv-l67-acertos",
+      "opcoes": [
+        {
+          "id": "entendi",
+          "imgs": [],
+          "nome": "Entendi",
+          "texto": ""
+        },
+        {
+          "id": "nao-entendi",
+          "imgs": [],
+          "nome": "Ainda não entendi",
+          "texto": "Explique de outro jeito."
+        }
+      ],
+      "titulo": "Layout 6 e 7: a ressalva dos três acertos. É um erro? Vai ser resolvido?"
+    },
+    {
+      "exemplos": [
+        {
+          "legenda": "A tela cheia com as opções do filtro.",
+          "src": "lyupdf/img/lu-tc-opcoes-zoom.jpg"
+        }
+      ],
+      "explicacao": [
+        "Não é só antes e depois. Depois da sua pergunta, o agente de layout pôs na tela cheia todas as opções do filtro escolhido: Só as letras, os 10 tipos de preto e branco do ScanTailor (2.8), Texto claro em fundo escuro (2.9), Reduzir cores (2.11), Limpar a sujeira e Mais ajustes. A página do meio sai com todas aplicadas.",
+        "Você conferiu e marcou \"Está bom\" (quadro lu-tc-opcoes, 22/10)."
+      ],
+      "historico": [
+        {
+          "em": "2026-10-22T12:39:24.691Z",
+          "quem": "samuel",
+          "texto": "esse aqui é para mostrar só o antes e depois? mas no programa vai aparecer as opções dos filtros né? o agente de layout fez já as opções de preto e branco que trouxemos do scan?"
+        },
+        {
+          "em": "2026-10-22T22:55:04Z",
+          "quem": "samuel",
+          "texto": "ele colocou todas as funções em todos os filtros?"
+        },
+        {
+          "em": "2026-10-23T02:50:00Z",
+          "quem": "gerente",
+          "texto": "Não todas em todos: cada filtro mostra as opções que servem para ele, as mesmas do painel do lado. No Preto e branco: Força do preto, Só as letras, Limpar a sujeira e, em \"Mais ajustes\", o jeito do preto e branco (Automático, os 3 de antes e os 10 do ScanTailor), Letra clara em fundo escuro, Letras com a cor delas e Reduzir cores. No Melhorar e no Mágico pro: \"Mais ajustes\" com Letra clara em fundo escuro e Reduzir cores. Mexer só mostra na página grande; \"Usar\" grava na página."
+        }
+      ],
+      "id": "dv-l67-tela-cheia",
+      "opcoes": [
+        {
+          "id": "entendi",
+          "imgs": [],
+          "nome": "Entendi",
+          "texto": ""
+        },
+        {
+          "id": "nao-entendi",
+          "imgs": [],
+          "nome": "Ainda não entendi",
+          "texto": "Explique de outro jeito."
+        }
+      ],
+      "titulo": "Tela cheia dos filtros: só antes e depois? Vão aparecer as opções?"
+    },
+    {
+      "exemplos": [
+        {
+          "legenda": "Hoje: o Boécio aberto em \"Duas lado a lado\", páginas 6 e 7 da mesma altura, com a barra de baixo como no UPDF.",
+          "src": "vt28/duvidas/livro-aberto-duas.jpg"
+        },
+        {
+          "legenda": "Como era (foto antiga): As duas páginas do par agora na mesma altura.",
+          "src": "lyupdf/img/lu-par-depois.jpg"
+        }
+      ],
+      "explicacao": [
+        "Você disse que não conseguia ver a página direito e que uma página estava maior que a outra; pediu para ver como o UPDF faz.",
+        "Refeito como no UPDF (D-347), aprovado em 22/10. Hoje: as duas páginas do par na mesma altura."
+      ],
+      "historico": [
+        {
+          "em": "2026-10-22T12:43:47.951Z",
+          "quem": "samuel",
+          "texto": "Eu não consigo ver a página direito, e elas estão  de maneira muito ruim, da uma na internet como o updf faz. Tem uma pagina maior que outra ali"
+        },
+        {
+          "em": "2026-10-28T21:08:00Z",
+          "quem": "gerente",
+          "texto": "Foi refeito como no UPDF, você aprovou em 22/10 (lyupdf \"Aprovado\"; D-347) e continua assim na versão de teste: barra de baixo com Uma página, Duas lado a lado, Rolar sem parar, Caber a página, Caber a altura, Caber a largura e Tamanho real; em \"Duas lado a lado\" as duas páginas do par ficam da mesma altura; e a escolha fica guardada para o próximo livro. Foto de hoje: o Boécio, páginas 6 e 7."
+        }
+      ],
+      "id": "dv-l67-livro-aberto",
+      "opcoes": [
+        {
+          "id": "entendi",
+          "imgs": [],
+          "nome": "Entendi",
+          "texto": ""
+        },
+        {
+          "id": "nao-entendi",
+          "imgs": [],
+          "nome": "Ainda não entendi",
+          "texto": "Explique de outro jeito."
+        }
+      ],
+      "titulo": "O livro aberto: página ruim de ver e uma maior que a outra"
+    },
+    {
+      "exemplos": [
+        {
+          "legenda": "Preto = os dois; vermelho = só na tela; azul = só no PDF.",
+          "src": "lyupdf/img/lu-tc-igual-zoom.jpg"
+        }
+      ],
+      "explicacao": [
+        "Você tem razão que é um perigo, e não está resolvido ainda. A causa: os 10 jeitos de preto e branco do ScanTailor calculam a imagem de um jeito que muda com o tamanho dela. A tela usa uma imagem com a metade da resolução do PDF, e por isso a letra sai cerca de 20% mais grossa na tela. No Preto e branco de fábrica, a tela e o PDF batem.",
+        "O conserto é de processamento: fazer a conta da tela dar o mesmo que a do PDF. Vai para um implementador na rodada logo depois da junção, com teste de reversão que compara a tinta da tela com a do PDF. Também vale para a prévia do painel."
+      ],
+      "historico": [
+        {
+          "em": "2026-10-22T18:13:22.735Z",
+          "quem": "samuel",
+          "texto": "O pdf está saindo diferente da tela gerada, na tela gerada a letra está mais grossa, isso é um perigo, porque pode parecer que se quer a letra mais grossa e ter ela mais fina, ou vice e versa e ainda pode acontecer em outras situações."
+        },
+        {
+          "em": "2026-10-22T22:53:46Z",
+          "quem": "samuel",
+          "texto": "ok, então deixe isso anotado, precisamos que o pdf saia que nem está na tela."
+        },
+        {
+          "em": "2026-10-23T02:50:00Z",
+          "quem": "gerente",
+          "texto": "Anotado no plano com as suas palavras. É o mesmo pedido que já estava na Lista de espera como \"a tela decide, o PDF obedece\". Entra na rodada logo depois da junção, e antes de mudar qualquer coisa você vê as fotos da tela e do PDF lado a lado."
+        }
+      ],
+      "id": "dv-lu-tc-igual",
+      "opcoes": [
+        {
+          "id": "entendi",
+          "imgs": [],
+          "nome": "Entendi",
+          "texto": ""
+        },
+        {
+          "id": "nao-entendi",
+          "imgs": [],
+          "nome": "Ainda não entendi",
+          "texto": "Explique de outro jeito."
+        }
+      ],
+      "titulo": "Tela cheia: a letra mais grossa que no PDF. O que vai ser feito?"
+    },
+    {
+      "exemplos": [
+        {
+          "legenda": "Hoje, na versão de teste: Marial 8, 28 e 43 com \"Cortar seguindo o conteúdo\" ligado. Verde = o corte; vermelho = o que o aviso conta como \"ficou de fora\": beirada do papel, pontinhos e mancha, nada impresso.",
+          "src": "vt28/duvidas/aviso-corte-marial.jpg"
+        },
+        {
+          "legenda": "Como era (foto antiga): O que o aviso conta hoje (retângulos azuis).",
+          "src": "cx22/img/avisos_o_que_fica_fora.jpg"
+        }
+      ],
+      "explicacao": [
+        "Você disse: \"Mas se precisa melhorar a acuracidade desse aviso\".",
+        "Anotado (D-296), mas ainda não consertado: hoje o aviso aparece em 71 de 100 páginas do Marial, por beirada, pontinho e mancha (foto)."
+      ],
+      "historico": [
+        {
+          "em": "2026-10-22T18:37:00.520Z",
+          "quem": "samuel",
+          "texto": "Mas se precisa melhorar a acuracidade desse aviso"
+        },
+        {
+          "em": "2026-10-28T21:09:00Z",
+          "quem": "gerente",
+          "texto": "Ainda não foi feito. Ficou anotado com as suas palavras (D-296, 22/10: \"O aviso só conta o que parece impresso\" + \"Mas se precisa melhorar a acuracidade desse aviso\" + \"ok, deixe isso anotado pois vai precisar ser resolvido\"), com lugar na rodada de consertos (etapa 9, \"avisos demais/falsos\"). As partes da etapa 9 já feitas não mexeram neste aviso: no programa ainda não existe a conta de \"parece impresso\". Medi hoje na versão de teste: Marial, páginas 1 a 100, com \"Cortar seguindo o conteúdo (como o ScanTailor)\" ligado no Automático: 71 de 100 páginas com o aviso. A medida não é igual à do verificador de 22/10 (82 de 100), então os números não se comparam exatos; o que vale é que ele continua tocando na maioria das páginas. Na foto, o que ele conta como \"ficou de fora\" no Marial 8, 28 e 43: pontinhos na beirada, a beirada do papel e uma mancha, nada impresso. Quando o conserto vier, o verificador mede antes e depois nas mesmas páginas e confere que o carimbo do Egenloff 3, que é de verdade, continua avisando. Lembrete: esse aviso só aparece com \"Cortar seguindo o conteúdo\" ligado; de fábrica vem desligado."
+        }
+      ],
+      "id": "dv-cx-avisos",
+      "opcoes": [
+        {
+          "id": "entendi",
+          "imgs": [],
+          "nome": "Entendi",
+          "texto": ""
+        },
+        {
+          "id": "nao-entendi",
+          "imgs": [],
+          "nome": "Ainda não entendi",
+          "texto": "Explique de outro jeito."
+        }
+      ],
+      "titulo": "Aviso de corte: melhorar o acerto do aviso"
+    },
+    {
+      "exemplos": [
+        {
+          "legenda": "Print seu de hoje (sessão 2): o \"Ver de perto\" parado em \"Preparando a prévia...\".",
+          "src": "vt28/duvidas/s2-ver-de-perto.jpg"
+        },
+        {
+          "legenda": "Print seu de hoje (sessão 2): Palatino, 126 páginas, processando.",
+          "src": "vt28/duvidas/s2-processando.jpg"
+        }
+      ],
+      "explicacao": [
+        "Você disse: \"Mas quanto mais rápidos pudermos deixar, melhor.\"",
+        "Anotado (D-431, D-111). A velocidade é a Fase 5. Hoje você achou duas lentidões na versão de teste; estão anotadas e a causa está sendo medida."
+      ],
+      "historico": [
+        {
+          "em": "2026-10-22T18:34:10.633Z",
+          "quem": "samuel",
+          "texto": "Mas quanto mais rápidos pudermos deixar, melhor."
+        },
+        {
+          "em": "2026-10-28T21:10:00Z",
+          "quem": "gerente",
+          "texto": "Anotado e continua valendo: D-431 (\"Devemos sempre buscar que o programa use todo o potencial do computador\" + \"quanto mais rápidos pudermos deixar, melhor\") e D-111 (a caixa do conteúdo mais rápida). Deixar mais rápido é a Fase 5 (Desempenho), depois da rodada de consertos, como você mandou em 19/10 (\"vamos deixar esse concerto de lentidão para o final, para a fase de desempenho\"). Na rodada de consertos vale só a regra de não deixar nada mais lento: cada etapa mede antes e depois. Como está hoje: o programa já usa todos os núcleos (2.16, aprovado em 22/10); a caixa do conteúdo não ficou mais rápida (D-111, ainda não feita). E hoje você mesmo achou lentidão na versão de teste: \"ele está bem travado\" (Cursus, 402 páginas) e \"demora muito para carregar a pagina na visão de imagem grande\" (Palatino 13). A conta da imagem do \"Ver de perto\" leva 1,1 s; a demora vem de outro lugar (suspeita: a fila de prévias do programa). Isso está anotado no relatório da sessão de hoje e a causa está sendo medida."
+        }
+      ],
+      "id": "dv-cx-velocidade",
+      "opcoes": [
+        {
+          "id": "entendi",
+          "imgs": [],
+          "nome": "Entendi",
+          "texto": ""
+        },
+        {
+          "id": "nao-entendi",
+          "imgs": [],
+          "nome": "Ainda não entendi",
+          "texto": "Explique de outro jeito."
+        }
+      ],
+      "titulo": "\"Quanto mais rápido pudermos deixar, melhor\""
+    },
+    {
+      "exemplos": [
+        {
+          "legenda": "Hoje, painel Filtro a 1280 x 657: \"Melhorar\" inteiro; mas a linha \"Igualar a luz da página / Suavizar as letras / Tirar o chuvisco\" sai cortada.",
+          "src": "vt28/duvidas/painel-filtro-nomes.jpg"
+        },
+        {
+          "legenda": "A janela de hoje (1280 x 657): as caixinhas ficam à vista em \"Mais ajustes\" do painel Filtro, desligadas de fábrica.",
+          "src": "vt28/duvidas/janela-filtro-horas26.jpg"
+        }
+      ],
+      "explicacao": [
+        "Você pediu: \"tem que sair inteiro os inscritos\" (o nome \"Melhorar\" saía cortado no painel Filtro).",
+        "O \"Melhorar\" está inteiro hoje (D-059). Mas na versão de teste há outra linha cortada no mesmo painel, em \"Mais ajustes\" (foto). Vai para a Lista de bugs."
+      ],
+      "historico": [
+        {
+          "em": "2026-10-21T19:59:38.933Z",
+          "quem": "samuel",
+          "texto": "tem que sair inteiro os inscritos"
+        },
+        {
+          "em": "2026-10-28T21:11:00Z",
+          "quem": "gerente",
+          "texto": "O \"Melhorar\" que saía cortado foi consertado pelo agente de layout (etapa 7b; D-059, conferido a 1280 x 657) e continua inteiro na versão de teste. Mas, conferindo hoje na mesma janela, achei outra coisa cortada no mesmo painel: em \"Mais ajustes\", a linha das três caixinhas que entraram em 23/10 (\"Igualar a luz da página\", \"Suavizar as letras\" e \"Tirar o chuvisco\") sai como \"Igual\", \"Suav\" e \"Tirar o chu\", e o resumo ao lado de \"Mais ajustes\" perde o começo (\":om a cor delas\"). Isso vai contra o que você mandou (\"tem que sair inteiro os inscritos\"): é defeito e vai para a Lista de bugs, para a rodada de consertos acertar."
+        }
+      ],
+      "id": "dv-ly-filtro",
+      "opcoes": [
+        {
+          "id": "entendi",
+          "imgs": [],
+          "nome": "Entendi",
+          "texto": ""
+        },
+        {
+          "id": "nao-entendi",
+          "imgs": [],
+          "nome": "Ainda não entendi",
+          "texto": "Explique de outro jeito."
+        }
+      ],
+      "titulo": "Painel Filtro: \"tem que sair inteiro os inscritos\""
+    },
+    {
+      "exemplos": [
+        {
+          "legenda": "Como era (antes do conserto).",
+          "src": "conf/img/a4n-antes-de-processar.jpg"
+        }
+      ],
+      "explicacao": [
+        "Feito pelo agente de layout em 22/10: a janela ficou menor (numa tela pequena ocupava 80% da altura, agora 61%), a frase em duas linhas, \"Selecionar todas\" e \"Nenhuma\" pequenos, e uma fila só de botões. Nenhum controle saiu.",
+        "O verificador está conferindo agora; depois vem para você aqui na Central, com as fotos de antes e depois."
+      ],
+      "historico": [
+        {
+          "em": "2026-10-21T21:43:25.375Z",
+          "quem": "samuel",
+          "texto": "ficou meio embolado, deve ficar mais claro e não tão grande."
+        },
+        {
+          "em": "2026-10-22T22:51:12Z",
+          "quem": "samuel",
+          "texto": "os nomes dos botões são horriveis, na verdade em todo o programa, a nomeação dos botões é horrivel. Anote a ideia de depois revisarmos todos os nomes de botão com um novo agente que vai ser criado."
+        },
+        {
+          "em": "2026-10-23T02:50:00Z",
+          "quem": "gerente",
+          "texto": "Anotado na Lista de espera do plano, com as suas palavras: um agente novo, só para revisar os nomes de todos os botões do programa. Ele traz a lista de todos os botões com o nome de hoje e uma sugestão, e você decide um por um."
+        }
+      ],
+      "id": "dv-pr-antes",
+      "opcoes": [
+        {
+          "id": "entendi",
+          "imgs": [],
+          "nome": "Entendi",
+          "texto": ""
+        },
+        {
+          "id": "nao-entendi",
+          "imgs": [],
+          "nome": "Ainda não entendi",
+          "texto": "Explique de outro jeito."
+        }
+      ],
+      "titulo": "A janela \"Antes de processar\": embolada e grande demais"
+    },
+    {
+      "exemplos": [
+        {
+          "legenda": "Livro de Horas 26, no PDF, Preto e branco + \"Letras com a cor delas\" + \"Reduzir cores\". Azul: antes do conserto (parte preta, parte clara). Verde: hoje (nada preto, mas duas cores na mesma palavra). Embaixo: o scan, uma tinta só.",
+          "src": "/_blob/63485e82b34ebef2ff6d409d55ba5fe3"
+        },
+        {
+          "legenda": "Onde ficam as caixinhas hoje: painel \"Filtro da página\" > Preto e branco > \"Mais ajustes\": \"Letras com a cor delas\" e \"Reduzir cores\".",
+          "src": "/_blob/5e0ba9fefa11a7c07bf66bdef98570ff"
+        }
+      ],
+      "explicacao": [
+        "Você aprovou em 21/10 com a ressalva: \"em alguns casos, ele acaba apagando a letra.\"",
+        "Isso foi consertado em 27/10: com \"Letras com a cor delas\" + \"Reduzir cores\", nenhuma letra sai mais preta nem some (faixa azul = antes, verde = hoje).",
+        "Mas o print novo mostra outra coisa: a mesma palavra ainda sai em duas cores (azul-acinzentado e bege). No scan, cada palavra é de uma tinta só.",
+        "Correção minha: eu tinha escrito que hoje a palavra sai inteira numa cor só, e isso não é verdade. O print novo mostra: antes do conserto de 27/10, parte das letras saía preta e parte clara (azul). Hoje nenhuma letra sai preta nem some, mas a palavra ainda sai em duas cores: em \"S. Leonard\", o \"S.\", o \"L\" e o \"n\" saem azul-acinzentados e o resto bege; no scan, a palavra é de uma tinta só (faixa de baixo). Por isso a pergunta mudou."
+      ],
+      "historico": [
+        {
+          "em": "2026-10-21T20:19:24.806Z",
+          "quem": "samuel",
+          "texto": "aprovado, mas ainda tem que melhorar, em alguns casos, ele acaba apagando a letra."
+        },
+        {
+          "em": "2026-10-28T21:20:00Z",
+          "quem": "gerente",
+          "texto": "A sua ressalva (\"em alguns casos, ele acaba apagando a letra\") virou a decisão D-189 e foi consertada na rodada de consertos, em 27/10. Era o \"Reduzir cores\" junto com \"Letras com a cor delas\" no Preto e branco: a cor mais escura de cada letra ia para o preto e o resto ficava claro, e metade da palavra parecia apagada (Livro de Horas 26, \"S. Leonard\", \"Theodore\"). Hoje cada palavra sai inteira numa cor só (letras que viravam preto: 20% antes, 0,1% hoje). Para isso, nesse caso o programa deixa de fazer o \"forçar preto e branco\" que o ScanTailor faz de fábrica; nos outros filtros continua igual a ele. A caixinha fica à vista e desligada de fábrica (D-191). O 2.15 (aviso de página com inclinação diferente das outras) entrou como você aprovou (D-294). Está na versão de teste; você confere a foto na conferência final. A resposta às suas perguntas sobre o \"Reduzir cores\" (quando foi pedido, se é do ScanTailor) está na aba \"Suas dúvidas sem resposta\"."
+        },
+        {
+          "em": "2026-11-08T19:29:17.189Z",
+          "quem": "samuel",
+          "texto": "Continuo sem entender o que aconteceu, prints inconclusivos, qual é antes e depois? Um monte de texto e não consigo saber o que era para saber realmente, se está funcionando como eu quero ou não."
+        },
+        {
+          "em": "2026-11-13T20:40:00Z",
+          "quem": "gerente",
+          "texto": "Você tem razão: o print não deixava claro o que era antes e o que era depois. Em poucas palavras: no Preto e branco com \"Reduzir cores\", metade da palavra virava preta e metade ficava clara. Isso foi consertado em 27/10, e hoje a palavra sai inteira numa cor só. Vou refazer o print com faixa azul para antes, verde para depois e o defeito circulado."
+        },
+        {
+          "em": "2026-11-13T22:40:00Z",
+          "quem": "gerente",
+          "texto": "Correção minha: eu tinha escrito que hoje a palavra sai inteira numa cor só, e isso não é verdade. O print novo mostra: antes do conserto de 27/10, parte das letras saía preta e parte clara (azul). Hoje nenhuma letra sai preta nem some, mas a palavra ainda sai em duas cores: em \"S. Leonard\", o \"S.\", o \"L\" e o \"n\" saem azul-acinzentados e o resto bege; no scan, a palavra é de uma tinta só (faixa de baixo). Por isso a pergunta mudou."
+        }
+      ],
+      "id": "dv-211-215",
+      "opcoes": [
+        {
+          "id": "consertar",
+          "nome": "Consertar: cada palavra sai numa cor só, como no scan (recomendo)",
+          "texto": "Entra na fila de consertos."
+        },
+        {
+          "id": "esta-bom",
+          "nome": "Está bom assim",
+          "texto": "A letra não some mais; as duas cores ficam."
+        },
+        {
+          "id": "depois",
+          "nome": "Fica para depois",
+          "texto": "Vai para a Lista de bugs."
+        }
+      ],
+      "sugestao": "Consertar: no scan a palavra é de uma tinta só.",
+      "titulo": "Cores no Preto e branco (2.11): a letra não some mais, mas a palavra ainda sai em duas cores. Consertar?"
+    },
+    {
+      "exemplos": [
+        {
+          "legenda": "A janela de hoje, numa página que vai ser impressa (slide do \"O meio ambiente hoje\", p. 27): com \"Letra clara em fundo escuro\" marcada, os quatro cartões mostram a página como ela sai.",
+          "src": "vt28/duvidas/janela-cartoes-slide.jpg"
+        }
+      ],
+      "explicacao": [
+        "Você respondeu em 21/10 (\"Está pior\") com este comentário, que ficou sem resposta. A resposta está logo acima; as fotos mostram como está hoje na versão de teste."
+      ],
+      "historico": [
+        {
+          "em": "2026-10-21T20:07:10.304Z",
+          "quem": "samuel",
+          "texto": "essa lombada de couro não seria impressa nunca, então não existe motivo para fazer teste nela e ficou muito ruim, não faça mais testes com lombadas de livros"
+        },
+        {
+          "em": "2026-10-28T21:21:00Z",
+          "quem": "gerente",
+          "texto": "Você tem razão. Virou regra em 21/10 (D-462, com as suas palavras; CLAUDE.md §4.10): teste só com página que vai ser impressa, nada de lombada, capa ou contracapa de couro ou papelão. A Horas 187 saiu dos testes. O que este quadro queria mostrar (a caixinha \"Letra clara em fundo escuro\" e os cartões seguindo ela) está mostrado de novo numa página que vai ser impressa, um slide de letra branca em fundo escuro: na janela de hoje os quatro cartões mostram a página como ela sai."
+        }
+      ],
+      "id": "dv-29-horas",
+      "opcoes": [
+        {
+          "id": "entendi",
+          "nome": "Entendi",
+          "texto": ""
+        }
+      ],
+      "titulo": "Letra clara (2.9): \"não faça mais testes com lombadas de livros\""
+    },
+    {
+      "exemplos": [
+        {
+          "legenda": "O mesmo slide como sai no PDF hoje. Com a caixinha a letra sai inteira, mas 71% da folha é preto: é a tinta que a impressora gastaria.",
+          "src": "vt28/duvidas/slide-tinta-hoje.jpg"
+        },
+        {
+          "legenda": "A janela de hoje, numa página que vai ser impressa (slide do \"O meio ambiente hoje\", p. 27): com \"Letra clara em fundo escuro\" marcada, os quatro cartões mostram a página como ela sai.",
+          "src": "vt28/duvidas/janela-cartoes-slide.jpg"
+        }
+      ],
+      "explicacao": [
+        "Você respondeu em 21/10 (\"Aprovado\") com este comentário, que ficou sem resposta. A resposta está logo acima; as fotos mostram como está hoje na versão de teste."
+      ],
+      "historico": [
+        {
+          "em": "2026-10-21T20:08:59.346Z",
+          "quem": "samuel",
+          "texto": "aprovado, mas veja as minhas ressalvas para melhoramentos."
+        },
+        {
+          "em": "2026-10-28T21:22:00Z",
+          "quem": "gerente",
+          "texto": "As suas ressalvas eram duas, e as duas estão anotadas com as suas palavras. 1) Lombada: não testar mais em lombada, capa ou contracapa (D-462); a Horas 187 saiu dos testes. 2) Slide de letra branca em fundo preto: pesquisar um jeito de virar letra preta em papel branco, para gastar menos tinta (D-190, Lista de espera); ainda não foi feito. Hoje, com a caixinha, o slide sai com 71% da folha em preto (foto). A caixinha entrou como você aprovou (D-177): uma por página, marcada à mão, desligada de fábrica, e está na versão de teste."
+        }
+      ],
+      "id": "dv-29-ressalvas",
+      "opcoes": [
+        {
+          "id": "entendi",
+          "nome": "Entendi",
+          "texto": ""
+        }
+      ],
+      "titulo": "Letra clara (2.9): \"veja as minhas ressalvas para melhoramentos\""
+    }
+  ],
+  "quadros": [],
+  "resumo": {
+    "paragrafos": [
+      "Você tinha razão: nos comentários de 21/10 você fez perguntas que eu registrei no plano, mas não respondi aqui. Algumas foram resolvidas no chat de 22/10, mas a regra é responder na Central. Estão todas aqui, uma por uma, com o seu comentário fixado no alto.",
+      "Se alguma resposta não ficar clara, marque \"Ainda não entendi\" e escreva o porquê.",
+      "Segunda leva (22/10, à noite): conferi todos os seus comentários no banco da Central e achei mais 8 que eu respondi só no chat, ou não respondi. Estão no fim desta aba, a partir de \"Layout 6 e 7: a ressalva dos três acertos\".",
+      "Terceira leva (28/10): você avisou que havia perguntas com comentário seu sem resposta minha. Era isso: nas 11 perguntas abaixo a resposta estava só no texto de cima, e o seu comentário ficava por último. Agora cada uma tem a minha resposta no histórico, dizendo o que aconteceu desde então e como está HOJE na versão de teste, com print de hoje.",
+      "Duas coisas que achei conferindo hoje e que não estão boas: em \"Mais ajustes\" do painel Filtro uma linha sai cortada (pergunta do \"Painel Filtro\"), e o aviso \"Corte deixou algo de fora\" continua tocando sem precisar (pergunta do \"Aviso de corte\")."
+    ],
+    "titulo": "Perguntas que você fez nas conferências e ficaram sem resposta"
+  },
+  "trabalho": "duvidas"
+}

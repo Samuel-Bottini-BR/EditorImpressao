@@ -1,0 +1,491 @@
+{
+  "atualizado": "2026-11-04T03:20:00Z",
+  "nome": "Para responder agora (14)",
+  "ordem": -10,
+  "origem": "Parecer do verificador da D-574 (ramo livreto-ver-2026-10-31) e ONDE-PAREI do gravuras-cinza",
+  "perguntas": [
+    {
+      "exemplos": [
+        {
+          "legenda": "Gradus, folha 5, ainda inteira, em \"Uma página\": a linha azul no meio (51%), nada cortado.",
+          "src": "/_blob/bcfd08c74d2ec9f7745a94dd61565dac"
+        }
+      ],
+      "explicacao": [
+        "Onde: ferramenta Dividir (primeiro botão da barra da esquerda), versão de teste. Livro: Gradus Primus.",
+        "O que você decidiu (D-602, 03/11): \"eu conseguir ver a linha e dai eu clicar e dividir esta\" → a folha dupla ainda inteira já mostra a linha azul onde o motor cortaria; \"dividir esta\" corta nela.",
+        "Como ficou: na folha inteira a linha é só para ver, não dá para arrastar. Para mudar o lugar do corte, você aperta \"dividir esta\" e depois arrasta a linha em \"Duas lado a lado\" (como já era, D-601).",
+        "A pergunta: quer poder arrastar a linha já na folha inteira, antes de dividir?"
+      ],
+      "id": "d602-arrastar",
+      "opcoes": [
+        {
+          "id": "so-ver",
+          "imgs": [],
+          "nome": "Fica só para ver; para mudar, divido e arrasto em \"Duas lado a lado\" (recomendo: é o que você pediu)",
+          "texto": ""
+        },
+        {
+          "id": "arrastar",
+          "imgs": [],
+          "nome": "Quero arrastar a linha já na folha inteira",
+          "texto": "\"dividir esta\" corta onde eu deixei a linha."
+        },
+        {
+          "id": "nao-entendi",
+          "imgs": [],
+          "nome": "Ainda não entendi",
+          "texto": "Explique de outro jeito."
+        }
+      ],
+      "titulo": "Dividir: a linha azul da folha ainda inteira deve poder ser arrastada?"
+    },
+    {
+      "exemplos": [
+        {
+          "legenda": "Folha 5 inteira com a linha azul; na faixa de baixo: \"Esta folha não vai ser dividida.\"",
+          "src": "/_blob/bcfd08c74d2ec9f7745a94dd61565dac"
+        }
+      ],
+      "explicacao": [
+        "Onde: ferramenta Dividir (primeiro botão da barra da esquerda), versão de teste. Livro: Gradus Primus.",
+        "Na folha dupla ainda inteira, agora aparece a linha azul (D-602), mas a faixa de baixo continua dizendo \"Esta folha não vai ser dividida.\" (veja o print, embaixo da folha). As duas coisas juntas podem confundir.",
+        "A pergunta: troca a frase quando a linha aparece?"
+      ],
+      "id": "d602-frase",
+      "opcoes": [
+        {
+          "id": "trocar",
+          "imgs": [],
+          "nome": "Trocar por: \"Achei a lombada. Aperte \"dividir esta\" para cortar nessa linha.\" (recomendo)",
+          "texto": ""
+        },
+        {
+          "id": "manter",
+          "imgs": [],
+          "nome": "Deixar \"Esta folha não vai ser dividida.\"",
+          "texto": ""
+        },
+        {
+          "id": "nao-entendi",
+          "imgs": [],
+          "nome": "Ainda não entendi",
+          "texto": "Explique de outro jeito."
+        }
+      ],
+      "titulo": "Dividir: a faixa diz \"Esta folha não vai ser dividida.\" enquanto a linha azul aparece. Trocar a frase?"
+    },
+    {
+      "exemplos": [
+        {
+          "legenda": "Painel da direita: \"dividir esta\" · \"juntar todas\" / \"usar em todas\" · \"dividir todas\".",
+          "src": "/_blob/bcfd08c74d2ec9f7745a94dd61565dac"
+        }
+      ],
+      "explicacao": [
+        "Onde: ferramenta Dividir (primeiro botão da barra da esquerda), versão de teste. Livro: Gradus Primus.",
+        "O botão novo \"dividir todas\" (D-602: o motor lê cada folha do livro e corta cada folha dupla na sua própria linha) ficou na direita, embaixo de \"juntar todas\" e ao lado de \"usar em todas\".",
+        "Lembrete: \"usar em todas\" é outra coisa (D-090): copia a linha DESTA folha para as outras."
+      ],
+      "id": "d602-lugar-botao",
+      "opcoes": [
+        {
+          "id": "ok",
+          "imgs": [],
+          "nome": "Está bom aí (recomendo)",
+          "texto": ""
+        },
+        {
+          "id": "outro",
+          "imgs": [],
+          "nome": "Quero em outro lugar",
+          "texto": "Escreva no comentário onde."
+        },
+        {
+          "id": "nao-entendi",
+          "imgs": [],
+          "nome": "Ainda não entendi",
+          "texto": "Explique de outro jeito."
+        }
+      ],
+      "titulo": "Dividir: o botão novo \"dividir todas\" ficou ao lado do \"usar em todas\". Está bom aí?"
+    },
+    {
+      "exemplos": [
+        {
+          "legenda": "Boécio, folha 3 (uma página só): sem linha azul.",
+          "src": "/_blob/5594434f602e6ec40d51788c4eddcfe7"
+        }
+      ],
+      "explicacao": [
+        "Onde: ferramenta Dividir (primeiro botão da barra da esquerda), versão de teste. Livro: Gradus Primus.",
+        "Se você aperta \"dividir todas\" e não sobra folha dupla inteira, aparece um aviso:",
+        "• quando as que faltam são de uma página só: \"Nenhuma folha dupla para dividir: as que faltam são de uma página só.\"",
+        "• quando todas já estão divididas: \"Todas as folhas já estão divididas.\"",
+        "A folha de uma página só não mostra linha (o que você decidiu na D-602). Exemplo: Boécio, folha 3."
+      ],
+      "id": "d602-aviso-nada",
+      "opcoes": [
+        {
+          "id": "ok",
+          "imgs": [],
+          "nome": "Pode ser assim (recomendo)",
+          "texto": ""
+        },
+        {
+          "id": "outro",
+          "imgs": [],
+          "nome": "Quero outra frase",
+          "texto": "Escreva no comentário."
+        },
+        {
+          "id": "nao-entendi",
+          "imgs": [],
+          "nome": "Ainda não entendi",
+          "texto": "Explique de outro jeito."
+        }
+      ],
+      "titulo": "Dividir: aviso quando o \"dividir todas\" não tem nada para dividir"
+    },
+    {
+      "exemplos": [
+        {
+          "legenda": "Depois do \"dividir todas\": folha 5 dividida (só a página da esquerda aparece em \"Uma página\"), \"0 de 70 conferidas\" no rodapé.",
+          "src": "/_blob/3b6ef67b47d64b2e1a3600ac2050d150"
+        }
+      ],
+      "explicacao": [
+        "Onde: ferramenta Dividir (primeiro botão da barra da esquerda), versão de teste. Livro: Gradus Primus.",
+        "Embaixo da tela aparece \"0 de 70 conferidas\". O \"dividir esta\" marca a folha como conferida. O \"dividir todas\" não marca nenhuma, igual ao \"juntar todas\" (D-590): você ainda olha uma por uma.",
+        "No print: depois do \"dividir todas\", as 70 folhas do Gradus divididas e \"0 de 70 conferidas\"."
+      ],
+      "id": "d602-conferidas",
+      "opcoes": [
+        {
+          "id": "nao-marca",
+          "imgs": [],
+          "nome": "Não marca; eu confiro uma por uma (recomendo, igual ao \"juntar todas\")",
+          "texto": ""
+        },
+        {
+          "id": "marca",
+          "imgs": [],
+          "nome": "Marca todas como conferidas",
+          "texto": ""
+        },
+        {
+          "id": "nao-entendi",
+          "imgs": [],
+          "nome": "Ainda não entendi",
+          "texto": "Explique de outro jeito."
+        }
+      ],
+      "titulo": "Dividir: o \"dividir todas\" deve marcar as folhas como conferidas?"
+    },
+    {
+      "exemplos": [
+        {
+          "legenda": "Folha inteira com a linha azul (a folha juntada fica igual a esta).",
+          "src": "/_blob/bcfd08c74d2ec9f7745a94dd61565dac"
+        }
+      ],
+      "explicacao": [
+        "Onde: ferramenta Dividir (primeiro botão da barra da esquerda), versão de teste. Livro: Gradus Primus.",
+        "Exemplo: você divide uma folha, vê que ela não era dupla e aperta \"não dividir esta\" (junta de volta).",
+        "Como ficou: essa folha mostra a linha onde estava antes (D-498: \"dividir esta\" devolve a linha de antes). Se você apertar \"dividir todas\", ela também é dividida de novo, nessa linha.",
+        "A pergunta: o \"dividir todas\" deve pular as folhas que você juntou à mão?"
+      ],
+      "id": "d602-juntada",
+      "opcoes": [
+        {
+          "id": "pular",
+          "imgs": [],
+          "nome": "Pular as que eu juntei à mão (recomendo: o que você fez à mão fica, como no Automático, D-004)",
+          "texto": ""
+        },
+        {
+          "id": "dividir",
+          "imgs": [],
+          "nome": "Dividir todas mesmo, como está",
+          "texto": ""
+        },
+        {
+          "id": "nao-entendi",
+          "imgs": [],
+          "nome": "Ainda não entendi",
+          "texto": "Explique de outro jeito."
+        }
+      ],
+      "titulo": "Dividir: folha que você juntou à mão volta a ser dividida pelo \"dividir todas\"?"
+    },
+    {
+      "exemplos": [
+        {
+          "legenda": "Dividir, Gradus: depois de trocar o motor na folha 7, a seta → foi para a folha 8 (a lista já não pega o teclado). Os botões \"dividir esta\" e \"juntar todas\" ainda pegam.",
+          "src": "/_blob/e9d79a8c75aaef940117c8fff1f32aa5"
+        }
+      ],
+      "explicacao": [
+        "Onde: painel da direita de todas as ferramentas (ex.: Dividir: \"dividir esta\", \"juntar todas\"; Cortar: \"não cortar esta\"). Achado do agente de 03/11.",
+        "Hoje: você clica num botão do painel e o botão fica com o teclado. Aí a seta → passa de um botão a outro em vez de ir para a próxima folha. Só volta a trocar de folha depois de clicar na página.",
+        "A lista \"motor de corte\" já foi consertada hoje (depois de escolher o motor, a seta → vai para a próxima folha; print abaixo, folha 7 → 8). Os botões não foram mexidos porque isso muda todas as ferramentas.",
+        "A pergunta: os botões do painel também deixam o teclado com a página, em todas as ferramentas?"
+      ],
+      "id": "teclado-botoes-painel",
+      "opcoes": [
+        {
+          "id": "pagina",
+          "imgs": [],
+          "nome": "Sim: depois de clicar num botão, as setas continuam trocando de folha, em todas as ferramentas (recomendo)",
+          "texto": ""
+        },
+        {
+          "id": "como-esta",
+          "imgs": [],
+          "nome": "Deixar como está",
+          "texto": ""
+        },
+        {
+          "id": "nao-entendi",
+          "imgs": [],
+          "nome": "Ainda não entendi",
+          "texto": "Explique de outro jeito."
+        }
+      ],
+      "titulo": "Depois de clicar num botão do painel, as setas do teclado devem continuar trocando de folha?"
+    },
+    {
+      "exemplos": [
+        {
+          "legenda": "Endireitar desmarcado, rodado, janela aberta de novo: a caixinha voltou marcada (\"ligada no livro todo\").",
+          "src": "/_blob/45dff64d45dee37eb2b189f0bdc8072f"
+        },
+        {
+          "legenda": "O mesmo com \"4 Limpar a folha\".",
+          "src": "/_blob/4a0f2ccbad796871a106a57415e9c5e0"
+        }
+      ],
+      "explicacao": [
+        "Onde: janela grande do Automático (\"Rodar o automático…\"), etapas 2, 3 e 4.",
+        "O que você disse (03/11): \"isso não tinha sido revisto em todo programa, se tinha algum item que desmarcado voltava a funcionar sozinho ou se marcava sem precisar estar marcado\". O agente conferiu.",
+        "Achado: desmarcar \"2 Endireitar\", \"3 Cortar as bordas\" ou \"4 Limpar a folha\" e rodar → a caixinha volta marcada, a etapa continua \"ligada no livro todo\", a frase diz \"Vou endireitar/cortar/limpar\" e o livro continua saindo endireitado, cortado ou limpo. É o mesmo defeito que a caixinha do Dividir tinha (já consertado hoje).",
+        "Sugestão: igual a Cadernos, Margens e Gravuras (D-589): desmarcada e rodada → a caixinha fica desmarcada e a etapa deixa de ser feita no livro todo. As páginas que você mexeu à mão continuam como você deixou."
+      ],
+      "id": "caixinhas-endireitar-cortar-limpar",
+      "opcoes": [
+        {
+          "id": "desligar",
+          "imgs": [],
+          "nome": "Desmarcada fica desmarcada e não é feita (recomendo, igual às outras)",
+          "texto": ""
+        },
+        {
+          "id": "como-esta",
+          "imgs": [],
+          "nome": "Deixar como está",
+          "texto": ""
+        },
+        {
+          "id": "nao-entendi",
+          "imgs": [],
+          "nome": "Ainda não entendi",
+          "texto": "Explique de outro jeito."
+        }
+      ],
+      "titulo": "Automático: Endireitar, Cortar e Limpar desmarcadas voltam marcadas e continuam sendo feitas"
+    },
+    {
+      "exemplos": [
+        {
+          "legenda": "Janela grande do Automático, etapas 1 a 7.",
+          "src": "/_blob/4a0f2ccbad796871a106a57415e9c5e0"
+        }
+      ],
+      "explicacao": [
+        "Onde: janela grande do Automático, etapa 5 \"Gravuras e fotos\".",
+        "Achado: marcar só \"5 Gravuras e fotos\" (sem \"4 Limpar a folha\") e rodar → a caixinha volta desmarcada sozinha.",
+        "Por quê: a procura das gravuras serve para o filtro (Limpar) não estragar o desenho. Sem o Limpar, o programa considera a etapa 5 desligada. Hoje, sem Limpar, marcar a etapa 5 não muda nada no PDF.",
+        "Sugestão: a caixinha fica marcada como você deixou (o programa procura as gravuras e guarda; quando o Limpar for ligado, elas já estão achadas)."
+      ],
+      "id": "caixinhas-gravuras-sozinha",
+      "opcoes": [
+        {
+          "id": "fica-marcada",
+          "imgs": [],
+          "nome": "Fica marcada como eu deixei (recomendo)",
+          "texto": ""
+        },
+        {
+          "id": "liga-limpar",
+          "imgs": [],
+          "nome": "Marcar Gravuras liga o Limpar junto",
+          "texto": ""
+        },
+        {
+          "id": "como-esta",
+          "imgs": [],
+          "nome": "Deixar como está (volta desmarcada)",
+          "texto": ""
+        },
+        {
+          "id": "nao-entendi",
+          "imgs": [],
+          "nome": "Ainda não entendi",
+          "texto": "Explique de outro jeito."
+        }
+      ],
+      "titulo": "Automático: \"Gravuras e fotos\" marcada sozinha volta desmarcada"
+    },
+    {
+      "exemplos": [
+        {
+          "legenda": "Na folha 2, \"Folhas de 3\": a prévia foi para a folha 4.",
+          "src": "/_blob/285a27fafd1da3cd95d4e5abff35ba7b"
+        }
+      ],
+      "explicacao": [
+        "Você está olhando a folha 2 e escreve \"Folhas de 3\". Hoje a prévia pula para a folha 4 (ela guarda a posição, não o número da folha)."
+      ],
+      "id": "d574-folhas-de",
+      "opcoes": [
+        {
+          "id": "a",
+          "imgs": [],
+          "nome": "Sim, vai para a folha 3 (sugestão)",
+          "texto": "A prévia mostra a primeira folha que você escolheu."
+        },
+        {
+          "id": "b",
+          "imgs": [],
+          "nome": "Não, fica como está",
+          "texto": "A prévia guarda a posição."
+        }
+      ],
+      "titulo": "\"Folhas de/até\": a prévia vai para a primeira folha escolhida?"
+    },
+    {
+      "exemplos": [
+        {
+          "legenda": "Depois da seta: desenho sumiu, texto ainda \"Folha 1 de 32\".",
+          "src": "/_blob/81108683d23b97047573c74359edf69c"
+        }
+      ],
+      "explicacao": [
+        "Ao apertar a seta, o desenho some e, até a folha nova chegar, ainda está escrito \"Folha 1 de 32\"."
+      ],
+      "id": "d574-texto-enquanto-monta",
+      "opcoes": [
+        {
+          "id": "a",
+          "imgs": [],
+          "nome": "Sim, troca na hora (sugestão)",
+          "texto": "Já escreve \"Folha 2 de 32\", com a bolinha girando."
+        },
+        {
+          "id": "b",
+          "imgs": [],
+          "nome": "Não, fica como está",
+          "texto": "O texto troca quando a folha chega."
+        }
+      ],
+      "titulo": "Ao apertar a seta, o \"Folha N de 32\" troca na hora?"
+    },
+    {
+      "exemplos": [
+        {
+          "legenda": "Ao abrir, montando a folha.",
+          "src": "/_blob/d15e52f76243db654c460f4f3e19b58b"
+        }
+      ],
+      "explicacao": [
+        "Enquanto monta a folha, o balão da bolinha diz \"Montando a folha (o livreto tem 32 folhas)\", sem porcentagem. A D-064 pede porcentagem nas bolinhas; aqui é uma folha só."
+      ],
+      "id": "d574-porcentagem",
+      "opcoes": [
+        {
+          "id": "a",
+          "imgs": [],
+          "nome": "Não precisa (sugestão)",
+          "texto": "Fica o texto, sem porcentagem."
+        },
+        {
+          "id": "b",
+          "imgs": [],
+          "nome": "Sim, com porcentagem",
+          "texto": "Mostra quanto falta da folha."
+        }
+      ],
+      "titulo": "O balão da bolinha mostra porcentagem?"
+    },
+    {
+      "exemplos": [
+        {
+          "legenda": "Folha 1 do Palatino; \"O que vai sair\" ficou embaixo.",
+          "src": "/_blob/b688ce71c6205355be684e763522c2a8"
+        }
+      ],
+      "explicacao": [
+        "Com a janela do tamanho de fábrica, a folha fica em cima e o texto \"O que vai sair\" só aparece rolando o cartão."
+      ],
+      "id": "d574-o-que-vai-sair",
+      "opcoes": [
+        {
+          "id": "a",
+          "imgs": [],
+          "nome": "Fica assim (sugestão)",
+          "texto": "A folha em cima, o texto embaixo."
+        },
+        {
+          "id": "b",
+          "imgs": [],
+          "nome": "Texto em cima da folha",
+          "texto": "\"O que vai sair\" aparece sem rolar."
+        }
+      ],
+      "titulo": "\"O que vai sair\" embaixo da folha: fica assim?"
+    },
+    {
+      "exemplos": [
+        {
+          "legenda": "Seu print a-25: \"Só as letras\" ligada no livro → as duas caixinhas apagadas.",
+          "src": "/_blob/56ef361de8c45f0268f91df062629813"
+        },
+        {
+          "legenda": "Depois do conserto, com \"Só as letras\" desligada e o \"Respeitar\" desligado: o cinza marcado e a baleia em tons de cinza.",
+          "src": "/_blob/8c5b2833d781a226cc7d17993e57c9cc"
+        }
+      ],
+      "explicacao": [
+        "A sua queixa (o cinza só funcionava com o \"Respeitar\" ligado, prints a-26 e a-27) está consertada. Isto é outra coisa, que apareceu no seu print a-25: no Na escola de Jesus o \"Só as letras\" está ligado no livro (a página 13 herda), e com ele ligado a caixinha do cinza também fica apagada.",
+        "Com \"Só as letras\" ligada, o programa guarda a cor das gravuras (D-148), e por isso o cinza fica apagado. Desligando o \"Só as letras\" da página, a caixinha volta a funcionar, com o \"Respeitar\" ligado ou desligado (segundo print).",
+        "Esta era a pergunta 1 do agente em 01/11, ainda sem resposta."
+      ],
+      "id": "d588-so-as-letras",
+      "opcoes": [
+        {
+          "id": "a",
+          "imgs": [],
+          "nome": "Está bom assim (sugestão)",
+          "texto": "Com \"Só as letras\" ligada, as gravuras guardam a cor e o cinza fica apagado. Para o cinza, desliga o \"Só as letras\"."
+        },
+        {
+          "id": "b",
+          "imgs": [],
+          "nome": "O cinza manda mais que o \"Só as letras\"",
+          "texto": "Com as duas ligadas, as letras ficam preto e branco e as gravuras saem em cinza."
+        }
+      ],
+      "titulo": "Com \"Só as letras\" ligada, a caixinha do cinza fica apagada. Está bom assim?"
+    }
+  ],
+  "quadros": [],
+  "resumo": {
+    "paragrafos": [
+      "Feito hoje e já na versão de teste: a linha azul aparece na folha dupla antes de cortar, o botão \"dividir todas\", \"motor de corte\" no lugar de \"jeito\" e a lista que travava (ela só acendia em folha já dividida).",
+      "Também feito: a caixinha do Dividir desmarcada fica desmarcada depois do Rodar. Revendo o programa, como você pediu, o agente achou o mesmo defeito em Endireitar, Cortar e Limpar.",
+      "Continuam aqui as 4 perguntas do \"Ver o caderno\" (D-574) e a do cinza com \"Só as letras\"."
+    ],
+    "titulo": "Dividir (D-602), caixinhas do Automático e Ver o caderno: 14 perguntas"
+  },
+  "trabalho": "D-600"
+}

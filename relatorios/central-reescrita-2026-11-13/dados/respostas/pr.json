@@ -1,0 +1,8 @@
+{
+  "comentario": "Precisamos melhorar nossos testes porque as vezes o resultado de uma funcionalidade depende de ter passado por outra, por exemplo o cortar faixa preta, as vezes a folha precisa ter passado por endireitar antes de cortar, e você faz os testes sem pensar nisso, por favor o proximos testes tem que levar essa questão em conta.",
+  "em": "2026-10-21T21:52:21.859Z",
+  "lida": true,
+  "opcao": "aprovado",
+  "opcaoNome": "Aprovado",
+  "relatorio": "pr"
+}

@@ -1,0 +1,31 @@
+{
+  "anteriores": [
+    {
+      "comentario": "esse teste é totalmente inconslusivo para mim, não consigo ter visão clara do que o programa tentou fazer, ou de qual problema ele tentou reslver.",
+      "em": "2026-11-09T19:18:36.823Z",
+      "opcao": "nao-entendi",
+      "opcaoNome": "Ainda não entendi"
+    }
+  ],
+  "comentario": "",
+  "conversa": [
+    {
+      "em": "2026-11-09T19:18:36.823Z",
+      "quem": "samuel",
+      "texto": "Ainda não entendi · \"esse teste é totalmente inconslusivo para mim, não consigo ter visão clara do que o programa tentou fazer, ou de qual problema ele tentou reslver.\""
+    },
+    {
+      "em": "2026-11-10T09:00:00Z",
+      "quem": "samuel",
+      "texto": "No chat: \"olha essa questão do canto não é urgente, pode deixar como branco por enquanto.\""
+    }
+  ],
+  "em": "2026-11-10T09:00:00Z",
+  "gerente": "Anotado (D-664): fica como está, nada muda no programa. A pergunta volta depois, refeita no jeito das provas do girar (Lista de espera).",
+  "gerenteEm": "2026-11-10T09:00:00Z",
+  "lida": true,
+  "opcao": "so-assim",
+  "opcaoNome": "Fica como está",
+  "reabrir": false,
+  "relatorio": "perg-cantinho"
+}

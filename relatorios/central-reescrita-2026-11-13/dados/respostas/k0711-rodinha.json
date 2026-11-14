@@ -1,0 +1,19 @@
+{
+  "comentario": "Eu acho que deve mover se estiver em cima da opção, por exemplo, se estiver em cima da numeração ele passa, ou em alguma opção ou ferramenta que tem algo para escolher, girar aumenta ou abaixa o valor da opção, mas vamos ter que pensar bem nisso para não dar problema no programa.",
+  "conversa": [
+    {
+      "em": "2026-11-07T19:30:00Z",
+      "quem": "gerente",
+      "texto": "Entendi que você quer o contrário do que o teste achou: em cima da opção, a rodinha muda o valor. Antes de fazer, te mostro como fica em cada lugar, para não dar problema."
+    }
+  ],
+  "em": "2026-11-07T16:10:18.981Z",
+  "gerente": "Entendi que você quer o contrário do que o teste achou: em cima da opção, a rodinha muda o valor. Antes de fazer, te mostro como fica em cada lugar, para não dar problema.",
+  "gerenteEm": "2026-11-07T19:30:00Z",
+  "lida": true,
+  "opcao": "consertar",
+  "opcaoNome": "Consertar",
+  "relatorio": "teste-kaique-funcoes",
+  "samuelViu": false,
+  "volta": false
+}

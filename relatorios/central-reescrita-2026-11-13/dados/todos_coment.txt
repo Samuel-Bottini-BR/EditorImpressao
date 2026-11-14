@@ -1,0 +1,187 @@
+2026-10-21 211-215: aprovado, mas ainda tem que melhorar, em alguns casos, ele acaba apagando a letra.
+2026-10-21 211-reduzir: Ele está apagando as letras, isso sim, e quando foi que eu pedi para fazer isso? isso é do scantailor?
+2026-10-21 29: aprovado, mas veja as minhas ressalvas para melhoramentos.
+2026-10-21 29-cartoes: está fazendo teste com pagina de lombada que nem iria ser impressa, e no caso é uma lombada de uma capa de livro.
+2026-10-21 29-horas: essa lombada de couro não seria impressa nunca, então não existe motivo para fazer teste nela e ficou muito ruim, não faça mais testes com lombadas de livros
+2026-10-21 29-slide: eu acho que aqui até resolve, mas o que gostariamos de fazer é selecionar a cor branca das letras e transformar em preto e dai então transformar a pagina em branco, porque quando imprimir a impressora vai imprimir todo esse preto, fica isso para ser solucionado mais para frente, precisamos pesquisar como fazer isso, deixe anotado.
+2026-10-21 imp-2-ajustar-no-livreto: Mas eu ainda vou poder aumentar né?
+2026-10-21 ly-filtro: tem que sair inteiro os inscritos
+2026-10-21 pr: Precisamos melhorar nossos testes porque as vezes o resultado de uma funcionalidade depende de ter passado por outra, por exemplo o cortar faixa preta, as vezes a folha precisa ter passado por endireitar antes de cortar, e você faz os testes sem pensar nisso, por favor o proximos testes tem que levar essa questão em conta.
+2026-10-21 pr-antes-de-processar: ficou meio embolado, deve ficar mais claro e não tão grande.
+2026-10-21 pr-opus-20: o que eu estou olhando? e porque a foto sai assim? que opção foi escolhida para sair assim?
+2026-10-21 pr-tela-igual-ao-pdf: mas o kaique pediu para tirar a letra ou não? porque a letra foi tirada, qual opção foi pedida para ser feita que tirou a letra? anote ai para explicar melhor o processo que a pagina passou para poder me perguntar.
+2026-10-22 a-212-desentortar: A causa: no ScanTailor a página tem uns 10 mm de papel em volta quando ele desentorta, então o que estica cai no papel. No nosso programa o desentortar vem depois do corte rente de 1 mm, então o que estica sai da página. porque a gente não resolve isso? não era para ter mais tamanho de pagina?
+
+ainda não consegui perceber se ficou melhor.
+
+essa funcionalidade você trouxe do scantailor exactamente como é lá? ou tu recriou em outra linguagem?
+
+porque o desentortar automatico deforma a pagina?
+2026-10-22 a-212-desentortar: Quando você respondeu a pergunta 2 disse que a gente iria cortar depois adicionar folha em volta e depois cortar de novo, porque fazer o trabalho duas vezes? como é feito no scantailor e que dá certo?
+2026-10-22 a-212-desentortar: Tem mais alguma função que pode fazer essa mesma coisa de comer parte da pagina sem que a gente queira no nosso programa?
+2026-10-22 a-212-p1: Ainda vou poder selecionar a opção c para as paginas que entrarem para revisão?
+2026-10-22 a-212-p3: Na pasta livros para editar, procure lá.
+2026-10-22 a-comer-pagina: escolhi a B, mas quando for feito o teste de bug, ele tem que fazer a C — Primeiro provar em páginas de verdade, depois decidir
+2026-10-22 b-3-cadernos-antigo: Pera ai, mas ele monta em formato livreto também? como assim monta com dobro de largura explique melhor.
+2026-10-22 b-6-igualar-luz: mas vai ser uma opção que eu posso desligar e ligar né?
+2026-10-22 b-7-chuvisco: mas eu vou poder escolher a escala né?
+2026-10-22 b-8-tinta-com-cor: Não entendi o que estou olhando.
+uma está o preto e branco bem melhor, a outra apagou as letras.
+2026-10-22 cx-avisos: Mas se precisa melhorar a acuracidade desse aviso
+2026-10-22 cx-avisos-demais: Eu não entendi, o programa está dando avisos sem precisar? 
+Se está dando avisos sem precisar, precisamos investigar o que ele está confundindo, me explique melhor.
+2026-10-22 cx-avisos-demais: Foi resolvido? o programa parou de confundir?
+2026-10-22 cx-velocidade: Mas quanto mais rápidos pudermos deixar, melhor.
+2026-10-22 dv-l67-tela-cheia: ele colocou todas as funções em todos os filtros?
+2026-10-22 dv-lu-tc-igual: ok, então deixe isso anotado, precisamos que o pdf saia que nem está na tela.
+2026-10-22 dv-opus-20: o scantailor tem um detector de figuras também né?
+2026-10-22 dv-pr-antes: os nomes dos botões são horriveis, na verdade em todo o programa, a nomeação dos botões é horrivel. Anote a ideia de depois revisarmos todos os nomes de botão com um novo agente que vai ser criado.
+2026-10-22 fr-218: Ele fez, mas apagou as letras juntos, não sei se foi erro seu ou do programa.
+2026-10-22 fr-219: Mas ainda pode melhorar a caixa de como escolhemos o que vai dentro da receita.
+2026-10-22 fr-24: Mas se eu quiser redimensionar isso dentro do programa eu vou conseguir né?
+2026-10-22 fr-26: Só tem que melhorar esse layout, cheio de letras uma em cima da outra , tudo bagunçado e dificil de saber o que é o que.
+2026-10-22 l67-acertos: Mas explica melhor essa ressalva, isso é um erro? vai ser resolvido?
+2026-10-22 l67-livro-aberto: Eu não consigo ver a página direito, e elas estão  de maneira muito ruim, da uma na internet como o updf faz. Tem uma pagina maior que outra ali
+2026-10-22 l67-tela-cheia: esse aqui é para mostrar só o antes e depois? mas no programa vai aparecer as opções dos filtros né? o agente de layout fez já as opções de preto e branco que trouxemos do scan?
+2026-10-22 lu-tamanho: Só não entendi porque cortou parte do livro ali no canto superior direito.
+2026-10-22 lu-tc-igual: O pdf está saindo diferente da tela gerada, na tela gerada a letra está mais grossa, isso é um perigo, porque pode parecer que se quer a letra mais grossa e ter ela mais fina, ou vice e versa e ainda pode acontecer em outras situações.
+2026-10-22 tc23-1: eu posso ter as duas opções?
+2026-10-22 tc23-1: não entendi nada, não tem exemplos.
+2026-10-22 tc23-janela: Pode explicar como eu vou usar isso? 
+segundo esse painel embaixo abre quando?
+o painel está muito bagunçado.
+2026-10-22 tc23-janela: entendi agora, só temos que deixar anotado para melhorar esse painel.
+2026-10-23 a-212-p4: Mas eu vou poder tentar desentortar fotos né? a opção não vai sumir?.
+2026-10-23 a-212-p4: não entendi.
+2026-10-23 a-212-p5: Mas o programa vai saber sempre que estiver deformada, o aviso deve perguntar e não fazer automaticamente.
+2026-10-23 a-212-p6: Respondida no chat: "sim" (quer que a tela mostre a página reta, igual ao PDF).
+2026-10-23 b-10-contorno: (Ainda não entendi, sem comentário)
+2026-10-23 b-10-contorno: Isso vai alterar alguma coisa, tirar essa linha preta?
+2026-10-23 b-11-nome: esse botão ainda é bem confuso, mas por enquanto pode ficar assim.
+2026-10-23 b-11-nome: não tem outro nome para recomendar? eu nem entendi para que serve esse botão.
+2026-10-23 d212-1: Mas fica anotado para depois da junção isso ser resolvido, porque na verdade, eu acho que o primeiro passo em uma pagina dessas seria tirar essa moldura preta transformando a pagina em totalmente branca sem mexer nas letras, ai o desentortador não iria confundir as letras com moldura preta. não é?
+2026-10-23 d212-2: Eu quero o aviso, mas isso fica para depois.
+2026-10-27 ac-fase-espacos: Ainda não entendi. "Não sei de que arranjos está falando."
+2026-10-27 ac-fase-espacos: Escolheu "Salvar o jeito dos painéis com um nome, como no Photoshop". Comentário: "Ai seria bom que já viesse de fabrica alguma configurações desses paineis prontas."
+2026-10-27 ac-fase-marcar-como: Ainda não entendi. "Que Obra?"
+2026-10-27 ac-fase-marcar-como: Escolheu "Depois desta rodada de consertos". Comentário: "Mas eu ainda não entendi onde vai ser colocado essas opções, do que você está falando."
+2026-10-27 ac-grade-inserir: Ainda não entendi. "Não sei de que obra está falando, quando falei dividir é dividir a pagina, usando a funcionalidade do scantailor que colocamos no aplicativo, é isso que deveria ser feito."
+2026-10-27 pd-escala-kaique: Escolheu "Ainda não olhei: continuar desenhando para 150%". Comentário: Como o photoshop faz para fazer isso? para que em todos os computadores fique certo? - https://github.com/storytold/photocraft acho que aqui tu pode dar uma olhada de como ele faz, é um clone do photoshop. e aqui tem o rea que pode ajudar nisso - https://github.com/morluto/rea
+2026-10-27 pd-escala-kaique: Escolheu "Só continuar desenhando para 150%". Comentário: Não está usando no photoshop, está usando em um programa que se propõe a fazer o que ele faz.
+2026-10-27 pd-escala-kaique: Não está usando no photoshop, está usando em um programa que se propõe a fazer o que ele faz.
+2026-10-27 pd-sequencia: Escolheu "Fazer o aviso de número fora de ordem, depois da obra". Comentário: Mas tem livros que não tem numero de pagina.
+2026-10-27 v-antes: Ainda não entendi. "antes e depois foi uma coisa que decidimos para usar no filtro né?"
+2026-10-27 v-capa: Ainda não entendi. "explique melhor"
+2026-10-29 au-d-002-abrir: Eu olhei, e no automatico tiveram opções que ficaram de fora que tinham no automatico que rodava antes de chegar na are de trabalho. Por favor verifique isso.
+2026-10-29 au-d-087: então isso entra na lista de coisas para fazer? não entendi.
+2026-10-29 au-d-135: Eu consigo usar essa opção sem ter que começar de novo.
+2026-10-31 au-d-548: Ele dá o aviso só por ter algo perto da borda?
+2026-10-31 ng-2-1-marcacao-travada: Eu ainda não consegui entender, mas dá para saber que é por causa da lentidão quando se move uma pagina que está com marcação em cima, pode explicar melhor.
+2026-10-31 ng-2-10-ver-o-livreto: Não gostei da tela que mostra o livreto, podemos mudar depois, deixe anotado na lista de espera. vou escolher a 1, mas não gostei muito, tem como olha como outros aplicativos fazem isso porque eu não gostei muito.
+2026-10-31 ng-2-11-automatico-ver-como-fica: Nós acabamos de fazer escolhas sobre isso agora a pouco no chat. Mas ainda vai ter o laboratorio que seriam sugestões do programa para o livro.
+2026-10-31 ng-2-2-tirada-fica-apagada: hoje o programa nunca altera o arquivo original. - que continue assim, só vai ser apagado do arquivo que vai ser processado.
+2026-10-31 ng-2-6-deixar-em-branco-em-qualquer-pagina: Mas essa opção vai ficar em mais algum lugar nas abas de funcionalidades do lado direito?
+2026-10-31 ng-2-7-depois-do-esta-certo: Mas nas paginas que não foi dado o ok, ela vai aparecer ainda né?
+2026-10-31 ng-2-8-ver-de-perto-demora: Isso fica anotado para que dentro do programa possamos fazer esses calculos de maneira mais rapido, porque fica tão lento? que processos estamos fazendo que não precisam ser feitos? como outros programas mais rapidos fazem isso? deixe isso anotado numa nova aba na central chamada pesquisas.
+2026-10-31 ng-2-9-voltar-para-os-livros: Seria um botão home na barra de arquivos e não livros, só que para fazer isso tem que ter a possibilidade de abrir varias abas né.
+2026-11-02 au-d-065: mas no caso ele vai fazer que nem no after effects que guarda caxe no disco para o programa rodar mais rapido? já esgotamos os recursos do programa de ele uar placa de video e puxar mais processamento do pc?
+2026-11-02 au-d-153: Deveria ter um aviso quando tiver esses detalhes fracos, e tem que ter alguma função que não deixe ele confundir isso com manchas na pagina ou pagina de costas que da para ver na pagina da frente.
+2026-11-02 au-d-154: Isso é uma coisa bem urgente, os filtros e as funcionalidades não podem deixar letras assim.
+2026-11-02 au-d-238: Eu queria que saisse como na silumalão
+2026-11-02 au-d-251: acredito que isso já foi mudado, mas tem varios outros lugares que precisam de edição no layout e nomes.
+2026-11-02 au-d-275: não entendi o que tem que ser escolhido, ou porque essa pauta não deveria ir para revisar. Isso é para criar uma regra para as pautas sobre revisão?
+2026-11-02 au-d-295: Precisam ser criados parametros e regras rigidas do que vai ou não para revisão e precisam ser estudados os casos, usando livros dentro do editor de impressão.
+2026-11-02 au-d-421: preciso de exemplos, não consegui visualizar o que está sendo feito errado que precisa de concerto.
+2026-11-02 au-d-474: Na verdade a regra tem que ser, avisos somente quando necessarios, e aumentar a acuracidade do programa de avisar exactamente o que deveria ser avisado, ele não se confundir e nem deixar passar erros graves.
+2026-11-02 d600-ferramentas-marcar: Respondido no chat: "sim"
+2026-11-02 d600-sem-zoom: Respondido no chat: "1- sim"
+2026-11-03 verif-juntada-motor: (respondido no chat, 03/11) "Ele deve fazer a conta novamente com o novo motor"
+2026-11-03 verif-juntar-todas-mexidas: (respondido no chat, 03/11) "só temos que mudar o aviso, avisar que as páginas foram juntadas e que vão ser separadas se o processar continuar."
+2026-11-04 au-d-087: Já foi resolvido?
+2026-11-04 au-d-372: Não é urgente.
+2026-11-04 au-d-374: Isso deveria ser feito junto com a repaginação do layout que eu estou estudando como vai ser feito, e o agente não vai escolher os nomes ele pode sugerir opções.
+2026-11-04 au-d-575: urgente, quero ver as opções antes de fazer, e a opção de ver só o pdf como ele está e de ver como fica em livreto né.
+2026-11-04 c-girar-inteira: Isso já está no programa?
+2026-11-04 c-recuperar: Mas a copia que ele guarda é um pdf pronto com as mudanças que foram feitas? ou é um arquivo que diz só como o pdf era antes?
+2026-11-04 caixinhas-endireitar-cortar-limpar: Só que no programa agora, sempre que eu rodo uma coisa no automatico, quando volto no automatico as coisas que rodaram estão marcadas, elas tem que voltar todas desmarcadas.
+2026-11-04 d574-folhas-de: ok, só não entendi esse todas, e esse 0=todas ficou horrivel.
+2026-11-04 d574-porcentagem: Fica dentro da bolinha, de forma bem descreta, e a bolinha vai carregando até encher toda de azul quando chega em 100%
+2026-11-04 d574-texto-enquanto-monta: Porque que é folha 2 de 32? e não a real numeração das paginas?
+2026-11-04 d602-arrastar: (respondido no chat, 04/11, print a-54) "não consigo mover a linha azul manualmente." → "Sim"
+2026-11-04 d602-aviso-nada: mas o aviso vai ficar em todo livro, vai ficar quando entrar na pagina de dividir?
+2026-11-04 d602-frase: No automatico eu consigo selecionar paginas para não serem divididas?
+2026-11-04 d602-juntada: 2- ele dá um aviso perguntando . eu já respondi, não deveria estar aqui como não respondido.
+2026-11-04 d602-lugar-botao: Poderia ter a explicação no botão usar em todas quando passa o mouse em cima, que vai usar aquele corte em todos.
+2026-11-04 dv-29-horas: Os prints não tem nada haver com a pergunta, e as respostas são inconslusivas.
+2- sobre essa questão das letras brancas em fundo escuro, a gente tem que ter uma maneira de inverter isso né de forma perfeita, agora veja como o scantailor faz isso, eu acho que faz.
+2026-11-04 dv-29-ressalvas: O que foi aprovado? os relatorios continuam muito ruins e dificeis de entender.
+2026-11-04 teclado-botoes-painel: (respondido no chat, 03/11) "ok" — depois de perguntar "mas a seta tem alguma ultilidade em outra ferramenta ou só no dividir?"
+2026-11-05 girar-aplicar-em-pagina: (respondido no chat, 05/11) "1- pode ser, só garanta que não crie mais problemas fazendo isso, você tem que pensar na experiencia do usario e no resultado final do livro dentro do programa, quando vai mudar algo, deixe isso anotado."
+2026-11-06 b-abas-nomes: No caso, isso é uma opção a mais do que a que temos hoje?
+2026-11-06 b-pdf-desatualizado: Isso se aplica só se eu fizer alterações né?
+2026-11-06 b-pintar-outras: Teria como eu deixar as letras travadas e pintar só por cima do que não é letra? anote isso
+2026-11-06 c-tampa-ao-abrir: Hoje temos opção de fazer isso manualmente caso o automatico não funcione? eu escolho essa opção no automatico ou ele faz sem eu precisar clicar em nada só rodando qualquer etapa do painel do automatico.
+2026-11-06 k0611-ilustracao-some: investigar que tipo de erro é. - como isso está acontecendo, as vezes não reconheceu como imagem ou gravura ou usou filtro errado né
+2026-11-06 k0611-margens-de-fabrica: recomendado
+2026-11-06 k0611-oito-de-funcao: ok - antes de começar, me confirma quais erros zçao
+2026-11-06 k0611-pagina-suja: isso é porque não foi feito manualmente né, mas isso não é um erro em si.
+2026-11-06 k0611-pagina-suja: não entendi
+2026-11-06 k0611-remendos: tem que verificar o que aconteu
+2026-11-07 k0711-auto-tira-fundo: É só criar uma opção para desfazer o tirar fundo, e só vai desfazer o tirar fundo quando apertar ela. E via de regra, nenhum filtro deve fazer o fundo voltar.
+2026-11-07 k0711-cortar-antes-depois: Ele tem que mostrar o antes e depois de acordo com aquela ferramenta que vai ser usada né? Talvez esse erro aconteça em outros lugares também.
+2026-11-07 k0711-f1-vazia: Não só abre vazia como a diagramação está horrível.
+2026-11-07 k0711-filtros-tela-cheia: Esse é um grave.
+2026-11-07 k0711-inclinacao-conferida: Preciso que explique melhor esse problema.
+2026-11-07 k0711-inserida-qualidade: Tem que saber porque a central de avisos reconheceu ele como paina com baixa qualidade de scan.
+2026-11-07 k0711-miniatura-pdf: Isso é um erro grave. O preview as miniaturas tem que estar sincronizada e o resultado final tem que sair como a edição foi mostrada no preview .
+2026-11-07 k0711-reabre-cortar: Não tem um jeito onde o programa fica sem nenhuma ferramenta selecionada ou com um selecionador como é no Photoshop, deveria ter isso, quero que isso seja feito junto com esse concerto.
+2026-11-07 k0711-rodinha: Eu acho que deve mover se estiver em cima da opção, por exemplo, se estiver em cima da numeração ele passa, ou em alguma opção ou ferramenta que tem algo para escolher, girar aumenta ou abaixa o valor da opção, mas vamos ter que pensar bem nisso para não dar problema no programa.
+2026-11-07 k0711-tirada-branco: Ela deveria voltar com o conteúdo dela.
+2026-11-07 k0711-voltar-inserida: Essa opção deveria ter numa página que foi criada?Isso é uma alucinação é justamente o erro que nossos agentes têm cometido o tempo inteiro, criar funcionalidades e elas fazem coisas que não deveriam, isso porque algum agente fez ela fazer isso. Temos que resolver esse tipo de problema.
+2026-11-07 mover-rotulo-antes: Isso ficou bem estranho né, acho que não deveria dar para ver o antes/depois enquanto se mexe na folha, no caso do mover.
+2026-11-08 ac-tampa: O jeito como ela some deveria poder ser escolhido no automático, pintar de branco ou cortar. E essa resposta não tem print provando que esse modo funciona.
+2026-11-08 dv-211-215: Continuo sem entender o que aconteceu, prints inconclusivos, qual é antes e depois? Um monte de texto e não consigo saber o que era para saber realmente, se está funcionando como eu quero ou não.
+2026-11-08 n0411-caderno-pagina-em-branco: Porque usou uma folha sem estar divida?  E essa mensagem em cima de folha em branco, porque? Ali em cima é para ter só a numeração das páginas.
+2026-11-08 n0411-inverter-letra-clara: Essa opção vai estar no automático também? Vai estar nas opções dos filtros para rodar no livro todo e também em uma só página? Se essa função nova ser colocada não pode afetar o programa e suas funcionalidades ou dar erros.
+2026-11-08 n0411-o-que-vai-sair: Como assim, o que vai sair? Quero um exemplo disso.
+2026-11-09 au-d-523: Mas e quando tiver mais de uma lingua dentro do livro, por exemplo sitações em latim em um livro em portugues, o ocr vai fazer cagada?
+2026-11-09 au-d-523: Nós já usamos ocr?
+2026-11-09 au-d-525: Eu gostaria de fazer uma inteligencia artificial só para isso, iriamos precisar de mais processamento, mas tudo bem.
+2026-11-09 au-d-527: Nós iriamos usar um ocr para isso?
+2026-11-09 au-d-544: Eu acho que já é assim hoje, não é?
+2026-11-09 au-d-557: Vai entrar sim.
+2026-11-09 au-d-565: No caso salva o jeito como os paineis e ferramentas ficam diagramados né?
+2026-11-09 au-d-566: Teriamos como treinar o programa para cada vez que marcassemos algo a mão ele pudesse aprender com aquilo para que em outro livro ele conseguisse reconhecer automaticamente?
+2026-11-09 au-d-567: Que grade? não entendi.
+2026-11-09 cantinho-outros-casos: Ainda não entendi · "esse teste é totalmente inconslusivo para mim, não consigo ter visão clara do que o programa tentou fazer, ou de qual problema ele tentou reslver."
+2026-11-09 cantinho-outros-casos: esse teste é totalmente inconslusivo para mim, não consigo ter visão clara do que o programa tentou fazer, ou de qual problema ele tentou reslver.
+2026-11-09 girar-capa-dividir-duas: Você colocou só um exemplo de como seria uma folha duas lado a lado sendo girada, como eu vou responder algo sem provas ou exemplos?
+2026-11-09 girar-capa-teste-daqui: Ainda não entendi · "Não estou vendo provas do que você diz, o exemplo da pagina que gira do miolo, eu ainda não entendi."
+2026-11-09 girar-capa-teste-daqui: Não estou vendo provas do que você diz, o exemplo da pagina que gira do miolo, eu ainda não entendi.
+2026-11-09 gravura-a-mao-automatico: No chat: "2- não entendi"
+2026-11-09 gravura-a-mao-automatico: No chat: "Se a pagina ou folha já tiver passado por modificações antes de entrar no automatico o automatico vai perguntar se quer mexer nela né, e se já foi procurado gravuras em uma pagina, não precisa procurar de novo." ... "1- pode" (conserto do Pular)
+2026-11-09 gravura-a-mao-testes: No chat: "1- sim"
+2026-11-09 k0611-aviso-velho-salvar: Eu quero saber porque aconteceu esse bugue, que regra o agente errou ou que boa pratica de programação o gerente errou, gostaria de entender melhor como os prompts tem sido feitos para os agentes pelo gerente, precisamos padronizar isso para quando formos fazer os pedidos, pois estamos fazendo muito retrabalho.
+2026-11-09 k0611-barra-cortada: não é urgente.
+2026-11-09 k0611-codigo-g2: Não se deve usar código na nomeação de coisas. Existe algum plugin ou skill que ajude Ias a nomear botoes e fazer explicações em programas?
+2026-11-09 k0611-frase-tirou: e porque tem esse aviso de a pagina vai sair em preto e branco, para que serve , e em que situação é disparado?
+2026-11-09 k0611-ilustracao-some: Tem que ser investigada a causa , se foi por mal uso ou bugue, se o programa não reconheceu a gravura, tem que ver porque né, inclusive tem que ver ai nas anotações se tem uma ideia minha anotada, que vai depender do modo de seleção mais qualificado que eu quero importar do photoshop, pois hoje nossa ferramentas de seleção e mascaramento são muito ruins, mas por exemplo, quando o computador errasse nessas imagens o programa iria dar um aviso nos iriamos nesses aviso e iriamos conseguir ver as marcações que tem naquela pagina e aumentar ou diminuir elas para que o filtro que deixou ou erro , ou
+2026-11-09 k0611-laranja-mao: Eu não sei que ferramenta é essa da mão e para que serve.
+2026-11-09 k0611-lista-sobe: Esse é o espirito que eu busco na hora de buscar problemas dentro do programa, se pudessemos fazer esse tipo de busca sem que o agente precisasse ficar tirando prints o tempo inteiro, se existisse alguma ferramenta ou plugin que ajudasse o agente a testar o programa de forma mais rapida sem ter que ficar tirando print o tempo inteiro, alguma coisa que transcrevesse tudo que está acontecendo para ele sem ele precisar ficar vendo foto.
+2026-11-09 k0611-mao-espremida: Essa ferramenta é uma mão?, isso é uma coisa que eu não entendi, isso é uma mão essa ferramenta selecioanda?
+2026-11-09 k0611-margens-de-fabrica: Isso ira afetar na hora de imprimir? como outros programas fazem isso? adobe acrobat, updf esses programas que ligam com pdf.
+2026-11-09 k0611-oito-de-funcao: eu quero ver esses erros, as provas dele e uma explicação de como acontece, explique de forma simples. quero antes de dar inicio.
+2026-11-09 k0611-pagina-suja: Precisa ser investigado o porque disso acontecer, pois as vezes foi um erro de configuração na hora de usar as ferramentas do programa, tem que saber diferenciar bugue de erro. vamos investigar.
+2026-11-09 k0611-titulo-partido: mas o programa da a opção de naquele lugar onde a lombada está incerta a gente conseguir mudar e fazer o resto automatico?
+2026-11-09 v-antes: Isso que eu escolhi vai alterar muito o programa? preste atenção nisso.
+2026-11-09 v-capa: Mas tem que dar um aviso né, mas quando esse aviso vai aparecer, na hora de montar cadernos? pense nisso e me traga.
+2026-11-10 au-d-572: Se é erro, tire daqui.
+2026-11-10 au-d-574: No caso já sair em livreto ao processar tem que ser uma opção né?
+2026-11-10 cantinho-outros-casos: No chat: "olha essa questão do canto não é urgente, pode deixar como branco por enquanto."
+2026-11-10 quadrados-qual: Mas antes ele não fazia isso né, você tentou usar o motor do scantailor para achar gravura e onde achar gravura ele não deixar esses pontos brancos assim, pois eu nunca tinha visto o programa fazer isso, descubra que agente fez o programa começar a fazer isso, é só você ver os testes que fizemos antes com o melhorar e magico pro.
+2026-11-13 au-d-523: Não pode ser usado somente para achar texto e aplicar filtros e tirar o fundo como o internet archive, por que não chegamos ainda no resultado que o internet arquive faz.
+2026-11-13 n0411-caderno-pagina-em-branco: Ainda não entendi · "Você ainda não explicou o que está acontecendo"
+2026-11-13 n0411-caderno-pagina-em-branco: Você ainda não explicou o que está acontecendo
+2026-11-13 n0411-o-que-vai-sair: "o fechar poderia virar um x no lado superior direito e sobraria espaço para aparecer essa mensagem em baixo sem ter que rolar."
+2026-11-13 n0411-o-que-vai-sair: o fechar poderia virar um x no lado superior direito e sobraria espaço para aparecer essa mensagem em baixo sem ter que rolar.
+2026-11-13 quadrados-provas-d659: No chat: "pode mudar, mas porque antes, ele não procurar gravura e saia certo?"

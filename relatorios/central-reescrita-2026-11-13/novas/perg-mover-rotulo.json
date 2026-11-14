@@ -1,0 +1,74 @@
+{
+ "nome": "Pergunta: o Mover com o \"antes / depois\"",
+ "ordem": 61,
+ "origem": "ONDE-PAREI do ramo mover-lado-2026-11-04 (pergunta 4)",
+ "perguntas": [
+  {
+   "exemplos": [
+    {
+     "src": "fotos/mover-lado/mover-antes-depois.png",
+     "legenda": "Print antigo (04/11) da mesma tela, com o conteúdo aumentado para 131%: o rótulo \"antes: Original\" fica em cima da parte da página que o Mover está mexendo (a parte vermelha vai ficar de fora da folha)."
+    }
+   ],
+   "explicacao": [
+    "Do que se trata: o botão \"antes / depois\" (barra de baixo da área de trabalho) mostra a página como veio, à esquerda, e como vai sair, à direita. A ferramenta Mover (barra da esquerda) arrasta o que está impresso na folha e muda o tamanho dele.",
+    "Como é hoje (Gradus, cópia, versão de teste; faixa azul): com os dois ligados, aparecem o antes e o depois, e o Mover mexe só no depois. Foi o que você aprovou em 04/11 (\"Ok, pode ser assim o antes e depois\"). O rótulo \"antes: Original\" fica no canto de cima. Não é defeito: é como foi feito.",
+    "Seu comentário: \"acho que não deveria dar para ver o antes/depois enquanto se mexe na folha, no caso do mover\" → A pergunta antiga era só sobre o lugar do rótulo. O seu comentário pede outra coisa: que, no Mover, a tela mostre só a página (faixa verde). Por isso as opções mudaram.",
+    "O que muda no que já funciona: as duas opções novas mudam o que você aprovou em 04/11, só no Mover. No Cortar e no Endireitar, o \"antes / depois\" continua como hoje. O botão \"antes / depois\" continua na barra de baixo e volta a valer ao trocar de ferramenta.",
+    "Situação: está como na faixa azul. Nada foi mudado.",
+    "O que você escolhe: o que a tela mostra quando o Mover está escolhido e o \"antes / depois\" ligado.",
+    "(Para consulta: decisão D-612.)"
+   ],
+   "id": "mover-rotulo-antes",
+   "opcoes": [
+    {
+     "id": "so-a-pagina",
+     "nome": "Com o Mover, só a página (recomendo)",
+     "texto": "Com o Mover escolhido, a tela mostra só a página que você mexe, mesmo com o \"antes / depois\" ligado (faixa verde). Ao trocar de ferramenta, o antes / depois volta."
+    },
+    {
+     "id": "some-ao-arrastar",
+     "nome": "O \"antes\" some só enquanto você arrasta",
+     "texto": "Enquanto arrasta ou puxa o canto, fica só a página; ao soltar o mouse, o antes volta. A tela muda a cada arrasto."
+    },
+    {
+     "id": "fica",
+     "nome": "Como hoje",
+     "texto": "Antes e depois juntos, o Mover mexe no depois (faixa azul). Nada muda."
+    },
+    {
+     "id": "mudar",
+     "nome": "Como hoje, só com o rótulo \"antes: Original\" em outro lugar",
+     "texto": "Diga onde no comentário."
+    }
+   ],
+   "primeira_imagem": {
+    "src": "imagens/mover-rotulo-antes-resumo.png",
+    "legenda": "Gradus (cópia), dividido, página 11, ferramenta Mover. Azul (como é hoje): com o \"antes / depois\" ligado, aparecem o antes e o depois. Verde: só a página que o Mover mexe."
+   },
+   "titulo": "Ferramenta Mover com o \"antes / depois\" ligado: o \"antes\" deve sumir?",
+   "historico": [
+    {
+     "quem": "samuel",
+     "em": "2026-11-07T15:49:48.704Z",
+     "texto": "Ainda não entendi. Isso ficou bem estranho né, acho que não deveria dar para ver o antes/depois enquanto se mexe na folha, no caso do mover."
+    },
+    {
+     "quem": "gerente",
+     "em": "2026-11-07T19:30:00Z",
+     "texto": "Entendi assim: com o Mover, enquanto você arrasta a página, o \"antes / depois\" some e aparece só a página. Ao soltar, ele volta. Pode ser assim?"
+    }
+   ],
+   "sugestao": "Com o Mover, só a página: é o que o seu comentário pede, e a tela não muda a cada arrasto."
+  }
+ ],
+ "quadros": [],
+ "resumo": {
+  "paragrafos": [
+   "Uma pergunta pequena sobre a ferramenta Mover, refeita a partir do seu comentário de 07/11.",
+   "Enquanto você não responde, a tela fica como está hoje."
+  ],
+  "titulo": "O Mover com o \"antes / depois\""
+ },
+ "trabalho": "mover-lado"
+}

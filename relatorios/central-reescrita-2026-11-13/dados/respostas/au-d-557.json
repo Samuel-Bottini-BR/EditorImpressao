@@ -1,0 +1,24 @@
+{
+  "comentario": "Vai entrar sim.",
+  "conversa": [
+    {
+      "em": "2026-11-09T20:23:17.874Z",
+      "quem": "samuel",
+      "texto": "Vai entrar sim."
+    },
+    {
+      "em": "2026-11-13T20:40:00Z",
+      "quem": "gerente",
+      "texto": "Anotado no Livro como D-677: os manuscritos entram na leitura do texto, na Fase 7."
+    }
+  ],
+  "em": "2026-11-09T20:23:17.874Z",
+  "gerente": "Anotado no Livro como D-677: os manuscritos entram na leitura do texto, na Fase 7.",
+  "gerenteEm": "2026-11-13T20:40:00Z",
+  "lida": true,
+  "opcao": "depois",
+  "opcaoNome": "Fica para depois",
+  "reabrir": false,
+  "relatorio": "auditoria-6-para-depois",
+  "volta": false
+}

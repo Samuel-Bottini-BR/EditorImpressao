@@ -1,0 +1,24 @@
+{
+  "comentario": "Eu não sei que ferramenta é essa da mão e para que serve.",
+  "conversa": [
+    {
+      "em": "2026-11-09T19:41:10.846Z",
+      "quem": "samuel",
+      "texto": "Eu não sei que ferramenta é essa da mão e para que serve."
+    },
+    {
+      "em": "2026-11-13T20:40:00Z",
+      "quem": "gerente",
+      "texto": "A Mão serve para arrastar a página na tela quando ela está com zoom, para ver outra parte (último ícone da barra da esquerda, tecla E). Ela não muda nada na página. Anotado no Livro como D-684: com a Mão, as marcações laranja se escondem, como você já tinha decidido."
+    }
+  ],
+  "em": "2026-11-09T19:41:10.846Z",
+  "gerente": "A Mão serve para arrastar a página na tela quando ela está com zoom, para ver outra parte (último ícone da barra da esquerda, tecla E). Ela não muda nada na página. Anotado no Livro como D-684: com a Mão, as marcações laranja se escondem, como você já tinha decidido.",
+  "gerenteEm": "2026-11-13T20:40:00Z",
+  "lida": true,
+  "opcao": "consertar",
+  "opcaoNome": "Consertar",
+  "reabrir": false,
+  "relatorio": "teste-kaique-lusiadas",
+  "volta": false
+}
