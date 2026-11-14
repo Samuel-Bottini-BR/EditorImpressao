@@ -30,13 +30,21 @@ Nada é mexido (só leitura). As decisões citadas: D-584 (marcações), D-547/D
 Nada muda: tarefa sem código.
 
 ## Andamento
-- [ ] leitura das regras (feito: verificador.md, CLAUDE.md, INDICE, bugs.md, D-678..D-691 e citadas)
-- [ ] montar o piloto fora da tela
+- [x] leitura das regras (verificador.md, CLAUDE.md, INDICE, bugs.md, D-678..D-691 e citadas)
+- [x] piloto fora da tela: `scripts/piloto.py` (base.py da obra-etapa3; janela em -32000, PrintWindow)
+- [x] lista de códigos na tela: `scripts/codigos_na_tela.py` -> `scripts/codigos_na_tela.txt`
+- [ ] fase a rodando (abrir, Automático como a rodada 1, tela, branco/tirar, processar 2x, montar)
 - [ ] erro por erro (abaixo)
 - [ ] relatório nos três formatos
 
 ## Erro por erro
-(preenchido conforme avança)
+Achados de código (antes de rodar):
+- D-687: `ui/automatico.py:2285` "(G2)" (texto à vista); balões com "D-068" (`ui/automatico.py:765`) e "D-094" (`:2304`). Vieram do commit e2321b16 (26/10, etapa 3 da obra).
+- D-685: `ui/widgets/destino.py` o campo do nome (`textEdited`) só chama `_conferir()`; o sinal `alterado` só sai em `escolher_pasta`; a faixa laranja da `JanelaConfirmar._reavaliar` só escuta `alterado`. Faixa nasceu em 765a56f3 (08/08, "Secao 2, etapa 1"); o seletor é de c3840ebd (18/07); a docstring falsa "Chamado toda vez que o destino muda" é de c8ae8b6a (25/09). O teste `tests/test_barra_de_menu.py::test_a_janela_de_confirmar_avisa_que_vai_substituir` chama `_reavaliar()` à mão.
+- D-686: `ui/tela_conferir._atualizar_faixa` tem ramo para `em_branco`, não para `apagada`.
+- D-680: `_acertar_as_miniaturas_movidas` pinta branca só a `inserida` (D-623); `em_branco` não; grade `_pagina_dentro_da_folha` também não.
+- D-688: `ListaDeEtapas.refazer` faz `clear()` e monta tudo de novo a cada `estado.mudou`.
+- D-684: o laranja é o "Mostrar as áreas achadas" (D-237), ligado sozinho em toda página com aviso (`_mostrar_as_achadas`: `mostrar or pagina.precisa_revisao`); o botão "marcações" (D-580/D-584) só mexe nas cores.
 
 ## Perguntas para o Samuel
 (nenhuma por enquanto)
