@@ -249,3 +249,22 @@ regra só** (o girar que hoje faz coisas diferentes em lugares diferentes), que 
 da revisão do código, na Central.
 
 (Para consulta: D-049, D-053, D-367, D-618, D-636; CLAUDE.md §11.12.)
+
+---
+
+## Como os prints foram feitos (para consulta)
+
+- Versão de teste de hoje, sem abrir janela na sua tela; dados numa pasta à parte; cópias do Siebmacher (10 primeiras
+  folhas) e do Gradus.
+- **A2, B1, B3:** as páginas desenhadas pela mesma conta do PDF. **A3, A4, C:** prints da janela do programa (feita
+  fora da tela).
+- **Desenhos e simulações** (dizem isso no título da faixa): A2 verde (o pedaço igual ao resto da página, que é o que
+  o programa já faz na página em Preto e branco); A3 verde (a frase do fundo, tirada da própria faixa do programa); A4
+  verde (a linha "Tirar o fundo" desenhada no menu); B1 verde e B3 laranja (sem o defeito dos retângulos, tirado só no
+  teste); B3 verde (o nome não recorta a capa, só no teste); C verde (o Girar desenhado na barra, no Propriedades e no
+  canto).
+- **Ressalvas:** no A2, o pedaço foi gravado direto na página (do mesmo jeito que o Retângulo grava), não desenhado
+  com o mouse. No B3, nas faixas laranja e verde ainda aparece um fiozinho branco na beirada de cima da capa, em cima
+  de "ÓNAI": é uma lasquinha que o programa acha como "papel" na beirada, e não muda entre as opções. A simulação da
+  opção (a) só vale para o desenho da pergunta: o conserto de verdade precisa ser conferido no Pesel, onde a regra de
+  hoje é que salva as legendas.

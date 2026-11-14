@@ -294,6 +294,128 @@ def b3() -> None:
             "sem caixa, com a cor da capa.")
 
 
+# --------------------------------------------------------------------------- C (Girar como ferramenta)
+G = CRU / "girar"
+PAINEL_X = (1256, 1556)                 # o painel, sem a coluna de ícones da direita
+FUNDO_PAINEL = (69, 69, 69)
+FUNDO_BARRA = (51, 51, 51)
+
+
+def _frac(caixa, tamanho):
+    w, h = tamanho
+    return (caixa[0] / w, caixa[1] / h, caixa[2] / w, caixa[3] / h)
+
+
+def _icone_girar(tamanho: int = 22) -> Image.Image:
+    """O ícone do "¼ à direita", tirado do botão do canto (o programa já o desenha)."""
+    canto = P.abrir(G / "c-canto.png")
+    # os três botões do canto: 7 px de margem, botões de 30 px, 3 px entre eles
+    x0 = 7 + 30 + 3
+    return canto.crop((x0 + 4, 9, x0 + 26, 31)).resize((tamanho, tamanho), Image.LANCZOS)
+
+
+def _trilha_proposta(base: Image.Image, sem_selecao_em_baixo: Image.Image) -> Image.Image:
+    """A barra da esquerda com o Girar (escolhido) logo depois do Mover; o resto desce 32 pontos."""
+    img = base.copy()
+    trilha_baixo = sem_selecao_em_baixo.crop((0, 173, 44, 1000 - 32))
+    img.paste(Image.new("RGB", (44, 1000 - 173), FUNDO_BARRA), (0, 173))
+    img.paste(trilha_baixo, (0, 205))
+    d = ImageDraw.Draw(img)
+    d.rounded_rectangle([5, 175, 38, 204], radius=4, fill=(38, 112, 235))
+    icone = _icone_girar()
+    img.paste(icone, (21 - icone.width // 2 + 1, 190 - icone.height // 2))
+    return img
+
+
+def _escrever(img: Image.Image, caixa, texto: str, fundo, cor, tamanho: int, negrito: bool = False) -> None:
+    d = ImageDraw.Draw(img)
+    d.rectangle(caixa, fill=fundo)
+    d.text((caixa[0], (caixa[1] + caixa[3]) / 2), texto, font=P.fonte(tamanho, negrito), fill=cor, anchor="lm")
+
+
+def _painel_so(base: Image.Image, partes: list[tuple[int, int]], subtitulo: str) -> Image.Image:
+    """O painel Propriedades montado com as faixas (y0, y1) da janela de base, uma embaixo da outra."""
+    x0, x1 = PAINEL_X
+    painel = base.crop((x0, 38, x1, 1000)).copy()
+    alto_cab = 80 - 38
+    corpo = Image.new("RGB", (x1 - x0, 1000 - 80), FUNDO_PAINEL)
+    y = 0
+    for a, b in partes:
+        corpo.paste(base.crop((x0, a, x1, b)), (0, y))
+        y += b - a
+    painel.paste(corpo, (0, alto_cab))
+    _escrever(painel, (102, 12, 240, 30), subtitulo, FUNDO_PAINEL, (160, 160, 160), 12)
+    return painel
+
+
+def c() -> None:
+    cortar = P.abrir(G / "c-janela-cortar.png")
+    endireitar = P.abrir(G / "c-janela-endireitar.png")
+    retangulo = P.abrir(G / "c-janela-retangulo.png")
+    info = json.loads((G / "info-girar.json").read_text(encoding="utf-8"))
+    tam = cortar.size
+    bloco = _frac(info["cortar"]["bloco"], tam)
+    canto = _frac(info["cortar"]["canto"], tam)
+
+    # HOJE: a janela no Cortar, e o alto do Propriedades nas três ferramentas
+    janela = P.caber(cortar, 1440, 900)
+    janela = P.circular(P.circular(janela, bloco, folga=0.12, espessura=5), canto, folga=0.35, espessura=5)
+    altos = []
+    for nome, img in (("Cortar as bordas", cortar), ("Endireitar", endireitar), ("Retângulo (marcar)", retangulo)):
+        alto = img.crop((PAINEL_X[0], 38, PAINEL_X[1], 300))
+        alto = P.circular(alto, (0.02, (90 - 38) / 262, 0.98, (210 - 38) / 262), folga=0.06, espessura=4)
+        altos.append(P.com_titulo(P.caber(alto, 440, 360), nome, tamanho=24))
+
+    # PROPOSTA: a janela com o Girar escolhido (desenho em cima do print do Retângulo, que não tem
+    # as alças do corte)
+    prop = _trilha_proposta(retangulo, cortar)
+    _escrever(prop, (630, 6, 760, 32), "Girar", FUNDO_BARRA, (235, 235, 235), 14, negrito=True)
+    ImageDraw.Draw(prop).rectangle([1450, 4, 1600, 34], fill=FUNDO_BARRA)          # "somar / tirar" do marcar
+    painel = _painel_so(retangulo, [(80, 279)], "Girar")
+    prop.paste(painel, (PAINEL_X[0], 38))
+    # o canto: os três botões e, ao lado, a setinha do "aplicar em"
+    cx0, cy0, cx1, cy1 = info["cortar"]["canto"]
+    pedaco_canto = retangulo.crop((cx0, cy0, cx1, cy1))
+    d = ImageDraw.Draw(prop)
+    prop.paste(pedaco_canto, (cx0 - 26, cy0))
+    d.rounded_rectangle([cx1 - 26, cy0, cx1, cy1], radius=6, fill=(60, 60, 60))
+    d.polygon([(cx1 - 19, cy0 + 16), (cx1 - 7, cy0 + 16), (cx1 - 13, cy0 + 23)], fill=(230, 230, 230))
+    tam_p = prop.size
+    alvos_prop = [_frac((2, 170, 42, 208), tam_p), _frac((PAINEL_X[0] + 8, 85, PAINEL_X[1] - 6, 215), tam_p),
+                  _frac((cx1 - 28, cy0 - 2, cx1 + 2, cy1 + 2), tam_p)]
+    janela_prop = carimbo(P.caber(prop, 1440, 900))
+    for alvo, folga in zip(alvos_prop, (0.4, 0.12, 0.6)):
+        janela_prop = P.circular(janela_prop, alvo, folga=folga, espessura=5)
+
+    # PROPOSTA: o Propriedades de outra ferramenta (Cortar) sem o bloco do Girar
+    cortar_sem = carimbo(_painel_so(cortar, [(215, 900)], "Cortar as bordas").crop((0, 0, 300, 520)), "PROPOSTA")
+    cortar_hoje = cortar.crop((PAINEL_X[0], 38, PAINEL_X[1], 558))
+    comparar = P.lado_a_lado([P.com_titulo(P.caber(cortar_hoje, 420, 640), "Cortar, hoje", tamanho=24),
+                              P.com_titulo(P.caber(cortar_sem, 420, 640), "Cortar, na proposta", vermelho=True,
+                                           tamanho=24)], espaco=80)
+
+    partes = [
+        P.cabeca("O Girar como ferramenta — resumo", P.CINZA,
+                 "Gradus Primus (cópia), página 6, livro novo. Painel Propriedades aberto. Em cima, como é hoje; "
+                 "embaixo, o desenho da proposta (ainda não existe; marcado PROPOSTA)."),
+        P.cabeca("HOJE", P.AZUL,
+                 "O bloco \"Girar a folha\" (setas e \"aplicar em\") fica no alto do Propriedades; os três botões "
+                 "do canto da página giram só a da vez. Os dois circulados."),
+        P.com_titulo(janela, "ferramenta Cortar as bordas escolhida"),
+        P.texto("O mesmo bloco no alto do Propriedades em todas as ferramentas:", 26, True),
+        P.lado_a_lado(altos, espaco=30),
+        P.cabeca("PROPOSTA — o Girar é uma ferramenta", P.VERDE,
+                 "Circulados: o Girar na barra da esquerda (escolhido), o Propriedades só com as opções dele, e a "
+                 "setinha nova ao lado dos botões do canto, que abre o \"aplicar em\"."),
+        P.com_titulo(janela_prop, "ferramenta Girar escolhida (desenho)", vermelho=True),
+        P.texto("Nas outras ferramentas, o bloco do Girar sai do alto do Propriedades:", 26, True),
+        comparar,
+    ]
+    guardar(P.empilhar(partes, espaco=12), "c-girar-ferramenta.png",
+            "C: hoje o bloco do Girar fica no alto do Propriedades em todas as ferramentas e no canto da página; "
+            "na proposta (desenho), o Girar vira ferramenta da barra e o canto ganha a setinha do \"aplicar em\".")
+
+
 def main() -> None:
     pedidas = set(sys.argv[1:]) or {"a2", "a3", "a4", "b1", "b3", "c"}
     for nome, func in (("a2", a2), ("a3", a3), ("a4", a4)):
