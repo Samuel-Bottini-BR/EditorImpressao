@@ -13,7 +13,8 @@ sugestão. O que olhar está circulado ou tracejado em vermelho.
 
 **Do que se trata.** No painel **Filtro da página** (à direita da página), a parte **"Só neste pedaço"** deixa
 escolher um filtro só para uma área que você marca na página. Caminho: painel Filtro da página > "Só neste pedaço" >
-"Original" > marcar a área na página (com o Retângulo, por exemplo). Ela só aparece com um pedaço marcado.
+"Original" > marcar a área na página (com o Retângulo, por exemplo). O filtro escolhido vale para o que se
+marcar depois.
 
 **O que acontece hoje.** No Siebmacher, depois do "Sim, tirar o fundo", marquei um pedaço em "Original" no meio da
 página 5:
