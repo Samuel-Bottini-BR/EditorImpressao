@@ -209,6 +209,22 @@ def erro11():
            P / "erro11-lista-volta-ao-topo.jpg")
 
 
+def erro6():
+    K = Path(r"D:/programas/EditorImpressao/.claude/worktrees/teste-kaique-lusiadas/relatorios/teste-kaique-lusiadas/prints")
+    montar("Erro 6 - folha espremida com a Mão - resumo",
+           "Os Lusíadas (cópia), logo depois do Automático com Dividir e \"A 1ª folha é a capa aberta\", "
+           "ferramenta Mão, vista \"Uma página\", página 1.",
+           [Faixa("azul", "NO TESTE DO KAIQUE (06/11)", "a página 1 aparece com a folha inteira (contracapa + capa) "
+                  "apertada na largura de uma página",
+                  [Peca("página 1, versão de 06/11 (print do Kaique)", K / "20-depois-rodar.png", recorte=(560, 40, 1020, 630),
+                        altura=520, circulos=[(790, 330, 230)], nome_vermelho=True)]),
+            Faixa("verde", "HOJE (VERSÃO DE TESTE DE 14/11)", "o mesmo caminho mostra só a capa, na forma certa "
+                  "(o laranja em volta é o erro 7, outro assunto)",
+                  [Peca("página 1, versão de hoje", C / "a-05-mao-uma-pagina-p1.png", recorte=(600, 80, 1340, 860),
+                        altura=520)])],
+           P / "erro6-folha-espremida.jpg")
+
+
 if __name__ == "__main__":
     for nome in sys.argv[1:]:
         globals()[nome]()

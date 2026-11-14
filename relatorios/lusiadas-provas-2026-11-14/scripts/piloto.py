@@ -30,7 +30,7 @@ if os.environ.get("CODIGO"):
 sys.path.insert(0, str(PASTA.parents[1] / "relatorios" / "obra-etapa3" / "roteiro"))
 import base  # noqa: E402
 
-TRAB = PASTA / ("_dados" if not os.environ.get("CODIGO") else f"_dados-{RAIZ.name}")
+TRAB = PASTA / ("_dados-d" if sys.argv[1:2] == ["d"] else ("_dados" if not os.environ.get("CODIGO") else f"_dados-{RAIZ.name}"))
 LIVRO = PASTA / "_livro" / "lusiadas.pdf"
 CRUS = PASTA / "prints" / "crus"
 FASE = sys.argv[1] if len(sys.argv) > 1 else "a"
@@ -378,6 +378,13 @@ def fase_a():
     base.esperar(4)
     p(jan, "automatico-pronto-para-rodar")
     anotar("rodou-em-s", rodar(j, jan))
+    if FASE == "d":
+        # D-679 logo depois do Automático, como o Kaique: "Qualidade baixa" + todas + "está bom",
+        # e o sino anotado de 5 em 5 segundos, parado, e depois andando
+        base.esperar(2)
+        sino_que_muda(j)
+        base.fechar(j)
+        return
 
     # 2. logo depois de rodar: a ferramenta que ficou, a vista, o sino
     t = j.tela_conferir
@@ -561,8 +568,8 @@ def sino_que_muda(j):
     relogio.stop()
     anotar("sino-logo-depois-do-esta-bom", sino(j))
     p(j, "sino-logo-depois-do-esta-bom")
-    for s in (10, 30, 60):
-        base.esperar(10 if s == 10 else (20 if s == 30 else 30))
+    for s in range(5, 125, 5):
+        base.esperar(5)
         anotar(f"sino-parado-{s}s-depois-do-esta-bom", sino(j))
     ir_pagina(j, 1)
     for n in range(1, 41):
@@ -730,7 +737,7 @@ def main():
     base.preparar(str(RAIZ), str(TRAB), limpar=False)
     LOG = open(PASTA / "scripts" / f"anotacoes-{FASE}.txt", "a", encoding="utf-8")
     anotar("comeco", {"fase": FASE, "raiz": str(RAIZ)})
-    {"a": fase_a, "mao": fase_a, "b": fase_b, "c": fase_c}[FASE]()
+    {"a": fase_a, "mao": fase_a, "b": fase_b, "c": fase_c, "d": fase_a}[FASE]()
     anotar("fim", FASE)
     LOG.close()
 
