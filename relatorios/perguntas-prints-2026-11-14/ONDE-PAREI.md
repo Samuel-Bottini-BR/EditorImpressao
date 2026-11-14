@@ -8,8 +8,10 @@ janela na tela do Samuel (offscreen com as fontes do Windows), dados em `_dados/
 
 - [x] Lidos: `.claude/agents/verificador.md`, `CLAUDE.md` inteiro (§10 modelo do girar, §11.13), `memoria/INDICE.md`,
   decisões do Livro (abaixo).
-- [ ] A2, A3, A4 (Tirar o fundo, Siebmacher em cópia).
-- [ ] B1, B3 (capa do Gradus, cópia).
+- [x] A2, A3, A4 (Tirar o fundo, Siebmacher em cópia): imagens prontas e abertas; texto em `relatorio_fonte.md`.
+- [ ] B1, B3 (capa do Gradus, cópia): texto pronto; desenhos rodando (`scripts/rodar_capa.sh`).
+- Lição desta tarefa: o script muda de pasta para a raiz do programa; o livro tem de ir com o caminho inteiro,
+  senão o programa abre a caixa "não achei o arquivo" e o processo fica parado sem janela (perdi duas rodadas).
 - [ ] C (Girar como ferramenta).
 - [ ] Relatório nos três formatos.
 

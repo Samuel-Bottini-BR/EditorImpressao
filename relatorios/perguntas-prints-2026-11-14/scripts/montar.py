@@ -196,6 +196,11 @@ def a2() -> None:
 
 # --------------------------------------------------------------------------- B (capa do Gradus)
 CAPA = CRU / "capa"
+PRINT_13_01 = R.parents[1] / "relatorios" / "testes-guiados" / "2026-11-13-sessao-6" / "prints" / \
+    "13-01-preto-e-branco-capa-preta.png"
+if not PRINT_13_01.exists():                       # o print dele mora na pasta principal do projeto
+    PRINT_13_01 = Path("D:/programas/EditorImpressao/relatorios/testes-guiados/2026-11-13-sessao-6/prints/"
+                       "13-01-preto-e-branco-capa-preta.png")
 ZOOM = (0.55, 0.0, 0.97, 0.30)             # o alto da capa azul (frações da página dupla)
 ALVO_RETANGULOS = (0.64, 0.0, 0.90, 0.12)
 ALVO_ONAI = (0.755, 0.0, 0.86, 0.085)
@@ -229,6 +234,9 @@ def b1() -> None:
         P.cabeca("Capa do Gradus no Preto e branco — resumo", P.CINZA,
                  "Gradus Primus (cópia), página 1 (a capa aberta), como sai no PDF. Painel Filtro da página > "
                  "\"Preto e branco\" e a caixinha \"Respeitar as gravuras achadas\". Olhe a capa azul, à direita."),
+        P.com_titulo(P.circular(P.caber(P.abrir(PRINT_13_01), 1300, 740), (0.785, 0.287, 0.935, 0.312),
+                                folga=0.25, espessura=5),
+                     "o seu print 13-01: a caixinha \"Respeitar as gravuras achadas\" desmarcada", vermelho=True),
         P.empilhar([P.cabeca("Como o livro foi escaneado", P.CINZA, ""),
                     linha_capa(capa("hoje", "original"), ALVO_RETANGULOS, circular=False)], espaco=6),
         P.empilhar([P.cabeca("HOJE — caixinha marcada (como vem)", P.AZUL,
