@@ -33,7 +33,10 @@ Nada muda: tarefa sem código.
 - [x] leitura das regras (verificador.md, CLAUDE.md, INDICE, bugs.md, D-678..D-691 e citadas)
 - [x] piloto fora da tela: `scripts/piloto.py` (base.py da obra-etapa3; janela em -32000, PrintWindow)
 - [x] lista de códigos na tela: `scripts/codigos_na_tela.py` -> `scripts/codigos_na_tela.txt`
-- [ ] fase a rodando (abrir, Automático como a rodada 1, tela, branco/tirar, processar 2x, montar)
+- [x] fase a: abrir, Automático como a rodada 1 (Dividir + capa aberta, sem Cortar, PB, Gravuras), Mão nas p.1/2/5/8/14, processar, montar para imprimir. O "deixar em branco"/"tirar do livro" e o Propriedades não aconteceram (o clique no ícone do painel não abriu): refeitos na fase b. O 2º processar foi interrompido de propósito (ver ATENÇÃO).
+- [x] análise das páginas 8, 14, 22 e folha 7 (`scripts/analise.py`, `analise_p8.py`; json ao lado)
+- [ ] fase b: sino, branco, tirar, Propriedades, Automático (contagem e lista), janela de salvar
+- [ ] fase mao no código do teste do Kaique (51bdcb0b, cópia teste-kaique-lusiadas) para o erro 6
 - [ ] erro por erro (abaixo)
 - [ ] relatório nos três formatos
 
@@ -45,6 +48,19 @@ Achados de código (antes de rodar):
 - D-680: `_acertar_as_miniaturas_movidas` pinta branca só a `inserida` (D-623); `em_branco` não; grade `_pagina_dentro_da_folha` também não.
 - D-688: `ListaDeEtapas.refazer` faz `clear()` e monta tudo de novo a cada `estado.mudou`.
 - D-684: o laranja é o "Mostrar as áreas achadas" (D-237), ligado sozinho em toda página com aviso (`_mostrar_as_achadas`: `mostrar or pagina.precisa_revisao`); o botão "marcações" (D-580/D-584) só mexe nas cores.
+
+## ATENÇÃO para a gerente (arquivo fora do projeto)
+- O 1º "Confirmar e processar" da fase a abriu com a pasta de fábrica `C:/Users/fotog/Documents/Editor de Impressao` (a pasta de dados era a minha, mas a pasta de saída sugerida cai em Documentos) e GRAVOU lá `lusiadas - preto e branco.pdf` (18,7 MB, 14/11 13:07). Nenhum arquivo dele foi substituído (a pasta só tinha os 3 "gradus ... cadernos" de 18/07). Não apaguei (regra: fora do projeto, nunca apagar). Copiei para `_dados/saida/`. O 2º processar foi cortado antes de gravar; na fase b a janela de salvar é só aberta e fechada com "voltar".
+
+## Achados por erro (fase a + análise)
+- D-678 (p.14): AINDA ACONTECE. A rede de regiões marcou 4 pedaços como "letra" dentro da pintura (peito do homem da direita, nuca/rosto do da frente); ali vale o preto e branco de texto. Com "Gravuras em tons de cinza" continua.
+- D-689 (p.22): AINDA ACONTECE. Página quase branca (cinza 249-255). O "jeito de preto" automático escolhe Otsu (letra grossa) e inventa tinta: 10,7% preto. Sauvola: 0%. Wolf: 6,6%. `filtros.escolher_algoritmo_automatico` mede a "espessura do traço" sobre o Otsu da própria página, sem olhar se há contraste. O aviso "Parece em branco" acertou.
+- D-690 (p.8): AINDA ACONTECE. A pintura FOI achada (gravura 55%), mas `_tipos_das_zonas` a classificou como "desenho de traço" (zona única) -> vira linhas; parte do mar/céu claro foi marcada papel. Com "Gravuras em tons de cinza" (D-588, já existe, desmarcada) sai inteira em cinza.
+- D-682: AINDA ACONTECE. Nesta rodada a folha 2 (linha em 0,239, "Lombada incerta") deixou a página 3 larga e ela saiu deitada na face 3; a folha 7 (linha em 0,732) partiu "PERIGOS E TRAIÇÕES" (p.12 quase quadrada, 616x612 pt, não girou). O aviso "Página 3: era deitada e foi girada..." existe, mas só depois de gravar e fora da vista (embaixo de "Como imprimir").
+- D-683: na versão de hoje NÃO aconteceu (p.1, 2, 5, 8, 14 com a Mão e "Uma página": página certa). Falta provar no código antigo.
+- D-684: AINDA ACONTECE (laranja nas p.1, 2, 8, 14 com a Mão; é o "Mostrar as áreas achadas" ligado sozinho nas páginas com aviso, D-237).
+- D-687: AINDA ACONTECE (print a-02).
+- D-679 (prévia "de 134"): a contagem conta a página tirada de propósito (comentário em `ui/automatico.py` ~1830). Sino: na fase a ficou 134 parado 60 s e andando (tudo com aviso). A fase b testa depois do "está bom nas marcadas".
 
 ## Perguntas para o Samuel
 (nenhuma por enquanto)
