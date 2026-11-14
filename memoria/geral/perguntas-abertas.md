@@ -356,3 +356,11 @@ Ficha [layout](../itens/layout.md).
 - **Respondidas nesta sessão (não perguntar de novo):** D-606, D-607, D-609 a D-623 (ver o Livro); "girar - sim" (folha inteira
   como foto); um clique escolhe e arrasta ("ok"); cantos só na escolhida ("Sim"); no Dividir a tira junta pela folha ("SIm, mas
   tem que verificar se vai ficar assim em todo os lugares"); A2 no desfazer; D-591 e memória: agente ("Sim").
+
+## Abertas em 14/11/2026 (PARTE -36 do histórico)
+
+- **Chat:** apagar `Documentos/Editor de Impressao/lusiadas - preto e branco.pdf` (18,7 MB, gravado por um teste do verificador; sugestão: sim).
+- **Chat:** pôr um agente para investigar os 4 problemas do teste do Tirar o fundo, com prova e sem consertar (sugestão: sim).
+- **Chat (de 14/11, madrugada):** arquivar as conferências antigas que funcionam (89) e as para depois (10).
+- **Central, novas:** `perg-14-11-fundo-capa-girar` (6: fundo-pedaco, fundo-frase, fundo-menu, capa-preta, capa-nome, girar-ferramenta); `perg-14-11-palavra-cor` (2: cor-mesma-tinta, cor-so-letras); `perg-14-11-lusiadas-provas` (13 cartões; escolha de verdade no erro 7 e no erro 13).
+

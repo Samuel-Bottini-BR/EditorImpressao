@@ -1,6 +1,6 @@
 # Editor de Impressão — documento para colar no Claude
 
-Atualizado em 14/11/2026 (PARTE -35; a anterior, PARTE -34, é de 10/11 à noite). Desde 19/10 a memória por assunto fica em `memoria/` (índice `memoria/INDICE.md`). Versão **máxima**: reúne o histórico institucional, o
+Atualizado em 14/11/2026, fim da tarde (PARTE -36; a anterior, PARTE -35, é de 13-14/11). Desde 19/10 a memória por assunto fica em `memoria/` (índice `memoria/INDICE.md`). Versão **máxima**: reúne o histórico institucional, o
 que o programa é, todas as funcionalidades pedidas, os 68 pedidos feitos até
 hoje **palavra por palavra**, o que foi feito, o que falta, e os dois
 documentos-fonte inteiros (a especificação original e o prompt de testes) em
@@ -11,6 +11,231 @@ Pasta do projeto: `D:\programas\EditorImpressao` (mudou de
 `C:\Users\fotog\Desktop\EditorImpressao` em 07/09/2026; essa pasta antiga virou
 o backup). Repositório git ligado a
 `https://github.com/Samuel-Bottini-BR/EditorImpressao`.
+
+---
+
+# PARTE -36 — Checkpoint de 14/11/2026 (fim da tarde): regras novas do /projeto, teste do Tirar o fundo com 4 problemas, 3 agentes de estudo publicados na Central (leia isto primeiro)
+
+Sessão no PC, 14/11 das 14h56 às 22h40 UTC, gerente Claude Opus 5.5, uma conversa (resumida uma vez). O Samuel pediu o
+checkpoint com `/checkpoint`. Fontes: a conversa salva (`falas_da_conversa.py --todas --desde 2026-11-14T05:27` e
+`--com-respostas`), o git e a Central, não o resumo.
+
+- **O defeito do script das falas continua:** ele não listou "e o 12 também" nem "3 agentes" (16h39, mandadas no meio do
+  trabalho; no `.jsonl` são `queue-operation` com `operation: "remove"` e `reason: "absorbed_mid_turn"`). Foram achadas à mão.
+  Ele também marca os relatórios dos agentes como "SAMUEL (no meio do trabalho)". Conserto: item 25 da lista (§5).
+- Outra conversa do mesmo dia (`48264939`, 21h12-21h33 UTC) é de outro assunto (pastas baixadas, mensagem ao Kaique,
+  Telegram) e não entra aqui.
+- **Nenhuma linha do programa mudou nesta sessão.** A versão de teste continua no `c7e34fd8`.
+- **No fechamento não há agente rodando** (conferido). Os três da sessão entregaram.
+
+## 0. Para recomeçar
+
+1. `git -C D:\programas\EditorImpressao fetch origin`. Versão de teste: ramo `obra-2026-10-26`, worktree
+   `.claude\worktrees\obra-juncao`, ponta `c7e34fd8` + o Livro deste checkpoint. Ramo do plano: `fase-1`.
+2. **O Samuel testa pelo atalho "Editor de Impressao (rodada de consertos)"** (`abrir.vbs`), que abre a versão de teste com a
+   pasta de dados própria `D:\programas\EditorImpressao-arquivos\dados-teste-rodada-de-consertos`. O "(desenvolvimento)" abre
+   a versão principal (`fase-1`), que não tem os consertos da obra. A PARTE -35 (§11) e o CLAUDE.md §8 passo 9 ainda dizem
+   "(desenvolvimento)": **errado para a versão de teste.**
+3. **Cinco perguntas do chat sem resposta** (texto exato no §8): apagar o PDF em Documentos; agente para os 4 problemas do Tirar o
+   fundo; arquivar as 99 conferências antigas; copiar o Estado atual para a pasta dele; responder primeiro as 4 da revisão.
+4. Na Central há 21 perguntas novas de hoje esperando ele (§4). Ler as respostas com `lida != true` antes de tudo.
+5. Abrir o projeto com a lista numerada por etapas e "(agente pode fazer)" (regra nova, §1). A lista de hoje está no §5.
+6. Não começar conserto sem o "sim" dele.
+
+## 1. Regras novas do Samuel, literais (14/11)
+
+- **Lista numerada por etapas** (15h40 e 15h46 UTC):
+  - "pera ai, vamos separar as coisas que estamos fazendo em numeração , e etapas, fica mais facil para mim."
+  - "eu quero que quando começarmos os projetos sempre faça assim que as coisas venham enumeradas no total como você fez na
+    mensagem passada e serparadas por etapas, fica mais facil para mim, transforme isso em regra, e me mostre as tarefas das
+    etapas que podem ser delegas para um agente para que eu possa mandar um agente fazer enquanto eu faço os testes.( acho que
+    quando for dar a primeira mensagem de resumo, você pode colocar um entre parenteses "agente pode fazer", assim eu já bato o
+    olho e peço explicação daquela tarefa e delibero qual já boto um agente para fazer, torne isso regra."
+- **"teste - N"** (15h51): "quando eu falar o numero de um teste quando tu der essa lista, tu faz a explicação, por exemplo, eu
+  coloco teste - 1 na mensagem, pode botar isso como regra."
+- Onde ficou: passo 7 do comando `C:\Users\fotog\.claude\commands\projeto.md` (fora do git do projeto) e a memória
+  `feedback_lista_numerada_por_etapas.md`. O passo 7 também manda tirar as pendências das fontes (no Livro: "falta o teste",
+  "pronta para conferir"; no Plano: `[~]` e "falta o teste"), não só do handoff. Motivo: a gerente tinha listado 2 testes, e
+  eram 6 ("tem certeza que são só esses testes ?").
+- **Três agentes ao mesmo tempo, desta vez** (16h39): "bota o 13 para ser estudado e o 17 também" · "e o 12 também" ·
+  "3 agentes". A gerente tinha dito "Rodam no máximo dois ao mesmo tempo, que é o seu limite." (15h47). Ele autorizou 3 para
+  esta leva; não disse que o limite mudou de vez.
+
+## 2. Os trabalhos, pelo git
+
+- **Feito no `fase-1`:** `1de7e7c6`, relatório da sessão 7 de testes (`relatorios/testes-guiados/2026-11-14-sessao-7/`, prints
+  14-01 e 14-02 e as frases dele). Mais este checkpoint (Plano, Estado atual, memória, handoff).
+- **Livro, no obra (igual à cópia dele):** sem decisão nova. Situação de hoje acrescentada em D-646, D-699, D-701, D-678 a
+  D-690 (este checkpoint).
+- **Três estudos, nenhuma linha do programa mudou, ramos com push, não juntados (não há o que juntar):**
+  - **12, prints das perguntas fora da Central:** ramo `perguntas-prints-2026-11-14`, `2ee4912f`. Relatório e imagens em
+    `.claude/worktrees/perguntas-prints/relatorios/perguntas-prints-2026-11-14/`. O `.pdf` (74 MB) fica fora do git.
+    O agente acrescentou na pergunta do Girar uma opção que nem a gerente nem o Samuel pediram ("Sim, mas sem a setinha no canto"); a gerente
+    publicou assim.
+  - **13, estudo da palavra em duas cores (D-701):** ramo `palavra-cor-2026-11-14`, `e54e344e`. Causa: "Reduzir cores" usa as
+    caixas fixas do ScanTailor, e a divisa entre duas caixas cai no meio da tinta (`core/cores_scantailor.aplicar`, o único lugar
+    a mudar). A tela e o PDF mostram cores diferentes (D-649). Plano: "uma cor por tinta" só no Preto e branco com "Reduzir
+    cores"; prova planejada `tests/test_d701_palavra_numa_cor.py`; risco de 0,3 a 0,6 s a mais por página nesse caso. Relatório em
+    `.claude/worktrees/palavra-cor/relatorios/palavra-cor-2026-11-14/`. O print das opções foi refeito a pedido da gerente (o
+    primeiro não mostrava a diferença; o texto da opção 2 estava errado e foi corrigido).
+  - **17, provas dos erros do Lusíadas (D-678 a D-690):** ramo `lusiadas-provas-2026-11-14`, `0bd75b41`. 12 ainda acontecem; o
+    erro 6 (D-683, folha espremida) já não, consertado por `88731637`. Os dois "investigar" (D-689 e D-690) são defeito. Parte 2
+    do relatório tem a causa no código de cada erro (arquivo, função, ideia de conserto). Relatório em
+    `.claude/worktrees/lusiadas-provas/relatorios/lusiadas-provas-2026-11-14/`. A gerente abriu as 13 provas: estão boas.
+- **Os três worktrees foram criados hoje a partir do `c7e34fd8`**, com as junções `modelos` e `gabarito\paginas` feitas pelo
+  PowerShell (`New-Item -ItemType Junction`); o `mklink` do cmd falhou.
+
+## 3. As falas do Samuel desde o último checkpoint e o destino (UTC)
+
+| Hora | Fala (literal) | Destino |
+|---|---|---|
+| 14h56 | "1" (abrir o Editor de Impressão) | Leitura das regras e resumo |
+| 15h40 | "pera ai, vamos separar as coisas que estamos fazendo em numeração , e etapas, fica mais facil para mim." | Lista em 5 etapas |
+| 15h41 | "tem certeza que são só esses testes ?" | **Correção:** eram 6, não 2 (§7) |
+| 15h46 | Regra da lista numerada e "(agente pode fazer)" (§1) | `projeto.md` passo 7 e memória |
+| 15h51 | Regra "teste - N" (§1) | Idem |
+| 15h52 | "teste 1" | Roteiro do Tirar o fundo dado (com o atalho errado) |
+| 16h12 | "não tem esse cartão, dá uma olhada" | **Correção:** atalho certo "(rodada de consertos)"; roteiro refeito (§7) |
+| 16h38 | "me mostra a lista de coisas urgentes que o agente pode começar a gazer" | Lista dada |
+| 16h39 | "bota o 13 para ser estudado e o 17 também" · "e o 12 também" · "3 agentes" | 3 agentes (§2) |
+| 16h56 | "Novo problema, o programa trava quando eu abro o livro [...]" e os pontos 2, 3, 4 e 6, com 2 prints (texto inteiro no Plano, Lista de bugs 14/11, e na sessão 7) | Sessão 7 (`1de7e7c6`); o 6 respondido no chat; 1 a 4 sem investigação (pergunta aberta, §8) |
+| 18h45 | "então?" | A gerente tinha dito "Abro as outras 7 antes de te mostrar" e parado a resposta sem fazer (§7). Feito: 13 provas abertas e publicadas |
+| 22h39 | `/checkpoint` | Esta parte |
+
+## 4. Central (https://claude.ai/artifact/XNFrsdVR7q4K8cBcxNftZy)
+
+- **Publicadas hoje (coleção `conferencias`, imagens como assets da página):**
+  - `perg-14-11-fundo-capa-girar` (ordem 76): fundo-pedaco, fundo-frase, fundo-menu, capa-preta, capa-nome, girar-ferramenta.
+    São as perguntas 2 a 4 do agente do fundo, as 1 e 3 do agente dos quadrados na capa e a proposta do Girar como ferramenta.
+  - `perg-14-11-palavra-cor` (ordem 77): cor-mesma-tinta (sugestão: "a mesma tinta, a mesma cor"), cor-so-letras (sugestão:
+    deixar como está).
+  - `perg-14-11-lusiadas-provas` (ordem 78): 13 cartões, um por erro, com print e explicação (D-691). Nos erros comuns as opções
+    são "Entendi, pode consertar" / "Ainda não" (texto da gerente); no 6, "Vou conferir no meu teste" / "não precisa conferir";
+    escolha de verdade no 7 (laranja com a Mão; sugestão: opção 2, o botão "marcações" manda em tudo) e no 13 (pintura das
+    bandeiras; sugestão: opção 3, começando pelo aviso).
+- Quadro da Central (`geral/resumo`, versão 84): frase e novidade de 14/11 atualizadas neste checkpoint (estava parado em 10/11).
+- A página não foi aberta sozinha no navegador dele: ele ainda não respondeu as anteriores (CLAUDE.md §10.10).
+- **Respostas com `lida != true`:** nenhuma no fechamento. **Ordens novas:** nenhuma.
+- Continuam esperando ele: as 4 da revisão do código, as 10 que voltaram, o aviso dos pares e as conferências das auditorias.
+
+## 5. A lista numerada (a de 15h47, com a situação de agora)
+
+Numeração da gerente, aprovada como formato pelo Samuel. A ordem das etapas é sugestão da gerente.
+
+**Etapa 1: testes que esperam ele**
+1. Tirar o fundo. **Testado em 14/11 com 4 problemas** (Plano, Lista de bugs 14/11). Falta investigar (item 27).
+2. Girar com a capa aberta (D-638, D-640, D-645). Dar o roteiro com onde fica cada botão ("nem sei onde fica esse botão girar todas").
+3. No Automático, desmarcar "Montar cadernos" faz o livro sair sem cadernos (queixa do Kaique de 30/10).
+4. Conferência final da obra: 54 coisas prontas. (agente pode fazer: montar a página de conferência com os prints)
+5. 40 consertos antigos que mudam o que ele vê. (agente pode fazer: montar a página de conferência)
+6. Instalação: instalar no PC dele e ver a busca de gravuras; velocidade no notebook do Kaique; apagar o atalho antigo.
+
+**Etapa 2: perguntas que esperam ele**
+7. As 4 perguntas da revisão do código (destravam o 18).
+8. Arquivar as 99 conferências antigas (pergunta no chat, §8).
+9. Quando aparece o aviso dos pares trocados (D-693).
+10. As 10 perguntas que voltaram para ele na Central.
+11. O comentário dele em au-d-523 (leitor de texto já agora, como o Internet Archive): **a gerente ainda não respondeu.** (agente pode fazer: os prints da resposta)
+12. **Feito:** as perguntas fora da Central foram com prints (`perg-14-11-fundo-capa-girar`). Esperam a resposta dele.
+
+**Etapa 3: consertos decididos**
+13. Palavra numa cor só (D-701). **Estudado**; 2 perguntas na Central. O conserto espera a resposta. (agente pode fazer)
+14. "Montar para imprimir": o "fechar" vira X e "O que vai sair" fica à vista (D-702). (agente pode fazer)
+15. Caixinhas do Automático voltam desmarcadas (D-669). (agente pode fazer) Depois do teste 3, porque mexe no mesmo lugar.
+16. "Imprimir só algumas folhas" (D-670). (agente pode fazer)
+17. Os erros do Lusíadas. **Provas prontas e na Central**; cada conserto espera o "pode consertar" dele, um por vez. (agente pode fazer, depois do sim)
+18. Girar numa regra só (D-665, D-666). Espera o 7.
+
+**Etapa 4: parados ou não urgentes**
+19. Retângulos na capa no Preto e branco (D-700): parado por ordem dele.
+20. Lista de atalhos do F1 mal arrumada. (agente pode fazer)
+21. Textos cortados na barra de baixo. **É o mesmo que o erro 4 do Lusíadas (D-681).** (agente pode fazer)
+22. Medir a memória e a demora ao trocar de livro. (agente pode fazer)
+23. O amarelo da capa da *Matemática*. (agente pode fazer)
+
+**Etapa 5: arrumação**
+24. Copiar o Estado atual novo para a pasta do plano dele: a gerente disse "Copio a nova para lá quando você disser"; **ele não disse**. A cópia dele é de 10/11.
+25. Consertar o script das falas. (agente pode fazer)
+26. Os mais de 150 worktrees velhos. (agente pode fazer: só a lista; apagar só com o "sim" dele)
+
+**Novos de hoje**
+27. Investigar os 4 problemas do Tirar o fundo, com prova, sem consertar. (agente pode fazer) Pergunta aberta (§8).
+28. Apagar o PDF que o teste do verificador gravou em Documentos. Pergunta aberta (§8).
+29. Horas 26: faixa preta na beirada direita no Preto e branco, mais um exemplo do defeito de 10/11 (anotado no Plano).
+
+## 6. Descobertas de comportamento real
+
+- **Com uma pasta de dados nova, "Confirmar e processar" sugere a pasta `Documentos\Editor de Impressao`.** Agente que processa
+  num teste tem que trocar a pasta de saída, ou grava fora do projeto (foi o que aconteceu hoje).
+- **Livro é reconhecido pelo conteúdo do arquivo** (`projetos.achar_por_assinatura`); a pergunta do fundo aparece com
+  `tem_camadas and not projeto.perguntou_fundo`. Na versão de teste, com a pasta de dados própria, o Siebmacher abre como novo.
+- **Central:** imagem nova vai como asset (Artifact `publish` com `asset: true` e `file_paths`, até 25 por vez); o cartão usa o
+  `/_blob/<id>` devolvido. O documento entra com ArtifactData `set` lendo um `.json` local (`file_path`).
+- **Bash do Windows:** caminho com `\U` dentro de string Python num heredoc quebra (`unicodeescape`). Usar barra normal.
+- **Junção de worktree:** `mklink /J` do cmd falhou ("O sistema não pode encontrar o caminho especificado"); o PowerShell
+  `New-Item -ItemType Junction` funciona. Nunca `rm -rf` numa junção.
+
+## 7. Erros da gerente nesta sessão (não repetir)
+
+- **Listou 2 testes, eram 6.** Tirou os testes só do handoff. Ele: "tem certeza que são só esses testes ?" Agora o `/projeto`
+  manda procurar no Livro e no Plano.
+- **Mandou testar pelo atalho "(desenvolvimento)" e por um cartão do Siebmacher que não existe na versão de teste.** Ele: "não tem
+  esse cartão, dá uma olhada". O atalho certo é "(rodada de consertos)". O erro veio do handoff da PARTE -35 e do CLAUDE.md §8.
+- **Prometeu e parou.** Disse "Abro as outras 7 antes de te mostrar" e terminou a resposta sem abrir. Ele esperou 1h10 e escreveu
+  "então?". Quando disser que vai fazer, fazer na mesma resposta.
+- Disse "Rodam no máximo dois ao mesmo tempo, que é o seu limite." (15h47); ele mandou 3 (§1).
+- O agente da Lusíadas gravou um PDF em Documentos porque o pedido não dizia para trocar a pasta de saída (§6).
+
+## 8. Perguntas em aberto (texto exato, onde, quando)
+
+- **Chat, 14/11 18h48:** "1. O teste salvou um PDF de 18 MB em `C:\Users\fotog\Documents\Editor de Impressao\lusiadas - preto e
+  branco.pdf`. Posso apagar? Sugiro que sim, porque fui eu que o criei." Sem resposta.
+- **Chat, 14/11 18h48 (feita antes às 16h57, 17h19, 17h30 e 17h34):** "2. Posso pôr um agente para investigar os 4 problemas do
+  Tirar o fundo: a demora, as páginas sem o fundo tirado, as miniaturas e o "antes" do Automático? Sugiro que sim." Sem resposta.
+- **Chat, 14/11 14h59:** "Posso arquivar essas 99 conferências antigas da Central? Eu sugiro que sim." Sem resposta (a mesma da
+  PARTE -35, §0).
+- **Chat, 14/11 14h59:** "A sua cópia do Estado atual, na pasta do plano, é de 10/11. A do git é de 14/11. Copio a nova para lá
+  quando você disser." Ele não disse.
+- **Da PARTE -35, ainda abertas:** "Quer responder essas primeiro?" (as 4 da revisão, 14/11 00h09); o comentário dele em au-d-523
+  sem resposta na página.
+- **Superadas hoje:** "Posso levar essas perguntas à Central agora?" (13/11 21h10m34s): ele mandou o agente dos prints ("e o 12
+  também") e as perguntas foram publicadas. "Quer que eu guarde uma cópia desse trabalho de julho" (15h54): não precisa, a versão
+  de teste usa outra pasta de dados. "Quer que eu monte a lista inteira de novo, com a numeração certa, e guarde num arquivo para
+  você consultar?" (15h42): ele respondeu com a regra da lista (15h46); a lista foi refeita no chat às 15h47, não em arquivo (está
+  no §5). "Quer que eu leia agora as três fichas da memória?" (13/11 17h40, da PARTE -35): a sessão seguiu sem isso.
+- **Na Central (21 perguntas novas):** ver §4.
+
+## 9. Fila e pendências
+
+A lista do §5 é a fila. Também continuam anotados, não urgentes (estavam na PARTE -35 §9 e ficaram fora da lista de 15h47; estão em
+`memoria/bugs.md`): "Abas no alto" esconde a barra de menus (conferir); "desligar as marcadas" deixa páginas "apagada". Fora dela: consertar o CLAUDE.md §8 passo 9 e os roteiros que dizem "(desenvolvimento)" para a versão de
+teste (perguntar antes, porque o CLAUDE.md é regra do projeto).
+
+## 10. Próximo passo recomendado
+
+Pegar as respostas das perguntas do chat (§8), começando pelas duas de 18h48. Se ele disser sim ao agente, investigar os 4 problemas do Tirar o fundo
+antes de qualquer conserto novo, porque ele é o teste que está na frente.
+
+## 11. Como rodar e testar
+
+- Programa (versão de teste): atalho "Editor de Impressao (rodada de consertos)", ou dentro de
+  `D:\programas\EditorImpressao\.claude\worktrees\obra-juncao` com `..\..\..\.venv\Scripts\python.exe main.py` (para a pasta
+  de dados dele, usar o atalho).
+- Um arquivo de teste: `.venv\Scripts\python.exe -m pytest tests\<arquivo> -q`, dentro do obra.
+- **Testes desta sessão:** nenhum código mudou, então não houve rodada. O agente da Lusíadas rodou os 2 testes do erro 6
+  (`test_d659_a_tela_nao_troca_a_previa_pela_folha_crua` e
+  `test_d649_a_o_mover_mostra_a_pagina_e_nao_a_folha_espremida`): passaram. A suíte inteira continua sem rodar no PC desde as
+  junções de 13/11, por ordem dele ("não precisa rodar teste, eu vou rodar no manual").
+- `memoria/conferir_memoria.py` neste checkpoint: "Tudo certo".
+
+## 12. Ambiente
+
+Nada instalado. Worktrees novos: `palavra-cor`, `lusiadas-provas`, `perguntas-prints` (com junções `modelos` e
+`gabarito\paginas`). **Fora do git:** o `.pdf` do perguntas-prints (74 MB); 40 arquivos de `prints/crus/` da Lusíadas (10 MB); as
+pastas `_dados*` e `_livro` dos agentes. **Foram para o git, apesar do `*.pdf` no `.gitignore`:** `relatorios/palavra-cor-2026-11-14/relatorio.pdf`
+(30,6 MB, ramo `palavra-cor-2026-11-14`) e `relatorios/lusiadas-provas-2026-11-14/relatorio.pdf` (4,7 MB, `0bd75b41`); também a
+`prints/analise/` inteira (29 arquivos, 11 MB) e 21 de `prints/crus/` (5,7 MB). Só nesses ramos, que não serão juntados; o histórico
+não foi reescrito.
 
 ---
 

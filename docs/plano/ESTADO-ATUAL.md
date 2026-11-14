@@ -8,7 +8,15 @@ Escrito em 24/09/2026. A ordem de autoridade é:
 
 O resto é histórico. O `PEDIDOS.md` virou histórico em 24/09: a lista que vale é o Plano Definitivo.
 
-> **Onde o projeto está em 14/11/2026 (vale sobre tudo abaixo; detalhe na [PARTE -35](../../historico/Editor%20de%20Impressao%20-%20resumo%20para%20o%20Claude.md) do handoff):**
+> **Onde o projeto está em 14/11/2026, fim da tarde (vale sobre tudo abaixo; detalhe na [PARTE -36](../../historico/Editor%20de%20Impressao%20-%20resumo%20para%20o%20Claude.md) do handoff):**
+> - Versão de teste: a mesma, ramo `obra-2026-10-26`, ponta `c7e34fd8`. Nenhuma linha do programa mudou hoje. **O Samuel testa pelo atalho "Editor de Impressao (rodada de consertos)"**, com pasta de dados própria; o "(desenvolvimento)" abre a versão principal.
+> - **Teste dele do Tirar o fundo: 4 problemas** (demora e trava ao abrir e ao tirar o fundo; páginas sem o fundo tirado; miniaturas com o papel velho; o "antes" do Automático com o papel velho). Prints na sessão 7 de testes. Falta investigar; a gerente perguntou se põe um agente, **sem resposta**.
+> - Três agentes de estudo terminaram (nada mudou no programa): prints das 6 perguntas que faltavam; estudo da palavra em duas cores (D-701, 2 perguntas); provas dos erros do Lusíadas (12 ainda acontecem, o 6 já não). Tudo está na Central (`perg-14-11-fundo-capa-girar`, `perg-14-11-palavra-cor`, `perg-14-11-lusiadas-provas`), esperando ele.
+> - Falta o teste dele: girar com a capa aberta, e os outros da lista numerada (PARTE -36, §5).
+> - Perguntas no chat sem resposta: apagar o PDF que o teste gravou em `Documentos\Editor de Impressao`; agente para os 4 problemas do Tirar o fundo; arquivar as conferências antigas.
+>
+> **Antes (14/11, madrugada), já superado:**
+> **Onde o projeto estava em 14/11/2026 (detalhe na [PARTE -35](../../historico/Editor%20de%20Impressao%20-%20resumo%20para%20o%20Claude.md) do handoff):**
 > - Versão de teste: ramo `obra-2026-10-26` (worktree `.claude/worktrees/obra-juncao`, ponta `c7e34fd8`; o código é o do `4c48e899`, depois só o Livro). Entraram em 13/11 os graves (D-649, D-648), os quadrados C (D-668) e o Tirar o fundo (D-646, D-699).
 > - **Testados pelo Samuel ("funcionando"):** D-649, D-648, D-668. **Falta o teste dele:** Tirar o fundo e girar com a capa aberta.
 > - Suspenso por ordem dele: conserto da sombra do Preto e branco (D-700, retângulos na capa do *Gradus*).
