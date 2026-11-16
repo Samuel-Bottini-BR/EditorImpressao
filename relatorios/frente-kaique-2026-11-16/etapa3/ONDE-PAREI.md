@@ -128,7 +128,30 @@ por isso os testes usam gerente falso e o programa só importa o velopack quando
 
 ## Perguntas para o Samuel
 
-(nenhuma ainda)
+**1. O instalador antigo sai do programa agora, ou fica de reserva até o teste no seu PC?**
+
+Do que se trata: o programa tinha um jeito antigo de montar o instalador (o "Inno Setup", o que fez o instalador que o
+Kaique tem de 28/10). Você escolheu trocá-lo pelo Velopack (16/11). O Velopack já está no programa e o ensaio da
+atualização deu certo numa pasta de teste. O jeito antigo continua lá, sem mudar nada, e nove conferências automáticas
+dele continuam passando.
+
+O que você escolhe:
+- **Deixar o antigo de reserva até o teste da instalação no seu PC (sugestão).** Nada muda agora. Se o Velopack der
+  problema na instalação de verdade, ainda dá para fazer um instalador do jeito antigo. Depois do teste, eu pergunto de
+  novo para tirar.
+- **Tirar já.** Saem o arquivo do instalador antigo e as nove conferências que só olham para ele (as que conferem que
+  cada modelo, peça e DLL entrou no instalador antigo). As mesmas peças continuam conferidas no instalador novo.
+- **Só comentário.**
+
+Para quem usa: nada muda nas duas opções; o Kaique recebe o instalador novo. Situação de agora: o novo está pronto
+na versão de teste, esperando o teste de instalação de verdade.
+
+As nove conferências (para a gerente, `tests/test_empacotar.py`): `test_registro_do_inno_tem_de_listar_cada_modelo`,
+`test_o_script_do_inno_recusa_pasta_sem_os_modelos`, `test_registro_do_inno_tem_de_listar_cada_peca`,
+`test_registro_do_inno_com_versao_no_fim_da_linha`, `test_o_script_do_inno_recusa_pasta_sem_as_pecas`,
+`test_registro_do_inno_tem_de_listar_a_dll_da_gravura`, `test_o_script_do_inno_recusa_pasta_sem_a_dll_da_gravura`,
+`test_regressao_o_pacote_leva_as_duas_dlls_do_scantailor` (a parte do `.iss`) e `test_modo_entrega_nao_apaga_o_teste_do_kaique`
+(o modo "entrega" leva o instalador antigo à Área de Trabalho). Nenhuma foi mudada nem apagada.
 
 ## Ressalvas (para a etapa 5)
 

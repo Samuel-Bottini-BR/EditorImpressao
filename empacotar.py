@@ -1049,6 +1049,9 @@ def comando_do_vpk(vpk: Path, pasta: Path, saida: Path, versao_do_pacote: str) -
             "--packTitle", TITULO_DO_PACOTE,
             "--packAuthors", AUTORES_DO_PACOTE,
             "--outputDir", str(saida),
+            # 64 bits (o Python e o programa sao x64). Sem isto o vpk supoe x86
+            # e o MSI iria para "Arquivos de Programas (x86)" (achado no ensaio).
+            "--runtime", "win-x64",
             "--msi", "--instLocation", "PerMachine",
             "--skip-updates"]
 

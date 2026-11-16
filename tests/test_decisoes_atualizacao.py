@@ -493,6 +493,7 @@ def test_d727_o_vpk_nao_baixa_nada_na_hora_de_instalar():
     comando = empacotar.comando_do_vpk(Path("vpk.exe"), Path("pasta"), Path("saida"), "1.2.0")
     assert "--framework" not in comando and "-f" not in comando
     assert comando[comando.index("--instLocation") + 1] == "PerMachine" and "--msi" in comando
+    assert comando[comando.index("--runtime") + 1] == "win-x64", "sem isto vai para Arquivos de Programas (x86)"
 
 
 def test_d727_o_visual_c_vai_dentro_e_e_conferido_no_pacote(tmp_path):
