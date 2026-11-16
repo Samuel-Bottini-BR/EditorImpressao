@@ -66,6 +66,17 @@ PADROES: dict[str, Any] = {
     # (Projeto.retangulo_do_corte) e a pagina podem trocar. Lido por
     # ui/tela_conferir._jeito_do_retangulo. Seguro mudar: nada.
     "retangulo_do_corte": "fica",
+    # Frente do notebook do Kaique (16/11/2026): os testes a distancia (D-705,
+    # D-712, D-717, D-721). "ligado" e a opcao das Configuracoes, LIGADA DE
+    # FABRICA (D-712). "pronto" diz se o lado do Windows ja foi montado (a
+    # conta de testes existe, o OpenSSH liga); so vira True depois de a senha
+    # ser dada e o Windows aceitar. "senha_perguntada" lembra se a janela da
+    # primeira abertura ja apareceu (D-721). Lido e gravado por
+    # core/testes_a_distancia.py. Seguro mudar: nada; estranho volta ao de
+    # fabrica. A senha em si NAO fica aqui (so na conta do Windows criada com ela).
+    "testes_a_distancia_ligado": True,
+    "testes_a_distancia_pronto": False,
+    "testes_a_distancia_senha_perguntada": False,
 }
 
 
