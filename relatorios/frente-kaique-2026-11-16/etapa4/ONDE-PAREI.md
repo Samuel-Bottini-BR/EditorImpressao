@@ -121,11 +121,11 @@ Todos os quatro caminhos passam pela **mesma** `ligar`/`desligar`, que monta os 
 - [x] `tests/promessas/promessas.md`: chave `configurações/Testes à distância/Fechar` em P-170; promessa
       nova **P-215** "Pôr a senha dos testes" (P-172 já era de outro botão). Prova `test_p215_...`
       acrescentada no FIM de `tests/test_promessas.py` (nenhuma prova antiga mudada).
-- [x] `relatorios/.../etapa4/prints.py` escrito (NÃO rodado ainda).
+- [x] Prints rodados fora da tela (fontes do Windows) e conferidos: `etapa4/prints/1-...png`, `2-...png`.
 - [ ] **`tests/test_promessas.py` no PC: PARADO no meio por ordem da gerente (o Samuel ia desligar o
       PC). Resultado desconhecido.** Não rodar mais testes grandes no PC.
 - [ ] Rodada do GitHub (o conjunto inteiro).
-- [ ] Prints (rodar `prints.py`, fora da tela) e relatório nos três formatos.
+- [x] Relatório nos três formatos: `etapa4/relatorio.md|.html|.pdf` (o .pdf fora do git).
 
 ## ONDE PAREI (16/11/2026, ~11:10) e o próximo passo
 
@@ -139,6 +139,6 @@ Próximo passo, nesta ordem:
    `test_p170`, `test_p215`), `test_configuracoes_em_partes.py`, `test_decisoes*.py`.
 2. Se `test_promessas` acusar botão sem promessa na parte nova, acertar só `promessas.md` (nunca uma
    prova antiga).
-3. Rodar `prints.py` (pequeno, fora da tela), abrir os dois PNGs e conferir.
-4. Relatório com `relatorio.gravar` em `relatorios/frente-kaique-2026-11-16/etapa4/relatorio` (o `.pdf`
+3. (feito) prints.
+4. (feito) relatório. Falta só: ler a rodada 43895649793 do GitHub, pôr o resultado no relatório e entregar.
    fora do git), commit, push, entrega à gerente.

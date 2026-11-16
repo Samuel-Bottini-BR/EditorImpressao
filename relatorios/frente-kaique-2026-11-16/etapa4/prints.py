@@ -74,8 +74,8 @@ def main() -> int:
     app.processEvents()
     img = config.grab().toImage()
     caixa = config.caixa_testes
-    alvo = (caixa.x() + 24, caixa.mapTo(config, caixa.rect().topLeft()).y(),
-            caixa.width(), caixa.height())
+    canto = caixa.mapTo(config, caixa.rect().topLeft())
+    alvo = (canto.x(), canto.y(), caixa.sizeHint().width(), caixa.height())
     _com_faixa(img, "Configurações > Testes à distância",
                "A caixinha já vem marcada (ligada de fábrica). O alvo em vermelho é a opção.",
                alvo).save(str(SAIDA / "1-opcao-nas-configuracoes.png"))

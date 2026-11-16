@@ -1,0 +1,210 @@
+<!doctype html>
+<html lang="pt-BR">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Etapa 4 - testes a distancia</title>
+<style>
+:root { color-scheme: light dark; }
+* { box-sizing: border-box; }
+body {
+  font: 17px/1.65 "Segoe UI", system-ui, sans-serif;
+  max-width: 46rem; margin: 0 auto; padding: 2.5rem 1.5rem 6rem;
+  color: #1c1c1e; background: #fdfdfc;
+}
+h1 { font-size: 2rem; line-height: 1.2; margin: 0 0 .3em; letter-spacing: -.02em; }
+h2 { font-size: 1.35rem; margin: 2.4em 0 .6em; padding-top: .8em;
+     border-top: 1px solid #e6e4e0; letter-spacing: -.01em; }
+h3 { font-size: 1.1rem; margin: 1.8em 0 .4em; }
+h1 + p, h2 + p { margin-top: .4em; }
+p, li { margin: 0 0 .9em; }
+ul, ol { padding-left: 1.3em; }
+strong { font-weight: 640; }
+code {
+  font: .88em ui-monospace, "Cascadia Code", Consolas, monospace;
+  background: #f1efec; padding: .12em .35em; border-radius: 4px;
+}
+pre {
+  background: #f1efec; padding: 1em 1.1em; border-radius: 8px;
+  overflow-x: auto; line-height: 1.5;
+}
+pre code { background: none; padding: 0; }
+blockquote {
+  margin: 1.2em 0; padding: .1em 0 .1em 1.1em;
+  border-left: 3px solid #c9c5be; color: #55524d;
+}
+table {
+  border-collapse: collapse; width: 100%; margin: 1.2em 0;
+  font-size: .95rem; display: block; overflow-x: auto;
+}
+th, td { padding: .5em .8em; text-align: left; border-bottom: 1px solid #e6e4e0; }
+th { font-weight: 620; background: #f7f5f2; white-space: nowrap; }
+tr:last-child td { border-bottom: none; }
+img { max-width: 100%; height: auto; border-radius: 6px; margin: 1em 0;
+      border: 1px solid #e6e4e0; }
+hr { border: none; border-top: 1px solid #e6e4e0; margin: 2.5em 0; }
+.rodape { margin-top: 4em; padding-top: 1.2em; border-top: 1px solid #e6e4e0;
+          font-size: .85rem; color: #86827c; }
+@media (prefers-color-scheme: dark) {
+  body { color: #e8e6e3; background: #1a1917; }
+  h2 { border-top-color: #35332f; }
+  code, pre, th { background: #262421; }
+  th, td { border-bottom-color: #35332f; }
+  blockquote { border-left-color: #4a4741; color: #b0aca6; }
+  img { border-color: #35332f; }
+  .rodape { border-top-color: #35332f; color: #7d7973; }
+}
+@media print {
+  body { max-width: none; padding: 0; color: #000; background: #fff; }
+  h2 { page-break-after: avoid; }
+  table, img { page-break-inside: avoid; }
+}
+</style>
+</head>
+<body>
+<h1>Etapa 4: os testes à distância (relatório do implementador, 16/11/2026)</h1>
+<p><strong>O que foi feito.</strong> Nas Configurações, entrou uma parte nova, "Testes à distância". Nela fica a
+caixinha "Deixar o Samuel fazer testes neste computador (pela rede do Tailscale)", que já vem
+marcada. Na primeira vez que o programa abre, uma janela pequena pede a senha dos testes. A parte
+que liga e desliga os testes no Windows ficou separada numa peça só. <strong>Nada foi feito de verdade no
+Windows de ninguém.</strong> Nos testes, essa peça é trocada por uma de mentira, que só anota os comandos
+que o programa daria.</p>
+<p><strong>Situação:</strong> pela metade. Parei por ordem da gerente, porque o PC ia ser desligado. A rodada do
+GitHub com todos os testes ainda não terminou.</p>
+<h2>O que o Kaique vê</h2>
+<ol>
+<li><strong>Na primeira vez que abre o programa novo:</strong> aparece a janela "Testes à distância". Ela pede a
+   senha que o Samuel passar. Ele digita e clica em "OK". O Windows faz uma pergunta só, e ele clica
+   em "Sim". Se clicar em "Agora não", nada é instalado, e ele pode pôr a senha depois nas
+   Configurações.</li>
+<li><strong>Em Configurações &gt; Testes à distância:</strong> a caixinha marcada, uma frase que diz como está
+   ("Ligado", "Falta a senha" ou "Desligado") e, quando falta a senha, o botão "Pôr a senha dos
+   testes".</li>
+<li><strong>No livro e no PDF:</strong> nada muda. Os filtros, as ferramentas e os projetos dele ficam iguais.</li>
+</ol>
+<p><img alt="A opção nas Configurações" src="prints/1-opcao-nas-configuracoes.png" /></p>
+<p><img alt="A janela da senha" src="prints/2-janela-da-senha.png" /></p>
+<h2>Como cumpri cada decisão</h2>
+<table>
+<thead>
+<tr>
+<th>Decisão</th>
+<th>Como foi feito</th>
+<th>Prova</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>D-712: vem ligada de fábrica; o instalador não pergunta nada</td>
+<td>A opção nasce ligada. O instalador não foi mexido.</td>
+<td><code>test_d712_opcao_ligada_de_fabrica</code>, <code>test_d712_instalador_nao_pergunta_nada</code>, print 1</td>
+</tr>
+<tr>
+<td>D-721: a janela da senha na primeira abertura; sem a senha, nada liga; a senha pode entrar depois</td>
+<td>A janela aparece uma vez só. Sem senha, o Windows não é tocado. Depois, a senha entra pelo botão das Configurações.</td>
+<td><code>test_d721_primeira_vez_pede_a_senha_e_liga</code>, <code>test_d721_sem_senha_nada_liga</code>, <code>test_p215_por_a_senha_dos_testes</code>, print 2</td>
+</tr>
+<tr>
+<td>D-705: só pela rede do Tailscale, sem porta nova dentro do programa</td>
+<td>O firewall fecha a porta para todos e abre só para os endereços do Tailscale, na placa de rede dele. O programa não abre porta nenhuma.</td>
+<td><code>test_ligar_da_os_comandos_esperados</code></td>
+</tr>
+<tr>
+<td>D-711: liga sozinho com o Windows e entra com senha, não com chave</td>
+<td>O serviço fica automático. Entra com senha (<code>PasswordAuthentication yes</code>), e só a conta de testes pode entrar.</td>
+<td><code>test_ligar_da_os_comandos_esperados</code></td>
+</tr>
+<tr>
+<td>D-717: conta separada, sem administrador, escondida da tela de entrada</td>
+<td>A conta entra só no grupo Usuários e é escondida pelo registro do Windows.</td>
+<td><code>test_ligar_da_os_comandos_esperados</code></td>
+</tr>
+<tr>
+<td>Dizer "Não" ao Windows não muda nada</td>
+<td>Nada é instalado, a opção fica desligada e aparece um aviso em português.</td>
+<td><code>test_disse_nao_nada_e_instalado</code></td>
+</tr>
+<tr>
+<td>Desligar fecha a entrada</td>
+<td>Para o serviço, tira ele da partida do Windows, apaga a regra do firewall e desativa a conta.</td>
+<td><code>test_desligar_para_o_servico_e_fecha_a_entrada</code></td>
+</tr>
+<tr>
+<td>D-722: desfazer tudo no fim do teste (é a etapa 5)</td>
+<td>A lista do que desfazer está pronta, mas não foi rodada.</td>
+<td><code>test_desfazer_tira_a_conta_e_o_openssh</code></td>
+</tr>
+<tr>
+<td>A senha nunca aparece no comando</td>
+<td>No comando, a senha vai como um nome (<code>$SenhaDosTestes</code>). O texto da senha chega por fora.</td>
+<td><code>test_a_senha_nunca_aparece_no_comando</code></td>
+</tr>
+</tbody>
+</table>
+<h2>Caminho → função (a regra fica num lugar só)</h2>
+<table>
+<thead>
+<tr>
+<th>Caminho</th>
+<th>Função</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>A janela da senha na primeira abertura</td>
+<td><code>core.testes_a_distancia.ligar</code></td>
+</tr>
+<tr>
+<td>A caixinha das Configurações, ao marcar</td>
+<td><code>core.testes_a_distancia.ligar</code></td>
+</tr>
+<tr>
+<td>A caixinha das Configurações, ao desmarcar</td>
+<td><code>core.testes_a_distancia.desligar</code></td>
+</tr>
+<tr>
+<td>O botão "Pôr a senha dos testes"</td>
+<td><code>core.testes_a_distancia.ligar</code></td>
+</tr>
+</tbody>
+</table>
+<p>Todos os caminhos usam a mesma função, e os comandos saem de um lugar só
+(<code>plano_de_ligar</code> e <code>plano_de_desligar</code>).</p>
+<h2>Prioridade baixa ou normal (D-716)</h2>
+<p>Isso fica com quem pede o teste. O programa não precisou mudar. Ao entrar de longe, a gerente
+começa o comando com <code>start "" /belownormal /wait ...</code> para prioridade baixa, ou sem esse pedaço
+para normal. O Windows passa a mesma prioridade para tudo o que esse comando abrir. Sem dizer nada,
+roda em baixa.</p>
+<h2>Testes</h2>
+<ul>
+<li><strong>No PC:</strong> <code>test_decisoes_testes_a_distancia.py</code> passou inteiro (11 de 11).
+  <code>test_configuracoes_em_partes.py</code> passou (2 de 2). O <code>test_promessas.py</code> foi <strong>parado no meio</strong> por
+  ordem da gerente, e o resultado dele não se sabe.</li>
+<li><strong>No GitHub:</strong> rodada <strong>43895649793</strong>, ainda sem resultado.</li>
+</ul>
+<h2>Ressalvas (só se provam na etapa 5, no PC do Samuel)</h2>
+<ul>
+<li>A parte que roda de verdade no Windows (a pergunta de administrador e a senha passada cifrada)
+  <strong>nunca foi rodada</strong>. Os testes só conferem os comandos e os botões da tela.</li>
+<li>O nome da placa de rede "Tailscale" e os endereços IPv6 dele precisam ser conferidos.</li>
+<li><strong>Antivírus (D-725):</strong> se ele reclamar da conta escondida, a saída é liberar só essa conta.
+  Nada foi feito no antivírus.</li>
+<li>Que a conta de testes não enxerga a pasta do Kaique é uma regra do Windows. Só se prova num
+  Windows de verdade. Atenção às pastas soltas no disco, por exemplo uma pasta de livros direto
+  no D:.</li>
+</ul>
+<h2>Bugs para a Lista de bugs</h2>
+<p>Nenhum achado.</p>
+<h2>Perguntas para o Samuel</h2>
+<p><strong>Do que se trata:</strong> o que acontece com a conta de testes escondida e com o comando de longe quando o
+programa for tirado do notebook do Kaique.
+<strong>Como está hoje:</strong> não há decisão. Ao tirar o programa, os dois ficariam no notebook.
+<strong>O que você escolhe:</strong>
+- (a) tirar o programa apaga a conta de testes e tira o comando de longe. A sugestão é esta, para
+  nada escondido ficar para trás;
+- (b) deixar os dois como estão;
+- Só comentário.</p>
+<p>Nada do que já funciona muda com essa escolha. Nesta etapa, nada foi feito nisso.</p>
+<p class="rodape">Editor de Impressão &middot; gerado em 16/11/2026 às 11:26</p>
+</body>
+</html>
