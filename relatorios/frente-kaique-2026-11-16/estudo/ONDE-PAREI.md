@@ -36,11 +36,11 @@ do programa muda; nada é instalado no Windows nem no `.venv`.**
 ## Andamento
 
 - [x] Leitura das regras, do plano, das decisões, de `empacotar.py`, `instalador.iss`, `main.py`.
-- [ ] Pesquisa A (atualização): tufup, Velopack, PyUpdater, WinSparkle, Inno + verificador.
-- [ ] Teste de instalação dos pacotes num ambiente virtual novo (pasta `estudo/venv-teste`, fora do git).
-- [ ] Pesquisa B (OpenSSH, firewall, conta, prioridade, UAC).
-- [ ] Pesquisa C (o que falta no empacotamento).
-- [ ] Documento `docs/pesquisa/atualizacao-e-testes-a-distancia.md`.
+- [x] Pesquisa A (atualização): tufup, Velopack, PyUpdater, WinSparkle, Inno + verificador, MSIX.
+- [x] Teste de instalação dos pacotes num ambiente virtual novo (pasta `estudo/venv-teste`, fora do git).
+- [x] Pesquisa B (OpenSSH, firewall, conta, prioridade, UAC).
+- [x] Pesquisa C (o que falta no empacotamento).
+- [x] Documento `docs/pesquisa/atualizacao-e-testes-a-distancia.md`.
 - [ ] Relatório nos três formatos + plano das etapas 3 e 4.
 
 ## Perguntas para o Samuel
