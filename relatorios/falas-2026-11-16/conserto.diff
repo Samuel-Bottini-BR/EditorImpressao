@@ -1,0 +1,417 @@
+--- /c/Users/fotog/.claude/scripts/falas_da_conversa.antes-2026-11-16.py	2026-11-16 14:27:33.273280700 -0400
++++ /c/Users/fotog/.claude/scripts/falas_da_conversa.py	2026-11-16 14:36:27.900479300 -0400
+@@ -1,120 +1,294 @@
+-"""Tira de uma conversa salva do Claude Code as mensagens do usuário (e, se pedido, as respostas).
+-
+-Usado pelo /checkpoint: o resumo para a próxima conversa tem de nascer das palavras de verdade,
+-não da lembrança da conversa (que é cortada quando a conversa enche e vira um resumo).
+-
+-Uso:
+-    python -I falas_da_conversa.py [--desde AAAA-MM-DDTHH:MM] [--com-respostas] [--conversa ARQUIVO.jsonl]
+-
+-Sem --conversa, usa a conversa mais recente (a atual) da pasta do projeto em ~/.claude/projects.
+---desde usa horário UTC (o mesmo dos arquivos .jsonl); sem ele, lista a conversa inteira.
+-A saída vai para a tela em UTF-8: uma linha por mensagem, com a hora, e marca quando havia imagem.
+-"""
+-import argparse
+-import glob
+-import json
+-import os
+-import sys
+-
+-PASTA = os.path.join(os.path.expanduser("~"), ".claude", "projects")
+-
+-
+-def conversa_mais_recente():
+-    arquivos = [f for f in glob.glob(os.path.join(PASTA, "*", "*.jsonl"))]
+-    if not arquivos:
+-        sys.exit("Nenhuma conversa salva encontrada em " + PASTA)
+-    return max(arquivos, key=os.path.getmtime)
+-
+-
+-def texto_da_mensagem(conteudo):
+-    if isinstance(conteudo, str):
+-        return conteudo, 0, False
+-    partes, imagens, e_resultado = [], 0, False
+-    for x in conteudo or []:
+-        if not isinstance(x, dict):
+-            continue
+-        if x.get("type") == "text":
+-            partes.append(x.get("text", ""))
+-        elif x.get("type") == "image":
+-            imagens += 1
+-        elif x.get("type") == "tool_result":
+-            e_resultado = True
+-    return "\n".join(partes), imagens, e_resultado
+-
+-
+-RUIDO = ("<task-notification", "<system-reminder", "Another Claude session sent",
+-         "This session is being continued", "[Request interrupted", "<command-message>",
+-         "<local-command", "[Image: source")
+-
+-
+-def main():
+-    ap = argparse.ArgumentParser()
+-    ap.add_argument("--desde", default="")
+-    ap.add_argument("--com-respostas", action="store_true")
+-    ap.add_argument("--conversa", default="")
+-    ap.add_argument("--todas", action="store_true",
+-                    help="todas as conversas mexidas depois de --desde, da mais velha para a mais nova")
+-    a = ap.parse_args()
+-    sys.stdout.reconfigure(encoding="utf-8")
+-    if a.todas:
+-        arquivos = sorted(glob.glob(os.path.join(PASTA, "*", "*.jsonl")), key=os.path.getmtime)
+-        if a.desde:
+-            import datetime
+-            limite = datetime.datetime.fromisoformat(a.desde).replace(
+-                tzinfo=datetime.timezone.utc).timestamp()
+-            arquivos = [f for f in arquivos if os.path.getmtime(f) >= limite]
+-        for f in arquivos:
+-            listar(f, a)
+-    else:
+-        listar(a.conversa or conversa_mais_recente(), a)
+-
+-
+-def listar(arquivo, a):
+-    print(f"# Conversa: {arquivo}\n")
+-    # 1a passada: textos que viraram mensagem normal, para não repetir a mesma mensagem da fila.
+-    normais = set()
+-    for linha in open(arquivo, encoding="utf-8"):
+-        try:
+-            d = json.loads(linha)
+-        except ValueError:
+-            continue
+-        if d.get("type") == "user" and isinstance(d.get("message"), dict):
+-            t, _, r = texto_da_mensagem(d["message"].get("content"))
+-            if not r:
+-                normais.add(t.strip())
+-    for linha in open(arquivo, encoding="utf-8"):
+-        try:
+-            d = json.loads(linha)
+-        except ValueError:
+-            continue
+-        if d.get("isSidechain") or d.get("isMeta"):
+-            continue
+-        hora = d.get("timestamp", "")[:16]
+-        if a.desde and hora < a.desde:
+-            continue
+-        papel = d.get("type")
+-        # Mensagem mandada enquanto o Claude ainda trabalhava: fica gravada como "queue-operation".
+-        if papel == "queue-operation" and d.get("operation") == "enqueue":
+-            conteudo = d.get("content")
+-            texto = conteudo if isinstance(conteudo, str) else texto_da_mensagem(conteudo)[0]
+-            if texto.strip() and texto.strip() not in normais and not texto.strip().startswith(RUIDO):
+-                print(f"[{hora}] SAMUEL (no meio do trabalho): {texto.strip()}\n")
+-            continue
+-        msg = d.get("message")
+-        if papel not in ("user", "assistant") or not isinstance(msg, dict):
+-            continue
+-        texto, imagens, e_resultado = texto_da_mensagem(msg.get("content"))
+-        if e_resultado or not texto.strip():
+-            continue
+-        if papel == "user":
+-            limpo = texto.strip()
+-            if limpo.startswith(RUIDO):
+-                continue
+-            extra = f" [+{imagens} print(s)]" if imagens else ""
+-            print(f"[{hora}] SAMUEL{extra}: {limpo}\n")
+-        elif a.com_respostas:
+-            print(f"[{hora}] CLAUDE: {texto.strip()}\n")
+-
+-
+-if __name__ == "__main__":
+-    main()
++"""Tira de uma conversa salva do Claude Code as mensagens do usuário (e, se pedido, as respostas).
++
++Usado pelo /checkpoint (passo 2a) e pelo /projeto (passo 5): o resumo para a próxima conversa tem de
++nascer das palavras de verdade, não da lembrança da conversa (que é cortada quando a conversa enche e
++vira um resumo).
++
++Uso:
++    python -I falas_da_conversa.py [--desde AAAA-MM-DDTHH:MM] [--com-respostas] [--conversa ARQUIVO.jsonl] [--todas]
++
++Sem --conversa, usa a conversa mais recente (a atual) da pasta do projeto em ~/.claude/projects.
++--todas lista todas as conversas mexidas depois de --desde, da mais velha para a mais nova.
++--desde usa horário UTC (o mesmo dos arquivos .jsonl); sem ele, lista a conversa inteira.
++A saída vai para a tela em UTF-8: uma linha por mensagem, com a hora, e marca quando havia imagem:
++    [hora] SAMUEL: ...                                  mensagem normal
++    [hora] SAMUEL (no meio do trabalho): ...            mandada enquanto o Claude trabalhava
++    [hora] SAMUEL [+N print(s)]: ...                    com imagem
++    [hora] CLAUDE: ...                                  resposta (só com --com-respostas)
++
++CONSERTO DE 16/11/2026 (o original está em falas_da_conversa.antes-2026-11-16.py)
++--------------------------------------------------------------------------------
++O defeito: o script decidia o que é fala do Samuel pelo JEITO como a linha foi gravada, cada jeito com
++a sua conta. As falas mandadas no meio do trabalho só eram lidas na linha "queue-operation"/"enqueue",
++que nas versões novas do Claude Code vem SEM texto; o texto vai para (a) a linha "queue-operation"/
++"remove" com reason "absorbed_mid_turn", (b) o anexo "attachment" do tipo "queued_command" (com
++origin.kind "human" e os prints) e (c) a cópia do pedido à API ("api-request-blob", papel user, junto
++de um tool_result), num bloco que começa com "The user sent a new message while you were working:".
++Nenhum desses era lido, então nenhuma fala do meio do trabalho saía. E os relatórios de agentes
++("<agent-message ...>"), que também passam pela fila, saíam como "SAMUEL (no meio do trabalho)"
++(defeito anotado em 14/11), e o aviso do navegador colado antes da fala saía junto com ela.
++
++O conserto (CLAUDE.md §11.12, uma regra num lugar só):
++- e_fala_do_samuel() é A REGRA, e todos os jeitos de gravar passam por ela: é fala dele o que tem
++  origem humana (origin.kind == "human", gravado na mensagem normal e no anexo queued_command); quando
++  o registro não diz a origem (remove, enqueue, cópia da API), vale o texto não ser aviso do programa.
++- AVISOS é a lista única dos avisos do programa, aplicada bloco por bloco: o bloco de aviso cai e o
++  texto dele fica (antes, "<browser_instruction>...\\n1" saía inteiro como fala).
++- ler_registro() só traduz cada jeito de gravar em (origem, blocos, prints, no meio?, id); não decide.
++- Sem repetir: a mesma fala do meio do trabalho pode estar em até quatro lugares. Sai uma vez só, de
++  preferência pelo anexo (tem os prints); o "remove" de mesmo id é pulado; as cópias sem id (enqueue
++  antigo, cópia da API) só saem se o texto não apareceu em nenhum outro lugar, nem dentro de uma
++  mensagem normal (a fila às vezes junta duas falas numa mensagem só). A cópia da API também junta
++  duas falas seguidas num bloco só: dela sai só o pedaço que não é fala já conhecida (_o_que_falta).
++
++Seguro mudar: a lista AVISOS (acrescentar aviso novo do Claude Code). Arriscado: o formato das linhas
++impressas (o /checkpoint e o /projeto leem "SAMUEL" e "(no meio do trabalho)") e a ordem de preferência
++do "sem repetir". Teste: D:\\programas\\EditorImpressao\\relatorios\\falas-2026-11-16\\teste_falas.py
++(ramo falas-2026-11-16), rodado com python -I.
++"""
++import argparse
++import datetime
++import glob
++import json
++import os
++import re
++import sys
++
++PASTA = os.path.join(os.path.expanduser("~"), ".claude", "projects")
++
++# Avisos que o Claude Code (ou o navegador, o editor, um agente) põe na conversa e que NÃO são fala do
++# Samuel. Lista única, usada por todos os jeitos de gravar (bloco por bloco).
++AVISOS = ("<task-notification", "<agent-message", "<system-reminder", "Another Claude session sent",
++          "This session is being continued", "[Request interrupted", "<command-message>",
++          "<command-name>", "<command-args>", "<local-command", "[Image: source", "[Image: original",
++          "<browser_instruction", "<ide_opened_file", "<ide_selection",
++          "<artifact-content-authored-by-others")
++
++# Começo do bloco com que o Claude Code entrega ao modelo uma fala mandada no meio do trabalho.
++MARCA_MEIO = "The user sent a new message while you were working:"
++FIM_MARCA_MEIO = "\n\nThis is how Claude Code surfaces"
++
++
++def conversa_mais_recente():
++    """A conversa .jsonl mexida por último (a atual)."""
++    arquivos = [f for f in glob.glob(os.path.join(PASTA, "*", "*.jsonl"))]
++    if not arquivos:
++        sys.exit("Nenhuma conversa salva encontrada em " + PASTA)
++    return max(arquivos, key=os.path.getmtime)
++
++
++def blocos_do_conteudo(conteudo):
++    """Separa o conteúdo de uma mensagem em (blocos de texto, nº de imagens, tem tool_result?)."""
++    if isinstance(conteudo, str):
++        return [conteudo], 0, False
++    textos, imagens, e_resultado = [], 0, False
++    for x in conteudo or []:
++        if not isinstance(x, dict):
++            continue
++        if x.get("type") == "text":
++            textos.append(x.get("text", ""))
++        elif x.get("type") == "image":
++            imagens += 1
++        elif x.get("type") == "tool_result":
++            e_resultado = True
++    return textos, imagens, e_resultado
++
++
++def texto_da_mensagem(conteudo):
++    """Compatível com a versão antiga: (texto juntado, nº de imagens, tem tool_result?)."""
++    textos, imagens, e_resultado = blocos_do_conteudo(conteudo)
++    return "\n".join(textos), imagens, e_resultado
++
++
++def e_fala_do_samuel(origem, blocos):
++    """A REGRA: devolve o texto da fala do Samuel, ou None se o registro não é fala dele.
++
++    origem: o origin.kind gravado ("human", "peer", "task-notification"...) ou None quando o jeito de
++    gravar não diz a origem. Origem conhecida e não humana nunca é fala dele. Em todo caso, os blocos
++    que são aviso do programa (AVISOS) caem; se não sobra texto, não é fala.
++    """
++    if origem is not None and origem != "human":
++        return None
++    ficam = [b.strip() for b in blocos if b and b.strip() and not b.strip().startswith(AVISOS)]
++    return "\n".join(ficam) if ficam else None
++
++
++def ler_registro(d):
++    """Traduz uma linha do .jsonl em uma candidata a fala, sem decidir nada.
++
++    Devolve dict(origem, blocos, imagens, meio, id, sem_id) ou None se a linha não carrega fala de
++    usuário. "meio" = mandada no meio do trabalho; "id" = o id da fala na fila (para não repetir);
++    "sem_id" = cópia sem id (só sai se o texto não aparecer em outro lugar).
++    """
++    tipo = d.get("type")
++    if tipo == "user":
++        if d.get("isSidechain") or d.get("isMeta") or not isinstance(d.get("message"), dict):
++            return None
++        textos, imagens, e_resultado = blocos_do_conteudo(d["message"].get("content"))
++        if e_resultado:  # resultado de ferramenta: só vale o bloco da fala do meio do trabalho
++            return _da_marca_meio(textos)
++        origem = d.get("origin")
++        origem = origem.get("kind") if isinstance(origem, dict) else None
++        return dict(origem=origem, blocos=textos, imagens=imagens, meio=False, id=None, sem_id=False)
++    if tipo == "attachment":
++        a = d.get("attachment") or {}
++        if a.get("type") != "queued_command":
++            return None
++        origem = a.get("origin")
++        origem = origem.get("kind") if isinstance(origem, dict) else None
++        textos, imagens, _ = blocos_do_conteudo(a.get("prompt"))
++        return dict(origem=origem, blocos=textos, imagens=imagens, meio=True,
++                    id=a.get("source_uuid"), sem_id=False)
++    if tipo == "queue-operation":
++        conteudo = d.get("content")
++        if not isinstance(conteudo, str):
++            return None
++        if d.get("operation") == "remove" and d.get("reason") == "absorbed_mid_turn":
++            return dict(origem=None, blocos=[conteudo], imagens=0, meio=True,
++                        id=d.get("commandUuid"), sem_id=False)
++        if d.get("operation") == "enqueue":
++            return dict(origem=None, blocos=[conteudo], imagens=0, meio=True, id=None, sem_id=True)
++        return None
++    if tipo == "api-request-blob":
++        m = d.get("message") or {}
++        if m.get("role") != "user":
++            return None
++        textos, _, _ = blocos_do_conteudo(m.get("content"))
++        return _da_marca_meio(textos)
++    return None
++
++
++def _da_marca_meio(textos):
++    """Fala do meio do trabalho entregue ao modelo dentro de um bloco com MARCA_MEIO (sem id)."""
++    falas = []
++    for t in textos:
++        if t.startswith(MARCA_MEIO):
++            falas.append(t[len(MARCA_MEIO):].split(FIM_MARCA_MEIO)[0])
++    if not falas:
++        return None
++    return dict(origem=None, blocos=falas, imagens=0, meio=True, id=None, sem_id=True)
++
++
++def _norm(s):
++    return re.sub(r"\s+", " ", s).strip()
++
++
++def _o_que_falta(texto, conhecidos):
++    """Tira de uma cópia sem id as falas já conhecidas e devolve só o que sobrar ("" = nada novo).
++
++    A cópia da API junta numa linha só, separadas por quebra de linha, as falas que chegaram juntas
++    no meio do trabalho ("e o 12 também\\n3 agentes"). Cada trecho de linhas inteiras que já é uma
++    fala conhecida (mesmo texto, ignorando espaços) sai; o resto é fala nova. Nunca corta dentro de
++    uma linha, para não estragar o texto quando uma fala curta ("sim") aparece dentro de outra.
++    """
++    linhas = texto.split("\n")
++    sobra, i = [], 0
++    while i < len(linhas):
++        for j in range(len(linhas), i, -1):
++            if _norm("\n".join(linhas[i:j])) in conhecidos:
++                i = j
++                break
++        else:
++            sobra.append(linhas[i])
++            i += 1
++    return "\n".join(sobra).strip()
++
++
++def main():
++    ap = argparse.ArgumentParser()
++    ap.add_argument("--desde", default="")
++    ap.add_argument("--com-respostas", action="store_true")
++    ap.add_argument("--conversa", default="")
++    ap.add_argument("--todas", action="store_true",
++                    help="todas as conversas mexidas depois de --desde, da mais velha para a mais nova")
++    a = ap.parse_args()
++    sys.stdout.reconfigure(encoding="utf-8")
++    if a.todas:
++        arquivos = sorted(glob.glob(os.path.join(PASTA, "*", "*.jsonl")), key=os.path.getmtime)
++        if a.desde:
++            limite = datetime.datetime.fromisoformat(a.desde).replace(
++                tzinfo=datetime.timezone.utc).timestamp()
++            arquivos = [f for f in arquivos if os.path.getmtime(f) >= limite]
++        for f in arquivos:
++            listar(f, a)
++    else:
++        listar(a.conversa or conversa_mais_recente(), a)
++
++
++def _linhas(arquivo):
++    for linha in open(arquivo, encoding="utf-8"):
++        try:
++            yield json.loads(linha)
++        except ValueError:
++            continue
++
++
++def falas(arquivo):
++    """Gera (hora, papel, texto, imagens, meio) de uma conversa, na ordem do arquivo, sem repetir.
++
++    papel é "SAMUEL" ou "CLAUDE". A decisão de ser fala do Samuel é sempre de e_fala_do_samuel().
++    """
++    # 1a passada: o que já se sabe da conversa, para as cópias não repetirem a mesma fala.
++    ids_do_anexo, textos_com_id, normais = set(), set(), []
++    for d in _linhas(arquivo):
++        r = ler_registro(d)
++        if not r:
++            continue
++        texto = e_fala_do_samuel(r["origem"], r["blocos"])
++        if texto is None:
++            continue
++        if not r["meio"]:
++            normais.append(_norm(texto))
++        elif r["id"]:
++            textos_com_id.add(_norm(texto))
++            if d.get("type") == "attachment":
++                ids_do_anexo.add(r["id"])
++    ja_saiu_id, ja_saiu_texto = set(), set()
++    hora = ""
++    for d in _linhas(arquivo):
++        hora = d.get("timestamp", "")[:16] or hora  # a cópia da API não tem hora: vale a da linha anterior
++        if d.get("type") == "assistant":
++            if not isinstance(d.get("message"), dict) or d.get("isSidechain") or d.get("isMeta"):
++                continue
++            texto, _, _ = texto_da_mensagem(d["message"].get("content"))
++            if texto.strip():
++                yield hora, "CLAUDE", texto.strip(), 0, False
++            continue
++        r = ler_registro(d)
++        if not r:
++            continue
++        texto = e_fala_do_samuel(r["origem"], r["blocos"])
++        if texto is None:
++            continue
++        if r["meio"]:
++            if r["id"]:
++                if r["id"] in ja_saiu_id or (d.get("type") != "attachment" and r["id"] in ids_do_anexo):
++                    continue
++                ja_saiu_id.add(r["id"])
++            else:
++                if any(_norm(texto) in m for m in normais):
++                    continue
++                texto = _o_que_falta(texto, textos_com_id | ja_saiu_texto | set(normais))
++                if not texto:
++                    continue
++            ja_saiu_texto.add(_norm(texto))
++        yield hora, "SAMUEL", texto, r["imagens"], r["meio"]
++
++
++def listar(arquivo, a):
++    """Imprime as falas de uma conversa no formato que o /checkpoint e o /projeto leem."""
++    print(f"# Conversa: {arquivo}\n")
++    for hora, papel, texto, imagens, meio in falas(arquivo):
++        if a.desde and hora < a.desde:
++            continue
++        if papel == "CLAUDE":
++            if a.com_respostas:
++                print(f"[{hora}] CLAUDE: {texto}\n")
++            continue
++        marca = " (no meio do trabalho)" if meio else ""
++        extra = f" [+{imagens} print(s)]" if imagens else ""
++        print(f"[{hora}] SAMUEL{marca}{extra}: {texto}\n")
++
++
++if __name__ == "__main__":
++    main()
