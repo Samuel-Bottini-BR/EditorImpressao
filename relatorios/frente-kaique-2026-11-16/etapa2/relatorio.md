@@ -95,9 +95,18 @@ clicando, abre; "Continuar" leva à área de trabalho com a página 2 "apagada" 
 Faixa azul: o PDF do programa de 28/10. Faixa verde: o mesmo livro aberto e processado no programa empacotado de hoje.
 As quatro primeiras folhas do PDF de cadernos.
 
-**O que mudou para quem usa:** só a tela. O livro antigo agora abre primeiro na tela do livro aberto (com "Continuar",
-"Rodar o automático...", "Confirmar e processar...") antes da área de trabalho. Isso é das decisões novas da obra, não
-defeito. Nada do trabalho dele se perde.
+**O que mudou para quem usa** (olho e máquina, conferido de novo com print das duas versões). Corrigido: na primeira
+versão deste relatório escrevi que o livro antigo "agora" abre primeiro na tela do livro aberto. **Isso estava
+errado: o programa de 28/10 já abria assim.** Nas duas versões o caminho é o mesmo e as telas são iguais ponto por
+ponto: "Seus livros", clique no livro, a tela do livro aberto (com "Continuar", "Rodar o automático...", "Confirmar e
+processar..."), "Continuar", a área de trabalho. A única diferença é na barra de baixo da área de trabalho: hoje há o
+botão "marcações" (pedido de 29/10, D-580) e a setinha da qualidade da prévia (pedido de 04/11, D-620); por falta de
+espaço, o nome do livro aparece encurtado ("righ..."). Nada do trabalho dele se perde.
+
+![telas ao abrir](item3/telas-ao-abrir-28-10-e-hoje.png)
+
+Faixa azul: programa de 28/10. Faixa verde: programa empacotado de hoje. As mesmas três telas na mesma ordem; em
+vermelho, a única diferença (a barra de baixo, ampliada no fim).
 
 ## 4. O que o empacotamento de hoje precisa mudar para o Velopack (conferido no código, sem mudar)
 

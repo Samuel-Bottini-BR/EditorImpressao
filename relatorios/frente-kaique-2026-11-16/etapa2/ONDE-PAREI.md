@@ -151,3 +151,13 @@ Cópia à parte do código de 28/10: `.claude\worktrees\kaique-etapa2-antigo` (H
 ## Perguntas para o Samuel
 
 (nenhuma até agora)
+
+## Prova pedida pela gerente (16/11, ~12:45): as telas ao abrir o livro do item 3, 28/10 x hoje
+
+- Cópia `kaique-etapa2-antigo` recriada (`3961fbff`, junções), as duas versões rodadas na área escondida com cópias da
+  pasta de dados do item 3 (`saida_teste/etapa2/telas/`), script `scripts/telas_ao_abrir.py`.
+- Resultado: **as três telas são iguais ponto por ponto** ("Seus livros" > clique > tela do livro aberto com
+  "Continuar" > área de trabalho). Só muda a barra de baixo da área de trabalho: botão "marcações" (D-580) e a setinha da
+  qualidade da prévia (D-620); o nome do livro encurta. Imagem: `item3/telas-ao-abrir-28-10-e-hoje.png` (aberta).
+- A frase errada do relatório ("agora abre primeiro na tela do livro aberto") foi corrigida e o relatório refeito.
+- Cópia à parte tirada de novo (junções com Delete(); modelos 18, gabarito\paginas 64); nada aberto.
