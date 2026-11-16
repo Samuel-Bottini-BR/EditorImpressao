@@ -37,19 +37,21 @@
 
 **Desempenho** (D-707): fica para a Fase 5, não entra nesta frente.
 
-## O que falta você responder (5 perguntas, uma por vez no chat)
+## As 5 perguntas, já respondidas (16/11)
 
-1. **Se a atualização falhar, volta para a versão antiga?** Sugestão: sim.
-2. **O aviso de reiniciar tem os botões "Reiniciar agora" e "Depois"?** Com "Depois", a versão entra na próxima vez
-   que o computador ligar. Sugestão: sim.
-3. **Como a senha dos testes chega ao notebook dele?** A opção vem ligada de fábrica, mas o programa não sabe a sua
-   senha. Sugestão: na primeira vez que o programa abre, uma janela pequena pede "a senha dos testes à distância", e o
-   Kaique digita a que você passar a ele. Sem essa senha, os testes à distância ficam desligados.
-4. **Onde testar antes de mandar.** A instalação e uma atualização de mentira dá para testar numa pasta de teste no
-   seu PC, sem mexer em nada seu. Mas ligar o comando de longe muda o Windows de quem testa: instala o OpenSSH e cria
-   a conta de testes. Sugestão: testar no seu PC e desfazer tudo no fim, com a lista do que foi desfeito.
-5. **O que o Kaique tem instalado hoje.** Para garantir que a versão nova abre os projetos que ele já tem, preciso
-   saber qual versão está no notebook dele. Sugestão: ele manda um print da tela "Sobre" ou do menu Ajuda.
+1. Se a atualização falhar, volta para a versão anterior: "Sim, e tem que avisar a gente de alguma maneira". O aviso
+   (opção "1"): na tela do Kaique, "A atualização não deu certo. O programa voltou para a versão anterior e continua
+   funcionando. Avise o Samuel.", e o erro vai para um registro que a gerente lê daqui. Nenhuma senha dentro do
+   programa (D-718, D-719).
+2. O aviso de reiniciar tem "Reiniciar agora" e "Depois"; com "Depois", entra na próxima vez que o computador ligar:
+   "Sim" (D-720).
+3. A senha dos testes: uma janela pequena na primeira abertura pede "a senha dos testes à distância"; o Kaique digita
+   a que o Samuel passar; sem ela, os testes à distância ficam desligados e a senha pode entrar depois nas
+   Configurações: "ok" (D-721).
+4. Testar antes no PC do Samuel e desfazer tudo no fim, com a lista do que foi desfeito: "Sim" (D-722).
+5. A versão que o Kaique tem: "a ultima vesão foi a que eu deixei na minha area de trabalho o .exe lá". É o
+   instalador feito em 28/10 da versão de teste daquele dia (ramo `obra-2026-10-26`, perto do `3961fbff`); a versão
+   de teste de hoje tem mais de 600 salvamentos depois dele. A etapa 2 confere que um projeto salvo por ela abre igual.
 
 ## As etapas
 
