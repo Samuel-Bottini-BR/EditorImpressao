@@ -1,0 +1,257 @@
+<!doctype html>
+<html lang="pt-BR">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Atualização sozinha e testes à distância: o estudo</title>
+<style>
+:root { color-scheme: light dark; }
+* { box-sizing: border-box; }
+body {
+  font: 17px/1.65 "Segoe UI", system-ui, sans-serif;
+  max-width: 46rem; margin: 0 auto; padding: 2.5rem 1.5rem 6rem;
+  color: #1c1c1e; background: #fdfdfc;
+}
+h1 { font-size: 2rem; line-height: 1.2; margin: 0 0 .3em; letter-spacing: -.02em; }
+h2 { font-size: 1.35rem; margin: 2.4em 0 .6em; padding-top: .8em;
+     border-top: 1px solid #e6e4e0; letter-spacing: -.01em; }
+h3 { font-size: 1.1rem; margin: 1.8em 0 .4em; }
+h1 + p, h2 + p { margin-top: .4em; }
+p, li { margin: 0 0 .9em; }
+ul, ol { padding-left: 1.3em; }
+strong { font-weight: 640; }
+code {
+  font: .88em ui-monospace, "Cascadia Code", Consolas, monospace;
+  background: #f1efec; padding: .12em .35em; border-radius: 4px;
+}
+pre {
+  background: #f1efec; padding: 1em 1.1em; border-radius: 8px;
+  overflow-x: auto; line-height: 1.5;
+}
+pre code { background: none; padding: 0; }
+blockquote {
+  margin: 1.2em 0; padding: .1em 0 .1em 1.1em;
+  border-left: 3px solid #c9c5be; color: #55524d;
+}
+table {
+  border-collapse: collapse; width: 100%; margin: 1.2em 0;
+  font-size: .95rem; display: block; overflow-x: auto;
+}
+th, td { padding: .5em .8em; text-align: left; border-bottom: 1px solid #e6e4e0; }
+th { font-weight: 620; background: #f7f5f2; white-space: nowrap; }
+tr:last-child td { border-bottom: none; }
+img { max-width: 100%; height: auto; border-radius: 6px; margin: 1em 0;
+      border: 1px solid #e6e4e0; }
+hr { border: none; border-top: 1px solid #e6e4e0; margin: 2.5em 0; }
+.rodape { margin-top: 4em; padding-top: 1.2em; border-top: 1px solid #e6e4e0;
+          font-size: .85rem; color: #86827c; }
+@media (prefers-color-scheme: dark) {
+  body { color: #e8e6e3; background: #1a1917; }
+  h2 { border-top-color: #35332f; }
+  code, pre, th { background: #262421; }
+  th, td { border-bottom-color: #35332f; }
+  blockquote { border-left-color: #4a4741; color: #b0aca6; }
+  img { border-color: #35332f; }
+  .rodape { border-top-color: #35332f; color: #7d7973; }
+}
+@media print {
+  body { max-width: none; padding: 0; color: #000; background: #fff; }
+  h2 { page-break-after: avoid; }
+  table, img { page-break-inside: avoid; }
+}
+</style>
+</head>
+<body>
+<h1>Atualização sozinha e testes à distância: o estudo</h1>
+<p><strong>O que é:</strong> o estudo que você pediu antes de mexer no programa, para deixar o notebook do Kaique pronto. Ele
+responde duas coisas: com qual ferramenta pronta o programa vai se atualizar sozinho pela internet, e como o programa
+liga e desliga os testes que você vai fazer de longe no notebook dele. <strong>Nada do programa mudou.</strong> Nada foi instalado
+no Windows. Feito em 16/11/2026.</p>
+<p><strong>Situação de agora:</strong> só estudo. Falta você escolher a ferramenta e o tipo de assinatura (no fim). Depois disso vem a
+parte de empacotar e instalar numa pasta de teste, e só então a construção, com o plano que está no fim desta página.</p>
+<p>Não há prints aqui porque nenhuma tela mudou ainda. Os prints vêm quando houver a janela do aviso e a opção nas
+Configurações.</p>
+<hr />
+<h2>1. A atualização sozinha</h2>
+<p><strong>O que o Kaique vai ver.</strong> Na primeira vez, ele instala como hoje. Depois, nunca mais instala nada. Toda vez que o
+notebook liga, o programa procura a versão nova por trás, sem janela. Se o programa estiver fechado, a versão nova
+entra ali mesmo, e na próxima vez que ele abrir já é a nova. Se estiver aberto, aparece o aviso para salvar e
+reiniciar, com "Reiniciar agora" e "Depois". Os livros e os projetos dele nunca são tocados: ficam numa pasta à parte,
+que a atualização não mexe.</p>
+<p><strong>A ferramenta recomendada: Velopack.</strong> É de graça e de código aberto (licença MIT, que só pede manter o aviso de
+quem fez). Está sendo atualizada: a última versão é de setembro de 2026. É a continuação do atualizador que o Slack e
+o Discord usaram.</p>
+<p>Por que ela:</p>
+<ul>
+<li>Funciona com o nosso Python e com o jeito que o programa é empacotado hoje. Eu instalei e abri ela num teste à parte.</li>
+<li>Baixa só os arquivos que mudaram. Se só o programa mudou, o detector de linhas (a parte de 1,2 GB) não é baixado de
+  novo.</li>
+<li>Troca a versão de uma vez só. Se a troca der errado no meio, ela devolve a versão anterior sozinha. Isso eu li no
+  código dela.</li>
+<li>Busca as versões direto no GitHub do projeto, sem senha nenhuma dentro do programa.</li>
+</ul>
+<p><strong>A outra candidata séria: tufup.</strong> Também é de graça. Tem uma assinatura muito boa, conferida pelo próprio programa.
+Mas tem três problemas para nós:</p>
+<ul>
+<li>Com o nosso Python, ela só instalou depois de eu compilar uma peça à mão.</li>
+<li>Ela copia a versão nova por cima da velha. Se parar no meio, o programa fica metade novo, metade velho, e não volta.</li>
+<li>O "baixar só o que mudou" dela é feito no programa inteiro de uma vez. Com 1,9 GB, isso leva horas. Na prática, o
+  Kaique baixaria uns 600 MB a cada versão.</li>
+</ul>
+<p><strong>As que ficaram de fora.</strong> O PyUpdater foi abandonado em 2022. O WinSparkle baixa o instalador inteiro e só funciona
+com o programa aberto. O jeito do Windows (o mesmo que o Slack usa hoje) instala o programa separado para cada pessoa
+do computador, e aí a conta dos seus testes não teria o mesmo programa do Kaique.</p>
+<p><strong>Como os programas grandes fazem a atualização quando o computador liga.</strong> O Chrome e o Edge deixam uma tarefa do
+Windows que roda quando o computador liga, com licença do próprio sistema, e por isso não perguntam nada a ninguém.
+Nenhuma ferramenta pronta faz essa parte sozinha: em todas, é uma tarefa do Windows. O instalador cria essa tarefa uma
+vez, na primeira instalação, aproveitando a licença que o Kaique já dá ao instalar.</p>
+<p><strong>O que muda com o Velopack, além da atualização:</strong></p>
+<ul>
+<li>O instalador de hoje é trocado pelo instalador do próprio Velopack. O Kaique continua vendo uma instalação comum, no
+  mesmo lugar do computador.</li>
+<li>A peça da Microsoft que o programa precisa (o Visual C++) passa a ser baixada da internet na instalação, em vez de ir
+  dentro do instalador.</li>
+<li>O Kaique já tem o programa instalado (o de 28/10). A primeira instalação nova precisa tirar a antiga antes, para não
+  ficarem dois.</li>
+<li>Quando ele clicar em "Reiniciar agora", o Windows pode perguntar "Deseja permitir que este aplicativo faça
+  alterações?". Vou tentar evitar essa pergunta no plano; se não der, é só ele clicar em "Sim". Com "Depois", não
+  aparece pergunta nenhuma.</li>
+</ul>
+<p><strong>O que eu não consigo garantir com nenhuma ferramenta.</strong> Se a versão nova se instalar certinho, mas tiver um defeito
+nosso que a impeça de abrir, nenhuma das duas volta sozinha. O plano resolve isso assim: depois de instalar, o
+programa faz um teste rápido escondido. Se falhar, ele pede a versão anterior ao próprio Velopack, que tem esse
+recurso. Aí aparece para o Kaique: "A atualização não deu certo. O programa voltou para a versão anterior e continua
+funcionando. Avise o Samuel."</p>
+<h2>2. A assinatura que prova que o arquivo é nosso</h2>
+<p>Você decidiu que a versão vem do GitHub com uma assinatura. Com o Velopack, isso tem um detalhe.</p>
+<p>O que o Velopack já faz sozinho: confere se o arquivo chegou inteiro. Isso <strong>não</strong> prova que é nosso. Se alguém
+entrasse na conta do GitHub, poderia publicar uma versão falsa, e ela também chegaria "inteira".</p>
+<p>Há dois jeitos de provar que é nosso:</p>
+<ul>
+<li><strong>De graça:</strong> o seu PC assina cada versão com uma chave que só ele tem. O programa do Kaique leva só a parte
+  pública da chave e confere antes de instalar. É o mesmo método que o Mac usa nos programas dele e que o tufup usa.
+  Ninguém mais consegue fazer uma versão que passe.</li>
+<li><strong>Pago:</strong> um certificado de assinatura do Windows. Ele tira o aviso "editor desconhecido" e faz os antivírus
+  desconfiarem menos. Tem custo todo ano e pede comprovar identidade. O serviço barato da Microsoft (10 dólares por
+  mês) não aceita pessoas do Brasil. Existe um serviço grátis para programas de código aberto, mas ele exige que o
+  programa seja montado inteiro no GitHub, e hoje partes dele são montadas no seu PC.</li>
+</ul>
+<h2>3. Os testes à distância</h2>
+<p><strong>O que o Kaique vai ver.</strong> Na primeira vez que abrir o programa novo, uma janela pequena pede "a senha dos testes à
+distância". Ele digita a que você passar. Logo depois, o Windows faz <strong>uma</strong> pergunta: "Deseja permitir que este
+aplicativo faça alterações no seu dispositivo?". Ele clica em "Sim", e está pronto. Se clicar em "Não", nada é
+instalado, os testes ficam desligados, e dá para ligar depois nas Configurações. Ele não vê mais nada: nem a conta de
+testes na tela de entrada, nem janela do programa quando você testa de longe.</p>
+<p><strong>O que o programa faz com esse "Sim", tudo com o que o próprio Windows traz:</strong></p>
+<ul>
+<li>instala o comando de longe do Windows (Servidor OpenSSH);</li>
+<li>deixa ele ligando sozinho com o Windows;</li>
+<li>fecha a porta para todo mundo e abre só para a rede do Tailscale, nem o Wi-Fi da casa entra;</li>
+<li>cria a conta só dos testes, sem poder de administrador, com a senha digitada, escondida da tela de entrada;</li>
+<li>deixa entrar por ali <strong>só</strong> essa conta (nem a conta do Kaique entra de longe).</li>
+</ul>
+<p><strong>Home ou Pro.</strong> Não se sabe qual Windows o notebook tem. Não faz diferença: tudo isso existe no Windows 11 Home e no
+Pro.</p>
+<p><strong>Prioridade baixa ou normal.</strong> O Windows faz isso sozinho: quando um programa começa em prioridade baixa, tudo o que
+ele abre por baixo também fica em baixa. Basta o seu pedido de teste começar em baixa (ou normal, se você disser).</p>
+<p><strong>Desligar.</strong> Na opção das Configurações: o comando de longe para, deixa de ligar com o Windows, a porta fecha, e a
+conta de testes fica desativada, com os projetos de teste guardados.</p>
+<p><strong>Os riscos, sem esconder:</strong></p>
+<ul>
+<li><strong>Parece vírus.</strong> Conta escondida, mais porta de comando, mais regra de firewall, é exatamente como um vírus de
+  acesso remoto trabalha. O antivírus do notebook pode reclamar ou bloquear. Ajuda ter a opção à vista nas
+  Configurações e o programa assinado.</li>
+<li><strong>Senha.</strong> Só quem está na sua rede do Tailscale chega até a porta. Lembrete: o Tailscale do seu PC está entrando
+  na conta do servidor de livros, então quem estiver nessa rede também chega à porta (ainda precisa da senha).</li>
+<li><strong>Pastas fora da conta.</strong> A conta de testes não enxerga a pasta pessoal do Kaique. Mas pastas soltas no disco (por
+  exemplo uma pasta de livros direto no disco) costumam ficar abertas para qualquer conta. O teste final tem de olhar
+  onde ele guarda os livros.</li>
+</ul>
+<p><strong>Como fazem os programas de suporte remoto</strong> (TeamViewer, AnyDesk). Eles não abrem porta: o computador liga para
+fora, num servidor deles. Usam uma senha que o dono define. E mostram um aviso na tela enquanto alguém está conectado.
+O nosso jeito também não abre porta para a internet (o Tailscale faz o papel do servidor do meio) e não mostra a tela
+do Kaique, só roda comandos. O que eles têm e o nosso não: o aviso visível de "alguém está conectado".</p>
+<hr />
+<h2>O que você escolhe</h2>
+<p><strong>Pergunta 1. Qual ferramenta de atualização?</strong></p>
+<ul>
+<li><strong>Velopack (sugestão).</strong> Volta sozinho se a troca falhar, baixa só o que mudou, já lê o GitHub. Muda o instalador.
+  Nada do que já funciona no programa muda.</li>
+<li><strong>tufup.</strong> Mantém o instalador de hoje e tem a assinatura completa pronta. Mas não volta se falhar no meio, e o
+  Kaique baixa uns 600 MB por versão.</li>
+<li><strong>Só comentário.</strong></li>
+</ul>
+<p><strong>Pergunta 2. Que assinatura?</strong></p>
+<ul>
+<li><strong>A de graça, conferida pelo programa (sugestão).</strong> Prova que a versão é sua. Não tira o aviso "editor
+  desconhecido" do Windows.</li>
+<li><strong>A de graça mais um certificado pago do Windows.</strong> Prova que é sua e tira o aviso. Tem custo todo ano e precisa
+  comprovar identidade. Dá para acrescentar depois, se o antivírus do Kaique reclamar.</li>
+<li><strong>Só comentário.</strong></li>
+</ul>
+<p><strong>Ainda não decidido, para depois:</strong> o que acontece com a conta de testes e o comando de longe se um dia o programa for
+desinstalado do notebook.</p>
+<hr />
+<h2>O plano das próximas etapas (com o Velopack)</h2>
+<p>Cada etapa só começa com o seu "sim". Nenhum agente abre janela na sua tela. Tudo é provado primeiro no seu PC, numa
+pasta de teste, e desfeito no fim.</p>
+<h3>Etapa 3. A atualização</h3>
+<p><strong>O que muda, e onde:</strong></p>
+<ol>
+<li>O programa passa a saber a própria versão (hoje ele não sabe).</li>
+<li>No começo do programa, entra o Velopack e um modo escondido "procurar versão nova", que roda sem janela.</li>
+<li>No empacotamento: o programa é empacotado como hoje, e o Velopack monta o instalador e os pacotes de atualização.
+   As conferências de hoje (modelos, detectores, peças) continuam travando, agora antes de montar.</li>
+<li>Um comando nosso para publicar a "versão para o Kaique" no GitHub, de propósito, nunca a cada salvamento. Ele
+   assina, sobe e confere.</li>
+<li>A tarefa do Windows que roda quando o computador liga.</li>
+<li>O aviso "Reiniciar agora / Depois", a mensagem de quando falha, e um registro do erro num lugar que a gerente
+   consegue ler de longe.</li>
+<li>A primeira instalação nova tira a instalação antiga do Kaique.</li>
+</ol>
+<p><strong>Por quê:</strong> é o que você decidiu. Cada parte é da ferramenta pronta ou do próprio Windows. O que é nosso é só a cola
+entre elas.</p>
+<p><strong>Riscos:</strong></p>
+<ul>
+<li>Os testes que hoje conferem o instalador antigo deixam de valer. Nenhum é mudado calado: o plano lista quais saem e
+  por quê, e você diz "sim".</li>
+<li>O disco precisa de espaço para duas versões durante a troca (perto de 4 GB por alguns minutos).</li>
+<li>O antivírus pode demorar na primeira abertura depois de atualizar, como já acontece hoje com o detector de linhas.</li>
+<li>Falta confirmar no seu PC que a tarefa do Windows aplica sem perguntar nada.</li>
+</ul>
+<p><strong>Como provar:</strong></p>
+<ul>
+<li>Publicar uma versão de mentira, religar o computador de teste, e o programa abre na versão nova, com os projetos
+  iguais.</li>
+<li>Abrir o programa antes, publicar, e ver o aviso. "Depois", religar, e abre a nova.</li>
+<li>Publicar uma versão de mentira estragada de propósito, e ver ela voltar para a anterior, com a mensagem na tela e o
+  erro no registro.</li>
+<li>Uma versão com a assinatura errada é recusada.</li>
+<li>Tudo o que já funcionava no programa continua igual: todos os testes do GitHub passando.</li>
+</ul>
+<h3>Etapa 4. Os testes à distância</h3>
+<p><strong>O que muda, e onde:</strong></p>
+<ol>
+<li>Nas Configurações, a opção "Deixar o Samuel fazer testes neste computador (pela rede do Tailscale)", ligada de
+   fábrica.</li>
+<li>Na primeira abertura, a janela da senha.</li>
+<li>Um ajudante que liga, desliga e desfaz tudo, com uma só pergunta do Windows, e anota o que fez.</li>
+<li>Um jeito de pedir cada teste em prioridade baixa ou normal (sem dizer, baixa).</li>
+</ol>
+<p><strong>Riscos:</strong> o antivírus reclamar; a senha nunca pode aparecer em lugar que outros programas leiam; pastas soltas no
+disco do Kaique.</p>
+<p><strong>Como provar:</strong></p>
+<ul>
+<li>Do seu PC, um comando de longe entra na conta de testes, roda a medida de velocidade e traz o resultado.</li>
+<li>Um comando tenta enxergar a pasta do Kaique (e a dos livros) e não consegue.</li>
+<li>Um comando de fora do Tailscale não entra.</li>
+<li>Desligar a opção fecha tudo.</li>
+<li>No fim, a lista do que foi desfeito no seu PC.</li>
+</ul>
+<hr />
+<p><strong>De onde veio:</strong> dos seus pedidos de 16/11 no chat. A comparação foi feita lendo a documentação e o código das
+ferramentas, e instalando as duas candidatas num teste à parte, fora do programa. O detalhe técnico, com os links,
+está no documento de pesquisa do projeto.</p>
+<p class="rodape">Editor de Impressão &middot; gerado em 16/11/2026 às 09:55</p>
+</body>
+</html>

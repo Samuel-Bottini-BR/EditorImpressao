@@ -41,8 +41,32 @@ do programa muda; nada é instalado no Windows nem no `.venv`.**
 - [x] Pesquisa B (OpenSSH, firewall, conta, prioridade, UAC).
 - [x] Pesquisa C (o que falta no empacotamento).
 - [x] Documento `docs/pesquisa/atualizacao-e-testes-a-distancia.md`.
-- [ ] Relatório nos três formatos + plano das etapas 3 e 4.
+- [x] Relatório nos três formatos + plano das etapas 3 e 4 (`relatorio.md/.html/.pdf`; o `.pdf` fora do git).
 
-## Perguntas para o Samuel
+**ENTREGUE em 16/11/2026.** Pesquisa: `docs/pesquisa/atualizacao-e-testes-a-distancia.md`.
 
-(nenhuma ainda)
+## Como cumpri cada uma
+
+- **D-705, D-711, D-712, D-716, D-717, D-721:** o estudo (§2 da pesquisa) usa só o OpenSSH do Windows, firewall preso à faixa e à placa do Tailscale, nenhuma porta dentro do programa, opção nas Configurações ligada de fábrica, instalador sem pergunta, senha (não chave), conta sem administrador escondida, prioridade baixa por padrão herdada pelos filhos (fonte Microsoft), e uma só pergunta do Windows na primeira abertura.
+- **D-706, D-713, D-714, D-715, D-718, D-719, D-720:** Velopack (pronta, MIT) lendo o GitHub público sem senha; tarefa SYSTEM ao ligar o PC; aviso "Reiniciar agora/Depois"; volta da versão anterior (troca: da ferramenta, lido no código; versão nova que não abre: `AllowVersionDowngrade` da ferramenta, a provar); registro em `C:\ProgramData` legível pela conta de testes; assinatura discutida em §1.6 (o Velopack sozinho só confere SHA-256).
+- **D-722:** nada instalado, nenhuma conta, nenhuma tarefa; o único teste foi um ambiente virtual novo em `estudo/venv-teste` (fora do git). Para o OpenSSH, só leitura (listar recursos pediu elevação e parei).
+- **CLAUDE.md §3 (consagrado):** só ferramentas prontas; "Inno + verificador nosso" descartado por isso.
+- Provas em `tests/test_decisoes.py`: não se aplicam (nenhuma linha do programa mudou).
+
+## Perguntas para o Samuel (formato do §11.13)
+
+**Pergunta 1. Qual ferramenta vai atualizar o programa sozinho pela internet?**
+Do que se trata: a parte do programa que, toda vez que o notebook do Kaique liga, procura a versão nova no GitHub e instala por trás. Situação: só estudo; nada construído. De onde veio: seu pedido de 16/11 ("como funciona com apps"); as duas candidatas foram instaladas num teste à parte.
+O que você escolhe:
+- **Velopack (sugestão).** Volta para a versão anterior se a troca falhar, baixa só o que mudou, já lê o GitHub. Troca o instalador de hoje pelo dele (o Kaique vê uma instalação comum). Nada do que já funciona no programa muda.
+- **tufup.** Mantém o instalador de hoje e já traz assinatura completa. Não volta se parar no meio, e o Kaique baixa uns 600 MB a cada versão.
+- **Só comentário.**
+
+**Pergunta 2. Que assinatura prova que a versão é sua?**
+Do que se trata: a "assinatura" que você pediu para a versão que vem do GitHub. Situação: só estudo. Como outros fazem: o Mac (Sparkle) e o tufup usam uma chave grátis conferida pelo programa; programas comerciais compram certificado do Windows.
+O que você escolhe:
+- **A de graça, conferida pelo programa (sugestão).** Ninguém mais consegue fazer uma versão que o programa aceite. Não tira o aviso "editor desconhecido" do Windows.
+- **A de graça mais um certificado pago do Windows.** Também tira o aviso e acalma antivírus; custo todo ano e comprovar identidade (o serviço barato da Microsoft não aceita pessoas do Brasil). Dá para acrescentar depois.
+- **Só comentário.**
+
+Sem print: nenhuma tela mudou ainda (os prints vêm com a janela do aviso e a opção nas Configurações).
