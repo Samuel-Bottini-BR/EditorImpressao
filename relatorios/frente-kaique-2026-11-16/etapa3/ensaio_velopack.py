@@ -58,6 +58,11 @@ ID_DO_ENSAIO = "EditorImpressaoEnsaio"
 CHAVE_DO_ENSAIO = bytes(range(100, 132))
 PUBLICA_DO_ENSAIO = assinatura.secret_to_public(CHAVE_DO_ENSAIO).hex()
 SEM_JANELA = getattr(subprocess, "CREATE_NO_WINDOW", 0)
+# Lidos ANTES de o ensaio trocar versao.ID_DO_PACOTE (1a rodada de 16/11: a
+# troca era feita antes da copia, e o programinha ficou com o nome do programa
+# de verdade; a volta procurou o arquivo errado).
+VERSAO_DO_PROGRAMA = versao.VERSAO
+ID_DO_PROGRAMA = versao.ID_DO_PACOTE
 
 APP = '''"""Programinha do ensaio: so a cola da atualizacao do Editor de Impressao."""
 import os, sys
@@ -85,8 +90,9 @@ def _fonte_do_programinha(destino: Path, numero: str, estragada: bool) -> Path:
     assert PUBLICA_DO_ENSAIO in texto
     (destino / "assinatura.py").write_text(texto, encoding="utf-8")
     texto = (RAIZ / "versao.py").read_text(encoding="utf-8")
-    texto = texto.replace(f'VERSAO = "{versao.VERSAO}"', f'VERSAO = "{numero}"')
-    texto = texto.replace(f'ID_DO_PACOTE = "{versao.ID_DO_PACOTE}"', f'ID_DO_PACOTE = "{ID_DO_ENSAIO}"')
+    texto = texto.replace(f'VERSAO = "{VERSAO_DO_PROGRAMA}"', f'VERSAO = "{numero}"')
+    texto = texto.replace(f'ID_DO_PACOTE = "{ID_DO_PROGRAMA}"', f'ID_DO_PACOTE = "{ID_DO_ENSAIO}"')
+    assert f'VERSAO = "{numero}"' in texto and f'ID_DO_PACOTE = "{ID_DO_ENSAIO}"' in texto
     (destino / "versao.py").write_text(texto, encoding="utf-8")
     (destino / "app.py").write_text(APP.format(estragada=estragada), encoding="utf-8")
     return destino / "app.py"
@@ -156,6 +162,18 @@ def main() -> int:
     # o pacote so pelo .exe (o programinha nao tem modelos nem DLLs)
     versao.ID_DO_PACOTE = ID_DO_ENSAIO
     empacotar.esperados_no_pacote_do_velopack = lambda pecas: ["EditorImpressao.exe"]
+    # O instalador .msi (o WiX leva ~5 min) so na 1a versao: as outras so
+    # precisam dos pacotes de atualizacao (notebook na bateria).
+    comando_completo = empacotar.comando_do_vpk
+
+    def sem_msi_depois_da_primeira(vpk, pasta, saida, numero):
+        comando = comando_completo(vpk, pasta, saida, numero)
+        if numero != "1.1.0":
+            i = comando.index("--msi")
+            comando = comando[:i] + comando[i + 3:] + ["--noInst"]
+        return comando
+
+    empacotar.comando_do_vpk = sem_msi_depois_da_primeira
     pub.RAIZ = PASTA / "fora-do-repositorio"   # a chave de mentira mora em build\ (rascunho)
     resultado: dict = {}
 
