@@ -26,3 +26,9 @@ onnxtr==0.9.0
 # O pyclipper alarga as caixas do docTR por dentro do OnnxTR: travado tambem,
 # na versao da comparacao do 1.3.
 pyclipper==1.4.0
+# A atualizacao pela internet (atualizacao.py; etapa 3 da frente do Kaique,
+# decisao D-723 "velopack"). Licenca MIT. Versao TRAVADA na mesma do vpk que
+# empacota (dotnet tool install -g vpk --version 1.2.161): as duas pontas tem
+# de falar o mesmo formato de pacote. Pelo codigo (.venv) o programa so a
+# importa quando foi instalado pelo Velopack.
+velopack==1.2.161
