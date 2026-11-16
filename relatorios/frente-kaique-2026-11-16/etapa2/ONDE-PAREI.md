@@ -77,10 +77,52 @@ Cópia à parte do código de 28/10: `.claude\worktrees\kaique-etapa2-antigo` (H
 - [x] Junção temporária criada; cópia de 28/10 criada com as junções.
 - [x] Teste da área escondida (janelinha): funciona.
 - [ ] 1. empacotar (rodando desde 10:54)
-- [ ] 2. abrir e processar no empacotado
-- [ ] 3. projeto de 28/10 na versão nova
-- [ ] 4. Velopack
-- [ ] relatório
+## PAUSA (ordem da gerente, ~11:25 de 16/11: o Samuel vai desligar o PC). Nenhum programa meu ficou aberto
+(o empacotado do item 2a foi fechado com WM_CLOSE; os servidores de páginas saíram junto; conferido).
+
+- [x] **1. Empacotar** (`empacotar.py --modo pasta`): **10 min 53 s** (646 s no script), **1889 MB** (603 MB de
+      `_internal`, o resto motor do Kraken e Tesseract), saiu 0; as duas DLLs do ScanTailor, os 4 modelos, o motor e o
+      Tesseract conferidos pelo próprio script. Um aviso do PyInstaller: `scipy.special._cdflib` não achado. Saída:
+      `dist/EditorImpressao/` desta cópia (fora do git). Log: `_tmp/empacotar-pasta.log`.
+- [x] **2b. `--conferir-ocr` no empacotado** (Palatino 57 e Horas 11; `saida_teste/etapa2/ocr/*.json`): os três
+      leitores disponíveis, achados dentro do `dist`; as mesmas contagens de linhas do empacotado de 29/09 (docTR
+      24/12, Tesseract 16/0, Kraken 17/16); detector de gravura do ScanTailor abre e lê. Kraken: 90-98 s para abrir o
+      motor (PC ocupado com outro teste ao mesmo tempo).
+- [x] **3a. Projeto feito pelo programa de 28/10** (código `3961fbff`, área escondida, dados em
+      `saida_teste/etapa2/antigo/dados`): Righetti 14 folhas (cópia), girar 1/4 à esquerda todas, Automático (Dividir,
+      Endireitar, Cortar, Limpar em Preto e branco, Montar cadernos) = 28 páginas; à mão: página 6 Mágico pro, página 8
+      corte à mão, página 10 gravura marcada à mão, página 2 tirada do livro. PDF em 61,6 s: "27 páginas, 2 cadernos,
+      14 folhas para imprimir". Cópia do PDF: `antigo/pdf-antes.pdf`. Prints `antigo/prints/01..04` (abertos).
+- [x] **3b. O mesmo projeto no EMPACOTADO de hoje** (pasta de dados copiada para `novo3/dados`): cartão "pronto, PDF
+      gerado"; tela do livro; "Continuar"; área de trabalho com a página 2 "apagada" e as conferidas com tique;
+      "Confirmar e processar" > "Antes de processar" > "continuar assim mesmo" > "Processar" > "Já existe" > "salvar
+      como ... (2)" > "Ficou pronto!" em 38 s; fechou com WM_CLOSE (saiu 0).
+      **Resultado (máquina):** PDF com as mesmas 14 folhas, mesmo tamanho, **imagem idêntica em todas** (diferença
+      0,0); no projeto.json nada mudou nem sumiu em folha ou página (só o caminho do PDF, pela escolha "(2)"); 8 campos
+      novos com valor neutro (capa_aberta false, linha_a_mao null, fundo_tirado null, giro_da_pagina 0,
+      gravura_achada_a_mao false, gravuras_em_tons_de_cinza false, inserida 0, respeitar_gravuras_achadas true).
+      Arquivos: `item3/projeto-comparado.txt`, `item3/pdf-comparado.json`, `item3/pdf-antes-depois.png` (aberto).
+      Prints do empacotado: `saida_teste/etapa2/novo3/prints/n01..n07` (abertos n02 e n03; faltam os outros).
+      Ressalva (igual antes e depois, não é regressão): sobra faixa preta na beirada esquerda das folhas 1 e 3 do PDF.
+- [ ] **2a. Livro novo no empacotado pelo caminho inteiro**: NÃO FEITO. Começou (`item2_novo.py`) e foi parado pela
+      ordem da gerente; `saida_teste/etapa2/novo2` ficou pela metade (criada por mim, pode ser apagada).
+- [ ] **4. Velopack** (achados só lendo, falta escrever por extenso): não há `.NET` nem `vpk` no PC; o programa não
+      sabe a própria versão (só `MinhaVersao` no `.iss`); `main.py` atende `--servidor-de-paginas` e `--conferir-ocr`
+      antes da janela (o `App().run()` do Velopack entra antes, e os servidores usam o mesmo `.exe`); `empacotar.py`
+      acha motor e Visual C++ por `RAIZ.parent/EditorImpressao-arquivos` (numa cópia de trabalho precisa de junção);
+      9 testes de `tests/test_empacotar.py` dependem do Inno; o programa só LÊ ao lado do `.exe` (motor-kraken,
+      tesseract), não grava ali (bom para a troca de pasta do Velopack).
+- [ ] relatório nos três formatos.
+
+## Próximo passo, ao recomeçar
+
+1. Conferir que nenhum `EditorImpressao.exe` ficou aberto; abrir as imagens de `novo3/prints` que faltam.
+2. Item 2a: apagar `saida_teste/etapa2/novo2` e rodar na área escondida:
+   `<py312> scripts/lancar.py EditorTesteEtapa2 l2.log <py312> scripts/item2_novo.py <dist>/EditorImpressao.exe
+   saida_teste/etapa2/novo2 saida_teste/etapa2/livros/righetti-folhas-21-a-30-de-pe.pdf` (caminhos absolutos;
+   py312 = Python 3.12 do sistema, que tem pywinauto). O `item2_novo.py` ainda não rodou até o fim: a janela
+   "Automático" pode precisar de ajuste (diálogos aparecem dentro da janela dona no leitor de tela).
+3. Item 4 por extenso; relatório com `relatorio.gravar`; commit e push; tirar as sobras abaixo.
 
 ## Sobras para tirar no fim (criadas por mim)
 
