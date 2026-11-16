@@ -107,18 +107,18 @@ com a versão nova" → `atualizacao.procurar_e_preparar`; "o que a tela avisa" 
 - [x] `empacotar.py`: funções do Velopack (achar_vpk, preparar_pasta_para_o_velopack, comando_do_vpk,
       conferir_pacote_do_velopack, construir_pacote_do_velopack). Sem teste; nenhum modo novo no argparse.
 - [x] `publicar_versao_kaique.py` (--criar-chave, --pasta, --pasta-pronta, --chave). Sem teste.
-- [ ] PRÓXIMO PASSO 1: `requirements.txt` ganha `velopack==1.2.161` (já instalado no `.venv`; o `vpk` 1.2.161 já está
+- [x] FEITO (passo 1, `3e0e8893`): `requirements.txt` ganha `velopack==1.2.161` (já instalado no `.venv`; o `vpk` 1.2.161 já está
       em `%USERPROFILE%\.dotnet\tools`, precisa de `DOTNET_ROOT=C:\Program Files\dotnet`).
-- [ ] PRÓXIMO PASSO 2: `tests/test_decisoes_atualizacao.py` com gerente falso (sem velopack): versão num lugar só;
+- [x] FEITO (passo 2, 38 passaram): `tests/test_decisoes_atualizacao.py` com gerente falso (sem velopack): versão num lugar só;
       assinatura errada recusada ANTES de baixar; programa aberto → "pendente" e aviso com os dois botões; "Depois" não
       troca; falha → FRASE_DA_FALHA uma vez + registro em PROGRAMDATA (monkeypatch); volta com pacote assinado; nenhum
       token no código; publicar para sem a chave e recusa chave dentro do repositório; portátil nunca tira o Inno; XML da
       tarefa. Depois, um arquivo por vez no PC: esse, `test_empacotar.py`, `test_botoes_em_portugues.py`, `test_requirements.py`.
-- [ ] PRÓXIMO PASSO 3: ensaio 1 → 2 com programinha de mentira (PyInstaller + vpk pack; ver se pede `--skipVeloAppCheck`),
+- [x] FEITO (passo 3, ensaio CERTO na 2a rodada; dois achados consertados): ensaio 1 → 2 com programinha de mentira (PyInstaller + vpk pack; ver se pede `--skipVeloAppCheck`),
       Portable.zip numa pasta de teste, versão 2 numa pasta-servidor, `--procurar-atualizacao --fonte <pasta>`; a volta
       (`Update.exe apply --package` com versão mais velha) e a assinatura errada. Nunca instalar em Arquivos de Programas
       nem criar tarefa (etapa 5).
-- [ ] PRÓXIMO PASSO 4: GitHub (conjunto + filtro de velocidade), relatório em três formatos, entrega.
+- [x] Relatório nos três formatos (`relatorio.md/.html/.pdf`). GitHub fora do ar hoje: conjunto inteiro e filtro de velocidade ficam para a gerente, no PC, com os agentes parados. ENTREGUE à gerente.
 
 Sobra minha fora do projeto (não apaguei, regra §10.9): `C:\Users\fotog\AppData\Local\Temp\x_never\` com um
 `velopack-1.2.161-...whl` baixado por engano às 11:05 de 16/11.
@@ -155,4 +155,4 @@ As nove conferências (para a gerente, `tests/test_empacotar.py`): `test_registr
 
 ## Ressalvas (para a etapa 5)
 
-(a preencher)
+Ver `relatorio.md` seção 8 (12 ressalvas).
