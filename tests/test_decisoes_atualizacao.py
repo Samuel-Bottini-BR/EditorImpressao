@@ -477,6 +477,32 @@ def test_d723_o_pacote_portatil_do_ensaio_nunca_mexe_no_windows(monkeypatch):
     atualizacao.preparar_o_computador(GerenteFalso(portatil=True))
 
 
+def test_d723_o_portatil_nunca_cria_nem_apaga_a_tarefa(monkeypatch):
+    """Achado no ensaio de 16/11: o gancho "depois de atualizar" do pacote
+    portatil tentou criar a tarefa no PC do Samuel (o Windows negou). Teste de
+    reversao: falha no codigo antigo (os ganchos nao olhavam o portatil)."""
+    monkeypatch.setattr(atualizacao, "criar_tarefa", lambda *a, **k: pytest.fail("criou a tarefa"))
+    monkeypatch.setattr(atualizacao, "apagar_tarefa", lambda *a, **k: pytest.fail("apagou a tarefa"))
+    atualizacao.ao_instalar("1.2.0", portatil=lambda: True)
+    atualizacao.ao_atualizar("1.2.0", portatil=lambda: True)
+    atualizacao.ao_desinstalar("1.2.0", portatil=lambda: True)
+    # e sem conseguir perguntar ao Velopack (pelo codigo), conta como portatil
+    class SemResposta:
+        def get_is_portable(self):
+            raise RuntimeError("não instalado")
+
+    assert atualizacao.e_portatil(SemResposta()) is True
+    assert atualizacao.e_portatil(GerenteFalso(portatil=False)) is False
+
+
+def test_d714_a_instalacao_de_verdade_cria_e_roda_a_tarefa(monkeypatch):
+    feito = []
+    monkeypatch.setattr(atualizacao, "criar_tarefa", lambda *a, **k: feito.append("criar") or True)
+    monkeypatch.setattr(atualizacao, "rodar_tarefa_agora", lambda *a, **k: feito.append("rodar") or True)
+    atualizacao.ao_instalar("1.2.0", portatil=lambda: False)
+    assert feito == ["criar", "rodar"]
+
+
 def test_d723_instalacao_de_verdade_prepara_o_computador(monkeypatch):
     feito = []
     monkeypatch.setattr(atualizacao, "tirar_instalacao_antiga", lambda *a, **k: feito.append("inno"))

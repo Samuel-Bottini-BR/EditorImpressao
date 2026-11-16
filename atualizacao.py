@@ -846,6 +846,21 @@ def tirar_instalacao_antiga(pasta_nova: Path, achar: Callable[[], dict | None] =
               f"(código {codigo}) {saida}")
 
 
+def e_portatil(gerente=None) -> bool:
+    """O programa e um pacote PORTATIL do Velopack (uma pasta solta, sem instalar)?
+
+    A UNICA regra de "mexer no Windows ou nao": portatil (o ensaio no PC do
+    Samuel) nunca cria tarefa, nunca roda o Visual C++, nunca tira o Inno.
+    Na duvida (nao deu para perguntar ao Velopack), conta como portatil: nao mexe.
+    Achado no ensaio de 16/11: o gancho "depois de atualizar" do pacote
+    portatil tentou criar a tarefa (o Windows negou; nada foi criado).
+    """
+    try:
+        return bool((gerente or criar_gerente(Fonte.padrao())).get_is_portable())
+    except Exception:  # noqa: BLE001
+        return True
+
+
 def preparar_o_computador(gerente) -> None:
     """O que a tarefa faz antes de procurar: Visual C++ e a instalacao antiga.
 
@@ -853,10 +868,7 @@ def preparar_o_computador(gerente) -> None:
     portatil no PC do Samuel, que tem uma instalacao do Inno de 01/09 que nao
     pode ser tirada por um ensaio.
     """
-    try:
-        if gerente.get_is_portable():
-            return
-    except Exception:  # noqa: BLE001
+    if e_portatil(gerente):
         return
     pasta = pasta_do_programa()
     instalar_visual_c_se_faltar(pasta)
@@ -867,21 +879,25 @@ def preparar_o_computador(gerente) -> None:
 # Os ganchos do Velopack e a entrada pela linha de comando
 # ---------------------------------------------------------------------------
 
-def ao_instalar(_versao: str) -> None:
-    """Gancho do Velopack, depois de instalar: cria a tarefa e a roda uma vez."""
+def ao_instalar(_versao: str, portatil: Callable[[], bool] = e_portatil) -> None:
+    """Gancho do Velopack, depois de instalar: cria a tarefa e a roda uma vez (nunca no portatil)."""
     registrar(f"instalada a versão {_versao}")
+    if portatil():
+        return
     if criar_tarefa():
         rodar_tarefa_agora()
 
 
-def ao_atualizar(_versao: str) -> None:
-    """Gancho do Velopack, depois de atualizar: refaz a tarefa (o XML pode ter mudado)."""
-    criar_tarefa()
+def ao_atualizar(_versao: str, portatil: Callable[[], bool] = e_portatil) -> None:
+    """Gancho do Velopack, depois de atualizar: refaz a tarefa (o XML pode ter mudado). Nunca no portatil."""
+    if not portatil():
+        criar_tarefa()
 
 
-def ao_desinstalar(_versao: str) -> None:
-    """Gancho do Velopack, antes de desinstalar: apaga a tarefa. Os projetos ficam."""
-    apagar_tarefa()
+def ao_desinstalar(_versao: str, portatil: Callable[[], bool] = e_portatil) -> None:
+    """Gancho do Velopack, antes de desinstalar: apaga a tarefa. Os projetos ficam. Nunca no portatil."""
+    if not portatil():
+        apagar_tarefa()
 
 
 def _rodar_o_velopack() -> None:
