@@ -1,0 +1,18 @@
+# projeto.json: 28/10 x hoje
+
+folhas: 14 -> 14; páginas: 28 -> 28
+
+## Valores que mudaram ou sumiram (1)
+
+MUDOU  projeto.caminho_saida: "D:\\programas\\EditorImpressao\\.claude\\worktrees\\kaique-etapa2\\saida_teste\\etapa2\\antigo\\saida\\righetti-14-folhas - cadernos.pdf"  ->  "D:\\programas\\EditorImpressao\\.claude\\worktrees\\kaique-etapa2\\saida_teste\\etapa2\\antigo\\saida\\righetti-14-folhas - cadernos (2).pdf"
+
+## Campos novos que o de hoje acrescentou (8; valor da primeira vez)
+
+NOVO   projeto.capa_aberta = false
+NOVO   projeto.folhas.linha_a_mao = null
+NOVO   projeto.paginas.fundo_tirado = null
+NOVO   projeto.paginas.giro_da_pagina = 0
+NOVO   projeto.paginas.gravura_achada_a_mao = false
+NOVO   projeto.paginas.gravuras_em_tons_de_cinza = false
+NOVO   projeto.paginas.inserida = 0
+NOVO   projeto.paginas.respeitar_gravuras_achadas = true
