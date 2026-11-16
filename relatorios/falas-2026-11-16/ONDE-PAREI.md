@@ -83,11 +83,25 @@ Ou seja: não há uma regra; há uma lista de exceções por jeito de gravar, e 
 ## Andamento
 
 - [x] Plano (este arquivo).
-- [ ] Script consertado.
-- [ ] Teste.
-- [ ] Prova na conversa de hoje e contagem.
-- [ ] Conferência das falas.
-- [ ] Relatório (três formatos), commit e push.
+- [x] Script consertado (`C:\Users\fotog\.claude\scripts\falas_da_conversa.py`; diferença em `conserto.diff`).
+  Achado no caminho: a cópia da API junta duas falas seguidas num bloco só ("e o 12 também\n3 agentes"); sai só o
+  pedaço que não é fala já conhecida (`_o_que_falta`, corta só em linhas inteiras).
+- [x] Teste: 17 de 17 no novo; 6 de 17 no antigo (`falas_da_conversa.antes-2026-11-16.py`).
+- [x] Prova na conversa de hoje: as duas falas saem (12:23 e 14:48). Total em todas as conversas: 103.
+- [x] Conferência das 103 falas: 78 registradas, 25 respondidas na hora, 0 decisões perdidas (4 pontos de atenção).
+- [x] Relatório (`relatorio.md/.html/.pdf`; o `.pdf` fica fora do git), commit e push.
+
+## Como cumpri cada decisão
+
+- **D-708, item 34:** plano escrito antes do código (este arquivo, commit `e3390150`); conferência de todas as falas do
+  meio do trabalho no relatório.
+- **§11.12:** uma regra só (`e_fala_do_samuel`) e uma lista só de avisos (`AVISOS`); cada jeito de gravar só traduz o
+  registro (`ler_registro`). Caminho → função:
+  mensagem normal → `ler_registro` → `e_fala_do_samuel`; anexo `queued_command` → idem; `remove` → idem;
+  `enqueue` → idem; cópia da API / `user` com `tool_result` → `_da_marca_meio` → `e_fala_do_samuel`.
+  Prova do mesmo resultado em todos: `teste_falas.py` (a mesma fala gravada nos quatro jeitos sai uma vez só).
+- **§11.7 / D-605:** saída e opções iguais; a comparação em todas as conversas mostra as mensagens normais iguais, menos
+  as 36 que traziam aviso do navegador/editor antes do texto (sai só o texto dele) e 1 aviso de conversa resumida.
 
 ## Perguntas para o Samuel
 
