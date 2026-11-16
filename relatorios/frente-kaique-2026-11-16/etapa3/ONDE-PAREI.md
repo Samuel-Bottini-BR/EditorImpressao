@@ -92,17 +92,39 @@ tarefa do Windows; a troca dos arquivos e a volta quando a troca falha são do p
 com a versão nova" → `atualizacao.procurar_e_preparar`; "o que a tela avisa" → `atualizacao.o_que_avisar`; falha →
 `atualizacao.registrar_falha`; programa aberto → `atualizacao.ha_programa_aberto` / `marcar_programa_aberto`.
 
-## Andamento
+## Andamento (PARADO em 16/11/2026 a pedido da gerente: o Samuel vai desligar o PC)
 
-- [ ] plano (este arquivo) — commit
-- [ ] versao.py + Inno lendo a versão
-- [ ] assinatura.py + vetores da RFC
-- [ ] atualizacao.py + testes
-- [ ] ui/aviso_de_atualizacao.py + main.py
-- [ ] empacotar.py (Velopack) + publicar_versao_kaique.py
-- [ ] chave de verdade criada fora do repositório
-- [ ] ensaio de mentira 1 → 2 (portátil, pasta de teste)
-- [ ] GitHub (conjunto + filtro de velocidade), relatório
+- [x] plano (este arquivo) — `87e8c712`
+- [x] `versao.py` (VERSAO = "1.1.0", ID_DO_PACOTE) + `instalador.iss` recebe a versão por `/DMinhaVersao=`
+      (`empacotar.comando_do_inno`) — `16c838a7`
+- [x] `assinatura.py` (Ed25519 da RFC 8032) + `tests/test_assinatura.py`: 16 passaram no PC (vetores da RFC certos).
+- [x] Chave de verdade criada em `C:\Users\fotog\AppData\Roaming\EditorImpressao-publicar\chave-privada-da-assinatura.txt`
+      (fora do repositório); a pública (`b2c4094c...f34a`) já está em `assinatura.CHAVE_PUBLICA_DO_SAMUEL`.
+      A gerente precisa guardar a cópia de reserva no HD externo D: (eu não copiei).
+- [x] `atualizacao.py` escrito (procurar_e_preparar, situacao, o_que_avisar, registrar_falha, voltar_para_a_anterior,
+      XML da tarefa, Visual C++, tirar o Inno, ganchos do Velopack, atender_linha_de_comando). AINDA SEM TESTE, NUNCA RODADO.
+- [x] `ui/aviso_de_atualizacao.py` + as duas chamadas no `main.py`. AINDA SEM TESTE.
+- [x] `empacotar.py`: funções do Velopack (achar_vpk, preparar_pasta_para_o_velopack, comando_do_vpk,
+      conferir_pacote_do_velopack, construir_pacote_do_velopack). Sem teste; nenhum modo novo no argparse.
+- [x] `publicar_versao_kaique.py` (--criar-chave, --pasta, --pasta-pronta, --chave). Sem teste.
+- [ ] PRÓXIMO PASSO 1: `requirements.txt` ganha `velopack==1.2.161` (já instalado no `.venv`; o `vpk` 1.2.161 já está
+      em `%USERPROFILE%\.dotnet\tools`, precisa de `DOTNET_ROOT=C:\Program Files\dotnet`).
+- [ ] PRÓXIMO PASSO 2: `tests/test_decisoes_atualizacao.py` com gerente falso (sem velopack): versão num lugar só;
+      assinatura errada recusada ANTES de baixar; programa aberto → "pendente" e aviso com os dois botões; "Depois" não
+      troca; falha → FRASE_DA_FALHA uma vez + registro em PROGRAMDATA (monkeypatch); volta com pacote assinado; nenhum
+      token no código; publicar para sem a chave e recusa chave dentro do repositório; portátil nunca tira o Inno; XML da
+      tarefa. Depois, um arquivo por vez no PC: esse, `test_empacotar.py`, `test_botoes_em_portugues.py`, `test_requirements.py`.
+- [ ] PRÓXIMO PASSO 3: ensaio 1 → 2 com programinha de mentira (PyInstaller + vpk pack; ver se pede `--skipVeloAppCheck`),
+      Portable.zip numa pasta de teste, versão 2 numa pasta-servidor, `--procurar-atualizacao --fonte <pasta>`; a volta
+      (`Update.exe apply --package` com versão mais velha) e a assinatura errada. Nunca instalar em Arquivos de Programas
+      nem criar tarefa (etapa 5).
+- [ ] PRÓXIMO PASSO 4: GitHub (conjunto + filtro de velocidade), relatório em três formatos, entrega.
+
+Sobra minha fora do projeto (não apaguei, regra §10.9): `C:\Users\fotog\AppData\Local\Temp\x_never\` com um
+`velopack-1.2.161-...whl` baixado por engano às 11:05 de 16/11.
+
+Lembrete: o GitHub não instala o velopack (`.github/requisitos-windows.txt`, ramo claude/list-server-files-gkos8v);
+por isso os testes usam gerente falso e o programa só importa o velopack quando foi instalado por ele.
 
 ## Perguntas para o Samuel
 
