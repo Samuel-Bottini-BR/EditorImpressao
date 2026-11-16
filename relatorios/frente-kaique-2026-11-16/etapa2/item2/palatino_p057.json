@@ -1,0 +1,95 @@
+{
+ "empacotado": true,
+ "executavel": "D:\\programas\\EditorImpressao\\.claude\\worktrees\\kaique-etapa2\\dist\\EditorImpressao\\EditorImpressao.exe",
+ "imagem": "D:\\programas\\EditorImpressao\\.claude\\worktrees\\kaique-etapa2\\gabarito\\paginas\\palatino_p057.png",
+ "ocrs": {
+  "doctr": {
+   "disponivel": true,
+   "motivo": null,
+   "detalhe_tecnico": null,
+   "linhas": 24,
+   "palavras": 70,
+   "perdidas": 0,
+   "segundos_na_pagina": 3.17,
+   "segundos_com_abrir": 27.46,
+   "modelo": "D:\\programas\\EditorImpressao\\.claude\\worktrees\\kaique-etapa2\\dist\\EditorImpressao\\_internal\\modelos\\doctr\\rep_fast_base-1b89ebf9.onnx",
+   "modelo_existe": true,
+   "onnxtr": "v0.9.0"
+  },
+  "tesseract": {
+   "disponivel": true,
+   "motivo": null,
+   "detalhe_tecnico": null,
+   "linhas": 16,
+   "palavras": 77,
+   "perdidas": 0,
+   "segundos_na_pagina": 6.0,
+   "segundos_com_abrir": 6.84,
+   "executavel": "D:\\programas\\EditorImpressao\\.claude\\worktrees\\kaique-etapa2\\dist\\EditorImpressao\\tesseract\\tesseract.exe",
+   "versao": "5.4.0.20240606",
+   "tessdata": "D:\\programas\\EditorImpressao\\.claude\\worktrees\\kaique-etapa2\\dist\\EditorImpressao\\tesseract\\tessdata",
+   "idiomas_na_tessdata": [
+    "eng",
+    "fra",
+    "ita",
+    "lat",
+    "por",
+    "script/Fraktur"
+   ]
+  },
+  "kraken": {
+   "disponivel": true,
+   "motivo": null,
+   "detalhe_tecnico": null,
+   "linhas": 17,
+   "palavras": null,
+   "perdidas": 0,
+   "segundos_na_pagina": 18.05,
+   "segundos_com_abrir": 116.71,
+   "motor": "D:\\programas\\EditorImpressao\\.claude\\worktrees\\kaique-etapa2\\dist\\EditorImpressao\\motor-kraken",
+   "abrir_segundos": 98.3,
+   "kraken": "7.1.1",
+   "python": "3.12.10",
+   "dlls_do_visual_c": [
+    "C:\\Windows\\System32\\msvcp140.dll",
+    "C:\\Windows\\System32\\msvcp140_atomic_wait.dll",
+    "C:\\Windows\\System32\\vcruntime140.dll",
+    "C:\\Windows\\System32\\vcruntime140_1.dll",
+    "C:\\Windows\\System32\\vcruntime140_threads.dll",
+    "D:\\programas\\EditorImpressao\\.claude\\worktrees\\kaique-etapa2\\dist\\EditorImpressao\\motor-kraken\\python\\Lib\\site-packages\\numpy.libs\\msvcp140-a4c2229bdc2a2a630acdc095b4d86008.dll",
+    "D:\\programas\\EditorImpressao\\.claude\\worktrees\\kaique-etapa2\\dist\\EditorImpressao\\motor-kraken\\python\\Lib\\site-packages\\pyarrow.libs\\msvcp140-d448dcabdad98c14abc6ff2741df95cd.dll",
+    "D:\\programas\\EditorImpressao\\.claude\\worktrees\\kaique-etapa2\\dist\\EditorImpressao\\motor-kraken\\python\\Lib\\site-packages\\pyarrow.libs\\msvcp140_atomic_wait-4bec1bd7c3f445519c6c93c879884a89.dll",
+    "D:\\programas\\EditorImpressao\\.claude\\worktrees\\kaique-etapa2\\dist\\EditorImpressao\\motor-kraken\\python\\Lib\\site-packages\\shapely.libs\\msvcp140-90bc62d4947a5878f1dc1057312f3be2.dll",
+    "D:\\programas\\EditorImpressao\\.claude\\worktrees\\kaique-etapa2\\dist\\EditorImpressao\\motor-kraken\\python\\Lib\\site-packages\\sklearn\\.libs\\msvcp140.dll",
+    "D:\\programas\\EditorImpressao\\.claude\\worktrees\\kaique-etapa2\\dist\\EditorImpressao\\motor-kraken\\python\\Lib\\site-packages\\sklearn\\.libs\\vcomp140.dll"
+   ],
+   "dlls_de_lugar_errado": []
+  }
+ },
+ "comparacao": {
+  "para_revisar": true,
+  "motivos": [
+   "O Tesseract achou texto nesta área e o docTR e o Kraken não: confira se há texto ou mancha.",
+   "O docTR e o Tesseract acharam texto nesta área e o Kraken não: confira se há texto ou mancha.",
+   "O Kraken achou texto em 2 lugares e o docTR e o Tesseract não: confira se há texto ou mancha.",
+   "O docTR e o Kraken acharam texto nesta área e o Tesseract não: confira se há texto ou mancha."
+  ],
+  "motores": [
+   "doctr",
+   "tesseract",
+   "kraken"
+  ]
+ },
+ "todos_leram": true,
+ "gravura_scantailor": {
+  "dll": "D:\\programas\\EditorImpressao\\.claude\\worktrees\\kaique-etapa2\\dist\\EditorImpressao\\_internal\\core\\nativo\\st_gravura.dll",
+  "dll_existe": true,
+  "disponivel": true,
+  "motivo": null,
+  "origem": "ScanTailor-Advanced/scantailor-advanced v1.2.1 (commit 5eaac1884cdc), Qt 6.11.1",
+  "leu": true,
+  "motivo_na_pagina": null,
+  "gravura_fracao": 0.0,
+  "segundos": 1.26
+ }
+}

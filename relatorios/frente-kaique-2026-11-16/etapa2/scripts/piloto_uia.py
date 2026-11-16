@@ -182,3 +182,29 @@ def descrever_tudo(pid: int, pasta: Path, nome: str):
             anotar("janela", [k, x.window_text()])
         except Exception as erro:
             anotar("erro ao descrever", str(erro))
+
+
+def clicar_ponto(janela_hwnd: int, x_tela: int, y_tela: int):
+    """Clique esquerdo por mensagens do Windows num ponto da tela (coordenadas da área escondida)."""
+    import win32api
+    import win32con
+    x, y = win32gui.ScreenToClient(janela_hwnd, (x_tela, y_tela))
+    lp = win32api.MAKELONG(x & 0xFFFF, y & 0xFFFF)
+    win32gui.PostMessage(janela_hwnd, win32con.WM_MOUSEMOVE, 0, lp); time.sleep(0.15)
+    win32gui.PostMessage(janela_hwnd, win32con.WM_LBUTTONDOWN, win32con.MK_LBUTTON, lp); time.sleep(0.1)
+    win32gui.PostMessage(janela_hwnd, win32con.WM_LBUTTONUP, 0, lp); time.sleep(0.6)
+    anotar("cliquei no ponto", [x, y])
+
+
+def teclas(janela_hwnd: int, texto: str = "", enter=False):
+    """Teclas por mensagens do Windows (WM_KEYDOWN/UP; o Qt traduz em letra)."""
+    import win32api
+    import win32con
+    for ch in texto:
+        vk = win32api.VkKeyScan(ch) & 0xFF
+        win32gui.PostMessage(janela_hwnd, win32con.WM_KEYDOWN, vk, 1); time.sleep(0.05)
+        win32gui.PostMessage(janela_hwnd, win32con.WM_KEYUP, vk, 0xC0000001); time.sleep(0.08)
+    if enter:
+        win32gui.PostMessage(janela_hwnd, win32con.WM_KEYDOWN, 0x0D, 1); time.sleep(0.05)
+        win32gui.PostMessage(janela_hwnd, win32con.WM_KEYUP, 0x0D, 0xC0000001)
+    time.sleep(0.8)

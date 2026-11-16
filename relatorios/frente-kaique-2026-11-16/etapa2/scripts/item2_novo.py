@@ -44,21 +44,45 @@ try:
     alvo = auto if auto is not None else w
     P.print_janela(alvo, prints / "i02-automatico-antes.png")
     P.descrever(alvo, prints / "i02-automatico-antes.txt")
-    for e in alvo.descendants(control_type="CheckBox"):
-        nome = e.element_info.name or ""
-        if not e.is_visible():
+    # As etapas são itens de uma lista com caixinha ("N  Nome" e, na linha de baixo, as opções e a situação). O "Toggle" do leitor
+    # de tela não muda a caixinha do Qt (testado: fica igual), então o clique é de verdade, por mensagem do
+    # Windows, em cima da caixinha (a uns 22 pontos da beirada esquerda do item).
+    hd = alvo.handle
+
+    def itens():
+        out = {}
+        for e in alvo.descendants(control_type="ListItem"):
+            nome = (e.element_info.name or "").splitlines()[0].strip() if e.element_info.name else ""
+            out[nome.split("  ", 1)[-1].strip()] = e
+        return out
+
+    for etapa in ("Dividir folhas ao meio", "Endireitar folhas tortas", "Cortar as bordas", "Limpar a folha",
+                  "Gravuras e fotos", "Margens iguais", "Montar cadernos"):
+        e = itens().get(etapa)
+        if e is None:
+            P.anotar("não achei a etapa", etapa)
             continue
-        quer = any(nome.startswith(x) for x in ETAPAS)
-        try:
-            ligada = e.get_toggle_state() == 1
-        except Exception:
-            ligada = None
-        if nome.split(" —")[0] in ("Dividir folhas ao meio", "Endireitar folhas tortas", "Cortar as bordas",
-                                   "Limpar a folha", "Gravuras e fotos", "Margens iguais", "Montar cadernos"):
-            if ligada is not None and ligada != quer:
-                e.toggle()
-                time.sleep(0.4)
-            P.anotar("caixinha", [nome, "era", ligada, "ficou", e.get_toggle_state()])
+        quer = etapa in ETAPAS
+        ligada = e.iface_toggle.CurrentToggleState == 1
+        if ligada != quer:
+            r = e.rectangle()
+            P.clicar_ponto(hd, r.left + 22, (r.top + r.bottom) // 2)
+            time.sleep(0.6)
+        P.anotar("caixinha", [etapa, "era", ligada, "ficou", itens()[etapa].iface_toggle.CurrentToggleState])
+    # o filtro da etapa Limpar: clicar no NOME da etapa (abre as opções dela no meio), depois na lista do
+    # filtro, e escolher "Preto e branco" pelo teclado (P + Enter), como quem digita a primeira letra
+    e = itens()["Limpar a folha"]
+    r = e.rectangle()
+    P.clicar_ponto(hd, r.left + 160, r.top + 18)
+    time.sleep(1.5)
+    P.print_janela(alvo, prints / "i02b-limpar-escolhida.png")
+    P.descrever(alvo, prints / "i02b-limpar-escolhida.txt")
+    # o "Jeito de limpar" são bolinhas (Original, Preto e branco, Melhorar, Mágico pro)
+    bolinha = P.achar(alvo, "Preto e branco", "RadioButton", limite=5)
+    r = bolinha.rectangle()
+    P.clicar_ponto(hd, r.left + 12, (r.top + r.bottom) // 2)
+    time.sleep(1.5)
+    P.anotar("frase do automático", P.achar(alvo, "Vou ", "Text", contem=True, limite=5).element_info.name)
     time.sleep(1)
     P.print_janela(alvo, prints / "i03-automatico-marcado.png")
     P.descrever(alvo, prints / "i03-automatico-marcado.txt")
@@ -68,11 +92,13 @@ try:
     botao.invoke()
     time.sleep(4)
     # espera a medida do Automático acabar (a tela de andamento some e a janela volta)
+    # (o "Confirmar e processar" exato é o da área de trabalho; o da tela do livro aberto tem "...")
     fim = time.time() + 900
     while time.time() < fim:
         try:
-            P.achar(w, "Continuar", "Button", limite=2)
-            break
+            P.achar(w, "olhando as páginas", "Text", contem=True, limite=1)
+            time.sleep(2)
+            continue
         except Exception:
             pass
         try:
@@ -80,6 +106,14 @@ try:
             break
         except Exception:
             pass
+        try:
+            c = P.achar(w, "Continuar", "Button", limite=1)
+            P.print_janela(w, prints / "i03b-voltou-ao-livro-aberto.png")
+            c.invoke()
+            P.anotar("apertei", "Continuar")
+        except Exception:
+            pass
+        time.sleep(1)
     P.anotar("automático rodou", round(time.time() - t1, 1))
     time.sleep(5)
     P.descrever_tudo(proc.pid, prints, "i04-depois-do-rodar")

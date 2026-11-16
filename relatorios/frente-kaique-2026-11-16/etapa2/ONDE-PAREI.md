@@ -77,6 +77,24 @@ Cópia à parte do código de 28/10: `.claude\worktrees\kaique-etapa2-antigo` (H
 - [x] Junção temporária criada; cópia de 28/10 criada com as junções.
 - [x] Teste da área escondida (janelinha): funciona.
 - [ ] 1. empacotar (rodando desde 10:54)
+## TERMINADO (retomado às ~12:05 de 16/11, ordem da gerente; entregue ~12:25)
+
+- [x] Imagens que faltavam abertas (novo3: n03-1, n05, n06, n07, n02b).
+- [x] **2a feito** no empacotado, na área escondida: Righetti folhas 21-30 (cópia de pé) > "Rodar o automático..." >
+      Dividir, Endireitar, Cortar, Limpar em Preto e branco (Gravuras desmarcada) > "Rodar 4 etapas" (17 s) >
+      "Confirmar e processar" > "Processar": PDF de 20 páginas em 11 s. Janela aparece ~23 s depois de abrir.
+      Achado do piloto: o "Toggle" do leitor de tela não marca as etapas do Automático; marcado por clique de verdade.
+      Ressalva/bug: faixa preta na beirada esquerda das páginas da esquerda (igual em 28/10). Antes, duas rodadas com a
+      receita de fábrica (sem Dividir, Original) guardadas em `saida_teste/etapa2/novo2-receita-de-fabrica` e
+      `tentativas/`.
+- [x] Item 4 escrito por extenso no relatório.
+- [x] Relatório nos três formatos: `relatorio.md`, `relatorio.html`, `relatorio.pdf` (fora do git). PRONTO PARA CONFERIR.
+- [x] Sobras tiradas: junção `EditorImpressao-arquivos` (Delete(); a pasta original continua com o motor e o
+      vc_redist); cópia `kaique-etapa2-antigo` (junções tiradas com Delete(): `modelos` 18 -> 18 arquivos,
+      `gabarito\paginas` 64 -> 64; depois `git worktree remove`); `build/` e `_tmp/` desta cópia (o log foi para
+      `saida_teste/etapa2/`). Nenhum `EditorImpressao.exe` aberto. Ficam de propósito, fora do git: `dist/` (o
+      empacotado, 1,9 GB) e `saida_teste/etapa2/` (dados, PDFs e prints), para a gerente ou a etapa 3.
+
 ## PAUSA (ordem da gerente, ~11:25 de 16/11: o Samuel vai desligar o PC). Nenhum programa meu ficou aberto
 (o empacotado do item 2a foi fechado com WM_CLOSE; os servidores de páginas saíram junto; conferido).
 
