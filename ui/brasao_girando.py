@@ -238,10 +238,42 @@ def _programa_vivo(pid: int):
     return vivo  # pragma: no cover
 
 
+# D-748: quanto o brasao espera, no maximo, a janelinha da atualizacao sumir
+# (ela olha a marca a cada 0,2 s; isto e so a seguranca se ela travar).
+ESPERA_DA_JANELINHA_S = 3.0
+
+
+def antes_de_mostrar(marcar=None, ha_janelinha=None, dormir=time.sleep,
+                     limite_s: float = ESPERA_DA_JANELINHA_S) -> None:
+    """D-748 (Samuel, 17/11/2026: "Sim"): a janelinha some quando o brasao aparece, nunca os dois juntos.
+
+    A regra e uma so, a marca de "programa aberto" (atualizacao.MARCA_DE_ABERTO),
+    a mesma que ja fazia a janelinha "Atualizando o programa..." (D-742) sumir
+    quando a janela principal abre:
+    1. o brasao poe essa marca (atualizacao.marcar_programa_aberto) - a
+       janelinha a ve e fecha, ou nem aparece;
+    2. so depois olha a marca da janelinha (atualizacao.ha_janelinha) e espera
+       ela sumir (no maximo `limite_s`) antes de mostrar a janela.
+    A janelinha faz o contrario na mesma ordem (pega a marca dela, depois olha
+    a de aberto): por isso nunca ficam os dois na tela. Na abertura comum nao
+    ha janelinha e nada espera.
+    `marcar`, `ha_janelinha`, `dormir` e `limite_s` so mudam nos testes.
+    """
+    import atualizacao
+
+    (marcar or atualizacao.marcar_programa_aberto)()
+    olhar = ha_janelinha or atualizacao.ha_janelinha
+    fim = time.monotonic() + limite_s
+    while olhar() and time.monotonic() < fim:
+        dormir(0.02)
+
+
 def rodar_sozinho(pid_do_programa: str | int) -> int:
     """O processo do brasao girando (main.py --brasao-girando <pid>).
 
-    Mostra a janela e gira ate: o programa fechar este processo (a janela
+    Antes de tudo, a marca de "programa aberto" e a espera da janelinha da
+    atualizacao (antes_de_mostrar, D-748). Mostra a janela e gira ate: o
+    programa fechar este processo (a janela
     principal apareceu, ui/tela_de_carregamento.py), o programa morrer, ou
     passar LIMITE_S. Nunca mostra erro: sem a imagem, so sai.
     """
@@ -249,6 +281,7 @@ def rodar_sozinho(pid_do_programa: str | int) -> int:
         pid = int(pid_do_programa)
     except (TypeError, ValueError):
         return 2
+    antes_de_mostrar()          # D-748: a janelinha da atualizacao sai antes
     QApplication.setHighDpiScaleFactorRoundingPolicy(Qt.HighDpiScaleFactorRoundingPolicy.PassThrough)
     app = QApplication.instance() or QApplication([sys.argv[0]])
     janela = BrasaoGirando()

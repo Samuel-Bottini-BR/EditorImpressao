@@ -153,6 +153,12 @@ ESPERA_DA_VOLTA_S = 60
 # A marca de "o programa esta aberto" (um mutex com nome, do Windows). A
 # janela cria; a tarefa (que roda como SYSTEM, em outra sessao) so consulta.
 MARCA_DE_ABERTO = "Global\\EditorImpressao-programa-aberto"
+# D-748 (Samuel, 17/11/2026: "Sim"): a janelinha da D-742 segura esta marca
+# (um mutex so da sessao do Kaique) do comeco ao fim. O brasao girando
+# (ui/brasao_girando.antes_de_mostrar) poe a MARCA_DE_ABERTO, que faz a
+# janelinha sumir, e so aparece quando esta marca sumiu: os dois nunca ficam
+# juntos na tela.
+MARCA_DA_JANELINHA = "Local\\EditorImpressao-janelinha"
 
 # Os textos da tela (portugues, sem jargao, sem emoji; CLAUDE.md §3).
 TITULO_DA_VERSAO_NOVA = "Versão nova do programa"
@@ -736,18 +742,35 @@ def marcar_programa_aberto() -> None:
     _MARCA = ctypes.windll.kernel32.CreateMutexW(None, False, MARCA_DE_ABERTO) or None
 
 
-def ha_programa_aberto() -> bool:
-    """Alguma janela do programa esta aberta (em qualquer conta)?"""
+def _marca_existe(nome: str) -> bool:
+    """O mutex `nome` existe agora (alguem o segura)? Fora do Windows: False."""
     if sys.platform != "win32":
         return False
     import ctypes
 
     kernel32 = ctypes.windll.kernel32
-    handle = kernel32.OpenMutexW(0x00100000, False, MARCA_DE_ABERTO)  # SYNCHRONIZE
+    handle = kernel32.OpenMutexW(0x00100000, False, nome)  # SYNCHRONIZE
     if handle:
         kernel32.CloseHandle(handle)
         return True
     return False
+
+
+def ha_programa_aberto() -> bool:
+    """Alguma janela do programa esta aberta (em qualquer conta)?
+
+    Desde 17/11/2026 (D-748), o brasao girando tambem conta: enquanto ele gira,
+    o programa esta abrindo, e o ajudante nao troca os arquivos por baixo dele.
+    """
+    return _marca_existe(MARCA_DE_ABERTO)
+
+
+def ha_janelinha() -> bool:
+    """A janelinha "Atualizando o programa..." (D-742) esta na tela, ou se montando? (D-748)
+
+    Le MARCA_DA_JANELINHA na hora da chamada (os testes trocam o nome).
+    """
+    return _marca_existe(MARCA_DA_JANELINHA)
 
 
 def _rodar(comando: list[str], tempo: int = 120) -> tuple[int, str]:
@@ -764,7 +787,8 @@ def _rodar(comando: list[str], tempo: int = 120) -> tuple[int, str]:
 # Trocar e reabrir: "Reiniciar agora" (D-720) e a abertura depois do "Depois" (D-734)
 # ---------------------------------------------------------------------------
 
-def script_da_janelinha(marca: str = MARCA_DE_ABERTO, limite_s: int | None = None) -> str:
+def script_da_janelinha(marca: str = MARCA_DE_ABERTO, limite_s: int | None = None,
+                        marca_da_janelinha: str | None = None) -> str:
     """D-742: o PowerShell da janelinha "Atualizando o programa, espere um pouco...".
 
     ONDE ELA VIVE: a troca acontece FORA do programa (o .exe tem de ter saido
@@ -784,12 +808,20 @@ def script_da_janelinha(marca: str = MARCA_DE_ABERTO, limite_s: int | None = Non
     Medido no PC do Samuel (17/11/2026): a primeira letra do Windows Forms
     num processo novo leva uns 5,5 s, entao a janelinha aparece uns 6 s
     depois de o programa sair; a etapa 5 mede no notebook.
-    `marca` e `limite_s` so mudam nos testes. Arriscado: ShowDialog em vez
-    de Show + DoEvents (o teste deixaria de poder trocar a janela por uma de
-    mentira) e tirar o limite (a janelinha ficaria para sempre se o programa
-    nao abrir).
+    D-748 (17/11/2026): a primeira coisa que ela faz e pegar a
+    MARCA_DA_JANELINHA, e so a solta depois de fechar. O brasao girando poe a
+    marca do programa aberto e espera esta sumir antes de aparecer. A ordem
+    (cada um poe a sua marca ANTES de olhar a do outro) garante que os dois
+    nunca ficam juntos: ou a janelinha ve o brasao e nem aparece, ou o brasao
+    ve a janelinha e espera ela fechar.
+    `marca`, `limite_s` e `marca_da_janelinha` so mudam nos testes.
+    Arriscado: ShowDialog em vez de Show + DoEvents (o teste deixaria de poder
+    trocar a janela por uma de mentira); tirar o limite (a janelinha ficaria
+    para sempre se o programa nao abrir); pegar a MARCA_DA_JANELINHA depois
+    de olhar a marca de aberto (os dois poderiam aparecer juntos).
     """
     limite = limite_s if limite_s is not None else LIMITE_DA_TROCA_S + ESPERA_DA_VOLTA_S + 120
+    minha = marca_da_janelinha if marca_da_janelinha is not None else MARCA_DA_JANELINHA
     return "\n".join([
         "$ErrorActionPreference = 'SilentlyContinue'",
         "Add-Type -AssemblyName System.Windows.Forms",
@@ -808,6 +840,8 @@ def script_da_janelinha(marca: str = MARCA_DE_ABERTO, limite_s: int | None = Non
         "$texto.TextAlign = 'MiddleCenter'",
         "$texto.Font = New-Object System.Drawing.Font('Segoe UI', 11)",
         "$janela.Controls.Add($texto)",
+        # D-748: a marca da janelinha ANTES de olhar se o programa ja abriu
+        f"$minha = [System.Threading.Mutex]::new($false, {_aspas_do_powershell(minha)})",
         "$aberto = $null",
         # o programa ja abriu enquanto a janelinha se montava: ela nem aparece (nada pisca)
         f"if ([System.Threading.Mutex]::TryOpenExisting({_aspas_do_powershell(marca)}, [ref]$aberto))"
@@ -822,6 +856,7 @@ def script_da_janelinha(marca: str = MARCA_DE_ABERTO, limite_s: int | None = Non
         "  }",
         "}",
         "$janela.Close()",
+        "$minha.Dispose()",
     ])
 
 

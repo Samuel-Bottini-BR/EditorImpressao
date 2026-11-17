@@ -386,3 +386,132 @@ def test_d744_o_brasao_some_quando_a_janela_principal_abre(tmp_path):
     assert resultado["vivo_ao_mostrar"], "o brasao nao estava girando enquanto o programa carregava"
     assert not resultado["vivo_depois"], "o brasao continuou depois da janela principal aparecer"
     assert set(brasao.TAMANHOS_DO_ICONE) <= set(resultado["icones"]), "a janela ficou sem o icone do brasao"
+
+
+# ---------------------------------------------------------------------------
+# D-748 (Samuel, 17/11/2026: "Sim"): na abertura em que a versao nova entra, a
+# janelinha "Atualizando o programa, espere um pouco..." (D-742) some na hora
+# em que o brasao girando aparece; os dois nunca ficam juntos na tela.
+# ---------------------------------------------------------------------------
+
+# A janela do Windows Forms de mentira (como em tests/test_decisoes_ajudante_da_atualizacao.py), com a hora em
+# que mostrou e fechou: nenhuma janela de verdade e criada, nada aparece na tela.
+_JANELINHA_DE_MENTIRA = r"""
+function New-Object { param([string]$TypeName, [object[]]$ArgumentList)
+  if ($TypeName -like 'System.Windows.Forms.*') {
+    $o = [pscustomobject]@{ Text=''; ControlBox=$true; FormBorderStyle=''; StartPosition=''; ShowInTaskbar=$true;
+                            TopMost=$false; ClientSize=$null; Dock=''; TextAlign=''; Font=$null; Controls=$null }
+    $c = [pscustomobject]@{}
+    $c | Add-Member -MemberType ScriptMethod -Name Add -Value { param($x) }
+    $o.Controls = $c
+    $o | Add-Member -MemberType ScriptMethod -Name Show -Value { Write-Host ('MOSTROU ' + [DateTime]::UtcNow.Ticks) }
+    $o | Add-Member -MemberType ScriptMethod -Name Close -Value { Write-Host ('FECHOU ' + [DateTime]::UtcNow.Ticks) }
+    return $o }
+  Microsoft.PowerShell.Utility\New-Object -TypeName $TypeName -ArgumentList $ArgumentList }
+"""
+
+# O processo do brasao de verdade (rodar_sozinho), fora da tela, com as marcas de teste; anota a hora em que a
+# janela dele aparece e sai logo depois.
+_BRASAO_DE_PROVA = textwrap.dedent(r"""
+    import sys, time
+    sys.path.insert(0, sys.argv[1])
+    import atualizacao
+    atualizacao.MARCA_DE_ABERTO = sys.argv[2]
+    atualizacao.MARCA_DA_JANELINHA = sys.argv[3]
+    from PySide6.QtCore import QTimer
+    from PySide6.QtWidgets import QApplication
+    from ui import brasao_girando as bg
+    mostrar = bg.BrasaoGirando.mostrar_no_meio
+    def mostrar_e_anotar(self):
+        print("BRASAO %d" % (int(time.time() * 10_000_000) + 621355968000000000), flush=True)
+        mostrar(self)
+        QTimer.singleShot(500, QApplication.quit)
+    bg.BrasaoGirando.mostrar_no_meio = mostrar_e_anotar
+    sys.exit(bg.rodar_sozinho(sys.argv[4]))
+""")
+
+
+@pytest.mark.skipif(sys.platform != "win32", reason="a janelinha usa o PowerShell e as marcas do Windows")
+def test_d748_a_janelinha_some_quando_o_brasao_aparece_e_nunca_ficam_juntos(tmp_path, monkeypatch):
+    """D-748 (Samuel, 17/11/2026: "Sim"). A janelinha de verdade (o script da D-742, com a janela do Windows
+    Forms trocada por uma de mentira que anota a hora) esta na tela; abre-se o processo do brasao de verdade.
+    Ela tem de fechar ANTES de o brasao aparecer. Marcas com nome de teste: nada do programa de verdade e tocado.
+    Teste de reversao: no codigo de antes o brasao nao punha a marca, e a janelinha so fechava no limite (20 s),
+    muito depois de o brasao aparecer."""
+    import shutil
+    import threading
+    import uuid
+
+    import atualizacao
+
+    powershell = shutil.which("powershell")
+    assert powershell
+    sufixo = uuid.uuid4().hex
+    marca_aberto = f"Local\\EditorImpressao-teste-aberto-{sufixo}"
+    marca_janelinha = f"Local\\EditorImpressao-teste-janelinha-{sufixo}"
+    monkeypatch.setattr(atualizacao, "MARCA_DA_JANELINHA", marca_janelinha, raising=False)
+    script = tmp_path / "janelinha.ps1"
+    script.write_text(_JANELINHA_DE_MENTIRA + "\n" + atualizacao.script_da_janelinha(marca=marca_aberto, limite_s=20),
+                      encoding="utf-8-sig")
+    janelinha = subprocess.Popen([powershell, "-NoProfile", "-NonInteractive", "-ExecutionPolicy", "Bypass",
+                                  "-File", str(script)], stdout=subprocess.PIPE, stderr=subprocess.STDOUT, text=True,
+                                 encoding="utf-8", errors="replace",
+                                 creationflags=getattr(subprocess, "CREATE_NO_WINDOW", 0))
+    linhas: list[str] = []
+    leitor = threading.Thread(target=lambda: linhas.extend(l.strip() for l in janelinha.stdout), daemon=True)
+    leitor.start()
+    brasao_py = tmp_path / "brasao_de_prova.py"
+    brasao_py.write_text(_BRASAO_DE_PROVA, encoding="utf-8")
+    try:
+        limite = time.monotonic() + 90
+        while not any(l.startswith("MOSTROU") for l in linhas) and time.monotonic() < limite:
+            assert janelinha.poll() is None, f"a janelinha parou antes de aparecer: {linhas}"
+            time.sleep(0.1)
+        assert any(l.startswith("MOSTROU") for l in linhas), f"a janelinha não apareceu: {linhas}"
+        feito = subprocess.run([sys.executable, str(brasao_py), str(RAIZ), marca_aberto, marca_janelinha,
+                                str(os.getpid())], cwd=str(RAIZ), capture_output=True, text=True, timeout=120,
+                               env=dict(os.environ, QT_QPA_PLATFORM="offscreen"),
+                               creationflags=getattr(subprocess, "CREATE_NO_WINDOW", 0))
+        janelinha.wait(timeout=60)
+        leitor.join(timeout=10)
+    finally:
+        if janelinha.poll() is None:
+            janelinha.kill()
+    brasao_apareceu = [int(l.split()[1]) for l in feito.stdout.splitlines() if l.startswith("BRASAO ")]
+    fechou = [int(l.split()[1]) for l in linhas if l.startswith("FECHOU ")]
+    assert brasao_apareceu, feito.stdout + feito.stderr
+    assert fechou, f"a janelinha nunca fechou: {linhas}"
+    assert fechou[0] <= brasao_apareceu[0], (
+        f"o brasão apareceu {(fechou[0] - brasao_apareceu[0]) / 1e7:.2f} s antes de a janelinha sumir: os dois juntos")
+
+
+def test_d748_o_brasao_poe_a_marca_antes_de_olhar_a_janelinha_e_espera_ela_sumir():
+    """D-748: a ordem que garante "nunca juntos" (o brasao poe a marca de aberto, so depois olha a da
+    janelinha) e a espera enquanto a janelinha existe. Na abertura comum (sem janelinha) nada espera."""
+    from ui import brasao_girando as bg
+
+    passos = []
+    ainda = iter([True, True, False])
+    bg.antes_de_mostrar(marcar=lambda: passos.append("marcou"),
+                        ha_janelinha=lambda: passos.append("olhou") or next(ainda),
+                        dormir=lambda s: passos.append("esperou"))
+    assert passos == ["marcou", "olhou", "esperou", "olhou", "esperou", "olhou"]
+    passos.clear()
+    bg.antes_de_mostrar(marcar=lambda: passos.append("marcou"),
+                        ha_janelinha=lambda: passos.append("olhou") or False, dormir=lambda s: passos.append("x"))
+    assert passos == ["marcou", "olhou"]
+    # se a janelinha travar, o brasao aparece mesmo assim depois do limite
+    comeco = time.monotonic()
+    bg.antes_de_mostrar(marcar=lambda: None, ha_janelinha=lambda: True, limite_s=0.2)
+    assert time.monotonic() - comeco < 2
+
+
+def test_d748_a_janelinha_pega_a_marca_dela_antes_de_olhar_o_programa_e_solta_depois_de_fechar():
+    import atualizacao
+
+    texto = atualizacao.script_da_janelinha()
+    pega = texto.index(f"[System.Threading.Mutex]::new($false, '{atualizacao.MARCA_DA_JANELINHA}')")
+    assert pega < texto.index("TryOpenExisting"), "a marca da janelinha vem antes de olhar a do programa aberto"
+    assert texto.index("$janela.Close()") < texto.index("$minha.Dispose()")
+    # a regra continua uma so: a mesma marca do programa aberto faz a janelinha sumir
+    assert f"'{atualizacao.MARCA_DE_ABERTO}'" in texto
