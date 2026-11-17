@@ -70,7 +70,10 @@ def main() -> int:
     # dos testes a distancia". So aparece uma vez; depois, da para por a senha
     # nas Configuracoes. So no programa instalado pelo instalador (D-728): pelo
     # codigo nao mostra nada e nao marca nada, com a mesma regra da atualizacao
-    # (atualizacao.instalado_pelo_velopack). Ver ui/testes_a_distancia_ui.py.
+    # (atualizacao.instalado_pelo_velopack). Desde 17/11 (D-733, D-735), logo
+    # depois dela vem SEMPRE uma pergunta do Windows, que cria o ajudante da
+    # atualizacao (com a senha, os testes a distancia vao na mesma pergunta).
+    # Ver ui/testes_a_distancia_ui.py.
     from ui.testes_a_distancia_ui import primeira_vez_se_preciso
 
     primeira_vez_se_preciso(janela)
@@ -78,9 +81,12 @@ def main() -> int:
     if len(sys.argv) > 1 and sys.argv[1].lower().endswith(".pdf"):
         janela.abrir_livro(sys.argv[1])
 
-    # Atualizacao (etapa 3 da frente do Kaique): o aviso da versao nova e o da
-    # atualizacao que falhou (D-715, D-719, D-720). So no programa instalado
-    # pelo Velopack; pelo codigo nao faz nada. Ver ui/aviso_de_atualizacao.py.
+    # Atualizacao (etapa 3 da frente do Kaique): manda o ajudante procurar a
+    # versao nova (D-732, "quando o programa e aberto") e liga o aviso da versao
+    # nova e o da atualizacao que falhou (D-715, D-719, D-720). Vem DEPOIS da
+    # primeira abertura de proposito: na primeira vez, o ajudante nasce nela.
+    # So no programa instalado pelo Velopack; pelo codigo nao faz nada. Ver
+    # ui/aviso_de_atualizacao.py.
     from ui.aviso_de_atualizacao import ligar_na_janela
 
     ligar_na_janela(janela)
@@ -107,9 +113,11 @@ if __name__ == "__main__":
 
         raise SystemExit(linha_de_comando(sys.argv[2:]))
     # Atualizacao pela internet (Velopack; etapa 3 da frente do Kaique): os
-    # ganchos de instalar/desinstalar e os modos sem janela (procurar a versao
-    # nova quando o computador liga, conferir a versao nova). Pelo codigo e
-    # sem argumento nosso nao faz nada. Ver atualizacao.py.
+    # ganchos de instalar/desinstalar, os modos sem janela (o ajudante procura
+    # a versao nova, conferir a versao nova, preparar o computador dentro da
+    # pergunta do Windows) e, no programa instalado, a troca antes da janela
+    # quando ha versao nova esperando do "Depois" (D-734). Pelo codigo e sem
+    # argumento nosso nao faz nada. Ver atualizacao.py.
     from atualizacao import atender_linha_de_comando
 
     codigo = atender_linha_de_comando(sys.argv)

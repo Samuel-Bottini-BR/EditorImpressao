@@ -1,43 +1,75 @@
 """A atualizacao pela internet do Editor de Impressao (Velopack).
 
-Etapa 3 da frente do notebook do Kaique, 16/11/2026. Decisoes do Samuel:
-D-706 (atualizar "como funciona com apps", sem reinstalar), D-713 (vem do
-GitHub publico do projeto), D-714 (publicada de proposito; "o programa pega
-sozinho, toda vez que o pc inicializar em segundo plano"), D-715/D-720 (com o
-programa aberto: aviso com "Reiniciar agora" e "Depois"; com "Depois", entra
-quando o computador ligar de novo), D-718/D-719 (se falhar, volta para a
-versao anterior, mostra a frase combinada e guarda o erro num registro que a
-gerente le daqui; nenhuma senha dentro do programa), D-723 (Velopack), D-724
-(assinatura gratis conferida antes de instalar), D-727 (tudo dentro do
-instalador: o Visual C++ vai no pacote).
+Etapa 3 da frente do notebook do Kaique, 16/11/2026, mudada em 17/11/2026.
+Decisoes do Samuel: D-706 (atualizar "como funciona com apps", sem
+reinstalar), D-713 (vem do GitHub publico do projeto), D-714 (publicada de
+proposito), D-715/D-720 (com o programa aberto: aviso com "Reiniciar agora" e
+"Depois"), D-718/D-719 (se falhar, volta para a versao anterior, mostra a frase
+combinada e guarda o erro num registro que a gerente le daqui; nenhuma senha
+dentro do programa), D-723 (Velopack), D-724 (assinatura gratis conferida antes
+de instalar), D-727 (tudo dentro do instalador: o Visual C++ vai no pacote).
+De 17/11/2026: D-732 ("não, faz quando o programa é aberto": a versao nova e
+procurada quando o programa ABRE, nao mais quando o computador liga), D-733
+(jeito 1: uma pergunta do Windows na primeira abertura cria o AJUDANTE, uma
+tarefa do Windows que roda como o sistema e que a conta comum pode mandar
+rodar; depois, nenhuma pergunta por atualizacao nem na volta), D-734 (com
+"Depois", entra na proxima vez que o Kaique abrir, com uma espera curta antes
+da janela; fechar nao troca nada), D-735 (a pergunta da primeira abertura
+aparece sempre, com ou sem a senha dos testes), D-736 (aberto por um teste a
+distancia, nao procura; o Samuel manda atualizar de longe pelo mesmo ajudante).
+
+POR QUE O AJUDANTE (achado B1, 16/11): o .msi "PerMachine" do Velopack roda os
+ganchos de instalar/atualizar/desinstalar SEM licenca de administrador
+(CustomAction Impersonate="yes"). Por isso a tarefa nao pode mais nascer no
+gancho de instalar: nasce na pergunta do Windows da primeira abertura.
 
 COMO FUNCIONA, DO COMECO AO FIM
-1. Instalacao (uma vez, com a licenca de administrador que o Kaique da ao
-   instalar): o Velopack chama o gancho de "depois de instalar" (ao_instalar),
-   que cria a tarefa do Windows (xml_da_tarefa) e a roda uma vez na hora.
-2. A tarefa roda como o proprio sistema (SYSTEM), ao ligar o computador, sem
-   janela: EditorImpressao.exe --procurar-atualizacao -> rodar_ao_ligar:
-   - prepara o computador (preparar_o_computador): instala o Visual C++ que vai
-     DENTRO do pacote, se faltar; tira a instalacao antiga do Inno Setup;
-   - confere o resultado da ultima troca (situacao) e, se a versao nova ainda
-     nao passou no teste rapido, faz o teste (conferir_versao_nova);
+1. Instalacao: o gancho (ao_instalar) so anota. Nada que pede administrador.
+2. Primeira abertura (preparar_na_primeira_abertura, chamada pela janela da
+   senha, ui/testes_a_distancia_ui.py): UMA pergunta do Windows ("Deseja
+   permitir...?"), pela mesma peca dos testes a distancia
+   (core.testes_a_distancia.Executor). Dentro dela roda este .exe com
+   --preparar-o-computador (preparar_como_administrador): cria o ajudante
+   (criar_tarefa, xml_da_tarefa), instala o Visual C++ de dentro do pacote se
+   faltar e tira a instalacao antiga do Inno (preparar_o_computador). Se o
+   Kaique digitou a senha, os passos dos testes a distancia vao na MESMA
+   pergunta (core.testes_a_distancia.ligar, sem mudanca).
+3. Toda abertura do programa do Kaique (procurar_ao_abrir, chamado por
+   ui/aviso_de_atualizacao.ligar_na_janela): manda o ajudante rodar
+   (schtasks /Run, sem pergunta: a tarefa deixa a conta comum mandar rodar).
+4. O ajudante roda como o proprio sistema (SYSTEM), sem janela:
+   EditorImpressao.exe --procurar-atualizacao -> rodar_ao_ligar (o nome ficou
+   da etapa 3; hoje roda quando o ajudante e chamado, nunca ao ligar):
+   - prepara o computador (Visual C++ e o Inno, se ainda faltar);
+   - confere o resultado da ultima troca (situacao);
    - procura a versao nova (procurar_e_preparar): confere a ASSINATURA antes de
-     baixar; baixa so o que mudou; se o programa esta aberto, deixa "pendente"
-     (a tela avisa); se esta fechado, pede ao Velopack para trocar e reabrir
-     escondido em --conferir-a-versao-nova.
-3. --conferir-a-versao-nova (conferir_versao_nova): roda o teste rapido da
-   versao nova (--teste-rapido, sem janela). Se falhar, volta para a anterior
-   (voltar_para_a_anterior: o pacote da anterior, conferido pela assinatura, e
-   aplicado pelo proprio Update.exe do Velopack) e registra a falha.
-4. A tela (ui/aviso_de_atualizacao.py) pergunta o_que_avisar de tempos em
+     baixar; baixa so o que mudou; programa aberto -> "pendente" (a tela
+     avisa); programa fechado -> pede ao Velopack para trocar e reabrir
+     escondido em --conferir-a-versao-nova. Como roda como SYSTEM, troca em
+     Arquivos de Programas sem perguntar nada.
+5. "Reiniciar agora" (D-720) e a proxima abertura depois do "Depois" (D-734)
+   usam a mesma funcao, trocar_e_reabrir: um PowerShell escondido, na conta do
+   Kaique, espera este processo sair, manda o ajudante rodar (agora com o
+   programa fechado, ele troca), espera a troca e reabre o programa na conta
+   do Kaique com --depois-da-troca (o ajudante, como SYSTEM, nao pode abrir a
+   janela dele).
+6. --conferir-a-versao-nova (conferir_e_refazer_o_ajudante): o teste rapido da
+   versao nova; se falhar, volta para a anterior (D-718); se passar, refaz o
+   ajudante (o XML pode ter mudado de uma versao para outra; antes era o
+   gancho de atualizar, que nao tem licenca, B1).
+7. A tela (ui/aviso_de_atualizacao.py) pergunta o_que_avisar de tempos em
    tempos: "versao-nova" -> o aviso com os dois botoes; "falhou" -> a frase da
    D-719, uma vez so.
+8. Na conta dos testes a distancia (e_a_conta_de_testes, D-736): nada disso
+   roda sozinho. O Samuel manda atualizar de longe pelo mesmo ajudante
+   (comando_de_longe_para_atualizar).
 
 ONDE FICAM AS COISAS
 - estado.json e atualizacao.log em %ProgramData%\\EditorImpressao\\atualizacao\\
-  (pasta_do_estado). Por que ali, e nao no %LOCALAPPDATA% do Kaique: a tarefa
-  roda como SYSTEM, e a conta dos testes a distancia (por onde a gerente le,
-  D-719) nao enxerga a pasta do Kaique; o ProgramData todas as contas leem.
+  (pasta_do_estado). Por que ali, e nao no %LOCALAPPDATA% do Kaique: o
+  ajudante roda como SYSTEM, e a conta dos testes a distancia (por onde a
+  gerente le, D-719) nao enxerga a pasta do Kaique; o ProgramData todas as
+  contas leem.
 - Os projetos do Kaique (%LOCALAPPDATA%\\EditorImpressao) nunca sao tocados:
   o Velopack troca so a pasta do programa.
 
@@ -45,18 +77,23 @@ A REGRA NUM LUGAR SO (CLAUDE.md §11.12): o que fazer com uma versao nova e
 procurar_e_preparar; o que a tela avisa e o_que_avisar (que usa situacao); uma
 falha e sempre registrar_falha; a assinatura e sempre
 assinatura.conferir_versao; "o programa esta aberto" e marcar_programa_aberto
-(a janela) / ha_programa_aberto (a tarefa). A unica entrada pela linha de
-comando e atender_linha_de_comando (main.py chama uma vez).
+(a janela) / ha_programa_aberto (o ajudante); "chamar o ajudante" e sempre
+comando_de_rodar_a_tarefa; "trocar e reabrir" e sempre trocar_e_reabrir; "e a
+conta de testes" e sempre e_a_conta_de_testes; a pergunta do Windows e sempre
+a peca dos testes a distancia (core.testes_a_distancia.Executor). A unica
+entrada pela linha de comando e atender_linha_de_comando (main.py chama uma vez).
 
 Nada aqui importa Qt nem ui/. O velopack so e importado quando o programa foi
 instalado por ele (instalado_pelo_velopack) ou num dos modos escondidos: pelo
 codigo (.venv) e nos testes, nada muda e nada fica mais lento.
 
-Arriscado mudar: NOME_DA_TAREFA e os argumentos (a tarefa ja criada no
-notebook chama exatamente estes); FRASE_DA_FALHA (palavras combinadas com o
-Samuel, D-719); a ordem "assinatura antes de baixar"; o "% portatil nao mexe
-no Windows" de preparar_o_computador (no PC do Samuel ha uma instalacao do Inno
-de 01/09 que um ensaio nao pode tirar).
+Arriscado mudar: NOME_DA_TAREFA e os argumentos (o ajudante ja criado no
+notebook chama exatamente estes); QUEM_PODE_MANDAR_RODAR (tirar o "AU" deixa a
+conta do Kaique e a de testes sem poder chamar o ajudante; dar mais que ler e
+executar deixaria a conta comum MUDAR uma tarefa que roda como SYSTEM);
+FRASE_DA_FALHA (palavras combinadas com o Samuel, D-719); a ordem "assinatura
+antes de baixar"; o "portatil nao mexe no Windows" (no PC do Samuel ha uma
+instalacao do Inno de 01/09 que um ensaio nao pode tirar).
 """
 
 from __future__ import annotations
@@ -86,11 +123,31 @@ ARG_TESTE_RAPIDO = "--teste-rapido"
 # So para o ensaio e os testes: de onde vem as versoes (uma pasta, em vez do
 # GitHub). O programa do Kaique nunca recebe isto: a tarefa chama sem.
 ARG_FONTE = "--fonte"
+# D-733: o modo que roda DENTRO da pergunta do Windows da primeira abertura
+# (ja como administrador): cria o ajudante, o Visual C++ e tira o Inno.
+ARG_PREPARAR = "--preparar-o-computador"
+# D-734: o programa reaberto por trocar_e_reabrir. Abre a janela normalmente;
+# so serve para nao tentar trocar de novo nesta abertura (sem ele, uma troca
+# que nao comecou reabriria o programa sem fim).
+ARG_DEPOIS_DA_TROCA = "--depois-da-troca"
 
-# A tarefa do Windows (D-714). Dentro de uma pasta propria do Agendador.
+# O ajudante (D-714, D-733): a tarefa do Windows, numa pasta propria do
+# Agendador. Mudou em 17/11 (D-732): nao tem mais hora para rodar (nada de
+# "ao ligar o computador"); so roda quando alguem manda (schtasks /Run).
 NOME_DA_TAREFA = "EditorImpressao\\Procurar versao nova"
-# Minutos depois de ligar o computador (deixa a rede e o Windows assentarem).
-ATRASO_DEPOIS_DE_LIGAR = "PT3M"
+# Quem pode o que na tarefa (SDDL): administradores e o sistema, tudo; as
+# contas comuns que entraram no Windows (AU, "Authenticated Users": a do
+# Kaique e a de testes), SO ler e mandar rodar (GRGX). Sem o AU, a conta do
+# Kaique nao conseguiria chamar o ajudante ao abrir o programa (D-733) e o
+# Samuel nao conseguiria mandar atualizar de longe (D-736).
+QUEM_PODE_MANDAR_RODAR = "D:(A;;FA;;;BA)(A;;FA;;;SY)(A;;GRGX;;;AU)"
+
+# trocar_e_reabrir (D-720 "Reiniciar agora", D-734 "Depois"): quanto o
+# PowerShell escondido espera a troca antes de reabrir o programa de qualquer
+# jeito (na versao que estiver), e quanto espera a mais quando a versao nova
+# falhou e o Velopack esta voltando para a anterior (D-718).
+LIMITE_DA_TROCA_S = 300
+ESPERA_DA_VOLTA_S = 60
 
 # A marca de "o programa esta aberto" (um mutex com nome, do Windows). A
 # janela cria; a tarefa (que roda como SYSTEM, em outra sessao) so consulta.
@@ -101,7 +158,7 @@ TITULO_DA_VERSAO_NOVA = "Versão nova do programa"
 FRASE_DA_VERSAO_NOVA = (
     "Chegou uma versão nova do Editor de Impressão.\n\n"
     "Salve o seu trabalho e reinicie o programa para usar a versão nova.\n\n"
-    "Se escolher \"Depois\", a versão nova entra sozinha na próxima vez que o computador ligar.")
+    "Se escolher \"Depois\", a versão nova entra sozinha na próxima vez que você abrir o programa.")
 BOTAO_REINICIAR = "Reiniciar agora"
 BOTAO_DEPOIS = "Depois"
 TITULO_DA_FALHA = "Atualização"
@@ -398,8 +455,9 @@ def procurar_e_preparar(gerente, fonte: Fonte, programa_aberto: Callable[[], boo
        nada e baixado, registra a falha, a tela avisa uma vez.
     4. Baixa so o que mudou (download_updates; o Velopack confere a soma).
     5. Programa aberto: fica "pendente" (a tela mostra "Reiniciar agora" /
-       "Depois", D-715/D-720); com "Depois", na proxima vez que o computador
-       ligar a tarefa chega aqui com o programa fechado e troca.
+       "Depois", D-715/D-720); com "Depois", na proxima vez que o Kaique abrir
+       o programa (D-734), trocar_e_reabrir chama o ajudante de novo com o
+       programa fechado, e ele chega aqui e troca.
     6. Programa fechado: anota "aplicando" e pede ao Velopack para trocar
        assim que este processo sair, reabrindo escondido em
        --conferir-a-versao-nova (o teste rapido). Quem chamou tem de sair logo.
@@ -431,8 +489,8 @@ def procurar_e_preparar(gerente, fonte: Fonte, programa_aberto: Callable[[], boo
             "quando": datetime.now().isoformat(timespec="seconds")}
     if programa_aberto():
         gravar_estado({"fase": "pendente", **base})
-        registrar(f"versão {alvo.Version} baixada; o programa está aberto: entra quando ele fechar "
-                  "(\"Reiniciar agora\") ou quando o computador ligar de novo")
+        registrar(f"versão {alvo.Version} baixada; o programa está aberto: entra no \"Reiniciar agora\" "
+                  "ou na próxima vez que o programa abrir")
         return "pendente"
     gravar_estado({"fase": "aplicando", **base})
     registrar(f"versão {alvo.Version} baixada; trocando (o programa está fechado)")
@@ -548,14 +606,18 @@ def conferir_versao_nova(fonte: Fonte, versao_atual: str,
 
 
 # ---------------------------------------------------------------------------
-# O que roda quando o computador liga (a tarefa do Windows, como SYSTEM)
+# O que o ajudante faz quando e chamado (a tarefa do Windows, como SYSTEM)
 # ---------------------------------------------------------------------------
 
 def rodar_ao_ligar(fonte: Fonte, gerente=None, preparar: Callable[[object], None] | None = None,
                    programa_aberto: Callable[[], bool] | None = None,
                    conferir: Callable[[Fonte, str], int] | None = None) -> int:
-    """--procurar-atualizacao. Devolve o codigo de saida (0 = sem erro).
+    """--procurar-atualizacao: o que o ajudante faz. Devolve o codigo de saida (0 = sem erro).
 
+    O nome ficou da etapa 3 (os testes antigos chamam por ele). Desde 17/11
+    (D-732) o ajudante NAO roda ao ligar o computador: roda quando o programa
+    abre (procurar_ao_abrir), no "Reiniciar agora" e na abertura depois do
+    "Depois" (trocar_e_reabrir) e quando o Samuel manda de longe (D-736).
     Nunca mostra janela. Sem internet: registra e sai (nao e falha).
     """
     try:
@@ -613,58 +675,247 @@ def ha_programa_aberto() -> bool:
     return False
 
 
-# ---------------------------------------------------------------------------
-# "Reiniciar agora" (D-720)
-# ---------------------------------------------------------------------------
-
-def aplicar_agora_e_reabrir(gerente=None) -> bool:
-    """Troca para a versao ja baixada e reabre o programa (o botao "Reiniciar agora").
-
-    A janela ja foi fechada (e gravou o trabalho) antes de chamar isto. O
-    Velopack troca e reabre; como o programa mora em Arquivos de Programas, o
-    Windows pode perguntar "Deseja permitir...?" (ressalva da etapa 5).
-    Devolve False se nao havia versao baixada (nada muda).
-    """
+def _rodar(comando: list[str], tempo: int = 120) -> tuple[int, str]:
+    """Roda um comando do Windows sem janela; (codigo, saida). Nunca levanta."""
     try:
-        gerente = gerente or criar_gerente(Fonte.padrao())
-        pendente = gerente.get_update_pending_restart()
-        if pendente is None:
-            registrar("\"Reiniciar agora\": não achei a versão baixada")
-            return False
-        registrar(f"\"Reiniciar agora\": trocando para a {pendente.Version}")
-        gerente.apply_updates_and_restart(pendente)
+        feito = subprocess.run(comando, capture_output=True, text=True, timeout=tempo,
+                               creationflags=getattr(subprocess, "CREATE_NO_WINDOW", 0))
+        return feito.returncode, (feito.stdout + feito.stderr).strip()
+    except (OSError, subprocess.SubprocessError) as erro:
+        return -1, str(erro)
+
+
+# ---------------------------------------------------------------------------
+# Trocar e reabrir: "Reiniciar agora" (D-720) e a abertura depois do "Depois" (D-734)
+# ---------------------------------------------------------------------------
+
+def script_de_trocar_e_reabrir(exe: Path, pid: int, arquivo_do_estado: Path) -> str:
+    """O PowerShell que troca a versao e reabre o programa NA CONTA DO KAIQUE.
+
+    Por que um PowerShell a parte, e nao este programa: a troca mexe nos
+    arquivos de <raiz>\\current, e este .exe mora la; ele precisa ter saido.
+    Por que nao o ajudante: ele roda como SYSTEM, e o que o SYSTEM abre nao
+    aparece na tela do Kaique.
+
+    Na ordem:
+    1. espera este processo (pid) sair: a janela ja gravou o trabalho e a
+       marca de "programa aberto" some junto (ha_programa_aberto);
+    2. manda o ajudante rodar (comando_de_rodar_a_tarefa): com o programa
+       fechado, ele confere a assinatura e troca (procurar_e_preparar);
+    3. espera a troca: enquanto o estado for "pendente" com o ajudante
+       rodando, ou "aplicando" (o Velopack trocando e o teste rapido), ate
+       LIMITE_DA_TROCA_S; se a versao nova nao passou no teste rapido, espera
+       mais ESPERA_DA_VOLTA_S (a volta para a anterior, D-718);
+    4. reabre o programa com ARG_DEPOIS_DA_TROCA (na versao que estiver).
+    Nenhum passo pede administrador: nenhuma pergunta do Windows (D-733).
+    """
+    pasta, nome = NOME_DA_TAREFA.rsplit("\\", 1)
+    rodar = " ".join(_aspas_do_powershell(p) for p in comando_de_rodar_a_tarefa()[1:])
+    estado = _aspas_do_powershell(str(arquivo_do_estado))
+    return "\n".join([
+        "$ErrorActionPreference = 'SilentlyContinue'",
+        f"Wait-Process -Id {int(pid)} -Timeout 120",
+        f"& schtasks {rodar} | Out-Null",
+        "$rodou = ($LASTEXITCODE -eq 0)",
+        f"$fim = (Get-Date).AddSeconds({LIMITE_DA_TROCA_S})",
+        "$fase = ''",
+        "if ($rodou) {",
+        "  Start-Sleep -Seconds 3",
+        "  while ((Get-Date) -lt $fim) {",
+        "    $fase = ''; $tipo = ''",
+        f"    try {{ $e = Get-Content -Raw -LiteralPath {estado} | ConvertFrom-Json; $fase = $e.fase;"
+        " $tipo = $e.tipo } catch { }",
+        f"    $tarefa = (Get-ScheduledTask -TaskPath {_aspas_do_powershell(chr(92) + pasta + chr(92))}"
+        f" -TaskName {_aspas_do_powershell(nome)}).State",
+        # o ajudante terminou sem trocar (sem internet, assinatura recusada...):
+        # nao espera o limite inteiro. "Queued" = ainda vai comecar.
+        "    if ($fase -eq 'pendente' -and \"$tarefa\" -ne 'Running' -and \"$tarefa\" -ne 'Queued') { break }",
+        "    if ($fase -ne 'pendente' -and $fase -ne 'aplicando') { break }",
+        "    Start-Sleep -Seconds 2",
+        "  }",
+        # so a versao que nao passou no teste rapido volta para a anterior (D-718)
+        f"  if ($fase -eq 'falhou' -and $tipo -eq 'teste') {{ Start-Sleep -Seconds {ESPERA_DA_VOLTA_S} }}",
+        "}",
+        f"Start-Process -FilePath {_aspas_do_powershell(str(exe))}"
+        f" -ArgumentList {_aspas_do_powershell(ARG_DEPOIS_DA_TROCA)}",
+    ])
+
+
+def _aspas_do_powershell(texto: str) -> str:
+    """Texto entre aspas simples do PowerShell (a aspa simples dobra)."""
+    return "'" + str(texto).replace("'", "''") + "'"
+
+
+def _lancar_escondido(script: str) -> None:
+    """Roda o script num PowerShell escondido e solto (nao espera; sobrevive a este processo).
+
+    O script vai em -EncodedCommand (UTF-16 em base64): nada de arquivo
+    provisorio para apagar depois.
+    """
+    import base64
+
+    codificado = base64.b64encode(script.encode("utf-16-le")).decode("ascii")
+    subprocess.Popen(["powershell.exe", "-NoProfile", "-NonInteractive", "-ExecutionPolicy", "Bypass",
+                      "-WindowStyle", "Hidden", "-EncodedCommand", codificado],
+                     creationflags=getattr(subprocess, "CREATE_NO_WINDOW", 0)
+                     | getattr(subprocess, "DETACHED_PROCESS", 0))
+
+
+def trocar_e_reabrir(lancar: Callable[[str], None] = _lancar_escondido, exe: Path | None = None,
+                     pid: int | None = None) -> bool:
+    """A UNICA forma de trocar para a versao ja baixada e reabrir o programa.
+
+    Usada pelo "Reiniciar agora" (D-720; a janela ja fechou gravando) e pela
+    abertura depois do "Depois" (D-734, trocar_antes_de_abrir; a janela nem
+    abriu). Quem chama tem de sair logo: o script espera este processo sair.
+    Devolve False se nao deu para comecar (o programa segue na versao de hoje).
+    """
+    exe = exe or (pasta_do_programa() / Path(sys.executable).name)
+    try:
+        lancar(script_de_trocar_e_reabrir(exe, pid or os.getpid(), pasta_do_estado() / "estado.json"))
+        registrar("trocar e reabrir: o ajudante foi chamado; o programa volta sozinho")
         return True
-    except Exception as erro:  # noqa: BLE001
-        registrar(f"\"Reiniciar agora\" não deu certo: {type(erro).__name__}: {erro}")
+    except Exception as erro:  # noqa: BLE001 - nunca derruba a janela
+        registrar(f"trocar e reabrir não começou: {type(erro).__name__}: {erro}")
         return False
 
 
+def aplicar_agora_e_reabrir(trocar: Callable[[], bool] | None = None) -> bool:
+    """O botao "Reiniciar agora" (D-720): troca para a versao ja baixada e reabre.
+
+    A janela ja foi fechada (e gravou o trabalho) antes de chamar isto. Antes
+    de 17/11 o proprio Velopack trocava daqui (apply_updates_and_restart) e,
+    como o programa mora em Arquivos de Programas, o Windows perguntava
+    "Deseja permitir...?". Agora quem troca e o ajudante (D-733): nenhuma
+    pergunta. Devolve False se a troca nao comecou.
+    """
+    return (trocar or trocar_e_reabrir)()
+
+
+def trocar_antes_de_abrir(argumentos: list[str], instalado: Callable[[], bool] | None = None,
+                          conta_de_testes: Callable[[], bool] | None = None,
+                          portatil: Callable[[], bool] | None = None,
+                          ler: Callable[[], dict] = ler_estado,
+                          versao_atual: Callable[[], str] | None = None,
+                          trocar: Callable[[], bool] | None = None) -> bool:
+    """D-734: com "Depois", a versao nova entra na proxima vez que o Kaique abrir.
+
+    Chamada por atender_linha_de_comando ANTES de qualquer janela. True = a
+    troca comecou e este processo tem de sair sem abrir a janela: o
+    trocar_e_reabrir reabre o programa ja na versao nova (a "espera curta
+    antes da janela"). False = abre normalmente.
+
+    So troca se: e o programa instalado (nao portatil), nao e a conta dos
+    testes a distancia (D-736), nao e a reabertura de uma troca
+    (ARG_DEPOIS_DA_TROCA, para nunca ficar reabrindo sem fim) e ha versao nova
+    ja baixada e conferida esperando (situacao == "versao-nova"). Fechar o
+    programa nao troca nada: so esta abertura e o "Reiniciar agora" trocam.
+    """
+    if ARG_DEPOIS_DA_TROCA in argumentos:
+        return False
+    if not (instalado or instalado_pelo_velopack)():
+        return False
+    if (conta_de_testes or e_a_conta_de_testes)() or (portatil or e_portatil)():
+        return False
+    o_que, detalhe = situacao(ler(), (versao_atual or versao_que_roda)())
+    if o_que != "versao-nova":
+        return False
+    registrar(f"abrindo o programa: a versão {detalhe} estava esperando (\"Depois\"); trocando antes da janela")
+    return (trocar or trocar_e_reabrir)()
+
+
 # ---------------------------------------------------------------------------
-# A tarefa do Windows (D-714), criada pela instalacao
+# Chamar o ajudante: ao abrir (D-732) e de longe (D-736)
+# ---------------------------------------------------------------------------
+
+def comando_de_rodar_a_tarefa() -> list[str]:
+    """O comando que manda o ajudante rodar (um lugar so: abrir, trocar, de longe).
+
+    Nao pede administrador: a tarefa deixa as contas comuns mandarem rodar
+    (QUEM_PODE_MANDAR_RODAR). Volta logo; o ajudante roda por tras.
+    """
+    return ["schtasks", "/Run", "/TN", NOME_DA_TAREFA]
+
+
+def e_a_conta_de_testes(usuario: str | None = None) -> bool:
+    """O programa esta rodando na conta dos testes a distancia (D-717, D-736)?
+
+    A conta tem nome fixo (core.testes_a_distancia.NOME_DA_CONTA). E a unica
+    regra de "aberto por um teste a distancia".
+    """
+    from core.testes_a_distancia import NOME_DA_CONTA
+
+    nome = usuario if usuario is not None else (os.environ.get("USERNAME") or "")
+    return nome.strip().lower() == NOME_DA_CONTA.lower()
+
+
+def procurar_ao_abrir(rodar: Callable[[list[str]], tuple[int, str]] = _rodar,
+                      conta_de_testes: Callable[[], bool] | None = None,
+                      portatil: Callable[[], bool] | None = None) -> bool:
+    """D-732: o programa abriu; manda o ajudante procurar a versao nova.
+
+    Chamada por ui/aviso_de_atualizacao.ligar_na_janela (so no programa
+    instalado). Nada na tela: o ajudante procura e baixa por tras; se chegar
+    versao nova com o programa aberto, a janela avisa (D-715). Nao procura na
+    conta dos testes a distancia (D-736) nem no pacote portatil do ensaio.
+    True se o ajudante foi chamado.
+    """
+    if (conta_de_testes or e_a_conta_de_testes)():
+        return False
+    if (portatil or e_portatil)():
+        return False
+    codigo, saida = rodar(comando_de_rodar_a_tarefa())
+    if codigo != 0:
+        registrar(f"abrir o programa: não consegui chamar o ajudante ({saida})")
+    return codigo == 0
+
+
+def comando_de_longe_para_atualizar(endereco: str) -> str:
+    """D-736: o que o Samuel roda no PC dele para o notebook do Kaique atualizar.
+
+    Entra pela conta de testes (o comando de longe, D-705) e manda o MESMO
+    ajudante rodar: mesma assinatura (D-724), mesma volta se falhar (D-718).
+    Se o Kaique estiver com o programa aberto, a versao fica "pendente" e a
+    janela dele mostra o aviso de salvar e reiniciar (D-715, D-720, D-734).
+    O registro do que aconteceu: comando_de_longe_para_ler_o_registro.
+    """
+    from core.testes_a_distancia import NOME_DA_CONTA
+
+    partes = comando_de_rodar_a_tarefa()
+    return f'ssh {NOME_DA_CONTA}@{endereco} {" ".join(partes[:-1])} "{partes[-1]}"'
+
+
+def comando_de_longe_para_ler_o_registro(endereco: str) -> str:
+    """D-719/D-736: ler daqui o registro da atualizacao do notebook do Kaique."""
+    from core.testes_a_distancia import NOME_DA_CONTA
+
+    return (f'ssh {NOME_DA_CONTA}@{endereco} type '
+            '"C:\\ProgramData\\EditorImpressao\\atualizacao\\atualizacao.log"')
+
+
+# ---------------------------------------------------------------------------
+# O ajudante: a tarefa do Windows (D-714, D-733), criada na primeira abertura
 # ---------------------------------------------------------------------------
 
 def xml_da_tarefa(exe: Path) -> str:
-    """O XML da tarefa: ao ligar o computador (com 3 minutos de atraso), como o
-    proprio sistema (SYSTEM, S-1-5-18), em prioridade baixa (7), sem janela,
-    roda <exe> --procurar-atualizacao.
+    """O XML do ajudante: como o proprio sistema (SYSTEM, S-1-5-18), em
+    prioridade baixa (7), sem janela, roda <exe> --procurar-atualizacao.
 
-    Nao exige rede para comecar: a primeira rodada (logo depois de instalar)
-    tambem instala o Visual C++ de dentro do pacote, que nao precisa de
-    internet (D-727); sem rede, a procura so registra e sai.
+    Mudou em 17/11 (D-732, D-733): SEM hora para rodar (nada de "ao ligar o
+    computador"); so quando alguem manda (comando_de_rodar_a_tarefa). E com o
+    SecurityDescriptor QUEM_PODE_MANDAR_RODAR: as contas comuns (a do Kaique,
+    a de testes) podem mandar rodar, mas nao mudar a tarefa.
+
+    Nao exige rede para comecar: sem rede, a procura so registra e sai.
     """
     from xml.sax.saxutils import escape
 
     return f"""<?xml version="1.0" encoding="UTF-16"?>
 <Task version="1.2" xmlns="http://schemas.microsoft.com/windows/2004/02/mit/task">
   <RegistrationInfo>
-    <Description>Editor de Impressão: procura e instala a versão nova quando o computador liga.</Description>
+    <Description>Editor de Impressão: procura e instala a versão nova quando o programa pede.</Description>
+    <SecurityDescriptor>{QUEM_PODE_MANDAR_RODAR}</SecurityDescriptor>
   </RegistrationInfo>
-  <Triggers>
-    <BootTrigger>
-      <Enabled>true</Enabled>
-      <Delay>{ATRASO_DEPOIS_DE_LIGAR}</Delay>
-    </BootTrigger>
-  </Triggers>
   <Principals>
     <Principal id="Sistema">
       <UserId>S-1-5-18</UserId>
@@ -675,7 +926,7 @@ def xml_da_tarefa(exe: Path) -> str:
     <MultipleInstancesPolicy>IgnoreNew</MultipleInstancesPolicy>
     <DisallowStartIfOnBatteries>false</DisallowStartIfOnBatteries>
     <StopIfGoingOnBatteries>false</StopIfGoingOnBatteries>
-    <StartWhenAvailable>true</StartWhenAvailable>
+    <AllowStartOnDemand>true</AllowStartOnDemand>
     <RunOnlyIfNetworkAvailable>false</RunOnlyIfNetworkAvailable>
     <ExecutionTimeLimit>PT2H</ExecutionTimeLimit>
     <Priority>7</Priority>
@@ -691,18 +942,10 @@ def xml_da_tarefa(exe: Path) -> str:
 """
 
 
-def _rodar(comando: list[str], tempo: int = 120) -> tuple[int, str]:
-    """Roda um comando do Windows sem janela; (codigo, saida). Nunca levanta."""
-    try:
-        feito = subprocess.run(comando, capture_output=True, text=True, timeout=tempo,
-                               creationflags=getattr(subprocess, "CREATE_NO_WINDOW", 0))
-        return feito.returncode, (feito.stdout + feito.stderr).strip()
-    except (OSError, subprocess.SubprocessError) as erro:
-        return -1, str(erro)
-
-
 def criar_tarefa(exe: Path | None = None, rodar: Callable[[list[str]], tuple[int, str]] = _rodar) -> bool:
-    """Cria (ou refaz) a tarefa do Windows. Precisa de administrador."""
+    """Cria (ou refaz) o ajudante. Precisa de administrador: so roda dentro da
+    pergunta da primeira abertura (preparar_como_administrador) ou como SYSTEM
+    depois de uma troca (conferir_e_refazer_o_ajudante)."""
     import tempfile
 
     exe = exe or (pasta_do_programa() / Path(sys.executable).name)
@@ -715,8 +958,8 @@ def criar_tarefa(exe: Path | None = None, rodar: Callable[[list[str]], tuple[int
 
 
 def rodar_tarefa_agora(rodar: Callable[[list[str]], tuple[int, str]] = _rodar) -> bool:
-    """Roda a tarefa uma vez, ja (logo depois de instalar: Visual C++ e a instalacao antiga)."""
-    codigo, saida = rodar(["schtasks", "/Run", "/TN", NOME_DA_TAREFA])
+    """Manda o ajudante rodar uma vez, ja (o mesmo comando de procurar_ao_abrir)."""
+    codigo, saida = rodar(comando_de_rodar_a_tarefa())
     registrar(f"rodar a tarefa agora: {'certo' if codigo == 0 else 'NÃO deu certo'} ({saida})")
     return codigo == 0
 
@@ -876,22 +1119,116 @@ def preparar_o_computador(gerente) -> None:
 
 
 # ---------------------------------------------------------------------------
+# A pergunta do Windows da primeira abertura (D-733, D-735)
+# ---------------------------------------------------------------------------
+
+def preparar_como_administrador(gerente=None, criar: Callable[[], bool] | None = None,
+                                preparar: Callable[[object], None] | None = None,
+                                portatil: Callable[[object], bool] | None = None) -> int:
+    """--preparar-o-computador: o que roda DENTRO da pergunta do Windows da
+    primeira abertura, ja como administrador (D-733). Devolve o codigo de saida.
+
+    Cria o ajudante (criar_tarefa) e faz o resto que pede licenca, pela mesma
+    regra de sempre (preparar_o_computador: o Visual C++ de dentro do pacote,
+    se faltar, e a instalacao antiga do Inno). Nunca no pacote portatil do
+    ensaio (e_portatil). Tudo vai para o registro da atualizacao.
+    """
+    try:
+        gerente = gerente or criar_gerente(Fonte.padrao())
+    except Exception as erro:  # noqa: BLE001
+        registrar(f"preparar o computador: não consegui perguntar ao Velopack ({erro}); não mexi em nada")
+        return 1
+    if (portatil or e_portatil)(gerente):
+        registrar("preparar o computador: pacote portátil, não mexi no Windows")
+        return 0
+    certo = (criar or criar_tarefa)()
+    (preparar or preparar_o_computador)(gerente)
+    return 0 if certo else 1
+
+
+def passo_de_preparar_o_computador(exe: Path | None = None):
+    """O passo da pergunta da primeira abertura: roda este .exe com
+    --preparar-o-computador, escondido, e espera ele terminar.
+
+    E um Passo da peca dos testes a distancia (core.testes_a_distancia.Passo),
+    para ir na MESMA pergunta do Windows que o ligar usa (uma regra so para
+    "pedir licenca", CLAUDE.md §11.12). Nao para a pergunta se der errado:
+    quem anota o que deu certo e o proprio --preparar-o-computador, no
+    registro da atualizacao; os passos dos testes a distancia, se houver
+    senha, continuam.
+    """
+    from core.testes_a_distancia import Passo
+
+    exe = exe or (pasta_do_programa() / Path(sys.executable).name)
+    return Passo("Preparar o computador: o ajudante da atualização, o Visual C++ e tirar a instalação "
+                 "antiga (D-733)",
+                 f"try {{ Start-Process -FilePath {_aspas_do_powershell(str(exe))}"
+                 f" -ArgumentList {_aspas_do_powershell(ARG_PREPARAR)} -WindowStyle Hidden -Wait }}"
+                 " catch { }")
+
+
+def preparar_na_primeira_abertura(senha: str):
+    """A pergunta do Windows da primeira abertura (D-733, D-735). Devolve o
+    Resultado da peca dos testes a distancia (core.testes_a_distancia.Resultado).
+
+    Aparece SEMPRE, com ou sem a senha (D-735):
+    - com a senha: chama core.testes_a_distancia.ligar (a porta unica, sem
+      mudanca) com a peca que fala com o Windows "acrescida" do passo de
+      preparar o computador. Assim o preparo e os passos dos testes vao numa
+      pergunta so, e ligar continua guardando o estado e escolhendo o aviso;
+    - sem a senha ("Agora não", ou a opcao desligada): so o passo de preparar,
+      na mesma peca (executor_atual), numa pergunta so.
+    Se o Kaique disser "Nao", fica anotado no registro; nada mais muda.
+    Quem chama: ui/testes_a_distancia_ui.primeira_vez_se_preciso.
+    """
+    from core import testes_a_distancia as td
+
+    preparo = [passo_de_preparar_o_computador()]
+    base = td.executor_atual()
+
+    class _ComOPreparo(td.Executor):
+        """A mesma peca de hoje, com o preparo antes dos passos que ela receber."""
+
+        def aplicar(self, passos, senha_dos_testes):
+            return base.aplicar([*preparo, *passos], senha_dos_testes)
+
+    if senha:
+        td.definir_executor(_ComOPreparo())
+        try:
+            resultado = td.ligar(senha)
+        finally:
+            td.definir_executor(base)
+    else:
+        resultado = base.aplicar(preparo, "")
+    if resultado.cancelado:
+        registrar("primeira abertura: o Kaique disse \"Não\" à pergunta do Windows; o ajudante da "
+                  "atualização não foi criado")
+    elif not resultado.ok:
+        registrar(f"primeira abertura: a pergunta do Windows não deu certo ({resultado.mensagem})")
+    return resultado
+
+
+# ---------------------------------------------------------------------------
 # Os ganchos do Velopack e a entrada pela linha de comando
 # ---------------------------------------------------------------------------
 
 def ao_instalar(_versao: str, portatil: Callable[[], bool] = e_portatil) -> None:
-    """Gancho do Velopack, depois de instalar: cria a tarefa e a roda uma vez (nunca no portatil)."""
+    """Gancho do Velopack, depois de instalar: so anota.
+
+    Ate 16/11 criava a tarefa aqui. Achado B1: o .msi roda este gancho SEM
+    licenca de administrador, e a tarefa nunca nasceria. Desde 17/11 (D-733)
+    o ajudante nasce na pergunta do Windows da primeira abertura
+    (preparar_na_primeira_abertura). `portatil` ficou para quem ja chamava assim.
+    """
     registrar(f"instalada a versão {_versao}")
-    if portatil():
-        return
-    if criar_tarefa():
-        rodar_tarefa_agora()
 
 
 def ao_atualizar(_versao: str, portatil: Callable[[], bool] = e_portatil) -> None:
-    """Gancho do Velopack, depois de atualizar: refaz a tarefa (o XML pode ter mudado). Nunca no portatil."""
-    if not portatil():
-        criar_tarefa()
+    """Gancho do Velopack, depois de atualizar: nada que peca licenca (achado B1).
+
+    Refazer o ajudante (o XML pode mudar de uma versao para outra) passou para
+    conferir_e_refazer_o_ajudante, que roda como SYSTEM logo depois da troca.
+    """
 
 
 def ao_desinstalar(_versao: str, portatil: Callable[[], bool] = e_portatil) -> None:
@@ -900,12 +1237,29 @@ def ao_desinstalar(_versao: str, portatil: Callable[[], bool] = e_portatil) -> N
         apagar_tarefa()
 
 
+def conferir_e_refazer_o_ajudante(fonte: Fonte, versao_atual: str,
+                                  conferir: Callable[[Fonte, str], int] | None = None,
+                                  criar: Callable[[], bool] | None = None,
+                                  portatil: Callable[[], bool] | None = None) -> int:
+    """--conferir-a-versao-nova: o teste rapido (conferir_versao_nova) e, se a
+    versao nova passou, refaz o ajudante com o XML desta versao.
+
+    Roda como SYSTEM (o Velopack o reabre do ajudante, depois de trocar), por
+    isso pode refazer a tarefa sem perguntar nada (antes era o gancho de
+    atualizar, sem licenca: achado B1). Nunca no portatil do ensaio.
+    """
+    codigo = (conferir or conferir_versao_nova)(fonte, versao_atual)
+    if codigo == 0 and not (portatil or e_portatil)():
+        (criar or criar_tarefa)()
+    return codigo
+
+
 def _rodar_o_velopack() -> None:
     """VelopackApp: atende os ganchos (o processo sai depois deles) e volta logo no resto.
 
     set_auto_apply_on_startup(False): a troca nunca acontece ao abrir a
-    janela (pediria a licenca de administrador ao Kaique); quem troca e a
-    tarefa, ou o "Reiniciar agora".
+    janela pelo proprio Velopack (pediria a licenca de administrador ao
+    Kaique); quem troca e o ajudante (D-733), chamado por trocar_e_reabrir.
     """
     import velopack
 
@@ -923,12 +1277,17 @@ def atender_linha_de_comando(argv: list[str]) -> int | None:
     Devolve o codigo de saida dos modos escondidos, ou None para o programa
     abrir normalmente. Pelo codigo (.venv) e sem argumento nosso: nao importa
     o velopack, nao faz nada.
+
+    No programa instalado, antes de abrir a janela, olha se ha versao nova
+    esperando do "Depois" (D-734, trocar_antes_de_abrir): se a troca comecou,
+    devolve 0 e o programa sai sem janela; o trocar_e_reabrir o reabre ja na
+    versao nova.
     """
     argumentos = list(argv[1:])
     primeiro = argumentos[0] if argumentos else ""
     if primeiro == ARG_TESTE_RAPIDO:
         return teste_rapido()
-    nossos = (ARG_PROCURAR, ARG_CONFERIR_NOVA)
+    nossos = (ARG_PROCURAR, ARG_CONFERIR_NOVA, ARG_PREPARAR)
     if primeiro not in nossos and not instalado_pelo_velopack() \
             and not any(a.startswith("--veloapp") for a in argumentos):
         return None
@@ -941,11 +1300,15 @@ def atender_linha_de_comando(argv: list[str]) -> int | None:
     fonte = fonte_da_linha(argumentos)
     if primeiro == ARG_PROCURAR:
         return rodar_ao_ligar(fonte)
+    if primeiro == ARG_PREPARAR:
+        return preparar_como_administrador()
     if primeiro == ARG_CONFERIR_NOVA:
         try:
             atual = criar_gerente(fonte).get_current_version()
         except Exception as erro:  # noqa: BLE001
             registrar(f"não consegui ler a versão para conferir: {erro}")
             return 1
-        return conferir_versao_nova(fonte, atual)
+        return conferir_e_refazer_o_ajudante(fonte, atual)
+    if trocar_antes_de_abrir(argumentos):
+        return 0
     return None
