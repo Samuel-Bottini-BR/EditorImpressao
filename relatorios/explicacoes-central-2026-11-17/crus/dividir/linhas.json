@@ -1,0 +1,62 @@
+{
+ "1": {
+  "scantailor": 0.523,
+  "programa": 0.523,
+  "confianca": 1.0
+ },
+ "2": {
+  "scantailor": 0.518,
+  "programa": 0.518,
+  "confianca": 1.0
+ },
+ "3": {
+  "scantailor": 0.519,
+  "programa": 0.519,
+  "confianca": 1.0
+ },
+ "4": {
+  "scantailor": 0.101,
+  "programa": 0.527,
+  "confianca": 0.25
+ },
+ "5": {
+  "scantailor": 0.101,
+  "programa": 0.48,
+  "confianca": 0.25
+ },
+ "6": {
+  "scantailor": 0.524,
+  "programa": 0.524,
+  "confianca": 1.0
+ },
+ "7": {
+  "scantailor": 0.526,
+  "programa": 0.526,
+  "confianca": 1.0
+ },
+ "8": {
+  "scantailor": 0.528,
+  "programa": 0.528,
+  "confianca": 1.0
+ },
+ "9": {
+  "scantailor": 0.529,
+  "programa": 0.529,
+  "confianca": 1.0
+ },
+ "10": {
+  "scantailor": 0.528,
+  "programa": 0.528,
+  "confianca": 1.0
+ },
+ "11": {
+  "scantailor": 0.528,
+  "programa": 0.528,
+  "confianca": 1.0
+ },
+ "12": {
+  "scantailor": 0.529,
+  "programa": 0.529,
+  "confianca": 1.0
+ }
+}

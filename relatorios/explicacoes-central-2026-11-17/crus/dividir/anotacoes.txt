@@ -1,0 +1,16 @@
+abriu => {"aba": "marcar", "folhas_na_tela": false, "pagina": 1, "folha": 1, "mostrar": "uma"}
+folhas-paginas => [12, 12]
+no-dividir => {"aba": "corte", "folhas_na_tela": true, "pagina": 1, "folha": 1, "mostrar": "uma"}
+automatico-marcadas => ["dividir"]
+depois-do-automatico => {"aba": "marcar", "folhas_na_tela": false, "pagina": 1, "folha": 1, "mostrar": "uma"}
+divididas => [[1, true, 0.523, 1.0, []], [2, true, 0.518, 1.0, []], [3, true, 0.519, 1.0, []], [4, true, 0.527, 0.25, ["lombada_incerta"]], [5, true, 0.48, 0.25, ["lombada_incerta"]], [6, true, 0.524, 1.0, []], [7, true, 0.526, 1.0, []], [8, true, 0.527, 1.0, []], [9, true, 0.529, 1.0, []], [10, true, 0.527, 1.0, []], [11, true, 0.527, 1.0, []], [12, true, 0.529, 1.0, []]]
+avisos => [["pagina", 2, "em_branco"], ["folha", 4, "lombada_incerta"], ["folha", 5, "lombada_incerta"], ["pagina", 9, "em_branco"]]
+cartao-pagina-2 => {"aba": "marcar", "folhas_na_tela": false, "pagina": 2, "folha": 1, "mostrar": "uma"}
+cartao-pagina-7 => {"aba": "corte", "folhas_na_tela": true, "pagina": 7, "folha": 4, "mostrar": "uma"}
+folha-4-duas-lado-a-lado => {"aba": "corte", "folhas_na_tela": true, "pagina": 7, "folha": 4, "mostrar": "duas", "linha": 0.5275}
+ver-outro-aviso => {"aviso": ["pagina", 2, "em_branco"], "aba": "filtro", "folhas_na_tela": false, "pagina": 2, "folha": 1, "mostrar": "uma"}
+ver-lombada-incerta => {"aviso": ["folha", 4, "lombada_incerta"], "aba": "corte", "folhas_na_tela": true, "pagina": 7, "folha": 4, "mostrar": "uma"}
+linhas => {"1": {"scantailor": 0.523, "programa": 0.523, "confianca": 1.0}, "2": {"scantailor": 0.518, "programa": 0.518, "confianca": 1.0}, "3": {"scantailor": 0.519, "programa": 0.519, "confianca": 1.0}, "4": {"scantailor": 0.101, "programa": 0.527, "confianca": 0.25}, "5": {"scantailor": 0.101, "programa": 0.48, "confianca": 0.25}, "6": {"scantailor": 0.524, "programa": 0.524, "confianca": 1.0}, "7": {"scantailor": 0.526, "programa": 0.526, "confianca": 1.0}, "8": {"scantailor": 0.528, "programa": 0.528, "confianca": 1.0}, "9": {"scantailor": 0.529, "programa": 0.529, "confianca": 1.0}, "10": {"scantailor": 0.528, "programa": 0.528, "confianca": 1.0}, "11": {"scantailor": 0.528, "programa": 0.528, "confianca": 1.0}, "12": {"scantailor": 0.529, "programa": 0.529, "confianca": 1.0}}
+paginas-das-folhas-3-4-5 => [[5, 3, "esquerda"], [6, 3, "direita"], [7, 4, "esquerda"], [8, 4, "direita"], [9, 5, "esquerda"], [10, 5, "direita"]]
+resumos => ["La vida eterna"]
+reabriu => {"aba": "marcar", "folhas_na_tela": false, "pagina": 1, "folha": 1, "mostrar": "uma"}

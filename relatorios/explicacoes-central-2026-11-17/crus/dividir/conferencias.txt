@@ -1,0 +1,3 @@
+ok   WM_CLOSE fechou a janela
+ok   WM_CLOSE fechou a janela
+2 de 2
