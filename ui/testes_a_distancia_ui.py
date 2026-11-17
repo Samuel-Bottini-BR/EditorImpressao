@@ -5,6 +5,12 @@ De onde vem (frente do notebook do Kaique, 16/11/2026):
          dos testes a distancia"; o Kaique digita a que o Samuel passar. Sem a
          senha, os testes ficam desligados; da para por a senha depois nas
          Configuracoes.
+  D-728  essa janela da primeira vez SO aparece no programa instalado pelo
+         instalador (o do Kaique). Aberto pelo codigo (atalho "(desenvolvimento)"
+         do Samuel), ela nunca aparece e nada dos testes a distancia liga sozinho -
+         igual a atualizacao, que pelo codigo nao faz nada. A regra de "instalado"
+         e a mesma da atualizacao: atualizacao.instalado_pelo_velopack (um lugar
+         so, CLAUDE.md 11.12).
 
 Esta e a parte da TELA. A regra (quais comandos ligam) fica em
 core/testes_a_distancia.py; aqui so se pede a senha e se chama `ligar` de la.
@@ -17,6 +23,8 @@ Texto da tela em portugues, sem jargao (regra do Kaique): nada de "OpenSSH",
 
 from __future__ import annotations
 
+from typing import Callable
+
 from PySide6.QtCore import Qt
 from PySide6.QtWidgets import (
     QDialog,
@@ -27,6 +35,7 @@ from PySide6.QtWidgets import (
     QVBoxLayout,
 )
 
+import atualizacao
 from core import testes_a_distancia as td
 from ui import perguntas
 
@@ -103,13 +112,27 @@ def pedir_senha_e_ligar(parent=None) -> td.Resultado:
     return resultado
 
 
-def primeira_vez_se_preciso(parent=None) -> None:
-    """Na primeira abertura do programa, pede a senha uma vez (D-721).
+def primeira_vez_se_preciso(parent=None,
+                            instalado: Callable[[], bool] = atualizacao.instalado_pelo_velopack) -> None:
+    """Na primeira abertura do programa instalado, pede a senha uma vez (D-721, D-728).
 
     So aparece se a janela ainda nao apareceu antes. Depois, nunca mais sozinha
     (da para por a senha nas Configuracoes). Nao faz nada se a opcao estiver
     desligada (o Kaique pode te-la desligado).
+
+    D-728 (16/11/2026): pelo codigo (nao instalado pelo instalador) nao faz NADA:
+    nem mostra a janela, nem marca "senha ja perguntada". Por que nao marcar: a
+    marca e da pasta de dados do usuario; se o codigo marcasse, o programa
+    instalado no mesmo computador nunca perguntaria na primeira vez dele. Antes
+    disto, a janela aparecia tambem pelo atalho "(desenvolvimento)", e uma senha
+    digitada ali ligaria os testes a distancia no PC do Samuel.
+    `instalado` vem como parametro so para os testes (igual a
+    ui/aviso_de_atualizacao.ligar_na_janela); o main.py usa o padrao.
+    Seguro mudar: o texto. Arriscado: tirar o `instalado()` daqui (a janela
+    voltaria a aparecer pelo codigo) ou marcar antes dele.
     """
+    if not instalado():
+        return
     if td.senha_ja_perguntada():
         return
     td.marcar_senha_perguntada()

@@ -68,7 +68,9 @@ def main() -> int:
 
     # Primeira abertura do programa (D-721): uma janela pequena pede "a senha
     # dos testes a distancia". So aparece uma vez; depois, da para por a senha
-    # nas Configuracoes. Ver ui/testes_a_distancia_ui.py.
+    # nas Configuracoes. So no programa instalado pelo instalador (D-728): pelo
+    # codigo nao mostra nada e nao marca nada, com a mesma regra da atualizacao
+    # (atualizacao.instalado_pelo_velopack). Ver ui/testes_a_distancia_ui.py.
     from ui.testes_a_distancia_ui import primeira_vez_se_preciso
 
     primeira_vez_se_preciso(janela)

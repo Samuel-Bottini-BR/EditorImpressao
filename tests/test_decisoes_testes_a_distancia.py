@@ -200,3 +200,47 @@ def test_executor_de_verdade_se_recusa_sob_o_pytest(dados):
     """O ExecutorWindows nunca toca o Windows durante os testes."""
     with pytest.raises(RuntimeError):
         td.ExecutorWindows().aplicar(td.plano_de_ligar(), "x")
+
+
+# --- D-728 (16/11/2026): a janela da senha só no programa instalado pelo instalador -----------
+# Palavras do Samuel, à pergunta "a janelinha aparece só no programa instalado pelo instalador
+# [...] No seu atalho ela nunca aparece. Pode ser assim?": "ok, mas eu nunca criei nenhuma senha".
+# A regra de "instalado" é a mesma da atualização: atualizacao.instalado_pelo_velopack.
+
+def test_d728_pelo_codigo_nenhuma_janela_e_nada_marcado(dados, fake, monkeypatch):
+    """D-728 (16/11/2026): aberto pelo código (atalho "(desenvolvimento)"), a janela da senha
+    não aparece, nada liga e "senha já perguntada" NÃO é marcada - para o programa instalado
+    continuar perguntando na primeira vez dele."""
+    pytest.importorskip("PySide6")
+    import atualizacao
+    import ui.testes_a_distancia_ui as tdui
+
+    assert atualizacao.instalado_pelo_velopack() is False, "sob o pytest o programa roda pelo código"
+    vezes = []
+    monkeypatch.setattr(tdui, "perguntar_senha", lambda parent=None: (vezes.append(1), "segredo")[1])
+    monkeypatch.setattr(tdui.perguntas, "avisar", lambda *a, **k: None)
+
+    tdui.primeira_vez_se_preciso(None)  # como o main.py chama: sem dizer nada de "instalado"
+    assert vezes == [], "pelo código a janela da senha não pode aparecer (D-728)"
+    assert fake.chamadas == [], "pelo código nada dos testes à distância liga (D-728)"
+    assert td.senha_ja_perguntada() is False, "pelo código não marca 'senha já perguntada' (D-728)"
+    assert td.esta_pronto() is False
+
+
+def test_d728_instalado_primeira_vez_pede_a_senha(dados, fake, monkeypatch):
+    """D-728 (16/11/2026): no programa instalado pelo instalador, na primeira vez, a janela da
+    senha aparece (D-721). A janela é trocada por uma de mentira: nada abre na tela."""
+    pytest.importorskip("PySide6")
+    import ui.testes_a_distancia_ui as tdui
+
+    vezes = []
+    monkeypatch.setattr(tdui, "perguntar_senha", lambda parent=None: (vezes.append(1), "segredo")[1])
+    assert not td.senha_ja_perguntada()
+
+    tdui.primeira_vez_se_preciso(None, instalado=lambda: True)
+    assert vezes == [1], "instalado, primeira vez: a janela da senha apareceu uma vez"
+    assert td.senha_ja_perguntada() and td.esta_pronto()
+    assert len(fake.chamadas) == 1
+
+    tdui.primeira_vez_se_preciso(None, instalado=lambda: True)
+    assert vezes == [1], "na segunda abertura a janela não aparece sozinha"
