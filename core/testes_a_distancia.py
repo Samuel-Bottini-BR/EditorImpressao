@@ -383,8 +383,12 @@ def plano_de_ligar() -> list[Passo]:
               f" Add-LocalGroupMember -SID {SID_USUARIOS} -Member {NOME_DA_CONTA} }}",
               precisa_senha=True),
         # Esconder da tela de entrada (D-717): valor 0 (DWORD) no UserList.
+        # B5 (17/11/2026): a chave so e criada se nao existe; o New-Item -Force
+        # numa chave que ja existe pode recria-la e apagar as outras contas
+        # escondidas do dono. O New-ItemProperty -Force so mexe no nosso valor.
         Passo("Esconder a conta de testes da tela de entrada (D-717)",
-              f"New-Item -Path '{CHAVE_USERLIST}' -Force | Out-Null;"
+              f"if (-not (Test-Path -Path '{CHAVE_USERLIST}'))"
+              f" {{ New-Item -Path '{CHAVE_USERLIST}' -Force | Out-Null }};"
               f" New-ItemProperty -Path '{CHAVE_USERLIST}' -Name {NOME_DA_CONTA}"
               f" -Value 0 -PropertyType DWord -Force | Out-Null"),
         # So a conta de testes entra pelo comando de longe (nem a conta do

@@ -667,3 +667,21 @@ def test_os_scripts_montados_sao_powershell_sem_erro_de_escrita(tmp_path, dados)
         feito = subprocess.run([POWERSHELL, "-NoProfile", "-NonInteractive", "-Command", ler],
                                capture_output=True, text=True, timeout=120)
         assert feito.returncode == 0 and not feito.stdout.strip(), f"{nome}: {feito.stdout} {feito.stderr}"
+
+
+@precisa_do_powershell
+@pytest.mark.parametrize("chave_existe", [True, False])
+def test_b5_esconder_a_conta_nao_recria_a_chave_userlist(maquina, monkeypatch, chave_existe):
+    """B5 (achado 17/11/2026, consertado em 17/11/2026): o passo que esconde a conta fazia
+    `New-Item -Path ...UserList -Force`; numa chave que já existe, isso pode recriá-la e apagar as outras contas
+    escondidas do dono. Agora a chave só é criada se não existe; o valor EditorTestes entra do mesmo jeito.
+    Falha no código de antes (o New-Item era sempre)."""
+    chave = maquina / "UserList-do-dono"
+    if chave_existe:
+        chave.mkdir()  # o Test-Path de verdade diz "existe"
+    monkeypatch.setattr(td, "CHAVE_USERLIST", str(chave))
+    passo = o_passo(td.plano_de_ligar(), "New-ItemProperty")
+    codigo, linhas, erro = rodar_no_windows_de_mentira(passo.comando, maquina, anotar=("New-Item", "New-ItemProperty"))
+    assert codigo == 0, erro
+    assert bool(chamou(linhas, "New-Item")) is (not chave_existe), "B5: a chave do dono não pode ser recriada"
+    assert f"-Name {td.NOME_DA_CONTA} -Value 0" in " ".join(chamou(linhas, "New-ItemProperty"))
