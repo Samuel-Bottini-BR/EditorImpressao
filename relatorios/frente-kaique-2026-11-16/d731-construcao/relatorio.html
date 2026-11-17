@@ -1,0 +1,286 @@
+<!doctype html>
+<html lang="pt-BR">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>D-731: desinstalar tira o que os testes a distancia puseram</title>
+<style>
+:root { color-scheme: light dark; }
+* { box-sizing: border-box; }
+body {
+  font: 17px/1.65 "Segoe UI", system-ui, sans-serif;
+  max-width: 46rem; margin: 0 auto; padding: 2.5rem 1.5rem 6rem;
+  color: #1c1c1e; background: #fdfdfc;
+}
+h1 { font-size: 2rem; line-height: 1.2; margin: 0 0 .3em; letter-spacing: -.02em; }
+h2 { font-size: 1.35rem; margin: 2.4em 0 .6em; padding-top: .8em;
+     border-top: 1px solid #e6e4e0; letter-spacing: -.01em; }
+h3 { font-size: 1.1rem; margin: 1.8em 0 .4em; }
+h1 + p, h2 + p { margin-top: .4em; }
+p, li { margin: 0 0 .9em; }
+ul, ol { padding-left: 1.3em; }
+strong { font-weight: 640; }
+code {
+  font: .88em ui-monospace, "Cascadia Code", Consolas, monospace;
+  background: #f1efec; padding: .12em .35em; border-radius: 4px;
+}
+pre {
+  background: #f1efec; padding: 1em 1.1em; border-radius: 8px;
+  overflow-x: auto; line-height: 1.5;
+}
+pre code { background: none; padding: 0; }
+blockquote {
+  margin: 1.2em 0; padding: .1em 0 .1em 1.1em;
+  border-left: 3px solid #c9c5be; color: #55524d;
+}
+table {
+  border-collapse: collapse; width: 100%; margin: 1.2em 0;
+  font-size: .95rem; display: block; overflow-x: auto;
+}
+th, td { padding: .5em .8em; text-align: left; border-bottom: 1px solid #e6e4e0; }
+th { font-weight: 620; background: #f7f5f2; white-space: nowrap; }
+tr:last-child td { border-bottom: none; }
+img { max-width: 100%; height: auto; border-radius: 6px; margin: 1em 0;
+      border: 1px solid #e6e4e0; }
+hr { border: none; border-top: 1px solid #e6e4e0; margin: 2.5em 0; }
+.rodape { margin-top: 4em; padding-top: 1.2em; border-top: 1px solid #e6e4e0;
+          font-size: .85rem; color: #86827c; }
+@media (prefers-color-scheme: dark) {
+  body { color: #e8e6e3; background: #1a1917; }
+  h2 { border-top-color: #35332f; }
+  code, pre, th { background: #262421; }
+  th, td { border-bottom-color: #35332f; }
+  blockquote { border-left-color: #4a4741; color: #b0aca6; }
+  img { border-color: #35332f; }
+  .rodape { border-top-color: #35332f; color: #7d7973; }
+}
+@media print {
+  body { max-width: none; padding: 0; color: #000; background: #fff; }
+  h2 { page-break-after: avoid; }
+  table, img { page-break-inside: avoid; }
+}
+</style>
+</head>
+<body>
+<h1>Desinstalar tira o que os testes à distância puseram (D-731) e os defeitos B2, B3, B4</h1>
+<p><strong>O que é.</strong> Quando o Kaique desinstalar o Editor de Impressão, o notebook volta a ser como era antes: sai o comando
+de longe (o Servidor OpenSSH, só se foi o programa que o instalou), a regra do firewall, a conta de testes escondida e
+a pasta dela. Os livros e os projetos do Kaique ficam. Ninguém precisa responder pergunta nenhuma a mais.</p>
+<p><strong>Situação.</strong> PRONTO PARA CONFERIR. Construído e provado com o Windows de mentira (17/11/2026). Nada foi feito no Windows
+de verdade. Ramo <code>desinstalar-b-2026-11-17</code>, commits <code>47d96ffb</code> (provas) e <code>65303058</code> (código), sobre <code>997a3085</code>.</p>
+<h2>O que mudou</h2>
+<ol>
+<li><strong>O caderninho do antes.</strong> O primeiro passo do <code>ligar</code>, já com a licença de administrador, anota o que o computador
+   já tinha em <code>C:\ProgramData\EditorImpressao\testes-a-distancia\antes.json</code>: o OpenSSH, como o serviço ligava, a regra
+   larga do firewall, uma conta com o nosso nome, a chave UserList e o que havia na pasta <code>C:\ProgramData\ssh</code>. Isso
+   acontece só na primeira vez. A pasta fica com dono "administradores" e só de leitura para as contas comuns. Um
+   caderninho que não foi gravado pelo sistema nem por um administrador não vale e é gravado de novo.</li>
+<li><strong>A tarefa "desfazer"</strong> (alternativa B, D-733). O último passo do <code>ligar</code> grava o script do desfazer e cria a tarefa
+   <code>EditorImpressao\Desfazer testes a distancia</code>. Ela roda como o sistema, escondida e sem gatilho. Pode mandá-la rodar
+   quem entrou no Windows, menos a conta de testes, que é negada (D-717). O script é exatamente o <code>plano_de_desfazer</code>,
+   o mesmo da etapa 5 (D-722): uma regra só.</li>
+<li><strong>O gancho de desinstalar</strong> (<code>atualizacao.ao_desinstalar</code>) só manda a tarefa rodar (<code>schtasks /Run</code>, no máximo 20 s)
+   e volta. Depois apaga a tarefa da atualização, como antes. Sem a tarefa, porque os testes nunca foram ligados, ele
+   só anota no registro.</li>
+<li><strong>O desfazer só tira o que foi nosso:</strong>
+   - o OpenSSH, a regra larga e o que nasceu na pasta <code>ssh</code> só saem se o caderninho diz que não existiam; sem
+     caderninho, o OpenSSH nunca sai;
+   - a conta só sai se tem a nossa descrição e o caderninho não anotou uma conta de outro;
+   - o perfil é achado pelo número de identidade da conta (SID), não pelo nome da pasta;
+   - o <code>sshd_config</code> sai pelas linhas-marca; a linha de fábrica <code>#PasswordAuthentication yes</code> fica, e o arquivo
+     volta igual, letra por letra;
+   - antes de apagar, ele para o comando de longe e fecha o que a conta de testes estiver rodando;
+   - um passo que falha não para os outros; o caderninho e a tarefa só se apagam se tudo deu certo;
+   - cada passo vai para <code>o-que-foi-desfeito.txt</code> na mesma pasta (a lista da D-722).</li>
+<li><strong>B2.</strong> As linhas do <code>ligar</code> vão entre as marcas e antes do primeiro <code>Match</code> do <code>sshd_config</code>.</li>
+<li><strong>B3.</strong> Ligar de novo reativa a conta nossa e troca a senha. Uma conta com o nosso nome que não é nossa faz o
+   <code>ligar</code> parar sem mexer nela. A regra do firewall e as linhas do <code>sshd_config</code> não se repetem.</li>
+<li><strong>B4.</strong> Se o OpenSSH já era do dono, desligar devolve o serviço e a regra larga como estavam e tira as nossas
+   linhas. Se foi o programa que o pôs, ou não há caderninho, desligar para o serviço como sempre.</li>
+<li><strong>Achado e consertado (impedia a tarefa).</strong> O script montado lia sempre o arquivo da senha. Sem ele, parava na
+   primeira linha. Por isso o desligar e o desfazer, que não têm senha, nunca rodariam no Windows de verdade. Provado
+   no código de antes: o script sem senha saiu com código 1, sem escrever o registro. Agora o arquivo só é lido quando
+   um passo precisa da senha. O montador passou a ser um só (<code>montar_script</code>, em <code>core/testes_a_distancia.py</code>).</li>
+</ol>
+<h2>Arquivos</h2>
+<ul>
+<li><code>core/testes_a_distancia.py</code>: caderninho, marcas, os três planos, <code>montar_script</code>, <code>Executor.rodar_a_tarefa</code> e
+  <code>mandar_desfazer</code>.</li>
+<li><code>core/_testes_a_distancia_windows.py</code>: usa o montador único; <code>rodar_a_tarefa_no_windows</code>.</li>
+<li><code>atualizacao.py</code>: <strong>só a função <code>ao_desinstalar</code></strong> (linhas 897 a 913). Mudaram a docstring (898 a 906) e as linhas
+  novas 908 a 912 (<code>from core import testes_a_distancia</code>, <code>mandar_desfazer()</code> e o <code>registrar</code>). A linha 913,
+  <code>apagar_tarefa()</code>, ficou igual.</li>
+<li><code>tests/test_decisoes_desinstalar.py</code> (novo, 35 provas).</li>
+<li>A assinatura <code>ligar(senha)</code> e o <code>Executor.aplicar</code> (a pergunta de administrador) não mudaram.</li>
+</ul>
+<h2>Caminho → função (uma regra num lugar só, §11.12)</h2>
+<table>
+<thead>
+<tr>
+<th>Caminho</th>
+<th>Função</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>Desinstalar pelo Windows</td>
+<td><code>atualizacao.ao_desinstalar</code> → <code>testes_a_distancia.mandar_desfazer</code> → <code>Executor.rodar_a_tarefa</code> → a tarefa roda <code>montar_script(plano_de_desfazer())</code></td>
+</tr>
+<tr>
+<td>Etapa 5 no PC do Samuel</td>
+<td>a mesma tarefa (<code>mandar_desfazer</code>), ou <code>plano_de_desfazer</code> → <code>Executor.aplicar</code></td>
+</tr>
+<tr>
+<td>Ligar (janela da senha, caixinha, botão "Pôr a senha")</td>
+<td><code>testes_a_distancia.ligar</code> → <code>plano_de_ligar</code></td>
+</tr>
+<tr>
+<td>Tirar as nossas linhas do <code>sshd_config</code> (ligar de novo, desligar do dono, desfazer)</td>
+<td><code>_comando_tirar_o_bloco</code></td>
+</tr>
+<tr>
+<td>"O OpenSSH foi nosso?" / "A conta é nossa?"</td>
+<td><code>_so_se_o_openssh_foi_nosso</code> / <code>_so_se_a_conta_foi_nossa</code></td>
+</tr>
+<tr>
+<td>Montar qualquer script (ligar, desligar, desfazer)</td>
+<td><code>montar_script</code></td>
+</tr>
+</tbody>
+</table>
+<p>Prova de que a etapa 5 e a desinstalação usam o mesmo desfazer: <code>test_d731_ligar_cria_a_tarefa_desfazer_com_o_mesmo_plano</code>.
+Ela abre o script gravado pelo <code>ligar</code> e cobra que ele seja igual a <code>montar_script(plano_de_desfazer())</code>.</p>
+<h2>Como se provou sem tocar o Windows</h2>
+<ul>
+<li><strong>O executor de mentira</strong>, como na etapa 4, só anota.</li>
+<li><strong>O Windows de mentira do PowerShell.</strong> O comando de cada passo roda num <code>powershell.exe</code> em que cada comando que
+  muda o Windows (Stop-Service, Remove-LocalUser, icacls...) é trocado por uma função que só anota. No PowerShell, uma
+  função com o mesmo nome ganha do comando de verdade. Os caminhos apontam para a pasta temporária do teste. Antes de
+  rodar, o teste confere o texto e se recusa a rodar se houver um comando sem troca, o disco C:, o registro do Windows
+  ou um serviço COM.</li>
+<li><strong>O leitor do PowerShell</strong> confere que os três scripts montados não têm erro de escrita. Ele só lê, não executa.</li>
+</ul>
+<h2>Cada prova de defeito falhando no código de antes</h2>
+<p>Rodei o arquivo novo com os três arquivos do código de antes (<code>997a3085</code>): 28 falham e 7 passam. As 7 que passam só
+guardam o que já era certo (portátil, conta nova sem administrador, desligar do OpenSSH nosso). Saída inteira em
+<code>prova-no-codigo-de-antes.txt</code>.</p>
+<table>
+<thead>
+<tr>
+<th>Prova</th>
+<th>Por que falhou no código de antes</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><code>test_d731_desinstalar_manda_rodar_a_tarefa_desfazer</code> (a principal)</td>
+<td>"o gancho de desinstalar não mandou rodar a tarefa desfazer": <code>ao_desinstalar</code> só apagava a tarefa da atualização</td>
+</tr>
+<tr>
+<td><code>test_d731_ligar_cria_a_tarefa_desfazer_com_o_mesmo_plano</code>, <code>..._a_conta_comum_manda_rodar...</code></td>
+<td>o <code>ligar</code> não criava tarefa</td>
+</tr>
+<tr>
+<td><code>test_d731_ligar_anota_o_antes_primeiro...</code></td>
+<td>não havia caderninho</td>
+</tr>
+<tr>
+<td><code>test_b2_as_linhas_do_ligar_vao_antes_do_match</code></td>
+<td>"B2: as linhas caíram dentro do bloco Match Group administrators"</td>
+</tr>
+<tr>
+<td><code>test_b3_ligar_de_novo_nao_repete_as_linhas</code></td>
+<td>2 linhas <code>AllowUsers</code> em vez de 1</td>
+</tr>
+<tr>
+<td><code>test_b3_ligar_depois_de_desligar_reativa_a_conta</code></td>
+<td>"ligar de novo parou no erro: A conta EditorTestes ja existe."</td>
+</tr>
+<tr>
+<td><code>test_b3_ligar_de_novo_refaz_a_regra_do_firewall</code></td>
+<td>só <code>New-NetFirewallRule</code>, sem apagar a de antes</td>
+</tr>
+<tr>
+<td><code>test_b4_desligar_devolve_o_openssh_que_ja_era_do_dono</code></td>
+<td>"B4: desligou o OpenSSH que era do dono"</td>
+</tr>
+<tr>
+<td><code>test_d731_sshd_config_sai_pelas_marcas...</code></td>
+<td>o desfazer procurava a linha solta <code>PasswordAuthentication yes</code> (apagava a de fábrica)</td>
+</tr>
+<tr>
+<td><code>test_d731_openssh_so_sai_se_foi_o_programa_que_pos</code> (2 casos)</td>
+<td>tirava o OpenSSH do dono e sem caderninho</td>
+</tr>
+<tr>
+<td><code>test_d731_a_conta_so_sai_se_for_a_nossa</code> (2 casos), <code>..._de_outro_que_existia_antes_fica</code></td>
+<td>apagava qualquer conta EditorTestes</td>
+</tr>
+<tr>
+<td><code>test_d731_o_perfil_e_achado_pelo_sid</code></td>
+<td>apagou o perfil de outra conta com pasta <code>...\EditorTestes</code></td>
+</tr>
+<tr>
+<td><code>test_d731_a_regra_larga_so_sai...</code>, <code>test_d731_da_pasta_ssh_so_sai...</code> (2+2)</td>
+<td>não havia esses passos</td>
+</tr>
+<tr>
+<td><code>test_script_sem_senha_nao_procura_o_arquivo_da_senha</code>, <code>test_d731_o_desfazer_continua_depois_de_um_erro</code></td>
+<td>o montador não era único e parava sem o arquivo da senha</td>
+</tr>
+</tbody>
+</table>
+<h2>Resultado de cada arquivo (um por vez, offscreen, <code>--basetemp=D:/agente_temp_testes/d731</code>)</h2>
+<ul>
+<li><code>tests/test_decisoes_testes_a_distancia.py</code>: 13 passaram (as provas da etapa 4, sem mudança).</li>
+<li><code>tests/test_decisoes_atualizacao.py</code>: 38 passaram.</li>
+<li><code>tests/test_decisoes_desinstalar.py</code> (novo): 35 passaram.</li>
+<li><code>tests/test_promessas.py -k "215"</code>: 1 passou.</li>
+<li>Rodada do GitHub: <strong>não disparada</strong> (o pedido disse "sem push"). A gerente dispara depois do push.</li>
+</ul>
+<p><strong>Testes antigos afetados: nenhum.</strong> Nenhum teste antigo foi mudado.</p>
+<h2>Como fica para quem usa e no livro</h2>
+<ul>
+<li><strong>Kaique, usando o programa:</strong> nada muda. A janela da senha, as Configurações, os filtros e o PDF ficam iguais.</li>
+<li><strong>Kaique, ao pôr a senha:</strong> a mesma pergunta do Windows de hoje. Por trás, o programa anota o que já havia e deixa a
+  tarefa pronta.</li>
+<li><strong>Kaique, ao desinstalar:</strong> nenhuma pergunta a mais. Em poucos minutos, por trás, o notebook fica como era.</li>
+<li><strong>No PDF:</strong> nada muda.</li>
+<li><strong>Problema novo:</strong> nenhum achado. Ressalva: um ligar demora alguns segundos a mais (anotar o antes, criar a tarefa).</li>
+</ul>
+<h2>Perguntas abertas (para a gerente; cada uma com a sugestão)</h2>
+<ol>
+<li><strong>A tarefa da atualização não sai ao desinstalar.</strong> O gancho roda sem administrador, e o <code>apagar_tarefa</code> falha
+   (achado B1). A tarefa "desfazer" só existe se os testes foram ligados. Sugestão: o agente da atualização faz a
+   tarefa dele sair pelo mesmo caminho. Por exemplo, a pergunta do Windows da primeira abertura (D-735) cria sempre a
+   tarefa "desfazer", e ela apaga também a da atualização. Isso é da frente do outro agente: eu não mexi.</li>
+<li><strong>Quem pode mandar rodar o desfazer.</strong> Hoje é qualquer conta que entrou no Windows, menos a de testes. Sugestão:
+   fica assim. A tarefa só desfaz o que é nosso, e prender só à conta do Kaique pediria saber qual é a conta dele na
+   hora de ligar.</li>
+<li><strong>Se o notebook do Kaique já tiver um OpenSSH dele</strong>, enquanto os testes estão ligados só a conta de testes entra
+   por ele (é a D-711). Desligar e desinstalar devolvem tudo como era. Sugestão: só perguntar ao Samuel se a etapa 6
+   mostrar que o notebook já tem um OpenSSH.</li>
+<li><strong>Defeito provável, não consertado (B5).</strong> O passo que esconde a conta usa <code>New-Item ... UserList -Force</code>. Se a
+   chave já existir, isso pode apagar as outras contas escondidas do dono. Sugestão: consertar já, com "só cria se não
+   existe" (uma linha) e teste de reversão. Fica fora deste pedido, por isso não mexi.</li>
+<li><strong>O registro do desfazer</strong> (<code>o-que-foi-desfeito.txt</code>) e a pasta dele ficam no ProgramData depois de desinstalar,
+   para a gerente ler o que foi feito. Sugestão: fica, como a pasta do registro da atualização.</li>
+<li><strong>Depois de uma atualização</strong>, a tarefa roda o desfazer da versão que ligou por último. Sugestão: fica assim, ou o
+   ajudante da atualização grava o script de novo (frente do outro agente).</li>
+</ol>
+<h2>O que só a etapa 5 prova (no PC do Samuel)</h2>
+<ul>
+<li>Que a conta comum consegue mandar a tarefa rodar com essa licença, de dentro do gancho do <code>.msi</code>, e em menos de 30 s.</li>
+<li>Que a tarefa continua rodando depois que o desinstalador termina e apaga a pasta do programa.</li>
+<li>Que <code>Register-ScheduledTask -Xml</code> aceita o XML com <code>S-1-5-18</code>, e o <code>SetSecurityDescriptor</code>, a licença.</li>
+<li>Que o <code>icacls</code> com os números dos grupos protege a pasta e que um arquivo gravado como administrador tem dono
+  "administradores".</li>
+<li>Os valores reais do caderninho (o estado do OpenSSH, o tipo de início do serviço, a regra larga).</li>
+<li>O <code>sshd_config</code> de fábrica de verdade, e se o <code>sshd</code> aceita as linhas antes do <code>Match</code>.</li>
+<li>Que o <code>Remove-CimInstance</code> apaga o perfil e que o <code>Remove-WindowsCapability</code> termina dentro de 1 hora.</li>
+<li>Que a tarefa consegue se apagar no último passo.</li>
+<li>O antivírus (D-725).</li>
+</ul>
+<p class="rodape">Editor de Impressão &middot; gerado em 17/11/2026 às 09:22</p>
+</body>
+</html>

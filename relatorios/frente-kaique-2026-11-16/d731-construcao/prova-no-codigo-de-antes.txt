@@ -1,0 +1,147 @@
+F.FFFFFFFFFF..FF..FF.FF.FFFFFFFFFFF                                      [100%]
+================================== FAILURES ===================================
+E   AssertionError: o gancho de desinstalar não mandou rodar a tarefa desfazer (D-731)
+    assert []
+     +  where [] = <tests.test_decisoes_desinstalar.ExecutorDeMentira object at 0x0000022E6DD07A10>.tarefas
+D:\programas\EditorImpressao\.claude\worktrees\desinstalar-b\tests\test_decisoes_desinstalar.py:210: AssertionError: o gancho de desinstalar não mandou rodar a tarefa desfazer (D-731)
+E   FileNotFoundError: [Errno 2] No such file or directory: 'D:\\agente_temp_testes\\d731\\reversao\\test_d731_desinstalar_sem_a_ta0\\ProgramData\\EditorImpressao\\atualizacao\\atualizacao.log'
+C:\Users\fotog\AppData\Local\Python\pythoncore-3.14-64\Lib\pathlib\__init__.py:771: FileNotFoundError: [Errno 2] No such file or directory: 'D:\\agente_temp_testes\\d731\\reversao\\test_d731_desinstalar_sem_a_ta0\\ProgramData\\EditorImpressao\\atualizacao\\atualizacao.log'
+E   AttributeError: 'ExecutorWindows' object has no attribute 'rodar_a_tarefa'
+D:\programas\EditorImpressao\.claude\worktrees\desinstalar-b\tests\test_decisoes_desinstalar.py:243: AttributeError: 'ExecutorWindows' object has no attribute 'rodar_a_tarefa'
+E   AssertionError: esperava um passo com ('FromBase64String',) (sem ()); achei []
+    assert 0 == 1
+     +  where 0 = len([])
+D:\programas\EditorImpressao\.claude\worktrees\desinstalar-b\tests\test_decisoes_desinstalar.py:183: AssertionError: esperava um passo com ('FromBase64String',) (sem ()); achei []
+E   AssertionError: esperava um passo com ('FromBase64String',) (sem ()); achei []
+    assert 0 == 1
+     +  where 0 = len([])
+D:\programas\EditorImpressao\.claude\worktrees\desinstalar-b\tests\test_decisoes_desinstalar.py:183: AssertionError: esperava um passo com ('FromBase64String',) (sem ()); achei []
+E   AttributeError: module 'core.testes_a_distancia' has no attribute 'caminho_do_antes'
+D:\programas\EditorImpressao\.claude\worktrees\desinstalar-b\tests\test_decisoes_desinstalar.py:285: AttributeError: module 'core.testes_a_distancia' has no attribute 'caminho_do_antes'
+E   AttributeError: module 'core.testes_a_distancia' has no attribute 'caminho_do_antes'
+D:\programas\EditorImpressao\.claude\worktrees\desinstalar-b\tests\test_decisoes_desinstalar.py:297: AttributeError: module 'core.testes_a_distancia' has no attribute 'caminho_do_antes'
+E   AssertionError: B2: as linhas caíram dentro do bloco Match Group administrators
+    assert 13 < 10
+D:\programas\EditorImpressao\.claude\worktrees\desinstalar-b\tests\test_decisoes_desinstalar.py:356: AssertionError: B2: as linhas caíram dentro do bloco Match Group administrators
+E   AssertionError: assert 2 == 1
+     +  where 2 = <built-in method count of list object at 0x0000022E7FAECC40>('AllowUsers EditorTestes')
+     +    where <built-in method count of list object at 0x0000022E7FAECC40> = ['# This is the sshd server system-wide configuration file.', '#Port 22', '#PubkeyAuthentication yes', 'AuthorizedKeys...authorized_keys', '# To disable tunneled clear text passwords, change to no here!', '#PasswordAuthentication yes', ...].count
+D:\programas\EditorImpressao\.claude\worktrees\desinstalar-b\tests\test_decisoes_desinstalar.py:372: AssertionError: assert 2 == 1
+E   AssertionError: o desfazer não procura a linha solta
+    assert 'PasswordAuthentication yes' not in "(Get-Conten...sshd_config'"
+      
+      'PasswordAuthentication yes' is contained here:
+        torTestes|PasswordAuthentication yes|MaxAuthTries 3' } | Set-Content 'D:\agente_temp_testes\d731\reversao\test_d731_sshd_config_sai_pela0\ssh\sshd_config'
+      ?           ++++++++++++++++++++++++++
+D:\programas\EditorImpressao\.claude\worktrees\desinstalar-b\tests\test_decisoes_desinstalar.py:386: AssertionError: o desfazer não procura a linha solta
+E   AssertionError: B3: ligar de novo parou no erro: A conta EditorTestes ja existe.
+      No D:\agente_temp_testes\d731\reversao\test_b3_ligar_depois_de_deslig0\windows_de_mentira.ps1:4 caractere:26
+      + function New-LocalUser { throw 'A conta EditorTestes ja existe.' }
+      +                          ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+          + CategoryInfo          : OperationStopped: (A conta EditorTestes ja existe.:String) [], RuntimeException
+          + FullyQualifiedErrorId : A conta EditorTestes ja existe.
+       
+      
+    assert 1 == 0
+D:\programas\EditorImpressao\.claude\worktrees\desinstalar-b\tests\test_decisoes_desinstalar.py:408: AssertionError: B3: ligar de novo parou no erro: A conta EditorTestes ja existe.
+E   AssertionError: assert ['New-NetFirewallRule'] == ['Remove-NetF...FirewallRule']
+      
+      At index 0 diff: 'New-NetFirewallRule' != 'Remove-NetFirewallRule'
+      Right contains one more item: 'New-NetFirewallRule'
+      Use -v to get more diff
+D:\programas\EditorImpressao\.claude\worktrees\desinstalar-b\tests\test_decisoes_desinstalar.py:447: AssertionError: assert ['New-NetFirewallRule'] == ['Remove-NetF...FirewallRule']
+E   AssertionError: B4: desligou o OpenSSH que era do dono
+    assert 'Disabled' not in 'CHAMOU Set-...ype Disabled'
+      
+      'Disabled' is contained here:
+        CHAMOU Set-Service -Name sshd -StartupType Disabled
+      ?                                            ++++++++
+D:\programas\EditorImpressao\.claude\worktrees\desinstalar-b\tests\test_decisoes_desinstalar.py:472: AssertionError: B4: desligou o OpenSSH que era do dono
+E   AssertionError: assert True is False
+     +  where True = bool(['CHAMOU Remove-WindowsCapability -Online -Name OpenSSH.Server~~~~0.0.1.0'])
+     +    where ['CHAMOU Remove-WindowsCapability -Online -Name OpenSSH.Server~~~~0.0.1.0'] = chamou(['CHAMOU Remove-WindowsCapability -Online -Name OpenSSH.Server~~~~0.0.1.0'], 'Remove-WindowsCapability')
+D:\programas\EditorImpressao\.claude\worktrees\desinstalar-b\tests\test_decisoes_desinstalar.py:511: AssertionError: assert True is False
+E   AssertionError: assert True is False
+     +  where True = bool(['CHAMOU Remove-WindowsCapability -Online -Name OpenSSH.Server~~~~0.0.1.0'])
+     +    where ['CHAMOU Remove-WindowsCapability -Online -Name OpenSSH.Server~~~~0.0.1.0'] = chamou(['CHAMOU Remove-WindowsCapability -Online -Name OpenSSH.Server~~~~0.0.1.0'], 'Remove-WindowsCapability')
+D:\programas\EditorImpressao\.claude\worktrees\desinstalar-b\tests\test_decisoes_desinstalar.py:511: AssertionError: assert True is False
+E   AssertionError: esperava um passo com ('Remove-NetFirewallRule -Name OpenSSH-Server-In-TCP',) (sem ()); achei []
+    assert 0 == 1
+     +  where 0 = len([])
+D:\programas\EditorImpressao\.claude\worktrees\desinstalar-b\tests\test_decisoes_desinstalar.py:183: AssertionError: esperava um passo com ('Remove-NetFirewallRule -Name OpenSSH-Server-In-TCP',) (sem ()); achei []
+E   AssertionError: esperava um passo com ('Remove-NetFirewallRule -Name OpenSSH-Server-In-TCP',) (sem ()); achei []
+    assert 0 == 1
+     +  where 0 = len([])
+D:\programas\EditorImpressao\.claude\worktrees\desinstalar-b\tests\test_decisoes_desinstalar.py:183: AssertionError: esperava um passo com ('Remove-NetFirewallRule -Name OpenSSH-Server-In-TCP',) (sem ()); achei []
+E   AssertionError: assert True is False
+     +  where True = bool(['CHAMOU Remove-LocalUser -Name EditorTestes -ErrorAction SilentlyContinue'])
+     +    where ['CHAMOU Remove-LocalUser -Name EditorTestes -ErrorAction SilentlyContinue'] = chamou(['CHAMOU Remove-LocalUser -Name EditorTestes -ErrorAction SilentlyContinue'], 'Remove-LocalUser')
+D:\programas\EditorImpressao\.claude\worktrees\desinstalar-b\tests\test_decisoes_desinstalar.py:535: AssertionError: assert True is False
+E   AssertionError: assert True is False
+     +  where True = bool(['CHAMOU Remove-LocalUser -Name EditorTestes -ErrorAction SilentlyContinue'])
+     +    where ['CHAMOU Remove-LocalUser -Name EditorTestes -ErrorAction SilentlyContinue'] = chamou(['CHAMOU Remove-LocalUser -Name EditorTestes -ErrorAction SilentlyContinue'], 'Remove-LocalUser')
+D:\programas\EditorImpressao\.claude\worktrees\desinstalar-b\tests\test_decisoes_desinstalar.py:535: AssertionError: assert True is False
+E   AssertionError: assert not ['CHAMOU Remove-LocalUser -Name EditorTestes -ErrorAction SilentlyContinue']
+     +  where ['CHAMOU Remove-LocalUser -Name EditorTestes -ErrorAction SilentlyContinue'] = chamou(['CHAMOU Remove-LocalUser -Name EditorTestes -ErrorAction SilentlyContinue'], 'Remove-LocalUser')
+D:\programas\EditorImpressao\.claude\worktrees\desinstalar-b\tests\test_decisoes_desinstalar.py:546: AssertionError: assert not ['CHAMOU Remove-LocalUser -Name EditorTestes -ErrorAction SilentlyContinue']
+E   AssertionError: assert ['CHAMOU Remo...-21-222-1002'] == ['CHAMOU Remo...-21-111-1001']
+      
+      At index 0 diff: 'CHAMOU Remove-CimInstance S-1-5-21-222-1002' != 'CHAMOU Remove-CimInstance S-1-5-21-111-1001'
+      Use -v to get more diff
+D:\programas\EditorImpressao\.claude\worktrees\desinstalar-b\tests\test_decisoes_desinstalar.py:566: AssertionError: assert ['CHAMOU Remo...-21-222-1002'] == ['CHAMOU Remo...-21-111-1001']
+E   AssertionError: esperava um passo com ('D:\\agente_temp_testes\\d731\\reversao\\test_d731_da_pasta_ssh_so_sai_0\\ssh', 'Remove-Item') (sem ()); achei []
+    assert 0 == 1
+     +  where 0 = len([])
+D:\programas\EditorImpressao\.claude\worktrees\desinstalar-b\tests\test_decisoes_desinstalar.py:183: AssertionError: esperava um passo com ('D:\\agente_temp_testes\\d731\\reversao\\test_d731_da_pasta_ssh_so_sai_0\\ssh', 'Remove-Item') (sem ()); achei []
+E   AssertionError: esperava um passo com ('D:\\agente_temp_testes\\d731\\reversao\\test_d731_da_pasta_ssh_so_sai_1\\ssh', 'Remove-Item') (sem ()); achei []
+    assert 0 == 1
+     +  where 0 = len([])
+D:\programas\EditorImpressao\.claude\worktrees\desinstalar-b\tests\test_decisoes_desinstalar.py:183: AssertionError: esperava um passo com ('D:\\agente_temp_testes\\d731\\reversao\\test_d731_da_pasta_ssh_so_sai_1\\ssh', 'Remove-Item') (sem ()); achei []
+E   TypeError: Passo.__init__() got an unexpected keyword argument 'so_se_tudo_certo'
+D:\programas\EditorImpressao\.claude\worktrees\desinstalar-b\tests\test_decisoes_desinstalar.py:601: TypeError: Passo.__init__() got an unexpected keyword argument 'so_se_tudo_certo'
+E   AttributeError: module 'core.testes_a_distancia' has no attribute 'montar_script'
+D:\programas\EditorImpressao\.claude\worktrees\desinstalar-b\tests\test_decisoes_desinstalar.py:620: AttributeError: module 'core.testes_a_distancia' has no attribute 'montar_script'
+E   AttributeError: module 'core.testes_a_distancia' has no attribute 'montar_script'
+D:\programas\EditorImpressao\.claude\worktrees\desinstalar-b\tests\test_decisoes_desinstalar.py:633: AttributeError: module 'core.testes_a_distancia' has no attribute 'montar_script'
+E   AttributeError: module 'core.testes_a_distancia' has no attribute 'montar_script'
+D:\programas\EditorImpressao\.claude\worktrees\desinstalar-b\tests\test_decisoes_desinstalar.py:633: AttributeError: module 'core.testes_a_distancia' has no attribute 'montar_script'
+E   AttributeError: module 'core.testes_a_distancia' has no attribute 'montar_script'
+D:\programas\EditorImpressao\.claude\worktrees\desinstalar-b\tests\test_decisoes_desinstalar.py:657: AttributeError: module 'core.testes_a_distancia' has no attribute 'montar_script'
+=================================== PASSES ====================================
+=========================== short test summary info ===========================
+PASSED tests/test_decisoes_desinstalar.py::test_d731_desinstalar_o_portatil_nao_manda_nada
+PASSED tests/test_decisoes_desinstalar.py::test_b3_ligar_numa_conta_que_nao_e_nossa_para
+PASSED tests/test_decisoes_desinstalar.py::test_b3_conta_nova_continua_sem_administrador
+PASSED tests/test_decisoes_desinstalar.py::test_b4_desligar_o_openssh_que_o_programa_pos_continua_parando[True]
+PASSED tests/test_decisoes_desinstalar.py::test_b4_desligar_o_openssh_que_o_programa_pos_continua_parando[False]
+PASSED tests/test_decisoes_desinstalar.py::test_d731_openssh_so_sai_se_foi_o_programa_que_pos[caderninho2-True]
+PASSED tests/test_decisoes_desinstalar.py::test_d731_a_conta_so_sai_se_for_a_nossa[Conta so para os testes a distancia-True]
+FAILED tests/test_decisoes_desinstalar.py::test_d731_desinstalar_manda_rodar_a_tarefa_desfazer
+FAILED tests/test_decisoes_desinstalar.py::test_d731_desinstalar_sem_a_tarefa_nao_quebra
+FAILED tests/test_decisoes_desinstalar.py::test_d731_o_executor_de_verdade_nao_manda_rodar_sob_o_pytest
+FAILED tests/test_decisoes_desinstalar.py::test_d731_ligar_cria_a_tarefa_desfazer_com_o_mesmo_plano
+FAILED tests/test_decisoes_desinstalar.py::test_d731_a_conta_comum_manda_rodar_e_a_conta_de_testes_nao
+FAILED tests/test_decisoes_desinstalar.py::test_d731_o_caderninho_fica_onde_o_plano_diz
+FAILED tests/test_decisoes_desinstalar.py::test_d731_ligar_anota_o_antes_primeiro_e_so_na_primeira_vez
+FAILED tests/test_decisoes_desinstalar.py::test_b2_as_linhas_do_ligar_vao_antes_do_match
+FAILED tests/test_decisoes_desinstalar.py::test_b3_ligar_de_novo_nao_repete_as_linhas
+FAILED tests/test_decisoes_desinstalar.py::test_d731_sshd_config_sai_pelas_marcas_e_a_linha_de_fabrica_fica
+FAILED tests/test_decisoes_desinstalar.py::test_b3_ligar_depois_de_desligar_reativa_a_conta
+FAILED tests/test_decisoes_desinstalar.py::test_b3_ligar_de_novo_refaz_a_regra_do_firewall
+FAILED tests/test_decisoes_desinstalar.py::test_b4_desligar_devolve_o_openssh_que_ja_era_do_dono
+FAILED tests/test_decisoes_desinstalar.py::test_d731_openssh_so_sai_se_foi_o_programa_que_pos[caderninho0-False]
+FAILED tests/test_decisoes_desinstalar.py::test_d731_openssh_so_sai_se_foi_o_programa_que_pos[None-False]
+FAILED tests/test_decisoes_desinstalar.py::test_d731_a_regra_larga_so_sai_se_veio_com_o_nosso_openssh[True-False]
+FAILED tests/test_decisoes_desinstalar.py::test_d731_a_regra_larga_so_sai_se_veio_com_o_nosso_openssh[False-True]
+FAILED tests/test_decisoes_desinstalar.py::test_d731_a_conta_so_sai_se_for_a_nossa[Conta do Kaique-False]
+FAILED tests/test_decisoes_desinstalar.py::test_d731_a_conta_so_sai_se_for_a_nossa[None-False]
+FAILED tests/test_decisoes_desinstalar.py::test_d731_a_conta_de_outro_que_existia_antes_fica
+FAILED tests/test_decisoes_desinstalar.py::test_d731_o_perfil_e_achado_pelo_sid
+FAILED tests/test_decisoes_desinstalar.py::test_d731_da_pasta_ssh_so_sai_o_que_nasceu_depois[True]
+FAILED tests/test_decisoes_desinstalar.py::test_d731_da_pasta_ssh_so_sai_o_que_nasceu_depois[False]
+FAILED tests/test_decisoes_desinstalar.py::test_d731_o_desfazer_continua_depois_de_um_erro
+FAILED tests/test_decisoes_desinstalar.py::test_script_sem_senha_nao_procura_o_arquivo_da_senha
+FAILED tests/test_decisoes_desinstalar.py::test_d731_nunca_toca_os_projetos_do_kaique
+FAILED tests/test_decisoes_desinstalar.py::test_os_comandos_sao_ascii - Attri...
+FAILED tests/test_decisoes_desinstalar.py::test_os_scripts_montados_sao_powershell_sem_erro_de_escrita
+28 failed, 7 passed in 8.26s

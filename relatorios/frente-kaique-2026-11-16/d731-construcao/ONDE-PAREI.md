@@ -50,11 +50,26 @@ a partir de `997a3085`. Nada foi feito no Windows de verdade (só leitura).
 ## Andamento
 
 - [x] Leitura (agente, CLAUDE.md, INDICE, decisões, planos, etapa 4).
-- [ ] Testes novos escritos e rodados no código de antes (devem falhar).
-- [ ] Código.
-- [ ] Testes rodados um arquivo por vez.
-- [ ] Relatório nos três formatos.
+- [x] Provas novas (`tests/test_decisoes_desinstalar.py`), commit `47d96ffb`. No código de antes: 28 falham, 7
+  passam (`prova-no-codigo-de-antes.txt`).
+- [x] Código, commit `65303058`.
+- [x] Um arquivo por vez: etapa 4 13/13, atualização 38/38, novo 35/35, P-215 1/1. Nenhum teste antigo mudou.
+- [x] Relatório nos três formatos (`relatorio.md/.html/.pdf`).
+- [ ] Rodada do GitHub: não disparada (pedido "sem push"); fica com a gerente.
+
+PRONTO PARA CONFERIR. Parei aqui.
+
+## Como cumpri cada decisão
+
+- D-731: `ao_desinstalar` manda a tarefa "desfazer"; o desfazer tira OpenSSH (se nosso), regra, conta, perfil;
+  nunca cita a pasta do Kaique (provas `test_d731_*`).
+- D-733: tarefa como o sistema, licença para a conta comum, gancho sem esperar (`test_d731_desinstalar_*`,
+  `test_d731_a_conta_comum_*`).
+- D-717: a conta de testes é negada na licença da tarefa; conta nova continua só no grupo Usuários.
+- D-722: o mesmo `plano_de_desfazer` (prova `..._com_o_mesmo_plano`); a lista vai para `o-que-foi-desfeito.txt`.
+- D-705/D-711/D-712/D-721/D-728: as 13 provas da etapa 4 passam sem mudança.
 
 ## Perguntas para o Samuel
 
-(no relatório)
+Nenhuma nova para ele. As perguntas abertas (para a gerente decidir ou levar) estão no relatório, seção "Perguntas
+abertas".
