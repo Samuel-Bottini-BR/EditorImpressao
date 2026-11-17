@@ -14,7 +14,10 @@ O QUE FAZ (D-705, D-711, D-717; estudo 2.3):
   - anota num registro o que fez (para a lista do D-722);
   - (D-731, 17/11/2026) manda rodar a tarefa "desfazer" sem esperar e sem
     pedir administrador (rodar_a_tarefa_no_windows), para o gancho de
-    desinstalar, que roda sem administrador e tem 30 s.
+    desinstalar, que roda sem administrador e tem 30 s;
+  - (D-731, pergunta (a), 17/11/2026) roda os passos sem pergunta nenhuma
+    quando quem chama ja e administrador (aplicar_ja_como_administrador_no_windows:
+    a primeira abertura cria ali a tarefa "desfazer").
 O texto do script vem de core/testes_a_distancia.montar_script (o unico
 montador: o ligar, o desligar e a tarefa desfazer usam o mesmo).
 
@@ -132,6 +135,39 @@ def aplicar_no_windows(passos: list[Passo], senha: str) -> Resultado:
             except OSError:
                 pass
         os.environ.pop("EDITOR_SENHA_TESTES", None)
+
+
+def aplicar_ja_como_administrador_no_windows(passos: list[Passo], tempo: int = 300) -> Resultado:
+    """Roda os passos num PowerShell escondido e espera, SEM runas (D-731, pergunta (a), 17/11/2026).
+
+    So para quem ja roda como administrador: o --preparar-o-computador, dentro
+    da pergunta do Windows da primeira abertura (D-733). Mesmo montador de
+    sempre (montar_script), sem senha. O registro do script volta na
+    mensagem (quem chama o anota no registro da atualizacao). Nunca levanta.
+    """
+    pasta = Path(tempfile.mkdtemp(prefix="editor-desfazer-"))
+    script = pasta / "preparar-o-desfazer.ps1"
+    registro = pasta / "o-que-fiz.txt"
+    try:
+        script.write_text(montar_script(passos, str(registro)), encoding="utf-8")
+        feito = subprocess.run(["powershell.exe", "-NoProfile", "-NonInteractive", "-ExecutionPolicy", "Bypass",
+                                "-WindowStyle", "Hidden", "-File", str(script)], capture_output=True, text=True,
+                               timeout=tempo, creationflags=getattr(subprocess, "CREATE_NO_WINDOW", 0))
+        anotado = registro.read_text(encoding="utf-8", errors="replace").strip() if registro.exists() else ""
+        return Resultado(feito.returncode == 0, mensagem=anotado or (feito.stdout + feito.stderr).strip(),
+                         passos=passos)
+    except (OSError, subprocess.SubprocessError) as erro:
+        return Resultado(False, mensagem=f"{type(erro).__name__}: {erro}", passos=passos)
+    finally:
+        for arquivo in (script, registro):
+            try:
+                arquivo.unlink(missing_ok=True)
+            except OSError:
+                pass
+        try:
+            pasta.rmdir()
+        except OSError:
+            pass
 
 
 def rodar_a_tarefa_no_windows(nome: str, tempo: int) -> Resultado:

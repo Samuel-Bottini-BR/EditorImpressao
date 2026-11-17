@@ -685,3 +685,166 @@ def test_b5_esconder_a_conta_nao_recria_a_chave_userlist(maquina, monkeypatch, c
     assert codigo == 0, erro
     assert bool(chamou(linhas, "New-Item")) is (not chave_existe), "B5: a chave do dono não pode ser recriada"
     assert f"-Name {td.NOME_DA_CONTA} -Value 0" in " ".join(chamou(linhas, "New-ItemProperty"))
+
+
+# ---------------------------------------------------------------------------------------------------------------
+# D-731, pergunta (a) do relatório da construção (pedido da gerente, 17/11/2026): a tarefa "desfazer" existe
+# SEMPRE (nasce na pergunta do Windows da primeira abertura) e apaga também a tarefa da atualização e a si mesma.
+# ---------------------------------------------------------------------------------------------------------------
+
+class ExecutorDaPrimeiraAbertura(ExecutorDeMentira):
+    """Anota também o que o --preparar-o-computador (já como administrador) mandaria aplicar."""
+
+    def __init__(self) -> None:
+        super().__init__(aplicar_proibido=True)
+        self.ja_como_administrador: list[list[td.Passo]] = []
+
+    def aplicar_ja_como_administrador(self, passos):
+        self.ja_como_administrador.append(list(passos))
+        return td.Resultado(True, passos=passos)
+
+
+class _GerenteInstalado:
+    def get_is_portable(self):
+        return False
+
+
+def _script_gravado(passo: td.Passo) -> str:
+    codificado = re.search(r"FromBase64String\('([A-Za-z0-9+/=]+)'\)", passo.comando).group(1)
+    return base64.b64decode(codificado).decode("utf-8")
+
+
+def _tarefa_da_atualizacao() -> tuple[str, str]:
+    pasta, nome = atualizacao.NOME_DA_TAREFA.rsplit("\\", 1)
+    return nome, f"\\{pasta}\\"
+
+
+@precisa_do_powershell
+def test_d731a_sem_os_testes_ligados_desinstalar_apaga_a_tarefa_da_atualizacao(maquina, monkeypatch):
+    """D-731 ("o notebook fica como era antes de instalar"), pergunta (a) do relatório da construção (17/11/2026).
+    Defeito: a tarefa "desfazer" só nascia quando os testes à distância eram ligados, e o gancho de desinstalar,
+    sem administrador, não consegue apagar a tarefa da atualização ("Procurar versao nova"): ela ficava no
+    Windows. Agora a pergunta do Windows da primeira abertura (--preparar-o-computador) cria SEMPRE a tarefa
+    "desfazer", com o plano curto; desinstalar manda rodá-la, e ela apaga a tarefa da atualização e a si mesma.
+    Falha no código de antes: a primeira abertura não criava a tarefa "desfazer"."""
+    falso = ExecutorDaPrimeiraAbertura()
+    monkeypatch.setattr(td, "_executor", falso)
+    criadas = []
+    monkeypatch.setattr(atualizacao, "criar_tarefa", lambda *a, **k: criadas.append("ajudante") or True)
+
+    # 1. a primeira abertura, dentro da pergunta do Windows, sem a senha dos testes
+    assert atualizacao.preparar_como_administrador(_GerenteInstalado(), preparar=lambda g: None) == 0
+    assert criadas == ["ajudante"]
+    assert falso.ja_como_administrador, "a primeira abertura não criou a tarefa desfazer (D-731, pergunta (a))"
+    assert falso.chamadas == [], "nenhuma pergunta do Windows a mais: já roda como administrador"
+    passos = falso.ja_como_administrador[0]
+    script = _script_gravado(o_passo(passos, "FromBase64String"))
+    assert script == td.montar_script(td.plano_de_desfazer(testes_ligados=False),
+                                      td.caminho_do_registro_do_desfazer(), continuar_depois_de_erro=True)
+
+    # 2. desinstalar: o gancho só manda rodar a tarefa desfazer
+    monkeypatch.setattr(atualizacao, "apagar_tarefa", lambda *a, **k: False)  # sem administrador, falha
+    atualizacao.ao_desinstalar("1.2.0", portatil=lambda: False)
+    assert falso.tarefas == [td.nome_da_tarefa_do_desfazer()]
+
+    # 3. a tarefa roda o script gravado: apaga a tarefa da atualização e a si mesma, e nada dos testes
+    codigo, linhas, erro = rodar_no_windows_de_mentira(script, maquina, anotar=("Unregister-ScheduledTask",))
+    assert codigo == 0, erro
+    apagadas = " | ".join(chamou(linhas, "Unregister-ScheduledTask"))
+    nome, pasta = _tarefa_da_atualizacao()
+    assert f"-TaskName {nome} -TaskPath {pasta}" in apagadas, "a tarefa da atualização tem de sair"
+    assert f"-TaskName {td.NOME_DA_TAREFA_DO_DESFAZER} -TaskPath {pasta}" in apagadas, "e o desfazer, a si mesmo"
+    for dos_testes in ("Set-Service", "Stop-Service", "Remove-LocalUser", "Remove-WindowsCapability",
+                       "NetFirewallRule", td.SSHD_CONFIG):
+        assert dos_testes not in script, f"sem os testes ligados, o desfazer não mexe em {dos_testes}"
+
+
+@precisa_do_powershell
+def test_d731a_com_os_testes_ligados_o_desfazer_inteiro_apaga_tambem_a_tarefa_da_atualizacao(maquina):
+    """D-731, pergunta (a) (17/11/2026): o desfazer inteiro (o que o ligar grava) também apaga a tarefa da
+    atualização, mesmo se um passo dos testes falhou; e só se apaga a si mesmo se tudo deu certo."""
+    plano = td.plano_de_desfazer()
+    nome, pasta = _tarefa_da_atualizacao()
+    passo = o_passo(plano, f"-TaskName '{nome}'")
+    assert not passo.so_se_tudo_certo, "a tarefa da atualização sai sempre"
+    fim = o_passo(plano, f"-TaskName '{td.NOME_DA_TAREFA_DO_DESFAZER}'")
+    assert fim.so_se_tudo_certo and plano[-1] is fim
+    # o que o plano curto faz é exatamente o fim do plano inteiro (uma regra só)
+    curto = td.plano_de_desfazer(testes_ligados=False)
+    assert [p.comando for p in plano[-len(curto):]] == [p.comando for p in curto]
+    codigo, linhas, erro = rodar_no_windows_de_mentira(passo.comando, maquina, anotar=("Unregister-ScheduledTask",))
+    assert codigo == 0, erro
+    assert f"-TaskName {nome} -TaskPath {pasta}" in " ".join(chamou(linhas, "Unregister-ScheduledTask"))
+
+
+@precisa_do_powershell
+@pytest.mark.parametrize("ja_ligados", [False, True])
+def test_d731a_a_primeira_abertura_nao_troca_o_desfazer_inteiro_pelo_curto(maquina, monkeypatch, ja_ligados):
+    """D-731, pergunta (a) (17/11/2026): se os testes já foram ligados (há o caderninho do antes), a pergunta da
+    primeira abertura (que volta depois de um "Não", D-741) deixa a tarefa desfazer como está: gravar o plano
+    curto por cima deixaria a conta de testes e o OpenSSH para trás ao desinstalar."""
+    monkeypatch.setattr(td, "_comando_preparar_o_desfazer", lambda testes_ligados=True: "Write-Output 'CRIOU'")
+    if ja_ligados:
+        gravar_o_antes(maquina)
+    passo = o_passo(td.plano_de_preparar_o_desfazer(), "CRIOU")
+    codigo, linhas, erro = rodar_no_windows_de_mentira(passo.comando, maquina)
+    assert codigo == 0, erro
+    assert ("CRIOU" in linhas) is (not ja_ligados)
+
+
+@precisa_do_powershell
+def test_d731a_a_pasta_do_desfazer_fica_protegida(maquina):
+    """D-731, pergunta (a) (17/11/2026): o script do desfazer roda como o sistema; a pasta dele é criada pela
+    primeira abertura com dono "administradores" e só de leitura para as contas comuns (o mesmo icacls do ligar)."""
+    (maquina / "testes-a-distancia").rmdir()  # a pasta vazia que a fixture criou: a primeira abertura a cria
+    passo = td.plano_de_preparar_o_desfazer()[0]
+    codigo, linhas, erro = rodar_no_windows_de_mentira(passo.comando, maquina, anotar=("icacls",))
+    assert codigo == 0, erro
+    assert (maquina / "testes-a-distancia").is_dir()
+    icacls = " ".join(chamou(linhas, "icacls"))
+    assert "/setowner" in icacls and "/inheritance:r" in icacls and f"*{td.SID_USUARIOS}:(OI)(CI)RX" in icacls
+    assert td.plano_de_ligar()[0].comando.endswith(td._comando_proteger_a_pasta()), "o mesmo icacls do ligar"
+
+
+def test_d731a_a_licenca_nega_a_conta_de_testes_so_quando_ela_existe(dados):
+    """D-717 e D-731 (17/11/2026): na primeira abertura a conta de testes ainda não existe; a tarefa nasce sem a
+    negação e o ligar a refaz já negando a conta. Quem entrou no Windows continua podendo mandar rodar."""
+    passo = o_passo(td.plano_de_preparar_o_desfazer(), "FromBase64String")
+    assert "if ($u) { $sid = $u.SID.Value; $licenca = \"D:(D;;FA;;;$sid)" in passo.comando
+    assert "else { $licenca = 'D:(A;;FA;;;SY)(A;;FA;;;BA)(A;;GRGX;;;AU)' }" in passo.comando
+    assert o_passo(td.plano_de_ligar(), "FromBase64String").comando.count("SetSecurityDescriptor($licenca, 0)") == 1
+
+
+def test_d731a_o_executor_de_verdade_nao_aplica_sob_o_pytest():
+    """D-731, pergunta (a) (17/11/2026): a peça de verdade se recusa a rodar durante os testes."""
+    with pytest.raises(RuntimeError):
+        td.ExecutorWindows().aplicar_ja_como_administrador(td.plano_de_preparar_o_desfazer())
+
+
+def test_d731a_nunca_toca_os_projetos_do_kaique_e_tudo_em_ascii(dados):
+    """D-731 (17/11/2026): o que a primeira abertura grava também nunca cita a pasta do Kaique, e é ASCII."""
+    comandos = [p.comando for p in td.plano_de_preparar_o_desfazer()]
+    comandos.append(td.montar_script(td.plano_de_desfazer(testes_ligados=False),
+                                     td.caminho_do_registro_do_desfazer(), continuar_depois_de_erro=True))
+    for comando in comandos:
+        assert comando.isascii()
+        for proibido in ("LOCALAPPDATA", "AppData", "C:\\Users", "LocalPath"):
+            assert proibido.lower() not in comando.lower()
+
+
+@precisa_do_powershell
+def test_d731a_os_scripts_novos_sao_powershell_sem_erro_de_escrita(tmp_path, dados):
+    """17/11/2026: o script da primeira abertura e o desfazer curto passam pelo leitor do PowerShell (só lê)."""
+    scripts = {
+        "preparar": td.montar_script(td.plano_de_preparar_o_desfazer(), str(tmp_path / "r.txt")),
+        "curto": td.montar_script(td.plano_de_desfazer(testes_ligados=False), td.caminho_do_registro_do_desfazer(),
+                                  continuar_depois_de_erro=True),
+    }
+    for nome, texto in scripts.items():
+        arquivo = tmp_path / f"{nome}.ps1"
+        arquivo.write_text(texto, encoding="utf-8-sig")
+        ler = ("$e = $null; [System.Management.Automation.Language.Parser]::ParseFile('" + str(arquivo)
+               + "', [ref]$null, [ref]$e) | Out-Null; $e | ForEach-Object { $_.Message }")
+        feito = subprocess.run([POWERSHELL, "-NoProfile", "-NonInteractive", "-Command", ler],
+                               capture_output=True, text=True, timeout=120)
+        assert feito.returncode == 0 and not feito.stdout.strip(), f"{nome}: {feito.stdout} {feito.stderr}"

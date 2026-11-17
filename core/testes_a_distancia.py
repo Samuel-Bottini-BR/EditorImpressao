@@ -20,6 +20,14 @@ docs/plano/DECISOES.md):
   D-733  alternativa B do plano-d732.md: o `ligar` cria uma tarefa do Windows
          "desfazer" que roda como o sistema e que a conta comum pode mandar
          rodar; o gancho de desinstalar (sem administrador, 30 s) so manda.
+  D-731, pergunta (a) do relatorio da construcao (pedido da gerente,
+         17/11/2026): a tarefa "desfazer" existe SEMPRE, e nao so quando os
+         testes foram ligados. A pergunta do Windows da primeira abertura
+         (D-733/D-735; atualizacao.preparar_como_administrador) a cria com o
+         plano curto (`plano_de_desfazer(testes_ligados=False)`: so as nossas
+         tarefas); o `ligar` a refaz com o plano inteiro. Nos dois, o desfazer
+         apaga tambem a tarefa da atualizacao ("Procurar versao nova") e a si
+         mesmo: o gancho de desinstalar nao consegue (roda sem administrador).
 
 O CADERNINHO DO ANTES (D-731, 17/11/2026). O primeiro passo do `ligar`, ja
 como administrador, anota em C:\\ProgramData\\EditorImpressao\\testes-a-distancia
@@ -275,11 +283,7 @@ def _comando_anotar_o_antes() -> str:
             f" {{ $itens = @(Get-ChildItem -LiteralPath '{PASTA_SSH}' -Recurse -Force -Name) }};"
             f" $novo = [ordered]@{{ {campos} }};"
             f" $novo | ConvertTo-Json | Set-Content -LiteralPath $arq -Encoding UTF8 }};"
-            f" $global:LASTEXITCODE = 0;"
-            f" icacls $pasta /setowner '*{SID_ADMINISTRADORES}' /T /C /Q | Out-Null;"
-            f" icacls $pasta /inheritance:r /grant:r '*{SID_SISTEMA}:(OI)(CI)F' '*{SID_ADMINISTRADORES}:(OI)(CI)F'"
-            f" '*{SID_USUARIOS}:(OI)(CI)RX' /T /C /Q | Out-Null;"
-            f" if ($LASTEXITCODE) {{ throw 'nao consegui proteger a pasta dos testes a distancia' }}")
+            f" {_comando_proteger_a_pasta()}")
 
 
 def xml_da_tarefa_do_desfazer() -> str:
@@ -308,27 +312,85 @@ def xml_da_tarefa_do_desfazer() -> str:
 # assim que o gancho de desinstalar, na conta do Kaique e sem administrador,
 # consegue dispara-la. A tarefa so roda o nosso script, numa pasta que so o
 # administrador grava.
-_LICENCA_DA_TAREFA = "D:(D;;FA;;;$sid)(A;;FA;;;SY)(A;;FA;;;BA)(A;;GRGX;;;AU)"
+# Sem a conta de testes (a primeira abertura, antes de qualquer ligar), so
+# falta a negacao; o `ligar` refaz a tarefa ja com ela.
+_LICENCA_SEM_A_CONTA = "D:(A;;FA;;;SY)(A;;FA;;;BA)(A;;GRGX;;;AU)"
+_LICENCA_DA_TAREFA = "D:(D;;FA;;;$sid)" + _LICENCA_SEM_A_CONTA[2:]
 
 
-def _comando_preparar_o_desfazer() -> str:
-    """O ultimo passo do ligar (D-731/D-733): grava o script do desfazer e cria a tarefa que o roda.
+def _comando_preparar_o_desfazer(testes_ligados: bool = True) -> str:
+    """Grava o script do desfazer e cria (ou refaz) a tarefa que o roda (D-731/D-733).
 
-    O script e `montar_script(plano_de_desfazer(), ...)`, o mesmo da etapa 5,
+    O UNICO jeito de criar a tarefa "desfazer" (CLAUDE.md 11.12). Dois caminhos:
+      - o ultimo passo do `ligar` (testes_ligados=True): o plano inteiro;
+      - a pergunta do Windows da primeira abertura (`plano_de_preparar_o_desfazer`,
+        testes_ligados=False): o plano curto, so as nossas tarefas.
+    O script e `montar_script(plano_de_desfazer(...), ...)`, o mesmo da etapa 5,
     levado em base64 (um texto so, sem aspas para escapar). Cada ligar grava de
     novo: a tarefa sempre roda o desfazer da versao que ligou por ultimo.
+    A licenca nega a conta de testes quando ela existe (D-717); na primeira
+    abertura ela ainda nao existe.
+    Arriscado: gravar o plano curto por cima do inteiro (a conta e o OpenSSH
+    ficariam para tras ao desinstalar): por isso o plano curto so entra pela
+    porta de `plano_de_preparar_o_desfazer`, que confere o caderninho antes.
     """
-    script = montar_script(plano_de_desfazer(), caminho_do_registro_do_desfazer(), continuar_depois_de_erro=True)
+    script = montar_script(plano_de_desfazer(testes_ligados), caminho_do_registro_do_desfazer(),
+                           continuar_depois_de_erro=True)
     codificado = base64.b64encode(script.encode("utf-8")).decode("ascii")
     return (f"[IO.File]::WriteAllText('{caminho_do_script_do_desfazer()}',"
             f" [Text.Encoding]::UTF8.GetString([Convert]::FromBase64String('{codificado}')),"
             f" (New-Object System.Text.UTF8Encoding $true));"
             f" Register-ScheduledTask -Xml '{xml_da_tarefa_do_desfazer()}' -TaskName '{NOME_DA_TAREFA_DO_DESFAZER}'"
             f" -TaskPath '\\{PASTA_DAS_TAREFAS}\\' -Force | Out-Null;"
-            f" $sid = (Get-LocalUser -Name {NOME_DA_CONTA}).SID.Value;"
+            f" $u = Get-LocalUser -Name {NOME_DA_CONTA} -ErrorAction SilentlyContinue;"
+            f" if ($u) {{ $sid = $u.SID.Value; $licenca = \"{_LICENCA_DA_TAREFA}\" }}"
+            f" else {{ $licenca = '{_LICENCA_SEM_A_CONTA}' }};"
             f" $agenda = New-Object -ComObject Schedule.Service; $agenda.Connect();"
             f" $agenda.GetFolder('\\{PASTA_DAS_TAREFAS}').GetTask('{NOME_DA_TAREFA_DO_DESFAZER}')"
-            f".SetSecurityDescriptor(\"{_LICENCA_DA_TAREFA}\", 0)")
+            f".SetSecurityDescriptor($licenca, 0)")
+
+
+def _comando_criar_e_proteger_a_pasta() -> str:
+    """Cria a pasta dos testes a distancia (se falta) e a deixa com dono "administradores", so de leitura
+    para as contas comuns. Usado pelo 1o passo do ligar (`_comando_anotar_o_antes`) e pela primeira
+    abertura (`plano_de_preparar_o_desfazer`): o script do desfazer, que roda como o sistema, mora nela,
+    e uma conta comum nunca pode troca-lo. Arriscado: afrouxar a licenca (uma conta comum que grava ali
+    roda o que quiser como o sistema)."""
+    return (f"$pasta = '{PASTA_DOS_TESTES}';"
+            f" if (-not (Test-Path -LiteralPath $pasta)) {{ New-Item -ItemType Directory -Path $pasta -Force | Out-Null }};"
+            f" {_comando_proteger_a_pasta()}")
+
+
+def _comando_proteger_a_pasta() -> str:
+    """O pedaco do icacls (a pasta ja esta em `$pasta`): dono "administradores"; sistema e administradores
+    tudo; o grupo Usuarios so le."""
+    return (f"$global:LASTEXITCODE = 0;"
+            f" icacls $pasta /setowner '*{SID_ADMINISTRADORES}' /T /C /Q | Out-Null;"
+            f" icacls $pasta /inheritance:r /grant:r '*{SID_SISTEMA}:(OI)(CI)F' '*{SID_ADMINISTRADORES}:(OI)(CI)F'"
+            f" '*{SID_USUARIOS}:(OI)(CI)RX' /T /C /Q | Out-Null;"
+            f" if ($LASTEXITCODE) {{ throw 'nao consegui proteger a pasta dos testes a distancia' }}")
+
+
+def plano_de_preparar_o_desfazer() -> list[Passo]:
+    """O que a pergunta do Windows da primeira abertura faz pelo desfazer (D-731, pergunta (a)).
+
+    Cria a tarefa "desfazer" SEMPRE, com ou sem os testes a distancia, para
+    que desinstalar apague tambem a tarefa da atualizacao. Com o plano curto
+    (`plano_de_desfazer(testes_ligados=False)`), e so se os testes nunca foram
+    ligados: havendo o caderninho do antes (o 1o passo do `ligar` o grava; o
+    desfazer inteiro o apaga), a tarefa ja tem o plano inteiro e fica como
+    esta. Assim, a pergunta da primeira abertura que volta depois de um "Nao"
+    (D-741), com os testes ja ligados pelas Configuracoes, nao estraga o desfazer.
+    Quem chama: `preparar_o_desfazer` (atualizacao.preparar_como_administrador,
+    --preparar-o-computador, ja como administrador).
+    """
+    return [
+        Passo("Criar e proteger a pasta do desfazer", _comando_criar_e_proteger_a_pasta()),
+        Passo("Preparar o desfazer para quando o programa for desinstalado (as tarefas do programa)",
+              f"if (Test-Path -LiteralPath '{caminho_do_antes()}')"
+              f" {{ Anotar 'FICA | os testes a distancia ja foram ligados: o desfazer inteiro ja esta pronto' }}"
+              f" else {{ {_comando_preparar_o_desfazer(testes_ligados=False)} }}"),
+    ]
 
 
 # ---------------------------------------------------------------------------
@@ -429,18 +491,59 @@ def plano_de_desligar() -> list[Passo]:
     ]
 
 
-def plano_de_desfazer() -> list[Passo]:
-    """Os passos para desfazer TUDO o que o ligar pos, e SO isso (D-722, D-731).
+def plano_de_desfazer(testes_ligados: bool = True) -> list[Passo]:
+    """Os passos para desfazer TUDO o que o programa pos no Windows, e SO isso (D-722, D-731).
 
     Dois caminhos, o mesmo plano (CLAUDE.md 11.12):
       - desinstalar o programa: o gancho manda rodar a tarefa "desfazer"
-        (`mandar_desfazer`), que roda este plano gravado pelo ligar;
+        (`mandar_desfazer`), que roda este plano gravado pelo ligar ou pela
+        primeira abertura (`_comando_preparar_o_desfazer`);
       - a etapa 5, no PC do Samuel: a mesma tarefa, ou este plano pelo executor.
+    `testes_ligados=False` (a primeira abertura, antes de qualquer ligar): so
+    os passos das nossas tarefas. Sem os testes ligados, os passos dos testes
+    mexeriam no que nao e nosso (o desligar para um OpenSSH do dono quando nao
+    ha caderninho). Os dois terminam igual (`_passos_das_nossas_tarefas`):
+    apagar a tarefa da atualizacao e, se tudo deu certo, a propria tarefa.
     Cada passo que poderia atingir algo do dono confere antes o caderninho e a
     descricao da conta. Na tarefa, um passo que falha nao para os outros, e a
     tarefa e o caderninho so se apagam se tudo deu certo. Os projetos do Kaique
     nunca sao citados; o perfil da conta de testes e achado pelo SID dela.
     """
+    passos = _passos_dos_testes_a_distancia() if testes_ligados else []
+    return passos + _passos_das_nossas_tarefas()
+
+
+def _passos_das_nossas_tarefas() -> list[Passo]:
+    """O fim de todo desfazer: as tarefas do Windows que o programa criou, e so elas.
+
+    1. a tarefa da atualizacao (atualizacao.NOME_DA_TAREFA, o ajudante da
+       D-733): o gancho de desinstalar tenta apaga-la, mas roda sem
+       administrador e nao consegue (pergunta (a) do relatorio da D-731);
+       aqui roda como o sistema. Sempre, mesmo se um passo antes falhou;
+    2. o caderninho, o script e a propria tarefa do desfazer, so se tudo deu
+       certo (para dar para rodar de novo).
+    O nome da tarefa da atualizacao vem do atualizacao.py (um lugar so); e
+    importado aqui dentro porque o atualizacao.py importa este arquivo.
+    """
+    from atualizacao import NOME_DA_TAREFA
+
+    pasta, nome = NOME_DA_TAREFA.rsplit("\\", 1)
+    return [
+        Passo("Apagar a tarefa da atualizacao do programa (Procurar versao nova)",
+              f"Unregister-ScheduledTask -TaskName '{nome}' -TaskPath '\\{pasta}\\'"
+              f" -Confirm:$false -ErrorAction SilentlyContinue"),
+        Passo("Apagar o caderninho, o script e a tarefa do desfazer (so se tudo deu certo)",
+              f"Remove-Item -LiteralPath '{caminho_do_antes()}' -Force -ErrorAction SilentlyContinue;"
+              f" Remove-Item -LiteralPath '{caminho_do_script_do_desfazer()}' -Force -ErrorAction SilentlyContinue;"
+              f" Anotar 'OK   | a tarefa do desfazer sai agora';"
+              f" Unregister-ScheduledTask -TaskName '{NOME_DA_TAREFA_DO_DESFAZER}'"
+              f" -TaskPath '\\{PASTA_DAS_TAREFAS}\\' -Confirm:$false -ErrorAction SilentlyContinue",
+              so_se_tudo_certo=True),
+    ]
+
+
+def _passos_dos_testes_a_distancia() -> list[Passo]:
+    """Os passos que desfazem o que o `ligar` pos (o plano de desfazer de 17/11, sem o fim das tarefas)."""
     # Primeiro o desligar (para o sshd: nenhum teste novo entra), depois fechar
     # o que a conta de testes ainda estiver rodando, e so entao apagar.
     passos = list(plano_de_desligar())
@@ -481,13 +584,6 @@ def plano_de_desfazer() -> list[Passo]:
                   f" | Sort-Object -Property Length -Descending"
                   f" | ForEach-Object {{ Remove-Item -LiteralPath (Join-Path $p $_) -Recurse -Force"
                   f" -ErrorAction SilentlyContinue }} }} }}")),
-        Passo("Apagar o caderninho, o script e a tarefa do desfazer (so se tudo deu certo)",
-              f"Remove-Item -LiteralPath '{caminho_do_antes()}' -Force -ErrorAction SilentlyContinue;"
-              f" Remove-Item -LiteralPath '{caminho_do_script_do_desfazer()}' -Force -ErrorAction SilentlyContinue;"
-              f" Anotar 'OK   | a tarefa do desfazer sai agora';"
-              f" Unregister-ScheduledTask -TaskName '{NOME_DA_TAREFA_DO_DESFAZER}'"
-              f" -TaskPath '\\{PASTA_DAS_TAREFAS}\\' -Confirm:$false -ErrorAction SilentlyContinue",
-              so_se_tudo_certo=True),
     ]
     return passos
 
@@ -559,6 +655,12 @@ class Executor:
         desinstalar roda sem administrador e tem 30 s)."""
         raise NotImplementedError
 
+    def aplicar_ja_como_administrador(self, passos: list[Passo]) -> Resultado:  # pragma: no cover
+        """Aplica os passos SEM pergunta nenhuma, porque quem chama ja roda como
+        administrador (a primeira abertura: --preparar-o-computador, dentro da
+        pergunta do Windows da D-733). Espera terminar. Sem senha."""
+        raise NotImplementedError
+
 
 class ExecutorWindows(Executor):
     """A de verdade: uma pergunta de administrador so para todos os passos.
@@ -591,6 +693,16 @@ class ExecutorWindows(Executor):
         from core._testes_a_distancia_windows import rodar_a_tarefa_no_windows
 
         return rodar_a_tarefa_no_windows(nome, TEMPO_MAXIMO_NO_GANCHO)
+
+    def aplicar_ja_como_administrador(self, passos: list[Passo]) -> Resultado:
+        if "PYTEST_CURRENT_TEST" in os.environ:
+            raise RuntimeError(
+                "ExecutorWindows nao roda sob o pytest: troque por um de mentira.")
+        if sys.platform != "win32":
+            return Resultado(False, mensagem="Os testes a distancia so funcionam no Windows.")
+        from core._testes_a_distancia_windows import aplicar_ja_como_administrador_no_windows
+
+        return aplicar_ja_como_administrador_no_windows(passos)
 
 
 # O executor de hoje. Troca-se com `definir_executor` (os testes poem um de
@@ -688,4 +800,18 @@ def mandar_desfazer() -> Resultado:
     try:
         return executor_atual().rodar_a_tarefa(nome_da_tarefa_do_desfazer())
     except Exception as erro:  # noqa: BLE001 - o gancho de desinstalar nunca pode quebrar
+        return Resultado(False, mensagem=f"{type(erro).__name__}: {erro}")
+
+
+def preparar_o_desfazer() -> Resultado:
+    """Cria a tarefa "desfazer" na primeira abertura, mesmo sem os testes ligados (D-731, pergunta (a)).
+
+    Quem chama: atualizacao.preparar_como_administrador (--preparar-o-computador),
+    que ja roda como administrador dentro da pergunta do Windows da primeira
+    abertura (D-733/D-735): por isso nenhuma pergunta a mais. Os passos sao
+    `plano_de_preparar_o_desfazer` (um lugar so). Nunca levanta.
+    """
+    try:
+        return executor_atual().aplicar_ja_como_administrador(plano_de_preparar_o_desfazer())
+    except Exception as erro:  # noqa: BLE001 - o preparo do computador continua
         return Resultado(False, mensagem=f"{type(erro).__name__}: {erro}")

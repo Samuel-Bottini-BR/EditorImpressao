@@ -30,7 +30,8 @@ COMO FUNCIONA, DO COMECO AO FIM
    permitir...?"), pela mesma peca dos testes a distancia
    (core.testes_a_distancia.Executor). Dentro dela roda este .exe com
    --preparar-o-computador (preparar_como_administrador): cria o ajudante
-   (criar_tarefa, xml_da_tarefa), instala o Visual C++ de dentro do pacote se
+   (criar_tarefa, xml_da_tarefa) e a tarefa "desfazer" que o apaga ao
+   desinstalar (criar_as_tarefas; D-731, 17/11/2026), instala o Visual C++ de dentro do pacote se
    faltar e tira a instalacao antiga do Inno (preparar_o_computador). Se o
    Kaique digitou a senha, os passos dos testes a distancia vao na MESMA
    pergunta (core.testes_a_distancia.ligar, sem mudanca).
@@ -1199,7 +1200,8 @@ def preparar_como_administrador(gerente=None, criar: Callable[[], bool] | None =
     """--preparar-o-computador: o que roda DENTRO da pergunta do Windows da
     primeira abertura, ja como administrador (D-733). Devolve o codigo de saida.
 
-    Cria o ajudante (criar_tarefa) e faz o resto que pede licenca, pela mesma
+    Cria as tarefas do programa (criar_as_tarefas: o ajudante e a tarefa
+    "desfazer", D-731) e faz o resto que pede licenca, pela mesma
     regra de sempre (preparar_o_computador: o Visual C++ de dentro do pacote,
     se faltar, e a instalacao antiga do Inno). Nunca no pacote portatil do
     ensaio (e_portatil). Tudo vai para o registro da atualizacao.
@@ -1212,9 +1214,30 @@ def preparar_como_administrador(gerente=None, criar: Callable[[], bool] | None =
     if (portatil or e_portatil)(gerente):
         registrar("preparar o computador: pacote portátil, não mexi no Windows")
         return 0
-    certo = (criar or criar_tarefa)()
+    certo = (criar or criar_as_tarefas)()
     (preparar or preparar_o_computador)(gerente)
     return 0 if certo else 1
+
+
+def criar_as_tarefas() -> bool:
+    """As duas tarefas que a pergunta da primeira abertura cria (ja como administrador).
+
+    1. o ajudante da atualizacao (criar_tarefa, D-733);
+    2. a tarefa "desfazer" (core.testes_a_distancia.preparar_o_desfazer;
+       D-731, pergunta (a) do relatorio da construcao, 17/11/2026): existe
+       SEMPRE, com ou sem os testes a distancia, e e ela quem apaga o
+       ajudante ao desinstalar (o gancho de desinstalar roda sem
+       administrador e nao consegue; ver ao_desinstalar). Se os testes ja
+       foram ligados, ela ja tem o desfazer inteiro e fica como esta.
+    True so se as duas deram certo; cada uma vai para o registro.
+    """
+    from core import testes_a_distancia
+
+    certo = criar_tarefa()
+    desfazer = testes_a_distancia.preparar_o_desfazer()
+    registrar(f"criar a tarefa do desfazer (D-731): {'certo' if desfazer.ok else 'NÃO deu certo'}"
+              f" ({desfazer.mensagem})")
+    return certo and desfazer.ok
 
 
 def passo_de_preparar_o_computador(exe: Path | None = None):
@@ -1311,6 +1334,10 @@ def ao_desinstalar(_versao: str, portatil: Callable[[], bool] = e_portatil) -> N
     tarefa "desfazer" que o ligar dos testes a distancia criou (ela roda como o
     sistema, por tras, e tira o OpenSSH se foi nosso, a regra, a conta e o
     perfil) e volta logo. Sem a tarefa (os testes nunca ligados), so anota.
+    Desde 17/11/2026 (D-731, pergunta (a)): a tarefa "desfazer" existe sempre
+    (nasce na pergunta da primeira abertura, criar_as_tarefas) e apaga tambem
+    o ajudante da atualizacao e a si mesma. O apagar_tarefa daqui ficou (sem
+    administrador ele falha, e o registro anota); quem apaga de fato e o desfazer.
     """
     if not portatil():
         from core import testes_a_distancia
