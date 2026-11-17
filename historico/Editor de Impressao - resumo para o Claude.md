@@ -81,7 +81,7 @@ Plano (aprovado em 16/11): `relatorios/frente-kaique-2026-11-16/plano.md`, com 7
 - **Preparo:**
   - feito pelo verificador em 17/11: `etapa5-preparo-2026-11-17` (`bb156447`), copiado para o obra (`a9d81030`);
   - em `relatorios/frente-kaique-2026-11-16/etapa5/`: `lista.md` (fases 0 a 12, ~5 a 6 h, ~8 perguntas do Windows), `comandos.md`, `fotografo.py` (só lê) e `comparar.py`.
-- **Começo (Samuel: "ok", 17/11 20h37):** worktree `.claude\worktrees\etapa5`, ramo `etapa5-2026-11-17`, `f505e5dc`, **sem push**.
+- **Começo (Samuel: "ok", 17/11 20h37):** worktree `.claude\worktrees\etapa5`, ramo `etapa5-2026-11-17`, `f505e5dc` (push feito no fechamento do checkpoint).
   - O agente preencheu os nomes de verdade (A2) e parou antes da fase 0. Nada foi rodado no Windows: nenhuma foto, nenhuma cópia de reserva, nenhuma versão de mentira, nenhuma pergunta do Windows.
 - **O achado que parou (do agente; parte conferida pela gerente, ver o topo):**
   - quando a janela do programa roda sem administrador, o Velopack usa uma pasta de reserva, `%LOCALAPPDATA%\EditorImpressao\packages`, que fica **dentro da pasta dos projetos**;
@@ -193,7 +193,7 @@ Plano (aprovado em 16/11): `relatorios/frente-kaique-2026-11-16/plano.md`, com 7
   - agora lê as falas do meio do trabalho, e os relatórios de agente não saem mais como fala dele (17 de 17 conferências).
   - Nesta lista, as falas de 16/11 12h14 e 12h22 aparecem duas vezes porque ele mandou duas vezes: a das 12h14 foi interrompida ("[Request interrupted by user]") e às 12h22 ele colou de novo com texto novo. Não é defeito do script.
 - **`fase-1`:** `7fb5abbf` (16/11), Lista de bugs: faixa preta na beirada esquerda do Righetti depois do Automático, igual em 28/10.
-- **Ramos de 17/11 sem push (já dentro do obra, não se perde nada):** `kaique-juntar-2026-11-17`, `desinstalar-tudo-2026-11-16`, `desinstalar-b-2026-11-17`, `senha-so-instalado-2026-11-16` e `brasao-2026-11-17-pasta-agendador`. Fora do obra e sem push: `etapa5-preparo-2026-11-17` (copiado para o obra pelo cherry-pick `a9d81030`) e `etapa5-2026-11-17` (`f505e5dc`, o de agora).
+- **Ramos de 17/11 sem push (já dentro do obra, não se perde nada):** `kaique-juntar-2026-11-17`, `desinstalar-tudo-2026-11-16`, `desinstalar-b-2026-11-17`, `senha-so-instalado-2026-11-16` e `brasao-2026-11-17-pasta-agendador`. Fora do obra e sem push: `etapa5-preparo-2026-11-17` (copiado para o obra pelo cherry-pick `a9d81030`) ; `etapa5-2026-11-17` (`f505e5dc`) teve push no fechamento.
 - **Nada mudou nos filtros nem nas ferramentas.** A versão de teste tem tudo o que tinha em 14/11 (`6b114163`, o código do `c7e34fd8`), mais a frente do Kaique e o brasão.
 
 ## 6. Descobertas de comportamento real (caras de redescobrir)
