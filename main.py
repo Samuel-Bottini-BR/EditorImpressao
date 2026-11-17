@@ -14,9 +14,20 @@ def main() -> int:
     tratada (regra 3.3: nunca stack trace na tela) e abre a janela principal.
     Se o programa foi chamado com um caminho de PDF (associacao de arquivo do
     instalador), abre esse livro direto."""
-    from PySide6.QtCore import Qt
+    # Tela de carregamento (D-744, D-745, D-747, 17/11/2026): o brasao girando
+    # aparece JA, antes dos imports pesados, num processo a parte que gira
+    # liso enquanto este carrega; some quando a janela principal aparece (logo
+    # abaixo, depois do janela.show()). Nos testes e na conta dos testes a
+    # distancia nao aparece. Ver ui/tela_de_carregamento.py.
+    from ui.tela_de_carregamento import abrir_o_brasao
+
+    brasao_girando = abrir_o_brasao()
+
+    from PySide6.QtCore import Qt, QTimer
+    from PySide6.QtGui import QIcon
     from PySide6.QtWidgets import QApplication, QMessageBox
 
+    import brasao
     from registro import registrar_erro
 
     QApplication.setHighDpiScaleFactorRoundingPolicy(
@@ -24,6 +35,9 @@ def main() -> int:
     )
     app = QApplication(sys.argv)
     app.setApplicationName("Editor de Impressão")
+    # O icone do programa e o brasao inteiro, desenhado do vetor em cada
+    # tamanho (D-746): vale para todas as janelas e para a barra de tarefas.
+    app.setWindowIcon(QIcon(str(brasao.ICONE)))
 
     # Obra 26/10 (etapa 9a, teste do Kaique): a rodinha do mouse so muda
     # numero/lista depois de clicar nele; e os textos do proprio Qt em
@@ -65,6 +79,9 @@ def main() -> int:
 
     janela = JanelaPrincipal()
     janela.show()
+    # A janela principal apareceu: o brasao girando some (D-744). Pelo laco do
+    # Qt, para a janela ja estar desenhada quando ele sumir.
+    QTimer.singleShot(0, brasao_girando.fechar)
 
     # Primeira abertura do programa (D-721): uma janela pequena pede "a senha
     # dos testes a distancia". So aparece uma vez; depois, da para por a senha
@@ -105,6 +122,13 @@ if __name__ == "__main__":
 
         servir(sys.argv[2], sys.argv[3])
         raise SystemExit(0)
+    # Tela de carregamento (D-744): o processo do brasao girando, aberto pelo
+    # main() abaixo (ui/tela_de_carregamento.py). Atendido AQUI, antes de
+    # tudo, para nao abrir outra janela do programa.
+    if len(sys.argv) > 2 and sys.argv[1] == "--brasao-girando":
+        from ui.brasao_girando import rodar_sozinho
+
+        raise SystemExit(rodar_sozinho(sys.argv[2]))
     # Conferência dos detectores de texto, sem janela (item 1.3): prova que o
     # programa EMPACOTADO acha o docTR, o Tesseract e o motor do Kraken. Ver
     # core/ocr_diagnostico.py. Não é usada pelo Kaique.
