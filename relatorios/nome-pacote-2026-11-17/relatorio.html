@@ -1,0 +1,295 @@
+<!doctype html>
+<html lang="pt-BR">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Conserto: o nome interno do pacote</title>
+<style>
+:root { color-scheme: light dark; }
+* { box-sizing: border-box; }
+body {
+  font: 17px/1.65 "Segoe UI", system-ui, sans-serif;
+  max-width: 46rem; margin: 0 auto; padding: 2.5rem 1.5rem 6rem;
+  color: #1c1c1e; background: #fdfdfc;
+}
+h1 { font-size: 2rem; line-height: 1.2; margin: 0 0 .3em; letter-spacing: -.02em; }
+h2 { font-size: 1.35rem; margin: 2.4em 0 .6em; padding-top: .8em;
+     border-top: 1px solid #e6e4e0; letter-spacing: -.01em; }
+h3 { font-size: 1.1rem; margin: 1.8em 0 .4em; }
+h1 + p, h2 + p { margin-top: .4em; }
+p, li { margin: 0 0 .9em; }
+ul, ol { padding-left: 1.3em; }
+strong { font-weight: 640; }
+code {
+  font: .88em ui-monospace, "Cascadia Code", Consolas, monospace;
+  background: #f1efec; padding: .12em .35em; border-radius: 4px;
+}
+pre {
+  background: #f1efec; padding: 1em 1.1em; border-radius: 8px;
+  overflow-x: auto; line-height: 1.5;
+}
+pre code { background: none; padding: 0; }
+blockquote {
+  margin: 1.2em 0; padding: .1em 0 .1em 1.1em;
+  border-left: 3px solid #c9c5be; color: #55524d;
+}
+table {
+  border-collapse: collapse; width: 100%; margin: 1.2em 0;
+  font-size: .95rem; display: block; overflow-x: auto;
+}
+th, td { padding: .5em .8em; text-align: left; border-bottom: 1px solid #e6e4e0; }
+th { font-weight: 620; background: #f7f5f2; white-space: nowrap; }
+tr:last-child td { border-bottom: none; }
+img { max-width: 100%; height: auto; border-radius: 6px; margin: 1em 0;
+      border: 1px solid #e6e4e0; }
+hr { border: none; border-top: 1px solid #e6e4e0; margin: 2.5em 0; }
+.rodape { margin-top: 4em; padding-top: 1.2em; border-top: 1px solid #e6e4e0;
+          font-size: .85rem; color: #86827c; }
+@media (prefers-color-scheme: dark) {
+  body { color: #e8e6e3; background: #1a1917; }
+  h2 { border-top-color: #35332f; }
+  code, pre, th { background: #262421; }
+  th, td { border-bottom-color: #35332f; }
+  blockquote { border-left-color: #4a4741; color: #b0aca6; }
+  img { border-color: #35332f; }
+  .rodape { border-top-color: #35332f; color: #7d7973; }
+}
+@media print {
+  body { max-width: none; padding: 0; color: #000; background: #fff; }
+  h2 { page-break-after: avoid; }
+  table, img { page-break-inside: avoid; }
+}
+</style>
+</head>
+<body>
+<h1>Conserto: o nome interno do pacote deixa de ser o da pasta dos projetos</h1>
+<p>17/11/2026, implementador. Cópia <code>.claude\worktrees\nome-pacote</code>, ramo <code>nome-pacote-2026-11-17</code>, a partir de <code>59678e22</code>.
+Pedido: D-763 (Samuel, 17/11: "ok, pode fazer"). Teste de máquina.</p>
+<h2>Em uma frase</h2>
+<p><strong>O nome interno que a peça de atualização usa passou de <code>EditorImpressao</code> para <code>EditorImpressaoPrograma</code>, e agora nada
+que essa peça grava ou apaga ao abrir e ao desinstalar cai na pasta dos projetos.</strong> O Kaique não vê diferença nenhuma.</p>
+<ul>
+<li><strong>Achado novo na prova repetida:</strong> o desinstalador do Velopack 1.2.161 não apaga a pasta do <strong>nome</strong> do pacote; apaga a
+  do <strong>título</strong> ("Editor de Impressão"). Em 17/11 os dois eram iguais no programa de mentira, por isso pareceu ser o nome.
+  O título já era diferente da pasta dos projetos e não muda; a prova nova cobra os dois.</li>
+<li><strong>Um teste antigo acusa erro</strong> com o nome novo e <strong>não foi mudado</strong>: ele confere o nome do arquivo da assinatura escrito
+  à mão. Vai como pergunta ao Samuel (no fim).</li>
+</ul>
+<h2>O que mudou</h2>
+<table>
+<thead>
+<tr>
+<th>Arquivo</th>
+<th>O quê</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><code>versao.py</code></td>
+<td><code>ID_DO_PACOTE = "EditorImpressaoPrograma"</code> e o comentário da regra (por que pode trocar agora e nunca mais depois da primeira instalação)</td>
+</tr>
+<tr>
+<td><code>atualizacao.py</code></td>
+<td>só o comentário do topo: a frase falsa "Os projetos do Kaique nunca são tocados" agora diz onde o Velopack grava e o que o desinstalador apaga</td>
+</tr>
+<tr>
+<td><code>empacotar.py</code></td>
+<td><code>VERSAO_DO_VPK = "1.2.161"</code> e <code>COMO_INSTALAR_O_VPK</code> (o "instale com" diz <code>--version 1.2.161</code>), com o aviso de repetir a prova antes de subir</td>
+</tr>
+<tr>
+<td><code>publicar_versao_kaique.py</code></td>
+<td>o "instale com" usa <code>empacotar.COMO_INSTALAR_O_VPK</code>; comentário</td>
+</tr>
+<tr>
+<td><code>assinatura.py</code></td>
+<td>só comentários (os exemplos de nome de arquivo)</td>
+</tr>
+<tr>
+<td><code>requirements.txt</code></td>
+<td><code>velopack==1.2.161</code> já estava preso; ganhou o aviso de repetir a prova</td>
+</tr>
+<tr>
+<td><code>tests/test_nome_do_pacote.py</code></td>
+<td><strong>novo</strong>, 5 testes</td>
+</tr>
+</tbody>
+</table>
+<p><strong>A regra num lugar só:</strong> o nome mora em <code>versao.ID_DO_PACOTE</code>; todo o resto lê dali (lista "caminho → de onde lê" no
+<code>ONDE-PAREI.md</code>). Nenhum lugar do programa tem o nome escrito à mão.</p>
+<h2>A prova nova (<code>tests/test_nome_do_pacote.py</code>)</h2>
+<ol>
+<li>o nome do pacote nunca é o nome da pasta dos projetos (sem diferenciar maiúsculas);</li>
+<li>a pasta de reserva (<code>LocalAppData\&lt;nome&gt;</code>, <code>packages\</code>, <code>Update.exe</code>) não é a dos projetos nem fica dentro dela;</li>
+<li>o que o desinstalador apaga (<code>LocalAppData\&lt;título&gt;</code> e <code>LocalAppData\&lt;nome&gt;</code>) não é a pasta dos projetos;</li>
+<li>o <code>--packId</code> do comando do vpk é <code>versao.ID_DO_PACOTE</code> (o "um lugar só");</li>
+<li>o <code>velopack</code> do pip e o <code>vpk</code> presos na mesma versão, 1.2.161.</li>
+</ol>
+<table>
+<thead>
+<tr>
+<th></th>
+<th>Resultado</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>Código antigo (<code>59678e22</code>, numa cópia destacada)</td>
+<td><strong>4 falharam</strong>, 1 passou (o 4: o <code>--packId</code> já lia do lugar certo) — <code>provas/prova-nova-no-codigo-antigo.txt</code></td>
+</tr>
+<tr>
+<td>Código novo</td>
+<td><strong>5 passaram</strong> — <code>provas/prova-nova-no-codigo-novo.txt</code></td>
+</tr>
+</tbody>
+</table>
+<h2>A prova de 17/11 repetida, com o nome novo</h2>
+<p>Programa de mentira <code>ProvaNome.exe</code> (sem janela), com o <code>atualizacao.py</code> novo, montado pelo <strong>mesmo comando</strong> do
+programa (<code>empacotar.comando_do_vpk</code>). Os nomes saem da mesma regra, nunca escritos à mão:</p>
+<ul>
+<li>pacote de mentira = <code>versao.ID_DO_PACOTE</code> + "Prova" = <strong><code>EditorImpressaoProgramaProva</code></strong>;</li>
+<li>pasta dos dados de mentira = <code>historico.pasta_de_dados().name</code> + "Prova" = <strong><code>EditorImpressaoProva</code></strong>, com um projeto de
+  mentira dentro (<code>projetos\livro-de-mentira\projeto.json</code>, <code>configuracoes.json</code>, <code>historico.json</code>).</li>
+</ul>
+<p>Trocas só da prova: <code>.msi</code> "Either" (instala só para a conta, sem pergunta do Windows, como em 17/11), sem atalhos, título
+"Prova do nome do pacote". Instalado com <code>msiexec /qn</code>. Nenhuma pergunta do Windows, nenhuma janela.</p>
+<h3>Caso A — pasta da instalação trancada (como Arquivos de Programas para o Kaique)</h3>
+<p>A cada chamada de abertura (<code>App().run()</code>, <code>versao_que_roda</code>, <code>e_portatil</code>, <code>procurar_ao_abrir</code>) o Velopack avisou
+"Acesso negado" na pasta do programa e criou <strong><code>C:\Users\fotog\AppData\Local\EditorImpressaoProgramaProva\</code></strong> com
+<code>Update.exe</code> (5,4 MB) e <code>packages\</code> vazia. O "procurar e baixar" do ajudante pôs lá a versão 1.0.1 (20 MB), depois de
+conferir a assinatura de mentira. A pasta dos dados de mentira ficou igual do começo ao fim. Fotos: <code>provas/fotos/A-*.txt</code>.</p>
+<h3>Caso B — pasta da instalação aberta (como o ajudante, que roda como o sistema)</h3>
+<p>Nenhuma pasta de reserva. A 1.0.1 foi para <code>&lt;instalado&gt;\packages\</code>. Foto: <code>provas/fotos/B-procurar-e-baixar.txt</code>.</p>
+<h3>Desinstalar</h3>
+<table>
+<thead>
+<tr>
+<th></th>
+<th>O que havia antes</th>
+<th>O que o desinstalador apagou</th>
+<th>O que ficou</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><strong>C1</strong> (depois do caso A)</td>
+<td>pasta de reserva com a 1.0.1 e um projeto de mentira; pasta dos dados de mentira</td>
+<td>a pasta instalada</td>
+<td><strong><code>...\Local\EditorImpressaoProgramaProva</code> inteira</strong> (Update.exe, packages, projeto de mentira) e <strong><code>...\Local\EditorImpressaoProva</code> inteira</strong></td>
+</tr>
+<tr>
+<td><strong>C2</strong> (depois do caso B)</td>
+<td>projeto de mentira em <code>...\Local\EditorImpressaoProgramaProva</code>, em <code>...\Local\EditorImpressaoProva</code> e em <code>...\Local\Prova do nome do pacote</code> (o título); uma marca em <code>%TEMP%\velopack_Prova do nome do pacote</code></td>
+<td>a pasta instalada, <strong><code>...\Local\Prova do nome do pacote</code></strong> e <strong><code>%TEMP%\velopack_Prova do nome do pacote</code></strong></td>
+<td><code>...\Local\EditorImpressaoProgramaProva</code> e <strong><code>...\Local\EditorImpressaoProva</code> (os "projetos")</strong></td>
+</tr>
+</tbody>
+</table>
+<ul>
+<li>Quem apaga: a limpeza do <code>.msi</code> (<code>RustCleanup</code> → <code>CleanupDeferred</code>) recebe
+  <code>&lt;pasta instalada&gt;"Prova do nome do pacote"&lt;Temp&gt;</code>, ou seja, <strong>o título</strong> (<code>provas/trechos-do-msi.txt</code>). No modelo do
+  WiX do vpk 1.2.161: <code>&lt;Property Id="RustAppId" Value="{{AppTitle}}"/&gt;</code>.</li>
+<li>O nosso gancho <code>ao_desinstalar</code> só anotou (<code>provas/registro-do-app.txt</code>).</li>
+<li><strong>A pasta dos projetos de mentira sobreviveu às duas desinstalações.</strong></li>
+</ul>
+<h3>O <code>.msi</code> com o título de verdade (só lido, sem instalar)</h3>
+<p>Montado pelo mesmo comando do programa (<code>PerMachine</code>, título "Editor de Impressão"), com o nome de mentira:
+<code>RustAppId = Editor de Impressão</code>; a pasta em Arquivos de Programas = <code>Editor de Impressão</code> (com acento); a entrada na
+lista de programas = chave <code>MSI:&lt;nome&gt;</code>, mostrando "Editor de Impressão" (<code>provas/msi-com-o-titulo-de-verdade.txt</code>).</p>
+<p><strong>Para o programa de verdade, então:</strong> ao abrir sem administrador, o Velopack grava em
+<code>%LOCALAPPDATA%\EditorImpressaoPrograma</code>; ao desinstalar, apaga <code>%LOCALAPPDATA%\Editor de Impressão</code> e
+<code>%TEMP%\velopack_Editor de Impressão</code>. Nenhuma das três é <code>%LOCALAPPDATA%\EditorImpressao</code>.</p>
+<h3>A pasta de verdade dos projetos</h3>
+<p>Só os nomes do primeiro nível, em todas as fotos, do começo ao fim: <code>configuracoes.json, erros.log, historico.json,
+projetos</code>. Nada foi gravado, mudado ou apagado nela. <code>%LOCALAPPDATA%\EditorImpressaoPrograma</code> nunca apareceu.</p>
+<h2>Testes</h2>
+<ul>
+<li><strong>No PC, um arquivo por vez</strong> (código novo): <code>test_decisoes_atualizacao</code> 37 passaram, <strong>1 falhou</strong> (o da pergunta);
+  <code>test_assinatura</code> 16; <code>test_decisoes_desinstalar</code> 46; <code>test_decisoes_desinstalar_pasta</code> 6;
+  <code>test_decisoes_ajudante_da_atualizacao</code> 37; <code>test_decisoes_preparo_d749</code> 8; <code>test_decisoes_testes_a_distancia</code> 13;
+  <code>test_empacotar</code> 41; <code>test_sem_janela_na_tela</code> 8; <code>test_nome_do_pacote</code> 5. Todos passaram, menos aquele um.</li>
+<li><strong>GitHub, 1ª rodada (44190676442, código de <code>13e897d7</code>):</strong> só falhou a parte 3, e só com
+  <code>test_d724_o_que_o_publicar_assina_o_programa_aceita</code> (o da pergunta). Botões e prints e as partes 2, 4 e 5 passaram.</li>
+<li><strong>GitHub, rodada final:</strong> ver a entrega à gerente.</li>
+</ul>
+<h2>Como cumpri cada decisão</h2>
+<ul>
+<li><strong>D-763:</strong> nome trocado num lugar só (<code>versao.ID_DO_PACOTE</code>); prova nova falha no antigo e passa no novo; prova de
+  17/11 repetida; o Kaique continua vendo "Editor de Impressão" (o <code>.msi</code> lido mostra).</li>
+<li><strong>D-723:</strong> o mesmo Velopack, o mesmo comando de empacotar (<code>PerMachine</code> no programa; "Either" só na prova).</li>
+<li><strong>D-724:</strong> a versão de mentira foi aceita só com a assinatura de mentira conferida ("publicada e assinada":
+  <code>provas/atualizacao-de-mentira.log</code>). A chave do Samuel não foi usada.</li>
+<li><strong>D-731 e §7:</strong> os projetos de mentira sobreviveram ao desinstalar; o nosso gancho não mudou.</li>
+<li><strong>D-732, D-733, D-740, D-750, D-751, D-727:</strong> nada tocado. A tarefa ajudante continua <code>EditorImpressao\Procurar versao
+  nova</code>; a pasta do Agendador continua "EditorImpressao".</li>
+<li><strong>§11.8:</strong> nenhum teste antigo mudado. O que falha virou pergunta.</li>
+</ul>
+<h2>Ressalvas</h2>
+<ul>
+<li><strong>O desinstalar de verdade (<code>.msi</code> para todo o computador, com administrador) não foi provado.</strong> Nele a limpeza roda
+  como o sistema (<code>Impersonate="no"</code>). Pelo que se leu no arquivo da limpeza, ela usa a variável <code>LOCALAPPDATA</code> de quem
+  roda, então deve apagar <code>C:\Windows\System32\config\systemprofile\AppData\Local\Editor de Impressão</code>. Não é a pasta dos
+  projetos em nenhum dos dois casos, mas só a etapa 5 confirma.</li>
+<li><strong>O que a prova de 17/11 disse sobre desinstalar estava certo para o programa de mentira, não para o de verdade.</strong> Com o
+  nome antigo e o título "Editor de Impressão", o desinstalador 1.2.161 provavelmente não apagaria os projetos (apaga a
+  pasta do título). O conserto continua necessário: a cada abertura o Velopack gravaria <code>Update.exe</code> e <code>packages\</code> dentro
+  da pasta dos projetos, e um Velopack mais novo (limpeza <code>UserCleanupDeferred</code>) apaga <code>%LocalAppData%\&lt;nome&gt;</code>.</li>
+<li><strong>O <code>vpk</code> instalado não é conferido na hora de empacotar:</strong> a versão está escrita e o teste cobra que ela bate com a do
+  pip, mas quem rodar <code>dotnet tool update</code> passa a montar com outra (ideia abaixo).</li>
+<li>A pasta trancada só negava criar arquivos na raiz, como em 17/11.</li>
+</ul>
+<h2>Bugs para a Lista de bugs (não impedem; não consertei)</h2>
+<ul>
+<li><strong>17/11/2026: desinstalar deixa uma sobra na conta do Kaique.</strong> O desinstalador do Velopack 1.2.161 não apaga a pasta
+  de reserva <code>%LOCALAPPDATA%\EditorImpressaoPrograma</code> (o <code>Update.exe</code> de 5 MB e <code>packages\</code>): ela fica depois de
+  desinstalar. Não toca nos projetos. Prova: <code>provas/fotos/C1-depois-de-desinstalar.txt</code> e <code>C2-depois-de-desinstalar.txt</code>.</li>
+<li><strong>17/11/2026: a lista da etapa 5 espera a pasta errada em Arquivos de Programas.</strong> <code>lista.md</code> (D-723),
+  <code>comandos.md</code> (<code>$INSTALADO</code>) e <code>fotografo.py</code> (<code>programa_novo</code>) esperam <code>C:\Program Files\EditorImpressao</code>; o <code>.msi</code>
+  instala em <code>C:\Program Files\Editor de Impressão</code> (do título). Isso já valia antes deste conserto.</li>
+</ul>
+<h2>Ideias para a Lista de espera</h2>
+<ul>
+<li><code>empacotar.py</code> recusar empacotar se o <code>vpk</code> instalado não for <code>VERSAO_DO_VPK</code> (hoje só o "instale com" diz a versão).</li>
+<li>O fotógrafo da etapa 5 fotografar também <code>%LOCALAPPDATA%\EditorImpressaoPrograma</code>, <code>%LOCALAPPDATA%\Editor de Impressão</code>
+  e <code>C:\Windows\System32\config\systemprofile\AppData\Local\Editor de Impressão</code> antes e depois de desinstalar.</li>
+</ul>
+<h2>Textos da etapa 5 que citam o nome antigo (para a gerente atualizar; não mudei)</h2>
+<p>Em <code>.claude\worktrees\etapa5\relatorios\frente-kaique-2026-11-16\etapa5\</code>:
+- <code>lista.md:36-38</code> (A2): "Se for dentro de <code>%LOCALAPPDATA%\EditorImpressao</code> [...] pare e avise a gerente".
+- <code>lista.md:54-61</code> (A2, a parada): "O id é <code>EditorImpressao</code>. Ou seja: <code>%LOCALAPPDATA%\EditorImpressao\packages</code> e
+  <code>...\Update.exe</code>, dentro da pasta dos projetos" → agora <code>%LOCALAPPDATA%\EditorImpressaoPrograma</code>.
+- <code>lista.md:273</code> (D-723): "o programa em <code>C:\Program Files\EditorImpressao</code>" → <code>C:\Program Files\Editor de Impressão</code>
+  (do título; já estava errado antes).
+- <code>lista.md:342-343</code> (desinstalar): acrescentar o que o desinstalador apaga (<code>%LOCALAPPDATA%\Editor de Impressão</code>,
+  <code>%TEMP%\velopack_Editor de Impressão</code>) e a sobra <code>%LOCALAPPDATA%\EditorImpressaoPrograma</code>.
+- <code>comandos.md:28-30</code> (a parada A2): <code>%LOCALAPPDATA%\EditorImpressao\packages</code> → <code>%LOCALAPPDATA%\EditorImpressaoPrograma\packages</code>.
+- <code>comandos.md:41</code>: <code>$INSTALADO = "C:\Program Files\EditorImpressao"</code> → <code>"C:\Program Files\Editor de Impressão"</code>.
+- <code>comandos.md:184</code>: <code>velopack_EditorImpressao.log</code> → <code>velopack_EditorImpressaoPrograma.log</code>.
+- <code>fotografo.py:347</code>: <code>programa_novo</code> em <code>C:\Program Files\EditorImpressao</code> → <code>C:\Program Files\Editor de Impressão</code>.
+- Os pacotes publicados no <code>$TRAB\servidor</code> passam a se chamar <code>EditorImpressaoPrograma-&lt;versão&gt;-full.nupkg</code> e
+  <code>EditorImpressaoPrograma-&lt;versão&gt;.assinatura</code> (<code>lista.md:137</code> fala só "os 6 pacotes", sem nome: não precisa mudar).</p>
+<h2>O que criei fora do projeto</h2>
+<ul>
+<li><code>D:\agente_temp_testes\nome-pacote\</code> (~185 MB): o programa de mentira, os pacotes, os registros do <code>.msi</code>, as fotos.
+  Deixado para o verificador repetir; pode ser apagado inteiro.</li>
+<li>Apagados por mim no fim: <code>C:\Users\fotog\AppData\Local\EditorImpressaoProva</code> e <code>...\EditorImpressaoProgramaProva</code>, a
+  cópia destacada do código antigo e as pastas temporárias do pytest.</li>
+<li>Tirados pelo próprio desinstalador: as duas instalações, <code>...\Local\Prova do nome do pacote</code>,
+  <code>%TEMP%\velopack_Prova do nome do pacote</code> e a entrada nos programas instalados (conferido).</li>
+<li><code>D:\Config.Msi</code> (do sistema, de 17/11): o Windows Installer deu de novo o erro 1926 nela. Não mexi.</li>
+</ul>
+<h2>Pergunta para o Samuel (formato do CLAUDE.md §11.13)</h2>
+<p><strong>Do que se trata:</strong> é a troca do nome interno da peça que atualiza o programa no notebook do Kaique, que você mandou
+fazer hoje ("ok, pode fazer"). Esse nome também vai no nome de um arquivo pequeno que acompanha cada versão nova, a
+"assinatura" que prova que a versão é sua. Com o nome novo, o arquivo passa de <code>EditorImpressao-1.2.0.assinatura</code> para
+<code>EditorImpressaoPrograma-1.2.0.assinatura</code>.</p>
+<p><strong>O que acontece hoje:</strong> um teste antigo, de 16/11, confere esse nome escrito à mão, com o nome antigo, e por isso acusa
+erro. <strong>Não é defeito do programa:</strong> é efeito da troca de nome. O mesmo teste continua mostrando que o programa aceita a
+versão assinada.</p>
+<p><strong>O que você escolhe:</strong> posso mudar esse teste antigo para conferir o nome novo, lido do mesmo lugar que o programa usa?
+- <strong>Sim (sugiro):</strong> o teste continua cobrando o mesmo. Nada que o Kaique vê muda.
+- <strong>Não:</strong> o nome interno não pode trocar, e a peça de atualização continua gravando na pasta dos projetos do Kaique.
+- <strong>Só comentário.</strong></p>
+<p><strong>Situação:</strong> feito na cópia de teste; espera este "sim" para entrar na versão de teste. A etapa 5 espera este conserto.</p>
+<p class="rodape">Editor de Impressão &middot; gerado em 17/11/2026 às 18:47</p>
+</body>
+</html>
