@@ -537,9 +537,29 @@ def _passos_das_nossas_tarefas() -> list[Passo]:
               f" Remove-Item -LiteralPath '{caminho_do_script_do_desfazer()}' -Force -ErrorAction SilentlyContinue;"
               f" Anotar 'OK   | a tarefa do desfazer sai agora';"
               f" Unregister-ScheduledTask -TaskName '{NOME_DA_TAREFA_DO_DESFAZER}'"
-              f" -TaskPath '\\{PASTA_DAS_TAREFAS}\\' -Confirm:$false -ErrorAction SilentlyContinue",
+              f" -TaskPath '\\{PASTA_DAS_TAREFAS}\\' -Confirm:$false -ErrorAction SilentlyContinue;"
+              f" {_comando_apagar_a_pasta_das_tarefas_se_vazia()}",
               so_se_tudo_certo=True),
     ]
+
+
+def _comando_apagar_a_pasta_das_tarefas_se_vazia() -> str:
+    """D-731 ("o notebook fica como era antes de instalar"), 17/11/2026: a pasta
+    PASTA_DAS_TAREFAS do Agendador do Windows sai no fim do desfazer, SO se
+    ficou vazia (nenhuma tarefa, nem escondida, e nenhuma subpasta).
+
+    O Agendador so apaga pasta pelo servico dele (Schedule.Service); os
+    cmdlets ScheduledTasks nao tem esse comando. Se alguem (o dono do
+    computador, outro programa) pos algo na pasta, ela fica e o registro diz.
+    Roda como a ultima coisa do ultimo passo, depois de a tarefa do desfazer
+    se apagar (antes disso a pasta nunca esta vazia).
+    """
+    return (f"$agenda = New-Object -ComObject Schedule.Service; $agenda.Connect(); $pasta = $null;"
+            f" try {{ $pasta = $agenda.GetFolder('\\{PASTA_DAS_TAREFAS}') }} catch {{ }};"
+            f" if ($pasta -and $pasta.GetTasks(1).Count -eq 0 -and $pasta.GetFolders(0).Count -eq 0)"
+            f" {{ $agenda.GetFolder('\\').DeleteFolder('{PASTA_DAS_TAREFAS}', 0);"
+            f" Anotar 'OK   | a pasta {PASTA_DAS_TAREFAS} saiu do Agendador (estava vazia)' }}"
+            f" elseif ($pasta) {{ Anotar 'FICA | a pasta {PASTA_DAS_TAREFAS} do Agendador nao esta vazia' }}")
 
 
 def _passos_dos_testes_a_distancia() -> list[Passo]:
