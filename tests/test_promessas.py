@@ -3833,3 +3833,39 @@ def test_p171_restaurar_os_atalhos(janela, tela):
     assert janela.menu.acoes["desfazer"].shortcut() == QKeySequence("Ctrl+Z")
     assert not configuracoes.ler("atalhos"), "as configurações continuam com atalho mudado"
     dialogo.close()
+
+
+@prova("P-215")
+def test_p215_por_a_senha_dos_testes(janela, pasta, monkeypatch):
+    """P-215. D-721: o botão "Pôr a senha dos testes" abre a janela da senha e, com a senha, liga os
+    testes à distância (a opção fica pronta e o botão some). A peça que fala com o Windows é trocada
+    por uma de mentira - nada toca o Windows - e a senha nunca aparece nos comandos."""
+    from core import testes_a_distancia as td
+    import ui.testes_a_distancia_ui as tdui
+    from ui.tela_configuracoes import TelaConfiguracoes
+
+    class Fake(td.Executor):
+        def __init__(self):
+            self.chamadas = []
+
+        def aplicar(self, passos, senha):
+            self.chamadas.append((passos, senha))
+            return td.Resultado(True, passos=passos)
+
+    fake = Fake()
+    monkeypatch.setattr(td, "_executor", fake)
+    monkeypatch.setattr(tdui, "perguntar_senha", lambda parent=None: "senha-de-teste")
+
+    dialogo = TelaConfiguracoes(janela, parte="Testes à distância")
+    dialogo.show()
+    aj.assentar()
+    botoes = aj.chaves_dos_botoes(dialogo, "configurações/Testes à distância")
+    botao = botoes["configurações/Testes à distância/Pôr a senha dos testes"]
+    botao.click()
+    aj.assentar()
+    assert fake.chamadas, "clicar não ligou os testes à distância"
+    assert td.esta_pronto(), "a opção ficou pronta depois da senha"
+    assert not botao.isVisible(), "o botão da senha some quando a opção fica pronta"
+    texto = "\n".join(p.comando for ps, _ in fake.chamadas for p in ps)
+    assert "senha-de-teste" not in texto, "a senha não aparece nos comandos"
+    dialogo.close()

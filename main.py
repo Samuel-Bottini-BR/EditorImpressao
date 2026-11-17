@@ -66,6 +66,13 @@ def main() -> int:
     janela = JanelaPrincipal()
     janela.show()
 
+    # Primeira abertura do programa (D-721): uma janela pequena pede "a senha
+    # dos testes a distancia". So aparece uma vez; depois, da para por a senha
+    # nas Configuracoes. Ver ui/testes_a_distancia_ui.py.
+    from ui.testes_a_distancia_ui import primeira_vez_se_preciso
+
+    primeira_vez_se_preciso(janela)
+
     if len(sys.argv) > 1 and sys.argv[1].lower().endswith(".pdf"):
         janela.abrir_livro(sys.argv[1])
 

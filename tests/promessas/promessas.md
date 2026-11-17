@@ -1176,8 +1176,15 @@ programa), a partir do **nome do botão**, da **dica** (o balão do mouse) e das
 
 ### P-170 · "Fechar" (Configurações)
 - **chaves:** `configurações/Aparência/Fechar`, `configurações/Atalhos de teclado/Fechar`, `configurações/Velocidade/Fechar`,
-  `configurações/Medidas e receitas/Fechar`, `configurações/Impressão/Fechar`
+  `configurações/Medidas e receitas/Fechar`, `configurações/Impressão/Fechar`, `configurações/Testes à distância/Fechar`
 - **na tela:** fecha a janela; o que foi mudado continua valendo. **no projeto:** nada muda.
+
+### P-215 · "Pôr a senha dos testes" (Testes à distância)
+- **chaves:** `configurações/Testes à distância/Pôr a senha dos testes`
+- **decisões:** D-721 ("da para pôr a senha depois nas Configurações")
+- **na tela:** abre a janela pequena que pede a senha dos testes à distância; com a senha, liga os testes
+  (a opção fica pronta) e o botão some. **no projeto:** nada do trabalho do livro muda (a opção é do programa,
+  não do projeto).
 
 ### P-171 · "Restaurar todos os padrões" (Atalhos de teclado)
 - **chaves:** `configurações/Atalhos de teclado/Restaurar todos os padrões`

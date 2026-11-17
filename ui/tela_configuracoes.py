@@ -33,6 +33,7 @@ from PySide6.QtCore import Qt
 from PySide6.QtGui import QKeySequence
 from PySide6.QtWidgets import (
     QButtonGroup,
+    QCheckBox,
     QComboBox,
     QDialog,
     QGridLayout,
@@ -52,7 +53,11 @@ from ui import estilo
 
 # Juncao de 23/10/2026: as tres ultimas sao dos itens 2.16, 2.19 e 2.6 (ver
 # _parte_velocidade); ficam no fim para nao mudar a ordem das do layout.
-PARTES = ("Aparência", "Atalhos de teclado", "Velocidade", "Medidas e receitas", "Impressão")
+# "Testes a distancia" (frente do notebook do Kaique, 16/11/2026, D-705/D-712)
+# entra no FIM, para os indices das partes de antes nao mudarem (os testes
+# delas - test_configuracoes_em_partes, test_promessas - continuam valendo).
+PARTES = ("Aparência", "Atalhos de teclado", "Velocidade", "Medidas e receitas", "Impressão",
+          "Testes à distância")
 
 
 class TelaConfiguracoes(QDialog):
@@ -87,6 +92,7 @@ class TelaConfiguracoes(QDialog):
         self.pilha.addWidget(self._parte_velocidade())
         self.pilha.addWidget(self._parte_medidas())
         self.pilha.addWidget(self._parte_impressao())
+        self.pilha.addWidget(self._parte_testes_a_distancia())
         corpo.addWidget(self.pilha, 1)
         raiz.addLayout(corpo, 1)
         self.lista.currentRowChanged.connect(self.pilha.setCurrentIndex)
@@ -320,6 +326,80 @@ class TelaConfiguracoes(QDialog):
         self.borda_da_impressora.valueChanged.connect(guardar_impressao)
         caixa.addStretch()
         return parte
+
+    def _parte_testes_a_distancia(self) -> QWidget:
+        """Testes à distância (frente do notebook do Kaique, 16/11/2026).
+
+        A caixinha "Deixar o Samuel fazer testes..." (D-712, ligada de fábrica),
+        uma frase com o estado, e o botão "Pôr a senha dos testes" quando falta
+        a senha (D-721). Liga e desliga pela mesma porta do core
+        (testes_a_distancia.ligar/desligar); sem comando próprio aqui.
+        """
+        from core import testes_a_distancia as td
+
+        parte = QWidget()
+        caixa = QVBoxLayout(parte)
+        caixa.setContentsMargins(24, 18, 24, 12)
+        caixa.setSpacing(10)
+        self._cabeca(caixa, "Testes à distância",
+                     "Deixa o Samuel fazer testes neste computador pela rede do Tailscale. "
+                     "Os testes rodam numa conta separada e não enxergam os seus arquivos.")
+        self.caixa_testes = QCheckBox(
+            "Deixar o Samuel fazer testes neste computador (pela rede do Tailscale)")
+        self.caixa_testes.setCursor(Qt.PointingHandCursor)
+        self.caixa_testes.setChecked(td.esta_ligado())
+        self.caixa_testes.clicked.connect(self._mudou_testes_a_distancia)
+        caixa.addWidget(self.caixa_testes)
+
+        self.estado_dos_testes = QLabel("")
+        self.estado_dos_testes.setWordWrap(True)
+        estilo.estilizar(self.estado_dos_testes, lambda: f"color: {estilo.TEXTO_FRACO};")
+        caixa.addWidget(self.estado_dos_testes)
+
+        self.botao_senha_dos_testes = QPushButton("Pôr a senha dos testes")
+        self.botao_senha_dos_testes.setCursor(Qt.PointingHandCursor)
+        self.botao_senha_dos_testes.clicked.connect(self._por_a_senha_dos_testes)
+        caixa.addWidget(self.botao_senha_dos_testes, 0, Qt.AlignLeft)
+
+        self._mostrar_estado_dos_testes()
+        caixa.addStretch()
+        return parte
+
+    def _mostrar_estado_dos_testes(self) -> None:
+        """Acerta a frase do estado e mostra/esconde o botão da senha."""
+        from core import testes_a_distancia as td
+
+        if not td.esta_ligado():
+            self.estado_dos_testes.setText("Desligado.")
+            self.botao_senha_dos_testes.setVisible(False)
+        elif td.esta_pronto():
+            self.estado_dos_testes.setText("Ligado. O Samuel pode fazer testes por aqui.")
+            self.botao_senha_dos_testes.setVisible(False)
+        else:
+            self.estado_dos_testes.setText(
+                "Ligado, mas falta a senha. Clique em “Pôr a senha dos testes”.")
+            self.botao_senha_dos_testes.setVisible(True)
+
+    def _mudou_testes_a_distancia(self, marcada: bool) -> None:
+        """A caixinha foi clicada: liga (pede a senha) ou desliga, pela porta do core."""
+        from core import testes_a_distancia as td
+        from ui import testes_a_distancia_ui as tdui
+
+        if marcada:
+            tdui.pedir_senha_e_ligar(self)
+        else:
+            td.desligar()
+        self.caixa_testes.setChecked(td.esta_ligado())
+        self._mostrar_estado_dos_testes()
+
+    def _por_a_senha_dos_testes(self) -> None:
+        """O botão "Pôr a senha dos testes": pede a senha e liga (D-721)."""
+        from core import testes_a_distancia as td
+        from ui import testes_a_distancia_ui as tdui
+
+        tdui.pedir_senha_e_ligar(self)
+        self.caixa_testes.setChecked(td.esta_ligado())
+        self._mostrar_estado_dos_testes()
 
     def _parte_atalhos(self) -> QWidget:
         """Atalhos de teclado: a tela de antes, inteira."""
