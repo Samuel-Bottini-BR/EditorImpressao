@@ -561,3 +561,161 @@ def test_d741_a_marca_e_de_fabrica_falsa_e_gravada_so_pelo_sim(monkeypatch):
     monkeypatch.setattr(td, "_executor", FakeExecutor())
     atualizacao.preparar_na_primeira_abertura("")
     assert not atualizacao.falta_a_pergunta_do_windows()
+
+
+# ---------------------------------------------------------------------------
+# D-742 (Samuel, 17/11/2026: "Sim"): a janelinha "Atualizando o programa, espere um pouco..."
+# ---------------------------------------------------------------------------
+
+# A janela do Windows Forms de mentira: New-Object devolve, para os tipos do Windows Forms, um objeto que so
+# anota (nenhuma janela e criada; nada aparece na tela). Os outros tipos (Size, Font) sao os de verdade.
+_JANELA_DE_MENTIRA = r"""
+function New-Object { param([string]$TypeName, [object[]]$ArgumentList)
+  if ($TypeName -like 'System.Windows.Forms.*') {
+    Write-Host ('CRIOU ' + $TypeName)
+    $o = [pscustomobject]@{ Text=''; ControlBox=$true; FormBorderStyle=''; StartPosition=''; ShowInTaskbar=$true;
+                            TopMost=$false; ClientSize=$null; Dock=''; TextAlign=''; Font=$null; Controls=$null }
+    $c = [pscustomobject]@{}
+    $c | Add-Member -MemberType ScriptMethod -Name Add -Value { param($x) Write-Host ('TEXTO ' + $x.Text) }
+    $o.Controls = $c
+    $o | Add-Member -MemberType ScriptMethod -Name Show -Value { Write-Host 'MOSTROU' }
+    $o | Add-Member -MemberType ScriptMethod -Name Close -Value {
+      Write-Host ('FECHOU ControlBox=' + $this.ControlBox + ' TopMost=' + $this.TopMost + ' Titulo=[' + $this.Text + ']') }
+    return $o }
+  Microsoft.PowerShell.Utility\New-Object -TypeName $TypeName -ArgumentList $ArgumentList }
+"""
+
+
+def _powershell():
+    import shutil
+    import sys
+
+    caminho = shutil.which("powershell")
+    if sys.platform != "win32" or not caminho:
+        pytest.skip("a janelinha de mentira usa o powershell.exe")
+    return caminho
+
+
+def test_d742_a_janelinha_aparece_durante_a_espera_e_some_quando_o_programa_abre(tmp_path):
+    """D-742 (Samuel, 17/11/2026: "Sim"): na abertura em que a versao nova entra (D-734), uma janelinha com o
+    texto exato "Atualizando o programa, espere um pouco..." fica na tela enquanto a troca acontece e some quando
+    o programa abre (a marca de "programa aberto" aparece). Sem botao nenhum. Offscreen: a janela do Windows
+    Forms e trocada por uma de mentira que so anota; nada aparece na tela. Falha no codigo de antes (nao havia
+    janelinha)."""
+    import ctypes
+    import subprocess
+    import threading
+    import time
+    import uuid
+
+    powershell = _powershell()
+    marca = f"Local\\EditorImpressao-teste-{uuid.uuid4().hex}"
+    script = tmp_path / "janelinha.ps1"
+    script.write_text(_JANELA_DE_MENTIRA + "\n" + atualizacao.script_da_janelinha(marca=marca, limite_s=60),
+                      encoding="utf-8-sig")
+    processo = subprocess.Popen([powershell, "-NoProfile", "-NonInteractive", "-ExecutionPolicy", "Bypass",
+                                 "-File", str(script)], stdout=subprocess.PIPE, stderr=subprocess.STDOUT,
+                                text=True, encoding="utf-8", errors="replace")
+    linhas: list[str] = []
+    leitor = threading.Thread(target=lambda: linhas.extend(l.rstrip() for l in processo.stdout), daemon=True)
+    leitor.start()
+    handle = None
+    try:
+        limite = time.monotonic() + 60
+        while "MOSTROU" not in linhas and time.monotonic() < limite and processo.poll() is None:
+            time.sleep(0.1)
+        assert "MOSTROU" in linhas, f"a janelinha não apareceu: {linhas}"
+        time.sleep(1.5)  # a troca ainda acontecendo: a janelinha continua
+        assert processo.poll() is None and not any(l.startswith("FECHOU") for l in linhas), \
+            "a janelinha sumiu antes de o programa abrir"
+        handle = ctypes.windll.kernel32.CreateMutexW(None, False, marca)  # o programa abriu
+        assert handle
+        processo.wait(timeout=30)
+        leitor.join(timeout=10)
+    finally:
+        if processo.poll() is None:
+            processo.kill()
+        if handle:
+            ctypes.windll.kernel32.CloseHandle(handle)
+    fechou = [l for l in linhas if l.startswith("FECHOU")]
+    assert fechou, f"a janelinha não sumiu quando o programa abriu: {linhas}"
+    assert linhas.index("MOSTROU") < linhas.index(fechou[0])
+    assert f"TEXTO {atualizacao.TEXTO_DA_JANELINHA}" in linhas
+    assert "ControlBox=False" in fechou[0] and "TopMost=True" in fechou[0] and "Titulo=[]" in fechou[0]
+    assert not any("Button" in l for l in linhas), "a janelinha não tem botão"
+
+
+def test_d742_o_texto_e_o_combinado_e_a_janelinha_nao_tem_botao():
+    """D-742 (17/11/2026): o texto palavra por palavra; nenhum botao; some sozinha (marca do programa aberto)."""
+    assert atualizacao.TEXTO_DA_JANELINHA == "Atualizando o programa, espere um pouco..."
+    texto = atualizacao.script_da_janelinha()
+    assert "Button" not in texto and "$janela.ControlBox = $false" in texto
+    assert f"'{atualizacao.MARCA_DE_ABERTO}'" in texto, "some quando o programa marca que abriu"
+    assert "ShowDialog" not in texto, "não prende ninguém: a troca segue sem esperar a janelinha"
+
+
+def test_d742_a_janelinha_so_na_abertura_depois_do_depois_e_a_troca_fica_igual():
+    """D-742 (17/11/2026): a janelinha so entra na abertura depois do "Depois" (D-734). Ela abre ANTES da
+    espera, numa linha de execucao separada, e a troca, a volta (D-718) e a reabertura ficam iguais, letra por
+    letra. O "Reiniciar agora" (D-720) fica como era: nenhuma outra tela muda."""
+    sem = atualizacao.script_de_trocar_e_reabrir(EXE, 4321, Path("C:/x/estado.json"))
+    com = atualizacao.script_de_trocar_e_reabrir(EXE, 4321, Path("C:/x/estado.json"), janelinha=True)
+    assert atualizacao.TEXTO_DA_JANELINHA not in sem
+    inicio, fim = atualizacao._linhas_da_janelinha()
+    linhas_sem = sem.split("\n")
+    assert com == "\n".join([linhas_sem[0], *inicio, *linhas_sem[1:], *fim])
+    assert "'STA'" in inicio[0] and "BeginInvoke" in inicio[-1], "abre e segue sem esperar"
+    assert com.index("BeginInvoke") < com.index("Wait-Process") < com.index("Start-Process") < com.index("EndInvoke")
+
+
+def test_d742_quem_pede_a_janelinha(monkeypatch):
+    """D-742 (17/11/2026): trocar_antes_de_abrir (o "Depois") pede a janelinha; o "Reiniciar agora" nao."""
+    de_verdade = atualizacao.trocar_e_reabrir
+    pedidos = []
+    monkeypatch.setattr(atualizacao, "trocar_e_reabrir", lambda **k: pedidos.append(k) or True)
+    assert atualizacao.trocar_antes_de_abrir([], instalado=lambda: True, conta_de_testes=lambda: False,
+                                             portatil=lambda: False, ler=_pendente, versao_atual=lambda: "1.1.0")
+    assert atualizacao.aplicar_agora_e_reabrir()
+    assert pedidos == [{"janelinha": True}, {}]
+    lancados = []
+    assert de_verdade(lancar=lancados.append, exe=EXE, pid=1, janelinha=True)
+    assert atualizacao.TEXTO_DA_JANELINHA in lancados[0]
+
+
+def test_d742_o_script_com_a_janelinha_e_powershell_sem_erro_de_escrita(tmp_path):
+    """D-742 (17/11/2026): o script da troca com a janelinha passa pelo leitor do PowerShell (so le o texto)."""
+    import subprocess
+
+    powershell = _powershell()
+    for nome, texto in {"troca": atualizacao.script_de_trocar_e_reabrir(EXE, 1, Path("C:/x/e.json"), janelinha=True),
+                        "janelinha": atualizacao.script_da_janelinha()}.items():
+        arquivo = tmp_path / f"{nome}.ps1"
+        arquivo.write_text(texto, encoding="utf-8-sig")
+        ler = ("$e = $null; [System.Management.Automation.Language.Parser]::ParseFile('" + str(arquivo)
+               + "', [ref]$null, [ref]$e) | Out-Null; $e | ForEach-Object { $_.Message }")
+        feito = subprocess.run([powershell, "-NoProfile", "-NonInteractive", "-Command", ler],
+                               capture_output=True, text=True, timeout=120)
+        assert feito.returncode == 0 and not feito.stdout.strip(), f"{nome}: {feito.stdout} {feito.stderr}"
+
+
+def test_d742_se_o_programa_ja_abriu_a_janelinha_nem_aparece(tmp_path):
+    """D-742 (17/11/2026): se o programa ja abriu enquanto a janelinha se montava, ela nem aparece (nada pisca
+    na tela). Offscreen, com a janela de mentira."""
+    import ctypes
+    import subprocess
+    import uuid
+
+    powershell = _powershell()
+    marca = f"Local\EditorImpressao-teste-{uuid.uuid4().hex}"
+    handle = ctypes.windll.kernel32.CreateMutexW(None, False, marca)
+    try:
+        script = tmp_path / "janelinha.ps1"
+        script.write_text(_JANELA_DE_MENTIRA + "\n" + atualizacao.script_da_janelinha(marca=marca, limite_s=60),
+                          encoding="utf-8-sig")
+        feito = subprocess.run([powershell, "-NoProfile", "-NonInteractive", "-ExecutionPolicy", "Bypass",
+                                "-File", str(script)], capture_output=True, text=True, timeout=120,
+                               encoding="utf-8", errors="replace")
+    finally:
+        ctypes.windll.kernel32.CloseHandle(handle)
+    linhas = feito.stdout.splitlines()
+    assert "MOSTROU" not in linhas and any(l.startswith("FECHOU") for l in linhas), linhas

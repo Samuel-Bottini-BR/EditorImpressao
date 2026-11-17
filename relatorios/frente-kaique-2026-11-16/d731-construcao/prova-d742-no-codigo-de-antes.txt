@@ -1,0 +1,15 @@
+D-742: as provas test_d742_*, rodadas sobre o codigo de 866186b3 (antes da janelinha; copia em D:/agente_temp_testes/juntar2-antigo-866186b3), 17/11/2026. A 6a prova (se o programa ja abriu, a janelinha nem aparece) foi escrita depois e tambem nao roda no codigo de antes (falta script_da_janelinha).
+E       AttributeError: module 'atualizacao' has no attribute 'script_da_janelinha'
+E       AttributeError: module 'atualizacao' has no attribute 'TEXTO_DA_JANELINHA'
+E       TypeError: script_de_trocar_e_reabrir() got an unexpected keyword argument 'janelinha'
+E       AssertionError: assert [{}, {}] == [{'janelinha': True}, {}]
+E         
+E         At index 0 diff: {} != {'janelinha': True}
+E         Use -v to get more diff
+E                           TypeError: script_de_trocar_e_reabrir() got an unexpected keyword argument 'janelinha'
+FAILED tests/test_decisoes_ajudante_novo.py::test_d742_a_janelinha_aparece_durante_a_espera_e_some_quando_o_programa_abre
+FAILED tests/test_decisoes_ajudante_novo.py::test_d742_o_texto_e_o_combinado_e_a_janelinha_nao_tem_botao
+FAILED tests/test_decisoes_ajudante_novo.py::test_d742_a_janelinha_so_na_abertura_depois_do_depois_e_a_troca_fica_igual
+FAILED tests/test_decisoes_ajudante_novo.py::test_d742_quem_pede_a_janelinha
+FAILED tests/test_decisoes_ajudante_novo.py::test_d742_o_script_com_a_janelinha_e_powershell_sem_erro_de_escrita
+5 failed, 31 deselected in 1.40s

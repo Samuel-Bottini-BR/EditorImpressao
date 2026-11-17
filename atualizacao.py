@@ -160,6 +160,9 @@ FRASE_DA_VERSAO_NOVA = (
     "Chegou uma versão nova do Editor de Impressão.\n\n"
     "Salve o seu trabalho e reinicie o programa para usar a versão nova.\n\n"
     "Se escolher \"Depois\", a versão nova entra sozinha na próxima vez que você abrir o programa.")
+# D-742 (Samuel, 17/11/2026: "Sim"), palavra por palavra: a janelinha da
+# abertura em que a versao nova entra (D-734, depois do "Depois").
+TEXTO_DA_JANELINHA = "Atualizando o programa, espere um pouco..."
 BOTAO_REINICIAR = "Reiniciar agora"
 BOTAO_DEPOIS = "Depois"
 TITULO_DA_FALHA = "Atualização"
@@ -761,7 +764,86 @@ def _rodar(comando: list[str], tempo: int = 120) -> tuple[int, str]:
 # Trocar e reabrir: "Reiniciar agora" (D-720) e a abertura depois do "Depois" (D-734)
 # ---------------------------------------------------------------------------
 
-def script_de_trocar_e_reabrir(exe: Path, pid: int, arquivo_do_estado: Path) -> str:
+def script_da_janelinha(marca: str = MARCA_DE_ABERTO, limite_s: int | None = None) -> str:
+    """D-742: o PowerShell da janelinha "Atualizando o programa, espere um pouco...".
+
+    ONDE ELA VIVE: a troca acontece FORA do programa (o .exe tem de ter saido
+    para o Velopack trocar os arquivos dele), num PowerShell escondido na
+    conta do Kaique (script_de_trocar_e_reabrir). A janelinha e uma janela do
+    Windows (Windows Forms) aberta por esse mesmo PowerShell, numa linha de
+    execucao separada (um "runspace" STA). Por isso ela nao espera nada da
+    troca nem a troca espera por ela: um erro nela nao impede a troca nem a
+    volta para a anterior (D-718).
+
+    Como ela e: pequena, no meio da tela, por cima, sem titulo e SEM botao
+    (ControlBox desligado; nenhum Button), so o texto TEXTO_DA_JANELINHA.
+    Some quando o programa abre: quando a marca de "programa aberto"
+    (`marca`, a mesma de marcar_programa_aberto) aparece, ou, no pior caso,
+    depois de `limite_s` (o tempo inteiro da troca, da volta e da abertura).
+    Se o programa ja abriu enquanto ela se montava, ela nem aparece.
+    Medido no PC do Samuel (17/11/2026): a primeira letra do Windows Forms
+    num processo novo leva uns 5,5 s, entao a janelinha aparece uns 6 s
+    depois de o programa sair; a etapa 5 mede no notebook.
+    `marca` e `limite_s` so mudam nos testes. Arriscado: ShowDialog em vez
+    de Show + DoEvents (o teste deixaria de poder trocar a janela por uma de
+    mentira) e tirar o limite (a janelinha ficaria para sempre se o programa
+    nao abrir).
+    """
+    limite = limite_s if limite_s is not None else LIMITE_DA_TROCA_S + ESPERA_DA_VOLTA_S + 120
+    return "\n".join([
+        "$ErrorActionPreference = 'SilentlyContinue'",
+        "Add-Type -AssemblyName System.Windows.Forms",
+        "Add-Type -AssemblyName System.Drawing",
+        "$janela = New-Object System.Windows.Forms.Form",
+        "$janela.Text = ''",
+        "$janela.ControlBox = $false",
+        "$janela.FormBorderStyle = 'FixedDialog'",
+        "$janela.StartPosition = 'CenterScreen'",
+        "$janela.ShowInTaskbar = $false",
+        "$janela.TopMost = $true",
+        "$janela.ClientSize = New-Object System.Drawing.Size(400, 90)",
+        "$texto = New-Object System.Windows.Forms.Label",
+        f"$texto.Text = {_aspas_do_powershell(TEXTO_DA_JANELINHA)}",
+        "$texto.Dock = 'Fill'",
+        "$texto.TextAlign = 'MiddleCenter'",
+        "$texto.Font = New-Object System.Drawing.Font('Segoe UI', 11)",
+        "$janela.Controls.Add($texto)",
+        "$aberto = $null",
+        # o programa ja abriu enquanto a janelinha se montava: ela nem aparece (nada pisca)
+        f"if ([System.Threading.Mutex]::TryOpenExisting({_aspas_do_powershell(marca)}, [ref]$aberto))"
+        " { $aberto.Dispose() } else {",
+        "  $janela.Show()",
+        f"  $fim = (Get-Date).AddSeconds({int(limite)})",
+        "  while ((Get-Date) -lt $fim) {",
+        f"    if ([System.Threading.Mutex]::TryOpenExisting({_aspas_do_powershell(marca)}, [ref]$aberto))"
+        " { $aberto.Dispose(); break }",
+        "    [System.Windows.Forms.Application]::DoEvents()",
+        "    Start-Sleep -Milliseconds 200",
+        "  }",
+        "}",
+        "$janela.Close()",
+    ])
+
+
+def _linhas_da_janelinha() -> tuple[list[str], list[str]]:
+    """D-742: o que script_de_trocar_e_reabrir acrescenta no comeco e no fim quando ha janelinha.
+
+    Comeco: abre a janelinha numa linha de execucao separada (STA, como o
+    Windows Forms pede) e segue sem esperar. Fim (depois de reabrir o
+    programa): espera a janelinha sumir sozinha, para este PowerShell nao
+    sair antes e leva-la junto.
+    """
+    inicio = [
+        "$jRun = [runspacefactory]::CreateRunspace(); $jRun.ApartmentState = 'STA'; $jRun.Open()",
+        "$jPs = [powershell]::Create(); $jPs.Runspace = $jRun",
+        f"[void]$jPs.AddScript({_aspas_do_powershell(script_da_janelinha())})",
+        "$jEspera = $jPs.BeginInvoke()",
+    ]
+    fim = ["try { [void]$jPs.EndInvoke($jEspera) } catch { }", "$jRun.Close()"]
+    return inicio, fim
+
+
+def script_de_trocar_e_reabrir(exe: Path, pid: int, arquivo_do_estado: Path, janelinha: bool = False) -> str:
     """O PowerShell que troca a versao e reabre o programa NA CONTA DO KAIQUE.
 
     Por que um PowerShell a parte, e nao este programa: a troca mexe nos
@@ -780,11 +862,15 @@ def script_de_trocar_e_reabrir(exe: Path, pid: int, arquivo_do_estado: Path) -> 
        mais ESPERA_DA_VOLTA_S (a volta para a anterior, D-718);
     4. reabre o programa com ARG_DEPOIS_DA_TROCA (na versao que estiver).
     Nenhum passo pede administrador: nenhuma pergunta do Windows (D-733).
+    `janelinha` (D-742, so a abertura depois do "Depois"; o "Reiniciar agora"
+    fica como era): antes do passo 1 abre a janelinha (script_da_janelinha)
+    e, depois do passo 4, espera ela sumir. Os passos 1 a 4 ficam iguais,
+    letra por letra.
     """
     pasta, nome = NOME_DA_TAREFA.rsplit("\\", 1)
     rodar = " ".join(_aspas_do_powershell(p) for p in comando_de_rodar_a_tarefa()[1:])
     estado = _aspas_do_powershell(str(arquivo_do_estado))
-    return "\n".join([
+    linhas = [
         "$ErrorActionPreference = 'SilentlyContinue'",
         f"Wait-Process -Id {int(pid)} -Timeout 120",
         f"& schtasks {rodar} | Out-Null",
@@ -810,7 +896,11 @@ def script_de_trocar_e_reabrir(exe: Path, pid: int, arquivo_do_estado: Path) -> 
         "}",
         f"Start-Process -FilePath {_aspas_do_powershell(str(exe))}"
         f" -ArgumentList {_aspas_do_powershell(ARG_DEPOIS_DA_TROCA)}",
-    ])
+    ]
+    if janelinha:
+        inicio, fim = _linhas_da_janelinha()
+        linhas = [linhas[0], *inicio, *linhas[1:], *fim]
+    return "\n".join(linhas)
 
 
 def _aspas_do_powershell(texto: str) -> str:
@@ -834,17 +924,19 @@ def _lancar_escondido(script: str) -> None:
 
 
 def trocar_e_reabrir(lancar: Callable[[str], None] = _lancar_escondido, exe: Path | None = None,
-                     pid: int | None = None) -> bool:
+                     pid: int | None = None, janelinha: bool = False) -> bool:
     """A UNICA forma de trocar para a versao ja baixada e reabrir o programa.
 
     Usada pelo "Reiniciar agora" (D-720; a janela ja fechou gravando) e pela
     abertura depois do "Depois" (D-734, trocar_antes_de_abrir; a janela nem
-    abriu). Quem chama tem de sair logo: o script espera este processo sair.
+    abriu; so esta com a janelinha da D-742). Quem chama tem de sair logo: o
+    script espera este processo sair.
     Devolve False se nao deu para comecar (o programa segue na versao de hoje).
     """
     exe = exe or (pasta_do_programa() / Path(sys.executable).name)
     try:
-        lancar(script_de_trocar_e_reabrir(exe, pid or os.getpid(), pasta_do_estado() / "estado.json"))
+        lancar(script_de_trocar_e_reabrir(exe, pid or os.getpid(), pasta_do_estado() / "estado.json",
+                                          janelinha=janelinha))
         registrar("trocar e reabrir: o ajudante foi chamado; o programa volta sozinho")
         return True
     except Exception as erro:  # noqa: BLE001 - nunca derruba a janela
@@ -893,7 +985,8 @@ def trocar_antes_de_abrir(argumentos: list[str], instalado: Callable[[], bool] |
     if o_que != "versao-nova":
         return False
     registrar(f"abrindo o programa: a versão {detalhe} estava esperando (\"Depois\"); trocando antes da janela")
-    return (trocar or trocar_e_reabrir)()
+    # D-742: so nesta abertura aparece a janelinha "Atualizando o programa...".
+    return (trocar or (lambda: trocar_e_reabrir(janelinha=True)))()
 
 
 # ---------------------------------------------------------------------------
