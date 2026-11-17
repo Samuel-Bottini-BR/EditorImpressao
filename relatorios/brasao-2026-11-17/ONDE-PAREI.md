@@ -94,3 +94,15 @@ da troca, só a janelinha. Nada do que já funciona muda em nenhuma. Print: falt
 - [x] Prints offscreen (`prints/`) e relatório (`relatorio.md/.html/.pdf`).
 - [x] Testes pedidos, um arquivo por vez: todos passaram; `teste_botoes.py` 372 ações, 0 falhas.
 - Entregue à gerente: PRONTO PARA CONFERIR. Falta: verificador olhar numa tela de verdade; `.exe` na etapa 5.
+
+## 17/11 (tarde): D-748 e a pasta do Agendador (D-731)
+
+- [x] D-748 ("Sim"): a janelinha some quando o brasão aparece; nunca juntos. Commit 5a407a6f. Teste de reversão
+  falhou no código de antes (brasão 19,9 s antes de a janelinha sumir).
+- [~] D-731, pasta vazia "EditorImpressao" no Agendador: feito no ramo `brasao-2026-11-17-pasta-agendador`
+  (0d41b711), FORA do ramo principal, porque quebra o teste antigo
+  `test_decisoes_desinstalar.py::test_d731a_sem_os_testes_ligados_desinstalar_apaga_a_tarefa_da_atualizacao` (a
+  proteção dele recusa o serviço do Agendador). Pergunta: posso mudar a proteção para aceitar o Agendador de
+  mentira e juntar? Sugestão: sim.
+- Testes pedidos (um por vez, offscreen, basetemp brasao2): todos passaram; `teste_botoes.py` 372 ações, 0 falhas.
+- Cópia de antes para as provas: `D:\agente_temp_testes\brasao2-antigo` (worktree, fora do projeto, não apagada).

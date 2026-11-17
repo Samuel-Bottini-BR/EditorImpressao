@@ -86,3 +86,48 @@ Nada do que já funciona muda em nenhuma das três.
 - O ícone guarda os tamanhos até 128 no formato clássico do Windows e o 256 em PNG, que é o jeito do próprio Windows. O instalador de reserva (Inno) não foi compilado para conferir.
 - Numa escala de tela que não está entre as desenhadas (por exemplo 110%), usa-se a mais perto, e o Qt ajusta um pouco.
 - Na primeira vez, com o PC frio, o processo do brasão demorou mais para subir (um teste solto não viu ele fechar em 7 s; repetido três vezes, fechou em menos de 0,2 s depois do programa).
+
+---
+
+# Acréscimo de 17/11/2026 (tarde): a janelinha some quando o brasão aparece, e a pasta do Agendador
+
+## 1. A janelinha "Atualizando o programa" some quando o brasão aparece (D-748, "Sim")
+
+**O que é:** só na abertura em que a versão nova entra, depois do "Depois". Antes, a janelinha "Atualizando o programa, espere um pouco..." ficava na tela até a janela do programa abrir, e o brasão girava em cima dela. Agora a janelinha some na hora em que o brasão aparece, e os dois nunca ficam juntos.
+
+**Como:** uma regra só, a mesma marca de "programa aberto" que já fazia a janelinha sumir. O brasão põe essa marca antes de aparecer. Para garantir "nunca juntos", a janelinha segura uma marca dela do começo até fechar, e o brasão só aparece quando essa marca sumiu (no máximo 3 s). Cada um põe a sua marca antes de olhar a do outro.
+
+**Onde:** `atualizacao.py` (a marca da janelinha e quem a olha), `ui/brasao_girando.py` (`antes_de_mostrar`).
+
+**Prova:** `tests/test_decisoes_brasao.py`, três testes novos. O principal roda a janelinha de verdade (com a janela do Windows trocada por uma de mentira que anota a hora) e o processo do brasão de verdade, fora da tela. Ele confere que a janelinha fechou antes de o brasão aparecer. No código de antes ele falha: o brasão apareceu 19,9 s antes de a janelinha sumir.
+
+**Efeito a mais:** enquanto o brasão gira, o programa já conta como "aberto" para o ajudante da atualização, que então não troca os arquivos por baixo de um programa que está abrindo.
+
+## 2. A pasta vazia "EditorImpressao" no Agendador (D-731): feito, mas num ramo à parte
+
+**O que é:** depois de desinstalar, a pasta vazia "EditorImpressao" ficava no Agendador de Tarefas do Windows. O último passo do desfazer passa a apagá-la, só se ficou vazia: nenhuma tarefa, nem escondida, e nenhuma subpasta. Se houver qualquer coisa, ela fica e o registro diz por quê.
+
+**Onde:** `core/testes_a_distancia.py`, no ramo `brasao-2026-11-17-pasta-agendador` (commit 0d41b711), **fora do ramo principal**.
+
+**Por que à parte:** o Windows só apaga pasta do Agendador pelo serviço dele, e um teste antigo se recusa, de propósito, a rodar qualquer comando que fale com esse serviço: `tests/test_decisoes_desinstalar.py::test_d731a_sem_os_testes_ligados_desinstalar_apaga_a_tarefa_da_atualizacao`. Com a pasta, esse teste antigo falha. Nenhum teste antigo pode mudar sem autorização, e burlar a proteção dele faria o teste mexer no Agendador de verdade do PC do Samuel.
+
+**Conserto proposto para o teste antigo:** a proteção dele passa a aceitar o serviço do Agendador só quando o teste dá um Agendador de mentira (o mesmo das provas novas). Nada que ele já confere muda.
+
+**Prova:** `tests/test_decisoes_desinstalar_pasta.py`, 6 testes (executor de mentira e Agendador de mentira). A pasta vazia sai; com tarefa ou subpasta, fica; sem a pasta, não dá erro. Cinco deles falham no código de antes.
+
+**Pergunta:** posso mudar a proteção desse teste antigo, como acima, e juntar o ramo? Sugiro que sim.
+
+## Testes desta rodada (cada arquivo sozinho, fora da tela, no ramo principal)
+
+| Arquivo | Resultado |
+|---|---|
+| `tests/test_decisoes_brasao.py` | 22 passaram (3 novos da D-748) |
+| `tests/test_decisoes_atualizacao.py` | 38 passaram |
+| `tests/test_decisoes_ajudante_da_atualizacao.py` | 37 passaram |
+| `tests/test_decisoes_desinstalar.py` | 46 passaram (no ramo à parte: 45 passaram e o teste antigo acima falhou) |
+| `tests/test_decisoes_testes_a_distancia.py` | 13 passaram |
+| `tests/test_sem_janela_na_tela.py` | 8 passaram |
+| `tests/test_decisoes_desinstalar_pasta.py` (ramo à parte) | 6 passaram |
+| `teste_botoes.py` (uma vez, fora da tela) | 372 ações, 0 falhas |
+
+Nenhum teste antigo foi mudado. Para as provas no código de antes, criei a cópia `D:gente_temp_testesrasao2-antigo` (commit fd9f1f58, fora do projeto; não apaguei: a gerente decide).
