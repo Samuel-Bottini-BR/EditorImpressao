@@ -242,6 +242,9 @@ a sua senha.
 - **(b)** Aparece uma janelinha para ele, dizendo que o comando de longe ficou e como tirar. O texto você aprova antes.
 - **Só comentário.**
 
+Atualização de 17/11 (D-732): se for escolhido o "ajudante do Windows" (alternativa B do `plano-d732.md`), esta
+pergunta deixa de existir. Uma tarefa "desfazer", criada pelo `ligar`, troca a segunda pergunta do Windows.
+
 Nada do que já funciona muda nas duas opções. Print: não há tela nova. A pergunta do Windows é a mesma do `ligar`, e
 o print dela sai na etapa 5.
 
