@@ -69,6 +69,13 @@ def main() -> int:
     if len(sys.argv) > 1 and sys.argv[1].lower().endswith(".pdf"):
         janela.abrir_livro(sys.argv[1])
 
+    # Atualizacao (etapa 3 da frente do Kaique): o aviso da versao nova e o da
+    # atualizacao que falhou (D-715, D-719, D-720). So no programa instalado
+    # pelo Velopack; pelo codigo nao faz nada. Ver ui/aviso_de_atualizacao.py.
+    from ui.aviso_de_atualizacao import ligar_na_janela
+
+    ligar_na_janela(janela)
+
     return app.exec()
 
 
@@ -90,4 +97,13 @@ if __name__ == "__main__":
         from core.ocr_diagnostico import linha_de_comando
 
         raise SystemExit(linha_de_comando(sys.argv[2:]))
+    # Atualizacao pela internet (Velopack; etapa 3 da frente do Kaique): os
+    # ganchos de instalar/desinstalar e os modos sem janela (procurar a versao
+    # nova quando o computador liga, conferir a versao nova). Pelo codigo e
+    # sem argumento nosso nao faz nada. Ver atualizacao.py.
+    from atualizacao import atender_linha_de_comando
+
+    codigo = atender_linha_de_comando(sys.argv)
+    if codigo is not None:
+        raise SystemExit(codigo)
     raise SystemExit(main())

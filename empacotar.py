@@ -771,6 +771,18 @@ def _pyinstaller(onefile: bool) -> bool:
     return subprocess.run(comando_do_pyinstaller(onefile), cwd=RAIZ).returncode == 0
 
 
+def comando_do_inno(inno: Path, script: Path) -> list[str]:
+    """O comando do compilador do Inno Setup, com a versao lida do versao.py.
+
+    16/11/2026 (etapa 3 da frente do Kaique): o instalador.iss nao tem mais o
+    numero escrito nele; recebe-o daqui (/DMinhaVersao=...) e recusa compilar
+    sem ele. Um lugar so para o numero: versao.VERSAO.
+    """
+    import versao
+
+    return [str(inno), f"/DMinhaVersao={versao.VERSAO}", str(script)]
+
+
 def achar_inno() -> Path | None:
     """Localiza o compilador do Inno Setup (ISCC.exe) nos lugares usuais, ou no PATH."""
     for caminho in CAMINHOS_DO_INNO:
@@ -914,7 +926,7 @@ def construir_instalador() -> Path | None:
     print("  comprimindo (o motor do Kraken tem ~1,1 GB: leva vários minutos)")
 
     resultado = subprocess.run(
-        [str(inno), str(script)], cwd=RAIZ, capture_output=True, text=True
+        comando_do_inno(inno, script), cwd=RAIZ, capture_output=True, text=True
     )
     # O registro inteiro fica guardado: e ele que lista, arquivo por arquivo,
     # o que entrou no instalador (a prova de que os modelos estao la dentro).
@@ -968,6 +980,148 @@ def construir_instalador() -> Path | None:
 
     print(f"  pronto: {destino}  ({_tamanho(destino)})")
     return destino
+
+
+# ---------------------------------------------------------------------------
+# o pacote do Velopack (etapa 3 da frente do Kaique, 16/11/2026; D-723, D-727)
+# ---------------------------------------------------------------------------
+#
+# O Velopack (decisao D-723, "velopack") troca o Inno Setup: monta o
+# instalador (MSI "por maquina": Arquivos de Programas, pede administrador) e
+# os pacotes de atualizacao (o inteiro e o "so o que mudou"). A pasta que ele
+# empacota e a MESMA dist\EditorImpressao\ da construir_pasta, com as mesmas
+# travas (modelos, DLLs, motor do Kraken, Tesseract). O que muda:
+# - o Visual C++ oficial vai DENTRO do pacote, em instalar\ (D-727: "se tiver
+#   qualquer coisa que o kaique precise, ele tem que estar no instalador"); o
+#   "--framework vcredist143-x64" do Velopack baixaria da internet, e por isso
+#   NAO e usado. Quem o roda (so se faltar) e a tarefa do Windows, como SYSTEM
+#   (atualizacao.instalar_visual_c_se_faltar);
+# - depois de montar, conferir_pacote_do_velopack abre o pacote e confere que
+#   cada peca esta la dentro (a mesma trava do registro do Inno).
+# Quem chama: publicar_versao_kaique.py (a "versao para o Kaique"). O Inno
+# Setup continua aqui, sem mudar, ate o Samuel decidir tira-lo (os testes dele).
+
+TITULO_DO_PACOTE = "Editor de Impressão"        # nome no menu Iniciar e no atalho
+AUTORES_DO_PACOTE = "Instituto de Preservacao de Livros"   # o mesmo do instalador.iss
+# Onde o dotnet tool install -g poe o vpk (o empacotador do Velopack).
+LUGARES_DO_VPK = [Path.home() / ".dotnet" / "tools" / "vpk.exe"]
+# Dentro do pacote do Velopack (.nupkg, um zip), a pasta do programa fica em lib\app\.
+PASTA_NO_NUPKG = "lib/app/"
+
+
+def achar_vpk() -> Path | None:
+    """O vpk.exe (dotnet tool install -g vpk), ou None."""
+    achado = shutil.which("vpk")
+    if achado:
+        return Path(achado)
+    return next((c for c in LUGARES_DO_VPK if c.is_file()), None)
+
+
+def preparar_pasta_para_o_velopack(pasta: Path, pecas: PecasDosDetectores) -> list[str]:
+    """Poe o Visual C++ oficial (ja conferido pela assinatura da Microsoft) em
+    <pasta>\\instalar\\, com a versao dele num .txt ao lado. Devolve os problemas."""
+    import atualizacao
+
+    destino = Path(pasta) / atualizacao.PASTA_DO_QUE_SE_INSTALA
+    destino.mkdir(parents=True, exist_ok=True)
+    shutil.copy2(pecas.vc_redist, destino / atualizacao.VC_REDIST_NOME)
+    (destino / atualizacao.VC_REDIST_VERSAO).write_text(pecas.vc_versao, encoding="utf-8")
+    if (destino / atualizacao.VC_REDIST_NOME).stat().st_size != Path(pecas.vc_redist).stat().st_size:
+        return [f"{atualizacao.VC_REDIST_NOME} chegou pela metade em {destino}"]
+    return []
+
+
+def comando_do_vpk(vpk: Path, pasta: Path, saida: Path, versao_do_pacote: str) -> list[str]:
+    """O comando do 'vpk pack' (separado para os testes conferirem sem rodar).
+
+    --msi --instLocation PerMachine: instala em Arquivos de Programas, para
+    todas as contas do computador (a conta dos testes a distancia usa o mesmo
+    programa, D-717), e pede administrador (D-723). Sem --framework: nada se
+    baixa na hora de instalar (D-727).
+    """
+    import versao
+
+    return [str(vpk), "pack",
+            "--packId", versao.ID_DO_PACOTE,
+            "--packVersion", versao_do_pacote,
+            "--packDir", str(pasta),
+            "--mainExe", f"{NOME}.exe",
+            "--packTitle", TITULO_DO_PACOTE,
+            "--packAuthors", AUTORES_DO_PACOTE,
+            "--outputDir", str(saida),
+            # 64 bits (o Python e o programa sao x64). Sem isto o vpk supoe x86
+            # e o MSI iria para "Arquivos de Programas (x86)" (achado no ensaio).
+            "--runtime", "win-x64",
+            "--msi", "--instLocation", "PerMachine",
+            "--skip-updates"]
+
+
+def nupkg_inteiro(saida: Path, versao_do_pacote: str) -> Path:
+    """O pacote inteiro que o vpk gera: <saida>\\EditorImpressao-<versao>-full.nupkg."""
+    import versao
+
+    return Path(saida) / f"{versao.ID_DO_PACOTE}-{versao_do_pacote}-full.nupkg"
+
+
+def esperados_no_pacote_do_velopack(pecas: PecasDosDetectores | None) -> list[str]:
+    """Os caminhos (relativos a pasta do programa, com /) que TEM de estar no
+    pacote do Velopack: o .exe, cada modelo, cada DLL, e (com as pecas) o
+    Tesseract, os idiomas, a amostra do motor do Kraken e o Visual C++."""
+    import atualizacao
+
+    saida = [f"{NOME}.exe"]
+    saida += [f"{INTERNO}/{destino}/{origem.name}" for origem, destino in modelos_do_programa()]
+    saida += [f"{INTERNO}/{destino}/{origem.name}" for origem, destino in nativos_do_programa()]
+    if pecas is not None:
+        saida += [relativo for _, relativo in _destinos_das_pecas(pecas)]
+        saida += [f"{PASTA_DO_MOTOR}/{a.replace(chr(92), '/')}" for a in AMOSTRA_DO_MOTOR]
+        saida += [f"{atualizacao.PASTA_DO_QUE_SE_INSTALA}/{atualizacao.VC_REDIST_NOME}"]
+    return saida
+
+
+def conferir_pacote_do_velopack(nupkg: Path, pecas: PecasDosDetectores | None) -> list[str]:
+    """Abre o .nupkg (um zip) e confere que cada peca esperada esta la dentro.
+    Devolve o que falta (vazio = tudo certo)."""
+    import zipfile
+
+    try:
+        with zipfile.ZipFile(nupkg) as pacote:
+            nomes = {n.replace("\\", "/").lower() for n in pacote.namelist()}
+    except (OSError, zipfile.BadZipFile) as erro:
+        return [f"não consegui abrir {nupkg}: {erro}"]
+    return [relativo for relativo in esperados_no_pacote_do_velopack(pecas)
+            if (PASTA_NO_NUPKG + relativo).lower() not in nomes]
+
+
+def construir_pacote_do_velopack(saida: Path, versao_do_pacote: str) -> Path | None:
+    """A pasta (construir_pasta, com todas as travas) + o Visual C++ dentro +
+    'vpk pack' + a conferencia do pacote. Devolve o .nupkg inteiro, ou None."""
+    print("\n=== Pacote do Velopack (versão para o Kaique) ===")
+    vpk = achar_vpk()
+    if vpk is None:
+        print("  PAREI: não achei o vpk. Instale com: dotnet tool install -g vpk")
+        return None
+    pasta = construir_pasta()
+    if pasta is None or _PECAS is None:
+        return None
+    problemas = preparar_pasta_para_o_velopack(pasta, _PECAS)
+    if problemas:
+        print("  PAREI: " + "; ".join(problemas))
+        return None
+    print(f"  Visual C++ oficial {_PECAS.vc_versao} dentro do pacote (instalar\\)")
+    feito = subprocess.run(comando_do_vpk(vpk, pasta, saida, versao_do_pacote), cwd=RAIZ)
+    nupkg = nupkg_inteiro(saida, versao_do_pacote)
+    if feito.returncode != 0 or not nupkg.is_file():
+        print("  PAREI: o vpk pack não terminou")
+        return None
+    faltando = conferir_pacote_do_velopack(nupkg, _PECAS)
+    if faltando:
+        print("  PAREI: o pacote do Velopack saiu sem:")
+        for relativo in faltando:
+            print(f"    {relativo}")
+        return None
+    print(f"  pronto: {nupkg}  ({_tamanho(nupkg)}); {len(esperados_no_pacote_do_velopack(_PECAS))} peças conferidas")
+    return nupkg
 
 
 def gerados_em_dist(raiz: Path | None = None) -> list[Path]:

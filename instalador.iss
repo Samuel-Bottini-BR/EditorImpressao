@@ -11,7 +11,13 @@
 #define MeuNome "Editor de Impressao"
 #define MeuExe "EditorImpressao.exe"
 #define MeuAutor "Instituto de Preservacao de Livros"
-#define MinhaVersao "1.0.0"
+; A versao NAO e escrita aqui (16/11/2026, etapa 3 da frente do Kaique): o
+; unico lugar do numero e o versao.py, e o empacotar.py o passa ao compilador
+; com /DMinhaVersao=<numero>. Compilar este .iss na mao, sem o empacotar.py,
+; para aqui (como as outras travas abaixo).
+#ifndef MinhaVersao
+  #error Falta a versao (MinhaVersao). Gere o instalador pelo empacotar.py, que le o numero do versao.py.
+#endif
 
 ; OS MODELOS (redes neurais) VAO DENTRO DE dist\EditorImpressao\_internal\,
 ; postos la pelo empacotar.py (modelos_do_programa), e entram no instalador
