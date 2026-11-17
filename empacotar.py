@@ -110,6 +110,11 @@ from pathlib import Path
 
 NOME = "EditorImpressao"
 RAIZ = Path(__file__).parent
+# O icone do programa (D-746): um lugar so, o brasao.py. Fica no git, gerado
+# pelo gerar_brasao.py: empacotar nao depende de desenhar nada.
+import brasao  # noqa: E402 - so caminhos e numeros, nada pesado
+
+ICONE = brasao.ICONE
 
 # CAMINHO EM DISCO, nao texto de tela: e a pasta que aparece na Area de
 # Trabalho do usuário. Trocar isto faz a pasta "mudar de lugar" para quem ja
@@ -752,6 +757,10 @@ def comando_do_pyinstaller(onefile: bool) -> list[str]:
     recursos = RAIZ / "recursos"
     if recursos.exists() and any(recursos.iterdir()):
         comando += ["--add-data", f"{recursos}{separador}recursos"]
+    # O icone do .exe (e dos atalhos, que usam o do .exe) e o brasao, desenhado
+    # do vetor em cada tamanho (D-746, 17/11/2026; brasao.py, gerar_brasao.py).
+    # As imagens do giro da tela de carregamento vao junto com recursos/ acima.
+    comando += ["--icon", str(ICONE)]
 
     # Um --add-data por ARQUIVO de modelo, e nao a pasta modelos/ inteira: ela
     # tem tambem o mobile_sam.zip (36 MB, repetindo o que ja vai), um script
@@ -1053,6 +1062,8 @@ def comando_do_vpk(vpk: Path, pasta: Path, saida: Path, versao_do_pacote: str) -
             # e o MSI iria para "Arquivos de Programas (x86)" (achado no ensaio).
             "--runtime", "win-x64",
             "--msi", "--instLocation", "PerMachine",
+            # o icone do instalador e do programa na lista de programas (D-746)
+            "--icon", str(ICONE),
             "--skip-updates"]
 
 

@@ -109,10 +109,27 @@ def test_arquivo_da_chave_privada_ida_e_volta(tmp_path):
         a.ler_chave_privada(tmp_path / "outra.txt")
 
 
-def test_a_chave_privada_mora_fora_do_repositorio():
+def test_a_chave_privada_mora_fora_do_repositorio(monkeypatch):
     """D-724: a chave nunca vai para o GitHub. O lugar padrao fica fora da
-    pasta do projeto."""
+    pasta do projeto.
+
+    D-751 (Samuel, 17/11/2026: "sim"): o lugar padrao e conferido com a pasta
+    de configuracoes (APPDATA) de um Windows comum, como a do Samuel e a do
+    Kaique. A maquina do GitHub monta o APPDATA de proposito dentro da pasta
+    do projeto, e ai o teste falhava sem defeito nenhum no programa. A
+    conferencia continua acusando se o lugar padrao cair dentro do projeto
+    (a segunda parte prova isso)."""
     from pathlib import Path
 
     raiz = Path(a.__file__).resolve().parent
-    assert raiz not in a.caminho_da_chave().resolve().parents
+
+    def dentro_do_projeto() -> bool:
+        caminho = a.caminho_da_chave().resolve()
+        return caminho == raiz or raiz in caminho.parents
+
+    # um Windows comum: a pasta de configuracoes fica no perfil da conta, fora do projeto
+    monkeypatch.setenv("APPDATA", r"C:\Users\Kaique\AppData\Roaming")
+    assert not dentro_do_projeto(), f"a chave cairia dentro do projeto: {a.caminho_da_chave()}"
+    # a mesma conferencia acusa um lugar padrao dentro do projeto (como o APPDATA da maquina do GitHub)
+    monkeypatch.setenv("APPDATA", str(raiz / "_temp_testes" / "appdata"))
+    assert dentro_do_projeto(), "a conferência não acusou a chave dentro do projeto"

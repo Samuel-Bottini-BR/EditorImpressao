@@ -3,8 +3,16 @@
 Etapa 3 da frente do notebook do Kaique (16/11/2026). Decisoes do Samuel:
 - D-715: "ele dá um aviso se o programa estiver aberto, um aviso para salvar o
   trabalho atual e reinicializar o programa";
-- D-720: "Sim" - o aviso tem "Reiniciar agora" e "Depois"; com "Depois", a
-  versao nova entra na proxima vez que o computador ligar;
+- D-720: "Sim" - o aviso tem "Reiniciar agora" e "Depois";
+- D-734 (17/11/2026, substitui o "quando o computador ligar" da D-720): com
+  "Depois", a versao nova entra na proxima vez que o Kaique abrir o programa,
+  com uma espera curta antes da janela (atualizacao.trocar_antes_de_abrir);
+  fechar o programa nao troca nada;
+- D-732 (17/11/2026): a versao nova e procurada quando o programa abre:
+  ligar_na_janela chama o ajudante (atualizacao.procurar_ao_abrir);
+- D-736 (17/11/2026): na conta dos testes a distancia nada disso roda (nem a
+  procura nem o aviso); so a marca de "programa aberto", para o ajudante nao
+  trocar a versao no meio de um teste;
 - D-719: na tela, "A atualização não deu certo. O programa voltou para a
   versão anterior e continua funcionando. Avise o Samuel." (uma vez por falha).
 
@@ -18,9 +26,11 @@ janela. Pelo codigo (.venv) e nos testes nao faz nada: so o programa
 instalado pelo Velopack tem atualizacao.
 
 "Reiniciar agora": fecha a janela pelo caminho de sempre (closeEvent, que
-GRAVA o trabalho e para as threads) e so depois pede ao Velopack a troca e a
-reabertura. "Depois": nada muda agora; o aviso nao volta nesta abertura do
-programa.
+GRAVA o trabalho e para as threads) e so depois pede a troca e a reabertura
+(atualizacao.aplicar_agora_e_reabrir -> trocar_e_reabrir: quem troca e o
+ajudante, sem pergunta do Windows, D-733). Se a janela nao fechou, nada e
+trocado. "Depois": nada muda agora; o aviso nao volta nesta abertura do
+programa; a versao entra na proxima abertura (D-734).
 
 Seguro mudar: INTERVALO_MS. Arriscado: fechar a janela por outro caminho que
 nao o close() (o trabalho deixaria de ser gravado antes da troca).
@@ -129,21 +139,36 @@ class VigiaDaAtualizacao(QObject):
             self._depois.add(versao_nova)
             atualizacao.registrar(f"versão {versao_nova} pronta; o Kaique escolheu \"Depois\"")
             return
-        # Fecha pelo caminho de sempre: o closeEvent grava o trabalho.
+        # Fecha pelo caminho de sempre: o closeEvent grava o trabalho. Se a
+        # janela recusou fechar, nada e trocado (o trocar_e_reabrir espera
+        # este processo sair e trocaria com o programa ainda aberto).
         self.relogio.stop()
-        self.janela.close()
+        if self.janela.close() is False:
+            atualizacao.registrar("\"Reiniciar agora\": a janela não fechou; nada foi trocado")
+            self.relogio.start()
+            return
         if not self._aplicar():
             # Nada foi trocado: o programa fechou gravado; abre-se de novo a mao,
-            # e a versao nova entra quando o computador ligar (como no "Depois").
-            atualizacao.registrar("\"Reiniciar agora\": a troca não começou; fica para quando o computador ligar")
+            # e a versao nova entra na proxima abertura (como no "Depois", D-734).
+            atualizacao.registrar("\"Reiniciar agora\": a troca não começou; fica para a próxima abertura")
 
 
-def ligar_na_janela(janela: QWidget, instalado: Callable[[], bool] = atualizacao.instalado_pelo_velopack
-                    ) -> VigiaDaAtualizacao | None:
-    """main.py chama uma vez, depois de abrir a janela. Pelo codigo, nao faz nada."""
+def ligar_na_janela(janela: QWidget, instalado: Callable[[], bool] = atualizacao.instalado_pelo_velopack,
+                    conta_de_testes: Callable[[], bool] | None = None,
+                    procurar: Callable[[], bool] | None = None) -> VigiaDaAtualizacao | None:
+    """main.py chama uma vez, depois de abrir a janela. Pelo codigo, nao faz nada.
+
+    No programa instalado: marca "programa aberto", manda o ajudante procurar
+    a versao nova (D-732) e liga o vigia do aviso. Na conta dos testes a
+    distancia (D-736): so a marca. `conta_de_testes` e `procurar` vem como
+    parametro so para os testes (o padrao e o de atualizacao.py).
+    """
     if not instalado():
         return None
     atualizacao.marcar_programa_aberto()
+    if (conta_de_testes or atualizacao.e_a_conta_de_testes)():
+        return None
+    (procurar or atualizacao.procurar_ao_abrir)()
     vigia = VigiaDaAtualizacao(janela)
     vigia.comecar()
     janela._vigia_da_atualizacao = vigia  # segura o objeto enquanto a janela vive

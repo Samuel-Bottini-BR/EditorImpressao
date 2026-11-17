@@ -129,6 +129,9 @@ PrivilegesRequired=admin
 ; Aparece em "Adicionar ou remover programas"
 UninstallDisplayName={#MeuNome}
 UninstallDisplayIcon={app}\{#MeuExe}
+; O icone do instalador e o brasao (D-746, 17/11/2026), o mesmo do .exe; os
+; atalhos usam o do .exe. Gerado do vetor por gerar_brasao.py, fica no git.
+SetupIconFile=recursos\brasao\brasao.ico
 
 OutputDir=dist
 OutputBaseFilename=EditorImpressao-Setup

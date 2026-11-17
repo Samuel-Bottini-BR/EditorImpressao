@@ -1,0 +1,25 @@
+D-731 pergunta (a): as provas novas test_d731a_*, rodadas sobre o codigo de 4eac1959 (antes do conserto; copia em D:/agente_temp_testes/juntar2-antigo-4eac1959), 17/11/2026
+E       AssertionError: a primeira abertura não criou a tarefa desfazer (D-731, pergunta (a))
+E       assert []
+E        +  where [] = <tests.test_decisoes_desinstalar_novo.ExecutorDaPrimeiraAbertura object at 0x00000243BDE97E00>.ja_como_administrador
+E       AssertionError: esperava um passo com ("-TaskName 'Procurar versao nova'",) (sem ()); achei []
+E       assert 0 == 1
+E        +  where 0 = len([])
+E       AttributeError: module 'core.testes_a_distancia' has no attribute 'plano_de_preparar_o_desfazer'
+E       AttributeError: module 'core.testes_a_distancia' has no attribute 'plano_de_preparar_o_desfazer'
+E       AttributeError: module 'core.testes_a_distancia' has no attribute 'plano_de_preparar_o_desfazer'
+E       AttributeError: module 'core.testes_a_distancia' has no attribute 'plano_de_preparar_o_desfazer'
+E           AttributeError: 'ExecutorWindows' object has no attribute 'aplicar_ja_como_administrador'
+E       AttributeError: module 'core.testes_a_distancia' has no attribute 'plano_de_preparar_o_desfazer'
+E       AttributeError: module 'core.testes_a_distancia' has no attribute 'plano_de_preparar_o_desfazer'
+FAILED tests/test_decisoes_desinstalar_novo.py::test_d731a_sem_os_testes_ligados_desinstalar_apaga_a_tarefa_da_atualizacao
+FAILED tests/test_decisoes_desinstalar_novo.py::test_d731a_com_os_testes_ligados_o_desfazer_inteiro_apaga_tambem_a_tarefa_da_atualizacao
+FAILED tests/test_decisoes_desinstalar_novo.py::test_d731a_a_primeira_abertura_nao_troca_o_desfazer_inteiro_pelo_curto[False]
+FAILED tests/test_decisoes_desinstalar_novo.py::test_d731a_a_primeira_abertura_nao_troca_o_desfazer_inteiro_pelo_curto[True]
+FAILED tests/test_decisoes_desinstalar_novo.py::test_d731a_a_pasta_do_desfazer_fica_protegida
+FAILED tests/test_decisoes_desinstalar_novo.py::test_d731a_a_licenca_nega_a_conta_de_testes_so_quando_ela_existe
+FAILED tests/test_decisoes_desinstalar_novo.py::test_d731a_o_executor_de_verdade_nao_aplica_sob_o_pytest
+FAILED tests/test_decisoes_desinstalar_novo.py::test_d731a_nunca_toca_os_projetos_do_kaique_e_tudo_em_ascii
+FAILED tests/test_decisoes_desinstalar_novo.py::test_d731a_os_scripts_novos_sao_powershell_sem_erro_de_escrita
+9 failed, 37 deselected in 30.16s
+

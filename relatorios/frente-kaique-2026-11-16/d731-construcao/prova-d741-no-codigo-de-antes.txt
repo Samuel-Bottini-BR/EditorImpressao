@@ -1,0 +1,13 @@
+D-741: as provas test_d741_*, rodadas sobre o codigo de 77be80ff (antes do conserto; copia em D:/agente_temp_testes/juntar2-antigo-77be80ff), 17/11/2026. A principal falha pelo comportamento (a pergunta nao volta); as outras tres so pela funcao nova que falta (o comportamento delas ja era certo no codigo de antes).
+E       AssertionError: D-741: depois do "Não", a pergunta do Windows volta ao abrir de novo
+E       assert 1 == 2
+E        +  where 1 = len([([Passo(nome='Preparar o computador: o ajudante da atualização, o Visual C++ e tirar a instalação antiga (D-733)', co...t '--preparar-o-computador' -WindowStyle Hidden -Wait } catch { }", precisa_senha=False, so_se_tudo_certo=False)], '')])
+E        +    where [([Passo(nome='Preparar o computador: o ajudante da atualização, o Visual C++ e tirar a instalação antiga (D-733)', co...t '--preparar-o-computador' -WindowStyle Hidden -Wait } catch { }", precisa_senha=False, so_se_tudo_certo=False)], '')] = <tests.test_decisoes_ajudante_novo.ExecutorQueResponde object at 0x0000018F7F626660>.chamadas
+E       AttributeError: module 'atualizacao' has no attribute 'falta_a_pergunta_do_windows'
+E       AttributeError: module 'atualizacao' has no attribute 'falta_a_pergunta_do_windows'
+E       AttributeError: module 'atualizacao' has no attribute 'CHAVE_PERGUNTA_DO_WINDOWS_RESPONDIDA'
+FAILED tests/test_decisoes_ajudante_novo.py::test_d741_nao_a_pergunta_volta_na_proxima_abertura_e_sim_ela_nao_volta_mais
+FAILED tests/test_decisoes_ajudante_novo.py::test_d741_sim_na_primeira_abertura_nao_volta_mais
+FAILED tests/test_decisoes_ajudante_novo.py::test_d741_na_conta_de_testes_nada_pergunta_mesmo_depois_de_um_nao
+FAILED tests/test_decisoes_ajudante_novo.py::test_d741_a_marca_e_de_fabrica_falsa_e_gravada_so_pelo_sim
+4 failed, 27 deselected in 0.89s

@@ -1,0 +1,12 @@
+D-740: os 3 testes mudados, rodados sobre o codigo de 997a3085 (copia em D:/agente_temp_testes/juntar2-antigo-997a3085), 17/11/2026
+E       assert ('Salve o seu trabalho' in 'Chegou uma versão nova do Editor de Impressão.\n\nSalve o seu trabalho e reinicie o programa para usar a versão nova.\n\nSe escolher "Depois", a versão nova entra sozinha na próxima vez que o computador ligar.' and 'próxima vez que você abrir o programa' in 'Chegou uma versão nova do Editor de Impressão.\n\nSalve o seu trabalho e reinicie o programa para usar a versão nova.\n\nSe escolher "Depois", a versão nova entra sozinha na próxima vez que o computador ligar.')
+E       AssertionError: B1/D-733: o gancho de instalar não cria nem roda a tarefa
+E       assert ['criar', 'rodar'] == []
+E         
+E         Left contains 2 more items, first extra item: 'criar'
+E         Use -v to get more diff
+FAILED tests/test_decisoes_atualizacao_d740.py::test_d714_a_tarefa_roda_ao_ligar_como_o_sistema_sem_janela
+FAILED tests/test_decisoes_atualizacao_d740.py::test_d720_o_aviso_tem_reiniciar_agora_e_depois_e_depois_nao_troca
+FAILED tests/test_decisoes_atualizacao_d740.py::test_d714_a_instalacao_de_verdade_nao_cria_a_tarefa
+3 failed, 35 deselected in 57.76s
+3 failed (no codigo de antes)

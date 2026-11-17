@@ -120,8 +120,13 @@ def test_d714_a_versao_vem_de_um_lugar_so():
 
 
 def test_d714_a_tarefa_roda_ao_ligar_como_o_sistema_sem_janela():
+    """Mudado pela D-740 (Samuel, 17/11/2026: "Sim"), por causa da D-732 ("não, faz quando o programa é
+    aberto"): a tarefa NAO tem mais gatilho de ligar o computador (nem nenhum outro: so roda quando o programa
+    a chama) e continua rodando como o sistema, sem janela, em prioridade baixa. Antes cobrava o <BootTrigger>.
+    O nome ficou o de antes porque a D-740 cita o teste por ele."""
     xml = atualizacao.xml_da_tarefa(Path(r"C:\Program Files\EditorImpressao\current\EditorImpressao.exe"))
-    assert "<BootTrigger>" in xml and "<UserId>S-1-5-18</UserId>" in xml
+    assert "<BootTrigger>" not in xml and "<Triggers>" not in xml, "D-732: sem gatilho de ligar o computador"
+    assert "<UserId>S-1-5-18</UserId>" in xml, "continua rodando como o sistema (sem janela na tela de ninguém)"
     assert f"<Arguments>{atualizacao.ARG_PROCURAR}</Arguments>" in xml
     assert "<Priority>7</Priority>" in xml          # prioridade baixa
     assert "<RunOnlyIfNetworkAvailable>false" in xml  # a 1a rodada instala o Visual C++ sem internet
@@ -258,6 +263,9 @@ def _vigia(estado: dict, respostas: list[bool], pedidos: list, avisos: list, apl
 
 
 def test_d720_o_aviso_tem_reiniciar_agora_e_depois_e_depois_nao_troca(app):
+    """Mudado pela D-740 (Samuel, 17/11/2026: "Sim"), por causa da D-734 ("quando ele abrir o programa de
+    novo"): o aviso fala da "próxima vez que você abrir o programa", nao mais do computador ligar. O resto
+    (os dois botoes, o Enter no "Depois", "Depois" nao troca nem fecha, nao volta nesta abertura) ficou igual."""
     pedidos, avisos, aplicou = [], [], []
     vigia, janela = _vigia({"fase": "pendente", "nova": "1.2.0", "anterior": "1.1.0"}, [False], pedidos,
                            avisos, aplicou)
@@ -267,7 +275,7 @@ def test_d720_o_aviso_tem_reiniciar_agora_e_depois_e_depois_nao_troca(app):
     titulo, texto, sim, nao, padrao_sim = pedidos[0]
     assert (sim, nao) == ("Reiniciar agora", "Depois")
     assert padrao_sim is False, "o Enter fica no \"Depois\""
-    assert "Salve o seu trabalho" in texto and "próxima vez que o computador ligar" in texto
+    assert "Salve o seu trabalho" in texto and "próxima vez que você abrir o programa" in texto
     assert aplicou == [] and type(janela).fechou == fechou_antes, "\"Depois\" não troca nem fecha"
     vigia.olhar()
     assert len(pedidos) == 1, "depois do \"Depois\" o aviso não volta nesta abertura"
@@ -495,12 +503,16 @@ def test_d723_o_portatil_nunca_cria_nem_apaga_a_tarefa(monkeypatch):
     assert atualizacao.e_portatil(GerenteFalso(portatil=False)) is False
 
 
-def test_d714_a_instalacao_de_verdade_cria_e_roda_a_tarefa(monkeypatch):
+def test_d714_a_instalacao_de_verdade_nao_cria_a_tarefa(monkeypatch):
+    """Mudado (e renomeado; era test_d714_a_instalacao_de_verdade_cria_e_roda_a_tarefa) pela D-740 (Samuel,
+    17/11/2026: "Sim"), por causa da D-733 ("1- sim": o ajudante nasce na pergunta do Windows da primeira
+    abertura) e do achado B1 (16/11/2026: o .msi roda o gancho de instalar SEM administrador, e a tarefa nunca
+    nasceria ali). Agora cobra o contrario do que cobrava: a instalacao de verdade NAO cria nem roda a tarefa."""
     feito = []
     monkeypatch.setattr(atualizacao, "criar_tarefa", lambda *a, **k: feito.append("criar") or True)
     monkeypatch.setattr(atualizacao, "rodar_tarefa_agora", lambda *a, **k: feito.append("rodar") or True)
     atualizacao.ao_instalar("1.2.0", portatil=lambda: False)
-    assert feito == ["criar", "rodar"]
+    assert feito == [], "B1/D-733: o gancho de instalar não cria nem roda a tarefa"
 
 
 def test_d723_instalacao_de_verdade_prepara_o_computador(monkeypatch):

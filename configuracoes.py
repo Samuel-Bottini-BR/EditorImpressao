@@ -77,6 +77,14 @@ PADROES: dict[str, Any] = {
     "testes_a_distancia_ligado": True,
     "testes_a_distancia_pronto": False,
     "testes_a_distancia_senha_perguntada": False,
+    # D-741 (Samuel, 17/11/2026: "Sim"): a pergunta do Windows da primeira
+    # abertura (D-733/D-735) ja teve o "Sim"? Enquanto False, ela volta a cada
+    # abertura do programa instalado (depois de um "Nao"); depois do "Sim",
+    # True, e nunca mais aparece. Lido e gravado so por
+    # atualizacao.falta_a_pergunta_do_windows / preparar_na_primeira_abertura.
+    # Seguro mudar: nada. Arriscado: de fabrica True (o ajudante da
+    # atualizacao e a tarefa desfazer nunca nasceriam).
+    "atualizacao_computador_preparado": False,
 }
 
 
