@@ -150,3 +150,170 @@ guardam o que já era certo (portátil, conta nova sem administrador, desligar d
 - Que o `Remove-CimInstance` apaga o perfil e que o `Remove-WindowsCapability` termina dentro de 1 hora.
 - Que a tarefa consegue se apagar no último passo.
 - O antivírus (D-725).
+
+
+---
+
+## Continuação de 17/11/2026: a junção, a D-740, o desfazer sempre, a D-741 e a D-742
+
+**O que é.** Quatro coisas na cópia que junta os dois trabalhos (ramo `kaique-juntar-2026-11-17`). Nada foi feito no
+Windows de verdade: nada instalado, nenhuma conta, nenhuma tarefa; nenhuma janela abriu na tela.
+
+**Situação.** PRONTO PARA CONFERIR. Commits sobre `cf49ff7f`, sem envio ao GitHub:
+`4eac1959` (D-740), `77be80ff` (desfazer sempre), `866186b3` (D-741) e `1a42dfb0` (D-742).
+
+### 1. D-740: os 3 testes antigos cobram o jeito novo
+
+O Samuel autorizou a mudança (D-740, "Sim"). Só estes três mudaram, em `tests/test_decisoes_atualizacao.py`:
+
+- `test_d714_a_tarefa_roda_ao_ligar_como_o_sistema_sem_janela`: cobra que a tarefa **não** tem gatilho de ligar o
+  computador e continua rodando como o sistema, em prioridade baixa (D-732). O nome ficou o de antes, porque a D-740
+  cita o teste por ele.
+- `test_d720_o_aviso_tem_reiniciar_agora_e_depois_e_depois_nao_troca`: cobra a frase nova, "próxima vez que você
+  abrir o programa" (D-734). O resto ficou igual.
+- `test_d714_a_instalacao_de_verdade_cria_e_roda_a_tarefa` virou `test_d714_a_instalacao_de_verdade_nao_cria_a_tarefa`:
+  cobra que a instalação **não** cria a tarefa (B1, D-733). O nome antigo mentia.
+
+**Prova.** No código de antes (`997a3085`), os três falham; no novo, passam. Saída em
+`prova-d740-no-codigo-de-antes.txt`.
+
+### 2. A tarefa "desfazer" existe sempre e apaga também a tarefa da atualização (pergunta (a) acima)
+
+**O defeito.** A tarefa "desfazer" só nascia quando os testes à distância eram ligados. E o gancho de desinstalar roda
+sem administrador, então a tarefa da atualização ("Procurar versao nova") ficava no Windows depois de desinstalar.
+O computador não voltava a ser como era antes (D-731).
+
+**O conserto, numa regra só.**
+- A pergunta do Windows da primeira abertura (o modo `--preparar-o-computador`) cria agora as duas tarefas
+  (`atualizacao.criar_as_tarefas`): o ajudante da atualização, como antes, e a tarefa "desfazer".
+- A tarefa "desfazer" nasce pelo mesmo caminho do `ligar` (`_comando_preparar_o_desfazer`), com o plano curto:
+  `plano_de_desfazer(testes_ligados=False)`, que só mexe nas nossas tarefas.
+- Todo desfazer, curto ou inteiro, termina igual (`_passos_das_nossas_tarefas`):
+  - apaga a tarefa da atualização, sempre;
+  - apaga a si mesmo, só se tudo deu certo.
+- Os testes à distância ligados continuam sendo desfeitos como antes. O `ligar` grava o plano inteiro, com o mesmo
+  fim.
+- Se os testes já foram ligados (o caderninho do antes existe), a primeira abertura não troca o desfazer inteiro pelo
+  curto. Isso importa por causa da D-741: a pergunta pode voltar depois de os testes serem ligados nas Configurações.
+- A licença da tarefa nega a conta de testes só quando ela existe. Na primeira abertura ela ainda não existe, e o
+  `ligar` refaz a tarefa já com a negação (D-717).
+- A pasta do desfazer fica protegida pelo mesmo `icacls` do `ligar`, agora escrito num lugar só
+  (`_comando_proteger_a_pasta`).
+- Os projetos do Kaique nunca são citados.
+
+**Caminho → função.**
+
+| Caminho | Função |
+|---|---|
+| Primeira abertura (dentro da pergunta do Windows) | `preparar_como_administrador` → `criar_as_tarefas` → `criar_tarefa` + `testes_a_distancia.preparar_o_desfazer` → `plano_de_preparar_o_desfazer` → `_comando_preparar_o_desfazer(testes_ligados=False)` |
+| Ligar os testes (janela, caixinha, botão) | `ligar` → `plano_de_ligar` → `_comando_preparar_o_desfazer()` (plano inteiro) |
+| Desinstalar | `ao_desinstalar` → `mandar_desfazer` → a tarefa roda `montar_script(plano_de_desfazer(...))` |
+| O fim de todo desfazer | `_passos_das_nossas_tarefas` |
+| Proteger a pasta | `_comando_proteger_a_pasta` (o `ligar` e a primeira abertura) |
+
+**Prova.** 9 provas novas `test_d731a_*` em `tests/test_decisoes_desinstalar.py`. A principal: sem os testes ligados,
+a primeira abertura cria o desfazer; desinstalar manda rodá-lo; ele apaga a tarefa da atualização e a si mesmo, e
+nada dos testes. Ela roda o script gravado no "Windows de mentira" do PowerShell. No código de antes (`4eac1959`), as
+9 falham. A principal falha pelo motivo certo: "a primeira abertura não criou a tarefa desfazer". Saída em
+`prova-d731a-no-codigo-de-antes.txt`.
+
+### 3. D-741: depois de um "Não", a pergunta do Windows volta até o "Sim"
+
+**O defeito.** Era a pergunta aberta 1 do relatório da D-732. Se o Kaique dissesse "Não" à pergunta do Windows da
+primeira abertura, ela nunca mais voltava. O ajudante da atualização nunca nascia.
+
+**O conserto, numa regra só.**
+- `atualizacao.falta_a_pergunta_do_windows` decide se a pergunta aparece de novo.
+- `preparar_na_primeira_abertura` grava a marca nas Configurações (`atualizacao_computador_preparado`), só quando a
+  resposta não foi "Não".
+- A tela (`primeira_vez_se_preciso`) pergunta de novo só a pergunta do Windows. A janela da senha não volta, porque a
+  senha vai nas Configurações (D-721), e não aparece aviso.
+- Na conta de testes e pelo código, nada pergunta (D-736, D-728).
+
+**Prova.** 4 provas `test_d741_*`. A principal faz "Não", abre de novo e vê a pergunta voltar; faz "Não" de novo e ela
+volta; faz "Sim" e ela nunca mais aparece. No código de antes (`77be80ff`), a principal falha pelo comportamento:
+"depois do Não, a pergunta do Windows volta ao abrir de novo", com 1 pergunta em vez de 2. As outras três falham só
+porque a função nova não existia; o comportamento delas já era certo. Saída em `prova-d741-no-codigo-de-antes.txt`.
+
+### 4. D-742: a janelinha "Atualizando o programa, espere um pouco..."
+
+**Como fica para o Kaique.** Ele clicou "Depois" e, mais tarde, abre o programa. A janela do programa não abre logo.
+Aparece no meio da tela uma janelinha pequena, sem título e sem botão, só com o texto "Atualizando o programa, espere
+um pouco...". Quando o programa abre, já na versão nova, ela some. Se a versão nova falhar, a volta para a anterior
+acontece igual (D-718), e a janelinha some quando o programa abrir na versão anterior. O "Reiniciar agora" ficou como
+era. Nenhuma outra tela muda. No PDF, nada muda.
+
+**Onde a janelinha vive.** A troca acontece fora do programa: o programa tem de sair para os arquivos dele serem
+trocados. Quem espera e reabre é um PowerShell escondido, na conta do Kaique (`script_de_trocar_e_reabrir`).
+- A janelinha é uma janela do Windows aberta por esse mesmo PowerShell, numa linha de execução separada
+  (`script_da_janelinha`, `_linhas_da_janelinha`).
+- A troca não espera por ela, e ela não espera pela troca. Um erro nela não impede a troca nem a volta.
+- Ela some quando o programa marca que abriu, pela mesma marca de "programa aberto" que o ajudante usa. No pior
+  caso, some sozinha depois do tempo inteiro da troca.
+- Se o programa já abriu enquanto ela se montava, ela nem aparece, para nada piscar na tela.
+- O resto do PowerShell da troca ficou igual, letra por letra (há uma prova disso).
+
+**Prova, sem abrir nada na tela.** A janela do Windows foi trocada por uma de mentira que só anota. A prova abre a
+"janelinha", confere que ela continua enquanto a troca não terminou, cria a marca de "programa aberto" e confere que
+ela fechou. Também confere o texto exato, que não há botão, que ela fica por cima e sem título. Uma segunda prova
+confere que ela nem aparece se o programa já abriu. Ao todo, 6 provas `test_d742_*`. No código de antes
+(`866186b3`), as 5 primeiras falham (a janelinha não existia). Saída em `prova-d742-no-codigo-de-antes.txt`.
+
+**Ressalva medida.** Neste PC, a primeira letra de uma janela do Windows num processo novo leva uns 5,5 s. Por isso a
+janelinha aparece uns 6 s depois de o programa sair. Isso foi medido com a janela de mentira e com relógio, sem
+mostrar nada. A troca de verdade leva mais que isso, então ela aparece durante a troca. No notebook do Kaique, só a
+etapa 5 mostra o tempo.
+
+### Resultado de cada arquivo (um por vez, offscreen, `--basetemp=D:/agente_temp_testes/juntar2`)
+
+- `tests/test_decisoes_atualizacao.py`: 38 passaram (os 3 da D-740 incluídos).
+- `tests/test_decisoes_ajudante_da_atualizacao.py`: 37 passaram (27 de antes, 4 da D-741 e 6 da D-742).
+- `tests/test_decisoes_desinstalar.py`: 46 passaram (37 de antes e 9 novas `test_d731a_*`).
+- `tests/test_decisoes_testes_a_distancia.py`: 13 passaram.
+- `tests/test_assinatura.py`: 16 passaram.
+- `tests/test_promessas.py -k "215"`: 1 passou.
+- **Ensaio da etapa 3** (`ensaio_velopack.py`): **"ENSAIO: CERTO"**. Ele continua sem tocar o Windows de verdade:
+  pacotes portáteis em `build\ensaio-velopack\`, sem tarefa, sem Arquivos de Programas, com um ProgramData de
+  mentira, e só o programinha do ensaio, com a chave de mentira.
+  - A, de 1.1.0 para 1.2.0: trocou, e a versão nova passou no teste.
+  - B, a 1.3.0 estragada: voltou para a 1.2.0.
+  - C, a 1.4.0 com a assinatura de outra chave: recusada, nada baixado.
+  - Ressalva: as duas primeiras tentativas pararam no meio (a primeira pelo meu limite de 50 minutos, com o PC lento;
+    a segunda quando a internet caiu). A terceira foi até o fim. Nenhum processo delas ficou rodando.
+- Rodada do GitHub: não disparada (sem push). Fica com a gerente.
+
+### Testes antigos
+
+Só os três da D-740 mudaram, com a autorização dele. Nenhum outro teste antigo mudou. As provas novas foram
+acrescentadas no fim dos arquivos.
+
+### Perguntas abertas (para a gerente; cada uma com a sugestão)
+
+1. **A pasta das tarefas no Agendador do Windows.** O desfazer apaga as duas tarefas, mas a pasta vazia
+   "EditorImpressao" fica no Agendador. Ela não faz nada, mas é um rastro. Sugestão: o desfazer apaga a pasta se ela
+   estiver vazia (uma linha). Fica para outro pedido, porque o "Windows de mentira" dos testes não roda esse tipo de
+   comando e a prova seria só no PC (etapa 5).
+2. **"Sim" à pergunta do Windows, mas o preparo deu erro.** Hoje vale a regra dele ao pé da letra: depois do "Sim",
+   nunca mais pergunta, mesmo se o preparo falhou. O erro fica no registro da atualização. Sugestão: fica assim; a
+   etapa 5 mostra se isso acontece de verdade.
+3. **Com a senha e "Não".** Na abertura seguinte volta só a pergunta do Windows, sem a janela da senha; os testes à
+   distância ficam desligados até ele pôr a senha nas Configurações. Sugestão: fica assim (D-721).
+4. **A espera da janelinha.** Ela aparece uns 6 s depois de o programa sumir, neste PC. Sugestão: a etapa 5 mede no
+   notebook antes de mudar qualquer coisa.
+
+### O que só a etapa 5 prova (no PC do Samuel)
+
+- Que o `--preparar-o-computador` roda o PowerShell do desfazer sem pergunta, e que a tarefa nasce sem a conta de
+  testes.
+- Que, depois de desinstalar, as duas tarefas somem do Agendador.
+- Que a janelinha aparece de verdade na conta do Kaique, a partir do PowerShell escondido, e some quando o programa
+  abre.
+- Quanto tempo ela leva para aparecer no notebook.
+
+### Arquivos fora do projeto (CLAUDE.md §10.9)
+
+Criei e deixei lá (a gerente decide se saem):
+- as cópias do código de antes, para as provas: `D:\agente_temp_testes\juntar2-antigo-997a3085`,
+  `...-4eac1959`, `...-77be80ff` e `...-866186b3` (uns 11 MB cada);
+- as pastas de teste `D:\agente_temp_testes\juntar2` e `D:\agente_temp_testes\juntar2-antigo-tmp`.
+Não apaguei nada.

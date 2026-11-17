@@ -73,3 +73,44 @@ PRONTO PARA CONFERIR. Parei aqui.
 
 Nenhuma nova para ele. As perguntas abertas (para a gerente decidir ou levar) estão no relatório, seção "Perguntas
 abertas".
+
+---
+
+## Continuação de 17/11/2026 (cópia `kaique-juntar`, ramo `kaique-juntar-2026-11-17`, sobre `cf49ff7f`)
+
+### Decisões que esta tarefa precisa cumprir
+- **D-740** ("Sim"): os 3 testes antigos de `test_decisoes_atualizacao.py` cobram o jeito novo (sem gatilho de ligar;
+  "próxima vez que você abrir o programa"; a instalação NÃO cria a tarefa). Exceção à §11.8 autorizada.
+- **D-731** ("ok": "o notebook fica como era antes de instalar") + pergunta (a) do relatório: a tarefa "desfazer"
+  sempre existe e apaga também a tarefa da atualização e a si mesma. Projetos do Kaique nunca tocados.
+- **D-733/D-735**: a pergunta do Windows da primeira abertura cria o que pede licença, sempre.
+- **D-741** ("Sim"): depois de um "Não", a pergunta do Windows volta a cada abertura até o "Sim"; depois, nunca mais;
+  na conta de testes nada pergunta (D-736).
+- **D-742** ("Sim"): na abertura em que a versão nova entra (D-734), a janelinha "Atualizando o programa, espere um
+  pouco..." sem botão, que some quando o programa abre; não impede a troca nem a volta (D-718).
+- D-717 (a conta de testes não manda no desfazer), D-721 (a senha vai nas Configurações), D-728 (pelo código nada).
+
+### O que já está escolhido e testado aqui
+- As provas de `test_decisoes_desinstalar.py`, `test_decisoes_ajudante_da_atualizacao.py`,
+  `test_decisoes_testes_a_distancia.py`, `test_decisoes_atualizacao.py` (menos os 3 da D-740), P-215: nenhuma muda.
+- O texto do script do "Reiniciar agora" fica igual (prova `test_d742_a_janelinha_so_na_abertura_...`).
+
+### Como fica para quem usa e no livro
+- Primeira abertura: igual (a mesma pergunta do Windows); por trás, nasce também a tarefa "desfazer".
+- "Não" à pergunta: ela volta na abertura seguinte, sem a janela da senha.
+- Depois do "Depois": ao abrir, a janelinha aparece no meio da tela e some quando o programa abre.
+- Desinstalar: nenhuma pergunta a mais; as duas tarefas saem do Windows.
+- PDF: nada muda.
+
+### Andamento
+- [x] D-740: `4eac1959` (3 falham em `997a3085`).
+- [x] Desfazer sempre: `77be80ff` (9 falham em `4eac1959`).
+- [x] D-741: `866186b3` (a principal falha em `77be80ff` pelo comportamento).
+- [x] D-742: `1a42dfb0` (5 falham em `866186b3`).
+- [x] Retomado depois da queda da internet (17/11): um arquivo por vez, offscreen: atualização 38/38, ajudante 37/37,
+  desinstalar 46/46, testes à distância 13/13, assinatura 16/16, P-215 1/1. Ensaio da etapa 3: "ENSAIO: CERTO"
+  (a 3a tentativa; a 1a parou no meu limite de 50 min, a 2a na queda da internet).
+- [x] Relatório (seção nova, três formatos: `relatorio.md/.html/.pdf`).
+- [ ] Rodada do GitHub: não disparada (sem push); fica com a gerente.
+
+PRONTO PARA CONFERIR.
