@@ -11,7 +11,12 @@ O QUE FAZ (D-705, D-711, D-717; estudo 2.3):
     usuario), NUNCA na linha de comando (outros programas enxergam a linha de
     comando). O texto da senha nao vai para disco em claro nem para argv;
   - roda o script elevado com UMA pergunta de administrador so (runas);
-  - anota num registro o que fez (para a lista do D-722).
+  - anota num registro o que fez (para a lista do D-722);
+  - (D-731, 17/11/2026) manda rodar a tarefa "desfazer" sem esperar e sem
+    pedir administrador (rodar_a_tarefa_no_windows), para o gancho de
+    desinstalar, que roda sem administrador e tem 30 s.
+O texto do script vem de core/testes_a_distancia.montar_script (o unico
+montador: o ligar, o desligar e a tarefa desfazer usam o mesmo).
 
 RESSALVA (etapa 5, D-722): esta ligacao - o runas, a passagem da senha por
 DPAPI, a tarefa rodar sem perguntar - so e PROVADA no PC do Samuel. Aqui ela e
@@ -28,7 +33,7 @@ import tempfile
 from ctypes import wintypes
 from pathlib import Path
 
-from core.testes_a_distancia import Passo, Resultado, VARIAVEL_DA_SENHA
+from core.testes_a_distancia import Passo, Resultado, montar_script
 from registro import registrar_erro
 
 _CANCELADO = 1223  # o Windows devolve isto quando a pessoa clica "Nao" no runas
@@ -48,28 +53,6 @@ def _senha_cifrada_pelo_windows(senha: str) -> str:
         input=senha, capture_output=True, text=True, check=True,
         creationflags=getattr(subprocess, "CREATE_NO_WINDOW", 0))
     return saida.stdout.strip()
-
-
-def _montar_script(passos: list[Passo], blob_cifrado: Path, registro: Path) -> str:
-    """O texto do script PowerShell que roda elevado: le a senha cifrada,
-    roda cada passo, para no primeiro erro, anota o que fez e apaga o blob."""
-    linhas = [
-        "$ErrorActionPreference = 'Stop'",
-        f"$blob = Get-Content -Raw '{blob_cifrado}'",
-        # $SenhaDosTestes (o nome que os passos usam) vem da DPAPI, so na memoria.
-        f"{VARIAVEL_DA_SENHA} = ConvertTo-SecureString $blob",
-        f"Remove-Item -Path '{blob_cifrado}' -Force -ErrorAction SilentlyContinue",
-        f"function Anotar($t) {{ Add-Content -Path '{registro}' -Value $t }}",
-    ]
-    for passo in passos:
-        linhas.append("try {")
-        linhas.append(f"  {passo.comando}")
-        linhas.append(f"  Anotar 'OK   | {passo.nome}'")
-        linhas.append("} catch {")
-        linhas.append(f"  Anotar ('ERRO | {passo.nome} | ' + $_.Exception.Message)")
-        linhas.append("  throw")
-        linhas.append("}")
-    return "\n".join(linhas)
 
 
 class _SHELLEXECUTEINFO(ctypes.Structure):
@@ -121,9 +104,13 @@ def aplicar_no_windows(passos: list[Passo], senha: str) -> Resultado:
     registro = pasta / "o-que-fiz.txt"
     blob = pasta / "senha.dpapi"
     try:
-        if any(p.precisa_senha for p in passos):
+        # O arquivo da senha so existe (e so e lido pelo script) quando um passo
+        # precisa dela (achado de 17/11/2026: o desligar nao tem senha).
+        com_senha = any(p.precisa_senha for p in passos)
+        if com_senha:
             blob.write_text(_senha_cifrada_pelo_windows(senha), encoding="ascii")
-        script.write_text(_montar_script(passos, blob, registro), encoding="utf-8")
+        script.write_text(montar_script(passos, str(registro), str(blob) if com_senha else None),
+                          encoding="utf-8")
         codigo = _rodar_elevado(script)
         if codigo == _CANCELADO:
             return Resultado(False, cancelado=True, passos=passos)
@@ -145,3 +132,19 @@ def aplicar_no_windows(passos: list[Passo], senha: str) -> Resultado:
             except OSError:
                 pass
         os.environ.pop("EDITOR_SENHA_TESTES", None)
+
+
+def rodar_a_tarefa_no_windows(nome: str, tempo: int) -> Resultado:
+    """Manda o Agendador do Windows rodar a tarefa `nome` e volta logo (D-731).
+
+    O `schtasks /Run` so pede para a tarefa comecar; nao espera ela terminar.
+    Nao pede licenca de administrador: a tarefa "desfazer" tem uma licenca que
+    deixa a conta comum manda-la rodar (core/testes_a_distancia._LICENCA_DA_TAREFA).
+    `tempo` corta a espera bem antes dos 30 s do gancho do Velopack. Nunca levanta.
+    """
+    try:
+        feito = subprocess.run(["schtasks", "/Run", "/TN", nome], capture_output=True, text=True,
+                               timeout=tempo, creationflags=getattr(subprocess, "CREATE_NO_WINDOW", 0))
+    except (OSError, subprocess.SubprocessError) as erro:
+        return Resultado(False, mensagem=f"{type(erro).__name__}: {erro}")
+    return Resultado(feito.returncode == 0, mensagem=(feito.stdout + feito.stderr).strip())

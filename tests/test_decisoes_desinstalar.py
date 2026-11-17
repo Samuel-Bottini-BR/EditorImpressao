@@ -109,8 +109,8 @@ PROGRAMAS_DE_FORA = ("icacls", "schtasks", "reg", "net", "sc", "cmd", "takeown",
 
 
 def _mentira_que_anota(nome: str) -> str:
-    return (f"function {nome} {{ $a = @($input); Write-Output ('CHAMOU {nome} ' + ($args -join ' '));"
-            f" foreach ($i in $a) {{ Write-Output ('CHAMOU {nome} <- ' + $i) }} }}")
+    return (f"function {nome} {{ $a = @($input); Write-Host ('CHAMOU {nome} ' + ($args -join ' '));"
+            f" foreach ($i in $a) {{ Write-Host ('CHAMOU {nome} <- ' + $i) }} }}")
 
 
 def rodar_no_windows_de_mentira(comando: str, pasta: Path, trocas: dict[str, str] | None = None,
@@ -123,7 +123,7 @@ def rodar_no_windows_de_mentira(comando: str, pasta: Path, trocas: dict[str, str
     trocas = dict(trocas or {})
     for nome in anotar:
         trocas.setdefault(nome, _mentira_que_anota(nome))
-    trocas.setdefault("Anotar", "function Anotar($t) { Write-Output ('ANOTOU ' + $t) }")
+    trocas.setdefault("Anotar", "function Anotar($t) { Write-Host ('ANOTOU ' + $t) }")
 
     # --- a proteção: nada de verdade do Windows sem troca ---
     texto = comando.replace(td.REGRA_LARGA_DO_OPENSSH, "").replace(td.NOME_DA_REGRA, "")  # nomes, não comandos
@@ -386,7 +386,7 @@ def test_d731_sshd_config_sai_pelas_marcas_e_a_linha_de_fabrica_fica(maquina):
     assert "PasswordAuthentication yes" not in desfazer.comando, "o desfazer não procura a linha solta"
     codigo, _, erro = rodar_no_windows_de_mentira(desfazer.comando, maquina)
     assert codigo == 0, erro
-    assert config.read_text(encoding="utf-8") == SSHD_CONFIG_DE_FABRICA
+    assert config.read_bytes() == SSHD_CONFIG_DE_FABRICA.encode("utf-8")
 
 
 # ---------------------------------------------------------------------------------------------------------------
@@ -473,7 +473,7 @@ def test_b4_desligar_devolve_o_openssh_que_ja_era_do_dono(maquina):
     assert "-StartupType Automatic" in set_service, "o início volta a ser o de antes"
     assert chamou(linhas, "Restart-Service") or chamou(linhas, "Start-Service"), "estava rodando: continua"
     assert chamou(linhas, "Enable-NetFirewallRule"), "a regra larga do dono volta a ficar ligada"
-    assert config.read_text(encoding="utf-8") == SSHD_CONFIG_DE_FABRICA, "as nossas linhas saem"
+    assert config.read_bytes() == SSHD_CONFIG_DE_FABRICA.encode("utf-8"), "as nossas linhas saem"
 
 
 @precisa_do_powershell
@@ -559,7 +559,7 @@ def test_d731_o_perfil_e_achado_pelo_sid(maquina):
                             " [pscustomobject]@{ SID = 'S-1-5-21-111-1001'; LocalPath = 'X:\\Users\\EditorTestes.PC' };"
                             " [pscustomobject]@{ SID = 'S-1-5-21-222-1002'; LocalPath = 'X:\\Users\\EditorTestes' } }"),
         "Remove-CimInstance": ("function Remove-CimInstance { foreach ($i in $input) {"
-                               " Write-Output ('CHAMOU Remove-CimInstance ' + $i.SID) } }"),
+                               " Write-Host ('CHAMOU Remove-CimInstance ' + $i.SID) } }"),
     }
     codigo, linhas, erro = rodar_no_windows_de_mentira(passo.comando, maquina, trocas)
     assert codigo == 0, erro
@@ -647,3 +647,23 @@ def test_os_comandos_sao_ascii(dados):
     """17/11/2026: o PowerShell do Windows lê o script sem marca de UTF-8 como ANSI; os comandos ficam em ASCII."""
     for comando in _todos_os_comandos():
         assert comando.isascii()
+
+
+@precisa_do_powershell
+def test_os_scripts_montados_sao_powershell_sem_erro_de_escrita(tmp_path, dados):
+    """17/11/2026: os scripts do ligar, do desligar e do desfazer (e o do desfazer de dentro do ligar) passam
+    pelo leitor do PowerShell sem erro de escrita. Só LÊ o texto (Parser.ParseFile): nada é executado."""
+    scripts = {
+        "ligar": td.montar_script(td.plano_de_ligar(), str(tmp_path / "r.txt"), str(tmp_path / "s.dpapi")),
+        "desligar": td.montar_script(td.plano_de_desligar(), str(tmp_path / "r.txt")),
+        "desfazer": td.montar_script(td.plano_de_desfazer(), td.caminho_do_registro_do_desfazer(),
+                                     continuar_depois_de_erro=True),
+    }
+    for nome, texto in scripts.items():
+        arquivo = tmp_path / f"{nome}.ps1"
+        arquivo.write_text(texto, encoding="utf-8-sig")
+        ler = ("$e = $null; [System.Management.Automation.Language.Parser]::ParseFile('" + str(arquivo)
+               + "', [ref]$null, [ref]$e) | Out-Null; $e | ForEach-Object { $_.Message }")
+        feito = subprocess.run([POWERSHELL, "-NoProfile", "-NonInteractive", "-Command", ler],
+                               capture_output=True, text=True, timeout=120)
+        assert feito.returncode == 0 and not feito.stdout.strip(), f"{nome}: {feito.stdout} {feito.stderr}"
