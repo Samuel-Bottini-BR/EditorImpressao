@@ -128,7 +128,10 @@ def rodar_no_windows_de_mentira(comando: str, pasta: Path, trocas: dict[str, str
     # --- a proteção: nada de verdade do Windows sem troca ---
     texto = comando.replace(td.REGRA_LARGA_DO_OPENSSH, "").replace(td.NOME_DA_REGRA, "")  # nomes, não comandos
     assert "C:\\" not in comando and "c:\\" not in comando, "o comando cita o disco C: (caminho não trocado)"
-    assert "ComObject" not in comando, "o comando fala com um serviço do Windows (COM): não roda aqui"
+    # D-750 (Samuel, 17/11/2026: "pode sim"): o serviço do Windows (COM) só roda aqui quando o teste dá um
+    # Agendador de mentira (troca do New-Object); sem a troca, continua recusado.
+    assert "ComObject" not in comando or "New-Object" in trocas, \
+        "o comando fala com um serviço do Windows (COM): não roda aqui"
     for nome in set(re.findall(r"\b[A-Z][a-z]+-[A-Z][A-Za-z]+\b", texto)):
         if nome in trocas or nome in SO_LEEM:
             continue
@@ -719,6 +722,27 @@ def _tarefa_da_atualizacao() -> tuple[str, str]:
     return nome, f"\\{pasta}\\"
 
 
+# D-750 (Samuel, 17/11/2026): o Agendador de mentira. A troca do New-Object devolve, para -ComObject, um
+# Agendador que só anota (pasta vazia: nenhuma tarefa, nenhuma subpasta); nunca o de verdade. Os outros tipos
+# seguem para o New-Object de verdade.
+_AGENDADOR_DE_MENTIRA = "\n".join([
+    "function New-Object { param([string]$TypeName, [switch]$ComObject, [object[]]$ArgumentList)",
+    "  if (-not $ComObject) { return Microsoft.PowerShell.Utility\\New-Object -TypeName $TypeName"
+    " -ArgumentList $ArgumentList }",
+    "  Write-Host ('CHAMOU New-Object -ComObject ' + $TypeName)",
+    "  $agenda = [pscustomobject]@{}",
+    "  $agenda | Add-Member -MemberType ScriptMethod -Name Connect -Value { }",
+    "  $agenda | Add-Member -MemberType ScriptMethod -Name GetFolder -Value { param($p)",
+    "    $pasta = [pscustomobject]@{}",
+    "    $pasta | Add-Member -MemberType ScriptMethod -Name GetTasks -Value { param($f) [pscustomobject]@{ Count = 0 } }",
+    "    $pasta | Add-Member -MemberType ScriptMethod -Name GetFolders -Value { param($f) [pscustomobject]@{ Count = 0 } }",
+    "    $pasta | Add-Member -MemberType ScriptMethod -Name DeleteFolder -Value { param($n, $f)",
+    "      Write-Host ('CHAMOU DeleteFolder ' + $n) }",
+    "    return $pasta }",
+    "  return $agenda }",
+])
+
+
 @precisa_do_powershell
 def test_d731a_sem_os_testes_ligados_desinstalar_apaga_a_tarefa_da_atualizacao(maquina, monkeypatch):
     """D-731 ("o notebook fica como era antes de instalar"), pergunta (a) do relatório da construção (17/11/2026).
@@ -747,13 +771,18 @@ def test_d731a_sem_os_testes_ligados_desinstalar_apaga_a_tarefa_da_atualizacao(m
     atualizacao.ao_desinstalar("1.2.0", portatil=lambda: False)
     assert falso.tarefas == [td.nome_da_tarefa_do_desfazer()]
 
-    # 3. a tarefa roda o script gravado: apaga a tarefa da atualização e a si mesma, e nada dos testes
-    codigo, linhas, erro = rodar_no_windows_de_mentira(script, maquina, anotar=("Unregister-ScheduledTask",))
+    # 3. a tarefa roda o script gravado: apaga a tarefa da atualização e a si mesma, e nada dos testes.
+    # D-750 (17/11/2026): e a pasta vazia do Agendador, só com o Agendador de mentira; sem ele, recusado.
+    with pytest.raises(AssertionError, match="COM"):
+        rodar_no_windows_de_mentira(script, maquina, anotar=("Unregister-ScheduledTask",))
+    codigo, linhas, erro = rodar_no_windows_de_mentira(script, maquina, anotar=("Unregister-ScheduledTask",),
+                                                       trocas={"New-Object": _AGENDADOR_DE_MENTIRA})
     assert codigo == 0, erro
     apagadas = " | ".join(chamou(linhas, "Unregister-ScheduledTask"))
     nome, pasta = _tarefa_da_atualizacao()
     assert f"-TaskName {nome} -TaskPath {pasta}" in apagadas, "a tarefa da atualização tem de sair"
     assert f"-TaskName {td.NOME_DA_TAREFA_DO_DESFAZER} -TaskPath {pasta}" in apagadas, "e o desfazer, a si mesmo"
+    assert f"CHAMOU DeleteFolder {td.PASTA_DAS_TAREFAS}" in linhas, "e a pasta vazia do Agendador (D-731, D-750)"
     for dos_testes in ("Set-Service", "Stop-Service", "Remove-LocalUser", "Remove-WindowsCapability",
                        "NetFirewallRule", td.SSHD_CONFIG):
         assert dos_testes not in script, f"sem os testes ligados, o desfazer não mexe em {dos_testes}"
