@@ -1,0 +1,381 @@
+<!doctype html>
+<html lang="pt-BR">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Procurar a versão nova ao abrir o programa (construção de 17/11/2026)</title>
+<style>
+:root { color-scheme: light dark; }
+* { box-sizing: border-box; }
+body {
+  font: 17px/1.65 "Segoe UI", system-ui, sans-serif;
+  max-width: 46rem; margin: 0 auto; padding: 2.5rem 1.5rem 6rem;
+  color: #1c1c1e; background: #fdfdfc;
+}
+h1 { font-size: 2rem; line-height: 1.2; margin: 0 0 .3em; letter-spacing: -.02em; }
+h2 { font-size: 1.35rem; margin: 2.4em 0 .6em; padding-top: .8em;
+     border-top: 1px solid #e6e4e0; letter-spacing: -.01em; }
+h3 { font-size: 1.1rem; margin: 1.8em 0 .4em; }
+h1 + p, h2 + p { margin-top: .4em; }
+p, li { margin: 0 0 .9em; }
+ul, ol { padding-left: 1.3em; }
+strong { font-weight: 640; }
+code {
+  font: .88em ui-monospace, "Cascadia Code", Consolas, monospace;
+  background: #f1efec; padding: .12em .35em; border-radius: 4px;
+}
+pre {
+  background: #f1efec; padding: 1em 1.1em; border-radius: 8px;
+  overflow-x: auto; line-height: 1.5;
+}
+pre code { background: none; padding: 0; }
+blockquote {
+  margin: 1.2em 0; padding: .1em 0 .1em 1.1em;
+  border-left: 3px solid #c9c5be; color: #55524d;
+}
+table {
+  border-collapse: collapse; width: 100%; margin: 1.2em 0;
+  font-size: .95rem; display: block; overflow-x: auto;
+}
+th, td { padding: .5em .8em; text-align: left; border-bottom: 1px solid #e6e4e0; }
+th { font-weight: 620; background: #f7f5f2; white-space: nowrap; }
+tr:last-child td { border-bottom: none; }
+img { max-width: 100%; height: auto; border-radius: 6px; margin: 1em 0;
+      border: 1px solid #e6e4e0; }
+hr { border: none; border-top: 1px solid #e6e4e0; margin: 2.5em 0; }
+.rodape { margin-top: 4em; padding-top: 1.2em; border-top: 1px solid #e6e4e0;
+          font-size: .85rem; color: #86827c; }
+@media (prefers-color-scheme: dark) {
+  body { color: #e8e6e3; background: #1a1917; }
+  h2 { border-top-color: #35332f; }
+  code, pre, th { background: #262421; }
+  th, td { border-bottom-color: #35332f; }
+  blockquote { border-left-color: #4a4741; color: #b0aca6; }
+  img { border-color: #35332f; }
+  .rodape { border-top-color: #35332f; color: #7d7973; }
+}
+@media print {
+  body { max-width: none; padding: 0; color: #000; background: #fff; }
+  h2 { page-break-after: avoid; }
+  table, img { page-break-inside: avoid; }
+}
+</style>
+</head>
+<body>
+<h1>Procurar a versão nova ao abrir o programa (construção de 17/11/2026)</h1>
+<p><strong>O que é.</strong> A versão nova do Editor de Impressão passa a ser procurada quando o programa abre, e não mais quando o
+computador liga. Quem troca os arquivos é um ajudante do Windows. Ele nasce numa pergunta do Windows ("Deseja
+permitir...?") na primeira vez que o Kaique abre o programa. Depois disso, nenhuma atualização pede licença.
+<strong>Nada foi feito no Windows de verdade:</strong> nos testes, o Windows é de mentira e só anota o que seria feito.</p>
+<p><strong>Situação.</strong> PRONTO PARA CONFERIR. Ramo <code>desinstalar-tudo-2026-11-16</code>, commits <code>73dc4122</code>, <code>f3e05a1d</code>, <code>d92ba757</code>,
+<code>87e4b7ff</code> e <code>f82a6139</code>, sem envio ao GitHub. Por ordem da gerente, este agente fez só os itens 1 a 4: D-732, D-733, B1, D-734,
+D-735 e D-736. A desinstalação (D-731) e os defeitos B2, B3 e B4 ficaram com outro agente. Nada deles tinha sido
+mexido aqui.</p>
+<h2>Como fica para quem usa</h2>
+<ol>
+<li><strong>Primeira abertura.</strong>
+   - Aparece a janela da senha, como antes.
+   - Com a senha, com "Agora não" ou com a opção desligada, vem depois <strong>uma</strong> pergunta do Windows.
+   - Ela prepara o computador: o ajudante, o Visual C++ e a retirada da instalação antiga. Com a senha, liga também
+     os testes à distância, na mesma pergunta.</li>
+<li><strong>Nas aberturas seguintes,</strong> nada aparece. O ajudante procura e baixa por trás.</li>
+<li><strong>Chegou versão nova com o programa aberto.</strong> Aparece o aviso de sempre, com um texto novo no fim: "Se escolher
+   "Depois", a versão nova entra sozinha na próxima vez que você abrir o programa."
+   - Com <strong>"Reiniciar agora"</strong>, o programa fecha gravando e volta sozinho já na versão nova, sem pergunta do Windows.
+   - Com <strong>"Depois"</strong>, nada muda agora. Na próxima vez que ele abrir, há uma espera curta, sem janela, e o programa
+     abre já na versão nova. Fechar o programa não troca nada.</li>
+<li><strong>No livro e no PDF,</strong> nada muda.</li>
+</ol>
+<h2>O que mudou, por decisão</h2>
+<table>
+<thead>
+<tr>
+<th>Decisão</th>
+<th>O que mudou</th>
+<th>Prova</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>D-732: procurar ao abrir</td>
+<td>A tarefa do Windows não tem mais hora para rodar (saiu o "ao ligar o computador"). Ao abrir, o programa manda o ajudante rodar.</td>
+<td><code>test_d732_o_ajudante_nao_roda_mais_ao_ligar_o_computador</code>, <code>test_d732_ao_abrir_o_programa_manda_o_ajudante_procurar</code>, <code>test_d732_a_janela_aberta_chama_o_ajudante_e_liga_o_aviso</code></td>
+</tr>
+<tr>
+<td>D-733: o ajudante e a pergunta da primeira abertura</td>
+<td>A tarefa deixa as contas comuns mandarem rodar, mas não mudá-la. A pergunta da primeira abertura roda o próprio programa no modo <code>--preparar-o-computador</code>: o ajudante, o Visual C++ e o Inno, pela regra de sempre. Com a senha, ela vai na mesma pergunta. O "Reiniciar agora" não pede mais licença. Depois de uma troca, o ajudante é refeito como o sistema.</td>
+<td><code>test_d733_*</code> (9 provas)</td>
+</tr>
+<tr>
+<td>B1: os ganchos sem administrador</td>
+<td><code>ao_instalar</code> e <code>ao_atualizar</code> não criam mais a tarefa.</td>
+<td><code>test_b1_ao_instalar_e_ao_atualizar_nao_criam_a_tarefa</code></td>
+</tr>
+<tr>
+<td>D-734: o "Depois"</td>
+<td>Antes da janela, se há versão baixada esperando, o programa troca e se reabre. A troca e a reabertura do "Depois" e do "Reiniciar agora" passam por uma função só.</td>
+<td><code>test_d734_*</code> (3 provas)</td>
+</tr>
+<tr>
+<td>D-735: a pergunta sempre</td>
+<td>"Agora não" e a opção desligada não pulam a pergunta do Windows.</td>
+<td><code>test_d735_*</code> (3 provas)</td>
+</tr>
+<tr>
+<td>D-736: testes à distância</td>
+<td>Na conta de testes, o programa não procura, não troca e não faz a primeira abertura. Continua marcando "programa aberto", para nada trocar no meio de um teste. O comando de longe chama o mesmo ajudante.</td>
+<td><code>test_d736_*</code> (3 provas)</td>
+</tr>
+<tr>
+<td>Uma regra num lugar só (§11.12)</td>
+<td>O comando que chama o ajudante está escrito uma vez só.</td>
+<td><code>test_regra_num_lugar_so_todos_os_caminhos_chamam_o_ajudante_pelo_mesmo_comando</code></td>
+</tr>
+</tbody>
+</table>
+<h3>O comando de longe (D-736)</h3>
+<p>O Samuel roda no PC dele, trocando <code>&lt;notebook&gt;</code> pelo nome do notebook do Kaique no Tailscale:</p>
+<pre><code>ssh EditorTestes@&lt;notebook&gt; schtasks /Run /TN &quot;EditorImpressao\Procurar versao nova&quot;
+</code></pre>
+<p>Para ler depois o que aconteceu:</p>
+<pre><code>ssh EditorTestes@&lt;notebook&gt; type &quot;C:\ProgramData\EditorImpressao\atualizacao\atualizacao.log&quot;
+</code></pre>
+<ul>
+<li>Se o programa do Kaique estiver fechado, a versão troca na hora. A assinatura e a volta se falhar são as de sempre.</li>
+<li>Se estiver aberto, a versão fica esperando, e o Kaique vê o aviso de salvar e reiniciar.</li>
+<li>No código, os dois comandos saem de <code>atualizacao.comando_de_longe_para_atualizar</code> e
+  <code>comando_de_longe_para_ler_o_registro</code>.</li>
+</ul>
+<h3>A fonte de teste da etapa 5 (pedido da gerente, 17/11)</h3>
+<p><strong>O que é.</strong> Um jeito, só para teste, de o programa instalado de verdade buscar a versão de mentira numa pasta, sem
+publicar no GitHub. O Kaique nunca vê nada disso: o arquivo não existe no notebook dele.</p>
+<p><strong>Como funciona.</strong> A escolha de onde vêm as versões continua numa função só (<code>fonte_da_linha</code>), nesta ordem:
+1. <code>--fonte &lt;pasta&gt;</code> na linha de comando (o ensaio usa);
+2. senão, o arquivo <code>C:\ProgramData\EditorImpressao\fonte-de-teste.txt</code>, com uma linha: a pasta das versões de
+   mentira. Ele só vale se o <strong>dono</strong> do arquivo for o grupo Administradores ou o sistema. Uma conta comum consegue
+   criar o arquivo, mas fica dona dele, e então ele é ignorado, com uma linha no registro;
+3. senão, o GitHub, como sempre.</p>
+<p>A assinatura é conferida igual nos três casos: só entra versão assinada pela chave do Samuel.</p>
+<p><strong>Como a etapa 5 usa</strong> (PowerShell como administrador, no PC do Samuel):</p>
+<pre><code>New-Item -ItemType Directory -Force C:\ProgramData\EditorImpressao | Out-Null
+Set-Content -Path C:\ProgramData\EditorImpressao\fonte-de-teste.txt -Value 'D:\teste-atualizacao\servidor' -Encoding utf8
+icacls C:\ProgramData\EditorImpressao\fonte-de-teste.txt /setowner *S-1-5-32-544
+schtasks /Run /TN &quot;EditorImpressao\Procurar versao nova&quot;
+</code></pre>
+<ul>
+<li>A pasta <code>D:\teste-atualizacao\servidor</code> é um exemplo. Nela vão o pacote e o arquivo <code>.assinatura</code> da versão de
+  mentira, como o <code>publicar_versao_kaique.py --pasta</code> grava.</li>
+<li>A versão de mentira tem de ter número maior que a instalada e ser assinada pela chave do Samuel. O programa
+  instalado só confia nessa chave.</li>
+<li><strong>Cuidado:</strong> esse pacote, assinado de verdade, nunca pode ir para o GitHub. Senão ele chegaria ao Kaique. Dê a
+    ele um número que nunca será publicado.</li>
+<li>Para conferir, leia <code>C:\ProgramData\EditorImpressao\atualizacao\atualizacao.log</code>. A linha "fonte de teste (etapa 5):
+  as versões vêm de ..." mostra que o arquivo valeu.</li>
+<li><strong>No fim, apague o <code>fonte-de-teste.txt</code>.</strong> Ele entra na lista do que foi desfeito (D-722).</li>
+<li>Provas: <code>test_etapa5_*</code> (4 provas: sem o arquivo vai ao GitHub; o arquivo do administrador vale; o de conta comum
+  é ignorado; a assinatura de outra chave é recusada antes de baixar).</li>
+</ul>
+<h3>Caminho → função</h3>
+<table>
+<thead>
+<tr>
+<th>Caminho</th>
+<th>Função</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>Abrir o programa (conta do Kaique)</td>
+<td><code>ui/aviso_de_atualizacao.ligar_na_janela</code> → <code>atualizacao.procurar_ao_abrir</code> → <code>comando_de_rodar_a_tarefa</code></td>
+</tr>
+<tr>
+<td>O ajudante rodando (como o sistema)</td>
+<td><code>--procurar-atualizacao</code> → <code>rodar_ao_ligar</code> → <code>procurar_e_preparar</code> (sem mudança)</td>
+</tr>
+<tr>
+<td>Primeira abertura</td>
+<td><code>ui/testes_a_distancia_ui.primeira_vez_se_preciso</code> → <code>atualizacao.preparar_na_primeira_abertura</code> → a peça de sempre (<code>core.testes_a_distancia.executor_atual().aplicar</code>); com senha, <code>core.testes_a_distancia.ligar</code> (sem mudança)</td>
+</tr>
+<tr>
+<td>Dentro da pergunta do Windows</td>
+<td><code>--preparar-o-computador</code> → <code>preparar_como_administrador</code> → <code>criar_tarefa</code> + <code>preparar_o_computador</code> (sem mudança)</td>
+</tr>
+<tr>
+<td>"Reiniciar agora"</td>
+<td><code>aplicar_agora_e_reabrir</code> → <code>trocar_e_reabrir</code> → <code>comando_de_rodar_a_tarefa</code></td>
+</tr>
+<tr>
+<td>Abrir depois do "Depois"</td>
+<td><code>atender_linha_de_comando</code> → <code>trocar_antes_de_abrir</code> → <code>trocar_e_reabrir</code></td>
+</tr>
+<tr>
+<td>Depois de trocar (como o sistema)</td>
+<td><code>--conferir-a-versao-nova</code> → <code>conferir_e_refazer_o_ajudante</code> → <code>conferir_versao_nova</code> (sem mudança) + <code>criar_tarefa</code></td>
+</tr>
+<tr>
+<td>Comando de longe do Samuel</td>
+<td><code>comando_de_longe_para_atualizar</code> → <code>comando_de_rodar_a_tarefa</code></td>
+</tr>
+<tr>
+<td>"É a conta de testes?"</td>
+<td><code>e_a_conta_de_testes</code> (o nome fixo <code>core.testes_a_distancia.NOME_DA_CONTA</code>)</td>
+</tr>
+</tbody>
+</table>
+<p><strong>Funções dos testes à distância que a primeira abertura chama, sem mudá-las</strong> (pedido da gerente):
+<code>core.testes_a_distancia.ligar</code>, <code>executor_atual</code>, <code>definir_executor</code>, <code>Passo</code>, <code>plano_de_ligar</code> (só nas provas) e
+<code>NOME_DA_CONTA</code>. Para a senha ir na mesma pergunta, a peça que fala com o Windows recebe, só durante o <code>ligar</code>, o
+passo de preparar na frente dos passos dela. Depois ela volta a ser a de sempre.</p>
+<h2>Prova dos testes de defeito falhando no código de antes</h2>
+<p>As 23 primeiras provas novas foram rodadas sobre uma cópia do código de antes (commit <code>997a3085</code>, extraída em
+<code>D:\agente_temp_testes\d732-codigo-antigo</code>). <strong>Resultado: 23 falharam.</strong> A do B1 falhou pelo motivo certo:</p>
+<pre><code>E   AssertionError: os ganchos do instalador não pedem nada que precise de administrador
+E   assert ['criar', 'rodar', 'criar'] == []
+</code></pre>
+<p>O gancho de instalar criava e rodava a tarefa, e o de atualizar a criava de novo. A D-735 falhou porque o código de
+antes não tinha a pergunta do Windows sem a senha. No código novo, as 23 passam.</p>
+<h2>Resultado dos testes (um arquivo por vez, offscreen, <code>--basetemp=D:/agente_temp_testes/d732</code>)</h2>
+<table>
+<thead>
+<tr>
+<th>Arquivo</th>
+<th>Resultado</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><code>tests/test_decisoes_ajudante_da_atualizacao.py</code> (novo)</td>
+<td>27 de 27 passaram (23 das decisões e 4 da fonte de teste da etapa 5)</td>
+</tr>
+<tr>
+<td><code>tests/test_decisoes_testes_a_distancia.py</code></td>
+<td>13 de 13 passaram</td>
+</tr>
+<tr>
+<td><code>tests/test_assinatura.py</code></td>
+<td>16 de 16 passaram</td>
+</tr>
+<tr>
+<td><code>tests/test_promessas.py -k "215"</code></td>
+<td>1 de 1 passou</td>
+</tr>
+<tr>
+<td><code>tests/test_decisoes_atualizacao.py</code></td>
+<td>35 passaram e 3 falharam: os três da tabela abaixo, que a decisão nova muda</td>
+</tr>
+</tbody>
+</table>
+<p><strong>Ensaio da etapa 3</strong> (<code>ensaio_velopack.py</code>): rodado, e o resultado foi <strong>"ENSAIO: CERTO"</strong>.
+- Ele continua sem tocar o Windows de verdade: usa pacotes portáteis em <code>build\ensaio-velopack\</code>, sem Arquivos de
+  Programas, sem tarefa e com um ProgramData de mentira.
+- Ele empacota só o programinha do ensaio, com a chave de mentira, nunca o programa de verdade.
+- Resultados:
+  - A, de 1.1.0 para 1.2.0: trocou, e a versão nova passou no teste;
+  - B, a 1.3.0 estragada: voltou para a 1.2.0 (falha anotada como "teste-1.3.0");
+  - C, a 1.4.0 com a assinatura de outra chave: recusada, e nada foi baixado.
+- Ressalva: o pacote 1.1.0 foi montado antes do último commit, o da fonte de teste. O ensaio sempre passa a pasta
+  pela linha de comando, então esse commit não muda o caminho dele. Os pacotes 1.2.0 a 1.4.0 já têm o código final.</p>
+<h2>Testes antigos afetados (não mudados, §11.8)</h2>
+<table>
+<thead>
+<tr>
+<th>Teste</th>
+<th>Por que quebra</th>
+<th>Conserto proposto</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><code>test_d714_a_tarefa_roda_ao_ligar_como_o_sistema_sem_janela</code></td>
+<td>Cobra <code>&lt;BootTrigger&gt;</code>, e a D-732 tirou o "ao ligar o computador".</td>
+<td>Trocar só essa cobrança por "sem gatilho" (<code>&lt;Triggers&gt;</code> ausente). O resto do teste continua valendo e passa.</td>
+</tr>
+<tr>
+<td><code>test_d720_o_aviso_tem_reiniciar_agora_e_depois_e_depois_nao_troca</code></td>
+<td>Cobra a frase "próxima vez que o computador ligar", e a D-734 mudou para "próxima vez que você abrir o programa".</td>
+<td>Trocar a frase cobrada pela nova. Os botões, o Enter no "Depois" e o "Depois não troca" continuam e passam.</td>
+</tr>
+<tr>
+<td><code>test_d714_a_instalacao_de_verdade_cria_e_roda_a_tarefa</code></td>
+<td>Cobra que o gancho de instalar cria e roda a tarefa, o que é justamente o defeito B1 que a D-733 manda tirar.</td>
+<td>Apagar o teste ou invertê-lo. A prova nova <code>test_b1_...</code> já cobra o contrário.</td>
+</tr>
+</tbody>
+</table>
+<p>Também: <code>test_d720_depois_do_depois_a_tarefa_troca_quando_o_computador_liga</code> continua passando, mas o nome ficou
+velho (fala em "computador liga"). Sugestão: trocar só o nome.</p>
+<h2>Perguntas para o Samuel (a gerente leva à Central)</h2>
+<ol>
+<li><strong>Se o Kaique disser "Não" à pergunta do Windows da primeira abertura.</strong>
+   - <strong>Onde fica:</strong> no notebook dele, logo depois da janela da senha, na primeira vez que ele abre o programa.
+   - <strong>Como ficou agora:</strong> a pergunta não volta sozinha. Fica anotado no registro. Sem o "Sim", a versão nova
+     nunca entra, e não há botão para pedir de novo (o "Pôr a senha" das Configurações só liga os testes).
+   - <strong>O que você escolhe:</strong><ul>
+<li>(a) <strong>Sugestão:</strong> a pergunta volta na próxima abertura, até ele dizer "Sim".</li>
+<li>(b) Fica como está.</li>
+<li>(c) Só comentário.</li>
+</ul>
+</li>
+<li><strong>A espera sem janela do "Depois".</strong>
+   - <strong>Como ficou agora:</strong> na abertura seguinte ao "Depois", o programa some por alguns segundos enquanto troca. Sem
+     internet, ele desiste logo e abre na versão de hoje. No pior caso (a troca travada), espera até 5 minutos. Se o Kaique clicar de novo no atalho nessa espera, abre a versão
+     velha no meio da troca. O que acontece então só a etapa 5 mostra.
+   - <strong>O que você escolhe:</strong><ul>
+<li>(a) <strong>Sugestão:</strong> fica assim, e a etapa 5 mede a espera de verdade.</li>
+<li>(b) Aparece uma janelinha "Atualizando o programa, um momento". O texto você aprova antes.</li>
+<li>(c) Só comentário.</li>
+</ul>
+</li>
+<li><strong>Na conta de testes, a primeira abertura não faz nada.</strong>
+   - <strong>Por quê:</strong> numa sessão de longe ninguém responde à pergunta do Windows nem à janela da senha. Elas travariam o
+     teste.
+   - <strong>O que pede:</strong> confirme se fica assim (sugestão: sim).</li>
+</ol>
+<h2>Bugs para a Lista de bugs (achados em 17/11, não consertados aqui)</h2>
+<ul>
+<li><strong>B5 (importante, impede a pergunta sem senha na etapa 5; arquivo do outro agente).</strong></li>
+<li>O script que roda com licença de administrador, <code>core/_testes_a_distancia_windows._montar_script</code>, lê sempre o
+    arquivo cifrado da senha (<code>$blob = Get-Content -Raw ...</code>) logo na segunda linha, com
+    <code>$ErrorActionPreference = 'Stop'</code>.</li>
+<li>Esse arquivo só é gravado quando algum passo usa a senha. Sem senha, o script para antes do primeiro passo.</li>
+<li>Hoje isso quebra, no Windows de verdade, o <code>desligar</code> e a pergunta da primeira abertura sem senha (D-735). A
+    pergunta apareceria, e nada seria feito.</li>
+<li>Conserto sugerido: só ler a senha quando o arquivo existe, ou quando algum passo precisa dela. Não mexi, por ordem
+    da gerente.</li>
+<li><strong>B6 (reforço, a decidir).</strong></li>
+<li>A pasta <code>C:\ProgramData\EditorImpressao\atualizacao</code> (o <code>estado.json</code>) segue as licenças de fábrica do Windows.
+    Nelas, uma conta comum pode criar um arquivo antes do sistema. Agora a conta comum também pode mandar o ajudante
+    rodar.</li>
+<li>Com isso, um programa na conta do Kaique poderia "pedir" ao ajudante uma volta para uma versão mais velha.</li>
+<li>Só versão assinada pelo Samuel entra, então o risco é baixo. Conserto possível: a pergunta da primeira abertura
+    fecha essa pasta só para o administrador e o sistema.</li>
+</ul>
+<h2>O que só a etapa 5 prova (no PC do Samuel)</h2>
+<ul>
+<li>Que a tarefa criada pelo XML aceita a licença "contas comuns mandam rodar". E que a conta comum lê o estado dela
+  (<code>Get-ScheduledTask</code>), que a espera do "Depois" usa.</li>
+<li>Que o Velopack, rodando como o sistema, troca em Arquivos de Programas sem perguntar nada.</li>
+<li>Que o PowerShell escondido continua depois que o programa fecha e reabre a janela na conta do Kaique.</li>
+<li>Que, dentro da pergunta do Windows, o programa roda no modo <code>--preparar-o-computador</code> e cria o ajudante. Que o
+  programa abre antes do Visual C++ ser instalado (ressalva antiga da D-727). E o B5 acima.</li>
+<li>Quanto dura a espera do "Depois" e do "Reiniciar agora".</li>
+<li>O aviso da versão nova pode levar até 5 minutos para aparecer depois de abrir. O vigia olha 4 segundos depois de
+  abrir e, depois, a cada 5 minutos, e o download leva mais que 4 segundos. Isso não foi mudado (§11.7).</li>
+</ul>
+<h2>Arquivos fora do projeto (CLAUDE.md §10.9)</h2>
+<ul>
+<li>Criei e deixei lá: <code>D:\agente_temp_testes\d732-codigo-antigo</code> (a cópia do código de antes, para a prova de
+  reversão, uns 800 MB), <code>D:\agente_temp_testes\d732-ensaio.txt</code> (a saída do ensaio) e a pasta de testes
+  <code>D:\agente_temp_testes\d732</code>. A gerente decide se saem.</li>
+<li>Por engano, apaguei <code>D:\agente_temp_testes\d732-dono.txt</code>. Era um arquivo de uma linha ("x") que eu mesmo tinha
+  criado um minuto antes, para conferir a leitura do dono de um arquivo. A regra manda não apagar nada fora do
+  projeto, nem o que é meu. Fica registrado.</li>
+</ul>
+<h2>Ideias para a Lista de espera</h2>
+<ul>
+<li>O nome <code>rodar_ao_ligar</code> ficou da etapa 3; hoje ele roda quando o ajudante é chamado. Trocar o nome muda testes
+  antigos, por isso ficou.</li>
+</ul>
+<p class="rodape">Editor de Impressão &middot; gerado em 17/11/2026 às 09:39</p>
+</body>
+</html>
