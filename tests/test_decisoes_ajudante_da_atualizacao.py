@@ -468,3 +468,96 @@ def test_etapa5_pela_fonte_de_teste_a_assinatura_e_conferida_igual(tmp_path):
     fonte = atualizacao.fonte_de_teste(dono=lambda p: ADMIN)
     assert atualizacao.procurar_e_preparar(Gerente(), fonte, lambda: False) == "recusada"
     assert not Gerente.baixou
+
+
+# ---------------------------------------------------------------------------
+# D-741 (Samuel, 17/11/2026: "Sim"): depois de um "Nao", a pergunta do Windows volta a cada abertura
+# ---------------------------------------------------------------------------
+
+class ExecutorQueResponde(FakeExecutor):
+    """A pergunta do Windows de mentira, respondida em sequencia (True = "Sim", False = "Nao")."""
+
+    def __init__(self, respostas: list[bool]) -> None:
+        super().__init__()
+        self.respostas = list(respostas)
+
+    def aplicar(self, passos, senha):
+        self.chamadas.append((list(passos), senha))
+        if self.respostas.pop(0):
+            return td.Resultado(True, passos=passos)
+        return td.Resultado(False, cancelado=True, passos=passos)
+
+
+def _abrir(tdui, conta_de_testes=False):
+    tdui.primeira_vez_se_preciso(None, instalado=lambda: True, conta_de_testes=lambda: conta_de_testes)
+
+
+def test_d741_nao_a_pergunta_volta_na_proxima_abertura_e_sim_ela_nao_volta_mais(monkeypatch):
+    """D-741 (Samuel, 17/11/2026: "Sim"): "Nao" a pergunta do Windows da primeira abertura -> abrir de novo -> a
+    pergunta volta (so ela: a janela da senha nao, D-721); "Nao" de novo -> volta de novo; "Sim" -> nunca mais.
+    Teste de reversao: no codigo de antes (relatorio da D-732, pergunta aberta 1) ela nao voltava: depois do
+    "Nao", o ajudante da atualizacao nunca nascia e a versao nova nunca entrava."""
+    pytest.importorskip("PySide6")
+    import ui.testes_a_distancia_ui as tdui
+
+    windows = ExecutorQueResponde([False, False, True])
+    monkeypatch.setattr(td, "_executor", windows)
+    senhas = []
+    monkeypatch.setattr(tdui, "perguntar_senha", lambda parent=None: senhas.append(1) or "")
+    monkeypatch.setattr(tdui.perguntas, "avisar", lambda *a, **k: None)
+
+    _abrir(tdui)                                    # 1a abertura: a senha ("Agora não") e a pergunta: "Não"
+    assert len(windows.chamadas) == 1 and senhas == [1]
+    _abrir(tdui)                                    # 2a abertura: a pergunta volta, sem a janela da senha
+    assert len(windows.chamadas) == 2, "D-741: depois do \"Não\", a pergunta do Windows volta ao abrir de novo"
+    assert senhas == [1], "a janela da senha não volta (D-721: a senha vai nas Configurações)"
+    assert _passo_de_preparo(windows.chamadas[1][0]) and windows.chamadas[1][1] == ""
+    _abrir(tdui)                                    # 3a abertura: volta de novo; agora "Sim"
+    assert len(windows.chamadas) == 3
+    _abrir(tdui)                                    # depois do "Sim": nunca mais
+    _abrir(tdui)
+    assert len(windows.chamadas) == 3, "D-741: depois do \"Sim\", a pergunta nunca mais aparece"
+    assert not atualizacao.falta_a_pergunta_do_windows()
+
+
+def test_d741_sim_na_primeira_abertura_nao_volta_mais(fake, monkeypatch):
+    """D-741 (17/11/2026): "Sim" ja na primeira abertura -> a pergunta nunca mais aparece."""
+    pytest.importorskip("PySide6")
+    import ui.testes_a_distancia_ui as tdui
+
+    monkeypatch.setattr(tdui, "perguntar_senha", lambda parent=None: "segredo")
+    monkeypatch.setattr(tdui.perguntas, "avisar", lambda *a, **k: None)
+    _abrir(tdui)
+    assert len(fake.chamadas) == 1
+    _abrir(tdui)
+    assert len(fake.chamadas) == 1
+    assert not atualizacao.falta_a_pergunta_do_windows()
+
+
+def test_d741_na_conta_de_testes_nada_pergunta_mesmo_depois_de_um_nao(monkeypatch):
+    """D-741 e D-736 (17/11/2026): na conta de testes, nada pergunta, nem a pergunta que ficou do "Nao"."""
+    pytest.importorskip("PySide6")
+    import ui.testes_a_distancia_ui as tdui
+
+    windows = ExecutorQueResponde([False])
+    monkeypatch.setattr(td, "_executor", windows)
+    monkeypatch.setattr(tdui, "perguntar_senha", lambda parent=None: "")
+    monkeypatch.setattr(tdui.perguntas, "avisar", lambda *a, **k: None)
+    _abrir(tdui)
+    assert atualizacao.falta_a_pergunta_do_windows()
+    monkeypatch.setattr(atualizacao, "preparar_na_primeira_abertura", _proibido)
+    _abrir(tdui, conta_de_testes=True)
+    tdui.primeira_vez_se_preciso(None, instalado=lambda: False, conta_de_testes=lambda: False)  # pelo código
+    assert len(windows.chamadas) == 1
+
+
+def test_d741_a_marca_e_de_fabrica_falsa_e_gravada_so_pelo_sim(monkeypatch):
+    """D-741 (17/11/2026): a regra unica (falta_a_pergunta_do_windows) nasce "falta"; "Nao" nao a muda."""
+    assert configuracoes.PADROES[atualizacao.CHAVE_PERGUNTA_DO_WINDOWS_RESPONDIDA] is False
+    monkeypatch.setattr(td, "_executor", FakeExecutor(cancelado=True))
+    atualizacao.preparar_na_primeira_abertura("")
+    assert atualizacao.falta_a_pergunta_do_windows()
+    assert "volta na próxima abertura" in atualizacao.caminho_do_registro().read_text(encoding="utf-8")
+    monkeypatch.setattr(td, "_executor", FakeExecutor())
+    atualizacao.preparar_na_primeira_abertura("")
+    assert not atualizacao.falta_a_pergunta_do_windows()

@@ -1272,7 +1272,9 @@ def preparar_na_primeira_abertura(senha: str):
       pergunta so, e ligar continua guardando o estado e escolhendo o aviso;
     - sem a senha ("Agora não", ou a opcao desligada): so o passo de preparar,
       na mesma peca (executor_atual), numa pergunta so.
-    Se o Kaique disser "Nao", fica anotado no registro; nada mais muda.
+    Se o Kaique disser "Nao", fica anotado no registro e a pergunta volta na
+    proxima abertura (D-741, falta_a_pergunta_do_windows); com o "Sim", a
+    marca fica gravada e ela nunca mais aparece.
     Quem chama: ui/testes_a_distancia_ui.primeira_vez_se_preciso.
     """
     from core import testes_a_distancia as td
@@ -1296,10 +1298,34 @@ def preparar_na_primeira_abertura(senha: str):
         resultado = base.aplicar(preparo, "")
     if resultado.cancelado:
         registrar("primeira abertura: o Kaique disse \"Não\" à pergunta do Windows; o ajudante da "
-                  "atualização não foi criado")
-    elif not resultado.ok:
+                  "atualização não foi criado; a pergunta volta na próxima abertura (D-741)")
+        return resultado
+    # D-741: houve o "Sim" (deu certo ou nao, o Windows ja deu a licenca): nunca mais pergunta.
+    import configuracoes
+
+    configuracoes.escrever(CHAVE_PERGUNTA_DO_WINDOWS_RESPONDIDA, True)
+    if not resultado.ok:
         registrar(f"primeira abertura: a pergunta do Windows não deu certo ({resultado.mensagem})")
     return resultado
+
+
+# D-741: a marca de "a pergunta do Windows da primeira abertura ja teve o Sim"
+# (configuracoes.PADROES; por conta do Windows, como a marca da senha).
+CHAVE_PERGUNTA_DO_WINDOWS_RESPONDIDA = "atualizacao_computador_preparado"
+
+
+def falta_a_pergunta_do_windows() -> bool:
+    """D-741 (Samuel, 17/11/2026: "Sim"): a pergunta do Windows da primeira abertura ainda nao teve o "Sim"?
+
+    A UNICA regra de "ela aparece de novo nesta abertura". Depois de um "Nao",
+    volta a cada abertura do programa instalado, ate o "Sim"; depois do "Sim",
+    nunca mais. Quem marca e preparar_na_primeira_abertura; quem pergunta e
+    ui/testes_a_distancia_ui.primeira_vez_se_preciso (que ja deixa de fora o
+    codigo, D-728, e a conta de testes, D-736).
+    """
+    import configuracoes
+
+    return not configuracoes.ler(CHAVE_PERGUNTA_DO_WINDOWS_RESPONDIDA)
 
 
 # ---------------------------------------------------------------------------

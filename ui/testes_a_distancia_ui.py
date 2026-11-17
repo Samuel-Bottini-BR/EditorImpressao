@@ -18,6 +18,8 @@ De onde vem (frente do notebook do Kaique, 16/11/2026):
          senha: "Agora não" na senha nao pula a pergunta do Windows.
   D-736  (17/11/2026) na conta dos testes a distancia, a primeira abertura nao
          faz nada (ninguem responderia a pergunta numa sessao de longe).
+  D-741  (17/11/2026) se o Kaique disser "Nao" a pergunta do Windows, ela volta
+         a cada abertura ate ele dizer "Sim"; depois do "Sim", nunca mais.
 
 Esta e a parte da TELA. A regra (quais comandos ligam) fica em
 core/testes_a_distancia.py; aqui so se pede a senha e se chama `ligar` de la.
@@ -133,9 +135,12 @@ def primeira_vez_se_preciso(parent=None,
        "Agora não", so o preparo.
     3. O aviso de sempre: com a senha, o de ligar (se nao deu certo); com
        "Agora não", o "Sem a senha..." de core.testes_a_distancia.ligar("").
-    So acontece se a primeira abertura ainda nao aconteceu nesta conta
-    (a mesma marca de "senha ja perguntada"). Depois, nunca mais sozinha
-    (da para por a senha nas Configuracoes).
+    A janela da senha so aparece se a primeira abertura ainda nao aconteceu
+    nesta conta (a marca de "senha ja perguntada"); depois, nunca mais
+    sozinha (da para por a senha nas Configuracoes). D-741 (17/11/2026): se
+    o Kaique disse "Nao" a pergunta do Windows, ela (so ela, sem a janela da
+    senha e sem aviso) volta a cada abertura, ate o "Sim"
+    (atualizacao.falta_a_pergunta_do_windows, a regra unica).
 
     D-728 (16/11/2026): pelo codigo (nao instalado pelo instalador) nao faz NADA:
     nem mostra a janela, nem marca "senha ja perguntada". Por que nao marcar: a
@@ -155,6 +160,10 @@ def primeira_vez_se_preciso(parent=None,
     if (conta_de_testes or atualizacao.e_a_conta_de_testes)():
         return
     if td.senha_ja_perguntada():
+        # D-741: a janela da senha nao volta (D-721: a senha vai nas
+        # Configuracoes), mas a pergunta do Windows volta ate o "Sim".
+        if atualizacao.falta_a_pergunta_do_windows():
+            atualizacao.preparar_na_primeira_abertura("")
         return
     td.marcar_senha_perguntada()
     senha = perguntar_senha(parent) if td.esta_ligado() else None
