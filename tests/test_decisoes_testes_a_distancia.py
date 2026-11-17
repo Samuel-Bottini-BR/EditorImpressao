@@ -84,12 +84,12 @@ def test_d721_primeira_vez_pede_a_senha_e_liga(dados, fake, monkeypatch):
     monkeypatch.setattr(tdui, "perguntar_senha", lambda parent=None: (vezes.append(1), "segredo")[1])
     assert not td.senha_ja_perguntada()
 
-    tdui.primeira_vez_se_preciso(None)
+    tdui.primeira_vez_se_preciso(None, instalado=lambda: True)  # D-728: so no programa instalado
     assert vezes == [1], "a janela da senha apareceu uma vez"
     assert td.senha_ja_perguntada() and td.esta_pronto()
     assert len(fake.chamadas) == 1
 
-    tdui.primeira_vez_se_preciso(None)
+    tdui.primeira_vez_se_preciso(None, instalado=lambda: True)
     assert vezes == [1], "na segunda abertura a janela não aparece sozinha"
 
 
