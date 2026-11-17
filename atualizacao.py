@@ -1207,21 +1207,26 @@ def precisa_do_visual_c(instalada: tuple[int, int, int] | None, do_pacote: str) 
 
 
 def instalar_visual_c_se_faltar(pasta: Path, ler: Callable[[], tuple | None] = _ler_versao_do_visual_c,
-                                rodar: Callable[[list[str], int], tuple[int, str]] = _rodar) -> None:
-    """O Visual C++ oficial que vai dentro do pacote (D-727), em silencio, so se faltar."""
+                                rodar: Callable[[list[str], int], tuple[int, str]] = _rodar) -> bool:
+    """O Visual C++ oficial que vai dentro do pacote (D-727), em silencio, so se faltar.
+
+    Devolve False so quando tentou instalar e deu erro (D-749: a preparacao
+    conta como nao feita); sem o instalador no pacote ou sem precisar, True.
+    """
     exe = pasta / PASTA_DO_QUE_SE_INSTALA / VC_REDIST_NOME
     if not exe.is_file():
         registrar(f"Visual C++: o pacote não tem {exe} (não instalei)")
-        return
+        return True
     do_pacote = (pasta / PASTA_DO_QUE_SE_INSTALA / VC_REDIST_VERSAO).read_text(encoding="utf-8").strip() \
         if (pasta / PASTA_DO_QUE_SE_INSTALA / VC_REDIST_VERSAO).is_file() else "0.0.0"
     instalada = ler()
     if not precisa_do_visual_c(instalada, do_pacote):
-        return
+        return True
     codigo, _saida = rodar([str(exe), "/install", "/quiet", "/norestart"], 600)
     # 0 = instalou; 1638 = ja havia uma mais nova; 3010 = instalou e pede reiniciar
     certo = codigo in (0, 1638, 3010)
     registrar(f"Visual C++ {do_pacote}: {'instalado' if certo else 'NÃO instalado'} (código {codigo})")
+    return certo
 
 
 def achar_instalacao_do_inno(ler_chave: Callable[[], dict | None] | None = None) -> dict | None:
@@ -1275,18 +1280,24 @@ def comando_para_tirar_o_inno(antiga: dict, pasta_nova: Path) -> list[str] | Non
 
 
 def tirar_instalacao_antiga(pasta_nova: Path, achar: Callable[[], dict | None] = achar_instalacao_do_inno,
-                            rodar: Callable[[list[str], int], tuple[int, str]] = _rodar) -> None:
-    """Tira a instalacao do Inno Setup (a de 28/10), se existir (D-723)."""
+                            rodar: Callable[[list[str], int], tuple[int, str]] = _rodar) -> bool:
+    """Tira a instalacao do Inno Setup (a de 28/10), se existir (D-723).
+
+    Devolve False so quando tentou tirar e o desinstalador deu erro (D-749).
+    Quando o caminho nao parece seguro, nao tira DE PROPOSITO e devolve True:
+    perguntar de novo a cada abertura nao mudaria nada.
+    """
     antiga = achar()
     if antiga is None:
-        return
+        return True
     comando = comando_para_tirar_o_inno(antiga, pasta_nova)
     if comando is None:
         registrar(f"instalação antiga em {antiga['pasta']}: NÃO tirei (o caminho não parece seguro)")
-        return
+        return True
     codigo, saida = rodar(comando, 900)
     registrar(f"instalação antiga em {antiga['pasta']}: {'tirada' if codigo == 0 else 'NÃO tirada'} "
               f"(código {codigo}) {saida}")
+    return codigo == 0
 
 
 def e_portatil(gerente=None) -> bool:
@@ -1304,18 +1315,20 @@ def e_portatil(gerente=None) -> bool:
         return True
 
 
-def preparar_o_computador(gerente) -> None:
+def preparar_o_computador(gerente) -> bool:
     """O que a tarefa faz antes de procurar: Visual C++ e a instalacao antiga.
 
     So numa instalacao de verdade (nao portatil): o ensaio roda um pacote
     portatil no PC do Samuel, que tem uma instalacao do Inno de 01/09 que nao
-    pode ser tirada por um ensaio.
+    pode ser tirada por um ensaio. Devolve False se uma das duas deu erro
+    (D-749); as duas sempre sao tentadas.
     """
     if e_portatil(gerente):
-        return
+        return True
     pasta = pasta_do_programa()
-    instalar_visual_c_se_faltar(pasta)
-    tirar_instalacao_antiga(pasta.parent)
+    visual_c = instalar_visual_c_se_faltar(pasta)
+    inno = tirar_instalacao_antiga(pasta.parent)
+    return visual_c is not False and inno is not False
 
 
 # ---------------------------------------------------------------------------
@@ -1333,6 +1346,13 @@ def preparar_como_administrador(gerente=None, criar: Callable[[], bool] | None =
     regra de sempre (preparar_o_computador: o Visual C++ de dentro do pacote,
     se faltar, e a instalacao antiga do Inno). Nunca no pacote portatil do
     ensaio (e_portatil). Tudo vai para o registro da atualizacao.
+
+    D-749 (Samuel, 17/11/2026: "Sim"): devolve 0 SO se tudo deu certo. Se uma
+    parte deu erro no meio (uma tarefa nao foi criada, o Visual C++ ou o
+    desinstalador do Inno falhou, ou um erro inesperado), devolve 1: o passo
+    da pergunta anota esse codigo e a primeira abertura conta a preparacao
+    como nao feita (a pergunta volta, preparo_deu_certo). `preparar` que
+    devolve None (nada a dizer) conta como certo.
     """
     try:
         gerente = gerente or criar_gerente(Fonte.padrao())
@@ -1342,9 +1362,13 @@ def preparar_como_administrador(gerente=None, criar: Callable[[], bool] | None =
     if (portatil or e_portatil)(gerente):
         registrar("preparar o computador: pacote portátil, não mexi no Windows")
         return 0
-    certo = (criar or criar_as_tarefas)()
-    (preparar or preparar_o_computador)(gerente)
-    return 0 if certo else 1
+    try:
+        certo = (criar or criar_as_tarefas)()
+        preparado = (preparar or preparar_o_computador)(gerente)
+    except Exception as erro:  # noqa: BLE001 - erro no meio: conta como nao feito (D-749)
+        registrar(f"preparar o computador: erro no meio ({type(erro).__name__}: {erro}); conta como não feito")
+        return 1
+    return 0 if certo and preparado is not False else 1
 
 
 def criar_as_tarefas() -> bool:
@@ -1368,7 +1392,12 @@ def criar_as_tarefas() -> bool:
     return certo and desfazer.ok
 
 
-def passo_de_preparar_o_computador(exe: Path | None = None):
+def arquivo_do_preparo() -> Path:
+    """D-749: onde o passo da pergunta anota como o --preparar-o-computador terminou."""
+    return pasta_do_estado() / "preparo.txt"
+
+
+def passo_de_preparar_o_computador(exe: Path | None = None, marca: str = ""):
     """O passo da pergunta da primeira abertura: roda este .exe com
     --preparar-o-computador, escondido, e espera ele terminar.
 
@@ -1378,15 +1407,44 @@ def passo_de_preparar_o_computador(exe: Path | None = None):
     quem anota o que deu certo e o proprio --preparar-o-computador, no
     registro da atualizacao; os passos dos testes a distancia, se houver
     senha, continuam.
+
+    D-749 (17/11/2026): o passo anota em arquivo_do_preparo() "<marca>
+    comecou" antes de rodar e "<marca> <codigo de saida>" depois. A `marca`
+    (nova a cada pergunta) separa esta vez de uma anotacao velha. Quem le e
+    preparo_deu_certo: so "<marca> 0" e preparacao feita.
     """
     from core.testes_a_distancia import Passo
 
     exe = exe or (pasta_do_programa() / Path(sys.executable).name)
+    arquivo = arquivo_do_preparo()
+    anotar = f"Set-Content -LiteralPath {_aspas_do_powershell(str(arquivo))} -Encoding ASCII -Value"
     return Passo("Preparar o computador: o ajudante da atualização, o Visual C++ e tirar a instalação "
                  "antiga (D-733)",
-                 f"try {{ Start-Process -FilePath {_aspas_do_powershell(str(exe))}"
-                 f" -ArgumentList {_aspas_do_powershell(ARG_PREPARAR)} -WindowStyle Hidden -Wait }}"
+                 f"try {{ New-Item -ItemType Directory -Force -Path {_aspas_do_powershell(str(arquivo.parent))}"
+                 f" | Out-Null; {anotar} {_aspas_do_powershell(marca + ' comecou')};"
+                 f" $p = Start-Process -FilePath {_aspas_do_powershell(str(exe))}"
+                 f" -ArgumentList {_aspas_do_powershell(ARG_PREPARAR)} -WindowStyle Hidden -Wait -PassThru;"
+                 f" {anotar} ({_aspas_do_powershell(marca + ' ')} + $p.ExitCode) }}"
                  " catch { }")
+
+
+def preparo_deu_certo(marca: str, resultado) -> bool:
+    """D-749 (Samuel, 17/11/2026: "Sim"): o "Sim" da pergunta do Windows terminou com a preparacao feita?
+
+    A UNICA regra de "o computador esta preparado". Le o que o passo anotou
+    nesta vez (a `marca` desta pergunta):
+    - "<marca> 0": o --preparar-o-computador terminou sem erro -> feito;
+    - "<marca> comecou" (parou no meio) ou outro codigo -> NAO feito;
+    - nada desta vez (o Windows nem chegou ao passo, ou a peca de mentira dos
+      testes, que nao roda nada): vale o resultado da pergunta inteira.
+    """
+    try:
+        conteudo = arquivo_do_preparo().read_text(encoding="utf-8-sig", errors="replace").strip()
+    except OSError:
+        conteudo = ""
+    if marca and conteudo.startswith(marca + " "):
+        return conteudo[len(marca) + 1:].strip() == "0"
+    return bool(getattr(resultado, "ok", False))
 
 
 def preparar_na_primeira_abertura(senha: str):
@@ -1401,13 +1459,17 @@ def preparar_na_primeira_abertura(senha: str):
     - sem a senha ("Agora não", ou a opcao desligada): so o passo de preparar,
       na mesma peca (executor_atual), numa pergunta so.
     Se o Kaique disser "Nao", fica anotado no registro e a pergunta volta na
-    proxima abertura (D-741, falta_a_pergunta_do_windows); com o "Sim", a
-    marca fica gravada e ela nunca mais aparece.
+    proxima abertura (D-741, falta_a_pergunta_do_windows); com o "Sim" E a
+    preparacao feita (preparo_deu_certo, D-749), a marca fica gravada e ela
+    nunca mais aparece. "Sim" com a preparacao parada no meio: volta tambem.
     Quem chama: ui/testes_a_distancia_ui.primeira_vez_se_preciso.
     """
+    import uuid
+
     from core import testes_a_distancia as td
 
-    preparo = [passo_de_preparar_o_computador()]
+    marca = uuid.uuid4().hex                          # D-749: esta pergunta
+    preparo = [passo_de_preparar_o_computador(marca=marca)]
     base = td.executor_atual()
 
     class _ComOPreparo(td.Executor):
@@ -1428,12 +1490,17 @@ def preparar_na_primeira_abertura(senha: str):
         registrar("primeira abertura: o Kaique disse \"Não\" à pergunta do Windows; o ajudante da "
                   "atualização não foi criado; a pergunta volta na próxima abertura (D-741)")
         return resultado
-    # D-741: houve o "Sim" (deu certo ou nao, o Windows ja deu a licenca): nunca mais pergunta.
+    if not resultado.ok:
+        registrar(f"primeira abertura: a pergunta do Windows não deu certo ({resultado.mensagem})")
+    # D-741: com o "Sim" e a preparacao feita, nunca mais pergunta. D-749 (17/11/2026): se a
+    # preparacao deu erro no meio, conta como nao feita e a pergunta volta, como depois do "Nao".
+    if not preparo_deu_certo(marca, resultado):
+        registrar("primeira abertura: o Kaique disse \"Sim\", mas a preparação do computador não terminou "
+                  "bem; conta como não feita e a pergunta volta na próxima abertura (D-749)")
+        return resultado
     import configuracoes
 
     configuracoes.escrever(CHAVE_PERGUNTA_DO_WINDOWS_RESPONDIDA, True)
-    if not resultado.ok:
-        registrar(f"primeira abertura: a pergunta do Windows não deu certo ({resultado.mensagem})")
     return resultado
 
 
@@ -1447,7 +1514,8 @@ def falta_a_pergunta_do_windows() -> bool:
 
     A UNICA regra de "ela aparece de novo nesta abertura". Depois de um "Nao",
     volta a cada abertura do programa instalado, ate o "Sim"; depois do "Sim",
-    nunca mais. Quem marca e preparar_na_primeira_abertura; quem pergunta e
+    nunca mais. D-749: um "Sim" cuja preparacao deu erro no meio conta como
+    nao feito (a marca nao e gravada). Quem marca e preparar_na_primeira_abertura; quem pergunta e
     ui/testes_a_distancia_ui.primeira_vez_se_preciso (que ja deixa de fora o
     codigo, D-728, e a conta de testes, D-736).
     """
