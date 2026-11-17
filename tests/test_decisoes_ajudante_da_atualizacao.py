@@ -319,6 +319,12 @@ def test_d734_a_linha_de_comando_sai_sem_janela_quando_a_troca_comecou(monkeypat
     monkeypatch.setattr(atualizacao, "trocar_antes_de_abrir", lambda argumentos: False)
     assert atualizacao.atender_linha_de_comando(["EditorImpressao.exe"]) is None
 
+    def quebra(argumentos):
+        raise RuntimeError("Velopack fora do ar")
+
+    monkeypatch.setattr(atualizacao, "trocar_antes_de_abrir", quebra)
+    assert atualizacao.atender_linha_de_comando(["EditorImpressao.exe"]) is None, "um erro aqui nunca impede abrir"
+
 
 def test_d734_o_aviso_diz_que_entra_na_proxima_abertura_e_fechar_nao_troca():
     """D-734 (17/11/2026): o texto do aviso fala da proxima abertura, nao do computador ligar;

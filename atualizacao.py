@@ -1309,6 +1309,9 @@ def atender_linha_de_comando(argv: list[str]) -> int | None:
             registrar(f"não consegui ler a versão para conferir: {erro}")
             return 1
         return conferir_e_refazer_o_ajudante(fonte, atual)
-    if trocar_antes_de_abrir(argumentos):
-        return 0
+    try:
+        if trocar_antes_de_abrir(argumentos):
+            return 0
+    except Exception as erro:  # noqa: BLE001 - o programa abre mesmo assim, na versao de hoje
+        registrar(f"abrir o programa: não consegui olhar a versão esperando: {type(erro).__name__}: {erro}")
     return None
