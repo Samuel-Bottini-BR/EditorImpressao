@@ -1,0 +1,125 @@
+<!doctype html>
+<html lang="pt-BR">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Etapa 5 - teste no PC do Samuel</title>
+<style>
+:root { color-scheme: light dark; }
+* { box-sizing: border-box; }
+body {
+  font: 17px/1.65 "Segoe UI", system-ui, sans-serif;
+  max-width: 46rem; margin: 0 auto; padding: 2.5rem 1.5rem 6rem;
+  color: #1c1c1e; background: #fdfdfc;
+}
+h1 { font-size: 2rem; line-height: 1.2; margin: 0 0 .3em; letter-spacing: -.02em; }
+h2 { font-size: 1.35rem; margin: 2.4em 0 .6em; padding-top: .8em;
+     border-top: 1px solid #e6e4e0; letter-spacing: -.01em; }
+h3 { font-size: 1.1rem; margin: 1.8em 0 .4em; }
+h1 + p, h2 + p { margin-top: .4em; }
+p, li { margin: 0 0 .9em; }
+ul, ol { padding-left: 1.3em; }
+strong { font-weight: 640; }
+code {
+  font: .88em ui-monospace, "Cascadia Code", Consolas, monospace;
+  background: #f1efec; padding: .12em .35em; border-radius: 4px;
+}
+pre {
+  background: #f1efec; padding: 1em 1.1em; border-radius: 8px;
+  overflow-x: auto; line-height: 1.5;
+}
+pre code { background: none; padding: 0; }
+blockquote {
+  margin: 1.2em 0; padding: .1em 0 .1em 1.1em;
+  border-left: 3px solid #c9c5be; color: #55524d;
+}
+table {
+  border-collapse: collapse; width: 100%; margin: 1.2em 0;
+  font-size: .95rem; display: block; overflow-x: auto;
+}
+th, td { padding: .5em .8em; text-align: left; border-bottom: 1px solid #e6e4e0; }
+th { font-weight: 620; background: #f7f5f2; white-space: nowrap; }
+tr:last-child td { border-bottom: none; }
+img { max-width: 100%; height: auto; border-radius: 6px; margin: 1em 0;
+      border: 1px solid #e6e4e0; }
+hr { border: none; border-top: 1px solid #e6e4e0; margin: 2.5em 0; }
+.rodape { margin-top: 4em; padding-top: 1.2em; border-top: 1px solid #e6e4e0;
+          font-size: .85rem; color: #86827c; }
+@media (prefers-color-scheme: dark) {
+  body { color: #e8e6e3; background: #1a1917; }
+  h2 { border-top-color: #35332f; }
+  code, pre, th { background: #262421; }
+  th, td { border-bottom-color: #35332f; }
+  blockquote { border-left-color: #4a4741; color: #b0aca6; }
+  img { border-color: #35332f; }
+  .rodape { border-top-color: #35332f; color: #7d7973; }
+}
+@media print {
+  body { max-width: none; padding: 0; color: #000; background: #fff; }
+  h2 { page-break-after: avoid; }
+  table, img { page-break-inside: avoid; }
+}
+</style>
+</head>
+<body>
+<h1>Etapa 5: teste da instalação e da atualização no PC do Samuel (relatório)</h1>
+<h2>17/11/2026: começo da etapa 5 parado antes de qualquer passo</h2>
+<p><strong>O que aconteceu.</strong> Antes de mexer no Windows, a lista manda ler no código onde a atualização guarda as versões que
+baixa. Esse lugar é <strong>dentro da pasta dos seus projetos</strong>. A ordem da gerente para esse caso era parar e avisar.
+Por isso nada foi feito no Windows: nenhuma foto nova, nenhuma cópia de reserva, nenhuma versão de mentira.</p>
+<p><strong>O que está errado, em palavras simples.</strong> O programa instalado fica em Arquivos de Programas. Quando o Kaique abre o
+programa, a peça de atualização (Velopack) tenta gravar ali e não consegue, porque a conta dele abre o programa sem
+licença de administrador. Ela então muda sozinha para um lugar de reserva:
+<code>%LOCALAPPDATA%\EditorImpressao\packages</code>, com uma cópia do <code>Update.exe</code> em <code>%LOCALAPPDATA%\EditorImpressao\</code>.
+Esse é o mesmo lugar dos projetos e das configurações do Kaique (e dos seus).</p>
+<ul>
+<li><strong>É defeito do programa</strong>, não escolha sua. Ninguém pediu isso.</li>
+<li><strong>Quando acontece:</strong> toda vez que a janela do programa instalado abre e olha a versão (a olhada do aviso de versão
+  nova). A pasta é criada nessa hora.</li>
+<li><strong>Por que a troca de pasta do teste não protege:</strong> o Velopack pergunta ao Windows onde fica essa pasta, sem ler a
+  variável que o teste troca. No teste, a pasta iria para a sua pasta de projetos de verdade.</li>
+<li><strong>O que ainda não se sabe:</strong> se desinstalar apaga essa pasta de reserva inteira. Não foi testado.</li>
+</ul>
+<p><strong>De onde vem a prova (máquina, só lendo):</strong>
+- Código do Velopack (<code>locator.rs</code>, <code>known_path.rs</code>, ramo <code>develop</code>): sem gravação na pasta do programa, usa
+  <code>LocalAppData</code> + id do pacote + <code>packages</code>, cria a pasta na hora e copia o <code>Update.exe</code>. O <code>LocalAppData</code> vem de
+  <code>SHGetKnownFolderPath</code>.
+- O Velopack do <code>.venv</code> (1.2.161) tem as mesmas frases dessa regra ("Using fallback directory", "Copied Update.exe
+  from root to fallback", ".velopack_dir_test").
+- O id do pacote é <code>EditorImpressao</code> (<code>versao.ID_DO_PACOTE</code>).
+- No programa: <code>atualizacao.versao_que_roda</code> (chamada pelo aviso de versão nova, <code>ui/aviso_de_atualizacao.py</code>)
+  cria o gerente do Velopack na conta do Kaique; o ajudante roda como o sistema e grava em <code>&lt;programa&gt;\packages</code>.</p>
+<h2>O que foi feito</h2>
+<ul>
+<li>Cópia nova do ramo final: <code>.claude\worktrees\etapa5</code>, ramo <code>etapa5-2026-11-17</code>, a partir de <code>a9d81030</code>.</li>
+<li>Os nomes de verdade (lista, A2), conferidos no código e escritos na <code>lista.md</code> e na <code>comandos.md</code>:</li>
+<li>o ajudante: <code>EditorImpressao\Procurar versao nova</code>;</li>
+<li>a tarefa "desfazer": <code>EditorImpressao\Desfazer testes a distancia</code>;</li>
+<li>o "atualizar" de longe: <code>schtasks /Run /TN "EditorImpressao\Procurar versao nova"</code>;</li>
+<li>a pasta de teste: o arquivo <code>C:\ProgramData\EditorImpressao\fonte-de-teste.txt</code>. Ele só vale se for dos
+    Administradores ou do sistema. Isso foi conferido no código;</li>
+<li>a versão que o programa mostra vem do Velopack. Uma pasta empacotada serve para todas as versões de mentira. O
+    registro da atualização vai dizer "versão 1.1.0" no começo de toda linha.</li>
+</ul>
+<h2>Fotos, cópia de reserva, versões de mentira</h2>
+<ul>
+<li><strong>Fotos do Windows:</strong> não tiradas (parado antes).</li>
+<li><strong>Cópia de reserva dos projetos:</strong> não feita (parado antes).</li>
+<li><strong>Versões 1.1.0 a 1.1.5:</strong> não feitas (parado antes).</li>
+<li>Nenhuma pergunta do Windows apareceu. Nada foi instalado, e nenhum arquivo foi criado no <code>ProgramData</code>.</li>
+</ul>
+<h2>Outras coisas achadas (para a fase 1, quando ela voltar)</h2>
+<ol>
+<li>O publicar com uma pasta já pronta não põe o Visual C++ dentro do pacote e confere o pacote sem cobrá-lo. A 1.1.0
+   tem de sair pelo caminho inteiro (com o Visual C++); as outras reaproveitam a pasta que ela deixa.</li>
+<li>Numa cópia do projeto (worktree), o empacotador procura o motor do Kraken e o Visual C++ baixado numa pasta que
+   não existe ali (<code>.claude\worktrees\EditorImpressao-arquivos</code>). É preciso apontar para
+   <code>D:\programas\EditorImpressao-arquivos\ferramentas\</code> e ligar a pasta <code>modelos</code> por junção.</li>
+<li>Sobra de outro agente, que já estava lá e não foi apagada: <code>%LOCALAPPDATA%\velopack\velopack_EditorImpressaoEnsaio.log</code>.</li>
+</ol>
+<h2>Situação</h2>
+<p>NÃO ESTÁ PRONTO PARA SEGUIR. A gerente decide com o Samuel o que fazer com a pasta de reserva do Velopack, antes da
+fase 0.</p>
+<p class="rodape">Editor de Impressão &middot; gerado em 17/11/2026 às 16:43</p>
+</body>
+</html>

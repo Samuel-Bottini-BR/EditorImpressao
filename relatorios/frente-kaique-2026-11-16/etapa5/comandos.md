@@ -9,6 +9,26 @@ Os números das fases são os da `lista.md` (parte B). Cada bloco tem uma marca:
 O que está entre `< >` vem do ONDE-PAREI dos construtores (lista, A2) e tem de ser preenchido antes. Comando com
 `< >` sem preencher **não roda**.
 
+**Preenchido em 17/11/2026 (lista, A2):**
+- `<NOME_DO_AJUDANTE>` = `EditorImpressao\Procurar versao nova`; a tarefa "desfazer" =
+  `EditorImpressao\Desfazer testes a distancia`.
+- `<COMANDO_ATUALIZAR_DE_LONGE>` = `schtasks /Run /TN "EditorImpressao\Procurar versao nova"`.
+- `<COMO_APONTAR_PARA_A_PASTA_DE_TESTE>` = num PowerShell de administrador:
+  `New-Item -ItemType Directory -Force C:\ProgramData\EditorImpressao | Out-Null;`
+  `Set-Content -Path C:\ProgramData\EditorImpressao\fonte-de-teste.txt -Value "$TRAB\servidor" -Encoding utf8;`
+  `icacls C:\ProgramData\EditorImpressao\fonte-de-teste.txt /setowner *S-1-5-32-544`. Conferir no
+  `atualizacao.log` a linha "fonte de teste (etapa 5): as versões vêm de ...". Apagar no fim (fase 12).
+- **Cuidados achados para a fase 1 (antes de rodar):**
+  - `publicar_versao_kaique.py --pasta-pronta` **não** põe o Visual C++ (`instalar\vc_redist.x64.exe`) na pasta e
+    confere o pacote sem ele (`conferir_pacote_do_velopack(nupkg, None)`). A 1.1.0 tem de sair pelo caminho inteiro
+    (`publicar` sem `--pasta-pronta`, que roda `construir_pacote_do_velopack`); as outras reaproveitam a pasta
+    `dist\EditorImpressao` que ela deixou, já com o `instalar\` dentro.
+  - Na cópia da etapa 5, o `empacotar.py` procura `DOWNLOADS` e o motor do Kraken em `RAIZ.parent\EditorImpressao-arquivos`,
+    que na cópia é `.claude\worktrees\EditorImpressao-arquivos` (não existe). É preciso passar o motor
+    (`MOTOR_ESCOLHIDO`) e o `DOWNLOADS` de `D:\programas\EditorImpressao-arquivos\ferramentas\`, e a junção `modelos`.
+- **PARADA (A2):** os pacotes baixados pela janela do programa (conta sem administrador) iriam para
+  `%LOCALAPPDATA%\EditorImpressao\packages`, dentro da pasta dos projetos. Ver lista, A2. Nada da fase 0 e 1 rodou.
+
 PowerShell (o do Windows, 5.1). Variáveis do começo de toda sessão:
 
 ```powershell

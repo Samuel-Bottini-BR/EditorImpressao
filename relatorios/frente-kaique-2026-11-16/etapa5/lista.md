@@ -36,6 +36,30 @@ Nenhum destes muda o Windows. Se faltar um, a etapa 5 não começa: pergunte à 
   - onde o Velopack grava os pacotes baixados quando a pasta do programa não aceita gravação (o plano da D-732 diz
     "numa pasta do `LocalAppData`"; o nome exato não se achou). Se for dentro de `%LOCALAPPDATA%\EditorImpressao`
     (a pasta dos projetos), **pare e avise a gerente**: desinstalar poderia apagar junto.
+  - **Preenchido em 17/11/2026 (verificador da etapa 5, ramo `etapa5-2026-11-17`, código `a9d81030`):**
+    - ajudante: `EditorImpressao\Procurar versao nova` (`atualizacao.NOME_DA_TAREFA`), roda como SYSTEM, sem gatilho;
+    - tarefa "desfazer": `EditorImpressao\Desfazer testes a distancia`
+      (`core.testes_a_distancia.NOME_DA_TAREFA_DO_DESFAZER`, pasta `PASTA_DAS_TAREFAS`);
+    - "atualizar" de longe: `ssh EditorTestes@<notebook> schtasks /Run /TN "EditorImpressao\Procurar versao nova"`
+      (`atualizacao.comando_de_longe_para_atualizar`); ler o registro:
+      `ssh EditorTestes@<notebook> type "C:\ProgramData\EditorImpressao\atualizacao\atualizacao.log"`;
+    - pasta de teste: `C:\ProgramData\EditorImpressao\fonte-de-teste.txt`, uma linha com a pasta das versões. Conferido
+      no código (`atualizacao.fonte_de_teste`, `fonte_da_linha`): só vale se o dono do arquivo for Administradores
+      (S-1-5-32-544) ou o sistema (S-1-5-18); senão é ignorado com uma linha no registro. Ordem: `--fonte` >
+      o arquivo > GitHub. A assinatura da chave do Samuel é cobrada nos três casos;
+    - a versão que o programa diz ter vem do **Velopack** (`versao_que_roda` → `get_current_version`, o número do
+      `vpk pack --packVersion`). O `versao.py` de dentro do pacote só aparece nas linhas do `atualizacao.log`
+      ("versão 1.1.0 | ..."). Então **uma pasta empacotada serve para todas as versões de mentira**; o registro vai
+      mostrar sempre "versão 1.1.0" no começo da linha (anotar no relatório, não é defeito do teste);
+    - **pacotes baixados: PARADA.** Velopack 1.2.161 (o do `.venv`), regra do `locator.rs`: se a pasta do programa
+      não aceita gravação pelo processo que roda, ele usa `<LocalAppData>\<id do pacote>\packages` e copia o
+      `Update.exe` para `<LocalAppData>\<id do pacote>\`. O id é `EditorImpressao`. Ou seja:
+      **`%LOCALAPPDATA%\EditorImpressao\packages` e `%LOCALAPPDATA%\EditorImpressao\Update.exe`, dentro da pasta
+      dos projetos.** O `LocalAppData` é lido pelo Windows (`SHGetKnownFolderPath`), não pela variável: trocar
+      `LOCALAPPDATA` na hora de abrir o programa (E1) **não desvia** isso. Quando acontece: o ajudante (SYSTEM)
+      grava em Arquivos de Programas e usa `<raiz>\packages`; mas a janela do Kaique (sem administrador) monta o
+      Velopack toda vez que abre (`_rodar_o_velopack`, `versao_que_roda` a cada olhada do aviso), e nessa hora a
+      pasta é criada (`create_dir_all`). Parado aqui por ordem da gerente; fases 0 e 1 não começaram.
 - **A3. O Samuel avisado e presente.** A pergunta do Windows aparece no monitor dele umas 8 vezes (ver a parte E e
   as perguntas). Só ele pode clicar "Sim". Marcar o horário com ele.
 - **A4. Disco.** C: com pelo menos 20 GB livres (a foto de 17/11 mostrou 45,6 GB). Todo `pytest` com
