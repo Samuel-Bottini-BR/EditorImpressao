@@ -68,6 +68,8 @@ def texto(t, tamanho=26, negrito=False, largura=LARGURA - 40, cor=(30, 30, 30)):
 
 
 def empilhar(partes, espaco=16, largura=LARGURA):
+    # nada passa da largura (senão a beirada da imagem cortaria um pedaço)
+    partes = [p if p.width <= largura - 20 else caber(p, largura - 20, 100_000) for p in partes]
     altura = sum(p.height for p in partes) + espaco * (len(partes) + 1)
     img = Image.new("RGB", (largura, altura), FUNDO)
     y = espaco
@@ -289,7 +291,11 @@ def item_500():
 ITENS = {"au-d-501": item_501, "au-d-500": item_500}
 
 if __name__ == "__main__":
-    pedidos = sys.argv[1:] or list(ITENS)
-    for nome in pedidos:
-        ITENS[nome]()
-    gravar_legendas()
+    # tudo pelo módulo "montar" (o mesmo que montar_mais importa), para as legendas ficarem juntas
+    sys.path.insert(0, str(AQUI))
+    import montar as m
+    import montar_mais                                    # os outros nove itens (mesmos ajudantes)
+    m.ITENS.update(montar_mais.ITENS)
+    for nome in sys.argv[1:] or list(m.ITENS):
+        m.ITENS[nome]()
+    m.gravar_legendas()

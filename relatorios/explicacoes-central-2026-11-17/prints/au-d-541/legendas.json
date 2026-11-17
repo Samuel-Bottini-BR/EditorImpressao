@@ -1,0 +1,8 @@
+{
+ "541-1-M0.png": "0. A ferramenta, como é hoje. La vida eterna (cópia, dividido), página 3. Ícone da cruz na barra da esquerda, ou tecla F: o nome \"Mover e redimensionar\" aparece no alto. A borda azul com 4 quadradinhos nos cantos é o conteúdo da página. À direita, \"Tamanho do conteúdo\" = 100 %.",
+ "541-2-M1.png": "1. Arrastar. Clicar em cima da página e arrastar para a esquerda: a página anda junto com o mouse. A faixa riscada de vermelho (circulada) é o pedaço que passou da beirada: ele fica de fora no PDF.",
+ "541-3-M2.png": "2. Puxar um canto. Puxar o quadradinho de baixo, à direita, para fora: o conteúdo cresce por igual (126 %). O que passa da beirada fica riscado de vermelho e a página ganha um aviso (circulado). O programa não diminui sozinho.",
+ "541-4-M3.png": "3. Digitar o tamanho. Escrever 80 no \"Tamanho do conteúdo\": o conteúdo fica menor, no meio da página, com margem branca em volta.",
+ "541-5-M4.png": "4. Arrastar até passar da beirada. Arrastar muito para a direita: o programa para quando o MEIO do conteúdo chega na beirada (circulado), para a página nunca sumir da vista. A metade de fora fica riscada.",
+ "541-0-resumo.png": "Resumo: as quatro mexidas do Mover, tela e PDF."
+}

@@ -1,0 +1,13 @@
+
+===== menu X1-menu-marcar =====
+Procurar de novo
+Limpar tudo
+----
+Deixar a folha em branco
+
+===== menu X2-botao-direito-na-miniatura =====
+Desfazer nesta página
+  
+----
+adicionar página em branco antes
+adicionar página em branco depois
