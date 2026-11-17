@@ -234,6 +234,65 @@ Nada do que já funciona muda em nenhuma das três.</p>
 </tbody>
 </table>
 <p>Nenhum teste antigo foi mudado. Para as provas no código de antes, criei a cópia <code>D:gente_temp_testesrasao2-antigo</code> (commit fd9f1f58, fora do projeto; não apaguei: a gerente decide).</p>
-<p class="rodape">Editor de Impressão &middot; gerado em 17/11/2026 às 12:50</p>
+<hr />
+<h1>Acréscimo de 17/11/2026 (noite): "Sim" com erro no meio, e a pasta do Agendador entra</h1>
+<h2>1. "Sim" na pergunta do Windows, mas a preparação deu erro no meio (D-749, "Sim")</h2>
+<p><strong>O que é:</strong> na primeira abertura do programa instalado, o Windows pergunta "Deseja permitir...?" para preparar o computador (o ajudante da atualização, o Visual C++, tirar a instalação antiga). Antes, qualquer "Sim" fazia o programa achar que estava preparado, e a pergunta nunca mais voltava, mesmo se a preparação parasse no meio. Agora, se a preparação der erro no meio, ela conta como não feita e a pergunta volta na próxima abertura, como depois de um "Não". Depois de uma preparação que deu certo, nunca mais.</p>
+<p><strong>Situação antes:</strong> o código não fazia isso. Além do "Sim" contar sempre, a preparação dizia "deu certo" mesmo com o Visual C++ ou a retirada da instalação antiga falhando.</p>
+<p><strong>Como:</strong> a preparação diz se cada parte falhou. O passo da pergunta anota como ela terminou (com uma marca nova a cada pergunta, para uma anotação velha não contar). Uma regra só, <code>preparo_deu_certo</code>, decide. Se o Kaique deu senha dos testes à distância, esses passos seguem como antes.</p>
+<p><strong>Prova:</strong> <code>tests/test_decisoes_preparo_d749.py</code>, 8 testes; todos falham no código de antes.</p>
+<h2>2. A pasta vazia do Agendador entrou (D-750, "pode sim")</h2>
+<p>O teste antigo do desinstalar passou a aceitar o comando do Agendador só quando o teste dá um Agendador de mentira; sem ele, continua recusado (o teste prova as duas coisas). O ramo da pasta foi juntado. Só esse teste mudou.</p>
+<p><strong>Sobre a pergunta "qual seria o problema de fazer o teste com um real?":</strong> o teste roda muitas vezes, no PC do Samuel e no GitHub. Com o Agendador de verdade, cada rodada criaria e apagaria tarefas e pastas de verdade no Windows, pediria licença de administrador e poderia apagar a pasta do programa instalado no PC dele. Por isso o de verdade é conferido uma vez só, na etapa 5, com ele perto.</p>
+<h2>Testes desta rodada</h2>
+<p>Cada arquivo sozinho, fora da tela, no ramo <code>brasao-2026-11-17</code> já com tudo junto:</p>
+<table>
+<thead>
+<tr>
+<th>Arquivo</th>
+<th>Resultado</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><code>tests/test_decisoes_brasao.py</code></td>
+<td>22 passaram</td>
+</tr>
+<tr>
+<td><code>tests/test_decisoes_atualizacao.py</code></td>
+<td>38 passaram</td>
+</tr>
+<tr>
+<td><code>tests/test_decisoes_ajudante_da_atualizacao.py</code></td>
+<td>37 passaram</td>
+</tr>
+<tr>
+<td><code>tests/test_decisoes_preparo_d749.py</code> (novo)</td>
+<td>8 passaram</td>
+</tr>
+<tr>
+<td><code>tests/test_decisoes_desinstalar.py</code> (o teste mudado pela D-750)</td>
+<td>46 passaram</td>
+</tr>
+<tr>
+<td><code>tests/test_decisoes_desinstalar_pasta.py</code></td>
+<td>6 passaram</td>
+</tr>
+<tr>
+<td><code>tests/test_decisoes_testes_a_distancia.py</code></td>
+<td>13 passaram</td>
+</tr>
+<tr>
+<td><code>tests/test_sem_janela_na_tela.py</code></td>
+<td>8 passaram</td>
+</tr>
+<tr>
+<td><code>teste_botoes.py</code> (uma vez, fora da tela)</td>
+<td>372 ações, 0 falhas</td>
+</tr>
+</tbody>
+</table>
+<p>Só o teste autorizado pela D-750 mudou.</p>
+<p class="rodape">Editor de Impressão &middot; gerado em 17/11/2026 às 15:34</p>
 </body>
 </html>

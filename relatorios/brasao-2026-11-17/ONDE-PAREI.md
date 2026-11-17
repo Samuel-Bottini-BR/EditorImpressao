@@ -106,3 +106,10 @@ da troca, só a janelinha. Nada do que já funciona muda em nenhuma. Print: falt
   mentira e juntar? Sugestão: sim.
 - Testes pedidos (um por vez, offscreen, basetemp brasao2): todos passaram; `teste_botoes.py` 372 ações, 0 falhas.
 - Cópia de antes para as provas: `D:\agente_temp_testes\brasao2-antigo` (worktree, fora do projeto, não apagada).
+
+## 17/11 (noite): D-749 e D-750
+
+- [x] D-749 ("Sim"): o código NÃO fazia isso (qualquer "Sim" gravava "preparado"; o preparo devolvia 0 mesmo com o
+  Visual C++/Inno falhando). Feito: commit 43f73780; `tests/test_decisoes_preparo_d749.py` (8, todos falham em fd9f1f58).
+- [x] D-750 ("pode sim"): ramo da pasta juntado (1a1e9c5a); só o teste antigo autorizado mudou (c785bb8d).
+- Testes (um por vez, offscreen, basetemp brasao2): todos passaram; `teste_botoes.py` 372 ações, 0 falhas.

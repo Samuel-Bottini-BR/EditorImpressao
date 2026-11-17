@@ -131,3 +131,41 @@ Nada do que já funciona muda em nenhuma das três.
 | `teste_botoes.py` (uma vez, fora da tela) | 372 ações, 0 falhas |
 
 Nenhum teste antigo foi mudado. Para as provas no código de antes, criei a cópia `D:gente_temp_testesrasao2-antigo` (commit fd9f1f58, fora do projeto; não apaguei: a gerente decide).
+
+---
+
+# Acréscimo de 17/11/2026 (noite): "Sim" com erro no meio, e a pasta do Agendador entra
+
+## 1. "Sim" na pergunta do Windows, mas a preparação deu erro no meio (D-749, "Sim")
+
+**O que é:** na primeira abertura do programa instalado, o Windows pergunta "Deseja permitir...?" para preparar o computador (o ajudante da atualização, o Visual C++, tirar a instalação antiga). Antes, qualquer "Sim" fazia o programa achar que estava preparado, e a pergunta nunca mais voltava, mesmo se a preparação parasse no meio. Agora, se a preparação der erro no meio, ela conta como não feita e a pergunta volta na próxima abertura, como depois de um "Não". Depois de uma preparação que deu certo, nunca mais.
+
+**Situação antes:** o código não fazia isso. Além do "Sim" contar sempre, a preparação dizia "deu certo" mesmo com o Visual C++ ou a retirada da instalação antiga falhando.
+
+**Como:** a preparação diz se cada parte falhou. O passo da pergunta anota como ela terminou (com uma marca nova a cada pergunta, para uma anotação velha não contar). Uma regra só, `preparo_deu_certo`, decide. Se o Kaique deu senha dos testes à distância, esses passos seguem como antes.
+
+**Prova:** `tests/test_decisoes_preparo_d749.py`, 8 testes; todos falham no código de antes.
+
+## 2. A pasta vazia do Agendador entrou (D-750, "pode sim")
+
+O teste antigo do desinstalar passou a aceitar o comando do Agendador só quando o teste dá um Agendador de mentira; sem ele, continua recusado (o teste prova as duas coisas). O ramo da pasta foi juntado. Só esse teste mudou.
+
+**Sobre a pergunta "qual seria o problema de fazer o teste com um real?":** o teste roda muitas vezes, no PC do Samuel e no GitHub. Com o Agendador de verdade, cada rodada criaria e apagaria tarefas e pastas de verdade no Windows, pediria licença de administrador e poderia apagar a pasta do programa instalado no PC dele. Por isso o de verdade é conferido uma vez só, na etapa 5, com ele perto.
+
+## Testes desta rodada
+
+Cada arquivo sozinho, fora da tela, no ramo `brasao-2026-11-17` já com tudo junto:
+
+| Arquivo | Resultado |
+|---|---|
+| `tests/test_decisoes_brasao.py` | 22 passaram |
+| `tests/test_decisoes_atualizacao.py` | 38 passaram |
+| `tests/test_decisoes_ajudante_da_atualizacao.py` | 37 passaram |
+| `tests/test_decisoes_preparo_d749.py` (novo) | 8 passaram |
+| `tests/test_decisoes_desinstalar.py` (o teste mudado pela D-750) | 46 passaram |
+| `tests/test_decisoes_desinstalar_pasta.py` | 6 passaram |
+| `tests/test_decisoes_testes_a_distancia.py` | 13 passaram |
+| `tests/test_sem_janela_na_tela.py` | 8 passaram |
+| `teste_botoes.py` (uma vez, fora da tela) | 372 ações, 0 falhas |
+
+Só o teste autorizado pela D-750 mudou.
