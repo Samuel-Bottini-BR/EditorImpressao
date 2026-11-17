@@ -1,0 +1,192 @@
+{
+ "p14": [
+  {
+   "caixa": [
+    0.64,
+    0.28,
+    0.86,
+    0.63
+   ],
+   "area": 0.0311,
+   "parece_escrita": false,
+   "glifos": 0.22,
+   "linhas_vazias": 0.15,
+   "tinta": 0.17,
+   "encosta_na_gravura": true
+  },
+  {
+   "caixa": [
+    0.33,
+    0.6,
+    0.59,
+    0.78
+   ],
+   "area": 0.0292,
+   "parece_escrita": false,
+   "glifos": 0.31,
+   "linhas_vazias": 0.05,
+   "tinta": 0.2,
+   "encosta_na_gravura": true
+  }
+ ],
+ "p8": [
+  {
+   "caixa": [
+    0.0,
+    0.01,
+    0.09,
+    0.98
+   ],
+   "area": 0.0401,
+   "parece_escrita": false,
+   "glifos": 0.0,
+   "linhas_vazias": 0.0,
+   "tinta": 0.31,
+   "encosta_na_gravura": true
+  },
+  {
+   "caixa": [
+    0.59,
+    0.01,
+    0.71,
+    0.05
+   ],
+   "area": 0.0013,
+   "parece_escrita": true,
+   "glifos": 0.74,
+   "linhas_vazias": 0.24,
+   "tinta": 0.04,
+   "encosta_na_gravura": true
+  },
+  {
+   "caixa": [
+    0.49,
+    0.27,
+    1.0,
+    0.99
+   ],
+   "area": 0.0944,
+   "parece_escrita": false,
+   "glifos": 0.37,
+   "linhas_vazias": 0.19,
+   "tinta": 0.12,
+   "encosta_na_gravura": true
+  },
+  {
+   "caixa": [
+    0.49,
+    0.62,
+    0.53,
+    0.76
+   ],
+   "area": 0.0011,
+   "parece_escrita": false,
+   "glifos": 0.02,
+   "linhas_vazias": 0.02,
+   "tinta": 0.15,
+   "encosta_na_gravura": true
+  },
+  {
+   "caixa": [
+    0.25,
+    0.74,
+    0.3,
+    0.78
+   ],
+   "area": 0.0011,
+   "parece_escrita": false,
+   "glifos": 0.0,
+   "linhas_vazias": 0.09,
+   "tinta": 0.46,
+   "encosta_na_gravura": true
+  },
+  {
+   "caixa": [
+    0.57,
+    0.89,
+    0.63,
+    0.94
+   ],
+   "area": 0.0014,
+   "parece_escrita": true,
+   "glifos": 0.32,
+   "linhas_vazias": 0.32,
+   "tinta": 0.1,
+   "encosta_na_gravura": true
+  },
+  {
+   "caixa": [
+    0.41,
+    0.91,
+    0.46,
+    0.99
+   ],
+   "area": 0.0012,
+   "parece_escrita": true,
+   "glifos": 0.58,
+   "linhas_vazias": 0.33,
+   "tinta": 0.11,
+   "encosta_na_gravura": true
+  }
+ ],
+ "p2": [
+  {
+   "caixa": [
+    0.08,
+    0.36,
+    1.0,
+    0.47
+   ],
+   "area": 0.1017,
+   "parece_escrita": true,
+   "glifos": 0.99,
+   "linhas_vazias": 0.55,
+   "tinta": 0.21,
+   "encosta_na_gravura": false
+  },
+  {
+   "caixa": [
+    0.08,
+    0.47,
+    1.0,
+    0.63
+   ],
+   "area": 0.1433,
+   "parece_escrita": true,
+   "glifos": 1.0,
+   "linhas_vazias": 0.54,
+   "tinta": 0.2,
+   "encosta_na_gravura": false
+  },
+  {
+   "caixa": [
+    0.08,
+    0.66,
+    1.0,
+    0.88
+   ],
+   "area": 0.2086,
+   "parece_escrita": true,
+   "glifos": 1.0,
+   "linhas_vazias": 0.57,
+   "tinta": 0.21,
+   "encosta_na_gravura": false
+  },
+  {
+   "caixa": [
+    0.58,
+    0.91,
+    0.9,
+    0.98
+   ],
+   "area": 0.0155,
+   "parece_escrita": false,
+   "glifos": 0.0,
+   "linhas_vazias": 0.06,
+   "tinta": 0.51,
+   "encosta_na_gravura": false
+  }
+ ],
+ "p12": [],
+ "p3": []
+}

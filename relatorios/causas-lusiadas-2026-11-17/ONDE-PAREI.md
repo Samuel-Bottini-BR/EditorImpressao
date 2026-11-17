@@ -70,3 +70,20 @@ Nada muda nesta tarefa: não há código. Em cada plano de conserto digo o que m
 ## Andamento
 
 (abaixo, a cada passo)
+
+### Passo 2 (lu-1, lu-7): feito — o que achei
+- `scripts/decompor_marcacao.py` (procura a marcação de novo, espiando por dentro) → `decompor_marcacao.json`; imagens
+  em `prints/decompor/` (fora do git).
+- P. 14: o leitor de texto NÃO viu texto na página (só uma caixa "figure"). Os dois pedaços azuis ("letra") são
+  buracos da pintura do ScanTailor (ele deixou de fora as partes escuras e lisas: a nuca do homem da frente e o casaco
+  do da direita). A regra `letra = (letra_layout | blocos_de_tinta(sobrou)) & ~gravura` (core/detectar_regioes.detectar)
+  chama de "letra" toda tinta que sobrou fora da gravura, sem conferir se parece escrita. O mesmo pedaço sai remendo
+  nos três filtros: Preto e branco (1 bit), Melhorar e Mágico pro (cinza chapado, com pontinhos brancos na beirada).
+- P. 8: igual, mais os pedaços do céu e do mar que sobraram viram "papel" (branco).
+- `scripts/pedacos_de_letra.py` → `pedacos_de_letra.json`: os pedaços remendo (p. 14 e o mar da p. 8) dão
+  "não parece escrita" na régua que o detector já tem (`_parece_escrita`) e encostam na gravura; os blocos de texto da
+  p. 2 dão "parece escrita" e não encostam. Medida em poucas páginas: o conserto precisa medir no gabarito.
+- Ligação com o Gradus (estudo de 13/11, ramo quadrados-capa): lá o pedaço "ÓNAI" veio de outra porta (caixa de texto do
+  leitor, regra "a escrita ganha", `ESCRITA_GANHA_DO_SCANTAILOR`) e o branco do passo da sombra em quadros do Preto e
+  branco (D-700, suspensa). Os quadrados do Melhorar e do Mágico pro na Escola eram a limpeza do papel (D-668, consertado
+  13/11, testado por ele: "funcionando").

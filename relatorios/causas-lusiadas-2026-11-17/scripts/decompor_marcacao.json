@@ -1,0 +1,81 @@
+{
+ "dpi": 300,
+ "p14": {
+  "folha": 8,
+  "metade": "esquerda",
+  "tamanho": [
+   1836,
+   2550
+  ],
+  "detector": "scantailor",
+  "caixas_do_leitor": [
+   {
+    "classe": "figure",
+    "caixa": [
+     0.088,
+     0.11,
+     0.993,
+     0.997
+    ],
+    "certeza": 0.79
+   }
+  ],
+  "fracao_da_pagina": {
+   "gravura_scantailor": 0.5769,
+   "gravura_final": 0.5771,
+   "letra_final": 0.0618,
+   "papel_final": 0.3399,
+   "caixas_de_texto": 0.0,
+   "escrita_certa": 0.0
+  },
+  "dentro_da_pintura_do_scantailor": {
+   "virou_letra": 0.0004,
+   "virou_letra_por_escrita_certa": 0.0,
+   "virou_papel": 0.0007
+  },
+  "letra_fora_da_pintura_mas_dentro_do_contorno": null,
+  "igual_a_guardada": {
+   "gravura": 1.0,
+   "letra": 1.0
+  }
+ },
+ "p8": {
+  "folha": 5,
+  "metade": "esquerda",
+  "tamanho": [
+   1826,
+   2550
+  ],
+  "detector": "scantailor",
+  "caixas_do_leitor": [
+   {
+    "classe": "figure",
+    "caixa": [
+     0.018,
+     0.11,
+     0.994,
+     0.998
+    ],
+    "certeza": 0.8
+   }
+  ],
+  "fracao_da_pagina": {
+   "gravura_scantailor": 0.5533,
+   "gravura_final": 0.5521,
+   "letra_final": 0.143,
+   "papel_final": 0.2679,
+   "caixas_de_texto": 0.0,
+   "escrita_certa": 0.0
+  },
+  "dentro_da_pintura_do_scantailor": {
+   "virou_letra": 0.0014,
+   "virou_letra_por_escrita_certa": 0.0,
+   "virou_papel": 0.0008
+  },
+  "letra_fora_da_pintura_mas_dentro_do_contorno": null,
+  "igual_a_guardada": {
+   "gravura": 1.0,
+   "letra": 1.0
+  }
+ }
+}
