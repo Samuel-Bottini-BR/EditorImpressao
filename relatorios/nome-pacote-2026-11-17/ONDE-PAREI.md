@@ -135,3 +135,8 @@ aceita a versão assinada.
 - **Só comentário.**
 
 **Situação:** feito na cópia de teste, esperando este "sim" para juntar à versão de teste (a etapa 5 espera este conserto).
+
+## Depois da entrega: D-764 (Samuel, 17/11: "ok")
+- `tests/test_decisoes_atualizacao.py:448`: `"EditorImpressao-1.2.0.assinatura"` → `f"{versao.ID_DO_PACOTE}-1.2.0.assinatura"`,
+  com a D-764 num comentário. Só essa linha; o resto do teste igual.
+- PC (offscreen, `--basetemp` no D:): `test_decisoes_atualizacao` 38 passaram; `test_nome_do_pacote` 5 passaram.
