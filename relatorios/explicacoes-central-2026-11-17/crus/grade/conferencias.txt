@@ -1,0 +1,4 @@
+ok   B: só as páginas 5 e 7 mudaram ([5, 7])
+ok   C: só as páginas 9 e 11 mudaram ([9, 11])
+ok   WM_CLOSE fechou a janela
+3 de 3

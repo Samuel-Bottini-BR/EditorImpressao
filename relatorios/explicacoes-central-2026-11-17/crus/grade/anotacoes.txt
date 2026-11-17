@@ -1,0 +1,13 @@
+caixa-ao-abrir => {"titulo": "Fundo separado", "texto": "Este livro tem fundo separado. Quer tirar o fundo?", "botoes": ["Sim, tirar o fundo", "Não, deixar como está"]}
+abriu => {"paginas": 12, "filtros": ["original", "original", "original", "original", "original", "original", "original", "original", "original", "original", "original", "original"]}
+cartoes-do-filtro => ["original", "preto_e_branco", "melhorar", "magico_pro", "tirar_fundo"]
+pagina-2-filtro => "preto_e_branco"
+PRINT-PEQUENO => ["B1b-lista-rodar-em", [248, 126]]
+grade-para-o-automatico => {"para_o_automatico": true}
+escolhidas-na-grade => [4, 6]
+janela-estado => {"alcance": "escolhidas", "escolhidas": [4, 6], "marcadas": ["limpar"], "rodar": "Rodar 1 etapa", "combo": "nas páginas escolhidas (2)"}
+B-filtros => {"antes": ["original", "preto_e_branco", "original", "original", "original", "original", "original", "original", "original", "original", "original", "original"], "depois": ["original", "preto_e_branco", "original", "original", "preto_e_branco", "original", "preto_e_branco", "original", "original", "original", "original", "original"], "paginas_que_mudaram": [5, 7], "historico": "Automático: limpar a folha (2 páginas)"}
+C-escolhidas => [8, 10]
+C-botao-direito-abriu-menu => 0
+C-automatico => {"janela": false, "painel": true, "alcance": "escolhidas", "escolhidas": [8, 10], "marcadas": ["limpar"]}
+C-filtros => {"antes": ["original", "preto_e_branco", "original", "original", "preto_e_branco", "original", "preto_e_branco", "original", "original", "original", "original", "original"], "depois": ["original", "preto_e_branco", "original", "original", "preto_e_branco", "original", "preto_e_branco", "original", "preto_e_branco", "original", "preto_e_branco", "original"], "paginas_que_mudaram": [9, 11], "historico": "Automático: limpar a folha (2 páginas)"}

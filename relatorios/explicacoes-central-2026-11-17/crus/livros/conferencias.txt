@@ -1,0 +1,4 @@
+ok   mudar uma etapa no Automático: a página 3 continua em Preto e branco
+ok   WM_CLOSE fechou a janela
+ok   WM_CLOSE fechou a janela
+3 de 3

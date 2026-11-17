@@ -1,0 +1,81 @@
+
+===== menu L2-menu-do-livro-perdido =====
+procurar o livro
+começar de novo
+----
+renomear
+abrir a pasta de saída   [CINZA]
+----
+remover da lista
+
+===== menu L3-menu-do-livro =====
+continuar
+começar de novo
+----
+renomear
+abrir a pasta de saída   [CINZA]
+----
+remover da lista
+
+===== menu L5a-menu-renomear =====
+continuar
+começar de novo
+----
+renomear
+abrir a pasta de saída   [CINZA]
+----
+remover da lista
+
+===== menu L8-menu-mais =====
+continuar
+começar de novo
+----
+renomear
+abrir a pasta de saída   [CINZA]
+----
+remover da lista
+
+===== menu L2-menu-do-livro-perdido =====
+procurar o livro
+começar de novo
+----
+renomear
+abrir a pasta de saída   [CINZA]
+----
+remover da lista
+
+===== menu L3-menu-do-livro =====
+continuar
+começar de novo
+----
+renomear
+abrir a pasta de saída   [CINZA]
+----
+remover da lista
+
+===== menu L5a-menu-renomear =====
+continuar
+começar de novo
+----
+renomear
+abrir a pasta de saída   [CINZA]
+----
+remover da lista
+
+===== menu L8-menu-mais =====
+continuar
+começar de novo
+----
+renomear
+abrir a pasta de saída   [CINZA]
+----
+remover da lista
+
+===== menu R2a-menu-comecar-de-novo =====
+continuar
+começar de novo
+----
+renomear
+abrir a pasta de saída   [CINZA]
+----
+remover da lista

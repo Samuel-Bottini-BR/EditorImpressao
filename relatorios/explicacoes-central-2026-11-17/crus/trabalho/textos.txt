@@ -1,0 +1,11 @@
+
+===== janela A0-antes-de-processar-hoje (JanelaDosAvisos, título 'Antes de processar') =====
+texto    (  18,  16 464x20)                    'Ainda tem 5 páginas que eu não tive certeza (4 avisos na lista).'
+texto    (  18,  44 464x19)                    'Quer ver antes ou continuar assim mesmo?'
+texto    (  18,  75 52x35)                    'Mostrar:'
+lista    (  76,  75 168x35)                    'todos os motivos (4)  [todos os motivos (4) | Parece em branco (2) | Lombada incerta (2)]'
+botão    ( 280,  78 117x28)                    'Selecionar todas'
+botão    ( 403,  78 79x28)                    'Nenhuma'
+botão    (  18, 347 179x39)                    'está bom nas marcadas'  · balão: 'Tira da lista as linhas marcadas. Não muda nada nas páginas; o Desfazer traz de volta.'
+botão    ( 229, 348 64x37)                    'ver'  · balão: 'Vai para a página da linha escolhida (ou a primeira da lista).'
+botão    ( 301, 347 181x39)                    'continuar assim mesmo'  · balão: 'Processa o livro como está, com os avisos.'

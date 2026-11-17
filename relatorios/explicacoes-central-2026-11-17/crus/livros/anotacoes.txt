@@ -1,0 +1,11 @@
+automatico-marcadas => ["dividir"]
+H0-pagina-3 => "preto_e_branco"
+automatico-marcadas => ["endireitar"]
+H1-depois-de-mudar-a-etapa => {"pagina_3": "preto_e_branco", "endireitar": true, "acoes": ["Automático: dividir folhas ao meio", "Filtro da página 3: Original para Preto e branco", "Automático: endireitar folhas tortas"]}
+caixa-ao-abrir => {"titulo": "Fundo separado", "texto": "Este livro tem fundo separado. Quer tirar o fundo?", "botoes": ["Sim, tirar o fundo", "Não, deixar como está"]}
+livros-na-lista => ["La vida eterna", "Palatino"]
+L6-livro-aberto => {"detalhe": "24 páginas · aberto hoje", "pagina": "página 3 de 12", "ver_todas_dica": "Todas as folhas do livro, em grade"}
+R1-tela => 0
+R2-depois => {"tela": 2, "paginas": 12, "pagina_3": "original", "acoes": []}
+R3-projeto.json => "C:\\Users\\fotog\\AppData\\Local\\Temp\\claude\\195a7ef9582f81cd\\fa022b8a-5c74-4934-803d-d9544e30a47d\\scratchpad\\explicacoes\\livros\\projetos\\La vida eterna\\projeto.json"
+R3-tela => 2

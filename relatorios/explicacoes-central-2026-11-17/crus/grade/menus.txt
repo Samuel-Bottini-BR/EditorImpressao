@@ -1,0 +1,24 @@
+
+===== menu A1-menu-filtro-pagina-1 =====
+Original   [1, marcado]
+Preto e branco   [2, desmarcado]
+Melhorar   [3, desmarcado]
+Mágico pro   [4, desmarcado]
+----
+Desfazer o tirar o fundo   [CINZA]
+
+===== menu A3-menu-filtro-pagina-2 =====
+Original   [1, desmarcado]
+Preto e branco   [2, marcado]
+Melhorar   [3, desmarcado]
+Mágico pro   [4, desmarcado]
+----
+Desfazer o tirar o fundo   [CINZA]
+
+===== menu A5-menu-filtro-pagina-3 =====
+Original   [1, marcado]
+Preto e branco   [2, desmarcado]
+Melhorar   [3, desmarcado]
+Mágico pro   [4, desmarcado]
+----
+Desfazer o tirar o fundo   [CINZA]

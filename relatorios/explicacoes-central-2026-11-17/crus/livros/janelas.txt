@@ -1,0 +1,35 @@
+
+===== janela L4-janela-tirar-da-lista (QMessageBox, título 'Tirar da lista?') =====
+texto    (  62,  11 427x76)                    'La vida eterna sai desta tela e a conferência feita nele se perde.\n\nO livro em PDF continua onde está - ele nunca esteve guardado aqui dentro.'
+botão    ( 269, 108 110x39)                    'Tirar da lista'
+botão    ( 385, 108 104x39)                    'Não, deixar'
+
+===== janela L5-janela-renomear (QInputDialog, título 'Renomear') =====
+texto    (  11,  11 178x19)                    'Nome deste projeto:'
+campo    (  11,  36 178x35)                    'La vida eterna'
+botão    (  43,  77 53x39)                    'OK'
+botão    ( 102,  77 87x39)                    'Cancelar'
+
+===== janela L4-janela-tirar-da-lista (QMessageBox, título 'Tirar da lista?') =====
+texto    (  62,  11 427x76)                    'La vida eterna sai desta tela e a conferência feita nele se perde.\n\nO livro em PDF continua onde está - ele nunca esteve guardado aqui dentro.'
+botão    ( 269, 108 110x39)                    'Tirar da lista'
+botão    ( 385, 108 104x39)                    'Não, deixar'
+
+===== janela L5-janela-renomear (QInputDialog, título 'Renomear') =====
+texto    (  11,  11 178x19)                    'Nome deste projeto:'
+campo    (  11,  36 178x35)                    'La vida eterna'
+botão    (  43,  77 53x39)                    'OK'
+botão    ( 102,  77 87x39)                    'Cancelar'
+
+===== janela R1-pdf-trocado (QMessageBox, título 'Este não é o mesmo livro') =====
+texto    (  62,  11 427x133)                    'Existe um arquivo chamado La vida eterna.pdf nesse lugar, mas ele não é o livro deste projeto - alguém o substituiu.\n\nNão vou aplicar os ajustes deste projeto num livro diferente: isso estragaria o trabalho sem aparecer.\n\nUse "procurar de novo" e aponte onde está o livro certo.'
+botão    ( 408, 165 81x39)                    'entendi'
+
+===== janela R2-comecar-de-novo (QMessageBox, título 'Começar de novo?') =====
+texto    (  62,  11 422x57)                    'Isto joga fora todos os ajustes de La vida eterna e abre o livro limpo.\n\nO livro em si não é tocado. O que se perde é a conferência já feita.'
+botão    ( 231,  89 143x39)                    'Começar de novo'
+botão    ( 380,  89 104x39)                    'Não, deixar'
+
+===== janela R3-trabalho-estragado (QMessageBox, título 'Um momento') =====
+texto    (  62,  11 565x114)                    'Comecei a conferência deste livro de novo: o trabalho salvo não pôde ser lido.\n\nO trabalho anterior não foi apagado. Guardei uma cópia dele, que pode ser recuperada:\nC:\u2060\\Users\\fotog\\AppData\\Local\\Temp\\claude\\195a7ef9582f81cd\\fa022b8a-5c74-4934-803d-d9544e30a47d\\scratchpad\\explicacoes\\livros\\projetos\\La vida eterna\\projeto.antigo-2026-11-17-1851.json'
+botão    ( 546, 146 81x39)                    'entendi'

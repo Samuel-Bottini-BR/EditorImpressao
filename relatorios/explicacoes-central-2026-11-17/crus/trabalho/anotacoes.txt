@@ -1,0 +1,12 @@
+automatico-marcadas => ["dividir"]
+dividido => [12, 24]
+M0 => {"aba": "mover", "escala": 1.0, "desloc": [0.0, 0.0], "campo": 100}
+M1-arrastou => {"desloc": [-0.1493, 0.0], "escala": 1.0}
+M2-canto => {"desloc": [0.0, 0.0], "escala": 1.2582, "campo": 126}
+M3-numero-80 => {"escala": 0.8, "campo": 80}
+M4-arrastou-muito => {"desloc": [0.5, 0.0]}
+M-depois-dos-ctrl-z => {"desloc": [0.0, 0.0], "escala": 1.0}
+P-filtro-pagina-3 => "preto_e_branco"
+P-itens => ["Automático", "Sauvola (padrão)", "Otsu (letra grossa/gótica)", "Wolf (scan de baixo contraste)", "", "Otsu do ScanTailor", "Sauvola do ScanTailor", "Wolf do ScanTailor", "Fox do ScanTailor", "Window do ScanTailor", "Bradley do ScanTailor", "Grad do ScanTailor", "EdgePlus do ScanTailor", "BlurDiv do ScanTailor", "EdgeDiv do ScanTailor"]
+A-botoes => ["Selecionar todas", "Nenhuma", "está bom nas marcadas", "ver", "continuar assim mesmo"]
+A-depois => {"tela": 2}

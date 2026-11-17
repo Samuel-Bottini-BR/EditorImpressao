@@ -70,7 +70,21 @@ def abrir(j, pdf: Path, resumo=None):
     base.esperar(2.0)
     esperar_ate(lambda: getattr(j, "medida_ao_abrir", None) is None or not j.medida_ao_abrir.isRunning(), 240)
     base.esperar(1.5)
+    responder_caixa(j, "Não")
     return j.tela_conferir
+
+
+def responder_caixa(j, comeco_do_botao: str):
+    """Se uma caixa de pergunta está aberta (ex.: "Este livro tem fundo separado. Quer tirar o
+    fundo?" do Palatino), anota o texto e clica no botão que começa com `comeco_do_botao`."""
+    from PySide6.QtWidgets import QApplication, QMessageBox
+    m = QApplication.activeModalWidget()
+    if isinstance(m, QMessageBox):
+        anotar("caixa-ao-abrir", {"titulo": m.windowTitle(), "texto": m.text(),
+                                  "botoes": [b.text() for b in m.buttons()]})
+        b = next((b for b in m.buttons() if b.text().startswith(comeco_do_botao)), m.buttons()[0])
+        base.clique(m, b)
+        base.esperar(2.0)
 
 
 def esperar_previa(tela, limite=60.0):
@@ -147,18 +161,46 @@ def pdf_das_paginas(projeto, paginas, saida: Path, nome: str, dpi=60) -> list[Pa
     return pngs
 
 
-def p(widget, pasta: Path, nome: str, so_cliente=False):
-    """Print da janela. Se o Windows minimizou a janela (sai 199x34), volta ao normal FORA da tela
-    (SW_SHOWNOACTIVATE em -32000) antes do print."""
+def normal(widget):
+    """Se o Windows minimizou a janela (o print sai 199x34 e o clique não chega), volta ao normal
+    FORA da tela (SW_SHOWNOACTIVATE, depois -32000). Nunca aparece na tela do Samuel."""
     from PySide6.QtCore import Qt
-    h = int(widget.winId())
+    h = int(widget.window().winId())
+    w = widget.window()
     for _ in range(3):
-        if not base.user32.IsIconic(h) and not (widget.windowState() & Qt.WindowMinimized):
-            break
-        widget.setWindowState(widget.windowState() & ~Qt.WindowMinimized)
+        if not base.user32.IsIconic(h) and not (w.windowState() & Qt.WindowMinimized):
+            return
+        anotar("janela-minimizada-voltei", type(w).__name__)
+        w.setWindowState(w.windowState() & ~Qt.WindowMinimized)
         base.user32.ShowWindow(h, 4)                  # SW_SHOWNOACTIVATE
-        widget.move(-32000, -32000)
+        w.move(-32000, -32000)
         base.esperar(1.5)
+
+
+_clique, _arrastar, _tecla = base.clique, base.arrastar, base.tecla
+
+
+def _clique_normal(janela, widget, ponto=None, duplo=False):
+    normal(janela)
+    return _clique(janela, widget, ponto, duplo)
+
+
+def _arrastar_normal(janela, widget, de, para, passos=12):
+    normal(janela)
+    return _arrastar(janela, widget, de, para, passos)
+
+
+def _tecla_normal(janela, vk, char=None, vezes=1):
+    normal(janela)
+    return _tecla(janela, vk, char, vezes)
+
+
+base.clique, base.arrastar, base.tecla = _clique_normal, _arrastar_normal, _tecla_normal
+
+
+def p(widget, pasta: Path, nome: str, so_cliente=False):
+    """Print da janela (volta ao normal fora da tela antes, se o Windows a minimizou)."""
+    normal(widget)
     img = base.print_window(widget, pasta / f"{nome}.png", so_cliente=so_cliente)
     if img is not None and img.width < 400:
         anotar("PRINT-PEQUENO", [nome, img.size])
