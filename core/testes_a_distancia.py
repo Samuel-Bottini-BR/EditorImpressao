@@ -13,12 +13,32 @@ docs/plano/DECISOES.md):
   D-721  na primeira abertura, uma janela pede a senha; sem senha, os testes
          ficam desligados; da para por a senha depois nas Configuracoes.
   D-722  testar no PC do Samuel e, no fim, DESFAZER tudo (etapa 5).
+  D-731  desinstalar o programa tira junto o que os testes a distancia
+         puseram (o OpenSSH, se foi o programa que instalou; a regra do
+         firewall; a conta de testes e o perfil dela). Os projetos do Kaique
+         (%LOCALAPPDATA%\\EditorImpressao) nunca sao tocados.
+  D-733  alternativa B do plano-d732.md: o `ligar` cria uma tarefa do Windows
+         "desfazer" que roda como o sistema e que a conta comum pode mandar
+         rodar; o gancho de desinstalar (sem administrador, 30 s) so manda.
+
+O CADERNINHO DO ANTES (D-731, 17/11/2026). O primeiro passo do `ligar`, ja
+como administrador, anota em C:\\ProgramData\\EditorImpressao\\testes-a-distancia
+\\antes.json o que o computador ja tinha (o OpenSSH, o servico, a regra larga,
+uma conta com o nosso nome, a pasta ssh). So na primeira vez: um desligar e
+ligar de novo nao faz o programa achar que o OpenSSH "ja estava la". A pasta
+fica so de leitura para as contas comuns. Desligar e desfazer leem o
+caderninho para tirar SO o que foi nosso; sem caderninho, o OpenSSH nunca e
+tirado.
 
 A REGRA NUM LUGAR SO (CLAUDE.md 11.12, sem gambiarra). Este arquivo e o unico
 lugar que sabe QUAIS comandos ligam, desligam e desfazem os testes a distancia.
 Todos os caminhos da tela (a janela da senha na primeira abertura, a caixinha
 das Configuracoes, o botao "Por a senha") chamam `ligar`/`desligar` daqui -
-nenhum monta comando por conta propria.
+nenhum monta comando por conta propria. O desfazer tambem e um so
+(`plano_de_desfazer`): a tarefa "desfazer" roda exatamente esse plano, montado
+por `montar_script`, e a etapa 5 (D-722) usa o mesmo. Tirar as nossas linhas do
+sshd_config e uma funcao so (`_comando_tirar_o_bloco`), e "foi nosso?" tambem
+(`_so_se_o_openssh_foi_nosso`, `_so_se_a_conta_foi_nossa`).
 
 A PECA QUE FALA COM O WINDOWS esta isolada em `Executor`. `ExecutorWindows` e
 a de verdade (uma pergunta de administrador so, para todos os passos). Os
@@ -37,6 +57,7 @@ Este arquivo NAO importa nada de ui/ (core/__init__.py). Importa `configuracoes`
 
 from __future__ import annotations
 
+import base64
 import os
 import sys
 from dataclasses import dataclass, field
@@ -60,6 +81,51 @@ SSHD_CONFIG = r"C:\ProgramData\ssh\sshd_config"
 CHAVE_USERLIST = (r"HKLM:\SOFTWARE\Microsoft\Windows NT\CurrentVersion"
                   r"\Winlogon\SpecialAccounts\UserList")
 VARIAVEL_DA_SENHA = "$SenhaDosTestes"     # o lugar da senha nos passos (NUNCA o texto dela)
+# A descricao que o ligar da a conta: e por ela (e pelo caderninho) que o
+# desfazer sabe que a conta EditorTestes e nossa. Mudar faz o desfazer deixar
+# para tras as contas criadas pelas versoes de antes.
+DESCRICAO_DA_CONTA = "Conta so para os testes a distancia"
+SID_SISTEMA = "S-1-5-18"
+SID_ADMINISTRADORES = "S-1-5-32-544"
+
+# --- D-731 (17/11/2026): o caderninho do antes e a tarefa "desfazer" ----------
+# Tudo numa pasta do ProgramData que so o sistema e os administradores gravam
+# (o `ligar` protege a pasta). Os testes trocam estes caminhos por pastas
+# temporarias; as funcoes abaixo os leem na hora.
+PASTA_SSH = r"C:\ProgramData\ssh"
+PASTA_DOS_TESTES = r"C:\ProgramData\EditorImpressao\testes-a-distancia"
+PASTA_DAS_TAREFAS = "EditorImpressao"     # a mesma pasta da tarefa da atualizacao
+NOME_DA_TAREFA_DO_DESFAZER = "Desfazer testes a distancia"
+# As linhas que o ligar poe no sshd_config ficam entre estas duas marcas: o
+# desfazer tira so o que esta entre elas (a linha de fabrica
+# "#PasswordAuthentication yes" e as linhas do dono ficam). Mudar as marcas
+# faz o desfazer nao achar as linhas postas pelas versoes de antes.
+MARCA_DO_INICIO = "# --- Editor de Impressao: inicio ---"
+MARCA_DO_FIM = "# --- Editor de Impressao: fim ---"
+LINHAS_DO_SSHD = (f"AllowUsers {NOME_DA_CONTA}", "PasswordAuthentication yes", "MaxAuthTries 3")
+# O gancho de desinstalar do Velopack e morto depois de 30 s: mandar rodar a
+# tarefa tem de voltar bem antes disso.
+TEMPO_MAXIMO_NO_GANCHO = 20
+
+
+def caminho_do_antes() -> str:
+    """O caderninho do antes (D-731): o que o computador ja tinha antes do 1o ligar."""
+    return PASTA_DOS_TESTES + r"\antes.json"
+
+
+def caminho_do_script_do_desfazer() -> str:
+    """O script que a tarefa "desfazer" roda (gravado pelo ligar)."""
+    return PASTA_DOS_TESTES + r"\desfazer.ps1"
+
+
+def caminho_do_registro_do_desfazer() -> str:
+    """A lista do que o desfazer fez, passo a passo (a gerente le pelo comando de longe; D-722)."""
+    return PASTA_DOS_TESTES + r"\o-que-foi-desfeito.txt"
+
+
+def nome_da_tarefa_do_desfazer() -> str:
+    """O nome completo da tarefa, como o schtasks o recebe."""
+    return f"{PASTA_DAS_TAREFAS}\\{NOME_DA_TAREFA_DO_DESFAZER}"
 
 # Chaves das Configuracoes (configuracoes.PADROES tem os valores de fabrica).
 CHAVE_LIGADO = "testes_a_distancia_ligado"              # intencao do Kaique (de fabrica True, D-712)
@@ -73,11 +139,17 @@ class Passo:
 
     `precisa_senha` marca o passo que usa `$SenhaDosTestes` - a prova confere
     que a senha nunca vira texto no comando.
+    `so_se_tudo_certo` marca o passo que so roda se nenhum anterior falhou
+    (o fim do desfazer: apagar a tarefa e o caderninho so quando tudo saiu).
+
+    O nome e o comando ficam em ASCII: o PowerShell do Windows le o script
+    sem marca de UTF-8 como ANSI.
     """
 
     nome: str
     comando: str
     precisa_senha: bool = False
+    so_se_tudo_certo: bool = False
 
 
 @dataclass
@@ -99,6 +171,167 @@ class Resultado:
 
 
 # ---------------------------------------------------------------------------
+# Pedacos de comando usados por mais de um plano (um lugar so, CLAUDE.md 11.12)
+# ---------------------------------------------------------------------------
+
+def _ler_o_antes() -> str:
+    """Le o caderninho do antes para `$antes` (ou `$null`, se nao ha caderninho)."""
+    arquivo = caminho_do_antes()
+    return (f"$antes = $null; if (Test-Path -LiteralPath '{arquivo}')"
+            f" {{ $antes = Get-Content -Raw -LiteralPath '{arquivo}' | ConvertFrom-Json }}")
+
+
+def _so_se_o_openssh_foi_nosso(comando: str) -> str:
+    """Roda `comando` so se o caderninho diz que o OpenSSH NAO existia antes do 1o ligar.
+
+    Sem caderninho, nunca (D-731: "se foi o programa que instalou"). Dentro de
+    `comando`, `$antes` ja esta lido.
+    """
+    return (f"{_ler_o_antes()}; if ($antes -and -not $antes.openssh_ja_existia) {{ {comando} }}"
+            f" else {{ Anotar 'FICA | o Servidor OpenSSH ja existia antes (ou nao ha caderninho)' }}")
+
+
+def _conta_e_nossa() -> str:
+    """Expressao do PowerShell: a conta EditorTestes existe e tem a descricao que o ligar da?"""
+    return (f"((Get-LocalUser -Name {NOME_DA_CONTA} -ErrorAction SilentlyContinue).Description"
+            f" -eq '{DESCRICAO_DA_CONTA}')")
+
+
+def _so_se_a_conta_foi_nossa(comando: str) -> str:
+    """Roda `comando` so se a conta EditorTestes e a nossa: a descricao e a nossa e o caderninho nao
+    anotou uma conta de outro com esse nome. Sem caderninho, vale so a descricao (plano.md, secao 5)."""
+    return (f"{_ler_o_antes()}; if ({_conta_e_nossa()} -and -not ($antes -and $antes.conta_de_outro_existia))"
+            f" {{ {comando} }} else {{ Anotar 'FICA | a conta {NOME_DA_CONTA} nao e do programa (ou nao existe)' }}")
+
+
+# A expressao regular que acha o nosso bloco no sshd_config: da marca do
+# inicio ate a marca do fim, linhas inteiras, com o fim de linha que o arquivo
+# tiver (\n ou \r\n).
+_BLOCO_DO_SSHD = (r"(?m)^" + MARCA_DO_INICIO + r"\r?\n(?:.*\r?\n)*?" + MARCA_DO_FIM + r"(?:\r?\n|$)")
+
+
+def _comando_tirar_o_bloco(caminho: str) -> str:
+    """Tira do arquivo SO o que esta entre as nossas marcas; o resto fica igual, letra por letra.
+
+    Usado ao ligar de novo (nao repetir as linhas, B3), ao desligar um OpenSSH
+    que ja era do dono (B4) e ao desfazer (D-731).
+    """
+    return (f"if (Test-Path -LiteralPath '{caminho}') {{ $t = [IO.File]::ReadAllText('{caminho}');"
+            f" $t = [regex]::Replace($t, '{_BLOCO_DO_SSHD}', ''); [IO.File]::WriteAllText('{caminho}', $t) }}")
+
+
+def _comando_por_o_bloco(caminho: str) -> str:
+    """Poe as nossas linhas entre as marcas ANTES do primeiro "Match" do arquivo (B2).
+
+    No sshd_config, o que vem depois de um "Match" vale so para quem o Match
+    escolhe: o arquivo de fabrica do Windows termina com "Match Group
+    administrators", e as linhas no fim valeriam so para os administradores.
+    Sem "Match", vao no fim. Tira antes um bloco antigo (B3: nao repete).
+    """
+    bloco = " + $nl + ".join(f"'{linha}'" for linha in (MARCA_DO_INICIO, *LINHAS_DO_SSHD, MARCA_DO_FIM))
+    return (f"{_comando_tirar_o_bloco(caminho)}; $t = '';"
+            f" if (Test-Path -LiteralPath '{caminho}') {{ $t = [IO.File]::ReadAllText('{caminho}') }};"
+            f" $nl = \"`n\"; if ($t.Contains(\"`r`n\")) {{ $nl = \"`r`n\" }};"
+            f" $bloco = {bloco} + $nl;"
+            f" $m = [regex]::Match($t, '(?im)^[ \\t]*Match[ \\t]');"
+            f" if ($m.Success) {{ $t = $t.Insert($m.Index, $bloco) }}"
+            f" else {{ if ($t.Length -gt 0 -and -not $t.EndsWith(\"`n\")) {{ $t = $t + $nl }}; $t = $t + $bloco }};"
+            f" [IO.File]::WriteAllText('{caminho}', $t)")
+
+
+def _comando_anotar_o_antes() -> str:
+    """O 1o passo do ligar (D-731): grava o caderninho, SO se ainda nao ha um valido, e protege a pasta.
+
+    Um caderninho cujo dono nao e o sistema nem os administradores foi posto
+    por uma conta comum: nao vale e e gravado de novo. Depois, a pasta fica com
+    dono "administradores" e so de leitura para os usuarios comuns.
+    """
+    pasta = PASTA_DOS_TESTES
+    arquivo = caminho_do_antes()
+    campos = "; ".join([
+        "openssh_ja_existia = (([string]$cap.State -eq 'Installed') -or [bool]$svc)",
+        "sshd_inicio = $(if ($svc) { [string]$svc.StartType } else { '' })",
+        "sshd_rodando = [bool]($svc -and ([string]$svc.Status -eq 'Running'))",
+        "regra_larga_existia = [bool]$regra",
+        "regra_larga_ligada = [bool]($regra -and ([string]$regra.Enabled -eq 'True'))",
+        f"conta_de_outro_existia = [bool]($conta -and ($conta.Description -ne '{DESCRICAO_DA_CONTA}'))",
+        f"userlist_existia = [bool](Test-Path -Path '{CHAVE_USERLIST}')",
+        f"pasta_ssh_existia = [bool](Test-Path -LiteralPath '{PASTA_SSH}')",
+        "pasta_ssh_itens = $itens",
+        "quando = (Get-Date -Format s)",
+    ])
+    return (f"$pasta = '{pasta}'; $arq = '{arquivo}';"
+            f" if (-not (Test-Path -LiteralPath $pasta)) {{ New-Item -ItemType Directory -Path $pasta -Force | Out-Null }};"
+            f" $vale = $false;"
+            f" if (Test-Path -LiteralPath $arq) {{ $dono = (Get-Acl -LiteralPath $arq).GetOwner("
+            f"[System.Security.Principal.SecurityIdentifier]).Value;"
+            f" $vale = ($dono -eq '{SID_SISTEMA}' -or $dono -eq '{SID_ADMINISTRADORES}') }};"
+            f" if (-not $vale) {{"
+            f" $cap = Get-WindowsCapability -Online -Name {CAPACIDADE_OPENSSH};"
+            f" $svc = Get-Service -Name sshd -ErrorAction SilentlyContinue;"
+            f" $regra = Get-NetFirewallRule -Name {REGRA_LARGA_DO_OPENSSH} -ErrorAction SilentlyContinue;"
+            f" $conta = Get-LocalUser -Name {NOME_DA_CONTA} -ErrorAction SilentlyContinue;"
+            f" $itens = @(); if (Test-Path -LiteralPath '{PASTA_SSH}')"
+            f" {{ $itens = @(Get-ChildItem -LiteralPath '{PASTA_SSH}' -Recurse -Force -Name) }};"
+            f" $novo = [ordered]@{{ {campos} }};"
+            f" $novo | ConvertTo-Json | Set-Content -LiteralPath $arq -Encoding UTF8 }};"
+            f" $global:LASTEXITCODE = 0;"
+            f" icacls $pasta /setowner '*{SID_ADMINISTRADORES}' /T /C /Q | Out-Null;"
+            f" icacls $pasta /inheritance:r /grant:r '*{SID_SISTEMA}:(OI)(CI)F' '*{SID_ADMINISTRADORES}:(OI)(CI)F'"
+            f" '*{SID_USUARIOS}:(OI)(CI)RX' /T /C /Q | Out-Null;"
+            f" if ($LASTEXITCODE) {{ throw 'nao consegui proteger a pasta dos testes a distancia' }}")
+
+
+def xml_da_tarefa_do_desfazer() -> str:
+    """O XML da tarefa "desfazer" (D-731/D-733): sem gatilho (so roda quando mandam), como o proprio
+    sistema (S-1-5-18), escondida, sem janela; roda o script gravado pelo ligar. Uma linha so, em ASCII."""
+    script = caminho_do_script_do_desfazer()
+    return ('<?xml version="1.0" encoding="UTF-16"?>'
+            '<Task version="1.2" xmlns="http://schemas.microsoft.com/windows/2004/02/mit/task">'
+            '<RegistrationInfo><Description>Editor de Impressao: desfaz o que os testes a distancia puseram'
+            ' no computador. Chamada ao desinstalar o programa.</Description></RegistrationInfo>'
+            f'<Principals><Principal id="Sistema"><UserId>{SID_SISTEMA}</UserId>'
+            '<RunLevel>HighestAvailable</RunLevel></Principal></Principals>'
+            '<Settings><MultipleInstancesPolicy>IgnoreNew</MultipleInstancesPolicy>'
+            '<DisallowStartIfOnBatteries>false</DisallowStartIfOnBatteries>'
+            '<StopIfGoingOnBatteries>false</StopIfGoingOnBatteries>'
+            '<AllowStartOnDemand>true</AllowStartOnDemand><Enabled>true</Enabled><Hidden>true</Hidden>'
+            '<ExecutionTimeLimit>PT1H</ExecutionTimeLimit></Settings>'
+            '<Actions Context="Sistema"><Exec><Command>powershell.exe</Command>'
+            '<Arguments>-NoProfile -NonInteractive -ExecutionPolicy Bypass -WindowStyle Hidden'
+            f' -File "{script}"</Arguments></Exec></Actions></Task>')
+
+
+# A licenca da tarefa "desfazer" (SDDL): a conta de testes e NEGADA primeiro
+# (D-717: um teste nao pode mudar o Windows); o sistema e os administradores
+# mandam em tudo; quem entrou no Windows (AU) pode ler e mandar rodar - e
+# assim que o gancho de desinstalar, na conta do Kaique e sem administrador,
+# consegue dispara-la. A tarefa so roda o nosso script, numa pasta que so o
+# administrador grava.
+_LICENCA_DA_TAREFA = "D:(D;;FA;;;$sid)(A;;FA;;;SY)(A;;FA;;;BA)(A;;GRGX;;;AU)"
+
+
+def _comando_preparar_o_desfazer() -> str:
+    """O ultimo passo do ligar (D-731/D-733): grava o script do desfazer e cria a tarefa que o roda.
+
+    O script e `montar_script(plano_de_desfazer(), ...)`, o mesmo da etapa 5,
+    levado em base64 (um texto so, sem aspas para escapar). Cada ligar grava de
+    novo: a tarefa sempre roda o desfazer da versao que ligou por ultimo.
+    """
+    script = montar_script(plano_de_desfazer(), caminho_do_registro_do_desfazer(), continuar_depois_de_erro=True)
+    codificado = base64.b64encode(script.encode("utf-8")).decode("ascii")
+    return (f"[IO.File]::WriteAllText('{caminho_do_script_do_desfazer()}',"
+            f" [Text.Encoding]::UTF8.GetString([Convert]::FromBase64String('{codificado}')),"
+            f" (New-Object System.Text.UTF8Encoding $true));"
+            f" Register-ScheduledTask -Xml '{xml_da_tarefa_do_desfazer()}' -TaskName '{NOME_DA_TAREFA_DO_DESFAZER}'"
+            f" -TaskPath '\\{PASTA_DAS_TAREFAS}\\' -Force | Out-Null;"
+            f" $sid = (Get-LocalUser -Name {NOME_DA_CONTA}).SID.Value;"
+            f" $agenda = New-Object -ComObject Schedule.Service; $agenda.Connect();"
+            f" $agenda.GetFolder('\\{PASTA_DAS_TAREFAS}').GetTask('{NOME_DA_TAREFA_DO_DESFAZER}')"
+            f".SetSecurityDescriptor(\"{_LICENCA_DA_TAREFA}\", 0)")
+
+
+# ---------------------------------------------------------------------------
 # A REGRA: os tres planos de comandos (um lugar so)
 # ---------------------------------------------------------------------------
 
@@ -107,8 +340,12 @@ def plano_de_ligar() -> list[Passo]:
 
     Tudo com o que o proprio Windows traz, igual no Home e no Pro. A senha
     entra como `$SenhaDosTestes` (o executor a fornece por dentro).
+    Ligar de novo (depois de desligar, ou para trocar a senha) da certo e nao
+    repete nada (B3, 17/11/2026).
     """
     return [
+        # D-731: antes de tudo, anotar o que o computador ja tinha (so na 1a vez).
+        Passo("Anotar o que o computador ja tinha antes (D-731)", _comando_anotar_o_antes()),
         Passo("Instalar o Servidor OpenSSH do Windows",
               f"Add-WindowsCapability -Online -Name {CAPACIDADE_OPENSSH}"),
         Passo("Deixar o Servidor OpenSSH ligando sozinho com o Windows (D-711)",
@@ -118,8 +355,10 @@ def plano_de_ligar() -> list[Passo]:
         # faixa do Tailscale, presa a placa do Tailscale. O Wi-Fi da casa nao entra.
         Passo("Fechar a porta para todo mundo (regra larga do OpenSSH)",
               f"Disable-NetFirewallRule -Name {REGRA_LARGA_DO_OPENSSH}"),
+        # B3: a regra nossa e apagada antes (ligar de novo nao para no "ja existe").
         Passo("Abrir a porta so para a rede do Tailscale (D-705)",
-              f"New-NetFirewallRule -Name {NOME_DA_REGRA}"
+              f"Remove-NetFirewallRule -Name {NOME_DA_REGRA} -ErrorAction SilentlyContinue;"
+              f" New-NetFirewallRule -Name {NOME_DA_REGRA}"
               f" -DisplayName 'Editor de Impressao - testes a distancia'"
               f" -Direction Inbound -Protocol TCP -LocalPort {PORTA_SSH}"
               f" -RemoteAddress {FAIXAS_DO_TAILSCALE}"
@@ -127,24 +366,40 @@ def plano_de_ligar() -> list[Passo]:
         # A conta so dos testes (D-717): sem administrador (New-LocalUser nao
         # poe em nenhum grupo; acrescentamos SO ao grupo Usuarios pelo SID, que
         # e igual em qualquer idioma do Windows). A senha e $SenhaDosTestes.
+        # B3: se a conta nossa ja existe (desligar so a desativa), ela e
+        # reativada com a senha dada; uma conta com o nosso nome que nao e nossa
+        # faz o ligar parar sem mexer nela.
         Passo("Criar a conta so dos testes, sem poder de administrador (D-717)",
-              f"New-LocalUser -Name {NOME_DA_CONTA} -Password {VARIAVEL_DA_SENHA}"
+              f"$u = Get-LocalUser -Name {NOME_DA_CONTA} -ErrorAction SilentlyContinue;"
+              f" if ($u) {{ if ($u.Description -ne '{DESCRICAO_DA_CONTA}')"
+              f" {{ throw 'Ja existe uma conta {NOME_DA_CONTA} que nao foi criada pelo programa: nada mudou nela.' }};"
+              f" Set-LocalUser -Name {NOME_DA_CONTA} -Password {VARIAVEL_DA_SENHA}"
+              f" -AccountNeverExpires -PasswordNeverExpires $true;"
+              f" Enable-LocalUser -Name {NOME_DA_CONTA} }}"
+              f" else {{ New-LocalUser -Name {NOME_DA_CONTA} -Password {VARIAVEL_DA_SENHA}"
               f" -FullName 'Testes do Editor de Impressao'"
-              f" -Description 'Conta so para os testes a distancia'"
+              f" -Description '{DESCRICAO_DA_CONTA}'"
               f" -AccountNeverExpires -PasswordNeverExpires;"
-              f" Add-LocalGroupMember -SID {SID_USUARIOS} -Member {NOME_DA_CONTA}",
+              f" Add-LocalGroupMember -SID {SID_USUARIOS} -Member {NOME_DA_CONTA} }}",
               precisa_senha=True),
         # Esconder da tela de entrada (D-717): valor 0 (DWORD) no UserList.
+        # B5 (17/11/2026): a chave so e criada se nao existe; o New-Item -Force
+        # numa chave que ja existe pode recria-la e apagar as outras contas
+        # escondidas do dono. O New-ItemProperty -Force so mexe no nosso valor.
         Passo("Esconder a conta de testes da tela de entrada (D-717)",
-              f"New-Item -Path '{CHAVE_USERLIST}' -Force | Out-Null;"
+              f"if (-not (Test-Path -Path '{CHAVE_USERLIST}'))"
+              f" {{ New-Item -Path '{CHAVE_USERLIST}' -Force | Out-Null }};"
               f" New-ItemProperty -Path '{CHAVE_USERLIST}' -Name {NOME_DA_CONTA}"
               f" -Value 0 -PropertyType DWord -Force | Out-Null"),
         # So a conta de testes entra pelo comando de longe (nem a conta do
-        # Kaique); entra com senha, nao chave (D-711).
+        # Kaique); entra com senha, nao chave (D-711). As linhas vao entre as
+        # marcas e ANTES do primeiro "Match" (B2), sem repetir (B3).
         Passo("Deixar entrar pelo comando de longe so a conta de testes (D-711)",
-              f"Add-Content -Path '{SSHD_CONFIG}' -Value"
-              f" \"`nAllowUsers {NOME_DA_CONTA}`nPasswordAuthentication yes`nMaxAuthTries 3\";"
-              f" Restart-Service -Name sshd"),
+              f"{_comando_por_o_bloco(SSHD_CONFIG)}; Restart-Service -Name sshd"),
+        # D-731/D-733: a tarefa "desfazer", que o gancho de desinstalar manda
+        # rodar. Depois da conta (a licenca nega a conta de testes pelo SID).
+        Passo("Preparar o desfazer para quando o programa for desinstalado (D-731)",
+              _comando_preparar_o_desfazer()),
     ]
 
 
@@ -152,11 +407,21 @@ def plano_de_desligar() -> list[Passo]:
     """Os passos para desligar: para o servico e fecha a entrada (estudo 2.4).
 
     A conta e os projetos de teste ficam guardados (a conta so e desativada).
+    B4 (17/11/2026): se o OpenSSH ja era do dono antes do 1o ligar (caderninho),
+    ele nao e desativado: o servico e a regra larga voltam como estavam e as
+    nossas linhas saem do sshd_config. Sem caderninho, para como sempre parou.
     """
     return [
-        Passo("Parar o Servidor OpenSSH e tira-lo do arranque do Windows",
-              "Stop-Service -Name sshd -ErrorAction SilentlyContinue;"
-              " Set-Service -Name sshd -StartupType Disabled"),
+        Passo("Parar o Servidor OpenSSH e tira-lo do arranque do Windows (ou devolver o do dono como estava)",
+              f"{_ler_o_antes()}; if ($antes -and $antes.openssh_ja_existia) {{"
+              f" {_comando_tirar_o_bloco(SSHD_CONFIG)};"
+              f" if ($antes.sshd_inicio) {{ Set-Service -Name sshd -StartupType $antes.sshd_inicio }};"
+              f" if ($antes.sshd_rodando) {{ Restart-Service -Name sshd }}"
+              f" else {{ Stop-Service -Name sshd -ErrorAction SilentlyContinue }};"
+              f" if ($antes.regra_larga_ligada) {{ Enable-NetFirewallRule -Name {REGRA_LARGA_DO_OPENSSH} }};"
+              f" Anotar 'FICA | o Servidor OpenSSH ja era do dono: voltou como estava' }}"
+              f" else {{ Stop-Service -Name sshd -ErrorAction SilentlyContinue;"
+              f" Set-Service -Name sshd -StartupType Disabled }}"),
         Passo("Fechar a porta do Tailscale (apagar a regra do firewall)",
               f"Remove-NetFirewallRule -Name {NOME_DA_REGRA} -ErrorAction SilentlyContinue"),
         Passo("Desativar a conta de testes (os projetos de teste ficam guardados)",
@@ -165,31 +430,112 @@ def plano_de_desligar() -> list[Passo]:
 
 
 def plano_de_desfazer() -> list[Passo]:
-    """Os passos para desfazer TUDO (etapa 5, D-722): tira o OpenSSH, apaga a
-    conta e o perfil, limpa o registro e o sshd_config.
+    """Os passos para desfazer TUDO o que o ligar pos, e SO isso (D-722, D-731).
 
-    So a etapa 5 roda isto, no PC do Samuel, e com a lista do que foi desfeito.
-    O que fazer ao DESINSTALAR o programa ainda nao esta decidido (pergunta ao
-    Samuel): NAO entra aqui como automatico.
+    Dois caminhos, o mesmo plano (CLAUDE.md 11.12):
+      - desinstalar o programa: o gancho manda rodar a tarefa "desfazer"
+        (`mandar_desfazer`), que roda este plano gravado pelo ligar;
+      - a etapa 5, no PC do Samuel: a mesma tarefa, ou este plano pelo executor.
+    Cada passo que poderia atingir algo do dono confere antes o caderninho e a
+    descricao da conta. Na tarefa, um passo que falha nao para os outros, e a
+    tarefa e o caderninho so se apagam se tudo deu certo. Os projetos do Kaique
+    nunca sao citados; o perfil da conta de testes e achado pelo SID dela.
     """
+    # Primeiro o desligar (para o sshd: nenhum teste novo entra), depois fechar
+    # o que a conta de testes ainda estiver rodando, e so entao apagar.
     passos = list(plano_de_desligar())
     passos += [
-        Passo("Apagar a conta de testes",
-              f"Remove-LocalUser -Name {NOME_DA_CONTA} -ErrorAction SilentlyContinue"),
-        Passo("Apagar o perfil da conta de testes",
-              f"Get-CimInstance Win32_UserProfile | Where-Object {{ $_.LocalPath -like '*\\{NOME_DA_CONTA}' }}"
-              f" | Remove-CimInstance -ErrorAction SilentlyContinue"),
+        Passo("Fechar o que a conta de testes estiver rodando (um teste de longe no meio)",
+              _so_se_a_conta_foi_nossa(
+                  f"Get-Process -IncludeUserName | Where-Object {{ $_.UserName -like '*\\{NOME_DA_CONTA}' }}"
+                  f" | Stop-Process -Force -ErrorAction SilentlyContinue")),
+        # O perfil antes da conta: o SID e lido da conta, que ainda existe.
+        Passo("Apagar o perfil da conta de testes (achado pelo SID da conta)",
+              _so_se_a_conta_foi_nossa(
+                  f"$sid = (Get-LocalUser -Name {NOME_DA_CONTA}).SID.Value;"
+                  f" Get-CimInstance -ClassName Win32_UserProfile | Where-Object {{ $_.SID -eq $sid }}"
+                  f" | Remove-CimInstance")),
         Passo("Tirar a conta de testes do registro (UserList)",
-              f"Remove-ItemProperty -Path '{CHAVE_USERLIST}' -Name {NOME_DA_CONTA}"
-              f" -ErrorAction SilentlyContinue"),
-        Passo("Devolver o sshd_config (tirar as linhas acrescentadas)",
-              f"(Get-Content '{SSHD_CONFIG}') | Where-Object {{ $_ -notmatch"
-              f" 'AllowUsers {NOME_DA_CONTA}|PasswordAuthentication yes|MaxAuthTries 3' }}"
-              f" | Set-Content '{SSHD_CONFIG}'"),
-        Passo("Tirar o Servidor OpenSSH do Windows",
-              f"Remove-WindowsCapability -Online -Name {CAPACIDADE_OPENSSH}"),
+              _so_se_a_conta_foi_nossa(
+                  f"Remove-ItemProperty -Path '{CHAVE_USERLIST}' -Name {NOME_DA_CONTA}"
+                  f" -ErrorAction SilentlyContinue;"
+                  f" if ($antes -and -not $antes.userlist_existia -and (Test-Path -Path '{CHAVE_USERLIST}')"
+                  f" -and -not (Get-Item -Path '{CHAVE_USERLIST}').Property)"
+                  f" {{ Remove-Item -Path '{CHAVE_USERLIST}' }}")),
+        Passo("Apagar a conta de testes",
+              _so_se_a_conta_foi_nossa(f"Remove-LocalUser -Name {NOME_DA_CONTA}")),
+        Passo("Devolver o sshd_config (tirar so o que esta entre as marcas)",
+              _comando_tirar_o_bloco(SSHD_CONFIG)),
+        Passo("Apagar a regra larga do OpenSSH, se veio com o OpenSSH que o programa pos",
+              _so_se_o_openssh_foi_nosso(
+                  f"if (-not $antes.regra_larga_existia)"
+                  f" {{ Remove-NetFirewallRule -Name {REGRA_LARGA_DO_OPENSSH} -ErrorAction SilentlyContinue }}")),
+        Passo("Tirar o Servidor OpenSSH do Windows (so se foi o programa que instalou)",
+              _so_se_o_openssh_foi_nosso(f"Remove-WindowsCapability -Online -Name {CAPACIDADE_OPENSSH}")),
+        Passo("Apagar da pasta ssh so o que nasceu depois (e a pasta, se ela nao existia)",
+              _so_se_o_openssh_foi_nosso(
+                  f"$p = '{PASTA_SSH}'; if (Test-Path -LiteralPath $p) {{"
+                  f" if (-not $antes.pasta_ssh_existia) {{ Remove-Item -LiteralPath $p -Recurse -Force }}"
+                  f" else {{ $ja = @($antes.pasta_ssh_itens);"
+                  f" Get-ChildItem -LiteralPath $p -Recurse -Force -Name | Where-Object {{ $ja -notcontains $_ }}"
+                  f" | Sort-Object -Property Length -Descending"
+                  f" | ForEach-Object {{ Remove-Item -LiteralPath (Join-Path $p $_) -Recurse -Force"
+                  f" -ErrorAction SilentlyContinue }} }} }}")),
+        Passo("Apagar o caderninho, o script e a tarefa do desfazer (so se tudo deu certo)",
+              f"Remove-Item -LiteralPath '{caminho_do_antes()}' -Force -ErrorAction SilentlyContinue;"
+              f" Remove-Item -LiteralPath '{caminho_do_script_do_desfazer()}' -Force -ErrorAction SilentlyContinue;"
+              f" Anotar 'OK   | a tarefa do desfazer sai agora';"
+              f" Unregister-ScheduledTask -TaskName '{NOME_DA_TAREFA_DO_DESFAZER}'"
+              f" -TaskPath '\\{PASTA_DAS_TAREFAS}\\' -Confirm:$false -ErrorAction SilentlyContinue",
+              so_se_tudo_certo=True),
     ]
     return passos
+
+
+def montar_script(passos: list[Passo], registro: str, blob: str | None = None,
+                  continuar_depois_de_erro: bool = False) -> str:
+    """O texto do script PowerShell que roda os passos (o unico montador).
+
+    - Cada passo vai num try; o registro ganha "OK", "ERRO" ou "PULADO" com o
+      nome do passo (a lista do que foi feito, D-722).
+    - `blob`: o arquivo da senha cifrada, SO quando um passo precisa da senha
+      (achado de 17/11/2026: antes o script lia o arquivo sempre e, sem ele,
+      parava na primeira linha - o desligar e o desfazer nunca rodariam).
+    - `continuar_depois_de_erro`: so o desfazer usa. Um passo que falha nao
+      para os outros; o passo `so_se_tudo_certo` e pulado se algum falhou; o
+      script sai com codigo 1 se algum falhou. Sem isto (o ligar), para no
+      primeiro erro, como sempre.
+    """
+    linhas = ["$ErrorActionPreference = 'Stop'"]
+    if blob is not None:
+        linhas += [
+            f"$blob = Get-Content -Raw '{blob}'",
+            # $SenhaDosTestes (o nome que os passos usam) vem da DPAPI, so na memoria.
+            f"{VARIAVEL_DA_SENHA} = ConvertTo-SecureString $blob",
+            f"Remove-Item -Path '{blob}' -Force -ErrorAction SilentlyContinue",
+        ]
+    linhas += [
+        f"function Anotar($t) {{ Add-Content -LiteralPath '{registro}' -Value $t }}",
+        "$HouveErro = $false",
+        "Anotar ('--- ' + (Get-Date -Format 'yyyy-MM-dd HH:mm:ss'))",
+    ]
+    for passo in passos:
+        nome = passo.nome.replace("'", "''")
+        tentar = ["try {",
+                  f"  {passo.comando}",
+                  f"  Anotar 'OK   | {nome}'",
+                  "} catch {",
+                  f"  Anotar ('ERRO | {nome} | ' + $_.Exception.Message)",
+                  "  $HouveErro = $true" if continuar_depois_de_erro else "  throw",
+                  "}"]
+        if passo.so_se_tudo_certo:
+            linhas += ["if ($HouveErro) {", f"  Anotar 'PULADO | {nome} (um passo antes falhou)'", "} else {",
+                       *tentar, "}"]
+        else:
+            linhas += tentar
+    if continuar_depois_de_erro:
+        linhas.append("if ($HouveErro) { exit 1 }")
+    return "\n".join(linhas)
 
 
 # ---------------------------------------------------------------------------
@@ -205,6 +551,12 @@ class Executor:
     """
 
     def aplicar(self, passos: list[Passo], senha: str) -> Resultado:  # pragma: no cover
+        raise NotImplementedError
+
+    def rodar_a_tarefa(self, nome: str) -> Resultado:  # pragma: no cover
+        """Manda rodar uma tarefa do Windows ja criada e volta logo, SEM esperar
+        ela terminar e SEM pedir licenca de administrador (D-731: o gancho de
+        desinstalar roda sem administrador e tem 30 s)."""
         raise NotImplementedError
 
 
@@ -229,6 +581,16 @@ class ExecutorWindows(Executor):
         from core._testes_a_distancia_windows import aplicar_no_windows
 
         return aplicar_no_windows(passos, senha)
+
+    def rodar_a_tarefa(self, nome: str) -> Resultado:
+        if "PYTEST_CURRENT_TEST" in os.environ:
+            raise RuntimeError(
+                "ExecutorWindows nao roda sob o pytest: troque por um de mentira.")
+        if sys.platform != "win32":
+            return Resultado(False, mensagem="Os testes a distancia so funcionam no Windows.")
+        from core._testes_a_distancia_windows import rodar_a_tarefa_no_windows
+
+        return rodar_a_tarefa_no_windows(nome, TEMPO_MAXIMO_NO_GANCHO)
 
 
 # O executor de hoje. Troca-se com `definir_executor` (os testes poem um de
@@ -311,3 +673,19 @@ def desligar() -> Resultado:
     resultado = executor_atual().aplicar(plano_de_desligar(), senha="")
     configuracoes.escrever(CHAVE_LIGADO, False)
     return resultado
+
+
+def mandar_desfazer() -> Resultado:
+    """Manda rodar a tarefa "desfazer" (D-731/D-733) e volta logo. Nunca levanta.
+
+    Quem chama: o gancho de desinstalar (atualizacao.ao_desinstalar), na conta
+    do Kaique e sem administrador; e a etapa 5 (D-722), para desfazer no PC do
+    Samuel com o mesmo plano. A tarefa (criada pelo ligar) roda como o sistema
+    o `plano_de_desfazer` e anota cada passo em `caminho_do_registro_do_desfazer`.
+    Se os testes nunca foram ligados, a tarefa nao existe: volta "nao deu certo"
+    com a mensagem do Windows, e nada mais acontece.
+    """
+    try:
+        return executor_atual().rodar_a_tarefa(nome_da_tarefa_do_desfazer())
+    except Exception as erro:  # noqa: BLE001 - o gancho de desinstalar nunca pode quebrar
+        return Resultado(False, mensagem=f"{type(erro).__name__}: {erro}")

@@ -1303,8 +1303,21 @@ def ao_atualizar(_versao: str, portatil: Callable[[], bool] = e_portatil) -> Non
 
 
 def ao_desinstalar(_versao: str, portatil: Callable[[], bool] = e_portatil) -> None:
-    """Gancho do Velopack, antes de desinstalar: apaga a tarefa. Os projetos ficam. Nunca no portatil."""
+    """Gancho do Velopack, antes de desinstalar: desfaz os testes a distancia e apaga a tarefa.
+
+    Os projetos ficam. Nunca no portatil.
+    D-731 (17/11/2026; alternativa B da D-733): este gancho roda SEM licenca de
+    administrador e e morto depois de 30 s. Por isso ele so MANDA rodar a
+    tarefa "desfazer" que o ligar dos testes a distancia criou (ela roda como o
+    sistema, por tras, e tira o OpenSSH se foi nosso, a regra, a conta e o
+    perfil) e volta logo. Sem a tarefa (os testes nunca ligados), so anota.
+    """
     if not portatil():
+        from core import testes_a_distancia
+
+        feito = testes_a_distancia.mandar_desfazer()
+        registrar(f"desfazer os testes à distância (D-731): {'mandado' if feito.ok else 'NÃO mandado'}"
+                  f" ({feito.mensagem})")
         apagar_tarefa()
 
 
