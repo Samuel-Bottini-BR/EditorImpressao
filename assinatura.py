@@ -3,7 +3,7 @@
 O que e, em portugues: o PC do Samuel tem uma chave secreta (a "privada"), que
 nunca sai de la e nunca vai para o GitHub. Com ela, o comando de publicar
 (publicar_versao_kaique.py) "assina" cada versao: escreve um arquivo pequeno
-(EditorImpressao-<versao>.assinatura) que diz o nome do pacote, a versao e a
+(<versao.ID_DO_PACOTE>-<versao>.assinatura) que diz o nome do pacote, a versao e a
 soma SHA-256 do arquivo do programa, e uma assinatura dessas linhas. O
 programa do Kaique leva so a parte publica da chave (CHAVE_PUBLICA_DO_SAMUEL,
 abaixo) e, ANTES de baixar e instalar, confere a assinatura e a soma. Quem nao
@@ -214,12 +214,12 @@ class VersaoAssinada:
 
     pacote: str      # o ID do pacote do Velopack (versao.ID_DO_PACOTE)
     versao: str      # "1.2.0"
-    arquivo: str     # "EditorImpressao-1.2.0-full.nupkg"
+    arquivo: str     # "<ID_DO_PACOTE>-1.2.0-full.nupkg"
     sha256: str      # soma do arquivo, em hexadecimal minusculo
 
 
 def nome_do_arquivo_da_assinatura(pacote: str, versao: str) -> str:
-    """'EditorImpressao-1.2.0.assinatura': o nome publicado ao lado do pacote."""
+    """'<pacote>-1.2.0.assinatura': o nome publicado ao lado do pacote."""
     return f"{pacote}-{versao}.assinatura"
 
 

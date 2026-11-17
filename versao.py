@@ -28,10 +28,30 @@ from __future__ import annotations
 
 VERSAO = "1.1.0"
 
-# O nome do pacote para o Velopack (a pasta em Arquivos de Programas, os
-# arquivos EditorImpressao-<versao>-full.nupkg). Trocar depois de instalado no
-# Kaique faz o Velopack achar que e OUTRO programa: nunca trocar.
-ID_DO_PACOTE = "EditorImpressao"
+# O nome INTERNO do pacote para o Velopack (o --packId do vpk). Aparece so em
+# lugares tecnicos: os arquivos <ID>-<versao>-full.nupkg e <ID>-<versao>.assinatura
+# publicados, a chave do desinstalador no registro do Windows (MSI:<ID>) e a
+# pasta de reserva do Velopack, %LOCALAPPDATA%\<ID>. O Kaique NAO ve este nome:
+# a pasta em Arquivos de Programas, o nome na lista de programas e os atalhos
+# vem do titulo do pacote (empacotar.TITULO_DO_PACOTE, "Editor de Impressão").
+#
+# A REGRA (D-763, Samuel 17/11/2026: "ok, pode fazer"): este nome NUNCA e o da
+# pasta dos dados do programa (historico.pasta_de_dados, %LOCALAPPDATA%\EditorImpressao,
+# onde moram os projetos). O Velopack usa %LOCALAPPDATA%\<ID> como pasta de
+# reserva (grava Update.exe e packages\ a cada abertura na conta do Kaique) e
+# o desinstalador do .msi limpa essa pasta. Ate 17/11 o nome era
+# "EditorImpressao", igual ao da pasta dos projetos, por acaso: a prova de
+# 17/11 (relatorios/velopack-pasta-2026-11-17/) mostrou o desinstalador
+# apagando a pasta inteira com um projeto de mentira dentro. A prova
+# tests/test_nome_do_pacote.py cobra a regra.
+#
+# Por que PODE trocar agora e NUNCA MAIS depois: o Velopack reconhece o
+# programa instalado por este nome (e o .msi se registra no Windows com ele).
+# Em 17/11/2026 nenhum pacote do Velopack foi instalado de verdade (nem no notebook do Kaique, nem no PC do Samuel; a de 28/10 do Kaique e do
+# Inno, que tem outro nome, atualizacao.APPID_DO_INNO). Depois da primeira
+# instalacao de verdade, trocar faz o Velopack achar que e OUTRO programa: a
+# atualizacao nao acha a instalada e ficam dois programas no computador.
+ID_DO_PACOTE = "EditorImpressaoPrograma"
 
 
 def numeros(versao: str) -> tuple[int, int, int]:

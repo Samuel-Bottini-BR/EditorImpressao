@@ -71,8 +71,16 @@ ONDE FICAM AS COISAS
   ajudante roda como SYSTEM, e a conta dos testes a distancia (por onde a
   gerente le, D-719) nao enxerga a pasta do Kaique; o ProgramData todas as
   contas leem.
-- Os projetos do Kaique (%LOCALAPPDATA%\\EditorImpressao) nunca sao tocados:
-  o Velopack troca so a pasta do programa.
+- Os projetos do Kaique ficam em %LOCALAPPDATA%\\EditorImpressao
+  (historico.pasta_de_dados). O Velopack troca a pasta do programa, mas NAO so
+  ela: quando a pasta do programa nao aceita gravacao (a janela do Kaique, sem
+  administrador, em Arquivos de Programas), ele usa uma pasta de reserva,
+  %LOCALAPPDATA%\\<nome do pacote>, e grava ali Update.exe e packages\\ a cada
+  abertura; e o desinstalador do .msi limpa %LOCALAPPDATA%\\<nome do pacote>
+  (prova de 17/11/2026, relatorios/velopack-pasta-2026-11-17/). Por isso o
+  nome do pacote (versao.ID_DO_PACOTE, "EditorImpressaoPrograma") NUNCA e o
+  nome da pasta dos projetos (D-763; tests/test_nome_do_pacote.py): a pasta de
+  reserva e uma pasta so do Velopack, e os projetos ficam fora do alcance dele.
 
 A REGRA NUM LUGAR SO (CLAUDE.md §11.12): o que fazer com uma versao nova e
 procurar_e_preparar; o que a tela avisa e o_que_avisar (que usa situacao); uma

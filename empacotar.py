@@ -1014,6 +1014,15 @@ TITULO_DO_PACOTE = "Editor de Impressão"        # nome no menu Iniciar e no ata
 AUTORES_DO_PACOTE = "Instituto de Preservacao de Livros"   # o mesmo do instalador.iss
 # Onde o dotnet tool install -g poe o vpk (o empacotador do Velopack).
 LUGARES_DO_VPK = [Path.home() / ".dotnet" / "tools" / "vpk.exe"]
+# A versao do vpk, PRESA (D-763): a mesma do velopack do pip (requirements.txt,
+# velopack==...; tests/test_nome_do_pacote.py cobra que as duas batem). O vpk
+# leva para dentro do .msi a limpeza do desinstalador: a 1.2.161 foi a provada
+# em 17/11/2026 (relatorios/velopack-pasta-2026-11-17/ e
+# relatorios/nome-pacote-2026-11-17/). SUBIR DE VERSAO EXIGE REPETIR A PROVA:
+# o Velopack mais novo tem outra limpeza (UserCleanupDeferred), que roda como
+# quem desinstala e apaga %LocalAppData%\<nome do pacote> de proposito.
+VERSAO_DO_VPK = "1.2.161"
+COMO_INSTALAR_O_VPK = f"dotnet tool install -g vpk --version {VERSAO_DO_VPK}"
 # Dentro do pacote do Velopack (.nupkg, um zip), a pasta do programa fica em lib\app\.
 PASTA_NO_NUPKG = "lib/app/"
 
@@ -1068,7 +1077,7 @@ def comando_do_vpk(vpk: Path, pasta: Path, saida: Path, versao_do_pacote: str) -
 
 
 def nupkg_inteiro(saida: Path, versao_do_pacote: str) -> Path:
-    """O pacote inteiro que o vpk gera: <saida>\\EditorImpressao-<versao>-full.nupkg."""
+    """O pacote inteiro que o vpk gera: <saida>\\<versao.ID_DO_PACOTE>-<versao>-full.nupkg."""
     import versao
 
     return Path(saida) / f"{versao.ID_DO_PACOTE}-{versao_do_pacote}-full.nupkg"
@@ -1110,7 +1119,7 @@ def construir_pacote_do_velopack(saida: Path, versao_do_pacote: str) -> Path | N
     print("\n=== Pacote do Velopack (versão para o Kaique) ===")
     vpk = achar_vpk()
     if vpk is None:
-        print("  PAREI: não achei o vpk. Instale com: dotnet tool install -g vpk")
+        print(f"  PAREI: não achei o vpk. Instale com: {COMO_INSTALAR_O_VPK}")
         return None
     pasta = construir_pasta()
     if pasta is None or _PECAS is None:

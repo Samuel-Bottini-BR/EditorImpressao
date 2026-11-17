@@ -1,0 +1,11 @@
+Testes no PC, um arquivo por vez, codigo novo (17/11/2026), QT_QPA_PLATFORM=offscreen
+test_decisoes_atualizacao: 1 failed, 37 passed in 1.52s
+test_assinatura: 16 passed in 0.62s
+test_decisoes_desinstalar: 46 passed in 19.88s
+test_decisoes_desinstalar_pasta: 6 passed in 2.91s
+test_decisoes_ajudante_da_atualizacao: 37 passed, 1 warning in 11.24s
+test_decisoes_preparo_d749: 8 passed in 1.98s
+test_decisoes_testes_a_distancia: 13 passed in 0.59s
+test_empacotar: 41 passed in 3.21s
+test_sem_janela_na_tela: 8 passed in 1.44s
+test_nome_do_pacote: 4 passed in 0.32s
