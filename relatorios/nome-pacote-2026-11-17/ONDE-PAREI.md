@@ -104,7 +104,7 @@ título do pacote são o nome da pasta dos dados**. O título não mudou (ele j�
 - [x] Testes no PC, um por vez.
 - [x] GitHub, 1ª rodada (44190676442, código de `13e897d7`): só a parte 3 falhou, com o teste antigo da pergunta.
 - [x] Relatório nos três formatos.
-- [ ] GitHub, rodada final (no último commit): ver o relatório.
+- [x] GitHub, rodada final (44193535388, `b076169e`): só a parte 3 falhou, com o mesmo teste antigo da pergunta.
 
 ## Sobras fora do projeto (criadas por esta tarefa)
 - `D:\agente_temp_testes\nome-pacote\` (~185 MB): o programa de mentira, os pacotes, os registros do `.msi`, as fotos.

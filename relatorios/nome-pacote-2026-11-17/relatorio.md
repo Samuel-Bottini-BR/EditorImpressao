@@ -101,7 +101,7 @@ projetos`. Nada foi gravado, mudado ou apagado nela. `%LOCALAPPDATA%\EditorImpre
   `test_empacotar` 41; `test_sem_janela_na_tela` 8; `test_nome_do_pacote` 5. Todos passaram, menos aquele um.
 - **GitHub, 1ª rodada (44190676442, código de `13e897d7`):** só falhou a parte 3, e só com
   `test_d724_o_que_o_publicar_assina_o_programa_aceita` (o da pergunta). Botões e prints e as partes 2, 4 e 5 passaram.
-- **GitHub, rodada final:** ver a entrega à gerente.
+- **GitHub, rodada final (44193535388, commit `b076169e`):** a mesma coisa. Passaram os botões e prints da janela real e as partes 1, 2, 4 e 5; a parte 3 falhou só com `test_d724_o_que_o_publicar_assina_o_programa_aceita` (1 falhou, 37 passaram nesse arquivo). Nenhum outro teste falhou.
 
 ## Como cumpri cada decisão
 
