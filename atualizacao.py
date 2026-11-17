@@ -374,13 +374,84 @@ class Fonte:
         return destino
 
 
-def fonte_da_linha(argumentos: list[str]) -> Fonte:
-    """--fonte <pasta> (so no ensaio e nos testes); sem ele, o GitHub."""
+def fonte_da_linha(argumentos: list[str], de_teste: Callable[[], "Fonte | None"] | None = None) -> Fonte:
+    """A UNICA escolha de onde vem as versoes, nos modos escondidos (o ajudante, o conferir).
+
+    1. --fonte <pasta> (o ensaio e os testes passam na linha de comando);
+    2. senao, a fonte de teste da etapa 5 (fonte_de_teste: um arquivo que so
+       o administrador grava; no notebook do Kaique ele nao existe);
+    3. senao, o GitHub do projeto (Fonte.padrao()).
+    Em todos os casos a assinatura e conferida igual (D-724).
+    """
     if ARG_FONTE in argumentos:
         posicao = argumentos.index(ARG_FONTE)
         if posicao + 1 < len(argumentos):
             return Fonte(argumentos[posicao + 1])
-    return Fonte.padrao()
+    return (de_teste or fonte_de_teste)() or Fonte.padrao()
+
+
+# A fonte de teste da etapa 5 (pedido da gerente, 17/11/2026): para a etapa 5
+# testar a atualizacao de mentira no programa INSTALADO de verdade, sem
+# publicar no GitHub. So vale se o arquivo for do administrador ou do sistema
+# (o dono do arquivo): uma conta comum consegue criar arquivo no ProgramData,
+# mas ele fica com ela de dona, e e ignorado. Mesmo valendo, so entra versao
+# com a assinatura do Samuel (D-724). O Kaique nunca tem este arquivo.
+ARQUIVO_DA_FONTE_DE_TESTE = "fonte-de-teste.txt"
+DONOS_ACEITOS = ("S-1-5-32-544", "S-1-5-18")  # Administradores, o sistema
+
+
+def caminho_da_fonte_de_teste() -> Path:
+    """%ProgramData%\\EditorImpressao\\fonte-de-teste.txt (lido na hora: os testes trocam a variavel)."""
+    return pasta_do_estado().parent / ARQUIVO_DA_FONTE_DE_TESTE
+
+
+def _dono_do_arquivo(caminho: Path) -> str | None:
+    """O SID do dono do arquivo ("S-1-5-32-544"...), ou None se nao deu para ler. So Windows."""
+    if sys.platform != "win32":
+        return None
+    import ctypes
+    from ctypes import wintypes
+
+    advapi32, kernel32 = ctypes.windll.advapi32, ctypes.windll.kernel32
+    dono, descritor = ctypes.c_void_p(), ctypes.c_void_p()
+    # SE_FILE_OBJECT = 1, OWNER_SECURITY_INFORMATION = 1
+    if advapi32.GetNamedSecurityInfoW(wintypes.LPCWSTR(str(caminho)), 1, 1, ctypes.byref(dono),
+                                      None, None, None, ctypes.byref(descritor)) != 0:
+        return None
+    texto = wintypes.LPWSTR()
+    try:
+        if not advapi32.ConvertSidToStringSidW(dono, ctypes.byref(texto)):
+            return None
+        sid = texto.value
+        kernel32.LocalFree(texto)
+        return sid
+    finally:
+        kernel32.LocalFree(descritor)
+
+
+def fonte_de_teste(dono: Callable[[Path], str | None] = _dono_do_arquivo) -> "Fonte | None":
+    """A fonte de teste da etapa 5, ou None (o normal: o arquivo nao existe).
+
+    O arquivo tem uma linha: a pasta com as versoes de mentira (como a pasta do
+    ensaio). Ignorado, com uma linha no registro, se: o dono nao e o
+    administrador nem o sistema, ou a linha nao e uma pasta que existe.
+    """
+    arquivo = caminho_da_fonte_de_teste()
+    try:
+        if not arquivo.is_file():
+            return None
+        linhas = arquivo.read_text(encoding="utf-8-sig").strip().splitlines()
+    except OSError:
+        return None
+    if dono(arquivo) not in DONOS_ACEITOS:
+        registrar(f"fonte de teste ignorada: {arquivo} não é do administrador")
+        return None
+    pasta = linhas[0].strip().strip('"') if linhas else ""
+    if not pasta or not Path(pasta).is_dir():
+        registrar(f"fonte de teste ignorada: \"{pasta}\" não é uma pasta")
+        return None
+    registrar(f"fonte de teste (etapa 5): as versões vêm de {pasta}")
+    return Fonte(pasta)
 
 
 # ---------------------------------------------------------------------------

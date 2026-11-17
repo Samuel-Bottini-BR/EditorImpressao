@@ -393,3 +393,78 @@ def test_regra_num_lugar_so_todos_os_caminhos_chamam_o_ajudante_pelo_mesmo_coman
     assert pedidos == [atualizacao.comando_de_rodar_a_tarefa()] * 2
     texto = Path(atualizacao.__file__).read_text(encoding="utf-8")
     assert texto.count('"/Run"') == 1, "o schtasks /Run está escrito num lugar só"
+
+
+# ---------------------------------------------------------------------------
+# A fonte de teste da etapa 5 (pedido da gerente, 17/11/2026)
+# ---------------------------------------------------------------------------
+
+ADMIN, KAIQUE = "S-1-5-32-544", "S-1-5-21-1-2-3-1001"
+
+
+def _arquivo_da_fonte(pasta: Path) -> Path:
+    arquivo = atualizacao.caminho_da_fonte_de_teste()
+    arquivo.parent.mkdir(parents=True, exist_ok=True)
+    arquivo.write_text(str(pasta) + "\n", encoding="utf-8")
+    return arquivo
+
+
+def test_etapa5_sem_o_arquivo_as_versoes_vem_do_github():
+    """17/11/2026: no notebook do Kaique o arquivo nao existe: tudo como sempre (o GitHub)."""
+    assert atualizacao.fonte_de_teste(dono=_proibido) is None
+    assert atualizacao.fonte_da_linha([]).endereco == atualizacao.REPOSITORIO
+
+
+def test_etapa5_o_arquivo_do_administrador_aponta_a_pasta_de_teste(tmp_path):
+    """17/11/2026: o arquivo que so o administrador grava aponta a pasta da versao de mentira."""
+    (tmp_path / "servidor").mkdir()
+    _arquivo_da_fonte(tmp_path / "servidor")
+    fonte = atualizacao.fonte_de_teste(dono=lambda p: ADMIN)
+    assert fonte is not None and fonte.endereco == str(tmp_path / "servidor") and not fonte.e_github
+    # a mesma regra de sempre: --fonte na linha vence; sem ele, a fonte de teste
+    assert atualizacao.fonte_da_linha([], de_teste=lambda: fonte) is fonte
+    assert atualizacao.fonte_da_linha([atualizacao.ARG_FONTE, "outra"], de_teste=_proibido).endereco == "outra"
+    # o conferir, reaberto pelo Velopack, recebe a mesma fonte
+    assert atualizacao._argumentos_da_fonte(fonte) == [atualizacao.ARG_FONTE, str(tmp_path / "servidor")]
+
+
+def test_etapa5_arquivo_de_conta_comum_e_ignorado(tmp_path):
+    """17/11/2026: uma conta comum consegue criar o arquivo, mas ele fica dela e e ignorado."""
+    (tmp_path / "servidor").mkdir()
+    _arquivo_da_fonte(tmp_path / "servidor")
+    assert atualizacao.fonte_de_teste(dono=lambda p: KAIQUE) is None
+    assert atualizacao.fonte_de_teste(dono=lambda p: None) is None
+    assert "não é do administrador" in atualizacao.caminho_do_registro().read_text(encoding="utf-8")
+    _arquivo_da_fonte(tmp_path / "nao-existe")
+    assert atualizacao.fonte_de_teste(dono=lambda p: ADMIN) is None
+
+
+def test_etapa5_pela_fonte_de_teste_a_assinatura_e_conferida_igual(tmp_path):
+    """17/11/2026 / D-724: a versao de mentira assinada por outra chave e recusada antes de baixar."""
+    import assinatura
+
+    class Pacote:
+        PackageId, Version, SHA256 = "EditorImpressao", "9.9.9", "ab" * 32
+        FileName = "EditorImpressao-9.9.9-full.nupkg"
+
+    class Gerente:
+        baixou = False
+
+        def get_current_version(self):
+            return "1.0.0"
+
+        def check_for_updates(self):
+            return type("Info", (), {"TargetFullRelease": Pacote()})()
+
+        def download_updates(self, info):
+            Gerente.baixou = True
+
+    servidor = tmp_path / "servidor"
+    servidor.mkdir()
+    v = assinatura.VersaoAssinada(Pacote.PackageId, Pacote.Version, Pacote.FileName, Pacote.SHA256)
+    (servidor / assinatura.nome_do_arquivo_da_assinatura(Pacote.PackageId, Pacote.Version)).write_text(
+        assinatura.escrever_assinatura(bytes(range(1, 33)), v), encoding="utf-8")
+    _arquivo_da_fonte(servidor)
+    fonte = atualizacao.fonte_de_teste(dono=lambda p: ADMIN)
+    assert atualizacao.procurar_e_preparar(Gerente(), fonte, lambda: False) == "recusada"
+    assert not Gerente.baixou
