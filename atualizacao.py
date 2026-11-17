@@ -76,11 +76,13 @@ ONDE FICAM AS COISAS
   ela: quando a pasta do programa nao aceita gravacao (a janela do Kaique, sem
   administrador, em Arquivos de Programas), ele usa uma pasta de reserva,
   %LOCALAPPDATA%\\<nome do pacote>, e grava ali Update.exe e packages\\ a cada
-  abertura; e o desinstalador do .msi limpa %LOCALAPPDATA%\\<nome do pacote>
-  (prova de 17/11/2026, relatorios/velopack-pasta-2026-11-17/). Por isso o
-  nome do pacote (versao.ID_DO_PACOTE, "EditorImpressaoPrograma") NUNCA e o
-  nome da pasta dos projetos (D-763; tests/test_nome_do_pacote.py): a pasta de
-  reserva e uma pasta so do Velopack, e os projetos ficam fora do alcance dele.
+  abertura; e o desinstalador do .msi (1.2.161) apaga %LOCALAPPDATA%\\<titulo
+  do pacote> inteira (provas de 17/11/2026, relatorios/velopack-pasta-2026-11-17/
+  e relatorios/nome-pacote-2026-11-17/). Por isso nem o nome do pacote
+  (versao.ID_DO_PACOTE, "EditorImpressaoPrograma") nem o titulo
+  (empacotar.TITULO_DO_PACOTE, "Editor de Impressão") sao o nome da pasta dos
+  projetos (D-763; tests/test_nome_do_pacote.py): o que o Velopack grava e
+  apaga fica em pastas so dele, e os projetos ficam fora do alcance dele.
 
 A REGRA NUM LUGAR SO (CLAUDE.md §11.12): o que fazer com uma versao nova e
 procurar_e_preparar; o que a tela avisa e o_que_avisar (que usa situacao); uma

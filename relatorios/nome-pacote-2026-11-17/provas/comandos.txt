@@ -1,0 +1,180 @@
+--- pyinstaller: D:\programas\EditorImpressao\.venv\Scripts\pyinstaller.exe --noconfirm --windowed --name ProvaNome --distpath D:\agente_temp_testes\nome-pacote\prova\app\dist --workpath D:\agente_temp_testes\nome-pacote\prova\app\build --specpath D:\agente_temp_testes\nome-pacote\prova\app --paths D:\programas\EditorImpressao\.claude\worktrees\nome-pacote --hidden-import velopack --hidden-import atualizacao --hidden-import assinatura --hidden-import versao --hidden-import configuracoes --hidden-import core.testes_a_distancia --hidden-import core._testes_a_distancia_windows --exclude-module PySide6 --exclude-module numpy --exclude-module cv2 --exclude-module fitz --exclude-module pymupdf --exclude-module PIL --exclude-module scipy --exclude-module onnxruntime --exclude-module skimage --exclude-module hf_xet --exclude-module huggingface_hub --exclude-module pypdfium2 --exclude-module pypdfium2_raw --exclude-module torch --exclude-module doxapy --exclude-module matplotlib --exclude-module pandas --exclude-module sqlite3 --exclude-module tkinter D:\agente_temp_testes\nome-pacote\prova\app\ProvaNome.py
+    codigo=1
+--- pyinstaller: D:\programas\EditorImpressao\.venv\Scripts\python.exe -m PyInstaller --noconfirm --windowed --name ProvaNome --distpath D:\agente_temp_testes\nome-pacote\prova\app\dist --workpath D:\agente_temp_testes\nome-pacote\prova\app\build --specpath D:\agente_temp_testes\nome-pacote\prova\app --paths D:\programas\EditorImpressao\.claude\worktrees\nome-pacote --hidden-import velopack --hidden-import atualizacao --hidden-import assinatura --hidden-import versao --hidden-import configuracoes --hidden-import core.testes_a_distancia --hidden-import core._testes_a_distancia_windows --exclude-module PySide6 --exclude-module numpy --exclude-module cv2 --exclude-module fitz --exclude-module pymupdf --exclude-module PIL --exclude-module scipy --exclude-module onnxruntime --exclude-module skimage --exclude-module hf_xet --exclude-module huggingface_hub --exclude-module pypdfium2 --exclude-module pypdfium2_raw --exclude-module torch --exclude-module doxapy --exclude-module matplotlib --exclude-module pandas --exclude-module sqlite3 --exclude-module tkinter D:\agente_temp_testes\nome-pacote\prova\app\ProvaNome.py
+    codigo=0
+    erro: 317 INFO: PyInstaller: 6.21.0, contrib hooks: 2026.6
+      318 INFO: Python: 3.14.3
+      353 INFO: Platform: Windows-11-10.0.26200-SP0
+      353 INFO: Python environment: D:\programas\EditorImpressao\.venv
+      388 INFO: wrote D:\agente_temp_testes\nome-pacote\prova\app\ProvaNome.spec
+      498 INFO: Module search paths (PYTHONPATH):
+      ['D:\\programas\\EditorImpressao\\.claude\\worktrees\\nome-pacote\\relatorios\\nome-pacote-2026-11-17\\provas',
+       'C:\\Users\\fotog\\AppData\\Local\\Python\\pythoncore-3.14-64\\python314.zip',
+       'C:\\Users\\fotog\\AppData\\Local\\Python\\pythoncore-3.14-64\\DLLs',
+       'C:\\Users\\fotog\\AppData\\Local\\Python\\pythoncore-3.14-64\\Lib',
+       'C:\\Users\\fotog\\AppData\\Local\\Python\\pythoncore-3.14-64',
+       'D:\\programas\\EditorImpressao\\.venv',
+       'D:\\programas\\EditorImpressao\\.venv\\Lib\\site-packages',
+       'D:\\agente_temp_testes\\nome-pacote\\prova\\app',
+       'D:\\programas\\EditorImpressao\\.claude\\worktrees\\nome-pacote']
+      1106 INFO: checking Analysis
+      1106 INFO: Building Analysis because Analysis-00.toc is non existent
+      1106 INFO: Looking for Python shared library...
+      1106 INFO: Using Python shared library: C:\Users\fotog\AppData\Local\Python\pythoncore-3.14-64\python314.dll
+      1106 INFO: Running Analysis Analysis-00.toc
+      1106 INFO: Target bytecode optimization level: 0
+      1106 INFO: Initializing module dependency graph...
+      1107 INFO: Initializing module graph hook caches...
+      4066 INFO: Analyzing modules for base_library.zip ...
+      6244 INFO: Processing standard module hook 'hook-encodings.py' from 'D:\\programas\\EditorImpressao\\.venv\\Lib\\site-packages\\PyInstaller\\hooks'
+      7221 INFO: Processing standard module hook 'hook-pickle.py' from 'D:\\programas\\EditorImpressao\\.venv\\Lib\\site-packages\\PyInstaller\\hooks'
+      7619 INFO: Processing standard module hook 'hook-math.py' from 'D:\\programas\\EditorImpressao\\.venv\\Lib\\site-packages\\PyInstaller\\hooks'
+      7878 INFO: Processing standard module hook 'hook-difflib.py' from 'D:\\programas\\EditorImpressao\\.venv\\Lib\\site-packages\\PyInstaller\\hooks'
+      7946 INFO: Processing standard module hook 'hook-heapq.py' from 'D:\\programas\\EditorImpressao\\.venv\\Lib\\site-packages\\PyInstaller\\hooks'
+      11919 INFO: Caching module dependency graph...
+      11969 INFO: Analyzing D:\agente_temp_testes\nome-pacote\prova\app\ProvaNome.py
+      12455 INFO: Processing standard module hook 'hook-sysconfig.py' from 'D:\\programas\\EditorImpressao\\.venv\\Lib\\site-packages\\PyInstaller\\hooks'
+      12601 INFO: Processing standard module hook 'hook-_ctypes.py' from 'D:\\programas\\EditorImpressao\\.venv\\Lib\\site-packages\\PyInstaller\\hooks'
+      12942 INFO: Processing standard module hook 'hook-multiprocessing.util.py' from 'D:\\programas\\EditorImpressao\\.venv\\Lib\\site-packages\\PyInstaller\\hooks'
+      13096 INFO: Processing standard module hook 'hook-xml.py' from 'D:\\programas\\EditorImpressao\\.venv\\Lib\\site-packages\\PyInstaller\\hooks'
+      15184 INFO: Processing standard module hook 'hook-xml.etree.cElementTree.py' from 'D:\\programas\\EditorImpressao\\.venv\\Lib\\site-packages\\PyInstaller\\hooks'
+      16027 INFO: Processing pre-safe-import-module hook 'hook-importlib_resources.py' from 'D:\\programas\\EditorImpressao\\.venv\\Lib\\site-packages\\PyInstaller\\hooks\\pre_safe_import_module'
+      16177 INFO: SetuptoolsInfo: initializing cached setuptools info...
+      21975 INFO: Processing standard module hook 'hook-langdetect.py' from 'D:\\programas\\EditorImpressao\\.venv\\Lib\\site-packages\\_pyinstaller_hooks_contrib\\stdhooks'
+      22437 INFO: Processing pre-safe-import-module hook 'hook-six.moves.py' from 'D:\\programas\\EditorImpressao\\.venv\\Lib\\site-packages\\PyInstaller\\hooks\\pre_safe_import_module'
+      23306 INFO: Processing standard module hook 'hook-platform.py' from 'D:\\programas\\EditorImpressao\\.venv\\Lib\\site-packages\\PyInstaller\\hooks'
+      24429 INFO: Processing standard module hook 'hook-shiboken6.py' from 'D:\\programas\\EditorImpressao\\.venv\\Lib\\site-packages\\PyInstaller\\hooks'
+      27007 INFO: Processing module hooks (post-graph stage)...
+      27036 INFO: Performing binary vs. data reclassification (57 entries)
+      28618 INFO: Looking for ctypes DLLs
+      28714 INFO: Analyzing run-time hooks ...
+      28717 INFO: Including run-time hook 'pyi_rth_inspect.py' from 'D:\\programas\\EditorImpressao\\.venv\\Lib\\site-packages\\PyInstaller\\hooks\\rthooks'
+      28745 INFO: Including run-time hook 'pyi_rth_pkgutil.py' from 'D:\\programas\\EditorImpressao\\.venv\\Lib\\site-packages\\PyInstaller\\hooks\\rthooks'
+      28760 INFO: Including run-time hook 'pyi_rth_multiprocessing.py' from 'D:\\programas\\EditorImpressao\\.venv\\Lib\\site-packages\\PyInstaller\\hooks\\rthooks'
+      28804 INFO: Creating base_library.zip...
+      29013 INFO: Looking for dynamic libraries
+      52299 INFO: Extra DLL search directories (AddDllDirectory): ['D:\\programas\\EditorImpressao\\.venv\\Lib\\site-packages\\numpy.libs', 'D:\\programas\\EditorImpressao\\.venv\\Lib\\site-packages\\cv2\\../../x64/vc17/bin', 'D:\\programas\\EditorImpressao\\.venv\\Lib\\site-packages\\scipy.libs', 'D:\\programas\\EditorImpressao\\.venv\\Lib\\site-packages\\rapidfuzz.libs']
+      52299 INFO: Extra DLL search directories (PATH): []
+      54751 INFO: Warnings written to D:\agente_temp_testes\nome-pacote\prova\app\build\ProvaNome\warn-ProvaNome.txt
+      54974 INFO: Graph cross-reference written to D:\agente_temp_testes\nome-pacote\prova\app\build\ProvaNome\xref-ProvaNome.html
+      55243 INFO: checking PYZ
+      55243 INFO: Building PYZ because PYZ-00.toc is non existent
+      55243 INFO: Building PYZ (ZlibArchive) D:\agente_temp_testes\nome-pacote\prova\app\build\ProvaNome\PYZ-00.pyz
+      56451 INFO: Building PYZ (ZlibArchive) D:\agente_temp_testes\nome-pacote\prova\app\build\ProvaNome\PYZ-00.pyz completed successfully.
+      56515 INFO: checking PKG
+      56515 INFO: Building PKG because PKG-00.toc is non existent
+      56515 INFO: Building PKG (CArchive) ProvaNome.pkg
+      56893 INFO: Building PKG (CArchive) ProvaNome.pkg completed successfully.
+      56916 INFO: Bootloader D:\programas\EditorImpressao\.venv\Lib\site-packages\PyInstaller\bootloader\Windows-64bit-intel\runw.exe
+      56916 INFO: checking EXE
+      56916 INFO: Building EXE because EXE-00.toc is non existent
+      56916 INFO: Building EXE from EXE-00.toc
+      57079 INFO: Copying bootloader EXE to D:\agente_temp_testes\nome-pacote\prova\app\build\ProvaNome\ProvaNome.exe
+      57347 INFO: Copying icon to EXE
+      57626 INFO: Copying 0 resources to EXE
+      57627 INFO: Embedding manifest in EXE
+      57773 INFO: Appending PKG archive to EXE
+      58481 INFO: Fixing EXE headers
+      59360 INFO: Building EXE from EXE-00.toc completed successfully.
+      59397 INFO: checking COLLECT
+      59397 INFO: Building COLLECT because COLLECT-00.toc is non existent
+      59416 INFO: Building COLLECT COLLECT-00.toc
+      66679 INFO: Building COLLECT COLLECT-00.toc completed successfully.
+      66703 INFO: Build complete! The results are available in: D:\agente_temp_testes\nome-pacote\prova\app\dist
+--- vpk pack 1.0.0: C:\Users\fotog\.dotnet\tools\vpk.exe pack --packId EditorImpressaoProgramaProva --packVersion 1.0.0 --packDir D:\agente_temp_testes\nome-pacote\prova\app\dist\ProvaNome --mainExe ProvaNome.exe --packTitle Prova do nome do pacote --packAuthors Instituto de Preservacao de Livros --outputDir D:\agente_temp_testes\nome-pacote\prova\versoes --runtime win-x64 --msi --instLocation Either --icon D:\programas\EditorImpressao\.claude\worktrees\nome-pacote\recursos\brasao\brasao.ico --skip-updates --shortcuts 
+    codigo=0
+    saida: [18:35:01 INF] Velopack CLI 1.2.161, for distributing applications.
+      [18:35:01 INF] Beginning to package Velopack release 1.0.0.
+      [18:35:01 INF] Releases Directory: D:\agente_temp_testes\nome-pacote\prova\versoes
+      [18:35:01 INF] Starting: Pre-process steps
+      [18:35:02 INF] Shortcuts: None
+      [18:35:03 INF] Complete: Pre-process steps
+      [18:35:03 INF] Starting: Code-sign application
+      [18:35:03 WRN] No signing parameters provided, 56 file(s) will not be signed.
+      [18:35:03 INF] Complete: Code-sign application
+      [18:35:03 INF] Starting: Building portable package
+      [18:35:03 INF] Starting: Building release 1.0.0
+      [18:35:07 INF] Complete: Building portable package
+      [18:35:07 INF] Complete: Building release 1.0.0
+      [18:35:07 INF] Starting: Building setup package
+      [18:35:07 INF] Setup bundle created 'EditorImpressaoProgramaProva-win-Setup.exe'.
+      [18:35:07 INF] Configuring WiX in x64 mode
+      [18:35:08 INF] Compiling WiX Template
+      [18:35:27 INF] MSI created 'EditorImpressaoProgramaProva-win.msi'.
+      [18:35:27 WRN] No signing parameters provided, 2 file(s) will not be signed.
+      [18:35:27 INF] Complete: Building setup package
+      [18:35:27 INF] Starting: Post-process steps
+      [18:35:33 INF] Complete: Post-process steps
+      [18:35:33 INF] Finished in 00:00:31.9247102.
+--- vpk pack 1.0.1: C:\Users\fotog\.dotnet\tools\vpk.exe pack --packId EditorImpressaoProgramaProva --packVersion 1.0.1 --packDir D:\agente_temp_testes\nome-pacote\prova\app\dist\ProvaNome --mainExe ProvaNome.exe --packTitle Prova do nome do pacote --packAuthors Instituto de Preservacao de Livros --outputDir D:\agente_temp_testes\nome-pacote\prova\versoes --runtime win-x64 --msi --instLocation Either --icon D:\programas\EditorImpressao\.claude\worktrees\nome-pacote\recursos\brasao\brasao.ico --skip-updates --shortcuts 
+    codigo=0
+    saida: [18:35:36 INF] Velopack CLI 1.2.161, for distributing applications.
+      [18:35:36 INF] Beginning to package Velopack release 1.0.1.
+      [18:35:36 INF] Releases Directory: D:\agente_temp_testes\nome-pacote\prova\versoes
+      [18:35:36 INF] Starting: Pre-process steps
+      [18:35:37 INF] Shortcuts: None
+      [18:35:39 INF] Complete: Pre-process steps
+      [18:35:39 INF] Starting: Code-sign application
+      [18:35:39 WRN] No signing parameters provided, 56 file(s) will not be signed.
+      [18:35:39 INF] Complete: Code-sign application
+      [18:35:39 INF] Starting: Building portable package
+      [18:35:39 INF] Starting: Building release 1.0.1
+      [18:35:42 INF] Complete: Building portable package
+      [18:35:42 INF] Complete: Building release 1.0.1
+      [18:35:42 INF] Starting: Building setup package
+      [18:35:42 INF] Starting: Building delta 1.0.0 -> 1.0.1
+      [18:35:43 INF] Creating delta for 1.0.0 -> 1.0.1 with 8 parallel threads.
+      [18:35:43 INF] Setup bundle created 'EditorImpressaoProgramaProva-win-Setup.exe'.
+      [18:35:43 INF] Configuring WiX in x64 mode
+      [18:35:43 INF] Compiling WiX Template
+      [18:35:44 INF] Delta processed 0150 files. 0001 patched, 0149 unchanged, 0000 new, 0000 removed
+      [18:35:44 INF] Complete: Building delta 1.0.0 -> 1.0.1
+      [18:35:58 INF] MSI created 'EditorImpressaoProgramaProva-win.msi'.
+      [18:35:58 WRN] No signing parameters provided, 2 file(s) will not be signed.
+      [18:35:58 INF] Complete: Building setup package
+      [18:35:58 INF] Starting: Post-process steps
+      [18:36:02 INF] Complete: Post-process steps
+      [18:36:02 INF] Finished in 00:00:26.2271758.
+--- instalar (trancada): msiexec /i D:\agente_temp_testes\nome-pacote\prova\msi-1.0.0\EditorImpressaoProgramaProva-win.msi /qn VELOPACK_INSTALLDIR=D:\agente_temp_testes\nome-pacote\prova\instalado-trancado /l*v D:\agente_temp_testes\nome-pacote\prova\msi-instalar-trancada.log
+    codigo=0
+--- trancar a raiz: icacls D:\agente_temp_testes\nome-pacote\prova\instalado-trancado /deny fotog:(WD,AD)
+    codigo=0
+    saida: arquivo processado: D:\agente_temp_testes\nome-pacote\prova\instalado-trancado
+      Processados com sucesso 1 arquivos; falha no processamento de 0 arquivos
+--- A prova-app-run: D:\agente_temp_testes\nome-pacote\prova\instalado-trancado\current\ProvaNome.exe prova-app-run
+    codigo=0
+    erro: Failed to open directory for writing "D:\\agente_temp_testes\\nome-pacote\\prova\\instalado-trancado\\.velopack_dir_test": Acesso negado. (os error 5)
+--- A prova-versao: D:\agente_temp_testes\nome-pacote\prova\instalado-trancado\current\ProvaNome.exe prova-versao
+    codigo=0
+    erro: Failed to open directory for writing "D:\\agente_temp_testes\\nome-pacote\\prova\\instalado-trancado\\.velopack_dir_test": Acesso negado. (os error 5)
+--- A prova-portatil: D:\agente_temp_testes\nome-pacote\prova\instalado-trancado\current\ProvaNome.exe prova-portatil
+    codigo=0
+    erro: Failed to open directory for writing "D:\\agente_temp_testes\\nome-pacote\\prova\\instalado-trancado\\.velopack_dir_test": Acesso negado. (os error 5)
+--- A prova-procurar-ao-abrir: D:\agente_temp_testes\nome-pacote\prova\instalado-trancado\current\ProvaNome.exe prova-procurar-ao-abrir
+    codigo=0
+    erro: Failed to open directory for writing "D:\\agente_temp_testes\\nome-pacote\\prova\\instalado-trancado\\.velopack_dir_test": Acesso negado. (os error 5)
+--- A --procurar-atualizacao: D:\agente_temp_testes\nome-pacote\prova\instalado-trancado\current\ProvaNome.exe --procurar-atualizacao --fonte D:\agente_temp_testes\nome-pacote\prova\versoes
+    codigo=0
+    erro: Failed to open directory for writing "D:\\agente_temp_testes\\nome-pacote\\prova\\instalado-trancado\\.velopack_dir_test": Acesso negado. (os error 5)
+      Failed to open directory for writing "D:\\agente_temp_testes\\nome-pacote\\prova\\instalado-trancado\\.velopack_dir_test": Acesso negado. (os error 5)
+--- destrancar a raiz: icacls D:\agente_temp_testes\nome-pacote\prova\instalado-trancado /remove:d fotog
+    codigo=0
+    saida: arquivo processado: D:\agente_temp_testes\nome-pacote\prova\instalado-trancado
+      Processados com sucesso 1 arquivos; falha no processamento de 0 arquivos
+--- desinstalar (trancada): msiexec /x D:\agente_temp_testes\nome-pacote\prova\msi-1.0.0\EditorImpressaoProgramaProva-win.msi /qn /l*v D:\agente_temp_testes\nome-pacote\prova\msi-desinstalar-trancada.log
+    codigo=0
+--- instalar (aberta): msiexec /i D:\agente_temp_testes\nome-pacote\prova\msi-1.0.0\EditorImpressaoProgramaProva-win.msi /qn VELOPACK_INSTALLDIR=D:\agente_temp_testes\nome-pacote\prova\instalado-aberta /l*v D:\agente_temp_testes\nome-pacote\prova\msi-instalar-aberta.log
+    codigo=0
+--- B prova-app-run: D:\agente_temp_testes\nome-pacote\prova\instalado-aberta\current\ProvaNome.exe prova-app-run
+    codigo=0
+--- B prova-versao: D:\agente_temp_testes\nome-pacote\prova\instalado-aberta\current\ProvaNome.exe prova-versao
+    codigo=0
+--- B prova-portatil: D:\agente_temp_testes\nome-pacote\prova\instalado-aberta\current\ProvaNome.exe prova-portatil
+    codigo=0
+--- B prova-procurar-ao-abrir: D:\agente_temp_testes\nome-pacote\prova\instalado-aberta\current\ProvaNome.exe prova-procurar-ao-abrir
+    codigo=0
+--- B --procurar-atualizacao: D:\agente_temp_testes\nome-pacote\prova\instalado-aberta\current\ProvaNome.exe --procurar-atualizacao --fonte D:\agente_temp_testes\nome-pacote\prova\versoes
+    codigo=0
+    erro: Couldn't write out staging userId.
+--- desinstalar (aberta): msiexec /x D:\agente_temp_testes\nome-pacote\prova\msi-1.0.0\EditorImpressaoProgramaProva-win.msi /qn /l*v D:\agente_temp_testes\nome-pacote\prova\msi-desinstalar-aberta.log
+    codigo=0

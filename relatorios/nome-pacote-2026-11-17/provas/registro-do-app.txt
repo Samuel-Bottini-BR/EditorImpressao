@@ -1,0 +1,44 @@
+2026-11-17T18:36:42.341 pid=18720 COMECO argv=['D:\\agente_temp_testes\\nome-pacote\\prova\\instalado-trancado\\current\\ProvaNome.exe', '--veloapp-install', '1.0.0'] usuario=fotog exe=D:\agente_temp_testes\nome-pacote\prova\instalado-trancado\current\ProvaNome.exe
+2026-11-17T18:36:42.476 pid=18720 GANCHO ao_instalar(1.0.0)
+2026-11-17T18:36:42.891 pid=3580 COMECO argv=['D:\\agente_temp_testes\\nome-pacote\\prova\\instalado-trancado\\current\\ProvaNome.exe', 'prova-app-run'] usuario=fotog exe=D:\agente_temp_testes\nome-pacote\prova\instalado-trancado\current\ProvaNome.exe
+2026-11-17T18:36:42.972 pid=3580 App().run() voltou
+2026-11-17T18:36:43.040 pid=3580 FIM codigo=0
+2026-11-17T18:36:43.232 pid=11896 COMECO argv=['D:\\agente_temp_testes\\nome-pacote\\prova\\instalado-trancado\\current\\ProvaNome.exe', 'prova-versao'] usuario=fotog exe=D:\agente_temp_testes\nome-pacote\prova\instalado-trancado\current\ProvaNome.exe
+2026-11-17T18:36:43.271 pid=11896 versao_que_roda() = 1.0.0
+2026-11-17T18:36:43.273 pid=11896 FIM codigo=0
+2026-11-17T18:36:43.451 pid=22512 COMECO argv=['D:\\agente_temp_testes\\nome-pacote\\prova\\instalado-trancado\\current\\ProvaNome.exe', 'prova-portatil'] usuario=fotog exe=D:\agente_temp_testes\nome-pacote\prova\instalado-trancado\current\ProvaNome.exe
+2026-11-17T18:36:43.502 pid=22512 e_portatil() = False
+2026-11-17T18:36:43.537 pid=22512 FIM codigo=0
+2026-11-17T18:36:43.778 pid=17268 COMECO argv=['D:\\agente_temp_testes\\nome-pacote\\prova\\instalado-trancado\\current\\ProvaNome.exe', 'prova-procurar-ao-abrir'] usuario=fotog exe=D:\agente_temp_testes\nome-pacote\prova\instalado-trancado\current\ProvaNome.exe
+2026-11-17T18:36:43.898 pid=17268 procurar_ao_abrir() = False
+2026-11-17T18:36:43.943 pid=17268 FIM codigo=0
+2026-11-17T18:36:44.247 pid=27440 COMECO argv=['D:\\agente_temp_testes\\nome-pacote\\prova\\instalado-trancado\\current\\ProvaNome.exe', '--procurar-atualizacao', '--fonte', 'D:\\agente_temp_testes\\nome-pacote\\prova\\versoes'] usuario=fotog exe=D:\agente_temp_testes\nome-pacote\prova\instalado-trancado\current\ProvaNome.exe
+2026-11-17T18:36:44.342 pid=27440 preparar_o_computador (desligado na prova)
+2026-11-17T18:36:44.568 pid=27440 atender_linha_de_comando -> 0
+2026-11-17T18:36:44.569 pid=27440 FIM codigo=0
+2026-11-17T18:36:46.330 pid=8908 COMECO argv=['D:\\agente_temp_testes\\nome-pacote\\prova\\instalado-trancado\\current\\ProvaNome.exe', '--veloapp-uninstall', '1.0.0'] usuario=fotog exe=D:\agente_temp_testes\nome-pacote\prova\instalado-trancado\current\ProvaNome.exe
+2026-11-17T18:36:46.372 pid=8908 GANCHO ao_desinstalar(1.0.0) comecou
+2026-11-17T18:36:46.381 pid=8908 executor de mentira: rodar_a_tarefa('EditorImpressaoProvaNome\\Desfazer testes a distancia')
+2026-11-17T18:36:46.467 pid=8908 GANCHO ao_desinstalar terminou
+2026-11-17T18:38:24.083 pid=12272 COMECO argv=['D:\\agente_temp_testes\\nome-pacote\\prova\\instalado-aberta\\current\\ProvaNome.exe', '--veloapp-install', '1.0.0'] usuario=fotog exe=D:\agente_temp_testes\nome-pacote\prova\instalado-aberta\current\ProvaNome.exe
+2026-11-17T18:38:24.204 pid=12272 GANCHO ao_instalar(1.0.0)
+2026-11-17T18:38:24.440 pid=29244 COMECO argv=['D:\\agente_temp_testes\\nome-pacote\\prova\\instalado-aberta\\current\\ProvaNome.exe', 'prova-app-run'] usuario=fotog exe=D:\agente_temp_testes\nome-pacote\prova\instalado-aberta\current\ProvaNome.exe
+2026-11-17T18:38:24.502 pid=29244 App().run() voltou
+2026-11-17T18:38:24.517 pid=29244 FIM codigo=0
+2026-11-17T18:38:24.667 pid=27216 COMECO argv=['D:\\agente_temp_testes\\nome-pacote\\prova\\instalado-aberta\\current\\ProvaNome.exe', 'prova-versao'] usuario=fotog exe=D:\agente_temp_testes\nome-pacote\prova\instalado-aberta\current\ProvaNome.exe
+2026-11-17T18:38:24.701 pid=27216 versao_que_roda() = 1.0.0
+2026-11-17T18:38:24.704 pid=27216 FIM codigo=0
+2026-11-17T18:38:24.845 pid=14988 COMECO argv=['D:\\agente_temp_testes\\nome-pacote\\prova\\instalado-aberta\\current\\ProvaNome.exe', 'prova-portatil'] usuario=fotog exe=D:\agente_temp_testes\nome-pacote\prova\instalado-aberta\current\ProvaNome.exe
+2026-11-17T18:38:24.902 pid=14988 e_portatil() = False
+2026-11-17T18:38:24.902 pid=14988 FIM codigo=0
+2026-11-17T18:38:25.044 pid=27544 COMECO argv=['D:\\agente_temp_testes\\nome-pacote\\prova\\instalado-aberta\\current\\ProvaNome.exe', 'prova-procurar-ao-abrir'] usuario=fotog exe=D:\agente_temp_testes\nome-pacote\prova\instalado-aberta\current\ProvaNome.exe
+2026-11-17T18:38:25.128 pid=27544 procurar_ao_abrir() = False
+2026-11-17T18:38:25.129 pid=27544 FIM codigo=0
+2026-11-17T18:38:25.275 pid=22640 COMECO argv=['D:\\agente_temp_testes\\nome-pacote\\prova\\instalado-aberta\\current\\ProvaNome.exe', '--procurar-atualizacao', '--fonte', 'D:\\agente_temp_testes\\nome-pacote\\prova\\versoes'] usuario=fotog exe=D:\agente_temp_testes\nome-pacote\prova\instalado-aberta\current\ProvaNome.exe
+2026-11-17T18:38:25.303 pid=22640 preparar_o_computador (desligado na prova)
+2026-11-17T18:38:26.498 pid=22640 atender_linha_de_comando -> 0
+2026-11-17T18:38:26.499 pid=22640 FIM codigo=0
+2026-11-17T18:38:27.320 pid=2376 COMECO argv=['D:\\agente_temp_testes\\nome-pacote\\prova\\instalado-aberta\\current\\ProvaNome.exe', '--veloapp-uninstall', '1.0.0'] usuario=fotog exe=D:\agente_temp_testes\nome-pacote\prova\instalado-aberta\current\ProvaNome.exe
+2026-11-17T18:38:27.362 pid=2376 GANCHO ao_desinstalar(1.0.0) comecou
+2026-11-17T18:38:27.370 pid=2376 executor de mentira: rodar_a_tarefa('EditorImpressaoProvaNome\\Desfazer testes a distancia')
+2026-11-17T18:38:27.418 pid=2376 GANCHO ao_desinstalar terminou

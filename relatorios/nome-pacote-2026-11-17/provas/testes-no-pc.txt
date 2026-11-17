@@ -1,11 +1,17 @@
-Testes no PC, um arquivo por vez, codigo novo (17/11/2026), QT_QPA_PLATFORM=offscreen
-test_decisoes_atualizacao: 1 failed, 37 passed in 1.52s
-test_assinatura: 16 passed in 0.62s
-test_decisoes_desinstalar: 46 passed in 19.88s
-test_decisoes_desinstalar_pasta: 6 passed in 2.91s
-test_decisoes_ajudante_da_atualizacao: 37 passed, 1 warning in 11.24s
-test_decisoes_preparo_d749: 8 passed in 1.98s
-test_decisoes_testes_a_distancia: 13 passed in 0.59s
-test_empacotar: 41 passed in 3.21s
-test_sem_janela_na_tela: 8 passed in 1.44s
-test_nome_do_pacote: 4 passed in 0.32s
+Testes no PC, um arquivo por vez, codigo novo (17/11/2026), QT_QPA_PLATFORM=offscreen, -p no:cacheprovider --basetemp=D:/agente_temp_testes/nome-pacote/pytest
+test_decisoes_atualizacao: 1 failed, 37 passed in 1.88s
+test_assinatura: 16 passed in 0.59s
+test_decisoes_desinstalar: 46 passed in 19.60s
+test_decisoes_desinstalar_pasta: 6 passed in 2.42s
+test_decisoes_ajudante_da_atualizacao: 37 passed in 11.86s
+test_decisoes_preparo_d749: 8 passed in 1.79s
+test_decisoes_testes_a_distancia: 13 passed in 0.48s
+test_empacotar: 41 passed in 1.46s
+test_sem_janela_na_tela: 8 passed in 0.98s
+test_nome_do_pacote: 5 passed in 0.32s
+E       AssertionError: assert 'EditorImpres....0.assinatura' == 'EditorImpres....0.assinatura'
+E         
+E         - EditorImpressao-1.2.0.assinatura
+E         + EditorImpressaoPrograma-1.2.0.assinatura
+E         ?                ++++++++
+FAILED tests/test_decisoes_atualizacao.py::test_d724_o_que_o_publicar_assina_o_programa_aceita

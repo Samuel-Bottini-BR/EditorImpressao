@@ -1018,9 +1018,12 @@ LUGARES_DO_VPK = [Path.home() / ".dotnet" / "tools" / "vpk.exe"]
 # velopack==...; tests/test_nome_do_pacote.py cobra que as duas batem). O vpk
 # leva para dentro do .msi a limpeza do desinstalador: a 1.2.161 foi a provada
 # em 17/11/2026 (relatorios/velopack-pasta-2026-11-17/ e
-# relatorios/nome-pacote-2026-11-17/). SUBIR DE VERSAO EXIGE REPETIR A PROVA:
-# o Velopack mais novo tem outra limpeza (UserCleanupDeferred), que roda como
-# quem desinstala e apaga %LocalAppData%\<nome do pacote> de proposito.
+# relatorios/nome-pacote-2026-11-17/): o desinstalador dela apaga
+# %LOCALAPPDATA%\<TITULO_DO_PACOTE> (o modelo do .msi passa o titulo a limpeza).
+# SUBIR DE VERSAO EXIGE REPETIR A PROVA: o Velopack mais novo tem outra limpeza
+# (UserCleanupDeferred), que roda como quem desinstala e apaga
+# %LocalAppData%\<nome do pacote> de proposito. Tambem por isso o titulo nunca
+# e o nome da pasta dos projetos (tests/test_nome_do_pacote.py).
 VERSAO_DO_VPK = "1.2.161"
 COMO_INSTALAR_O_VPK = f"dotnet tool install -g vpk --version {VERSAO_DO_VPK}"
 # Dentro do pacote do Velopack (.nupkg, um zip), a pasta do programa fica em lib\app\.
