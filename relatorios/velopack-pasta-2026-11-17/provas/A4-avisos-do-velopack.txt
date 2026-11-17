@@ -1,0 +1,2 @@
+Failed to open directory for writing "D:\\agente_temp_testes\\velopack-pasta\\instalado-trancado\\.velopack_dir_test": Acesso negado. (os error 5)
+Failed to open directory for writing "D:\\agente_temp_testes\\velopack-pasta\\instalado-trancado\\.velopack_dir_test": Acesso negado. (os error 5)

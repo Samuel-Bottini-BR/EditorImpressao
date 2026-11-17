@@ -1,0 +1,18 @@
+FOTO A1-trancada-depois-do-App-run
+LocalAppData do Windows (SHGetKnownFolderPath): C:\Users\fotog\AppData\Local
+[1] C:\Users\fotog\AppData\Local\EditorImpressaoProvaPasta (a pasta de reserva esperada, do pacote de mentira)
+  Update.exe  3979264 bytes
+  packages/ (vazia)
+[2] D:\agente_temp_testes\velopack-pasta\instalado-trancado (a pasta instalada)
+  .msi-installed  0 bytes
+  EditorImpressaoProvaPasta.exe  462336 bytes
+  Update.exe  3979264 bytes
+  current\_internal/ (nao listado)
+  current\ProvaPasta.exe  5546272 bytes
+  current\sq.version  543 bytes
+[3] C:\Users\fotog\AppData\Local\EditorImpressao (pasta de verdade dos projetos: so os nomes do primeiro nivel)
+  configuracoes.json, erros.log, historico.json, projetos
+[4] C:\Users\fotog\AppData\Local\velopack (logs do Velopack)
+  velopack_EditorImpressaoEnsaio.log
+[5] D:\agente_temp_testes\velopack-pasta\localappdata-de-mentira (a VARIAVEL LOCALAPPDATA que o app de mentira recebe)
+  (nao existe) D:\agente_temp_testes\velopack-pasta\localappdata-de-mentira

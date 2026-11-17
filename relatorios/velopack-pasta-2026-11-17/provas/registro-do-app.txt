@@ -1,0 +1,57 @@
+2026-11-17T18:04:51.569 pid=24072 COMECO argv=['D:\\agente_temp_testes\\velopack-pasta\\app\\dist\\ProvaPasta\\ProvaPasta.exe', 'prova-versao'] usuario=fotog exe=D:\agente_temp_testes\velopack-pasta\app\dist\ProvaPasta\ProvaPasta.exe
+2026-11-17T18:04:51.599 pid=24072 versao_que_roda() = 1.1.0
+2026-11-17T18:04:51.650 pid=24072 FIM codigo=0
+2026-11-17T18:06:52.011 pid=5792 COMECO argv=['D:\\agente_temp_testes\\velopack-pasta\\instalado-trancado\\current\\ProvaPasta.exe', '--veloapp-install', '1.0.0'] usuario=fotog exe=D:\agente_temp_testes\velopack-pasta\instalado-trancado\current\ProvaPasta.exe
+2026-11-17T18:06:52.150 pid=5792 GANCHO ao_instalar(1.0.0)
+2026-11-17T18:07:20.975 pid=18616 COMECO argv=['D:\\agente_temp_testes\\velopack-pasta\\instalado-trancado\\current\\ProvaPasta.exe', 'prova-app-run'] usuario=fotog exe=D:\agente_temp_testes\velopack-pasta\instalado-trancado\current\ProvaPasta.exe
+2026-11-17T18:07:21.044 pid=18616 App().run() voltou
+2026-11-17T18:07:21.216 pid=18616 FIM codigo=0
+2026-11-17T18:07:28.765 pid=22468 COMECO argv=['D:\\agente_temp_testes\\velopack-pasta\\instalado-trancado\\current\\ProvaPasta.exe', 'prova-versao'] usuario=fotog exe=D:\agente_temp_testes\velopack-pasta\instalado-trancado\current\ProvaPasta.exe
+2026-11-17T18:07:28.797 pid=22468 versao_que_roda() = 1.0.0
+2026-11-17T18:07:28.810 pid=22468 FIM codigo=0
+2026-11-17T18:07:28.999 pid=11452 COMECO argv=['D:\\agente_temp_testes\\velopack-pasta\\instalado-trancado\\current\\ProvaPasta.exe', 'prova-abrir'] usuario=fotog exe=D:\agente_temp_testes\velopack-pasta\instalado-trancado\current\ProvaPasta.exe
+2026-11-17T18:07:29.102 pid=11452 atender_linha_de_comando -> None
+2026-11-17T18:07:29.137 pid=11452 ERRO Traceback (most recent call last): |   File "ProvaPasta.py", line 96, in <module> |   File "atualizacao.py", line 1524, in falta_a_pergunta_do_windows |   File "configuracoes.py", line 128, in ler |   File "configuracoes.py", line 103, in carregar |   File "configuracoes.py", line 93, in _caminho |   File "pyimod02_importers.py", line 457, in exec_module |   File "historico.py", line 13, in <module> |   File "pyimod02_importers.py", line 457, in exec_module |   File "modelos.py", line 25, in <module> |   File "pyimod02_importers.py", line 457, in exec_module |   File "core\filtros.py", line 31, in <module> | ModuleNotFoundError: No module named 'cv2' | 
+2026-11-17T18:07:42.673 pid=23576 COMECO argv=['D:\\agente_temp_testes\\velopack-pasta\\instalado-trancado\\current\\ProvaPasta.exe', 'prova-versao'] usuario=fotog exe=D:\agente_temp_testes\velopack-pasta\instalado-trancado\current\ProvaPasta.exe
+2026-11-17T18:07:42.784 pid=23576 versao_que_roda() = 1.0.0
+2026-11-17T18:07:42.785 pid=23576 FIM codigo=0
+2026-11-17T18:07:43.535 pid=26068 COMECO argv=['D:\\agente_temp_testes\\velopack-pasta\\instalado-trancado\\current\\ProvaPasta.exe', 'prova-portatil'] usuario=fotog exe=D:\agente_temp_testes\velopack-pasta\instalado-trancado\current\ProvaPasta.exe
+2026-11-17T18:07:43.567 pid=26068 e_portatil() = False
+2026-11-17T18:07:43.569 pid=26068 FIM codigo=0
+2026-11-17T18:07:43.943 pid=17768 COMECO argv=['D:\\agente_temp_testes\\velopack-pasta\\instalado-trancado\\current\\ProvaPasta.exe', 'prova-procurar-ao-abrir'] usuario=fotog exe=D:\agente_temp_testes\velopack-pasta\instalado-trancado\current\ProvaPasta.exe
+2026-11-17T18:07:44.059 pid=17768 procurar_ao_abrir() = False
+2026-11-17T18:07:44.060 pid=17768 FIM codigo=0
+2026-11-17T18:07:53.765 pid=22064 COMECO argv=['D:\\agente_temp_testes\\velopack-pasta\\instalado-trancado\\current\\ProvaPasta.exe', '--procurar-atualizacao', '--fonte', 'D:\\agente_temp_testes\\velopack-pasta\\versoes'] usuario=fotog exe=D:\agente_temp_testes\velopack-pasta\instalado-trancado\current\ProvaPasta.exe
+2026-11-17T18:07:53.810 pid=22064 preparar_o_computador (desligado na prova)
+2026-11-17T18:07:53.957 pid=22064 atender_linha_de_comando -> 0
+2026-11-17T18:07:53.959 pid=22064 FIM codigo=0
+2026-11-17T18:08:11.362 pid=8568 COMECO argv=['D:\\agente_temp_testes\\velopack-pasta\\instalado-trancado\\current\\ProvaPasta.exe', 'prova-app-run'] usuario=fotog exe=D:\agente_temp_testes\velopack-pasta\instalado-trancado\current\ProvaPasta.exe
+2026-11-17T18:08:11.428 pid=8568 App().run() voltou
+2026-11-17T18:08:11.451 pid=8568 FIM codigo=0
+2026-11-17T18:08:11.718 pid=22192 COMECO argv=['D:\\agente_temp_testes\\velopack-pasta\\instalado-trancado\\current\\ProvaPasta.exe', 'prova-versao'] usuario=fotog exe=D:\agente_temp_testes\velopack-pasta\instalado-trancado\current\ProvaPasta.exe
+2026-11-17T18:08:11.764 pid=22192 versao_que_roda() = 1.0.0
+2026-11-17T18:08:11.793 pid=22192 FIM codigo=0
+2026-11-17T18:08:11.965 pid=25400 COMECO argv=['D:\\agente_temp_testes\\velopack-pasta\\instalado-trancado\\current\\ProvaPasta.exe', 'prova-procurar-ao-abrir'] usuario=fotog exe=D:\agente_temp_testes\velopack-pasta\instalado-trancado\current\ProvaPasta.exe
+2026-11-17T18:08:12.268 pid=25400 procurar_ao_abrir() = False
+2026-11-17T18:08:12.305 pid=25400 FIM codigo=0
+2026-11-17T18:08:12.483 pid=24744 COMECO argv=['D:\\agente_temp_testes\\velopack-pasta\\instalado-trancado\\current\\ProvaPasta.exe', 'prova-abrir'] usuario=fotog exe=D:\agente_temp_testes\velopack-pasta\instalado-trancado\current\ProvaPasta.exe
+2026-11-17T18:08:12.644 pid=24744 atender_linha_de_comando -> None
+2026-11-17T18:08:12.674 pid=24744 ERRO Traceback (most recent call last): |   File "ProvaPasta.py", line 96, in <module> |   File "atualizacao.py", line 1524, in falta_a_pergunta_do_windows |   File "configuracoes.py", line 128, in ler |   File "configuracoes.py", line 103, in carregar |   File "configuracoes.py", line 93, in _caminho |   File "pyimod02_importers.py", line 457, in exec_module |   File "historico.py", line 13, in <module> |   File "pyimod02_importers.py", line 457, in exec_module |   File "modelos.py", line 25, in <module> |   File "pyimod02_importers.py", line 457, in exec_module |   File "core\filtros.py", line 31, in <module> | ModuleNotFoundError: No module named 'cv2' | 
+2026-11-17T18:08:12.858 pid=12760 COMECO argv=['D:\\agente_temp_testes\\velopack-pasta\\instalado-trancado\\current\\ProvaPasta.exe', '--procurar-atualizacao', '--fonte', 'D:\\agente_temp_testes\\velopack-pasta\\versoes'] usuario=fotog exe=D:\agente_temp_testes\velopack-pasta\instalado-trancado\current\ProvaPasta.exe
+2026-11-17T18:08:13.044 pid=12760 preparar_o_computador (desligado na prova)
+2026-11-17T18:08:13.650 pid=12760 atender_linha_de_comando -> 0
+2026-11-17T18:08:13.670 pid=12760 FIM codigo=0
+2026-11-17T18:08:37.628 pid=27772 COMECO argv=['D:\\agente_temp_testes\\velopack-pasta\\instalado-trancado\\current\\ProvaPasta.exe', '--procurar-atualizacao', '--fonte', 'D:\\agente_temp_testes\\velopack-pasta\\versoes'] usuario=fotog exe=D:\agente_temp_testes\velopack-pasta\instalado-trancado\current\ProvaPasta.exe
+2026-11-17T18:08:37.659 pid=27772 preparar_o_computador (desligado na prova)
+2026-11-17T18:08:38.093 pid=27772 atender_linha_de_comando -> 0
+2026-11-17T18:08:38.094 pid=27772 FIM codigo=0
+2026-11-17T18:08:45.384 pid=3648 COMECO argv=['D:\\agente_temp_testes\\velopack-pasta\\instalado-trancado\\current\\ProvaPasta.exe', '--veloapp-uninstall', '1.0.0'] usuario=fotog exe=D:\agente_temp_testes\velopack-pasta\instalado-trancado\current\ProvaPasta.exe
+2026-11-17T18:08:45.411 pid=3648 GANCHO ao_desinstalar(1.0.0) comecou
+2026-11-17T18:08:45.426 pid=3648 executor de mentira: rodar_a_tarefa('EditorImpressaoProvaPasta\\Desfazer testes a distancia')
+2026-11-17T18:08:45.500 pid=3648 GANCHO ao_desinstalar terminou
+2026-11-17T18:10:38.707 pid=26100 COMECO argv=['D:\\agente_temp_testes\\velopack-pasta\\instalado-aberto\\current\\ProvaPasta.exe', '--veloapp-install', '1.0.0'] usuario=fotog exe=D:\agente_temp_testes\velopack-pasta\instalado-aberto\current\ProvaPasta.exe
+2026-11-17T18:10:38.831 pid=26100 GANCHO ao_instalar(1.0.0)
+2026-11-17T18:10:40.152 pid=23884 COMECO argv=['D:\\agente_temp_testes\\velopack-pasta\\instalado-aberto\\current\\ProvaPasta.exe', '--veloapp-uninstall', '1.0.0'] usuario=fotog exe=D:\agente_temp_testes\velopack-pasta\instalado-aberto\current\ProvaPasta.exe
+2026-11-17T18:10:40.185 pid=23884 GANCHO ao_desinstalar(1.0.0) comecou
+2026-11-17T18:10:40.210 pid=23884 executor de mentira: rodar_a_tarefa('EditorImpressaoProvaPasta\\Desfazer testes a distancia')
+2026-11-17T18:10:40.296 pid=23884 GANCHO ao_desinstalar terminou

@@ -1,0 +1,11 @@
+Segunda desinstalacao (17/11/2026 18:10, PowerShell), pasta da instalacao ACEITANDO gravacao
+(D:\agente_temp_testes\velopack-pasta\instalado-aberto), sem pasta de reserva nenhuma.
+
+msiexec /i EditorImpressaoProvaPasta-win.msi /qn VELOPACK_INSTALLDIR=...\instalado-aberto  -> instalar=0
+existe C:\Users\fotog\AppData\Local\EditorImpressaoProvaPasta antes do projeto de mentira: False
+criado so o projeto de mentira:
+  C:\Users\fotog\AppData\Local\EditorImpressaoProvaPasta\projetos
+  C:\Users\fotog\AppData\Local\EditorImpressaoProvaPasta\projetos\livro-de-mentira
+  C:\Users\fotog\AppData\Local\EditorImpressaoProvaPasta\projetos\livro-de-mentira\projeto.json
+msiexec /x EditorImpressaoProvaPasta-win.msi /qn  -> desinstalar=0
+existe C:\Users\fotog\AppData\Local\EditorImpressaoProvaPasta depois: False   <- o projeto de mentira foi APAGADO

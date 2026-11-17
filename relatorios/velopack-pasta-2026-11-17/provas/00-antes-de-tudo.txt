@@ -1,0 +1,12 @@
+FOTO 00-antes-de-tudo
+LocalAppData do Windows (SHGetKnownFolderPath): C:\Users\fotog\AppData\Local
+[1] C:\Users\fotog\AppData\Local\EditorImpressaoProvaPasta (a pasta de reserva esperada, do pacote de mentira)
+  (nao existe) C:\Users\fotog\AppData\Local\EditorImpressaoProvaPasta
+[2] D:\agente_temp_testes\velopack-pasta\instalado-trancado (a pasta instalada)
+  (nao existe) D:\agente_temp_testes\velopack-pasta\instalado-trancado
+[3] C:\Users\fotog\AppData\Local\EditorImpressao (pasta de verdade dos projetos: so os nomes do primeiro nivel)
+  configuracoes.json, erros.log, historico.json, projetos
+[4] C:\Users\fotog\AppData\Local\velopack (logs do Velopack)
+  velopack_EditorImpressaoEnsaio.log
+[5] D:\agente_temp_testes\velopack-pasta\localappdata-de-mentira (a VARIAVEL LOCALAPPDATA que o app de mentira recebe)
+  (nao existe) D:\agente_temp_testes\velopack-pasta\localappdata-de-mentira

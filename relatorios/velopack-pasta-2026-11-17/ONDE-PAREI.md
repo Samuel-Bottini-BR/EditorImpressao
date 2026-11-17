@@ -53,9 +53,27 @@ arquivos dentro da pasta dos projetos, e se desinstalar pode apagar alguma coisa
 ## Feito
 - [x] Worktree e ramo (renomeado de 18 para 17, a pedido da gerente).
 - [x] Leitura do código do Velopack (passo 1).
+- [x] `ProvaPasta.exe` (37 MB, sem janela), pacotes 1.0.0 e 1.0.1, `.msi` por usuário (passos 2 e 3).
+- [x] Caso A (trancada): toda chamada de abertura cria `...\Local\EditorImpressaoProvaPasta\packages` + `Update.exe`;
+      procurar+baixar põe o `.nupkg` lá (passo 4).
+- [x] Caso B (aberta): nada na pasta de reserva; o `.nupkg` vai para `<instalado>\packages` (passo 5).
+- [x] Desinstalar (`msiexec /x /qn`, sem administrador): **apagou `...\Local\EditorImpressaoProvaPasta` inteira, com
+      o projeto de mentira**, duas vezes (com e sem pasta de reserva) (passo 6).
+- [x] Permissão devolvida; as duas pastas instaladas foram tiradas pelo desinstalador (passo 7).
+- [x] Relatório nos três formatos (`relatorio.md/.html/.pdf`) e as provas em `provas/`.
 
-## Próximo passo
-- Montar o `ProvaPasta.exe` (passo 2).
+## Situação
+ENTREGUE à gerente. Investigação terminada; o conserto é só plano (no relatório).
 
-## Perguntas para o Samuel
-Nenhuma por enquanto.
+## Sobras fora do projeto
+- `D:gente_temp_testeselopack-pasta\` (criada por esta tarefa, ~180 MB).
+- `D:\Config.Msi` (escondida, do sistema): criada pelo Windows Installer na desinstalação de 18:08:45, não limpa por
+  ele (erro 1926). Sem administrador não dá para apagar; não tentei.
+
+## Perguntas para o Samuel (a gerente leva; formato do §11.13)
+**Do que se trata:** a peça que atualiza o programa no notebook do Kaique guarda arquivos numa pasta com o mesmo nome
+da pasta onde ficam os projetos dele. No teste, ao desinstalar, ela apagou essa pasta inteira, com um projeto de
+mentira dentro. **É defeito do programa**, achado antes de instalar em qualquer lugar.
+**O que você escolhe:** posso mandar trocar o nome interno do pacote (um nome que o Kaique nunca vê na tela), para que
+essa peça nunca mais use a pasta dos projetos? Os projetos continuam onde estão; nada muda na tela nem no PDF.
+Sugiro que sim, e antes da etapa 5.

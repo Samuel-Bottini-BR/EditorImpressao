@@ -1,0 +1,302 @@
+<!doctype html>
+<html lang="pt-BR">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Onde o Velopack grava no notebook do Kaique</title>
+<style>
+:root { color-scheme: light dark; }
+* { box-sizing: border-box; }
+body {
+  font: 17px/1.65 "Segoe UI", system-ui, sans-serif;
+  max-width: 46rem; margin: 0 auto; padding: 2.5rem 1.5rem 6rem;
+  color: #1c1c1e; background: #fdfdfc;
+}
+h1 { font-size: 2rem; line-height: 1.2; margin: 0 0 .3em; letter-spacing: -.02em; }
+h2 { font-size: 1.35rem; margin: 2.4em 0 .6em; padding-top: .8em;
+     border-top: 1px solid #e6e4e0; letter-spacing: -.01em; }
+h3 { font-size: 1.1rem; margin: 1.8em 0 .4em; }
+h1 + p, h2 + p { margin-top: .4em; }
+p, li { margin: 0 0 .9em; }
+ul, ol { padding-left: 1.3em; }
+strong { font-weight: 640; }
+code {
+  font: .88em ui-monospace, "Cascadia Code", Consolas, monospace;
+  background: #f1efec; padding: .12em .35em; border-radius: 4px;
+}
+pre {
+  background: #f1efec; padding: 1em 1.1em; border-radius: 8px;
+  overflow-x: auto; line-height: 1.5;
+}
+pre code { background: none; padding: 0; }
+blockquote {
+  margin: 1.2em 0; padding: .1em 0 .1em 1.1em;
+  border-left: 3px solid #c9c5be; color: #55524d;
+}
+table {
+  border-collapse: collapse; width: 100%; margin: 1.2em 0;
+  font-size: .95rem; display: block; overflow-x: auto;
+}
+th, td { padding: .5em .8em; text-align: left; border-bottom: 1px solid #e6e4e0; }
+th { font-weight: 620; background: #f7f5f2; white-space: nowrap; }
+tr:last-child td { border-bottom: none; }
+img { max-width: 100%; height: auto; border-radius: 6px; margin: 1em 0;
+      border: 1px solid #e6e4e0; }
+hr { border: none; border-top: 1px solid #e6e4e0; margin: 2.5em 0; }
+.rodape { margin-top: 4em; padding-top: 1.2em; border-top: 1px solid #e6e4e0;
+          font-size: .85rem; color: #86827c; }
+@media (prefers-color-scheme: dark) {
+  body { color: #e8e6e3; background: #1a1917; }
+  h2 { border-top-color: #35332f; }
+  code, pre, th { background: #262421; }
+  th, td { border-bottom-color: #35332f; }
+  blockquote { border-left-color: #4a4741; color: #b0aca6; }
+  img { border-color: #35332f; }
+  .rodape { border-top-color: #35332f; color: #7d7973; }
+}
+@media print {
+  body { max-width: none; padding: 0; color: #000; background: #fff; }
+  h2 { page-break-after: avoid; }
+  table, img { page-break-inside: avoid; }
+}
+</style>
+</head>
+<body>
+<h1>Prova: onde a peça de atualização (Velopack) grava no notebook do Kaique</h1>
+<p>17/11/2026, verificador. Investigação: nenhuma linha do programa mudou, nada foi consertado.
+Cópia <code>.claude\worktrees\velopack-pasta</code>, ramo <code>velopack-pasta-2026-11-17</code>.</p>
+<h2>A resposta em uma frase</h2>
+<p><strong>Sim: no notebook do Kaique, toda vez que ele abrir o programa, a peça de atualização vai gravar dentro da pasta dos
+projetos dele</strong> (uma pasta <code>packages</code> e uma cópia do <code>Update.exe</code>, uns 4 MB). E achei um risco maior, que ninguém
+tinha visto: <strong>o desinstalador apaga a pasta <code>%LOCALAPPDATA%\&lt;nome do pacote&gt;</code> inteira</strong>. No teste, ele apagou o
+projeto de mentira que estava lá dentro. O nome do nosso pacote é <code>EditorImpressao</code>, que é o mesmo nome da pasta dos
+projetos.</p>
+<ul>
+<li><strong>É defeito do programa</strong>, não escolha do Samuel. Vem de o nome do pacote ser igual ao nome da pasta dos projetos.</li>
+<li><strong>Situação:</strong> só achado. O programa ainda não foi instalado em lugar nenhum: nem no notebook do Kaique, nem no PC do
+  Samuel. Por isso ainda dá para consertar sem mexer em nada instalado.</li>
+<li><strong>Até o conserto, a etapa 5 não pode instalar e desinstalar o programa de verdade no PC do Samuel.</strong> A pasta de
+  projetos dele estaria em risco (ver "Desinstalar").</li>
+</ul>
+<h2>Como a prova foi feita</h2>
+<ul>
+<li>Montei um programa de mentira, <code>ProvaPasta.exe</code>. Ele não abre janela nem console. O nome do pacote é
+  <code>EditorImpressaoProvaPasta</code> (nunca <code>EditorImpressao</code>). Ele leva o <code>atualizacao.py</code> de verdade e chama as mesmas
+  funções que o programa chama ao abrir e que o ajudante chama ao atualizar.</li>
+<li>Por segurança, só isto foi trocado dentro dele:</li>
+<li>as pastas que o nosso código lê pela variável foram para pastas de mentira no D:;</li>
+<li>as tarefas do Windows ganharam nome de mentira;</li>
+<li>a peça que fala com o Windows nos testes à distância foi trocada por uma que só anota;</li>
+<li>não mexe no Visual C++ nem no Inno;</li>
+<li>a assinatura usa uma chave de mentira (a do Samuel não foi usada);</li>
+<li>nunca pede ao Velopack para trocar a pasta.</li>
+<li>Empacotei com o <code>vpk</code> 1.2.161, o mesmo do projeto: versões 1.0.0 e 1.0.1, um <code>.msi</code> "por usuário", sem atalhos.
+  Esse <code>.msi</code> instala sem administrador. A instalação foi calada (<code>msiexec /qn</code>), numa pasta do D:.</li>
+<li><strong>Caso A, pasta trancada:</strong> tirei da minha conta o direito de criar arquivos na raiz da instalação
+  (<code>icacls /deny</code>, sem administrador). É o que acontece com o Kaique em Arquivos de Programas.</li>
+<li><strong>Caso B, pasta aberta:</strong> a mesma pasta, com a permissão devolvida.</li>
+<li>Depois de cada chamada, uma "foto" (<code>provas\foto.py</code>, só lê) da pasta de reserva esperada e da pasta instalada.
+  A foto também mostra os nomes do primeiro nível de <code>%LOCALAPPDATA%\EditorImpressao</code>, só para conferir que nada mudou
+  ali.</li>
+<li>Nenhuma pergunta do Windows apareceu. Nenhuma janela foi aberta.</li>
+</ul>
+<h2>O que vi rodando (máquina)</h2>
+<h3>Caso A: pasta da instalação trancada (como Arquivos de Programas para o Kaique)</h3>
+<p>O Velopack avisa "Failed to open directory for writing <code>...\instalado-trancado\.velopack_dir_test</code>: Acesso negado"
+(<code>provas\A4-avisos-do-velopack.txt</code>). Depois disso, grava em <strong><code>C:\Users\fotog\AppData\Local\EditorImpressaoProvaPasta\</code></strong>.
+Esse é o LocalAppData do Windows, e não a variável <code>LOCALAPPDATA</code>: o programa de mentira recebeu a variável trocada
+para o D:, e nada foi parar lá (foto, item 5). Apaguei a pasta de reserva antes de cada chamada, para saber qual
+chamada a cria:</p>
+<table>
+<thead>
+<tr>
+<th>Chamada (a mesma do programa)</th>
+<th>Quando o programa faz</th>
+<th>O que apareceu em <code>...\Local\EditorImpressaoProvaPasta</code></th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><code>velopack.App().run()</code> (<code>_rodar_o_velopack</code>)</td>
+<td><strong>toda abertura</strong>, antes da janela (<code>atender_linha_de_comando</code>)</td>
+<td><code>Update.exe</code> (3.979.264 bytes) e <code>packages\</code> vazia</td>
+</tr>
+<tr>
+<td><code>versao_que_roda()</code></td>
+<td>toda abertura (<code>trocar_antes_de_abrir</code>) e o aviso de versão nova</td>
+<td>o mesmo</td>
+</tr>
+<tr>
+<td><code>e_portatil()</code></td>
+<td>toda abertura (<code>trocar_antes_de_abrir</code>, <code>procurar_ao_abrir</code>)</td>
+<td>o mesmo</td>
+</tr>
+<tr>
+<td><code>procurar_ao_abrir()</code></td>
+<td>toda abertura (o aviso liga o ajudante)</td>
+<td>o mesmo</td>
+</tr>
+<tr>
+<td><code>--procurar-atualizacao</code> (o que o ajudante faz: procurar, conferir a assinatura, baixar)</td>
+<td>se rodasse na conta do Kaique</td>
+<td><code>Update.exe</code>, <code>packages\.betaId</code>, <code>packages\.velopack_lock</code> e <strong><code>packages\EditorImpressaoProvaPasta-1.0.1-full.nupkg</code> (19,8 MB)</strong></td>
+</tr>
+</tbody>
+</table>
+<p>Fotos: <code>provas\A1-...txt</code> a <code>provas\A4-...txt</code>. Na pasta instalada não foi gravado nada.</p>
+<h3>Caso B: pasta da instalação aberta (como o ajudante, que roda como o sistema)</h3>
+<p>As mesmas chamadas <strong>não</strong> criaram a pasta de reserva. A versão baixada foi para
+<code>...\instalado-trancado\packages\EditorImpressaoProvaPasta-1.0.1-full.nupkg</code>, dentro da pasta do programa
+(<code>provas\B-aberta-tudo.txt</code>). É o mesmo que o ensaio de 16/11 mostrou ("writable: true").</p>
+<h3>Desinstalar (o <code>.msi</code> por usuário, sem administrador)</h3>
+<ul>
+<li><strong>C1 (pasta trancada):</strong> antes de desinstalar, a pasta de reserva tinha a versão baixada. Pus ao lado um
+  "projeto de mentira" (<code>projetos\livro-de-mentira\projeto.json</code>) e um <code>configuracoes.json</code>. Desinstalei com
+  <code>msiexec /x /qn</code>. Depois, <strong><code>C:\Users\fotog\AppData\Local\EditorImpressaoProvaPasta</code> não existia mais: foi apagada
+  inteira, com o projeto de mentira dentro</strong> (<code>provas\C-depois-de-desinstalar.txt</code>).</li>
+<li><strong>C2 (pasta aberta, sem pasta de reserva):</strong> instalei de novo e pus <strong>só</strong> o projeto de mentira em
+  <code>...\Local\EditorImpressaoProvaPasta\projetos\</code>. Desinstalei. <strong>Ele foi apagado de novo</strong>
+  (<code>provas\C2-desinstalar-so-com-projeto-de-mentira.txt</code>). Então quem apaga não depende da pasta de reserva: é o
+  desinstalador que apaga <code>LocalAppData\&lt;nome do pacote&gt;</code>.</li>
+<li><strong>Quem apaga:</strong></li>
+<li>o nosso gancho <code>ao_desinstalar</code> (D-731) só anotou e mandou a tarefa de mentira rodar (<code>provas\registro-do-app.txt</code>);</li>
+<li>o registro do <code>.msi</code> mostra, depois do nosso gancho, a ação do Velopack <code>RustCleanup</code> → <code>CleanupDeferred</code>, que
+    recebe <code>&lt;pasta instalada&gt;"EditorImpressaoProvaPasta"&lt;Temp&gt;</code>;</li>
+<li>dentro do arquivo dessa ação no <code>vpk</code> 1.2.161 (<code>vendor\velopack_wix_x64.dll</code>) estão as frases <code>LOCALAPPDATA</code> e
+    "Failed to remove local app data directory".</li>
+</ul>
+<h2>O que é dedução (não vi rodando)</h2>
+<ol>
+<li><strong>A janela do Kaique grava em <code>%LOCALAPPDATA%\EditorImpressao\packages</code> e <code>%LOCALAPPDATA%\EditorImpressao\Update.exe</code>.</strong>
+   - Por que acredito: é a mesma regra do caso A, com o nome do nosso pacote (<code>EditorImpressao</code>) no lugar do de mentira.
+     O código do Velopack monta o caminho como LocalAppData + id do pacote + <code>packages</code> (<code>locator.rs</code>).
+   - Não testei com o nome de verdade, de propósito.</li>
+<li><strong>Na conta do Kaique nada baixa para lá.</strong> Quem baixa é o ajudante, que roda como o sistema e consegue gravar em
+   Arquivos de Programas (caso B). Só baixaria na conta dele se o código mudasse.</li>
+<li><strong>No desinstalar de verdade (o <code>.msi</code> para todo o computador, aberto com administrador), não se sabe de quem é a
+   pasta apagada.</strong> A ação <code>CleanupDeferred</code> roda como o sistema.
+   - Se ela pega o LocalAppData do sistema, apaga <code>C:\Windows\System32\config\systemprofile\AppData\Local\EditorImpressao</code>
+     e os projetos do Kaique ficam.
+   - Se ela pega o LocalAppData de quem desinstalou, <strong>apaga <code>%LOCALAPPDATA%\EditorImpressao</code> inteira: todos os projetos
+     do Kaique</strong> (ou os do Samuel, na etapa 5).
+   - Não deu para provar sem administrador.</li>
+<li><strong>Numa versão mais nova do Velopack, o risco fica certo.</strong> No código atual do Velopack (ramo develop), o
+   desinstalador <code>.msi</code> ganhou outra ação, <code>UserCleanupDeferred</code>. Ela roda <strong>como o usuário que desinstala</strong> e apaga
+   <code>%LocalAppData%\{AppId}</code> de propósito (o comentário do código diz "the fallback dir"). A 1.2.161 ainda não tem essa
+   ação (procurei o nome no arquivo dela e não achei). Atualizar o <code>vpk</code> sem consertar antes faria a desinstalação
+   apagar os projetos.</li>
+<li><strong>O <code>App().run()</code> apaga pacotes velhos só dentro de <code>packages\</code></strong> (<code>cleanup_old_packages_from_list</code>, só arquivos
+   <code>.nupkg</code>). Ele não toca em <code>projetos\</code>.</li>
+</ol>
+<h2>Risco para os projetos, em português simples</h2>
+<ul>
+<li><strong>Ao abrir o programa:</strong> o Kaique não perde nada. Mas aparece uma pasta <code>packages</code> e um <code>Update.exe</code> dentro da pasta
+  dos projetos dele, sem ninguém pedir. Isso contraria o que o próprio programa promete no <code>atualizacao.py</code>
+  ("Os projetos do Kaique nunca são tocados: o Velopack troca só a pasta do programa").</li>
+<li><strong>Ao desinstalar:</strong> pode apagar todos os projetos. No teste, apagou. Falta saber se, na instalação de verdade, ele
+  apaga a pasta do Kaique ou só a do sistema.</li>
+<li><strong>Na etapa 5, no PC do Samuel:</strong> a lista manda instalar o programa de verdade e desinstalar no fim. Com o nome
+  <code>EditorImpressao</code>, a desinstalação pode apagar a pasta de projetos <strong>do Samuel</strong>. A cópia de reserva da D-738 é
+  obrigatória, mas não basta. Não rodar a etapa 5 antes do conserto.</li>
+</ul>
+<h2>Desinstalar: provado ou não, e como provar na etapa 5</h2>
+<ul>
+<li><strong>Provado, rodando:</strong></li>
+<li>o desinstalador <code>.msi</code> por usuário, do <code>vpk</code> 1.2.161, apaga <code>LocalAppData\&lt;id&gt;</code> inteira, com o que estiver dentro;</li>
+<li>o nosso <code>ao_desinstalar</code> não apaga nada.</li>
+<li><strong>Não provado:</strong> de quem é a pasta apagada no <code>.msi</code> para todo o computador. Isso precisa de administrador.</li>
+<li><strong>Como provar na etapa 5:</strong> duas perguntas do Windows, sempre com o pacote de mentira e nunca com o id
+  <code>EditorImpressao</code>. O que é preciso já está em <code>D:\agente_temp_testes\velopack-pasta\app\</code>.
+  1. Empacotar o <code>ProvaPasta</code> com <code>--msi --instLocation PerMachine</code>.
+  2. Instalar com administrador (1ª pergunta) em Arquivos de Programas.
+  3. Abrir na conta comum (<code>ProvaPasta.exe prova-app-run</code>). Ver a pasta de reserva aparecer em
+     <code>%LOCALAPPDATA%\EditorImpressaoProvaPasta</code>.
+  4. Pôr um projeto de mentira em <code>%LOCALAPPDATA%\EditorImpressaoProvaPasta\projetos\</code>.
+  5. Desinstalar com <code>msiexec /x</code> (2ª pergunta).
+  6. Ver se sobrou <code>%LOCALAPPDATA%\EditorImpressaoProvaPasta</code> (o do Samuel). Ver também
+     <code>C:\Windows\System32\config\systemprofile\AppData\Local\EditorImpressaoProvaPasta</code>. Guardar o registro do <code>.msi</code>
+     (<code>/l*v</code>).</li>
+</ul>
+<h2>Plano do conserto (só o plano; nada foi codado)</h2>
+<p><strong>Por que acontece.</strong> O Velopack usa a pasta <code>LocalAppData\&lt;id do pacote&gt;</code> para duas coisas:
+- a pasta de reserva, quando a pasta do programa não aceita gravação (toda abertura na conta do Kaique);
+- a limpeza do desinstalador.</p>
+<p>O nosso id é <code>EditorImpressao</code>, e esse é também o nome da pasta onde os projetos moram (<code>historico.pasta_de_dados</code>).
+Os dois nomes caíram iguais por acaso. Não foi decisão de ninguém.</p>
+<p><strong>O que mudar, numa regra só (CLAUDE.md §11.12):</strong>
+1. <strong>O id do pacote nunca é o nome da pasta dos dados.</strong> Mudar só <code>versao.ID_DO_PACOTE</code>, para um nome que não seja
+   <code>EditorImpressao</code>.
+   - Sugestões: <code>EditorImpressaoPrograma</code> ou <code>EditorImpressao.Programa</code>.
+   - O Kaique não vê esse nome em tela nenhuma: o nome em Arquivos de Programas e na lista de programas vem do título
+     do pacote, que não muda.
+   - Todos os outros lugares já leem esse valor dali: <code>empacotar.py</code>, <code>publicar_versao_kaique.py</code>,
+     <code>atualizacao.voltar_para_a_anterior</code>, os testes e o ensaio.
+   - <strong>Tem de ser antes de qualquer instalação de verdade:</strong> o próprio <code>versao.py</code> avisa que trocar depois de instalado
+     faz o Velopack achar que é outro programa. Hoje não está instalado em lugar nenhum.
+2. <strong>Uma prova em <code>tests/</code></strong>, que cobra:
+   - <code>versao.ID_DO_PACOTE</code> diferente do nome da pasta de <code>historico.pasta_de_dados()</code>;
+   - o <code>--packId</code> do <code>empacotar.comando_do_vpk</code> igual a <code>versao.ID_DO_PACOTE</code>.
+   - Rodada no código de hoje, ela falha (o teste de reversão da §4.7).
+3. <strong>Corrigir a frase falsa</strong> no topo do <code>atualizacao.py</code> ("Os projetos do Kaique nunca sao tocados"). Ela tem de
+   dizer onde o Velopack grava e por que o id é diferente.
+4. <strong>Prender o <code>velopack</code> e o <code>vpk</code> na 1.2.161</strong> (já é a versão em uso). Antes de subir de versão, repetir esta prova:
+   a versão nova muda o desinstalar (<code>UserCleanupDeferred</code>).</p>
+<p><strong>O que fica igual:</strong>
+- os projetos continuam em <code>%LOCALAPPDATA%\EditorImpressao</code> (CLAUDE.md §7, D-731);
+- nada muda para o Kaique, nem no PDF.
+- Com o id novo, a pasta de reserva vai para <code>%LOCALAPPDATA%\&lt;id novo&gt;</code>, uma pasta só do Velopack. O desinstalador
+  pode apagá-la sem perder nada.</p>
+<p><strong>O que não resolve (descartado):</strong>
+- <strong>Passar ao Velopack outra pasta de pacotes (o <code>VelopackLocatorConfig</code>):</strong> só vale para o gerente de atualização. O
+  <code>App().run()</code> do Python não aceita essa troca, e a limpeza do desinstalador continua apagando <code>LocalAppData\&lt;id&gt;</code>.
+- <strong>Trocar a variável <code>LOCALAPPDATA</code>:</strong> o Velopack pergunta a pasta ao Windows (<code>SHGetKnownFolderPath</code>), e isso foi
+  visto rodando.</p>
+<p><strong>Como provar o conserto:</strong>
+1. A prova nova em <code>tests/</code>, que falha hoje e passa depois.
+2. Repetir esta prova (casos A, B e C), com o id do pacote de mentira tirado da mesma regra.
+3. Na etapa 5, com administrador e a cópia de reserva da D-738:
+   - instalar o programa de verdade;
+   - abrir sem administrador e ver que nada novo aparece em <code>%LOCALAPPDATA%\EditorImpressao</code>;
+   - desinstalar e ver que <code>projetos\</code>, <code>configuracoes.json</code> e <code>historico.json</code> continuam lá.</p>
+<h2>Como cumpri cada decisão</h2>
+<ul>
+<li><strong>D-723</strong> (Velopack, Arquivos de Programas): a prova usou o mesmo <code>vpk</code> 1.2.161. Arquivos de Programas foi imitado
+  com uma pasta em que a minha conta não pode criar arquivos.</li>
+<li><strong>D-724</strong> (só a assinatura do Samuel): a chave dele não foi usada. A conferência da assinatura rodou com uma chave
+  de mentira e aceitou a versão de mentira ("publicada e assinada": <code>provas\atualizacao-de-mentira.log</code>).</li>
+<li><strong>D-731</strong> (desinstalar tira o que os testes puseram, os projetos ficam): o nosso gancho não apaga nada. <strong>Mas o
+  desinstalador do Velopack apagou a pasta <code>LocalAppData\&lt;id&gt;</code></strong> (caso C). Com o id de hoje, a promessa "os projetos
+  do Kaique continuam lá" não está garantida.</li>
+<li><strong>D-733</strong> (janela sem administrador, ajudante como o sistema): o caso A é a janela, o caso B é o ajudante.</li>
+<li><strong>D-741 e D-749:</strong> não foram tocadas.</li>
+<li><strong>Pasta de verdade dos projetos:</strong> nunca foi aberta para mudar. A foto só leu os nomes do primeiro nível, iguais do
+  começo ao fim (<code>configuracoes.json, erros.log, historico.json, projetos</code>).</li>
+<li><strong>Nenhuma pergunta do Windows, nenhuma janela, nenhum agente aberto.</strong></li>
+</ul>
+<h2>O que criei fora do projeto (nada apagado sem ser meu)</h2>
+<ul>
+<li><code>D:\agente_temp_testes\velopack-pasta\</code>: o programa de mentira, os pacotes, a chave de mentira, o código do Velopack
+  baixado para ler, as fotos e os registros. Cerca de 180 MB.</li>
+<li><code>C:\Users\fotog\AppData\Local\EditorImpressaoProvaPasta\</code>: criado pelas provas. Apaguei entre as chamadas e o
+  desinstalador apagou no fim. <strong>Hoje não existe.</strong></li>
+<li><strong><code>D:\Config.Msi</code></strong> (escondida, do sistema): <strong>criada pelo Windows Installer</strong> às 18:08:45, na primeira
+  desinstalação. Ele não conseguiu limpá-la (erro 1926: "Could not set file security"). Não dá para apagar sem
+  administrador, e não tentei. Fica para a gerente perguntar ao Samuel.</li>
+<li>As duas instalações de teste (<code>instalado-trancado</code>, <code>instalado-aberto</code>) foram tiradas pelo próprio desinstalador.
+  A entrada do Windows também saiu. A permissão negada foi devolvida (<code>icacls /remove:d</code>), e a pasta trancada não
+  existe mais.</li>
+</ul>
+<h2>Ressalvas</h2>
+<ul>
+<li>O <code>.msi</code> da prova é "por usuário", e o do Kaique é "para todo o computador". O que muda entre os dois está em
+  "O que é dedução", item 3.</li>
+<li>A pasta trancada só negava criar arquivos na raiz. Em Arquivos de Programas, o Kaique também não grava em
+  <code>current\</code>. Para a regra do Velopack isso não muda nada, porque ele só testa a raiz.</li>
+<li>A chamada <code>falta_a_pergunta_do_windows()</code> não rodou no programa de mentira: ela precisa de partes pesadas do
+  programa, que deixei de fora. Ela não usa o Velopack.</li>
+<li>O Velopack não gravou arquivo de registro próprio para o pacote de mentira. Os avisos saíram na saída de erro e
+  foram guardados em <code>provas\</code>.</li>
+</ul>
+<p class="rodape">Editor de Impressão &middot; gerado em 17/11/2026 às 18:14</p>
+</body>
+</html>

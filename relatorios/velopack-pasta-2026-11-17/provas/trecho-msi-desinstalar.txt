@@ -1,0 +1,29 @@
+MSI (s) (E8:9C) [18:08:44:736]: MSI_LUA: Package is marked as LUA installation capable with no elevation required
+Action start 18:08:44: RemoveExistingProducts.
+Action start 18:08:44: RemoveRegistryValues.
+MSI (s) (E8:9C) [18:08:44:983]: Doing action: SetUninstallHookData
+MSI (s) (E8:9C) [18:08:44:983]: PROPERTY CHANGE: Adding UninstallHookDeferred property. Its value is 'D:\agente_temp_testes\velopack-pasta\instalado-trancado\"ProvaPasta.exe"1.0.0'.
+Action start 18:08:44: SetUninstallHookData.
+MSI (s) (E8:9C) [18:08:44:983]: Doing action: UninstallHookDeferred
+Action ended 18:08:44: SetUninstallHookData. Return value 1.
+Action start 18:08:44: UninstallHookDeferred.
+Action ended 18:08:45: UninstallHookDeferred. Return value 1.
+Action start 18:08:45: RemoveFiles.
+MSI (s) (E8:9C) [18:08:45:023]: Doing action: SetRustCleanupData
+MSI (s) (E8:9C) [18:08:45:024]: PROPERTY CHANGE: Adding RustCleanup property. Its value is 'D:\agente_temp_testes\velopack-pasta\instalado-trancado\"EditorImpressaoProvaPasta"C:\Users\fotog\AppData\Local\Temp\'.
+Action start 18:08:45: SetRustCleanupData.
+MSI (s) (E8:9C) [18:08:45:024]: Doing action: RustCleanup
+Action ended 18:08:45: SetRustCleanupData. Return value 1.
+MSI (s) (E8:9C) [18:08:45:024]: MSI_LUA : Custom Action 'RustCleanup' does not require elevation prompt.
+Action start 18:08:45: RustCleanup.
+Action ended 18:08:45: RustCleanup. Return value 1.
+Action start 18:08:45: RemoveFolders.
+MSI (s) (E8:9C) [18:08:45:226]: Executing op: ActionStart(Name=UninstallHookDeferred,,)
+MSI (s) (E8:9C) [18:08:45:228]: Executing op: CustomActionSchedule(Action=UninstallHookDeferred,ActionType=1089,Source=BinaryData,Target=UninstallHookDeferred,CustomActionData=D:\agente_temp_testes\velopack-pasta\instalado-trancado\"ProvaPasta.exe"1.0.0)
+MSI (s) (E8:A8) [18:08:45:233]: Invoking remote custom action. DLL: C:\WINDOWS\Installer\MSI6E25.tmp, Entrypoint: UninstallHookDeferred
+MSI (s) (E8:9C) [18:08:55:198]: Executing op: ActionStart(Name=RustCleanup,,)
+MSI (s) (E8:9C) [18:08:55:200]: Executing op: CustomActionSchedule(Action=RustCleanup,ActionType=3137,Source=BinaryData,Target=CleanupDeferred,CustomActionData=D:\agente_temp_testes\velopack-pasta\instalado-trancado\"EditorImpressaoProvaPasta"C:\Users\fotog\AppData\Local\Temp\)
+MSI (s) (E8:68) [18:08:55:203]: Invoking remote custom action. DLL: C:\WINDOWS\Installer\MSI9517.tmp, Entrypoint: CleanupDeferred
+Property(S): RustCleanup = D:\agente_temp_testes\velopack-pasta\instalado-trancado\"EditorImpressaoProvaPasta"C:\Users\fotog\AppData\Local\Temp\
+Property(S): UninstallHookDeferred = D:\agente_temp_testes\velopack-pasta\instalado-trancado\"ProvaPasta.exe"1.0.0
+MSI (s) (E8:9C) [18:08:55:469]: Product: EditorImpressaoProvaPasta -- Removal completed successfully.
