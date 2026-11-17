@@ -11,6 +11,13 @@ De onde vem (frente do notebook do Kaique, 16/11/2026):
          igual a atualizacao, que pelo codigo nao faz nada. A regra de "instalado"
          e a mesma da atualizacao: atualizacao.instalado_pelo_velopack (um lugar
          so, CLAUDE.md 11.12).
+  D-733  (17/11/2026) na primeira abertura, UMA pergunta do Windows cria o
+         ajudante da atualizacao e faz o Visual C++ e tirar o Inno antigo; a
+         senha, se digitada, entra na mesma pergunta.
+  D-735  (17/11/2026) essa pergunta do Windows aparece SEMPRE, com ou sem a
+         senha: "Agora não" na senha nao pula a pergunta do Windows.
+  D-736  (17/11/2026) na conta dos testes a distancia, a primeira abertura nao
+         faz nada (ninguem responderia a pergunta numa sessao de longe).
 
 Esta e a parte da TELA. A regra (quais comandos ligam) fica em
 core/testes_a_distancia.py; aqui so se pede a senha e se chama `ligar` de la.
@@ -113,12 +120,22 @@ def pedir_senha_e_ligar(parent=None) -> td.Resultado:
 
 
 def primeira_vez_se_preciso(parent=None,
-                            instalado: Callable[[], bool] = atualizacao.instalado_pelo_velopack) -> None:
-    """Na primeira abertura do programa instalado, pede a senha uma vez (D-721, D-728).
+                            instalado: Callable[[], bool] = atualizacao.instalado_pelo_velopack,
+                            conta_de_testes: Callable[[], bool] | None = None) -> None:
+    """Na primeira abertura do programa instalado: a senha e a pergunta do
+    Windows, uma vez (D-721, D-728, D-733, D-735).
 
-    So aparece se a janela ainda nao apareceu antes. Depois, nunca mais sozinha
-    (da para por a senha nas Configuracoes). Nao faz nada se a opcao estiver
-    desligada (o Kaique pode te-la desligado).
+    1. Se a opcao dos testes a distancia esta ligada, a janela da senha
+       aparece (como antes). Desligada, a janela nao aparece.
+    2. Depois, SEMPRE, a pergunta do Windows (D-735), pela
+       atualizacao.preparar_na_primeira_abertura: com a senha, os testes a
+       distancia vao na mesma pergunta (core.testes_a_distancia.ligar); com
+       "Agora não", so o preparo.
+    3. O aviso de sempre: com a senha, o de ligar (se nao deu certo); com
+       "Agora não", o "Sem a senha..." de core.testes_a_distancia.ligar("").
+    So acontece se a primeira abertura ainda nao aconteceu nesta conta
+    (a mesma marca de "senha ja perguntada"). Depois, nunca mais sozinha
+    (da para por a senha nas Configuracoes).
 
     D-728 (16/11/2026): pelo codigo (nao instalado pelo instalador) nao faz NADA:
     nem mostra a janela, nem marca "senha ja perguntada". Por que nao marcar: a
@@ -126,16 +143,25 @@ def primeira_vez_se_preciso(parent=None,
     instalado no mesmo computador nunca perguntaria na primeira vez dele. Antes
     disto, a janela aparecia tambem pelo atalho "(desenvolvimento)", e uma senha
     digitada ali ligaria os testes a distancia no PC do Samuel.
-    `instalado` vem como parametro so para os testes (igual a
-    ui/aviso_de_atualizacao.ligar_na_janela); o main.py usa o padrao.
+    D-736: na conta dos testes a distancia nao faz nada (nem marca).
+    `instalado` e `conta_de_testes` vem como parametro so para os testes
+    (igual a ui/aviso_de_atualizacao.ligar_na_janela); o main.py usa o padrao.
     Seguro mudar: o texto. Arriscado: tirar o `instalado()` daqui (a janela
-    voltaria a aparecer pelo codigo) ou marcar antes dele.
+    voltaria a aparecer pelo codigo) ou marcar antes dele; pular a pergunta
+    do Windows quando nao ha senha (o ajudante da atualizacao nunca nasceria).
     """
     if not instalado():
+        return
+    if (conta_de_testes or atualizacao.e_a_conta_de_testes)():
         return
     if td.senha_ja_perguntada():
         return
     td.marcar_senha_perguntada()
-    if not td.esta_ligado():
-        return
-    pedir_senha_e_ligar(parent)
+    senha = perguntar_senha(parent) if td.esta_ligado() else None
+    resultado = atualizacao.preparar_na_primeira_abertura(senha or "")
+    if senha is None:
+        return  # a opcao estava desligada: nenhum aviso sobre a senha
+    if not senha:
+        resultado = td.ligar("")  # nao toca o Windows; so o aviso "Sem a senha..." de sempre
+    if not resultado.ok and resultado.mensagem:
+        perguntas.avisar(parent, "Testes à distância", resultado.mensagem)
