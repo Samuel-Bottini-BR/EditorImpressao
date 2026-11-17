@@ -8,6 +8,15 @@ Escrito em 24/09/2026. A ordem de autoridade é:
 
 O resto é histórico. O `PEDIDOS.md` virou histórico em 24/09: a lista que vale é o Plano Definitivo.
 
+> **Onde o projeto está em 17/11/2026, noite (vale sobre tudo abaixo; detalhe na [PARTE -37](../../historico/Editor%20de%20Impressao%20-%20resumo%20para%20o%20Claude.md) do handoff):**
+> - **Frente do notebook do Kaique** (pedido de 16/11, "antes de tudo isso"; D-705 a D-751). As etapas 1 a 4 estão feitas e juntadas na versão de teste: atualização pelo Velopack com assinatura, procura ao abrir o programa, testes à distância pelo OpenSSH e o Tailscale, desinstalar limpo. Junto entrou o brasão girando ao carregar e como ícone (D-744 a D-748). Ramo `obra-2026-10-26`, ponta `a9d81030`. A rodada inteira do GitHub passou (44166943005). Nada foi instalado de verdade ainda.
+> - **Etapa 5 (instalar e testar no PC do Samuel e desfazer) parada antes de começar**: o agente achou que o Velopack, na janela sem administrador, guarda os pacotes em `%LOCALAPPDATA%\EditorImpressao\packages`, dentro da pasta dos projetos. A gerente conferiu parte disso (PARTE -37, topo). Pergunta aberta: provar onde ele grava (e depois consertar).
+> - **38 respostas dele na Central de 17/11 sem leitura** (lista exata na PARTE -37, §4).
+> - **Pergunta dele sem resposta da gerente (17/11 14h10):** "se eu instalar o claude code no pc do kaique você consegue ver lá? se a gente abrir a mesma conversa e ligar acesso remoto?" Falta o teste dele do Girar com a capa aberta.
+> - Esperando ele: a senha dos testes à distância ("eu nunca criei nenhuma senha"); D-709 (esperar o "sim" depois do plano?); D-710 (modelos por tarefa); os itens da D-708; as 4 da revisão do código.
+> - Atalho de teste dele: "Editor de Impressao (rodada de consertos)". Nos filtros e nas ferramentas, nada mudou desde 14/11.
+>
+> **Antes (14/11, fim da tarde), já superado:**
 > **Onde o projeto está em 14/11/2026, fim da tarde (vale sobre tudo abaixo; detalhe na [PARTE -36](../../historico/Editor%20de%20Impressao%20-%20resumo%20para%20o%20Claude.md) do handoff):**
 > - Versão de teste: a mesma, ramo `obra-2026-10-26`, ponta `c7e34fd8`. Nenhuma linha do programa mudou hoje. **O Samuel testa pelo atalho "Editor de Impressao (rodada de consertos)"**, com pasta de dados própria; o "(desenvolvimento)" abre a versão principal.
 > - **Teste dele do Tirar o fundo: 4 problemas** (demora e trava ao abrir e ao tirar o fundo; páginas sem o fundo tirado; miniaturas com o papel velho; o "antes" do Automático com o papel velho). Prints na sessão 7 de testes. Falta investigar; a gerente perguntou se põe um agente, **sem resposta**.

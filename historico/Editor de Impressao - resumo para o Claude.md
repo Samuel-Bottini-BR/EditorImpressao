@@ -1,6 +1,6 @@
 # Editor de Impressão — documento para colar no Claude
 
-Atualizado em 14/11/2026, fim da tarde (PARTE -36; a anterior, PARTE -35, é de 13-14/11). Desde 19/10 a memória por assunto fica em `memoria/` (índice `memoria/INDICE.md`). Versão **máxima**: reúne o histórico institucional, o
+Atualizado em 17/11/2026, noite (PARTE -37; a anterior, PARTE -36, é de 14/11). Desde 19/10 a memória por assunto fica em `memoria/` (índice `memoria/INDICE.md`). Versão **máxima**: reúne o histórico institucional, o
 que o programa é, todas as funcionalidades pedidas, os 68 pedidos feitos até
 hoje **palavra por palavra**, o que foi feito, o que falta, e os dois
 documentos-fonte inteiros (a especificação original e o prompt de testes) em
@@ -13,6 +13,274 @@ o backup). Repositório git ligado a
 `https://github.com/Samuel-Bottini-BR/EditorImpressao`.
 
 ---
+
+# PARTE -37 — Checkpoint de 16-17/11/2026: a frente do notebook do Kaique (etapas 1 a 4 feitas e juntadas, brasão, D-705 a D-751), etapa 5 parada num achado do Velopack, 38 respostas da Central esperando a gerente (leia isto primeiro)
+
+Sessão no PC, de 16/11 12h02 a 17/11 ~21h UTC, gerente Claude Opus 5.5. Foi uma conversa só (`52e3de14`), resumida uma vez em 17/11. O Samuel pediu o checkpoint com `/checkpoint` logo depois de dizer **"eu acho que estamos com contexto cheio e você está alucinando"** (17/11 20h46 UTC). Fontes usadas: a conversa salva (`falas_da_conversa.py --todas --desde 2026-11-14T22:53` e `--com-respostas`), o git e a Central. O resumo não foi usado como fonte.
+
+- **Por que ele disse "alucinando":** a gerente trouxe o achado do agente da etapa 5, "o Velopack guarda os pacotes dentro da pasta dos projetos", como se fosse certo. Depois conferiu sozinha três pontos, e eles batem:
+  - o `velopack.pyd` da `.venv` tem as frases "Using fallback directory" e "Copied Update.exe from root to fallback";
+  - `atualizacao.versao_que_roda` (`atualizacao.py:501`) cria o gerente do Velopack na janela normal, sem administrador;
+  - `versao.ID_DO_PACOTE = "EditorImpressao"` (`versao.py:34`).
+  
+  **Não conferido pela gerente:** o endereço exato, `%LOCALAPPDATA%\<id>\packages`. Ele vem só da leitura do código-fonte do Velopack feita pelo agente; nada foi testado. A última pergunta ficou sem resposta (§8).
+- **Nenhum agente rodando no fechamento.** Em 17/11 entregaram: a junção, o desinstalar (dois), o preparo da etapa 5, o brasão e a etapa 5 (parada). O das falas entregou em 16/11 (`ef1142d7`).
+- **Outras conversas no período** (`48264939`, `5ebc79e5`): o script não listou nenhuma fala delas.
+
+## 0. Para recomeçar
+
+1. `git -C D:\programas\EditorImpressao fetch origin`. Versão de teste: ramo `obra-2026-10-26`, worktree `.claude\worktrees\obra-juncao`, ponta `a9d81030` (o Livro não mudou neste checkpoint). Ramo do plano e do handoff: `fase-1`.
+2. **Responder a pergunta dele do Claude Code no PC do Kaique (§8), que ficou sem resposta, e a pergunta aberta do Velopack (§8).** A etapa 5 está parada nela.
+3. **Ler as 38 respostas da Central sem leitura (§4)** e responder na página, como mandam o CLAUDE.md §10.10 e o §11.13. São de 17/11, das 12h58 às 15h04 UTC. Ele respondeu enquanto a gerente consertava o "Só comentário", e ninguém leu.
+4. Abrir o projeto com a lista numerada por etapas e "(agente pode fazer)" (§9).
+5. Não começar conserto sem o "sim" dele. Agentes não abrem janela na tela dele.
+
+## 1. A frente do notebook do Kaique: o que é e onde está
+
+Pedido dele (16/11 12h32): "antes de tudo isso, agora vamos começar os testes já no pc do Kaique, vamos colocar uma api no programa para que eu possa fazer chamadas dentro do proprio pc do kaique para fazer testes de velocidade e outras coisas, segundo vamos adicionar uma forma de atualizar o aplicativo via internet [...]". Depois: "a atualização via internet tem que ser como funciona com apps, não pode ser ele ter que baixar de novo um instalador fazer tudo de novo" e "anote isso que acabamos de falar, não faremos os testes agora no computador do kaique, mas quero deixar tudo pronto para que isso possa ser feito".
+
+Plano (aprovado em 16/11): `relatorios/frente-kaique-2026-11-16/plano.md`, com 7 etapas. Decisões D-705 a D-751 no Livro, cada uma com as palavras dele.
+
+| Etapa | Situação (pelo git) |
+|---|---|
+| 1. Estudo | Feita: `estudo-kaique-2026-11-16` (`30e2f101`). Escolhido o Velopack (D-723, "velopack") |
+| 2. Empacotar e instalar numa pasta de teste | Feita: `kaique-etapa2-2026-11-16` (`a4411272`). O pacote funciona (1,9 GB, 11 min para montar). Um projeto feito na versão de 28/10 abre igual e dá o mesmo PDF. A faixa preta do Righetti já existia em 28/10 (Lista de bugs, `7fb5abbf`) |
+| 3. Atualização (Velopack, assinatura, voltar se falhar, aviso) | Feita e juntada: `kaique-etapa3-2026-11-16` (`a97eee08`). Ensaio 1→2 certo: só 3 de 528 arquivos baixados; a versão estragada volta; a assinatura errada é recusada |
+| 4. Testes à distância (Configurações, senha, conta escondida, OpenSSH) | Feita e juntada: `kaique-etapa4-2026-11-16` (`2fa4a6ce`) e `senha-so-instalado-2026-11-16` (`caf87b3b`, D-728) |
+| Ajustes de 17/11 | Juntados. `desinstalar-tudo-2026-11-16` (D-732 a D-736, `3c465209`); `desinstalar-b-2026-11-17` (D-731 e B2 a B5, `a4fab74f`); `kaique-juntar-2026-11-17` (D-740 a D-742, `df7acdc4`); `brasao-2026-11-17` (D-744 a D-751, `8925216e`) |
+| Junção na versão de teste | `a594049e` no `obra-2026-10-26`, com push. **Rodada inteira do GitHub passou: 44166943005** (rodou no ramo `brasao-2026-11-17`, mesmo código) (a 44160156929 tinha 1 falha, a da D-751) |
+| 5. Conferência no PC do Samuel | **Parada antes da fase 0** (§2) |
+| 6. Mandar para o Kaique | Não começada. Antes: o Kaique entra no Tailscale (D-739); ver §9 |
+| 7. Primeira atualização de verdade | Não começada |
+
+**Como ficou (o que o código faz; só o Velopack e a desinstalação foram testados na máquina, nada foi instalado de verdade):**
+- **Na primeira abertura:**
+  - aparece uma pergunta do Windows (UAC) que cria a tarefa "ajudante" `EditorImpressao\Procurar versao nova`, rodando como SYSTEM (D-733);
+  - a pergunta aparece com ou sem a senha (D-735) e volta até ele dizer "Sim" (D-741);
+  - se a preparação der erro no meio, conta como não feita (D-749);
+  - também é criada sempre a tarefa `EditorImpressao\Desfazer testes a distancia`.
+- **A cada abertura** o programa dispara o ajudante, que procura a versão nova (D-732):
+  - com "Reiniciar agora", ela entra na hora;
+  - com "Depois", entra na próxima abertura (D-734), com a janelinha "Atualizando o programa, espere um pouco..." (D-742), que some quando o brasão aparece (D-748).
+- **Testes à distância e atualização de longe:**
+  - aberto por um teste à distância, o programa não procura versão (D-736);
+  - o comando de longe para atualizar é `ssh EditorTestes@<notebook> schtasks /Run /TN "EditorImpressao\Procurar versao nova"`.
+- **De onde vem a versão nova:** a fonte de teste é `C:\ProgramData\EditorImpressao\fonte-de-teste.txt`, que só vale se o dono do arquivo for Administradores ou SYSTEM. A ordem é `--fonte`, depois esse arquivo, depois o GitHub. A assinatura (Ed25519) é conferida nos três casos.
+- **A chave privada:**
+  - fica em `%APPDATA%\EditorImpressao-publicar\chave-privada-da-assinatura.txt`;
+  - a cópia de reserva está em `D:\chaves\EditorImpressao\` (conferida idêntica em 16/11);
+  - nunca vai para o git.
+- **Desinstalar** tira o OpenSSH (se foi nosso), a regra do firewall, a conta e o perfil (D-731), e também a pasta vazia do Agendador (D-750).
+- **O brasão:**
+  - gira enquanto o programa carrega, uma volta a cada 2,5 s, sem fundo (D-744 a D-747), num processo à parte: `main.py --brasao-girando <pid>`;
+  - o ícone é o brasão desenhado do vetor em cada tamanho, de 16 a 256 (`recursos/brasao/brasao.ico`);
+  - o original é `arte/brasao/brasao.ai`, cópia do `C:\Users\fotog\Desktop\Brasão 1.ai`.
+
+## 2. A etapa 5: onde parou
+
+- **Preparo:**
+  - feito pelo verificador em 17/11: `etapa5-preparo-2026-11-17` (`bb156447`), copiado para o obra (`a9d81030`);
+  - em `relatorios/frente-kaique-2026-11-16/etapa5/`: `lista.md` (fases 0 a 12, ~5 a 6 h, ~8 perguntas do Windows), `comandos.md`, `fotografo.py` (só lê) e `comparar.py`.
+- **Começo (Samuel: "ok", 17/11 20h37):** worktree `.claude\worktrees\etapa5`, ramo `etapa5-2026-11-17`, `f505e5dc`, **sem push**.
+  - O agente preencheu os nomes de verdade (A2) e parou antes da fase 0. Nada foi rodado no Windows: nenhuma foto, nenhuma cópia de reserva, nenhuma versão de mentira, nenhuma pergunta do Windows.
+- **O achado que parou (do agente; parte conferida pela gerente, ver o topo):**
+  - quando a janela do programa roda sem administrador, o Velopack usa uma pasta de reserva, `%LOCALAPPDATA%\EditorImpressao\packages`, que fica **dentro da pasta dos projetos**;
+  - ele também copia o `Update.exe` para lá;
+  - ele pega o LocalAppData do Windows (`SHGetKnownFolderPath`), não da variável. Por isso trocar o `LOCALAPPDATA` ao abrir (lista.md E1) **não protege** a pasta de verdade do Samuel na etapa 5;
+  - ainda não se sabe se desinstalar apaga essa pasta. O CLAUDE.md §7 diz que desinstalar **não apaga** `%LOCALAPPDATA%\EditorImpressao`, de propósito.
+- **Outros problemas da fase 1 achados pelo agente:**
+  - `publicar_versao_kaique.py --pasta-pronta` não põe o Visual C++ no pacote. A 1.1.0 vai pelo caminho inteiro, e as 1.1.1 a 1.1.5 reaproveitam o `dist\EditorImpressao`;
+  - num worktree, o `empacotar.py` procura o Kraken e o Visual C++ em `RAIZ.parent\EditorImpressao-arquivos`, que não existe ali. É preciso apontar para `D:\programas\EditorImpressao-arquivos\ferramentas\` e fazer a junção `modelos`;
+  - lugar da cópia de reserva: a lista diz `$TRAB\reserva-dados-do-samuel`, o pedido da gerente diz uma pasta com data em `D:\programas\EditorImpressao-arquivos\`. O agente segue o pedido.
+- **Relatório do agente:** `.claude\worktrees\etapa5\relatorios\frente-kaique-2026-11-16\etapa5\relatorio.md` e `.html`, mais `ONDE-PAREI.md`. O `.pdf` foi gravado, mas fica fora do git pela regra `*.pdf` do `.gitignore` da raiz.
+
+## 3. As falas do Samuel desde o último checkpoint e o destino (UTC)
+
+| Hora | Fala (literal ou resumida, como marcado) | Destino |
+|---|---|---|
+| 16/11 12h02 | "1" (abrir o Editor) | Lista numerada |
+| 16/11 12h14 e 12h22 | Respostas à lista: "10 - sim", "11- sim- mas elas não podem se perder, nem os prints", "12- sim, mas não é importante que ele fique guardado [...]?", "13 - Sim, e por favor faça um breve relato [...]", "14 - Não é a mesma coisa que o item 10?", "16 - Não lembro qual o erro [...]", "17 - já pode ser feito.", "20 - Isso podia ser feito junto com a ferramenta girar [...]", "27 - Tem que ser investigado em todos os filtros [...] quero achar a causa.", "34 - Isso é urgente [...]" e "vou botar 5 agentes para trabalhar, mas espere o meu comando" | D-708. Feitos: 11 (Arquivo na Central, 16/11), 12 (PDF para a Lixeira, 16/11), 34 (falas, §5). Esperando o comando dele: 10/14, 17 (D-702), 27 (D-700). "etapa 1 - verifique se eu já não fiz esses testes": a gerente conferiu (12h27), só 1 dos 5 estava feito; **falta o teste dele do Girar com a capa aberta** ("você não fez"; §9). 13: a cópia do Estado atual para a pasta dele foi bloqueada em 16/11 e **feita neste checkpoint** (17/11); o breve relato foi dado no chat. 16: apresentados no chat os erros do Lusíadas com causa e plano (D-708). 20: entra junto da pergunta do Girar como ferramenta, que espera as 4 da revisão (D-708) |
+| 16/11 12h22 | Regra "Todas vez que um agente for fazer uma tarefa o gerente tem que montar um plano [...]" | D-709. **Falta uma resposta e escrever no CLAUDE.md** (§8) |
+| 16/11 12h23 | "Outra nova regra, tem que ser feito uma sessão de prioridade [...] aprensete 3 opções de modelos para cada tipo de tarefa." | D-710. Proposta da gerente; **esperando a escolha dele** (§8) |
+| 16/11 12h32 a 13h37 | O pedido da frente do Kaique e as perguntas sobre API, Tailscale, OpenSSH, conta, prioridade, versão privada e desempenho | D-705 a D-722 (desempenho: D-707, Fase 5) |
+| 16/11 13h22 | "sim e me responda isso tambem • Como o C++ e o Python se comunicam [...] • Qual é o principal tipo de erro [...]" | Respondido no chat |
+| 16/11 14h32 a 14h56 | "pera ai, explica melhor [...]", "velopack", "gratis, mas o que é essa assinatura e é segura?", "que conta? [...] se reclamar é só pedir para o pc dar acesso.", "ok", "que etapa 2?", "tem que fazer a minha conta do scantailor também né", "faz isso o mais rapido possivel, pode usar o fable se for preciso", "pode abrir mais de um agente ao mesmo tempo também desde que não seja fable", "pode, se tiver qualquer coisa que o kaique precise, ele tem que estar no instalador né" | D-723 a D-727. "scantailor" era o Tailscale (passo dele antes da etapa 6, D-739) |
+| 16/11 15h17 a 16h05 | Fechar o PC, rodar na 3G, a tampa ("ok, pode mudar"), "terninou?", "confere", "pode rodar tudo que falta no meu pc então" | A tampa já estava em "não fazer nada". Atraso do GitHub. Suítes rodadas no PC |
+| 16/11 16h29, 16h45 | "Não entendi essa diferença, diferente em relação ao que?" · "conferi" | **Correção:** a frase do relatório da etapa 2 estava errada; a abertura é igual (`a4411272`) |
+| 16/11 17h07 a 18h25 | "vou reiniciar o pc, não preciso dar checkpoint aqui né?", "pode começar pelo 1" (cópia da chave no D:), "não vou reiniciar o que mais temos para fazer?", "vamos fazer 1", "qual coisa pode rodar junto [...]", "pode fazer essa lista de coisas leves então" | Checkpoint não feito (ele não reiniciou). Chave copiada. Coisas leves: Arquivo da Central, PDF, falas |
+| 16/11 18h54 a 18h56 | "não era sobre o giro na tela" · "nem sei mais do que vocÊ esta falando" · "era sobre o exe para o kaique" · "Sim, mas eu tinha feito uma ressalva sobre isso, da uma olhada" | **Correção:** o "eu quero que seja rapido" de 10/11 era sobre o .exe do Kaique. A ressalva ("não podem se perder, nem os prints") foi cumprida no Arquivo |
+| 16/11 19h34 a 22h22 | "eu estou sem memoria no meu disco por causa disso?", "isso vai fazer alguma diferença para o programa?", "ta e da onde vem o resto dos 40 gigas?", "travou aqui", "pode", "o que estamos fazendo agora?", "3 e 4 já foram?", "acabei de liberar espaço" | Disco cheio por uma rodada de pytest travada (depois de parar, o C: voltou a ter 27,5 GB livres). O agente não reproduziu (`2fa4a6ce`). Vigia do disco. `--basetemp` no D: |
+| 16/11 23h32 a 17/11 03h06 | "ok", "esperando o resultado", "e agora?", "não entendi", "ok, mas eu nunca criei nenhuma senha", "pode ser, mas o programa está funcionando certinho como está no meu pc npe?" e "né?", "pode", "k", "ok" | D-728 (a senha só no instalado), D-729, D-730, D-731. **"eu nunca criei nenhuma senha": a senha dos testes à distância ainda não existe (§9)** |
+| 17/11 11h33 a 12h54 | "a atualização tinha que ser procurada quando ele abre o programa né? [...]", "não, faz quando o programa é aberto", "1- sim / VAI CONSEGUIR FAZER OS TESTS A DISTANCIA NÉ?", "quando ele abrir o programa de novo", "vai aparecer o deseja permitir sempre que ele for atualizar né?", "Sim", "Se tiver nova versão eu quero poder mandar atualizar aqui pelo meu pc [...]", "pode, mas vai demorar quanto tempo?", "podemos fazer isso de maneira mais rapida?", "dá para usar 3 agentes? [...]", "ok, pode ser" | D-732 a D-736. Três agentes |
+| 17/11 13h10 | [print] "eu botei só comentario aqui e não deu certo." · "ele não seleciona" | Central consertada (v45; a causa era a opção "encerrada") |
+| 17/11 13h24, 13h25 | "ok" · "ok" | D-737, D-738 |
+| 17/11 13h29, 13h36 | "não entendi, pode recapitular [...] da ultima vez que eu tranformei o app em exe foi muito mais rapido [...] queria que as configurações rolassem no automatico." · "Não tem como ver se as redes estão conectadas mesmos [...]?" | Explicado. D-739: a gerente conferiu o Tailscale (só samuel-pc e o NAS na conta do Kaique; o notebook ainda não está) |
+| 17/11 13h40 a 14h04 | "ok", "Sim", "Sim", "Sim" | D-739 a D-742 |
+| 17/11 14h05 a 14h16 | O brasão ("[...] girando em 3d sem mudar nada no brasão [...] e pode mudar o icone"), "pode ser, mas como você vai conferir os discos dele?", "que resposta?", "se eu instalar o claude code no pc do kaique você consegue ver lá? [...]", "entra agora na versão que vai ser enviada para ele.", "A", "dá para ser sem fundo?" | D-743 a D-745. **A pergunta do Claude Code no PC do Kaique ficou sem resposta:** a gerente disse "Estou conferindo na documentação do Claude Code como isso funciona, para te responder certo. Volto em instantes." (14h10m45s) e nunca voltou (§8). O resumo automático da conversa dizia que tinha respondido: errado |
+| 17/11 14h16 | **"eu mandei um arquivo em .ai que daria para vetorizar sem problemas, porque não fez isso?"** | **Correção:** a 1ª prévia tinha sido feita de uma imagem. Refeita direto do vetor |
+| 17/11 14h32 | "Sim, mas eu quero ver um exemplo, manda um agente fazer html para para eu ver, e como está o processo do .exe?" | D-746. Página de exemplo em `D:\programas\EditorImpressao-arquivos\brasao-previas-17-11\exemplo-brasao.html` |
+| 17/11 14h45 | [print] "aqui quando eu vou na resposta no abrir relatorio e respondo ela, ela deveria ficar resposndida aqui no respostas [...] e o html não abriu, abre para mim" · "brasão aprovado" | Central v46 (bloco "A gerente respondeu" com "ok" dentro do relatório). HTML aberto. D-747 |
+| 17/11 14h54 | "arrumou a central?" | Sim, v45 e v46 |
+| 17/11 15h06 a 15h14 | "[...] não suspender mesmo com a tampa fechada [...]", "certeza, vou fazer o teste de fechar a tampa", "fechei e abri", "ok, vou fechar" | A gerente mudou a tampa ("Pronto, já mudei", 15h07; em 16/11 15h26 tinha dito "não precisei mudar nada"): LIDACTION = 0 na tomada e na bateria, conferido no registro. No teste da tampa o PC não dormiu |
+| 17/11 15h51 | "Sim" | D-748 |
+| 17/11 15h52, 16h12 | "E o que estamos fazendo agora?" · "a conexão voltou, retome os trabalhos" | A rede caiu e matou um agente; ele foi retomado, com o trabalho intacto |
+| 17/11 18h33 | "Sim" | D-749 |
+| 17/11 19h18 | "pera ai, o que aconteceu?" | Explicado o teste do Agendador |
+| 17/11 19h25 | "pode sim, mas qual seria o problema de fazer o teste com um real?" | D-750, e explicado (mexeria no Windows dele, abriria perguntas do Windows, poderia apagar coisa real) |
+| 17/11 20h02 | "em que parte estamos?" | Respondido |
+| 17/11 20h11 | "sim" | D-751 |
+| 17/11 20h37 | "ok" | Etapa 5, primeira parte (agente) |
+| 17/11 20h46 | **"eu acho que estamos com contexto cheio e você está alucinando"** | A gerente conferiu o achado nos arquivos (topo) e ofereceu o checkpoint; ele pediu `/checkpoint` |
+
+## 4. Central (https://claude.ai/artifact/XNFrsdVR7q4K8cBcxNftZy)
+
+- **Feito nesta sessão:**
+  - 16/11: aba "Arquivo" (as 99 conferências antigas, inteiras e com os prints; cópia antes em `D:\programas\EditorImpressao-arquivos\central-banco\copia-2026-11-16`);
+  - v45: o "Só comentário" volta a selecionar;
+  - v46: o bloco "A gerente respondeu" com "ok" e "não entendi" dentro do relatório;
+  - au-d-486 respondida.
+  
+  A página local que se edita é `D:\programas\EditorImpressao-arquivos\central-banco\arquivo-2026-11-16\central-pagina-nova.html`. A vigia da Central caiu quando a rede caiu (17/11).
+- **As 61 respostas antigas que já tinham resposta da gerente não foram marcadas como lidas.** O próprio Samuel marca, com o "ok" novo.
+- **38 respostas de 17/11 sem leitura (`lida != true`), esperando a gerente**, com o texto exato. As horas são UTC; "dono" é o relatório da Central.
+
+| id | hora | escolha | comentário dele | relatório |
+|---|---|---|---|---|
+| b-pdf-desatualizado | 11-17 12:58 | Só comentário | "Mas o pdf já tinha sido conferido inteiro, para aparecer que não foi conferido, teria que ter sido mexido em todas as paginas né?" | acrescentei-27-10 |
+| b-abas-nomes | 11-17 13:00 | Ficam como estão (recomendo) | — | acrescentei-27-10 |
+| au-d-574 | 11-17 13:02 | Pôr na lista de fazer | — | auditoria-2-nao-feito |
+| nm-esta-bom | 11-17 13:03 | Nomes pelo que fazem: "página conferida" e "tirar este aviso" | "Eu gostei da opção que eu escolhi, essa logica funciona bem, é bom analisar ela para reutilizar em outros lugares." | nomes-28-10 |
+| nm-antes-de-processar | 11-17 13:05 | Só comentário | "Quero mais opções, até agora eu gostei mais da segunda opção." | nomes-28-10 |
+| nm-folha-pagina | 11-17 13:08 | Só comentário | "Gostei da segunda opção, mas não ficou claro, como essa mudança vai funcionar." | nomes-28-10 |
+| au-d-546 | 11-17 13:11 | Só comentário | "O pdf deve ser gerado conforme o preview mostra as alterações feitas né?" | auditoria-5-escolhas-da-gerente |
+| au-d-541 | 11-17 13:14 | Só comentário | "Isso não é um print da ferramenta mover, e não consegui entender o que você quer que eu escolha, pois não tenho exemplo concreto do que você está dizendo a cerca da ferramenta mover." | auditoria-5-escolhas-da-gerente |
+| au-d-487 | 11-17 13:17 | Só comentário | "Eu não testei o botão direito nessa grade com todas as paginas, segundo: tem que ver se não tem gambiarra ai, terceiro: não ficou claro o que você quer que eu concorde ou descorde." | auditoria-5-escolhas-da-gerente |
+| au-d-560 | 11-17 13:19 | Só comentário | "Acho que tem que dar um aviso no livro todo paras as paginas que a conta ficou incerta e eu pode ver e selecionar pagina por pagina, aparecer uma telinha que eu posso clicar e ir para pagina( agora fiquei confuso sobre pagina e folha) e dai selecionar ou não selecionar se ela vai usar a conta do editor." | auditoria-5-escolhas-da-gerente |
+| au-d-528 | 11-17 13:20 | Concordo, fica assim | "Mas tem que ver se não tem gambiarra nessa decisão, e nessa função." | auditoria-5-escolhas-da-gerente |
+| au-d-501 | 11-17 13:22 | Concordo, fica assim | "Mas eu não entendi ainda, por favor, quero uma explicação mais detalhada, o jeito como foi feito a explicação, tudo junto, fica uma forma muito confusa." | auditoria-5-escolhas-da-gerente |
+| au-d-500 | 11-17 13:33 | Só comentário | "Eu preciso de provas disso, eu não entendi ainda, ficou nebuloso." | auditoria-5-escolhas-da-gerente |
+| au-d-492 | 11-17 13:33 | Só comentário | "Mas esse tique só vai aparecer se eu clicar na aba lá de cima filtros né?" | auditoria-5-escolhas-da-gerente |
+| au-d-484 | 11-17 13:46 | Só comentário | "se você ler bem , eu falei: no livro, nas escolhidas e em uma pagina só, o que não dá para fazer hoje, ele só road em todas as paginas de uma vez, e eu não consigo ir na tela grande selecionar paginas e rodar automatico só nelas." | auditoria-5-escolhas-da-gerente |
+| au-d-489 | 11-17 13:47 | Só comentário | "Sua mensagem não ficou clara." | auditoria-5-escolhas-da-gerente |
+| au-d-488 | 11-17 13:48 | Concordo, fica assim | — | auditoria-5-escolhas-da-gerente |
+| au-d-498 | 11-17 13:49 | Só comentário | "os nomes não estão bons, mas continua assim por enquanto." | auditoria-5-escolhas-da-gerente |
+| au-d-018 | 11-17 13:52 | Quero diferente: pôr na lista de fazer | — | auditoria-5-escolhas-da-gerente |
+| lu-13-p8 | 11-17 14:01 | Só comentário | "explique melhor como vai funcionar a opção 3." | perg-14-11-lusiadas-provas |
+| lu-12-p22 | 11-17 14:02 | Só comentário | "Gostaria de saber como seria esse conserto, por enquanto poderia ter só um aviso né? Seria possivel criar uma IA só para parte de avisos do programa?" | perg-14-11-lusiadas-provas |
+| lu-11-lista | 11-17 14:07 | Entendi, pode consertar | "pode consertar, mas quero saber o motivo desse erro, pois isso é um gambiarra né." | perg-14-11-lusiadas-provas |
+| lu-10-codigo | 11-17 14:09 | Entendi, pode consertar | "além disso tem que rever as regras dos agentes para que eles não cometam mais esse erro." | perg-14-11-lusiadas-provas |
+| lu-9-frase | 11-17 14:33 | Entendi, pode consertar | "Depois que tira uma pagina do livro, ela tem que sumir das miniaturas, ela só continuaria existindo se tivessemos deixado ela em branco ou simplismente excluido o conteudo dela." | perg-14-11-lusiadas-provas |
+| lu-8-aviso-salvar | 11-17 14:34 | Entendi, pode consertar | "Quero saber porque esse problema acontece." | perg-14-11-lusiadas-provas |
+| lu-7-laranja | 11-17 14:35 | Opção 2: o botão "marcações" manda também no laranja (recomendo) | "Quero entender porque este bug está acontecendo. Segundo, onde aparece essas marcações, vemos claramente alguns defeitos nas gravuras, vemos manchas brancas." | perg-14-11-lusiadas-provas |
+| lu-1-remendos | 11-17 14:38 | Entendi, pode consertar | "Quero entender porque isso aconteceu. porque esses pedaços brancos estavam aparecendo também no melhorar e no magico pro e também apareceram em outros livros, como no Gradus primus que ele apaga um quadrado da parte superior da capa azul do livro." | perg-14-11-lusiadas-provas |
+| lu-2-numeros | 11-17 14:39 | Entendi, pode consertar | "Mudou sozinho porque ele procurou e achou mais defeitos? numero está errado por causa de alguma confusão que o programa está fazendo, provavelmente uma gambiarra o motor de contagem deveria valer para todo o programa e não fazer uma conta em cada lugar um motor para paginas e um para folhas( lembrando que eu não lembro a diferença entre as duas), Quero entender também o porque desse erro." | perg-14-11-lusiadas-provas |
+| lu-3-miniatura | 11-17 14:40 | Entendi, pode consertar | "Quero saber porque isso acontece." | perg-14-11-lusiadas-provas |
+| lu-4-barra | 11-17 14:40 | Entendi, pode consertar (no fim da fila) | "não é urgente." | perg-14-11-lusiadas-provas |
+| lu-5-deitada | 11-17 14:42 | Entendi, pode consertar | "Quero saber porque saiu deitado? o programa aplicou o girar? é um defeito do programa ou do agente que fez esses testes?" | perg-14-11-lusiadas-provas |
+| lu-6-espremida | 11-17 14:43 | Vou conferir no meu teste | — | perg-14-11-lusiadas-provas |
+| v-capa-aviso | 11-17 14:50 | Só comentário | "Se não for arrumado isso, as paginas vão ficar fora de ordem?" | acrescentei-27-10 |
+| au-d-482 | 11-17 14:52 | Concordo, fica assim | — | auditoria-5-escolhas-da-gerente |
+| nm-desligar-marcadas | 11-17 14:59 | Só comentário | "Então o botão tem que ser desfazer e não desligar as marcadas né?" | nomes-28-10 |
+| nm-jeito-pb | 11-17 15:02 | Só comentário | "Certo, mas o que eu estou escolhendo aqui?" | nomes-28-10 |
+| nm-codigos | 11-17 15:02 | Tirar só os códigos e deixar o resto da frase (recomendo) | — | nomes-28-10 |
+| nm-tela-livros | 11-17 15:04 | Só comentário | "Eu quero pode escolher os nomes, não ficou clar, tem nomes diferentes e fazem a mesma cosia?" | nomes-28-10 |
+
+## 5. Outros trabalhos do período (pelo git)
+
+- **Programinha das falas (D-708, item 34):**
+  - consertado e conferido em 16/11, ramo `falas-2026-11-16` (`ef1142d7`, com push);
+  - o script consertado é `C:\Users\fotog\.claude\scripts\falas_da_conversa.py`, fora do git; a cópia antiga é `falas_da_conversa.antes-2026-11-16.py`;
+  - agora lê as falas do meio do trabalho, e os relatórios de agente não saem mais como fala dele (17 de 17 conferências).
+  - Nesta lista, as falas de 16/11 12h14 e 12h22 aparecem duas vezes porque ele mandou duas vezes: a das 12h14 foi interrompida ("[Request interrupted by user]") e às 12h22 ele colou de novo com texto novo. Não é defeito do script.
+- **`fase-1`:** `7fb5abbf` (16/11), Lista de bugs: faixa preta na beirada esquerda do Righetti depois do Automático, igual em 28/10.
+- **Ramos de 17/11 sem push (já dentro do obra, não se perde nada):** `kaique-juntar-2026-11-17`, `desinstalar-tudo-2026-11-16`, `desinstalar-b-2026-11-17`, `senha-so-instalado-2026-11-16` e `brasao-2026-11-17-pasta-agendador`. Fora do obra e sem push: `etapa5-preparo-2026-11-17` (copiado para o obra pelo cherry-pick `a9d81030`) e `etapa5-2026-11-17` (`f505e5dc`, o de agora).
+- **Nada mudou nos filtros nem nas ferramentas.** A versão de teste tem tudo o que tinha em 14/11 (`6b114163`, o código do `c7e34fd8`), mais a frente do Kaique e o brasão.
+
+## 6. Descobertas de comportamento real (caras de redescobrir)
+
+- **Velopack 1.2.161:**
+  - o `.msi` com `--instLocation PerMachine` tem os ganchos (`InstallHookDeferred`, `UninstallHookDeferred`) com `Impersonate="yes"`, ou seja, rodam **sem** administrador (achado B1, lido na DLL do `vpk`);
+  - o empacotador precisa do .NET, instalado em 16/11;
+  - a pasta de reserva dos pacotes vai para `LocalAppData\<id>` (§2).
+- **Pytest no PC:**
+  - um processo travou depois de imprimir o resultado (15 min, 5 GB de RAM) e encheu o C: com temporários;
+  - remédio: `--basetemp` no D: e o vigia `scratchpad\vigia_disco.ps1`;
+  - 8 testes de tempo falham na rodada inteira com o PC ocupado e passam sozinhos;
+  - o teste do desfazer da d621 falha às vezes também na base: não é regressão.
+- **GitHub:** a máquina põe `APPDATA` e `LOCALAPPDATA` dentro da pasta do projeto, de propósito. Teste que confere "fora do projeto" pelo ambiente falha lá (D-751).
+- **Criar worktree é lento** (fica travado enquanto outro git trabalha). Junções `modelos` e `gabarito\paginas` pelo PowerShell (`New-Item -ItemType Junction`).
+- **Energia:** LIDACTION = 0 na tomada e na bateria, e nunca dorme sozinho. A tampa fechada não para os agentes.
+- **Tailscale do Samuel:** está na conta do Kaique (`kaique_silva.7`); só aparecem samuel-pc e o NAS (offline há 3 dias); cliente parado em 17/11 (endereço guardado 100.81.145.27). O notebook do Kaique ainda não está na rede.
+- `D:\` e `D:\chaves` dão Controle total a "Todos" (só lido).
+
+## 7. Erros da gerente nesta sessão (para não repetir)
+
+- **A prévia do brasão saiu de uma imagem, não do vetor.** Ele: "eu mandei um arquivo em .ai que daria para vetorizar sem problemas, porque não fez isso?"
+- **A frase errada do relatório da etapa 2** ("abre diferente") passou sem prova. Ele: "Não entendi essa diferença, diferente em relação ao que?"
+- **`--basetemp` no D: usado sem perguntar antes.** A gerente contou, e ele disse "ok".
+- **Um `gerenteEm` com hora no futuro** na Central (§10.10: "horário de verdade"). Corrigido.
+- **O achado do Velopack levado a ele como certo, antes de a gerente conferir.** Ele: "eu acho que estamos com contexto cheio e você está alucinando". A gerente conferiu depois, e três pontos batem (topo). Regra: achado de agente que pare uma etapa só vai a ele depois de a gerente conferir nos arquivos, dizendo o que conferiu e o que não.
+- **38 respostas da Central ficaram sem leitura por horas**, enquanto a gerente consertava a própria Central.
+- **A pergunta dele do Claude Code no PC do Kaique (17/11 14h10) ficou sem resposta.** A gerente disse "Volto em instantes" e não voltou. O resumo automático dizia que tinha respondido, e o primeiro rascunho deste checkpoint copiou isso. O conferente pegou. Regra: "volto em instantes" só com a resposta dada na mesma vez ou anotada como pendência.
+
+## 8. Perguntas em aberto (texto exato, onde, quando)
+
+- **Chat, 17/11 20h46 UTC (a última):** "Para tirar a dúvida sem mexer em nada, posso pôr um agente para provar onde ela grava, rodando a ferramenta numa pasta de teste. Se você preferir recomeçar com a conversa limpa, eu salvo tudo antes com o /checkpoint. Posso mandar o agente fazer a prova? Sugiro que sim." **Ele respondeu com `/checkpoint`; a prova não foi respondida.**
+  - **Antes dela (17/11 20h45, antes do "alucinando"), superada por essa:** "Posso mandar um agente fazer esse conserto antes da etapa 5? Sugiro que sim." O conserto proposto: o programa manda o Velopack guardar os pacotes numa pasta só dele, fora da pasta dos projetos, e um teste prova que instalar, atualizar e desinstalar nunca tocam nela.
+- **Chat, 17/11 14h10, pergunta DELE sem resposta da gerente:** "se eu instalar o claude code no pc do kaique você consegue ver lá? se a gente abrir a mesma conversa e ligar acesso remoto?" A gerente disse que ia conferir na documentação e voltar, e não voltou. Responder primeiro, conferindo na documentação do Claude Code (Remote Control).
+- **D-709 (chat, 16/11):** se o agente espera o "sim" dele depois do plano. Sugestão da gerente: sim nos consertos e ferramentas novas, não nas investigações. A regra ainda não está no CLAUDE.md.
+- **D-710 (chat, 16/11):** a escolha dos modelos por tipo de tarefa (as 3 opções estão na D-710).
+- **D-708:** esperando o comando dele: os 4 problemas do Tirar o fundo (10/14), a D-702 (17), a investigação da D-700 em todos os filtros (27), e os agentes da lista ("Tirar o fundo", retângulos na capa, "Montar para imprimir", conferência final da obra).
+- **Ainda da PARTE -36:** as 4 perguntas da revisão do código na Central (destravam o girar numa regra só e a pergunta 20); o comentário dele em au-d-523.
+- **Sobras fora do projeto, para perguntar antes de apagar (§10.9):**
+  - `D:\agente_temp_testes\`, com muitas pastas, entre elas os worktrees `brasao2-antigo` (commit `fd9f1f58`) e `d732-codigo-antigo` (~800 MB);
+  - `C:\Users\fotog\AppData\Local\Temp\x_never\`;
+  - `D:\agente_disco\`;
+  - `%LOCALAPPDATA%\velopack\velopack_EditorImpressaoEnsaio.log` (ensaio da etapa 3).
+
+## 9. Fila, por etapas
+
+**Etapa 1: a frente do Kaique**
+1. Responder a pergunta do Velopack (§8). Depois: provar onde ele grava (agente pode fazer); se confirmar, o conserto (agente pode fazer, com plano antes).
+2. Etapa 5, fases 0 e 1 sem ele, com 1 pergunta do Windows na foto de administrador (agente pode fazer). O agente já tem os nomes de verdade (`f505e5dc`).
+3. Etapa 5, fases 2 a 11, com ele por perto (~2h30 a 3h, ~8 perguntas do Windows, foto da primeira com o celular, D-737).
+4. Etapa 5, fase 12, e o relatório (agente pode fazer).
+5. **A senha dos testes à distância:** ele ainda não criou ("ok, mas eu nunca criei nenhuma senha"). Precisa existir antes da etapa 6.
+6. Etapa 6: o Kaique entra no Tailscale pelo telefone com o Samuel (D-739); a gerente confere daqui; o Samuel manda o instalador; a gerente confere as permissões dos discos (D-743).
+7. Etapa 7: a primeira atualização de verdade.
+8. Pôr o Velopack em `.github/requisitos-windows.txt` (ramo `claude/list-server-files-gkos8v`), se a rodada do GitHub um dia precisar dele (agente pode fazer).
+
+**Etapa 1b: o que ele deve testar**
+- O Girar com a capa aberta (D-638, D-640, D-645, D-662, D-663; da PARTE -36). Atalho "(rodada de consertos)".
+
+**Etapa 2: a Central**
+9. Ler e responder as 38 respostas de 17/11 (§4).
+
+**Etapa 3: o que espera o comando dele (D-708)**
+10. Os itens 10/14, 17, 27 e os agentes da lista (§8).
+
+## 10. Testes (a última rodada)
+
+- **GitHub, rodada inteira:** 44166943005 (17/11, 20h13 a 20h33 UTC), no ramo `brasao-2026-11-17` (`8925216e`), que tem o mesmo código da junção `a594049e` (só o Livro difere). **Passou**, nas 5 partes e no teste dos botões e prints da janela.
+- **PC, um arquivo por vez (agente do brasão, 17/11):** brasão 22, atualização 38, ajudante 37, preparo D-749 8, desinstalar 46, pasta do Agendador 6, testes à distância 13, sem janela na tela 8, assinatura 16. Todos passaram. `teste_botoes.py`: 372 ações, 0 falhas.
+- **PC, suíte inteira:** só nas etapas 3 e 4 (16/11). Etapa 3: 3.672 passaram, 8 falhas de tempo que passaram sozinhas. Etapa 4: 3.630 passaram, 7 falhas: 6 passaram sozinhas, e a 7ª é o teste do desfazer (d621) que falha às vezes também na base. Depois da junção de 17/11 não rodou inteira no PC; só no GitHub.
+- **Nada foi instalado de verdade ainda.** É a etapa 5.
+
+## 11. Como rodar
+
+- **Programa da versão de teste:** atalho "Editor de Impressao (rodada de consertos)".
+- **Rodada do GitHub:** `gh workflow run "Testes no Windows" -R Samuel-Bottini-BR/EditorImpressao --ref claude/list-server-files-gkos8v -f ramo=<ramo>`. Acompanhar com `gh run watch <id> -R Samuel-Bottini-BR/EditorImpressao --exit-status`. O `gh` fica em `C:\Program Files\GitHub CLI`.
+- **No PC:** um arquivo por vez, `.venv\Scripts\python.exe -m pytest tests\<arquivo> -q -p no:cacheprovider --basetemp=D:/agente_temp_testes/<nome>`, com `QT_QPA_PLATFORM=offscreen`.
+- **Publicar uma versão para o Kaique:** `publicar_versao_kaique.py`. Não usar ainda: a primeira é a etapa 7.
+
+## 12. Ambiente (instalado nesta sessão)
+
+- .NET SDK, o `vpk` 1.2.161 (`~/.dotnet/tools`) e o `velopack` 1.2.161 na `.venv`.
+- A chave da assinatura (§1).
+- Energia: LIDACTION = 0 (§6).
+
+---
+
 
 # PARTE -36 — Checkpoint de 14/11/2026 (fim da tarde): regras novas do /projeto, teste do Tirar o fundo com 4 problemas, 3 agentes de estudo publicados na Central (leia isto primeiro)
 
