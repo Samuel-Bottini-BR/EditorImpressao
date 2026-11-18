@@ -41,13 +41,52 @@ pode mudar (por opção) é só o tamanho do que ele baixa e qual instalador fic
 - ~07:25 pedi à gerente o "pode" das medidas M1 a M5. Resposta: esperar a etapa 5 parar; deixar o relatório pronto com estimativas "[não medido]"; não entregar sem as medidas.
 - 07:29 rascunho do relatório gravado em três formatos (relatorio.md/.html/.pdf), com os números a medir marcados.
 - 10:40 dado novo da gerente (o lado do Kaique): lido o atualizacao.log da etapa 5 e o código do Velopack do lado do cliente. Achados: a troca pela diferença leva ~22-23 min (remonta o pacote inteiro), pelo pacote inteiro ~7,5 min; **a diferença não passa pela assinatura** (D-724), dedução da leitura, avisada à gerente. Relatório refeito (seção 2b, pergunta 3 nova: diferença ou versão inteira).
-- Próximo: esperar o "pode"; rodar M1 a M4 (e M5 se der); trocar os [não medido] pelos números; regravar; entregar.
+- 12:06 "pode" da gerente (etapa 5 terminada). Medidas M1, M2a, M2b, M3, M4, M5, M5b feitas até 13:32 (números na
+  seção 8 do relatório). Achado novo: o vpk 1.2.161 recusa `--noInst` com `--noPortable`; a versão de atualização
+  usa `--noPortable` sem `--msi`.
+- 13:32 C: caiu para 9,9 GB livres por outra coisa (não a minha pasta). A trava do Claude Code não deixou apagar
+  `C:\pr-medida` (pasta na raiz do C:); avisado à gerente, não contornado.
+- Relatório final gravado nos três formatos; entrega à gerente.
+
+## Como cumpri cada decisão
+
+- D-765: nenhuma linha do programa, dos scripts de publicar ou dos testes mudou (`git status` da cópia: só
+  `relatorios/`). As medidas usaram o vpk direto e um script meu fora do código
+  (`saida_teste/publicar-rapido/medir/`). Na M5, rodei a função `empacotar.construir_pasta` sem mudar o código.
+- D-766: o estudo mede o tempo de publicar e de atualizar, que é o que pesa em "atualizar sempre que eu puder".
+- D-714, D-723, D-713: nenhuma saída troca o Velopack, a publicação de propósito ou o GitHub público.
+- D-724: toda saída foi conferida contra a assinatura. Achado: pelo caminho da diferença ela não cobre o que é
+  instalado (relatório, seção 2b), e isso virou a pergunta 3.
+- D-727: nenhuma saída baixa algo na instalação. A 3.5 (motor fora do pacote) mexeria nisso, por isso fica para
+  depois, com plano.
+- D-736: a versão publicada serve igual ao comando de longe; nada muda.
+- D-763/D-764: o nome interno não muda. O Velopack mais novo exigiria refazer a prova do desinstalar (seção 3.6).
+- D-730: o instalador antigo não foi tocado.
+- D-300: a versão portátil (a pasta) continua; o zip portátil do Velopack vai na pergunta 2.
+- §6: nenhuma biblioteca trocada.
+- §11.12: em cada saída está dito onde mora a regra e por quais caminhos (seção 3).
+- §11.13: as perguntas estão no formato pedido (seção 5).
+- Etapa 5: `saida_teste\etapa5` e a cópia `etapa5` foram só lidas (o `dist`, o servidor, os registros e o
+  `atualizacao.log`).
+- A chave do Samuel não foi lida nem tocada, e nenhuma medida assinou nada.
+- Nenhuma janela foi aberta na tela do Samuel e nenhum outro agente foi aberto.
+
+## Disco (o que ficou)
+
+- **C:** `C:\pr-medida\` (~2,5 GB, só arquivos meus: `base-1.1.0-full.nupkg`, `delta-BestSpeed.nupkg`,
+  `delta-m5.nupkg`, `saida-m5\` e `temp\`). **Precisa ser apagada por uma pessoa:** a trava de segurança do Claude
+  Code recusou o `rm` de uma pasta na raiz do C:.
+- **D:** `saida_teste\publicar-rapido\fonte-velopack\` (código e documentação do Velopack, ~0,5 GB, para consulta;
+  pode ser apagada) e `saida_teste\publicar-rapido\medir\` (o script, o registro, as vigias, a diferença da M4 com
+  ~20 MB e o `temp\`). A pasta do programa e o `build\` que a M5 montou na cópia do estudo foram apagados. A junção
+  `modelos` da cópia foi removida só como junção, e o original `D:\programas\EditorImpressao\modelos` continua inteiro.
+- A cópia `.claude\worktrees\publicar-rapido` (ramo `publicar-rapido-2026-11-18`) fica, com o relatório.
 
 ## Perguntas para o Samuel
 
 (no relatório, seção 5, formato §11.13: 1. montar no C:; 2. instalador só quando pedir; 3. diferença ou versão inteira (e a assinatura); 4. motor do Kraken fora, para depois)
 
-## Medidas planejadas (esperam o "pode" da gerente)
+## Medidas planejadas (feitas em 18/11, 12:06 a 13:32; resultados no relatório, seção 8)
 
 - M1: copiar a pasta do programa (só leitura do `dist` da etapa 5) para o C: (`C:\pr-medida\`) e para `saida_teste\publicar-rapido\`.
 - M2: no C:, `vpk pack` sem instalador, sem portátil, sem diferença (TEMP no C:); medir o pico de espaço e o tempo de conferir+assinar.
