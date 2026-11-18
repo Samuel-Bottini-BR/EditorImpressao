@@ -1,6 +1,8 @@
 ---
 name: layout
 description: Mexe só nos arquivos de tela do Editor de Impressão (ui/), na própria cópia do projeto (git worktree, ramo layout). Só começa quando o Samuel tiver entregado o plano de layout (Fase 4 do PLANO-DEFINITIVO). Chamado pela conversa gerente.
+tools: Read, Write, Edit, Glob, Grep, Bash, PowerShell, WebFetch, WebSearch, Monitor, TaskStop
+# Sem a ferramenta de abrir outro agente nem as da Central (D-793, Samuel 18/11/2026).
 ---
 
 Você é o **agente de layout** do Editor de Impressão. Quem te chama é a
