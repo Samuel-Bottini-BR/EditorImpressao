@@ -1,0 +1,676 @@
+<!doctype html>
+<html lang="pt-BR">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Revisão da estrutura do atualizador</title>
+<style>
+:root { color-scheme: light dark; }
+* { box-sizing: border-box; }
+body {
+  font: 17px/1.65 "Segoe UI", system-ui, sans-serif;
+  max-width: 46rem; margin: 0 auto; padding: 2.5rem 1.5rem 6rem;
+  color: #1c1c1e; background: #fdfdfc;
+}
+h1 { font-size: 2rem; line-height: 1.2; margin: 0 0 .3em; letter-spacing: -.02em; }
+h2 { font-size: 1.35rem; margin: 2.4em 0 .6em; padding-top: .8em;
+     border-top: 1px solid #e6e4e0; letter-spacing: -.01em; }
+h3 { font-size: 1.1rem; margin: 1.8em 0 .4em; }
+h1 + p, h2 + p { margin-top: .4em; }
+p, li { margin: 0 0 .9em; }
+ul, ol { padding-left: 1.3em; }
+strong { font-weight: 640; }
+code {
+  font: .88em ui-monospace, "Cascadia Code", Consolas, monospace;
+  background: #f1efec; padding: .12em .35em; border-radius: 4px;
+}
+pre {
+  background: #f1efec; padding: 1em 1.1em; border-radius: 8px;
+  overflow-x: auto; line-height: 1.5;
+}
+pre code { background: none; padding: 0; }
+blockquote {
+  margin: 1.2em 0; padding: .1em 0 .1em 1.1em;
+  border-left: 3px solid #c9c5be; color: #55524d;
+}
+table {
+  border-collapse: collapse; width: 100%; margin: 1.2em 0;
+  font-size: .95rem; display: block; overflow-x: auto;
+}
+th, td { padding: .5em .8em; text-align: left; border-bottom: 1px solid #e6e4e0; }
+th { font-weight: 620; background: #f7f5f2; white-space: nowrap; }
+tr:last-child td { border-bottom: none; }
+img { max-width: 100%; height: auto; border-radius: 6px; margin: 1em 0;
+      border: 1px solid #e6e4e0; }
+hr { border: none; border-top: 1px solid #e6e4e0; margin: 2.5em 0; }
+.rodape { margin-top: 4em; padding-top: 1.2em; border-top: 1px solid #e6e4e0;
+          font-size: .85rem; color: #86827c; }
+@media (prefers-color-scheme: dark) {
+  body { color: #e8e6e3; background: #1a1917; }
+  h2 { border-top-color: #35332f; }
+  code, pre, th { background: #262421; }
+  th, td { border-bottom-color: #35332f; }
+  blockquote { border-left-color: #4a4741; color: #b0aca6; }
+  img { border-color: #35332f; }
+  .rodape { border-top-color: #35332f; color: #7d7973; }
+}
+@media print {
+  body { max-width: none; padding: 0; color: #000; background: #fff; }
+  h2 { page-break-after: avoid; }
+  table, img { page-break-inside: avoid; }
+}
+</style>
+</head>
+<body>
+<h1>Revisão da estrutura do atualizador (18/11/2026)</h1>
+<p>Revisão feita por um implementador, só lendo. Nenhuma linha do programa nem dos testes mudou. Nenhuma janela abriu na
+tela do Samuel, nenhuma pergunta do Windows, nada instalado, nada apagado. Ramo <code>revisao-atualizador-2026-11-18</code>.</p>
+<h2>A resposta, em poucas frases</h2>
+<ol>
+<li>O atualizador foi montado como se o Windows sempre respondesse "deu certo". Os testes trocam o Windows por peças
+   de mentira que sempre respondem assim. Por isso os defeitos só apareceram na etapa 5.</li>
+<li>Além dos 5 defeitos já conhecidos, a leitura achou <strong>13 defeitos novos</strong>. Três deles provados hoje no Windows de
+   verdade, só lendo: depois de desinstalar, <strong>as duas tarefas do Windows continuam lá</strong>; a pasta interna do programa
+   em <code>C:\ProgramData</code> (789 MB) fica; e essa pasta <strong>aceita arquivos de qualquer conta</strong>, embora quem a usa seja o
+   ajudante, que manda em tudo no Windows.</li>
+<li>Os mais graves para o Kaique, lidos no código:
+   - se a internet piscar no segundo em que o programa lê a assinatura, <strong>aquela versão fica recusada para sempre</strong> e o
+     Kaique vê "a atualização não deu certo";
+   - publicar no GitHub <strong>libera a versão antes de pôr a assinatura</strong>: quem abrir o programa nesse meio-tempo recusa a
+     versão para sempre;
+   - <strong>abrir o programa durante a troca</strong> (que dura de 7 a 23 minutos) faz o Velopack fechá-lo à força e o programa
+     acusar uma falha que não houve;
+   - mesmo sem o defeito do PowerShell, <strong>o "Reiniciar agora" espera só 5 minutos</strong> e reabre o programa no meio de uma
+     troca que dura 7 ou mais;
+   - se a versão nova estiver estragada a ponto de nem abrir, <strong>ninguém volta para a anterior</strong>: quem faz a volta é a
+     própria versão nova;
+   - <strong>reinstalar depois de desinstalar</strong> deixa o programa sem atualização para sempre, sem aviso.</li>
+<li>Consertar cada um onde apareceu seria remendo. A seção 3 traz o desenho com <strong>10 regras</strong>, cada uma num lugar só.
+   A seção 3b junta a pasta do ajudante e a dos testes à distância num "lugar seguro de fábrica" só, como propôs o
+   revisor dos testes à distância.
+   A ideia central: <strong>o que o programa lembra não é prova; prova é o que o Windows responde</strong>.</li>
+<li>A seção 4 é o plano de provar cada peça <strong>de verdade e à vista</strong> no PC do Samuel, uma por uma, antes de montar a
+   versão: 14 provas pequenas, umas 11 perguntas do Windows, perto de 2 horas, quase tudo em janelas que ele vê.</li>
+<li>São 8 perguntas para o Samuel (seção 5).</li>
+</ol>
+<p><strong>Sobre o "provado hoje":</strong> as leituras do Windows foram feitas por volta das 12:00, só lendo e sem administrador,
+depois do desinstalar da etapa 5 (11:53) e <strong>antes</strong> da limpeza à mão da fase 12 dela. Às 12:11 as tarefas, a pasta do
+ProgramData e a pasta de reserva do Velopack já não existiam: a fase 12 as tirou, e o programa não as tirou sozinho.</p>
+<p>Fontes: código do programa (ramo <code>obra-2026-10-26</code>, <code>b74a94e2</code>); registros e ONDE-PAREI da etapa 5; relatório do
+estudo de publicar mais rápido; código do Velopack 1.2.161 (cópia do estudo, só lida); documentação da Microsoft e do
+Python citada em cada item; leituras feitas hoje no Windows, só lendo (<code>icacls</code>, Agendador de Tarefas, registro).</p>
+<hr />
+<h2>1. Cada coisa que o atualizador pede ao Windows</h2>
+<p>Para cada uma: <strong>onde</strong> no código; <strong>como falha</strong> no Windows de verdade, com a fonte; <strong>hoje</strong>, o que o programa faz
+quando falha; <strong>devia</strong>, o que fazer. "Provado" quer dizer visto no Windows de verdade. "Lido" quer dizer lido no
+código ou na documentação, ainda sem prova.</p>
+<h3>1.1 Abrir um PowerShell escondido e solto (o "trocar e reabrir")</h3>
+<ul>
+<li><strong>Onde:</strong> <code>atualizacao._lancar_escondido</code> (linhas 956-968), usado pelo "Reiniciar agora" e pela abertura depois do
+  "Depois" (<code>trocar_e_reabrir</code>, 971-989).</li>
+<li><strong>Como falha:</strong></li>
+<li>Com <code>DETACHED_PROCESS</code>, o PowerShell 5.1 sai sem rodar nada (<strong>provado</strong> na etapa 5:
+    <code>registros/variantes-lancar-escondido.txt</code>). A Microsoft (página "Process Creation Flags") diz que
+    <code>CREATE_NO_WINDOW</code> é ignorado quando vem junto com <code>DETACHED_PROCESS</code>. Então o processo nasce sem console nenhum,
+    e o PowerShell não roda assim.</li>
+<li>Antivírus e regras do Windows (proteção "ASR" do Defender) podem bloquear PowerShell com <code>-EncodedCommand</code>
+    escondido, que é o jeito típico de programa malicioso (lido: documentação do Microsoft Defender sobre as regras de
+    redução de superfície de ataque). No PC do Samuel não bloqueou; no notebook do Kaique não se sabe.</li>
+<li>Um <code>Popen</code> que dá certo só quer dizer que o processo nasceu, não que o script rodou.</li>
+<li><strong>Hoje:</strong> anota "o ajudante foi chamado; o programa volta sozinho" e sai. O programa não volta (<strong>provado</strong>, fase 4).</li>
+<li><strong>Devia:</strong> um jeito só de lançar processo solto, sem <code>DETACHED_PROCESS</code>, e com um sinal de vida: o processo lançado
+  escreve "comecei" num arquivo e quem lançou espera esse sinal por alguns segundos. Sem o sinal, avisa e abre o
+  programa na versão de hoje.</li>
+</ul>
+<h3>1.2 Abrir o Update.exe solto (a volta para a versão anterior)</h3>
+<ul>
+<li><strong>Onde:</strong> <code>_aplicar_pacote_quando_sair</code> (669-674).</li>
+<li><strong>Como falha:</strong> o mesmo par de opções do 1.1. Funcionou na etapa 5 (a volta da 1.1.3, <strong>provado</strong>) porque o
+  Update.exe não é um PowerShell. É uma segunda regra para a mesma coisa (§11.12).</li>
+<li><strong>Hoje:</strong> não confere se a volta aconteceu.</li>
+<li><strong>Devia:</strong> usar a mesma peça do 1.1, e quem faz a volta confere depois que a versão anterior está no lugar.</li>
+</ul>
+<h3>1.3 Rodar um comando do Windows e esperar (schtasks, vc_redist, desinstalador antigo, teste rápido)</h3>
+<ul>
+<li><strong>Onde:</strong> <code>_rodar</code> (786-793), <code>rodar_teste_rapido</code> (629-637).</li>
+<li><strong>Como falha:</strong></li>
+<li>As ferramentas de linha de comando do Windows em português respondem na página de código OEM (850). O <code>_rodar</code>
+    lê com a do Windows (1252). Resultado: "ÒXITO" no lugar de "ÊXITO" (<strong>provado</strong>: <code>atualizacao.log</code>, linhas de
+    09:34:32, 09:59:30 e 11:39:09; página OEM 850 lida no registro deste PC). Fonte: documentação do Python,
+    <code>subprocess</code> (o texto é lido com a codificação do local) e o codec "oem" do Python no Windows.</li>
+<li>Tempo esgotado: vira código -1 e a mensagem do Python.</li>
+<li><strong>Hoje:</strong> só o código decide; a mensagem vai torta para o registro que a gerente lê de longe (D-719).</li>
+<li><strong>Devia:</strong> ler a saída na página OEM, em um lugar só.</li>
+</ul>
+<h3>1.4 Pedir licença de administrador ("Deseja permitir...?") na primeira abertura</h3>
+<ul>
+<li><strong>Onde:</strong> <code>preparar_na_primeira_abertura</code> (1460-1514) e <code>passo_de_preparar_o_computador</code> (1410-1438), que usam a
+  peça do outro agente, <code>core/_testes_a_distancia_windows._rodar_elevado</code> (80-100).</li>
+<li><strong>Como falha:</strong></li>
+<li>"Não" do Kaique: o Windows devolve o erro 1223. O programa lê 0 ("deu certo"), porque usa <code>ctypes.get_last_error()</code>
+    sem ter aberto a biblioteca com <code>use_last_error=True</code> (<strong>provado</strong>: <code>registros/prova-get-last-error.txt</code>). Fonte:
+    documentação do Python, <code>ctypes.get_last_error</code>.</li>
+<li>Programa que não está na frente: o Windows não mostra a pergunta no meio da tela, só um botão piscando na barra de
+    tarefas; ninguém clica e ela se cancela (documentado pela Microsoft em "How User Account Control works";
+    <strong>visto</strong> na etapa 5, 08:26 a 08:28: "não apareceu nada"). O pedido vai sem a janela do programa como dona
+    (<code>hwnd</code> vazio).</li>
+<li>Área de trabalho que não é a de verdade: "Não há suporte para o pedido" (<strong>provado</strong>, fase 3.1). Falta
+    <code>SEE_MASK_FLAG_NO_UI</code>, que impede a caixa crua de erro (documentação da Microsoft, <code>SHELLEXECUTEINFOW</code>).</li>
+<li>Conta do Kaique sem administrador: a pergunta pede a senha de um administrador, não "Sim/Não". Não se sabe como é a
+    conta dele.</li>
+<li><strong>A janela congela</strong> enquanto espera (lido): a pergunta e a preparação rodam no fio principal, antes do laço da
+    janela (<code>main.py</code> 96 → <code>testes_a_distancia_ui.py</code> 166/170 → <code>WaitForSingleObject</code> sem limite, linha 96). A
+    preparação pode levar até 10 min (Visual C++) mais 15 min (desinstalador antigo). Contra o CLAUDE.md §3
+    ("Interface nunca congela"). Na etapa 5 ficou 91 s parada.</li>
+<li><strong>Hoje:</strong> depois de um "Não" ou de uma falha, grava "computador preparado" e nunca mais pergunta (<strong>provado</strong>, 08:19,
+  contra a D-741).</li>
+<li><strong>Devia:</strong> a peça única de "pedir licença" devolve três respostas certas (deu certo, a pessoa disse "Não", falhou com
+  o código); leva a janela do programa como dona; não mostra caixa crua; roda por trás com a janela respondendo e uma
+  frase "Preparando o computador..."; e a resposta final é conferida no Windows (regra 2 da seção 3).</li>
+</ul>
+<h3>1.5 Criar, refazer e apagar tarefas do Agendador (o ajudante e o "desfazer")</h3>
+<ul>
+<li><strong>Onde:</strong> <code>criar_tarefa</code> (1155-1167), <code>criar_as_tarefas</code> (1384-1402), <code>apagar_tarefa</code> (1177-1181),
+  <code>core/testes_a_distancia._comando_preparar_o_desfazer</code> e <code>_passos_das_nossas_tarefas</code>.</li>
+<li><strong>Como falha:</strong></li>
+<li>Sem administrador, criar e apagar dão "Acesso negado". O gancho de desinstalar roda sem administrador (achado B1)
+    e dá esse erro (<strong>provado</strong>: <code>atualizacao.log</code> 11:53:41, "apagar a tarefa do Windows: NÃO deu certo (ERRO: Acesso
+    negado.)").</li>
+<li><strong>A tarefa "desfazer" rodou e falhou</strong>: última execução 11:53:41, resultado 1. Por isso <strong>as duas tarefas continuam
+    no Agendador depois do desinstalar</strong> (<strong>provado hoje</strong>, só lendo, com <code>Get-ScheduledTaskInfo</code>). O ajudante aponta
+    para <code>C:\Program Files\EditorImpressaoPrograma\current\EditorImpressao.exe</code>, que não existe mais.</li>
+<li>O desfazer depende de um arquivo (<code>desfazer.ps1</code>) numa pasta cuja licença o outro agente achou estragada (acesso
+    negado até para o administrador, fase 7). Por isso o desinstalar do atualizador depende de uma peça de outra parte
+    do programa.</li>
+<li><strong>Hoje:</strong> o registro diz "mandado" e o programa segue; ninguém confere.</li>
+<li><strong>Devia:</strong> a limpeza do desinstalar não depender do gancho de 30 s nem da pasta dos testes (regra 9 da seção 3), e
+  terminar com a conferência: as tarefas não existem mais.</li>
+</ul>
+<h3>1.6 Mandar o ajudante rodar e olhar se ele está rodando</h3>
+<ul>
+<li><strong>Onde:</strong> <code>comando_de_rodar_a_tarefa</code> (1041-1047), <code>procurar_ao_abrir</code> (1062-1080), o script de trocar (921-935).</li>
+<li><strong>Como falha:</strong></li>
+<li>Tarefa que não existe: "O sistema não pode encontrar o arquivo especificado" (<strong>provado</strong>, 08:19:31).</li>
+<li><code>MultipleInstancesPolicy IgnoreNew</code>: pedido feito com o ajudante rodando é ignorado sem erro.</li>
+<li>O ajudante sai logo depois de pedir a troca; a troca segue no Update.exe. Quem olha "a tarefa está rodando?" acha
+    que acabou, e não acabou (lido, linha 588).</li>
+<li><strong>Hoje:</strong> só anota. A conta de testes e a do Kaique podem mandar rodar (<strong>provado</strong>, fases 3 e 9).</li>
+<li><strong>Devia:</strong> "terminou" vem de um sinal escrito pelo ajudante no fim de cada fase, não do estado da tarefa.</li>
+</ul>
+<h3>1.7 A marca "programa aberto" (mutex do Windows)</h3>
+<ul>
+<li><strong>Onde:</strong> <code>marcar_programa_aberto</code> e <code>ha_programa_aberto</code> (745-783).</li>
+<li><strong>Como falha:</strong> só é olhada uma vez, depois de baixar (581). Depois disso, abrir o programa não impede a troca.</li>
+<li><strong>Hoje:</strong> funciona para "baixar com o programa aberto → pendente" (<strong>provado</strong>, fase 4).</li>
+<li><strong>Devia:</strong> uma segunda marca, "trocando", que o ajudante segura do começo ao fim da troca; o programa, ao abrir, olha
+  essa marca primeiro (regra 6 da seção 3).</li>
+</ul>
+<h3>1.8 Gravar e ler em <code>C:\ProgramData\EditorImpressao</code></h3>
+<ul>
+<li><strong>Onde:</strong> <code>pasta_do_estado</code>, <code>registrar</code>, <code>gravar_estado</code>, <code>registrar_falha</code> (207-273), <code>voltar_para_a_anterior</code>
+  (652-655), <code>arquivo_do_preparo</code> (1405).</li>
+<li><strong>Como falha:</strong></li>
+<li><strong>Contas comuns podem criar arquivos e pastas ali</strong> (<strong>provado hoje</strong> com <code>icacls</code>): <code>BUILTIN\Usuários:(CI)(WD,AD)</code>
+    em <code>atualizacao</code> e em <code>volta</code>. E a conta <code>fotog</code> tem controle total da pasta de cima, porque foi o gancho de
+    instalar (que roda na conta de quem instala, sem administrador) que a criou ao escrever a primeira linha do
+    registro. O ajudante, que roda como o sistema, grava ali o estado, o registro e o pacote da volta. Quem consegue
+    criar o arquivo ou a pasta antes dele pode desviar essa gravação (tipo de falha conhecido do Windows, "seguir um
+    atalho de pasta em área gravável"; ver as notas da Microsoft sobre licenças padrão do ProgramData). Contra a D-717
+    ("um teste não consegue mudar o Windows"). <strong>Lido, não provado.</strong></li>
+<li>Disco cheio: <code>gravar_estado</code> levanta erro; o ajudante registra e sai (ver 1.14).</li>
+<li>A pasta <code>volta</code> (789 MB) nunca é limpa (<strong>provado hoje</strong>: continua lá depois do desinstalar).</li>
+<li><strong>Hoje:</strong> nada confere a licença da pasta.</li>
+<li><strong>Devia:</strong> sair do ProgramData para o "lugar seguro de fábrica" do outro revisor (seção 3b): uma pasta própria em
+  Arquivos de Programas, ao lado da pasta do programa, criada na pergunta de administrador, só com as licenças que o
+  Windows dá ali (nenhum comando de licença à mão). A janela do Kaique nunca grava nela; o registro da janela vai para a
+  pasta da conta dele.</li>
+</ul>
+<h3>1.9 Ler o dono de um arquivo e o registro do Windows</h3>
+<ul>
+<li><strong>Onde:</strong> <code>_dono_do_arquivo</code> (428-449, a fonte de teste); <code>_ler_versao_do_visual_c</code> (1188-1205); <code>_ler_chave_do_inno</code>
+  (1257-1266).</li>
+<li><strong>Como falha:</strong> chave ausente ou sem licença: devolve "não há". Funcionou na etapa 5 (<strong>provado</strong>).</li>
+<li><strong>Hoje:</strong> certo. Ressalva: a "fonte de teste" (um arquivo que troca o GitHub por uma pasta) vai dentro do programa
+  do Kaique. Só o administrador cria esse arquivo e a assinatura continua valendo, mas é uma peça de teste no
+  programa de verdade.</li>
+<li><strong>Devia:</strong> ficar como está, documentado; ou sair do programa depois da entrega (é escolha técnica, não do Kaique).</li>
+</ul>
+<h3>1.10 Instalar o Visual C++ e tirar a instalação antiga</h3>
+<ul>
+<li><strong>Onde:</strong> <code>instalar_visual_c_se_faltar</code> (1219-1239), <code>tirar_instalacao_antiga</code> (1292-1310).</li>
+<li><strong>Como falha:</strong> 1618 (outra instalação do Windows em andamento, por exemplo uma atualização do Windows) e 1603
+  (erro geral), códigos documentados do Windows Installer; desinstalador antigo que pede reiniciar. A instalação
+  antiga saiu certa na etapa 5 (<strong>provado</strong>, 09:02:07).</li>
+<li><strong>Hoje:</strong> devolve "não feito" (D-749: a pergunta volta). Certo.</li>
+<li><strong>Devia:</strong> igual, com a mensagem do código em português no registro.</li>
+</ul>
+<h3>1.11 O Velopack na conta do Kaique</h3>
+<ul>
+<li><strong>Onde:</strong> <code>versao_que_roda</code> (507-514), <code>e_portatil</code> (1313-1325), <code>_rodar_o_velopack</code> em toda abertura (1600-1614,
+  chamado por 1638).</li>
+<li><strong>Como falha:</strong></li>
+<li>Sem licença para gravar em Arquivos de Programas, o Velopack usa a pasta de reserva
+    <code>%LOCALAPPDATA%\EditorImpressaoPrograma</code> e copia o Update.exe para ela (<strong>provado</strong>: 5,2 MB, nasceu às 07:58 e
+    continua depois do desinstalar). O desinstalador do Velopack 1.2.161 não a apaga (problemas #989 e #1004 do
+    Velopack, consertados no commit <code>b40a2781</code>, que só está na prévia 1.3.39; conferido hoje no código).</li>
+<li>Qualquer erro do Velopack na conta do Kaique faz <code>e_portatil</code> responder "é portátil" (1324-1325), e aí
+    <code>procurar_ao_abrir</code> desiste sem anotar nada (1075-1076). A atualização desliga em silêncio.</li>
+<li><strong>Hoje:</strong> a pasta sobra e o erro some.</li>
+<li><strong>Devia:</strong> a janela do Kaique não cria o Velopack nunca. A versão vem de um arquivo que o ajudante escreve; "é
+  portátil" é a regra do próprio Velopack, o arquivo <code>.portable</code> ao lado do Update.exe (<code>locator.rs</code>, linha 376); o
+  <code>_rodar_o_velopack</code> só roda quando a linha de comando traz um gancho do Velopack. Sem o Velopack na conta, a pasta de
+  reserva não nasce (é a causa, não o sintoma).</li>
+</ul>
+<h3>1.12 O Velopack como o sistema: procurar, baixar, trocar</h3>
+<ul>
+<li><strong>Onde:</strong> <code>procurar_e_preparar</code> (536-590), via <code>wait_exit_then_apply_updates</code>.</li>
+<li><strong>Como falha</strong> (lido no código do Velopack 1.2.161, <code>apply_windows_impl.rs</code> e <code>util_windows.rs</code>):</li>
+<li><strong>A troca mata todo processo que estiver rodando da pasta do programa</strong> (<code>force_stop_package</code>, linha 159), sem
+    aviso. Se o Kaique abrir o programa durante os 7 a 23 minutos da troca, ele é fechado à força.</li>
+<li>Primeira troca de pastas falha (arquivo preso por antivírus, 10 tentativas de 1 s): "Unable to start the update";
+    a versão de hoje fica.</li>
+<li><strong>Segunda troca falha: o programa fica sem a pasta <code>current</code></strong> ("the app was left in a broken state"). Não abre,
+    não atualiza, não desinstala. O Velopack só passou a voltar a pasta velha no commit <code>afa30e56</code> (10/10/2026), que
+    não está na 1.2.161 (conferido).</li>
+<li>Desligar o notebook no meio: na extração, nada se perde; entre as duas trocas de pasta, o mesmo estrago de cima.</li>
+<li>Diferença ("só o que mudou"): conferida contra uma soma que não é assinada (achado do estudo; contra a D-724).</li>
+<li><strong>Hoje:</strong> com a troca em andamento, o estado fica "aplicando"; qualquer leitura nessa hora conta como <strong>falha</strong>
+  (<code>situacao</code>, 309-310). A próxima chamada do ajudante grava a falha e põe a versão na lista de nunca mais tentar
+  (722-724).</li>
+<li><strong>Devia:</strong> ver regras 3, 4, 5 e 6 da seção 3.</li>
+</ul>
+<h3>1.13 O instalador (.msi) e os ganchos</h3>
+<ul>
+<li><strong>Onde:</strong> <code>empacotar.comando_do_vpk</code> (1055-1079); <code>ao_instalar</code>, <code>ao_desinstalar</code> (1541-1580).</li>
+<li><strong>Como falha:</strong> os ganchos rodam na conta de quem instala, <strong>sem administrador</strong> (achado B1, provado em 16/11); o de
+  desinstalar tem tempo curto. 1618, 1603 e 1638 são os códigos de erro do Windows Installer. O gancho de instalar cria
+  <code>C:\ProgramData\EditorImpressao</code> com a conta comum como dona (<strong>provado hoje</strong>, ver 1.8).</li>
+<li><strong>Hoje:</strong> o de desinstalar não confere nada.</li>
+<li><strong>Devia:</strong> o gancho de instalar não grava nada fora da pasta da conta; a limpeza de desinstalar roda como o
+  sistema, depois que o Windows avisa que o programa saiu (regra 9 da seção 3).</li>
+</ul>
+<h3>1.14 A rede e o GitHub</h3>
+<ul>
+<li><strong>Onde:</strong> <code>Fonte</code> (335-394), <code>conferir_assinatura_do</code> (522-529).</li>
+<li><strong>Como falha:</strong> sem internet; tempo esgotado (60 s); GitHub fora do ar; limite de 60 consultas por hora sem senha
+  (documentação do GitHub); internet do celular, que cobra por megabyte (826 MB por versão sem a diferença).</li>
+<li><strong>Hoje:</strong> <strong>qualquer erro ao ler a assinatura vira "assinatura recusada"</strong> (528 → 573-576): a versão entra na lista
+  de nunca mais tentar e o Kaique vê "A atualização não deu certo. O programa voltou para a versão anterior", sem nada
+  ter sido instalado.</li>
+<li><strong>Devia:</strong> falha passageira (rede, tempo, disco) não é recusa: tenta de novo na próxima abertura, sem aviso.</li>
+</ul>
+<h3>1.15 Pastas temporárias</h3>
+<ul>
+<li><strong>Onde:</strong> <code>criar_tarefa</code> (1159-1164), <code>aplicar_no_windows</code> (outro agente, 105).</li>
+<li><strong>Como falha:</strong> no Python 3.13 e 3.14, <code>tempfile.mkdtemp</code> cria a pasta só para quem a criou (conserto de
+  segurança CVE-2024-4030; notas do Python sobre <code>os.mkdir</code> com modo 0o700). O que um administrador escreve nela a
+  conta comum não lê (<strong>provado</strong>, fase 7: PermissionError).</li>
+<li><strong>Hoje:</strong> no atualizador só é usada dentro do administrador (certo). No outro agente, quebrou.</li>
+<li><strong>Devia:</strong> quando dois níveis de licença trocam arquivos, usar uma pasta com licença dada de propósito.</li>
+</ul>
+<h3>1.16 Publicar (PC do Samuel)</h3>
+<ul>
+<li><strong>Onde:</strong> <code>publicar_versao_kaique.publicar</code> (153-189).</li>
+<li><strong>Como falha:</strong></li>
+<li><strong>No GitHub, a versão é liberada antes de a assinatura subir</strong> (<code>--publish</code> na 181, assinatura na 186). Quem abrir
+    o programa nesse meio-tempo cai no 1.14 e recusa a versão para sempre. Se o envio da assinatura falhar, a versão
+    fica publicada sem assinatura para todos.</li>
+<li><code>--pasta-pronta</code> publica uma pasta cuja versão de dentro pode ser outra (na etapa 5, todo registro diz "versão
+    1.1.0" numa 1.1.5). Nada confere.</li>
+<li>Lentidão de 59 a 82 min: ver o estudo.</li>
+<li><strong>Devia:</strong> sobe como rascunho, sobe a assinatura, confere, e só então libera; recusa pasta pronta com outra versão;
+  anota de que commit saiu a versão.</li>
+</ul>
+<h3>1.17 Proteções do Windows contra programa sem certificado</h3>
+<ul>
+<li><strong>Como falha:</strong> o "Controle Inteligente de Aplicativos" do Windows 11 bloqueia programa sem certificado pago, e não
+  dá para liberar um programa só (página de suporte da Microsoft "Smart App Control"). Neste PC está desligado (lido
+  hoje no registro: 0). No notebook do Kaique não se sabe; num Windows novo ele começa "em avaliação" e pode ligar
+  sozinho. O SmartScreen avisa ao abrir o .msi baixado.</li>
+<li><strong>Devia:</strong> conferir no notebook antes de instalar (pergunta 8).</li>
+</ul>
+<hr />
+<h2>2. Defeitos novos (achados nesta leitura)</h2>
+<p>Separados dos já conhecidos. "Provado" = visto no Windows de verdade; "lido" = falta provar.</p>
+<ol>
+<li><strong>Rede piscando vira recusa para sempre</strong> (lido). <code>atualizacao.py</code> 522-529 transforma qualquer erro de leitura em
+   motivo de recusa; 573-576 grava "recusada"; 269 põe a versão em "nunca mais tentar". O aviso diz "voltou para a
+   versão anterior" sem nada ter sido instalado.</li>
+<li><strong>Publicar no GitHub fica pela metade</strong> (lido). <code>publicar_versao_kaique.py</code> 181-186: libera a versão e só depois
+   envia a assinatura. Junto com o 1, a versão fica recusada para quem abriu nesse meio-tempo.</li>
+<li><strong>O "Reiniciar agora" espera 5 minutos; a troca leva 7 a 23</strong> (lido; tempos medidos na etapa 5). <code>LIMITE_DA_TROCA_S
+   = 300</code> (160), usado em 923-944. Mesmo sem o <code>DETACHED_PROCESS</code>, o programa seria reaberto no meio da troca. A D-742
+   foi decidida com "alguns segundos, até 5 minutos".</li>
+<li><strong>Abrir o programa durante a troca</strong> (lido no nosso código e no do Velopack). O ajudante sai logo depois de pedir a
+   troca (588). Durante a troca, <code>situacao</code> lê "aplicando" como falha (309-310), a janela mostra o aviso de falha, a
+   próxima chamada do ajudante grava a falha e risca a versão (722-724), e o Velopack mata o programa aberto
+   (<code>apply_windows_impl.rs</code> 159).</li>
+<li><strong>Quem socorre é a própria versão nova</strong> (lido). A conferência e a volta rodam no <code>.exe</code> novo
+   (<code>--conferir-a-versao-nova</code>), e o ajudante aponta para esse mesmo <code>.exe</code> (1147). Uma versão que nem abre deixa o
+   programa morto, sem volta e sem aviso. A versão estragada da etapa 5 (sem o Tesseract) abria; esse caso nunca foi
+   testado.</li>
+<li><strong>A volta depende da internet e o aviso diz que voltou antes de saber</strong> (lido). <code>voltar_para_a_anterior</code> baixa a
+   anterior (653-658); se falhar, só anota. A falha já foi gravada com a frase "voltou" (693-696).</li>
+<li><strong>Reinstalar deixa o programa sem atualização para sempre</strong> (lido). A marca "computador preparado" (1513, 1519)
+   mora nas Configurações do Kaique, que de propósito ficam depois do desinstalar (CLAUDE.md §7). Reinstalado, ele não
+   pergunta de novo, o ajudante não existe, e só o registro diz "não consegui chamar o ajudante".</li>
+<li><strong>Desinstalar deixa as duas tarefas do Windows</strong> (<strong>provado hoje</strong>, só lendo). "Desfazer testes a distancia": última
+   execução 18/11 11:53:41, resultado 1. "Procurar versao nova" continua, apontando para um <code>.exe</code> que não existe.</li>
+<li><strong>Desinstalar deixa <code>C:\ProgramData\EditorImpressao</code></strong> (<strong>provado hoje</strong>): o estado, o registro, o <code>preparo.txt</code> e a
+   cópia da volta de 789 MB. Nenhum plano de desfazer cita essa pasta.</li>
+<li><strong>A pasta do ajudante aceita arquivos de contas comuns</strong> (licença <strong>provada hoje</strong> com <code>icacls</code>; o desvio é lido,
+    não provado). Ver 1.8. Contra a D-717.</li>
+<li><strong>A janela congela na primeira abertura</strong> (lido; a etapa 5 viu 91 s parada). Ver 1.4. Contra o CLAUDE.md §3.</li>
+<li><strong>Erro do Velopack na conta do Kaique desliga a atualização em silêncio</strong> (lido). <code>e_portatil</code> 1324-1325 e
+    <code>procurar_ao_abrir</code> 1075-1076.</li>
+<li><strong>Falha passageira na troca vira falha para sempre</strong> (lido). Arquivo preso, notebook desligado no meio ou disco
+    cheio deixam "aplicando"; a próxima chamada grava "troca" e risca a versão (722-724, 269).</li>
+</ol>
+<p>Menores:</p>
+<ul>
+<li>O teste automático do lançamento <strong>cobra o defeito</strong>: <code>tests/test_decisoes_ajudante_da_atualizacao.py</code> 281-290 exige
+  <code>DETACHED_PROCESS</code>. Os testes que rodam um PowerShell de verdade usam outro jeito de lançar (<code>-File</code>, sem as duas
+  opções, por volta da linha 616). O caminho de verdade nunca rodou num teste. Mudar esse teste precisa do ok
+  (pergunta 7).</li>
+<li>Duas regras para "lançar solto" (1.1 e 1.2).</li>
+<li>Letras trocadas no registro (1.3) e "versão 1.1.0" em todas as linhas (1.16).</li>
+<li>O aviso de falha é marcado como visto <strong>antes</strong> de aparecer (<code>ui/aviso_de_atualizacao.py</code> 125-126): se o programa
+  fechar nessa hora, ele não volta.</li>
+</ul>
+<h3>Os defeitos já conhecidos, com a causa de cada um</h3>
+<ul>
+<li><strong>"Reiniciar agora" não volta, e com versão esperando o programa não abre:</strong> <code>DETACHED_PROCESS</code> (1.1). Para
+  funcionar mesmo, é preciso resolver também os novos 3 e 4.</li>
+<li><strong>A diferença não passa pela assinatura:</strong> o arquivo de versões do servidor não é assinado (estudo, 1.12).</li>
+<li><strong>Publicar leva ~1 h e a troca leva 7 a 23 min:</strong> os 35 mil arquivos do motor do Kraken, que nunca muda, entram em
+  toda versão; publicar no HD externo; remontar a diferença no notebook (estudo). A troca de 7,5 min é quase toda
+  abrir esses 35 mil arquivos.</li>
+<li><strong>O aviso de falha aparece só uma vez:</strong> é uma marca por conta, gravada antes de mostrar; a frase é a mesma para
+  todos os casos, e em dois deles não é verdade (recusada: nada foi instalado; volta que não deu certo). A gerente só
+  sabe se ler o registro de longe.</li>
+<li><strong>Desinstalar deixa <code>%LOCALAPPDATA%\EditorImpressaoPrograma</code>:</strong> a causa é o Velopack ser criado na conta do Kaique
+  (1.11), mais o desinstalador da 1.2.161 que não limpa essa pasta (#989 e #1004 do Velopack).</li>
+</ul>
+<hr />
+<h2>3. Como a estrutura fica certa</h2>
+<p>O que <strong>fica</strong>: o Velopack; o ajudante como o sistema, chamado sem pergunta; uma pergunta do Windows na primeira
+abertura; a assinatura do Samuel; o aviso com "Reiniciar agora" e "Depois"; a janelinha; o registro lido de longe;
+<code>registrar_falha</code> e <code>situacao</code> como lugar único de cada decisão.</p>
+<p>O que <strong>muda</strong>, em 10 regras. Cada uma mora num lugar só.</p>
+<ol>
+<li><strong>Uma peça só para cada pedido ao Windows.</strong> "Lançar solto", "rodar e esperar", "pedir licença" e "mandar a tarefa
+   rodar" ficam numa função cada, que devolve sempre uma de três respostas: deu certo, a pessoa disse "Não", falhou
+   (com o código e a frase em português). Nenhuma devolve "deu certo" sem prova. <em>Limpo.</em> Trocar só a opção do
+   PowerShell e o <code>get_last_error</code> onde estão seria remendo: a próxima peça repetiria o erro.</li>
+<li><strong>Conferir em vez de lembrar.</strong> "O computador está preparado" é a resposta do Windows, e não uma marca nas
+   Configurações: a tarefa existe, aponta para este programa e tem a licença certa. Conferir não pede pergunta e leva
+   menos de 1 s. Resolve o "Não" que vira "Sim", o reinstalar sem ajudante e a conta que muda. <em>Limpo.</em></li>
+<li><strong>Falha passageira não é falha.</strong> Sem internet, tempo esgotado, disco cheio, arquivo preso, notebook desligado no
+   meio: tenta de novo na próxima abertura, sem aviso. Só três coisas riscam a versão e avisam: assinatura que não
+   confere, pacote estragado e teste rápido que falha. <em>Limpo.</em> Aumentar o tempo de espera da rede seria remendo.</li>
+<li><strong>O aviso diz o que aconteceu.</strong> Uma frase para cada caso (recusada; instalada e voltou; não conseguiu voltar),
+   escolhida pelo mesmo <code>registrar_falha</code>. É marcada como vista só depois de aparecer, e o registro anota que o Kaique
+   viu. As frases são do Samuel (pergunta 4).</li>
+<li><strong>O socorro mora fora do que é trocado.</strong> Antes de trocar, o ajudante guarda a versão de hoje no disco (o pacote
+   que o Velopack já tem; a pasta <code>volta</code> deixa de baixar da internet). Quem confere a versão nova e volta, se preciso,
+   é uma peça que não está dentro de <code>current</code>: um script do ajudante numa pasta protegida, que roda o teste rápido no
+   <code>.exe</code> novo e, se ele nem abrir, aplica a versão guardada. Resolve os novos 5 e 6 e cobre a falha do Velopack 1.2.161
+   (programa sem <code>current</code>). <em>Limpo</em>; trocar o Velopack pela prévia é outra saída (pergunta 6).</li>
+<li><strong>Sinal de fim em vez de relógio, e trava durante a troca.</strong> O ajudante escreve "troca começou / terminou bem /
+   voltou / falhou" e segura a marca "trocando" do começo ao fim. A janelinha e a reabertura esperam o sinal (com um
+   limite de segurança medido, não de 5 min). Se o Kaique clicar no atalho com a marca "trocando", aparece a janelinha
+   e o programa abre quando a troca acaba, em vez de ser fechado à força (pergunta 3). Resolve os novos 3 e 4.
+   <em>Limpo.</em> Trocar 300 s por 1800 s seria remendo.</li>
+<li><strong>A assinatura cobre tudo o que se instala, e publicar nunca fica pela metade.</strong> Ou sem diferença, ou com a
+   diferença assinada (pergunta 3 do estudo). No GitHub: sobe como rascunho, sobe a assinatura, confere lendo de volta
+   do GitHub, e só então libera. Um número de versão só: o publicar recusa pasta pronta de outra versão e anota o
+   commit. <em>Limpo.</em></li>
+<li><strong>A janela do Kaique não mexe no Velopack nem na pasta do ajudante.</strong> Ela só pede ao ajudante e lê o que ele
+   escreveu. A pasta do ajudante é a "pasta segura do programa", a mesma dos testes à distância (seção 3b). O registro
+   da janela vai para a pasta da conta. Resolve a pasta de reserva que sobra e a pasta gravável por todos. <em>Limpo.</em>
+   Apagar a pasta de reserva no desinstalar, sem deixar de criá-la, seria remendo; trancar o ProgramData com comandos
+   de licença à mão também (foi o que estragou a pasta dos testes à distância).</li>
+<li><strong>Desinstalar limpa como o sistema, depois que o Windows avisa que o programa saiu.</strong> Uma tarefa criada na primeira
+   abertura, disparada pelo próprio aviso do Windows Installer ("o produto foi removido", evento 1034 do registro de
+   aplicativos), roda como o sistema, sem os 30 s do gancho e sem depender da pasta dos testes. Tira as tarefas, a
+   pasta do ajudante e as sobras do Velopack em cada conta. Nunca toca os projetos. Termina conferindo e deixa a lista
+   do que tirou. <strong>Falta provar</strong> que esse aviso não aparece também numa atualização por .msi novo. <em>Limpo</em>, se a prova
+   passar; se não passar, a outra saída é a mesma tarefa conferir, ao ligar o computador, se o programa ainda existe
+   (pergunta 5).</li>
+<li><strong>A janela nunca congela.</strong> A pergunta e a preparação da primeira abertura rodam por trás, com a janela respondendo
+    e a frase "Preparando o computador...". <em>Limpo.</em></li>
+</ol>
+<h2>3b. A pasta do ajudante e a dos testes à distância: dono, licença e uma peça só</h2>
+<p>Pedido da gerente (recado do revisor dos testes à distância, achado N11 dele, ramo <code>revisao-distancia-2026-11-18</code>).</p>
+<p><strong>Dono e licença de cada pasta, segundo o código</strong> (o Windows não foi lido como administrador):</p>
+<ul>
+<li><strong><code>C:\ProgramData\EditorImpressao</code></strong> e <strong><code>...\atualizacao</code></strong> nascem juntas na <strong>instalação</strong>: o gancho de instalar
+  (<code>atualizacao.ao_instalar</code>, 1549) chama <code>registrar</code>, que cria as duas pastas (<code>caminho.parent.mkdir(parents=True)</code>,
+  228). Esse gancho roda <strong>na conta de quem instala, sem administrador</strong> (achado B1). Então:</li>
+<li>o <strong>dono</strong> das duas é a conta de quem instalou (no notebook, a do Kaique);</li>
+<li>a <strong>licença</strong> é a herdada do ProgramData, e nenhum código a muda: o sistema e os administradores, tudo; quem
+    criou ("proprietário criador"), tudo; os Usuários, ler, e também <strong>criar arquivos e pastas</strong> dentro.</li>
+<li>Lido hoje <strong>sem administrador</strong>, por volta das 12:00, antes de a fase 12 da etapa 5 limpar o PC (<code>icacls</code>): bate
+    com o código. <code>SAMUEL-PC\fotog</code> com controle total nas duas, e <code>Usuários:(CI)(WD,AD,WEA,WA)</code> em <code>atualizacao</code> e em
+    <code>volta</code>. Às 12:11 as pastas já não existiam (fase 12), e o dono não chegou a ser lido.</li>
+<li><strong><code>atualizacao\atualizacao.log</code>:</strong> a primeira linha é escrita pelo mesmo gancho; dono a conta de quem instalou, com
+  controle total. Lido hoje: <code>fotog:(I)(F)</code>.</li>
+<li><strong><code>atualizacao\estado.json</code>, <code>atualizacao\volta\</code>:</strong> criados pelo ajudante (o sistema). A licença é herdada; dentro de
+  <code>volta</code> os Usuários também podem criar.</li>
+<li><strong><code>atualizacao\preparo.txt</code>:</strong> criado pelo PowerShell da pergunta de administrador; licença herdada.</li>
+<li><strong><code>fonte-de-teste.txt</code>:</strong> só na etapa 5; o programa aceita só se o dono for administrador ou o sistema.</li>
+<li><strong><code>testes-a-distancia\</code>:</strong> criada pelo PowerShell de administrador, que depois põe a licença à mão (dono
+  administradores, sem herança, <code>/T</code> nos arquivos). O outro revisor provou que isso deixa os arquivos sem licença
+  nenhuma.</li>
+</ul>
+<p><strong>O risco, nas duas partes:</strong></p>
+<ul>
+<li>Quem é dono da pasta de cima pode trocar de lugar qualquer pasta de dentro, inclusive a trancada.</li>
+<li>Qualquer conta, inclusive a de testes, pode criar arquivos e pastas onde o sistema vai gravar depois.</li>
+<li>O sistema roda o script dos testes à distância e grava o estado e a cópia da volta do atualizador ali.</li>
+</ul>
+<p><strong>O desenho do outro revisor serve para o atualizador: sim, e deve ser uma peça só.</strong> "O que roda como o sistema mora
+num lugar seguro de fábrica, sem licença à mão" resolve os dois casos.</p>
+<ul>
+<li><strong>O lugar:</strong> uma pasta própria em Arquivos de Programas, <strong>ao lado</strong> da pasta do programa (nunca dentro dela: o
+  Velopack troca e apaga a pasta dele ao atualizar e ao desinstalar). Ali o Windows já deixa só o administrador e o
+  sistema criarem e mudarem; os Usuários leem. Nenhuma conta comum cria nada, e nenhum comando de licença é preciso.
+  O nome exato é detalhe técnico, mas não pode lembrar a pasta dos projetos (a regra da D-763).</li>
+<li><strong>Quem cria:</strong> a pergunta de administrador da primeira abertura, sempre (nunca o gancho de instalar).</li>
+<li><strong>O que vai para lá:</strong></li>
+<li>do atualizador: o estado, o registro, a cópia para voltar, o sinal "trocando", o socorro (regra 5) e a marca do
+    preparo;</li>
+<li>dos testes à distância: o script do desfazer e o caderninho do antes.</li>
+<li><strong>Uma função só</strong> diz onde é a pasta e <strong>uma função só</strong> a cria e confere (é pasta de verdade, não um atalho para
+  outro lugar, e com a licença do Windows). Os dois lados usam as duas.</li>
+<li><strong>O que continua igual:</strong> a gerente lê o registro de longe pela conta de testes, porque os Usuários leem (D-719). A
+  janela do Kaique lê o estado para mostrar o aviso, mas não grava; o que ela anota vai para a pasta da conta dela.</li>
+<li><strong>Uma chave do registro do Windows em HKLM\SOFTWARE</strong> serve só para dados pequenos (o estado, a marca do preparo).
+  Para o registro que cresce, para a cópia de 788 MB e para os scripts, é preciso pasta. Por isso a sugestão é a pasta
+  em Arquivos de Programas, um lugar só para tudo.</li>
+<li><strong>O desinstalar</strong> (regra 9) apaga essa pasta inteira no fim, como o sistema, depois de conferir; os projetos nunca
+  estão nela.</li>
+</ul>
+<p>O que muda para quem usa: nada visível. O ProgramData deixa de ter pastas do programa.</p>
+<p><strong>Fica para depois, só se ainda ficar lento:</strong> tirar o motor do Kraken do pacote que se troca (estudo, pergunta 4). É
+o único jeito de a troca cair de minutos para segundos. É mudança grande; plano antes.</p>
+<p><strong>O que isso muda para quem usa:</strong></p>
+<ul>
+<li>O Kaique deixa de ver aviso de falha falso.</li>
+<li>Clicar no atalho durante a troca mostra a janelinha, em vez de o programa sumir.</li>
+<li>"Reiniciar agora" mostra a janelinha e volta (pergunta 1).</li>
+<li>A primeira abertura não congela.</li>
+<li>Reinstalar volta a perguntar.</li>
+<li>Desinstalar deixa o notebook limpo. Os projetos ficam, como sempre.</li>
+<li>Nada muda nos livros nem no PDF.</li>
+</ul>
+<hr />
+<h2>4. Como provar cada peça de verdade e à vista (D-767)</h2>
+<p><strong>Regras de todas as provas:</strong></p>
+<ul>
+<li>No PC do Samuel, na área de trabalho de verdade, nunca escondida.</li>
+<li>Cada prova abre uma janela pequena de PowerShell visível que diz o que está fazendo e mostra o resultado.</li>
+<li>O Samuel clica "Sim" quando a pergunta do Windows aparecer.</li>
+<li>Nada de peça de mentira no lugar do Windows.</li>
+<li>Os testes automáticos continuam para o resto, mas não contam como prova destas peças.</li>
+<li>As provas 1 a 4, 13 e 14 rodam com o código novo antes de montar a versão. As outras pedem o programa instalado.</li>
+<li>Depende do alcance da D-767 que a gerente está confirmando (versões de teste numa pasta do D: ou no GitHub).</li>
+</ul>
+<ol>
+<li><strong>Lançar solto</strong> (regra 1). O programa lança um script que escreve "rodei às HH:MM:SS" e mostra uma janela; depois,
+   o mesmo com o programa já fechado. Ele vê a janela aparecer. 0 perguntas, 2 min.</li>
+<li><strong>Pedir licença, as três respostas</strong> (regras 1 e 2). (a) "Sim" → a janela de prova diz "rodou como
+   administrador"; (b) "Não" → diz "você disse Não" (código 1223 lido certo); (c) com outra janela na frente → a
+   pergunta aparece no meio da tela, não na barra; (d) um arquivo que não existe → frase em português, sem a caixa
+   crua do Windows. 3 perguntas, 5 min.</li>
+<li><strong>A pasta segura do programa</strong> (regra 8, seção 3b; é a mesma prova P3 do revisor dos testes à distância: fazer uma
+   vez só). Cria com administrador em Arquivos de Programas e mostra na janela a licença que o Windows deu, sem comando
+   de licença; a conta comum lê e tenta criar um arquivo ("recusado"); o sistema lê e grava. 1 a 2 perguntas, 3 min.</li>
+<li><strong>O ajudante criado, chamado e conferido</strong> (regra 2). Cria, a conta comum manda rodar, a janela mostra o fim do
+   registro e a resposta "preparado: sim" lida do Windows; apaga a tarefa e mostra "preparado: não". 2 perguntas, 3
+   min.</li>
+<li><strong>A troca com sinal e janelinha</strong> (regra 6). Programa instalado; uma versão nova; "Reiniciar agora": a janelinha
+   fica visível o tempo todo e o programa volta na versão nova. Medir quanto levou. 0 perguntas, ~10 a 25 min.</li>
+<li><strong>Abrir durante a troca</strong> (regra 6). No meio da troca, ele clica no atalho: aparece a janelinha, nada é fechado à
+   força, o programa abre no fim. 0 perguntas, ~10 min.</li>
+<li><strong>Falha passageira</strong> (regra 3). Com a versão nova publicada, desligar o cabo/Wi-Fi na hora de ler a assinatura (o
+   teste avisa a hora certa): nenhum aviso; religar e abrir de novo: a versão entra. 0 perguntas, 5 min.</li>
+<li><strong>Versão que nem abre</strong> (regra 5). Uma versão com o <code>.exe</code> quebrado de propósito: o socorro volta para a anterior
+   sem internet, e o aviso certo aparece. 0 perguntas, ~15 min.</li>
+<li><strong>Assinatura em tudo o que se instala</strong> (regra 7). Conforme a pergunta 3 do estudo: sem diferença, mostrar no
+   registro que só o pacote inteiro, conferido, foi usado; com diferença assinada, uma diferença trocada é recusada
+   antes de instalar. 0 perguntas, 5 a 15 min.</li>
+<li><strong>Publicar sem ficar pela metade</strong> (regra 7). Publicar no GitHub como rascunho, a janela mostra a assinatura lida
+    de volta, libera, e o programa instalado acha a versão; apagar a versão de teste no fim (pergunta 7). 0 perguntas,
+    o tempo de publicar.</li>
+<li><strong>Desinstalar limpo</strong> (regra 9). Pelas Configurações do Windows, como o Kaique faria: a barra de progresso do
+    Windows aparece; depois, a janela de prova lista que as tarefas, a pasta do ajudante e as sobras do Velopack
+    saíram e que os projetos são os mesmos 44 arquivos. 1 pergunta, 5 min.</li>
+<li><strong>Reinstalar</strong> (regra 2). Instalar de novo e abrir: a pergunta do Windows volta e o ajudante nasce. 2 perguntas,
+    10 min.</li>
+<li><strong>A primeira abertura não congela</strong> (regra 10). Durante a pergunta e a preparação, ele arrasta a janela e ela
+    responde, com "Preparando o computador...". 1 pergunta, 3 min.</li>
+<li><strong>O registro legível</strong> (1.3). Uma linha com resposta do Windows aparece com "ÊXITO" certo na janela. 0 perguntas,
+    1 min.</li>
+</ol>
+<p><strong>Total:</strong> umas 11 perguntas do Windows e perto de 2 horas, contando duas trocas reais. O teste grande depois só
+confirma.</p>
+<hr />
+<h2>5. Perguntas para o Samuel</h2>
+<h3>Pergunta 1. A janelinha também no "Reiniciar agora"</h3>
+<p><strong>Do que se trata.</strong> É o aviso "Chegou uma versão nova do Editor de Impressão", que aparece com o programa aberto
+quando chega uma versão nova. Ele tem os botões "Reiniciar agora" e "Depois". Print do aviso, da etapa 5:
+<code>saida_teste\etapa5\prints\fase4\1-aviso.png</code>.</p>
+<p><strong>O que acontece hoje.</strong> Com "Depois", na próxima abertura aparece a janelinha "Atualizando o programa, espere um
+pouco..." até o programa abrir (você escolheu em 17/11). Com "Reiniciar agora", o programa fecha e <strong>não aparece nada</strong>
+durante a troca. Medido na etapa 5, a troca leva de 7 a 23 minutos. O Kaique vai achar que o programa quebrou. É uma
+falta no que foi pedido, não um defeito do Windows.</p>
+<p><strong>O que você escolhe:</strong>
+- <strong>Sim (sugestão):</strong> a mesma janelinha aparece também depois do "Reiniciar agora", até o programa voltar. Nada mais
+  muda.
+- <strong>Não:</strong> fica como está, sem nada na tela durante a troca.
+- <strong>Só comentário.</strong></p>
+<h3>Pergunta 2. Com "Depois", quando a versão nova entra</h3>
+<p><strong>Do que se trata.</strong> É o botão "Depois" do mesmo aviso. Em 17/11 você escolheu "quando ele abrir o programa de novo",
+com uma espera curta. A explicação de então falava em "alguns segundos, até 5 minutos".</p>
+<p><strong>O que acontece hoje.</strong> A espera medida na etapa 5 foi de <strong>7 a 23 minutos</strong>, e não alguns segundos. O Kaique clica no
+atalho para trabalhar e fica esse tempo olhando a janelinha.</p>
+<p><strong>O que você escolhe:</strong>
+- <strong>Continua na próxima abertura:</strong> como você decidiu, com a janelinha de 7 a 23 minutos (ou uns 7,5 se a versão vier
+  inteira, pergunta 3 do estudo de publicar).
+- <strong>Na hora de fechar (sugestão):</strong> quando o Kaique fecha o programa, a troca acontece sozinha, por trás. Na próxima
+  vez ele já abre na versão nova, sem esperar. Se ele abrir no meio da troca, aparece a janelinha até acabar
+  (pergunta 3). Se ele desligar o notebook no meio, nada se perde: a troca tenta de novo depois.
+- <strong>Só comentário.</strong></p>
+<p>Você continua no controle: o "Reiniciar agora" continua trocando na hora.</p>
+<h3>Pergunta 3. O Kaique abre o programa no meio da troca</h3>
+<p><strong>Do que se trata.</strong> É o momento em que a versão nova está sendo trocada, com o programa fechado (7 a 23 minutos).</p>
+<p><strong>O que acontece hoje.</strong> Se o Kaique clicar no atalho nessa hora, o programa abre. Aí a ferramenta de atualização
+fecha o programa à força para trocar os arquivos, e o programa ainda mostra "A atualização não deu certo", sem ter
+dado errado. É um defeito, achado lendo o código (ainda não provado).</p>
+<p><strong>O que você escolhe:</strong>
+- <strong>Sim (sugestão):</strong> nessa hora, em vez do programa, aparece a janelinha "Atualizando o programa, espere um pouco...",
+  e o programa abre sozinho quando a troca acaba. É a mesma janelinha que você já escolheu.
+- <strong>Não:</strong> fica como está.
+- <strong>Só comentário.</strong></p>
+<h3>Pergunta 4. A frase do aviso de falha, para cada caso</h3>
+<p><strong>Do que se trata.</strong> É o aviso que aparece na tela do Kaique quando a atualização não dá certo. Hoje é sempre a frase
+que você escolheu em 16/11: "A atualização não deu certo. O programa voltou para a versão anterior e continua
+funcionando. Avise o Samuel."</p>
+<p><strong>O que acontece hoje.</strong> Ela aparece em três casos diferentes, e em dois ela não é verdade:
+- a versão chegou sem a sua assinatura e <strong>nem foi instalada</strong> (não "voltou", nunca saiu);
+- a versão foi instalada, falhou, e <strong>a volta não deu certo</strong> (o programa não voltou).</p>
+<p><strong>O que você escolhe:</strong>
+- <strong>Três frases (sugestão):</strong>
+  - recusada: "Chegou uma versão nova, mas ela não foi instalada porque não tem a assinatura do Samuel. O programa
+    continua funcionando. Avise o Samuel.";
+  - voltou: a frase de hoje;
+  - não voltou: "A atualização não deu certo e o programa não conseguiu voltar sozinho. Não desinstale nada. Avise o
+    Samuel."
+- <strong>Uma frase só:</strong> a de hoje em todos os casos.
+- <strong>Quero outras palavras:</strong> diga quais.
+- <strong>Só comentário.</strong></p>
+<h3>Pergunta 5. O que o desinstalar tira</h3>
+<p><strong>Do que se trata.</strong> É o desinstalar do programa (Configurações do Windows &gt; Aplicativos). Em 16/11 você decidiu que o
+computador fica como era antes de instalar e que os projetos ficam.</p>
+<p><strong>O que acontece hoje.</strong> Medido hoje no seu PC, depois do desinstalar da etapa 5, ficaram: as duas tarefas do
+Windows que o programa criou; uma pasta interna do programa com 789 MB (a cópia para voltar de versão); e uma pastinha
+de 5 MB da ferramenta de atualização na sua conta. É um defeito.</p>
+<p><strong>O que você escolhe:</strong>
+- <strong>Sim (sugestão):</strong> o desinstalar tira tudo isso, e no fim deixa a lista do que tirou. Os projetos e as
+  configurações do Kaique ficam, como sempre.
+- <strong>Só as tarefas:</strong> as pastas internas ficam.
+- <strong>Só comentário.</strong></p>
+<h3>Pergunta 6. A ferramenta de atualização tem dois defeitos já consertados numa versão mais nova</h3>
+<p><strong>Do que se trata.</strong> É a ferramenta pronta que faz a atualização (a Velopack, que você escolheu em 16/11). Usamos a
+versão 1.2.161, a última que já saiu como final.</p>
+<p><strong>O que acontece hoje.</strong> Os autores dela consertaram dois defeitos que nos atingem, mas o conserto só está numa versão
+de teste (1.3.39):
+- se a troca falhar num momento ruim, o programa pode ficar sem abrir, sem atualizar e sem desinstalar;
+- o desinstalar deixa uma pasta para trás.</p>
+<p><strong>O que você escolhe:</strong>
+- <strong>Ficar na 1.2.161 e nos protegermos (sugestão):</strong> o programa guarda a versão de hoje antes de trocar e volta sozinho
+  se a troca estragar (regra 5 da seção 3). Nada muda para o Kaique.
+- <strong>Trocar pela versão de teste:</strong> os consertos vêm prontos, mas é uma versão ainda em teste, e todas as provas de
+  instalar e desinstalar têm de ser refeitas.
+- <strong>Esperar a versão final</strong> e trocar quando ela sair.
+- <strong>Só comentário.</strong></p>
+<h3>Pergunta 7. Duas licenças para as provas</h3>
+<p><strong>Do que se trata.</strong> São as provas à vista que vêm antes de montar a versão (seção 4).</p>
+<p><strong>O que acontece hoje.</strong>
+- Um teste antigo cobra justamente o jeito errado que fez o "Reiniciar agora" não voltar. Mudar teste antigo precisa
+  do seu ok.
+- Para provar o publicar no GitHub de verdade, é preciso pôr lá uma versão de teste. Como rascunho, ninguém vê e o
+  programa do Kaique não enxerga.</p>
+<p><strong>O que você escolhe:</strong>
+- <strong>Sim para as duas (sugestão):</strong> o teste antigo passa a cobrar o jeito certo, e a versão de teste vai ao GitHub como
+  rascunho, sendo apagada no fim.
+- <strong>Só o teste.</strong>
+- <strong>Nenhuma.</strong>
+- <strong>Só comentário.</strong></p>
+<h3>Pergunta 8. Uma opção do Windows no notebook do Kaique</h3>
+<p><strong>Do que se trata.</strong> É uma proteção do Windows 11, o "Controle Inteligente de Aplicativos" (em Segurança do Windows &gt;
+Controle de aplicativos e navegador). Quando está ligada, ela bloqueia programas que não têm um certificado pago, e não
+dá para liberar um programa só. O nosso não tem (você escolheu a assinatura grátis em 16/11).</p>
+<p><strong>O que acontece hoje.</strong> No seu PC ela está desligada (lido hoje). No notebook do Kaique não se sabe. Num Windows novo
+ela começa "em avaliação" e pode ligar sozinha. Se estiver ligada, o programa não abre lá.</p>
+<p><strong>O que você escolhe:</strong>
+- <strong>Sim (sugestão):</strong> antes de mandar o programa, o Kaique olha essa tela e diz o que aparece (pode ser por telefone).
+  Se estiver ligada, você decide o que fazer antes de instalar.
+- <strong>Não:</strong> instalar e ver.
+- <strong>Só comentário.</strong></p>
+<hr />
+<h2>6. Ressalvas</h2>
+<ul>
+<li>Os defeitos marcados "lido" não foram provados. A seção 4 diz como provar cada um.</li>
+<li>O desvio de gravação na pasta do ajudante (novo 10) é um tipo de falha conhecido do Windows; não tentei fazê-lo.</li>
+<li>A prova de que o aviso "o produto foi removido" (regra 9) não aparece numa atualização por .msi novo ainda falta.</li>
+<li>A regra 5 (o socorro fora de <code>current</code>) precisa de um plano à parte antes de construir, porque muda o que o ajudante
+  roda.</li>
+<li>Não li o código inteiro da parte dos testes à distância (é de outro agente), só o que o desinstalar e a pergunta do
+  Windows usam.</li>
+<li>Os prints das perguntas são os da etapa 5. Os prints novos saem nas provas à vista da seção 4.</li>
+</ul>
+<p class="rodape">Editor de Impressão &middot; gerado em 18/11/2026 às 12:13</p>
+</body>
+</html>
