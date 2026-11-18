@@ -1,0 +1,7 @@
+Prova nova (tests/test_nome_do_pacote.py) rodada no codigo NOVO (ID_DO_PACOTE = "EditorImpressaoPrograma"), 17/11/2026:
+PASSED tests/test_nome_do_pacote.py::test_d763_o_nome_do_pacote_nunca_e_o_nome_da_pasta_dos_projetos
+PASSED tests/test_nome_do_pacote.py::test_d763_a_pasta_de_reserva_do_velopack_fica_fora_da_pasta_dos_projetos
+PASSED tests/test_nome_do_pacote.py::test_d763_a_limpeza_do_desinstalador_fica_fora_da_pasta_dos_projetos
+PASSED tests/test_nome_do_pacote.py::test_d763_o_packid_do_vpk_e_o_nome_do_pacote
+PASSED tests/test_nome_do_pacote.py::test_d763_o_velopack_e_o_vpk_presos_na_versao_da_prova
+5 passed in 0.42s

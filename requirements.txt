@@ -31,4 +31,10 @@ pyclipper==1.4.0
 # empacota (dotnet tool install -g vpk --version 1.2.161): as duas pontas tem
 # de falar o mesmo formato de pacote. Pelo codigo (.venv) o programa so a
 # importa quando foi instalado pelo Velopack.
+# D-763 (17/11/2026): a 1.2.161 foi a provada (onde o Velopack grava e o que o
+# desinstalador apaga; relatorios/nome-pacote-2026-11-17/). SUBIR DE VERSAO
+# (aqui e no vpk, empacotar.VERSAO_DO_VPK) EXIGE REPETIR A PROVA: o Velopack
+# mais novo tem outra limpeza no desinstalador (UserCleanupDeferred) que apaga
+# %LocalAppData%\<nome do pacote> de proposito. tests/test_nome_do_pacote.py
+# cobra que as duas versoes batem.
 velopack==1.2.161

@@ -1,0 +1,29 @@
+FOTO C1-antes-de-desinstalar
+LocalAppData do Windows (SHGetKnownFolderPath): C:\Users\fotog\AppData\Local
+[1] C:\Users\fotog\AppData\Local\EditorImpressaoProgramaProva (LocalAppData + nome do pacote de mentira: a pasta de reserva esperada)
+  Update.exe  5409280 bytes
+  configuracoes.json  2 bytes
+  historico.json  2 bytes
+  packages\.betaId  36 bytes
+  packages\.velopack_lock  0 bytes
+  packages\EditorImpressaoProgramaProva-1.0.1-full.nupkg  20430619 bytes
+  projetos\livro-de-mentira\projeto.json  20 bytes
+[2] C:\Users\fotog\AppData\Local\EditorImpressaoProva (LocalAppData + nome da pasta dos dados de mentira: os 'projetos')
+  configuracoes.json  2 bytes
+  historico.json  2 bytes
+  projetos\livro-de-mentira\projeto.json  20 bytes
+[3] D:\agente_temp_testes\nome-pacote\prova\instalado-trancado (a pasta instalada)
+  .msi-installed  0 bytes
+  Prova do nome do pacote.exe  529408 bytes
+  Update.exe  5409280 bytes
+  current\_internal/ (nao listado)
+  current\ProvaNome.exe  5546604 bytes
+  current\sq.version  605 bytes
+[4] C:\Users\fotog\AppData\Local\EditorImpressao (pasta de VERDADE dos projetos: so os nomes do primeiro nivel)
+  configuracoes.json, erros.log, historico.json, projetos
+[5] C:\Users\fotog\AppData\Local\EditorImpressaoPrograma (a pasta de reserva do programa de verdade: nunca deve aparecer nesta prova)
+  (nao existe)
+[6] C:\Users\fotog\AppData\Local\velopack (logs do Velopack)
+  velopack_EditorImpressaoEnsaio.log
+[7] D:\agente_temp_testes\nome-pacote\prova\localappdata-de-mentira (a VARIAVEL LOCALAPPDATA que o app de mentira recebe)
+  (nao existe) D:\agente_temp_testes\nome-pacote\prova\localappdata-de-mentira

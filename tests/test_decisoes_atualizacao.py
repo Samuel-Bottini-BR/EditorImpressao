@@ -445,7 +445,7 @@ def test_d724_o_que_o_publicar_assina_o_programa_aceita(tmp_path, monkeypatch):
     arquivo = pub.assinar_pacote(CHAVE, nupkg, "1.2.0", PUBLICA)
     alvo = Pacote("1.2.0", assinatura.soma_sha256(nupkg))
     assert atualizacao.conferir_assinatura_do(atualizacao.Fonte(str(tmp_path)), alvo, PUBLICA) is None
-    assert arquivo.name == "EditorImpressao-1.2.0.assinatura"
+    assert arquivo.name == f"{versao.ID_DO_PACOTE}-1.2.0.assinatura"  # D-764 (17/11): o nome lido de versao.py, nao escrito a mao
 
 
 # ---------------------------------------------------------------------------

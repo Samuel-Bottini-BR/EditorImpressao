@@ -1,0 +1,6 @@
+{
+  "pacote_de_verdade": "EditorImpressaoPrograma",
+  "dados_de_verdade": "EditorImpressao",
+  "pacote_de_mentira": "EditorImpressaoProgramaProva",
+  "dados_de_mentira": "EditorImpressaoProva"
+}

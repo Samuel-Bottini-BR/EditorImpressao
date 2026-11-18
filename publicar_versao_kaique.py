@@ -14,7 +14,7 @@ O que faz, em ordem, parando no primeiro problema (nada sai pela metade):
 4. empacota (empacotar.construir_pacote_do_velopack: a pasta com todas as
    travas, o Visual C++ dentro, o vpk pack e a conferencia do pacote). Com
    --pasta-pronta, usa uma pasta ja feita (o ensaio usa isto);
-5. assina o pacote inteiro (arquivo EditorImpressao-<versao>.assinatura) e
+5. assina o pacote inteiro (arquivo <versao.ID_DO_PACOTE>-<versao>.assinatura) e
    confere a propria assinatura com a chave publica do programa;
 6. publica: no GitHub (vpk upload github --publish, etiqueta v<versao>, mais o
    arquivo da assinatura com o gh), ou na pasta do ensaio (vpk upload local).
@@ -142,7 +142,7 @@ def publicar(versao_do_pacote: str, destino_pasta: Path | None = None, pasta_pro
         raise Parou(f"a versão {versao_do_pacote} já foi publicada: aumente o número em versao.py")
     vpk = vpk or empacotar.achar_vpk()
     if vpk is None:
-        raise Parou("não achei o vpk (dotnet tool install -g vpk)")
+        raise Parou(f"não achei o vpk ({empacotar.COMO_INSTALAR_O_VPK})")
     saida = PASTA_DE_TRABALHO / versao_do_pacote
     shutil.rmtree(saida, ignore_errors=True)
     saida.mkdir(parents=True)

@@ -28,10 +28,35 @@ from __future__ import annotations
 
 VERSAO = "1.1.0"
 
-# O nome do pacote para o Velopack (a pasta em Arquivos de Programas, os
-# arquivos EditorImpressao-<versao>-full.nupkg). Trocar depois de instalado no
-# Kaique faz o Velopack achar que e OUTRO programa: nunca trocar.
-ID_DO_PACOTE = "EditorImpressao"
+# O nome INTERNO do pacote para o Velopack (o --packId do vpk). Aparece so em
+# lugares tecnicos: os arquivos <ID>-<versao>-full.nupkg e <ID>-<versao>.assinatura
+# publicados, a chave do desinstalador no registro do Windows (MSI:<ID>) e a
+# pasta de reserva do Velopack, %LOCALAPPDATA%\<ID>. O Kaique NAO ve este nome:
+# a pasta em Arquivos de Programas, o nome na lista de programas e os atalhos
+# vem do titulo do pacote (empacotar.TITULO_DO_PACOTE, "Editor de Impressão").
+#
+# A REGRA (D-763, Samuel 17/11/2026: "ok, pode fazer"): nem este nome nem o
+# titulo do pacote sao o nome da pasta dos dados do programa
+# (historico.pasta_de_dados, %LOCALAPPDATA%\EditorImpressao, onde moram os
+# projetos). Por que (provas de 17/11/2026, relatorios/velopack-pasta-2026-11-17/
+# e relatorios/nome-pacote-2026-11-17/, Velopack 1.2.161):
+# - o Velopack usa %LOCALAPPDATA%\<ID> como pasta de reserva: grava ali
+#   Update.exe e packages\ a cada abertura na conta do Kaique;
+# - o desinstalador do .msi apaga %LOCALAPPDATA%\<titulo> inteira (o modelo
+#   do .msi da 1.2.161 passa o TITULO a limpeza; o Velopack mais novo tem outra
+#   limpeza que apaga %LocalAppData%\<nome>). Na prova de 17/11 o titulo era
+#   igual ao nome, e ele apagou a pasta com um projeto de mentira dentro.
+# Ate 17/11 este nome era "EditorImpressao", igual ao da pasta dos projetos,
+# por acaso. tests/test_nome_do_pacote.py cobra a regra.
+#
+# Por que PODE trocar agora e NUNCA MAIS depois: o Velopack reconhece o
+# programa instalado por este nome (e o .msi se registra no Windows com ele).
+# Em 17/11/2026 nenhum pacote do Velopack foi instalado de verdade (nem no
+# notebook do Kaique, nem no PC do Samuel; a de 28/10 do Kaique e do Inno, que
+# tem outro nome, atualizacao.APPID_DO_INNO). Depois da primeira instalacao de
+# verdade, trocar faz o Velopack achar que e OUTRO programa: a atualizacao nao
+# acha a instalada e ficam dois programas no computador.
+ID_DO_PACOTE = "EditorImpressaoPrograma"
 
 
 def numeros(versao: str) -> tuple[int, int, int]:

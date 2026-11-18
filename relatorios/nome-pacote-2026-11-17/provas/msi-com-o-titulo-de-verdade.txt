@@ -1,0 +1,20 @@
+O .msi montado pelo MESMO comando do programa (empacotar.comando_do_vpk: --instLocation PerMachine, titulo de verdade
+"Editor de Impressão"), so com o nome do pacote de mentira (EditorImpressaoProgramaProva) e o .exe de mentira, sem atalhos.
+NAO foi instalado: as tabelas foram so lidas (WindowsInstaller.Installer, OpenDatabase somente leitura). 17/11/2026.
+
+--- Property
+ALLUSERS | 1
+RustAppId | Editor de Impressão          <- o que a limpeza do desinstalador recebe: o TITULO, nao o nome do pacote
+RustAppTitle | Editor de Impressão
+Manufacturer | Instituto de Preservacao de Livros
+ProductName | Editor de Impressão
+--- Directory
+INSTALLFOLDER | TARGETDIR | cpsj4kkn|Editor de Impressão   <- a pasta em Arquivos de Programas: do TITULO (com acento;
+                                                             diferente da do Inno, "Editor de Impressao", sem acento)
+--- CustomAction
+SetINSTALLFOLDER | [VELOPACK_INSTALLDIR]
+SetRustCleanupData | [INSTALLFOLDER]"[RustAppId]"[TempFolder]
+RustCleanup | CleanupDeferred
+--- Registry (a entrada na lista de programas)
+Software\Microsoft\Windows\CurrentVersion\Uninstall\MSI:EditorImpressaoProgramaProva | DisplayName | Editor de Impressão
+   (a chave leva o NOME do pacote; o que aparece na lista e o TITULO)

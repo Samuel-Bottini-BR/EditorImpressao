@@ -1,0 +1,11 @@
+Prova nova (tests/test_nome_do_pacote.py) rodada no codigo ANTIGO (59678e22, worktree destacada em D:\agente_temp_testes\nome-pacote\antigo, ID_DO_PACOTE = "EditorImpressao"), 17/11/2026:
+E       AssertionError: o nome do pacote ('EditorImpressao') e o da pasta dos projetos ('EditorImpressao'): o Velopack gravaria na pasta dos projetos, e um Velopack mais novo a apagaria ao desinstalar
+E           AssertionError: assert 'c:\\users\\kaique\\appdata\\local\\editorimpressao' != 'c:\\users\\kaique\\appdata\\local\\editorimpressao'
+E           AssertionError: EditorImpressao
+E       AttributeError: module 'empacotar' has no attribute 'VERSAO_DO_VPK'
+PASSED tests/test_nome_do_pacote.py::test_d763_o_packid_do_vpk_e_o_nome_do_pacote
+FAILED tests/test_nome_do_pacote.py::test_d763_o_nome_do_pacote_nunca_e_o_nome_da_pasta_dos_projetos
+FAILED tests/test_nome_do_pacote.py::test_d763_a_pasta_de_reserva_do_velopack_fica_fora_da_pasta_dos_projetos
+FAILED tests/test_nome_do_pacote.py::test_d763_a_limpeza_do_desinstalador_fica_fora_da_pasta_dos_projetos
+FAILED tests/test_nome_do_pacote.py::test_d763_o_velopack_e_o_vpk_presos_na_versao_da_prova
+4 failed, 1 passed in 0.56s
