@@ -1,0 +1,586 @@
+<!doctype html>
+<html lang="pt-BR">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Publicar uma versão para o Kaique: por que leva quase 1 hora, e como deixar rápido</title>
+<style>
+:root { color-scheme: light dark; }
+* { box-sizing: border-box; }
+body {
+  font: 17px/1.65 "Segoe UI", system-ui, sans-serif;
+  max-width: 46rem; margin: 0 auto; padding: 2.5rem 1.5rem 6rem;
+  color: #1c1c1e; background: #fdfdfc;
+}
+h1 { font-size: 2rem; line-height: 1.2; margin: 0 0 .3em; letter-spacing: -.02em; }
+h2 { font-size: 1.35rem; margin: 2.4em 0 .6em; padding-top: .8em;
+     border-top: 1px solid #e6e4e0; letter-spacing: -.01em; }
+h3 { font-size: 1.1rem; margin: 1.8em 0 .4em; }
+h1 + p, h2 + p { margin-top: .4em; }
+p, li { margin: 0 0 .9em; }
+ul, ol { padding-left: 1.3em; }
+strong { font-weight: 640; }
+code {
+  font: .88em ui-monospace, "Cascadia Code", Consolas, monospace;
+  background: #f1efec; padding: .12em .35em; border-radius: 4px;
+}
+pre {
+  background: #f1efec; padding: 1em 1.1em; border-radius: 8px;
+  overflow-x: auto; line-height: 1.5;
+}
+pre code { background: none; padding: 0; }
+blockquote {
+  margin: 1.2em 0; padding: .1em 0 .1em 1.1em;
+  border-left: 3px solid #c9c5be; color: #55524d;
+}
+table {
+  border-collapse: collapse; width: 100%; margin: 1.2em 0;
+  font-size: .95rem; display: block; overflow-x: auto;
+}
+th, td { padding: .5em .8em; text-align: left; border-bottom: 1px solid #e6e4e0; }
+th { font-weight: 620; background: #f7f5f2; white-space: nowrap; }
+tr:last-child td { border-bottom: none; }
+img { max-width: 100%; height: auto; border-radius: 6px; margin: 1em 0;
+      border: 1px solid #e6e4e0; }
+hr { border: none; border-top: 1px solid #e6e4e0; margin: 2.5em 0; }
+.rodape { margin-top: 4em; padding-top: 1.2em; border-top: 1px solid #e6e4e0;
+          font-size: .85rem; color: #86827c; }
+@media (prefers-color-scheme: dark) {
+  body { color: #e8e6e3; background: #1a1917; }
+  h2 { border-top-color: #35332f; }
+  code, pre, th { background: #262421; }
+  th, td { border-bottom-color: #35332f; }
+  blockquote { border-left-color: #4a4741; color: #b0aca6; }
+  img { border-color: #35332f; }
+  .rodape { border-top-color: #35332f; color: #7d7973; }
+}
+@media print {
+  body { max-width: none; padding: 0; color: #000; background: #fff; }
+  h2 { page-break-after: avoid; }
+  table, img { page-break-inside: avoid; }
+}
+</style>
+</head>
+<body>
+<h1>Publicar uma versão para o Kaique: por que leva quase 1 hora, e como deixar rápido</h1>
+<p>Estudo do pesquisador, 18/11/2026. Nenhuma linha do programa nem dos scripts de publicar mudou.
+Ramo <code>publicar-rapido-2026-11-18</code>.</p>
+<blockquote>
+<p><strong>RASCUNHO.</strong> Os números marcados <strong>[não medido]</strong> são estimativas. Eles serão trocados pelas medidas
+M1 a M5, que esperam a etapa 5 parar (ordem da gerente, 18/11, 07:20).</p>
+</blockquote>
+<h2>A resposta, em cinco frases</h2>
+<ol>
+<li>Publicar demora porque a ferramenta (o Velopack) copia a pasta do programa inteira <strong>quatro vezes</strong> e comprime
+   três vezes a cada versão. Para fazer a diferença, ela ainda abre de novo a versão anterior inteira. Tudo isso
+   acontece no <strong>HD externo</strong> (o D:, ligado por USB).</li>
+<li>Num HD o que pesa é a <strong>quantidade de arquivos</strong>, e quase todos são do motor do Kraken: 34.521 dos 35.103 (98%).
+   Esse motor nunca muda.</li>
+<li>Duas mudanças simples cortam a maior parte do tempo. A primeira é montar a versão no disco de dentro do PC (o C:,
+   que é rápido). A segunda é só refazer o instalador e a versão portátil quando você pedir: hoje eles são refeitos
+   a cada versão e só servem para a primeira instalação.</li>
+<li>Com as duas juntas, publicar deve cair de <strong>59 a 82 min</strong> para uns <strong>20 a 25 min</strong> <strong>[não medido]</strong>. A conta é:
+   uns 10 a 15 min do Velopack mais os ~11 min de montar a pasta do programa.</li>
+<li>Nada muda para o Kaique na atualização: ele continua baixando só o que mudou (uns 20 MB), com a mesma assinatura
+   conferida antes de instalar.</li>
+</ol>
+<h2>1. Onde vai cada minuto hoje (medido nos registros da etapa 5)</h2>
+<p>Tempos tirados dos horários dos registros <code>saida_teste/etapa5/registros/publicar-1.1.0.log</code> e
+<code>fase1-resto-limpo.log</code> (Velopack 1.2.161, tudo no D:). Nas versões 1.1.1 a 1.1.5 o programa era <strong>o mesmo</strong>:
+só o número da versão mudou.</p>
+<table>
+<thead>
+<tr>
+<th>Passo</th>
+<th>1.1.1</th>
+<th>1.1.2</th>
+<th>1.1.3</th>
+<th>1.1.4</th>
+<th>1.1.5</th>
+<th>O que é</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>Baixar a versão anterior</td>
+<td>0:19</td>
+<td>0:41</td>
+<td>0:34</td>
+<td>0:32</td>
+<td>0:27</td>
+<td>cópia do servidor de mentira</td>
+</tr>
+<tr>
+<td>Pré-processo</td>
+<td>3:27</td>
+<td>5:51</td>
+<td>10:00</td>
+<td>6:10</td>
+<td>5:36</td>
+<td>1ª cópia da pasta (35 mil arquivos)</td>
+</tr>
+<tr>
+<td>Pacote completo + portátil (juntos)</td>
+<td>12:05</td>
+<td>16:29</td>
+<td>12:28</td>
+<td>18:52</td>
+<td>21:57</td>
+<td>2ª e 3ª cópias, duas compressões ao mesmo tempo</td>
+</tr>
+<tr>
+<td>Setup.exe</td>
+<td>0:31</td>
+<td>0:45</td>
+<td>0:30</td>
+<td>2:04</td>
+<td>0:46</td>
+<td>junta o pacote completo a um .exe</td>
+</tr>
+<tr>
+<td>.msi: cópia</td>
+<td>6:57</td>
+<td>11:10</td>
+<td>8:05</td>
+<td>11:04</td>
+<td>15:17</td>
+<td>4ª cópia da pasta</td>
+</tr>
+<tr>
+<td>.msi: montar (WiX)</td>
+<td>26:13</td>
+<td>26:42</td>
+<td>24:47</td>
+<td>24:37</td>
+<td>27:45</td>
+<td>3ª compressão, ao mesmo tempo que a diferença</td>
+</tr>
+<tr>
+<td>Diferença ("só o que mudou")</td>
+<td>28:11</td>
+<td>33:16</td>
+<td>30:04</td>
+<td>33:20</td>
+<td>37:25</td>
+<td>abre os dois pacotes, compara, apaga</td>
+</tr>
+<tr>
+<td>Fim do Velopack</td>
+<td>0:48</td>
+<td>0:41</td>
+<td>0:37</td>
+<td>0:40</td>
+<td>0:33</td>
+<td></td>
+</tr>
+<tr>
+<td><strong>Velopack, total</strong></td>
+<td><strong>50:02</strong></td>
+<td><strong>61:42</strong></td>
+<td><strong>56:30</strong></td>
+<td><strong>63:29</strong></td>
+<td><strong>71:58</strong></td>
+<td></td>
+</tr>
+<tr>
+<td>Conferir e assinar (nosso script)</td>
+<td>5:14</td>
+<td>7:09</td>
+<td>5:09</td>
+<td>4:22</td>
+<td>5:30</td>
+<td>ver nota</td>
+</tr>
+<tr>
+<td>Copiar para o servidor</td>
+<td>3:37</td>
+<td>3:34</td>
+<td>3:38</td>
+<td>3:34</td>
+<td>3:39</td>
+<td>3,2 GB (completo, portátil, Setup, .msi)</td>
+</tr>
+<tr>
+<td><strong>Total da versão</strong></td>
+<td><strong>59</strong></td>
+<td><strong>73</strong></td>
+<td><strong>66</strong></td>
+<td><strong>72</strong></td>
+<td><strong>82</strong> min</td>
+<td>sem contar os ~11 min de montar a pasta</td>
+</tr>
+</tbody>
+</table>
+<p>O que se vê:</p>
+<ul>
+<li><strong>A diferença e o .msi rodam juntos e disputam o mesmo HD.</strong> Na 1.1.0, com o .msi sozinho, o WiX levou 13 min.
+  Nas outras, com a diferença rodando junto, levou de 25 a 28 min.</li>
+<li><strong>Uns 7 min da "diferença" são só para apagar</strong> os arquivos que ela mesma abriu: do "Delta processed" ao
+  "Complete" do registro. O código do Velopack apaga as pastas temporárias nesse ponto.</li>
+<li><strong>Fica mais lento a cada versão</strong> (59 → 82 min). O pré-processo, que é só uma cópia, foi de 3,5 para 10 min. Isso
+  combina com um HD que vai enchendo e se espalhando, mas não foi medido.</li>
+<li><strong>Conferir e assinar (4 a 7 min)</strong> deveria levar segundos: é ler 826 MB uma vez. A suspeita é o antivírus do
+  Windows abrindo o pacote recém-criado, que tem 35 mil arquivos dentro <strong>[não medido; M2 separa]</strong>.</li>
+</ul>
+<h3>Do que é feita a pasta do programa (medido no pacote 1.1.5 do servidor, só lendo)</h3>
+<table>
+<thead>
+<tr>
+<th>Parte</th>
+<th>Arquivos</th>
+<th>Tamanho</th>
+<th>Comprimido</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>motor do Kraken</td>
+<td>34.521</td>
+<td>1.090 MB</td>
+<td>341 MB</td>
+</tr>
+<tr>
+<td>o programa (PyInstaller, <code>_internal</code>)</td>
+<td>539</td>
+<td>600 MB</td>
+<td>308 MB</td>
+</tr>
+<tr>
+<td>Tesseract</td>
+<td>36</td>
+<td>177 MB</td>
+<td>83 MB</td>
+</tr>
+<tr>
+<td>o .exe e soltos</td>
+<td>5</td>
+<td>27 MB</td>
+<td>23 MB</td>
+</tr>
+<tr>
+<td>Visual C++ (<code>instalar\</code>)</td>
+<td>2</td>
+<td>24 MB</td>
+<td>24 MB</td>
+</tr>
+<tr>
+<td><strong>total</strong></td>
+<td><strong>35.103</strong></td>
+<td><strong>1.918 MB</strong></td>
+<td><strong>779 MB</strong></td>
+</tr>
+</tbody>
+</table>
+<h3>Os discos deste PC (medido)</h3>
+<p>O C: é um SSD NVMe de 512 GB (WD SN530), com 28 GB livres. O D: é um HD externo USB de 2 TB (WD easystore), com
+185 GB livres. O processador é um Ryzen 7 5800H (8 núcleos, 16 linhas), com 15 GB de memória. O TEMP do publicar
+estava desviado para <code>saida_teste\etapa5\temp</code>, no D:.</p>
+<h2>2. Por que é assim (lido no código do Velopack 1.2.161, licença MIT)</h2>
+<p>Fonte: <code>github.com/velopack/velopack</code>, etiqueta <code>1.2.161</code> (commit <code>92d6a1c9</code>, 29/09/2026), copiada em
+<code>saida_teste/publicar-rapido/fonte-velopack/repo</code>. Arquivos lidos: <code>src/vpk/Velopack.Packaging/PackageBuilder.cs</code>,
+<code>src/vpk/Velopack.Packaging.Windows/Commands/WindowsPackCommandRunner.cs</code>,
+<code>src/vpk/Velopack.Packaging/Compression/DeltaPackageBuilder.cs</code>, <code>src/lib-csharp/Util/EasyZip.cs</code>,
+<code>src/lib-csharp/Util/TempUtil.cs</code>, <code>src/vpk/Velopack.Packaging.Windows/Msi/</code>.</p>
+<p><strong>Lido na fonte:</strong></p>
+<ul>
+<li><strong>Pré-processo</strong> (<code>PreprocessPackDir</code>): copia a pasta inteira para <code>%TEMP%\velopack\...</code>, arquivo por arquivo.</li>
+<li><strong>Pacote completo</strong> (<code>CreateReleasePackage</code>): copia <strong>de novo</strong> para outra pasta temporária e comprime num zip, num
+  processo só e no nível "Optimal".</li>
+<li><strong>Portátil</strong> (<code>CreatePortablePackage</code>): copia <strong>de novo</strong> e comprime outro zip, ao mesmo tempo que o completo.</li>
+<li><strong>Setup.exe</strong>: copia o pacote completo (826 MB) para dentro de um .exe.</li>
+<li><strong>.msi</strong>: copia a pasta <strong>pela quarta vez</strong> e o WiX comprime tudo num arquivo dentro do .msi. O .msi leva os
+  arquivos do programa soltos, não o pacote.</li>
+<li><strong>Diferença</strong> (<code>DeltaPackageBuilder</code>): descompacta <strong>os dois pacotes inteiros</strong> (o anterior e o novo, uns 70 mil
+  arquivos). Compara cada arquivo byte a byte. Para cada arquivo igual, grava <strong>dois arquivos vazios</strong> de marcação
+  e apaga o original. Só o arquivo que mudou passa pelo Zstandard, que é onde entra o modo (BestSpeed ou BestSize).
+  No fim, comprime tudo e apaga as pastas.</li>
+<li>Tudo vai para <code>%TEMP%\velopack</code> (<code>TempUtil</code>). Por isso, desviar o TEMP muda o disco de todo esse trabalho.</li>
+<li>As opções escondidas (<code>vpk pack -H</code>): <code>--noInst</code> ("Skip generating an installer package", sem Setup.exe nem .msi),
+  <code>--noPortable</code> (sem portátil) e <code>--delta None|BestSpeed|BestSize</code>. O <code>--msi</code> não vem ligado de fábrica: nós o
+  ligamos (<code>empacotar.comando_do_vpk</code>).</li>
+</ul>
+<p><strong>Dedução minha (a medir):</strong> cada versão escreve no HD uns 18 GB em ~210 mil arquivos pequenos. São 4 cópias de
+1,9 GB, 2 descompactações de 1,9 GB, os 70 mil arquivos vazios, as saídas e a cópia de 3,2 GB para o servidor. Um
+HD USB grava poucas centenas de arquivos pequenos por segundo; um SSD NVMe, dezenas de milhares. Por isso a hipótese
+principal é <strong>disco</strong>, não processador nem compressão. A M2 e a M4 separam isso: o mesmo trabalho no C: e no D:.</p>
+<p><strong>Os 19,5 MB da diferença são quase só "papel" (medido, só lendo o pacote 1.1.5):</strong> o arquivo tem 70.210 entradas.
+Só 6 têm conteúdo, uns 140 KB somados (o ícone do instalador e a marcação da versão). O resto são as entradas vazias
+de "não mudou", e cada uma ocupa uns 280 bytes de cabeçalho no zip. Com o código mudado de verdade, entra também o
+remendo do <code>EditorImpressao.exe</code> (21,8 MB, onde mora o código). O tamanho real da diferença será medido na M5.</p>
+<h2>3. Cada saída possível</h2>
+<p>Para cada uma: quanto economiza, o que muda para o Kaique, a segurança (a assinatura, D-724), a etapa 5, e se é
+solução limpa ou remendo (CLAUDE.md §11.12).</p>
+<h3>3.1 Montar a versão no C: (SSD) em vez do D: (HD externo)</h3>
+<ul>
+<li><strong>Economiza:</strong> a maior parte dos 50 a 72 min do Velopack. Estimativa: o Velopack cai para uns 10 a 15 min
+  <strong>[não medido; M2 e M3]</strong>.</li>
+<li><strong>Para o Kaique:</strong> nada muda. O pacote é o mesmo, byte a byte no que importa.</li>
+<li><strong>Assinatura:</strong> igual. Ela é feita depois, sobre o pacote pronto.</li>
+<li><strong>Etapa 5:</strong> não é tocada. O servidor de mentira continua onde está; só a pasta de rascunho muda de lugar.</li>
+<li><strong>Custo:</strong> precisa de uns 9 a 12 GB livres no C: <strong>durante</strong> o publicar, apagados no fim <strong>[não medido; a M2 mede
+  o pico]</strong>. O C: tem 28 GB livres hoje e já ficou cheio em 05/10.</li>
+<li><strong>Limpa ou remendo:</strong> limpa, se feita num lugar só. Hoje o rascunho mora em
+  <code>publicar_versao_kaique.PASTA_DE_TRABALHO</code> (<code>build\publicar</code>, ao lado do código, no D:). O TEMP vem de quem chama:
+  a etapa 5 o desviou à mão no <code>fase1_resto.ps1</code>. O vpk é chamado por <strong>dois caminhos</strong>:
+  <code>publicar_versao_kaique.publicar</code> (com <code>--pasta-pronta</code>, por <code>_rodar</code>) e
+  <code>empacotar.construir_pacote_do_velopack</code> (por <code>subprocess.run</code>). Os dois usam a mesma regra do comando
+  (<code>empacotar.comando_do_vpk</code>), mas cada um roda o processo do seu jeito. O conserto limpo é <strong>uma</strong> função que roda
+  o vpk com a pasta de trabalho e o TEMP certos, chamada pelos dois caminhos. Desviar o TEMP só num deles seria remendo.</li>
+</ul>
+<h3>3.2 Não gerar o instalador (.msi e Setup.exe) nem o portátil nas versões de atualização</h3>
+<ul>
+<li><strong>Economiza:</strong> no D:, a 4ª cópia mais o WiX (25 a 43 min que hoje correm junto com a diferença e a atrasam), a 3ª
+  cópia e uma compressão (o portátil), e 2,4 GB a menos para enviar. No C:, uns 3 a 6 min <strong>[não medido]</strong>. <strong>No
+  GitHub de verdade isso pesa mais:</strong> cada versão hoje sobe 3,2 GB pela internet (completo, portátil, Setup e .msi).
+  Só com o completo e a diferença, sobem uns 850 MB.</li>
+<li><strong>Para o Kaique:</strong> a atualização é igual. Ela usa só o pacote completo e a diferença, não o instalador (lido em
+  <code>atualizacao.procurar_e_preparar</code> e no código do Velopack, <code>lib-rust/src/manager.rs</code>). Muda só uma coisa: numa
+  <strong>instalação nova</strong> (outro computador, ou reinstalar), o instalador disponível é o da última versão que o gerou. O
+  programa instalado por ele se atualiza sozinho na primeira abertura (D-732).</li>
+<li><strong>Assinatura:</strong> igual. O que se assina é o pacote completo, que continua saindo sempre.</li>
+<li><strong>Desinstalar:</strong> quem desinstala é o .msi da <strong>primeira</strong> instalação, que o Windows guarda. O que foi provado em
+  17/11 (D-763/D-764, Velopack 1.2.161) continua valendo.</li>
+<li><strong>Etapa 5:</strong> nada muda nela. Ela já tem o .msi da 1.1.0.</li>
+<li><strong>Versão portátil (D-300, "Instalador em português, com desinstalador e versão portátil"):</strong> a versão portátil do
+  nosso programa é a pasta que o <code>empacotar.py --modo pasta</code> monta, e ela continua existindo. O zip portátil do
+  Velopack é outra, que a etapa 5 nem usa. Mesmo assim, tirá-la muda o que sai do publicar: vai na pergunta 2.</li>
+<li><strong>Limpa ou remendo:</strong> limpa. A regra do comando já mora num lugar só (<code>empacotar.comando_do_vpk</code>). Basta uma
+  escolha "com instalador" (ligada de fábrica, como hoje) e uma opção no publicar para desligá-la. Com a escolha
+  ligada de fábrica, o teste antigo <code>tests/test_decisoes_atualizacao.py::test_d727_o_vpk_nao_baixa_nada_na_hora_de_instalar</code>
+  (que cobra o <code>--msi</code>) continua valendo sem mudar. Seria preciso um teste novo para o caminho "sem instalador".</li>
+</ul>
+<h3>3.3 O modo da diferença (None, BestSpeed, BestSize)</h3>
+<ul>
+<li><strong>Lido na fonte:</strong> o modo só age no arquivo que mudou de verdade (o Zstandard, <code>Zstd.CreatePatch</code>). Os outros 35
+  mil arquivos passam pelo mesmo caminho em qualquer modo. A documentação (<code>docs/packaging/deltas.mdx</code>) diz que o
+  BestSize é "a lot slower, about on-par with the bsdiff algorithm".</li>
+<li><strong>BestSpeed (hoje):</strong> o Kaique baixa uns 20 MB por versão <strong>[a confirmar com código mudado: M5]</strong>.</li>
+<li><strong>BestSize:</strong> mais lento, e o ganho é só no remendo do .exe, poucos MB no máximo. Não compensa <strong>[M3 mede]</strong>.</li>
+<li><strong>None (sem diferença):</strong> tira o passo inteiro (28 a 37 min no D:, uns 3 a 5 min no C: <strong>[não medido]</strong>). Mas o
+  Kaique passaria a baixar o pacote inteiro, <strong>826 MB, a cada versão</strong>. Não sei a velocidade da internet dele.</li>
+<li><strong>Recomendação:</strong> deixar como está (BestSpeed). Com as saídas 3.1 e 3.2, a diferença deixa de ser o gargalo.</li>
+</ul>
+<h3>3.4 Não refazer a pasta do programa inteira quando só o código mudou</h3>
+<ul>
+<li><strong>Hoje</strong> (<code>empacotar.construir_pasta</code>): apaga o <code>dist\EditorImpressao</code> inteiro, roda o PyInstaller (uns 3,5 min
+  no registro da 1.1.0) e copia de novo o motor do Kraken (34 mil arquivos) e o Tesseract. Ao todo, ~7 a 11 min.</li>
+<li><strong>Saídas:</strong>
+  (a) montar a pasta também no C: (a cópia do motor fica rápida; o PyInstaller lê o <code>.venv</code> no D:, e isso não muda);
+  (b) não apagar e não copiar de novo o motor quando ele é o mesmo, conferido pela regra que já existe
+  (<code>conferir_pecas_no_pacote</code>, que compara quantidade e bytes).</li>
+<li><strong>Economia:</strong> uns 3 a 5 min <strong>[não medido]</strong>.</li>
+<li><strong>Limpa ou remendo:</strong> a (a) é limpa e sai junto com a 3.1. A (b) é uma regra nova de "reaproveitar"; precisa de
+  cuidado para nunca publicar um motor velho. Não recomendo agora.</li>
+<li>O Velopack copia a pasta inteira de qualquer jeito (seção 2). Por isso, reaproveitar a pasta só ajuda no passo do
+  PyInstaller, não no do Velopack.</li>
+</ul>
+<h3>3.5 Deixar o motor do Kraken fora do pacote que se atualiza, instalado uma vez só</h3>
+<ul>
+<li><strong>Como o Velopack funciona (lido na fonte):</strong> ele cuida só da pasta <code>current</code> do programa instalado. Ao atualizar,
+  monta a versão nova inteira e troca a pasta toda. O que não estiver no pacote <strong>some</strong> da <code>current</code>. O .msi só
+  instala dentro dessa pasta (modelo <code>Msi/Templates/MsiTemplate.hbs</code>). O Velopack não tem um jeito próprio de
+  "peça instalada uma vez e nunca trocada".</li>
+<li><strong>Então o motor teria de morar fora da pasta do programa</strong> (por exemplo em <code>%ProgramData%</code>), instalado por outro
+  caminho: um segundo instalador, ou o ajudante da primeira abertura (D-733) tirando-o de um arquivo dentro do pacote.</li>
+<li><strong>Ganho:</strong> o pacote cai de 35.103 para uns 600 arquivos e de 1,9 para 0,8 GB. Publicar ficaria rápido até no D:
+  <strong>[não medido]</strong>.</li>
+<li><strong>O que muda (muito):</strong> o lugar onde o programa procura o motor (<code>core/ocr_kraken.lugares_do_motor</code>, a regra
+  única); o teste rápido depois de atualizar (<code>atualizacao.teste_rapido</code>, que procura <code>motor-kraken</code> ao lado do .exe);
+  a instalação (D-727, tudo dentro do instalador); a assinatura (o motor, fora do pacote, precisaria da sua própria);
+  o desinstalar (D-731); e trocar o motor um dia, que hoje já tem aviso de "outra versão" (<code>_AVISO_VERSAO</code>).</li>
+<li><strong>Limpa ou remendo:</strong> pode ser limpa, mas é mudança de estrutura e de instalação. Pela D-765 e pelo §11.12 ("se
+  juntar os caminhos mexer em mais de uma ferramenta... o agente escreve o plano antes e espera o sim"), não é para
+  agora. <strong>Só vale estudar se, depois de 3.1 e 3.2, ainda estiver lento.</strong></li>
+</ul>
+<h3>3.6 Velopack mais novo</h3>
+<ul>
+<li><strong>Lido:</strong> a última versão estável é a <strong>1.2.161</strong>, a que usamos (NuGet <code>vpk</code> e PyPI <code>velopack</code>, consultados em
+  18/11/2026). Existe uma prévia, <code>1.3.39-g8d2844f</code> (17/10/2026). No ramo de desenvolvimento há 107 mudanças desde
+  a 1.2.161; nenhuma acelera o empacotar.</li>
+<li><strong>O que ela traz e importa para nós:</strong></li>
+<li>"Fix MSI uninstall cleanup and stop wiping user data on MSI upgrades" (<code>b40a2781</code>, <code>f31022e6</code>): mexe justamente
+    na limpeza do desinstalador provada em 17/11. O <code>empacotar.py</code> já avisa: "SUBIR DE VERSAO EXIGE REPETIR A PROVA".</li>
+<li>"Restore the previous version when a Windows update cannot replace current" (<code>afa30e56</code>).</li>
+<li>"Fix zstd delta creation for non-ASCII paths on Windows" (<code>8d2844f3</code>): nomes com acento, como o do nosso
+    <code>Editor de Impressão_ExecutionStub.exe</code>. <strong>Dedução:</strong> o Windows em português usa uma tabela de letras que tem o
+    "ã", então neste PC o defeito não deve aparecer. Nas cinco versões da etapa 5 esse arquivo nunca mudou, então
+    isso não foi provado nem desmentido.</li>
+<li><strong>Recomendação:</strong> não trocar agora. Trocar biblioteca precisa perguntar (CLAUDE.md §6), ela não acelera nada, e
+  obrigaria a refazer a prova do desinstalar.</li>
+</ul>
+<h2>4. Recomendação</h2>
+<p><strong>A combinação mais simples:</strong> 3.1 (montar no C:) + 3.2 (instalador e portátil só quando você pedir), com a diferença
+como está (BestSpeed). As duas mudanças moram cada uma num lugar só do script de publicar.</p>
+<table>
+<thead>
+<tr>
+<th></th>
+<th>Hoje (D:)</th>
+<th>Só 3.2 (D:)</th>
+<th>Só 3.1 (C:)</th>
+<th>3.1 + 3.2 (C:)</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>Velopack</td>
+<td>50 a 72 min</td>
+<td>35 a 50 min <strong>[não medido]</strong></td>
+<td>12 a 20 min <strong>[não medido]</strong></td>
+<td>8 a 15 min <strong>[não medido]</strong></td>
+</tr>
+<tr>
+<td>Conferir, assinar, enviar</td>
+<td>8 a 11 min</td>
+<td>5 a 7 min <strong>[não medido]</strong></td>
+<td>2 a 4 min <strong>[não medido]</strong></td>
+<td>1 a 2 min <strong>[não medido]</strong></td>
+</tr>
+<tr>
+<td>Montar a pasta do programa</td>
+<td>~11 min</td>
+<td>~11 min</td>
+<td>~8 min <strong>[não medido]</strong></td>
+<td>~8 min <strong>[não medido]</strong></td>
+</tr>
+<tr>
+<td><strong>Total</strong></td>
+<td><strong>70 a 93 min</strong></td>
+<td><strong>50 a 70 min</strong></td>
+<td><strong>22 a 32 min</strong></td>
+<td><strong>17 a 25 min</strong></td>
+</tr>
+</tbody>
+</table>
+<p>(No GitHub de verdade, some o tempo de subir o pacote pela internet. Com a 3.2 são uns 850 MB por versão; sem ela,
+3,2 GB.)</p>
+<p><strong>O que fica de fora:</strong> tirar o motor do Kraken do pacote (3.5, só se ainda ficar lento), reaproveitar a pasta do
+programa (3.4b) e trocar o Velopack (3.6).</p>
+<p><strong>Quando o instalador é feito:</strong> na primeira entrega ao Kaique (etapa 6) e sempre que você pedir. Por exemplo,
+antes de instalar num computador novo, ou se o Velopack um dia mudar.</p>
+<h2>5. Perguntas para o Samuel</h2>
+<h3>Pergunta 1. Montar a versão no disco de dentro do seu PC</h3>
+<p><strong>Do que se trata.</strong> É o passo de publicar uma versão nova para o Kaique. Ele roda no seu PC quando a gente manda uma
+atualização, e o Kaique não vê nada disso. Hoje esse passo leva de 59 a 82 minutos por versão (medido na etapa 5,
+versões 1.1.1 a 1.1.5).</p>
+<p><strong>O que acontece hoje.</strong> Todo o trabalho de montar a versão acontece no seu HD externo (o D:, ligado por USB). A
+ferramenta copia a pasta do programa (35 mil arquivos) quatro vezes, e um HD é lento para muitos arquivos pequenos.
+O disco de dentro do PC (o C:) é muito mais rápido.</p>
+<p><strong>Sua dúvida:</strong> "fazer tudo de novo sempre, eu acho que está errado né?" → Em parte, sim. A ferramenta refaz tudo de
+propósito: é o jeito dela. Mas fazer isso no HD externo é o que deixa tão lento. No disco de dentro, o mesmo trabalho
+deve levar uns 15 a 25 minutos <strong>[não medido]</strong>.</p>
+<p><strong>O que você escolhe:</strong>
+- <strong>Sim (sugestão):</strong> a versão é montada no C: e o rascunho é apagado no fim. Enquanto publica, ocupa uns 9 a 12 GB
+  do C:, que tem 28 GB livres hoje. O Kaique recebe exatamente a mesma atualização. Nada do que já funciona muda.
+- <strong>Não:</strong> continua no D:, com os mesmos 59 a 82 minutos.
+- <strong>Só comentário.</strong></p>
+<h3>Pergunta 2. O instalador só quando você pedir</h3>
+<p><strong>Do que se trata.</strong> Quando a gente publica uma versão, saem três coisas além da atualização: o instalador (o .msi,
+que o Kaique usa só na primeira vez), outro instalador (Setup.exe) e uma versão portátil em zip. Nenhuma delas é
+usada para atualizar.</p>
+<p><strong>O que acontece hoje.</strong> As três são refeitas a cada versão. O instalador sozinho leva de 25 a 43 minutos no HD
+(medido), correndo junto com a parte da atualização e atrasando ela. E, no GitHub, cada versão sobe 3,2 GB em vez de
+850 MB.</p>
+<p><strong>Sua dúvida:</strong> "as atualizações deveriam ser rapidas" → Sim. A atualização que o Kaique baixa já é pequena (uns
+20 MB). O que demora é refazer, a cada vez, coisas que só servem para instalar do zero.</p>
+<p><strong>O que você escolhe:</strong>
+- <strong>Sim (sugestão):</strong> a versão de atualização sai sem instalador e sem o zip portátil. O instalador é feito na
+  primeira entrega ao Kaique e sempre que você pedir. Para o Kaique, a atualização é igual. Se um dia ele instalar
+  num computador novo, usa o último instalador feito, e o programa se atualiza sozinho na primeira abertura. A
+  versão portátil do programa (a pasta) continua existindo. Economiza uns 3 a 6 minutos no C: <strong>[não medido]</strong> e
+  uns 25 a 40 no D:.
+- <strong>Não:</strong> tudo continua sendo refeito a cada versão.
+- <strong>Só comentário.</strong></p>
+<h3>Pergunta 3 (para depois, só se ainda ficar lento). Deixar o motor do Kraken fora da atualização</h3>
+<p><strong>Do que se trata.</strong> O motor do Kraken é a parte do programa que acha as linhas de texto. Ele tem 1 GB, 98% dos
+arquivos do programa, e nunca muda. Mesmo assim, ele entra de novo em cada versão.</p>
+<p><strong>O que acontece hoje.</strong> Ele vai dentro de cada versão. Na atualização do Kaique isso não pesa, porque ele não baixa
+o que não mudou. Mas pesa no seu PC na hora de montar a versão.</p>
+<p><strong>O que você escolhe:</strong>
+- <strong>Não agora (sugestão):</strong> com as duas mudanças acima, publicar já deve ficar em uns 20 minutos. Tirar o motor muda
+  a instalação e o jeito de atualizar, e só seria estudado se ainda ficar lento.
+- <strong>Sim, estudar:</strong> um agente escreve o plano (como o motor é instalado uma vez, conferido e desinstalado) e você
+  decide antes de qualquer mudança.
+- <strong>Só comentário.</strong></p>
+<h2>6. Tabela das coisas de fora</h2>
+<table>
+<thead>
+<tr>
+<th>O que é</th>
+<th>Licença</th>
+<th>Roda aqui?</th>
+<th>No notebook do Kaique?</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>Velopack 1.2.161 (o <code>vpk</code>, que monta e publica)</td>
+<td>MIT</td>
+<td>sim (já instalado, .NET 8)</td>
+<td>não precisa (só no PC do Samuel)</td>
+</tr>
+<tr>
+<td>Velopack 1.2.161 (a parte que atualiza, dentro do programa)</td>
+<td>MIT</td>
+<td>sim</td>
+<td>sim (já vai no programa)</td>
+</tr>
+<tr>
+<td>Velopack 1.3.39 (prévia)</td>
+<td>MIT</td>
+<td>sim, não testado</td>
+<td>sim, não testado</td>
+</tr>
+<tr>
+<td>Zstandard 1.5.5 (o <code>zstd.exe</code> dentro do vpk, faz o remendo da diferença)</td>
+<td>BSD-3 ou GPL-2.0 (dupla)</td>
+<td>sim</td>
+<td>não precisa</td>
+</tr>
+<tr>
+<td>WiX 7 (cópia modificada pelo Velopack, dentro do vpk, monta o .msi)</td>
+<td>MS-RL</td>
+<td>sim</td>
+<td>não precisa</td>
+</tr>
+<tr>
+<td>Documentação do Velopack (velopack.docs)</td>
+<td>MIT</td>
+<td>—</td>
+<td>—</td>
+</tr>
+</tbody>
+</table>
+<h2>7. O que ficou em aberto</h2>
+<ul>
+<li>Todos os números <strong>[não medido]</strong>: esperam as medidas M1 a M5 (depois da etapa 5).</li>
+<li>Por que "conferir e assinar" leva 4 a 7 min (suspeita: o antivírus abrindo o pacote).</li>
+<li>O tamanho real da diferença quando o código muda (M5).</li>
+<li>O pico de espaço no C: durante o publicar (M2).</li>
+<li>Não sei a velocidade da internet do Kaique nem a do envio ao GitHub; isso pesa no "None" e no envio do pacote.</li>
+<li><strong>Dedução não confirmada:</strong> depois de instalar pelo .msi, a pasta de pacotes do programa começa vazia. Se for
+  assim, a <strong>primeira</strong> atualização baixaria o pacote inteiro (826 MB) e só as seguintes baixariam a diferença.
+  O código do Velopack (<code>create_delta_update_strategy</code>) só usa a diferença quando há um pacote local. A etapa 5
+  pode confirmar olhando o registro da atualização.</li>
+</ul>
+<h2>8. Fontes consultadas (18/11/2026)</h2>
+<ul>
+<li>Código do Velopack: https://github.com/velopack/velopack (etiqueta <code>1.2.161</code>; ramo <code>develop</code> em <code>30965450</code>)</li>
+<li>Documentação: https://github.com/velopack/velopack.docs (<code>docs/packaging/deltas.mdx</code>, <code>overview.mdx</code>,
+  <code>reference/cli/content/vpk-windows.mdx</code>; commit <code>788ad95</code>)</li>
+<li>Versões publicadas: https://api.nuget.org/v3-flatcontainer/vpk/index.json e https://pypi.org/pypi/velopack/json</li>
+<li><code>vpk pack -H</code> no PC do Samuel (opções escondidas)</li>
+<li>Registros da etapa 5: <code>saida_teste/etapa5/registros/publicar-1.1.0.log</code>, <code>fase1-resto-limpo.log</code>; scripts
+  <code>saida_teste/etapa5/pilotos/publicar_etapa5.py</code>, <code>fase1_resto.ps1</code> (só lidos)</li>
+<li>Nosso código (só lido): <code>publicar_versao_kaique.py</code>, <code>empacotar.py</code>, <code>atualizacao.py</code>, <code>assinatura.py</code>,
+  <code>core/ocr_kraken.py</code>, <code>tests/test_decisoes_atualizacao.py</code></li>
+</ul>
+<h2>9. O que ficou no disco</h2>
+<ul>
+<li>D: <code>saida_teste/publicar-rapido/fonte-velopack/</code> (código e documentação do Velopack, ~0,5 GB). Pode ser apagada no
+  fim do estudo.</li>
+<li>C: nada até agora.</li>
+</ul>
+<p class="rodape">Editor de Impressão &middot; gerado em 18/11/2026 às 07:29</p>
+</body>
+</html>

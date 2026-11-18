@@ -38,8 +38,19 @@ pode mudar (por opção) é só o tamanho do que ele baixa e qual instalador fic
   WindowsPackCommandRunner, DeltaPackageBuilder, EasyZip. Documentação (velopack.docs) em `.../docs/repo`.
 - Medidas leves feitas (só leitura dos pacotes do servidor da etapa 5): divisão do pacote por pasta; conteúdo do delta.
 - ~07:20 recado da gerente: etapa 5 começou; **nada de medida pesada sem o "pode" dela**. Parei a contagem que rodava.
-- Próximo: relatório com o que se sabe do código e dos registros; plano de medidas pesadas para pedir o "pode".
+- ~07:25 pedi à gerente o "pode" das medidas M1 a M5. Resposta: esperar a etapa 5 parar; deixar o relatório pronto com estimativas "[não medido]"; não entregar sem as medidas.
+- 07:29 rascunho do relatório gravado em três formatos (relatorio.md/.html/.pdf), com os números a medir marcados.
+- Próximo: esperar o "pode"; rodar M1 a M4 (e M5 se der); trocar os [não medido] pelos números; regravar; entregar.
 
 ## Perguntas para o Samuel
 
-(no relatório, formato §11.13)
+(no relatório, seção 5, formato §11.13: 1. montar no C:; 2. instalador só quando pedir; 3. motor do Kraken fora, para depois)
+
+## Medidas planejadas (esperam o "pode" da gerente)
+
+- M1: copiar a pasta do programa (só leitura do `dist` da etapa 5) para o C: (`C:\pr-medida\`) e para `saida_teste\publicar-rapido\`.
+- M2: no C:, `vpk pack` sem instalador, sem portátil, sem diferença (TEMP no C:); medir o pico de espaço e o tempo de conferir+assinar.
+- M3: no C:, `vpk delta generate` entre a 1.1.0 e a 1.1.1 do servidor (copiadas): BestSpeed e BestSize.
+- M4: a mesma diferença no D:, sozinha.
+- M5 (opcional): montar a pasta na minha cópia (PyInstaller) e medir a diferença com o código mudado de verdade.
+- Limites: no máximo ~8 GB no C: (apagar no fim) e ~40 GB no D:.
