@@ -12,7 +12,7 @@ mudou**, nada instalado, nenhuma janela aberta na tela do Samuel, nenhuma pergun
 - [x] Código do Velopack 1.2.161 (só leitura, `saida_teste/publicar-rapido/fonte-velopack/`).
 - [x] Nosso código (só leitura): `core/ocr_kraken.py`, `core/linhas_do_texto.py`, `core/ocr_diagnostico.py`,
       `atualizacao.py`, `empacotar.py`, `publicar_versao_kaique.py`, `assinatura.py`, `versao.py`, testes que citam o motor.
-- [x] Medidas leves (ver relatório, seção 9). A pasta de medida que criei em `saida_teste/kraken-separado/medida-extrair`
+- [x] Medidas leves (ver relatório, seção 10). A pasta de medida que criei em `saida_teste/kraken-separado/medida-extrair`
       (916 MB, 3.582 arquivos, só meus) foi apagada no fim; a pasta vazia `saida_teste/kraken-separado/` ficou.
 - [x] Relatório nos três formatos: `relatorio.md`, `.html`, `.pdf` nesta pasta.
 - [x] Commit e push do ramo.
@@ -68,7 +68,7 @@ Velopack 1.2.161 (`92d6a1c9`, MIT), código em `saida_teste/publicar-rapido/font
 | Caso que usamos | O que o Velopack faz | Fonte |
 |---|---|---|
 | Trocar de versão | renomeia `current` para uma pasta temporária e põe a nova no lugar; nada mais da raiz é apagado | `src/bins/src/commands/apply_windows_impl.rs:129-177` |
-| Trocar com processo aberto | fecha à força tudo o que roda dentro da raiz (inclusive o motor, se estiver lá) | `apply_windows_impl.rs:158`, `src/bins/src/shared/util_windows.rs:81-98` |
+| Trocar com processo aberto | fecha à força tudo o que roda dentro da raiz (inclusive o motor, se estiver lá) | `apply_windows_impl.rs:159`, `src/bins/src/shared/util_windows.rs:81-98` |
 | Pasta temporária da troca | `<packages>\VelopackTemp\tmp_<16 letras>` | `src/lib-rust/src/locator.rs:205-213` |
 | Onde guarda o pacote baixado | `<raiz>\packages\` se a raiz aceita gravação (o ajudante, como o sistema); senão `%LOCALAPPDATA%\<id>\packages` | `locator.rs:153-166`, `src/lib-rust/src/manager.rs:408-412` |
 | Ao baixar | apaga os `*.nupkg` e `*.partial` velhos da pasta `packages` | `manager.rs:419-432` |
@@ -91,59 +91,64 @@ aberto. Em todos: o motor velho continua, nunca fica meio motor com o nome certo
 
 ## Perguntas para o Samuel
 
-(no formato do CLAUDE.md §11.13; as mesmas do relatório, seção 8)
+(no formato do CLAUDE.md §11.13; as mesmas do relatório, seção 9)
 
-**Pergunta 1. Onde fica o motor do Kraken e como ele chega.**
-- Do que se trata: é a peça do programa que acha as linhas de texto (o "Kraken"). Tem 1 GB e 34 mil arquivos, quase
-  todos os arquivos do programa. Ela fica dentro da pasta do programa, em Arquivos de Programas.
-- O que acontece hoje: ela vai inteira em toda versão nova, e o notebook do Kaique a desmonta e monta de novo a cada
+### Pergunta 1. Onde fica o motor do Kraken e como ele chega
+
+- **Do que se trata.** É a peça do programa que acha as linhas de texto (o "Kraken"). Tem 1 GB e 34 mil arquivos, quase
+  todos os arquivos do programa. Fica dentro da pasta do programa, em Arquivos de Programas.
+- **O que acontece hoje.** Ela vai inteira em toda versão nova, e o notebook do Kaique a desmonta e monta de novo a cada
   troca. É por isso que a troca leva uns 7 minutos e meio.
-- O que você escolhe:
-  - **Sim, uma pasta própria do motor junto do programa (sugestão):** a atualização não mexe nela. Na primeira vez ela
-    vem dentro do instalador. Quando o motor mudar (raro), o programa baixa só ele, com a sua assinatura, e só troca
-    quando ele chegou inteiro. Desinstalar tira junto. A versão nova fica com uns 460 MB e a troca com uns 2 a 3
-    minutos (conta, não medida). Nada muda na tela nem no livro.
-  - **Um segundo programa só para o motor:** o Windows mostra dois programas na lista ("Editor de Impressão" e "Motor
+- **O que você escolhe:**
+  - **Uma pasta própria do motor, junto do programa (sugestão).** A atualização não mexe nela. Na primeira vez ela vem
+    dentro do instalador. Quando o motor mudar (raro), o programa baixa só ele, com a sua assinatura. Desinstalar tira
+    junto. A versão nova fica com uns 460 MB, e a troca com uns 2 a 3 minutos (conta, não medida). Nada muda na tela
+    nem no livro.
+  - **Um segundo programa só para o motor.** O Windows mostra dois programas na lista ("Editor de Impressão" e "Motor
     do Kraken"), e desinstalar um não tira o outro sozinho. Não recomendo.
   - **Só comentário.**
-- De onde veio: pedido seu de hoje (escolheu tirar o motor da atualização). A ferramenta de atualização não tem um
-  jeito próprio para isso; a documentação dela manda guardar o que deve durar numa pasta ao lado da do programa, que
-  é a sugestão.
-- Situação: só estudo; nada escrito.
+- **De onde veio.** Pedido seu de hoje. A ferramenta de atualização não tem um jeito próprio para isso; a documentação
+  dela manda guardar o que deve durar numa pasta ao lado da do programa, que é a sugestão.
+- **Bom saber.** Hoje o Kraken ainda não é usado em nenhuma tela: a "segunda opinião" dele está desligada. Ele vai ao
+  Kaique porque você decidiu, em 29/09, "todos os OCRs instalados".
+- **Situação.** Só estudo; nada escrito. Acrescenta ao plano uns 12 a 18 horas de trabalho de agente e uns 20 a 40
+  minutos nas provas com você.
 
-**Pergunta 2. A versão inteira ou só o que mudou, agora sem o motor.**
-- Do que se trata: é a atualização que chega sozinha no notebook do Kaique. Você deixou essa escolha para depois deste
-  estudo.
-- O que acontece hoje: só o que mudou (uns 20 MB), mas o notebook remonta a versão inteira antes de trocar (22 minutos
-  no seu PC); e por esse caminho a sua assinatura não confere tudo.
-- O que você escolhe:
-  - **A versão inteira (sugestão):** sem o motor, ela fica com uns 460 MB (uns 1 a 6 minutos para baixar, conforme a
-    internet; conta). A troca fica em uns 2 a 3 minutos. A assinatura confere tudo.
-  - **Só o que mudou:** baixa uns 20 MB, mas o notebook ainda remonta a versão (uns 5 a 7 minutos a mais; conta), e a
+### Pergunta 2. A versão inteira ou só o que mudou, agora sem o motor
+
+- **Do que se trata.** É a atualização que chega sozinha no notebook do Kaique quando ele abre o programa. Hoje de manhã
+  você deixou essa escolha para depois deste estudo.
+- **O que acontece hoje.** Ele baixa só o que mudou (uns 20 MB), mas o notebook remonta a versão inteira antes de trocar
+  (22 minutos no seu PC). E por esse caminho a sua assinatura não confere tudo.
+- **O que você escolhe:**
+  - **A versão inteira (sugestão).** Sem o motor, ela fica com uns 460 MB: uns 1 minuto e meio a 50 Mbps, uns 6
+    minutos a 10 Mbps (conta). A troca fica em uns 2 a 3 minutos. A assinatura confere tudo.
+  - **Só o que mudou.** Baixa uns 20 MB, mas o notebook ainda remonta a versão (uns 5 a 7 minutos a mais; conta). E a
     assinatura precisa passar a conferir a diferença também (mudança no programa).
   - **Só comentário.** Se souber, diga a velocidade da internet do Kaique.
-- Situação: aberta desde hoje de manhã; o resto do plano não depende dela.
+- **Situação.** Aberta desde hoje de manhã; o resto do plano não depende dela.
 
-**Pergunta 3. Quando o motor muda, a versão nova espera ele chegar?**
-- Do que se trata: é o caso raro em que uma versão nova do programa precisa de um motor novo.
-- O que você escolhe:
-  - **Sim, tudo ou nada (sugestão):** a versão nova só entra depois que o motor novo chegou inteiro e conferido. Se a
+### Pergunta 3. Quando o motor muda, a versão nova espera ele chegar?
+
+- **Do que se trata.** É o caso raro em que uma versão nova do programa precisa de um motor novo.
+- **O que você escolhe:**
+  - **Sim, tudo ou nada (sugestão).** A versão nova só entra depois que o motor novo chegou inteiro e conferido. Se a
     internet cair, o Kaique continua na versão de antes, com o motor de antes, e o programa tenta de novo na próxima
     abertura. É o mesmo jeito que você escolheu para os testes à distância.
-  - **Não:** a versão nova entra logo e o motor chega depois; nesse meio-tempo o Kraken não funciona.
+  - **Não.** A versão nova entra logo e o motor chega depois; nesse meio-tempo, o Kraken não funciona.
   - **Só comentário.**
-- Situação: só estudo. Nada do que já funciona muda.
+- **Situação.** Só estudo. Nada do que já funciona muda.
 
 ## Como cumpri cada uma
 
-- D-768: o estudo responde às 8 perguntas da gerente (relatório, seções 1 a 7), com a recomendação e o tempo.
+- D-768: o estudo responde às 8 perguntas da gerente (relatório, seções 1 a 8), com a recomendação e o tempo.
 - D-727: o motor vai dentro do instalador da primeira entrega (seção 2.1); nada baixado ao instalar.
 - D-724: o motor só entra com a assinatura do Samuel, pela mesma peça `assinatura.py` (seção 2.3).
-- D-731/D-764: desinstalar tira o motor pelo próprio desinstalador do Velopack, lido no código (seção 4.3).
-- D-767/D-775: a seção 6 lista as provas à vista e onde entram nas sessões do plano.
+- D-731/D-764: desinstalar tira o motor pelo próprio desinstalador do Velopack, lido no código (seção 4.2).
+- D-767/D-775: a seção 7 lista as provas à vista e onde entram nas sessões do plano.
 - D-776: publicar sem o motor usa menos espaço no C: (seção 5).
 - D-777: o motor entra só no instalador (seção 2.1).
-- D-779: nada exige outra versão do Velopack (seção 7).
+- D-779: nada exige outra versão do Velopack (seção 8).
 - §11.12 ponto 6: a tabela acima, com a fonte de cada afirmação.
 - §11.13: as três perguntas acima.
 

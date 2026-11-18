@@ -1,0 +1,681 @@
+<!doctype html>
+<html lang="pt-BR">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>O motor do Kraken fora da atualização</title>
+<style>
+:root { color-scheme: light dark; }
+* { box-sizing: border-box; }
+body {
+  font: 17px/1.65 "Segoe UI", system-ui, sans-serif;
+  max-width: 46rem; margin: 0 auto; padding: 2.5rem 1.5rem 6rem;
+  color: #1c1c1e; background: #fdfdfc;
+}
+h1 { font-size: 2rem; line-height: 1.2; margin: 0 0 .3em; letter-spacing: -.02em; }
+h2 { font-size: 1.35rem; margin: 2.4em 0 .6em; padding-top: .8em;
+     border-top: 1px solid #e6e4e0; letter-spacing: -.01em; }
+h3 { font-size: 1.1rem; margin: 1.8em 0 .4em; }
+h1 + p, h2 + p { margin-top: .4em; }
+p, li { margin: 0 0 .9em; }
+ul, ol { padding-left: 1.3em; }
+strong { font-weight: 640; }
+code {
+  font: .88em ui-monospace, "Cascadia Code", Consolas, monospace;
+  background: #f1efec; padding: .12em .35em; border-radius: 4px;
+}
+pre {
+  background: #f1efec; padding: 1em 1.1em; border-radius: 8px;
+  overflow-x: auto; line-height: 1.5;
+}
+pre code { background: none; padding: 0; }
+blockquote {
+  margin: 1.2em 0; padding: .1em 0 .1em 1.1em;
+  border-left: 3px solid #c9c5be; color: #55524d;
+}
+table {
+  border-collapse: collapse; width: 100%; margin: 1.2em 0;
+  font-size: .95rem; display: block; overflow-x: auto;
+}
+th, td { padding: .5em .8em; text-align: left; border-bottom: 1px solid #e6e4e0; }
+th { font-weight: 620; background: #f7f5f2; white-space: nowrap; }
+tr:last-child td { border-bottom: none; }
+img { max-width: 100%; height: auto; border-radius: 6px; margin: 1em 0;
+      border: 1px solid #e6e4e0; }
+hr { border: none; border-top: 1px solid #e6e4e0; margin: 2.5em 0; }
+.rodape { margin-top: 4em; padding-top: 1.2em; border-top: 1px solid #e6e4e0;
+          font-size: .85rem; color: #86827c; }
+@media (prefers-color-scheme: dark) {
+  body { color: #e8e6e3; background: #1a1917; }
+  h2 { border-top-color: #35332f; }
+  code, pre, th { background: #262421; }
+  th, td { border-bottom-color: #35332f; }
+  blockquote { border-left-color: #4a4741; color: #b0aca6; }
+  img { border-color: #35332f; }
+  .rodape { border-top-color: #35332f; color: #7d7973; }
+}
+@media print {
+  body { max-width: none; padding: 0; color: #000; background: #fff; }
+  h2 { page-break-after: avoid; }
+  table, img { page-break-inside: avoid; }
+}
+</style>
+</head>
+<body>
+<h1>O motor do Kraken fora da atualização: como fazer (estudo, 18/11/2026)</h1>
+<p>Estudo do pesquisador para a decisão de hoje do Samuel ("mas dai vai ter que baixar o motor do kraken toda vez e
+reinstalar ele de novo?" · "vou escolher a 16", D-768). <strong>Nenhuma linha do programa nem dos testes mudou.</strong> Nada
+instalado, nenhuma janela na tela do Samuel, nenhuma pergunta do Windows. Ramo <code>kraken-separado-2026-11-18</code>.</p>
+<p>Cada afirmação sobre o Velopack traz a linha do código lido (versão 1.2.161, <code>92d6a1c9</code>, licença MIT, cópia em
+<code>saida_teste/publicar-rapido/fonte-velopack/</code>). O que é <strong>conta</strong> ou <strong>não sei</strong> está escrito assim.</p>
+<h2>Em poucas frases</h2>
+<ol>
+<li><strong>Recomendação:</strong> o motor mora numa pasta própria <strong>ao lado</strong> da pasta que a atualização troca, dentro da pasta do
+   programa: <code>C:\Program Files\EditorImpressaoPrograma\motor-kraken\&lt;versão do motor&gt;\</code>. A atualização não toca nela
+   (lido no código do Velopack) e o desinstalador do Velopack a apaga junto com o resto (lido no código). É o lugar que
+   a própria documentação do Velopack manda usar para o que deve durar nas trocas e sair ao desinstalar.</li>
+<li><strong>Como chega:</strong> na primeira vez, dentro do instalador (.msi), como um arquivo só (o motor comprimido); o ajudante da
+   atualização (a tarefa do Windows que já roda como o sistema) o põe no lugar, por trás, sem pergunta nova. Quando o
+   motor mudar (raro), o mesmo ajudante baixa só o motor, assinado pelo Samuel, e <strong>só troca o programa depois que o
+   motor novo chegou inteiro</strong>. Uma peça só faz as duas coisas.</li>
+<li><strong>Tamanho e tempo depois:</strong> a versão nova fica com <strong>~460 MB</strong> em vez de 826 MB (medido: soma das partes do pacote
+   1.1.5 sem o motor) e <strong>582 arquivos</strong> em vez de 35.103. A troca no notebook deve cair de ~7,5 min para <strong>uns 2 a 3
+   min</strong> (conta, a partir da proporção medida ao desempacotar; não medido no Velopack).</li>
+<li><strong>Publicar</strong> fica mais curto (uns <strong>12 a 16 min</strong>, contra 21 a 28 no plano de hoje; conta) e ocupa menos o C:.</li>
+<li><strong>Quanto acrescenta ao plano da parte do Windows:</strong> uns <strong>12 a 18 h</strong> de escrita (chute), mais 1 a 2 h para o agente
+   que tenta quebrar, e uns <strong>20 a 40 min a mais</strong> de provas com o Samuel (as trocas mais curtas devolvem parte).</li>
+<li><strong>Riscos maiores:</strong> (a) para saber que motor a versão nova pede antes de trocar, o ajudante lê o pacote que o
+   Velopack baixou, na pasta dele (lido no código, mas é um detalhe de dentro do Velopack); (b) "instalar por cima" com
+   outro .msi: não sei o que o Velopack faz; (c) o espaço livre e o antivírus do notebook do Kaique não são conhecidos.</li>
+<li><strong>Fato que o Samuel precisa saber:</strong> hoje o Kraken <strong>não é usado</strong> no caminho do livro. A "segunda opinião" está
+   desligada e sem tela (<code>core/linhas_do_texto.py:85</code>, <code>SEGUNDA_OPINIAO_DO_KRAKEN = False</code>; D-164 "pela metade"); só a
+   conferência <code>--conferir-ocr</code> e o teste rápido da atualização o procuram. O motor vai ao Kaique porque ele decidiu
+   "todos os OCRs instalados" (D-138). Por isso a prova de que o motor funciona é abri-lo e conversar com ele, não uma
+   tela.</li>
+<li><strong>Agora é o melhor momento:</strong> nada do Velopack foi instalado ainda no notebook do Kaique. Depois da primeira
+   instalação, mudar o lugar do motor exigiria código para mudá-lo de lugar em quem já tem.</li>
+</ol>
+<hr />
+<h2>1. Onde o motor fica, e quem cria a pasta</h2>
+<h3>O que o Velopack troca, apaga e deixa (lido no código)</h3>
+<ul>
+<li><strong>Na troca de versão</strong> ele renomeia a pasta <code>current</code> para uma temporária e põe a nova no lugar dela
+  (<code>src/bins/src/commands/apply_windows_impl.rs:129-177</code>). Nada mais da pasta do programa é apagado: depois ele só
+  atualiza o atalho, o <code>Update.exe</code> e o pequeno <code>.exe</code> de partida da raiz (linhas 208-270). Portanto <strong>o que estiver ao
+  lado de <code>current</code> sobrevive a toda troca</strong>.</li>
+<li>Antes de trocar, ele fecha à força tudo o que roda <strong>dentro da raiz</strong> do programa (<code>apply_windows_impl.rs:159</code>;
+  <code>src/bins/src/shared/util_windows.rs:81-98</code>). Um motor aberto em <code>raiz\motor-kraken</code> também é fechado. Isso já
+  acontece hoje (o motor está em <code>current</code>) e é o que queremos: o programa está fechando.</li>
+<li><strong>As pastas temporárias</strong> da troca ficam em <code>&lt;raiz&gt;\packages\VelopackTemp\</code> (<code>src/lib-rust/src/locator.rs:205-213</code>).</li>
+<li><strong>Ao baixar</strong> uma versão, ele apaga os <code>*.nupkg</code> e <code>*.partial</code> velhos da pasta <code>packages</code>
+  (<code>src/lib-rust/src/manager.rs:419-432</code>). Por isso o motor <strong>nunca</strong> pode morar em <code>packages</code>.</li>
+<li><strong>Ao desinstalar pelo .msi</strong>, a ação de limpeza do Velopack apaga <strong>a pasta de instalação inteira</strong>, rodando como o
+  sistema (<code>src/wix-dll/src/lib.rs:82-102</code>; no modelo do .msi, <code>Impersonate="no"</code> e condição de desinstalar,
+  <code>src/vpk/Velopack.Packaging.Windows/Msi/Templates/MsiTemplate.hbs:197-199, 235</code>).</li>
+<li><strong>A documentação diz o mesmo:</strong> "If you want to create settings that persist through updates, but are erased when
+  the app is uninstalled, on Windows you should store them one level up (<code>..\</code>) outside of the <code>current</code> dir"
+  (<code>docs/integrating/preserved-files.mdx</code>); e "Removes the entire install directory" ao desinstalar
+  (<code>docs/integrating/uninstalling.mdx</code>).</li>
+<li>O caminho real da instalação, visto na etapa 5: <code>C:\Program Files\EditorImpressaoPrograma\</code> (com <code>current\</code> dentro)
+  (<code>saida_teste/etapa5/registros/comparar-0-com-2.txt</code>).</li>
+</ul>
+<h3>O lugar proposto</h3>
+<pre><code>C:\Program Files\EditorImpressaoPrograma\
+    current\                  &lt;- o Velopack troca a cada versão (como hoje)
+    packages\                 &lt;- do Velopack
+    Update.exe, Editor de Impressão.exe (o de partida)
+    motor-kraken\             &lt;- NOVO: o Velopack não toca; o desinstalador apaga
+        1\                    &lt;- uma pasta por versão do motor (python\, servidor_kraken.py, motor.json)
+        .chegando-2\          &lt;- só enquanto um motor novo está chegando (nunca com o nome final)
+</code></pre>
+<ul>
+<li><strong>Uma pasta por versão do motor.</strong> Assim nunca se troca um motor "por cima": o novo chega com outro nome, e o programa
+  de cada versão procura exatamente a versão de motor que ele pede. A volta para a versão anterior (o socorro do plano)
+  acha o motor dela ainda lá, sem internet. Ficam no máximo as duas versões mais novas; as outras são apagadas depois
+  que a versão nova passou no teste rápido.</li>
+<li><strong>Licenças da pasta:</strong> as que o Windows dá dentro de Arquivos de Programas (o sistema e os administradores mudam; as
+  contas comuns só leem). <strong>Nenhum comando de licença à mão</strong> (a mesma regra da pasta segura do plano, peça 2).</li>
+<li><strong>Quem cria:</strong> o <strong>ajudante da atualização</strong> (a tarefa que roda como o sistema, D-733), na primeira vez que ele roda
+  depois do "Sim" da primeira abertura. Não é o gancho de instalar (roda sem administrador: achado B1, cabeçalho de
+  <code>atualizacao.py</code>), nem a janela do Kaique (não tem licença para gravar em Arquivos de Programas). Não precisa de
+  pergunta nova do Windows.</li>
+</ul>
+<h3>Combinação com a "pasta segura" do plano</h3>
+<p>A pasta segura (peça 2 do plano) guarda o estado, o registro, os scripts e a cópia para voltar, e fica <strong>fora</strong> da raiz
+do programa. O motor não vai para ela: ele é grande, tem versão, e pertence ao programa (sai sozinho ao desinstalar). Se
+o Samuel preferir tudo fora da raiz, o motor pode ir para a pasta segura sem mudar o resto deste estudo; o custo é que
+só a limpeza do desinstalar (peça 7) o tira, e não mais o próprio desinstalador. Ganho de brinde: a cópia para voltar
+da pasta segura cai de ~788 MB para ~460 MB, porque o pacote fica sem o motor.</p>
+<h2>2. Como o motor chega</h2>
+<h3>2.1 Na primeira instalação (D-727: tudo dentro do instalador)</h3>
+<ul>
+<li>O instalador (.msi) da primeira entrega, e o que o Samuel pedir depois (D-777), leva o motor como <strong>um arquivo só</strong>,
+  comprimido e assinado: <code>current\instalar\motor-kraken-&lt;versão&gt;.zip</code> (a mesma pasta <code>instalar\</code> onde já vai o Visual
+  C++, <code>atualizacao.PASTA_DO_QUE_SE_INSTALA</code>). Nada é baixado ao instalar.</li>
+<li>Na primeira vez que o ajudante roda, ele vê que falta o motor que esta versão pede, acha o arquivo em <code>instalar\</code>,
+  confere a assinatura, desempacota em <code>motor-kraken\.chegando-&lt;v&gt;\</code>, confere e só então dá o nome final. Roda por trás,
+  como o sistema, com prioridade baixa (<code>atualizacao.xml_da_tarefa</code>, <code>atualizacao.py:1136-1142</code>: prioridade 7, limite de 2 h, "IgnoreNew"); <strong>a janela do
+  Kaique não espera nada</strong>, porque nenhuma tela usa o Kraken hoje.</li>
+<li>Por que um arquivo só, e não os 34 mil soltos no .msi: assim a primeira instalação e a troca do motor usam <strong>a mesma
+  peça</strong> (pôr no lugar um motor que veio num arquivo). Com os arquivos soltos seriam dois caminhos (mudar a pasta de
+  lugar, e desempacotar o que veio da internet), e isso é o tipo de gambiarra do §11.12.</li>
+<li><strong>As versões de atualização não levam o motor</strong> (nem o arquivo dele). Quem faz a diferença entre "atualização" e
+  "instalador" é um lugar só do publicar (seção 5).</li>
+<li>O instalador e a atualização da mesma versão ficam com conteúdos diferentes (o instalador tem o arquivo do motor a
+  mais). Isso não aparece para o Velopack: depois do .msi, a primeira atualização sempre vem pelo pacote inteiro
+  (estudo de publicar, §2b: <code>create_delta_update_strategy</code>, "no local/base package available").</li>
+</ul>
+<h3>2.2 Quando o motor muda (raro)</h3>
+<ul>
+<li><strong>Quanto muda:</strong> o motor é o Python 3.12 com o Kraken 7.1.1 e o PyTorch, com 73 versões presas
+  (<code>motor_kraken/requisitos-travados.txt</code>, memória <code>geral/ambiente.md</code>), mais o <code>servidor_kraken.py</code>. O protocolo está na
+  versão 1 desde 29/09 (<code>core/ocr_kraken.py:97</code>). Muda quando o Samuel trocar o Kraken, o PyTorch ou o servidor
+  (por exemplo na Fase 7, de transcrever).</li>
+<li><strong>A versão do motor tem um lugar só:</strong> uma constante ao lado do <code>VERSAO_PROTOCOLO</code> em <code>core/ocr_kraken.py</code> (nome a
+  escolher, ex. <code>VERSAO_DO_MOTOR</code>). O empacotador escreve, dentro de cada pacote do programa, um arquivo pequeno
+  <code>motor-exigido.json</code> com essa versão, o nome do arquivo do motor e a soma dele.</li>
+<li><strong>Quem baixa e quando:</strong> o mesmo ajudante, dentro de <code>procurar_e_preparar</code>, <strong>depois de baixar a versão nova do
+  programa e antes de trocar</strong>:
+  1. confere a assinatura da versão nova (como hoje, D-724) e baixa;
+  2. abre o pacote baixado, confere a soma dele contra a assinada (o próprio programa, não só o Velopack) e lê o
+     <code>motor-exigido.json</code> de dentro;
+  3. se esse motor já está instalado e confere: segue para a troca, como hoje (<strong>nada do motor é baixado</strong>);
+  4. se não: baixa o motor do GitHub (uma publicação própria, etiqueta <code>motor-kraken-&lt;v&gt;</code>), confere a soma e a
+     assinatura, põe no lugar (como em 2.1) e só então segue para a troca.</li>
+<li><strong>Onde o Velopack deixa o pacote baixado</strong> (para o passo 2): <code>&lt;raiz&gt;\packages\&lt;id&gt;-&lt;versão&gt;-full.nupkg</code> quando a raiz
+  aceita gravação, que é o caso do ajudante, que roda como o sistema (<code>locator.rs:153-159</code>, <code>manager.rs:408-412</code>).
+  É um detalhe de dentro do Velopack, documentado só como "PackagesDir" (<code>preserved-files.mdx</code>). Se um dia mudar, o
+  programa não acha o pacote e <strong>não troca</strong> (registra e tenta depois): falha segura, nunca troca sem motor.</li>
+<li><strong>A publicação do motor no GitHub não atrapalha o Velopack:</strong> ele procura versões só nas publicações que têm o
+  arquivo <code>releases.win.json</code> e pula as outras (<code>src/lib-rust/src/sources/mod.rs:112-144</code>). Ele lê só as 10
+  publicações mais novas (<code>sources/github.rs:80</code>); a do motor ocupa um desses lugares enquanto for nova. Não atrapalha a
+  volta, que baixa pelo endereço direto (<code>atualizacao.voltar_para_a_anterior</code>).</li>
+</ul>
+<h3>2.3 A assinatura (D-724)</h3>
+<ul>
+<li>O motor é assinado com a <strong>mesma chave</strong> do Samuel e conferido pela <strong>mesma peça</strong> (<code>assinatura.py</code>), sem mudar nada
+  nela: o arquivo de assinatura já diz o "pacote", a versão, o nome do arquivo e a soma (<code>assinatura.VersaoAssinada</code>,
+  <code>assinatura.py:211-218</code>), e a conferência recusa assinatura de outro pacote (<code>conferir_versao</code>, <code>assinatura.py:285-286</code>).
+  O motor usa outro nome de pacote (ex. <code>EditorImpressaoMotorKraken</code>, ao lado do <code>ID_DO_PACOTE</code> em <code>versao.py</code>). Uma
+  assinatura do motor nunca vale como assinatura do programa, nem o contrário.</li>
+<li>A soma do motor também vai dentro do pacote do programa (o <code>motor-exigido.json</code>), que já é coberto pela assinatura do
+  programa. São duas travas: a versão nova só aceita <strong>aquele</strong> motor, e o motor só entra com a assinatura do Samuel.</li>
+<li>O arquivo do motor dentro do .msi também é conferido pela assinatura antes de ir para o lugar.</li>
+</ul>
+<h3>2.4 Tudo ou nada</h3>
+<ul>
+<li>O motor novo nunca aparece com o nome final pela metade: ele chega em <code>.chegando-&lt;v&gt;</code>, é conferido, e só um
+  renomear (no mesmo disco, de uma vez só) dá o nome final.</li>
+<li><strong>O programa continua com o motor velho</strong> até o novo estar inteiro, e a versão nova do programa <strong>espera</strong> o motor
+  (pergunta 3 para o Samuel). Se o motor não chega (internet caiu), o Kaique fica na versão de hoje, que funciona, e o
+  ajudante tenta de novo na próxima abertura, sem aviso (falha passageira, como no plano, peça 4).</li>
+</ul>
+<h2>3. Como o programa acha o motor e confere que ele está inteiro</h2>
+<ul>
+<li><strong>A regra de achar continua num lugar só:</strong> <code>core/ocr_kraken.lugares_do_motor()</code> (hoje: ao lado do <code>.exe</code>, na raiz do
+  código, e na pasta das ferramentas, <code>core/ocr_kraken.py:129-144</code>). Passa a ser: no programa instalado pelo Velopack,
+  só <code>&lt;raiz&gt;\motor-kraken\&lt;versão que este programa pede&gt;\</code>; no portátil e pelo código, os lugares de hoje.</li>
+<li><strong>Uma conferência só</strong> ("está inteiro e é da versão certa"), usada por todos: o motor (<code>MotorKraken</code>), o teste rápido
+  da atualização (hoje procura <code>motor-kraken/python/python.exe</code> ao lado do <code>.exe</code>, <code>atualizacao.py:616-621</code>), a
+  conferência <code>--conferir-ocr</code>, o ajudante (antes e depois de pôr no lugar) e o empacotador (que hoje tem a sua
+  própria, <code>empacotar.conferir_motor_kraken</code>). Ela lê o <code>motor.json</code> que vai dentro do motor (versão do motor, versão do
+  protocolo, e a lista de arquivos com o tamanho de cada um) e confere a versão e que cada arquivo está lá com o
+  tamanho certo. Medido: listar e medir os 34.521 arquivos leva <strong>2,9 s</strong> com o disco já lido uma vez (HD do D:); a
+  primeira leitura, com o disco frio, levou bem mais (não cronometrado).</li>
+<li><strong>A conferência forte é na chegada:</strong> a soma do arquivo do motor (assinada) e a conferência de cada arquivo que o
+  próprio Python faz ao desempacotar (ele recusa um arquivo com a soma interna errada: "Bad CRC-32",
+  <code>Lib/zipfile/__init__.py:1115</code> do Python 3.14). Por isso não é preciso somar os 1,1 GB arquivo por arquivo depois:
+  medido no HD do D:, essa soma passou de 5 minutos e eu a interrompi; no disco de dentro não foi medida.</li>
+<li><strong>A prova de que funciona é o próprio motor responder:</strong> abrir o motor já confere a versão do protocolo
+  (<code>core/ocr_kraken.py:280-285</code>). O teste rápido depois de uma troca passa a abrir o motor de verdade e esperar o
+  "pronto", e não só ver que o arquivo existe (D-767: nada de "deu certo" sem prova). Custo: a primeira abertura do motor
+  depois de instalar levou 52 a 65 s no PC do Samuel (memória <code>itens/6.8.md</code>, antivírus lendo arquivos novos); as
+  seguintes, 6 a 7 s.</li>
+<li><strong>O que aparece na tela se o motor faltar ou estiver estragado:</strong> hoje, <strong>nada</strong> para o Kaique, porque nenhuma tela
+  usa o Kraken; o motivo vai para o registro, que a gerente lê de longe (D-719). O ajudante vê a falta na próxima vez
+  que roda e põe o motor de novo (baixando, se o arquivo do instalador já saiu). Quando o Kraken ganhar tela (Fase 1.5),
+  aparece o aviso que já existe, "O detector de linhas do Kraken não está instalado [...] As outras funções continuam
+  funcionando." (<code>core/ocr_kraken.py:113-114</code>). O aviso de versão diferente diz "É preciso reinstalar o programa."
+  (<code>core/ocr_kraken.py:121-122</code>), o que deixa de ser verdade: é texto de tela, e muda só com o "sim" dele quando a tela
+  existir.</li>
+</ul>
+<h2>4. Falhas, desinstalar e reinstalar</h2>
+<h3>4.1 O que pode dar errado ao pôr o motor no lugar, e o que o programa faz</h3>
+<table>
+<thead>
+<tr>
+<th>Caso</th>
+<th>O que o programa faz</th>
+<th>O Kaique vê</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>Sem internet, ou a internet cai no meio do download do motor</td>
+<td>apaga o pedaço baixado; não troca o programa; tenta na próxima abertura</td>
+<td>nada (falha passageira)</td>
+</tr>
+<tr>
+<td>A soma ou a assinatura do motor não confere</td>
+<td>recusa a versão nova (registrar_falha "recusada"); motor e programa de hoje ficam</td>
+<td>o aviso de assinatura (a frase 2 da D-778), uma vez</td>
+</tr>
+<tr>
+<td>Disco cheio (confere o espaço antes: o arquivo e o motor aberto, uns 1,5 GB; mais 1,1 GB se o velho ainda estiver lá)</td>
+<td>não começa, ou apaga o que fez nesta vez; tenta depois</td>
+<td>nada; o registro diz "falta espaço"</td>
+</tr>
+<tr>
+<td>Notebook desligado no meio</td>
+<td>sobra só a pasta <code>.chegando-&lt;v&gt;</code>, nunca com o nome final; a próxima vez a apaga e recomeça</td>
+<td>nada</td>
+</tr>
+<tr>
+<td>O antivírus tira ou segura um arquivo do motor</td>
+<td>o desempacotar ou a conferência acusa; apaga e tenta de novo na próxima vez</td>
+<td>nada; o registro diz qual arquivo</td>
+</tr>
+<tr>
+<td>O motor instalado se estraga depois</td>
+<td>a conferência acusa no uso ou no ajudante; o ajudante põe de novo</td>
+<td>nada hoje (sem tela)</td>
+</tr>
+<tr>
+<td>"Não" na pergunta do Windows da primeira abertura</td>
+<td>sem ajudante, o motor não vai para o lugar; o arquivo fica em <code>instalar\</code>; a pergunta volta (D-741)</td>
+<td>o mesmo de hoje ("Nada mudou")</td>
+</tr>
+<tr>
+<td>A versão nova pede um motor que não foi publicado</td>
+<td>o publicar recusa liberar a versão sem o motor publicado e lido de volta (seção 5); no Kaique, seria tratado como falha passageira</td>
+<td>nada</td>
+</tr>
+<tr>
+<td>A volta para a versão anterior</td>
+<td>o motor dela continua na pasta dela; volta sem internet</td>
+<td>o aviso da volta (D-778, frase 1)</td>
+</tr>
+<tr>
+<td>Dois ajudantes ao mesmo tempo</td>
+<td>a tarefa já não deixa ("IgnoreNew", <code>atualizacao.xml_da_tarefa</code>)</td>
+<td>nada</td>
+</tr>
+<tr>
+<td>O Kaique abre o programa enquanto o motor chega</td>
+<td>sem problema: o motor novo ainda não tem o nome final</td>
+<td>nada</td>
+</tr>
+</tbody>
+</table>
+<p>Ponto a amarrar no plano: com "IgnoreNew", um "Reiniciar agora" no meio de um ajudante que está pondo o motor no lugar
+não abre um segundo ajudante. O "sinal de fim" do plano (peça 4) tem de esperar o ajudante que já está rodando.</p>
+<h3>4.2 Desinstalar (D-731, D-764)</h3>
+<ul>
+<li><strong>Desinstalar tira o motor:</strong> a pasta <code>motor-kraken\</code> está dentro da pasta de instalação, que a limpeza do .msi apaga
+  inteira, como o sistema (<code>src/wix-dll/src/lib.rs:98-102</code>). Os projetos do Kaique ficam em <code>%LOCALAPPDATA%\EditorImpressao</code>,
+  fora do alcance (D-763).</li>
+<li><strong>Cuidado:</strong> a limpeza do Velopack ignora os erros (<code>MsiTemplate.hbs:199</code>, <code>Return="ignore"</code>; <code>lib.rs:100</code>, só anota).
+  Se o motor estiver aberto (o programa aberto durante o desinstalar), um arquivo preso pode sobrar. O motor fecha
+  sozinho quando o programa fecha (<code>core/ocr_kraken.py:192</code>). A limpeza do desinstalar do plano (peça 7) passa a
+  conferir também que <code>motor-kraken\</code> saiu e apaga o que sobrou.</li>
+</ul>
+<h3>4.3 Reinstalar</h3>
+<ul>
+<li>Como o desinstalar apaga o motor, <strong>reinstalar traz o motor de novo pelo instalador</strong> (que o leva dentro, D-777),
+  sem baixar nada. Não há reaproveitamento, e não precisa.</li>
+<li><strong>"Instalar por cima"</strong> (rodar outro .msi com o programa ainda instalado): o modelo do .msi do Velopack 1.2.161 não tem
+  regra de atualização maior (<code>MajorUpgrade</code>; procurei em <code>MsiTemplate.hbs</code> e não achei). <strong>Não sei</strong> o que o Windows faz
+  nesse caso (pode recusar, instalar ao lado ou apagar a pasta). Já é uma dúvida do plano hoje (risco 4); o motor não
+  muda a resposta, só o tamanho do que se perde se a pasta for apagada (ele volta pelo próprio .msi).</li>
+<li>Se um dia trocar para o Velopack 1.3 (D-779), as mudanças dele na limpeza do .msi ("stop wiping user data on MSI
+  upgrades", estudo de publicar §3.6) têm de ser relidas para o motor também.</li>
+</ul>
+<h2>5. Publicar</h2>
+<h3>Versão nova do programa (a de toda hora)</h3>
+<table>
+<thead>
+<tr>
+<th></th>
+<th>Hoje (pacote com o motor)</th>
+<th>Sem o motor</th>
+<th>Fonte</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>Arquivos no pacote</td>
+<td>35.103</td>
+<td>582</td>
+<td>medido no pacote 1.1.5</td>
+</tr>
+<tr>
+<td>Tamanho, aberto</td>
+<td>2.011 MB</td>
+<td>868 MB</td>
+<td>medido (soma das entradas)</td>
+</tr>
+<tr>
+<td>Tamanho, comprimido (o que o Kaique baixa)</td>
+<td>826 MB</td>
+<td>~460 MB</td>
+<td>medido (soma das entradas comprimidas)</td>
+</tr>
+<tr>
+<td>Montar a pasta do programa</td>
+<td>10 min 16 s (D:)</td>
+<td>uns 6 a 8 min</td>
+<td>medido / conta (tira a cópia dos 34 mil arquivos)</td>
+</tr>
+<tr>
+<td>O Velopack empacotar, no C:</td>
+<td>7 min 39 s (M2b)</td>
+<td>uns 3 a 4 min</td>
+<td>medido / conta (a compressão é proporcional aos bytes)</td>
+</tr>
+<tr>
+<td>Enviar</td>
+<td>~1,7 GB</td>
+<td>~0,9 GB (o pacote e o Setup.exe, que leva o pacote dentro)</td>
+<td>conta</td>
+</tr>
+<tr>
+<td><strong>Total</strong></td>
+<td><strong>21 a 28 min</strong> (plano de hoje)</td>
+<td><strong>uns 12 a 16 min</strong></td>
+<td>conta</td>
+</tr>
+<tr>
+<td>Pico de espaço no C:</td>
+<td>5,3 a 6,1 GB</td>
+<td>uns 2,5 a 3 GB</td>
+<td>medido / conta</td>
+</tr>
+</tbody>
+</table>
+<p>Com a reserva de 20 GB livres no C: (D-776) e os 40 GB livres de hoje, sobra folga nos dois casos.</p>
+<h3>O que muda no publicar e no empacotar</h3>
+<ul>
+<li><strong>As três saídas num lugar só</strong> do empacotador, em vez de cópias: (1) a <strong>pasta portátil</strong> (<code>--modo pasta</code>), com o
+  motor solto ao lado do <code>.exe</code>, como hoje; (2) a <strong>atualização</strong>, sem o motor, com o <code>motor-exigido.json</code>; (3) o
+  <strong>instalador</strong>, que é a atualização mais o arquivo do motor em <code>instalar\</code> e o <code>--msi</code> (D-777).</li>
+<li><strong>Antes de liberar uma versão</strong>, o publicar confere que o motor que ela pede está publicado no GitHub e o lê de volta
+  (a mesma regra "nunca pela metade" do plano, peça 8).</li>
+<li><strong>Montar uma versão nova do motor</strong> (raro): <code>montar_motor_kraken.py</code> como hoje, mais o <code>motor.json</code>; depois um passo
+  novo do publicar comprime o motor, assina e publica na etiqueta <code>motor-kraken-&lt;v&gt;</code>. Tempo: comprimir os 34.521
+  arquivos no C: uns 3 a 5 min (conta, pela velocidade medida no estudo de publicar); assinar, uns segundos; enviar
+  357 MB. O tempo do <code>montar_motor_kraken.py</code> (que baixa e confere cada peça) não foi medido hoje. O limite do GitHub
+  para um arquivo publicado é de 2 GB (documentação do GitHub, que eu não reli hoje).</li>
+<li><strong>O instalador sob pedido</strong> (D-777): o tempo do .msi com o motor dentro como um arquivo só <strong>não foi medido</strong> (hoje,
+  com os 35 mil arquivos soltos, leva de 33 a 43 min no D:).</li>
+<li>Duas listas que hoje se repetem ficam numa só: <code>empacotar.LUGARES_DO_MOTOR</code> (onde achar o motor <strong>para montar</strong>) e
+  <code>core/ocr_kraken.lugares_do_motor</code> (onde o programa o procura) são coisas diferentes e devem ter nomes que digam isso;
+  a conferência do motor passa a ser uma só (seção 3). Já é o item 57 da lista do plano.</li>
+</ul>
+<h2>6. Os portáteis, o atalho "(desenvolvimento)" e os testes</h2>
+<ul>
+<li><strong>Atalho "(desenvolvimento)":</strong> roda pelo código (<code>main.py</code> na pasta principal); o motor continua achado na pasta das
+  ferramentas (<code>D:\programas\EditorImpressao-arquivos\ferramentas\motor-kraken\</code>, que existe hoje: 34.521 arquivos,
+  1.143 MB, medido). Nada muda.</li>
+<li><strong>A pasta portátil</strong> (<code>empacotar.py --modo pasta</code>): continua com o motor solto ao lado do <code>.exe</code>, e o programa o acha
+  ali como hoje. O zip portátil do Velopack já deixou de sair (D-777). O arquivo único do pendrive nunca levou o Kraken
+  (cabeçalho de <code>empacotar.py</code>).</li>
+<li><strong>Os testes:</strong> pela busca nos testes (<code>motor-kraken</code>, <code>PASTA_DO_MOTOR</code>, <code>AMOSTRA_DO_MOTOR</code>, <code>lugares_do_motor</code>),
+  <strong>nenhum teste antigo cobra o motor dentro do pacote do Velopack</strong>. O teste do Visual C++ no pacote monta a lista com a
+  própria função (<code>tests/test_decisoes_atualizacao.py:537-557</code>), e continua valendo. Os testes do Inno
+  (<code>tests/test_empacotar.py</code>) cobram o Inno, que continua até o Samuel decidir tirá-lo. Os testes com o motor de verdade
+  (<code>tests/test_ocr_kraken.py</code>) continuam achando-o pelos lugares do código. Continua o defeito antigo de, numa cópia do
+  projeto, o motor não ser achado e os testes pularem calados (Lista de bugs, nº 330); este estudo não o resolve.</li>
+<li><strong>Testes novos:</strong> a lógica (que lugar, que versão, o <code>motor.json</code>, a ordem "motor antes da troca", cada linha da tabela
+  4.1) com pastas de mentira; mas, pela D-767, <strong>o que vale é a prova à vista</strong> (seção 7).</li>
+</ul>
+<h2>7. O que muda no plano da parte do Windows</h2>
+<h3>Peças</h3>
+<ul>
+<li><strong>Peça 4 (a troca):</strong> um passo novo dentro de <code>procurar_e_preparar</code>, "garantir o motor que a versão nova pede"
+  (seção 2.2), e o teste rápido passa a abrir o motor (seção 3). O socorro guarda um pacote menor (~460 MB).</li>
+<li><strong>Peça nova, "o motor no lugar":</strong> uma peça só que acha, confere e põe o motor no lugar, vindo do instalador ou da
+  internet. É chamada em dois lugares: no começo de cada rodada do ajudante (a primeira instalação e o conserto
+  sozinho) e antes da troca (o motor novo).</li>
+<li><strong>Peça 7 (desinstalar):</strong> confere também que o motor saiu.</li>
+<li><strong>Peça 8 (publicar):</strong> as três saídas, o <code>motor-exigido.json</code>, o passo de publicar o motor e a conferência antes de
+  liberar.</li>
+<li><strong>Peças 1, 2, 3, 5 e 6:</strong> não mudam.</li>
+<li><strong>A decisão 1 do plano (versão inteira ou só a diferença)</strong> volta para o Samuel com os números novos (pergunta 2): sem
+  o motor, a versão inteira fica com ~460 MB.</li>
+<li><strong>A decisão 16 do plano ("para depois")</strong> deixa de existir: virou a D-768.</li>
+</ul>
+<h3>Provas à vista (D-767, D-773, D-775)</h3>
+<ul>
+<li><strong>Sessão B (o atualizador):</strong> instalar pelo .msi; depois do "Sim", a janela de prova mostra a pasta
+  <code>motor-kraken\1\</code> nascendo e a conferência "motor 1, inteiro"; uma versão nova <strong>sem</strong> troca de motor chega sem baixar
+  o motor (o registro e a data da pasta provam); uma versão que pede o <strong>motor 2</strong>: o motor chega, o programa troca, o
+  teste rápido abre o motor 2; um <strong>motor 2 com assinatura falsa</strong>: recusado com o aviso certo, tudo fica como estava;
+  <strong>fechar a janela que serve as versões no meio do download do motor</strong>: nada muda, e ao reabrir chega; <strong>a versão que
+  nem abre</strong> volta para a anterior, que acha o motor dela sem internet. Uns 45 a 60 min a mais (chute), com umas 4 a 5
+  trocas mais curtas devolvendo uns 20 min (conta). Nenhuma pergunta do Windows a mais.</li>
+<li><strong>Sessão C:</strong> depois do desinstalar, a janela de prova lista que <code>motor-kraken\</code> saiu; depois do reinstalar, que o
+  motor voltou sem baixar. Uns 5 a 10 min a mais.</li>
+<li><strong>Versões de prova a montar:</strong> mais um motor 2 de verdade (pode ser o mesmo motor com outra versão escrita) e um motor
+  com assinatura falsa; cada versão do programa fica mais rápida de montar. Mais ou menos o mesmo tempo de hoje (conta).</li>
+</ul>
+<h3>Tempo que acrescenta</h3>
+<ul>
+<li><strong>Escrever (chute; nada parecido foi medido):</strong> a peça de achar e conferir, com o <code>motor.json</code> no montar: 2 a 3 h; a
+  peça de pôr no lugar, com a lista de falhas da seção 4.1 e a ligação ao ajudante: 5 a 7 h; empacotar e publicar: 3 a
+  5 h; testes da lógica: 2 a 3 h. <strong>Total: 12 a 18 h</strong>, sobre as 27 a 40 h do plano.</li>
+<li><strong>Tentar quebrar (D-775):</strong> 1 a 2 h a mais.</li>
+<li><strong>Provas com o Samuel:</strong> uns <strong>20 a 40 min a mais</strong> no total.</li>
+</ul>
+<h3>Riscos novos</h3>
+<ol>
+<li><strong>Ler o pacote baixado na pasta do Velopack</strong> (seção 2.2): é detalhe de dentro dele. Falha segura se mudar, mas
+   precisa ser relido a cada troca de versão do Velopack.</li>
+<li><strong>Espaço no notebook do Kaique:</strong> não se sabe quanto há livre. A troca do motor precisa de uns 2,6 GB por um tempo
+   (o arquivo, o novo e o velho).</li>
+<li><strong>Antivírus do Kaique</strong> lendo 34 mil arquivos novos na primeira vez: pode deixar essa primeira rodada do ajudante bem
+   mais lenta (não medido lá), e pode tirar algum arquivo do motor.</li>
+<li><strong>"Instalar por cima" com outro .msi</strong>: não sei o que acontece (seção 4.3).</li>
+<li><strong>O instalador e a atualização da mesma versão com conteúdos diferentes</strong> (o arquivo do motor a mais): é preciso que
+   isso esteja escrito num lugar só do publicar, ou um agente vai achar que é defeito.</li>
+<li><strong>A publicação do motor no GitHub</strong> ocupa um dos 10 lugares que o Velopack lê (seção 2.2): não atrapalha hoje, mas
+   precisa ser lembrado se um dia a "diferença" voltar.</li>
+<li><strong>O ajudante fica ocupado mais tempo</strong> na rodada em que o motor chega (seção 4.1, "IgnoreNew").</li>
+</ol>
+<h2>8. As alternativas</h2>
+<table>
+<thead>
+<tr>
+<th>Alternativa</th>
+<th>O que é</th>
+<th>Limpa ou remendo</th>
+<th>Recomendo?</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><strong>A. Pasta do motor ao lado de <code>current</code>, posta pelo nosso ajudante</strong> (seções 1 a 7)</td>
+<td>uma peça só para a primeira vez e para o motor novo; o lugar que o Velopack documenta; o desinstalador do Velopack já apaga</td>
+<td><strong>limpa</strong></td>
+<td><strong>sim</strong></td>
+</tr>
+<tr>
+<td>A'. A mesma coisa, mas na pasta segura do plano (fora da raiz)</td>
+<td>igual à A; só o desinstalar muda: quem tira é a nossa limpeza (peça 7), não o Velopack</td>
+<td>limpa</td>
+<td>segunda opção</td>
+</tr>
+<tr>
+<td>B. Um segundo pacote do Velopack só para o motor (outro nome interno)</td>
+<td>o Velopack trata o motor como outro programa: ele precisa de um <code>.exe</code> principal, ganha a sua própria entrada na lista de programas do Windows e o seu próprio desinstalar (a limpeza de um .msi só apaga a pasta dele, <code>lib.rs:98</code>); o ajudante teria de atualizar dois programas; os dois no mesmo GitHub: não li como o Velopack separa as versões de dois pacotes no mesmo lugar (não sei)</td>
+<td><strong>remendo</strong>: usa uma ferramenta de atualizar programas para guardar uma pasta de arquivos, e deixa dois programas para o Kaique</td>
+<td>não</td>
+</tr>
+<tr>
+<td>C. Algum recurso do próprio Velopack</td>
+<td><strong>não existe</strong> na 1.2.161 um jeito de "peça instalada uma vez": o único recurso de dependências é uma lista fixa de peças da Microsoft (Visual C++, .NET, WebView2), baixadas da internet na hora (<code>src/bins/src/windows/runtimes.rs:45-73</code>, <code>prerequisite.rs:43-56</code>), o que também iria contra a D-727. A "diferença" não resolve: mesmo baixando pouco, ele remonta e desempacota o motor inteiro a cada troca (estudo de publicar, §2b). O que o Velopack oferece é a regra "guarde um nível acima de <code>current</code>", que é a alternativa A</td>
+<td>—</td>
+<td>(é a A)</td>
+</tr>
+<tr>
+<td>D. O motor como um arquivo só dentro de <strong>todo</strong> pacote, desempacotado só quando muda</td>
+<td>a troca fica rápida (poucos arquivos), mas o Kaique baixa os 357 MB do motor em toda versão</td>
+<td><strong>remendo</strong> frente à decisão dele ("só é baixado de novo se ele mesmo mudar")</td>
+<td>não</td>
+</tr>
+<tr>
+<td>E. Um instalador à parte só para o motor</td>
+<td>o Kaique rodaria dois instaladores; o Inno sai (D-723)</td>
+<td>remendo</td>
+<td>não</td>
+</tr>
+</tbody>
+</table>
+<p>Nenhuma alternativa exige outra versão do Velopack (D-779 continua valendo).</p>
+<h2>9. Perguntas para o Samuel</h2>
+<p>(No formato do CLAUDE.md §11.13. A gerente confere a lista antes de publicar. Não há print possível: tudo acontece por
+trás, sem janela. Pode ir um desenho simples das pastas, dizendo que é desenho.)</p>
+<h3>Pergunta 1. Onde fica o motor do Kraken e como ele chega</h3>
+<ul>
+<li><strong>Do que se trata.</strong> É a peça do programa que acha as linhas de texto (o "Kraken"). Tem 1 GB e 34 mil arquivos, quase
+  todos os arquivos do programa. Fica dentro da pasta do programa, em Arquivos de Programas.</li>
+<li><strong>O que acontece hoje.</strong> Ela vai inteira em toda versão nova, e o notebook do Kaique a desmonta e monta de novo a cada
+  troca. É por isso que a troca leva uns 7 minutos e meio.</li>
+<li><strong>O que você escolhe:</strong></li>
+<li><strong>Uma pasta própria do motor, junto do programa (sugestão).</strong> A atualização não mexe nela. Na primeira vez ela vem
+    dentro do instalador. Quando o motor mudar (raro), o programa baixa só ele, com a sua assinatura. Desinstalar tira
+    junto. A versão nova fica com uns 460 MB, e a troca com uns 2 a 3 minutos (conta, não medida). Nada muda na tela
+    nem no livro.</li>
+<li><strong>Um segundo programa só para o motor.</strong> O Windows mostra dois programas na lista ("Editor de Impressão" e "Motor
+    do Kraken"), e desinstalar um não tira o outro sozinho. Não recomendo.</li>
+<li><strong>Só comentário.</strong></li>
+<li><strong>De onde veio.</strong> Pedido seu de hoje. A ferramenta de atualização não tem um jeito próprio para isso; a documentação
+  dela manda guardar o que deve durar numa pasta ao lado da do programa, que é a sugestão.</li>
+<li><strong>Bom saber.</strong> Hoje o Kraken ainda não é usado em nenhuma tela: a "segunda opinião" dele está desligada. Ele vai ao
+  Kaique porque você decidiu, em 29/09, "todos os OCRs instalados".</li>
+<li><strong>Situação.</strong> Só estudo; nada escrito. Acrescenta ao plano uns 12 a 18 horas de trabalho de agente e uns 20 a 40
+  minutos nas provas com você.</li>
+</ul>
+<h3>Pergunta 2. A versão inteira ou só o que mudou, agora sem o motor</h3>
+<ul>
+<li><strong>Do que se trata.</strong> É a atualização que chega sozinha no notebook do Kaique quando ele abre o programa. Hoje de manhã
+  você deixou essa escolha para depois deste estudo.</li>
+<li><strong>O que acontece hoje.</strong> Ele baixa só o que mudou (uns 20 MB), mas o notebook remonta a versão inteira antes de trocar
+  (22 minutos no seu PC). E por esse caminho a sua assinatura não confere tudo.</li>
+<li><strong>O que você escolhe:</strong></li>
+<li><strong>A versão inteira (sugestão).</strong> Sem o motor, ela fica com uns 460 MB: uns 1 minuto e meio a 50 Mbps, uns 6
+    minutos a 10 Mbps (conta). A troca fica em uns 2 a 3 minutos. A assinatura confere tudo.</li>
+<li><strong>Só o que mudou.</strong> Baixa uns 20 MB, mas o notebook ainda remonta a versão (uns 5 a 7 minutos a mais; conta). E a
+    assinatura precisa passar a conferir a diferença também (mudança no programa).</li>
+<li><strong>Só comentário.</strong> Se souber, diga a velocidade da internet do Kaique.</li>
+<li><strong>Situação.</strong> Aberta desde hoje de manhã; o resto do plano não depende dela.</li>
+</ul>
+<h3>Pergunta 3. Quando o motor muda, a versão nova espera ele chegar?</h3>
+<ul>
+<li><strong>Do que se trata.</strong> É o caso raro em que uma versão nova do programa precisa de um motor novo.</li>
+<li><strong>O que você escolhe:</strong></li>
+<li><strong>Sim, tudo ou nada (sugestão).</strong> A versão nova só entra depois que o motor novo chegou inteiro e conferido. Se a
+    internet cair, o Kaique continua na versão de antes, com o motor de antes, e o programa tenta de novo na próxima
+    abertura. É o mesmo jeito que você escolheu para os testes à distância.</li>
+<li><strong>Não.</strong> A versão nova entra logo e o motor chega depois; nesse meio-tempo, o Kraken não funciona.</li>
+<li><strong>Só comentário.</strong></li>
+<li><strong>Situação.</strong> Só estudo. Nada do que já funciona muda.</li>
+</ul>
+<h2>10. Medidas e fontes</h2>
+<h3>Medidas desta tarefa (18/11/2026, PC do Samuel, só no D:)</h3>
+<table>
+<thead>
+<tr>
+<th>Medida</th>
+<th>Resultado</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>Motor das ferramentas (<code>EditorImpressao-arquivos\ferramentas\motor-kraken</code>): arquivos e bytes</td>
+<td>34.521 arquivos, 1.143.431.232 bytes; listar e medir: 2,9 s (com o disco já lido)</td>
+</tr>
+<tr>
+<td>Somar cada arquivo do motor (SHA-256), lendo do HD</td>
+<td>passou de 300 s e foi interrompida (o disco estava frio)</td>
+</tr>
+<tr>
+<td>Pacote 1.1.5 (<code>saida_teste/etapa5/servidor/</code>): entradas</td>
+<td>35.103; motor 34.521 (1.143 MB aberto, 357 MB comprimido); resto 582 (868 MB aberto, 460 MB comprimido)</td>
+</tr>
+<tr>
+<td>Desempacotar o resto (582 arquivos) no D:, com o Python</td>
+<td>42,8 s</td>
+</tr>
+<tr>
+<td>Desempacotar 3.000 arquivos do motor (85 MB) no D:, com o Python</td>
+<td>9,4 s (conta: o motor inteiro, uns 110 a 125 s; o motor é uns 70 a 75% do tempo de desempacotar)</td>
+</tr>
+</tbody>
+</table>
+<p>A pasta da medida (<code>saida_teste/kraken-separado/medida-extrair</code>, 916 MB, só minha) foi apagada no fim. Nada foi gravado
+no C: além de dois scripts pequenos na pasta de rascunho da sessão.</p>
+<h3>O que não foi medido nem lido</h3>
+<ul>
+<li>A troca de verdade pelo Velopack sem o motor (só a conta da tabela acima).</li>
+<li>O .msi com o motor dentro como um arquivo só.</li>
+<li>Desempacotar o motor no disco de dentro (SSD) e no notebook do Kaique.</li>
+<li>O que o Windows faz ao "instalar por cima" com o .msi do Velopack.</li>
+<li>Como o Velopack separa dois pacotes de nomes diferentes no mesmo GitHub (só para a alternativa B).</li>
+<li>O espaço livre e o antivírus do notebook do Kaique.</li>
+</ul>
+<h3>Fontes lidas</h3>
+<ul>
+<li>Velopack 1.2.161 (<code>92d6a1c9</code>, MIT): <code>src/bins/src/commands/apply_windows_impl.rs</code>, <code>uninstall.rs</code>,
+  <code>src/bins/src/shared/util_windows.rs</code>, <code>src/bins/src/windows/runtimes.rs</code>, <code>prerequisite.rs</code>,
+  <code>src/lib-rust/src/locator.rs</code>, <code>manager.rs</code>, <code>sources/github.rs</code>, <code>sources/mod.rs</code>, <code>src/wix-dll/src/lib.rs</code>,
+  <code>src/vpk/Velopack.Packaging.Windows/Msi/Templates/MsiTemplate.hbs</code>, <code>Msi/MsiBuilder.cs</code>.</li>
+<li>Documentação do Velopack (cópia local, <code>fonte-velopack/docs/repo/docs/</code>): <code>integrating/preserved-files.mdx</code>,
+  <code>integrating/uninstalling.mdx</code>, <code>packaging/operating-systems/windows.mdx</code>.</li>
+<li>Python 3.14: <code>Lib/zipfile/__init__.py:1115</code> (a conferência de cada arquivo ao desempacotar).</li>
+<li>Nosso código (só lido): <code>core/ocr_kraken.py</code>, <code>core/linhas_do_texto.py</code>, <code>core/ocr_diagnostico.py</code>, <code>atualizacao.py</code>,
+  <code>empacotar.py</code>, <code>publicar_versao_kaique.py</code>, <code>assinatura.py</code>, <code>versao.py</code>, <code>tests/test_empacotar.py</code>,
+  <code>tests/test_decisoes_atualizacao.py</code>, <code>tests/test_ocr_kraken.py</code>.</li>
+<li>O plano da parte do Windows (ramo <code>plano-windows-2026-11-18</code>), o estudo de publicar mais rápido (ramo
+  <code>publicar-rapido-2026-11-18</code>), o Livro (D-138 a D-140, D-164, D-723 a D-783), a memória (<code>itens/6.8.md</code>,
+  <code>itens/1.3.md</code>, <code>geral/ambiente.md</code>) e o registro da etapa 5 (<code>saida_teste/etapa5/registros/comparar-0-com-2.txt</code>).</li>
+</ul>
+<h3>Licenças</h3>
+<table>
+<thead>
+<tr>
+<th>O que é</th>
+<th>Licença</th>
+<th>Roda aqui?</th>
+<th>No notebook do Kaique?</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>Velopack 1.2.161</td>
+<td>MIT</td>
+<td>sim (etapa 5)</td>
+<td>sim (já vai no programa)</td>
+</tr>
+<tr>
+<td>Kraken 7.1.1 (dentro do motor)</td>
+<td>Apache-2.0 (pela página do projeto; não reli hoje)</td>
+<td>sim, no motor à parte</td>
+<td>sim, no motor à parte</td>
+</tr>
+<tr>
+<td>PyTorch (dentro do motor)</td>
+<td>BSD-3 (não reli hoje)</td>
+<td>sim</td>
+<td>sim</td>
+</tr>
+<tr>
+<td>Python 3.12 embutível (dentro do motor)</td>
+<td>PSF</td>
+<td>sim</td>
+<td>sim</td>
+</tr>
+</tbody>
+</table>
+<p class="rodape">Editor de Impressão &middot; gerado em 18/11/2026 às 17:00</p>
+</body>
+</html>
