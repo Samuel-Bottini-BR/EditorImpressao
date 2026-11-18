@@ -220,6 +220,7 @@ Ramo `kraken-separado-2026-11-18`. O motor mora em `C:\Program Files\EditorImpre
 | 23h03 | "vamos fazer checkpoint e começo na proxima conversa." | Este checkpoint |
 | 23h18 (depois do commit `21aa8358`) | "não tem nenhum atalho na area de trabalho, como voce disse que ia fazer" | Explicado: não é atalho na área de trabalho, é a junção (ligação de pasta escondida do Claude Code, não fica na área de trabalho) em `C:\Users\fotog\.claude\agents`; nada aparece na área de trabalho |
 | 23h18 | "você está lendo só resumos da conversa ou está lendo a conversa mesmo?" | Respondido: a memória da gerente do começo da conversa vem do resumo automático; o checkpoint foi escrito das falas salvas, do git e do Livro, e isso pegou a noite de 17/11 que faltava na lista dela |
+| 23h55 | "quero que você verifique isso" (depois do resumo final do checkpoint) | A gerente conferiu ela mesma a PARTE -38 contra o git: as pontas e o push de todos os ramos da tabela do §1 (etapa5 `abbc3e9d` com 40 commits sem push; os 6 ramos de 18/11 sem nada local a enviar), a junção dos agentes (os 4 arquivos aparecem por ela), as decisões até a D-793 no Livro e as falas até 23h55. Bateu. |
 
 **Sem destino (viram pendência, §9):** a foto da pergunta do Windows trocada pela frase dele (D-737); a pergunta "meio da tela ou botão piscando?" (pesa no risco 1 do plano-v2); o cache do pip; a `D:\Config.Msi` (citada pela gerente em 17/11 22h20, sem resposta); a velocidade da internet do Kaique.
 
