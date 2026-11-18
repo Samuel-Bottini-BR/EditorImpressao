@@ -48,3 +48,15 @@ Esta tarefa não muda nada. O que o plano mudaria para o Kaique está no plano, 
 
 ## Perguntas para o Samuel
 Estão no plano, seção 5 (16 decisões, em ordem, no formato do CLAUDE.md §11.13). A gerente leva à Central.
+
+## Versão 2 do plano (18/11/2026, 18:10)
+- [x] Data conferida (`date`: qua 18/11/2026 17:54).
+- [x] Lidos inteiros: `implementador.md`; o CLAUDE.md inteiro (com a §11.12 ampliada, seis pontos, e a §11.13);
+  `memoria/INDICE.md`; D-765 a D-790 do Livro (`obra-2026-10-26`, `48d2c3a8`) e D-712, D-721, D-724, D-727, D-739, D-741
+  para conferir; `plano.md` e este ONDE-PAREI; o estudo do Kraken (`kraken-separado-2026-11-18`); a proposta das regras
+  (§1 contradições, §2, §3, §5, §6, §9).
+- [x] Escrito `plano-v2.md` (+ .html e .pdf por `relatorio.gravar`). O `plano.md` ficou como estava (histórico).
+- Decisões que esta versão precisa cumprir: D-765 a D-790 (lista "decisão → onde está" na seção 10 do plano-v2).
+- Nenhuma linha do programa nem dos testes mudou. Nenhuma janela, nenhuma pergunta do Windows, nenhum agente aberto.
+- Perguntas para o Samuel: no plano-v2, seções 6.2 (o que depende dele) e 6.3 (três pontos em que duas decisões, ao pé
+  da letra, não combinam). A gerente as leva no formato do CLAUDE.md §11.13.
