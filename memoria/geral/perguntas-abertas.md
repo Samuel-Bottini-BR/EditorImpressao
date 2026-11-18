@@ -9,6 +9,15 @@ Como manter: quando ele responder, registre no plano (as duas cópias) e na fich
 daqui** (ou mova para "Respondidas recentemente" com a data). O `conferir_memoria.py` avisa quando uma pergunta desta
 lista com nome entre crases já aparece como decidida no Registro.
 
+## 0000000c. Atualização de 18/11/2026, noite (vale sobre o resto; [PARTE -38](../../historico/Editor%20de%20Impressao%20-%20resumo%20para%20o%20Claude.md) §9)
+
+- **Respondidas em 17-18/11 (não perguntar de novo):** as 38 da Central de 17/11 (D-752 a D-762, todas com resposta na página); a prova do Velopack e o nome do pacote (D-763, D-764); a senha dos testes à distância já existe (dita por ele em 18/11; nunca escrever em arquivo); as 16 decisões do plano da parte do Windows (D-768 a D-783); as do Kraken (D-788 a D-790); as da proposta das regras (D-784, D-791, D-792, D-793); as contradições X8, X1 e X2 (D-785, D-786, D-787).
+- **A próxima conversa começa por aqui (chat, 18/11 23h01 UTC):** "Os 3 pontos em que duas decisões suas não combinam, que o agente do plano achou." — plano-v2 §6.3: (1) o Setup.exe sem o motor contra o motor sempre no instalador; (2) a janelinha "em toda troca" contra a troca ao fechar "por trás"; (3) "Editor de Impressão" na pergunta do Windows contra o caminho sem acento. Uma pergunta por vez.
+- **Esperam ele:** aprovar o plano-v2 (ramo `plano-windows-2026-11-18`) e as perguntas da seção 6.2 dele; as contradições X4, X5, X6, X7, X9, X10 da proposta das regras (X3 adiada: "falamos disso depois, deixe anotado"); se as 3 respostas do Kraken valem como a aprovação do estudo (D-768); o desenho da janela da senha (D-781); a internet do Kaique.
+- **Sem resposta no chat (18/11):** "Posso trocar a foto pela sua frase de que ela apareceu?" (D-737, 11h33 UTC); "a pergunta apareceu direto no meio da tela, ou você teve que clicar num botão piscando na barra de tarefas primeiro?" (12h43); o cache do pip, 5,6 GB ("Se quiser, eu tiro também"); a `D:\Config.Msi` (17/11 22h20).
+- **Coisas dele:** apagar `C:\pr-medida` e `D:\agente_temp_testes` pelo Explorador (a trava de segurança não deixou a gerente); avisar quando reiniciar (para tirar `C:\Users\editortestes`).
+- **Paradas pela D-765 (de antes):** a pergunta dele de 17/11 14h10 sobre o Claude Code no PC do Kaique (ainda sem resposta da gerente); D-709; D-710; as 4 da revisão do código; as respostas da Central que voltaram para ele; os itens da D-708.
+
 ## 0000000b. Atualização de 14/11/2026 (vale sobre o resto; [PARTE -35](../../historico/Editor%20de%20Impressao%20-%20resumo%20para%20o%20Claude.md) §8)
 
 - **Respondidas:** `perg-desfazer-fundo` ("Ok" → D-699); `perg-quadrados-provas` ("pode mudar" → D-698); as 38 de 08 a 10/11 (D-669 a D-697); au-d-523, au-d-544, au-d-565, au-d-567 e au-d-574 → D-704.

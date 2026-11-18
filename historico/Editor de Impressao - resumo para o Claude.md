@@ -1,6 +1,6 @@
 # Editor de Impressão — documento para colar no Claude
 
-Atualizado em 17/11/2026, noite (PARTE -37; a anterior, PARTE -36, é de 14/11). Desde 19/10 a memória por assunto fica em `memoria/` (índice `memoria/INDICE.md`). Versão **máxima**: reúne o histórico institucional, o
+Atualizado em 18/11/2026, noite (PARTE -38; a anterior, PARTE -37, é de 16-17/11). Desde 19/10 a memória por assunto fica em `memoria/` (índice `memoria/INDICE.md`). Versão **máxima**: reúne o histórico institucional, o
 que o programa é, todas as funcionalidades pedidas, os 68 pedidos feitos até
 hoje **palavra por palavra**, o que foi feito, o que falta, e os dois
 documentos-fonte inteiros (a especificação original e o prompt de testes) em
@@ -13,6 +13,319 @@ o backup). Repositório git ligado a
 `https://github.com/Samuel-Bottini-BR/EditorImpressao`.
 
 ---
+
+# PARTE -38 — Checkpoint de 17-18/11/2026: a etapa 5 rodou de verdade no PC do Samuel (7 defeitos, não está pronto para o Kaique), a regra "sem gambiarra" vale para tudo, plano único da parte do Windows (versão 2) com D-767 a D-793, o motor do Kraken à parte (leia isto primeiro)
+
+Sessão no PC, de 17/11 21h46 a 18/11 23h03 UTC (no relógio do Samuel, UTC−4: de 17/11 17h46 a 18/11 19h03), gerente Claude Opus 5.5, uma conversa só (`fa022b8a`). O Samuel pediu o checkpoint com **"vamos fazer checkpoint e começo na proxima conversa."** (18/11 23h03 UTC). Fontes usadas, nesta ordem: as falas dele (`falas_da_conversa.py --todas --desde 2026-11-17T21:06` e `--com-respostas` na conversa `fa022b8a`), o git de todos os ramos, o Livro (`obra-2026-10-26`, D-752 a D-793), o Plano (`fase-1`) e os relatórios de cada trabalho. Nada foi escrito de memória.
+
+- **Outras conversas no período:** `17229797` é do Buscador e Baixador (falas "4", "eu estou esquecido acerca do projeot, me relembre", "pode abrir ele para eu ver como está?"), não entra aqui. `52e3de14` (a conversa da PARTE -37) não tem fala nova.
+- **Nenhum agente rodando no fechamento.** Todos os trabalhos de 17-18/11 entregaram (o estado de cada um, pelo git, está no §1).
+- **Nenhuma linha do programa mudou em 18/11.** A última mudança de código é a do nome interno do pacote (D-763, D-764), juntada no obra em 17/11 à noite (`8d567c4a`, 18/11 00h14 UTC). Depois disso só mudaram o Livro, o CLAUDE.md, as regras dos 4 agentes e o Plano.
+- **Uma senha foi dita no chat** (18/11 13h00 UTC, a senha dos testes à distância). Ela não está em nenhum arquivo, de propósito, nem neste. Não copie.
+
+## 0. Para recomeçar
+
+1. `git -C D:\programas\EditorImpressao fetch origin`. Versão de teste: ramo `obra-2026-10-26`, worktree `.claude\worktrees\obra-juncao`, ponta `c7631563` (o código é o do `8d567c4a`; o resto é Livro, CLAUDE.md e agentes). Ramo do plano e do handoff: `fase-1`.
+2. **Conferir que o atalho dos agentes funciona** (D-793, "falta a prova numa conversa nova"): `C:\Users\fotog\.claude\agents` é uma junção para `D:\programas\EditorImpressao\.claude\agents`. Na conversa nova devem aparecer os tipos `implementador`, `verificador`, `pesquisador` e `layout`. Chamar um deles pelo nome e ver que ele **não** tem a ferramenta de abrir agente nem as da Central. Se não aparecerem, avisar o Samuel antes de chamar agente geral.
+3. **Começar pelos 3 pontos em que duas decisões dele não combinam** (§9, texto exato no plano-v2 §6.3), **uma pergunta por vez**, com exemplo concreto, como ele pediu ("faz uma pergunta por vez"). Foi o que a gerente propôs por último ("Sigo pelo 1, uma pergunta por vez?") e ele respondeu com o checkpoint.
+4. Depois: aprovar o plano-v2 (resumo de uma página), as contradições das regras que faltam (X4, X5, X6, X7, X9, X10; X7, X5 e X4 pesam no plano) e se as 3 respostas do Kraken contam como a aprovação do estudo (D-768).
+5. **Antes de qualquer trabalho:** pôr no Registro de mudanças do Plano (as duas cópias) as entradas de 18/11 de dia (D-767 a D-793, a regra §11.12 ampliada, as revisões, o plano, o Kraken, a limpeza). **Hoje o Registro para em "18/11/2026 (madrugada)"** (§10).
+6. Nenhum conserto do programa começa até a entrega ao Kaique (D-765). Nada de agente abrindo janela na tela dele, a não ser no que a D-785 manda ser à vista (o que mexe no Windows), e sempre avisando antes.
+
+## 1. Estado atual pelo git (18/11, 23h UTC)
+
+| Ramo | Ponta | Push | O que é | Situação |
+|---|---|---|---|---|
+| `obra-2026-10-26` | `c7631563` | sim | versão de teste; Livro até a D-793; CLAUDE.md §11.12 ampliada; agentes com `tools:` | o código é o do `8d567c4a` (nome do pacote, 17/11) |
+| `fase-1` | `15f071be` | sim | Plano, CLAUDE.md, agentes, este handoff | Livro do `fase-1` continua velho (o que vale é o do obra) |
+| `etapa5-2026-11-17` | `abbc3e9d` | **não** (40 commits à frente do `origin`) | a etapa 5 inteira: ONDE-PAREI, relatório, registros | terminada (fase 12); worktree `.claude\worktrees\etapa5` |
+| `velopack-pasta-2026-11-17` | `575d2af1` | sim | prova da pasta de reserva do Velopack (17/11) | entregue; worktree removido |
+| `nome-pacote-2026-11-17` | `052be045` | sim | conserto D-763 e D-764 | juntado no obra (`8d567c4a`); GitHub 44202459161 passou; worktree removido |
+| `causas-lusiadas-2026-11-17` | `5a9a886a` | sim | causas dos erros do Lusíadas (sem mudar o programa) | publicado na Central em 17/11; worktree removido |
+| `explicacoes-central-2026-11-17` | `e7957b3b` | sim | as 11 explicações novas com 53 prints | publicado na Central em 17/11; worktree removido |
+| `publicar-rapido-2026-11-18` | `ce88e827` | sim | estudo de por que publicar demora | entregue (medidas M1 a M5) |
+| `revisao-atualizador-2026-11-18` | `8cf8358a` | sim | revisão do atualizador, só leitura | entregue: 13 defeitos novos, desenho em 10 regras, 8 perguntas |
+| `revisao-distancia-2026-11-18` | `77848768` | sim | revisão dos testes à distância, só leitura | entregue: 4 causas de estrutura, 13 defeitos novos, 5 perguntas |
+| `plano-windows-2026-11-18` | `9a57f482` | sim | plano único: `plano.md` (v1, `ddd06787`) e `plano-v2.md` | v2 entregue, **esperando a aprovação dele** |
+| `regras-agentes-2026-11-18` | `76831576` | sim | proposta de como passar as regras | entregue; D-784, D-791, D-792, D-793 respondidas |
+| `kraken-separado-2026-11-18` | `3bd0e322` | sim | estudo do motor do Kraken fora da atualização | entregue; D-788 a D-790 respondidas |
+
+`git status` do `fase-1`: limpo antes deste checkpoint. Os worktrees de 17/11 `brasao`, `desinstalar-b`, `etapa5-preparo` e `kaique-juntar` continuam no disco (trabalho já no obra).
+
+## 2. Os trabalhos, um por um
+
+### 2.1 17/11 noite: as 38 respostas da Central e a prova do Velopack
+
+- **Central:** as 38 respostas dele de 17/11 foram todas respondidas na página (14 pela gerente às 22h07 UTC, 13 do agente das causas às 22h32, 11 do agente das explicações às 23h13, com 53 prints). Entraram no Livro como **D-752 a D-762** (ver o Livro). Defeitos novos na Lista de bugs: as manchas brancas nas gravuras do Lusíadas, a marcação que some ao dividir de novo (o "dividir esta" depois de juntar copia só "tirada do livro" e "em branco"), e 4 achados do agente das explicações. Na Lista de espera: a lombada incerta (D-757) e a "IA só para os avisos".
+- **Prova da pasta do Velopack** (Samuel: "Pode, só realmente verifica se é isso mesmo que estávamos fazendo."): ramo `velopack-pasta-2026-11-17`. A gerente levou a ele "desinstalar apagou a pasta inteira com esse nome" como certo; o agente do conserto corrigiu depois: o desinstalador do Velopack 1.2.161 apaga `LocalAppData\<título>` ("Editor de Impressão"), não `LocalAppData\<nome do pacote>`. **O conserto continuou valendo** (a cada abertura o Velopack gravava o `Update.exe`, 4 MB, dentro da pasta dos projetos; e a versão mais nova do Velopack apaga pelo nome do pacote).
+- **Conserto D-763 e D-764:** `versao.ID_DO_PACOTE = "EditorImpressaoPrograma"`, num lugar só; `tests/test_nome_do_pacote.py` (5; 4 falham no código antigo); o teste antigo da assinatura passou a ler o nome de `versao.ID_DO_PACOTE` ("ok"). Juntado no obra `8d567c4a`, GitHub **44202459161 passou**.
+- **D-765 e D-766:** nenhum conserto até a entrega; depois, cada conserto vira versão nova quando ele quiser.
+
+### 2.2 A etapa 5 (instalar de verdade no PC dele, testar e desfazer)
+
+Ramo `etapa5-2026-11-17` (sem push), relatório `.claude\worktrees\etapa5\relatorios\frente-kaique-2026-11-16\etapa5\relatorio.md` (e `.html`; o `.pdf` fica fora do git pela regra `*.pdf`) e `ONDE-PAREI.md`. Provas em `D:\programas\EditorImpressao\saida_teste\etapa5\` (`registros\`, `prints\`, `fotos\`, uns 14 GB, guardados para os consertos).
+
+- **Fases 0 e 1, sem ele** ("sim, pode fazer", 18/11 01h15 UTC): cópia de reserva dos projetos em `D:\programas\EditorImpressao-arquivos\reserva-projetos-2026-11-17` (44 arquivos, iguais à origem; os originais não foram tocados); foto do Windows; 6 versões de mentira (1.1.0 a 1.1.5, com uma estragada e uma com assinatura falsa). **As versões levaram ~6h47** (de 01h25 a 08h12 UTC); a gerente tinha dito 11 minutos. O programa instala em **`C:\Program Files\EditorImpressaoPrograma`** (lido nas tabelas do .msi; a gerente tinha dito "Editor de Impressão").
+- **Fases 0.3 a 12, com ele clicando** (11h23 a 16h06 UTC). Ele: "sim, eu dou permissão para todos os proximos" (11h58), "pode rodar, pode fazer aparecer na tela" (12h43). Fotos da pergunta do Windows: não deu ("eu não tirei foto"; "eu não consigo tirar print, quando a mensagem aparece, mas deu certo sim, a mensagem apareceu"): ela aparece numa tela protegida.
+- **Funcionou de verdade:** instalar (3 min, 1 pergunta; aparece como "Editor de Impressão" 1.1.0); a primeira abertura **com o programa na frente** (ajudante criado, a tarefa de desfazer criada, o Editor antigo de 01/09 removido, D-729); procurar, baixar e conferir a assinatura (1.1.1 em 17 s); a troca pelo ajudante, sem pergunta, duas vezes; a volta da versão estragada (1.1.3); a recusa da assinatura falsa (1.1.4, "a assinatura não confere com a chave do Samuel"); entrar por SSH com senha, só na conta de testes (entrar como ele, sem senha, foi recusado); a conta de testes não enxerga a pasta dele nem tem administrador (no C:); prioridade baixa; o teste rápido de longe; **atualizar de longe** (1.1.5 às 15h39 UTC, sem pergunta); desinstalar sem tocar nos projetos.
+- **Os 7 defeitos achados** (todos na Lista de bugs de 18/11 ou no relatório; nenhum consertado):
+  1. O pedido de licença lê o erro errado: `ctypes.get_last_error` sem `use_last_error` dá sempre 0. Falha ou "Não" viram "preparado" (contra a D-741). Junto: aparece a caixa crua "Não há suporte para o pedido".
+  2. A pergunta do Windows **não aparece** se o programa não estiver na frente (com o programa escondido não dá; atrás de outra janela, o Windows só pisca um escudo na barra de tarefas). Com o defeito 1, o programa marca "preparado" sem estar.
+  3. `DETACHED_PROCESS`: o PowerShell da troca fecha sem rodar. **"Reiniciar agora" fecha e não volta, e com uma versão esperando o programa não abre** (provado; D-720 e D-734 não cumpridas).
+  4. `PermissionError` ao ler o relatório do script com administrador (a pasta temporária do Python 3.14 nasce só para o dono) → "Não consegui preparar os testes à distância agora" com 8 de 9 passos feitos.
+  5. A tranca da pasta (`icacls ... (OI)(CI)` com `/inheritance:r` passando nos arquivos de dentro) deixa `antes.json` e `desfazer.ps1` **sem licença nenhuma**, nem para o administrador. Por isso falham o último passo de ligar, o desligar e o desfazer do desinstalar (D-731 não cumprida).
+  6. "Desligar" mostra "Desligado" sem desligar (grava sem conferir; a porta e a conta continuaram ativas).
+  7. O perfil da conta de testes (`C:\Users\editortestes`) fica preso depois de apagar a conta.
+  - Para saber: cada troca levou de 7 a 23 min; o aviso de versão nova pode demorar até 5 min.
+  - Erros do próprio teste (não do programa): a área escondida, as aspas quebradas nos comandos por SSH, o roteiro da prioridade baixa e o da primeira limpeza (ele clicou "Sim" 3 vezes em vez de 1).
+- **Fase 12 (limpeza, "ok, pode fazer", 16h01):** saíram o Servidor OpenSSH, as 2 regras do firewall, a conta EditorTestes e a marca que a escondia, as 2 tarefas, o que nasceu em `C:\ProgramData\ssh`, `C:\ProgramData\EditorImpressao` (788 MB), a pasta de reserva do Velopack. **Ficou** `C:\Users\editortestes` (preso até reiniciar; conferido agora: existe). Ficam de propósito: os projetos, o Visual C++, o Tailscale, a reserva no D:. Conferido agora: `C:\Program Files\EditorImpressaoPrograma` e `C:\ProgramData\EditorImpressao` não existem.
+- **Resultado do relatório: "NÃO ESTÁ PRONTO para ir ao Kaique."** Decisões não cumpridas: D-720, D-734, D-731; pela metade: D-717 (no D: a conta de testes lê e grava, porque o D: dá Controle total a "Todos"), D-722, D-727, D-737 (sem foto), D-764; não testadas: B3 (ligar de novo), B4, D-741.
+
+### 2.3 Publicar rápido (pesquisador)
+
+Pedido: "tá, mas isso não é uma falha? não deveria ser mais simples?" · "não deveria ser mais rapido" · "fazer tudo de novo sempre, eu acho que está errado né?" · "as atualizações deveriam ser rapidas" · "ok, pode botar um agente para estudar". Ramo `publicar-rapido-2026-11-18`, `relatorios/publicar-rapido-2026-11-18/relatorio.md`. Medido: o tempo vai no disco (o D: é HD externo por USB): a mesma diferença leva 20,5 min no D: e 3,6 min no C:; 34.521 dos 35.103 arquivos (98%) são do motor do Kraken; publicar cai de 70-93 min para 21-28 min no C:, sem .msi e sem diferença; no Kaique a "pequena" é a mais lenta (22-23 min pela diferença, 7,5 pela inteira). **Achado de segurança (lido, não provado): pela diferença, a assinatura não confere o que é instalado.** As medidas deixaram `C:\pr-medida` (2,5 GB), que a trava de segurança não deixou apagar.
+
+### 2.4 As duas revisões (só leitura)
+
+- **Atualizador** (`revisao-atualizador-2026-11-18`): 13 defeitos novos, 3 provados só lendo o Windows (as tarefas ficam depois de desinstalar; a pasta do ProgramData fica e aceita arquivos de qualquer conta). Os mais graves: a internet piscar ao ler a assinatura recusa a versão para sempre; publicar libera a versão antes da assinatura; abrir no meio da troca faz o Velopack fechar o programa à força e acusar falha falsa; o "Reiniciar agora" espera só 5 min; se a versão nova nem abre, ninguém volta; reinstalar deixa sem atualização. Desenho em 10 regras; "o que o programa lembra não é prova; prova é o que o Windows responde".
+- **Testes à distância** (`revisao-distancia-2026-11-18`): os 7 defeitos vêm de 4 escolhas de estrutura (a tela mostra o anotado; ligar não desfaz o meio; não lê a resposta do administrador; a tranca feita à mão). 13 defeitos novos; provados: a tranca estraga os arquivos de dentro e diz "deu certo"; **senha com acento vira outra** ("maçã-Ação" → "maþÒ-AþÒo", com texto de exemplo). O estado de verdade se lê sem administrador.
+
+### 2.5 O plano único da parte do Windows
+
+- **v1** (`ddd06787`, "pode começar o proximo passo, só quero saber como isso vai ser feito"): 63 defeitos somados, 12 passos, 27 a 40 h de escrita. A gerente tinha dito "só uma peça" é refeita; **o plano achou mais 5 coisas** (a gerente corrigiu no chat).
+- **Decisões tomadas uma por uma no chat (18/11 19h06 a 23h01 UTC):** D-768 a D-783 (as 16 do plano), D-784 a D-787 (regras), D-788 a D-790 (Kraken), D-791 a D-793 (regras). Lista no §4.
+- **v2** (`9a57f482`, `relatorios/plano-windows-2026-11-18/plano-v2.md`): 7 passos (0 a 6), 10 peças. **Escrita 52 a 78 h e quem tenta quebrar 8 a 13 h (chute); com o Samuel 4 h 40 a 6 h 35 em 5 sessões, 19 perguntas do Windows (+2 opcionais); confirmação 1 h 30 a 2 h.** Seção 6.2: o que depende dele antes de cada passo; seção 6.3: os 3 pontos que não combinam (§9).
+
+### 2.6 O motor do Kraken à parte (pesquisador)
+
+Ramo `kraken-separado-2026-11-18`. O motor mora em `C:\Program Files\EditorImpressaoPrograma\motor-kraken\<versão>\`, ao lado da pasta que o Velopack troca (lido no código do Velopack 1.2.161: a atualização não toca e o desinstalar apaga). A atualização cai para **~460 MB e 582 arquivos** (medido); a troca para uns 2 a 3 min e publicar para 12 a 16 min (conta). Acrescenta 12 a 18 h de escrita (chute). **Fato:** hoje o Kraken não é usado em nenhuma tela (`SEGUNDA_OPINIAO_DO_KRAKEN = False`); vai ao Kaique pela D-138 ("todos os OCRs instalados").
+
+### 2.7 As regras dos agentes
+
+- **CLAUDE.md §11.12 ampliada, "sem gambiarra, em tudo"** (fase-1 `919d8f02`, obra `0e510978`; ponto 6 em `0014e618`/`fc2a0c53`), também nos 4 agentes. Pedido: "eu acho que tinhamos que atualizar a regra de gambiarras para que ela se aplicasse a tudo né? de maneira que não fique dubia." e, para o ponto 6, "mas isso não pega essa falha né" · "pode". Os 6 pontos: uma peça só para cada conversa com o que está fora; nada dá como feito o que não conferiu; a lista das falhas antes de escrever; peça de mentira não prova; a gerente não aceita "pronto" sem a prova; ler a peça de fora antes de usar, com a fonte.
+- **Proposta** (`regras-agentes-2026-11-18`, `proposta.md`), pedida com "não, esse jeito não é bom para passar as regras, como poderiamos melhorar isso?" · "mas o agente que vai passar as regras como ele vai saber que regras passar para cada tipo de serviço?" · "Sim": 155 regras, 80 repetidas (28 com diferença), **10 contradições (X1 a X10)**; pacote do Windows de 93 mil para 9,2 mil caracteres; 24 conferências automáticas que dão para fazer já (duas teriam barrado o `DETACHED_PROCESS` e a tranca); formulário de 20 campos. Achou um bug: duas dicas do Automático mostram "D-068" e "D-094" ao Kaique (Lista de bugs `2fdc05cc`).
+- **Respondidas:** X8 (D-785), X1 (D-786), X2 (D-787); X3 adiada ("falamos disso depois, deixe anotado", Lista de espera `dc6e2c7d`). **Faltam X4, X5, X6, X7, X9, X10.**
+- **D-793 construída:** `tools:` nos 4 agentes sem a de abrir agente e sem as da Central (`afa68e46`/`15f071be`), e a junção `C:\Users\fotog\.claude\agents` → `D:\programas\EditorImpressao\.claude\agents` ("B"). Conferido agora: a junção existe e lista os 4 arquivos. **Falta a prova numa conversa nova.**
+
+### 2.8 Limpeza do disco
+
+- **Área de trabalho** ("pode mover, mas vai mover para onde?"): os dois instaladores antigos (563 MB e 115 MB), os dois "handoff-editor-de-impressao" e os 3 rascunhos de layout foram para `D:\programas\EditorImpressao-arquivos\sobras da área de trabalho` (conferidos antes de tirar). Ficaram os atalhos "(desenvolvimento)" e "(rodada de consertos)" e o "Brasão 1.ai".
+- **D:** ("Sim, e pode apagar os que precisam de reinicio para apagar"): saíram as pastas de montagem da etapa 5 (24 GB), os worktrees de 4 agentes que terminaram (3 GB: nome do pacote, causas do Lusíadas, explicações da Central, pasta do Velopack) e 16 programinhas de vigia. **A trava de segurança não deixou apagar `D:\agente_temp_testes` (~4 GB) nem `C:\pr-medida` (2,5 GB)**, por estarem na raiz do disco: ficam para ele pelo Explorador (conferido agora: as duas existem).
+- **C:** ("1. se excluir esse do cap cut não vai afetar o programa, só os 34 giga que são versões antigas?" · "pode"): 20 versões antigas do CapCut removidas, ficaram a 9.8.0 e a 9.7.1. O C: foi de ~10 para ~40 GB livres. **Agora: C: 37,7 GB livres, D: 207 GB.** O cache do pip (5,6 GB) **não** foi tirado: ele não disse sim. A memória virtual (cresceu 14 GB nas medidas) só volta ao reiniciar.
+
+## 3. As falas do Samuel desde o último checkpoint e o destino (UTC)
+
+| Hora | Fala (literal) | Destino |
+|---|---|---|
+| 17/11 21h51 | "O que estávamos fazendo não era o .exe?" | Respondido (sim, a frente do Kaique, etapa 5) |
+| 21h52 | "Pode, só realmente verifica se é isso mesmo que estávamos fazendo." | Agente da prova, ramo `velopack-pasta-2026-11-17` |
+| 21h54 | "E a conversa de hoje?" · "Tais caducando" | **Correção:** a gerente chamou de "ontem" a conversa do mesmo dia e pôs a data 18/11 no trabalho do agente. Memória "conferir a data de hoje" |
+| 21h55, 21h56 | "Tá, então em que etapa estamos?" · "Ok, prossiga." | Respondido (etapa 5 de 7) |
+| 21h56, 22h02 | "Enquanto isso, preciso que você analise a central" · "Ok" | As 38 respostas: D-752 a D-762; agentes `causas-lusiadas` e `explicacoes-central`; todas respondidas até 23h13 |
+| 22h08 | "Você leu todas as minhas respostas e anotou minhas recomendações né?" | **Correção:** só 14 estavam no Livro; as outras 24 entraram (D-759 a D-762, `97ba026b`) |
+| 22h18 | "ok, pode fazer" | D-763 (nome interno do pacote) |
+| 22h44, 22h46 | "2- já tinha sido consetado antes né?" · "Isso é porque existem mais de uma caminho para dividir e o programa está criando dois caminhos para fazer a mesma coisa?" | Respondido (o conserto de 27/10 cobriu só a primeira divisão). Defeito na Lista de bugs (`8d7c4123`); "ponho na fila?" ficou na fila pela D-765 |
+| 23h46 | "ok" | D-764 (o teste antigo da assinatura) |
+| 23h48 | "eu não quero fazer nenhum conserto até o .exe estar pronto para o kaique e a questão de eu poder lançar testes no pc dele funcionar." | D-765 |
+| 23h49 | "os proximos consertos eu quero poder arrumar e poder atualizar a versão dele sempre que eu puder" | D-766 |
+| 18/11 00h04 | "porque tem documentação do editor de impressão na area de tabalho, olha isso" | Listado; movido às 16h55 (ver 16h53) |
+| 01h15 | "sim, pode fazer" | Etapa 5, fases 0 e 1 (`3e01dc29`) |
+| 02h05 | "já passou 10 mniutos faz tempo" | **Correção:** eram ~7 h, não 11 min (§7) |
+| 11h09, 11h10 | "tá, mas isso não é uma falha? não deveria ser mais simples?" · "não deveria ser mais rapido" · "fazer tudo de novo sempre, eu acho que está errado né?" · "as atualizações deveriam ser rapidas" | Lista de bugs 18/11 (`987cddeb`) |
+| 11h13 | "ok, pode botar um agente para estudar" | Estudo `publicar-rapido-2026-11-18` |
+| 11h15, 11h20 | "esse tempo é muito grande, porque demora tanto?" · "ok" | Explicado; a etapa 5 recomeça |
+| 11h23 | "sim" | Fase 0.3 (foto com administrador) |
+| 11h24 | "eu não tirei foto" | Anotado no relatório (D-737 pela metade) |
+| 11h32 | "pode" | Fase 2, instalar |
+| 11h33 | "eu não consigo tirar print, quando a mensagem aparece, mas deu certo sim, a mensagem apareceu" | Anotado. **Sem destino:** a pergunta "Posso trocar a foto pela sua frase de que ela apareceu?" ficou sem resposta (§9) |
+| 11h55, 11h56 | "Sim" · "já apareceu e eu já dei sim" | Fase 2.4 (fonte de teste) |
+| 11h58 | "sim, eu dou permissão para todos os proximos" | Autorização das perguntas do Windows da etapa 5 |
+| 12h13 | "pode fazer aquele negocio não entrar em modo de descanso, pois eu vou ter que fechar ela para trocar de escritorio" | Já estava assim (tampa "não fazer nada", descanso "nunca"); nada mudado |
+| 12h18 | "sim" | Abrir o programa com a janela fora da vista (fase 3) |
+| 12h25 | "sim" | Seguir (refazer a primeira abertura) |
+| 12h37 | "não apareceu nada" | Defeito 2 (a pergunta não aparece com o programa atrás) |
+| 12h43 | "pode rodar, pode fazer aparecer na tela" · "apareceu, dei sim" | Prova do pedido fora do programa (`3577a8c1`); autorização para o programa aparecer na tela dele na etapa 5. A pergunta "direto no meio da tela ou pelo botão piscando?" ficou sem resposta direta |
+| 12h58 | "pode" | Primeira abertura na tela (fase 3 feita, `d40b2326`) |
+| 13h00 | "abriu o programa, mas eu não escolhi nenhuma senha, a senha vai [senha omitida de propósito]" | A senha dos testes passou a existir (dita por ele); **não gravada em lugar nenhum** |
+| 13h02 | "apertei agora não e depois apareceu mensagem e eu apertei sim e começou a clicar em algumas coisas" | Fase 3 certa |
+| 13h10 | "e agora, onde estamos?" | Respondido (fase 4) |
+| 13h22 | "sim" | Seguir sem consertar; atualizações pelo ajudante (fases 4 a 6, `fb851c82`) |
+| 13h40 | "quantos %?" | Respondido (~40%) |
+| 14h09 | "que defeitos já foram achados?" | Respondido (4 até ali) |
+| 14h33 | "não apareceu nada aqui para eu aceitar ainda" | Respondido (as fases 4 a 6 não pedem nada) |
+| 14h38 | "a" | Jeito (A): uma janela do PowerShell guarda a senha só na memória |
+| 14h40 a 14h57 | "botei a senha, mas apareceu para colocar a senha dentro do prorama" · "eu digitei no programa" · "do powershel não abriu ainda" · "pode rodar, eu coloquei a senha em uma janela que abriu dentro do programa, o powershell não apareceu até agora" · "cliquei" | Fase 7 (`2befbc7a`, `7b2f5aea`) |
+| 15h10, 15h14 | "pode" · "pode" | Fases 7.4, 8 e 9 por SSH (`dcd60c0a`, `e1dde627`) |
+| 15h17 a 15h39 | "e agora?" · "vai demorar tudo isso, toda vez que for atualizar?" · "faz quase 1 hora e não terminou ainda" · "quando for trocar isso vai ter que fazer todo esse processo que acabamos de fazer que demorou 3 dias?" | Respondidos; a lentidão foi ao estudo e ao plano (D-768, D-789) |
+| 15h40 | "pode começar" | Fase 10 |
+| 15h44 | "pode seguir, mas eu não sei no que isso implica" | Explicado; seguiu para a fase 11 |
+| 15h45, 15h46 | "mas não seria melhor você ver porque acontecue esse erro e arrumar?" · "por que esse defeitos estão acontecendo, porque não foi pensando nisso antes de programar por3 dias ?" | Respondidos; a causa da tranca foi achada |
+| 15h47, 15h48 | **"não faça mais nada escodindo ou de mentira"** · **"não quero fazer consertos quero que funcione"** · **"quero que faça as coisas certas e sem bugs ou erros, deveria ter pensado nesses erros na hora de montar a estrutura do atualizador e testes a distancias"** | D-767 |
+| 15h50 | "sim, consegue usar mais de um agente para fazer isso de forma mais rapida?" | 4 agentes: etapa 5 (fases 11 e 12), as duas revisões, o estudo |
+| 16h00 | "não entendi nada, explica de maneira mais clara e porque vai desinstalar o c++ e as coisas do meu projeto?" | Reexplicado (nada dele sai). **Erro de explicação** (§7) |
+| 16h01 | "ok, pode fazer" | Fase 12 (`abbc3e9d`) |
+| 16h02, 16h03 | "já sabe o que deu errado na nossa atualização do nosso programa? porque os agentes erraram tão feio estruturamente e porque durou mais de 3 dias nesse serviço?" · **"não tem como construir uma coisa sem defeitos? desde que eu comecei a programar aqui com o calude, você não fez nada que viesse sem defeitos."** | Respondidos; viraram o caso da §11.12 ampliada e a D-775 |
+| 16h07 | "eu não vou reiniciar agora o pc, eu consigo apagar a pasta manualmente?" | Explicado; pendência do perfil `editortestes` (§9) |
+| 16h12, 16h13 | "pera ai, não entendi, vai ser tudo feito do zero? o que vai ser feitow" · "?" · "é só isso que falha, todo o resto funciona?" | Respondidos ("não é do zero"; "não posso te garantir") |
+| 16h14, 16h16 | "os agentes que fizeram isso no programa, leram a regra de não fazer remendos no programa? ou no caso gambiarras?" · **"eu acho que tinhamos que atualizar a regra de gambiarras para que ela se aplicasse a tudo né? de maneira que não fique dubia."** | CLAUDE.md §11.12 ampliada e os 4 agentes (`919d8f02`, `0e510978`) |
+| 16h18, 16h21 | "como assim, a tela mostra?" · "então ele vai verificar no beck end realmente e não só olhar a tela?" · "ok, e agora? o que fazemos?" | Explicado com o exemplo do "Desligado" |
+| 16h39 | "e agora?" | Respondido |
+| 16h53, 16h54 | "o que tem de sobra do editor" · "pode mover, mas vai mover para onde?" | Movido para `sobras da área de trabalho` |
+| 17h20, 17h28 | "e agora, terminou?" · "quantos %?" | Respondidos |
+| 17h37 | "eu autorizo" | Apagar `C:\pr-medida`: a trava não deixou; fica para ele |
+| 17h48 | "precisa excluir alguma coisa então né" · "me da uma lista do que pode ser limpo" | Lista dada |
+| 17h54 a 17h58 | "eu quero apagar sem precisar reiniciar" · "o numero 4 - vai demorar muito para refazer?" · "quanto tempo demorou para fazer da ultima vez a numero 4?" | Respondidos (a pasta do programa levou ~7 min) |
+| 18h06 | "Sim, e pode apagar os que precisam de reinicio para apagar" | 27 GB apagados no D:; `D:\agente_temp_testes`, `C:\pr-medida` e o perfil ficaram (§2.8) |
+| 18h22 | "eu queria esvaziar o c" | Medida do C: |
+| 18h25 | "mas e a parte de atualizar o programa?" · "onde ficamos?" | Respondido |
+| 18h27, 18h31 | "1. se excluir esse do cap cut não vai afetar o programa, só os 34 giga que são versões antigas?" · "pode" | 20 versões do CapCut removidas |
+| 18h31 | "pode começar o proximo passo, só quero saber como isso vai ser feito" | Agente do plano (v1, `ddd06787`) |
+| 19h06 | "começa a explicar" | Decisões do plano, uma por uma |
+| 19h11, 19h14 | "o que os grandes programas fazem?" · "mas dai vai ter que baixar o motor do kraken toda vez e reinstalar ele de novo?" | Explicado |
+| 19h24 | "vou escolher a 16, vamos para a proxima" | D-768 |
+| 19h26 | "b" | D-769 |
+| 19h28 | "a" | D-770 |
+| 19h29 | "A" | D-771 |
+| 19h30 a 19h33 | "a" · "pera ai, essa opção que eu escolhi, não entendi, demorar 15 minutos porque?" · "mantenho, qual a proxima coisa" | D-772 |
+| 19h34 | "A" | D-773 |
+| 19h35 a 19h39 | "não entendi" · "o que os testes novos pedem?" · "todas essa mudanças não vão dar erro, não vamos precisar refazer né?" · "o agente vai tentar quebrar antes de fazer o teste real na tela né?" · "ok" | D-774 e D-775 |
+| 19h41 | "Sim, no C só tem que cuidar para não encher o disco C inteiro" | D-776 |
+| 19h42 a 19h44 | "não entendi" · "mas dai vai fazer quais versões?" · "ok, fica assim" | D-777 |
+| 19h47 | "A" | D-778 |
+| 19h52 a 19h59 | "não entendi nada" · "não tem outra peça que funcione melhor?" · "ta vamos continuar com ele, mas o que fazemos para ele não dar defeito e porque nossa peças em voltadele deram defeito?" | D-779 |
+| 20h01 | **"mas isso não é um erro bem amador?"** | Respondido ("É, sim"); §7 |
+| 20h04, 20h05 | "mas isso não pega essa falha né" · "pode, mas quantas regras os agentes tem até agora?" | §11.12 ponto 6 (`0014e618`, `fc2a0c53`); respondido (~40 numeradas, 70 mil caracteres) |
+| 20h07 a 20h11 | **"não, esse jeito não é bom para passar as regras, como poderiamos melhorar isso?"** · "mas o agente que vai passar as regras como ele vai saber que regras passar para cada tipo de serviço?" · "Sim" | Proposta `regras-agentes-2026-11-18` |
+| 20h12 | "vamos continuar" | Decisão 12 do plano |
+| 20h13 a 20h17 | "não tem como contruir para isso não acontecer antes de ter que testar de novo?" · "mas tu diz que tem essas trancas mas acabou de dizer que o programa ficou aberto, como tem trancas?" · "não quero fazer essa prova com o celular, eu quero que tu programa o negocio e ele funcione" | D-780 |
+| 20h20, 20h21 | "explica melhor" · "quero os dois campos e a possibilidade de apertar o botão para poder ver a senha enquanto digita" | D-781 |
+| 20h24 a 20h30 | "como assim assusta?" · "ele não vai pensar isso" · "sim" | D-782 |
+| 20h32 | "eu desligo quando for instalar." | D-783 |
+| 20h33 | "pode colocar" | Estudo `kraken-separado-2026-11-18` |
+| 20h36, 20h43 | "acha que isso é suficiente?" · "ok" | D-776 (reserva de 20 GB no C:) |
+| 20h44, 20h46 | "ok, mas como vai saber que regras enviar para o agente?" · "ok, e as regras que se contradizem?" | D-784 |
+| 20h48, 20h51 | "ok, mais ainda existem mais casos na opção A" · "ok" | D-785 (X8) |
+| 20h55 | "a" | D-786 (X1) |
+| 20h56 | "A" | D-787 (X2) |
+| 21h03 a 21h44 | "qual?" · "do que você está falando?" · "pode explicar melhor" · "pera ai não entendi" · "falamos disso depois, deixe anotado" | X3 na Lista de espera (`dc6e2c7d`). **Quatro explicações seguidas sem ele entender** (§7) |
+| 21h45, 21h46 | "1" · "1" | Começar pelo Kraken; D-788 |
+| 21h47, 21h51 | "mas iria demorar mais toda vez que eu fosse fazer a compilação né?" · "A" | D-789 |
+| 21h52 | "A" | D-790 |
+| 21h54 | "1" | Agente atualiza o plano (v2, `9a57f482`) |
+| 22h04 | "e o que mais tem para decidir?" · **"faz uma pergunta por vez"** | Lista dada; daí em diante uma por vez |
+| 22h10, 22h20 | "não sei do que você está falando" · "b" | D-791 |
+| 22h34, 22h35 | "mas e o que vai determinar o que vai nesse formulario? vai ser feito um toda vez que for enviado um trabalho para um agente?" · "ok" | D-792 |
+| 22h40 | "ok" | D-793 |
+| 22h53 a 23h00 | "papeis? do que você está falando, explica melhor" · "no caso quando eu escolher o projeto do editor de impressão ele vai abrir na pasta do disco d automaticamente?" · "B" | D-793: a junção dos agentes (`afa68e46`, `15f071be`, `c7631563`) |
+| 23h03 | "vamos fazer checkpoint e começo na proxima conversa." | Este checkpoint |
+
+**Sem destino (viram pendência, §9):** a foto da pergunta do Windows trocada pela frase dele (D-737); a pergunta "meio da tela ou botão piscando?" (pesa no risco 1 do plano-v2); o cache do pip; a `D:\Config.Msi` (citada pela gerente em 17/11 22h20, sem resposta); a velocidade da internet do Kaique.
+
+## 4. Decisões fechadas (o texto e a situação estão no Livro, `obra-2026-10-26`; não copiar daqui)
+
+- **17/11 noite:** D-752 a D-762 (as 38 respostas da Central); D-763 e D-764 (nome do pacote, construídas e juntadas); D-765 (nenhum conserto até a entrega); D-766 (depois, cada conserto vira versão).
+- **18/11, etapa 5:** D-767 (o que mexe no Windows só vale de verdade e à vista; alcance resolvido pela D-785).
+- **Plano da parte do Windows:** D-768 (o Kraken sai do pacote que se atualiza; "decidida, falta o estudo"), D-769 (com "Depois", troca ao fechar), D-770 (janelinha "Atualizando" em toda troca), D-771 (ligar é tudo ou nada), D-772 (OpenSSH do Windows Update), D-773 (versões de prova de verdade, janela visível e rascunho no GitHub), D-774 (testes antigos que cobram o jeito errado mudam), D-775 (escrever → testes → outro agente tenta quebrar → prova na tela), D-776 (publicar no C:, nunca menos de 20 GB livres), D-777 (instalador só na primeira entrega e quando ele pedir), D-778 (três frases do aviso de falha), D-779 (fica o Velopack 1.2.161 com a nossa proteção), D-780 (duas trancas, sem prova do celular), D-781 (senha em dois campos com botão de ver), D-782 ("Editor de Impressão" na pergunta do Windows), D-783 (ele desliga o Controle Inteligente de Aplicativos ao instalar).
+- **Kraken:** D-788 (pasta própria dentro da pasta do programa), D-789 (cada atualização inteira, sem o motor), D-790 (motor novo é tudo ou nada).
+- **Regras:** D-784 (pacote de regras por trabalho), D-785 (o que roda à vista e o que pode ficar escondido; X8), D-786 (velocidade como em 19/10; X1), D-787 (testes no PC como em 19/10; X2), D-791 (o porteiro barra desde o primeiro dia, com lista de exceções que só diminui), D-792 (formulário único da entrega), D-793 (agentes sem abrir agente nem gravar na Central; junção; "construída, falta a prova numa conversa nova").
+
+## 5. Caminhos descartados
+
+- **Consertar no meio da etapa 5** (cada conserto = uma versão de ~1 h): ficou para depois, num plano só.
+- **Remendar defeito por defeito:** as duas revisões dizem que deixaria as 4 causas de pé. Ficou: refazer a parte que conversa com o Windows, numa peça só.
+- **Baixar só a diferença** (D-789): mais lenta no notebook e fora da assinatura.
+- **Trocar o Velopack** (1.3.39 de teste, MSIX, tufup, WinSparkle, fazer a nossa): fica o 1.2.161 com a nossa proteção (D-779).
+- **Motor do Kraken como um segundo programa** (o estudo chamou de remendo): fica na pasta do programa (D-788).
+- **Uma semana só avisando** nas conferências automáticas: ele escolheu barrar desde o primeiro dia (D-791).
+- **Prova do celular** para o Tailscale (D-780) e **"Windows PowerShell" na pergunta** (D-782).
+- **Copiar os agentes para a pasta do usuário** (duas cópias): ficou a junção (D-793).
+- **Testar o Windows numa área escondida** (D-767, D-785): o Windows não deixa a pergunta de administrador aparecer de lá.
+
+## 6. Descobertas de comportamento real (caras de redescobrir)
+
+- **Velopack 1.2.161:**
+  - sem administrador, grava `Update.exe` (4 MB) numa pasta de reserva `LocalAppData\<nome do pacote>`; por isso o nome virou `EditorImpressaoPrograma`;
+  - o desinstalador apaga `LocalAppData\<título>`, não `LocalAppData\<nome>` (versões mais novas apagam também pelo nome);
+  - pela diferença ele remonta o pacote inteiro no PC: 22-23 min contra 7,5 min do pacote inteiro (medido);
+  - fecha à força o programa aberto no meio da troca (lido no código);
+  - a 1.3.39 (de teste) conserta dois defeitos que nos atingem (troca que falha num momento ruim; pasta que sobra);
+  - a pasta ao lado de `current` dentro da pasta do programa sobrevive à troca e sai no desinstalar (lido, estudo do Kraken);
+  - publicar no D: (HD externo, USB) é lento pela quantidade de arquivos: a mesma diferença leva 20,5 min no D: e 3,6 no C:.
+- **Windows:**
+  - a pergunta de administrador ("Deseja permitir...?") aparece numa tela protegida: não dá print;
+  - se quem pede não está na frente, ela não aparece no meio da tela: só um escudo piscando na barra de tarefas, e o pedido cai sozinho; de uma área de trabalho escondida, o `runas` não funciona;
+  - para o PowerShell, a faixa é azul, "Editor verificado: Microsoft Windows"; para um programa sem certificado pago, amarela, "Editor: Desconhecido";
+  - `ctypes.get_last_error()` sem `use_last_error=True` dá sempre 0;
+  - `icacls` com regra de herança `(OI)(CI)` e `/inheritance:r` passando nos arquivos que já existem deixa a lista de licenças vazia e diz "deu certo" (código 0);
+  - Python 3.14: a pasta de `tempfile.mkdtemp` nasce só para o dono; o relatório gravado pelo administrador fica ilegível (PermissionError);
+  - instalar o Servidor OpenSSH pelo Windows Update levou 13 min;
+  - o perfil de uma conta apagada depois de entrar por SSH fica preso até reiniciar;
+  - o D: dá Controle total a "Todos": a conta de testes lê e grava lá;
+  - a senha passada ao Windows pelo jeito de hoje perde os acentos ("ç" → "þ");
+  - o Controle Inteligente de Aplicativos bloqueia programa sem certificado; desligado, não liga mais sem reinstalar o Windows;
+  - a memória virtual cresceu até 27 GB nas medidas e só volta ao reiniciar.
+- **PowerShell:** aberto com `DETACHED_PROCESS`, fecha sem rodar nada; com só `CREATE_NO_WINDOW`, roda (provado). Comandos mandados por SSH quebram as aspas se não forem montados com cuidado.
+- **Claude Code:** os tipos de agente (`.claude/agents/`) só aparecem se a conversa abrir na pasta do projeto ou se estiverem em `~/.claude/agents`, e são lidos quando a conversa abre. A trava de segurança não deixa apagar pasta na raiz de um disco (`C:\pr-medida`, `D:\agente_temp_testes`), nem com o "eu autorizo" dele.
+
+## 7. Erros da gerente nesta sessão (para não repetir)
+
+- **Datas:** chamou de "ontem" a conversa do mesmo dia e datou o trabalho do agente de amanhã. Ele: "Tais caducando".
+- **Anotou só 14 das 38 respostas no Livro.** Ele: "Você leu todas as minhas respostas e anotou minhas recomendações né?"
+- **De novo um achado de agente levado como certo antes de conferir:** "desinstalar apagou a pasta inteira" (era o título, não o nome). A gerente: "Errei ao te passar aquilo como certo." É o mesmo erro da PARTE -37.
+- **Tempo:** disse 11 min e a montagem levou ~7 h ("já passou 10 mniutos faz tempo"); disse 2h30 a 3h para a etapa 5, estimativa do mesmo agente.
+- **A pasta de instalação:** disse "C:\Program Files\Editor de Impressão"; é `EditorImpressaoPrograma`.
+- **Disse que a atualização já era rápida para o Kaique** ("Ele baixa só o que mudou, uns 19 MB"); a troca levou de 7 a 23 min.
+- **Prometeu "só uma peça"** é refeita; o plano achou mais 5 coisas.
+- **Explicações que ele não entendeu:** "não entendi nada, explica de maneira mais clara..." (16h00), "não entendi" (19h35, 19h42), "não entendi nada" (19h52), a contradição 4 em quatro tentativas ("qual?", "do que você está falando?", "pode explicar melhor", "pera ai não entendi"), "não sei do que você está falando" (22h10), "papeis? do que você está falando, explica melhor" (22h53). E uma lista de várias perguntas de uma vez → "faz uma pergunta por vez".
+  - **O que funcionou:** exemplo concreto do caso dele (a senha errada que ninguém vê; o "porteiro"; as versões 1.1, 1.2, 1.3; a faixa azul e a amarela), uma pergunta por vez, e dizer onde estamos antes da pergunta.
+- **Aceitou as etapas 3 e 4 sem a prova de verdade no Windows** (dito por ela mesma às 15h46 e 16h02: "Essa parte é falha minha"). Origem da §11.12 ampliada e da D-775.
+
+## 8. Testes (a última rodada)
+
+- **GitHub, rodada inteira:** 44202459161 (17/11, ramo `nome-pacote-2026-11-17`, o mesmo código da junção `8d567c4a`): **passou**. Depois disso nenhuma linha do programa mudou.
+- **Windows de verdade:** a etapa 5 (§2.2). É a primeira vez que o atualizador e os testes à distância rodaram fora de peças de mentira.
+- **PC, suíte inteira:** não rodou nesta sessão.
+
+## 9. Perguntas em aberto (texto exato, onde, quando)
+
+- **A última, chat 18/11 23h01 UTC:** "Com isso, as perguntas da proposta das regras terminaram. O que falta: 1. Os 3 pontos em que duas decisões suas não combinam, que o agente do plano achou. 2. Aprovar o plano atualizado. 3. As 6 contradições internas das regras. Sigo pelo 1, uma pergunta por vez?" → ele respondeu com o checkpoint. **A próxima conversa começa aqui.**
+- **Os 3 pontos (plano-v2 §6.3, texto do agente):**
+  1. "O Setup.exe que continua saindo (D-777) e o motor sempre dentro do instalador, sem nada baixado na hora (D-788 e D-727). [...] **O que o Samuel escolhe** (sem sugestão minha, porque cada saída muda uma decisão dele): o Setup.exe deixa de sair; ou sai, mas com o motor dentro como o .msi; ou sai como hoje e fica escrito que ele não serve para instalar."
+  2. "'A janelinha aparece em toda troca de versão' (D-770) e 'com Depois, a troca acontece sozinha, por trás, quando o Kaique fecha o programa' (D-769). [...] O plano segue as duas listas: **ao fechar, nada aparece**. Mas 'toda troca', lida sozinha, inclui a troca ao fechar. Confirmar com ele."
+  3. "O nome 'Editor de Impressão' na pergunta do Windows (D-782) e a regra técnica de caminho de disco sem acento (CLAUDE.md §3). [...] se o Windows mostrar o nome do arquivo para um programa sem certificado (risco 2), o arquivo teria de se chamar 'Editor de Impressão.exe' [...] Só se sabe depois da leitura do passo 1; se der conflito, vira pergunta antes de escrever."
+- **Aprovar o plano-v2** (`relatorios/plano-windows-2026-11-18/plano-v2.md`, ramo `plano-windows-2026-11-18`) e as perguntas da seção 6.2 dele antes de cada passo (textos de tela novos, como desligar no meio da troca, como tirar a internet, o desenho da janela da senha, o print da janelinha).
+- **As contradições das regras que faltam** (proposta, seção 1): X4 (quem escreve "PRONTO PARA CONFERIR"), X5 (ramo principal: `master`, `fase-1` ou `obra-2026-10-26`), X6 (quantos agentes), X7 (o agente de tela e o `core/`), X9 (o ritmo: a obra e a D-765), X10 (a ordem de leitura). **X3** adiada: "falamos disso depois, deixe anotado" (Lista de espera 18/11).
+- **D-768:** se as 3 respostas do estudo do Kraken (D-788 a D-790) contam como "o Samuel aprova esse estudo". No Livro a D-768 ainda diz "decidida, falta o estudo".
+- **Chat 18/11 11h33:** "O registro que você aceitou em 16/11 (D-737) pede uma foto dessa pergunta. Posso trocar a foto pela sua frase de que ela apareceu? Sugiro que sim. Se preferir, você tira com o celular na próxima." Sem resposta.
+- **Chat 18/11 12h43:** "a pergunta apareceu **direto no meio da tela**, ou você teve que clicar num **botão piscando na barra de tarefas** primeiro?" Sem resposta direta.
+- **Coisas dele:** apagar `C:\pr-medida` e `D:\agente_temp_testes` pelo Explorador; avisar quando reiniciar (para tirar `C:\Users\editortestes` com um "Sim"); o cache do pip, 5,6 GB ("Se quiser, eu tiro também", sem resposta); a `D:\Config.Msi` (17/11 22h20: "só mexo quando você quiser"); a internet do Kaique (não trava nada).
+- **Paradas pela D-765 (de antes):** as respostas da Central que voltaram para ele escolher de novo; **a pergunta dele de 17/11 14h10, ainda sem resposta da gerente:** "se eu instalar o claude code no pc do kaique você consegue ver lá? se a gente abrir a mesma conversa e ligar acesso remoto?"; D-709 (o agente espera o "sim" depois do plano?); D-710 (modelos por tipo de tarefa); as 4 perguntas da revisão do código de 10/11; os itens da D-708.
+
+## 10. Próximo passo
+
+1. Na conversa nova: §0 passos 1 e 2 (fetch, conferir a junção dos agentes).
+2. Os 3 pontos do §9, um por vez, com exemplo concreto.
+3. Aprovar o plano-v2; a D-768; X7, X5 e X4.
+4. Passo 0 do plano (o pacote de regras, o porteiro e o formulário), depois o passo 1 (o porteiro do Windows e a pasta segura, primeira sessão à vista no PC dele).
+5. **Falta na gerente, antes de tudo:** o Registro de mudanças do Plano para 18/11 de dia (as duas cópias). Hoje o Plano tem as linhas da Lista de bugs de 18/11 (`987cddeb` a `2fdc05cc`) e a da Lista de espera (X3), mas nenhuma entrada do Registro depois de "18/11/2026 (madrugada)". Também faltam na Lista de bugs, como linhas próprias, três defeitos da etapa 5 que estão no relatório e no plano-v2: a pergunta que não aparece com o programa atrás de outra janela (na Lista só aparece de passagem, "o programa aberto na área escondida"), o perfil preso e a causa provada da tranca (a linha da fase 7 ainda diz "falta provar").
+
+## 11. Como rodar
+
+- **Programa da versão de teste:** atalho "Editor de Impressao (rodada de consertos)". O programa instalado de verdade foi desinstalado no fim da etapa 5.
+- **Rodada do GitHub:** `gh workflow run "Testes no Windows" -R Samuel-Bottini-BR/EditorImpressao --ref claude/list-server-files-gkos8v -f ramo=<ramo>`; acompanhar com `gh run watch <id> -R Samuel-Bottini-BR/EditorImpressao --exit-status`. O `gh` fica em `C:\Program Files\GitHub CLI`.
+- **No PC:** um arquivo por vez, `.venv\Scripts\python.exe -m pytest tests\<arquivo> -q -p no:cacheprovider --basetemp=D:/agente_temp_testes/<nome>`, com `QT_QPA_PLATFORM=offscreen` (D-787). O que mexe no Windows roda à vista (D-785).
+- **Publicar:** `publicar_versao_kaique.py`. Não usar até o plano-v2 (passo 2 muda o publicar).
+
+## 12. Ambiente
+
+- **Junção dos agentes:** `C:\Users\fotog\.claude\agents` → `D:\programas\EditorImpressao\.claude\agents` (D-793). Se o D: estiver desconectado, os tipos somem.
+- **Disco agora:** C: 37,7 GB livres, D: 207 GB. A reserva do publicar é 20 GB livres no C: (D-776).
+- **Pastas que ficam:** `D:\programas\EditorImpressao-arquivos\reserva-projetos-2026-11-17` (14 MB, até ele dizer que pode sair); `saida_teste\etapa5\` (provas, ~14 GB); `sobras da área de trabalho`; `C:\Users\editortestes` (preso); `C:\pr-medida` e `D:\agente_temp_testes` (para ele apagar); `D:\Config.Msi`.
+- **Energia:** tampa "não fazer nada" e descanso "nunca" (conferido 18/11).
+- **Nada instalado** do Editor novo no PC dele agora; o Editor antigo de 01/09 saiu (D-729). O Visual C++ e o Tailscale ficam.
+
+---
+
 
 # PARTE -37 — Checkpoint de 16-17/11/2026: a frente do notebook do Kaique (etapas 1 a 4 feitas e juntadas, brasão, D-705 a D-751), etapa 5 parada num achado do Velopack, 38 respostas da Central esperando a gerente (leia isto primeiro)
 

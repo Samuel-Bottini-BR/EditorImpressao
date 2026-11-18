@@ -7,6 +7,14 @@ Montado em 20/10/2026. Fontes: [CLAUDE.md §3 e §7](../../CLAUDE.md), [plano, R
 e uma conferência leve no PC em 20/10/2026 (`pip list`, `py -0p`, `Test-Path`, `Get-ChildItem`). O PC em si (memória,
 disco, regras de uso) está em [pc-e-github.md](pc-e-github.md). O mapa do código está em [../mapa-do-codigo.md](../mapa-do-codigo.md).
 
+> **Atualização de 18/11/2026, noite ([PARTE -38](../../historico/Editor%20de%20Impressao%20-%20resumo%20para%20o%20Claude.md) §12; vale sobre o resto):**
+> - **Junção dos agentes:** `C:\Users\fotog\.claude\agents` → `D:\programas\EditorImpressao\.claude\agents` (D-793), para os 4 tipos aparecerem em qualquer conversa; se o D: estiver desconectado, eles somem. Falta provar numa conversa nova.
+> - **Disco (18/11 23h UTC):** C: 37,7 GB livres, D: 207 GB. Publicar nunca deixa menos de 20 GB livres no C: (D-776). Saíram 20 versões antigas do CapCut (o C: foi de ~10 para ~40 GB) e, no D:, 27 GB de montagem e de worktrees. O cache do pip (5,6 GB) ficou (sem o sim dele). A memória virtual cresceu nas medidas e só volta ao reiniciar.
+> - **Para ele apagar pelo Explorador** (a trava de segurança barra pasta na raiz do disco): `C:\pr-medida` (2,5 GB) e `D:\agente_temp_testes` (~4 GB). Preso até reiniciar: `C:\Users\editortestes`. Pequena, com administrador: `D:\Config.Msi`.
+> - **Ficam:** `D:\programas\EditorImpressao-arquivos\reserva-projetos-2026-11-17` (cópia dos 44 arquivos de projeto, 14 MB), `D:\programas\EditorImpressao-arquivos\sobras da área de trabalho` (os instaladores antigos e rascunhos que estavam na área de trabalho), `saida_teste\etapa5\` (provas, ~14 GB).
+> - **O programa novo não está instalado** no PC dele (desinstalado no fim da etapa 5); o Editor antigo de 01/09 saiu (D-729). Ficam o Visual C++ e o Tailscale. O `vpk` e o `velopack` são o 1.2.161 (D-779).
+> - **Energia:** tampa "não fazer nada" e descanso "nunca" (conferido em 18/11).
+
 ---
 
 ## 1. Os três Pythons (não confundir)

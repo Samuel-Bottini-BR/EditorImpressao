@@ -10,7 +10,7 @@ Memória do projeto **organizada por assunto**, decidida pelo Samuel em 19/10/20
 >
 > O histórico por data continua inteiro em
 > [historico/Editor de Impressao - resumo para o Claude.md](../historico/Editor%20de%20Impressao%20-%20resumo%20para%20o%20Claude.md)
-> (PARTE -37, de 16-17/11/2026, é a mais nova). A memória aponta para ele; não o substitui.
+> (PARTE -38, de 17-18/11/2026, é a mais nova). A memória aponta para ele; não o substitui.
 
 ## Antes de qualquer trabalho (todo agente)
 
@@ -46,6 +46,8 @@ Memória do projeto **organizada por assunto**, decidida pelo Samuel em 19/10/20
 | **montar uma conferência para o Samuel** | [geral/paginas-claude-ai.md](geral/paginas-claude-ai.md), [geral/jeito-do-samuel.md](geral/jeito-do-samuel.md), [conferencias.md](conferencias.md), [paginas-de-teste/](#páginas-de-teste-e-livros) |
 | **ler respostas do Samuel / registrar decisão** | [conferencias.md](conferencias.md) ("Como registrar uma resposta nova"), a ficha do item, o Registro do plano |
 | **instalador, notebook do Kaique** | [itens/6.8.md](itens/6.8.md), [itens/0.6.md](itens/0.6.md), [geral/kaique.md](geral/kaique.md), [geral/ambiente.md](geral/ambiente.md) |
+| **atualizador, publicar, motor do Kraken à parte** | [geral/atualizador.md](geral/atualizador.md), [geral/testes-a-distancia.md](geral/testes-a-distancia.md), [itens/6.8.md](itens/6.8.md), CLAUDE.md §11.12 (sem gambiarra, em tudo) |
+| **testes à distância, pergunta de administrador do Windows** | [geral/testes-a-distancia.md](geral/testes-a-distancia.md), [geral/atualizador.md](geral/atualizador.md), CLAUDE.md §11.12 |
 | **pesquisa (código de fora)** | [referencias/](#referências-de-fora), `docs/pesquisa/` |
 | **retomar o projeto depois de uma pausa** | [LINHA-DO-TEMPO.md](LINHA-DO-TEMPO.md), [ramos.md](ramos.md), [geral/perguntas-abertas.md](geral/perguntas-abertas.md), a PARTE mais nova do histórico |
 | **saber o que o Samuel pediu desde o começo** | [pedidos.md](pedidos.md) (os 68 pedidos literais), [resultados-R1-a-R9.md](resultados-R1-a-R9.md) |
@@ -90,7 +92,7 @@ onde veio).
 [regras-de-trabalho](geral/regras-de-trabalho.md) · [pc-e-github](geral/pc-e-github.md) ·
 [paginas-claude-ai](geral/paginas-claude-ai.md) · [perguntas-abertas](geral/perguntas-abertas.md) ·
 [jeito-do-samuel](geral/jeito-do-samuel.md) · [kaique](geral/kaique.md) · [glossario](geral/glossario.md) ·
-[ambiente](geral/ambiente.md)
+[ambiente](geral/ambiente.md) · [atualizador](geral/atualizador.md) · [testes-a-distancia](geral/testes-a-distancia.md)
 
 ## Referências de fora
 
