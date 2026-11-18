@@ -1,0 +1,2934 @@
+<!doctype html>
+<html lang="pt-BR">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Como passar as regras aos agentes: proposta (18/11/2026)</title>
+<style>
+:root { color-scheme: light dark; }
+* { box-sizing: border-box; }
+body {
+  font: 17px/1.65 "Segoe UI", system-ui, sans-serif;
+  max-width: 46rem; margin: 0 auto; padding: 2.5rem 1.5rem 6rem;
+  color: #1c1c1e; background: #fdfdfc;
+}
+h1 { font-size: 2rem; line-height: 1.2; margin: 0 0 .3em; letter-spacing: -.02em; }
+h2 { font-size: 1.35rem; margin: 2.4em 0 .6em; padding-top: .8em;
+     border-top: 1px solid #e6e4e0; letter-spacing: -.01em; }
+h3 { font-size: 1.1rem; margin: 1.8em 0 .4em; }
+h1 + p, h2 + p { margin-top: .4em; }
+p, li { margin: 0 0 .9em; }
+ul, ol { padding-left: 1.3em; }
+strong { font-weight: 640; }
+code {
+  font: .88em ui-monospace, "Cascadia Code", Consolas, monospace;
+  background: #f1efec; padding: .12em .35em; border-radius: 4px;
+}
+pre {
+  background: #f1efec; padding: 1em 1.1em; border-radius: 8px;
+  overflow-x: auto; line-height: 1.5;
+}
+pre code { background: none; padding: 0; }
+blockquote {
+  margin: 1.2em 0; padding: .1em 0 .1em 1.1em;
+  border-left: 3px solid #c9c5be; color: #55524d;
+}
+table {
+  border-collapse: collapse; width: 100%; margin: 1.2em 0;
+  font-size: .95rem; display: block; overflow-x: auto;
+}
+th, td { padding: .5em .8em; text-align: left; border-bottom: 1px solid #e6e4e0; }
+th { font-weight: 620; background: #f7f5f2; white-space: nowrap; }
+tr:last-child td { border-bottom: none; }
+img { max-width: 100%; height: auto; border-radius: 6px; margin: 1em 0;
+      border: 1px solid #e6e4e0; }
+hr { border: none; border-top: 1px solid #e6e4e0; margin: 2.5em 0; }
+.rodape { margin-top: 4em; padding-top: 1.2em; border-top: 1px solid #e6e4e0;
+          font-size: .85rem; color: #86827c; }
+@media (prefers-color-scheme: dark) {
+  body { color: #e8e6e3; background: #1a1917; }
+  h2 { border-top-color: #35332f; }
+  code, pre, th { background: #262421; }
+  th, td { border-bottom-color: #35332f; }
+  blockquote { border-left-color: #4a4741; color: #b0aca6; }
+  img { border-color: #35332f; }
+  .rodape { border-top-color: #35332f; color: #7d7973; }
+}
+@media print {
+  body { max-width: none; padding: 0; color: #000; background: #fff; }
+  h2 { page-break-after: avoid; }
+  table, img { page-break-inside: avoid; }
+}
+</style>
+</head>
+<body>
+<h1>Como passar as regras aos agentes: proposta (18/11/2026)</h1>
+<p>Proposta de um agente, só lendo e escrevendo. <strong>Nenhuma regra mudou de texto, nenhuma linha do programa nem dos testes
+mudou.</strong> Os esboços em <code>esbocos/</code> mostram como seria; nada está ligado (nem gancho, nem teste, nem conferência antes
+do commit). Ramo <code>regras-agentes-2026-11-18</code>, a partir do <code>fase-1</code> (<code>0014e618</code>). O Livro lido é o do obra (o do
+<code>fase-1</code> ainda não tem as decisões de 17 e 18/11).</p>
+<h2>Em poucas frases</h2>
+<ol>
+<li><strong>155 regras</strong> no CLAUDE.md e nos 4 arquivos de agente (mais 9 trechos que são informação, não regra).
+   <strong>80 aparecem em dois lugares ou mais</strong>, e 28 dessas cópias dizem coisas um pouco diferentes.
+   <strong>10 contradições</strong> de verdade (duas regras que não dá para cumprir juntas), 6 diferenças pequenas e
+   4 regras que parecem vencidas. 23 regras são só da gerente e não precisam ir para agente nenhum.</li>
+<li><strong>Hoje o implementador recebe 93 mil caracteres de regras</strong> (CLAUDE.md inteiro, o arquivo dele e o índice da
+   memória), e até 167 mil se ler tudo o que o índice manda "antes de qualquer trabalho". <strong>No pacote de exemplo
+   (a peça nova do Windows), as regras são 9,2 mil caracteres</strong> (10 "sempre" e 29 do trabalho), e o
+   pacote inteiro, com as decisões copiadas do Livro e o formulário, 18,6 mil. Cerca de 9 vezes menos regra.</li>
+<li><strong>A máquina pode cobrar 37 regras inteiras e 62 em parte.</strong> 24 conferências dão para
+   fazer já; 14 precisam de estudo. Rodando o esboço (só leitura) no código de hoje do obra, as três primeiras
+   teriam barrado exatamente os defeitos 1 e 4 da etapa 5 (o <code>DETACHED_PROCESS</code> do "Reiniciar agora" e a tranca
+   <code>/inheritance:r</code> da pasta), e uma quarta acha duas dicas de tela do Automático que mostram número de decisão ao Kaique.</li>
+<li><strong>O formulário da entrega</strong> tem 20 campos, em três etapas (antes de quem tenta quebrar, antes da prova à vista,
+   antes de "pronto"). O programa vê se cada campo existe e se bate com o código, o Livro e o git; não vê se a resposta
+   é boa. Isso é do agente que tenta quebrar, que recebe a lista completa de regras.</li>
+<li><strong>5 perguntas para o Samuel</strong> (seção 9).</li>
+</ol>
+<hr />
+<h2>1. O catálogo de todas as regras</h2>
+<p>Etiquetas: <strong>TODO</strong> todo trabalho · <strong>TELA</strong> tela · <strong>WIN</strong> Windows e instalador (e qualquer conversa com programa de
+fora) · <strong>IMG</strong> imagem, filtros e processamento · <strong>PERG</strong> perguntas e relatórios ao Samuel · <strong>TESTE</strong> testes ·
+<strong>GIT</strong> git e arquivos · <strong>PESQ</strong> pesquisa de peça de fora · <strong>GER</strong> só a gerente.
+Papel: todos · código (implementador e layout) · verif · pesq · layout · gerente.
+"Máquina": sim = um programa cobra a regra inteira; em parte = cobra um pedaço (ex.: que o campo existe); não = só
+gente. "Onde" lista todas as cópias; "Repete/contra" diz se as cópias dizem coisas diferentes e aponta a contradição
+(X = contradição, V = parece vencida; a lista está logo depois da tabela). <strong>Nada aqui foi resolvido, só apontado.</strong>
+O texto completo de cada regra continua no lugar de onde veio. Os mesmos dados estão em <code>esbocos/catalogo.py</code>.</p>
+<table>
+<thead>
+<tr>
+<th>#</th>
+<th>Regra</th>
+<th>Onde</th>
+<th>Etiquetas</th>
+<th>Papel</th>
+<th>Máquina</th>
+<th>Repete / contra</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>R001</td>
+<td>Ordem de leitura e quem manda</td>
+<td>C topo; implementador 'Leia antes'; verificador 'Leia antes'; pesquisador 'Leia antes'; layout 'Leia antes'</td>
+<td>TODO</td>
+<td>todos</td>
+<td>nao</td>
+<td>5 lugares; o CLAUDE.md põe o Livro como item 0, os agentes começam pelo ESTADO-ATUAL e só mais abaixo dizem 'Livro antes de tudo' · X10</td>
+</tr>
+<tr>
+<td>R002</td>
+<td>PEDIDOS.md e handoff são histórico</td>
+<td>C topo; C §7</td>
+<td>TODO</td>
+<td>todos</td>
+<td>nao</td>
+<td>2 lugares no CLAUDE.md, iguais</td>
+</tr>
+<tr>
+<td>R003</td>
+<td>Tela em português sem jargão</td>
+<td>C §1; layout 'Regras de tela'</td>
+<td>TELA PERG</td>
+<td>todos</td>
+<td>em parte</td>
+<td>2 lugares, iguais</td>
+</tr>
+<tr>
+<td>R004</td>
+<td>Critério final do livro</td>
+<td>C §1</td>
+<td>IMG</td>
+<td>todos</td>
+<td>nao</td>
+<td></td>
+</tr>
+<tr>
+<td>R005</td>
+<td>Não recomeçar do zero</td>
+<td>C §2</td>
+<td>TODO</td>
+<td>codigo</td>
+<td>em parte</td>
+<td></td>
+</tr>
+<tr>
+<td>R006</td>
+<td>Uma mudança por vez</td>
+<td>C §2; C §8 passo 3; implementador 'O que você faz'</td>
+<td>TODO</td>
+<td>codigo</td>
+<td>nao</td>
+<td>3 lugares; a Obra (D-014) suspende o 'conferir cada item antes do próximo' · X9</td>
+</tr>
+<tr>
+<td>R007</td>
+<td>Planejar antes; perguntar antes de mexer em estrutura</td>
+<td>C §2</td>
+<td>TODO</td>
+<td>codigo</td>
+<td>nao</td>
+<td></td>
+</tr>
+<tr>
+<td>R008</td>
+<td>Ir até o fim dentro da alçada</td>
+<td>C §2</td>
+<td>TODO</td>
+<td>todos</td>
+<td>nao</td>
+<td></td>
+</tr>
+<tr>
+<td>R009</td>
+<td>Primeiro a frase, depois o número</td>
+<td>C §2; implementador 'Como entregar'; verificador 'Como entregar'; pesquisador 'Como entregar'; layout 'Como entregar'; C §11.13.7</td>
+<td>PERG</td>
+<td>todos</td>
+<td>nao</td>
+<td>6 lugares, iguais no sentido</td>
+</tr>
+<tr>
+<td>R010</td>
+<td>Conciso: essencial no chat, detalhe em arquivo</td>
+<td>C §2</td>
+<td>PERG</td>
+<td>todos</td>
+<td>nao</td>
+<td></td>
+</tr>
+<tr>
+<td>R011</td>
+<td>Claro e direto com o Samuel</td>
+<td>C §2; C §11.13.7</td>
+<td>PERG</td>
+<td>todos</td>
+<td>em parte</td>
+<td>2 lugares, parecidos · X11</td>
+</tr>
+<tr>
+<td>R012</td>
+<td>Honesto: avisar erro e risco</td>
+<td>C §2</td>
+<td>TODO</td>
+<td>todos</td>
+<td>nao</td>
+<td></td>
+</tr>
+<tr>
+<td>R013</td>
+<td>Não inventar detalhe</td>
+<td>C §2</td>
+<td>TODO</td>
+<td>todos</td>
+<td>em parte</td>
+<td></td>
+</tr>
+<tr>
+<td>R014</td>
+<td>Relatório em três formatos</td>
+<td>C §2; C §8 passo 7; verificador passo 7</td>
+<td>TODO PERG</td>
+<td>todos</td>
+<td>sim</td>
+<td>3 lugares, iguais</td>
+</tr>
+<tr>
+<td>R015</td>
+<td>PySide6, nunca tkinter</td>
+<td>C §3; layout 'Regras de tela'</td>
+<td>TELA</td>
+<td>codigo</td>
+<td>sim</td>
+<td>2 lugares, iguais</td>
+</tr>
+<tr>
+<td>R016</td>
+<td>Uma página por vez na memória</td>
+<td>C §3</td>
+<td>IMG</td>
+<td>codigo</td>
+<td>em parte</td>
+<td></td>
+</tr>
+<tr>
+<td>R017</td>
+<td>A janela nunca congela</td>
+<td>C §3; layout 'Regras de tela'</td>
+<td>TELA WIN</td>
+<td>codigo</td>
+<td>em parte</td>
+<td>2 lugares, iguais</td>
+</tr>
+<tr>
+<td>R018</td>
+<td>Nenhuma exceção fecha a janela</td>
+<td>C §3</td>
+<td>TELA</td>
+<td>codigo</td>
+<td>em parte</td>
+<td></td>
+</tr>
+<tr>
+<td>R019</td>
+<td>Nenhum emoji em rótulo</td>
+<td>C §3; layout 'Regras de tela'</td>
+<td>TELA</td>
+<td>codigo</td>
+<td>sim</td>
+<td>2 lugares, iguais</td>
+</tr>
+<tr>
+<td>R020</td>
+<td>Texto com acento, caminho sem acento</td>
+<td>C §3</td>
+<td>TELA GIT WIN</td>
+<td>codigo</td>
+<td>sim</td>
+<td></td>
+</tr>
+<tr>
+<td>R021</td>
+<td>Algoritmo consagrado</td>
+<td>C §3</td>
+<td>IMG</td>
+<td>codigo</td>
+<td>nao</td>
+<td></td>
+</tr>
+<tr>
+<td>R022</td>
+<td>Nenhum modelo generativo</td>
+<td>C §3; implementador 'nunca'; pesquisador 'nunca'</td>
+<td>IMG PESQ</td>
+<td>todos</td>
+<td>em parte</td>
+<td>3 lugares; o pesquisador acrescenta 'OCR generativo proibido'</td>
+</tr>
+<tr>
+<td>R023</td>
+<td>Python 3.14, não rebaixar</td>
+<td>C §3; implementador 'nunca'</td>
+<td>TODO</td>
+<td>todos</td>
+<td>sim</td>
+<td>2 lugares, iguais</td>
+</tr>
+<tr>
+<td>R024</td>
+<td>GPU sem float16 rápido</td>
+<td>C §3; pesquisador 'roda aqui?'</td>
+<td>IMG PESQ</td>
+<td>todos</td>
+<td>em parte</td>
+<td>2 lugares; o pesquisador acrescenta o notebook do Kaique</td>
+</tr>
+<tr>
+<td>R025</td>
+<td>Erro nunca como stack trace</td>
+<td>C §3</td>
+<td>TELA</td>
+<td>codigo</td>
+<td>em parte</td>
+<td></td>
+</tr>
+<tr>
+<td>R026</td>
+<td>Licença: GPL pode entrar</td>
+<td>C §3; pesquisador 'O que você faz'</td>
+<td>PESQ</td>
+<td>todos</td>
+<td>nao</td>
+<td>2 lugares; o pesquisador cobra escrever sempre</td>
+</tr>
+<tr>
+<td>R027</td>
+<td>Teste de máquina: o agente decide</td>
+<td>C §4.1</td>
+<td>TESTE</td>
+<td>todos</td>
+<td>sim</td>
+<td></td>
+</tr>
+<tr>
+<td>R028</td>
+<td>Teste de olho: prepara, abre tudo, para e chama</td>
+<td>C §4.2; verificador passos 3 e 4</td>
+<td>TESTE IMG</td>
+<td>verif</td>
+<td>nao</td>
+<td>2 lugares; dizem coisas diferentes sobre quais páginas · X3</td>
+</tr>
+<tr>
+<td>R029</td>
+<td>Número que não pega o pior defeito não dá veredito</td>
+<td>C §4.2</td>
+<td>TESTE IMG</td>
+<td>todos</td>
+<td>nao</td>
+<td></td>
+</tr>
+<tr>
+<td>R030</td>
+<td>Ressalva escrita, nunca escondida</td>
+<td>C §4.2; implementador 'Como entregar'; verificador 'nunca'</td>
+<td>TODO</td>
+<td>todos</td>
+<td>em parte</td>
+<td>3 lugares, iguais</td>
+</tr>
+<tr>
+<td>R031</td>
+<td>Nunca 'APROVADO'</td>
+<td>C §4.3; C §8; implementador 'nunca'; verificador 'regra de ouro'; verificador 'nunca'</td>
+<td>TODO</td>
+<td>todos</td>
+<td>sim</td>
+<td>5 lugares; dizem coisas diferentes sobre quem pode escrever 'PRONTO PARA CONFERIR' · X4</td>
+</tr>
+<tr>
+<td>R032</td>
+<td>Máquina ou olho, item por item</td>
+<td>C §4.3; verificador 'regra de ouro'; verificador 'Como entregar'</td>
+<td>TESTE</td>
+<td>todos</td>
+<td>sim</td>
+<td>3 lugares, iguais</td>
+</tr>
+<tr>
+<td>R033</td>
+<td>Auditoria por amostragem</td>
+<td>C §4.4</td>
+<td>GER</td>
+<td>gerente</td>
+<td>nao</td>
+<td></td>
+</tr>
+<tr>
+<td>R034</td>
+<td>Onde roda cada teste</td>
+<td>C §4.6; implementador 19/10; verificador 19/10; pesquisador 19/10; layout 19/10</td>
+<td>TESTE</td>
+<td>todos</td>
+<td>sim</td>
+<td>5 lugares; nos agentes contradiz o texto mais antigo do próprio arquivo · X2</td>
+</tr>
+<tr>
+<td>R035</td>
+<td>Só documentos: entra com o GitHub</td>
+<td>C §4.6</td>
+<td>GER</td>
+<td>gerente</td>
+<td>sim</td>
+<td></td>
+</tr>
+<tr>
+<td>R036</td>
+<td>Filtro de velocidade no GitHub</td>
+<td>C §4.6; implementador 19/10; verificador 19/10; pesquisador 19/10; layout 19/10</td>
+<td>TESTE IMG</td>
+<td>codigo</td>
+<td>sim</td>
+<td>5 lugares · X1</td>
+</tr>
+<tr>
+<td>R037</td>
+<td>Lentidão pequena vai para a Fase 5</td>
+<td>C §4.6</td>
+<td>GER</td>
+<td>gerente</td>
+<td>nao</td>
+<td>X1</td>
+</tr>
+<tr>
+<td>R038</td>
+<td>Teste de reversão em todo conserto</td>
+<td>C §4.7; implementador 19/10; verificador 19/10; layout 19/10</td>
+<td>TESTE</td>
+<td>todos</td>
+<td>em parte</td>
+<td>4 lugares, iguais (o pesquisador não tem)</td>
+</tr>
+<tr>
+<td>R039</td>
+<td>Agente entrega sempre à gerente</td>
+<td>C §4.8; implementador 19/10; verificador 19/10; pesquisador 19/10; layout 19/10</td>
+<td>TODO</td>
+<td>todos</td>
+<td>em parte</td>
+<td>5 lugares, iguais</td>
+</tr>
+<tr>
+<td>R040</td>
+<td>Recados de outras janelas</td>
+<td>C §4.8</td>
+<td>GER</td>
+<td>gerente</td>
+<td>nao</td>
+<td></td>
+</tr>
+<tr>
+<td>R041</td>
+<td>Ler a memória antes</td>
+<td>C §4.9; implementador 19/10; verificador 19/10; pesquisador 19/10; layout 19/10</td>
+<td>TODO</td>
+<td>todos</td>
+<td>nao</td>
+<td>5 lugares; nos agentes ainda diz 'se a pasta já existir (está sendo montada a partir de 19/10)'</td>
+</tr>
+<tr>
+<td>R042</td>
+<td>Teste de imagem pelo caminho inteiro</td>
+<td>C §4.10; implementador 21/10; verificador 21/10; layout 21/10; C §11.13.4</td>
+<td>IMG TESTE</td>
+<td>todos</td>
+<td>em parte</td>
+<td>5 lugares, iguais</td>
+</tr>
+<tr>
+<td>R043</td>
+<td>Cada foto diz o caminho e as opções</td>
+<td>C §4.10; implementador 21/10; verificador 21/10; layout 21/10; C §11.13.5</td>
+<td>IMG PERG</td>
+<td>todos</td>
+<td>em parte</td>
+<td>5 lugares, iguais</td>
+</tr>
+<tr>
+<td>R044</td>
+<td>Só páginas que vão ser impressas</td>
+<td>C §4.10; implementador 21/10; verificador 21/10; layout 21/10; C §11.13.4</td>
+<td>IMG TESTE PERG</td>
+<td>todos</td>
+<td>em parte</td>
+<td>5 lugares, iguais</td>
+</tr>
+<tr>
+<td>R045</td>
+<td>Protocolo de mudança de imagem</td>
+<td>C §5</td>
+<td>IMG</td>
+<td>codigo</td>
+<td>em parte</td>
+<td></td>
+</tr>
+<tr>
+<td>R046</td>
+<td>Tudo o que foi tentado vai para melhorias.md</td>
+<td>C §5; pesquisador 'Leia antes'</td>
+<td>IMG PESQ</td>
+<td>todos</td>
+<td>em parte</td>
+<td>2 lugares</td>
+</tr>
+<tr>
+<td>R047</td>
+<td>O que o agente decide sozinho</td>
+<td>C §6</td>
+<td>IMG</td>
+<td>codigo</td>
+<td>nao</td>
+<td></td>
+</tr>
+<tr>
+<td>R048</td>
+<td>O que precisa perguntar antes</td>
+<td>C §6; implementador 'nunca'</td>
+<td>TODO</td>
+<td>todos</td>
+<td>em parte</td>
+<td>2 lugares; o implementador só repete 'trocar biblioteca'</td>
+</tr>
+<tr>
+<td>R049</td>
+<td>core/ não importa ui/</td>
+<td>C §7; implementador 'nunca'</td>
+<td>IMG WIN</td>
+<td>codigo</td>
+<td>sim</td>
+<td>2 lugares, iguais</td>
+</tr>
+<tr>
+<td>R050</td>
+<td>Modelo de dados em dois níveis</td>
+<td>C §7</td>
+<td>IMG TELA</td>
+<td>codigo</td>
+<td>em parte</td>
+<td></td>
+</tr>
+<tr>
+<td>R051</td>
+<td>Onde o programa guarda estado</td>
+<td>C §7</td>
+<td>WIN</td>
+<td>codigo</td>
+<td>em parte</td>
+<td></td>
+</tr>
+<tr>
+<td>R052</td>
+<td>Desempenho já resolvido, não refazer</td>
+<td>C §7</td>
+<td>IMG</td>
+<td>codigo</td>
+<td>nao</td>
+<td></td>
+</tr>
+<tr>
+<td>R053</td>
+<td>Ordem obrigatória do processamento</td>
+<td>C §7</td>
+<td>IMG</td>
+<td>codigo</td>
+<td>em parte</td>
+<td></td>
+</tr>
+<tr>
+<td>R054</td>
+<td>Acervo e originais só para ler</td>
+<td>C §7; implementador 'nunca'; verificador 'nunca'</td>
+<td>TODO GIT</td>
+<td>todos</td>
+<td>em parte</td>
+<td>3 lugares; o implementador lista mais pastas</td>
+</tr>
+<tr>
+<td>R055</td>
+<td>Queixas do Kaique são requisito</td>
+<td>C §7</td>
+<td>IMG TELA</td>
+<td>todos</td>
+<td>nao</td>
+<td></td>
+</tr>
+<tr>
+<td>R056</td>
+<td>Handoff só com pedido do Samuel</td>
+<td>C §7</td>
+<td>GIT</td>
+<td>todos</td>
+<td>sim</td>
+<td></td>
+</tr>
+<tr>
+<td>R057</td>
+<td>Item da fase atual, na ordem</td>
+<td>C §8 passo 1; C §10.2; implementador 'O que você faz'</td>
+<td>GER TODO</td>
+<td>todos</td>
+<td>nao</td>
+<td>3 lugares · X9</td>
+</tr>
+<tr>
+<td>R058</td>
+<td>Testes quebrados: conserta antes de seguir</td>
+<td>C §8 passo 4; implementador 'O que você faz'</td>
+<td>TESTE</td>
+<td>codigo</td>
+<td>sim</td>
+<td>2 lugares</td>
+</tr>
+<tr>
+<td>R059</td>
+<td>Régua e velocidade; nada mais lento</td>
+<td>C §8 passo 5; implementador 'O que você faz'; verificador passo 2</td>
+<td>TESTE IMG</td>
+<td>codigo</td>
+<td>em parte</td>
+<td>3 lugares · X1</td>
+</tr>
+<tr>
+<td>R060</td>
+<td>Antes/depois só nas páginas-gabarito do item</td>
+<td>C §8 passo 6; verificador passo 3</td>
+<td>TESTE IMG</td>
+<td>verif</td>
+<td>em parte</td>
+<td>2 lugares · X3</td>
+</tr>
+<tr>
+<td>R061</td>
+<td>Item de tela: janela real com mouse nativo</td>
+<td>C §8 passo 6; verificador passo 5; layout 'Como provar'</td>
+<td>TELA TESTE</td>
+<td>verif</td>
+<td>em parte</td>
+<td>3 lugares</td>
+</tr>
+<tr>
+<td>R062</td>
+<td>Commit na hora com o defeito por extenso; nunca segredo</td>
+<td>C §8 passo 10</td>
+<td>GIT</td>
+<td>todos</td>
+<td>em parte</td>
+<td>X12</td>
+</tr>
+<tr>
+<td>R063</td>
+<td>Mancha do verso: o defeito mais grave</td>
+<td>C §9</td>
+<td>IMG</td>
+<td>todos</td>
+<td>nao</td>
+<td></td>
+</tr>
+<tr>
+<td>R064</td>
+<td>A régua precisa de critérios novos</td>
+<td>C §9</td>
+<td>IMG</td>
+<td>todos</td>
+<td>nao</td>
+<td></td>
+</tr>
+<tr>
+<td>R065</td>
+<td>Amarelado está na tinta</td>
+<td>C §9</td>
+<td>IMG</td>
+<td>todos</td>
+<td>nao</td>
+<td></td>
+</tr>
+<tr>
+<td>R066</td>
+<td>Não há binarizador vencedor</td>
+<td>C §9</td>
+<td>IMG</td>
+<td>todos</td>
+<td>nao</td>
+<td></td>
+</tr>
+<tr>
+<td>R067</td>
+<td>Não desfazer a correção do 'magic color'</td>
+<td>C §9</td>
+<td>IMG</td>
+<td>codigo</td>
+<td>em parte</td>
+<td></td>
+</tr>
+<tr>
+<td>R068</td>
+<td>Scan de baixa resolução não se recupera</td>
+<td>C §9</td>
+<td>IMG</td>
+<td>todos</td>
+<td>nao</td>
+<td></td>
+</tr>
+<tr>
+<td>R069</td>
+<td>Barra de rolagem cinza, de propósito</td>
+<td>C §9</td>
+<td>TELA</td>
+<td>codigo</td>
+<td>sim</td>
+<td></td>
+</tr>
+<tr>
+<td>R070</td>
+<td>Gerente não escreve código</td>
+<td>C §10.1</td>
+<td>GER</td>
+<td>gerente</td>
+<td>nao</td>
+<td></td>
+</tr>
+<tr>
+<td>R071</td>
+<td>Cada papel no seu lugar</td>
+<td>C §10.1; implementador 'O que você faz'; verificador 'nunca'; pesquisador 'nunca'; layout 'Onde você trabalha'</td>
+<td>TODO GIT</td>
+<td>todos</td>
+<td>sim</td>
+<td>5 lugares · X7</td>
+</tr>
+<tr>
+<td>R072</td>
+<td>Layout só começa com o plano de layout</td>
+<td>C §10.1; layout 'Antes de tudo'</td>
+<td>TELA</td>
+<td>layout</td>
+<td>nao</td>
+<td>2 lugares · V1</td>
+</tr>
+<tr>
+<td>R073</td>
+<td>Ideia nova vai para a Lista de espera; bug que não impede, para a Lista de bugs</td>
+<td>C §10.2; implementador 'Ideias e bugs'; layout 'Como entregar'</td>
+<td>TODO</td>
+<td>todos</td>
+<td>em parte</td>
+<td>3 lugares · X9</td>
+</tr>
+<tr>
+<td>R074</td>
+<td>Uma cópia e um ramo por frente</td>
+<td>C §10.3; layout 'Onde você trabalha'</td>
+<td>GIT</td>
+<td>todos</td>
+<td>sim</td>
+<td>2 lugares · X5</td>
+</tr>
+<tr>
+<td>R075</td>
+<td>Plano em duas cópias</td>
+<td>C §10.4</td>
+<td>GER</td>
+<td>gerente</td>
+<td>sim</td>
+<td></td>
+</tr>
+<tr>
+<td>R076</td>
+<td>Docstring em tudo o que tocar</td>
+<td>C §10.5; implementador 'O que você faz'; layout 'Regras de tela'</td>
+<td>TODO</td>
+<td>codigo</td>
+<td>sim</td>
+<td>3 lugares, iguais</td>
+</tr>
+<tr>
+<td>R077</td>
+<td>Plano novo não apaga pendência</td>
+<td>C §10.6</td>
+<td>TODO</td>
+<td>todos</td>
+<td>nao</td>
+<td></td>
+</tr>
+<tr>
+<td>R078</td>
+<td>Item resolvido guarda o pedido original</td>
+<td>C §10.7</td>
+<td>GER</td>
+<td>gerente</td>
+<td>em parte</td>
+<td></td>
+</tr>
+<tr>
+<td>R079</td>
+<td>Prosa de checkpoint não é prova</td>
+<td>C §10.8; C §9 (menu Abrir)</td>
+<td>TODO</td>
+<td>todos</td>
+<td>nao</td>
+<td>2 lugares</td>
+</tr>
+<tr>
+<td>R080</td>
+<td>Apagar: fora do projeto nada; dentro só o seu; junções</td>
+<td>C §10.9; implementador 'Apagar'; verificador 'Apagar'; pesquisador 'Apagar'; layout 'Apagar'</td>
+<td>GIT</td>
+<td>todos</td>
+<td>sim</td>
+<td>5 lugares; os agentes acrescentam 'conferir o que há dentro' e as junções</td>
+</tr>
+<tr>
+<td>R081</td>
+<td>Conferências em página do claude.ai com banco</td>
+<td>C §10.10</td>
+<td>GER</td>
+<td>gerente</td>
+<td>nao</td>
+<td></td>
+</tr>
+<tr>
+<td>R082</td>
+<td>Aba Respostas: gerente responde no documento</td>
+<td>C §10.10</td>
+<td>GER</td>
+<td>gerente</td>
+<td>sim</td>
+<td></td>
+</tr>
+<tr>
+<td>R083</td>
+<td>Responder de novo guardando a antiga</td>
+<td>C §10.10</td>
+<td>GER</td>
+<td>gerente</td>
+<td>sim</td>
+<td></td>
+</tr>
+<tr>
+<td>R084</td>
+<td>Modelo de print (o do girar)</td>
+<td>C §10.10; C §11.13.3</td>
+<td>PERG</td>
+<td>todos</td>
+<td>em parte</td>
+<td>2 lugares; o §11.13.3 resume com azul e verde só</td>
+</tr>
+<tr>
+<td>R085</td>
+<td>Central: um jeito de ver e celular</td>
+<td>C §10.10</td>
+<td>GER</td>
+<td>gerente</td>
+<td>sim</td>
+<td></td>
+</tr>
+<tr>
+<td>R086</td>
+<td>Central: atualizar sempre</td>
+<td>C §10.10</td>
+<td>GER</td>
+<td>gerente</td>
+<td>em parte</td>
+<td></td>
+</tr>
+<tr>
+<td>R087</td>
+<td>Central: ler as ordens dele primeiro</td>
+<td>C §10.10</td>
+<td>GER</td>
+<td>gerente</td>
+<td>em parte</td>
+<td></td>
+</tr>
+<tr>
+<td>R088</td>
+<td>Aviso no celular ao pôr cartão</td>
+<td>C §10.10</td>
+<td>GER</td>
+<td>gerente</td>
+<td>nao</td>
+<td></td>
+</tr>
+<tr>
+<td>R089</td>
+<td>Pergunta de agente vai à Central na hora</td>
+<td>C §10.10; implementador 26/10; verificador 26/10; pesquisador 26/10; layout 26/10</td>
+<td>PERG</td>
+<td>todos</td>
+<td>em parte</td>
+<td>5 lugares; os agentes dizem 'na dúvida, pare e pergunte' · X13</td>
+</tr>
+<tr>
+<td>R090</td>
+<td>Agente não grava na Central</td>
+<td>C §10.10</td>
+<td>PERG</td>
+<td>todos</td>
+<td>sim</td>
+<td></td>
+</tr>
+<tr>
+<td>R091</td>
+<td>Aba Conferência</td>
+<td>C §10.10</td>
+<td>GER</td>
+<td>gerente</td>
+<td>em parte</td>
+<td></td>
+</tr>
+<tr>
+<td>R092</td>
+<td>Abrir a conferência sozinha no navegador</td>
+<td>C §10.10</td>
+<td>GER</td>
+<td>gerente</td>
+<td>nao</td>
+<td>X13</td>
+</tr>
+<tr>
+<td>R093</td>
+<td>Comentário dele se responde na página</td>
+<td>C §10.10</td>
+<td>GER</td>
+<td>gerente</td>
+<td>nao</td>
+<td></td>
+</tr>
+<tr>
+<td>R094</td>
+<td>Livro de decisões único</td>
+<td>C §11.1</td>
+<td>GER</td>
+<td>gerente</td>
+<td>em parte</td>
+<td></td>
+</tr>
+<tr>
+<td>R095</td>
+<td>Nenhuma decisão sem dono</td>
+<td>C §11.2</td>
+<td>GER</td>
+<td>gerente</td>
+<td>sim</td>
+<td></td>
+</tr>
+<tr>
+<td>R096</td>
+<td>Pedido leva as decisões; ONDE-PAREI diz como cumpriu</td>
+<td>C §11.3; implementador 26/10; verificador 26/10; pesquisador 26/10; layout 26/10</td>
+<td>TODO</td>
+<td>todos</td>
+<td>sim</td>
+<td>5 lugares, iguais</td>
+</tr>
+<tr>
+<td>R097</td>
+<td>Cada decisão tem prova de comportamento; aparência não é prova</td>
+<td>C §11.4; C §11.8; implementador 26/10; verificador 26/10; pesquisador 26/10; layout 26/10</td>
+<td>TESTE</td>
+<td>todos</td>
+<td>em parte</td>
+<td>6 lugares; o §11.4 e os agentes dizem test_decisoes.py, o §11.8 diz test_decisoes*.py</td>
+</tr>
+<tr>
+<td>R098</td>
+<td>Quem confere não construiu, e confere do zero</td>
+<td>C §11.5; verificador 26/10</td>
+<td>TESTE</td>
+<td>verif</td>
+<td>em parte</td>
+<td>2 lugares</td>
+</tr>
+<tr>
+<td>R099</td>
+<td>Na dúvida, parar e perguntar</td>
+<td>C §11.6; implementador 26/10; verificador 26/10; pesquisador 26/10; layout 26/10</td>
+<td>TODO</td>
+<td>todos</td>
+<td>nao</td>
+<td>5 lugares, iguais</td>
+</tr>
+<tr>
+<td>R100</td>
+<td>Gerente procura no Livro antes de perguntar</td>
+<td>C §11.6; C §11.13.10</td>
+<td>GER</td>
+<td>gerente</td>
+<td>em parte</td>
+<td>2 lugares</td>
+</tr>
+<tr>
+<td>R101</td>
+<td>Só o que ele mandou</td>
+<td>C §11.7</td>
+<td>TODO</td>
+<td>todos</td>
+<td>em parte</td>
+<td></td>
+</tr>
+<tr>
+<td>R102</td>
+<td>O novo não estraga o escolhido e testado (D-605)</td>
+<td>C §11.8; implementador 03/11; verificador 03/11; pesquisador 03/11; layout 03/11</td>
+<td>TODO TESTE</td>
+<td>todos</td>
+<td>sim</td>
+<td>5 lugares, iguais · X14</td>
+</tr>
+<tr>
+<td>R103</td>
+<td>Verificador confere o que funcionava ao redor</td>
+<td>C §11.8; implementador 03/11; verificador 03/11; pesquisador 03/11; layout 03/11</td>
+<td>TESTE</td>
+<td>verif</td>
+<td>nao</td>
+<td>5 lugares, iguais</td>
+</tr>
+<tr>
+<td>R104</td>
+<td>Como fica para quem usa e no livro (D-637)</td>
+<td>C §11.9; implementador D-637; verificador D-637; pesquisador D-637; layout D-637</td>
+<td>TODO</td>
+<td>todos</td>
+<td>sim</td>
+<td>5 lugares, iguais</td>
+</tr>
+<tr>
+<td>R105</td>
+<td>Mudou a ferramenta, muda em todos os lugares (D-667)</td>
+<td>C §11.10</td>
+<td>TODO TELA</td>
+<td>todos</td>
+<td>em parte</td>
+<td></td>
+</tr>
+<tr>
+<td>R106</td>
+<td>Agente não abre agente</td>
+<td>C §11.11</td>
+<td>TODO</td>
+<td>todos</td>
+<td>sim</td>
+<td>X6</td>
+</tr>
+<tr>
+<td>R107</td>
+<td>Sem gambiarra: a causa, a regra, todos os caminhos</td>
+<td>C §11.12; implementador 13/11; verificador 13/11; pesquisador 13/11; layout 13/11</td>
+<td>TODO</td>
+<td>todos</td>
+<td>em parte</td>
+<td>5 lugares; cada agente tem um resumo diferente para o seu papel</td>
+</tr>
+<tr>
+<td>R108</td>
+<td>Como conserta: um lugar só</td>
+<td>C §11.12</td>
+<td>TODO</td>
+<td>codigo</td>
+<td>em parte</td>
+<td>X7</td>
+</tr>
+<tr>
+<td>R109</td>
+<td>Prova: caminho → função e o mesmo resultado em todos</td>
+<td>C §11.12; implementador 13/11; verificador 13/11</td>
+<td>TESTE</td>
+<td>todos</td>
+<td>em parte</td>
+<td>3 lugares</td>
+</tr>
+<tr>
+<td>R110</td>
+<td>Quando só der remendo: parar</td>
+<td>C §11.12</td>
+<td>TODO</td>
+<td>todos</td>
+<td>nao</td>
+<td></td>
+</tr>
+<tr>
+<td>R111</td>
+<td>Gerente pede sobre a ferramenta inteira</td>
+<td>C §11.12; C §11.10</td>
+<td>GER</td>
+<td>gerente</td>
+<td>nao</td>
+<td>2 lugares</td>
+</tr>
+<tr>
+<td>R112</td>
+<td>Sem gambiarra vale para tudo</td>
+<td>C §11.12 (18/11); implementador 18/11; verificador 18/11; pesquisador 18/11; layout 18/11</td>
+<td>TODO</td>
+<td>todos</td>
+<td>nao</td>
+<td>5 lugares; os agentes dizem 'os cinco pontos' e listam seis</td>
+</tr>
+<tr>
+<td>R113</td>
+<td>Uma peça só para conversar com o que está fora</td>
+<td>C §11.12.1; implementador 18/11; verificador 18/11; pesquisador 18/11; layout 18/11</td>
+<td>WIN</td>
+<td>todos</td>
+<td>sim</td>
+<td>5 lugares, iguais</td>
+</tr>
+<tr>
+<td>R114</td>
+<td>Nada dá como feito o que não conferiu</td>
+<td>C §11.12.2; implementador 18/11; verificador 18/11; pesquisador 18/11; layout 18/11</td>
+<td>WIN TODO</td>
+<td>todos</td>
+<td>em parte</td>
+<td>5 lugares, iguais</td>
+</tr>
+<tr>
+<td>R115</td>
+<td>Antes de escrever, a lista das falhas</td>
+<td>C §11.12.3; implementador 18/11; verificador 18/11; pesquisador 18/11; layout 18/11</td>
+<td>WIN</td>
+<td>codigo</td>
+<td>em parte</td>
+<td>5 lugares, iguais</td>
+</tr>
+<tr>
+<td>R116</td>
+<td>Peça de mentira não prova (D-767)</td>
+<td>C §11.12.4; implementador 18/11; verificador 18/11; pesquisador 18/11; layout 18/11</td>
+<td>WIN TESTE</td>
+<td>todos</td>
+<td>em parte</td>
+<td>5 lugares, iguais · X8</td>
+</tr>
+<tr>
+<td>R117</td>
+<td>Gerente não aceita 'pronto' sem prova</td>
+<td>C §11.12.5; implementador 18/11; verificador 18/11; pesquisador 18/11; layout 18/11</td>
+<td>GER TESTE</td>
+<td>verif</td>
+<td>em parte</td>
+<td>5 lugares, iguais</td>
+</tr>
+<tr>
+<td>R118</td>
+<td>Ler a peça de fora antes de usar</td>
+<td>C §11.12.6; implementador 18/11; verificador 18/11; pesquisador 18/11; layout 18/11</td>
+<td>WIN PESQ TODO</td>
+<td>todos</td>
+<td>em parte</td>
+<td>5 lugares, iguais</td>
+</tr>
+<tr>
+<td>R119</td>
+<td>Perguntar: comece pelo que é e onde fica</td>
+<td>C §11.13.1; implementador 13/11; verificador 13/11; pesquisador 13/11; layout 13/11</td>
+<td>PERG</td>
+<td>todos</td>
+<td>em parte</td>
+<td>5 lugares, iguais</td>
+</tr>
+<tr>
+<td>R120</td>
+<td>Perguntar: nenhuma palavra de dentro</td>
+<td>C §11.13.2; implementador 13/11; verificador 13/11; pesquisador 13/11; layout 13/11</td>
+<td>PERG</td>
+<td>todos</td>
+<td>sim</td>
+<td>5 lugares, iguais</td>
+</tr>
+<tr>
+<td>R121</td>
+<td>Perguntar: print que prova</td>
+<td>C §11.13.3; implementador 13/11; verificador 13/11; pesquisador 13/11; layout 13/11</td>
+<td>PERG</td>
+<td>todos</td>
+<td>em parte</td>
+<td>5 lugares, iguais</td>
+</tr>
+<tr>
+<td>R122</td>
+<td>Perguntar: o caso que o Kaique encontra, print conferido</td>
+<td>C §11.13.4; implementador 13/11; verificador 13/11; pesquisador 13/11; layout 13/11</td>
+<td>PERG</td>
+<td>todos</td>
+<td>nao</td>
+<td>5 lugares, iguais</td>
+</tr>
+<tr>
+<td>R123</td>
+<td>Perguntar: o caminho, e se é defeito ou escolha</td>
+<td>C §11.13.5; implementador 13/11; verificador 13/11; pesquisador 13/11; layout 13/11</td>
+<td>PERG</td>
+<td>todos</td>
+<td>em parte</td>
+<td>5 lugares, iguais</td>
+</tr>
+<tr>
+<td>R124</td>
+<td>Perguntar: o que você escolhe e o que muda</td>
+<td>C §11.13.6; implementador 13/11; verificador 13/11; pesquisador 13/11; layout 13/11</td>
+<td>PERG</td>
+<td>todos</td>
+<td>em parte</td>
+<td>5 lugares, iguais</td>
+</tr>
+<tr>
+<td>R125</td>
+<td>Perguntar: curto, sem ficha</td>
+<td>C §11.13.7; implementador 13/11; verificador 13/11; pesquisador 13/11; layout 13/11</td>
+<td>PERG</td>
+<td>todos</td>
+<td>em parte</td>
+<td>5 lugares, iguais</td>
+</tr>
+<tr>
+<td>R126</td>
+<td>Perguntar: ele continua no controle?</td>
+<td>C §11.13.8; implementador 13/11; verificador 13/11; pesquisador 13/11; layout 13/11</td>
+<td>PERG</td>
+<td>todos</td>
+<td>nao</td>
+<td>5 lugares, iguais</td>
+</tr>
+<tr>
+<td>R127</td>
+<td>Perguntar: de onde veio</td>
+<td>C §11.13.9; implementador 13/11; verificador 13/11; pesquisador 13/11; layout 13/11</td>
+<td>PERG</td>
+<td>todos</td>
+<td>em parte</td>
+<td>5 lugares, iguais</td>
+</tr>
+<tr>
+<td>R128</td>
+<td>Perguntar: a situação de agora, sem repetir</td>
+<td>C §11.13.10; implementador 13/11; verificador 13/11; pesquisador 13/11; layout 13/11</td>
+<td>PERG</td>
+<td>todos</td>
+<td>em parte</td>
+<td>5 lugares, iguais</td>
+</tr>
+<tr>
+<td>R129</td>
+<td>Depois de 'Ainda não entendi': mudar o jeito</td>
+<td>C §11.13</td>
+<td>GER</td>
+<td>gerente</td>
+<td>nao</td>
+<td></td>
+</tr>
+<tr>
+<td>R130</td>
+<td>A lista de conferência antes de mandar</td>
+<td>C §11.13; C §10.10</td>
+<td>GER PERG</td>
+<td>gerente</td>
+<td>em parte</td>
+<td>2 lugares</td>
+</tr>
+<tr>
+<td>R131</td>
+<td>Obra D-014: o que não vale durante a obra</td>
+<td>C fim</td>
+<td>GER TODO</td>
+<td>todos</td>
+<td>nao</td>
+<td>X9</td>
+</tr>
+<tr>
+<td>R132</td>
+<td>Teste escrito antes do código, quando der</td>
+<td>implementador 'O que você faz'</td>
+<td>TESTE</td>
+<td>codigo</td>
+<td>nao</td>
+<td></td>
+</tr>
+<tr>
+<td>R133</td>
+<td>Nunca commit no master</td>
+<td>implementador 'nunca'; layout 'Onde você trabalha'</td>
+<td>GIT</td>
+<td>codigo</td>
+<td>sim</td>
+<td>2 lugares · X5</td>
+</tr>
+<tr>
+<td>R134</td>
+<td>Nunca fechar à força janela que o Samuel usa</td>
+<td>implementador 'nunca'; verificador 'Como pilotar'; layout 'Como provar'</td>
+<td>TODO TELA</td>
+<td>todos</td>
+<td>em parte</td>
+<td>3 lugares</td>
+</tr>
+<tr>
+<td>R135</td>
+<td>Como entregar (lista do papel)</td>
+<td>implementador 'Como entregar'; verificador 'Como entregar'; pesquisador 'Como entregar'; layout 'Como entregar'</td>
+<td>TODO</td>
+<td>todos</td>
+<td>sim</td>
+<td>4 lugares, cada um com itens diferentes (vira o formulário único)</td>
+</tr>
+<tr>
+<td>R136</td>
+<td>Commit e push a cada passo; ONDE-PAREI</td>
+<td>implementador 19/10; verificador 19/10; pesquisador 19/10; layout 19/10</td>
+<td>GIT</td>
+<td>todos</td>
+<td>sim</td>
+<td>4 lugares, iguais · X12</td>
+</tr>
+<tr>
+<td>R137</td>
+<td>Verificador: não conserta código</td>
+<td>verificador passo 1; verificador 'nunca'</td>
+<td>TESTE</td>
+<td>verif</td>
+<td>sim</td>
+<td>2 lugares no verificador</td>
+</tr>
+<tr>
+<td>R138</td>
+<td>Verificador: skill conferir-testes-visuais</td>
+<td>verificador passo 4</td>
+<td>TESTE IMG</td>
+<td>verif</td>
+<td>nao</td>
+<td></td>
+</tr>
+<tr>
+<td>R139</td>
+<td>Defeitos conhecidos da Fase 1 em destaque</td>
+<td>verificador passo 6</td>
+<td>IMG PERG</td>
+<td>verif</td>
+<td>nao</td>
+<td>V2</td>
+</tr>
+<tr>
+<td>R140</td>
+<td>Pilotar: instância nova, nunca a dele</td>
+<td>verificador 'Como pilotar'</td>
+<td>TELA TESTE</td>
+<td>verif</td>
+<td>nao</td>
+<td></td>
+</tr>
+<tr>
+<td>R141</td>
+<td>Pilotar: mouse por mensagem nativa ao hwnd</td>
+<td>verificador 'Como pilotar'</td>
+<td>TELA TESTE</td>
+<td>verif</td>
+<td>nao</td>
+<td></td>
+</tr>
+<tr>
+<td>R142</td>
+<td>Pilotar: nunca pywinauto click_input/send_keys</td>
+<td>verificador 'Como pilotar'</td>
+<td>TELA TESTE</td>
+<td>verif</td>
+<td>sim</td>
+<td></td>
+</tr>
+<tr>
+<td>R143</td>
+<td>Pilotar: roda do mouse não funciona sem foco</td>
+<td>verificador 'Como pilotar'</td>
+<td>TELA TESTE</td>
+<td>verif</td>
+<td>nao</td>
+<td></td>
+</tr>
+<tr>
+<td>R144</td>
+<td>Pilotar: print fora da tela</td>
+<td>verificador 'Como pilotar'</td>
+<td>TELA TESTE</td>
+<td>verif</td>
+<td>nao</td>
+<td>X8</td>
+</tr>
+<tr>
+<td>R145</td>
+<td>offscreen não tem fonte</td>
+<td>verificador 'Como pilotar'</td>
+<td>TELA TESTE</td>
+<td>verif</td>
+<td>nao</td>
+<td></td>
+</tr>
+<tr>
+<td>R146</td>
+<td>Verificador: prova de reversão numa cópia à parte</td>
+<td>verificador 19/10</td>
+<td>TESTE</td>
+<td>verif</td>
+<td>em parte</td>
+<td></td>
+</tr>
+<tr>
+<td>R147</td>
+<td>Pesquisador: não repetir caminho fechado</td>
+<td>pesquisador 'Leia antes'</td>
+<td>PESQ</td>
+<td>pesq</td>
+<td>nao</td>
+<td></td>
+</tr>
+<tr>
+<td>R148</td>
+<td>Pesquisador: resumir com as próprias palavras</td>
+<td>pesquisador 'O que você faz'</td>
+<td>PESQ</td>
+<td>pesq</td>
+<td>nao</td>
+<td></td>
+</tr>
+<tr>
+<td>R149</td>
+<td>Pesquisador: roda aqui e no notebook do Kaique?</td>
+<td>pesquisador 'O que você faz'</td>
+<td>PESQ WIN</td>
+<td>pesq</td>
+<td>nao</td>
+<td></td>
+</tr>
+<tr>
+<td>R150</td>
+<td>Lido na fonte separado de dedução</td>
+<td>pesquisador 'O que você faz'; pesquisador 'nunca'</td>
+<td>PESQ TODO</td>
+<td>todos</td>
+<td>em parte</td>
+<td>2 lugares no pesquisador</td>
+</tr>
+<tr>
+<td>R151</td>
+<td>Pesquisa gravada em docs/pesquisa/ com data e links</td>
+<td>pesquisador 'O que você faz'</td>
+<td>PESQ</td>
+<td>pesq</td>
+<td>sim</td>
+<td></td>
+</tr>
+<tr>
+<td>R152</td>
+<td>Não instalar no .venv sem pedido</td>
+<td>pesquisador 'nunca'</td>
+<td>PESQ TODO</td>
+<td>todos</td>
+<td>em parte</td>
+<td></td>
+</tr>
+<tr>
+<td>R153</td>
+<td>Layout: pista visual em toda área de clicar</td>
+<td>layout 'Regras de tela'</td>
+<td>TELA</td>
+<td>codigo</td>
+<td>nao</td>
+<td></td>
+</tr>
+<tr>
+<td>R154</td>
+<td>Toda função automática tem ligar e desligar</td>
+<td>layout 'Regras de tela'; implementador 'O que você faz' (exceção da tela)</td>
+<td>TELA IMG</td>
+<td>todos</td>
+<td>em parte</td>
+<td>2 lugares</td>
+</tr>
+<tr>
+<td>R155</td>
+<td>Layout: ler a Lista de espera e as referências</td>
+<td>layout 'Leia antes'</td>
+<td>TELA</td>
+<td>layout</td>
+<td>nao</td>
+<td></td>
+</tr>
+</tbody>
+</table>
+<h3>As contradições (não resolvidas, só apontadas)</h3>
+<ul>
+<li><strong>X1.</strong> Velocidade. §8 passo 5, o implementador e o verificador (passo 2) mandam rodar o teste_velocidade antes e depois e dizem 'nenhum item pode deixar o programa mais lento'. §4.6 e as regras de 19/10 dos quatro agentes dizem: não rode o completo no PC, use o filtro do GitHub, e lentidão pequena achada no meio da fase vai para a Fase 5. (regras R036, R037, R059)</li>
+<li><strong>X2.</strong> Testes no PC. O implementador ('rode pytest tests -q antes de entregar'), o layout ('pytest tests -q passando') e o verificador (passo 1) mandam rodar a suíte inteira; o §4.6 e o bloco de 19/10 do mesmo arquivo dizem 'só um arquivo por vez no PC'. O bloco de 19/10 diz que vale sobre o de cima, mas o de cima continua escrito. (regras R034)</li>
+<li><strong>X3.</strong> Páginas do antes/depois. §4.2 passo 1: 'roda a mudança em TODOS os PDFs do conjunto de teste'. §8 passo 6 e o verificador (passo 3): 'só com as páginas-gabarito daquele item'. (regras R028, R060)</li>
+<li><strong>X4.</strong> Quem escreve 'PRONTO PARA CONFERIR'. §4.3: 'o Claude Code pode escrever'. O implementador: 'quem escreve isso é o verificador'. (regras R031)</li>
+<li><strong>X5.</strong> Ramo principal. §10.3 ('só a gerente junta no master', 'conferir git log do master'), o implementador e o layout falam do master; o resto do CLAUDE.md (§4.6, §11.4) fala do fase-1, e a obra (D-014) junta no obra-2026-10-26. (regras R074, R133)</li>
+<li><strong>X6.</strong> Quantos agentes. §11.11: 'no máximo dois; em 10/11 deixou três'. A memória (geral/pc-e-github.md §2 e geral/regras-de-trabalho.md §5): 'no máximo 3 a 4 agentes ao mesmo tempo'. A Central tem config agentes.max. (regras R106)</li>
+<li><strong>X7.</strong> Layout e core/. O layout 'só mexe em ui/' e 'não escreve em core/' (§10.1 e layout.md); o §11.12 manda mudar a regra 'num lugar só, de preferência em core/ (a tela só chama)', e o próprio resumo do layout diz 'de preferência em core/'. (regras R071, R108)</li>
+<li><strong>X8.</strong> Janela escondida. O verificador manda tirar print com a janela fora da tela (-32000) e os testes rodam offscreen (memória da gerente: 'testes offscreen, nunca abrir na tela'); o §11.12.4 (D-767) diz 'só conta rodando de verdade, à vista; nada em área escondida', e o plano da parte do Windows: 'nenhuma janela empurrada para fora da tela'. O texto não diz que uma vale para tela e a outra para Windows. (regras R116, R144)</li>
+<li><strong>X9.</strong> Ritmo do trabalho. §2, §8 e §10.2 (uma fase por vez, conferir cada item antes do próximo, bug que impede se conserta na hora); a Obra (D-014, fim do CLAUDE.md) suspende 'conferir cada item' e 'uma fase por vez', e a D-765 suspende todo conserto até a entrega ao Kaique. Os arquivos dos agentes não citam nem a obra nem a D-765. (regras R006, R057, R073, R131)</li>
+<li><strong>X10.</strong> Ordem de leitura. O CLAUDE.md põe o Livro de decisões como item 0; os quatro agentes começam por ESTADO-ATUAL → PLANO → CLAUDE.md e só no bloco de 26/10 dizem 'leia o Livro antes de tudo'; o INDICE da memória põe o Livro no item 5. (regras R001)</li>
+</ul>
+<h3>Diferenças pequenas</h3>
+<ul>
+<li><strong>X11.</strong> Tabela: o §2 diz 'nada de tabela' (para o Samuel); o pesquisador entrega 'Tabela: o que é · licença...' (para a gerente). (regras R011)</li>
+<li><strong>X12.</strong> Commit: o §8 passo 10 diz 'se aprovado, commit na hora'; os agentes dizem 'commit e push a cada passo no seu ramo'. (regras R062, R136)</li>
+<li><strong>X13.</strong> Abrir a página: pergunta de agente abre no navegador dele na hora; conferência só abre se ele já fez a anterior (§10.10). (regras R089, R092)</li>
+<li><strong>X14.</strong> Teste antigo: o §11.8 diz 'nunca mude um teste antigo para ele passar'; o plano da parte do Windows e a D-774 dizem 'só com o sim dele'; a D-644 e a D-663 abriram exceções. Não é contradição, mas o texto da regra não diz como se pede a exceção. (regras R102)</li>
+<li><strong>X15.</strong> test_decisoes.py (§11.4 e agentes) e test_decisoes*.py (§11.8).</li>
+<li><strong>X16.</strong> Os resumos de 18/11 nos agentes dizem 'os cinco pontos' e listam seis.</li>
+</ul>
+<h3>Regras que parecem vencidas</h3>
+<ul>
+<li><strong>V1.</strong> Layout: 'só começa quando o Samuel entregar o plano de layout' e worktree .claude/worktrees/layout no ramo layout. Hoje há a obra do layout (memoria/itens/layout.md) e as frentes usam outras cópias e ramos. (regras R072)</li>
+<li><strong>V2.</strong> Verificador: 'até a Fase 1 ficar pronta, avisar que moldura dourada e iluminura são defeito conhecido' (28/09). Não diz se ainda vale. (regras R139)</li>
+<li><strong>V3.</strong> Agentes: 'memória: leia o INDICE se a pasta já existir no fase-1 (está sendo montada a partir de 19/10)'. Ela existe.</li>
+<li><strong>V4.</strong> CLAUDE.md §7 'os testes (666 casos em 26/09/2026)' e §4.5 '241 funções'.</li>
+</ul>
+<h3>O que está no meio das regras mas é informação</h3>
+<ul>
+<li>§4.5: Quantos testes existem (241 funções, 279 casos em 07/09) (desatualizado: §7 diz 666 casos (26/09), §4.6 diz ~2.050, a memória ~2.100)</li>
+<li>§4.5: teste_botoes.py clica de verdade; teste_interface.py dirige a lógica (útil para trabalho de tela)</li>
+<li>§4.6: Comandos do GitHub e do filtro de velocidade (útil para testes)</li>
+<li>§7: Mapa de onde ficam as coisas e comandos (útil para todos)</li>
+<li>§7: Acervo e queixas do Kaique: onde ficam (útil para imagem)</li>
+<li>§9: O bug do menu Abrir já foi corrigido (história)</li>
+<li>§10.10: Endereços das páginas do claude.ai (só a gerente)</li>
+<li>§11: Por que o Livro existe (sessão 1 dos testes guiados) (história)</li>
+<li>§11.12: O que aconteceu em 10/11 e na etapa 5 (o porquê da regra; vai resumido no pacote)</li>
+</ul>
+<hr />
+<h2>2. As regras "sempre" (vão em todo pacote)</h2>
+<p>Escolhidas pelo que já deu errado mais vezes e pelo que o Samuel mandou que <strong>todo</strong> agente leia. Cada uma junta
+várias regras do catálogo (entre parênteses), para o pacote não repetir.</p>
+<ol>
+<li><strong>Só o que foi pedido e decidido.</strong> Faça só o que o pedido e as decisões do Samuel mandam. Nada de botão, aviso, texto ou comportamento a mais. Se a decisão parecer impossível, contraditória ou pouco clara, ou se a única saída for um remendo: pare e escreva a pergunta (não faça diferente em silêncio, nem 'por enquanto').
+   <em>Por que está aqui:</em> É a falha que mais se repetiu: decisões de 25/09 nunca construídas, e agentes mudando o que ele tinha definido (§11.7). (cobre R101, R099, R048, R006, R007, R110)</li>
+<li><strong>O novo não estraga o que já funciona.</strong> Antes de mexer, anote o que já está escolhido e testado ali. Teste antigo que quebra faz a entrega voltar; nunca mude um teste antigo para ele passar.
+   <em>Por que está aqui:</em> Ele disse: 'essa é uma nova regra que todos os agentes precisam ler' (D-605). (cobre R102, R058)</li>
+<li><strong>Sem gambiarra, em tudo.</strong> Ache a causa, a função que decide, e todos os caminhos que chegam nela (grep). Mude num lugar só e faça todos os caminhos usarem esse lugar. Nada de desvio para um caso, nem conta ou lista copiada.
+   <em>Por que está aqui:</em> 17 remendos achados em 10/11 e os 33 defeitos do atualizador em 18/11 têm a mesma causa (§11.12). (cobre R107, R108, R112, R105)</li>
+<li><strong>Nada é feito sem conferir de verdade.</strong> Só diga 'feito' do que você conferiu de verdade (abrindo o arquivo, olhando a imagem, perguntando ao Windows). Escreva toda ressalva. Nunca escreva 'APROVADO': só o Samuel aprova.
+   <em>Por que está aqui:</em> 57 commits 'feito' e zero aprovados; '10 de 10 corretas' com seis erradas; 'Desligado' gravado sem desligar. (cobre R114, R030, R031, R029)</li>
+<li><strong>Leia a peça de fora antes de usar.</strong> Antes de usar uma peça que não é nossa (biblioteca, função do Windows, PowerShell, Velopack, Qt), leia a documentação e, se não bastar, o código. Anote o que ela faz em cada caso que usamos, com a fonte. Separe o lido do deduzido.
+   <em>Por que está aqui:</em> Na etapa 5 o atualizador foi escrito sem ler o Velopack nem o Windows (§11.12.6). (cobre R118, R150)</li>
+<li><strong>Decisões do Livro: cumprir e provar cada uma.</strong> As decisões que o pedido traz (número e palavras dele) vão no começo do ONDE-PAREI; na entrega, como cumpriu cada uma, com teste ou print. Aparência não é prova. Palavras dele sempre copiadas do Livro, nunca de memória.
+   <em>Por que está aqui:</em> As decisões se perdiam entre o pedido e o código (§11.3 e §11.4). (cobre R096, R097, R013)</li>
+<li><strong>Pense em quem usa e no livro que sai.</strong> Antes de mexer, escreva o que o Kaique vê e faz, passo a passo, antes e depois, e o que muda no PDF. Na entrega, confira.
+   <em>Por que está aqui:</em> Regra do Samuel para todo agente (D-637). (cobre R104, R003)</li>
+<li><strong>Pergunta ao Samuel: no ONDE-PAREI, na hora, no jeito dele.</strong> Pergunta vai na seção 'Perguntas para o Samuel' do ONDE-PAREI assim que surge. Começa pelo que é e onde fica, sem palavra de dentro (número, arquivo, etapa), com print do caso real e 'O que você escolhe', com a sua sugestão. Você nunca grava na Central.
+   <em>Por que está aqui:</em> 106 perguntas voltaram com 'Ainda não entendi' (§11.13); 8 perguntas ficaram escondidas num ONDE-PAREI (22/10). (cobre R089, R090, R119, R120, R124)</li>
+<li><strong>Seu ramo, commit a cada passo, nada se apaga fora.</strong> Trabalhe só na sua cópia e no seu ramo; commit e push a cada passo, com o ONDE-PAREI em dia. Fora de D:\programas\EditorImpressao nada se apaga; dentro, só o que você criou. Junção nunca com rm -rf. Acervo só para ler.
+   <em>Por que está aqui:</em> O limite da conta já derrubou agentes; em 29/09 um agente apagou D:\d inteira. (cobre R136, R074, R080, R054, R133)</li>
+<li><strong>Não abra agente, não use a tela dele, entregue à gerente.</strong> Não abra outros agentes. Não abra janela nem pergunta do Windows na tela do Samuel, e não feche processo que não é seu, a não ser numa prova que a gerente combinou com ele. Entregue sempre à gerente.
+   <em>Por que está aqui:</em> Cinco agentes rodando sem ele saber (10/11); caixas abertas na tela dele (30/09, 23/10). (cobre R106, R039, R134)</li>
+</ol>
+<p><strong>Por que não mais de 10:</strong> o problema de hoje é a regra que importa se perder no meio de 70 mil caracteres. Dez
+regras curtas cabem numa tela. Tudo o que é de um tipo de trabalho vai pela etiqueta; o que é do jeito de entregar vai
+pelo formulário (que o programa confere), e não precisa estar no "sempre".</p>
+<hr />
+<h2>3. A tabela "arquivos que o trabalho mexe → etiquetas"</h2>
+<p>Cobre <strong>todos</strong> os 4.665 arquivos do ramo obra e os 4.144 do <code>fase-1</code> (conferido com o esboço: 0 sem linha). Três
+regras:</p>
+<ol>
+<li><strong>Um arquivo recebe as etiquetas de todas as linhas que casam com ele.</strong> Ex.: <code>ui/aviso_de_atualizacao.py</code> casa com
+   a sua linha (tela + Windows) e com <code>ui/*</code> (tela).</li>
+<li><strong>Linha de reserva</strong> (<code>core/*</code>, <code>teste_*.py</code>, <code>relatorios/*</code>, <code>docs/plano/*</code>, <code>*.md</code>) só vale quando nenhuma linha
+   mais própria casou. Assim <code>core/windows.py</code> é só Windows, e <code>core/filtros.py</code> é imagem.</li>
+<li><strong>O conteúdo também conta:</strong> se o arquivo (ou o pedido, quando o arquivo é novo) tem <code>subprocess</code>, <code>ctypes</code>,
+   <code>powershell</code>, <code>schtasks</code>, <code>icacls</code>, <code>Update.exe</code>, <code>urllib</code>... ganha a etiqueta Windows, mesmo que a tabela não diga.
+   Isso pega o script novo que conversa com o Windows sem ninguém lembrar de pôr na tabela.</li>
+</ol>
+<p><strong>Arquivo que não está na tabela:</strong> recebe <strong>todas</strong> as etiquetas (o pacote fica grande, nunca pequeno demais) e a
+gerente é avisada no próprio pacote ("X não está na tabela"), para acrescentar a linha. Com um arquivo fora da tabela,
+o pacote de exemplo passa de 29 para 73 regras.</p>
+<p><strong>A pasta do relatório do próprio trabalho não conta</strong> (todo trabalho escreve ONDE-PAREI e relatório). <strong>Git e
+arquivos vai sempre</strong> (todo trabalho faz commit).</p>
+<table>
+<thead>
+<tr>
+<th>Arquivo ou pasta</th>
+<th>Etiquetas</th>
+<th>Por quê</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><code>core/windows.py</code></td>
+<td>WIN</td>
+<td>o porteiro do Windows (arquivo novo do plano da parte do Windows)</td>
+</tr>
+<tr>
+<td><code>core/_testes_a_distancia_windows.py</code></td>
+<td>WIN</td>
+<td>pede licença ao Windows</td>
+</tr>
+<tr>
+<td><code>core/testes_a_distancia.py</code></td>
+<td>WIN</td>
+<td>planos de comandos do ligar, desligar e desfazer</td>
+</tr>
+<tr>
+<td><code>atualizacao.py</code></td>
+<td>WIN</td>
+<td>atualizador, ajudante, tarefas do Windows, desinstalar</td>
+</tr>
+<tr>
+<td><code>publicar_versao_kaique.py</code></td>
+<td>WIN</td>
+<td>publicar no GitHub com o Velopack</td>
+</tr>
+<tr>
+<td><code>empacotar.py</code></td>
+<td>WIN</td>
+<td>monta o pacote do Velopack e o instalador</td>
+</tr>
+<tr>
+<td><code>empacotar_teste_velocidade.py</code></td>
+<td>WIN TESTE</td>
+<td>empacota a medida de velocidade</td>
+</tr>
+<tr>
+<td><code>instalador.iss</code></td>
+<td>WIN</td>
+<td>instalador antigo (Inno Setup)</td>
+</tr>
+<tr>
+<td><code>assinatura.py</code></td>
+<td>WIN</td>
+<td>assinatura da versão para o Kaique</td>
+</tr>
+<tr>
+<td><code>versao.py</code></td>
+<td>WIN</td>
+<td>número da versão e nome do pacote (lugar único)</td>
+</tr>
+<tr>
+<td><code>montar_motor_kraken.py</code></td>
+<td>WIN IMG</td>
+<td>monta o Python à parte do Kraken</td>
+</tr>
+<tr>
+<td><code>motor_kraken/*</code></td>
+<td>WIN IMG</td>
+<td>o motor do Kraken</td>
+</tr>
+<tr>
+<td><code>main.py</code></td>
+<td>TELA WIN</td>
+<td>o começo do programa: primeira abertura, troca antes de abrir</td>
+</tr>
+<tr>
+<td><code>ui/aviso_de_atualizacao.py</code></td>
+<td>TELA WIN</td>
+<td>aviso de versão nova</td>
+</tr>
+<tr>
+<td><code>ui/testes_a_distancia_ui.py</code></td>
+<td>TELA WIN</td>
+<td>janela da senha dos testes à distância</td>
+</tr>
+<tr>
+<td><code>ui/tela_configuracoes.py</code></td>
+<td>TELA WIN</td>
+<td>Configurações, inclusive os testes à distância</td>
+</tr>
+<tr>
+<td><code>ui/tela_de_carregamento.py</code></td>
+<td>TELA WIN</td>
+<td>abre processo à parte (o brasão)</td>
+</tr>
+<tr>
+<td><code>compilar_*.py</code></td>
+<td>IMG WIN</td>
+<td>compila DLL do ScanTailor (chama o compilador)</td>
+</tr>
+<tr>
+<td><code>core/nativo/*</code></td>
+<td>IMG WIN</td>
+<td>DLLs compiladas: peça de fora</td>
+</tr>
+<tr>
+<td><code>core/paginas_em_outro_processo.py</code></td>
+<td>IMG WIN</td>
+<td>lança processo à parte</td>
+</tr>
+<tr>
+<td><code>core/ocr_*.py</code></td>
+<td>IMG WIN</td>
+<td>chama programas de fora (Tesseract, Kraken)</td>
+</tr>
+<tr>
+<td><code>ui/*</code></td>
+<td>TELA</td>
+<td>telas</td>
+</tr>
+<tr>
+<td><code>ui/widgets/*</code></td>
+<td>TELA</td>
+<td>peças de tela</td>
+</tr>
+<tr>
+<td><code>atalhos.py</code></td>
+<td>TELA</td>
+<td>registro único dos atalhos de teclado</td>
+</tr>
+<tr>
+<td><code>brasao.py</code></td>
+<td>TELA</td>
+<td>medidas do brasão</td>
+</tr>
+<tr>
+<td><code>gerar_brasao.py</code></td>
+<td>TELA</td>
+<td>desenha o ícone e o giro</td>
+</tr>
+<tr>
+<td><code>recursos/*</code></td>
+<td>TELA</td>
+<td>imagens do programa</td>
+</tr>
+<tr>
+<td><code>arte/*</code></td>
+<td>TELA</td>
+<td>arte do brasão</td>
+</tr>
+<tr>
+<td><code>core/*</code> (reserva)</td>
+<td>IMG</td>
+<td>processamento do livro (o que não estiver acima)</td>
+</tr>
+<tr>
+<td><code>modelos.py</code></td>
+<td>IMG TELA</td>
+<td>modelo de dados: ConfigFolha e ConfigPagina (mexer pede pergunta, §6)</td>
+</tr>
+<tr>
+<td><code>projetos.py</code></td>
+<td>IMG WIN</td>
+<td>projetos salvos em %LOCALAPPDATA%</td>
+</tr>
+<tr>
+<td><code>historico.py</code></td>
+<td>IMG TELA</td>
+<td>lista de projetos da tela de início</td>
+</tr>
+<tr>
+<td><code>historico_acoes.py</code></td>
+<td>IMG TELA</td>
+<td>desfazer e refazer (mexer pede pergunta, §6)</td>
+</tr>
+<tr>
+<td><code>configuracoes.py</code></td>
+<td>TELA WIN</td>
+<td>preferências; hoje também marcas do atualizador</td>
+</tr>
+<tr>
+<td><code>registro.py</code></td>
+<td>TODO</td>
+<td>arquivo de log</td>
+</tr>
+<tr>
+<td><code>avaliar.py</code></td>
+<td>IMG TESTE</td>
+<td>a régua dos filtros</td>
+</tr>
+<tr>
+<td><code>avaliar_selecao.py</code></td>
+<td>IMG TESTE</td>
+<td>a régua da seleção</td>
+</tr>
+<tr>
+<td><code>montar_misto.py</code></td>
+<td>IMG</td>
+<td>monta o Misto</td>
+</tr>
+<tr>
+<td><code>rodada_*.py</code></td>
+<td>IMG TESTE PERG</td>
+<td>rodadas de comparação para o Samuel</td>
+</tr>
+<tr>
+<td><code>conferir_gravura_scantailor.py</code></td>
+<td>IMG TESTE</td>
+<td>confere a gravura contra o ScanTailor</td>
+</tr>
+<tr>
+<td><code>gabarito/*</code></td>
+<td>IMG TESTE</td>
+<td>páginas fixas de conferência (fora do git; junções!)</td>
+</tr>
+<tr>
+<td><code>terceiros/*</code></td>
+<td>IMG PESQ</td>
+<td>código de fora (ScanTailor): ler a licença</td>
+</tr>
+<tr>
+<td><code>conferencia.py</code></td>
+<td>IMG PERG</td>
+<td>página de antes/depois</td>
+</tr>
+<tr>
+<td><code>conferir.py</code></td>
+<td>IMG PERG</td>
+<td>conferir amostras falando</td>
+</tr>
+<tr>
+<td><code>montar_para_conferir.py</code></td>
+<td>IMG PERG</td>
+<td>relatorios/para-conferir.html</td>
+</tr>
+<tr>
+<td><code>gerar_prints.py</code></td>
+<td>IMG PERG</td>
+<td>prints para o Samuel</td>
+</tr>
+<tr>
+<td><code>relatorio.py</code></td>
+<td>PERG</td>
+<td>grava os três formatos</td>
+</tr>
+<tr>
+<td><code>docs/plano/central/*</code></td>
+<td>PERG GER</td>
+<td>fonte da Central (só a gerente grava)</td>
+</tr>
+<tr>
+<td><code>docs/plano/para_a_*.py</code></td>
+<td>PERG GER</td>
+<td>scripts que alimentam as páginas</td>
+</tr>
+<tr>
+<td><code>tests/*</code></td>
+<td>TESTE</td>
+<td>testes de máquina</td>
+</tr>
+<tr>
+<td><code>tests/conftest.py</code></td>
+<td>TESTE TODO</td>
+<td>vale para todos os testes: avisar a gerente</td>
+</tr>
+<tr>
+<td><code>tests/test_decisoes*.py</code></td>
+<td>TESTE</td>
+<td>provas das decisões (D-605: teste antigo não muda)</td>
+</tr>
+<tr>
+<td><code>tests/*atualizacao*</code></td>
+<td>TESTE WIN</td>
+<td></td>
+</tr>
+<tr>
+<td><code>tests/*ajudante*</code></td>
+<td>TESTE WIN</td>
+<td></td>
+</tr>
+<tr>
+<td><code>tests/*desinstalar*</code></td>
+<td>TESTE WIN</td>
+<td></td>
+</tr>
+<tr>
+<td><code>tests/*testes_a_distancia*</code></td>
+<td>TESTE WIN</td>
+<td></td>
+</tr>
+<tr>
+<td><code>tests/*empacotar*</code></td>
+<td>TESTE WIN</td>
+<td></td>
+</tr>
+<tr>
+<td><code>tests/*assinatura*</code></td>
+<td>TESTE WIN</td>
+<td></td>
+</tr>
+<tr>
+<td><code>tests/*nome_do_pacote*</code></td>
+<td>TESTE WIN</td>
+<td></td>
+</tr>
+<tr>
+<td><code>tests/*windows*</code></td>
+<td>TESTE WIN</td>
+<td></td>
+</tr>
+<tr>
+<td><code>tests/*na_tela*</code></td>
+<td>TESTE TELA</td>
+<td></td>
+</tr>
+<tr>
+<td><code>tests/*tela*</code></td>
+<td>TESTE TELA</td>
+<td></td>
+</tr>
+<tr>
+<td><code>tests/*botoes*</code></td>
+<td>TESTE TELA</td>
+<td></td>
+</tr>
+<tr>
+<td><code>tests/*menu*</code></td>
+<td>TESTE TELA</td>
+<td></td>
+</tr>
+<tr>
+<td><code>tests/*paineis*</code></td>
+<td>TESTE TELA</td>
+<td></td>
+</tr>
+<tr>
+<td><code>tests/*janela*</code></td>
+<td>TESTE TELA</td>
+<td></td>
+</tr>
+<tr>
+<td><code>tests/promessas/*</code></td>
+<td>TESTE TELA</td>
+<td>promessas dos botões (D-010)</td>
+</tr>
+<tr>
+<td><code>teste_botoes.py</code></td>
+<td>TESTE TELA</td>
+<td>clica em botões de verdade</td>
+</tr>
+<tr>
+<td><code>teste_interface.py</code></td>
+<td>TESTE TELA</td>
+<td>dirige a lógica da tela</td>
+</tr>
+<tr>
+<td><code>teste_velocidade.py</code></td>
+<td>TESTE IMG</td>
+<td>medida de velocidade</td>
+</tr>
+<tr>
+<td><code>teste_*.py</code> (reserva)</td>
+<td>TESTE IMG</td>
+<td>testes soltos da raiz (geram relatório e imagem)</td>
+</tr>
+<tr>
+<td><code>rodar_suite_por_arquivo.py</code></td>
+<td>TESTE</td>
+<td>roda a suíte um arquivo por vez</td>
+</tr>
+<tr>
+<td><code>pasta_de_dados_dos_scripts.py</code></td>
+<td>TESTE</td>
+<td>pasta de dados dos scripts de teste</td>
+</tr>
+<tr>
+<td><code>requirements.txt</code></td>
+<td>TODO PESQ</td>
+<td>trocar ou acrescentar biblioteca pede pergunta (§6)</td>
+</tr>
+<tr>
+<td><code>.claude/agents/*</code></td>
+<td>GER</td>
+<td>regras dos agentes: só com o 'sim' do Samuel</td>
+</tr>
+<tr>
+<td><code>.claude/skills/*</code></td>
+<td>GER</td>
+<td>skills do projeto</td>
+</tr>
+<tr>
+<td><code>.claude/*</code></td>
+<td>GER</td>
+<td>outros arquivos do Claude Code (ex.: m.txt, settings)</td>
+</tr>
+<tr>
+<td><code>CLAUDE.md</code></td>
+<td>GER</td>
+<td>regras: só com o 'sim' do Samuel</td>
+</tr>
+<tr>
+<td><code>docs/plano/DECISOES.md</code></td>
+<td>GER</td>
+<td>o Livro: só a gerente escreve</td>
+</tr>
+<tr>
+<td><code>docs/plano/PLANO-DEFINITIVO.md</code></td>
+<td>GER</td>
+<td>o plano: só o Samuel muda</td>
+</tr>
+<tr>
+<td><code>docs/plano/*</code> (reserva)</td>
+<td>GER PERG</td>
+<td>plano e estado</td>
+</tr>
+<tr>
+<td><code>docs/pesquisa/*</code></td>
+<td>PESQ</td>
+<td>pesquisas</td>
+</tr>
+<tr>
+<td><code>memoria/*</code></td>
+<td>GIT</td>
+<td>memória do projeto (conferir_memoria.py depois)</td>
+</tr>
+<tr>
+<td><code>historico/*</code></td>
+<td>GIT GER</td>
+<td>handoff: só com pedido do Samuel</td>
+</tr>
+<tr>
+<td><code>velhos/*</code></td>
+<td>GIT</td>
+<td>histórico</td>
+</tr>
+<tr>
+<td><code>relatorios/*</code> (reserva)</td>
+<td>PERG</td>
+<td>relatórios (três formatos)</td>
+</tr>
+<tr>
+<td><code>ONDE-PAREI.md</code></td>
+<td>GIT</td>
+<td></td>
+</tr>
+<tr>
+<td><code>PEDIDOS.md</code></td>
+<td>GER</td>
+<td>histórico desde 24/09</td>
+</tr>
+<tr>
+<td><code>PLANO-RETOMADA.md</code></td>
+<td>GER</td>
+<td>histórico</td>
+</tr>
+<tr>
+<td><code>LEIAME.md</code></td>
+<td>GIT</td>
+<td></td>
+</tr>
+<tr>
+<td><code>.gitignore</code></td>
+<td>GIT GER</td>
+<td>nunca desfazer sem avisar</td>
+</tr>
+<tr>
+<td><code>*.md</code> (reserva)</td>
+<td>PERG</td>
+<td>documento solto</td>
+</tr>
+</tbody>
+</table>
+<hr />
+<h2>4. O pacote de exemplo: a peça nova do Windows</h2>
+<p>O próximo trabalho real é o <strong>passo 1 do plano da parte do Windows</strong>: escrever o "porteiro do Windows" e a pasta segura
+(peças 1 e 2) em <code>core/windows.py</code>, com os testes da lógica em volta, sem mudar nenhum chamador. Abaixo está o texto
+exato que o implementador receberia: o pedido curto da gerente (modelo da seção 7) e o pacote que o programa monta
+(<code>esbocos/montar_pacote.py</code>) a partir de "implementador", dos dois arquivos novos e das decisões que o pedido toca.</p>
+<p><strong>Tamanho, comparado ao de hoje:</strong></p>
+<table>
+<thead>
+<tr>
+<th></th>
+<th>hoje</th>
+<th>com o pacote</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>Regras que o agente tem de ler</td>
+<td>CLAUDE.md 69.519 + implementador.md 12.115 + índice da memória 11.501 = <strong>93.135</strong> caracteres (até 167.069 com as fichas que o índice manda ler antes de tudo)</td>
+<td>"sempre" 3.565 + regras do trabalho 5.624 = <strong>9.189</strong></td>
+</tr>
+<tr>
+<td>Regras de tela, imagem e Central que não servem para este trabalho</td>
+<td>vão junto</td>
+<td>não vão (dizem no fim que não vieram)</td>
+</tr>
+<tr>
+<td>Decisões do Livro</td>
+<td>a gerente copia à mão</td>
+<td>o programa copia da linha do Livro (5.538 caracteres)</td>
+</tr>
+<tr>
+<td>O que entregar</td>
+<td>listas diferentes em cada arquivo de agente</td>
+<td>um formulário só, conferido (1.521 caracteres)</td>
+</tr>
+<tr>
+<td><strong>Total</strong></td>
+<td><strong>93.135</strong> + o pedido</td>
+<td><strong>18.582</strong> com o pedido</td>
+</tr>
+</tbody>
+</table>
+<p>Para comparar: o mesmo programa monta um trabalho de tela do girar: 35 regras do trabalho e 11.982 caracteres sem as decisões; um trabalho no filtro: 48 regras do trabalho e 14.203 caracteres sem as decisões; uma pesquisa: 23 regras do trabalho e 9.986 caracteres sem as decisões; o agente que tenta quebrar a peça do Windows: 94 regras do trabalho e 22.214 caracteres sem as decisões.</p>
+<p>O pedido de exemplo inteiro está no arquivo <code>pedido-exemplo</code> (nos três formatos), e é este:</p>
+<pre><code>&gt; Você é o **implementador** do Editor de Impressão. Não abra outros agentes.
+&gt;
+&gt; **Trabalho:** escrever o porteiro do Windows e a pasta segura (peças 1 e 2), a peça única que todo o programa vai
+&gt; usar para pedir licença, lançar processo, rodar comando, mexer em tarefa e ler como o Windows está. Vem do plano da
+&gt; parte do Windows (`relatorios/plano-windows-2026-11-18/plano.md`, ramo `plano-windows-2026-11-18`): seção 1.2, peças
+&gt; 1 e 2; seção 2, defeitos 1 a 16; seção 3, passos 1 e 2.
+&gt; **Cópia e ramo:** `.claude/worktrees/porteiro-windows`, ramo `porteiro-windows-&lt;data&gt;`, a partir de `&lt;commit do obra&gt;`.
+&gt; Relatório em `relatorios/porteiro-windows-&lt;data&gt;/`.
+&gt; **Arquivos:** `core/windows.py` (novo) e `tests/test_windows.py` (novo). Mexer fora deles: pare e me avise (o pacote muda).
+&gt; **Fica de fora:** nenhum chamador muda ainda (o atualizador e os testes à distância passam a usar o porteiro nos
+&gt; passos 3 e 4). Nada roda no Windows de verdade neste trabalho: a prova à vista é a sessão A, que a gerente marca
+&gt; com o Samuel depois do agente que tenta quebrar.
+&gt; **Pronto quer dizer:** o formulário passa na etapa "antes de quem tenta quebrar"; o script da sessão A fica descrito
+&gt; no ONDE-PAREI (o que cada linha da janela de prova vai mostrar).
+&gt; **Leia:** este pacote inteiro; as seções do plano acima; as fichas `memoria/geral/ambiente.md` e
+&gt; `memoria/licoes.md` (parte D). O CLAUDE.md só nas seções que o pacote cita, quando tiver dúvida.
+
+# Pacote de regras: o porteiro do Windows e a pasta segura (passo 1 do plano da parte do Windows)
+
+Papel: **implementador**. Arquivos: `core/windows.py` (novo), `tests/test_windows.py` (novo).
+Tipo de trabalho (sai dos arquivos): git e arquivos, testes, Windows e instalador (e qualquer conversa com programa de fora).
+
+## 1. Sempre (todo trabalho)
+
+1. **Só o que foi pedido e decidido.** Faça só o que o pedido e as decisões do Samuel mandam. Nada de botão, aviso, texto ou comportamento a mais. Se a decisão parecer impossível, contraditória ou pouco clara, ou se a única saída for um remendo: pare e escreva a pergunta (não faça diferente em silêncio, nem 'por enquanto'). *Por quê:* É a falha que mais se repetiu: decisões de 25/09 nunca construídas, e agentes mudando o que ele tinha definido (§11.7).
+2. **O novo não estraga o que já funciona.** Antes de mexer, anote o que já está escolhido e testado ali. Teste antigo que quebra faz a entrega voltar; nunca mude um teste antigo para ele passar. *Por quê:* Ele disse: 'essa é uma nova regra que todos os agentes precisam ler' (D-605).
+3. **Sem gambiarra, em tudo.** Ache a causa, a função que decide, e todos os caminhos que chegam nela (grep). Mude num lugar só e faça todos os caminhos usarem esse lugar. Nada de desvio para um caso, nem conta ou lista copiada. *Por quê:* 17 remendos achados em 10/11 e os 33 defeitos do atualizador em 18/11 têm a mesma causa (§11.12).
+4. **Nada é feito sem conferir de verdade.** Só diga 'feito' do que você conferiu de verdade (abrindo o arquivo, olhando a imagem, perguntando ao Windows). Escreva toda ressalva. Nunca escreva 'APROVADO': só o Samuel aprova. *Por quê:* 57 commits 'feito' e zero aprovados; '10 de 10 corretas' com seis erradas; 'Desligado' gravado sem desligar.
+5. **Leia a peça de fora antes de usar.** Antes de usar uma peça que não é nossa (biblioteca, função do Windows, PowerShell, Velopack, Qt), leia a documentação e, se não bastar, o código. Anote o que ela faz em cada caso que usamos, com a fonte. Separe o lido do deduzido. *Por quê:* Na etapa 5 o atualizador foi escrito sem ler o Velopack nem o Windows (§11.12.6).
+6. **Decisões do Livro: cumprir e provar cada uma.** As decisões que o pedido traz (número e palavras dele) vão no começo do ONDE-PAREI; na entrega, como cumpriu cada uma, com teste ou print. Aparência não é prova. Palavras dele sempre copiadas do Livro, nunca de memória. *Por quê:* As decisões se perdiam entre o pedido e o código (§11.3 e §11.4).
+7. **Pense em quem usa e no livro que sai.** Antes de mexer, escreva o que o Kaique vê e faz, passo a passo, antes e depois, e o que muda no PDF. Na entrega, confira. *Por quê:* Regra do Samuel para todo agente (D-637).
+8. **Pergunta ao Samuel: no ONDE-PAREI, na hora, no jeito dele.** Pergunta vai na seção 'Perguntas para o Samuel' do ONDE-PAREI assim que surge. Começa pelo que é e onde fica, sem palavra de dentro (número, arquivo, etapa), com print do caso real e 'O que você escolhe', com a sua sugestão. Você nunca grava na Central. *Por quê:* 106 perguntas voltaram com 'Ainda não entendi' (§11.13); 8 perguntas ficaram escondidas num ONDE-PAREI (22/10).
+9. **Seu ramo, commit a cada passo, nada se apaga fora.** Trabalhe só na sua cópia e no seu ramo; commit e push a cada passo, com o ONDE-PAREI em dia. Fora de D:\programas\EditorImpressao nada se apaga; dentro, só o que você criou. Junção nunca com rm -rf. Acervo só para ler. *Por quê:* O limite da conta já derrubou agentes; em 29/09 um agente apagou D:\d inteira.
+10. **Não abra agente, não use a tela dele, entregue à gerente.** Não abra outros agentes. Não abra janela nem pergunta do Windows na tela do Samuel, e não feche processo que não é seu, a não ser numa prova que a gerente combinou com ele. Entregue sempre à gerente. *Por quê:* Cinco agentes rodando sem ele saber (10/11); caixas abertas na tela dele (30/09, 23/10).
+
+## 2. As regras do seu trabalho (29)
+
+**Windows e instalador (e qualquer conversa com programa de fora)**
+- A janela nunca congela: Todo trabalho demorado em QThread, com barra e cancelar que funciona; esperar o Windows também (na etapa 5 a janela ficou parada 14 min). (CLAUDE.md §3)
+- Texto com acento, caminho sem acento: Texto de tela com acento (UTF-8); caminho de disco sem acento. (CLAUDE.md §3)
+- core/ não importa ui/: core/ nunca importa ui/: o processamento roda por linha de comando, sem janela. (CLAUDE.md §7)
+- Onde o programa guarda estado: %LOCALAPPDATA%\EditorImpressao guarda projetos e histórico; fechar e reabrir preserva tudo; desinstalar NÃO apaga essa pasta. (CLAUDE.md §7)
+- Uma peça só para conversar com o que está fora: Windows, disco, rede, GitHub, Velopack, outro programa: uma peça só para cada conversa; ninguém escreve a sua versão (na etapa 5, cada função pedia licença do seu jeito). (CLAUDE.md §11.12.1)
+- Antes de escrever, a lista das falhas: No ONDE-PAREI, para cada coisa que pode dar errado (sem licença, sem internet, disco cheio, 'Não', arquivo preso, desligar no meio), o que o programa faz; nunca pela metade. (CLAUDE.md §11.12.3)
+- Peça de mentira não prova (D-767): Teste com peça de mentira só prova a lógica em volta. O que mexe no Windows só conta rodando de verdade, à vista, e funcionando. Nada em área escondida. (CLAUDE.md §11.12.4) **Atenção: outro texto das regras diz diferente; na dúvida, pergunte à gerente.**
+
+**Testes**
+- Teste de máquina: o agente decide: O que tem resposta objetiva (fecha? páginas certas? memória? PDF estragado? cadernos? acento?) roda a cada mudança, sozinho. (CLAUDE.md §4.1)
+- Máquina ou olho, item por item: Todo item diz se foi conferido por máquina ou por olho. (CLAUDE.md §4.3)
+- Onde roda cada teste: No PC, um arquivo de teste por vez; a suíte inteira e o teste_botoes no GitHub (push antes); a entrega traz o número da rodada. (CLAUDE.md §4.6) **Atenção: outro texto das regras diz diferente; na dúvida, pergunte à gerente.**
+- Teste de reversão em todo conserto: Todo bug consertado ganha teste que FALHA no código antigo e passa no novo, com o bug na docstring; o verificador prova no antigo. Bug de imagem: uma medida, ou ressalva escrita. (CLAUDE.md §4.7)
+- Prova: caminho → função e o mesmo resultado em todos: Na entrega, a lista 'caminho → função' e uma prova em tests/ que cobra o mesmo resultado por todos os caminhos. (CLAUDE.md §11.12)
+- Teste escrito antes do código, quando der: Teste automático do que é objetivo, escrito antes do código quando der. (implementador.md 'O que você faz')
+
+**Git e arquivos**
+- Handoff só com pedido do Samuel: Só atualizar o handoff de historico/ quando o Samuel pedir. (CLAUDE.md §7)
+- Commit na hora com o defeito por extenso; nunca segredo: Commit com o defeito resolvido escrito por extenso e push; revisar o que vai no commit; nunca segredo; nunca desfazer o .gitignore sem avisar. (CLAUDE.md §8 passo 10)
+- Cada papel no seu lugar: Implementador: core/ e scripts, não ui/ (salvo pedido). Layout: só ui/. Verificador e pesquisador: não mexem no código do programa. (CLAUDE.md §10.1) **Atenção: outro texto das regras diz diferente; na dúvida, pergunte à gerente.**
+
+**Todo trabalho**
+- Ordem de leitura e quem manda: Quem manda: o Livro de decisões e o plano; o CLAUDE.md vem depois. O que ele disser contra o plano, vale o plano. (CLAUDE.md topo) **Atenção: outro texto das regras diz diferente; na dúvida, pergunte à gerente.**
+- PEDIDOS.md e handoff são histórico: PEDIDOS.md e o handoff em historico/ só servem de consulta; não dizem o que fazer. (CLAUDE.md topo)
+- Não recomeçar do zero: Não reescrever módulo inteiro nem reorganizar o que funciona. Testar não é licença para reconstruir. (Duas versões já fracassaram.) (CLAUDE.md §2)
+- Ir até o fim dentro da alçada: Decidir o que é da alçada e executar tudo, sem parar a cada passo. Se o contexto acabar, parar num commit com o programa rodando. (CLAUDE.md §2)
+- Honesto: avisar erro e risco: Se o Samuel ou a gerente estiver enganado ou correndo risco, avisar. Não concordar para agradar. (CLAUDE.md §2)
+- Python 3.14, não rebaixar: A máquina só tem Python 3.14. Nunca sugerir rebaixar. (CLAUDE.md §3)
+- Ler a memória antes: Antes de começar, ler memoria/INDICE.md e as fichas do assunto. A memória nunca contradiz o plano. (CLAUDE.md §4.9)
+- Item da fase atual, na ordem: O item vem da fase atual do plano; Lista de bugs no começo da fase. (CLAUDE.md §8 passo 1) **Atenção: outro texto das regras diz diferente; na dúvida, pergunte à gerente.**
+- Ideia nova vai para a Lista de espera; bug que não impede, para a Lista de bugs: Ideia nova: não fazer, anotar para a Lista de espera. Bug que impede a tarefa: consertar e dizer. Bug que não impede: anotar com data e print. (CLAUDE.md §10.2) **Atenção: outro texto das regras diz diferente; na dúvida, pergunte à gerente.**
+- Docstring em tudo o que tocar: Todo arquivo e função tocados ganham docstring: o que faz e o que é seguro ou arriscado mudar. (CLAUDE.md §10.5)
+- Plano novo não apaga pendência: Plano novo diz o que resolve e o que deixa de fora; nunca apaga pendência por omissão. (CLAUDE.md §10.6)
+- Prosa de checkpoint não é prova: Quando o estado importa, conferir o código e o git log, não o texto de checkpoint. (CLAUDE.md §10.8)
+- Obra D-014: o que não vale durante a obra: Durante a obra não valem 'conferir cada item antes do próximo' nem 'uma fase por vez'; nada entra no fase-1 antes da conferência final; duas decisões que se contradizem: vale a mais recente. (CLAUDE.md fim) **Atenção: outro texto das regras diz diferente; na dúvida, pergunte à gerente.**
+
+## 3. As decisões que este trabalho precisa cumprir (copiadas do Livro)
+
+- **D-767** (18/11/2026): Chat, na etapa 5, depois dos 7 defeitos achados no Windows de verdade (a gerente explicou que os testes automáticos trocam as peças do Windows por peças de mentira): "não faça mais nada escodindo ou de mentira" · logo depois: "não quero fazer consertos quero que funcione" · e: "quero que faça as coisas certas e sem bugs ou erros, deveria ter pensado nesses erros na hora de montar a estrutura do atualizador e testes a distancias"
+  Na prática: O que mexe no Windows (pergunta de administrador, PowerShell, tarefas, licenças de pasta, instalar e desinstalar, testes à distância) só conta como pronto quando roda de verdade no Windows, à vista, e funciona. Teste automático com peça de mentira não prova que funciona. Nada de área de trabalho escondida nos testes. O objetivo não é remendar cada defeito, é a parte do Windows funcionar inteira (CLAUDE.md §11.12). O alcance exato (por exemplo, as versões de teste servidas de uma pasta do D: em vez do GitHub) está sendo confirmado com o Samuel.
+- **D-775** (18/11/2026): Chat: "o agente vai tentar quebrar antes de fazer o teste real na tela né?" (a gerente descreveu a ordem abaixo) · "ok"
+  Na prática: A ordem de cada passo do plano da parte do Windows: (1) um agente escreve a peça; (2) os testes automáticos rodam, cobrando o jeito certo; (3) outro agente, que não escreveu, tenta quebrar (lê procurando falha não pensada, resultado não conferido e peça duplicada; roda o que dá sem pergunta do Windows); (4) só então a prova de verdade e à vista na tela do Samuel. Se o passo 3 achar problema, volta ao 1; o Samuel só é chamado quando a peça passou pelos três primeiros. Completa a D-767.
+- **D-605** (03/11/2026): "A partir de agora, nenhuma função nova, ou nova escolha dentro do programa pode alterar o que já está escolhido e testado, coisas novas não podem criar novos problemas, essa é uma nova regra que todos os agentes precisam ler"
+  Na prática: Nenhuma coisa nova (função ou escolha nova) muda o que já está escolhido e testado, nem cria problema novo. Antes de mexer, o agente lista o que já está escolhido e testado ali; se a coisa nova mudaria isso, para e pergunta; teste antigo que quebra faz a entrega voltar (nunca se muda o teste antigo para passar); o verificador confere também o que já funcionava ao redor.
+- **D-637** (05/11/2026): No chat, ao aprovar a D-636: "1- pode ser, só garanta que não crie mais problemas fazendo isso, você tem que pensar na experiencia do usario e no resultado final do livro dentro do programa, quando vai mudar algo, deixe isso anotado."
+  Na prática: Regra: antes de mudar qualquer coisa, pensar na experiência de quem usa (o Kaique) e no resultado final do livro dentro do programa, e garantir que a mudança não cria problema novo. Isso fica escrito: no ONDE-PAREI de cada tarefa, uma seção "Como fica para quem usa e no livro" (o que a pessoa vê e faz, passo a passo, e o que muda no PDF), antes de começar e conferida na entrega. Junta-se à D-605.
+- **D-741** (17/11/2026): Chat, à pergunta "Se o Kaique clicar "Não" [no "Deseja permitir...?" da primeira abertura], do jeito que está, a pergunta não volta, e ele fica sem a atualização sozinha. Faço a pergunta voltar toda vez que ele abrir o programa, até ele clicar "Sim"? Sugiro que sim.": "Sim"
+  Na prática: Se o Kaique disser "Não" à pergunta do Windows da primeira abertura (D-733, D-735), ela volta a cada vez que ele abrir o programa, até ele dizer "Sim". Depois do "Sim", nunca mais aparece (as atualizações seguem sem perguntar). Na conta de testes, nada pergunta (D-736).
+- **D-763** (17/11/2026): Chat, à pergunta "Posso mandar um agente fazer esse conserto? Sugiro que sim." (prova de 17/11, ramo `velopack-pasta-2026-11-17`: o nome interno do pacote, "EditorImpressao", é igual ao da pasta dos projetos; a cada abertura o Velopack grava ali uma cópia do Update.exe, e o desinstalador do .msi apagou a pasta `%LOCALAPPDATA%\&lt;nome do pacote&gt;` inteira, com o projeto de mentira dentro): "ok, pode fazer"
+  Na prática: O nome interno do pacote do Velopack deixa de ser igual ao nome da pasta dos projetos (`%LOCALAPPDATA%\EditorImpressao`), antes da primeira instalação de verdade. A troca é num lugar só (`versao.ID_DO_PACOTE`), que todo o resto lê; o Kaique continua vendo "Editor de Impressão". Uma prova cobra que o nome do pacote nunca é o da pasta dos projetos, e a prova da pasta de reserva e do desinstalar é repetida com o nome novo. O nome novo exato é detalhe técnico (escolha da gerente, D-014). A instalação no PC do Samuel (etapa 5) espera esse conserto.
+- **D-717** (16/11/2026): Chat: "Fica a conta separada, escondida, só para os testes?" → "sim"
+  Na prática: No notebook do Kaique, os testes à distância entram numa conta do Windows só para eles, sem poder de administrador, escondida da tela de entrada, com a senha que o Samuel criar (D-711). Os projetos de teste ficam na pasta dessa conta e nunca se misturam com os do Kaique.
+- **D-771** (18/11/2026): Chat, decisão 4 do plano da parte do Windows ("se ligar os testes à distância der erro no meio"; A = desfazer tudo, sugestão; B = deixar o que deu certo, com "Ligado pela metade"): "A"
+  Na prática: Ligar os testes à distância é tudo ou nada: se um dos passos falhar, o programa desfaz sozinho o que fez naquela vez, deixa o computador como estava e diz na tela "Desligado" e o motivo. A tela sempre mostra o que o Windows tem de verdade (D-767). Nenhum botão novo. Completa a D-712/D-721.
+
+## 4. O formulário da entrega (no seu ONDE-PAREI; um programa confere, campo vazio volta)
+
+- [ ] **Arquivos que vou mexer** (antes de ir ao agente que tenta quebrar)
+- [ ] **Decisões que esta tarefa precisa cumprir** (antes de ir ao agente que tenta quebrar)
+- [ ] **O que já está escolhido e testado aqui** (antes de ir ao agente que tenta quebrar)
+- [ ] **Como fica para quem usa e no livro** (antes de ir ao agente que tenta quebrar)
+- [ ] **A causa, a regra e todos os caminhos** (antes de ir ao agente que tenta quebrar)
+- [ ] **O que pode falhar e o que o programa faz** (antes de ir ao agente que tenta quebrar)
+- [ ] **O que li da peça de fora e onde** (antes de ir ao agente que tenta quebrar)
+- [ ] **O que foi feito** (antes de ir ao agente que tenta quebrar)
+- [ ] **Arquivos criados ou alterados** (antes de ir ao agente que tenta quebrar)
+- [ ] **Como cumpri cada uma** (antes de ir ao agente que tenta quebrar)
+- [ ] **Testes** (antes de ir ao agente que tenta quebrar)
+- [ ] **Caminho e função** (antes de ir ao agente que tenta quebrar)
+- [ ] **Máquina ou olho** (antes de ir ao agente que tenta quebrar)
+- [ ] **Ressalvas** (antes de ir ao agente que tenta quebrar)
+- [ ] **Ideias e bugs** (antes de ir ao agente que tenta quebrar)
+- [ ] **Perguntas para o Samuel** (antes de ir ao agente que tenta quebrar)
+- [ ] **Commit** (antes de ir ao agente que tenta quebrar)
+- [ ] **O que o agente que tentou quebrar achou** (antes da prova à vista)
+- [ ] **A prova de verdade** (antes de 'pronto para conferir')
+
+## 5. O que você não recebeu, e quando parar
+
+Este pacote não traz as regras de: imagem, filtros e processamento do livro, perguntas e relatórios ao Samuel, pesquisa de peça de fora, tela (ui/). Se precisar mexer num arquivo fora da lista acima, pare e avise a gerente: o pacote muda. Se tiver pergunta para o Samuel, a regra 8 acima é o mínimo; a lista inteira está no CLAUDE.md §11.13, e a gerente devolve a pergunta que não passar. O texto que vale é o do CLAUDE.md: a fonte de cada regra está entre parênteses; leia lá quando tiver dúvida.
+</code></pre>
+<hr />
+<h2>5. As conferências automáticas</h2>
+<p>Onde cada uma roda:</p>
+<ul>
+<li><strong>Teste em <code>tests/</code></strong>: roda no GitHub em toda entrega, ninguém consegue pular. É o lugar das buscas no código.</li>
+<li><strong>Antes do commit</strong> (uma conferência que o git roda sozinho, guardada no repositório e ligada com uma configuração
+  em cada cópia): a mesma busca, só nos arquivos mudados, em segundos. Avisa cedo; o GitHub garante.</li>
+<li><strong>Gancho do Claude Code</strong> (um programa que o Claude Code roda sozinho em certos momentos; lido na documentação
+  dele em 18/11, <code>code.claude.com/docs/en/hooks</code>): "antes de uma ferramenta" (<code>PreToolUse</code>: "Exit with code 2 to block
+  the action"), e "quando o agente termina" (<code>SubagentStop</code>: código 2 "Prevents the subagent from stopping"). O gancho
+  recebe o <code>agent_id</code> e o <code>agent_type</code> quando quem chama é um agente ("the input carries the agent_id and agent_type
+  common input fields that identify the subagent"), e pode ficar no próprio arquivo do agente ("hooks can be defined
+  directly in skills and subagents using frontmatter"). Ressalva lida lá: se o agente responder com <code>continue: false</code>,
+  isso vence o código 2 e ele termina mesmo assim.</li>
+<li><strong>Lista de ferramentas do agente</strong>: o arquivo de cada agente pode dizer quais ferramentas ele tem. Sem a ferramenta
+  de abrir agente e a de gravar na Central, ele não consegue, nem por engano.</li>
+</ul>
+<h3>5.1 As que dão para fazer já (24)</h3>
+<table>
+<thead>
+<tr>
+<th>#</th>
+<th>O que confere</th>
+<th>Regra</th>
+<th>Como</th>
+<th>O que não pega</th>
+<th>Falso alarme?</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>K01</td>
+<td>Conversa com o Windows fora da peça única (<code>ShellExecute</code>, <code>runas</code>, <code>schtasks</code>, <code>icacls</code>, <code>powershell</code>, <code>Update.exe</code>, <code>netsh</code>...) em texto do código</td>
+<td>R113</td>
+<td>busca nas strings do código (sem docstring), teste em <code>tests/</code> + antes do commit</td>
+<td>chamada disfarçada (texto montado em pedaços), uma segunda "peça" com outro nome</td>
+<td>hoje acha 12 lugares, todos nos 3 arquivos que o plano muda: entram numa lista de exceções com data, que só diminui</td>
+</tr>
+<tr>
+<td>K02</td>
+<td><code>DETACHED_PROCESS</code> em qualquer lugar</td>
+<td>R113, D-774</td>
+<td>busca</td>
+<td>outro jeito de lançar que também falha</td>
+<td>não: acha hoje <code>atualizacao.py</code> linhas 674 e 968 (o defeito 1 da etapa 5)</td>
+</tr>
+<tr>
+<td>K03</td>
+<td><code>icacls</code>, <code>/inheritance:r</code>, <code>/setowner</code>, <code>Set-Acl</code></td>
+<td>R113, plano peça 2</td>
+<td>busca</td>
+<td>licença mudada por outra função do Windows</td>
+<td>não: acha hoje <code>core/testes_a_distancia.py</code> 367-368 (o defeito 4)</td>
+</tr>
+<tr>
+<td>K04</td>
+<td>Número de decisão (<code>D-123</code>) em texto que a pessoa vê (tela, avisos, passos e registro dos testes à distância)</td>
+<td>R120, Lista de bugs 17/11</td>
+<td>busca nas strings, sem docstring nem comentário</td>
+<td>número escrito de outro jeito ("decisão 731")</td>
+<td>1 em 15 hoje: um comentário dentro do texto da folha de estilo (<code>ui/estilo.py</code> 447). Acha também 2 dicas de tela reais em <code>ui/automatico.py</code> (765 e 2304)</td>
+</tr>
+<tr>
+<td>K05</td>
+<td>Emoji em texto de tela</td>
+<td>R019</td>
+<td>busca nas strings de <code>ui/</code> e <code>main.py</code></td>
+<td>emoji que chega por arquivo de dados</td>
+<td>baixo (símbolos como "→" ficam de fora da faixa)</td>
+</tr>
+<tr>
+<td>K06</td>
+<td><code>core/</code> importa <code>ui/</code></td>
+<td>R049</td>
+<td>leitura da estrutura do código</td>
+<td>importação feita por texto (<code>importlib</code>)</td>
+<td>não</td>
+</tr>
+<tr>
+<td>K07</td>
+<td><code>tkinter</code> ou <code>customtkinter</code></td>
+<td>R015</td>
+<td>leitura da estrutura</td>
+<td>—</td>
+<td>não</td>
+</tr>
+<tr>
+<td>K08</td>
+<td>Nome de arquivo com acento no programa</td>
+<td>R020</td>
+<td>lista de arquivos do git</td>
+<td>caminho com acento que o programa monta ao rodar</td>
+<td>não (o esboço olha só <code>core/</code>, <code>ui/</code> e a raiz)</td>
+</tr>
+<tr>
+<td>K09</td>
+<td>Relatório só em <code>.md</code></td>
+<td>R014</td>
+<td>na pasta do relatório do trabalho, o relatório principal tem <code>.html</code> e <code>.pdf</code></td>
+<td>relatório gravado fora da pasta</td>
+<td>sim, para anexos em <code>.md</code>: só o principal é cobrado</td>
+</tr>
+<tr>
+<td>K10</td>
+<td>"APROVADO" escrito por agente; <code>[x]</code> posto no plano ou no Livro num ramo de agente</td>
+<td>R031</td>
+<td>linhas novas do ramo</td>
+<td>aprovação dita com outras palavras</td>
+<td>citação da regra ("nunca APROVADO"): fica de fora quando está entre aspas</td>
+</tr>
+<tr>
+<td>K11</td>
+<td>Teste antigo mudado ou apagado</td>
+<td>R102, D-605</td>
+<td>linhas tiradas ou trocadas dentro de funções <code>test_</code> que já existiam no commit de partida</td>
+<td>teste antigo enfraquecido por fora (uma ajuda que ele usa mudou)</td>
+<td>mudança autorizada (como a D-774): passa só se o commit citar a decisão que autoriza e ela existir no Livro</td>
+</tr>
+<tr>
+<td>K12</td>
+<td>Função ou arquivo tocado sem docstring</td>
+<td>R076</td>
+<td>leitura da estrutura, só nas funções mudadas</td>
+<td>docstring vazia de sentido</td>
+<td>funções de 1 a 2 linhas dentro de outra: ficam de fora</td>
+</tr>
+<tr>
+<td>K13</td>
+<td>Mexeu fora do papel (implementador em <code>ui/</code> sem pedido, layout em <code>core/</code>, verificador ou pesquisador no programa)</td>
+<td>R071</td>
+<td>arquivos mudados no ramo × papel do pedido</td>
+<td>—</td>
+<td>quando o pedido autoriza: o pedido lista os arquivos permitidos</td>
+</tr>
+<tr>
+<td>K14</td>
+<td>Mexeu em arquivo fora da lista do pedido</td>
+<td>camada 2</td>
+<td>arquivos mudados × "Arquivos que vou mexer"</td>
+<td>—</td>
+<td>não barra: avisa e o pacote é refeito</td>
+</tr>
+<tr>
+<td>K15</td>
+<td><code>requirements.txt</code> mudou</td>
+<td>R048</td>
+<td>arquivos mudados</td>
+<td>biblioteca instalada à mão no <code>.venv</code></td>
+<td>só passa com o "sim" citado no commit</td>
+</tr>
+<tr>
+<td>K16</td>
+<td>Biblioteca que desenha ou inventa (<code>diffusers</code>, <code>realesrgan</code>, <code>gfpgan</code>...)</td>
+<td>R022</td>
+<td><code>requirements.txt</code> e importações</td>
+<td>biblioteca nova que não está na lista</td>
+<td>uma biblioteca grande usada só para apontar: a gerente põe na lista de permitidas</td>
+</tr>
+<tr>
+<td>K17</td>
+<td>Agente mexeu no CLAUDE.md, nos agentes, no Livro, no plano ou no handoff</td>
+<td>R056, R094</td>
+<td>arquivos mudados num ramo de agente</td>
+<td>—</td>
+<td>quando o pedido é esse (como hoje): o pedido diz</td>
+</tr>
+<tr>
+<td>K18</td>
+<td>Terminar com mudança sem commit ou sem push</td>
+<td>R136</td>
+<td>gancho "quando o agente termina" + <code>git status</code></td>
+<td>—</td>
+<td>não</td>
+</tr>
+<tr>
+<td>K19</td>
+<td>O formulário da entrega (seção 6)</td>
+<td>R096, R104, R115, R118 e outras</td>
+<td>gancho "quando o agente termina" + <code>esbocos/conferir_entrega.py</code></td>
+<td>se a resposta é verdadeira</td>
+<td>o commit de partida tem de vir no pedido: comparando com o ramo errado, o esboço deu 30 alarmes falsos no ONDE-PAREI do plano de hoje</td>
+</tr>
+<tr>
+<td>K20</td>
+<td>As palavras do Samuel citadas batem com o Livro, letra por letra</td>
+<td>R013, R096</td>
+<td>parte do K19</td>
+<td>palavras certas na decisão errada</td>
+<td>aspas tiradas de outra fonte (Central) que o Livro resume: aceitar também a fonte citada</td>
+</tr>
+<tr>
+<td>K21</td>
+<td>A rodada do GitHub existe, é do último commit do ramo e passou</td>
+<td>R034</td>
+<td><code>gh run view</code></td>
+<td>—</td>
+<td>commit só de documento depois da rodada: aceitar se o que mudou depois é só <code>.md</code></td>
+</tr>
+<tr>
+<td>K22</td>
+<td>A barra de rolagem continua cinza</td>
+<td>R069</td>
+<td>busca em <code>ui/estilo.py</code></td>
+<td>—</td>
+<td>não</td>
+</tr>
+<tr>
+<td>K23</td>
+<td>Agente não abre agente; agente não grava na Central</td>
+<td>R106, R090</td>
+<td>lista de ferramentas no arquivo de cada agente (muda o texto do agente: precisa do "sim")</td>
+<td>—</td>
+<td>não</td>
+</tr>
+<tr>
+<td>K24</td>
+<td><code>pywinauto</code> com <code>click_input</code> ou <code>send_keys</code></td>
+<td>R142</td>
+<td>busca nos scripts de teste</td>
+<td>—</td>
+<td>não</td>
+</tr>
+</tbody>
+</table>
+<p>Já existem hoje, e continuam: botões em inglês (<code>tests/test_botoes_em_portugues.py</code>), nenhuma janela na tela nos
+testes (<code>tests/test_sem_janela_na_tela.py</code>), memória que não cresce com o livro
+(<code>tests/test_memoria_nao_cresce_com_o_livro.py</code>), as provas das decisões (<code>tests/test_decisoes*.py</code>) e as promessas
+dos botões (<code>tests/test_promessas.py</code>).</p>
+<p>O esboço <code>esbocos/conferir_codigo.py</code> faz K01 a K08 (só lê). Rodado no obra de hoje: <strong>15 achados com as exceções</strong>
+(todos do K04), e <strong>31 sem as exceções</strong> (12 do K01, 2 do K02, 2 do K03, 15 do K04).</p>
+<h3>5.2 As que precisam de estudo (14)</h3>
+<table>
+<thead>
+<tr>
+<th>#</th>
+<th>O que conferiria</th>
+<th>Regra</th>
+<th>Por que precisa de estudo</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>E1</td>
+<td>Apagar fora do projeto, ou <code>rm -rf</code> numa junção</td>
+<td>R080</td>
+<td>gancho "antes do comando": ler o comando com segurança (variável, script que apaga por dentro do Python); decidir o que fazer com a pasta temporária do próprio agente, que também fica fora do projeto</td>
+</tr>
+<tr>
+<td>E2</td>
+<td>Fechar processo que não é seu</td>
+<td>R134</td>
+<td>o gancho precisa saber quais processos o agente abriu (lista de números de processo)</td>
+</tr>
+<tr>
+<td>E3</td>
+<td>Escrever no acervo ou nos originais</td>
+<td>R054</td>
+<td>a permissão do Claude Code pode negar editar e gravar ali; um comando que grava por dentro escapa</td>
+</tr>
+<tr>
+<td>E4</td>
+<td>O teste de reversão falha mesmo no código antigo</td>
+<td>R038</td>
+<td>rodar os testes novos no commit de partida (no GitHub, como o filtro de velocidade); pesado</td>
+</tr>
+<tr>
+<td>E5</td>
+<td>Conta ou lista copiada em dois arquivos</td>
+<td>R108</td>
+<td>comparar trechos parecidos dá muito alarme falso; serviria como lista para quem tenta quebrar, não para barrar</td>
+</tr>
+<tr>
+<td>E6</td>
+<td>Desvio para um caso (<code>if</code> com o nome de uma opção)</td>
+<td>R105, R108</td>
+<td>idem</td>
+</tr>
+<tr>
+<td>E7</td>
+<td>A janela congela (esperar o Windows, a rede ou outro programa fora do trabalho por trás)</td>
+<td>R017</td>
+<td>o defeito 4 da etapa 5 era exatamente isso, mas separar o que roda por trás exige ler o código com cuidado</td>
+</tr>
+<tr>
+<td>E8</td>
+<td>"Gravou que deu certo sem conferir"</td>
+<td>R114</td>
+<td>difícil por busca; o melhor é a peça única só devolver as três respostas (deu certo, "Não", falhou) e o resto do código não ter outro jeito de saber</td>
+</tr>
+<tr>
+<td>E9</td>
+<td>A prova foi de verdade e à vista</td>
+<td>R116</td>
+<td>a máquina vê a hora e o print; não vê se foi à vista. Fica com quem tenta quebrar e com o Samuel</td>
+</tr>
+<tr>
+<td>E10</td>
+<td>Página de lombada ou capa em teste</td>
+<td>R044</td>
+<td>precisa marcar na lista do gabarito quais páginas não vão ser impressas</td>
+</tr>
+<tr>
+<td>E11</td>
+<td>Texto de tela sem acento ("nao", "voce")</td>
+<td>R020</td>
+<td>lista de palavras; muito alarme falso em nome de variável</td>
+</tr>
+<tr>
+<td>E12</td>
+<td>O verificador abriu todas as imagens</td>
+<td>R028</td>
+<td>contar no registro da conversa do agente as imagens abertas contra as geradas</td>
+</tr>
+<tr>
+<td>E13</td>
+<td>Erro engolido (<code>except: pass</code>)</td>
+<td>proposta do revisor de 10/11</td>
+<td><strong>ainda não é regra</strong> (espera o Samuel); não se cobra o que ele não aprovou</td>
+</tr>
+<tr>
+<td>E14</td>
+<td>O resto da lista de perguntas ao Samuel (o caso real, o controle, de onde veio)</td>
+<td>R122, R126, R127</td>
+<td>só gente; a máquina já cobra o que dá no K19</td>
+</tr>
+</tbody>
+</table>
+<hr />
+<h2>6. O formulário da entrega</h2>
+<p>O agente preenche no próprio ONDE-PAREI, com estes títulos de seção. O programa (<code>esbocos/conferir_entrega.py</code>)
+confere <strong>em três etapas</strong>: antes de ir ao agente que tenta quebrar; antes da prova à vista na tela do Samuel; antes de
+"pronto para conferir". Campo que falta ou está vazio: o programa devolve, e o gancho não deixa o agente terminar.</p>
+<p><strong>Texto de enchimento não vale:</strong> "—", "...", "ver acima", "idem", "n/a", "TODO", "a fazer". "Não se aplica" só vale com
+o motivo ("não se aplica: este passo não pede licença ao Windows").</p>
+<table>
+<thead>
+<tr>
+<th>#</th>
+<th>Campo (título da seção)</th>
+<th>Quando é obrigatório</th>
+<th>O que é preenchimento válido</th>
+<th>O que o programa confere</th>
+<th>O que ele não confere</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>F1</td>
+<td>Arquivos que vou mexer</td>
+<td>sempre, antes de escrever</td>
+<td>lista de caminhos</td>
+<td>que bate com os arquivos mudados no fim (K14) e monta o pacote</td>
+<td>se a lista era a certa</td>
+</tr>
+<tr>
+<td>F2</td>
+<td>Decisões que esta tarefa precisa cumprir</td>
+<td>sempre</td>
+<td>cada linha: número e as palavras dele entre aspas</td>
+<td>que a decisão existe e as palavras estão no Livro assim</td>
+<td>se faltou alguma decisão (isso é da gerente, que manda no pedido)</td>
+</tr>
+<tr>
+<td>F3</td>
+<td>O que já está escolhido e testado aqui</td>
+<td>sempre</td>
+<td>decisões e nomes de testes que existem</td>
+<td>que os testes citados existem</td>
+<td>se é a lista completa</td>
+</tr>
+<tr>
+<td>F4</td>
+<td>Como fica para quem usa e no livro</td>
+<td>sempre</td>
+<td>antes e depois, passo a passo; o PDF (ou "nada muda no PDF")</td>
+<td>que existe e fala de antes, depois e PDF</td>
+<td>se é verdade</td>
+</tr>
+<tr>
+<td>F5</td>
+<td>A causa, a regra e todos os caminhos</td>
+<td>sempre que muda comportamento</td>
+<td>causa; a função que decide; cada caminho → a função que ele usa</td>
+<td>que cada função citada existe no código</td>
+<td>se achou todos os caminhos (quem tenta quebrar procura de novo)</td>
+</tr>
+<tr>
+<td>F6</td>
+<td>O que pode falhar e o que o programa faz</td>
+<td>Windows e instalador</td>
+<td>uma linha por caso, com o que o programa faz; os seis de sempre (sem licença, sem internet, disco cheio, "Não", arquivo preso, desligar no meio) aparecem ou dizem "não se aplica: motivo"</td>
+<td>os seis casos</td>
+<td>se pensou em todos os outros</td>
+</tr>
+<tr>
+<td>F7</td>
+<td>O que li da peça de fora e onde</td>
+<td>sempre que usa peça de fora</td>
+<td>para cada peça e cada caso que usamos (deu certo, falhou, "Não", interrompida): o que ela faz, com endereço da documentação ou arquivo:linha do código dela</td>
+<td>que cada item tem fonte; (a fazer) que cada importação ou programa de fora novo do código aparece aqui</td>
+<td>se leu mesmo e entendeu certo</td>
+</tr>
+<tr>
+<td>F8</td>
+<td>O que foi feito</td>
+<td>sempre</td>
+<td>uma ou duas frases</td>
+<td>que existe</td>
+<td>—</td>
+</tr>
+<tr>
+<td>F9</td>
+<td>Arquivos criados ou alterados</td>
+<td>sempre</td>
+<td>lista</td>
+<td>que bate com o git (sem contar a pasta do relatório)</td>
+<td>—</td>
+</tr>
+<tr>
+<td>F10</td>
+<td>Como cumpri cada uma</td>
+<td>sempre</td>
+<td>cada decisão do F2, com o teste ou o print</td>
+<td>que nenhuma decisão do F2 ficou sem linha; que o teste e o print existem</td>
+<td>se o teste prova a decisão</td>
+</tr>
+<tr>
+<td>F11</td>
+<td>Testes</td>
+<td>sempre</td>
+<td>arquivos rodados no PC; número da rodada do GitHub</td>
+<td>(K21) que a rodada é do último commit e passou</td>
+<td>se os testes cobram o que importa</td>
+</tr>
+<tr>
+<td>F12</td>
+<td>Caminho e função</td>
+<td>sempre que F5</td>
+<td>a lista caminho → função e a prova em <code>tests/</code> que cobra o mesmo resultado em todos</td>
+<td>que o teste existe</td>
+<td>se cobre todos</td>
+</tr>
+<tr>
+<td>F13</td>
+<td>Máquina ou olho</td>
+<td>sempre</td>
+<td>item por item</td>
+<td>que existe</td>
+<td>—</td>
+</tr>
+<tr>
+<td>F14</td>
+<td>Ressalvas</td>
+<td>sempre</td>
+<td>o que não foi testado, o que pode dar errado</td>
+<td>que existe e não é enchimento ("nenhuma" é aceito, mas vai marcado para quem tenta quebrar)</td>
+<td>se escondeu alguma</td>
+</tr>
+<tr>
+<td>F15</td>
+<td>Velocidade</td>
+<td>imagem e processamento</td>
+<td>número da rodada do filtro de velocidade</td>
+<td>que a rodada existe</td>
+<td>—</td>
+</tr>
+<tr>
+<td>F16</td>
+<td>Ideias e bugs</td>
+<td>sempre</td>
+<td>"nenhum" vale</td>
+<td>que existe</td>
+<td>—</td>
+</tr>
+<tr>
+<td>F17</td>
+<td>Perguntas para o Samuel</td>
+<td>sempre</td>
+<td>"nenhuma" vale; cada pergunta num <code>###</code></td>
+<td>sem palavra de dentro, com "O que você escolhe", print que existe, sugestão</td>
+<td>se ele vai entender</td>
+</tr>
+<tr>
+<td>F18</td>
+<td>Commit</td>
+<td>sempre</td>
+<td>o código do último commit, já enviado</td>
+<td>que está no GitHub</td>
+<td>—</td>
+</tr>
+<tr>
+<td>F19</td>
+<td>O que o agente que tentou quebrar achou</td>
+<td>antes da prova à vista (Windows e instalador; nos outros, quando a gerente pedir)</td>
+<td>o relatório dele (outro agente), a lista de achados e, para cada um: consertado no commit X / não é defeito, porquê / vira pergunta</td>
+<td>que o relatório existe, é de outro agente e cada achado tem destino</td>
+<td>se ele procurou direito</td>
+</tr>
+<tr>
+<td>F20</td>
+<td>A prova de verdade</td>
+<td>antes de "pronto" (Windows e instalador)</td>
+<td>o que rodou de verdade, onde, data e hora, à vista, e o print ou o registro da janela de prova; ou "falta a sessão X" (então não é "pronto")</td>
+<td>data, hora e o arquivo de print ou registro</td>
+<td>se foi à vista e se mostra o que diz</td>
+</tr>
+</tbody>
+</table>
+<p><strong>O agente que tenta quebrar (D-775)</strong> recebe o pacote com <strong>todas</strong> as etiquetas (94 regras, uns 22 mil caracteres no
+esboço), o formulário preenchido do outro e o código. Ele preenche o seu próprio relatório, com:</p>
+<ol>
+<li>o que leu (arquivos e commits);</li>
+<li>para F5, F6 e F7 do outro: o que conferiu, como (a busca que rodou, o documento que abriu), e o que achou;</li>
+<li>caminhos que o outro não listou (procurados com busca no código, não lidos do formulário);</li>
+<li>falhas não pensadas (casos fora do F6) e resultado não conferido (lugar que grava sem perguntar ao Windows);</li>
+<li>as regras do catálogo que conferiu, por número, e as que não se aplicam;</li>
+<li>os achados numerados, cada um com o lugar no código.</li>
+</ol>
+<p>O mesmo programa confere que esses seis campos existem. A qualidade de quem quebra a gerente vê pela taxa: o que ele
+achou e o que o Samuel achou depois na prova à vista.</p>
+<hr />
+<h2>7. Como a gerente passa a montar o pedido</h2>
+<ol>
+<li>Escreve o pedido curto (modelo abaixo), com a lista de arquivos e as decisões.</li>
+<li>Roda o montador: <code>python montar_pacote.py &lt;papel&gt; docs/plano/DECISOES.md "&lt;título&gt;" &lt;D-...&gt; &lt;arquivos&gt;</code>.</li>
+<li>Lê o aviso de arquivo fora da tabela, se houver, e acrescenta a linha na tabela.</li>
+<li>Junta: pedido + pacote. Manda.</li>
+</ol>
+<p><strong>Modelo do pedido:</strong></p>
+<blockquote>
+<p>Você é o <strong><papel></strong> do Editor de Impressão. Não abra outros agentes.</p>
+<p><strong>Trabalho:</strong> <uma frase do que fazer, sobre a coisa inteira>. Vem de <documento, seção>.
+<strong>Cópia e ramo:</strong> <code>&lt;pasta&gt;</code>, ramo <code>&lt;ramo&gt;</code>, a partir de <code>&lt;commit&gt;</code>. Relatório em <code>relatorios/&lt;nome&gt;/</code>.
+<strong>Arquivos:</strong> <lista>. Mexer fora dela: pare e me avise (o pacote muda).
+<strong>Fica de fora:</strong> <o que não faz neste trabalho>.
+<strong>Pronto quer dizer:</strong> <ex.: o formulário passa na etapa "antes de quem tenta quebrar">.
+<strong>Leia:</strong> este pacote inteiro; <seções do plano>; as fichas &lt;...&gt; da memória. O CLAUDE.md só nas seções que o pacote
+cita, quando tiver dúvida.</p>
+<p><o pacote, montado pelo programa></p>
+</blockquote>
+<p>Seis linhas da gerente; o resto sai do programa. O que antes ela copiava à mão (as regras de cada assunto, as palavras
+do Livro) não depende mais da memória dela.</p>
+<hr />
+<h2>8. O que pode dar errado, e como cada risco é coberto</h2>
+<table>
+<thead>
+<tr>
+<th>Risco</th>
+<th>O que acontece</th>
+<th>Como fica coberto</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>Regra nova sem etiqueta</td>
+<td>o agente não recebe</td>
+<td>o catálogo é a lista que o montador lê: regra fora dele não existe para o pacote. Uma conferência (teste) cobra que cada número de regra do CLAUDE.md esteja no catálogo, e que toda regra do catálogo tenha etiqueta</td>
+</tr>
+<tr>
+<td>Etiqueta errada (ex.: regra de Windows marcada só como tela)</td>
+<td>o agente de Windows não recebe</td>
+<td>quem tenta quebrar recebe tudo; achado dele que cair numa regra que o pacote não trouxe vira correção da etiqueta</td>
+</tr>
+<tr>
+<td>Tabela de arquivos atrasada</td>
+<td>arquivo novo sem linha</td>
+<td>arquivo fora da tabela recebe <strong>todas</strong> as regras (o pacote cresce, nunca encolhe) e a gerente é avisada; o conteúdo também dá etiqueta (subprocess → Windows); um teste cobra que todo arquivo do git tem linha</td>
+</tr>
+<tr>
+<td>O trabalho se espalha para arquivos que não estavam no pedido</td>
+<td>o agente seguiu com o pacote errado</td>
+<td>K14 avisa no commit e no fim; o pacote é refeito com os arquivos de verdade</td>
+</tr>
+<tr>
+<td>A máquina dá falso alarme</td>
+<td>o agente perde tempo ou contorna</td>
+<td>exceções com data e motivo, numa lista que só diminui; alarme de conferência nova começa como aviso, e só passa a barrar depois de uma semana sem falso alarme; toda exceção nova é da gerente</td>
+</tr>
+<tr>
+<td>O agente contorna a conferência (<code>--no-verify</code>, <code>continue: false</code>, texto montado em pedaços)</td>
+<td>passa sem cobrar</td>
+<td>o teste em <code>tests/</code> roda no GitHub e ninguém pula; quem tenta quebrar procura contorno de propósito</td>
+</tr>
+<tr>
+<td>O agente preenche o formulário de qualquer jeito</td>
+<td>campo existe, resposta vazia de sentido</td>
+<td>o programa cobra o que dá (a decisão existe, o teste existe, a fonte tem endereço); o resto é de quem tenta quebrar, que confere F5, F6 e F7 contra o código; "nenhuma ressalva" vai marcado para ele</td>
+</tr>
+<tr>
+<td>O texto curto do pacote fica diferente do texto que vale</td>
+<td>o agente cumpre a versão curta errada</td>
+<td>cada regra do pacote diz de onde veio; quando a regra muda, o catálogo muda no mesmo commit (um teste pode cobrar que a seção citada ainda existe)</td>
+</tr>
+<tr>
+<td>As contradições continuam</td>
+<td>o agente recebe as duas</td>
+<td>o pacote marca cada regra com contradição ("outro texto das regras diz diferente; na dúvida, pergunte à gerente") até o Samuel resolver</td>
+</tr>
+<tr>
+<td>Gerente esquece de mandar a decisão certa</td>
+<td>F2 incompleto</td>
+<td>o programa não pega. A Central já liga decisão a etapa e dono; o Livro diz em "onde toca" quais arquivos cada decisão toca: dá para o montador sugerir as decisões dos arquivos (a fazer)</td>
+</tr>
+<tr>
+<td>O pacote fica grande de novo com o tempo</td>
+<td>volta o problema de hoje</td>
+<td>o montador mostra o tamanho; o "sempre" tem limite de 10</td>
+</tr>
+<tr>
+<td>O agente não lê o CLAUDE.md e perde uma regra que não estava no pacote</td>
+<td>falha que a regra pegaria</td>
+<td>o pacote diz o que não trouxe e quando parar; quem tenta quebrar lê tudo</td>
+</tr>
+</tbody>
+</table>
+<hr />
+<h2>9. Perguntas para o Samuel</h2>
+<p>Ressalva sobre as imagens (regra 3 do jeito de perguntar): nenhuma destas perguntas é sobre uma tela do programa.
+A prova de cada uma é o exemplo de verdade que está nesta proposta (o pacote da peça nova do Windows e o que a
+conferência achou no código de hoje). A gerente põe esses exemplos ao lado na Central.</p>
+<h3>1. O agente passa a receber só as regras do trabalho dele, em vez do livro de regras inteiro?</h3>
+<p><strong>Do que se trata.</strong> Quando a gerente chama um agente, ele lê hoje o livro de regras inteiro (umas 40 regras, 70 mil
+letras) e o arquivo do papel dele. Na etapa 5, os agentes do atualizador leram as regras e mesmo assim fizeram a
+gambiarra que a regra proíbe.
+<strong>Como seria.</strong> Um programa olha quais arquivos o trabalho vai mexer e monta um pacote: 10 regras que valem sempre, as
+regras daquele tipo de trabalho (Windows, tela, imagem...) e as suas palavras copiadas do Livro de decisões. Na peça
+nova do Windows, são 39 regras curtas em vez do livro inteiro, umas 9 vezes menos texto. O livro de regras continua
+inteiro, do mesmo jeito: é dele que o pacote sai. O agente que tenta quebrar recebe tudo.
+<strong>O que você escolhe:</strong>
+- <strong>Opção 1 (sugestão):</strong> o agente recebe o pacote; o livro inteiro fica para consulta e para quem tenta quebrar. Muda
+  só o jeito de passar as regras; nenhuma regra muda.
+- <strong>Opção 2:</strong> o agente recebe o pacote <strong>e</strong> continua lendo o livro inteiro. Mais seguro de não faltar nada, mas
+  continua o problema de hoje: a regra que importa se perde no meio.
+- <strong>Só comentário.</strong>
+<strong>Situação:</strong> só proposta; nada foi ligado.</p>
+<h3>2. As conferências que barram o trabalho podem entrar já?</h3>
+<p><strong>Do que se trata.</strong> São programas pequenos que leem o código e não deixam o trabalho entrar se acharem uma coisa
+proibida. Exemplo de verdade: rodando no código de hoje, eles acham o jeito de abrir o PowerShell que fazia o
+"Reiniciar agora" fechar e não voltar, e o comando que trancou a pasta dos testes à distância. Os dois defeitos que
+você viu na instalação de verdade teriam sido barrados antes.
+<strong>Como seria.</strong> 24 conferências que dão para fazer já. Rodam no GitHub em toda entrega (ninguém consegue pular) e
+antes de cada gravação no git. Os lugares de hoje que o plano da parte do Windows ainda vai mudar ficam numa lista de
+exceções com data, que só diminui. Nada muda para o Kaique.
+<strong>O que você escolhe:</strong>
+- <strong>Opção 1 (sugestão):</strong> entram já, com a lista de exceções; uma conferência nova só avisa na primeira semana e depois
+  passa a barrar.
+- <strong>Opção 2:</strong> entram só depois da entrega ao Kaique (você pediu que nenhum conserto comece antes disso; isto não muda
+  o programa, mas é trabalho novo).
+- <strong>Só comentário.</strong>
+<strong>Situação:</strong> só proposta, com dois esboços que só leem.</p>
+<h3>3. Posso tirar dos agentes a ferramenta de abrir outro agente e a de gravar na Central?</h3>
+<p><strong>Do que se trata.</strong> Cada agente tem uma lista de ferramentas. Hoje a regra diz "não abra outro agente" e "agente não
+grava na Central", mas eles têm as duas ferramentas na mão. Em 10/11 um agente abriu três ajudantes e você viu cinco
+rodando.
+<strong>Como seria.</strong> As duas ferramentas saem da lista de cada agente. Ele não consegue mais, nem por engano. A gerente
+continua com as duas. Isso muda o arquivo de regras de cada agente (só a lista de ferramentas).
+<strong>O que você escolhe:</strong>
+- <strong>Opção 1 (sugestão):</strong> sim, tirar as duas.
+- <strong>Opção 2:</strong> deixar como está e confiar na regra escrita.
+- <strong>Só comentário.</strong>
+<strong>Situação:</strong> só proposta.</p>
+<h3>4. A entrega do agente passa a ter um formulário que um programa confere?</h3>
+<p><strong>Do que se trata.</strong> Hoje cada arquivo de agente tem a sua lista do que entregar, e a gerente confere a olho. Na etapa
+5, o "pronto" chegou sem a lista do que pode falhar e sem a leitura do Velopack.
+<strong>Como seria.</strong> Um formulário só, de 20 campos (o que pode falhar e o que o programa faz; o que leu da peça de fora e
+onde; a prova de verdade; o que achou o agente que tentou quebrar...). Um programa não deixa o agente terminar com
+campo vazio, e confere o que dá: que a sua frase está no Livro do jeito que você disse, que o teste citado existe, que
+a rodada do GitHub passou. Se a resposta é boa, quem vê é o agente que tenta quebrar, antes de chamar você.
+<strong>O que você escolhe:</strong>
+- <strong>Opção 1 (sugestão):</strong> sim, o formulário e o programa que confere, começando pela parte do Windows.
+- <strong>Opção 2:</strong> o formulário, mas conferido só pela gerente, sem o programa.
+- <strong>Só comentário.</strong>
+<strong>Situação:</strong> só proposta, com um esboço que só lê.</p>
+<h3>5. Posso trazer, uma por vez, as regras que dizem o contrário uma da outra?</h3>
+<p><strong>Do que se trata.</strong> Lendo tudo, achei 10 lugares em que duas regras não dá para cumprir juntas. Exemplo: uma regra
+manda tirar o print da janela escondida, fora da tela; a regra nova da parte do Windows diz que nada conta se não for à
+vista. Outra: uma manda medir a velocidade no seu PC a cada item; outra diz para não medir no PC no meio da fase.
+<strong>Como seria.</strong> Uma pergunta por contradição, com o texto das duas regras e a sugestão. Até você responder, o pacote
+avisa o agente: "outro texto das regras diz diferente; na dúvida, pergunte à gerente".
+<strong>O que você escolhe:</strong>
+- <strong>Opção 1 (sugestão):</strong> sim, uma por vez, primeiro as duas que tocam o próximo trabalho do Windows (a janela escondida
+  e a velocidade).
+- <strong>Opção 2:</strong> a gerente propõe as 10 de uma vez, numa lista.
+- <strong>Só comentário.</strong>
+<strong>Situação:</strong> só apontadas; nenhuma resolvida.</p>
+<hr />
+<h2>Detalhe técnico (para a gerente)</h2>
+<ul>
+<li>Arquivos desta proposta: <code>proposta</code> (este, nos três formatos), <code>pedido-exemplo</code> (três formatos), <code>pacote-exemplo.md</code>
+  (o que o montador devolve), <code>ONDE-PAREI.md</code>, e <code>esbocos/</code>: <code>catalogo.py</code> (as 155 regras em dados),
+  <code>tabela_arquivos.py</code>, <code>montar_pacote.py</code>, <code>conferir_codigo.py</code>, <code>conferir_entrega.py</code>, <code>montar_proposta.py</code> (gera
+  este documento a partir dos dados). Nada está ligado; nada foi rodado contra o PC fora de leitura do git e do código.</li>
+<li>Contas: <code>python esbocos/catalogo.py</code> dá os números do catálogo; <code>python esbocos/tabela_arquivos.py obra-2026-10-26</code>
+  confere a cobertura da tabela.</li>
+<li>Achado no caminho, para a Lista de bugs (não impede; D-765 segura o conserto): as dicas de tela do Automático
+  "desligar as marcadas" e a do retângulo do corte mostram "D-068" e "D-094" ao Kaique (<code>ui/automatico.py</code> 765 e
+  2304, no obra). Mesmo tipo do bug de 17/11 dos passos dos testes à distância.</li>
+<li>O <code>CLAUDE.md</code> da cópia <code>obra-juncao</code> (66.755 caracteres) é mais velho que o do <code>fase-1</code> (71.186): o catálogo usa o do
+  <code>fase-1</code>.</li>
+</ul>
+<p class="rodape">Editor de Impressão &middot; gerado em 18/11/2026 às 16:36</p>
+</body>
+</html>

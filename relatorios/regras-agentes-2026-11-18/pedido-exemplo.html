@@ -1,0 +1,178 @@
+<!doctype html>
+<html lang="pt-BR">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Pedido de exemplo: a peça nova do Windows</title>
+<style>
+:root { color-scheme: light dark; }
+* { box-sizing: border-box; }
+body {
+  font: 17px/1.65 "Segoe UI", system-ui, sans-serif;
+  max-width: 46rem; margin: 0 auto; padding: 2.5rem 1.5rem 6rem;
+  color: #1c1c1e; background: #fdfdfc;
+}
+h1 { font-size: 2rem; line-height: 1.2; margin: 0 0 .3em; letter-spacing: -.02em; }
+h2 { font-size: 1.35rem; margin: 2.4em 0 .6em; padding-top: .8em;
+     border-top: 1px solid #e6e4e0; letter-spacing: -.01em; }
+h3 { font-size: 1.1rem; margin: 1.8em 0 .4em; }
+h1 + p, h2 + p { margin-top: .4em; }
+p, li { margin: 0 0 .9em; }
+ul, ol { padding-left: 1.3em; }
+strong { font-weight: 640; }
+code {
+  font: .88em ui-monospace, "Cascadia Code", Consolas, monospace;
+  background: #f1efec; padding: .12em .35em; border-radius: 4px;
+}
+pre {
+  background: #f1efec; padding: 1em 1.1em; border-radius: 8px;
+  overflow-x: auto; line-height: 1.5;
+}
+pre code { background: none; padding: 0; }
+blockquote {
+  margin: 1.2em 0; padding: .1em 0 .1em 1.1em;
+  border-left: 3px solid #c9c5be; color: #55524d;
+}
+table {
+  border-collapse: collapse; width: 100%; margin: 1.2em 0;
+  font-size: .95rem; display: block; overflow-x: auto;
+}
+th, td { padding: .5em .8em; text-align: left; border-bottom: 1px solid #e6e4e0; }
+th { font-weight: 620; background: #f7f5f2; white-space: nowrap; }
+tr:last-child td { border-bottom: none; }
+img { max-width: 100%; height: auto; border-radius: 6px; margin: 1em 0;
+      border: 1px solid #e6e4e0; }
+hr { border: none; border-top: 1px solid #e6e4e0; margin: 2.5em 0; }
+.rodape { margin-top: 4em; padding-top: 1.2em; border-top: 1px solid #e6e4e0;
+          font-size: .85rem; color: #86827c; }
+@media (prefers-color-scheme: dark) {
+  body { color: #e8e6e3; background: #1a1917; }
+  h2 { border-top-color: #35332f; }
+  code, pre, th { background: #262421; }
+  th, td { border-bottom-color: #35332f; }
+  blockquote { border-left-color: #4a4741; color: #b0aca6; }
+  img { border-color: #35332f; }
+  .rodape { border-top-color: #35332f; color: #7d7973; }
+}
+@media print {
+  body { max-width: none; padding: 0; color: #000; background: #fff; }
+  h2 { page-break-after: avoid; }
+  table, img { page-break-inside: avoid; }
+}
+</style>
+</head>
+<body>
+<h1>Pedido de exemplo: a peça nova do Windows</h1>
+<blockquote>
+<p>Você é o <strong>implementador</strong> do Editor de Impressão. Não abra outros agentes.</p>
+<p><strong>Trabalho:</strong> escrever o porteiro do Windows e a pasta segura (peças 1 e 2), a peça única que todo o programa vai
+usar para pedir licença, lançar processo, rodar comando, mexer em tarefa e ler como o Windows está. Vem do plano da
+parte do Windows (<code>relatorios/plano-windows-2026-11-18/plano.md</code>, ramo <code>plano-windows-2026-11-18</code>): seção 1.2, peças
+1 e 2; seção 2, defeitos 1 a 16; seção 3, passos 1 e 2.
+<strong>Cópia e ramo:</strong> <code>.claude/worktrees/porteiro-windows</code>, ramo <code>porteiro-windows-&lt;data&gt;</code>, a partir de <code>&lt;commit do obra&gt;</code>.
+Relatório em <code>relatorios/porteiro-windows-&lt;data&gt;/</code>.
+<strong>Arquivos:</strong> <code>core/windows.py</code> (novo) e <code>tests/test_windows.py</code> (novo). Mexer fora deles: pare e me avise (o pacote muda).
+<strong>Fica de fora:</strong> nenhum chamador muda ainda (o atualizador e os testes à distância passam a usar o porteiro nos
+passos 3 e 4). Nada roda no Windows de verdade neste trabalho: a prova à vista é a sessão A, que a gerente marca
+com o Samuel depois do agente que tenta quebrar.
+<strong>Pronto quer dizer:</strong> o formulário passa na etapa "antes de quem tenta quebrar"; o script da sessão A fica descrito
+no ONDE-PAREI (o que cada linha da janela de prova vai mostrar).
+<strong>Leia:</strong> este pacote inteiro; as seções do plano acima; as fichas <code>memoria/geral/ambiente.md</code> e
+<code>memoria/licoes.md</code> (parte D). O CLAUDE.md só nas seções que o pacote cita, quando tiver dúvida.</p>
+</blockquote>
+<h1>Pacote de regras: o porteiro do Windows e a pasta segura (passo 1 do plano da parte do Windows)</h1>
+<p>Papel: <strong>implementador</strong>. Arquivos: <code>core/windows.py</code> (novo), <code>tests/test_windows.py</code> (novo).
+Tipo de trabalho (sai dos arquivos): git e arquivos, testes, Windows e instalador (e qualquer conversa com programa de fora).</p>
+<h2>1. Sempre (todo trabalho)</h2>
+<ol>
+<li><strong>Só o que foi pedido e decidido.</strong> Faça só o que o pedido e as decisões do Samuel mandam. Nada de botão, aviso, texto ou comportamento a mais. Se a decisão parecer impossível, contraditória ou pouco clara, ou se a única saída for um remendo: pare e escreva a pergunta (não faça diferente em silêncio, nem 'por enquanto'). <em>Por quê:</em> É a falha que mais se repetiu: decisões de 25/09 nunca construídas, e agentes mudando o que ele tinha definido (§11.7).</li>
+<li><strong>O novo não estraga o que já funciona.</strong> Antes de mexer, anote o que já está escolhido e testado ali. Teste antigo que quebra faz a entrega voltar; nunca mude um teste antigo para ele passar. <em>Por quê:</em> Ele disse: 'essa é uma nova regra que todos os agentes precisam ler' (D-605).</li>
+<li><strong>Sem gambiarra, em tudo.</strong> Ache a causa, a função que decide, e todos os caminhos que chegam nela (grep). Mude num lugar só e faça todos os caminhos usarem esse lugar. Nada de desvio para um caso, nem conta ou lista copiada. <em>Por quê:</em> 17 remendos achados em 10/11 e os 33 defeitos do atualizador em 18/11 têm a mesma causa (§11.12).</li>
+<li><strong>Nada é feito sem conferir de verdade.</strong> Só diga 'feito' do que você conferiu de verdade (abrindo o arquivo, olhando a imagem, perguntando ao Windows). Escreva toda ressalva. Nunca escreva 'APROVADO': só o Samuel aprova. <em>Por quê:</em> 57 commits 'feito' e zero aprovados; '10 de 10 corretas' com seis erradas; 'Desligado' gravado sem desligar.</li>
+<li><strong>Leia a peça de fora antes de usar.</strong> Antes de usar uma peça que não é nossa (biblioteca, função do Windows, PowerShell, Velopack, Qt), leia a documentação e, se não bastar, o código. Anote o que ela faz em cada caso que usamos, com a fonte. Separe o lido do deduzido. <em>Por quê:</em> Na etapa 5 o atualizador foi escrito sem ler o Velopack nem o Windows (§11.12.6).</li>
+<li><strong>Decisões do Livro: cumprir e provar cada uma.</strong> As decisões que o pedido traz (número e palavras dele) vão no começo do ONDE-PAREI; na entrega, como cumpriu cada uma, com teste ou print. Aparência não é prova. Palavras dele sempre copiadas do Livro, nunca de memória. <em>Por quê:</em> As decisões se perdiam entre o pedido e o código (§11.3 e §11.4).</li>
+<li><strong>Pense em quem usa e no livro que sai.</strong> Antes de mexer, escreva o que o Kaique vê e faz, passo a passo, antes e depois, e o que muda no PDF. Na entrega, confira. <em>Por quê:</em> Regra do Samuel para todo agente (D-637).</li>
+<li><strong>Pergunta ao Samuel: no ONDE-PAREI, na hora, no jeito dele.</strong> Pergunta vai na seção 'Perguntas para o Samuel' do ONDE-PAREI assim que surge. Começa pelo que é e onde fica, sem palavra de dentro (número, arquivo, etapa), com print do caso real e 'O que você escolhe', com a sua sugestão. Você nunca grava na Central. <em>Por quê:</em> 106 perguntas voltaram com 'Ainda não entendi' (§11.13); 8 perguntas ficaram escondidas num ONDE-PAREI (22/10).</li>
+<li><strong>Seu ramo, commit a cada passo, nada se apaga fora.</strong> Trabalhe só na sua cópia e no seu ramo; commit e push a cada passo, com o ONDE-PAREI em dia. Fora de D:\programas\EditorImpressao nada se apaga; dentro, só o que você criou. Junção nunca com rm -rf. Acervo só para ler. <em>Por quê:</em> O limite da conta já derrubou agentes; em 29/09 um agente apagou D:\d inteira.</li>
+<li><strong>Não abra agente, não use a tela dele, entregue à gerente.</strong> Não abra outros agentes. Não abra janela nem pergunta do Windows na tela do Samuel, e não feche processo que não é seu, a não ser numa prova que a gerente combinou com ele. Entregue sempre à gerente. <em>Por quê:</em> Cinco agentes rodando sem ele saber (10/11); caixas abertas na tela dele (30/09, 23/10).</li>
+</ol>
+<h2>2. As regras do seu trabalho (29)</h2>
+<p><strong>Windows e instalador (e qualquer conversa com programa de fora)</strong>
+- A janela nunca congela: Todo trabalho demorado em QThread, com barra e cancelar que funciona; esperar o Windows também (na etapa 5 a janela ficou parada 14 min). (CLAUDE.md §3)
+- Texto com acento, caminho sem acento: Texto de tela com acento (UTF-8); caminho de disco sem acento. (CLAUDE.md §3)
+- core/ não importa ui/: core/ nunca importa ui/: o processamento roda por linha de comando, sem janela. (CLAUDE.md §7)
+- Onde o programa guarda estado: %LOCALAPPDATA%\EditorImpressao guarda projetos e histórico; fechar e reabrir preserva tudo; desinstalar NÃO apaga essa pasta. (CLAUDE.md §7)
+- Uma peça só para conversar com o que está fora: Windows, disco, rede, GitHub, Velopack, outro programa: uma peça só para cada conversa; ninguém escreve a sua versão (na etapa 5, cada função pedia licença do seu jeito). (CLAUDE.md §11.12.1)
+- Antes de escrever, a lista das falhas: No ONDE-PAREI, para cada coisa que pode dar errado (sem licença, sem internet, disco cheio, 'Não', arquivo preso, desligar no meio), o que o programa faz; nunca pela metade. (CLAUDE.md §11.12.3)
+- Peça de mentira não prova (D-767): Teste com peça de mentira só prova a lógica em volta. O que mexe no Windows só conta rodando de verdade, à vista, e funcionando. Nada em área escondida. (CLAUDE.md §11.12.4) <strong>Atenção: outro texto das regras diz diferente; na dúvida, pergunte à gerente.</strong></p>
+<p><strong>Testes</strong>
+- Teste de máquina: o agente decide: O que tem resposta objetiva (fecha? páginas certas? memória? PDF estragado? cadernos? acento?) roda a cada mudança, sozinho. (CLAUDE.md §4.1)
+- Máquina ou olho, item por item: Todo item diz se foi conferido por máquina ou por olho. (CLAUDE.md §4.3)
+- Onde roda cada teste: No PC, um arquivo de teste por vez; a suíte inteira e o teste_botoes no GitHub (push antes); a entrega traz o número da rodada. (CLAUDE.md §4.6) <strong>Atenção: outro texto das regras diz diferente; na dúvida, pergunte à gerente.</strong>
+- Teste de reversão em todo conserto: Todo bug consertado ganha teste que FALHA no código antigo e passa no novo, com o bug na docstring; o verificador prova no antigo. Bug de imagem: uma medida, ou ressalva escrita. (CLAUDE.md §4.7)
+- Prova: caminho → função e o mesmo resultado em todos: Na entrega, a lista 'caminho → função' e uma prova em tests/ que cobra o mesmo resultado por todos os caminhos. (CLAUDE.md §11.12)
+- Teste escrito antes do código, quando der: Teste automático do que é objetivo, escrito antes do código quando der. (implementador.md 'O que você faz')</p>
+<p><strong>Git e arquivos</strong>
+- Handoff só com pedido do Samuel: Só atualizar o handoff de historico/ quando o Samuel pedir. (CLAUDE.md §7)
+- Commit na hora com o defeito por extenso; nunca segredo: Commit com o defeito resolvido escrito por extenso e push; revisar o que vai no commit; nunca segredo; nunca desfazer o .gitignore sem avisar. (CLAUDE.md §8 passo 10)
+- Cada papel no seu lugar: Implementador: core/ e scripts, não ui/ (salvo pedido). Layout: só ui/. Verificador e pesquisador: não mexem no código do programa. (CLAUDE.md §10.1) <strong>Atenção: outro texto das regras diz diferente; na dúvida, pergunte à gerente.</strong></p>
+<p><strong>Todo trabalho</strong>
+- Ordem de leitura e quem manda: Quem manda: o Livro de decisões e o plano; o CLAUDE.md vem depois. O que ele disser contra o plano, vale o plano. (CLAUDE.md topo) <strong>Atenção: outro texto das regras diz diferente; na dúvida, pergunte à gerente.</strong>
+- PEDIDOS.md e handoff são histórico: PEDIDOS.md e o handoff em historico/ só servem de consulta; não dizem o que fazer. (CLAUDE.md topo)
+- Não recomeçar do zero: Não reescrever módulo inteiro nem reorganizar o que funciona. Testar não é licença para reconstruir. (Duas versões já fracassaram.) (CLAUDE.md §2)
+- Ir até o fim dentro da alçada: Decidir o que é da alçada e executar tudo, sem parar a cada passo. Se o contexto acabar, parar num commit com o programa rodando. (CLAUDE.md §2)
+- Honesto: avisar erro e risco: Se o Samuel ou a gerente estiver enganado ou correndo risco, avisar. Não concordar para agradar. (CLAUDE.md §2)
+- Python 3.14, não rebaixar: A máquina só tem Python 3.14. Nunca sugerir rebaixar. (CLAUDE.md §3)
+- Ler a memória antes: Antes de começar, ler memoria/INDICE.md e as fichas do assunto. A memória nunca contradiz o plano. (CLAUDE.md §4.9)
+- Item da fase atual, na ordem: O item vem da fase atual do plano; Lista de bugs no começo da fase. (CLAUDE.md §8 passo 1) <strong>Atenção: outro texto das regras diz diferente; na dúvida, pergunte à gerente.</strong>
+- Ideia nova vai para a Lista de espera; bug que não impede, para a Lista de bugs: Ideia nova: não fazer, anotar para a Lista de espera. Bug que impede a tarefa: consertar e dizer. Bug que não impede: anotar com data e print. (CLAUDE.md §10.2) <strong>Atenção: outro texto das regras diz diferente; na dúvida, pergunte à gerente.</strong>
+- Docstring em tudo o que tocar: Todo arquivo e função tocados ganham docstring: o que faz e o que é seguro ou arriscado mudar. (CLAUDE.md §10.5)
+- Plano novo não apaga pendência: Plano novo diz o que resolve e o que deixa de fora; nunca apaga pendência por omissão. (CLAUDE.md §10.6)
+- Prosa de checkpoint não é prova: Quando o estado importa, conferir o código e o git log, não o texto de checkpoint. (CLAUDE.md §10.8)
+- Obra D-014: o que não vale durante a obra: Durante a obra não valem 'conferir cada item antes do próximo' nem 'uma fase por vez'; nada entra no fase-1 antes da conferência final; duas decisões que se contradizem: vale a mais recente. (CLAUDE.md fim) <strong>Atenção: outro texto das regras diz diferente; na dúvida, pergunte à gerente.</strong></p>
+<h2>3. As decisões que este trabalho precisa cumprir (copiadas do Livro)</h2>
+<ul>
+<li><strong>D-767</strong> (18/11/2026): Chat, na etapa 5, depois dos 7 defeitos achados no Windows de verdade (a gerente explicou que os testes automáticos trocam as peças do Windows por peças de mentira): "não faça mais nada escodindo ou de mentira" · logo depois: "não quero fazer consertos quero que funcione" · e: "quero que faça as coisas certas e sem bugs ou erros, deveria ter pensado nesses erros na hora de montar a estrutura do atualizador e testes a distancias"
+  Na prática: O que mexe no Windows (pergunta de administrador, PowerShell, tarefas, licenças de pasta, instalar e desinstalar, testes à distância) só conta como pronto quando roda de verdade no Windows, à vista, e funciona. Teste automático com peça de mentira não prova que funciona. Nada de área de trabalho escondida nos testes. O objetivo não é remendar cada defeito, é a parte do Windows funcionar inteira (CLAUDE.md §11.12). O alcance exato (por exemplo, as versões de teste servidas de uma pasta do D: em vez do GitHub) está sendo confirmado com o Samuel.</li>
+<li><strong>D-775</strong> (18/11/2026): Chat: "o agente vai tentar quebrar antes de fazer o teste real na tela né?" (a gerente descreveu a ordem abaixo) · "ok"
+  Na prática: A ordem de cada passo do plano da parte do Windows: (1) um agente escreve a peça; (2) os testes automáticos rodam, cobrando o jeito certo; (3) outro agente, que não escreveu, tenta quebrar (lê procurando falha não pensada, resultado não conferido e peça duplicada; roda o que dá sem pergunta do Windows); (4) só então a prova de verdade e à vista na tela do Samuel. Se o passo 3 achar problema, volta ao 1; o Samuel só é chamado quando a peça passou pelos três primeiros. Completa a D-767.</li>
+<li><strong>D-605</strong> (03/11/2026): "A partir de agora, nenhuma função nova, ou nova escolha dentro do programa pode alterar o que já está escolhido e testado, coisas novas não podem criar novos problemas, essa é uma nova regra que todos os agentes precisam ler"
+  Na prática: Nenhuma coisa nova (função ou escolha nova) muda o que já está escolhido e testado, nem cria problema novo. Antes de mexer, o agente lista o que já está escolhido e testado ali; se a coisa nova mudaria isso, para e pergunta; teste antigo que quebra faz a entrega voltar (nunca se muda o teste antigo para passar); o verificador confere também o que já funcionava ao redor.</li>
+<li><strong>D-637</strong> (05/11/2026): No chat, ao aprovar a D-636: "1- pode ser, só garanta que não crie mais problemas fazendo isso, você tem que pensar na experiencia do usario e no resultado final do livro dentro do programa, quando vai mudar algo, deixe isso anotado."
+  Na prática: Regra: antes de mudar qualquer coisa, pensar na experiência de quem usa (o Kaique) e no resultado final do livro dentro do programa, e garantir que a mudança não cria problema novo. Isso fica escrito: no ONDE-PAREI de cada tarefa, uma seção "Como fica para quem usa e no livro" (o que a pessoa vê e faz, passo a passo, e o que muda no PDF), antes de começar e conferida na entrega. Junta-se à D-605.</li>
+<li><strong>D-741</strong> (17/11/2026): Chat, à pergunta "Se o Kaique clicar "Não" [no "Deseja permitir...?" da primeira abertura], do jeito que está, a pergunta não volta, e ele fica sem a atualização sozinha. Faço a pergunta voltar toda vez que ele abrir o programa, até ele clicar "Sim"? Sugiro que sim.": "Sim"
+  Na prática: Se o Kaique disser "Não" à pergunta do Windows da primeira abertura (D-733, D-735), ela volta a cada vez que ele abrir o programa, até ele dizer "Sim". Depois do "Sim", nunca mais aparece (as atualizações seguem sem perguntar). Na conta de testes, nada pergunta (D-736).</li>
+<li><strong>D-763</strong> (17/11/2026): Chat, à pergunta "Posso mandar um agente fazer esse conserto? Sugiro que sim." (prova de 17/11, ramo <code>velopack-pasta-2026-11-17</code>: o nome interno do pacote, "EditorImpressao", é igual ao da pasta dos projetos; a cada abertura o Velopack grava ali uma cópia do Update.exe, e o desinstalador do .msi apagou a pasta <code>%LOCALAPPDATA%\&lt;nome do pacote&gt;</code> inteira, com o projeto de mentira dentro): "ok, pode fazer"
+  Na prática: O nome interno do pacote do Velopack deixa de ser igual ao nome da pasta dos projetos (<code>%LOCALAPPDATA%\EditorImpressao</code>), antes da primeira instalação de verdade. A troca é num lugar só (<code>versao.ID_DO_PACOTE</code>), que todo o resto lê; o Kaique continua vendo "Editor de Impressão". Uma prova cobra que o nome do pacote nunca é o da pasta dos projetos, e a prova da pasta de reserva e do desinstalar é repetida com o nome novo. O nome novo exato é detalhe técnico (escolha da gerente, D-014). A instalação no PC do Samuel (etapa 5) espera esse conserto.</li>
+<li><strong>D-717</strong> (16/11/2026): Chat: "Fica a conta separada, escondida, só para os testes?" → "sim"
+  Na prática: No notebook do Kaique, os testes à distância entram numa conta do Windows só para eles, sem poder de administrador, escondida da tela de entrada, com a senha que o Samuel criar (D-711). Os projetos de teste ficam na pasta dessa conta e nunca se misturam com os do Kaique.</li>
+<li><strong>D-771</strong> (18/11/2026): Chat, decisão 4 do plano da parte do Windows ("se ligar os testes à distância der erro no meio"; A = desfazer tudo, sugestão; B = deixar o que deu certo, com "Ligado pela metade"): "A"
+  Na prática: Ligar os testes à distância é tudo ou nada: se um dos passos falhar, o programa desfaz sozinho o que fez naquela vez, deixa o computador como estava e diz na tela "Desligado" e o motivo. A tela sempre mostra o que o Windows tem de verdade (D-767). Nenhum botão novo. Completa a D-712/D-721.</li>
+</ul>
+<h2>4. O formulário da entrega (no seu ONDE-PAREI; um programa confere, campo vazio volta)</h2>
+<ul>
+<li>[ ] <strong>Arquivos que vou mexer</strong> (antes de ir ao agente que tenta quebrar)</li>
+<li>[ ] <strong>Decisões que esta tarefa precisa cumprir</strong> (antes de ir ao agente que tenta quebrar)</li>
+<li>[ ] <strong>O que já está escolhido e testado aqui</strong> (antes de ir ao agente que tenta quebrar)</li>
+<li>[ ] <strong>Como fica para quem usa e no livro</strong> (antes de ir ao agente que tenta quebrar)</li>
+<li>[ ] <strong>A causa, a regra e todos os caminhos</strong> (antes de ir ao agente que tenta quebrar)</li>
+<li>[ ] <strong>O que pode falhar e o que o programa faz</strong> (antes de ir ao agente que tenta quebrar)</li>
+<li>[ ] <strong>O que li da peça de fora e onde</strong> (antes de ir ao agente que tenta quebrar)</li>
+<li>[ ] <strong>O que foi feito</strong> (antes de ir ao agente que tenta quebrar)</li>
+<li>[ ] <strong>Arquivos criados ou alterados</strong> (antes de ir ao agente que tenta quebrar)</li>
+<li>[ ] <strong>Como cumpri cada uma</strong> (antes de ir ao agente que tenta quebrar)</li>
+<li>[ ] <strong>Testes</strong> (antes de ir ao agente que tenta quebrar)</li>
+<li>[ ] <strong>Caminho e função</strong> (antes de ir ao agente que tenta quebrar)</li>
+<li>[ ] <strong>Máquina ou olho</strong> (antes de ir ao agente que tenta quebrar)</li>
+<li>[ ] <strong>Ressalvas</strong> (antes de ir ao agente que tenta quebrar)</li>
+<li>[ ] <strong>Ideias e bugs</strong> (antes de ir ao agente que tenta quebrar)</li>
+<li>[ ] <strong>Perguntas para o Samuel</strong> (antes de ir ao agente que tenta quebrar)</li>
+<li>[ ] <strong>Commit</strong> (antes de ir ao agente que tenta quebrar)</li>
+<li>[ ] <strong>O que o agente que tentou quebrar achou</strong> (antes da prova à vista)</li>
+<li>[ ] <strong>A prova de verdade</strong> (antes de 'pronto para conferir')</li>
+</ul>
+<h2>5. O que você não recebeu, e quando parar</h2>
+<p>Este pacote não traz as regras de: imagem, filtros e processamento do livro, perguntas e relatórios ao Samuel, pesquisa de peça de fora, tela (ui/). Se precisar mexer num arquivo fora da lista acima, pare e avise a gerente: o pacote muda. Se tiver pergunta para o Samuel, a regra 8 acima é o mínimo; a lista inteira está no CLAUDE.md §11.13, e a gerente devolve a pergunta que não passar. O texto que vale é o do CLAUDE.md: a fonte de cada regra está entre parênteses; leia lá quando tiver dúvida.</p>
+<p class="rodape">Editor de Impressão &middot; gerado em 18/11/2026 às 16:36</p>
+</body>
+</html>
