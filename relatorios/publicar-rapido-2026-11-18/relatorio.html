@@ -69,7 +69,7 @@ Ramo <code>publicar-rapido-2026-11-18</code>.</p>
 <p><strong>RASCUNHO.</strong> Os números marcados <strong>[não medido]</strong> são estimativas. Eles serão trocados pelas medidas
 M1 a M5, que esperam a etapa 5 parar (ordem da gerente, 18/11, 07:20).</p>
 </blockquote>
-<h2>A resposta, em cinco frases</h2>
+<h2>A resposta, em poucas frases</h2>
 <ol>
 <li>Publicar demora porque a ferramenta (o Velopack) copia a pasta do programa inteira <strong>quatro vezes</strong> e comprime
    três vezes a cada versão. Para fazer a diferença, ela ainda abre de novo a versão anterior inteira. Tudo isso
@@ -81,8 +81,14 @@ M1 a M5, que esperam a etapa 5 parar (ordem da gerente, 18/11, 07:20).</p>
    a cada versão e só servem para a primeira instalação.</li>
 <li>Com as duas juntas, publicar deve cair de <strong>59 a 82 min</strong> para uns <strong>20 a 25 min</strong> <strong>[não medido]</strong>. A conta é:
    uns 10 a 15 min do Velopack mais os ~11 min de montar a pasta do programa.</li>
-<li>Nada muda para o Kaique na atualização: ele continua baixando só o que mudou (uns 20 MB), com a mesma assinatura
-   conferida antes de instalar.</li>
+<li><strong>No PC do Kaique, a atualização "pequena" é a mais lenta.</strong> Ele baixa só uns 20 MB, mas o computador remonta
+   o pacote inteiro (840 MB) antes de trocar. Na etapa 5 isso levou <strong>22 a 23 min</strong> por versão, contra <strong>7,5 min</strong>
+   quando veio o pacote inteiro (medido no registro da atualização).</li>
+<li><strong>Achado de segurança (lido no código, não provado em teste):</strong> pelo caminho da diferença, a assinatura do PC do
+   Samuel não cobre o que é instalado. Ela cobre só o pacote inteiro.</li>
+<li>Publicar <strong>sem diferença</strong> resolve o 5 e o 6 de uma vez, e ainda tira um passo do publicar. O custo é o Kaique
+   baixar 826 MB por versão. Isso é escolha do Samuel (pergunta 3), porque ele escolheu o Velopack justamente por
+   "baixar só o que mudou".</li>
 </ol>
 <h2>1. Onde vai cada minuto hoje (medido nos registros da etapa 5)</h2>
 <p>Tempos tirados dos horários dos registros <code>saida_teste/etapa5/registros/publicar-1.1.0.log</code> e
@@ -307,6 +313,83 @@ principal é <strong>disco</strong>, não processador nem compressão. A M2 e a 
 Só 6 têm conteúdo, uns 140 KB somados (o ícone do instalador e a marcação da versão). O resto são as entradas vazias
 de "não mudou", e cada uma ocupa uns 280 bytes de cabeçalho no zip. Com o código mudado de verdade, entra também o
 remendo do <code>EditorImpressao.exe</code> (21,8 MB, onde mora o código). O tamanho real da diferença será medido na M5.</p>
+<h2>2b. O lado do Kaique: quanto ele baixa e quanto tempo a troca leva</h2>
+<p>Medido no registro da atualização da etapa 5 (<code>C:\ProgramData\EditorImpressao\atualizacao\atualizacao.log</code>, só
+lido), no PC do Samuel. O programa estava instalado no C: (SSD) e as versões vinham de uma pasta no D:.</p>
+<table>
+<thead>
+<tr>
+<th>Versão</th>
+<th>Caminho</th>
+<th>"Baixando" (do registro)</th>
+<th>Trocar e conferir</th>
+<th>Total</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>1.1.0 → 1.1.1</td>
+<td>pacote inteiro (826 MB)</td>
+<td>17 s (09:07:22 a 09:07:39)</td>
+<td>7 min 15 s (09:27:17 a 09:34:32)</td>
+<td>~7,5 min</td>
+</tr>
+<tr>
+<td>1.1.1 → 1.1.2</td>
+<td>diferença (19,5 MB)</td>
+<td>14 min 56 s (09:36:40 a 09:51:36)</td>
+<td>7 min 53 s (a 09:59:29)</td>
+<td>~23 min</td>
+</tr>
+<tr>
+<td>1.1.2 → 1.1.3</td>
+<td>diferença (19,5 MB)</td>
+<td>14 min 21 s (10:00:18 a 10:14:39)</td>
+<td>7 min 49 s (o teste rápido recusou, como devia)</td>
+<td>~22 min</td>
+</tr>
+</tbody>
+</table>
+<p><strong>Por que (lido no código do Velopack, <code>src/lib-rust/src/manager.rs</code> e <code>src/bins/src/commands/patch.rs</code>):</strong></p>
+<ul>
+<li>A <strong>primeira</strong> atualização depois do .msi veio pelo pacote inteiro. O .msi não deixa o pacote da versão instalada
+  na pasta <code>packages</code>, e sem ele a diferença não tem de onde partir (<code>create_delta_update_strategy</code>: "no local/base
+  package available"). Isso confirma o que era só dedução no rascunho.</li>
+<li><strong>Pela diferença</strong>, o "baixando" inclui remontar o pacote inteiro. O Velopack descompacta o pacote anterior inteiro
+  (35 mil arquivos), aplica a diferença e <strong>comprime tudo de novo</strong> num pacote de 840 MB (<code>patch.rs</code>, <code>delta</code>; o
+  remontado da 1.1.3 ficou com 839.424.186 bytes, o publicado tem 826.530.083). Baixar os 19,5 MB é o de menos.</li>
+<li><strong>A troca</strong> (<code>apply_windows_impl.rs</code>) descompacta o pacote inteiro mais uma vez numa pasta temporária, troca as
+  pastas e apaga a velha. São de novo 35 mil arquivos, cada um lido pelo antivírus. Depois vem o nosso teste rápido.</li>
+<li>Então a diferença <strong>economiza internet, mas custa uns 15 min a mais de trabalho do computador</strong>. No notebook do
+  Kaique (i5-1235U) deve ser parecido ou mais lento <strong>[não medido]</strong>.</li>
+</ul>
+<p><strong>Quanto ele baixa de verdade:</strong> pela diferença, 19,5 MB (quase só as entradas vazias de "não mudou"; com código
+mudado, um pouco mais, M5). Pelo pacote inteiro, 826 MB. Na primeira atualização depois de instalar, sempre o
+inteiro.</p>
+<h3>Achado de segurança: a diferença não passa pela assinatura (lido no código, não provado em teste)</h3>
+<ul>
+<li><strong>O que a assinatura cobre hoje</strong> (<code>atualizacao._versao_assinada_do</code>): o nome do pacote, a versão, o nome do
+  arquivo do pacote <strong>inteiro</strong> e a soma dele. O programa confere isso <strong>antes de baixar</strong> (D-724).</li>
+<li><strong>Pelo caminho da diferença</strong>, o Velopack confere a diferença baixada contra a soma escrita no arquivo de versões
+  do servidor (<code>releases.win.json</code>), que <strong>não é assinado</strong> (<code>verify_package_checksum</code> no <code>delta</code>). Depois ele
+  monta o pacote novo e <strong>não o compara com a soma assinada</strong>: o <code>patch.rs</code> pula as somas ("skip shasum files"), e o
+  remontado nem tem o mesmo tamanho do publicado.</li>
+<li><strong>Consequência (dedução):</strong> quem conseguisse trocar os arquivos de uma versão no GitHub (por exemplo, com a conta
+  ou o token do Samuel) poderia publicar uma diferença adulterada. A assinatura verdadeira do pacote inteiro
+  continuaria lá. A D-724 diz que "versão sem a assinatura certa não é instalada", e pelo caminho da diferença isso
+  não está garantido.</li>
+<li><strong>O que foi provado na etapa 5:</strong> a 1.1.4, com assinatura de chave falsa, foi recusada. Essa prova é sobre a
+  assinatura do pacote inteiro. Uma diferença adulterada com a assinatura certa nunca foi testada.</li>
+<li><strong>Saídas:</strong>
+  (a) publicar <strong>sem diferença</strong>: o programa sempre baixa o pacote inteiro, conferido pela soma assinada. Nada muda
+  no programa (só uma opção no comando do publicar);
+  (b) manter a diferença e <strong>assinar também a diferença</strong>: o publicar põe a soma dela na assinatura, e o programa
+  confere antes de baixar. É mudança no programa (<code>assinatura.py</code>, <code>atualizacao.py</code>), e pela D-765 espera a entrega;
+  (c) desligar a diferença no próprio programa (<code>MaximumDeltasBeforeFallback</code>, opção do Velopack). Também é mudança
+  no programa.</li>
+<li><strong>Limpa ou remendo:</strong> a (a) e a (b) são limpas. A (b) mora num lugar só (<code>_versao_assinada_do</code> e
+  <code>assinatura.VersaoAssinada</code>). A (c) deixaria diferenças publicadas que ninguém usa.</li>
+</ul>
 <h2>3. Cada saída possível</h2>
 <p>Para cada uma: quanto economiza, o que muda para o Kaique, a segurança (a assinatura, D-724), a etapa 5, e se é
 solução limpa ou remendo (CLAUDE.md §11.12).</p>
@@ -356,9 +439,15 @@ solução limpa ou remendo (CLAUDE.md §11.12).</p>
   BestSize é "a lot slower, about on-par with the bsdiff algorithm".</li>
 <li><strong>BestSpeed (hoje):</strong> o Kaique baixa uns 20 MB por versão <strong>[a confirmar com código mudado: M5]</strong>.</li>
 <li><strong>BestSize:</strong> mais lento, e o ganho é só no remendo do .exe, poucos MB no máximo. Não compensa <strong>[M3 mede]</strong>.</li>
-<li><strong>None (sem diferença):</strong> tira o passo inteiro (28 a 37 min no D:, uns 3 a 5 min no C: <strong>[não medido]</strong>). Mas o
-  Kaique passaria a baixar o pacote inteiro, <strong>826 MB, a cada versão</strong>. Não sei a velocidade da internet dele.</li>
-<li><strong>Recomendação:</strong> deixar como está (BestSpeed). Com as saídas 3.1 e 3.2, a diferença deixa de ser o gargalo.</li>
+<li><strong>None (sem diferença):</strong> tira o passo inteiro do publicar (28 a 37 min no D:, uns 3 a 5 min no C:
+  <strong>[não medido]</strong>). No PC do Kaique, tira os ~15 min de remontar o pacote (seção 2b): a atualização fica em ~7,5 min
+  mais o tempo de baixar. A assinatura de hoje passa a cobrir tudo o que se instala (achado da seção 2b). O custo é
+  o Kaique baixar o pacote inteiro, <strong>826 MB, a cada versão</strong>: uns 2 min a 50 Mbps, 5,5 min a 20 Mbps, 11 min a
+  10 Mbps (conta, não medido). Não sei a velocidade da internet dele.</li>
+<li><strong>Recomendação (mudou depois da seção 2b):</strong> <strong>sem diferença</strong>, se a internet do Kaique aguentar 826 MB por versão.
+  Fica mais rápido dos dois lados e fecha o buraco da assinatura, sem mudar nenhuma linha do programa. Se a
+  internet dele for fraca, manter o BestSpeed e assinar também a diferença (saída (b) da seção 2b, mudança no
+  programa, depois da entrega). É a pergunta 3.</li>
 </ul>
 <h3>3.4 Não refazer a pasta do programa inteira quando só o código mudou</h3>
 <ul>
@@ -409,36 +498,34 @@ solução limpa ou remendo (CLAUDE.md §11.12).</p>
   obrigaria a refazer a prova do desinstalar.</li>
 </ul>
 <h2>4. Recomendação</h2>
-<p><strong>A combinação mais simples:</strong> 3.1 (montar no C:) + 3.2 (instalador e portátil só quando você pedir), com a diferença
-como está (BestSpeed). As duas mudanças moram cada uma num lugar só do script de publicar.</p>
+<p><strong>A combinação mais simples:</strong> 3.1 (montar no C:) + 3.2 (instalador e portátil só quando você pedir) + publicar sem
+diferença (3.3 "None", se a internet do Kaique aguentar). As três moram no script de publicar: duas na regra única
+do comando (<code>empacotar.comando_do_vpk</code>) e uma na função que roda o vpk. Nenhuma linha do programa do Kaique muda.</p>
+<p><strong>No PC do Samuel (publicar):</strong></p>
 <table>
 <thead>
 <tr>
 <th></th>
 <th>Hoje (D:)</th>
-<th>Só 3.2 (D:)</th>
-<th>Só 3.1 (C:)</th>
 <th>3.1 + 3.2 (C:)</th>
+<th>3.1 + 3.2 + sem diferença (C:)</th>
 </tr>
 </thead>
 <tbody>
 <tr>
 <td>Velopack</td>
 <td>50 a 72 min</td>
-<td>35 a 50 min <strong>[não medido]</strong></td>
-<td>12 a 20 min <strong>[não medido]</strong></td>
 <td>8 a 15 min <strong>[não medido]</strong></td>
+<td>4 a 10 min <strong>[não medido]</strong></td>
 </tr>
 <tr>
 <td>Conferir, assinar, enviar</td>
 <td>8 a 11 min</td>
-<td>5 a 7 min <strong>[não medido]</strong></td>
-<td>2 a 4 min <strong>[não medido]</strong></td>
+<td>1 a 2 min <strong>[não medido]</strong></td>
 <td>1 a 2 min <strong>[não medido]</strong></td>
 </tr>
 <tr>
 <td>Montar a pasta do programa</td>
-<td>~11 min</td>
 <td>~11 min</td>
 <td>~8 min <strong>[não medido]</strong></td>
 <td>~8 min <strong>[não medido]</strong></td>
@@ -446,16 +533,42 @@ como está (BestSpeed). As duas mudanças moram cada uma num lugar só do script
 <tr>
 <td><strong>Total</strong></td>
 <td><strong>70 a 93 min</strong></td>
-<td><strong>50 a 70 min</strong></td>
-<td><strong>22 a 32 min</strong></td>
 <td><strong>17 a 25 min</strong></td>
+<td><strong>13 a 20 min</strong></td>
 </tr>
 </tbody>
 </table>
-<p>(No GitHub de verdade, some o tempo de subir o pacote pela internet. Com a 3.2 são uns 850 MB por versão; sem ela,
-3,2 GB.)</p>
-<p><strong>O que fica de fora:</strong> tirar o motor do Kraken do pacote (3.5, só se ainda ficar lento), reaproveitar a pasta do
-programa (3.4b) e trocar o Velopack (3.6).</p>
+<p>(No GitHub de verdade, soma-se o tempo de subir pela internet: hoje 3,2 GB por versão; com a 3.2, uns 850 MB; sem
+diferença, 826 MB.)</p>
+<p><strong>No PC do Kaique (atualizar), medido na etapa 5 no PC do Samuel:</strong></p>
+<table>
+<thead>
+<tr>
+<th></th>
+<th>Com diferença (hoje)</th>
+<th>Sem diferença</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>Baixa</td>
+<td>19,5 MB</td>
+<td>826 MB</td>
+</tr>
+<tr>
+<td>Remontar e trocar</td>
+<td>~22 a 23 min</td>
+<td>~7,5 min</td>
+</tr>
+<tr>
+<td>A assinatura cobre o que se instala?</td>
+<td>não (seção 2b)</td>
+<td>sim</td>
+</tr>
+</tbody>
+</table>
+<p><strong>O que fica de fora:</strong> tirar o motor do Kraken do pacote (3.5; é a única saída que encurta também a troca de
+~7,5 min, e só vale estudar se ainda ficar lento), reaproveitar a pasta do programa (3.4b) e trocar o Velopack (3.6).</p>
 <p><strong>Quando o instalador é feito:</strong> na primeira entrega ao Kaique (etapa 6) e sempre que você pedir. Por exemplo,
 antes de instalar num computador novo, ou se o Velopack um dia mudar.</p>
 <h2>5. Perguntas para o Samuel</h2>
@@ -481,8 +594,8 @@ usada para atualizar.</p>
 <p><strong>O que acontece hoje.</strong> As três são refeitas a cada versão. O instalador sozinho leva de 25 a 43 minutos no HD
 (medido), correndo junto com a parte da atualização e atrasando ela. E, no GitHub, cada versão sobe 3,2 GB em vez de
 850 MB.</p>
-<p><strong>Sua dúvida:</strong> "as atualizações deveriam ser rapidas" → Sim. A atualização que o Kaique baixa já é pequena (uns
-20 MB). O que demora é refazer, a cada vez, coisas que só servem para instalar do zero.</p>
+<p><strong>Sua dúvida:</strong> "as atualizações deveriam ser rapidas" → Sim. O que demora no seu PC é refazer, a cada vez, coisas
+que só servem para instalar do zero. (O lado do Kaique é a pergunta 3.)</p>
 <p><strong>O que você escolhe:</strong>
 - <strong>Sim (sugestão):</strong> a versão de atualização sai sem instalador e sem o zip portátil. O instalador é feito na
   primeira entrega ao Kaique e sempre que você pedir. Para o Kaique, a atualização é igual. Se um dia ele instalar
@@ -491,13 +604,34 @@ usada para atualizar.</p>
   uns 25 a 40 no D:.
 - <strong>Não:</strong> tudo continua sendo refeito a cada versão.
 - <strong>Só comentário.</strong></p>
-<h3>Pergunta 3 (para depois, só se ainda ficar lento). Deixar o motor do Kraken fora da atualização</h3>
+<h3>Pergunta 3. O Kaique baixa só o que mudou, ou a versão inteira?</h3>
+<p><strong>Do que se trata.</strong> É a atualização que chega sozinha no notebook do Kaique quando ele abre o programa. O
+programa baixa a versão nova e, com o programa fechado, troca uma pela outra.</p>
+<p><strong>O que acontece hoje.</strong> O Kaique baixa só a diferença, uns 20 MB. Mas, antes de trocar, o computador dele remonta
+a versão inteira (840 MB) a partir dessa diferença. No teste de hoje no seu PC, isso levou <strong>22 a 23 minutos</strong> por
+atualização. Quando veio a versão inteira, levou <strong>7,5 minutos</strong> (medido nas versões 1.1.1 a 1.1.3 da etapa 5).
+E há um defeito de segurança, achado lendo o código da ferramenta (ainda não provado em teste): pelo caminho da
+diferença, a assinatura do seu PC não confere o que é instalado, só a versão inteira.</p>
+<p><strong>Sua dúvida:</strong> "as atualizações deveriam ser rapidas" → No PC do Kaique, a atualização "pequena" é a mais lenta.
+Quando você escolheu o Velopack (16/11), a explicação foi "baixa só o que mudou, então a atualização é rápida".
+Com o nosso programa, que tem 35 mil arquivos, baixar é rápido, mas remontar demora.</p>
+<p><strong>O que você escolhe:</strong>
+- <strong>A versão inteira (sugestão, se a internet do Kaique aguentar):</strong> ele baixa 826 MB por versão. Isso leva uns
+  2 min a 50 Mbps e uns 11 min a 10 Mbps (conta, não medido; não sei a internet dele). A atualização fica em ~7,5 min
+  mais esse tempo. A assinatura passa a cobrir tudo o que é instalado. Publicar fica uns 4 a 5 min mais rápido no seu
+  PC. Nada muda no programa dele, só no jeito de publicar.
+- <strong>Só o que mudou, assinando também a diferença:</strong> ele continua baixando uns 20 MB, e a atualização continua com
+  ~22 min. Para fechar o defeito de segurança, o programa passa a conferir a assinatura da diferença também. Isso
+  muda o programa, e pela sua regra de 17/11 fica para depois da entrega ao Kaique.
+- <strong>Deixar como está:</strong> 20 MB, ~22 min, e o defeito de segurança continua aberto. Não recomendo.
+- <strong>Só comentário.</strong> (Se puder, diga a velocidade da internet do Kaique.)</p>
+<h3>Pergunta 4 (para depois, só se ainda ficar lento). Deixar o motor do Kraken fora da atualização</h3>
 <p><strong>Do que se trata.</strong> O motor do Kraken é a parte do programa que acha as linhas de texto. Ele tem 1 GB, 98% dos
 arquivos do programa, e nunca muda. Mesmo assim, ele entra de novo em cada versão.</p>
-<p><strong>O que acontece hoje.</strong> Ele vai dentro de cada versão. Na atualização do Kaique isso não pesa, porque ele não baixa
-o que não mudou. Mas pesa no seu PC na hora de montar a versão.</p>
+<p><strong>O que acontece hoje.</strong> Ele vai dentro de cada versão. No seu PC, pesa na hora de montar a versão. No do Kaique,
+pesa na troca: a maior parte dos ~7,5 minutos é abrir e trocar os 35 mil arquivos, e quase todos são do motor.</p>
 <p><strong>O que você escolhe:</strong>
-- <strong>Não agora (sugestão):</strong> com as duas mudanças acima, publicar já deve ficar em uns 20 minutos. Tirar o motor muda
+- <strong>Não agora (sugestão):</strong> com as mudanças acima, publicar já deve ficar em uns 15 a 20 minutos. Tirar o motor muda
   a instalação e o jeito de atualizar, e só seria estudado se ainda ficar lento.
 - <strong>Sim, estudar:</strong> um agente escreve o plano (como o motor é instalado uma vez, conferido e desinstalado) e você
   decide antes de qualquer mudança.
@@ -558,10 +692,10 @@ o que não mudou. Mas pesa no seu PC na hora de montar a versão.</p>
 <li>O tamanho real da diferença quando o código muda (M5).</li>
 <li>O pico de espaço no C: durante o publicar (M2).</li>
 <li>Não sei a velocidade da internet do Kaique nem a do envio ao GitHub; isso pesa no "None" e no envio do pacote.</li>
-<li><strong>Dedução não confirmada:</strong> depois de instalar pelo .msi, a pasta de pacotes do programa começa vazia. Se for
-  assim, a <strong>primeira</strong> atualização baixaria o pacote inteiro (826 MB) e só as seguintes baixariam a diferença.
-  O código do Velopack (<code>create_delta_update_strategy</code>) só usa a diferença quando há um pacote local. A etapa 5
-  pode confirmar olhando o registro da atualização.</li>
+<li>Confirmado pelo registro da etapa 5: a <strong>primeira</strong> atualização depois do .msi baixa o pacote inteiro.</li>
+<li>O achado de segurança da seção 2b foi tirado da leitura do código. Falta uma prova: uma diferença adulterada com a
+  assinatura certa do pacote inteiro, num servidor de mentira. Pela leitura, ela seria aceita.</li>
+<li>A troca no notebook do Kaique (i5-1235U) não foi medida; os tempos são do PC do Samuel.</li>
 </ul>
 <h2>8. Fontes consultadas (18/11/2026)</h2>
 <ul>
@@ -572,6 +706,11 @@ o que não mudou. Mas pesa no seu PC na hora de montar a versão.</p>
 <li><code>vpk pack -H</code> no PC do Samuel (opções escondidas)</li>
 <li>Registros da etapa 5: <code>saida_teste/etapa5/registros/publicar-1.1.0.log</code>, <code>fase1-resto-limpo.log</code>; scripts
   <code>saida_teste/etapa5/pilotos/publicar_etapa5.py</code>, <code>fase1_resto.ps1</code> (só lidos)</li>
+<li>Registro da atualização da etapa 5: <code>C:\ProgramData\EditorImpressao\atualizacao\atualizacao.log</code> (só lido) e o
+  ONDE-PAREI da etapa 5 (<code>.claude/worktrees/etapa5/relatorios/frente-kaique-2026-11-16/etapa5/ONDE-PAREI.md</code>)</li>
+<li>Código do Velopack do lado do Kaique: <code>src/lib-rust/src/manager.rs</code> (<code>create_delta_update_strategy</code>,
+  <code>download_updates</code>, <code>download_and_apply_delta_updates</code>, <code>verify_package_checksum</code>), <code>src/bins/src/commands/patch.rs</code>,
+  <code>src/bins/src/commands/apply_windows_impl.rs</code></li>
 <li>Nosso código (só lido): <code>publicar_versao_kaique.py</code>, <code>empacotar.py</code>, <code>atualizacao.py</code>, <code>assinatura.py</code>,
   <code>core/ocr_kraken.py</code>, <code>tests/test_decisoes_atualizacao.py</code></li>
 </ul>
@@ -581,6 +720,6 @@ o que não mudou. Mas pesa no seu PC na hora de montar a versão.</p>
   fim do estudo.</li>
 <li>C: nada até agora.</li>
 </ul>
-<p class="rodape">Editor de Impressão &middot; gerado em 18/11/2026 às 07:29</p>
+<p class="rodape">Editor de Impressão &middot; gerado em 18/11/2026 às 10:39</p>
 </body>
 </html>

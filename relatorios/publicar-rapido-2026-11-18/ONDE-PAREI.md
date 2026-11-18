@@ -40,11 +40,12 @@ pode mudar (por opção) é só o tamanho do que ele baixa e qual instalador fic
 - ~07:20 recado da gerente: etapa 5 começou; **nada de medida pesada sem o "pode" dela**. Parei a contagem que rodava.
 - ~07:25 pedi à gerente o "pode" das medidas M1 a M5. Resposta: esperar a etapa 5 parar; deixar o relatório pronto com estimativas "[não medido]"; não entregar sem as medidas.
 - 07:29 rascunho do relatório gravado em três formatos (relatorio.md/.html/.pdf), com os números a medir marcados.
+- 10:40 dado novo da gerente (o lado do Kaique): lido o atualizacao.log da etapa 5 e o código do Velopack do lado do cliente. Achados: a troca pela diferença leva ~22-23 min (remonta o pacote inteiro), pelo pacote inteiro ~7,5 min; **a diferença não passa pela assinatura** (D-724), dedução da leitura, avisada à gerente. Relatório refeito (seção 2b, pergunta 3 nova: diferença ou versão inteira).
 - Próximo: esperar o "pode"; rodar M1 a M4 (e M5 se der); trocar os [não medido] pelos números; regravar; entregar.
 
 ## Perguntas para o Samuel
 
-(no relatório, seção 5, formato §11.13: 1. montar no C:; 2. instalador só quando pedir; 3. motor do Kraken fora, para depois)
+(no relatório, seção 5, formato §11.13: 1. montar no C:; 2. instalador só quando pedir; 3. diferença ou versão inteira (e a assinatura); 4. motor do Kraken fora, para depois)
 
 ## Medidas planejadas (esperam o "pode" da gerente)
 
