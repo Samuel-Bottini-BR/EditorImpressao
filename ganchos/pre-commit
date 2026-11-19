@@ -8,7 +8,8 @@
 # O caminho relativo é lido a partir da raiz de cada cópia (git-config, core.hooksPath: "A relative path is taken as
 # relative to the directory where the hooks are run"), então cada cópia usa o ganchos/ do próprio ramo. Numa cópia de
 # um ramo sem esta pasta, o git não roda nada e NÃO AVISA (hook.c, find_hook, v2.53.0): quem garante é o teste no
-# GitHub; esta conferência só avisa cedo. Pular com --no-verify é proibido aos agentes (CLAUDE.md, git).
+# GitHub; esta conferência só avisa cedo. Quem faz o commit com --no-verify pula esta conferência (githooks, pre-commit:
+# "can be bypassed with the --no-verify option"); o teste no GitHub não se pula.
 #
 # O que pode falhar e o que acontece (nunca passa sem conferir):
 #   - sem o Python do projeto: o commit é barrado e a mensagem diz onde o Python foi procurado;

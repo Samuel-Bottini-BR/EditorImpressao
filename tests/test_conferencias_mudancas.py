@@ -25,7 +25,8 @@ LIVRO = ("| D-605 | 03/11/2026 | \"A partir de agora, nenhuma função nova\" | 
          "| D-900 | 19/11/2026 | \"pode pôr a biblioteca\" | entra a biblioteca nova no requirements | x | x | x | x | x |\n")
 TESTE_VELHO = ('"""Teste antigo."""\n\n\ndef test_um():\n    """Um."""\n    assert 1 == 1\n\n\n'
                'def test_dois():\n    """Dois."""\n    assert 2 == 2\n')
-LISTA = {"situacao": "valendo", "sim_do_samuel": {"em": "19/11/2026", "palavras": "sim"},
+LISTA = {"situacao": "valendo", "sim_do_samuel": {"decisao": "D-774", "em": "19/11/2026",
+                                                   "palavras": "os testes antigos que cobram o jeito errado mudam"},
          "itens": [{"arquivo": "atualizacao.py", "conferencia": "K02", "texto": "x", "quantas": 1, "data": "2026-11-19",
                     "passo": "3", "motivo": "prova"}]}
 
@@ -61,9 +62,44 @@ def test_k10_barra_o_rotulo_de_pronto_no_ramo_de_quem_construiu(repo):
     r, base = repo
     r.escrever("relatorios/x/ONDE-PAREI.md", "# Entrega\n\nPRONTO PARA CONFERIR\n")
     r.commit("entrega")
-    assert conferencias(pm.k10(r.raiz, base, "implementador")) == ["K10"]
-    assert conferencias(pm.k10(r.raiz, base, "layout")) == ["K10"]
-    assert pm.k10(r.raiz, base, "verificador") == [] and pm.k10(r.raiz, base, "quebrador") == []
+    assert conferencias(pm.k10(r.raiz, base, "implementador", "relatorios/x/")) == ["K10"]
+    assert conferencias(pm.k10(r.raiz, base, "layout", "relatorios/x/")) == ["K10"]
+    assert pm.k10(r.raiz, base, "verificador", "relatorios/x/") == []
+    assert pm.k10(r.raiz, base, "quebrador", "relatorios/x/") == []
+    assert conferencias(pm.k10(r.raiz, base, "verificador", "relatorios/outra/")) == ["K10"]
+
+
+QUEBRA = ("# Relatório de quem quebrou\n\n## Pedido\n\n- Papel: quebrador\n- Commit de partida: x\n- Ramo: y\n\n"
+          "## Veredito\n\nPRONTO PARA CONFERIR\n")
+
+
+def test_k10_o_rotulo_de_quem_quebrou_vale_so_no_relatorio_dele_num_commit_so_dele(repo):
+    """Achado 5 de quem tentou quebrar (19/11): o rótulo do relatório de quem quebra (no ramo de quem construiu) fazia
+    o formulário de quem construiu voltar. Agora vale na pasta `quem-quebrou/`, num commit que só mexe nela, com o
+    papel de quem confere escrito no relatório; fora disso, continua barrado."""
+    r, base = repo
+    r.escrever("core/a.py", '"""Trabalho de quem construiu."""\n')
+    r.commit("o trabalho")
+    r.escrever("relatorios/x/quem-quebrou/relatorio.md", QUEBRA)
+    r.commit("o relatório de quem quebrou")
+    assert pm.k10(r.raiz, base, "implementador", "relatorios/x/") == []
+
+
+def test_k10_o_rotulo_na_pasta_de_quem_quebrou_misturado_com_trabalho_e_barrado(repo):
+    """O mesmo relatório, num commit que também mexe no trabalho de quem construiu, ou com outro papel: barrado."""
+    r, base = repo
+    r.escrever("core/a.py", '"""Trabalho de quem construiu."""\n')
+    r.escrever("relatorios/x/quem-quebrou/relatorio.md", QUEBRA)
+    r.commit("tudo junto")
+    assert conferencias(pm.k10(r.raiz, base, "implementador", "relatorios/x/")) == ["K10"]
+
+
+def test_k10_o_rotulo_na_pasta_de_quem_quebrou_com_papel_de_quem_construiu_e_barrado(repo):
+    """Na pasta certa e num commit só dela, mas com o papel de quem construiu no relatório: barrado."""
+    r, base = repo
+    r.escrever("relatorios/x/quem-quebrou/relatorio.md", QUEBRA.replace("quebrador", "implementador"))
+    r.commit("relatório")
+    assert conferencias(pm.k10(r.raiz, base, "implementador", "relatorios/x/")) == ["K10"]
 
 
 def test_k10_barra_aprovado_e_x_no_plano_e_aceita_a_citacao_entre_aspas(repo):
@@ -105,6 +141,17 @@ def test_k11_barra_teste_antigo_mudado_ou_apagado(repo):
     assert sorted(a.texto for a in pm.k11(r.raiz, base, livro(r))) == ["test_dois", "test_um"]
 
 
+def test_k11_olha_tambem_os_testes_soltos_da_raiz(repo):
+    """Achado 14 de quem tentou quebrar (19/11): o `teste_botoes.py` é teste antigo (CLAUDE.md §4.5) e a K11 não o
+    olhava. Agora toda função mudada num `teste_*.py` da raiz é acusada."""
+    r, base = repo
+    r.escrever("teste_botoes.py", '"""Clica."""\n\n\ndef clicar_em_tudo():\n    """Clica."""\n    return 1\n')
+    base = r.commit("teste solto antigo")
+    r.escrever("teste_botoes.py", '"""Clica."""\n\n\ndef clicar_em_tudo():\n    """Clica."""\n    return 0\n')
+    r.commit("enfraquece")
+    assert [(a.arquivo, a.texto) for a in pm.k11(r.raiz, base, livro(r))] == [("teste_botoes.py", "clicar_em_tudo")]
+
+
 def test_k11_aceita_a_mudanca_autorizada_e_o_teste_novo(repo):
     """O commit que cita o nome do teste e a decisão do Livro (a D-774) passa; teste novo e espaço no fim, também."""
     r, base = repo
@@ -141,6 +188,21 @@ def test_k13_barra_o_agente_de_tela_em_core_fora_da_lista_do_pedido(repo):
     mudados = git.arquivos_mudados(r.raiz, base)
     assert [(a.conferencia, a.arquivo) for a in pm.k13(mudados, "layout", ["ui/"])] == [("K13", "core/a.py")]
     assert pm.k13(mudados, "layout", ["ui/", "core/a.py"]) == []
+
+
+def test_k13_o_agente_de_tela_e_barrado_em_tudo_fora_de_ui_que_o_pedido_nao_nomeou(repo):
+    """Achado 4 de quem tentou quebrar (19/11), D-796 ("continua só em ui/"): o agente de tela mexendo no
+    atualizacao.py e no modelos.py (raiz) era só avisado. Agora é barrado; a pasta do relatório dele não conta."""
+    r, base = repo
+    r.escrever("atualizacao.py", '"""Mudado."""\n')
+    r.escrever("modelos.py", '"""Mudado."""\n')
+    r.escrever("ui/b.py", '"""Tela mudada."""\n')
+    r.escrever("relatorios/x/ONDE-PAREI.md", "# x\n")
+    r.commit("mexe")
+    mudados = git.arquivos_mudados(r.raiz, base)
+    assert sorted(a.arquivo for a in pm.k13(mudados, "layout", ["ui/"], "relatorios/x/")) == ["atualizacao.py",
+                                                                                              "modelos.py"]
+    assert pm.k13(mudados, "layout", ["ui/", "atualizacao.py", "modelos.py"], "relatorios/x/") == []
 
 
 def test_k13_barra_implementador_em_ui_e_verificador_no_programa(repo):
@@ -194,6 +256,20 @@ def test_k17_barra_mexer_nas_regras_e_acrescentar_item_na_lista(repo):
     assert pm.k17(r.raiz, base, git.arquivos_mudados(r.raiz, base), ["core/"]) == []
 
 
+def test_k17_barra_mexer_no_porteiro_mudar_o_passo_e_trocar_a_situacao(repo):
+    """Achado 6 de quem tentou quebrar (19/11): o porteiro (o pacote, o gancho, as provas) entre os arquivos que só a
+    gerente muda; mudar o passo de um item e trocar a situação da lista também são acusados."""
+    r, base = repo
+    r.escrever("regras_dos_agentes/porteiro.py", '"""Afrouxado."""\n')
+    r.escrever("tests/conferencias_excecoes.json",
+               json.dumps(dict(LISTA, situacao="proposta", sim_do_samuel=None,
+                               itens=[dict(LISTA["itens"][0], passo="depois da entrega")])))
+    r.commit("afrouxa")
+    frases = [a.porque for a in pm.k17(r.raiz, base, git.arquivos_mudados(r.raiz, base), ["core/"])]
+    assert any("só a gerente muda" in f for f in frases)
+    assert any("passo de um item" in f for f in frases) and any("situação" in f for f in frases)
+
+
 # ---------------------------------------------------------------- K09 e K18
 
 def test_k09_relatorio_so_em_md_e_barrado(repo):
@@ -212,7 +288,8 @@ def test_k09_relatorio_so_em_md_e_barrado(repo):
 def test_k18_barra_mudanca_fora_de_commit_e_sem_push(repo):
     """Mudança fora de commit e commit que não foi ao "GitHub" são barrados; depois do push, passa."""
     r, _ = repo
-    assert "o ramo não acompanha" in pm.k18(r.raiz)[0].porque
+    with pytest.raises(git.GitFalhou):          # sem "GitHub" nenhum: não deu para perguntar, nunca "passou"
+        pm.k18(r.raiz)
     r.enviar()
     assert pm.k18(r.raiz) == []
     r.escrever("core/a.py", '"""Mudado e sem commit."""\n')

@@ -126,3 +126,27 @@ def test_quem_tenta_quebrar_recebe_todas_as_regras_e_os_seis_campos():
     texto = montar_pacote.montar("quebrador", "x", [], ARQUIVOS_DO_PASSO_1, RAIZ, "746dbda6", "passo1")
     for _, titulo in formulario.CAMPOS_DE_QUEM_QUEBRA:
         assert f"## {titulo}" in texto
+
+
+def test_arquivo_novo_ganha_as_regras_do_windows_pelo_texto_do_pedido():
+    """Achado 12 de quem tentou quebrar (19/11): `novo:core/registro_do_windows.py` saía só com imagem e git. Agora,
+    para arquivo que ainda não existe, o texto do pedido (o título do pacote) que fala do Windows dá a etiqueta."""
+    tags, _ = tabela_arquivos.etiquetas_do_trabalho(["novo:core/registro_do_windows.py"], RAIZ,
+                                                    "ler o registro do Windows")
+    assert "WIN" in tags
+    tags, _ = tabela_arquivos.etiquetas_do_trabalho(["novo:core/filtro_novo.py"], RAIZ, "um filtro de imagem novo")
+    assert "WIN" not in tags
+
+
+def test_a_lista_do_windows_da_tabela_e_a_do_porteiro():
+    """Achado 13: o que é "conversa com o Windows" está escrito num lugar só (o porteiro); a tabela usa o mesmo."""
+    from regras_dos_agentes import porteiro
+
+    for linha in ("os.startfile(x)", "Register-ScheduledTask", "import winreg", "pwsh"):
+        assert porteiro.CONVERSA_COM_O_WINDOWS.search(linha) and tabela_arquivos.fala_com_o_windows(linha), linha
+
+
+def test_o_pacote_mostra_os_lugares_da_lista_nos_arquivos_do_pedido():
+    """Achado 11: quem mexe num arquivo com lugares na lista recebe a lista deles e o aviso de como ela funciona."""
+    texto = montar_pacote.montar("implementador", "atualizador", [], ["atualizacao.py"], RAIZ, "746dbda6", "x")
+    assert "## Lugares da lista de exceções nos seus arquivos" in texto and "vira erro novo" in texto

@@ -215,20 +215,27 @@ def test_k04_correcao_3_comentario_da_folha_de_estilo_nao_conta():
 
 
 def test_k04_nao_acusa_comentario_docstring_nem_processamento():
-    """K04 não acusa comentário, docstring nem arquivo cujo texto o Kaique não vê (`core/filtros.py`)."""
+    """K04 não acusa comentário, docstring nem arquivo que não é do programa (um teste, um script de documentos)."""
     certo = 'def f():\n    """Ver D-068."""\n    # D-094\n    return 1\n'
     assert codigos(conferir({"ui/automatico.py": certo}), "K04") == []
-    assert codigos(conferir({"core/filtros.py": 'X = "D-068"\n'}), "K04") == []
+    assert codigos(conferir({"tests/test_x.py": 'X = "D-068"\n', "docs/plano/x.py": 'X = "D-068"\n'}), "K04") == []
+
+
+def test_k04_e_k05_olham_tambem_os_avisos_que_moram_em_core():
+    """Achado 9 de quem tentou quebrar (19/11): os avisos do "Para revisar" que o Kaique lê moram em `core/`."""
+    assert codigos(conferir({"core/analise.py": 'AVISO = "confira (D-068)"\n'}), "K04") == [("core/analise.py", 1)]
+    assert codigos(conferir({"core/analise.py": f'AVISO = "pronto {chr(0x1F600)}"\n'}), "K05") == [
+        ("core/analise.py", 1)]
 
 
 # ---------------------------------------------------------------- K05 a K08
 
 def test_k05_acusa_emoji_na_tela_e_nao_acusa_seta_nem_fora_da_tela():
-    """K05 acusa um emoji num texto da tela; a seta comum e o texto de `core/` não."""
+    """K05 acusa um emoji num texto da tela; a seta comum e o texto de um teste não."""
     rosto, seta = chr(0x1F600), chr(0x2192)
     assert codigos(conferir({"ui/tela.py": f'R = "Pronto {rosto}"\n'}), "K05") == [("ui/tela.py", 1)]
     assert codigos(conferir({"ui/tela.py": f'R = "Próxima {seta}"\n'}), "K05") == []
-    assert codigos(conferir({"core/x.py": f'R = "{rosto}"\n'}), "K05") == []
+    assert codigos(conferir({"tests/test_x.py": f'R = "{rosto}"\n'}), "K05") == []
 
 
 def test_k06_acusa_core_importando_ui_e_nao_acusa_o_resto():
@@ -345,3 +352,75 @@ def test_as_24_conferencias_tem_a_numeracao_da_tabela_da_proposta():
     assert porteiro.POR_CODIGO["K05"].o_que.startswith("emoji")
     assert porteiro.POR_CODIGO["K08"].o_que.startswith("nome de arquivo com acento")
     assert all(c.tipo in ("codigo", "entrega") and c.regra for c in porteiro.CONFERENCIAS)
+
+
+# ---------------------------------------------------------------- a busca ampliada (achado 2, 19/11)
+
+# Os 14 jeitos de pedir a mesma coisa com outro nome que quem tentou quebrar provou passarem pela busca antiga, mais
+# os do mesmo tipo lidos na documentação. Cada linha é um caso errado, de um arquivo do programa.
+OUTROS_NOMES = [
+    'subprocess.run(["pwsh", "-Command", "x"])',
+    'comando = f"Register-ScheduledTask -Xml $x -TaskName {nome}"',
+    'comando = "Unregister-ScheduledTask -TaskName x"',
+    'comando = "takeown /f C:/x /r"',
+    'subprocess.run(["msiexec", "/i", "x.msi"])',
+    'subprocess.run(["reg", "add", "HKLM\\Software\\X"])',
+    "import winreg",
+    "os.startfile(pasta)",
+    "dono = ctypes.windll.advapi32",
+    "subprocess.Popen(c, creationflags=0x8)",
+    'comando = "New-LocalUser -Name x"',
+    'comando = "Set-Service -Name sshd -StartupType Automatic"',
+    'subprocess.run(["cmd", "/c", "start", "", "x"])',
+    'comando = "New-ItemProperty -Path HKLM:\\Software -Name x"',
+    'comando = "Get-CimInstance Win32_VideoController"',
+    'comando = "Add-WindowsCapability -Online -Name x"',
+    "kernel32 = ctypes.WinDLL('kernel32')",
+    'os.system("dir")',
+]
+
+
+@pytest.mark.parametrize("linha", OUTROS_NOMES)
+def test_k01_acusa_os_outros_nomes_da_mesma_conversa_com_o_windows(linha):
+    """Achado 2 de quem tentou quebrar (19/11): o mesmo pedido ao Windows escrito com outra palavra passava.
+
+    Cada um destes, num arquivo do programa, é acusado pela K01.
+    """
+    fonte = f'"""Um arquivo do programa."""\nimport ctypes\nimport os\nimport subprocess\n\n\ndef f(c, pasta, nome):\n' \
+            f'    """Fala com o Windows."""\n    {linha}\n'
+    assert codigos(conferir({"atualizacao.py": fonte}), "K01") == [("atualizacao.py", 9)], linha
+
+
+def test_k01_nao_acusa_nome_parecido_que_nao_e_conversa_com_o_windows():
+    """Variável chamada `cmd`, `kernel32` usada depois de pega, o nome de arquivo `vc_redist`, `servico` comum: não."""
+    certo = py('''
+        def f(cmd, kernel32, servico):
+            """Nada de conversa nova com o Windows aqui."""
+            VC = "vc_redist.x64.exe"
+            subprocess.run(cmd, check=True)
+            kernel32.CloseHandle(1)
+            return servico.start()
+    ''')
+    assert codigos(conferir({"atualizacao.py": certo}), "K01") == []
+
+
+def test_k02_acusa_o_numero_do_detached_process():
+    """O DETACHED_PROCESS pelo número (0x8 ou 8, sozinho ou somado) também é o defeito 1."""
+    for bandeira in ("0x8", "0x00000008", "8", "subprocess.CREATE_NEW_PROCESS_GROUP | 0x8"):
+        fonte = f'def f(c):\n    """Lança."""\n    subprocess.Popen(c, creationflags={bandeira})\n'
+        assert codigos(conferir({"atualizacao.py": fonte}), "K02") == [("atualizacao.py", 3)], bandeira
+    certo = 'def f(c):\n    """Lança."""\n    subprocess.Popen(c, creationflags=0x08000000)\n'
+    assert codigos(conferir({"atualizacao.py": certo}), "K02") == []
+
+
+def test_k04_correcao_3_so_dentro_do_mesmo_texto_da_folha_de_estilo():
+    """Achado 10 de quem tentou quebrar (19/11): um `"imagens/*"` num texto e um `"*/fim"` em outro apagavam o que
+    ficava entre os dois. Agora o comentário só sai de dentro do mesmo texto, e só se ele tiver cara de folha de estilo."""
+    tela = py('''
+        def f():
+            """Uma tela."""
+            padrao = "imagens/*"
+            QLabel("veja D-731")
+            return "*/fim"
+    ''')
+    assert codigos(conferir({"ui/x.py": tela}), "K04") == [("ui/x.py", 4)]

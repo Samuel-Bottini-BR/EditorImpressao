@@ -67,6 +67,6 @@ class RepositorioDeProva:
         """Tenta o commit e devolve o resultado (código, saída): o gancho pode barrar."""
         return git.commit_de_tudo(self.raiz, mensagem)
 
-    def enviar(self) -> None:
-        """Envia o ramo ao remoto de prova (o "push")."""
-        git.enviar(self.raiz, self.remoto)
+    def enviar(self, ramo_no_remoto: str | None = None) -> None:
+        """Envia o ramo ao remoto de prova (o "push"); com `ramo_no_remoto`, como outro ramo lá (ex.: a versão de teste)."""
+        git.enviar(self.raiz, self.remoto, ramo_no_remoto)

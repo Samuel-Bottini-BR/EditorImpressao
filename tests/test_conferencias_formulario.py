@@ -71,14 +71,28 @@ def entrega(tmp_path):
     return r, base, commit
 
 
-def conferir(r: RepositorioDeProva, secoes: dict[str, str], etapa: str = "quebrar", pacote: str | None = None):
-    """Grava o ONDE-PAREI, faz o commit e confere o formulário (sem consultar o GitHub nem o push)."""
+def pacote_de(secoes: dict[str, str], titulo: str = "um trabalho de testes") -> str:
+    """O pacote da gerente com o mesmo pedido do formulário (o que o montador escreveria no começo)."""
+    return f"# Pacote de regras: {titulo}\n\n" + texto_de({"Pedido": secoes["Pedido"],
+                                                           "Arquivos que vou mexer": secoes["Arquivos que vou mexer"]})
+
+
+def gravar_pacote(r: RepositorioDeProva, texto: str) -> Path:
+    """O pacote fica fora da cópia (a gerente o guarda; não vai para o ramo do agente)."""
+    caminho = r.raiz.parent / "pacote.md"
+    caminho.write_text(texto, encoding="utf-8")
+    return caminho
+
+
+def conferir(r: RepositorioDeProva, secoes: dict[str, str], etapa: str = "quebrar", pacote: str | None = None,
+             sem_pacote: bool = False):
+    """Grava o ONDE-PAREI, faz o commit e confere o formulário (sem consultar o GitHub nem o push).
+
+    O pacote da gerente é obrigatório: sem `pacote`, usa o do mesmo pedido do formulário (`pacote_de`).
+    """
     r.escrever(f"{PASTA}/ONDE-PAREI.md", texto_de(secoes))
     r.tentar_commit("ONDE-PAREI")   # sem mudança (o mesmo ONDE-PAREI de novo), o git não faz commit: tudo bem
-    caminho_do_pacote = None
-    if pacote is not None:
-        caminho_do_pacote = r.raiz.parent / "pacote.md"
-        caminho_do_pacote.write_text(pacote, encoding="utf-8")
+    caminho_do_pacote = None if sem_pacote else gravar_pacote(r, pacote if pacote is not None else pacote_de(secoes))
     return formulario.conferir(r.raiz / PASTA / "ONDE-PAREI.md", etapa, r.raiz, pacote=caminho_do_pacote,
                                consultar_github=False, olhar_o_github_do_ramo=False)
 
@@ -171,10 +185,25 @@ def test_o_pedido_tem_de_ser_o_do_pacote_da_gerente(entrega):
     """D-796: a lista de arquivos do ONDE-PAREI tem de ser a do pacote; o agente que a muda é devolvido."""
     r, base, commit = entrega
     s = secoes_certas(base, commit)
-    pacote = texto_de({"Pedido": s["Pedido"], "Arquivos que vou mexer": "- `tests/test_x.py`"})
+    pacote = pacote_de({"Pedido": s["Pedido"], "Arquivos que vou mexer": "- `tests/test_x.py`"})
     assert any("não é o do pacote" in p for p in conferir(r, s, pacote=pacote).problemas)
-    pacote_certo = texto_de({"Pedido": s["Pedido"], "Arquivos que vou mexer": s["Arquivos que vou mexer"]})
-    assert not any("não é o do pacote" in p for p in conferir(r, s, pacote=pacote_certo).problemas)
+    assert not any("não é o do pacote" in p for p in conferir(r, s).problemas)
+
+
+def test_sem_o_pacote_da_gerente_o_formulario_volta(entrega):
+    """Achado 3 de quem tentou quebrar (19/11): sem o pacote, o papel e a lista eram só o que o agente escrevia, e a
+    saída era 0. Agora volta ao agente."""
+    r, base, commit = entrega
+    resultado = conferir(r, secoes_certas(base, commit), sem_pacote=True)
+    assert any("falta o pacote" in p for p in resultado.problemas) and resultado.codigo_de_saida == 1
+
+
+def test_o_papel_que_vale_e_o_do_pacote(entrega):
+    """O agente que escreve outro papel no ONDE-PAREI (ex.: o de tela que se diz implementador) é devolvido."""
+    r, base, commit = entrega
+    s = secoes_certas(base, commit)
+    pacote = pacote_de(dict(s, Pedido=s["Pedido"].replace("implementador", "layout")))
+    assert any("(papel)" in p for p in conferir(r, s, pacote=pacote).problemas)
 
 
 def test_rotulo_de_pronto_no_formulario_de_quem_construiu_volta(entrega):
@@ -263,10 +292,11 @@ def test_k21_vale_a_rodada_do_ultimo_commit_mesmo_citada_antes_de_uma_antiga(ent
                  "222222222": github.Rodada("222222222", True, True, "x", base)}
     monkeypatch.setattr(github, "ler_rodada", lambda numero, repositorio: respostas[numero])
     monkeypatch.setattr(formulario.git, "repositorio_no_github", lambda raiz: "dono/nome")
-    resultado = formulario.conferir(r.raiz / PASTA / "ONDE-PAREI.md", "quebrar", r.raiz, consultar_github=True,
-                                    olhar_o_github_do_ramo=False)
+    pacote = gravar_pacote(r, pacote_de(s))
+    resultado = formulario.conferir(r.raiz / PASTA / "ONDE-PAREI.md", "quebrar", r.raiz, pacote=pacote,
+                                    consultar_github=True, olhar_o_github_do_ramo=False)
     assert not any("K21" in p for p in resultado.problemas + resultado.pendentes), resultado.explicar()
     respostas["111111111"] = github.Rodada("111111111", True, False, "x", commit)
-    resultado = formulario.conferir(r.raiz / PASTA / "ONDE-PAREI.md", "quebrar", r.raiz, consultar_github=True,
-                                    olhar_o_github_do_ramo=False)
+    resultado = formulario.conferir(r.raiz / PASTA / "ONDE-PAREI.md", "quebrar", r.raiz, pacote=pacote,
+                                    consultar_github=True, olhar_o_github_do_ramo=False)
     assert any("nenhuma rodada citada vale" in p for p in resultado.problemas)

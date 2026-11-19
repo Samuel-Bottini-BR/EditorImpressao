@@ -103,16 +103,37 @@ def linhas_de_codigo(fonte: str) -> list[str]:
     return ["".join(l) for l in texto]
 
 
-def sem_comentarios_de_folha_de_estilo(codigo: list[str]) -> list[str]:
-    """Tira os comentários `/* ... */` (os da folha de estilo do Qt, que ninguém vê na tela), mesmo em várias linhas.
+def sem_comentarios_de_folha_de_estilo(codigo: list[str], raiz: ast.Module, fonte: str) -> list[str]:
+    """Tira os comentários `/* ... */` de dentro dos textos de folha de estilo do Qt (que ninguém vê na tela).
 
     Correção 3 do plano-v3, passo 0: o comentário de `ui/estilo.py` ("etapa 6 da obra... (D-015, lyupdf)") estava
-    dentro do texto da folha de estilo e o esboço o contava como número de decisão na tela. Vale para toda folha de
-    estilo, não só a do `ui/estilo.py`: um comentário `/* */` nunca aparece para o Kaique.
+    dentro do texto da folha de estilo e o esboço o contava como número de decisão na tela.
+
+    Só dentro do MESMO texto (um nó de texto do código, inclusive um f-string em várias linhas) que tem cara de folha
+    de estilo (tem "{" e "}"): um `"imagens/*"` num texto e um `"*/fim"` em outro não apagam o que fica entre os
+    dois (achado 10 de quem tentou quebrar, 19/11). `codigo` são as linhas já sem comentário `#` nem docstring.
     """
-    junto = "\n".join(codigo)
-    limpo = re.sub(r"/\*.*?\*/", lambda m: re.sub(r"[^\n]", " ", m.group(0)), junto, flags=re.S)
-    return limpo.split("\n")
+    texto = [list(l) for l in codigo]
+    originais = linhas(fonte)
+    for no in ast.walk(raiz):
+        if not isinstance(no, (ast.Constant, ast.JoinedStr)) or not getattr(no, "end_lineno", None):
+            continue
+        if isinstance(no, ast.Constant) and not isinstance(no.value, str):
+            continue
+        l1, l2 = no.lineno, no.end_lineno
+        c1 = _coluna_em_letras(originais[l1 - 1], no.col_offset)
+        c2 = _coluna_em_letras(originais[l2 - 1], no.end_col_offset or 0)
+        posicoes = [(n, c) for n in range(l1, l2 + 1) for c in range(c1 if n == l1 else 0,
+                                                                     c2 if n == l2 else len(texto[n - 1]))
+                    if c < len(texto[n - 1])]
+        trecho = "".join(texto[n - 1][c] for n, c in posicoes)
+        if "{" not in trecho or "}" not in trecho or "/*" not in trecho:
+            continue
+        for m in re.finditer(r"/\*.*?\*/", trecho, flags=re.S):
+            for k in range(m.start(), m.end()):
+                n, c = posicoes[k]
+                texto[n - 1][c] = " "
+    return ["".join(l) for l in texto]
 
 
 @dataclass(frozen=True)

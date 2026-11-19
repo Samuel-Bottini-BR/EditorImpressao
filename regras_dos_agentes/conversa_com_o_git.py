@@ -173,6 +173,53 @@ def commit_do_ramo_remoto(raiz: Path | str) -> str | None:
     return r.stdout.strip() or None
 
 
+def arquivos_por_commit(raiz: Path | str, base: str) -> list[tuple[str, list[str]]]:
+    """(código, arquivos que ele mexeu) de cada commit depois de `base` até o atual."""
+    if not existe_commit(raiz, base):
+        raise GitFalhou(f"o commit de partida {base} não existe neste repositório")
+    saida = _rodar(raiz, "log", "--no-renames", "--format=%x1e%H", "--name-only", f"{base}..HEAD").stdout
+    resultado = []
+    for bloco in saida.split("\x1e"):
+        linhas = [l.strip() for l in bloco.strip().splitlines() if l.strip()]
+        if linhas:
+            resultado.append((linhas[0], linhas[1:]))
+    return resultado
+
+
+def ramo_atual(raiz: Path | str) -> str:
+    """O nome do ramo em que a cópia está (`GitFalhou` se a cópia não está num ramo)."""
+    nome = _rodar(raiz, "rev-parse", "--abbrev-ref", "HEAD").stdout.strip()
+    if not nome or nome == "HEAD":
+        raise GitFalhou("a cópia não está num ramo (HEAD solto)")
+    return nome
+
+
+def commit_no_github(raiz: Path | str, ramo: str) -> str | None:
+    """O commit que o ramo tem AGORA no GitHub (pergunta ao GitHub, `git ls-remote`), ou None se o ramo não existe lá.
+
+    Não usa a cópia local do que foi buscado da última vez (achado 19 de quem tentou quebrar, 19/11): sem internet,
+    `GitFalhou`, e a conferência diz que não conseguiu conferir.
+    """
+    saida = _rodar(raiz, "ls-remote", "--heads", "origin", f"refs/heads/{ramo}").stdout.strip()
+    return saida.split()[0] if saida else None
+
+
+def e_raso(raiz: Path | str) -> bool:
+    """A cópia foi tirada só com o último commit (como no GitHub, `--depth=1`)?"""
+    return _rodar(raiz, "rev-parse", "--is-shallow-repository").stdout.strip() == "true"
+
+
+def buscar_ramo(raiz: Path | str, ramo: str) -> str:
+    """Busca o ramo no GitHub e devolve o código do commit dele (`refs/remotes/origin/<ramo>`).
+
+    Numa cópia rasa (a do GitHub), busca só o último commit; numa cópia inteira (a do PC), busca normal: `--depth`
+    numa cópia inteira a deixaria rasa, e isso cortaria a história do repositório do Samuel.
+    """
+    profundidade = ["--depth=1"] if e_raso(raiz) else []
+    _rodar(raiz, "fetch", "-q", *profundidade, "origin", f"+refs/heads/{ramo}:refs/remotes/origin/{ramo}")
+    return commit_completo(raiz, f"refs/remotes/origin/{ramo}")
+
+
 def repositorio_no_github(raiz: Path | str) -> str:
     """O "dono/nome" do repositório no GitHub, tirado do endereço do `origin` (ex.: Samuel-Bottini-BR/EditorImpressao)."""
     url = _rodar(raiz, "remote", "get-url", "origin").stdout.strip()
@@ -224,8 +271,11 @@ def commit_de_tudo(raiz: Path | str, mensagem: str) -> subprocess.CompletedProce
     return commit_do_indice(raiz, mensagem)
 
 
-def enviar(raiz: Path | str, remoto: Path | str) -> None:
-    """Liga o repositório a um "origin" (uma pasta) e envia o ramo atual, acompanhando-o."""
+def enviar(raiz: Path | str, remoto: Path | str, ramo_no_remoto: str | None = None) -> None:
+    """Liga o repositório a um "origin" (uma pasta) e envia o ramo atual (ou o envia com outro nome lá, sem acompanhar)."""
     if _rodar(raiz, "remote", aceitar=(0,)).stdout.strip() == "":
         _rodar(raiz, "remote", "add", "origin", str(remoto))
-    _rodar_para_escrever(raiz, "push", "-q", "-u", "origin", "HEAD")
+    if ramo_no_remoto:
+        _rodar_para_escrever(raiz, "push", "-q", "-f", "origin", f"HEAD:refs/heads/{ramo_no_remoto}")
+    else:
+        _rodar_para_escrever(raiz, "push", "-q", "-u", "origin", "HEAD")

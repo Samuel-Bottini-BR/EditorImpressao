@@ -6,7 +6,8 @@ A lista `CONFERENCIAS` abaixo é o lugar único dessa numeração: os testes, a 
 
 Dois tipos:
 - **as que leem o código parado** (este arquivo): K01 a K08, K16, K22, K23, K24. Rodam no GitHub em toda entrega
-  (`tests/test_conferencias_codigo.py`) e antes do commit, só nos arquivos mudados (`antes_do_commit.py`).
+  (`tests/test_conferencias_codigo.py`) e antes do commit, só nos arquivos mudados
+  (`python -m regras_dos_agentes antes-do-commit`, chamado por `ganchos/pre-commit`).
 - **as que olham o que a entrega mudou** (`porteiro_mudancas.py` e `formulario.py`): K09 a K15, K17 a K21. Precisam do
   commit de partida e do papel do agente, que vêm do pedido; rodam quando a entrega é conferida.
 
@@ -129,19 +130,23 @@ def e_programa(caminho: str) -> bool:
 
 
 def e_texto_que_a_pessoa_ve(caminho: str) -> bool:
-    """Arquivo cujos textos o Kaique vê: a tela, o começo do programa, o atualizador e os testes à distância."""
-    return e_programa(caminho) and (caminho.startswith("ui/") or caminho in ("main.py", "atualizacao.py")
-                                    or "testes_a_distancia" in caminho)
+    """Arquivo cujos textos o Kaique vê: a tela, o processamento (os avisos do "Para revisar" moram em `core/`, achado
+    9 de quem tentou quebrar), o começo do programa e o atualizador."""
+    return e_programa(caminho) and (caminho.startswith(("ui/", "core/")) or caminho in ("main.py", "atualizacao.py"))
 
 
 def e_tela(caminho: str) -> bool:
-    """Arquivo de tela: `ui/` e o `main.py`."""
-    return e_programa(caminho) and (caminho.startswith("ui/") or caminho == "main.py")
+    """Arquivo com texto de tela: `ui/`, o `main.py` e `core/` (os avisos que a tela mostra moram lá, achado 9)."""
+    return e_programa(caminho) and (caminho.startswith(("ui/", "core/")) or caminho == "main.py")
+
+
+# As pastas que não são do projeto para o porteiro: o código de fora e o guardado. Lugar único (achado 13).
+FORA_DO_PROJETO = ("terceiros", "velhos")
 
 
 def e_script_python(caminho: str) -> bool:
     """Todo `.py` do projeto, menos o código de fora (`terceiros/`) e o guardado (`velhos/`)."""
-    return caminho.endswith(".py") and caminho.split("/")[0] not in ("terceiros", "velhos")
+    return caminho.endswith(".py") and caminho.split("/")[0] not in FORA_DO_PROJETO
 
 
 # ----------------------------------------------------------------------------------------------------------------
@@ -173,8 +178,8 @@ PALAVRAS_DO_WINDOWS: list[tuple[str, str]] = [
     (r"Schedule\.Service", "tarefas do Windows pelo COM"),
     (r"\bicacls\b|\bcacls\b|\btakeown\b|-Acl\b|/inheritance|/setowner|Set(?:Named)?SecurityInfo|SetFileSecurity",
      "licença e dono de pastas e arquivos"),
-    (r"\bwinreg\b|\b_winreg\b|\breg(?:\.exe)?\s+(?:add|delete|query|import|export|copy)\b|\bHK(?:LM|CU|CR|U|CC):|"
-     r"\bHKEY_\w+|Registry::|-ItemProperty\b|\bregedit\b", "o registro do Windows"),
+    (r"\bwinreg\b|\b_winreg\b|\breg(?:\.exe)?\b[\"']?(?:\s*,\s*[\"']|\s+)(?:add|delete|query|import|export|copy)\b|"
+     r"\bHK(?:LM|CU|CR|U|CC)(?::|\\)|\bHKEY_\w+|Registry::|-ItemProperty\b|\bregedit\b", "o registro do Windows"),
     (r"\bmsiexec\b|\bUpdate\.exe\b", "instaladores"),
     (r"\bnetsh\b|-NetFirewall\w*\b", "o firewall e a rede do Windows"),
     (r"\bsc(?:\.exe)?\s+(?:create|delete|config|start|stop|query)\b|\bsc\.exe\b|-Service\b", "serviços do Windows"),
@@ -201,16 +206,27 @@ DETACHED = re.compile("|".join(f"(?:{p})" for p in PALAVRAS_DE_DETACHED))
 PALAVRAS_DE_LICENCA: list[str] = [r"\bicacls\b", r"\bcacls\b", r"\btakeown\b", r"/inheritance:r", r"/setowner",
                                   r"\bSet-Acl\b", r"Set(?:Named)?SecurityInfo", r"SetFileSecurity"]
 LICENCA_A_MAO = re.compile("|".join(f"(?:{p})" for p in PALAVRAS_DE_LICENCA), re.I)
-NUMERO_DE_DECISAO = re.compile(r"\bD-\d{3,}\b")
-EMOJI = re.compile("[\U0001F300-\U0001FAFF\U0001F000-\U0001F2FF\u2600-\u27BF\u2B00-\u2BFF\uFE0F]")
+# K04 e K05: PROTEGIDAS.
+PADRAO_DO_NUMERO_DE_DECISAO = r"\bD-\d{3,}\b"
+NUMERO_DE_DECISAO = re.compile(PADRAO_DO_NUMERO_DE_DECISAO)
+PADRAO_DO_EMOJI = "[\U0001F300-\U0001FAFF\U0001F000-\U0001F2FF\u2600-\u27BF\u2B00-\u2BFF\uFE0F]"
+EMOJI = re.compile(PADRAO_DO_EMOJI)
 # K16 e K23: PROTEGIDAS (nada sai sem a gerente).
 GERADORES = {"diffusers", "realesrgan", "gfpgan", "basicsr", "codeformer", "facexlib", "lama_cleaner", "iopaint",
              "invokeai", "stable_diffusion", "controlnet_aux", "kandinsky"}
-FERRAMENTAS_PROIBIDAS_AOS_AGENTES = re.compile(r"^(Agent|Task)$|Artifact", re.I)
+PADRAO_DAS_FERRAMENTAS_PROIBIDAS = r"^(Agent|Task)$|Artifact"
+FERRAMENTAS_PROIBIDAS_AOS_AGENTES = re.compile(PADRAO_DAS_FERRAMENTAS_PROIBIDAS, re.I)
 
 # K22: os valores de hoje da barra de rolagem, um por tema (ui/estilo.py, 19/11/2026). São cinza; o #a8a49e do
 # CLAUDE.md §9 é de antes dos temas. Mudar exige decisão do Samuel (CLAUDE.md §9): então muda aqui junto.
 BARRA_DE_ROLAGEM = {"escuro": "#4A4D54", "cinza": "#6A6A6A", "claro": "#B5B3AC"}
+
+# Os dados das buscas que agente nenhum afrouxa: o teste do GitHub (`tests/test_conferencias_protecao.py`, pela
+# `protecao.py`) compara cada um com o da versão de teste; nenhum item pode sumir nem mudar (achado 6 de quem tentou
+# quebrar, 19/11). Só acrescentar é livre. Cada nome aqui é uma atribuição de valor literal neste arquivo.
+PROTEGIDAS = ("PALAVRAS_DO_WINDOWS", "PALAVRAS_DE_DETACHED", "PALAVRAS_DE_LICENCA", "PADRAO_DO_NUMERO_DE_DECISAO",
+              "PADRAO_DO_EMOJI", "GERADORES", "PADRAO_DAS_FERRAMENTAS_PROIBIDAS", "BARRA_DE_ROLAGEM",
+              "PECA_UNICA_DO_WINDOWS", "FORA_DO_PROJETO")
 
 
 def _texto_do_lugar(linha_de_codigo: str) -> str:
@@ -287,7 +303,7 @@ def k04(arq: _Arquivo) -> list[Achado]:
     """K04: número de decisão num texto que a pessoa vê (sem comentário, docstring e comentário de folha de estilo)."""
     if not e_texto_que_a_pessoa_ve(arq.caminho):
         return []
-    visivel = leitura.sem_comentarios_de_folha_de_estilo(arq.codigo)
+    visivel = leitura.sem_comentarios_de_folha_de_estilo(arq.codigo, arq.raiz, arq.fonte)
     return _por_linha(arq, "K04", NUMERO_DE_DECISAO, "número de decisão num texto que a pessoa vê", visivel)
 
 

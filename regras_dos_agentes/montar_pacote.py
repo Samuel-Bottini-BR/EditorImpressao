@@ -23,7 +23,8 @@ from __future__ import annotations
 
 from pathlib import Path
 
-from . import catalogo, formulario, tabela_arquivos
+from . import catalogo, excecoes, formulario, tabela_arquivos
+from .pedido import coberto
 from .livro import Livro
 from .pedido import Pedido
 
@@ -68,12 +69,36 @@ def formulario_em_branco(tags: set, papel: str) -> list[str]:
     return saida
 
 
+def lugares_da_lista(arquivos: list[str], raiz: Path) -> list[str]:
+    """Os lugares da lista de exceções nos arquivos do pedido, com o aviso de como a lista funciona (achado 11).
+
+    A lista identifica cada lugar pelo texto da linha: mexer numa dessas linhas sem consertá-la (mudar de função,
+    renomear uma variável, reformatar) vira erro novo, que só sai com o "sim" do Samuel. Quem conserta tira o item no
+    mesmo commit (`python -m regras_dos_agentes excecoes --diminuir`).
+    """
+    caminho = Path(raiz) / excecoes.ARQUIVO_DA_LISTA
+    if not caminho.exists():
+        return []
+    lista = excecoes.ler(raiz)
+    nos_arquivos = [i for i in lista.itens if coberto(i["arquivo"], [a.removeprefix("novo:") for a in arquivos])]
+    if not nos_arquivos:
+        return []
+    saida = ["## Lugares da lista de exceções nos seus arquivos", "",
+             f"{sum(int(i['quantas']) for i in nos_arquivos)} lugares. Cada um é identificado pelo texto da linha: mexer "
+             "numa dessas linhas sem consertá-la (mudar de função, renomear, reformatar) vira erro novo, que só sai com o "
+             "\"sim\" do Samuel. Quem conserta tira o item no mesmo commit (`python -m regras_dos_agentes excecoes "
+             "--diminuir`).", ""]
+    saida += [f"- {i['conferencia']} `{i['arquivo']}` ({i['funcao']}, passo {i['passo']}, {i['quantas']}x): "
+              f"`{i['texto'][:90]}`" for i in nos_arquivos]
+    return saida + [""]
+
+
 def montar(papel: str, titulo: str, numeros: list[str], arquivos: list[str], raiz: Path, partida: str,
            ramo: str) -> str:
     """O texto do pacote."""
     if papel not in PAPEIS:
         raise ValueError(f"papel desconhecido: {papel} (vale: {', '.join(PAPEIS)})")
-    tags, avisos = tabela_arquivos.etiquetas_do_trabalho(arquivos, raiz)
+    tags, avisos = tabela_arquivos.etiquetas_do_trabalho(arquivos, raiz, titulo)
     regras = escolher_regras(tags, papel)
     nomes = ", ".join(catalogo.ETIQUETAS[t] for t in sorted(tags) if t in catalogo.ETIQUETAS and t != "GER")
     fora = sorted(set(catalogo.ETIQUETAS) - tags - {"GER", "TODO"}) if papel != "quebrador" else []
@@ -85,6 +110,7 @@ def montar(papel: str, titulo: str, numeros: list[str], arquivos: list[str], rai
     p += [f"> Aviso à gerente: {a}" for a in avisos]
     p += ["", "Copie as duas seções abaixo, sem mudar nada, para o começo do seu ONDE-PAREI: o porteiro lê dali quais "
           "arquivos você pode mexer, e a gerente compara com este pacote.", "", pedido.bloco()]
+    p += lugares_da_lista(arquivos, raiz)
     p += ["## 1. Sempre (todo trabalho)", ""]
     for s in catalogo.SEMPRE:
         p.append(f"{s['n']}. **{s['titulo']}.** {s['texto']} *Por quê:* {s['porque']}")

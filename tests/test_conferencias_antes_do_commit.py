@@ -32,14 +32,17 @@ DEFEITO_1 = ('"""O atualizador."""\nimport subprocess\n\n\ndef lancar(c):\n    "
 CERTO = '"""Um arquivo certo."""\n\n\ndef f():\n    """Nada de errado."""\n    return 1\n'
 
 
-def _lista(r: RepositorioDeProva, situacao: str = "valendo") -> None:
+LIVRO = '| D-791 | 18/11/2026 | "b" · "sim" | o porteiro | x | x | x | x | x |\n'
+SIM = {"decisao": "D-791", "em": "19/11/2026", "palavras": "sim"}
+
+
+def _lista(r: RepositorioDeProva, situacao: str = "valendo", mais: list | None = None) -> None:
     """A lista de exceções do repositório de prova: deixa o defeito 1 em atualizacao.py (K01 e K02, uma vez)."""
     texto = "subprocess.Popen(c, creationflags=subprocess.DETACHED_PROCESS)"
     itens = [{"arquivo": "atualizacao.py", "conferencia": k, "texto": texto, "quantas": 1, "data": "2026-11-19",
-              "passo": "3", "motivo": "prova"} for k in ("K01", "K02")]
+              "passo": "3", "motivo": "prova"} for k in ("K01", "K02")] + (mais or [])
     r.escrever("tests/conferencias_excecoes.json", json.dumps({
-        "situacao": situacao, "sim_do_samuel": {"em": "19/11/2026", "palavras": "sim"} if situacao == "valendo"
-        else None, "itens": itens}))
+        "situacao": situacao, "sim_do_samuel": SIM if situacao == "valendo" else None, "itens": itens}))
 
 
 @pytest.fixture
@@ -55,6 +58,7 @@ def repo(tmp_path) -> RepositorioDeProva:
     assert feito.returncode == 0, feito.stderr
     r.escrever(".gitignore", ".venv/\n__pycache__/\n")
     r.escrever("atualizacao.py", DEFEITO_1)
+    r.escrever("docs/plano/DECISOES.md", LIVRO)
     _lista(r)
     git.configurar(r.raiz, "core.hooksPath", "ganchos")
     r.commit("partida (o gancho já confere este commit)")
@@ -134,3 +138,14 @@ def test_o_gancho_e_o_github_acham_o_mesmo_no_mesmo_arquivo(repo):
     chave = lambda a: (a.conferencia, a.arquivo, a.linha, a.texto)  # noqa: E731
     assert sorted(map(chave, do_commit)) == sorted(chave(a) for a in do_repositorio if a.arquivo == "core/novo.py")
     assert {a.conferencia for a in do_commit} == {"K01", "K02"}
+
+
+def test_o_gancho_barra_o_agente_que_poe_o_proprio_erro_na_lista_no_mesmo_commit(repo):
+    """Achado 7 de quem tentou quebrar (19/11): o erro novo e o item dele na lista, no mesmo commit, passavam no gancho.
+    Agora a lista do commit é comparada com a do último commit: item novo sem o "sim" próprio barra."""
+    repo.escrever("core/novo.py", DEFEITO_1)
+    texto = "subprocess.Popen(c, creationflags=subprocess.DETACHED_PROCESS)"
+    _lista(repo, mais=[{"arquivo": "core/novo.py", "conferencia": k, "texto": texto, "quantas": 1,
+                        "data": "2026-11-19", "passo": "3", "motivo": "eu mesmo"} for k in ("K01", "K02")])
+    feito = repo.tentar_commit("erro novo e o item dele")
+    assert feito.returncode != 0 and "item novo na lista" in feito.stdout + feito.stderr

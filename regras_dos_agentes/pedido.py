@@ -96,6 +96,12 @@ def ler(texto: str) -> Pedido:
     return p
 
 
+def titulo_do_pacote(texto: str) -> str:
+    """O título do pacote ("# Pacote de regras: <título>"), que diz em palavras o que o trabalho faz."""
+    m = re.search(r"^#\s+Pacote de regras:\s*(.+)$", texto, re.M)
+    return m.group(1).strip() if m else ""
+
+
 def coberto(caminho: str, permitidos: list[str]) -> bool:
     """O arquivo mexido está na lista? (o mesmo arquivo, dentro de uma pasta da lista, ou num padrão com "*")."""
     for p in permitidos:

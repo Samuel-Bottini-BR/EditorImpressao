@@ -31,13 +31,18 @@ from . import excecoes
 from . import leitura_do_codigo as leitura
 from .livro import NUMERO, Livro
 from .pedido import coberto
-from .porteiro import Achado, e_programa
+from . import pedido as pedido_
+from .porteiro import FORA_DO_PROJETO, Achado, e_programa
 
-# Quem pode escrever "PRONTO PARA CONFERIR" (D-798): só quem confere.
+# Quem pode escrever "PRONTO PARA CONFERIR" (D-798): só quem confere. Lugar único (o formulário importa daqui).
 QUEM_CONFERE = ("verificador", "quebrador")
+# A pasta, dentro da pasta do trabalho de quem construiu, onde fica o relatório de quem quebrou (o F19 lê dali).
+PASTA_DE_QUEM_QUEBROU = "quem-quebrou/"
 
-# Arquivos que agente nenhum muda sem o pedido dizer (K17): as regras, o Livro, o plano e o handoff.
-PROTEGIDOS = ("CLAUDE.md", ".claude/*", "docs/plano/DECISOES.md", "docs/plano/PLANO-DEFINITIVO.md", "historico/*")
+# Arquivos que agente nenhum muda sem o pedido dizer (K17): as regras, o Livro, o plano, o handoff e o próprio
+# porteiro (o pacote, o gancho e as provas dele; achado 6 de quem tentou quebrar, 19/11).
+PROTEGIDOS = ("CLAUDE.md", ".claude/*", "docs/plano/DECISOES.md", "docs/plano/PLANO-DEFINITIVO.md", "historico/*",
+              "regras_dos_agentes/*", "ganchos/*", "tests/test_conferencias_*")
 
 
 def _fora_das_aspas(linha: str) -> str:
@@ -63,17 +68,52 @@ def k09(pasta_do_relatorio: Path, raiz: Path) -> list[Achado]:
     return saida
 
 
-ROTULO_DE_PRONTO = re.compile(r"PRONTO\s+PARA\s+CONFERIR|(?i:^\W*pronto\s+para\s+conferir\b)", re.M)
+ROTULO_DE_PRONTO = re.compile(r"PRONTO\s+PARA\s+CONFERIR|(?i:^[\W\d_]*pronto\s+para\s+conferir\b)", re.M)
 
 
-def k10(raiz: Path, base: str, papel: str) -> list[Achado]:
-    """K10: "APROVADO" escrito por agente; [x] no plano ou no Livro; o rótulo de pronto em ramo de quem constrói.
+def _relatorios_de_quem_quebrou_aceitos(raiz: Path, base: str) -> set[str]:
+    """As pastas `.../quem-quebrou/` onde o rótulo de pronto vale: só as que nenhum commit misturou com outro trabalho.
+
+    O relatório de quem quebra vai para o ramo de quem construiu (D-775), e o rótulo de pronto é dele (D-798). Para o
+    rótulo valer ali: (1) o arquivo está numa pasta `quem-quebrou/` de dentro de `relatorios/`; (2) todo commit que
+    mexeu nessa pasta mexeu SÓ nela (um commit de quem quebrou, não um commit de quem construiu); (3) o relatório diz,
+    no pedido dele, que o papel é de quem confere (conferido em `_rotulo_aceito`). Continua sendo o que está escrito
+    no commit e no relatório: a gerente confere com o pacote que deu a quem quebrou.
+    """
+    limpas: dict[str, bool] = {}
+    for _, arquivos in git.arquivos_por_commit(raiz, base):
+        pastas = {a[: a.index(PASTA_DE_QUEM_QUEBROU) + len(PASTA_DE_QUEM_QUEBROU)] for a in arquivos
+                  if a.startswith("relatorios/") and PASTA_DE_QUEM_QUEBROU in a}
+        so_ali = all(any(a.startswith(p) for p in pastas) for a in arquivos)
+        for p in pastas:
+            limpas[p] = limpas.get(p, True) and so_ali
+    return {p for p, limpa in limpas.items() if limpa}
+
+
+def _rotulo_aceito(raiz: Path, caminho: str, papel: str, pasta_do_relatorio: str, aceitas: set[str],
+                   papel_do_arquivo: dict[str, str]) -> bool:
+    """O rótulo de pronto neste arquivo vale? (as regras estão na docstring de `k10`)."""
+    if papel in QUEM_CONFERE and pasta_do_relatorio and caminho.startswith(pasta_do_relatorio):
+        return True
+    if not any(caminho.startswith(p) for p in aceitas):
+        return False
+    if caminho not in papel_do_arquivo:
+        papel_do_arquivo[caminho] = pedido_.ler(git.conteudo_no_commit(raiz, "HEAD", caminho) or "").papel
+    return papel_do_arquivo[caminho] in QUEM_CONFERE
+
+
+def k10(raiz: Path, base: str, papel: str, pasta_do_relatorio: str = "") -> list[Achado]:
+    """K10: "APROVADO" escrito por agente; [x] no plano ou no Livro; o rótulo de pronto fora do lugar de quem confere.
 
     Lê só os documentos (não os `.py`: no código, a palavra está sempre num texto entre aspas, como dado, ex.: o próprio
-    porteiro). O rótulo conta em maiúsculas em qualquer lugar, ou como linha de situação ("Pronto para conferir."),
-    fora das aspas; "antes de pronto para conferir" no meio de uma frase não conta.
+    porteiro). O rótulo conta em maiúsculas em qualquer lugar, ou como linha de situação ("Pronto para conferir.",
+    "3. **Pronto para conferir**"), fora das aspas; "antes de pronto para conferir" no meio de uma frase não conta.
+    O rótulo vale (D-798) na pasta do próprio trabalho de quem confere (`papel` verificador ou quebrador) e, no ramo
+    de quem construiu, só no relatório de quem quebrou (`_relatorios_de_quem_quebrou_aceitos`).
     """
     saida = []
+    aceitas = _relatorios_de_quem_quebrou_aceitos(raiz, base)
+    papel_do_arquivo: dict[str, str] = {}
     for caminho, linhas in git.linhas_novas(raiz, base).items():
         if caminho.endswith(".py"):
             continue
@@ -85,21 +125,32 @@ def k10(raiz: Path, base: str, papel: str) -> list[Achado]:
             if caminho in ("docs/plano/PLANO-DEFINITIVO.md", "docs/plano/DECISOES.md") and re.search(r"\[[xX]\]", fora):
                 saida.append(Achado("K10", caminho, n, " ".join(texto.split()), "[x] posto no plano ou no Livro "
                                     "(só o Samuel marca)"))
-            if papel not in QUEM_CONFERE and ROTULO_DE_PRONTO.search(fora):
+            if ROTULO_DE_PRONTO.search(fora) and not _rotulo_aceito(raiz, caminho, papel, pasta_do_relatorio, aceitas,
+                                                                     papel_do_arquivo):
                 saida.append(Achado("K10", caminho, n, " ".join(texto.split()), f"o rótulo de pronto para conferir "
-                                    f"no ramo de quem construiu ({papel}); só quem confere escreve (D-798)"))
+                                    f"fora do relatório de quem confere ({papel}); só quem confere escreve, e só no "
+                                    f"relatório dele (D-798)"))
     return saida
 
 
-def _testes_de(fonte: str | None) -> dict[str, str]:
-    """As funções de teste de um arquivo (nome completo → o código dela, sem espaço sobrando no fim das linhas)."""
+def e_teste_antigo(caminho: str) -> bool:
+    """Arquivo de teste: os de `tests/` e os soltos da raiz (`teste_*.py`, ex.: o `teste_botoes.py`, CLAUDE.md §4.5)."""
+    return caminho.endswith(".py") and (caminho.startswith("tests/") or
+                                        ("/" not in caminho and caminho.startswith("teste_")))
+
+
+def _testes_de(fonte: str | None, todas: bool = False) -> dict[str, str]:
+    """As funções de teste de um arquivo (nome completo → o código dela, sem espaço sobrando no fim das linhas).
+
+    `todas`: num teste solto da raiz, toda função conta como teste (o `teste_botoes.py` não usa o nome `test_`).
+    """
     if fonte is None:
         return {}
     texto = leitura.sem_marca_de_utf8(fonte).replace("\r\n", "\n")
     raiz = leitura.arvore(texto)
     saida = {}
     for f in leitura.funcoes(raiz):
-        if f.nome.split(".")[-1].startswith("test"):
+        if todas or f.nome.split(".")[-1].startswith("test"):
             trecho = texto.split("\n")[f.inicio - 1:f.fim]
             saida[f.nome] = "\n".join(l.rstrip() for l in trecho)
     return saida
@@ -117,11 +168,12 @@ def k11(raiz: Path, base: str, livro: Livro) -> list[Achado]:
     """K11: teste que já existia no commit de partida e foi mudado ou apagado, sem o commit citar a decisão que deixa."""
     saida = []
     for caminho in git.arquivos_mudados(raiz, base):
-        if not (caminho.startswith("tests/") and caminho.endswith(".py")):
+        if not e_teste_antigo(caminho):
             continue
+        todas = not caminho.startswith("tests/")
         try:
-            antes = _testes_de(git.conteudo_no_commit(raiz, base, caminho))
-            depois = _testes_de(git.conteudo_no_commit(raiz, "HEAD", caminho))
+            antes = _testes_de(git.conteudo_no_commit(raiz, base, caminho), todas)
+            depois = _testes_de(git.conteudo_no_commit(raiz, "HEAD", caminho), todas)
         except leitura.CodigoIlegivel as erro:
             saida.append(Achado("K11", caminho, 0, caminho, f"não deu para ler o teste: {erro}"))
             continue
@@ -144,7 +196,7 @@ def k12(raiz: Path, base: str) -> list[Achado]:
     saida = []
     novas = git.linhas_novas(raiz, base)
     for caminho, linhas in novas.items():
-        if not caminho.endswith(".py") or caminho.split("/")[0] in ("terceiros", "velhos") or not linhas:
+        if not caminho.endswith(".py") or caminho.split("/")[0] in FORA_DO_PROJETO or not linhas:
             continue
         fonte = git.conteudo_no_commit(raiz, "HEAD", caminho)
         if fonte is None:
@@ -166,16 +218,21 @@ def k12(raiz: Path, base: str) -> list[Achado]:
     return saida
 
 
-def k13(mudados: list[str], papel: str, permitidos: list[str]) -> list[Achado]:
-    """K13: mexeu fora do papel, fora da lista do pedido (D-796)."""
+def k13(mudados: list[str], papel: str, permitidos: list[str], pasta_do_relatorio: str = "") -> list[Achado]:
+    """K13: mexeu fora do papel, fora da lista do pedido (D-796).
+
+    O agente de tela (D-796: "Sem isso escrito no pedido, continua só em ui/") é barrado em todo arquivo fora de `ui/`
+    que o pedido não nomeou, menos a pasta do relatório do próprio trabalho (achado 4 de quem tentou quebrar, 19/11).
+    """
     saida = []
     for c in mudados:
-        if coberto(c, permitidos):
+        if coberto(c, permitidos) or (pasta_do_relatorio and c.startswith(pasta_do_relatorio)):
             continue
         if papel == "implementador" and c.startswith("ui/"):
             saida.append(Achado("K13", c, 0, c, "o implementador mexeu em ui/ sem o pedido nomear o arquivo"))
-        elif papel == "layout" and c.startswith("core/"):
-            saida.append(Achado("K13", c, 0, c, "o agente de tela mexeu em core/ sem o pedido nomear o arquivo (D-796)"))
+        elif papel == "layout" and not c.startswith("ui/"):
+            saida.append(Achado("K13", c, 0, c, "o agente de tela mexeu fora de ui/ sem o pedido nomear o arquivo "
+                                "(D-796)"))
         elif papel in ("verificador", "pesquisador", "quebrador") and e_programa(c):
             saida.append(Achado("K13", c, 0, c, f"o {papel} mexeu no programa sem o pedido nomear o arquivo"))
     return saida
@@ -201,8 +258,36 @@ def k15(raiz: Path, base: str, mudados: list[str], livro: Livro) -> list[Achado]
                    "\"sim\" do Samuel, citado no commit (a decisão do Livro que fala da biblioteca)")]
 
 
-def k17(raiz: Path, base: str, mudados: list[str], permitidos: list[str]) -> list[Achado]:
-    """K17: mexeu nas regras, no Livro, no plano ou no handoff sem o pedido dizer; ou acrescentou item na lista."""
+def mudancas_na_lista(antes: excecoes.Lista | None, depois: excecoes.Lista, livro: Livro) -> list[str]:
+    """O que mudou na lista de exceções que só a gerente (com o "sim" do Samuel) pode mudar: o lugar único dessa conta.
+
+    Usada pela K17 (o formulário da entrega), pelo teste do GitHub que compara com a versão de teste
+    (`tests/test_conferencias_protecao.py`) e pela conferência antes do commit (achados 6 e 7 de quem quebrou, 19/11):
+    - item novo, ou "quantas" maior, sem o "sim" próprio conferido no Livro (D-791);
+    - a situação ou o "sim" do Samuel mudados;
+    - o passo de um item que continua mudado (a promessa feita ao Samuel sobre quando ele some).
+    """
+    if antes is None:
+        return []
+    frases = [f"item novo na lista sem o \"sim\" do Samuel: {i['conferencia']} {i['arquivo']} | {i['texto'][:80]}"
+              for i in excecoes.acrescentados_sem_sim(antes, depois, livro)]
+    if antes.situacao != depois.situacao:
+        frases.append(f"a situação da lista mudou de {antes.situacao!r} para {depois.situacao!r}")
+    if antes.sim_do_samuel != depois.sim_do_samuel:
+        frases.append("o \"sim\" do Samuel na lista mudou")
+    passos = {excecoes.chave(i["arquivo"], i["conferencia"], i["texto"]): i["passo"] for i in antes.itens}
+    for i in depois.itens:
+        velho = passos.get(excecoes.chave(i["arquivo"], i["conferencia"], i["texto"]))
+        if velho is not None and velho != i["passo"]:
+            frases.append(f"o passo de um item mudou de {velho!r} para {i['passo']!r}: {i['arquivo']} | "
+                          f"{i['texto'][:60]}")
+    return frases
+
+
+def k17(raiz: Path, base: str, mudados: list[str], permitidos: list[str], livro: Livro | None = None) -> list[Achado]:
+    """K17: mexeu nas regras, no Livro, no plano, no handoff ou no porteiro sem o pedido dizer; ou mudou a lista do
+    jeito que só a gerente pode (`mudancas_na_lista`)."""
+    livro = livro or Livro.do_repositorio(raiz)
     saida = [Achado("K17", c, 0, c, "agente mexeu num arquivo que só a gerente muda (com o \"sim\" do Samuel)")
              for c in mudados if any(fnmatch(c, p) for p in PROTEGIDOS) and not coberto(c, permitidos)]
     if excecoes.ARQUIVO_DA_LISTA in mudados:
@@ -213,27 +298,22 @@ def k17(raiz: Path, base: str, mudados: list[str], permitidos: list[str]) -> lis
             saida.append(Achado("K17", excecoes.ARQUIVO_DA_LISTA, 0, "lista criada", "a lista de exceções nasceu "
                                 "neste trabalho sem o pedido nomeá-la"))
         if depois_txt is not None:
-            depois = excecoes.ler(raiz, depois_txt)
-            for item in excecoes.itens_acrescentados(antes, depois) if antes is not None else []:
-                saida.append(Achado("K17", excecoes.ARQUIVO_DA_LISTA, 0, item["texto"], "item novo na lista de "
-                                    "exceções: a lista só diminui, e item novo só entra com o \"sim\" do Samuel"))
-            if antes is not None and antes.vale and not depois.vale:
-                saida.append(Achado("K17", excecoes.ARQUIVO_DA_LISTA, 0, "situacao", "a lista deixou de valer: só "
-                                    "a gerente muda isso"))
+            for frase in mudancas_na_lista(antes, excecoes.ler(raiz, depois_txt), livro):
+                saida.append(Achado("K17", excecoes.ARQUIVO_DA_LISTA, 0, frase[:80], frase))
     return saida
 
 
 def k18(raiz: Path) -> list[Achado]:
-    """K18: nada mudado fora de um commit, e o último commit já está no GitHub."""
+    """K18: nada mudado fora de um commit, e o último commit já está no GitHub (perguntado ao GitHub, não à cópia)."""
     saida = []
     sobras = git.mudancas_sem_commit(raiz)
     if sobras:
         saida.append(Achado("K18", ".", 0, "git status", f"há {len(sobras)} mudança(s) fora de commit: "
                             + ", ".join(s[3:] for s in sobras[:5])))
-    remoto = git.commit_do_ramo_remoto(raiz)
+    remoto = git.commit_no_github(raiz, git.ramo_atual(raiz))
     atual = git.commit_completo(raiz, "HEAD")
     if remoto is None:
-        saida.append(Achado("K18", ".", 0, "git push", "o ramo não acompanha um ramo do GitHub: faça o push"))
+        saida.append(Achado("K18", ".", 0, "git push", "o ramo não existe no GitHub: faça o push"))
     elif remoto != atual:
         saida.append(Achado("K18", ".", 0, "git push", "o último commit ainda não está no GitHub: faça o push"))
     return saida
@@ -245,9 +325,9 @@ def conferir_mudancas(raiz: Path, base: str, papel: str, permitidos: list[str], 
     raiz = Path(raiz)
     mudados = git.arquivos_mudados(raiz, base)
     pasta_rel = pasta_do_relatorio.resolve().relative_to(raiz.resolve()).as_posix() + "/"
-    achados = (k09(pasta_do_relatorio, raiz) + k10(raiz, base, papel) + k11(raiz, base, livro) + k12(raiz, base)
-               + k13(mudados, papel, permitidos) + k14(mudados, permitidos, pasta_rel)
-               + k15(raiz, base, mudados, livro) + k17(raiz, base, mudados, permitidos))
+    achados = (k09(pasta_do_relatorio, raiz) + k10(raiz, base, papel, pasta_rel) + k11(raiz, base, livro)
+               + k12(raiz, base) + k13(mudados, papel, permitidos, pasta_rel) + k14(mudados, permitidos, pasta_rel)
+               + k15(raiz, base, mudados, livro) + k17(raiz, base, mudados, permitidos, livro))
     if olhar_o_github:
         achados += k18(raiz)
     return achados

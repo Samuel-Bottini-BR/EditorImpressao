@@ -40,6 +40,8 @@ from . import conversa_com_o_github as github
 from . import pedido as pedido_
 from . import porteiro_mudancas, tabela_arquivos
 from .livro import NUMERO, Livro
+from .porteiro import FORA_DO_PROJETO
+from .porteiro_mudancas import QUEM_CONFERE
 
 ETAPAS = ("quebrar", "prova", "pronto")
 NOME_DAS_ETAPAS = {"quebrar": "antes de ir ao agente que tenta quebrar", "prova": "antes da prova à vista",
@@ -177,7 +179,7 @@ class _Repositorio:
         if self._definidos is None:
             nomes: set[str] = set()
             for c in self.arquivos:
-                if c.endswith(".py") and not c.startswith(("terceiros/", "velhos/")):
+                if c.endswith(".py") and c.split("/")[0] not in FORA_DO_PROJETO:
                     try:
                         texto = (self.raiz / c).read_text(encoding="utf-8", errors="replace")
                     except OSError:
@@ -433,7 +435,7 @@ def _conferir_f19(campos: dict[str, str], pasta: Path, raiz: Path, r: Resultado)
         arquivo = pasta / c if (pasta / c).exists() else raiz / c
         texto = arquivo.read_text(encoding="utf-8")
         quem = pedido_.ler(texto)
-        if quem.papel not in ("quebrador", "verificador"):
+        if quem.papel not in QUEM_CONFERE:
             r.problemas.append(f"o relatório {c} não é de quem tenta quebrar (papel: {quem.papel or 'não diz'}) (F19)")
         conferir_relatorio_de_quem_quebra(texto, r)
     for item in _itens(f19):
@@ -503,16 +505,23 @@ def conferir(onde_parei: Path, etapa: str, raiz: Path, pacote: Path | None = Non
     s = pedido_.secoes(texto)
     pedido = pedido_.ler(texto)
     r.problemas += pedido.problemas
-    if pacote is not None:
-        do_pacote = pedido_.ler(pacote.read_text(encoding="utf-8"))
-        for nome in ("papel", "partida", "ramo", "arquivos"):
-            if getattr(do_pacote, nome) != getattr(pedido, nome):
-                r.problemas.append(f"o pedido do ONDE-PAREI não é o do pacote da gerente ({nome}): copie sem mudar "
-                                   "(D-796)")
-    else:
-        r.avisos.append("o pedido não foi comparado com o pacote da gerente (sem --pacote)")
-    if pedido.problemas:
+    # O pacote da gerente é obrigatório (achado 3 de quem tentou quebrar, 19/11): sem ele, o papel e a lista de
+    # arquivos seriam só o que o agente escreveu. O papel e a lista que valem são os do pacote.
+    titulo = ""
+    if pacote is None:
+        r.problemas.append("falta o pacote do pedido (--pacote): sem ele, o papel e os arquivos permitidos são só o que "
+                           "o agente escreveu (D-796)")
         return r
+    texto_do_pacote = pacote.read_text(encoding="utf-8")
+    do_pacote = pedido_.ler(texto_do_pacote)
+    titulo = pedido_.titulo_do_pacote(texto_do_pacote)
+    r.problemas += [f"no pacote: {p}" for p in do_pacote.problemas]
+    for nome in ("papel", "partida", "ramo", "arquivos"):
+        if getattr(do_pacote, nome) != getattr(pedido, nome):
+            r.problemas.append(f"o pedido do ONDE-PAREI não é o do pacote da gerente ({nome}): copie sem mudar (D-796)")
+    if pedido.problemas or do_pacote.problemas:
+        return r
+    pedido = do_pacote
     if not git.existe_commit(raiz, pedido.partida):
         r.problemas.append(f"o commit de partida {pedido.partida} não existe neste repositório")
         return r
@@ -529,7 +538,7 @@ def conferir(onde_parei: Path, etapa: str, raiz: Path, pacote: Path | None = Non
         conferir_relatorio_de_quem_quebra(texto, r)
         return r
 
-    tags, avisos_da_tabela = tabela_arquivos.etiquetas_do_trabalho(pedido.arquivos, raiz)
+    tags, avisos_da_tabela = tabela_arquivos.etiquetas_do_trabalho(pedido.arquivos, raiz, titulo)
     r.avisos += avisos_da_tabela
     repo = _Repositorio(raiz)
     campos = _conferir_campos(s, etapa, tags, r)

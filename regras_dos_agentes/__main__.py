@@ -51,6 +51,23 @@ def comando_porteiro(raiz: Path, so_o_proximo_commit: bool) -> int:
     if lista is None:
         _escrever("O porteiro não achou a lista de exceções (tests/conferencias_excecoes.json): não deu para conferir.")
         return NAO_CONFERIU
+    if so_o_proximo_commit and excecoes.ARQUIVO_DA_LISTA in caminhos:
+        # A lista do commit contra a do último commit (achado 7 de quem tentou quebrar): item novo sem o "sim" próprio,
+        # ou o passo de um item mudado, barra. A situação e o "sim" podem mudar aqui (é a gerente quem liga, na
+        # versão de teste); o teste do GitHub compara isso com a versão de teste.
+        from .livro import Livro
+        from .porteiro_mudancas import mudancas_na_lista
+
+        texto_antes = git.conteudo_no_commit(raiz, "HEAD", excecoes.ARQUIVO_DA_LISTA) if git.existe_commit(
+            raiz, "HEAD") else None
+        antes = excecoes.ler(raiz, texto_antes) if texto_antes is not None else None
+        frases = [f for f in mudancas_na_lista(antes, lista, Livro.do_repositorio(raiz))
+                  if not f.startswith(("a situação", "o \"sim\""))]
+        if frases:
+            _escrever("O porteiro barrou a lista de exceções (ela só diminui; item novo só com o \"sim\" do Samuel):")
+            for frase in frases:
+                _escrever("  " + frase)
+            return BARROU
     if not lista.vale:
         _escrever(f"A lista de exceções ainda é proposta (espera o \"sim\" do Samuel): o porteiro não barra o "
                   f"código ainda. Achados agora: {len(achados)}.")

@@ -7,8 +7,9 @@ Regras:
   1. Um arquivo recebe as etiquetas de TODAS as linhas cujo padrão casa com ele (não só a primeira).
   2. Linha de reserva (`RESERVA`: `core/*`, `*.md`, `docs/plano/*`, `teste_*.py`, `relatorios/*`) só vale quando
      nenhuma linha mais própria casou: assim `core/windows.py` é só Windows, e `core/filtros.py` é imagem.
-  3. Além do nome, o conteúdo: se o arquivo (ou o pedido, para arquivo novo) tem uma das `PALAVRAS_DE_WINDOWS`, ganha
-     WIN, mesmo que a tabela não diga (ex.: um script novo que chama o PowerShell).
+  3. Além do nome, o conteúdo: se o arquivo (ou o texto do pedido, para arquivo novo) fala com o Windows (a lista do
+     porteiro, `fala_com_o_windows`), ganha WIN, mesmo que a tabela não diga (ex.: um script novo que chama o
+     PowerShell).
   4. Arquivo que não casa com nenhuma linha recebe TODAS as etiquetas e a gerente é avisada (a tabela está atrasada).
      Um teste (`tests/test_conferencias_pacote.py`) cobra que todo arquivo do git tem linha.
 
@@ -20,10 +21,12 @@ o gancho, as provas do porteiro e a lista de exceções), mais a pasta `.github/
 Seguro mexer: acrescentar linha. Arriscado: tirar linha ou etiqueta (o agente deixa de receber regra que precisa).
 """
 
+import re
 from fnmatch import fnmatch
 from pathlib import Path
 
 from . import conversa_com_o_git as git
+from .porteiro import CONVERSA_COM_O_WINDOWS
 
 # (padrão, etiquetas, por quê) — padrões no jeito do fnmatch, com "/" mesmo no Windows.
 TABELA = [
@@ -138,11 +141,17 @@ TABELA = [
     ("*.md", ["PERG"], "documento solto"),
 ]
 
-# Palavras que, no conteúdo do arquivo, mostram conversa com o Windows ou com programa de fora.
-PALAVRAS_DE_WINDOWS = [
-    "subprocess", "ctypes", "ShellExecute", "runas", "powershell", "schtasks", "icacls", "Update.exe",
-    "velopack", "winreg", "os.startfile", "CreateProcess", "DETACHED_PROCESS", "netsh", "sc.exe", "urllib", "requests.",
-]
+# Palavras que, no conteúdo do arquivo, mostram conversa com o Windows ou com programa de fora: a lista do porteiro
+# (`porteiro.PALAVRAS_DO_WINDOWS`, a única; achado 13 de quem tentou quebrar) mais as de qualquer programa de fora
+# (rodar processo, a rede, o Velopack), que dão a etiqueta mas não são erro do porteiro.
+PROGRAMA_DE_FORA = re.compile(r"\bsubprocess\b|\bctypes\b|\burllib\b|\brequests\.|\bvelopack\b|CreateProcess", re.I)
+# Para arquivo que ainda não existe, o texto do pedido conta (ex.: "a peça única do Windows").
+PEDIDO_DO_WINDOWS = re.compile(r"\bWindows\b|\binstalador\b|\batualiza", re.I)
+
+
+def fala_com_o_windows(texto: str) -> bool:
+    """O texto tem conversa com o Windows (a lista do porteiro) ou com programa de fora?"""
+    return bool(CONVERSA_COM_O_WINDOWS.search(texto) or PROGRAMA_DE_FORA.search(texto))
 
 # Linhas "de reserva": só valem se nenhuma linha mais própria casou.
 RESERVA = {"core/*", "*.md", "docs/plano/*", "teste_*.py", "relatorios/*"}
@@ -159,7 +168,7 @@ def etiquetas_do_arquivo(caminho: str, conteudo: str = "") -> tuple[set, list]:
     # Windows, e não Windows + imagem.
     casou = especificas or reserva
     tags = {t for _, ts in casou for t in ts}
-    if any(p in conteudo for p in PALAVRAS_DE_WINDOWS):
+    if fala_com_o_windows(conteudo):
         tags.add("WIN")
     if not casou:
         return set(TODAS), []
@@ -171,13 +180,18 @@ def sem_linha(caminhos) -> list[str]:
     return [c for c in caminhos if not etiquetas_do_arquivo(c)[1]]
 
 
-def etiquetas_do_trabalho(arquivos: list[str], raiz: Path | str) -> tuple[set, list[str]]:
+def etiquetas_do_trabalho(arquivos: list[str], raiz: Path | str, texto_do_pedido: str = "") -> tuple[set, list[str]]:
     """As etiquetas de um trabalho (a lista de arquivos do pedido) e os avisos de arquivo fora da tabela.
 
     Arquivo novo vem com "novo:" na frente (não há conteúdo para ler ainda). Uma pasta (termina em "/") vale por todos
     os arquivos que o git conhece nela; pasta nova vale pelo próprio nome. A pasta de relatório do próprio trabalho
     (`relatorios/<trabalho>/`) não dá etiqueta: todo trabalho tem uma. O lugar único dessa conta: o montador do
     pacote e o formulário da entrega chamam esta função.
+
+    Arquivo que ainda não existe não tem conteúdo para ler: aí vale o texto do pedido (o título do pacote). Se ele
+    fala do Windows, do instalador ou da atualização, ou tem uma palavra da lista do porteiro, o arquivo novo ganha
+    a etiqueta do Windows (achado 12 de quem tentou quebrar, 19/11: `novo:core/registro_do_windows.py` saía só com
+    imagem e git).
     """
     raiz = Path(raiz)
     tags: set = set()
@@ -196,8 +210,11 @@ def etiquetas_do_trabalho(arquivos: list[str], raiz: Path | str) -> tuple[set, l
             alvos = [c for c in conhecidos if c.startswith(caminho)] or [caminho + "arquivo_novo"]
         for alvo in alvos:
             arquivo = raiz / alvo
-            conteudo = "" if novo or not arquivo.is_file() else arquivo.read_text(encoding="utf-8", errors="replace")
+            existe = not novo and arquivo.is_file()
+            conteudo = arquivo.read_text(encoding="utf-8", errors="replace") if existe else ""
             t, casou = etiquetas_do_arquivo(alvo, conteudo)
+            if not existe and (PEDIDO_DO_WINDOWS.search(texto_do_pedido) or fala_com_o_windows(texto_do_pedido)):
+                t = t | {"WIN"}
             if not casou:
                 avisos.append(f"{alvo} não está na tabela: recebe todas as regras e a gerente é avisada")
             tags |= t
