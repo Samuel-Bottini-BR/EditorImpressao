@@ -1,9 +1,9 @@
 {
- "explicacao": "Lista de exceções do porteiro (D-791, D-800). Gerada por `python -m regras_dos_agentes excecoes --gerar`; não escreva à mão. Um item por lugar (arquivo, conferência, texto, quantas). Só diminui: cada conserto tira o seu item no mesmo commit. Item novo só com o 'sim' do Samuel. Enquanto 'situacao' for 'proposta', a lista não vale e o teste que barra o repositório fica parado; a gerente liga trocando para 'valendo' e escrevendo o 'sim' dele em 'sim_do_samuel'.",
+ "explicacao": "Lista de exceções do porteiro (D-791, D-800, D-802). Gerada por `python -m regras_dos_agentes excecoes --gerar`; não escreva à mão. Um item por lugar (arquivo, conferência, texto, quantas). Só diminui: cada conserto tira o seu item no mesmo commit. Item novo só com o 'sim' do Samuel. Enquanto 'situacao' for 'proposta', a lista não vale e o teste que barra o repositório fica parado; a gerente liga trocando para 'valendo' e escrevendo o 'sim' dele em 'sim_do_samuel'.",
  "situacao": "proposta",
  "sim_do_samuel": null,
  "gerada_em": "2026-11-19",
- "commit_lido": "65843bb387c08b8e6b7e6e9717abbb37354e5d1a",
+ "commit_lido": "69b3937cbeca4b09ed29e42c70580213f89604bf",
  "itens": [
   {
    "arquivo": "atualizacao.py",
@@ -717,8 +717,8 @@
     78
    ],
    "data": "2026-11-19",
-   "passo": "fora do plano, a perguntar ao Samuel",
-   "motivo": "fora do que o plano da parte do Windows conserta: a gerente pergunta ao Samuel"
+   "passo": "depois da entrega",
+   "motivo": "a memória livre pelo Windows; D-802"
   },
   {
    "arquivo": "core/ocr_comum.py",
@@ -730,8 +730,8 @@
     211
    ],
    "data": "2026-11-19",
-   "passo": "fora do plano, a perguntar ao Samuel",
-   "motivo": "fora do que o plano da parte do Windows conserta: a gerente pergunta ao Samuel"
+   "passo": "depois da entrega",
+   "motivo": "o motor de achar texto ajusta onde procurar as bibliotecas; D-802"
   },
   {
    "arquivo": "core/ocr_comum.py",
@@ -743,8 +743,8 @@
     217
    ],
    "data": "2026-11-19",
-   "passo": "fora do plano, a perguntar ao Samuel",
-   "motivo": "fora do que o plano da parte do Windows conserta: a gerente pergunta ao Samuel"
+   "passo": "depois da entrega",
+   "motivo": "o motor de achar texto ajusta onde procurar as bibliotecas; D-802"
   },
   {
    "arquivo": "core/ocr_comum.py",
@@ -756,8 +756,8 @@
     222
    ],
    "data": "2026-11-19",
-   "passo": "fora do plano, a perguntar ao Samuel",
-   "motivo": "fora do que o plano da parte do Windows conserta: a gerente pergunta ao Samuel"
+   "passo": "depois da entrega",
+   "motivo": "o motor de achar texto ajusta onde procurar as bibliotecas; D-802"
   },
   {
    "arquivo": "core/ocr_comum.py",
@@ -769,8 +769,8 @@
     214
    ],
    "data": "2026-11-19",
-   "passo": "fora do plano, a perguntar ao Samuel",
-   "motivo": "fora do que o plano da parte do Windows conserta: a gerente pergunta ao Samuel"
+   "passo": "depois da entrega",
+   "motivo": "o motor de achar texto ajusta onde procurar as bibliotecas; D-802"
   },
   {
    "arquivo": "core/testes_a_distancia.py",
@@ -1497,8 +1497,8 @@
     207
    ],
    "data": "2026-11-19",
-   "passo": "fora do plano, a perguntar ao Samuel",
-   "motivo": "fora do que o plano da parte do Windows conserta: a gerente pergunta ao Samuel"
+   "passo": "depois da entrega",
+   "motivo": "o pacote do teste de velocidade abre a janela preta; D-802"
   },
   {
    "arquivo": "historico.py",
@@ -1510,8 +1510,8 @@
     199
    ],
    "data": "2026-11-19",
-   "passo": "fora do plano, a perguntar ao Samuel",
-   "motivo": "fora do que o plano da parte do Windows conserta: a gerente pergunta ao Samuel"
+   "passo": "depois da entrega",
+   "motivo": "a tela de início abre a pasta do projeto; D-802"
   },
   {
    "arquivo": "historico.py",
@@ -1523,8 +1523,8 @@
     212
    ],
    "data": "2026-11-19",
-   "passo": "fora do plano, a perguntar ao Samuel",
-   "motivo": "fora do que o plano da parte do Windows conserta: a gerente pergunta ao Samuel"
+   "passo": "depois da entrega",
+   "motivo": "a tela de início manda imprimir; D-802"
   },
   {
    "arquivo": "teste_velocidade.py",
@@ -1562,8 +1562,8 @@
     1925
    ],
    "data": "2026-11-19",
-   "passo": "fora do plano, a perguntar ao Samuel",
-   "motivo": "fora do que o plano da parte do Windows conserta: a gerente pergunta ao Samuel"
+   "passo": "depois da entrega",
+   "motivo": "o resto do teste de velocidade (a classe da janela); D-802"
   },
   {
    "arquivo": "teste_velocidade.py",
@@ -1575,8 +1575,8 @@
     1921
    ],
    "data": "2026-11-19",
-   "passo": "fora do plano, a perguntar ao Samuel",
-   "motivo": "fora do que o plano da parte do Windows conserta: a gerente pergunta ao Samuel"
+   "passo": "depois da entrega",
+   "motivo": "o resto do teste de velocidade (a classe da janela); D-802"
   },
   {
    "arquivo": "teste_velocidade.py",
@@ -1588,8 +1588,8 @@
     1922
    ],
    "data": "2026-11-19",
-   "passo": "fora do plano, a perguntar ao Samuel",
-   "motivo": "fora do que o plano da parte do Windows conserta: a gerente pergunta ao Samuel"
+   "passo": "depois da entrega",
+   "motivo": "o resto do teste de velocidade (a classe da janela); D-802"
   },
   {
    "arquivo": "teste_velocidade.py",
@@ -1601,8 +1601,8 @@
     1923
    ],
    "data": "2026-11-19",
-   "passo": "fora do plano, a perguntar ao Samuel",
-   "motivo": "fora do que o plano da parte do Windows conserta: a gerente pergunta ao Samuel"
+   "passo": "depois da entrega",
+   "motivo": "o resto do teste de velocidade (a classe da janela); D-802"
   },
   {
    "arquivo": "teste_velocidade.py",
@@ -1614,8 +1614,8 @@
     1739
    ],
    "data": "2026-11-19",
-   "passo": "fora do plano, a perguntar ao Samuel",
-   "motivo": "fora do que o plano da parte do Windows conserta: a gerente pergunta ao Samuel"
+   "passo": "depois da entrega",
+   "motivo": "o resto do teste de velocidade (a janela preta); D-802"
   },
   {
    "arquivo": "teste_velocidade.py",
@@ -1627,8 +1627,8 @@
     1742
    ],
    "data": "2026-11-19",
-   "passo": "fora do plano, a perguntar ao Samuel",
-   "motivo": "fora do que o plano da parte do Windows conserta: a gerente pergunta ao Samuel"
+   "passo": "depois da entrega",
+   "motivo": "o resto do teste de velocidade (a janela preta); D-802"
   },
   {
    "arquivo": "teste_velocidade.py",
@@ -1640,8 +1640,8 @@
     1743
    ],
    "data": "2026-11-19",
-   "passo": "fora do plano, a perguntar ao Samuel",
-   "motivo": "fora do que o plano da parte do Windows conserta: a gerente pergunta ao Samuel"
+   "passo": "depois da entrega",
+   "motivo": "o resto do teste de velocidade (a janela preta); D-802"
   },
   {
    "arquivo": "teste_velocidade.py",
@@ -1653,8 +1653,8 @@
     1740
    ],
    "data": "2026-11-19",
-   "passo": "fora do plano, a perguntar ao Samuel",
-   "motivo": "fora do que o plano da parte do Windows conserta: a gerente pergunta ao Samuel"
+   "passo": "depois da entrega",
+   "motivo": "o resto do teste de velocidade (a janela preta); D-802"
   },
   {
    "arquivo": "teste_velocidade.py",
@@ -1666,8 +1666,8 @@
     1741
    ],
    "data": "2026-11-19",
-   "passo": "fora do plano, a perguntar ao Samuel",
-   "motivo": "fora do que o plano da parte do Windows conserta: a gerente pergunta ao Samuel"
+   "passo": "depois da entrega",
+   "motivo": "o resto do teste de velocidade (a janela preta); D-802"
   },
   {
    "arquivo": "teste_velocidade.py",
@@ -1679,8 +1679,8 @@
     1744
    ],
    "data": "2026-11-19",
-   "passo": "fora do plano, a perguntar ao Samuel",
-   "motivo": "fora do que o plano da parte do Windows conserta: a gerente pergunta ao Samuel"
+   "passo": "depois da entrega",
+   "motivo": "o resto do teste de velocidade (a janela preta); D-802"
   },
   {
    "arquivo": "teste_velocidade.py",
@@ -1692,8 +1692,8 @@
     1745
    ],
    "data": "2026-11-19",
-   "passo": "fora do plano, a perguntar ao Samuel",
-   "motivo": "fora do que o plano da parte do Windows conserta: a gerente pergunta ao Samuel"
+   "passo": "depois da entrega",
+   "motivo": "o resto do teste de velocidade (a janela preta); D-802"
   },
   {
    "arquivo": "teste_velocidade.py",
@@ -1705,8 +1705,8 @@
     1746
    ],
    "data": "2026-11-19",
-   "passo": "fora do plano, a perguntar ao Samuel",
-   "motivo": "fora do que o plano da parte do Windows conserta: a gerente pergunta ao Samuel"
+   "passo": "depois da entrega",
+   "motivo": "o resto do teste de velocidade (a janela preta); D-802"
   },
   {
    "arquivo": "teste_velocidade.py",
@@ -1718,8 +1718,8 @@
     2252
    ],
    "data": "2026-11-19",
-   "passo": "fora do plano, a perguntar ao Samuel",
-   "motivo": "fora do que o plano da parte do Windows conserta: a gerente pergunta ao Samuel"
+   "passo": "depois da entrega",
+   "motivo": "o resto do teste de velocidade (a janela preta); D-802"
   },
   {
    "arquivo": "teste_velocidade.py",
@@ -1731,8 +1731,8 @@
     2253
    ],
    "data": "2026-11-19",
-   "passo": "fora do plano, a perguntar ao Samuel",
-   "motivo": "fora do que o plano da parte do Windows conserta: a gerente pergunta ao Samuel"
+   "passo": "depois da entrega",
+   "motivo": "o resto do teste de velocidade (a janela preta); D-802"
   },
   {
    "arquivo": "teste_velocidade.py",
@@ -1744,8 +1744,8 @@
     2254
    ],
    "data": "2026-11-19",
-   "passo": "fora do plano, a perguntar ao Samuel",
-   "motivo": "fora do que o plano da parte do Windows conserta: a gerente pergunta ao Samuel"
+   "passo": "depois da entrega",
+   "motivo": "o resto do teste de velocidade (a janela preta); D-802"
   },
   {
    "arquivo": "teste_velocidade.py",
@@ -1757,8 +1757,8 @@
     2255
    ],
    "data": "2026-11-19",
-   "passo": "fora do plano, a perguntar ao Samuel",
-   "motivo": "fora do que o plano da parte do Windows conserta: a gerente pergunta ao Samuel"
+   "passo": "depois da entrega",
+   "motivo": "o resto do teste de velocidade (a janela preta); D-802"
   },
   {
    "arquivo": "teste_velocidade.py",
@@ -1770,8 +1770,8 @@
     1906
    ],
    "data": "2026-11-19",
-   "passo": "fora do plano, a perguntar ao Samuel",
-   "motivo": "fora do que o plano da parte do Windows conserta: a gerente pergunta ao Samuel"
+   "passo": "depois da entrega",
+   "motivo": "o resto do teste de velocidade (a janela preta); D-802"
   },
   {
    "arquivo": "teste_velocidade.py",
@@ -1783,8 +1783,8 @@
     1907
    ],
    "data": "2026-11-19",
-   "passo": "fora do plano, a perguntar ao Samuel",
-   "motivo": "fora do que o plano da parte do Windows conserta: a gerente pergunta ao Samuel"
+   "passo": "depois da entrega",
+   "motivo": "o resto do teste de velocidade (a janela preta); D-802"
   },
   {
    "arquivo": "teste_velocidade.py",
@@ -1796,8 +1796,8 @@
     1908
    ],
    "data": "2026-11-19",
-   "passo": "fora do plano, a perguntar ao Samuel",
-   "motivo": "fora do que o plano da parte do Windows conserta: a gerente pergunta ao Samuel"
+   "passo": "depois da entrega",
+   "motivo": "o resto do teste de velocidade (a janela preta); D-802"
   },
   {
    "arquivo": "teste_velocidade.py",
@@ -1809,8 +1809,8 @@
     1909
    ],
    "data": "2026-11-19",
-   "passo": "fora do plano, a perguntar ao Samuel",
-   "motivo": "fora do que o plano da parte do Windows conserta: a gerente pergunta ao Samuel"
+   "passo": "depois da entrega",
+   "motivo": "o resto do teste de velocidade (a janela preta); D-802"
   },
   {
    "arquivo": "teste_velocidade.py",
@@ -1822,8 +1822,8 @@
     1760
    ],
    "data": "2026-11-19",
-   "passo": "fora do plano, a perguntar ao Samuel",
-   "motivo": "fora do que o plano da parte do Windows conserta: a gerente pergunta ao Samuel"
+   "passo": "depois da entrega",
+   "motivo": "o resto do teste de velocidade (a janela preta); D-802"
   },
   {
    "arquivo": "teste_velocidade.py",
@@ -1835,8 +1835,8 @@
     1758
    ],
    "data": "2026-11-19",
-   "passo": "fora do plano, a perguntar ao Samuel",
-   "motivo": "fora do que o plano da parte do Windows conserta: a gerente pergunta ao Samuel"
+   "passo": "depois da entrega",
+   "motivo": "o resto do teste de velocidade (a janela preta); D-802"
   },
   {
    "arquivo": "teste_velocidade.py",
@@ -1848,8 +1848,8 @@
     365
    ],
    "data": "2026-11-19",
-   "passo": "fora do plano, a perguntar ao Samuel",
-   "motivo": "fora do que o plano da parte do Windows conserta: a gerente pergunta ao Samuel"
+   "passo": "depois da entrega",
+   "motivo": "o resto do teste de velocidade (o registro do Windows); D-802"
   },
   {
    "arquivo": "teste_velocidade.py",
@@ -1861,8 +1861,8 @@
     362
    ],
    "data": "2026-11-19",
-   "passo": "fora do plano, a perguntar ao Samuel",
-   "motivo": "fora do que o plano da parte do Windows conserta: a gerente pergunta ao Samuel"
+   "passo": "depois da entrega",
+   "motivo": "o resto do teste de velocidade (o registro do Windows); D-802"
   },
   {
    "arquivo": "teste_velocidade.py",
@@ -1874,8 +1874,8 @@
     364
    ],
    "data": "2026-11-19",
-   "passo": "fora do plano, a perguntar ao Samuel",
-   "motivo": "fora do que o plano da parte do Windows conserta: a gerente pergunta ao Samuel"
+   "passo": "depois da entrega",
+   "motivo": "o resto do teste de velocidade (o registro do Windows); D-802"
   },
   {
    "arquivo": "teste_velocidade.py",
@@ -1887,8 +1887,8 @@
     479
    ],
    "data": "2026-11-19",
-   "passo": "fora do plano, a perguntar ao Samuel",
-   "motivo": "fora do que o plano da parte do Windows conserta: a gerente pergunta ao Samuel"
+   "passo": "depois da entrega",
+   "motivo": "o resto do teste de velocidade (a memória do computador); D-802"
   },
   {
    "arquivo": "teste_velocidade.py",
@@ -1900,8 +1900,8 @@
     1771
    ],
    "data": "2026-11-19",
-   "passo": "fora do plano, a perguntar ao Samuel",
-   "motivo": "fora do que o plano da parte do Windows conserta: a gerente pergunta ao Samuel"
+   "passo": "depois da entrega",
+   "motivo": "o resto do teste de velocidade (a janela preta); D-802"
   },
   {
    "arquivo": "teste_velocidade.py",
@@ -1913,8 +1913,8 @@
     1772
    ],
    "data": "2026-11-19",
-   "passo": "fora do plano, a perguntar ao Samuel",
-   "motivo": "fora do que o plano da parte do Windows conserta: a gerente pergunta ao Samuel"
+   "passo": "depois da entrega",
+   "motivo": "o resto do teste de velocidade (a janela preta); D-802"
   },
   {
    "arquivo": "teste_velocidade.py",
@@ -1926,8 +1926,8 @@
     1678
    ],
    "data": "2026-11-19",
-   "passo": "fora do plano, a perguntar ao Samuel",
-   "motivo": "fora do que o plano da parte do Windows conserta: a gerente pergunta ao Samuel"
+   "passo": "depois da entrega",
+   "motivo": "o resto do teste de velocidade (impedir o computador de dormir); D-802"
   },
   {
    "arquivo": "teste_velocidade.py",
@@ -1939,8 +1939,8 @@
     1679
    ],
    "data": "2026-11-19",
-   "passo": "fora do plano, a perguntar ao Samuel",
-   "motivo": "fora do que o plano da parte do Windows conserta: a gerente pergunta ao Samuel"
+   "passo": "depois da entrega",
+   "motivo": "o resto do teste de velocidade (impedir o computador de dormir); D-802"
   },
   {
    "arquivo": "teste_velocidade.py",
@@ -1952,8 +1952,8 @@
     1680
    ],
    "data": "2026-11-19",
-   "passo": "fora do plano, a perguntar ao Samuel",
-   "motivo": "fora do que o plano da parte do Windows conserta: a gerente pergunta ao Samuel"
+   "passo": "depois da entrega",
+   "motivo": "o resto do teste de velocidade (impedir o computador de dormir); D-802"
   },
   {
    "arquivo": "teste_velocidade.py",
@@ -1965,8 +1965,8 @@
     1681
    ],
    "data": "2026-11-19",
-   "passo": "fora do plano, a perguntar ao Samuel",
-   "motivo": "fora do que o plano da parte do Windows conserta: a gerente pergunta ao Samuel"
+   "passo": "depois da entrega",
+   "motivo": "o resto do teste de velocidade (impedir o computador de dormir); D-802"
   },
   {
    "arquivo": "teste_velocidade.py",
@@ -1978,8 +1978,8 @@
     668
    ],
    "data": "2026-11-19",
-   "passo": "fora do plano, a perguntar ao Samuel",
-   "motivo": "fora do que o plano da parte do Windows conserta: a gerente pergunta ao Samuel"
+   "passo": "depois da entrega",
+   "motivo": "o resto do teste de velocidade (a memória do próprio teste); D-802"
   },
   {
    "arquivo": "teste_velocidade.py",
@@ -1991,8 +1991,8 @@
     658
    ],
    "data": "2026-11-19",
-   "passo": "fora do plano, a perguntar ao Samuel",
-   "motivo": "fora do que o plano da parte do Windows conserta: a gerente pergunta ao Samuel"
+   "passo": "depois da entrega",
+   "motivo": "o resto do teste de velocidade (a memória do próprio teste); D-802"
   },
   {
    "arquivo": "teste_velocidade.py",
@@ -2004,8 +2004,8 @@
     660
    ],
    "data": "2026-11-19",
-   "passo": "fora do plano, a perguntar ao Samuel",
-   "motivo": "fora do que o plano da parte do Windows conserta: a gerente pergunta ao Samuel"
+   "passo": "depois da entrega",
+   "motivo": "o resto do teste de velocidade (a memória do próprio teste); D-802"
   },
   {
    "arquivo": "teste_velocidade.py",
@@ -2017,8 +2017,8 @@
     659
    ],
    "data": "2026-11-19",
-   "passo": "fora do plano, a perguntar ao Samuel",
-   "motivo": "fora do que o plano da parte do Windows conserta: a gerente pergunta ao Samuel"
+   "passo": "depois da entrega",
+   "motivo": "o resto do teste de velocidade (a memória do próprio teste); D-802"
   },
   {
    "arquivo": "teste_velocidade.py",
@@ -2030,8 +2030,8 @@
     661
    ],
    "data": "2026-11-19",
-   "passo": "fora do plano, a perguntar ao Samuel",
-   "motivo": "fora do que o plano da parte do Windows conserta: a gerente pergunta ao Samuel"
+   "passo": "depois da entrega",
+   "motivo": "o resto do teste de velocidade (a memória do próprio teste); D-802"
   },
   {
    "arquivo": "teste_velocidade.py",
@@ -2043,8 +2043,8 @@
     662
    ],
    "data": "2026-11-19",
-   "passo": "fora do plano, a perguntar ao Samuel",
-   "motivo": "fora do que o plano da parte do Windows conserta: a gerente pergunta ao Samuel"
+   "passo": "depois da entrega",
+   "motivo": "o resto do teste de velocidade (a memória do próprio teste); D-802"
   },
   {
    "arquivo": "teste_velocidade.py",
@@ -2056,8 +2056,8 @@
     664
    ],
    "data": "2026-11-19",
-   "passo": "fora do plano, a perguntar ao Samuel",
-   "motivo": "fora do que o plano da parte do Windows conserta: a gerente pergunta ao Samuel"
+   "passo": "depois da entrega",
+   "motivo": "o resto do teste de velocidade (a memória do próprio teste); D-802"
   },
   {
    "arquivo": "teste_velocidade.py",
@@ -2134,8 +2134,8 @@
     2233
    ],
    "data": "2026-11-19",
-   "passo": "fora do plano, a perguntar ao Samuel",
-   "motivo": "fora do que o plano da parte do Windows conserta: a gerente pergunta ao Samuel"
+   "passo": "depois da entrega",
+   "motivo": "o resto do teste de velocidade (a janela preta); D-802"
   },
   {
    "arquivo": "teste_velocidade.py",
@@ -2147,8 +2147,8 @@
     2234
    ],
    "data": "2026-11-19",
-   "passo": "fora do plano, a perguntar ao Samuel",
-   "motivo": "fora do que o plano da parte do Windows conserta: a gerente pergunta ao Samuel"
+   "passo": "depois da entrega",
+   "motivo": "o resto do teste de velocidade (a janela preta); D-802"
   },
   {
    "arquivo": "teste_velocidade.py",
@@ -2160,8 +2160,8 @@
     2235
    ],
    "data": "2026-11-19",
-   "passo": "fora do plano, a perguntar ao Samuel",
-   "motivo": "fora do que o plano da parte do Windows conserta: a gerente pergunta ao Samuel"
+   "passo": "depois da entrega",
+   "motivo": "o resto do teste de velocidade (a janela preta); D-802"
   },
   {
    "arquivo": "teste_velocidade.py",
@@ -2173,8 +2173,8 @@
     2236
    ],
    "data": "2026-11-19",
-   "passo": "fora do plano, a perguntar ao Samuel",
-   "motivo": "fora do que o plano da parte do Windows conserta: a gerente pergunta ao Samuel"
+   "passo": "depois da entrega",
+   "motivo": "o resto do teste de velocidade (a janela preta); D-802"
   },
   {
    "arquivo": "teste_velocidade.py",
@@ -2238,8 +2238,8 @@
     226
    ],
    "data": "2026-11-19",
-   "passo": "fora do plano, a perguntar ao Samuel",
-   "motivo": "fora do que o plano da parte do Windows conserta: a gerente pergunta ao Samuel"
+   "passo": "depois da entrega",
+   "motivo": "o brasão pergunta ao Windows se o programa está aberto; D-802"
   },
   {
    "arquivo": "ui/brasao_girando.py",
@@ -2251,8 +2251,8 @@
     225
    ],
    "data": "2026-11-19",
-   "passo": "fora do plano, a perguntar ao Samuel",
-   "motivo": "fora do que o plano da parte do Windows conserta: a gerente pergunta ao Samuel"
+   "passo": "depois da entrega",
+   "motivo": "o brasão pergunta ao Windows se o programa está aberto; D-802"
   },
   {
    "arquivo": "ui/brasao_girando.py",
@@ -2264,8 +2264,8 @@
     229
    ],
    "data": "2026-11-19",
-   "passo": "fora do plano, a perguntar ao Samuel",
-   "motivo": "fora do que o plano da parte do Windows conserta: a gerente pergunta ao Samuel"
+   "passo": "depois da entrega",
+   "motivo": "o brasão pergunta ao Windows se o programa está aberto; D-802"
   },
   {
    "arquivo": "ui/brasao_girando.py",
@@ -2277,8 +2277,8 @@
     290
    ],
    "data": "2026-11-19",
-   "passo": "fora do plano, a perguntar ao Samuel",
-   "motivo": "fora do que o plano da parte do Windows conserta: a gerente pergunta ao Samuel"
+   "passo": "depois da entrega",
+   "motivo": "o brasão pergunta ao Windows se o programa está aberto; D-802"
   },
   {
    "arquivo": "ui/brasao_girando.py",
@@ -2290,8 +2290,8 @@
     294
    ],
    "data": "2026-11-19",
-   "passo": "fora do plano, a perguntar ao Samuel",
-   "motivo": "fora do que o plano da parte do Windows conserta: a gerente pergunta ao Samuel"
+   "passo": "depois da entrega",
+   "motivo": "o brasão pergunta ao Windows se o programa está aberto; D-802"
   }
  ]
 }

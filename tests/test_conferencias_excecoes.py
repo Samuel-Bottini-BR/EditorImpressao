@@ -1,7 +1,8 @@
-"""Provas da lista de exceções do porteiro (D-791, D-800) e do teste que barra o repositório quando ela valer.
+"""Provas da lista de exceções do porteiro (D-791, D-800, D-802) e do teste que barra o repositório quando ela valer.
 
 Palavras do Samuel (D-791, 19/11): à pergunta "o que já está errado no código fica numa lista, que só diminui e só
-ganha item com o seu "sim"?": "Sim". E (D-800): "esses consertos deixa para depois".
+ganha item com o seu "sim"?": "Sim". E (D-800): "esses consertos deixa para depois". E (D-802), à pergunta "esses 56
+ficam para depois da entrega ao Kaique? Sugiro que sim.": "ok, continuamos assim e vamos proceguir".
 
 - A exceção é **por lugar** (arquivo, conferência, texto, quantas), nunca o arquivo inteiro (correção 2 do plano-v3,
   passo 0): erro novo no mesmo arquivo é barrado.
@@ -22,7 +23,29 @@ from regras_dos_agentes import excecoes, porteiro, texto_para_o_samuel
 RAIZ = Path(__file__).resolve().parent.parent
 PASSOS_DO_PLANO = {"1", "2", "3", "4", "5", "6"}
 PASSOS_VALIDOS = PASSOS_DO_PLANO | {excecoes.DEPOIS_DA_ENTREGA, excecoes.FORA_DO_PLANO}
-ARQUIVOS_DE_FORA_D800 = {"ui/automatico.py", "teste_velocidade.py", "avaliar.py"}
+# Os lugares que o Samuel deixou para depois da entrega, (arquivo, conferência, função), escritos aqui à parte da
+# tabela do programa de propósito: a prova não pode ler a resposta da própria coisa que ela confere.
+# D-800: as dicas do Automático (qualquer função), o teste de velocidade lendo a placa de vídeo e o disco, e a régua.
+DEPOIS_D800 = {("ui/automatico.py", "K04", "*"), ("teste_velocidade.py", "K01", "_placas_de_video"),
+               ("teste_velocidade.py", "K01", "tipo_do_disco"), ("teste_velocidade.py", "K01", "_powershell"),
+               ("teste_velocidade.py", "K01", "_caminho_do_powershell"), ("avaliar.py", "K01", "achar_acervo")}
+# D-802: os 56 da busca ampliada, pelas funções onde estavam em 19/11 ("" = fora de função).
+DEPOIS_D802 = {("teste_velocidade.py", "K01", f) for f in (
+    "_classe_da_janela", "_entrada_da_janela_preta", "_esvaziar_a_entrada_pelo_windows", "_janela_do_console",
+    "_ler_modo_da_janela_preta", "_ler_registro", "_memoria_gb", "_mudar_modo_da_janela_preta", "_pedir_ao_windows",
+    "_pico_pelo_windows", "_sozinho_no_console")} | {
+    ("ui/brasao_girando.py", "K01", f) for f in ("_programa_vivo", "rodar_sozinho", "rodar_sozinho.vigiar")} | {
+    ("core/ocr_comum.py", "K01", "abrir_processo"), ("historico.py", "K01", "abrir_pasta"),
+    ("historico.py", "K01", "imprimir"), ("core/nucleos.py", "K01", "memoria_livre_mb"),
+    ("empacotar_teste_velocidade.py", "K01", "")}
+
+
+def _depois_por_decisao(i: dict) -> str | None:
+    """De qual decisão é o lugar, pela lista desta prova (não pela tabela do programa)."""
+    for decisao, lugares in (("D-800", DEPOIS_D800), ("D-802", DEPOIS_D802)):
+        if any(i["arquivo"] == a and i["conferencia"] == c and f in ("*", i["funcao"]) for a, c, f in lugares):
+            return decisao
+    return None
 
 
 def lista_de(itens: list[dict], situacao: str = "valendo") -> excecoes.Lista:
@@ -59,13 +82,54 @@ def test_a_lista_do_repositorio_tem_o_formato_e_cada_item_tem_data_e_passo():
 
 
 def test_so_os_lugares_que_o_samuel_deixou_para_depois_ficam_depois_da_entrega():
-    """D-800: só as dicas do Automático, o teste de velocidade e a régua dos filtros ficam "depois da entrega"."""
+    """D-800 e D-802: "depois da entrega" é exatamente o que o Samuel deixou para depois, e nada fica "a perguntar".
+
+    Mudou com a D-802 (19/11, "ok, continuamos assim e vamos proceguir"): antes, o que a busca ampliada achou nos
+    arquivos da D-800 (o resto do teste de velocidade) tinha de esperar a pergunta ("fora do plano"); agora os 56 são
+    "depois da entrega" e a lista não tem nenhum "fora do plano" (a prova escrita na D-802). A cobrança passou de
+    arquivo para função: um lugar "depois da entrega" fora das funções que ele deixou para depois falha aqui.
+    """
     lista = excecoes.ler(RAIZ)
-    de_fora = {i["arquivo"] for i in lista.itens if i["passo"] == excecoes.DEPOIS_DA_ENTREGA}
-    assert de_fora <= ARQUIVOS_DE_FORA_D800
-    # Nos arquivos da D-800, o que não é dos 5 lugares dele (achado pela busca ampliada) espera a pergunta.
-    assert all(i["passo"] in (excecoes.DEPOIS_DA_ENTREGA, excecoes.FORA_DO_PLANO)
-               for i in lista.itens if i["arquivo"] in ARQUIVOS_DE_FORA_D800)
+    depois = [i for i in lista.itens if i["passo"] == excecoes.DEPOIS_DA_ENTREGA]
+    assert all(_depois_por_decisao(i) for i in depois), [i for i in depois if not _depois_por_decisao(i)]
+    # Todo lugar que ele deixou para depois e ainda está na lista é "depois da entrega" (nem no plano, nem a perguntar).
+    assert all(i["passo"] == excecoes.DEPOIS_DA_ENTREGA for i in lista.itens if _depois_por_decisao(i))
+    # D-802: "A lista de exceções não tem nenhum item 'fora do plano, a perguntar'".
+    assert [i for i in lista.itens if i["passo"] == excecoes.FORA_DO_PLANO] == []
+    # Na lista gerada em 19/11, os grupos têm o tamanho das decisões: 13 da D-800 (os 5 de então, com as linhas que a
+    # busca maior achou nos mesmos pedaços) e os 56 da D-802. A lista só diminui: cada conta só pode cair.
+    lugares = {d: sum(int(i["quantas"]) for i in depois if _depois_por_decisao(i) == d) for d in ("D-800", "D-802")}
+    assert lugares["D-800"] <= 13 and lugares["D-802"] <= 56, lugares
+
+
+def test_d802_a_tabela_do_programa_poe_cada_lugar_dele_depois_da_entrega_com_a_decisao_certa():
+    """D-802: cada lugar que o Samuel deixou para depois sai "depois da entrega" na tabela do programa (o lugar único
+    da conta, `excecoes.regra_do_lugar`), e a decisão que o texto dele usa é a mesma da prova."""
+    for decisao, lugares in (("D-800", DEPOIS_D800), ("D-802", DEPOIS_D802)):
+        for arquivo, conferencia, funcao in lugares:
+            funcao = "PainelAutomatico.__init__" if funcao == "*" else funcao
+            assert excecoes.passo_do_lugar(arquivo, conferencia, funcao)[0] == excecoes.DEPOIS_DA_ENTREGA, funcao
+            assert excecoes.decisao_que_deixou_para_depois(arquivo, conferencia, funcao) == decisao, funcao
+
+
+def test_d802_lugar_novo_que_ninguem_classificou_continua_fora_do_plano_a_perguntar():
+    """D-802 não abriu a porta para o que vier depois: um lugar novo, que nenhuma linha classifica, continua "fora do
+    plano, a perguntar ao Samuel" (CLAUDE.md §11.12, ponto 2: nada dá como certo o que não conferiu), mesmo dentro de
+    um arquivo que já tem lugares "depois da entrega" (uma função nova no teste de velocidade, no brasão, na tela de
+    início) ou com outra conferência numa função que já está na lista."""
+    for arquivo, conferencia, funcao in (("teste_velocidade.py", "K01", "_funcao_nova_de_depois"),
+                                         ("ui/brasao_girando.py", "K01", "outra_funcao"),
+                                         ("historico.py", "K01", ""),
+                                         ("core/nucleos.py", "K02", "memoria_livre_mb"),
+                                         ("empacotar_teste_velocidade.py", "K01", "empacotar"),
+                                         ("main.py", "K01", "principal")):
+        assert excecoes.passo_do_lugar(arquivo, conferencia, funcao)[0] == excecoes.FORA_DO_PLANO, (arquivo, funcao)
+        assert excecoes.decisao_que_deixou_para_depois(arquivo, conferencia, funcao) is None
+    # E pelo caminho inteiro: o porteiro acha o erro numa função nova do teste de velocidade e a lista gerada o põe
+    # "fora do plano", não "depois da entrega".
+    novo = 'import ctypes\n\ndef _funcao_nova_de_depois():\n    """Nova."""\n    return ctypes.windll.kernel32\n'
+    gerada = excecoes.gerar(achados({"teste_velocidade.py": novo}), "abc")
+    assert gerada["itens"] and {i["passo"] for i in gerada["itens"]} == {excecoes.FORA_DO_PLANO}
 
 
 def test_o_repositorio_so_tem_os_erros_que_a_lista_deixa():

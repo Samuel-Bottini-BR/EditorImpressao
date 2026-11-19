@@ -2,20 +2,24 @@
 
 Sai da própria lista (os números são contados aqui, nunca escritos à mão), em português comum: o que é e onde fica,
 um caso real (um lugar de verdade do código de hoje que o porteiro acha, contado sem código), o que o porteiro faz e o
-que ele não faz, em que parte do trabalho cada grupo some, os 5 que ele deixou para depois da entrega (D-800) e, como
-pergunta, os lugares novos fora do plano (achados pela busca ampliada em 19/11). Sem número de decisão, nome de
-arquivo nem código no meio do texto (§11.13, regra 2).
+que ele não faz, em que parte do trabalho cada grupo some e o que ele deixou para depois da entrega: os 5 primeiros
+(D-800) e os 56 da busca ampliada (D-802, 19/11: "ok, continuamos assim e vamos proceguir"). Lugar que nenhuma regra
+classifica ("fora do plano") ainda vira pergunta no fim. Sem número de decisão, nome de arquivo nem código no meio do
+texto (§11.13, regra 2).
+
+D-802 (19/11): a pergunta dos 56 saiu; os 56 aparecem em "ficam para depois da entrega", com o que cada pedaço faz.
 
 Refeito em 19/11 depois de quem tentou quebrar (achado 8): a imagem do próprio texto não provava nada, faltava o caso
 real, e "barra qualquer erro novo" prometia mais do que o porteiro faz.
 
-Seguro mexer: as frases. Arriscado: a conta (vem de `excecoes.resumo`) e os nomes de cada grupo (`GRUPOS`, `DE_FORA`,
-`FORA_DO_PLANO`), que dizem ao Samuel o que cada passo conserta.
+Seguro mexer: as frases. Arriscado: a conta (vem de `excecoes.resumo`), a separação por decisão (vem de
+`excecoes.decisao_que_deixou_para_depois`, nunca de uma lista de funções copiada aqui) e os nomes de cada grupo
+(`GRUPOS`, `DE_FORA`, `O_QUE_O_PEDACO_FAZ`), que dizem ao Samuel o que cada passo conserta.
 """
 
 from __future__ import annotations
 
-from .excecoes import DEPOIS_DA_ENTREGA, FORA_DO_PLANO, Lista, resumo
+from .excecoes import DEPOIS_DA_ENTREGA, FORA_DO_PLANO, Lista, decisao_que_deixou_para_depois, resumo
 
 # O que cada passo do plano conserta, dito como o Samuel conhece (a ordem é a do plano).
 GRUPOS = [
@@ -25,9 +29,9 @@ GRUPOS = [
     ("5", "quando a gente arrumar o desinstalar"),
 ]
 
-# Os pedaços que ele deixou para depois da entrega (D-800), ditos como ele conhece, por arquivo. Do teste de
-# velocidade, só a leitura da placa de vídeo e do disco pelo PowerShell é escolha dele (R4 da terceira volta de quem
-# quebrou): o resto do teste de velocidade vai para a pergunta, explicado.
+# Os 5 pedaços que ele deixou para depois da entrega primeiro (D-800), ditos como ele conhece, por arquivo. Do teste
+# de velocidade, a D-800 foi só a leitura da placa de vídeo e do disco pelo PowerShell (R4 da terceira volta de quem
+# quebrou); o resto do teste de velocidade é da D-802 (`O_QUE_O_PEDACO_FAZ`).
 DE_FORA = {
     "ui/automatico.py": "as duas dicas do Automático que mostram um número ao Kaique",
     "teste_velocidade.py": "o teste de velocidade lendo a placa de vídeo e o tipo de disco pelo PowerShell",
@@ -36,11 +40,12 @@ DE_FORA = {
 # Quantos lugares a conta de 19/11 (D-800) tinha em cada um desses pedaços.
 NA_DECISAO_DELE = {"ui/automatico.py": 2, "teste_velocidade.py": 2, "avaliar.py": 1}
 
-# Os lugares novos fora do plano, ditos como ele conhece, por arquivo (o que aquele pedaço faz com o Windows).
-FORA_DO_PLANO_POR_ARQUIVO = {
-    "teste_velocidade.py": "o resto do teste de velocidade, que você ainda não decidiu: ele lê a memória do computador e "
-                           "do próprio teste, lê no registro do Windows o nome do Windows, do processador e da placa de "
-                           "vídeo, impede o computador de dormir durante a medida e mexe na janela preta onde roda",
+# Os 56 pedaços da busca ampliada (D-802; antes eram a pergunta "fora do plano"), ditos como ele conhece, por arquivo:
+# o que aquele pedaço faz com o Windows. Também diz o pedaço de um lugar que ainda esteja "fora do plano".
+O_QUE_O_PEDACO_FAZ = {
+    "teste_velocidade.py": "o resto do teste de velocidade: ele lê a memória do computador e do próprio teste, lê no "
+                           "registro do Windows o nome do Windows, do processador e da placa de vídeo, impede o "
+                           "computador de dormir durante a medida e mexe na janela preta onde roda",
     "historico.py": "a tela de início abre a pasta do projeto e manda imprimir pelo Windows",
     "core/nucleos.py": "o programa pergunta ao Windows quanta memória está livre",
     "core/ocr_comum.py": "o motor de achar texto ajusta, no Windows, onde procurar as bibliotecas dele",
@@ -57,12 +62,20 @@ def _lugares(n: int) -> str:
     return f"{n} lugar" if n == 1 else f"{n} lugares"
 
 
-def _por_arquivo(lista: Lista, passo: str) -> dict[str, int]:
-    """Quantos lugares de um passo há em cada arquivo."""
+def _por_arquivo(lista: Lista, passo: str, decisao: str | None = "qualquer") -> dict[str, int]:
+    """Quantos lugares de um passo há em cada arquivo, na ordem da lista.
+
+    `decisao`: só os lugares que essa decisão deixou para depois ("D-800", "D-802"; None = de nenhuma), pela mesma
+    regra que deu o passo (`excecoes.decisao_que_deixou_para_depois`). "qualquer" não separa.
+    """
     contagem: dict[str, int] = {}
     for item in lista.itens:
-        if item["passo"] == passo:
-            contagem[item["arquivo"]] = contagem.get(item["arquivo"], 0) + int(item["quantas"])
+        if item["passo"] != passo:
+            continue
+        if decisao != "qualquer" and decisao_que_deixou_para_depois(
+                item["arquivo"], item["conferencia"], item["funcao"]) != decisao:
+            continue
+        contagem[item["arquivo"]] = contagem.get(item["arquivo"], 0) + int(item["quantas"])
     return contagem
 
 
@@ -98,11 +111,22 @@ def texto(lista: Lista) -> str:
             linhas.append(f"- {_lugares(por_passo[passo])}: {nome}.")
     if depois:
         partes = []
-        for a, n in _por_arquivo(lista, DEPOIS_DA_ENTREGA).items():
+        # Primeiro os 5 pedaços que ele deixou para depois primeiro (D-800), com a conta daquela hora.
+        for a, n in _por_arquivo(lista, DEPOIS_DA_ENTREGA, "D-800").items():
             antes = NA_DECISAO_DELE.get(a)
             conta = f"; na conta de 19/11 eram {antes}, a busca maior achou mais linhas no mesmo pedaço" if (
                 antes is not None and antes != n) else ""
             partes.append(f"- {DE_FORA.get(a, 'outro pedaço')} ({_lugares(n)}{conta}).")
+        # Depois os que conversam com o Windows por conta própria, que ele deixou para depois em seguida (D-802).
+        # Um "depois da entrega" sem decisão conhecida (não deve existir) também aparece aqui, nunca some do texto.
+        outros = _por_arquivo(lista, DEPOIS_DA_ENTREGA, "D-802")
+        for a, n in _por_arquivo(lista, DEPOIS_DA_ENTREGA, None).items():
+            outros[a] = outros.get(a, 0) + n
+        if outros:
+            partes += ["", "E os pedaços que conversam com o Windows por conta própria, que você deixou para depois "
+                       "logo em seguida:", ""]
+            partes += [f"- {O_QUE_O_PEDACO_FAZ.get(a, 'outro pedaço do programa')} ({_lugares(n)})."
+                       for a, n in sorted(outros.items(), key=lambda x: -x[1])]
         linhas += ["", f"**Ficam para depois da entrega ao Kaique, como você escolheu em 19/11 ({_lugares(depois)}):**",
                    "", *partes]
     linhas += [
@@ -114,7 +138,7 @@ def texto(lista: Lista) -> str:
         "**De onde veio:** do seu \"sim\" de 19/11 à lista que só diminui. A conta saiu do próprio programa que confere.",
     ]
     if fora:
-        partes = [f"- {FORA_DO_PLANO_POR_ARQUIVO.get(a, 'outro pedaço do programa')} ({_lugares(n)})."
+        partes = [f"- {O_QUE_O_PEDACO_FAZ.get(a, 'outro pedaço do programa')} ({_lugares(n)})."
                   for a, n in sorted(_por_arquivo(lista, FORA_DO_PLANO).items(), key=lambda x: -x[1])]
         linhas += [
             "",

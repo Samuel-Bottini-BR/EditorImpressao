@@ -27,6 +27,7 @@ partir da lista de arquivos do pedido da gerente (a gerente não tinha mandado u
   Terceira volta (`quem-quebrou/relatorio-3.md`, R1 a R7, furos de estrutura): consertada nesta volta, pela estrutura
   (ver "Como ficou cada achado da terceira volta").
 - **A lista: 176 lugares em 176 itens** (um item por lugar: arquivo, conferência, função e texto).
+- **D-802 (19/11): os 56 lugares de fora do plano passaram para "depois da entrega"** (ver "D-802", logo abaixo). A lista continua "proposta", sem o "sim" escrito: quem liga é a gerente, na versão de teste (D-801).
 - Quarta volta (`quem-quebrou/relatorio-4.md`, Q1 a Q7): consertada (ver "Como ficou cada achado da quarta volta").
 - Quinta volta (`quem-quebrou/relatorio-5.md`, S1 a S3): consertada nesta volta (ver "Como ficou cada achado da
   quinta volta").
@@ -34,6 +35,45 @@ partir da lista de arquivos do pedido da gerente (a gerente não tinha mandado u
   o nome do trabalho ("Porteiro (juiz da versao de teste)") é o que o formulário agora procura.
 - **O formulário dos próximos passos fica pendente até a gerente ligar a lista** (Q5): com a lista "proposta", a K21
   dá "não conferido" (código 3) em toda entrega, de propósito.
+
+## D-802
+
+Pedido da gerente (19/11): os 56 lugares "fora do plano, a perguntar" passam a "depois da entrega", como os 5 da
+D-800. Palavras do Samuel, à pergunta "esses 56 ficam para depois da entrega ao Kaique? Sugiro que sim.": "ok,
+continuamos assim e vamos proceguir". A D-801 ("ok": a lista entra como está e o porteiro passa a barrar) quem liga é
+a gerente, direto na versão de teste; aqui a lista continua "proposta" e `sim_do_samuel` continua vazio.
+
+- **A tabela (`regras_dos_agentes/excecoes.py`):** os lugares de "depois da entrega" ficaram em duas listas, uma por
+  decisão (`_DEPOIS_D800`, as linhas de antes, e `_DEPOIS_D802`, as 56 novas), que entram no `PASSO_QUE_CONSERTA`
+  antes da linha final. Cada linha da D-802 nomeia a função onde o lugar estava (nunca "*" na função; no pacote do
+  teste de velocidade, "" = fora de função). **A linha final continua "fora do plano, a perguntar"**: um lugar novo,
+  numa função nova do teste de velocidade ou de qualquer arquivo, não entra calado como "depois da entrega".
+- **Uma conta só:** `regra_do_lugar` acha a linha que vale; `passo_do_lugar` (a lista) e
+  `decisao_que_deixou_para_depois` (o texto para o Samuel) perguntam a ela. O texto não tem lista de funções copiada.
+- **A lista, gerada de novo pelo programa** (`python -m regras_dos_agentes excecoes --gerar --de-novo`): 176 lugares
+  em 176 itens; 107 no plano (passo 2: 1, 3: 38, 4: 50, 5: 18); 69 "depois da entrega" (13 da D-800, 56 da D-802);
+  zero "fora do plano". `situacao` "proposta", `sim_do_samuel` vazio. Conferido contra a lista de antes: as mesmas
+  176 chaves, os mesmos "quantas" e linhas; mudaram só o passo e o motivo dos 56, o commit lido e a explicação do
+  topo. O porteiro no repositório inteiro, comparado com a lista nova: nenhum lugar novo, nenhum consertado.
+- **O texto para o Samuel** (`lista-de-excecoes-para-o-samuel.md`, `.html`, `.pdf`, por `relatorio.gravar`; o `.pdf`
+  fica fora do git): a pergunta dos 56 saiu; eles aparecem em "Ficam para depois da entrega ao Kaique, como você
+  escolheu em 19/11 (69 lugares)", depois dos pedaços da D-800, com o que cada pedaço faz. Abri o PDF e conferi.
+- **As provas (`tests/test_conferencias_excecoes.py`):**
+  - Mudou `test_so_os_lugares_que_o_samuel_deixou_para_depois_ficam_depois_da_entrega` (era a prova da D-800), por
+    causa da decisão nova, não para passar. Antes: os arquivos "depois da entrega" eram um subconjunto de três
+    arquivos, e nos arquivos da D-800 o resto podia estar "fora do plano". Agora: cada lugar "depois da entrega" tem
+    de ser uma das funções que o Samuel deixou para depois (D-800 ou D-802, escritas no próprio teste, à parte da
+    tabela), todo lugar dessas funções que está na lista tem de ser "depois da entrega", não pode haver nenhum "fora
+    do plano" (a prova escrita na D-802), e as contas por decisão só podem cair (13 e 56). A cobrança ficou mais
+    estreita (por função, não por arquivo).
+  - A constante `ARQUIVOS_DE_FORA_D800` saiu; no lugar, `DEPOIS_D800` e `DEPOIS_D802` (arquivo, conferência, função).
+  - Novo `test_d802_a_tabela_do_programa_poe_cada_lugar_dele_depois_da_entrega_com_a_decisao_certa`.
+  - Novo `test_d802_lugar_novo_que_ninguem_classificou_continua_fora_do_plano_a_perguntar`: funções novas no teste
+    de velocidade, no brasão, na tela de início e no pacote do teste de velocidade, outra conferência numa função da
+    lista e o `main.py` continuam "fora do plano"; e pelo caminho inteiro (porteiro + `gerar`). Conferi que ele pega
+    o jeito errado: com uma linha `("teste_velocidade.py", "K01", "*", depois da entrega)` na tabela, ele falha.
+  - No código anterior (`69b3937c`), os três falham (o primeiro pelos 56 "fora do plano"; os dois novos porque a
+    função de decisão não existia).
 
 ## Como ficou cada achado da quinta volta
 
@@ -377,6 +417,12 @@ No ramo `claude/list-server-files-gkos8v`:
 - **D-799** (19/11/2026): "Aprova o plano?". Aqui: o passo 0 do plano-v3, como escrito.
 - **D-800** (19/11/2026): "esses consertos deixa para depois". Aqui: os 5 lugares de fora ficam na lista marcados
   "depois da entrega".
+- **D-801** (19/11/2026): à pergunta "a lista entra assim, e o porteiro passa a barrar erro novo? Sugiro que sim.":
+  "ok". Aqui: quem liga a lista ("valendo" e o "sim") é a gerente, direto na versão de teste; no ramo ela continua
+  "proposta".
+- **D-802** (19/11/2026): à pergunta "esses 56 ficam para depois da entrega ao Kaique? Sugiro que sim.": "ok,
+  continuamos assim e vamos proceguir". Aqui: os 56 lugares ficam na lista marcados "depois da entrega"; nenhum
+  "fora do plano".
 - **D-605** (03/11/2026): "A partir de agora, nenhuma função nova, ou nova escolha dentro do programa pode alterar o
   que já está escolhido e testado". Aqui: nenhum teste antigo muda; o porteiro não é ligado no repositório.
 - **D-637** (05/11/2026): "você tem que pensar na experiencia do usario e no resultado final do livro dentro do
@@ -535,6 +581,11 @@ conferência antes do commit (não ligada) e o pacote do passo 1, montado pelo p
 - **D-798:** `tests/test_conferencias_mudancas.py::test_k10_barra_o_rotulo_de_pronto_no_ramo_de_quem_construiu`.
 - **D-799:** o passo 0 do plano-v3: as três correções, a lista por lugar, o formulário, o K13 e o K10.
 - **D-800:** `tests/test_conferencias_excecoes.py::test_so_os_lugares_que_o_samuel_deixou_para_depois_ficam_depois_da_entrega`.
+- **D-801:** a lista gerada continua `"situacao": "proposta"` e `"sim_do_samuel": null` (a gerente liga).
+- **D-802:** `tests/test_conferencias_excecoes.py::test_so_os_lugares_que_o_samuel_deixou_para_depois_ficam_depois_da_entrega`
+  (nenhum "fora do plano"; os 56 "depois da entrega"),
+  `::test_d802_a_tabela_do_programa_poe_cada_lugar_dele_depois_da_entrega_com_a_decisao_certa` e
+  `::test_d802_lugar_novo_que_ninguem_classificou_continua_fora_do_plano_a_perguntar`.
 - **D-605:** nenhum teste antigo mudou (o próprio porteiro, K11, confere isso nesta entrega).
 - **D-637:** ver "Como fica para quem usa e no livro": nada muda para o Kaique nem no PDF.
 
@@ -588,9 +639,14 @@ conferência antes do commit (não ligada) e o pacote do passo 1, montado pelo p
   `TRABALHO_DO_JUIZ`, a K21 fica pendente (nunca passa). Os testes do próprio ramo (`tests/test_conferencias_protecao.py` e o
   teste que barra o repositório) continuam como aviso cedo, mas rodam o código do ramo: quem garante é o juiz.
 - **A conta deu 176** (primeira entrega 44, primeira volta 125, segunda 189; o plano tinha contado 43): 107 no plano
-  (passo 2: 1, 3: 38, 4: 50, 5: 18), 13 depois da entrega (a régua dos filtros 2, a leitura da placa de vídeo e do
-  disco 9, as dicas do Automático 2) e 56 fora do plano, a perguntar (o resto do teste de velocidade 43, o brasão 5, o
-  motor de achar texto 4, a tela de início 2, a memória livre 1, o pacote do teste de velocidade 1).
+  (passo 2: 1, 3: 38, 4: 50, 5: 18) e 69 depois da entrega: 13 da D-800 (a régua dos filtros 2, a leitura da placa de
+  vídeo e do disco 9, as dicas do Automático 2) e 56 da D-802 (o resto do teste de velocidade 43, o brasão 5, o motor
+  de achar texto 4, a tela de início 2, a memória livre 1, o pacote do teste de velocidade 1). Nenhum fora do plano.
+- **A página para o Samuel ainda traz a pergunta da lista ("sim, a lista entra assim...")**, que ele já respondeu
+  (D-801, "ok"). Não mexi: o pedido foi tirar só a pergunta dos 56. Se a página for mostrada de novo, a gerente decide
+  se essa pergunta vira frase do que ele decidiu (o teste do texto cobra hoje "O que você escolhe" e "Sugestão").
+- **O Livro deste ramo não tem a D-801 nem a D-802** (estão na versão de teste, `obra-2026-10-26`, commits
+  `c5838a1f` e `8a34960c`); eu não juntei a versão de teste neste ramo. O código e os testes citam as duas.
 - **O juiz confia no código da versão de teste.** Se a própria versão de teste tiver um porteiro afrouxado, o juiz
   também estará; isso só a gerente evita, juntando com a conferência das mudanças (K17) e com quem tenta quebrar.
 - **O apelido do ctypes não é seguido** quando vai para outro arquivo (importado), nem quando passa por um dicionário
@@ -643,43 +699,11 @@ conferência antes do commit (não ligada) e o pacote do passo 1, montado pelo p
 
 ## Perguntas para o Samuel
 
-### A lista do que já está errado no código (para dizer sim)
-
-**O que é e onde fica:** é a conferência automática que barra o trabalho de um agente quando o código tem um erro que
-já conhecemos. Ela roda nos testes do GitHub, em toda entrega; você não vê nada dela no programa.
-
-**O que acontece hoje:** ela leu o programa e achou 176 lugares com esses erros, que ficam numa lista; ela barra o
-trabalho que acrescentar mais um lugar com um desses erros, escrito com as palavras que ela conhece. A lista só diminui:
-o plano da parte do Windows tira 107 deles. Os pedaços que você deixou para depois da entrega em 19/11 (a régua dos
-filtros, o teste de velocidade lendo a placa de vídeo e o disco, e as duas dicas do Automático) ficam na lista até lá.
-
-![A lista, como vai para você](prints/caso-real-reiniciar-agora.png)
-
-**O que você escolhe:** sim, a lista entra assim e a conferência passa a barrar; ou não, e diga o que mudar. Sugestão:
-sim. Nada do programa muda com isso, e nada do que já funciona muda.
-
-**De onde veio:** do seu "sim" de 19/11 à lista que só diminui; a conta saiu do próprio programa que confere.
-
-### Os pedaços novos que conversam com o Windows por conta própria
-
-**O que é e onde fica:** procurando com mais palavras, a mesma conferência achou outros pedaços do programa que falam
-com o Windows por conta própria e que o plano da parte do Windows não conserta. Por exemplo: o resto do teste de
-velocidade (ele lê a memória, impede o computador de dormir durante a medida e mexe na janela preta), a tela de início
-que abre a pasta do projeto e manda imprimir, e o brasão que gira perguntando se o programa ainda está aberto. São 56
-lugares.
-
-![O mesmo tipo de erro num pedaço que aparece na tela (o "Reiniciar agora"); os 56 lugares desta pergunta não aparecem](prints/caso-real-reiniciar-agora.png)
-
-**Ressalva: esta pergunta não tem print dos próprios pedaços.** Esses pedaços são código que não aparece na tela:
-conversam com o Windows por baixo, sem janela nem botão. Não há o que fotografar; o que existe é a linha do código,
-que está na lista. O print acima é só do mesmo tipo de erro, num pedaço que tem botão. (A gerente aceitou assim na
-quarta volta.)
-
-**O que você escolhe:** ficam para depois da entrega ao Kaique, como os pedaços que você já deixou para depois (ficam
-na lista até lá); ou entram no plano (cada um vira conserto antes da entrega). Sugestão: depois da entrega. Nada do
-programa muda com nenhuma das duas escolhas agora.
-
-**De onde veio:** da busca maior pedida depois da conferência de quem tentou quebrar a conferência automática.
+- Nenhuma em aberto. As duas deste passo foram respondidas em 19/11: a da lista ("ok": ela entra como está e a
+  conferência passa a barrar; a gerente liga na versão de teste) e a dos 56 pedaços que conversam com o Windows por
+  conta própria ("ok, continuamos assim e vamos proceguir": ficam para depois da entrega ao Kaique, como os outros que
+  ele já tinha deixado para depois). Os textos das duas perguntas, como foram, estão no histórico do git deste arquivo
+  (commit `69b3937c`).
 
 ## Commit
 

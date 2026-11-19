@@ -17,25 +17,21 @@
 - 50 lugares: quando a gente arrumar os testes à distância.
 - 18 lugares: quando a gente arrumar o desinstalar.
 
-**Ficam para depois da entrega ao Kaique, como você escolheu em 19/11 (13 lugares):**
+**Ficam para depois da entrega ao Kaique, como você escolheu em 19/11 (69 lugares):**
 
 - a régua dos filtros, que pergunta ao Windows onde fica a Área de Trabalho (2 lugares; na conta de 19/11 eram 1, a busca maior achou mais linhas no mesmo pedaço).
 - o teste de velocidade lendo a placa de vídeo e o tipo de disco pelo PowerShell (9 lugares; na conta de 19/11 eram 2, a busca maior achou mais linhas no mesmo pedaço).
 - as duas dicas do Automático que mostram um número ao Kaique (2 lugares).
 
-**O que você escolhe:** sim, a lista entra assim e a conferência passa a barrar; ou não, e diga o que mudar (enquanto não entra, a conferência não barra nada no código). Sugestão: sim. Nada do programa muda com isso, e nada do que já funciona muda.
+E os pedaços que conversam com o Windows por conta própria, que você deixou para depois logo em seguida:
 
-**De onde veio:** do seu "sim" de 19/11 à lista que só diminui. A conta saiu do próprio programa que confere.
-
-**Uma pergunta a mais: 56 lugares novos, fora do plano.** Procurando com mais palavras, a conferência achou outros pedaços do programa que conversam com o Windows por conta própria e que o plano da parte do Windows não conserta:
-
-- o resto do teste de velocidade, que você ainda não decidiu: ele lê a memória do computador e do próprio teste, lê no registro do Windows o nome do Windows, do processador e da placa de vídeo, impede o computador de dormir durante a medida e mexe na janela preta onde roda (43 lugares).
+- o resto do teste de velocidade: ele lê a memória do computador e do próprio teste, lê no registro do Windows o nome do Windows, do processador e da placa de vídeo, impede o computador de dormir durante a medida e mexe na janela preta onde roda (43 lugares).
 - o brasão que gira pergunta ao Windows se o programa ainda está aberto (5 lugares).
 - o motor de achar texto ajusta, no Windows, onde procurar as bibliotecas dele (4 lugares).
 - a tela de início abre a pasta do projeto e manda imprimir pelo Windows (2 lugares).
 - o programa pergunta ao Windows quanta memória está livre (1 lugar).
 - o pacote do teste de velocidade abre a janela preta pelo Windows (1 lugar).
 
-**O que você escolhe para esses:** ficam para depois da entrega ao Kaique, como os outros pedaços que você já deixou para depois (ficam na lista até lá); ou entram no plano (cada um vira conserto antes da entrega). Sugestão: depois da entrega, como você decidiu para os outros. Nada do programa muda com nenhuma das duas escolhas agora.
+**O que você escolhe:** sim, a lista entra assim e a conferência passa a barrar; ou não, e diga o que mudar (enquanto não entra, a conferência não barra nada no código). Sugestão: sim. Nada do programa muda com isso, e nada do que já funciona muda.
 
-**Ressalva: esta pergunta não tem print.** Esses pedaços são código que não aparece na tela: conversam com o Windows por baixo, sem janela nem botão. Não há o que fotografar; o que existe é a linha do código, que está na lista.
+**De onde veio:** do seu "sim" de 19/11 à lista que só diminui. A conta saiu do próprio programa que confere.
