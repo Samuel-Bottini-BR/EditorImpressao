@@ -450,7 +450,10 @@ conferência antes do commit (não ligada) e o pacote do passo 1, montado pelo p
 - Teste de reversão da terceira volta: os 4 testes do R5 e o do `CREATE_NO_WINDOW` guardado numa variável (R6) falham
   com o código anterior (`8a1f56d8`) e passam com o de hoje.
 - Prova de verdade do juiz no repositório real: ver "Como ficou cada achado da terceira volta", R2 e R3.
-- GitHub, rodada RODADA_FINAL (o último commit de código, COMMIT_FINAL): RESULTADO_FINAL
+- GitHub, rodada 44475889011 (o último commit de código, 93ab77fb): passou inteira. 251 arquivos de teste, 4189 passaram, 0 falharam,
+  148 pulados (entre eles o teste do porteiro que espera o "sim" e o de proteção, que espera a versão de teste ter o
+  porteiro, os dois com o motivo escrito); os botões e os prints da janela real também passaram. Esta rodada ainda
+  não tem o juiz (a mudança do workflow é da gerente): a K21 dá "não conferido" por isso, de propósito.
 
 ## Caminho e função
 
@@ -554,7 +557,7 @@ programa muda com nenhuma das duas escolhas agora.
 
 ## Commit
 
-Último commit de código do trabalho: 8a1f56d8 (depois dele, só este ONDE-PAREI mudou).
+Último commit de código do trabalho: 93ab77fb (depois dele, só este ONDE-PAREI mudou).
 
 ## Perguntas do Windows que o Samuel vê
 
