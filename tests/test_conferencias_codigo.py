@@ -65,6 +65,10 @@ ERRADO_K01 = py('''
     def caminho(w):
         """O caminho do PowerShell."""
         return w / "WindowsPowerShell" / "v1.0" / "powershell.exe"
+
+    def janelinha():
+        """A janelinha do "Reiniciar agora" (atualizacao.py, linha 883 em 19/11)."""
+        return "$jPs = [powershell]::Create(); $jPs.Runspace = $jRun"
 ''')
 
 
@@ -72,7 +76,7 @@ def test_k01_acusa_a_conversa_com_o_windows_fora_da_peca_unica():
     """K01 acusa cada linha que fala com o Windows fora de `core/windows.py`, nos textos e nos nomes."""
     achados = conferir({"atualizacao.py": ERRADO_K01})
     linhas = [n for _, n in codigos(achados, "K01")]
-    assert linhas == [7, 11, 12, 18, 22, 26]
+    assert linhas == [7, 11, 12, 18, 22, 26, 30]
 
 
 def test_k01_correcao_1_o_esboco_perdia_os_textos_sem_aspas_e_os_nomes():
@@ -80,7 +84,8 @@ def test_k01_correcao_1_o_esboco_perdia_os_textos_sem_aspas_e_os_nomes():
 
     O esboço `conferir_codigo.py` (ramo regras-agentes-2026-11-18) procurava `'runas'` e `'powershell'` COM as aspas
     dentro do texto, mas lia o valor do texto (que não tem aspas), e não olhava os nomes do código. Aqui está a busca
-    do esboço, copiada como referência: no mesmo exemplo ela acha 2 das 6 linhas; a do porteiro acha as 6.
+    do esboço, copiada como referência: no mesmo exemplo ela acha 2 das 7 linhas; a do porteiro acha as 7. A linha 30
+    (o `[powershell]::Create()` da janelinha) só a busca sem aspas pega, mesmo lendo o texto da linha inteira.
     """
     import ast
 
@@ -94,7 +99,7 @@ def test_k01_correcao_1_o_esboco_perdia_os_textos_sem_aspas_e_os_nomes():
                  and id(n) not in docs and esboco.search(n.value)}
     assert do_esboco == {18, 22}
     novos = {n for _, n in codigos(conferir({"atualizacao.py": ERRADO_K01}), "K01")}
-    assert novos == {7, 11, 12, 18, 22, 26}
+    assert novos == {7, 11, 12, 18, 22, 26, 30}
     assert do_esboco < novos, "o porteiro tem de achar tudo o que o esboço achava, e mais"
 
 
