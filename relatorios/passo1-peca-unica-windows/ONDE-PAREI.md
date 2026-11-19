@@ -25,6 +25,10 @@ teste com o porteiro ligado). Este ONDE-PAREI é também o formulário da entreg
   `empacotar.py` nem no nome do arquivo.
 - 19/11: código, testes e janela de prova feitos e no GitHub (commits abaixo). Rodada do GitHub disparada; resultado
   em "Testes". **Próximo:** a gerente manda a quem tenta quebrar; depois a sessão A à vista.
+- 19/11: quem tentou quebrar devolveu (relatório 1, `quem-quebrou/relatorio-1.md`, commit 5de9c52d). Consertados os
+  achados 1 a 15 e 17 (o 16 é observação; fica). Destino de cada um em "O que o agente que tentou quebrar achou".
+  Prova de reversão numa cópia à parte: 15 de 15 proteções acusadas pelo seu teste
+  (`anexos/reversao-volta1-resultado.txt`). **Próximo:** a gerente manda a quem tenta quebrar de novo.
 
 ## Decisões que esta tarefa precisa cumprir
 
@@ -109,7 +113,13 @@ ficava ilegível), a resposta das ferramentas lida na tabela de letras errada, o
 - o lado com licença: `atender_trabalho_de_administrador()` (o `main.py` chama, antes de tudo);
 - lançar solto: `lancar_solto()` e `lancar_powershell_solto()`;
 - rodar e esperar: `rodar_e_esperar()` e `rodar_powershell()`;
-- tarefas: `criar_tarefa()`, `apagar_tarefa()`, `rodar_tarefa()`, `ler_tarefa()`, `xml_da_tarefa_do_sistema()`;
+- tarefas: `criar_tarefa()`, `apagar_tarefa()`, `rodar_tarefa()`, `ler_tarefa()`, `xml_da_tarefa_do_sistema()`,
+  `xml_da_tarefa_de_script()`; a conferência da tarefa criada, `problemas_da_tarefa_criada()` e
+  `problemas_da_licenca_da_tarefa()` (a licença lida pelo próprio Windows, comparada pelo sentido); a pasta do
+  programa no Agendador, `pasta_de_tarefas_existe()` e `apagar_pasta_de_tarefas()`;
+- as regras, num lugar só para os dois lados: `problemas_do_passo()`, `problemas_da_pasta_de_troca()` (quem grava e
+  quem lê), `problemas_da_pasta_segura()`; o desfecho: `o_que_houve_ao_abrir()`, `resposta_do_pedido()`,
+  `desfecho_do_trabalho()` (o relatório contra o pedido);
 - a pasta de troca: `criar_pasta_de_troca()`, `apagar_pasta_de_troca()`;
 - a pasta segura: `pasta_segura()`, `criar_pasta_segura()`, `conferir_pasta_segura()`, `apagar_pasta_segura()`;
 - ler sem licença: `ler_licencas()`, `marca_existe()`, `ler_tarefa()`;
@@ -150,8 +160,18 @@ metade sem dizer: o relatório do trabalho diz, passo a passo, o que foi feito, 
 - **Desligar no meio** (o computador desliga durante o trabalho com licença): o relatório fica pela metade ou nem
   existe → na próxima leitura, a resposta é "falhou: o trabalho não terminou"; o que já tinha sido feito se confere
   pelas leituras (tarefa existe? pasta segura confere?), nunca pela anotação.
-- **O programa com licença trava ou demora:** a espera tem limite; passou dele, "falhou: o Windows não terminou no
-  tempo" (o processo com licença não pode ser fechado pela conta comum; fica anotado).
+- **O programa com licença trava ou demora:** a espera tem limite; passou dele, "falhou: ... ele pode continuar e
+  mudar o computador depois: confira de novo como o Windows está" (o processo com licença não pode ser fechado pela
+  conta comum). A pasta de troca fica (ele ainda pode estar usando; a limpeza das velhas a apaga depois de um dia).
+- **O Windows não devolve o processo aberto** (a documentação diz que pode acontecer): a peça acompanha pelo
+  relatório até ele dizer que terminou, com o mesmo limite. **A espera do Windows falha:** "falhou: não deu para
+  acompanhar até o fim; ele pode continuar", e a pasta de troca fica.
+- **A tarefa criada não fica como pedida** (o comando, quem roda ou a licença que o Windows diz que vale): a peça
+  apaga a tarefa de novo e confere que sumiu; se não der para apagar, a resposta diz que ela ficou.
+- **A pasta do programa no Agendador** (`\EditorImpressao`) nasce com a primeira tarefa e não some ao apagar a
+  tarefa: a janela de prova anota se ela existia antes e a pergunta 3 a apaga (só vazia) se foi a prova que a criou.
+- **Outra conta pode ler a pasta de troca** (onde vai o segredo cifrado para o computador): a regra recusa, dos dois
+  lados, como recusa quem grava.
 - **O programa com licença começa e cai sem relatório:** "falhou: o trabalho com licença não deixou relatório"
   (código de saída anotado). Código de saída sozinho nunca decide "deu certo".
 - **Alguém troca o aviso de trabalho por outro:** a pasta de troca nasce na pasta da conta, que outra conta comum não
@@ -275,6 +295,11 @@ Lido (documentação ou código), separado do deduzido:
 - **Testes:** `tests/test_windows_peca.py` (31) e `tests/test_windows_janela_de_prova.py` (3).
 - Nenhum chamador do programa mudou; nenhum item saiu da lista de exceções do porteiro; nenhum teste antigo mudou.
 - **Não mexi** em `empacotar.py` nem no nome do arquivo do programa (vira pergunta, abaixo).
+- **Volta 1 (19/11), depois de quem tentou quebrar:** os consertos de cada achado (lista em "O que o agente que
+  tentou quebrar achou"). Os mais importantes: o nome da tarefa da pergunta 2 sem parênteses e um teste que passa o
+  pedido de cada prova pelas regras da peça; o desfazer da pergunta 3 indo até o fim e tirando a pasta do Agendador
+  quando foi a prova que a criou; a licença da tarefa lida pelo próprio Windows; a peça fechada (o rodar e o lançar
+  genéricos recusam todo programa da pasta do Windows; nada com "_" usado fora dela).
 
 ## Arquivos criados ou alterados
 
@@ -315,7 +340,19 @@ Lido (documentação ou código), separado do deduzido:
 
 ## Testes
 
-- **No PC, um arquivo por vez** (19/11): `tests/test_windows_peca.py` 31 passaram;
+- **Volta 1, no PC, um arquivo por vez** (19/11): `tests/test_windows_peca.py` 43 passaram;
+  `tests/test_windows_janela_de_prova.py` 6; `tests/test_conferencias_codigo.py` 77; `tests/test_conferencias_excecoes.py`
+  14; `tests/test_conferencias_pacote.py` 20; `tests/test_conferencias_mudancas.py` 21;
+  `tests/test_conferencias_protecao.py` 11; `tests/test_decisoes_brasao.py` 22; `tests/test_decisoes_atualizacao.py` 38;
+  `tests/test_decisoes_ajudante_da_atualizacao.py` 37; `tests/test_decisoes_testes_a_distancia.py` 13. O repositório
+  continuou inteiro (`--is-shallow-repository` = false).
+- **Volta 1, prova de reversão** numa cópia à parte (`git archive` no rascunho, fora do projeto), como fez quem
+  quebrou: cada proteção desligada ou trocada pelo jeito antigo, e o teste dela roda limpo (passa) e mutado (tem de
+  falhar). **15 de 15 acusadas** (`anexos/reversao-volta1-resultado.txt`; o script em
+  `anexos/reversao-volta1-mutacoes.py.txt`), entre elas o nome antigo da tarefa com parênteses (o achado 1), o "Não"
+  devolvendo "deu certo", todo erro lido como "Não", o lado com licença sem conferir quem grava, o aviso ligado a
+  outro arquivo, a pasta segura e a tarefa sem conferir.
+- **Da primeira entrega, no PC** (19/11): `tests/test_windows_peca.py` 31 passaram;
   `tests/test_windows_janela_de_prova.py` 3; `tests/test_conferencias_codigo.py` 77; `tests/test_conferencias_pacote.py`
   20; `tests/test_conferencias_excecoes.py` 14; `tests/test_conferencias_protecao.py` 11;
   `tests/test_conferencias_mudancas.py` 21; `tests/test_conferencias_formulario.py` 34;
@@ -323,7 +360,8 @@ Lido (documentação ou código), separado do deduzido:
   `tests/test_conferencias_copia_inteira.py` 2; `tests/test_decisoes_brasao.py` 22; `tests/test_decisoes_atualizacao.py`
   38; `tests/test_botoes_em_portugues.py` 5. O repositório do PC continuou inteiro (`--is-shallow-repository` = false
   antes e depois).
-- **No GitHub:** rodada 44558364601, sobre o commit 1b1b0fa6: **success** na segunda tentativa (a parte 4 rodou de
+- **No GitHub, volta 1:** RODADA_VOLTA1
+- **No GitHub, primeira entrega:** rodada 44558364601, sobre o commit 1b1b0fa6: **success** na segunda tentativa (a parte 4 rodou de
   novo e passou). PORTEIRO: success nas duas tentativas (o trabalho "Porteiro (juiz da versao de teste)").
   - Na primeira tentativa falhou só `tests/test_decisoes_so_as_letras.py::test_d148_desfazer_o_automatico_devolve_o_so_as_letras_do_livro`,
     por tempo ("não aconteceu a tempo"). Ele não é deste passo: não usa nada do que mudou; no PC passa (5 de 5).
@@ -339,11 +377,15 @@ Lido (documentação ou código), separado do deduzido:
 - O começo do programa com o argumento → `atender_trabalho_de_administrador()`.
 - A janela de prova, cada prova → `pedir_licenca()`, `lancar_powershell_solto()`, `rodar_e_esperar()`,
   `rodar_tarefa()`, `ler_tarefa()`, `conferir_pasta_segura()`.
-- Rodar um script (no trabalho com licença, ao ler uma tarefa, solto, na tarefa de prova) → `comando_do_powershell()`
-  (o mesmo comando) e `_gravar_script()` (a mesma marca de UTF-8).
-- A regra "a pasta de troca é só desta conta": o lado que pede e o lado com licença → `_problemas_da_pasta_de_troca()`.
-- A regra "o passo é aceito": o lado que pede e o lado com licença → `_problemas_do_passo()`.
-- O desfecho de todo pedido → `_desfecho_do_trabalho()` (pelo relatório).
+- Rodar um script (no trabalho com licença, ao ler uma tarefa, solto, na tarefa de prova) → `_comando_do_powershell()`
+  (o mesmo comando; a tarefa de prova pelo `xml_da_tarefa_de_script()`) e `_gravar_script()` (a mesma marca de UTF-8).
+- A regra "a pasta de troca é só desta conta" (quem grava e quem lê): o lado que pede e o lado com licença →
+  `problemas_da_pasta_de_troca()`.
+- A regra "o passo é aceito": o lado que pede, o lado com licença e o teste dos pedidos da janela →
+  `problemas_do_passo()` (`tests/test_windows_janela_de_prova.py::test_o_pedido_de_cada_prova_passa_nas_regras_da_peca`).
+- O desfecho de todo pedido → `resposta_do_pedido()` e `desfecho_do_trabalho()` (pelo relatório, contra o pedido).
+- "Este programa tem função própria na peça": o rodar e o lançar genéricos → a mesma conferência pela pasta do
+  Windows (`tests/test_windows_peca.py::test_a_peca_e_fechada_rodar_e_lancar_recusam_os_programas_com_funcao_propria`).
 - O XML da tarefa, o que a peça escreve e o que o Windows devolve → `ler_xml_da_tarefa()`.
 - Provas de que os caminhos dão o mesmo resultado: `tests/test_windows_peca.py::test_o_xml_da_tarefa_ida_e_volta`,
   `tests/test_windows_peca.py::test_o_leitor_de_tarefa_le_o_que_o_windows_devolve`,
@@ -378,8 +420,9 @@ Lido (documentação ou código), separado do deduzido:
 - **Política de scripts** (empresa) ou antivírus que barre o PowerShell: o script falha e a resposta diz "falhou".
 - **Lançar solto num grupo de processos que fecha os filhos:** a peça lê o grupo e recusa. No PC (dentro da conversa
   do Claude) o grupo solta sozinho; aberto pelo atalho não há grupo. Os outros casos não foram vistos.
-- **Os testes da peça** criam e apagam uma pasta própria na pasta temporária da conta (fora do projeto), como o pytest
-  faz; só a que o próprio teste criou.
+- **Os testes da peça** criam e apagam uma pasta própria na pasta local da conta (perguntada ao Windows; fora do
+  projeto), como o pytest faz na pasta temporária; só a que o próprio teste criou. O teste da pasta onde outra conta
+  grava cria a dele dentro do projeto (`saida_teste`) e dá a licença para Todos só nela, e a apaga no fim.
 - **Lido × deduzido:** o que tem endereço em "O que li" foi lido; o nome na pergunta e a pergunta 3 são dedução, a
   provar.
 - **Pergunta preparada, só para depois da sessão A (se ela confirmar o risco 1):** "Quando o Kaique está em outra
@@ -387,6 +430,21 @@ Lido (documentação ou código), separado do deduzido:
   O que você escolhe: A (sugestão) a janelinha que avisa antes da pergunta ganha um botão "Continuar", e com o clique
   dele o programa fica na frente e a pergunta vem no meio; B a janelinha diz também "Se a pergunta não aparecer,
   clique no escudo que pisca na barra de tarefas"; C fica como está." O print sai da própria sessão A.
+- **Volta 1, a recusa do rodar genérico é pela pasta do Windows** (todo programa de lá), não por uma lista de nomes:
+  a lista com o nome das ferramentas de licença de pasta fazia o porteiro (K03, que vale também na peça) acusar a
+  própria recusa, e eu não mexo no porteiro. É mais largo que o pedido (pega qualquer ferramenta do Windows), o que
+  cumpre "a peça fechada". Se um dia o rodar genérico precisar de um programa da pasta do Windows, a peça ganha uma
+  função própria para ele.
+- **Volta 1, testes que no Windows do GitHub mexem no Windows da nuvem** (que roda com a licença e é jogado fora):
+  o da tarefa que não confere (`test_a_tarefa_criada_que_nao_confere_e_apagada`) cria lá uma tarefa de verdade, que a
+  peça apaga, e o teste tira a pasta do Agendador se foi ele que a criou; o do desfazer até o fim roda dois scripts com
+  licença. No PC do Samuel, sem a licença, nada disso muda o Windows (o Windows recusa criar a tarefa; o trabalho é
+  recusado antes). Fica para a gerente dizer se vale como prova extra (não substitui a sessão à vista).
+- **Volta 1, a prova 5 (b)** (arquivo que existe e não é programa) chega ao Windows de verdade e só roda na sessão à
+  vista; pela documentação, ela não abre caixa nem pergunta (não rodei, para não arriscar a tela do Samuel).
+- **Volta 1, o arquivo `relatorios/janela-de-prova/agendador-antes-da-prova.json`** nasce na sessão A (antes da
+  pergunta 1) e a pergunta 3 o apaga quando desfaz tudo; se a sessão parar no meio, ele fica e diz como estava o
+  Agendador antes.
 - **Para o passo 4:** as leituras do serviço de entrar de longe, da conta e das duas trancas (a peça já dá o rodar e
   esperar e o ler; a leitura específica é da peça 3).
 
@@ -424,11 +482,60 @@ sem o certificado pago, a pergunta mostra o **nome do arquivo** do programa, e o
 
 ## Commit
 
-1b1b0fa6 (o último commit do trabalho; depois dele só este formulário muda).
+COMMIT_VOLTA1
 
 ## O que o agente que tentou quebrar achou
 
-(a preencher depois da volta de quem tenta quebrar)
+Relatório 1 (`quem-quebrou/relatorio-1.md`, commit 5de9c52d). Destino de cada achado (D-775). Consertos nos commits
+dcc4981c, 7e726221 e a21b311a; a prova de reversão de cada conserto está em `anexos/reversao-volta1-resultado.txt`.
+
+1. **Grave, a janela não fazia as perguntas 2 e 3** (nome com parênteses): consertado em dcc4981c. Nome sem parênteses;
+   os pedidos de cada prova saem de funções sem o Windows, e
+   `tests/test_windows_janela_de_prova.py::test_o_pedido_de_cada_prova_passa_nas_regras_da_peca` passa cada um pelas
+   regras da peça (acusa o nome antigo); o desfazer da pergunta 3 vai até o fim mesmo com um passo que falha
+   (`tests/test_windows_peca.py::test_o_desfazer_vai_ate_o_fim_mesmo_com_um_passo_que_falha`).
+2. **O resultado de uma vez anterior enganava a prova**: consertado em dcc4981c. O passo com licença deixa o resultado
+   vazio antes de criar a tarefa, e a janela só aceita o que foi escrito depois de mandar rodar
+   (`tests/test_windows_janela_de_prova.py::test_a_pergunta_1_zera_o_resultado_da_tarefa_antes_de_criar`).
+3. **Nenhum teste do "Não"**: consertado em dcc4981c. A decisão saiu para `o_que_houve_ao_abrir()` e
+   `resposta_do_pedido()` (lugar único), cobradas por `tests/test_windows_peca.py::test_o_nao_e_so_o_nao_e_uma_falha_nunca_vira_nao`
+   (acusa as mutações M8 e M9). A prova 5 ganhou a parte (b), que chega ao Windows (só à vista).
+4. **Nenhum teste de outra conta que grava na pasta**: consertado em dcc4981c
+   (`tests/test_windows_peca.py::test_o_lado_com_licenca_recusa_a_pasta_onde_outra_conta_grava`, no lado com licença;
+   acusa M7).
+5. **A tarefa que não confere ficava; a licença comparada pelo texto**: consertado em dcc4981c e 7e726221. A licença é
+   lida pelo próprio Windows e comparada pelo sentido; o que não confere é apagado e conferido; o técnico vai inteiro
+   ao registro da janela (`tests/test_windows_peca.py::test_a_licenca_da_tarefa_e_comparada_pelo_sentido_com_o_que_o_windows_devolve`,
+   `tests/test_windows_peca.py::test_a_tarefa_criada_que_nao_confere_e_apagada`).
+6. **A pasta `\EditorImpressao` ficava no Agendador**: consertado em dcc4981c. A janela anota antes da pergunta 1 se
+   ela existia; a pergunta 3 a apaga (só vazia) se foi a prova que a criou e diz, lido de novo, se ela ficou
+   (`tests/test_windows_peca.py::test_a_pasta_do_programa_no_agendador_e_lida_sem_licenca`).
+7. **"Apagada de novo" sem conferir**: consertado em dcc4981c (diz se sobrou;
+   `tests/test_windows_peca.py::test_a_pasta_segura_que_nao_confere_e_apagada_de_novo_e_conferida`).
+8. **Ninguém conferia quem lê a pasta de troca**: consertado em dcc4981c (a regra recusa quem lê, dos dois lados;
+   `tests/test_windows_peca.py::test_a_regra_da_pasta_de_troca_recusa_outra_conta`).
+9. **Depois do tempo esgotado o trabalho continua sem ninguém saber**: consertado em dcc4981c. A frase diz que ele
+   pode continuar; a pasta de troca fica; sem o processo, acompanha pelo relatório; a espera que falha não gira até o
+   limite (`tests/test_windows_peca.py::test_o_nao_e_so_o_nao_e_uma_falha_nunca_vira_nao`).
+10. **O script "deu certo" com um programa de dentro falhando**: consertado em dcc4981c (`Confere-Comando` e o fim do
+    script; `tests/test_windows_peca.py::test_o_script_falha_quando_um_programa_de_fora_falha`).
+11. **A resposta junta com o erro**: consertado em dcc4981c (separados; mesmo teste).
+12. **A peça entregava o cru do Windows**: consertado em dcc4981c e a21b311a, como a gerente decidiu (comentário "A
+    PEÇA É FECHADA" no topo da peça; `tests/test_windows_peca.py::test_a_peca_e_fechada_rodar_e_lancar_recusam_os_programas_com_funcao_propria`,
+    `tests/test_windows_peca.py::test_a_peca_e_fechada_ninguem_usa_o_que_tem_sublinhado_fora_dela`). A conferência
+    no porteiro fica com a gerente; não mexi em `regras_dos_agentes/`.
+13. **Proteções sem teste (M10, M11, M12)**: consertado em dcc4981c e 7e726221 (um teste para cada; os três acusam a
+    mutação).
+14. **O relatório não era comparado com o pedido**: consertado em dcc4981c
+    (`tests/test_windows_peca.py::test_o_relatorio_tem_de_bater_com_o_pedido`).
+15. **A mesma conta pode trocar o script antes de o programa com licença usar**: não é defeito deste passo. A Microsoft
+    não trata a passagem da mesma conta para a licença como fronteira de segurança (Russinovich: "UAC elevations are
+    conveniences and not security boundaries"), e o plano pede só "outra conta". Fica anotado como cuidado para o
+    passo 3: nada que o ajudante (que roda como o sistema) roda pode vir de pasta que a conta comum grava (por isso a
+    tarefa de prova roda um script da pasta segura).
+16. Observação, não defeito: fica como está, como a gerente mandou.
+17. **Fechar a janela no meio de uma prova**: consertado em dcc4981c (a janela não fecha e pede para esperar;
+    `tests/test_windows_janela_de_prova.py::test_a_janela_nao_fecha_no_meio_de_uma_prova`).
 
 ## A prova de verdade
 
