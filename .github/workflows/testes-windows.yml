@@ -208,7 +208,7 @@ jobs:
     timeout-minutes: 30
     env:
       VERSAO_DE_TESTE: obra-2026-10-26
-      PORTEIRO_LIGADO: "0"
+      PORTEIRO_LIGADO: "1"
     steps:
       - name: Codigo do programa (este commit)
         uses: actions/checkout@v4
