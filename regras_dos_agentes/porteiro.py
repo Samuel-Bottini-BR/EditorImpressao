@@ -15,7 +15,8 @@ Nenhuma conferência tem exceção própria escrita no código: nem por arquivo,
 
 Onde cada busca olha (o "programa"): os `.py` de `core/`, de `ui/` e da raiz. O pacote `regras_dos_agentes/`, os
 testes e os scripts de outras pastas não são programa (o próprio porteiro tem as palavras que procura escritas como
-dado). A K24 é a única que olha os scripts de teste, e lê a estrutura do código (chamada de verdade), não o texto.
+dado). A K16 e a K24 olham também os scripts de teste e de apoio, e leem a estrutura do código (a importação e a
+chamada de verdade), não o texto.
 
 Seguro mexer: o texto de `porque`; acrescentar uma palavra a uma busca **com** o exemplo errado e o certo no teste.
 Arriscado: tirar palavra de uma busca, mudar o que conta como "programa" (`e_programa`), ou mudar o que conta como

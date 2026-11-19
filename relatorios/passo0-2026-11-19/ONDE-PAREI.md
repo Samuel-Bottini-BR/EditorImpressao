@@ -138,9 +138,11 @@ o formulário da entrega (D-792), conferido pelo próprio programa:
 - **O gancho antes do commit:** https://git-scm.com/docs/githooks, pre-commit: "It takes no parameters [...] Exiting
   with a non-zero status from this script causes the git commit command to abort before creating a commit." E: "can be
   bypassed with the --no-verify option".
-- **Quebra de linha do Windows no gancho:** testado de verdade em 19/11 (`sh` do Git para Windows 2.53 roda um script
-  com quebras de linha do Windows sem erro); com `core.autocrlf=true` (a configuração do Git deste PC, em
-  `C:/Program Files/Git/etc/gitconfig:1`), o gancho sai da cópia com essas quebras.
+- **Quebra de linha do Windows no gancho:** com `core.autocrlf=true` (a configuração do Git deste PC, lida com
+  `git config --show-origin`), o git troca a quebra de linha ao tirar o arquivo para a cópia
+  (https://git-scm.com/docs/git-config, entrada `core.autocrlf`), e o gancho sai com as quebras do Windows. Testado de
+  verdade em 19/11: o `sh` do Git para Windows 2.53 roda um script assim sem erro (e os testes do gancho rodam com a
+  cópia que o git tirou).
 - **A rodada do GitHub (K21):** lida em 19/11 na rodada 44202459161 (https://github.com/Samuel-Bottini-BR/EditorImpressao/actions/runs/44202459161):
   o commit testado só aparece no registro do passo "Trocar o codigo" (`.github/scripts/trocar_codigo.sh:31`, a linha
   "codigo trocado pelo de <ramo> (<commit>)"); `gh api .../jobs/<id>/logs` recusa ("the response contains terminal
