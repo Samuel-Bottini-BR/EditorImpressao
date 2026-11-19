@@ -40,14 +40,32 @@ from core import windows  # noqa: E402
 PY = sys.executable
 
 
+def _pasta_local_da_conta() -> Path:
+    """A pasta local da conta (a %LOCALAPPDATA% de verdade), perguntada ao Windows: o GitHub e o conftest desviam as
+    variáveis de ambiente (a pasta temporária do GitHub fica no D: da máquina da nuvem, sem as licenças da conta)."""
+    import uuid
+    from ctypes import wintypes
+
+    guid = windows._GUID.from_buffer_copy(uuid.UUID("f1b32785-6fba-4fcf-9d55-7b8e7f157091").bytes_le)
+    saida = wintypes.LPWSTR()
+    shell32 = ctypes.WinDLL("shell32")
+    shell32.SHGetKnownFolderPath.argtypes = [ctypes.c_void_p, wintypes.DWORD, wintypes.HANDLE,
+                                             ctypes.POINTER(wintypes.LPWSTR)]
+    assert shell32.SHGetKnownFolderPath(ctypes.byref(guid), 0, None, ctypes.byref(saida)) == 0
+    caminho = Path(saida.value)
+    ctypes.WinDLL("ole32").CoTaskMemFree(ctypes.cast(saida, ctypes.c_void_p))
+    return caminho
+
+
 @pytest.fixture(autouse=True)
 def _pasta_da_conta_no_disco_do_sistema(monkeypatch):
-    """A pasta de troca tem de nascer onde nasce no programa de verdade: dentro da pasta da conta no disco do sistema,
-    onde só a conta, o sistema e os administradores gravam. A pasta de dados dos testes (`saida_teste`, no D: do
-    Samuel) deixa "Todos" gravarem, e a peça recusa a pasta de troca ali (com razão). Então, nestes testes, a pasta
-    de dados fica numa pasta própria do teste dentro da pasta temporária da conta (como o pytest faz), criada com
-    `os.mkdir` comum (herda as licenças da conta) e apagada no fim. Só a pasta que o próprio teste criou é apagada."""
-    pasta = Path(tempfile.gettempdir()) / f"EditorImpressaoTestesPecaWindows-{os.getpid()}-{time.time_ns()}"
+    """A pasta de troca tem de nascer onde nasce no programa de verdade: dentro da pasta local da conta, onde só a
+    conta, o sistema e os administradores gravam. A pasta de dados dos testes (`saida_teste`, no D: do Samuel) deixa
+    "Todos" gravarem, e a pasta temporária do GitHub fica no D: da máquina da nuvem: a peça recusa a pasta de troca
+    nos dois (com razão). Então, nestes testes, a pasta de dados fica numa pasta própria do teste dentro da pasta local
+    da conta (perguntada ao Windows), criada com `os.mkdir` comum (herda as licenças da conta) e apagada no fim. Só a
+    pasta que o próprio teste criou é apagada."""
+    pasta = _pasta_local_da_conta() / f"EditorImpressaoTestesPecaWindows-{os.getpid()}-{time.time_ns()}"
     os.mkdir(pasta)
     monkeypatch.setenv("LOCALAPPDATA", str(pasta))
     yield pasta
