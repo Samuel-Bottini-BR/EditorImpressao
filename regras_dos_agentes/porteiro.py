@@ -148,15 +148,62 @@ def e_script_python(caminho: str) -> bool:
 # As buscas
 # ----------------------------------------------------------------------------------------------------------------
 
-# K01 (correção 1 do plano-v3): as palavras sem exigir aspas, e os nomes do código. `\b` evita pegar nome de função
-# que só contém a palavra (`_caminho_do_powershell` não é conversa com o Windows; `"powershell.exe"` é).
-CONVERSA_COM_O_WINDOWS = re.compile(
-    r"ShellExecute|\brunas\b|\bschtasks\b|\bicacls\b|Set-Acl\b|\bUpdate\.exe\b|DETACHED_PROCESS|\bnetsh\b|"
-    r"New-NetFirewallRule|Add-WindowsCapability|\bsc\.exe\b|windll\.shell32|\bpowershell\b", re.I)
-DETACHED = re.compile(r"\bDETACHED_PROCESS\b")
-LICENCA_A_MAO = re.compile(r"\bicacls\b|/inheritance:r|/setowner|\bSet-Acl\b", re.I)
+# K01 (correção 1 do plano-v3, ampliada em 19/11 com os achados de quem tentou quebrar): as palavras sem exigir aspas,
+# e os nomes do código. `\b` evita pegar nome de função que só contém a palavra (`_caminho_do_powershell` não é
+# conversa com o Windows; `"powershell.exe"` é). É a lista única do que é "conversa com o Windows" no pacote: a tabela
+# de etiquetas (`tabela_arquivos.py`) usa a mesma. Cada linha é (expressão, o que é).
+# PROTEGIDA: nenhuma linha sai sem a gerente; o teste do GitHub compara com a versão de teste
+# (`tests/test_conferencias_protecao.py`). Acrescentar linha é seguro, com o exemplo errado e o certo no teste.
+# Fontes: os módulos do PowerShell (ScheduledTasks, NetSecurity, LocalAccounts, Microsoft.PowerShell.Security,
+# Microsoft.PowerShell.Management), https://learn.microsoft.com/powershell/module/scheduledtasks/; o `winreg` e o
+# `os.startfile` da biblioteca do Python (https://docs.python.org/3/library/winreg.html,
+# https://docs.python.org/3/library/os.html#os.startfile); o `ctypes` (https://docs.python.org/3/library/ctypes.html,
+# `windll`, `WinDLL`, `oledll`); os programas do Windows de linha de comando.
+PALAVRAS_DO_WINDOWS: list[tuple[str, str]] = [
+    (r"\bpowershell\b", "o PowerShell"),
+    (r"\bpwsh\b", "o PowerShell 7"),
+    (r"ShellExecute", "abrir programa pelo ShellExecute"),
+    (r"\bos\.startfile\b", "abrir arquivo ou programa pelo ShellExecute (os.startfile)"),
+    (r"\bos\.system\b|\bos\.popen\b", "rodar um comando pelo cmd"),
+    (r"\bcmd(?:\.exe)?\b[\"']?(?:\s*,\s*[\"']|\s+)/[cCkK]\b", "rodar um comando pelo cmd"),
+    (r"\brunas\b", "pedir licença de administrador"),
+    (r"\bStart-Process\b", "abrir programa pelo PowerShell (inclusive com licença)"),
+    (r"\bschtasks\b", "tarefas do Windows"),
+    (r"-(?:Clustered)?ScheduledTask\w*\b", "tarefas do Windows pelo PowerShell"),
+    (r"Schedule\.Service", "tarefas do Windows pelo COM"),
+    (r"\bicacls\b|\bcacls\b|\btakeown\b|-Acl\b|/inheritance|/setowner|Set(?:Named)?SecurityInfo|SetFileSecurity",
+     "licença e dono de pastas e arquivos"),
+    (r"\bwinreg\b|\b_winreg\b|\breg(?:\.exe)?\s+(?:add|delete|query|import|export|copy)\b|\bHK(?:LM|CU|CR|U|CC):|"
+     r"\bHKEY_\w+|Registry::|-ItemProperty\b|\bregedit\b", "o registro do Windows"),
+    (r"\bmsiexec\b|\bUpdate\.exe\b", "instaladores"),
+    (r"\bnetsh\b|-NetFirewall\w*\b", "o firewall e a rede do Windows"),
+    (r"\bsc(?:\.exe)?\s+(?:create|delete|config|start|stop|query)\b|\bsc\.exe\b|-Service\b", "serviços do Windows"),
+    (r"-Local(?:User|Group\w*)\b|\bnet(?:\.exe)?\s+(?:user|localgroup)\b", "contas do Windows"),
+    (r"-WindowsCapability\b|-WindowsOptionalFeature\b|\bdism(?:\.exe)?\b", "recursos do Windows"),
+    (r"-CimInstance\b|Invoke-CimMethod|-WmiObject\b|\bwmic\b|\bwin32com\b|\bcomtypes\b|\bpythoncom\b",
+     "ler ou mudar o Windows pelo WMI ou COM"),
+    (r"\bwin32api\b|\bwin32con\b|\bwin32process\b|\bwin32security\b|\bwin32service\b|\bpywintypes\b",
+     "o pywin32"),
+    # Só onde a biblioteca do Windows é pega (`ctypes.windll...`, `WinDLL("kernel32")`), não cada chamada feita depois
+    # pela mesma variável: o lugar é onde a conversa começa.
+    (r"\bwindll\b|\bWinDLL\b|\boledll\b", "funções do Windows pelo ctypes"),
+    (r"\bDETACHED_PROCESS\b|\bcreationflags\s*=\s*(?:0x[0-9a-fA-F]+|\d+)\b", "lançar processo com bandeira do Windows"),
+    (r"-ExecutionPolicy\b|-MpPreference\b|\bbcdedit\b|\bwevtutil\b|\beventcreate\b|\brundll32\b|\bmshta\b",
+     "outras configurações do Windows"),
+]
+CONVERSA_COM_O_WINDOWS = re.compile("|".join(f"(?:{p})" for p, _ in PALAVRAS_DO_WINDOWS), re.I)
+
+# K02: o DETACHED_PROCESS pelo nome ou pelo número (0x8 = 8), na bandeira de lançar processo. PROTEGIDA.
+PALAVRAS_DE_DETACHED: list[str] = [r"\bDETACHED_PROCESS\b",
+                                   r"\bcreationflags\s*=\s*[^,)\n]*?(?<![\w.])(?:0x0*8|8)(?![\w.])"]
+DETACHED = re.compile("|".join(f"(?:{p})" for p in PALAVRAS_DE_DETACHED))
+# K03: licença de pasta mudada à mão. PROTEGIDA.
+PALAVRAS_DE_LICENCA: list[str] = [r"\bicacls\b", r"\bcacls\b", r"\btakeown\b", r"/inheritance:r", r"/setowner",
+                                  r"\bSet-Acl\b", r"Set(?:Named)?SecurityInfo", r"SetFileSecurity"]
+LICENCA_A_MAO = re.compile("|".join(f"(?:{p})" for p in PALAVRAS_DE_LICENCA), re.I)
 NUMERO_DE_DECISAO = re.compile(r"\bD-\d{3,}\b")
 EMOJI = re.compile("[\U0001F300-\U0001FAFF\U0001F000-\U0001F2FF\u2600-\u27BF\u2B00-\u2BFF\uFE0F]")
+# K16 e K23: PROTEGIDAS (nada sai sem a gerente).
 GERADORES = {"diffusers", "realesrgan", "gfpgan", "basicsr", "codeformer", "facexlib", "lama_cleaner", "iopaint",
              "invokeai", "stable_diffusion", "controlnet_aux", "kandinsky"}
 FERRAMENTAS_PROIBIDAS_AOS_AGENTES = re.compile(r"^(Agent|Task)$|Artifact", re.I)

@@ -21,12 +21,13 @@ from regras_dos_agentes import excecoes, porteiro, texto_para_o_samuel
 
 RAIZ = Path(__file__).resolve().parent.parent
 PASSOS_DO_PLANO = {"1", "2", "3", "4", "5", "6"}
+PASSOS_VALIDOS = PASSOS_DO_PLANO | {excecoes.DEPOIS_DA_ENTREGA, excecoes.FORA_DO_PLANO}
 ARQUIVOS_DE_FORA_D800 = {"ui/automatico.py", "teste_velocidade.py", "avaliar.py"}
 
 
 def lista_de(itens: list[dict], situacao: str = "valendo") -> excecoes.Lista:
     """Uma lista de exceções feita aqui, para provar a comparação."""
-    sim = {"em": "19/11/2026", "palavras": "sim"} if situacao == "valendo" else None
+    sim = {"decisao": "D-791", "em": "19/11/2026", "palavras": "sim"} if situacao == "valendo" else None
     return excecoes.Lista(situacao, sim, itens, {"situacao": situacao, "sim_do_samuel": sim, "itens": itens})
 
 
@@ -52,7 +53,7 @@ def test_a_lista_do_repositorio_tem_o_formato_e_cada_item_tem_data_e_passo():
     assert lista.itens, "a lista de partida não pode estar vazia antes dos consertos"
     for i in lista.itens:
         assert re.fullmatch(r"\d{4}-\d{2}-\d{2}", i["data"]), i
-        assert i["passo"] in PASSOS_DO_PLANO | {excecoes.DEPOIS_DA_ENTREGA}, i
+        assert i["passo"] in PASSOS_VALIDOS, i
         assert porteiro.POR_CODIGO.get(i["conferencia"]), i
 
 
@@ -61,8 +62,9 @@ def test_so_os_lugares_que_o_samuel_deixou_para_depois_ficam_depois_da_entrega()
     lista = excecoes.ler(RAIZ)
     de_fora = {i["arquivo"] for i in lista.itens if i["passo"] == excecoes.DEPOIS_DA_ENTREGA}
     assert de_fora <= ARQUIVOS_DE_FORA_D800
-    assert not any(i["arquivo"] in ARQUIVOS_DE_FORA_D800 and i["passo"] != excecoes.DEPOIS_DA_ENTREGA
-                   for i in lista.itens)
+    # Nos arquivos da D-800, o que não é dos 5 lugares dele (achado pela busca ampliada) espera a pergunta.
+    assert all(i["passo"] in (excecoes.DEPOIS_DA_ENTREGA, excecoes.FORA_DO_PLANO)
+               for i in lista.itens if i["arquivo"] in ARQUIVOS_DE_FORA_D800)
 
 
 def test_o_repositorio_so_tem_os_erros_que_a_lista_deixa():
@@ -79,14 +81,36 @@ def test_o_repositorio_so_tem_os_erros_que_a_lista_deixa():
     assert comparacao.passa, "o porteiro barrou:\n" + "\n".join(comparacao.explicar())
 
 
-def test_a_lista_valendo_sem_o_sim_do_samuel_nao_vale():
-    """Trocar para "valendo" sem escrever o "sim" dele (data e palavras) é erro, nunca "vale"."""
-    texto = (RAIZ / excecoes.ARQUIVO_DA_LISTA).read_text(encoding="utf-8")
-    sem_sim = texto.replace('"situacao": "proposta"', '"situacao": "valendo"')
-    with pytest.raises(excecoes.ListaErrada):
-        excecoes.ler(RAIZ, sem_sim)
-    com_sim = sem_sim.replace('"sim_do_samuel": null', '"sim_do_samuel": {"em": "19/11/2026", "palavras": "sim"}')
-    assert excecoes.ler(RAIZ, com_sim).vale
+def test_a_lista_valendo_sem_o_sim_do_samuel_conferido_no_livro_nao_vale():
+    """"valendo" sem o "sim" do Samuel, ou com um "sim" inventado, não abre; com o "sim" que está no Livro, abre.
+
+    Monta a lista com dados próprios (não com o arquivo do repositório): assim vale nos dois estados da lista, antes e
+    depois do "sim" (achado 1 de quem tentou quebrar, 19/11: o teste antigo trocava o texto do arquivo e ficava
+    vermelho no dia em que a lista passasse a valer).
+    """
+    import json
+
+    base = {"situacao": "valendo", "itens": [item("atualizacao.py", "K02", "x")]}
+    for sim in (None, {"em": "19/11/2026", "palavras": "sim"}, {"decisao": "D-791", "em": "19/11/2026",
+                                                                 "palavras": "palavras que ele nunca disse"},
+                {"decisao": "D-999", "em": "19/11/2026", "palavras": "sim"}):
+        with pytest.raises(excecoes.ListaErrada):
+            excecoes.ler(RAIZ, json.dumps(dict(base, sim_do_samuel=sim)))
+    certo = {"decisao": "D-791", "em": "19/11/2026", "palavras": "Então anoto a lista de exceções como combinamos?"}
+    assert excecoes.ler(RAIZ, json.dumps(dict(base, sim_do_samuel=certo))).vale
+    assert not excecoes.ler(RAIZ, json.dumps(dict(base, situacao="proposta", sim_do_samuel=None))).vale
+
+
+def test_item_novo_so_entra_com_o_sim_proprio_conferido_no_livro():
+    """D-791, "nada entra nela sem o 'sim' dele": item novo sem o "sim" próprio (conferido no Livro) é acusado."""
+    from regras_dos_agentes.livro import Livro
+
+    livro = Livro.do_repositorio(RAIZ)
+    antes = lista_de([item("a.py", "K01", "x")])
+    sem_sim = lista_de([item("a.py", "K01", "x"), item("b.py", "K01", "y")])
+    assert [i["arquivo"] for i in excecoes.acrescentados_sem_sim(antes, sem_sim, livro)] == ["b.py"]
+    com_sim = dict(item("b.py", "K01", "y"), sim={"decisao": "D-791", "em": "19/11/2026", "palavras": "sim"})
+    assert excecoes.acrescentados_sem_sim(antes, lista_de([item("a.py", "K01", "x"), com_sim]), livro) == []
 
 
 # ---------------------------------------------------------------- a exceção é por lugar
@@ -147,10 +171,10 @@ def test_arquivo_ilegivel_nunca_e_excecao():
         excecoes.gerar(ilegivel, "abc")
 
 
-def test_lugar_sem_passo_nao_entra_na_lista_sem_a_gerente_decidir():
-    """Gerar a lista com um lugar que nenhum passo do plano conserta é erro, nunca um passo inventado."""
-    with pytest.raises(excecoes.ListaErrada):
-        excecoes.gerar(achados({"main.py": DEFEITO_1}), "abc")
+def test_lugar_que_o_plano_nao_conserta_fica_para_o_samuel_decidir():
+    """Um lugar fora do que o plano conserta nunca ganha um passo inventado: fica "fora do plano, a perguntar"."""
+    gerada = excecoes.gerar(achados({"main.py": DEFEITO_1}), "abc")
+    assert {i["passo"] for i in gerada["itens"]} == {excecoes.FORA_DO_PLANO}
     gerada = excecoes.gerar(achados({"atualizacao.py": DEFEITO_1}), "abc", "2026-11-19")
     assert {i["passo"] for i in gerada["itens"]} == {"3"} and gerada["situacao"] == "proposta"
 

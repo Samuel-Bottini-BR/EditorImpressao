@@ -13,7 +13,8 @@ Como funciona:
   conserto); item novo só entra com o "sim" do Samuel (a gerente põe; o agente que acrescenta é barrado, K17).
 - **Enquanto o Samuel não disser "sim", a lista não vale** (`situacao: "proposta"`): o teste que barra o código do
   repositório fica parado, com o motivo escrito. A gerente liga trocando para `"valendo"` e escrevendo o "sim" dele
-  (data e palavras) em `sim_do_samuel`; um teste cobra que "valendo" sem o "sim" não passa.
+  em `sim_do_samuel` (a decisão do Livro onde ele está, a data e as palavras, conferidas no Livro); "valendo" sem esse
+  "sim" não abre (`ler` recusa).
 
 O arquivo de dados é `tests/conferencias_excecoes.json` (ao lado dos testes; no git). Ele é gerado por este programa
 (`python -m regras_dos_agentes excecoes --gerar`), nunca escrito à mão.
@@ -32,24 +33,37 @@ from fnmatch import fnmatch
 from pathlib import Path
 from typing import Iterable
 
+from .livro import Livro
 from .porteiro import Achado
 
 ARQUIVO_DA_LISTA = "tests/conferencias_excecoes.json"
 DEPOIS_DA_ENTREGA = "depois da entrega"
+FORA_DO_PLANO = "fora do plano, a perguntar ao Samuel"
 
 # (arquivo, conferência, função) → (passo do plano-v3 que conserta, por quê). A primeira linha que casa vale.
 # Tirado da tabela "A lista de partida" do plano-v3, passo 0 (relatorios/plano-windows-2026-11-18/plano-v3.md).
 PASSO_QUE_CONSERTA: list[tuple[str, str, str, str, str]] = [
-    ("empacotar.py", "*", "*", "2", "o publicar passa a ler a assinatura pela peça única do Windows"),
+    ("empacotar.py", "*", "assinatura_do_arquivo", "2", "o publicar passa a ler a assinatura pela peça única do Windows"),
     ("atualizacao.py", "K04", "criar_as_tarefas", "5", "o desinstalar limpo tira o número de decisão do registro"),
     ("atualizacao.py", "K04", "ao_desinstalar", "5", "o desinstalar limpo tira o número de decisão do registro"),
     ("atualizacao.py", "*", "*", "3", "o atualizador passa a conversar com o Windows só pela peça única"),
     ("core/_testes_a_distancia_windows.py", "*", "*", "4", "os testes à distância passam a usar a peça única"),
+    # O desfazer (plano_de_desfazer e a tarefa dele) é do desinstalar limpo, passo 5 (plano-v3, passo 5, "Arquivos").
     ("core/testes_a_distancia.py", "*", "xml_da_tarefa_do_desfazer", "5", "o desinstalar limpo troca a tarefa do desfazer"),
+    ("core/testes_a_distancia.py", "*", "_comando_preparar_o_desfazer", "5", "o desinstalar limpo troca a tarefa do desfazer"),
+    ("core/testes_a_distancia.py", "*", "_passos_dos_testes_a_distancia", "5", "o desinstalar limpo refaz o desfazer"),
+    ("core/testes_a_distancia.py", "*", "_passos_das_nossas_tarefas", "5", "o desinstalar limpo refaz o desfazer"),
+    ("core/testes_a_distancia.py", "*", "_comando_apagar_a_pasta_das_tarefas_se_vazia", "5",
+     "o desinstalar limpo refaz o desfazer"),
     ("core/testes_a_distancia.py", "*", "*", "4", "os testes à distância passam a usar a peça única e a pasta segura"),
+    # Os 5 lugares que o Samuel deixou para depois da entrega (D-800), pelas funções onde estavam em 19/11.
     ("ui/automatico.py", "K04", "*", DEPOIS_DA_ENTREGA, "dicas do Automático com número de decisão; D-800"),
-    ("teste_velocidade.py", "K01", "*", DEPOIS_DA_ENTREGA, "o teste de velocidade abre o PowerShell; D-800"),
-    ("avaliar.py", "K01", "*", DEPOIS_DA_ENTREGA, "a régua dos filtros pergunta a Área de Trabalho ao Windows; D-800"),
+    ("teste_velocidade.py", "K01", "_caminho_do_powershell", DEPOIS_DA_ENTREGA,
+     "o teste de velocidade abre o PowerShell; D-800"),
+    ("avaliar.py", "K01", "achar_acervo", DEPOIS_DA_ENTREGA,
+     "a régua dos filtros pergunta a Área de Trabalho ao Windows; D-800"),
+    # Achados pela busca ampliada (19/11), fora do que o plano conserta: o Samuel decide (a gerente pergunta).
+    ("*", "*", "*", FORA_DO_PLANO, "fora do que o plano da parte do Windows conserta: a gerente pergunta ao Samuel"),
 ]
 
 
@@ -95,10 +109,12 @@ def ler(raiz: Path | str, conteudo: str | None = None) -> Lista:
     situacao = dados.get("situacao")
     if situacao not in ("proposta", "valendo"):
         raise ListaErrada(f"situação da lista desconhecida: {situacao!r} (só 'proposta' ou 'valendo')")
+    livro = Livro.do_repositorio(raiz)
     sim = dados.get("sim_do_samuel")
-    if situacao == "valendo" and not (isinstance(sim, dict) and str(sim.get("em", "")).strip()
-                                      and str(sim.get("palavras", "")).strip()):
-        raise ListaErrada("a lista está 'valendo' sem o 'sim' do Samuel escrito (sim_do_samuel: em e palavras)")
+    if situacao == "valendo":
+        problema = problema_do_sim(sim, livro)
+        if problema:
+            raise ListaErrada(f"a lista está 'valendo' sem o 'sim' do Samuel conferido no Livro: {problema}")
     itens = dados.get("itens")
     if not isinstance(itens, list):
         raise ListaErrada("a lista não tem 'itens'")
@@ -114,6 +130,25 @@ def ler(raiz: Path | str, conteudo: str | None = None) -> Lista:
             raise ListaErrada(f"o mesmo lugar aparece duas vezes na lista: {k}")
         vistos.add(k)
     return Lista(situacao, sim, itens, dados)
+
+
+def problema_do_sim(sim: object, livro: Livro) -> str | None:
+    """O que falta num "sim" do Samuel (None = está certo).
+
+    O "sim" é `{"decisao": "D-nnn", "em": "data", "palavras": "..."}`: a decisão tem de existir no Livro e as palavras
+    têm de estar na linha dela, letra por letra. Assim um "sim" inventado ("x") não passa: a gerente registra o "sim"
+    no Livro primeiro (CLAUDE.md §11.1) e cita a decisão aqui.
+    """
+    if not isinstance(sim, dict):
+        return "falta o sim_do_samuel (decisao, em, palavras)"
+    decisao, em, palavras = (str(sim.get(c, "")).strip() for c in ("decisao", "em", "palavras"))
+    if not (decisao and em and palavras):
+        return "o sim precisa de decisao, em e palavras"
+    if not livro.existe(decisao):
+        return f"a decisão {decisao} do sim não existe no Livro"
+    if not livro.tem_as_palavras(decisao, palavras):
+        return f"as palavras do sim não estão na linha da {decisao} no Livro"
+    return None
 
 
 def passo_do_lugar(arquivo: str, conferencia: str, funcao: str) -> tuple[str, str]:
@@ -228,6 +263,14 @@ def diminuir(lista: Lista, achados: Iterable[Achado]) -> dict:
         if ficam:
             itens.append(dict(item, quantas=ficam))
     return dict(lista.dados, itens=itens)
+
+
+def acrescentados_sem_sim(antes: Lista | None, depois: Lista, livro: Livro) -> list[dict]:
+    """Os itens que a lista ganhou sem o "sim" do Samuel próprio do item (campo "sim", conferido no Livro).
+
+    D-791: "nada entra nela sem o 'sim' dele". O item novo que a gerente põe leva o seu "sim"; o resto é barrado.
+    """
+    return [i for i in itens_acrescentados(antes, depois) if problema_do_sim(i.get("sim"), livro)]
 
 
 def itens_acrescentados(antes: Lista | None, depois: Lista) -> list[dict]:
