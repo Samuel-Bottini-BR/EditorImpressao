@@ -27,12 +27,43 @@ partir da lista de arquivos do pedido da gerente (a gerente não tinha mandado u
   Terceira volta (`quem-quebrou/relatorio-3.md`, R1 a R7, furos de estrutura): consertada nesta volta, pela estrutura
   (ver "Como ficou cada achado da terceira volta").
 - **A lista: 176 lugares em 176 itens** (um item por lugar: arquivo, conferência, função e texto).
-- Quarta volta (`quem-quebrou/relatorio-4.md`, Q1 a Q7): consertada nesta volta (ver "Como ficou cada achado da
-  quarta volta").
+- Quarta volta (`quem-quebrou/relatorio-4.md`, Q1 a Q7): consertada (ver "Como ficou cada achado da quarta volta").
+- Quinta volta (`quem-quebrou/relatorio-5.md`, S1 a S3): consertada nesta volta (ver "Como ficou cada achado da
+  quinta volta").
 - O juiz já está no workflow (a gerente aplicou no `c41e4309`, no ramo dos testes). **Nada a mudar nele nesta volta:**
   o nome do trabalho ("Porteiro (juiz da versao de teste)") é o que o formulário agora procura.
 - **O formulário dos próximos passos fica pendente até a gerente ligar a lista** (Q5): com a lista "proposta", a K21
   dá "não conferido" (código 3) em toda entrega, de propósito.
+
+## Como ficou cada achado da quinta volta
+
+Quinta volta de quem quebrou (`quem-quebrou/relatorio-5.md`): três pequenos, todos do mesmo tipo (código que o Python
+carrega e o porteiro não lia). Commit `b5927774`.
+
+- **S1: nenhuma pasta "não é programa" pode ter o nome de um módulo da raiz.** `historico` saiu da lista
+  `NAO_E_PROGRAMA`. A pasta `historico/` continua no git como está; o porteiro passa a lê-la, mas ela não tem nenhum
+  `.py` nem nome com acento, então não acha nada (a lista de exceções continua com 176 lugares em 176 itens). Um
+  `historico/__init__.py` novo agora é lido como programa, e a pasta já é protegida pela conferência das mudanças (o
+  handoff só muda com pedido do Samuel). E a colisão não pode voltar: `porteiro.pastas_de_fora_com_nome_de_modulo`
+  acusa (K00, que nunca entra na lista) qualquer pasta da lista com o nome de um arquivo de código solto na raiz (ex.:
+  alguém criar um `docs.py`). Isso roda no porteiro, então também no juiz, com o código da versão de teste.
+  - **Por que não o jeito do `__init__.py`:** a pasta `tests/` tem `__init__.py` de propósito (três scripts da raiz
+    importam `tests`), então "acusar `__init__.py` nas pastas de fora" precisaria de exceção já no primeiro dia. E o
+    que deixa a pasta tomar o lugar de um arquivo do programa é ter o mesmo nome dele: sem esse nome, um
+    `__init__.py` não substitui nada. Com o nome, a pasta sai da lista e é lida inteira. Uma regra, sem exceção.
+  - Provas: `tests/test_conferencias_codigo.py::test_s1_nenhuma_pasta_de_fora_tem_o_nome_de_um_modulo_da_raiz` (no
+    repositório de verdade) e `::test_s1_a_pasta_com_nome_de_modulo_e_lida_e_a_colisao_e_acusada` (o
+    `historico/__init__.py` com `schtasks` de quem quebrou é acusado; um `docs.py` na raiz dá K00).
+- **S2: o porteiro lê `.pyw`.** Ficou num lugar só (`porteiro.FONTE_PYTHON` = `.py` e `.pyw`, e `e_fonte_python`).
+  Todas as conferências que olhavam `.py` perguntam a ela: o porteiro do código, a K10 e a K12 das mudanças, o teste
+  antigo e as funções do Livro no formulário. Hoje não há `.pyw` no git. Prova: `::test_s2_o_pyw_e_lido_como_codigo`.
+- **S3: `.pyd` é acusado junto com o código compilado** (`porteiro.COMPILADO_PYTHON` = `.pyc`, `.pyo`, `.pyd`). A
+  `.dll` do ScanTailor não entra (o Python não a importa como módulo). Hoje não há `.pyd` no git. Prova:
+  `::test_s3_a_extensao_compilada_pyd_e_acusada`.
+- As duas listas novas são protegidas ("igual"), como a das pastas.
+- **Teste de reversão:** os quatro testes acima falham no código anterior (`65843bb3`) e passam no novo. O primeiro
+  falha lá porque a função que conta a colisão não existia; quem prova o comportamento é o segundo (lá, o
+  `historico/__init__.py` não era lido).
 
 ## Como ficou cada achado da quarta volta
 
@@ -510,11 +541,13 @@ conferência antes do commit (não ligada) e o pacote do passo 1, montado pelo p
 ## Testes
 
 - No PC, um arquivo por vez (`QT_QPA_PLATFORM=offscreen`, pasta temporária fora do projeto):
-  `tests/test_conferencias_codigo.py` 73 passaram; `tests/test_conferencias_excecoes.py` 11 passaram e 1 parado de
+  `tests/test_conferencias_codigo.py` 77 passaram; `tests/test_conferencias_excecoes.py` 11 passaram e 1 parado de
   propósito (o que barra o repositório espera o "sim"); `tests/test_conferencias_mudancas.py` 21;
   `tests/test_conferencias_formulario.py` 34; `tests/test_conferencias_pacote.py` 20;
   `tests/test_conferencias_protecao.py` 10 passaram e 1 parado (a versão de teste ainda não tem o porteiro);
   `tests/test_conferencias_antes_do_commit.py` 12; `tests/test_conferencias_juiz.py` 9.
+- Teste de reversão da quinta volta: os quatro testes novos (S1 duas vezes, S2, S3) falham com o código anterior e
+  passam com o de hoje.
 - Teste de reversão da quarta volta: os seis testes novos (Q1, Q1 no formato do GitHub, Q2, Q3, Q4, Q6) falham com o
   código anterior e passam com o de hoje.
 - Teste de reversão da terceira volta: os 4 testes do R5 e o do `CREATE_NO_WINDOW` guardado numa variável (R6) falham
@@ -572,6 +605,10 @@ conferência antes do commit (não ligada) e o pacote do passo 1, montado pelo p
   juntar a versão de teste antes da entrega.
 - **As pastas que não são programa (Q2)** ficam numa lista só, protegida. Se alguém criar código do programa dentro
   de uma delas (ex.: um `.py` em `docs/` importado pelo `main.py`), o porteiro não lê; a lista é curta de propósito.
+- **Importar direto uma pasta de fora (S1, o vizinho que fica):** o programa que escrever `import docs.segredo` carrega
+  `docs/segredo.py`, mesmo sem `__init__.py`, e o porteiro não lê `docs/`. Hoje nenhum arquivo do programa importa
+  uma dessas pastas, a não ser `tests` (por três scripts da raiz que não vão para o Kaique). Acusar esse import seria
+  uma conferência nova; está em "Ideias".
 - **As funções que não se mexem (Q3)** são só aviso no pacote: se o agente renomear uma delas mesmo assim, o ramo barra
   (o lugar vira erro novo), e é aí que ele descobre; o pacote só evita a surpresa.
 - **O que o porteiro não pega:** texto montado em pedaços (ex.: `"power" + "shell"`), uma segunda peça com outro nome,
@@ -592,6 +629,8 @@ conferência antes do commit (não ligada) e o pacote do passo 1, montado pelo p
 
 - **Ideia (Lista de espera):** a K06 poderia pegar também a importação por texto (`importlib.import_module("ui...")`),
   que hoje fica de fora.
+- **Ideia (Lista de espera):** o porteiro acusar o arquivo do programa que importa uma pasta de fora do programa
+  (`import docs.x`, `from memoria import y`), o vizinho do S1 que ainda passa.
 - **Ideia (Lista de espera):** o montador sugerir as decisões do pedido pelos arquivos (o Livro diz "onde toca"), como
   a proposta das regras já previa.
 - **Bug para a Lista de bugs (19/11/2026):** três arquivos do repositório começam com a marca de UTF-8 (BOM):
@@ -641,7 +680,7 @@ programa muda com nenhuma das duas escolhas agora.
 
 ## Commit
 
-Último commit de código do trabalho: a664329e (depois dele, só este ONDE-PAREI mudou).
+Último commit de código do trabalho: b5927774 (depois dele, só este ONDE-PAREI mudou).
 
 ## Perguntas do Windows que o Samuel vê
 
