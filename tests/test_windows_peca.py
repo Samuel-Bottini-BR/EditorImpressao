@@ -748,6 +748,9 @@ def test_a_licenca_da_tarefa_e_comparada_pelo_sentido_com_o_que_o_windows_devolv
     assert windows.problemas_da_tarefa_criada(xml, lida) == []
     assert windows.problemas_da_tarefa_criada(xml, windows.Tarefa("EditorImpressao\\x", True, True,
                                                                   comando="C:\\a.exe", usuario=windows.SID_SISTEMA))
+    sem_rodar = windows.Tarefa("EditorImpressao\\x", True, True, comando="C:\\a.exe", argumentos="",
+                               usuario=windows.SID_SISTEMA, licenca="D:(A;;FA;;;BA)(A;;FA;;;SY)(A;;FR;;;AU)")
+    assert "direitos pedidos" in " ".join(windows.problemas_da_tarefa_criada(xml, sem_rodar))
 
 
 def test_a_pasta_do_programa_no_agendador_e_lida_sem_licenca():

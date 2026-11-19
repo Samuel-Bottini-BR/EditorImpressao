@@ -1,0 +1,102 @@
+"""Prova de reversão da volta 1 do passo 1: cada proteção desligada numa cópia à parte, e o teste dela tem de acusar.
+
+Roda na cópia (`reversao-passo1-volta1`), nunca no projeto. Cada mutação troca um texto exato; se o texto não for
+achado, a mutação conta como "não aplicada" (e a prova falha).
+"""
+import os
+import shutil
+import subprocess
+import sys
+from pathlib import Path
+
+COPIA = Path(__file__).parent / "reversao-passo1-volta1"
+PY = r"d:\programas\EditorImpressao\.venv\Scripts\python.exe"
+N = "\n"
+
+MUTACOES = [
+    ("A1 nome da tarefa com parênteses (o código antigo)", "janela_de_prova.py",
+     'TAREFA_DO_NAO = "EditorImpressao\\\\Prova da peca do Windows - Nao"',
+     'TAREFA_DO_NAO = "EditorImpressao\\\\Prova da peca do Windows (Nao)"',
+     "tests/test_windows_janela_de_prova.py::test_o_pedido_de_cada_prova_passa_nas_regras_da_peca"),
+    ("A3/M8 o Não devolvendo deu certo", "core/windows.py",
+     'return Resposta(DISSE_NAO, "você disse Não; nada mudou", tecnico)',
+     'return Resposta(DEU_CERTO, "você disse Não; nada mudou", tecnico)',
+     "tests/test_windows_peca.py::test_o_nao_e_so_o_nao_e_uma_falha_nunca_vira_nao"),
+    ("A3/M9 todo erro lido como Não", "core/windows.py",
+     'return "nao" if erro == ERRO_CANCELADO else f"erro:{erro}"',
+     'return "nao"',
+     "tests/test_windows_peca.py::test_o_nao_e_so_o_nao_e_uma_falha_nunca_vira_nao"),
+    ("A4/M7 o lado com licença sem conferir quem grava na pasta", "core/windows.py",
+     '        if problemas:' + N + '            return None, f"{lugar.name}: " + "; ".join(problemas)',
+     '        if False:' + N + '            return None, f"{lugar.name}: " + "; ".join(problemas)',
+     "tests/test_windows_peca.py::test_o_lado_com_licenca_recusa_a_pasta_onde_outra_conta_grava"),
+    ("A13/M10 o aviso aceito ligado a outro arquivo", "core/windows.py",
+     "    if info.st_nlink != 1:", "    if False:",
+     "tests/test_windows_peca.py::test_o_lado_com_licenca_recusa_aviso_ligado_a_outro_arquivo"),
+    ("A13/M11 a pasta segura criada sem conferir", "core/windows.py",
+     "    conferida = conferir_pasta_segura(nome)" + N + "    if not conferida.deu_certo:" + N + "        shutil.rmtree(caminho, ignore_errors=True)",
+     "    conferida = _certo()" + N + "    if not conferida.deu_certo:" + N + "        shutil.rmtree(caminho, ignore_errors=True)",
+     "tests/test_windows_peca.py::test_a_pasta_segura_que_nao_confere_e_apagada_de_novo_e_conferida"),
+    ("A13/M12 a tarefa criada sem ler de volta", "core/windows.py",
+     "    problemas = problemas_da_tarefa_criada(xml, lida)", "    problemas = []",
+     "tests/test_windows_peca.py::test_a_tarefa_criada_que_nao_confere_e_apagada"),
+    ("A7 a pasta segura apagada de novo sem conferir", "core/windows.py",
+     "        sobrou = caminho.exists() or e_atalho(caminho)", "        sobrou = None",
+     "tests/test_windows_peca.py::test_a_pasta_segura_que_nao_confere_e_apagada_de_novo_e_conferida"),
+    ("A8 quem lê a pasta de troca sem conferir", "core/windows.py",
+     "    for quem in sorted(licencas.quem_le() - aceitos):", "    for quem in []:",
+     "tests/test_windows_peca.py::test_a_regra_da_pasta_de_troca_recusa_outra_conta"),
+    ("A10 o fim do script sem conferir o programa de fora", "core/windows.py",
+     "_gravar_script(script, _CABECA_DO_SCRIPT + texto + _PE_DO_SCRIPT)",
+     "_gravar_script(script, _CABECA_DO_SCRIPT + texto)",
+     "tests/test_windows_peca.py::test_o_script_falha_quando_um_programa_de_fora_falha"),
+    ("A11 a saída junta com o erro", "core/windows.py",
+     '    saida = feito.stdout.decode(letras, "replace").strip()',
+     '    saida = (feito.stdout + feito.stderr).decode(letras, "replace").strip()',
+     "tests/test_windows_peca.py::test_o_script_falha_quando_um_programa_de_fora_falha"),
+    ("A12 o rodar genérico sem recusar", "core/windows.py",
+     "    if not comando or _programa_com_funcao_propria(str(comando[0])):" + N + "        return _recusa_de_programa(str(comando[0]) if comando else \"(nada)\")" + N + "    return _rodar(",
+     "    if not comando:" + N + "        return _recusa_de_programa(str(comando[0]) if comando else \"(nada)\")" + N + "    return _rodar(",
+     "tests/test_windows_peca.py::test_a_peca_e_fechada_rodar_e_lancar_recusam_os_programas_com_funcao_propria"),
+    ("A14 o relatório sem comparar com o pedido", "core/windows.py",
+     "    if pedidos is not None and [", "    if False and [",
+     "tests/test_windows_peca.py::test_o_relatorio_tem_de_bater_com_o_pedido"),
+    ("A5 a licença da tarefa sem comparar", "core/windows.py",
+     "                problemas += problemas_da_licenca_da_tarefa(esperado[\"quem_pode\"], lida.licenca)",
+     "                problemas += []",
+     "tests/test_windows_peca.py::test_a_licenca_da_tarefa_e_comparada_pelo_sentido_com_o_que_o_windows_devolve"),
+]
+
+
+def rodar(teste: str) -> bool:
+    """Roda um teste na cópia; True = passou."""
+    ambiente = {**os.environ, "QT_QPA_PLATFORM": "offscreen", "PYTHONIOENCODING": "utf-8"}
+    feito = subprocess.run([PY, "-m", "pytest", teste, "-q", "-p", "no:cacheprovider"], cwd=COPIA,
+                           capture_output=True, text=True, env=ambiente, timeout=600)
+    return feito.returncode == 0
+
+
+def main() -> int:
+    """Roda o teste de cada mutação: primeiro sem mutar (tem de passar), depois mutado (tem de falhar)."""
+    resultado = []
+    for nome, arquivo, velho, novo, teste in MUTACOES:
+        caminho = COPIA / arquivo
+        original = caminho.read_text(encoding="utf-8")
+        if original.count(velho) != 1:
+            resultado.append(f"NÃO APLICADA ({original.count(velho)}x): {nome}")
+            continue
+        limpo = rodar(teste)
+        caminho.write_text(original.replace(velho, novo), encoding="utf-8")
+        try:
+            mutado = rodar(teste)
+        finally:
+            caminho.write_text(original, encoding="utf-8")
+        estado = "ACUSADA" if limpo and not mutado else ("o teste não passa sem mutar" if not limpo else "NÃO ACUSADA")
+        resultado.append(f"{estado}: {nome}  [{teste.split('::')[1]}]")
+        print(resultado[-1], flush=True)
+    print("\n".join(["", "RESUMO:"] + resultado))
+    return 0 if all(r.startswith("ACUSADA") for r in resultado) else 1
+
+
+if __name__ == "__main__":
+    sys.exit(main())
