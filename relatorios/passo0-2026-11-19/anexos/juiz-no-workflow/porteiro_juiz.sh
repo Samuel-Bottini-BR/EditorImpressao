@@ -25,7 +25,16 @@ avisar() {   # $1 = nível do GitHub (warning/error), $2 = frase
   [ -n "${GITHUB_STEP_SUMMARY:-}" ] && echo "## $2" >> "$GITHUB_STEP_SUMMARY"
 }
 
-if ! git fetch -q --depth=1 origin "+refs/heads/$VERSAO:refs/remotes/origin/$VERSAO"; then
+# `--depth=1` só quando a cópia já é rasa (a do GitHub, tirada com o último commit). Numa cópia inteira (a do PC, ou
+# uma worktree dela, que divide a mesma pasta .git), `--depth=1` a deixa rasa e corta a história do repositório do
+# Samuel, mesmo quando o ramo buscado já estava em dia (aconteceu em 19/11/2026: o script rodado à mão na cópia do
+# agente deixou o repositório do PC raso, e o `git merge` da gerente recusou). É a mesma regra de
+# `regras_dos_agentes/conversa_com_o_git.py::buscar_ramo` (este script não pode importar o pacote: ele ainda não tem
+# o código da versão de teste); `tests/test_conferencias_copia_inteira.py` cobra as duas. Arriscado: voltar o
+# `--depth=1` fixo.
+PROFUNDIDADE=""
+[ "$(git rev-parse --is-shallow-repository)" = "true" ] && PROFUNDIDADE="--depth=1"
+if ! git fetch -q $PROFUNDIDADE origin "+refs/heads/$VERSAO:refs/remotes/origin/$VERSAO"; then
   avisar error "PORTEIRO: NAO CONFERIDO (não deu para buscar a versão de teste $VERSAO)"
   exit 1
 fi

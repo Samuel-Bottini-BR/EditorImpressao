@@ -27,6 +27,8 @@ partir da lista de arquivos do pedido da gerente (a gerente não tinha mandado u
   Terceira volta (`quem-quebrou/relatorio-3.md`, R1 a R7, furos de estrutura): consertada nesta volta, pela estrutura
   (ver "Como ficou cada achado da terceira volta").
 - **A lista: 176 lugares em 176 itens** (um item por lugar: arquivo, conferência, função e texto).
+- **19/11, 08:00: o repositório do PC ficou raso** (achado da gerente). Causa e conserto em "O repositório do PC
+  ficou raso", logo abaixo.
 - **D-802 (19/11): os 56 lugares de fora do plano passaram para "depois da entrega"** (ver "D-802", logo abaixo). A lista continua "proposta", sem o "sim" escrito: quem liga é a gerente, na versão de teste (D-801).
 - Quarta volta (`quem-quebrou/relatorio-4.md`, Q1 a Q7): consertada (ver "Como ficou cada achado da quarta volta").
 - Quinta volta (`quem-quebrou/relatorio-5.md`, S1 a S3): consertada nesta volta (ver "Como ficou cada achado da
@@ -35,6 +37,50 @@ partir da lista de arquivos do pedido da gerente (a gerente não tinha mandado u
   o nome do trabalho ("Porteiro (juiz da versao de teste)") é o que o formulário agora procura.
 - **O formulário dos próximos passos fica pendente até a gerente ligar a lista** (Q5): com a lista "proposta", a K21
   dá "não conferido" (código 3) em toda entrega, de propósito.
+
+## O repositório do PC ficou raso (19/11)
+
+Achado da gerente, 19/11 08:00: o repositório do Samuel no PC ficou raso (`.git/shallow` com 746dbda6, 8a34960c e
+93ab77fb, gravado às 08:01) e o `git merge` do passo 0 na versão de teste recusou ("unrelated histories"). Ela
+restaurou com `git fetch --unshallow origin`.
+
+- **A causa: o script do juiz rodado à mão na cópia do agente.** O `porteiro_juiz.sh` do anexo buscava a versão de
+  teste sempre com `git fetch --depth=1`. A "prova de verdade no repositório real" da terceira volta (ver a seção da
+  terceira volta, R2 e R3: "o script do anexo, rodado na minha cópia") rodou esse script dentro desta worktree, que
+  divide a pasta `.git` com o repositório do PC, duas vezes: com a versão de teste `obra-2026-10-26` e com este ramo no
+  lugar dela. Provas:
+  - as duas primeiras linhas do `.git/shallow` são as pontas desses dois ramos naquela hora: 746dbda6 era a ponta da
+    `obra-2026-10-26` de 18/11 22:27 até o push de 06:37 de 19/11; 93ab77fb foi a ponta deste ramo no GitHub de 02:56 a
+    03:01, e o commit de 03:01 (382efa33) é o que escreve no ONDE-PAREI o resultado dessa prova;
+  - repeti num repositório de prova: um clone inteiro, `git fetch --depth=1 origin +refs/heads/main:refs/remotes/origin/main`
+    com o ramo já em dia → `--is-shallow-repository` passa de false para true, o `.git/shallow` ganha a ponta e o
+    `git log` mostra um commit só. Como o ramo já estava em dia, nada muda no ramo remoto e nada fica no histórico dos
+    ramos remotos: é por isso que a gerente não achou "fetch" lá;
+  - nenhum outro código do passo 0 roda `--depth`: a busca no Python é só `conversa_com_o_git.buscar_ramo`, e ela já
+    tinha a regra "`--depth=1` só se a cópia já é rasa" desde que nasceu (commit 9834d67b).
+- **A terceira linha (8a34960c) veio depois, de cópia já rasa, e uma delas fui eu.** 8a34960c é a ponta da versão de
+  teste desde 07:51. Às 07:58 rodei os testes do passo 0 (o teste de proteção chama `protecao.comparar(RAIZ)` →
+  `buscar_ramo` no repositório do projeto) e às 08:00 rodei o formulário (`Livro.da_versao_de_teste` →
+  `buscar_ramo`). Com a cópia já rasa, `buscar_ramo` usa `--depth=1` e acrescenta a ponta nova ao `.git/shallow` (o
+  arquivo foi gravado às 08:01). Isso espalha o corte numa cópia que já está rasa, mas nunca deixa rasa uma cópia
+  inteira.
+- **Os caminhos que buscam no GitHub** (procurados com busca no código por `fetch`, `buscar_ramo` e `depth` em
+  `regras_dos_agentes/`, `tests/test_conferencias_*.py`, `ganchos/` e no anexo):
+  - `protecao.comparar` (teste de proteção, rodado com a raiz do projeto) → `buscar_ramo`;
+  - `Livro.da_versao_de_teste` (formulário da entrega, na raiz do projeto) → `buscar_ramo`;
+  - o script do juiz do workflow → a sua própria busca em shell (não pode importar o pacote: ele ainda não tem o
+    código da versão de teste, e o do ramo conferido não pode decidir nada);
+  - os testes do juiz e da conferência antes do commit rodam só em repositórios de prova em pasta temporária.
+- **O conserto (uma regra só):** o script segue a regra de `buscar_ramo`, `--depth=1` só quando a cópia já é rasa (a
+  do GitHub). Por o script ser shell, a regra fica escrita em dois lugares, um apontando para o outro, e uma prova só
+  (`tests/test_conferencias_copia_inteira.py`) cobra o mesmo resultado nos dois. O texto para a gerente copiar para
+  `.github/scripts/porteiro_juiz.sh` no ramo do workflow está na entrega e no próprio anexo
+  (`anexos/juiz-no-workflow/porteiro_juiz.sh`): mudam só as linhas da busca.
+- **Teste de reversão:** `tests/test_conferencias_copia_inteira.py::test_o_script_do_juiz_numa_copia_inteira_deixa_a_copia_inteira`
+  falha com o script anterior ("o script deixou a cópia inteira rasa") e passa com o novo;
+  `::test_buscar_ramo_numa_copia_inteira_deixa_a_copia_inteira` passa nos dois (a regra do `buscar_ramo` já existia;
+  fica como guarda, inclusive para o caso do ramo já em dia, que não deixa registro).
+- `git -C D:\programas\EditorImpressao rev-parse --is-shallow-repository`: false antes e false depois dos testes.
 
 ## D-802
 
@@ -647,6 +693,10 @@ conferência antes do commit (não ligada) e o pacote do passo 1, montado pelo p
   se essa pergunta vira frase do que ele decidiu (o teste do texto cobra hoje "O que você escolhe" e "Sugestão").
 - **O Livro deste ramo não tem a D-801 nem a D-802** (estão na versão de teste, `obra-2026-10-26`, commits
   `c5838a1f` e `8a34960c`); eu não juntei a versão de teste neste ramo. O código e os testes citam as duas.
+- **Uma cópia que já esteja rasa continua buscando raso** (`buscar_ramo` e o script, de propósito: é o caso do
+  GitHub). Se o repositório do PC ficar raso por outro motivo, rodar o formulário ou o teste de proteção acrescenta a
+  ponta da versão de teste ao `.git/shallow` em vez de avisar. O remédio continua sendo `git fetch --unshallow
+  origin`. Está em "Ideias".
 - **O juiz confia no código da versão de teste.** Se a própria versão de teste tiver um porteiro afrouxado, o juiz
   também estará; isso só a gerente evita, juntando com a conferência das mudanças (K17) e com quem tenta quebrar.
 - **O apelido do ctypes não é seguido** quando vai para outro arquivo (importado), nem quando passa por um dicionário
@@ -686,6 +736,8 @@ conferência antes do commit (não ligada) e o pacote do passo 1, montado pelo p
 
 ## Ideias e bugs
 
+- **Ideia (Lista de espera):** `buscar_ramo` (e o script do juiz) avisar, em vez de buscar raso, quando a cópia está
+  rasa fora da rodada do GitHub (sem `GITHUB_ACTIONS`): seria o aviso do PC raso de 19/11 na hora, não no `git merge`.
 - **Ideia (Lista de espera):** a K06 poderia pegar também a importação por texto (`importlib.import_module("ui...")`),
   que hoje fica de fora.
 - **Ideia (Lista de espera):** o porteiro acusar o arquivo do programa que importa uma pasta de fora do programa
