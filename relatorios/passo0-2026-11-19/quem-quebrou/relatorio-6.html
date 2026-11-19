@@ -1,0 +1,167 @@
+<!doctype html>
+<html lang="pt-BR">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Passo 0: sexta conferência de quem tentou quebrar</title>
+<style>
+:root { color-scheme: light dark; }
+* { box-sizing: border-box; }
+body {
+  font: 17px/1.65 "Segoe UI", system-ui, sans-serif;
+  max-width: 46rem; margin: 0 auto; padding: 2.5rem 1.5rem 6rem;
+  color: #1c1c1e; background: #fdfdfc;
+}
+h1 { font-size: 2rem; line-height: 1.2; margin: 0 0 .3em; letter-spacing: -.02em; }
+h2 { font-size: 1.35rem; margin: 2.4em 0 .6em; padding-top: .8em;
+     border-top: 1px solid #e6e4e0; letter-spacing: -.01em; }
+h3 { font-size: 1.1rem; margin: 1.8em 0 .4em; }
+h1 + p, h2 + p { margin-top: .4em; }
+p, li { margin: 0 0 .9em; }
+ul, ol { padding-left: 1.3em; }
+strong { font-weight: 640; }
+code {
+  font: .88em ui-monospace, "Cascadia Code", Consolas, monospace;
+  background: #f1efec; padding: .12em .35em; border-radius: 4px;
+}
+pre {
+  background: #f1efec; padding: 1em 1.1em; border-radius: 8px;
+  overflow-x: auto; line-height: 1.5;
+}
+pre code { background: none; padding: 0; }
+blockquote {
+  margin: 1.2em 0; padding: .1em 0 .1em 1.1em;
+  border-left: 3px solid #c9c5be; color: #55524d;
+}
+table {
+  border-collapse: collapse; width: 100%; margin: 1.2em 0;
+  font-size: .95rem; display: block; overflow-x: auto;
+}
+th, td { padding: .5em .8em; text-align: left; border-bottom: 1px solid #e6e4e0; }
+th { font-weight: 620; background: #f7f5f2; white-space: nowrap; }
+tr:last-child td { border-bottom: none; }
+img { max-width: 100%; height: auto; border-radius: 6px; margin: 1em 0;
+      border: 1px solid #e6e4e0; }
+hr { border: none; border-top: 1px solid #e6e4e0; margin: 2.5em 0; }
+.rodape { margin-top: 4em; padding-top: 1.2em; border-top: 1px solid #e6e4e0;
+          font-size: .85rem; color: #86827c; }
+@media (prefers-color-scheme: dark) {
+  body { color: #e8e6e3; background: #1a1917; }
+  h2 { border-top-color: #35332f; }
+  code, pre, th { background: #262421; }
+  th, td { border-bottom-color: #35332f; }
+  blockquote { border-left-color: #4a4741; color: #b0aca6; }
+  img { border-color: #35332f; }
+  .rodape { border-top-color: #35332f; color: #7d7973; }
+}
+@media print {
+  body { max-width: none; padding: 0; color: #000; background: #fff; }
+  h2 { page-break-after: avoid; }
+  table, img { page-break-inside: avoid; }
+}
+</style>
+</head>
+<body>
+<h1>Passo 0 do plano da parte do Windows: sexta conferência de quem tentou quebrar (19/11/2026)</h1>
+<p>Esta é a sexta volta do mesmo verificador, que não escreveu o passo 0. Conferi os consertos de S1, S2 e S3 pelo mesmo
+caminho e pelos vizinhos, e respondi se o caso <code>import docs.segredo</code> é grave hoje. Não mexi no código entregue.</p>
+<h2>Pedido</h2>
+<ul>
+<li>Papel: quebrador</li>
+<li>Commit de partida: 89f80080</li>
+<li>Ramo: passo0-porteiro-2026-11-19</li>
+</ul>
+<h2>Arquivos que vou mexer</h2>
+<ul>
+<li><code>relatorios/passo0-2026-11-19/quem-quebrou/</code></li>
+</ul>
+<h2>Veredito</h2>
+<p>"PRONTO PARA CONFERIR"</p>
+<p>Nos termos da D-798: quem escreve é quem tentou quebrar, que não construiu nada deste passo. Todos os achados das seis
+voltas têm destino resolvido, e este passo não tem prova à vista, porque nada nele mexe no Windows (plano-v3, passo 0;
+D-785). Isto não é aprovação: só o Samuel aprova.</p>
+<p>Nesta volta:
+- S1, S2 e S3 estão consertados no commit <code>b5927774</code>, com teste de reversão provado por mim.
+- O caso <code>import docs.segredo</code> <strong>não é grave hoje</strong>. Fica registrado como ressalva e como ideia na Lista de espera (T1).</p>
+<h2>O que li</h2>
+<ul>
+<li>O <code>relatorios/passo0-2026-11-19/ONDE-PAREI.md</code> na ponta <code>89f80080</code>: "Como ficou cada achado da quinta volta", as
+  ressalvas e as ideias.</li>
+<li>O código mudado de <code>65843bb3</code> a <code>b5927774</code>: <code>porteiro.py</code> (<code>NAO_E_PROGRAMA</code> sem <code>historico</code>, <code>FONTE_PYTHON</code>,
+  <code>COMPILADO_PYTHON</code>, <code>pastas_de_fora_com_nome_de_modulo</code>), <code>porteiro_mudancas.py</code>, <code>formulario.py</code>, <code>protecao.py</code> e
+  os testes novos.</li>
+<li>A rodada 44487102520: "success".</li>
+</ul>
+<h2>O que conferi nas falhas, nas peças de fora e nos caminhos</h2>
+<ul>
+<li><strong>S1, o jeito novo se sustenta.</strong> <code>historico</code> saiu da lista das pastas que não são programa. O porteiro passa a ler
+  <code>historico/</code>, que hoje não tem nenhum <code>.py</code>, então a lista continua com 176 lugares, o que conferi. E qualquer pasta
+  da lista com o nome de um arquivo de código da raiz vira K00, que nunca entra na lista.</li>
+<li>Mesmo caminho: <code>historico/__init__.py</code> com <code>schtasks</code> agora é acusado (K01).</li>
+<li>Vizinhos: um <code>docs.py</code> na raiz com <code>docs/x.py</code> dá K00 em <code>docs</code>; um <code>tests.pyw</code> na raiz dá K00 em <code>tests</code>.</li>
+<li>No repositório de hoje, nenhuma colisão.</li>
+<li>Esse jeito é melhor que acusar <code>__init__.py</code> nas pastas da lista: o <code>tests/__init__.py</code> existe de propósito e
+    precisaria de exceção.</li>
+<li><strong>S2, consertado.</strong> <code>core/x.pyw</code> com <code>schtasks</code> é acusado. <code>FONTE_PYTHON</code> (<code>.py</code> e <code>.pyw</code>) é a lista única que as
+  conferências consultam.</li>
+<li><strong>S3, consertado.</strong> <code>core/x.cp314-win_amd64.pyd</code> dá K00. A <code>.dll</code> do ScanTailor fica de fora, e é certo: o Python
+  não a importa como módulo, e o ctypes que a carrega já é acusado pela busca do Windows.</li>
+<li><strong>Teste de reversão provado por mim.</strong> Com o <code>regras_dos_agentes/</code> de <code>65843bb3</code>, os três testes falham:
+  <code>test_s1_a_pasta_com_nome_de_modulo_e_lida_e_a_colisao_e_acusada</code>, <code>test_s2_o_pyw_e_lido_como_codigo</code> e
+  <code>test_s3_a_extensao_compilada_pyd_e_acusada</code>. No código novo, passam.</li>
+<li><strong>O caso <code>import docs.segredo</code>, e o vizinho do arquivo <code>.zip</code> posto no caminho de busca do Python.</strong> Provei que
+  passa: <code>main.py</code> com <code>import docs.segredo</code> e <code>docs/segredo.py</code> com <code>schtasks</code> não dão achado. O mesmo vale para
+  <code>sys.path.insert(0, "core/extra.zip")</code> seguido de um <code>import</code>.</li>
+<li>Não é grave hoje. Nenhum arquivo do programa importa das pastas de fora. Só três scripts da raiz que não vão para o
+    Kaique importam <code>tests.ajudante_do_automatico</code>, e esse arquivo não conversa com o Windows (conferido com a busca).
+    Os <code>sys.path.insert</code> de hoje só põem a raiz do projeto.</li>
+<li>Para usar esse caminho, é preciso escrever de propósito uma linha nova de import ou de caminho no programa, e essa
+    linha aparece no diff para quem tenta quebrar e para a gerente.</li>
+<li><strong>Nada mudou fora do combinado.</strong> Desde <code>746dbda6</code>, só arquivos novos em <code>regras_dos_agentes/</code>, <code>ganchos/</code>,
+  <code>relatorios/passo0-2026-11-19/</code>, <code>tests/test_conferencias_*</code> e a lista.</li>
+</ul>
+<h2>Caminhos que o outro não listou</h2>
+<ul>
+<li>O vizinho do arquivo <code>.zip</code> no caminho de busca do Python, que é da mesma família do <code>import docs.segredo</code>. Fica
+  junto com ele (T1).</li>
+</ul>
+<h2>Falhas não pensadas e resultado não conferido</h2>
+<ul>
+<li>Nenhuma nova. O formulário ficar "não conferido" até a gerente ligar a lista é o combinado, fora da conta.</li>
+</ul>
+<h2>As regras que conferi</h2>
+<ul>
+<li><strong>CLAUDE.md §11.12:</strong></li>
+<li>pontos 1 a 4: cumpridos;</li>
+<li>ponto 3, a lista do que pode falhar: as falhas que sobram estão escritas nas ressalvas.</li>
+<li><strong>CLAUDE.md §4.7:</strong> teste de reversão provado.</li>
+<li><strong>CLAUDE.md §11.7</strong>, só o que ele mandou: acusar import de pasta de fora seria uma conferência nova, além das 24 da
+  proposta. Por isso o lugar certo é a Lista de espera, e não um conserto agora.</li>
+<li><strong>Decisões tocadas:</strong> D-791, D-792, D-796, D-798, D-800, D-605 e D-784, todas cumpridas.</li>
+</ul>
+<h2>Achados</h2>
+<ol>
+<li><strong>T1, baixo: o programa pode importar código de uma pasta de fora (<code>import docs.segredo</code>) ou de um <code>.zip</code> posto no
+   caminho de busca, e o porteiro não lê esse código</strong> (<code>regras_dos_agentes/porteiro.py:130</code>, <code>NAO_E_PROGRAMA</code>).
+   - Provado com um exemplo; hoje não acontece em nenhum lugar do programa.
+   - Destino: não é defeito deste passo, e já está registrado. Está escrito nas ressalvas do ONDE-PAREI ("Importar
+     direto uma pasta de fora") e como ideia para a Lista de espera, porque seria uma conferência nova (§11.7).
+   - Peço à gerente que o "<code>.zip</code> no caminho de busca" entre na mesma ideia, e que quem tentar quebrar os próximos
+     passos olhe no diff toda linha nova de import de pasta de fora e de mudança no caminho de busca.</li>
+</ol>
+<p>Os achados das voltas anteriores e o destino de cada um:
+- <strong>1 a 19</strong> (relatório 1): consertados nos commits das voltas, menos o 11, que é o combinado do plano, e o 17, que
+  virou pergunta à gerente.
+- <strong>N1 a N9, R1 a R7 e Q1 a Q7</strong>: consertados (o Q3 também com o aviso no pacote). O Q5 é o combinado, e o Q7 foi
+  aceito pela gerente.
+- <strong>S1 a S3</strong>: consertados em <code>b5927774</code>.</p>
+<h2>Para a gerente: o que ficou fora do projeto</h2>
+<ul>
+<li>Na cópia temporária (<code>C:\Users\fotog\AppData\Local\Temp\claude\b9ca076ad002e817\848d7b72-406b-4bfe-aabf-f5b3005d7b22\scratchpad\quebrar\copia</code>)
+  ficou mais o ramo de prova <code>prova6</code>.</li>
+<li>Nada foi apagado. A lista inteira do que deixei na pasta temporária está nos relatórios 1 a 5. A gerente pergunta
+  ao Samuel se pode apagar.</li>
+</ul>
+<p class="rodape">Editor de Impressão &middot; gerado em 19/11/2026 às 04:46</p>
+</body>
+</html>
