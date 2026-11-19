@@ -1,0 +1,2297 @@
+{
+ "explicacao": "Lista de exceções do porteiro (D-791, D-800, D-802). Gerada por `python -m regras_dos_agentes excecoes --gerar`; não escreva à mão. Um item por lugar (arquivo, conferência, texto, quantas). Só diminui: cada conserto tira o seu item no mesmo commit. Item novo só com o 'sim' do Samuel. Enquanto 'situacao' for 'proposta', a lista não vale e o teste que barra o repositório fica parado; a gerente liga trocando para 'valendo' e escrevendo o 'sim' dele em 'sim_do_samuel'.",
+ "situacao": "proposta",
+ "sim_do_samuel": null,
+ "gerada_em": "2026-11-19",
+ "commit_lido": "69b3937cbeca4b09ed29e42c70580213f89604bf",
+ "itens": [
+  {
+   "arquivo": "atualizacao.py",
+   "conferencia": "K01",
+   "funcao": "_aplicar_pacote_quando_sair",
+   "texto": "creationflags=getattr(subprocess, \"CREATE_NO_WINDOW\", 0)",
+   "quantas": 1,
+   "linhas_quando_gerada": [
+    673
+   ],
+   "data": "2026-11-19",
+   "passo": "3",
+   "motivo": "o atualizador passa a conversar com o Windows só pela peça única"
+  },
+  {
+   "arquivo": "atualizacao.py",
+   "conferencia": "K01",
+   "funcao": "_aplicar_pacote_quando_sair",
+   "texto": "| getattr(subprocess, \"DETACHED_PROCESS\", 0))",
+   "quantas": 1,
+   "linhas_quando_gerada": [
+    674
+   ],
+   "data": "2026-11-19",
+   "passo": "3",
+   "motivo": "o atualizador passa a conversar com o Windows só pela peça única"
+  },
+  {
+   "arquivo": "atualizacao.py",
+   "conferencia": "K01",
+   "funcao": "_dono_do_arquivo",
+   "texto": "advapi32, kernel32 = ctypes.windll.advapi32, ctypes.windll.kernel32",
+   "quantas": 1,
+   "linhas_quando_gerada": [
+    435
+   ],
+   "data": "2026-11-19",
+   "passo": "3",
+   "motivo": "o atualizador passa a conversar com o Windows só pela peça única"
+  },
+  {
+   "arquivo": "atualizacao.py",
+   "conferencia": "K01",
+   "funcao": "_dono_do_arquivo",
+   "texto": "if advapi32.GetNamedSecurityInfoW(wintypes.LPCWSTR(str(caminho)), 1, 1, ctypes.byref(dono),",
+   "quantas": 1,
+   "linhas_quando_gerada": [
+    438
+   ],
+   "data": "2026-11-19",
+   "passo": "3",
+   "motivo": "o atualizador passa a conversar com o Windows só pela peça única"
+  },
+  {
+   "arquivo": "atualizacao.py",
+   "conferencia": "K01",
+   "funcao": "_dono_do_arquivo",
+   "texto": "if not advapi32.ConvertSidToStringSidW(dono, ctypes.byref(texto)):",
+   "quantas": 1,
+   "linhas_quando_gerada": [
+    443
+   ],
+   "data": "2026-11-19",
+   "passo": "3",
+   "motivo": "o atualizador passa a conversar com o Windows só pela peça única"
+  },
+  {
+   "arquivo": "atualizacao.py",
+   "conferencia": "K01",
+   "funcao": "_dono_do_arquivo",
+   "texto": "kernel32.LocalFree(descritor)",
+   "quantas": 1,
+   "linhas_quando_gerada": [
+    449
+   ],
+   "data": "2026-11-19",
+   "passo": "3",
+   "motivo": "o atualizador passa a conversar com o Windows só pela peça única"
+  },
+  {
+   "arquivo": "atualizacao.py",
+   "conferencia": "K01",
+   "funcao": "_dono_do_arquivo",
+   "texto": "kernel32.LocalFree(texto)",
+   "quantas": 1,
+   "linhas_quando_gerada": [
+    446
+   ],
+   "data": "2026-11-19",
+   "passo": "3",
+   "motivo": "o atualizador passa a conversar com o Windows só pela peça única"
+  },
+  {
+   "arquivo": "atualizacao.py",
+   "conferencia": "K01",
+   "funcao": "_lancar_escondido",
+   "texto": "creationflags=getattr(subprocess, \"CREATE_NO_WINDOW\", 0)",
+   "quantas": 1,
+   "linhas_quando_gerada": [
+    967
+   ],
+   "data": "2026-11-19",
+   "passo": "3",
+   "motivo": "o atualizador passa a conversar com o Windows só pela peça única"
+  },
+  {
+   "arquivo": "atualizacao.py",
+   "conferencia": "K01",
+   "funcao": "_lancar_escondido",
+   "texto": "subprocess.Popen([\"powershell.exe\", \"-NoProfile\", \"-NonInteractive\", \"-ExecutionPolicy\", \"Bypass\",",
+   "quantas": 1,
+   "linhas_quando_gerada": [
+    965
+   ],
+   "data": "2026-11-19",
+   "passo": "3",
+   "motivo": "o atualizador passa a conversar com o Windows só pela peça única"
+  },
+  {
+   "arquivo": "atualizacao.py",
+   "conferencia": "K01",
+   "funcao": "_lancar_escondido",
+   "texto": "| getattr(subprocess, \"DETACHED_PROCESS\", 0))",
+   "quantas": 1,
+   "linhas_quando_gerada": [
+    968
+   ],
+   "data": "2026-11-19",
+   "passo": "3",
+   "motivo": "o atualizador passa a conversar com o Windows só pela peça única"
+  },
+  {
+   "arquivo": "atualizacao.py",
+   "conferencia": "K01",
+   "funcao": "_ler_chave_do_inno",
+   "texto": "for vista in (winreg.KEY_WOW64_64KEY, winreg.KEY_WOW64_32KEY):",
+   "quantas": 1,
+   "linhas_quando_gerada": [
+    1260
+   ],
+   "data": "2026-11-19",
+   "passo": "3",
+   "motivo": "o atualizador passa a conversar com o Windows só pela peça única"
+  },
+  {
+   "arquivo": "atualizacao.py",
+   "conferencia": "K01",
+   "funcao": "_ler_chave_do_inno",
+   "texto": "import winreg",
+   "quantas": 1,
+   "linhas_quando_gerada": [
+    1258
+   ],
+   "data": "2026-11-19",
+   "passo": "3",
+   "motivo": "o atualizador passa a conversar com o Windows só pela peça única"
+  },
+  {
+   "arquivo": "atualizacao.py",
+   "conferencia": "K01",
+   "funcao": "_ler_chave_do_inno",
+   "texto": "return {nome: winreg.QueryValueEx(chave, nome)[0] for nome in (\"UninstallString\", \"InstallLocation\")}",
+   "quantas": 1,
+   "linhas_quando_gerada": [
+    1263
+   ],
+   "data": "2026-11-19",
+   "passo": "3",
+   "motivo": "o atualizador passa a conversar com o Windows só pela peça única"
+  },
+  {
+   "arquivo": "atualizacao.py",
+   "conferencia": "K01",
+   "funcao": "_ler_chave_do_inno",
+   "texto": "with winreg.OpenKey(winreg.HKEY_LOCAL_MACHINE, CHAVE_DO_INNO, 0, winreg.KEY_READ | vista) as chave:",
+   "quantas": 1,
+   "linhas_quando_gerada": [
+    1262
+   ],
+   "data": "2026-11-19",
+   "passo": "3",
+   "motivo": "o atualizador passa a conversar com o Windows só pela peça única"
+  },
+  {
+   "arquivo": "atualizacao.py",
+   "conferencia": "K01",
+   "funcao": "_ler_versao_do_visual_c",
+   "texto": "achadas.append(tuple(int(winreg.QueryValueEx(chave, nome)[0]) for nome in (\"Major\", \"Minor\", \"Bld\")))",
+   "quantas": 1,
+   "linhas_quando_gerada": [
+    1202
+   ],
+   "data": "2026-11-19",
+   "passo": "3",
+   "motivo": "o atualizador passa a conversar com o Windows só pela peça única"
+  },
+  {
+   "arquivo": "atualizacao.py",
+   "conferencia": "K01",
+   "funcao": "_ler_versao_do_visual_c",
+   "texto": "for vista in (winreg.KEY_WOW64_64KEY, winreg.KEY_WOW64_32KEY):",
+   "quantas": 1,
+   "linhas_quando_gerada": [
+    1197
+   ],
+   "data": "2026-11-19",
+   "passo": "3",
+   "motivo": "o atualizador passa a conversar com o Windows só pela peça única"
+  },
+  {
+   "arquivo": "atualizacao.py",
+   "conferencia": "K01",
+   "funcao": "_ler_versao_do_visual_c",
+   "texto": "if winreg.QueryValueEx(chave, \"Installed\")[0] != 1:",
+   "quantas": 1,
+   "linhas_quando_gerada": [
+    1200
+   ],
+   "data": "2026-11-19",
+   "passo": "3",
+   "motivo": "o atualizador passa a conversar com o Windows só pela peça única"
+  },
+  {
+   "arquivo": "atualizacao.py",
+   "conferencia": "K01",
+   "funcao": "_ler_versao_do_visual_c",
+   "texto": "import winreg",
+   "quantas": 1,
+   "linhas_quando_gerada": [
+    1194
+   ],
+   "data": "2026-11-19",
+   "passo": "3",
+   "motivo": "o atualizador passa a conversar com o Windows só pela peça única"
+  },
+  {
+   "arquivo": "atualizacao.py",
+   "conferencia": "K01",
+   "funcao": "_ler_versao_do_visual_c",
+   "texto": "with winreg.OpenKey(winreg.HKEY_LOCAL_MACHINE, CHAVE_DO_VISUAL_C, 0, winreg.KEY_READ | vista) as chave:",
+   "quantas": 1,
+   "linhas_quando_gerada": [
+    1199
+   ],
+   "data": "2026-11-19",
+   "passo": "3",
+   "motivo": "o atualizador passa a conversar com o Windows só pela peça única"
+  },
+  {
+   "arquivo": "atualizacao.py",
+   "conferencia": "K01",
+   "funcao": "_linhas_da_janelinha",
+   "texto": "\"$jPs = [powershell]::Create(); $jPs.Runspace = $jRun\",",
+   "quantas": 1,
+   "linhas_quando_gerada": [
+    883
+   ],
+   "data": "2026-11-19",
+   "passo": "3",
+   "motivo": "o atualizador passa a conversar com o Windows só pela peça única"
+  },
+  {
+   "arquivo": "atualizacao.py",
+   "conferencia": "K01",
+   "funcao": "_marca_existe",
+   "texto": "handle = kernel32.OpenMutexW(0x00100000, False, nome)",
+   "quantas": 1,
+   "linhas_quando_gerada": [
+    762
+   ],
+   "data": "2026-11-19",
+   "passo": "3",
+   "motivo": "o atualizador passa a conversar com o Windows só pela peça única"
+  },
+  {
+   "arquivo": "atualizacao.py",
+   "conferencia": "K01",
+   "funcao": "_marca_existe",
+   "texto": "kernel32 = ctypes.windll.kernel32",
+   "quantas": 1,
+   "linhas_quando_gerada": [
+    761
+   ],
+   "data": "2026-11-19",
+   "passo": "3",
+   "motivo": "o atualizador passa a conversar com o Windows só pela peça única"
+  },
+  {
+   "arquivo": "atualizacao.py",
+   "conferencia": "K01",
+   "funcao": "_marca_existe",
+   "texto": "kernel32.CloseHandle(handle)",
+   "quantas": 1,
+   "linhas_quando_gerada": [
+    764
+   ],
+   "data": "2026-11-19",
+   "passo": "3",
+   "motivo": "o atualizador passa a conversar com o Windows só pela peça única"
+  },
+  {
+   "arquivo": "atualizacao.py",
+   "conferencia": "K01",
+   "funcao": "apagar_tarefa",
+   "texto": "codigo, saida = rodar([\"schtasks\", \"/Delete\", \"/TN\", NOME_DA_TAREFA, \"/F\"])",
+   "quantas": 1,
+   "linhas_quando_gerada": [
+    1179
+   ],
+   "data": "2026-11-19",
+   "passo": "3",
+   "motivo": "o atualizador passa a conversar com o Windows só pela peça única"
+  },
+  {
+   "arquivo": "atualizacao.py",
+   "conferencia": "K01",
+   "funcao": "comando_de_rodar_a_tarefa",
+   "texto": "return [\"schtasks\", \"/Run\", \"/TN\", NOME_DA_TAREFA]",
+   "quantas": 1,
+   "linhas_quando_gerada": [
+    1047
+   ],
+   "data": "2026-11-19",
+   "passo": "3",
+   "motivo": "o atualizador passa a conversar com o Windows só pela peça única"
+  },
+  {
+   "arquivo": "atualizacao.py",
+   "conferencia": "K01",
+   "funcao": "criar_tarefa",
+   "texto": "codigo, saida = rodar([\"schtasks\", \"/Create\", \"/TN\", NOME_DA_TAREFA, \"/XML\", str(arquivo), \"/F\"])",
+   "quantas": 1,
+   "linhas_quando_gerada": [
+    1165
+   ],
+   "data": "2026-11-19",
+   "passo": "3",
+   "motivo": "o atualizador passa a conversar com o Windows só pela peça única"
+  },
+  {
+   "arquivo": "atualizacao.py",
+   "conferencia": "K01",
+   "funcao": "marcar_programa_aberto",
+   "texto": "_MARCA = ctypes.windll.kernel32.CreateMutexW(None, False, MARCA_DE_ABERTO) or None",
+   "quantas": 1,
+   "linhas_quando_gerada": [
+    752
+   ],
+   "data": "2026-11-19",
+   "passo": "3",
+   "motivo": "o atualizador passa a conversar com o Windows só pela peça única"
+  },
+  {
+   "arquivo": "atualizacao.py",
+   "conferencia": "K01",
+   "funcao": "passo_de_preparar_o_computador",
+   "texto": "f\" $p = Start-Process -FilePath {_aspas_do_powershell(str(exe))}\"",
+   "quantas": 1,
+   "linhas_quando_gerada": [
+    1435
+   ],
+   "data": "2026-11-19",
+   "passo": "3",
+   "motivo": "o atualizador passa a conversar com o Windows só pela peça única"
+  },
+  {
+   "arquivo": "atualizacao.py",
+   "conferencia": "K01",
+   "funcao": "script_de_trocar_e_reabrir",
+   "texto": "f\" $tarefa = (Get-ScheduledTask -TaskPath {_aspas_do_powershell(chr(92) + pasta + chr(92))}\"",
+   "quantas": 1,
+   "linhas_quando_gerada": [
+    931
+   ],
+   "data": "2026-11-19",
+   "passo": "3",
+   "motivo": "o atualizador passa a conversar com o Windows só pela peça única"
+  },
+  {
+   "arquivo": "atualizacao.py",
+   "conferencia": "K01",
+   "funcao": "script_de_trocar_e_reabrir",
+   "texto": "f\"& schtasks {rodar} | Out-Null\",",
+   "quantas": 1,
+   "linhas_quando_gerada": [
+    921
+   ],
+   "data": "2026-11-19",
+   "passo": "3",
+   "motivo": "o atualizador passa a conversar com o Windows só pela peça única"
+  },
+  {
+   "arquivo": "atualizacao.py",
+   "conferencia": "K01",
+   "funcao": "script_de_trocar_e_reabrir",
+   "texto": "f\"Start-Process -FilePath {_aspas_do_powershell(str(exe))}\"",
+   "quantas": 1,
+   "linhas_quando_gerada": [
+    942
+   ],
+   "data": "2026-11-19",
+   "passo": "3",
+   "motivo": "o atualizador passa a conversar com o Windows só pela peça única"
+  },
+  {
+   "arquivo": "atualizacao.py",
+   "conferencia": "K01",
+   "funcao": "script_de_trocar_e_reabrir",
+   "texto": "f\"Wait-Process -Id {int(pid)} -Timeout 120\",",
+   "quantas": 1,
+   "linhas_quando_gerada": [
+    920
+   ],
+   "data": "2026-11-19",
+   "passo": "3",
+   "motivo": "o atualizador passa a conversar com o Windows só pela peça única"
+  },
+  {
+   "arquivo": "atualizacao.py",
+   "conferencia": "K01",
+   "funcao": "update_exe",
+   "texto": "return pasta_do_programa().parent / \"Update.exe\"",
+   "quantas": 1,
+   "linhas_quando_gerada": [
+    488
+   ],
+   "data": "2026-11-19",
+   "passo": "3",
+   "motivo": "o atualizador passa a conversar com o Windows só pela peça única"
+  },
+  {
+   "arquivo": "atualizacao.py",
+   "conferencia": "K02",
+   "funcao": "_aplicar_pacote_quando_sair",
+   "texto": "| getattr(subprocess, \"DETACHED_PROCESS\", 0))",
+   "quantas": 1,
+   "linhas_quando_gerada": [
+    674
+   ],
+   "data": "2026-11-19",
+   "passo": "3",
+   "motivo": "o atualizador passa a conversar com o Windows só pela peça única"
+  },
+  {
+   "arquivo": "atualizacao.py",
+   "conferencia": "K02",
+   "funcao": "_lancar_escondido",
+   "texto": "| getattr(subprocess, \"DETACHED_PROCESS\", 0))",
+   "quantas": 1,
+   "linhas_quando_gerada": [
+    968
+   ],
+   "data": "2026-11-19",
+   "passo": "3",
+   "motivo": "o atualizador passa a conversar com o Windows só pela peça única"
+  },
+  {
+   "arquivo": "atualizacao.py",
+   "conferencia": "K04",
+   "funcao": "ao_desinstalar",
+   "texto": "registrar(f\"desfazer os testes à distância (D-731): {'mandado' if feito.ok else 'NÃO mandado'}\"",
+   "quantas": 1,
+   "linhas_quando_gerada": [
+    1578
+   ],
+   "data": "2026-11-19",
+   "passo": "5",
+   "motivo": "o desinstalar limpo tira o número de decisão do registro"
+  },
+  {
+   "arquivo": "atualizacao.py",
+   "conferencia": "K04",
+   "funcao": "criar_as_tarefas",
+   "texto": "registrar(f\"criar a tarefa do desfazer (D-731): {'certo' if desfazer.ok else 'NÃO deu certo'}\"",
+   "quantas": 1,
+   "linhas_quando_gerada": [
+    1400
+   ],
+   "data": "2026-11-19",
+   "passo": "5",
+   "motivo": "o desinstalar limpo tira o número de decisão do registro"
+  },
+  {
+   "arquivo": "atualizacao.py",
+   "conferencia": "K04",
+   "funcao": "passo_de_preparar_o_computador",
+   "texto": "\"antiga (D-733)\",",
+   "quantas": 1,
+   "linhas_quando_gerada": [
+    1432
+   ],
+   "data": "2026-11-19",
+   "passo": "3",
+   "motivo": "o atualizador passa a conversar com o Windows só pela peça única"
+  },
+  {
+   "arquivo": "atualizacao.py",
+   "conferencia": "K04",
+   "funcao": "preparar_na_primeira_abertura",
+   "texto": "\"atualização não foi criado; a pergunta volta na próxima abertura (D-741)\")",
+   "quantas": 1,
+   "linhas_quando_gerada": [
+    1501
+   ],
+   "data": "2026-11-19",
+   "passo": "3",
+   "motivo": "o atualizador passa a conversar com o Windows só pela peça única"
+  },
+  {
+   "arquivo": "atualizacao.py",
+   "conferencia": "K04",
+   "funcao": "preparar_na_primeira_abertura",
+   "texto": "\"bem; conta como não feita e a pergunta volta na próxima abertura (D-749)\")",
+   "quantas": 1,
+   "linhas_quando_gerada": [
+    1509
+   ],
+   "data": "2026-11-19",
+   "passo": "3",
+   "motivo": "o atualizador passa a conversar com o Windows só pela peça única"
+  },
+  {
+   "arquivo": "avaliar.py",
+   "conferencia": "K01",
+   "funcao": "achar_acervo",
+   "texto": "ctypes.windll.shell32.SHGetFolderPathW(None, 0x10, None, 0, buffer)",
+   "quantas": 1,
+   "linhas_quando_gerada": [
+    1659
+   ],
+   "data": "2026-11-19",
+   "passo": "depois da entrega",
+   "motivo": "a régua dos filtros pergunta a Área de Trabalho ao Windows; D-800"
+  },
+  {
+   "arquivo": "avaliar.py",
+   "conferencia": "K01",
+   "funcao": "achar_acervo",
+   "texto": "from ctypes import windll, wintypes",
+   "quantas": 1,
+   "linhas_quando_gerada": [
+    1655
+   ],
+   "data": "2026-11-19",
+   "passo": "depois da entrega",
+   "motivo": "a régua dos filtros pergunta a Área de Trabalho ao Windows; D-800"
+  },
+  {
+   "arquivo": "core/_testes_a_distancia_windows.py",
+   "conferencia": "K01",
+   "funcao": "",
+   "texto": "class _SHELLEXECUTEINFO(ctypes.Structure):",
+   "quantas": 1,
+   "linhas_quando_gerada": [
+    61
+   ],
+   "data": "2026-11-19",
+   "passo": "4",
+   "motivo": "os testes à distância passam a usar a peça única"
+  },
+  {
+   "arquivo": "core/_testes_a_distancia_windows.py",
+   "conferencia": "K01",
+   "funcao": "_rodar_elevado",
+   "texto": "ctypes.windll.kernel32.CloseHandle(info.hProcess)",
+   "quantas": 1,
+   "linhas_quando_gerada": [
+    99
+   ],
+   "data": "2026-11-19",
+   "passo": "4",
+   "motivo": "os testes à distância passam a usar a peça única"
+  },
+  {
+   "arquivo": "core/_testes_a_distancia_windows.py",
+   "conferencia": "K01",
+   "funcao": "_rodar_elevado",
+   "texto": "ctypes.windll.kernel32.GetExitCodeProcess(info.hProcess, ctypes.byref(codigo))",
+   "quantas": 1,
+   "linhas_quando_gerada": [
+    98
+   ],
+   "data": "2026-11-19",
+   "passo": "4",
+   "motivo": "os testes à distância passam a usar a peça única"
+  },
+  {
+   "arquivo": "core/_testes_a_distancia_windows.py",
+   "conferencia": "K01",
+   "funcao": "_rodar_elevado",
+   "texto": "ctypes.windll.kernel32.WaitForSingleObject(info.hProcess, 0xFFFFFFFF)",
+   "quantas": 1,
+   "linhas_quando_gerada": [
+    96
+   ],
+   "data": "2026-11-19",
+   "passo": "4",
+   "motivo": "os testes à distância passam a usar a peça única"
+  },
+  {
+   "arquivo": "core/_testes_a_distancia_windows.py",
+   "conferencia": "K01",
+   "funcao": "_rodar_elevado",
+   "texto": "if not ctypes.windll.shell32.ShellExecuteExW(ctypes.byref(info)):",
+   "quantas": 1,
+   "linhas_quando_gerada": [
+    94
+   ],
+   "data": "2026-11-19",
+   "passo": "4",
+   "motivo": "os testes à distância passam a usar a peça única"
+  },
+  {
+   "arquivo": "core/_testes_a_distancia_windows.py",
+   "conferencia": "K01",
+   "funcao": "_rodar_elevado",
+   "texto": "info = _SHELLEXECUTEINFO()",
+   "quantas": 1,
+   "linhas_quando_gerada": [
+    86
+   ],
+   "data": "2026-11-19",
+   "passo": "4",
+   "motivo": "os testes à distância passam a usar a peça única"
+  },
+  {
+   "arquivo": "core/_testes_a_distancia_windows.py",
+   "conferencia": "K01",
+   "funcao": "_rodar_elevado",
+   "texto": "info.lpFile = \"powershell.exe\"",
+   "quantas": 1,
+   "linhas_quando_gerada": [
+    90
+   ],
+   "data": "2026-11-19",
+   "passo": "4",
+   "motivo": "os testes à distância passam a usar a peça única"
+  },
+  {
+   "arquivo": "core/_testes_a_distancia_windows.py",
+   "conferencia": "K01",
+   "funcao": "_rodar_elevado",
+   "texto": "info.lpParameters = (f\"-NoProfile -NonInteractive -ExecutionPolicy Bypass \"",
+   "quantas": 1,
+   "linhas_quando_gerada": [
+    91
+   ],
+   "data": "2026-11-19",
+   "passo": "4",
+   "motivo": "os testes à distância passam a usar a peça única"
+  },
+  {
+   "arquivo": "core/_testes_a_distancia_windows.py",
+   "conferencia": "K01",
+   "funcao": "_rodar_elevado",
+   "texto": "info.lpVerb = \"runas\"",
+   "quantas": 1,
+   "linhas_quando_gerada": [
+    89
+   ],
+   "data": "2026-11-19",
+   "passo": "4",
+   "motivo": "os testes à distância passam a usar a peça única"
+  },
+  {
+   "arquivo": "core/_testes_a_distancia_windows.py",
+   "conferencia": "K01",
+   "funcao": "_senha_cifrada_pelo_windows",
+   "texto": "[\"powershell\", \"-NoProfile\", \"-NonInteractive\", \"-Command\", script],",
+   "quantas": 1,
+   "linhas_quando_gerada": [
+    55
+   ],
+   "data": "2026-11-19",
+   "passo": "4",
+   "motivo": "os testes à distância passam a usar a peça única"
+  },
+  {
+   "arquivo": "core/_testes_a_distancia_windows.py",
+   "conferencia": "K01",
+   "funcao": "aplicar_ja_como_administrador_no_windows",
+   "texto": "feito = subprocess.run([\"powershell.exe\", \"-NoProfile\", \"-NonInteractive\", \"-ExecutionPolicy\", \"Bypass\",",
+   "quantas": 1,
+   "linhas_quando_gerada": [
+    153
+   ],
+   "data": "2026-11-19",
+   "passo": "4",
+   "motivo": "os testes à distância passam a usar a peça única"
+  },
+  {
+   "arquivo": "core/_testes_a_distancia_windows.py",
+   "conferencia": "K01",
+   "funcao": "rodar_a_tarefa_no_windows",
+   "texto": "feito = subprocess.run([\"schtasks\", \"/Run\", \"/TN\", nome], capture_output=True, text=True,",
+   "quantas": 1,
+   "linhas_quando_gerada": [
+    182
+   ],
+   "data": "2026-11-19",
+   "passo": "4",
+   "motivo": "os testes à distância passam a usar a peça única"
+  },
+  {
+   "arquivo": "core/nucleos.py",
+   "conferencia": "K01",
+   "funcao": "memoria_livre_mb",
+   "texto": "if not ctypes.windll.kernel32.GlobalMemoryStatusEx(ctypes.byref(estado)):",
+   "quantas": 1,
+   "linhas_quando_gerada": [
+    78
+   ],
+   "data": "2026-11-19",
+   "passo": "depois da entrega",
+   "motivo": "a memória livre pelo Windows; D-802"
+  },
+  {
+   "arquivo": "core/ocr_comum.py",
+   "conferencia": "K01",
+   "funcao": "abrir_processo",
+   "texto": "kernel32 = ctypes.WinDLL(\"kernel32\", use_last_error=True)",
+   "quantas": 1,
+   "linhas_quando_gerada": [
+    211
+   ],
+   "data": "2026-11-19",
+   "passo": "depois da entrega",
+   "motivo": "o motor de achar texto ajusta onde procurar as bibliotecas; D-802"
+  },
+  {
+   "arquivo": "core/ocr_comum.py",
+   "conferencia": "K01",
+   "funcao": "abrir_processo",
+   "texto": "kernel32.SetDllDirectoryW(None)",
+   "quantas": 1,
+   "linhas_quando_gerada": [
+    217
+   ],
+   "data": "2026-11-19",
+   "passo": "depois da entrega",
+   "motivo": "o motor de achar texto ajusta onde procurar as bibliotecas; D-802"
+  },
+  {
+   "arquivo": "core/ocr_comum.py",
+   "conferencia": "K01",
+   "funcao": "abrir_processo",
+   "texto": "kernel32.SetDllDirectoryW(antes)",
+   "quantas": 1,
+   "linhas_quando_gerada": [
+    222
+   ],
+   "data": "2026-11-19",
+   "passo": "depois da entrega",
+   "motivo": "o motor de achar texto ajusta onde procurar as bibliotecas; D-802"
+  },
+  {
+   "arquivo": "core/ocr_comum.py",
+   "conferencia": "K01",
+   "funcao": "abrir_processo",
+   "texto": "tamanho = kernel32.GetDllDirectoryW(32768, memoria)",
+   "quantas": 1,
+   "linhas_quando_gerada": [
+    214
+   ],
+   "data": "2026-11-19",
+   "passo": "depois da entrega",
+   "motivo": "o motor de achar texto ajusta onde procurar as bibliotecas; D-802"
+  },
+  {
+   "arquivo": "core/testes_a_distancia.py",
+   "conferencia": "K01",
+   "funcao": "",
+   "texto": "CHAVE_USERLIST = (r\"HKLM:\\SOFTWARE\\Microsoft\\Windows NT\\CurrentVersion\"",
+   "quantas": 1,
+   "linhas_quando_gerada": [
+    89
+   ],
+   "data": "2026-11-19",
+   "passo": "4",
+   "motivo": "os testes à distância passam a usar a peça única e a pasta segura"
+  },
+  {
+   "arquivo": "core/testes_a_distancia.py",
+   "conferencia": "K01",
+   "funcao": "_comando_anotar_o_antes",
+   "texto": "f\" $cap = Get-WindowsCapability -Online -Name {CAPACIDADE_OPENSSH};\"",
+   "quantas": 1,
+   "linhas_quando_gerada": [
+    278
+   ],
+   "data": "2026-11-19",
+   "passo": "4",
+   "motivo": "os testes à distância passam a usar a peça única e a pasta segura"
+  },
+  {
+   "arquivo": "core/testes_a_distancia.py",
+   "conferencia": "K01",
+   "funcao": "_comando_anotar_o_antes",
+   "texto": "f\" $conta = Get-LocalUser -Name {NOME_DA_CONTA} -ErrorAction SilentlyContinue;\"",
+   "quantas": 1,
+   "linhas_quando_gerada": [
+    281
+   ],
+   "data": "2026-11-19",
+   "passo": "4",
+   "motivo": "os testes à distância passam a usar a peça única e a pasta segura"
+  },
+  {
+   "arquivo": "core/testes_a_distancia.py",
+   "conferencia": "K01",
+   "funcao": "_comando_anotar_o_antes",
+   "texto": "f\" $regra = Get-NetFirewallRule -Name {REGRA_LARGA_DO_OPENSSH} -ErrorAction SilentlyContinue;\"",
+   "quantas": 1,
+   "linhas_quando_gerada": [
+    280
+   ],
+   "data": "2026-11-19",
+   "passo": "4",
+   "motivo": "os testes à distância passam a usar a peça única e a pasta segura"
+  },
+  {
+   "arquivo": "core/testes_a_distancia.py",
+   "conferencia": "K01",
+   "funcao": "_comando_anotar_o_antes",
+   "texto": "f\" $svc = Get-Service -Name sshd -ErrorAction SilentlyContinue;\"",
+   "quantas": 1,
+   "linhas_quando_gerada": [
+    279
+   ],
+   "data": "2026-11-19",
+   "passo": "4",
+   "motivo": "os testes à distância passam a usar a peça única e a pasta segura"
+  },
+  {
+   "arquivo": "core/testes_a_distancia.py",
+   "conferencia": "K01",
+   "funcao": "_comando_anotar_o_antes",
+   "texto": "f\" if (Test-Path -LiteralPath $arq) {{ $dono = (Get-Acl -LiteralPath $arq).GetOwner(\"",
+   "quantas": 1,
+   "linhas_quando_gerada": [
+    274
+   ],
+   "data": "2026-11-19",
+   "passo": "4",
+   "motivo": "os testes à distância passam a usar a peça única e a pasta segura"
+  },
+  {
+   "arquivo": "core/testes_a_distancia.py",
+   "conferencia": "K01",
+   "funcao": "_comando_apagar_a_pasta_das_tarefas_se_vazia",
+   "texto": "return (f\"$agenda = New-Object -ComObject Schedule.Service; $agenda.Connect(); $pasta = $null;\"",
+   "quantas": 1,
+   "linhas_quando_gerada": [
+    557
+   ],
+   "data": "2026-11-19",
+   "passo": "5",
+   "motivo": "o desinstalar limpo refaz o desfazer"
+  },
+  {
+   "arquivo": "core/testes_a_distancia.py",
+   "conferencia": "K01",
+   "funcao": "_comando_preparar_o_desfazer",
+   "texto": "f\" $agenda = New-Object -ComObject Schedule.Service; $agenda.Connect();\"",
+   "quantas": 1,
+   "linhas_quando_gerada": [
+    348
+   ],
+   "data": "2026-11-19",
+   "passo": "5",
+   "motivo": "o desinstalar limpo troca a tarefa do desfazer"
+  },
+  {
+   "arquivo": "core/testes_a_distancia.py",
+   "conferencia": "K01",
+   "funcao": "_comando_preparar_o_desfazer",
+   "texto": "f\" $u = Get-LocalUser -Name {NOME_DA_CONTA} -ErrorAction SilentlyContinue;\"",
+   "quantas": 1,
+   "linhas_quando_gerada": [
+    345
+   ],
+   "data": "2026-11-19",
+   "passo": "5",
+   "motivo": "o desinstalar limpo troca a tarefa do desfazer"
+  },
+  {
+   "arquivo": "core/testes_a_distancia.py",
+   "conferencia": "K01",
+   "funcao": "_comando_preparar_o_desfazer",
+   "texto": "f\" Register-ScheduledTask -Xml '{xml_da_tarefa_do_desfazer()}' -TaskName '{NOME_DA_TAREFA_DO_DESFAZER}'\"",
+   "quantas": 1,
+   "linhas_quando_gerada": [
+    343
+   ],
+   "data": "2026-11-19",
+   "passo": "5",
+   "motivo": "o desinstalar limpo troca a tarefa do desfazer"
+  },
+  {
+   "arquivo": "core/testes_a_distancia.py",
+   "conferencia": "K01",
+   "funcao": "_comando_proteger_a_pasta",
+   "texto": "f\" icacls $pasta /inheritance:r /grant:r '*{SID_SISTEMA}:(OI)(CI)F' '*{SID_ADMINISTRADORES}:(OI)(CI)F'\"",
+   "quantas": 1,
+   "linhas_quando_gerada": [
+    369
+   ],
+   "data": "2026-11-19",
+   "passo": "4",
+   "motivo": "os testes à distância passam a usar a peça única e a pasta segura"
+  },
+  {
+   "arquivo": "core/testes_a_distancia.py",
+   "conferencia": "K01",
+   "funcao": "_comando_proteger_a_pasta",
+   "texto": "f\" icacls $pasta /setowner '*{SID_ADMINISTRADORES}' /T /C /Q | Out-Null;\"",
+   "quantas": 1,
+   "linhas_quando_gerada": [
+    368
+   ],
+   "data": "2026-11-19",
+   "passo": "4",
+   "motivo": "os testes à distância passam a usar a peça única e a pasta segura"
+  },
+  {
+   "arquivo": "core/testes_a_distancia.py",
+   "conferencia": "K01",
+   "funcao": "_conta_e_nossa",
+   "texto": "return (f\"((Get-LocalUser -Name {NOME_DA_CONTA} -ErrorAction SilentlyContinue).Description\"",
+   "quantas": 1,
+   "linhas_quando_gerada": [
+    204
+   ],
+   "data": "2026-11-19",
+   "passo": "4",
+   "motivo": "os testes à distância passam a usar a peça única e a pasta segura"
+  },
+  {
+   "arquivo": "core/testes_a_distancia.py",
+   "conferencia": "K01",
+   "funcao": "_passos_das_nossas_tarefas",
+   "texto": "f\" Unregister-ScheduledTask -TaskName '{NOME_DA_TAREFA_DO_DESFAZER}'\"",
+   "quantas": 1,
+   "linhas_quando_gerada": [
+    539
+   ],
+   "data": "2026-11-19",
+   "passo": "5",
+   "motivo": "o desinstalar limpo refaz o desfazer"
+  },
+  {
+   "arquivo": "core/testes_a_distancia.py",
+   "conferencia": "K01",
+   "funcao": "_passos_das_nossas_tarefas",
+   "texto": "f\"Unregister-ScheduledTask -TaskName '{nome}' -TaskPath '\\\\{pasta}\\\\'\"",
+   "quantas": 1,
+   "linhas_quando_gerada": [
+    533
+   ],
+   "data": "2026-11-19",
+   "passo": "5",
+   "motivo": "o desinstalar limpo refaz o desfazer"
+  },
+  {
+   "arquivo": "core/testes_a_distancia.py",
+   "conferencia": "K01",
+   "funcao": "_passos_dos_testes_a_distancia",
+   "texto": "_so_se_a_conta_foi_nossa(f\"Remove-LocalUser -Name {NOME_DA_CONTA}\")),",
+   "quantas": 1,
+   "linhas_quando_gerada": [
+    589
+   ],
+   "data": "2026-11-19",
+   "passo": "5",
+   "motivo": "o desinstalar limpo refaz o desfazer"
+  },
+  {
+   "arquivo": "core/testes_a_distancia.py",
+   "conferencia": "K01",
+   "funcao": "_passos_dos_testes_a_distancia",
+   "texto": "_so_se_o_openssh_foi_nosso(f\"Remove-WindowsCapability -Online -Name {CAPACIDADE_OPENSSH}\")),",
+   "quantas": 1,
+   "linhas_quando_gerada": [
+    597
+   ],
+   "data": "2026-11-19",
+   "passo": "5",
+   "motivo": "o desinstalar limpo refaz o desfazer"
+  },
+  {
+   "arquivo": "core/testes_a_distancia.py",
+   "conferencia": "K01",
+   "funcao": "_passos_dos_testes_a_distancia",
+   "texto": "f\" Get-CimInstance -ClassName Win32_UserProfile | Where-Object {{ $_.SID -eq $sid }}\"",
+   "quantas": 1,
+   "linhas_quando_gerada": [
+    579
+   ],
+   "data": "2026-11-19",
+   "passo": "5",
+   "motivo": "o desinstalar limpo refaz o desfazer"
+  },
+  {
+   "arquivo": "core/testes_a_distancia.py",
+   "conferencia": "K01",
+   "funcao": "_passos_dos_testes_a_distancia",
+   "texto": "f\" {{ Remove-NetFirewallRule -Name {REGRA_LARGA_DO_OPENSSH} -ErrorAction SilentlyContinue }}\")),",
+   "quantas": 1,
+   "linhas_quando_gerada": [
+    595
+   ],
+   "data": "2026-11-19",
+   "passo": "5",
+   "motivo": "o desinstalar limpo refaz o desfazer"
+  },
+  {
+   "arquivo": "core/testes_a_distancia.py",
+   "conferencia": "K01",
+   "funcao": "_passos_dos_testes_a_distancia",
+   "texto": "f\" | Remove-CimInstance\")),",
+   "quantas": 1,
+   "linhas_quando_gerada": [
+    580
+   ],
+   "data": "2026-11-19",
+   "passo": "5",
+   "motivo": "o desinstalar limpo refaz o desfazer"
+  },
+  {
+   "arquivo": "core/testes_a_distancia.py",
+   "conferencia": "K01",
+   "funcao": "_passos_dos_testes_a_distancia",
+   "texto": "f\" | Stop-Process -Force -ErrorAction SilentlyContinue\")),",
+   "quantas": 1,
+   "linhas_quando_gerada": [
+    574
+   ],
+   "data": "2026-11-19",
+   "passo": "5",
+   "motivo": "o desinstalar limpo refaz o desfazer"
+  },
+  {
+   "arquivo": "core/testes_a_distancia.py",
+   "conferencia": "K01",
+   "funcao": "_passos_dos_testes_a_distancia",
+   "texto": "f\"$sid = (Get-LocalUser -Name {NOME_DA_CONTA}).SID.Value;\"",
+   "quantas": 1,
+   "linhas_quando_gerada": [
+    578
+   ],
+   "data": "2026-11-19",
+   "passo": "5",
+   "motivo": "o desinstalar limpo refaz o desfazer"
+  },
+  {
+   "arquivo": "core/testes_a_distancia.py",
+   "conferencia": "K01",
+   "funcao": "_passos_dos_testes_a_distancia",
+   "texto": "f\"Remove-ItemProperty -Path '{CHAVE_USERLIST}' -Name {NOME_DA_CONTA}\"",
+   "quantas": 1,
+   "linhas_quando_gerada": [
+    583
+   ],
+   "data": "2026-11-19",
+   "passo": "5",
+   "motivo": "o desinstalar limpo refaz o desfazer"
+  },
+  {
+   "arquivo": "core/testes_a_distancia.py",
+   "conferencia": "K01",
+   "funcao": "plano_de_desligar",
+   "texto": "f\" Set-Service -Name sshd -StartupType Disabled }}\"),",
+   "quantas": 1,
+   "linhas_quando_gerada": [
+    486
+   ],
+   "data": "2026-11-19",
+   "passo": "4",
+   "motivo": "os testes à distância passam a usar a peça única e a pasta segura"
+  },
+  {
+   "arquivo": "core/testes_a_distancia.py",
+   "conferencia": "K01",
+   "funcao": "plano_de_desligar",
+   "texto": "f\" else {{ Stop-Service -Name sshd -ErrorAction SilentlyContinue }};\"",
+   "quantas": 1,
+   "linhas_quando_gerada": [
+    482
+   ],
+   "data": "2026-11-19",
+   "passo": "4",
+   "motivo": "os testes à distância passam a usar a peça única e a pasta segura"
+  },
+  {
+   "arquivo": "core/testes_a_distancia.py",
+   "conferencia": "K01",
+   "funcao": "plano_de_desligar",
+   "texto": "f\" else {{ Stop-Service -Name sshd -ErrorAction SilentlyContinue;\"",
+   "quantas": 1,
+   "linhas_quando_gerada": [
+    485
+   ],
+   "data": "2026-11-19",
+   "passo": "4",
+   "motivo": "os testes à distância passam a usar a peça única e a pasta segura"
+  },
+  {
+   "arquivo": "core/testes_a_distancia.py",
+   "conferencia": "K01",
+   "funcao": "plano_de_desligar",
+   "texto": "f\" if ($antes.regra_larga_ligada) {{ Enable-NetFirewallRule -Name {REGRA_LARGA_DO_OPENSSH} }};\"",
+   "quantas": 1,
+   "linhas_quando_gerada": [
+    483
+   ],
+   "data": "2026-11-19",
+   "passo": "4",
+   "motivo": "os testes à distância passam a usar a peça única e a pasta segura"
+  },
+  {
+   "arquivo": "core/testes_a_distancia.py",
+   "conferencia": "K01",
+   "funcao": "plano_de_desligar",
+   "texto": "f\" if ($antes.sshd_inicio) {{ Set-Service -Name sshd -StartupType $antes.sshd_inicio }};\"",
+   "quantas": 1,
+   "linhas_quando_gerada": [
+    480
+   ],
+   "data": "2026-11-19",
+   "passo": "4",
+   "motivo": "os testes à distância passam a usar a peça única e a pasta segura"
+  },
+  {
+   "arquivo": "core/testes_a_distancia.py",
+   "conferencia": "K01",
+   "funcao": "plano_de_desligar",
+   "texto": "f\" if ($antes.sshd_rodando) {{ Restart-Service -Name sshd }}\"",
+   "quantas": 1,
+   "linhas_quando_gerada": [
+    481
+   ],
+   "data": "2026-11-19",
+   "passo": "4",
+   "motivo": "os testes à distância passam a usar a peça única e a pasta segura"
+  },
+  {
+   "arquivo": "core/testes_a_distancia.py",
+   "conferencia": "K01",
+   "funcao": "plano_de_desligar",
+   "texto": "f\"Disable-LocalUser -Name {NOME_DA_CONTA} -ErrorAction SilentlyContinue\"),",
+   "quantas": 1,
+   "linhas_quando_gerada": [
+    490
+   ],
+   "data": "2026-11-19",
+   "passo": "4",
+   "motivo": "os testes à distância passam a usar a peça única e a pasta segura"
+  },
+  {
+   "arquivo": "core/testes_a_distancia.py",
+   "conferencia": "K01",
+   "funcao": "plano_de_desligar",
+   "texto": "f\"Remove-NetFirewallRule -Name {NOME_DA_REGRA} -ErrorAction SilentlyContinue\"),",
+   "quantas": 1,
+   "linhas_quando_gerada": [
+    488
+   ],
+   "data": "2026-11-19",
+   "passo": "4",
+   "motivo": "os testes à distância passam a usar a peça única e a pasta segura"
+  },
+  {
+   "arquivo": "core/testes_a_distancia.py",
+   "conferencia": "K01",
+   "funcao": "plano_de_ligar",
+   "texto": "\"Set-Service -Name sshd -StartupType Automatic; Start-Service -Name sshd\"),",
+   "quantas": 1,
+   "linhas_quando_gerada": [
+    414
+   ],
+   "data": "2026-11-19",
+   "passo": "4",
+   "motivo": "os testes à distância passam a usar a peça única e a pasta segura"
+  },
+  {
+   "arquivo": "core/testes_a_distancia.py",
+   "conferencia": "K01",
+   "funcao": "plano_de_ligar",
+   "texto": "f\" Add-LocalGroupMember -SID {SID_USUARIOS} -Member {NOME_DA_CONTA} }}\",",
+   "quantas": 1,
+   "linhas_quando_gerada": [
+    445
+   ],
+   "data": "2026-11-19",
+   "passo": "4",
+   "motivo": "os testes à distância passam a usar a peça única e a pasta segura"
+  },
+  {
+   "arquivo": "core/testes_a_distancia.py",
+   "conferencia": "K01",
+   "funcao": "plano_de_ligar",
+   "texto": "f\" Enable-LocalUser -Name {NOME_DA_CONTA} }}\"",
+   "quantas": 1,
+   "linhas_quando_gerada": [
+    440
+   ],
+   "data": "2026-11-19",
+   "passo": "4",
+   "motivo": "os testes à distância passam a usar a peça única e a pasta segura"
+  },
+  {
+   "arquivo": "core/testes_a_distancia.py",
+   "conferencia": "K01",
+   "funcao": "plano_de_ligar",
+   "texto": "f\" New-ItemProperty -Path '{CHAVE_USERLIST}' -Name {NOME_DA_CONTA}\"",
+   "quantas": 1,
+   "linhas_quando_gerada": [
+    454
+   ],
+   "data": "2026-11-19",
+   "passo": "4",
+   "motivo": "os testes à distância passam a usar a peça única e a pasta segura"
+  },
+  {
+   "arquivo": "core/testes_a_distancia.py",
+   "conferencia": "K01",
+   "funcao": "plano_de_ligar",
+   "texto": "f\" New-NetFirewallRule -Name {NOME_DA_REGRA}\"",
+   "quantas": 1,
+   "linhas_quando_gerada": [
+    423
+   ],
+   "data": "2026-11-19",
+   "passo": "4",
+   "motivo": "os testes à distância passam a usar a peça única e a pasta segura"
+  },
+  {
+   "arquivo": "core/testes_a_distancia.py",
+   "conferencia": "K01",
+   "funcao": "plano_de_ligar",
+   "texto": "f\" Set-LocalUser -Name {NOME_DA_CONTA} -Password {VARIAVEL_DA_SENHA}\"",
+   "quantas": 1,
+   "linhas_quando_gerada": [
+    438
+   ],
+   "data": "2026-11-19",
+   "passo": "4",
+   "motivo": "os testes à distância passam a usar a peça única e a pasta segura"
+  },
+  {
+   "arquivo": "core/testes_a_distancia.py",
+   "conferencia": "K01",
+   "funcao": "plano_de_ligar",
+   "texto": "f\" else {{ New-LocalUser -Name {NOME_DA_CONTA} -Password {VARIAVEL_DA_SENHA}\"",
+   "quantas": 1,
+   "linhas_quando_gerada": [
+    441
+   ],
+   "data": "2026-11-19",
+   "passo": "4",
+   "motivo": "os testes à distância passam a usar a peça única e a pasta segura"
+  },
+  {
+   "arquivo": "core/testes_a_distancia.py",
+   "conferencia": "K01",
+   "funcao": "plano_de_ligar",
+   "texto": "f\"$u = Get-LocalUser -Name {NOME_DA_CONTA} -ErrorAction SilentlyContinue;\"",
+   "quantas": 1,
+   "linhas_quando_gerada": [
+    435
+   ],
+   "data": "2026-11-19",
+   "passo": "4",
+   "motivo": "os testes à distância passam a usar a peça única e a pasta segura"
+  },
+  {
+   "arquivo": "core/testes_a_distancia.py",
+   "conferencia": "K01",
+   "funcao": "plano_de_ligar",
+   "texto": "f\"Add-WindowsCapability -Online -Name {CAPACIDADE_OPENSSH}\"),",
+   "quantas": 1,
+   "linhas_quando_gerada": [
+    412
+   ],
+   "data": "2026-11-19",
+   "passo": "4",
+   "motivo": "os testes à distância passam a usar a peça única e a pasta segura"
+  },
+  {
+   "arquivo": "core/testes_a_distancia.py",
+   "conferencia": "K01",
+   "funcao": "plano_de_ligar",
+   "texto": "f\"Disable-NetFirewallRule -Name {REGRA_LARGA_DO_OPENSSH}\"),",
+   "quantas": 1,
+   "linhas_quando_gerada": [
+    419
+   ],
+   "data": "2026-11-19",
+   "passo": "4",
+   "motivo": "os testes à distância passam a usar a peça única e a pasta segura"
+  },
+  {
+   "arquivo": "core/testes_a_distancia.py",
+   "conferencia": "K01",
+   "funcao": "plano_de_ligar",
+   "texto": "f\"Remove-NetFirewallRule -Name {NOME_DA_REGRA} -ErrorAction SilentlyContinue;\"",
+   "quantas": 1,
+   "linhas_quando_gerada": [
+    422
+   ],
+   "data": "2026-11-19",
+   "passo": "4",
+   "motivo": "os testes à distância passam a usar a peça única e a pasta segura"
+  },
+  {
+   "arquivo": "core/testes_a_distancia.py",
+   "conferencia": "K01",
+   "funcao": "plano_de_ligar",
+   "texto": "f\"{_comando_por_o_bloco(SSHD_CONFIG)}; Restart-Service -Name sshd\"),",
+   "quantas": 1,
+   "linhas_quando_gerada": [
+    460
+   ],
+   "data": "2026-11-19",
+   "passo": "4",
+   "motivo": "os testes à distância passam a usar a peça única e a pasta segura"
+  },
+  {
+   "arquivo": "core/testes_a_distancia.py",
+   "conferencia": "K01",
+   "funcao": "xml_da_tarefa_do_desfazer",
+   "texto": "'<Actions Context=\"Sistema\"><Exec><Command>powershell.exe</Command>'",
+   "quantas": 1,
+   "linhas_quando_gerada": [
+    304
+   ],
+   "data": "2026-11-19",
+   "passo": "5",
+   "motivo": "o desinstalar limpo troca a tarefa do desfazer"
+  },
+  {
+   "arquivo": "core/testes_a_distancia.py",
+   "conferencia": "K01",
+   "funcao": "xml_da_tarefa_do_desfazer",
+   "texto": "'<Arguments>-NoProfile -NonInteractive -ExecutionPolicy Bypass -WindowStyle Hidden'",
+   "quantas": 1,
+   "linhas_quando_gerada": [
+    305
+   ],
+   "data": "2026-11-19",
+   "passo": "5",
+   "motivo": "o desinstalar limpo troca a tarefa do desfazer"
+  },
+  {
+   "arquivo": "core/testes_a_distancia.py",
+   "conferencia": "K03",
+   "funcao": "_comando_proteger_a_pasta",
+   "texto": "f\" icacls $pasta /inheritance:r /grant:r '*{SID_SISTEMA}:(OI)(CI)F' '*{SID_ADMINISTRADORES}:(OI)(CI)F'\"",
+   "quantas": 1,
+   "linhas_quando_gerada": [
+    369
+   ],
+   "data": "2026-11-19",
+   "passo": "4",
+   "motivo": "os testes à distância passam a usar a peça única e a pasta segura"
+  },
+  {
+   "arquivo": "core/testes_a_distancia.py",
+   "conferencia": "K03",
+   "funcao": "_comando_proteger_a_pasta",
+   "texto": "f\" icacls $pasta /setowner '*{SID_ADMINISTRADORES}' /T /C /Q | Out-Null;\"",
+   "quantas": 1,
+   "linhas_quando_gerada": [
+    368
+   ],
+   "data": "2026-11-19",
+   "passo": "4",
+   "motivo": "os testes à distância passam a usar a peça única e a pasta segura"
+  },
+  {
+   "arquivo": "core/testes_a_distancia.py",
+   "conferencia": "K04",
+   "funcao": "plano_de_ligar",
+   "texto": "Passo(\"Abrir a porta so para a rede do Tailscale (D-705)\",",
+   "quantas": 1,
+   "linhas_quando_gerada": [
+    421
+   ],
+   "data": "2026-11-19",
+   "passo": "4",
+   "motivo": "os testes à distância passam a usar a peça única e a pasta segura"
+  },
+  {
+   "arquivo": "core/testes_a_distancia.py",
+   "conferencia": "K04",
+   "funcao": "plano_de_ligar",
+   "texto": "Passo(\"Anotar o que o computador ja tinha antes (D-731)\", _comando_anotar_o_antes()),",
+   "quantas": 1,
+   "linhas_quando_gerada": [
+    410
+   ],
+   "data": "2026-11-19",
+   "passo": "4",
+   "motivo": "os testes à distância passam a usar a peça única e a pasta segura"
+  },
+  {
+   "arquivo": "core/testes_a_distancia.py",
+   "conferencia": "K04",
+   "funcao": "plano_de_ligar",
+   "texto": "Passo(\"Criar a conta so dos testes, sem poder de administrador (D-717)\",",
+   "quantas": 1,
+   "linhas_quando_gerada": [
+    434
+   ],
+   "data": "2026-11-19",
+   "passo": "4",
+   "motivo": "os testes à distância passam a usar a peça única e a pasta segura"
+  },
+  {
+   "arquivo": "core/testes_a_distancia.py",
+   "conferencia": "K04",
+   "funcao": "plano_de_ligar",
+   "texto": "Passo(\"Deixar entrar pelo comando de longe so a conta de testes (D-711)\",",
+   "quantas": 1,
+   "linhas_quando_gerada": [
+    459
+   ],
+   "data": "2026-11-19",
+   "passo": "4",
+   "motivo": "os testes à distância passam a usar a peça única e a pasta segura"
+  },
+  {
+   "arquivo": "core/testes_a_distancia.py",
+   "conferencia": "K04",
+   "funcao": "plano_de_ligar",
+   "texto": "Passo(\"Deixar o Servidor OpenSSH ligando sozinho com o Windows (D-711)\",",
+   "quantas": 1,
+   "linhas_quando_gerada": [
+    413
+   ],
+   "data": "2026-11-19",
+   "passo": "4",
+   "motivo": "os testes à distância passam a usar a peça única e a pasta segura"
+  },
+  {
+   "arquivo": "core/testes_a_distancia.py",
+   "conferencia": "K04",
+   "funcao": "plano_de_ligar",
+   "texto": "Passo(\"Esconder a conta de testes da tela de entrada (D-717)\",",
+   "quantas": 1,
+   "linhas_quando_gerada": [
+    451
+   ],
+   "data": "2026-11-19",
+   "passo": "4",
+   "motivo": "os testes à distância passam a usar a peça única e a pasta segura"
+  },
+  {
+   "arquivo": "core/testes_a_distancia.py",
+   "conferencia": "K04",
+   "funcao": "plano_de_ligar",
+   "texto": "Passo(\"Preparar o desfazer para quando o programa for desinstalado (D-731)\",",
+   "quantas": 1,
+   "linhas_quando_gerada": [
+    463
+   ],
+   "data": "2026-11-19",
+   "passo": "4",
+   "motivo": "os testes à distância passam a usar a peça única e a pasta segura"
+  },
+  {
+   "arquivo": "empacotar.py",
+   "conferencia": "K01",
+   "funcao": "assinatura_do_arquivo",
+   "texto": "saida = subprocess.run([\"powershell\", \"-NoProfile\", \"-NonInteractive\", \"-Command\", comando],",
+   "quantas": 1,
+   "linhas_quando_gerada": [
+    527
+   ],
+   "data": "2026-11-19",
+   "passo": "2",
+   "motivo": "o publicar passa a ler a assinatura pela peça única do Windows"
+  },
+  {
+   "arquivo": "empacotar_teste_velocidade.py",
+   "conferencia": "K01",
+   "funcao": "",
+   "texto": "start \"\" \"{CONHOST}\" cmd.exe /c %%{VARIAVEL_DO_BAT}%% {MARCA_DA_JANELA_CLASSICA} || goto medir",
+   "quantas": 1,
+   "linhas_quando_gerada": [
+    207
+   ],
+   "data": "2026-11-19",
+   "passo": "depois da entrega",
+   "motivo": "o pacote do teste de velocidade abre a janela preta; D-802"
+  },
+  {
+   "arquivo": "historico.py",
+   "conferencia": "K01",
+   "funcao": "abrir_pasta",
+   "texto": "os.startfile(str(pasta))",
+   "quantas": 1,
+   "linhas_quando_gerada": [
+    199
+   ],
+   "data": "2026-11-19",
+   "passo": "depois da entrega",
+   "motivo": "a tela de início abre a pasta do projeto; D-802"
+  },
+  {
+   "arquivo": "historico.py",
+   "conferencia": "K01",
+   "funcao": "imprimir",
+   "texto": "os.startfile(str(caminho), \"print\")",
+   "quantas": 1,
+   "linhas_quando_gerada": [
+    212
+   ],
+   "data": "2026-11-19",
+   "passo": "depois da entrega",
+   "motivo": "a tela de início manda imprimir; D-802"
+  },
+  {
+   "arquivo": "teste_velocidade.py",
+   "conferencia": "K01",
+   "funcao": "_caminho_do_powershell",
+   "texto": "completo = Path(windows) / \"System32\" / \"WindowsPowerShell\" / \"v1.0\" / \"powershell.exe\"",
+   "quantas": 1,
+   "linhas_quando_gerada": [
+    391
+   ],
+   "data": "2026-11-19",
+   "passo": "depois da entrega",
+   "motivo": "o PowerShell do teste de velocidade; D-800"
+  },
+  {
+   "arquivo": "teste_velocidade.py",
+   "conferencia": "K01",
+   "funcao": "_caminho_do_powershell",
+   "texto": "return str(completo) if completo.is_file() else \"powershell\"",
+   "quantas": 1,
+   "linhas_quando_gerada": [
+    392
+   ],
+   "data": "2026-11-19",
+   "passo": "depois da entrega",
+   "motivo": "o PowerShell do teste de velocidade; D-800"
+  },
+  {
+   "arquivo": "teste_velocidade.py",
+   "conferencia": "K01",
+   "funcao": "_classe_da_janela",
+   "texto": "letras = user32.GetClassNameW(janela, nome, len(nome))",
+   "quantas": 1,
+   "linhas_quando_gerada": [
+    1925
+   ],
+   "data": "2026-11-19",
+   "passo": "depois da entrega",
+   "motivo": "o resto do teste de velocidade (a classe da janela); D-802"
+  },
+  {
+   "arquivo": "teste_velocidade.py",
+   "conferencia": "K01",
+   "funcao": "_classe_da_janela",
+   "texto": "user32 = ctypes.WinDLL(\"user32\", use_last_error=True)",
+   "quantas": 1,
+   "linhas_quando_gerada": [
+    1921
+   ],
+   "data": "2026-11-19",
+   "passo": "depois da entrega",
+   "motivo": "o resto do teste de velocidade (a classe da janela); D-802"
+  },
+  {
+   "arquivo": "teste_velocidade.py",
+   "conferencia": "K01",
+   "funcao": "_classe_da_janela",
+   "texto": "user32.GetClassNameW.argtypes = [wintypes.HWND, wintypes.LPWSTR, ctypes.c_int]",
+   "quantas": 1,
+   "linhas_quando_gerada": [
+    1922
+   ],
+   "data": "2026-11-19",
+   "passo": "depois da entrega",
+   "motivo": "o resto do teste de velocidade (a classe da janela); D-802"
+  },
+  {
+   "arquivo": "teste_velocidade.py",
+   "conferencia": "K01",
+   "funcao": "_classe_da_janela",
+   "texto": "user32.GetClassNameW.restype = ctypes.c_int",
+   "quantas": 1,
+   "linhas_quando_gerada": [
+    1923
+   ],
+   "data": "2026-11-19",
+   "passo": "depois da entrega",
+   "motivo": "o resto do teste de velocidade (a classe da janela); D-802"
+  },
+  {
+   "arquivo": "teste_velocidade.py",
+   "conferencia": "K01",
+   "funcao": "_entrada_da_janela_preta",
+   "texto": "kernel32 = ctypes.WinDLL(\"kernel32\", use_last_error=True)",
+   "quantas": 1,
+   "linhas_quando_gerada": [
+    1739
+   ],
+   "data": "2026-11-19",
+   "passo": "depois da entrega",
+   "motivo": "o resto do teste de velocidade (a janela preta); D-802"
+  },
+  {
+   "arquivo": "teste_velocidade.py",
+   "conferencia": "K01",
+   "funcao": "_entrada_da_janela_preta",
+   "texto": "kernel32.GetConsoleMode.argtypes = [wintypes.HANDLE, ctypes.POINTER(wintypes.DWORD)]",
+   "quantas": 1,
+   "linhas_quando_gerada": [
+    1742
+   ],
+   "data": "2026-11-19",
+   "passo": "depois da entrega",
+   "motivo": "o resto do teste de velocidade (a janela preta); D-802"
+  },
+  {
+   "arquivo": "teste_velocidade.py",
+   "conferencia": "K01",
+   "funcao": "_entrada_da_janela_preta",
+   "texto": "kernel32.GetConsoleMode.restype = wintypes.BOOL",
+   "quantas": 1,
+   "linhas_quando_gerada": [
+    1743
+   ],
+   "data": "2026-11-19",
+   "passo": "depois da entrega",
+   "motivo": "o resto do teste de velocidade (a janela preta); D-802"
+  },
+  {
+   "arquivo": "teste_velocidade.py",
+   "conferencia": "K01",
+   "funcao": "_entrada_da_janela_preta",
+   "texto": "kernel32.GetStdHandle.argtypes = [wintypes.DWORD]",
+   "quantas": 1,
+   "linhas_quando_gerada": [
+    1740
+   ],
+   "data": "2026-11-19",
+   "passo": "depois da entrega",
+   "motivo": "o resto do teste de velocidade (a janela preta); D-802"
+  },
+  {
+   "arquivo": "teste_velocidade.py",
+   "conferencia": "K01",
+   "funcao": "_entrada_da_janela_preta",
+   "texto": "kernel32.GetStdHandle.restype = wintypes.HANDLE",
+   "quantas": 1,
+   "linhas_quando_gerada": [
+    1741
+   ],
+   "data": "2026-11-19",
+   "passo": "depois da entrega",
+   "motivo": "o resto do teste de velocidade (a janela preta); D-802"
+  },
+  {
+   "arquivo": "teste_velocidade.py",
+   "conferencia": "K01",
+   "funcao": "_entrada_da_janela_preta",
+   "texto": "kernel32.SetConsoleMode.argtypes = [wintypes.HANDLE, wintypes.DWORD]",
+   "quantas": 1,
+   "linhas_quando_gerada": [
+    1744
+   ],
+   "data": "2026-11-19",
+   "passo": "depois da entrega",
+   "motivo": "o resto do teste de velocidade (a janela preta); D-802"
+  },
+  {
+   "arquivo": "teste_velocidade.py",
+   "conferencia": "K01",
+   "funcao": "_entrada_da_janela_preta",
+   "texto": "kernel32.SetConsoleMode.restype = wintypes.BOOL",
+   "quantas": 1,
+   "linhas_quando_gerada": [
+    1745
+   ],
+   "data": "2026-11-19",
+   "passo": "depois da entrega",
+   "motivo": "o resto do teste de velocidade (a janela preta); D-802"
+  },
+  {
+   "arquivo": "teste_velocidade.py",
+   "conferencia": "K01",
+   "funcao": "_entrada_da_janela_preta",
+   "texto": "return kernel32, kernel32.GetStdHandle(_STD_INPUT_HANDLE)",
+   "quantas": 1,
+   "linhas_quando_gerada": [
+    1746
+   ],
+   "data": "2026-11-19",
+   "passo": "depois da entrega",
+   "motivo": "o resto do teste de velocidade (a janela preta); D-802"
+  },
+  {
+   "arquivo": "teste_velocidade.py",
+   "conferencia": "K01",
+   "funcao": "_esvaziar_a_entrada_pelo_windows",
+   "texto": "kernel32, entrada = _entrada_da_janela_preta()",
+   "quantas": 1,
+   "linhas_quando_gerada": [
+    2252
+   ],
+   "data": "2026-11-19",
+   "passo": "depois da entrega",
+   "motivo": "o resto do teste de velocidade (a janela preta); D-802"
+  },
+  {
+   "arquivo": "teste_velocidade.py",
+   "conferencia": "K01",
+   "funcao": "_esvaziar_a_entrada_pelo_windows",
+   "texto": "kernel32.FlushConsoleInputBuffer.argtypes = [wintypes.HANDLE]",
+   "quantas": 1,
+   "linhas_quando_gerada": [
+    2253
+   ],
+   "data": "2026-11-19",
+   "passo": "depois da entrega",
+   "motivo": "o resto do teste de velocidade (a janela preta); D-802"
+  },
+  {
+   "arquivo": "teste_velocidade.py",
+   "conferencia": "K01",
+   "funcao": "_esvaziar_a_entrada_pelo_windows",
+   "texto": "kernel32.FlushConsoleInputBuffer.restype = wintypes.BOOL",
+   "quantas": 1,
+   "linhas_quando_gerada": [
+    2254
+   ],
+   "data": "2026-11-19",
+   "passo": "depois da entrega",
+   "motivo": "o resto do teste de velocidade (a janela preta); D-802"
+  },
+  {
+   "arquivo": "teste_velocidade.py",
+   "conferencia": "K01",
+   "funcao": "_esvaziar_a_entrada_pelo_windows",
+   "texto": "return bool(kernel32.FlushConsoleInputBuffer(entrada))",
+   "quantas": 1,
+   "linhas_quando_gerada": [
+    2255
+   ],
+   "data": "2026-11-19",
+   "passo": "depois da entrega",
+   "motivo": "o resto do teste de velocidade (a janela preta); D-802"
+  },
+  {
+   "arquivo": "teste_velocidade.py",
+   "conferencia": "K01",
+   "funcao": "_janela_do_console",
+   "texto": "kernel32 = ctypes.WinDLL(\"kernel32\", use_last_error=True)",
+   "quantas": 1,
+   "linhas_quando_gerada": [
+    1906
+   ],
+   "data": "2026-11-19",
+   "passo": "depois da entrega",
+   "motivo": "o resto do teste de velocidade (a janela preta); D-802"
+  },
+  {
+   "arquivo": "teste_velocidade.py",
+   "conferencia": "K01",
+   "funcao": "_janela_do_console",
+   "texto": "kernel32.GetConsoleWindow.argtypes = []",
+   "quantas": 1,
+   "linhas_quando_gerada": [
+    1907
+   ],
+   "data": "2026-11-19",
+   "passo": "depois da entrega",
+   "motivo": "o resto do teste de velocidade (a janela preta); D-802"
+  },
+  {
+   "arquivo": "teste_velocidade.py",
+   "conferencia": "K01",
+   "funcao": "_janela_do_console",
+   "texto": "kernel32.GetConsoleWindow.restype = wintypes.HWND",
+   "quantas": 1,
+   "linhas_quando_gerada": [
+    1908
+   ],
+   "data": "2026-11-19",
+   "passo": "depois da entrega",
+   "motivo": "o resto do teste de velocidade (a janela preta); D-802"
+  },
+  {
+   "arquivo": "teste_velocidade.py",
+   "conferencia": "K01",
+   "funcao": "_janela_do_console",
+   "texto": "return kernel32.GetConsoleWindow()",
+   "quantas": 1,
+   "linhas_quando_gerada": [
+    1909
+   ],
+   "data": "2026-11-19",
+   "passo": "depois da entrega",
+   "motivo": "o resto do teste de velocidade (a janela preta); D-802"
+  },
+  {
+   "arquivo": "teste_velocidade.py",
+   "conferencia": "K01",
+   "funcao": "_ler_modo_da_janela_preta",
+   "texto": "if not kernel32.GetConsoleMode(entrada, ctypes.byref(modo)):",
+   "quantas": 1,
+   "linhas_quando_gerada": [
+    1760
+   ],
+   "data": "2026-11-19",
+   "passo": "depois da entrega",
+   "motivo": "o resto do teste de velocidade (a janela preta); D-802"
+  },
+  {
+   "arquivo": "teste_velocidade.py",
+   "conferencia": "K01",
+   "funcao": "_ler_modo_da_janela_preta",
+   "texto": "kernel32, entrada = _entrada_da_janela_preta()",
+   "quantas": 1,
+   "linhas_quando_gerada": [
+    1758
+   ],
+   "data": "2026-11-19",
+   "passo": "depois da entrega",
+   "motivo": "o resto do teste de velocidade (a janela preta); D-802"
+  },
+  {
+   "arquivo": "teste_velocidade.py",
+   "conferencia": "K01",
+   "funcao": "_ler_registro",
+   "texto": "dado, _tipo = winreg.QueryValueEx(chave, valor)",
+   "quantas": 1,
+   "linhas_quando_gerada": [
+    365
+   ],
+   "data": "2026-11-19",
+   "passo": "depois da entrega",
+   "motivo": "o resto do teste de velocidade (o registro do Windows); D-802"
+  },
+  {
+   "arquivo": "teste_velocidade.py",
+   "conferencia": "K01",
+   "funcao": "_ler_registro",
+   "texto": "import winreg",
+   "quantas": 1,
+   "linhas_quando_gerada": [
+    362
+   ],
+   "data": "2026-11-19",
+   "passo": "depois da entrega",
+   "motivo": "o resto do teste de velocidade (o registro do Windows); D-802"
+  },
+  {
+   "arquivo": "teste_velocidade.py",
+   "conferencia": "K01",
+   "funcao": "_ler_registro",
+   "texto": "with winreg.OpenKey(winreg.HKEY_LOCAL_MACHINE, caminho) as chave:",
+   "quantas": 1,
+   "linhas_quando_gerada": [
+    364
+   ],
+   "data": "2026-11-19",
+   "passo": "depois da entrega",
+   "motivo": "o resto do teste de velocidade (o registro do Windows); D-802"
+  },
+  {
+   "arquivo": "teste_velocidade.py",
+   "conferencia": "K01",
+   "funcao": "_memoria_gb",
+   "texto": "if ctypes.windll.kernel32.GetPhysicallyInstalledSystemMemory(ctypes.byref(kb)):",
+   "quantas": 1,
+   "linhas_quando_gerada": [
+    479
+   ],
+   "data": "2026-11-19",
+   "passo": "depois da entrega",
+   "motivo": "o resto do teste de velocidade (a memória do computador); D-802"
+  },
+  {
+   "arquivo": "teste_velocidade.py",
+   "conferencia": "K01",
+   "funcao": "_mudar_modo_da_janela_preta",
+   "texto": "kernel32, entrada = _entrada_da_janela_preta()",
+   "quantas": 1,
+   "linhas_quando_gerada": [
+    1771
+   ],
+   "data": "2026-11-19",
+   "passo": "depois da entrega",
+   "motivo": "o resto do teste de velocidade (a janela preta); D-802"
+  },
+  {
+   "arquivo": "teste_velocidade.py",
+   "conferencia": "K01",
+   "funcao": "_mudar_modo_da_janela_preta",
+   "texto": "return bool(kernel32.SetConsoleMode(entrada, modo & 0xFFFFFFFF))",
+   "quantas": 1,
+   "linhas_quando_gerada": [
+    1772
+   ],
+   "data": "2026-11-19",
+   "passo": "depois da entrega",
+   "motivo": "o resto do teste de velocidade (a janela preta); D-802"
+  },
+  {
+   "arquivo": "teste_velocidade.py",
+   "conferencia": "K01",
+   "funcao": "_pedir_ao_windows",
+   "texto": "funcao = ctypes.windll.kernel32.SetThreadExecutionState",
+   "quantas": 1,
+   "linhas_quando_gerada": [
+    1678
+   ],
+   "data": "2026-11-19",
+   "passo": "depois da entrega",
+   "motivo": "o resto do teste de velocidade (impedir o computador de dormir); D-802"
+  },
+  {
+   "arquivo": "teste_velocidade.py",
+   "conferencia": "K01",
+   "funcao": "_pedir_ao_windows",
+   "texto": "funcao.argtypes = [ctypes.c_uint32]",
+   "quantas": 1,
+   "linhas_quando_gerada": [
+    1679
+   ],
+   "data": "2026-11-19",
+   "passo": "depois da entrega",
+   "motivo": "o resto do teste de velocidade (impedir o computador de dormir); D-802"
+  },
+  {
+   "arquivo": "teste_velocidade.py",
+   "conferencia": "K01",
+   "funcao": "_pedir_ao_windows",
+   "texto": "funcao.restype = ctypes.c_uint32",
+   "quantas": 1,
+   "linhas_quando_gerada": [
+    1680
+   ],
+   "data": "2026-11-19",
+   "passo": "depois da entrega",
+   "motivo": "o resto do teste de velocidade (impedir o computador de dormir); D-802"
+  },
+  {
+   "arquivo": "teste_velocidade.py",
+   "conferencia": "K01",
+   "funcao": "_pedir_ao_windows",
+   "texto": "return bool(funcao(estado))",
+   "quantas": 1,
+   "linhas_quando_gerada": [
+    1681
+   ],
+   "data": "2026-11-19",
+   "passo": "depois da entrega",
+   "motivo": "o resto do teste de velocidade (impedir o computador de dormir); D-802"
+  },
+  {
+   "arquivo": "teste_velocidade.py",
+   "conferencia": "K01",
+   "funcao": "_pico_pelo_windows",
+   "texto": "if not psapi.GetProcessMemoryInfo(kernel32.GetCurrentProcess(),",
+   "quantas": 1,
+   "linhas_quando_gerada": [
+    668
+   ],
+   "data": "2026-11-19",
+   "passo": "depois da entrega",
+   "motivo": "o resto do teste de velocidade (a memória do próprio teste); D-802"
+  },
+  {
+   "arquivo": "teste_velocidade.py",
+   "conferencia": "K01",
+   "funcao": "_pico_pelo_windows",
+   "texto": "kernel32 = ctypes.WinDLL(\"kernel32\", use_last_error=True)",
+   "quantas": 1,
+   "linhas_quando_gerada": [
+    658
+   ],
+   "data": "2026-11-19",
+   "passo": "depois da entrega",
+   "motivo": "o resto do teste de velocidade (a memória do próprio teste); D-802"
+  },
+  {
+   "arquivo": "teste_velocidade.py",
+   "conferencia": "K01",
+   "funcao": "_pico_pelo_windows",
+   "texto": "kernel32.GetCurrentProcess.argtypes = []",
+   "quantas": 1,
+   "linhas_quando_gerada": [
+    660
+   ],
+   "data": "2026-11-19",
+   "passo": "depois da entrega",
+   "motivo": "o resto do teste de velocidade (a memória do próprio teste); D-802"
+  },
+  {
+   "arquivo": "teste_velocidade.py",
+   "conferencia": "K01",
+   "funcao": "_pico_pelo_windows",
+   "texto": "kernel32.GetCurrentProcess.restype = wintypes.HANDLE",
+   "quantas": 1,
+   "linhas_quando_gerada": [
+    659
+   ],
+   "data": "2026-11-19",
+   "passo": "depois da entrega",
+   "motivo": "o resto do teste de velocidade (a memória do próprio teste); D-802"
+  },
+  {
+   "arquivo": "teste_velocidade.py",
+   "conferencia": "K01",
+   "funcao": "_pico_pelo_windows",
+   "texto": "psapi = ctypes.WinDLL(\"psapi\", use_last_error=True)",
+   "quantas": 1,
+   "linhas_quando_gerada": [
+    661
+   ],
+   "data": "2026-11-19",
+   "passo": "depois da entrega",
+   "motivo": "o resto do teste de velocidade (a memória do próprio teste); D-802"
+  },
+  {
+   "arquivo": "teste_velocidade.py",
+   "conferencia": "K01",
+   "funcao": "_pico_pelo_windows",
+   "texto": "psapi.GetProcessMemoryInfo.argtypes = [",
+   "quantas": 1,
+   "linhas_quando_gerada": [
+    662
+   ],
+   "data": "2026-11-19",
+   "passo": "depois da entrega",
+   "motivo": "o resto do teste de velocidade (a memória do próprio teste); D-802"
+  },
+  {
+   "arquivo": "teste_velocidade.py",
+   "conferencia": "K01",
+   "funcao": "_pico_pelo_windows",
+   "texto": "psapi.GetProcessMemoryInfo.restype = wintypes.BOOL",
+   "quantas": 1,
+   "linhas_quando_gerada": [
+    664
+   ],
+   "data": "2026-11-19",
+   "passo": "depois da entrega",
+   "motivo": "o resto do teste de velocidade (a memória do próprio teste); D-802"
+  },
+  {
+   "arquivo": "teste_velocidade.py",
+   "conferencia": "K01",
+   "funcao": "_placas_de_video",
+   "texto": "for i in range(winreg.QueryInfoKey(chave)[0]):",
+   "quantas": 1,
+   "linhas_quando_gerada": [
+    437
+   ],
+   "data": "2026-11-19",
+   "passo": "depois da entrega",
+   "motivo": "a placa de vídeo pelo PowerShell; D-800"
+  },
+  {
+   "arquivo": "teste_velocidade.py",
+   "conferencia": "K01",
+   "funcao": "_placas_de_video",
+   "texto": "import winreg",
+   "quantas": 1,
+   "linhas_quando_gerada": [
+    432
+   ],
+   "data": "2026-11-19",
+   "passo": "depois da entrega",
+   "motivo": "a placa de vídeo pelo PowerShell; D-800"
+  },
+  {
+   "arquivo": "teste_velocidade.py",
+   "conferencia": "K01",
+   "funcao": "_placas_de_video",
+   "texto": "nomes = _sem_repetir(_powershell(\"(Get-CimInstance Win32_VideoController).Name\"))",
+   "quantas": 1,
+   "linhas_quando_gerada": [
+    428
+   ],
+   "data": "2026-11-19",
+   "passo": "depois da entrega",
+   "motivo": "a placa de vídeo pelo PowerShell; D-800"
+  },
+  {
+   "arquivo": "teste_velocidade.py",
+   "conferencia": "K01",
+   "funcao": "_placas_de_video",
+   "texto": "sub = winreg.EnumKey(chave, i)",
+   "quantas": 1,
+   "linhas_quando_gerada": [
+    438
+   ],
+   "data": "2026-11-19",
+   "passo": "depois da entrega",
+   "motivo": "a placa de vídeo pelo PowerShell; D-800"
+  },
+  {
+   "arquivo": "teste_velocidade.py",
+   "conferencia": "K01",
+   "funcao": "_placas_de_video",
+   "texto": "with winreg.OpenKey(winreg.HKEY_LOCAL_MACHINE, classe) as chave:",
+   "quantas": 1,
+   "linhas_quando_gerada": [
+    436
+   ],
+   "data": "2026-11-19",
+   "passo": "depois da entrega",
+   "motivo": "a placa de vídeo pelo PowerShell; D-800"
+  },
+  {
+   "arquivo": "teste_velocidade.py",
+   "conferencia": "K01",
+   "funcao": "_sozinho_no_console",
+   "texto": "funcao = ctypes.windll.kernel32.GetConsoleProcessList",
+   "quantas": 1,
+   "linhas_quando_gerada": [
+    2233
+   ],
+   "data": "2026-11-19",
+   "passo": "depois da entrega",
+   "motivo": "o resto do teste de velocidade (a janela preta); D-802"
+  },
+  {
+   "arquivo": "teste_velocidade.py",
+   "conferencia": "K01",
+   "funcao": "_sozinho_no_console",
+   "texto": "funcao.argtypes = [ctypes.POINTER(ctypes.c_uint32), ctypes.c_uint32]",
+   "quantas": 1,
+   "linhas_quando_gerada": [
+    2234
+   ],
+   "data": "2026-11-19",
+   "passo": "depois da entrega",
+   "motivo": "o resto do teste de velocidade (a janela preta); D-802"
+  },
+  {
+   "arquivo": "teste_velocidade.py",
+   "conferencia": "K01",
+   "funcao": "_sozinho_no_console",
+   "texto": "funcao.restype = ctypes.c_uint32",
+   "quantas": 1,
+   "linhas_quando_gerada": [
+    2235
+   ],
+   "data": "2026-11-19",
+   "passo": "depois da entrega",
+   "motivo": "o resto do teste de velocidade (a janela preta); D-802"
+  },
+  {
+   "arquivo": "teste_velocidade.py",
+   "conferencia": "K01",
+   "funcao": "_sozinho_no_console",
+   "texto": "return funcao(lista, len(lista)) == 1",
+   "quantas": 1,
+   "linhas_quando_gerada": [
+    2236
+   ],
+   "data": "2026-11-19",
+   "passo": "depois da entrega",
+   "motivo": "o resto do teste de velocidade (a janela preta); D-802"
+  },
+  {
+   "arquivo": "teste_velocidade.py",
+   "conferencia": "K01",
+   "funcao": "tipo_do_disco",
+   "texto": "\"Get-PhysicalDisk | Where-Object { $_.DeviceId -eq [string]$n } | \"",
+   "quantas": 1,
+   "linhas_quando_gerada": [
+    523
+   ],
+   "data": "2026-11-19",
+   "passo": "depois da entrega",
+   "motivo": "o tipo de disco pelo PowerShell; D-800"
+  },
+  {
+   "arquivo": "teste_velocidade.py",
+   "conferencia": "K01",
+   "funcao": "tipo_do_disco",
+   "texto": "f\"$n = (Get-Partition -DriveLetter {letra}).DiskNumber; \"",
+   "quantas": 1,
+   "linhas_quando_gerada": [
+    522
+   ],
+   "data": "2026-11-19",
+   "passo": "depois da entrega",
+   "motivo": "o tipo de disco pelo PowerShell; D-800"
+  },
+  {
+   "arquivo": "ui/automatico.py",
+   "conferencia": "K04",
+   "funcao": "PainelAutomatico.__init__",
+   "texto": "\"escolhido em \\\"Rodar\\\" (D-068: toda função automática \"",
+   "quantas": 1,
+   "linhas_quando_gerada": [
+    766
+   ],
+   "data": "2026-11-19",
+   "passo": "depois da entrega",
+   "motivo": "dicas do Automático com número de decisão; D-800"
+  },
+  {
+   "arquivo": "ui/automatico.py",
+   "conferencia": "K04",
+   "funcao": "PainelDeOpcoes._opcoes_endireitar",
+   "texto": "\"D-094: a mesma escolha existe nas Configurações (para todos os livros) e na \"",
+   "quantas": 1,
+   "linhas_quando_gerada": [
+    2304
+   ],
+   "data": "2026-11-19",
+   "passo": "depois da entrega",
+   "motivo": "dicas do Automático com número de decisão; D-800"
+  },
+  {
+   "arquivo": "ui/brasao_girando.py",
+   "conferencia": "K01",
+   "funcao": "_programa_vivo",
+   "texto": "alca = kernel32.OpenProcess(0x00100000, False, pid)",
+   "quantas": 1,
+   "linhas_quando_gerada": [
+    226
+   ],
+   "data": "2026-11-19",
+   "passo": "depois da entrega",
+   "motivo": "o brasão pergunta ao Windows se o programa está aberto; D-802"
+  },
+  {
+   "arquivo": "ui/brasao_girando.py",
+   "conferencia": "K01",
+   "funcao": "_programa_vivo",
+   "texto": "kernel32 = ctypes.windll.kernel32",
+   "quantas": 1,
+   "linhas_quando_gerada": [
+    225
+   ],
+   "data": "2026-11-19",
+   "passo": "depois da entrega",
+   "motivo": "o brasão pergunta ao Windows se o programa está aberto; D-802"
+  },
+  {
+   "arquivo": "ui/brasao_girando.py",
+   "conferencia": "K01",
+   "funcao": "_programa_vivo",
+   "texto": "return lambda: kernel32.WaitForSingleObject(alca, 0) == 0x102",
+   "quantas": 1,
+   "linhas_quando_gerada": [
+    229
+   ],
+   "data": "2026-11-19",
+   "passo": "depois da entrega",
+   "motivo": "o brasão pergunta ao Windows se o programa está aberto; D-802"
+  },
+  {
+   "arquivo": "ui/brasao_girando.py",
+   "conferencia": "K01",
+   "funcao": "rodar_sozinho",
+   "texto": "vivo = _programa_vivo(pid)",
+   "quantas": 1,
+   "linhas_quando_gerada": [
+    290
+   ],
+   "data": "2026-11-19",
+   "passo": "depois da entrega",
+   "motivo": "o brasão pergunta ao Windows se o programa está aberto; D-802"
+  },
+  {
+   "arquivo": "ui/brasao_girando.py",
+   "conferencia": "K01",
+   "funcao": "rodar_sozinho.vigiar",
+   "texto": "if not vivo() or time.monotonic() - comeco > LIMITE_S:",
+   "quantas": 1,
+   "linhas_quando_gerada": [
+    294
+   ],
+   "data": "2026-11-19",
+   "passo": "depois da entrega",
+   "motivo": "o brasão pergunta ao Windows se o programa está aberto; D-802"
+  }
+ ]
+}

@@ -1,0 +1,402 @@
+<!doctype html>
+<html lang="pt-BR">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Passo 0: relatório de quem tentou quebrar</title>
+<style>
+:root { color-scheme: light dark; }
+* { box-sizing: border-box; }
+body {
+  font: 17px/1.65 "Segoe UI", system-ui, sans-serif;
+  max-width: 46rem; margin: 0 auto; padding: 2.5rem 1.5rem 6rem;
+  color: #1c1c1e; background: #fdfdfc;
+}
+h1 { font-size: 2rem; line-height: 1.2; margin: 0 0 .3em; letter-spacing: -.02em; }
+h2 { font-size: 1.35rem; margin: 2.4em 0 .6em; padding-top: .8em;
+     border-top: 1px solid #e6e4e0; letter-spacing: -.01em; }
+h3 { font-size: 1.1rem; margin: 1.8em 0 .4em; }
+h1 + p, h2 + p { margin-top: .4em; }
+p, li { margin: 0 0 .9em; }
+ul, ol { padding-left: 1.3em; }
+strong { font-weight: 640; }
+code {
+  font: .88em ui-monospace, "Cascadia Code", Consolas, monospace;
+  background: #f1efec; padding: .12em .35em; border-radius: 4px;
+}
+pre {
+  background: #f1efec; padding: 1em 1.1em; border-radius: 8px;
+  overflow-x: auto; line-height: 1.5;
+}
+pre code { background: none; padding: 0; }
+blockquote {
+  margin: 1.2em 0; padding: .1em 0 .1em 1.1em;
+  border-left: 3px solid #c9c5be; color: #55524d;
+}
+table {
+  border-collapse: collapse; width: 100%; margin: 1.2em 0;
+  font-size: .95rem; display: block; overflow-x: auto;
+}
+th, td { padding: .5em .8em; text-align: left; border-bottom: 1px solid #e6e4e0; }
+th { font-weight: 620; background: #f7f5f2; white-space: nowrap; }
+tr:last-child td { border-bottom: none; }
+img { max-width: 100%; height: auto; border-radius: 6px; margin: 1em 0;
+      border: 1px solid #e6e4e0; }
+hr { border: none; border-top: 1px solid #e6e4e0; margin: 2.5em 0; }
+.rodape { margin-top: 4em; padding-top: 1.2em; border-top: 1px solid #e6e4e0;
+          font-size: .85rem; color: #86827c; }
+@media (prefers-color-scheme: dark) {
+  body { color: #e8e6e3; background: #1a1917; }
+  h2 { border-top-color: #35332f; }
+  code, pre, th { background: #262421; }
+  th, td { border-bottom-color: #35332f; }
+  blockquote { border-left-color: #4a4741; color: #b0aca6; }
+  img { border-color: #35332f; }
+  .rodape { border-top-color: #35332f; color: #7d7973; }
+}
+@media print {
+  body { max-width: none; padding: 0; color: #000; background: #fff; }
+  h2 { page-break-after: avoid; }
+  table, img { page-break-inside: avoid; }
+}
+</style>
+</head>
+<body>
+<h1>Passo 0 do plano da parte do Windows: relatório de quem tentou quebrar (19/11/2026)</h1>
+<p>Feito por um agente verificador que não escreveu nada do passo 0. Eu não mexi no código entregue: os testes que mudam
+coisas foram feitos numa cópia temporária e num repositório de prova, os dois fora do projeto.</p>
+<h2>Pedido</h2>
+<ul>
+<li>Papel: quebrador</li>
+<li>Commit de partida: 39aafbee</li>
+<li>Ramo: passo0-porteiro-2026-11-19</li>
+</ul>
+<h2>Arquivos que vou mexer</h2>
+<ul>
+<li><code>relatorios/passo0-2026-11-19/quem-quebrou/</code></li>
+</ul>
+<h2>Veredito</h2>
+<p><strong>NÃO ESTÁ PRONTO.</strong> A base está boa: as conferências acham os dois defeitos da etapa 5, a recontagem bate (44
+lugares em 42 itens), o gancho barra de verdade num git de verdade, e nada do programa mudou. Mas encontrei 19
+problemas. Os quatro primeiros pedem conserto antes de a lista ir ao Samuel:</p>
+<ul>
+<li><strong>Ligar a lista deixa um teste vermelho.</strong> Quando a gerente trocar a lista para "valendo", com o "sim" dele escrito, um
+  dos testes novos falha (achado 1).</li>
+<li><strong>A busca só conhece 13 palavras.</strong> O mesmo pedido ao Windows escrito com outra palavra passa: tarefa criada pelo
+  PowerShell em vez do <code>schtasks</code>, registro do Windows, <code>pwsh</code>, <code>os.startfile</code>. Só no programa de hoje, são 73 linhas a
+  mais que ficam de fora da lista. Se a busca for ampliada, a lista muda, e essa decisão tem de vir antes do "sim" do
+  Samuel (achado 2).</li>
+<li><strong>A barreira do agente de tela e do rótulo de pronto se apoia no papel que o próprio agente escreve.</strong> Basta o agente
+  escrever outro papel no ONDE-PAREI para passar (achado 3).</li>
+<li><strong>Os papéis se atrapalham.</strong> O rótulo de pronto que quem quebra escreve no ramo de quem construiu faz o formulário de
+  quem construiu voltar (achado 5).</li>
+</ul>
+<p>Cada achado tem um destino proposto. Muitos deles são "consertar", e conserto ainda não feito não conta como destino
+resolvido (D-798; plano, "Regras de todos os passos"). Por isso o veredito é este, e não o rótulo de pronto.</p>
+<h2>O que li</h2>
+<ul>
+<li>Regras: <code>.claude/agents/verificador.md</code>, <code>CLAUDE.md</code> inteiro (§11.12 e §11.13 com cuidado), <code>memoria/INDICE.md</code>, o
+  Livro (<code>docs/plano/DECISOES.md</code> desta cópia), com as decisões D-767, D-775, D-784 a D-787, D-791 a D-800 inteiras e
+  ainda D-722, D-724, D-771, D-774, D-778, D-781 e D-783 para conferir o pacote do passo 1.</li>
+<li>O plano aprovado: <code>relatorios/plano-windows-2026-11-18/plano-v3.md</code> (worktree <code>plano-windows</code>), §2 (peça 1), §3
+  ("Regras de todos os passos", "Passo 0", "Passo 1") e §6.3.</li>
+<li>A proposta das regras: <code>git show origin/regras-agentes-2026-11-18:relatorios/regras-agentes-2026-11-18/proposta.md</code>
+  (§5.1, as 24 conferências; §6, os seis campos) e o esboço <code>esbocos/conferir_codigo.py</code> do mesmo ramo.</li>
+<li>A entrega, ramo <code>passo0-porteiro-2026-11-19</code>, ponta <code>39aafbee</code>, saída de <code>746dbda6</code> (16 commits): o
+  <code>relatorios/passo0-2026-11-19/ONDE-PAREI.md</code>, todo o <code>regras_dos_agentes/</code> (16 arquivos), os seis
+  <code>tests/test_conferencias_*.py</code>, <code>tests/conferencias_excecoes.json</code>, <code>ganchos/pre-commit</code>,
+  <code>relatorios/passo0-2026-11-19/anexos/pacote-passo1.md</code> e o texto para o Samuel (<code>.md</code>, <code>.html</code> e a imagem <code>.png</code>).</li>
+<li>O script do GitHub que troca o código (<code>origin/claude/list-server-files-gkos8v:.github/scripts/trocar_codigo.sh</code>) e a
+  rodada 44453253677 (<code>gh run view</code>: terminada, "success").</li>
+</ul>
+<h2>O que conferi nas falhas, nas peças de fora e nos caminhos</h2>
+<p><strong>Como conferi.</strong> Rodei os comandos do pacote na cópia da entrega e fiz uma recontagem minha, com um script
+independente que não usa o código do porteiro. As provas que mudam coisas rodaram numa cópia temporária, um clone
+local do ramo, e num repositório de git de prova com um <code>.venv</code> próprio. Os dois ficam na pasta temporária da sessão,
+fora do projeto. Em nenhum deles liguei o gancho no repositório principal.</p>
+<ul>
+<li><strong>As conferências no código de hoje</strong> (<code>python -m regras_dos_agentes porteiro</code>, 11 s): 44 achados.</li>
+<li><strong>O defeito 1 da etapa 5 é achado.</strong> O "Reiniciar agora" lança o PowerShell com <code>DETACHED_PROCESS</code>. Saem a K02 em
+    <code>atualizacao.py:968</code> (<code>_lancar_escondido</code>) e em <code>atualizacao.py:674</code>, e a K01 em <code>atualizacao.py:965</code>, por causa
+    do <code>powershell.exe</code>.</li>
+<li><strong>O defeito 4 é achado.</strong> A tranca da pasta feita à mão (<code>icacls ... /inheritance:r</code>, <code>/setowner</code>) sai como K03
+    em <code>core/testes_a_distancia.py:368</code> e <code>:369</code>.</li>
+<li><strong>Os 13 lugares que o esboço perdia também saem.</strong> Rodei o esboço da proposta (sem as exceções dele) no mesmo
+    código: ele acha 12 lugares da K01. O porteiro novo acha 26. A diferença são 14 linhas: as 13 que o plano previa
+    (<code>atualizacao.py</code> 883 e 965; <code>core/_testes_a_distancia_windows.py</code> 55, 86, 89, 90, 94 e 153;
+    <code>core/testes_a_distancia.py</code> 304; <code>empacotar.py</code> 527; <code>teste_velocidade.py</code> 391 e 392; <code>avaliar.py</code> 1659), mais a
+    linha <code>class _SHELLEXECUTEINFO</code> (<code>core/_testes_a_distancia_windows.py:61</code>).</li>
+<li><strong>A recontagem da lista. Bate: 44 lugares em 42 itens.</strong></li>
+<li>Por conferência: K01 26, K02 2, K03 2, K04 14.</li>
+<li>Por passo: 2 → 1; 3 → 14; 4 → 21; 5 → 3; depois da entrega → 5.</li>
+<li>São 42 itens porque a linha <code>| getattr(subprocess, "DETACHED_PROCESS", 0))</code> aparece duas vezes em
+    <code>atualizacao.py</code>, e cada uma das duas conferências que a acham (K01 e K02) a guarda como um item só, com "quantas: 2".</li>
+<li>Os 43 do plano mais a linha da <code>class _SHELLEXECUTEINFO</code> dão os 44. O resto bate com a tabela do plano, passo a
+    passo.</li>
+<li>A K04 recontada por mim dá os mesmos 14. O comentário da folha de estilo (<code>ui/estilo.py:449</code>) fica de fora, como
+    manda a correção 3. Os números de decisão do <code>teste_botoes.py</code> também ficam de fora, e é certo: aquilo não é tela do
+    Kaique.</li>
+<li>Texto montado em pedaços: nenhum no programa de hoje.</li>
+<li><strong>O que fica de fora da lista, e não é pedaço:</strong> as outras palavras para a mesma coisa (achado 2). São 73 linhas a
+    mais no programa.</li>
+<li><strong>Erro novo num arquivo que já tem exceção: barra.</strong> Na cópia, com a lista trocada para "valendo", acrescentei ao
+  <code>atualizacao.py</code> a mesma linha do <code>DETACHED_PROCESS</code> pela terceira vez: barrou (K01 e K02), código 1. Com outro texto
+  (<code>["schtasks", "/Run", "/TN", "outra"]</code>) também barrou. Mas a mesma linha <strong>mudada de função</strong>, com a mesma contagem,
+  passa (achado 11).</li>
+<li><strong>O agente de tela mexendo em <code>core/</code> fora do pedido (K13): barra</strong>, como diz a D-796 (<code>core/filtros.py</code>, "o agente
+  de tela mexeu em core/ sem o pedido nomear o arquivo"). Mas o mesmo trabalho, com o agente escrevendo "implementador"
+  no lugar de "layout", passa: só um aviso (achado 3). E o agente de tela mexendo no <code>atualizacao.py</code> e no <code>modelos.py</code>
+  também passa (achado 4).</li>
+<li><strong>"PRONTO PARA CONFERIR" no ramo de quem construiu (K10): barra quando está em maiúsculas.</strong> Passa entre aspas, entre
+  crases, e numa linha numerada como <code>3. **Pronto para conferir**</code> (achado 15). E barra também o relatório legítimo de
+  quem quebra, quando ele fica no mesmo ramo (achado 5).</li>
+<li><strong>A lista como "valendo" sem o "sim".</strong> A linha de comando diz "não deu para conferir" e sai com o código 3; os
+  testes de <code>tests/test_conferencias_excecoes.py</code> falham (4 de 11). Está certo. Com o "sim" escrito, o porteiro passa,
+  mas um teste falha (achado 1). E um "sim" inventado ("x", "x") também é aceito (achado 6).</li>
+<li><strong>O gancho num repositório de prova, com o git de verdade e a mesma configuração de quebra de linha deste PC.</strong></li>
+<li>Barra o arquivo novo com <code>DETACHED_PROCESS</code>, o <code>git commit -a</code> e o <code>git commit -- caminho</code>, mesmo com outro arquivo
+    já no índice: código 1, com a linha e o motivo.</li>
+<li>Deixa passar o commit que só muda um <code>.md</code>.</li>
+<li>Sem o Python do projeto, barra e diz onde procurou.</li>
+<li>Sem a lista no índice, barra com o código 3.</li>
+<li><strong>Quando a pasta <code>ganchos/</code> falta no ramo, o commit com <code>DETACHED_PROCESS</code> passa calado.</strong> Isso está escrito no
+    ONDE-PAREI.</li>
+<li><strong>O agente que põe o próprio erro na lista, no mesmo commit, passa no gancho e no teste do repositório</strong> (achado 7).</li>
+<li><strong>O pacote do passo 1</strong> traz as regras de Windows: a peça única, a lista das falhas, peça de mentira não prova, a
+  D-785, a leitura da peça de fora. As decisões estão certas no essencial (D-767, D-775, D-782, D-780, D-733, D-785,
+  D-791, D-796, D-798, D-605, D-637). Faltam duas que o passo 1 toca (achado 18).</li>
+<li><strong>As peças de fora (F7 do formulário).</strong></li>
+<li>Conferi a leitura do git na prática. O gancho rodou no Windows a partir do arquivo tirado pelo git com as quebras
+    de linha do Windows, e o <code>git commit -a</code> e o <code>git commit -- caminho</code> usam o índice certo (o gancho herda o
+    <code>GIT_INDEX_FILE</code>), como a documentação do githooks diz.</li>
+<li>A frase "pular com --no-verify é proibido aos agentes (CLAUDE.md, git)" não está no CLAUDE.md nem nos arquivos dos
+    agentes (achado 16).</li>
+<li>A leitura do registro do GitHub (a K21) bate com o script <code>trocar_codigo.sh</code> lido por mim.</li>
+<li><strong>O teste de reversão do conserto da K21.</strong> Com o <code>formulario.py</code> de <code>e2fad264~1</code>, o teste
+  <code>test_k21_vale_a_rodada_do_ultimo_commit_mesmo_citada_antes_de_uma_antiga</code> falha. Com o de hoje, passa. Está provado.</li>
+<li><strong>O formulário da própria entrega</strong>, conferido com o GitHub: passa na etapa "antes de quem quebra", código 0, mas só
+  com o aviso "o pedido não foi comparado com o pacote da gerente" (achado 3).</li>
+<li><strong>Nada mudou fora do combinado.</strong> <code>git diff --name-status 746dbda6 HEAD</code> mostra só os 29 arquivos novos (A), todos em
+  <code>regras_dos_agentes/</code>, <code>ganchos/</code>, <code>relatorios/passo0-2026-11-19/</code>, <code>tests/test_conferencias_*</code> e
+  <code>tests/conferencias_excecoes.json</code>. Nada em <code>core/</code>, <code>ui/</code>, na raiz do programa, em <code>.claude/</code>, no <code>CLAUDE.md</code>, em
+  <code>docs/plano/</code>, nem em teste antigo. Não há <code>core.hooksPath</code> ligado no repositório principal nem nesta cópia.</li>
+<li><strong>Arquivos sem linha na tabela:</strong> nenhum (<code>python -m regras_dos_agentes tabela</code>, 0). Dos arquivos que o plano cita,
+  só ficam de fora <code>motor.json</code>, <code>motor-exigido.json</code> e <code>preparo.txt</code>, que são dados gerados, não arquivos do git.</li>
+<li><strong>Peça duplicada de git e GitHub:</strong> não achei. Só <code>conversa_com_o_git.py</code> e <code>conversa_com_o_github.py</code> chamam o <code>git</code>
+  e o <code>gh</code>. Mas há listas duplicadas (achado 13).</li>
+</ul>
+<h2>Caminhos que o outro não listou</h2>
+<p>Procurei no código, não no formulário.</p>
+<ul>
+<li><strong>Outros nomes para a mesma conversa com o Windows, em linhas do programa que a K01 não vê</strong> (achado 2):</li>
+<li><code>atualizacao.py:435</code>, a função <code>_dono_do_arquivo</code>, que lê o dono do arquivo pelo <code>advapi32</code>. É "ler como o Windows
+    está", coisa da peça 1.</li>
+<li><code>atualizacao.py:1194</code> a <code>:1263</code>, leituras do registro do Windows com <code>winreg</code>.</li>
+<li><code>atualizacao.py:931</code> (<code>Get-ScheduledTask</code>), <code>:942</code> e <code>:1435</code> (<code>Start-Process</code>).</li>
+<li><code>core/testes_a_distancia.py:343</code> (<code>Register-ScheduledTask</code>), <code>:414</code> (<code>Set-Service</code>), <code>:434</code> a <code>:445</code>
+    (<code>New-LocalUser</code>, <code>Add-LocalGroupMember</code>), <code>:451</code> (registro), <code>:419</code> e <code>:422</code> (<code>Disable-</code> e <code>Remove-NetFirewallRule</code>).</li>
+<li><code>historico.py:199</code> e <code>:212</code> (<code>os.startfile</code>, inclusive o "imprimir").</li>
+<li><code>core/nucleos.py:78</code>, <code>core/ocr_comum.py:211</code> e <code>ui/brasao_girando.py:225</code> (o <code>kernel32</code>).</li>
+<li><code>teste_velocidade.py</code>: 16 linhas com <code>winreg</code>, <code>WinDLL</code> e <code>Get-CimInstance</code>.</li>
+<li><strong>O instalador antigo</strong> (<code>instalador.iss:272</code>) roda o <code>vc_redist</code> com <code>Exec</code>. O porteiro só lê <code>.py</code> (achado 17).</li>
+<li><strong>Textos que o Kaique vê dentro de <code>core/</code>.</strong> Os avisos do "Para revisar" moram em <code>core/analise.py:187</code>, e a K04
+  (número de decisão) e a K05 (emoji) não olham ali (achado 9).</li>
+<li><strong>Agente de tela fora de <code>ui/</code> nos arquivos do programa da raiz</strong> (<code>atualizacao.py</code>, <code>modelos.py</code>,
+  <code>historico_acoes.py</code>): a K13 não olha (achado 4).</li>
+<li><strong>Testes antigos da raiz</strong> (<code>teste_botoes.py</code>): a K11 não olha (achado 14).</li>
+<li><strong>Arquivo novo de <code>core/</code> no pedido.</strong> O texto do pedido não é lido, e o arquivo novo não ganha as regras de Windows
+  (achado 12).</li>
+<li><strong>Quem tenta quebrar, conferido pelo comando <code>entrega</code>.</strong> Só passa se a partida dele for a ponta do ramo de quem
+  construiu; senão a K13 acusa os arquivos do construtor como se fossem dele. Isso não está escrito em lugar nenhum
+  (achado 5).</li>
+</ul>
+<h2>Falhas não pensadas e resultado não conferido</h2>
+<p><strong>Falhas não pensadas</strong> (fora do "O que pode falhar" da entrega):</p>
+<ul>
+<li><strong>Ligar a lista legitimamente quebra um teste</strong> (achado 1).</li>
+<li><strong>O teste que barra o repositório nunca rodou no GitHub.</strong> Ele fica pulado enquanto a lista é "proposta". A leitura
+  do repositório inteiro na cópia que o GitHub monta (o <code>trocar_codigo.sh</code> deixa a pasta <code>.github/</code> do ramo dos testes
+  no índice) só vai ser provada na primeira rodada depois do "sim". Sugestão: antes de levar a lista ao Samuel, uma
+  rodada do GitHub num ramo de prova com a lista "valendo". Ela teria mostrado o achado 1.</li>
+<li><strong>Mexer numa linha da lista sem consertá-la vira erro novo.</strong> Isso inclui mudar a linha de arquivo, renomear uma
+  variável nela ou reformatá-la. E esse erro novo só sai com o "sim" do Samuel (achado 11).</li>
+<li><strong>Um <code>"pasta/*"</code> seguido de um <code>"*/"</code> mais adiante cega a K04 no trecho entre os dois</strong> (achado 10).</li>
+<li><strong>O commit de junção (merge) não passa pelo gancho do git</strong> (o <code>pre-commit</code> não roda nele). A gerente junta ramos sem
+  essa conferência; o GitHub cobre depois. Fica como ressalva.</li>
+<li><strong>O agente pode afrouxar o próprio porteiro.</strong> Pode tirar uma palavra da busca, mudar o passo de um item, ou trocar
+  "proposta" por "valendo" com um "sim" inventado (achado 6).</li>
+</ul>
+<p><strong>Resultado não conferido</strong> (§11.12, ponto 2):</p>
+<ul>
+<li><strong>O comando <code>entrega</code> sem <code>--pacote</code> sai com 0</strong> e aceita o papel que o próprio agente escreveu (achado 3).</li>
+<li><strong>O <code>sim_do_samuel</code> aceita qualquer texto.</strong> Ninguém confere que as palavras estão no Livro (achado 6).</li>
+<li><strong>A K18 diz "o último commit já está no GitHub" olhando a cópia local</strong> (<code>@{upstream}</code>, "o último buscado"), sem
+  perguntar ao GitHub (achado 19).</li>
+<li><strong>"Só diminui" só é conferido pela K17 do formulário</strong>, rodada à mão pela gerente. O GitHub e o gancho não conferem
+  (achado 7).</li>
+</ul>
+<h2>As regras que conferi</h2>
+<ul>
+<li><strong>CLAUDE.md §11.12, os seis pontos.</strong></li>
+<li>(1) Peça única de git e GitHub: cumprida. Mas há listas escritas à mão em mais de um lugar (achado 13).</li>
+<li>(2) Nada dado como feito sem conferir: pela metade (achados 3, 6, 7 e 19).</li>
+<li>(3) Lista das falhas: existe, mas faltaram casos (achados 1, 10 e 11).</li>
+<li>(4) Peça de mentira: cumprida. O git é de verdade e nada mexe no Windows.</li>
+<li>(5) Não se aplica a mim.</li>
+<li>(6) Leitura da peça de fora: conferida (achado 16, sobre a citação errada).</li>
+<li><strong>CLAUDE.md §11.13</strong> (o texto para o Samuel): regra 1 cumprida. Regra 2 quase: "peça única" é palavra de dentro, mas
+  ele já a ouviu. Regras 3 e 4 não cumpridas: a imagem é o próprio texto, não prova nada, e não há caso real. Regra 6
+  cumprida, mas sem dizer o que acontece se ele disser "não". Regra 9 falta no <code>.md</code>, embora exista no ONDE-PAREI.
+  Regra 7: o texto é curto. Ainda: "barra qualquer erro novo" promete mais do que o porteiro faz (achado 8).</li>
+<li><strong>Cada decisão tocada:</strong></li>
+<li>D-767: cumprida.</li>
+<li>D-775: pela metade (achado 5).</li>
+<li>D-784: cumprida, com o achado 12.</li>
+<li>D-785, D-786 e D-787: cumpridas.</li>
+<li>D-791: pela metade (achados 1, 2, 6 e 7).</li>
+<li>D-792: cumprida, com o achado 3.</li>
+<li>D-793: cumprida (a K23 passa nos quatro agentes).</li>
+<li>D-796: pela metade (achados 3 e 4).</li>
+<li>D-797: cumprida.</li>
+<li>D-798: pela metade (achados 5 e 15).</li>
+<li>D-799: pela metade (o passo 0 está feito, com os achados acima).</li>
+<li>D-800: cumprida (o teste cobra que só os 5 ficam para depois).</li>
+<li>D-605: cumprida (nenhum teste antigo mudou).</li>
+<li>D-637: cumprida (nada muda para o Kaique nem no PDF).</li>
+<li><strong>Regras do catálogo:</strong> a R113 (K01 a K03), a R120 (K04), a R031 (K10), a R071 (K13), a R102 (K11), a R056 e a R094
+  (K17) e a R136 (K18). Não se aplicam a este passo: as de imagem, de filtro e de tela (nenhum arquivo do programa mudou).</li>
+</ul>
+<h2>Achados</h2>
+<ol>
+<li><strong>Grave: ligar a lista deixa um teste vermelho.</strong> O teste <code>test_a_lista_valendo_sem_o_sim_do_samuel_nao_vale</code>
+   (<code>tests/test_conferencias_excecoes.py:82</code>) monta o caso trocando <code>"situacao": "proposta"</code> no texto do arquivo real
+   da lista. Com a lista já "valendo" e o "sim" escrito, a troca não acontece, e o teste falha. Provado na cópia: 1
+   falha, 10 passam. Consequência: no dia do "sim", o GitHub fica vermelho. E consertar nesse momento seria mudar um
+   teste antigo (K11, D-605). Destino: consertar antes de juntar (o teste monta a lista dele com dados próprios). Junto,
+   uma rodada do GitHub com a lista "valendo" num ramo de prova.</li>
+<li><strong>Grave: a busca da conversa com o Windows conhece poucas palavras, e a lista que vai ao "sim" depende disso.</strong>
+   (<code>regras_dos_agentes/porteiro.py:153</code>).
+   - Na cópia, de 14 jeitos de pedir a mesma coisa com outro nome, só 1 foi barrado. Passaram: <code>pwsh</code>;
+     <code>Register-ScheduledTask</code>, que é o mesmo que o <code>schtasks</code>; <code>takeown</code>, o mesmo que o <code>/setowner</code>; <code>msiexec</code>;
+     <code>reg add</code> e <code>winreg</code>; <code>os.startfile</code>, o mesmo que o <code>ShellExecute</code>; <code>windll.advapi32</code>; <code>creationflags=0x8</code>, o
+     mesmo número do <code>DETACHED_PROCESS</code>; <code>New-LocalUser</code>; <code>Set-Service</code>; <code>cmd /c start</code>; e os textos em pedaços.
+   - No programa de hoje, são 73 linhas a mais. Algumas são do próprio plano: tarefas, registro, o dono do arquivo em
+     <code>atualizacao.py:435</code> e as contas e serviços em <code>core/testes_a_distancia.py:343</code> a <code>:451</code>. Outras estão fora do
+     plano: <code>historico.py:199</code> e <code>core/nucleos.py:78</code>.
+   - Destino: pergunta. A gerente decide o alcance técnico, mas a lista que vai ao Samuel muda. Sugestão: ampliar com
+     o que o plano já chama de peça 1 (tarefas por qualquer meio, registro, PowerShell com qualquer nome, <code>ShellExecute</code>
+     com qualquer nome, licença e dono de arquivo, o número do <code>DETACHED_PROCESS</code>), recontar, e só então levar a lista.
+     O que fica de fora (memória, prioridade do processo) vai escrito, com o motivo.</li>
+<li><strong>Médio: o papel do agente é o que ele mesmo escreve.</strong>
+   - Sem <code>--pacote</code>, a comparação com o pedido da gerente vira só aviso, e a saída é 0
+     (<code>regras_dos_agentes/formulario.py:512</code>).
+   - Provado na cópia: um agente de tela que se declara "implementador" mexe no <code>core/filtros.py</code> sem ser barrado.
+   - Quem se declara "quebrador" pula o formulário inteiro (<code>regras_dos_agentes/formulario.py:528</code>) e fica livre para
+     escrever o rótulo de pronto.
+   - Destino: consertar (sem <code>--pacote</code>, "não conferido", código 3).</li>
+<li><strong>Médio: a K13 só barra o agente de tela em <code>core/</code></strong> (<code>regras_dos_agentes/porteiro_mudancas.py:177</code>). A D-796 diz
+   "sem isso escrito no pedido, continua só em <code>ui/</code>". Provado na cópia: o agente de tela mexendo no <code>atualizacao.py</code> e
+   no <code>modelos.py</code> recebe só o aviso K14. Destino: consertar (barrar o agente de tela em qualquer arquivo do programa
+   fora de <code>ui/</code> que o pedido não nomeou). Se a gerente preferir outro limite, vira pergunta.</li>
+<li><strong>Médio: a convenção "o relatório de quem quebra vai para o ramo de quem construiu" bate com a K10.</strong>
+   - A K10 lê todas as linhas novas do ramo com o papel de quem construiu (<code>regras_dos_agentes/porteiro_mudancas.py:88</code>).
+     Então o rótulo de pronto que quem quebra escreve no próprio relatório (D-798; plano: "Ele só escreve com o próprio
+     relatório") faz o formulário de quem construiu voltar. Provado na cópia.
+   - Também não está escrito que a partida do relatório de quem quebra tem de ser a ponta do ramo. Sem isso, a K13
+     acusa os arquivos do construtor.
+   - Por causa disso, este relatório só escreve o rótulo entre aspas.
+   - Destino: consertar. A K10 deixa de fora a pasta <code>quem-quebrou/</code> quando o relatório ali é de quem quebra ou do
+     verificador, e as duas regras ficam escritas no <code>regras_dos_agentes/formulario.py:19</code>.</li>
+<li><strong>Médio: o porteiro e a lista não estão protegidos contra o próprio agente.</strong>
+   - Os arquivos que só a gerente muda não incluem <code>regras_dos_agentes/</code> nem <code>ganchos/</code>
+     (<code>regras_dos_agentes/porteiro_mudancas.py:40</code>). Da lista, só se acusa item novo e a volta de "valendo" para
+     "proposta" (<code>regras_dos_agentes/porteiro_mudancas.py:220</code>).
+   - Provado na cópia: tirei o <code>schtasks</code> da busca, escrevi um <code>schtasks</code> novo, rodei <code>--diminuir</code> (a lista caiu de 44
+     para 39), troquei para "valendo" com um "sim" inventado e mudei o passo de um item. O porteiro passou, e o
+     formulário só deu avisos K14.
+   - O GitHub pegaria esse caso só porque há exemplo de <code>schtasks</code> nos testes e porque um teste confere quais itens
+     ficam para depois da entrega. Uma palavra sem exemplo ficaria desprotegida.
+   - O "sim" aceita qualquer texto (<code>regras_dos_agentes/excecoes.py:99</code>).
+   - Destino: consertar (pôr o porteiro, o gancho e a situação, o "sim" e o passo da lista entre os arquivos
+     protegidos, e conferir o "sim" no Livro).</li>
+<li><strong>Médio: "só diminui" não é conferido no GitHub nem antes do commit.</strong> O gancho lê a lista do próprio commit
+   (<code>regras_dos_agentes/__main__.py:43</code>). O agente que põe o erro novo dele na lista, no mesmo commit, passa no gancho e
+   no teste do repositório. Provado no repositório de prova. Só a K17, rodada à mão pela gerente, acusa. Destino:
+   pergunta à gerente. Ou um teste do GitHub compara a lista com a da versão de teste, ou fica escrito que o comando
+   <code>entrega</code> com <code>--pacote</code> é obrigatório antes de juntar.</li>
+<li><strong>Médio: o texto para o Samuel não segue o §11.13.</strong>
+   - A imagem é o próprio texto: não prova nada e não mostra caso real (<code>relatorios/passo0-2026-11-19/lista-de-excecoes-para-o-samuel.md:5</code>).
+   - A frase "barra qualquer erro novo" promete mais do que o porteiro faz (achados 2 e 11).
+   - Falta "de onde veio" no <code>.md</code>, e não diz o que acontece se ele disser "não".
+   - Destino: consertar. Usar um caso real (por exemplo, a dica do Automático com o número, circulada em vermelho),
+     dizer em uma frase o que ele não pega, e recontar depois do achado 2.</li>
+<li><strong>Baixo: a K04 e a K05 não olham <code>core/</code></strong>, mas os avisos do "Para revisar" que o Kaique lê moram em
+   <code>core/analise.py:187</code> (<code>regras_dos_agentes/porteiro.py:133</code>). Hoje há zero achados ali, então ampliar não muda a
+   lista. Destino: consertar.</li>
+<li><strong>Baixo: a correção 3 vale para qualquer texto, não só para a folha de estilo.</strong> Um <code>"imagens/*"</code> seguido de um
+    <code>"*/fim"</code> apaga da busca o que está entre os dois (<code>regras_dos_agentes/leitura_do_codigo.py:114</code>). Provado: o
+    "D-731" de uma tela de exemplo deixou de ser achado. Destino: consertar (tirar o comentário só dentro do mesmo texto
+    da folha de estilo).</li>
+<li><strong>Baixo: o lugar é identificado pelo texto da linha</strong> (<code>regras_dos_agentes/excecoes.py:60</code>).<ul>
+<li>A mesma linha mudada de função passa. Provado na cópia: o <code>DETACHED_PROCESS</code> tirado de <code>_lancar_escondido</code> e
+  posto numa função nova.</li>
+<li>Mexer numa linha da lista sem consertá-la vira erro novo, que só sai com o "sim" do Samuel. Isso vale para mudar
+  a linha de arquivo, renomear uma variável nela ou reformatá-la.</li>
+<li>Destino: não é defeito, é o combinado no plano (arquivo, conferência, texto e quantas). Mas tem de ir nas
+  ressalvas e no pacote dos passos 2 a 5.</li>
+</ul>
+</li>
+<li><strong>Baixo: o pedido não é lido para arquivo novo.</strong> O docstring promete (<code>regras_dos_agentes/tabela_arquivos.py:10</code>),
+    mas o código lê só o conteúdo, que não existe para arquivo novo (<code>regras_dos_agentes/tabela_arquivos.py:199</code>).
+    Provado: <code>novo:core/registro_do_windows.py</code> sai só com as etiquetas de imagem e de git, sem as regras de Windows e
+    sem a pergunta "O que pode falhar". Destino: consertar (ou o código lê o pedido, ou o docstring diz que a gerente
+    acrescenta a linha na tabela antes).</li>
+<li><strong>Baixo: listas escritas à mão em mais de um lugar</strong> (§11.12: "uma lista é escrita uma vez e importada").<ul>
+<li>O que é "conversa com o Windows" está em dois lugares, e as duas listas diferem
+  (<code>regras_dos_agentes/porteiro.py:153</code> e <code>regras_dos_agentes/tabela_arquivos.py:142</code>).</li>
+<li>Os nomes <code>terceiros</code> e <code>velhos</code> estão em três (<code>regras_dos_agentes/porteiro.py:144</code>,
+  <code>regras_dos_agentes/porteiro_mudancas.py:147</code> e <code>regras_dos_agentes/formulario.py:180</code>).</li>
+<li>Quem pode escrever o rótulo de pronto está em dois (<code>regras_dos_agentes/porteiro_mudancas.py:37</code> e
+  <code>regras_dos_agentes/formulario.py:436</code>).</li>
+<li>Destino: consertar.</li>
+</ul>
+</li>
+<li><strong>Baixo: a K11 não olha os testes da raiz</strong>, como o <code>teste_botoes.py</code>, que é teste antigo pelo CLAUDE.md §4.5
+    (<code>regras_dos_agentes/porteiro_mudancas.py:120</code>). Destino: consertar, ou escrever na ressalva.</li>
+<li><strong>Baixo: o rótulo de pronto passa entre aspas, entre crases ou numa linha numerada</strong> (<code>3. **Pronto para conferir**</code>)
+    (<code>regras_dos_agentes/porteiro_mudancas.py:45</code> e <code>:66</code>). A ressalva da entrega só fala do "meio da frase". Destino:
+    não é defeito, porque as aspas existem para citar a regra. Mas a ressalva tem de dizer isso.</li>
+<li><strong>Baixo: textos que não batem com a verdade.</strong><ul>
+<li><code>regras_dos_agentes/porteiro.py:9</code> cita <code>antes_do_commit.py</code>, que não existe.</li>
+<li><code>ganchos/pre-commit:11</code> diz que "--no-verify é proibido aos agentes (CLAUDE.md, git)", e nem o CLAUDE.md nem os
+  arquivos dos agentes dizem isso.</li>
+<li>O ONDE-PAREI diz "17 arquivos" em <code>regras_dos_agentes/</code>, e o git tem 16.</li>
+<li>Destino: consertar (a regra do <code>--no-verify</code>, se for para valer, é da gerente com o "sim" do Samuel).</li>
+</ul>
+</li>
+<li><strong>Baixo: o instalador antigo conversa com o Windows fora do Python</strong> (<code>instalador.iss:272</code>, <code>Exec</code> do
+    <code>vc_redist</code>), e o porteiro só lê <code>.py</code>. Destino: pergunta à gerente. Se o Inno não é mais usado, não é defeito.</li>
+<li><strong>Baixo: o pacote do passo 1</strong> (<code>relatorios/passo0-2026-11-19/anexos/pacote-passo1.md:1</code>).<ul>
+<li>Faltam a D-722 (a lista do que foi desfeito no fim da sessão de prova, que cria uma tarefa e uma pasta) e a D-724
+  (a assinatura grátis, de onde vem a faixa "Editor desconhecido" que o passo 1 prova).</li>
+<li>A regra da barra de rolagem ("#a8a49e") contradiz os valores que a K22 cobra.</li>
+<li>Destino: a gerente decide ao remontar o pacote (as duas decisões). O texto da barra é do CLAUDE.md §9: vira
+  pergunta.</li>
+</ul>
+</li>
+<li><strong>Baixo: a K18 confere o GitHub pela cópia local</strong> (<code>regras_dos_agentes/conversa_com_o_git.py:168</code>, "o último
+    buscado"). Destino: não é defeito grave. Escrever na ressalva, ou perguntar ao GitHub de verdade (<code>git ls-remote</code>).</li>
+</ol>
+<h2>Para a gerente: o que ficou fora do projeto</h2>
+<p>Criei, na pasta temporária da sessão (fora do projeto; não apaguei, pela regra de 29/09):</p>
+<ul>
+<li><code>C:\Users\fotog\AppData\Local\Temp\claude\b9ca076ad002e817\848d7b72-406b-4bfe-aabf-f5b3005d7b22\scratchpad\quebrar\copia</code>:
+  um clone local do ramo, com uns 3,3 GB. Tem os ramos de prova <code>prova-k13</code>, <code>prova-k10</code>, <code>prova-k17</code> e
+  <code>prova-ligar</code>, só nele.</li>
+<li><code>...\quebrar\gancho</code>: o repositório de prova do gancho, com o <code>core.hooksPath</code> ligado só nele.</li>
+<li><code>...\quebrar\esboco</code>, <code>recontar.py</code> e <code>largo.py</code>: o esboço da proposta e os meus scripts de recontagem.</li>
+</ul>
+<p>A gerente pergunta ao Samuel se pode apagar.</p>
+<p class="rodape">Editor de Impressão &middot; gerado em 19/11/2026 às 00:27</p>
+</body>
+</html>
