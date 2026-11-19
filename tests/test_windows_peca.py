@@ -842,8 +842,10 @@ def test_a_pasta_do_agendador_tem_de_ser_do_sistema_ou_dos_administradores():
     """N3: a pasta do programa no Agendador com as licenças de fábrica passa; criada antes por uma conta comum (dona),
     ou dando controle total a "Todos", ou passando para as tarefas o direito de uma conta comum gravar, não passa."""
     assert windows.problemas_da_pasta_de_tarefas(_PASTA_DE_FABRICA) == []
-    problemas = " ".join(windows.problemas_da_pasta_de_tarefas(_PASTA_DA_CONTA_COMUM))
-    assert "dono" in problemas and "Todos" in problemas
+    problemas = windows.problemas_da_pasta_de_tarefas(_PASTA_DA_CONTA_COMUM)
+    # o nome das contas vem na língua do Windows ("Todos" aqui, "Everyone" no GitHub): confere-se o sentido
+    assert any("dono" in pr for pr in problemas)
+    assert sum("pode mexer na pasta" in pr for pr in problemas) == 2          # Todos e a conta comum dona
     assert windows.problemas_da_pasta_de_tarefas("O:BAD:(A;;FA;;;BA)(A;OI;FW;;;AU)")          # passa para as tarefas
     assert windows.problemas_da_pasta_de_tarefas("O:BAD:(A;;FA;;;BA)(A;;WD;;;BU)")            # muda a licença
     assert windows.conferir_pasta_de_tarefas().dados.get("existe") in (True, False)
