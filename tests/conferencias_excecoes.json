@@ -1,0 +1,557 @@
+{
+ "explicacao": "Lista de exceções do porteiro (D-791, D-800). Gerada por `python -m regras_dos_agentes excecoes --gerar`; não escreva à mão. Um item por lugar (arquivo, conferência, texto, quantas). Só diminui: cada conserto tira o seu item no mesmo commit. Item novo só com o 'sim' do Samuel. Enquanto 'situacao' for 'proposta', a lista não vale e o teste que barra o repositório fica parado; a gerente liga trocando para 'valendo' e escrevendo o 'sim' dele em 'sim_do_samuel'.",
+ "situacao": "proposta",
+ "sim_do_samuel": null,
+ "gerada_em": "2026-11-18",
+ "commit_lido": "8967cc10c21307e67c9fce4c4205c405fce806b1",
+ "itens": [
+  {
+   "arquivo": "atualizacao.py",
+   "conferencia": "K01",
+   "texto": "\"$jPs = [powershell]::Create(); $jPs.Runspace = $jRun\",",
+   "quantas": 1,
+   "linhas_quando_gerada": [
+    883
+   ],
+   "funcao": "_linhas_da_janelinha",
+   "data": "2026-11-18",
+   "passo": "3",
+   "motivo": "o atualizador passa a conversar com o Windows só pela peça única"
+  },
+  {
+   "arquivo": "atualizacao.py",
+   "conferencia": "K01",
+   "texto": "codigo, saida = rodar([\"schtasks\", \"/Create\", \"/TN\", NOME_DA_TAREFA, \"/XML\", str(arquivo), \"/F\"])",
+   "quantas": 1,
+   "linhas_quando_gerada": [
+    1165
+   ],
+   "funcao": "criar_tarefa",
+   "data": "2026-11-18",
+   "passo": "3",
+   "motivo": "o atualizador passa a conversar com o Windows só pela peça única"
+  },
+  {
+   "arquivo": "atualizacao.py",
+   "conferencia": "K01",
+   "texto": "codigo, saida = rodar([\"schtasks\", \"/Delete\", \"/TN\", NOME_DA_TAREFA, \"/F\"])",
+   "quantas": 1,
+   "linhas_quando_gerada": [
+    1179
+   ],
+   "funcao": "apagar_tarefa",
+   "data": "2026-11-18",
+   "passo": "3",
+   "motivo": "o atualizador passa a conversar com o Windows só pela peça única"
+  },
+  {
+   "arquivo": "atualizacao.py",
+   "conferencia": "K01",
+   "texto": "f\"& schtasks {rodar} | Out-Null\",",
+   "quantas": 1,
+   "linhas_quando_gerada": [
+    921
+   ],
+   "funcao": "script_de_trocar_e_reabrir",
+   "data": "2026-11-18",
+   "passo": "3",
+   "motivo": "o atualizador passa a conversar com o Windows só pela peça única"
+  },
+  {
+   "arquivo": "atualizacao.py",
+   "conferencia": "K01",
+   "texto": "return [\"schtasks\", \"/Run\", \"/TN\", NOME_DA_TAREFA]",
+   "quantas": 1,
+   "linhas_quando_gerada": [
+    1047
+   ],
+   "funcao": "comando_de_rodar_a_tarefa",
+   "data": "2026-11-18",
+   "passo": "3",
+   "motivo": "o atualizador passa a conversar com o Windows só pela peça única"
+  },
+  {
+   "arquivo": "atualizacao.py",
+   "conferencia": "K01",
+   "texto": "return pasta_do_programa().parent / \"Update.exe\"",
+   "quantas": 1,
+   "linhas_quando_gerada": [
+    488
+   ],
+   "funcao": "update_exe",
+   "data": "2026-11-18",
+   "passo": "3",
+   "motivo": "o atualizador passa a conversar com o Windows só pela peça única"
+  },
+  {
+   "arquivo": "atualizacao.py",
+   "conferencia": "K01",
+   "texto": "subprocess.Popen([\"powershell.exe\", \"-NoProfile\", \"-NonInteractive\", \"-ExecutionPolicy\", \"Bypass\",",
+   "quantas": 1,
+   "linhas_quando_gerada": [
+    965
+   ],
+   "funcao": "_lancar_escondido",
+   "data": "2026-11-18",
+   "passo": "3",
+   "motivo": "o atualizador passa a conversar com o Windows só pela peça única"
+  },
+  {
+   "arquivo": "atualizacao.py",
+   "conferencia": "K01",
+   "texto": "| getattr(subprocess, \"DETACHED_PROCESS\", 0))",
+   "quantas": 2,
+   "linhas_quando_gerada": [
+    674,
+    968
+   ],
+   "funcao": "_aplicar_pacote_quando_sair, _lancar_escondido",
+   "data": "2026-11-18",
+   "passo": "3",
+   "motivo": "o atualizador passa a conversar com o Windows só pela peça única"
+  },
+  {
+   "arquivo": "atualizacao.py",
+   "conferencia": "K02",
+   "texto": "| getattr(subprocess, \"DETACHED_PROCESS\", 0))",
+   "quantas": 2,
+   "linhas_quando_gerada": [
+    674,
+    968
+   ],
+   "funcao": "_aplicar_pacote_quando_sair, _lancar_escondido",
+   "data": "2026-11-18",
+   "passo": "3",
+   "motivo": "o atualizador passa a conversar com o Windows só pela peça única"
+  },
+  {
+   "arquivo": "atualizacao.py",
+   "conferencia": "K04",
+   "texto": "\"antiga (D-733)\",",
+   "quantas": 1,
+   "linhas_quando_gerada": [
+    1432
+   ],
+   "funcao": "passo_de_preparar_o_computador",
+   "data": "2026-11-18",
+   "passo": "3",
+   "motivo": "o atualizador passa a conversar com o Windows só pela peça única"
+  },
+  {
+   "arquivo": "atualizacao.py",
+   "conferencia": "K04",
+   "texto": "\"atualização não foi criado; a pergunta volta na próxima abertura (D-741)\")",
+   "quantas": 1,
+   "linhas_quando_gerada": [
+    1501
+   ],
+   "funcao": "preparar_na_primeira_abertura",
+   "data": "2026-11-18",
+   "passo": "3",
+   "motivo": "o atualizador passa a conversar com o Windows só pela peça única"
+  },
+  {
+   "arquivo": "atualizacao.py",
+   "conferencia": "K04",
+   "texto": "\"bem; conta como não feita e a pergunta volta na próxima abertura (D-749)\")",
+   "quantas": 1,
+   "linhas_quando_gerada": [
+    1509
+   ],
+   "funcao": "preparar_na_primeira_abertura",
+   "data": "2026-11-18",
+   "passo": "3",
+   "motivo": "o atualizador passa a conversar com o Windows só pela peça única"
+  },
+  {
+   "arquivo": "atualizacao.py",
+   "conferencia": "K04",
+   "texto": "registrar(f\"criar a tarefa do desfazer (D-731): {'certo' if desfazer.ok else 'NÃO deu certo'}\"",
+   "quantas": 1,
+   "linhas_quando_gerada": [
+    1400
+   ],
+   "funcao": "criar_as_tarefas",
+   "data": "2026-11-18",
+   "passo": "5",
+   "motivo": "o desinstalar limpo tira o número de decisão do registro"
+  },
+  {
+   "arquivo": "atualizacao.py",
+   "conferencia": "K04",
+   "texto": "registrar(f\"desfazer os testes à distância (D-731): {'mandado' if feito.ok else 'NÃO mandado'}\"",
+   "quantas": 1,
+   "linhas_quando_gerada": [
+    1578
+   ],
+   "funcao": "ao_desinstalar",
+   "data": "2026-11-18",
+   "passo": "5",
+   "motivo": "o desinstalar limpo tira o número de decisão do registro"
+  },
+  {
+   "arquivo": "avaliar.py",
+   "conferencia": "K01",
+   "texto": "ctypes.windll.shell32.SHGetFolderPathW(None, 0x10, None, 0, buffer)",
+   "quantas": 1,
+   "linhas_quando_gerada": [
+    1659
+   ],
+   "funcao": "achar_acervo",
+   "data": "2026-11-18",
+   "passo": "depois da entrega",
+   "motivo": "a régua dos filtros pergunta a Área de Trabalho ao Windows; D-800"
+  },
+  {
+   "arquivo": "core/_testes_a_distancia_windows.py",
+   "conferencia": "K01",
+   "texto": "[\"powershell\", \"-NoProfile\", \"-NonInteractive\", \"-Command\", script],",
+   "quantas": 1,
+   "linhas_quando_gerada": [
+    55
+   ],
+   "funcao": "_senha_cifrada_pelo_windows",
+   "data": "2026-11-18",
+   "passo": "4",
+   "motivo": "os testes à distância passam a usar a peça única"
+  },
+  {
+   "arquivo": "core/_testes_a_distancia_windows.py",
+   "conferencia": "K01",
+   "texto": "class _SHELLEXECUTEINFO(ctypes.Structure):",
+   "quantas": 1,
+   "linhas_quando_gerada": [
+    61
+   ],
+   "funcao": "(fora de função)",
+   "data": "2026-11-18",
+   "passo": "4",
+   "motivo": "os testes à distância passam a usar a peça única"
+  },
+  {
+   "arquivo": "core/_testes_a_distancia_windows.py",
+   "conferencia": "K01",
+   "texto": "feito = subprocess.run([\"powershell.exe\", \"-NoProfile\", \"-NonInteractive\", \"-ExecutionPolicy\", \"Bypass\",",
+   "quantas": 1,
+   "linhas_quando_gerada": [
+    153
+   ],
+   "funcao": "aplicar_ja_como_administrador_no_windows",
+   "data": "2026-11-18",
+   "passo": "4",
+   "motivo": "os testes à distância passam a usar a peça única"
+  },
+  {
+   "arquivo": "core/_testes_a_distancia_windows.py",
+   "conferencia": "K01",
+   "texto": "feito = subprocess.run([\"schtasks\", \"/Run\", \"/TN\", nome], capture_output=True, text=True,",
+   "quantas": 1,
+   "linhas_quando_gerada": [
+    182
+   ],
+   "funcao": "rodar_a_tarefa_no_windows",
+   "data": "2026-11-18",
+   "passo": "4",
+   "motivo": "os testes à distância passam a usar a peça única"
+  },
+  {
+   "arquivo": "core/_testes_a_distancia_windows.py",
+   "conferencia": "K01",
+   "texto": "if not ctypes.windll.shell32.ShellExecuteExW(ctypes.byref(info)):",
+   "quantas": 1,
+   "linhas_quando_gerada": [
+    94
+   ],
+   "funcao": "_rodar_elevado",
+   "data": "2026-11-18",
+   "passo": "4",
+   "motivo": "os testes à distância passam a usar a peça única"
+  },
+  {
+   "arquivo": "core/_testes_a_distancia_windows.py",
+   "conferencia": "K01",
+   "texto": "info = _SHELLEXECUTEINFO()",
+   "quantas": 1,
+   "linhas_quando_gerada": [
+    86
+   ],
+   "funcao": "_rodar_elevado",
+   "data": "2026-11-18",
+   "passo": "4",
+   "motivo": "os testes à distância passam a usar a peça única"
+  },
+  {
+   "arquivo": "core/_testes_a_distancia_windows.py",
+   "conferencia": "K01",
+   "texto": "info.lpFile = \"powershell.exe\"",
+   "quantas": 1,
+   "linhas_quando_gerada": [
+    90
+   ],
+   "funcao": "_rodar_elevado",
+   "data": "2026-11-18",
+   "passo": "4",
+   "motivo": "os testes à distância passam a usar a peça única"
+  },
+  {
+   "arquivo": "core/_testes_a_distancia_windows.py",
+   "conferencia": "K01",
+   "texto": "info.lpVerb = \"runas\"",
+   "quantas": 1,
+   "linhas_quando_gerada": [
+    89
+   ],
+   "funcao": "_rodar_elevado",
+   "data": "2026-11-18",
+   "passo": "4",
+   "motivo": "os testes à distância passam a usar a peça única"
+  },
+  {
+   "arquivo": "core/testes_a_distancia.py",
+   "conferencia": "K01",
+   "texto": "'<Actions Context=\"Sistema\"><Exec><Command>powershell.exe</Command>'",
+   "quantas": 1,
+   "linhas_quando_gerada": [
+    304
+   ],
+   "funcao": "xml_da_tarefa_do_desfazer",
+   "data": "2026-11-18",
+   "passo": "5",
+   "motivo": "o desinstalar limpo troca a tarefa do desfazer"
+  },
+  {
+   "arquivo": "core/testes_a_distancia.py",
+   "conferencia": "K01",
+   "texto": "f\" New-NetFirewallRule -Name {NOME_DA_REGRA}\"",
+   "quantas": 1,
+   "linhas_quando_gerada": [
+    423
+   ],
+   "funcao": "plano_de_ligar",
+   "data": "2026-11-18",
+   "passo": "4",
+   "motivo": "os testes à distância passam a usar a peça única e a pasta segura"
+  },
+  {
+   "arquivo": "core/testes_a_distancia.py",
+   "conferencia": "K01",
+   "texto": "f\" icacls $pasta /inheritance:r /grant:r '*{SID_SISTEMA}:(OI)(CI)F' '*{SID_ADMINISTRADORES}:(OI)(CI)F'\"",
+   "quantas": 1,
+   "linhas_quando_gerada": [
+    369
+   ],
+   "funcao": "_comando_proteger_a_pasta",
+   "data": "2026-11-18",
+   "passo": "4",
+   "motivo": "os testes à distância passam a usar a peça única e a pasta segura"
+  },
+  {
+   "arquivo": "core/testes_a_distancia.py",
+   "conferencia": "K01",
+   "texto": "f\" icacls $pasta /setowner '*{SID_ADMINISTRADORES}' /T /C /Q | Out-Null;\"",
+   "quantas": 1,
+   "linhas_quando_gerada": [
+    368
+   ],
+   "funcao": "_comando_proteger_a_pasta",
+   "data": "2026-11-18",
+   "passo": "4",
+   "motivo": "os testes à distância passam a usar a peça única e a pasta segura"
+  },
+  {
+   "arquivo": "core/testes_a_distancia.py",
+   "conferencia": "K01",
+   "texto": "f\"Add-WindowsCapability -Online -Name {CAPACIDADE_OPENSSH}\"),",
+   "quantas": 1,
+   "linhas_quando_gerada": [
+    412
+   ],
+   "funcao": "plano_de_ligar",
+   "data": "2026-11-18",
+   "passo": "4",
+   "motivo": "os testes à distância passam a usar a peça única e a pasta segura"
+  },
+  {
+   "arquivo": "core/testes_a_distancia.py",
+   "conferencia": "K03",
+   "texto": "f\" icacls $pasta /inheritance:r /grant:r '*{SID_SISTEMA}:(OI)(CI)F' '*{SID_ADMINISTRADORES}:(OI)(CI)F'\"",
+   "quantas": 1,
+   "linhas_quando_gerada": [
+    369
+   ],
+   "funcao": "_comando_proteger_a_pasta",
+   "data": "2026-11-18",
+   "passo": "4",
+   "motivo": "os testes à distância passam a usar a peça única e a pasta segura"
+  },
+  {
+   "arquivo": "core/testes_a_distancia.py",
+   "conferencia": "K03",
+   "texto": "f\" icacls $pasta /setowner '*{SID_ADMINISTRADORES}' /T /C /Q | Out-Null;\"",
+   "quantas": 1,
+   "linhas_quando_gerada": [
+    368
+   ],
+   "funcao": "_comando_proteger_a_pasta",
+   "data": "2026-11-18",
+   "passo": "4",
+   "motivo": "os testes à distância passam a usar a peça única e a pasta segura"
+  },
+  {
+   "arquivo": "core/testes_a_distancia.py",
+   "conferencia": "K04",
+   "texto": "Passo(\"Abrir a porta so para a rede do Tailscale (D-705)\",",
+   "quantas": 1,
+   "linhas_quando_gerada": [
+    421
+   ],
+   "funcao": "plano_de_ligar",
+   "data": "2026-11-18",
+   "passo": "4",
+   "motivo": "os testes à distância passam a usar a peça única e a pasta segura"
+  },
+  {
+   "arquivo": "core/testes_a_distancia.py",
+   "conferencia": "K04",
+   "texto": "Passo(\"Anotar o que o computador ja tinha antes (D-731)\", _comando_anotar_o_antes()),",
+   "quantas": 1,
+   "linhas_quando_gerada": [
+    410
+   ],
+   "funcao": "plano_de_ligar",
+   "data": "2026-11-18",
+   "passo": "4",
+   "motivo": "os testes à distância passam a usar a peça única e a pasta segura"
+  },
+  {
+   "arquivo": "core/testes_a_distancia.py",
+   "conferencia": "K04",
+   "texto": "Passo(\"Criar a conta so dos testes, sem poder de administrador (D-717)\",",
+   "quantas": 1,
+   "linhas_quando_gerada": [
+    434
+   ],
+   "funcao": "plano_de_ligar",
+   "data": "2026-11-18",
+   "passo": "4",
+   "motivo": "os testes à distância passam a usar a peça única e a pasta segura"
+  },
+  {
+   "arquivo": "core/testes_a_distancia.py",
+   "conferencia": "K04",
+   "texto": "Passo(\"Deixar entrar pelo comando de longe so a conta de testes (D-711)\",",
+   "quantas": 1,
+   "linhas_quando_gerada": [
+    459
+   ],
+   "funcao": "plano_de_ligar",
+   "data": "2026-11-18",
+   "passo": "4",
+   "motivo": "os testes à distância passam a usar a peça única e a pasta segura"
+  },
+  {
+   "arquivo": "core/testes_a_distancia.py",
+   "conferencia": "K04",
+   "texto": "Passo(\"Deixar o Servidor OpenSSH ligando sozinho com o Windows (D-711)\",",
+   "quantas": 1,
+   "linhas_quando_gerada": [
+    413
+   ],
+   "funcao": "plano_de_ligar",
+   "data": "2026-11-18",
+   "passo": "4",
+   "motivo": "os testes à distância passam a usar a peça única e a pasta segura"
+  },
+  {
+   "arquivo": "core/testes_a_distancia.py",
+   "conferencia": "K04",
+   "texto": "Passo(\"Esconder a conta de testes da tela de entrada (D-717)\",",
+   "quantas": 1,
+   "linhas_quando_gerada": [
+    451
+   ],
+   "funcao": "plano_de_ligar",
+   "data": "2026-11-18",
+   "passo": "4",
+   "motivo": "os testes à distância passam a usar a peça única e a pasta segura"
+  },
+  {
+   "arquivo": "core/testes_a_distancia.py",
+   "conferencia": "K04",
+   "texto": "Passo(\"Preparar o desfazer para quando o programa for desinstalado (D-731)\",",
+   "quantas": 1,
+   "linhas_quando_gerada": [
+    463
+   ],
+   "funcao": "plano_de_ligar",
+   "data": "2026-11-18",
+   "passo": "4",
+   "motivo": "os testes à distância passam a usar a peça única e a pasta segura"
+  },
+  {
+   "arquivo": "empacotar.py",
+   "conferencia": "K01",
+   "texto": "saida = subprocess.run([\"powershell\", \"-NoProfile\", \"-NonInteractive\", \"-Command\", comando],",
+   "quantas": 1,
+   "linhas_quando_gerada": [
+    527
+   ],
+   "funcao": "assinatura_do_arquivo",
+   "data": "2026-11-18",
+   "passo": "2",
+   "motivo": "o publicar passa a ler a assinatura pela peça única do Windows"
+  },
+  {
+   "arquivo": "teste_velocidade.py",
+   "conferencia": "K01",
+   "texto": "completo = Path(windows) / \"System32\" / \"WindowsPowerShell\" / \"v1.0\" / \"powershell.exe\"",
+   "quantas": 1,
+   "linhas_quando_gerada": [
+    391
+   ],
+   "funcao": "_caminho_do_powershell",
+   "data": "2026-11-18",
+   "passo": "depois da entrega",
+   "motivo": "o teste de velocidade abre o PowerShell; D-800"
+  },
+  {
+   "arquivo": "teste_velocidade.py",
+   "conferencia": "K01",
+   "texto": "return str(completo) if completo.is_file() else \"powershell\"",
+   "quantas": 1,
+   "linhas_quando_gerada": [
+    392
+   ],
+   "funcao": "_caminho_do_powershell",
+   "data": "2026-11-18",
+   "passo": "depois da entrega",
+   "motivo": "o teste de velocidade abre o PowerShell; D-800"
+  },
+  {
+   "arquivo": "ui/automatico.py",
+   "conferencia": "K04",
+   "texto": "\"D-094: a mesma escolha existe nas Configurações (para todos os livros) e na \"",
+   "quantas": 1,
+   "linhas_quando_gerada": [
+    2304
+   ],
+   "funcao": "PainelDeOpcoes._opcoes_endireitar",
+   "data": "2026-11-18",
+   "passo": "depois da entrega",
+   "motivo": "dicas do Automático com número de decisão; D-800"
+  },
+  {
+   "arquivo": "ui/automatico.py",
+   "conferencia": "K04",
+   "texto": "\"escolhido em \\\"Rodar\\\" (D-068: toda função automática \"",
+   "quantas": 1,
+   "linhas_quando_gerada": [
+    766
+   ],
+   "funcao": "PainelAutomatico.__init__",
+   "data": "2026-11-18",
+   "passo": "depois da entrega",
+   "motivo": "dicas do Automático com número de decisão; D-800"
+  }
+ ]
+}
