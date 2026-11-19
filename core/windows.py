@@ -616,6 +616,43 @@ _NOMES_DE_FABRICA = {
     "S-1-5-4": "quem usa este computador (Interativo)",
     "S-1-15-2-1": "os aplicativos da loja",
     "S-1-15-2-2": "os aplicativos da loja restritos",
+    "S-1-5-32-546": "Convidados",
+    "S-1-5-32-547": "Usuários avançados",
+    "S-1-5-32-551": "Operadores de cópia",
+    "S-1-5-32-555": "Usuários da área de trabalho remota",
+    "S-1-5-32-556": "Operadores de configuração de rede",
+    "S-1-5-32-558": "Usuários do monitor de desempenho",
+    "S-1-5-32-559": "Usuários do log de desempenho",
+    "S-1-5-32-562": "Usuários do COM distribuído",
+    "S-1-5-32-568": "Usuários do servidor de páginas (IIS)",
+    "S-1-5-32-569": "Operadores criptográficos",
+    "S-1-5-32-573": "Leitores do registro de eventos",
+    "S-1-5-32-578": "Administradores do Hyper-V",
+    "S-1-5-32-579": "Operadores de assistência de controle de acesso",
+    "S-1-5-32-580": "Usuários de gerenciamento remoto",
+    "S-1-5-1": "quem entra por discagem",
+    "S-1-5-2": "quem entra pela rede (Rede)",
+    "S-1-5-3": "os trabalhos em lote",
+    "S-1-5-6": "os serviços",
+    "S-1-5-7": "quem entra sem conta (Anônimo)",
+    "S-1-5-9": "os controladores de domínio",
+    "S-1-5-10": "a própria conta (Self)",
+    "S-1-5-12": "o código restrito",
+    "S-1-5-13": "os usuários do terminal remoto",
+    "S-1-5-14": "quem entra de longe (Logon interativo remoto)",
+    "S-1-5-15": "esta organização",
+    "S-1-5-17": "o usuário do servidor de páginas (IIS)",
+    "S-1-5-33": "o código de escrita restrita",
+    "S-1-5-64-10": "a autenticação NTLM",
+    "S-1-5-113": "as contas locais",
+    "S-1-5-114": "as contas locais administradoras",
+    "S-1-2-0": "quem entra neste computador (Local)",
+    "S-1-2-1": "quem entra pelo console",
+    "S-1-3-1": "o grupo de quem cria (Grupo Criador)",
+    "S-1-16-4096": "o nível baixo",
+    "S-1-16-8192": "o nível médio",
+    "S-1-16-12288": "o nível alto",
+    "S-1-16-16384": "o nível do sistema",
     "todos": "todas as contas (a pasta não tem lista de licenças)",
     "desconhecida": "uma licença que a peça não sabe ler",
 }
@@ -635,14 +672,39 @@ def _nome_do_sid_pelo_windows(sid: str) -> str:
         w.kernel32.LocalFree(psid)
 
 
+# As contas de fábrica que são grupos ou várias (o verbo vai no plural: "Todos podem", "Administradores podem").
+_NOMES_NO_PLURAL = {sid for sid, nome in _NOMES_DE_FABRICA.items()
+                    if sid.startswith("S-1-5-32-") or sid in ("S-1-1-0", SID_AUTENTICADOS, "S-1-5-6", "S-1-5-113",
+                                                              "S-1-5-114", "S-1-15-2-1", "S-1-15-2-2", "S-1-5-9",
+                                                              "S-1-5-13")}
+
+
 def nome_para_mostrar(sid: str, nome_do_windows: str = "") -> str:
-    """Como a peça diz uma conta numa frase (em português, sem código): as de fábrica pelo nome em português
-    (`_NOMES_DE_FABRICA`), não pelo que o Windows traduz; as outras pelo nome que o Windows dá; sem nome, "outra conta
-    deste computador". Nunca o SID cru."""
+    """Como a peça diz uma conta numa frase (em português, sem código). Lugar único:
+    - as de fábrica pelo nome em português (`_NOMES_DE_FABRICA`), nunca pelo que o Windows traduz;
+    - as dos serviços do Windows ("NT SERVICE\\..."), "um serviço do Windows"; as permissões dos aplicativos da loja,
+      "uma permissão de aplicativo da loja"; o administrador e o convidado embutidos, por esse nome;
+    - as outras pelo nome que o Windows dá, SEM o nome do computador (ou do domínio) na frente;
+    - sem nome, "outra conta deste computador". Nunca o SID cru."""
     if sid in _NOMES_DE_FABRICA:
         return _NOMES_DE_FABRICA[sid]
+    if sid.startswith("S-1-5-80-"):
+        return "um serviço do Windows"
+    if sid.startswith("S-1-15-3-"):
+        return "uma permissão de aplicativo da loja"
+    if re.match(r"^S-1-5-21-\d+-\d+-\d+-500$", sid):
+        return "o administrador embutido do Windows"
+    if re.match(r"^S-1-5-21-\d+-\d+-\d+-501$", sid):
+        return "o convidado embutido do Windows"
     nome = nome_do_windows or (_nome_do_sid_pelo_windows(sid) if sid else "")
+    nome = nome.rsplit("\\", 1)[-1].strip()
     return nome or "outra conta deste computador"
+
+
+def frase_da_conta(sid: str, nome_do_windows: str, singular: str, plural: str) -> str:
+    """A conta e o verbo concordando: "Todos podem mexer...", "fotog pode mexer..." (`singular` e `plural` são o resto
+    da frase, começando pelo verbo)."""
+    return f"{nome_para_mostrar(sid, nome_do_windows)} {plural if sid in _NOMES_NO_PLURAL else singular}"
 
 
 def ler_licencas(caminho: Path | str) -> Licencas:
@@ -747,10 +809,12 @@ def problemas_da_pasta_de_tarefas(sddl: str) -> list[str]:
         if li.tipo == "outra":
             problemas.append("a pasta do programa no Agendador tem uma licença que a peça não sabe ler")
         elif _direitos(li.mascara) & _MEXER_NA_PASTA_DE_TAREFAS:
-            problemas.append(f"{nome_para_mostrar(li.sid, li.nome)} pode mexer na pasta do programa no Agendador")
+            problemas.append(frase_da_conta(li.sid, li.nome, "pode mexer na pasta do programa no Agendador",
+                                            "podem mexer na pasta do programa no Agendador"))
         elif li.para_objetos and _direitos(li.mascara) & _ESCRITA:
-            problemas.append(f"{nome_para_mostrar(li.sid, li.nome)} poderia mudar as tarefas da pasta do programa no "
-                             "Agendador")
+            problemas.append(frase_da_conta(li.sid, li.nome,
+                                            "poderia mudar as tarefas da pasta do programa no Agendador",
+                                            "poderiam mudar as tarefas da pasta do programa no Agendador"))
     return problemas
 
 
@@ -781,12 +845,13 @@ def problemas_da_licenca_da_tarefa(pedida: str, efetiva: str) -> list[str]:
             if e.sid == li.sid:
                 tem |= _direitos(e.mascara)
         if _direitos(li.mascara) & ~tem:
-            problemas.append(f"{nome_para_mostrar(li.sid, li.nome)} não ficou com os direitos pedidos na tarefa")
+            problemas.append(frase_da_conta(li.sid, li.nome, "não ficou com os direitos pedidos na tarefa",
+                                            "não ficaram com os direitos pedidos na tarefa"))
     pode_mudar = {SID_SISTEMA, SID_ADMINISTRADORES, SID_INSTALADOR_CONFIAVEL}
     pode_mudar |= {li.sid for li in pedidas if _direitos(li.mascara) & _ESCRITA}
     for e in efetivas:
         if _direitos(e.mascara) & _ESCRITA and e.sid not in pode_mudar:
-            problemas.append(f"{nome_para_mostrar(e.sid, e.nome)} pode mudar a tarefa")
+            problemas.append(frase_da_conta(e.sid, e.nome, "pode mudar a tarefa", "podem mudar a tarefa"))
     return problemas
 
 
@@ -920,8 +985,10 @@ def aspas_do_powershell(texto: object) -> str:
 # ---------------------------------------------------------------------------------------------------------------------
 
 def _caminho_do_programa(programa: str) -> Path | None:
-    """O caminho do programa, normalizado num lugar só para comparar: sem aspas, sem o prefixo de caminho longo nem o
-    de dispositivo (duas barras com interrogação ou com ponto, que o Windows aceita para o mesmo arquivo). None para
+    """O caminho do programa, normalizado num lugar só para comparar: sem aspas, e o que vem com o prefixo de caminho
+    longo ou de dispositivo (duas barras com interrogação ou com ponto, que o Windows aceita para o mesmo arquivo) é
+    resolvido inteiro pelo Windows e só então perde o prefixo (assim o "raiz global" e o "volume por número" viram a
+    letra de disco de verdade). None para
     caminho de rede (duas barras e o nome de um computador, inclusive pelo prefixo longo com UNC): ele pode apontar
     para a pasta do Windows deste computador por outro nome (ex.: o "C$" ou o "ADMIN$" do "localhost"), e o rodar
     genérico não o aceita."""
@@ -929,10 +996,21 @@ def _caminho_do_programa(programa: str) -> Path | None:
     for prefixo in ("\\\\?\\UNC\\", "\\\\.\\UNC\\"):
         if texto.upper().startswith(prefixo.upper()):
             return None
-    for prefixo in ("\\\\?\\", "\\\\.\\", "\\??\\"):
-        if texto.startswith(prefixo):
-            texto = texto[len(prefixo):]
-            break
+    prefixos = ("\\\\?\\", "\\\\.\\", "\\??\\")
+    if texto.startswith(prefixos):
+        # O caminho INTEIRO é resolvido pelo Windows antes de tirar o prefixo (achado T1 da terceira volta): o "raiz
+        # global" e o "volume por número" só viram uma letra de disco assim. Depois de resolver, só vale caminho com
+        # letra de disco; o que não virou letra (rede, dispositivo desconhecido) é recusado.
+        try:
+            texto = os.path.realpath(texto)
+        except (OSError, ValueError):
+            return None
+        for prefixo in prefixos:
+            if texto.startswith(prefixo):
+                texto = texto[len(prefixo):]
+                break
+        if not re.match(r"^[A-Za-z]:\\", texto):
+            return None
     if texto.startswith("\\\\"):
         return None
     return Path(texto)
@@ -1005,7 +1083,7 @@ def _rodar(comando: list, limite_s: float = 120, entrada: bytes | None = None, l
     erros = feito.stderr.decode(letras, "replace").strip()
     if feito.returncode == 0:
         return _certo(codigo=0, saida=saida, erros=erros)
-    return _falhou(f"o Windows respondeu com erro (código {feito.returncode})", (erros + "\n" + saida).strip(),
+    return _falhou("o Windows respondeu com erro", (f"código {feito.returncode}\n" + erros + "\n" + saida).strip(),
                    codigo=feito.returncode, saida=saida, erros=erros)
 
 
@@ -1113,7 +1191,8 @@ def _lancar_solto(comando: list, sinal: Path, espera_s: float) -> Resposta:
             pass
         return _falhou(f"o processo lançado não deu sinal de vida em {int(espera_s)} segundos (foi fechado)",
                        comando[0], grupo=grupo)
-    return _falhou(f"o processo lançado saiu sem começar (código {processo.returncode})", comando[0], grupo=grupo)
+    return _falhou("o processo lançado saiu sem começar", f"{comando[0]}: código {processo.returncode}", grupo=grupo,
+                   codigo=processo.returncode)
 
 
 def lancar_powershell_solto(texto: str, espera_s: float = 30) -> Resposta:
@@ -1342,7 +1421,8 @@ def ler_tarefa(nome: str, limite_s: float = 60) -> Tarefa:
         return Tarefa(nome, False)
     if codigo == HRESULT_ACESSO_NEGADO:
         return Tarefa(nome, True, False, motivo="a tarefa existe, mas esta conta não tem licença para ler")
-    return Tarefa(nome, None, motivo=f"o Windows respondeu 0x{codigo:08X}")
+    _registrar("ler a tarefa", f"{nome}: o Windows respondeu 0x{codigo:08X}")
+    return Tarefa(nome, None, motivo="o Windows deu uma resposta que a peça não conhece (anotada no registro)")
 
 
 def problemas_da_tarefa_criada(pedido: str, lida: Tarefa) -> list[str]:
@@ -1873,7 +1953,7 @@ def desfecho_do_trabalho(codigo: int | None, relatorio: dict | None, pedidos: li
             return _falhou(f"{p.get('descricao')}: {p.get('motivo') or p.get('resultado')}",
                            str(p.get("detalhe", "")), codigo=codigo, passos=passos)
     if not passos or codigo != SAIDA_TUDO_CERTO:
-        return _falhou(f"o programa com licença terminou com o código {codigo}", "relatório sem falha, código não 0",
+        return _falhou("o programa com licença terminou com um erro", f"relatório sem falha, código {codigo}",
                        codigo=codigo, passos=passos)
     return _certo(codigo=codigo, passos=passos)
 
@@ -1890,7 +1970,7 @@ def _motivo_do_erro_ao_abrir(erro: int) -> str:
             ERRO_CAMINHO_NAO_ACHADO: "não achei a pasta do programa a abrir",
             ERRO_ACESSO_NEGADO: "o Windows não deixou abrir o programa",
             ERRO_SEM_ASSOCIACAO: "o Windows não sabe pedir licença para esse arquivo"}.get(
-        erro, f"o Windows não abriu o programa (código {erro})")
+        erro, "o Windows não abriu o programa")
 
 
 def manter_a_pasta_de_troca(houve: str) -> bool:

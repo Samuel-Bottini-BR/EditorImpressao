@@ -466,7 +466,8 @@ def test_lancar_solto_sem_sinal_de_vida_fecha_o_lancado(tmp_path):
     time.sleep(6)
     assert not atrasado.exists()
     r = windows.lancar_solto([PY, "-c", "raise SystemExit(7)"], tmp_path / "nunca.txt", espera_s=10)
-    assert r.desfecho == windows.FALHOU and "código 7" in r.motivo
+    assert r.desfecho == windows.FALHOU and "saiu sem começar" in r.motivo and "código" not in r.motivo
+    assert "código 7" in r.detalhe and r.dados["codigo"] == 7
 
 
 def test_lancar_powershell_solto_roda_e_apaga_a_propria_pasta(tmp_path):
@@ -844,7 +845,7 @@ def test_a_pasta_do_agendador_tem_de_ser_do_sistema_ou_dos_administradores():
     assert windows.problemas_da_pasta_de_tarefas(_PASTA_DE_FABRICA) == []
     problemas = windows.problemas_da_pasta_de_tarefas(_PASTA_DA_CONTA_COMUM)
     assert "o dono da pasta do programa no Agendador é outra conta deste computador" in problemas[0]
-    assert "Todos pode mexer na pasta do programa no Agendador" in problemas
+    assert "Todos podem mexer na pasta do programa no Agendador" in problemas
     assert "outra conta deste computador pode mexer na pasta do programa no Agendador" in problemas
     assert windows.problemas_da_pasta_de_tarefas("O:BAD:(A;;FA;;;BA)(A;OI;FW;;;AU)")          # passa para as tarefas
     assert windows.problemas_da_pasta_de_tarefas("O:BAD:(A;;FA;;;BA)(A;;WD;;;BU)")            # muda a licença
@@ -858,7 +859,7 @@ def test_a_tarefa_nao_e_criada_numa_pasta_do_agendador_que_nao_e_segura(monkeypa
     nome = f"EditorImpressao\\Teste da pasta insegura {os.getpid()}"
     monkeypatch.setattr(windows, "pasta_de_tarefas_existe", lambda: True)
     monkeypatch.setattr(windows, "conferir_pasta_de_tarefas", lambda: windows.Resposta(
-        windows.FALHOU, "a pasta do programa no Agendador não é segura: Todos pode mexer"))
+        windows.FALHOU, "a pasta do programa no Agendador não é segura: Todos podem mexer"))
     xml = windows.xml_da_tarefa_do_sistema("C:\\nao\\existe.exe", "", "teste", "D:(A;;FA;;;BA)(A;;FA;;;SY)")
     r = windows.criar_tarefa(nome, xml)
     assert r.desfecho == windows.FALHOU and "não é segura" in r.motivo and "não foi criada" in r.motivo
@@ -893,7 +894,7 @@ def test_as_frases_da_peca_dizem_as_contas_em_portugues_e_nunca_o_numero():
     assert windows.nome_para_mostrar(windows.SID_SISTEMA) == "o sistema"
     assert windows.nome_para_mostrar(windows.SID_ADMINISTRADORES) == "Administradores"
     assert windows.nome_para_mostrar("S-1-5-21-1-2-3-1001") == "outra conta deste computador"
-    assert windows.nome_para_mostrar("S-1-5-21-1-2-3-1001", "PC\\kaique") == "PC\\kaique"
+    assert windows.nome_para_mostrar("S-1-5-21-1-2-3-1001", "PC\\kaique") == "kaique"     # sem o computador
     sid = "S-1-5-21-1-2-3-1001"
 
     def lic(dono: str, *linhas) -> windows.Licencas:
@@ -914,6 +915,91 @@ def test_as_frases_da_peca_dizem_as_contas_em_portugues_e_nunca_o_numero():
     assert "outra conta pode gravar na pasta: Todos" in frases
     assert "outra conta pode ler a pasta: Usuários" in frases
     assert "uma conta que não é administradora pode gravar na pasta: Usuários" in frases
-    assert "Usuários autenticados não ficou com os direitos pedidos na tarefa" in frases
-    assert "Todos pode mudar a tarefa" in frases
+    assert "Usuários autenticados não ficaram com os direitos pedidos na tarefa" in frases
+    assert "Todos podem mudar a tarefa" in frases
+
+
+# ---------------------------------------------------------------------------------------------------------------------
+# A terceira volta de quem tentou quebrar (19/11)
+# ---------------------------------------------------------------------------------------------------------------------
+
+def test_a_recusa_resolve_o_caminho_inteiro_antes_de_tirar_o_prefixo():
+    """T1: o caminho com o prefixo longo é resolvido inteiro antes de perder o prefixo: pela "raiz global" e pelo
+    "volume por número" (o do disco C: deste Windows), a ferramenta do Windows também é recusada. Programa de fora
+    escrito com o prefixo continua passando."""
+    from ctypes import wintypes
+
+    barra = chr(92)
+    k = ctypes.WinDLL("kernel32", use_last_error=True)
+    k.GetVolumeNameForVolumeMountPointW.argtypes = [wintypes.LPCWSTR, wintypes.LPWSTR, wintypes.DWORD]
+    disco = os.environ["SystemRoot"][:3]                                      # "C:" e a barra
+    volume = ctypes.create_unicode_buffer(100)
+    assert k.GetVolumeNameForVolumeMountPointW(disco, volume, 100), "o Windows não disse o volume do disco do sistema"
+    for caminho in (barra * 2 + "?" + barra + "GLOBALROOT" + barra + "SystemRoot" + barra + "System32" + barra
+                    + "schtasks.exe",
+                    volume.value + "Windows" + barra + "System32" + barra + "schtasks.exe",
+                    barra * 2 + "?" + barra + "GLOBALROOT" + barra + "Device" + barra + "Coisa" + barra + "x.exe",
+                    barra * 2 + "." + barra + "pipe" + barra + "programa.exe"):       # não vira letra de disco
+        r = windows.rodar_e_esperar([caminho, "/?"])
+        assert r.desfecho == windows.FALHOU and "função própria" in r.motivo, caminho
+    assert windows.rodar_e_esperar([barra * 2 + "?" + barra + PY, "-c", "print(1)"], letras="utf-8").deu_certo
+    # o mesmo programa de fora pelo "volume por número" do disco dele: a peça não o recusa, porque o caminho é resolvido
+    # inteiro (sem resolver, ele seria recusado); quem não o roda é o próprio Windows, que não abre programa por esse
+    # caminho ("parâmetro incorreto"): a resposta é "falhou", mas não a recusa da peça.
+    volume_do_python = ctypes.create_unicode_buffer(100)
+    assert k.GetVolumeNameForVolumeMountPointW(PY[:3], volume_do_python, 100)
+    r = windows.rodar_e_esperar([volume_do_python.value + PY[3:], "-c", "print(1)"], letras="utf-8")
+    assert "função própria" not in r.motivo, r
+
+
+def test_a_tarefa_numa_pasta_do_agendador_que_mudou_no_meio_e_apagada(monkeypatch):
+    """T2: a pasta do programa no Agendador não existia antes e, depois de criar a tarefa, não é segura (mudou entre
+    as duas conferências): a peça apaga a tarefa de novo, confere que sumiu e a resposta diz isso. SÓ no Windows do
+    GitHub (com licença, máquina jogada fora): lá a tarefa é criada de verdade; a segunda leitura da pasta é trocada
+    para dizer que ela não é segura. No PC do Samuel não roda: nenhuma tarefa criada escondida (D-785)."""
+    if os.environ.get("GITHUB_ACTIONS") != "true":
+        pytest.skip("só no Windows do GitHub: no PC do Samuel nenhuma tarefa é criada escondida (D-785)")
+    nome = f"EditorImpressao\\Teste da pasta que mudou {os.getpid()}"
+    import atualizacao
+
+    xml = windows.xml_da_tarefa_do_sistema("C:\\nao\\existe.exe", "", "teste da peça (pode apagar)",
+                                           atualizacao.QUEM_PODE_MANDAR_RODAR)
+    existia = windows.pasta_de_tarefas_existe()
+    real = windows.conferir_pasta_de_tarefas
+    leituras = []
+
+    def conferir() -> windows.Resposta:
+        """A leitura antes é a de verdade; a de depois de criar diz que a pasta não é segura."""
+        leituras.append(1)
+        if len(leituras) == 1 and existia is not False:
+            return real()
+        return windows.Resposta(windows.FALHOU, "a pasta do programa no Agendador não é segura: Todos podem mexer")
+
+    monkeypatch.setattr(windows, "conferir_pasta_de_tarefas", conferir)
+    r = windows.criar_tarefa(nome, xml)
+    assert r.desfecho == windows.FALHOU and "não é segura" in r.motivo and "apagada de novo" in r.motivo, r
+    assert windows.ler_tarefa(nome).existe is False
+    if existia is False:
+        assert windows.apagar_pasta_de_tarefas().deu_certo
+
+
+def test_as_frases_concordam_e_nao_levam_numero_do_windows():
+    """T3: o verbo concorda com a conta ("Todos podem", "Administradores podem", "fotog pode"); as contas de fábrica
+    fora das mais comuns também saem em português pelo número (Convidados, os serviços, o administrador embutido),
+    venha o nome do Windows em que língua vier; e as frases que a pessoa lê não levam o número do erro do Windows (ele
+    fica no técnico)."""
+    barra = chr(92)
+    assert windows.frase_da_conta("S-1-1-0", "Everyone", "pode x", "podem x") == "Todos podem x"
+    assert windows.frase_da_conta(windows.SID_ADMINISTRADORES, "", "pode x", "podem x") == "Administradores podem x"
+    assert windows.frase_da_conta("S-1-5-21-1-2-3-1001", "PC" + barra + "fotog", "pode x", "podem x") == "fotog pode x"
+    assert windows.nome_para_mostrar("S-1-5-32-546", "BUILTIN" + barra + "Guests") == "Convidados"
+    assert windows.nome_para_mostrar("S-1-5-80-1-2-3-4-5", "NT SERVICE" + barra + "Algo") == "um serviço do Windows"
+    assert windows.nome_para_mostrar("S-1-5-21-1-2-3-500", "PC" + barra + "Administrator") == \
+        "o administrador embutido do Windows"
+    r = windows.rodar_e_esperar([PY, "-c", "raise SystemExit(3)"], letras="utf-8")
+    assert "código" not in r.motivo and "0x" not in r.motivo and "código 3" in r.detalhe
+    assert "código" not in windows.desfecho_do_trabalho(
+        1, {"passos": [{"descricao": "a", "resultado": windows.DEU_CERTO}], "terminou": True, "recusado": ""}).motivo
+    for erro in (2, 3, 5, 1155, 1460):
+        assert "código" not in windows.resposta_do_pedido(f"erro:{erro}", None, "t", None, [], 60).motivo
 

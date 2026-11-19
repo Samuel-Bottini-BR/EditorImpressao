@@ -1,0 +1,41 @@
+"""Prova de reversão da volta 3 do passo 1 (T1, T2, T3), numa cópia à parte (`reversao-passo1-volta3`)."""
+import sys
+from pathlib import Path
+
+sys.path.insert(0, str(Path(__file__).parent))
+import mutacoes_volta1 as v1  # noqa: E402
+
+N = "\n"
+T = "tests/test_windows_peca.py::"
+MUTACOES = [
+    ("T1 sem resolver o caminho inteiro", "core/windows.py",
+     "            texto = os.path.realpath(texto)", "            pass",
+     T + "test_a_recusa_resolve_o_caminho_inteiro_antes_de_tirar_o_prefixo"),
+    ("T1 sem exigir a letra de disco depois de resolver", "core/windows.py",
+     '        if not re.match(r"^[A-Za-z]:' + chr(92) * 2 + '", texto):' + N + "            return None",
+     "        if False:" + N + "            return None",
+     T + "test_a_recusa_resolve_o_caminho_inteiro_antes_de_tirar_o_prefixo"),
+    ("T2 sem a conferência de depois da pasta do Agendador (só o GitHub prova)", "core/windows.py",
+     "    if lida.existe:" + N + "        depois = conferir_pasta_de_tarefas()",
+     "    if False:" + N + "        depois = conferir_pasta_de_tarefas()",
+     T + "test_a_tarefa_numa_pasta_do_agendador_que_mudou_no_meio_e_apagada"),
+    ("T3 o verbo sempre no singular", "core/windows.py",
+     '    return f"{nome_para_mostrar(sid, nome_do_windows)} {plural if sid in _NOMES_NO_PLURAL else singular}"',
+     '    return f"{nome_para_mostrar(sid, nome_do_windows)} {singular}"',
+     T + "test_as_frases_concordam_e_nao_levam_numero_do_windows"),
+    ("T3 a conta comum com o computador na frente", "core/windows.py",
+     '    nome = nome.rsplit("' + chr(92) * 2 + '", 1)[-1].strip()', "    nome = nome.strip()",
+     T + "test_as_frases_concordam_e_nao_levam_numero_do_windows"),
+    ("T3 Convidados fora da lista (na língua do Windows)", "core/windows.py",
+     '    "S-1-5-32-546": "Convidados",' + N, "",
+     T + "test_as_frases_concordam_e_nao_levam_numero_do_windows"),
+    ("T3 o número do erro de volta na frase", "core/windows.py",
+     '    return _falhou("o Windows respondeu com erro", (f"código {feito.returncode}',
+     '    return _falhou(f"o Windows respondeu com erro (código {feito.returncode})", (f"código {feito.returncode}',
+     T + "test_as_frases_concordam_e_nao_levam_numero_do_windows"),
+]
+
+if __name__ == "__main__":
+    v1.COPIA = Path(__file__).parent / "reversao-passo1-volta3"
+    v1.MUTACOES = MUTACOES
+    sys.exit(v1.main())
