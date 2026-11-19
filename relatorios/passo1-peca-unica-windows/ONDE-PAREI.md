@@ -378,7 +378,11 @@ Lido (documentação ou código), separado do deduzido:
   só no GitHub); `tests/test_windows_janela_de_prova.py` 10; `tests/test_conferencias_codigo.py` 77;
   `tests/test_conferencias_excecoes.py` 14. Prova de reversão numa cópia à parte: 26 de 27 acusadas; a que falta (M12)
   é pulada no PC pelo N4 (`anexos/reversao-volta2-resultado.txt`).
-- **No GitHub, volta 2:** RODADA_VOLTA2
+- **No GitHub, volta 2:** rodada 44587786297, sobre o commit 6bf3459a: **success** na segunda tentativa (só a parte 3
+  rodou de novo). PORTEIRO: success (o trabalho "Porteiro (juiz da versao de teste)"). Na primeira tentativa falhou só
+  `tests/test_decisoes_gravura_a_mao.py::test_d659_g_outros_filtros_a_mao_nada_e_procurado_e_sai_igual_ao_de_antes`
+  (o caso "original"; "procurou: [0]"), que não usa nada deste passo e passa no PC (15 de 15). Rodadas da volta 2 que
+  falharam por testes meus: 44582797901 (a palavra "Todos" no Windows em inglês; consertado em bd46892a e 6bf3459a).
 - **No GitHub, volta 1:** rodada 44571676129, sobre o commit a21b311a: **success** na segunda tentativa (só a parte 4
   rodou de novo). PORTEIRO: success (o trabalho "Porteiro (juiz da versao de teste)"). Na primeira tentativa falhou só
   `tests/test_decisoes_so_as_letras.py::test_d148_desfazer_o_automatico_devolve_o_so_as_letras_do_livro`, por tempo,
@@ -492,6 +496,9 @@ Lido (documentação ou código), separado do deduzido:
 - **Bug para a Lista de bugs (19/11), instabilidade:** `tests/test_decisoes_so_as_letras.py::test_d148_desfazer_o_automatico_devolve_o_so_as_letras_do_livro`
   falhou por tempo ("não aconteceu a tempo: o projeto.json com o 'Só as letras' desfeito") na primeira tentativa da
   rodada 44558364601 e passou na segunda; passou também na 44553075293 e no PC. Não é deste passo; não mexi nele.
+- **Bug para a Lista de bugs (19/11), instabilidade:** `tests/test_decisoes_gravura_a_mao.py::test_d659_g_outros_filtros_a_mao_nada_e_procurado_e_sai_igual_ao_de_antes`
+  (o caso "original") falhou com "procurou: [0]" na primeira tentativa da rodada 44587786297 e passou na segunda; no
+  PC passa. Não é deste passo; não mexi nele.
 - **Ideia para a Lista de espera:** a janelinha de antes da pergunta (passo 3) ter um botão "Continuar", para o
   programa ganhar a frente com o clique dele (resolveria o caso do navegador na frente). Está como pergunta abaixo.
 
@@ -518,7 +525,7 @@ sem o certificado pago, a pergunta mostra o **nome do arquivo** do programa, e o
 
 ## Commit
 
-COMMIT_VOLTA2
+6bf3459a (o último commit de código da volta 2; depois dele só este formulário muda).
 
 ## O que o agente que tentou quebrar achou
 
