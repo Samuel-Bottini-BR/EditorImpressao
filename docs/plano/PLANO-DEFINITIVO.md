@@ -795,3 +795,4 @@ Feito pelo agente de layout, a partir do plano discutido na conversa separada (v
 | 19/11/2026 | **Pergunta 2 de 6 (D-810): os agentes que escrevem testes recebem a lista das diferenças entre o PC dele, o GitHub e o PC do Kaique.** Ele: "ok". | chat | Samuel |
 | 19/11/2026 | **Pergunta 3 de 6 (D-811): na ficha de entrega, cada proteção vem com o teste que falha quando ela é desligada.** Ele: "ok". | chat | Samuel |
 | 19/11/2026 | **Pergunta 4 de 6 (D-812): toda conferência diz de onde vem cada informação; a que o conferido pode trocar não vale como prova.** Ele: "ok". | chat | Samuel |
+| 19/11/2026 | **Pergunta 5 de 6 (D-813): quando o programa recusa ou procura algo, o agente lista antes todos os jeitos que a peça de fora aceita, e a proteção compara a coisa de verdade.** Ele: "ok". | chat | Samuel |
