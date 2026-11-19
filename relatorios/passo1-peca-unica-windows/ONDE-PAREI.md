@@ -22,7 +22,9 @@ teste com o porteiro ligado). Este ONDE-PAREI é também o formulário da entreg
 - 19/11: leitura feita (pacote, plano v3, plano v1 §1.2 e §2, Livro, código de hoje, peças de fora). Seções de antes
   de escrever preenchidas abaixo. **Achado que vira pergunta:** pela leitura, a pergunta do Windows mostra o nome do
   arquivo (`EditorImpressao.exe`), não "Editor de Impressão" (ver "O que li" e "Perguntas para o Samuel"). Não mexi em
-  `empacotar.py` nem no nome do arquivo. Começando o código.
+  `empacotar.py` nem no nome do arquivo.
+- 19/11: código, testes e janela de prova feitos e no GitHub (commits abaixo). Rodada do GitHub disparada; resultado
+  em "Testes". **Próximo:** a gerente manda a quem tenta quebrar; depois a sessão A à vista.
 
 ## Decisões que esta tarefa precisa cumprir
 
@@ -233,43 +235,165 @@ Lido (documentação ou código), separado do deduzido:
 
 ## O que foi feito
 
-(a preencher)
+- **`core/windows.py` (novo): a peça única do Windows e a pasta segura.** Pedir a licença abre o próprio programa
+  com o aviso de trabalho numa pasta de troca (`pedir_licenca()`), e o lado com licença faz só os passos do aviso
+  (`atender_trabalho_de_administrador()`), de uma lista fechada: criar, conferir e apagar a pasta segura, gravar nela,
+  criar e apagar tarefa, rodar um script. Mais: rodar e esperar com as letras certas, lançar solto com sinal de vida,
+  ler tarefas, licenças e marcas sem licença, o segredo cifrado pelo Windows, a janela dona trazida para a frente.
+  Toda resposta é "deu certo", "disse Não" ou "falhou" com o motivo em português; "deu certo" só depois de conferir
+  (lendo de volta), e o desfecho do trabalho com licença vem do relatório, nunca só do código de saída.
+- **`main.py`: a entrada do trabalho de administrador**, antes de tudo (antes do brasão e dos outros modos). O texto do
+  argumento fica escrito no `main.py`, como os outros modos, porque importar a peça em toda abertura atrasava o brasão
+  em ~100 ms (medido); um teste cobra que é o mesmo texto da peça.
+- **`janela_de_prova.py` (novo): a janela de prova da sessão A** (as seis provas do plano), que só usa a peça.
+- **Testes:** `tests/test_windows_peca.py` (31) e `tests/test_windows_janela_de_prova.py` (3).
+- Nenhum chamador do programa mudou; nenhum item saiu da lista de exceções do porteiro; nenhum teste antigo mudou.
+- **Não mexi** em `empacotar.py` nem no nome do arquivo do programa (vira pergunta, abaixo).
 
 ## Arquivos criados ou alterados
 
-(a preencher)
+- `core/windows.py` (novo)
+- `main.py`
+- `janela_de_prova.py` (novo)
+- `tests/test_windows_peca.py` (novo)
+- `tests/test_windows_janela_de_prova.py` (novo)
+- `relatorios/passo1-peca-unica-windows/` (este formulário, o print e os anexos)
 
 ## Como cumpri cada uma
 
-(a preencher)
+- D-782: quem pede é o próprio programa (`pedir_licenca()` abre `programa_deste_processo()` com o aviso); o
+  `main.py` atende sem janela nem brasão (`tests/test_windows_peca.py::test_o_trabalho_de_administrador_nao_abre_janela_nem_brasao`,
+  `tests/test_windows_peca.py::test_o_main_atende_o_argumento_da_peca_antes_de_tudo`). **O nome "Editor de
+  Impressão" na pergunta, pela leitura, não sai com o arquivo de hoje:** pergunta abaixo. A janelinha de antes da
+  pergunta é do passo 3.
+- D-767 e D-785: nenhum teste pede licença, cria tarefa ou mexe em Arquivos de Programas; isso fica na janela de prova,
+  à vista (`tests/test_windows_peca.py::test_pedir_licenca_errado_para_antes_da_pergunta` garante que o pedido errado
+  nem chega à pergunta). Ensaio da janela sem nenhuma pergunta: `prints/janela-de-prova-ensaio-sem-pergunta.png`.
+- D-775 e D-798: entregue à gerente sem rótulo; a prova à vista vem depois de quem tenta quebrar.
+- D-733: a tarefa que roda como o sistema e que a conta comum manda rodar (`xml_da_tarefa_do_sistema()`, com o
+  descritor do ajudante lido de `atualizacao.QUEM_PODE_MANDAR_RODAR`); a prova é a pergunta 1 da sessão A.
+- D-724: a leitura do nome na pergunta depende disto (sem certificado pago): ver "O que li".
+- D-780: as leituras básicas sem licença (`ler_tarefa()`, `ler_licencas()`, `marca_existe()`); as duas trancas são do
+  passo 4 (ressalva).
+- D-722: a pergunta 3 da janela apaga a tarefa e a pasta de prova e a janela lê de novo que não existem.
+- D-786: não mexe no processamento das páginas; mediu-se só o atraso do brasão (evitado).
+- D-787: no PC, um arquivo de teste por vez; o conjunto inteiro no GitHub (rodada em "Testes").
+- D-791, D-801 e D-802: porteiro passando (`tests/test_conferencias_codigo.py` e os outros, aqui e no GitHub); a lista
+  de exceções não mudou.
+- D-796: nada em `ui/`; só os arquivos do pedido.
+- D-797: tudo no meu ramo; quem junta é a gerente.
+- D-799: só o passo 1.
+- D-605: nenhum teste antigo mudou; os que leem o `main.py` passam (`tests/test_decisoes_brasao.py`,
+  `tests/test_decisoes_atualizacao.py`, `tests/test_botoes_em_portugues.py`).
+- D-637: "Como fica para quem usa e no livro" acima: nada muda para o Kaique nem no PDF neste passo.
 
 ## Testes
 
-(a preencher)
+- **No PC, um arquivo por vez** (19/11): `tests/test_windows_peca.py` 31 passaram;
+  `tests/test_windows_janela_de_prova.py` 3; `tests/test_conferencias_codigo.py` 77; `tests/test_conferencias_pacote.py`
+  20; `tests/test_conferencias_excecoes.py` 14; `tests/test_conferencias_protecao.py` 11;
+  `tests/test_conferencias_mudancas.py` 21; `tests/test_conferencias_formulario.py` 34;
+  `tests/test_conferencias_antes_do_commit.py` 12; `tests/test_conferencias_juiz.py` 9;
+  `tests/test_conferencias_copia_inteira.py` 2; `tests/test_decisoes_brasao.py` 22; `tests/test_decisoes_atualizacao.py`
+  38; `tests/test_botoes_em_portugues.py` 5. O repositório do PC continuou inteiro (`--is-shallow-repository` = false
+  antes e depois).
+- **No GitHub:** RODADA_AQUI
+- **Achado de verdade nos testes:** a pasta de dados dos testes fica no D:, onde "Todos" têm controle total; a peça
+  recusou a pasta de troca ali (certo). Os testes da peça usam uma pasta própria na pasta temporária da conta (no C:,
+  como o programa de verdade), criada e apagada pelo próprio teste.
 
 ## Caminho e função
 
-(a preencher)
+- O começo do programa com o argumento → `atender_trabalho_de_administrador()`.
+- A janela de prova, cada prova → `pedir_licenca()`, `lancar_powershell_solto()`, `rodar_e_esperar()`,
+  `rodar_tarefa()`, `ler_tarefa()`, `conferir_pasta_segura()`.
+- Rodar um script (no trabalho com licença, ao ler uma tarefa, solto, na tarefa de prova) → `comando_do_powershell()`
+  (o mesmo comando) e `_gravar_script()` (a mesma marca de UTF-8).
+- A regra "a pasta de troca é só desta conta": o lado que pede e o lado com licença → `_problemas_da_pasta_de_troca()`.
+- A regra "o passo é aceito": o lado que pede e o lado com licença → `_problemas_do_passo()`.
+- O desfecho de todo pedido → `_desfecho_do_trabalho()` (pelo relatório).
+- O XML da tarefa, o que a peça escreve e o que o Windows devolve → `ler_xml_da_tarefa()`.
+- Provas de que os caminhos dão o mesmo resultado: `tests/test_windows_peca.py::test_o_xml_da_tarefa_ida_e_volta`,
+  `tests/test_windows_peca.py::test_o_leitor_de_tarefa_le_o_que_o_windows_devolve`,
+  `tests/test_windows_peca.py::test_a_regra_da_pasta_de_troca_recusa_outra_conta`,
+  `tests/test_windows_peca.py::test_o_aviso_so_aceita_a_lista_fechada`,
+  `tests/test_windows_peca.py::test_o_trabalho_com_licenca_faz_so_o_aviso`.
+- **Ainda com conta própria (passos 3 a 5, como o plano manda; estão na lista de exceções):** `atualizacao.py`
+  (inclusive `xml_da_tarefa()`, com o mesmo desenho de `xml_da_tarefa_do_sistema()` até o passo 3),
+  `core/_testes_a_distancia_windows.py`, `core/testes_a_distancia.py`.
 
 ## Máquina ou olho
 
-(a preencher)
+- Máquina: tudo o que está em "Testes" (leituras de verdade do Windows, sem mudar nada, e a lógica em volta).
+- À vista (não feito; é da sessão A com o Samuel): a pergunta do Windows ("Sim", "Não", com o navegador na frente),
+  criar e apagar a pasta segura e a tarefa de prova, a tarefa rodando como o sistema, a conta comum sem gravar.
+- Olho: o nome que a pergunta mostra (foto do celular, se ele quiser).
 
 ## Ressalvas
 
-(a preencher)
+- **Nada do que pede licença rodou.** Pedir a licença, a pasta segura em Arquivos de Programas, criar e apagar tarefa
+  e o lado com licença fazendo os passos só foram testados até a porta: aqui (sem licença) ele recusa; no GitHub (o
+  Windows da nuvem roda como administrador, sem pergunta) ele roda um script. Só a sessão A prova o resto.
+- **O nome na pergunta:** pela leitura, aparece "EditorImpressao.exe", não "Editor de Impressão". Pergunta abaixo.
+- **Pergunta 3 (navegador na frente), pela documentação:** a pergunta deve vir piscando na barra de tarefas, não no
+  meio da tela. A peça tenta trazer a janela para a frente e diz se conseguiu (`janela_na_frente`), sem truque. Se a
+  sessão A confirmar, o plano para (risco 1); a pergunta pronta está abaixo.
+- **O programa montado para a sessão A** tem de sair deste commit (a entrada nova no `main.py`). O empacotador leva a
+  peça (o `main.py` a importa) e não leva a janela de prova; não montei o pacote.
+- **Dono da pasta segura:** se o Windows estiver configurado para dar o dono ao administrador (e não ao grupo
+  Administradores), a pasta segura não confere e é apagada de novo (falha dita, nada pela metade). Na configuração de
+  fábrica o dono é o grupo. Não testado.
+- **Política de scripts** (empresa) ou antivírus que barre o PowerShell: o script falha e a resposta diz "falhou".
+- **Lançar solto num grupo de processos que fecha os filhos:** a peça lê o grupo e recusa. No PC (dentro da conversa
+  do Claude) o grupo solta sozinho; aberto pelo atalho não há grupo. Os outros casos não foram vistos.
+- **Os testes da peça** criam e apagam uma pasta própria na pasta temporária da conta (fora do projeto), como o pytest
+  faz; só a que o próprio teste criou.
+- **Lido × deduzido:** o que tem endereço em "O que li" foi lido; o nome na pergunta e a pergunta 3 são dedução, a
+  provar.
+- **Para o passo 4:** as leituras do serviço de entrar de longe, da conta e das duas trancas (a peça já dá o rodar e
+  esperar e o ler; a leitura específica é da peça 3).
 
 ## Ideias e bugs
 
-(a preencher)
+- **Bug para a Lista de bugs (19/11):** o disco D: do PC do Samuel dá controle total a "Todos" (visto em
+  `saida_teste` deste ramo). Já era conhecido (plano v1, item 59); fica anotado que é por isso que a pasta de troca
+  não pode ficar no D:. Não impede o passo.
+- **Ideia para a Lista de espera:** a janelinha de antes da pergunta (passo 3) ter um botão "Continuar", para o
+  programa ganhar a frente com o clique dele (resolveria o caso do navegador na frente). Está como pergunta abaixo.
 
 ## Perguntas para o Samuel
 
-(a preencher)
+**Pergunta 1. O nome que aparece na pergunta do Windows.** É a pergunta "Deseja permitir que este aplicativo faça
+alterações?", que vai aparecer uma vez, na primeira vez que o Kaique abre o programa. Você escolheu, em 18/11, que nela
+apareça "Editor de Impressão" em vez de "Windows PowerShell". A troca de quem pede já está feita: agora é o próprio
+programa. Mas a Microsoft escreve que, num programa sem o certificado pago, a pergunta mostra o **nome do arquivo** do
+programa, e o arquivo hoje se chama "EditorImpressao.exe" (tudo junto, sem acento).
+- Foto da Microsoft de um programa sem certificado (faixa amarela; o nome fica logo abaixo da faixa, borrado por
+  eles): `anexos/pergunta-do-windows-sem-certificado-foto-da-microsoft.png`. Com certificado (faixa cinza, nome
+  bonito): `anexos/pergunta-do-windows-com-certificado-foto-da-microsoft.png`.
+- Situação: é escolha, não defeito. O Kaique ainda não vê esta pergunta; a prova na sua tela mostra como fica.
+- **O que você escolhe:**
+  - A (sugestão): fica "EditorImpressao.exe". Nada mais muda.
+  - B: o arquivo passa a se chamar "Editor de Impressão.exe", e a pergunta mostra esse nome. Muda o nome do programa
+    instalado (o atalho continua igual); nome com acento e espaço pede testar de novo a instalação e a atualização.
+  - C: comprar o certificado: aparece "Editor de Impressão" e a faixa fica cinza. Custa todo ano.
+  - Só comentário.
+- Sugestão à gerente: levar depois da sessão A, com a foto de verdade (decisão de 18/11, D-782).
+
+**Pergunta 2 (preparada; levar só se a sessão A confirmar). Quando o Kaique está em outra janela.** Na primeira vez
+que ele abre o programa, se clicar no navegador enquanto o programa carrega, o Windows não põe a pergunta no meio da
+tela: o escudo fica piscando na barra de tarefas (regra do Windows, para não roubar a tela de quem faz outra coisa).
+Situação: a confirmar na sua tela.
+- **O que você escolhe:**
+  - A (sugestão): a janelinha que avisa antes da pergunta ganha um botão "Continuar"; quando ele clica, o programa
+    fica na frente e a pergunta vem no meio da tela.
+  - B: a janelinha diz também "Se a pergunta não aparecer, clique no escudo que pisca na barra de tarefas".
+  - C: fica como está.
+  - Só comentário.
 
 ## Commit
 
-(a preencher)
+COMMIT_AQUI
 
 ## O que o agente que tentou quebrar achou
 
@@ -277,12 +401,17 @@ Lido (documentação ou código), separado do deduzido:
 
 ## A prova de verdade
 
-(a preencher na prova à vista)
+(a preencher na sessão A, à vista)
 
 ## Perguntas do Windows que o Samuel vê
 
-(a preencher)
+- Nesta entrega: 0 (nada pediu licença).
+- Na sessão A: 3 (pergunta 1 "Sim", pergunta 2 "Não", pergunta 3 "Sim" com o navegador na frente), como o plano
+  diz. Antes, a gerente monta o programa deste commit no C: (0 perguntas).
 
 ## O print que prova
 
-(a preencher)
+- `prints/janela-de-prova-ensaio-sem-pergunta.png`: a janela de prova desenhada fora da tela, depois das provas sem
+  pergunta (1: o script solto rodou depois de quem o lançou fechar; 5: "não achei o programa", sem caixa do Windows;
+  6: a resposta do Windows com acento certo, aqui "não pode encontrar", porque a tarefa de prova ainda não existe).
+  Nenhuma tela do programa do Kaique mudou. O print das perguntas 1 a 3 é da sessão A.
