@@ -1,0 +1,195 @@
+<!doctype html>
+<html lang="pt-BR">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Passo 0: quinta conferência de quem tentou quebrar</title>
+<style>
+:root { color-scheme: light dark; }
+* { box-sizing: border-box; }
+body {
+  font: 17px/1.65 "Segoe UI", system-ui, sans-serif;
+  max-width: 46rem; margin: 0 auto; padding: 2.5rem 1.5rem 6rem;
+  color: #1c1c1e; background: #fdfdfc;
+}
+h1 { font-size: 2rem; line-height: 1.2; margin: 0 0 .3em; letter-spacing: -.02em; }
+h2 { font-size: 1.35rem; margin: 2.4em 0 .6em; padding-top: .8em;
+     border-top: 1px solid #e6e4e0; letter-spacing: -.01em; }
+h3 { font-size: 1.1rem; margin: 1.8em 0 .4em; }
+h1 + p, h2 + p { margin-top: .4em; }
+p, li { margin: 0 0 .9em; }
+ul, ol { padding-left: 1.3em; }
+strong { font-weight: 640; }
+code {
+  font: .88em ui-monospace, "Cascadia Code", Consolas, monospace;
+  background: #f1efec; padding: .12em .35em; border-radius: 4px;
+}
+pre {
+  background: #f1efec; padding: 1em 1.1em; border-radius: 8px;
+  overflow-x: auto; line-height: 1.5;
+}
+pre code { background: none; padding: 0; }
+blockquote {
+  margin: 1.2em 0; padding: .1em 0 .1em 1.1em;
+  border-left: 3px solid #c9c5be; color: #55524d;
+}
+table {
+  border-collapse: collapse; width: 100%; margin: 1.2em 0;
+  font-size: .95rem; display: block; overflow-x: auto;
+}
+th, td { padding: .5em .8em; text-align: left; border-bottom: 1px solid #e6e4e0; }
+th { font-weight: 620; background: #f7f5f2; white-space: nowrap; }
+tr:last-child td { border-bottom: none; }
+img { max-width: 100%; height: auto; border-radius: 6px; margin: 1em 0;
+      border: 1px solid #e6e4e0; }
+hr { border: none; border-top: 1px solid #e6e4e0; margin: 2.5em 0; }
+.rodape { margin-top: 4em; padding-top: 1.2em; border-top: 1px solid #e6e4e0;
+          font-size: .85rem; color: #86827c; }
+@media (prefers-color-scheme: dark) {
+  body { color: #e8e6e3; background: #1a1917; }
+  h2 { border-top-color: #35332f; }
+  code, pre, th { background: #262421; }
+  th, td { border-bottom-color: #35332f; }
+  blockquote { border-left-color: #4a4741; color: #b0aca6; }
+  img { border-color: #35332f; }
+  .rodape { border-top-color: #35332f; color: #7d7973; }
+}
+@media print {
+  body { max-width: none; padding: 0; color: #000; background: #fff; }
+  h2 { page-break-after: avoid; }
+  table, img { page-break-inside: avoid; }
+}
+</style>
+</head>
+<body>
+<h1>Passo 0 do plano da parte do Windows: quinta conferência de quem tentou quebrar (19/11/2026)</h1>
+<p>Esta é a quinta volta do mesmo verificador, que não escreveu o passo 0. Conferi os consertos de Q1 a Q7 e tentei
+quebrar de novo pelo mesmo caminho e por caminhos vizinhos. Não mexi no código entregue. As provas rodaram numa cópia
+e numa pasta de juiz temporárias, fora do projeto.</p>
+<h2>Pedido</h2>
+<ul>
+<li>Papel: quebrador</li>
+<li>Commit de partida: 47fb68fa</li>
+<li>Ramo: passo0-porteiro-2026-11-19</li>
+</ul>
+<h2>Arquivos que vou mexer</h2>
+<ul>
+<li><code>relatorios/passo0-2026-11-19/quem-quebrou/</code></li>
+</ul>
+<h2>Veredito</h2>
+<p><strong>NÃO ESTÁ PRONTO, mas falta pouco.</strong> Q1 a Q7 estão fechados de verdade, e não resta nada grave.</p>
+<p>Sobram três consertos pequenos. Os três são o mesmo tipo de furo do Q2: código que o Python carrega e o porteiro não
+lê.</p>
+<ul>
+<li><strong>S1, médio:</strong> a pasta <code>historico/</code> está na lista das que não são programa. Mas o programa importa <code>historico</code>, o
+  arquivo <code>historico.py</code> da raiz. Um <code>historico/__init__.py</code> toma o lugar dele no import, e o porteiro não o lê.</li>
+<li><strong>S2, médio-baixo:</strong> no Windows, o Python importa <code>.pyw</code> como código-fonte, e o porteiro só lê <code>.py</code>.</li>
+<li><strong>S3, baixo:</strong> uma extensão compilada (<code>.pyd</code>) passa. O <code>.pyc</code> agora é acusado.</li>
+</ul>
+<p>O formulário ficar "não conferido" até a gerente ligar a lista é o combinado e não conta como achado.</p>
+<h2>O que li</h2>
+<ul>
+<li>O <code>relatorios/passo0-2026-11-19/ONDE-PAREI.md</code> na ponta <code>47fb68fa</code> ("Como ficou cada achado da quarta volta") e o
+  anexo <code>anexos/funcoes-que-nao-se-mexem.md</code>.</li>
+<li>O código mudado de <code>b66e6be9</code> a <code>a664329e</code>:</li>
+<li><code>conversa_com_o_github.py</code> (<code>marca_do_juiz</code>, <code>marca_do_porteiro</code>);</li>
+<li><code>porteiro.py</code> (<code>NAO_E_PROGRAMA</code>, <code>e_programa</code>, o código compilado);</li>
+<li><code>juiz.py</code> (<code>tirados_sem_conserto</code>);</li>
+<li><code>montar_pacote.py</code> (<code>--passo</code>);</li>
+<li><code>texto_para_o_samuel.py</code> e os testes.</li>
+<li>O texto <code>lista-de-excecoes-para-o-samuel.md</code>.</li>
+</ul>
+<h2>O que conferi nas falhas, nas peças de fora e nos caminhos</h2>
+<ul>
+<li><strong>Recontagem:</strong> igual à volta passada. São 176 lugares: 107 no plano, 13 depois da entrega e 56 a perguntar. O
+  porteiro de hoje acha os mesmos 176.</li>
+<li><strong>Q1, fechado.</strong> Repeti o registro de mentira, agora no formato do GitHub e com a marca como linha inteira: a suíte
+  escreve "PORTEIRO: CONFERIDO", e o juiz "NAO CONFERIDO". <code>ler_rodada</code> devolveu o do juiz.</li>
+<li>Pelo vizinho: um texto do agente só aparece no registro do juiz quando ele barra. Por exemplo, o texto de um item
+    novo da lista com uma quebra de linha e uma marca falsa dentro. Nesse caso, a rodada já falha, e a K21 recusa por
+    "não passou". Não serve como ataque.</li>
+<li><strong>Q2, fechado no caminho provado.</strong> <code>servicos/__init__.py</code> com <code>schtasks</code> agora dá "BARROU" no juiz com a lista
+  "valendo".</li>
+<li>Conferi as pastas de <code>NAO_E_PROGRAMA</code> uma a uma. Não há <code>.py</code> em <code>terceiros/</code>, <code>velhos/</code>, <code>historico/</code>,
+    <code>gabarito/</code> nem <code>ganchos/</code>. Em <code>docs/</code> e <code>memoria/</code> há só scripts de apoio, que o programa não importa.</li>
+<li><code>tests</code> é um pacote importado por três scripts da raiz que não vão para o Kaique (<code>gerar_prints.py</code>,
+    <code>teste_ampliar.py</code>, <code>teste_interface.py</code>).</li>
+<li><strong>Hoje, nenhuma dessas pastas esconde código do programa.</strong></li>
+<li>Mas <code>historico</code> é também o nome de um arquivo do programa (S1).</li>
+<li><strong>Q3, fechado.</strong> As funções que não se mexem nos passos 3 e 4 estão no anexo e saem do montador com <code>--passo</code>.</li>
+<li><strong>Q4, fechado.</strong> <code>.pyc</code> e <code>.pyo</code> dão K00. Pelo vizinho, <code>.pyd</code> passa (S3).</li>
+<li><strong>Q5:</strong> é o combinado, fora da conta.</li>
+<li><strong>Q6, fechado no mesmo caminho.</strong> Com a lista "proposta", tirar o item de <code>update_exe</code> sem consertar dá "BARROU",
+  "item tirado da lista sem conserto".</li>
+<li>Pelo vizinho: reescrevi a mesma linha (<code>return (pasta_do_programa().parent / "Update.exe")</code>) e tirei o item. O juiz
+    deu "NAO CONFERIDO", porque o lugar velho sumiu e o novo não é julgado antes do "sim".</li>
+<li>Isso não fica escondido: na primeira rodada depois de a gerente ligar a lista, essa linha aparece como erro novo e
+    barra. Não é defeito (ver "Falhas não pensadas").</li>
+<li><strong>Q7:</strong> a gerente aceitou. O texto diz por que a pergunta não tem print.</li>
+<li><strong>Os vizinhos novos, no juiz com a lista "valendo" como ficará depois do "sim":</strong></li>
+<li><code>historico/__init__.py</code> com <code>schtasks</code>: "CONFERIDO". Conferi que o Python carrega a pasta <code>historico/</code> no lugar do
+    <code>historico.py</code> quando os dois existem: a pasta ganha.</li>
+<li><code>core/segredo.pyw</code> com <code>schtasks</code>: "CONFERIDO". <code>importlib.machinery.SOURCE_SUFFIXES</code> no Python 3.14 do Windows é
+    <code>['.py', '.pyw']</code>, e testei: <code>import segredo</code> carrega o <code>.pyw</code>.</li>
+<li><code>core/x.pyd</code>: "CONFERIDO".</li>
+</ul>
+<h2>Caminhos que o outro não listou</h2>
+<ul>
+<li>Um pacote numa pasta de <code>NAO_E_PROGRAMA</code> com o mesmo nome de um arquivo do programa. Hoje, o caso é o <code>historico</code>,
+  importado por <code>projetos.py:42</code>, <code>configuracoes.py:93</code> e <code>registro.py:18</code> (S1).</li>
+<li>O código-fonte <code>.pyw</code> (S2).</li>
+<li>A extensão compilada <code>.pyd</code> (S3).</li>
+</ul>
+<h2>Falhas não pensadas e resultado não conferido</h2>
+<ul>
+<li>Antes do "sim", uma linha da lista reescrita, com o mesmo erro e o item tirado, passa como "consertada" (o vizinho do
+  Q6). <strong>Não é defeito, e por quê:</strong> a gerente liga a lista na versão de teste, e a rodada seguinte julga o código com
+  a lista ligada. O erro reescrito aparece como erro novo e barra. Nada fica escondido depois de ligar. O efeito é só a
+  contagem que vai ao Samuel ficar menor que a real até lá.</li>
+<li>Nenhum resultado não conferido novo.</li>
+</ul>
+<h2>As regras que conferi</h2>
+<ul>
+<li><strong>CLAUDE.md §11.12:</strong></li>
+<li>ponto 1, uma peça só: cumprida;</li>
+<li>ponto 2, nada dado como feito sem conferir: cumprida (Q1 fechado);</li>
+<li>ponto 3, a lista do que pode falhar: faltam S1 a S3;</li>
+<li>ponto 4, peça de mentira: cumprida.</li>
+<li><strong>CLAUDE.md §11.13:</strong> o texto para o Samuel continua cumprindo, e a falta de print está explicada e aceita.</li>
+<li><strong>Decisões tocadas:</strong></li>
+<li>D-791: cumprida no essencial, com S1 a S3;</li>
+<li>D-800, D-796, D-798, D-792, D-784, D-605 e D-797: cumpridas.</li>
+</ul>
+<h2>Achados</h2>
+<p>Os números começam com "S" (quinta volta). Fechados de verdade: Q1, Q2 (no caminho provado), Q3, Q4 (<code>.pyc</code> e
+<code>.pyo</code>) e Q6 (no caminho provado). O Q5 é o combinado, e o Q7 foi aceito pela gerente.</p>
+<ol>
+<li><strong>S1, médio: a pasta <code>historico/</code> está fora da vista do porteiro, mas o programa importa <code>historico</code></strong>
+   (<code>regras_dos_agentes/porteiro.py:126</code>).
+   - Um <code>historico/__init__.py</code> toma o lugar do <code>historico.py</code> da raiz no import de <code>projetos.py:42</code>,
+     <code>configuracoes.py:93</code> e <code>registro.py:18</code>.
+   - Provado: com a lista "valendo", o juiz deu "CONFERIDO" com um <code>schtasks</code> ali dentro.
+   - Destino: consertar. Uma pasta de <code>NAO_E_PROGRAMA</code> não pode ter o nome de um módulo da raiz (<code>historico.py</code>), ou o
+     porteiro lê os <code>.py</code> dela quando ela tiver esse nome. Um teste cobra que nenhuma pasta da lista tenha nome de
+     arquivo <code>.py</code> da raiz.</li>
+<li><strong>S2, médio-baixo: o <code>.pyw</code> é código-fonte que o Python importa no Windows, e o porteiro só lê <code>.py</code></strong>
+   (<code>regras_dos_agentes/porteiro.py:138</code>, <code>e_programa</code>).
+   - Provado: <code>core/segredo.pyw</code> com <code>schtasks</code> deu "CONFERIDO", com a lista "valendo".
+   - Destino: consertar. <code>e_programa</code>, e as outras conferências que olham <code>.py</code>, leem também <code>.pyw</code>. Hoje não há
+     nenhum <code>.pyw</code> no git, então a lista não muda.</li>
+<li><strong>S3, baixo: uma extensão compilada (<code>.pyd</code>) passa, como o <code>.pyc</code> passava antes do Q4</strong>
+   (<code>regras_dos_agentes/porteiro.py:707</code>).
+   - Provado: <code>core/x.pyd</code> deu "CONFERIDO".
+   - Destino: consertar. Acrescentar <code>.pyd</code> ao código compilado acusado (K00). Hoje não há nenhum <code>.pyd</code> no git. As
+     DLLs do ScanTailor (<code>core/nativo</code>, <code>.dll</code>) não são importadas pelo Python como módulo, então não entram.</li>
+</ol>
+<h2>Para a gerente: o que ficou fora do projeto</h2>
+<ul>
+<li>Na cópia temporária (<code>C:\Users\fotog\AppData\Local\Temp\claude\b9ca076ad002e817\848d7b72-406b-4bfe-aabf-f5b3005d7b22\scratchpad\quebrar\copia</code>)
+  ficou mais o ramo de prova <code>prova5</code>.</li>
+<li>Ficaram também as pastas <code>...\quebrar\juiz5</code>, <code>...\quebrar\imp</code> e <code>...\quebrar\imp2</code> (as provas do import).</li>
+<li>Nada foi apagado.</li>
+</ul>
+<p class="rodape">Editor de Impressão &middot; gerado em 19/11/2026 às 04:17</p>
+</body>
+</html>
