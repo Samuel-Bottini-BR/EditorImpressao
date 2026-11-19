@@ -17,7 +17,9 @@ GitHub. **Não vê se a resposta é boa nem verdadeira**: isso é de quem tenta 
 Junto, em toda etapa, roda o porteiro das mudanças (`porteiro_mudancas.py`: K09 a K15, K17, K18).
 
 Quem tenta quebrar (papel "quebrador") preenche, no lugar do formulário, os seis campos do relatório dele
-(`CAMPOS_DE_QUEM_QUEBRA`); o mesmo programa confere.
+(`CAMPOS_DE_QUEM_QUEBRA`); o mesmo programa confere. O relatório dele vai para o ramo de quem construiu, numa subpasta
+da pasta do trabalho (`relatorios/<trabalho>/quem-quebrou/`), e o F19 cita esse arquivo: assim o formulário de quem
+construiu acha o relatório, e ele não conta como arquivo mexido pelo trabalho.
 
 Resultado: `problemas` (devolve ao agente), `avisos` (não barram; vão para quem quebra) e `pendentes` (o que não deu
 para conferir, ex.: o GitHub sem resposta). Com pendente, o código de saída é 3 ("não conferiu"), nunca 0.
@@ -128,7 +130,7 @@ def vazio(corpo: str | None) -> bool:
     linhas = [l.strip() for l in corpo.splitlines() if l.strip()]
     if not linhas:
         return True
-    if all(ENCHIMENTO.match(l.lstrip("-* ")) for l in linhas):
+    if all(not l.lstrip("-* ") or ENCHIMENTO.match(l.lstrip("-* ")) for l in linhas):
         return True
     junto = " ".join(linhas)
     if re.match(r"^\s*-?\s*n[ãa]o se aplica\b", junto, re.I) and not NAO_SE_APLICA.search(junto.lstrip("-* ")):
@@ -409,7 +411,7 @@ def _conferir_f19(campos: dict[str, str], pasta: Path, raiz: Path, r: Resultado)
     relatorios = [c for c in re.findall(r"`([^`\s]+\.md)`", f19) if _arquivo_citado_existe(c, pasta, raiz)]
     if not relatorios:
         r.problemas.append("\"O que o agente que tentou quebrar achou\" não cita o relatório dele (um .md que "
-                           "exista) (F19)")
+                           "exista, em relatorios/<trabalho>/quem-quebrou/) (F19)")
     for c in relatorios:
         arquivo = pasta / c if (pasta / c).exists() else raiz / c
         texto = arquivo.read_text(encoding="utf-8")

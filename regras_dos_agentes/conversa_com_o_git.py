@@ -26,12 +26,13 @@ class GitFalhou(RuntimeError):
     """O git não respondeu do jeito esperado. A mensagem diz, em português, o que foi pedido e o que ele disse."""
 
 
-def _rodar(raiz: Path | str, *args: str, entrada: str | None = None, aceitar: tuple[int, ...] = (0,)) -> subprocess.CompletedProcess:
+def _rodar(raiz: Path | str, *args: str, entrada: str | None = None, aceitar: tuple[int, ...] = (0,),
+           ambiente_extra: dict[str, str] | None = None) -> subprocess.CompletedProcess:
     """Roda `git <args>` na pasta `raiz` e devolve o resultado; código fora de `aceitar` vira `GitFalhou`.
 
     `GIT_OPTIONAL_LOCKS=0` evita que uma leitura (ex.: `git status`) grave no índice enquanto o gancho do commit roda.
     """
-    ambiente = dict(os.environ, GIT_OPTIONAL_LOCKS="0", LC_ALL="C")
+    ambiente = dict(os.environ, GIT_OPTIONAL_LOCKS="0", LC_ALL="C", **(ambiente_extra or {}))
     try:
         r = subprocess.run(["git", "-c", "core.quotepath=false", *args], cwd=str(raiz), input=entrada,
                            capture_output=True, text=True, encoding="utf-8", errors="replace", env=ambiente)
@@ -179,3 +180,42 @@ def repositorio_no_github(raiz: Path | str) -> str:
     if not m:
         raise GitFalhou(f"o origin não é um repositório do GitHub: {url}")
     return m.group(1)
+
+
+# ----------------------------------------------------------------------------------------------------------------
+# Escrever num repositório (só para os repositórios de prova: `repositorio_de_prova.py`). O pacote nunca escreve no
+# repositório do projeto: quem faz commit e push ali é o agente, com o git dele.
+# ----------------------------------------------------------------------------------------------------------------
+
+_QUEM_FAZ_O_COMMIT_DE_PROVA = {"GIT_AUTHOR_NAME": "prova do porteiro", "GIT_AUTHOR_EMAIL": "prova@porteiro.invalid",
+                               "GIT_COMMITTER_NAME": "prova do porteiro",
+                               "GIT_COMMITTER_EMAIL": "prova@porteiro.invalid"}
+
+
+def _rodar_para_escrever(raiz: Path | str, *args: str, aceitar: tuple[int, ...] = (0,)) -> subprocess.CompletedProcess:
+    """Como `_rodar`, com um nome de autor de prova (o repositório de prova não tem o nome do Samuel configurado)."""
+    return _rodar(raiz, *args, aceitar=aceitar, ambiente_extra=_QUEM_FAZ_O_COMMIT_DE_PROVA)
+
+
+def criar_repositorio(pasta: Path | str, sem_pasta_de_trabalho: bool = False) -> None:
+    """`git init` (com o ramo "principal"); `sem_pasta_de_trabalho` cria um repositório só de guardar (o "GitHub")."""
+    Path(pasta).mkdir(parents=True, exist_ok=True)
+    _rodar(pasta, "init", "-q", "-b", "principal", *(["--bare"] if sem_pasta_de_trabalho else []))
+
+
+def configurar(raiz: Path | str, chave: str, valor: str) -> None:
+    """`git config <chave> <valor>` só neste repositório."""
+    _rodar(raiz, "config", chave, valor)
+
+
+def commit_de_tudo(raiz: Path | str, mensagem: str) -> subprocess.CompletedProcess:
+    """`git add -A` e `git commit`; devolve o resultado inteiro (código, saída) sem levantar: o gancho pode barrar."""
+    _rodar(raiz, "add", "-A")
+    return _rodar_para_escrever(raiz, "commit", "-q", "-m", mensagem, aceitar=tuple(range(256)))
+
+
+def enviar(raiz: Path | str, remoto: Path | str) -> None:
+    """Liga o repositório a um "origin" (uma pasta) e envia o ramo atual, acompanhando-o."""
+    if _rodar(raiz, "remote", aceitar=(0,)).stdout.strip() == "":
+        _rodar(raiz, "remote", "add", "origin", str(remoto))
+    _rodar_para_escrever(raiz, "push", "-q", "-u", "origin", "HEAD")
