@@ -175,7 +175,8 @@ def etiquetas_do_trabalho(arquivos: list[str], raiz: Path | str) -> tuple[set, l
     """As etiquetas de um trabalho (a lista de arquivos do pedido) e os avisos de arquivo fora da tabela.
 
     Arquivo novo vem com "novo:" na frente (não há conteúdo para ler ainda). Uma pasta (termina em "/") vale por todos
-    os arquivos que o git conhece nela; pasta nova vale pelo próprio nome. O lugar único dessa conta: o montador do
+    os arquivos que o git conhece nela; pasta nova vale pelo próprio nome. A pasta de relatório do próprio trabalho
+    (`relatorios/<trabalho>/`) não dá etiqueta: todo trabalho tem uma. O lugar único dessa conta: o montador do
     pacote e o formulário da entrega chamam esta função.
     """
     raiz = Path(raiz)
@@ -185,6 +186,8 @@ def etiquetas_do_trabalho(arquivos: list[str], raiz: Path | str) -> tuple[set, l
     for a in arquivos:
         novo = a.startswith("novo:")
         caminho = a.removeprefix("novo:").replace("\\", "/")
+        if caminho.endswith("/") and caminho.startswith("relatorios/"):
+            continue      # a pasta do relatório do próprio trabalho não conta (todo trabalho tem uma; proposta §3)
         alvos = [caminho]
         if caminho.endswith("/"):
             if conhecidos is None:

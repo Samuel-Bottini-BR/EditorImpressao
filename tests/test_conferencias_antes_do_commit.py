@@ -121,3 +121,17 @@ def test_com_a_lista_ainda_proposta_o_gancho_nao_barra_e_diz_isso(repo):
     feito = repo.tentar_commit("erro com a lista proposta")
     assert feito.returncode == 0
     assert "proposta" in feito.stdout + feito.stderr and "K02" in feito.stdout + feito.stderr
+
+
+def test_o_gancho_e_o_github_acham_o_mesmo_no_mesmo_arquivo(repo):
+    """Caminho → função: o GitHub (o repositório inteiro, da pasta) e o gancho (o índice) chamam a mesma conferência
+    (`porteiro.conferir_codigo`) e acham os mesmos lugares no mesmo arquivo."""
+    from regras_dos_agentes import porteiro
+
+    repo.escrever("core/novo.py", DEFEITO_1)
+    subprocess.run(["git", "add", "core/novo.py"], cwd=repo.raiz, check=True)
+    _, do_commit = porteiro.achados_do_proximo_commit(repo.raiz)
+    _, do_repositorio = porteiro.achados_do_repositorio(repo.raiz)
+    chave = lambda a: (a.conferencia, a.arquivo, a.linha, a.texto)  # noqa: E731
+    assert sorted(map(chave, do_commit)) == sorted(chave(a) for a in do_repositorio if a.arquivo == "core/novo.py")
+    assert {a.conferencia for a in do_commit} == {"K01", "K02"}

@@ -50,6 +50,7 @@ def texto(lista: Lista) -> str:
         "diminui: cada conserto tira o seu lugar.",
         "",
         f"**Quando cada grupo some ({_lugares(no_plano)} no plano da parte do Windows):**",
+        "",
     ]
     for passo, nome in GRUPOS:
         if por_passo.get(passo):

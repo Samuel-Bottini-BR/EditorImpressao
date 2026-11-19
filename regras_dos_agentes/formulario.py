@@ -435,7 +435,7 @@ def _conferir_f19(campos: dict[str, str], pasta: Path, raiz: Path, r: Resultado)
 def _conferir_f20(campos: dict[str, str], etapa: str, pasta: Path, raiz: Path, r: Resultado) -> None:
     """F20: a prova de verdade, com data, hora e o print ou o registro da janela de prova."""
     f20 = campos.get("F20")
-    if f20 is None:
+    if f20 is None or nao_se_aplica(f20):
         return
     if re.search(r"falta a sess[ãa]o", f20, re.I):
         r.problemas.append("a prova de verdade ainda falta (\"falta a sessão\"): não pode ser pronto (F20)")

@@ -1,0 +1,79 @@
+<!doctype html>
+<html lang="pt-BR">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>A lista do que já está errado no código</title>
+<style>
+:root { color-scheme: light dark; }
+* { box-sizing: border-box; }
+body {
+  font: 17px/1.65 "Segoe UI", system-ui, sans-serif;
+  max-width: 46rem; margin: 0 auto; padding: 2.5rem 1.5rem 6rem;
+  color: #1c1c1e; background: #fdfdfc;
+}
+h1 { font-size: 2rem; line-height: 1.2; margin: 0 0 .3em; letter-spacing: -.02em; }
+h2 { font-size: 1.35rem; margin: 2.4em 0 .6em; padding-top: .8em;
+     border-top: 1px solid #e6e4e0; letter-spacing: -.01em; }
+h3 { font-size: 1.1rem; margin: 1.8em 0 .4em; }
+h1 + p, h2 + p { margin-top: .4em; }
+p, li { margin: 0 0 .9em; }
+ul, ol { padding-left: 1.3em; }
+strong { font-weight: 640; }
+code {
+  font: .88em ui-monospace, "Cascadia Code", Consolas, monospace;
+  background: #f1efec; padding: .12em .35em; border-radius: 4px;
+}
+pre {
+  background: #f1efec; padding: 1em 1.1em; border-radius: 8px;
+  overflow-x: auto; line-height: 1.5;
+}
+pre code { background: none; padding: 0; }
+blockquote {
+  margin: 1.2em 0; padding: .1em 0 .1em 1.1em;
+  border-left: 3px solid #c9c5be; color: #55524d;
+}
+table {
+  border-collapse: collapse; width: 100%; margin: 1.2em 0;
+  font-size: .95rem; display: block; overflow-x: auto;
+}
+th, td { padding: .5em .8em; text-align: left; border-bottom: 1px solid #e6e4e0; }
+th { font-weight: 620; background: #f7f5f2; white-space: nowrap; }
+tr:last-child td { border-bottom: none; }
+img { max-width: 100%; height: auto; border-radius: 6px; margin: 1em 0;
+      border: 1px solid #e6e4e0; }
+hr { border: none; border-top: 1px solid #e6e4e0; margin: 2.5em 0; }
+.rodape { margin-top: 4em; padding-top: 1.2em; border-top: 1px solid #e6e4e0;
+          font-size: .85rem; color: #86827c; }
+@media (prefers-color-scheme: dark) {
+  body { color: #e8e6e3; background: #1a1917; }
+  h2 { border-top-color: #35332f; }
+  code, pre, th { background: #262421; }
+  th, td { border-bottom-color: #35332f; }
+  blockquote { border-left-color: #4a4741; color: #b0aca6; }
+  img { border-color: #35332f; }
+  .rodape { border-top-color: #35332f; color: #7d7973; }
+}
+@media print {
+  body { max-width: none; padding: 0; color: #000; background: #fff; }
+  h2 { page-break-after: avoid; }
+  table, img { page-break-inside: avoid; }
+}
+</style>
+</head>
+<body>
+<h1>A lista do que já está errado no código (para você dizer sim)</h1>
+<p><strong>O que é:</strong> o porteiro é a conferência automática que barra um trabalho de agente quando o código tem um erro que já conhecemos (por exemplo, pedir licença ao Windows por fora da peça única, ou um número de decisão aparecendo na tela). Ele roda nos testes do GitHub, em toda entrega.</p>
+<p><strong>O que já está errado hoje:</strong> o porteiro leu o programa e achou 44 lugares com esses erros. Eles ficam numa lista de exceções: o porteiro deixa passar só esses e barra qualquer erro novo. A lista só diminui: cada conserto tira o seu lugar.</p>
+<p><strong>Quando cada grupo some (39 lugares no plano da parte do Windows):</strong></p>
+<ul>
+<li>1 lugar: quando a gente arrumar o publicar das versões.</li>
+<li>14 lugares: quando a gente arrumar a atualização sozinha.</li>
+<li>21 lugares: quando a gente arrumar os testes à distância.</li>
+<li>3 lugares: quando a gente arrumar o desinstalar.</li>
+</ul>
+<p><strong>Os 5 que ficam para depois da entrega ao Kaique, como você escolheu:</strong> a régua dos filtros, que pergunta ao Windows onde fica a Área de Trabalho (1 lugar); o teste de velocidade, que abre o PowerShell por conta própria (2 lugares); as dicas do Automático que mostram um número ao Kaique (2 lugares).</p>
+<p><strong>O que você escolhe:</strong> sim, a lista entra assim e o porteiro passa a barrar; ou não, e diga o que mudar. Sugestão: sim. Nada do programa muda com isso: é só a conferência dos trabalhos dos agentes.</p>
+<p class="rodape">Editor de Impressão &middot; gerado em 18/11/2026 às 23:13</p>
+</body>
+</html>
