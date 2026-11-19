@@ -27,8 +27,71 @@ partir da lista de arquivos do pedido da gerente (a gerente não tinha mandado u
   Terceira volta (`quem-quebrou/relatorio-3.md`, R1 a R7, furos de estrutura): consertada nesta volta, pela estrutura
   (ver "Como ficou cada achado da terceira volta").
 - **A lista: 176 lugares em 176 itens** (um item por lugar: arquivo, conferência, função e texto).
-- Falta a gerente aplicar no ramo dos testes a mudança do workflow que põe o juiz na rodada (texto exato abaixo e nos
-  anexos). Até lá, a K21 dá "não conferido" (código 3) em toda entrega, de propósito.
+- Quarta volta (`quem-quebrou/relatorio-4.md`, Q1 a Q7): consertada nesta volta (ver "Como ficou cada achado da
+  quarta volta").
+- O juiz já está no workflow (a gerente aplicou no `c41e4309`, no ramo dos testes). **Nada a mudar nele nesta volta:**
+  o nome do trabalho ("Porteiro (juiz da versao de teste)") é o que o formulário agora procura.
+- **O formulário dos próximos passos fica pendente até a gerente ligar a lista** (Q5): com a lista "proposta", a K21
+  dá "não conferido" (código 3) em toda entrega, de propósito.
+
+## Como ficou cada achado da quarta volta
+
+Quarta volta de quem quebrou (`quem-quebrou/relatorio-4.md`), com as escolhas da gerente. Commit `a664329e`.
+
+- **Q1: a marca do juiz só vale lida no trabalho dele.** Antes, o formulário (K21) lia a primeira marca
+  "PORTEIRO: ..." de qualquer trabalho da rodada; o código do agente, que roda na suíte, podia escrever
+  "PORTEIRO: CONFERIDO" antes do juiz. Agora: `conversa_com_o_github.marca_do_juiz` lê só o trabalho de nome
+  "Porteiro (juiz da versao de teste)" (o nome vem do workflow, no ramo dos testes, que o agente não controla; conferi
+  que é o mesmo nome no `c41e4309`), pela API de trabalhos da rodada; e a marca só conta quando a linha inteira é a
+  marca (depois do nome do trabalho, do passo e da hora que o GitHub põe na frente), valendo a última. Rodada sem esse
+  trabalho, ou com ele pulado: sem marca, e a K21 fica pendente (nunca "passou"). Provas:
+  `tests/test_conferencias_formulario.py::test_q1_a_marca_so_vale_lida_no_trabalho_do_juiz` (o registro falso de quem
+  quebrou: a suíte escreve "CONFERIDO", o juiz "NAO CONFERIDO"; vale o do juiz) e
+  `::test_a_marca_do_juiz_e_lida_no_registro_da_rodada` (no formato real do GitHub; `echo 'PORTEIRO: CONFERIDO'` no
+  meio da linha não conta). Conferido no registro real da rodada 44479180182 (a primeira com o juiz): devolve
+  "NAO CONFERIDO (a versão de teste obra-2026-10-26 ainda não tem o porteiro)". Mudei um teste meu desta tarefa
+  (`test_a_marca_do_juiz_e_lida_no_registro_da_rodada`): o exemplo "x PORTEIRO: ..." agora tem a frente que o GitHub
+  põe, porque marca no meio da linha deixou de valer de propósito. Não é teste antigo do projeto.
+- **Q2: todo `.py` conta como programa, menos uma lista curta de pastas.** A lista, num lugar só
+  (`porteiro.NAO_E_PROGRAMA`): `tests`, `relatorios`, `.github`, `.claude`, `docs`, `memoria`, `historico`,
+  `gabarito`, `regras_dos_agentes`, `ganchos`, `terceiros`, `velhos`. O porteiro (`e_programa`) e a K08 (nome com
+  acento) leem dela; ela é protegida ("igual": pôr uma pasta ali afrouxa o porteiro e o juiz acusa). Pasta nova
+  (ex.: `servicos/`) conta como programa. **A lista de exceções não muda com isso:** gerada de novo, continua com 176
+  lugares em 176 itens (só o commit lido mudou). Prova:
+  `tests/test_conferencias_codigo.py::test_q2_todo_py_fora_das_pastas_de_fora_e_programa` (o `servicos/__init__.py`
+  com `schtasks` de quem quebrou é acusado; o mesmo texto em `tests/` não).
+- **Q3: o pacote diz as funções de outros passos que não se mexem.** O montador ganhou `--passo`: com ele, o pacote
+  escreve, antes da lista dos lugares, "Não renomeie nem mova estas funções neste trabalho", com cada função dos
+  arquivos do pedido que guarda lugar de outro passo (o lugar é a função e o texto). É ressalva do pacote, não
+  conferência nova. O texto para a gerente pôr no plano dos passos 3 e 4 está em `anexos/funcoes-que-nao-se-mexem.md`,
+  tirado pelo mesmo montador:
+  - Passo 3 (`atualizacao.py`): não mexer em `ao_desinstalar` e `criar_as_tarefas` (lugares do passo 5).
+  - Passo 4 (`core/testes_a_distancia.py`): não mexer em `_comando_apagar_a_pasta_das_tarefas_se_vazia`,
+    `_comando_preparar_o_desfazer`, `_passos_das_nossas_tarefas`, `_passos_dos_testes_a_distancia` e
+    `xml_da_tarefa_do_desfazer` (lugares do passo 5).
+  - O pacote do passo 1 não muda: os arquivos dele não têm lugar nenhum na lista.
+  Prova: `tests/test_conferencias_pacote.py::test_q3_o_pacote_do_passo_diz_as_funcoes_de_outros_passos_que_nao_se_mexem`.
+- **Q4: código compilado (`.pyc`, `.pyo`) guardado no repositório é acusado** (K00, que nunca entra na lista): o
+  Python o importa e o porteiro não consegue lê-lo. Prova:
+  `tests/test_conferencias_codigo.py::test_q4_codigo_compilado_sem_fonte_no_repositorio_e_acusado`.
+- **Q6: antes do "sim", tirar item da lista sem consertar barra.** Com a lista ainda "proposta", o juiz não julgava o
+  código, e o ramo podia encolher a lista que vai ao "sim". Agora o juiz sempre roda o porteiro da versão de teste no
+  código do ramo e, com a lista proposta, acusa o item que o ramo tirou (ou diminuiu) enquanto o código ainda tem
+  aquele lugar (`juiz.tirados_sem_conserto`); tirar o item de um lugar consertado de verdade continua dando
+  "NAO CONFERIDO" (não barra). Prova: `tests/test_conferencias_juiz.py::test_q6_antes_do_sim_tirar_da_lista_sem_consertar_barra`.
+- **Q7: a pergunta dos 56 lugares fica sem print**, como a gerente aceitou. O texto para o Samuel diz isso nas
+  ressalvas: "esta pergunta não tem print. Esses pedaços são código que não aparece na tela: conversam com o Windows
+  por baixo, sem janela nem botão." Regravado nos três formatos (`lista-de-excecoes-para-o-samuel.md`, `.html`,
+  `.pdf`; o `.pdf` fica fora do git). No ONDE-PAREI, a pergunta continua mostrando o print do "Reiniciar agora", agora
+  com a legenda certa ("o mesmo tipo de erro num pedaço que aparece na tela; os 56 não aparecem"): o formulário (F17)
+  cobra um print em toda pergunta, e eu não afrouxei essa regra sozinho. Se a gerente preferir a pergunta sem print
+  nenhum, o F17 precisa aceitar "sem print" com o motivo escrito: é uma mudança de regra, e é dela.
+- **Q5: é o combinado.** **O formulário dos próximos passos fica pendente até a gerente ligar a lista:** enquanto a
+  lista da versão de teste for "proposta", o juiz escreve "PORTEIRO: NAO CONFERIDO (...)", e a K21 do formulário de
+  qualquer entrega dá "não conferido" (código 3), nunca "passou". Isso vale para o passo 1 em diante, até a gerente
+  ligar a lista na versão de teste (depois do "sim" do Samuel) e trocar `PORTEIRO_LIGADO` para "1".
+- **Teste de reversão:** os seis testes acima rodaram no código anterior (`regras_dos_agentes/` do commit `b66e6be9`,
+  com os testes novos) e os seis falharam; no código novo, passam.
 
 ## Como ficou cada achado da terceira volta
 
@@ -97,6 +160,11 @@ partir da lista de arquivos do pedido da gerente (a gerente não tinha mandado u
   de agente).
 
 ## A mudança do workflow (para a gerente aplicar no ramo dos testes; eu não mexi)
+
+Aplicada pela gerente no `c41e4309`. Na quarta volta não precisa mudar nada; só o passo 4 abaixo continua por fazer,
+na junção. Se um dia o nome do trabalho do juiz mudar no workflow, o `TRABALHO_DO_JUIZ` de
+`regras_dos_agentes/conversa_com_o_github.py` tem que mudar junto (senão a K21 fica pendente em toda entrega; nunca
+passa).
 
 No ramo `claude/list-server-files-gkos8v`:
 1. **Arquivo novo `.github/scripts/porteiro_juiz.sh`:** o conteúdo inteiro de
@@ -442,11 +510,13 @@ conferência antes do commit (não ligada) e o pacote do passo 1, montado pelo p
 ## Testes
 
 - No PC, um arquivo por vez (`QT_QPA_PLATFORM=offscreen`, pasta temporária fora do projeto):
-  `tests/test_conferencias_codigo.py` 71 passaram; `tests/test_conferencias_excecoes.py` 11 passaram e 1 parado de
+  `tests/test_conferencias_codigo.py` 73 passaram; `tests/test_conferencias_excecoes.py` 11 passaram e 1 parado de
   propósito (o que barra o repositório espera o "sim"); `tests/test_conferencias_mudancas.py` 21;
-  `tests/test_conferencias_formulario.py` 33; `tests/test_conferencias_pacote.py` 19;
+  `tests/test_conferencias_formulario.py` 34; `tests/test_conferencias_pacote.py` 20;
   `tests/test_conferencias_protecao.py` 10 passaram e 1 parado (a versão de teste ainda não tem o porteiro);
-  `tests/test_conferencias_antes_do_commit.py` 12; `tests/test_conferencias_juiz.py` 8.
+  `tests/test_conferencias_antes_do_commit.py` 12; `tests/test_conferencias_juiz.py` 9.
+- Teste de reversão da quarta volta: os seis testes novos (Q1, Q1 no formato do GitHub, Q2, Q3, Q4, Q6) falham com o
+  código anterior e passam com o de hoje.
 - Teste de reversão da terceira volta: os 4 testes do R5 e o do `CREATE_NO_WINDOW` guardado numa variável (R6) falham
   com o código anterior (`8a1f56d8`) e passam com o de hoje.
 - Prova de verdade do juiz no repositório real: ver "Como ficou cada achado da terceira volta", R2 e R3.
@@ -473,8 +543,10 @@ conferência antes do commit (não ligada) e o pacote do passo 1, montado pelo p
 - **A lista não vale ainda:** até a gerente ligar a lista direto na versão de teste (depois do "sim" do Samuel
   registrado no Livro), o juiz da rodada diz "NAO CONFERIDO" para o código, e o teste do próprio ramo que barra o
   repositório fica parado com o motivo. O juiz já barra item novo e mudança da lista desde a junção deste passo.
-- **O juiz só existe na rodada depois que a gerente aplicar a mudança do workflow.** Até lá, a K21 de toda entrega dá
-  "não conferido" (código 3), de propósito. Os testes do próprio ramo (`tests/test_conferencias_protecao.py` e o
+- **O juiz está na rodada desde o `c41e4309`** (aplicado pela gerente), mas diz "NAO CONFERIDO" até a lista ser
+  ligada na versão de teste; a K21 de toda entrega dá "não conferido" (código 3) até lá, de propósito. A marca só é
+  lida no trabalho de nome "Porteiro (juiz da versao de teste)": se esse nome mudar no workflow sem mudar o
+  `TRABALHO_DO_JUIZ`, a K21 fica pendente (nunca passa). Os testes do próprio ramo (`tests/test_conferencias_protecao.py` e o
   teste que barra o repositório) continuam como aviso cedo, mas rodam o código do ramo: quem garante é o juiz.
 - **A conta deu 176** (primeira entrega 44, primeira volta 125, segunda 189; o plano tinha contado 43): 107 no plano
   (passo 2: 1, 3: 38, 4: 50, 5: 18), 13 depois da entrega (a régua dos filtros 2, a leitura da placa de vídeo e do
@@ -495,6 +567,10 @@ conferência antes do commit (não ligada) e o pacote do passo 1, montado pelo p
 - **O teste de proteção busca a versão de teste no GitHub:** precisa de internet (no PC e no GitHub); e um ramo feito
   de uma versão de teste antiga, depois que a lista diminuiu lá, vê os itens que já saíram como "item novo": precisa
   juntar a versão de teste antes da entrega.
+- **As pastas que não são programa (Q2)** ficam numa lista só, protegida. Se alguém criar código do programa dentro
+  de uma delas (ex.: um `.py` em `docs/` importado pelo `main.py`), o porteiro não lê; a lista é curta de propósito.
+- **As funções que não se mexem (Q3)** são só aviso no pacote: se o agente renomear uma delas mesmo assim, o ramo barra
+  (o lugar vira erro novo), e é aí que ele descobre; o pacote só evita a surpresa.
 - **O que o porteiro não pega:** texto montado em pedaços (ex.: `"power" + "shell"`), uma segunda peça com outro nome,
   importação por texto (`importlib`). A K10 só lê documentos (não `.py`) e conta o rótulo em maiúsculas ou como linha
   de situação; o rótulo escrito de outro jeito no meio da frase passa.
@@ -547,7 +623,12 @@ velocidade (ele lê a memória, impede o computador de dormir durante a medida e
 que abre a pasta do projeto e manda imprimir, e o brasão que gira perguntando se o programa ainda está aberto. São 56
 lugares.
 
-![O texto, como vai para você](prints/caso-real-reiniciar-agora.png)
+![O mesmo tipo de erro num pedaço que aparece na tela (o "Reiniciar agora"); os 56 lugares desta pergunta não aparecem](prints/caso-real-reiniciar-agora.png)
+
+**Ressalva: esta pergunta não tem print dos próprios pedaços.** Esses pedaços são código que não aparece na tela:
+conversam com o Windows por baixo, sem janela nem botão. Não há o que fotografar; o que existe é a linha do código,
+que está na lista. O print acima é só do mesmo tipo de erro, num pedaço que tem botão. (A gerente aceitou assim na
+quarta volta.)
 
 **O que você escolhe:** ficam para depois da entrega ao Kaique, como os pedaços que você já deixou para depois (ficam
 na lista até lá); ou entram no plano (cada um vira conserto antes da entrega). Sugestão: depois da entrega. Nada do
@@ -557,7 +638,7 @@ programa muda com nenhuma das duas escolhas agora.
 
 ## Commit
 
-Último commit de código do trabalho: 93ab77fb (depois dele, só este ONDE-PAREI mudou).
+Último commit de código do trabalho: a664329e (depois dele, só este ONDE-PAREI mudou).
 
 ## Perguntas do Windows que o Samuel vê
 
