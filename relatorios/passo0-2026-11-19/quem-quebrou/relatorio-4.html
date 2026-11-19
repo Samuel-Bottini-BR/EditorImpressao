@@ -1,0 +1,258 @@
+<!doctype html>
+<html lang="pt-BR">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Passo 0: quarta conferência de quem tentou quebrar</title>
+<style>
+:root { color-scheme: light dark; }
+* { box-sizing: border-box; }
+body {
+  font: 17px/1.65 "Segoe UI", system-ui, sans-serif;
+  max-width: 46rem; margin: 0 auto; padding: 2.5rem 1.5rem 6rem;
+  color: #1c1c1e; background: #fdfdfc;
+}
+h1 { font-size: 2rem; line-height: 1.2; margin: 0 0 .3em; letter-spacing: -.02em; }
+h2 { font-size: 1.35rem; margin: 2.4em 0 .6em; padding-top: .8em;
+     border-top: 1px solid #e6e4e0; letter-spacing: -.01em; }
+h3 { font-size: 1.1rem; margin: 1.8em 0 .4em; }
+h1 + p, h2 + p { margin-top: .4em; }
+p, li { margin: 0 0 .9em; }
+ul, ol { padding-left: 1.3em; }
+strong { font-weight: 640; }
+code {
+  font: .88em ui-monospace, "Cascadia Code", Consolas, monospace;
+  background: #f1efec; padding: .12em .35em; border-radius: 4px;
+}
+pre {
+  background: #f1efec; padding: 1em 1.1em; border-radius: 8px;
+  overflow-x: auto; line-height: 1.5;
+}
+pre code { background: none; padding: 0; }
+blockquote {
+  margin: 1.2em 0; padding: .1em 0 .1em 1.1em;
+  border-left: 3px solid #c9c5be; color: #55524d;
+}
+table {
+  border-collapse: collapse; width: 100%; margin: 1.2em 0;
+  font-size: .95rem; display: block; overflow-x: auto;
+}
+th, td { padding: .5em .8em; text-align: left; border-bottom: 1px solid #e6e4e0; }
+th { font-weight: 620; background: #f7f5f2; white-space: nowrap; }
+tr:last-child td { border-bottom: none; }
+img { max-width: 100%; height: auto; border-radius: 6px; margin: 1em 0;
+      border: 1px solid #e6e4e0; }
+hr { border: none; border-top: 1px solid #e6e4e0; margin: 2.5em 0; }
+.rodape { margin-top: 4em; padding-top: 1.2em; border-top: 1px solid #e6e4e0;
+          font-size: .85rem; color: #86827c; }
+@media (prefers-color-scheme: dark) {
+  body { color: #e8e6e3; background: #1a1917; }
+  h2 { border-top-color: #35332f; }
+  code, pre, th { background: #262421; }
+  th, td { border-bottom-color: #35332f; }
+  blockquote { border-left-color: #4a4741; color: #b0aca6; }
+  img { border-color: #35332f; }
+  .rodape { border-top-color: #35332f; color: #7d7973; }
+}
+@media print {
+  body { max-width: none; padding: 0; color: #000; background: #fff; }
+  h2 { page-break-after: avoid; }
+  table, img { page-break-inside: avoid; }
+}
+</style>
+</head>
+<body>
+<h1>Passo 0 do plano da parte do Windows: quarta conferência de quem tentou quebrar (19/11/2026)</h1>
+<p>Esta é a quarta volta do mesmo verificador, que não escreveu o passo 0. Conferi os consertos do relatório 3 (R1 a R7)
+e tentei quebrar o juiz novo, que roda o porteiro e a lista da versão de teste. Não mexi no código entregue. As provas
+rodaram numa cópia e numa pasta de juiz temporárias, fora do projeto.</p>
+<h2>Pedido</h2>
+<ul>
+<li>Papel: quebrador</li>
+<li>Commit de partida: edb87d32</li>
+<li>Ramo: passo0-porteiro-2026-11-19</li>
+</ul>
+<h2>Arquivos que vou mexer</h2>
+<ul>
+<li><code>relatorios/passo0-2026-11-19/quem-quebrou/</code></li>
+</ul>
+<h2>Veredito</h2>
+<p><strong>NÃO ESTÁ PRONTO, mas os dois furos graves da volta passada fecharam pela estrutura.</strong> Ninguém mais põe item na lista
+por um ramo de agente, e quem julga vem de fora do ramo.</p>
+<p>Tentei quebrar o juiz por oito caminhos:
+- erro novo no código;
+- porteiro do ramo afrouxado, com um item tirado da lista;
+- linha da lista mudada de função, com a função trocada no item;
+- <code>sitecustomize.py</code> e um arquivo <code>.pth</code> no ramo.</p>
+<p>Nesses quatro, o juiz barrou ou não se deixou enganar. Restam:
+- <strong>dois problemas para consertar:</strong>
+  - o formulário pode ler a marca do juiz no registro de outro trabalho da rodada, que roda o código do agente (Q1);
+  - o código do programa posto numa pasta nova fica fora da vista do porteiro (Q2);
+- três coisas para escrever ou decidir (Q3, Q5, Q6);
+- dois detalhes (Q4, Q7).</p>
+<h2>O que li</h2>
+<ul>
+<li>O <code>relatorios/passo0-2026-11-19/ONDE-PAREI.md</code> na ponta <code>edb87d32</code>: "Como ficou cada achado da terceira volta" e "A
+  mudança do workflow".</li>
+<li>O código mudado de <code>fc1ca18e</code> a <code>93ab77fb</code>: <code>juiz.py</code> (novo), <code>excecoes.py</code> (a chave agora tem a função),
+  <code>porteiro_mudancas.py</code> (<code>mudancas_na_lista</code>), <code>porteiro.py</code> (<code>_bandeiras_do_windows</code> e o apelido corrigido),
+  <code>conversa_com_o_github.py</code> (a marca) e <code>formulario.py</code> (a K21).</li>
+<li>Os anexos <code>juiz-no-workflow/porteiro_juiz.sh</code> e <code>job-porteiro.yml</code>.</li>
+<li>No ramo dos testes <code>claude/list-server-files-gkos8v</code>, commit <code>c41e4309</code>: o <code>.github/scripts/porteiro_juiz.sh</code>
+  aplicado, idêntico ao anexo (conferido com <code>fc</code>), e o job <code>porteiro</code> no workflow, com <code>VERSAO_DE_TESTE:
+  obra-2026-10-26</code>, <code>PORTEIRO_LIGADO: "0"</code> e <code>needs: [suite, janela, porteiro]</code> no resumo.</li>
+<li>A rodada 44479180201. Ainda estava rodando ao fechar este relatório: o trabalho "Porteiro (juiz da versao de teste)"
+  terminou com "success", mas o registro só sai com a rodada inteira terminada. Por isso não li a marca dela (Q5).</li>
+<li>O texto <code>lista-de-excecoes-para-o-samuel.md</code> e o print <code>prints/caso-real-reiniciar-agora.png</code>.</li>
+</ul>
+<h2>O que conferi nas falhas, nas peças de fora e nos caminhos</h2>
+<h3>A recontagem: bate</h3>
+<ul>
+<li><strong>176 lugares em 176 itens</strong>, com "quantas" igual a 1 em todos.</li>
+<li>Meu script independente acha 111 linhas de conversa com o Windows pelas palavras. A lista tem mais 47 que só
+  aparecem pelo apelido da biblioteca. São 158 nessa conferência.</li>
+<li>Com 2 de <code>DETACHED_PROCESS</code>, 2 de licença de pasta e 14 números de decisão, dá 176.</li>
+<li>Por grupo: o plano conserta 107 (1, 38, 50 e 18); 13 ficam para depois da entrega; 56 são pergunta.</li>
+<li><strong>Os 13 de "depois da entrega" batem com as palavras da D-800:</strong></li>
+<li>a régua dos filtros: 2 linhas da mesma função <code>achar_acervo</code>, que pergunta onde fica a Área de Trabalho;</li>
+<li>o teste de velocidade: 9, que são <code>_placas_de_video</code> 5, <code>tipo_do_disco</code> 2 e <code>_caminho_do_powershell</code> 2. É a
+    leitura da placa de vídeo e do disco pelo PowerShell. Duas linhas de <code>_placas_de_video</code> leem o registro, mas estão
+    na mesma função;</li>
+<li>as duas dicas do Automático: 2.</li>
+<li><strong>Os falsos alarmes da volta passada saíram:</strong> <code>atualizacao.py:748</code> e <code>teste_velocidade.py:2317</code> não estão mais na
+  lista. No meu exemplo de antes, as 4 linhas falsas não são mais acusadas.</li>
+<li>A janela escondida (<code>CREATE_NO_WINDOW</code>) não conta mais. Os dois <code>creationflags</code> do <code>atualizacao.py</code> que continuam na
+  lista estão na mesma chamada que o <code>DETACHED_PROCESS</code>, e isso é certo.</li>
+</ul>
+<h3>O juiz: tentativas de quebrar</h3>
+<p>Montei uma pasta de juiz como o <code>porteiro_juiz.sh</code> faz: o <code>git archive</code> de <code>regras_dos_agentes/</code> e da lista, com a
+lista "valendo", como ficará na versão de teste depois do "sim". Rodei
+<code>python -m regras_dos_agentes juiz --conferido &lt;cópia&gt;</code> de dentro dela.</p>
+<ul>
+<li><strong>Ramo igual à versão de teste:</strong> "PORTEIRO: CONFERIDO".</li>
+<li><strong>Erro novo</strong> (um <code>schtasks</code> numa função nova): "BARROU".</li>
+<li><strong>O porteiro do ramo afrouxado</strong> (sem a busca que ignora maiúscula) <strong>e os itens com <code>powershell.exe</code> tirados da
+  lista:</strong> "BARROU", com as 3 linhas listadas. Afrouxar o porteiro do ramo não serve para nada, porque o juiz usa o
+  dele.</li>
+<li><strong>Pôr item novo mudando a função de uma linha que já tem exceção:</strong> renomeei <code>update_exe</code> e troquei a função no
+  item. "BARROU", com "item novo na lista (só a gerente põe [...])".</li>
+<li><strong><code>sitecustomize.py</code> e <code>x.pth</code> na raiz do ramo:</strong> nenhum dos dois rodou. O juiz roda de dentro da pasta dele, e a
+  pasta do ramo não entra no caminho de busca do Python. O <code>git</code> chamado pelo juiz também não é procurado na pasta do
+  ramo.</li>
+<li><strong>Uma pasta nova de programa</strong> (<code>servicos/__init__.py</code> com <code>schtasks</code>, importada pelo <code>main.py</code>): "CONFERIDO". O
+  porteiro só olha <code>core/</code>, <code>ui/</code> e a raiz (Q2).</li>
+<li><strong>Um <code>.pyc</code> sem fonte em <code>core/</code></strong>, que o Python importa: "CONFERIDO" (Q4).</li>
+<li><strong>O nome da versão de teste no código do ramo:</strong> não conta mais. O juiz usa o <code>VERSAO_DE_TESTE</code> escrito no workflow
+  do ramo dos testes. O <code>trocar_codigo.sh</code> não traz a <code>.github/</code> do ramo do agente.</li>
+</ul>
+<h3>A marca do juiz no formulário: dá para forjar</h3>
+<ul>
+<li><code>ler_rodada</code> (<code>regras_dos_agentes/conversa_com_o_github.py:83</code>) fica com a primeira marca "PORTEIRO: ..." que achar
+  no registro de qualquer trabalho da rodada.</li>
+<li>Na rodada 44479180201, a ordem é: "Botoes e prints da janela real" e as partes 3, 2 e 4 da suíte primeiro, o
+  porteiro depois. Esses trabalhos rodam o código do agente.</li>
+<li>Provei com um registro de mentira na mesma ordem: o teste do agente imprime "PORTEIRO: CONFERIDO" no trabalho dos
+  botões, e o juiz de verdade diz "NAO CONFERIDO". <code>ler_rodada</code> devolveu <code>CONFERIDO</code>.</li>
+</ul>
+<h3>A função na identificação do lugar: atrapalha os passos 3 e 4</h3>
+<ul>
+<li>Dentro do próprio passo não atrapalha: no fim do passo, os lugares dele somem.</li>
+<li>Atrapalha onde um passo mexe num arquivo que tem lugares de um passo seguinte:</li>
+<li>em <code>atualizacao.py</code>, que é do passo 3, há 2 lugares do passo 5, nas funções <code>criar_as_tarefas</code> e <code>ao_desinstalar</code>;</li>
+<li>em <code>core/testes_a_distancia.py</code>, que é do passo 4, há 16 lugares do passo 5 (o desfazer e as tarefas dele).</li>
+<li>Se o passo 3 ou o 4 renomear, dividir ou mover essas funções, os 18 lugares viram "item novo" e o juiz barra. Só um
+  commit da gerente direto na versão de teste destrava (Q3).</li>
+</ul>
+<h3>O texto para o Samuel</h3>
+<ul>
+<li>O §11.13 está cumprido no principal:</li>
+<li>primeira linha: o que é e onde fica;</li>
+<li>o print do caso real, circulado;</li>
+<li>o que a conferência faz e o que não faz;</li>
+<li>"como você escolheu" agora só para os 13 lugares da D-800, com a conta de antes e a de agora;</li>
+<li>os 43 do teste de velocidade explicados em palavras simples, na pergunta;</li>
+<li>"O que você escolhe", a sugestão e de onde veio.</li>
+<li>Falta só um print na pergunta dos 56 (Q7).</li>
+</ul>
+<h2>Caminhos que o outro não listou</h2>
+<ul>
+<li>O registro de outros trabalhos da rodada, lido pela K21 (Q1).</li>
+<li>O programa fora de <code>core/</code>, <code>ui/</code> e da raiz: uma pasta nova importada pelo <code>main.py</code> (Q2). O teste da tabela de
+  etiquetas acusaria uma pasta nova, mas ele roda o código do ramo, e o agente pode acrescentar a linha da tabela.
+  Quem barra hoje é só a conferência das mudanças (K17), rodada pela gerente.</li>
+<li>Os <code>.pyc</code> sem fonte (Q4).</li>
+<li>Os 18 lugares do passo 5 dentro dos arquivos dos passos 3 e 4 (Q3).</li>
+</ul>
+<h2>Falhas não pensadas e resultado não conferido</h2>
+<ul>
+<li><strong>Resultado não conferido:</strong> a marca que a K21 aceita pode não ser a do juiz (Q1).</li>
+<li><strong>Falha não pensada:</strong> até o "sim" do Samuel, o juiz sempre diz "NAO CONFERIDO" para o código. Então a K21 deixa
+  pendente (código 3) o formulário de toda entrega. Os passos 1 em diante não passam no formulário antes de a gerente
+  ligar a lista (Q5).</li>
+<li><strong>Falha não pensada:</strong> enquanto a lista é "proposta", nada confere que ela bate com o código. O juiz diz "NAO
+  CONFERIDO", e o teste do repositório no ramo fica parado. Um ramo pode tirar itens sem conserto, e, se for juntado, a
+  lista que vai ao "sim" encolhe sem ninguém ver (Q6).</li>
+</ul>
+<h2>As regras que conferi</h2>
+<ul>
+<li><strong>CLAUDE.md §11.12:</strong></li>
+<li>ponto 1, uma peça só: cumprida, porque o juiz é o mesmo porteiro, da versão de teste;</li>
+<li>ponto 2, nada dado como feito sem conferir: pela metade (Q1);</li>
+<li>ponto 3, a lista do que pode falhar: faltam Q5 e Q6;</li>
+<li>ponto 4, peça de mentira: cumprida, porque o juiz foi provado com o git e o bash de verdade, pelo construtor e por
+    mim.</li>
+<li><strong>CLAUDE.md §11.13:</strong> cumprido, menos o print da segunda pergunta (Q7).</li>
+<li><strong>Cada decisão tocada:</strong></li>
+<li>D-791: cumprida no essencial (a lista só diminui e ninguém põe item por ramo), com Q1 e Q2;</li>
+<li>D-800: cumprida (os 13 lugares batem com os pedaços dela);</li>
+<li>D-796, D-798, D-792 e D-784: cumpridas;</li>
+<li>D-605: cumprida;</li>
+<li>D-797: cumprida (a versão de teste é o juiz).</li>
+</ul>
+<h2>Achados</h2>
+<p>Os números começam com "Q" (quarta volta). Fechados de verdade: R1, R2, R3, R4, R5, R6 e R7.</p>
+<ol>
+<li><strong>Q1, médio: a K21 aceita a marca "PORTEIRO: ..." de qualquer trabalho da rodada</strong>
+   (<code>regras_dos_agentes/conversa_com_o_github.py:83</code>).
+   - Os trabalhos dos botões e da suíte rodam o código do agente e aparecem antes do porteiro.
+   - Provado com um registro de mentira: devolve <code>CONFERIDO</code> quando o juiz disse <code>NAO CONFERIDO</code>.
+   - Até o "sim", isso esconde o "não conferido". Depois, o "BARROU" de verdade já faz a rodada falhar.
+   - Destino: consertar. Ler a marca só no trabalho de nome "Porteiro (juiz da versao de teste)", que vem do workflow
+     do ramo dos testes, e só na linha do passo do juiz.</li>
+<li><strong>Q2, médio: o porteiro não vê programa fora de <code>core/</code>, <code>ui/</code> e da raiz</strong> (<code>regras_dos_agentes/porteiro.py:124</code>,
+   <code>e_programa</code>). Provado no juiz: <code>servicos/__init__.py</code> com <code>schtasks</code>, importado pelo <code>main.py</code>, deu "CONFERIDO".
+   Destino: consertar. Todo <code>.py</code> conta como programa, menos as pastas que não são (<code>tests/</code>, <code>relatorios/</code>, <code>docs/</code>,
+   <code>terceiros/</code>, <code>velhos/</code>, <code>regras_dos_agentes/</code>, <code>.github/</code>...). Recontar a lista depois.</li>
+<li><strong>Q3, baixo: a função na chave trava os passos 3 e 4 se mexerem nas funções que guardam lugares do passo 5</strong>
+   (<code>regras_dos_agentes/excecoes.py:82</code>). São 18 lugares: <code>atualizacao.py</code> (<code>criar_as_tarefas</code>, <code>ao_desinstalar</code>) e 16
+   em <code>core/testes_a_distancia.py</code>. Destino: escrever no pacote dos passos 3 e 4 quais funções não se renomeiam nem se
+   movem, ou que a gerente atualiza o item na versão de teste ao juntar. É o combinado (lugar = função e texto); não é
+   defeito.</li>
+<li><strong>Q4, baixo: um <code>.pyc</code> sem fonte, que o Python importa, passa</strong> (<code>regras_dos_agentes/porteiro.py:124</code>). Destino:
+   escrever na ressalva, ou acusar todo <code>.pyc</code> que esteja no git.</li>
+<li><strong>Q5, baixo: até o "sim", toda entrega fica com o formulário pendente pela K21</strong> (<code>regras_dos_agentes/formulario.py:403</code>).
+   - Isso é coerente com "não conferido nunca vale como passou". Mas quer dizer que o passo 1 não fecha antes de a
+     gerente ligar a lista.
+   - Destino: pergunta à gerente. Ou o "sim" vem antes da entrega do passo 1, ou há uma regra escrita para esse
+     intervalo.
+   - Também: não li a marca da rodada 44479180201, que ainda roda. A gerente confere a linha "PORTEIRO: NAO CONFERIDO
+     (a versão de teste ... ainda não tem o porteiro)" quando ela terminar.</li>
+<li><strong>Q6, baixo: enquanto a lista é "proposta", nada confere que ela bate com o código</strong> (<code>regras_dos_agentes/juiz.py:63</code>).
+   Um ramo pode tirar itens sem consertar, e a lista que vai ao "sim" encolhe. Destino: consertar. O juiz, mesmo com a
+   lista "proposta", roda o porteiro da versão de teste e barra só o item tirado que o código ainda tem. Ou escrever na
+   ressalva que a gerente confere a contagem antes de levar a lista ao Samuel.</li>
+<li><strong>Q7, baixo: a pergunta dos 56 lugares não tem print</strong>
+   (<code>relatorios/passo0-2026-11-19/lista-de-excecoes-para-o-samuel.md:30</code>, regra 3 do §11.13). Destino: consertar (um
+   print de um caso, por exemplo a tela de início com "Imprimir"), ou a gerente aceita só o texto nessa pergunta.</li>
+</ol>
+<h2>Para a gerente: o que ficou fora do projeto</h2>
+<ul>
+<li>Na cópia temporária (<code>C:\Users\fotog\AppData\Local\Temp\claude\b9ca076ad002e817\848d7b72-406b-4bfe-aabf-f5b3005d7b22\scratchpad\quebrar\copia</code>)
+  ficou mais o ramo de prova <code>prova4-base</code>. Busquei a ponta <code>edb87d32</code> do GitHub, porque a busca na pasta do projeto
+  falhou com "did not send all necessary objects".</li>
+<li>A pasta do juiz de prova: <code>...\quebrar\juiz</code>.</li>
+<li>Nada foi apagado.</li>
+</ul>
+<p class="rodape">Editor de Impressão &middot; gerado em 19/11/2026 às 03:32</p>
+</body>
+</html>
