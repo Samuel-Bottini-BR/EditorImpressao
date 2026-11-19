@@ -60,7 +60,13 @@ A PEÇA É FECHADA (escolha técnica da gerente, 19/11, achado 12 de quem tentou
       pela pasta, e não por uma lista de nomes, porque escrever aqui o nome das ferramentas de licença de pasta faria
       o porteiro (K03, que vale também nesta peça) acusar a própria recusa; e a pasta pega também as que ninguém
       lembrou de pôr na lista. Quem precisa de um deles chama a função da peça (`ler_tarefa`, `rodar_tarefa`,
-      `rodar_powershell`, `pedir_licenca`...), ou a peça ganha uma função nova para isso, com teste.
+      `rodar_powershell`, `pedir_licenca`...), ou a peça ganha uma função nova para isso, com teste. O caminho é
+      normalizado num lugar só antes de comparar (`_caminho_do_programa`): o prefixo de caminho longo e o de
+      dispositivo (duas barras com interrogação ou com ponto) saem, e o caminho de rede (duas barras e o nome de um
+      computador, que pode apontar para a pasta do Windows deste por outro nome) é recusado.
+    - Programa de fora do Windows (ex.: o do Tailscale, no passo 4) passa pelo rodar genérico neste passo. CADA passo
+      que usar um programa de fora decide, no pedido dele, se o programa ganha função própria na peça (e entra em
+      `PROGRAMAS_COM_FUNCAO_PROPRIA`).
 
 Fontes lidas antes de escrever (CLAUDE.md §11.12, ponto 6): estão no ONDE-PAREI do passo 1
 (`relatorios/passo1-peca-unica-windows/ONDE-PAREI.md`, seção "O que li da peça de fora e onde").
@@ -339,6 +345,7 @@ class _Bibliotecas:
              wintypes.BOOL),
             (a.GetSecurityDescriptorDacl, [P, ctypes.POINTER(wintypes.BOOL), ctypes.POINTER(P),
                                            ctypes.POINTER(wintypes.BOOL)], wintypes.BOOL),
+            (a.GetSecurityDescriptorOwner, [P, ctypes.POINTER(P), ctypes.POINTER(wintypes.BOOL)], wintypes.BOOL),
             (s.ShellExecuteExW, [ctypes.POINTER(_SHELLEXECUTEINFOW)], wintypes.BOOL),
             (s.SHGetKnownFolderPath, [ctypes.POINTER(_GUID), wintypes.DWORD, wintypes.HANDLE,
                                       ctypes.POINTER(wintypes.LPWSTR)], ctypes.c_long),
@@ -366,6 +373,16 @@ def _win() -> _Bibliotecas:
     if sys.platform != "win32":
         raise OSError("esta peça só funciona no Windows")
     return _Bibliotecas()
+
+
+def bibliotecas_guardam_o_erro() -> dict[str, bool]:
+    """Para cada biblioteca do Windows da peça, se ela guarda o erro de cada chamada (`use_last_error`). Tem de ser
+    True em todas, em especial na `shell32`, que lê o "Não" da pergunta do Windows (defeito 2 da etapa 5: lido sem
+    isso, o "Não" virava "deu certo"). Só leitura; para os testes conferirem sem tocar no que é de dentro."""
+    w = _win()
+    guarda = getattr(ctypes, "_FUNCFLAG_USE_LASTERROR", 0x10)
+    return {nome: bool(getattr(w, nome)._FuncPtr._flags_ & guarda)
+            for nome in ("kernel32", "advapi32", "shell32", "user32", "ole32", "crypt32")}
 
 
 def _ler_erro() -> int:
@@ -495,6 +512,7 @@ class Licenca:
     mascara: int
     herdada: bool
     so_para_dentro: bool
+    para_objetos: bool = False      # OBJECT_INHERIT_ACE: passa para os arquivos (ou as tarefas) que nascem dentro
 
     @property
     def grava(self) -> bool:
@@ -613,13 +631,14 @@ def _linhas_da_lista(lista: ctypes.c_void_p, de_onde: str) -> list[Licenca]:
             raise OSError(f"não deu para ler a licença {i} de {de_onde} (erro {_ler_erro()})")
         cabeca = ctypes.cast(ace, ctypes.POINTER(_ACE)).contents
         herdada, so_dentro = bool(cabeca.AceFlags & _ACE_HERDADA), bool(cabeca.AceFlags & _ACE_SO_PARA_DENTRO)
+        objetos = bool(cabeca.AceFlags & 0x01)                                     # OBJECT_INHERIT_ACE
         if cabeca.AceType in (_ACE_PERMITE, _ACE_NEGA):
             psid = ace.value + 8
             linhas.append(Licenca(_sid_em_texto(psid), _nome_da_conta(psid),
                                   "permite" if cabeca.AceType == _ACE_PERMITE else "nega", cabeca.Mask, herdada,
-                                  so_dentro))
+                                  so_dentro, objetos))
         else:
-            linhas.append(Licenca("", "", "outra", cabeca.Mask, herdada, so_dentro))
+            linhas.append(Licenca("", "", "outra", cabeca.Mask, herdada, so_dentro, objetos))
     return linhas
 
 
@@ -639,6 +658,53 @@ def licencas_do_texto(sddl: str) -> list[Licenca]:
         return _linhas_da_lista(lista, sddl) if presente.value else []
     finally:
         w.kernel32.LocalFree(descritor)
+
+
+def dono_do_texto(sddl: str) -> str:
+    """O dono escrito numa licença em texto ("O:BA...", "O:S-1-5-21-..."), em SID, lido pelo próprio Windows; "" se
+    não há dono no texto. Levanta OSError se o Windows não aceitar o texto."""
+    w = _win()
+    descritor, tamanho = ctypes.c_void_p(), wintypes.DWORD()
+    if not w.advapi32.ConvertStringSecurityDescriptorToSecurityDescriptorW(sddl, 1, ctypes.byref(descritor),
+                                                                         ctypes.byref(tamanho)):
+        raise OSError(f"o Windows não aceitou a licença {sddl!r} (erro {_ler_erro()})")
+    try:
+        dono, padrao = ctypes.c_void_p(), wintypes.BOOL()
+        if not w.advapi32.GetSecurityDescriptorOwner(descritor, ctypes.byref(dono), ctypes.byref(padrao)):
+            raise OSError(f"não deu para ler o dono de {sddl!r} (erro {_ler_erro()})")
+        return _sid_em_texto(dono.value) if dono.value else ""
+    finally:
+        w.kernel32.LocalFree(descritor)
+
+
+# Direitos numa pasta do Agendador que deixam mexer no que já existe nela: mudar a licença ou o dono, apagar, apagar o
+# que está dentro, tudo. O "gravar" de fábrica que o Windows dá às contas comuns (criar tarefas DELAS na pasta, com
+# a licença "FW", só para a pasta e as de dentro) não entra: com ele ninguém mexe nas tarefas do programa.
+_MEXER_NA_PASTA_DE_TAREFAS = 0x40000 | 0x80000 | 0x10000 | 0x40 | 0x10000000
+
+
+def problemas_da_pasta_de_tarefas(sddl: str) -> list[str]:
+    """A pasta do programa no Agendador (`\\EditorImpressao`) é segura para o ajudante? O dono é o sistema ou os
+    Administradores; nenhuma conta comum pode mexer no que já está nela (mudar licença ou dono, apagar); e nenhuma
+    licença que passa para as tarefas deixa conta comum gravar nelas. A licença de fábrica que o Windows dá a uma pasta
+    nova criada por administrador passa (lida em 19/11 nas pastas do Windows); uma pasta criada antes por uma conta
+    comum (dona) ou que dá controle total a "Todos" não passa. Levanta OSError se o Windows não aceitar o texto."""
+    problemas = []
+    dono = dono_do_texto(sddl)
+    if dono not in (SID_SISTEMA, SID_ADMINISTRADORES, SID_INSTALADOR_CONFIAVEL):
+        problemas.append(f"o dono da pasta do programa no Agendador é {dono or 'ninguém'}, não o sistema nem os "
+                         "Administradores")
+    admins = {SID_SISTEMA, SID_ADMINISTRADORES, SID_INSTALADOR_CONFIAVEL, SID_PROPRIETARIO_CRIADOR}
+    for li in licencas_do_texto(sddl):
+        if li.tipo == "nega" or li.sid in admins:
+            continue
+        if li.tipo == "outra":
+            problemas.append("a pasta do programa no Agendador tem uma licença que a peça não sabe ler")
+        elif _direitos(li.mascara) & _MEXER_NA_PASTA_DE_TAREFAS:
+            problemas.append(f"{li.nome or li.sid} pode mexer na pasta do programa no Agendador")
+        elif li.para_objetos and _direitos(li.mascara) & _ESCRITA:
+            problemas.append(f"{li.nome or li.sid} poderia mudar as tarefas da pasta do programa no Agendador")
+    return problemas
 
 
 # Os direitos "genéricos" escritos do jeito dos arquivos (o Agendador devolve "FRFX" como 0x1200a9, lido em 19/11).
@@ -804,11 +870,32 @@ def aspas_do_powershell(texto: object) -> str:
 # Rodar e esperar
 # ---------------------------------------------------------------------------------------------------------------------
 
+def _caminho_do_programa(programa: str) -> Path | None:
+    """O caminho do programa, normalizado num lugar só para comparar: sem aspas, sem o prefixo de caminho longo nem o
+    de dispositivo (duas barras com interrogação ou com ponto, que o Windows aceita para o mesmo arquivo). None para
+    caminho de rede (duas barras e o nome de um computador, inclusive pelo prefixo longo com UNC): ele pode apontar
+    para a pasta do Windows deste computador por outro nome (ex.: o "C$" ou o "ADMIN$" do "localhost"), e o rodar
+    genérico não o aceita."""
+    texto = str(programa).strip().strip('"').replace("/", "\\")
+    for prefixo in ("\\\\?\\UNC\\", "\\\\.\\UNC\\"):
+        if texto.upper().startswith(prefixo.upper()):
+            return None
+    for prefixo in ("\\\\?\\", "\\\\.\\", "\\??\\"):
+        if texto.startswith(prefixo):
+            texto = texto[len(prefixo):]
+            break
+    if texto.startswith("\\\\"):
+        return None
+    return Path(texto)
+
+
 def _programa_com_funcao_propria(programa: str) -> bool:
     """O programa tem função própria na peça? Sim se está na pasta do Windows (ou, dado só pelo nome, é achado lá: o
-    Windows procura primeiro na pasta do sistema), ou se o nome é de `PROGRAMAS_COM_FUNCAO_PROPRIA`. Na dúvida (não
-    deu para saber onde fica a pasta do Windows), sim."""
-    caminho = Path(str(programa).strip().strip('"'))
+    Windows procura primeiro na pasta do sistema), se o nome é de `PROGRAMAS_COM_FUNCAO_PROPRIA`, ou se é caminho de
+    rede (`_caminho_do_programa`). Na dúvida (não deu para saber onde fica a pasta do Windows), sim."""
+    caminho = _caminho_do_programa(programa)
+    if caminho is None:
+        return True
     nome = caminho.name.lower()
     if nome.removesuffix(".exe") in PROGRAMAS_COM_FUNCAO_PROPRIA:
         return True
@@ -1238,6 +1325,14 @@ def criar_tarefa(nome: str, xml: str) -> Resposta:
         ler_xml_da_tarefa(xml)
     except Exception as erro:  # noqa: BLE001
         return _falhou("o desenho da tarefa está errado", repr(erro))
+    # A pasta do programa no Agendador: se já existe, tem de ser segura ANTES de pôr a tarefa nela (qualquer conta
+    # pode criá-la antes com as licenças que quiser; achado N3 de quem tentou quebrar). Se não existe, o Windows a
+    # cria junto com a tarefa, e ela é conferida depois.
+    existia = pasta_de_tarefas_existe()
+    if existia is not False:
+        antes = conferir_pasta_de_tarefas()
+        if not antes.deu_certo:
+            return _falhou(antes.motivo + " (a tarefa não foi criada)", antes.detalhe)
     try:
         pasta = criar_pasta_de_troca()
     except OSError as erro:
@@ -1250,6 +1345,10 @@ def criar_tarefa(nome: str, xml: str) -> Resposta:
         apagar_pasta_de_troca(pasta)
     lida = ler_tarefa(nome)
     problemas = problemas_da_tarefa_criada(xml, lida)
+    if lida.existe:
+        depois = conferir_pasta_de_tarefas()
+        if not depois.deu_certo:
+            problemas.append(depois.motivo)
     if not problemas:
         return _certo(saida=feito.dados.get("saida", ""))
     tecnico = f"schtasks: {feito.desfecho} {feito.detalhe} {feito.dados.get('saida', '')}; lida: {lida}"
@@ -1286,21 +1385,45 @@ def rodar_tarefa(nome: str, limite_s: float = 60) -> Resposta:
 
 
 def _pasta_de_tarefas_pelo_windows(acao: str, limite_s: float = 60) -> tuple[int | None, str]:
-    """Pergunta ao Agendador pela pasta do programa (`PASTA_DAS_TAREFAS`): "ler" ou "apagar" (só se vazia). Devolve
-    (o número da resposta do Windows, 0 = deu certo; None = não deu para perguntar, o técnico)."""
-    comando = (f"$s.GetFolder('\\').DeleteFolder({aspas_do_powershell(PASTA_DAS_TAREFAS)}, 0)" if acao == "apagar"
-               else f"$null = $s.GetFolder({aspas_do_powershell(chr(92) + PASTA_DAS_TAREFAS)})")
+    """Pergunta ao Agendador pela pasta do programa (`PASTA_DAS_TAREFAS`): "ler" (existe?), "licenca" (o dono e a
+    licença, em texto) ou "apagar" (só se vazia). Devolve (o número da resposta do Windows, 0 = deu certo; None = não
+    deu para perguntar, o texto: a licença em "licenca", senão o técnico)."""
+    pasta = aspas_do_powershell(chr(92) + PASTA_DAS_TAREFAS)
+    comando = {"apagar": f"$s.GetFolder('\\').DeleteFolder({aspas_do_powershell(PASTA_DAS_TAREFAS)}, 0); $t = ''",
+               "licenca": f"$t = $s.GetFolder({pasta}).GetSecurityDescriptor(5)",
+               "ler": f"$null = $s.GetFolder({pasta}); $t = ''"}[acao]
     resposta = rodar_powershell(
         "$s = New-Object -ComObject Schedule.Service\n$s.Connect()\n"
-        f"try {{ {comando}; [Console]::Out.Write('0') }}\n"
+        f"try {{ {comando}; [Console]::Out.Write('0|' + $t) }}\n"
         "catch { $h = $_.Exception.HResult; if ($_.Exception.InnerException) { $h = $_.Exception.InnerException.HResult }\n"
-        "  [Console]::Out.Write([string]$h) }\n", limite_s)
+        "  [Console]::Out.Write([string]$h + '|') }\n", limite_s)
     if not resposta.deu_certo:
         return None, f"{resposta.motivo} {resposta.detalhe}"
+    codigo, _, texto = str(resposta.dados.get("saida", "")).partition("|")
     try:
-        return int(resposta.dados["saida"]) & 0xFFFFFFFF, resposta.dados["saida"]
-    except (ValueError, KeyError):
+        return int(codigo) & 0xFFFFFFFF, texto
+    except ValueError:
         return None, f"resposta que não deu para ler: {resposta.dados.get('saida')!r}"
+
+
+def conferir_pasta_de_tarefas() -> Resposta:
+    """Lê (sem licença, se a conta pode ler) o dono e a licença da pasta do programa no Agendador e confere com
+    `problemas_da_pasta_de_tarefas`. Não existe: "falhou" com `existe=False`. `dados`: `existe`, `licenca`,
+    `problemas`."""
+    codigo, texto = _pasta_de_tarefas_pelo_windows("licenca")
+    if codigo in HRESULT_NAO_EXISTE:
+        return _falhou("a pasta do programa no Agendador não existe", texto, existe=False)
+    if codigo != 0:
+        return _falhou("não deu para ler a licença da pasta do programa no Agendador",
+                       f"0x{(codigo or 0):08X} {texto}", existe=None)
+    try:
+        problemas = problemas_da_pasta_de_tarefas(texto)
+    except OSError as erro:
+        return _falhou("a licença da pasta do programa no Agendador não deu para ler", repr(erro), existe=True)
+    if problemas:
+        return _falhou("a pasta do programa no Agendador não é segura: " + "; ".join(problemas), texto, existe=True,
+                       licenca=texto, problemas=problemas)
+    return _certo(existe=True, licenca=texto, problemas=[])
 
 
 def pasta_de_tarefas_existe() -> bool | None:
@@ -1721,6 +1844,12 @@ def _motivo_do_erro_ao_abrir(erro: int) -> str:
         erro, f"o Windows não abriu o programa (código {erro})")
 
 
+def manter_a_pasta_de_troca(houve: str) -> bool:
+    """A pasta de troca fica depois do pedido? Sim quando o trabalho com licença pode estar ainda usando (passou do
+    tempo, ou não deu para acompanhar); a limpeza das velhas a apaga depois de um dia. Senão, apaga."""
+    return houve in ("tempo", "sem_acompanhar")
+
+
 def resposta_do_pedido(houve: str, codigo: int | None, tecnico: str, relatorio: dict | None, pedidos: list[dict],
                        limite_s: float) -> Resposta:
     """O desfecho de um pedido de licença, a partir do que houve ao abrir (`o_que_houve_ao_abrir` ou "tempo",
@@ -1838,7 +1967,7 @@ def pedir_licenca(passos: list[Passo], *, segredo: str | None = None, janela: in
         na_frente = trazer_para_a_frente(janela)
         houve, codigo, tecnico = _abrir_com_licenca(programa, [ARG_TRABALHO_DE_ADMINISTRADOR, str(pasta)], janela,
                                                     limite_s, pasta)
-        manter_a_pasta = houve in ("tempo", "sem_acompanhar")
+        manter_a_pasta = manter_a_pasta_de_troca(houve)
         resposta = resposta_do_pedido(houve, codigo, tecnico, _ler_relatorio(pasta) if houve == "terminou" else None,
                                       pedidos, limite_s)
         return Resposta(resposta.desfecho, resposta.motivo, resposta.detalhe,

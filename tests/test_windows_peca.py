@@ -703,8 +703,13 @@ def test_a_pasta_segura_que_nao_confere_e_apagada_de_novo_e_conferida(monkeypatc
 def test_a_tarefa_criada_que_nao_confere_e_apagada(monkeypatch):
     """Achados 13 (M12) e 5: depois de pedir a tarefa, a peça lê de volta; se o que o Windows tem não é o pedido, ela
     apaga a tarefa e confere que sumiu. A leitura da tarefa é trocada só para dizer, na primeira vez, que a tarefa
-    ficou diferente; depois volta a ser a de verdade. Neste PC (sem licença) o Windows nem cria; no Windows do
-    GitHub (com licença), cria de verdade e a peça apaga, e o teste confere e tira a pasta do Agendador."""
+    ficou diferente; depois volta a ser a de verdade. SÓ no Windows do GitHub (com licença, uma máquina que é jogada
+    fora): lá cria de verdade e a peça apaga, e o teste confere e tira a pasta do Agendador. No PC do Samuel não roda,
+    nem num terminal com a licença ligada: nada de tarefa criada escondida (D-785; achado N4 de quem tentou quebrar).
+    A conferência em si é provada sem o Windows em
+    `test_a_licenca_da_tarefa_e_comparada_pelo_sentido_com_o_que_o_windows_devolve`."""
+    if os.environ.get("GITHUB_ACTIONS") != "true":
+        pytest.skip("só no Windows do GitHub: no PC do Samuel nenhuma tarefa é criada escondida (D-785)")
     nome = f"EditorImpressao\\Teste da peca {os.getpid()}"
     xml = windows.xml_da_tarefa_do_sistema("C:\\nao\\existe.exe", "", "teste da peça (pode apagar)",
                                            "D:(A;;FA;;;BA)(A;;FA;;;SY)")
@@ -789,3 +794,86 @@ def test_o_desfazer_vai_ate_o_fim_mesmo_com_um_passo_que_falha():
             assert codigo == windows.SAIDA_SEM_LICENCA and not marca.exists()
     finally:
         windows.apagar_pasta_de_troca(pasta)
+
+
+# ---------------------------------------------------------------------------------------------------------------------
+# A segunda volta de quem tentou quebrar (19/11)
+# ---------------------------------------------------------------------------------------------------------------------
+
+def test_as_bibliotecas_da_peca_guardam_o_erro_de_cada_chamada():
+    """N1 (etapa 5, defeito 2): cada biblioteca do Windows da peça guarda o erro da chamada, em especial a shell32,
+    que lê o "Não" da pergunta do Windows; o jeito antigo (`ctypes.windll`) não guarda. Pela função pública de
+    conferência da peça (nada de dentro dela)."""
+    guardam = windows.bibliotecas_guardam_o_erro()
+    assert set(guardam) == {"kernel32", "advapi32", "shell32", "user32", "ole32", "crypt32"}
+    assert guardam["shell32"] is True and all(guardam.values()), guardam
+    assert not ctypes.windll.shell32._FuncPtr._flags_ & getattr(ctypes, "_FUNCFLAG_USE_LASTERROR", 0x10)
+
+
+def test_a_recusa_vale_para_o_caminho_escrito_de_outro_jeito():
+    """N2: o mesmo programa da pasta do Windows escrito de outro jeito também é recusado: com o prefixo de caminho
+    longo ou de dispositivo, por caminho de rede (o "C$" e o "ADMIN$" do próprio computador, ou qualquer outro), com
+    barra normal ou com "..". Programa de fora do Windows passa."""
+    barra = chr(92)
+    for caminho in (barra * 2 + "?" + barra + "C:" + barra + "Windows" + barra + "System32" + barra + "schtasks.exe",
+                    barra * 2 + "." + barra + "C:" + barra + "Windows" + barra + "System32" + barra + "cmd.exe",
+                    barra * 2 + "localhost" + barra + "C$" + barra + "Windows" + barra + "System32" + barra + "schtasks.exe",
+                    barra * 2 + "127.0.0.1" + barra + "ADMIN$" + barra + "System32" + barra + "schtasks.exe",
+                    barra * 2 + "?" + barra + "UNC" + barra + "localhost" + barra + "C$" + barra + "x.exe",
+                    barra * 2 + "outro-computador" + barra + "pasta" + barra + "programa.exe",
+                    "C:/Windows/System32/whoami.exe",
+                    "C:" + barra + "Windows" + barra + ".." + barra + "Windows" + barra + "System32" + barra + "whoami.exe"):
+        r = windows.rodar_e_esperar([caminho, "/?"])
+        assert r.desfecho == windows.FALHOU and "função própria" in r.motivo, caminho
+    assert windows.rodar_e_esperar([PY, "-c", "print(1)"], letras="utf-8").deu_certo
+
+
+# Licenças de pastas do Agendador lidas neste PC em 19/11 (só leitura). A "de fábrica" é a que uma pasta criada por
+# administrador herda da raiz; a "da conta comum" é uma pasta que a conta comum criou e deu a "Todos".
+_PASTA_DE_FABRICA = ("O:BAD:AI(A;CIID;FA;;;BA)(A;OIIOID;0x1f019f;;;BA)(A;CIID;FA;;;SY)(A;OIIOID;0x1f019f;;;SY)"
+                     "(A;CIID;FW;;;AU)(A;CIID;FW;;;NS)(A;CIID;FW;;;LS)(A;OICIIOID;FA;;;CO)")
+_PASTA_DA_CONTA_COMUM = ("O:S-1-5-21-1-2-3-1001D:AI(A;;FA;;;WD)(A;CIID;FA;;;BA)(A;OIIOID;0x1f019f;;;BA)(A;CIID;FA;;;SY)"
+                         "(A;OIIOID;0x1f019f;;;SY)(A;CIID;FW;;;AU)(A;ID;FA;;;S-1-5-21-1-2-3-1001)(A;OICIIOID;FA;;;CO)")
+
+
+def test_a_pasta_do_agendador_tem_de_ser_do_sistema_ou_dos_administradores():
+    """N3: a pasta do programa no Agendador com as licenças de fábrica passa; criada antes por uma conta comum (dona),
+    ou dando controle total a "Todos", ou passando para as tarefas o direito de uma conta comum gravar, não passa."""
+    assert windows.problemas_da_pasta_de_tarefas(_PASTA_DE_FABRICA) == []
+    problemas = " ".join(windows.problemas_da_pasta_de_tarefas(_PASTA_DA_CONTA_COMUM))
+    assert "dono" in problemas and "Todos" in problemas
+    assert windows.problemas_da_pasta_de_tarefas("O:BAD:(A;;FA;;;BA)(A;OI;FW;;;AU)")          # passa para as tarefas
+    assert windows.problemas_da_pasta_de_tarefas("O:BAD:(A;;FA;;;BA)(A;;WD;;;BU)")            # muda a licença
+    assert windows.conferir_pasta_de_tarefas().dados.get("existe") in (True, False)
+
+
+def test_a_tarefa_nao_e_criada_numa_pasta_do_agendador_que_nao_e_segura(monkeypatch):
+    """N3: se a pasta do programa no Agendador já existe e não é segura, a peça recusa ANTES de pedir a tarefa ao
+    Windows, com o aviso em português, e nada é criado. A leitura da pasta é trocada só para dizer que ela existe e
+    não confere."""
+    nome = f"EditorImpressao\\Teste da pasta insegura {os.getpid()}"
+    monkeypatch.setattr(windows, "pasta_de_tarefas_existe", lambda: True)
+    monkeypatch.setattr(windows, "conferir_pasta_de_tarefas", lambda: windows.Resposta(
+        windows.FALHOU, "a pasta do programa no Agendador não é segura: Todos pode mexer"))
+    xml = windows.xml_da_tarefa_do_sistema("C:\\nao\\existe.exe", "", "teste", "D:(A;;FA;;;BA)(A;;FA;;;SY)")
+    r = windows.criar_tarefa(nome, xml)
+    assert r.desfecho == windows.FALHOU and "não é segura" in r.motivo and "não foi criada" in r.motivo
+    assert windows.ler_tarefa(nome).existe is False
+
+
+def test_a_pasta_de_troca_fica_so_quando_o_trabalho_pode_continuar():
+    """Mutação A9 da segunda volta: a pasta de troca fica depois do tempo esgotado ou sem dar para acompanhar (o
+    trabalho com licença ainda pode estar usando); em todos os outros casos, ela é apagada."""
+    assert windows.manter_a_pasta_de_troca("tempo") and windows.manter_a_pasta_de_troca("sem_acompanhar")
+    for houve in ("terminou", "nao", "erro:2", "erro:5"):
+        assert not windows.manter_a_pasta_de_troca(houve), houve
+
+
+def test_apagar_a_pasta_do_agendador_confere_que_sumiu(monkeypatch):
+    """Mutação A6b da segunda volta: depois de pedir para apagar a pasta do programa no Agendador, a peça confere que
+    ela sumiu; se a leitura ainda diz que existe, é "falhou". Só roda quando a pasta de verdade não existe (o pedido de
+    apagar não acha nada para apagar); a leitura é trocada para dizer sempre que existe."""
+    if windows.pasta_de_tarefas_existe() is not False:
+        pytest.skip("a pasta do programa existe neste Windows: o teste não pede para apagá-la")
+    monkeypatch.setattr(windows, "pasta_de_tarefas_existe", lambda: True)
+    assert windows.apagar_pasta_de_tarefas().desfecho == windows.FALHOU

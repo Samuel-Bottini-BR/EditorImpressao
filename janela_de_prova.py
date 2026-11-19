@@ -69,6 +69,7 @@ RODOU = "tarefa-rodou.txt"
 SEGREDO_DE_PROVA = "Prova: senha com acento çÃõ€ e espaço"      # nunca a senha dos testes; nunca mostrado
 TEXTO_COM_ACENTO = "Ação, ÊXITO, coração, € 10"
 ESPERA_ANTES_DA_PERGUNTA_3_S = 10
+ESPERA_DO_RESULTADO_DA_TAREFA_S = 60
 # Como estava o Agendador antes da primeira pergunta (a pasta do programa existia?), para a pergunta 3 deixá-lo como
 # estava (D-722). Gravado na primeira vez da pergunta 1 e nunca sobrescrito; apagado pela pergunta 3 quando ela desfaz.
 ESTADO_DE_ANTES = RAIZ / "relatorios" / "janela-de-prova" / "agendador-antes-da-prova.json"
@@ -283,7 +284,7 @@ def prova_pergunta_1(dizer: Callable[[str], None], programa: list[str] | None, j
         dizer(f"Esta conta mandou a tarefa rodar; o Windows respondeu: {_resposta_do_windows(rodar)}")
         # Só vale o resultado escrito DEPOIS de mandar rodar (achado 2 de quem tentou quebrar: um arquivo da vez
         # anterior enganava a prova). O passo com licença também o deixou vazio antes.
-        fim = time.monotonic() + 60
+        fim = time.monotonic() + ESPERA_DO_RESULTADO_DA_TAREFA_S
         texto = ""
         while time.monotonic() < fim:
             if rodou.exists() and rodou.stat().st_mtime >= marco - 1:
@@ -296,7 +297,8 @@ def prova_pergunta_1(dizer: Callable[[str], None], programa: list[str] | None, j
             dizer(f"A tarefa rodou às {hora} como {nome} ({sid})"
                   + (": é o sistema, certo." if sid == windows.SID_SISTEMA else ": NÃO é o sistema."))
         else:
-            dizer("A tarefa não escreveu que rodou em 60 segundos (depois de mandar rodar).")
+            dizer(f"A tarefa não escreveu que rodou em {ESPERA_DO_RESULTADO_DA_TAREFA_S} segundos (depois de mandar "
+                  "rodar).")
 
 
 def prova_pergunta_2(dizer: Callable[[str], None], programa: list[str] | None, janela: int | None) -> None:
@@ -310,12 +312,36 @@ def prova_pergunta_2(dizer: Callable[[str], None], programa: list[str] | None, j
         dizer("Nada mudou: " + ("conferido (a tarefa não existe)." if t.existe is False else "NÃO CONFERE."))
 
 
+def apagar_a_pasta_do_agendador(existia: bool | None) -> bool:
+    """A pergunta 3 apaga a pasta do programa no Agendador? Só se ela NÃO existia antes da prova (foi a prova que a
+    criou). Se existia, ou se não se sabe, fica (D-722: deixar o Agendador como estava)."""
+    return existia is False
+
+
+def frase_da_pasta_do_agendador(existia: bool | None, agora: bool | None) -> str:
+    """O que a janela diz da pasta do programa no Agendador no fim da pergunta 3, comparando com antes da prova.
+    Nunca diz "foi apagada" quando ela nem foi criada (achado 6 da segunda volta de quem tentou quebrar)."""
+    nome = f"A pasta \\EditorImpressao do Agendador"
+    if existia is False:
+        if agora is False:
+            return f"{nome} não existia antes da prova e não existe agora: o Agendador está como estava."
+        if agora is True:
+            return f"{nome} não existia antes da prova e EXISTE agora: ELA FICOU."
+        return f"{nome} não existia antes da prova; agora não deu para saber se existe."
+    if existia is True:
+        if agora is True:
+            return f"{nome} já existia antes da prova e continua existindo, como estava."
+        return f"{nome} já existia antes da prova e NÃO EXISTE MAIS (ou não deu para saber)."
+    return (f"Não se sabe se a pasta \\EditorImpressao do Agendador existia antes da prova; agora "
+            + {True: "existe.", False: "não existe.", None: "não deu para saber."}[agora])
+
+
 def prova_pergunta_3(dizer: Callable[[str], None], programa: list[str] | None, janela: int | None) -> None:
     """Prova 4 (pergunta 3, com o navegador na frente, "Sim"): desfaz o que a pergunta 1 (e a 2, se recebeu "Sim")
     criou, indo até o fim mesmo que um passo falhe, e diz, lido de novo por fora, o que foi desfeito e o que ficou."""
     antes = json.loads(ESTADO_DE_ANTES.read_text(encoding="utf-8")) if ESTADO_DE_ANTES.exists() else {}
     existia = antes.get("pasta_do_agendador_existia")
-    apagar_a_pasta = existia is False
+    apagar_a_pasta = apagar_a_pasta_do_agendador(existia)
     if existia is None:
         dizer("Não se sabe se a pasta \\EditorImpressao do Agendador existia antes da prova: ela NÃO será apagada.")
     for falta in range(ESPERA_ANTES_DA_PERGUNTA_3_S, 0, -1):
@@ -330,11 +356,7 @@ def prova_pergunta_3(dizer: Callable[[str], None], programa: list[str] | None, j
     _ler_tarefa(dizer, TAREFA_DO_NAO)
     _ler_pasta(dizer)
     agora = _ler_pasta_do_agendador(dizer)
-    if existia is False:
-        dizer("A pasta \\EditorImpressao do Agendador não existia antes da prova: "
-              + ("foi apagada, o Agendador ficou como estava." if agora is False else "ELA FICOU."))
-    elif existia is True:
-        dizer("A pasta \\EditorImpressao do Agendador já existia antes da prova: ficou, como estava.")
+    dizer(frase_da_pasta_do_agendador(existia, agora))
     if r.deu_certo and (agora is False or existia is True):
         ESTADO_DE_ANTES.unlink(missing_ok=True)
 

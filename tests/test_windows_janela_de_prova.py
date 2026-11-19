@@ -11,6 +11,8 @@ Seguro mexer: acrescentar casos sem pergunta. Arriscado: chamar aqui uma prova q
 
 from __future__ import annotations
 
+import json
+import os
 import sys
 import time
 from dataclasses import asdict
@@ -122,3 +124,109 @@ def test_a_janela_usa_a_peca_e_nao_fala_com_o_windows_sozinha():
     assert "windows._" not in texto
     for proibido in ("import ctypes", "import subprocess", "import winreg"):
         assert proibido not in texto
+
+
+# ---------------------------------------------------------------------------------------------------------------------
+# A segunda volta de quem tentou quebrar (19/11): as decisões da janela, sem o Windows
+# ---------------------------------------------------------------------------------------------------------------------
+
+def test_a_frase_da_pasta_do_agendador_nunca_diz_apagada_sem_ter_sido_criada():
+    """Achado 6 da segunda volta: a janela dizia "foi apagada" quando a pasta nem tinha sido criada. A frase compara
+    antes e agora, e só diz o que leu."""
+    import janela_de_prova as jp
+
+    for existia in (True, False, None):
+        for agora in (True, False, None):
+            assert "foi apagada" not in jp.frase_da_pasta_do_agendador(existia, agora)
+    assert "está como estava" in jp.frase_da_pasta_do_agendador(False, False)
+    assert "ELA FICOU" in jp.frase_da_pasta_do_agendador(False, True)
+    assert "NÃO EXISTE MAIS" in jp.frase_da_pasta_do_agendador(True, False)
+
+
+def test_a_decisao_de_apagar_a_pasta_do_agendador():
+    """Achado 6: a pasta do programa no Agendador só é apagada pela pergunta 3 se não existia antes da prova; se
+    existia, ou se não se sabe, fica."""
+    import janela_de_prova as jp
+
+    assert jp.apagar_a_pasta_do_agendador(False) is True
+    assert jp.apagar_a_pasta_do_agendador(True) is False
+    assert jp.apagar_a_pasta_do_agendador(None) is False
+
+
+def _pergunta_3_sem_o_windows(monkeypatch, tmp_path, existia):
+    """Roda a pergunta 3 com o pedido de licença trocado por um que anota o pedido e responde "Não" (nenhuma pergunta
+    do Windows), o estado de antes num arquivo do teste e as leituras da pasta do Agendador dizendo "não existe"."""
+    import janela_de_prova as jp
+    from core import windows
+
+    estado = tmp_path / "antes.json"
+    if existia is not None:
+        estado.write_text(json.dumps({"pasta_do_agendador_existia": existia}), encoding="utf-8")
+    pedidos = []
+
+    def pedir(passos, **opcoes):
+        """Anota o pedido e responde "Não"."""
+        pedidos.append((passos, opcoes))
+        return windows.Resposta(windows.DISSE_NAO, "você disse Não; nada mudou")
+
+    monkeypatch.setattr(jp, "ESTADO_DE_ANTES", estado)
+    monkeypatch.setattr(jp, "ESPERA_ANTES_DA_PERGUNTA_3_S", 0)
+    monkeypatch.setattr(windows, "pedir_licenca", pedir)
+    monkeypatch.setattr(windows, "pasta_de_tarefas_existe", lambda: False)
+    linhas: list[str] = []
+    jp.prova_pergunta_3(linhas.append, None, None)
+    return pedidos, linhas
+
+
+def test_a_pergunta_3_pede_ate_o_fim_e_a_pasta_do_agendador_so_se_a_prova_a_criou(monkeypatch, tmp_path):
+    """Mutações A1c e A6 da segunda volta: a pergunta 3 pede "ir até o fim" e inclui apagar a pasta do Agendador só
+    quando o estado de antes diz que ela não existia; a frase do fim não diz "foi apagada"."""
+    pedidos, linhas = _pergunta_3_sem_o_windows(monkeypatch, tmp_path, existia=False)
+    passos, opcoes = pedidos[0]
+    assert opcoes.get("ate_o_fim") is True
+    assert [p.tipo for p in passos].count("apagar_pasta_de_tarefas") == 1
+    assert any("não existia antes da prova e não existe agora" in l for l in linhas)
+    assert not any("foi apagada" in l for l in linhas)
+    pedidos, _ = _pergunta_3_sem_o_windows(monkeypatch, tmp_path, existia=True)
+    assert "apagar_pasta_de_tarefas" not in [p.tipo for p in pedidos[0][0]]
+
+
+def _pergunta_1_sem_o_windows(monkeypatch, tmp_path, resultado_novo: bool):
+    """Roda a pergunta 1 sem o Windows: o pedido de licença responde "deu certo", a tarefa "existe", e o resultado
+    da tarefa numa pasta do teste: um arquivo velho (da vez anterior) e, se `resultado_novo`, um novo escrito quando a
+    tarefa "roda"."""
+    import janela_de_prova as jp
+    from core import windows
+
+    rodou = tmp_path / jp.RODOU
+    rodou.write_text(windows.SID_SISTEMA + "|VELHO|01:02:03", encoding="utf-8")
+    velho = time.time() - 3600
+    os.utime(rodou, (velho, velho))
+
+    def rodar(_nome, limite_s=60):
+        """A tarefa "roda": escreve o resultado novo, se o teste pediu."""
+        if resultado_novo:
+            rodou.write_text(windows.SID_SISTEMA + "|NOVO|10:20:30", encoding="utf-8")
+        return windows.Resposta(windows.DEU_CERTO, dados={"saida": "ÊXITO"})
+
+    monkeypatch.setattr(jp, "ESTADO_DE_ANTES", tmp_path / "antes.json")
+    monkeypatch.setattr(jp, "ESPERA_DO_RESULTADO_DA_TAREFA_S", 2)
+    monkeypatch.setattr(windows, "pasta_de_tarefas_existe", lambda: False)
+    monkeypatch.setattr(windows, "pedir_licenca", lambda passos, **o: windows.Resposta(windows.DEU_CERTO))
+    monkeypatch.setattr(windows, "conferir_pasta_segura", lambda nome: windows.Resposta(windows.FALHOU,
+                                                                                      dados={"existe": False}))
+    monkeypatch.setattr(windows, "ler_tarefa", lambda nome, limite_s=60: windows.Tarefa(nome, True, True))
+    monkeypatch.setattr(windows, "rodar_tarefa", rodar)
+    monkeypatch.setattr(windows, "pasta_segura", lambda nome: tmp_path)
+    linhas: list[str] = []
+    jp.prova_pergunta_1(linhas.append, None, None)
+    return linhas
+
+
+def test_a_pergunta_1_nao_aceita_o_resultado_velho_da_tarefa(monkeypatch, tmp_path):
+    """Mutação A2 da segunda volta: a janela só aceita o resultado da tarefa escrito DEPOIS de mandar rodar. Com só o
+    arquivo velho, diz que a tarefa não escreveu; com o novo, diz a hora nova."""
+    linhas = _pergunta_1_sem_o_windows(monkeypatch, tmp_path, resultado_novo=False)
+    assert any("não escreveu que rodou" in l for l in linhas) and not any("VELHO" in l for l in linhas)
+    linhas = _pergunta_1_sem_o_windows(monkeypatch, tmp_path, resultado_novo=True)
+    assert any("rodou às 10:20:30" in l and "é o sistema, certo" in l for l in linhas)
