@@ -108,3 +108,12 @@
 16:19:34  Lido no Windows: a pasta \EditorImpressao do Agendador não existe.
 16:19:34  Não se sabe se a pasta \EditorImpressao do Agendador existia antes da prova; agora não existe.
 16:19:34  (fim)
+16:42:30  ===== 5. Programa que não existe =====
+16:42:30  (a) Programa que não existe:
+16:42:30  Resposta: FALHOU — não achei o programa a abrir com a licença
+16:42:30     (técnico: C:\Esta pasta nao existe\EditorImpressao.exe)
+16:42:30  (b) Arquivo que existe e não é programa (vai ao Windows; não deve aparecer caixa nem pergunta):
+16:42:30  Resposta: FALHOU — o Windows não sabe pedir licença para esse arquivo
+16:42:30  A janela do programa estava na frente quando pediu: sim
+16:42:30     (técnico: ShellExecuteExW erro 1155)
+16:42:30  (fim)
