@@ -33,6 +33,10 @@ teste com o porteiro ligado). Este ONDE-PAREI é também o formulário da entreg
   à vista"). Consertados N1 a N4, a frase do achado 6 e as mutações que passavam (destinos em "O que o agente que
   tentou quebrar achou", segunda volta). Prova de reversão: 26 de 27 acusadas no PC; a 27a (M12) só roda no GitHub
   (`anexos/reversao-volta2-resultado.txt`).
+- 19/11: terceira volta (`quem-quebrou/relatorio-3.md`, commit 16bc32fe: "pode ir à prova à vista"). Consertados T1,
+  T2 e T3 (destinos em "O que o agente que tentou quebrar achou", terceira volta). Prova de reversão: 6 de 7 no PC;
+  a do T2 só roda no GitHub (`anexos/reversao-volta3-resultado.txt`). **Próximo:** a gerente monta o programa no C:
+  (comando em "A prova de verdade") e faz a sessão A.
 
 ## Decisões que esta tarefa precisa cumprir
 
@@ -378,6 +382,10 @@ Lido (documentação ou código), separado do deduzido:
   só no GitHub); `tests/test_windows_janela_de_prova.py` 10; `tests/test_conferencias_codigo.py` 77;
   `tests/test_conferencias_excecoes.py` 14. Prova de reversão numa cópia à parte: 26 de 27 acusadas; a que falta (M12)
   é pulada no PC pelo N4 (`anexos/reversao-volta2-resultado.txt`).
+- **Volta 3, no PC, um arquivo por vez** (19/11): `tests/test_windows_peca.py` 51 passaram e 2 pulados (os que
+  criam tarefa de verdade, só no GitHub); `tests/test_windows_janela_de_prova.py` 10; `tests/test_conferencias_codigo.py`
+  77; `tests/test_conferencias_excecoes.py` 14.
+- **No GitHub, volta 3:** RODADA_VOLTA3
 - **No GitHub, volta 2:** rodada 44587786297, sobre o commit 6bf3459a: **success** na segunda tentativa (só a parte 3
   rodou de novo). PORTEIRO: success (o trabalho "Porteiro (juiz da versao de teste)"). Na primeira tentativa falhou só
   `tests/test_decisoes_gravura_a_mao.py::test_d659_g_outros_filtros_a_mao_nada_e_procurado_e_sai_igual_ao_de_antes`
@@ -525,7 +533,7 @@ sem o certificado pago, a pergunta mostra o **nome do arquivo** do programa, e o
 
 ## Commit
 
-6bf3459a (o último commit de código da volta 2; depois dele só este formulário muda).
+COMMIT_VOLTA3
 
 ## O que o agente que tentou quebrar achou
 
@@ -604,6 +612,23 @@ prova de reversão em `anexos/reversao-volta2-resultado.txt`.
 - **As mutações que passavam**: A1c, A2, A6, A6b e A9 ganharam teste em baf27718 (todas acusadas). A1b e M12 só o
   GitHub prova; A9c não dá para provocar: em "Ressalvas".
 - **O cuidado do achado 15**: em "Ressalvas", marcado para o pacote do passo 3.
+
+**Terceira volta** (relatório 3, `quem-quebrou/relatorio-3.md`, commit 16bc32fe). Consertos em c87f7bfe; prova de
+reversão em `anexos/reversao-volta3-resultado.txt`.
+
+- **T1, dois jeitos de escrever o caminho passavam pela recusa** (a raiz global e o volume por número): consertado em
+  c87f7bfe. O caminho com prefixo é resolvido inteiro pelo Windows antes de perder o prefixo, e depois só vale com
+  letra de disco; tudo em `_caminho_do_programa`
+  (`tests/test_windows_peca.py::test_a_recusa_resolve_o_caminho_inteiro_antes_de_tirar_o_prefixo`; acusa as duas
+  mutações).
+- **T2, a conferência de depois da pasta do Agendador sem teste**: consertado em c87f7bfe
+  (`tests/test_windows_peca.py::test_a_tarefa_numa_pasta_do_agendador_que_mudou_no_meio_e_apagada`). Como o N4, ele
+  cria uma tarefa de verdade, então só roda no GitHub; no PC é pulado (e a mutação dele não é acusada no PC).
+- **T3, as frases**: consertado em c87f7bfe. O verbo concorda com a conta (`frase_da_conta()`: "Todos podem",
+  "Administradores podem", "fotog pode"); conta comum sem o computador na frente; mais contas de fábrica em português
+  pelo número, na mesma função (`nome_para_mostrar()`); o número do erro do Windows saiu das frases que a pessoa lê e
+  ficou no técnico, em toda a peça (`tests/test_windows_peca.py::test_as_frases_concordam_e_nao_levam_numero_do_windows`).
+  Nada fora da peça mudou por isso.
 - **Pedido da gerente depois da rodada 44582797901 (o Windows do GitHub em inglês escreveu "Everyone"; a frase mostrava
   o número da conta)**: consertado em 6bf3459a. As contas de fábrica são ditas em português pela peça, a partir do
   número delas, num lugar só (`nome_para_mostrar()`); conta sem nome é "outra conta deste computador"; nenhuma frase
@@ -614,6 +639,24 @@ prova de reversão em `anexos/reversao-volta2-resultado.txt`.
 ## A prova de verdade
 
 (a preencher na sessão A, à vista)
+
+**Como montar o programa no C: para a sessão A** (para a gerente; eu não rodei). No PowerShell, na cópia deste ramo,
+no último commit de código (o de "Commit" abaixo):
+
+```
+cd D:\programas\EditorImpressao\.claude\worktrees\passo1
+if (-not (Test-Path modelos)) { New-Item -ItemType Junction -Path modelos -Target D:\programas\EditorImpressao\modelos }
+if ((Get-PSDrive C).Free -lt 23GB) { throw "o C: não tem a reserva de 20 GB mais os ~3 GB do programa" }
+D:\programas\EditorImpressao\.venv\Scripts\python.exe empacotar.py --modo pasta
+robocopy dist\EditorImpressao C:\EditorImpressaoProva\EditorImpressao /MIR
+```
+
+- A junção `modelos` aponta para a pasta dos modelos do repositório (o empacotador para sem ela); para tirá-la depois,
+  `(Get-Item modelos).Delete()`, que tira só o atalho.
+- O empacotador monta em `dist\` desta cópia (no D:) e o resultado é copiado para o C:; montar no próprio C: é do
+  passo 2. Nenhuma pergunta do Windows nesse caminho.
+- Depois, a janela de prova: `D:\programas\EditorImpressao\.venv\Scripts\python.exe janela_de_prova.py --programa
+  C:\EditorImpressaoProva\EditorImpressao\EditorImpressao.exe`.
 
 ## Perguntas do Windows que o Samuel vê
 
