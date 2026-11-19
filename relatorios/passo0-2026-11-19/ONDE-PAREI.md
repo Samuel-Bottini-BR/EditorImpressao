@@ -23,8 +23,9 @@ o formulário da entrega (D-792), conferido pelo próprio programa:
 
 - Feito: o pacote, o porteiro (24 conferências), a lista de exceções (44 lugares, proposta), o formulário, o gancho
   (não ligado), o pacote do passo 1 e o texto para o Samuel. Testes novos passam no PC, um arquivo por vez.
-- As duas rodadas do GitHub passaram (ver "Testes"). O formulário foi conferido pelo próprio programa, com o GitHub,
-  na etapa "antes de ir ao agente que tenta quebrar". Entregue à gerente; o próximo é quem tenta quebrar.
+- Conferindo este formulário com o GitHub, o próprio programa achou um defeito nele: com duas rodadas citadas, a K21
+  olhava só a última citada. Consertado (`e2fad264`, com teste de reversão que falha no código antigo). Esperando a
+  rodada 44453253677 (do commit do conserto) para conferir o formulário de novo.
 
 ## Decisões que esta tarefa precisa cumprir
 
@@ -203,7 +204,7 @@ conferência antes do commit (não ligada) e o pacote do passo 1, montado pelo p
 - No PC, um arquivo por vez (`QT_QPA_PLATFORM=offscreen`, pasta temporária fora do projeto):
   `tests/test_conferencias_codigo.py` 21 passaram; `tests/test_conferencias_excecoes.py` 10 passaram e 1 parado de
   propósito (o que barra o repositório espera o "sim"); `tests/test_conferencias_mudancas.py` 14;
-  `tests/test_conferencias_formulario.py` 25; `tests/test_conferencias_pacote.py` 10;
+  `tests/test_conferencias_formulario.py` 26; `tests/test_conferencias_pacote.py` 10;
   `tests/test_conferencias_antes_do_commit.py` 8.
 - Mutação (desfazer cada correção do esboço numa cópia e ver o teste dela falhar): correção 1, 2 testes falham;
   correção 2, 1 falha; correção 3, 1 falha.
