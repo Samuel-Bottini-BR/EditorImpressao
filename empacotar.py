@@ -1304,7 +1304,7 @@ def conferir_espaco(pasta: Path, precisa: int, reserva: int = RESERVA_DO_DISCO) 
 
 
 def rodar_vpk(comando: list, rascunho: Path, reserva: int = RESERVA_DO_DISCO,
-              intervalo_s: float = INTERVALO_DA_VIGIA_S, livre=espaco_livre) -> str | None:
+              intervalo_s: float = INTERVALO_DA_VIGIA_S, livre=None) -> str | None:
     """A UNICA funcao que roda o vpk (plano-v3, peca 8). None = terminou bem; senao o motivo, em portugues.
 
     - a pasta temporaria do vpk (VELOPACK_TEMP, TEMP e TMP: o vpk 1.2.161 le nessa
@@ -1319,6 +1319,7 @@ def rodar_vpk(comando: list, rascunho: Path, reserva: int = RESERVA_DO_DISCO,
     caminhos, a pasta temporaria desviada a mao)."""
     import os
 
+    livre = livre or espaco_livre
     temp = Path(rascunho) / "temp"
     temp.mkdir(parents=True, exist_ok=True)
     ambiente = {**os.environ, "VELOPACK_TEMP": str(temp), "TEMP": str(temp), "TMP": str(temp)}
@@ -1364,8 +1365,8 @@ def nupkg_inteiro(saida: Path, versao_do_pacote: str) -> Path:
 
 def esperados_no_pacote_do_velopack(pecas: PecasDosDetectores | None, saida: Saida = ATUALIZACAO) -> list[str]:
     """Os caminhos (relativos a pasta do programa, com /) que TEM de estar no
-    pacote do Velopack: o .exe, cada modelo, cada DLL, e (com as pecas) o
-    Tesseract, os idiomas e o Visual C++; o motor-exigido.json e o arquivo do
+    pacote do Velopack: o .exe, cada modelo, cada DLL, o Visual C++, e (com as
+    pecas) o Tesseract e os idiomas; o motor-exigido.json e o arquivo do
     motor em instalar\\ quando a saida pede (SAIDAS). O motor solto so na saida
     que o leva (nenhuma das do Velopack)."""
     import atualizacao
@@ -1377,7 +1378,8 @@ def esperados_no_pacote_do_velopack(pecas: PecasDosDetectores | None, saida: Sai
     saida_ += [f"{INTERNO}/{destino}/{origem.name}" for origem, destino in nativos_do_programa()]
     if pecas is not None:
         saida_ += [relativo for _, relativo in _destinos_das_pecas(pecas)]
-        saida_ += [f"{atualizacao.PASTA_DO_QUE_SE_INSTALA}/{atualizacao.VC_REDIST_NOME}"]
+    # o Visual C++ sempre (D-727), com ou sem as pecas (a pasta pronta tambem tem de trazer)
+    saida_ += [f"{atualizacao.PASTA_DO_QUE_SE_INSTALA}/{atualizacao.VC_REDIST_NOME}"]
     if saida.motor_solto:
         saida_ += [f"{PASTA_DO_MOTOR}/{a.replace(chr(92), '/')}" for a in AMOSTRA_DO_MOTOR]
     if saida.motor_exigido:
@@ -1415,7 +1417,7 @@ def conferir_pacote_do_velopack(nupkg: Path, pecas: PecasDosDetectores | None,
 def construir_pacote_do_velopack(saida_do_vpk: Path, versao_do_pacote: str, saida: Saida = ATUALIZACAO,
                                  pasta: Path | None = None, motor: MotorPublicado | None = None,
                                  arquivo_do_motor: Path | None = None, rascunho: Path | None = None,
-                                 vpk: Path | None = None) -> Path | None:
+                                 vpk: Path | None = None, pecas: PecasDosDetectores | None = None) -> Path | None:
     """Monta o pacote do Velopack de uma saida (ATUALIZACAO ou INSTALADOR): a pasta
     (construir_pasta, com todas as travas; ou a 'pasta' ja pronta), preparar_saida,
     rodar_vpk (a funcao unica), apaga o Setup.exe na hora (D-795) e confere o
@@ -1423,13 +1425,14 @@ def construir_pacote_do_velopack(saida_do_vpk: Path, versao_do_pacote: str, said
 
     saida_do_vpk: a pasta de saida do vpk (tem de ser nova: o vpk pergunta se ja
     houver versao la). rascunho: onde fica a pasta temporaria do vpk (o rascunho
-    do publicar, no C:); sem ele, a pasta acima de saida_do_vpk."""
+    do publicar, no C:); sem ele, a pasta acima de saida_do_vpk. pecas: as pecas
+    conferidas quando a pasta foi montada por construir_pasta (para conferir o
+    Tesseract no pacote); com uma pasta pronta de outro jeito, None."""
     print(f"\n=== Pacote do Velopack ({saida.nome}, versão {versao_do_pacote}) ===")
     vpk = vpk or achar_vpk()
     if vpk is None:
         print(f"  PAREI: não achei o vpk. Instale com: {COMO_INSTALAR_O_VPK}")
         return None
-    pecas = None
     if pasta is None:
         pasta = construir_pasta(ATUALIZACAO)
         if pasta is None or _PECAS is None:
@@ -1527,7 +1530,7 @@ def conferir_pasta_pronta(pasta: Path, versao_do_pacote: str, saida: Saida = ATU
 # ---- o arquivo do motor (a publicacao propria do motor, D-768, D-788) ------
 
 def zipar_motor(pasta_do_motor: Path, destino: Path, reserva: int = RESERVA_DO_DISCO,
-                livre=espaco_livre) -> str | None:
+                livre=None) -> str | None:
     """Comprime a pasta do motor num arquivo so (o que vai a publicacao do motor e,
     no instalador, a instalar\\). None = pronto e conferido; senao o motivo.
 
@@ -1538,6 +1541,7 @@ def zipar_motor(pasta_do_motor: Path, destino: Path, reserva: int = RESERVA_DO_D
     import zipfile
 
     pasta_do_motor, destino = Path(pasta_do_motor), Path(destino)
+    livre = livre or espaco_livre
     provisorio = destino.with_name(destino.name + ".fazendo")
     provisorio.unlink(missing_ok=True)
     arquivos = sorted(f for f in pasta_do_motor.rglob("*") if f.is_file())
