@@ -391,7 +391,7 @@ linha.
 
 | Código | O que foi | Família | Quem achou | Destino | Fonte |
 |---|---|---|---|---|---|
-| P1-v3-T1 | caminhos com `\?\`\?GLOBALROOT\` e `\?\`\?Volume{...}\` passavam pela recusa da peça e chegavam a programa do Windows | F2 | quebra v3 | consertado em `c87f7bfe` | `quem-quebrou/relatorio-3.md`, T1 |
+| P1-v3-T1 | caminhos com `\\?\GLOBALROOT\...` e `\\?\Volume{...}\...` passavam pela recusa da peça e chegavam a programa do Windows | F2 | quebra v3 | consertado em `c87f7bfe` | `quem-quebrou/relatorio-3.md`, T1 |
 | P1-v3-T2 | a conferência de depois da pasta do Agendador não tinha teste | F3 | quebra v3 | consertado em `c87f7bfe` (teste só no GitHub) | idem, T2 |
 | P1-v3-T3 | frases da peça com "Todos pode", o nome do computador na conta e números de erro do Windows ("0x…") | F6 | quebra v3 | consertado em `c87f7bfe` | idem, T3 |
 | P1-gh-5 | o teste da gravura à mão (`test_d659_g...[original]`) falhou uma vez no GitHub e passou na repetição (não é deste passo) | F4 | GitHub (44587786297) | Lista de bugs (instabilidade) | ONDE-PAREI do passo 1, "Ideias e bugs" |
