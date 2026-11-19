@@ -32,6 +32,9 @@ DE_FORA = {
     "avaliar.py": "a régua dos filtros, que pergunta ao Windows onde fica a Área de Trabalho",
 }
 
+# Quantos lugares a decisão dele de deixar para depois (19/11) contou em cada arquivo.
+NA_DECISAO_DELE = {"ui/automatico.py": 2, "teste_velocidade.py": 2, "avaliar.py": 1}
+
 # Os lugares novos fora do plano, ditos como ele conhece, por arquivo (o que aquele pedaço faz com o Windows).
 FORA_DO_PLANO_POR_ARQUIVO = {
     "teste_velocidade.py": "o teste de velocidade lê a memória, a placa de vídeo e o disco direto no Windows e mexe na "
@@ -87,9 +90,15 @@ def texto(lista: Lista) -> str:
         if por_passo.get(passo):
             linhas.append(f"- {_lugares(por_passo[passo])}: {nome}.")
     if depois:
-        partes = [f"{DE_FORA.get(a, a)} ({_lugares(n)})" for a, n in _por_arquivo(lista, DEPOIS_DA_ENTREGA).items()]
-        linhas += ["", f"**Os {depois} que ficam para depois da entrega ao Kaique, como você escolheu:** "
-                   + "; ".join(partes) + "."]
+        agora = _por_arquivo(lista, DEPOIS_DA_ENTREGA)
+        partes = [f"{DE_FORA.get(a, a)} ({_lugares(n)})" for a, n in agora.items()]
+        linhas += ["", "**Os 5 lugares que você deixou para depois da entrega ao Kaique continuam lá, como você "
+                   "escolheu:** " + "; ".join(partes) + "."]
+        a_mais = [f"{DE_FORA.get(a, a).split(',')[0]} agora conta {_lugares(n)} no mesmo pedaço"
+                  for a, n in agora.items() if n > NA_DECISAO_DELE.get(a, 0)]
+        if a_mais:
+            linhas[-1] += (" Com a busca maior, " + "; ".join(a_mais) + " (uma linha a mais que prepara a mesma "
+                           f"pergunta ao Windows), por isso a conta dá {depois}.")
     linhas += [
         "",
         "**O que você escolhe:** sim, a lista entra assim e a conferência passa a barrar; ou não, e diga o que mudar "
