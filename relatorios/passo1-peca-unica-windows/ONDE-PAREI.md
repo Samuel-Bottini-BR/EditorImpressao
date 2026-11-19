@@ -374,7 +374,7 @@ Lido (documentação ou código), separado do deduzido:
   `tests/test_conferencias_copia_inteira.py` 2; `tests/test_decisoes_brasao.py` 22; `tests/test_decisoes_atualizacao.py`
   38; `tests/test_botoes_em_portugues.py` 5. O repositório do PC continuou inteiro (`--is-shallow-repository` = false
   antes e depois).
-- **Volta 2, no PC, um arquivo por vez** (19/11): `tests/test_windows_peca.py` 48 passaram e 1 pulado (o do N4,
+- **Volta 2, no PC, um arquivo por vez** (19/11; depois do conserto dos nomes, 49): `tests/test_windows_peca.py` 48 passaram e 1 pulado (o do N4,
   só no GitHub); `tests/test_windows_janela_de_prova.py` 10; `tests/test_conferencias_codigo.py` 77;
   `tests/test_conferencias_excecoes.py` 14. Prova de reversão numa cópia à parte: 26 de 27 acusadas; a que falta (M12)
   é pulada no PC pelo N4 (`anexos/reversao-volta2-resultado.txt`).
@@ -597,6 +597,12 @@ prova de reversão em `anexos/reversao-volta2-resultado.txt`.
 - **As mutações que passavam**: A1c, A2, A6, A6b e A9 ganharam teste em baf27718 (todas acusadas). A1b e M12 só o
   GitHub prova; A9c não dá para provocar: em "Ressalvas".
 - **O cuidado do achado 15**: em "Ressalvas", marcado para o pacote do passo 3.
+- **Pedido da gerente depois da rodada 44582797901 (o Windows do GitHub em inglês escreveu "Everyone"; a frase mostrava
+  o número da conta)**: consertado em 6bf3459a. As contas de fábrica são ditas em português pela peça, a partir do
+  número delas, num lugar só (`nome_para_mostrar()`); conta sem nome é "outra conta deste computador"; nenhuma frase
+  mostra o número cru. Vale para a pasta de troca, a pasta segura, o Agendador e a licença da tarefa
+  (`tests/test_windows_peca.py::test_as_frases_da_peca_dizem_as_contas_em_portugues_e_nunca_o_numero`, que não depende
+  da língua do Windows). A rodada 44587157615 foi cancelada por mim (era de um commit sem esse conserto).
 
 ## A prova de verdade
 
