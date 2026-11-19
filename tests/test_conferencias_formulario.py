@@ -244,3 +244,29 @@ def test_a_leitura_do_commit_testado_no_registro_do_github():
     assert github.commit_do_registro(linha) == "052be0452e5cfe3f16fb073648a4820667b3b204"
     assert github.commit_do_registro("testando o proprio commit " + "a" * 40) == "a" * 40
     assert github.commit_do_registro("nada aqui") is None
+
+
+def test_k21_vale_a_rodada_do_ultimo_commit_mesmo_citada_antes_de_uma_antiga(entrega, monkeypatch):
+    """Teste de reversão (bug achado em 19/11/2026 rodando o formulário na própria entrega do passo 0): com duas rodadas
+    citadas em "Testes", a K21 conferia só a última citada (a de um commit do meio) e devolvia a entrega, mesmo com a
+    rodada do último commit passando. Agora vale se alguma rodada citada testou o último commit e passou.
+
+    A leitura do GitHub é trocada aqui por respostas fixas (`ler_rodada`): o que se prova é a escolha entre as rodadas,
+    não a conversa com o GitHub (essa é provada com a rodada de verdade na entrega, ver o ONDE-PAREI do passo 0).
+    """
+    r, base, commit = entrega
+    s = secoes_certas(base, commit)
+    s["Testes"] = "GitHub: rodada 111111111 (o último commit), passou. Antes, a rodada 222222222 (de um commit do meio)."
+    r.escrever(f"{PASTA}/ONDE-PAREI.md", texto_de(s))
+    r.commit("ONDE-PAREI")
+    respostas = {"111111111": github.Rodada("111111111", True, True, "x", commit),
+                 "222222222": github.Rodada("222222222", True, True, "x", base)}
+    monkeypatch.setattr(github, "ler_rodada", lambda numero, repositorio: respostas[numero])
+    monkeypatch.setattr(formulario.git, "repositorio_no_github", lambda raiz: "dono/nome")
+    resultado = formulario.conferir(r.raiz / PASTA / "ONDE-PAREI.md", "quebrar", r.raiz, consultar_github=True,
+                                    olhar_o_github_do_ramo=False)
+    assert not any("K21" in p for p in resultado.problemas + resultado.pendentes), resultado.explicar()
+    respostas["111111111"] = github.Rodada("111111111", True, False, "x", commit)
+    resultado = formulario.conferir(r.raiz / PASTA / "ONDE-PAREI.md", "quebrar", r.raiz, consultar_github=True,
+                                    olhar_o_github_do_ramo=False)
+    assert any("nenhuma rodada citada vale" in p for p in resultado.problemas)

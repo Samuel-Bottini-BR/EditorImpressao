@@ -353,39 +353,55 @@ def _conferir_commit(campos: dict[str, str], raiz: Path, pasta_rel: str, r: Resu
                            "(cite o último commit do trabalho) (F18)")
 
 
+def _problema_da_rodada(rodada: github.Rodada, raiz: Path) -> str | None:
+    """O que impede esta rodada de valer para o último commit (None = vale): não passou, outro ramo, código mudado depois."""
+    if not rodada.passou:
+        return f"a rodada {rodada.numero} do GitHub não passou"
+    if not git.existe_commit(raiz, rodada.commit_testado):
+        return f"a rodada {rodada.numero} testou o commit {rodada.commit_testado[:8]}, que não está neste repositório"
+    if not git.e_ancestral(raiz, rodada.commit_testado):
+        return f"a rodada {rodada.numero} testou outro ramo (commit {rodada.commit_testado[:8]})"
+    depois = [m for m in git.mudados_entre(raiz, rodada.commit_testado) if not m.endswith(".md")]
+    if depois:
+        return (f"depois do commit que a rodada {rodada.numero} testou ({rodada.commit_testado[:8]}) mudaram arquivos "
+                f"que não são .md: {', '.join(depois[:5])}; rode o GitHub de novo")
+    return None
+
+
 def _conferir_github(campos: dict[str, str], raiz: Path, consultar: bool, r: Resultado) -> None:
-    """F11 e K21: a rodada do GitHub existe, terminou, passou e testou o último commit (ou só .md mudou depois)."""
+    """F11 e K21: alguma rodada citada terminou, passou e testou o último commit (ou só .md mudou depois dela).
+
+    Todas as rodadas citadas em "Testes" são lidas: uma rodada antiga citada (de um commit do meio) não atrapalha, e
+    a ordem em que elas aparecem não importa.
+    """
     f11 = campos.get("F11")
     if f11 is None:
         return
-    numeros = RODADA.findall(f11)
+    numeros = list(dict.fromkeys(RODADA.findall(f11)))
     if not numeros:
         r.problemas.append("\"Testes\" não traz o número da rodada do GitHub (F11, K21)")
         return
     if not consultar:
-        r.pendentes.append(f"a rodada {numeros[-1]} do GitHub não foi consultada (K21)")
+        r.pendentes.append(f"a(s) rodada(s) {', '.join(numeros)} do GitHub não foi(ram) consultada(s) (K21)")
         return
-    try:
-        rodada = github.ler_rodada(numeros[-1], git.repositorio_no_github(raiz))
-    except github.GitHubFalhou as erro:
-        r.pendentes.append(f"não deu para ler a rodada {numeros[-1]} do GitHub: {erro} (K21)")
-        return
-    if not rodada.terminada:
-        r.pendentes.append(f"a rodada {rodada.numero} ainda não terminou (K21)")
-        return
-    if not rodada.passou:
-        r.problemas.append(f"a rodada {rodada.numero} do GitHub não passou (K21)")
-    if not git.existe_commit(raiz, rodada.commit_testado):
-        r.problemas.append(f"a rodada {rodada.numero} testou o commit {rodada.commit_testado[:8]}, que não está "
-                           "neste repositório (K21)")
-        return
-    if not git.e_ancestral(raiz, rodada.commit_testado):
-        r.problemas.append(f"a rodada {rodada.numero} testou outro ramo (commit {rodada.commit_testado[:8]}) (K21)")
-        return
-    depois = [m for m in git.mudados_entre(raiz, rodada.commit_testado) if not m.endswith(".md")]
-    if depois:
-        r.problemas.append(f"depois do commit testado ({rodada.commit_testado[:8]}) mudaram arquivos que não são .md: "
-                           f"{', '.join(depois[:5])}; rode o GitHub de novo (K21)")
+    motivos, pendentes = [], []
+    for numero in numeros:
+        try:
+            rodada = github.ler_rodada(numero, git.repositorio_no_github(raiz))
+        except github.GitHubFalhou as erro:
+            pendentes.append(f"não deu para ler a rodada {numero} do GitHub: {erro}")
+            continue
+        if not rodada.terminada:
+            pendentes.append(f"a rodada {numero} ainda não terminou")
+            continue
+        motivo = _problema_da_rodada(rodada, raiz)
+        if motivo is None:
+            return      # uma rodada que vale para o último commit basta
+        motivos.append(motivo)
+    if pendentes:
+        r.pendentes += [f"{p} (K21)" for p in pendentes]
+    else:
+        r.problemas.append("nenhuma rodada citada vale para o último commit: " + "; ".join(motivos) + " (K21)")
 
 
 def conferir_relatorio_de_quem_quebra(texto: str, r: Resultado) -> None:
