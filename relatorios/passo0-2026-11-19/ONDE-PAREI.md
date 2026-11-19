@@ -23,7 +23,8 @@ o formulário da entrega (D-792), conferido pelo próprio programa:
 
 - Feito: o pacote, o porteiro (24 conferências), a lista de exceções (44 lugares, proposta), o formulário, o gancho
   (não ligado), o pacote do passo 1 e o texto para o Samuel. Testes novos passam no PC, um arquivo por vez.
-- Falta: a rodada final do GitHub depois do último commit de código, e conferir este formulário com ela.
+- Falta: o resultado das rodadas do GitHub (44449552916, de um commit do meio; 44450557071, do último commit de
+  código, `1d381001`) e conferir este formulário com a segunda.
 
 ## Decisões que esta tarefa precisa cumprir
 
