@@ -794,3 +794,4 @@ Feito pelo agente de layout, a partir do plano discutido na conversa separada (v
 | 19/11/2026 | **Pergunta 1 de 6 (D-809): regra nova e conferência do porteiro contra comandos que mexem no repositório ou nas pastas do Samuel sem ele ver** (o histórico cortado e a pasta das redes neurais esvaziada, os dois recuperados). Ele: "ok". | chat | Samuel |
 | 19/11/2026 | **Pergunta 2 de 6 (D-810): os agentes que escrevem testes recebem a lista das diferenças entre o PC dele, o GitHub e o PC do Kaique.** Ele: "ok". | chat | Samuel |
 | 19/11/2026 | **Pergunta 3 de 6 (D-811): na ficha de entrega, cada proteção vem com o teste que falha quando ela é desligada.** Ele: "ok". | chat | Samuel |
+| 19/11/2026 | **Pergunta 4 de 6 (D-812): toda conferência diz de onde vem cada informação; a que o conferido pode trocar não vale como prova.** Ele: "ok". | chat | Samuel |
