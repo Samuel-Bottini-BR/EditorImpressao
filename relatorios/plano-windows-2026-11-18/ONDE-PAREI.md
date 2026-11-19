@@ -103,3 +103,109 @@ Esta tarefa não muda nada. O que a v3 muda para o Kaique está no plano-v3, se�
 - [x] Lidos para a D-794 (§11.12, ponto 6): documentação do `QSystemTrayIcon` (Qt for Python 6); código do Velopack
   1.2.161 (`apply_windows_impl.rs`, `util_windows.rs`, `l18n/src/progress.rs`); Microsoft sobre a sessão 0; a pergunta
   do Microsoft Q&A sobre os ícones escondidos do Windows 11. O que cada um diz está no plano-v3, peça 11.
+- [x] Escrito `plano-v3.md` (+ `.html` e `.pdf` por `relatorio.gravar`; o `.pdf` fica fora do git pelo `.gitignore`,
+  como o da v2). O `plano-v2.md` ficou como estava (histórico).
+- [x] Escrito `resumo-v3.md` (+ `.html` e `.pdf`): o PDF tem uma página (conferido abrindo a imagem da página).
+- Nenhuma linha do programa nem dos testes mudou. Nenhuma janela, nenhuma pergunta do Windows, nenhum agente aberto,
+  nada apagado. O esboço do porteiro foi rodado só lendo, a partir de uma cópia numa pasta temporária, contra a cópia
+  `obra-juncao`.
+
+### Como cumpri cada uma
+- **D-791** → plano-v3, passo 0 (o porteiro em `tests/` e no git, sem gancho; a lista de partida contada: 43 lugares,
+  cada um com o passo; as três correções do esboço); "Lista de exceções do porteiro" em cada passo; seção 6.3, ponto 1
+  (os 5 de fora). Prova: a conta reproduzível com o esboço (31 achados, os mesmos da proposta) e com a busca corrigida
+  (25 de K01), descrita no detalhe técnico do plano.
+- **D-792, D-793** → passo 0 (o formulário sem condição; K23 passa hoje: os quatro arquivos de agente têm `tools:` sem
+  a ferramenta de abrir agente, conferido com `grep`).
+- **D-794** → peças 4, 6a e 11 (nova), passo 3 (leitura antes, quem quebra, prova à vista com "Não" e "Sim"), seção 4,
+  seção 6.2 item 3, seção 6.3 ponto 2, seção 8 itens 8 e 10. As fontes lidas, com as linhas, estão na peça 11.
+- **D-795** → peça 8, passo 2 (prova sem erro e com erro de propósito).
+- **D-796** → "Regras de todos os passos", passo 0 (K13), passos 3 e 4 (arquivos nomeados).
+- **D-797** → "Regras de todos os passos" ("Onde se junta"); o `master` não aparece mais no plano.
+- **D-798** → "Regras de todos os passos", passo 0 (K10), passo 6. Esta entrega não traz o rótulo.
+- **D-768 (aprovado)** → seção 1 e seção 6.2 (saiu a pendência).
+- **Fato de 19/11** → seção 6.1, risco 1; passo 1 (a sessão A prova só o que falta).
+- **X3, X6, X9, X10** → seção 6.2, item 2: apontadas, nenhuma decidida.
+- **D-765** → os 5 lugares de fora não entram em passo nenhum; viraram a pergunta 1 abaixo.
+- **D-605 / §11.8** → o fechar continua gravando e sem "quer salvar?" (`tests/test_salva_sozinho.py` continua como
+  está: seção 6.3, "parecem não combinar"; seção 8, item 10).
+
+## Perguntas para o Samuel (v3, no formato do CLAUDE.md §11.13)
+
+Ressalva para a gerente: as perguntas 2, 3 e 4 pedem print (regra 3). Eu não posso abrir janela; o print sai quando o
+agente do passo 3 desenhar a pergunta e o ícone, antes de construir. Sugiro levá-las juntas nessa hora. A pergunta 1
+pode ir já. A pergunta 5 só vai se, na sessão B, o ícone nascer escondido. O "sim" à lista de partida das exceções vai
+quando o programa do passo 0 gerar a lista (a conta de 43 é minha, lida no código).
+
+### Pergunta 1 — os 5 lugares que o porteiro acha fora da parte do Windows
+- **Do que se trata.** O porteiro é a conferência automática que barra o trabalho de um agente quando o código tem um
+  erro já conhecido. Os erros desse tipo que já estão no programa vão numa lista; cada conserto tira o seu. Contei 43
+  na versão de teste. 38 estão na parte do Windows, e este plano conserta cada um num passo.
+- **O que acontece hoje.** Os outros 5 estão fora da parte do Windows: as duas dicas do painel Automático (ao passar o
+  mouse em "desligar as marcadas" e na escolha do corte depois do Endireitar) que mostram ao Kaique um número de
+  decisão; o teste de velocidade, que abre o PowerShell por conta própria para ler a placa de vídeo e o tipo de disco
+  (é o teste que você roda de longe no notebook do Kaique); e a régua dos filtros, que pergunta ao Windows onde fica a
+  Área de Trabalho. Não é defeito novo: as duas dicas já estão na lista de defeitos de 18/11.
+- **Por que é pergunta.** Você mandou que a lista fique vazia no fim do plano, e também que nada do programa seja
+  consertado antes da entrega ao Kaique, fora a parte do Windows. Para estes 5, as duas ordens não cabem juntas.
+- **O que você escolhe:**
+  - **A:** os 5 ficam na lista com "depois da entrega ao Kaique"; a lista só fica vazia depois. Nada muda no programa
+    agora.
+  - **B:** este plano conserta os 5 (é pouco: tirar o número das duas dicas e fazer os dois programas de medir pedirem
+    ao Windows pelo mesmo caminho que o resto). É conserto fora da parte do Windows antes da entrega.
+  - **C:** só o teste de velocidade entra no plano (ele roda no notebook do Kaique pelos testes à distância); as duas
+    dicas e a régua ficam para depois da entrega.
+  - **Só comentário.**
+- **O que muda no que já funciona:** em A, nada; em C, só o jeito de o teste de velocidade perguntar ao Windows; em B,
+  também o texto das duas dicas e o jeito de a régua perguntar. O resultado das medidas não muda.
+- **Situação:** só plano. **De onde veio:** a conta que fiz no código para a lista que você confirmou em 19/11.
+- Sem sugestão minha (cada saída muda uma ordem sua); a gerente põe a dela.
+
+### Pergunta 2 — a pergunta "Atualizar agora?" ao fechar
+- **Do que se trata.** Quando chega uma versão nova e o Kaique clica "Depois", você escolheu que, ao fechar o programa,
+  apareça "Atualizar agora?". Sim: fecha, e o ícone perto do relógio mostra a porcentagem. Não: fecha sem trocar, e o
+  aviso volta na próxima abertura.
+- **O que ainda falta você dizer:**
+  - **o texto e os botões.** Sugestão de agente, para a gerente levar: título "Versão nova"; texto "Há uma versão nova
+    do Editor de Impressão. Atualizar agora? Leva uns 2 a 3 minutos, com o programa fechado."; botões "Sim, atualizar"
+    e "Não, só fechar". Outras opções para os botões: "Atualizar agora" e "Agora não"; ou "Sim" e "Não".
+  - **o X da pergunta:** A (sugestão) fecha sem trocar, igual ao "Não" (ele já tinha pedido para fechar, e o trabalho já
+    foi gravado); B volta para o programa sem fechar (como o Word faz quando pergunta algo ao fechar).
+- **O que já funciona e não muda:** o programa grava antes de fechar e nunca pergunta "quer salvar?"; a pergunta nova vem
+  depois de gravar, e nenhuma resposta perde trabalho.
+- **Situação:** decidida em 18/11 à noite, não construída. O print vai junto quando o agente desenhar. **Só comentário.**
+
+### Pergunta 3 — o ícone perto do relógio
+- **Do que se trata.** Depois do "Sim", o programa fecha e um ícone pequeno perto do relógio mostra a porcentagem da
+  troca.
+- **O que você escolhe:**
+  - **como mostra o número:** A (sugestão) uma figura que vai enchendo no ícone, com "Atualizando o Editor de
+    Impressão: 40%" quando se passa o mouse; B o número desenhado no próprio ícone (ele é muito pequeno).
+  - **no fim:** A (sugestão) some sozinho; B some e o Windows mostra um aviso "Pronto" no canto (pode não aparecer, se o
+    Windows estiver configurado para não mostrar avisos); C abre o programa.
+  - **clicar nele:** A (sugestão) não faz nada; B abre a janelinha "Atualizando o programa, espere um pouco...".
+  - **se a troca falhar:** A (sugestão) o ícone some e a frase de falha aparece na próxima abertura, como já está
+    decidido; B o ícone avisa na hora.
+- **De onde vem o número:** do trabalho feito de verdade (o que já foi copiado e desempacotado), nunca de um relógio. Num
+  trecho que a ferramenta de atualizar faz por dentro, se não der para medir, o ícone diz "atualizando" sem número.
+- **De onde veio:** pedido seu de 18/11 à noite, com o print dos ícones perto do relógio. Programas como o OneDrive e o
+  Dropbox mostram o andamento assim. **Situação:** decidida, não construída. **Só comentário.**
+
+### Pergunta 4 — dois casos que você ainda não disse
+- **O Windows desligando com o programa aberto e uma versão esperando.** A (sugestão) a pergunta não aparece, conta como
+  "Não", e o aviso volta na próxima abertura (uma pergunta aberta na hora de desligar faz o Windows dizer que um
+  programa está impedindo o desligamento); B outra coisa que você disser.
+- **Fechar sem ter clicado nem "Reiniciar agora" nem "Depois" no aviso.** A (sugestão) a pergunta aparece do mesmo jeito
+  (a versão está esperando igual); B só aparece se ele clicou "Depois".
+- **Situação:** não decidido; aparece na prova da sessão do atualizador. **Só comentário.**
+
+### Pergunta 5 (só se acontecer na sessão do atualizador) — o ícone escondido atrás da setinha "^"
+- **Do que se trata.** No Windows 11, o ícone de um programa novo costuma nascer escondido atrás da setinha "^" ao lado
+  do relógio, e volta a esconder depois de cada atualização do programa (li num fórum da Microsoft, resposta de um
+  moderador, não documentação oficial). O programa não força o ícone para fora: seria mexer por dentro numa
+  configuração do Windows.
+- **O que você escolhe:** A aceitar (você, na instalação no notebook, pode deixá-lo sempre à vista nas Configurações do
+  Windows, se o Windows guardar a escolha); B junto com o ícone, um aviso do Windows no canto dizendo onde ver o
+  andamento (coisa nova; e o Windows pode não mostrar o aviso); C a janelinha pequena da troca no lugar do ícone (muda
+  o que você escolheu). **Só comentário.** Sem sugestão minha.
+- **Situação:** só se confirma vendo no seu PC, na sessão do atualizador; antes disso a gerente não pergunta.
