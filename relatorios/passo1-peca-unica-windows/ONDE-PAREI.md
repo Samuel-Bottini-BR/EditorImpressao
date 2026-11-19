@@ -445,7 +445,7 @@ Lido (documentação ou código), separado do deduzido:
   recusado antes). Fica para a gerente dizer se vale como prova extra (não substitui a sessão à vista).
 - **Volta 1, a prova 5 (b)** (arquivo que existe e não é programa) chega ao Windows de verdade e só roda na sessão à
   vista; pela documentação, ela não abre caixa nem pergunta (não rodei, para não arriscar a tela do Samuel).
-- **Volta 1, o arquivo `relatorios/janela-de-prova/agendador-antes-da-prova.json`** nasce na sessão A (antes da
+- **Volta 1, o arquivo agendador-antes-da-prova (na pasta relatorios/janela-de-prova)** nasce na sessão A (antes da
   pergunta 1) e a pergunta 3 o apaga quando desfaz tudo; se a sessão parar no meio, ele fica e diz como estava o
   Agendador antes.
 - **Para o passo 4:** as leituras do serviço de entrar de longe, da conta e das duas trancas (a peça já dá o rodar e
