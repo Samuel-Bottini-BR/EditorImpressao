@@ -826,6 +826,8 @@ def test_a_recusa_vale_para_o_caminho_escrito_de_outro_jeito():
         r = windows.rodar_e_esperar([caminho, "/?"])
         assert r.desfecho == windows.FALHOU and "função própria" in r.motivo, caminho
     assert windows.rodar_e_esperar([PY, "-c", "print(1)"], letras="utf-8").deu_certo
+    # o prefixo de caminho longo sai antes de comparar: um programa de fora do Windows escrito com ele continua passando
+    assert windows.rodar_e_esperar([barra * 2 + "?" + barra + PY, "-c", "print(1)"], letras="utf-8").deu_certo
 
 
 # Licenças de pastas do Agendador lidas neste PC em 19/11 (só leitura). A "de fábrica" é a que uma pasta criada por
