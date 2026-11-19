@@ -4,17 +4,20 @@ Palavras do Samuel (D-791, 19/11): à pergunta "o que já está errado no códig
 ganha item com o seu "sim"?": "Sim"; e a "Então anoto a lista de exceções como combinamos?": "sim".
 
 Como funciona:
-- **Um item por lugar** (correção 2 do plano-v3, passo 0): arquivo, conferência, o texto achado e quantas vezes ele
-  aparece. Nunca o arquivo inteiro: um erro novo no mesmo arquivo (outro texto, ou o mesmo texto uma vez a mais) é
+- **Um item por lugar** (correção 2 do plano-v3, passo 0): arquivo, conferência, a função onde ele está, o texto
+  achado e quantas vezes ele aparece. Nunca o arquivo inteiro: um erro novo no mesmo arquivo (outro texto, ou o mesmo texto uma vez a mais) é
   barrado. O número da linha não entra na chave (muda quando se escreve acima); fica só para achar o lugar.
 - **Cada item tem a data e o passo do plano que o conserta** (`PASSO_QUE_CONSERTA`, o lugar único dessa conta, tirada
   da tabela do plano-v3, passo 0). Os 5 lugares de fora da parte do Windows ficam "depois da entrega" (D-800).
 - **Só diminui:** item que o código já não tem faz o porteiro reclamar até ser tirado da lista (no mesmo commit do
-  conserto); item novo só entra com o "sim" do Samuel (a gerente põe; o agente que acrescenta é barrado, K17).
+  conserto). **Nenhum item entra, e a lista não é ligada, por ramo de agente** (terceira volta de quem quebrou, R1):
+  item novo, mudança da situação, do "sim" ou do passo são sempre acusados quando vêm de um ramo de agente. Só entram
+  por commit da gerente direto na versão de teste, depois do "sim" do Samuel registrado no Livro.
 - **Enquanto o Samuel não disser "sim", a lista não vale** (`situacao: "proposta"`): o teste que barra o código do
   repositório fica parado, com o motivo escrito. A gerente liga trocando para `"valendo"` e escrevendo o "sim" dele
-  em `sim_do_samuel` (a decisão do Livro onde ele está, a data e as palavras, conferidas no Livro); "valendo" sem esse
-  "sim" não abre (`ler` recusa).
+  em `sim_do_samuel` (a decisão do Livro onde ele está, a data e as palavras): é o registro do que ela fez, não uma
+  chave. "valendo" sem esse registro não abre (`ler` recusa). Quem garante que só ela liga é a comparação com a versão
+  de teste (`protecao.py`, e o juiz da rodada do GitHub, `juiz.py`).
 
 O arquivo de dados é `tests/conferencias_excecoes.json` (ao lado dos testes; no git). Ele é gerado por este programa
 (`python -m regras_dos_agentes excecoes --gerar`), nunca escrito à mão.
@@ -33,7 +36,6 @@ from fnmatch import fnmatch
 from pathlib import Path
 from typing import Iterable
 
-from .livro import Livro
 from .porteiro import Achado
 
 ARQUIVO_DA_LISTA = "tests/conferencias_excecoes.json"
@@ -58,9 +60,14 @@ PASSO_QUE_CONSERTA: list[tuple[str, str, str, str, str]] = [
     ("core/testes_a_distancia.py", "*", "*", "4", "os testes à distância passam a usar a peça única e a pasta segura"),
     # Os 5 lugares que o Samuel deixou para depois da entrega (D-800), pelas funções onde estavam em 19/11.
     ("ui/automatico.py", "K04", "*", DEPOIS_DA_ENTREGA, "dicas do Automático com número de decisão; D-800"),
-    # O teste de velocidade inteiro é o mesmo pedaço que o Samuel mandou para depois (D-800: "o teste de velocidade
-    # lendo placa de vídeo e disco pelo PowerShell por conta própria"); a busca maior só acha mais linhas dele.
-    ("teste_velocidade.py", "*", "*", DEPOIS_DA_ENTREGA, "o teste de velocidade conversa com o Windows; D-800"),
+    # Do teste de velocidade, só a leitura da placa de vídeo e do disco pelo PowerShell é o que o Samuel mandou para
+    # depois (D-800: "o teste de velocidade lendo placa de vídeo e disco pelo PowerShell por conta própria"). O resto
+    # do teste de velocidade (memória, janela preta, não dormir, registro) ele não decidiu: vai para a pergunta (R4).
+    ("teste_velocidade.py", "K01", "_placas_de_video", DEPOIS_DA_ENTREGA, "a placa de vídeo pelo PowerShell; D-800"),
+    ("teste_velocidade.py", "K01", "tipo_do_disco", DEPOIS_DA_ENTREGA, "o tipo de disco pelo PowerShell; D-800"),
+    ("teste_velocidade.py", "K01", "_powershell", DEPOIS_DA_ENTREGA, "o PowerShell do teste de velocidade; D-800"),
+    ("teste_velocidade.py", "K01", "_caminho_do_powershell", DEPOIS_DA_ENTREGA,
+     "o PowerShell do teste de velocidade; D-800"),
     ("avaliar.py", "K01", "achar_acervo", DEPOIS_DA_ENTREGA,
      "a régua dos filtros pergunta a Área de Trabalho ao Windows; D-800"),
     # Achados pela busca ampliada (19/11), fora do que o plano conserta: o Samuel decide (a gerente pergunta).
@@ -72,9 +79,24 @@ class ListaErrada(ValueError):
     """O arquivo da lista não está no formato combinado, ou um lugar não tem passo que o conserte."""
 
 
-def chave(arquivo: str, conferencia: str, texto: str) -> tuple[str, str, str]:
-    """O que identifica um lugar na lista (sem o número da linha)."""
-    return (arquivo, conferencia, texto)
+def chave(arquivo: str, conferencia: str, funcao: str, texto: str) -> tuple[str, str, str, str]:
+    """O que identifica um lugar na lista: arquivo, conferência, a função onde ele está ("" fora de função) e o texto.
+
+    Sem o número da linha (muda quando se escreve acima). A função entrou na terceira volta de quem quebrou (19/11):
+    o mesmo texto em duas funções pode ter destinos diferentes (`import winreg` no teste de velocidade), e a mesma
+    linha levada para outra função passa a contar como lugar novo (o caso antigo do achado 11).
+    """
+    return (arquivo, conferencia, funcao, texto)
+
+
+def chave_do_item(item: dict) -> tuple[str, str, str, str]:
+    """A chave de um item da lista."""
+    return chave(item["arquivo"], item["conferencia"], item.get("funcao", ""), item["texto"])
+
+
+def chave_do_achado(a: Achado) -> tuple[str, str, str, str]:
+    """A chave de um lugar achado pelo porteiro."""
+    return chave(a.arquivo, a.conferencia, a.funcao, a.texto)
 
 
 @dataclass
@@ -93,7 +115,7 @@ class Lista:
 
     def permitidos(self) -> dict[tuple[str, str, str], int]:
         """Quantas vezes cada lugar pode aparecer."""
-        return {chave(i["arquivo"], i["conferencia"], i["texto"]): int(i["quantas"]) for i in self.itens}
+        return {chave_do_item(i): int(i["quantas"]) for i in self.itens}
 
     def lugares(self) -> int:
         """Quantos lugares a lista deixa passar (a soma de "quantas")."""
@@ -118,19 +140,18 @@ def ler(raiz: Path | str, conteudo: str | None = None) -> Lista:
         raise ListaErrada("a lista não tem 'itens'")
     vistos = set()
     for i in itens:
+        if not isinstance(i.get("funcao"), str):
+            raise ListaErrada(f"item sem 'funcao' (\"\" fora de função): {i}")
         for campo in ("arquivo", "conferencia", "texto", "quantas", "data", "passo", "motivo"):
             if not str(i.get(campo, "")).strip():
                 raise ListaErrada(f"item sem '{campo}': {i}")
         if int(i["quantas"]) < 1:
             raise ListaErrada(f"item com 'quantas' menor que 1: {i}")
-        k = chave(i["arquivo"], i["conferencia"], i["texto"])
+        k = chave_do_item(i)
         if k in vistos:
             raise ListaErrada(f"o mesmo lugar aparece duas vezes na lista: {k}")
         vistos.add(k)
     return Lista(situacao, sim, itens, dados)
-
-
-MINIMO_DAS_PALAVRAS = 12      # o trecho das palavras do Samuel que o "sim" cita tem de ter ao menos isto
 
 
 def problema_do_formato_do_sim(sim: object) -> str | None:
@@ -139,31 +160,6 @@ def problema_do_formato_do_sim(sim: object) -> str | None:
         return "falta o sim_do_samuel (decisao, em, palavras)"
     if not all(str(sim.get(c, "")).strip() for c in ("decisao", "em", "palavras")):
         return "o sim precisa de decisao, em e palavras"
-    return None
-
-
-def problema_do_sim(sim: object, livro: Livro) -> str | None:
-    """O que falta num "sim" do Samuel, conferido no Livro da VERSÃO DE TESTE (None = está certo).
-
-    `livro` tem de ser o da versão de teste no GitHub (`Livro.da_versao_de_teste`), que só a gerente escreve, nunca o
-    da pasta do agente (achado N1 da segunda volta de quem quebrou: `"palavras": "sim"` e até `"a"` passavam, porque
-    qualquer pedaço da linha valia). Agora:
-    - a decisão existe no Livro e trata da lista de exceções (a D-791, a D-800, ou uma decisão nova que diga isso);
-    - as palavras são um trecho literal da coluna das palavras do Samuel daquela decisão, com ao menos
-      `MINIMO_DAS_PALAVRAS` letras.
-    """
-    problema = problema_do_formato_do_sim(sim)
-    if problema:
-        return problema
-    decisao, palavras = str(sim["decisao"]).strip(), " ".join(str(sim["palavras"]).split())
-    if not livro.existe(decisao):
-        return f"a decisão {decisao} do sim não existe no Livro da versão de teste"
-    if not livro.trata_da_lista_de_excecoes(decisao):
-        return f"a decisão {decisao} do sim não trata da lista de exceções"
-    if len(palavras) < MINIMO_DAS_PALAVRAS:
-        return f"as palavras do sim são curtas demais (menos de {MINIMO_DAS_PALAVRAS} letras)"
-    if palavras not in " ".join(livro.palavras_do_samuel(decisao).split()):
-        return f"as palavras do sim não são um trecho das palavras do Samuel na {decisao}"
     return None
 
 
@@ -179,21 +175,16 @@ def passo_do_lugar(arquivo: str, conferencia: str, funcao: str) -> tuple[str, st
 def gerar(achados: Iterable[Achado], commit_lido: str, data: str | None = None) -> dict:
     """A lista de partida, tirada dos achados do porteiro no código de hoje. Sai como 'proposta', sem o "sim"."""
     data = data or datetime.date.today().isoformat()
-    grupos: dict[tuple[str, str, str], list[Achado]] = defaultdict(list)
+    grupos: dict[tuple[str, str, str, str], list[Achado]] = defaultdict(list)
     for a in achados:
         if a.conferencia == "K00":
             raise ListaErrada(f"o porteiro não conseguiu ler {a.arquivo}: arrume antes de gerar a lista")
-        grupos[chave(a.arquivo, a.conferencia, a.texto)].append(a)
+        grupos[chave_do_achado(a)].append(a)
     itens = []
-    for (arquivo, conferencia, texto), lista in sorted(grupos.items()):
-        funcoes = sorted({a.funcao for a in lista})
-        passo, motivo = passo_do_lugar(arquivo, conferencia, funcoes[0])
-        for f in funcoes[1:]:
-            if passo_do_lugar(arquivo, conferencia, f)[0] != passo:
-                raise ListaErrada(f"o mesmo texto em {arquivo} tem passos diferentes conforme a função: {texto}")
-        itens.append({"arquivo": arquivo, "conferencia": conferencia, "texto": texto, "quantas": len(lista),
-                      "linhas_quando_gerada": sorted(a.linha for a in lista),
-                      "funcao": ", ".join(f or "(fora de função)" for f in funcoes),
+    for (arquivo, conferencia, funcao, texto), lista in sorted(grupos.items()):
+        passo, motivo = passo_do_lugar(arquivo, conferencia, funcao)
+        itens.append({"arquivo": arquivo, "conferencia": conferencia, "funcao": funcao, "texto": texto,
+                      "quantas": len(lista), "linhas_quando_gerada": sorted(a.linha for a in lista),
                       "data": data, "passo": passo, "motivo": motivo})
     return {
         "explicacao": ("Lista de exceções do porteiro (D-791, D-800). Gerada por `python -m regras_dos_agentes excecoes "
@@ -242,9 +233,9 @@ def comparar(achados: Iterable[Achado], lista: Lista, so_arquivos: Iterable[str]
     """
     so = set(so_arquivos) if so_arquivos is not None else None
     achados = [a for a in achados if so is None or a.arquivo in so]
-    por_chave: dict[tuple[str, str, str], list[Achado]] = defaultdict(list)
+    por_chave: dict[tuple[str, str, str, str], list[Achado]] = defaultdict(list)
     for a in achados:
-        por_chave[chave(a.arquivo, a.conferencia, a.texto)].append(a)
+        por_chave[chave_do_achado(a)].append(a)
     permitidos = lista.permitidos()
     r = Comparacao()
     for k, lugares in sorted(por_chave.items()):
@@ -255,7 +246,7 @@ def comparar(achados: Iterable[Achado], lista: Lista, so_arquivos: Iterable[str]
     for item in lista.itens:
         if so is not None and item["arquivo"] not in so:
             continue
-        k = chave(item["arquivo"], item["conferencia"], item["texto"])
+        k = chave_do_item(item)
         if contagem.get(k, 0) < int(item["quantas"]):
             r.consertados.append((item, contagem.get(k, 0)))
     return r
@@ -272,21 +263,13 @@ def diminuir(lista: Lista, achados: Iterable[Achado]) -> dict:
     if novos:
         raise ListaErrada("há erro novo que a lista não deixa; conserte antes (a lista não ganha item sem o 'sim' do "
                           "Samuel):\n  " + "\n  ".join(Comparacao(novos=novos).explicar()))
-    contagem = Counter(chave(a.arquivo, a.conferencia, a.texto) for a in achados)
+    contagem = Counter(chave_do_achado(a) for a in achados)
     itens = []
     for item in lista.itens:
-        ficam = min(int(item["quantas"]), contagem.get(chave(item["arquivo"], item["conferencia"], item["texto"]), 0))
+        ficam = min(int(item["quantas"]), contagem.get(chave_do_item(item), 0))
         if ficam:
             itens.append(dict(item, quantas=ficam))
     return dict(lista.dados, itens=itens)
-
-
-def acrescentados_sem_sim(antes: Lista | None, depois: Lista, livro: Livro) -> list[dict]:
-    """Os itens que a lista ganhou sem o "sim" do Samuel próprio do item (campo "sim", conferido no Livro).
-
-    D-791: "nada entra nela sem o 'sim' dele". O item novo que a gerente põe leva o seu "sim"; o resto é barrado.
-    """
-    return [i for i in itens_acrescentados(antes, depois) if problema_do_sim(i.get("sim"), livro)]
 
 
 def itens_acrescentados(antes: Lista | None, depois: Lista) -> list[dict]:
@@ -295,7 +278,7 @@ def itens_acrescentados(antes: Lista | None, depois: Lista) -> list[dict]:
         return list(depois.itens)
     permitidos = antes.permitidos()
     return [i for i in depois.itens
-            if int(i["quantas"]) > permitidos.get(chave(i["arquivo"], i["conferencia"], i["texto"]), 0)]
+            if int(i["quantas"]) > permitidos.get(chave_do_item(i), 0)]
 
 
 def resumo(lista: Lista) -> dict:

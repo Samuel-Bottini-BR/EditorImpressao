@@ -505,3 +505,121 @@ def test_k04_correcao_3_um_f_string_comum_com_chaves_nao_e_folha_de_estilo():
     assert codigos(conferir({"ui/x.py": errado}), "K04") == [("ui/x.py", 3)]
     folha = 'def f(c):\n    """Folha."""\n    return f"QWidget {{ color: red; }} /* etapa (D-015) */"\n'
     assert codigos(conferir({"ui/x.py": folha}), "K04") == []
+
+
+# ---------------------------------------------------------------- terceira volta de quem quebrou (19/11)
+
+def test_r5_o_resultado_de_uma_chamada_da_biblioteca_nao_e_apelido():
+    """R5: a função que devolve o RESULTADO de uma chamada feita pela biblioteca (o caso do `_sozinho_no_console`, que
+    devolve sim ou não) não "devolve a biblioteca", e quem a chama não é acusado (antes: `teste_velocidade.py:2317`)."""
+    fonte = py('''
+        """Programa."""
+        import ctypes
+
+
+        def _sozinho():
+            """Sim ou não."""
+            funcao = ctypes.windll.kernel32.GetConsoleProcessList
+            return funcao(1, 2) == 1
+
+
+        def despedir():
+            """Usa o sim ou não."""
+            if _sozinho():
+                return 1
+            return 0
+    ''')
+    assert [n for _, n in codigos(conferir({"atualizacao.py": fonte}), "K01")] == [7, 8]
+
+
+def test_r5_a_marca_criada_pela_biblioteca_nao_e_apelido():
+    """R5: `_MARCA = ctypes.windll.kernel32.CreateMutexW(...)` guarda o resultado, não a biblioteca; a linha que só
+    pergunta se a marca existe não é acusada (antes: `atualizacao.py:748`)."""
+    fonte = py('''
+        """Programa."""
+        import ctypes
+        import sys
+
+        _MARCA = None
+
+
+        def marcar():
+            """Cria a marca."""
+            global _MARCA
+            if _MARCA is not None or sys.platform != "win32":
+                return
+            _MARCA = ctypes.windll.kernel32.CreateMutexW(None, False, "x") or None
+    ''')
+    assert [n for _, n in codigos(conferir({"atualizacao.py": fonte}), "K01")] == [13]
+
+
+def test_r5_o_segundo_nome_da_tupla_nao_e_apelido():
+    """R5: `kernel32, entrada = f()`, quando `f` devolve a biblioteca só na primeira posição: só `kernel32` é apelido."""
+    fonte = py('''
+        """Programa."""
+        import ctypes
+
+
+        def _entrada():
+            """A biblioteca e um número."""
+            k = ctypes.WinDLL("kernel32")
+            return k, 5
+
+
+        def usar():
+            """Usa."""
+            kernel32, entrada = _entrada()
+            total = entrada + 1
+            return total
+    ''')
+    assert [n for _, n in codigos(conferir({"atualizacao.py": fonte}), "K01")] == [7, 8, 13]
+
+
+def test_r5_o_metodo_de_mesmo_nome_em_outra_classe_nao_e_seguido():
+    """R5: o método `abrir` de uma classe devolve a biblioteca; o `abrir` de outra classe, chamado por ela, não conta."""
+    fonte = py('''
+        """Programa."""
+        import ctypes
+
+
+        class A:
+            """Uma."""
+
+            def abrir(self):
+                """Devolve a biblioteca."""
+                return ctypes.WinDLL("kernel32")
+
+
+        class B:
+            """Outra."""
+
+            def abrir(self):
+                """Devolve um número."""
+                return 1
+
+            def usar(self):
+                """Usa o abrir de B."""
+                return self.abrir()
+    ''')
+    assert [n for _, n in codigos(conferir({"atualizacao.py": fonte}), "K01")] == [10]
+
+
+@pytest.mark.parametrize("bandeira", [
+    'getattr(subprocess, "CREATE_NO_WINDOW", 0)', "subprocess.CREATE_NO_WINDOW", "0x08000000",
+    "_SEM_JANELA | (_PRIORIDADE_BAIXA if baixa else 0)", "_SEM_JANELA if os.name == \"nt\" else 0",
+])
+def test_r6_abrir_sem_janela_preta_nao_e_conversa_com_o_windows(bandeira):
+    """R6: `creationflags` só para esconder a janela preta (e baixar a prioridade) não é conversa com o Windows, também
+    guardado numa variável do arquivo (o caso dos motores de achar texto)."""
+    fonte = ('"""Programa."""\nimport os\nimport subprocess\n\n_SEM_JANELA = 0x08000000\n_PRIORIDADE_BAIXA = 0x00004000\n'
+             f'\n\ndef f(c, baixa):\n    """Abre."""\n    subprocess.Popen(c, creationflags={bandeira})\n')
+    assert codigos(conferir({"core/ocr_x.py": fonte}), "K01") == [], bandeira
+
+
+@pytest.mark.parametrize("bandeira", ['getattr(subprocess, "DETACHED_PROCESS", 0)', "subprocess.CREATE_NEW_CONSOLE",
+                                      "0x00000010", "bandeiras_que_vem_de_fora"])
+def test_r6_outra_bandeira_continua_sendo_conversa_com_o_windows(bandeira):
+    """R6: o DETACHED_PROCESS, as outras bandeiras e o valor que não dá para ler continuam acusados."""
+    fonte = ('"""Programa."""\nimport subprocess\n\n\ndef f(c, bandeiras_que_vem_de_fora):\n    """Abre."""\n'
+             f'    subprocess.Popen(c, creationflags={bandeira})\n')
+    assert codigos(conferir({"core/ocr_x.py": fonte}), "K01") == [("core/ocr_x.py", 7)], bandeira

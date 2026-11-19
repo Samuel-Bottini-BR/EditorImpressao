@@ -27,6 +27,7 @@ from dataclasses import dataclass
 from pathlib import Path
 
 LUGAR_DO_GH = Path(r"C:\Program Files\GitHub CLI\gh.exe")
+MARCA_DO_PORTEIRO = re.compile(r"PORTEIRO: (CONFERIDO|BARROU|NAO CONFERIDO[^\r\n]*)")
 LINHA_DO_COMMIT = re.compile(r"codigo trocado pelo de \S+ \(([0-9a-f]{40})\)|testando o proprio commit ([0-9a-f]{40})")
 
 
@@ -65,6 +66,7 @@ class Rodada:
     passou: bool
     titulo: str
     commit_testado: str
+    porteiro: str | None = None     # a marca do juiz (`juiz.py`) no registro; None = a rodada não tem o juiz
 
 
 def commit_do_registro(registro: str) -> str | None:
@@ -77,14 +79,20 @@ def ler_rodada(numero: str, repositorio: str) -> Rodada:
     """Lê a rodada `numero` no repositório `dono/nome`: se terminou, se passou e qual commit ela testou de verdade."""
     dados = json.loads(_rodar("run", "view", numero, "-R", repositorio, "--json", "status,conclusion,displayTitle,jobs"))
     commit = None
+    porteiro = None
     for job in dados.get("jobs", []):
-        if job.get("conclusion") == "skipped":
+        if job.get("conclusion") == "skipped" or (commit and porteiro):
             continue
-        commit = commit_do_registro(_rodar("run", "view", numero, "-R", repositorio, "--log", "--job",
-                                           str(job["databaseId"])))
-        if commit:
-            break
+        registro = _rodar("run", "view", numero, "-R", repositorio, "--log", "--job", str(job["databaseId"]))
+        commit = commit or commit_do_registro(registro)
+        porteiro = porteiro or marca_do_porteiro(registro)
     if commit is None:
         raise GitHubFalhou(f"o registro da rodada {numero} não diz qual commit foi testado")
     return Rodada(numero, dados.get("status") == "completed", dados.get("conclusion") == "success",
-                  dados.get("displayTitle", ""), commit)
+                  dados.get("displayTitle", ""), commit, porteiro)
+
+
+def marca_do_porteiro(registro: str) -> str | None:
+    """A marca que o juiz deixou no registro ("CONFERIDO", "BARROU" ou "NAO CONFERIDO (motivo)"), ou None."""
+    m = MARCA_DO_PORTEIRO.search(registro)
+    return m.group(1).strip() if m else None

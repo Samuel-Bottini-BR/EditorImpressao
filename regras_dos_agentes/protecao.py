@@ -5,8 +5,8 @@ busca, pôr o próprio erro na lista, mudar o passo de um item, trocar "proposta
 pegava, mas só quando a gerente o rodava. Aqui está a mesma conta, que o teste do GitHub
 (`tests/test_conferencias_protecao.py`) roda em toda entrega, contra a versão de teste (`VERSAO_DE_TESTE`, D-797):
 
-- **a lista** (`porteiro_mudancas.mudancas_na_lista`, o lugar único dessa conta): item novo sem o "sim" próprio
-  conferido no Livro, a situação ou o "sim" do Samuel mudados, o passo de um item mudado;
+- **a lista** (`porteiro_mudancas.mudancas_na_lista`, o lugar único dessa conta): qualquer item novo, a situação ou o
+  "sim" do Samuel mudados, o passo de um item mudado (nada disso entra por ramo de agente, R1);
 - **os dados das buscas** (`PROTEGIDOS`, abaixo): em cada um, nada da versão de teste pode sumir (acrescentar é livre)
   ou, nos marcados "igual", nada pode mudar.
 
@@ -28,8 +28,7 @@ from pathlib import Path
 
 from . import conversa_com_o_git as git
 from . import excecoes
-from .livro import CAMINHO as CAMINHO_DO_LIVRO
-from .livro import VERSAO_DE_TESTE, Livro
+from .livro import VERSAO_DE_TESTE
 
 # (arquivo, nome da atribuição, regra): "nao_some" = nada da versão de teste some; "igual" = nada muda.
 PROTEGIDOS: list[tuple[str, str, str]] = [
@@ -147,13 +146,7 @@ def comparar(raiz: Path | str, ramo: str = VERSAO_DE_TESTE) -> list[str] | None:
         return None
     from .porteiro_mudancas import mudancas_na_lista
 
-    # O Livro que vale é o da versão de teste (achado N1), nunca o do ramo.
-    livro = Livro(git.conteudo_no_commit(raiz, base, CAMINHO_DO_LIVRO) or "")
-    agora = excecoes.ler(raiz)
-    frases = mudancas_na_lista(excecoes.ler(raiz, lista_antes), agora, livro)
-    if agora.vale and excecoes.problema_do_sim(agora.sim_do_samuel, livro):
-        frases.append(f"a lista vale com um \"sim\" que o Livro da versão de teste não confirma: "
-                      f"{excecoes.problema_do_sim(agora.sim_do_samuel, livro)}")
+    frases = mudancas_na_lista(excecoes.ler(raiz, lista_antes), excecoes.ler(raiz))
     por_arquivo: dict[str, list[tuple[str, str]]] = {}
     for arquivo, nome, regra in PROTEGIDOS:
         por_arquivo.setdefault(arquivo, []).append((nome, regra))

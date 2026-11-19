@@ -242,11 +242,9 @@ PALAVRAS_DO_WINDOWS: list[tuple[str, str, str]] = [
     (r"\bwindll\b|\bWinDLL\b|\boledll\b", "funções do Windows pelo ctypes", "k = ctypes.windll.kernel32"),
     (r"\bcdll\." + _DLL_DO_WINDOWS + r"\b|\bCDLL\(\s*[\"']" + _DLL_DO_WINDOWS, "funções do Windows pelo ctypes (CDLL)",
      'k = ctypes.CDLL("kernel32")'),
-    # Lançar processo com bandeira do Windows (qualquer valor que não seja o 0 literal: guardada numa variável
-    # também conta, achado N2).
+    # Lançar processo solto do Windows. As outras bandeiras de lançar processo são lidas pela estrutura do código
+    # (`_bandeiras_do_windows`): só esconder a janela e baixar a prioridade não contam (achado R6).
     (r"\bDETACHED_PROCESS\b", "lançar processo solto do Windows", "f = subprocess.DETACHED_PROCESS"),
-    (r"\bcreationflags\s*=\s*(?!0(?![\w.x]))[\w(]", "lançar processo com bandeira do Windows",
-     "subprocess.Popen(c, creationflags=bandeiras)"),
 ]
 CONVERSA_COM_O_WINDOWS = re.compile("|".join(f"(?:{p})" for p, _, _ in PALAVRAS_DO_WINDOWS), re.I)
 
@@ -355,44 +353,92 @@ def _escopos(nome_da_funcao: str) -> list[str]:
     return [".".join(partes[:n]) for n in range(len(partes), -1, -1)]
 
 
-def _apelidos_do_windows(arq: _Arquivo) -> dict[int, str]:
-    """As linhas que usam a biblioteca do Windows por um apelido (achado N2 da segunda volta de quem quebrou).
+# Os construtores e atributos do ctypes que dão uma biblioteca do Windows (a mesma conta das duas linhas da lista).
+_CONSTRUTORES_DO_WINDOWS = {"WinDLL", "OleDLL"}
+_ATRIBUTOS_DO_WINDOWS = {"windll", "oledll"}
+_DLL_DO_WINDOWS_NOMES = set(_DLL_DO_WINDOWS.strip("(?:)").split("|"))
 
-    Segue o apelido dentro do arquivo: (1) o nome que recebe a biblioteca (`kernel32 = ctypes.WinDLL("kernel32")`,
-    `funcao = ctypes.windll.kernel32.SetThreadExecutionState`); (2) a função que devolve um apelido (`return kernel32,
-    ...`, inclusive dentro de um `lambda`) e o nome que recebe o que ela devolve (`kernel32, entrada =
-    _entrada_da_janela_preta()`: os dois nomes, por cautela), até não mudar mais; (3) toda linha que usa um desses
-    nomes, na mesma função ou dentro dela, e toda chamada de uma função que devolve a biblioteca. O resultado de uma
-    chamada feita PELA biblioteca (`alca = kernel32.OpenProcess(...)`) não vira apelido. Devolve linha → o nome usado.
-    Não segue: o apelido que vai para outro arquivo (importado), nem o que passa por um dicionário ou um atributo
-    (`self.k = ...`); isso fica nas ressalvas.
+
+def _pega_a_biblioteca(valor: ast.AST) -> bool:
+    """O valor pega uma biblioteca do Windows: `ctypes.WinDLL("x")`, `ctypes.CDLL("kernel32")`, `ctypes.windll.kernel32`,
+    `ctypes.cdll.kernel32` ou uma função dela sem chamar (`ctypes.windll.kernel32.SetThreadExecutionState`)."""
+    if isinstance(valor, ast.Call):
+        nome = valor.func.attr if isinstance(valor.func, ast.Attribute) else getattr(valor.func, "id", "")
+        if nome in _CONSTRUTORES_DO_WINDOWS:
+            return True
+        primeiro = valor.args[0] if valor.args else None
+        return (nome == "CDLL" and isinstance(primeiro, ast.Constant) and isinstance(primeiro.value, str)
+                and primeiro.value.lower().removesuffix(".dll") in _DLL_DO_WINDOWS_NOMES)
+    no = valor
+    while isinstance(no, ast.Attribute):
+        if no.attr in _ATRIBUTOS_DO_WINDOWS or (no.attr in _DLL_DO_WINDOWS_NOMES and isinstance(no.value, ast.Attribute)
+                                                and no.value.attr == "cdll"):
+            return True
+        no = no.value
+    return isinstance(no, ast.Name) and no.id in _ATRIBUTOS_DO_WINDOWS
+
+
+def _apelidos_do_windows(arq: _Arquivo) -> dict[int, str]:
+    """As linhas que usam a biblioteca do Windows por um apelido (achados N2 e R5 de quem quebrou).
+
+    Segue o apelido dentro do arquivo:
+    (1) o nome que recebe a biblioteca (`kernel32 = ctypes.WinDLL("kernel32")`) ou uma função dela sem chamar
+        (`funcao = ctypes.windll.kernel32.SetThreadExecutionState`);
+    (2) a função que devolve a biblioteca EM SI (`return kernel32, ...`; um `lambda` que usa a biblioteca conta como
+        função dela), na posição em que ela devolve; quem recebe o que essa função devolve vira apelido só naquela
+        posição (`kernel32, entrada = _entrada_da_janela_preta()`: só o `kernel32`);
+    (3) toda linha que usa um desses nomes, na mesma função ou dentro dela, e toda chamada de uma função que devolve a
+        biblioteca (pelo nome da função no mesmo arquivo, ou `self.metodo()` dentro da mesma classe).
+    O resultado de uma chamada feita pela biblioteca (`alca = kernel32.OpenProcess(...)`,
+    `_MARCA = ctypes.windll.kernel32.CreateMutexW(...)`, `return funcao(...) == 1`) não vira apelido (achado R5).
+    Não segue: o apelido que vai para outro arquivo, nem o que passa por um dicionário ou um atributo (`self.k = ...`).
     """
     if not PEGA_A_BIBLIOTECA.search("\n".join(arq.codigo)):
         return {}
     apelidos: dict[str, set[str]] = {}            # escopo (função) → nomes
-    devolve: set[str] = set()                     # funções que devolvem a biblioteca
+    devolve: dict[str, set[int | None]] = {}      # função (nome completo) → posições devolvidas (None = o valor inteiro)
 
     def e_apelido(nome: str, linha: int) -> bool:
+        """O nome é um apelido da biblioteca no lugar desta linha?"""
         return any(nome in apelidos.get(e, set()) for e in _escopos(arq.funcao(linha)))
 
+    def funcao_chamada(chamada: ast.Call, linha: int) -> str | None:
+        """O nome completo da função deste arquivo que a chamada chama, se ela devolve a biblioteca."""
+        escopo = arq.funcao(linha)
+        if isinstance(chamada.func, ast.Name):
+            candidatos = [f"{e}.{chamada.func.id}" if e else chamada.func.id for e in _escopos(escopo)]
+        elif (isinstance(chamada.func, ast.Attribute) and isinstance(chamada.func.value, ast.Name)
+              and chamada.func.value.id == "self" and "." in escopo):
+            candidatos = [f"{escopo.rsplit('.', 1)[0]}.{chamada.func.attr}"]
+        else:
+            return None
+        return next((c for c in candidatos if c in devolve), None)
+
     def e_a_biblioteca(valor: ast.AST, linha: int) -> bool:
-        """O valor É a biblioteca (ou uma função dela), e não o resultado de uma chamada feita por ela: um apelido, um
-        atributo de um apelido (`kernel32.SetThreadExecutionState`), a chamada de uma função que devolve a biblioteca,
-        ou uma tupla com um desses."""
+        """O valor É a biblioteca (ou uma função dela), não o resultado de uma chamada feita por ela."""
+        if _pega_a_biblioteca(valor):
+            return True
         if isinstance(valor, ast.Name):
             return e_apelido(valor.id, linha)
         if isinstance(valor, ast.Attribute):
             return e_a_biblioteca(valor.value, linha)
+        if isinstance(valor, ast.Lambda):
+            return any(isinstance(n, ast.Name) and e_apelido(n.id, linha) for n in ast.walk(valor.body))
         if isinstance(valor, ast.Call):
-            f = valor.func
-            return (f.id if isinstance(f, ast.Name) else f.attr if isinstance(f, ast.Attribute) else "") in devolve
-        if isinstance(valor, (ast.Tuple, ast.List)):
-            return any(e_a_biblioteca(e, linha) for e in valor.elts)
+            f = funcao_chamada(valor, linha)
+            return f is not None and None in devolve[f]
         return False
 
-    def alvos(no: ast.AST) -> list[str]:
-        nos = [no.target] if isinstance(no, ast.AnnAssign) else list(no.targets)
-        return [n.id for alvo in nos for n in ast.walk(alvo) if isinstance(n, ast.Name)]
+    def posicoes(valor: ast.AST, linha: int) -> set[int | None]:
+        """As posições do valor que são a biblioteca (None = o valor inteiro)."""
+        if isinstance(valor, (ast.Tuple, ast.List)):
+            return {i for i, e in enumerate(valor.elts) if e_a_biblioteca(e, linha)}
+        if _pega_a_biblioteca(valor):
+            return {None}
+        if isinstance(valor, ast.Call):
+            f = funcao_chamada(valor, linha)
+            return set(devolve[f]) if f else set()
+        return {None} if e_a_biblioteca(valor, linha) else set()
 
     atribuicoes = [n for n in ast.walk(arq.raiz) if isinstance(n, (ast.Assign, ast.AnnAssign)) and n.value is not None]
     funcoes = [n for n in ast.walk(arq.raiz) if isinstance(n, (ast.FunctionDef, ast.AsyncFunctionDef))]
@@ -400,43 +446,105 @@ def _apelidos_do_windows(arq: _Arquivo) -> dict[int, str]:
     while mudou:
         mudou = False
         for no in atribuicoes:
-            linhas = arq.codigo[no.lineno - 1:(no.end_lineno or no.lineno)]
-            if PEGA_A_BIBLIOTECA.search(" ".join(linhas)) or e_a_biblioteca(no.value, no.lineno):
-                escopo = arq.funcao(no.lineno)
-                novos = set(alvos(no)) - apelidos.get(escopo, set())
-                if novos:
-                    apelidos.setdefault(escopo, set()).update(novos)
-                    mudou = True
+            escopo = arq.funcao(no.lineno)
+            alvos = [no.target] if isinstance(no, ast.AnnAssign) else list(no.targets)
+            pos = posicoes(no.value, no.lineno)
+            novos: set[str] = set()
+            for alvo in alvos:
+                if isinstance(alvo, ast.Name) and None in pos:
+                    novos.add(alvo.id)
+                elif isinstance(alvo, (ast.Tuple, ast.List)):
+                    novos |= {e.id for i, e in enumerate(alvo.elts) if isinstance(e, ast.Name) and (i in pos or None in pos)}
+            novos -= apelidos.get(escopo, set())
+            if novos:
+                apelidos.setdefault(escopo, set()).update(novos)
+                mudou = True
         for f in funcoes:
-            if f.name in devolve:
-                continue
+            nome = arq.funcao(f.lineno) if arq.funcao(f.lineno).endswith(f.name) else f.name
+            pos: set[int | None] = set()
             for r in ast.walk(f):
-                if isinstance(r, ast.Return) and r.value is not None and any(
-                        isinstance(n, ast.Name) and e_apelido(n.id, r.lineno) for n in ast.walk(r.value)):
-                    devolve.add(f.name)
-                    mudou = True
-                    break
+                if isinstance(r, ast.Return) and r.value is not None and arq.funcao(r.lineno) == nome:
+                    pos |= posicoes(r.value, r.lineno)
+            if pos - devolve.get(nome, set()):
+                devolve.setdefault(nome, set()).update(pos)
+                mudou = True
     usadas: dict[int, str] = {}
     for n in ast.walk(arq.raiz):
-        if isinstance(n, ast.Name) and e_apelido(n.id, n.lineno):
+        if isinstance(n, ast.Name) and isinstance(n.ctx, ast.Load) and e_apelido(n.id, n.lineno):
             usadas.setdefault(n.lineno, n.id)
-        elif isinstance(n, ast.Call):
-            nome = n.func.id if isinstance(n.func, ast.Name) else n.func.attr if isinstance(n.func, ast.Attribute) else ""
-            if nome in devolve:
-                usadas.setdefault(n.lineno, nome)
+        elif isinstance(n, ast.Call) and funcao_chamada(n, n.lineno):
+            usadas.setdefault(n.lineno, funcao_chamada(n, n.lineno))
     return usadas
 
 
+# As bandeiras de lançar processo que não mudam nada no Windows: só esconder a janela preta e baixar a prioridade
+# (achado R6 da terceira volta; escolha técnica da gerente). Qualquer outra (DETACHED_PROCESS, CREATE_NEW_CONSOLE,
+# CREATE_BREAKAWAY_FROM_JOB...) ou um valor que não se consegue ler é conversa com o Windows.
+BANDEIRAS_QUE_SO_ESCONDEM = {"CREATE_NO_WINDOW": 0x08000000, "BELOW_NORMAL_PRIORITY_CLASS": 0x00004000,
+                             "IDLE_PRIORITY_CLASS": 0x00000040}
+
+
+def _bandeiras_do_windows(arq: _Arquivo) -> dict[int, str]:
+    """As linhas com `creationflags=` que usam uma bandeira além de esconder a janela ou baixar a prioridade.
+
+    Lê a estrutura do código: o número escrito, `subprocess.NOME`, `getattr(subprocess, "NOME", ...)`, `a | b`,
+    `x if c else y`, e o nome guardado numa variável do mesmo arquivo (segue as atribuições dela). O que não se consegue
+    ler conta como bandeira desconhecida (acusa). Devolve linha → o que foi achado.
+    """
+    permitidos = set(BANDEIRAS_QUE_SO_ESCONDEM.values())
+    atribuicoes: dict[str, list[ast.AST]] = {}
+    for no in ast.walk(arq.raiz):
+        if isinstance(no, ast.Assign):
+            for alvo in no.targets:
+                if isinstance(alvo, ast.Name):
+                    atribuicoes.setdefault(alvo.id, []).append(no.value)
+
+    def ruins(valor: ast.AST, vistos: frozenset) -> set[str]:
+        """As bandeiras do valor que não só escondem (vazio = tudo bem)."""
+        if isinstance(valor, ast.Constant) and isinstance(valor.value, int):
+            sobra = valor.value & ~sum(permitidos)
+            return {hex(sobra)} if sobra else set()
+        nome = (valor.attr if isinstance(valor, ast.Attribute) else valor.id if isinstance(valor, ast.Name) else None)
+        if isinstance(valor, ast.Call) and getattr(valor.func, "id", "") == "getattr" and len(valor.args) >= 2 \
+                and isinstance(valor.args[1], ast.Constant):
+            nome = str(valor.args[1].value)
+        if nome is not None:
+            if nome in BANDEIRAS_QUE_SO_ESCONDEM:
+                return set()
+            if isinstance(valor, ast.Name) and nome in atribuicoes and nome not in vistos:
+                return set().union(*(ruins(v, vistos | {nome}) for v in atribuicoes[nome]))
+            return {nome}
+        if isinstance(valor, ast.BinOp) and isinstance(valor.op, ast.BitOr):
+            return ruins(valor.left, vistos) | ruins(valor.right, vistos)
+        if isinstance(valor, ast.IfExp):
+            return ruins(valor.body, vistos) | ruins(valor.orelse, vistos)
+        return {"valor que não dá para ler"}
+
+    achadas: dict[int, str] = {}
+    for no in ast.walk(arq.raiz):
+        if isinstance(no, ast.keyword) and no.arg == "creationflags":
+            sobra = ruins(no.value, frozenset())
+            if sobra:
+                achadas[no.value.lineno] = ", ".join(sorted(sobra))
+    return achadas
+
+
 def k01(arq: _Arquivo) -> list[Achado]:
-    """K01: conversa com o Windows fora da peça única: as palavras da lista e o uso da biblioteca do Windows pelo apelido."""
+    """K01: conversa com o Windows fora da peça única: as palavras da lista, o uso da biblioteca do Windows pelo
+    apelido e a bandeira de lançar processo que vai além de esconder a janela."""
     if not e_programa(arq.caminho) or arq.caminho == PECA_UNICA_DO_WINDOWS:
         return []
     achados = _por_linha(arq, "K01", CONVERSA_COM_O_WINDOWS, "fala com o Windows fora da peça única")
     ja = {a.linha for a in achados}
-    for linha, nome in sorted(_apelidos_do_windows(arq).items()):
+    extras = [(linha, f"usa a biblioteca do Windows pelo apelido {nome}")
+              for linha, nome in _apelidos_do_windows(arq).items()]
+    extras += [(linha, f"lança processo com bandeira do Windows ({quais})")
+               for linha, quais in _bandeiras_do_windows(arq).items()]
+    for linha, porque in sorted(extras):
         if linha not in ja and arq.codigo[linha - 1].strip():
-            achados.append(Achado("K01", arq.caminho, linha, _texto_do_lugar(arq.codigo[linha - 1]),
-                                  f"usa a biblioteca do Windows pelo apelido {nome}", arq.funcao(linha)))
+            ja.add(linha)
+            achados.append(Achado("K01", arq.caminho, linha, _texto_do_lugar(arq.codigo[linha - 1]), porque,
+                                  arq.funcao(linha)))
     return sorted(achados, key=lambda a: a.linha)
 
 

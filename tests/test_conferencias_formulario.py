@@ -289,15 +289,48 @@ def test_k21_vale_a_rodada_do_ultimo_commit_mesmo_citada_antes_de_uma_antiga(ent
     s["Testes"] = "GitHub: rodada 111111111 (o último commit), passou. Antes, a rodada 222222222 (de um commit do meio)."
     r.escrever(f"{PASTA}/ONDE-PAREI.md", texto_de(s))
     r.commit("ONDE-PAREI")
-    respostas = {"111111111": github.Rodada("111111111", True, True, "x", commit),
-                 "222222222": github.Rodada("222222222", True, True, "x", base)}
+    respostas = {"111111111": github.Rodada("111111111", True, True, "x", commit, "CONFERIDO"),
+                 "222222222": github.Rodada("222222222", True, True, "x", base, "CONFERIDO")}
     monkeypatch.setattr(github, "ler_rodada", lambda numero, repositorio: respostas[numero])
     monkeypatch.setattr(formulario.git, "repositorio_no_github", lambda raiz: "dono/nome")
     pacote = gravar_pacote(r, pacote_de(s))
     resultado = formulario.conferir(r.raiz / PASTA / "ONDE-PAREI.md", "quebrar", r.raiz, pacote=pacote,
                                     consultar_github=True, olhar_o_github_do_ramo=False)
     assert not any("K21" in p for p in resultado.problemas + resultado.pendentes), resultado.explicar()
-    respostas["111111111"] = github.Rodada("111111111", True, False, "x", commit)
+    respostas["111111111"] = github.Rodada("111111111", True, False, "x", commit, "CONFERIDO")
     resultado = formulario.conferir(r.raiz / PASTA / "ONDE-PAREI.md", "quebrar", r.raiz, pacote=pacote,
                                     consultar_github=True, olhar_o_github_do_ramo=False)
     assert any("nenhuma rodada citada vale" in p for p in resultado.problemas)
+
+
+
+@pytest.mark.parametrize("marca, onde", [(None, "pendentes"), ("NAO CONFERIDO (a lista ainda espera o sim)", "pendentes"),
+                                         ("BARROU", "problemas"), ("CONFERIDO", None)])
+def test_k21_o_juiz_do_porteiro_tem_de_ter_conferido(entrega, monkeypatch, marca, onde):
+    """R2 da terceira volta de quem quebrou (19/11): "parado" nunca vale como "passou". A rodada só vale se o juiz do
+    porteiro (o código da versão de teste) deixou "PORTEIRO: CONFERIDO" no registro; sem o juiz ou com "NAO CONFERIDO",
+    fica pendente (código 3); com "BARROU", volta."""
+    r, base, commit = entrega
+    s = secoes_certas(base, commit)
+    s["Testes"] = "GitHub: rodada 111111111, passou."
+    r.escrever(f"{PASTA}/ONDE-PAREI.md", texto_de(s))
+    r.commit("ONDE-PAREI")
+    monkeypatch.setattr(github, "ler_rodada",
+                        lambda numero, repositorio: github.Rodada(numero, True, True, "x", commit, marca))
+    monkeypatch.setattr(formulario.git, "repositorio_no_github", lambda raiz: "dono/nome")
+    resultado = formulario.conferir(r.raiz / PASTA / "ONDE-PAREI.md", "quebrar", r.raiz, pacote=gravar_pacote(r, pacote_de(s)),
+                                    consultar_github=True, olhar_o_github_do_ramo=False)
+    k21 = {"pendentes": [p for p in resultado.pendentes if "K21" in p],
+           "problemas": [p for p in resultado.problemas if "K21" in p]}
+    if onde is None:
+        assert not k21["pendentes"] and not k21["problemas"], resultado.explicar()
+    else:
+        assert k21[onde], resultado.explicar()
+
+
+def test_a_marca_do_juiz_e_lida_no_registro_da_rodada():
+    """A marca que o juiz escreve é achada no registro (como a K21 lê)."""
+    assert github.marca_do_porteiro("2026-11-20T01:00Z PORTEIRO: CONFERIDO\n") == "CONFERIDO"
+    assert github.marca_do_porteiro("x PORTEIRO: NAO CONFERIDO (a versão de teste ainda não tem o porteiro)\r\n") == \
+        "NAO CONFERIDO (a versão de teste ainda não tem o porteiro)"
+    assert github.marca_do_porteiro("nada aqui") is None

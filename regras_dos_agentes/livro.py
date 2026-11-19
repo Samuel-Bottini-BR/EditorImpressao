@@ -64,15 +64,6 @@ class Livro:
         junta = lambda s: " ".join(s.split())  # noqa: E731
         return bool(citacao.strip()) and junta(citacao) in junta(linha)
 
-    def palavras_do_samuel(self, numero: str) -> str:
-        """A coluna das palavras do Samuel (com a origem) da decisão, ou "" se ela não existe."""
-        col = self.colunas(numero)
-        return col[2] if len(col) > 2 else ""
-
-    def trata_da_lista_de_excecoes(self, numero: str) -> bool:
-        """A decisão fala da lista de exceções do porteiro (como a D-791 e a D-800)?"""
-        return "lista de exceç" in self.linhas.get(numero, "").lower()
-
     def resumo(self, numero: str, limite: int = 700) -> str:
         """A decisão para o pacote: a data, as palavras dele e o "na prática", copiados da linha."""
         col = self.colunas(numero)

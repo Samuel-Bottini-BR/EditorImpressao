@@ -398,7 +398,16 @@ def _conferir_github(campos: dict[str, str], raiz: Path, consultar: bool, r: Res
             continue
         motivo = _problema_da_rodada(rodada, raiz)
         if motivo is None:
-            return      # uma rodada que vale para o último commit basta
+            # Uma rodada que vale para o último commit basta, e o juiz dela (o porteiro da versão de teste) tem de ter
+            # conferido: "não conferido" nunca vale como "passou" (R2 da terceira volta de quem quebrou).
+            if rodada.porteiro is None:
+                r.pendentes.append(f"a rodada {numero} não tem o juiz do porteiro (o porteiro da versão de teste não "
+                                   "rodou: a mudança do workflow ainda não foi aplicada) (K21)")
+            elif rodada.porteiro.startswith("NAO CONFERIDO"):
+                r.pendentes.append(f"o juiz do porteiro da rodada {numero} não conferiu: {rodada.porteiro} (K21)")
+            elif rodada.porteiro == "BARROU":
+                r.problemas.append(f"o juiz do porteiro barrou a rodada {numero} (K21)")
+            return
         motivos.append(motivo)
     if pendentes:
         r.pendentes += [f"{p} (K21)" for p in pendentes]

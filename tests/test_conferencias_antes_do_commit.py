@@ -41,15 +41,16 @@ FORJADO = {"decisao": "D-791", "em": "19/11/2026", "palavras": "sim"}     # o at
 def _lista(r: RepositorioDeProva, situacao: str = "valendo", mais: list | None = None, sim: dict | None = None) -> None:
     """A lista de exceções do repositório de prova: deixa o defeito 1 em atualizacao.py (K01 e K02, uma vez)."""
     texto = "subprocess.Popen(c, creationflags=subprocess.DETACHED_PROCESS)"
-    itens = [{"arquivo": "atualizacao.py", "conferencia": k, "texto": texto, "quantas": 1, "data": "2026-11-19",
+    itens = [{"arquivo": "atualizacao.py", "conferencia": k, "funcao": "lancar", "texto": texto, "quantas": 1,
+              "data": "2026-11-19",
               "passo": "3", "motivo": "prova"} for k in ("K01", "K02")] + (mais or [])
     r.escrever("tests/conferencias_excecoes.json", json.dumps({
         "situacao": situacao, "sim_do_samuel": (sim or SIM) if situacao == "valendo" else None, "itens": itens}))
 
 
-@pytest.fixture
-def repo(tmp_path) -> RepositorioDeProva:
-    """Repositório de prova com o pacote, o gancho ligado, o Python do .venv e a partida já no commit."""
+def fazer_repo(tmp_path, situacao: str = "valendo") -> RepositorioDeProva:
+    """Repositório de prova com o pacote, o gancho ligado, o Python do .venv e a partida já no commit (a lista na
+    situação pedida, posta antes de ligar o gancho, como a gerente faria na versão de teste)."""
     r = RepositorioDeProva.novo(tmp_path)
     shutil.copytree(RAIZ / "regras_dos_agentes", r.raiz / "regras_dos_agentes",
                     ignore=shutil.ignore_patterns("__pycache__"))
@@ -61,7 +62,7 @@ def repo(tmp_path) -> RepositorioDeProva:
     r.escrever(".gitignore", ".venv/\n__pycache__/\n")
     r.escrever("atualizacao.py", DEFEITO_1)
     r.escrever("docs/plano/DECISOES.md", LIVRO)
-    _lista(r)
+    _lista(r, situacao)
     r.commit("partida")
     # A versão de teste no "GitHub" de prova: é dela que o gancho lê o Livro que vale (achado N1).
     r.enviar("obra-2026-10-26")
@@ -69,6 +70,12 @@ def repo(tmp_path) -> RepositorioDeProva:
     r.escrever("LEIAME.md", "x\n")
     r.commit("o primeiro commit com o gancho ligado")
     return r
+
+
+@pytest.fixture
+def repo(tmp_path) -> RepositorioDeProva:
+    """O repositório de prova com a lista já valendo."""
+    return fazer_repo(tmp_path)
 
 
 def test_o_gancho_barra_o_erro_novo_e_diz_onde(repo):
@@ -122,10 +129,9 @@ def test_sem_o_gancho_ligado_o_git_nao_avisa_nada(repo):
     assert feito.returncode == 0 and "K02" not in feito.stdout + feito.stderr
 
 
-def test_com_a_lista_ainda_proposta_o_gancho_nao_barra_e_diz_isso(repo):
+def test_com_a_lista_ainda_proposta_o_gancho_nao_barra_e_diz_isso(tmp_path):
     """Enquanto o Samuel não disser "sim", a lista não vale: o gancho avisa o que barraria e deixa passar."""
-    _lista(repo, "proposta")
-    repo.commit("a lista volta a proposta")
+    repo = fazer_repo(tmp_path, "proposta")
     repo.escrever("core/novo.py", DEFEITO_1)
     feito = repo.tentar_commit("erro com a lista proposta")
     assert feito.returncode == 0
@@ -151,7 +157,8 @@ def test_o_gancho_barra_o_agente_que_poe_o_proprio_erro_na_lista_no_mesmo_commit
     Agora a lista do commit é comparada com a do último commit: item novo sem o "sim" próprio barra."""
     repo.escrever("core/novo.py", DEFEITO_1)
     texto = "subprocess.Popen(c, creationflags=subprocess.DETACHED_PROCESS)"
-    _lista(repo, mais=[{"arquivo": "core/novo.py", "conferencia": k, "texto": texto, "quantas": 1,
+    _lista(repo, mais=[{"arquivo": "core/novo.py", "conferencia": k, "funcao": "lancar", "texto": texto,
+                        "quantas": 1,
                         "data": "2026-11-19", "passo": "3", "motivo": "eu mesmo"} for k in ("K01", "K02")])
     feito = repo.tentar_commit("erro novo e o item dele")
     assert feito.returncode != 0 and "item novo na lista" in feito.stdout + feito.stderr
@@ -163,24 +170,25 @@ def test_o_gancho_barra_o_sim_forjado_num_item_novo(repo):
     Livro da versão de teste e tem de trazer um trecho das palavras do Samuel."""
     repo.escrever("atualizacao.py", DEFEITO_1 + '    return ["schtasks", "/Run", "/TN", "nova"]\n')
     texto = 'return ["schtasks", "/Run", "/TN", "nova"]'
-    _lista(repo, mais=[{"arquivo": "atualizacao.py", "conferencia": "K01", "texto": texto, "quantas": 1,
+    _lista(repo, mais=[{"arquivo": "atualizacao.py", "conferencia": "K01", "funcao": "lancar",
+                        "texto": texto, "quantas": 1,
                         "data": "2026-11-19", "passo": "3", "motivo": "eu mesmo", "sim": FORJADO}])
     feito = repo.tentar_commit("erro novo com o sim forjado")
     assert feito.returncode != 0 and "item novo na lista" in feito.stdout + feito.stderr
 
 
-def test_o_gancho_barra_a_lista_valendo_com_o_sim_forjado(repo):
-    """A lista inteira "valendo" com o "sim" forjado: barrada (o Livro da versão de teste não confirma)."""
+def test_o_gancho_barra_mexer_na_situacao_ou_no_sim_num_ramo_de_agente(repo):
+    """R1: mudar o "sim" (ou a situação) da lista num ramo de agente barra; isso é só da gerente, na versão de teste."""
     _lista(repo, sim=FORJADO)
     repo.escrever("core/certo.py", CERTO)
-    feito = repo.tentar_commit("sim forjado")
-    assert feito.returncode != 0 and "não confirma" in feito.stdout + feito.stderr
+    feito = repo.tentar_commit("troca o sim")
+    assert feito.returncode != 0 and "mudou" in feito.stdout + feito.stderr
 
 
-def test_sem_internet_o_gancho_barra_em_vez_de_passar(repo):
-    """Sem o GitHub (aqui, o "GitHub" de prova sumiu), o gancho não consegue ler o Livro da versão de teste: barra
-    (código 3), nunca passa calado."""
-    git.configurar(repo.raiz, "remote.origin.url", str(repo.remoto.parent / "github_que_nao_existe"))
-    repo.escrever("core/certo.py", CERTO)
-    feito = repo.tentar_commit("sem internet")
-    assert feito.returncode != 0 and "Não deu para conferir" in feito.stdout + feito.stderr
+def test_na_versao_de_teste_a_gerente_liga_a_lista(tmp_path):
+    """Na versão de teste (o ramo obra-2026-10-26), o commit da gerente que liga a lista passa no gancho."""
+    repo = fazer_repo(tmp_path, "proposta")
+    git.criar_e_ir_para_o_ramo(repo.raiz, "obra-2026-10-26")
+    _lista(repo, "valendo")
+    feito = repo.tentar_commit("a gerente liga a lista, depois do sim do Samuel registrado no Livro")
+    assert feito.returncode == 0, feito.stdout + feito.stderr

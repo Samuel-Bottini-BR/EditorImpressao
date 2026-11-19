@@ -271,6 +271,11 @@ def commit_de_tudo(raiz: Path | str, mensagem: str) -> subprocess.CompletedProce
     return commit_do_indice(raiz, mensagem)
 
 
+def criar_e_ir_para_o_ramo(raiz: Path | str, nome: str) -> None:
+    """`git switch -C <nome>`: cria (ou refaz) o ramo no commit atual e vai para ele (só nas provas)."""
+    _rodar(raiz, "switch", "-q", "-C", nome)
+
+
 def enviar(raiz: Path | str, remoto: Path | str, ramo_no_remoto: str | None = None) -> None:
     """Liga o repositório a um "origin" (uma pasta) e envia o ramo atual (ou o envia com outro nome lá, sem acompanhar)."""
     if _rodar(raiz, "remote", aceitar=(0,)).stdout.strip() == "":

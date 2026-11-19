@@ -261,36 +261,36 @@ def k15(raiz: Path, base: str, mudados: list[str], livro: Livro) -> list[Achado]
                    "\"sim\" do Samuel, citado no commit (a decisão do Livro que fala da biblioteca)")]
 
 
-def mudancas_na_lista(antes: excecoes.Lista | None, depois: excecoes.Lista, livro: Livro) -> list[str]:
+def mudancas_na_lista(antes: excecoes.Lista | None, depois: excecoes.Lista) -> list[str]:
     """O que mudou na lista de exceções que só a gerente (com o "sim" do Samuel) pode mudar: o lugar único dessa conta.
 
     Usada pela K17 (o formulário da entrega), pelo teste do GitHub que compara com a versão de teste
     (`tests/test_conferencias_protecao.py`) e pela conferência antes do commit (achados 6 e 7 de quem quebrou, 19/11):
-    - item novo, ou "quantas" maior, sem o "sim" próprio conferido no Livro (D-791);
+    - item novo, ou "quantas" maior, com ou sem "sim" (R1 da terceira volta: nenhum item entra por ramo de agente;
+      só por commit da gerente direto na versão de teste);
     - a situação ou o "sim" do Samuel mudados;
     - o passo de um item que continua mudado (a promessa feita ao Samuel sobre quando ele some).
     """
     if antes is None:
         return []
-    frases = [f"item novo na lista sem o \"sim\" do Samuel: {i['conferencia']} {i['arquivo']} | {i['texto'][:80]}"
-              for i in excecoes.acrescentados_sem_sim(antes, depois, livro)]
+    frases = [f"item novo na lista (só a gerente põe, direto na versão de teste): {i['conferencia']} {i['arquivo']} | "
+              f"{i['texto'][:80]}" for i in excecoes.itens_acrescentados(antes, depois)]
     if antes.situacao != depois.situacao:
         frases.append(f"a situação da lista mudou de {antes.situacao!r} para {depois.situacao!r}")
     if antes.sim_do_samuel != depois.sim_do_samuel:
         frases.append("o \"sim\" do Samuel na lista mudou")
-    passos = {excecoes.chave(i["arquivo"], i["conferencia"], i["texto"]): i["passo"] for i in antes.itens}
+    passos = {excecoes.chave_do_item(i): i["passo"] for i in antes.itens}
     for i in depois.itens:
-        velho = passos.get(excecoes.chave(i["arquivo"], i["conferencia"], i["texto"]))
+        velho = passos.get(excecoes.chave_do_item(i))
         if velho is not None and velho != i["passo"]:
             frases.append(f"o passo de um item mudou de {velho!r} para {i['passo']!r}: {i['arquivo']} | "
                           f"{i['texto'][:60]}")
     return frases
 
 
-def k17(raiz: Path, base: str, mudados: list[str], permitidos: list[str], livro: Livro | None = None) -> list[Achado]:
+def k17(raiz: Path, base: str, mudados: list[str], permitidos: list[str]) -> list[Achado]:
     """K17: mexeu nas regras, no Livro, no plano, no handoff ou no porteiro sem o pedido dizer; ou mudou a lista do
     jeito que só a gerente pode (`mudancas_na_lista`)."""
-    livro = livro or Livro.do_repositorio(raiz)
     saida = [Achado("K17", c, 0, c, "agente mexeu num arquivo que só a gerente muda (com o \"sim\" do Samuel)")
              for c in mudados if any(fnmatch(c, p) for p in PROTEGIDOS) and not coberto(c, permitidos)]
     if excecoes.ARQUIVO_DA_LISTA in mudados:
@@ -301,7 +301,7 @@ def k17(raiz: Path, base: str, mudados: list[str], permitidos: list[str], livro:
             saida.append(Achado("K17", excecoes.ARQUIVO_DA_LISTA, 0, "lista criada", "a lista de exceções nasceu "
                                 "neste trabalho sem o pedido nomeá-la"))
         if depois_txt is not None:
-            for frase in mudancas_na_lista(antes, excecoes.ler(raiz, depois_txt), livro):
+            for frase in mudancas_na_lista(antes, excecoes.ler(raiz, depois_txt)):
                 saida.append(Achado("K17", excecoes.ARQUIVO_DA_LISTA, 0, frase[:80], frase))
     return saida
 
@@ -330,7 +330,7 @@ def conferir_mudancas(raiz: Path, base: str, papel: str, permitidos: list[str], 
     pasta_rel = pasta_do_relatorio.resolve().relative_to(raiz.resolve()).as_posix() + "/"
     achados = (k09(pasta_do_relatorio, raiz) + k10(raiz, base, papel, pasta_rel) + k11(raiz, base, livro)
                + k12(raiz, base) + k13(mudados, papel, permitidos, pasta_rel) + k14(mudados, permitidos, pasta_rel)
-               + k15(raiz, base, mudados, livro) + k17(raiz, base, mudados, permitidos, livro))
+               + k15(raiz, base, mudados, livro) + k17(raiz, base, mudados, permitidos))
     if olhar_o_github:
         achados += k18(raiz)
     return achados

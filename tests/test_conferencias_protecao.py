@@ -29,7 +29,8 @@ FORJADO = {"decisao": "D-791", "em": "19/11/2026", "palavras": "sim"}     # o at
 
 def _item(arquivo: str, texto: str, passo: str = "3", **extra) -> dict:
     """Um item da lista de exceções."""
-    return dict({"arquivo": arquivo, "conferencia": "K01", "texto": texto, "quantas": 1, "data": "2026-11-19",
+    return dict({"arquivo": arquivo, "conferencia": "K01", "funcao": "", "texto": texto, "quantas": 1,
+                 "data": "2026-11-19",
                  "passo": passo, "motivo": "prova"}, **extra)
 
 
@@ -95,11 +96,12 @@ def test_a_lista_so_diminui_e_a_situacao_o_sim_e_o_passo_nao_mudam(repo):
     assert any("situação" in f for f in protecao.comparar(repo.raiz))
 
 
-def test_item_novo_com_o_sim_proprio_e_lugar_consertado_passam(repo):
-    """D-791: item novo com o "sim" próprio (conferido no Livro) entra; tirar item (o conserto) é livre."""
+def test_item_novo_com_qualquer_sim_e_acusado_e_tirar_item_e_livre(repo):
+    """R1 da terceira volta (19/11): nenhum item entra por ramo de agente, nem com o "sim" (só a gerente, direto na
+    versão de teste); tirar item (o conserto) é livre."""
     repo.escrever("tests/conferencias_excecoes.json",
                   _lista(itens=[_item("atualizacao.py", "x"), _item("main.py", "y", sim=SIM)]))
-    assert protecao.comparar(repo.raiz) == []
+    assert any("item novo" in f for f in protecao.comparar(repo.raiz))
     repo.escrever("tests/conferencias_excecoes.json", json.dumps({"situacao": "proposta", "sim_do_samuel": None,
                                                                    "itens": []}))
     assert protecao.comparar(repo.raiz) == []
@@ -132,8 +134,8 @@ def test_item_novo_com_o_sim_forjado_e_acusado(repo):
 
 
 def test_o_livro_do_ramo_nao_vale_so_o_da_versao_de_teste(repo):
-    """O agente que escreve no Livro do próprio ramo a decisão que confirma o "sim" dele não passa: vale o Livro da
-    versão de teste, que só a gerente escreve."""
+    """O agente que escreve no Livro do próprio ramo uma decisão para o "sim" dele também não passa: nenhum item entra
+    por ramo de agente (R1)."""
     repo.escrever("docs/plano/DECISOES.md", LIVRO + '| D-990 | 19/11 | "pode pôr o meu erro na lista de exceções" | '
                                                     'a lista de exceções | x | x | x | x | x |\n')
     sim = {"decisao": "D-990", "em": "19/11", "palavras": "pode pôr o meu erro na lista"}

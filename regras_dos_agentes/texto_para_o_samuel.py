@@ -25,26 +25,26 @@ GRUPOS = [
     ("5", "quando a gente arrumar o desinstalar"),
 ]
 
-# Os pedaços que ele deixou para depois da entrega (D-800), ditos como ele conhece, por arquivo. O teste de velocidade
-# inteiro é o mesmo pedaço (achado N6 da segunda volta de quem quebrou: perguntar de novo seria a regra 10 do §11.13).
+# Os pedaços que ele deixou para depois da entrega (D-800), ditos como ele conhece, por arquivo. Do teste de
+# velocidade, só a leitura da placa de vídeo e do disco pelo PowerShell é escolha dele (R4 da terceira volta de quem
+# quebrou): o resto do teste de velocidade vai para a pergunta, explicado.
 DE_FORA = {
     "ui/automatico.py": "as duas dicas do Automático que mostram um número ao Kaique",
-    "teste_velocidade.py": "o teste de velocidade, que conversa com o Windows por conta própria (o PowerShell, a placa de "
-                           "vídeo, o disco, a memória, a janela preta)",
+    "teste_velocidade.py": "o teste de velocidade lendo a placa de vídeo e o tipo de disco pelo PowerShell",
     "avaliar.py": "a régua dos filtros, que pergunta ao Windows onde fica a Área de Trabalho",
 }
+# Quantos lugares a conta de 19/11 (D-800) tinha em cada um desses pedaços.
+NA_DECISAO_DELE = {"ui/automatico.py": 2, "teste_velocidade.py": 2, "avaliar.py": 1}
 
 # Os lugares novos fora do plano, ditos como ele conhece, por arquivo (o que aquele pedaço faz com o Windows).
 FORA_DO_PLANO_POR_ARQUIVO = {
+    "teste_velocidade.py": "o resto do teste de velocidade, que você ainda não decidiu: ele lê a memória do computador e "
+                           "do próprio teste, lê no registro do Windows o nome do Windows, do processador e da placa de "
+                           "vídeo, impede o computador de dormir durante a medida e mexe na janela preta onde roda",
     "historico.py": "a tela de início abre a pasta do projeto e manda imprimir pelo Windows",
     "core/nucleos.py": "o programa pergunta ao Windows quanta memória está livre",
     "core/ocr_comum.py": "o motor de achar texto ajusta, no Windows, onde procurar as bibliotecas dele",
-    "core/ocr_tesseract.py": "o motor de achar texto Tesseract abre sem janela preta, com uma bandeira do Windows",
-    "core/ocr_kraken.py": "o motor de achar texto Kraken abre sem janela preta, com uma bandeira do Windows",
-    "core/paginas_em_outro_processo.py": "o trabalho das páginas em outro processo abre sem janela preta, com uma "
-                                         "bandeira do Windows",
     "ui/brasao_girando.py": "o brasão que gira pergunta ao Windows se o programa ainda está aberto",
-    "ui/tela_de_carregamento.py": "a tela de carregamento abre o brasão sem janela preta, com uma bandeira do Windows",
     "empacotar_teste_velocidade.py": "o pacote do teste de velocidade abre a janela preta pelo Windows",
 }
 
@@ -97,9 +97,13 @@ def texto(lista: Lista) -> str:
         if por_passo.get(passo):
             linhas.append(f"- {_lugares(por_passo[passo])}: {nome}.")
     if depois:
-        partes = [f"- {DE_FORA.get(a, a)} ({_lugares(n)})." for a, n in _por_arquivo(lista, DEPOIS_DA_ENTREGA).items()]
-        linhas += ["", f"**Ficam para depois da entrega ao Kaique, como você escolheu em 19/11 ({_lugares(depois)}, "
-                   "nos mesmos três pedaços que você deixou para depois; a busca maior só achou mais linhas neles):**",
+        partes = []
+        for a, n in _por_arquivo(lista, DEPOIS_DA_ENTREGA).items():
+            antes = NA_DECISAO_DELE.get(a)
+            conta = f"; na conta de 19/11 eram {antes}, a busca maior achou mais linhas no mesmo pedaço" if (
+                antes is not None and antes != n) else ""
+            partes.append(f"- {DE_FORA.get(a, 'outro pedaço')} ({_lugares(n)}{conta}).")
+        linhas += ["", f"**Ficam para depois da entrega ao Kaique, como você escolheu em 19/11 ({_lugares(depois)}):**",
                    "", *partes]
     linhas += [
         "",

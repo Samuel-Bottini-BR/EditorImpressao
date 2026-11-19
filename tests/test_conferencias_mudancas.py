@@ -27,7 +27,8 @@ TESTE_VELHO = ('"""Teste antigo."""\n\n\ndef test_um():\n    """Um."""\n    asse
                'def test_dois():\n    """Dois."""\n    assert 2 == 2\n')
 LISTA = {"situacao": "valendo", "sim_do_samuel": {"decisao": "D-774", "em": "19/11/2026",
                                                    "palavras": "os testes antigos que cobram o jeito errado mudam"},
-         "itens": [{"arquivo": "atualizacao.py", "conferencia": "K02", "texto": "x", "quantas": 1, "data": "2026-11-19",
+         "itens": [{"arquivo": "atualizacao.py", "conferencia": "K02", "funcao": "", "texto": "x", "quantas": 1,
+                    "data": "2026-11-19",
                     "passo": "3", "motivo": "prova"}]}
 
 
