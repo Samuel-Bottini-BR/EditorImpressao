@@ -20,9 +20,11 @@ AS PROVAS (sessão A do passo 1)
        do script chega igual.
     3. Pergunta 2, "Não": "você disse Não; nada mudou", conferido (a tarefa que seria criada não existe).
     4. Pergunta 3, com o navegador na frente, "Sim": a janela espera 10 segundos (para o Samuel clicar no navegador)
-       e pede; mostra se a janela conseguiu vir para a frente; esse "Sim" apaga a tarefa e a pasta de prova, e a
-       leitura diz "não existe" (a lista do que foi desfeito).
-    5. Pedido para um programa que não existe: frase em português, sem caixa do Windows. 0 perguntas.
+       e pede; mostra se a janela conseguiu vir para a frente; esse "Sim" apaga as tarefas e a pasta de prova e, se
+       foi a prova que criou a pasta EditorImpressao do Agendador (anotado antes da pergunta 1), apaga-a também;
+       vai até o fim mesmo que um passo falhe, e a leitura diz o que foi desfeito e o que ficou (D-722).
+    5. (a) Pedido para um programa que não existe: a peça para antes do Windows, com a frase em português. (b) Pedido
+       para um arquivo que existe e não é programa: chega ao Windows; frase em português, sem caixa. 0 perguntas.
     6. A resposta do Windows com acento: manda a tarefa de prova rodar e mostra a resposta ("ÊXITO"). 0 perguntas.
 
 COMO ABRIR
@@ -30,6 +32,10 @@ COMO ABRIR
     O programa indicado é o que a pergunta do Windows abre com a licença (montado deste mesmo commit, para ter a
     entrada do trabalho de administrador). Sem `--programa`, abre o próprio Python com o `main.py` (a pergunta
     mostra o Python, não o Editor: serve só para ensaiar).
+
+Os pedidos de cada prova saem de funções sem o Windows (`passos_da_pergunta_1` etc.), e um teste passa cada um pelas
+regras da peça, para nenhum pedido errado chegar à sessão (achado 1 de quem tentou quebrar). Fechar a janela no meio
+de uma prova não fecha: ela pede para esperar.
 
 Seguro mexer: os textos, a ordem das linhas. Arriscado: escrever aqui qualquer conversa com o Windows (tem de ir
 para a peça); usar nomes de pasta ou de tarefa que não sejam os de prova (a pergunta 3 apaga o que a pergunta 1
@@ -40,6 +46,7 @@ from __future__ import annotations
 
 import argparse
 import hashlib
+import json
 import os
 import sys
 import time
@@ -53,13 +60,18 @@ sys.path.insert(0, str(RAIZ))
 from core import windows  # noqa: E402
 
 TAREFA_DE_PROVA = "EditorImpressao\\Prova da peca do Windows"
-TAREFA_DO_NAO = "EditorImpressao\\Prova da peca do Windows (Nao)"
+# Sem parênteses: a peça só aceita letras, números, espaço, ponto, sublinhado e hífen (achado 1 de quem tentou quebrar:
+# com "(Nao)" a peça recusava o pedido antes do Windows, e as perguntas 2 e 3 nunca apareciam).
+TAREFA_DO_NAO = "EditorImpressao\\Prova da peca do Windows - Nao"
 PASTA_DE_PROVA = windows.NOME_DA_PASTA_SEGURA_DE_PROVA
 SCRIPT_DA_TAREFA = "tarefa-de-prova.ps1"
 RODOU = "tarefa-rodou.txt"
 SEGREDO_DE_PROVA = "Prova: senha com acento çÃõ€ e espaço"      # nunca a senha dos testes; nunca mostrado
 TEXTO_COM_ACENTO = "Ação, ÊXITO, coração, € 10"
 ESPERA_ANTES_DA_PERGUNTA_3_S = 10
+# Como estava o Agendador antes da primeira pergunta (a pasta do programa existia?), para a pergunta 3 deixá-lo como
+# estava (D-722). Gravado na primeira vez da pergunta 1 e nunca sobrescrito; apagado pela pergunta 3 quando ela desfaz.
+ESTADO_DE_ANTES = RAIZ / "relatorios" / "janela-de-prova" / "agendador-antes-da-prova.json"
 
 
 def _agora() -> str:
@@ -68,7 +80,7 @@ def _agora() -> str:
 
 
 # ---------------------------------------------------------------------------------------------------------------------
-# O que cada prova faz (sem tela: recebe `dizer`, que escreve uma linha na janela e no registro)
+# Os pedidos de cada prova (sem o Windows: os testes passam cada um pelas regras da peça)
 # ---------------------------------------------------------------------------------------------------------------------
 
 def _xml_de_prova() -> str:
@@ -76,11 +88,9 @@ def _xml_de_prova() -> str:
     mandar rodar (o mesmo descritor do ajudante do programa, lido do lugar único dele)."""
     import atualizacao
 
-    script = windows.pasta_segura(PASTA_DE_PROVA) / SCRIPT_DA_TAREFA
-    return windows.xml_da_tarefa_do_sistema(str(windows.caminho_do_powershell()),
-                                            windows.argumentos_do_powershell(script),
-                                            "Editor de Impressão: tarefa de prova da peça do Windows (pode apagar).",
-                                            atualizacao.QUEM_PODE_MANDAR_RODAR, limite="PT10M")
+    return windows.xml_da_tarefa_de_script(windows.pasta_segura(PASTA_DE_PROVA) / SCRIPT_DA_TAREFA,
+                                           "Editor de Impressão: tarefa de prova da peça do Windows (pode apagar).",
+                                           atualizacao.QUEM_PODE_MANDAR_RODAR, limite="PT10M")
 
 
 _SCRIPT_DA_TAREFA = (
@@ -97,8 +107,43 @@ _SCRIPT_DA_SOMA = (
 )
 
 
+def passos_da_pergunta_1() -> list:
+    """Pergunta 1: a pasta segura de prova, o script da tarefa (o resultado da vez anterior apagado antes), a tarefa
+    de prova e o script do segredo e do texto com acento."""
+    return [windows.passo_criar_pasta_segura(PASTA_DE_PROVA),
+            windows.passo_gravar_na_pasta_segura(PASTA_DE_PROVA, SCRIPT_DA_TAREFA, _SCRIPT_DA_TAREFA),
+            windows.passo_gravar_na_pasta_segura(PASTA_DE_PROVA, RODOU, ""),
+            windows.passo_criar_tarefa(TAREFA_DE_PROVA, _xml_de_prova()),
+            windows.passo_script("conferir o segredo e o texto com acento", _SCRIPT_DA_SOMA, com_segredo=True,
+                                 limite_s=120)]
+
+
+def passos_da_pergunta_2() -> list:
+    """Pergunta 2 (a que recebe "Não"): criaria uma segunda tarefa de prova."""
+    return [windows.passo_criar_tarefa(TAREFA_DO_NAO, _xml_de_prova())]
+
+
+def passos_da_pergunta_3(apagar_a_pasta_do_agendador: bool) -> list:
+    """Pergunta 3 (o desfazer): as duas tarefas de prova, a pasta segura de prova e, se foi a prova que a criou, a
+    pasta do programa no Agendador (só se ficar vazia)."""
+    passos = [windows.passo_apagar_tarefa(TAREFA_DE_PROVA), windows.passo_apagar_tarefa(TAREFA_DO_NAO),
+              windows.passo_apagar_pasta_segura(PASTA_DE_PROVA)]
+    if apagar_a_pasta_do_agendador:
+        passos.append(windows.passo_apagar_pasta_de_tarefas())
+    return passos
+
+
+def passos_da_prova_5() -> list:
+    """Prova 5: um passo qualquer (o pedido não chega a fazer nada)."""
+    return [windows.passo_script("nada", "")]
+
+
+# ---------------------------------------------------------------------------------------------------------------------
+# O que cada prova faz (sem tela: recebe `dizer`, que escreve uma linha na janela e no registro)
+# ---------------------------------------------------------------------------------------------------------------------
+
 def _dizer_resposta(dizer: Callable[[str], None], resposta: windows.Resposta) -> None:
-    """Escreve o desfecho, o motivo e cada passo do relatório."""
+    """Escreve o desfecho, o motivo, cada passo do relatório e o técnico inteiro (o registro é a prova escrita)."""
     dizer(f"Resposta: {resposta.desfecho.upper()}" + (f" — {resposta.motivo}" if resposta.motivo else ""))
     if "janela_na_frente" in resposta.dados:
         dizer("A janela do programa estava na frente quando pediu: "
@@ -107,8 +152,15 @@ def _dizer_resposta(dizer: Callable[[str], None], resposta: windows.Resposta) ->
     for passo in resposta.dados.get("passos", []):
         dizer(f"   passo \"{passo.get('descricao')}\": {passo.get('resultado')}"
               + (f" — {passo.get('motivo')}" if passo.get("motivo") else ""))
+        if passo.get("resultado") != windows.DEU_CERTO and passo.get("detalhe"):
+            dizer(f"      (técnico do passo: {passo.get('detalhe')})")
     if resposta.detalhe:
-        dizer(f"   (técnico: {resposta.detalhe[:300]})")
+        dizer(f"   (técnico: {resposta.detalhe})")
+
+
+def _resposta_do_windows(r: windows.Resposta) -> str:
+    """O que o Windows escreveu (a resposta ou o erro), ou o motivo."""
+    return r.dados.get("saida") or r.dados.get("erros") or r.motivo
 
 
 def _ler_tarefa(dizer: Callable[[str], None], nome: str) -> windows.Tarefa:
@@ -122,7 +174,8 @@ def _ler_tarefa(dizer: Callable[[str], None], nome: str) -> windows.Tarefa:
         dizer(f"Lido no Windows: a tarefa existe, mas não deu para ler ({t.motivo}).")
     else:
         quem = "o sistema" if t.usuario == windows.SID_SISTEMA else t.usuario
-        dizer(f"Lido no Windows: a tarefa existe; roda como {quem}; comando: {t.comando} {t.argumentos}")
+        dizer(f"Lido no Windows: a tarefa existe; roda como {quem}; comando: {t.comando} {t.argumentos}; "
+              f"licença no Windows: {t.licenca}")
     return t
 
 
@@ -139,6 +192,14 @@ def _ler_pasta(dizer: Callable[[str], None]) -> windows.Resposta:
     return r
 
 
+def _ler_pasta_do_agendador(dizer: Callable[[str], None]) -> bool | None:
+    """Lê se a pasta do programa existe no Agendador e diz."""
+    existe = windows.pasta_de_tarefas_existe()
+    dizer("Lido no Windows: a pasta \\EditorImpressao do Agendador "
+          + {True: "existe.", False: "não existe.", None: "não deu para saber se existe."}[existe])
+    return existe
+
+
 def prova_lancar_solto(dizer: Callable[[str], None], _programa: list[str] | None, _janela: int | None) -> None:
     """Prova 1: um processo à parte lança um script solto e fecha; o script diz quando rodou e se o outro já tinha
     fechado."""
@@ -146,7 +207,7 @@ def prova_lancar_solto(dizer: Callable[[str], None], _programa: list[str] | None
     dizer("Abrindo um processo à parte que lança o script solto e fecha logo em seguida...")
     r = windows.rodar_e_esperar([sys.executable, str(Path(__file__).resolve()), "--lancador", str(resultado)],
                                 limite_s=120, letras="utf-8")
-    dizer(f"O processo que lançou terminou: {r.dados.get('saida') or r.motivo}")
+    dizer(f"O processo que lançou terminou: {_resposta_do_windows(r)}")
     fim = time.monotonic() + 90
     while time.monotonic() < fim and not resultado.exists():
         time.sleep(0.3)
@@ -174,15 +235,21 @@ def _lancador(resultado: str) -> int:
     return 0 if r.deu_certo else 1
 
 
+def _anotar_o_agendador_de_antes(dizer: Callable[[str], None]) -> None:
+    """Antes da primeira pergunta 1: anota se a pasta do programa já existia no Agendador (uma vez só)."""
+    if ESTADO_DE_ANTES.exists():
+        dizer(f"Como estava o Agendador antes da prova: já anotado em {ESTADO_DE_ANTES.name}.")
+        return
+    existia = _ler_pasta_do_agendador(dizer)
+    ESTADO_DE_ANTES.parent.mkdir(parents=True, exist_ok=True)
+    ESTADO_DE_ANTES.write_text(json.dumps({"pasta_do_agendador_existia": existia, "em": _agora()}), encoding="utf-8")
+
+
 def prova_pergunta_1(dizer: Callable[[str], None], programa: list[str] | None, janela: int | None) -> None:
     """Prova 2 (pergunta 1, "Sim"): pasta segura de prova, tarefa de prova, segredo e texto com acento."""
+    _anotar_o_agendador_de_antes(dizer)
     dizer("Vai aparecer a pergunta do Windows. A gerente pede: clique SIM.")
-    passos = [windows.passo_criar_pasta_segura(PASTA_DE_PROVA),
-              windows.passo_gravar_na_pasta_segura(PASTA_DE_PROVA, SCRIPT_DA_TAREFA, _SCRIPT_DA_TAREFA),
-              windows.passo_criar_tarefa(TAREFA_DE_PROVA, _xml_de_prova()),
-              windows.passo_script("conferir o segredo e o texto com acento", _SCRIPT_DA_SOMA, com_segredo=True,
-                                   limite_s=120)]
-    r = windows.pedir_licenca(passos, segredo=SEGREDO_DE_PROVA, janela=janela, programa=programa)
+    r = windows.pedir_licenca(passos_da_pergunta_1(), segredo=SEGREDO_DE_PROVA, janela=janela, programa=programa)
     _dizer_resposta(dizer, r)
     for passo in r.dados.get("passos", []):
         if passo.get("descricao") == "conferir o segredo e o texto com acento" and "|" in str(passo.get("saida")):
@@ -210,25 +277,32 @@ def prova_pergunta_1(dizer: Callable[[str], None], programa: list[str] | None, j
             dizer("Esta conta tentou gravar na pasta segura e o Windows não deixou: certo.")
     t = windows.ler_tarefa(TAREFA_DE_PROVA)
     if t.existe:
-        rodar = windows.rodar_tarefa(TAREFA_DE_PROVA)
-        dizer(f"Esta conta mandou a tarefa rodar; o Windows respondeu: {rodar.dados.get('saida') or rodar.motivo}")
         rodou = windows.pasta_segura(PASTA_DE_PROVA) / RODOU
+        marco = time.time()
+        rodar = windows.rodar_tarefa(TAREFA_DE_PROVA)
+        dizer(f"Esta conta mandou a tarefa rodar; o Windows respondeu: {_resposta_do_windows(rodar)}")
+        # Só vale o resultado escrito DEPOIS de mandar rodar (achado 2 de quem tentou quebrar: um arquivo da vez
+        # anterior enganava a prova). O passo com licença também o deixou vazio antes.
         fim = time.monotonic() + 60
-        while time.monotonic() < fim and not rodou.exists():
+        texto = ""
+        while time.monotonic() < fim:
+            if rodou.exists() and rodou.stat().st_mtime >= marco - 1:
+                texto = rodou.read_text(encoding="utf-8-sig")
+                if texto.count("|") == 2:
+                    break
             time.sleep(0.5)
-        if rodou.exists():
-            sid, nome, hora = rodou.read_text(encoding="utf-8-sig").split("|")
+        if texto.count("|") == 2:
+            sid, nome, hora = texto.split("|")
             dizer(f"A tarefa rodou às {hora} como {nome} ({sid})"
                   + (": é o sistema, certo." if sid == windows.SID_SISTEMA else ": NÃO é o sistema."))
         else:
-            dizer("A tarefa não escreveu que rodou em 60 segundos.")
+            dizer("A tarefa não escreveu que rodou em 60 segundos (depois de mandar rodar).")
 
 
 def prova_pergunta_2(dizer: Callable[[str], None], programa: list[str] | None, janela: int | None) -> None:
     """Prova 3 (pergunta 2, "Não"): a resposta é "disse Não" e nada mudou (a tarefa que seria criada não existe)."""
     dizer("Vai aparecer a pergunta do Windows. A gerente pede: clique NÃO.")
-    r = windows.pedir_licenca([windows.passo_criar_tarefa(TAREFA_DO_NAO, _xml_de_prova())], janela=janela,
-                              programa=programa)
+    r = windows.pedir_licenca(passos_da_pergunta_2(), janela=janela, programa=programa)
     _dizer_resposta(dizer, r)
     dizer("--- Lido de novo, por fora ---")
     t = _ler_tarefa(dizer, TAREFA_DO_NAO)
@@ -237,33 +311,64 @@ def prova_pergunta_2(dizer: Callable[[str], None], programa: list[str] | None, j
 
 
 def prova_pergunta_3(dizer: Callable[[str], None], programa: list[str] | None, janela: int | None) -> None:
-    """Prova 4 (pergunta 3, com o navegador na frente, "Sim"): apaga a tarefa e a pasta de prova e confere."""
+    """Prova 4 (pergunta 3, com o navegador na frente, "Sim"): desfaz o que a pergunta 1 (e a 2, se recebeu "Sim")
+    criou, indo até o fim mesmo que um passo falhe, e diz, lido de novo por fora, o que foi desfeito e o que ficou."""
+    antes = json.loads(ESTADO_DE_ANTES.read_text(encoding="utf-8")) if ESTADO_DE_ANTES.exists() else {}
+    existia = antes.get("pasta_do_agendador_existia")
+    apagar_a_pasta = existia is False
+    if existia is None:
+        dizer("Não se sabe se a pasta \\EditorImpressao do Agendador existia antes da prova: ela NÃO será apagada.")
     for falta in range(ESPERA_ANTES_DA_PERGUNTA_3_S, 0, -1):
         dizer(f"Clique agora no navegador (ou em outra janela). A pergunta vem em {falta} s...")
         time.sleep(1)
     dizer("Pedindo agora. A gerente pede: clique SIM (na pergunta, ou no escudo piscando na barra de tarefas).")
-    r = windows.pedir_licenca([windows.passo_apagar_tarefa(TAREFA_DE_PROVA),
-                               windows.passo_apagar_tarefa(TAREFA_DO_NAO),
-                               windows.passo_apagar_pasta_segura(PASTA_DE_PROVA)], janela=janela, programa=programa)
+    r = windows.pedir_licenca(passos_da_pergunta_3(apagar_a_pasta), janela=janela, programa=programa,
+                              ate_o_fim=True)
     _dizer_resposta(dizer, r)
     dizer("--- O que foi desfeito, lido de novo por fora ---")
     _ler_tarefa(dizer, TAREFA_DE_PROVA)
     _ler_tarefa(dizer, TAREFA_DO_NAO)
     _ler_pasta(dizer)
+    agora = _ler_pasta_do_agendador(dizer)
+    if existia is False:
+        dizer("A pasta \\EditorImpressao do Agendador não existia antes da prova: "
+              + ("foi apagada, o Agendador ficou como estava." if agora is False else "ELA FICOU."))
+    elif existia is True:
+        dizer("A pasta \\EditorImpressao do Agendador já existia antes da prova: ficou, como estava.")
+    if r.deu_certo and (agora is False or existia is True):
+        ESTADO_DE_ANTES.unlink(missing_ok=True)
+
+
+def pedido_para_programa_que_nao_existe(dizer: Callable[[str], None], janela: int | None) -> None:
+    """Prova 5 (a): pedido para um programa que não existe: a peça para antes do Windows, com a frase em português."""
+    dizer("(a) Programa que não existe:")
+    _dizer_resposta(dizer, windows.pedir_licenca(passos_da_prova_5(), janela=janela,
+                                                 programa=["C:\\Esta pasta nao existe\\EditorImpressao.exe"]))
+
+
+def pedido_para_arquivo_que_nao_e_programa(dizer: Callable[[str], None], janela: int | None) -> None:
+    """Prova 5 (b): pedido para um arquivo que existe e não é programa: CHEGA ao Windows, que não sabe pedir licença
+    para ele; deve voltar a frase em português, sem caixa do Windows e sem pergunta. Só na sessão à vista (nunca nos
+    testes automáticos: é o Windows de verdade)."""
+    pasta = windows.criar_pasta_de_troca()
+    texto = pasta / "nao-e-programa.txt"
+    texto.write_text("isto não é um programa", encoding="utf-8")
+    dizer("(b) Arquivo que existe e não é programa (vai ao Windows; não deve aparecer caixa nem pergunta):")
+    _dizer_resposta(dizer, windows.pedir_licenca(passos_da_prova_5(), janela=janela, programa=[str(texto)]))
+    windows.apagar_pasta_de_troca(pasta)
 
 
 def prova_programa_que_nao_existe(dizer: Callable[[str], None], _programa: list[str] | None,
                                   janela: int | None) -> None:
-    """Prova 5: pedido para um programa que não existe: frase em português, nenhuma caixa do Windows."""
-    r = windows.pedir_licenca([windows.passo_script("nada", "")], janela=janela,
-                              programa=["C:\\Esta pasta nao existe\\EditorImpressao.exe"])
-    _dizer_resposta(dizer, r)
+    """Prova 5: as duas partes, (a) e (b)."""
+    pedido_para_programa_que_nao_existe(dizer, janela)
+    pedido_para_arquivo_que_nao_e_programa(dizer, janela)
 
 
 def prova_resposta_com_acento(dizer: Callable[[str], None], _programa: list[str] | None, _janela: int | None) -> None:
     """Prova 6: manda a tarefa de prova rodar (sem licença) e mostra a resposta do Windows, com acento."""
     r = windows.rodar_tarefa(TAREFA_DE_PROVA)
-    dizer(f"O Windows respondeu ({r.desfecho}): {r.dados.get('saida') or r.motivo}")
+    dizer(f"O Windows respondeu ({r.desfecho}): {_resposta_do_windows(r)}")
 
 
 PROVAS: list[tuple[str, str, Callable]] = [
@@ -356,6 +461,14 @@ def montar_janela(programa: list[str] | None, registro: Path):
             trabalho.finished.connect(self.acabou)
             self.trabalhos.append(trabalho)
             trabalho.start()
+
+        def closeEvent(self, evento) -> None:  # noqa: N802 - nome do Qt
+            """Não fecha no meio de uma prova (o registro ficaria pela metade; achado 17 de quem tentou quebrar)."""
+            if any(t.isRunning() for t in self.trabalhos):
+                self.dizer("Espere a prova acabar antes de fechar a janela (o registro ficaria pela metade).")
+                evento.ignore()
+                return
+            evento.accept()
 
         def acabou(self) -> None:
             """A prova acabou: os botões voltam."""

@@ -46,7 +46,11 @@ def _pasta_local_da_conta() -> Path:
     import uuid
     from ctypes import wintypes
 
-    guid = windows._GUID.from_buffer_copy(uuid.UUID("f1b32785-6fba-4fcf-9d55-7b8e7f157091").bytes_le)
+    class Guid(ctypes.Structure):
+        """O GUID do Windows (para a pasta conhecida)."""
+        _fields_ = [("a", wintypes.DWORD), ("b", wintypes.WORD), ("c", wintypes.WORD), ("d", ctypes.c_ubyte * 8)]
+
+    guid = Guid.from_buffer_copy(uuid.UUID("f1b32785-6fba-4fcf-9d55-7b8e7f157091").bytes_le)
     saida = wintypes.LPWSTR()
     shell32 = ctypes.WinDLL("shell32")
     shell32.SHGetKnownFolderPath.argtypes = [ctypes.c_void_p, wintypes.DWORD, wintypes.HANDLE,
@@ -132,7 +136,7 @@ def test_o_trabalho_recusa_a_pasta_de_troca_que_e_um_atalho(tmp_path):
     atalho = verdadeira.parent / (windows.PREFIXO_DA_TROCA + "atalho-do-teste")
     _winapi.CreateJunction(str(verdadeira), str(atalho))
     try:
-        assert windows._e_atalho(atalho)
+        assert windows.e_atalho(atalho)
         assert windows.atender_trabalho_de_administrador([str(atalho)]) == windows.SAIDA_PASTA_RECUSADA
         assert not (verdadeira / windows.NOME_DO_RELATORIO).exists()
     finally:
@@ -170,7 +174,7 @@ def test_o_trabalho_com_licenca_faz_so_o_aviso():
     try:
         codigo = windows.atender_trabalho_de_administrador([str(pasta)])
         relatorio = json.loads((pasta / windows.NOME_DO_RELATORIO).read_text(encoding="utf-8"))
-        resposta = windows._desfecho_do_trabalho(codigo, relatorio)
+        resposta = windows.desfecho_do_trabalho(codigo, relatorio)
         if windows.tem_licenca_de_administrador():
             assert codigo == windows.SAIDA_TUDO_CERTO and resposta.deu_certo
             assert marca.read_text(encoding="utf-8") == "Ação"
@@ -189,7 +193,7 @@ def test_o_aviso_so_aceita_a_lista_fechada():
     script sem limite aceito: tudo recusado. Os passos montados pelas funções da peça são aceitos."""
     def problemas(passo) -> list[str]:
         """Os problemas de um passo, como o lado com licença confere."""
-        return windows._problemas_do_passo(passo)
+        return windows.problemas_do_passo(passo)
 
     assert problemas({"tipo": "formatar_o_disco", "descricao": "x", "dados": {}})
     assert problemas({"tipo": "criar_pasta_segura", "descricao": "x", "dados": {"nome": "Windows"}})
@@ -215,18 +219,16 @@ def test_o_aviso_so_aceita_a_lista_fechada():
 # O lado que pede
 # ---------------------------------------------------------------------------------------------------------------------
 
-def test_pedir_licenca_errado_para_antes_da_pergunta(monkeypatch):
+def test_pedir_licenca_errado_para_antes_da_pergunta():
     """Pedido sem passos, com passo fora da lista ou com um programa que não existe: "falhou" em português, e a
-    pergunta do Windows nem chega a ser feita (a função que abre com licença não é chamada)."""
-    def nao_pode(*_a, **_k):
-        """Se chegasse aqui, o Windows faria a pergunta: o teste falha."""
-        raise AssertionError("a pergunta do Windows não podia ter sido feita")
-
-    monkeypatch.setattr(windows, "_abrir_com_licenca", nao_pode)
-    r = windows.pedir_licenca([])
-    assert r.desfecho == windows.FALHOU and "pedido" in r.motivo
-    r = windows.pedir_licenca([windows.Passo("formatar_o_disco", "x", {})])
-    assert r.desfecho == windows.FALHOU
+    pergunta do Windows nem chega a ser feita. Todos pedem um programa que não existe: mesmo que a conferência do
+    pedido sumisse, o Windows não abriria pergunta nenhuma (só "não achei"); a frase do pedido errado prova qual
+    conferência parou."""
+    nao_existe = ["C:\\nao\\existe\\EditorImpressao.exe"]
+    r = windows.pedir_licenca([], programa=nao_existe)
+    assert r.desfecho == windows.FALHOU and "pedido ao Windows está errado" in r.motivo
+    r = windows.pedir_licenca([windows.Passo("formatar_o_disco", "x", {})], programa=nao_existe)
+    assert r.desfecho == windows.FALHOU and "pedido ao Windows está errado" in r.motivo
     r = windows.pedir_licenca([windows.passo_script("s", "x")], programa=["C:\\nao\\existe\\EditorImpressao.exe"])
     assert r.desfecho == windows.FALHOU and "não achei o programa" in r.motivo
 
@@ -235,29 +237,63 @@ def test_o_desfecho_vem_do_relatorio_nunca_so_do_codigo():
     """Sem relatório, nunca "deu certo" (nem com o código 0); relatório recusado, pela metade ou com um passo que
     falhou: "falhou", com o passo; só tudo feito e o código 0 dão "deu certo"."""
     ok = {"passos": [{"descricao": "a", "resultado": windows.DEU_CERTO}], "terminou": True, "recusado": ""}
-    assert windows._desfecho_do_trabalho(0, None).desfecho == windows.FALHOU
-    assert "não é só desta conta" in windows._desfecho_do_trabalho(windows.SAIDA_PASTA_RECUSADA, None).motivo
-    assert windows._desfecho_do_trabalho(0, {**ok, "recusado": "sem licença"}).desfecho == windows.FALHOU
-    assert windows._desfecho_do_trabalho(0, {**ok, "terminou": False}).desfecho == windows.FALHOU
+    assert windows.desfecho_do_trabalho(0, None).desfecho == windows.FALHOU
+    assert "não é só desta conta" in windows.desfecho_do_trabalho(windows.SAIDA_PASTA_RECUSADA, None).motivo
+    assert windows.desfecho_do_trabalho(0, {**ok, "recusado": "sem licença"}).desfecho == windows.FALHOU
+    assert windows.desfecho_do_trabalho(0, {**ok, "terminou": False}).desfecho == windows.FALHOU
     falhou = {**ok, "passos": [{"descricao": "criar a tarefa", "resultado": windows.FALHOU, "motivo": "m"}]}
-    r = windows._desfecho_do_trabalho(1, falhou)
+    r = windows.desfecho_do_trabalho(1, falhou)
     assert r.desfecho == windows.FALHOU and r.motivo.startswith("criar a tarefa")
-    assert windows._desfecho_do_trabalho(1, ok).desfecho == windows.FALHOU
-    assert windows._desfecho_do_trabalho(0, {**ok, "passos": []}).desfecho == windows.FALHOU
-    assert windows._desfecho_do_trabalho(0, ok).deu_certo
+    assert windows.desfecho_do_trabalho(1, ok).desfecho == windows.FALHOU
+    assert windows.desfecho_do_trabalho(0, {**ok, "passos": []}).desfecho == windows.FALHOU
+    assert windows.desfecho_do_trabalho(0, ok).deu_certo
 
 
-def test_o_nao_e_lido_pelo_erro_guardado_daquela_chamada():
+def test_o_erro_do_windows_e_o_daquela_chamada():
     """Etapa 5, defeito 2 (18/11): o "Não" na pergunta do Windows virava "deu certo" porque o erro era lido sem
-    guardar o último erro da chamada (`ctypes.windll`, sem `use_last_error`). Todas as bibliotecas da peça guardam o
-    erro; a do jeito antigo não guarda (este teste acusaria o jeito antigo)."""
-    guarda = ctypes._FUNCFLAG_USE_LASTERROR
-    w = windows._win()
-    for biblioteca in (w.kernel32, w.advapi32, w.shell32, w.user32, w.ole32, w.crypt32):
-        assert biblioteca._FuncPtr._flags_ & guarda, biblioteca
-    assert not ctypes.windll.shell32._FuncPtr._flags_ & guarda      # o jeito de core/_testes_a_distancia_windows.py
+    guardar o último erro da chamada. Aqui, pelo comportamento: a peça pergunta por uma marca que não existe, e só
+    lendo o erro daquela chamada ("não achado") ela responde "não existe" (False); lido do jeito antigo, o erro vem 0
+    e a resposta seria "não deu para saber" (None)."""
+    assert windows.marca_existe(f"Local\\EditorImpressao-nao-existe-{time.time_ns()}") is False
     assert windows.ERRO_CANCELADO == 1223
-    assert "não achei" in windows._motivo_do_erro_ao_abrir(windows.ERRO_ARQUIVO_NAO_ACHADO)
+
+
+def test_o_nao_e_so_o_nao_e_uma_falha_nunca_vira_nao():
+    """Achado 3 de quem tentou quebrar (19/11): nenhum teste provava que o "Não" vira "você disse Não" e que uma
+    falha não vira "Não". O erro "cancelado" (1223) é "nao"; qualquer outro é "erro:<n>". E o desfecho: "nao" é
+    DISSE_NAO (nunca "deu certo"); erro é FALHOU (nunca DISSE_NAO); passou do tempo é FALHOU e diz que o trabalho pode
+    continuar; terminou sem relatório é FALHOU."""
+    assert windows.o_que_houve_ao_abrir(windows.ERRO_CANCELADO) == "nao"
+    for erro in (2, 3, 5, 1155, 1460, 0):
+        assert windows.o_que_houve_ao_abrir(erro) == f"erro:{erro}"
+    pedidos = [{"tipo": "script", "descricao": "a"}]
+    ok = {"passos": [{"tipo": "script", "descricao": "a", "resultado": windows.DEU_CERTO}], "terminou": True,
+          "recusado": ""}
+    r = windows.resposta_do_pedido("nao", None, "t", None, pedidos, 60)
+    assert r.desfecho == windows.DISSE_NAO and "Não" in r.motivo
+    r = windows.resposta_do_pedido("erro:5", None, "t", None, pedidos, 60)
+    assert r.desfecho == windows.FALHOU and "não deixou" in r.motivo
+    r = windows.resposta_do_pedido("erro:2", None, "t", None, pedidos, 60)
+    assert r.desfecho == windows.FALHOU and "não achei" in r.motivo
+    r = windows.resposta_do_pedido("tempo", None, "t", ok, pedidos, 600)
+    assert r.desfecho == windows.FALHOU and "pode continuar" in r.motivo
+    r = windows.resposta_do_pedido("sem_acompanhar", None, "t", ok, pedidos, 600)
+    assert r.desfecho == windows.FALHOU and "pode continuar" in r.motivo
+    assert windows.resposta_do_pedido("terminou", 0, "t", None, pedidos, 60).desfecho == windows.FALHOU
+    assert windows.resposta_do_pedido("terminou", 0, "t", ok, pedidos, 60).deu_certo
+
+
+def test_o_relatorio_tem_de_bater_com_o_pedido():
+    """Achado 14 de quem tentou quebrar: um relatório com menos passos (ou outros) que o pedido, todos "deu certo",
+    não vira "deu certo"."""
+    pedidos = [{"tipo": "script", "descricao": "a"}, {"tipo": "criar_tarefa", "descricao": "b"}]
+    so_um = {"passos": [{"tipo": "script", "descricao": "a", "resultado": windows.DEU_CERTO}], "terminou": True,
+             "recusado": ""}
+    r = windows.desfecho_do_trabalho(0, so_um, pedidos)
+    assert r.desfecho == windows.FALHOU and "não bate" in r.motivo
+    outro = {**so_um, "passos": [{"tipo": "script", "descricao": "a", "resultado": windows.DEU_CERTO},
+                                 {"tipo": "script", "descricao": "b", "resultado": windows.DEU_CERTO}]}
+    assert windows.desfecho_do_trabalho(0, outro, pedidos).desfecho == windows.FALHOU
 
 
 # ---------------------------------------------------------------------------------------------------------------------
@@ -281,7 +317,7 @@ def test_a_pasta_de_troca_herda_as_licencas_da_conta():
         # tem outro dono (o defeito 3 acima). A regra da peça aceita os dois.
         esperado = windows.SID_ADMINISTRADORES if windows.tem_licenca_de_administrador() else sid
         assert lic.dono == esperado
-        assert windows._problemas_da_pasta_de_troca(lic, sid) == []
+        assert windows.problemas_da_pasta_de_troca(lic, sid) == []
     finally:
         assert windows.apagar_pasta_de_troca(pasta)
         assert not pasta.exists()
@@ -305,16 +341,19 @@ def test_a_regra_da_pasta_de_troca_recusa_outra_conta():
         """Uma linha de licença montada."""
         return windows.Licenca(quem, "", tipo, mascara, True, False)
 
-    assert windows._problemas_da_pasta_de_troca(lic(sid, linha(sid, 0x1F01FF)), sid) == []
-    assert windows._problemas_da_pasta_de_troca(lic(sid, linha("S-1-1-0", 0x2)), sid)          # Todos gravam
-    assert windows._problemas_da_pasta_de_troca(lic(sid, linha(windows.SID_USUARIOS, 0x1301BF)), sid)
-    assert windows._problemas_da_pasta_de_troca(lic("S-1-5-21-9-9-9-1002", linha(sid, 0x1F01FF)), sid)
-    assert windows._problemas_da_pasta_de_troca(windows.Licencas("x", sid, "", False, True, ()), sid)  # sem lista
-    assert windows._problemas_da_pasta_de_troca(lic(sid, linha(windows.SID_USUARIOS, 0x1200A9)), sid) == []
+    assert windows.problemas_da_pasta_de_troca(lic(sid, linha(sid, 0x1F01FF)), sid) == []
+    assert windows.problemas_da_pasta_de_troca(lic(sid, linha("S-1-1-0", 0x2)), sid)          # Todos gravam
+    assert windows.problemas_da_pasta_de_troca(lic(sid, linha(windows.SID_USUARIOS, 0x1301BF)), sid)
+    assert windows.problemas_da_pasta_de_troca(lic("S-1-5-21-9-9-9-1002", linha(sid, 0x1F01FF)), sid)
+    assert windows.problemas_da_pasta_de_troca(windows.Licencas("x", sid, "", False, True, ()), sid)  # sem lista
+    # Achado 8 de quem tentou quebrar: outra conta que LÊ também é problema (o segredo cifrado para o computador fica
+    # ali enquanto o pedido roda).
+    assert windows.problemas_da_pasta_de_troca(lic(sid, linha(windows.SID_USUARIOS, 0x1200A9)), sid)
+    assert windows.problemas_da_pasta_de_troca(lic(sid, linha(sid, 0x1F01FF), linha("S-1-1-0", 0x120089)), sid)
     # Dono Administradores (a pasta criada por quem já roda com a licença ligada): aceita, porque só administrador
     # muda as licenças dela; uma conta comum continua sem poder gravar.
-    assert windows._problemas_da_pasta_de_troca(lic(windows.SID_ADMINISTRADORES, linha(sid, 0x1F01FF)), sid) == []
-    assert windows._problemas_da_pasta_de_troca(lic(windows.SID_ADMINISTRADORES, linha(sid, 0x1F01FF),
+    assert windows.problemas_da_pasta_de_troca(lic(windows.SID_ADMINISTRADORES, linha(sid, 0x1F01FF)), sid) == []
+    assert windows.problemas_da_pasta_de_troca(lic(windows.SID_ADMINISTRADORES, linha(sid, 0x1F01FF),
                                                     linha(windows.SID_USUARIOS, 0x2)), sid)
 
 
@@ -332,12 +371,16 @@ def test_apagar_pasta_de_troca_so_apaga_pasta_de_troca(tmp_path):
 
 def test_a_resposta_das_ferramentas_do_windows_e_lida_na_tabela_do_console():
     """Etapa 5, revisão do atualizador 1.3: a resposta do Windows era lida na tabela errada ("ÒXITO" no registro).
-    Um programa de console escreve na tabela OEM; lida como OEM, volta igual; lida como ANSI (o jeito antigo), não."""
-    r = windows.rodar_e_esperar(["cmd", "/c", "echo", "çéü"])
-    assert r.deu_certo and r.dados["saida"] == "çéü"
-    cru = subprocess.run(["cmd", "/c", "echo", "çéü"], capture_output=True,
-                         creationflags=windows.CREATE_NO_WINDOW).stdout.strip()
-    assert cru.decode("cp1252", "replace") != "çéü"
+    A ferramenta de tarefas escreve na tabela OEM do console: a resposta da peça é igual à resposta crua lida como OEM
+    (no Windows em português: "ERRO: O sistema não pode encontrar..."; lida como ANSI, o "não" sai trocado)."""
+    nome = "EditorImpressao\\Tarefa que nao existe do teste"
+    r = windows.rodar_tarefa(nome)
+    assert r.desfecho == windows.FALHOU
+    cru = subprocess.run([str(Path(os.environ["SystemRoot"]) / "System32" / "schtasks.exe"), "/Run", "/TN", nome],
+                         capture_output=True, creationflags=windows.CREATE_NO_WINDOW)
+    assert r.dados["erros"] == cru.stderr.decode("oem").strip()
+    if any(b > 127 for b in cru.stderr):                        # Windows em português: tem letra com acento
+        assert cru.stderr.decode("cp1252", "replace").strip() != r.dados["erros"]
 
 
 def test_rodar_e_esperar_diz_cada_falha():
@@ -352,9 +395,6 @@ def test_rodar_e_esperar_diz_cada_falha():
 def test_o_script_vai_com_a_marca_de_utf8_e_acento_e_segredo_chegam_iguais(tmp_path):
     """O script é gravado com a marca de UTF-8 (sem ela o PowerShell 5.1 lê como ANSI) e o texto com acento dentro do
     script e o segredo com acento (pela entrada, nunca pela linha de comando) chegam iguais."""
-    arquivo = tmp_path / "s.ps1"
-    windows._gravar_script(arquivo, "Write-Output 'ç'")
-    assert arquivo.read_bytes().startswith(b"\xef\xbb\xbf")
     segredo = "Senha de prova: çÃõ€ ção"
     r = windows.rodar_powershell("$s = [Console]::In.ReadLine()\n"
                                  "$h = [System.Security.Cryptography.SHA256]::Create().ComputeHash($__utf8.GetBytes($s))\n"
@@ -435,7 +475,7 @@ def test_lancar_powershell_solto_roda_e_apaga_a_propria_pasta(tmp_path):
 
     def trocas() -> set:
         """As pastas de troca que existem agora."""
-        mae = windows._pasta_mae_da_troca()
+        mae = Path(os.environ["LOCALAPPDATA"]) / "EditorImpressao" / windows.NOME_DA_PASTA_MAE_DA_TROCA
         return set(mae.iterdir()) if mae.is_dir() else set()
 
     antes = trocas()
@@ -499,20 +539,20 @@ def test_a_regra_da_pasta_segura_com_pastas_de_verdade():
     pasta de troca (a conta grava e é dona) não passa. As linhas montadas: conta comum que grava, ou ninguém comum que
     lê, não passam."""
     comuns = windows.pasta_de_programas() / "Common Files"
-    assert windows._problemas_da_pasta_segura(windows.ler_licencas(comuns)) == []
+    assert windows.problemas_da_pasta_segura(windows.ler_licencas(comuns)) == []
     pasta = windows.criar_pasta_de_troca()
     try:
-        assert windows._problemas_da_pasta_segura(windows.ler_licencas(pasta))
+        assert windows.problemas_da_pasta_segura(windows.ler_licencas(pasta))
     finally:
         windows.apagar_pasta_de_troca(pasta)
     le = windows.Licenca(windows.SID_USUARIOS, "", "permite", 0x1200A9, True, False)
     grava = windows.Licenca(windows.SID_USUARIOS, "", "permite", 0x1301BF, True, False)
     adm = windows.Licenca(windows.SID_ADMINISTRADORES, "", "permite", 0x1F01FF, True, False)
     base = windows.Licencas("x", windows.SID_ADMINISTRADORES, "", False, False, (adm, le))
-    assert windows._problemas_da_pasta_segura(base) == []
-    assert windows._problemas_da_pasta_segura(windows.Licencas("x", windows.SID_ADMINISTRADORES, "", False, False,
+    assert windows.problemas_da_pasta_segura(base) == []
+    assert windows.problemas_da_pasta_segura(windows.Licencas("x", windows.SID_ADMINISTRADORES, "", False, False,
                                                                (adm, le, grava)))
-    assert windows._problemas_da_pasta_segura(windows.Licencas("x", windows.SID_ADMINISTRADORES, "", False, False,
+    assert windows.problemas_da_pasta_segura(windows.Licencas("x", windows.SID_ADMINISTRADORES, "", False, False,
                                                                (adm,)))
 
 
@@ -560,3 +600,187 @@ def test_o_programa_deste_processo_existe():
     programa = windows.programa_deste_processo()
     assert all(Path(p).is_file() for p in programa)
     assert programa[-1].endswith("main.py")
+
+
+# ---------------------------------------------------------------------------------------------------------------------
+# A volta de quem tentou quebrar (19/11): um teste por achado
+# ---------------------------------------------------------------------------------------------------------------------
+
+def test_a_peca_e_fechada_rodar_e_lancar_recusam_os_programas_com_funcao_propria(tmp_path):
+    """Achado 12 (escolha técnica da gerente): o rodar e o lançar genéricos recusam os programas que têm função
+    própria na peça (tarefas, licenças de pasta, PowerShell, pedido de licença, cmd...), com ou sem o caminho inteiro,
+    em qualquer caixa de letra; nada roda."""
+    sistema = Path(os.environ["SystemRoot"]) / "System32"
+    for programa in ("schtasks", str(sistema / "schtasks.exe"), "ICACLS.EXE", "cmd", "runas.exe", "reg",
+                     str(sistema / "WindowsPowerShell" / "v1.0" / "powershell.exe"), '"C:\\x\\Update.exe"'):
+        r = windows.rodar_e_esperar([programa, "/?"])
+        assert r.desfecho == windows.FALHOU and "função própria" in r.motivo, programa
+        sinal = tmp_path / "nao-pode.txt"
+        r = windows.lancar_solto([programa, "/?"], sinal, espera_s=1)
+        assert r.desfecho == windows.FALHOU and "função própria" in r.motivo and not sinal.exists(), programa
+    assert windows.rodar_e_esperar([]).desfecho == windows.FALHOU
+    assert windows.rodar_e_esperar([PY, "-c", "print('x')"], letras="utf-8").deu_certo
+
+
+def test_a_peca_e_fechada_ninguem_usa_o_que_tem_sublinhado_fora_dela():
+    """Achado 12: o que tem "_" no nome é de dentro da peça. Nenhum arquivo do projeto fora de core/windows.py (a
+    janela de prova, os testes, o programa) usa ou importa um nome com "_" da peça."""
+    proibido = re.compile(r"\bwindows\._[A-Za-z]|from\s+core\.windows\s+import\s+[^\n]*\b_[A-Za-z]")
+    achados = []
+    for arquivo in RAIZ.rglob("*.py"):
+        partes = arquivo.relative_to(RAIZ).parts
+        if partes[0] in (".venv", ".claude", "build", "dist", "saida_teste", "terceiros", "velhos") or \
+                arquivo == RAIZ / "core" / "windows.py":
+            continue
+        try:
+            texto = arquivo.read_text(encoding="utf-8")
+        except (OSError, UnicodeDecodeError):
+            continue
+        achados += [f"{arquivo.relative_to(RAIZ)}: {m.group(0)}" for m in proibido.finditer(texto)]
+    assert achados == []
+
+
+def test_o_script_falha_quando_um_programa_de_fora_falha():
+    """Achado 10: um programa de fora que falha dentro do script (o PowerShell não para sozinho) dá "falhou" no fim
+    do script; e `Confere-Comando` para o script na hora, com a frase de quem falhou. A resposta e o erro chegam
+    separados (achado 11)."""
+    r = windows.rodar_powershell("cmd /c exit 5\n[Console]::Out.Write('depois')")
+    assert r.desfecho == windows.FALHOU and r.dados["codigo"] == 5
+    assert r.dados["saida"] == "depois" and "código 5" in r.dados["erros"]
+    r = windows.rodar_powershell("cmd /c exit 4\nConfere-Comando 'o cmd de teste'\n[Console]::Out.Write('nunca')")
+    assert r.desfecho == windows.FALHOU and "o cmd de teste falhou (código 4)" in r.detalhe
+    assert "nunca" not in r.dados["saida"]
+    r = windows.rodar_powershell("[Console]::Error.Write('AVISO'); [Console]::Out.Write('{\"a\":1}')")
+    assert r.deu_certo and r.dados["saida"] == '{"a":1}' and r.dados["erros"] == "AVISO"
+
+
+def test_o_lado_com_licenca_recusa_a_pasta_onde_outra_conta_grava():
+    """Achado 4: o programa com licença recusa uma pasta de troca onde outra conta (Todos) pode gravar, no lugar onde
+    a regra age (`atender_trabalho_de_administrador`), e não escreve nada nela. A pasta é do próprio teste, dentro do
+    projeto; a licença para Todos é posta só nela."""
+    base = RAIZ / "saida_teste" / f"troca-aberta-{os.getpid()}-{time.time_ns()}"
+    pasta = base / windows.NOME_DA_PASTA_MAE_DA_TROCA / (windows.PREFIXO_DA_TROCA + "aberta")
+    pasta.mkdir(parents=True)
+    try:
+        aviso = {"formato": windows.FORMATO_DO_AVISO, "pedido_por": windows.sid_desta_conta(), "criado_em": "agora",
+                 "passos": [{"tipo": "script", "descricao": "x", "dados": {"texto": "", "com_segredo": False,
+                                                                         "limite_s": 10}}]}
+        (pasta / windows.NOME_DO_AVISO).write_text(json.dumps(aviso), encoding="utf-8")
+        subprocess.run([str(Path(os.environ["SystemRoot"]) / "System32" / "icacls.exe"), str(pasta), "/grant",
+                        "*S-1-1-0:(OI)(CI)(M)"], check=True, capture_output=True)
+        assert "outra conta pode gravar" in " ".join(
+            windows.problemas_da_pasta_de_troca(windows.ler_licencas(pasta), windows.sid_desta_conta()))
+        assert windows.atender_trabalho_de_administrador([str(pasta)]) == windows.SAIDA_PASTA_RECUSADA
+        assert not (pasta / windows.NOME_DO_RELATORIO).exists()
+    finally:
+        shutil.rmtree(base, ignore_errors=True)
+
+
+def test_o_lado_com_licenca_recusa_aviso_ligado_a_outro_arquivo():
+    """Achado 13 (M10): o aviso que é uma ligação para outro arquivo (o mesmo conteúdo com dois nomes) é recusado."""
+    pasta = _troca_com_aviso([{"tipo": "script", "descricao": "x", "dados": {"texto": "", "com_segredo": False,
+                                                                             "limite_s": 10}}])
+    try:
+        os.link(pasta / windows.NOME_DO_AVISO, pasta / "outro-nome.json")
+        assert windows.atender_trabalho_de_administrador([str(pasta)]) == windows.SAIDA_PASTA_RECUSADA
+        assert not (pasta / windows.NOME_DO_RELATORIO).exists()
+    finally:
+        windows.apagar_pasta_de_troca(pasta)
+
+
+def test_a_pasta_segura_que_nao_confere_e_apagada_de_novo_e_conferida(monkeypatch, tmp_path):
+    """Achados 13 (M11) e 7: a pasta segura criada é conferida; se não confere (aqui, criada numa pasta do teste, onde
+    a conta comum é dona e grava), a resposta é "falhou" e ela é apagada de novo, conferindo que sumiu. Arquivos de
+    Programas é trocado só para o lugar (a criação e a conferência são as de verdade)."""
+    monkeypatch.setattr(windows, "pasta_de_programas", lambda: tmp_path)
+    r = windows.criar_pasta_segura(windows.NOME_DA_PASTA_SEGURA_DE_PROVA)
+    assert r.desfecho == windows.FALHOU and "não confere" in r.motivo and "apagada de novo" in r.motivo
+    assert r.dados["sobrou"] is False and not (tmp_path / windows.NOME_DA_PASTA_SEGURA_DE_PROVA).exists()
+
+
+def test_a_tarefa_criada_que_nao_confere_e_apagada(monkeypatch):
+    """Achados 13 (M12) e 5: depois de pedir a tarefa, a peça lê de volta; se o que o Windows tem não é o pedido, ela
+    apaga a tarefa e confere que sumiu. A leitura da tarefa é trocada só para dizer, na primeira vez, que a tarefa
+    ficou diferente; depois volta a ser a de verdade. Neste PC (sem licença) o Windows nem cria; no Windows do
+    GitHub (com licença), cria de verdade e a peça apaga, e o teste confere e tira a pasta do Agendador."""
+    nome = f"EditorImpressao\\Teste da peca {os.getpid()}"
+    xml = windows.xml_da_tarefa_do_sistema("C:\\nao\\existe.exe", "", "teste da peça (pode apagar)",
+                                           "D:(A;;FA;;;BA)(A;;FA;;;SY)")
+    real = windows.ler_tarefa
+    vezes = []
+
+    def lida(n: str, limite_s: float = 60) -> windows.Tarefa:
+        """Na primeira leitura, a tarefa "ficou diferente"; nas outras, a leitura de verdade."""
+        vezes.append(n)
+        if len(vezes) == 1:
+            return windows.Tarefa(n, True, True, comando="C:\\outro.exe", usuario=windows.SID_SISTEMA,
+                                  licenca="D:(A;;FA;;;BA)(A;;FA;;;SY)")
+        return real(n, limite_s)
+
+    existia = windows.pasta_de_tarefas_existe()
+    monkeypatch.setattr(windows, "ler_tarefa", lida)
+    r = windows.criar_tarefa(nome, xml)
+    assert r.desfecho == windows.FALHOU and "apagada de novo" in r.motivo, r
+    assert real(nome).existe is False
+    if windows.tem_licenca_de_administrador() and existia is False:
+        assert windows.apagar_pasta_de_tarefas().deu_certo
+        assert windows.pasta_de_tarefas_existe() is False
+
+
+def test_a_licenca_da_tarefa_e_comparada_pelo_sentido_com_o_que_o_windows_devolve():
+    """Achado 5: o Agendador não devolve a licença como recebeu (acrescenta as herdadas e escreve "FRFX" como número).
+    A comparação é pelo sentido, lendo pelo próprio Windows: o caso de verdade da tarefa de desfragmentar (lido em
+    19/11) confere; uma conta que perde direitos, ou uma conta comum que ganha o de mudar, não conferem."""
+    pedida = "D:AI(A;;FA;;;BA)(A;;FA;;;SY)(A;;FRFX;;;LS)(A;;FR;;;AU)"
+    efetiva = ("D:(A;;FA;;;BA)(A;;FA;;;SY)(A;;0x1200a9;;;LS)(A;;FR;;;AU)(A;ID;0x1f019f;;;BA)(A;ID;0x1f019f;;;SY)"
+               "(A;ID;FR;;;AU)(A;ID;FR;;;LS)(A;ID;FR;;;NS)(A;ID;FA;;;SY)(A;;FR;;;SY)")
+    assert windows.problemas_da_licenca_da_tarefa(pedida, efetiva) == []
+    import atualizacao
+
+    assert windows.problemas_da_licenca_da_tarefa(atualizacao.QUEM_PODE_MANDAR_RODAR,
+                                                  "D:(A;;FA;;;BA)(A;;FA;;;SY)(A;;0x1200a9;;;AU)") == []
+    assert windows.problemas_da_licenca_da_tarefa(atualizacao.QUEM_PODE_MANDAR_RODAR,
+                                                  "D:(A;;FA;;;BA)(A;;FA;;;SY)(A;;FR;;;AU)")
+    assert windows.problemas_da_licenca_da_tarefa("D:(A;;FA;;;BA)", "D:(A;;FA;;;BA)(A;;FA;;;BU)")
+    lida = windows.Tarefa("EditorImpressao\\x", True, True, comando="C:\\a.exe", argumentos="",
+                          usuario=windows.SID_SISTEMA, licenca="D:(A;;FA;;;BA)(A;;FA;;;SY)(A;;0x1200a9;;;AU)")
+    xml = windows.xml_da_tarefa_do_sistema("C:\\a.exe", "", "d", atualizacao.QUEM_PODE_MANDAR_RODAR)
+    assert windows.problemas_da_tarefa_criada(xml, lida) == []
+    assert windows.problemas_da_tarefa_criada(xml, windows.Tarefa("EditorImpressao\\x", True, True,
+                                                                  comando="C:\\a.exe", usuario=windows.SID_SISTEMA))
+
+
+def test_a_pasta_do_programa_no_agendador_e_lida_sem_licenca():
+    """Achado 6: a peça lê se a pasta do programa existe no Agendador (True ou False), e o passo de apagá-la (só
+    vazia) é aceito pelas regras."""
+    from dataclasses import asdict
+
+    assert windows.pasta_de_tarefas_existe() in (True, False)
+    assert windows.problemas_do_passo(asdict(windows.passo_apagar_pasta_de_tarefas())) == []
+
+
+def test_o_desfazer_vai_ate_o_fim_mesmo_com_um_passo_que_falha():
+    """Achado 1 (o desfazer da pergunta 3): com "ate_o_fim", um passo que falha não impede os seguintes. Sem a
+    licença (o PC do Samuel), o trabalho é recusado antes; com a licença (o Windows do GitHub), o primeiro script
+    falha e o segundo roda mesmo assim, e o relatório diz os dois."""
+    pasta = windows.criar_pasta_de_troca()
+    marca = pasta / "o-segundo-rodou.txt"
+    passos = [{"tipo": "script", "descricao": "falha de propósito", "dados": {"texto": "throw 'x'",
+                                                                            "com_segredo": False, "limite_s": 60}},
+              {"tipo": "script", "descricao": "roda mesmo assim",
+               "dados": {"texto": f"[System.IO.File]::WriteAllText('{marca}', 'sim')", "com_segredo": False,
+                         "limite_s": 60}}]
+    aviso = {"formato": windows.FORMATO_DO_AVISO, "pedido_por": windows.sid_desta_conta(), "criado_em": "agora",
+             "ate_o_fim": True, "passos": passos}
+    (pasta / windows.NOME_DO_AVISO).write_text(json.dumps(aviso), encoding="utf-8")
+    try:
+        codigo = windows.atender_trabalho_de_administrador([str(pasta)])
+        relatorio = json.loads((pasta / windows.NOME_DO_RELATORIO).read_text(encoding="utf-8"))
+        if windows.tem_licenca_de_administrador():
+            assert codigo == windows.SAIDA_UM_PASSO_FALHOU
+            assert [p["resultado"] for p in relatorio["passos"]] == [windows.FALHOU, windows.DEU_CERTO]
+            assert marca.read_text(encoding="utf-8") == "sim"
+        else:
+            assert codigo == windows.SAIDA_SEM_LICENCA and not marca.exists()
+    finally:
+        windows.apagar_pasta_de_troca(pasta)

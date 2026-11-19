@@ -27,7 +27,7 @@ A PASTA DE TROCA
     da pasta da conta. NUNCA com `tempfile.mkdtemp`: no Python 3.13+ ele cria a pasta com licença só para o dono, e o
     arquivo que o programa com licença cria lá dentro tem outro dono (os Administradores), que a conta comum não lê
     (defeito 13 da etapa 5). Outra conta comum não grava na pasta da conta, então não consegue trocar o aviso; o lado
-    com licença confere isso antes de ler (`_problemas_da_pasta_de_troca`).
+    com licença confere isso antes de ler (`problemas_da_pasta_de_troca`).
 
 A PASTA SEGURA (peça 2)
     Uma pasta própria em Arquivos de Programas, ao lado da pasta do programa (nunca dentro: o Velopack troca e apaga a
@@ -36,15 +36,28 @@ A PASTA SEGURA (peça 2)
     Arquivos de Programas; `conferir_pasta_segura` lê e confere (é pasta de verdade, não um atalho; quem pode gravar).
 
 O QUE É SEGURO E O QUE É ARRISCADO MUDAR
-    Seguro: as frases de `motivo`; acrescentar um tipo de passo NOVO (com a validação dele em `_problemas_do_passo` e
+    Seguro: as frases de `motivo`; acrescentar um tipo de passo NOVO (com a validação dele em `problemas_do_passo` e
     um teste). Arriscado: `_ler_erro`/`use_last_error` (sem eles o "Não" vira "deu certo", defeito 2 da etapa 5);
     `_criar_pasta_comum` (voltar ao `mkdtemp` reabre o defeito 13); a marca de UTF-8 dos scripts (`_gravar_script`,
     sem ela o PowerShell 5.1 lê o script como ANSI e o texto com acento chega trocado ou o script nem roda); a tabela
     de letras `oem` na leitura das ferramentas do Windows (o "ÒXITO" da etapa 5); as listas fechadas
     (`TIPOS_DE_PASSO`, `PASTAS_SEGURAS_ACEITAS`, `_NOME_DE_TAREFA`): abri-las deixa o aviso mandar o programa com
-    licença fazer outra coisa; as regras de quem pode gravar (`_problemas_da_pasta_de_troca`,
-    `_problemas_da_pasta_segura`). NUNCA usar a bandeira de lançar processo sem console (o porteiro barra, K02): o
+    licença fazer outra coisa; as regras de quem pode gravar e ler (`problemas_da_pasta_de_troca`,
+    `problemas_da_pasta_segura`). NUNCA usar a bandeira de lançar processo sem console (o porteiro barra, K02): o
     PowerShell lançado assim sai sem rodar (defeito 1 da etapa 5).
+
+A PEÇA É FECHADA (escolha técnica da gerente, 19/11, achado 12 de quem tentou quebrar)
+    Por quê: o porteiro só deixa a conversa com o Windows acontecer aqui. Se a peça entregasse a biblioteca crua do
+    Windows ou um "rode qualquer ferramenta" a qualquer arquivo, cada chamador dos passos 3 a 5 voltaria a falar com o
+    Windows do seu jeito, só que por dentro da peça, e o porteiro não veria (foi a causa dos defeitos da etapa 5).
+    Então:
+    - tudo o que tem "_" no nome é de dentro da peça e não é usado fora de `core/windows.py` (as bibliotecas cruas
+      `_win()`, os caminhos das ferramentas, o comando do PowerShell, o rodar sem filtro `_rodar`);
+    - o rodar genérico (`rodar_e_esperar`) e o lançar solto genérico (`lancar_solto`) RECUSAM os programas que já têm
+      função própria na peça (`PROGRAMAS_COM_FUNCAO_PROPRIA`: as tarefas, as licenças de pasta, o PowerShell, o pedido
+      de licença, o registro, os serviços, o firewall, o instalador...). Quem precisa de um deles chama a função da
+      peça (`ler_tarefa`, `rodar_tarefa`, `rodar_powershell`, `pedir_licenca`...), ou a peça ganha uma função nova
+      para isso, com teste.
 
 Fontes lidas antes de escrever (CLAUDE.md §11.12, ponto 6): estão no ONDE-PAREI do passo 1
 (`relatorios/passo1-peca-unica-windows/ONDE-PAREI.md`, seção "O que li da peça de fora e onde").
@@ -112,7 +125,7 @@ SID_DIREITOS_DO_DONO = "S-1-3-4"
 
 # Os tipos de passo que o programa com licença sabe fazer. Lista FECHADA (ver o topo).
 TIPOS_DE_PASSO = ("criar_pasta_segura", "apagar_pasta_segura", "gravar_na_pasta_segura", "criar_tarefa",
-                  "apagar_tarefa", "script")
+                  "apagar_tarefa", "apagar_pasta_de_tarefas", "script")
 
 # Códigos de saída do programa com licença (o relatório decide; o código só explica quando não há relatório).
 SAIDA_TUDO_CERTO = 0
@@ -129,6 +142,15 @@ _MOTIVO_DA_SAIDA = {
     SAIDA_AVISO_RECUSADO: "o programa com licença recusou o pedido: o pedido está errado",
     SAIDA_ERRO_INESPERADO: "o programa com licença teve um problema inesperado",
 }
+
+# Os programas do Windows que têm função própria na peça (ver "A PEÇA É FECHADA" no topo). O rodar e o lançar
+# genéricos recusam qualquer um destes, pelo nome do arquivo, venha com o caminho inteiro ou não. O cmd entra porque
+# roda qualquer outro. Acrescentar é seguro; tirar abre a porta.
+PROGRAMAS_COM_FUNCAO_PROPRIA = frozenset({
+    "schtasks", "powershell", "pwsh", "powershell_ise", "cmd", "runas", "icacls", "cacls", "takeown", "reg", "regedit",
+    "sc", "net", "net1", "netsh", "msiexec", "wmic", "wevtutil", "bcdedit", "rundll32", "mshta", "wscript", "cscript",
+    "taskkill", "shutdown", "dism", "update",
+})
 
 # Bandeiras de lançar processo (process-creation-flags, Microsoft Learn).
 CREATE_NO_WINDOW = 0x08000000
@@ -152,12 +174,20 @@ _ACE_SO_PARA_DENTRO = 0x08                 # INHERIT_ONLY_ACE: não vale para a 
 _ACE_HERDADA = 0x10                        # INHERITED_ACE
 _DACL_PROTEGIDA = 0x1000                   # SE_DACL_PROTECTED
 
+# O que todo script da peça recebe na frente. `Confere-Comando 'o que era'` é a ajuda para conferir, logo depois de
+# um programa de fora, se ele deu certo (o PowerShell não para sozinho quando um programa de fora falha: achado 10 de
+# quem tentou quebrar). E o fim de todo script confere o último programa de fora (`_PE_DO_SCRIPT`).
 _CABECA_DO_SCRIPT = (
     "$ErrorActionPreference = 'Stop'\n"
     "$__utf8 = New-Object System.Text.UTF8Encoding $false\n"
     "[Console]::InputEncoding = $__utf8\n"
     "[Console]::OutputEncoding = $__utf8\n"
+    "$global:LASTEXITCODE = 0\n"
+    "function Confere-Comando([string]$oque) { if ($LASTEXITCODE -ne 0) { "
+    "throw ($oque + ' falhou (código ' + $LASTEXITCODE + ')') } }\n"
 )
+_PE_DO_SCRIPT = ("\nif ($LASTEXITCODE -ne 0) { [Console]::Error.WriteLine('um programa de fora falhou (código ' + "
+                 "$LASTEXITCODE + ')'); exit $LASTEXITCODE }\n")
 
 
 # ---------------------------------------------------------------------------------------------------------------------
@@ -305,6 +335,11 @@ class _Bibliotecas:
             (a.GetTokenInformation, [wintypes.HANDLE, ctypes.c_int, P, wintypes.DWORD,
                                      ctypes.POINTER(wintypes.DWORD)], wintypes.BOOL),
             (a.CheckTokenMembership, [wintypes.HANDLE, P, ctypes.POINTER(wintypes.BOOL)], wintypes.BOOL),
+            (a.ConvertStringSecurityDescriptorToSecurityDescriptorW, [wintypes.LPCWSTR, wintypes.DWORD,
+                                                                      ctypes.POINTER(P), ctypes.POINTER(wintypes.DWORD)],
+             wintypes.BOOL),
+            (a.GetSecurityDescriptorDacl, [P, ctypes.POINTER(wintypes.BOOL), ctypes.POINTER(P),
+                                           ctypes.POINTER(wintypes.BOOL)], wintypes.BOOL),
             (s.ShellExecuteExW, [ctypes.POINTER(_SHELLEXECUTEINFOW)], wintypes.BOOL),
             (s.SHGetKnownFolderPath, [ctypes.POINTER(_GUID), wintypes.DWORD, wintypes.HANDLE,
                                       ctypes.POINTER(wintypes.LPWSTR)], ctypes.c_long),
@@ -371,25 +406,25 @@ def pasta_do_sistema() -> Path:
     return Path(buffer.value)
 
 
-def caminho_do_powershell() -> Path:
+def _caminho_do_powershell() -> Path:
     """O PowerShell do Windows pelo caminho inteiro (nunca só pelo nome: defeito 5 do plano)."""
     return pasta_do_sistema() / "WindowsPowerShell" / "v1.0" / "powershell.exe"
 
 
-def comando_do_powershell(script: Path) -> list[str]:
+def _comando_do_powershell(script: Path) -> list[str]:
     """O comando que roda um script do PowerShell (lugar único: rodar e esperar, lançar solto e as tarefas usam este):
     o caminho inteiro, sem o perfil da conta, sem perguntar nada, liberado para rodar o script (salvo política do
     computador, que vence este pedido) e pelo arquivo (nunca texto codificado na linha de comando)."""
-    return [str(caminho_do_powershell()), "-NoProfile", "-NonInteractive", "-ExecutionPolicy", "Bypass", "-File",
+    return [str(_caminho_do_powershell()), "-NoProfile", "-NonInteractive", "-ExecutionPolicy", "Bypass", "-File",
             str(script)]
 
 
-def argumentos_do_powershell(script: Path) -> str:
-    """Os argumentos de `comando_do_powershell` numa linha só (para o campo de argumentos de uma tarefa)."""
-    return subprocess.list2cmdline(comando_do_powershell(script)[1:])
+def _argumentos_do_powershell(script: Path) -> str:
+    """Os argumentos de `_comando_do_powershell` numa linha só (para o campo de argumentos de uma tarefa)."""
+    return subprocess.list2cmdline(_comando_do_powershell(script)[1:])
 
 
-def caminho_do_schtasks() -> Path:
+def _caminho_do_schtasks() -> Path:
     """A ferramenta de tarefas do Windows pelo caminho inteiro."""
     return pasta_do_sistema() / "schtasks.exe"
 
@@ -516,6 +551,15 @@ class Licencas:
             grava.add("desconhecida")
         return grava
 
+    def quem_le(self) -> set[str]:
+        """Os SIDs que podem ler; "todos" se não há lista; "desconhecida" se há linha que a peça não sabe ler."""
+        if self.sem_lista:
+            return {"todos"}
+        le = {li.sid for li in self.lista if li.le}
+        if any(li.tipo == "outra" for li in self.lista):
+            le.add("desconhecida")
+        return le
+
     def para_mostrar(self) -> list[str]:
         """Uma frase por linha, para a janela de prova ("BUILTIN\\Usuários: ler e executar")."""
         linhas = [f"dono: {self.dono_nome or self.dono}"]
@@ -551,31 +595,90 @@ def ler_licencas(caminho: Path | str) -> Licencas:
     try:
         controle, revisao = wintypes.WORD(), wintypes.DWORD()
         w.advapi32.GetSecurityDescriptorControl(descritor, ctypes.byref(controle), ctypes.byref(revisao))
-        linhas: list[Licenca] = []
-        if lista.value:
-            quantas = ctypes.cast(lista, ctypes.POINTER(_ACL)).contents.AceCount
-            for i in range(quantas):
-                ace = ctypes.c_void_p()
-                if not w.advapi32.GetAce(lista, i, ctypes.byref(ace)):
-                    raise OSError(f"não deu para ler a licença {i} de {caminho} (erro {_ler_erro()})")
-                cabeca = ctypes.cast(ace, ctypes.POINTER(_ACE)).contents
-                if cabeca.AceType in (_ACE_PERMITE, _ACE_NEGA):
-                    psid = ace.value + 8
-                    linhas.append(Licenca(_sid_em_texto(psid), _nome_da_conta(psid),
-                                          "permite" if cabeca.AceType == _ACE_PERMITE else "nega", cabeca.Mask,
-                                          bool(cabeca.AceFlags & _ACE_HERDADA),
-                                          bool(cabeca.AceFlags & _ACE_SO_PARA_DENTRO)))
-                else:
-                    linhas.append(Licenca("", "", "outra", cabeca.Mask, bool(cabeca.AceFlags & _ACE_HERDADA),
-                                          bool(cabeca.AceFlags & _ACE_SO_PARA_DENTRO)))
         return Licencas(str(caminho), _sid_em_texto(dono.value) if dono.value else "",
                         _nome_da_conta(dono.value) if dono.value else "", bool(controle.value & _DACL_PROTEGIDA),
-                        not lista.value, tuple(linhas))
+                        not lista.value, tuple(_linhas_da_lista(lista, str(caminho))))
     finally:
         w.kernel32.LocalFree(descritor)
 
 
-def _e_atalho(caminho: Path) -> bool:
+def _linhas_da_lista(lista: ctypes.c_void_p, de_onde: str) -> list[Licenca]:
+    """As linhas de uma lista de licenças do Windows (lugar único: a pasta e a tarefa usam este)."""
+    w = _win()
+    linhas: list[Licenca] = []
+    if not lista.value:
+        return linhas
+    for i in range(ctypes.cast(lista, ctypes.POINTER(_ACL)).contents.AceCount):
+        ace = ctypes.c_void_p()
+        if not w.advapi32.GetAce(lista, i, ctypes.byref(ace)):
+            raise OSError(f"não deu para ler a licença {i} de {de_onde} (erro {_ler_erro()})")
+        cabeca = ctypes.cast(ace, ctypes.POINTER(_ACE)).contents
+        herdada, so_dentro = bool(cabeca.AceFlags & _ACE_HERDADA), bool(cabeca.AceFlags & _ACE_SO_PARA_DENTRO)
+        if cabeca.AceType in (_ACE_PERMITE, _ACE_NEGA):
+            psid = ace.value + 8
+            linhas.append(Licenca(_sid_em_texto(psid), _nome_da_conta(psid),
+                                  "permite" if cabeca.AceType == _ACE_PERMITE else "nega", cabeca.Mask, herdada,
+                                  so_dentro))
+        else:
+            linhas.append(Licenca("", "", "outra", cabeca.Mask, herdada, so_dentro))
+    return linhas
+
+
+def licencas_do_texto(sddl: str) -> list[Licenca]:
+    """As linhas de uma licença escrita em texto do Windows ("D:(A;;FA;;;BA)..."), lidas pelo próprio Windows (o
+    mesmo leitor das pastas). Levanta OSError se o Windows não aceitar o texto."""
+    w = _win()
+    descritor, tamanho = ctypes.c_void_p(), wintypes.DWORD()
+    if not w.advapi32.ConvertStringSecurityDescriptorToSecurityDescriptorW(sddl, 1, ctypes.byref(descritor),
+                                                                         ctypes.byref(tamanho)):
+        raise OSError(f"o Windows não aceitou a licença {sddl!r} (erro {_ler_erro()})")
+    try:
+        presente, padrao, lista = wintypes.BOOL(), wintypes.BOOL(), ctypes.c_void_p()
+        if not w.advapi32.GetSecurityDescriptorDacl(descritor, ctypes.byref(presente), ctypes.byref(lista),
+                                                    ctypes.byref(padrao)):
+            raise OSError(f"não deu para ler a licença {sddl!r} (erro {_ler_erro()})")
+        return _linhas_da_lista(lista, sddl) if presente.value else []
+    finally:
+        w.kernel32.LocalFree(descritor)
+
+
+# Os direitos "genéricos" escritos do jeito dos arquivos (o Agendador devolve "FRFX" como 0x1200a9, lido em 19/11).
+_GENERICOS = {0x80000000: 0x120089, 0x40000000: 0x120116, 0x20000000: 0x1200A0, 0x10000000: 0x1F01FF}
+
+
+def _direitos(mascara: int) -> int:
+    """Os direitos com os "genéricos" trocados pelos de arquivo (para comparar o pedido com o que o Windows devolve)."""
+    for generico, especifico in _GENERICOS.items():
+        if mascara & generico:
+            mascara = (mascara & ~generico) | especifico
+    return mascara
+
+
+def problemas_da_licenca_da_tarefa(pedida: str, efetiva: str) -> list[str]:
+    """A licença que o Windows diz que a tarefa tem (`efetiva`, lida com `GetSecurityDescriptor`) cumpre a pedida?
+
+    Pelo sentido, não pelo texto (o Agendador acrescenta as licenças herdadas da pasta e reescreve os direitos): cada
+    conta da pedida tem na efetiva pelo menos os direitos pedidos; e ninguém que não seja o sistema, os administradores
+    ou quem a pedida deixa mudar pode mudar a tarefa. Levanta OSError se o Windows não aceitar um dos textos."""
+    pedidas = [li for li in licencas_do_texto(pedida) if li.tipo == "permite"]
+    efetivas = [li for li in licencas_do_texto(efetiva) if li.tipo == "permite"]
+    problemas = []
+    for li in pedidas:
+        tem = 0
+        for e in efetivas:
+            if e.sid == li.sid:
+                tem |= _direitos(e.mascara)
+        if _direitos(li.mascara) & ~tem:
+            problemas.append(f"{li.nome or li.sid} não ficou com os direitos pedidos na tarefa")
+    pode_mudar = {SID_SISTEMA, SID_ADMINISTRADORES, SID_INSTALADOR_CONFIAVEL}
+    pode_mudar |= {li.sid for li in pedidas if _direitos(li.mascara) & _ESCRITA}
+    for e in efetivas:
+        if _direitos(e.mascara) & _ESCRITA and e.sid not in pode_mudar:
+            problemas.append(f"{e.nome or e.sid} pode mudar a tarefa")
+    return problemas
+
+
+def e_atalho(caminho: Path) -> bool:
     """O caminho é um atalho do sistema de arquivos (junção ou link simbólico) para outro lugar?"""
     try:
         info = os.lstat(caminho)
@@ -585,8 +688,10 @@ def _e_atalho(caminho: Path) -> bool:
         info.st_mode)
 
 
-def _problemas_da_pasta_de_troca(licencas: Licencas, sid_da_conta: str) -> list[str]:
-    """A pasta de troca é só da conta que pediu? Só ela, o sistema e os administradores podem gravar; o dono é ela.
+def problemas_da_pasta_de_troca(licencas: Licencas, sid_da_conta: str) -> list[str]:
+    """A pasta de troca é só da conta que pediu? Só ela, o sistema e os administradores podem gravar E ler (o segredo
+    vai ali, cifrado para o computador: quem lê o arquivo abre o segredo, achado 8 de quem tentou quebrar); o dono é
+    ela, o sistema ou os Administradores (quem já roda com a licença ligada cria com dono Administradores).
 
     Lugar único da regra: o lado que pede confere logo depois de criar, e o lado com licença confere antes de ler."""
     problemas = []
@@ -595,10 +700,12 @@ def _problemas_da_pasta_de_troca(licencas: Licencas, sid_da_conta: str) -> list[
     aceitos = {sid_da_conta, SID_SISTEMA, SID_ADMINISTRADORES, SID_PROPRIETARIO_CRIADOR, SID_DIREITOS_DO_DONO}
     for quem in sorted(licencas.quem_grava() - aceitos):
         problemas.append(f"outra conta pode gravar na pasta: {quem}")
+    for quem in sorted(licencas.quem_le() - aceitos):
+        problemas.append(f"outra conta pode ler a pasta: {quem}")
     return problemas
 
 
-def _problemas_da_pasta_segura(licencas: Licencas) -> list[str]:
+def problemas_da_pasta_segura(licencas: Licencas) -> list[str]:
     """A pasta segura tem só as licenças de fábrica de Arquivos de Programas? O dono é o sistema, os administradores
     ou o Instalador Confiável; só eles (e o "Proprietário Criador", que vira o dono) podem gravar; as contas comuns
     leem."""
@@ -639,7 +746,7 @@ def _limpar_trocas_velhas(mae: Path) -> None:
     limite = time.time() - DIAS_ATE_LIMPAR_TROCA_VELHA * 86400
     try:
         for pasta in mae.iterdir():
-            if pasta.name.startswith(PREFIXO_DA_TROCA) and not _e_atalho(pasta) and pasta.stat().st_mtime < limite:
+            if pasta.name.startswith(PREFIXO_DA_TROCA) and not e_atalho(pasta) and pasta.stat().st_mtime < limite:
                 shutil.rmtree(pasta, ignore_errors=True)
     except OSError:
         pass
@@ -651,7 +758,7 @@ def criar_pasta_de_troca() -> Path:
     mae = _pasta_mae_da_troca()
     if not mae.is_dir():
         _criar_pasta_comum(mae)
-    if _e_atalho(mae):
+    if e_atalho(mae):
         raise OSError(f"a pasta {mae} é um atalho para outro lugar")
     _limpar_trocas_velhas(mae)
     pasta = mae / f"{PREFIXO_DA_TROCA}{datetime.now():%Y%m%d-%H%M%S}-{secrets.token_hex(4)}"
@@ -665,7 +772,7 @@ def apagar_pasta_de_troca(pasta: Path) -> bool:
     pasta = Path(pasta)
     if not pasta.name.startswith(PREFIXO_DA_TROCA) or pasta.parent.name != NOME_DA_PASTA_MAE_DA_TROCA:
         return False
-    if _e_atalho(pasta):
+    if e_atalho(pasta):
         return False
     shutil.rmtree(pasta, ignore_errors=True)
     if pasta.exists():
@@ -698,13 +805,34 @@ def aspas_do_powershell(texto: object) -> str:
 # Rodar e esperar
 # ---------------------------------------------------------------------------------------------------------------------
 
+def _programa_com_funcao_propria(programa: str) -> bool:
+    """O programa (pelo nome do arquivo, com ou sem caminho e ".exe") é um dos que têm função própria na peça?"""
+    nome = Path(str(programa).strip().strip('"')).name.lower()
+    return nome.removesuffix(".exe") in PROGRAMAS_COM_FUNCAO_PROPRIA
+
+
+def _recusa_de_programa(programa: str) -> Resposta:
+    """A resposta para quem pede ao rodar ou lançar genérico um programa que tem função própria na peça."""
+    return _falhou("este programa do Windows tem função própria na peça: use a função dela",
+                   f"{programa} recusado pelo rodar genérico (ver \"A PEÇA É FECHADA\" em core/windows.py)")
+
+
 def rodar_e_esperar(comando: list, limite_s: float = 120, entrada: bytes | None = None,
                     letras: str = "oem") -> Resposta:
-    """Roda um programa sem janela, espera ele terminar (com limite) e lê a resposta.
+    """Roda um programa sem janela, espera ele terminar (com limite) e lê a resposta. RECUSA os programas que têm
+    função própria na peça (`PROGRAMAS_COM_FUNCAO_PROPRIA`; ver "A PEÇA É FECHADA" no topo).
 
-    `letras`: a tabela de letras da resposta. As ferramentas do Windows (schtasks e as outras de console) escrevem na
-    tabela OEM do console ("oem"); os nossos scripts escrevem em UTF-8 ("utf-8-sig"). Deu certo = código de saída 0.
-    `dados`: `codigo` e `saida` (a resposta inteira, já com as letras certas)."""
+    `letras`: a tabela de letras da resposta. Os programas de console do Windows escrevem na tabela OEM do console
+    ("oem"); o Python escreve em UTF-8 ("utf-8"). Deu certo = código de saída 0.
+    `dados`: `codigo`, `saida` (o que o programa escreveu como resposta) e `erros` (o que escreveu como erro), separados
+    e já com as letras certas."""
+    if not comando or _programa_com_funcao_propria(str(comando[0])):
+        return _recusa_de_programa(str(comando[0]) if comando else "(nada)")
+    return _rodar(comando, limite_s, entrada, letras)
+
+
+def _rodar(comando: list, limite_s: float = 120, entrada: bytes | None = None, letras: str = "oem") -> Resposta:
+    """O rodar sem filtro, só de dentro da peça (as funções próprias de cada ferramenta usam este)."""
     comando = [str(c) for c in comando]
     extra = {"input": entrada} if entrada is not None else {"stdin": subprocess.DEVNULL}
     try:
@@ -716,11 +844,12 @@ def rodar_e_esperar(comando: list, limite_s: float = 120, entrada: bytes | None 
         return _falhou("não achei o programa a rodar", f"{comando[0]}: {erro}")
     except OSError as erro:
         return _falhou("o Windows não deixou rodar o programa", f"{comando[0]}: {erro!r}")
-    saida = (feito.stdout + feito.stderr).decode(letras, "replace").strip()
+    saida = feito.stdout.decode(letras, "replace").strip()
+    erros = feito.stderr.decode(letras, "replace").strip()
     if feito.returncode == 0:
-        return _certo(codigo=0, saida=saida)
-    return _falhou(f"o Windows respondeu com erro (código {feito.returncode})", saida, codigo=feito.returncode,
-                   saida=saida)
+        return _certo(codigo=0, saida=saida, erros=erros)
+    return _falhou(f"o Windows respondeu com erro (código {feito.returncode})", (erros + "\n" + saida).strip(),
+                   codigo=feito.returncode, saida=saida, erros=erros)
 
 
 def rodar_powershell(texto: str, limite_s: float = 600, segredo: str | None = None) -> Resposta:
@@ -729,17 +858,19 @@ def rodar_powershell(texto: str, limite_s: float = 600, segredo: str | None = No
 
     O script recebe na frente: parar no primeiro erro e ler/escrever em UTF-8. Se `segredo` vier, ele chega pela
     entrada do script (nunca pela linha de comando, que outros programas veem), em UTF-8, numa linha: o script lê com
-    `[Console]::In.ReadLine()`. A resposta (`dados["saida"]`) é o que o script escreveu, em UTF-8. Comando de fora
-    que o script chama e falha NÃO para o script sozinho: o script tem de olhar o `$LASTEXITCODE`."""
+    `[Console]::In.ReadLine()`. A resposta (`dados["saida"]`) é só o que o script escreveu como resposta; o que ele
+    escreveu como erro fica em `dados["erros"]`. Programa de fora que o script chama e falha não para o PowerShell
+    sozinho: o script confere com `Confere-Comando 'o que era'` logo depois dele, e o fim de todo script dá "falhou"
+    se o último programa de fora falhou."""
     try:
         pasta = criar_pasta_de_troca()
     except OSError as erro:
         return _falhou("não consegui preparar o script (o disco está cheio ou sem licença?)", repr(erro))
     try:
         script = pasta / "script.ps1"
-        _gravar_script(script, _CABECA_DO_SCRIPT + texto)
+        _gravar_script(script, _CABECA_DO_SCRIPT + texto + _PE_DO_SCRIPT)
         entrada = (segredo + "\n").encode("utf-8") if segredo is not None else None
-        return rodar_e_esperar(comando_do_powershell(script), limite_s, entrada, "utf-8-sig")
+        return _rodar(_comando_do_powershell(script), limite_s, entrada, "utf-8-sig")
     except (OSError, ValueError) as erro:
         return _falhou("não consegui rodar o script", repr(erro))
     finally:
@@ -781,8 +912,16 @@ def lancar_solto(comando: list, sinal: Path, espera_s: float = 30) -> Resposta:
     O processo lançado tem de criar o arquivo `sinal` logo que começa. Sem o sinal em `espera_s` segundos, a peça
     fecha o lançado e diz "falhou" (nada fica rodando pela metade). Sem console e num grupo novo; NUNCA com a bandeira
     de processo sem console (o porteiro barra: o PowerShell lançado assim saía sem rodar). Se este processo estiver
-    preso a um grupo que mataria o lançado ao fechar, não lança e diz "falhou".
+    preso a um grupo que mataria o lançado ao fechar, não lança e diz "falhou". RECUSA os programas que têm função
+    própria na peça (o PowerShell vai por `lancar_powershell_solto`; ver "A PEÇA É FECHADA" no topo).
     `dados`: `pid` e `grupo` (a situação do grupo)."""
+    if not comando or _programa_com_funcao_propria(str(comando[0])):
+        return _recusa_de_programa(str(comando[0]) if comando else "(nada)")
+    return _lancar_solto(comando, sinal, espera_s)
+
+
+def _lancar_solto(comando: list, sinal: Path, espera_s: float) -> Resposta:
+    """O lançar solto sem filtro, só de dentro da peça (`lancar_powershell_solto` usa este)."""
     comando = [str(c) for c in comando]
     try:
         grupo = _situacao_do_grupo()
@@ -838,7 +977,7 @@ def lancar_powershell_solto(texto: str, espera_s: float = 30) -> Resposta:
     except (OSError, ValueError) as erro:
         apagar_pasta_de_troca(pasta)
         return _falhou("não consegui preparar o script", repr(erro))
-    resposta = lancar_solto(comando_do_powershell(script), sinal, espera_s)
+    resposta = _lancar_solto(_comando_do_powershell(script), sinal, espera_s)
     if not resposta.deu_certo:
         apagar_pasta_de_troca(pasta)
     return resposta
@@ -932,7 +1071,8 @@ _NS_DA_TAREFA = "{http://schemas.microsoft.com/windows/2004/02/mit/task}"
 class Tarefa:
     """O que o Windows diz de uma tarefa: `existe` (True, False ou None = não deu para saber), `lida` (deu para ler
     o conteúdo; "acesso negado" é existe=True e lida=False), o comando, os argumentos, quem roda (`usuario`, o SID)
-    e quem pode mandar rodar (`quem_pode`)."""
+    e quem pode mandar rodar: `quem_pode` é o que o desenho (XML) declara; `licenca` é o que o Windows diz que vale
+    de verdade (lido com `GetSecurityDescriptor`, já com as licenças herdadas da pasta do Agendador)."""
 
     nome: str
     existe: bool | None
@@ -942,6 +1082,7 @@ class Tarefa:
     usuario: str = ""
     quem_pode: str = ""
     motivo: str = ""
+    licenca: str = ""
 
 
 def xml_da_tarefa_do_sistema(comando: str, argumentos: str, descricao: str, quem_pode_mandar_rodar: str,
@@ -984,6 +1125,14 @@ def xml_da_tarefa_do_sistema(comando: str, argumentos: str, descricao: str, quem
 """
 
 
+def xml_da_tarefa_de_script(script: Path, descricao: str, quem_pode_mandar_rodar: str, limite: str = "PT2H") -> str:
+    """O desenho de uma tarefa que roda como o sistema um script do PowerShell que está em `script` (com o mesmo
+    comando do PowerShell que a peça usa em todo lugar). O script tem de estar numa pasta que só o administrador grava
+    (a pasta segura)."""
+    return xml_da_tarefa_do_sistema(str(_caminho_do_powershell()), _argumentos_do_powershell(script), descricao,
+                                    quem_pode_mandar_rodar, limite)
+
+
 def ler_xml_da_tarefa(xml: str) -> dict:
     """Do XML de uma tarefa: o comando, os argumentos, quem roda e quem pode mandar rodar (o mesmo leitor para o que
     a peça escreve e para o que o Windows devolve)."""
@@ -1015,7 +1164,8 @@ def ler_tarefa(nome: str, limite_s: float = 60) -> Tarefa:
     resposta = rodar_powershell(
         "$s = New-Object -ComObject Schedule.Service\n$s.Connect()\n"
         f"try {{ $t = $s.GetFolder({aspas_do_powershell(chr(92) + pasta)}).GetTask({aspas_do_powershell(folha)})\n"
-        "  [Console]::Out.Write((@{ codigo = 0; xml = $t.Xml } | ConvertTo-Json -Compress)) }\n"
+        "  $l = ''; try { $l = $t.GetSecurityDescriptor(4) } catch { }\n"
+        "  [Console]::Out.Write((@{ codigo = 0; xml = $t.Xml; licenca = $l } | ConvertTo-Json -Compress)) }\n"
         "catch { $h = $_.Exception.HResult; if ($_.Exception.InnerException) { $h = $_.Exception.InnerException.HResult }\n"
         "  [Console]::Out.Write((@{ codigo = $h; xml = '' } | ConvertTo-Json -Compress)) }\n", limite_s)
     if not resposta.deu_certo:
@@ -1030,7 +1180,7 @@ def ler_tarefa(nome: str, limite_s: float = 60) -> Tarefa:
             campos = ler_xml_da_tarefa(lido["xml"])
         except Exception as erro:  # noqa: BLE001 - XML estranho vira "não deu para ler"
             return Tarefa(nome, True, False, motivo=f"a tarefa existe, mas o conteúdo não deu para ler ({erro!r})")
-        return Tarefa(nome, True, True, **campos)
+        return Tarefa(nome, True, True, licenca=str(lido.get("licenca") or ""), **campos)
     if codigo in HRESULT_NAO_EXISTE:
         return Tarefa(nome, False)
     if codigo == HRESULT_ACESSO_NEGADO:
@@ -1038,13 +1188,33 @@ def ler_tarefa(nome: str, limite_s: float = 60) -> Tarefa:
     return Tarefa(nome, None, motivo=f"o Windows respondeu 0x{codigo:08X}")
 
 
+def problemas_da_tarefa_criada(pedido: str, lida: Tarefa) -> list[str]:
+    """A tarefa lida no Windows é a que foi pedida? Existe e foi lida; o comando, os argumentos e quem roda batem com
+    o desenho pedido; e a licença que o Windows diz que vale cumpre a pedida (`problemas_da_licenca_da_tarefa`)."""
+    if not lida.existe or not lida.lida:
+        return [f"a tarefa não foi achada depois de criada ({lida.motivo or 'não existe'})"]
+    esperado = ler_xml_da_tarefa(pedido)
+    problemas = [f"{campo} ficou {getattr(lida, campo)!r}, e o pedido era {esperado[campo]!r}"
+                 for campo in ("comando", "argumentos", "usuario") if getattr(lida, campo) != esperado[campo]]
+    if esperado["quem_pode"]:
+        if not lida.licenca:
+            problemas.append("não deu para ler a licença da tarefa no Windows")
+        else:
+            try:
+                problemas += problemas_da_licenca_da_tarefa(esperado["quem_pode"], lida.licenca)
+            except OSError as erro:
+                problemas.append(f"a licença da tarefa não deu para comparar ({erro})")
+    return problemas
+
+
 def criar_tarefa(nome: str, xml: str) -> Resposta:
-    """Cria (ou refaz) a tarefa a partir do XML e CONFERE lendo de volta: existe, o comando, os argumentos e quem roda
-    batem com o XML. Precisa da licença de administrador (roda dentro do trabalho com licença ou como o sistema)."""
+    """Cria (ou refaz) a tarefa a partir do XML e CONFERE lendo de volta (`problemas_da_tarefa_criada`). Se não
+    conferir, apaga a tarefa de novo e confere que sumiu (nada fica pela metade; a resposta diz o que ficou). Precisa da
+    licença de administrador (roda dentro do trabalho com licença ou como o sistema)."""
     if not _NOME_DE_TAREFA.match(nome):
         return _falhou("nome de tarefa fora da pasta do programa", nome)
     try:
-        esperado = ler_xml_da_tarefa(xml)
+        ler_xml_da_tarefa(xml)
     except Exception as erro:  # noqa: BLE001
         return _falhou("o desenho da tarefa está errado", repr(erro))
     try:
@@ -1054,14 +1224,21 @@ def criar_tarefa(nome: str, xml: str) -> Resposta:
     try:
         arquivo = pasta / "tarefa.xml"
         _gravar_por_inteiro(arquivo, xml.encode("utf-16"))
-        feito = rodar_e_esperar([caminho_do_schtasks(), "/Create", "/TN", nome, "/XML", arquivo, "/F"])
+        feito = _rodar([_caminho_do_schtasks(), "/Create", "/TN", nome, "/XML", arquivo, "/F"])
     finally:
         apagar_pasta_de_troca(pasta)
     lida = ler_tarefa(nome)
-    if lida.existe and lida.lida and all(getattr(lida, k) == v for k, v in esperado.items()):
+    problemas = problemas_da_tarefa_criada(xml, lida)
+    if not problemas:
         return _certo(saida=feito.dados.get("saida", ""))
-    return _falhou("a tarefa não ficou criada como pedido", f"schtasks: {feito.desfecho} {feito.detalhe or ''} "
-                   f"{feito.dados.get('saida', '')}; lida: {lida}", saida=feito.dados.get("saida", ""))
+    tecnico = f"schtasks: {feito.desfecho} {feito.detalhe} {feito.dados.get('saida', '')}; lida: {lida}"
+    if lida.existe is False:
+        return _falhou("a tarefa não foi criada: " + "; ".join(problemas), tecnico)
+    apagada = apagar_tarefa(nome)
+    if apagada.deu_certo:
+        return _falhou("a tarefa não ficou como pedido e foi apagada de novo: " + "; ".join(problemas), tecnico)
+    return _falhou("a tarefa não ficou como pedido e NÃO deu para apagar: ela ficou no Windows: "
+                   + "; ".join(problemas), tecnico + f"; apagar: {apagada.motivo} {apagada.detalhe}")
 
 
 def apagar_tarefa(nome: str) -> Resposta:
@@ -1071,7 +1248,7 @@ def apagar_tarefa(nome: str) -> Resposta:
     antes = ler_tarefa(nome)
     if antes.existe is False:
         return _certo("a tarefa já não existia")
-    feito = rodar_e_esperar([caminho_do_schtasks(), "/Delete", "/TN", nome, "/F"])
+    feito = _rodar([_caminho_do_schtasks(), "/Delete", "/TN", nome, "/F"])
     depois = ler_tarefa(nome)
     if depois.existe is False:
         return _certo(saida=feito.dados.get("saida", ""))
@@ -1084,7 +1261,49 @@ def rodar_tarefa(nome: str, limite_s: float = 60) -> Resposta:
     rodar. `dados["saida"]` é a resposta do Windows, lida na tabela de letras certa ("ÊXITO: ...")."""
     if not _NOME_DE_TAREFA.match(nome):
         return _falhou("nome de tarefa fora da pasta do programa", nome)
-    return rodar_e_esperar([caminho_do_schtasks(), "/Run", "/TN", nome], limite_s)
+    return _rodar([_caminho_do_schtasks(), "/Run", "/TN", nome], limite_s)
+
+
+def _pasta_de_tarefas_pelo_windows(acao: str, limite_s: float = 60) -> tuple[int | None, str]:
+    """Pergunta ao Agendador pela pasta do programa (`PASTA_DAS_TAREFAS`): "ler" ou "apagar" (só se vazia). Devolve
+    (o número da resposta do Windows, 0 = deu certo; None = não deu para perguntar, o técnico)."""
+    comando = (f"$s.GetFolder('\\').DeleteFolder({aspas_do_powershell(PASTA_DAS_TAREFAS)}, 0)" if acao == "apagar"
+               else f"$null = $s.GetFolder({aspas_do_powershell(chr(92) + PASTA_DAS_TAREFAS)})")
+    resposta = rodar_powershell(
+        "$s = New-Object -ComObject Schedule.Service\n$s.Connect()\n"
+        f"try {{ {comando}; [Console]::Out.Write('0') }}\n"
+        "catch { $h = $_.Exception.HResult; if ($_.Exception.InnerException) { $h = $_.Exception.InnerException.HResult }\n"
+        "  [Console]::Out.Write([string]$h) }\n", limite_s)
+    if not resposta.deu_certo:
+        return None, f"{resposta.motivo} {resposta.detalhe}"
+    try:
+        return int(resposta.dados["saida"]) & 0xFFFFFFFF, resposta.dados["saida"]
+    except (ValueError, KeyError):
+        return None, f"resposta que não deu para ler: {resposta.dados.get('saida')!r}"
+
+
+def pasta_de_tarefas_existe() -> bool | None:
+    """A pasta do programa (`\\EditorImpressao`) existe no Agendador? True, False ou None (não deu para saber).
+    "Acesso negado" quer dizer que existe."""
+    codigo, _ = _pasta_de_tarefas_pelo_windows("ler")
+    if codigo == 0 or codigo == HRESULT_ACESSO_NEGADO:
+        return True
+    if codigo in HRESULT_NAO_EXISTE:
+        return False
+    return None
+
+
+def apagar_pasta_de_tarefas() -> Resposta:
+    """Apaga a pasta do programa no Agendador, SÓ se estiver vazia, e confere que sumiu (se já não existia, deu
+    certo). Para deixar o Agendador como estava quando foi o programa que a criou. Precisa de administrador."""
+    if pasta_de_tarefas_existe() is False:
+        return _certo("a pasta do Agendador já não existia")
+    codigo, tecnico = _pasta_de_tarefas_pelo_windows("apagar")
+    if pasta_de_tarefas_existe() is False:
+        return _certo()
+    if codigo == 0x80070091:                                    # ERROR_DIR_NOT_EMPTY
+        return _falhou("a pasta do programa no Agendador tem outras tarefas: não apago", tecnico)
+    return _falhou("a pasta do programa no Agendador não foi apagada", f"0x{(codigo or 0):08X} {tecnico}")
 
 
 # ---------------------------------------------------------------------------------------------------------------------
@@ -1105,9 +1324,9 @@ def conferir_pasta_segura(nome: str = NOME_DA_PASTA_SEGURA) -> Resposta:
         caminho = pasta_segura(nome)
     except (ValueError, OSError) as erro:
         return _falhou("não deu para saber onde fica a pasta segura", repr(erro), existe=None)
-    if not caminho.exists() and not _e_atalho(caminho):
+    if not caminho.exists() and not e_atalho(caminho):
         return _falhou("a pasta segura não existe", str(caminho), caminho=str(caminho), existe=False)
-    if _e_atalho(caminho):
+    if e_atalho(caminho):
         return _falhou("a pasta segura é um atalho para outro lugar", str(caminho), caminho=str(caminho),
                        existe=True, problemas=["é um atalho"])
     if not caminho.is_dir():
@@ -1117,7 +1336,7 @@ def conferir_pasta_segura(nome: str = NOME_DA_PASTA_SEGURA) -> Resposta:
         licencas = ler_licencas(caminho)
     except OSError as erro:
         return _falhou("não deu para ler as licenças da pasta segura", repr(erro), caminho=str(caminho), existe=True)
-    problemas = _problemas_da_pasta_segura(licencas)
+    problemas = problemas_da_pasta_segura(licencas)
     dados = {"caminho": str(caminho), "existe": True, "licencas": licencas.para_mostrar(), "problemas": problemas}
     if problemas:
         return _falhou("a pasta segura não confere: " + "; ".join(problemas), str(caminho), **dados)
@@ -1132,7 +1351,7 @@ def criar_pasta_segura(nome: str = NOME_DA_PASTA_SEGURA) -> Resposta:
         caminho = pasta_segura(nome)
     except (ValueError, OSError) as erro:
         return _falhou("não deu para saber onde fica a pasta segura", repr(erro))
-    if caminho.exists() or _e_atalho(caminho):
+    if caminho.exists() or e_atalho(caminho):
         return conferir_pasta_segura(nome)
     try:
         _criar_pasta_comum(caminho)
@@ -1141,8 +1360,10 @@ def criar_pasta_segura(nome: str = NOME_DA_PASTA_SEGURA) -> Resposta:
     conferida = conferir_pasta_segura(nome)
     if not conferida.deu_certo:
         shutil.rmtree(caminho, ignore_errors=True)
-        return _falhou(conferida.motivo + " (a pasta criada agora foi apagada de novo)", conferida.detalhe,
-                       **conferida.dados)
+        sobrou = caminho.exists() or e_atalho(caminho)
+        return _falhou(conferida.motivo + (" (a pasta criada agora NÃO deu para apagar: ela ficou)" if sobrou
+                                           else " (a pasta criada agora foi apagada de novo)"),
+                       conferida.detalhe, **{**conferida.dados, "sobrou": sobrou})
     return conferida
 
 
@@ -1153,7 +1374,7 @@ def apagar_pasta_segura(nome: str) -> Resposta:
         caminho = pasta_segura(nome)
     except (ValueError, OSError) as erro:
         return _falhou("não deu para saber onde fica a pasta segura", repr(erro))
-    if _e_atalho(caminho):
+    if e_atalho(caminho):
         return _falhou("a pasta segura é um atalho para outro lugar: não apago", str(caminho))
     if not caminho.exists():
         return _certo("a pasta segura já não existia")
@@ -1222,12 +1443,17 @@ def passo_apagar_tarefa(nome: str) -> Passo:
     return Passo("apagar_tarefa", "apagar a tarefa do Windows", {"nome": nome})
 
 
+def passo_apagar_pasta_de_tarefas() -> Passo:
+    """Passo: apagar a pasta do programa no Agendador, só se estiver vazia."""
+    return Passo("apagar_pasta_de_tarefas", "apagar a pasta do programa no Agendador", {})
+
+
 def passo_script(descricao: str, texto: str, com_segredo: bool = False, limite_s: float = 600) -> Passo:
     """Passo: rodar um script do PowerShell com licença (com o segredo pela entrada, se `com_segredo`)."""
     return Passo("script", descricao, {"texto": texto, "com_segredo": com_segredo, "limite_s": limite_s})
 
 
-def _problemas_do_passo(passo: dict) -> list[str]:
+def problemas_do_passo(passo: dict) -> list[str]:
     """O que está errado num passo do aviso (lugar único: o lado que pede confere antes de pedir, e o lado com
     licença confere antes de fazer). Lista vazia = o passo é aceito."""
     if not isinstance(passo, dict):
@@ -1273,6 +1499,8 @@ def _fazer_passo(passo: dict, segredo: str | None) -> Resposta:
         return criar_tarefa(d["nome"], d["xml"])
     if tipo == "apagar_tarefa":
         return apagar_tarefa(d["nome"])
+    if tipo == "apagar_pasta_de_tarefas":
+        return apagar_pasta_de_tarefas()
     if d["com_segredo"] and segredo is None:
         return _falhou("o script precisa do segredo e ele não veio")
     return rodar_powershell(d["texto"], d["limite_s"], segredo if d["com_segredo"] else None)
@@ -1286,7 +1514,7 @@ def _ler_arquivo_da_troca(caminho: Path, limite: int) -> bytes:
     """Lê um arquivo da pasta de troca só se ele for um arquivo comum dela (nem atalho, nem ligação para outro
     arquivo) e pequeno. Levanta OSError com o motivo."""
     info = os.lstat(caminho)
-    if not stat.S_ISREG(info.st_mode) or _e_atalho(caminho):
+    if not stat.S_ISREG(info.st_mode) or e_atalho(caminho):
         raise OSError(f"{caminho.name} não é um arquivo comum")
     if info.st_nlink != 1:
         raise OSError(f"{caminho.name} é ligado a outro arquivo")
@@ -1303,7 +1531,7 @@ def _conferir_a_troca(pasta: Path) -> tuple[dict | None, str]:
     if not pasta.is_absolute() or not pasta.name.startswith(PREFIXO_DA_TROCA) \
             or pasta.parent.name != NOME_DA_PASTA_MAE_DA_TROCA:
         return None, "o caminho não é de uma pasta de troca"
-    if not pasta.is_dir() or _e_atalho(pasta) or _e_atalho(pasta.parent):
+    if not pasta.is_dir() or e_atalho(pasta) or e_atalho(pasta.parent):
         return None, "a pasta de troca não existe ou é um atalho"
     try:
         aviso = json.loads(_ler_arquivo_da_troca(pasta / NOME_DO_AVISO, TAMANHO_MAXIMO_DO_AVISO).decode("utf-8"))
@@ -1316,7 +1544,7 @@ def _conferir_a_troca(pasta: Path) -> tuple[dict | None, str]:
         return None, "o aviso não diz qual conta pediu"
     for lugar in (pasta, pasta.parent):
         try:
-            problemas = _problemas_da_pasta_de_troca(ler_licencas(lugar), sid)
+            problemas = problemas_da_pasta_de_troca(ler_licencas(lugar), sid)
         except OSError as erro:
             return None, f"não deu para ler as licenças de {lugar.name}: {erro}"
         if problemas:
@@ -1384,7 +1612,7 @@ def atender_trabalho_de_administrador(argumentos: list[str]) -> int:
         if not tem_licenca_de_administrador():
             relatorio.recusar("este trabalho precisa da licença de administrador, e o programa abriu sem ela")
             return SAIDA_SEM_LICENCA
-        problemas = [p for passo in passos for p in _problemas_do_passo(passo)]
+        problemas = [p for passo in passos for p in problemas_do_passo(passo)]
         if problemas:
             relatorio.recusar("o pedido está errado: " + "; ".join(problemas))
             return SAIDA_AVISO_RECUSADO
@@ -1395,6 +1623,10 @@ def atender_trabalho_de_administrador(argumentos: list[str]) -> int:
             except OSError as erro:
                 relatorio.recusar(f"o segredo não deu para abrir: {erro}")
                 return SAIDA_AVISO_RECUSADO
+        # "ate_o_fim" (o desfazer): um passo que falha não impede os seguintes, para deixar o mínimo para trás; o
+        # relatório diz cada um. Sem ele, para no primeiro que falha (os seguintes dependem dos anteriores).
+        ate_o_fim = aviso.get("ate_o_fim") is True
+        algum_falhou = False
         for i, passo in enumerate(passos):
             try:
                 resposta = _fazer_passo(passo, segredo)
@@ -1402,10 +1634,11 @@ def atender_trabalho_de_administrador(argumentos: list[str]) -> int:
                 resposta = _falhou("o passo teve um problema inesperado", repr(erro))
             relatorio.anotar(i, resposta)
             if not resposta.deu_certo:
-                relatorio.fechar()
-                return SAIDA_UM_PASSO_FALHOU
+                algum_falhou = True
+                if not ate_o_fim:
+                    break
         relatorio.fechar()
-        return SAIDA_TUDO_CERTO
+        return SAIDA_UM_PASSO_FALHOU if algum_falhou else SAIDA_TUDO_CERTO
     except Exception:  # noqa: BLE001 - o programa com licença nunca mostra erro na tela
         return SAIDA_ERRO_INESPERADO
 
@@ -1424,15 +1657,20 @@ def programa_deste_processo() -> list[str]:
             str(Path(__file__).resolve().parent.parent / "main.py")]
 
 
-def _desfecho_do_trabalho(codigo: int | None, relatorio: dict | None) -> Resposta:
+def desfecho_do_trabalho(codigo: int | None, relatorio: dict | None, pedidos: list[dict] | None = None) -> Resposta:
     """Decide o desfecho do trabalho com licença PELO RELATÓRIO (o código de saída só explica quando não há
-    relatório). "Deu certo" só com o relatório completo, todos os passos "deu certo" e o código 0."""
+    relatório). "Deu certo" só com o relatório completo, os mesmos passos do pedido (`pedidos`, na mesma ordem, com o
+    mesmo tipo e a mesma frase), todos "deu certo" e o código 0."""
     if relatorio is None:
         motivo = _MOTIVO_DA_SAIDA.get(codigo, "o trabalho com licença não deixou relatório")
         return _falhou(motivo, f"código de saída {codigo}, sem relatório", codigo=codigo, passos=[])
     passos = relatorio.get("passos") if isinstance(relatorio.get("passos"), list) else []
     if relatorio.get("recusado"):
         return _falhou(str(relatorio["recusado"]), f"código {codigo}", codigo=codigo, passos=passos)
+    if pedidos is not None and [(p.get("tipo"), p.get("descricao")) for p in passos] != \
+            [(p.get("tipo"), p.get("descricao")) for p in pedidos]:
+        return _falhou("o relatório do trabalho com licença não bate com o pedido",
+                       f"pedidos {len(pedidos)} passos, relatório {len(passos)}", codigo=codigo, passos=passos)
     if not relatorio.get("terminou"):
         feitos = [p.get("descricao") for p in passos if p.get("resultado") == DEU_CERTO]
         return _falhou("o trabalho com licença não terminou", f"feitos até parar: {feitos}; código {codigo}",
@@ -1447,6 +1685,12 @@ def _desfecho_do_trabalho(codigo: int | None, relatorio: dict | None) -> Respost
     return _certo(codigo=codigo, passos=passos)
 
 
+def o_que_houve_ao_abrir(erro: int) -> str:
+    """O erro do Windows ao pedir a licença: "nao" SÓ para o cancelado (a pessoa disse Não ou fechou a pergunta);
+    qualquer outro é "erro:<n>" (nunca vira "Não", e nunca vira "deu certo")."""
+    return "nao" if erro == ERRO_CANCELADO else f"erro:{erro}"
+
+
 def _motivo_do_erro_ao_abrir(erro: int) -> str:
     """A frase em português para o erro do Windows ao abrir o programa com licença."""
     return {ERRO_ARQUIVO_NAO_ACHADO: "não achei o programa a abrir",
@@ -1456,12 +1700,41 @@ def _motivo_do_erro_ao_abrir(erro: int) -> str:
         erro, f"o Windows não abriu o programa (código {erro})")
 
 
-def _abrir_com_licenca(programa: list[str], argumentos: list[str], janela: int | None,
-                       limite_s: float) -> tuple[str, int | None, str]:
+def resposta_do_pedido(houve: str, codigo: int | None, tecnico: str, relatorio: dict | None, pedidos: list[dict],
+                       limite_s: float) -> Resposta:
+    """O desfecho de um pedido de licença, a partir do que houve ao abrir (`o_que_houve_ao_abrir` ou "tempo",
+    "sem_acompanhar", "terminou") e do relatório. Lugar único da decisão (o `pedir_licenca` só junta as peças)."""
+    if houve == "nao":
+        return Resposta(DISSE_NAO, "você disse Não; nada mudou", tecnico)
+    if houve.startswith("erro:"):
+        return _falhou(_motivo_do_erro_ao_abrir(int(houve[5:])), tecnico)
+    if houve == "tempo":
+        return _falhou(f"o trabalho com licença não terminou em {int(limite_s // 60)} minutos; ele pode continuar e "
+                       "mudar o computador depois: confira de novo como o Windows está", tecnico)
+    if houve == "sem_acompanhar":
+        return _falhou("o Windows abriu o trabalho com licença, mas não deu para acompanhar até o fim; ele pode "
+                       "continuar e mudar o computador depois: confira de novo como o Windows está", tecnico)
+    resposta = desfecho_do_trabalho(codigo, relatorio, pedidos)
+    return Resposta(resposta.desfecho, resposta.motivo, (resposta.detalhe + " " + tecnico).strip(), resposta.dados)
+
+
+def _ler_relatorio(pasta: Path) -> dict | None:
+    """O relatório que o lado com licença escreveu, ou None se não há (ou não deu para ler)."""
+    try:
+        relatorio = json.loads((pasta / NOME_DO_RELATORIO).read_text(encoding="utf-8"))
+    except (OSError, ValueError):
+        return None
+    return relatorio if isinstance(relatorio, dict) else None
+
+
+def _abrir_com_licenca(programa: list[str], argumentos: list[str], janela: int | None, limite_s: float,
+                       pasta: Path) -> tuple[str, int | None, str]:
     """Abre o programa com a licença de administrador (a pergunta do Windows) e espera ele terminar.
 
-    Devolve (o que houve, código de saída, técnico): "nao" (a pessoa disse Não), "erro:<n>" (o Windows não abriu),
-    "tempo" (passou do limite), "terminou". Nunca no fio da tela: a pergunta segura esta chamada até a resposta."""
+    Devolve (o que houve, código de saída, técnico): `o_que_houve_ao_abrir` (o Windows não abriu, ou a pessoa disse
+    Não), "tempo" (passou do limite), "sem_acompanhar" (a espera do Windows falhou), "terminou". Se o Windows não
+    devolver o processo (a documentação diz que pode acontecer), espera o relatório dizer que terminou. Nunca no fio da
+    tela: a pergunta segura esta chamada até a resposta."""
     w = _win()
     comeco_com = w.ole32.CoInitializeEx(None, 0x2 | 0x4)       # COINIT_APARTMENTTHREADED | COINIT_DISABLE_OLE1DDE
     try:
@@ -1476,14 +1749,21 @@ def _abrir_com_licenca(programa: list[str], argumentos: list[str], janela: int |
         info.nShow = 0                                  # SW_HIDE: o trabalho com licença não mostra janela
         if not w.shell32.ShellExecuteExW(ctypes.byref(info)):
             erro = _ler_erro()
-            return ("nao" if erro == ERRO_CANCELADO else f"erro:{erro}"), None, f"ShellExecuteExW erro {erro}"
+            return o_que_houve_ao_abrir(erro), None, f"ShellExecuteExW erro {erro}"
+        fim = time.monotonic() + limite_s
         if not info.hProcess:
-            return "erro:0", None, "o Windows não devolveu o processo aberto"
+            while time.monotonic() < fim:
+                if (_ler_relatorio(pasta) or {}).get("terminou"):
+                    return "terminou", None, "o Windows não devolveu o processo; acompanhado pelo relatório"
+                time.sleep(0.5)
+            return "tempo", None, f"passou de {limite_s} s (sem o processo para acompanhar)"
         try:
-            fim = time.monotonic() + limite_s
             while True:
-                if w.kernel32.WaitForSingleObject(info.hProcess, 250) == 0:      # WAIT_OBJECT_0
+                espera = w.kernel32.WaitForSingleObject(info.hProcess, 250)
+                if espera == 0:                                                 # WAIT_OBJECT_0
                     break
+                if espera == 0xFFFFFFFF:                                        # WAIT_FAILED
+                    return "sem_acompanhar", None, f"WaitForSingleObject falhou (erro {_ler_erro()})"
                 if time.monotonic() > fim:
                     return "tempo", None, f"passou de {limite_s} s"
             codigo = wintypes.DWORD()
@@ -1498,18 +1778,21 @@ def _abrir_com_licenca(programa: list[str], argumentos: list[str], janela: int |
 
 
 def pedir_licenca(passos: list[Passo], *, segredo: str | None = None, janela: int | None = None,
-                  programa: list[str] | None = None, limite_s: float = 1800) -> Resposta:
+                  programa: list[str] | None = None, limite_s: float = 1800, ate_o_fim: bool = False) -> Resposta:
     """A pergunta do Windows ("Deseja permitir...?"): abre o próprio programa com a licença de administrador para
     fazer os `passos`, espera e lê o relatório.
 
     `janela`: a janela do programa (o número dela no Windows), que vira a dona da pergunta e é trazida para a frente
     antes. `segredo`: vai cifrado num arquivo da pasta de troca, nunca pela linha de comando. `programa`: o programa a
-    abrir (padrão: este mesmo). Chamar FORA do fio da tela: a pergunta segura a chamada até a pessoa responder.
+    abrir (padrão: este mesmo). `ate_o_fim`: para desfazer: um passo que falha não impede os seguintes. Chamar FORA
+    do fio da tela: a pergunta segura a chamada até a pessoa responder.
 
-    Desfechos: DISSE_NAO (a pessoa disse Não; nada mudou), FALHOU (com o passo e o motivo), DEU_CERTO (todos os passos
-    feitos e conferidos). `dados`: `passos` (o relatório de cada passo), `janela_na_frente`, `codigo`."""
+    Desfechos (decididos em `resposta_do_pedido`): DISSE_NAO (a pessoa disse Não; nada mudou), FALHOU (com o passo e o
+    motivo), DEU_CERTO (todos os passos feitos e conferidos). `dados`: `passos` (o relatório de cada passo),
+    `janela_na_frente`, `codigo`. Se o trabalho com licença passou do limite, a pasta de troca fica (ele ainda pode
+    estar usando; a limpeza das velhas a apaga depois de um dia)."""
     pedidos = [asdict(p) for p in passos]
-    problemas = [p for passo in pedidos for p in _problemas_do_passo(passo)] or ([] if pedidos else ["sem passos"])
+    problemas = [p for passo in pedidos for p in problemas_do_passo(passo)] or ([] if pedidos else ["sem passos"])
     if problemas:
         return _falhou("o pedido ao Windows está errado", "; ".join(problemas))
     programa = [str(p) for p in (programa or programa_deste_processo())]
@@ -1520,34 +1803,24 @@ def pedir_licenca(passos: list[Passo], *, segredo: str | None = None, janela: in
         pasta = criar_pasta_de_troca()
     except OSError as erro:
         return _falhou("não consegui preparar o pedido (o disco está cheio ou sem licença?)", repr(erro))
+    manter_a_pasta = False
     try:
-        problemas = _problemas_da_pasta_de_troca(ler_licencas(pasta), sid) + \
-            _problemas_da_pasta_de_troca(ler_licencas(pasta.parent), sid)
+        problemas = problemas_da_pasta_de_troca(ler_licencas(pasta), sid) + \
+            problemas_da_pasta_de_troca(ler_licencas(pasta.parent), sid)
         if problemas:
             return _falhou("a pasta do pedido não é só desta conta: " + "; ".join(problemas), str(pasta))
         if segredo is not None:
             _gravar_por_inteiro(pasta / NOME_DO_SEGREDO, cifrar_segredo(segredo))
         aviso = {"formato": FORMATO_DO_AVISO, "pedido_por": sid, "criado_em": datetime.now().isoformat(timespec="seconds"),
-                 "com_segredo": segredo is not None, "passos": pedidos}
+                 "com_segredo": segredo is not None, "ate_o_fim": ate_o_fim, "passos": pedidos}
         _gravar_por_inteiro(pasta / NOME_DO_AVISO, json.dumps(aviso, ensure_ascii=False).encode("utf-8"))
         na_frente = trazer_para_a_frente(janela)
         houve, codigo, tecnico = _abrir_com_licenca(programa, [ARG_TRABALHO_DE_ADMINISTRADOR, str(pasta)], janela,
-                                                    limite_s)
-        if houve == "nao":
-            return Resposta(DISSE_NAO, "você disse Não; nada mudou", tecnico, {"janela_na_frente": na_frente})
-        if houve.startswith("erro:"):
-            return _falhou(_motivo_do_erro_ao_abrir(int(houve[5:])), tecnico, janela_na_frente=na_frente)
-        if houve == "tempo":
-            return _falhou(f"o trabalho com licença não terminou em {int(limite_s // 60)} minutos", tecnico,
-                           janela_na_frente=na_frente)
-        try:
-            relatorio = json.loads((pasta / NOME_DO_RELATORIO).read_text(encoding="utf-8"))
-            if not isinstance(relatorio, dict):
-                relatorio = None
-        except (OSError, ValueError):
-            relatorio = None
-        resposta = _desfecho_do_trabalho(codigo, relatorio)
-        return Resposta(resposta.desfecho, resposta.motivo, (resposta.detalhe + " " + tecnico).strip(),
+                                                    limite_s, pasta)
+        manter_a_pasta = houve in ("tempo", "sem_acompanhar")
+        resposta = resposta_do_pedido(houve, codigo, tecnico, _ler_relatorio(pasta) if houve == "terminou" else None,
+                                      pedidos, limite_s)
+        return Resposta(resposta.desfecho, resposta.motivo, resposta.detalhe,
                         {**resposta.dados, "janela_na_frente": na_frente})
     except Exception as erro:  # noqa: BLE001 - nunca derruba quem chamou
         return _falhou("o pedido ao Windows teve um problema inesperado", repr(erro))
@@ -1556,4 +1829,5 @@ def pedir_licenca(passos: list[Passo], *, segredo: str | None = None, janela: in
             (pasta / NOME_DO_SEGREDO).unlink(missing_ok=True)
         except OSError:
             pass
-        apagar_pasta_de_troca(pasta)
+        if not manter_a_pasta:
+            apagar_pasta_de_troca(pasta)
