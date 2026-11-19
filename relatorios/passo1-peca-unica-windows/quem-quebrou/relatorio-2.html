@@ -1,0 +1,300 @@
+<!doctype html>
+<html lang="pt-BR">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Passo 1: segunda conferência de quem tentou quebrar</title>
+<style>
+:root { color-scheme: light dark; }
+* { box-sizing: border-box; }
+body {
+  font: 17px/1.65 "Segoe UI", system-ui, sans-serif;
+  max-width: 46rem; margin: 0 auto; padding: 2.5rem 1.5rem 6rem;
+  color: #1c1c1e; background: #fdfdfc;
+}
+h1 { font-size: 2rem; line-height: 1.2; margin: 0 0 .3em; letter-spacing: -.02em; }
+h2 { font-size: 1.35rem; margin: 2.4em 0 .6em; padding-top: .8em;
+     border-top: 1px solid #e6e4e0; letter-spacing: -.01em; }
+h3 { font-size: 1.1rem; margin: 1.8em 0 .4em; }
+h1 + p, h2 + p { margin-top: .4em; }
+p, li { margin: 0 0 .9em; }
+ul, ol { padding-left: 1.3em; }
+strong { font-weight: 640; }
+code {
+  font: .88em ui-monospace, "Cascadia Code", Consolas, monospace;
+  background: #f1efec; padding: .12em .35em; border-radius: 4px;
+}
+pre {
+  background: #f1efec; padding: 1em 1.1em; border-radius: 8px;
+  overflow-x: auto; line-height: 1.5;
+}
+pre code { background: none; padding: 0; }
+blockquote {
+  margin: 1.2em 0; padding: .1em 0 .1em 1.1em;
+  border-left: 3px solid #c9c5be; color: #55524d;
+}
+table {
+  border-collapse: collapse; width: 100%; margin: 1.2em 0;
+  font-size: .95rem; display: block; overflow-x: auto;
+}
+th, td { padding: .5em .8em; text-align: left; border-bottom: 1px solid #e6e4e0; }
+th { font-weight: 620; background: #f7f5f2; white-space: nowrap; }
+tr:last-child td { border-bottom: none; }
+img { max-width: 100%; height: auto; border-radius: 6px; margin: 1em 0;
+      border: 1px solid #e6e4e0; }
+hr { border: none; border-top: 1px solid #e6e4e0; margin: 2.5em 0; }
+.rodape { margin-top: 4em; padding-top: 1.2em; border-top: 1px solid #e6e4e0;
+          font-size: .85rem; color: #86827c; }
+@media (prefers-color-scheme: dark) {
+  body { color: #e8e6e3; background: #1a1917; }
+  h2 { border-top-color: #35332f; }
+  code, pre, th { background: #262421; }
+  th, td { border-bottom-color: #35332f; }
+  blockquote { border-left-color: #4a4741; color: #b0aca6; }
+  img { border-color: #35332f; }
+  .rodape { border-top-color: #35332f; color: #7d7973; }
+}
+@media print {
+  body { max-width: none; padding: 0; color: #000; background: #fff; }
+  h2 { page-break-after: avoid; }
+  table, img { page-break-inside: avoid; }
+}
+</style>
+</head>
+<body>
+<h1>Passo 1 do plano da parte do Windows: segunda conferência de quem tentou quebrar (19/11/2026)</h1>
+<p>Segunda volta do mesmo verificador, que não escreveu este código. Conferi o destino de cada achado do relatório 1 no
+código de <code>a21b311a</code>, com o formulário em <code>d1f6be95</code>, e procurei o que os consertos podem ter quebrado. Não mexi no
+código, não pedi licença ao Windows e não abri janela na tela do Samuel.</p>
+<h2>Pedido</h2>
+<ul>
+<li>Papel: verificador</li>
+<li>Commit de partida: d1f6be95</li>
+<li>Ramo: passo1-peca-unica-windows</li>
+</ul>
+<h2>Arquivos que vou mexer</h2>
+<ul>
+<li><code>relatorios/passo1-peca-unica-windows/quem-quebrou/</code></li>
+</ul>
+<h2>Veredito</h2>
+<p><strong>Pode ir para a prova à vista. Ainda não escrevo "PRONTO PARA CONFERIR".</strong>
+- O achado grave (as perguntas 2 e 3 que não apareciam) está consertado. Conferi que as três perguntas chegam à
+  chamada do Windows.
+- Os outros consertos pegam a causa. Os testes novos acusam a volta do código antigo.
+- Achei quatro coisas novas de gravidade média. Nenhuma impede a sessão à vista. Uma delas vale consertar antes (N1,
+  uma linha de teste).
+- Pela D-798, o rótulo só vem depois da prova de verdade (data, hora, à vista, registro da janela de prova). Essa prova
+  ainda não aconteceu.</p>
+<h2>O que li</h2>
+<ul>
+<li>O ONDE-PAREI em <code>d1f6be95</code>: "O que o agente que tentou quebrar achou" (o destino de cada achado), as ressalvas da
+  volta 1 e o anexo <code>reversao-volta1-resultado.txt</code>.</li>
+<li>O diff de <code>5de9c52d</code> a <code>a21b311a</code>:</li>
+<li><code>core/windows.py</code>: +521 linhas;</li>
+<li><code>janela_de_prova.py</code>;</li>
+<li>os dois arquivos de teste;</li>
+<li>o <code>main.py</code> e <code>regras_dos_agentes/</code> não mudaram (conferido).</li>
+<li>A rodada 44571676129: "success" na segunda tentativa, segundo a gerente. Não reli o registro dela.</li>
+</ul>
+<h2>O que conferi, e como</h2>
+<p>Tudo por máquina, no PC, sem licença.</p>
+<ul>
+<li><strong>Testes no PC, um arquivo por vez:</strong></li>
+<li>na cópia de <code>a21b311a</code>, <code>test_windows_peca.py</code> e <code>test_windows_janela_de_prova.py</code>: 49 passaram;</li>
+<li>no ramo, <code>test_conferencias_codigo.py</code> (77), <code>test_decisoes_atualizacao.py</code> (38) e <code>test_decisoes_brasao.py</code>
+    (22): passaram.</li>
+<li>O repositório continuou inteiro: <code>--is-shallow-repository</code> deu false antes e depois.</li>
+<li><strong>As perguntas chegam ao Windows (achado 1).</strong> Rodei as provas 2, 3 e 4 da janela numa cópia, trocando só a chamada
+  que abriria a pergunta por uma que anota o pedido e responde "Não".</li>
+<li>As três chegam à chamada, com o programa e o argumento certos.</li>
+<li>A pergunta 3 leva os quatro passos de desfazer (as duas tarefas, a pasta segura de prova e a pasta do Agendador),
+    com "ir até o fim" ligado.</li>
+<li>O estado de antes do Agendador ficou anotado ("não existia").</li>
+<li>Antes, as perguntas 2 e 3 paravam na regra da própria peça.</li>
+<li><strong>Prova de reversão, minha, numa segunda cópia à parte</strong> (<code>git archive</code> de <code>a21b311a</code> no rascunho). Fiz 20
+  mutações, cada uma desfazendo um conserto, e rodei os dois arquivos de teste:</li>
+<li><strong>Acusadas (12):</strong><ul>
+<li>A1, o nome com parênteses de volta;</li>
+<li>A2b, a pergunta 1 sem zerar o resultado;</li>
+<li>A3, o "Não" virando "deu certo";</li>
+<li>A4, o lado com licença sem conferir a pasta;</li>
+<li>A8, ninguém conferindo quem lê a pasta de troca;</li>
+<li>A9b, a frase do tempo esgotado sem o aviso de que o trabalho continua;</li>
+<li>A10, o script sem a conferência do fim;</li>
+<li>A12 e A12c, o rodar e o lançar genéricos sem a recusa;</li>
+<li>A17, a janela fechando no meio da prova;</li>
+<li>mais as do anexo dele, que confere com o que eu vi.</li>
+</ul>
+</li>
+<li><strong>Não acusadas (8):</strong><ul>
+<li>A1b, o desfazer parando no primeiro passo que falha (só o GitHub prova, porque no PC o trabalho é recusado antes
+  de rodar os passos);</li>
+<li>A1c, a pergunta 3 sem pedir "ir até o fim";</li>
+<li>A2, a janela sem conferir a hora do resultado;</li>
+<li>A6, a janela nunca apagando a pasta do Agendador;</li>
+<li>A6b, a pasta do Agendador apagada sem conferir depois;</li>
+<li>A9, a pasta de troca apagada mesmo com o tempo esgotado;</li>
+<li>A9c, a espera que falha girando até o limite;</li>
+<li><strong>M2 e M2b, a biblioteca que lê o "Não" sem guardar o erro (achado N1).</strong></li>
+</ul>
+</li>
+<li><strong>O Agendador, lido sem licença</strong> (só leitura):</li>
+<li>a pasta raiz, a licença das tarefas da raiz e a das pastas;</li>
+<li><code>\EditorImpressao</code> continua não existindo neste PC, mesmo depois de as minhas rodadas de teste chamarem
+    <code>schtasks /Create</code> uma vez por rodada (ver N4).</li>
+<li><strong>A regra "pela pasta do Windows" (achado 12)</strong>, testada só como função, sem rodar nada, com várias formas de
+  caminho. Resultado no achado N2.</li>
+<li><strong>O porteiro e o teste do "sublinhado"</strong> em arquivos inventados, só lendo texto. Resultado no achado N2.</li>
+</ul>
+<h2>Cada destino do relatório 1</h2>
+<ol>
+<li><strong>Consertado; pega a causa.</strong>
+   - O nome agora é aceito, e um teste passa todo pedido de toda prova pelas regras da peça. O teste falha com o nome
+     antigo (A1 acusada).
+   - A pergunta 3 vai até o fim com um passo que falha. Isso só é provado no GitHub (A1b).
+   - Que a janela peça "ir até o fim" na pergunta 3 não tem teste (A1c), mas a minha simulação mostra que ela pede.
+     Baixo.</li>
+<li><strong>Consertado, em duas camadas.</strong>
+   - O passo com licença zera o resultado antes de criar a tarefa (acusado).
+   - A janela só aceita o que foi escrito depois de mandar rodar. Essa conferência não tem teste (A2). Baixo, porque a
+     primeira camada já fecha o caso.</li>
+<li><strong>Consertado.</strong>
+   - A decisão do "Não" saiu para uma função só, com teste (A3 e M9 acusadas).
+   - A prova 5 ganhou a parte (b), que chega ao Windows de verdade. Ela só roda à vista.
+   - Mas a proteção que lê o "Não" na hora perdeu o teste dela: achado N1.</li>
+<li><strong>Consertado</strong> (A4 acusada). O teste põe "Todos" numa pasta do próprio teste e cobra a recusa no lado com licença.</li>
+<li><strong>Consertado.</strong>
+   - A licença é lida pelo Windows e comparada pelo sentido. O que não confere é apagado, e a peça confere que sumiu.
+   - Li as tarefas da raiz neste PC. O Agendador dá ao dono da tarefa o controle total, por herança:<ul>
+<li>criada com a licença: o dono é "Administradores" (ACCBackgroundApplication, "App Explorer");</li>
+<li>criada pela conta comum: o dono é a conta (Launch Adobe CCXProcess).</li>
+<li>Com a licença, como na sessão A, a regra deve conferir.</li>
+<li>Se o Windows não aplicar a licença escrita no desenho da tarefa, a pergunta 1 falha de forma honesta e a tarefa é
+ apagada. Só a sessão A diz.</li>
+</ul>
+</li>
+<li><strong>Consertado na janela.</strong>
+   - O estado de antes fica num arquivo, e a pergunta 3 apaga a pasta só se a prova a criou e se ela estiver vazia.
+   - O fluxo está certo na simulação, mas não tem teste (A6 e A6b). Baixo.
+   - Uma frase engana: quando a pasta nunca foi criada e a resposta é "Não", a janela escreve "foi apagada, o
+     Agendador ficou como estava". O lugar é <code>janela_de_prova.py</code>, em <code>prova_pergunta_3</code>. Baixo.
+   - Ver também o achado N3.</li>
+<li><strong>Consertado</strong> (acusado no anexo dele).</li>
+<li><strong>Consertado</strong> (A8 acusada).</li>
+<li><strong>Consertado.</strong>
+   - A frase agora diz que o trabalho pode continuar (A9b acusada).
+   - Manter a pasta de troca depois do tempo esgotado (A9) e parar quando a espera falha (A9c) não têm teste. Baixo.</li>
+<li><strong>Consertado</strong> (A10 acusada).</li>
+<li><strong>Consertado.</strong></li>
+<li><strong>A recusa pela pasta do Windows não é larga demais, mas tem buracos</strong> (achado N2).<ul>
+<li>Ela recusa todo programa de <code>C:\Windows</code>. Cada ferramenta do Windows de que os passos 3 a 5 precisarem vai virar
+  uma função da peça, e isso cumpre a "peça fechada" (§11.12.1).</li>
+<li>Não quebra nada que existe hoje: nenhum chamador do programa usa a peça.</li>
+</ul>
+</li>
+<li><strong>Consertado</strong> (acusado no anexo dele).</li>
+<li><strong>Consertado</strong> (acusado no anexo dele).</li>
+<li><strong>Concordo que não é defeito deste passo.</strong><ul>
+<li>O plano pede "outra conta". A frase do Russinovich é real ("UAC elevations are conveniences and not security
+  boundaries", de 2007).</li>
+<li>Peço à gerente que o cuidado entre no pacote do passo 3 como regra: "nada que o ajudante roda como o sistema vem
+  de pasta que a conta comum grava".</li>
+</ul>
+</li>
+<li><strong>Consertado</strong> (A17 acusada).</li>
+</ol>
+<h2>Achados novos</h2>
+<p><strong>N1. MÉDIO: o conserto do achado 12 apagou a prova do defeito 2 da etapa 5, o "Não" lido do jeito errado.</strong>
+- O teste antigo conferia que as seis bibliotecas da peça guardam o erro de cada chamada. O novo
+  (<code>test_o_erro_do_windows_e_o_daquela_chamada</code>) só confere uma, a de <code>kernel32</code>, pelo comportamento.
+- O teste antigo foi tirado porque usava <code>windows._win()</code>, e o teste novo do "sublinhado" proíbe isso também nos
+  testes.
+- A biblioteca que lê o "Não" é a <code>shell32</code> (<code>ShellExecuteExW</code> e depois <code>GetLastError</code>). Tirei dela o
+  <code>use_last_error=True</code> (M2) e todos os testes passaram. O mesmo aconteceu com a <code>advapi32</code> (M2b).
+- Saiu também do teste do pedido errado a troca que garantia que a pergunta nunca é feita. Hoje ele se apoia só num
+  programa que não existe.
+- Destino sugerido:
+  - devolver a conferência das seis bibliotecas, com uma exceção escrita para o teste dentro da regra do "sublinhado";
+  - ou dar à peça uma função pública que diga quais bibliotecas guardam o erro.
+- Lugares: <code>tests/test_windows_peca.py</code>, <code>test_o_erro_do_windows_e_o_daquela_chamada</code> e
+  <code>test_a_peca_e_fechada_ninguem_usa_o_que_tem_sublinhado_fora_dela</code>; <code>core/windows.py:305-310</code>.</p>
+<p><strong>N2. MÉDIO, conta nos passos 3 a 5: a "peça fechada" tem três portas abertas</strong> (<code>core/windows.py</code>,
+<code>_programa_com_funcao_propria</code> e o topo "A PEÇA É FECHADA").
+- <strong>(a) Caminho escrito de outro jeito.</strong> <code>\\?\C:\Windows\System32\schtasks.exe</code>,
+  <code>\\localhost\C$\Windows\System32\schtasks.exe</code> e <code>\\127.0.0.1\ADMIN$\System32\schtasks.exe</code> <strong>não são recusados</strong>.
+  Testei só a função, sem rodar nada. Sugestão: comparar o arquivo de verdade (o mesmo arquivo no disco), não o texto
+  do caminho, ou recusar caminho de rede e o prefixo <code>\\?\</code>.
+- <strong>(b) O que tem "_" no nome só é privado de nome.</strong>
+  - <code>from core import windows as w</code> seguido de <code>w._rodar([...])</code>, ou <code>getattr(windows, "_rodar")</code>, passam pelo teste
+    do sublinhado (ele procura o texto <code>windows._</code>) e pelo porteiro. Testei com arquivos inventados.
+  - Assim o rodar sem nenhum filtro (<code>_rodar</code>) e a biblioteca crua (<code>_win()</code>) continuam ao alcance de qualquer
+    arquivo.
+  - Sugestão: o teste olhar a estrutura do código (todo acesso a nome com "_" na peça, com qualquer apelido), ou a
+    gerente levar isso ao porteiro.
+- <strong>(c) Programas que não são do Windows passam pelo rodar genérico.</strong>
+  - Ex.: <code>C:\Program Files\Tailscale\tailscale.exe</code> (passo 4) e o Git.
+  - A lista de fora tem só <code>pwsh</code> e <code>update</code>.
+  - Cada programa de fora que um passo usar precisa entrar na lista, ou ganhar função própria. Isso vale anotar no
+    pacote dos passos 2 a 4.</p>
+<p><strong>N3. MÉDIO, conta no passo 3: qualquer conta do computador pode criar antes a pasta <code>\EditorImpressao</code> no Agendador,
+com as licenças que quiser.</strong>
+- Lido neste PC: a pasta raiz do Agendador deixa "Usuários Autenticados" criar pastas (<code>(A;CI;FW;;;AU)</code>).
+- <code>\SoftLanding</code> e <code>\GoogleUserPEH</code> foram criadas pela conta comum do Samuel. A <code>\SoftLanding</code> dá controle total a
+  "Todos" (<code>(A;;FA;;;WD)</code>).
+- Na criação, a peça confere a licença da tarefa, e isso pega uma licença herdada que deixa outra conta mudar a tarefa.
+  Mas a peça <strong>não confere o dono nem a licença da própria pasta</strong>.
+- Quem é dono da pasta pode mudar a licença dela depois. Se o Agendador passar a mudança para as tarefas, o ajudante
+  (que roda como o sistema) ficaria mudável por outra conta. Isso não li nem provei.
+- No passo 1, isso só toca a prova: se a pasta já existir, a janela não a apaga.
+- Sugestão para o passo 3: conferir (e, se preciso, recusar) o dono e a licença da pasta <code>\EditorImpressao</code> antes de
+  criar o ajudante, e na leitura do "preparado".</p>
+<p><strong>N4. BAIXO, para a gerente decidir: um teste novo chama <code>schtasks /Create</code> de verdade no PC do Samuel</strong>
+(<code>test_a_tarefa_criada_que_nao_confere_e_apagada</code>).
+- Sem a licença, o Windows recusa: conferi que a pasta <code>\EditorImpressao</code> continua não existindo depois de umas 20
+  rodadas minhas.
+- Mas se o conjunto rodar num terminal com a licença ligada (Controle de Conta desligado, ou "Executar como
+  administrador"), ele cria e apaga uma tarefa do sistema no PC dele, escondido. Isso fere a D-785, que manda as
+  tarefas serem sempre à vista.
+- Sugestão: esse teste só criar a tarefa no Windows do GitHub (pela variável de ambiente do GitHub) e, fora dele,
+  provar só a lógica.</p>
+<h2>As regras que conferi</h2>
+<ul>
+<li><strong>§4.7, reversão:</strong> provada por mim em 12 mutações. As 8 sem teste estão acima; uma delas é a N1.</li>
+<li><strong>§11.12:</strong></li>
+<li>ponto 1, uma peça só: N2;</li>
+<li>ponto 2, nada dá como feito sem conferir: consertado nos achados 5, 7 e 14;</li>
+<li>ponto 3, a lista das falhas: N3 é falha não pensada;</li>
+<li>ponto 4, peça de mentira: N4.</li>
+<li><strong>D-605:</strong> <code>main.py</code> e <code>regras_dos_agentes/</code> sem mudança.</li>
+<li><strong>D-722:</strong> a pergunta 3 agora desfaz até a pasta do Agendador (simulado), com a frase da observação no item 6.</li>
+<li><strong>D-785:</strong> não rodei nada com licença. A N4 é o único ponto de atrito.</li>
+<li><strong>D-798:</strong> sem rótulo até a prova à vista.</li>
+</ul>
+<h2>O que falta para a prova à vista e para o rótulo</h2>
+<ol>
+<li>De preferência antes da sessão: a N1 (devolver a prova do "Não").</li>
+<li>N2, N3 e N4: dar destino. Consertar, levar ao pacote dos passos 3 e 4, ou a gerente aceitar.</li>
+<li>A gerente monta o programa no C:, à vista, com a reserva conferida.</li>
+<li>A sessão A, com as 3 perguntas e o registro da janela guardado.</li>
+</ol>
+<p>Pela leitura, a pergunta vai mostrar "EditorImpressao.exe", e o plano para a sessão na pergunta 1 se o nome não for
+"Editor de Impressão". A pergunta sobre o nome está pronta no formulário.</p>
+<p>Só depois da sessão, com cada achado com destino, cabe "PRONTO PARA CONFERIR". Nunca "aprovado".</p>
+<h2>Para a gerente: o que ficou fora do projeto</h2>
+<ul>
+<li>No rascunho
+  (<code>C:\Users\fotog\AppData\Local\Temp\claude\b9ca076ad002e817\848d7b72-406b-4bfe-aabf-f5b3005d7b22\scratchpad\</code>)
+  ficou mais isto, nada apagado:</li>
+<li>a cópia <code>copia-reversao-2\</code>;</li>
+<li>as pastas <code>dados-leitura-agendador\</code> (as pastas de troca das minhas leituras) e <code>saida_teste</code> dentro da cópia;</li>
+<li>os scripts <code>mutacoes2.py</code>, <code>provas_chegam_ao_windows.py</code>, <code>ler_licencas_agendador.py</code>,
+    <code>ler_pasta_agendador.py</code> e <code>regra_pasta.py</code>;</li>
+<li>o arquivo <code>estado-de-antes-teste.json</code>.</li>
+<li>Nada mudou no Windows:</li>
+<li>não houve pergunta de administrador, licença mudada nem pasta em Arquivos de Programas;</li>
+<li>houve, sim, tentativas de <code>schtasks /Create</code> vindas dos testes do outro (N4), todas recusadas pelo Windows, e a
+    pasta do Agendador continua não existindo.</li>
+</ul>
+<p class="rodape">Editor de Impressão &middot; gerado em 19/11/2026 às 13:42</p>
+</body>
+</html>

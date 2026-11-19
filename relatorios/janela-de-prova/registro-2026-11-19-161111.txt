@@ -1,0 +1,119 @@
+16:12:43  ===== 1. Lançar solto =====
+16:12:48  Abrindo um processo à parte que lança o script solto e fecha logo em seguida...
+16:12:50  O processo que lançou terminou: lançado: deu certo  (às 16:12:49)
+16:12:50  O script solto escreveu: o script solto rodou às 16:12:50; quem o lançou (processo 6992) já tinha fechado: sim
+16:12:50  (fim)
+16:13:16  ===== 2. Pergunta 1: clique Sim =====
+16:13:16  Lido no Windows: a pasta \EditorImpressao do Agendador não existe.
+16:13:16  Vai aparecer a pergunta do Windows. A gerente pede: clique SIM.
+16:13:23  Resposta: DEU CERTO
+16:13:23  A janela do programa estava na frente quando pediu: sim
+16:13:23     passo "criar a pasta segura": deu certo
+16:13:23     passo "gravar tarefa-de-prova.ps1 na pasta segura": deu certo
+16:13:23     passo "gravar tarefa-rodou.txt na pasta segura": deu certo
+16:13:23     passo "criar a tarefa do Windows": deu certo
+16:13:23     passo "conferir o segredo e o texto com acento": deu certo
+16:13:23  O segredo de prova com acento chegou do outro lado: IGUAL (a soma confere; o segredo não é mostrado)
+16:13:23  O texto com acento dentro do script chegou: 'Ação, ÊXITO, coração, € 10' — igual
+16:13:23  --- Lido de novo, por fora, depois da pergunta ---
+16:13:23  Lido no Windows: a pasta segura de prova CONFERE (C:\Program Files\EditorImpressaoProvaPastaSegura). Licenças:
+16:13:23     dono: Administradores
+16:13:23     o Instalador Confiável do Windows: controle total (herdada)
+16:13:23     o Instalador Confiável do Windows: controle total (só para o que nasce dentro) (herdada)
+16:13:23     o sistema: controle total (herdada)
+16:13:23     o sistema: controle total (só para o que nasce dentro) (herdada)
+16:13:23     Administradores: controle total (herdada)
+16:13:23     Administradores: controle total (só para o que nasce dentro) (herdada)
+16:13:23     Usuários: ler e executar (herdada)
+16:13:23     Usuários: ler e executar (só para o que nasce dentro) (herdada)
+16:13:23     quem cria (Proprietário Criador): controle total (só para o que nasce dentro) (herdada)
+16:13:23     os aplicativos da loja: ler e executar (herdada)
+16:13:23     os aplicativos da loja: ler e executar (só para o que nasce dentro) (herdada)
+16:13:23     os aplicativos da loja restritos: ler e executar (herdada)
+16:13:23     os aplicativos da loja restritos: ler e executar (só para o que nasce dentro) (herdada)
+16:13:24  Lido no Windows: a tarefa existe; roda como o sistema; comando: C:\WINDOWS\system32\WindowsPowerShell\v1.0\powershell.exe -NoProfile -NonInteractive -ExecutionPolicy Bypass -File "C:\Program Files\EditorImpressaoProvaPastaSegura\tarefa-de-prova.ps1"; licença no Windows: D:(A;;FA;;;BA)(A;;FA;;;SY)(A;;0x1200a9;;;AU)(A;ID;0x1f019f;;;BA)(A;ID;0x1f019f;;;SY)(A;ID;FA;;;BA)(A;;FR;;;SY)
+16:13:24  Esta conta lê a pasta: sim (2 arquivo(s) lá dentro).
+16:13:24  Esta conta tentou gravar na pasta segura e o Windows não deixou: certo.
+16:13:24  Esta conta mandou a tarefa rodar; o Windows respondeu: ÊXITO: tentativa de executar a tarefa agendada "EditorImpressao\Prova da peca do Windows".
+16:13:25  A tarefa rodou às 16:13:25 como AUTORIDADE NT\SISTEMA (S-1-5-18): é o sistema, certo.
+16:13:25  (fim)
+16:14:41  ===== 6. Resposta do Windows com acento =====
+16:14:41  O Windows respondeu (deu certo): ÊXITO: tentativa de executar a tarefa agendada "EditorImpressao\Prova da peca do Windows".
+16:14:41  (fim)
+16:15:20  ===== 5. Programa que não existe =====
+16:15:20  (a) Programa que não existe:
+16:15:20  Resposta: FALHOU — não achei o programa a abrir com a licença
+16:15:20     (técnico: C:\Esta pasta nao existe\EditorImpressao.exe)
+16:15:20  (b) Arquivo que existe e não é programa (vai ao Windows; não deve aparecer caixa nem pergunta):
+16:15:21  Resposta: FALHOU — o Windows não sabe pedir licença para esse arquivo
+16:15:21  A janela do programa estava na frente quando pediu: sim
+16:15:21     (técnico: ShellExecuteExW erro 1155)
+16:15:21  (fim)
+16:16:23  ===== 3. Pergunta 2: clique Não =====
+16:16:23  Vai aparecer a pergunta do Windows. A gerente pede: clique NÃO.
+16:16:29  Resposta: DISSE NÃO — você disse Não; nada mudou
+16:16:29  A janela do programa estava na frente quando pediu: sim
+16:16:29     (técnico: ShellExecuteExW erro 1223)
+16:16:29  --- Lido de novo, por fora ---
+16:16:30  Lido no Windows: a tarefa "EditorImpressao\Prova da peca do Windows - Nao" não existe.
+16:16:30  Nada mudou: conferido (a tarefa não existe).
+16:16:30  (fim)
+16:17:11  ===== 4. Pergunta 3: navegador na frente, clique Sim =====
+16:17:11  Clique agora no navegador (ou em outra janela). A pergunta vem em 10 s...
+16:17:12  Clique agora no navegador (ou em outra janela). A pergunta vem em 9 s...
+16:17:13  Clique agora no navegador (ou em outra janela). A pergunta vem em 8 s...
+16:17:14  Clique agora no navegador (ou em outra janela). A pergunta vem em 7 s...
+16:17:15  Clique agora no navegador (ou em outra janela). A pergunta vem em 6 s...
+16:17:16  Clique agora no navegador (ou em outra janela). A pergunta vem em 5 s...
+16:17:17  Clique agora no navegador (ou em outra janela). A pergunta vem em 4 s...
+16:17:18  Clique agora no navegador (ou em outra janela). A pergunta vem em 3 s...
+16:17:19  Clique agora no navegador (ou em outra janela). A pergunta vem em 2 s...
+16:17:20  Clique agora no navegador (ou em outra janela). A pergunta vem em 1 s...
+16:17:21  Pedindo agora. A gerente pede: clique SIM (na pergunta, ou no escudo piscando na barra de tarefas).
+16:17:31  Resposta: DEU CERTO
+16:17:31  A janela do programa estava na frente quando pediu: sim
+16:17:31     passo "apagar a tarefa do Windows": deu certo
+16:17:31     passo "apagar a tarefa do Windows": deu certo — a tarefa já não existia
+16:17:31     passo "apagar a pasta segura": deu certo
+16:17:31     passo "apagar a pasta do programa no Agendador": deu certo
+16:17:31  --- O que foi desfeito, lido de novo por fora ---
+16:17:31  Lido no Windows: a tarefa "EditorImpressao\Prova da peca do Windows" não existe.
+16:17:31  Lido no Windows: a tarefa "EditorImpressao\Prova da peca do Windows - Nao" não existe.
+16:17:31  Lido no Windows: a pasta segura de prova não existe (C:\Program Files\EditorImpressaoProvaPastaSegura).
+16:17:32  Lido no Windows: a pasta \EditorImpressao do Agendador não existe.
+16:17:32  A pasta \EditorImpressao do Agendador não existia antes da prova e não existe agora: o Agendador está como estava.
+16:17:32  (fim)
+16:18:58  ===== 4. Pergunta 3: navegador na frente, clique Sim =====
+16:18:58  Não se sabe se a pasta \EditorImpressao do Agendador existia antes da prova: ela NÃO será apagada.
+16:18:58  Clique agora no navegador (ou em outra janela). A pergunta vem em 10 s...
+16:18:59  Clique agora no navegador (ou em outra janela). A pergunta vem em 9 s...
+16:19:00  Clique agora no navegador (ou em outra janela). A pergunta vem em 8 s...
+16:19:01  Clique agora no navegador (ou em outra janela). A pergunta vem em 7 s...
+16:19:02  Clique agora no navegador (ou em outra janela). A pergunta vem em 6 s...
+16:19:03  Clique agora no navegador (ou em outra janela). A pergunta vem em 5 s...
+16:19:04  Clique agora no navegador (ou em outra janela). A pergunta vem em 4 s...
+16:19:05  Clique agora no navegador (ou em outra janela). A pergunta vem em 3 s...
+16:19:06  Clique agora no navegador (ou em outra janela). A pergunta vem em 2 s...
+16:19:07  Clique agora no navegador (ou em outra janela). A pergunta vem em 1 s...
+16:19:08  Pedindo agora. A gerente pede: clique SIM (na pergunta, ou no escudo piscando na barra de tarefas).
+16:19:33  Resposta: DEU CERTO
+16:19:33  A janela do programa estava na frente quando pediu: NÃO (a pergunta deve ter piscado na barra de tarefas)
+16:19:33     passo "apagar a tarefa do Windows": deu certo — a tarefa já não existia
+16:19:33     passo "apagar a tarefa do Windows": deu certo — a tarefa já não existia
+16:19:33     passo "apagar a pasta segura": deu certo — a pasta segura já não existia
+16:19:33  --- O que foi desfeito, lido de novo por fora ---
+16:19:33  Lido no Windows: a tarefa "EditorImpressao\Prova da peca do Windows" não existe.
+16:19:34  Lido no Windows: a tarefa "EditorImpressao\Prova da peca do Windows - Nao" não existe.
+16:19:34  Lido no Windows: a pasta segura de prova não existe (C:\Program Files\EditorImpressaoProvaPastaSegura).
+16:19:34  Lido no Windows: a pasta \EditorImpressao do Agendador não existe.
+16:19:34  Não se sabe se a pasta \EditorImpressao do Agendador existia antes da prova; agora não existe.
+16:19:34  (fim)
+16:42:30  ===== 5. Programa que não existe =====
+16:42:30  (a) Programa que não existe:
+16:42:30  Resposta: FALHOU — não achei o programa a abrir com a licença
+16:42:30     (técnico: C:\Esta pasta nao existe\EditorImpressao.exe)
+16:42:30  (b) Arquivo que existe e não é programa (vai ao Windows; não deve aparecer caixa nem pergunta):
+16:42:30  Resposta: FALHOU — o Windows não sabe pedir licença para esse arquivo
+16:42:30  A janela do programa estava na frente quando pediu: sim
+16:42:30     (técnico: ShellExecuteExW erro 1155)
+16:42:30  (fim)

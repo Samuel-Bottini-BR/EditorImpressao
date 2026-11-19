@@ -1,0 +1,8 @@
+RESUMO:
+ACUSADA: T1 sem resolver o caminho inteiro  [test_a_recusa_resolve_o_caminho_inteiro_antes_de_tirar_o_prefixo]
+ACUSADA: T1 sem exigir a letra de disco depois de resolver  [test_a_recusa_resolve_o_caminho_inteiro_antes_de_tirar_o_prefixo]
+NÃO ACUSADA: T2 sem a conferência de depois da pasta do Agendador (só o GitHub prova)  [test_a_tarefa_numa_pasta_do_agendador_que_mudou_no_meio_e_apagada]
+ACUSADA: T3 o verbo sempre no singular  [test_as_frases_concordam_e_nao_levam_numero_do_windows]
+ACUSADA: T3 a conta comum com o computador na frente  [test_as_frases_concordam_e_nao_levam_numero_do_windows]
+ACUSADA: T3 Convidados fora da lista (na língua do Windows)  [test_as_frases_concordam_e_nao_levam_numero_do_windows]
+ACUSADA: T3 o número do erro de volta na frase  [test_as_frases_concordam_e_nao_levam_numero_do_windows]

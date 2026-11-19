@@ -1,0 +1,75 @@
+"""Prova de reversão da volta 2 do passo 1: as mutações novas e as 7 que passavam (relatório 2), numa cópia à parte.
+
+Reaproveita as mutações da volta 1 (`mutacoes_volta1.MUTACOES`), atualizadas para o código de agora, e acrescenta as
+da volta 2. Roda na cópia `reversao-passo1-volta2`, nunca no projeto.
+"""
+import os
+import subprocess
+import sys
+from pathlib import Path
+
+COPIA = Path(__file__).parent / "reversao-passo1-volta2"
+PY = r"d:\programas\EditorImpressao\.venv\Scripts\python.exe"
+N = "\n"
+B = chr(92)
+
+sys.path.insert(0, str(Path(__file__).parent))
+import mutacoes_volta1 as v1  # noqa: E402
+
+NOVAS = [
+    ("N1/M2 a shell32 sem guardar o erro", "core/windows.py",
+     's = self.shell32 = ctypes.WinDLL("shell32", use_last_error=True)',
+     's = self.shell32 = ctypes.WinDLL("shell32")',
+     "tests/test_windows_peca.py::test_as_bibliotecas_da_peca_guardam_o_erro_de_cada_chamada"),
+    ("N1/M2b a advapi32 sem guardar o erro", "core/windows.py",
+     'a = self.advapi32 = ctypes.WinDLL("advapi32", use_last_error=True)',
+     'a = self.advapi32 = ctypes.WinDLL("advapi32")',
+     "tests/test_windows_peca.py::test_as_bibliotecas_da_peca_guardam_o_erro_de_cada_chamada"),
+    ("N2 caminho de rede aceito", "core/windows.py",
+     "    if texto.startswith(" + '"' + B * 4 + '"' + "):" + N + "        return None",
+     "    if False:" + N + "        return None",
+     "tests/test_windows_peca.py::test_a_recusa_vale_para_o_caminho_escrito_de_outro_jeito"),
+    ("N2 o prefixo longo não tirado", "core/windows.py",
+     "            texto = texto[len(prefixo):]", "            pass",
+     "tests/test_windows_peca.py::test_a_recusa_vale_para_o_caminho_escrito_de_outro_jeito"),
+    ("N3 a pasta do Agendador sem conferir o dono", "core/windows.py",
+     "    if dono not in (SID_SISTEMA, SID_ADMINISTRADORES, SID_INSTALADOR_CONFIAVEL):" + N + '        problemas.append(f"o dono da pasta do programa no Agendador',
+     "    if False:" + N + '        problemas.append(f"o dono da pasta do programa no Agendador',
+     "tests/test_windows_peca.py::test_a_pasta_do_agendador_tem_de_ser_do_sistema_ou_dos_administradores"),
+    ("N3 criar a tarefa sem conferir a pasta antes", "core/windows.py",
+     "    if existia is not False:" + N + "        antes = conferir_pasta_de_tarefas()",
+     "    if False:" + N + "        antes = conferir_pasta_de_tarefas()",
+     "tests/test_windows_peca.py::test_a_tarefa_nao_e_criada_numa_pasta_do_agendador_que_nao_e_segura"),
+    ("A9 a pasta de troca apagada mesmo com o tempo esgotado", "core/windows.py",
+     '    return houve in ("tempo", "sem_acompanhar")', "    return False",
+     "tests/test_windows_peca.py::test_a_pasta_de_troca_fica_so_quando_o_trabalho_pode_continuar"),
+    ("A6b a pasta do Agendador apagada sem conferir depois", "core/windows.py",
+     '    codigo, tecnico = _pasta_de_tarefas_pelo_windows("apagar")' + N + "    if pasta_de_tarefas_existe() is False:",
+     '    codigo, tecnico = _pasta_de_tarefas_pelo_windows("apagar")' + N + "    if True:",
+     "tests/test_windows_peca.py::test_apagar_a_pasta_do_agendador_confere_que_sumiu"),
+    ("A1c a pergunta 3 sem ir até o fim", "janela_de_prova.py",
+     "    r = windows.pedir_licenca(passos_da_pergunta_3(apagar_a_pasta), janela=janela, programa=programa," + N + "                              ate_o_fim=True)",
+     "    r = windows.pedir_licenca(passos_da_pergunta_3(apagar_a_pasta), janela=janela, programa=programa," + N + "                              ate_o_fim=False)",
+     "tests/test_windows_janela_de_prova.py::test_a_pergunta_3_pede_ate_o_fim_e_a_pasta_do_agendador_so_se_a_prova_a_criou"),
+    ("A6 a janela nunca apagando a pasta do Agendador", "janela_de_prova.py",
+     "    return existia is False", "    return False",
+     "tests/test_windows_janela_de_prova.py::test_a_decisao_de_apagar_a_pasta_do_agendador"),
+    ("A2 a janela sem conferir a hora do resultado", "janela_de_prova.py",
+     "            if rodou.exists() and rodou.stat().st_mtime >= marco - 1:", "            if rodou.exists():",
+     "tests/test_windows_janela_de_prova.py::test_a_pergunta_1_nao_aceita_o_resultado_velho_da_tarefa"),
+    ("Achado 6 a frase dizendo apagada sem ter sido criada", "janela_de_prova.py",
+     '            return f"{nome} não existia antes da prova e não existe agora: o Agendador está como estava."',
+     '            return f"{nome} não existia antes da prova: foi apagada, o Agendador ficou como estava."',
+     "tests/test_windows_janela_de_prova.py::test_a_frase_da_pasta_do_agendador_nunca_diz_apagada_sem_ter_sido_criada"),
+]
+
+
+def main() -> int:
+    """Roda as mutações da volta 1 (as que ainda casam com o código) e as da volta 2 na cópia da volta 2."""
+    v1.COPIA = COPIA
+    v1.MUTACOES = v1.MUTACOES + NOVAS
+    return v1.main()
+
+
+if __name__ == "__main__":
+    sys.exit(main())
