@@ -759,7 +759,7 @@ conferência antes do commit (não ligada) e o pacote do passo 1, montado pelo p
 
 ## Commit
 
-Último commit de código do trabalho: 7858d11f (D-802; depois dele, só este ONDE-PAREI mudou). A rodada do GitHub para ele fica com a gerente (pedido de 19/11: "Não rode a suíte inteira: a gerente roda").
+Último commit de código do trabalho: ad513dfc (o script do juiz que não deixa a cópia rasa; antes, 7858d11f, D-802; depois dele, só este ONDE-PAREI mudou). A rodada do GitHub para ele fica com a gerente (pedido de 19/11: "Não rode a suíte inteira: a gerente roda").
 
 ## Perguntas do Windows que o Samuel vê
 
