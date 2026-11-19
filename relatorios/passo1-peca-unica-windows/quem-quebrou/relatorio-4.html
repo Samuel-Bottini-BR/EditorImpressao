@@ -1,0 +1,254 @@
+<!doctype html>
+<html lang="pt-BR">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Passo 1: quarta conferência de quem tentou quebrar, com a prova à vista</title>
+<style>
+:root { color-scheme: light dark; }
+* { box-sizing: border-box; }
+body {
+  font: 17px/1.65 "Segoe UI", system-ui, sans-serif;
+  max-width: 46rem; margin: 0 auto; padding: 2.5rem 1.5rem 6rem;
+  color: #1c1c1e; background: #fdfdfc;
+}
+h1 { font-size: 2rem; line-height: 1.2; margin: 0 0 .3em; letter-spacing: -.02em; }
+h2 { font-size: 1.35rem; margin: 2.4em 0 .6em; padding-top: .8em;
+     border-top: 1px solid #e6e4e0; letter-spacing: -.01em; }
+h3 { font-size: 1.1rem; margin: 1.8em 0 .4em; }
+h1 + p, h2 + p { margin-top: .4em; }
+p, li { margin: 0 0 .9em; }
+ul, ol { padding-left: 1.3em; }
+strong { font-weight: 640; }
+code {
+  font: .88em ui-monospace, "Cascadia Code", Consolas, monospace;
+  background: #f1efec; padding: .12em .35em; border-radius: 4px;
+}
+pre {
+  background: #f1efec; padding: 1em 1.1em; border-radius: 8px;
+  overflow-x: auto; line-height: 1.5;
+}
+pre code { background: none; padding: 0; }
+blockquote {
+  margin: 1.2em 0; padding: .1em 0 .1em 1.1em;
+  border-left: 3px solid #c9c5be; color: #55524d;
+}
+table {
+  border-collapse: collapse; width: 100%; margin: 1.2em 0;
+  font-size: .95rem; display: block; overflow-x: auto;
+}
+th, td { padding: .5em .8em; text-align: left; border-bottom: 1px solid #e6e4e0; }
+th { font-weight: 620; background: #f7f5f2; white-space: nowrap; }
+tr:last-child td { border-bottom: none; }
+img { max-width: 100%; height: auto; border-radius: 6px; margin: 1em 0;
+      border: 1px solid #e6e4e0; }
+hr { border: none; border-top: 1px solid #e6e4e0; margin: 2.5em 0; }
+.rodape { margin-top: 4em; padding-top: 1.2em; border-top: 1px solid #e6e4e0;
+          font-size: .85rem; color: #86827c; }
+@media (prefers-color-scheme: dark) {
+  body { color: #e8e6e3; background: #1a1917; }
+  h2 { border-top-color: #35332f; }
+  code, pre, th { background: #262421; }
+  th, td { border-bottom-color: #35332f; }
+  blockquote { border-left-color: #4a4741; color: #b0aca6; }
+  img { border-color: #35332f; }
+  .rodape { border-top-color: #35332f; color: #7d7973; }
+}
+@media print {
+  body { max-width: none; padding: 0; color: #000; background: #fff; }
+  h2 { page-break-after: avoid; }
+  table, img { page-break-inside: avoid; }
+}
+</style>
+</head>
+<body>
+<h1>Passo 1 do plano da parte do Windows: quarta conferência de quem tentou quebrar, com a prova à vista (19/11/2026)</h1>
+<p>Quarta volta do mesmo verificador, que não escreveu este código. Conferi o registro da sessão A linha por linha
+contra o que o plano pede, e conferi os consertos de T1 a T3 (<code>c87f7bfe</code>). Não confiei no resumo da gerente. Não mexi
+no código, não pedi licença ao Windows e não abri janela na tela do Samuel.</p>
+<h2>Pedido</h2>
+<ul>
+<li>Papel: verificador</li>
+<li>Commit de partida: 4f9fcc4e</li>
+<li>Ramo: passo1-peca-unica-windows</li>
+</ul>
+<h2>Arquivos que vou mexer</h2>
+<ul>
+<li><code>relatorios/passo1-peca-unica-windows/quem-quebrou/</code></li>
+</ul>
+<h2>Veredito</h2>
+<p><strong>"PRONTO PARA CONFERIR"</strong>, com duas condições que a gerente cumpre antes de levar ao Samuel:</p>
+<ol>
+<li><strong>Pôr no git o registro e os dois prints da sessão.</strong> Hoje eles estão no worktree, mas fora do git:
+   <code>relatorios/janela-de-prova/registro-2026-11-19-161111.txt</code> e os dois <code>prints/sessao-a-*.png</code>. Eu não os pus,
+   porque não estão na minha lista de arquivos.</li>
+<li><strong>Confirmar com o Samuel uma coisa que só o olho dele viu:</strong> que na prova 5 (b) não apareceu caixa do Windows. O
+   registro mostra a frase em português, mas não prova que não houve caixa.</li>
+</ol>
+<p>Escrevo nos termos da D-798:
+- quem escreve é quem tentou quebrar, e não construiu nada deste passo;
+- todos os achados das quatro voltas têm destino;
+- houve a prova de verdade: hoje, à vista, com registro e prints.</p>
+<p>Isto não é aprovação: só o Samuel aprova.</p>
+<h2>A prova de verdade</h2>
+<ul>
+<li><strong>Quando:</strong> 19/11/2026, das 16:12:43 às 16:19:34, pelos horários do registro. A gerente diz que começou às 16:11.</li>
+<li><strong>Onde e como:</strong> à vista, na tela do Samuel. A janela de prova abriu
+  <code>C:\EditorImpressaoProva\EditorImpressao\EditorImpressao.exe</code>, montado do commit <code>c87f7bfe</code>.</li>
+<li>Depois de <code>c87f7bfe</code> só mudou o formulário: conferi com <code>git diff --stat</code>.</li>
+<li>A rodada 44597542145 do GitHub testou esse commit (<code>TESTADO_SHA: c87f7bfe...</code>) e deu "success".</li>
+<li>O print 1 mostra a janela de prova com esse programa e com "Esta conta tem a licença de administrador agora:
+    não".</li>
+<li><strong>Registro:</strong> <code>relatorios/janela-de-prova/registro-2026-11-19-161111.txt</code>, no worktree <code>passo1</code>.</li>
+<li><strong>Prints, abertos e conferidos por mim:</strong></li>
+<li><code>prints/sessao-a-pergunta-1-resultado-print-do-samuel.png</code>: o fim da pergunta 1 na janela de prova;</li>
+<li><code>prints/sessao-a-pergunta-com-navegador-na-frente-print-do-samuel.png</code>: o navegador na frente, e a pergunta só
+    na barra de tarefas, como "EditorImpressao.exe solicit...".</li>
+</ul>
+<h2>O registro contra o que o plano pede da sessão A</h2>
+<p>Cada linha diz o que o plano pede, o que o registro mostra, e se foi conferido por máquina (o registro) ou por olho
+(o Samuel).</p>
+<table>
+<thead>
+<tr>
+<th>O plano pede</th>
+<th>O registro mostra</th>
+<th>Situação</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>Lançar solto: "rodou às HH:MM:SS", também depois de quem lançou fechar; 0 perguntas</td>
+<td>16:12:50: "o script solto rodou às 16:12:50; quem o lançou (processo 6992) já tinha fechado: sim"</td>
+<td>cumprido (máquina)</td>
+</tr>
+<tr>
+<td>Pergunta 1 mostra "Editor de Impressão"</td>
+<td>Mostrou "EditorImpressao.exe" (print 2 e palavras dele)</td>
+<td>não cumprido como o plano dizia. O plano manda parar, e parou: o Samuel decidiu ficar com o nome do arquivo (D-805, "a")</td>
+</tr>
+<tr>
+<td>No mesmo "Sim", a pasta segura nasce com as licenças de fábrica</td>
+<td>16:13:23: "a pasta segura de prova CONFERE", dono Administradores; só o sistema, os Administradores e o Instalador Confiável mudam; Usuários e aplicativos da loja leem</td>
+<td>cumprido (máquina)</td>
+</tr>
+<tr>
+<td>Uma tarefa de prova roda como o sistema</td>
+<td>A tarefa diz "roda como o sistema", e o script dela escreveu "rodou às 16:13:25 como AUTORIDADE NT\SISTEMA (S-1-5-18)"</td>
+<td>cumprido (máquina)</td>
+</tr>
+<tr>
+<td>A conta comum lê a pasta e não grava</td>
+<td>"Esta conta lê a pasta: sim"; "tentou gravar ... e o Windows não deixou: certo"; o print mostra que a janela rodava sem a licença</td>
+<td>cumprido (máquina)</td>
+</tr>
+<tr>
+<td>A senha de prova com acento chega igual</td>
+<td>"IGUAL (a soma confere; o segredo não é mostrado)"</td>
+<td>cumprido (máquina)</td>
+</tr>
+<tr>
+<td>O texto com acento chega igual no script</td>
+<td>"'Ação, ÊXITO, coração, € 10' — igual"</td>
+<td>cumprido (máquina)</td>
+</tr>
+<tr>
+<td>Pergunta 2, "Não": "você disse Não; nada mudou"</td>
+<td>16:16:29: "DISSE NÃO" (o Windows deu o erro 1223); lido de novo, a tarefa "- Nao" não existe</td>
+<td>cumprido (máquina)</td>
+</tr>
+<tr>
+<td>Pergunta 3 com o navegador na frente: vem para o meio da tela</td>
+<td>1ª rodada: "A janela do programa estava na frente: sim" (o navegador não estava na frente de verdade). 2ª rodada: "NÃO", e a pergunta só piscou na barra de tarefas (print 2)</td>
+<td>não cumprido, como a documentação previa (risco 1). O plano manda parar, e parou: o Samuel decidiu que a licença é pedida no instante do clique, no passo 3 (D-806)</td>
+</tr>
+<tr>
+<td>O "Sim" da pergunta 3 apaga a tarefa e a pasta, e a leitura diz "não existe"</td>
+<td>1ª rodada, 16:17:31: os 4 passos "deu certo"; lido de novo: as duas tarefas, a pasta segura e a pasta do Agendador não existem; "o Agendador está como estava"</td>
+<td>cumprido (máquina)</td>
+</tr>
+<tr>
+<td>Programa que não existe: frase em português, sem a caixa crua do Windows</td>
+<td>(a) "não achei o programa a abrir com a licença". (b) "o Windows não sabe pedir licença para esse arquivo" (o Windows deu o erro 1155)</td>
+<td>a frase está cumprida (máquina). Que não apareceu caixa é coisa do olho do Samuel e está a confirmar (condição 2)</td>
+</tr>
+<tr>
+<td>A resposta do Windows com "ÊXITO" certo</td>
+<td>Prova 6, 16:14:41: "ÊXITO: tentativa de executar a tarefa agendada ..."</td>
+<td>cumprido (máquina)</td>
+</tr>
+<tr>
+<td>3 perguntas do Windows, 25 a 35 min</td>
+<td><strong>4 perguntas</strong> (1, 2, 3 e a repetição da 3), em 7 minutos</td>
+<td>a repetição foi de propósito, para o caso do navegador; o Samuel estava presente</td>
+</tr>
+</tbody>
+</table>
+<p><strong>Cada resposta contra o que a peça diz:</strong>
+- Nenhum "Não" e nenhuma falha viraram "deu certo". O 1223 deu "disse Não"; o 1155 deu "falhou" em português.
+- Os quatro "deu certo" foram lidos de novo por fora e conferem: a pasta, a tarefa, a licença e o "não existe".
+- A licença que o Windows deu à tarefa é
+  <code>D:(A;;FA;;;BA)(A;;FA;;;SY)(A;;0x1200a9;;;AU)(A;ID;0x1f019f;;;BA)(A;ID;0x1f019f;;;SY)(A;ID;FA;;;BA)(A;;FR;;;SY)</code>.
+  - É o que eu tinha previsto na volta 2 pelas tarefas da raiz.
+  - Os usuários autenticados ficam só com ler e mandar rodar, e foi assim que a conta comum mandou a tarefa rodar
+    ("ÊXITO").
+  - A regra da peça aceitou essa licença.</p>
+<h2>A linha da segunda rodada da prova 4</h2>
+<p>A linha: "Não se sabe se a pasta \EditorImpressao do Agendador existia antes da prova; agora não existe".</p>
+<p><strong>É aceitável. Não é defeito.</strong>
+- A janela anota o estado de antes na pergunta 1 e apaga essa anotação quando a pergunta 3 desfaz tudo com sucesso.
+  Foi o que aconteceu às 16:17:32.
+- A segunda rodada veio sem uma nova pergunta 1, então a janela não tinha como saber o estado de antes. Ela fez a
+  escolha segura: não pede para apagar a pasta do Agendador sem saber se a prova a criou.
+- O Agendador terminou como começou, comparando com o que a primeira rodada leu às 16:13:16 ("não existe"). A D-722
+  está cumprida.
+- A janela não precisa lembrar entre uma rodada e outra. Lembrar depois de desfazer tudo poderia, numa sessão
+  seguinte, levar a apagar uma pasta que outra coisa criou (só se vazia, mas ainda assim).
+- Melhoria de texto, opcional, que não impede nada: nesse caso a frase poderia dizer "a prova anterior já desfez tudo;
+  nada para apagar". Fica como ideia; não é conserto pedido.</p>
+<h2>Os consertos de T1 a T3</h2>
+<ul>
+<li><strong>T1, consertado.</strong> O caminho é resolvido inteiro antes de o prefixo sair. Conferi com a mesma função, sem rodar
+  nada: <code>\\?\GLOBALROOT\...</code> e <code>\\?\Volume{...}\...</code> agora são recusados. A prova de reversão dele acusa.</li>
+<li><strong>T2.</strong> A conferência de depois tem teste, mas ele só roda no GitHub (precisa da licença). Destino aceito: é o
+  combinado para o que só roda com a licença.</li>
+<li><strong>T3, consertado.</strong> A concordância, a conta sem o nome do computador, Convidados na lista, e o número do erro fora da
+  frase. A prova de reversão dele acusa as quatro.</li>
+<li><strong>No PC, <code>tests/test_windows_peca.py</code>:</strong></li>
+<li>Na primeira vez, 1 teste falhou, 50 passaram e 2 foram pulados, em 4 min 43 s. O PC estava lento, e a saída que eu guardei não diz qual teste foi.</li>
+<li>Na segunda vez, logo depois: 51 passaram e 2 foram pulados, em 20 s.</li>
+<li><strong>Ressalva:</strong> pode haver um teste da peça que falha quando o PC está carregado (ele depende de tempo). A gerente olha isso na rodada inteira no PC, antes de juntar.</li>
+</ul>
+<h2>O que fica no PC do Samuel (D-722)</h2>
+<ul>
+<li>Desfeito e lido de novo: a tarefa de prova, a pasta segura de prova em Arquivos de Programas e a pasta do
+  Agendador.</li>
+<li><strong>Fica, e não é da peça:</strong> a pasta do programa montado, <code>C:\EditorImpressaoProva\</code>. Ela está fora do projeto, então
+  só sai com o "sim" do Samuel (CLAUDE.md §10.9). A gerente pergunta a ele.</li>
+</ul>
+<h2>Destino de todos os achados</h2>
+<ul>
+<li><strong>Relatório 1, achados 1 a 17:</strong> consertados nas voltas 1 a 3. O 15 é cuidado para o pacote do passo 3. O 16 é
+  observação, e fica.</li>
+<li><strong>Relatório 2:</strong></li>
+<li>N1, N3 e N4: consertados;</li>
+<li>N2: consertado, menos a parte (b), o apelido do que tem "_" no nome, que ficou com a gerente, no porteiro;</li>
+<li>o programa de fora do Windows (N2c): decisão de cada passo, escrita na peça.</li>
+<li><strong>Relatório 3:</strong> T1 e T3 consertados. T2 com teste só no GitHub (aceito).</li>
+<li><strong>Sessão A:</strong></li>
+<li>o nome na pergunta: decidido pelo Samuel (D-805);</li>
+<li>o navegador na frente: decidido pelo Samuel (D-806), e vale para o passo 3.</li>
+</ul>
+<h2>Para a gerente</h2>
+<ul>
+<li>Fazer as duas condições do veredito.</li>
+<li>Levar ao pacote do passo 3:</li>
+<li>o achado 15: nada que o ajudante roda como o sistema vem de pasta que a conta comum grava;</li>
+<li>a D-806: a licença é pedida no instante do clique;</li>
+<li>o apelido do que tem "_" no nome (N2b), no porteiro.</li>
+<li>No rascunho não deixei nada novo nesta volta. Os scripts de leitura das voltas anteriores continuam lá, listados nos
+  relatórios 1 a 3. Nada mudou no Windows.</li>
+</ul>
+<p class="rodape">Editor de Impressão &middot; gerado em 19/11/2026 às 16:34</p>
+</body>
+</html>
