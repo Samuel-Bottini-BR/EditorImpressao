@@ -382,3 +382,29 @@ quem tenta quebrar**.
 
 ---
 
+---
+
+## Passo 1: voltas 3 e 4, a prova à vista e a junção (gerente, 19/11/2026)
+
+Acrescentado pela gerente ao juntar o passo 1 (D-803). Mesmos campos, em tabela curta; a prova está na fonte de cada
+linha.
+
+| Código | O que foi | Família | Quem achou | Destino | Fonte |
+|---|---|---|---|---|---|
+| P1-v3-T1 | caminhos com `\?\GLOBALROOT\` e `\?\Volume{...}\` passavam pela recusa da peça e chegavam a programa do Windows | F2 | quebra v3 | consertado em `c87f7bfe` | `quem-quebrou/relatorio-3.md`, T1 |
+| P1-v3-T2 | a conferência de depois da pasta do Agendador não tinha teste | F3 | quebra v3 | consertado em `c87f7bfe` (teste só no GitHub) | idem, T2 |
+| P1-v3-T3 | frases da peça com "Todos pode", o nome do computador na conta e números de erro do Windows ("0x…") | F6 | quebra v3 | consertado em `c87f7bfe` | idem, T3 |
+| P1-gh-5 | o teste da gravura à mão (`test_d659_g...[original]`) falhou uma vez no GitHub e passou na repetição (não é deste passo) | F4 | GitHub (44587786297) | Lista de bugs (instabilidade) | ONDE-PAREI do passo 1, "Ideias e bugs" |
+| P1-pc-1 | o teste de proteção do porteiro falhou uma vez no PC (busca a versão de teste na internet) e passou ao rodar de novo | F4 | rodada inteira no PC | em observação | gerente, 19/11 |
+| P1-ger-1 (grave) | a pasta das redes neurais do repositório do PC (`modelos/`) estava vazia desde 18/11 por volta das 14h: o agente do estudo "publicar rápido" tirou um atalho (junção) para ela com um comando que apagou o conteúdo, e escreveu que o original "continua inteiro" sem conferir | F9 (e F5) | a gerente, ao montar o programa da sessão A | restaurado do ramo `dados-de-teste` em 19/11 (15 arquivos, 242 MB); atalhos da gerente tirados com `rmdir`, que só tira o atalho, conferindo antes e depois | `relatorios/publicar-rapido-2026-11-18/ONDE-PAREI.md`, "Disco" (ramo `publicar-rapido-2026-11-18`) |
+| P1-ger-2 (grave) | a rodada inteira dos testes no PC, junto com um jogo aberto, encheu a memória; a tela do Samuel piscou preta e verde e o serviço da Predator caiu | F9 | o Samuel | D-807 (conjunto inteiro no PC só no fim); a rodada passou a ter vigia de memória | Livro, D-807 |
+| P1-ger-3 | montar o programa numa cópia de agente falhava duas vezes: a cópia não tem os modelos nem o motor do Kraken, e o comando que o agente deixou só previa os modelos | F4 | a gerente, na montagem da sessão A | contornado com atalhos para as pastas do PC, tirados depois; vai como foco do passo 2 (publicar) | `scratchpad/passo1/montar.log` (gerente) |
+
+**Não entram (combinado do plano, sem furo):** o nome "EditorImpressao.exe" na pergunta do Windows (risco 2 do plano;
+virou a D-805) e a pergunta que só pisca com outra janela na frente (risco 1; virou a D-806). O plano mandava parar e
+levar ao Samuel, e foi o que aconteceu.
+
+**Contas depois desta seção:** F4 passa a 8 erros (P0 e P1) e F9 a 4 erros (P0 e P1), as duas com dois graves fora
+das voltas de quem quebra. F9 já se repetia; com P1-ger-1 ela tem o mesmo desenho do `licoes.md` D2 (pasta esvaziada
+por uma junção): é a primeira das seis perguntas a levar ao Samuel.
+
