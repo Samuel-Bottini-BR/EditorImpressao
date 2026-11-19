@@ -23,8 +23,8 @@ o formulário da entrega (D-792), conferido pelo próprio programa:
 
 - Feito: o pacote, o porteiro (24 conferências), a lista de exceções (44 lugares, proposta), o formulário, o gancho
   (não ligado), o pacote do passo 1 e o texto para o Samuel. Testes novos passam no PC, um arquivo por vez.
-- Falta: o resultado das rodadas do GitHub (44449552916, de um commit do meio; 44450557071, do último commit de
-  código, `1d381001`) e conferir este formulário com a segunda.
+- As duas rodadas do GitHub passaram (ver "Testes"). O formulário foi conferido pelo próprio programa, com o GitHub,
+  na etapa "antes de ir ao agente que tenta quebrar". Entregue à gerente; o próximo é quem tenta quebrar.
 
 ## Decisões que esta tarefa precisa cumprir
 
@@ -142,8 +142,8 @@ o formulário da entrega (D-792), conferido pelo próprio programa:
 - **Quebra de linha do Windows no gancho:** com `core.autocrlf=true` (a configuração do Git deste PC, lida com
   `git config --show-origin`), o git troca a quebra de linha ao tirar o arquivo para a cópia
   (https://git-scm.com/docs/git-config, entrada `core.autocrlf`), e o gancho sai com as quebras do Windows. Testado de
-  verdade em 19/11: o `sh` do Git para Windows 2.53 roda um script assim sem erro (e os testes do gancho rodam com a
-  cópia que o git tirou).
+  verdade em 19/11: o `sh` do Git para Windows 2.53 roda um script assim sem erro; no GitHub, os testes do gancho rodam
+  com a cópia que o git tirou (com as quebras do Windows) e passaram.
 - **A rodada do GitHub (K21):** lida em 19/11 na rodada 44202459161 (https://github.com/Samuel-Bottini-BR/EditorImpressao/actions/runs/44202459161):
   o commit testado só aparece no registro do passo "Trocar o codigo" (`.github/scripts/trocar_codigo.sh:31`, a linha
   "codigo trocado pelo de <ramo> (<commit>)"); `gh api .../jobs/<id>/logs` recusa ("the response contains terminal
@@ -207,7 +207,10 @@ conferência antes do commit (não ligada) e o pacote do passo 1, montado pelo p
   `tests/test_conferencias_antes_do_commit.py` 8.
 - Mutação (desfazer cada correção do esboço numa cópia e ver o teste dela falhar): correção 1, 2 testes falham;
   correção 2, 1 falha; correção 3, 1 falha.
-- GitHub: rodada (a preencher com a rodada final).
+- GitHub, rodada 44450557071 (o último commit de código, 1d381001): passou inteira. 249 arquivos de teste, 4092
+  passaram, 0 falharam, 147 pulados (entre eles o teste do porteiro que espera o "sim" do Samuel, com o motivo
+  escrito); os botões e os prints da janela real também passaram. Antes, a rodada 44449552916 (de um commit do meio)
+  também passou inteira.
 
 ## Caminho e função
 
@@ -276,7 +279,7 @@ sim. Nada do programa muda com isso, e nada do que já funciona muda.
 
 ## Commit
 
-Último commit do trabalho: (a preencher no fim).
+Último commit de código do trabalho: 1d381001 (depois dele, só este ONDE-PAREI mudou).
 
 ## Perguntas do Windows que o Samuel vê
 
