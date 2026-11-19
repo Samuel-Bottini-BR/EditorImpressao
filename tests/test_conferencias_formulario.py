@@ -66,6 +66,7 @@ def entrega(tmp_path):
     r.escrever("docs/plano/DECISOES.md", LIVRO)
     r.escrever("tests/test_velho.py", TESTE_VELHO)
     base = r.commit("partida")
+    r.enviar("obra-2026-10-26")      # a versão de teste no "GitHub" de prova: o Livro que vale é o dela (achado N1)
     r.escrever("tests/test_x.py", TESTE_NOVO)
     commit = r.commit("o teste novo")
     return r, base, commit

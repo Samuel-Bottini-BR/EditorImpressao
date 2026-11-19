@@ -27,7 +27,8 @@ ARQUIVOS_DE_FORA_D800 = {"ui/automatico.py", "teste_velocidade.py", "avaliar.py"
 
 def lista_de(itens: list[dict], situacao: str = "valendo") -> excecoes.Lista:
     """Uma lista de exceções feita aqui, para provar a comparação."""
-    sim = {"decisao": "D-791", "em": "19/11/2026", "palavras": "sim"} if situacao == "valendo" else None
+    sim = {"decisao": "D-791", "em": "19/11/2026", "palavras": "o que já está errado no código"} if (
+        situacao == "valendo") else None
     return excecoes.Lista(situacao, sim, itens, {"situacao": situacao, "sim_do_samuel": sim, "itens": itens})
 
 
@@ -76,40 +77,68 @@ def test_o_repositorio_so_tem_os_erros_que_a_lista_deixa():
     lista = excecoes.ler(RAIZ)
     if not lista.vale:
         pytest.skip("a lista de exceções espera o 'sim' do Samuel (D-791); o porteiro ainda não barra o repositório")
+    from regras_dos_agentes.livro import Livro
+
+    # O "sim" é conferido no Livro da versão de teste, no GitHub (achado N1): o do ramo o agente pode mudar.
+    problema = excecoes.problema_do_sim(lista.sim_do_samuel, Livro.da_versao_de_teste(RAIZ))
+    assert problema is None, f"a lista vale com um \"sim\" que o Livro da versão de teste não confirma: {problema}"
     _, encontrados = porteiro.achados_do_repositorio(RAIZ)
     comparacao = excecoes.comparar(encontrados, lista)
     assert comparacao.passa, "o porteiro barrou:\n" + "\n".join(comparacao.explicar())
 
 
-def test_a_lista_valendo_sem_o_sim_do_samuel_conferido_no_livro_nao_vale():
-    """"valendo" sem o "sim" do Samuel, ou com um "sim" inventado, não abre; com o "sim" que está no Livro, abre.
+LIVRO_DE_PROVA = ('| D-791 | 18/11/2026 | Chat: "o que já está errado no código fica numa lista" · "sim" | a lista de exceções do porteiro | x | x | x | x | x |\n'
+                  '| D-605 | 03/11/2026 | "A partir de agora, nenhuma função nova" | o novo não estraga | x | x | x | x | x |\n')
 
-    Monta a lista com dados próprios (não com o arquivo do repositório): assim vale nos dois estados da lista, antes e
-    depois do "sim" (achado 1 de quem tentou quebrar, 19/11: o teste antigo trocava o texto do arquivo e ficava
-    vermelho no dia em que a lista passasse a valer).
-    """
+
+def test_a_lista_valendo_sem_o_sim_do_samuel_nao_abre():
+    """"valendo" sem o "sim" (ou com ele pela metade) não abre a lista. Monta a lista com dados próprios: vale nos
+    dois estados da lista, antes e depois do "sim" (achado 1 da primeira volta de quem quebrou)."""
     import json
 
     base = {"situacao": "valendo", "itens": [item("atualizacao.py", "K02", "x")]}
-    for sim in (None, {"em": "19/11/2026", "palavras": "sim"}, {"decisao": "D-791", "em": "19/11/2026",
-                                                                 "palavras": "palavras que ele nunca disse"},
-                {"decisao": "D-999", "em": "19/11/2026", "palavras": "sim"}):
+    for sim in (None, {"em": "19/11/2026", "palavras": "sim"}):
         with pytest.raises(excecoes.ListaErrada):
             excecoes.ler(RAIZ, json.dumps(dict(base, sim_do_samuel=sim)))
-    certo = {"decisao": "D-791", "em": "19/11/2026", "palavras": "Então anoto a lista de exceções como combinamos?"}
-    assert excecoes.ler(RAIZ, json.dumps(dict(base, sim_do_samuel=certo))).vale
     assert not excecoes.ler(RAIZ, json.dumps(dict(base, situacao="proposta", sim_do_samuel=None))).vale
 
 
-def test_item_novo_so_entra_com_o_sim_proprio_conferido_no_livro():
-    """D-791, "nada entra nela sem o 'sim' dele": item novo sem o "sim" próprio (conferido no Livro) é acusado."""
+@pytest.mark.parametrize("sim", [
+    {"decisao": "D-791", "em": "19/11", "palavras": "sim"},             # o ataque de quem quebrou (achado N1)
+    {"decisao": "D-791", "em": "19/11", "palavras": "a"},
+    {"decisao": "D-791", "em": "19/11", "palavras": "a lista de exceções do porteiro"},   # está na linha, mas não
+    {"decisao": "D-605", "em": "19/11", "palavras": "A partir de agora, nenhuma função nova"},   # não trata da lista
+    {"decisao": "D-999", "em": "19/11", "palavras": "o que já está errado no código"},
+])
+def test_o_sim_forjado_nao_passa(sim):
+    """Achado N1 da segunda volta de quem quebrou (19/11): `"palavras": "sim"` (ou "a") passava, porque qualquer pedaço
+    da linha da decisão valia. Agora o "sim" cita uma decisão que trata da lista de exceções e traz um trecho literal,
+    de ao menos 12 letras, das palavras do Samuel daquela decisão (no Livro da versão de teste)."""
     from regras_dos_agentes.livro import Livro
 
-    livro = Livro.do_repositorio(RAIZ)
+    assert excecoes.problema_do_sim(sim, Livro(LIVRO_DE_PROVA))
+
+
+def test_o_sim_de_verdade_passa():
+    """O "sim" com um trecho literal das palavras do Samuel numa decisão sobre a lista passa."""
+    from regras_dos_agentes.livro import Livro
+
+    sim = {"decisao": "D-791", "em": "19/11/2026", "palavras": "o que já está errado no código"}
+    assert excecoes.problema_do_sim(sim, Livro(LIVRO_DE_PROVA)) is None
+
+
+def test_item_novo_so_entra_com_o_sim_proprio_conferido_no_livro():
+    """D-791, "nada entra nela sem o 'sim' dele": item novo sem o "sim" próprio, ou com o "sim" forjado, é acusado."""
+    from regras_dos_agentes.livro import Livro
+
+    livro = Livro(LIVRO_DE_PROVA)
     antes = lista_de([item("a.py", "K01", "x")])
     sem_sim = lista_de([item("a.py", "K01", "x"), item("b.py", "K01", "y")])
     assert [i["arquivo"] for i in excecoes.acrescentados_sem_sim(antes, sem_sim, livro)] == ["b.py"]
-    com_sim = dict(item("b.py", "K01", "y"), sim={"decisao": "D-791", "em": "19/11/2026", "palavras": "sim"})
+    forjado = dict(item("b.py", "K01", "y"), sim={"decisao": "D-791", "em": "19/11/2026", "palavras": "sim"})
+    assert len(excecoes.acrescentados_sem_sim(antes, lista_de([item("a.py", "K01", "x"), forjado]), livro)) == 1
+    com_sim = dict(item("b.py", "K01", "y"), sim={"decisao": "D-791", "em": "19/11/2026",
+                                                 "palavras": "o que já está errado no código"})
     assert excecoes.acrescentados_sem_sim(antes, lista_de([item("a.py", "K01", "x"), com_sim]), livro) == []
 
 
@@ -137,7 +166,7 @@ def test_lugar_consertado_tem_de_sair_da_lista():
     """A lista só diminui: o lugar que o código já não tem faz o porteiro reclamar até sair da lista."""
     hoje = achados({"atualizacao.py": DEFEITO_1})
     lista = lista_de([item(a.arquivo, a.conferencia, a.texto) for a in hoje])
-    consertado = DEFEITO_1.replace("subprocess.DETACHED_PROCESS", "subprocess.CREATE_NEW_PROCESS_GROUP")
+    consertado = DEFEITO_1.replace(", creationflags=subprocess.DETACHED_PROCESS", "")
     r = excecoes.comparar(achados({"atualizacao.py": consertado}), lista)
     assert not r.novos and len(r.consertados) == 2 and not r.passa
     nova = excecoes.diminuir(lista, achados({"atualizacao.py": consertado}))

@@ -3,7 +3,7 @@
  "situacao": "proposta",
  "sim_do_samuel": null,
  "gerada_em": "2026-11-19",
- "commit_lido": "08ecdab5fff48b55855f5684e4cf32a22c2a80dc",
+ "commit_lido": "dc0a5fc9393c96495677dbc37eccb9866b6512e1",
  "itens": [
   {
    "arquivo": "atualizacao.py",
@@ -86,6 +86,34 @@
   {
    "arquivo": "atualizacao.py",
    "conferencia": "K01",
+   "texto": "creationflags=getattr(subprocess, \"CREATE_NO_WINDOW\", 0)",
+   "quantas": 2,
+   "linhas_quando_gerada": [
+    673,
+    967
+   ],
+   "funcao": "_aplicar_pacote_quando_sair, _lancar_escondido",
+   "data": "2026-11-19",
+   "passo": "3",
+   "motivo": "o atualizador passa a conversar com o Windows só pela peça única"
+  },
+  {
+   "arquivo": "atualizacao.py",
+   "conferencia": "K01",
+   "texto": "creationflags=getattr(subprocess, \"CREATE_NO_WINDOW\", 0))",
+   "quantas": 2,
+   "linhas_quando_gerada": [
+    634,
+    790
+   ],
+   "funcao": "_rodar, rodar_teste_rapido",
+   "data": "2026-11-19",
+   "passo": "3",
+   "motivo": "o atualizador passa a conversar com o Windows só pela peça única"
+  },
+  {
+   "arquivo": "atualizacao.py",
+   "conferencia": "K01",
    "texto": "f\" $p = Start-Process -FilePath {_aspas_do_powershell(str(exe))}\"",
    "quantas": 1,
    "linhas_quando_gerada": [
@@ -138,6 +166,19 @@
   {
    "arquivo": "atualizacao.py",
    "conferencia": "K01",
+   "texto": "f\"Wait-Process -Id {int(pid)} -Timeout 120\",",
+   "quantas": 1,
+   "linhas_quando_gerada": [
+    920
+   ],
+   "funcao": "script_de_trocar_e_reabrir",
+   "data": "2026-11-19",
+   "passo": "3",
+   "motivo": "o atualizador passa a conversar com o Windows só pela peça única"
+  },
+  {
+   "arquivo": "atualizacao.py",
+   "conferencia": "K01",
    "texto": "for vista in (winreg.KEY_WOW64_64KEY, winreg.KEY_WOW64_32KEY):",
    "quantas": 2,
    "linhas_quando_gerada": [
@@ -145,6 +186,58 @@
     1260
    ],
    "funcao": "_ler_chave_do_inno, _ler_versao_do_visual_c",
+   "data": "2026-11-19",
+   "passo": "3",
+   "motivo": "o atualizador passa a conversar com o Windows só pela peça única"
+  },
+  {
+   "arquivo": "atualizacao.py",
+   "conferencia": "K01",
+   "texto": "handle = kernel32.OpenMutexW(0x00100000, False, nome)",
+   "quantas": 1,
+   "linhas_quando_gerada": [
+    762
+   ],
+   "funcao": "_marca_existe",
+   "data": "2026-11-19",
+   "passo": "3",
+   "motivo": "o atualizador passa a conversar com o Windows só pela peça única"
+  },
+  {
+   "arquivo": "atualizacao.py",
+   "conferencia": "K01",
+   "texto": "if _MARCA is not None or sys.platform != \"win32\":",
+   "quantas": 1,
+   "linhas_quando_gerada": [
+    748
+   ],
+   "funcao": "marcar_programa_aberto",
+   "data": "2026-11-19",
+   "passo": "3",
+   "motivo": "o atualizador passa a conversar com o Windows só pela peça única"
+  },
+  {
+   "arquivo": "atualizacao.py",
+   "conferencia": "K01",
+   "texto": "if advapi32.GetNamedSecurityInfoW(wintypes.LPCWSTR(str(caminho)), 1, 1, ctypes.byref(dono),",
+   "quantas": 1,
+   "linhas_quando_gerada": [
+    438
+   ],
+   "funcao": "_dono_do_arquivo",
+   "data": "2026-11-19",
+   "passo": "3",
+   "motivo": "o atualizador passa a conversar com o Windows só pela peça única"
+  },
+  {
+   "arquivo": "atualizacao.py",
+   "conferencia": "K01",
+   "texto": "if not advapi32.ConvertSidToStringSidW(dono, ctypes.byref(texto)):",
+   "quantas": 1,
+   "linhas_quando_gerada": [
+    443
+   ],
+   "funcao": "_dono_do_arquivo",
    "data": "2026-11-19",
    "passo": "3",
    "motivo": "o atualizador passa a conversar com o Windows só pela peça única"
@@ -185,6 +278,45 @@
     761
    ],
    "funcao": "_marca_existe",
+   "data": "2026-11-19",
+   "passo": "3",
+   "motivo": "o atualizador passa a conversar com o Windows só pela peça única"
+  },
+  {
+   "arquivo": "atualizacao.py",
+   "conferencia": "K01",
+   "texto": "kernel32.CloseHandle(handle)",
+   "quantas": 1,
+   "linhas_quando_gerada": [
+    764
+   ],
+   "funcao": "_marca_existe",
+   "data": "2026-11-19",
+   "passo": "3",
+   "motivo": "o atualizador passa a conversar com o Windows só pela peça única"
+  },
+  {
+   "arquivo": "atualizacao.py",
+   "conferencia": "K01",
+   "texto": "kernel32.LocalFree(descritor)",
+   "quantas": 1,
+   "linhas_quando_gerada": [
+    449
+   ],
+   "funcao": "_dono_do_arquivo",
+   "data": "2026-11-19",
+   "passo": "3",
+   "motivo": "o atualizador passa a conversar com o Windows só pela peça única"
+  },
+  {
+   "arquivo": "atualizacao.py",
+   "conferencia": "K01",
+   "texto": "kernel32.LocalFree(texto)",
+   "quantas": 1,
+   "linhas_quando_gerada": [
+    446
+   ],
+   "funcao": "_dono_do_arquivo",
    "data": "2026-11-19",
    "passo": "3",
    "motivo": "o atualizador passa a conversar com o Windows só pela peça única"
@@ -415,6 +547,19 @@
   {
    "arquivo": "core/_testes_a_distancia_windows.py",
    "conferencia": "K01",
+   "texto": "creationflags=getattr(subprocess, \"CREATE_NO_WINDOW\", 0))",
+   "quantas": 1,
+   "linhas_quando_gerada": [
+    57
+   ],
+   "funcao": "_senha_cifrada_pelo_windows",
+   "data": "2026-11-19",
+   "passo": "4",
+   "motivo": "os testes à distância passam a usar a peça única"
+  },
+  {
+   "arquivo": "core/_testes_a_distancia_windows.py",
+   "conferencia": "K01",
    "texto": "ctypes.windll.kernel32.CloseHandle(info.hProcess)",
    "quantas": 1,
    "linhas_quando_gerada": [
@@ -543,6 +688,20 @@
    "motivo": "os testes à distância passam a usar a peça única"
   },
   {
+   "arquivo": "core/_testes_a_distancia_windows.py",
+   "conferencia": "K01",
+   "texto": "timeout=tempo, creationflags=getattr(subprocess, \"CREATE_NO_WINDOW\", 0))",
+   "quantas": 2,
+   "linhas_quando_gerada": [
+    155,
+    183
+   ],
+   "funcao": "aplicar_ja_como_administrador_no_windows, rodar_a_tarefa_no_windows",
+   "data": "2026-11-19",
+   "passo": "4",
+   "motivo": "os testes à distância passam a usar a peça única"
+  },
+  {
    "arquivo": "core/nucleos.py",
    "conferencia": "K01",
    "texto": "if not ctypes.windll.kernel32.GlobalMemoryStatusEx(ctypes.byref(estado)):",
@@ -564,6 +723,97 @@
     211
    ],
    "funcao": "abrir_processo",
+   "data": "2026-11-19",
+   "passo": "fora do plano, a perguntar ao Samuel",
+   "motivo": "fora do que o plano da parte do Windows conserta: a gerente pergunta ao Samuel"
+  },
+  {
+   "arquivo": "core/ocr_comum.py",
+   "conferencia": "K01",
+   "texto": "kernel32.SetDllDirectoryW(None)",
+   "quantas": 1,
+   "linhas_quando_gerada": [
+    217
+   ],
+   "funcao": "abrir_processo",
+   "data": "2026-11-19",
+   "passo": "fora do plano, a perguntar ao Samuel",
+   "motivo": "fora do que o plano da parte do Windows conserta: a gerente pergunta ao Samuel"
+  },
+  {
+   "arquivo": "core/ocr_comum.py",
+   "conferencia": "K01",
+   "texto": "kernel32.SetDllDirectoryW(antes)",
+   "quantas": 1,
+   "linhas_quando_gerada": [
+    222
+   ],
+   "funcao": "abrir_processo",
+   "data": "2026-11-19",
+   "passo": "fora do plano, a perguntar ao Samuel",
+   "motivo": "fora do que o plano da parte do Windows conserta: a gerente pergunta ao Samuel"
+  },
+  {
+   "arquivo": "core/ocr_comum.py",
+   "conferencia": "K01",
+   "texto": "tamanho = kernel32.GetDllDirectoryW(32768, memoria)",
+   "quantas": 1,
+   "linhas_quando_gerada": [
+    214
+   ],
+   "funcao": "abrir_processo",
+   "data": "2026-11-19",
+   "passo": "fora do plano, a perguntar ao Samuel",
+   "motivo": "fora do que o plano da parte do Windows conserta: a gerente pergunta ao Samuel"
+  },
+  {
+   "arquivo": "core/ocr_kraken.py",
+   "conferencia": "K01",
+   "texto": "cwd=str(pasta) if pasta else None, creationflags=bandeiras)",
+   "quantas": 1,
+   "linhas_quando_gerada": [
+    259
+   ],
+   "funcao": "MotorKraken._abrir",
+   "data": "2026-11-19",
+   "passo": "fora do plano, a perguntar ao Samuel",
+   "motivo": "fora do que o plano da parte do Windows conserta: a gerente pergunta ao Samuel"
+  },
+  {
+   "arquivo": "core/ocr_tesseract.py",
+   "conferencia": "K01",
+   "texto": "creationflags=_SEM_JANELA if os.name == \"nt\" else 0)",
+   "quantas": 1,
+   "linhas_quando_gerada": [
+    262
+   ],
+   "funcao": "MotorTesseract.versao",
+   "data": "2026-11-19",
+   "passo": "fora do plano, a perguntar ao Samuel",
+   "motivo": "fora do que o plano da parte do Windows conserta: a gerente pergunta ao Samuel"
+  },
+  {
+   "arquivo": "core/ocr_tesseract.py",
+   "conferencia": "K01",
+   "texto": "stderr=subprocess.PIPE, cwd=pasta, creationflags=bandeiras)",
+   "quantas": 1,
+   "linhas_quando_gerada": [
+    344
+   ],
+   "funcao": "MotorTesseract._rodar",
+   "data": "2026-11-19",
+   "passo": "fora do plano, a perguntar ao Samuel",
+   "motivo": "fora do que o plano da parte do Windows conserta: a gerente pergunta ao Samuel"
+  },
+  {
+   "arquivo": "core/paginas_em_outro_processo.py",
+   "conferencia": "K01",
+   "texto": "creationflags=getattr(subprocess, \"CREATE_NO_WINDOW\", 0))",
+   "quantas": 1,
+   "linhas_quando_gerada": [
+    112
+   ],
+   "funcao": "_Servidor.__init__",
    "data": "2026-11-19",
    "passo": "fora do plano, a perguntar ao Samuel",
    "motivo": "fora do que o plano da parte do Windows conserta: a gerente pergunta ao Samuel"
@@ -987,6 +1237,19 @@
   {
    "arquivo": "core/testes_a_distancia.py",
    "conferencia": "K01",
+   "texto": "f\" | Stop-Process -Force -ErrorAction SilentlyContinue\")),",
+   "quantas": 1,
+   "linhas_quando_gerada": [
+    574
+   ],
+   "funcao": "_passos_dos_testes_a_distancia",
+   "data": "2026-11-19",
+   "passo": "5",
+   "motivo": "o desinstalar limpo refaz o desfazer"
+  },
+  {
+   "arquivo": "core/testes_a_distancia.py",
+   "conferencia": "K01",
    "texto": "f\"$sid = (Get-LocalUser -Name {NOME_DA_CONTA}).SID.Value;\"",
    "quantas": 1,
    "linhas_quando_gerada": [
@@ -1312,6 +1575,32 @@
   {
    "arquivo": "teste_velocidade.py",
    "conferencia": "K01",
+   "texto": "\"Get-PhysicalDisk | Where-Object { $_.DeviceId -eq [string]$n } | \"",
+   "quantas": 1,
+   "linhas_quando_gerada": [
+    523
+   ],
+   "funcao": "tipo_do_disco",
+   "data": "2026-11-19",
+   "passo": "depois da entrega",
+   "motivo": "o teste de velocidade conversa com o Windows; D-800"
+  },
+  {
+   "arquivo": "teste_velocidade.py",
+   "conferencia": "K01",
+   "texto": "and (_sozinho_no_console() if sozinho is None else sozinho))",
+   "quantas": 1,
+   "linhas_quando_gerada": [
+    2317
+   ],
+   "funcao": "despedir",
+   "data": "2026-11-19",
+   "passo": "depois da entrega",
+   "motivo": "o teste de velocidade conversa com o Windows; D-800"
+  },
+  {
+   "arquivo": "teste_velocidade.py",
+   "conferencia": "K01",
    "texto": "completo = Path(windows) / \"System32\" / \"WindowsPowerShell\" / \"v1.0\" / \"powershell.exe\"",
    "quantas": 1,
    "linhas_quando_gerada": [
@@ -1320,7 +1609,20 @@
    "funcao": "_caminho_do_powershell",
    "data": "2026-11-19",
    "passo": "depois da entrega",
-   "motivo": "o teste de velocidade abre o PowerShell; D-800"
+   "motivo": "o teste de velocidade conversa com o Windows; D-800"
+  },
+  {
+   "arquivo": "teste_velocidade.py",
+   "conferencia": "K01",
+   "texto": "creationflags=getattr(subprocess, \"CREATE_NO_WINDOW\", 0),",
+   "quantas": 1,
+   "linhas_quando_gerada": [
+    406
+   ],
+   "funcao": "_powershell",
+   "data": "2026-11-19",
+   "passo": "depois da entrega",
+   "motivo": "o teste de velocidade conversa com o Windows; D-800"
   },
   {
    "arquivo": "teste_velocidade.py",
@@ -1332,8 +1634,21 @@
    ],
    "funcao": "_ler_registro",
    "data": "2026-11-19",
-   "passo": "fora do plano, a perguntar ao Samuel",
-   "motivo": "fora do que o plano da parte do Windows conserta: a gerente pergunta ao Samuel"
+   "passo": "depois da entrega",
+   "motivo": "o teste de velocidade conversa com o Windows; D-800"
+  },
+  {
+   "arquivo": "teste_velocidade.py",
+   "conferencia": "K01",
+   "texto": "f\"$n = (Get-Partition -DriveLetter {letra}).DiskNumber; \"",
+   "quantas": 1,
+   "linhas_quando_gerada": [
+    522
+   ],
+   "funcao": "tipo_do_disco",
+   "data": "2026-11-19",
+   "passo": "depois da entrega",
+   "motivo": "o teste de velocidade conversa com o Windows; D-800"
   },
   {
    "arquivo": "teste_velocidade.py",
@@ -1345,8 +1660,8 @@
    ],
    "funcao": "_placas_de_video",
    "data": "2026-11-19",
-   "passo": "fora do plano, a perguntar ao Samuel",
-   "motivo": "fora do que o plano da parte do Windows conserta: a gerente pergunta ao Samuel"
+   "passo": "depois da entrega",
+   "motivo": "o teste de velocidade conversa com o Windows; D-800"
   },
   {
    "arquivo": "teste_velocidade.py",
@@ -1358,8 +1673,8 @@
    ],
    "funcao": "_sozinho_no_console",
    "data": "2026-11-19",
-   "passo": "fora do plano, a perguntar ao Samuel",
-   "motivo": "fora do que o plano da parte do Windows conserta: a gerente pergunta ao Samuel"
+   "passo": "depois da entrega",
+   "motivo": "o teste de velocidade conversa com o Windows; D-800"
   },
   {
    "arquivo": "teste_velocidade.py",
@@ -1371,8 +1686,48 @@
    ],
    "funcao": "_pedir_ao_windows",
    "data": "2026-11-19",
-   "passo": "fora do plano, a perguntar ao Samuel",
-   "motivo": "fora do que o plano da parte do Windows conserta: a gerente pergunta ao Samuel"
+   "passo": "depois da entrega",
+   "motivo": "o teste de velocidade conversa com o Windows; D-800"
+  },
+  {
+   "arquivo": "teste_velocidade.py",
+   "conferencia": "K01",
+   "texto": "funcao.argtypes = [ctypes.POINTER(ctypes.c_uint32), ctypes.c_uint32]",
+   "quantas": 1,
+   "linhas_quando_gerada": [
+    2234
+   ],
+   "funcao": "_sozinho_no_console",
+   "data": "2026-11-19",
+   "passo": "depois da entrega",
+   "motivo": "o teste de velocidade conversa com o Windows; D-800"
+  },
+  {
+   "arquivo": "teste_velocidade.py",
+   "conferencia": "K01",
+   "texto": "funcao.argtypes = [ctypes.c_uint32]",
+   "quantas": 1,
+   "linhas_quando_gerada": [
+    1679
+   ],
+   "funcao": "_pedir_ao_windows",
+   "data": "2026-11-19",
+   "passo": "depois da entrega",
+   "motivo": "o teste de velocidade conversa com o Windows; D-800"
+  },
+  {
+   "arquivo": "teste_velocidade.py",
+   "conferencia": "K01",
+   "texto": "funcao.restype = ctypes.c_uint32",
+   "quantas": 2,
+   "linhas_quando_gerada": [
+    1680,
+    2235
+   ],
+   "funcao": "_pedir_ao_windows, _sozinho_no_console",
+   "data": "2026-11-19",
+   "passo": "depois da entrega",
+   "motivo": "o teste de velocidade conversa com o Windows; D-800"
   },
   {
    "arquivo": "teste_velocidade.py",
@@ -1384,8 +1739,34 @@
    ],
    "funcao": "_memoria_gb",
    "data": "2026-11-19",
-   "passo": "fora do plano, a perguntar ao Samuel",
-   "motivo": "fora do que o plano da parte do Windows conserta: a gerente pergunta ao Samuel"
+   "passo": "depois da entrega",
+   "motivo": "o teste de velocidade conversa com o Windows; D-800"
+  },
+  {
+   "arquivo": "teste_velocidade.py",
+   "conferencia": "K01",
+   "texto": "if not kernel32.GetConsoleMode(entrada, ctypes.byref(modo)):",
+   "quantas": 1,
+   "linhas_quando_gerada": [
+    1760
+   ],
+   "funcao": "_ler_modo_da_janela_preta",
+   "data": "2026-11-19",
+   "passo": "depois da entrega",
+   "motivo": "o teste de velocidade conversa com o Windows; D-800"
+  },
+  {
+   "arquivo": "teste_velocidade.py",
+   "conferencia": "K01",
+   "texto": "if not psapi.GetProcessMemoryInfo(kernel32.GetCurrentProcess(),",
+   "quantas": 1,
+   "linhas_quando_gerada": [
+    668
+   ],
+   "funcao": "_pico_pelo_windows",
+   "data": "2026-11-19",
+   "passo": "depois da entrega",
+   "motivo": "o teste de velocidade conversa com o Windows; D-800"
   },
   {
    "arquivo": "teste_velocidade.py",
@@ -1398,8 +1779,8 @@
    ],
    "funcao": "_ler_registro, _placas_de_video",
    "data": "2026-11-19",
-   "passo": "fora do plano, a perguntar ao Samuel",
-   "motivo": "fora do que o plano da parte do Windows conserta: a gerente pergunta ao Samuel"
+   "passo": "depois da entrega",
+   "motivo": "o teste de velocidade conversa com o Windows; D-800"
   },
   {
    "arquivo": "teste_velocidade.py",
@@ -1413,8 +1794,192 @@
    ],
    "funcao": "_entrada_da_janela_preta, _janela_do_console, _pico_pelo_windows",
    "data": "2026-11-19",
-   "passo": "fora do plano, a perguntar ao Samuel",
-   "motivo": "fora do que o plano da parte do Windows conserta: a gerente pergunta ao Samuel"
+   "passo": "depois da entrega",
+   "motivo": "o teste de velocidade conversa com o Windows; D-800"
+  },
+  {
+   "arquivo": "teste_velocidade.py",
+   "conferencia": "K01",
+   "texto": "kernel32, entrada = _entrada_da_janela_preta()",
+   "quantas": 3,
+   "linhas_quando_gerada": [
+    1758,
+    1771,
+    2252
+   ],
+   "funcao": "_esvaziar_a_entrada_pelo_windows, _ler_modo_da_janela_preta, _mudar_modo_da_janela_preta",
+   "data": "2026-11-19",
+   "passo": "depois da entrega",
+   "motivo": "o teste de velocidade conversa com o Windows; D-800"
+  },
+  {
+   "arquivo": "teste_velocidade.py",
+   "conferencia": "K01",
+   "texto": "kernel32.FlushConsoleInputBuffer.argtypes = [wintypes.HANDLE]",
+   "quantas": 1,
+   "linhas_quando_gerada": [
+    2253
+   ],
+   "funcao": "_esvaziar_a_entrada_pelo_windows",
+   "data": "2026-11-19",
+   "passo": "depois da entrega",
+   "motivo": "o teste de velocidade conversa com o Windows; D-800"
+  },
+  {
+   "arquivo": "teste_velocidade.py",
+   "conferencia": "K01",
+   "texto": "kernel32.FlushConsoleInputBuffer.restype = wintypes.BOOL",
+   "quantas": 1,
+   "linhas_quando_gerada": [
+    2254
+   ],
+   "funcao": "_esvaziar_a_entrada_pelo_windows",
+   "data": "2026-11-19",
+   "passo": "depois da entrega",
+   "motivo": "o teste de velocidade conversa com o Windows; D-800"
+  },
+  {
+   "arquivo": "teste_velocidade.py",
+   "conferencia": "K01",
+   "texto": "kernel32.GetConsoleMode.argtypes = [wintypes.HANDLE, ctypes.POINTER(wintypes.DWORD)]",
+   "quantas": 1,
+   "linhas_quando_gerada": [
+    1742
+   ],
+   "funcao": "_entrada_da_janela_preta",
+   "data": "2026-11-19",
+   "passo": "depois da entrega",
+   "motivo": "o teste de velocidade conversa com o Windows; D-800"
+  },
+  {
+   "arquivo": "teste_velocidade.py",
+   "conferencia": "K01",
+   "texto": "kernel32.GetConsoleMode.restype = wintypes.BOOL",
+   "quantas": 1,
+   "linhas_quando_gerada": [
+    1743
+   ],
+   "funcao": "_entrada_da_janela_preta",
+   "data": "2026-11-19",
+   "passo": "depois da entrega",
+   "motivo": "o teste de velocidade conversa com o Windows; D-800"
+  },
+  {
+   "arquivo": "teste_velocidade.py",
+   "conferencia": "K01",
+   "texto": "kernel32.GetConsoleWindow.argtypes = []",
+   "quantas": 1,
+   "linhas_quando_gerada": [
+    1907
+   ],
+   "funcao": "_janela_do_console",
+   "data": "2026-11-19",
+   "passo": "depois da entrega",
+   "motivo": "o teste de velocidade conversa com o Windows; D-800"
+  },
+  {
+   "arquivo": "teste_velocidade.py",
+   "conferencia": "K01",
+   "texto": "kernel32.GetConsoleWindow.restype = wintypes.HWND",
+   "quantas": 1,
+   "linhas_quando_gerada": [
+    1908
+   ],
+   "funcao": "_janela_do_console",
+   "data": "2026-11-19",
+   "passo": "depois da entrega",
+   "motivo": "o teste de velocidade conversa com o Windows; D-800"
+  },
+  {
+   "arquivo": "teste_velocidade.py",
+   "conferencia": "K01",
+   "texto": "kernel32.GetCurrentProcess.argtypes = []",
+   "quantas": 1,
+   "linhas_quando_gerada": [
+    660
+   ],
+   "funcao": "_pico_pelo_windows",
+   "data": "2026-11-19",
+   "passo": "depois da entrega",
+   "motivo": "o teste de velocidade conversa com o Windows; D-800"
+  },
+  {
+   "arquivo": "teste_velocidade.py",
+   "conferencia": "K01",
+   "texto": "kernel32.GetCurrentProcess.restype = wintypes.HANDLE",
+   "quantas": 1,
+   "linhas_quando_gerada": [
+    659
+   ],
+   "funcao": "_pico_pelo_windows",
+   "data": "2026-11-19",
+   "passo": "depois da entrega",
+   "motivo": "o teste de velocidade conversa com o Windows; D-800"
+  },
+  {
+   "arquivo": "teste_velocidade.py",
+   "conferencia": "K01",
+   "texto": "kernel32.GetStdHandle.argtypes = [wintypes.DWORD]",
+   "quantas": 1,
+   "linhas_quando_gerada": [
+    1740
+   ],
+   "funcao": "_entrada_da_janela_preta",
+   "data": "2026-11-19",
+   "passo": "depois da entrega",
+   "motivo": "o teste de velocidade conversa com o Windows; D-800"
+  },
+  {
+   "arquivo": "teste_velocidade.py",
+   "conferencia": "K01",
+   "texto": "kernel32.GetStdHandle.restype = wintypes.HANDLE",
+   "quantas": 1,
+   "linhas_quando_gerada": [
+    1741
+   ],
+   "funcao": "_entrada_da_janela_preta",
+   "data": "2026-11-19",
+   "passo": "depois da entrega",
+   "motivo": "o teste de velocidade conversa com o Windows; D-800"
+  },
+  {
+   "arquivo": "teste_velocidade.py",
+   "conferencia": "K01",
+   "texto": "kernel32.SetConsoleMode.argtypes = [wintypes.HANDLE, wintypes.DWORD]",
+   "quantas": 1,
+   "linhas_quando_gerada": [
+    1744
+   ],
+   "funcao": "_entrada_da_janela_preta",
+   "data": "2026-11-19",
+   "passo": "depois da entrega",
+   "motivo": "o teste de velocidade conversa com o Windows; D-800"
+  },
+  {
+   "arquivo": "teste_velocidade.py",
+   "conferencia": "K01",
+   "texto": "kernel32.SetConsoleMode.restype = wintypes.BOOL",
+   "quantas": 1,
+   "linhas_quando_gerada": [
+    1745
+   ],
+   "funcao": "_entrada_da_janela_preta",
+   "data": "2026-11-19",
+   "passo": "depois da entrega",
+   "motivo": "o teste de velocidade conversa com o Windows; D-800"
+  },
+  {
+   "arquivo": "teste_velocidade.py",
+   "conferencia": "K01",
+   "texto": "letras = user32.GetClassNameW(janela, nome, len(nome))",
+   "quantas": 1,
+   "linhas_quando_gerada": [
+    1925
+   ],
+   "funcao": "_classe_da_janela",
+   "data": "2026-11-19",
+   "passo": "depois da entrega",
+   "motivo": "o teste de velocidade conversa com o Windows; D-800"
   },
   {
    "arquivo": "teste_velocidade.py",
@@ -1426,8 +1991,8 @@
    ],
    "funcao": "_placas_de_video",
    "data": "2026-11-19",
-   "passo": "fora do plano, a perguntar ao Samuel",
-   "motivo": "fora do que o plano da parte do Windows conserta: a gerente pergunta ao Samuel"
+   "passo": "depois da entrega",
+   "motivo": "o teste de velocidade conversa com o Windows; D-800"
   },
   {
    "arquivo": "teste_velocidade.py",
@@ -1439,8 +2004,112 @@
    ],
    "funcao": "_pico_pelo_windows",
    "data": "2026-11-19",
-   "passo": "fora do plano, a perguntar ao Samuel",
-   "motivo": "fora do que o plano da parte do Windows conserta: a gerente pergunta ao Samuel"
+   "passo": "depois da entrega",
+   "motivo": "o teste de velocidade conversa com o Windows; D-800"
+  },
+  {
+   "arquivo": "teste_velocidade.py",
+   "conferencia": "K01",
+   "texto": "psapi.GetProcessMemoryInfo.argtypes = [",
+   "quantas": 1,
+   "linhas_quando_gerada": [
+    662
+   ],
+   "funcao": "_pico_pelo_windows",
+   "data": "2026-11-19",
+   "passo": "depois da entrega",
+   "motivo": "o teste de velocidade conversa com o Windows; D-800"
+  },
+  {
+   "arquivo": "teste_velocidade.py",
+   "conferencia": "K01",
+   "texto": "psapi.GetProcessMemoryInfo.restype = wintypes.BOOL",
+   "quantas": 1,
+   "linhas_quando_gerada": [
+    664
+   ],
+   "funcao": "_pico_pelo_windows",
+   "data": "2026-11-19",
+   "passo": "depois da entrega",
+   "motivo": "o teste de velocidade conversa com o Windows; D-800"
+  },
+  {
+   "arquivo": "teste_velocidade.py",
+   "conferencia": "K01",
+   "texto": "return bool(funcao(estado))",
+   "quantas": 1,
+   "linhas_quando_gerada": [
+    1681
+   ],
+   "funcao": "_pedir_ao_windows",
+   "data": "2026-11-19",
+   "passo": "depois da entrega",
+   "motivo": "o teste de velocidade conversa com o Windows; D-800"
+  },
+  {
+   "arquivo": "teste_velocidade.py",
+   "conferencia": "K01",
+   "texto": "return bool(kernel32.FlushConsoleInputBuffer(entrada))",
+   "quantas": 1,
+   "linhas_quando_gerada": [
+    2255
+   ],
+   "funcao": "_esvaziar_a_entrada_pelo_windows",
+   "data": "2026-11-19",
+   "passo": "depois da entrega",
+   "motivo": "o teste de velocidade conversa com o Windows; D-800"
+  },
+  {
+   "arquivo": "teste_velocidade.py",
+   "conferencia": "K01",
+   "texto": "return bool(kernel32.SetConsoleMode(entrada, modo & 0xFFFFFFFF))",
+   "quantas": 1,
+   "linhas_quando_gerada": [
+    1772
+   ],
+   "funcao": "_mudar_modo_da_janela_preta",
+   "data": "2026-11-19",
+   "passo": "depois da entrega",
+   "motivo": "o teste de velocidade conversa com o Windows; D-800"
+  },
+  {
+   "arquivo": "teste_velocidade.py",
+   "conferencia": "K01",
+   "texto": "return funcao(lista, len(lista)) == 1",
+   "quantas": 1,
+   "linhas_quando_gerada": [
+    2236
+   ],
+   "funcao": "_sozinho_no_console",
+   "data": "2026-11-19",
+   "passo": "depois da entrega",
+   "motivo": "o teste de velocidade conversa com o Windows; D-800"
+  },
+  {
+   "arquivo": "teste_velocidade.py",
+   "conferencia": "K01",
+   "texto": "return kernel32, kernel32.GetStdHandle(_STD_INPUT_HANDLE)",
+   "quantas": 1,
+   "linhas_quando_gerada": [
+    1746
+   ],
+   "funcao": "_entrada_da_janela_preta",
+   "data": "2026-11-19",
+   "passo": "depois da entrega",
+   "motivo": "o teste de velocidade conversa com o Windows; D-800"
+  },
+  {
+   "arquivo": "teste_velocidade.py",
+   "conferencia": "K01",
+   "texto": "return kernel32.GetConsoleWindow()",
+   "quantas": 1,
+   "linhas_quando_gerada": [
+    1909
+   ],
+   "funcao": "_janela_do_console",
+   "data": "2026-11-19",
+   "passo": "depois da entrega",
+   "motivo": "o teste de velocidade conversa com o Windows; D-800"
   },
   {
    "arquivo": "teste_velocidade.py",
@@ -1453,7 +2122,7 @@
    "funcao": "_caminho_do_powershell",
    "data": "2026-11-19",
    "passo": "depois da entrega",
-   "motivo": "o teste de velocidade abre o PowerShell; D-800"
+   "motivo": "o teste de velocidade conversa com o Windows; D-800"
   },
   {
    "arquivo": "teste_velocidade.py",
@@ -1465,8 +2134,8 @@
    ],
    "funcao": "_placas_de_video",
    "data": "2026-11-19",
-   "passo": "fora do plano, a perguntar ao Samuel",
-   "motivo": "fora do que o plano da parte do Windows conserta: a gerente pergunta ao Samuel"
+   "passo": "depois da entrega",
+   "motivo": "o teste de velocidade conversa com o Windows; D-800"
   },
   {
    "arquivo": "teste_velocidade.py",
@@ -1478,8 +2147,34 @@
    ],
    "funcao": "_classe_da_janela",
    "data": "2026-11-19",
-   "passo": "fora do plano, a perguntar ao Samuel",
-   "motivo": "fora do que o plano da parte do Windows conserta: a gerente pergunta ao Samuel"
+   "passo": "depois da entrega",
+   "motivo": "o teste de velocidade conversa com o Windows; D-800"
+  },
+  {
+   "arquivo": "teste_velocidade.py",
+   "conferencia": "K01",
+   "texto": "user32.GetClassNameW.argtypes = [wintypes.HWND, wintypes.LPWSTR, ctypes.c_int]",
+   "quantas": 1,
+   "linhas_quando_gerada": [
+    1922
+   ],
+   "funcao": "_classe_da_janela",
+   "data": "2026-11-19",
+   "passo": "depois da entrega",
+   "motivo": "o teste de velocidade conversa com o Windows; D-800"
+  },
+  {
+   "arquivo": "teste_velocidade.py",
+   "conferencia": "K01",
+   "texto": "user32.GetClassNameW.restype = ctypes.c_int",
+   "quantas": 1,
+   "linhas_quando_gerada": [
+    1923
+   ],
+   "funcao": "_classe_da_janela",
+   "data": "2026-11-19",
+   "passo": "depois da entrega",
+   "motivo": "o teste de velocidade conversa com o Windows; D-800"
   },
   {
    "arquivo": "teste_velocidade.py",
@@ -1491,8 +2186,8 @@
    ],
    "funcao": "_ler_registro",
    "data": "2026-11-19",
-   "passo": "fora do plano, a perguntar ao Samuel",
-   "motivo": "fora do que o plano da parte do Windows conserta: a gerente pergunta ao Samuel"
+   "passo": "depois da entrega",
+   "motivo": "o teste de velocidade conversa com o Windows; D-800"
   },
   {
    "arquivo": "teste_velocidade.py",
@@ -1504,8 +2199,8 @@
    ],
    "funcao": "_placas_de_video",
    "data": "2026-11-19",
-   "passo": "fora do plano, a perguntar ao Samuel",
-   "motivo": "fora do que o plano da parte do Windows conserta: a gerente pergunta ao Samuel"
+   "passo": "depois da entrega",
+   "motivo": "o teste de velocidade conversa com o Windows; D-800"
   },
   {
    "arquivo": "ui/automatico.py",
@@ -1536,12 +2231,77 @@
   {
    "arquivo": "ui/brasao_girando.py",
    "conferencia": "K01",
+   "texto": "alca = kernel32.OpenProcess(0x00100000, False, pid)",
+   "quantas": 1,
+   "linhas_quando_gerada": [
+    226
+   ],
+   "funcao": "_programa_vivo",
+   "data": "2026-11-19",
+   "passo": "fora do plano, a perguntar ao Samuel",
+   "motivo": "fora do que o plano da parte do Windows conserta: a gerente pergunta ao Samuel"
+  },
+  {
+   "arquivo": "ui/brasao_girando.py",
+   "conferencia": "K01",
+   "texto": "if not vivo() or time.monotonic() - comeco > LIMITE_S:",
+   "quantas": 1,
+   "linhas_quando_gerada": [
+    294
+   ],
+   "funcao": "rodar_sozinho.vigiar",
+   "data": "2026-11-19",
+   "passo": "fora do plano, a perguntar ao Samuel",
+   "motivo": "fora do que o plano da parte do Windows conserta: a gerente pergunta ao Samuel"
+  },
+  {
+   "arquivo": "ui/brasao_girando.py",
+   "conferencia": "K01",
    "texto": "kernel32 = ctypes.windll.kernel32",
    "quantas": 1,
    "linhas_quando_gerada": [
     225
    ],
    "funcao": "_programa_vivo",
+   "data": "2026-11-19",
+   "passo": "fora do plano, a perguntar ao Samuel",
+   "motivo": "fora do que o plano da parte do Windows conserta: a gerente pergunta ao Samuel"
+  },
+  {
+   "arquivo": "ui/brasao_girando.py",
+   "conferencia": "K01",
+   "texto": "return lambda: kernel32.WaitForSingleObject(alca, 0) == 0x102",
+   "quantas": 1,
+   "linhas_quando_gerada": [
+    229
+   ],
+   "funcao": "_programa_vivo",
+   "data": "2026-11-19",
+   "passo": "fora do plano, a perguntar ao Samuel",
+   "motivo": "fora do que o plano da parte do Windows conserta: a gerente pergunta ao Samuel"
+  },
+  {
+   "arquivo": "ui/brasao_girando.py",
+   "conferencia": "K01",
+   "texto": "vivo = _programa_vivo(pid)",
+   "quantas": 1,
+   "linhas_quando_gerada": [
+    290
+   ],
+   "funcao": "rodar_sozinho",
+   "data": "2026-11-19",
+   "passo": "fora do plano, a perguntar ao Samuel",
+   "motivo": "fora do que o plano da parte do Windows conserta: a gerente pergunta ao Samuel"
+  },
+  {
+   "arquivo": "ui/tela_de_carregamento.py",
+   "conferencia": "K01",
+   "texto": "stderr=subprocess.DEVNULL, creationflags=getattr(subprocess, \"CREATE_NO_WINDOW\", 0))",
+   "quantas": 1,
+   "linhas_quando_gerada": [
+    114
+   ],
+   "funcao": "abrir_o_brasao",
    "data": "2026-11-19",
    "passo": "fora do plano, a perguntar ao Samuel",
    "motivo": "fora do que o plano da parte do Windows conserta: a gerente pergunta ao Samuel"

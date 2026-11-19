@@ -28,9 +28,8 @@ from pathlib import Path
 
 from . import conversa_com_o_git as git
 from . import excecoes
-from .livro import Livro
-
-VERSAO_DE_TESTE = "obra-2026-10-26"     # D-797: a versão de teste, onde a gerente junta o trabalho
+from .livro import CAMINHO as CAMINHO_DO_LIVRO
+from .livro import VERSAO_DE_TESTE, Livro
 
 # (arquivo, nome da atribuição, regra): "nao_some" = nada da versão de teste some; "igual" = nada muda.
 PROTEGIDOS: list[tuple[str, str, str]] = [
@@ -50,18 +49,69 @@ PROTEGIDOS: list[tuple[str, str, str]] = [
 ]
 
 
+class _NaoELiteral(ValueError):
+    """O valor não é um dado escrito no arquivo (tem chamada de função, por exemplo)."""
+
+
+def _valor(no: ast.AST, ja: dict[str, object]) -> object:
+    """O valor de um dado escrito no arquivo: textos, números, listas, tuplas, conjuntos, dicionários, um nome já
+    definido antes no mesmo arquivo e a soma de textos (`_SEP + "..."`). Nada é executado."""
+    if isinstance(no, ast.Constant):
+        return no.value
+    if isinstance(no, ast.Name) and no.id in ja:
+        return ja[no.id]
+    if isinstance(no, ast.BinOp) and isinstance(no.op, ast.Add):
+        esquerda, direita = _valor(no.left, ja), _valor(no.right, ja)
+        if isinstance(esquerda, str) and isinstance(direita, str):
+            return esquerda + direita
+    if isinstance(no, (ast.List, ast.Tuple, ast.Set)):
+        itens = [_valor(e, ja) for e in no.elts]
+        return list(itens) if isinstance(no, ast.List) else tuple(itens) if isinstance(no, ast.Tuple) else set(itens)
+    if isinstance(no, ast.Dict) and None not in no.keys:
+        return {_valor(k, ja): _valor(v, ja) for k, v in zip(no.keys, no.values)}
+    raise _NaoELiteral(ast.dump(no)[:60])
+
+
 def literais(fonte: str) -> dict[str, object]:
-    """Os valores literais das atribuições de primeiro nível de um arquivo (`NOME = [...]`, `NOME: tipo = {...}`)."""
+    """Os valores dos dados de primeiro nível de um arquivo (`NOME = [...]`, `NOME: tipo = {...}`), sem executar nada."""
     valores: dict[str, object] = {}
     for no in ast.parse(fonte).body:
         alvos = [no.target] if isinstance(no, ast.AnnAssign) else no.targets if isinstance(no, ast.Assign) else []
         for alvo in alvos:
             if isinstance(alvo, ast.Name) and getattr(no, "value", None) is not None:
                 try:
-                    valores[alvo.id] = ast.literal_eval(no.value)
-                except ValueError:
+                    valores[alvo.id] = _valor(no.value, valores)
+                except (_NaoELiteral, TypeError):
                     pass
     return valores
+
+
+# Cada exemplo das listas da versão de teste, com a conferência que tem de achá-lo (achado N3 da segunda volta).
+EXEMPLOS = [("PALAVRAS_DO_WINDOWS", "K01", 2), ("PALAVRAS_DE_DETACHED", "K02", 1), ("PALAVRAS_DE_LICENCA", "K03", 1)]
+
+
+def exemplos_que_o_porteiro_nao_acha(fonte_da_versao_de_teste: str) -> list[str]:
+    """Os exemplos das listas da versão de teste que o porteiro DESTE ramo não acha mais (afrouxar pelo uso).
+
+    Cada exemplo vira uma linha de um arquivo do programa (`atualizacao.py`) e passa pelo porteiro de agora; se a
+    conferência daquela lista não acusar a linha, a busca foi afrouxada: tirando palavra, mudando o jeito de juntar as
+    palavras ou o que conta como programa. Gerado a partir dos dados da versão de teste, nunca escrito à mão.
+    """
+    from . import porteiro
+
+    valores = literais(fonte_da_versao_de_teste)
+    faltam = []
+    for nome, conferencia, posicao in EXEMPLOS:
+        for entrada in valores.get(nome, []) or []:
+            exemplo = entrada[posicao] if isinstance(entrada, (list, tuple)) and len(entrada) > posicao else None
+            if not isinstance(exemplo, str):
+                continue
+            fonte = ('"""Exemplo da proteção."""\nimport ctypes\nimport os\nimport subprocess\n\n\n'
+                     'def f(c, pasta, info, bandeiras, advapi32, a):\n    """Exemplo."""\n    ' + exemplo + "\n")
+            achados = porteiro.conferir_codigo(["atualizacao.py"], lambda _c, f=fonte: f)
+            if not any(a.conferencia == conferencia and a.linha == 9 for a in achados):
+                faltam.append(f"{nome}: o porteiro deste ramo não acha mais o exemplo {exemplo!r} ({conferencia})")
+    return faltam
 
 
 def o_que_afrouxou(antes: str, depois: str, nomes: list[tuple[str, str]]) -> list[str]:
@@ -97,8 +147,13 @@ def comparar(raiz: Path | str, ramo: str = VERSAO_DE_TESTE) -> list[str] | None:
         return None
     from .porteiro_mudancas import mudancas_na_lista
 
-    livro = Livro.do_repositorio(raiz)
-    frases = mudancas_na_lista(excecoes.ler(raiz, lista_antes), excecoes.ler(raiz), livro)
+    # O Livro que vale é o da versão de teste (achado N1), nunca o do ramo.
+    livro = Livro(git.conteudo_no_commit(raiz, base, CAMINHO_DO_LIVRO) or "")
+    agora = excecoes.ler(raiz)
+    frases = mudancas_na_lista(excecoes.ler(raiz, lista_antes), agora, livro)
+    if agora.vale and excecoes.problema_do_sim(agora.sim_do_samuel, livro):
+        frases.append(f"a lista vale com um \"sim\" que o Livro da versão de teste não confirma: "
+                      f"{excecoes.problema_do_sim(agora.sim_do_samuel, livro)}")
     por_arquivo: dict[str, list[tuple[str, str]]] = {}
     for arquivo, nome, regra in PROTEGIDOS:
         por_arquivo.setdefault(arquivo, []).append((nome, regra))
@@ -111,4 +166,7 @@ def comparar(raiz: Path | str, ramo: str = VERSAO_DE_TESTE) -> list[str] | None:
             frases.append(f"{arquivo} sumiu")
             continue
         frases += [f"{arquivo}: {f}" for f in o_que_afrouxou(antes, agora.read_text(encoding="utf-8"), nomes)]
+    fonte_base = git.conteudo_no_commit(raiz, base, "regras_dos_agentes/porteiro.py")
+    if fonte_base is not None:
+        frases += exemplos_que_o_porteiro_nao_acha(fonte_base)
     return frases

@@ -32,17 +32,19 @@ DEFEITO_1 = ('"""O atualizador."""\nimport subprocess\n\n\ndef lancar(c):\n    "
 CERTO = '"""Um arquivo certo."""\n\n\ndef f():\n    """Nada de errado."""\n    return 1\n'
 
 
-LIVRO = '| D-791 | 18/11/2026 | "b" · "sim" | o porteiro | x | x | x | x | x |\n'
-SIM = {"decisao": "D-791", "em": "19/11/2026", "palavras": "sim"}
+LIVRO = ('| D-791 | 18/11/2026 | Chat: "o que já está errado no código fica numa lista" · "sim" | a lista de '
+         'exceções do porteiro | x | x | x | x | x |\n')
+SIM = {"decisao": "D-791", "em": "19/11/2026", "palavras": "o que já está errado no código"}
+FORJADO = {"decisao": "D-791", "em": "19/11/2026", "palavras": "sim"}     # o ataque de quem quebrou (achado N1)
 
 
-def _lista(r: RepositorioDeProva, situacao: str = "valendo", mais: list | None = None) -> None:
+def _lista(r: RepositorioDeProva, situacao: str = "valendo", mais: list | None = None, sim: dict | None = None) -> None:
     """A lista de exceções do repositório de prova: deixa o defeito 1 em atualizacao.py (K01 e K02, uma vez)."""
     texto = "subprocess.Popen(c, creationflags=subprocess.DETACHED_PROCESS)"
     itens = [{"arquivo": "atualizacao.py", "conferencia": k, "texto": texto, "quantas": 1, "data": "2026-11-19",
               "passo": "3", "motivo": "prova"} for k in ("K01", "K02")] + (mais or [])
     r.escrever("tests/conferencias_excecoes.json", json.dumps({
-        "situacao": situacao, "sim_do_samuel": SIM if situacao == "valendo" else None, "itens": itens}))
+        "situacao": situacao, "sim_do_samuel": (sim or SIM) if situacao == "valendo" else None, "itens": itens}))
 
 
 @pytest.fixture
@@ -60,8 +62,12 @@ def repo(tmp_path) -> RepositorioDeProva:
     r.escrever("atualizacao.py", DEFEITO_1)
     r.escrever("docs/plano/DECISOES.md", LIVRO)
     _lista(r)
+    r.commit("partida")
+    # A versão de teste no "GitHub" de prova: é dela que o gancho lê o Livro que vale (achado N1).
+    r.enviar("obra-2026-10-26")
     git.configurar(r.raiz, "core.hooksPath", "ganchos")
-    r.commit("partida (o gancho já confere este commit)")
+    r.escrever("LEIAME.md", "x\n")
+    r.commit("o primeiro commit com o gancho ligado")
     return r
 
 
@@ -149,3 +155,32 @@ def test_o_gancho_barra_o_agente_que_poe_o_proprio_erro_na_lista_no_mesmo_commit
                         "data": "2026-11-19", "passo": "3", "motivo": "eu mesmo"} for k in ("K01", "K02")])
     feito = repo.tentar_commit("erro novo e o item dele")
     assert feito.returncode != 0 and "item novo na lista" in feito.stdout + feito.stderr
+
+
+def test_o_gancho_barra_o_sim_forjado_num_item_novo(repo):
+    """Achado N1 da segunda volta de quem quebrou (19/11): o erro novo e o item dele na lista, com o "sim"
+    `{"decisao": "D-791", "palavras": "sim"}`, passavam no gancho (código 0). Agora barram: o "sim" é conferido no
+    Livro da versão de teste e tem de trazer um trecho das palavras do Samuel."""
+    repo.escrever("atualizacao.py", DEFEITO_1 + '    return ["schtasks", "/Run", "/TN", "nova"]\n')
+    texto = 'return ["schtasks", "/Run", "/TN", "nova"]'
+    _lista(repo, mais=[{"arquivo": "atualizacao.py", "conferencia": "K01", "texto": texto, "quantas": 1,
+                        "data": "2026-11-19", "passo": "3", "motivo": "eu mesmo", "sim": FORJADO}])
+    feito = repo.tentar_commit("erro novo com o sim forjado")
+    assert feito.returncode != 0 and "item novo na lista" in feito.stdout + feito.stderr
+
+
+def test_o_gancho_barra_a_lista_valendo_com_o_sim_forjado(repo):
+    """A lista inteira "valendo" com o "sim" forjado: barrada (o Livro da versão de teste não confirma)."""
+    _lista(repo, sim=FORJADO)
+    repo.escrever("core/certo.py", CERTO)
+    feito = repo.tentar_commit("sim forjado")
+    assert feito.returncode != 0 and "não confirma" in feito.stdout + feito.stderr
+
+
+def test_sem_internet_o_gancho_barra_em_vez_de_passar(repo):
+    """Sem o GitHub (aqui, o "GitHub" de prova sumiu), o gancho não consegue ler o Livro da versão de teste: barra
+    (código 3), nunca passa calado."""
+    git.configurar(repo.raiz, "remote.origin.url", str(repo.remoto.parent / "github_que_nao_existe"))
+    repo.escrever("core/certo.py", CERTO)
+    feito = repo.tentar_commit("sem internet")
+    assert feito.returncode != 0 and "Não deu para conferir" in feito.stdout + feito.stderr

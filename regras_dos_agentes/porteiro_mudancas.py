@@ -95,7 +95,10 @@ def _rotulo_aceito(raiz: Path, caminho: str, papel: str, pasta_do_relatorio: str
     """O rótulo de pronto neste arquivo vale? (as regras estão na docstring de `k10`)."""
     if papel in QUEM_CONFERE and pasta_do_relatorio and caminho.startswith(pasta_do_relatorio):
         return True
-    if not any(caminho.startswith(p) for p in aceitas):
+    # Só a `quem-quebrou/` do próprio trabalho (achado N4 da segunda volta): a de outro trabalho, ou uma solta em
+    # `relatorios/`, não vale.
+    propria = f"{pasta_do_relatorio}{PASTA_DE_QUEM_QUEBROU}" if pasta_do_relatorio else None
+    if propria is None or propria not in aceitas or not caminho.startswith(propria):
         return False
     if caminho not in papel_do_arquivo:
         papel_do_arquivo[caminho] = pedido_.ler(git.conteudo_no_commit(raiz, "HEAD", caminho) or "").papel

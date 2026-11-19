@@ -58,8 +58,9 @@ PASSO_QUE_CONSERTA: list[tuple[str, str, str, str, str]] = [
     ("core/testes_a_distancia.py", "*", "*", "4", "os testes à distância passam a usar a peça única e a pasta segura"),
     # Os 5 lugares que o Samuel deixou para depois da entrega (D-800), pelas funções onde estavam em 19/11.
     ("ui/automatico.py", "K04", "*", DEPOIS_DA_ENTREGA, "dicas do Automático com número de decisão; D-800"),
-    ("teste_velocidade.py", "K01", "_caminho_do_powershell", DEPOIS_DA_ENTREGA,
-     "o teste de velocidade abre o PowerShell; D-800"),
+    # O teste de velocidade inteiro é o mesmo pedaço que o Samuel mandou para depois (D-800: "o teste de velocidade
+    # lendo placa de vídeo e disco pelo PowerShell por conta própria"); a busca maior só acha mais linhas dele.
+    ("teste_velocidade.py", "*", "*", DEPOIS_DA_ENTREGA, "o teste de velocidade conversa com o Windows; D-800"),
     ("avaliar.py", "K01", "achar_acervo", DEPOIS_DA_ENTREGA,
      "a régua dos filtros pergunta a Área de Trabalho ao Windows; D-800"),
     # Achados pela busca ampliada (19/11), fora do que o plano conserta: o Samuel decide (a gerente pergunta).
@@ -109,12 +110,9 @@ def ler(raiz: Path | str, conteudo: str | None = None) -> Lista:
     situacao = dados.get("situacao")
     if situacao not in ("proposta", "valendo"):
         raise ListaErrada(f"situação da lista desconhecida: {situacao!r} (só 'proposta' ou 'valendo')")
-    livro = Livro.do_repositorio(raiz)
     sim = dados.get("sim_do_samuel")
-    if situacao == "valendo":
-        problema = problema_do_sim(sim, livro)
-        if problema:
-            raise ListaErrada(f"a lista está 'valendo' sem o 'sim' do Samuel conferido no Livro: {problema}")
+    if situacao == "valendo" and problema_do_formato_do_sim(sim):
+        raise ListaErrada(f"a lista está 'valendo' sem o 'sim' do Samuel: {problema_do_formato_do_sim(sim)}")
     itens = dados.get("itens")
     if not isinstance(itens, list):
         raise ListaErrada("a lista não tem 'itens'")
@@ -132,22 +130,40 @@ def ler(raiz: Path | str, conteudo: str | None = None) -> Lista:
     return Lista(situacao, sim, itens, dados)
 
 
-def problema_do_sim(sim: object, livro: Livro) -> str | None:
-    """O que falta num "sim" do Samuel (None = está certo).
+MINIMO_DAS_PALAVRAS = 12      # o trecho das palavras do Samuel que o "sim" cita tem de ter ao menos isto
 
-    O "sim" é `{"decisao": "D-nnn", "em": "data", "palavras": "..."}`: a decisão tem de existir no Livro e as palavras
-    têm de estar na linha dela, letra por letra. Assim um "sim" inventado ("x") não passa: a gerente registra o "sim"
-    no Livro primeiro (CLAUDE.md §11.1) e cita a decisão aqui.
-    """
+
+def problema_do_formato_do_sim(sim: object) -> str | None:
+    """O "sim" tem a forma `{"decisao", "em", "palavras"}`, preenchida? (só a forma; o Livro é conferido à parte)."""
     if not isinstance(sim, dict):
         return "falta o sim_do_samuel (decisao, em, palavras)"
-    decisao, em, palavras = (str(sim.get(c, "")).strip() for c in ("decisao", "em", "palavras"))
-    if not (decisao and em and palavras):
+    if not all(str(sim.get(c, "")).strip() for c in ("decisao", "em", "palavras")):
         return "o sim precisa de decisao, em e palavras"
+    return None
+
+
+def problema_do_sim(sim: object, livro: Livro) -> str | None:
+    """O que falta num "sim" do Samuel, conferido no Livro da VERSÃO DE TESTE (None = está certo).
+
+    `livro` tem de ser o da versão de teste no GitHub (`Livro.da_versao_de_teste`), que só a gerente escreve, nunca o
+    da pasta do agente (achado N1 da segunda volta de quem quebrou: `"palavras": "sim"` e até `"a"` passavam, porque
+    qualquer pedaço da linha valia). Agora:
+    - a decisão existe no Livro e trata da lista de exceções (a D-791, a D-800, ou uma decisão nova que diga isso);
+    - as palavras são um trecho literal da coluna das palavras do Samuel daquela decisão, com ao menos
+      `MINIMO_DAS_PALAVRAS` letras.
+    """
+    problema = problema_do_formato_do_sim(sim)
+    if problema:
+        return problema
+    decisao, palavras = str(sim["decisao"]).strip(), " ".join(str(sim["palavras"]).split())
     if not livro.existe(decisao):
-        return f"a decisão {decisao} do sim não existe no Livro"
-    if not livro.tem_as_palavras(decisao, palavras):
-        return f"as palavras do sim não estão na linha da {decisao} no Livro"
+        return f"a decisão {decisao} do sim não existe no Livro da versão de teste"
+    if not livro.trata_da_lista_de_excecoes(decisao):
+        return f"a decisão {decisao} do sim não trata da lista de exceções"
+    if len(palavras) < MINIMO_DAS_PALAVRAS:
+        return f"as palavras do sim são curtas demais (menos de {MINIMO_DAS_PALAVRAS} letras)"
+    if palavras not in " ".join(livro.palavras_do_samuel(decisao).split()):
+        return f"as palavras do sim não são um trecho das palavras do Samuel na {decisao}"
     return None
 
 

@@ -153,59 +153,118 @@ def e_script_python(caminho: str) -> bool:
 # As buscas
 # ----------------------------------------------------------------------------------------------------------------
 
-# K01 (correção 1 do plano-v3, ampliada em 19/11 com os achados de quem tentou quebrar): as palavras sem exigir aspas,
-# e os nomes do código. `\b` evita pegar nome de função que só contém a palavra (`_caminho_do_powershell` não é
+# K01 (correção 1 do plano-v3, ampliada em 19/11 com as duas voltas de quem tentou quebrar): as palavras sem exigir
+# aspas, e os nomes do código. `\b` evita pegar nome de função que só contém a palavra (`_caminho_do_powershell` não é
 # conversa com o Windows; `"powershell.exe"` é). É a lista única do que é "conversa com o Windows" no pacote: a tabela
-# de etiquetas (`tabela_arquivos.py`) usa a mesma. Cada linha é (expressão, o que é).
-# PROTEGIDA: nenhuma linha sai sem a gerente; o teste do GitHub compara com a versão de teste
-# (`tests/test_conferencias_protecao.py`). Acrescentar linha é seguro, com o exemplo errado e o certo no teste.
-# Fontes: os módulos do PowerShell (ScheduledTasks, NetSecurity, LocalAccounts, Microsoft.PowerShell.Security,
-# Microsoft.PowerShell.Management), https://learn.microsoft.com/powershell/module/scheduledtasks/; o `winreg` e o
-# `os.startfile` da biblioteca do Python (https://docs.python.org/3/library/winreg.html,
+# de etiquetas (`tabela_arquivos.py`) usa a mesma.
+# Cada linha é (expressão, o que é, uma linha de código de exemplo que ela tem de achar). O exemplo existe para a
+# proteção (achado N3 da segunda volta): o teste do GitHub pega o exemplo de cada linha da lista da versão de teste e
+# cobra que o porteiro do ramo ainda o acha. Assim afrouxar a busca pelo jeito de juntar as palavras, sem tirar
+# palavra nenhuma, também é pego. Um teste cobra que cada exemplo é achado pela própria expressão.
+# PROTEGIDA: nenhuma linha sai e nenhum exemplo deixa de ser achado sem a gerente. Acrescentar linha é seguro.
+# Fontes: os módulos do PowerShell (ScheduledTasks, NetSecurity, LocalAccounts, Storage, Microsoft.PowerShell.Security,
+# Microsoft.PowerShell.Management), https://learn.microsoft.com/powershell/module/scheduledtasks/ e
+# https://learn.microsoft.com/powershell/module/microsoft.powershell.management/; o `winreg` e o `os.startfile` da
+# biblioteca do Python (https://docs.python.org/3/library/winreg.html,
 # https://docs.python.org/3/library/os.html#os.startfile); o `ctypes` (https://docs.python.org/3/library/ctypes.html,
-# `windll`, `WinDLL`, `oledll`); os programas do Windows de linha de comando.
-PALAVRAS_DO_WINDOWS: list[tuple[str, str]] = [
-    (r"\bpowershell\b", "o PowerShell"),
-    (r"\bpwsh\b", "o PowerShell 7"),
-    (r"ShellExecute", "abrir programa pelo ShellExecute"),
-    (r"\bos\.startfile\b", "abrir arquivo ou programa pelo ShellExecute (os.startfile)"),
-    (r"\bos\.system\b|\bos\.popen\b", "rodar um comando pelo cmd"),
-    (r"\bcmd(?:\.exe)?\b[\"']?(?:\s*,\s*[\"']|\s+)/[cCkK]\b", "rodar um comando pelo cmd"),
-    (r"\brunas\b", "pedir licença de administrador"),
-    (r"\bStart-Process\b", "abrir programa pelo PowerShell (inclusive com licença)"),
-    (r"\bschtasks\b", "tarefas do Windows"),
-    (r"-(?:Clustered)?ScheduledTask\w*\b", "tarefas do Windows pelo PowerShell"),
-    (r"Schedule\.Service", "tarefas do Windows pelo COM"),
-    (r"\bicacls\b|\bcacls\b|\btakeown\b|-Acl\b|/inheritance|/setowner|Set(?:Named)?SecurityInfo|SetFileSecurity",
-     "licença e dono de pastas e arquivos"),
-    (r"\bwinreg\b|\b_winreg\b|\breg(?:\.exe)?\b[\"']?(?:\s*,\s*[\"']|\s+)(?:add|delete|query|import|export|copy)\b|"
-     r"\bHK(?:LM|CU|CR|U|CC)(?::|\\)|\bHKEY_\w+|Registry::|-ItemProperty\b|\bregedit\b", "o registro do Windows"),
-    (r"\bmsiexec\b|\bUpdate\.exe\b", "instaladores"),
-    (r"\bnetsh\b|-NetFirewall\w*\b", "o firewall e a rede do Windows"),
-    (r"\bsc(?:\.exe)?\s+(?:create|delete|config|start|stop|query)\b|\bsc\.exe\b|-Service\b", "serviços do Windows"),
-    (r"-Local(?:User|Group\w*)\b|\bnet(?:\.exe)?\s+(?:user|localgroup)\b", "contas do Windows"),
-    (r"-WindowsCapability\b|-WindowsOptionalFeature\b|\bdism(?:\.exe)?\b", "recursos do Windows"),
-    (r"-CimInstance\b|Invoke-CimMethod|-WmiObject\b|\bwmic\b|\bwin32com\b|\bcomtypes\b|\bpythoncom\b",
-     "ler ou mudar o Windows pelo WMI ou COM"),
+# `windll`, `WinDLL`, `oledll`, `cdll`, `CDLL`); os programas do Windows de linha de comando (sc, net, taskkill, reg,
+# msiexec, shutdown), https://learn.microsoft.com/windows-server/administration/windows-commands/windows-commands.
+_SEP = r"""\b["']?(?:\s*,\s*["']|\s+)"""      # "programa subcomando" ou ["programa", "subcomando"]
+_DLL_DO_WINDOWS = r"(?:kernel32|advapi32|shell32|user32|psapi|ntdll|ole32|oleaut32|netapi32|wtsapi32|userenv|secur32)"
+PALAVRAS_DO_WINDOWS: list[tuple[str, str, str]] = [
+    # O PowerShell, com qualquer nome.
+    (r"\bpowershell\b", "o PowerShell", 'subprocess.run(["powershell.exe", "-Command", "x"])'),
+    (r"\bpwsh\b", "o PowerShell 7", 'subprocess.run(["pwsh", "-Command", "x"])'),
+    (r"-ExecutionPolicy\b", "a permissão de rodar scripts do PowerShell", 'x = "-ExecutionPolicy Bypass"'),
+    # Abrir programa ou arquivo pelo Windows.
+    (r"ShellExecute", "abrir programa pelo ShellExecute", "ctypes.windll.shell32.ShellExecuteExW(info)"),
+    (r"\bos\.startfile\b", "abrir arquivo ou programa pelo ShellExecute (os.startfile)", "os.startfile(pasta)"),
+    (r"\bos\.system\b", "rodar um comando pelo cmd (os.system)", 'os.system("dir")'),
+    (r"\bos\.popen\b", "rodar um comando pelo cmd (os.popen)", 'os.popen("dir")'),
+    (r"\bcmd(?:\.exe)?" + _SEP + r"/[cCkK]\b", "rodar um comando pelo cmd", 'subprocess.run(["cmd", "/c", "start", "x"])'),
+    (r"\brunas\b", "pedir licença de administrador", 'info.lpVerb = "runas"'),
+    (r"\b(?:Start|Stop|Wait|Debug)-Process\b", "abrir ou fechar programa pelo PowerShell", 'x = "Start-Process -FilePath a"'),
+    (r"\btaskkill\b", "fechar programa à força", 'subprocess.run(["taskkill", "/F", "/PID", "1"])'),
+    # Tarefas do Windows, por qualquer meio.
+    (r"\bschtasks\b", "tarefas do Windows", 'subprocess.run(["schtasks", "/Run", "/TN", "x"])'),
+    (r"-(?:Clustered)?ScheduledTask\w*\b", "tarefas do Windows pelo PowerShell", 'x = "Register-ScheduledTask -Xml a"'),
+    (r"Schedule\.Service", "tarefas do Windows pelo COM", 'x = "New-Object -ComObject Schedule.Service"'),
+    (r"-ComObject\b", "um programa do Windows pelo COM", 'x = "New-Object -ComObject WScript.Shell"'),
+    # Licença e dono de pastas e arquivos.
+    (r"\bicacls\b", "licença de pasta (icacls)", 'x = "icacls C:/a /grant x"'),
+    (r"\bcacls\b", "licença de pasta (cacls)", 'x = "cacls C:/a"'),
+    (r"\btakeown\b", "tomar o dono de pasta", 'x = "takeown /f C:/a"'),
+    (r"\b(?:Get|Set)-Acl\b", "licença de pasta pelo PowerShell", 'x = "Set-Acl -Path a"'),
+    (r"/inheritance", "licença de pasta (herança)", 'x = "/inheritance:r"'),
+    (r"/setowner", "dono de pasta", 'x = "/setowner a"'),
+    (r"Set(?:Named)?SecurityInfo|SetFileSecurity", "licença de pasta pelo ctypes", "advapi32.SetNamedSecurityInfoW(a)"),
+    # O registro do Windows.
+    (r"\bwinreg\b|\b_winreg\b", "o registro do Windows (winreg)", "import winreg"),
+    (r"\breg(?:\.exe)?" + _SEP + r"(?:add|delete|query|import|export|copy)\b", "o registro do Windows (reg)",
+     'subprocess.run(["reg", "add", "x"])'),
+    (r"(?-i:\bHK(?:LM|CU|CR|U|CC)(?::|\\))|(?-i:\bHKEY_[A-Z_]+)|Registry::", "o registro do Windows (o caminho)",
+     r'x = "HKLM:\Software\X"'),
+    (r"-ItemProperty\b", "o registro do Windows pelo PowerShell", 'x = "New-ItemProperty -Path a -Name b"'),
+    (r"\bregedit\b", "o registro do Windows (regedit)", 'x = "regedit /s a.reg"'),
+    # Instaladores.
+    (r"\bmsiexec\b", "o instalador do Windows", 'subprocess.run(["msiexec", "/i", "a.msi"])'),
+    (r"\bUpdate\.exe\b", "o atualizador do Velopack", 'x = pasta / "Update.exe"'),
+    # O firewall e a rede.
+    (r"\bnetsh\b", "o firewall e a rede (netsh)", 'x = "netsh advfirewall set"'),
+    (r"-NetFirewall\w*\b", "o firewall pelo PowerShell", 'x = "New-NetFirewallRule -Name a"'),
+    # Serviços.
+    (r"\bsc(?:\.exe)?" + _SEP + r"(?:create|delete|config|start|stop|query|failure)\b", "serviços do Windows (sc)",
+     'subprocess.run(["sc", "create", "x"])'),
+    (r"\bsc\.exe\b", "serviços do Windows (sc.exe)", 'x = "sc.exe"'),
+    (r"\b(?:Get|Set|Start|Stop|Restart|New|Remove|Suspend|Resume)-Service\b", "serviços do Windows pelo PowerShell",
+     'x = "Set-Service -Name sshd"'),
+    # Contas e o computador.
+    (r"-Local(?:User|Group\w*)\b", "contas do Windows pelo PowerShell", 'x = "New-LocalUser -Name a"'),
+    (r"\bnet(?:\.exe)?" + _SEP + r"(?:user|localgroup|stop|start|share|use|accounts)\b", "contas e serviços (net)",
+     'subprocess.run(["net", "stop", "x"])'),
+    (r"\b(?:Restart|Stop)-Computer\b|\bshutdown(?:\.exe)?" + _SEP + r"/", "desligar ou reiniciar o computador",
+     'subprocess.run(["shutdown", "/r"])'),
+    # Recursos, discos e o que o Windows sabe.
+    (r"-WindowsCapability\b|-WindowsOptionalFeature\b|\bdism(?:\.exe)?\b", "recursos do Windows",
+     'x = "Add-WindowsCapability -Online -Name a"'),
+    (r"-(?:PhysicalDisk|Disk|Volume|Partition)\b", "os discos pelo PowerShell", 'x = "Get-PhysicalDisk"'),
+    (r"-CimInstance\b|Invoke-CimMethod|-WmiObject\b|\bwmic\b", "ler ou mudar o Windows pelo WMI",
+     'x = "Get-CimInstance Win32_VideoController"'),
+    (r"\bwin32com\b|\bcomtypes\b|\bpythoncom\b", "o COM pelo Python", "import win32com.client"),
     (r"\bwin32api\b|\bwin32con\b|\bwin32process\b|\bwin32security\b|\bwin32service\b|\bpywintypes\b",
-     "o pywin32"),
-    # Só onde a biblioteca do Windows é pega (`ctypes.windll...`, `WinDLL("kernel32")`), não cada chamada feita depois
-    # pela mesma variável: o lugar é onde a conversa começa.
-    (r"\bwindll\b|\bWinDLL\b|\boledll\b", "funções do Windows pelo ctypes"),
-    (r"\bDETACHED_PROCESS\b|\bcreationflags\s*=\s*(?:0x[0-9a-fA-F]+|\d+)\b", "lançar processo com bandeira do Windows"),
-    (r"-ExecutionPolicy\b|-MpPreference\b|\bbcdedit\b|\bwevtutil\b|\beventcreate\b|\brundll32\b|\bmshta\b",
-     "outras configurações do Windows"),
+     "o pywin32", "import win32api"),
+    (r"-WinEvent\b|-EventLog\b|\bwevtutil\b|\beventcreate\b", "o registro de eventos do Windows",
+     'x = "Write-EventLog -LogName a"'),
+    (r"-MpPreference\b|\bbcdedit\b|\brundll32\b|\bmshta\b", "outras configurações do Windows",
+     'subprocess.run(["rundll32", "a.dll"])'),
+    # As bibliotecas do Windows pelo ctypes (o lugar onde a biblioteca é pega; o uso dela pelo apelido é seguido
+    # pela K01 também, ver `_apelidos_do_windows`).
+    (r"\bwindll\b|\bWinDLL\b|\boledll\b", "funções do Windows pelo ctypes", "k = ctypes.windll.kernel32"),
+    (r"\bcdll\." + _DLL_DO_WINDOWS + r"\b|\bCDLL\(\s*[\"']" + _DLL_DO_WINDOWS, "funções do Windows pelo ctypes (CDLL)",
+     'k = ctypes.CDLL("kernel32")'),
+    # Lançar processo com bandeira do Windows (qualquer valor que não seja o 0 literal: guardada numa variável
+    # também conta, achado N2).
+    (r"\bDETACHED_PROCESS\b", "lançar processo solto do Windows", "f = subprocess.DETACHED_PROCESS"),
+    (r"\bcreationflags\s*=\s*(?!0(?![\w.x]))[\w(]", "lançar processo com bandeira do Windows",
+     "subprocess.Popen(c, creationflags=bandeiras)"),
 ]
-CONVERSA_COM_O_WINDOWS = re.compile("|".join(f"(?:{p})" for p, _ in PALAVRAS_DO_WINDOWS), re.I)
+CONVERSA_COM_O_WINDOWS = re.compile("|".join(f"(?:{p})" for p, _, _ in PALAVRAS_DO_WINDOWS), re.I)
 
 # K02: o DETACHED_PROCESS pelo nome ou pelo número (0x8 = 8), na bandeira de lançar processo. PROTEGIDA.
-PALAVRAS_DE_DETACHED: list[str] = [r"\bDETACHED_PROCESS\b",
-                                   r"\bcreationflags\s*=\s*[^,)\n]*?(?<![\w.])(?:0x0*8|8)(?![\w.])"]
-DETACHED = re.compile("|".join(f"(?:{p})" for p in PALAVRAS_DE_DETACHED))
-# K03: licença de pasta mudada à mão. PROTEGIDA.
-PALAVRAS_DE_LICENCA: list[str] = [r"\bicacls\b", r"\bcacls\b", r"\btakeown\b", r"/inheritance:r", r"/setowner",
-                                  r"\bSet-Acl\b", r"Set(?:Named)?SecurityInfo", r"SetFileSecurity"]
-LICENCA_A_MAO = re.compile("|".join(f"(?:{p})" for p in PALAVRAS_DE_LICENCA), re.I)
+# (padrão, exemplo que ele tem de achar).
+PALAVRAS_DE_DETACHED: list[tuple[str, str]] = [
+    (r"\bDETACHED_PROCESS\b", "f = subprocess.DETACHED_PROCESS"),
+    (r"\bcreationflags\s*=\s*[^,)\n]*?(?<![\w.])(?:0x0*8|8)(?![\w.])", "subprocess.Popen(c, creationflags=0x8)"),
+]
+DETACHED = re.compile("|".join(f"(?:{p})" for p, _ in PALAVRAS_DE_DETACHED))
+# K03: licença de pasta mudada à mão. PROTEGIDA. (padrão, exemplo que ele tem de achar).
+PALAVRAS_DE_LICENCA: list[tuple[str, str]] = [
+    (r"\bicacls\b", 'x = "icacls a /grant b"'), (r"\bcacls\b", 'x = "cacls a"'), (r"\btakeown\b", 'x = "takeown /f a"'),
+    (r"/inheritance:r", 'x = "/inheritance:r"'), (r"/setowner", 'x = "/setowner a"'),
+    (r"\bSet-Acl\b", 'x = "Set-Acl -Path a"'), (r"Set(?:Named)?SecurityInfo", "advapi32.SetNamedSecurityInfoW(a)"),
+    (r"SetFileSecurity", "advapi32.SetFileSecurityW(a)"),
+]
+LICENCA_A_MAO = re.compile("|".join(f"(?:{p})" for p, _ in PALAVRAS_DE_LICENCA), re.I)
 # K04 e K05: PROTEGIDAS.
 PADRAO_DO_NUMERO_DE_DECISAO = r"\bD-\d{3,}\b"
 NUMERO_DE_DECISAO = re.compile(PADRAO_DO_NUMERO_DE_DECISAO)
@@ -244,6 +303,7 @@ class _Arquivo:
     _arvore: ast.Module | None = None
     erro: str = ""
     _lido: bool = False
+    _funcoes: list | None = None
 
     def ler(self) -> bool:
         """Lê o código uma vez; devolve False (e guarda o erro) se não for Python válido."""
@@ -266,6 +326,12 @@ class _Arquivo:
         """A árvore do código (só depois de `ler()` dar certo)."""
         return self._arvore  # type: ignore[return-value]
 
+    def funcao(self, linha: int) -> str:
+        """O nome da função mais de dentro que contém a linha ("" fora de função), calculado uma vez por arquivo."""
+        if self._funcoes is None:
+            self._funcoes = sorted(leitura.funcoes(self.raiz), key=lambda f: f.fim - f.inicio)
+        return next((f.nome for f in self._funcoes if f.inicio <= linha <= f.fim), "")
+
 
 def _por_linha(arq: _Arquivo, k: str, padrao: re.Pattern, porque: str, linhas: list[str] | None = None) -> list[Achado]:
     """Um achado por linha de código onde a busca acha alguma coisa (no máximo um por linha e por conferência)."""
@@ -274,15 +340,104 @@ def _por_linha(arq: _Arquivo, k: str, padrao: re.Pattern, porque: str, linhas: l
         m = padrao.search(linha)
         if m:
             saida.append(Achado(k, arq.caminho, n, _texto_do_lugar(arq.codigo[n - 1]),
-                                f"{porque}: {m.group(0)}", leitura.funcao_em_volta(arq.raiz, n)))
+                                f"{porque}: {m.group(0)}", arq.funcao(n)))
     return saida
 
 
+# Onde a biblioteca do Windows é pega pelo ctypes: as duas linhas de PALAVRAS_DO_WINDOWS que tratam disso.
+PEGA_A_BIBLIOTECA = re.compile("|".join(f"(?:{p})" for p, o_que, _ in PALAVRAS_DO_WINDOWS
+                                        if o_que.startswith("funções do Windows pelo ctypes")), re.I)
+
+
+def _escopos(nome_da_funcao: str) -> list[str]:
+    """A função e as de fora dela, até o arquivo ("a.b.c" → ["a.b.c", "a.b", "a", ""])."""
+    partes = nome_da_funcao.split(".") if nome_da_funcao else []
+    return [".".join(partes[:n]) for n in range(len(partes), -1, -1)]
+
+
+def _apelidos_do_windows(arq: _Arquivo) -> dict[int, str]:
+    """As linhas que usam a biblioteca do Windows por um apelido (achado N2 da segunda volta de quem quebrou).
+
+    Segue o apelido dentro do arquivo: (1) o nome que recebe a biblioteca (`kernel32 = ctypes.WinDLL("kernel32")`,
+    `funcao = ctypes.windll.kernel32.SetThreadExecutionState`); (2) a função que devolve um apelido (`return kernel32,
+    ...`, inclusive dentro de um `lambda`) e o nome que recebe o que ela devolve (`kernel32, entrada =
+    _entrada_da_janela_preta()`: os dois nomes, por cautela), até não mudar mais; (3) toda linha que usa um desses
+    nomes, na mesma função ou dentro dela, e toda chamada de uma função que devolve a biblioteca. O resultado de uma
+    chamada feita PELA biblioteca (`alca = kernel32.OpenProcess(...)`) não vira apelido. Devolve linha → o nome usado.
+    Não segue: o apelido que vai para outro arquivo (importado), nem o que passa por um dicionário ou um atributo
+    (`self.k = ...`); isso fica nas ressalvas.
+    """
+    if not PEGA_A_BIBLIOTECA.search("\n".join(arq.codigo)):
+        return {}
+    apelidos: dict[str, set[str]] = {}            # escopo (função) → nomes
+    devolve: set[str] = set()                     # funções que devolvem a biblioteca
+
+    def e_apelido(nome: str, linha: int) -> bool:
+        return any(nome in apelidos.get(e, set()) for e in _escopos(arq.funcao(linha)))
+
+    def e_a_biblioteca(valor: ast.AST, linha: int) -> bool:
+        """O valor É a biblioteca (ou uma função dela), e não o resultado de uma chamada feita por ela: um apelido, um
+        atributo de um apelido (`kernel32.SetThreadExecutionState`), a chamada de uma função que devolve a biblioteca,
+        ou uma tupla com um desses."""
+        if isinstance(valor, ast.Name):
+            return e_apelido(valor.id, linha)
+        if isinstance(valor, ast.Attribute):
+            return e_a_biblioteca(valor.value, linha)
+        if isinstance(valor, ast.Call):
+            f = valor.func
+            return (f.id if isinstance(f, ast.Name) else f.attr if isinstance(f, ast.Attribute) else "") in devolve
+        if isinstance(valor, (ast.Tuple, ast.List)):
+            return any(e_a_biblioteca(e, linha) for e in valor.elts)
+        return False
+
+    def alvos(no: ast.AST) -> list[str]:
+        nos = [no.target] if isinstance(no, ast.AnnAssign) else list(no.targets)
+        return [n.id for alvo in nos for n in ast.walk(alvo) if isinstance(n, ast.Name)]
+
+    atribuicoes = [n for n in ast.walk(arq.raiz) if isinstance(n, (ast.Assign, ast.AnnAssign)) and n.value is not None]
+    funcoes = [n for n in ast.walk(arq.raiz) if isinstance(n, (ast.FunctionDef, ast.AsyncFunctionDef))]
+    mudou = True
+    while mudou:
+        mudou = False
+        for no in atribuicoes:
+            linhas = arq.codigo[no.lineno - 1:(no.end_lineno or no.lineno)]
+            if PEGA_A_BIBLIOTECA.search(" ".join(linhas)) or e_a_biblioteca(no.value, no.lineno):
+                escopo = arq.funcao(no.lineno)
+                novos = set(alvos(no)) - apelidos.get(escopo, set())
+                if novos:
+                    apelidos.setdefault(escopo, set()).update(novos)
+                    mudou = True
+        for f in funcoes:
+            if f.name in devolve:
+                continue
+            for r in ast.walk(f):
+                if isinstance(r, ast.Return) and r.value is not None and any(
+                        isinstance(n, ast.Name) and e_apelido(n.id, r.lineno) for n in ast.walk(r.value)):
+                    devolve.add(f.name)
+                    mudou = True
+                    break
+    usadas: dict[int, str] = {}
+    for n in ast.walk(arq.raiz):
+        if isinstance(n, ast.Name) and e_apelido(n.id, n.lineno):
+            usadas.setdefault(n.lineno, n.id)
+        elif isinstance(n, ast.Call):
+            nome = n.func.id if isinstance(n.func, ast.Name) else n.func.attr if isinstance(n.func, ast.Attribute) else ""
+            if nome in devolve:
+                usadas.setdefault(n.lineno, nome)
+    return usadas
+
+
 def k01(arq: _Arquivo) -> list[Achado]:
-    """K01: conversa com o Windows fora da peça única."""
+    """K01: conversa com o Windows fora da peça única: as palavras da lista e o uso da biblioteca do Windows pelo apelido."""
     if not e_programa(arq.caminho) or arq.caminho == PECA_UNICA_DO_WINDOWS:
         return []
-    return _por_linha(arq, "K01", CONVERSA_COM_O_WINDOWS, "fala com o Windows fora da peça única")
+    achados = _por_linha(arq, "K01", CONVERSA_COM_O_WINDOWS, "fala com o Windows fora da peça única")
+    ja = {a.linha for a in achados}
+    for linha, nome in sorted(_apelidos_do_windows(arq).items()):
+        if linha not in ja and arq.codigo[linha - 1].strip():
+            achados.append(Achado("K01", arq.caminho, linha, _texto_do_lugar(arq.codigo[linha - 1]),
+                                  f"usa a biblioteca do Windows pelo apelido {nome}", arq.funcao(linha)))
+    return sorted(achados, key=lambda a: a.linha)
 
 
 def k02(arq: _Arquivo) -> list[Achado]:
@@ -323,7 +478,7 @@ def k06(arq: _Arquivo) -> list[Achado]:
     for n, nome in leitura.importacoes(arq.raiz, pacote):
         if nome == "ui" or nome.startswith("ui."):
             saida.append(Achado("K06", arq.caminho, n, _texto_do_lugar(arq.codigo[n - 1]), f"core/ importa {nome}",
-                                leitura.funcao_em_volta(arq.raiz, n)))
+                                arq.funcao(n)))
     return saida
 
 
@@ -335,7 +490,7 @@ def k07(arq: _Arquivo) -> list[Achado]:
     for n, nome in leitura.importacoes(arq.raiz):
         if nome.split(".")[0] in ("tkinter", "customtkinter", "_tkinter"):
             saida.append(Achado("K07", arq.caminho, n, _texto_do_lugar(arq.codigo[n - 1]), f"importa {nome}",
-                                leitura.funcao_em_volta(arq.raiz, n)))
+                                arq.funcao(n)))
     return saida
 
 
@@ -347,7 +502,7 @@ def k16_codigo(arq: _Arquivo) -> list[Achado]:
     for n, nome in leitura.importacoes(arq.raiz):
         if nome.split(".")[0].lower() in GERADORES:
             saida.append(Achado("K16", arq.caminho, n, _texto_do_lugar(arq.codigo[n - 1]),
-                                f"importa {nome}, que desenha ou inventa pixel", leitura.funcao_em_volta(arq.raiz, n)))
+                                f"importa {nome}, que desenha ou inventa pixel", arq.funcao(n)))
     return saida
 
 
@@ -365,7 +520,7 @@ def k24(arq: _Arquivo) -> list[Achado]:
             if nome in ("click_input", "send_keys", "type_keys"):
                 saida.append(Achado("K24", arq.caminho, no.lineno, _texto_do_lugar(arq.codigo[no.lineno - 1]),
                                     f"pywinauto {nome} toma o mouse e o teclado do Samuel",
-                                    leitura.funcao_em_volta(arq.raiz, no.lineno)))
+                                    arq.funcao(no.lineno)))
     return saida
 
 

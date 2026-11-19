@@ -424,3 +424,84 @@ def test_k04_correcao_3_so_dentro_do_mesmo_texto_da_folha_de_estilo():
             return "*/fim"
     ''')
     assert codigos(conferir({"ui/x.py": tela}), "K04") == [("ui/x.py", 4)]
+
+
+
+# ---------------------------------------------------------------- segunda volta de quem quebrou (19/11)
+
+@pytest.mark.parametrize("linha", [
+    'subprocess.run(["sc", "create", "x"])', 'subprocess.run(["net", "stop", "x"])',
+    'subprocess.run(["taskkill", "/F", "/PID", "1"])', 'x = "Stop-Process -Id 1"',
+    'x = "New-Object -ComObject WScript.Shell"', 'x = "Get-PhysicalDisk"', 'k = ctypes.CDLL("kernel32")',
+    "k = ctypes.cdll.kernel32", "subprocess.Popen(c, creationflags=bandeiras)",
+    'subprocess.run(["shutdown", "/r"])', 'x = "Write-EventLog -LogName a"',
+])
+def test_k01_acusa_os_nomes_que_ainda_escapavam(linha):
+    """Achado N3 da segunda volta: `sc create` em lista, `net stop`, `taskkill`, `Stop-Process`, `-ComObject`,
+    `Get-PhysicalDisk`, `CDLL`/`cdll` com biblioteca do Windows e `creationflags` guardado numa variável (N2)."""
+    fonte = f'"""Programa."""\nimport ctypes\nimport subprocess\n\n\ndef f(c, bandeiras):\n    """Fala."""\n    {linha}\n'
+    assert codigos(conferir({"atualizacao.py": fonte}), "K01") == [("atualizacao.py", 8)], linha
+
+
+def test_cada_palavra_da_busca_tem_exemplo_que_ela_acha_e_o_porteiro_tambem():
+    """N3: cada linha da busca do Windows (e do DETACHED_PROCESS e da licença de pasta) traz um exemplo, a própria
+    linha acha o exemplo e o porteiro de agora também (é o que a proteção cobra contra a versão de teste)."""
+    import re
+
+    from regras_dos_agentes import protecao
+
+    for padrao, _o_que, exemplo in porteiro.PALAVRAS_DO_WINDOWS:
+        assert re.search(padrao, exemplo, re.I), (padrao, exemplo)
+    for padrao, exemplo in porteiro.PALAVRAS_DE_DETACHED + porteiro.PALAVRAS_DE_LICENCA:
+        assert re.search(padrao, exemplo, re.I), (padrao, exemplo)
+    fonte = (porteiro.__file__ and open(porteiro.__file__, encoding="utf-8").read())
+    assert protecao.exemplos_que_o_porteiro_nao_acha(fonte) == []
+
+
+def test_k01_falsos_alarmes_que_quem_quebrou_apontou_nao_sao_acusados():
+    """Achado N5 da segunda volta: `creationflags=0`, "self-service" e "hku:" num texto comum não são conversa com o
+    Windows."""
+    certo = py('''
+        def f(c):
+            """Nada de Windows."""
+            subprocess.run(c, creationflags=0)
+            texto = "o self-service do restaurante"
+            outro = "hku: abreviação qualquer"
+            return texto, outro
+    ''')
+    assert codigos(conferir({"atualizacao.py": certo}), "K01") == []
+
+
+def test_k01_segue_o_apelido_da_biblioteca_do_windows():
+    """Achado N2 da segunda volta: a chamada feita pelo apelido (`kernel32.X`), a função que devolve a biblioteca e
+    quem recebe o que ela devolve são acusados; o resultado de uma chamada feita pela biblioteca não vira apelido."""
+    fonte = py('''
+        """Programa."""
+        import ctypes
+
+
+        def _biblioteca():
+            """Pega a biblioteca."""
+            kernel32 = ctypes.WinDLL("kernel32")
+            alca = kernel32.GetStdHandle(1)
+            if alca:
+                pass
+            return kernel32, alca
+
+
+        def usar():
+            """Usa a biblioteca devolvida."""
+            k32, entrada = _biblioteca()
+            return k32.SetConsoleMode(entrada, 0)
+    ''')
+    linhas = [n for _, n in codigos(conferir({"atualizacao.py": fonte}), "K01")]
+    assert linhas == [7, 8, 11, 16, 17], linhas
+
+
+def test_k04_correcao_3_um_f_string_comum_com_chaves_nao_e_folha_de_estilo():
+    """Achado N7 da segunda volta: `f"Arquivo {nome} salvo /* conforme D-731 */"` não é folha de estilo: o número é
+    acusado. Na folha de estilo de verdade (um seletor do Qt seguido de "{" e de uma propriedade), o comentário sai."""
+    errado = 'def f(nome):\n    """Tela."""\n    return f"Arquivo {nome} salvo /* conforme D-731 */"\n'
+    assert codigos(conferir({"ui/x.py": errado}), "K04") == [("ui/x.py", 3)]
+    folha = 'def f(c):\n    """Folha."""\n    return f"QWidget {{ color: red; }} /* etapa (D-015) */"\n'
+    assert codigos(conferir({"ui/x.py": folha}), "K04") == []

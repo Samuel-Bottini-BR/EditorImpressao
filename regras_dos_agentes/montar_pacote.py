@@ -98,7 +98,7 @@ def montar(papel: str, titulo: str, numeros: list[str], arquivos: list[str], rai
     """O texto do pacote."""
     if papel not in PAPEIS:
         raise ValueError(f"papel desconhecido: {papel} (vale: {', '.join(PAPEIS)})")
-    tags, avisos = tabela_arquivos.etiquetas_do_trabalho(arquivos, raiz, titulo)
+    tags, avisos = tabela_arquivos.etiquetas_do_trabalho(arquivos, raiz)
     regras = escolher_regras(tags, papel)
     nomes = ", ".join(catalogo.ETIQUETAS[t] for t in sorted(tags) if t in catalogo.ETIQUETAS and t != "GER")
     fora = sorted(set(catalogo.ETIQUETAS) - tags - {"GER", "TODO"}) if papel != "quebrador" else []

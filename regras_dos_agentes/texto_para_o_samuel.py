@@ -25,26 +25,31 @@ GRUPOS = [
     ("5", "quando a gente arrumar o desinstalar"),
 ]
 
-# Os lugares que ele deixou para depois da entrega (D-800), ditos como ele conhece, por arquivo.
+# Os pedaços que ele deixou para depois da entrega (D-800), ditos como ele conhece, por arquivo. O teste de velocidade
+# inteiro é o mesmo pedaço (achado N6 da segunda volta de quem quebrou: perguntar de novo seria a regra 10 do §11.13).
 DE_FORA = {
-    "ui/automatico.py": "as dicas do Automático que mostram um número ao Kaique",
-    "teste_velocidade.py": "o teste de velocidade, que abre o PowerShell por conta própria",
+    "ui/automatico.py": "as duas dicas do Automático que mostram um número ao Kaique",
+    "teste_velocidade.py": "o teste de velocidade, que conversa com o Windows por conta própria (o PowerShell, a placa de "
+                           "vídeo, o disco, a memória, a janela preta)",
     "avaliar.py": "a régua dos filtros, que pergunta ao Windows onde fica a Área de Trabalho",
 }
 
-# Quantos lugares a decisão dele de deixar para depois (19/11) contou em cada arquivo.
-NA_DECISAO_DELE = {"ui/automatico.py": 2, "teste_velocidade.py": 2, "avaliar.py": 1}
-
 # Os lugares novos fora do plano, ditos como ele conhece, por arquivo (o que aquele pedaço faz com o Windows).
 FORA_DO_PLANO_POR_ARQUIVO = {
-    "teste_velocidade.py": "o teste de velocidade lê a memória, a placa de vídeo e o disco direto no Windows e mexe na "
-                           "janela preta onde ele roda",
     "historico.py": "a tela de início abre a pasta do projeto e manda imprimir pelo Windows",
     "core/nucleos.py": "o programa pergunta ao Windows quanta memória está livre",
     "core/ocr_comum.py": "o motor de achar texto ajusta, no Windows, onde procurar as bibliotecas dele",
+    "core/ocr_tesseract.py": "o motor de achar texto Tesseract abre sem janela preta, com uma bandeira do Windows",
+    "core/ocr_kraken.py": "o motor de achar texto Kraken abre sem janela preta, com uma bandeira do Windows",
+    "core/paginas_em_outro_processo.py": "o trabalho das páginas em outro processo abre sem janela preta, com uma "
+                                         "bandeira do Windows",
     "ui/brasao_girando.py": "o brasão que gira pergunta ao Windows se o programa ainda está aberto",
+    "ui/tela_de_carregamento.py": "a tela de carregamento abre o brasão sem janela preta, com uma bandeira do Windows",
     "empacotar_teste_velocidade.py": "o pacote do teste de velocidade abre a janela preta pelo Windows",
 }
+
+# O print do caso real (uma cópia do print da instalação de 18/11, com o botão marcado), ao lado do texto.
+PRINT_DO_CASO_REAL = "prints/caso-real-reiniciar-agora.png"
 
 
 def _lugares(n: int) -> str:
@@ -72,9 +77,11 @@ def texto(lista: Lista) -> str:
         "**O que é e onde fica:** é a conferência automática dos trabalhos dos agentes. Ela roda nos testes do GitHub, "
         "em toda entrega; você não vê nada dela no programa.",
         "",
-        "**Um caso real:** o botão \"Reiniciar agora\", do aviso de versão nova, abre o PowerShell de um jeito que o "
+        "**Um caso real:** o botão \"Reiniciar agora\", da janela de versão nova, abre o PowerShell de um jeito que o "
         "faz fechar sem rodar (foi um dos defeitos da instalação no seu computador, em 18/11). A conferência acha esse "
-        "jeito no código. Outro caso: duas dicas do Automático mostram ao Kaique um número de decisão no meio do texto.",
+        "jeito no código.",
+        "",
+        f"![O botão \"Reiniciar agora\" marcado em vermelho, no print da instalação de 18/11]({PRINT_DO_CASO_REAL})",
         "",
         f"**O que já está errado hoje:** ela leu o programa e achou {_lugares(r['lugares'])} desses erros. Eles ficam "
         "numa lista: a conferência deixa passar esses e barra o trabalho de agente que acrescentar mais um lugar com "
@@ -90,15 +97,10 @@ def texto(lista: Lista) -> str:
         if por_passo.get(passo):
             linhas.append(f"- {_lugares(por_passo[passo])}: {nome}.")
     if depois:
-        agora = _por_arquivo(lista, DEPOIS_DA_ENTREGA)
-        partes = [f"{DE_FORA.get(a, a)} ({_lugares(n)})" for a, n in agora.items()]
-        linhas += ["", "**Os 5 lugares que você deixou para depois da entrega ao Kaique continuam lá, como você "
-                   "escolheu:** " + "; ".join(partes) + "."]
-        a_mais = [f"{DE_FORA.get(a, a).split(',')[0]} agora conta {_lugares(n)} no mesmo pedaço"
-                  for a, n in agora.items() if n > NA_DECISAO_DELE.get(a, 0)]
-        if a_mais:
-            linhas[-1] += (" Com a busca maior, " + "; ".join(a_mais) + " (uma linha a mais que prepara a mesma "
-                           f"pergunta ao Windows), por isso a conta dá {depois}.")
+        partes = [f"- {DE_FORA.get(a, a)} ({_lugares(n)})." for a, n in _por_arquivo(lista, DEPOIS_DA_ENTREGA).items()]
+        linhas += ["", f"**Ficam para depois da entrega ao Kaique, como você escolheu em 19/11 ({_lugares(depois)}, "
+                   "nos mesmos três pedaços que você deixou para depois; a busca maior só achou mais linhas neles):**",
+                   "", *partes]
     linhas += [
         "",
         "**O que você escolhe:** sim, a lista entra assim e a conferência passa a barrar; ou não, e diga o que mudar "
@@ -108,7 +110,7 @@ def texto(lista: Lista) -> str:
         "**De onde veio:** do seu \"sim\" de 19/11 à lista que só diminui. A conta saiu do próprio programa que confere.",
     ]
     if fora:
-        partes = [f"- {FORA_DO_PLANO_POR_ARQUIVO.get(a, a)} ({_lugares(n)})."
+        partes = [f"- {FORA_DO_PLANO_POR_ARQUIVO.get(a, 'outro pedaço do programa')} ({_lugares(n)})."
                   for a, n in sorted(_por_arquivo(lista, FORA_DO_PLANO).items(), key=lambda x: -x[1])]
         linhas += [
             "",
@@ -118,8 +120,9 @@ def texto(lista: Lista) -> str:
             "",
             *partes,
             "",
-            "**O que você escolhe para esses:** ficam para depois da entrega ao Kaique, como os outros 5 (ficam na lista "
-            "até lá); ou entram no plano (cada um vira conserto antes da entrega). Sugestão: depois da entrega, como você "
-            "decidiu para os outros 5. Nada do programa muda com nenhuma das duas escolhas agora.",
+            "**O que você escolhe para esses:** ficam para depois da entrega ao Kaique, como os outros pedaços que você "
+            "já deixou para depois (ficam na lista até lá); ou entram no plano (cada um vira conserto antes da "
+            "entrega). Sugestão: depois da entrega, como você decidiu para os outros. Nada do programa muda com "
+            "nenhuma das duas escolhas agora.",
         ]
     return "\n".join(linhas)

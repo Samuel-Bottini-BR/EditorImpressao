@@ -21,8 +21,10 @@ from regras_dos_agentes import protecao
 from regras_dos_agentes.repositorio_de_prova import RepositorioDeProva
 
 RAIZ = Path(__file__).resolve().parent.parent
-LIVRO = '| D-791 | 18/11/2026 | "b" · "sim" | o porteiro | x | x | x | x | x |\n'
-SIM = {"decisao": "D-791", "em": "19/11/2026", "palavras": "sim"}
+LIVRO = ('| D-791 | 18/11/2026 | Chat: "o que já está errado no código fica numa lista" · "sim" | a lista de '
+         'exceções do porteiro | x | x | x | x | x |\n')
+SIM = {"decisao": "D-791", "em": "19/11/2026", "palavras": "o que já está errado no código"}
+FORJADO = {"decisao": "D-791", "em": "19/11/2026", "palavras": "sim"}     # o ataque de quem quebrou (achado N1)
 
 
 def _item(arquivo: str, texto: str, passo: str = "3", **extra) -> dict:
@@ -76,8 +78,8 @@ def test_acrescentar_palavra_na_busca_e_livre(repo):
     """Acrescentar uma palavra à busca não é acusado (deixa o porteiro mais rígido, não mais frouxo)."""
     caminho = repo.raiz / "regras_dos_agentes" / "porteiro.py"
     texto = caminho.read_text(encoding="utf-8")
-    novo = texto.replace('    (r"\\bpwsh\\b", "o PowerShell 7"),', '    (r"\\bpwsh\\b", "o PowerShell 7"),\n'
-                                                                   '    (r"\\bnovacoisa\\b", "prova"),')
+    linha = next(l for l in texto.split("\n") if "o PowerShell 7" in l)
+    novo = texto.replace(linha, linha + '\n    (r"\\bnovacoisa\\b", "prova", "x = \'novacoisa\'"),')
     assert novo != texto
     repo.escrever("regras_dos_agentes/porteiro.py", novo)
     assert protecao.comparar(repo.raiz) == []
@@ -120,3 +122,35 @@ def test_o_que_afrouxou_compara_cada_tipo_de_dado():
     frases = protecao.o_que_afrouxou(antes, 'A = ["x"]\nB = "outro"\n', [("A", "nao_some"), ("B", "igual"),
                                                                           ("C", "nao_some")])
     assert frases == ["A: 'y' sumiu", "B mudou", "C sumiu (ou deixou de ser um valor escrito no arquivo)"]
+
+
+def test_item_novo_com_o_sim_forjado_e_acusado(repo):
+    """Achado N1 da segunda volta (19/11): o item novo com `"palavras": "sim"` passava na proteção do GitHub."""
+    repo.escrever("tests/conferencias_excecoes.json",
+                  _lista(itens=[_item("atualizacao.py", "x"), _item("main.py", "y", sim=FORJADO)]))
+    assert any("item novo" in f for f in protecao.comparar(repo.raiz))
+
+
+def test_o_livro_do_ramo_nao_vale_so_o_da_versao_de_teste(repo):
+    """O agente que escreve no Livro do próprio ramo a decisão que confirma o "sim" dele não passa: vale o Livro da
+    versão de teste, que só a gerente escreve."""
+    repo.escrever("docs/plano/DECISOES.md", LIVRO + '| D-990 | 19/11 | "pode pôr o meu erro na lista de exceções" | '
+                                                    'a lista de exceções | x | x | x | x | x |\n')
+    sim = {"decisao": "D-990", "em": "19/11", "palavras": "pode pôr o meu erro na lista"}
+    repo.escrever("tests/conferencias_excecoes.json",
+                  _lista(itens=[_item("atualizacao.py", "x"), _item("main.py", "y", sim=sim)]))
+    assert any("item novo" in f for f in protecao.comparar(repo.raiz))
+
+
+def test_afrouxar_a_busca_pelo_uso_e_acusado(repo, monkeypatch):
+    """Achado N3 da segunda volta (19/11): a lista de palavras igual, mas o jeito de juntar as palavras deixando uma de
+    fora (o caso provado: o `msiexec`). O porteiro deste ramo é trocado aqui por um afrouxado assim; a proteção usa o
+    exemplo da própria lista da versão de teste e acusa."""
+    import re
+
+    from regras_dos_agentes import porteiro
+
+    frouxa = re.compile("|".join(f"(?:{p})" for p, _, _ in porteiro.PALAVRAS_DO_WINDOWS if "msiexec" not in p), re.I)
+    monkeypatch.setattr(porteiro, "CONVERSA_COM_O_WINDOWS", frouxa)
+    frases = protecao.comparar(repo.raiz)
+    assert any("msiexec" in f for f in frases), frases

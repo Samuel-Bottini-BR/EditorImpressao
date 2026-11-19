@@ -103,6 +103,9 @@ def linhas_de_codigo(fonte: str) -> list[str]:
     return ["".join(l) for l in texto]
 
 
+FOLHA_DE_ESTILO = re.compile(r"\bQ[A-Z]\w*(?:::?[\w-]+)*\s*\{\{?\s*[\w-]+\s*:")
+
+
 def sem_comentarios_de_folha_de_estilo(codigo: list[str], raiz: ast.Module, fonte: str) -> list[str]:
     """Tira os comentários `/* ... */` de dentro dos textos de folha de estilo do Qt (que ninguém vê na tela).
 
@@ -127,7 +130,9 @@ def sem_comentarios_de_folha_de_estilo(codigo: list[str], raiz: ast.Module, font
                                                                      c2 if n == l2 else len(texto[n - 1]))
                     if c < len(texto[n - 1])]
         trecho = "".join(texto[n - 1][c] for n, c in posicoes)
-        if "{" not in trecho or "}" not in trecho or "/*" not in trecho:
+        # Cara de folha de estilo do Qt: um seletor (QWidget, QScrollBar::handle:vertical...) seguido de "{" e de uma
+        # propriedade com ":" (achado N7 da segunda volta: um f-string comum com "{nome}" e "/* */" não é folha).
+        if "/*" not in trecho or not FOLHA_DE_ESTILO.search(trecho):
             continue
         for m in re.finditer(r"/\*.*?\*/", trecho, flags=re.S):
             for k in range(m.start(), m.end()):

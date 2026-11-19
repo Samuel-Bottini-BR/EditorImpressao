@@ -305,3 +305,15 @@ def test_git_que_nao_responde_nunca_vira_passou(repo):
     r, _ = repo
     with pytest.raises(git.GitFalhou):
         pm.conferir_mudancas(r.raiz, "0" * 40, "implementador", [], r.raiz / "relatorios", livro(r), False)
+
+
+
+def test_k10_o_rotulo_so_vale_na_quem_quebrou_do_proprio_trabalho(repo):
+    """Achado N4 da segunda volta (19/11): o rótulo numa `quem-quebrou/` de outro trabalho, ou solta em `relatorios/`,
+    passava. Agora só a `quem-quebrou/` do próprio trabalho vale."""
+    r, base = repo
+    r.escrever("relatorios/outro/quem-quebrou/relatorio.md", QUEBRA)
+    r.commit("rótulo em outro trabalho")
+    r.escrever("relatorios/quem-quebrou/relatorio.md", QUEBRA)
+    r.commit("rótulo solto")
+    assert conferencias(pm.k10(r.raiz, base, "implementador", "relatorios/x/")) == ["K10", "K10"]

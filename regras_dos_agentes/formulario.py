@@ -507,14 +507,12 @@ def conferir(onde_parei: Path, etapa: str, raiz: Path, pacote: Path | None = Non
     r.problemas += pedido.problemas
     # O pacote da gerente é obrigatório (achado 3 de quem tentou quebrar, 19/11): sem ele, o papel e a lista de
     # arquivos seriam só o que o agente escreveu. O papel e a lista que valem são os do pacote.
-    titulo = ""
     if pacote is None:
         r.problemas.append("falta o pacote do pedido (--pacote): sem ele, o papel e os arquivos permitidos são só o que "
                            "o agente escreveu (D-796)")
         return r
     texto_do_pacote = pacote.read_text(encoding="utf-8")
     do_pacote = pedido_.ler(texto_do_pacote)
-    titulo = pedido_.titulo_do_pacote(texto_do_pacote)
     r.problemas += [f"no pacote: {p}" for p in do_pacote.problemas]
     for nome in ("papel", "partida", "ramo", "arquivos"):
         if getattr(do_pacote, nome) != getattr(pedido, nome):
@@ -527,7 +525,7 @@ def conferir(onde_parei: Path, etapa: str, raiz: Path, pacote: Path | None = Non
         return r
     pasta = onde_parei.parent
     pasta_rel = pasta.resolve().relative_to(raiz.resolve()).as_posix() + "/"
-    livro = Livro.do_repositorio(raiz)
+    livro = Livro.da_versao_de_teste(raiz)    # o que vale é o da versão de teste (achado N1), nunca o do ramo
 
     for a in porteiro_mudancas.conferir_mudancas(raiz, pedido.partida, pedido.papel, pedido.arquivos, pasta, livro,
                                                  olhar_o_github_do_ramo):
@@ -538,7 +536,7 @@ def conferir(onde_parei: Path, etapa: str, raiz: Path, pacote: Path | None = Non
         conferir_relatorio_de_quem_quebra(texto, r)
         return r
 
-    tags, avisos_da_tabela = tabela_arquivos.etiquetas_do_trabalho(pedido.arquivos, raiz, titulo)
+    tags, avisos_da_tabela = tabela_arquivos.etiquetas_do_trabalho(pedido.arquivos, raiz)
     r.avisos += avisos_da_tabela
     repo = _Repositorio(raiz)
     campos = _conferir_campos(s, etapa, tags, r)

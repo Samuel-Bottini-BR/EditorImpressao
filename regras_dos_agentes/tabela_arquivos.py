@@ -7,9 +7,8 @@ Regras:
   1. Um arquivo recebe as etiquetas de TODAS as linhas cujo padrão casa com ele (não só a primeira).
   2. Linha de reserva (`RESERVA`: `core/*`, `*.md`, `docs/plano/*`, `teste_*.py`, `relatorios/*`) só vale quando
      nenhuma linha mais própria casou: assim `core/windows.py` é só Windows, e `core/filtros.py` é imagem.
-  3. Além do nome, o conteúdo: se o arquivo (ou o texto do pedido, para arquivo novo) fala com o Windows (a lista do
-     porteiro, `fala_com_o_windows`), ganha WIN, mesmo que a tabela não diga (ex.: um script novo que chama o
-     PowerShell).
+  3. Além do nome, o conteúdo: se o arquivo fala com o Windows (a lista do porteiro, `fala_com_o_windows`), ganha WIN,
+     mesmo que a tabela não diga. Arquivo novo (sem conteúdo ainda) que só cai numa linha de reserva recebe todas.
   4. Arquivo que não casa com nenhuma linha recebe TODAS as etiquetas e a gerente é avisada (a tabela está atrasada).
      Um teste (`tests/test_conferencias_pacote.py`) cobra que todo arquivo do git tem linha.
 
@@ -145,8 +144,6 @@ TABELA = [
 # (`porteiro.PALAVRAS_DO_WINDOWS`, a única; achado 13 de quem tentou quebrar) mais as de qualquer programa de fora
 # (rodar processo, a rede, o Velopack), que dão a etiqueta mas não são erro do porteiro.
 PROGRAMA_DE_FORA = re.compile(r"\bsubprocess\b|\bctypes\b|\burllib\b|\brequests\.|\bvelopack\b|CreateProcess", re.I)
-# Para arquivo que ainda não existe, o texto do pedido conta (ex.: "a peça única do Windows").
-PEDIDO_DO_WINDOWS = re.compile(r"\bWindows\b|\binstalador\b|\batualiza", re.I)
 
 
 def fala_com_o_windows(texto: str) -> bool:
@@ -180,7 +177,7 @@ def sem_linha(caminhos) -> list[str]:
     return [c for c in caminhos if not etiquetas_do_arquivo(c)[1]]
 
 
-def etiquetas_do_trabalho(arquivos: list[str], raiz: Path | str, texto_do_pedido: str = "") -> tuple[set, list[str]]:
+def etiquetas_do_trabalho(arquivos: list[str], raiz: Path | str) -> tuple[set, list[str]]:
     """As etiquetas de um trabalho (a lista de arquivos do pedido) e os avisos de arquivo fora da tabela.
 
     Arquivo novo vem com "novo:" na frente (não há conteúdo para ler ainda). Uma pasta (termina em "/") vale por todos
@@ -188,10 +185,10 @@ def etiquetas_do_trabalho(arquivos: list[str], raiz: Path | str, texto_do_pedido
     (`relatorios/<trabalho>/`) não dá etiqueta: todo trabalho tem uma. O lugar único dessa conta: o montador do
     pacote e o formulário da entrega chamam esta função.
 
-    Arquivo que ainda não existe não tem conteúdo para ler: aí vale o texto do pedido (o título do pacote). Se ele
-    fala do Windows, do instalador ou da atualização, ou tem uma palavra da lista do porteiro, o arquivo novo ganha
-    a etiqueta do Windows (achado 12 de quem tentou quebrar, 19/11: `novo:core/registro_do_windows.py` saía só com
-    imagem e git).
+    Arquivo que ainda não existe não tem conteúdo para ler, então vale só o nome, pela tabela (achado N8 da segunda
+    volta de quem quebrou: pelo título do pedido, "desinstalar limpo" ou "publicar" não davam a etiqueta). Se o
+    arquivo novo só cai numa linha de reserva (ex.: `core/*`), ele recebe TODAS as regras e a gerente é avisada para
+    pôr a linha dele na tabela (o lado seguro: pacote grande, nunca pequeno demais).
     """
     raiz = Path(raiz)
     tags: set = set()
@@ -213,8 +210,10 @@ def etiquetas_do_trabalho(arquivos: list[str], raiz: Path | str, texto_do_pedido
             existe = not novo and arquivo.is_file()
             conteudo = arquivo.read_text(encoding="utf-8", errors="replace") if existe else ""
             t, casou = etiquetas_do_arquivo(alvo, conteudo)
-            if not existe and (PEDIDO_DO_WINDOWS.search(texto_do_pedido) or fala_com_o_windows(texto_do_pedido)):
-                t = t | {"WIN"}
+            if not existe and casou and all(p in RESERVA for p in casou):
+                t = set(TODAS)
+                avisos.append(f"{alvo} é novo e só cai na linha de reserva ({', '.join(casou)}): recebe todas as regras; "
+                              "a gerente põe a linha dele na tabela")
             if not casou:
                 avisos.append(f"{alvo} não está na tabela: recebe todas as regras e a gerente é avisada")
             tags |= t

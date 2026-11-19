@@ -14,8 +14,11 @@ from __future__ import annotations
 import re
 from pathlib import Path
 
+from . import conversa_com_o_git as git
+
 CAMINHO = "docs/plano/DECISOES.md"
 NUMERO = re.compile(r"\bD-\d{3,}\b")
+VERSAO_DE_TESTE = "obra-2026-10-26"     # D-797: a versão de teste, onde só a gerente junta (e escreve o Livro)
 
 
 class Livro:
@@ -28,6 +31,17 @@ class Livro:
             m = re.match(r"^\|\s*(D-\d{3,})\s*\|", l)
             if m:
                 self.linhas.setdefault(m.group(1), l)
+
+    @classmethod
+    def da_versao_de_teste(cls, raiz: Path | str) -> "Livro":
+        """O Livro da versão de teste no GitHub (`origin/obra-2026-10-26`), que só a gerente escreve.
+
+        É o Livro que vale para conferir o "sim" do Samuel e as palavras citadas (achado N1 da segunda volta de quem
+        quebrou): o Livro da pasta ou do ramo do agente o próprio agente pode mudar. Busca no GitHub pela peça única do
+        git; sem internet, `GitFalhou` (quem chama diz que não deu para conferir, nunca "passou").
+        """
+        base = git.buscar_ramo(raiz, VERSAO_DE_TESTE)
+        return cls(git.conteudo_no_commit(raiz, base, CAMINHO) or "")
 
     @classmethod
     def do_repositorio(cls, raiz: Path | str) -> "Livro":
@@ -49,6 +63,15 @@ class Livro:
         linha = self.linhas.get(numero, "")
         junta = lambda s: " ".join(s.split())  # noqa: E731
         return bool(citacao.strip()) and junta(citacao) in junta(linha)
+
+    def palavras_do_samuel(self, numero: str) -> str:
+        """A coluna das palavras do Samuel (com a origem) da decisão, ou "" se ela não existe."""
+        col = self.colunas(numero)
+        return col[2] if len(col) > 2 else ""
+
+    def trata_da_lista_de_excecoes(self, numero: str) -> bool:
+        """A decisão fala da lista de exceções do porteiro (como a D-791 e a D-800)?"""
+        return "lista de exceç" in self.linhas.get(numero, "").lower()
 
     def resumo(self, numero: str, limite: int = 700) -> str:
         """A decisão para o pacote: a data, as palavras dele e o "na prática", copiados da linha."""

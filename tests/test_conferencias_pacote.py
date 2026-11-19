@@ -11,6 +11,8 @@ from __future__ import annotations
 import re
 from pathlib import Path
 
+import pytest
+
 from regras_dos_agentes import catalogo, conversa_com_o_git as git, formulario, montar_pacote, pedido, tabela_arquivos
 from regras_dos_agentes.livro import Livro
 
@@ -128,14 +130,22 @@ def test_quem_tenta_quebrar_recebe_todas_as_regras_e_os_seis_campos():
         assert f"## {titulo}" in texto
 
 
-def test_arquivo_novo_ganha_as_regras_do_windows_pelo_texto_do_pedido():
-    """Achado 12 de quem tentou quebrar (19/11): `novo:core/registro_do_windows.py` saía só com imagem e git. Agora,
-    para arquivo que ainda não existe, o texto do pedido (o título do pacote) que fala do Windows dá a etiqueta."""
-    tags, _ = tabela_arquivos.etiquetas_do_trabalho(["novo:core/registro_do_windows.py"], RAIZ,
-                                                    "ler o registro do Windows")
-    assert "WIN" in tags
-    tags, _ = tabela_arquivos.etiquetas_do_trabalho(["novo:core/filtro_novo.py"], RAIZ, "um filtro de imagem novo")
-    assert "WIN" not in tags
+def test_arquivo_novo_so_da_linha_de_reserva_recebe_todas_as_regras():
+    """Achado 12 (primeira volta) e N8 (segunda) de quem quebrou: `novo:core/registro_do_windows.py` saía só com imagem
+    e git, e pelo título do pedido "desinstalar limpo" também não dava. Agora vale a tabela: o arquivo novo que só cai
+    na linha de reserva (`core/*`) recebe todas as regras e a gerente é avisada para pôr a linha dele."""
+    tags, avisos = tabela_arquivos.etiquetas_do_trabalho(["novo:core/registro_do_windows.py"], RAIZ)
+    assert "WIN" in tags and any("linha de reserva" in a for a in avisos)
+    tags, avisos = tabela_arquivos.etiquetas_do_trabalho(["novo:core/windows.py"], RAIZ)
+    assert tags == {"WIN", "GIT"} and avisos == []
+
+
+@pytest.mark.parametrize("arquivo", ["publicar_versao_kaique.py", "empacotar.py", "atualizacao.py",
+                                     "core/testes_a_distancia.py", "core/_testes_a_distancia_windows.py",
+                                     "ui/testes_a_distancia_ui.py"])
+def test_os_arquivos_do_windows_ganham_as_regras_do_windows_pela_tabela(arquivo):
+    """N8: as regras do Windows vêm do arquivo, pela tabela (não do título do pedido)."""
+    assert "WIN" in tabela_arquivos.etiquetas_do_arquivo(arquivo)[0]
 
 
 def test_a_lista_do_windows_da_tabela_e_a_do_porteiro():
