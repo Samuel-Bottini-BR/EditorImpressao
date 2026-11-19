@@ -520,8 +520,8 @@ agora?"). Os dois leem o mesmo andamento e terminam no mesmo sinal de fim da pe�
 
 ### Passo 3. O atualizador, o motor no lugar, a primeira abertura e o mostrador da troca (peças 3 na parte do atualizador, 4, 6a, 9 e 11)
 
-- **O que faz:** o atualizador passa a usar a peça única do Windows; tudo o que a peça 4 diz (seção 2); a peça 9 ligada ao ajudante
-  (a primeira vez, vindo do `current\instalar\`; o motor novo antes da troca; o conserto sozinho); o "preparado" lido do
+- **O que faz:** o atualizador passa a usar a peça única do Windows; tudo o que a peça 4 diz (seção 2); a peça 9 ligada
+  ao ajudante (a primeira vez, vindo do `current\instalar\`; o motor novo antes da troca; o conserto sozinho); o "preparado" lido do
   Windows (sai a marca das Configurações); a primeira abertura sem congelar, com a janelinha da D-782; a fonte de teste
   apontando para o servidor das versões; **a pergunta "Atualizar agora?" ao fechar e o mostrador da troca (peça 11),
   com a janelinha e o ícone** (D-794). O socorro leva antes **um plano curto próprio**, porque mexe no que o ajudante
@@ -535,8 +535,7 @@ agora?"). Os dois leem o mesmo andamento e terminam no mesmo sinal de fim da pe�
   rápido que abre o motor); `main.py` (TELA WIN; o começo: a marca "trocando", a janelinha, a pergunta por trás);
   `ui/aviso_de_atualizacao.py` (TELA WIN; as três frases); `ui/janela_principal.py` (TELA; só o `closeEvent`: a pergunta
   "Atualizar agora?" depois de gravar, D-794); o mostrador da troca (novo em `ui/`, peça 11; a gerente acrescenta a
-  linha TELA WIN); `ui/testes_a_distancia_ui.py` (TELA WIN; só
-  o `primeira_vez_se_preciso`: o preparo por trás e a janelinha da D-782); `configuracoes.py` (TELA WIN; sai a marca do
+  linha TELA WIN); `ui/testes_a_distancia_ui.py` (TELA WIN; só o `primeira_vez_se_preciso`: o preparo por trás e a janelinha da D-782); `configuracoes.py` (TELA WIN; sai a marca do
   preparo); `core/ocr_kraken.py` (`lugares_do_motor` no programa instalado); a peça 9 (arquivo novo ou dentro de
   `atualizacao.py`, o agente diz no ONDE-PAREI; se novo, a gerente acrescenta a linha WIN); `core/windows.py` só se
   faltar algo (a mudança volta a quem quebra). **Todos os arquivos de `ui/` e de `core/` vão nomeados no pedido** e no
@@ -544,8 +543,8 @@ agora?"). Os dois leem o mesmo andamento e terminam no mesmo sinal de fim da pe�
 - **Lista de exceções do porteiro:** este passo tira 14 itens (os de `atualizacao.py` da troca e do preparo; passo 0).
 - **Testes antigos que mudam (D-774):** o do jeito de lançar o "Reiniciar agora" (item 1 da seção 8); a linha da marca do
   preparo nas Configurações (item 5); o "é portátil" (item 6); a falha da troca que fica riscada (item 7); o
-  `trocar_antes_de_abrir` (item 8, pela D-769 e agora pela D-794). **Antes, ao Samuel, um por um:** os que cobram o "preparado" como anotação
-  e os do `preparo.txt` no ProgramData (`test_decisoes_preparo_d749.py`).
+  `trocar_antes_de_abrir` (item 8, pela D-769 e agora pela D-794). **Antes, ao Samuel, um por um:** os que cobram o
+  "preparado" como anotação e os do `preparo.txt` no ProgramData (`test_decisoes_preparo_d749.py`).
 - **Quem tenta quebrar, o foco:** o socorro contra o que o Velopack 1.2.161 faz de verdade (as linhas do código lidas no
   estudo); o sinal de fim com um ajudante já rodando ("IgnoreNew": um "Reiniciar agora" no meio do motor chegando); o
   instante entre o clique no atalho e a marca "trocando"; cada erro classificado como passageiro ou "risca" (a lista
