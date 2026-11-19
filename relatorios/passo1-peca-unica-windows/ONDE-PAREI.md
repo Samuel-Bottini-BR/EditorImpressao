@@ -323,7 +323,13 @@ Lido (documentação ou código), separado do deduzido:
   `tests/test_conferencias_copia_inteira.py` 2; `tests/test_decisoes_brasao.py` 22; `tests/test_decisoes_atualizacao.py`
   38; `tests/test_botoes_em_portugues.py` 5. O repositório do PC continuou inteiro (`--is-shallow-repository` = false
   antes e depois).
-- **No GitHub:** RODADA_AQUI
+- **No GitHub:** rodada 44558364601, sobre o commit 1b1b0fa6: **success** na segunda tentativa (a parte 4 rodou de
+  novo e passou). PORTEIRO: success nas duas tentativas (o trabalho "Porteiro (juiz da versao de teste)").
+  - Na primeira tentativa falhou só `tests/test_decisoes_so_as_letras.py::test_d148_desfazer_o_automatico_devolve_o_so_as_letras_do_livro`,
+    por tempo ("não aconteceu a tempo"). Ele não é deste passo: não usa nada do que mudou; no PC passa (5 de 5).
+  - Rodadas anteriores: 44549715965 (bec15886) e 44553075293 (20054121) falharam em testes meus da peça (a pasta
+    temporária do GitHub no D:, e o dono da pasta com a licença ligada); consertados nos commits 20054121, b271cefc e
+    1b1b0fa6, sem mudar a peça.
 - **Achado de verdade nos testes:** a pasta de dados dos testes fica no D:, onde "Todos" têm controle total; a peça
   recusou a pasta de troca ali (certo). Os testes da peça usam uma pasta própria na pasta temporária da conta (no C:,
   como o programa de verdade), criada e apagada pelo próprio teste.
@@ -389,6 +395,9 @@ Lido (documentação ou código), separado do deduzido:
 - **Bug para a Lista de bugs (19/11):** o disco D: do PC do Samuel dá controle total a "Todos" (visto em
   `saida_teste` deste ramo). Já era conhecido (plano v1, item 59); fica anotado que é por isso que a pasta de troca
   não pode ficar no D:. Não impede o passo.
+- **Bug para a Lista de bugs (19/11), instabilidade:** `tests/test_decisoes_so_as_letras.py::test_d148_desfazer_o_automatico_devolve_o_so_as_letras_do_livro`
+  falhou por tempo ("não aconteceu a tempo: o projeto.json com o 'Só as letras' desfeito") na primeira tentativa da
+  rodada 44558364601 e passou na segunda; passou também na 44553075293 e no PC. Não é deste passo; não mexi nele.
 - **Ideia para a Lista de espera:** a janelinha de antes da pergunta (passo 3) ter um botão "Continuar", para o
   programa ganhar a frente com o clique dele (resolveria o caso do navegador na frente). Está como pergunta abaixo.
 
@@ -415,7 +424,7 @@ sem o certificado pago, a pergunta mostra o **nome do arquivo** do programa, e o
 
 ## Commit
 
-COMMIT_AQUI
+1b1b0fa6 (o último commit do trabalho; depois dele só este formulário muda).
 
 ## O que o agente que tentou quebrar achou
 
