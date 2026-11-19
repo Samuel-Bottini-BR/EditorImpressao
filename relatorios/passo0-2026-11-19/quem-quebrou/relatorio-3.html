@@ -1,0 +1,314 @@
+<!doctype html>
+<html lang="pt-BR">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Passo 0: terceira conferência de quem tentou quebrar</title>
+<style>
+:root { color-scheme: light dark; }
+* { box-sizing: border-box; }
+body {
+  font: 17px/1.65 "Segoe UI", system-ui, sans-serif;
+  max-width: 46rem; margin: 0 auto; padding: 2.5rem 1.5rem 6rem;
+  color: #1c1c1e; background: #fdfdfc;
+}
+h1 { font-size: 2rem; line-height: 1.2; margin: 0 0 .3em; letter-spacing: -.02em; }
+h2 { font-size: 1.35rem; margin: 2.4em 0 .6em; padding-top: .8em;
+     border-top: 1px solid #e6e4e0; letter-spacing: -.01em; }
+h3 { font-size: 1.1rem; margin: 1.8em 0 .4em; }
+h1 + p, h2 + p { margin-top: .4em; }
+p, li { margin: 0 0 .9em; }
+ul, ol { padding-left: 1.3em; }
+strong { font-weight: 640; }
+code {
+  font: .88em ui-monospace, "Cascadia Code", Consolas, monospace;
+  background: #f1efec; padding: .12em .35em; border-radius: 4px;
+}
+pre {
+  background: #f1efec; padding: 1em 1.1em; border-radius: 8px;
+  overflow-x: auto; line-height: 1.5;
+}
+pre code { background: none; padding: 0; }
+blockquote {
+  margin: 1.2em 0; padding: .1em 0 .1em 1.1em;
+  border-left: 3px solid #c9c5be; color: #55524d;
+}
+table {
+  border-collapse: collapse; width: 100%; margin: 1.2em 0;
+  font-size: .95rem; display: block; overflow-x: auto;
+}
+th, td { padding: .5em .8em; text-align: left; border-bottom: 1px solid #e6e4e0; }
+th { font-weight: 620; background: #f7f5f2; white-space: nowrap; }
+tr:last-child td { border-bottom: none; }
+img { max-width: 100%; height: auto; border-radius: 6px; margin: 1em 0;
+      border: 1px solid #e6e4e0; }
+hr { border: none; border-top: 1px solid #e6e4e0; margin: 2.5em 0; }
+.rodape { margin-top: 4em; padding-top: 1.2em; border-top: 1px solid #e6e4e0;
+          font-size: .85rem; color: #86827c; }
+@media (prefers-color-scheme: dark) {
+  body { color: #e8e6e3; background: #1a1917; }
+  h2 { border-top-color: #35332f; }
+  code, pre, th { background: #262421; }
+  th, td { border-bottom-color: #35332f; }
+  blockquote { border-left-color: #4a4741; color: #b0aca6; }
+  img { border-color: #35332f; }
+  .rodape { border-top-color: #35332f; color: #7d7973; }
+}
+@media print {
+  body { max-width: none; padding: 0; color: #000; background: #fff; }
+  h2 { page-break-after: avoid; }
+  table, img { page-break-inside: avoid; }
+}
+</style>
+</head>
+<body>
+<h1>Passo 0 do plano da parte do Windows: terceira conferência de quem tentou quebrar (19/11/2026)</h1>
+<p>Esta é a terceira volta do mesmo verificador, que não escreveu nada do passo 0. Conferi os consertos do segundo
+relatório (N1 a N9) e dos achados 6, 7 e 8, tentei quebrar de novo pelos caminhos que a gerente pediu e recontei a
+lista. Não mexi no código entregue. As provas rodaram na cópia temporária, fora do projeto.</p>
+<h2>Pedido</h2>
+<ul>
+<li>Papel: quebrador</li>
+<li>Commit de partida: 6b29185e</li>
+<li>Ramo: passo0-porteiro-2026-11-19</li>
+</ul>
+<h2>Arquivos que vou mexer</h2>
+<ul>
+<li><code>relatorios/passo0-2026-11-19/quem-quebrou/</code></li>
+</ul>
+<h2>Veredito</h2>
+<p><strong>NÃO ESTÁ PRONTO.</strong></p>
+<p><strong>O que fechou:</strong>
+- A recontagem bate: 189 lugares em 176 itens.
+- O print do caso real agora existe.
+- O N4, o N5, o N7, o N8 e o N9 estão fechados.
+- O N2 está fechado, mas com falsos alarmes novos.</p>
+<p><strong>Dois furos graves continuam na proteção da lista:</strong>
+- <strong>O "sim" do Samuel ainda é forjável.</strong> Basta copiar um trecho de 12 letras ou mais da D-791, da D-799 ou da D-800,
+  que já estão no Livro da versão de teste (R1).
+- <strong>O próprio ramo do agente escolhe com que versão se compara.</strong> Se o nome da versão de teste for trocado no código,
+  o teste do GitHub fica parado em vez de barrar (R2).</p>
+<p><strong>Mais três problemas:</strong>
+- O porteiro ainda pode ser afrouxado pelo uso sem nenhum teste acusar (R3).
+- O teste de velocidade inteiro foi para "depois da entrega", como se fosse escolha do Samuel. As palavras dele na D-800
+  tratam de 5 lugares (R4).
+- O jeito novo de seguir o apelido da biblioteca do Windows acusa linhas que não conversam com o Windows (R5).</p>
+<h2>O que li</h2>
+<ul>
+<li>O <code>relatorios/passo0-2026-11-19/ONDE-PAREI.md</code> na ponta <code>6b29185e</code>: "Como ficou cada achado da segunda volta",
+  "Ressalvas" e "Perguntas para o Samuel".</li>
+<li>O código mudado de <code>dc0a5fc9</code> a <code>8a1f56d8</code>:</li>
+<li><code>livro.py</code> (o Livro da versão de teste);</li>
+<li><code>excecoes.py</code> (<code>problema_do_sim</code>);</li>
+<li><code>protecao.py</code> (os exemplos de cada palavra e o Livro da versão de teste);</li>
+<li><code>porteiro.py</code> (as 48 palavras e o seguir do apelido, <code>_apelidos_do_windows</code>);</li>
+<li><code>tabela_arquivos.py</code> e <code>texto_para_o_samuel.py</code>.</li>
+<li>Os testes <code>tests/test_conferencias_*.py</code> e a lista <code>tests/conferencias_excecoes.json</code>.</li>
+<li>O texto <code>lista-de-excecoes-para-o-samuel.md</code>, o <code>.pdf</code> e o print <code>prints/caso-real-reiniciar-agora.png</code>.</li>
+<li>A linha da D-800 no Livro.</li>
+<li>A rodada 44468529235 do GitHub: "success".</li>
+</ul>
+<h2>O que conferi nas falhas, nas peças de fora e nos caminhos</h2>
+<h3>A recontagem: bate</h3>
+<ul>
+<li>Meu script independente acha 124 linhas de conversa com o Windows pelas palavras. A lista tem mais 47 que só
+  aparecem por um apelido da biblioteca. São 171 nessa conferência.</li>
+<li>Com 2 de <code>DETACHED_PROCESS</code>, 2 de licença de pasta e 14 números de decisão, dá <strong>189</strong>.</li>
+<li>Por passo: o plano conserta 113 (1, 41, 53 e 18); 58 ficam "depois da entrega"; 18 estão "fora do plano, a
+  perguntar".</li>
+</ul>
+<h3>O "sim" do Samuel (N1): não fechado</h3>
+<p>O Livro agora é o da versão de teste, e isso está certo. Mas a conferência aceita:
+- qualquer decisão cuja linha tenha "lista de exceç" em algum lugar (hoje são três: D-791, D-799 e D-800);
+- qualquer trecho de 12 letras ou mais da coluna das palavras daquela decisão. Essa coluna inclui o texto da própria
+  gerente (por exemplo, "Chat, pergunta 2 da proposta").</p>
+<p>Provei na cópia que estes quatro "sim" passam:
+- D-791 com "não sei do que você está falando";
+- D-791 com "as conferências automáticas";
+- D-800 com "esses consertos deixa para depois";
+- D-799 com <code>Aprova o plano?" → "ok</code>.</p>
+<p>E provei o caso inteiro: um erro novo em <code>atualizacao.py</code> e o item na lista com o primeiro "sim" acima.
+- O gancho sai com código 0.
+- <code>protecao.comparar</code> contra a ponta do passo 0 não acha nada.</p>
+<p>Sem internet, o gancho barra com código 3. Isso está certo.</p>
+<h3>O nome da versão de teste: o agente controla</h3>
+<ul>
+<li>O nome do ramo com que se compara (<code>VERSAO_DE_TESTE</code>, em <code>regras_dos_agentes/livro.py:21</code>) vem do código do próprio
+  ramo.</li>
+<li>Troquei para <code>"fase-1"</code>, um ramo que existe e não tem a lista. <code>protecao.comparar</code> devolveu <code>None</code>, e o teste do
+  GitHub trata <code>None</code> como "a versão de teste ainda não tem o porteiro" e fica parado
+  (<code>tests/test_conferencias_protecao.py:58</code>).</li>
+<li>Apontar para um ramo do próprio agente, com um Livro inventado, vai pelo mesmo caminho.</li>
+<li>Esse nome não está entre os dados protegidos. Mesmo que estivesse, a comparação é feita com a versão que o próprio
+  código escolhe.</li>
+</ul>
+<h3>Afrouxar pelo uso (N3): pela metade</h3>
+<ul>
+<li>Os exemplos tirados da lista da versão de teste pegam a palavra apagada da linha que junta as palavras (o caso do
+  <code>msiexec</code>).</li>
+<li>Mas dois outros jeitos passam pela proteção:
+  1. <strong>Tirar a busca sem diferença de maiúscula</strong> (o <code>re.I</code>, em <code>regras_dos_agentes/porteiro.py:251</code>). Os exemplos
+     são todos em minúscula, então a proteção não acha nada. E <code>PowerShell.exe</code> deixa de ser achado.
+  2. <strong>Deixar os arquivos <code>core/testes*</code> de fora da conferência</strong> (em <code>k01</code>, <code>regras_dos_agentes/porteiro.py:432</code>) e
+     rodar <code>--diminuir</code>. A lista cai de 189 para 144, e os 45 lugares saem sem conserto. Os quatro arquivos de teste do
+     porteiro passam (58, 17, 10 e 19 testes passando), e a proteção também.</li>
+<li>Só a conferência das mudanças rodada pela gerente pegaria, porque os arquivos do porteiro estão entre os que só a
+  gerente muda. Isso já está nas ressalvas dele, mas o "N3 fechado" do ONDE-PAREI promete mais do que isso.</li>
+</ul>
+<h3>O apelido da biblioteca do Windows (N2): consertado, com falsos alarmes</h3>
+<ul>
+<li><code>return kernel32, ...</code> é seguido, e <code>CDLL</code>, <code>getattr</code> e <code>creationflags</code> com o número numa variável agora são acusados.</li>
+<li>Mas uma função que devolve o <strong>resultado</strong> de uma chamada feita pela biblioteca vira "devolve a biblioteca", e quem
+  a chama passa a contar. Isso contradiz o docstring (<code>regras_dos_agentes/porteiro.py:414</code>).</li>
+<li>Também conta o segundo nome de <code>kernel32, entrada = ...</code> e o método de mesmo nome de outra classe.</li>
+<li>Na lista de hoje, são pelo menos dois falsos:</li>
+<li><code>atualizacao.py:748</code>, <code>if _MARCA is not None or sys.platform != "win32":</code>. O <code>_MARCA</code> é o resultado de uma
+    chamada da biblioteca, a marca que diz que o programa está aberto.</li>
+<li><code>teste_velocidade.py:2317</code>, em <code>despedir</code>, que chama <code>_sozinho_no_console()</code>. Essa função devolve um sim ou não.</li>
+</ul>
+<h3>O teste de velocidade inteiro em "depois da entrega": não bate com a D-800</h3>
+<ul>
+<li>A D-800 trata de "os 5 lugares", entre eles "o teste de velocidade lendo placa de vídeo e disco pelo PowerShell
+  [...] 2". A prova escrita na linha da D-800 é "A lista de exceções do fim do plano tem só esses 5".</li>
+<li>Dos 54 lugares do teste de velocidade, uns 10 são essa leitura: <code>_placas_de_video</code> 5, <code>tipo_do_disco</code> 2,
+  <code>_powershell</code> 1 e <code>_caminho_do_powershell</code> 2.</li>
+<li>Os outros 44 são coisas que ninguém explicou ao Samuel:</li>
+<li>a memória do processo (<code>_pico_pelo_windows</code> 7, <code>_memoria_gb</code> 1);</li>
+<li>a janela preta (17);</li>
+<li>impedir o computador de dormir (<code>_pedir_ao_windows</code> 4);</li>
+<li>a classe da janela (4);</li>
+<li>o registro (3).</li>
+</ul>
+<h3>O texto para o Samuel (achado 8 e N6): o print fechou, o resto não</h3>
+<ul>
+<li>O print é de verdade: a janela de versão nova de 18/11, com "Reiniciar agora" circulado e três frases em vermelho e
+  preto.</li>
+<li>A primeira linha diz o que é e onde fica, e o texto diz o que a conferência não faz.</li>
+<li>Mas o texto diz "como você escolheu em 19/11 (58 lugares, nos mesmos três pedaços [...] a memória, a janela preta)".
+  Isso apresenta como escolha dele o que ele não escolheu (R4).</li>
+<li>E 5 dos 18 lugares da pergunta nova são programas abertos "sem janela preta" (<code>CREATE_NO_WINDOW</code>), que não mudam
+  nada no Windows (R6).</li>
+</ul>
+<h3>Os outros: fechados de verdade</h3>
+<ul>
+<li><strong>N4:</strong> o rótulo de pronto em <code>relatorios/outro/quem-quebrou/</code> e em <code>relatorios/quem-quebrou/</code> agora é barrado; na
+  pasta do próprio trabalho, passa.</li>
+<li><strong>N5:</strong> <code>creationflags=0</code>, "self-service" e "hku:" não acusam mais.</li>
+<li><strong>N7:</strong> o f-string comum com <code>{}</code> não esconde mais o número de decisão.</li>
+<li><strong>N8:</strong> um arquivo novo de <code>core/</code> recebe todas as regras, e a gerente é avisada.</li>
+<li><strong>N9:</strong> conferido.</li>
+<li><strong>Os vizinhos de antes:</strong> <code>sc</code> numa lista, <code>net stop</code>, <code>taskkill</code>, <code>-ComObject</code>, <code>Get-PhysicalDisk</code> e <code>importlib</code>
+  com <code>winreg</code> agora são acusados.</li>
+<li><strong>O que ainda escapa e não é defeito</strong>, porque o texto diz "escrito com as palavras que ela conhece": <code>vssadmin</code>,
+  <code>setx</code>, <code>bitsadmin</code>, <code>wscript</code> e textos montados em pedaços.</li>
+</ul>
+<h3>O resto</h3>
+<ul>
+<li>Nada mudou fora de <code>regras_dos_agentes/</code>, <code>ganchos/</code>, <code>tests/test_conferencias_*</code>, da lista e de
+  <code>relatorios/passo0-2026-11-19/</code>.</li>
+<li>O porteiro inteiro leva 16 s (antes, 11 s).</li>
+</ul>
+<h2>Caminhos que o outro não listou</h2>
+<ul>
+<li>O nome da versão de teste e o caso "a versão de teste não tem a lista": hoje, os dois desligam a proteção (R2).</li>
+<li>Afrouxar pelo uso:</li>
+<li>tirar o <code>re.I</code>;</li>
+<li>mudar o que fica de fora em <code>k01</code> ou em <code>e_programa</code>, e depois rodar <code>--diminuir</code> (R3).</li>
+<li>O "sim" com um trecho do texto da gerente, dentro da coluna das palavras (R1).</li>
+</ul>
+<h2>Falhas não pensadas e resultado não conferido</h2>
+<ul>
+<li><strong>Resultado não conferido:</strong> a proteção dá <code>None</code> e o teste para, com o motivo "ainda não tem o porteiro". Isso
+  acontece também quando o ramo do agente aponta para o lugar errado (R2). Ficar parado parece com "passou", e não é.</li>
+<li><strong>Falha não pensada:</strong> <code>--diminuir</code> aceita qualquer diminuição. Se a regra encolheu, os lugares saem da lista sem
+  conserto, e nenhum teste do GitHub percebe (R3).</li>
+<li><strong>Texto que não bate com o código:</strong> os itens 2 e 12 de "Como ficou cada achado (primeira volta)" no ONDE-PAREI
+  ainda dizem "125", "conta só a linha onde a biblioteca é pega" e "o título do pedido dá a etiqueta". O código de hoje
+  faz diferente (R7).</li>
+</ul>
+<h2>As regras que conferi</h2>
+<ul>
+<li><strong>CLAUDE.md §11.12:</strong></li>
+<li>ponto 2, nada dado como feito sem conferir: pela metade (R1, R2);</li>
+<li>ponto 3, a lista do que pode falhar: faltaram os casos de R2 e R3;</li>
+<li>ponto 1, uma peça só: cumprida.</li>
+<li><strong>CLAUDE.md §11.13</strong>, no texto para o Samuel:</li>
+<li>regra 3, print que prova: cumprida;</li>
+<li>regras 1, 2, 7 e 9: cumpridas;</li>
+<li>regra 10 e a regra 7 do §11 (só o que ele mandou): não cumpridas para os 44 lugares do teste de velocidade (R4);</li>
+<li>regra 6: uma parte da pergunta trata de bandeira que não é erro (R6).</li>
+<li><strong>Cada decisão tocada:</strong></li>
+<li>D-791: pela metade (R1, R2, R3);</li>
+<li>D-800: não cumprida no alcance (R4);</li>
+<li>D-796, D-798, D-792 e D-784: cumpridas;</li>
+<li>D-605: cumprida (nada fora dos arquivos do pedido mudou);</li>
+<li>D-767, D-785, D-786, D-787 e D-797: cumpridas.</li>
+</ul>
+<h2>Achados</h2>
+<p>Os números começam com "R" (terceira volta). Os achados antigos que continuam abertos ficam assim:
+- 6 e N3: pela metade (R2, R3);
+- 7 e N1: não fechados (R1);
+- 8 e N6: pela metade (R4).</p>
+<ol>
+<li><strong>R1, grave: o "sim" do Samuel continua forjável</strong> (<code>regras_dos_agentes/excecoes.py:135</code>, <code>regras_dos_agentes/livro.py:21</code>).
+   - Qualquer trecho de 12 letras ou mais da coluna das palavras da D-791, da D-799 ou da D-800 passa. Isso inclui o
+     texto da própria gerente.
+   - Provado: um item novo com <code>{"decisao": "D-791", "palavras": "não sei do que você está falando"}</code> passa no gancho
+     (código 0) e na proteção (nenhum achado).
+   - O próprio ONDE-PAREI diz "A D-791 de hoje não serve sozinha", mas o código aceita.
+   - Destino: consertar. O "sim" tem de apontar para uma decisão que registre aquele "sim" e nomeie o que ele abre:
+     para um item novo, o arquivo e o texto do item; para a lista inteira, quantos lugares e o commit lido. As decisões
+     que só falam da lista em geral (D-791, D-799, D-800) não podem valer.</li>
+<li><strong>R2, grave: a versão com que se compara é escolhida pelo código do próprio ramo, e "não achei a lista lá" vira
+   teste parado</strong> (<code>regras_dos_agentes/livro.py:21</code>, <code>regras_dos_agentes/protecao.py:138</code>,
+   <code>tests/test_conferencias_protecao.py:58</code>).
+   - Provado: com <code>VERSAO_DE_TESTE = "fase-1"</code>, <code>protecao.comparar</code> dá <code>None</code>.
+   - Destino: consertar.<ul>
+<li>O nome da versão de teste vem de fora do ramo do agente. Por exemplo, do workflow do GitHub, no ramo dos testes.</li>
+<li>Depois que o passo 0 for juntado, "a versão de teste não tem a lista" vira falha, nunca teste parado. Por
+   exemplo, com uma marca no workflow que a gerente liga ao juntar.</li>
+</ul>
+</li>
+<li><strong>R3, médio: o porteiro ainda pode ser afrouxado pelo uso sem nenhum teste acusar</strong> (<code>regras_dos_agentes/porteiro.py:251</code>
+   e <code>regras_dos_agentes/porteiro.py:432</code>).
+   - Provado de dois jeitos: tirando o <code>re.I</code>, <code>PowerShell.exe</code> deixa de ser achado; e deixando <code>core/testes*</code> de fora
+     da conferência e rodando <code>--diminuir</code>, a lista cai de 189 para 144.
+   - Nos dois casos, os quatro arquivos de teste do porteiro e a proteção passam.
+   - Destino: consertar. A proteção roda o porteiro da versão de teste (código em que se confia, buscado de lá) neste
+     ramo e compara com a lista. Assim, nenhum lugar sai da lista enquanto o porteiro de lá ainda o acha. Ou, no mínimo,
+     escrever nas ressalvas que o "N3" só cobre as palavras, e não o resto do código do porteiro.</li>
+<li><strong>R4, médio: o teste de velocidade inteiro (54 lugares) foi para "depois da entrega (D-800)", mas a decisão do
+   Samuel trata de 5 lugares</strong> (<code>regras_dos_agentes/excecoes.py:63</code>).
+   - A D-800 diz "o teste de velocidade lendo placa de vídeo e disco pelo PowerShell [...] 2", e a prova escrita nela
+     é "A lista de exceções do fim do plano tem só esses 5".
+   - Uns 10 lugares são essa leitura. Os outros 44 (a memória do processo, a janela preta, impedir o computador de
+     dormir, a classe da janela, o registro) nunca foram explicados a ele.
+   - E o texto para ele diz "como você escolheu" (<code>relatorios/passo0-2026-11-19/lista-de-excecoes-para-o-samuel.md:20</code>).
+   - Destino: vira pergunta. Os 44 vão para a pergunta dos lugares fora do plano, ou a gerente pergunta direto se a
+     escolha de 19/11 vale para o teste de velocidade inteiro. Até ele responder, o texto não diz "como você escolheu"
+     sobre eles.</li>
+<li><strong>R5, baixo: o seguir do apelido acusa linhas que não conversam com o Windows</strong> (<code>regras_dos_agentes/porteiro.py:414</code>).
+   - Uma função que devolve o resultado de uma chamada da biblioteca vira "devolve a biblioteca", e quem a chama passa
+     a contar. O mesmo vale para o segundo nome de uma tupla e para um método de mesmo nome em outra classe.
+   - Na lista: <code>atualizacao.py:748</code> e <code>teste_velocidade.py:2317</code>.
+   - Provado num exemplo, com 4 linhas falsas.
+   - Destino: consertar. Uma função só "devolve a biblioteca" quando o <code>return</code> traz o apelido em si, não uma chamada
+     feita por ele. A tupla vira apelido só na posição certa. Depois, recontar a lista.</li>
+<li><strong>R6, baixo: "abrir sem janela preta" (<code>CREATE_NO_WINDOW</code>) conta como conversa com o Windows</strong>
+   (<code>regras_dos_agentes/porteiro.py:251</code>).
+   - São 5 dos 18 lugares da pergunta nova: o Tesseract, o Kraken, as páginas em outro processo e a tela de
+     carregamento (<code>core/ocr_tesseract.py</code>, <code>core/paginas_em_outro_processo.py:112</code>).
+   - Essa bandeira só esconde a janela de um programa aberto. Não muda o Windows, e o plano não a chama de erro.
+   - Destino: pergunta à gerente sobre o alcance. Sugestão: só o número do <code>DETACHED_PROCESS</code> e as bandeiras que soltam
+     o processo contam, não a que esconde a janela.</li>
+<li><strong>R7, baixo: texto do ONDE-PAREI que não bate com o código</strong>
+   (<code>relatorios/passo0-2026-11-19/ONDE-PAREI.md:93</code>). Os itens 2 e 12 da primeira volta descrevem o comportamento
+   antigo. Destino: consertar o texto.</li>
+</ol>
+<h2>Para a gerente: o que ficou fora do projeto</h2>
+<p>Na cópia temporária (<code>C:\Users\fotog\AppData\Local\Temp\claude\b9ca076ad002e817\848d7b72-406b-4bfe-aabf-f5b3005d7b22\scratchpad\quebrar\copia</code>)
+ficaram mais estes ramos de prova: <code>prova3-sim</code>, <code>prova3-uso</code>, <code>prova3-core</code>, e <code>prova3-k10</code>. Ficou
+também o pacote <code>pac3.md</code>. Nada foi apagado.</p>
+<p class="rodape">Editor de Impressão &middot; gerado em 19/11/2026 às 02:34</p>
+</body>
+</html>
