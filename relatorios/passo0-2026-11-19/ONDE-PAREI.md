@@ -520,10 +520,13 @@ conferência antes do commit (não ligada) e o pacote do passo 1, montado pelo p
 - Teste de reversão da terceira volta: os 4 testes do R5 e o do `CREATE_NO_WINDOW` guardado numa variável (R6) falham
   com o código anterior (`8a1f56d8`) e passam com o de hoje.
 - Prova de verdade do juiz no repositório real: ver "Como ficou cada achado da terceira volta", R2 e R3.
-- GitHub, rodada 44475889011 (o último commit de código, 93ab77fb): passou inteira. 251 arquivos de teste, 4189 passaram, 0 falharam,
-  148 pulados (entre eles o teste do porteiro que espera o "sim" e o de proteção, que espera a versão de teste ter o
-  porteiro, os dois com o motivo escrito); os botões e os prints da janela real também passaram. Esta rodada ainda
-  não tem o juiz (a mudança do workflow é da gerente): a K21 dá "não conferido" por isso, de propósito.
+- GitHub, rodada 44481987404 (https://github.com/Samuel-Bottini-BR/EditorImpressao/actions/runs/44481987404; o último
+  commit de código, a664329e): passou inteira. 251 arquivos de teste, 4194 passaram, 0 falharam, 148 pulados (entre
+  eles o teste do porteiro que espera o "sim" e o de proteção, que espera a versão de teste ter o porteiro, os dois
+  com o motivo escrito); os botões e os prints da janela real também passaram. É a primeira rodada deste ramo com o
+  juiz: o trabalho "Porteiro (juiz da versao de teste)" escreveu "PORTEIRO: NAO CONFERIDO (a versão de teste
+  obra-2026-10-26 ainda não tem o porteiro)", lido pelo próprio formulário (`ler_rodada`, só no trabalho do juiz). A
+  K21 dá "não conferido" por isso, de propósito (Q5).
 
 ## Caminho e função
 
