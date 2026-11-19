@@ -63,7 +63,7 @@ def k09(pasta_do_relatorio: Path, raiz: Path) -> list[Achado]:
     return saida
 
 
-ROTULO_DE_PRONTO = re.compile(r"PRONTO\s+PARA\s+CONFERIR|^\W*pronto\s+para\s+conferir\b", re.M)
+ROTULO_DE_PRONTO = re.compile(r"PRONTO\s+PARA\s+CONFERIR|(?i:^\W*pronto\s+para\s+conferir\b)", re.M)
 
 
 def k10(raiz: Path, base: str, papel: str) -> list[Achado]:
