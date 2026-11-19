@@ -112,6 +112,22 @@ def main() -> int:
 
 
 if __name__ == "__main__":
+    # Trabalho de administrador (plano da parte do Windows, passo 1; 19/11/2026):
+    # o programa aberto pela pergunta do Windows ("Deseja permitir...?") com a
+    # licença de administrador e um aviso de trabalho na pasta de troca. Atendido
+    # PRIMEIRO, antes de qualquer janela, do brasão e dos outros modos: não mostra
+    # nada, faz só os passos do aviso, escreve o relatório e sai. Ver
+    # core/windows.py (pedir_licenca e atender_trabalho_de_administrador). Seguro:
+    # o resto do programa não muda. Arriscado: mover para depois do brasão ou de
+    # um import pesado (a pergunta mostraria o brasão girando e demoraria).
+    # O texto do argumento fica escrito aqui, como o dos outros modos abaixo:
+    # importar core.windows em toda abertura atrasaria o brasão em ~100 ms
+    # (medido em 19/11). O lugar único dele é core.windows.ARG_TRABALHO_DE_ADMINISTRADOR,
+    # e tests/test_windows_peca.py cobra que os dois são iguais.
+    if len(sys.argv) > 1 and sys.argv[1] == "--trabalho-de-administrador":
+        from core.windows import atender_trabalho_de_administrador
+
+        raise SystemExit(atender_trabalho_de_administrador(sys.argv[2:]))
     # Servidor de paginas (30/09/2026): o programa desenha as paginas do PDF
     # num processo a parte, para a janela nunca congelar - ver
     # core/paginas_em_outro_processo.py. Empacotado, esse processo e este mesmo
