@@ -623,3 +623,24 @@ def test_r6_outra_bandeira_continua_sendo_conversa_com_o_windows(bandeira):
     fonte = ('"""Programa."""\nimport subprocess\n\n\ndef f(c, bandeiras_que_vem_de_fora):\n    """Abre."""\n'
              f'    subprocess.Popen(c, creationflags={bandeira})\n')
     assert codigos(conferir({"core/ocr_x.py": fonte}), "K01") == [("core/ocr_x.py", 7)], bandeira
+
+
+# ---------------------------------------------------------------- quarta volta de quem quebrou (Q2, Q4)
+
+def test_q2_todo_py_fora_das_pastas_de_fora_e_programa():
+    """Achado Q2 (quarta volta, 19/11/2026): só core/, ui/ e a raiz eram programa; um `servicos/__init__.py` com
+    `schtasks`, importado pelo `main.py`, passava. Agora todo `.py` conta, menos as pastas da lista `NAO_E_PROGRAMA`."""
+    achados = conferir({"servicos/__init__.py": '"""Serviços."""\nCMD = ["schtasks", "/Run"]\n',
+                        "tests/test_x.py": '"""Teste."""\nCMD = ["schtasks", "/Run"]\n'})
+    assert [a for a, _ in codigos(achados, "K01")] == ["servicos/__init__.py"]
+    assert porteiro.e_programa("servicos/__init__.py") and porteiro.e_programa("main.py")
+    assert not any(porteiro.e_programa(p + "/x.py") for p in porteiro.NAO_E_PROGRAMA)
+    assert sorted(codigos(conferir({"servicos/ação.py": "X = 1\n"}), "K08")) == [("servicos/ação.py", 0)]
+
+
+def test_q4_codigo_compilado_sem_fonte_no_repositorio_e_acusado():
+    """Achado Q4 (quarta volta, 19/11/2026): um `.pyc` guardado no repositório é importado pelo Python e o porteiro não
+    o lê; passava calado. Agora vira K00 (que nunca entra na lista de exceções)."""
+    achados = porteiro.conferir_codigo(["servicos/__pycache__/x.cpython-314.pyc", "core/y.pyo", "core/z.py"],
+                                       lambda c: '"""Z."""\n' if c.endswith(".py") else None)
+    assert sorted(a for a, _ in codigos(achados, "K00")) == ["core/y.pyo", "servicos/__pycache__/x.cpython-314.pyc"]

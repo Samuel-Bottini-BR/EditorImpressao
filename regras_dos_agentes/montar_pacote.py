@@ -69,12 +69,14 @@ def formulario_em_branco(tags: set, papel: str) -> list[str]:
     return saida
 
 
-def lugares_da_lista(arquivos: list[str], raiz: Path) -> list[str]:
+def lugares_da_lista(arquivos: list[str], raiz: Path, passo: str | None = None) -> list[str]:
     """Os lugares da lista de exceções nos arquivos do pedido, com o aviso de como a lista funciona (achado 11).
 
-    A lista identifica cada lugar pelo texto da linha: mexer numa dessas linhas sem consertá-la (mudar de função,
-    renomear uma variável, reformatar) vira erro novo, que só sai com o "sim" do Samuel. Quem conserta tira o item no
-    mesmo commit (`python -m regras_dos_agentes excecoes --diminuir`).
+    A lista identifica cada lugar pela função e pelo texto da linha: mexer numa dessas linhas sem consertá-la, ou
+    renomear ou mover a função onde ela está, vira erro novo (e nenhum item entra na lista por ramo de agente). Quem
+    conserta tira o item no mesmo commit (`python -m regras_dos_agentes excecoes --diminuir`). Com `passo`, diz também
+    quais funções guardam lugares de OUTROS passos e não podem ser renomeadas nem movidas neste (achado Q3 da quarta
+    volta de quem quebrou).
     """
     caminho = Path(raiz) / excecoes.ARQUIVO_DA_LISTA
     if not caminho.exists():
@@ -84,17 +86,25 @@ def lugares_da_lista(arquivos: list[str], raiz: Path) -> list[str]:
     if not nos_arquivos:
         return []
     saida = ["## Lugares da lista de exceções nos seus arquivos", "",
-             f"{sum(int(i['quantas']) for i in nos_arquivos)} lugares. Cada um é identificado pelo texto da linha: mexer "
-             "numa dessas linhas sem consertá-la (mudar de função, renomear, reformatar) vira erro novo, que só sai com o "
-             "\"sim\" do Samuel. Quem conserta tira o item no mesmo commit (`python -m regras_dos_agentes excecoes "
-             "--diminuir`).", ""]
-    saida += [f"- {i['conferencia']} `{i['arquivo']}` ({i['funcao']}, passo {i['passo']}, {i['quantas']}x): "
-              f"`{i['texto'][:90]}`" for i in nos_arquivos]
+             f"{sum(int(i['quantas']) for i in nos_arquivos)} lugares. Cada um é identificado pela função e pelo texto da "
+             "linha: mexer numa dessas linhas sem consertá-la, ou renomear ou mover a função onde ela está, vira erro "
+             "novo (e nenhum item entra na lista por ramo de agente). Quem conserta tira o item no mesmo commit "
+             "(`python -m regras_dos_agentes excecoes --diminuir`).", ""]
+    if passo is not None:
+        outras = sorted({(i["arquivo"], i["funcao"] or "(fora de função)", i["passo"]) for i in nos_arquivos
+                         if i["passo"] != passo})
+        if outras:
+            saida += [f"**Não renomeie nem mova estas funções neste trabalho (passo {passo}): elas guardam lugares de "
+                      "outros passos, e o lugar é a função e o texto.**", ""]
+            saida += [f"- `{a}`, função `{f}` (lugares do passo {p})" for a, f, p in outras]
+            saida.append("")
+    saida += [f"- {i['conferencia']} `{i['arquivo']}` ({i['funcao'] or 'fora de função'}, passo {i['passo']}, "
+              f"{i['quantas']}x): `{i['texto'][:90]}`" for i in nos_arquivos]
     return saida + [""]
 
 
 def montar(papel: str, titulo: str, numeros: list[str], arquivos: list[str], raiz: Path, partida: str,
-           ramo: str) -> str:
+           ramo: str, passo: str | None = None) -> str:
     """O texto do pacote."""
     if papel not in PAPEIS:
         raise ValueError(f"papel desconhecido: {papel} (vale: {', '.join(PAPEIS)})")
@@ -110,7 +120,7 @@ def montar(papel: str, titulo: str, numeros: list[str], arquivos: list[str], rai
     p += [f"> Aviso à gerente: {a}" for a in avisos]
     p += ["", "Copie as duas seções abaixo, sem mudar nada, para o começo do seu ONDE-PAREI: o porteiro lê dali quais "
           "arquivos você pode mexer, e a gerente compara com este pacote.", "", pedido.bloco()]
-    p += lugares_da_lista(arquivos, raiz)
+    p += lugares_da_lista(arquivos, raiz, passo)
     p += ["## 1. Sempre (todo trabalho)", ""]
     for s in catalogo.SEMPRE:
         p.append(f"{s['n']}. **{s['titulo']}.** {s['texto']} *Por quê:* {s['porque']}")

@@ -329,8 +329,31 @@ def test_k21_o_juiz_do_porteiro_tem_de_ter_conferido(entrega, monkeypatch, marca
 
 
 def test_a_marca_do_juiz_e_lida_no_registro_da_rodada():
-    """A marca que o juiz escreve é achada no registro (como a K21 lê)."""
+    """A marca que o juiz escreve é achada no registro, no formato que o GitHub devolve (trabalho, passo e hora antes
+    do texto). Mudou na quarta volta (achado Q1): texto que só CONTÉM a marca no meio da linha não conta mais."""
+    juiz = "Porteiro (juiz da versao de teste)\tJulgar\t"
+    assert github.marca_do_porteiro(juiz + "2026-11-20T01:00:00.1234567Z PORTEIRO: CONFERIDO\n") == "CONFERIDO"
     assert github.marca_do_porteiro("2026-11-20T01:00Z PORTEIRO: CONFERIDO\n") == "CONFERIDO"
-    assert github.marca_do_porteiro("x PORTEIRO: NAO CONFERIDO (a versão de teste ainda não tem o porteiro)\r\n") == \
+    assert github.marca_do_porteiro(
+        juiz + "2026-11-20T01:00:00Z PORTEIRO: NAO CONFERIDO (a versão de teste ainda não tem o porteiro)\r\n") == \
         "NAO CONFERIDO (a versão de teste ainda não tem o porteiro)"
+    assert github.marca_do_porteiro(juiz + "2026-11-20T01:00:00Z echo 'PORTEIRO: CONFERIDO'\n") is None
     assert github.marca_do_porteiro("nada aqui") is None
+
+
+# O registro de uma rodada falsa, como o de quem quebrou (quarta volta, Q1): o código do agente roda na suíte e escreve
+# uma marca "CONFERIDO" antes; o juiz, no trabalho dele, escreve "NAO CONFERIDO".
+TRABALHOS = [{"name": "Testes (pytest)", "databaseId": 1, "conclusion": "success"},
+             {"name": "Porteiro (juiz da versao de teste)", "databaseId": 2, "conclusion": "success"}]
+REGISTROS = {1: "Testes (pytest)\tpytest\t2026-11-20T01:00:00Z PORTEIRO: CONFERIDO\n",
+             2: "Porteiro (juiz da versao de teste)\tJulgar\t2026-11-20T01:05:00Z PORTEIRO: NAO CONFERIDO (proposta)\n"}
+
+
+def test_q1_a_marca_so_vale_lida_no_trabalho_do_juiz():
+    """Achado Q1 (quarta volta de quem quebrou, 19/11/2026): a K21 lia a primeira marca de qualquer trabalho, e o
+    código do agente, que roda na suíte, podia escrever "PORTEIRO: CONFERIDO" antes do juiz. Agora só vale a marca do
+    trabalho de nome "Porteiro (juiz da versao de teste)"; sem esse trabalho, não há marca (e a K21 fica pendente)."""
+    assert github.marca_do_juiz(TRABALHOS, lambda j: REGISTROS[j["databaseId"]]) == "NAO CONFERIDO (proposta)"
+    assert github.marca_do_juiz(TRABALHOS[:1], lambda j: REGISTROS[j["databaseId"]]) is None
+    pulado = [TRABALHOS[0], dict(TRABALHOS[1], conclusion="skipped")]
+    assert github.marca_do_juiz(pulado, lambda j: REGISTROS[j["databaseId"]]) is None

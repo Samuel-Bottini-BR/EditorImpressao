@@ -14,9 +14,8 @@ Dois tipos:
 O que já está errado hoje no código fica na lista de exceções (`excecoes.py`), um item por lugar, e só ali.
 Nenhuma conferência tem exceção própria escrita no código: nem por arquivo, nem por caso.
 
-Onde cada busca olha (o "programa"): os `.py` de `core/`, de `ui/` e da raiz. O pacote `regras_dos_agentes/`, os
-testes e os scripts de outras pastas não são programa (o próprio porteiro tem as palavras que procura escritas como
-dado). A K16 e a K24 olham também os scripts de teste e de apoio, e leem a estrutura do código (a importação e a
+Onde cada busca olha (o "programa"): todo `.py` do repositório, menos as pastas de `NAO_E_PROGRAMA` (os testes, os
+relatórios, a documentação, o próprio porteiro, que tem as palavras que procura escritas como dado, e o código de fora). A K16 e a K24 olham também os scripts de teste e de apoio, e leem a estrutura do código (a importação e a
 chamada de verdade), não o texto.
 
 Seguro mexer: o texto de `porque`; acrescentar uma palavra a uma busca **com** o exemplo errado e o certo no teste.
@@ -121,12 +120,22 @@ class Achado:
 PECA_UNICA_DO_WINDOWS = "core/windows.py"   # o único lugar onde a conversa com o Windows é permitida (plano, peça 1)
 
 
-def e_programa(caminho: str) -> bool:
-    """Um `.py` do programa: de `core/`, de `ui/` (com as subpastas) ou da raiz."""
-    if not caminho.endswith(".py"):
-        return False
+# As pastas do repositório que NÃO são programa (achado Q2 da quarta volta de quem quebrou: um `servicos/__init__.py`
+# com `schtasks`, importado pelo `main.py`, passava). Todo o resto conta como programa, inclusive pasta nova. Lugar
+# único: o porteiro, a K08 e a tabela leem daqui. PROTEGIDA ("igual"): pôr uma pasta aqui afrouxa o porteiro.
+NAO_E_PROGRAMA = ("tests", "relatorios", ".github", ".claude", "docs", "memoria", "historico", "gabarito",
+                  "regras_dos_agentes", "ganchos", "terceiros", "velhos")
+
+
+def _no_programa(caminho: str) -> bool:
+    """O arquivo está numa parte do repositório que é programa (a raiz ou uma pasta fora de `NAO_E_PROGRAMA`)?"""
     partes = caminho.split("/")
-    return len(partes) == 1 or partes[0] in ("core", "ui")
+    return len(partes) == 1 or partes[0] not in NAO_E_PROGRAMA
+
+
+def e_programa(caminho: str) -> bool:
+    """Um `.py` do programa: qualquer `.py` do repositório fora das pastas de `NAO_E_PROGRAMA`."""
+    return caminho.endswith(".py") and _no_programa(caminho)
 
 
 def e_texto_que_a_pessoa_ve(caminho: str) -> bool:
@@ -283,7 +292,7 @@ BARRA_DE_ROLAGEM = {"escuro": "#4A4D54", "cinza": "#6A6A6A", "claro": "#B5B3AC"}
 # quebrar, 19/11). Só acrescentar é livre. Cada nome aqui é uma atribuição de valor literal neste arquivo.
 PROTEGIDAS = ("PALAVRAS_DO_WINDOWS", "PALAVRAS_DE_DETACHED", "PALAVRAS_DE_LICENCA", "PADRAO_DO_NUMERO_DE_DECISAO",
               "PADRAO_DO_EMOJI", "GERADORES", "PADRAO_DAS_FERRAMENTAS_PROIBIDAS", "BARRA_DE_ROLAGEM",
-              "PECA_UNICA_DO_WINDOWS", "FORA_DO_PROJETO")
+              "PECA_UNICA_DO_WINDOWS", "FORA_DO_PROJETO", "NAO_E_PROGRAMA")
 
 
 def _texto_do_lugar(linha_de_codigo: str) -> str:
@@ -687,15 +696,16 @@ def k16_requisitos(caminho: str, fonte: str) -> list[Achado]:
 
 
 def k08(caminhos: Iterable[str]) -> list[Achado]:
-    """K08: nome de arquivo ou pasta com acento (ou outra letra fora do ASCII) em core/, ui/ ou na raiz."""
-    saida = []
-    for c in caminhos:
-        partes = c.split("/")
-        if len(partes) > 1 and partes[0] not in ("core", "ui"):
-            continue
-        if any(ord(letra) > 127 for letra in c):
-            saida.append(Achado("K08", c, 0, c, "nome de arquivo com acento"))
-    return saida
+    """K08: nome de arquivo ou pasta com acento (ou outra letra fora do ASCII) no programa (fora de `NAO_E_PROGRAMA`)."""
+    return [Achado("K08", c, 0, c, "nome de arquivo com acento") for c in caminhos
+            if _no_programa(c) and any(ord(letra) > 127 for letra in c)]
+
+
+def k00_compilado_sem_fonte(caminhos: Iterable[str]) -> list[Achado]:
+    """Um `.pyc` (ou `.pyo`) guardado no repositório: o Python o importa, e o porteiro não consegue lê-lo (achado Q4 da
+    quarta volta). Vira K00, que nunca entra na lista de exceções."""
+    return [Achado("K00", c, 0, c, "código compilado (.pyc) no repositório: o porteiro não consegue ler e o Python "
+                   "importa") for c in caminhos if c.endswith((".pyc", ".pyo"))]
 
 
 _DO_CODIGO_PYTHON: list[Callable[[_Arquivo], list[Achado]]] = [k01, k02, k03, k04, k05, k06, k07, k16_codigo, k22, k24]
@@ -708,7 +718,7 @@ def conferir_codigo(caminhos: Iterable[str], ler: Callable[[str], str | None]) -
     porteiro deveria ler e não conseguiu vira achado (K00), nunca "passou".
     """
     caminhos = sorted(set(caminhos))
-    achados: list[Achado] = k08(caminhos)
+    achados: list[Achado] = k08(caminhos) + k00_compilado_sem_fonte(caminhos)
     for c in caminhos:
         precisa = e_script_python(c) or c == "requirements.txt" or fnmatch(c, ".claude/agents/*.md")
         if not precisa:

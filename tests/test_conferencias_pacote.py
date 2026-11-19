@@ -160,3 +160,14 @@ def test_o_pacote_mostra_os_lugares_da_lista_nos_arquivos_do_pedido():
     """Achado 11: quem mexe num arquivo com lugares na lista recebe a lista deles e o aviso de como ela funciona."""
     texto = montar_pacote.montar("implementador", "atualizador", [], ["atualizacao.py"], RAIZ, "746dbda6", "x")
     assert "## Lugares da lista de exceções nos seus arquivos" in texto and "vira erro novo" in texto
+
+
+def test_q3_o_pacote_do_passo_diz_as_funcoes_de_outros_passos_que_nao_se_mexem():
+    """Achado Q3 (quarta volta, 19/11/2026): o lugar da lista é a função e o texto; o agente do passo 3 que renomeasse
+    `criar_as_tarefas` (lugares do passo 5) faria o ramo barrar sem saber por quê. Com `passo`, o pacote lista essas
+    funções; as do próprio passo não entram nessa lista."""
+    texto = montar_pacote.montar("implementador", "passo 3", [], ["atualizacao.py"], RAIZ, "746dbda6", "x", "3")
+    bloco = texto.split("Não renomeie nem mova", 1)[1].split("\n\n", 2)[1]
+    assert "`criar_as_tarefas` (lugares do passo 5)" in bloco and "passo 3)" not in bloco
+    assert "Não renomeie nem mova" not in montar_pacote.montar("implementador", "x", [], ["atualizacao.py"], RAIZ,
+                                                               "746dbda6", "x")

@@ -142,6 +142,7 @@ def principal(argv: list[str] | None = None) -> int:
     p.add_argument("--partida", required=True, help="o commit de onde o trabalho sai")
     p.add_argument("--ramo", required=True)
     p.add_argument("--saida", help="grava o pacote neste arquivo (a gerente guarda para conferir a entrega)")
+    p.add_argument("--passo", help="o passo do plano deste trabalho (o pacote diz quais funções não se mexem)")
     p.add_argument("arquivos", nargs="+", help="arquivos do pedido; novo: na frente para arquivo que ainda não existe")
     f = sub.add_parser("entrega", help="confere o formulário da entrega")
     f.add_argument("onde_parei")
@@ -177,7 +178,7 @@ def principal(argv: list[str] | None = None) -> int:
         if args.comando == "pacote":
             from . import montar_pacote
             texto = montar_pacote.montar(args.papel, args.titulo, [d for d in args.decisoes.split(",") if d],
-                                         args.arquivos, raiz, args.partida, args.ramo)
+                                         args.arquivos, raiz, args.partida, args.ramo, args.passo)
             if args.saida:
                 Path(args.saida).write_text(texto, encoding="utf-8", newline="\n")
             _escrever(texto)

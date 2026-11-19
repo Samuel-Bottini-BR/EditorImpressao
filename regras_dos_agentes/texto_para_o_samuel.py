@@ -128,5 +128,10 @@ def texto(lista: Lista) -> str:
             "já deixou para depois (ficam na lista até lá); ou entram no plano (cada um vira conserto antes da "
             "entrega). Sugestão: depois da entrega, como você decidiu para os outros. Nada do programa muda com "
             "nenhuma das duas escolhas agora.",
+            "",
+            # Achado Q7 da quarta volta: a gerente aceitou sem print, com esta ressalva escrita no próprio texto.
+            "**Ressalva: esta pergunta não tem print.** Esses pedaços são código que não aparece na tela: conversam com "
+            "o Windows por baixo, sem janela nem botão. Não há o que fotografar; o que existe é a linha do código, que "
+            "está na lista.",
         ]
     return "\n".join(linhas)

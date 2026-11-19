@@ -43,6 +43,7 @@ PROTEGIDOS: list[tuple[str, str, str]] = [
     ("regras_dos_agentes/porteiro.py", "BARRA_DE_ROLAGEM", "igual"),
     ("regras_dos_agentes/porteiro.py", "PECA_UNICA_DO_WINDOWS", "igual"),
     ("regras_dos_agentes/porteiro.py", "FORA_DO_PROJETO", "igual"),
+    ("regras_dos_agentes/porteiro.py", "NAO_E_PROGRAMA", "igual"),
     ("regras_dos_agentes/porteiro_mudancas.py", "PROTEGIDOS", "nao_some"),
     ("regras_dos_agentes/porteiro_mudancas.py", "QUEM_CONFERE", "igual"),
 ]

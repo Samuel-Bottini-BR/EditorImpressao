@@ -189,3 +189,16 @@ def test_o_script_sem_porteiro_na_versao_de_teste_avisa_e_ligado_falha(tmp_path)
     assert feito.returncode == 0 and "PORTEIRO: NAO CONFERIDO" in feito.stdout, feito.stdout + feito.stderr
     feito = _rodar_o_script(conferido, tmp_path, ligado="1")
     assert feito.returncode == 1 and "PORTEIRO: NAO CONFERIDO" in feito.stdout
+
+
+def test_q6_antes_do_sim_tirar_da_lista_sem_consertar_barra(tmp_path):
+    """Achado Q6 (quarta volta de quem quebrou, 19/11/2026): com a lista ainda "proposta", o juiz não julgava o código,
+    e o ramo podia tirar itens da lista sem consertar (a lista que vai ao "sim" encolhia de mentira). Agora o item
+    tirado que o porteiro da versão de teste ainda acha no código do ramo barra; tirar o de um lugar consertado não."""
+    juiz = versao_de_teste(tmp_path / "juiz", lista("proposta"))
+    sem_um = json.loads(lista("proposta"))["itens"][:1]
+    feito = julgar(juiz, ramo(tmp_path / "r1", lista("proposta", sem_um)).raiz)
+    assert feito.returncode == 1 and "sem conserto" in feito.stdout, feito.stdout + feito.stderr
+    consertado = DEFEITO.replace(", creationflags=subprocess.DETACHED_PROCESS", "")
+    feito = julgar(juiz, ramo(tmp_path / "r2", lista("proposta", []), consertado).raiz)
+    assert feito.returncode == 0 and "PORTEIRO: NAO CONFERIDO" in feito.stdout, feito.stdout + feito.stderr

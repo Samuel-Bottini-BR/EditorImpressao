@@ -27,7 +27,12 @@ from dataclasses import dataclass
 from pathlib import Path
 
 LUGAR_DO_GH = Path(r"C:\Program Files\GitHub CLI\gh.exe")
-MARCA_DO_PORTEIRO = re.compile(r"PORTEIRO: (CONFERIDO|BARROU|NAO CONFERIDO[^\r\n]*)")
+# O trabalho da rodada que roda o juiz (o nome vem do workflow, no ramo dos testes, que o agente não controla). A marca
+# só vale lida ali (achado Q1 da quarta volta de quem quebrou: os trabalhos da suíte e dos botões rodam o código do
+# agente, que pode escrever uma marca falsa antes).
+TRABALHO_DO_JUIZ = "Porteiro (juiz da versao de teste)"
+MARCA_DO_PORTEIRO = re.compile(r"^PORTEIRO: (CONFERIDO|BARROU|NAO CONFERIDO[^\r\n]*)$")
+CARIMBO_DE_HORA = re.compile(r"^\d{4}-\d{2}-\d{2}T[\d:.]+Z ")
 LINHA_DO_COMMIT = re.compile(r"codigo trocado pelo de \S+ \(([0-9a-f]{40})\)|testando o proprio commit ([0-9a-f]{40})")
 
 
@@ -79,13 +84,15 @@ def ler_rodada(numero: str, repositorio: str) -> Rodada:
     """Lê a rodada `numero` no repositório `dono/nome`: se terminou, se passou e qual commit ela testou de verdade."""
     dados = json.loads(_rodar("run", "view", numero, "-R", repositorio, "--json", "status,conclusion,displayTitle,jobs"))
     commit = None
-    porteiro = None
     for job in dados.get("jobs", []):
-        if job.get("conclusion") == "skipped" or (commit and porteiro):
+        if job.get("conclusion") == "skipped" or job.get("name") == TRABALHO_DO_JUIZ:
             continue
-        registro = _rodar("run", "view", numero, "-R", repositorio, "--log", "--job", str(job["databaseId"]))
-        commit = commit or commit_do_registro(registro)
-        porteiro = porteiro or marca_do_porteiro(registro)
+        commit = commit_do_registro(_rodar("run", "view", numero, "-R", repositorio, "--log", "--job",
+                                           str(job["databaseId"])))
+        if commit:
+            break
+    porteiro = marca_do_juiz(dados.get("jobs", []), lambda job: _rodar("run", "view", numero, "-R", repositorio,
+                                                                       "--log", "--job", str(job["databaseId"])))
     if commit is None:
         raise GitHubFalhou(f"o registro da rodada {numero} não diz qual commit foi testado")
     return Rodada(numero, dados.get("status") == "completed", dados.get("conclusion") == "success",
@@ -93,6 +100,22 @@ def ler_rodada(numero: str, repositorio: str) -> Rodada:
 
 
 def marca_do_porteiro(registro: str) -> str | None:
-    """A marca que o juiz deixou no registro ("CONFERIDO", "BARROU" ou "NAO CONFERIDO (motivo)"), ou None."""
-    m = MARCA_DO_PORTEIRO.search(registro)
-    return m.group(1).strip() if m else None
+    """A ÚLTIMA marca que o juiz deixou no registro de um trabalho ("CONFERIDO", "BARROU" ou "NAO CONFERIDO (motivo)").
+
+    Só conta a linha que É a marca (depois do nome do trabalho, do passo e da hora que o GitHub põe na frente), não um
+    texto que a contenha no meio; e vale a última, que o juiz escreve no fim.
+    """
+    achada = None
+    for linha in registro.splitlines():
+        texto = CARIMBO_DE_HORA.sub("", linha.rsplit("\t", 1)[-1]).strip()
+        m = MARCA_DO_PORTEIRO.match(texto)
+        if m:
+            achada = m.group(1).strip()
+    return achada
+
+
+def marca_do_juiz(jobs: list[dict], registro_de) -> str | None:
+    """A marca do juiz, lida só no trabalho de nome `TRABALHO_DO_JUIZ` (None se a rodada não tem esse trabalho ou ele
+    não deixou marca). `registro_de(job)` devolve o registro de um trabalho."""
+    juiz = next((j for j in jobs if j.get("name") == TRABALHO_DO_JUIZ and j.get("conclusion") != "skipped"), None)
+    return marca_do_porteiro(registro_de(juiz)) if juiz else None

@@ -16,6 +16,8 @@ Como roda (a rodada do GitHub; a mudança exata do workflow está no ONDE-PAREI 
 O que o juiz confere:
 - a lista do ramo contra a da versão de teste (`porteiro_mudancas.mudancas_na_lista`): nenhum item novo, "quantas"
   maior, passo, situação ou "sim" mudados (R1);
+- sempre, mesmo com a lista ainda "proposta": item tirado da lista que o porteiro da versão de teste ainda acha no
+  código do ramo barra (`tirados_sem_conserto`, Q6);
 - se a lista da versão de teste já vale (o Samuel disse "sim" e a gerente ligou lá): o porteiro da versão de teste no
   código do ramo, comparado com a lista do ramo. Erro novo barra; lugar tirado da lista que o porteiro da versão de
   teste ainda acha barra (R3: afrouxar o porteiro do ramo não tira nada da lista); item que o código já não tem pede
@@ -60,12 +62,30 @@ def julgar(conferido: Path, raiz_do_juiz: Path = RAIZ_DO_JUIZ) -> tuple[str, lis
     except excecoes.ListaErrada as erro:
         return MARCA_BARROU, [f"a lista de exceções do ramo está fora do formato: {erro}"]
     frases = mudancas_na_lista(confianca, do_ramo)
+    _, achados = porteiro.achados_do_repositorio(conferido)
     if not confianca.vale:
+        # Antes do "sim", o código não é julgado; mas a lista que vai ao "sim" não pode encolher sem conserto (achado Q6
+        # da quarta volta): o item tirado da lista que o porteiro da versão de teste ainda acha no código barra.
+        frases += tirados_sem_conserto(confianca, do_ramo, achados)
         motivo = "a lista de exceções da versão de teste ainda espera o \"sim\" do Samuel: o código não foi julgado"
         return (MARCA_BARROU, frases) if frases else (MARCA_NAO_CONFERIDO, [motivo])
-    _, achados = porteiro.achados_do_repositorio(conferido)
     frases += excecoes.comparar(achados, do_ramo).explicar()
     return (MARCA_BARROU, frases) if frases else (MARCA_CONFERIDO, [])
+
+
+def tirados_sem_conserto(confianca: excecoes.Lista, do_ramo: excecoes.Lista, achados) -> list[str]:
+    """Os itens que o ramo tirou (ou diminuiu) da lista e que o código do ramo ainda tem."""
+    from collections import Counter
+
+    no_codigo = Counter(excecoes.chave_do_achado(a) for a in achados)
+    no_ramo = do_ramo.permitidos()
+    frases = []
+    for item in confianca.itens:
+        k = excecoes.chave_do_item(item)
+        if no_ramo.get(k, 0) < int(item["quantas"]) and no_codigo.get(k, 0) > no_ramo.get(k, 0):
+            frases.append(f"item tirado da lista sem conserto (o código ainda tem): {item['conferencia']} "
+                          f"{item['arquivo']} ({item.get('funcao') or 'fora de função'}) | {item['texto'][:80]}")
+    return frases
 
 
 def anunciar(marca: str, frases: list[str]) -> str:
