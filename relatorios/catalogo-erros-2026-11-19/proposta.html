@@ -1,0 +1,1239 @@
+<!doctype html>
+<html lang="pt-BR">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Catálogo dos erros: proposta</title>
+<style>
+:root { color-scheme: light dark; }
+* { box-sizing: border-box; }
+body {
+  font: 17px/1.65 "Segoe UI", system-ui, sans-serif;
+  max-width: 46rem; margin: 0 auto; padding: 2.5rem 1.5rem 6rem;
+  color: #1c1c1e; background: #fdfdfc;
+}
+h1 { font-size: 2rem; line-height: 1.2; margin: 0 0 .3em; letter-spacing: -.02em; }
+h2 { font-size: 1.35rem; margin: 2.4em 0 .6em; padding-top: .8em;
+     border-top: 1px solid #e6e4e0; letter-spacing: -.01em; }
+h3 { font-size: 1.1rem; margin: 1.8em 0 .4em; }
+h1 + p, h2 + p { margin-top: .4em; }
+p, li { margin: 0 0 .9em; }
+ul, ol { padding-left: 1.3em; }
+strong { font-weight: 640; }
+code {
+  font: .88em ui-monospace, "Cascadia Code", Consolas, monospace;
+  background: #f1efec; padding: .12em .35em; border-radius: 4px;
+}
+pre {
+  background: #f1efec; padding: 1em 1.1em; border-radius: 8px;
+  overflow-x: auto; line-height: 1.5;
+}
+pre code { background: none; padding: 0; }
+blockquote {
+  margin: 1.2em 0; padding: .1em 0 .1em 1.1em;
+  border-left: 3px solid #c9c5be; color: #55524d;
+}
+table {
+  border-collapse: collapse; width: 100%; margin: 1.2em 0;
+  font-size: .95rem; display: block; overflow-x: auto;
+}
+th, td { padding: .5em .8em; text-align: left; border-bottom: 1px solid #e6e4e0; }
+th { font-weight: 620; background: #f7f5f2; white-space: nowrap; }
+tr:last-child td { border-bottom: none; }
+img { max-width: 100%; height: auto; border-radius: 6px; margin: 1em 0;
+      border: 1px solid #e6e4e0; }
+hr { border: none; border-top: 1px solid #e6e4e0; margin: 2.5em 0; }
+.rodape { margin-top: 4em; padding-top: 1.2em; border-top: 1px solid #e6e4e0;
+          font-size: .85rem; color: #86827c; }
+@media (prefers-color-scheme: dark) {
+  body { color: #e8e6e3; background: #1a1917; }
+  h2 { border-top-color: #35332f; }
+  code, pre, th { background: #262421; }
+  th, td { border-bottom-color: #35332f; }
+  blockquote { border-left-color: #4a4741; color: #b0aca6; }
+  img { border-color: #35332f; }
+  .rodape { border-top-color: #35332f; color: #7d7973; }
+}
+@media print {
+  body { max-width: none; padding: 0; color: #000; background: #fff; }
+  h2 { page-break-after: avoid; }
+  table, img { page-break-inside: avoid; }
+}
+</style>
+</head>
+<body>
+<h1>Catálogo dos erros achados: como organizar (proposta, 19/11/2026)</h1>
+<p>Feito por um agente a pedido da gerente, para a decisão de 19/11/2026 ("catálogo dos erros achados, passo a passo").
+Palavras do Samuel: "pera ai, quando acontece esses erros, eles são catalogados para virarem regras depois?" · à
+proposta da gerente: "ok" · depois: "como vai ser organizado esse catologo de erros?" · "coloque um agente para pensar
+nisso".</p>
+<p><strong>É uma proposta, não o catálogo pronto.</strong> Nenhum arquivo do programa, dos testes, do porteiro, do Livro ou do Plano
+foi mexido. Ramo <code>catalogo-erros-2026-11-19</code>.</p>
+<hr />
+<h2>Resumo para o Samuel</h2>
+<p><strong>Como fica.</strong> No fim de cada passo, eu anoto num caderno só cada erro achado naquele passo: o que foi, por que
+aconteceu, quem achou e o que devia ter pegado antes. Os erros com a mesma causa ficam juntos, num tipo. Quando um tipo
+aparece em dois passos, ou três vezes no mesmo passo, eu preparo a regra ou a conferência automática que evitaria o
+próximo e te pergunto na Central, uma pergunta por vez. Nada entra sem o seu sim.</p>
+<p><strong>Um exemplo de verdade.</strong> No passo 1, três vezes, um teste passava no seu computador e falhava no GitHub. Lá o Windows
+é em inglês e escreve "Everyone" em vez de "Todos"; a pasta temporária fica em outro disco; e o programa já roda com a
+licença de administrador ligada. A causa é a mesma nas três: o teste supõe o computador onde foi escrito. No passo 0 já
+tinha acontecido parecido. A regra que eu proporia é curta: quem escreve teste do Windows recebe a lista das diferenças
+entre o seu computador, o do GitHub e o do Kaique.</p>
+<p><strong>O que já tem.</strong> Nos passos 0 e 1 foram 76 erros, quase todos achados pelo agente que tenta quebrar, antes da prova
+na sua tela. Eles caem em dez tipos. Seis já se repetem e valem uma pergunta cada.</p>
+<p><strong>De onde vem.</strong> Das suas regras: anotar no fim de cada passo, transformar o que se repete em regra ou conferência, e
+só com o seu sim. Escolha minha: onde o caderno fica, os dez tipos, a conta do "se repete" e a ordem das perguntas.</p>
+<p><strong>Pergunta.</strong> Organizo o caderno assim e começo a te trazer as seis, uma por vez? Sugiro que sim.</p>
+<hr />
+<h2>Para a gerente, em poucas linhas</h2>
+<ul>
+<li><strong>Onde:</strong> um arquivo só, <code>memoria/catalogo-de-erros.md</code>, no ramo da versão de teste (<code>obra-2026-10-26</code>), escrito
+  só pela gerente, na junção de cada passo. Markdown com títulos fixos, para um programa poder ler depois sem mudar o
+  formato. Não tem três formatos: é arquivo de controle (CLAUDE.md §2); o Samuel vê cada tipo pela Central.</li>
+<li><strong>O catálogo não copia, aponta.</strong> Uma entrada por erro, de poucas linhas, com o link para o relatório que tem a
+  prova. O que ele guarda que ninguém guarda: <strong>a causa em forma de tipo (família)</strong>, <strong>quem achou</strong> e <strong>o que devia
+  ter pegado antes</strong>. É isso que mostra o que se repete e onde a regra não bastou.</li>
+<li><strong>Famílias:</strong> pela causa, nunca pelo lugar. Cada erro numa família só. "Se repete" = em dois passos, ou três vezes no
+  mesmo passo em voltas diferentes de quem quebra.</li>
+<li><strong>O que vira:</strong> depende do "o que devia ter pegado": não havia regra → regra nova; havia regra e não bastou →
+  conferência do porteiro (se a máquina vê no código) ou pergunta do formulário (se só o agente sabe); havia conferência
+  com furo → conserto dela, sem regra nova; defeito do programa → Lista de bugs.</li>
+<li><strong>Exemplo pronto (seção 5):</strong> 76 erros dos passos 0 e 1 em 10 famílias; 6 propostas, uma por pergunta.</li>
+<li><strong>Automático, já:</strong> só a prova da decisão (um teste que cobra que cada passo com relatório de quem quebrou tem a sua
+  seção no catálogo). O resto, manual por ora (custo e motivo na seção 4).</li>
+<li><strong>Uso imediato, sem pergunta nova:</strong> as famílias "em observação" vão como foco no pacote de quem tenta quebrar o
+  próximo passo; e a mesma família em duas voltas seguidas do mesmo passo faz a gerente pedir o conserto pela causa
+  (CLAUDE.md §11.12) antes da volta seguinte.</li>
+</ul>
+<hr />
+<h2>1. Onde o catálogo fica</h2>
+<h3>A proposta</h3>
+<ul>
+<li><strong>Um arquivo só:</strong> <code>memoria/catalogo-de-erros.md</code>.</li>
+<li><strong>No ramo da versão de teste</strong> (<code>obra-2026-10-26</code>), que é onde a gerente junta cada passo (D-797). Os ramos dos
+  agentes saem dali e o recebem para ler; ninguém o muda num ramo de agente.</li>
+<li><strong>Escrito só pela gerente,</strong> no fim de cada passo, antes de juntar. Os agentes não escrevem nele: deixam os erros
+  nos relatórios deles (seção 4), e a gerente passa para o catálogo.</li>
+<li><strong>Uma linha no <code>memoria/INDICE.md</code></strong> ("antes de qualquer trabalho": ler as famílias em observação) e <strong>uma linha no
+  topo do <code>memoria/licoes.md</code></strong> apontando para o catálogo (ver abaixo). A gerente faz as duas quando o Samuel disser sim.</li>
+</ul>
+<h3>Por que assim</h3>
+<ul>
+<li><strong>Um arquivo, não um por erro.</strong> As famílias só aparecem quando se vê tudo junto; um arquivo por erro espalharia em
+  dezenas de arquivos o que precisa ser lido de uma vez. E é "uma coisa, um lugar" (CLAUDE.md §11.12).</li>
+<li><strong>Em <code>memoria/</code>, não junto do porteiro.</strong> A pasta <code>regras_dos_agentes/</code> é código e dados que o porteiro protege
+  (D-791, D-801); pôr ali uma anotação da gerente misturaria o que barra com o que só registra. O que nasce do
+  catálogo é que vai para lá (a regra nova no catálogo das regras; a conferência nova no porteiro), com um apontador de
+  volta para a família.</li>
+<li><strong>Markdown com títulos fixos.</strong> O formulário da entrega já é lido por um programa pelos títulos das seções (D-792).
+  Com o mesmo jeito, um programa pode ler o catálogo depois (seção 4) sem mudar o formato.</li>
+<li><strong>Sem três formatos.</strong> O CLAUDE.md §2 isenta os arquivos de controle (como o <code>PEDIDOS.md</code> e o handoff). O Samuel não
+  precisa abrir o catálogo: cada família que vira proposta chega a ele pela Central. Se ele quiser ler tudo, a gerente
+  grava na hora uma cópia em três formatos em <code>relatorios/</code> (<code>relatorio.gravar</code>), sem guardar uma segunda cópia viva.</li>
+</ul>
+<h3>O que cada lugar que já existe guarda, e o que só o catálogo guarda</h3>
+<table>
+<thead>
+<tr>
+<th>Lugar</th>
+<th>O que guarda</th>
+<th>O que não guarda</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>Lista de bugs do Plano (§5) e <code>memoria/bugs.md</code></td>
+<td>defeitos do programa que alguém vê ou que mexem no livro, para consertar, com a situação</td>
+<td>erros dos agentes consertados antes de juntar; a causa como tipo; o que devia ter pegado</td>
+</tr>
+<tr>
+<td><code>relatorios/melhorias.md</code></td>
+<td>cada tentativa de mudança de imagem (filtros, corte), com as medidas, aceita ou revertida</td>
+<td>erros do jeito de escrever código, de teste ou de processo</td>
+</tr>
+<tr>
+<td>Relatórios de quem tentou quebrar (<code>relatorios/&lt;passo&gt;/quem-quebrou/</code>)</td>
+<td>cada achado de cada volta, com a prova, o lugar no código e o destino pedido</td>
+<td>o que se repete entre passos; o que devia ter pegado antes</td>
+</tr>
+<tr>
+<td>ONDE-PAREI do passo</td>
+<td>o destino de cada achado (commit, teste), as falhas do GitHub (às vezes só na mensagem do commit)</td>
+<td>o tipo do erro; a ligação com outros passos</td>
+</tr>
+<tr>
+<td>Lista de exceções do porteiro</td>
+<td>os lugares do código que já têm um erro conhecido e que o porteiro deixa passar até o passo que conserta</td>
+<td>erros novos; erros que o porteiro não sabe ler</td>
+</tr>
+<tr>
+<td>Catálogo das regras (<code>regras_dos_agentes/catalogo.py</code>) e as conferências K01 a K24 (<code>porteiro.py</code>)</td>
+<td>as regras e as conferências que existem, com a fonte</td>
+<td>os erros que mostram que uma regra falta ou não bastou</td>
+</tr>
+<tr>
+<td><code>memoria/licoes.md</code></td>
+<td>os erros que custaram caro até 24/10/2026 e a regra que nasceu de cada um (parado desde então)</td>
+<td>os erros dos passos do plano da parte do Windows</td>
+</tr>
+<tr>
+<td>Livro de decisões</td>
+<td>o "sim" do Samuel a cada regra nova</td>
+<td>o erro que motivou a regra</td>
+</tr>
+</tbody>
+</table>
+<p><strong>O que só o catálogo guarda:</strong> para cada erro, a família (a causa numa frase, sem o lugar), quem achou e o que devia
+ter pegado antes; para cada família, quantas vezes, em que passos, a regra que já existia e o que ela virou. Todo o
+resto (a prova, o diff, o teste) fica onde já está, e o catálogo só aponta.</p>
+<p><strong>O <code>licoes.md</code> (escolha minha).</strong> Ele fica como está, como histórico até 24/10. Ganha só uma linha no topo: "os erros
+achados a partir de 19/11/2026 estão no catálogo dos erros, por família". A regra que nascer de uma família não é
+copiada para o <code>licoes.md</code>: ela vai para o catálogo das regras com o caso que a originou (como a D-784 já pede), e o
+caso é a família do catálogo. Assim a mesma lição não fica escrita em dois lugares.</p>
+<hr />
+<h2>2. Os campos de cada erro</h2>
+<p>Cada erro é um título <code>###</code> com um código e o nome do erro em palavras simples, e estes campos, sempre nesta ordem:</p>
+<table>
+<thead>
+<tr>
+<th>Campo</th>
+<th>O que vai</th>
+<th>Valores</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><strong>Código</strong></td>
+<td>passo, de onde veio e o número que a fonte já usa</td>
+<td><code>P1-v1-05</code> (passo 1, volta 1 de quem quebrou, achado 5); <code>P1-v2-N1</code>; <code>P1-gh-1</code> (GitHub); <code>P0-ger-1</code> (achado pela gerente); <code>P1-port-1</code> (porteiro); <code>P1-form-1</code> (formulário); <code>P2-sam-1</code> (achado pelo Samuel)</td>
+</tr>
+<tr>
+<td><strong>O que foi</strong></td>
+<td>uma ou duas frases simples: o que dava errado e para quem</td>
+<td>—</td>
+</tr>
+<tr>
+<td><strong>Causa</strong></td>
+<td>por que aconteceu, numa frase, sem o nome do arquivo</td>
+<td>—</td>
+</tr>
+<tr>
+<td><strong>Família</strong></td>
+<td>o código da família (seção 3), ou "sem família"</td>
+<td><code>F1</code> a <code>F10</code>, ou "sem família"</td>
+</tr>
+<tr>
+<td><strong>Quem achou</strong></td>
+<td>quem viu primeiro</td>
+<td>teste no PC · GitHub · porteiro · formulário · quem tenta quebrar (volta N) · prova à vista · a gerente · o Samuel · o próprio agente</td>
+</tr>
+<tr>
+<td><strong>Quando</strong></td>
+<td>data e passo; para quem quebra, a volta</td>
+<td>—</td>
+</tr>
+<tr>
+<td><strong>Gravidade</strong></td>
+<td>a que a fonte deu</td>
+<td>grave · médio · baixo</td>
+</tr>
+<tr>
+<td><strong>Onde</strong></td>
+<td>arquivo e função (nunca só a linha: muda)</td>
+<td>—</td>
+</tr>
+<tr>
+<td><strong>O que devia ter pegado antes</strong></td>
+<td>a regra ou a conferência que já existia e devia ter pegado, e por que não pegou; ou "nenhuma"</td>
+<td>"nenhuma" · "regra X existia e não foi seguida" · "conferência KNN existia e tinha furo"</td>
+</tr>
+<tr>
+<td><strong>Destino</strong></td>
+<td>o que aconteceu com ele</td>
+<td>consertado no commit X, com o teste Y · não é defeito (porquê) · Lista de bugs · Lista de espera · pergunta ao Samuel · combinado do plano</td>
+</tr>
+<tr>
+<td><strong>Fonte</strong></td>
+<td>o relatório e o número do achado, com o ramo</td>
+<td>—</td>
+</tr>
+</tbody>
+</table>
+<p>E cada família é um título <code>##</code> com:</p>
+<table>
+<thead>
+<tr>
+<th>Campo</th>
+<th>O que vai</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><strong>A causa, numa frase</strong></td>
+<td>o que todos os erros dela têm em comum</td>
+</tr>
+<tr>
+<td><strong>Erros</strong></td>
+<td>os códigos, quantos, em que passos e voltas</td>
+</tr>
+<tr>
+<td><strong>Já visto antes do catálogo</strong></td>
+<td>casos parecidos nas revisões de 10/11 e 18/11 ou no <code>licoes.md</code>, só como apontador</td>
+</tr>
+<tr>
+<td><strong>Regra ou conferência que já existia</strong></td>
+<td>qual, ou "nenhuma"</td>
+</tr>
+<tr>
+<td><strong>Situação</strong></td>
+<td>em observação · se repete, proposta preparada · levada à Central em DATA · o Samuel disse sim (D-NNN) · o Samuel disse não em DATA · não vira nada (porquê)</td>
+</tr>
+<tr>
+<td><strong>Virou</strong></td>
+<td>a regra (R-NNN) ou a conferência (K-NN) ou a pergunta do formulário, quando existir</td>
+</tr>
+</tbody>
+</table>
+<p><strong>O que não entra no catálogo:</strong> o que a própria fonte diz que não é defeito (observação) e o que é o combinado do
+plano sem furo; o que já está na Lista de bugs ou no plano e só foi visto de novo (fica uma linha na seção "não
+entram", com o motivo). Tentativa de imagem continua só no <code>melhorias.md</code>.</p>
+<p><strong>Um exemplo de entrada:</strong></p>
+<pre><code>### P1-v1-05 · A tarefa que não confere fica no Windows
+- O que foi: quando a tarefa lida de volta não batia com a pedida, a peça dizia &quot;não ficou criada como pedido&quot; e a
+  tarefa ficava lá, com outro conteúdo.
+- Causa: só o caminho em que a leitura confere foi pensado; o &quot;não confere&quot; não desfazia nada.
+- Família: F5
+- Quem achou: quem tenta quebrar (volta 1)
+- Quando: 19/11/2026, passo 1
+- Gravidade: médio
+- Onde: core/windows.py, criar_tarefa
+- O que devia ter pegado antes: CLAUDE.md §11.12, pontos 2 e 3 (existia desde 18/11; não foi seguida)
+- Destino: consertado em dcc4981c e 7e726221 (test_a_tarefa_criada_que_nao_confere_e_apagada)
+- Fonte: relatorios/passo1-peca-unica-windows/quem-quebrou/relatorio-1.md, achado 5 (ramo passo1-peca-unica-windows)
+</code></pre>
+<hr />
+<h2>3. As famílias e quando viram proposta</h2>
+<h3>O que é uma família</h3>
+<ul>
+<li><strong>É a causa, não o lugar.</strong> "O teste supõe o computador onde foi escrito" é família; "erro em <code>core/windows.py</code>"
+  não é.</li>
+<li><strong>Cada erro fica numa família só</strong>, a da causa principal. Se tiver uma vizinha, a entrada diz "vizinha: F3", mas só
+  conta numa. Assim nenhuma família cresce por contagem dupla.</li>
+<li><strong>Como um erro novo entra:</strong> a gerente escreve a causa numa frase, sem o lugar, e compara com a frase de cada
+  família. Se cabe, entra. Se não cabe, fica "sem família". Dois "sem família" com a mesma causa viram família nova.</li>
+<li><strong>A frase da família pode ser reescrita</strong> quando um erro novo mostra que ela era estreita ou larga demais; a mudança
+  fica anotada na própria família, com a data.</li>
+</ul>
+<h3>Quando "se repete"</h3>
+<p>Uma família se repete quando tem erros <strong>em dois passos diferentes</strong>, ou <strong>três vezes no mesmo passo, em voltas
+diferentes</strong> de quem tenta quebrar. (Escolha minha. Uma vez só é acaso; duas voltas seguidas do mesmo passo já são
+sinal de conserto feito no sintoma, como se viu no passo 0.)</p>
+<p><strong>Sinal de dentro do passo (sem pergunta nova ao Samuel):</strong> se a mesma família aparece em duas voltas seguidas do
+mesmo passo, a gerente pede ao agente o conserto pela causa (CLAUDE.md §11.12) antes da volta seguinte. Foi o que
+fechou o passo 0: o "sim" forjável voltou em três voltas (achados 6 e 7, depois N1, depois R1) até ser consertado pela
+estrutura ("nenhum item entra na lista por ramo de agente").</p>
+<h3>O que uma família que se repete vira</h3>
+<p>Pelo campo "o que devia ter pegado antes" dos erros dela:</p>
+<ol>
+<li><strong>Não havia regra</strong> → proposta de <strong>regra nova dos agentes</strong>. Entra no catálogo das regras com etiqueta e com o caso
+   que a originou (a família), e vai nos pacotes pelas etiquetas dos arquivos (D-784).</li>
+<li><strong>Havia regra e ela não bastou</strong> (os agentes leram e o erro aconteceu igual) → escrever mais texto não resolve. Então:
+   - se a máquina consegue ver no código → proposta de <strong>conferência nova do porteiro</strong> (construída como item de um
+     passo, com quem tenta quebrar, como as 24 do passo 0);
+   - se só o agente sabe a resposta → proposta de <strong>pergunta nova no formulário</strong> da entrega (pela D-792, pergunta nova
+     só com regra nova e o "sim");
+   - se só gente vê → <strong>foco fixo de quem tenta quebrar</strong>.</li>
+<li><strong>Havia conferência e ela tinha furo</strong> → não é regra nova: é defeito da conferência, consertado no próprio passo, com
+   teste de reversão (CLAUDE.md §4.7). Não precisa de pergunta.</li>
+<li><strong>É defeito do programa</strong> (aparece usando) → Lista de bugs e, se tocar uma decisão, a prova em
+   <code>tests/test_decisoes*.py</code> (CLAUDE.md §11.4).</li>
+<li><strong>Nenhuma proposta ajuda</strong> (a conferência que existe já pega a maior parte, ou o custo é maior que o ganho) → a
+   família fica "não vira nada", com o porquê escrito. O porquê vai numa linha na pergunta seguinte, para o Samuel saber
+   que foi visto.</li>
+</ol>
+<p>Quando duas famílias se resolvem com a mesma mudança, elas vão numa pergunta só.</p>
+<h3>Como chega ao Samuel</h3>
+<ul>
+<li><strong>Um cartão em "Decidir agora" na Central, uma família por vez.</strong> O cartão seguinte só entra depois da resposta dele.</li>
+<li><strong>No formato do CLAUDE.md §11.13</strong> (a gerente confere a lista dos dez antes de publicar):</li>
+<li><strong>Do que se trata:</strong> o tipo de erro, numa frase, e onde ele aparece para quem usa (ou "não aparece na tela: é código
+    que conversa com o Windows por baixo").</li>
+<li><strong>O que aconteceu:</strong> o caso real mais claro da família, com o livro, a tela ou o passo, e quantas vezes.</li>
+<li><strong>Quem achou e quando:</strong> quase sempre antes dele, e isso é bom; quando foi ele, dizer.</li>
+<li><strong>O que eu proponho:</strong> a regra ou a conferência em palavras simples, e o que muda para os agentes. "Nada do que já
+    funciona no programa muda", quando for o caso.</li>
+<li><strong>De onde veio:</strong> do catálogo, pela decisão dele de 19/11; e se a proposta é escolha da gerente.</li>
+<li><strong>O que você escolhe:</strong> sim · não · só comentário, com a sugestão.</li>
+<li><strong>A prova em imagem:</strong> o print do caso real quando ele aparece na tela. Quando é código sem tela, o cartão diz isso
+    com todas as letras (ver ressalvas).</li>
+<li><strong>Depois do "sim":</strong> a decisão entra no Livro com as palavras dele; a regra entra no catálogo das regras (ou a
+  conferência vira item do próximo passo); a família fica "virou R-NNN / K-NN".</li>
+<li><strong>Depois do "não":</strong> a família fica "o Samuel disse não em DATA", continua contando, e a gerente não pergunta de novo
+  (§11.13, ponto 10), a não ser que um passo novo traga um caso de outro jeito; aí ela cita a resposta dele e mostra o
+  caso novo.</li>
+</ul>
+<hr />
+<h2>4. Quem faz o quê e quando</h2>
+<h3>O agente que constrói</h3>
+<ul>
+<li>No ONDE-PAREI, na seção "Testes" que já existe: <strong>cada falha que ele mesmo encontrou</strong> (a rodada do GitHub que
+  falhou, o porteiro que barrou, o formulário que voltou), com a causa numa frase. Hoje isso fica às vezes só na
+  mensagem do commit (ex.: no passo 1, a pasta temporária no D: e o dono Administradores estão só nos commits
+  <code>20054121</code> e <code>b271cefc</code>). Não é campo novo: é escrever na seção que já existe.</li>
+</ul>
+<h3>Quem tenta quebrar</h3>
+<ul>
+<li>Em cada achado, mais uma linha: <strong>"O que devia ter pegado antes"</strong> (a regra ou a conferência que existia, ou
+  "nenhuma"). É quem melhor sabe, porque acabou de ler todas as regras (D-784). Mudança pequena no jeito do relatório;
+  enquanto não for cobrada pelo formulário, é pedido da gerente.</li>
+<li>No pacote dele, a gerente põe <strong>as famílias em observação como foco</strong> ("procure de propósito: dado que o conferido
+  escreve; jeito vizinho de escrever; proteção sem teste"). O plano já diz que cada passo tem o seu foco; isto só
+  diz qual.</li>
+</ul>
+<h3>A gerente, no fim de cada passo (antes de juntar)</h3>
+<ol>
+<li>Lê os relatórios de quem quebrou de todas as voltas, o ONDE-PAREI (Testes, Ressalvas, Ideias e bugs), o <code>git log</code>
+   do ramo (falhas do GitHub só nos commits), as barradas do porteiro e do formulário e o que o Samuel achou na prova à
+   vista.</li>
+<li>Escreve uma entrada por erro, põe cada um numa família.</li>
+<li>Atualiza as famílias (contagem, situação) e vê quais passaram a se repetir.</li>
+<li>Se alguma passou a se repetir, prepara o cartão da Central (uma por vez, na ordem da seção 5.3).</li>
+<li>Faz o commit do catálogo junto com a junção do passo.</li>
+</ol>
+<p>Custo estimado: de 20 a 40 minutos por passo, mais nos passos com muitas voltas. (Estimativa minha, não medida: o
+exemplo da seção 5 levou mais porque partiu do zero.)</p>
+<h3>O Samuel</h3>
+<ul>
+<li>Responde um cartão por vez. Nada mais.</li>
+</ul>
+<h3>O que pode ser automático, e quanto custa</h3>
+<table>
+<thead>
+<tr>
+<th>Ideia</th>
+<th>O que faz</th>
+<th>Custo</th>
+<th>Proposta</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>(a) A prova da decisão</td>
+<td>um teste em <code>tests/test_decisoes*.py</code>: todo passo com relatório de quem quebrou (<code>relatorios/passo*/quem-quebrou/</code>) tem a sua seção no catálogo, e toda família "virou" cita uma decisão que existe no Livro</td>
+<td>pequeno: um teste de leitura de arquivos, sem tocar no porteiro</td>
+<td><strong>sim, agora</strong>: o CLAUDE.md §11.4 pede uma prova para cada decisão, e a D-803 diz qual ("no fim de cada passo existe o catálogo atualizado")</td>
+</tr>
+<tr>
+<td>(b) O formulário cobra a linha "o que devia ter pegado antes" em cada achado de quem quebra</td>
+<td>o programa do formulário devolve o relatório sem essa linha</td>
+<td>pequeno no código, mas mexe em <code>regras_dos_agentes/</code> e é pergunta nova do formulário (D-792: só com regra nova e o "sim"); passa pelo ciclo de quem quebra</td>
+<td><strong>depois</strong>, se o pedido da gerente não bastar em dois passos</td>
+</tr>
+<tr>
+<td>(c) Um programa que monta o rascunho do catálogo a partir dos relatórios</td>
+<td>lê os achados numerados e escreve as entradas sem família</td>
+<td>médio: os relatórios são texto livre; ler isso sem erro dá trabalho, e a família continua sendo julgamento</td>
+<td><strong>não por ora</strong>: com um passo por vez, a mão é mais barata e mais certa</td>
+</tr>
+<tr>
+<td>(d) O porteiro barra agente que mexe no catálogo (pôr o arquivo na K17)</td>
+<td>protege o catálogo</td>
+<td>pequeno, mas mexe no porteiro</td>
+<td><strong>não por ora</strong>: só a gerente junta na versão de teste, e lá ela vê o diff</td>
+</tr>
+</tbody>
+</table>
+<hr />
+<h2>5. O exemplo: os passos 0 e 1, já agrupados</h2>
+<p>Fontes lidas: passo 0 (o porteiro), as seis voltas de quem quebrou (<code>relatorio.md</code>, <code>relatorio-2.md</code> a
+<code>relatorio-6.md</code>) e o ONDE-PAREI, ramo <code>passo0-porteiro-2026-11-19</code>; passo 1 (a peça única do Windows), as duas voltas
+(<code>relatorio-1.md</code> e <code>relatorio-2.md</code>), o ONDE-PAREI e o <code>git log</code>, ramo <code>passo1-peca-unica-windows</code>. As revisões de
+10/11 e 18/11 e o <code>licoes.md</code> aparecem só como "já visto antes".</p>
+<p><strong>Passo 1 ainda não acabou:</strong> falta a prova à vista. O que o Samuel achar nela entra depois.</p>
+<h3>5.1 Quantos e quem achou</h3>
+<ul>
+<li><strong>Passo 0: 47 erros.</strong> Quem tenta quebrar achou 45 (seis voltas: 19, 9, 7, 6, 3 e 1); a gerente, 1 (o repositório
+  raso); o porteiro, 1 (os arquivos com marca de UTF-8).</li>
+<li><strong>Passo 1: 29 erros.</strong> Quem tenta quebrar achou 22 (duas voltas: 16 e 6); o GitHub, 4; o porteiro, 1; o formulário,
+  1; o próprio agente, lendo a documentação, 1.</li>
+<li><strong>O Samuel: 0</strong> (a prova à vista do passo 1 ainda não aconteceu; o passo 0 não tem prova à vista).</li>
+<li><strong>Leitura:</strong> quem tenta quebrar acha quase tudo. O GitHub pegou quatro que o PC não pegava. O porteiro e o
+  formulário já estão pegando coisa no passo seguinte ao que os construiu.</li>
+</ul>
+<p>Na lista abaixo, "v1" é a primeira volta de quem quebrou, "N", "R", "Q", "S" e "T" são os nomes das voltas 2 a 6 do
+passo 0, e "v2-N" a segunda volta do passo 1.</p>
+<h3>5.2 As famílias</h3>
+<h4>F1 · A conferência acredita num dado que não prova nada</h4>
+<p><strong>A causa:</strong> o dado que decide vem do próprio conferido (o ramo do agente, o que ele escreve no ONDE-PAREI, um texto
+que ele pode copiar) ou já estava lá antes (o arquivo da vez anterior, a pasta criada por outra conta).</p>
+<table>
+<thead>
+<tr>
+<th>Código</th>
+<th>O que foi</th>
+<th>Quem achou</th>
+<th>Destino</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>P0-v1-03</td>
+<td>o papel do agente era o que ele mesmo escrevia no ONDE-PAREI</td>
+<td>quebra v1</td>
+<td>consertado: vale o papel do pacote</td>
+</tr>
+<tr>
+<td>P0-v1-06</td>
+<td>o porteiro e a lista não tinham proteção contra o próprio agente</td>
+<td>quebra v1</td>
+<td>consertado (reaberto em N1 e R2)</td>
+</tr>
+<tr>
+<td>P0-v1-07</td>
+<td>"a lista só diminui" não era conferido no GitHub nem antes do commit</td>
+<td>quebra v1</td>
+<td>consertado</td>
+</tr>
+<tr>
+<td>P0-v1-19</td>
+<td>a K18 conferia o GitHub pela cópia local</td>
+<td>quebra v1</td>
+<td>consertado: pergunta ao GitHub</td>
+</tr>
+<tr>
+<td>P0-N1 (grave)</td>
+<td>o "sim" do Samuel era forjável com um texto curto</td>
+<td>quebra v2</td>
+<td>consertado (reaberto em R1)</td>
+</tr>
+<tr>
+<td>P0-N3</td>
+<td>o ramo podia afrouxar a busca do porteiro; 8 grupos de palavras sem exemplo nos testes (vizinha: F3)</td>
+<td>quebra v2</td>
+<td>consertado</td>
+</tr>
+<tr>
+<td>P0-N9</td>
+<td>o pacote que confere o formulário do passo foi feito por quem construiu</td>
+<td>quebra v2</td>
+<td>consertado</td>
+</tr>
+<tr>
+<td>P0-R1 (grave)</td>
+<td>o "sim" continuava forjável: bastava copiar 12 letras de uma decisão que existe</td>
+<td>quebra v3</td>
+<td>consertado pela estrutura: nada entra na lista por ramo de agente</td>
+</tr>
+<tr>
+<td>P0-R2 (grave)</td>
+<td>a versão com que se compara era escolhida pelo código do próprio ramo; "não achei" virava "passou"</td>
+<td>quebra v3</td>
+<td>consertado pela estrutura: o juiz vem da versão de teste</td>
+</tr>
+<tr>
+<td>P0-R3</td>
+<td>o porteiro podia ser afrouxado pelo uso sem nenhum teste acusar</td>
+<td>quebra v3</td>
+<td>consertado (o juiz)</td>
+</tr>
+<tr>
+<td>P0-Q1</td>
+<td>a K21 aceitava a marca "PORTEIRO" de qualquer trabalho da rodada, inclusive um que roda o código do agente</td>
+<td>quebra v4</td>
+<td>consertado: só o trabalho do juiz</td>
+</tr>
+<tr>
+<td>P0-Q6</td>
+<td>com a lista "proposta", o ramo podia encolhê-la sem consertar nada</td>
+<td>quebra v4</td>
+<td>consertado</td>
+</tr>
+<tr>
+<td>P1-v1-02</td>
+<td>um arquivo da vez anterior fazia a janela de prova dizer "a tarefa rodou"</td>
+<td>quebra v1</td>
+<td>consertado em duas camadas</td>
+</tr>
+<tr>
+<td>P1-v1-14</td>
+<td>um relatório com menos passos que o pedido virava "deu certo"</td>
+<td>quebra v1</td>
+<td>consertado</td>
+</tr>
+<tr>
+<td>P1-v2-N3</td>
+<td>qualquer conta do computador pode criar antes a pasta do programa no Agendador</td>
+<td>quebra v2</td>
+<td>consertado: a peça confere dono e licença da pasta</td>
+</tr>
+</tbody>
+</table>
+<ul>
+<li><strong>15 erros, passos 0 e 1.</strong> Se repete.</li>
+<li><strong>Já visto antes:</strong> revisões de 18/11 ("o programa mostra o que ele mesmo anotou": desligar grava "Desligado",
+  "preparado" sem nada preparado).</li>
+<li><strong>Regra que já existia:</strong> CLAUDE.md §11.12, ponto 2, fala do programa ("o que a tela mostra vem dessa conferência,
+  nunca só da anotação"), não de conferência, de juiz nem de teste. Nenhuma conferência do porteiro. → <strong>não havia
+  regra para este caso.</strong></li>
+</ul>
+<h4>F2 · A conferência olha o jeito mais comum, e o vizinho passa</h4>
+<p><strong>A causa:</strong> a conferência compara o texto (uma palavra, uma pasta, uma extensão, um jeito de escrever o caminho, o
+título do pedido) em vez da coisa de verdade, e não lista antes todos os jeitos que o Python ou o Windows aceitam.</p>
+<table>
+<thead>
+<tr>
+<th>Código</th>
+<th>O que foi</th>
+<th>Quem achou</th>
+<th>Destino</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>P0-v1-02 (grave)</td>
+<td>a busca do Windows conhecia 13 palavras; o mesmo pedido com outra palavra passava (73 linhas)</td>
+<td>quebra v1</td>
+<td>consertado: 48 linhas, cada uma com exemplo</td>
+</tr>
+<tr>
+<td>P0-v1-04</td>
+<td>a K13 só barrava o agente de tela em <code>core/</code></td>
+<td>quebra v1</td>
+<td>consertado</td>
+</tr>
+<tr>
+<td>P0-v1-09</td>
+<td>a K04 e a K05 não olhavam <code>core/</code>, onde moram avisos que o Kaique lê</td>
+<td>quebra v1</td>
+<td>consertado</td>
+</tr>
+<tr>
+<td>P0-v1-10</td>
+<td>a correção da folha de estilo cegava a busca em qualquer texto com <code>/* */</code></td>
+<td>quebra v1</td>
+<td>consertado</td>
+</tr>
+<tr>
+<td>P0-v1-14</td>
+<td>a K11 não olhava os testes soltos da raiz</td>
+<td>quebra v1</td>
+<td>consertado</td>
+</tr>
+<tr>
+<td>P0-v1-15</td>
+<td>o rótulo de pronto numa linha numerada passava</td>
+<td>quebra v1</td>
+<td>consertado</td>
+</tr>
+<tr>
+<td>P0-v1-17</td>
+<td>o instalador antigo (Inno) conversa com o Windows fora do Python; o porteiro só lê <code>.py</code></td>
+<td>quebra v1</td>
+<td>pergunta à gerente</td>
+</tr>
+<tr>
+<td>P0-N2</td>
+<td>chamada por apelido da biblioteca do Windows passava</td>
+<td>quebra v2</td>
+<td>consertado: segue o apelido no arquivo</td>
+</tr>
+<tr>
+<td>P0-N4</td>
+<td>o rótulo de pronto valia numa pasta de quem quebrou de outro trabalho</td>
+<td>quebra v2</td>
+<td>consertado</td>
+</tr>
+<tr>
+<td>P0-N7</td>
+<td>a mesma cegueira da folha de estilo num f-string com <code>{}</code></td>
+<td>quebra v2</td>
+<td>consertado</td>
+</tr>
+<tr>
+<td>P0-N8</td>
+<td>arquivo novo só ganhava as regras do Windows se o título do pedido dissesse "Windows"</td>
+<td>quebra v2</td>
+<td>consertado: vale a tabela</td>
+</tr>
+<tr>
+<td>P0-Q2</td>
+<td>o porteiro não via programa fora de <code>core/</code>, <code>ui/</code> e da raiz</td>
+<td>quebra v4</td>
+<td>consertado: lista curta do que não é programa</td>
+</tr>
+<tr>
+<td>P0-Q4</td>
+<td>um <code>.pyc</code> sem fonte, que o Python importa, passava</td>
+<td>quebra v4</td>
+<td>consertado</td>
+</tr>
+<tr>
+<td>P0-S1</td>
+<td>uma pasta <code>historico/</code> com <code>__init__.py</code> tomava o lugar do <code>historico.py</code> e não era lida</td>
+<td>quebra v5</td>
+<td>consertado</td>
+</tr>
+<tr>
+<td>P0-S2</td>
+<td><code>.pyw</code> não era lido</td>
+<td>quebra v5</td>
+<td>consertado</td>
+</tr>
+<tr>
+<td>P0-S3</td>
+<td><code>.pyd</code> passava</td>
+<td>quebra v5</td>
+<td>consertado</td>
+</tr>
+<tr>
+<td>P0-T1</td>
+<td><code>import docs.segredo</code> ou um <code>.zip</code> no caminho de busca passam</td>
+<td>quebra v6</td>
+<td>Lista de espera (não é grave hoje)</td>
+</tr>
+<tr>
+<td>P1-v1-12</td>
+<td>a peça entregava a biblioteca crua do Windows e o "rodar qualquer ferramenta" a qualquer arquivo; o porteiro não via</td>
+<td>quebra v1</td>
+<td>consertado: a peça é fechada</td>
+</tr>
+<tr>
+<td>P1-v2-N2</td>
+<td>a peça fechada tinha três portas: o caminho escrito de outro jeito (<code>\\?\</code>, <code>\\localhost\C$</code>), o nome com "_" usado por apelido, programas de fora do Windows</td>
+<td>quebra v2</td>
+<td>consertado (o apelido fica com a gerente, no porteiro)</td>
+</tr>
+</tbody>
+</table>
+<ul>
+<li><strong>19 erros, passos 0 e 1.</strong> Se repete. No passo 0, a mesma família voltou nas seis voltas: o agente acrescentava a
+  palavra ou a extensão que faltou, e o vizinho seguinte passava (o próprio quebrador, na volta 5: "Os três são o mesmo
+  tipo de furo do Q2").</li>
+<li><strong>Regra que já existia:</strong> CLAUDE.md §11.12, ponto 6 ("ler antes de usar peça de fora"): pede o que a peça faz em
+  cada caso (deu certo, falhou, "Não"), não <strong>tudo o que ela aceita como entrada</strong>. → <strong>a regra existia e não cobria
+  este caso.</strong></li>
+</ul>
+<h4>F3 · Proteção ou caminho que nenhum teste percorre</h4>
+<p><strong>A causa:</strong> a proteção foi escrita e o teste não a cobra (desligada numa cópia, todos os testes passam), ou o ensaio
+só percorreu os caminhos fáceis.</p>
+<table>
+<thead>
+<tr>
+<th>Código</th>
+<th>O que foi</th>
+<th>Quem achou</th>
+<th>Destino</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>P1-v1-01 (grave)</td>
+<td>a janela de prova não fazia as perguntas 2 e 3: o nome da tarefa tinha parênteses e a própria peça recusava; o ensaio só rodou as provas 1, 5 e 6</td>
+<td>quebra v1</td>
+<td>consertado: um teste passa todo pedido de toda prova pelas regras da peça</td>
+</tr>
+<tr>
+<td>P1-v1-03</td>
+<td>nenhum teste provava que o "Não" vira "você disse Não" e que uma falha não vira "Não" (mutações M8 e M9 passavam)</td>
+<td>quebra v1</td>
+<td>consertado</td>
+</tr>
+<tr>
+<td>P1-v1-04</td>
+<td>nenhum teste provava a recusa da pasta de troca onde outra conta grava (M7)</td>
+<td>quebra v1</td>
+<td>consertado</td>
+</tr>
+<tr>
+<td>P1-v1-13</td>
+<td>três proteções sem teste (M10, M11, M12)</td>
+<td>quebra v1</td>
+<td>consertado</td>
+</tr>
+<tr>
+<td>P1-v2-N1</td>
+<td>o conserto do achado 12 apagou a prova do "Não" lido do jeito certo (o defeito 2 da etapa 5)</td>
+<td>quebra v2</td>
+<td>consertado: a peça diz quais bibliotecas guardam o erro</td>
+</tr>
+<tr>
+<td>P1-v2-mut</td>
+<td>cinco proteções da volta 1 sem teste (A1c, A2, A6, A6b, A9)</td>
+<td>quebra v2</td>
+<td>consertado</td>
+</tr>
+</tbody>
+</table>
+<ul>
+<li><strong>6 erros, passo 1, duas voltas.</strong> Se repete (três ou mais no mesmo passo, em voltas diferentes).</li>
+<li><strong>Já visto antes:</strong> revisão de 18/11 ("os testes trocavam as peças do Windows por peças de mentira e passavam").</li>
+<li><strong>Regra que já existia:</strong> CLAUDE.md §4.7 (teste de reversão, só para bug consertado) e §11.12, ponto 4 (peça de
+  mentira não prova). Nenhuma pede, para código novo, a prova de que cada proteção tem um teste que a acusa. No passo
+  1, o agente fez essa prova (o anexo "reversão", 26 de 27 acusadas) <strong>depois</strong> de quem quebrou pedir. → <strong>não havia
+  regra.</strong></li>
+</ul>
+<h4>F4 · O teste supõe o computador, a língua ou o estado de hoje</h4>
+<p><strong>A causa:</strong> o teste foi escrito olhando o PC do Samuel (Windows em português, sem a licença ligada, pasta temporária
+no C:) ou o estado do dia (a lista ainda "proposta"), e quebra noutro lugar.</p>
+<table>
+<thead>
+<tr>
+<th>Código</th>
+<th>O que foi</th>
+<th>Quem achou</th>
+<th>Destino</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>P0-v1-01 (grave)</td>
+<td>ligar a lista deixava um teste vermelho: ele só valia com a lista "proposta"</td>
+<td>quebra v1</td>
+<td>consertado: o teste usa dados próprios</td>
+</tr>
+<tr>
+<td>P1-gh-1</td>
+<td>no GitHub a pasta temporária fica no D:, sem as licenças da conta; a peça (com razão) recusava, e dois testes falharam</td>
+<td>GitHub (rodada 44549715965)</td>
+<td>consertado no teste (<code>20054121</code>)</td>
+</tr>
+<tr>
+<td>P1-gh-2</td>
+<td>o teste exigia a conta como dona da pasta nova; o Windows do GitHub roda com a licença ligada e dá o dono aos Administradores</td>
+<td>GitHub (44553075293)</td>
+<td>consertado no teste (<code>b271cefc</code>, <code>1b1b0fa6</code>)</td>
+</tr>
+<tr>
+<td>P1-gh-3</td>
+<td>o Windows do GitHub em inglês escreveu "Everyone"; o teste procurava "Todos"; e a frase da peça mostrava o número da conta</td>
+<td>GitHub (44582797901)</td>
+<td>consertado: a peça diz as contas em português pelo número delas (<code>bd46892a</code>, <code>6bf3459a</code>)</td>
+</tr>
+<tr>
+<td>P1-gh-4</td>
+<td>o teste do "Só as letras" que desfaz o Automático falhou por tempo em duas rodadas e passou na repetição (não é deste passo)</td>
+<td>GitHub (44558364601, 44571676129)</td>
+<td>Lista de bugs (instabilidade)</td>
+</tr>
+</tbody>
+</table>
+<ul>
+<li><strong>5 erros, passos 0 e 1.</strong> Se repete. Cada falha do GitHub custou uma rodada.</li>
+<li><strong>Já visto antes:</strong> <code>licoes.md</code>, 24/10 ("suíte que passa no GitHub pode falhar no PC pela ordem dos testes"); C3
+  ("teste simulado passa e o uso real falha").</li>
+<li><strong>Regra que já existia:</strong> nenhuma diz como o Windows do GitHub é diferente do PC. → <strong>não havia regra.</strong></li>
+</ul>
+<h4>F5 · Dá como feito o que não conferiu, ou deixa pela metade</h4>
+<p><strong>A causa:</strong> depois de pedir algo ao Windows, a peça não lê de volta o que aconteceu, ou para no meio sem desfazer, ou
+a frase diz mais do que se sabe.</p>
+<table>
+<thead>
+<tr>
+<th>Código</th>
+<th>O que foi</th>
+<th>Quem achou</th>
+<th>Destino</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>P1-v1-05</td>
+<td>a tarefa que não conferia ficava no Windows; a licença era comparada pelo texto</td>
+<td>quebra v1</td>
+<td>consertado</td>
+</tr>
+<tr>
+<td>P1-v1-06</td>
+<td>a pergunta 3 deixava a pasta do programa no Agendador, e "o que foi desfeito" não dizia</td>
+<td>quebra v1</td>
+<td>consertado</td>
+</tr>
+<tr>
+<td>P1-v1-07</td>
+<td>"a pasta foi apagada de novo" sem conferir que sumiu</td>
+<td>quebra v1</td>
+<td>consertado</td>
+</tr>
+<tr>
+<td>P1-v1-08</td>
+<td>ninguém conferia quem pode ler a pasta de troca (o segredo cifrado abre em qualquer conta do computador)</td>
+<td>quebra v1</td>
+<td>consertado</td>
+</tr>
+<tr>
+<td>P1-v1-09</td>
+<td>depois do "não terminou no tempo", o trabalho com licença continua e a frase dá a entender que nada aconteceu</td>
+<td>quebra v1</td>
+<td>consertado</td>
+</tr>
+<tr>
+<td>P1-v1-10</td>
+<td>o script dava "deu certo" com um comando de dentro falhando</td>
+<td>quebra v1</td>
+<td>consertado</td>
+</tr>
+<tr>
+<td>P1-v1-11</td>
+<td>a resposta juntava o que o programa escreve como saída e como erro</td>
+<td>quebra v1</td>
+<td>consertado</td>
+</tr>
+<tr>
+<td>P1-v1-17</td>
+<td>fechar a janela de prova no meio de uma pergunta derrubava o processo</td>
+<td>quebra v1</td>
+<td>consertado</td>
+</tr>
+<tr>
+<td>P1-v2-frase</td>
+<td>a janela dizia "foi apagada" de uma pasta que nunca foi criada</td>
+<td>quebra v2</td>
+<td>consertado</td>
+</tr>
+</tbody>
+</table>
+<ul>
+<li><strong>9 erros, passo 1, duas voltas.</strong> Se repete.</li>
+<li><strong>Já visto antes:</strong> as revisões de 18/11 inteiras (desligar com "Não" grava "desligado"; ligar que falha no meio não
+  desfaz; a volta que diz "voltou" antes de saber). Foi por elas que a regra nasceu.</li>
+<li><strong>Regra que já existia:</strong> CLAUDE.md §11.12, pontos 2 e 3, escritos em 18/11 <strong>por causa deste tipo de erro</strong>, e lidos
+  pelo agente do passo 1. → <strong>a regra existia e não bastou.</strong></li>
+</ul>
+<h4>F6 · O que se diz ao Samuel foge do combinado</h4>
+<p><strong>A causa:</strong> o texto para ele não segue a lista do CLAUDE.md §11.13, ou diz que ele decidiu o que não decidiu, ou
+pergunta de novo o que ele já respondeu.</p>
+<table>
+<thead>
+<tr>
+<th>Código</th>
+<th>O que foi</th>
+<th>Quem achou</th>
+<th>Destino</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>P0-v1-08</td>
+<td>o texto da lista de exceções não seguia o §11.13</td>
+<td>quebra v1</td>
+<td>consertado</td>
+</tr>
+<tr>
+<td>P0-N6</td>
+<td>o texto ainda sem print que prova, e perguntando de novo parte do que ele decidiu em 19/11</td>
+<td>quebra v2</td>
+<td>consertado</td>
+</tr>
+<tr>
+<td>P0-R4</td>
+<td>o texto dizia "como você escolheu" sobre os 54 lugares do teste de velocidade, e a escolha dele tratava de uma parte deles (uns 10)</td>
+<td>quebra v3</td>
+<td>consertado: os outros viraram pergunta</td>
+</tr>
+<tr>
+<td>P0-Q7</td>
+<td>a pergunta dos 56 lugares não tinha print</td>
+<td>quebra v4</td>
+<td>aceito pela gerente (código sem tela)</td>
+</tr>
+</tbody>
+</table>
+<ul>
+<li><strong>4 erros, passo 0, quatro voltas.</strong> Se repete.</li>
+<li><strong>Já visto antes:</strong> <code>licoes.md</code> B1 e B2 (perguntas que voltaram com "Ainda não entendi"; perguntas dadas como "nunca
+  feitas" e já respondidas).</li>
+<li><strong>Regra que já existia:</strong> CLAUDE.md §11.13 inteiro; o formulário (F17) confere parte dele. → <strong>a regra existia e não
+  bastou.</strong></li>
+</ul>
+<h4>F7 · O escrito não bate com o código</h4>
+<p><strong>A causa:</strong> o docstring, o ONDE-PAREI ou o formulário dizem uma coisa que o código não faz (ou citam um arquivo que
+ainda não existe).</p>
+<table>
+<thead>
+<tr>
+<th>Código</th>
+<th>O que foi</th>
+<th>Quem achou</th>
+<th>Destino</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>P0-v1-12</td>
+<td>o docstring da tabela prometia ler o pedido para arquivo novo, e não lia</td>
+<td>quebra v1</td>
+<td>consertado</td>
+</tr>
+<tr>
+<td>P0-v1-16</td>
+<td>o docstring do porteiro, o texto do gancho e a contagem de arquivos não batiam com o código</td>
+<td>quebra v1</td>
+<td>consertado</td>
+</tr>
+<tr>
+<td>P0-R7</td>
+<td>dois itens do ONDE-PAREI não batiam com o código</td>
+<td>quebra v3</td>
+<td>consertado</td>
+</tr>
+<tr>
+<td>P1-form-1</td>
+<td>o formulário citava como prova um arquivo que só nasce na sessão à vista; faltavam o pacote e a fonte nos anexos</td>
+<td>formulário e a gerente</td>
+<td>consertado (<code>a8921a49</code>, <code>d1f6be95</code>)</td>
+</tr>
+</tbody>
+</table>
+<ul>
+<li><strong>4 erros, passos 0 e 1.</strong> Se repete.</li>
+<li><strong>Regra que já existia:</strong> CLAUDE.md §10.8 e §11.12 ("comentário que diz ... é conferido na hora"); o formulário já
+  confere que a função e o teste citados existem, e pegou o do passo 1. → <strong>a conferência que existe já pega a maior
+  parte.</strong></li>
+</ul>
+<h4>F8 · Falso alarme da conferência</h4>
+<p><strong>A causa:</strong> a conferência acusa o que está certo (e, se ninguém vê, isso faz a lista de exceções crescer à toa).</p>
+<table>
+<thead>
+<tr>
+<th>Código</th>
+<th>O que foi</th>
+<th>Quem achou</th>
+<th>Destino</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>P0-N5</td>
+<td><code>creationflags=0</code>, "self-service" e "hku:" contavam como conversa com o Windows</td>
+<td>quebra v2</td>
+<td>consertado, com o exemplo certo como teste</td>
+</tr>
+<tr>
+<td>P0-R5</td>
+<td>o seguir do apelido acusava linhas que não conversam com o Windows</td>
+<td>quebra v3</td>
+<td>consertado, com teste</td>
+</tr>
+<tr>
+<td>P0-R6</td>
+<td>abrir sem a janela preta contava como conversa com o Windows</td>
+<td>quebra v3</td>
+<td>consertado, com teste</td>
+</tr>
+<tr>
+<td>P1-port-1</td>
+<td>o porteiro barrou o nome de uma ferramenta de licença escrito numa lista que servia para recusá-la; o agente trocou a lista pela regra "tudo da pasta do Windows"</td>
+<td>porteiro</td>
+<td>resolvido por um desenho melhor (<code>a21b311a</code>)</td>
+</tr>
+</tbody>
+</table>
+<ul>
+<li><strong>4 erros, passos 0 e 1.</strong> Se repete.</li>
+<li><strong>Regra que já existia:</strong> a prova da D-791 ("cada conferência ... não acusa o código certo"); cada falso alarme já
+  virou teste com o exemplo certo. → <strong>o jeito que existe já resolve cada caso.</strong></li>
+</ul>
+<h4>F9 · Comando que muda o que é do Samuel sem ele ver</h4>
+<p><strong>A causa:</strong> um comando rodado como se fosse numa cópia isolada mexe no repositório ou no Windows do PC dele, por
+baixo.</p>
+<table>
+<thead>
+<tr>
+<th>Código</th>
+<th>O que foi</th>
+<th>Quem achou</th>
+<th>Destino</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>P0-ger-1 (grave)</td>
+<td>o repositório do PC ficou raso: o script do juiz, com <code>git fetch --depth=1</code>, rodou na cópia do agente, que divide a pasta <code>.git</code> com o repositório dele; o <code>git merge</code> recusou</td>
+<td>a gerente (no merge)</td>
+<td>consertado: <code>--depth=1</code> só se a cópia já é rasa, com teste de reversão; restaurado com <code>git fetch --unshallow</code></td>
+</tr>
+<tr>
+<td>P1-v2-N4</td>
+<td>um teste novo cria uma tarefa de verdade no Windows do PC se o terminal tiver a licença ligada</td>
+<td>quebra v2</td>
+<td>consertado: esse teste só roda no GitHub</td>
+</tr>
+</tbody>
+</table>
+<ul>
+<li><strong>2 erros, passos 0 e 1.</strong> Se repete.</li>
+<li><strong>Já visto antes:</strong> <code>licoes.md</code> D1 (agente apagou <code>D:\d</code>), D2 (<code>robocopy</code> esvaziou pastas por uma junção), D4
+  (<code>git stash</code> levou arquivos de outro agente), C4 (testes gravando no <code>erros.log</code> real), C9 (teste quase apagou um
+  projeto).</li>
+<li><strong>Regra que já existia:</strong> CLAUDE.md §10.9 (apagar) e D-785 (nada escondido no Windows). Nenhuma diz que a cópia do
+  agente divide o <code>.git</code> com o PC. → <strong>não havia regra para o git.</strong></li>
+</ul>
+<h4>F10 · Duas regras que se atrapalham</h4>
+<table>
+<thead>
+<tr>
+<th>Código</th>
+<th>O que foi</th>
+<th>Quem achou</th>
+<th>Destino</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>P0-v1-05</td>
+<td>o rótulo que quem quebra escreve no ramo de quem construiu fazia o formulário de quem construiu voltar</td>
+<td>quebra v1</td>
+<td>consertado</td>
+</tr>
+<tr>
+<td>P0-v1-18</td>
+<td>a regra da barra de rolagem no CLAUDE.md §9 (<code>#a8a49e</code>) contradiz os valores que a K22 cobra</td>
+<td>quebra v1</td>
+<td>pergunta à gerente</td>
+</tr>
+</tbody>
+</table>
+<ul>
+<li><strong>2 erros, passo 0, uma volta.</strong> Em observação. As contradições já têm a lista própria na proposta das regras (X1 a
+  X11); a gerente as leva lá.</li>
+</ul>
+<h4>Sem família</h4>
+<table>
+<thead>
+<tr>
+<th>Código</th>
+<th>O que foi</th>
+<th>Quem achou</th>
+<th>Destino</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>P0-v1-11</td>
+<td>o lugar da lista de exceções é o texto da linha: mexer na linha sem consertar vira erro novo</td>
+<td>quebra v1</td>
+<td>combinado do plano; o pacote mostra os lugares</td>
+</tr>
+<tr>
+<td>P0-v1-13</td>
+<td>listas escritas à mão em mais de um lugar</td>
+<td>quebra v1</td>
+<td>consertado (mesma causa dos remendos de 10/11: se voltar, vira família)</td>
+</tr>
+<tr>
+<td>P0-Q3</td>
+<td>a função na chave trava os passos 3 e 4 se renomearem funções que guardam lugares do passo 5</td>
+<td>quebra v4</td>
+<td>aviso no pacote dos passos 3 e 4</td>
+</tr>
+<tr>
+<td>P0-port-1</td>
+<td>três arquivos começam com a marca de UTF-8 (BOM)</td>
+<td>porteiro</td>
+<td>Lista de bugs</td>
+</tr>
+<tr>
+<td>P1-v1-15</td>
+<td>a mesma conta, sem licença, pode trocar o script antes de o programa com licença usar</td>
+<td>quebra v1</td>
+<td>não é defeito deste passo; cuidado no pacote do passo 3</td>
+</tr>
+<tr>
+<td>P1-leit-1</td>
+<td>pela leitura da documentação, a pergunta do Windows vai mostrar "EditorImpressao.exe", não "Editor de Impressão"</td>
+<td>o próprio agente</td>
+<td>pergunta ao Samuel, pronta</td>
+</tr>
+</tbody>
+</table>
+<h4>Não entram</h4>
+<ul>
+<li>P0-Q5 (o formulário fica pendente até a lista ser ligada): é o combinado.</li>
+<li>P1-v1-16 (o texto do argumento escrito à mão no <code>main.py</code>): a fonte diz "observação, não é defeito".</li>
+<li>O disco D: dá controle total a "Todos" (achado de novo no passo 1): já está na lista do plano (item 59).</li>
+</ul>
+<h3>5.3 As famílias que se repetem e o que eu proporia</h3>
+<p>Seis perguntas, uma por vez. A ordem é sugestão minha: primeiro o que o próximo passo (publicar e o servidor das versões
+de prova) mais vai encontrar.</p>
+<p><strong>1. F9, comando que muda o que é do Samuel sem ele ver</strong> → <strong>regra nova</strong> (etiqueta git) e <strong>conferência nova do
+porteiro</strong>.
+- Regra: "A sua cópia divide a pasta <code>.git</code> com o repositório do Samuel. Comando que muda o <code>.git</code> inteiro (<code>fetch</code> com
+  <code>--depth</code>, <code>gc</code>, <code>prune</code>, <code>stash</code>, <code>config</code>, mexer em ramo que não é o seu) não roda na sua cópia, nem em script ou
+  teste, a não ser num repositório de prova que o próprio teste cria em pasta temporária. Caso que originou: o
+  repositório do PC raso em 19/11."
+- Conferência: o porteiro acusa esses comandos em scripts e testes fora das duas peças de git que já existem
+  (<code>conversa_com_o_git.py</code>, <code>repositorio_de_prova.py</code>). É busca de texto, como a K01; pouco falso alarme.
+- Por que primeiro: é o único tipo que já estragou uma coisa do Samuel nestes dois passos, e o passo 2 mexe com o
+  GitHub.</p>
+<p><strong>2. F4, o teste supõe o computador</strong> → <strong>regra nova</strong> (etiquetas Windows e testes).
+- Regra: "O teste do Windows roda em três computadores diferentes. GitHub: Windows em inglês ('Everyone',
+  'Administrators'), a licença de administrador já ligada (o dono do que se cria é o grupo Administradores), pasta
+  temporária no D:. PC do Samuel: português, sem a licença, o D: dá controle total a 'Todos'. Notebook do Kaique: a
+  conferir. O teste compara a conta pelo número dela, nunca pelo nome escrito, e não supõe o estado de hoje da lista ou
+  da versão de teste. Casos que originaram: três rodadas perdidas no passo 1."
+- Uma conferência do porteiro aqui daria falso alarme (os testes de frase em português precisam escrever "Todos"); fica
+  só a regra.</p>
+<p><strong>3. F3 e F5 juntas, proteção sem teste e resultado não conferido</strong> → <strong>pergunta nova no formulário</strong> (com a regra que
+a cria).
+- Pergunta do formulário, para trabalho de Windows e de instalador: "Cada proteção e cada conferência do resultado
+  (recusa, leitura de volta, desfazer) → o teste que falha quando ela é desligada, provado numa cópia." É o anexo de
+  reversão que o passo 1 fez depois do pedido de quem quebrou, passado para antes. O programa do formulário confere que
+  a lista existe e que cada teste citado existe; quem tenta quebrar confere se a lista está completa.
+- Por que juntas: desligar a conferência do resultado e ver um teste falhar pega a F5 também (os achados 5, 7 e 14 do
+  passo 1 seriam vistos assim). A regra da F5 já existe e não bastou; escrever mais texto não resolve.</p>
+<p><strong>4. F1, a conferência acredita num dado que não prova nada</strong> → <strong>regra nova</strong> e <strong>pergunta nova no formulário</strong>.
+- Regra: "Toda conferência (do porteiro, de um teste ou do programa) diz de onde vem cada dado que ela usa. Dado que o
+  próprio conferido escreve ou pode trocar (o ramo do agente, o ONDE-PAREI, a anotação do programa, a pasta de troca,
+  o arquivo da vez anterior) não serve de prova. Casos que originaram: o 'sim' forjável e o juiz escolhido pelo ramo, no
+  passo 0; o arquivo da vez anterior, no passo 1."
+- Pergunta do formulário, para trabalho que confere algo: "De onde vem cada dado que a sua conferência usa?"
+- Vale muito para o passo 3: o atualizador confere a assinatura e a marca "preparado".</p>
+<p><strong>5. F2, o vizinho passa</strong> → <strong>ampliar a regra 6 do CLAUDE.md §11.12</strong> (texto de regra: precisa do "sim") e <strong>foco de
+quem tenta quebrar</strong>.
+- Texto a acrescentar: "Quando o nosso código recusa, filtra ou procura algo, a leitura da peça de fora lista também
+  tudo o que ela aceita como entrada, com a fonte (ex.: o Python importa <code>.py</code>, <code>.pyw</code>, <code>.pyd</code>, <code>.pyc</code>, pasta com e sem
+  <code>__init__</code>, <code>.zip</code> no caminho; o Windows aceita <code>\\?\</code>, <code>\\localhost\C$</code>, nome curto), e a recusa compara a coisa de
+  verdade, não o texto."
+- A conferência que acusaria import de pasta de fora já está na Lista de espera (ideia do passo 0); o catálogo só
+  aponta para ela.</p>
+<p><strong>6. F6, o texto ao Samuel foge do combinado</strong> → <strong>pergunta nova no formulário</strong>.
+- Pergunta: "Para cada pergunta ao Samuel: as decisões do Livro que você procurou antes, e por que esta ainda não está
+  respondida." Pega o "perguntar de novo o que ele já respondeu" e o "como você escolheu" sobre o que ele não escolheu
+  (§11.13, ponto 10).</p>
+<p><strong>Não viram pergunta (uma linha na pergunta seguinte, para ele saber):</strong>
+- <strong>F7, o escrito não bate com o código:</strong> se repete, mas o formulário já confere o que dá e pegou o do passo 1; o resto
+  fica com quem tenta quebrar.
+- <strong>F8, falso alarme:</strong> cada caso já vira teste com o exemplo certo; o jeito funciona.
+- <strong>F10, duas regras que se atrapalham:</strong> em observação; as contradições têm a lista própria.</p>
+<hr />
+<h2>6. Ressalvas</h2>
+<ul>
+<li><strong>O passo 1 está pela metade:</strong> falta a prova à vista. O que o Samuel achar nela entra depois, e pode mudar a
+  contagem da F3 e da F5.</li>
+<li><strong>Família é julgamento.</strong> Outro agente poderia pôr P0-N3 na F3 em vez da F1, ou P1-v1-02 na F5. Por isso cada erro
+  conta numa família só e diz a vizinha; a contagem de "se repete" não depende de um erro só.</li>
+<li><strong>O passo 0 pesa muito nas famílias F1, F2 e F6:</strong> é o passo que construiu a própria conferência, com seis voltas. Pela
+  minha conta de "se repete" (três vezes no mesmo passo), elas passariam mesmo sem o passo 1; F1 e F2 também aparecem
+  no passo 1, então a proposta não depende só do passo 0.</li>
+<li><strong>"Se repete" é escolha minha.</strong> Com ela, nove das dez famílias já se repetem; agrupando o que se resolve junto e
+  deixando de fora o que já tem remédio, sobram seis perguntas. Se o Samuel achar muitas, a conta pode subir para
+  "três passos".</li>
+<li><strong>Contei como um erro só</strong> o que a fonte deu num número só, mesmo com várias partes (ex.: P1-v2-N2, as três portas;
+  P1-v2-mut, as cinco proteções; P1-gh-1, dois testes).</li>
+<li><strong>A gravidade é a da fonte.</strong> Os erros do GitHub, do porteiro e do formulário não tinham gravidade; dei "médio" às
+  rodadas perdidas e "baixo" ao resto.</li>
+<li><strong>Pergunta sem print.</strong> O CLAUDE.md §11.13, ponto 3, pede print em toda pergunta. Várias famílias são código sem tela
+  (F1, F2, F9). A gerente já aceitou, no passo 0, uma pergunta sem print com o motivo escrito (P0-Q7), mas isso não foi
+  decidido pelo Samuel. Proposta: nesses cartões, o print é da coisa que aparece (a mensagem do <code>git merge</code> recusando, a
+  falha da rodada do GitHub), e quando nada aparece, o cartão diz por quê.</li>
+<li><strong>As revisões de 10/11 e 18/11 (50 defeitos) não foram passadas para o catálogo</strong>, só citadas como "já visto antes".
+  Passar todas daria história às famílias, mas custa e mistura um tempo em que as regras eram outras.</li>
+<li><strong>O catálogo não é a Lista de bugs.</strong> Um defeito do programa achado num passo continua indo para a Lista de bugs; no
+  catálogo fica só a linha com a família e o apontador.</li>
+<li><strong>O que o Livro e o plano dizem continua valendo.</strong> Esta proposta não muda nenhuma regra: cada regra nova só entra com
+  o "sim" dele, uma por vez.</li>
+</ul>
+<p class="rodape">Editor de Impressão &middot; gerado em 19/11/2026 às 14:39</p>
+</body>
+</html>
