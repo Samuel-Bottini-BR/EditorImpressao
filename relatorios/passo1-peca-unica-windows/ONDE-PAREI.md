@@ -234,6 +234,31 @@ Lido (documentação ou código), separado do deduzido:
   `GetSystemDirectoryW` (https://learn.microsoft.com/en-us/windows/win32/api/sysinfoapi/nf-sysinfoapi-getsystemdirectoryw),
   em vez das variáveis de ambiente (que a conta pode mudar).
 
+## O dono da pasta de troca quando quem pede já tem a licença (pergunta da gerente, 19/11)
+
+- **Não é só do GitHub; é um caso real.** O dono do que um processo cria depende de ele estar com a licença ligada.
+  Com o Controle de Conta de Usuário ligado e sem a licença, o dono é a própria conta: "When enabled, User Account
+  Control (UAC) will ensure the user account is being used as owner for all objects created locally"
+  (https://learn.microsoft.com/en-US/troubleshoot/windows-server/group-policy/default-owner-objects-created-members-administrators-group-not-available).
+  Com a licença ligada, o dono é o grupo Administradores. Isso foi visto de verdade na rodada 44553075293: o Windows
+  do GitHub roda com a licença ligada e deu S-1-5-32-544 como dono da pasta nova. Acontece também no PC do Kaique
+  quando o programa é aberto com "Executar como administrador", com o Controle de Conta desligado, ou na conta
+  Administrador embutida. **Deduzido:** estes três casos não foram vistos aqui; o do GitHub foi.
+- **O que a peça faz:** aceita. A regra única `_problemas_da_pasta_de_troca()` (a mesma do lado que pede e do lado com
+  licença) aceita como dono a conta que pediu, o sistema ou os Administradores; recusa outro dono ("o dono da pasta é
+  ..., não a conta que pediu") e recusa qualquer outra conta que possa gravar ("outra conta pode gravar na pasta:
+  ..."). Visto na mesma rodada: `tests/test_windows_peca.py::test_o_trabalho_com_licenca_faz_so_o_aviso` passou, ou
+  seja, `atender_trabalho_de_administrador()` aceitou a pasta de troca com dono Administradores e rodou o script.
+- **É o que o plano e a regra 12 pedem?** Sim. O plano pede que "outra conta não consegue mandar ele fazer outra
+  coisa": com dono Administradores, só um administrador muda as licenças da pasta, e uma conta comum continua sem
+  gravar (a regra cobra isso). Os arquivos do programa com licença continuam legíveis pela conta (a licença dela vem
+  herdada pelo nome). Não há desvio para o GitHub: a peça não mudou.
+- **O defeito era do teste,** que exigia sempre a conta como dona. Agora ele espera o dono que o Windows dá
+  (Administradores se o processo tem a licença ligada; senão, a conta), e a prova da regra ganhou o caso "dono
+  Administradores" aceito e "dono Administradores com conta comum que grava" recusado
+  (`tests/test_windows_peca.py::test_a_regra_da_pasta_de_troca_recusa_outra_conta`). Não é defeito da peça, então não
+  cabe teste de reversão dela.
+
 ## O que foi feito
 
 - **`core/windows.py` (novo): a peça única do Windows e a pasta segura.** Pedir a licença abre o próprio programa

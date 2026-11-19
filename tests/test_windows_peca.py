@@ -275,9 +275,12 @@ def test_a_pasta_de_troca_herda_as_licencas_da_conta():
         assert not lic.protegida
         assert any(li.sid == sid and li.herdada and li.grava for li in lic.lista)
         assert not any(li.sid == windows.SID_DIREITOS_DO_DONO for li in lic.lista)
-        # Dono: a conta; ou o grupo Administradores quando o processo roda com a licença ligada (o Windows do
-        # GitHub). É por isso que o arquivo do programa com licença tem outro dono (o defeito 3 acima).
-        assert lic.dono in (sid, windows.SID_ADMINISTRADORES)
+        # Dono (regra do Windows, não do ambiente): com o Controle de Conta ligado e sem a licença, a conta; com a
+        # licença ligada (programa aberto como administrador, Controle de Conta desligado, a conta Administrador
+        # embutida, o Windows do GitHub), o grupo Administradores. É por isso que o arquivo do programa com licença
+        # tem outro dono (o defeito 3 acima). A regra da peça aceita os dois.
+        esperado = windows.SID_ADMINISTRADORES if windows.tem_licenca_de_administrador() else sid
+        assert lic.dono == esperado
         assert windows._problemas_da_pasta_de_troca(lic, sid) == []
     finally:
         assert windows.apagar_pasta_de_troca(pasta)
@@ -308,6 +311,11 @@ def test_a_regra_da_pasta_de_troca_recusa_outra_conta():
     assert windows._problemas_da_pasta_de_troca(lic("S-1-5-21-9-9-9-1002", linha(sid, 0x1F01FF)), sid)
     assert windows._problemas_da_pasta_de_troca(windows.Licencas("x", sid, "", False, True, ()), sid)  # sem lista
     assert windows._problemas_da_pasta_de_troca(lic(sid, linha(windows.SID_USUARIOS, 0x1200A9)), sid) == []
+    # Dono Administradores (a pasta criada por quem já roda com a licença ligada): aceita, porque só administrador
+    # muda as licenças dela; uma conta comum continua sem poder gravar.
+    assert windows._problemas_da_pasta_de_troca(lic(windows.SID_ADMINISTRADORES, linha(sid, 0x1F01FF)), sid) == []
+    assert windows._problemas_da_pasta_de_troca(lic(windows.SID_ADMINISTRADORES, linha(sid, 0x1F01FF),
+                                                    linha(windows.SID_USUARIOS, 0x2)), sid)
 
 
 def test_apagar_pasta_de_troca_so_apaga_pasta_de_troca(tmp_path):
