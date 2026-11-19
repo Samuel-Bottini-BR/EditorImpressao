@@ -376,6 +376,19 @@ def caminho_do_powershell() -> Path:
     return pasta_do_sistema() / "WindowsPowerShell" / "v1.0" / "powershell.exe"
 
 
+def comando_do_powershell(script: Path) -> list[str]:
+    """O comando que roda um script do PowerShell (lugar único: rodar e esperar, lançar solto e as tarefas usam este):
+    o caminho inteiro, sem o perfil da conta, sem perguntar nada, liberado para rodar o script (salvo política do
+    computador, que vence este pedido) e pelo arquivo (nunca texto codificado na linha de comando)."""
+    return [str(caminho_do_powershell()), "-NoProfile", "-NonInteractive", "-ExecutionPolicy", "Bypass", "-File",
+            str(script)]
+
+
+def argumentos_do_powershell(script: Path) -> str:
+    """Os argumentos de `comando_do_powershell` numa linha só (para o campo de argumentos de uma tarefa)."""
+    return subprocess.list2cmdline(comando_do_powershell(script)[1:])
+
+
 def caminho_do_schtasks() -> Path:
     """A ferramenta de tarefas do Windows pelo caminho inteiro."""
     return pasta_do_sistema() / "schtasks.exe"
@@ -673,7 +686,7 @@ def _gravar_script(caminho: Path, texto: str) -> None:
     _gravar_por_inteiro(caminho, texto.encode("utf-8-sig"))
 
 
-def _aspas(texto: object) -> str:
+def aspas_do_powershell(texto: object) -> str:
     """Texto entre aspas simples do PowerShell (a aspa simples dobra). Só para valores de uma linha."""
     texto = str(texto)
     if "\n" in texto or "\r" in texto:
@@ -726,8 +739,7 @@ def rodar_powershell(texto: str, limite_s: float = 600, segredo: str | None = No
         script = pasta / "script.ps1"
         _gravar_script(script, _CABECA_DO_SCRIPT + texto)
         entrada = (segredo + "\n").encode("utf-8") if segredo is not None else None
-        return rodar_e_esperar([caminho_do_powershell(), "-NoProfile", "-NonInteractive", "-ExecutionPolicy",
-                                "Bypass", "-File", script], limite_s, entrada, "utf-8-sig")
+        return rodar_e_esperar(comando_do_powershell(script), limite_s, entrada, "utf-8-sig")
     except (OSError, ValueError) as erro:
         return _falhou("não consegui rodar o script", repr(erro))
     finally:
@@ -819,15 +831,14 @@ def lancar_powershell_solto(texto: str, espera_s: float = 30) -> Resposta:
     script = pasta / "solto.ps1"
     try:
         _gravar_script(script, _CABECA_DO_SCRIPT
-                       + f"[System.IO.File]::WriteAllText({_aspas(sinal)}, 'comecei')\n"
+                       + f"[System.IO.File]::WriteAllText({aspas_do_powershell(sinal)}, 'comecei')\n"
                        + "try {\n" + texto + "\n} finally {\n"
-                       + f"  Remove-Item -LiteralPath {_aspas(pasta)} -Recurse -Force -ErrorAction SilentlyContinue\n"
+                       + f"  Remove-Item -LiteralPath {aspas_do_powershell(pasta)} -Recurse -Force -ErrorAction SilentlyContinue\n"
                        + "}\n")
     except (OSError, ValueError) as erro:
         apagar_pasta_de_troca(pasta)
         return _falhou("não consegui preparar o script", repr(erro))
-    resposta = lancar_solto([caminho_do_powershell(), "-NoProfile", "-NonInteractive", "-ExecutionPolicy", "Bypass",
-                             "-File", script], sinal, espera_s)
+    resposta = lancar_solto(comando_do_powershell(script), sinal, espera_s)
     if not resposta.deu_certo:
         apagar_pasta_de_troca(pasta)
     return resposta
@@ -1003,7 +1014,7 @@ def ler_tarefa(nome: str, limite_s: float = 60) -> Tarefa:
     pasta, _, folha = nome.rpartition("\\")
     resposta = rodar_powershell(
         "$s = New-Object -ComObject Schedule.Service\n$s.Connect()\n"
-        f"try {{ $t = $s.GetFolder({_aspas(chr(92) + pasta)}).GetTask({_aspas(folha)})\n"
+        f"try {{ $t = $s.GetFolder({aspas_do_powershell(chr(92) + pasta)}).GetTask({aspas_do_powershell(folha)})\n"
         "  [Console]::Out.Write((@{ codigo = 0; xml = $t.Xml } | ConvertTo-Json -Compress)) }\n"
         "catch { $h = $_.Exception.HResult; if ($_.Exception.InnerException) { $h = $_.Exception.InnerException.HResult }\n"
         "  [Console]::Out.Write((@{ codigo = $h; xml = '' } | ConvertTo-Json -Compress)) }\n", limite_s)
