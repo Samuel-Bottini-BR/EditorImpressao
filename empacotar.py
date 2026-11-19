@@ -200,6 +200,52 @@ REGISTRO_DO_INNO = RAIZ / "build" / "instalador-registro.txt"
 
 
 # ---------------------------------------------------------------------------
+# as tres saidas (plano da parte do Windows, passo 2, peca 8; D-768, D-777, D-788)
+# ---------------------------------------------------------------------------
+#
+# O LUGAR UNICO do que muda entre o que este script monta. Tudo o que difere
+# entre a pasta portatil, a atualizacao e o instalador le daqui (construir_pasta,
+# o comando do vpk, a preparacao da pasta, o que o pacote tem de ter e o que nao
+# pode ter, a conta do espaco). Nao escreva "se for o instalador..." em outro
+# lugar: acrescente um campo aqui (CLAUDE.md §11.12).
+#
+# - pasta portatil (--modo pasta, e o que o Inno empacota): o motor do Kraken
+#   solto ao lado do .exe, como sempre;
+# - atualizacao (o que o publicar sobe a cada versao): SEM o motor (D-768), com o
+#   motor-exigido.json (que motor esta versao pede); sem .msi e sem zip portatil
+#   (D-777);
+# - instalador (so quando o Samuel pede, D-777): a atualizacao mais o motor como
+#   UM arquivo so em instalar\ (D-788, D-727), e o .msi. O pacote dele (.nupkg)
+#   NAO e o publicado: o publicado e sempre o da atualizacao (senao todo mundo
+#   baixaria o motor na proxima atualizacao, contra a D-768). Por isso o mesmo
+#   numero de versao tem dois conteudos: e de proposito (estudo do Kraken, risco 5).
+
+@dataclass(frozen=True)
+class Saida:
+    """Uma das tres saidas do empacotador (ver o comentario acima)."""
+
+    nome: str
+    motor_solto: bool          # a pasta motor-kraken\ inteira ao lado do .exe
+    motor_exigido: bool        # o motor-exigido.json dentro do pacote
+    motor_em_instalar: bool    # o arquivo do motor (um zip so) em instalar\
+    com_msi: bool              # o vpk faz o .msi (instalar em Arquivos de Programas)
+
+
+PORTATIL = Saida("pasta portátil", motor_solto=True, motor_exigido=False, motor_em_instalar=False, com_msi=False)
+ATUALIZACAO = Saida("atualização", motor_solto=False, motor_exigido=True, motor_em_instalar=False, com_msi=False)
+INSTALADOR = Saida("instalador", motor_solto=False, motor_exigido=True, motor_em_instalar=True, com_msi=True)
+SAIDAS = (PORTATIL, ATUALIZACAO, INSTALADOR)
+
+# O arquivo que diz que motor a versao pede (dentro do pacote, na raiz da pasta do
+# programa: current\motor-exigido.json no instalado). Coberto pela assinatura do
+# programa, porque vai dentro do .nupkg assinado. Quem le e o ajudante (passo 3).
+NOME_DO_MOTOR_EXIGIDO = "motor-exigido.json"
+# A ficha da versao (que versao e de que commit a pasta saiu; plano v1, peca 8,
+# "um numero de versao so"): o publicar recusa uma pasta pronta de outra versao.
+NOME_DA_FICHA_DA_VERSAO = "versao-do-pacote.json"
+
+
+# ---------------------------------------------------------------------------
 # os modelos (redes neurais), que ficam fora do git
 # ---------------------------------------------------------------------------
 
@@ -421,9 +467,11 @@ class PecasDosDetectores:
     licencas: a pasta com LICENSE e AUTHORS do Tesseract;
     tessdata: a pasta com os seis idiomas;
     vc_redist: o vc_redist.x64.exe oficial conferido; vc_versao: a versao dele.
+    motor e None quando a saida nao leva o motor solto (a atualizacao e o
+    instalador, ver SAIDAS; passo 2 do plano da parte do Windows).
     """
 
-    motor: Path
+    motor: Path | None
     tesseract: Path
     licencas: Path
     tessdata: Path
@@ -437,23 +485,23 @@ def conferir_motor_kraken(pasta: Path) -> list[str]:
     Recusa o motor do jeito velho (com as DLLs do Visual C++ ao lado do
     python.exe, ou com os atalhos bin\\*.exe): desde 29/09 o Visual C++ vem do
     vc_redist oficial, e um motor com as DLLs dentro misturaria versoes.
+
+    A forma do motor (o Python, o servidor do protocolo certo, o modelo) vem da
+    peca unica do motor, core/ocr_kraken.problemas_da_forma (passo 2 do plano,
+    19/11/2026: antes esta conta estava escrita aqui). Aqui fica so a regra de
+    montagem (jeito velho). Esta funcao NAO le a ficha (motor.json): o "inteiro
+    e da versao certa" e core/ocr_kraken.conferir_motor, que juntar_pecas e o
+    publicar chamam depois de escolher o motor (os testes antigos usam um motor
+    de mentira sem ficha aqui).
     """
     import montar_motor_kraken as m
     from core import ocr_kraken
 
     pasta = Path(pasta)
     python = pasta / "python"
-    problemas = []
+    problemas = ocr_kraken.problemas_da_forma(pasta)
     if not (python / "python.exe").is_file():
-        return [f"não há motor montado em {pasta} (falta python\\python.exe)"]
-    servidor = pasta / ocr_kraken.NOME_DO_SERVIDOR
-    if not servidor.is_file():
-        problemas.append(f"falta {servidor.name} em {pasta}")
-    elif f"VERSAO_PROTOCOLO = {ocr_kraken.VERSAO_PROTOCOLO}\n" not in servidor.read_text(encoding="utf-8"):
-        problemas.append(f"o {servidor.name} de {pasta} é de outra versão (rode montar_motor_kraken.py "
-                         f"--so-servidor --destino {pasta})")
-    if not (python / "Lib" / "site-packages" / "kraken" / "blla.mlmodel").is_file():
-        problemas.append(f"falta o modelo do Kraken (kraken\\blla.mlmodel) em {pasta}")
+        return problemas
     velhas = [n for n in m.DLLS_DO_VISUAL_C if (python / n).is_file()]
     if velhas:
         problemas.append(f"o motor de {pasta} é do jeito velho, com o Visual C++ dentro ({', '.join(velhas)}); "
@@ -587,16 +635,23 @@ def preparar_vc_redist(baixar: bool = True) -> tuple[Path | None, str, list[str]
     return arquivo, assinatura.get("versao", ""), []
 
 
-def juntar_pecas(motor_escolhido: Path | None = None,
-                 baixar: bool = True) -> tuple[PecasDosDetectores | None, list[str]]:
-    """Confere TODAS as pecas dos detectores de texto. (pecas, []) ou (None, problemas)."""
+def juntar_pecas(motor_escolhido: Path | None = None, baixar: bool = True,
+                 com_motor: bool = True) -> tuple[PecasDosDetectores | None, list[str]]:
+    """Confere TODAS as pecas dos detectores de texto. (pecas, []) ou (None, problemas).
+
+    com_motor=False (a saida nao leva o motor solto, Saida.motor_solto): nao
+    procura o motor do Kraken neste PC (a atualizacao pede o motor PUBLICADO,
+    pelo motor-exigido.json; o instalador leva o arquivo publicado). Com
+    com_motor=True (a pasta portatil), como sempre."""
     from core import ocr_tesseract
 
     problemas = []
-    motor, erros = achar_motor_kraken(motor_escolhido)
-    if motor is None:
-        problemas.append("motor do Kraken: nenhum motor pronto do jeito novo:")
-        problemas += [f"  {e}" for e in erros]
+    motor = None
+    if com_motor:
+        motor, erros = achar_motor_kraken(motor_escolhido)
+        if motor is None:
+            problemas.append("motor do Kraken: nenhum motor pronto do jeito novo:")
+            problemas += [f"  {e}" for e in erros]
     tesseract = achar_pasta_do_tesseract()
     problemas += [f"Tesseract: {e}" for e in conferir_tesseract(tesseract)]
     vc_redist, versao, erros = preparar_vc_redist(baixar)
@@ -607,11 +662,12 @@ def juntar_pecas(motor_escolhido: Path | None = None,
                               vc_redist, versao), []
 
 
-def _avisar_pecas_faltando(motor_escolhido: Path | None = None) -> PecasDosDetectores | None:
+def _avisar_pecas_faltando(motor_escolhido: Path | None = None,
+                           com_motor: bool = True) -> PecasDosDetectores | None:
     """juntar_pecas, imprimindo o que falta. Chamada ANTES de apagar ou gerar qualquer coisa."""
-    pecas, problemas = juntar_pecas(motor_escolhido)
+    pecas, problemas = juntar_pecas(motor_escolhido, com_motor=com_motor)
     if pecas is not None:
-        print(f"  motor do Kraken: {pecas.motor}")
+        print(f"  motor do Kraken: {pecas.motor or 'não vai solto nesta saída (vai o motor publicado)'}")
         print(f"  Tesseract: {pecas.tesseract}  (idiomas de {pecas.tessdata})")
         print(f"  Visual C++: {pecas.vc_redist}  (versão {pecas.vc_versao}, assinatura da Microsoft conferida)")
         return pecas
@@ -656,12 +712,14 @@ licença Apache-2.0.
 
 
 def copiar_pecas(pasta: Path, pecas: PecasDosDetectores) -> None:
-    """Poe o motor do Kraken e o Tesseract ao lado do .exe, na versao em pasta."""
+    """Poe o motor do Kraken (so quando pecas.motor existe: a pasta portatil, SAIDAS)
+    e o Tesseract ao lado do .exe, na versao em pasta."""
     from core import ocr_tesseract
 
-    destino_motor = pasta / PASTA_DO_MOTOR
-    print(f"  copiando o motor do Kraken ({_tamanho(pecas.motor)}) para {destino_motor.name}\\")
-    shutil.copytree(pecas.motor, destino_motor)
+    if pecas.motor is not None:
+        destino_motor = pasta / PASTA_DO_MOTOR
+        print(f"  copiando o motor do Kraken ({_tamanho(pecas.motor)}) para {destino_motor.name}\\")
+        shutil.copytree(pecas.motor, destino_motor)
     print(f"  copiando o Tesseract e os {len(ocr_tesseract.IDIOMAS_DO_INSTALADOR)} idiomas "
           f"para {PASTA_DO_TESSERACT}\\")
     for origem, relativo in _destinos_das_pecas(pecas):
@@ -674,7 +732,10 @@ def copiar_pecas(pasta: Path, pecas: PecasDosDetectores) -> None:
 
 
 def conferir_pecas_no_pacote(pasta: Path, pecas: PecasDosDetectores) -> list[str]:
-    """Confere que cada peca chegou inteira na versao em pasta (vazio = tudo certo)."""
+    """Confere que cada peca chegou inteira na versao em pasta (vazio = tudo certo).
+
+    Sem motor nas pecas (a atualizacao e o instalador, SAIDAS): confere que a
+    pasta motor-kraken\\ NAO esta la (D-768: a atualizacao nunca leva o motor)."""
     problemas = []
     for origem, relativo in _destinos_das_pecas(pecas):
         alvo = Path(pasta) / relativo
@@ -683,7 +744,10 @@ def conferir_pecas_no_pacote(pasta: Path, pecas: PecasDosDetectores) -> list[str
         elif alvo.stat().st_size != origem.stat().st_size:
             problemas.append(f"{relativo} chegou pela metade")
     motor = Path(pasta) / PASTA_DO_MOTOR
-    if not motor.is_dir():
+    if pecas.motor is None:
+        if motor.exists():
+            problemas.append(f"{PASTA_DO_MOTOR}\\ está na pasta, e esta saída não leva o motor solto")
+    elif not motor.is_dir():
         problemas.append(f"{PASTA_DO_MOTOR}\\ não chegou")
     else:
         def resumo(p: Path) -> tuple[int, int]:
@@ -803,18 +867,22 @@ MOTOR_ESCOLHIDO: Path | None = None
 _PECAS: PecasDosDetectores | None = None
 
 
-def construir_pasta() -> Path | None:
-    """Versao portatil em pasta. E tambem o que o instalador empacota.
+def construir_pasta(saida: Saida = PORTATIL) -> Path | None:
+    """A pasta do programa (dist\\EditorImpressao\\). De fabrica, a versao portatil
+    em pasta, que e tambem o que o instalador do Inno empacota; com
+    saida=ATUALIZACAO (o publicar), a mesma pasta SEM o motor do Kraken solto
+    (SAIDAS, D-768).
 
     Para (devolve None) se faltar modelo ou peca dos detectores de texto
     ANTES de apagar a pasta anterior, e de novo se algum modelo ou peca nao
     chegar inteiro (ver conferir_modelos_no_pacote e conferir_pecas_no_pacote).
+    No fim grava a ficha da versao (gravar_ficha_da_versao).
     """
     global _PECAS
-    print("\n=== Versao em pasta (portatil, abre na hora) ===")
+    print(f"\n=== Versao em pasta ({saida.nome}) ===")
     if not _avisar_modelos_faltando() or not _avisar_nativos_faltando():
         return None
-    pecas = _avisar_pecas_faltando(MOTOR_ESCOLHIDO)
+    pecas = _avisar_pecas_faltando(MOTOR_ESCOLHIDO, com_motor=saida.motor_solto)
     if pecas is None:
         return None
     destino = RAIZ / "dist" / NOME
@@ -847,8 +915,10 @@ def construir_pasta() -> Path | None:
         for problema in problemas:
             print(f"    {problema}")
         return None
-    print("  motor do Kraken e Tesseract dentro da pasta, conferidos")
+    print("  motor do Kraken e Tesseract dentro da pasta, conferidos" if pecas.motor is not None
+          else "  Tesseract dentro da pasta, conferido; o motor do Kraken não vai solto nesta saída (conferido)")
     _PECAS = pecas
+    gravar_ficha_da_versao(destino, saida)
 
     # Um bilhete dentro da pasta, para quem receber so ela
     (destino / "COMO USAR.txt").write_text(
@@ -987,21 +1057,29 @@ def construir_instalador() -> Path | None:
 
 
 # ---------------------------------------------------------------------------
-# o pacote do Velopack (etapa 3 da frente do Kaique, 16/11/2026; D-723, D-727)
+# o pacote do Velopack (etapa 3 da frente do Kaique, 16/11/2026; D-723, D-727;
+# refeito no passo 2 do plano da parte do Windows, 19/11/2026)
 # ---------------------------------------------------------------------------
 #
 # O Velopack (decisao D-723, "velopack") troca o Inno Setup: monta o
 # instalador (MSI "por maquina": Arquivos de Programas, pede administrador) e
-# os pacotes de atualizacao (o inteiro e o "so o que mudou"). A pasta que ele
-# empacota e a MESMA dist\EditorImpressao\ da construir_pasta, com as mesmas
-# travas (modelos, DLLs, motor do Kraken, Tesseract). O que muda:
+# o pacote de atualizacao. A pasta que ele empacota e a dist\EditorImpressao\
+# da construir_pasta, com as mesmas travas (modelos, DLLs, Tesseract), mas SEM o
+# motor do Kraken solto (SAIDAS, D-768). O que muda:
 # - o Visual C++ oficial vai DENTRO do pacote, em instalar\ (D-727: "se tiver
 #   qualquer coisa que o kaique precise, ele tem que estar no instalador"); o
 #   "--framework vcredist143-x64" do Velopack baixaria da internet, e por isso
 #   NAO e usado. Quem o roda (so se faltar) e a tarefa do Windows, como SYSTEM
 #   (atualizacao.instalar_visual_c_se_faltar);
+# - o motor-exigido.json (que motor esta versao pede, lido do motor PUBLICADO) e,
+#   so no instalador, o arquivo do motor em instalar\ (preparar_saida);
+# - sem o pacote de diferenca (--delta None, D-789) e sem o zip portatil
+#   (--noPortable, D-777); o .msi so no instalador. O Setup.exe o vpk sempre faz
+#   (a 1.2.161 recusa --noInst com --noPortable): quem o apaga e o publicar (D-795);
+# - UMA funcao roda o vpk (rodar_vpk), com a pasta temporaria dentro do rascunho
+#   e a vigia do espaco (D-776);
 # - depois de montar, conferir_pacote_do_velopack abre o pacote e confere que
-#   cada peca esta la dentro (a mesma trava do registro do Inno).
+#   cada peca esta la dentro e que nada proibido esta (o motor solto).
 # Quem chama: publicar_versao_kaique.py (a "versao para o Kaique"). O Inno
 # Setup continua aqui, sem mudar, ate o Samuel decidir tira-lo (os testes dele).
 
@@ -1024,6 +1102,26 @@ COMO_INSTALAR_O_VPK = f"dotnet tool install -g vpk --version {VERSAO_DO_VPK}"
 # Dentro do pacote do Velopack (.nupkg, um zip), a pasta do programa fica em lib\app\.
 PASTA_NO_NUPKG = "lib/app/"
 
+# Os nomes do que o vpk 1.2.161 grava na pasta de saida (lidos no codigo dele,
+# src/vpk/Velopack.Core/DefaultName.cs: o sufixo e "-" + o canal, "win"; e
+# conferidos na pasta da etapa 5). NOME_DO_INDICE e o que o programa do Kaique
+# le para achar as versoes (releases.win.json).
+NOME_DO_INDICE = "releases.win.json"
+
+
+def nome_do_setup() -> str:
+    """'<ID>-win-Setup.exe': o instalador pequeno que o vpk sempre faz (D-795: o publicar o apaga)."""
+    import versao
+
+    return f"{versao.ID_DO_PACOTE}-win-Setup.exe"
+
+
+def nome_do_msi() -> str:
+    """'<ID>-win.msi': o instalador .msi (so na saida INSTALADOR)."""
+    import versao
+
+    return f"{versao.ID_DO_PACOTE}-win.msi"
+
 
 def achar_vpk() -> Path | None:
     """O vpk.exe (dotnet tool install -g vpk), ou None."""
@@ -1035,7 +1133,8 @@ def achar_vpk() -> Path | None:
 
 def preparar_pasta_para_o_velopack(pasta: Path, pecas: PecasDosDetectores) -> list[str]:
     """Poe o Visual C++ oficial (ja conferido pela assinatura da Microsoft) em
-    <pasta>\\instalar\\, com a versao dele num .txt ao lado. Devolve os problemas."""
+    <pasta>\\instalar\\, com a versao dele num .txt ao lado. Devolve os problemas.
+    (Chamada por preparar_saida; o nome e o de antes, os testes antigos o usam.)"""
     import atualizacao
 
     destino = Path(pasta) / atualizacao.PASTA_DO_QUE_SE_INSTALA
@@ -1047,32 +1146,214 @@ def preparar_pasta_para_o_velopack(pasta: Path, pecas: PecasDosDetectores) -> li
     return []
 
 
-def comando_do_vpk(vpk: Path, pasta: Path, saida: Path, versao_do_pacote: str) -> list[str]:
-    """O comando do 'vpk pack' (separado para os testes conferirem sem rodar).
+# ---- o motor PUBLICADO que a versao pede (D-768, D-788, D-790) -------------
 
-    --msi --instLocation PerMachine: instala em Arquivos de Programas, para
-    todas as contas do computador (a conta dos testes a distancia usa o mesmo
-    programa, D-717), e pede administrador (D-723). Sem --framework: nada se
-    baixa na hora de instalar (D-727).
+@dataclass(frozen=True)
+class MotorPublicado:
+    """O motor do Kraken publicado e lido de volta (pelo publicar): a versao do
+    motor, o nome do arquivo, a soma SHA-256 dele (a da assinatura do Samuel,
+    conferida) e a etiqueta da publicacao. E o que vai no motor-exigido.json."""
+
+    versao: int
+    arquivo: str
+    sha256: str
+    etiqueta: str
+
+
+def texto_do_motor_exigido(motor: MotorPublicado) -> str:
+    """O conteudo do motor-exigido.json (o lugar unico do formato; o ajudante le no passo 3)."""
+    import json
+
+    import versao
+
+    return json.dumps({"formato": 1, "pacote": versao.ID_DO_PACOTE_DO_MOTOR, "versao": motor.versao,
+                       "etiqueta": motor.etiqueta, "arquivo": motor.arquivo, "sha256": motor.sha256.lower()},
+                      ensure_ascii=False, indent=1)
+
+
+def preparar_saida(pasta: Path, saida: Saida, pecas: PecasDosDetectores | None,
+                   motor: MotorPublicado | None, arquivo_do_motor: Path | None = None) -> list[str]:
+    """Deixa a pasta pronta para o vpk, para a saida pedida (SAIDAS; o lugar unico).
+
+    - Visual C++ em instalar\\ (preparar_pasta_para_o_velopack), quando ha pecas
+      (com uma pasta pronta, ela ja tem de trazer: conferir_pasta_pronta);
+    - motor-exigido.json, se a saida pede (motor e o publicado, lido de volta);
+    - o arquivo do motor em instalar\\, se a saida pede (arquivo_do_motor: o zip
+      ja conferido pela soma assinada; e copiado, nunca movido);
+    - e tira de instalar\\ um arquivo de motor que nao deve ir (a mesma pasta
+      serve as duas saidas, em sequencia: atualizacao e depois instalador).
+    Devolve os problemas (vazio = pronta)."""
+    import atualizacao
+
+    pasta = Path(pasta)
+    problemas = preparar_pasta_para_o_velopack(pasta, pecas) if pecas is not None else []
+    if saida.motor_exigido:
+        if motor is None:
+            return problemas + ["falta saber qual motor publicado esta versão pede"]
+        (pasta / NOME_DO_MOTOR_EXIGIDO).write_text(texto_do_motor_exigido(motor), encoding="utf-8")
+    instalar = pasta / atualizacao.PASTA_DO_QUE_SE_INSTALA
+    for sobra in instalar.glob("motor-kraken-*.zip"):
+        if not (saida.motor_em_instalar and motor is not None and sobra.name == motor.arquivo):
+            sobra.unlink()
+    if saida.motor_em_instalar:
+        if motor is None or arquivo_do_motor is None or not Path(arquivo_do_motor).is_file():
+            return problemas + ["falta o arquivo do motor publicado para pôr no instalador"]
+        import assinatura
+
+        instalar.mkdir(parents=True, exist_ok=True)
+        alvo = instalar / motor.arquivo
+        shutil.copyfile(arquivo_do_motor, alvo)
+        if assinatura.soma_sha256(alvo) != motor.sha256.lower():
+            alvo.unlink()
+            problemas.append(f"o arquivo do motor copiado para {instalar} não tem a soma assinada")
+    return problemas
+
+
+def comando_do_vpk(vpk: Path, pasta: Path, saida: Path, versao_do_pacote: str, com_msi: bool = True) -> list[str]:
+    """O comando do 'vpk pack' (separado para os testes conferirem sem rodar). O LUGAR UNICO do comando.
+
+    --msi --instLocation PerMachine (so quando com_msi: a saida INSTALADOR):
+    instala em Arquivos de Programas, para todas as contas do computador (a
+    conta dos testes a distancia usa o mesmo programa, D-717), e pede
+    administrador (D-723). com_msi=True de fabrica e so o valor padrao do
+    parametro (os testes antigos da D-727 conferem o comando do instalador):
+    quem decide e a saida (Saida.com_msi), que o construir_pacote_do_velopack passa.
+    Sem --framework: nada se baixa na hora de instalar (D-727).
+    --delta None: sem o pacote de diferenca (D-789). --noPortable: sem o zip
+    portatil (D-777); o vpk 1.2.161 recusa --noInst junto, por isso o Setup.exe
+    sempre sai (D-795).
     """
     import versao
 
-    return [str(vpk), "pack",
-            "--packId", versao.ID_DO_PACOTE,
-            "--packVersion", versao_do_pacote,
-            "--packDir", str(pasta),
-            "--mainExe", f"{NOME}.exe",
-            "--packTitle", TITULO_DO_PACOTE,
-            "--packAuthors", AUTORES_DO_PACOTE,
-            "--outputDir", str(saida),
-            # 64 bits (o Python e o programa sao x64). Sem isto o vpk supoe x86
-            # e o MSI iria para "Arquivos de Programas (x86)" (achado no ensaio).
-            "--runtime", "win-x64",
-            "--msi", "--instLocation", "PerMachine",
-            # o icone do instalador e do programa na lista de programas (D-746)
-            "--icon", str(ICONE),
-            "--skip-updates"]
+    comando = [str(vpk), "pack",
+               "--packId", versao.ID_DO_PACOTE,
+               "--packVersion", versao_do_pacote,
+               "--packDir", str(pasta),
+               "--mainExe", f"{NOME}.exe",
+               "--packTitle", TITULO_DO_PACOTE,
+               "--packAuthors", AUTORES_DO_PACOTE,
+               "--outputDir", str(saida),
+               # 64 bits (o Python e o programa sao x64). Sem isto o vpk supoe x86
+               # e o MSI iria para "Arquivos de Programas (x86)" (achado no ensaio).
+               "--runtime", "win-x64",
+               "--delta", "None",
+               "--noPortable"]
+    if com_msi:
+        comando += ["--msi", "--instLocation", "PerMachine"]
+    # o icone do instalador e do programa na lista de programas (D-746)
+    comando += ["--icon", str(ICONE), "--skip-updates"]
+    return comando
 
+
+# ---- o espaco no disco do rascunho (D-776) ---------------------------------
+
+GB = 1024 ** 3
+# A reserva do C: (D-776, Samuel 18/11: "ok" a 20 GB): o publicar nao comeca se,
+# somando o que vai usar, o disco do rascunho ficaria com menos que isto, e para
+# se, durante, o espaco livre cair abaixo disto.
+RESERVA_DO_DISCO = 20 * GB
+MARGEM_DA_CONTA = 1 * GB          # o que a conta acrescenta por cima (registros, a ficha, o .nupkg do instalador)
+INTERVALO_DA_VIGIA_S = 2.0
+
+
+def espaco_livre(pasta: Path) -> int:
+    """Bytes livres no disco da pasta (a primeira pasta que existe subindo). Levanta OSError."""
+    pasta = Path(pasta)
+    while not pasta.exists() and pasta.parent != pasta:
+        pasta = pasta.parent
+    return shutil.disk_usage(pasta).free
+
+
+def tamanho_da_pasta(pasta: Path) -> int:
+    """Bytes de todos os arquivos dentro da pasta."""
+    return sum(f.stat().st_size for f in Path(pasta).rglob("*") if f.is_file())
+
+
+def espaco_que_vai_usar(tamanho_da_pasta_do_programa: int, saidas: tuple[Saida, ...],
+                        tamanho_do_motor: int = 0) -> int:
+    """A conta do que o vpk vai usar no disco do rascunho (D-776: "o que vai usar de verdade").
+
+    Conta (lida no codigo do vpk 1.2.161, PackageBuilder e WindowsPackCommandRunner,
+    e medida no estudo de publicar rapido, M2a: pico de 5,3 GB para uma pasta de
+    2,0 GB sem .msi, ou 2,65 vezes a pasta): para cada saida empacotada, uma copia
+    da pasta no pre-processo, outra para o pacote, o pacote e o Setup.exe (cada um
+    menor que a pasta): 3 vezes a pasta; com o .msi, mais uma copia e o .msi: 5
+    vezes. As saidas rodam uma depois da outra e a pasta temporaria do vpk e
+    apagada por ele no fim de cada uma; mas a conta soma, por seguranca, so tirando
+    o que o publicar apaga entre elas (fica o pacote da primeira, ate 1 vez a pasta).
+    A saida INSTALADOR leva tambem o arquivo do motor (tamanho_do_motor).
+    Arriscado: diminuir os fatores sem medir (o C: enche); o .msi nunca foi medido."""
+    total = 0
+    for i, saida in enumerate(saidas):
+        pasta = tamanho_da_pasta_do_programa + (tamanho_do_motor if saida.motor_em_instalar else 0)
+        total += pasta * (5 if saida.com_msi else 3) if i == len(saidas) - 1 else pasta
+    return total + MARGEM_DA_CONTA
+
+
+def conferir_espaco(pasta: Path, precisa: int, reserva: int = RESERVA_DO_DISCO) -> str | None:
+    """None se o disco da pasta aguenta 'precisa' bytes e ainda fica com a reserva; senao a frase (em GB)."""
+    try:
+        livre = espaco_livre(pasta)
+    except OSError as erro:
+        return f"não consegui ler o espaço livre do disco de {pasta} ({erro})"
+    if livre - precisa < reserva:
+        return (f"o disco de {Path(pasta).anchor or pasta} tem {livre / GB:.1f} GB livres; este trabalho usa uns "
+                f"{precisa / GB:.1f} GB e o disco tem de ficar com pelo menos {reserva / GB:.0f} GB livres. "
+                f"Libere uns {(reserva + precisa - livre) / GB:.1f} GB e rode de novo")
+    return None
+
+
+def rodar_vpk(comando: list, rascunho: Path, reserva: int = RESERVA_DO_DISCO,
+              intervalo_s: float = INTERVALO_DA_VIGIA_S, livre=espaco_livre) -> str | None:
+    """A UNICA funcao que roda o vpk (plano-v3, peca 8). None = terminou bem; senao o motivo, em portugues.
+
+    - a pasta temporaria do vpk (VELOPACK_TEMP, TEMP e TMP: o vpk 1.2.161 le nessa
+      ordem, src/lib-csharp/Util/TempUtil.cs) fica em <rascunho>\\temp, no mesmo
+      disco do rascunho (o C:, D-776) e e apagada junto com ele;
+    - a vigia (D-776): a cada 'intervalo_s', le o espaco livre do disco do
+      rascunho; se cair abaixo da reserva, fecha o vpk que ESTA funcao abriu (so
+      ele, Popen.kill) e devolve o motivo. Quem chamou apaga o rascunho;
+    - Ctrl+C: fecha o vpk e repassa a interrupcao (quem chamou apaga o rascunho).
+    'livre' e trocavel so nos testes (para simular o disco enchendo).
+    Arriscado: rodar o vpk por outro caminho (era o defeito 56 do plano: dois
+    caminhos, a pasta temporaria desviada a mao)."""
+    import os
+
+    temp = Path(rascunho) / "temp"
+    temp.mkdir(parents=True, exist_ok=True)
+    ambiente = {**os.environ, "VELOPACK_TEMP": str(temp), "TEMP": str(temp), "TMP": str(temp)}
+    try:
+        processo = subprocess.Popen([str(c) for c in comando], cwd=str(rascunho), env=ambiente)
+    except OSError as erro:
+        return f"não consegui abrir o vpk ({erro})"
+    try:
+        while True:
+            try:
+                codigo = processo.wait(timeout=intervalo_s)
+                break
+            except subprocess.TimeoutExpired:
+                pass
+            try:
+                sobra = livre(rascunho)
+            except OSError as erro:
+                processo.kill()
+                processo.wait()
+                return f"parei: não consegui ler o espaço livre durante o trabalho ({erro})"
+            if sobra < reserva:
+                processo.kill()
+                processo.wait()
+                return (f"parei: o disco do rascunho ficou com {sobra / GB:.1f} GB livres, abaixo da reserva de "
+                        f"{reserva / GB:.0f} GB (outro programa pode estar usando o disco)")
+    except BaseException:
+        processo.kill()
+        processo.wait()
+        raise
+    if codigo != 0:
+        return f"o vpk parou com erro (código {codigo}); as mensagens dele estão acima"
+    return None
+
+
+# ---- o que o pacote tem de ter, e o que nao pode ter -----------------------
 
 def nupkg_inteiro(saida: Path, versao_do_pacote: str) -> Path:
     """O pacote inteiro que o vpk gera: <saida>\\<versao.ID_DO_PACOTE>-<versao>-full.nupkg."""
@@ -1081,25 +1362,41 @@ def nupkg_inteiro(saida: Path, versao_do_pacote: str) -> Path:
     return Path(saida) / f"{versao.ID_DO_PACOTE}-{versao_do_pacote}-full.nupkg"
 
 
-def esperados_no_pacote_do_velopack(pecas: PecasDosDetectores | None) -> list[str]:
+def esperados_no_pacote_do_velopack(pecas: PecasDosDetectores | None, saida: Saida = ATUALIZACAO) -> list[str]:
     """Os caminhos (relativos a pasta do programa, com /) que TEM de estar no
     pacote do Velopack: o .exe, cada modelo, cada DLL, e (com as pecas) o
-    Tesseract, os idiomas, a amostra do motor do Kraken e o Visual C++."""
+    Tesseract, os idiomas e o Visual C++; o motor-exigido.json e o arquivo do
+    motor em instalar\\ quando a saida pede (SAIDAS). O motor solto so na saida
+    que o leva (nenhuma das do Velopack)."""
     import atualizacao
+    import versao
+    from core import ocr_kraken
 
-    saida = [f"{NOME}.exe"]
-    saida += [f"{INTERNO}/{destino}/{origem.name}" for origem, destino in modelos_do_programa()]
-    saida += [f"{INTERNO}/{destino}/{origem.name}" for origem, destino in nativos_do_programa()]
+    saida_ = [f"{NOME}.exe"]
+    saida_ += [f"{INTERNO}/{destino}/{origem.name}" for origem, destino in modelos_do_programa()]
+    saida_ += [f"{INTERNO}/{destino}/{origem.name}" for origem, destino in nativos_do_programa()]
     if pecas is not None:
-        saida += [relativo for _, relativo in _destinos_das_pecas(pecas)]
-        saida += [f"{PASTA_DO_MOTOR}/{a.replace(chr(92), '/')}" for a in AMOSTRA_DO_MOTOR]
-        saida += [f"{atualizacao.PASTA_DO_QUE_SE_INSTALA}/{atualizacao.VC_REDIST_NOME}"]
-    return saida
+        saida_ += [relativo for _, relativo in _destinos_das_pecas(pecas)]
+        saida_ += [f"{atualizacao.PASTA_DO_QUE_SE_INSTALA}/{atualizacao.VC_REDIST_NOME}"]
+    if saida.motor_solto:
+        saida_ += [f"{PASTA_DO_MOTOR}/{a.replace(chr(92), '/')}" for a in AMOSTRA_DO_MOTOR]
+    if saida.motor_exigido:
+        saida_ += [NOME_DO_MOTOR_EXIGIDO]
+    if saida.motor_em_instalar:
+        saida_ += [f"{atualizacao.PASTA_DO_QUE_SE_INSTALA}/{versao.arquivo_do_motor(ocr_kraken.VERSAO_DO_MOTOR)}"]
+    return saida_
 
 
-def conferir_pacote_do_velopack(nupkg: Path, pecas: PecasDosDetectores | None) -> list[str]:
-    """Abre o .nupkg (um zip) e confere que cada peca esperada esta la dentro.
-    Devolve o que falta (vazio = tudo certo)."""
+def proibidos_no_pacote_do_velopack(saida: Saida = ATUALIZACAO) -> list[str]:
+    """Os comecos de caminho (relativos a pasta do programa, com /) que NAO podem
+    estar no pacote: o motor solto, na saida que nao o leva (D-768)."""
+    return [] if saida.motor_solto else [f"{PASTA_DO_MOTOR}/"]
+
+
+def conferir_pacote_do_velopack(nupkg: Path, pecas: PecasDosDetectores | None,
+                                saida: Saida = ATUALIZACAO) -> list[str]:
+    """Abre o .nupkg (um zip) e confere que cada peca esperada esta la dentro e
+    que nada proibido esta. Devolve o que falta ou sobra (vazio = tudo certo)."""
     import zipfile
 
     try:
@@ -1107,39 +1404,180 @@ def conferir_pacote_do_velopack(nupkg: Path, pecas: PecasDosDetectores | None) -
             nomes = {n.replace("\\", "/").lower() for n in pacote.namelist()}
     except (OSError, zipfile.BadZipFile) as erro:
         return [f"não consegui abrir {nupkg}: {erro}"]
-    return [relativo for relativo in esperados_no_pacote_do_velopack(pecas)
-            if (PASTA_NO_NUPKG + relativo).lower() not in nomes]
+    faltando = [relativo for relativo in esperados_no_pacote_do_velopack(pecas, saida)
+                if (PASTA_NO_NUPKG + relativo).lower() not in nomes]
+    for comeco in proibidos_no_pacote_do_velopack(saida):
+        if any(n.startswith((PASTA_NO_NUPKG + comeco).lower()) for n in nomes):
+            faltando.append(f"{comeco} (não pode ir nesta saída: {saida.nome})")
+    return faltando
 
 
-def construir_pacote_do_velopack(saida: Path, versao_do_pacote: str) -> Path | None:
-    """A pasta (construir_pasta, com todas as travas) + o Visual C++ dentro +
-    'vpk pack' + a conferencia do pacote. Devolve o .nupkg inteiro, ou None."""
-    print("\n=== Pacote do Velopack (versão para o Kaique) ===")
-    vpk = achar_vpk()
+def construir_pacote_do_velopack(saida_do_vpk: Path, versao_do_pacote: str, saida: Saida = ATUALIZACAO,
+                                 pasta: Path | None = None, motor: MotorPublicado | None = None,
+                                 arquivo_do_motor: Path | None = None, rascunho: Path | None = None,
+                                 vpk: Path | None = None) -> Path | None:
+    """Monta o pacote do Velopack de uma saida (ATUALIZACAO ou INSTALADOR): a pasta
+    (construir_pasta, com todas as travas; ou a 'pasta' ja pronta), preparar_saida,
+    rodar_vpk (a funcao unica), apaga o Setup.exe na hora (D-795) e confere o
+    pacote. Devolve o .nupkg inteiro, ou None (o motivo foi impresso).
+
+    saida_do_vpk: a pasta de saida do vpk (tem de ser nova: o vpk pergunta se ja
+    houver versao la). rascunho: onde fica a pasta temporaria do vpk (o rascunho
+    do publicar, no C:); sem ele, a pasta acima de saida_do_vpk."""
+    print(f"\n=== Pacote do Velopack ({saida.nome}, versão {versao_do_pacote}) ===")
+    vpk = vpk or achar_vpk()
     if vpk is None:
         print(f"  PAREI: não achei o vpk. Instale com: {COMO_INSTALAR_O_VPK}")
         return None
-    pasta = construir_pasta()
-    if pasta is None or _PECAS is None:
-        return None
-    problemas = preparar_pasta_para_o_velopack(pasta, _PECAS)
+    pecas = None
+    if pasta is None:
+        pasta = construir_pasta(ATUALIZACAO)
+        if pasta is None or _PECAS is None:
+            return None
+        pecas = _PECAS
+    problemas = preparar_saida(pasta, saida, pecas, motor, arquivo_do_motor)
     if problemas:
         print("  PAREI: " + "; ".join(problemas))
         return None
-    print(f"  Visual C++ oficial {_PECAS.vc_versao} dentro do pacote (instalar\\)")
-    feito = subprocess.run(comando_do_vpk(vpk, pasta, saida, versao_do_pacote), cwd=RAIZ)
-    nupkg = nupkg_inteiro(saida, versao_do_pacote)
-    if feito.returncode != 0 or not nupkg.is_file():
-        print("  PAREI: o vpk pack não terminou")
+    Path(saida_do_vpk).mkdir(parents=True, exist_ok=True)
+    motivo = rodar_vpk(comando_do_vpk(vpk, pasta, saida_do_vpk, versao_do_pacote, com_msi=saida.com_msi),
+                       Path(rascunho or Path(saida_do_vpk).parent))
+    (Path(saida_do_vpk) / nome_do_setup()).unlink(missing_ok=True)       # D-795: nunca vai a lugar nenhum
+    nupkg = nupkg_inteiro(saida_do_vpk, versao_do_pacote)
+    if motivo is not None or not nupkg.is_file():
+        print(f"  PAREI: {motivo or 'o vpk pack não deixou o pacote'}")
         return None
-    faltando = conferir_pacote_do_velopack(nupkg, _PECAS)
+    if saida.com_msi and not (Path(saida_do_vpk) / nome_do_msi()).is_file():
+        print(f"  PAREI: o vpk pack não deixou o {nome_do_msi()}")
+        return None
+    faltando = conferir_pacote_do_velopack(nupkg, pecas, saida)
     if faltando:
-        print("  PAREI: o pacote do Velopack saiu sem:")
+        print("  PAREI: o pacote do Velopack saiu errado:")
         for relativo in faltando:
             print(f"    {relativo}")
         return None
-    print(f"  pronto: {nupkg}  ({_tamanho(nupkg)}); {len(esperados_no_pacote_do_velopack(_PECAS))} peças conferidas")
+    print(f"  pronto: {nupkg}  ({_tamanho(nupkg)}); {len(esperados_no_pacote_do_velopack(pecas, saida))} peças "
+          "conferidas")
     return nupkg
+
+
+# ---- a ficha da versao (plano v1, peca 8: "um numero de versao so") --------
+
+def gravar_ficha_da_versao(pasta: Path, saida: Saida) -> Path:
+    """Escreve <pasta>\\versao-do-pacote.json: a versao (versao.VERSAO), a saida e de
+    que commit a pasta saiu (pela peca do git, regras_dos_agentes.conversa_com_o_git;
+    se o git nao responder, diz isso, nunca inventa). O publicar recusa uma pasta
+    pronta cuja ficha seja de outra versao ou de outra saida (o defeito da etapa 5:
+    "versao 1.1.0" numa 1.1.5)."""
+    import datetime
+    import json
+
+    import versao
+
+    commit, sem_commit = "não deu para ler (o git não respondeu)", None
+    try:
+        from regras_dos_agentes import conversa_com_o_git as git
+
+        commit = git.commit_completo(RAIZ, "HEAD")
+        sem_commit = len(git.mudancas_sem_commit(RAIZ))
+    except Exception as erro:  # noqa: BLE001 - so anota; a ficha diz que nao leu
+        commit = f"não deu para ler ({erro})"
+    destino = Path(pasta) / NOME_DA_FICHA_DA_VERSAO
+    destino.write_text(json.dumps({"versao": versao.VERSAO, "saida": saida.nome, "commit": commit,
+                                   "arquivos_mudados_sem_commit": sem_commit,
+                                   "montada_em": datetime.datetime.now().isoformat(timespec="seconds")},
+                                  ensure_ascii=False, indent=1), encoding="utf-8")
+    return destino
+
+
+def conferir_pasta_pronta(pasta: Path, versao_do_pacote: str, saida: Saida = ATUALIZACAO) -> list[str]:
+    """O que impede uma pasta ja montada de ir para o vpk nesta saida (vazio = pode).
+
+    Cobra: o .exe; a ficha da versao, da MESMA versao e montada para uma saida
+    sem o motor solto (o motor nao pode ir na atualizacao); o Visual C++ em
+    instalar\\ (D-727); e que a pasta motor-kraken\\ nao esteja la (D-768)."""
+    import json
+
+    import atualizacao
+
+    pasta = Path(pasta)
+    if not (pasta / f"{NOME}.exe").is_file():
+        return [f"{pasta} não é uma pasta do programa (falta {NOME}.exe)"]
+    problemas = []
+    try:
+        ficha = json.loads((pasta / NOME_DA_FICHA_DA_VERSAO).read_text(encoding="utf-8"))
+    except (OSError, ValueError):
+        ficha = None
+    if not isinstance(ficha, dict):
+        problemas.append(f"a pasta {pasta} não tem a ficha da versão ({NOME_DA_FICHA_DA_VERSAO}): monte de novo")
+    else:
+        if ficha.get("versao") != versao_do_pacote:
+            problemas.append(f"a pasta {pasta} é da versão {ficha.get('versao')}, e a versão a publicar é a "
+                             f"{versao_do_pacote}")
+        if ficha.get("saida") == PORTATIL.nome:
+            problemas.append(f"a pasta {pasta} foi montada como {PORTATIL.nome} (com o motor solto)")
+    if not (pasta / atualizacao.PASTA_DO_QUE_SE_INSTALA / atualizacao.VC_REDIST_NOME).is_file():
+        problemas.append(f"a pasta {pasta} não tem o Visual C++ em {atualizacao.PASTA_DO_QUE_SE_INSTALA}\\")
+    if not saida.motor_solto and (pasta / PASTA_DO_MOTOR).exists():
+        problemas.append(f"a pasta {pasta} tem o motor do Kraken solto ({PASTA_DO_MOTOR}\\), e a {saida.nome} "
+                         "não leva")
+    return problemas
+
+
+# ---- o arquivo do motor (a publicacao propria do motor, D-768, D-788) ------
+
+def zipar_motor(pasta_do_motor: Path, destino: Path, reserva: int = RESERVA_DO_DISCO,
+                livre=espaco_livre) -> str | None:
+    """Comprime a pasta do motor num arquivo so (o que vai a publicacao do motor e,
+    no instalador, a instalar\\). None = pronto e conferido; senao o motivo.
+
+    Grava num nome provisorio e so da o nome final depois de conferir que cada
+    arquivo da ficha do motor esta no zip com o tamanho certo (problemas_do_zip_do_motor).
+    Vigia o espaco do disco do destino a cada 500 arquivos (D-776); para abaixo da
+    reserva e apaga o provisorio. 'livre' e trocavel so nos testes."""
+    import zipfile
+
+    pasta_do_motor, destino = Path(pasta_do_motor), Path(destino)
+    provisorio = destino.with_name(destino.name + ".fazendo")
+    provisorio.unlink(missing_ok=True)
+    arquivos = sorted(f for f in pasta_do_motor.rglob("*") if f.is_file())
+    try:
+        with zipfile.ZipFile(provisorio, "w", zipfile.ZIP_DEFLATED, compresslevel=6) as z:
+            for i, arquivo in enumerate(arquivos):
+                if i % 500 == 0 and livre(destino.parent) < reserva:
+                    raise OSError(f"o disco de {destino.parent} ficou abaixo da reserva de {reserva / GB:.0f} GB")
+                z.write(arquivo, arquivo.relative_to(pasta_do_motor).as_posix())
+    except (OSError, zipfile.BadZipFile) as erro:
+        provisorio.unlink(missing_ok=True)
+        return f"parei de comprimir o motor: {erro}"
+    problemas = problemas_do_zip_do_motor(provisorio)
+    if problemas:
+        provisorio.unlink(missing_ok=True)
+        return "o arquivo do motor saiu errado: " + "; ".join(problemas)
+    import os
+
+    os.replace(provisorio, destino)
+    return None
+
+
+def problemas_do_zip_do_motor(arquivo: Path) -> list[str]:
+    """O zip do motor tem a ficha (motor.json) da versao pedida e cada arquivo dela, com o tamanho dela? (Vazio =
+    sim.) A ficha e lida de dentro do zip, e a regra e a mesma da pasta (core/ocr_kraken.conferir_ficha), aplicada
+    as entradas do zip."""
+    import json
+    import zipfile
+
+    from core import ocr_kraken
+
+    try:
+        with zipfile.ZipFile(arquivo) as z:
+            tamanhos = {i.filename: i.file_size for i in z.infolist()}
+            ficha = json.loads(z.read(ocr_kraken.NOME_DA_FICHA).decode("utf-8"))
+    except (OSError, KeyError, ValueError, zipfile.BadZipFile) as erro:
+        return [f"não consegui ler a ficha do motor dentro de {arquivo} ({erro})"]
+    if not isinstance(ficha, dict):
+        return [f"a ficha do motor dentro de {arquivo} está estragada"]
+    return ocr_kraken.conferir_ficha(ficha, tamanhos.get, f"o motor dentro de {Path(arquivo).name}")
 
 
 def gerados_em_dist(raiz: Path | None = None) -> list[Path]:

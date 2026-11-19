@@ -47,6 +47,12 @@ AINDA NÃO ESTÁ LIGADO AO PROGRAMA (29/09/2026)
     ligação vem na etapa seguinte do item 1.3, junto com o docTR e a
     comparação automática entre os OCRs (onde discordam, "Para revisar").
 
+O MOTOR À PARTE (plano da parte do Windows, passo 2, 19/11/2026)
+    A versão do motor (VERSAO_DO_MOTOR), a ficha (motor.json) e a conferência única "inteiro e da versão certa"
+    (conferir_motor) moram aqui. A ficha é escrita pelo montar_motor_kraken.py; o publicar recusa publicar um motor
+    que não confere. Nada disso muda ainda o jeito de ACHAR o motor (achar_pasta_do_motor, lugares_do_motor): isso é
+    do passo 3.
+
 "PARA REVISAR"
     O Kraken 7.1.1, quando não consegue desenhar o contorno de uma linha,
     avisa "Polygonizer failed" e JOGA A LINHA FORA sem dizer nada a quem
@@ -106,6 +112,17 @@ TEMPO_PARA_FECHAR = 5.0
 NOME_DA_PASTA = "motor-kraken"
 NOME_DO_SERVIDOR = "servidor_kraken.py"
 
+# ---- O motor à parte (plano da parte do Windows, peça 9; D-768, D-788 a D-790) ----------------------------------
+# A versão DO MOTOR (não do programa nem do protocolo): o ÚNICO lugar onde ela está escrita. Muda quando o próprio
+# motor muda (outro Kraken, outro PyTorch, outro servidor_kraken.py). Cada versão do programa pede a versão de motor
+# daqui (o empacotador escreve isso no motor-exigido.json, dentro do pacote); no notebook do Kaique o motor mora em
+# <pasta do programa>\motor-kraken\<VERSAO_DO_MOTOR>\ (passo 3 do plano). Arriscado mudar sem publicar o motor novo:
+# o publicar recusa liberar a versão do programa que pede um motor que não está publicado.
+VERSAO_DO_MOTOR = 1
+# A ficha do motor: escrita só por montar_motor_kraken.gravar_ficha_do_motor, lida só por conferir_motor.
+NOME_DA_FICHA = "motor.json"
+FORMATO_DA_FICHA = 1
+
 # Windows: sem janela preta de console; prioridade abaixo do normal.
 _SEM_JANELA = 0x08000000
 _PRIORIDADE_BAIXA = 0x00004000
@@ -127,7 +144,10 @@ def _raiz_do_codigo() -> Path:
 
 
 def lugares_do_motor() -> list[Path]:
-    """Onde o motor é procurado, em ordem.
+    """Onde O PROGRAMA procura o motor para usar, em ordem. (Não confundir com empacotar.LUGARES_DO_MOTOR, que é onde
+    o EMPACOTADOR acha um motor pronto para pôr na pasta portátil ou publicar; os dois nomes ficaram como estavam
+    porque testes antigos os usam: plano-v3, passo 2, e o ONDE-PAREI dele. No passo 3, o programa instalado passa a
+    procurar em <pasta do programa>\\motor-kraken\\<VERSAO_DO_MOTOR>\\.)
 
     1. Ao lado do programa instalado ({app}\\motor-kraken, quando o programa
        roda empacotado pelo PyInstaller).
@@ -145,7 +165,108 @@ def lugares_do_motor() -> list[Path]:
 
 
 def _e_motor(pasta: Path) -> bool:
+    """Tem cara de motor (o Python e o servidor)? A conferência de verdade é conferir_motor."""
     return (pasta / "python" / "python.exe").is_file() and (pasta / NOME_DO_SERVIDOR).is_file()
+
+
+def problemas_da_forma(pasta: Path | str) -> list[str]:
+    """O que falta para a pasta ser um motor montado (vazio = tem a forma de um motor): o Python, o servidor da versão
+    de protocolo deste programa e o modelo do Kraken. Não lê a ficha: ver conferir_motor.
+
+    Usada por conferir_motor (o motor "inteiro e da versão certa") e pela regra do empacotador do motor "do jeito
+    novo" (empacotar.conferir_motor_kraken), que acrescenta só o que é de montagem. As frases são as de antes de
+    19/11/2026 (vinham do empacotar; os testes antigos procuram "não há motor montado" e "outra versão")."""
+    pasta = Path(pasta)
+    python = pasta / "python"
+    if not (python / "python.exe").is_file():
+        return [f"não há motor montado em {pasta} (falta python\\python.exe)"]
+    problemas = []
+    servidor = pasta / NOME_DO_SERVIDOR
+    if not servidor.is_file():
+        problemas.append(f"falta {servidor.name} em {pasta}")
+    elif f"VERSAO_PROTOCOLO = {VERSAO_PROTOCOLO}\n" not in servidor.read_text(encoding="utf-8"):
+        problemas.append(f"o {servidor.name} de {pasta} é de outra versão (rode montar_motor_kraken.py "
+                         f"--so-servidor --destino {pasta})")
+    if not (python / "Lib" / "site-packages" / "kraken" / "blla.mlmodel").is_file():
+        problemas.append(f"falta o modelo do Kraken (kraken\\blla.mlmodel) em {pasta}")
+    return problemas
+
+
+def ler_ficha(pasta: Path | str) -> dict | None:
+    """A ficha do motor (motor.json) lida, ou None se ela não existe ou não é uma ficha nossa. Não confere nada."""
+    try:
+        ficha = json.loads((Path(pasta) / NOME_DA_FICHA).read_text(encoding="utf-8"))
+    except (OSError, ValueError):
+        return None
+    if not isinstance(ficha, dict) or ficha.get("formato") != FORMATO_DA_FICHA \
+            or not isinstance(ficha.get("arquivos"), list):
+        return None
+    return ficha
+
+
+def conferir_motor(pasta: Path | str, versao_do_motor: int = VERSAO_DO_MOTOR) -> list[str]:
+    """A ÚNICA conferência "o motor está inteiro e é da versão certa" (peça 9 do plano). Vazio = confere.
+
+    Lê a ficha (motor.json, escrita pelo montar_motor_kraken.py quando o motor passou no teste) e confere: a forma
+    (problemas_da_forma); a versão do motor da ficha é a pedida; a versão de protocolo da ficha é a deste programa;
+    cada arquivo da ficha está na pasta com o tamanho escrito nela. Arquivo a mais na pasta não conta (a ficha diz o
+    que o motor precisa). Não soma o conteúdo dos 34 mil arquivos (passou de 5 minutos no HD, estudo do Kraken §3): a
+    conferência forte é na chegada do motor (a soma assinada do arquivo do motor e a do zip de cada arquivo).
+
+    Quem usa hoje (passo 2): o empacotador (o motor que vai para a pasta portátil e o que vai ser publicado) e o
+    publicar. No passo 3: o motor, o teste rápido, o --conferir-ocr e o ajudante. Arriscado mudar: aceitar motor sem
+    ficha (ninguém saberia de que versão ele é) ou deixar de conferir o tamanho (um arquivo cortado passaria)."""
+    pasta = Path(pasta)
+    problemas = problemas_da_forma(pasta)
+    if problemas:
+        return problemas
+    ficha = ler_ficha(pasta)
+    if ficha is None:
+        return [f"o motor de {pasta} não tem a ficha ({NOME_DA_FICHA}): rode montar_motor_kraken.py --so-ficha "
+                f"--destino {pasta}"]
+    raiz = pasta.resolve()
+
+    def tamanho_de(relativo: str) -> int | None:
+        """O tamanho do arquivo na pasta, ou None se ele não está (ou se o caminho sai da pasta)."""
+        caminho = (raiz / relativo).resolve()
+        if not caminho.is_relative_to(raiz):
+            return None
+        try:
+            return caminho.stat().st_size
+        except OSError:
+            return None
+
+    return conferir_ficha(ficha, tamanho_de, f"o motor de {pasta}", versao_do_motor)
+
+
+def conferir_ficha(ficha: dict, tamanho_de: Callable[[str], int | None], onde: str,
+                   versao_do_motor: int = VERSAO_DO_MOTOR) -> list[str]:
+    """A regra da ficha, num lugar só: a versão do motor e a do protocolo da ficha são as pedidas, e cada arquivo da
+    ficha existe com o tamanho escrito nela. `tamanho_de(caminho relativo)` diz o tamanho onde o motor está (na pasta:
+    conferir_motor; dentro do arquivo do motor: empacotar.problemas_do_zip_do_motor), ou None se não está. Vazio =
+    confere."""
+    if ficha.get("versao_do_motor") != versao_do_motor:
+        return [f"{onde} é da versão {ficha.get('versao_do_motor')}, e o programa pede a versão {versao_do_motor}"]
+    if ficha.get("versao_protocolo") != VERSAO_PROTOCOLO:
+        return [f"a ficha de {onde} é do protocolo {ficha.get('versao_protocolo')}, e o programa fala o "
+                f"{VERSAO_PROTOCOLO}"]
+    faltando, diferentes = [], []
+    for item in ficha.get("arquivos", []):
+        try:
+            relativo, tamanho = str(item[0]), int(item[1])
+        except (TypeError, ValueError, IndexError):
+            return [f"a ficha de {onde} está estragada"]
+        achado = tamanho_de(relativo)
+        if achado is None:
+            faltando.append(relativo)
+        elif achado != tamanho:
+            diferentes.append(relativo)
+    problemas = []
+    if faltando:
+        problemas.append(f"faltam {len(faltando)} arquivo(s) em {onde} (ex.: {faltando[0]})")
+    if diferentes:
+        problemas.append(f"{len(diferentes)} arquivo(s) de {onde} estão diferentes da ficha (ex.: {diferentes[0]})")
+    return problemas
 
 
 def achar_pasta_do_motor() -> Path | None:

@@ -58,6 +58,33 @@ VERSAO = "1.1.0"
 # acha a instalada e ficam dois programas no computador.
 ID_DO_PACOTE = "EditorImpressaoPrograma"
 
+# O motor do Kraken a parte (plano da parte do Windows, passo 2; D-768, D-788):
+# ele tem publicacao propria, rara, com este nome de pacote NA ASSINATURA (outro
+# nome = uma assinatura do motor nunca vale como a do programa, nem o contrario:
+# assinatura.conferir_versao recusa "outro pacote"). Nao e um pacote do Velopack
+# (o Velopack nunca o ve) e nao e o nome de nenhuma pasta. A versao do motor mora
+# em core/ocr_kraken.VERSAO_DO_MOTOR (o programa pede a dele).
+# Arriscado mudar depois da primeira publicacao do motor: a assinatura publicada
+# diz este nome.
+ID_DO_PACOTE_DO_MOTOR = "EditorImpressaoMotorKraken"
+
+
+def etiqueta_da_versao(versao_do_pacote: str) -> str:
+    """A etiqueta da publicacao de uma versao do programa: 'v1.2.0' (o programa procura
+    a assinatura em releases/download/v<versao>/, atualizacao.Fonte)."""
+    return f"v{versao_do_pacote}"
+
+
+def etiqueta_do_motor(versao_do_motor: int | str) -> str:
+    """A etiqueta da publicacao do motor: 'motor-kraken-1' (plano-v3, peca 8)."""
+    return f"motor-kraken-{versao_do_motor}"
+
+
+def arquivo_do_motor(versao_do_motor: int | str) -> str:
+    """O nome do arquivo do motor publicado (um zip so): 'motor-kraken-1.zip'. E o mesmo
+    nome dentro de instalar\\ no instalador (D-788, D-727)."""
+    return f"motor-kraken-{versao_do_motor}.zip"
+
 
 def numeros(versao: str) -> tuple[int, int, int]:
     """'1.2.3' -> (1, 2, 3), para comparar versoes. Levanta ValueError se o
