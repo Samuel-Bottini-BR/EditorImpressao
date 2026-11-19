@@ -1,0 +1,46 @@
+#!/bin/sh
+# A conferência antes do commit (o porteiro, D-791): roda as mesmas buscas dos testes do GitHub, só nos arquivos que
+# vão no próximo commit (lidos do índice, não da pasta), e barra o commit com um erro já conhecido.
+#
+# NÃO ESTÁ LIGADA. A gerente liga uma vez, no repositório principal (vale para todas as cópias, porque a configuração
+# do repositório é uma só: https://git-scm.com/docs/git-worktree, "CONFIGURATION FILE"):
+#     git config core.hooksPath ganchos
+# O caminho relativo é lido a partir da raiz de cada cópia (git-config, core.hooksPath: "A relative path is taken as
+# relative to the directory where the hooks are run"), então cada cópia usa o ganchos/ do próprio ramo. Numa cópia de
+# um ramo sem esta pasta, o git não roda nada e NÃO AVISA (hook.c, find_hook, v2.53.0): quem garante é o teste no
+# GitHub; esta conferência só avisa cedo. Pular com --no-verify é proibido aos agentes (CLAUDE.md, git).
+#
+# O que pode falhar e o que acontece (nunca passa sem conferir):
+#   - sem o Python do projeto: o commit é barrado e a mensagem diz onde o Python foi procurado;
+#   - o git não responde, ou a lista de exceções está fora do formato: barrado, com o motivo (código 3);
+#   - um erro novo no que vai no commit: barrado, com o arquivo, a linha e o que está errado (código 1).
+#
+# Seguro mexer: as mensagens. Arriscado: o jeito de achar o Python (a cópia não tem .venv própria; ela fica no
+# repositório principal) e o código de saída (diferente de 0 barra o commit: githooks, pre-commit).
+
+raiz="$(git rev-parse --show-toplevel)" || exit 1
+comum="$(git rev-parse --path-format=absolute --git-common-dir)" || exit 1
+principal="$(dirname "$comum")"
+
+python=""
+for candidato in "$raiz/.venv/Scripts/python.exe" "$principal/.venv/Scripts/python.exe" \
+                 "$raiz/.venv/bin/python" "$principal/.venv/bin/python"; do
+    if [ -x "$candidato" ] || [ -f "$candidato" ]; then
+        python="$candidato"
+        break
+    fi
+done
+
+if [ -z "$python" ]; then
+    echo "Conferência antes do commit (porteiro): não achei o Python do projeto (.venv) em $raiz nem em $principal." >&2
+    echo "O commit foi barrado porque nada foi conferido. Ajeite o .venv e tente de novo." >&2
+    exit 1
+fi
+
+cd "$raiz" || exit 1
+PYTHONUTF8=1 "$python" -m regras_dos_agentes antes-do-commit
+codigo=$?
+if [ "$codigo" -ne 0 ]; then
+    echo "Conferência antes do commit (porteiro): commit barrado (código $codigo). Conserte e faça o commit de novo." >&2
+fi
+exit "$codigo"

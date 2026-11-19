@@ -132,11 +132,12 @@ def linhas_novas(raiz: Path | str, base: str) -> dict[str, list[tuple[int, str]]
     return resultado
 
 
-def mensagens_dos_commits(raiz: Path | str, base: str) -> list[tuple[str, str]]:
-    """(código, mensagem inteira) de cada commit depois de `base` até o atual."""
+def mensagens_dos_commits(raiz: Path | str, base: str, caminho: str | None = None) -> list[tuple[str, str]]:
+    """(código, mensagem inteira) de cada commit depois de `base` até o atual (só os que mexem em `caminho`, se dado)."""
     if not existe_commit(raiz, base):
         raise GitFalhou(f"o commit de partida {base} não existe neste repositório")
-    saida = _rodar(raiz, "log", "--format=%H%x1f%B%x1e", f"{base}..HEAD").stdout
+    filtro = ["--", caminho] if caminho else []
+    saida = _rodar(raiz, "log", "--format=%H%x1f%B%x1e", f"{base}..HEAD", *filtro).stdout
     resultado = []
     for bloco in saida.split("\x1e"):
         bloco = bloco.strip("\n")
@@ -169,3 +170,12 @@ def commit_do_ramo_remoto(raiz: Path | str) -> str | None:
     if r.returncode != 0:
         return None
     return r.stdout.strip() or None
+
+
+def repositorio_no_github(raiz: Path | str) -> str:
+    """O "dono/nome" do repositório no GitHub, tirado do endereço do `origin` (ex.: Samuel-Bottini-BR/EditorImpressao)."""
+    url = _rodar(raiz, "remote", "get-url", "origin").stdout.strip()
+    m = re.search(r"github\.com[:/]([^/]+/[^/]+?)(?:\.git)?/?$", url)
+    if not m:
+        raise GitFalhou(f"o origin não é um repositório do GitHub: {url}")
+    return m.group(1)
