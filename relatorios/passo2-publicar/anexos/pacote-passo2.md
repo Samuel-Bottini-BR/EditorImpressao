@@ -18,6 +18,8 @@ Copie as duas seções abaixo, sem mudar nada, para o começo do seu ONDE-PAREI:
 - `montar_motor_kraken.py`
 - `core/ocr_kraken.py`
 - `versao.py`
+- `core/windows.py`
+- `tests/test_windows_peca.py`
 - `servidor_das_versoes.py` (novo)
 - `tests/test_empacotar.py`
 - `tests/test_publicar_*.py` (novo)
