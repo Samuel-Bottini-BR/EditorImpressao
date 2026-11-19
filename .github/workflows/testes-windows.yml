@@ -193,6 +193,42 @@ jobs:
           path: relatorio-parte-${{ matrix.parte }}
           if-no-files-found: warn
 
+  # PARA A GERENTE COPIAR para .github/workflows/testes-windows.yml, no ramo claude/list-server-files-gkos8v, dentro
+  # de "jobs:", logo depois do job "suite" (o mesmo nível de indentação de "suite:"). E acrescentar "porteiro" ao
+  # "needs:" do job "resumo" (fica "needs: [suite, janela, porteiro]"), para o resumo esperar o juiz.
+  # 
+  # O juiz do porteiro: o código e a lista da versão de teste (obra-2026-10-26) julgando o código do ramo pedido.
+  # Ver relatorios/passo0-2026-11-19/anexos/juiz-no-workflow/porteiro_juiz.sh (vai para .github/scripts/).
+  # PORTEIRO_LIGADO: a gerente troca para "1" no commit em que juntar o passo 0 na versão de teste; a partir daí,
+  # "a versão de teste não tem o porteiro" faz a rodada falhar, em vez de só avisar.
+  porteiro:
+    name: Porteiro (juiz da versao de teste)
+    if: ${{ !inputs.velocidade && !inputs.antes_depois && !inputs.so_janela && !inputs.velocidade_ab }}
+    runs-on: windows-latest
+    timeout-minutes: 30
+    env:
+      VERSAO_DE_TESTE: obra-2026-10-26
+      PORTEIRO_LIGADO: "0"
+    steps:
+      - name: Codigo do programa (este commit)
+        uses: actions/checkout@v4
+
+      - name: Trocar o codigo pelo do ramo pedido (se houver)
+        shell: bash
+        env:
+          RAMO_PEDIDO: ${{ inputs.ramo }}     # por variavel, nunca colado no comando
+        run: bash .github/scripts/trocar_codigo.sh "$RAMO_PEDIDO"
+
+      - name: Python ${{ env.PYTHON_VERSION }}
+        uses: actions/setup-python@v5
+        with:
+          python-version: ${{ env.PYTHON_VERSION }}
+          allow-prereleases: true
+
+      - name: Porteiro com o codigo da versao de teste
+        shell: bash
+        run: bash .github/scripts/porteiro_juiz.sh
+
   janela:
     name: Botoes e prints da janela real
     if: ${{ !inputs.velocidade && !inputs.antes_depois && !inputs.velocidade_ab }}
@@ -333,7 +369,7 @@ jobs:
     # (.github/scripts/resumir.py). Existe porque os "artifacts" nao baixam de
     # todo lugar; o log sempre se le. Roda mesmo se alguma parte falhou.
     name: Resumo
-    needs: [suite, janela]
+    needs: [suite, janela, porteiro]
     if: ${{ always() && !inputs.velocidade && !inputs.antes_depois && !inputs.velocidade_ab }}
     runs-on: ubuntu-latest
     steps:

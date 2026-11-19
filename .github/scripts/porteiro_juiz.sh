@@ -1,0 +1,50 @@
+#!/usr/bin/env bash
+# O juiz do porteiro na rodada do GitHub (passo 0 do plano da parte do Windows; R2 e R3 da terceira volta de quem
+# tentou quebrar). PARA A GERENTE COPIAR para `.github/scripts/porteiro_juiz.sh` no ramo claude/list-server-files-gkos8v.
+#
+# Roda DEPOIS do trocar_codigo.sh (a pasta de trabalho já tem o código do ramo pedido). Busca a versão de teste, tira
+# dela o pacote regras_dos_agentes/ e a lista de exceções para uma pasta à parte ($RUNNER_TEMP/juiz) e roda, de lá,
+# `python -m regras_dos_agentes juiz --conferido "$GITHUB_WORKSPACE"`: é o código da versão de teste julgando o ramo.
+# Nada do ramo conferido decide com que versão se compara: o nome vem de VERSAO_DE_TESTE, escrito no workflow.
+#
+# Saída: a linha "PORTEIRO: CONFERIDO", "PORTEIRO: BARROU" ou "PORTEIRO: NAO CONFERIDO (motivo)" (a K21 do formulário
+# procura essa linha no registro da rodada). BARROU faz o passo falhar. NAO CONFERIDO não falha a rodada, mas vira
+# aviso visível no topo da rodada e no resumo; com PORTEIRO_LIGADO=1, "a versão de teste não tem o porteiro" falha.
+#
+# Seguro mudar: as mensagens. Arriscado: buscar o código de outro lugar que não a versão de teste, ou rodar o juiz de
+# dentro da pasta de trabalho (aí o `python -m` pegaria o regras_dos_agentes do ramo conferido).
+set -uo pipefail
+
+VERSAO="${VERSAO_DE_TESTE:?o workflow tem de dizer VERSAO_DE_TESTE}"
+LIGADO="${PORTEIRO_LIGADO:-0}"
+JUIZ="${RUNNER_TEMP:-/tmp}/juiz"
+
+avisar() {   # $1 = nível do GitHub (warning/error), $2 = frase
+  echo "$2"
+  echo "::$1 title=Porteiro::$2"
+  [ -n "${GITHUB_STEP_SUMMARY:-}" ] && echo "## $2" >> "$GITHUB_STEP_SUMMARY"
+}
+
+if ! git fetch -q --depth=1 origin "+refs/heads/$VERSAO:refs/remotes/origin/$VERSAO"; then
+  avisar error "PORTEIRO: NAO CONFERIDO (não deu para buscar a versão de teste $VERSAO)"
+  exit 1
+fi
+BASE="$(git rev-parse "refs/remotes/origin/$VERSAO")"
+
+if ! git cat-file -e "$BASE:regras_dos_agentes/__main__.py" 2>/dev/null; then
+  if [ "$LIGADO" = "1" ]; then
+    avisar error "PORTEIRO: NAO CONFERIDO (a versão de teste $VERSAO não tem o porteiro, e ele devia estar lá)"
+    exit 1
+  fi
+  avisar warning "PORTEIRO: NAO CONFERIDO (a versão de teste $VERSAO ainda não tem o porteiro)"
+  exit 0
+fi
+
+rm -rf "$JUIZ" && mkdir -p "$JUIZ"
+# O tar recebe o arquivo pela entrada e escreve na pasta atual: um caminho com "C:" no tar seria lido como outra
+# máquina (o RUNNER_TEMP do GitHub é "D:\a\_temp").
+( cd "$JUIZ" && git -C "$GITHUB_WORKSPACE" archive "$BASE" regras_dos_agentes tests/conferencias_excecoes.json | tar -x ) || {
+  avisar error "PORTEIRO: NAO CONFERIDO (não deu para tirar o porteiro da versão de teste)"
+  exit 1
+}
+cd "$JUIZ" && python -m regras_dos_agentes juiz --conferido "$GITHUB_WORKSPACE"
