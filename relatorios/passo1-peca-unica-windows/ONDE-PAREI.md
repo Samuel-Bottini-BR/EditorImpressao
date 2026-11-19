@@ -385,7 +385,7 @@ Lido (documentação ou código), separado do deduzido:
 - **Volta 3, no PC, um arquivo por vez** (19/11): `tests/test_windows_peca.py` 51 passaram e 2 pulados (os que
   criam tarefa de verdade, só no GitHub); `tests/test_windows_janela_de_prova.py` 10; `tests/test_conferencias_codigo.py`
   77; `tests/test_conferencias_excecoes.py` 14.
-- **No GitHub, volta 3:** RODADA_VOLTA3
+- **No GitHub, volta 3:** rodada 44597542145, sobre o commit c87f7bfe: **success** na primeira tentativa (todas as partes e os botões). PORTEIRO: success (o trabalho "Porteiro (juiz da versao de teste)").
 - **No GitHub, volta 2:** rodada 44587786297, sobre o commit 6bf3459a: **success** na segunda tentativa (só a parte 3
   rodou de novo). PORTEIRO: success (o trabalho "Porteiro (juiz da versao de teste)"). Na primeira tentativa falhou só
   `tests/test_decisoes_gravura_a_mao.py::test_d659_g_outros_filtros_a_mao_nada_e_procurado_e_sai_igual_ao_de_antes`
@@ -533,7 +533,7 @@ sem o certificado pago, a pergunta mostra o **nome do arquivo** do programa, e o
 
 ## Commit
 
-COMMIT_VOLTA3
+c87f7bfe (o último commit de código da volta 3; depois dele só este formulário muda).
 
 ## O que o agente que tentou quebrar achou
 
