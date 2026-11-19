@@ -579,10 +579,10 @@ class Licencas:
 
     def para_mostrar(self) -> list[str]:
         """Uma frase por linha, para a janela de prova ("BUILTIN\\Usuários: ler e executar")."""
-        linhas = [f"dono: {self.dono_nome or self.dono}"]
+        linhas = [f"dono: {nome_para_mostrar(self.dono, self.dono_nome)}"]
         if self.sem_lista:
             linhas.append("SEM LISTA DE LICENÇAS: todos podem tudo")
-        linhas += [f"{li.nome or li.sid}: {li.direitos()}" + (" (herdada)" if li.herdada else "")
+        linhas += [f"{nome_para_mostrar(li.sid, li.nome)}: {li.direitos()}" + (" (herdada)" if li.herdada else "")
                    for li in self.lista]
         return linhas
 
@@ -597,6 +597,52 @@ def _nome_da_conta(psid: int) -> str:
                                         ctypes.byref(uso)):
         return ""
     return f"{dominio.value}\\{nome.value}" if dominio.value else nome.value
+
+
+# As contas e grupos de fábrica do Windows, ditos em português pela peça (o Windows traduz o nome deles conforme a
+# língua dele: "Todos" aqui, "Everyone" num Windows em inglês). Lugar único: toda frase da peça que cita uma conta
+# passa por `nome_para_mostrar`.
+_NOMES_DE_FABRICA = {
+    "S-1-1-0": "Todos",
+    SID_USUARIOS: "Usuários",
+    SID_AUTENTICADOS: "Usuários autenticados",
+    SID_SISTEMA: "o sistema",
+    SID_ADMINISTRADORES: "Administradores",
+    SID_INSTALADOR_CONFIAVEL: "o Instalador Confiável do Windows",
+    SID_PROPRIETARIO_CRIADOR: "quem cria (Proprietário Criador)",
+    SID_DIREITOS_DO_DONO: "o dono",
+    "S-1-5-19": "o serviço local",
+    "S-1-5-20": "o serviço de rede",
+    "S-1-5-4": "quem usa este computador (Interativo)",
+    "S-1-15-2-1": "os aplicativos da loja",
+    "S-1-15-2-2": "os aplicativos da loja restritos",
+    "todos": "todas as contas (a pasta não tem lista de licenças)",
+    "desconhecida": "uma licença que a peça não sabe ler",
+}
+
+
+def _nome_do_sid_pelo_windows(sid: str) -> str:
+    """O nome que o Windows dá à conta deste SID, ou "" se ele não souber (ou o SID não for válido)."""
+    if not _SID.match(sid):
+        return ""
+    w = _win()
+    psid = ctypes.c_void_p()
+    if not w.advapi32.ConvertStringSidToSidW(sid, ctypes.byref(psid)):
+        return ""
+    try:
+        return _nome_da_conta(psid.value)
+    finally:
+        w.kernel32.LocalFree(psid)
+
+
+def nome_para_mostrar(sid: str, nome_do_windows: str = "") -> str:
+    """Como a peça diz uma conta numa frase (em português, sem código): as de fábrica pelo nome em português
+    (`_NOMES_DE_FABRICA`), não pelo que o Windows traduz; as outras pelo nome que o Windows dá; sem nome, "outra conta
+    deste computador". Nunca o SID cru."""
+    if sid in _NOMES_DE_FABRICA:
+        return _NOMES_DE_FABRICA[sid]
+    nome = nome_do_windows or (_nome_do_sid_pelo_windows(sid) if sid else "")
+    return nome or "outra conta deste computador"
 
 
 def ler_licencas(caminho: Path | str) -> Licencas:
@@ -692,7 +738,7 @@ def problemas_da_pasta_de_tarefas(sddl: str) -> list[str]:
     problemas = []
     dono = dono_do_texto(sddl)
     if dono not in (SID_SISTEMA, SID_ADMINISTRADORES, SID_INSTALADOR_CONFIAVEL):
-        problemas.append(f"o dono da pasta do programa no Agendador é {dono or 'ninguém'}, não o sistema nem os "
+        problemas.append(f"o dono da pasta do programa no Agendador é {nome_para_mostrar(dono)}, não o sistema nem os "
                          "Administradores")
     admins = {SID_SISTEMA, SID_ADMINISTRADORES, SID_INSTALADOR_CONFIAVEL, SID_PROPRIETARIO_CRIADOR}
     for li in licencas_do_texto(sddl):
@@ -701,9 +747,10 @@ def problemas_da_pasta_de_tarefas(sddl: str) -> list[str]:
         if li.tipo == "outra":
             problemas.append("a pasta do programa no Agendador tem uma licença que a peça não sabe ler")
         elif _direitos(li.mascara) & _MEXER_NA_PASTA_DE_TAREFAS:
-            problemas.append(f"{li.nome or li.sid} pode mexer na pasta do programa no Agendador")
+            problemas.append(f"{nome_para_mostrar(li.sid, li.nome)} pode mexer na pasta do programa no Agendador")
         elif li.para_objetos and _direitos(li.mascara) & _ESCRITA:
-            problemas.append(f"{li.nome or li.sid} poderia mudar as tarefas da pasta do programa no Agendador")
+            problemas.append(f"{nome_para_mostrar(li.sid, li.nome)} poderia mudar as tarefas da pasta do programa no "
+                             "Agendador")
     return problemas
 
 
@@ -734,12 +781,12 @@ def problemas_da_licenca_da_tarefa(pedida: str, efetiva: str) -> list[str]:
             if e.sid == li.sid:
                 tem |= _direitos(e.mascara)
         if _direitos(li.mascara) & ~tem:
-            problemas.append(f"{li.nome or li.sid} não ficou com os direitos pedidos na tarefa")
+            problemas.append(f"{nome_para_mostrar(li.sid, li.nome)} não ficou com os direitos pedidos na tarefa")
     pode_mudar = {SID_SISTEMA, SID_ADMINISTRADORES, SID_INSTALADOR_CONFIAVEL}
     pode_mudar |= {li.sid for li in pedidas if _direitos(li.mascara) & _ESCRITA}
     for e in efetivas:
         if _direitos(e.mascara) & _ESCRITA and e.sid not in pode_mudar:
-            problemas.append(f"{e.nome or e.sid} pode mudar a tarefa")
+            problemas.append(f"{nome_para_mostrar(e.sid, e.nome)} pode mudar a tarefa")
     return problemas
 
 
@@ -761,12 +808,13 @@ def problemas_da_pasta_de_troca(licencas: Licencas, sid_da_conta: str) -> list[s
     Lugar único da regra: o lado que pede confere logo depois de criar, e o lado com licença confere antes de ler."""
     problemas = []
     if licencas.dono not in (sid_da_conta, SID_SISTEMA, SID_ADMINISTRADORES):
-        problemas.append(f"o dono da pasta é {licencas.dono_nome or licencas.dono}, não a conta que pediu")
+        problemas.append(f"o dono da pasta é {nome_para_mostrar(licencas.dono, licencas.dono_nome)}, não a conta que "
+                         "pediu")
     aceitos = {sid_da_conta, SID_SISTEMA, SID_ADMINISTRADORES, SID_PROPRIETARIO_CRIADOR, SID_DIREITOS_DO_DONO}
     for quem in sorted(licencas.quem_grava() - aceitos):
-        problemas.append(f"outra conta pode gravar na pasta: {quem}")
+        problemas.append(f"outra conta pode gravar na pasta: {nome_para_mostrar(quem)}")
     for quem in sorted(licencas.quem_le() - aceitos):
-        problemas.append(f"outra conta pode ler a pasta: {quem}")
+        problemas.append(f"outra conta pode ler a pasta: {nome_para_mostrar(quem)}")
     return problemas
 
 
@@ -777,11 +825,12 @@ def problemas_da_pasta_segura(licencas: Licencas) -> list[str]:
     problemas = []
     donos = (SID_SISTEMA, SID_ADMINISTRADORES, SID_INSTALADOR_CONFIAVEL)
     if licencas.dono not in donos:
-        problemas.append(f"o dono da pasta é {licencas.dono_nome or licencas.dono} (deveria ser o sistema ou os "
+        problemas.append(f"o dono da pasta é {nome_para_mostrar(licencas.dono, licencas.dono_nome)} (deveria ser o "
+                         "sistema ou os "
                          "administradores)")
     aceitos = {SID_SISTEMA, SID_ADMINISTRADORES, SID_INSTALADOR_CONFIAVEL, SID_PROPRIETARIO_CRIADOR}
     for quem in sorted(licencas.quem_grava() - aceitos):
-        problemas.append(f"uma conta que não é administradora pode gravar na pasta: {quem}")
+        problemas.append(f"uma conta que não é administradora pode gravar na pasta: {nome_para_mostrar(quem)}")
     if not any(li.le and not li.so_para_dentro and li.sid in (SID_USUARIOS, SID_AUTENTICADOS)
                for li in licencas.lista):
         problemas.append("as contas comuns não conseguem ler a pasta")

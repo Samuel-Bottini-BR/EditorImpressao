@@ -843,9 +843,9 @@ def test_a_pasta_do_agendador_tem_de_ser_do_sistema_ou_dos_administradores():
     ou dando controle total a "Todos", ou passando para as tarefas o direito de uma conta comum gravar, não passa."""
     assert windows.problemas_da_pasta_de_tarefas(_PASTA_DE_FABRICA) == []
     problemas = windows.problemas_da_pasta_de_tarefas(_PASTA_DA_CONTA_COMUM)
-    # o nome das contas vem na língua do Windows ("Todos" aqui, "Everyone" no GitHub): confere-se o sentido
-    assert any("dono" in pr for pr in problemas)
-    assert sum("pode mexer na pasta" in pr for pr in problemas) == 2          # Todos e a conta comum dona
+    assert "o dono da pasta do programa no Agendador é outra conta deste computador" in problemas[0]
+    assert "Todos pode mexer na pasta do programa no Agendador" in problemas
+    assert "outra conta deste computador pode mexer na pasta do programa no Agendador" in problemas
     assert windows.problemas_da_pasta_de_tarefas("O:BAD:(A;;FA;;;BA)(A;OI;FW;;;AU)")          # passa para as tarefas
     assert windows.problemas_da_pasta_de_tarefas("O:BAD:(A;;FA;;;BA)(A;;WD;;;BU)")            # muda a licença
     assert windows.conferir_pasta_de_tarefas().dados.get("existe") in (True, False)
@@ -881,3 +881,39 @@ def test_apagar_a_pasta_do_agendador_confere_que_sumiu(monkeypatch):
         pytest.skip("a pasta do programa existe neste Windows: o teste não pede para apagá-la")
     monkeypatch.setattr(windows, "pasta_de_tarefas_existe", lambda: True)
     assert windows.apagar_pasta_de_tarefas().desfecho == windows.FALHOU
+
+
+def test_as_frases_da_peca_dizem_as_contas_em_portugues_e_nunca_o_numero():
+    """As contas de fábrica são ditas pela peça em português a partir do número delas (o Windows traduz o nome: "Todos"
+    aqui, "Everyone" no Windows do GitHub, em inglês); conta sem nome é "outra conta deste computador"; nenhuma frase
+    mostra o número cru (S-1-...). Vale para a pasta de troca, a pasta segura, o Agendador e a licença da tarefa."""
+    assert windows.nome_para_mostrar("S-1-1-0", "Everyone") == "Todos"
+    assert windows.nome_para_mostrar(windows.SID_USUARIOS, "BUILTIN\\Users") == "Usuários"
+    assert windows.nome_para_mostrar(windows.SID_AUTENTICADOS) == "Usuários autenticados"
+    assert windows.nome_para_mostrar(windows.SID_SISTEMA) == "o sistema"
+    assert windows.nome_para_mostrar(windows.SID_ADMINISTRADORES) == "Administradores"
+    assert windows.nome_para_mostrar("S-1-5-21-1-2-3-1001") == "outra conta deste computador"
+    assert windows.nome_para_mostrar("S-1-5-21-1-2-3-1001", "PC\\kaique") == "PC\\kaique"
+    sid = "S-1-5-21-1-2-3-1001"
+
+    def lic(dono: str, *linhas) -> windows.Licencas:
+        """Licenças montadas."""
+        return windows.Licencas("x", dono, "", False, False, tuple(linhas))
+
+    def linha(quem: str, mascara: int) -> windows.Licenca:
+        """Uma linha montada, sem o nome do Windows."""
+        return windows.Licenca(quem, "", "permite", mascara, True, False)
+
+    frases = (windows.problemas_da_pasta_de_troca(lic("S-1-5-21-9-9-9-1002", linha("S-1-1-0", 0x1F01FF),
+                                                      linha(windows.SID_USUARIOS, 0x120089)), sid)
+              + windows.problemas_da_pasta_segura(lic(sid, linha(windows.SID_USUARIOS, 0x1301BF)))
+              + windows.problemas_da_pasta_de_tarefas(_PASTA_DA_CONTA_COMUM)
+              + windows.problemas_da_licenca_da_tarefa("D:(A;;FA;;;BA)(A;;GRGX;;;AU)", "D:(A;;FA;;;BA)(A;;FA;;;WD)")
+              + lic(sid, linha("S-1-1-0", 0x1F01FF)).para_mostrar())
+    assert frases and not [f for f in frases if "S-1-" in f], frases
+    assert "outra conta pode gravar na pasta: Todos" in frases
+    assert "outra conta pode ler a pasta: Usuários" in frases
+    assert "uma conta que não é administradora pode gravar na pasta: Usuários" in frases
+    assert "Usuários autenticados não ficou com os direitos pedidos na tarefa" in frases
+    assert "Todos pode mudar a tarefa" in frases
+
