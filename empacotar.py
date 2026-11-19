@@ -510,26 +510,21 @@ def conferir_tesseract(pasta: Path | None) -> list[str]:
 
 
 def assinatura_do_arquivo(arquivo: Path) -> dict:
-    """A assinatura digital de um arquivo, lida pelo proprio Windows (Get-AuthenticodeSignature).
+    """A assinatura digital de um arquivo, lida pelo proprio Windows, pela peca unica do Windows
+    (core/windows.ler_assinatura_digital; ate o passo 2 do plano da parte do Windows este arquivo abria o
+    PowerShell por conta propria, item K01 da lista de excecoes do porteiro).
 
     Devolve {"status", "assinante", "produto", "versao"} ("status" = "Valid"
-    quando a assinatura confere e o certificado e de uma autoridade em que o
-    Windows confia). Nunca levanta: erro vira status "erro: ...".
+    quando a assinatura confere; quem assinou e conferido por vc_redist_confere).
+    Nunca levanta: a falha da peca vira status "erro: <motivo>", que nunca confere.
+    Arriscado: abrir o PowerShell aqui de novo (o porteiro barra, K01).
     """
-    import json
-    import os
+    from core import windows
 
-    comando = ("$s = Get-AuthenticodeSignature -LiteralPath $env:ARQUIVO_A_CONFERIR; "
-               "$v = (Get-Item -LiteralPath $env:ARQUIVO_A_CONFERIR).VersionInfo; "
-               "[pscustomobject]@{status=[string]$s.Status; assinante=[string]$s.SignerCertificate.Subject; "
-               "produto=[string]$v.ProductName; versao=[string]$v.FileVersion} | ConvertTo-Json -Compress")
-    try:
-        saida = subprocess.run(["powershell", "-NoProfile", "-NonInteractive", "-Command", comando],
-                               capture_output=True, text=True, timeout=120,
-                               env={**os.environ, "ARQUIVO_A_CONFERIR": str(arquivo)})
-        return json.loads(saida.stdout)
-    except (OSError, subprocess.SubprocessError, ValueError) as erro:
-        return {"status": f"erro: {erro}", "assinante": "", "produto": "", "versao": ""}
+    lido = windows.ler_assinatura_digital(arquivo)
+    if not lido.deu_certo:
+        return {"status": f"erro: {lido.motivo}", "assinante": "", "produto": "", "versao": ""}
+    return {chave: lido.dados[chave] for chave in ("status", "assinante", "produto", "versao")}
 
 
 def vc_redist_confere(assinatura: dict) -> list[str]:

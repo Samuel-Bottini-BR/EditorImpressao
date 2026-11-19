@@ -3,7 +3,8 @@
 O QUE É
     O único lugar do programa que conversa com o Windows: pedir a licença de administrador, lançar um processo solto,
     rodar e esperar uma ferramenta do Windows ou um script do PowerShell, criar/apagar/rodar/ler tarefas do
-    Agendador, a pasta de troca, a pasta segura, ler licenças de pasta e marcas. O porteiro (`regras_dos_agentes`,
+    Agendador, a pasta de troca, a pasta segura, ler licenças de pasta e marcas, e ler a assinatura digital de um
+    arquivo (`ler_assinatura_digital`, desde o passo 2, para o publicar). O porteiro (`regras_dos_agentes`,
     conferência K01) só deixa essa conversa acontecer aqui. Nenhum chamador do programa usa esta peça ainda: eles
     mudam nos passos 3 a 5 do plano; hoje só o `main.py` (a entrada do trabalho de administrador), a janela de prova e
     os testes a usam.
@@ -1217,6 +1218,50 @@ def lancar_powershell_solto(texto: str, espera_s: float = 30) -> Resposta:
     if not resposta.deu_certo:
         apagar_pasta_de_troca(pasta)
     return resposta
+
+
+# ---------------------------------------------------------------------------------------------------------------------
+# A assinatura digital de um arquivo: só ler (passo 2 do plano; antes o empacotar abria o PowerShell por conta própria)
+# ---------------------------------------------------------------------------------------------------------------------
+
+_SCRIPT_DA_ASSINATURA = (
+    "$arquivo = {arquivo}\n"
+    "$s = Get-AuthenticodeSignature -LiteralPath $arquivo\n"
+    "$v = (Get-Item -LiteralPath $arquivo).VersionInfo\n"
+    "[Console]::Out.Write(([pscustomobject]@{{status=[string]$s.Status; "
+    "assinante=[string]$s.SignerCertificate.Subject; produto=[string]$v.ProductName; "
+    "versao=[string]$v.FileVersion}} | ConvertTo-Json -Compress))\n"
+)
+
+
+def ler_assinatura_digital(arquivo: Path | str, limite_s: float = 120) -> Resposta:
+    """A assinatura digital (Authenticode) de um arquivo, lida pelo próprio Windows, sem licença e sem pergunta.
+
+    DEU_CERTO quer dizer só que o Windows LEU: `dados` traz `status` (o estado do Windows: "Valid", "NotSigned",
+    "HashMismatch", "NotTrusted", "UnknownError", "NotSupportedFileFormat" ou "Incompatible"; Microsoft Learn,
+    SignatureStatus), `assinante` (o certificado de quem assinou, vazio sem assinatura), `produto` e `versao` (do
+    arquivo). "Valid" não diz quem assinou: quem chama confere o assinante (ex.: `empacotar.vc_redist_confere`).
+    FALHOU quando o Windows não conseguiu ler (o arquivo não existe, sem licença de leitura, o PowerShell não terminou):
+    nunca um estado inventado.
+
+    Roda pelo `rodar_powershell` da peça (o caminho inteiro do PowerShell do Windows, o script em arquivo com a marca
+    de UTF-8). O caminho vai entre aspas do PowerShell, numa linha (`aspas_do_powershell` recusa quebra de linha).
+    Seguro mexer: as frases. Arriscado: tirar o `-LiteralPath` (colchetes no nome viram curinga)."""
+    try:
+        texto = _SCRIPT_DA_ASSINATURA.format(arquivo=aspas_do_powershell(str(arquivo)))
+    except ValueError as erro:
+        return _falhou("o nome do arquivo não serve para ler a assinatura", repr(erro))
+    r = rodar_powershell(texto, limite_s=limite_s)
+    if not r.deu_certo:
+        return _falhou("o Windows não conseguiu ler a assinatura digital do arquivo", f"{arquivo}: {r.detalhe}")
+    try:
+        lido = json.loads(r.dados.get("saida") or "")
+    except ValueError as erro:
+        return _falhou("o Windows respondeu algo que o programa não entendeu", f"{arquivo}: {erro!r}: {r.dados}")
+    if not isinstance(lido, dict) or not isinstance(lido.get("status"), str):
+        return _falhou("o Windows respondeu algo que o programa não entendeu", f"{arquivo}: {lido!r}")
+    return _certo(status=lido["status"], assinante=str(lido.get("assinante") or ""),
+                  produto=str(lido.get("produto") or ""), versao=str(lido.get("versao") or ""))
 
 
 # ---------------------------------------------------------------------------------------------------------------------

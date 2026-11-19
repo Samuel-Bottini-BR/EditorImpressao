@@ -1003,3 +1003,46 @@ def test_as_frases_concordam_e_nao_levam_numero_do_windows():
     for erro in (2, 3, 5, 1155, 1460):
         assert "código" not in windows.resposta_do_pedido(f"erro:{erro}", None, "t", None, [], 60).motivo
 
+
+
+# ---------------------------------------------------------------------------------------------------------------------
+# A assinatura digital de um arquivo (passo 2 do plano: o PowerShell do empacotar passa pela peça)
+# ---------------------------------------------------------------------------------------------------------------------
+
+def test_a_assinatura_digital_e_lida_pela_peca_de_verdade(tmp_path):
+    """Passo 2 (lista de exceções, K01): o publicar lia a assinatura digital do Visual C++ abrindo o PowerShell por
+    conta própria (`empacotar.assinatura_do_arquivo`). Agora a peça tem a função própria (`ler_assinatura_digital`),
+    que roda de verdade, sem pergunta do Windows: um programa assinado pela Microsoft (o próprio PowerShell do Windows)
+    dá "Valid" com o assinante da Microsoft; um script sem assinatura dá "NotSigned"; um arquivo que não existe dá
+    FALHOU (nunca um "não assinado" inventado), com a frase em português."""
+    assinado = windows.ler_assinatura_digital(windows._caminho_do_powershell())
+    assert assinado.deu_certo, assinado
+    assert assinado.dados["status"] in ("Valid", "NotTrusted", "UnknownError"), assinado.dados
+    assert "Microsoft" in assinado.dados["assinante"] or assinado.dados["status"] != "Valid", assinado.dados
+    falso = tmp_path / "sem assinatura, com acento ção.ps1"     # script sem assinatura: o Windows diz NotSigned
+    falso.write_text("Write-Output 'oi'", encoding="utf-8")
+    sem = windows.ler_assinatura_digital(falso)
+    assert sem.deu_certo and sem.dados["status"] == "NotSigned", sem
+    assert sem.dados["assinante"] == ""
+    nada = windows.ler_assinatura_digital(tmp_path / "nao-existe.exe")
+    assert nada.desfecho == windows.FALHOU and nada.motivo and "código" not in nada.motivo, nada
+
+
+def test_o_empacotar_le_a_assinatura_pela_peca_e_nao_abre_o_powershell(tmp_path, monkeypatch):
+    """Passo 2: `empacotar.assinatura_do_arquivo` chama a função da peça (um lugar só) e não abre nenhum programa por
+    conta própria. Falha da peça vira "erro: <motivo>" (o mesmo formato de antes), que nunca confere."""
+    import empacotar
+
+    rodou = []
+    monkeypatch.setattr(empacotar.subprocess, "run", lambda *a, **k: rodou.append(a))
+    pedidos = []
+
+    def ler(arquivo):
+        """A peça de mentira só para ver que é ela que o empacotar chama (o teste de cima roda a de verdade)."""
+        pedidos.append(Path(arquivo))
+        return windows.Resposta(windows.FALHOU, "o arquivo sumiu", "teste")
+
+    monkeypatch.setattr(windows, "ler_assinatura_digital", ler)
+    lido = empacotar.assinatura_do_arquivo(tmp_path / "x.exe")
+    assert pedidos == [tmp_path / "x.exe"] and rodou == []
+    assert lido["status"].startswith("erro: ") and empacotar.vc_redist_confere(lido)
