@@ -23,22 +23,75 @@ partir da lista de arquivos do pedido da gerente (a gerente não tinha mandado u
 
 ## Onde parei
 
-- Primeira entrega: o pacote, o porteiro (24 conferências), a lista (44 lugares), o formulário, o gancho (não ligado),
-  o pacote do passo 1 e o texto para o Samuel.
-- Quem tentou quebrar devolveu com 19 achados (`quem-quebrou/relatorio.md`, NÃO ESTÁ PRONTO). Esta é a volta: todos
-  os achados que a gerente mandou consertar estão consertados, cada um com prova em `tests/` (ver "Como ficou cada
-  achado"). A lista foi refeita com a busca ampliada: 125 lugares em 118 itens (eram 44 em 42).
-- Rodada de prova com a lista "valendo" (ramo `passo0-prova-valendo`, que eu criei): passou, e o ramo foi apagado.
-  Rodada final do ramo de trabalho: passou. O formulário, conferido com o pacote e com o GitHub, passa na etapa "antes de
-  ir ao agente que tenta quebrar". Entregue à gerente.
+- Primeira entrega: 44 lugares. Primeira volta de quem quebrou (19 achados, `quem-quebrou/relatorio.md`): consertados;
+  125 lugares. Segunda volta (`quem-quebrou/relatorio-2.md`: 14 dos 19 consertados, 6, 7 e 8 pela metade, 9 novos):
+  todos consertados nesta volta, cada um com prova em `tests/` (ver "Como ficou cada achado da segunda volta").
+- A lista foi refeita: **189 lugares em 176 itens.**
+- Rodada inteira do GitHub do último commit de código: ver "Testes".
 
-## Como ficou cada achado de quem tentou quebrar
+## Como ficou cada achado da segunda volta
+
+- **N1 (grave), o "sim" forjável.** O "sim" é conferido no Livro da versão de teste no GitHub
+  (`origin/obra-2026-10-26`, `Livro.da_versao_de_teste`), nunca no da pasta nem no do ramo do agente. Ele tem de citar
+  uma decisão que exista lá e trate da lista de exceções, e trazer um trecho literal, de ao menos 12 letras, da coluna
+  das palavras do Samuel daquela decisão (`excecoes.problema_do_sim`). O gancho também lê o Livro da versão de teste;
+  sem internet, barra (código 3). Provas do ataque do quebrador (`"palavras": "sim"`):
+  `tests/test_conferencias_excecoes.py::test_o_sim_forjado_nao_passa` (5 jeitos de forjar),
+  `tests/test_conferencias_antes_do_commit.py::test_o_gancho_barra_o_sim_forjado_num_item_novo`,
+  `tests/test_conferencias_antes_do_commit.py::test_o_gancho_barra_a_lista_valendo_com_o_sim_forjado`,
+  `tests/test_conferencias_antes_do_commit.py::test_sem_internet_o_gancho_barra_em_vez_de_passar`,
+  `tests/test_conferencias_protecao.py::test_item_novo_com_o_sim_forjado_e_acusado` e
+  `tests/test_conferencias_protecao.py::test_o_livro_do_ramo_nao_vale_so_o_da_versao_de_teste` (o agente que escreve a
+  decisão no Livro do próprio ramo não passa). Consequência para ligar a lista: a gerente registra o "sim" do Samuel
+  como uma decisão no Livro da versão de teste (com as palavras dele e dizendo que é sobre a lista de exceções) e a
+  cita em `sim_do_samuel`. A D-791 de hoje não serve sozinha: as palavras dele ali ("não sei do que você está
+  falando" · "b") não são o "sim" à lista.
+- **N2, o apelido do ctypes.** O porteiro segue o apelido dentro do arquivo (`porteiro._apelidos_do_windows`): o nome
+  que recebe a biblioteca, a função que a devolve (inclusive num `lambda`), quem recebe o que ela devolve, e toda
+  linha que usa esses nomes. O resultado de uma chamada feita pela biblioteca não vira apelido. `CDLL`/`cdll` com uma
+  biblioteca do Windows conta; `creationflags` com qualquer valor que não seja o 0 escrito conta (inclusive guardado
+  numa variável). O caso do `teste_velocidade.py:1746` (`return kernel32, ...`) é seguido: a função
+  `_entrada_da_janela_preta` devolve a biblioteca, e as linhas de quem a recebe (1758, 1760, 1771, 1772, 2252 a
+  2255) entram na lista. Prova: `tests/test_conferencias_codigo.py::test_k01_segue_o_apelido_da_biblioteca_do_windows`.
+  O que não é seguido está nas ressalvas.
+- **N3, afrouxar a busca pelo uso.** Cada palavra da busca agora tem um exemplo (uma palavra por linha, 48 linhas). A
+  proteção do GitHub pega o exemplo de cada palavra da lista da versão de teste (gerado dos dados de lá, não escrito à
+  mão) e cobra que o porteiro do ramo ainda o acha (`protecao.exemplos_que_o_porteiro_nao_acha`). Prova:
+  `tests/test_conferencias_protecao.py::test_afrouxar_a_busca_pelo_uso_e_acusado` (o caso do `msiexec`). Nomes
+  acrescentados: `sc create` em lista, `net stop`/`net start`, `taskkill`, `Stop-Process`, `-ComObject`,
+  `Get-PhysicalDisk` (e `Get-Disk`, `Get-Volume`, `-Partition`), `CDLL`/`cdll` do Windows, `shutdown`,
+  `Restart-Computer`, o registro de eventos (`Write-EventLog`, `wevtutil`). Prova:
+  `tests/test_conferencias_codigo.py::test_k01_acusa_os_nomes_que_ainda_escapavam`.
+- **N4.** O rótulo só vale na `quem-quebrou/` do próprio trabalho
+  (`tests/test_conferencias_mudancas.py::test_k10_o_rotulo_so_vale_na_quem_quebrou_do_proprio_trabalho`).
+- **N5.** `creationflags=0`, "self-service" e "hku:" não são mais alarme
+  (`tests/test_conferencias_codigo.py::test_k01_falsos_alarmes_que_quem_quebrou_apontou_nao_sao_acusados`).
+- **N6, o texto para o Samuel.** O print é de verdade: uma cópia (marcada em vermelho) do print da janela de versão
+  nova com o "Reiniciar agora", tirado na instalação de 18/11 (`saida_teste/etapa5/prints/fase4/1-aviso.png`; não
+  abri o programa). O teste de velocidade inteiro foi para "depois da entrega (D-800)", como a régua dos filtros; o
+  texto não fala mais em "5" e "6": diz os três pedaços que ele deixou para depois e quantas linhas a busca maior achou
+  neles. **Na pergunta nova sobraram 18 lugares** (a tela de início 2, a memória livre 1, o motor de achar texto 4, o
+  brasão 5, o pacote do teste de velocidade 1, e, achados pela regra nova do `creationflags`, os motores Tesseract 2 e
+  Kraken 1, as páginas em outro processo 1 e a tela de carregamento 1).
+- **N7.** A folha de estilo só conta com um seletor do Qt seguido de "{" e de uma propriedade
+  (`tests/test_conferencias_codigo.py::test_k04_correcao_3_um_f_string_comum_com_chaves_nao_e_folha_de_estilo`).
+- **N8.** As regras do Windows vêm do arquivo, pela tabela: o arquivo novo que só cai na linha de reserva (`core/*`)
+  recebe todas as regras e a gerente é avisada (o título do pedido não conta mais)
+  (`tests/test_conferencias_pacote.py::test_arquivo_novo_so_da_linha_de_reserva_recebe_todas_as_regras`,
+  `tests/test_conferencias_pacote.py::test_os_arquivos_do_windows_ganham_as_regras_do_windows_pela_tabela`).
+- **N9.** O pacote do meu pedido (`anexos/pacote-passo0.md`) foi montado com exatamente esta lista de arquivos:
+  `regras_dos_agentes/`, `tests/test_conferencias_*.py`, `tests/conferencias_excecoes.json`, `ganchos/pre-commit`,
+  `relatorios/passo0-2026-11-19/`; papel implementador; partida `746dbda6`; ramo `passo0-porteiro-2026-11-19`.
+- **6, 7 e 8 pela metade:** fechados pelos itens N1, N3 e N6 acima.
+
+## Como ficou cada achado de quem tentou quebrar (primeira volta)
 
 1. **Ligar a lista deixava um teste vermelho.** O teste monta a lista com dados próprios e vale nos dois estados
    (`tests/test_conferencias_excecoes.py::test_a_lista_valendo_sem_o_sim_do_samuel_conferido_no_livro_nao_vale`). E uma
    rodada inteira do GitHub num ramo de prova, com a lista "valendo" e um "sim" de mentira, roda o teste que barra o
    repositório (ver "Testes").
-2. **A busca do Windows conhecia poucas palavras.** Ampliada (`PALAVRAS_DO_WINDOWS`, 23 linhas: o PowerShell com
+2. **A busca do Windows conhecia poucas palavras.** Ampliada (`PALAVRAS_DO_WINDOWS`, hoje 48 linhas, uma por
+   palavra; na primeira volta eram 23: o PowerShell com
    qualquer nome, as tarefas por qualquer meio, o ShellExecute por qualquer nome, o cmd, o registro, a licença e o
    dono de arquivo, os instaladores, o firewall, os serviços, as contas, os recursos do Windows, o WMI e o COM, o
    pywin32, o ctypes, o número do DETACHED_PROCESS). Provas: os 18 jeitos de
@@ -308,20 +361,15 @@ conferência antes do commit (não ligada) e o pacote do passo 1, montado pelo p
 ## Testes
 
 - No PC, um arquivo por vez (`QT_QPA_PLATFORM=offscreen`, pasta temporária fora do projeto):
-  `tests/test_conferencias_codigo.py` 43 passaram; `tests/test_conferencias_excecoes.py` 11 passaram e 1 parado de
-  propósito (o que barra o repositório espera o "sim"); `tests/test_conferencias_mudancas.py` 20;
-  `tests/test_conferencias_formulario.py` 28; `tests/test_conferencias_pacote.py` 13;
-  `tests/test_conferencias_protecao.py` 7 passaram e 1 parado (a versão de teste ainda não tem o porteiro);
-  `tests/test_conferencias_antes_do_commit.py` 9.
-- Mutação da primeira volta (desfazer cada correção do esboço numa cópia e ver o teste dela falhar): correção 1, 2
-  testes falham; correção 2, 1 falha; correção 3, 1 falha.
-- GitHub, rodada de prova 44461329846 (ramo `passo0-prova-valendo`, a lista em "valendo" com um "sim" de mentira):
-  passou inteira (4136 passaram, 0 falharam). O teste que barra o repositório
-  rodou de verdade (não aparece entre os parados) e passou: com a lista valendo, o código de hoje só tem o que a lista
-  deixa. O ramo de prova foi apagado depois (no GitHub e na cópia; só tinha o commit da prova).
-- GitHub, rodada 44461501923 (o último commit de código, 76fed2ee): passou inteira. 250 arquivos de teste, 4135 passaram, 0 falharam,
-  148 pulados (entre eles o teste do porteiro que espera o "sim" do Samuel e o de proteção, que espera a versão de
-  teste ter o porteiro, os dois com o motivo escrito); os botões e os prints da janela real também passaram.
+  `tests/test_conferencias_codigo.py` 58 passaram; `tests/test_conferencias_excecoes.py` 17 passaram e 1 parado de
+  propósito (o que barra o repositório espera o "sim"); `tests/test_conferencias_mudancas.py` 21;
+  `tests/test_conferencias_formulario.py` 28; `tests/test_conferencias_pacote.py` 19;
+  `tests/test_conferencias_protecao.py` 10 passaram e 1 parado (a versão de teste ainda não tem o porteiro);
+  `tests/test_conferencias_antes_do_commit.py` 12.
+- Primeira volta: a rodada de prova 44461329846 (a lista "valendo" com um "sim" de mentira) passou, e o teste que barra o
+  repositório rodou de verdade; o ramo de prova foi apagado. Com a regra nova do "sim" (N1), aquele "sim" de mentira
+  não passaria mais.
+- GitHub, rodada RODADA_FINAL (o último commit de código, COMMIT_FINAL): RESULTADO_FINAL
 
 ## Caminho e função
 
@@ -343,9 +391,16 @@ conferência antes do commit (não ligada) e o pacote do passo 1, montado pelo p
   conferidas na linha da decisão). A gerente registra o "sim" no Livro primeiro. Até lá, nenhuma conferência do código parado barra no GitHub (nem as que hoje dão
   zero, como a do emoji): escolhi deixar o porteiro inteiro desligado, como o plano diz ("depende dele antes de ligar o
   porteiro").
-- **A conta deu 125** (na primeira volta, 44; o plano tinha contado 43): a busca ampliada pegou 81 lugares a mais (ver o
-  achado 2 acima). A régua dos filtros, que o Samuel deixou para depois, passa a contar 2 linhas no mesmo pedaço (o
-  texto para ele explica).
+- **A conta deu 189** (primeira entrega 44, primeira volta 125; o plano tinha contado 43): a busca ampliada e o
+  apelido do ctypes pegaram mais linhas, a maioria nos mesmos pedaços. 113 no plano (passo 2: 1, 3: 41, 4: 53, 5: 18),
+  58 depois da entrega (D-800: a régua dos filtros 2, o teste de velocidade 54, as dicas do Automático 2) e 18 fora do
+  plano, a perguntar.
+- **O apelido do ctypes não é seguido** quando vai para outro arquivo (importado), nem quando passa por um dicionário
+  ou um atributo (`self.k = ...`). Quem recebe o que uma função devolve recebe todos os nomes como apelido, por cautela
+  (ex.: `kernel32, entrada = ...`: as linhas que usam `entrada` também entram).
+- **O "sim" agora precisa de internet** onde é conferido (o gancho, o teste do GitHub, o formulário): sem o GitHub,
+  "não deu para conferir". E a gerente precisa registrar o "sim" como decisão no Livro da versão de teste antes de
+  ligar a lista.
 - **O rótulo de pronto continua sendo o que está escrito:** a K10 aceita o rótulo no relatório de quem quebrou quando
   os commits daquela pasta são só dela e o relatório diz o papel; um agente que imite isso de propósito passaria. A
   gerente confere com o pacote que deu a quem quebrou. Entre aspas ou crases o rótulo não conta (é como se cita a
@@ -385,11 +440,12 @@ conferência antes do commit (não ligada) e o pacote do passo 1, montado pelo p
 **O que é e onde fica:** é a conferência automática que barra o trabalho de um agente quando o código tem um erro que
 já conhecemos. Ela roda nos testes do GitHub, em toda entrega; você não vê nada dela no programa.
 
-**O que acontece hoje:** ela leu o programa e achou 125 lugares com esses erros, que ficam numa lista; ela barra o
+**O que acontece hoje:** ela leu o programa e achou 189 lugares com esses erros, que ficam numa lista; ela barra o
 trabalho que acrescentar mais um lugar com um desses erros, escrito com as palavras que ela conhece. A lista só diminui:
-o plano da parte do Windows tira 97 deles. Os 5 que você deixou para depois da entrega ficam na lista até lá.
+o plano da parte do Windows tira 113 deles. Os três pedaços que você deixou para depois da entrega (a régua dos filtros,
+o teste de velocidade e as duas dicas do Automático) ficam na lista até lá.
 
-![A lista, como vai para você](lista-de-excecoes-para-o-samuel.png)
+![A lista, como vai para você](prints/caso-real-reiniciar-agora.png)
 
 **O que você escolhe:** sim, a lista entra assim e a conferência passa a barrar; ou não, e diga o que mudar. Sugestão:
 sim. Nada do programa muda com isso, e nada do que já funciona muda.
@@ -400,14 +456,14 @@ sim. Nada do programa muda com isso, e nada do que já funciona muda.
 
 **O que é e onde fica:** procurando com mais palavras, a mesma conferência achou outros pedaços do programa que falam
 com o Windows por conta própria e que o plano da parte do Windows não conserta. Por exemplo: a tela de início abre a
-pasta do projeto e manda imprimir pelo Windows; o teste de velocidade lê a memória e a placa de vídeo direto no Windows.
-São 22 lugares.
+pasta do projeto e manda imprimir pelo Windows; o brasão que gira pergunta ao Windows se o programa ainda está aberto.
+São 18 lugares.
 
-![O texto, como vai para você](lista-de-excecoes-para-o-samuel.png)
+![O texto, como vai para você](prints/caso-real-reiniciar-agora.png)
 
-**O que você escolhe:** ficam para depois da entrega ao Kaique, como os outros 5 (ficam na lista até lá); ou entram no
-plano (cada um vira conserto antes da entrega). Sugestão: depois da entrega, como você decidiu para os outros 5. Nada do
-programa muda com nenhuma das duas escolhas agora.
+**O que você escolhe:** ficam para depois da entrega ao Kaique, como os outros pedaços que você já deixou para depois
+(ficam na lista até lá); ou entram no plano (cada um vira conserto antes da entrega). Sugestão: depois da entrega, como
+você decidiu para os outros. Nada do programa muda com nenhuma das duas escolhas agora.
 
 **De onde veio:** da busca maior pedida depois da conferência de quem tentou quebrar a conferência automática.
 
