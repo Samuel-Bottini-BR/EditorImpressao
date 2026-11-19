@@ -54,10 +54,13 @@ A PEÇA É FECHADA (escolha técnica da gerente, 19/11, achado 12 de quem tentou
     - tudo o que tem "_" no nome é de dentro da peça e não é usado fora de `core/windows.py` (as bibliotecas cruas
       `_win()`, os caminhos das ferramentas, o comando do PowerShell, o rodar sem filtro `_rodar`);
     - o rodar genérico (`rodar_e_esperar`) e o lançar solto genérico (`lancar_solto`) RECUSAM os programas que já têm
-      função própria na peça (`PROGRAMAS_COM_FUNCAO_PROPRIA`: as tarefas, as licenças de pasta, o PowerShell, o pedido
-      de licença, o registro, os serviços, o firewall, o instalador...). Quem precisa de um deles chama a função da
-      peça (`ler_tarefa`, `rodar_tarefa`, `rodar_powershell`, `pedir_licenca`...), ou a peça ganha uma função nova
-      para isso, com teste.
+      função própria na peça: TODO programa da pasta do Windows (é lá que ficam as ferramentas de tarefas, de licença
+      de pasta, o PowerShell, o pedido de licença, o cmd, o registro, os serviços, o firewall, o instalador...) e os
+      de fora dela listados em `PROGRAMAS_COM_FUNCAO_PROPRIA` (o PowerShell 7, o atualizador do Velopack). A regra é
+      pela pasta, e não por uma lista de nomes, porque escrever aqui o nome das ferramentas de licença de pasta faria
+      o porteiro (K03, que vale também nesta peça) acusar a própria recusa; e a pasta pega também as que ninguém
+      lembrou de pôr na lista. Quem precisa de um deles chama a função da peça (`ler_tarefa`, `rodar_tarefa`,
+      `rodar_powershell`, `pedir_licenca`...), ou a peça ganha uma função nova para isso, com teste.
 
 Fontes lidas antes de escrever (CLAUDE.md §11.12, ponto 6): estão no ONDE-PAREI do passo 1
 (`relatorios/passo1-peca-unica-windows/ONDE-PAREI.md`, seção "O que li da peça de fora e onde").
@@ -143,14 +146,10 @@ _MOTIVO_DA_SAIDA = {
     SAIDA_ERRO_INESPERADO: "o programa com licença teve um problema inesperado",
 }
 
-# Os programas do Windows que têm função própria na peça (ver "A PEÇA É FECHADA" no topo). O rodar e o lançar
-# genéricos recusam qualquer um destes, pelo nome do arquivo, venha com o caminho inteiro ou não. O cmd entra porque
-# roda qualquer outro. Acrescentar é seguro; tirar abre a porta.
-PROGRAMAS_COM_FUNCAO_PROPRIA = frozenset({
-    "schtasks", "powershell", "pwsh", "powershell_ise", "cmd", "runas", "icacls", "cacls", "takeown", "reg", "regedit",
-    "sc", "net", "net1", "netsh", "msiexec", "wmic", "wevtutil", "bcdedit", "rundll32", "mshta", "wscript", "cscript",
-    "taskkill", "shutdown", "dism", "update",
-})
+# Os programas de FORA da pasta do Windows que também têm função própria na peça (os da pasta do Windows são todos
+# recusados pela pasta; ver "A PEÇA É FECHADA" no topo). Pelo nome do arquivo, sem ".exe". Acrescentar é seguro;
+# tirar abre a porta.
+PROGRAMAS_COM_FUNCAO_PROPRIA = frozenset({"pwsh", "update"})
 
 # Bandeiras de lançar processo (process-creation-flags, Microsoft Learn).
 CREATE_NO_WINDOW = 0x08000000
@@ -806,9 +805,31 @@ def aspas_do_powershell(texto: object) -> str:
 # ---------------------------------------------------------------------------------------------------------------------
 
 def _programa_com_funcao_propria(programa: str) -> bool:
-    """O programa (pelo nome do arquivo, com ou sem caminho e ".exe") é um dos que têm função própria na peça?"""
-    nome = Path(str(programa).strip().strip('"')).name.lower()
-    return nome.removesuffix(".exe") in PROGRAMAS_COM_FUNCAO_PROPRIA
+    """O programa tem função própria na peça? Sim se está na pasta do Windows (ou, dado só pelo nome, é achado lá: o
+    Windows procura primeiro na pasta do sistema), ou se o nome é de `PROGRAMAS_COM_FUNCAO_PROPRIA`. Na dúvida (não
+    deu para saber onde fica a pasta do Windows), sim."""
+    caminho = Path(str(programa).strip().strip('"'))
+    nome = caminho.name.lower()
+    if nome.removesuffix(".exe") in PROGRAMAS_COM_FUNCAO_PROPRIA:
+        return True
+    try:
+        sistema = pasta_do_sistema()
+    except OSError:
+        return True
+    pasta_do_windows = sistema.parent
+    if len(caminho.parts) == 1:                                 # só o nome: onde o Windows o acharia
+        com_exe = nome if nome.endswith(".exe") else nome + ".exe"
+        if any((pasta / com_exe).exists() for pasta in (sistema, pasta_do_windows)):
+            return True
+        achado = shutil.which(str(caminho))
+        if not achado:
+            return False
+        caminho = Path(achado)
+    try:
+        caminho = caminho.resolve()
+    except OSError:
+        return True
+    return caminho.is_relative_to(pasta_do_windows.resolve())
 
 
 def _recusa_de_programa(programa: str) -> Resposta:

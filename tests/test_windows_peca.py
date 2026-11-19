@@ -609,9 +609,11 @@ def test_o_programa_deste_processo_existe():
 def test_a_peca_e_fechada_rodar_e_lancar_recusam_os_programas_com_funcao_propria(tmp_path):
     """Achado 12 (escolha técnica da gerente): o rodar e o lançar genéricos recusam os programas que têm função
     própria na peça (tarefas, licenças de pasta, PowerShell, pedido de licença, cmd...), com ou sem o caminho inteiro,
-    em qualquer caixa de letra; nada roda."""
+    em qualquer caixa de letra; nada roda. A regra é pela pasta do Windows: qualquer programa de lá é recusado
+    (whoami, aqui), e os de fora com função própria (o atualizador do Velopack) também."""
     sistema = Path(os.environ["SystemRoot"]) / "System32"
     for programa in ("schtasks", str(sistema / "schtasks.exe"), "ICACLS.EXE", "cmd", "runas.exe", "reg",
+                     str(sistema / "whoami.exe"), "whoami",
                      str(sistema / "WindowsPowerShell" / "v1.0" / "powershell.exe"), '"C:\\x\\Update.exe"'):
         r = windows.rodar_e_esperar([programa, "/?"])
         assert r.desfecho == windows.FALHOU and "função própria" in r.motivo, programa

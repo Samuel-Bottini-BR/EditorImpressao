@@ -11,5 +11,6 @@ ACUSADA: A8 quem lê a pasta de troca sem conferir  [test_a_regra_da_pasta_de_tr
 ACUSADA: A10 o fim do script sem conferir o programa de fora  [test_o_script_falha_quando_um_programa_de_fora_falha]
 ACUSADA: A11 a saída junta com o erro  [test_o_script_falha_quando_um_programa_de_fora_falha]
 ACUSADA: A12 o rodar genérico sem recusar  [test_a_peca_e_fechada_rodar_e_lancar_recusam_os_programas_com_funcao_propria]
+ACUSADA: A12b a pasta do Windows fora da recusa  [test_a_peca_e_fechada_rodar_e_lancar_recusam_os_programas_com_funcao_propria]
 ACUSADA: A14 o relatório sem comparar com o pedido  [test_o_relatorio_tem_de_bater_com_o_pedido]
 ACUSADA: A5 a licença da tarefa sem comparar  [test_a_licenca_da_tarefa_e_comparada_pelo_sentido_com_o_que_o_windows_devolve]
