@@ -65,7 +65,7 @@ O resumo de uma página, no formato das regras de como escrever para ele, está 
 - **7 passos** (0 a 6): as regras e o porteiro; a peça única do Windows; publicar com o motor à parte; o atualizador e o
   mostrador da troca; os testes à distância; desinstalar; a confirmação. **11 peças** (as 10 da versão 2 mais o
   mostrador da troca).
-- **Tempo:** escrita 58 a 87 h e quem tenta quebrar 9 a 14 h 30 (chute); com o Samuel 4 h 55 a 7 h, em 5 sessões, 19
+- **Tempo:** escrita 57 h 30 a 87 h e quem tenta quebrar 8 h 30 a 14 h (chute); com o Samuel 4 h 55 a 7 h, em 5 sessões, 19
   perguntas do Windows (+2 opcionais); versões de prova 1 h 20 a 2 h 10 (conta); confirmação 1 h 30 a 2 h, com 5 a 6
   perguntas. Na versão 2: 52 a 78 h, 8 a 13 h e 4 h 40 a 6 h 35.
 - **A lista de exceções do porteiro:** 43 lugares no código de hoje (passo 0). 38 são consertados pelos passos 2 a 5;
@@ -363,7 +363,8 @@ agora?"). Os dois leem o mesmo andamento e terminam no mesmo sinal de fim da pe�
     conferência tem a prova que a D-791 pede: acusa um exemplo errado feito de propósito e não acusa o código certo;
   - **a lista de exceções (D-791):** os erros que já existem hoje ficam numa lista, **um item por lugar**, com a data e o
     passo que o conserta; o porteiro deixa passar só esses e barra qualquer erro novo; a lista só diminui; nada entra
-    sem o "sim" do Samuel; no fim do plano ela fica só com o que este plano não pode consertar (seção 6.3, ponto 1);
+    sem o "sim" do Samuel; no fim do plano ela fica vazia, menos o que a escolha dele na seção 6.3, ponto 1, deixar
+    para depois;
   - **o formulário (D-792):** o programa que confere o formulário da entrega (as perguntas fixas, F1 a F20, mais as das
     etiquetas), em três etapas (antes de quem quebra, antes da prova à vista, antes de juntar), e os seis campos do
     relatório de quem quebra;
@@ -456,7 +457,8 @@ agora?"). Os dois leem o mesmo andamento e terminam no mesmo sinal de fim da pe�
 - **Quem tenta quebrar, o foco:** nenhum caminho transforma "Não" ou falha em "deu certo"; o código do erro é lido como a
   documentação diz; o programa com licença não faz nada além do aviso de trabalho que veio da pasta de troca (outra
   conta não consegue mandar ele fazer outra coisa); a pasta segura nasce sem comando de licença e não é um atalho para
-  outro lugar; nada espera no fio da tela; a exceção da conferência deste arquivo pode sair.
+  outro lugar; nada espera no fio da tela; o porteiro aceita `core/windows.py` como o único lugar de conversa com o
+  Windows e continua barrando todo o resto (este passo não tira nenhum item da lista de exceções).
 - **Prova à vista (sessão A), sem o programa instalado:** antes, a pasta do programa é montada no C: à vista (5 a 11 min,
   0 perguntas; a reserva de 20 GB conferida), para que a pergunta do Windows seja do programa de verdade. Na janela de
   prova:
@@ -471,7 +473,9 @@ agora?"). Os dois leem o mesmo andamento e terminam no mesmo sinal de fim da pe�
   - pedido para um arquivo que não existe: frase em português, sem a caixa crua do Windows (0); a resposta do Windows com
     "ÊXITO" certo (0).
   **3 perguntas do Windows, 25 a 35 min.** Se a pergunta não vier para a frente, ou não mostrar "Editor de Impressão", o
-  plano para e a gerente leva o resultado a ele antes de seguir.
+  plano para e a gerente leva o resultado a ele antes de seguir. Fato de 19/11 (Samuel: "veio direito"): na etapa 5,
+  com o programa na frente, a pergunta já veio direto no meio da tela; a pergunta 1 desta sessão confirma isso com a
+  peça nova, e a pergunta 3 (o navegador na frente) é o caso que ainda falta provar (risco 1).
 - **Tempo:** escrita 8 a 11 h; quebrar 1 h 30 a 2 h 30 (chute).
 
 ### Passo 2. Publicar, o motor do Kraken à parte e o servidor das versões de prova (peças 8, 9 na parte de empacotar, 10b)
@@ -487,13 +491,18 @@ agora?"). Os dois leem o mesmo andamento e terminam no mesmo sinal de fim da pe�
   outro nome de pacote); se precisar mudar, o agente para e pergunta.
 - **Testes antigos que mudam:** nenhum (nenhum teste antigo cobra o motor dentro do pacote, estudo do Kraken §6). Os do
   Inno continuam. O defeito antigo dos testes do motor que pulam calados numa cópia (Lista de bugs nº 330) continua.
+- **Lista de exceções do porteiro:** este passo tira 1 item (o PowerShell de `empacotar.assinatura_do_arquivo` passa a
+  ir pela peça única do Windows).
 - **Quem tenta quebrar, o foco:** o vpk roda mesmo sem a diferença (ler a documentação e o código do vpk); a conta do
-  espaço usa o que vai ser usado e para antes da reserva; o rascunho é apagado também quando dá erro no meio; no GitHub,
+  espaço usa o que vai ser usado e para antes da reserva; o rascunho e o Setup.exe são apagados também quando dá erro no
+  meio (D-795), e o Setup.exe nunca chega ao rascunho do GitHub; no GitHub,
   nada liberado antes da assinatura lida de volta; nenhuma versão liberada sem o motor que ela pede publicado e lido de
   volta; a diferença entre atualização e instalador está num lugar só; o `motor-exigido.json` vai dentro do que a
   assinatura cobre.
 - **Prova à vista (o Samuel olha a janela, não clica nada):**
   - publicar uma versão de prova no C: sem o .msi: o espaço antes e depois (volta ao que era) e o tempo de montar (D-789);
+    no fim, a janela lista a pasta de saída e o rascunho do GitHub e mostra que o Setup.exe não está em nenhum (D-795);
+  - um erro de propósito no meio do publicar (à vista): o Setup.exe e o rascunho também somem (D-795, D-776);
   - publicar outra com o .msi pedido (D-777): medir o .msi com o motor num arquivo só (nunca medido);
   - o aviso de pouco espaço: a conta de verdade do espaço, com a reserva aumentada só nesta prova (o C: nunca é enchido;
     a gerente diz isso a ele antes);
@@ -506,33 +515,46 @@ agora?"). Os dois leem o mesmo andamento e terminam no mesmo sinal de fim da pe�
   o motor 2, com o motor 2 verdadeiro e o motor 2 com assinatura falsa; e uma boa para o atualizar de longe do passo 4.
   A lista exata vai no ONDE-PAREI. Tempo: 1 h 20 a 2 h 10 (conta: 12 a 16 min por versão, pelo estudo; o .msi não
   medido).
-- **Tempo:** escrita 11 a 16 h; quebrar 1 a 2 h (chute).
+- **Tempo:** escrita 11 h 30 a 17 h; quebrar 1 a 2 h (chute; na versão 2: 11 a 16 h; o Setup.exe apagado pesa pouco,
+  porque usa o mesmo "apagar no fim" do rascunho).
 
-### Passo 3. O atualizador, o motor no lugar e a primeira abertura (peças 3 na parte do atualizador, 4, 6a e 9)
+### Passo 3. O atualizador, o motor no lugar, a primeira abertura e o mostrador da troca (peças 3 na parte do atualizador, 4, 6a, 9 e 11)
 
 - **O que faz:** o atualizador passa a usar a peça única do Windows; tudo o que a peça 4 diz (seção 2); a peça 9 ligada ao ajudante
   (a primeira vez, vindo do `current\instalar\`; o motor novo antes da troca; o conserto sozinho); o "preparado" lido do
   Windows (sai a marca das Configurações); a primeira abertura sem congelar, com a janelinha da D-782; a fonte de teste
-  apontando para o servidor das versões. O socorro leva antes **um plano curto próprio**, porque mexe no que o ajudante
-  roda (risco 3).
+  apontando para o servidor das versões; **a pergunta "Atualizar agora?" ao fechar e o mostrador da troca (peça 11),
+  com a janelinha e o ícone** (D-794). O socorro leva antes **um plano curto próprio**, porque mexe no que o ajudante
+  roda (risco 3); o mostrador entra nesse mesmo plano curto, porque roda da cópia que o socorro guarda.
+- **Antes de escrever, ler (§11.12, ponto 6), além do que a versão 2 dizia:** onde o Velopack 1.2.161 extrai a versão
+  nova durante a troca e se dá para ler quanto já foi extraído sem mexer nele (para a porcentagem; se não der, o ícone
+  diz "atualizando" sem número); o que o Qt faz com o ícone quando a área de notificação some e volta (o Explorer
+  reiniciando); como o Windows avisa ao programa que vai desligar ou sair da conta, para a pergunta ao fechar não
+  segurar o desligamento (a resposta para esse caso é do Samuel, seção 6.2, item 3).
 - **Arquivos:** `atualizacao.py` (WIN; as funções da peça 4 da versão 1, mais `procurar_e_preparar` com o motor e o teste
   rápido que abre o motor); `main.py` (TELA WIN; o começo: a marca "trocando", a janelinha, a pergunta por trás);
-  `ui/aviso_de_atualizacao.py` (TELA WIN; as três frases, a troca ao fechar); `ui/testes_a_distancia_ui.py` (TELA WIN; só
+  `ui/aviso_de_atualizacao.py` (TELA WIN; as três frases); `ui/janela_principal.py` (TELA; só o `closeEvent`: a pergunta
+  "Atualizar agora?" depois de gravar, D-794); o mostrador da troca (novo em `ui/`, peça 11; a gerente acrescenta a
+  linha TELA WIN); `ui/testes_a_distancia_ui.py` (TELA WIN; só
   o `primeira_vez_se_preciso`: o preparo por trás e a janelinha da D-782); `configuracoes.py` (TELA WIN; sai a marca do
   preparo); `core/ocr_kraken.py` (`lugares_do_motor` no programa instalado); a peça 9 (arquivo novo ou dentro de
   `atualizacao.py`, o agente diz no ONDE-PAREI; se novo, a gerente acrescenta a linha WIN); `core/windows.py` só se
-  faltar algo (a mudança volta a quem quebra). Os três arquivos de `ui/` precisam estar escritos no pedido (regra do
-  implementador; ver contradição X7 na seção 6.2).
+  faltar algo (a mudança volta a quem quebra). **Todos os arquivos de `ui/` e de `core/` vão nomeados no pedido** e no
+  formulário (D-796; o porteiro barra o que estiver fora).
+- **Lista de exceções do porteiro:** este passo tira 14 itens (os de `atualizacao.py` da troca e do preparo; passo 0).
 - **Testes antigos que mudam (D-774):** o do jeito de lançar o "Reiniciar agora" (item 1 da seção 8); a linha da marca do
   preparo nas Configurações (item 5); o "é portátil" (item 6); a falha da troca que fica riscada (item 7); o
-  `trocar_antes_de_abrir` (item 8, pela D-769). **Antes, ao Samuel, um por um:** os que cobram o "preparado" como anotação
+  `trocar_antes_de_abrir` (item 8, pela D-769 e agora pela D-794). **Antes, ao Samuel, um por um:** os que cobram o "preparado" como anotação
   e os do `preparo.txt` no ProgramData (`test_decisoes_preparo_d749.py`).
 - **Quem tenta quebrar, o foco:** o socorro contra o que o Velopack 1.2.161 faz de verdade (as linhas do código lidas no
   estudo); o sinal de fim com um ajudante já rodando ("IgnoreNew": um "Reiniciar agora" no meio do motor chegando); o
   instante entre o clique no atalho e a marca "trocando"; cada erro classificado como passageiro ou "risca" (a lista
   inteira, um por um); o motor nunca com o nome final pela metade; a leitura do pacote baixado na pasta do Velopack
-  (risco 5); a troca ao fechar quando o Windows desliga; a janela nunca cria o Velopack na conta do Kaique; cada frase
-  aparece uma vez por caso; as exceções da conferência deste passo podem sair.
+  (risco 5); a pergunta ao fechar quando o Windows desliga ou sai da conta; todo jeito de fechar passa pela mesma
+  pergunta, depois de gravar; o "Não" deixa a versão esperando e o aviso volta na próxima abertura; o mostrador nunca
+  roda de dentro da pasta do programa e não morre na troca; a porcentagem nunca vem de um relógio; o que o mostrador faz
+  se o ajudante parar no meio (não fica para sempre no mesmo número); a janela nunca cria o Velopack na conta do Kaique;
+  cada frase aparece uma vez por caso; os 14 itens da lista de exceções saíram e nenhum entrou.
 - **Prova à vista (sessão B), com o programa instalado pelo .msi e as versões do servidor visível:**
   - **pergunta 1:** a foto do computador com administrador (para comparar no fim); no mesmo "Sim", a fonte de teste
     aponta para o servidor das versões;
@@ -543,9 +565,15 @@ agora?"). Os dois leem o mesmo andamento e terminam no mesmo sinal de fim da pe�
     Windows; a pasta `motor-kraken\1\` nasce e a leitura diz "motor 1, inteiro";
   - versão nova sem motor novo, "Reiniciar agora": a janelinha o tempo todo, o programa volta na versão nova; o motor não
     foi baixado (o registro e a data da pasta provam); medir o download e a troca (D-789) (0 perguntas);
-  - versão nova, "Depois", fechar: a troca acontece por trás; abrir de novo: já na versão nova, sem esperar (0);
-  - **desligar no meio da troca** (do jeito que ele escolher, seção 6.2): ao religar, nada se perdeu e a troca tenta de
-    novo (0);
+  - versão nova, "Depois", fechar: **a pergunta "Atualizar agora?" aparece; "Não":** o programa fecha, nada troca (a
+    janela de prova lê a versão); abrir de novo: o aviso de versão nova volta (0);
+  - fechar de novo, **"Sim":** o programa fecha e o ícone aparece perto do relógio (ou atrás da setinha "^", seção 6.3,
+    ponto 2), com a porcentagem subindo até o fim; o que ele faz no fim, como o Samuel escolher (seção 6.2, item 3);
+    abrir de novo: já na versão nova, sem esperar (0);
+  - **desligar no meio da troca** (do jeito que ele escolher, seção 6.2), com o ícone na tela depois de um "Sim": ao
+    religar, nada se perdeu e a troca tenta de novo (0);
+  - Windows desligando com o programa aberto e uma versão esperando: o que acontece é o que o Samuel escolher (seção 6.2,
+    item 3), e o desligamento não fica preso (0);
   - no meio de uma troca, clicar no atalho: a janelinha aparece, nada é fechado à força, o programa abre no fim (0);
   - falha passageira: fechar a janela do servidor na hora de ler a assinatura: nenhum aviso; reabrir: a versão entra (0);
   - a versão que nem abre: o socorro volta para a anterior sem internet; **print da frase 1** (0);
@@ -554,21 +582,26 @@ agora?"). Os dois leem o mesmo andamento e terminam no mesmo sinal de fim da pe�
   - a versão que pede o motor 2: fechar o servidor no meio do motor: continua a de antes; reabrir: o motor chega inteiro
     e só então a versão entra; o teste rápido abre o motor 2 (0);
   - o motor 2 com assinatura falsa: recusado com a frase 2, tudo fica como estava (0).
-  **4 perguntas do Windows, 2 h a 2 h 45** (pode ser em duas sentadas).
-- **Depende dele antes:** o print da janelinha para aprovar, assim que ela existir (antes da sessão B); o jeito de
-  desligar no meio da troca; os testes antigos "provavelmente" (um por um); os textos de tela novos deste passo (seção
-  6.2).
-- **Tempo:** escrita 18 a 27 h; quebrar 2 a 3 h (chute).
+  **4 perguntas do Windows, 2 h 15 a 3 h 10** (pode ser em duas sentadas; na versão 2: 2 h a 2 h 45; a pergunta ao
+  fechar, o ícone e o desligar com o programa aberto somam 15 a 25 min, chute).
+- **Depende dele antes:** os detalhes da pergunta "Atualizar agora?" e do ícone (seção 6.2, item 3) e o print dos dois
+  para aprovar assim que existirem; o print da janelinha para aprovar, assim que ela existir (antes da sessão B); o
+  jeito de desligar no meio da troca; os testes antigos "provavelmente" (um por um); os textos de tela novos deste passo
+  (seção 6.2).
+- **Tempo:** escrita 22 a 34 h; quebrar 2 h 30 a 4 h (chute; na versão 2: 18 a 27 h e 2 a 3 h; o que pesa a mais é o
+  mostrador da troca, que roda fora da pasta do programa e lê o andamento de verdade, e a pergunta ao fechar).
 
 ### Passo 4. Os testes à distância e a tela (peças 3 na parte dos testes, 5 e 6b)
 
 - **O que faz:** tudo o que as peças 5 e 6b dizem (seção 2): relatório sempre lido; tudo ou nada; a senha; o aviso de
   internet e de até 15 minutos; a porta ocupada; as duas trancas e a leitura delas depois de ligar; "como está agora";
   ligar e desligar por trás; a janela da senha da D-781 (o desenho aprovado antes).
-- **Arquivos:** `core/testes_a_distancia.py` (WIN); `core/_testes_a_distancia_windows.py` (WIN; vira chamadas da peça única do Windows
-  porteiro ou sai); `ui/testes_a_distancia_ui.py` (TELA WIN; a janela da senha, o ligar por trás);
+- **Arquivos:** `core/testes_a_distancia.py` (WIN); `core/_testes_a_distancia_windows.py` (WIN; vira chamadas da peça
+  única do Windows ou sai); `ui/testes_a_distancia_ui.py` (TELA WIN; a janela da senha, o ligar por trás);
   `ui/tela_configuracoes.py` (TELA WIN); `configuracoes.py` (TELA WIN); `core/windows.py` (a leitura das trancas, se não
-  ficou pronta no passo 1).
+  ficou pronta no passo 1). Todos nomeados no pedido (D-796).
+- **Lista de exceções do porteiro:** este passo tira 20 itens (os de `core/_testes_a_distancia_windows.py` e os do
+  ligar em `core/testes_a_distancia.py`, com os 7 números de decisão nos nomes dos passos; passo 0).
 - **Testes antigos que mudam (D-774):** o do lugar do caderninho (item 2), o do comando de tranca no ligar (item 3), o da
   pasta do desfazer protegida (item 4). **Antes, ao Samuel, um por um:** os de `test_decisoes_testes_a_distancia.py` que
   cobram "ligado" e "pronto" como anotação.
@@ -611,10 +644,12 @@ agora?"). Os dois leem o mesmo andamento e terminam no mesmo sinal de fim da pe�
   limpar.
 - **Arquivos:** `atualizacao.py` (WIN; `ao_desinstalar`, `criar_as_tarefas`); `core/testes_a_distancia.py` (WIN;
   `plano_de_desfazer`, `xml_da_tarefa_do_desfazer`); `core/windows.py` (o registro de eventos, se faltar).
+- **Lista de exceções do porteiro:** este passo tira os 3 últimos itens da parte do Windows (passo 0). Depois dele, a
+  lista fica só com os 5 lugares de fora, ou vazia, conforme a escolha dele na seção 6.3, ponto 1.
 - **Testes antigos:** **antes, ao Samuel, um por um:** os de `test_decisoes_desinstalar.py` e
   `test_decisoes_desinstalar_pasta.py` que cobram o gancho do Velopack como quem limpa.
 - **Quem tenta quebrar, o foco:** a limpeza confere antes de agir (instalar por cima); nunca chega a
-  `%LOCALAPPDATA%\EditorImpressao`; o motor e a cópia do socorro saem; a segunda tentativa só uma vez; a sobra na conta
+  `%LOCALAPPDATA%\EditorImpressao`; o motor, a cópia do socorro e o mostrador da troca saem (nenhum ícone fica); a segunda tentativa só uma vez; a sobra na conta
   do Kaique não nasce.
 - **Prova à vista (sessão C2), com os testes ligados do passo 4:**
   - a versão com o passo 5 chega pelo servidor (0); como falta a tarefa de limpeza, o Windows responde "não preparado" e
@@ -633,11 +668,13 @@ agora?"). Os dois leem o mesmo andamento e terminam no mesmo sinal de fim da pe�
 
 - **O que faz:** monta à vista a versão que vai para o Kaique, com o .msi (a primeira entrega, D-777), e repete a etapa
   5 curta: instalar, primeira abertura (a senha em dois campos, a pergunta com "Editor de Impressão"), uma atualização
-  com "Reiniciar agora", uma com "Depois" e fechar, ligar, entrar de longe, atualizar de longe, desligar, desinstalar,
-  foto. Relatório final nos três formatos, com cada print ao lado das palavras dele da decisão, e a lista do que foi
-  desfeito no PC dele.
+  com "Reiniciar agora", uma com "Depois" e fechar (a pergunta "Atualizar agora?", o "Não" e depois o "Sim" com o
+  ícone), ligar, entrar de longe, atualizar de longe, desligar, desinstalar, foto. Confere também que a lista de
+  exceções do porteiro ficou só com o que a seção 6.3, ponto 1, deixou de fora. Relatório final nos três formatos, com
+  cada print ao lado das palavras dele da decisão, e a lista do que foi desfeito no PC dele.
 - **Arquivos:** nenhum do programa (só o relatório).
-- **Quem tenta quebrar:** confere a lista "decisão → prova" (seção 10) contra o relatório antes de chamar o Samuel.
+- **Quem tenta quebrar:** confere a lista "decisão → prova" (seção 10) contra o relatório antes de chamar o Samuel, e é
+  ele quem escreve "PRONTO PARA CONFERIR" (D-798).
 - **Prova à vista:** **5 a 6 perguntas do Windows, 1 h 30 a 2 h.** Montar: 30 a 55 min (conta e chute).
 - **Fica para a etapa 6 (a instalação no notebook do Kaique), na lista dela:** o Samuel confere e desliga o "Controle
   Inteligente de Aplicativos" (Segurança do Windows > Controle de aplicativos e navegador) antes de rodar o instalador,
@@ -649,20 +686,29 @@ agora?"). Os dois leem o mesmo andamento e terminam no mesmo sinal de fim da pe�
 
 ## 4. Como fica para quem usa (o Kaique) e no livro
 
-- **Instalar:** um .msi, uma pergunta do Windows. O motor do Kraken vem dentro.
+- **Instalar:** um .msi, uma pergunta do Windows. O motor do Kraken vem dentro. O Setup.exe nunca chega a ele (D-795).
 - **Primeira abertura:** a janela da senha com "Senha", "Repita a senha" e o botão de ver; depois a janelinha "O Windows
   vai perguntar se pode deixar o Editor de Impressão fazer alterações. Clique em Sim."; a pergunta do Windows mostra
   "Editor de Impressão" com a faixa amarela "Editor: Desconhecido"; a janela do programa continua respondendo. Com
   "Não", aparece "Nada mudou" e a pergunta volta na próxima abertura.
-- **Versão nova:** o aviso aparece logo que ela chega. "Reiniciar agora" mostra a janelinha até o programa voltar (uns 2
-  a 3 min, conta). "Depois": quando ele fecha o programa, a troca acontece por trás; na próxima vez ele já abre na
-  versão nova. Se abrir no meio da troca, a janelinha aparece em vez de o programa sumir. O motor só é baixado quando
-  muda, e a versão nova só entra depois dele.
+- **Versão nova:** o aviso aparece logo que ela chega.
+  - "Reiniciar agora" mostra a janelinha até o programa voltar (uns 2 a 3 min, conta).
+  - "Depois": o Kaique continua trabalhando. **Quando ele fecha o programa, aparece a pergunta "Atualizar agora?"**
+    (D-794). O programa já gravou o trabalho antes da pergunta, como sempre; nenhuma das respostas perde nada.
+    - "Sim": o programa fecha e um ícone perto do relógio mostra a porcentagem da troca. No Windows 11 o ícone pode
+      nascer escondido atrás da setinha "^" ao lado do relógio (seção 6.3, ponto 2). Na próxima vez que ele abrir, já
+      está na versão nova.
+    - "Não": o programa fecha sem trocar; na próxima vez que ele abrir, o aviso de versão nova volta.
+  - Se abrir no meio da troca, a janelinha aparece em vez de o programa sumir.
+  - O motor só é baixado quando muda, e a versão nova só entra depois dele.
+  - Os detalhes que ele ainda não escolheu (o texto da pergunta e dos botões, como o ícone mostra o número, o que o
+    ícone faz no fim) estão na seção 6.2, item 3.
 - **Falha:** uma das três frases, uma vez; falha passageira não mostra nada.
 - **Configurações > Testes à distância:** a frase diz o que o computador tem de verdade. Ligar avisa da internet e dos
   até 15 minutos; se der errado, o computador fica como estava e a tela diz "Desligado" e o motivo.
-- **Desinstalar:** o notebook fica como era, sem o motor; os projetos ficam.
-- **Nada muda nos livros nem no PDF.** O Kraken hoje não é usado no caminho do livro (estudo do Kraken, ponto 7).
+- **Desinstalar:** o notebook fica como era, sem o motor e sem ícone; os projetos ficam.
+- **Nada muda nos livros nem no PDF.** O Kraken hoje não é usado no caminho do livro (estudo do Kraken, ponto 7). O
+  porteiro (passo 0) não muda nada que o Kaique vê: ele só barra trabalho de agente.
 
 ---
 
@@ -670,20 +716,21 @@ agora?"). Os dois leem o mesmo andamento e terminam no mesmo sinal de fim da pe�
 
 | Parte | Tempo | De onde vem |
 |---|---|---|
-| Escrever (passos 0 a 5) | 52 a 78 h | chute (nada parecido foi medido). Versão 1: 27 a 40 h; estudo do Kraken: +12 a 18 h; o que as decisões de hoje acrescentam (o próprio programa pedir a licença, a troca ao fechar, a janela da senha, a leitura das trancas, o servidor das versões, o espaço vigiado): +9 a 13 h; o passo 0: +4 a 7 h |
-| Quem tenta quebrar | 8 a 13 h | chute (o estudo do Kraken dizia 1 a 2 h só para a parte dele). Não conta as voltas à escrita quando ele acha problema: podem somar de 10 a 30% (chute) |
-| Provas com o Samuel | 4 h 40 a 6 h 35, em 5 sessões, 19 perguntas do Windows (+2 opcionais) | chute, com partes medidas: a troca de 7,5 min e o ligar de 13 min da etapa 5. A troca de 2 a 3 min sem o motor é conta |
+| Escrever (passos 0 a 5) | 57 h 30 a 87 h (versão 2: 52 a 78 h) | chute (nada parecido foi medido). O que a versão 3 acrescenta: o passo 0 inteiro, com a lista por lugar e a busca corrigida (+1 h); o Setup.exe apagado (+30 min a 1 h); a pergunta ao fechar e o mostrador da troca (+4 a 7 h) |
+| Quem tenta quebrar | 8 h 30 a 14 h (versão 2: 8 a 13 h) | chute. Passo 0 +30 min, passo 3 +30 min a 1 h. Não conta as voltas à escrita quando ele acha problema: podem somar de 10 a 30% (chute) |
+| Provas com o Samuel | 4 h 55 a 7 h, em 5 sessões, 19 perguntas do Windows (+2 opcionais) (versão 2: 4 h 40 a 6 h 35) | chute, com partes medidas: a troca de 7,5 min e o ligar de 13 min da etapa 5. A troca de 2 a 3 min sem o motor é conta. A sessão B ganha 15 a 25 min (a pergunta ao fechar, o ícone, o desligar com o programa aberto), chute |
 | Montar a pasta da sessão A | 5 a 11 min | medido 10 min 16 s no D:; no C:, conta |
-| Publicar (prova do passo 2) | 1 h a 1 h 40 de máquina | conta (12 a 16 min por versão sem o motor, estudo do Kraken) e chute (.msi com o motor num arquivo só, nunca medido) |
+| Publicar (prova do passo 2) | 1 h a 1 h 40 de máquina | conta (12 a 16 min por versão sem o motor, estudo do Kraken) e chute (.msi com o motor num arquivo só, nunca medido). O Setup.exe apagado não muda o tempo (2 s para fazer, medido em 18/11) |
 | Versões de prova | 1 h 20 a 2 h 10, mais 15 a 40 min do .msi do passo 5 | conta e chute |
 | Relatórios das provas | 2 a 3 h (sem ele) | chute |
 | Confirmação | montar 30 a 55 min; provas 1 h 30 a 2 h, 5 a 6 perguntas | chute, a partir da etapa 5 |
 
-**Medido** (etapa 5 e estudos de hoje): a troca de 7,5 min com o motor e de 22 a 23 min pela diferença; o ligar de 13
+**Medido** (etapa 5 e estudos de 18/11): a troca de 7,5 min com o motor e de 22 a 23 min pela diferença; o ligar de 13
 min (Windows Update); a parte do publicar que leva 20 min e meio no D: e 3 min e meio no C:; o pacote sem o motor com 582
-arquivos e ~460 MB; desempacotar o resto em 42,8 s no D:; a primeira abertura do motor de 52 a 65 s depois de instalar.
-**Conta:** a troca de 2 a 3 min; o publicar de 12 a 16 min; os tempos de download. **Chute:** a escrita, quem quebra e
-as sessões.
+arquivos e ~460 MB; desempacotar o resto em 42,8 s no D:; a primeira abertura do motor de 52 a 65 s depois de instalar;
+o Setup.exe feito em 2 s. **Contado na leitura do código, sem rodar nada no Windows:** os 43 lugares da lista de
+exceções. **Conta:** a troca de 2 a 3 min; o publicar de 12 a 16 min; os tempos de download. **Chute:** a escrita, quem
+quebra e as sessões.
 
 ---
 
@@ -691,22 +738,32 @@ as sessões.
 
 ### 6.1 Não depende do Samuel para começar (riscos; os primeiros são provados antes de construir em cima)
 
-1. **A pergunta do Windows com o programa atrás de outra janela.** O Windows limita quem vem para a frente. A sessão A
-   prova primeiro; se falhar, o plano para (talvez uma frase nova na janelinha, que precisaria do "sim" dele).
+1. **A pergunta do Windows com o programa atrás de outra janela.** O Windows limita quem vem para a frente. **Fato novo
+   (Samuel, 19/11: "veio direito"):** na etapa 5, com o programa na frente, a pergunta apareceu direto no meio da tela,
+   sem precisar clicar no escudo da barra de tarefas. Continua valendo que, com o programa atrás ou escondido, ela não
+   aparece (só pisca o escudo). A sessão A prova o caso que falta (o navegador na frente); se falhar, o plano para
+   (talvez uma frase nova na janelinha, que precisaria do "sim" dele).
 2. **O nome que a pergunta do Windows mostra para um programa sem certificado pago (D-782).** Não li ainda se o Windows
    mostra o nome do arquivo (hoje `EditorImpressao.exe`) ou a descrição gravada nele. O agente lê a documentação da
    Microsoft antes de escrever, e a sessão A prova. Se for o nome do arquivo, mostrar "Editor de Impressão" pede mudar o
    nome do arquivo do programa (seção 6.3, ponto 3).
 3. **O socorro por dentro do Velopack 1.2.161 (D-779).** Reaplicar a versão guardada quando o Velopack deixar o programa
    sem a pasta dele depende de como o Update.exe se comporta nesse estado. Plano curto próprio no começo do passo 3 e a
-   prova "versão que nem abre".
+   prova "versão que nem abre". **Na versão 3, o mostrador da troca (peça 11) roda dessa mesma cópia guardada:** se o
+   socorro mudar de desenho, o mostrador muda junto.
 4. **Abrir no meio da troca:** o instante entre o clique no atalho e a marca "trocando" (sessão B).
 5. **Ler o pacote baixado na pasta do Velopack para saber que motor a versão pede** (estudo do Kraken, risco 1): detalhe
-   de dentro do Velopack; falha segura se mudar (não troca), mas precisa ser relido a cada versão do Velopack.
+   de dentro do Velopack; falha segura se mudar (não troca), mas precisa ser relido a cada versão do Velopack. **Na
+   versão 3, também a porcentagem:** ler quanto da versão nova o Velopack já extraiu é detalhe de dentro dele
+   (`get_temp_dir_rand16` no `apply_windows_impl.rs`); se não der para ler com segurança, o ícone mostra "atualizando"
+   sem número nesse trecho, nunca um número inventado.
 6. **O estado do PC do Samuel depois da etapa 5:** se o servidor de entrar de longe, a regra ou a conta ficaram, as
    provas do passo 4 mudam. Leitura sem pergunta do Windows antes do passo 4.
-7. **A troca ao fechar quando o Windows desliga** (D-769): quanto o Windows espera a tarefa do ajudante e o que o Velopack
-   faz se for cortado no meio. Coberto pela proteção da D-779; provado na sessão B.
+7. **A troca quando o Windows desliga** (D-769): quanto o Windows espera a tarefa do ajudante e o que o Velopack faz se
+   for cortado no meio. Coberto pela proteção da D-779; provado na sessão B. **Na versão 3, mais um caso:** o Windows
+   desligando com o programa aberto e a pergunta "Atualizar agora?" por aparecer; uma janela com pergunta pode segurar
+   o desligamento ("este aplicativo está impedindo o desligamento"). O agente lê antes como o Windows avisa o programa;
+   o que o programa faz é do Samuel (seção 6.2, item 3).
 8. **O .msi com o motor num arquivo só:** nunca medido; o instalador e a atualização da mesma versão ficam com
    conteúdos diferentes (estudo do Kraken, risco 5): tem de estar escrito num lugar só do publicar.
 9. **"Instalar por cima" com outro .msi:** não se sabe o que o Windows faz (estudo do Kraken §4.3; versão 1, risco 4).
@@ -724,40 +781,55 @@ as sessões.
     da troca tem de contar com isso no limite de tempo.
 16. **O notebook do Kaique:** processador, internet, antivírus, espaço livre e se a conta dele é de administrador não
     são conhecidos (versão 1, riscos 7 a 9; estudo do Kraken, riscos 2 e 3).
-17. **Não existem fichas da memória** do atualizador, dos testes à distância e do motor. Sugestão: criar no próximo
-    `/checkpoint`.
+17. **As fichas da memória** do atualizador e dos testes à distância foram criadas no checkpoint de 18/11
+    (`memoria/geral/atualizador.md` e `testes-a-distancia.md`); o motor está dentro da do atualizador. Elas ainda dizem
+    "esperando ele" nos dois pontos que a D-794 e a D-795 responderam: a gerente atualiza no próximo checkpoint.
 18. **Dois agentes ao mesmo tempo** encurtariam a escrita, mas os passos 3 a 5 mexem no `atualizacao.py`. O plano vai um
-    agente por vez (quem escreve, depois quem quebra).
-19. **A estimativa de escrita é chute** e pode crescer se o socorro (risco 3) complicar.
+    agente por vez (quem escreve, depois quem quebra). Cabe em qualquer resposta à contradição X6.
+19. **A estimativa de escrita é chute** e pode crescer se o socorro (risco 3) ou o mostrador da troca complicarem.
+20. **O mostrador da troca precisa de uma cópia fora da pasta do programa** (peça 11). Se o socorro um dia deixar de
+    guardar a cópia inteira (por espaço, por exemplo), o mostrador fica sem lugar para rodar. O plano não separa um
+    terceiro programa só para o ícone (seria mais uma coisa para empacotar e assinar); se o passo 3 achar que precisa,
+    vira pergunta.
+21. **A conferência do git antes do commit não roda numa cópia que não tem o arquivo dela** (um ramo antigo): o git não
+    avisa. Por isso quem garante é o teste no GitHub, em toda entrega; a conferência do commit só avisa mais cedo.
+    Pular a conferência do commit de propósito já é proibido pelas regras.
+22. **A lista de exceções contada aqui (43) é da busca corrigida, lida por mim:** a do programa do passo 0 pode dar um
+    pouco diferente. A que vai ao Samuel é a do programa, recontada por quem tenta quebrar.
 
 ### 6.2 Depende do Samuel antes de algum passo
 
-1. **Antes do passo 0: as 4 perguntas restantes da proposta das regras.** A 2 (as conferências que barram o trabalho) e a
-   4 (o formulário da entrega conferido por um programa) entram no passo 0 e valem já para o passo 1. A 3 (tirar dos
-   agentes a ferramenta de abrir outro agente e a de gravar na Central) muda o texto dos agentes: só com o "sim". A 5
-   (trazer as contradições uma por vez) já está acontecendo na prática.
-2. **As contradições das regras que faltam.** O pedido fala em 6; pelo Livro, 3 das 10 foram respondidas hoje (a janela
-   escondida, a velocidade e os testes no PC: D-785, D-786, D-787), então **faltam 7** (X3, X4, X5, X6, X7, X9, X10 da
-   proposta). Se outra foi respondida e não está no Livro, a gerente corrige. As que tocam este plano:
-   - **X7 (o agente de tela só mexe em `ui/`, mas a regra sem gambiarra manda a regra em `core/`):** antes do passo 3,
-     porque os passos 3 e 4 mexem em `ui/aviso_de_atualizacao.py`, `ui/testes_a_distancia_ui.py` e
-     `ui/tela_configuracoes.py`. Quem escreve essas partes?
-   - **X5 (onde se junta: `master`, `fase-1` ou `obra-2026-10-26`):** antes de juntar o passo 1.
-   - **X4 (quem escreve "PRONTO PARA CONFERIR"):** antes da primeira entrega.
-   - **X9 (o ritmo: a obra e a D-765 suspendem regras que os agentes não citam):** o plano segue a D-765.
-   - **X6 (quantos agentes):** o plano roda um por vez, e cabe em qualquer resposta.
-   - X3 e X10 não tocam este plano.
-3. **Antes do passo 2: se as três respostas ao estudo do Kraken valem como a aprovação do estudo** que a D-768 pede ("o
-   Samuel aprova esse estudo"). A situação da D-768 no Livro ainda diz "falta o estudo".
-4. **Antes do passo 3:**
-   - o **print da janelinha "Atualizando"** para ele aprovar, assim que ela existir (D-770);
-   - **como desligar no meio da troca:** pelo botão Desligar do Windows, ou cortando a energia (a prova mais forte, mas o
-     PC é dele e pode ter outro trabalho aberto);
-   - os **textos de tela novos** que nenhuma decisão escolheu: a janelinha enquanto o Windows trabalha (a versão 1
-     propunha "Esperando o Windows. Isto pode levar até 15 minutos."); o que a janelinha diz se a troca não terminar
-     (o ajudante parou);
-   - os testes antigos "provavelmente mudam" do passo 3, um por um (D-774).
-5. **Antes do passo 4:**
+1. **Antes de ligar o porteiro (passo 0):** o "sim" à lista de partida das exceções, item por item, como a D-791 manda
+   ("nada entra nela sem o 'sim' dele"), e a escolha da seção 6.3, ponto 1 (os 5 lugares de fora da parte do Windows). As
+   quatro perguntas da proposta das regras que a versão 2 esperava já foram respondidas (D-791, D-792, D-793) e a
+   quinta (as contradições uma por vez) está acontecendo.
+2. **As contradições das regras.** Respondidas: X1, X2 e X8 (D-785 a D-787), X7 (D-796), X5 (D-797) e X4 (D-798).
+   **Continuam abertas, e nenhuma trava o plano:** X3 (as páginas do antes e depois; adiada por ele; não toca este
+   plano), X6 (quantos agentes; o plano roda um por vez), X9 (o ritmo; o plano segue a D-765) e X10 (a ordem de leitura;
+   não toca este plano). O texto do CLAUDE.md e dos agentes ainda diz `master` e "o Claude Code pode escrever PRONTO
+   PARA CONFERIR" (a D-796, a D-797 e a D-798 dizem "falta corrigir o texto"): é trabalho da gerente; o plano segue as
+   decisões, não o texto antigo.
+3. **Antes do passo 3 (novo na versão 3): os detalhes da pergunta "Atualizar agora?" e do ícone (D-794).** A D-794 já
+   diz o que acontece com "Sim" e com "Não". Falta ele dizer (as perguntas prontas, no formato das regras, estão no
+   ONDE-PAREI; o print de cada uma vai junto quando o agente do passo 3 desenhar, antes de construir):
+   - o texto da pergunta e o nome dos dois botões;
+   - o que acontece se ele fechar a pergunta pelo X (fecha sem trocar, como o "Não", ou volta para o programa sem
+     fechar);
+   - como o ícone mostra a porcentagem (o número desenhado no ícone, que é pequeno; ou uma figura que enche, com o
+     número escrito quando se passa o mouse);
+   - o que o ícone faz no fim (some sozinho; some e o Windows mostra um aviso "pronto", que pode não aparecer se o
+     Windows estiver configurado para não mostrar avisos; ou abre o programa);
+   - se dá para clicar nele, e o que acontece (nada; ou abre a janelinha da troca);
+   - se a troca falhar com o ícone na tela (o ícone some e a frase de falha aparece na próxima abertura, como hoje; ou o
+     ícone avisa na hora);
+   - o Windows desligando com o programa aberto e uma versão esperando (a pergunta não aparece e conta como "Não"; ou
+     outra coisa);
+   - se a pergunta aparece também quando ele fecha sem ter clicado nem "Reiniciar agora" nem "Depois" no aviso.
+   Mais o que a versão 2 já pedia antes do passo 3: o **print da janelinha "Atualizando"** para ele aprovar (D-770);
+   **como desligar no meio da troca** (pelo botão Desligar do Windows, ou cortando a energia); os **textos de tela
+   novos** (a janelinha enquanto o Windows trabalha; o que a janelinha diz se a troca não terminar); os testes antigos
+   "provavelmente mudam" do passo 3, um por um (D-774).
+4. **Antes do passo 4:**
    - o **desenho da janela da senha** (D-781), com o nome e o jeito do botão de ver;
    - **como tirar a internet** na prova do "ligar sem internet": desligar o Wi-Fi ou o cabo por uns minutos (a conversa
      com a gerente cai junto e volta depois);
@@ -766,29 +838,56 @@ as sessões.
      palavras); o que a tela diz quando o próprio desfazer falhar ou uma tranca sumir depois de ligar (D-771, D-780:
      "diz na tela"); e o "não deu para saber" (quando o Windows não responde);
    - os testes antigos "provavelmente mudam" do passo 4, um por um.
-6. **Antes do passo 5:** os testes antigos do desinstalar, um por um; se quer a prova opcional de instalar por cima.
-7. **Opcional:** a velocidade da internet do Kaique (para os números de download).
+5. **Antes do passo 5:** os testes antigos do desinstalar, um por um; se quer a prova opcional de instalar por cima.
+6. **Opcional:** a velocidade da internet do Kaique (para os números de download).
 
-### 6.3 Decisões de hoje que, ao pé da letra, não dá para cumprir juntas (apontadas, não resolvidas)
+Saiu da versão 2: a aprovação do estudo do Kraken (respondida em 19/11, D-768: "sim").
 
-1. **O Setup.exe que continua saindo (D-777) e o motor sempre dentro do instalador, sem nada baixado na hora (D-788 e
-   D-727).** O Setup.exe é feito a partir da atualização, que não leva o motor. Se alguém instalar o programa por ele, o
-   motor não vem, e o ajudante teria de baixá-lo na hora, o que as duas outras decisões proíbem. As três só se cumprem
-   juntas se o Setup.exe nunca for usado para instalar. **O que o Samuel escolhe** (sem sugestão minha, porque cada
-   saída muda uma decisão dele): o Setup.exe deixa de sair; ou sai, mas com o motor dentro como o .msi; ou sai como hoje
-   e fica escrito que ele não serve para instalar.
-2. **"A janelinha aparece em toda troca de versão" (D-770) e "com Depois, a troca acontece sozinha, por trás, quando o
-   Kaique fecha o programa" (D-769).** A D-770 lista os dois casos (depois do "Reiniciar agora" e ao abrir no meio da
-   troca), e a D-769 diz "por trás". O plano segue as duas listas: **ao fechar, nada aparece**. Mas "toda troca", lida
-   sozinha, inclui a troca ao fechar. Confirmar com ele.
+### 6.3 Decisões que, ao pé da letra, não dá para cumprir juntas (apontadas, não resolvidas)
+
+1. **(Novo na versão 3.) "A lista de exceções fica vazia no fim do plano, cada item com o passo que o conserta" (D-791)
+   e "nenhum conserto até a entrega ao Kaique, fora desta frente" (D-765).** Dos 43 lugares da lista, 5 estão fora da
+   parte do Windows: as duas dicas do Automático que mostram "D-068" e "D-094" ao Kaique (já na Lista de bugs de 18/11);
+   o teste de velocidade, que abre o PowerShell por conta própria para ler a placa de vídeo e o tipo de disco (é o teste
+   que o Samuel roda de longe no notebook do Kaique); e a régua dos filtros, que pergunta ao Windows onde fica a Área de
+   Trabalho. Este plano não pode consertá-los sem ferir a D-765, e sem consertá-los a lista não fica vazia no fim do
+   plano. **O que o Samuel escolhe** (sem sugestão minha, porque cada saída muda uma decisão dele): os 5 ficam na lista
+   com "depois da entrega ao Kaique" no lugar do passo, e a lista só fica vazia depois; ou este plano conserta os 5
+   (pequeno, mas é conserto fora da parte do Windows); ou só o teste de velocidade entra no plano (ele roda no notebook
+   do Kaique pelos testes à distância), e os outros 3 ficam para depois da entrega.
+2. **(Novo na versão 3.) "Um ícone na área de notificação do Windows (perto do relógio)" (D-794) e o que o Windows 11
+   faz com ícone de programa novo.** Pelo que li (uma resposta aceita no fórum da Microsoft, de um moderador, não
+   documentação oficial), o Windows 11 põe o ícone de programa novo escondido atrás da setinha "^", e volta a esconder
+   depois de cada atualização do programa. Então o Kaique pode não ver o ícone perto do relógio sem clicar na setinha.
+   O programa não força o ícone para fora: isso seria mexer por dentro numa configuração do Windows (CLAUDE.md §11.12).
+   **O que o Samuel escolhe** (sem sugestão minha): aceitar o ícone atrás da setinha (o Samuel, na instalação no
+   notebook, pode deixá-lo sempre à vista nas Configurações do Windows, se o Windows guardar a escolha); ou, junto com o
+   ícone, um aviso do Windows no canto da tela dizendo onde ver o andamento (coisa nova, que ele não pediu; e o próprio
+   Windows pode não mostrar o aviso); ou a janelinha pequena da troca no lugar do ícone (muda a D-794). Antes de
+   perguntar, a sessão B mostra no PC dele onde o ícone nasce de verdade, e a gerente só leva a pergunta se ele nascer
+   escondido.
 3. **O nome "Editor de Impressão" na pergunta do Windows (D-782) e a regra técnica de caminho de disco sem acento
-   (CLAUDE.md §3).** Não é decisão de hoje contra decisão de hoje, mas pode virar: se o Windows mostrar o nome do arquivo
-   para um programa sem certificado (risco 2), o arquivo teria de se chamar "Editor de Impressão.exe", com acento e
-   espaço. O atalho de partida do Velopack já tem esse nome; se for ele quem pede a licença, a regra não é ferida, mas
-   isso depende de ele repassar o aviso de trabalho (a ler no código do Velopack). Só se sabe depois da leitura do
-   passo 1; se der conflito, vira pergunta antes de escrever.
+   (CLAUDE.md §3).** Continua como na versão 2: se o Windows mostrar o nome do arquivo para um programa sem certificado
+   (risco 2), o arquivo teria de se chamar "Editor de Impressão.exe", com acento e espaço. O atalho de partida do
+   Velopack já tem esse nome; se for ele quem pede a licença, a regra não é ferida, mas isso depende de ele repassar o
+   aviso de trabalho (a ler no código do Velopack). Só se sabe depois da leitura do passo 1; se der conflito, vira
+   pergunta antes de escrever.
+
+**Resolvidos desde a versão 2:** o ponto 1 da versão 2 (o Setup.exe que continuava saindo) pela D-795; o ponto 2 da
+versão 2 (a janelinha em toda troca contra a troca calada ao fechar) pela D-794.
 
 **Pontos que parecem não combinar, mas combinam (para ninguém tropeçar):**
+- **A pergunta "Atualizar agora?" ao fechar (D-794) e "o fechar não pergunta 'quer salvar?'"** (a regra de sempre do
+  programa, `ui/janela_principal.py`, `closeEvent`, provada por `tests/test_salva_sozinho.py`): a pergunta nova vem
+  depois de gravar, não é sobre salvar, e nenhuma resposta perde trabalho. Os dois testes de `test_salva_sozinho.py`
+  continuam como estão.
+- **"Reiniciar agora" mostra a janelinha (D-770) e "Sim" no fechar mostra o ícone (D-794):** são dois casos diferentes,
+  e os dois são o mesmo mostrador (peça 11), com dois jeitos.
+- **"O ícone em segundo plano" (D-794) e "tudo à vista" (D-785):** a D-785 é sobre as provas; o ícone aparece na tela
+  dele na prova.
+- **"Só quem confere escreve PRONTO PARA CONFERIR" (D-798) e o texto do implementador ("quem escreve isso é o
+  verificador"):** a D-798 inclui também o agente que tenta quebrar. Este plano foi escrito por um implementador e não
+  traz esse rótulo.
 - "A troca ao fechar à vista" (D-785, item 4) e "a troca por trás" (D-769): a D-785 é sobre as provas no PC do Samuel; a
   D-769, sobre o que o Kaique vê.
 - "A senha nunca vai para print" (D-781) e "o print com o botão de ver apertado" (a prova da mesma D-781): na prova se
@@ -818,8 +917,14 @@ A lista de 63 itens da versão 1 (`plano.md`, seção 2) continua valendo, cada 
 - **Novo 64:** o teste rápido depois da troca só confere que o arquivo do motor existe; passa a abrir o motor (estudo do
   Kraken §3). Peça 4.
 - **Novo 65:** a mensagem "É preciso reinstalar o programa" do motor de versão diferente (`core/ocr_kraken.py`) deixa de
-  ser verdade com o motor à parte. É texto de tela que hoje não aparece (nenhuma tela usa o Kraken); muda só com o "sim"
-  dele quando a tela existir. Fica anotado, fora deste plano.
+  ser verdade com o motor à parte. É texto de tela que hoje não aparece (nenhuma tela usa o Kraken); muda só com
+  o "sim" dele quando a tela existir. Fica anotado, fora deste plano.
+- **Novo 66 (versão 3):** o Velopack mata todo processo que roda de dentro da pasta do programa no meio da troca, e o
+  ajudante roda como o sistema, que não mostra nada na tela do Kaique: nenhum dos dois pode mostrar a janelinha nem o
+  ícone. Peça 11.
+- **Novo 67 (versão 3):** a busca de "conversa com o Windows fora da peça única" do esboço do porteiro perdia 13 dos 25
+  lugares (procurava aspas que o texto não tem, e não olhava os nomes do código), e a exceção valia para o arquivo
+  inteiro. Passo 0.
 
 ---
 
@@ -838,9 +943,15 @@ D-774 (a conferência de teste antigo do passo 0 confere).
 5. `test_decisoes_ajudante_da_atualizacao.py`, a linha da marca da pergunta do Windows nas Configurações: passo 3.
 6. `test_decisoes_atualizacao.py`, o "é portátil" perguntado ao Velopack: passo 3.
 7. `test_decisoes_atualizacao.py`, a falha da troca que fica riscada: passo 3.
-8. Os testes do `trocar_antes_de_abrir` em `test_decisoes_ajudante_da_atualizacao.py` (a D-769 escolheu "ao fechar"):
-   passo 3.
+8. Os testes do `trocar_antes_de_abrir` em `test_decisoes_ajudante_da_atualizacao.py` (a D-769 escolheu "ao fechar", e a
+   D-794 pôs a pergunta "Atualizar agora?" antes): passo 3.
 9. As três frases: nenhum teste antigo muda (o da frase de hoje continua para o caso "voltou"); entram testes novos.
+10. **(Versão 3.)** A pergunta ao fechar e o ícone: nenhum teste antigo muda; entram testes novos. Os dois de
+    `tests/test_salva_sozinho.py` ("fechar a janela grava" e "nenhuma pergunta de salvar") **continuam como estão** e têm
+    de passar: a pergunta nova vem depois de gravar e não usa nenhuma das frases que eles procuram.
+11. **(Versão 3.)** O porteiro: nenhum teste antigo muda; as conferências são testes novos. Os testes que já existem e
+    fazem parte do mesmo cuidado (botões em português, nenhuma janela na tela nos testes, memória que não cresce, as
+    provas das decisões, as promessas dos botões) continuam.
 
 **Vão ao Samuel antes, numa lista, um por um** (a lista exata no ONDE-PAREI de cada passo): os que cobram "pronto" e
 "ligado" como anotação (`test_decisoes_testes_a_distancia.py`, `test_decisoes_ajudante_da_atualizacao.py`), os do
@@ -851,7 +962,8 @@ de mentira, e os do desinstalar que cobram o gancho do Velopack.
 
 ## 9. Decisões de antes de hoje que mudaram, e o que continua além do combinado
 
-**Mudadas pelas de hoje:** D-734 (na próxima abertura) → D-769 (ao fechar). D-742 e D-748 (a janelinha só na abertura
+**Mudadas pelas de hoje:** D-734 (na próxima abertura) → D-769 (ao fechar) → D-794 (ao fechar, com a pergunta
+"Atualizar agora?" e o ícone). D-777 (o Setup.exe continua saindo) → D-795 (é feito e apagado no fim). D-742 e D-748 (a janelinha só na abertura
 depois do "Depois") → ampliadas pela D-770. D-712 e D-721 (as frases das Configurações) → completadas pela D-771. D-727
 (tudo dentro do instalador) → exceção só para o servidor de entrar de longe (D-772). D-713 (nada no GitHub nesta etapa)
 → ajustada só para o rascunho de prova (D-773). D-719 (a frase única) → três frases (D-778). D-723 (o Velopack, "baixa
@@ -877,29 +989,43 @@ motores de achar texto, o servidor de páginas, o brasão, o `--conferir-ocr`), 
   chega); passo 6 (etapa 7).
 - **D-767** (só conta o que rodou de verdade e à vista) → seção 3, "Regras de todos os passos"; a prova à vista de cada
   passo; o alcance fechado pela D-773.
-- **D-768** (o motor sai do pacote que se atualiza) → peça 9; passos 2, 3 e 5; seção 7, item 58.
-- **D-769** ("Depois" troca ao fechar) → peça 4; passo 3 (prova com "Depois", fechar e desligar no meio); seção 8, item
-  8; seção 6.3, ponto 2.
-- **D-770** (a janelinha em toda troca) → peça 4; passo 3; seção 6.2, item 4 (o print); seção 6.3, ponto 2.
-- **D-771** (ligar é tudo ou nada) → peças 3 e 5; passo 4 (prova sem internet e porta ocupada); seção 6.2, item 5 (o
+- **D-768** (o motor sai do pacote que se atualiza; estudo aprovado em 19/11) → peça 9; passos 2, 3 e 5; seção 7, item
+  58; seção 1 (a aprovação).
+- **D-769** ("Depois" troca ao fechar), mudada pela D-794 → peça 4; passo 3 (prova com "Depois", fechar e desligar no
+  meio); seção 8, item 8.
+- **D-770** (a janelinha em toda troca) → peças 4 e 11; passo 3; seção 6.2, item 3 (o print).
+- **D-771** (ligar é tudo ou nada) → peças 3 e 5; passo 4 (prova sem internet e porta ocupada); seção 6.2, item 4 (o
   texto do desfazer que falha).
-- **D-772** (o servidor vem do Windows Update, com aviso) → peça 5; passo 4; seção 6.1, item 11; seção 6.2, item 5.
+- **D-772** (o servidor vem do Windows Update, com aviso) → peça 5; passo 4; seção 6.1, item 11; seção 6.2, item 4.
 - **D-773** (as versões de prova de verdade e o rascunho no GitHub) → peça 10b; passo 2 (rascunho e servidor); passos 3
   e 4.
 - **D-774** (os testes antigos que mudam) → seção 8; cada passo, "Testes antigos que mudam".
 - **D-775** (escrever, testes, quebrar, prova à vista) → seção 3, "Regras de todos os passos"; o foco de quem quebra em
   cada passo.
 - **D-776** (publicar no C:, 20 GB livres) → peça 8; passo 2 (prova do espaço e do aviso); seção 6.3, último ponto.
-- **D-777** (o .msi só na primeira entrega e quando pedir) → peça 8; passos 2, 5 e 6; seção 6.3, ponto 1.
+- **D-777** (o .msi só na primeira entrega e quando pedir), ajustada pela D-795 → peça 8; passos 2, 5 e 6.
 - **D-778** (as três frases) → peça 4; passo 3 (o print de cada uma); seção 8, item 9.
 - **D-779** (Velopack 1.2.161 com a nossa proteção) → peça 4; passos 3 e 5; seção 6.1, item 3.
 - **D-780** (as duas trancas, sem o celular) → peças 1 e 5; passo 4 (a leitura das trancas); passo 6 (a prova de fora na
   etapa 7).
-- **D-781** (dois campos e o botão de ver) → peça 6b; passo 4 (os prints, a senha nova); seção 6.2, item 5 (o desenho).
-- **D-782** (a pergunta mostra "Editor de Impressão") → peça 1; passo 1 (prova); passo 3 (a janelinha); seção 6.1, item
-  2; seção 6.3, ponto 3.
+- **D-781** (dois campos e o botão de ver) → peça 6b; passo 4 (os prints, a senha nova); seção 6.2, item 4 (o desenho).
+- **D-782** (a pergunta mostra "Editor de Impressão") → peça 1; passo 1 (prova); passo 3 (a janelinha); seção 6.1, itens
+  1 (o fato de 19/11) e 2; seção 6.3, ponto 3.
 - **D-783** (o Samuel desliga o Controle Inteligente de Aplicativos) → passo 6, a lista da etapa 6; seção 7, item 62.
 - **D-784** (o pacote de regras do trabalho) → passo 0; os arquivos e as etiquetas de cada passo.
+- **D-791** (o porteiro barra desde o primeiro dia; a lista de exceções) → passo 0 (a lista de partida, 43 lugares, e as
+  três correções do esboço); "Regras de todos os passos"; "Lista de exceções do porteiro" nos passos 1 a 5; passo 6;
+  seção 6.2, item 1; seção 6.3, ponto 1.
+- **D-792** (o formulário da entrega) → passo 0; "Regras de todos os passos" (a lista de arquivos no formulário).
+- **D-793** (os agentes sem as duas ferramentas) → passo 0 (K23 passa hoje).
+- **D-794** (a pergunta "Atualizar agora?" ao fechar e o ícone perto do relógio) → peças 4, 6a e 11; passo 3 (escrita,
+  leitura antes, quem quebra, prova); passo 6; seção 4; seção 6.1, itens 3, 5, 7 e 20; seção 6.2, item 3; seção 6.3,
+  ponto 2; seção 8, itens 8 e 10.
+- **D-795** (o Setup.exe é apagado no fim) → peça 8; passo 2 (prova sem erro e com erro); seção 4.
+- **D-796** (o agente de tela em `core/` só com os arquivos nomeados; o porteiro barra) → "Regras de todos os passos";
+  passo 0 (K13); passos 3 e 4 (os arquivos nomeados).
+- **D-797** (dois lugares: versão de teste e oficial) → "Regras de todos os passos" ("Onde se junta").
+- **D-798** (só quem confere escreve PRONTO PARA CONFERIR) → "Regras de todos os passos"; passo 0 (K10); passo 6.
 - **D-785** (o que roda à vista e o que fica escondido) → seção 3, "Regras de todos os passos"; a prova de cada passo.
 - **D-786** (a velocidade medida no GitHub) → seção 3, "Regras de todos os passos".
 - **D-787** (um arquivo de teste por vez no PC) → seção 3, "Regras de todos os passos".
@@ -908,12 +1034,19 @@ motores de achar texto, o servidor de páginas, o brasão, o `--conferir-ocr`), 
   troca).
 - **D-790** (o motor novo é tudo ou nada) → peças 4 e 9; passo 3 (o servidor fechado no meio do motor).
 
-Nenhuma das 26 ficou de fora.
+Nenhuma das 34 (D-765 a D-798) ficou de fora.
 
 ---
 
 ## Detalhe técnico (para a gerente)
 
+- **Versão 3, fontes novas:** o Livro da versão de teste (`82ef9e64`, D-767 a D-798 lidas inteiras); o esboço
+  `conferir_codigo.py` da proposta das regras, rodado só lendo numa pasta temporária contra a cópia `obra-juncao`
+  (31 achados sem exceções, como a proposta dizia), e a mesma busca corrigida (palavras sem exigir aspas e nomes do
+  código: 25 lugares de K01 em 6 arquivos); o código do Velopack na etiqueta `1.2.161` (`apply_windows_impl.rs`,
+  `shared/util_windows.rs`, `l18n/src/progress.rs`, lidos pelo `gh api` em 18/11); a documentação do `QSystemTrayIcon`
+  (doc.qt.io, Qt for Python 6); Microsoft Learn, "Service Changes for Windows Vista" (sessão 0); Microsoft Q&A, pergunta
+  5600219 (os ícones escondidos do Windows 11; resposta de moderador, não documentação oficial).
 - Fontes: o plano da versão 1 e o ONDE-PAREI dele; o estudo do Kraken (ramo `kraken-separado-2026-11-18`); a proposta das
   regras (ramo `regras-agentes-2026-11-18`: §3 a tabela, §5 as conferências, §6 o formulário, §9 as perguntas); o Livro
   do ramo `obra-2026-10-26` (`48d2c3a8`: D-765 a D-790 lidas inteiras, e D-712, D-721, D-724, D-727, D-739, D-741 para
