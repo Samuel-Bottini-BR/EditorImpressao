@@ -1,0 +1,290 @@
+<!doctype html>
+<html lang="pt-BR">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Passo 0: segunda conferência de quem tentou quebrar</title>
+<style>
+:root { color-scheme: light dark; }
+* { box-sizing: border-box; }
+body {
+  font: 17px/1.65 "Segoe UI", system-ui, sans-serif;
+  max-width: 46rem; margin: 0 auto; padding: 2.5rem 1.5rem 6rem;
+  color: #1c1c1e; background: #fdfdfc;
+}
+h1 { font-size: 2rem; line-height: 1.2; margin: 0 0 .3em; letter-spacing: -.02em; }
+h2 { font-size: 1.35rem; margin: 2.4em 0 .6em; padding-top: .8em;
+     border-top: 1px solid #e6e4e0; letter-spacing: -.01em; }
+h3 { font-size: 1.1rem; margin: 1.8em 0 .4em; }
+h1 + p, h2 + p { margin-top: .4em; }
+p, li { margin: 0 0 .9em; }
+ul, ol { padding-left: 1.3em; }
+strong { font-weight: 640; }
+code {
+  font: .88em ui-monospace, "Cascadia Code", Consolas, monospace;
+  background: #f1efec; padding: .12em .35em; border-radius: 4px;
+}
+pre {
+  background: #f1efec; padding: 1em 1.1em; border-radius: 8px;
+  overflow-x: auto; line-height: 1.5;
+}
+pre code { background: none; padding: 0; }
+blockquote {
+  margin: 1.2em 0; padding: .1em 0 .1em 1.1em;
+  border-left: 3px solid #c9c5be; color: #55524d;
+}
+table {
+  border-collapse: collapse; width: 100%; margin: 1.2em 0;
+  font-size: .95rem; display: block; overflow-x: auto;
+}
+th, td { padding: .5em .8em; text-align: left; border-bottom: 1px solid #e6e4e0; }
+th { font-weight: 620; background: #f7f5f2; white-space: nowrap; }
+tr:last-child td { border-bottom: none; }
+img { max-width: 100%; height: auto; border-radius: 6px; margin: 1em 0;
+      border: 1px solid #e6e4e0; }
+hr { border: none; border-top: 1px solid #e6e4e0; margin: 2.5em 0; }
+.rodape { margin-top: 4em; padding-top: 1.2em; border-top: 1px solid #e6e4e0;
+          font-size: .85rem; color: #86827c; }
+@media (prefers-color-scheme: dark) {
+  body { color: #e8e6e3; background: #1a1917; }
+  h2 { border-top-color: #35332f; }
+  code, pre, th { background: #262421; }
+  th, td { border-bottom-color: #35332f; }
+  blockquote { border-left-color: #4a4741; color: #b0aca6; }
+  img { border-color: #35332f; }
+  .rodape { border-top-color: #35332f; color: #7d7973; }
+}
+@media print {
+  body { max-width: none; padding: 0; color: #000; background: #fff; }
+  h2 { page-break-after: avoid; }
+  table, img { page-break-inside: avoid; }
+}
+</style>
+</head>
+<body>
+<h1>Passo 0 do plano da parte do Windows: segunda conferência de quem tentou quebrar (19/11/2026)</h1>
+<p>Esta é a segunda volta do mesmo verificador, que não escreveu o passo 0. Conferi os consertos dos 19 achados do
+primeiro relatório (<code>relatorio.md</code>, nesta pasta) e tentei quebrar de novo: pelo mesmo caminho e por um caminho vizinho.
+Não mexi no código entregue. As provas rodaram na cópia temporária, fora do projeto.</p>
+<h2>Pedido</h2>
+<ul>
+<li>Papel: quebrador</li>
+<li>Commit de partida: 7c39c9d5</li>
+<li>Ramo: passo0-porteiro-2026-11-19</li>
+</ul>
+<h2>Arquivos que vou mexer</h2>
+<ul>
+<li><code>relatorios/passo0-2026-11-19/quem-quebrou/</code></li>
+</ul>
+<h2>Veredito</h2>
+<p><strong>NÃO ESTÁ PRONTO</strong>, mas está bem mais perto.</p>
+<ul>
+<li>Dos 19 achados:</li>
+<li>14 estão consertados de verdade;</li>
+<li>3 ficaram pela metade (6, 7 e 8);</li>
+<li>2 não foram consertados, e o porquê se sustenta (11 e 17).</li>
+<li><strong>Um problema novo reabre os achados 6 e 7.</strong> O "sim" do Samuel que a lista exige é conferido no Livro só por um
+  pedaço de texto. Um agente põe o próprio erro na lista com o "sim" <code>{"decisao": "D-791", "palavras": "sim"}</code>, ou até
+  com <code>"palavras": "a"</code>, e passa no gancho e na proteção do GitHub. Isso fura a regra "nada entra nela sem o 'sim'
+  dele" (D-791).</li>
+<li><strong>O texto para o Samuel ainda não tem print que prove.</strong> A imagem continua sendo o próprio texto. E a pergunta dos 22
+  lugares pergunta de novo, em parte, o que ele já decidiu em 19/11 (D-800).</li>
+</ul>
+<h2>O que li</h2>
+<ul>
+<li>O <code>relatorios/passo0-2026-11-19/ONDE-PAREI.md</code> novo, com as seções "Como ficou cada achado", "Perguntas para a
+  gerente", "Testes", "Ressalvas" e "Perguntas para o Samuel".</li>
+<li>O código mudado de <code>ee520a12</code> a <code>7c39c9d5</code>, com o último código em <code>76fed2ee</code>: <code>porteiro.py</code>,
+  <code>leitura_do_codigo.py</code>, <code>porteiro_mudancas.py</code>, <code>protecao.py</code> (novo), <code>excecoes.py</code>, <code>formulario.py</code>, <code>__main__.py</code>,
+  <code>conversa_com_o_git.py</code>, <code>tabela_arquivos.py</code> e <code>texto_para_o_samuel.py</code>.</li>
+<li>Os testes <code>tests/test_conferencias_*.py</code>, entre eles <code>tests/test_conferencias_protecao.py</code> (novo), e
+  <code>tests/conferencias_excecoes.json</code>, que agora tem 125 lugares em 118 itens.</li>
+<li>O texto <code>lista-de-excecoes-para-o-samuel.md</code> e a imagem <code>.png</code> dele, e os anexos <code>pacote-passo1.md</code> e
+  <code>pacote-passo0.md</code>.</li>
+<li>As rodadas do GitHub:</li>
+<li>44461501923 ("success");</li>
+<li>44461329846 ("success"). Li o registro desta: o ramo de prova com a lista "valendo" rodou
+    <code>test_conferencias_excecoes.py</code> com 12 testes passando e nenhum parado. Então o teste que barra o repositório rodou
+    de verdade.</li>
+</ul>
+<h2>O que conferi nas falhas, nas peças de fora e nos caminhos</h2>
+<p><strong>Recontagem.</strong> Contei de novo com um script meu, que tira os comentários e as docstrings do seu próprio jeito e usa as
+expressões novas.</p>
+<ul>
+<li>Achei 107 lugares de conversa com o Windows, 2 de <code>DETACHED_PROCESS</code> e 2 de licença de pasta. Com os 14 números de
+  decisão, dá 125. <strong>Bate.</strong></li>
+<li>Por passo também bate: 1, 29, 50 e 17, que somam 97 no plano; mais 6 "depois da entrega" e 22 "fora do plano".</li>
+<li>Procurei alarme falso nos 107. Não achei palavra que só esteja em comentário, em docstring ou em nome de arquivo.</li>
+<li><code>[powershell]::Create()</code> (<code>atualizacao.py:883</code>) é o PowerShell rodando um pedaço por dentro do próprio script.
+    Conta como caso de borda, não como erro.</li>
+<li>Os falsos alarmes possíveis no futuro são pequenos: <code>creationflags=0</code>, "self-service", "hku:" (achado N5).</li>
+</ul>
+<p><strong>Cada um dos 19, pelo mesmo caminho e pelo vizinho:</strong></p>
+<ol>
+<li><strong>Consertado.</strong> Na cópia, com a lista "valendo" e um "sim" no formato novo, os 12 testes de
+   <code>tests/test_conferencias_excecoes.py</code> passam. Na rodada de prova do GitHub, o teste que barra o repositório rodou e
+   passou.</li>
+<li><strong>Consertado em grande parte.</strong> As 23 linhas novas da busca acham os 14 disfarces do primeiro relatório, menos os
+   textos em pedaços, que estão nas ressalvas. Pelo vizinho, ainda passam (achados N2 e N3):
+   - <code>["sc", "create", ...]</code> em lista: o <code>sc</code> só é achado com espaço depois;
+   - <code>net stop</code> e <code>net start</code>;
+   - <code>taskkill</code> e <code>Stop-Process</code>;
+   - <code>New-Object -ComObject WScript.Shell</code>: o COM só é achado quando é o das tarefas;
+   - <code>ctypes.CDLL</code> e <code>ctypes.cdll</code>;
+   - <code>Get-PhysicalDisk</code>, que é exatamente a leitura do tipo de disco do teste de velocidade;
+   - <code>creationflags=f</code>, com o número guardado numa variável;
+   - toda chamada feita por um apelido de biblioteca já pega.</li>
+<li><strong>Consertado.</strong> Sem <code>--pacote</code>, o formulário volta (código 1). Com o pacote de "layout", o agente que escreve
+   "implementador" no ONDE-PAREI é devolvido.</li>
+<li><strong>Consertado.</strong> O agente de tela que mexe em <code>atualizacao.py</code> e em <code>tests/test_atalhos.py</code> é barrado: "mexeu fora de
+   ui/ sem o pedido nomear o arquivo".</li>
+<li><strong>Consertado, com a ressalva que ele mesmo escreveu.</strong> O rótulo de quem construiu é barrado no ONDE-PAREI, numa pasta
+   <code>quem-quebrou/</code> mexida junto com outro arquivo, e em <code>docs/quem-quebrou/</code>. Passam, só com aviso (achado N4):
+   - a imitação, num commit que mexe só na pasta, que já é ressalva dele;
+   - o rótulo numa pasta <code>quem-quebrou/</code> de <strong>outro</strong> trabalho;
+   - o rótulo em <code>relatorios/quem-quebrou/</code> direto.</li>
+<li><strong>Pela metade.</strong>
+   - Contra a ponta deste ramo, a proteção acusa: palavra tirada da busca (o <code>schtasks</code>), mudança da situação, mudança
+     do "sim" e mudança do passo de um item.
+   - Não acusa o afrouxamento pelo uso: a lista de palavras continua igual, mas a linha que junta as palavras deixa uma
+     de fora. Esse caso só é pego pelo teste que tiver exemplo daquela palavra (o do <code>msiexec</code> existe e falhou). Oito
+     grupos de palavras não têm exemplo nos testes (achado N3).
+   - Os itens novos com "sim" forjado passam (achado N1).
+   - Enquanto a versão de teste não tiver o porteiro, a proteção do GitHub fica parada. Isso está escrito.</li>
+<li><strong>Pela metade.</strong> O gancho barra o item novo sem "sim": provado com <code>antes-do-commit</code>, código 1. Com o "sim"
+   forjado, passa, código 0 (achado N1).</li>
+<li><strong>Pela metade.</strong>
+   - Melhorou: o caso real está escrito, há "o que ela não faz", o que acontece se ele disser "não", e "de onde veio".
+     A conta bate com a lista.
+   - Continua: a imagem é o próprio texto, sem print do caso real (CLAUDE.md §11.13, regra 3).
+   - Novo: "Os 5 lugares [...] continuam lá" e logo depois "a conta dá 6" confunde.
+   - Novo: a pergunta dos 22 inclui o teste de velocidade lendo a placa de vídeo pelo PowerShell, que ele já mandou
+     para depois (achado N6).</li>
+<li><strong>Consertado.</strong> "D-731" num texto de <code>core/analise.py</code> agora é acusado.</li>
+<li><strong>Consertado no caso provado.</strong> Pelo vizinho: num texto com <code>{}</code> que não é folha de estilo (um f-string
+    <code>f"Arquivo {nome} salvo /* conforme D-731 */"</code>), o número some da busca (achado N7).</li>
+<li><strong>Não consertado; o porquê se sustenta.</strong> É o combinado do plano (arquivo, conferência, texto e quantas), está nas
+    ressalvas, e o pacote passa a mostrar os lugares da lista nos arquivos do pedido.</li>
+<li><strong>Consertado pela metade.</strong> O texto do pedido só dá a etiqueta de Windows quando o título tem "Windows",
+    "instalador" ou "atualiza". Os títulos "Passo 5: desinstalar limpo", "Passo 2: publicar e o motor do Kraken" e "a
+    pasta segura do programa" não ganham as regras de Windows num arquivo novo de <code>core/</code> (achado N8).</li>
+<li><strong>Consertado.</strong> A lista do Windows, as pastas de fora do projeto e quem pode escrever o rótulo de pronto agora estão
+    num lugar só cada uma.</li>
+<li><strong>Consertado.</strong></li>
+<li><strong>Consertado.</strong> A ressalva das aspas está escrita.</li>
+<li><strong>Consertado.</strong> O <code>regras_dos_agentes/</code> tem 17 arquivos, e o gancho cita o que a documentação do git diz.</li>
+<li><strong>Pergunta à gerente; se sustenta.</strong></li>
+<li><strong>Consertado.</strong> A D-722 e a D-724 estão no pacote do passo 1. A barra de rolagem foi como pergunta à gerente.</li>
+<li><strong>Consertado.</strong> Agora usa <code>git ls-remote</code>.</li>
+</ol>
+<h2>Caminhos que o outro não listou</h2>
+<ul>
+<li><strong>Chamadas por apelido de biblioteca do Windows.</strong> A escolha "no ctypes conta só a linha onde a biblioteca é pega" é
+  razoável para não multiplicar a lista. Mas esconde coisa: uma chamada nova feita pelo mesmo apelido não é barrada, e
+  o apelido pode sair da função.</li>
+<li>Em <code>teste_velocidade.py:1746</code>, <code>return kernel32, kernel32.GetStdHandle(...)</code> devolve a biblioteca para quem chama.</li>
+<li>Em <code>atualizacao.py:438</code>, a leitura do dono do arquivo é feita por <code>advapi32.GetNamedSecurityInfoW</code>, que não entra
+    na conta. Só a linha 435, onde a biblioteca é pega, entra.</li>
+<li>Isso não está escrito como ressalva (achado N2).</li>
+<li><strong>Afrouxar o porteiro pela linha que junta as palavras</strong> (<code>regras_dos_agentes/porteiro.py:199</code>), sem tirar palavra
+  nenhuma (achado N3).</li>
+<li><strong>A pasta <code>quem-quebrou/</code> de outro trabalho</strong>, ou direto em <code>relatorios/</code> (achado N4).</li>
+</ul>
+<h2>Falhas não pensadas e resultado não conferido</h2>
+<ul>
+<li><strong>Resultado não conferido: o "sim" do Samuel.</strong> A conferência no Livro olha só se as palavras aparecem em algum
+  lugar da linha da decisão (<code>regras_dos_agentes/livro.py:51</code>). Uma letra basta (achado N1).</li>
+<li><strong>Falha não pensada.</strong> A rodada de prova do GitHub só abriu a lista com um "sim" de mentira porque essa conferência
+  aceita qualquer pedaço. Isso mostra que a conferência não separa o "sim" de verdade do inventado.</li>
+<li><strong>O pacote usado para conferir o formulário deste passo</strong> (<code>anexos/pacote-passo0.md</code>) foi feito por quem construiu,
+  no próprio ramo. É o caso de partida, mas a gerente confere se ele é mesmo o pedido dela (achado N9).</li>
+</ul>
+<h2>As regras que conferi</h2>
+<ul>
+<li><strong>CLAUDE.md §11.12:</strong></li>
+<li>(1) uma peça só: cumprida, com as listas agora num lugar só;</li>
+<li>(2) nada dado como feito sem conferir: pela metade (achado N1);</li>
+<li>(3) a lista do que pode falhar: melhorou;</li>
+<li>(4) peça de mentira: cumprida;</li>
+<li>(6) ler a peça de fora: as fontes de <code>PALAVRAS_DO_WINDOWS</code> estão citadas.</li>
+<li><strong>CLAUDE.md §11.13</strong>, no texto para o Samuel:</li>
+<li>regras 1, 2, 5, 6, 7, 9 e 10: cumpridas, menos a parte da D-800 (achado N6);</li>
+<li>regras 3 e 4: pela metade, porque não há print.</li>
+<li><strong>Cada decisão tocada:</strong></li>
+<li>D-791: pela metade (achado N1);</li>
+<li>D-792: cumprida;</li>
+<li>D-796: cumprida;</li>
+<li>D-798: cumprida, com a ressalva da imitação;</li>
+<li>D-800: pela metade (achado N6);</li>
+<li>D-784: cumprida, com o achado N8;</li>
+<li>D-605 e D-637: cumpridas, porque nada mudou fora de <code>regras_dos_agentes/</code>, <code>ganchos/</code>, <code>tests/test_conferencias_*</code>,
+    a lista e o relatório;</li>
+<li>D-767, D-785, D-786, D-787 e D-797: cumpridas.</li>
+</ul>
+<h2>Achados</h2>
+<p>Os números começam com "N" para não se confundir com os 19 do primeiro relatório.</p>
+<ol>
+<li><strong>N1, grave: o "sim" do Samuel é forjável, e isso reabre os achados 6 e 7.</strong> <code>problema_do_sim</code>
+   (<code>regras_dos_agentes/excecoes.py:135</code>) aceita qualquer pedaço que exista na linha da decisão
+   (<code>regras_dos_agentes/livro.py:51</code>).
+   - Provado na cópia: com o erro novo <code>return ["schtasks", "/Run", "/TN", "nova"]</code> em <code>atualizacao.py</code> e o item na
+     lista com <code>"sim": {"decisao": "D-791", "em": "19/11/2026", "palavras": "sim"}</code>, o gancho dá código 0, e
+     <code>protecao.comparar</code> não acha nada.
+   - <code>"palavras": "a"</code> também passa.
+   - Destino: consertar. O item novo só passa se a linha da decisão citada no Livro nomear aquele lugar, com o arquivo
+     e o texto achado. Para a lista inteira valer, a decisão tem de ser a que registra o "sim" à lista, com um tamanho
+     mínimo de palavras. A outra saída: o item novo nunca passa por máquina, só pela gerente, conferido pela K17.</li>
+<li><strong>N2, médio: chamadas por apelido de biblioteca do Windows não são barradas, e isso não está escrito.</strong>
+   (<code>regras_dos_agentes/porteiro.py:194</code>).
+   - A biblioteca é devolvida e usada fora da função (<code>teste_velocidade.py:1746</code>).
+   - Também passam <code>ctypes.CDLL</code> e <code>ctypes.cdll</code>, <code>getattr(ctypes, ...)</code> e <code>creationflags=f</code> (com o número numa
+     variável).
+   - Destino: consertar (seguir o apelido dentro da função pela árvore do código e acrescentar <code>CDLL</code>/<code>cdll</code>), ou ao
+     menos escrever na ressalva e no texto para o Samuel.</li>
+<li><strong>N3, médio: afrouxar a busca pelo uso não é protegido, e 8 grupos de palavras não têm exemplo nos testes.</strong>
+   - Provado: com a linha de <code>regras_dos_agentes/porteiro.py:199</code> trocada para deixar o <code>msiexec</code> de fora, a proteção
+     não acusa nada. Quem pega é o teste de exemplo.
+   - Grupos sem exemplo: <code>os.popen</code>, <code>Start-Process</code>, <code>Schedule.Service</code>, <code>Update.exe</code>, WMI e COM (<code>wmic</code>, <code>win32com</code>,
+     <code>comtypes</code>...), pywin32, <code>oledll</code>, e as outras configurações (<code>bcdedit</code>, <code>rundll32</code>...).
+   - Pelo vizinho, ainda passam: <code>["sc", "create"]</code>, <code>net stop</code>, <code>taskkill</code>, <code>Stop-Process</code>,
+     <code>New-Object -ComObject WScript.Shell</code> e <code>Get-PhysicalDisk</code>.
+   - Destino: consertar. Um exemplo errado nos testes para cada palavra da busca (assim afrouxar pelo uso faz um teste
+     falhar), e as palavras vizinhas acrescentadas. Acrescentar é seguro e não tira nada da lista, mas pode aumentar a
+     conta: se aumentar, a lista é refeita antes do "sim".</li>
+<li><strong>N4, baixo: o rótulo de pronto vale numa pasta <code>quem-quebrou/</code> de outro trabalho, ou em <code>relatorios/quem-quebrou/</code>
+   direto</strong> (<code>regras_dos_agentes/porteiro_mudancas.py:74</code>). Provado: só aviso K14. Destino: consertar (só a pasta
+   <code>quem-quebrou/</code> do próprio trabalho vale), ou acrescentar à ressalva da imitação.</li>
+<li><strong>N5, baixo: falsos alarmes possíveis</strong> (<code>regras_dos_agentes/porteiro.py:199</code>). <code>creationflags=0</code> conta como
+   conversa com o Windows, e "self-service" e "hku:" num texto também. Hoje nenhum aparece no programa. Destino: não é
+   defeito agora; escrever na ressalva.</li>
+<li><strong>N6, médio: o texto para o Samuel ainda não segue o §11.13 em três pontos</strong>
+   (<code>relatorios/passo0-2026-11-19/lista-de-excecoes-para-o-samuel.md:18</code>).
+   - A imagem é o próprio texto, sem print do caso real (regra 3).
+   - "Os 5 lugares" e "a conta dá 6" confundem.
+   - Os 16 lugares do teste de velocidade entram na pergunta nova, mas a D-800 já mandou para depois "o teste de
+     velocidade lendo placa de vídeo e disco pelo PowerShell". A linha <code>teste_velocidade.py:428</code> (<code>Get-CimInstance
+     Win32_VideoController</code>) é essa mesma leitura e ficou "fora do plano, a perguntar". O mesmo caso na régua dos
+     filtros foi tratado como "mesmo pedaço" e foi para depois. É regra 10: não perguntar de novo o que já foi
+     respondido.
+   - Destino: consertar. Classificar a linha da placa de vídeo pelo mesmo critério da régua dos filtros, pôr um print
+     do caso real e dizer "6 lugares" no título.</li>
+<li><strong>N7, baixo: a correção 3 ainda cega a busca num f-string visível que tenha <code>{}</code> e <code>/* */</code></strong>
+   (<code>regras_dos_agentes/leitura_do_codigo.py:130</code>). Provado com <code>f"Arquivo {nome} salvo /* conforme D-731 */"</code>. Na
+   prática é raro. Destino: escrever na ressalva, ou exigir cara de folha de estilo mais forte (um seletor seguido de
+   <code>{</code>).</li>
+<li><strong>N8, baixo: o arquivo novo só ganha as regras de Windows se o título do pedido tiver "Windows", "instalador" ou
+   "atualiza"</strong> (<code>regras_dos_agentes/tabela_arquivos.py:149</code>). Os títulos "desinstalar limpo", "publicar" e "pasta
+   segura" não ganham. Destino: escrever no pacote que a gerente põe "Windows" no título ou uma linha na tabela, ou
+   ampliar a busca do título.</li>
+<li><strong>N9, baixo: o pacote que confere o formulário deste passo foi feito por quem construiu</strong>
+   (<code>relatorios/passo0-2026-11-19/anexos/pacote-passo0.md:10</code>). Destino: não é defeito, é o caso de partida. A gerente
+   confirma que é o pedido dela antes de usar.</li>
+</ol>
+<h2>Para a gerente: o que ficou fora do projeto</h2>
+<p>Na cópia temporária da sessão (<code>C:\Users\fotog\AppData\Local\Temp\claude\b9ca076ad002e817\848d7b72-406b-4bfe-aabf-f5b3005d7b22\scratchpad\quebrar\copia</code>),
+ficaram mais estes ramos de prova: <code>prova2-sim</code>, <code>prova2-k10</code>, <code>prova2-k13</code>, <code>prova2-prot</code>, <code>prova2-prot2</code>,
+<code>prova2-prot3</code>, <code>prova2-gancho</code> e <code>prova2-ligar</code>. Ficaram também os pacotes <code>pac-impl.md</code> e <code>pac-lay.md</code> e o script
+<code>recontar2.py</code>. Nada foi apagado.</p>
+<p class="rodape">Editor de Impressão &middot; gerado em 19/11/2026 às 01:33</p>
+</body>
+</html>
