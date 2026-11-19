@@ -24,8 +24,9 @@ o formulário da entrega (D-792), conferido pelo próprio programa:
 - Feito: o pacote, o porteiro (24 conferências), a lista de exceções (44 lugares, proposta), o formulário, o gancho
   (não ligado), o pacote do passo 1 e o texto para o Samuel. Testes novos passam no PC, um arquivo por vez.
 - Conferindo este formulário com o GitHub, o próprio programa achou um defeito nele: com duas rodadas citadas, a K21
-  olhava só a última citada. Consertado (`e2fad264`, com teste de reversão que falha no código antigo). Esperando a
-  rodada 44453253677 (do commit do conserto) para conferir o formulário de novo.
+  olhava só a última citada. Consertado (`e2fad264`, com teste de reversão que falha no código antigo). A rodada
+  44453253677, do commit do conserto, passou; o formulário foi conferido de novo, com o GitHub, e passa na etapa
+  "antes de ir ao agente que tenta quebrar". Entregue à gerente; o próximo é quem tenta quebrar.
 
 ## Decisões que esta tarefa precisa cumprir
 
@@ -208,10 +209,10 @@ conferência antes do commit (não ligada) e o pacote do passo 1, montado pelo p
   `tests/test_conferencias_antes_do_commit.py` 8.
 - Mutação (desfazer cada correção do esboço numa cópia e ver o teste dela falhar): correção 1, 2 testes falham;
   correção 2, 1 falha; correção 3, 1 falha.
-- GitHub, rodada 44450557071 (o último commit de código, 1d381001): passou inteira. 249 arquivos de teste, 4092
+- GitHub, rodada 44453253677 (o último commit de código, e2fad264): passou inteira. 249 arquivos de teste, 4093
   passaram, 0 falharam, 147 pulados (entre eles o teste do porteiro que espera o "sim" do Samuel, com o motivo
-  escrito); os botões e os prints da janela real também passaram. Antes, a rodada 44449552916 (de um commit do meio)
-  também passou inteira.
+  escrito); os botões e os prints da janela real também passaram. Antes, as rodadas 44449552916 e 44450557071 (de
+  commits do meio) também passaram inteiras (4092 passaram).
 
 ## Caminho e função
 
@@ -280,7 +281,7 @@ sim. Nada do programa muda com isso, e nada do que já funciona muda.
 
 ## Commit
 
-Último commit de código do trabalho: 1d381001 (depois dele, só este ONDE-PAREI mudou).
+Último commit de código do trabalho: e2fad264 (depois dele, só este ONDE-PAREI mudou).
 
 ## Perguntas do Windows que o Samuel vê
 
