@@ -330,7 +330,7 @@ def test_arquivo_ilegivel_vira_achado_e_nunca_passa():
 
 def test_arquivo_com_marca_de_utf8_e_lido():
     """A marca de UTF-8 no começo (três arquivos de hoje têm) não impede a leitura nem esconde um erro."""
-    achados = conferir({"atualizacao.py": "﻿" + ERRADO_K02})
+    achados = conferir({"atualizacao.py": chr(0xFEFF) + ERRADO_K02})
     assert [n for _, n in codigos(achados, "K02")] == [6, 7]
 
 

@@ -131,6 +131,7 @@ def funcoes(raiz: ast.Module) -> list[Funcao]:
     saida: list[Funcao] = []
 
     def andar(no: ast.AST, prefixo: str, em_funcao: bool) -> None:
+        """Desce na árvore guardando o nome de fora (classe ou função) de cada função achada."""
         for filho in ast.iter_child_nodes(no):
             if isinstance(filho, (ast.FunctionDef, ast.AsyncFunctionDef)):
                 nome = f"{prefixo}{filho.name}"

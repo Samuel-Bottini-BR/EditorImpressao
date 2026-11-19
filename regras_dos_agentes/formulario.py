@@ -163,6 +163,7 @@ class _Repositorio:
     """O que o formulário precisa saber do repositório, lido uma vez (os arquivos do git e as funções definidas)."""
 
     def __init__(self, raiz: Path):
+        """Guarda a raiz e a lista de arquivos do git; as funções definidas só são lidas se alguém pedir."""
         self.raiz = raiz
         self.arquivos = git.arquivos_do_git(raiz)
         self._definidos: set[str] | None = None

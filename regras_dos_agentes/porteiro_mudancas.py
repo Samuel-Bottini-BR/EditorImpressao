@@ -63,10 +63,20 @@ def k09(pasta_do_relatorio: Path, raiz: Path) -> list[Achado]:
     return saida
 
 
+ROTULO_DE_PRONTO = re.compile(r"PRONTO\s+PARA\s+CONFERIR|^\W*pronto\s+para\s+conferir\b", re.M)
+
+
 def k10(raiz: Path, base: str, papel: str) -> list[Achado]:
-    """K10: "APROVADO" escrito por agente; [x] no plano ou no Livro; "PRONTO PARA CONFERIR" em ramo de quem constrói."""
+    """K10: "APROVADO" escrito por agente; [x] no plano ou no Livro; o rótulo de pronto em ramo de quem constrói.
+
+    Lê só os documentos (não os `.py`: no código, a palavra está sempre num texto entre aspas, como dado, ex.: o próprio
+    porteiro). O rótulo conta em maiúsculas em qualquer lugar, ou como linha de situação ("Pronto para conferir."),
+    fora das aspas; "antes de pronto para conferir" no meio de uma frase não conta.
+    """
     saida = []
     for caminho, linhas in git.linhas_novas(raiz, base).items():
+        if caminho.endswith(".py"):
+            continue
         for n, texto in linhas:
             fora = _fora_das_aspas(texto)
             if re.search(r"\bAPROVADO\b", fora):
@@ -75,7 +85,7 @@ def k10(raiz: Path, base: str, papel: str) -> list[Achado]:
             if caminho in ("docs/plano/PLANO-DEFINITIVO.md", "docs/plano/DECISOES.md") and re.search(r"\[[xX]\]", fora):
                 saida.append(Achado("K10", caminho, n, " ".join(texto.split()), "[x] posto no plano ou no Livro "
                                     "(só o Samuel marca)"))
-            if papel not in QUEM_CONFERE and re.search(r"PRONTO\s+PARA\s+CONFERIR", fora, re.I):
+            if papel not in QUEM_CONFERE and ROTULO_DE_PRONTO.search(fora):
                 saida.append(Achado("K10", caminho, n, " ".join(texto.split()), f"o rótulo de pronto para conferir "
                                     f"no ramo de quem construiu ({papel}); só quem confere escreve (D-798)"))
     return saida

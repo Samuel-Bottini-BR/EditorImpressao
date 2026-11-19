@@ -155,7 +155,7 @@ CONVERSA_COM_O_WINDOWS = re.compile(
 DETACHED = re.compile(r"\bDETACHED_PROCESS\b")
 LICENCA_A_MAO = re.compile(r"\bicacls\b|/inheritance:r|/setowner|\bSet-Acl\b", re.I)
 NUMERO_DE_DECISAO = re.compile(r"\bD-\d{3,}\b")
-EMOJI = re.compile("[\U0001F300-\U0001FAFF\U0001F000-\U0001F2FF☀-➿⬀-⯿️]")
+EMOJI = re.compile("[\U0001F300-\U0001FAFF\U0001F000-\U0001F2FF\u2600-\u27BF\u2B00-\u2BFF\uFE0F]")
 GERADORES = {"diffusers", "realesrgan", "gfpgan", "basicsr", "codeformer", "facexlib", "lama_cleaner", "iopaint",
              "invokeai", "stable_diffusion", "controlnet_aux", "kandinsky"}
 FERRAMENTAS_PROIBIDAS_AOS_AGENTES = re.compile(r"^(Agent|Task)$|Artifact", re.I)
@@ -194,10 +194,12 @@ class _Arquivo:
 
     @property
     def codigo(self) -> list[str]:
+        """As linhas de código (sem comentário nem docstring); vazio se o arquivo não foi lido."""
         return self._codigo or []
 
     @property
     def raiz(self) -> ast.Module:
+        """A árvore do código (só depois de `ler()` dar certo)."""
         return self._arvore  # type: ignore[return-value]
 
 
@@ -425,6 +427,7 @@ def achados_do_repositorio(raiz) -> tuple[list[str], list[Achado]]:
     caminhos = git.arquivos_do_git(raiz)
 
     def ler(c: str) -> str | None:
+        """O texto do arquivo na pasta, ou None se não deu para ler (vira K00)."""
         try:
             return (raiz / c).read_text(encoding="utf-8")
         except (OSError, UnicodeDecodeError):
@@ -441,6 +444,7 @@ def achados_do_proximo_commit(raiz) -> tuple[list[str], list[Achado]]:
     caminhos = git.arquivos_no_indice_mudados(raiz)
 
     def ler(c: str) -> str | None:
+        """O texto do arquivo como vai no commit, ou None se o git não deu (vira K00)."""
         try:
             return git.conteudo_no_indice(raiz, c)
         except git.GitFalhou:

@@ -78,6 +78,19 @@ def test_k10_barra_aprovado_e_x_no_plano_e_aceita_a_citacao_entre_aspas(repo):
     assert conferencias(pm.k10(r.raiz, base, "verificador")) == ["K10", "K10"]
 
 
+def test_k10_o_rotulo_como_linha_de_situacao_conta_e_no_meio_da_frase_ou_no_codigo_nao(repo):
+    """O rótulo escrito como linha de situação ("Pronto para conferir.") conta; no meio de uma frase que explica a
+    regra, ou como dado num arquivo .py (o próprio porteiro tem a palavra), não."""
+    r, base = repo
+    r.escrever("relatorios/x/ONDE-PAREI.md", "Confere antes de pronto para conferir.\n")
+    r.escrever("core/a.py", '"""Processamento."""\nROTULO = "PRONTO PARA CONFERIR"  # APROVADO\n')
+    r.commit("explica")
+    assert pm.k10(r.raiz, base, "implementador") == []
+    r.escrever("relatorios/x/ONDE-PAREI.md", "Confere antes de pronto para conferir.\n\nPronto para conferir.\n")
+    r.commit("rótulo")
+    assert conferencias(pm.k10(r.raiz, base, "implementador")) == ["K10"]
+
+
 # ---------------------------------------------------------------- K11
 
 def test_k11_barra_teste_antigo_mudado_ou_apagado(repo):

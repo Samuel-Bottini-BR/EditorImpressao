@@ -167,6 +167,7 @@ class Comparacao:
 
     @property
     def passa(self) -> bool:
+        """Passa quando não há erro novo nem item da lista que o código já não tem."""
         return not self.novos and not self.consertados
 
     def explicar(self) -> list[str]:

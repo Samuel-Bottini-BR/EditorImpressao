@@ -22,6 +22,7 @@ class Livro:
     """O Livro lido uma vez: as linhas de cada decisão."""
 
     def __init__(self, texto: str):
+        """Guarda a linha de cada decisão (a primeira, se o número aparecer duas vezes)."""
         self.linhas: dict[str, str] = {}
         for l in texto.splitlines():
             m = re.match(r"^\|\s*(D-\d{3,})\s*\|", l)
