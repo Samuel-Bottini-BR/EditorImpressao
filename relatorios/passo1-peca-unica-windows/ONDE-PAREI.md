@@ -29,6 +29,10 @@ teste com o porteiro ligado). Este ONDE-PAREI é também o formulário da entreg
   achados 1 a 15 e 17 (o 16 é observação; fica). Destino de cada um em "O que o agente que tentou quebrar achou".
   Prova de reversão numa cópia à parte: 15 de 15 proteções acusadas pelo seu teste
   (`anexos/reversao-volta1-resultado.txt`). **Próximo:** a gerente manda a quem tenta quebrar de novo.
+- 19/11: segunda volta de quem tentou quebrar (`quem-quebrou/relatorio-2.md`, commit 7f82731a: "pode ir para a prova
+  à vista"). Consertados N1 a N4, a frase do achado 6 e as mutações que passavam (destinos em "O que o agente que
+  tentou quebrar achou", segunda volta). Prova de reversão: 26 de 27 acusadas no PC; a 27a (M12) só roda no GitHub
+  (`anexos/reversao-volta2-resultado.txt`).
 
 ## Decisões que esta tarefa precisa cumprir
 
@@ -117,6 +121,10 @@ ficava ilegível), a resposta das ferramentas lida na tabela de letras errada, o
   `xml_da_tarefa_de_script()`; a conferência da tarefa criada, `problemas_da_tarefa_criada()` e
   `problemas_da_licenca_da_tarefa()` (a licença lida pelo próprio Windows, comparada pelo sentido); a pasta do
   programa no Agendador, `pasta_de_tarefas_existe()` e `apagar_pasta_de_tarefas()`;
+- a pasta do programa no Agendador conferida antes e depois de criar tarefa: `conferir_pasta_de_tarefas()` e
+  `problemas_da_pasta_de_tarefas()` (o dono e as licenças, lidos pelo Windows; `dono_do_texto()`);
+- a conferência das bibliotecas que guardam o erro: `bibliotecas_guardam_o_erro()`; a decisão de manter a pasta de
+  troca: `manter_a_pasta_de_troca()`;
 - as regras, num lugar só para os dois lados: `problemas_do_passo()`, `problemas_da_pasta_de_troca()` (quem grava e
   quem lê), `problemas_da_pasta_segura()`; o desfecho: `o_que_houve_ao_abrir()`, `resposta_do_pedido()`,
   `desfecho_do_trabalho()` (o relatório contra o pedido);
@@ -170,6 +178,12 @@ metade sem dizer: o relatório do trabalho diz, passo a passo, o que foi feito, 
   apaga a tarefa de novo e confere que sumiu; se não der para apagar, a resposta diz que ela ficou.
 - **A pasta do programa no Agendador** (`\EditorImpressao`) nasce com a primeira tarefa e não some ao apagar a
   tarefa: a janela de prova anota se ela existia antes e a pergunta 3 a apaga (só vazia) se foi a prova que a criou.
+- **A pasta do programa no Agendador já existe e não é do sistema nem dos Administradores** (qualquer conta pode
+  criá-la antes; o Windows deixa): a peça recusa antes de criar a tarefa, com "a pasta do programa no Agendador não
+  é segura: ...". Se ela não existia, o Windows a cria junto com a tarefa, e a peça confere depois; se não conferir, a
+  tarefa é apagada de novo.
+- **O programa do Windows pedido por outro caminho** (prefixo longo, de dispositivo, caminho de rede): o caminho é
+  normalizado num lugar só e o de rede é recusado pelo rodar genérico.
 - **Outra conta pode ler a pasta de troca** (onde vai o segredo cifrado para o computador): a regra recusa, dos dois
   lados, como recusa quem grava.
 - **O programa com licença começa e cai sem relatório:** "falhou: o trabalho com licença não deixou relatório"
@@ -360,6 +374,11 @@ Lido (documentação ou código), separado do deduzido:
   `tests/test_conferencias_copia_inteira.py` 2; `tests/test_decisoes_brasao.py` 22; `tests/test_decisoes_atualizacao.py`
   38; `tests/test_botoes_em_portugues.py` 5. O repositório do PC continuou inteiro (`--is-shallow-repository` = false
   antes e depois).
+- **Volta 2, no PC, um arquivo por vez** (19/11): `tests/test_windows_peca.py` 48 passaram e 1 pulado (o do N4,
+  só no GitHub); `tests/test_windows_janela_de_prova.py` 10; `tests/test_conferencias_codigo.py` 77;
+  `tests/test_conferencias_excecoes.py` 14. Prova de reversão numa cópia à parte: 26 de 27 acusadas; a que falta (M12)
+  é pulada no PC pelo N4 (`anexos/reversao-volta2-resultado.txt`).
+- **No GitHub, volta 2:** RODADA_VOLTA2
 - **No GitHub, volta 1:** rodada 44571676129, sobre o commit a21b311a: **success** na segunda tentativa (só a parte 4
   rodou de novo). PORTEIRO: success (o trabalho "Porteiro (juiz da versao de teste)"). Na primeira tentativa falhou só
   `tests/test_decisoes_so_as_letras.py::test_d148_desfazer_o_automatico_devolve_o_so_as_letras_do_livro`, por tempo,
@@ -433,6 +452,20 @@ Lido (documentação ou código), separado do deduzido:
   O que você escolhe: A (sugestão) a janelinha que avisa antes da pergunta ganha um botão "Continuar", e com o clique
   dele o programa fica na frente e a pergunta vem no meio; B a janelinha diz também "Se a pergunta não aparecer,
   clique no escudo que pisca na barra de tarefas"; C fica como está." O print sai da própria sessão A.
+- **Volta 2, o que só o GitHub ou a prova à vista provam** (das mutações do relatório 2 e das minhas):
+  - M12 (a tarefa criada sem ler de volta) e A1b (o desfazer parando no primeiro passo que falha): os testes que as
+    pegam (`test_a_tarefa_criada_que_nao_confere_e_apagada` e `test_o_desfazer_vai_ate_o_fim_mesmo_com_um_passo_que_falha`)
+    só fazem o trabalho com licença no Windows do GitHub; no PC um é pulado (N4) e o outro só confere a recusa;
+  - A9c (a espera do Windows que falha): não dá para provocar sem o Windows de verdade falhar; o código para e diz
+    "não deu para acompanhar", lido no código, não provado;
+  - N3 de verdade (a pasta do Agendador criada antes por uma conta comum): a regra é provada com as licenças lidas
+    neste PC; a recusa no Windows de verdade só a sessão A (ou o GitHub) mostra.
+- **Para o pacote do passo 3 (cuidado do achado 15):** nada que o ajudante roda como o sistema pode vir de pasta que a
+  conta comum grava (a tarefa de prova já roda um script da pasta segura). Também para os passos 2 a 4: programa de
+  fora do Windows (ex.: o do Tailscale) passa pelo rodar genérico; cada passo que usar um decide, no pedido, se ele
+  ganha função própria na peça (escrito no comentário "A PEÇA É FECHADA").
+- **O apelido do que tem "_"** (`getattr`, outro nome para o módulo, achado N2 b): fica com a gerente, no porteiro; o
+  meu teste só procura o texto `windows._`.
 - **Volta 1, a recusa do rodar genérico é pela pasta do Windows** (todo programa de lá), não por uma lista de nomes:
   a lista com o nome das ferramentas de licença de pasta fazia o porteiro (K03, que vale também na peça) acusar a
   própria recusa, e eu não mexo no porteiro. É mais largo que o pedido (pega qualquer ferramenta do Windows), o que
@@ -485,7 +518,7 @@ sem o certificado pago, a pergunta mostra o **nome do arquivo** do programa, e o
 
 ## Commit
 
-a21b311a (o último commit de código da volta 1; depois dele só este formulário muda).
+COMMIT_VOLTA2
 
 ## O que o agente que tentou quebrar achou
 
@@ -539,6 +572,31 @@ dcc4981c, 7e726221 e a21b311a; a prova de reversão de cada conserto está em `a
 16. Observação, não defeito: fica como está, como a gerente mandou.
 17. **Fechar a janela no meio de uma prova**: consertado em dcc4981c (a janela não fecha e pede para esperar;
     `tests/test_windows_janela_de_prova.py::test_a_janela_nao_fecha_no_meio_de_uma_prova`).
+
+**Segunda volta** (relatório 2, `quem-quebrou/relatorio-2.md`, commit 7f82731a). Consertos em baf27718 e 5de2b8e8;
+prova de reversão em `anexos/reversao-volta2-resultado.txt`.
+
+- **N1, a prova do "Não" lido do jeito certo tinha sumido**: consertado em baf27718. A peça tem
+  `bibliotecas_guardam_o_erro()` (pública, só leitura), e
+  `tests/test_windows_peca.py::test_as_bibliotecas_da_peca_guardam_o_erro_de_cada_chamada` cobra as seis, em especial
+  a shell32 (acusa M2 e M2b).
+- **N2, o caminho escrito de outro jeito escapava da recusa**: consertado em baf27718 e 5de2b8e8. O caminho é
+  normalizado num lugar só (`_caminho_do_programa`): o prefixo longo e o de dispositivo saem; caminho de rede é
+  recusado (`tests/test_windows_peca.py::test_a_recusa_vale_para_o_caminho_escrito_de_outro_jeito`). O apelido (b)
+  fica com a gerente, no porteiro. O (c), programa de fora do Windows, está certo neste passo e ficou anotado no
+  comentário da peça.
+- **N3, a pasta do Agendador criada antes por outra conta**: consertado em baf27718. A peça confere o dono e as
+  licenças da pasta antes de criar a tarefa (e depois, se o Windows a criou junto) e recusa com aviso em português
+  (`tests/test_windows_peca.py::test_a_pasta_do_agendador_tem_de_ser_do_sistema_ou_dos_administradores`,
+  `tests/test_windows_peca.py::test_a_tarefa_nao_e_criada_numa_pasta_do_agendador_que_nao_e_segura`).
+- **N4, o teste que pede a tarefa ao Windows rodava também no PC**: consertado em baf27718 (só roda no GitHub; no PC é
+  pulado, nem num terminal com a licença cria nada).
+- **Achado 6, a frase "foi apagada" sem a pasta ter sido criada**: consertado em baf27718. A frase e a decisão saíram
+  para funções (`tests/test_windows_janela_de_prova.py::test_a_frase_da_pasta_do_agendador_nunca_diz_apagada_sem_ter_sido_criada`,
+  `tests/test_windows_janela_de_prova.py::test_a_decisao_de_apagar_a_pasta_do_agendador`).
+- **As mutações que passavam**: A1c, A2, A6, A6b e A9 ganharam teste em baf27718 (todas acusadas). A1b e M12 só o
+  GitHub prova; A9c não dá para provocar: em "Ressalvas".
+- **O cuidado do achado 15**: em "Ressalvas", marcado para o pacote do passo 3.
 
 ## A prova de verdade
 
