@@ -360,7 +360,10 @@ Lido (documentação ou código), separado do deduzido:
   `tests/test_conferencias_copia_inteira.py` 2; `tests/test_decisoes_brasao.py` 22; `tests/test_decisoes_atualizacao.py`
   38; `tests/test_botoes_em_portugues.py` 5. O repositório do PC continuou inteiro (`--is-shallow-repository` = false
   antes e depois).
-- **No GitHub, volta 1:** RODADA_VOLTA1
+- **No GitHub, volta 1:** rodada 44571676129, sobre o commit a21b311a: **success** na segunda tentativa (só a parte 4
+  rodou de novo). PORTEIRO: success (o trabalho "Porteiro (juiz da versao de teste)"). Na primeira tentativa falhou só
+  `tests/test_decisoes_so_as_letras.py::test_d148_desfazer_o_automatico_devolve_o_so_as_letras_do_livro`, por tempo,
+  de novo (o teste instável já anotado em "Ideias e bugs"; não é deste passo).
 - **No GitHub, primeira entrega:** rodada 44558364601, sobre o commit 1b1b0fa6: **success** na segunda tentativa (a parte 4 rodou de
   novo e passou). PORTEIRO: success nas duas tentativas (o trabalho "Porteiro (juiz da versao de teste)").
   - Na primeira tentativa falhou só `tests/test_decisoes_so_as_letras.py::test_d148_desfazer_o_automatico_devolve_o_so_as_letras_do_livro`,
@@ -482,7 +485,7 @@ sem o certificado pago, a pergunta mostra o **nome do arquivo** do programa, e o
 
 ## Commit
 
-COMMIT_VOLTA1
+a21b311a (o último commit de código da volta 1; depois dele só este formulário muda).
 
 ## O que o agente que tentou quebrar achou
 
