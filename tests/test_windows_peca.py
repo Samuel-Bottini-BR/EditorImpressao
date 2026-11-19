@@ -275,7 +275,9 @@ def test_a_pasta_de_troca_herda_as_licencas_da_conta():
         assert not lic.protegida
         assert any(li.sid == sid and li.herdada and li.grava for li in lic.lista)
         assert not any(li.sid == windows.SID_DIREITOS_DO_DONO for li in lic.lista)
-        assert lic.dono == sid
+        # Dono: a conta; ou o grupo Administradores quando o processo roda com a licença ligada (o Windows do
+        # GitHub). É por isso que o arquivo do programa com licença tem outro dono (o defeito 3 acima).
+        assert lic.dono in (sid, windows.SID_ADMINISTRADORES)
         assert windows._problemas_da_pasta_de_troca(lic, sid) == []
     finally:
         assert windows.apagar_pasta_de_troca(pasta)
