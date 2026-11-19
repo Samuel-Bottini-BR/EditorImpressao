@@ -212,7 +212,8 @@ Lido (documentação ou código), separado do deduzido:
   Conferido no PC, só lendo: com a marca, texto e segredo com acento chegam iguais; sem a marca, o script nem roda.
 - **A resposta das ferramentas do Windows:** o `schtasks` escreve na tabela de letras do console (OEM, 850 no PC do
   Samuel); conferido só lendo uma tarefa do Windows: lido como OEM sai "Hora da próxima execução"; lido como ANSI sai
-  trocado (é o "ÒXITO" da etapa 5). O Python lê essa tabela com o codec `oem`.
+  trocado (é o "ÒXITO" da etapa 5). O Python lê essa tabela com o codec `oem`. Fonte das tabelas do console:
+  https://learn.microsoft.com/en-us/windows/console/console-code-pages
 - **Lançar solto:** `DETACHED_PROCESS` deixa o processo de console sem console; `CREATE_NO_WINDOW` roda o programa de
   console sem janela; `CREATE_BREAKAWAY_FROM_JOB` só funciona se o grupo deixar
   (https://learn.microsoft.com/en-us/windows/win32/procthread/process-creation-flags). Um grupo (job) com
@@ -350,6 +351,11 @@ Lido (documentação ou código), separado do deduzido:
   faz; só a que o próprio teste criou.
 - **Lido × deduzido:** o que tem endereço em "O que li" foi lido; o nome na pergunta e a pergunta 3 são dedução, a
   provar.
+- **Pergunta preparada, só para depois da sessão A (se ela confirmar o risco 1):** "Quando o Kaique está em outra
+  janela na primeira abertura, a pergunta do Windows não vem para o meio da tela: o escudo pisca na barra de tarefas.
+  O que você escolhe: A (sugestão) a janelinha que avisa antes da pergunta ganha um botão "Continuar", e com o clique
+  dele o programa fica na frente e a pergunta vem no meio; B a janelinha diz também "Se a pergunta não aparecer,
+  clique no escudo que pisca na barra de tarefas"; C fica como está." O print sai da própria sessão A.
 - **Para o passo 4:** as leituras do serviço de entrar de longe, da conta e das duas trancas (a peça já dá o rodar e
   esperar e o ler; a leitura específica é da peça 3).
 
@@ -363,14 +369,16 @@ Lido (documentação ou código), separado do deduzido:
 
 ## Perguntas para o Samuel
 
-**Pergunta 1. O nome que aparece na pergunta do Windows.** É a pergunta "Deseja permitir que este aplicativo faça
-alterações?", que vai aparecer uma vez, na primeira vez que o Kaique abre o programa. Você escolheu, em 18/11, que nela
-apareça "Editor de Impressão" em vez de "Windows PowerShell". A troca de quem pede já está feita: agora é o próprio
-programa. Mas a Microsoft escreve que, num programa sem o certificado pago, a pergunta mostra o **nome do arquivo** do
-programa, e o arquivo hoje se chama "EditorImpressao.exe" (tudo junto, sem acento).
+### O nome que aparece na pergunta do Windows
+
+É a pergunta "Deseja permitir que este aplicativo faça alterações?", que vai aparecer uma vez, na primeira vez que o
+Kaique abre o programa. Você escolheu, em 18/11, que nela apareça "Editor de Impressão" em vez de "Windows
+PowerShell". A troca de quem pede já está feita: agora é o próprio programa. Mas a Microsoft escreve que, num programa
+sem o certificado pago, a pergunta mostra o **nome do arquivo** do programa, e o arquivo hoje se chama
+"EditorImpressao.exe" (tudo junto, sem acento).
 - Foto da Microsoft de um programa sem certificado (faixa amarela; o nome fica logo abaixo da faixa, borrado por
-  eles): `anexos/pergunta-do-windows-sem-certificado-foto-da-microsoft.png`. Com certificado (faixa cinza, nome
-  bonito): `anexos/pergunta-do-windows-com-certificado-foto-da-microsoft.png`.
+  eles): [sem certificado](anexos/pergunta-do-windows-sem-certificado-foto-da-microsoft.png). Com certificado (faixa
+  cinza, nome bonito): [com certificado](anexos/pergunta-do-windows-com-certificado-foto-da-microsoft.png).
 - Situação: é escolha, não defeito. O Kaique ainda não vê esta pergunta; a prova na sua tela mostra como fica.
 - **O que você escolhe:**
   - A (sugestão): fica "EditorImpressao.exe". Nada mais muda.
@@ -379,17 +387,6 @@ programa, e o arquivo hoje se chama "EditorImpressao.exe" (tudo junto, sem acent
   - C: comprar o certificado: aparece "Editor de Impressão" e a faixa fica cinza. Custa todo ano.
   - Só comentário.
 - Sugestão à gerente: levar depois da sessão A, com a foto de verdade (decisão de 18/11, D-782).
-
-**Pergunta 2 (preparada; levar só se a sessão A confirmar). Quando o Kaique está em outra janela.** Na primeira vez
-que ele abre o programa, se clicar no navegador enquanto o programa carrega, o Windows não põe a pergunta no meio da
-tela: o escudo fica piscando na barra de tarefas (regra do Windows, para não roubar a tela de quem faz outra coisa).
-Situação: a confirmar na sua tela.
-- **O que você escolhe:**
-  - A (sugestão): a janelinha que avisa antes da pergunta ganha um botão "Continuar"; quando ele clica, o programa
-    fica na frente e a pergunta vem no meio da tela.
-  - B: a janelinha diz também "Se a pergunta não aparecer, clique no escudo que pisca na barra de tarefas".
-  - C: fica como está.
-  - Só comentário.
 
 ## Commit
 
