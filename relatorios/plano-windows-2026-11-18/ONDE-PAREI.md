@@ -60,3 +60,46 @@ Estão no plano, seção 5 (16 decisões, em ordem, no formato do CLAUDE.md §11
 - Nenhuma linha do programa nem dos testes mudou. Nenhuma janela, nenhuma pergunta do Windows, nenhum agente aberto.
 - Perguntas para o Samuel: no plano-v2, seções 6.2 (o que depende dele) e 6.3 (três pontos em que duas decisões, ao pé
   da letra, não combinam). A gerente as leva no formato do CLAUDE.md §11.13.
+
+## Versão 3 do plano (18/11/2026, começada 21:42 pelo relógio do PC; o Livro data as respostas novas de 19/11)
+
+Pedido da gerente: aplicar as respostas do Samuel de hoje (D-791 a D-798, a aprovação do estudo do Kraken na D-768, o
+fato novo da pergunta do Windows) e montar um resumo de uma página para ele aprovar. Só documento.
+
+### Decisões que esta tarefa precisa cumprir
+- D-791: "b" (o porteiro barra desde o primeiro dia); lista de exceções: "Sim" · "sim" (cada erro que já existe com data
+  e o passo que o conserta; só diminui; nada entra sem o "sim" dele). Feito em `tests/` e no git, não como gancho.
+- D-792: "ok" (o formulário único da entrega, conferido por um programa).
+- D-793: "ok" (agentes sem a ferramenta de abrir agente nem a da Central; construída).
+- D-794 (muda a D-769): "eu acho que deveria aparecer o aviso para atualizar ou não na hora de fechar e se ele disser
+  sim, o programa fecha e fica uma janelinha em segundo plano tipo esses iconizinhos, mostrando porcentagem
+  atualizando" · "da proxima vez que ele abrir o programa".
+- D-795: "ok" (o Setup.exe continua sendo feito, mas o publicar o apaga no fim, também com erro; não vai ao GitHub nem ao
+  Kaique).
+- D-796: "1, mas tem que ser explissito o pedido né" · "o porteiro tem que bloquear".
+- D-797: "Só precisa de dois lugares né?" · "ok" (versão de teste e oficial; o `master` sai das regras).
+- D-798: "fechou" (só quem confere escreve PRONTO PARA CONFERIR, nunca sobre o que construiu).
+- D-768: estudo do Kraken aprovado ("sim", 19/11).
+- Continuam: D-765 ("eu não quero fazer nenhum conserto até o .exe estar pronto para o kaique..."), D-767, D-775, D-785,
+  D-605, CLAUDE.md §11.12 (ampliada) e §11.13.
+- Fato novo (Samuel, 19/11: "veio direito"): com o programa na frente, a pergunta do Windows veio no meio da tela.
+- Em aberto, não decidir: X3 (adiada), X6, X9, X10.
+
+### O que já está escolhido e testado aqui
+- Tudo o que o plano-v2 lista (seção 9 e o ONDE-PAREI da v1). Novo para a v3: o fechar do programa grava primeiro e
+  não pergunta "quer salvar?" (`ui/janela_principal.py`, `closeEvent`, docstring: "um 'não' por engano apagaria um dia
+  de trabalho do Kaique"). A pergunta "Atualizar agora?" da D-794 não pode mudar isso: ela vem depois de gravar e o
+  "Não" nunca perde trabalho.
+
+### Como fica para quem usa e no livro
+Esta tarefa não muda nada. O que a v3 muda para o Kaique está no plano-v3, seção 4. Nada muda nos livros nem no PDF.
+
+### Feito (v3)
+- [x] Lidos: `implementador.md`; CLAUDE.md inteiro (§11.12 e §11.13); `memoria/INDICE.md`,
+  `memoria/geral/atualizador.md`, `memoria/geral/testes-a-distancia.md`; D-767 a D-798 inteiras (obra-juncao,
+  `82ef9e64`); o plano-v2; a proposta das regras §1 (contradições) e §5 (as 24 conferências).
+- [x] Contada a lista de exceções no código da versão de teste (o código é o mesmo desde `b74a94e2`; conferido com
+  `git diff`): ver plano-v3, passo 0.
+- [x] Lidos para a D-794 (§11.12, ponto 6): documentação do `QSystemTrayIcon` (Qt for Python 6); código do Velopack
+  1.2.161 (`apply_windows_impl.rs`, `util_windows.rs`, `l18n/src/progress.rs`); Microsoft sobre a sessão 0; a pergunta
+  do Microsoft Q&A sobre os ícones escondidos do Windows 11. O que cada um diz está no plano-v3, peça 11.
