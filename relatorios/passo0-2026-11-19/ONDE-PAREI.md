@@ -28,8 +28,9 @@ partir da lista de arquivos do pedido da gerente (a gerente não tinha mandado u
 - Quem tentou quebrar devolveu com 19 achados (`quem-quebrou/relatorio.md`, NÃO ESTÁ PRONTO). Esta é a volta: todos
   os achados que a gerente mandou consertar estão consertados, cada um com prova em `tests/` (ver "Como ficou cada
   achado"). A lista foi refeita com a busca ampliada: 125 lugares em 118 itens (eram 44 em 42).
-- Rodada de prova com a lista "valendo" (ramo `passo0-prova-valendo`, que eu criei): ver "Testes". Depois dela, o ramo
-  de prova é apagado (só ele; fui eu que o criei).
+- Rodada de prova com a lista "valendo" (ramo `passo0-prova-valendo`, que eu criei): passou, e o ramo foi apagado.
+  Rodada final do ramo de trabalho: passou. O formulário, conferido com o pacote e com o GitHub, passa na etapa "antes de
+  ir ao agente que tenta quebrar". Entregue à gerente.
 
 ## Como ficou cada achado de quem tentou quebrar
 
@@ -314,9 +315,13 @@ conferência antes do commit (não ligada) e o pacote do passo 1, montado pelo p
   `tests/test_conferencias_antes_do_commit.py` 9.
 - Mutação da primeira volta (desfazer cada correção do esboço numa cópia e ver o teste dela falhar): correção 1, 2
   testes falham; correção 2, 1 falha; correção 3, 1 falha.
-- GitHub, rodada de prova RODADA_PROVA (ramo `passo0-prova-valendo`, a lista em "valendo" com um "sim" de mentira):
-  RESULTADO_PROVA
-- GitHub, rodada RODADA_FINAL (o último commit de código, COMMIT_FINAL): RESULTADO_FINAL
+- GitHub, rodada de prova 44461329846 (ramo `passo0-prova-valendo`, a lista em "valendo" com um "sim" de mentira):
+  passou inteira (4136 passaram, 0 falharam). O teste que barra o repositório
+  rodou de verdade (não aparece entre os parados) e passou: com a lista valendo, o código de hoje só tem o que a lista
+  deixa. O ramo de prova foi apagado depois (no GitHub e na cópia; só tinha o commit da prova).
+- GitHub, rodada 44461501923 (o último commit de código, 76fed2ee): passou inteira. 250 arquivos de teste, 4135 passaram, 0 falharam,
+  148 pulados (entre eles o teste do porteiro que espera o "sim" do Samuel e o de proteção, que espera a versão de
+  teste ter o porteiro, os dois com o motivo escrito); os botões e os prints da janela real também passaram.
 
 ## Caminho e função
 
@@ -408,7 +413,7 @@ programa muda com nenhuma das duas escolhas agora.
 
 ## Commit
 
-Último commit de código do trabalho: e2fad264 (depois dele, só este ONDE-PAREI mudou).
+Último commit de código do trabalho: 76fed2ee (depois dele, só este ONDE-PAREI mudou).
 
 ## Perguntas do Windows que o Samuel vê
 
