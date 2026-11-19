@@ -369,7 +369,9 @@ conferência antes do commit (não ligada) e o pacote do passo 1, montado pelo p
 - Primeira volta: a rodada de prova 44461329846 (a lista "valendo" com um "sim" de mentira) passou, e o teste que barra o
   repositório rodou de verdade; o ramo de prova foi apagado. Com a regra nova do "sim" (N1), aquele "sim" de mentira
   não passaria mais.
-- GitHub, rodada RODADA_FINAL (o último commit de código, COMMIT_FINAL): RESULTADO_FINAL
+- GitHub, rodada 44468529235 (o último commit de código, 8a1f56d8): passou inteira. 250 arquivos de teste, 4169 passaram, 0 falharam,
+  148 pulados (entre eles o teste do porteiro que espera o "sim" do Samuel e o de proteção, que espera a versão de
+  teste ter o porteiro, os dois com o motivo escrito); os botões e os prints da janela real também passaram.
 
 ## Caminho e função
 
@@ -469,7 +471,7 @@ você decidiu para os outros. Nada do programa muda com nenhuma das duas escolha
 
 ## Commit
 
-Último commit de código do trabalho: 76fed2ee (depois dele, só este ONDE-PAREI mudou).
+Último commit de código do trabalho: 8a1f56d8 (depois dele, só este ONDE-PAREI mudou).
 
 ## Perguntas do Windows que o Samuel vê
 
