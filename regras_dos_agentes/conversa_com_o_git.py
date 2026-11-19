@@ -208,10 +208,20 @@ def configurar(raiz: Path | str, chave: str, valor: str) -> None:
     _rodar(raiz, "config", chave, valor)
 
 
+def adicionar(raiz: Path | str, *caminhos: str) -> None:
+    """`git add` destes caminhos (vão para o índice, o que entra no próximo commit)."""
+    _rodar(raiz, "add", "--", *caminhos)
+
+
+def commit_do_indice(raiz: Path | str, mensagem: str) -> subprocess.CompletedProcess:
+    """`git commit` só do que já está no índice; devolve o resultado inteiro sem levantar (o gancho pode barrar)."""
+    return _rodar_para_escrever(raiz, "commit", "-q", "-m", mensagem, aceitar=tuple(range(256)))
+
+
 def commit_de_tudo(raiz: Path | str, mensagem: str) -> subprocess.CompletedProcess:
     """`git add -A` e `git commit`; devolve o resultado inteiro (código, saída) sem levantar: o gancho pode barrar."""
     _rodar(raiz, "add", "-A")
-    return _rodar_para_escrever(raiz, "commit", "-q", "-m", mensagem, aceitar=tuple(range(256)))
+    return commit_do_indice(raiz, mensagem)
 
 
 def enviar(raiz: Path | str, remoto: Path | str) -> None:

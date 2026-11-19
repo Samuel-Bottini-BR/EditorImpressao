@@ -88,10 +88,9 @@ def test_o_gancho_deixa_passar_o_commit_certo(repo):
 def test_o_gancho_le_o_que_vai_no_commit_e_nao_a_pasta(repo):
     """O que conta é o índice: o erro só na pasta (fora do commit) não barra; o erro no commit barra."""
     repo.escrever("core/a.py", CERTO)
-    subprocess.run(["git", "add", "core/a.py"], cwd=repo.raiz, check=True)
+    repo.adicionar("core/a.py")
     repo.escrever("core/a.py", DEFEITO_1)              # mudou a pasta depois do add: não vai no commit
-    feito = subprocess.run(["git", "-c", "user.name=prova", "-c", "user.email=prova@porteiro.invalid", "commit", "-q",
-                            "-m", "só o certo"], cwd=repo.raiz, capture_output=True, text=True)
+    feito = repo.commit_do_indice("só o certo")
     assert feito.returncode == 0, feito.stdout + feito.stderr
     feito = repo.tentar_commit("agora o erro vai junto")
     assert feito.returncode != 0
@@ -129,7 +128,7 @@ def test_o_gancho_e_o_github_acham_o_mesmo_no_mesmo_arquivo(repo):
     from regras_dos_agentes import porteiro
 
     repo.escrever("core/novo.py", DEFEITO_1)
-    subprocess.run(["git", "add", "core/novo.py"], cwd=repo.raiz, check=True)
+    repo.adicionar("core/novo.py")
     _, do_commit = porteiro.achados_do_proximo_commit(repo.raiz)
     _, do_repositorio = porteiro.achados_do_repositorio(repo.raiz)
     chave = lambda a: (a.conferencia, a.arquivo, a.linha, a.texto)  # noqa: E731

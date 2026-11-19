@@ -9,12 +9,16 @@ programa (só lê os arquivos como texto). Nasceu das decisões do Samuel de 18 
   `excecoes.py` (a lista de exceções, um item por lugar, que só diminui e só ganha item com o "sim" do Samuel);
 - D-792, o formulário da entrega: `formulario.py` (F1 a F20 e as perguntas das etiquetas, nas três etapas, e os seis
   campos do relatório de quem tenta quebrar);
-- a conferência antes do commit: `antes_do_commit.py`, chamada por `ganchos/pre-commit` (a gerente liga com
-  `git config core.hooksPath ganchos`; o teste no GitHub é quem garante, porque o git não avisa quando o gancho falta).
+- a conferência antes do commit: `python -m regras_dos_agentes antes-do-commit` (em `__main__.py`), chamada por
+  `ganchos/pre-commit` (a gerente liga com `git config core.hooksPath ganchos`; o teste no GitHub é quem garante,
+  porque o git não avisa quando o gancho falta);
+- `texto_para_o_samuel.py`: o texto curto do "sim" à lista, contado da própria lista;
+- `repositorio_de_prova.py`: um repositório git de verdade numa pasta, para as provas e para quem tenta quebrar.
 
 Peças únicas (CLAUDE.md §11.12, ponto 1): toda conversa com o git passa por `conversa_com_o_git.py`; com o GitHub, por
-`conversa_com_o_github.py`; toda leitura de código Python, por `leitura_do_codigo.py`; a lista de arquivos de um
-pedido é lida por `pedido.py`. Ninguém aqui chama o git ou o `gh` por conta própria.
+`conversa_com_o_github.py`; toda leitura de código Python, por `leitura_do_codigo.py`; o Livro de decisões, por
+`livro.py`; o pedido (papel, partida, lista de arquivos), por `pedido.py`. Ninguém aqui chama o git ou o `gh` por
+conta própria.
 
 Como usar (linha de comando): `python -m regras_dos_agentes --help`.
 

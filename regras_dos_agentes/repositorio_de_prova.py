@@ -55,6 +55,14 @@ class RepositorioDeProva:
             raise git.GitFalhou(f"o commit de prova não aconteceu: {r.stdout}{r.stderr}")
         return git.commit_completo(self.raiz, "HEAD")
 
+    def adicionar(self, caminho: str) -> None:
+        """Põe o arquivo no índice (o que vai no próximo commit), sem fazer o commit."""
+        git.adicionar(self.raiz, caminho)
+
+    def commit_do_indice(self, mensagem: str):
+        """Tenta o commit só do que está no índice e devolve o resultado (o gancho pode barrar)."""
+        return git.commit_do_indice(self.raiz, mensagem)
+
     def tentar_commit(self, mensagem: str):
         """Tenta o commit e devolve o resultado (código, saída): o gancho pode barrar."""
         return git.commit_de_tudo(self.raiz, mensagem)
