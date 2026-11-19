@@ -40,7 +40,7 @@ from . import conversa_com_o_github as github
 from . import pedido as pedido_
 from . import porteiro_mudancas, tabela_arquivos
 from .livro import NUMERO, Livro
-from .porteiro import FORA_DO_PROJETO
+from .porteiro import FORA_DO_PROJETO, e_fonte_python
 from .porteiro_mudancas import QUEM_CONFERE
 
 ETAPAS = ("quebrar", "prova", "pronto")
@@ -179,7 +179,7 @@ class _Repositorio:
         if self._definidos is None:
             nomes: set[str] = set()
             for c in self.arquivos:
-                if c.endswith(".py") and c.split("/")[0] not in FORA_DO_PROJETO:
+                if e_fonte_python(c) and c.split("/")[0] not in FORA_DO_PROJETO:
                     try:
                         texto = (self.raiz / c).read_text(encoding="utf-8", errors="replace")
                     except OSError:

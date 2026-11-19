@@ -644,3 +644,43 @@ def test_q4_codigo_compilado_sem_fonte_no_repositorio_e_acusado():
     achados = porteiro.conferir_codigo(["servicos/__pycache__/x.cpython-314.pyc", "core/y.pyo", "core/z.py"],
                                        lambda c: '"""Z."""\n' if c.endswith(".py") else None)
     assert sorted(a for a, _ in codigos(achados, "K00")) == ["core/y.pyo", "servicos/__pycache__/x.cpython-314.pyc"]
+
+
+# ---------------------------------------------------------------- quinta volta de quem quebrou (S1, S2, S3)
+
+def test_s1_nenhuma_pasta_de_fora_tem_o_nome_de_um_modulo_da_raiz():
+    """Achado S1 (quinta volta, 19/11/2026): `historico/` estava entre as pastas que não são programa, mas o programa
+    importa `historico` (o `historico.py` da raiz); um `historico/__init__.py` tomava o lugar dele e o porteiro não o
+    lia. No repositório de hoje, nenhuma pasta de `NAO_E_PROGRAMA` tem o nome de um módulo da raiz."""
+    from pathlib import Path
+
+    from regras_dos_agentes import conversa_com_o_git as git
+
+    caminhos = git.arquivos_do_git(Path(__file__).resolve().parent.parent)
+    assert not porteiro.modulos_da_raiz(caminhos) & set(porteiro.NAO_E_PROGRAMA)
+    assert porteiro.pastas_de_fora_com_nome_de_modulo(caminhos) == []
+
+
+def test_s1_a_pasta_com_nome_de_modulo_e_lida_e_a_colisao_e_acusada():
+    """S1: o `historico/__init__.py` com `schtasks` é lido como programa; e se uma pasta de fora voltar a ter o nome de
+    um módulo da raiz (aqui, um `docs.py` solto), o porteiro acusa (K00, que nunca entra na lista)."""
+    achados = conferir({"historico.py": '"""O histórico."""\n',
+                        "historico/__init__.py": '"""Toma o lugar."""\nCMD = ["schtasks", "/Run"]\n'})
+    assert [a for a, _ in codigos(achados, "K01")] == ["historico/__init__.py"]
+    achados = conferir({"docs.py": '"""Um módulo com nome de pasta de fora."""\n'})
+    assert [a for a, _ in codigos(achados, "K00")] == ["docs"]
+
+
+def test_s2_o_pyw_e_lido_como_codigo():
+    """Achado S2 (quinta volta, 19/11/2026): no Windows o Python importa `.pyw` como código-fonte, e o porteiro só lia
+    `.py`; um `core/segredo.pyw` com `schtasks` passava."""
+    achados = conferir({"core/segredo.pyw": '"""Escondido."""\nCMD = ["schtasks", "/Run"]\n'})
+    assert [a for a, _ in codigos(achados, "K01")] == ["core/segredo.pyw"]
+    assert porteiro.e_programa("core/segredo.pyw") and porteiro.e_script_python("segredo.pyw")
+
+
+def test_s3_a_extensao_compilada_pyd_e_acusada():
+    """Achado S3 (quinta volta, 19/11/2026): um `.pyd` (extensão compilada do Windows, que o Python importa) passava;
+    agora vira K00 junto com o `.pyc` e o `.pyo`. A `.dll` do ScanTailor não entra (o Python não a importa)."""
+    achados = porteiro.conferir_codigo(["core/x.cp314-win_amd64.pyd", "core/nativo/scantailor.dll"], lambda c: None)
+    assert [a for a, _ in codigos(achados, "K00")] == ["core/x.cp314-win_amd64.pyd"]

@@ -3,7 +3,7 @@
  "situacao": "proposta",
  "sim_do_samuel": null,
  "gerada_em": "2026-11-19",
- "commit_lido": "b66e6be921b4ed2aa031f75119a401e5fb45a97c",
+ "commit_lido": "65843bb387c08b8e6b7e6e9717abbb37354e5d1a",
  "itens": [
   {
    "arquivo": "atualizacao.py",

@@ -14,7 +14,7 @@ Dois tipos:
 O que já está errado hoje no código fica na lista de exceções (`excecoes.py`), um item por lugar, e só ali.
 Nenhuma conferência tem exceção própria escrita no código: nem por arquivo, nem por caso.
 
-Onde cada busca olha (o "programa"): todo `.py` do repositório, menos as pastas de `NAO_E_PROGRAMA` (os testes, os
+Onde cada busca olha (o "programa"): todo `.py` e `.pyw` do repositório, menos as pastas de `NAO_E_PROGRAMA` (os testes, os
 relatórios, a documentação, o próprio porteiro, que tem as palavras que procura escritas como dado, e o código de fora). A K16 e a K24 olham também os scripts de teste e de apoio, e leem a estrutura do código (a importação e a
 chamada de verdade), não o texto.
 
@@ -123,8 +123,25 @@ PECA_UNICA_DO_WINDOWS = "core/windows.py"   # o único lugar onde a conversa com
 # As pastas do repositório que NÃO são programa (achado Q2 da quarta volta de quem quebrou: um `servicos/__init__.py`
 # com `schtasks`, importado pelo `main.py`, passava). Todo o resto conta como programa, inclusive pasta nova. Lugar
 # único: o porteiro, a K08 e a tabela leem daqui. PROTEGIDA ("igual"): pôr uma pasta aqui afrouxa o porteiro.
-NAO_E_PROGRAMA = ("tests", "relatorios", ".github", ".claude", "docs", "memoria", "historico", "gabarito",
+# Nenhuma delas pode ter o nome de um módulo da raiz (achado S1 da quinta volta): uma pasta `historico/` com
+# `__init__.py` toma o lugar do `historico.py` no `import historico`, e o porteiro não a lia. Por isso `historico`
+# saiu daqui (a pasta continua no git; não tem `.py`, então o porteiro passa a lê-la sem achar nada), e
+# `pastas_de_fora_com_nome_de_modulo` acusa a colisão se ela voltar.
+NAO_E_PROGRAMA = ("tests", "relatorios", ".github", ".claude", "docs", "memoria", "gabarito",
                   "regras_dos_agentes", "ganchos", "terceiros", "velhos")
+
+# O que o Python carrega como código (achados S2 e S3 da quinta volta). Lugar único: toda conferência que olha código
+# Python pergunta a `e_fonte_python`, e o código compilado vira K00.
+# - Fonte: o `.py` e o `.pyw` (no Windows, `importlib.machinery.SOURCE_SUFFIXES` é `['.py', '.pyw']`).
+# - Compilado, que o porteiro não consegue ler: o `.pyc`/`.pyo` (bytecode) e o `.pyd` (extensão do Windows,
+#   `EXTENSION_SUFFIXES`). As `.dll` do ScanTailor não entram: o Python não as importa como módulo.
+FONTE_PYTHON = (".py", ".pyw")
+COMPILADO_PYTHON = (".pyc", ".pyo", ".pyd")
+
+
+def e_fonte_python(caminho: str) -> bool:
+    """O arquivo é código-fonte que o Python importa (`.py` ou `.pyw`)?"""
+    return caminho.endswith(FONTE_PYTHON)
 
 
 def _no_programa(caminho: str) -> bool:
@@ -134,8 +151,22 @@ def _no_programa(caminho: str) -> bool:
 
 
 def e_programa(caminho: str) -> bool:
-    """Um `.py` do programa: qualquer `.py` do repositório fora das pastas de `NAO_E_PROGRAMA`."""
-    return caminho.endswith(".py") and _no_programa(caminho)
+    """Código-fonte do programa: qualquer `.py`/`.pyw` do repositório fora das pastas de `NAO_E_PROGRAMA`."""
+    return e_fonte_python(caminho) and _no_programa(caminho)
+
+
+def modulos_da_raiz(caminhos: Iterable[str]) -> set[str]:
+    """Os nomes que um `import` acha na raiz: cada arquivo de código ou compilado solto na raiz (`historico.py` →
+    `historico`; `x.cp314-win_amd64.pyd` → `x`)."""
+    return {c.split(".", 1)[0] for c in caminhos if "/" not in c and c.endswith(FONTE_PYTHON + COMPILADO_PYTHON)}
+
+
+def pastas_de_fora_com_nome_de_modulo(caminhos: Iterable[str]) -> list[Achado]:
+    """Achado S1: uma pasta de `NAO_E_PROGRAMA` com o nome de um módulo da raiz pode tomar o lugar dele no import (com
+    um `__init__.py`), fora da vista do porteiro. Vira K00, que nunca entra na lista de exceções."""
+    return [Achado("K00", nome, 0, nome, f"a pasta {nome}/ está fora da vista do porteiro e tem o nome de um módulo "
+                   f"da raiz ({nome}): ela pode tomar o lugar dele no import")
+            for nome in sorted(modulos_da_raiz(caminhos) & set(NAO_E_PROGRAMA))]
 
 
 def e_texto_que_a_pessoa_ve(caminho: str) -> bool:
@@ -154,8 +185,8 @@ FORA_DO_PROJETO = ("terceiros", "velhos")
 
 
 def e_script_python(caminho: str) -> bool:
-    """Todo `.py` do projeto, menos o código de fora (`terceiros/`) e o guardado (`velhos/`)."""
-    return caminho.endswith(".py") and caminho.split("/")[0] not in FORA_DO_PROJETO
+    """Todo `.py`/`.pyw` do projeto, menos o código de fora (`terceiros/`) e o guardado (`velhos/`)."""
+    return e_fonte_python(caminho) and caminho.split("/")[0] not in FORA_DO_PROJETO
 
 
 # ----------------------------------------------------------------------------------------------------------------
@@ -292,7 +323,8 @@ BARRA_DE_ROLAGEM = {"escuro": "#4A4D54", "cinza": "#6A6A6A", "claro": "#B5B3AC"}
 # quebrar, 19/11). Só acrescentar é livre. Cada nome aqui é uma atribuição de valor literal neste arquivo.
 PROTEGIDAS = ("PALAVRAS_DO_WINDOWS", "PALAVRAS_DE_DETACHED", "PALAVRAS_DE_LICENCA", "PADRAO_DO_NUMERO_DE_DECISAO",
               "PADRAO_DO_EMOJI", "GERADORES", "PADRAO_DAS_FERRAMENTAS_PROIBIDAS", "BARRA_DE_ROLAGEM",
-              "PECA_UNICA_DO_WINDOWS", "FORA_DO_PROJETO", "NAO_E_PROGRAMA")
+              "PECA_UNICA_DO_WINDOWS", "FORA_DO_PROJETO", "NAO_E_PROGRAMA",
+              "FONTE_PYTHON", "COMPILADO_PYTHON")
 
 
 def _texto_do_lugar(linha_de_codigo: str) -> str:
@@ -702,10 +734,10 @@ def k08(caminhos: Iterable[str]) -> list[Achado]:
 
 
 def k00_compilado_sem_fonte(caminhos: Iterable[str]) -> list[Achado]:
-    """Um `.pyc` (ou `.pyo`) guardado no repositório: o Python o importa, e o porteiro não consegue lê-lo (achado Q4 da
-    quarta volta). Vira K00, que nunca entra na lista de exceções."""
-    return [Achado("K00", c, 0, c, "código compilado (.pyc) no repositório: o porteiro não consegue ler e o Python "
-                   "importa") for c in caminhos if c.endswith((".pyc", ".pyo"))]
+    """Código compilado guardado no repositório (`COMPILADO_PYTHON`: `.pyc`, `.pyo`, `.pyd`): o Python o importa, e o
+    porteiro não consegue lê-lo (achados Q4 da quarta volta e S3 da quinta). Vira K00, que nunca entra na lista."""
+    return [Achado("K00", c, 0, c, "código compilado no repositório: o porteiro não consegue ler e o Python "
+                   "importa") for c in caminhos if c.endswith(COMPILADO_PYTHON)]
 
 
 _DO_CODIGO_PYTHON: list[Callable[[_Arquivo], list[Achado]]] = [k01, k02, k03, k04, k05, k06, k07, k16_codigo, k22, k24]
@@ -718,7 +750,8 @@ def conferir_codigo(caminhos: Iterable[str], ler: Callable[[str], str | None]) -
     porteiro deveria ler e não conseguiu vira achado (K00), nunca "passou".
     """
     caminhos = sorted(set(caminhos))
-    achados: list[Achado] = k08(caminhos) + k00_compilado_sem_fonte(caminhos)
+    achados: list[Achado] = (k08(caminhos) + k00_compilado_sem_fonte(caminhos)
+                             + pastas_de_fora_com_nome_de_modulo(caminhos))
     for c in caminhos:
         precisa = e_script_python(c) or c == "requirements.txt" or fnmatch(c, ".claude/agents/*.md")
         if not precisa:
@@ -727,7 +760,7 @@ def conferir_codigo(caminhos: Iterable[str], ler: Callable[[str], str | None]) -
         if fonte is None:
             achados.append(Achado("K00", c, 0, c, "não deu para ler o arquivo"))
             continue
-        if c.endswith(".py"):
+        if e_fonte_python(c):
             arq = _Arquivo(c, fonte)
             if not arq.ler():
                 achados.append(Achado("K00", c, 0, c, f"o porteiro não conseguiu ler o código: {arq.erro}"))

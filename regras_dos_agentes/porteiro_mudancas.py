@@ -32,7 +32,7 @@ from . import leitura_do_codigo as leitura
 from .livro import NUMERO, Livro
 from .pedido import coberto
 from . import pedido as pedido_
-from .porteiro import FORA_DO_PROJETO, Achado, e_programa
+from .porteiro import FORA_DO_PROJETO, Achado, e_fonte_python, e_programa
 
 # Quem pode escrever "PRONTO PARA CONFERIR" (D-798): só quem confere. Lugar único (o formulário importa daqui).
 QUEM_CONFERE = ("verificador", "quebrador")
@@ -118,7 +118,7 @@ def k10(raiz: Path, base: str, papel: str, pasta_do_relatorio: str = "") -> list
     aceitas = _relatorios_de_quem_quebrou_aceitos(raiz, base)
     papel_do_arquivo: dict[str, str] = {}
     for caminho, linhas in git.linhas_novas(raiz, base).items():
-        if caminho.endswith(".py"):
+        if e_fonte_python(caminho):
             continue
         for n, texto in linhas:
             fora = _fora_das_aspas(texto)
@@ -138,7 +138,7 @@ def k10(raiz: Path, base: str, papel: str, pasta_do_relatorio: str = "") -> list
 
 def e_teste_antigo(caminho: str) -> bool:
     """Arquivo de teste: os de `tests/` e os soltos da raiz (`teste_*.py`, ex.: o `teste_botoes.py`, CLAUDE.md §4.5)."""
-    return caminho.endswith(".py") and (caminho.startswith("tests/") or
+    return e_fonte_python(caminho) and (caminho.startswith("tests/") or
                                         ("/" not in caminho and caminho.startswith("teste_")))
 
 
@@ -199,7 +199,7 @@ def k12(raiz: Path, base: str) -> list[Achado]:
     saida = []
     novas = git.linhas_novas(raiz, base)
     for caminho, linhas in novas.items():
-        if not caminho.endswith(".py") or caminho.split("/")[0] in FORA_DO_PROJETO or not linhas:
+        if not e_fonte_python(caminho) or caminho.split("/")[0] in FORA_DO_PROJETO or not linhas:
             continue
         fonte = git.conteudo_no_commit(raiz, "HEAD", caminho)
         if fonte is None:
