@@ -2056,3 +2056,259 @@ def test_volta5_achado4_so_o_gh_que_nao_abriu_de_verdade_e_nada_saiu(tmp_path, m
     with pytest.raises(pub.Parou) as erro:
         pub.DestinoGitHub("dono/projeto", gh=str(gh)).liberar(ETIQUETA)
     assert not isinstance(erro.value, pub.NadaSaiu), erro.value
+
+
+
+# ---------------------------------------------------------------------------------------------------------------------
+# Passo 2, volta 6 (a prova à vista de 20/11/2026 e o relatório 5 de quem tentou quebrar)
+# ---------------------------------------------------------------------------------------------------------------------
+
+VC_DE_PROVA = b"MZ o Visual C++ de prova (o de verdade e conferido pela assinatura da Microsoft, em preparar_vc_redist)"
+
+
+def _pyinstaller_de_prova(onefile: bool) -> bool:
+    """No lugar SÓ do PyInstaller (que leva uns 4 minutos e não roda no Windows do GitHub sem os modelos): escreve o que
+    o PyInstaller 6 escreve, lido do PRÓPRIO comando (`empacotar.comando_do_pyinstaller`): o .exe em
+    `--distpath\\--name\\` e cada `--add-data origem;destino` em `<pasta>\\<--contents-directory>\\<destino>\\`. Foi o que a
+    prova de 20/11 achou na pasta do PyInstaller de verdade (`relatorios/passo2-publicar/anexos/volta6-a-pasta-da-prova.txt`).
+    Tudo o que o `construir_pasta` faz depois (as peças, as conferências, o Visual C++, a ficha) é o código de verdade."""
+    comando = empacotar.comando_do_pyinstaller(onefile)
+    valor = lambda opcao: comando[comando.index(opcao) + 1]  # noqa: E731
+    pasta = Path(valor("--distpath")) / valor("--name")
+    interno = pasta / valor("--contents-directory")
+    interno.mkdir(parents=True)
+    (pasta / f"{valor('--name')}.exe").write_bytes(b"MZ o programa montado de prova")
+    for i, item in enumerate(comando):
+        if item == "--add-data":
+            origem, destino = (Path(p) for p in comando[i + 1].rsplit(";", 1))
+            if origem.is_dir():
+                shutil.copytree(origem, interno / destino, dirs_exist_ok=True)
+            else:
+                (interno / destino).mkdir(parents=True, exist_ok=True)
+                shutil.copy2(origem, interno / destino / origem.name)
+    return True
+
+
+@pytest.fixture
+def montar_de_verdade(ambiente, monkeypatch):
+    """O `empacotar.construir_pasta` DE VERDADE, numa pasta do teste: `empacotar.RAIZ` aponta para ela (a pasta montada
+    fica em <tmp>\\repositorio-do-empacotar\\dist\\EditorImpressao, nunca no dist\\ desta cópia). Trocados só: o PyInstaller
+    (`_pyinstaller_de_prova`), os modelos (os mesmos nomes e destinos de `empacotar.modelos_do_programa`, com arquivos
+    do teste: no Windows do GitHub os modelos não existem) e as peças dos detectores (`empacotar.juntar_pecas`: um
+    Tesseract com os 27 arquivos e as licenças, os idiomas e um Visual C++ de prova; no Windows do GitHub não há
+    Tesseract instalado nem o Visual C++ baixado, e o de verdade baixaria da internet). Devolve o que o teste precisa."""
+    a = ambiente
+    from core import ocr_tesseract
+
+    raiz = a["tmp"] / "repositorio-do-empacotar"
+    monkeypatch.setattr(empacotar, "RAIZ", raiz)
+    monkeypatch.setattr(empacotar, "_pyinstaller", _pyinstaller_de_prova)
+    monkeypatch.setattr(empacotar, "_PECAS", None)
+    modelos = []
+    for origem, destino in empacotar.modelos_do_programa():
+        copia = a["tmp"] / "modelos-de-prova" / destino / origem.name
+        copia.parent.mkdir(parents=True, exist_ok=True)
+        copia.write_bytes(b"modelo de prova " + origem.name.encode())
+        modelos.append((copia, destino))
+    monkeypatch.setattr(empacotar, "modelos_do_programa", lambda: modelos)
+    tesseract = a["tmp"] / "tesseract-de-prova"
+    (tesseract / "doc").mkdir(parents=True)
+    for nome in empacotar.ARQUIVOS_DO_TESSERACT:
+        (tesseract / nome).write_bytes(b"nao e programa: so um arquivo de prova " + nome.encode())
+    for nome in empacotar.LICENCAS_DO_TESSERACT:
+        (tesseract / "doc" / nome).write_text(f"{nome} de prova", encoding="utf-8")
+    idiomas = a["tmp"] / "tessdata-de-prova"
+    for idioma in ocr_tesseract.IDIOMAS_DO_INSTALADOR:
+        (idiomas / f"{idioma}.traineddata").parent.mkdir(parents=True, exist_ok=True)
+        (idiomas / f"{idioma}.traineddata").write_bytes(b"idioma " + idioma.encode())
+    vc = a["tmp"] / "downloads-de-prova" / empacotar.VC_REDIST_NOME
+    vc.parent.mkdir()
+    vc.write_bytes(VC_DE_PROVA)
+
+    def pecas_de_prova(motor_escolhido=None, baixar=True, com_motor=True):
+        """As peças, como o juntar_pecas de verdade as devolve (o motor só na pasta portátil)."""
+        return empacotar.PecasDosDetectores(a["motor"] if com_motor else None, tesseract, tesseract / "doc", idiomas,
+                                            vc, "14.44.35211.0"), []
+
+    monkeypatch.setattr(empacotar, "juntar_pecas", pecas_de_prova)
+    return {"pasta": raiz / "dist" / empacotar.NOME, "vc": vc}
+
+
+def _no_pacote(nupkg: Path) -> dict[str, bytes]:
+    """O que está dentro do pacote do Velopack (o caminho dentro da pasta do programa: o conteúdo)."""
+    with zipfile.ZipFile(nupkg) as z:
+        return {n.removeprefix(empacotar.PASTA_NO_NUPKG): z.read(n) for n in z.namelist()
+                if n.startswith(empacotar.PASTA_NO_NUPKG)}
+
+
+@pytest.mark.parametrize("com_instalador", [False, True])
+def test_volta6_a_versao_montada_do_zero_leva_o_visual_c_e_e_publicada(ambiente, montar_de_verdade, com_instalador):
+    """O defeito da prova à vista de 20/11/2026 (14h33 a 14h39; registro em C:\\EditorImpressaoProva\\publicar-versao.log):
+    `publicar_versao_kaique.py --pasta <pasta>` SEM `--pasta-pronta` montava a pasta (`empacotar.construir_pasta`,
+    797 MB) e parava sempre em "a pasta do programa não serve: ... não tem o Visual C++ em instalar\\": a conferência
+    (`empacotar.conferir_pasta_pronta`) rodava antes de o Visual C++ ser posto (só em `preparar_saida`, dentro do
+    `construir_pacote_do_velopack`). Nenhuma versão montada do zero saía. Os testes não pegavam porque todos usavam a
+    pasta de mentira `_pasta_pronta`, que já vem com o Visual C++ (D-767: "não faça mais nada escodindo ou de mentira").
+    Agora a montagem põe o Visual C++ em instalar\\ antes da ficha (D-727: ele vai dentro), a mesma conferência aceita a
+    pasta, e a versão é publicada na pasta das provas com o Visual C++, o Tesseract e sem o motor solto, com e sem o
+    instalador. Rodado no código de b9300da8: falha com "não tem o Visual C++ em instalar\\"."""
+    a = ambiente
+    _publicar_o_motor(a)
+    pub.publicar(versao.VERSAO, arquivo_da_chave=a["chave"], chave_publica=PUBLICA, vpk=a["vpk"],
+                 rascunho_base=a["rascunho"], pasta_de_saida=a["saida"], destino=pub.DestinoPasta(a["servidor"]),
+                 com_instalador=com_instalador)
+    etiqueta = versao.etiqueta_da_versao(versao.VERSAO)
+    dentro = _no_pacote(empacotar.nupkg_inteiro(a["servidor"] / etiqueta, versao.VERSAO))
+    instalar = atualizacao.PASTA_DO_QUE_SE_INSTALA
+    assert dentro[f"{instalar}/{atualizacao.VC_REDIST_NOME}"] == VC_DE_PROVA
+    assert dentro[f"{instalar}/{atualizacao.VC_REDIST_VERSAO}"] == b"14.44.35211.0"
+    assert "tesseract/tesseract.exe" in dentro and "tesseract/tessdata/script/Fraktur.traineddata" in dentro
+    assert not any(n.startswith(empacotar.PASTA_DO_MOTOR + "/") for n in dentro)
+    assert empacotar.conferir_pasta_pronta(montar_de_verdade["pasta"], versao.VERSAO) == []
+    vezes = _vezes_que_o_vpk_rodou(a)
+    assert len(vezes) == (2 if com_instalador else 1)
+    assert (a["saida"] / etiqueta / empacotar.nome_do_msi_publicado(versao.VERSAO)).is_file() == com_instalador
+    assert _rascunhos_que_sobraram(a) == []
+
+
+def test_volta6_a_mesma_conferencia_da_pasta_em_todos_os_caminhos(ambiente, montar_de_verdade, capsys):
+    """CLAUDE.md §11.12 (uma regra, um lugar): "a pasta está pronta para o vpk" é decidido por uma função só
+    (`empacotar.conferir_pasta_pronta`), e todos os caminhos chegam a ela com a pasta no mesmo estado:
+    - a montagem para a atualização (`construir_pasta(ATUALIZACAO)`) deixa o Visual C++ em instalar\\ e passa;
+    - a mesma pasta SEM o Visual C++ (como a que vem de fora, e como a da prova de 20/11) é recusada com a frase de
+      sempre, pela montagem conferida e pela pasta pronta de mentira, igual;
+    - o empacotar chamado direto com essa pasta para ANTES de rodar o vpk (antes, o vpk rodava e só a conferência do
+      pacote pegava);
+    - o empacotar chamado direto sem pasta monta e empacota com o Visual C++;
+    - a pasta portátil (o Inno) continua SEM instalar\\ (o Inno pega o Visual C++ de build\\).
+    Rodado no código de b9300da8: falha na primeira conferência (a montagem não punha o Visual C++)."""
+    a = ambiente
+    pasta = empacotar.construir_pasta(empacotar.ATUALIZACAO)
+    assert pasta == montar_de_verdade["pasta"]
+    vc = pasta / atualizacao.PASTA_DO_QUE_SE_INSTALA / atualizacao.VC_REDIST_NOME
+    assert vc.is_file() and vc.read_bytes() == VC_DE_PROVA, "a montagem para a atualização tem de pôr o Visual C++"
+    assert empacotar.conferir_pasta_pronta(pasta, versao.VERSAO) == []
+    assert empacotar.conferir_pasta_pronta(pasta, versao.VERSAO, empacotar.INSTALADOR) == []
+
+    sem_vc = f"não tem o Visual C++ em {atualizacao.PASTA_DO_QUE_SE_INSTALA}\\"
+    vc.unlink()
+    assert empacotar.conferir_pasta_pronta(pasta, versao.VERSAO) == [f"a pasta {pasta} {sem_vc}"]
+    de_fora = _pasta_pronta(a["tmp"] / "de-fora" / "EditorImpressao", versao.VERSAO)
+    (de_fora / atualizacao.PASTA_DO_QUE_SE_INSTALA / atualizacao.VC_REDIST_NOME).unlink()
+    assert empacotar.conferir_pasta_pronta(de_fora, versao.VERSAO) == [f"a pasta {de_fora} {sem_vc}"]
+
+    motor = empacotar.MotorPublicado(ocr_kraken.VERSAO_DO_MOTOR, versao.arquivo_do_motor(ocr_kraken.VERSAO_DO_MOTOR),
+                                     "0" * 64, ETIQUETA_DO_MOTOR)
+    capsys.readouterr()
+    assert empacotar.construir_pacote_do_velopack(a["tmp"] / "saida-1", versao.VERSAO, empacotar.ATUALIZACAO, de_fora,
+                                                  motor, vpk=a["vpk"]) is None
+    assert _vezes_que_o_vpk_rodou(a) == [], "o vpk rodou com uma pasta sem o Visual C++"
+    assert sem_vc in capsys.readouterr().out
+
+    nupkg = empacotar.construir_pacote_do_velopack(a["tmp"] / "saida-2", versao.VERSAO, empacotar.ATUALIZACAO,
+                                                   motor=motor, vpk=a["vpk"])
+    assert nupkg is not None
+    assert _no_pacote(nupkg)[f"{atualizacao.PASTA_DO_QUE_SE_INSTALA}/{atualizacao.VC_REDIST_NOME}"] == VC_DE_PROVA
+
+    portatil = empacotar.construir_pasta(empacotar.PORTATIL)
+    assert portatil is not None and not (portatil / atualizacao.PASTA_DO_QUE_SE_INSTALA).exists()
+    assert (portatil / empacotar.PASTA_DO_MOTOR).is_dir()
+
+
+def test_volta6_a_copia_do_visual_c_pela_metade_nao_deixa_a_ficha(ambiente, montar_de_verdade, monkeypatch):
+    """A falha que o conserto acrescenta: se o Visual C++ não chega inteiro a instalar\\, a montagem para e NÃO grava a
+    ficha da versão (a ficha é o sinal de "montada inteira"): um `--pasta-pronta` nessa pasta é recusado ("não tem a
+    ficha"), e o publicar para antes do vpk."""
+    a = ambiente
+    original = shutil.copy2
+
+    def copia_cortada(origem, alvo, *x, **k):
+        """Corta só a cópia do Visual C++ (o resto copia de verdade)."""
+        if Path(origem) == montar_de_verdade["vc"]:
+            Path(alvo).write_bytes(VC_DE_PROVA[:10])
+            return alvo
+        return original(origem, alvo, *x, **k)
+
+    monkeypatch.setattr(empacotar.shutil, "copy2", copia_cortada)
+    assert empacotar.construir_pasta(empacotar.ATUALIZACAO) is None
+    pasta = montar_de_verdade["pasta"]
+    assert not (pasta / empacotar.NOME_DA_FICHA_DA_VERSAO).exists()
+    assert any("ficha da versão" in p for p in empacotar.conferir_pasta_pronta(pasta, versao.VERSAO))
+    _publicar_o_motor(a)
+    with pytest.raises(pub.Parou, match="montagem da pasta do programa parou"):
+        pub.publicar(versao.VERSAO, arquivo_da_chave=a["chave"], chave_publica=PUBLICA, vpk=a["vpk"],
+                     rascunho_base=a["rascunho"], pasta_de_saida=a["saida"], destino=pub.DestinoPasta(a["servidor"]))
+    assert _vezes_que_o_vpk_rodou(a) == []
+
+
+class _GhQueNaoAbreNoApagar(_GitHubDeMentira):
+    """Lê como o gh de mentira; o pedido de APAGAR passa pelo `DestinoGitHub._gh` DE VERDADE com um gh que não existe (o
+    programa nem começa: o laço da peça devolve "não abriu" e o `_gh` levanta `NadaSaiu`)."""
+
+    def __init__(self, tmp: Path):
+        """O gh de verdade aponta para um programa que não existe."""
+        super().__init__(tmp)
+        self.de_verdade = pub.DestinoGitHub("dono/projeto", gh=str(tmp / "nao-existe" / "gh.exe"))
+
+    def __call__(self, *argumentos, limite_s=600):
+        """O "delete" vai ao _gh de verdade (que não abre); o resto, ao gh de mentira."""
+        if list(argumentos)[1] == "delete":
+            self.pedidos.append(list(argumentos))
+            return pub.DestinoGitHub._gh(self.de_verdade, *argumentos, limite_s=limite_s)
+        return super().__call__(*argumentos, limite_s=limite_s)
+
+
+def test_volta6_achado1_o_apagar_em_que_o_gh_nem_abre_diz_nao_apaguei(ambiente, monkeypatch):
+    """Achado 1 do relatório 5 de quem tentou quebrar (20/11/2026, família F3: proteção sem teste): se o gh nem abre no
+    pedido de apagar, nada saiu do PC, e a frase tem de dizer "não apaguei" (com o comando para conferir e apagar),
+    nunca "pedi para apagar ... e não deu para conferir se sumiu". Isso vale porque `NadaSaiu` não é um caso de
+    `SemResposta` (o `_pedir_para_apagar` só troca o "sem resposta" por "pedi"); nenhum teste o percorria (a mutação X3,
+    `NadaSaiu` como caso de `SemResposta`, passava nos 78). O pedido de apagar passa pelo `_gh` de verdade."""
+    gh = _GhQueNaoAbreNoApagar(ambiente["tmp"])
+    destino = pub.DestinoGitHub("dono/projeto")
+    monkeypatch.setattr(destino, "_gh", gh)
+    destino.criar_rascunho(ETIQUETA, "t", "n")
+    with pytest.raises(pub.Parou) as erro:
+        pub.apagar_publicacao(destino, ETIQUETA, so_rascunho=True, acabou_de_criar=True)
+    frase = str(erro.value)
+    assert "não apaguei" in frase and "pedi para apagar" not in frase, frase
+    assert "não consegui falar com o GitHub pelo gh" in frase and destino.comando_de_apagar(ETIQUETA) in frase, frase
+    assert any(p[1] == "delete" for p in gh.pedidos), "o pedido de apagar nem foi tentado"
+    assert gh.publicacoes[ETIQUETA]["rascunho"] is True, "o rascunho tinha de continuar lá"
+
+
+@pytest.mark.parametrize("onde", ["pasta", "github"])
+def test_volta6_achado2_a_frase_do_motor_que_falta_da_o_comando_do_destino(ambiente, monkeypatch, onde):
+    """Achado 2 do relatório 5 de quem tentou quebrar (20/11/2026, família F2, o vizinho do achado 1 do relatório 4): na
+    pasta das provas, a frase "o motor ... não está publicado ...: publique o motor antes (--motor)" mandava rodar o
+    `--motor` SEM o `--pasta`; seguida ao pé da letra, publicava (e liberava) o motor no GitHub (D-773: no GitHub, só
+    um rascunho durante a prova). Agora o comando vem do destino (`comando_de_publicar_o_motor`, ao lado do
+    `comando_de_apagar`): na pasta, com o `--pasta`; no GitHub, sem. Seguir a frase da pasta publica o motor na pasta e
+    nunca fala com o GitHub."""
+    import shlex
+
+    a = ambiente
+    if onde == "pasta":
+        destino = pub.DestinoPasta(a["servidor"])
+    else:
+        destino = pub.DestinoGitHub("dono/projeto")
+        monkeypatch.setattr(destino, "_gh", _GitHubDeMentira(a["tmp"]))
+    with pytest.raises(pub.Parou, match="publique o motor antes") as erro:
+        _publicar(a, destino=destino)
+    frase = str(erro.value)
+    assert ("--pasta" in frase) == (onde == "pasta"), frase
+    comando = destino.comando_de_publicar_o_motor()
+    assert comando in frase and "--motor" in comando, frase
+    assert ("--pasta" in comando) == (onde == "pasta"), comando
+    if onde == "github":
+        return
+    pedidos = []
+    monkeypatch.setattr(pub, "publicar_motor", lambda destino_pasta=None, *x, **k: pedidos.append(destino_pasta))
+
+    def nao_pode(self, *argumentos, **k):
+        """Seguir a frase da pasta não pode chegar ao GitHub."""
+        raise AssertionError(f"a frase da pasta foi ao GitHub: {argumentos}")
+
+    monkeypatch.setattr(pub.DestinoGitHub, "_gh", nao_pode)
+    assert pub.main([p.strip('"') for p in shlex.split(comando, posix=False)][1:]) == 0
+    assert pedidos == [a["servidor"]], pedidos

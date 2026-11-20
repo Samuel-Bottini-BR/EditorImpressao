@@ -1555,3 +1555,31 @@ def test_volta5_o_programa_num_fluxo_escondido_de_outro_arquivo_e_recusado(tmp_p
     (tmp_path / "x.bat").write_text("@echo x\r\n", encoding="ascii")
     r = windows.rodar_e_esperar([str(tmp_path / "x.bat") + "::$DATA"])
     assert r.desfecho == windows.FALHOU and "função própria" in r.motivo, r
+
+
+# ---------------------------------------------------------------------------------------------------------------------
+# Passo 2, volta 6 (relatório 5 de quem tentou quebrar, 20/11/2026)
+# ---------------------------------------------------------------------------------------------------------------------
+
+def test_volta6_achado3_o_caminho_de_rede_e_recusado_com_a_frase_propria(tmp_path):
+    """Achado 3 do relatório 5 de quem tentou quebrar (20/11/2026, família F7: o escrito não bate com o código): o caminho
+    de rede (`\\\\localhost\\C$\\...`, `\\\\?\\UNC\\...`) e o caminho que o Windows não completa com uma letra de disco eram
+    recusados (certo) com a frase de outro motivo, "este programa do Windows tem função própria na peça: use a função
+    dela", que manda usar uma função que não existe. Agora a recusa é a mesma, pelos três caminhos da peça (o rodar, o
+    lançar solto e o grupo), com a frase própria (`FRASE_CAMINHO_DE_REDE`), que não manda usar função nenhuma. Nada roda:
+    a recusa vem antes de abrir."""
+    barra = chr(92)
+    sistema = windows.pasta_do_sistema()
+    hostname = str(sistema / "hostname.exe")
+    for caminho in (barra * 2 + "localhost" + barra + "C$" + hostname[2:],
+                    barra * 2 + "127.0.0.1" + barra + "ADMIN$" + barra + "System32" + barra + "hostname.exe",
+                    barra * 2 + "?" + barra + "UNC" + barra + "localhost" + barra + "C$" + hostname[2:],
+                    barra * 2 + "outro-computador" + barra + "pasta" + barra + "programa.exe",
+                    barra * 2 + "?" + barra + "GLOBALROOT" + barra + "Device" + barra + "Coisa" + barra + "x.exe",
+                    barra * 2 + "." + barra + "pipe" + barra + "programa.exe"):
+        motivo = windows._por_que_recusa(caminho)
+        assert motivo and "use a função dela" not in motivo and "rede" in motivo, (caminho, motivo)
+        assert _tres_caminhos_recusam(caminho, tmp_path, windows.FRASE_CAMINHO_DE_REDE) == [], caminho
+    # o programa de fora pela letra do disco continua passando, e o da pasta do Windows continua com a frase de sempre
+    assert windows.rodar_e_esperar([PY, "-c", "print(1)"], letras="utf-8").deu_certo
+    assert windows._por_que_recusa(hostname) == windows.FRASE_TEM_FUNCAO_PROPRIA
