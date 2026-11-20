@@ -423,7 +423,13 @@ WiX por dentro; se sobrar um, o rascunho não apaga e a frase diz o que ficou).
   `tests/test_empacotar.py` 41; `tests/test_decisoes_atualizacao.py` 38; `tests/test_windows_janela_de_prova.py` 10;
   `tests/test_conferencias_codigo.py` 77; `tests/test_nome_do_pacote.py` 5. Porteiro no PC: "nada novo" (175).
   Reversão: `anexos/reversao-volta2-resultado.txt`.
-- **No GitHub, volta 2:** (preenchida quando a rodada acabar).
+- **No GitHub, volta 2, rodada final:** 44663876080, sobre o ramo em 0d51ad5e: **success** na primeira tentativa, todas
+  as partes e os botões. PORTEIRO: success (o trabalho "Porteiro (juiz da versao de teste)").
+- **No GitHub, volta 2, rodada anterior:** 44661337397, sobre 0f7639eb: **failure**. PORTEIRO: success. Falharam
+  `tests/test_publicar_versao.py::test_achado5_erro_do_disco_vira_frase` (o teste supunha o vpk instalado, como no PC;
+  no Windows do GitHub não há vpk e a linha de comando parava antes; consertado no teste em `0d51ad5e`, família F4) e
+  `tests/test_decisoes_so_as_letras.py::test_d148_desfazer_o_automatico_devolve_o_so_as_letras_do_livro` (o instável
+  conhecido, por tempo; não é deste passo).
 - **No GitHub, rodada final da volta 1:** 44650408369, sobre o ramo em a14b7d55 (o código de 0ef0da17; depois só o formulário):
   **success** na segunda tentativa (só a parte 3 rodou de novo). PORTEIRO: success (o trabalho "Porteiro (juiz da
   versao de teste)"). Na primeira tentativa falhou só
@@ -615,7 +621,7 @@ de ferramentas dele, em "Ressalvas"): a gerente pergunta, se achar preciso.
 
 ## Commit
 
-85781a08 (o último commit de código, volta 2; depois dele só este formulário e os anexos mudam).
+0d51ad5e (o último commit de código, volta 2; depois dele só este formulário muda).
 
 ## O que o agente que tentou quebrar achou
 
