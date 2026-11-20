@@ -937,7 +937,8 @@ arquivo e nas seções "O que foi feito" e "Caminho e função".
 - **Volta 5, reversão:** os testes novos no código de `595cc293`: 8 de 9 casos falham
   (`anexos/reversao-volta5-codigo-antigo.txt`, com a leitura no fim); o do achado 3 (b) passa lá (a proteção existia
   sem teste) e é provado pela mutação W3b. Mutações: 10 de 10 acusadas (`anexos/reversao-volta5-resultado.txt`).
-- **No GitHub, volta 5:** a preencher.
+- **No GitHub, volta 5:** rodada 44766224353, sobre o ramo depois de `35ec0c27` (depois, só a pasta deste relatório).
+  Resultado: a preencher.
 
 ## Caminho e função
 
