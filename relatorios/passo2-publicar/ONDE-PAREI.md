@@ -1214,6 +1214,8 @@ o teste antigo do achado 5 da volta 3, que saiu porque cobrava o que a D-816 tir
 
 2e906e94 (o último commit de código e testes da volta 3, com três docstrings de um teste; depois dele só este formulário muda).
 
+Volta 4: 9384f1a3 (o último commit de código e testes da volta 4; depois dele só este formulário muda).
+
 ## O que o agente que tentou quebrar achou
 
 **Volta 1** (`quem-quebrou/relatorio-1.md`, commit `a58f181b`). Destino de cada achado (volta 2 deste agente; código em
