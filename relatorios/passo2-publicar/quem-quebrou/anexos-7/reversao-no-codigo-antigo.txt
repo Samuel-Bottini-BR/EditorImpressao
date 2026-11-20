@@ -1,0 +1,43 @@
+Os testes novos da volta 7 (tests/test_publicar_versao.py e tests/test_empacotar.py de eda1dc6b) rodados no codigo de db4b377a (git archive numa copia a parte, quebra7\antigo). 20/11/2026, quem quebra (volta 7).
+
+== test_publicar_versao.py, so os novos (-k 'd818 or volta7') ==
+E   Failed: DID NOT RAISE Parou
+E   Failed: DID NOT RAISE Parou
+E   Failed: DID NOT RAISE Parou
+E   Failed: DID NOT RAISE Parou
+E   Failed: DID NOT RAISE Parou
+E   Failed: DID NOT RAISE Parou
+E   Failed: DID NOT RAISE Parou
+E   Failed: DID NOT RAISE Parou
+E   Failed: DID NOT RAISE Parou
+E   AssertionError: a pasta recusada foi mudada antes da recusa
+PASSED tests/test_publicar_versao.py::test_volta7_achado3_o_pacote_sem_uma_peca_e_recusado_depois_do_vpk[instalar/vc_redist.x64.exe]
+PASSED tests/test_publicar_versao.py::test_volta7_achado3_o_pacote_montado_do_zero_sem_o_tesseract_e_recusado
+PASSED tests/test_publicar_versao.py::test_volta7_achado5_a_pasta_das_provas_com_espaco_no_nome
+FAILED tests/test_publicar_versao.py::test_d818_a_pasta_ja_montada_e_conferida_igual_a_montada_do_zero[sem o Tesseract]
+FAILED tests/test_publicar_versao.py::test_d818_a_pasta_ja_montada_e_conferida_igual_a_montada_do_zero[sem um idioma do Tesseract]
+FAILED tests/test_publicar_versao.py::test_d818_a_pasta_ja_montada_e_conferida_igual_a_montada_do_zero[um arquivo do Tesseract vazio]
+FAILED tests/test_publicar_versao.py::test_d818_a_pasta_ja_montada_e_conferida_igual_a_montada_do_zero[um Visual C++ falso]
+FAILED tests/test_publicar_versao.py::test_d818_a_pasta_ja_montada_e_conferida_igual_a_montada_do_zero[sem a versao do Visual C++]
+FAILED tests/test_publicar_versao.py::test_d818_a_pasta_ja_montada_e_conferida_igual_a_montada_do_zero[a versao do Visual C++ errada]
+FAILED tests/test_publicar_versao.py::test_volta7_achado3_o_pacote_sem_uma_peca_e_recusado_depois_do_vpk[instalar/vc_redist.versao.txt]
+FAILED tests/test_publicar_versao.py::test_volta7_achado3_o_pacote_sem_uma_peca_e_recusado_depois_do_vpk[tesseract/]
+FAILED tests/test_publicar_versao.py::test_volta7_achado3_o_pacote_sem_uma_peca_e_recusado_depois_do_vpk[tesseract/tessdata/script/Fraktur.traineddata]
+FAILED tests/test_publicar_versao.py::test_volta7_achado4_o_empacotar_chamado_sozinho_recusa_antes_de_mexer_na_pasta
+10 failed, 3 passed, 85 deselected in 8.15s
+
+== test_empacotar.py, o novo ==
+E   AttributeError: module 'empacotar' has no attribute 'conferir_o_visual_c'
+C:\Users\fotog\AppData\Local\Temp\claude\b9ca076ad002e817\14e42ebb-3236-41f4-94f5-20370c33bd91\scratchpad\quebra7\antigo\tests\test_empacotar.py:597: AttributeError: module 'empacotar' has no attribute 'conferir_o_visual_c'
+=========================== short test summary info ===========================
+FAILED tests/test_empacotar.py::test_d818_a_montagem_e_a_pasta_usam_a_mesma_regua_do_visual_c
+1 failed, 41 deselected in 1.81s
+
+== test_publicar_versao.py inteiro no codigo antigo (os antigos com a pasta de mentira nova) ==
+FAILED tests/test_publicar_versao.py::test_volta7_achado4_o_empacotar_chamado_sozinho_recusa_antes_de_mexer_na_pasta
+10 failed, 88 passed in 52.50s
+
+== test_publicar_versao.py inteiro no codigo novo (25c514ad) ==
+........................................................................ [ 73%]
+..........................                                               [100%]
+98 passed in 52.19s

@@ -1,0 +1,594 @@
+<!doctype html>
+<html lang="pt-BR">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Passo 2, volta 7: sétima conferência de quem tentou quebrar</title>
+<style>
+:root { color-scheme: light dark; }
+* { box-sizing: border-box; }
+body {
+  font: 17px/1.65 "Segoe UI", system-ui, sans-serif;
+  max-width: 46rem; margin: 0 auto; padding: 2.5rem 1.5rem 6rem;
+  color: #1c1c1e; background: #fdfdfc;
+}
+h1 { font-size: 2rem; line-height: 1.2; margin: 0 0 .3em; letter-spacing: -.02em; }
+h2 { font-size: 1.35rem; margin: 2.4em 0 .6em; padding-top: .8em;
+     border-top: 1px solid #e6e4e0; letter-spacing: -.01em; }
+h3 { font-size: 1.1rem; margin: 1.8em 0 .4em; }
+h1 + p, h2 + p { margin-top: .4em; }
+p, li { margin: 0 0 .9em; }
+ul, ol { padding-left: 1.3em; }
+strong { font-weight: 640; }
+code {
+  font: .88em ui-monospace, "Cascadia Code", Consolas, monospace;
+  background: #f1efec; padding: .12em .35em; border-radius: 4px;
+}
+pre {
+  background: #f1efec; padding: 1em 1.1em; border-radius: 8px;
+  overflow-x: auto; line-height: 1.5;
+}
+pre code { background: none; padding: 0; }
+blockquote {
+  margin: 1.2em 0; padding: .1em 0 .1em 1.1em;
+  border-left: 3px solid #c9c5be; color: #55524d;
+}
+table {
+  border-collapse: collapse; width: 100%; margin: 1.2em 0;
+  font-size: .95rem; display: block; overflow-x: auto;
+}
+th, td { padding: .5em .8em; text-align: left; border-bottom: 1px solid #e6e4e0; }
+th { font-weight: 620; background: #f7f5f2; white-space: nowrap; }
+tr:last-child td { border-bottom: none; }
+img { max-width: 100%; height: auto; border-radius: 6px; margin: 1em 0;
+      border: 1px solid #e6e4e0; }
+hr { border: none; border-top: 1px solid #e6e4e0; margin: 2.5em 0; }
+.rodape { margin-top: 4em; padding-top: 1.2em; border-top: 1px solid #e6e4e0;
+          font-size: .85rem; color: #86827c; }
+@media (prefers-color-scheme: dark) {
+  body { color: #e8e6e3; background: #1a1917; }
+  h2 { border-top-color: #35332f; }
+  code, pre, th { background: #262421; }
+  th, td { border-bottom-color: #35332f; }
+  blockquote { border-left-color: #4a4741; color: #b0aca6; }
+  img { border-color: #35332f; }
+  .rodape { border-top-color: #35332f; color: #7d7973; }
+}
+@media print {
+  body { max-width: none; padding: 0; color: #000; background: #fff; }
+  h2 { page-break-after: avoid; }
+  table, img { page-break-inside: avoid; }
+}
+</style>
+</head>
+<body>
+<h1>Passo 2 do plano da parte do Windows: sétima conferência de quem tentou quebrar (20/11/2026)</h1>
+<p>Sou um agente novo nesta volta (D-815). Não escrevi este código e não fiz as voltas anteriores. Não mexi no código do
+outro.</p>
+<p>O que <strong>não</strong> fiz:</p>
+<ul>
+<li>não rodei o publicar, o PyInstaller, o vpk nem o <code>gh release</code> de verdade (D-785, item 8);</li>
+<li>não pedi licença de administrador e não abri janela na tela do Samuel (a leitura da assinatura pela peça abre o
+  PowerShell sem janela);</li>
+<li>não disparei rodada do GitHub (só consultei a 44816609032);</li>
+<li>não mexi em <code>C:\EditorImpressaoProva</code> nem na pasta <code>dist\EditorImpressao</code> da cópia <code>passo2</code> (só li).</li>
+</ul>
+<p>Tudo rodou em cópias do código (<code>git archive</code> de <code>db4b377a</code> e de <code>25c514ad</code>), na pasta de rascunho desta conversa
+(<code>quebra7\</code>), um arquivo de teste por vez (com uma exceção pequena, contada em "Para a gerente").</p>
+<h2>Pedido</h2>
+<ul>
+<li>Papel: quebrador</li>
+<li>Commit de partida: eda1dc6b</li>
+<li>Ramo: passo2-publicar-2026-11-19</li>
+</ul>
+<h2>Arquivos que vou mexer</h2>
+<ul>
+<li><code>publicar_versao_kaique.py</code></li>
+<li><code>empacotar.py</code></li>
+<li><code>core/windows.py</code></li>
+<li><code>tests/test_windows_peca.py</code></li>
+<li><code>tests/test_empacotar.py</code></li>
+<li><code>tests/test_publicar_*.py</code></li>
+<li><code>relatorios/passo2-publicar/</code></li>
+</ul>
+<p>(Copiado do pacote sem mudar. Na prática só escrevi em <code>relatorios/passo2-publicar/quem-quebrou/</code>: este relatório, nos
+três formatos, e a pasta <code>anexos-7/</code>. O pacote <code>anexos/pacote-quem-quebra-volta7.md</code>, que a gerente gerou, vai no mesmo
+commit, como ela pediu.)</p>
+<h2>Veredito</h2>
+<p><strong>PRONTO PARA CONFERIR (a prova à vista): o defeito médio da volta anterior está consertado pela causa, a pasta já
+montada agora é recusada pelos mesmos motivos da montada do zero, e nada do que funcionava quebrou. Ficam 5 baixos:
+quatro proteções novas que nenhum teste acusa (a mesma família de erro da volta anterior) e um item do roteiro da prova
+escrito numa ordem que não dá para seguir.</strong> Nada disso muda o que o Kaique recebe hoje.</p>
+<p>O que está certo:</p>
+<ul>
+<li><strong>A pasta já montada é conferida igual à montada do zero.</strong> Uma função só (<code>conferir_pasta_pronta</code>) cobra o Visual
+  C++ pela assinatura da Microsoft, o arquivo da versão dele e cada arquivo do Tesseract. Testei com arquivos de
+  verdade, lidos pelo próprio Windows: o Visual C++ oficial passa; um arquivo de outro programa da Microsoft, o Visual
+  C++ de 32 bits, o Visual C++ novo (14.50), o oficial cortado, o oficial com bytes a mais no fim e o oficial com um byte
+  trocado são recusados.</li>
+<li><strong>A leitura da assinatura que falha nunca vira "passou".</strong> O PowerShell que não termina, a resposta vazia, a resposta
+  sem os campos e a resposta só com "Valid": a pasta e a montagem recusam nos quatro casos.</li>
+<li><strong>A prova de reversão confere.</strong> Os testes novos no código antigo: 10 de 13 falham no arquivo do publicar (os 9 que o
+  outro contou e o do arquivo do Tesseract vazio, que ele acrescentou depois); os 3 que passam cobram proteções que já
+  existiam. O teste novo do empacotar falha lá só porque a função nova não existia.</li>
+<li><strong>Os testes antigos não ficaram mais frouxos.</strong> Só mudaram as três peças que a D-818 permite e o outro listou (a pasta
+  de mentira, a leitura da assinatura na preparação e uma opção nova do vpk de mentira, desligada). Os 88 antigos com a
+  pasta nova passam também no código antigo.</li>
+<li><strong>Os 4 baixos do relatório 6 foram consertados pela causa</strong> (detalhe em "O que conferi").</li>
+</ul>
+<p>O que fica (5 baixos): achados 1 a 5. Pela D-775, a gerente decide se os testes que faltam (achados 1 a 4) voltam a quem
+escreve antes da prova à vista. O catálogo dos erros manda pedir o conserto pela causa quando a mesma família aparece em
+duas voltas seguidas do mesmo passo, e é o caso (achados 3 e 5 do relatório 6, achados 1 a 4 aqui). Nunca "aprovado":
+só o Samuel aprova.</p>
+<h2>Decisões que esta tarefa precisa cumprir</h2>
+<p>O pacote diz "D-815 a D-818: NÃO ACHADA NO LIVRO". Achei as quatro no Livro da <code>obra-juncao</code> (linhas 1105 a 1108) e li
+inteiras, com as outras 11 pedidas.</p>
+<ul>
+<li>D-818 "vai ter que reprogramar?" · "A". Aqui: <strong>cumprida no que a decisão pede.</strong> A pasta já montada passa pela mesma
+  função da montada do zero e é recusada, antes do vpk, sem o Tesseract, com um Visual C++ que não é o oficial ou sem o
+  arquivo da versão dele (testes do outro e minhas sondas com arquivos de verdade). A montada do zero continua passando.
+  Os testes antigos mudaram só nas peças que o outro listou, e nenhum passou a cobrar menos (conferido abaixo). O que
+  falta não é da decisão, é de teste: quatro proteções novas sem teste que as acuse (achados 1 a 4).</li>
+<li>D-605 "A partir de agora, nenhuma função nova, ou nova escolha dentro do programa pode alterar o que já está
+  escolhido e testado [...]". Aqui: os 10 arquivos de teste ao redor passam no código novo (lista em "O que conferi");
+  a única troca de teste antigo é a que a D-818 autoriza.</li>
+<li>D-727 "pode, se tiver qualquer coisa que o kaique precise, ele tem que estar no instalador né". Aqui: o Visual C++
+  oficial, a versão dele e o Tesseract são cobrados de toda pasta antes do vpk e de todo pacote depois do vpk. As
+  licenças do Tesseract também são cobradas, mas sem teste (achado 3).</li>
+<li>D-767 "não faça mais nada escodindo ou de mentira". Aqui: a leitura da assinatura é a peça de verdade do Windows. Nos
+  testes do publicar, só os dois conteúdos de prova respondem "Microsoft"; o resto vai à leitura de verdade. O caminho
+  certo com o Visual C++ oficial só rodou de verdade na minha sonda, no PC (no GitHub o arquivo não existe).</li>
+<li>D-773 "A". Aqui: a frase com a pasta das provas com espaço no nome ganhou teste (achado 5 do relatório 6).</li>
+<li>D-775 "ok". Aqui: tentei quebrar, sem pergunta do Windows. O resultado vai à gerente.</li>
+<li>D-776, D-777, D-788, D-789, D-795: nada desta volta toca a conta do espaço, o .msi, o motor, a diferença nem o
+  Setup.exe (conferido no diff).</li>
+<li>D-785 (item 8, publicar sempre à vista). Aqui: não rodei o publicar de verdade.</li>
+<li>D-815 "ok". Aqui: sou um agente novo nesta volta, sem memória da anterior. O escritor desta volta estava na segunda e
+  última volta dele.</li>
+<li>D-816 "A , mas onde estamos antes de você fazer qualquer processo" e D-817 "pode". Aqui: nada desta volta toca o
+  liberar nem o apagar; os <code>test_d816_*</code> passam no arquivo inteiro (98 de 98).</li>
+</ul>
+<h2>O que li</h2>
+<ul>
+<li><code>.claude/agents/verificador.md</code> e o <code>CLAUDE.md</code> inteiro (na cópia <code>passo2</code>; ela é mais antiga que a do projeto só na
+  parte da Central), com atenção ao §4.7, §11.8, §11.12 (os 6 pontos) e §11.13.</li>
+<li><code>memoria/INDICE.md</code> (na cópia <code>passo2</code>), <code>memoria/geral/atualizador.md</code> (só existe na pasta do projeto,
+  <code>D:\programas\EditorImpressao\memoria\geral\atualizador.md</code>; na cópia <code>passo2</code> e na <code>obra-juncao</code> não há) e o catálogo
+  dos erros (<code>obra-juncao</code>, famílias F1 a F10).</li>
+<li>O meu pacote (<code>anexos/pacote-quem-quebra-volta7.md</code>) e, no Livro da <code>obra-juncao</code>, as linhas inteiras de D-605, D-727,
+  D-767, D-773, D-775, D-776, D-777, D-785, D-788, D-789, D-795, D-813, D-815, D-816, D-817 e D-818.</li>
+<li>No ONDE-PAREI do escritor, todas as partes "Volta 7": "Onde parei", decisões, "O que já está escolhido e testado
+  aqui" (a lista dos testes antigos mudados), "Como fica para quem usa", "A causa, a regra e todos os caminhos" (a tabela
+  dos 7 caminhos), "O que pode falhar", "O que li", "O que foi feito", "Testes", "Caminho e função", "Cada proteção", "De
+  onde vem cada dado", "Ressalvas", "Ideias e bugs", "O que o agente que tentou quebrar achou" e "A prova de verdade"
+  (itens 1 a 17).</li>
+<li>O relatório 6 de quem tentou quebrar e os anexos <code>reversao-volta7-*</code> do escritor.</li>
+<li>O código: <code>git diff db4b377a eda1dc6b</code> inteiro (só <code>empacotar.py</code>, <code>publicar_versao_kaique.py</code> e dois arquivos de
+  teste mudaram; de <code>25c514ad</code> a <code>eda1dc6b</code> nenhum <code>.py</code> muda). Li inteiras, no código novo: <code>assinatura_do_arquivo</code>,
+  <code>vc_redist_confere</code>, <code>conferir_o_visual_c</code>, <code>preparar_vc_redist</code>, <code>juntar_pecas</code>, <code>_avisar_pecas_faltando</code>,
+  <code>_destinos_das_pecas</code>, <code>relativos_do_tesseract</code>, <code>conferir_tesseract</code>, <code>preparar_pasta_para_o_velopack</code>,
+  <code>preparar_saida</code>, <code>esperados_no_pacote_do_velopack</code>, <code>proibidos_no_pacote_do_velopack</code>, <code>conferir_pacote_do_velopack</code>,
+  <code>construir_pacote_do_velopack</code>, <code>conferir_pasta_pronta</code> (empacotar); <code>publicar</code> (publicar); <code>ler_assinatura_digital</code>,
+  <code>rodar_powershell</code>, <code>Resposta</code> (peça do Windows); <code>precisa_do_visual_c</code> e <code>instalar_visual_c_se_faltar</code> (atualizacao);
+  <code>_montar_comando</code> e a procura do Tesseract (<code>core/ocr_tesseract.py</code>). E os testes novos e os três trechos antigos
+  mudados, inteiros, comparados com os de <code>db4b377a</code>.</li>
+<li>A pasta <code>dist\EditorImpressao</code> da cópia <code>passo2</code> (a da prova de 20/11), só lida: a lista do Tesseract e a ficha.</li>
+<li>Peça de fora: nada novo nesta volta. O que conferi rodando: o <code>Get-AuthenticodeSignature</code> do Windows (pela peça) em
+  arquivos de verdade (ver "O que conferi"). Li a página da Microsoft dos Visual C++ mais novos (fonte no fim) e
+  perguntei ao endereço permanente que o programa usa para onde ele leva (só o cabeçalho, sem baixar).</li>
+</ul>
+<h2>O que conferi nas falhas, nas peças de fora e nos caminhos</h2>
+<h3>A prova de reversão (anexo <code>anexos-7/reversao-no-codigo-antigo.txt</code>)</h3>
+<ul>
+<li>Os dois arquivos de teste de <code>eda1dc6b</code> por cima do código de <code>db4b377a</code>, numa cópia minha. Arquivo do publicar, só os
+  testes novos: <strong>10 falham e 3 passam.</strong> Falham os 6 casos da D-818 (o do arquivo do Tesseract vazio, que o outro
+  acrescentou depois de contar "9 de 12", também falha), 3 dos 4 casos do pacote sem uma peça e o do empacotar chamado
+  sozinho. Passam: o pacote sem o Visual C++, o montado do zero sem o Tesseract e a pasta com espaço no nome. Os três
+  cobram proteções que já existiam (servem para a proteção não sumir calada, não para provar um defeito).</li>
+<li>O teste novo do empacotar falha no código antigo só porque a função nova não existia (<code>AttributeError</code>). No código
+  antigo a montagem já usava uma régua só, escrita duas vezes dentro da mesma função. Ele não prova um defeito.</li>
+<li>O arquivo inteiro no código antigo: 10 falham (os novos) e <strong>88 passam</strong> (os antigos, com a pasta de mentira nova),
+  como o outro escreveu. No código novo: <strong>98 de 98 passam.</strong></li>
+</ul>
+<h3>Os testes antigos mudados ficaram mais frouxos? (anexo <code>anexos-7/testes-antigos-sem-mudanca-no-codigo-novo.txt</code>)</h3>
+<p>Comparei cada função do arquivo de testes em <code>db4b377a</code> e em <code>eda1dc6b</code>. Só mudaram três trechos, os que o outro
+listou: a pasta de mentira (<code>_pasta_pronta</code>), a preparação (<code>ambiente</code>) e o vpk de mentira (<code>VPK_FALSO</code>). O resto só
+foi acrescentado no fim.</p>
+<ul>
+<li><strong>A pasta de mentira</strong> ganhou o arquivo da versão do Visual C++ e os 35 arquivos do Tesseract (pela lista da
+  montagem). Só peças a mais: nenhum teste antigo perdeu um caso. O teste novo da D-818 confere que essa pasta inteira
+  passa na conferência; então, quando um teste antigo espera uma recusa, ela vem do motivo dele, não da conferência nova.</li>
+<li><strong>A preparação</strong> passou a responder "assinado pela Microsoft" só para dois conteúdos exatos (os dois Visual C++ de
+  prova, comparados por igualdade, não por pedaço). O arquivo antigo de testes nunca falava da assinatura, então nenhum
+  teste antigo deixou de ler algo de verdade que lia antes.</li>
+<li><strong>O vpk de mentira</strong> ganhou uma opção desligada de fábrica; com ela vazia, o código dele é o mesmo.</li>
+<li><strong>Prova de que a troca era necessária e só para isso:</strong> o arquivo de testes antigo, sem mudança nenhuma, no código
+  novo: 41 falham, todos pela conferência nova ("o Visual C++ da pasta ... não é o oficial da Microsoft: ... o Windows
+  diz: UnknownError" para os 11 bytes de mentira, e "não tem o Tesseract inteiro"). Os outros 44 passam.</li>
+<li><strong>Os testes antigos que esperam uma recusa sem dizer qual</strong> (<code>pytest.raises(pub.Parou)</code> sem a frase): olhei cada um.
+  Ou não usam a pasta, ou conferem depois o que esperam (ex.: o do .msi confere que as duas passadas do vpk rodaram).</li>
+</ul>
+<p>Leitura: a D-818 permitia "os testes antigos que usam a pasta de mentira sem essas peças passam a trazê-las". A troca da
+leitura da assinatura na preparação vai um pouco além da letra (não é uma peça da pasta), mas é o que faz o arquivo de
+poucos bytes "ser" o Visual C++ de verdade; o outro escreveu isso às claras. Não achei teste que passou a cobrar menos.
+Deixo a leitura da letra da D-818 para a gerente (observação 9).</p>
+<h3>O Visual C++ falso: arquivos de verdade, lidos pelo Windows (anexos <code>sonda-assinaturas.txt</code>, <code>sondas7-resultado.txt</code>)</h3>
+<p>Copiei para a minha pasta (só lendo os originais) o <code>vc_redist.x64.exe</code> da pasta de downloads, os dois Visual C++ que o
+Windows guardou no PC (14.50, de 32 e de 64 bits) e um programa assinado pela Microsoft (o "Copilot Update"). Fiz três
+estragos do oficial. Cada um, posto como <code>instalar\vc_redist.x64.exe</code> numa pasta já montada, lido pela peça de verdade:</p>
+<table>
+<thead>
+<tr>
+<th>O arquivo</th>
+<th>O que o Windows diz</th>
+<th>A conferência da pasta</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>o oficial (14.44.35211.0)</td>
+<td>assinatura válida, da Microsoft, Visual C++ 2015-2022 x64</td>
+<td><strong>passa</strong></td>
+</tr>
+<tr>
+<td>outro programa da Microsoft</td>
+<td>válida, da Microsoft, produto "Copilot Update"</td>
+<td>recusa</td>
+</tr>
+<tr>
+<td>o Visual C++ de 32 bits</td>
+<td>válida, produto "(x86)"</td>
+<td>recusa</td>
+</tr>
+<tr>
+<td>o Visual C++ novo de 64 bits (14.50)</td>
+<td>válida, produto "v14 Redistributable (x64)"</td>
+<td>recusa (observação 7)</td>
+</tr>
+<tr>
+<td>o oficial cortado na metade</td>
+<td>sem assinatura</td>
+<td>recusa</td>
+</tr>
+<tr>
+<td>o oficial com 4 KB a mais no fim</td>
+<td>sem assinatura</td>
+<td>recusa</td>
+</tr>
+<tr>
+<td>o oficial com um byte trocado no meio</td>
+<td>a assinatura não bate com o arquivo</td>
+<td>recusa</td>
+</tr>
+<tr>
+<td>uma cópia do <code>powershell.exe</code> do Windows</td>
+<td>válida, assinante "CN=Microsoft Windows"</td>
+<td>a régua recusa pelo assinante (rodada no original; a cópia lida dá a mesma assinatura válida; ver achado 1)</td>
+</tr>
+</tbody>
+</table>
+<p><strong>Lido na fonte:</strong> a régua (<code>vc_redist_confere</code>) exige a assinatura válida, o assinante "CN=Microsoft Corporation, O=Microsoft
+Corporation", o produto "Microsoft Visual C++ 2015-20xx Redistributable (x64)" e a versão começando por "14.".</p>
+<h3>A leitura da assinatura que falha (anexo <code>sondas7-resultado.txt</code>, SONDA7-4)</h3>
+<p>Troquei só a conversa com o PowerShell da peça por quatro respostas ruins: não terminou no tempo; resposta vazia;
+resposta sem os campos; resposta só com "Valid". Nos quatro, a pasta é recusada ("a assinatura digital não confere" ou
+"não foi assinado pela Microsoft") e a montagem recusa o arquivo da pasta de downloads. <strong>Nada vira "passou".</strong> Lido na
+fonte: <code>assinatura_do_arquivo</code> transforma a falha em "erro: ...", e a régua nunca aceita isso.</p>
+<h3>O arquivo da versão do Visual C++ (SONDA7-3)</h3>
+<p>A conferência e o programa instalado leem esse arquivo com código diferente (achado 6). Testei cinco conteúdos com o
+Visual C++ oficial: com a marca de UTF-8 no começo (recusado), com quebra de linha do Windows no fim (passa; o programa
+instalado lê certo), em UTF-16 (recusado; o programa instalado levantaria erro), vazio (recusado) e com espaços em volta
+(passa; lido certo). <strong>Hoje, tudo o que passa na conferência o programa instalado lê certo.</strong></p>
+<h3>O Tesseract (lido na fonte e na pasta da prova)</h3>
+<ul>
+<li>A lista única (<code>relativos_do_tesseract</code>) tem os 27 arquivos, as duas licenças e os seis idiomas. A pasta da prova de
+  20/11 tem exatamente esses 35, mais o <code>LEIA-ME-TESSERACT.txt</code> (o texto que a montagem escreve; não é do Tesseract).</li>
+<li>O programa chama o Tesseract só com esses arquivos: <code>tesseract.exe</code>, as DLLs, <code>--tessdata-dir</code> apontando para
+  <code>tesseract\tessdata</code> e o hOCR ligado pelo <code>-c</code> (o arquivo de configuração <code>configs\hocr</code> não é usado; <code>core/ocr_tesseract.py</code>,
+  <code>_montar_comando</code>). <strong>A lista cobre o que o programa usa.</strong></li>
+<li>A conferência nova, rodada na pasta da prova de 20/11 (só lendo): "não tem o Visual C++ em instalar\" e nada sobre o
+  Tesseract. Isso também confere o item 13 do roteiro novo.</li>
+<li>O conteúdo não é comparado: um Tesseract de 1 byte por arquivo passa (SONDA7-5). O outro escreveu isso nas ressalvas.</li>
+</ul>
+<h3>Os caminhos até o vpk (a tabela do outro, conferida um por um no código)</h3>
+<table>
+<thead>
+<tr>
+<th>Caminho</th>
+<th>Passa pela mesma conferência antes do vpk?</th>
+<th>O que vi</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>publicar montado do zero</td>
+<td>sim, cedo e de novo antes do vpk</td>
+<td>a montagem confere o Visual C++ pela mesma régua (<code>preparar_vc_redist</code> → <code>conferir_o_visual_c</code>)</td>
+</tr>
+<tr>
+<td>publicar <code>--pasta-pronta</code></td>
+<td>sim, cedo (antes da conta do espaço) e antes do vpk</td>
+<td>pela mesma função; a mutação W6 (pular só a pasta pronta) é acusada</td>
+</tr>
+<tr>
+<td>a segunda passada (o instalador)</td>
+<td>sim, agora antes de <code>preparar_saida</code></td>
+<td>entre as passadas só muda o arquivo do motor; o pacote depois confere o motor</td>
+</tr>
+<tr>
+<td>a volta da pasta depois do instalador</td>
+<td>não vai ao vpk (só tira o zip do motor, também com erro)</td>
+<td>igual à volta 6</td>
+</tr>
+<tr>
+<td><code>construir_pacote_do_velopack</code> chamado sozinho</td>
+<td>sim, antes de mexer na pasta</td>
+<td>o teste novo prova que a pasta recusada fica igual, arquivo por arquivo</td>
+</tr>
+<tr>
+<td>a pasta portátil e o Inno</td>
+<td>não vão ao vpk; não passam por esta conferência</td>
+<td>o Inno usa a mesma lista do Tesseract (<code>_destinos_das_pecas</code> → <code>relativos_do_tesseract</code>)</td>
+</tr>
+<tr>
+<td>o pacote depois do vpk</td>
+<td>sempre: o Tesseract pela lista, o Visual C++ e a versão dele</td>
+<td>só confere que cada nome está lá, não o tamanho (o roteiro manda olhar o tamanho, item 15)</td>
+</tr>
+</tbody>
+</table>
+<p>Procurei outras listas do Tesseract e outras réguas do Visual C++ em todo o código fora dos testes: não há (a lista de
+nomes só existe em <code>empacotar.py</code>; a régua só em <code>conferir_o_visual_c</code>).</p>
+<h3>Os 4 baixos do relatório 6: consertados pela causa?</h3>
+<ul>
+<li><strong>Item 14 do roteiro depois do 13:</strong> a ordem foi trocada (a pasta antiga primeiro). Mas o novo item 14 tem um passo
+  que não dá para fazer onde está (achado 5).</li>
+<li><strong>Duas conferências do pacote sem teste:</strong> sim. O vpk de mentira agora deixa uma peça de fora e o publicar para em "o
+  pacote do Velopack saiu errado". A Z2 do relatório 6 seria acusada pelo caso do pacote sem o Visual C++ (dedução: não a rodei); a Z4
+  deixou de ter efeito, porque o pacote agora cobra o Tesseract com ou sem as peças, e a R6 do outro (tirar essa
+  cobrança) é acusada. Faltou o caso das licenças (achado 3).</li>
+<li><strong>O empacotar chamado sozinho mexia na pasta antes de recusar:</strong> sim, pela causa (a conferência vem antes) e com teste
+  que compara a pasta inteira antes e depois.</li>
+<li><strong>As aspas sem teste:</strong> sim, teste com espaço no nome que segue as duas frases ao pé da letra.</li>
+</ul>
+<h3>As mutações minhas (anexo <code>anexos-7/mutacoes7-resultado.txt</code>; script <code>mutar_quebra7.py.txt</code>)</h3>
+<p>Numa cópia de <code>25c514ad</code>, uma por vez, o arquivo devolvido ao original depois de cada uma (conferido byte a byte).
+Rodei os arquivos de teste inteiros. Diferentes das R1 a R12 do outro, das Y da volta 6 e das Z do relatório 6.</p>
+<table>
+<thead>
+<tr>
+<th></th>
+<th>O que desliguei</th>
+<th>Acusada?</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>W1</td>
+<td>a conferência da pasta com régua própria: aceita qualquer arquivo com assinatura válida, de quem for</td>
+<td><strong>não</strong> (98 + 42 passam)</td>
+</tr>
+<tr>
+<td>W2</td>
+<td>a conferência da pasta deixa de cobrar as licenças do Tesseract</td>
+<td><strong>não</strong> (98 + 42)</td>
+</tr>
+<tr>
+<td>W3</td>
+<td>a conferência do pacote depois do vpk deixa de cobrar as licenças do Tesseract</td>
+<td><strong>não</strong> (98 + 42 + 38)</td>
+</tr>
+<tr>
+<td>W4</td>
+<td>a versão do arquivo comparada por "começa com" (o arquivo vazio passa)</td>
+<td><strong>não</strong> (98 + 42)</td>
+</tr>
+<tr>
+<td>W5</td>
+<td>a leitura da assinatura que falha vira "passou" na régua única</td>
+<td><strong>não</strong> (98 + 42)</td>
+</tr>
+<tr>
+<td>W6</td>
+<td>o publicar não confere cedo só a pasta pronta (desvio para um caso)</td>
+<td>sim (7 testes)</td>
+</tr>
+</tbody>
+</table>
+<p><strong>1 de 6 acusadas.</strong> As 5 que passam estão nos achados 1 a 4. Com a W5, mostrei rodando (anexo <code>sonda-w5-resultado.txt</code>)
+o que ela deixaria passar: a montagem aceita o Visual C++ sem ler a assinatura, grava a versão vazia, a conferência da
+pasta compara vazio com vazio e passa, e o programa instalado, num notebook com um Visual C++ mais velho, nunca instala
+o novo.</p>
+<h3>O que já funcionava em volta (§11.8; anexo <code>anexos-7/arredor.txt</code>)</h3>
+<p>Código de <code>25c514ad</code>, um arquivo por vez: <code>test_publicar_versao.py</code> 98; <code>test_empacotar.py</code> 42; <code>test_publicar_motor.py</code> 12; <code>test_windows_peca.py</code> 69 e 2 pulados; <code>test_publicar_servidor.py</code> 14; <code>test_windows_janela_de_prova.py</code> 10; <code>test_decisoes_atualizacao.py</code> 38; <code>test_decisoes_ajudante_da_atualizacao.py</code> 37; <code>test_decisoes_testes_a_distancia.py</code> 13; <code>test_nome_do_pacote.py</code> 5. Todos passam.</p>
+<h3>A rodada do GitHub 44816609032</h3>
+<p>Consultei: tentativa 1, <strong>success</strong>, todas as partes (as 5 da suíte, os botões e os prints da janela real, o porteiro: "CONFERIDO"); o filtro de velocidade não foi pedido nesta rodada. O registro diz "código trocado pelo de passo2-publicar-2026-11-19 (eda1dc6b...)": é o código desta volta (de <code>25c514ad</code> a <code>eda1dc6b</code> nenhum <code>.py</code> muda). Lá, <code>test_publicar_versao.py</code> deu 98 passados (o caso do Visual C++ falso lido pela peça de verdade também roda no Windows do GitHub) e <code>test_empacotar.py</code> 41 passados e 1 pulado (o que precisa do Tesseract instalado).</p>
+<h2>Caminhos que o outro não listou</h2>
+<ol>
+<li><strong>A leitura que falha, dentro da régua única:</strong> a tabela do outro diz que a falha "nunca confere", e é verdade no
+   código, mas o caminho "leitura falha → montagem → versão vazia → conferência" não tem teste (achado 1, W5).</li>
+<li><strong>Um arquivo com assinatura válida que não é da Microsoft Corporation chegando à conferência da pasta:</strong> o teste novo
+   só usa um arquivo sem assinatura, que qualquer régua recusa (achado 1, W1).</li>
+<li><strong>As licenças do Tesseract</strong> no caminho da pasta pronta e no pacote (achado 3).</li>
+<li><strong>O item 14 do roteiro:</strong> a linha que ele manda ler só aparece durante a montagem (achado 5).</li>
+</ol>
+<h2>Falhas não pensadas e resultado não conferido</h2>
+<ul>
+<li><strong>Proteção sem teste (F3), de novo:</strong> a leitura que falha (W5), a régua da pasta (W1), as licenças (W2, W3) e a
+  versão vazia (W4). O código de hoje faz o certo em todas (provei rodando); só nenhum teste acusa se alguém mudar.
+  É a mesma família dos achados 3 e 5 do relatório 6.</li>
+<li><strong>O escrito não bate (F7), pequeno:</strong> o teste novo do empacotar diz "um arquivo sem assinatura é recusado pelos dois"
+  (montagem e conferência da pasta), mas não chama a conferência da pasta (achado 1). O item 14 do roteiro diz "ainda
+  antes de montar" para uma linha que a montagem imprime (achado 5).</li>
+<li><strong>Conta duplicada (§11.12):</strong> o arquivo da versão do Visual C++ é lido de dois jeitos (achado 6).</li>
+<li><strong>Dá como feito o que não conferiu (F5):</strong> não achei. A conferência lê a assinatura do arquivo que está na pasta, não
+  uma anotação.</li>
+<li><strong>F9 (mexer no que é do Samuel sem ele ver):</strong> nada. <code>git rev-parse --is-shallow-repository</code> deu <code>false</code>. Não criei
+  junção. Não mexi em <code>dist\</code> nem em <code>C:\EditorImpressaoProva</code>.</li>
+</ul>
+<h2>As regras que conferi</h2>
+<ul>
+<li><strong>§11.12 (uma regra, um lugar):</strong> cumprida para "é o Visual C++ oficial?" (uma função, usada pela montagem e pela
+  pasta) e para "o que é o Tesseract" (uma lista, usada pela montagem, pelo Inno, pela pasta e pelo pacote). Não
+  cumprida para "que versão o arquivo diz" (achado 6). A prova de "o mesmo resultado nos dois caminhos" existe, mas não
+  pega uma régua diferente na pasta (achado 1).</li>
+<li><strong>§11.12.2 (nada dado como feito sem conferir; falha nunca vira "deu certo"):</strong> cumprida no código (SONDA7-4); sem
+  teste (achado 1).</li>
+<li><strong>§11.12.3 (a lista das falhas):</strong> a do outro cobre os casos da D-818 e o da leitura que falha; faltam os caminhos 1 a
+  4 acima.</li>
+<li><strong>§11.12.4 e D-767:</strong> a régua roda pela peça de verdade nos testes para os arquivos falsos; o caminho certo só na minha
+  sonda e na prova à vista.</li>
+<li><strong>§11.12.6 e D-813 (ler a peça de fora; todos os jeitos que ela aceita):</strong> a régua compara a assinatura de verdade e o
+  nome de quem assinou (o texto do certificado); conferi os vizinhos que existem no PC (ver a tabela). Ver a observação
+  7 sobre o nome do produto.</li>
+<li><strong>§11.8 e D-818 (o novo não estraga; os testes antigos só ganham peças):</strong> conferido acima, sem afrouxar.</li>
+<li><strong>§4.7 e D-811 (reversão):</strong> confere (10 de 13 no publicar; o do empacotar não prova defeito). Das minhas 6 mutações,
+  1 acusada.</li>
+<li><strong>§11.4 (a prova da decisão em <code>tests/test_decisoes*.py</code>):</strong> a prova da D-818 está em <code>tests/test_publicar_versao.py</code>;
+  o outro escreveu por quê (observação 10).</li>
+<li><strong>D-815:</strong> agente novo.</li>
+<li><strong>CLAUDE.md §10.9:</strong> só criei arquivos na minha pasta de rascunho e na pasta deste relatório, com uma exceção (ver "Para
+  a gerente"). Não apaguei nada.</li>
+</ul>
+<h2>Achados</h2>
+<ol>
+<li>
+<p><strong>BAIXO: duas proteções do Visual C++ não têm teste que as acuse: a leitura que falha e "a mesma régua" na pasta.</strong>
+   - Onde: <code>empacotar.py</code>, <code>assinatura_do_arquivo</code> e <code>conferir_o_visual_c</code> (a falha vira "erro: ...", que a régua
+     recusa); <code>conferir_pasta_pronta</code> (chama <code>conferir_o_visual_c</code>).
+   - Lido na fonte: hoje está certo. Provado rodando: a leitura que falha recusa nos quatro jeitos (SONDA7-4), e um
+     arquivo válido de outro assinante é recusado (a cópia do <code>powershell.exe</code>).
+   - Provado (mutações): <strong>W5</strong> (a leitura que falha vira "passou") e <strong>W1</strong> (a pasta com régua própria, que aceita
+     qualquer assinatura válida) passam em todos os testes. O teste novo da D-818 usa só um arquivo sem assinatura, que
+     qualquer régua recusa. O teste novo do empacotar diz que confere "os dois", mas não chama a conferência da pasta.
+   - O que a W5 deixaria passar (rodado, <code>sonda-w5-resultado.txt</code>): a montagem grava a versão vazia, a conferência
+     compara vazio com vazio e passa, e o programa instalado com um Visual C++ mais velho nunca instala o novo.
+   - Por que baixo: o código de hoje faz o certo; é a proteção que pode sumir calada.
+   - O que pedir: (a) um teste que faça a leitura falhar (a peça do PowerShell respondendo "não terminou") e cobre a
+     recusa da pasta e da montagem; (b) um teste que ponha uma <strong>cópia do <code>powershell.exe</code> do Windows</strong> como
+     <code>instalar\vc_redist.x64.exe</code> e na pasta de downloads, e cobre a mesma recusa nos dois. Esse arquivo existe em todo
+     Windows e tem assinatura válida (conferi a cópia no PC: "Valid", assinante "CN=Microsoft Windows"), então roda de
+     verdade também no GitHub (dedução: não rodei lá).</p>
+</li>
+<li>
+<p><strong>BAIXO: a versão do Visual C++ comparada inteira não tem teste para o arquivo vazio ou com só um pedaço.</strong>
+   - Onde: <code>empacotar.py</code>, <code>conferir_pasta_pronta</code> (<code>lida != versao_do_vc</code>).
+   - Provado: a W4 (comparar por "começa com") passa em todos os testes; o único caso de teste é uma versão inteira e
+     diferente ("14.29.30133.0"). Hoje o arquivo vazio é recusado (SONDA7-3).
+   - O que pedir: um caso "arquivo da versão vazio" no teste da D-818.</p>
+</li>
+<li>
+<p><strong>BAIXO: as licenças do Tesseract são cobradas, mas nenhum teste acusa se deixarem de ser.</strong>
+   - Onde: <code>conferir_pasta_pronta</code> e <code>esperados_no_pacote_do_velopack</code> (as duas pela lista única, que tem <code>LICENSE</code> e
+     <code>AUTHORS</code>).
+   - Provado: W2 (a pasta) e W3 (o pacote) passam em todos os testes. Hoje a pasta sem a <code>LICENSE</code> é recusada (SONDA7-7).
+   - Por que importa: a licença do Tesseract tem de ir junto com ele.
+   - O que pedir: um caso "sem a licença do Tesseract" no teste da D-818 e um <code>tesseract/LICENSE</code> no teste do pacote sem
+     uma peça.</p>
+</li>
+<li>
+<p><strong>BAIXO: a mesma família de erro (proteção sem teste) em duas voltas seguidas.</strong>
+   - O relatório 6 achou 3 (achados 3 e 5, observação 6); esta volta, 5 (W1 a W5). O outro fez 12 mutações e 11 foram
+     acusadas; elas desligavam cada proteção inteira, e nenhuma tirava uma condição de dentro da régua (quem assinou, a
+     falha da leitura) nem um item da lista (as licenças).
+   - O catálogo dos erros manda a gerente pedir o conserto pela causa quando isso acontece. Sugestão para o pedido: para
+     cada proteção nova, uma mutação que <strong>tira uma condição de dentro dela</strong> (não só a desliga inteira), e o teste que
+     a acusa.</p>
+</li>
+<li>
+<p><strong>BAIXO: o novo item 14 do roteiro da prova não dá para fazer onde está.</strong>
+   - Onde: <code>relatorios/passo2-publicar/ONDE-PAREI.md</code>, "A prova de verdade", Volta 7, item 14: "Ainda antes de montar, ler
+     na linha "Visual C++: ..." de onde ele vem."
+   - Lido na fonte: essa linha só é impressa pela própria montagem, no começo dela (<code>empacotar.py</code>,
+     <code>_avisar_pecas_faltando</code>, chamada por <code>construir_pasta</code>). Antes do item 15 ela não aparece.
+   - O que pedir: trocar por "no item 15, logo no começo (antes de o PyInstaller começar), ler a linha 'Visual C++: ...'";
+     ou, antes do item 15, olhar se o arquivo está na pasta de downloads da cópia <code>passo2</code> (está: 25.635.768 bytes, o
+     mesmo do endereço da Microsoft, conferido pela soma).
+   - O item 13 novo está certo: rodei a conferência nova na pasta da prova de 20/11 (só lendo), e ela diz só "não tem o
+     Visual C++ em instalar\".</p>
+</li>
+<li>
+<p><strong>BAIXO: o arquivo da versão do Visual C++ é lido de dois jeitos (§11.12, conta duplicada).</strong>
+   - Onde: <code>empacotar.py</code>, <code>conferir_pasta_pronta</code> (lê com troca dos caracteres ruins e tira os espaços);
+     <code>atualizacao.py</code>, <code>instalar_visual_c_se_faltar</code> (lê sem troca e tira os espaços). Quem escreve é
+     <code>preparar_pasta_para_o_velopack</code>.
+   - Provado: hoje concordam em tudo o que testei (SONDA7-3): o que a conferência aceita, o programa instalado lê certo.
+   - Por que baixo: a §11.12 pede "um dado é lido e gravado por uma função só". Se alguém mudar só um dos dois, a
+     conferência passa a aceitar o que o programa do Kaique lê errado (e o programa, quando lê errado, decide não instalar
+     o Visual C++).
+   - O que pedir: uma função só em <code>atualizacao.py</code> que lê a versão do pacote, usada pelo programa instalado e pela
+     conferência.</p>
+</li>
+<li>
+<p><strong>OBSERVAÇÃO: a régua do Visual C++ recusa o Visual C++ novo da Microsoft e aceitaria um oficial mais velho.</strong>
+   - Lido na fonte: o nome do produto tem de ser "Microsoft Visual C++ 2015-20xx Redistributable (x64)". O Visual C++
+     14.50 (que já está neste PC, guardado em <code>C:\ProgramData\Package Cache</code>) chama-se "Microsoft Visual C++ v14 Redistributable (x64)" e é
+     recusado. Um oficial de 2015-2019 (14.2x) passaria (dedução pelo nome; não tenho o arquivo).
+   - Hoje não faz mal: o endereço permanente que o programa usa (<code>aka.ms/vs/17/release</code>) ainda leva ao 14.44, o mesmo
+     arquivo da pasta de downloads (conferi a soma no endereço, sem baixar). A Microsoft passou a indicar outro endereço
+     para os novos (fonte no fim).
+   - Não é desta volta (a régua já existia na montagem). Para a Lista de espera: decidir a versão mínima e o nome novo.</p>
+</li>
+<li>
+<p><strong>OBSERVAÇÃO: o caminho certo com o Visual C++ oficial lido de verdade não roda em nenhum teste automático.</strong>
+   - Os testes dão o Visual C++ de prova como "da Microsoft" (necessário: no GitHub o arquivo não existe). Só a minha
+     sonda (SONDA7-1) e a prova à vista (item 15) passam por ele. Rodou e passou na sonda.
+   - Ideia: um teste que roda só onde o arquivo existe (o PC) e pula no GitHub, dizendo que pulou.</p>
+</li>
+<li>
+<p><strong>OBSERVAÇÃO: a troca da leitura da assinatura na preparação dos testes vai um pouco além da letra da D-818.</strong>
+   - A D-818 autoriza "os testes antigos que usam a pasta de mentira sem essas peças passam a trazê-las". A troca na
+     preparação não é uma peça da pasta; é o que faz os poucos bytes "serem" o Visual C++. Não afrouxou nenhum teste
+     (conferido acima). A gerente decide se basta a lista que o outro escreveu ou se leva ao Samuel.</p>
+</li>
+<li>
+<p><strong>OBSERVAÇÃO: a prova da D-818 não está em <code>tests/test_decisoes*.py</code></strong> (CLAUDE.md §11.4). O pacote do escritor não
+    deixava mexer nesse arquivo; ele escreveu isso nas ressalvas. É da gerente.</p>
+</li>
+<li>
+<p><strong>OBSERVAÇÃO: o Tesseract da pasta já montada é conferido pela existência e pelo tamanho, não pelo conteúdo.</strong> Um
+    arquivo de 1 byte passa (SONDA7-5). O outro escreveu isso nas ressalvas; só confirmo rodando.</p>
+</li>
+</ol>
+<h2>O que falta para a prova à vista</h2>
+<ol>
+<li>A gerente decide se os achados 1 a 4 (só testes) e o 6 voltam a quem escreve antes da prova. Nenhum muda o que a
+   prova vai ver.</li>
+<li>No roteiro: o item 14 como no achado 5.</li>
+<li>No item 15, além do que já está: conferir que o <code>vc_redist.versao.txt</code> dentro do pacote diz exatamente
+   "14.44.35211.0" (é o que o programa do Kaique lê para decidir se instala).</li>
+<li>O que só a publicação de verdade mostra: a leitura da assinatura pela peça dentro do publicar (2 ou 3 vezes por
+   publicação, uns segundos cada, não medido), o vpk de verdade recebendo uma pasta com <code>instalar\</code> e o Tesseract, e o
+   tamanho do Visual C++ dentro do pacote (as conferências do programa olham só o nome).</li>
+</ol>
+<h2>Para a gerente: o que ficou fora do projeto</h2>
+<p>Na pasta de rascunho desta conversa, em
+<code>C:\Users\fotog\AppData\Local\Temp\claude\b9ca076ad002e817\14e42ebb-3236-41f4-94f5-20370c33bd91\scratchpad\quebra7\</code>:</p>
+<ul>
+<li><code>antigo\</code> (o código de <code>db4b377a</code>, com os dois arquivos de teste de <code>eda1dc6b</code> por cima), <code>novo\</code> (<code>25c514ad</code>, onde
+  rodaram as mutações; cada arquivo devolvido ao original, conferido), <code>novo-testes-velhos\</code> (<code>25c514ad</code> com o arquivo
+  de testes antigo, sem mudança), <code>sonda\</code> (<code>25c514ad</code>, com as minhas sondas no fim de <code>tests\test_publicar_versao.py</code>) e
+  <code>w5\</code> (<code>25c514ad</code> com a mutação W5 aplicada <strong>e deixada</strong>, só para a sonda dela; não serve para nada além disso);</li>
+<li><code>pecas\</code>: cópias do Visual C++ oficial, dos dois Visual C++ que o Windows guardou em <code>C:\ProgramData\Package Cache</code>,
+  do <code>CopilotUpdate.exe</code> e do <code>powershell.exe</code>, e os três estragos do oficial (os originais só foram lidos);</li>
+<li>os scripts e os resultados (os mesmos de <code>anexos-7/</code>).</li>
+</ul>
+<p><strong>Um arquivo meu ficou fora da pasta de rascunho:</strong> a sonda da W5 criou uma pasta temporária
+<code>C:\Users\fotog\AppData\Local\Temp\w5-f5nn64f9\</code> (uma cópia do Visual C++ oficial e uma pasta do programa de mentira, uns
+25 MB). Não apaguei (fora do projeto). A gerente decide.</p>
+<p><strong>Uma vez rodei duas coisas ao mesmo tempo:</strong> a sonda da W5 (um script, não um arquivo de teste) rodou enquanto a
+última mutação rodava o arquivo de testes do publicar. Não mudou o resultado de nenhuma das duas (a W6 foi acusada; a
+sonda não usa a cópia das mutações).</p>
+<p>O pytest cria as pastas dos testes em <code>C:\Users\fotog\AppData\Local\Temp\pytest-of-fotog\</code> (ele mesmo guarda só as
+últimas). Não apaguei nada em lugar nenhum.</p>
+<h2>Fontes de fora</h2>
+<ul>
+<li>Microsoft, "Latest supported Visual C++ Redistributable downloads":
+  https://learn.microsoft.com/cpp/windows/latest-supported-vc-redist (o endereço novo <code>aka.ms/vc14/...</code> para os
+  14.50).</li>
+<li>O endereço <code>https://aka.ms/vs/17/release/vc_redist.x64.exe</code>, perguntado só o cabeçalho em 20/11/2026: leva a um arquivo
+  cuja soma (no próprio endereço) é a do nosso <code>vc_redist.x64.exe</code> 14.44.35211.0.</li>
+</ul>
+<p class="rodape">Editor de Impressão &middot; gerado em 20/11/2026 às 17:31</p>
+</body>
+</html>

@@ -1,0 +1,6 @@
+C:\Users\fotog\AppData\Local\Temp\claude\b9ca076ad002e817\14e42ebb-3236-41f4-94f5-20370c33bd91\scratchpad\quebra7\sonda_w5.py:2: SyntaxWarning: "\w" is an invalid escape sequence. Such sequences will not work in the future. Did you mean "\\w"? A raw string is also an option.
+  Roda numa copia (quebra7\w5) com a W5 aplicada; a leitura da assinatura falha de proposito (o PowerShell 'nao termina')."""
+montagem (preparar_vc_redist), com a leitura falhando: C:\Users\fotog\AppData\Local\Temp\w5-f5nn64f9\downloads\vc_redist.x64.exe '' []
+a montagem põe o Visual C++: [] | versao.txt = ''
+conferência da pasta: PASSA
+o programa instalado, com um Visual C++ mais velho no notebook: False (False = não instala)

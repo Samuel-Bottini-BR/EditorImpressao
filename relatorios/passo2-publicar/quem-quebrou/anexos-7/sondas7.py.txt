@@ -1,0 +1,94 @@
+
+
+# =====================================================================================================================
+# SONDAS DE QUEM QUEBRA, VOLTA 7 (20/11/2026). Rodadas so numa copia na pasta de rascunho; nunca vao ao ramo.
+# =====================================================================================================================
+_PECAS7 = Path(r"C:\Users\fotog\AppData\Local\Temp\claude\b9ca076ad002e817\14e42ebb-3236-41f4-94f5-20370c33bd91\scratchpad\quebra7\pecas")
+
+
+def _pronta_com(a, nome: str, conteudo: bytes, versao_txt: bytes | None = b"14.44.35211.0") -> Path:
+    pronta = _pasta_pronta(a["tmp"] / nome / "EditorImpressao", versao.VERSAO)
+    instalar = pronta / atualizacao.PASTA_DO_QUE_SE_INSTALA
+    (instalar / atualizacao.VC_REDIST_NOME).write_bytes(conteudo)
+    if versao_txt is None:
+        (instalar / atualizacao.VC_REDIST_VERSAO).unlink()
+    else:
+        (instalar / atualizacao.VC_REDIST_VERSAO).write_bytes(versao_txt)
+    return pronta
+
+
+def test_sonda7_1_o_oficial_de_verdade_passa_pela_leitura_de_verdade(ambiente, capsys):
+    """O caminho positivo da pasta pronta com o Visual C++ OFICIAL, lido pela peça de verdade (sem a troca do ambiente:
+    o conteúdo não é o de prova)."""
+    pronta = _pronta_com(ambiente, "oficial", (_PECAS7 / "oficial.exe").read_bytes())
+    r = empacotar.conferir_pasta_pronta(pronta, versao.VERSAO)
+    print("SONDA7-1", r)
+    assert r == []
+
+
+@pytest.mark.parametrize("arquivo", ["outro-da-microsoft.exe", "x86.exe", "cache-x64.exe", "cortado.exe",
+                                     "com-sobra.exe", "um-byte-trocado.exe"])
+def test_sonda7_2_falsos_de_verdade(ambiente, arquivo):
+    pronta = _pronta_com(ambiente, "f-" + arquivo, (_PECAS7 / arquivo).read_bytes())
+    r = empacotar.conferir_pasta_pronta(pronta, versao.VERSAO)
+    print("SONDA7-2", arquivo, r)
+    assert r and "não é o oficial da Microsoft" in r[0]
+
+
+@pytest.mark.parametrize("versao_txt", [b"\xef\xbb\xbf14.44.35211.0", b"14.44.35211.0\r\n", b"\xff\xfe1\x004\x00",
+                                        b"", b" 14.44.35211.0 "])
+def test_sonda7_3_o_arquivo_da_versao_lido_igual_pelo_programa_instalado(ambiente, versao_txt):
+    """A conferência e o programa instalado (atualizacao.instalar_visual_c_se_faltar) leem o mesmo arquivo com código
+    diferente: o que passa na conferência tem de ser lido certo pelo programa."""
+    pronta = _pronta_com(ambiente, "v" + str(abs(hash(versao_txt))), (_PECAS7 / "oficial.exe").read_bytes(), versao_txt)
+    r = empacotar.conferir_pasta_pronta(pronta, versao.VERSAO)
+    rodou = []
+    try:
+        ok = atualizacao.instalar_visual_c_se_faltar(pronta, ler=lambda: None,
+                                                     rodar=lambda c, t: (rodou.append(c), (0, ""))[1])
+        programa = f"devolve {ok}, rodou o vc_redist: {bool(rodou)}"
+    except Exception as erro:  # noqa: BLE001
+        programa = f"LEVANTOU {erro!r}"
+    print("SONDA7-3", repr(versao_txt), "conferencia:", r or "PASSA", "| programa instalado (sem VC no PC):", programa)
+
+
+@pytest.mark.parametrize("resposta", ["falha", "vazio", "chaves", "so-status"])
+def test_sonda7_4_a_leitura_que_falha_nunca_vira_passou(ambiente, monkeypatch, resposta):
+    from core import windows
+    pronta = _pronta_com(ambiente, "l-" + resposta, (_PECAS7 / "oficial.exe").read_bytes())
+
+    def powershell(texto, limite_s=600, segredo=None):
+        if resposta == "falha":
+            return windows._falhou("o PowerShell não terminou no tempo", "limite")
+        saida = {"vazio": "", "chaves": "{}", "so-status": '{"status":"Valid"}'}[resposta]
+        return windows._certo(saida=saida, erros="")
+
+    monkeypatch.setattr(windows, "rodar_powershell", powershell)
+    r = empacotar.conferir_pasta_pronta(pronta, versao.VERSAO)
+    monkeypatch.setattr(empacotar, "DOWNLOADS", _PECAS7 / "so-oficial")
+    (_PECAS7 / "so-oficial").mkdir(exist_ok=True)
+    alvo = _PECAS7 / "so-oficial" / empacotar.VC_REDIST_NOME
+    if not alvo.exists():
+        shutil.copyfile(_PECAS7 / "oficial.exe", alvo)
+    m = empacotar.preparar_vc_redist(baixar=False)
+    print("SONDA7-4", resposta, "| pasta:", r, "| montagem:", m[0], repr(m[1]), m[2])
+    assert r and m[0] is None
+
+
+def test_sonda7_5_o_tesseract_de_lixo_passa(ambiente):
+    pronta = _pronta_com(ambiente, "lixo", (_PECAS7 / "oficial.exe").read_bytes())
+    for r in empacotar.relativos_do_tesseract():
+        (pronta / r).write_bytes(b"x")
+    print("SONDA7-5", empacotar.conferir_pasta_pronta(pronta, versao.VERSAO))
+
+
+def test_sonda7_6_caminho_escrito_de_outro_jeito(ambiente):
+    pronta = _pronta_com(ambiente, "outrojeito", (_PECAS7 / "oficial.exe").read_bytes())
+    for jeito in ("\\?\\" + str(pronta), str(pronta).replace("\\", "/"), str(pronta) + "\.\\"):
+        print("SONDA7-6", jeito, empacotar.conferir_pasta_pronta(Path(jeito), versao.VERSAO))
+
+
+def test_sonda7_7_sem_as_licencas_do_tesseract(ambiente):
+    pronta = _pronta_com(ambiente, "semlic", (_PECAS7 / "oficial.exe").read_bytes())
+    (pronta / "tesseract" / "LICENSE").unlink()
+    print("SONDA7-7", empacotar.conferir_pasta_pronta(pronta, versao.VERSAO))

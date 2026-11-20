@@ -1,0 +1,17 @@
+"""Sonda de quem quebra (volta 7): le a assinatura de verdade (pela peca do Windows, sem janela) de copias de arquivos."""
+import sys, shutil
+from pathlib import Path
+sys.path.insert(0, sys.argv[1])
+import empacotar
+P = Path(sys.argv[2])
+oficial = P / "oficial.exe"
+dados = oficial.read_bytes()
+(P / "cortado.exe").write_bytes(dados[: len(dados) // 2])
+(P / "com-sobra.exe").write_bytes(dados + b"\0" * 4096)
+meio = bytearray(dados); meio[len(meio) // 2] ^= 0xFF
+(P / "um-byte-trocado.exe").write_bytes(bytes(meio))
+for nome in ["oficial.exe", "cache-x64.exe", "x86.exe", "outro-da-microsoft.exe", "cortado.exe", "com-sobra.exe",
+             "um-byte-trocado.exe"]:
+    a = empacotar.assinatura_do_arquivo(P / nome)
+    v, problemas = empacotar.conferir_o_visual_c(P / nome)
+    print(f"{nome} ({(P / nome).stat().st_size} bytes): {a}\n   -> regua: {'PASSA' if not problemas else 'recusa: ' + '; '.join(problemas)}")

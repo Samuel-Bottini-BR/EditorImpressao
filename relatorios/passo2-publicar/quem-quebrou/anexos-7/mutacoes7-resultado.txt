@@ -1,0 +1,20 @@
+W1 (a conferência da pasta tem régua própria do Visual C++: só 'assinatura válida', de quem for): NAO acusada
+    tests/test_publicar_versao.py: ['98 passed in 50.88s'] []
+    tests/test_empacotar.py: ['42 passed in 2.66s'] []
+W2 (a conferência da pasta deixa de cobrar as licenças do Tesseract): NAO acusada
+    tests/test_publicar_versao.py: ['98 passed in 50.49s'] []
+    tests/test_empacotar.py: ['42 passed in 3.42s'] []
+W3 (a conferência do pacote depois do vpk deixa de cobrar as licenças do Tesseract): NAO acusada
+    tests/test_publicar_versao.py: ['98 passed in 50.43s'] []
+    tests/test_empacotar.py: ['42 passed in 3.42s'] []
+    tests/test_decisoes_atualizacao.py: ['38 passed in 3.21s'] []
+W4 (a versão do arquivo comparada por 'começa com' (o arquivo vazio passa)): NAO acusada
+    tests/test_publicar_versao.py: ['98 passed in 52.05s'] []
+    tests/test_empacotar.py: ['42 passed in 1.73s'] []
+W5 (a leitura da assinatura que falha vira 'passou' na régua única): NAO acusada
+    tests/test_publicar_versao.py: ['98 passed in 50.69s'] []
+    tests/test_empacotar.py: ['42 passed in 3.46s'] []
+W6 (o publicar não confere cedo só a pasta pronta (desvio para um caso)): ACUSADA
+    tests/test_publicar_versao.py: ['7 failed, 91 passed in 51.16s'] ['test_a_pasta_pronta_de_outra_versao_e_recusada', 'test_d818_a_pasta_ja_montada_e_conferida_igual_a_montada_do_zero[sem o Tesseract]', 'test_d818_a_pasta_ja_montada_e_conferida_igual_a_montada_do_zero[sem um idioma do Tesseract]']
+
+1 de 6 acusadas; cada arquivo devolvido ao original (conferido byte a byte).
