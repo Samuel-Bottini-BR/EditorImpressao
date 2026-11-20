@@ -5,10 +5,13 @@ O QUE É
     rodar e esperar uma ferramenta do Windows ou um script do PowerShell, criar/apagar/rodar/ler tarefas do
     Agendador, a pasta de troca, a pasta segura, ler licenças de pasta e marcas, e ler a assinatura digital de um
     arquivo (`ler_assinatura_digital`, desde o passo 2, para o publicar), e abrir um programa num grupo do Windows que
-    fecha junto tudo o que ele abrir (`abrir_em_grupo`, passo 2, para a vigia do espaço do publicar). O porteiro (`regras_dos_agentes`,
+    fecha junto tudo o que ele abrir (`abrir_em_grupo`, passo 2, para a vigia do espaço do publicar), com o laço único
+    de rodar, olhar a vigia e fechar (`rodar_em_grupo`, passo 2, volta 4: o vpk e o gh), e pedir ao Windows que grave
+    um arquivo no disco (`gravar_no_disco`, passo 2, volta 4). O porteiro (`regras_dos_agentes`,
     conferência K01) só deixa essa conversa acontecer aqui. Quem usa hoje: o `main.py` (a entrada do trabalho de
-    administrador), a janela de prova, os testes e, desde o passo 2, o `empacotar.py` (o grupo do vpk e a assinatura
-    digital do Visual C++), que o publicar chama. O programa do Kaique ainda não a usa: ele muda nos passos 3 a 5.
+    administrador), a janela de prova, os testes e, desde o passo 2, o `empacotar.py` (o vpk pelo laço único, a
+    assinatura digital do Visual C++ e a gravação no disco) e o `publicar_versao_kaique.py` (o gh pelo laço único). O
+    programa do Kaique ainda não a usa: ele muda nos passos 3 a 5.
 
 AS TRÊS RESPOSTAS
     Toda função que pede algo ao Windows devolve uma `Resposta` com um de três desfechos: `DEU_CERTO`, `DISSE_NAO` (a
@@ -64,8 +67,10 @@ A PEÇA É FECHADA (escolha técnica da gerente, 19/11, achado 12 de quem tentou
       lembrou de pôr na lista. Quem precisa de um deles chama a função da peça (`ler_tarefa`, `rodar_tarefa`,
       `rodar_powershell`, `pedir_licenca`...), ou a peça ganha uma função nova para isso, com teste. O caminho é
       normalizado num lugar só antes de comparar (`_caminho_do_programa`): o prefixo de caminho longo e o de
-      dispositivo (duas barras com interrogação ou com ponto) saem, e o caminho de rede (duas barras e o nome de um
-      computador, que pode apontar para a pasta do Windows deste por outro nome) é recusado.
+      dispositivo (duas barras com interrogação ou com ponto) saem, o caminho de rede (duas barras e o nome de um
+      computador, que pode apontar para a pasta do Windows deste por outro nome) é recusado, e o nome é completado como
+      o Windows o completa, com os pontos e espaços do fim tirados (passo 2, volta 4: `pwsh.exe.` e `whoami.exe.`
+      passavam); a regra inteira, com uma frase para cada motivo, é `_por_que_recusa`.
     - Programa de fora do Windows (ex.: o do Tailscale, no passo 4) passa pelo rodar genérico neste passo. CADA passo
       que usar um programa de fora decide, no pedido dele, se o programa ganha função própria na peça (e entra em
       `PROGRAMAS_COM_FUNCAO_PROPRIA`).

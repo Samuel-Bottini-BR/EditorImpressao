@@ -1336,8 +1336,10 @@ def vigia_do_espaco(pasta: Path, reserva: int | None = None, livre=None):
     """A vigia do espaco (D-776: "ele vigia o espaco durante o trabalho e para com aviso se cair perto da reserva"): o
     LUGAR UNICO da regra. Devolve uma funcao que, a cada chamada, le o espaco livre do disco da pasta (do Windows, na
     hora) e devolve None (pode continuar) ou o motivo de parar, em portugues: abaixo da reserva, ou nao deu para ler
-    (na duvida, para). Quem usa: rodar_vpk (durante o vpk), zipar_motor (durante a compressao do motor) e o publicar
-    (durante o download do motor para o rascunho, achado 7 do relatorio 2). 'livre' e trocavel so nos testes."""
+    (na duvida, para). Quem usa: rodar_vpk (durante o vpk), zipar_motor (durante a compressao do motor), a copia
+    conferida (copiar_inteiro) e o publicar (durante o download do motor para o rascunho, achado 7 do relatorio 2, e o
+    download para somar quando o GitHub nao da a soma pronta, achado 7 do relatorio 3). 'livre' e trocavel so nos
+    testes."""
     livre = livre or espaco_livre
     reserva = reserva or RESERVA_DO_DISCO
 
