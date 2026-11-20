@@ -1,0 +1,42 @@
+"""Segunda rodada das minhas mutacoes (achados 5 a 9 do relatorio 2)."""
+import subprocess, sys
+from pathlib import Path
+RAIZ = Path(sys.argv[1]); PY = sys.argv[2]
+MUT = [
+  ("Q-l", "achado 5: o caminho de erro nunca apaga o rascunho (so_rascunho vira 'nao faz nada')", "publicar_versao_kaique.py",
+   "aviso = destino.apagar_rascunho(etiqueta)", "aviso = None",
+   ["tests/test_publicar_versao.py::test_volta3_achado5_o_liberar_que_falha_e_continua_rascunho_apaga_o_rascunho"]),
+  ("Q-m", "achado 6: sem a comparacao do motor lido de novo", "publicar_versao_kaique.py",
+   "if de_novo != motor:", "if False:",
+   ["tests/test_publicar_versao.py::test_volta3_achado6_o_motor_trocado_durante_a_publicacao_impede_liberar"]),
+  ("Q-n", "achado 7: o motor baixado fora da conta", "publicar_versao_kaique.py",
+   "baixado_para_o_rascunho=tamanho_do_motor)", "baixado_para_o_rascunho=0)",
+   ["tests/test_publicar_versao.py::test_volta3_achado7_o_motor_baixado_entra_na_conta_e_na_vigia"]),
+  ("Q-o", "achado 7: o download do motor sem a vigia", "publicar_versao_kaique.py",
+   "empacotar.vigia_do_espaco(rascunho))", "None)",
+   ["tests/test_publicar_versao.py::test_volta3_achado7_o_motor_baixado_entra_na_conta_e_na_vigia"]),
+  ("Q-p", "achado 8: o servidor volta a tratar o repetido como inexistente", "servidor_das_versoes.py",
+   "if len(achados) > 1:", "if False:",
+   ["tests/test_publicar_servidor.py::test_achado8_o_nome_repetido_aparece_na_janela_como_repetido_e_nao_como_inexistente"]),
+  ("Q-q", "achado 9: a primeira pasta de troca fica quando a segunda nao nasce", "core/windows.py",
+   "    except OSError as erro:\r\n        apagar_pasta_de_troca(pasta)\r\n        return _falhou(\"não consegui preparar o script",
+   "    except OSError as erro:\r\n        pass\r\n        return _falhou(\"não consegui preparar o script",
+   ["tests/test_windows_peca.py::test_o_lancado_solto_apaga_a_primeira_pasta_se_a_segunda_nao_nasce"]),
+  ("Q-r", "achado 9: sem leitura do grupo, a frase volta a 'continua rodando'", "core/windows.py",
+   "        if lido is None:\r\n            return _falhou(\"pedi para fechar o programa e o que ele abriu, e não deu para conferir",
+   "        if False:\r\n            return _falhou(\"pedi para fechar o programa e o que ele abriu, e não deu para conferir",
+   ["tests/test_windows_peca.py::test_fechar_tudo_so_diz_conferido_quando_o_windows_diz_que_nenhum_ficou"]),
+]
+for codigo, oque, arq, de, para, testes in MUT:
+    caminho = RAIZ / arq
+    original = caminho.read_bytes(); texto = original.decode("utf-8"); n = texto.count(de)
+    if n != 1:
+        print(f"{codigo}: NAO APLICADA ({n} vezes) - {oque}", flush=True); continue
+    caminho.write_bytes(texto.replace(de, para).encode("utf-8"))
+    try:
+        r = subprocess.run([PY, "-m", "pytest", *testes, "-q", "-x", "-p", "no:cacheprovider"], cwd=RAIZ,
+                           capture_output=True, text=True, encoding="utf-8", errors="replace", timeout=900)
+        fim = [l for l in r.stdout.splitlines() if l.strip()][-1] if r.stdout.strip() else r.stderr[-200:]
+        print(f"{codigo}: {'ACUSOU' if r.returncode else 'NAO ACUSOU'} - {oque} - {fim}", flush=True)
+    finally:
+        caminho.write_bytes(original)

@@ -1,0 +1,18 @@
+Q-a: ACUSOU - copiar_inteiro grava direto no nome certo (sem o provisorio) - 1 failed in 1.33s ['FAILED tests/test_publicar_versao.py::test_volta3_a_copia_cortada_no_meio_nunca_deixa_o_nome_certo']
+Q-b: ACUSOU - a peca deixa de ler o comeco do arquivo (so a extensao) - 1 failed in 0.46s ['FAILED tests/test_windows_peca.py::test_bat_e_cmd_sao_recusados_pelo_rodar_pelo_lancar_e_pelo_grupo']
+Q-c: ACUSOU - a peca deixa de olhar a extensao (so o comeco) - 1 failed in 0.42s ['FAILED tests/test_windows_peca.py::test_um_lote_que_a_peca_nao_acha_tambem_e_recusado_pela_extensao']
+Q-d: NAO ACUSOU - a segunda olhada depois do which (o nome que vira .BAT pelo PATHEXT) desligada - 62 passed, 2 skipped in 40.04s []
+Q-e: ACUSOU - o grupo abre o programa rodando (sem CREATE_SUSPENDED); o soltar nao reclama - 1 failed in 3.50s ['FAILED tests/test_windows_peca.py::test_o_programa_nasce_parado_e_so_roda_dentro_do_grupo']
+Q-f: NAO ACUSOU - a conferencia IsProcessInJob desligada - 62 passed, 2 skipped in 40.04s []
+Q-g: ACUSOU - o apagar do GitHub nao olha se ficou liberada logo antes de pedir - 1 failed in 0.98s ['FAILED tests/test_publicar_versao.py::test_volta3_achado1_no_github_a_leitura_atrasada_tambem_nunca_apaga_a_liberada']
+Q-h: NAO ACUSOU - o apagar_publicacao nao olha a primeira leitura (so a do destino) - 49 passed in 19.51s []
+Q-i: ACUSOU - a vigia unica nunca manda parar - 1 failed, 3 passed in 61.82s (0:01:01) ['FAILED tests/test_publicar_versao.py::test_d776_a_vigia_fecha_o_vpk_quando_o_disco_cai_abaixo_da_reserva']
+Q-j: ACUSOU - a conferencia do fim nao acusa o pedaco .copiando - 1 failed, 41 passed in 16.27s ['FAILED tests/test_publicar_versao.py::test_volta3_achado2_o_msi_da_pasta_de_saida_e_comparado_com_o_do_rascunho']
+Q-k: ACUSOU - o .msi conferido so pelo tamanho (sem a soma) - 1 failed, 41 passed in 16.86s ['FAILED tests/test_publicar_versao.py::test_volta3_achado2_o_msi_da_pasta_de_saida_e_comparado_com_o_do_rascunho']
+Q-l: ACUSOU - achado 5: o caminho de erro nunca apaga o rascunho (so_rascunho vira 'nao faz nada') - 1 failed in 1.04s
+Q-m: ACUSOU - achado 6: sem a comparacao do motor lido de novo - 1 failed in 1.05s
+Q-n: ACUSOU - achado 7: o motor baixado fora da conta - 1 failed in 1.51s
+Q-o: ACUSOU - achado 7: o download do motor sem a vigia - 1 failed in 1.61s
+Q-p: ACUSOU - achado 8: o servidor volta a tratar o repetido como inexistente - 1 failed in 0.70s
+Q-q: ACUSOU - achado 9: a primeira pasta de troca fica quando a segunda nao nasce - 1 failed in 0.44s
+Q-r: ACUSOU - achado 9: sem leitura do grupo, a frase volta a 'continua rodando' - 1 failed in 4.43s

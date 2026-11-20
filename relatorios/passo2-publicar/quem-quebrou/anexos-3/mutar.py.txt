@@ -1,0 +1,66 @@
+"""Minhas mutacoes (quem tenta quebrar, volta 3): desligo uma protecao por vez numa copia e rodo o teste que diz
+cobri-la. Restaura o arquivo depois de cada uma."""
+import subprocess, sys
+from pathlib import Path
+
+RAIZ = Path(sys.argv[1])
+PY = sys.argv[2]
+MUT = [
+  ("Q-a", "copiar_inteiro grava direto no nome certo (sem o provisorio)", "empacotar.py",
+   'provisorio = alvo.with_name(alvo.name + ".copiando")', 'provisorio = alvo',
+   ["tests/test_publicar_versao.py::test_volta3_a_copia_cortada_no_meio_nunca_deixa_o_nome_certo",
+    "tests/test_publicar_versao.py::test_volta3_achado2_o_msi_que_nao_termina_de_copiar_nao_fica_com_o_nome_certo"]),
+  ("Q-b", "a peca deixa de ler o comeco do arquivo (so a extensao)", "core/windows.py",
+   "return arquivo.read(len(_COMECO_DE_PROGRAMA)) != _COMECO_DE_PROGRAMA", "return False",
+   ["tests/test_windows_peca.py::test_bat_e_cmd_sao_recusados_pelo_rodar_pelo_lancar_e_pelo_grupo"]),
+  ("Q-c", "a peca deixa de olhar a extensao (so o comeco)", "core/windows.py",
+   'if completo.rstrip(". ").lower().endswith(_EXTENSOES_DE_LOTE):', 'if False:',
+   ["tests/test_windows_peca.py::test_um_lote_que_a_peca_nao_acha_tambem_e_recusado_pela_extensao"]),
+  ("Q-d", "a segunda olhada depois do which (o nome que vira .BAT pelo PATHEXT) desligada", "core/windows.py",
+   "return caminho.is_relative_to(pasta_do_windows.resolve()) or _nao_e_programa_do_windows(caminho)",
+   "return caminho.is_relative_to(pasta_do_windows.resolve())",
+   ["tests/test_windows_peca.py"]),
+  ("Q-e", "o grupo abre o programa rodando (sem CREATE_SUSPENDED); o soltar nao reclama", "core/windows.py",
+   "creationflags=_ABRIR_PARADO)", "creationflags=0)",
+   ["tests/test_windows_peca.py::test_o_programa_nasce_parado_e_so_roda_dentro_do_grupo"]),
+  ("Q-f", "a conferencia IsProcessInJob desligada", "core/windows.py",
+   "conferido = posto and bool(w.kernel32.IsProcessInJob(alca, grupo, ctypes.byref(dentro))) and bool(dentro.value)",
+   "conferido = posto",
+   ["tests/test_windows_peca.py"]),
+  ("Q-g", "o apagar do GitHub nao olha se ficou liberada logo antes de pedir", "publicar_versao_kaique.py",
+   '        if situacao == "liberada":\r\n            raise PublicacaoLiberada(f"{etiqueta} está liberada em {self.nome}',
+   '        if False:\r\n            raise PublicacaoLiberada(f"{etiqueta} está liberada em {self.nome}',
+   ["tests/test_publicar_versao.py::test_volta3_achado1_no_github_a_leitura_atrasada_tambem_nunca_apaga_a_liberada"]),
+  ("Q-h", "o apagar_publicacao nao olha a primeira leitura (so a do destino)", "publicar_versao_kaique.py",
+   '        if antes != "rascunho":\r\n            raise PublicacaoLiberada',
+   '        if False:\r\n            raise PublicacaoLiberada',
+   ["tests/test_publicar_versao.py"]),
+  ("Q-i", "a vigia unica nunca manda parar", "empacotar.py",
+   "        if sobra < reserva:\r\n            return (f\"o disco do rascunho",
+   "        if False:\r\n            return (f\"o disco do rascunho",
+   ["tests/test_publicar_versao.py"]),
+  ("Q-j", "a conferencia do fim nao acusa o pedaco .copiando", "publicar_versao_kaique.py",
+   'if nome.endswith(".copiando")]', 'if False]',
+   ["tests/test_publicar_versao.py"]),
+  ("Q-k", "o .msi conferido so pelo tamanho (sem a soma)", "publicar_versao_kaique.py",
+   "igual = (saida / nome).stat().st_size == tamanho and assinatura.soma_sha256(saida / nome) == soma",
+   "igual = (saida / nome).stat().st_size == tamanho",
+   ["tests/test_publicar_versao.py"]),
+]
+for codigo, oque, arq, de, para, testes in MUT:
+    caminho = RAIZ / arq
+    original = caminho.read_bytes()
+    texto = original.decode("utf-8")
+    n = texto.count(de)
+    if n != 1:
+        print(f"{codigo}: NAO APLICADA ({n} vezes) - {oque}", flush=True)
+        continue
+    caminho.write_bytes(texto.replace(de, para).encode("utf-8"))
+    try:
+        r = subprocess.run([PY, "-m", "pytest", *testes, "-q", "-x", "-p", "no:cacheprovider"], cwd=RAIZ,
+                           capture_output=True, text=True, encoding="utf-8", errors="replace", timeout=900)
+        fim = [l for l in r.stdout.splitlines() if l.strip()][-1] if r.stdout.strip() else r.stderr[-200:]
+        falhou = [l for l in r.stdout.splitlines() if l.startswith("FAILED")]
+        print(f"{codigo}: {'ACUSOU' if r.returncode else 'NAO ACUSOU'} - {oque} - {fim} {falhou[:1]}", flush=True)
+    finally:
+        caminho.write_bytes(original)

@@ -1,0 +1,10 @@
+Nota (quem tenta quebrar, volta 3): o texto 'o filho que saiu' é o nome da pergunta do script; o resultado mostra que ele NÃO saiu: estava entre os 2 vivos do grupo e morreu no fechar_tudo (erro 87 = o processo não existe mais).
+.lnk: Windows cru: OSError 193 | peça recusa? True | falhou
+.lnk pelo grupo: falhou
+este python (quem chama) esta num grupo do Windows? True
+abrir_em_grupo: deu certo
+o filho escreveu: 23208
+vivos no grupo antes de fechar: 2
+fechar_tudo: deu certo | fechados o programa e tudo o que ele abriu (conferido no Windows: nenhum vivo no grupo)
+o filho que saiu, depois do 'conferido' e do soltar: nao abre (erro 87)
+depois de eu fechar o meu processo de prova: nao abre (erro 87)

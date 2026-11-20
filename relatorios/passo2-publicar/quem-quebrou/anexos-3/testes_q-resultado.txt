@@ -1,0 +1,10 @@
+Q1 FRASE: o GitHub não deixou liberar v9.9.9: HTTP 502: a resposta se perdeu (de mentira). a publicação v9.9.9 foi apagada de o GitHub (dono/projeto) (conferido)
+Q1 PEDIDOS DE APAGAR: [['release', 'delete', 'v9.9.9', '--yes']]
+Q1 A VERSAO LIBERADA CONTINUA NO GITHUB? False
+Q2 FRASE: o GitHub não deixou liberar v9.9.9: HTTP 502 (de mentira). v9.9.9: pedi para liberar em o GitHub (dono/projeto); não deu para ler a situação agora (não consegui perguntar ao GitHub pela publicação v9.9.9: error connecting to api.github.com). Se ficou liberada, ela está inteira; não deu para reconferir agora e NÃO apaguei. Confira com calma antes de publicar de novo
+Q2 PEDIDOS DE APAGAR: [['release', 'delete', 'v9.9.9', '--yes']]
+Q2 O RASCUNHO CONTINUA NO GITHUB? False
+Q3 FRASE: o GitHub não deixou enviar EditorImpressaoPrograma-9.9.9-full.nupkg: HTTP 502 ao enviar (de mentira). a publicação v9.9.9 foi apagada de o GitHub (dono/projeto) (conferido)
+Q3 PEDIDOS DE APAGAR: []
+Q3 O RASCUNHO CONTINUA NO GITHUB? True
+3 failed, 49 passed in 21.51s

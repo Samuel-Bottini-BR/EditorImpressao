@@ -1,0 +1,40 @@
+"""E4: o filho com CREATE_BREAKAWAY_FROM_JOB sai do grupo do abrir_em_grupo? Fica vivo depois do 'conferido'?"""
+import ctypes, subprocess, sys, time
+from ctypes import wintypes
+from pathlib import Path
+RAIZ = Path(sys.argv[1]); CASOS = Path(sys.argv[2]); CASOS.mkdir(parents=True, exist_ok=True)
+sys.path.insert(0, str(RAIZ))
+from core import windows  # noqa
+k = ctypes.WinDLL("kernel32", use_last_error=True)
+k.OpenProcess.restype = wintypes.HANDLE
+def vivo(pid):
+    h = k.OpenProcess(0x1000 | 0x00100000, False, pid)
+    if not h:
+        return f"nao abre (erro {ctypes.get_last_error()})"
+    codigo = wintypes.DWORD()
+    k.GetExitCodeProcess(h, ctypes.byref(codigo)); k.CloseHandle(h)
+    return "VIVO" if codigo.value == 259 else f"saiu ({codigo.value})"
+def no_meu_processo_ha_grupo():
+    dentro = wintypes.BOOL()
+    k.IsProcessInJob(wintypes.HANDLE(-1), None, ctypes.byref(dentro))
+    return bool(dentro.value)
+print("este python (quem chama) esta num grupo do Windows?", no_meu_processo_ha_grupo())
+marca = CASOS / "filho.txt"; marca.unlink(missing_ok=True)
+script = ("import subprocess, sys\n"
+          "try:\n"
+          "    p = subprocess.Popen([sys.executable, '-c', 'import time; time.sleep(90)'], creationflags=0x01000000)\n"
+          "    open(sys.argv[1], 'w').write(str(p.pid))\n"
+          "except OSError as e:\n"
+          "    open(sys.argv[1], 'w').write('recusado %r' % (e,))\n")
+prog, r = windows.abrir_em_grupo([sys.executable, "-c", script, str(marca)])
+print("abrir_em_grupo:", r.desfecho)
+prog.esperar(20)
+texto = marca.read_text()
+print("o filho escreveu:", texto)
+print("vivos no grupo antes de fechar:", prog.vivos())
+f = prog.fechar_tudo(); print("fechar_tudo:", f.desfecho, "|", f.motivo)
+prog.soltar(); time.sleep(1)
+if texto.isdigit():
+    print("o filho que saiu, depois do 'conferido' e do soltar:", vivo(int(texto)))
+    subprocess.run(["taskkill", "/PID", texto, "/T", "/F"], capture_output=True)   # o meu proprio processo de prova
+    print("depois de eu fechar o meu processo de prova:", vivo(int(texto)))

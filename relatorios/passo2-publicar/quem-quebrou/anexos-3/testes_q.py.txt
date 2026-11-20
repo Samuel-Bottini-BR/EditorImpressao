@@ -1,0 +1,90 @@
+# Acrescentado ao FIM de uma cópia de tests/test_publicar_versao.py (código e4263c0a), numa cópia fora do projeto
+# (quem tenta quebrar, volta 3). Usa o gh de mentira e as classes do próprio arquivo de testes.
+
+
+class _GitHubComDuasLeiturasAtrasadas(_GitHubQueLiberaEPerdeAResposta):
+    """Igual ao do teste do achado 1, mas a demora da leitura dura DUAS leituras."""
+
+    def __call__(self, *argumentos, limite_s=600):
+        a = list(argumentos)
+        r = super().__call__(*argumentos, limite_s=limite_s)
+        if a[1] == "edit" and a[2] == ETIQUETA:
+            self.atrasadas = 2
+        return r
+
+
+def test_q1_duas_leituras_atrasadas_no_github_apagam_a_liberada(ambiente, monkeypatch):
+    a = ambiente
+    gh = _GitHubComDuasLeiturasAtrasadas(a["tmp"])
+    destino = pub.DestinoGitHub("dono/projeto")
+    monkeypatch.setattr(destino, "_gh", gh)
+    _publicar_o_motor(a, destino=destino)
+    with pytest.raises(pub.Parou) as erro:
+        _publicar(a, destino=destino)
+    print("Q1 FRASE:", erro.value)
+    print("Q1 PEDIDOS DE APAGAR:", [p for p in gh.pedidos if p[1] == "delete"])
+    print("Q1 A VERSAO LIBERADA CONTINUA NO GITHUB?", ETIQUETA in gh.publicacoes)
+    assert ETIQUETA in gh.publicacoes, "a versão liberada foi apagada"
+
+
+class _GitHubQueCaiDepoisDeApagar(_GitHubDeMentira):
+    """O liberar falha (e não libera); o apagar do rascunho dá certo; a leitura seguinte não responde."""
+
+    def __init__(self, tmp):
+        super().__init__(tmp)
+        self.caiu = False
+
+    def __call__(self, *argumentos, limite_s=600):
+        a = list(argumentos)
+        if a[1] == "edit" and a[2] == ETIQUETA:
+            self.pedidos.append(a)
+            return subprocess.CompletedProcess(a, 1, "", "HTTP 502 (de mentira)")
+        if a[1] == "view" and self.caiu:
+            self.pedidos.append(a)
+            return subprocess.CompletedProcess(a, 1, "", "error connecting to api.github.com")
+        r = super().__call__(*argumentos, limite_s=limite_s)
+        if a[1] == "delete" and a[2] == ETIQUETA:
+            self.caiu = True
+        return r
+
+
+def test_q2_a_frase_diz_nao_apaguei_tendo_apagado(ambiente, monkeypatch):
+    a = ambiente
+    gh = _GitHubQueCaiDepoisDeApagar(a["tmp"])
+    destino = pub.DestinoGitHub("dono/projeto")
+    monkeypatch.setattr(destino, "_gh", gh)
+    _publicar_o_motor(a, destino=destino)
+    with pytest.raises(pub.Parou) as erro:
+        _publicar(a, destino=destino)
+    print("Q2 FRASE:", erro.value)
+    print("Q2 PEDIDOS DE APAGAR:", [p for p in gh.pedidos if p[1] == "delete" and p[2] == ETIQUETA])
+    print("Q2 O RASCUNHO CONTINUA NO GITHUB?", ETIQUETA in gh.publicacoes)
+    assert not (ETIQUETA not in gh.publicacoes and "NÃO apaguei" in str(erro.value))
+
+
+class _GitHubQueNaoVeORascunhoNovo(_GitHubDeMentira):
+    """Logo depois de criar o rascunho da versão, o "view" ainda não o acha (atraso de leitura); o envio falha."""
+
+    def __call__(self, *argumentos, limite_s=600):
+        a = list(argumentos)
+        if a[1] == "upload" and a[2] == ETIQUETA:
+            self.pedidos.append(a)
+            return subprocess.CompletedProcess(a, 1, "", "HTTP 502 ao enviar (de mentira)")
+        if a[1] == "view" and a[2] == ETIQUETA and ETIQUETA in self.publicacoes:
+            self.pedidos.append(a)
+            return subprocess.CompletedProcess(a, 1, "", "release not found")
+        return super().__call__(*argumentos, limite_s=limite_s)
+
+
+def test_q3_foi_apagada_conferido_sem_pedir_para_apagar(ambiente, monkeypatch):
+    a = ambiente
+    gh = _GitHubQueNaoVeORascunhoNovo(a["tmp"])
+    destino = pub.DestinoGitHub("dono/projeto")
+    monkeypatch.setattr(destino, "_gh", gh)
+    _publicar_o_motor(a, destino=destino)
+    with pytest.raises(pub.Parou) as erro:
+        _publicar(a, destino=destino)
+    print("Q3 FRASE:", erro.value)
+    print("Q3 PEDIDOS DE APAGAR:", [p for p in gh.pedidos if p[1] == "delete" and p[2] == ETIQUETA])
+    print("Q3 O RASCUNHO CONTINUA NO GITHUB?", ETIQUETA in gh.publicacoes)
+    assert not (ETIQUETA in gh.publicacoes and "foi apagada" in str(erro.value))
