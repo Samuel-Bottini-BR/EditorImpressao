@@ -406,6 +406,7 @@ class _GitHubDeMentira:
         self.pedidos: list[list[str]] = []
         self.falhar_ao_ver = falhar_ao_ver
         self.etiquetas_apagadas: list[str] = []
+        self.falhar_ao_apagar_a_etiqueta = False
 
     def __call__(self, *argumentos, limite_s=600):
         """Responde um pedido do gh (release view/create/upload/download/edit/delete)."""
@@ -446,6 +447,8 @@ class _GitHubDeMentira:
                 if era_rascunho:
                     return feito(1, "", "HTTP 422: Reference does not exist (https://api.github.com/repos/x/y/git/refs/"
                                         f"tags/{etiqueta})")
+                if self.falhar_ao_apagar_a_etiqueta:
+                    return feito(1, "", "HTTP 500: o GitHub não respondeu ao apagar a etiqueta")
                 self.etiquetas_apagadas.append(etiqueta)
         return feito()
 
@@ -866,3 +869,17 @@ def test_n8_o_msi_nao_fica_na_pasta_de_saida_se_a_versao_nao_saiu(ambiente):
         _publicar(a, destino=destino, com_instalador=True)
     assert len(_vezes_que_o_vpk_rodou(a)) == 2, "as duas passadas do vpk tinham de rodar"
     assert not any(n.endswith(".msi") for n in _tudo_em(a["saida"])), _tudo_em(a["saida"])
+
+
+def test_achado1_quem_decide_se_apagou_e_a_leitura_de_volta(ambiente, monkeypatch):
+    """Achado 1 (o "leia de volta se sumiu", F5): o gh apaga a publicação liberada e sai com erro porque a etiqueta não
+    saiu; a leitura diz que a publicação sumiu, então ela está apagada, e a frase traz o aviso do gh (a etiqueta pode
+    ter ficado). Nunca "não apagou" sem ler."""
+    gh = _GitHubDeMentira(ambiente["tmp"])
+    gh.falhar_ao_apagar_a_etiqueta = True
+    destino = pub.DestinoGitHub("dono/projeto")
+    monkeypatch.setattr(destino, "_gh", gh)
+    destino.criar_rascunho(ETIQUETA, "t", "n")
+    destino.liberar(ETIQUETA)
+    aviso = pub.apagar_publicacao(destino, ETIQUETA)
+    assert destino.situacao(ETIQUETA) is None and aviso and "HTTP 500" in aviso
