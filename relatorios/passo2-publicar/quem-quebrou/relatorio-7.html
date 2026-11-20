@@ -454,8 +454,9 @@ o novo.</p>
 <ol>
 <li>
 <p><strong>BAIXO: duas proteções do Visual C++ não têm teste que as acuse: a leitura que falha e "a mesma régua" na pasta.</strong>
-   - Onde: <code>empacotar.py</code>, <code>assinatura_do_arquivo</code> e <code>conferir_o_visual_c</code> (a falha vira "erro: ...", que a régua
-     recusa); <code>conferir_pasta_pronta</code> (chama <code>conferir_o_visual_c</code>).
+   - Onde: <code>empacotar.py:593</code> (<code>assinatura_do_arquivo</code>: a falha vira "erro: ..."), <code>empacotar.py:631</code>
+     (<code>conferir_o_visual_c</code>: a régua recusa), <code>empacotar.py:1758</code> (<code>conferir_pasta_pronta</code> chama a régua) e
+     <code>tests/test_empacotar.py:588</code> (o teste que diz "os dois").
    - Lido na fonte: hoje está certo. Provado rodando: a leitura que falha recusa nos quatro jeitos (SONDA7-4), e um
      arquivo válido de outro assinante é recusado (a cópia do <code>powershell.exe</code>).
    - Provado (mutações): <strong>W5</strong> (a leitura que falha vira "passou") e <strong>W1</strong> (a pasta com régua própria, que aceita
@@ -472,15 +473,16 @@ o novo.</p>
 </li>
 <li>
 <p><strong>BAIXO: a versão do Visual C++ comparada inteira não tem teste para o arquivo vazio ou com só um pedaço.</strong>
-   - Onde: <code>empacotar.py</code>, <code>conferir_pasta_pronta</code> (<code>lida != versao_do_vc</code>).
+   - Onde: <code>empacotar.py:1768</code> (<code>conferir_pasta_pronta</code>, <code>lida != versao_do_vc</code>); os casos do teste em
+     <code>tests/test_publicar_versao.py:2391</code>.
    - Provado: a W4 (comparar por "começa com") passa em todos os testes; o único caso de teste é uma versão inteira e
      diferente ("14.29.30133.0"). Hoje o arquivo vazio é recusado (SONDA7-3).
    - O que pedir: um caso "arquivo da versão vazio" no teste da D-818.</p>
 </li>
 <li>
 <p><strong>BAIXO: as licenças do Tesseract são cobradas, mas nenhum teste acusa se deixarem de ser.</strong>
-   - Onde: <code>conferir_pasta_pronta</code> e <code>esperados_no_pacote_do_velopack</code> (as duas pela lista única, que tem <code>LICENSE</code> e
-     <code>AUTHORS</code>).
+   - Onde: <code>empacotar.py:1772</code> (<code>conferir_pasta_pronta</code>) e <code>empacotar.py:1573</code> (<code>esperados_no_pacote_do_velopack</code>), as
+     duas pela lista única, que tem <code>LICENSE</code> e <code>AUTHORS</code>.
    - Provado: W2 (a pasta) e W3 (o pacote) passam em todos os testes. Hoje a pasta sem a <code>LICENSE</code> é recusada (SONDA7-7).
    - Por que importa: a licença do Tesseract tem de ir junto com ele.
    - O que pedir: um caso "sem a licença do Tesseract" no teste da D-818 e um <code>tesseract/LICENSE</code> no teste do pacote sem
@@ -488,6 +490,8 @@ o novo.</p>
 </li>
 <li>
 <p><strong>BAIXO: a mesma família de erro (proteção sem teste) em duas voltas seguidas.</strong>
+   - Onde: os testes da volta 7, <code>tests/test_publicar_versao.py:2400</code> e <code>tests/test_empacotar.py:588</code>; as mutações do
+     outro em <code>relatorios/passo2-publicar/anexos/reversao-volta7-mutacoes.py.txt:16</code>.
    - O relatório 6 achou 3 (achados 3 e 5, observação 6); esta volta, 5 (W1 a W5). O outro fez 12 mutações e 11 foram
      acusadas; elas desligavam cada proteção inteira, e nenhuma tirava uma condição de dentro da régua (quem assinou, a
      falha da leitura) nem um item da lista (as licenças).
@@ -497,9 +501,9 @@ o novo.</p>
 </li>
 <li>
 <p><strong>BAIXO: o novo item 14 do roteiro da prova não dá para fazer onde está.</strong>
-   - Onde: <code>relatorios/passo2-publicar/ONDE-PAREI.md</code>, "A prova de verdade", Volta 7, item 14: "Ainda antes de montar, ler
+   - Onde: <code>relatorios/passo2-publicar/ONDE-PAREI.md:2330</code>, "A prova de verdade", Volta 7, item 14: "Ainda antes de montar, ler
      na linha "Visual C++: ..." de onde ele vem."
-   - Lido na fonte: essa linha só é impressa pela própria montagem, no começo dela (<code>empacotar.py</code>,
+   - Lido na fonte: essa linha só é impressa pela própria montagem, no começo dela (<code>empacotar.py:704</code>,
      <code>_avisar_pecas_faltando</code>, chamada por <code>construir_pasta</code>). Antes do item 15 ela não aparece.
    - O que pedir: trocar por "no item 15, logo no começo (antes de o PyInstaller começar), ler a linha 'Visual C++: ...'";
      ou, antes do item 15, olhar se o arquivo está na pasta de downloads da cópia <code>passo2</code> (está: 25.635.768 bytes, o
@@ -509,9 +513,9 @@ o novo.</p>
 </li>
 <li>
 <p><strong>BAIXO: o arquivo da versão do Visual C++ é lido de dois jeitos (§11.12, conta duplicada).</strong>
-   - Onde: <code>empacotar.py</code>, <code>conferir_pasta_pronta</code> (lê com troca dos caracteres ruins e tira os espaços);
-     <code>atualizacao.py</code>, <code>instalar_visual_c_se_faltar</code> (lê sem troca e tira os espaços). Quem escreve é
-     <code>preparar_pasta_para_o_velopack</code>.
+   - Onde: <code>empacotar.py:1767</code> (<code>conferir_pasta_pronta</code>: lê com troca dos caracteres ruins e tira os espaços);
+     <code>atualizacao.py:1230</code> (<code>instalar_visual_c_se_faltar</code>: lê sem troca e tira os espaços). Quem escreve é
+     <code>empacotar.py:1221</code> (<code>preparar_pasta_para_o_velopack</code>).
    - Provado: hoje concordam em tudo o que testei (SONDA7-3): o que a conferência aceita, o programa instalado lê certo.
    - Por que baixo: a §11.12 pede "um dado é lido e gravado por uma função só". Se alguém mudar só um dos dois, a
      conferência passa a aceitar o que o programa do Kaique lê errado (e o programa, quando lê errado, decide não instalar
@@ -521,7 +525,7 @@ o novo.</p>
 </li>
 <li>
 <p><strong>OBSERVAÇÃO: a régua do Visual C++ recusa o Visual C++ novo da Microsoft e aceitaria um oficial mais velho.</strong>
-   - Lido na fonte: o nome do produto tem de ser "Microsoft Visual C++ 2015-20xx Redistributable (x64)". O Visual C++
+   - Lido na fonte (<code>empacotar.py:614</code>): o nome do produto tem de ser "Microsoft Visual C++ 2015-20xx Redistributable (x64)". O Visual C++
      14.50 (que já está neste PC, guardado em <code>C:\ProgramData\Package Cache</code>) chama-se "Microsoft Visual C++ v14 Redistributable (x64)" e é
      recusado. Um oficial de 2015-2019 (14.2x) passaria (dedução pelo nome; não tenho o arquivo).
    - Hoje não faz mal: o endereço permanente que o programa usa (<code>aka.ms/vs/17/release</code>) ainda leva ao 14.44, o mesmo
@@ -531,22 +535,24 @@ o novo.</p>
 </li>
 <li>
 <p><strong>OBSERVAÇÃO: o caminho certo com o Visual C++ oficial lido de verdade não roda em nenhum teste automático.</strong>
-   - Os testes dão o Visual C++ de prova como "da Microsoft" (necessário: no GitHub o arquivo não existe). Só a minha
+   - Onde: <code>tests/test_publicar_versao.py:152</code>. Os testes dão o Visual C++ de prova como "da Microsoft" (necessário: no GitHub o arquivo não existe). Só a minha
      sonda (SONDA7-1) e a prova à vista (item 15) passam por ele. Rodou e passou na sonda.
    - Ideia: um teste que roda só onde o arquivo existe (o PC) e pula no GitHub, dizendo que pulou.</p>
 </li>
 <li>
 <p><strong>OBSERVAÇÃO: a troca da leitura da assinatura na preparação dos testes vai um pouco além da letra da D-818.</strong>
-   - A D-818 autoriza "os testes antigos que usam a pasta de mentira sem essas peças passam a trazê-las". A troca na
+   - Onde: <code>tests/test_publicar_versao.py:152</code> (a troca, na preparação <code>ambiente</code>). A D-818 autoriza "os testes antigos que usam a pasta de mentira sem essas peças passam a trazê-las". A troca na
      preparação não é uma peça da pasta; é o que faz os poucos bytes "serem" o Visual C++. Não afrouxou nenhum teste
      (conferido acima). A gerente decide se basta a lista que o outro escreveu ou se leva ao Samuel.</p>
 </li>
 <li>
-<p><strong>OBSERVAÇÃO: a prova da D-818 não está em <code>tests/test_decisoes*.py</code></strong> (CLAUDE.md §11.4). O pacote do escritor não
+<p><strong>OBSERVAÇÃO: a prova da D-818 não está em <code>tests/test_decisoes*.py</code></strong> (CLAUDE.md §11.4); ela está em
+    <code>tests/test_publicar_versao.py:2400</code>. O pacote do escritor não
     deixava mexer nesse arquivo; ele escreveu isso nas ressalvas. É da gerente.</p>
 </li>
 <li>
-<p><strong>OBSERVAÇÃO: o Tesseract da pasta já montada é conferido pela existência e pelo tamanho, não pelo conteúdo.</strong> Um
+<p><strong>OBSERVAÇÃO: o Tesseract da pasta já montada é conferido pela existência e pelo tamanho, não pelo conteúdo</strong>
+    (<code>empacotar.py:1772</code>). Um
     arquivo de 1 byte passa (SONDA7-5). O outro escreveu isso nas ressalvas; só confirmo rodando.</p>
 </li>
 </ol>
@@ -589,6 +595,6 @@ sonda não usa a cópia das mutações).</p>
 <li>O endereço <code>https://aka.ms/vs/17/release/vc_redist.x64.exe</code>, perguntado só o cabeçalho em 20/11/2026: leva a um arquivo
   cuja soma (no próprio endereço) é a do nosso <code>vc_redist.x64.exe</code> 14.44.35211.0.</li>
 </ul>
-<p class="rodape">Editor de Impressão &middot; gerado em 20/11/2026 às 17:31</p>
+<p class="rodape">Editor de Impressão &middot; gerado em 20/11/2026 às 17:32</p>
 </body>
 </html>

@@ -309,8 +309,9 @@ Consultei: tentativa 1, **success**, todas as partes (as 5 da suíte, os botões
 ## Achados
 
 1. **BAIXO: duas proteções do Visual C++ não têm teste que as acuse: a leitura que falha e "a mesma régua" na pasta.**
-   - Onde: `empacotar.py`, `assinatura_do_arquivo` e `conferir_o_visual_c` (a falha vira "erro: ...", que a régua
-     recusa); `conferir_pasta_pronta` (chama `conferir_o_visual_c`).
+   - Onde: `empacotar.py:593` (`assinatura_do_arquivo`: a falha vira "erro: ..."), `empacotar.py:631`
+     (`conferir_o_visual_c`: a régua recusa), `empacotar.py:1758` (`conferir_pasta_pronta` chama a régua) e
+     `tests/test_empacotar.py:588` (o teste que diz "os dois").
    - Lido na fonte: hoje está certo. Provado rodando: a leitura que falha recusa nos quatro jeitos (SONDA7-4), e um
      arquivo válido de outro assinante é recusado (a cópia do `powershell.exe`).
    - Provado (mutações): **W5** (a leitura que falha vira "passou") e **W1** (a pasta com régua própria, que aceita
@@ -326,20 +327,23 @@ Consultei: tentativa 1, **success**, todas as partes (as 5 da suíte, os botões
      verdade também no GitHub (dedução: não rodei lá).
 
 2. **BAIXO: a versão do Visual C++ comparada inteira não tem teste para o arquivo vazio ou com só um pedaço.**
-   - Onde: `empacotar.py`, `conferir_pasta_pronta` (`lida != versao_do_vc`).
+   - Onde: `empacotar.py:1768` (`conferir_pasta_pronta`, `lida != versao_do_vc`); os casos do teste em
+     `tests/test_publicar_versao.py:2391`.
    - Provado: a W4 (comparar por "começa com") passa em todos os testes; o único caso de teste é uma versão inteira e
      diferente ("14.29.30133.0"). Hoje o arquivo vazio é recusado (SONDA7-3).
    - O que pedir: um caso "arquivo da versão vazio" no teste da D-818.
 
 3. **BAIXO: as licenças do Tesseract são cobradas, mas nenhum teste acusa se deixarem de ser.**
-   - Onde: `conferir_pasta_pronta` e `esperados_no_pacote_do_velopack` (as duas pela lista única, que tem `LICENSE` e
-     `AUTHORS`).
+   - Onde: `empacotar.py:1772` (`conferir_pasta_pronta`) e `empacotar.py:1573` (`esperados_no_pacote_do_velopack`), as
+     duas pela lista única, que tem `LICENSE` e `AUTHORS`.
    - Provado: W2 (a pasta) e W3 (o pacote) passam em todos os testes. Hoje a pasta sem a `LICENSE` é recusada (SONDA7-7).
    - Por que importa: a licença do Tesseract tem de ir junto com ele.
    - O que pedir: um caso "sem a licença do Tesseract" no teste da D-818 e um `tesseract/LICENSE` no teste do pacote sem
      uma peça.
 
 4. **BAIXO: a mesma família de erro (proteção sem teste) em duas voltas seguidas.**
+   - Onde: os testes da volta 7, `tests/test_publicar_versao.py:2400` e `tests/test_empacotar.py:588`; as mutações do
+     outro em `relatorios/passo2-publicar/anexos/reversao-volta7-mutacoes.py.txt:16`.
    - O relatório 6 achou 3 (achados 3 e 5, observação 6); esta volta, 5 (W1 a W5). O outro fez 12 mutações e 11 foram
      acusadas; elas desligavam cada proteção inteira, e nenhuma tirava uma condição de dentro da régua (quem assinou, a
      falha da leitura) nem um item da lista (as licenças).
@@ -348,9 +352,9 @@ Consultei: tentativa 1, **success**, todas as partes (as 5 da suíte, os botões
      a acusa.
 
 5. **BAIXO: o novo item 14 do roteiro da prova não dá para fazer onde está.**
-   - Onde: `relatorios/passo2-publicar/ONDE-PAREI.md`, "A prova de verdade", Volta 7, item 14: "Ainda antes de montar, ler
+   - Onde: `relatorios/passo2-publicar/ONDE-PAREI.md:2330`, "A prova de verdade", Volta 7, item 14: "Ainda antes de montar, ler
      na linha "Visual C++: ..." de onde ele vem."
-   - Lido na fonte: essa linha só é impressa pela própria montagem, no começo dela (`empacotar.py`,
+   - Lido na fonte: essa linha só é impressa pela própria montagem, no começo dela (`empacotar.py:704`,
      `_avisar_pecas_faltando`, chamada por `construir_pasta`). Antes do item 15 ela não aparece.
    - O que pedir: trocar por "no item 15, logo no começo (antes de o PyInstaller começar), ler a linha 'Visual C++: ...'";
      ou, antes do item 15, olhar se o arquivo está na pasta de downloads da cópia `passo2` (está: 25.635.768 bytes, o
@@ -359,9 +363,9 @@ Consultei: tentativa 1, **success**, todas as partes (as 5 da suíte, os botões
      Visual C++ em instalar\".
 
 6. **BAIXO: o arquivo da versão do Visual C++ é lido de dois jeitos (§11.12, conta duplicada).**
-   - Onde: `empacotar.py`, `conferir_pasta_pronta` (lê com troca dos caracteres ruins e tira os espaços);
-     `atualizacao.py`, `instalar_visual_c_se_faltar` (lê sem troca e tira os espaços). Quem escreve é
-     `preparar_pasta_para_o_velopack`.
+   - Onde: `empacotar.py:1767` (`conferir_pasta_pronta`: lê com troca dos caracteres ruins e tira os espaços);
+     `atualizacao.py:1230` (`instalar_visual_c_se_faltar`: lê sem troca e tira os espaços). Quem escreve é
+     `empacotar.py:1221` (`preparar_pasta_para_o_velopack`).
    - Provado: hoje concordam em tudo o que testei (SONDA7-3): o que a conferência aceita, o programa instalado lê certo.
    - Por que baixo: a §11.12 pede "um dado é lido e gravado por uma função só". Se alguém mudar só um dos dois, a
      conferência passa a aceitar o que o programa do Kaique lê errado (e o programa, quando lê errado, decide não instalar
@@ -370,7 +374,7 @@ Consultei: tentativa 1, **success**, todas as partes (as 5 da suíte, os botões
      conferência.
 
 7. **OBSERVAÇÃO: a régua do Visual C++ recusa o Visual C++ novo da Microsoft e aceitaria um oficial mais velho.**
-   - Lido na fonte: o nome do produto tem de ser "Microsoft Visual C++ 2015-20xx Redistributable (x64)". O Visual C++
+   - Lido na fonte (`empacotar.py:614`): o nome do produto tem de ser "Microsoft Visual C++ 2015-20xx Redistributable (x64)". O Visual C++
      14.50 (que já está neste PC, guardado em `C:\ProgramData\Package Cache`) chama-se "Microsoft Visual C++ v14 Redistributable (x64)" e é
      recusado. Um oficial de 2015-2019 (14.2x) passaria (dedução pelo nome; não tenho o arquivo).
    - Hoje não faz mal: o endereço permanente que o programa usa (`aka.ms/vs/17/release`) ainda leva ao 14.44, o mesmo
@@ -379,19 +383,21 @@ Consultei: tentativa 1, **success**, todas as partes (as 5 da suíte, os botões
    - Não é desta volta (a régua já existia na montagem). Para a Lista de espera: decidir a versão mínima e o nome novo.
 
 8. **OBSERVAÇÃO: o caminho certo com o Visual C++ oficial lido de verdade não roda em nenhum teste automático.**
-   - Os testes dão o Visual C++ de prova como "da Microsoft" (necessário: no GitHub o arquivo não existe). Só a minha
+   - Onde: `tests/test_publicar_versao.py:152`. Os testes dão o Visual C++ de prova como "da Microsoft" (necessário: no GitHub o arquivo não existe). Só a minha
      sonda (SONDA7-1) e a prova à vista (item 15) passam por ele. Rodou e passou na sonda.
    - Ideia: um teste que roda só onde o arquivo existe (o PC) e pula no GitHub, dizendo que pulou.
 
 9. **OBSERVAÇÃO: a troca da leitura da assinatura na preparação dos testes vai um pouco além da letra da D-818.**
-   - A D-818 autoriza "os testes antigos que usam a pasta de mentira sem essas peças passam a trazê-las". A troca na
+   - Onde: `tests/test_publicar_versao.py:152` (a troca, na preparação `ambiente`). A D-818 autoriza "os testes antigos que usam a pasta de mentira sem essas peças passam a trazê-las". A troca na
      preparação não é uma peça da pasta; é o que faz os poucos bytes "serem" o Visual C++. Não afrouxou nenhum teste
      (conferido acima). A gerente decide se basta a lista que o outro escreveu ou se leva ao Samuel.
 
-10. **OBSERVAÇÃO: a prova da D-818 não está em `tests/test_decisoes*.py`** (CLAUDE.md §11.4). O pacote do escritor não
+10. **OBSERVAÇÃO: a prova da D-818 não está em `tests/test_decisoes*.py`** (CLAUDE.md §11.4); ela está em
+    `tests/test_publicar_versao.py:2400`. O pacote do escritor não
     deixava mexer nesse arquivo; ele escreveu isso nas ressalvas. É da gerente.
 
-11. **OBSERVAÇÃO: o Tesseract da pasta já montada é conferido pela existência e pelo tamanho, não pelo conteúdo.** Um
+11. **OBSERVAÇÃO: o Tesseract da pasta já montada é conferido pela existência e pelo tamanho, não pelo conteúdo**
+    (`empacotar.py:1772`). Um
     arquivo de 1 byte passa (SONDA7-5). O outro escreveu isso nas ressalvas; só confirmo rodando.
 
 ## O que falta para a prova à vista
