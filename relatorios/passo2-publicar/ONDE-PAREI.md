@@ -40,8 +40,9 @@ teste com o passo 1 e o porteiro ligado). Este ONDE-PAREI é também o formulár
 - 19/11: pedido da gerente (D-809, D-811, D-812, D-814): consertado o apagar do lançar solto (`64ed0c01`) e o
   apagar do destino com atalho (`0ef0da17`), com testes que falham sem o conserto; as três seções novas do formulário.
 - 19/11 (noite): quem tentou quebrar devolveu (volta 1, `quem-quebrou/relatorio-1.md`, commit `a58f181b`): 11
-  achados. A gerente pediu o conserto de todos (o 4 por decisão técnica dela, D-014). **Em andamento:** a volta 2
-  (destinos em "O que o agente que tentou quebrar achou").
+  achados. A gerente pediu o conserto de todos (o 4 por decisão técnica dela, D-014). **Feita a volta 2** (`17cd8635`,
+  `85781a08`): os 11 achados com destino em "O que o agente que tentou quebrar achou", cada conserto com o teste que
+  falha sem ele (`anexos/reversao-volta2-resultado.txt`). **Próximo:** a gerente manda a quem tenta quebrar de novo.
 - **Próximo (antes):** a gerente manda a quem tenta quebrar; depois a prova à vista (o roteiro está em "A prova de verdade").
 
 ## Decisões que esta tarefa precisa cumprir
@@ -211,6 +212,10 @@ teste com o passo 1 e o porteiro ligado). Este ONDE-PAREI é também o formulár
 | Desligar no meio (o PC ou a energia) | o rascunho fica no C: e o rascunho do destino fica sem liberar (nunca liberado pela metade); na próxima vez o comando acha o rascunho velho do destino e para dizendo como apagar; o rascunho velho do C: é apagado no começo da próxima vez (só as pastas com o nome do publicar) |
 | O publicar roda dentro de um PowerShell 7 (terminal pwsh) | a peça abre o PowerShell do Windows sem a lista de módulos herdada: a assinatura do Visual C++ é lida igual (antes falhava com CouldNotAutoloadMatchingModule) |
 | Um atalho (junção) dentro da pasta de troca do lançar solto, ou uma publicação do destino que é atalho | o lançar solto tira só o atalho e apaga o resto; o destino para sem apagar nada e diz que é atalho |
+| O apagar de um rascunho no GitHub (o gh sai com erro mesmo tendo apagado, delete.go) | o rascunho é apagado sem pedir a etiqueta, e quem decide se apagou é a leitura de volta; o aviso do gh vai na frase |
+| A vigia fecha o vpk com o WiX rodando (o .msi) | o vpk roda num grupo do Windows: fechar fecha ele, o cmd.exe e o wix.exe, e confere no Windows que nenhum ficou vivo; se ficou, a frase diz e manda olhar o Gerenciador de Tarefas |
+| Erro do disco que não é dos previstos (pasta que não cria, arquivo preso ao somar, cópia do .msi) | a linha de comando diz "PAREI: o disco não deixou terminar (o arquivo): o motivo"; o rascunho já foi apagado pelo fim de cada caminho |
+| A leitura depois de liberar falha | não apaga a versão liberada (achado 4); diz "liberada; não deu para reconferir agora" |
 | Ctrl+C no meio | o mesmo caminho do erro: o vpk é fechado, o rascunho é apagado e o do destino também; a frase diz "interrompido" (sem a tela de erro do Python) |
 | Dois publicar ao mesmo tempo | cada um tem o seu rascunho; o rascunho de outra vez só é apagado se tiver mais de 12 horas (antes, pode ser do outro rodando); a mesma versão no mesmo destino é recusada pelo segundo (já existe um rascunho) |
 | O instalador pedido e a publicação falha depois | o .msi só vai para a pasta de saída depois de a versão estar publicada: um .msi de versão que não saiu nunca fica lá |
@@ -249,6 +254,15 @@ Código do Velopack na etiqueta 1.2.161 (commit `92d6a1c9`, MIT), cópia só par
 - Do lado do programa, `src/lib-rust/src/sources/http.rs:42` a 70 e `src/lib-rust/src/sources/mod.rs:64`: um endereço
   http:// vira a fonte HTTP, que pede o índice com "?localVersion=...&id=...&stagingId=..." e baixa
   "<endereço>/<FileName>". É o que o servidor das versões responde.
+
+**Lido na volta 2:** https://github.com/cli/cli/blob/trunk/pkg/cmd/release/delete/delete.go (deleteRun e deleteTag):
+o gh apaga a publicação e, com `--cleanup-tag`, apaga depois a etiqueta sem olhar se é rascunho, e devolve o erro dessa
+segunda parte; num rascunho a etiqueta não existe. Microsoft Learn, https://learn.microsoft.com/windows/win32/procthread/job-objects
+e AssignProcessToJobObject: o que um processo do grupo cria entra no grupo; TerminateJobObject fecha todos; com
+JOB_OBJECT_LIMIT_KILL_ON_JOB_CLOSE, fechar a última alça fecha todos; grupos dentro de grupos desde o Windows 8. O vpk:
+`src/vpk/Velopack.Packaging.Windows/Msi/MsiBuilder.cs:221` (o .msi sai de `Exe.RunHostedCommand`, que abre
+cmd.exe e wix.exe), `src/vpk/Velopack.Packaging/PackageBuilder.cs:76` (a pasta temporária vive até o fim do pack) e
+`src/vpk/Velopack.Packaging.Windows/Commands/WindowsPackCommandRunner.cs:231` (a cópia a mais do .msi).
 
 O gh 2.99.0 (instalado no PC), código `cli/cli`, https://github.com/cli/cli/blob/trunk/pkg/cmd/release/shared/fetch.go
 (lido em 19/11): `FetchRelease` acha uma publicação liberada pela etiqueta ou um rascunho pela etiqueta pendente; sem
@@ -305,7 +319,12 @@ WiX por dentro; se sobrar um, o rascunho não apaga e a frase diz o que ficou).
    módulos do PowerShell 7 (no Windows do GitHub, ou num terminal pwsh) e não carregava os dele; a assinatura digital
    nunca era lida lá. Agora a peça o abre sem essa lista (`_ambiente_do_powershell`, lugar único, ao lado do comando
    do PowerShell), no rodar e esperar e no lançar solto.
-8. **O servidor das versões de prova** (`servidor_das_versoes.py`, novo): a janela, o índice de todas as versões
+8. **Volta 2 (os achados de quem tentou quebrar):** o apagar no GitHub certo para rascunho e para liberada, decidido
+   pela leitura de volta; o vpk num grupo do Windows (`windows.abrir_em_grupo`), que a vigia e o Ctrl+C fecham inteiro;
+   nada apagado depois de pedir para liberar; o erro do disco em frase; o lançar solto sem "saiu sem começar"; o .msi
+   com o número da versão e o servidor sem nome repetido nem junção (a regra das publicações num lugar só); o motor em
+   instalar\ recusado na atualização; a conta do espaço refeita; a etiqueta conferida inteira.
+9. **O servidor das versões de prova** (`servidor_das_versoes.py`, novo): a janela, o índice de todas as versões
    liberadas, os arquivos pelo nome, o rascunho escondido, fechar corta o envio, `--limite` deixa lento, a porta
    exclusiva.
 
@@ -353,7 +372,9 @@ WiX por dentro; se sobrar um, o rascunho não apaga e a frase diz o que ficou).
 - D-789: `--delta None` e nenhum download da versão anterior (o mesmo teste da D-777 confere o comando de cada vez
   que o vpk rodou).
 - D-790: `tests/test_publicar_versao.py::test_d790_sem_o_motor_publicado_nada_e_montado` e, antes de liberar, o motor
-  lido de novo (`tests/test_publicar_versao.py::test_d53_nada_e_liberado_antes_da_assinatura_lida_de_volta`).
+  lido de novo (`tests/test_publicar_versao.py::test_n1_n3_n4_n14_cada_leitura_de_volta_errada_impede_liberar`, o caso
+  "motor sumiu"). **Correção da volta 2:** a primeira entrega dizia que o `test_d53` provava isso; não provava (ele só
+  cobra a ordem; quem tentou quebrar desligou a leitura de novo do motor e ele passou).
 - D-791: o item saiu da lista no commit do conserto (`0d844b4f`); o porteiro passou no GitHub ("Testes").
 - D-795: `tests/test_publicar_versao.py::test_d795_o_setup_exe_e_o_rascunho_somem_tambem_quando_da_erro` (com erro) e
   o teste da D-768 (sem erro): o Setup.exe nunca está no destino nem na pasta de saída, e a conferência do fim diz isso.
@@ -366,7 +387,8 @@ WiX por dentro; se sobrar um, o rascunho não apaga e a frase diz o que ficou).
 - D-809: `tests/test_windows_peca.py::test_o_lancado_solto_apaga_a_pasta_de_troca_sem_seguir_atalho` e
   `tests/test_publicar_versao.py::test_d809_apagar_uma_publicacao_que_e_atalho_nao_apaga_o_outro_lado`; as junções
   dos testes nascem e saem em pastas temporárias do próprio teste, com o outro lado conferido inteiro depois.
-- D-811: a seção "Cada proteção e o teste que falha sem ela" (19 de 19 acusadas numa cópia).
+- D-811: a seção "Cada proteção e o teste que falha sem ela" (19 de 19 na primeira entrega; na volta 2, mais 21, das
+  quais 20 acusadas sozinhas e uma dupla proteção escrita).
 - D-812: a seção "De onde vem cada dado da conferência" (os dois dados que o conferido escreve estão marcados como
   não-prova).
 - D-814: nenhuma pergunta ao Samuel; procurei antes no Livro (ver "Perguntas para o Samuel").
@@ -396,7 +418,13 @@ WiX por dentro; se sobrar um, o rascunho não apaga e a frase diz o que ficou).
   módulos falhou antes do conserto (CouldNotAutoloadMatchingModule) e passa depois.
 - **No GitHub, rodada 4:** 44645740920, sobre o commit fa28ab5b (o conserto da lista de módulos): **success**, todas
   as partes e os botões. PORTEIRO: success (o trabalho "Porteiro (juiz da versao de teste)").
-- **No GitHub, rodada final:** 44650408369, sobre o ramo em a14b7d55 (o código de 0ef0da17; depois só o formulário):
+- **Volta 2, no PC, um arquivo por vez** (19-20/11): `tests/test_publicar_versao.py` 36 passaram;
+  `tests/test_publicar_servidor.py` 13; `tests/test_publicar_motor.py` 12; `tests/test_windows_peca.py` 57 e 2 pulados;
+  `tests/test_empacotar.py` 41; `tests/test_decisoes_atualizacao.py` 38; `tests/test_windows_janela_de_prova.py` 10;
+  `tests/test_conferencias_codigo.py` 77; `tests/test_nome_do_pacote.py` 5. Porteiro no PC: "nada novo" (175).
+  Reversão: `anexos/reversao-volta2-resultado.txt`.
+- **No GitHub, volta 2:** (preenchida quando a rodada acabar).
+- **No GitHub, rodada final da volta 1:** 44650408369, sobre o ramo em a14b7d55 (o código de 0ef0da17; depois só o formulário):
   **success** na segunda tentativa (só a parte 3 rodou de novo). PORTEIRO: success (o trabalho "Porteiro (juiz da
   versao de teste)"). Na primeira tentativa falhou só
   `tests/test_decisoes_gravura_a_mao.py::test_d659_g_outros_filtros_a_mao_nada_e_procurado_e_sai_igual_ao_de_antes`
@@ -466,10 +494,18 @@ Cada uma foi desligada numa cópia à parte (git archive no rascunho da sessão,
 - O PowerShell sem a lista de módulos herdada →
   `tests/test_windows_peca.py::test_o_powershell_nao_herda_os_modulos_do_powershell_7` (M17).
 - O script lançado solto apaga sem seguir atalho (D-809) →
-  `tests/test_windows_peca.py::test_o_lancado_solto_apaga_a_pasta_de_troca_sem_seguir_atalho` (M18, no código anterior).
+  `tests/test_windows_peca.py::test_o_lancado_solto_apaga_a_pasta_de_troca_sem_seguir_atalho` (M18, no código anterior;
+  acusa pelo JEITO de apagar: neste Windows o apagar antigo não entrou na junção, `anexos/d809-jeito-antigo.txt`).
 - O destino não apaga uma publicação que é atalho (D-809) →
   `tests/test_publicar_versao.py::test_d809_apagar_uma_publicacao_que_e_atalho_nao_apaga_o_outro_lado` (M19).
-- Sem teste que acuse sozinho (dupla proteção; escrito para quem tenta quebrar): o Setup.exe apagado logo depois do vpk
+- **Volta 2** (`anexos/reversao-volta2-resultado.txt`): o apagar do rascunho no GitHub sem a etiqueta (A1), a
+  leitura de volta decide se apagou (A1b), o grupo fecha o que o vpk abriu (A2), nada apagado depois de liberar (A4), o
+  erro do disco em frase (A5), o sinal de vida fora da pasta (A6), nome repetido não entregue (A7), o motor em
+  instalar\ recusado na atualização (A8), a conta de 7 vezes (A9), a etiqueta inteira (A11), e N1, N3, N4, N5, N6,
+  N8, N10, N13, N14: todas acusadas pelos testes citados no achado 3 e nos achados acima.
+- Sem teste que acuse sozinho (dupla proteção; escrito para quem tenta quebrar): a conferência de que nada ficou vivo
+  depois de fechar o grupo (A2b: o fechamento do Windows já fecha tudo; com ele desligado, o A2 acusa); o Ctrl+C que
+  fecha o grupo (N10: o fechar-ao-fechar do grupo também cobre; com os dois desligados, acusa); o Setup.exe apagado logo depois do vpk
   (o rascunho inteiro some no fim de qualquer jeito); o corte das conexões no fechar do servidor (o envio também para
   pela marca de fechado).
 
@@ -508,7 +544,9 @@ Cada uma foi desligada numa cópia à parte (git archive no rascunho da sessão,
   dos arquivos que o vpk 1.2.161 grava (conferidos só na pasta da etapa 5), o "digest" das publicações de rascunho do
   GitHub (se faltar, o publicar baixa o arquivo para somar: mais lento, ainda certo), e o gh achar o rascunho pela
   etiqueta.
-- **A conta do espaço é conta, não medida** (3 vezes a pasta na atualização, 5 com o .msi, mais 1 GB). O .msi com o
+- **A conta do espaço é conta, não medida** (volta 2, achado 9, refeita pela leitura do vpk: 4 vezes a pasta na
+  atualização, 7 com o .msi, mais 1 GB; fontes no docstring de `empacotar.espaco_que_vai_usar`). Com o .msi pedido e uns
+  26 GB livres no C:, a conta recusa (pede uns 10 GB): é de propósito, contada pelo pior caso. O .msi com o
   motor nunca foi medido. Se a conta for alta demais, o publicar pode recusar com espaço que bastaria (com 26 GB livres
   e o .msi pedido, a conta dá uns 8 GB e passa; com 25 GB, recusa).
 - **A pasta do programa ainda é montada no D:** (o PyInstaller, em dist\EditorImpressao\); no C: ficam o trabalho do
@@ -536,9 +574,12 @@ Cada uma foi desligada numa cópia à parte (git archive no rascunho da sessão,
   "servia" sem erro). Consertado com a porta exclusiva; o teste falha no jeito de fábrica (mutação M11).
 - **A conversa com o GitHub não foi rodada contra o GitHub de verdade, nem como rascunho** (o pedido proíbe sem a
   gerente).
-- **Se a leitura depois de liberar falhar** (a internet cai no segundo seguinte ao "liberar"), o publicar apaga a
-  versão que acabou de liberar (nunca fica pela metade). Uma versão liberada por segundos e apagada pode, em tese, ter
-  sido vista por um programa que procurou naquele instante; ele não instala sem a assinatura, que também some.
+- **Depois de pedir para liberar, nada é apagado** (volta 2, achado 4, decisão técnica da gerente, D-014): se a
+  leitura que vem depois falhar, o publicar lê a situação; só se ainda for rascunho, apaga. Se ficou liberada (ou não dá
+  para ler), para com "liberada; não deu para reconferir agora" e "NÃO apaguei". **Por quê:** quando o liberar é pedido,
+  tudo já foi lido de volta e conferido (a versão está inteira); apagá-la deixaria o número dela livre para outro
+  conteúdo, e um programa que a pegou naqueles segundos nunca pegaria a outra, que teria o mesmo número ("um número de
+  versão só", peça 8). Isso muda o "nunca pela metade" do plano só neste ponto: a versão inteira fica.
 - **O conserto da lista de módulos mexe na peça do passo 1** (todo PowerShell que ela abre passa a nascer sem a lista
   herdada). Os testes do passo 1 continuam passando (`tests/test_windows_peca.py`, `tests/test_windows_janela_de_prova.py`).
   O que a peça faz com licença de administrador (a pergunta do Windows, as tarefas) não foi rodado de novo: a próxima
@@ -560,10 +601,8 @@ passos"). O tempo de publicar é medido na prova à vista.
   (hoje o .msi sai junto com uma versão nova).
 - Ideia (Lista de espera): a versão do protocolo do motor num lugar só (hoje está em `core/ocr_kraken.py`, em
   `montar_motor_kraken.py` e no servidor do motor).
-- Bug (Lista de bugs, 19/11/2026, não impede este passo): `windows.lancar_powershell_solto` dá "o processo lançado saiu
-  sem começar" para um script que termina rápido: o fim do script apaga a pasta de troca com o sinal de vida antes de a
-  peça olhar (ela olha a cada 0,1 s). Visto ao escrever o teste da lista de módulos (com uma espera de 2 s no script o
-  sinal é visto). Pode afetar o passo 3 se ele lançar solto algo curto.
+- (Consertado na volta 2, pedido da gerente, achado 6): o lançar solto que dava "saiu sem começar" para um script
+  curto. Já não vai para a Lista de bugs.
 - Bug (Lista de bugs, 19/11/2026, não impede): o http.server do Python, de fábrica, deixa dois servidores abrirem a mesma
   porta no Windows; outros lugares do projeto que usem o http.server podem ter o mesmo defeito (não procurei fora deste
   passo).
@@ -576,11 +615,49 @@ de ferramentas dele, em "Ressalvas"): a gerente pergunta, se achar preciso.
 
 ## Commit
 
-0ef0da17 (o último commit de código; depois dele só este formulário muda).
+85781a08 (o último commit de código, volta 2; depois dele só este formulário e os anexos mudam).
 
 ## O que o agente que tentou quebrar achou
 
-(a preencher por quem tenta quebrar)
+**Volta 1** (`quem-quebrou/relatorio-1.md`, commit `a58f181b`). Destino de cada achado (volta 2 deste agente; código em
+`17cd8635` e `85781a08`; reversão em `anexos/reversao-volta2-resultado.txt`):
+1. **O apagar de um rascunho no GitHub dizia "não deixou apagar" tendo apagado:** consertado. Lido o `delete.go` do gh
+   (apaga a publicação e depois a etiqueta, que num rascunho não existe, e sai com esse erro): rascunho sem
+   `--cleanup-tag`, liberada com; quem decide é a leitura de volta. O gh de mentira imita o de verdade, com a fonte.
+   Testes: `tests/test_publicar_versao.py::test_achado1_apagar_um_rascunho_no_github_le_de_volta_e_nao_acusa_erro_falso`,
+   `tests/test_publicar_versao.py::test_achado1_erro_antes_de_liberar_no_github_apaga_e_diz_que_apagou` e
+   `tests/test_publicar_versao.py::test_achado1_quem_decide_se_apagou_e_a_leitura_de_volta`.
+2. **A vigia fechava só o vpk:** consertado na peça do Windows, num lugar só (`windows.abrir_em_grupo`, um grupo do
+   Windows que fecha tudo junto e confere que nada ficou vivo); `empacotar.rodar_vpk` o usa. Testes de verdade, num
+   processo que abre outro: `tests/test_windows_peca.py::test_fechar_o_programa_em_grupo_fecha_tambem_o_que_ele_abriu` e
+   `tests/test_publicar_versao.py::test_achado2_a_vigia_fecha_o_vpk_e_o_que_ele_abriu`.
+3. **Nove proteções sem teste:** cada uma ganhou o seu (N1, N3, N4, N14:
+   `tests/test_publicar_versao.py::test_n1_n3_n4_n14_cada_leitura_de_volta_errada_impede_liberar`; N5:
+   `tests/test_publicar_versao.py::test_n5_o_apagar_que_nao_apaga_e_acusado`; N6:
+   `tests/test_publicar_versao.py::test_n6_a_conferencia_do_fim_acusa_o_setup_exe`; N8:
+   `tests/test_publicar_versao.py::test_n8_o_msi_nao_fica_na_pasta_de_saida_se_a_versao_nao_saiu`; N10:
+   `tests/test_publicar_versao.py::test_n10_ctrl_c_fecha_o_vpk_e_o_que_ele_abriu`; N13:
+   `tests/test_publicar_servidor.py::test_n13_o_servidor_nao_serve_por_uma_juncao`). Todos acusam com a proteção
+   desligada; o N10 só com o fechar-ao-fechar do grupo desligado junto (é dupla proteção agora). Corrigida a afirmação de
+   que o `test_d53` provava o N4.
+4. **Apagar uma versão já liberada quando a leitura depois falha:** decisão técnica da gerente (D-014): não apaga; diz
+   "liberada; não deu para reconferir agora". Porquê em "Ressalvas". Teste:
+   `tests/test_publicar_versao.py::test_achado4_depois_de_liberar_a_leitura_que_falha_nao_apaga_a_versao`.
+5. **Erro do disco cru:** consertado (frase em português). Teste: `tests/test_publicar_versao.py::test_achado5_erro_do_disco_vira_frase`.
+6. **O lançar solto "saiu sem começar":** consertado (o sinal de vida numa pasta à parte). Teste repetido 20 vezes:
+   `tests/test_windows_peca.py::test_o_lancado_solto_curto_nunca_vira_saiu_sem_comecar` (no código anterior: 12 de 20).
+7. **O .msi de outra versão:** consertado (o .msi publicado com o número da versão; o servidor usa a regra única das
+   publicações, `DestinoPasta.liberadas`, sem junção, e não entrega nome repetido). Teste:
+   `tests/test_publicar_servidor.py::test_achado7_nome_repetido_em_duas_versoes_nao_e_entregue`.
+8. **O motor em `instalar\` aceito na atualização:** consertado (lido de `SAIDAS`). Teste:
+   `tests/test_publicar_versao.py::test_achado8_o_arquivo_do_motor_em_instalar_e_recusado_na_atualizacao`.
+9. **A conta com o .msi curta:** refeita pela leitura do vpk (fontes no docstring de `empacotar.espaco_que_vai_usar`):
+   4 vezes a pasta, 7 com o .msi. Teste: `tests/test_publicar_versao.py::test_d776_a_conta_do_espaco_e_a_reserva_de_20_gb`.
+10. **A reversão da D-809 só pelo texto:** rodado de verdade o jeito antigo numa junção temporária
+    (`anexos/d809-jeito-antigo.txt`): neste Windows ele não entrou na junção. A seção "Cada proteção" passa a dizer que
+    o M18 acusa pelo jeito de apagar, não por arquivo perdido.
+11. **A etiqueta com quebra de linha:** consertado (conferida inteira). Teste:
+    `tests/test_publicar_versao.py::test_achado11_etiqueta_com_quebra_de_linha_e_recusada`.
 
 ## A prova de verdade
 
@@ -593,7 +670,8 @@ clica nada):
 4. Publicar uma versão de prova no C: sem o .msi, com a janela do servidor mostrando a versão chegar: o espaço do C:
    antes e depois (volta ao que era), o tempo, e no fim a conferência mostra que o Setup.exe não está em lugar nenhum.
 5. Um erro de propósito no meio (fechar o vpk pelo Gerenciador de Tarefas, ou desligar a internet antes do envio ao
-   GitHub): o rascunho e o Setup.exe também somem.
+   GitHub; olhar no Gerenciador de Tarefas que não sobrou cmd.exe nem wix.exe depois, achado 2; e que a frase do
+   apagar no GitHub diz "foi apagada (conferido)", achado 1): o rascunho e o Setup.exe também somem.
 6. Outra versão com `--com-instalador`: medir o .msi com o motor num arquivo só.
 7. O aviso de pouco espaço: com a reserva aumentada só nesta prova (`--reserva-gb` com um número maior que o espaço
    livre do C:; a opção só aumenta, nunca abaixo de 20 GB), o publicar recusa antes do vpk; o C: nunca é enchido.
