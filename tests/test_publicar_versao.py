@@ -1007,7 +1007,8 @@ class _DestinoQueNaoLibera(pub.DestinoPasta):
 # vale a mesma regra". O mesmo caso (o _DestinoQueNaoLibera, na pasta) e o do GitHub passaram a ser cobrados do jeito
 # novo, com a prova de que o antigo saiu (o rascunho continua e a frase diz o comando), em
 # test_d816_o_liberar_que_falha_e_fica_rascunho_nao_apaga_e_diz_o_comando (volta 4, mais abaixo). CLAUDE.md §11,
-# ponto 4: quando a decisão substitui um comportamento antigo, a prova confere que o antigo saiu.
+# ponto 4: quando a decisão substitui um comportamento antigo, a prova confere que o antigo saiu. O achado voltou a quem
+# escreveu pela D-775 (volta 4).
 
 
 class _DestinoQueTrocaOMotor(pub.DestinoPasta):

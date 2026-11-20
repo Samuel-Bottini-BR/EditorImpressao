@@ -1351,8 +1351,9 @@ def test_um_lote_que_a_peca_nao_acha_tambem_e_recusado_pela_extensao(tmp_path):
     for the executable file in the following sequence"), o começo do arquivo não pode ser lido; a extensão .bat ou .cmd,
     lida do caminho completado pelo Windows, recusa mesmo assim. (Rodado: um .bat que começa com "MZ" não vai ao cmd.exe,
     o Windows recusa com o erro 216; por isso o começo do arquivo basta quando ele existe.)"""
-    # Passo 2, volta 4, achado 9 do relatório 3 de quem tentou quebrar: os caminhos em texto cru. Antes, num texto
-    # comum, o "\n" virava quebra de linha e o "\e" dava o aviso de escape inválido: o caminho testado não era o escrito.
+    # Passo 2, volta 4, achado 9 do relatório 3 de quem tentou quebrar (voltou a quem escreveu pela D-775): os caminhos
+    # em texto cru. Antes, num texto comum, o "\n" virava quebra de linha e o "\e" dava o aviso de escape inválido: o
+    # caminho testado não era o escrito.
     for nome in (r"C:\nao\existe.bat", r"C:\nao\existe.CMD", r"C:\nao\existe.bat. ", "nao-existe-em-lugar-nenhum.cmd"):
         r = windows.rodar_e_esperar([nome])
         assert r.desfecho == windows.FALHOU and "função própria" in r.motivo, (nome, r)

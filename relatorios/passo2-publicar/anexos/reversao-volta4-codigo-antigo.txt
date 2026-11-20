@@ -1,30 +1,45 @@
-Volta 4: os testes novos rodados no cÃ³digo de 5f96975b (antes de qualquer conserto), 20/11/2026.
-Comando: python -m pytest tests/<arquivo> -q -rfE -k 'volta4 or d816' (QT_QPA_PLATFORM=offscreen)
+Volta 4 do passo 2: os testes novos (os de tests/ de e0921ed8 com 'volta4' ou 'd816' no nome) rodados no cÃ³digo de
+5f96975b (a partida, antes de qualquer conserto), numa cÃ³pia (git archive) fora do projeto. 20/11/2026.
+Comando: python -m pytest tests/<arquivo> -q -rf --tb=line -k 'volta4 or d816' (QT_QPA_PLATFORM=offscreen)
 
 == tests/test_windows_peca.py ==
-E       AssertionError: {'C:\\Users\\fotog\\AppData\\Local\\Temp\\pytest-of-fotog\\pytest-4166\\test_volta4_o_nome_com_ponto_n0\\PowerShell\\7...e .': ["rodar: deu certo '' 'SAMUEL-PC'", "lançar: falhou 'o processo lançado saiu sem começar'", 'grupo: abriu'], ...}
-E       assert not True
-E        +  where True = any(dict_values([["rodar: deu certo '' 'SAMUEL-PC'", "lançar: falhou 'o processo lançado saiu sem começar'", 'grupo: abriu... ["rodar: deu certo '' 'samuel-pc\\\\fotog'", "lançar: falhou 'o processo lançado saiu sem começar'", 'grupo: abriu']]))
-E        +    where dict_values([["rodar: deu certo '' 'SAMUEL-PC'", "lançar: falhou 'o processo lançado saiu sem começar'", 'grupo: abriu... ["rodar: deu certo '' 'samuel-pc\\\\fotog'", "lançar: falhou 'o processo lançado saiu sem começar'", 'grupo: abriu']]) = <built-in method values of dict object at 0x000002537530CE00>()
-E        +      where <built-in method values of dict object at 0x000002537530CE00> = {'C:\\Users\\fotog\\AppData\\Local\\Temp\\pytest-of-fotog\\pytest-4166\\test_volta4_o_nome_com_ponto_n0\\PowerShell\\7...e .': ["rodar: deu certo '' 'SAMUEL-PC'", "lançar: falhou 'o processo lançado saiu sem começar'", 'grupo: abriu'], ...}.values
-E           assert ["rodar: falh...função dela'"] == []
-E             
-E             Left contains 3 more items, first extra item: "rodar: falhou 'este programa do Windows tem função própria na peça: use a função dela' ''"
-E             Use -v to get more diff
-E       AttributeError: module 'core.windows' has no attribute 'rodar_em_grupo'. Did you mean: 'abrir_em_grupo'?
-E       AssertionError: [('trocar', 'aviso.json')]
-E       assert [('trocar', 'aviso.json')] == ['gravar no d...'aviso.json')]
-E         
-E         At index 0 diff: ('trocar', 'aviso.json') != 'gravar no disco'
-E         Right contains one more item: ('trocar', 'aviso.json')
-E         Use -v to get more diff
+E   AssertionError: {'C:\\Users\\fotog\\AppData\\Local\\Temp\\pytest-of-fotog\\pytest-4240\\test_volta4_o_nome_com_ponto_n0\\PowerShell\\7...e .': ["rodar: deu certo '' '<pc>'", "lançar: falhou 'o processo lançado saiu sem começar'", 'grupo: abriu'],
+E   assert ["rodar: falh...função dela'"] == []
+E   AttributeError: module 'core.windows' has no attribute 'rodar_em_grupo'. Did you mean: 'abrir_em_grupo'?
+E   AssertionError: [('trocar', 'script.ps1')]
 FAILED tests/test_windows_peca.py::test_volta4_o_nome_com_ponto_no_fim_e_lido_como_o_windows_completa
 FAILED tests/test_windows_peca.py::test_volta4_o_programa_que_nao_deixa_ler_e_recusado_com_frase_propria
 FAILED tests/test_windows_peca.py::test_volta4_rodar_em_grupo_e_o_laco_unico_com_a_saida_a_vigia_e_o_tempo
-FAILED tests/test_windows_peca.py::test_volta4_gravar_por_inteiro_manda_gravar_no_disco_antes_de_trocar_o_nome
-4 failed, 1 passed, 64 deselected in 2.15s
+FAILED tests/test_windows_peca.py::test_volta4_a_peca_manda_gravar_no_disco_antes_de_trocar_o_nome
+4 failed, 1 passed, 64 deselected in 2.88s
 
 == tests/test_publicar_versao.py ==
+E   AssertionError: a resposta do liberar se perdeu (de mentira). v9.9.9 ficou liberada em a pasta C:\Users\fotog\AppData\Local\Temp\pytest-of-fotog\pytest-4241\test_d816_depois_do_pedido_de_0\servidor (o rascunho virou versão liberada antes de eu ap
+E   AssertionError: a resposta do liberar se perdeu (de mentira). v9.9.9: pedi para liberar em a pasta C:\Users\fotog\AppData\Local\Temp\pytest-of-fotog\pytest-4241\test_d816_depois_do_pedido_de_1\servidor; não deu para ler a situação agora (pedi par
+E   AssertionError: a resposta do liberar se perdeu (de mentira). v9.9.9: pedi para liberar em a pasta C:\Users\fotog\AppData\Local\Temp\pytest-of-fotog\pytest-4241\test_d816_depois_do_pedido_de_2\servidor; não deu para ler a situação agora (pedi par
+E   AssertionError: a resposta do liberar se perdeu (de mentira). v9.9.9: pedi para liberar em a pasta C:\Users\fotog\AppData\Local\Temp\pytest-of-fotog\pytest-4241\test_d816_depois_do_pedido_de_3\servidor; não deu para ler a situação agora (pedi par
+E   AssertionError: o GitHub não deixou liberar v9.9.9: HTTP 502: a resposta se perdeu (de mentira). v9.9.9 está liberada em o GitHub (dono/projeto): só o rascunho podia ser apagado aqui, e NÃO apaguei. Pedi para liberar; ela está inteira (tudo foi l
+E   AssertionError: o GitHub não deixou liberar v9.9.9: HTTP 502: a resposta se perdeu (de mentira). a publicação v9.9.9 foi apagada de o GitHub (dono/projeto) (conferido)
+E   publicar_versao_kaique.Parou: o GitHub não deixou liberar v9.9.9: HTTP 502: a resposta se perdeu (de mentira)
+E   KeyError: 'v9.9.9'
+E   publicar_versao_kaique.Parou: o GitHub não deixou liberar v9.9.9: HTTP 502: a resposta se perdeu (de mentira)
+E   KeyError: 'v9.9.9'
+E   KeyError: 'v9.9.9'
+E   AssertionError: a resposta do liberar se perdeu (de mentira). motor-kraken-1: pedi para liberar em a pasta C:\Users\fotog\AppData\Local\Temp\pytest-of-fotog\pytest-4241\test_d816_o_motor_tambem_nunca0\servidor; não deu para ler a situação agora (
+E   AssertionError: o GitHub não deixou liberar motor-kraken-1: HTTP 502: a resposta se perdeu (de mentira). a publicação motor-kraken-1 foi apagada de o GitHub (dono/projeto) (conferido)
+E   AssertionError: o destino não deixou liberar (de mentira). a publicação v9.9.9 foi apagada de a pasta C:\Users\fotog\AppData\Local\Temp\pytest-of-fotog\pytest-4241\test_d816_o_liberar_que_falha_0\servidor (conferido)
+E   AssertionError: o GitHub não deixou liberar v9.9.9: HTTP 502: a resposta se perdeu (de mentira). a publicação v9.9.9 foi apagada de o GitHub (dono/projeto) (conferido)
+E   AssertionError: assert (True and 'v9.9.9' not in ['v9.9.9'])
+E   AssertionError: o GitHub não deixou enviar EditorImpressaoPrograma-9.9.9-full.nupkg: HTTP 502 ao enviar (de mentira). ATENÇÃO: não consegui perguntar ao GitHub pela publicação v9.9.9: error connecting to api.github.com; apague com --apagar v9.9.9
+E   AssertionError: o GitHub não deixou enviar EditorImpressaoPrograma-9.9.9-full.nupkg: HTTP 502 ao enviar (de mentira). a publicação v9.9.9 foi apagada de o GitHub (dono/projeto) (conferido)
+E   AttributeError: 'DestinoGitHub' object has no attribute 'usar_rascunho'. Did you mean: 'criar_rascunho'?
+E   AssertionError: ([1073743156], 1073743156, 333, 716)
+E   AttributeError: module 'core.windows' has no attribute 'rodar_em_grupo'. Did you mean: 'abrir_em_grupo'?
+E   AssertionError: ['ler de volta', 'trocar o nome']
+E   publicar_versao_kaique.Parou: o GitHub não deixou enviar EditorImpressaoPrograma-9.9.9-full.nupkg: HTTP 502 ao enviar (de mentira)
+E   AttributeError: module 'publicar_versao_kaique' has no attribute 'SemResposta'
+E   TypeError: apagar_publicacao() got an unexpected keyword argument 'acabou_de_criar'
+E   AssertionError: [1073742674]
 FAILED tests/test_publicar_versao.py::test_d816_depois_do_pedido_de_liberar_nada_e_apagado_com_qualquer_atraso[pasta-1]
 FAILED tests/test_publicar_versao.py::test_d816_depois_do_pedido_de_liberar_nada_e_apagado_com_qualquer_atraso[pasta-2]
 FAILED tests/test_publicar_versao.py::test_d816_depois_do_pedido_de_liberar_nada_e_apagado_com_qualquer_atraso[pasta-3]
@@ -44,55 +59,21 @@ FAILED tests/test_publicar_versao.py::test_volta4_achado7_sem_a_soma_pronta_o_do
 FAILED tests/test_publicar_versao.py::test_volta4_achado7_a_conta_do_espaco_soma_o_que_a_soma_pode_baixar
 FAILED tests/test_publicar_versao.py::test_volta4_achado8_o_gh_roda_pelo_laco_unico_da_peca_e_fecha_o_que_abriu
 FAILED tests/test_publicar_versao.py::test_volta4_achado11_a_copia_e_o_motor_gravam_no_disco_antes_de_conferir_e_trocar
-19 failed, 49 deselected in 10.88s
+FAILED tests/test_publicar_versao.py::test_volta4_achado3_o_pedido_de_apagar_sem_resposta_diz_que_pediu
+FAILED tests/test_publicar_versao.py::test_volta4_achado3_liberada_no_meio_do_apagar_nunca_vira_apagada
+FAILED tests/test_publicar_versao.py::test_volta4_achado7_no_publicar_sem_a_soma_pronta_tudo_e_baixado_no_rascunho
+22 failed, 48 deselected in 8.18s
 
-== o motivo de cada falha (--tb=line) ==
-E   AssertionError: {'C:\\Users\\fotog\\AppData\\Local\\Temp\\pytest-of-fotog\\pytest-4168\\test_volta4_o_nome_com_ponto_n0\\PowerShell\\7...e .': ["rodar: deu certo '' 'SAMUEL-PC'", "lançar: falhou 'o processo lançado saiu sem começar'", 'grupo: abriu'], ...}
-D:\programas\EditorImpressao\.claude\worktrees\passo2\tests\test_windows_peca.py:1406: AssertionError: {'C:\\Users\\fotog\\AppData\\Local\\Temp\\pytest-of-fotog\\pytest-4168\\test_volta4_o_nome_com_ponto_n0\\PowerShell\\7...e .': ["rodar: deu certo '' 'SAMUEL-
-E   assert ["rodar: falh...função dela'"] == []
-D:\programas\EditorImpressao\.claude\worktrees\passo2\tests\test_windows_peca.py:1431: assert ["rodar: falh...função dela'"] == []
-E   AttributeError: module 'core.windows' has no attribute 'rodar_em_grupo'. Did you mean: 'abrir_em_grupo'?
-D:\programas\EditorImpressao\.claude\worktrees\passo2\tests\test_windows_peca.py:1470: AttributeError: module 'core.windows' has no attribute 'rodar_em_grupo'. Did you mean: 'abrir_em_grupo'?
-E   AssertionError: [('trocar', 'aviso.json')]
-D:\programas\EditorImpressao\.claude\worktrees\passo2\tests\test_windows_peca.py:1510: AssertionError: [('trocar', 'aviso.json')]
-E   AssertionError: a resposta do liberar se perdeu (de mentira). v9.9.9 ficou liberada em a pasta C:\Users\fotog\AppData\Local\Temp\pytest-of-fotog\pytest-4169\test_d816_depois_do_pedido_de_0\servidor (o rascunho virou versão liberada antes de eu apagar): só 
-D:\programas\EditorImpressao\.claude\worktrees\passo2\tests\test_publicar_versao.py:1415: AssertionError: a resposta do liberar se perdeu (de mentira). v9.9.9 ficou liberada em a pasta C:\Users\fotog\AppData\Local\Temp\pytest-of-fotog\pytest-4169\test_d816_dep
-E   AssertionError: a resposta do liberar se perdeu (de mentira). v9.9.9: pedi para liberar em a pasta C:\Users\fotog\AppData\Local\Temp\pytest-of-fotog\pytest-4169\test_d816_depois_do_pedido_de_1\servidor; não deu para ler a situação agora (pedi para apagar v
-D:\programas\EditorImpressao\.claude\worktrees\passo2\tests\test_publicar_versao.py:1415: AssertionError: a resposta do liberar se perdeu (de mentira). v9.9.9: pedi para liberar em a pasta C:\Users\fotog\AppData\Local\Temp\pytest-of-fotog\pytest-4169\test_d816
-E   AssertionError: a resposta do liberar se perdeu (de mentira). v9.9.9: pedi para liberar em a pasta C:\Users\fotog\AppData\Local\Temp\pytest-of-fotog\pytest-4169\test_d816_depois_do_pedido_de_2\servidor; não deu para ler a situação agora (pedi para apagar v
-D:\programas\EditorImpressao\.claude\worktrees\passo2\tests\test_publicar_versao.py:1415: AssertionError: a resposta do liberar se perdeu (de mentira). v9.9.9: pedi para liberar em a pasta C:\Users\fotog\AppData\Local\Temp\pytest-of-fotog\pytest-4169\test_d816
-E   AssertionError: a resposta do liberar se perdeu (de mentira). v9.9.9: pedi para liberar em a pasta C:\Users\fotog\AppData\Local\Temp\pytest-of-fotog\pytest-4169\test_d816_depois_do_pedido_de_3\servidor; não deu para ler a situação agora (pedi para apagar v
-D:\programas\EditorImpressao\.claude\worktrees\passo2\tests\test_publicar_versao.py:1415: AssertionError: a resposta do liberar se perdeu (de mentira). v9.9.9: pedi para liberar em a pasta C:\Users\fotog\AppData\Local\Temp\pytest-of-fotog\pytest-4169\test_d816
-E   AssertionError: o GitHub não deixou liberar v9.9.9: HTTP 502: a resposta se perdeu (de mentira). v9.9.9 está liberada em o GitHub (dono/projeto): só o rascunho podia ser apagado aqui, e NÃO apaguei. Pedi para liberar; ela está inteira (tudo foi lido de vol
-D:\programas\EditorImpressao\.claude\worktrees\passo2\tests\test_publicar_versao.py:1415: AssertionError: o GitHub não deixou liberar v9.9.9: HTTP 502: a resposta se perdeu (de mentira). v9.9.9 está liberada em o GitHub (dono/projeto): só o rascunho podia ser 
-E   AssertionError: o GitHub não deixou liberar v9.9.9: HTTP 502: a resposta se perdeu (de mentira). a publicação v9.9.9 foi apagada de o GitHub (dono/projeto) (conferido)
-D:\programas\EditorImpressao\.claude\worktrees\passo2\tests\test_publicar_versao.py:1414: AssertionError: o GitHub não deixou liberar v9.9.9: HTTP 502: a resposta se perdeu (de mentira). a publicação v9.9.9 foi apagada de o GitHub (dono/projeto) (conferido)
-E   publicar_versao_kaique.Parou: o GitHub não deixou liberar v9.9.9: HTTP 502: a resposta se perdeu (de mentira)
-E   KeyError: 'v9.9.9'
-D:\programas\EditorImpressao\.claude\worktrees\passo2\tests\test_publicar_versao.py:1395: KeyError: 'v9.9.9'
-E   publicar_versao_kaique.Parou: o GitHub não deixou liberar v9.9.9: HTTP 502: a resposta se perdeu (de mentira)
-E   KeyError: 'v9.9.9'
-E   KeyError: 'v9.9.9'
-D:\programas\EditorImpressao\.claude\worktrees\passo2\tests\test_publicar_versao.py:1395: KeyError: 'v9.9.9'
-E   AssertionError: a resposta do liberar se perdeu (de mentira). motor-kraken-1: pedi para liberar em a pasta C:\Users\fotog\AppData\Local\Temp\pytest-of-fotog\pytest-4169\test_d816_o_motor_tambem_nunca0\servidor; não deu para ler a situação agora (pedi para 
-D:\programas\EditorImpressao\.claude\worktrees\passo2\tests\test_publicar_versao.py:1415: AssertionError: a resposta do liberar se perdeu (de mentira). motor-kraken-1: pedi para liberar em a pasta C:\Users\fotog\AppData\Local\Temp\pytest-of-fotog\pytest-4169\t
-E   AssertionError: o GitHub não deixou liberar motor-kraken-1: HTTP 502: a resposta se perdeu (de mentira). a publicação motor-kraken-1 foi apagada de o GitHub (dono/projeto) (conferido)
-D:\programas\EditorImpressao\.claude\worktrees\passo2\tests\test_publicar_versao.py:1414: AssertionError: o GitHub não deixou liberar motor-kraken-1: HTTP 502: a resposta se perdeu (de mentira). a publicação motor-kraken-1 foi apagada de o GitHub (dono/projeto
-E   AssertionError: a resposta do liberar se perdeu (de mentira). a publicação v9.9.9 foi apagada de a pasta C:\Users\fotog\AppData\Local\Temp\pytest-of-fotog\pytest-4169\test_d816_o_liberar_que_falha_0\servidor (conferido)
-D:\programas\EditorImpressao\.claude\worktrees\passo2\tests\test_publicar_versao.py:1414: AssertionError: a resposta do liberar se perdeu (de mentira). a publicação v9.9.9 foi apagada de a pasta C:\Users\fotog\AppData\Local\Temp\pytest-of-fotog\pytest-4169\tes
-E   AssertionError: o GitHub não deixou liberar v9.9.9: HTTP 502: a resposta se perdeu (de mentira). a publicação v9.9.9 foi apagada de o GitHub (dono/projeto) (conferido)
-D:\programas\EditorImpressao\.claude\worktrees\passo2\tests\test_publicar_versao.py:1414: AssertionError: o GitHub não deixou liberar v9.9.9: HTTP 502: a resposta se perdeu (de mentira). a publicação v9.9.9 foi apagada de o GitHub (dono/projeto) (conferido)
-E   AssertionError: assert (True and 'v9.9.9' not in ['v9.9.9'])
-D:\programas\EditorImpressao\.claude\worktrees\passo2\tests\test_publicar_versao.py:1500: AssertionError: assert (True and 'v9.9.9' not in ['v9.9.9'])
-E   AssertionError: o GitHub não deixou enviar EditorImpressaoPrograma-9.9.9-full.nupkg: HTTP 502 ao enviar (de mentira). ATENÇÃO: não consegui perguntar ao GitHub pela publicação v9.9.9: error connecting to api.github.com; apague com --apagar v9.9.9
-D:\programas\EditorImpressao\.claude\worktrees\passo2\tests\test_publicar_versao.py:1542: AssertionError: o GitHub não deixou enviar EditorImpressaoPrograma-9.9.9-full.nupkg: HTTP 502 ao enviar (de mentira). ATENÇÃO: não consegui perguntar ao GitHub pela publi
-E   AssertionError: o GitHub não deixou enviar EditorImpressaoPrograma-9.9.9-full.nupkg: HTTP 502 ao enviar (de mentira). a publicação v9.9.9 foi apagada de o GitHub (dono/projeto) (conferido)
-D:\programas\EditorImpressao\.claude\worktrees\passo2\tests\test_publicar_versao.py:1591: AssertionError: o GitHub não deixou enviar EditorImpressaoPrograma-9.9.9-full.nupkg: HTTP 502 ao enviar (de mentira). a publicação v9.9.9 foi apagada de o GitHub (dono/pr
-E   AttributeError: 'DestinoGitHub' object has no attribute 'usar_rascunho'. Did you mean: 'criar_rascunho'?
-D:\programas\EditorImpressao\.claude\worktrees\passo2\tests\test_publicar_versao.py:1643: AttributeError: 'DestinoGitHub' object has no attribute 'usar_rascunho'. Did you mean: 'criar_rascunho'?
-E   AssertionError: ([1073742648], 1073743540, 429, 716)
-D:\programas\EditorImpressao\.claude\worktrees\passo2\tests\test_publicar_versao.py:1675: AssertionError: ([1073742648], 1073743540, 429, 716)
-E   AttributeError: module 'core.windows' has no attribute 'rodar_em_grupo'. Did you mean: 'abrir_em_grupo'?
-D:\programas\EditorImpressao\.claude\worktrees\passo2\tests\test_publicar_versao.py:1687: AttributeError: module 'core.windows' has no attribute 'rodar_em_grupo'. Did you mean: 'abrir_em_grupo'?
-E   AssertionError: ['ler de volta', 'trocar o nome']
-D:\programas\EditorImpressao\.claude\worktrees\passo2\tests\test_publicar_versao.py:1739: AssertionError: ['ler de volta', 'trocar o nome']
+== Leitura (o agente da volta 4) ==
+- 26 dos 27 casos novos falham no cÃ³digo antigo. O que passa Ã© o do achado 10 (a segunda olhada depois do PATH): a
+  proteÃ§Ã£o jÃ¡ existia e nÃ£o tinha teste; a prova de que ele a cobra Ã© a mutaÃ§Ã£o V10 (reversao-volta4-resultado.txt).
+- Falham pelo defeito: os do D-816 no GitHub com 2 ou mais atrasos (o "KeyError: 'v9.9.9'" Ã© o gh de mentira lendo
+  uma publicaÃ§Ã£o que o publicar antigo APAGOU) e os de 1 atraso e da pasta (a frase antiga nÃ£o diz o que pode ter
+  ficado nem os comandos); o liberar que falha (o rascunho foi apagado: "foi apagada ... (conferido)"); o Ctrl+C; o
+  achado 3 (a frase diz "ATENÃ‡ÃƒO: nÃ£o consegui perguntar ..." sem dizer se pediu); o achado 4 ("foi apagada
+  (conferido)" com o rascunho no GitHub; e o rascunho criado com a resposta perdida ficou lÃ¡); o nome com ponto no fim
+  (passava); a frase do programa trancado ("funÃ§Ã£o prÃ³pria"); a cÃ³pia e o motor sem gravar no disco; a gravaÃ§Ã£o da
+  peÃ§a sem gravar no disco; a conta sem o que a soma baixa.
+- Falham porque a peÃ§a nova nÃ£o existia: os que chamam `windows.rodar_em_grupo`, `Destino.usar_rascunho`,
+  `Destino.como_conferir` e `apagar_publicacao(acabou_de_criar=...)` (o laÃ§o Ãºnico, a soma no rascunho e a frase
+  nova). Para esses, a prova de que cobram a proteÃ§Ã£o Ã© a mutaÃ§Ã£o de cada uma (V6, V7, V11 a V19b).

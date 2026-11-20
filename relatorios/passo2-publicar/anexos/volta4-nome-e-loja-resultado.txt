@@ -1,0 +1,22 @@
+1. Com o caminho inteiro (a cópia numa pasta de rascunho):
+   'provaeco.exe'         -> código 0, escreveu '<pc>'
+   'provaeco.exe.'        -> código 0, escreveu '<pc>'
+   'provaeco.exe..'       -> código 0, escreveu '<pc>'
+   'provaeco.exe .'       -> código 0, escreveu '<pc>'
+   'provaeco.exe. '       -> código 0, escreveu '<pc>'
+   os.path.abspath (o GetFullPathNameW) de 'provaeco.exe.. .': provaeco.exe
+2. Só o nome, com a env do subprocess mudando o PATH (o Windows procura no PATH de quem chama):
+   'provaeco.exe' (PATH só na env) -> não rodou (erro 2)
+3. Só o nome, com o PATH do próprio processo:
+   'provaeco.exe'       -> código 0, escreveu '<pc>'; shutil.which acha? True
+   'provaeco.exe.'      -> código 0, escreveu '<pc>'; shutil.which acha? False
+   'provaeco.exe..'     -> código 0, escreveu '<pc>'; shutil.which acha? False
+   'provaeco.exe. '     -> código 0, escreveu '<pc>'; shutil.which acha? False
+   'provaeco'           -> código 0, escreveu '<pc>'; shutil.which acha? True
+   'provaeco.'          -> não rodou (erro 2); shutil.which acha? False
+   'whoami.exe.' (da pasta do Windows) -> código 0, escreveu '<pc>\\<conta>'
+4. Os atalhos da Loja (%LOCALAPPDATA%\Microsoft\WindowsApps):
+   ActionsMcpHost.exe             isfile=True; não deixou ler (OSError 22)
+   bash.exe                       isfile=True; não deixou ler (OSError 22)
+   claude-desktop.exe             isfile=True; não deixou ler (OSError 22)
+   claude-make-data-folder.exe    isfile=True; não deixou ler (OSError 22)

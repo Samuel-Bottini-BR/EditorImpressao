@@ -174,7 +174,7 @@ As da primeira entrega, de `03c91599`, estão no `git log` deste arquivo.)
   `test_n1_n3_n4_n14_cada_leitura_de_volta_errada_impede_liberar`, `test_n5_o_apagar_que_nao_apaga_e_acusado`
   ("continua lá"), `test_achado1_apagar_um_rascunho_no_github_le_de_volta_e_nao_acusa_erro_falso` e
   `test_achado1_quem_decide_se_apagou_e_a_leitura_de_volta` (o `--apagar`), todos em `tests/test_publicar_versao.py`.
-- **Um teste antigo cobra o que a D-816 tirou:** `tests/test_publicar_versao.py::test_volta3_achado5_o_liberar_que_falha_e_continua_rascunho_apaga_o_rascunho`
+- **Um teste antigo cobra o que a D-816 tirou:** `test_volta3_achado5_o_liberar_que_falha_e_continua_rascunho_apaga_o_rascunho` (saiu na volta 4: a D-816 tirou o que ele cobrava)
   cobra que, quando o PEDIDO de liberar falha e a publicação continua rascunho (na pasta), o rascunho é apagado. A D-816
   diz o contrário ("depois de pedir ao GitHub para liberar a versão, o programa nunca apaga nada"; "Na pasta das provas
   (não no GitHub) vale a mesma regra"), e o pedido da gerente repete ("em nenhum destino"). Pela regra das decisões
@@ -550,7 +550,7 @@ WiX por dentro; se sobrar um, o rascunho não apaga e a frase diz o que ficou).
   nenhum com ponto no fim. E na peça de hoje: `rodar_e_esperar(["whoami.exe."])` rodou o whoami da pasta do Windows.
   **Rodado também:** o CreateProcess procura o nome sozinho no PATH de QUEM CHAMA, não no `env` passado ao subprocess
   (com o PATH só no `env`, o nome sozinho deu erro 2). Por isso o teste muda o PATH do próprio processo.
-- **Os atalhos da Loja (achado 6).** Rodado no PC: os `.exe` de `%LOCALAPPDATA%\Microsoft\WindowsApps` (ex.:
+- **Os atalhos da Loja (achado 6).** Rodado no PC (`relatorios/passo2-publicar/anexos/volta4-nome-e-loja.py.txt:1`, resultado em `relatorios/passo2-publicar/anexos/volta4-nome-e-loja-resultado.txt:1`): os `.exe` de `%LOCALAPPDATA%\Microsoft\WindowsApps` (ex.:
   `bash.exe`, `claude-desktop.exe`) existem para o `os.path.isfile`, mas abrir para ler dá `OSError` 22 ("Invalid
   argument"). **Deduzido, não lido:** que é assim em todo Windows (são "atalhos de execução de aplicativo"; não li a
   documentação deles).
@@ -566,13 +566,13 @@ WiX por dentro; se sobrar um, o rascunho não apaga e a frase diz o que ficou).
   vindo do que o Windows guarda na memória; o que muda é que, quando o nome certo aparece, o conteúdo já foi mandado ao
   disco (a falta de luz logo depois não deixa um arquivo pela metade com o nome certo). A pasta (o nome trocado) não é
   gravada à parte: o Windows não abre pasta para isso pelo Python (Ressalvas).
-- **O laço com a saída guardada (achado 8).** Python 3.14, `subprocess.Popen.communicate`: "If the process does not
+- **O laço com a saída guardada (achado 8).** Python 3.14, `subprocess.Popen.communicate` (https://docs.python.org/3/library/subprocess.html#subprocess.Popen.communicate): "If the process does not
   terminate after timeout seconds, a TimeoutExpired exception will be raised. Catching this exception and retrying
   communication will not lose any output" (já citado na volta 3; é o jeito do laço com `capturar=True`). O gh: a saída
   em UTF-8, como hoje.
 - **Conferir uma publicação no GitHub sem mudar nada (achado 1, a frase):** `gh release view <etiqueta> --json isDraft`,
-  o mesmo pedido que o publicar já faz para ler a situação (cli/cli, `pkg/cmd/release/shared/fetch.go`, lido na volta
-  1): `"isDraft": true` é rascunho; "release not found", não existe.
+  o mesmo pedido que o publicar já faz para ler a situação (cli/cli,
+  https://github.com/cli/cli/blob/trunk/pkg/cmd/release/shared/fetch.go, lido na volta 1): `"isDraft": true` é rascunho; "release not found", não existe.
 
 ## O que foi feito
 
@@ -626,32 +626,18 @@ WiX por dentro; se sobrar um, o rascunho não apaga e a frase diz o que ficou).
 
 ## Arquivos criados ou alterados
 
+Desde a partida desta volta (`5f96975b`, o pacote da volta 4); o que as voltas 1 a 3 mexeram está no `git log` deste
+arquivo e nas seções "O que foi feito" e "Caminho e função".
+
 - `core/windows.py`
 - `empacotar.py`
 - `publicar_versao_kaique.py`
-- `montar_motor_kraken.py`
-- `core/ocr_kraken.py`
-- `versao.py`
-- `servidor_das_versoes.py` (novo)
-- `tests/test_windows_peca.py` (3 testes novos; nenhum antigo mudou)
-- `tests/test_publicar_versao.py` (novo)
-- `tests/test_publicar_motor.py` (novo)
-- `tests/test_publicar_servidor.py` (novo)
-- `tests/conferencias_excecoes.json` (o item consertado saiu, pelo `python -m regras_dos_agentes excecoes --diminuir`;
-  fora da lista do pedido: o porteiro avisa, K14; é o "tire esse item da lista no mesmo commit" do pedido)
-- `relatorios/passo2-publicar/` (este formulário e os anexos)
+- `tests/test_windows_peca.py` (5 testes novos e o caminho do achado 9 em texto cru; nenhum antigo mudou no que cobra)
+- `tests/test_publicar_versao.py` (13 testes novos, 22 casos; o teste antigo do achado 5 da volta 3 saiu, com a nota no
+  lugar dele: ver "O que já está escolhido e testado aqui" e "Ressalvas")
+- `relatorios/passo2-publicar/` (este formulário, o pacote da volta 4 e os anexos `reversao-volta4-*` e `volta4-*`)
 
-- `relatorios/passo2-publicar/anexos/reversao-volta3-codigo-antigo.txt`, `relatorios/passo2-publicar/anexos/reversao-volta3-resultado.txt`,
-  `relatorios/passo2-publicar/anexos/reversao-volta3-mutacoes.py.txt`, `relatorios/passo2-publicar/anexos/variantes-do-lote.py.txt`,
-  `relatorios/passo2-publicar/anexos/variantes-do-lote-resultado.txt` e `relatorios/passo2-publicar/anexos/lote-que-comeca-com-mz.py.txt`
-  (volta 3: o resultado no código antigo, as mutações, o script e o ensaio dos jeitos de escrever um lote)
-
-- **Volta 4** (todos na lista do pacote da volta 4): `core/windows.py`, `empacotar.py`, `publicar_versao_kaique.py`,
-  `tests/test_windows_peca.py` (5 testes novos e o caminho do achado 9 em texto cru; nenhum antigo mudou no que cobra),
-  `tests/test_publicar_versao.py` (13 testes novos, 22 casos; o teste antigo do achado 5 da volta 3 saiu, com a nota no
-  lugar dele: ver "O que já está escolhido e testado aqui" e "Ressalvas"), e em `relatorios/passo2-publicar/`: este
-  formulário, `anexos/pacote-volta4.md`, `anexos/reversao-volta4-codigo-antigo.txt`, `anexos/reversao-volta4-mutacoes.py.txt`
-  e `anexos/reversao-volta4-resultado.txt`. `tests/test_empacotar.py` não mudou.
+`tests/test_empacotar.py` não mudou.
 
 ## Como cumpri cada uma
 
@@ -798,7 +784,7 @@ WiX por dentro; se sobrar um, o rascunho não apaga e a frase diz o que ficou).
   (`anexos/reversao-volta3-codigo-antigo.txt`); passam lá os dos achados 5 e 6 e o do soltar do grupo, que cobram
   proteções que já existiam e são provados pela mutação (B5, B6, B4b).
 - **No GitHub, volta 3:** rodada 44675872042, sobre o ramo em 2e906e94 (o código de e4263c0a e três docstrings de um
-  teste). Resultado: **success** na segunda tentativa. PORTEIRO: success (o trabalho "Porteiro (juiz da versao de teste)", nas duas tentativas). Na primeira tentativa falhou só a parte 2: `tests/test_caixinha_do_dividir_nao_volta.py` saiu com o código 3221226505 (0xC0000409) e "sem saída", um travamento do Qt que não usa nada deste passo (instável novo, em "Ideias e bugs"); a parte 2 rodou de novo e passou. A rodada 44675045916, sobre 05f743ca, foi cancelada por mim aos 7 minutos (o porteiro já tinha dado success), porque depois dela mudaram um comentário da peça e as docstrings.
+  teste). Resultado: **success** na segunda tentativa. PORTEIRO: success (o trabalho "Porteiro (juiz da versao de teste)", nas duas tentativas). Na primeira tentativa falhou só a parte 2: `tests/test_caixinha_do_dividir_nao_volta.py` saiu com o código 0xC0000409 e "sem saída", um travamento do Qt que não usa nada deste passo (instável novo, em "Ideias e bugs"); a parte 2 rodou de novo e passou. A rodada 44675045916, sobre 05f743ca, foi cancelada por mim aos 7 minutos (o porteiro já tinha dado success), porque depois dela mudaram um comentário da peça e as docstrings.
 
 ## Caminho e função
 
@@ -949,7 +935,7 @@ Cada uma foi desligada numa cópia à parte (git archive no rascunho da sessão,
   - a primeira pasta de troca apagada (B9b) →
     `tests/test_windows_peca.py::test_o_lancado_solto_apaga_a_primeira_pasta_se_a_segunda_nao_nasce`;
   - o rascunho apagado quando o liberar falha (B5) →
-    `tests/test_publicar_versao.py::test_volta3_achado5_o_liberar_que_falha_e_continua_rascunho_apaga_o_rascunho`;
+    `test_volta3_achado5_o_liberar_que_falha_e_continua_rascunho_apaga_o_rascunho` (saiu na volta 4: a D-816 tirou o que ele cobrava);
   - o motor que mudou (B6) → `tests/test_publicar_versao.py::test_volta3_achado6_o_motor_trocado_durante_a_publicacao_impede_liberar`;
   - o motor baixado na conta (B7) e na vigia (B7b) →
     `tests/test_publicar_versao.py::test_volta3_achado7_o_motor_baixado_entra_na_conta_e_na_vigia`; o gh na vigia (B7c) →
@@ -961,6 +947,43 @@ Cada uma foi desligada numa cópia à parte (git archive no rascunho da sessão,
     AssignProcessToJobObject que deu certo já põe; sem ele, o B4 acusa). Na primeira passada, a B1d e a B2 não foram
     acusadas: a B1d porque o teste só cobrava "NÃO apaguei" (passou a cobrar "ficou liberada em"); a B2 porque o apagar
     do pedaço também a cobre na falha comum (ganhou o teste da cópia cortada no meio, sem nada rodando depois).
+
+- **Volta 4** (`anexos/reversao-volta4-resultado.txt`; script em `anexos/reversao-volta4-mutacoes.py.txt`): cada uma
+  desligada numa cópia (git archive, fora do projeto) e acusada pelo teste dela, 24 de 24:
+  - depois do pedido de liberar, nada é apagado (V1) →
+    `tests/test_publicar_versao.py::test_d816_depois_do_pedido_de_liberar_nada_e_apagado_com_qualquer_atraso` e
+    `tests/test_publicar_versao.py::test_d816_o_liberar_que_falha_e_fica_rascunho_nao_apaga_e_diz_o_comando`;
+  - "não achei" logo depois de criar não é "sumiu" (V2) e o criar no caminho de erro (V3) →
+    `tests/test_publicar_versao.py::test_volta4_achado4_nao_achei_logo_depois_de_criar_nao_e_apagado`;
+  - a frase diz se pediu: a leitura de depois falha (V4), a de antes falha (V5) →
+    `tests/test_publicar_versao.py::test_volta4_achado3_a_frase_diz_se_pediu_para_apagar`; o pedido sem resposta (V6) →
+    `tests/test_publicar_versao.py::test_volta4_achado3_o_pedido_de_apagar_sem_resposta_diz_que_pediu`; liberada no
+    meio do apagar (V7) → `tests/test_publicar_versao.py::test_volta4_achado3_liberada_no_meio_do_apagar_nunca_vira_apagada`;
+  - o nome como o Windows o completa (V8) →
+    `tests/test_windows_peca.py::test_volta4_o_nome_com_ponto_no_fim_e_lido_como_o_windows_completa`;
+  - a frase do programa que não deixa ler (V9) →
+    `tests/test_windows_peca.py::test_volta4_o_programa_que_nao_deixa_ler_e_recusado_com_frase_propria`;
+  - a segunda olhada depois do PATH (V10, achado 10) →
+    `tests/test_windows_peca.py::test_volta4_a_segunda_olhada_depois_do_path_recusa_o_lote_achado_pelo_pathext`;
+  - a soma no rascunho (V11), pela vigia (V12), na conta da versão (V13) e do motor (V14), com o rascunho dado pelo
+    publicar (V15) → `tests/test_publicar_versao.py::test_volta4_achado7_sem_a_soma_pronta_o_download_vai_ao_rascunho_pela_vigia`,
+    `tests/test_publicar_versao.py::test_volta4_achado7_a_conta_do_espaco_soma_o_que_a_soma_pode_baixar` e
+    `tests/test_publicar_versao.py::test_volta4_achado7_no_publicar_sem_a_soma_pronta_tudo_e_baixado_no_rascunho`;
+  - o gh pelo laço único (V16), o laço fecha o grupo inteiro (V17), o limite de tempo (V18), o Ctrl+C fecha o grupo
+    (V19; V19b com o fechar-ao-fechar do grupo também desligado) →
+    `tests/test_publicar_versao.py::test_volta4_achado8_o_gh_roda_pelo_laco_unico_da_peca_e_fecha_o_que_abriu` e
+    `tests/test_windows_peca.py::test_volta4_rodar_em_grupo_e_o_laco_unico_com_a_saida_a_vigia_e_o_tempo`;
+  - gravar no disco na cópia (V20), no motor comprimido (V21), na gravação da peça (V22), e com o os.fsync de verdade
+    (V23) → `tests/test_publicar_versao.py::test_volta4_achado11_a_copia_e_o_motor_gravam_no_disco_antes_de_conferir_e_trocar`
+    e `tests/test_windows_peca.py::test_volta4_a_peca_manda_gravar_no_disco_antes_de_trocar_o_nome`.
+  - **Na primeira passada, duas não foram acusadas** (V17 e V19): quem fechava o filho era o fechar-ao-fechar do fim do
+    `with` (o grupo é solto e o Windows fecha o que ficou). Os dois testes passaram a segurar o soltar do grupo (como o
+    da volta 3, achado 4), e as duas foram acusadas na segunda passada. O `test_n10_ctrl_c_fecha_o_vpk_e_o_que_ele_abriu`
+    sozinho continua não acusando a V19 (dupla proteção, já escrito na volta 2). Na primeira passada também apareceu
+    um defeito do teste: o filho do gh de prova rodava para sempre quando escapava (a V16 levou 10 minutos, presa no
+    cano da saída); passou a sair sozinho em 30 s.
+- **Volta 4, limite conhecido (achado 5, não é proteção):** a recusa da peça é pela pasta do Windows e pela lista de
+  nomes; uma cópia de um programa do Windows fora da pasta, com outro nome, passa (Ressalvas).
 
 ## De onde vem cada dado da conferência
 
@@ -1162,7 +1185,7 @@ passos"). O tempo de publicar é medido na prova à vista.
   baixa o arquivo inteiro para a pasta temporária da conta (`%TEMP%`, no C:), fora do rascunho: fora da conta do espaço
   e da vigia (o pacote tem uns 460 MB). Achado lendo o código na volta 3; não é dos achados do relatório 2.
 - Ideia (Lista de espera): a cópia do motor para instalar\ (`empacotar.preparar_saida`) pela cópia conferida também.
-- Bug (Lista de bugs, 20/11/2026, não impede; instável novo): na rodada 44675872042 do GitHub, primeira tentativa, `tests/test_caixinha_do_dividir_nao_volta.py` saiu com o código 3221226505 (0xC0000409) e "sem saída" (um travamento do Qt); na repetição passou. Não usa nada deste passo.
+- Bug (Lista de bugs, 20/11/2026, não impede; instável novo): na rodada 44675872042 do GitHub, primeira tentativa, `tests/test_caixinha_do_dividir_nao_volta.py` saiu com o código 0xC0000409 e "sem saída" (um travamento do Qt); na repetição passou. Não usa nada deste passo.
 
 - **Volta 4.** Bug (Lista de bugs, 20/11/2026, não impede; achado 12 do relatório 3 de quem tentou quebrar, família
   F4): `tests/test_decisoes_desinstalar.py` (25 falham) e `tests/test_decisoes_desinstalar_pasta.py` (5 falham) falham
@@ -1255,7 +1278,7 @@ o teste antigo do achado 5 da volta 3, que saiu porque cobrava o que a D-816 tir
    `tests/test_publicar_versao.py::test_volta3_achado4_a_vigia_fecha_o_filho_do_vpk_antes_de_soltar_o_grupo` (fechar só
    o vpk não passa).
 5. **O rascunho apagado quando o liberar falha:** teste novo,
-   `tests/test_publicar_versao.py::test_volta3_achado5_o_liberar_que_falha_e_continua_rascunho_apaga_o_rascunho`.
+   `test_volta3_achado5_o_liberar_que_falha_e_continua_rascunho_apaga_o_rascunho` (saiu na volta 4: a D-816 tirou o que ele cobrava).
 6. **O motor que muda durante a publicação:** teste novo,
    `tests/test_publicar_versao.py::test_volta3_achado6_o_motor_trocado_durante_a_publicacao_impede_liberar`.
 7. **O motor baixado fora da conta e da vigia; o nome escrito à mão:** consertado (a conta, a vigia única, o nome em

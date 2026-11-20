@@ -1,0 +1,66 @@
+"""Volta 4 do passo 2 (D-813, "tudo o que a peça de fora aceita como entrada"): o que o Windows faz com o nome do
+programa com ponto ou espaço no fim, e os atalhos da Loja. Rodado no PC do Samuel em 20/11/2026, sem licença de
+administrador, só com cópias do hostname.exe (escreve o nome do computador; o resultado troca o nome por <pc>).
+
+Uso: python volta4-nome-e-loja.py <pasta vazia de rascunho>
+"""
+import os
+import re
+import shutil
+import socket
+import subprocess
+import sys
+from pathlib import Path
+
+aqui = Path(sys.argv[1]).resolve()
+aqui.mkdir(parents=True, exist_ok=True)
+sistema = Path(os.environ["SystemRoot"]) / "System32"
+copia = aqui / "provaeco.exe"
+shutil.copyfile(sistema / "hostname.exe", copia)
+pc = socket.gethostname()
+
+
+def sem_nomes(texto: str) -> str:
+    """Tira do texto o nome do computador e o da conta (o resultado vai para o git)."""
+    texto = re.sub(re.escape(pc), "<pc>", texto, flags=re.I)
+    return re.sub(re.escape(os.environ.get("USERNAME", "?")), "<conta>", texto, flags=re.I)
+
+
+def rodar(nome: str) -> str:
+    """Roda pelo subprocess sem shell (o CreateProcess) e diz o que aconteceu."""
+    try:
+        r = subprocess.run([nome], capture_output=True, timeout=10, cwd=str(Path.home()))
+        return f"código {r.returncode}, escreveu {sem_nomes(r.stdout.decode('oem', 'replace').strip())!r}"
+    except OSError as erro:
+        return f"não rodou (erro {erro.winerror})"
+
+
+print("1. Com o caminho inteiro (a cópia numa pasta de rascunho):")
+for fim in ("", ".", "..", " .", ". "):
+    print(f"   {('provaeco.exe' + fim)!r:22} -> {rodar(str(copia) + fim)}")
+print("   os.path.abspath (o GetFullPathNameW) de 'provaeco.exe.. .':", Path(os.path.abspath(str(copia) + ".. .")).name)
+
+print("2. Só o nome, com a env do subprocess mudando o PATH (o Windows procura no PATH de quem chama):")
+print("   'provaeco.exe' (PATH só na env) ->", end=" ")
+try:
+    subprocess.run(["provaeco.exe"], capture_output=True, timeout=10, cwd=str(Path.home()),
+                   env={**os.environ, "PATH": str(aqui) + os.pathsep + os.environ["PATH"]})
+    print("rodou")
+except OSError as erro:
+    print(f"não rodou (erro {erro.winerror})")
+
+print("3. Só o nome, com o PATH do próprio processo:")
+os.environ["PATH"] = str(aqui) + os.pathsep + os.environ["PATH"]
+for nome in ("provaeco.exe", "provaeco.exe.", "provaeco.exe..", "provaeco.exe. ", "provaeco", "provaeco."):
+    print(f"   {nome!r:20} -> {rodar(nome)}; shutil.which acha? {bool(shutil.which(nome))}")
+print("   'whoami.exe.' (da pasta do Windows) ->", rodar("whoami.exe."))
+
+print("4. Os atalhos da Loja (%LOCALAPPDATA%\\Microsoft\\WindowsApps):")
+loja = Path(os.environ["LOCALAPPDATA"]) / "Microsoft" / "WindowsApps"
+for atalho in sorted(loja.glob("*.exe"))[:4]:
+    try:
+        with open(atalho, "rb") as arquivo:
+            lido = f"leu {arquivo.read(2)!r}"
+    except OSError as erro:
+        lido = f"não deixou ler (OSError {erro.errno})"
+    print(f"   {atalho.name:30} isfile={os.path.isfile(atalho)}; {lido}")
