@@ -33,6 +33,10 @@ Implementador. Ramo `regras-catalogo-2026-11-19`, worktree `.claude/worktrees/re
   listas da K25 protegidas; os dois jeitos de tirar atalho aceitos; pacote novo copiado (commit `e075c467`).
 - 20/11 (madrugada): quem quebrou devolveu (`quem-quebrou/relatorio-1.md`). Feitos os achados 1, 4, 6, 7, 10, 11 e
   13, pela decisão da gerente; os outros na Lista de espera. Rodada nova do GitHub disparada.
+- 20/11 (volta 2 de quem quebrou, `quem-quebrou/relatorio-2.md`, nada grave): a guarda "só no GitHub" só no
+  começo da linha e direto no `&&` (terminal) ou dentro do `if` escrito assim (Python); as proteções sem "-" também
+  cobradas; o teste mudado explicado; o destino do achado 12 acertado. Rodada do GitHub: a gerente dispara depois
+  que o passo 2 entrar na versão de teste.
 
 ## Decisões que esta tarefa precisa cumprir
 
@@ -129,6 +133,9 @@ Cada uma foi desligada na memória e o arquivo de teste rodou de novo (script e 
 - O `git config` que só lê não é acusado (feito depois das mutações) → `tests/test_conferencias_codigo.py::test_k25_git_config_so_acusa_o_que_grava`.
 - As listas da K25 na proteção do GitHub (20/11): tirar linha → `tests/test_conferencias_protecao.py::test_k25_tirar_linha_das_listas_e_acusado`; crescer a exceção ou o "conferiu o atalho" → `tests/test_conferencias_protecao.py::test_k25_crescer_a_excecao_ou_o_que_conta_como_conferir_e_acusado`; afrouxar pelo uso → `tests/test_conferencias_protecao.py::test_k25_afrouxar_pelo_uso_e_acusado`.
 - Os dois jeitos certos de tirar atalho não são acusados → `tests/test_conferencias_codigo.py::test_k25_os_dois_jeitos_certos_de_tirar_o_atalho_nao_sao_acusados`.
+- A guarda "só no GitHub" só no começo da linha e direto no git (terminal) → `tests/test_conferencias_codigo.py::test_k25_volta2_so_no_github_no_terminal_so_no_comeco_da_linha_e_direto_no_git`.
+- A guarda "só no GitHub" só dentro do `if` escrito assim (Python) → `tests/test_conferencias_codigo.py::test_k25_volta2_so_no_github_no_python_so_dentro_do_if_escrito_assim`.
+- As proteções escritas sem "-" também são cobradas → `tests/test_conferencias_formulario.py::test_volta2_achado_3_protecao_escrita_sem_traco_tambem_e_cobrada`.
 - O `git rm` não lido como o `rm` do terminal, o `git clean` e o "só no GitHub" na mesma linha → `tests/test_conferencias_codigo.py::test_k25_o_rm_do_git_nao_e_o_rm_do_terminal`, `tests/test_conferencias_codigo.py::test_k25_acusa_o_git_clean_e_nao_o_que_so_lista` e `tests/test_conferencias_codigo.py::test_k25_o_comando_do_git_so_no_github_na_mesma_linha_passa`.
 - Os scripts da rodada consertados → `tests/test_conferencias_codigo.py::test_k25_os_scripts_do_workflow_consertados_passam_e_os_de_antes_nao`.
 - Cada jeito de ler o comando na proteção → `tests/test_conferencias_protecao.py::test_k25_desligar_um_jeito_de_ler_o_comando_e_acusado` e `tests/test_conferencias_protecao.py::test_k25_tirar_exemplo_de_um_jeito_e_acusado`.
@@ -238,8 +245,17 @@ Cada uma foi desligada na memória e o arquivo de teste rodou de novo (script e 
   `tests/test_conferencias_protecao.py::test_k25_crescer_a_excecao_ou_o_que_conta_como_conferir_e_acusado` e
   `tests/test_conferencias_protecao.py::test_k25_afrouxar_pelo_uso_e_acusado`. O script do juiz consertado: a K25 não o
   acusa mais, e `tests/test_conferencias_copia_inteira.py` (que roda o script de verdade) passa.
-- D-810: `tests/test_conferencias_pacote.py::test_d809_d810_d812_as_regras_novas_vao_aos_trabalhos_certos` (a lista com
-  "Everyone" vai no pacote do Windows e no de testes; não no de pesquisa). Sem conferência do porteiro, como a decisão.
+- D-810: `tests/test_conferencias_pacote.py::test_d809_d810_d812_as_regras_novas_vao_aos_trabalhos_certos` e
+  `tests/test_conferencias_pacote.py::test_d810_a_regra_dos_tres_computadores_vai_tambem_ao_trabalho_do_windows_sem_teste`:
+  a lista com "Everyone" vai no pacote do Windows (com ou sem teste) e no de testes; não vai no de imagem sem teste. Sem
+  conferência do porteiro, como a decisão.
+  **Um teste deste trabalho mudou** (commit `32ff536a`; o teste é deste trabalho, de `fcca5386`, não um teste antigo):
+  em `tests/test_conferencias_pacote.py::test_d809_d810_d812_as_regras_novas_vao_aos_trabalhos_certos`, linhas 209 e 211,
+  o caso "a R157 não vai" era o pacote de pesquisa (`docs/pesquisa/`) e passou a ser o de imagem (`core/filtros.py`).
+  Por quê: os arquivos de `docs/pesquisa/` falam com o Windows e dão ao trabalho a etiqueta do Windows; com o conserto
+  do achado 10 (a R157 vai também ao trabalho do Windows, como a D-810 pede), a pesquisa passou a receber a regra, o que
+  está certo. O trabalho de imagem não tem teste nem Windows: é o caso "não vai" de verdade. Eu não tinha escrito isso
+  no commit nem aqui (volta 2 de quem quebrou, achado 2).
 - D-811: `tests/test_conferencias_formulario.py::test_d811_trabalho_do_windows_sem_as_protecoes_e_os_testes_volta`.
 - D-812: `tests/test_conferencias_formulario.py::test_d812_trabalho_que_confere_tem_de_dizer_de_onde_vem_cada_dado`.
 - D-813: `tests/test_conferencias_pacote.py::test_d813_o_acrescimo_a_regra_6_e_o_texto_do_livro_e_vai_em_todo_pacote`
@@ -248,13 +264,15 @@ Cada uma foi desligada na memória e o arquivo de teste rodou de novo (script e 
 
 ## Testes
 
-- No PC, um arquivo por vez (`.venv` do repositório, `QT_QPA_PLATFORM=offscreen`), no commit `32ff536a`:
-  `tests/test_conferencias_codigo.py` 107 passaram; `tests/test_conferencias_formulario.py` 41;
+- No PC, um arquivo por vez (`.venv` do repositório, `QT_QPA_PLATFORM=offscreen`), no commit `ea25e6ac`:
+  `tests/test_conferencias_codigo.py` 122 passaram; `tests/test_conferencias_formulario.py` 42;
   `tests/test_conferencias_pacote.py` 26; `tests/test_conferencias_protecao.py` 19; `tests/test_conferencias_juiz.py` 9;
-  `tests/test_conferencias_copia_inteira.py` 2. `tests/test_conferencias_excecoes.py` (no commit `ce3fa9c4`): 13
+  `tests/test_conferencias_copia_inteira.py` 2; `tests/test_conferencias_mudancas.py` 21;
+  `tests/test_conferencias_antes_do_commit.py` 12. `tests/test_conferencias_excecoes.py` (no commit `ce3fa9c4`): 13
   passaram e 1 falhou, o esperado (abaixo). No PC, o porteiro do repositório inteiro acha só o `core/windows.py:1211`.
 - As provas das decisões (`tests/test_decisoes*.py`) e o resto: só no GitHub (não mexi em nada que elas usam).
-- GitHub: rodada 44657609512 (commit `32ff536a`): falhou só numa parte (a 4 de 5), num teste só, o esperado: `test_o_repositorio_so_tem_os_erros_que_a_lista_deixa`, com os cinco lugares abaixo e nenhum outro. As outras partes, os botões e o juiz passaram.
+- GitHub: a rodada do commit `ea25e6ac` ainda não foi feita (a gerente dispara depois que o passo 2 entrar na
+  versão de teste). A última: rodada 44657609512 (commit `32ff536a`): falhou só numa parte (a 4 de 5), num teste só, o esperado: `test_o_repositorio_so_tem_os_erros_que_a_lista_deixa`, com os cinco lugares abaixo e nenhum outro. As outras partes, os botões e o juiz passaram.
   **O esperado:** falha só em `tests/test_conferencias_excecoes.py::test_o_repositorio_so_tem_os_erros_que_a_lista_deixa`,
   com estes lugares, até eles saírem do código:
   - `core/windows.py:1211`, até o passo 2 entrar;
@@ -299,7 +317,7 @@ Máquina: tudo (testes em `tests/` e o exercício de desligar cada proteção). 
    foi o `--depth` e o `git clean`); a gerente decide se o script inteiro deve recusar rodar fora do GitHub.
 5. **A D-812 não vale para o trabalho só de testes** (achado 12 de quem quebrou): a pergunta "De onde vem cada dado"
    vale para o trabalho do Windows e o do porteiro (`TRABALHO_QUE_CONFERE`); o Livro fala em "toda conferência (do
-   porteiro, de um teste ou do programa)". Isso estreita a decisão do Samuel; a gerente leva a ele se for preciso.
+   porteiro, de um teste ou do programa)". Isso estreita a decisão do Samuel. Fica na Lista de espera; a gerente leva a ele se for preciso.
 6. **Falso alarme possível nos testes:** um texto de exemplo que começa com o comando (`"git gc"`) conta como comando;
    aconteceu com o meu próprio teste duas vezes e foi consertado. A docstring de `comandos()` avisa.
 7. **`shutil.rmtree` não é acusado** (aceito pela gerente, 20/11); as linhas lidas do Python 3.14 estão no comentário da
@@ -318,6 +336,12 @@ Para a Lista de espera (decisão da gerente, 20/11: sem mexer agora):
 - Achado 5: as funções de escrever da peça do git (`configurar`, `criar_e_ir_para_o_ramo`, `enviar`) aceitam o
   repositório de verdade.
 - Achado 8: falsos alarmes raros (`-Recurse:$false`, o comentário de bloco `<# #>`, o aviso que começa com o comando).
+- Volta 2, achado 1 (o resto): a guarda "só no GitHub" ainda passa quando o próprio script ou código liga a
+  variável antes (`export GITHUB_ACTIONS=true` na linha de cima; `os.environ["GITHUB_ACTIONS"] = "true"`): a
+  variável é um dado que quem roda pode trocar (D-812). Junto com o achado 9 da volta 1, abaixo.
+- Volta 2, achado 3 (o resto): a mesma prova citada para várias proteções ainda passa.
+- Volta 2, achado 4: o comentário novo do juiz ainda não foi para o `.github/scripts/porteiro_juiz.sh` (a gerente
+  copia; o comportamento é o mesmo).
 - Achado 9: "conferiu o atalho" vale para qualquer caminho e qualquer menção antes; `[ -L "$X/" ]` com barra responde
   "não é atalho".
 - Achado 15 (menos o `git clean`, que entrou): `git maintenance`, `git repack`, `git reflog expire`, `git remote
@@ -368,7 +392,7 @@ Os arquivos inteiros: `relatorios/regras-catalogo-2026-11-19/anexos/workflow/pre
 
 ## Commit
 
-Último commit do trabalho: 32ff536a.
+Último commit do trabalho: ea25e6ac.
 
 ## O que o agente que tentou quebrar achou
 
@@ -388,12 +412,24 @@ Relatório: `quem-quebrou/relatorio-1.md` (commit `6ac413d8`). Cada achado e o d
    20/11).
 10. A R157 não ia ao trabalho do Windows sem teste: consertado no commit 32ff536a.
 11. O comentário do juiz: consertado no commit 32ff536a.
-12. A D-812 não vale para o trabalho só de testes: vira pergunta ao Samuel se a gerente achar preciso (ressalva 5).
+12. A D-812 não vale para o trabalho só de testes: não é defeito que impeça este trabalho; Lista de espera; a gerente
+    leva ao Samuel se for preciso (ressalva 5).
 13. O formulário deste trabalho era devolvido: não é defeito do código; completado neste ONDE-PAREI (o item sem teste
     saiu da lista das proteções e foi para as ressalvas; a rodada e a linha do porteiro em "Testes").
 14. O pacote de quem quebrou com o papel errado: não é defeito deste trabalho (o pacote é da gerente; sem ação).
 15. Comandos que a K25 não olha: o `git clean` consertado no commit c51285c4; o resto não é defeito que impeça este
     trabalho, Lista de espera (gerente, 20/11).
+
+Relatório da volta 2: `quem-quebrou/relatorio-2.md` (commit `d4567f1f`), nada grave:
+
+1. A guarda "só no GitHub" em qualquer lugar da linha: consertado no commit ea25e6ac (começo da linha e direto
+   no `&&`; no Python, dentro do `if`); o caso de o script ligar a variável antes não é defeito que impeça este
+   trabalho, Lista de espera (gerente, 20/11).
+2. O teste mudado sem aviso: não é defeito do código; explicado em "Como cumpri cada uma" (D-810).
+3. As proteções sem "-": consertado no commit ea25e6ac; a mesma prova para várias proteções não é defeito que
+   impeça este trabalho, Lista de espera.
+4. O comentário do juiz no ramo dos testes: não é defeito deste trabalho (a gerente copia o anexo).
+5. O destino do achado 12 da volta 1: não é defeito do código; acertado neste ONDE-PAREI (Lista de espera).
 
 ## A prova de verdade
 
