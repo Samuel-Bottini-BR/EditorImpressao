@@ -7,18 +7,28 @@
 #     bash .github/scripts/trocar_codigo.sh <ramo-ou-commit>
 #
 # O que faz, dentro da copia de trabalho do job (nunca no GitHub):
-#   1. busca o ramo pedido (so o ultimo commit);
+#   1. busca o ramo pedido: so o ultimo commit quando a copia ja e rasa (a do
+#      GitHub); numa copia inteira (a do PC, ou uma copia de agente, que divide a
+#      pasta .git com o repositorio do Samuel), busca normal: buscar raso numa
+#      copia inteira a deixa rasa e corta a historia do repositorio do Samuel
+#      (D-809; aconteceu em 19/11/2026 com o script do juiz). Mesma regra de
+#      regras_dos_agentes/conversa_com_o_git.py::buscar_ramo e do porteiro_juiz.sh;
 #   2. tira tudo o que o git conhece, MENOS a .github/ (o workflow, os scripts
 #      e as versoes travadas continuam os deste ramo);
-#   3. poe no lugar os arquivos do ramo pedido, MENOS a .github/ dele;
-#   4. grava em $GITHUB_ENV quem foi testado: TESTADO_RAMO e TESTADO_SHA.
+#   3. so no GitHub (GITHUB_ACTIONS=true): apaga do disco os arquivos que o git
+#      nao conhece (git clean). Fora do GitHub isso apagaria o que nao esta no
+#      git de quem rodou (o trabalho sem commit de um agente, por exemplo), entao
+#      nao roda (D-809);
+#   4. poe no lugar os arquivos do ramo pedido, MENOS a .github/ dele;
+#   5. grava em $GITHUB_ENV quem foi testado: TESTADO_RAMO e TESTADO_SHA.
 # Sem ramo pedido, so grava o proprio commit em TESTADO_*.
 #
 # Nao grava nada em ramo nenhum: nao faz commit nem push.
-# Seguro mudar: a profundidade da busca. Arriscado: trazer a .github/ do outro
-# ramo (os scripts de la podem nao existir ou ser outros), ou trocar o codigo
-# DEPOIS de copiar o gabarito/modelos (a lista.json do outro ramo sobrescreveria
-# a ordem das coisas; a troca tem de vir primeiro).
+# Seguro mudar: as mensagens. Arriscado: voltar a profundidade fixa ou tirar a
+# condicao do git clean (o porteiro acusa, K25); trazer a .github/ do outro ramo
+# (os scripts de la podem nao existir ou ser outros), ou trocar o codigo DEPOIS
+# de copiar o gabarito/modelos (a lista.json do outro ramo sobrescreveria a
+# ordem das coisas; a troca tem de vir primeiro).
 set -euo pipefail
 RAMO="${1:-}"
 if [ -z "$RAMO" ]; then
@@ -27,11 +37,13 @@ if [ -z "$RAMO" ]; then
   echo "testando o proprio commit ${GITHUB_SHA}"
   exit 0
 fi
-git fetch --depth=1 origin "$RAMO"
+PROFUNDIDADE=""
+[ "$(git rev-parse --is-shallow-repository)" = "true" ] && PROFUNDIDADE="--depth=1"
+git fetch $PROFUNDIDADE origin "$RAMO"
 SHA="$(git rev-parse FETCH_HEAD)"
 git rm -rq --cached --ignore-unmatch -- . ':(exclude).github' > /dev/null
-# apaga do disco o que era do programa deste ramo (o .gitignore protege o resto)
-git clean -fdq -- . ':(exclude).github'
+# apaga do disco o que era do programa deste ramo (o .gitignore protege o resto); so no GitHub
+[ "${GITHUB_ACTIONS:-}" = "true" ] && git clean -fdq -- . ':(exclude).github'
 git checkout FETCH_HEAD -- . ':(exclude).github'
 echo "TESTADO_RAMO=${RAMO}" >> "$GITHUB_ENV"
 echo "TESTADO_SHA=${SHA}" >> "$GITHUB_ENV"
