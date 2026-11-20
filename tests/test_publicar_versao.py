@@ -949,6 +949,7 @@ def test_volta3_achado1_uma_leitura_atrasada_depois_de_liberar_nunca_apaga_a_ver
     assert (a["servidor"] / ETIQUETA).is_dir(), "a versão liberada foi apagada"
     assert sorted(f.name for f in (a["servidor"] / ETIQUETA).iterdir()), "a versão liberada ficou vazia"
     assert "NÃO apaguei" in str(erro.value) and "foi apagada" not in str(erro.value), erro.value
+    assert "ficou liberada em" in str(erro.value), "a frase tem de dizer que a versão ficou liberada (lido depois)"
 
 
 class _GitHubQueLiberaEPerdeAResposta(_GitHubDeMentira):
@@ -1287,3 +1288,31 @@ def test_volta3_achado4_a_vigia_fecha_o_filho_do_vpk_antes_de_soltar_o_grupo(amb
     finally:
         for programa in segurados:
             verdadeiro(programa)
+
+
+def test_volta3_a_copia_cortada_no_meio_nunca_deixa_o_nome_certo(tmp_path):
+    """Achado 2 do relatório 2, o caso que o apagar do pedaço não cobre: o publicar é fechado no meio da cópia (o
+    Gerenciador de Tarefas, a energia), e nada roda depois para limpar. Com a cópia indo para um nome provisório, o que
+    fica é o "<nome>.copiando", nunca um arquivo pela metade com o nome certo (que a conferência do fim e quem abre a
+    pasta tomariam por inteiro). De verdade: um processo que copia devagar é fechado à força no meio."""
+    origem = tmp_path / "grande.bin"
+    origem.write_bytes(os.urandom(2_000_000))
+    alvo = tmp_path / "saida" / "grande.bin"
+    alvo.parent.mkdir()
+    copiador = tmp_path / "copiador.py"
+    copiador.write_text(
+        "import sys, time\n"
+        f"sys.path.insert(0, {str(RAIZ)!r})\n"
+        "import empacotar\n"
+        "empacotar.PEDACO_DA_COPIA = empacotar.VIGIA_A_CADA = 100_000\n"
+        f"empacotar.copiar_inteiro({str(origem)!r}, {str(alvo)!r}, lambda: time.sleep(0.3))\n", encoding="utf-8")
+    processo = subprocess.Popen([sys.executable, str(copiador)])
+    try:
+        fim = time.monotonic() + 30
+        while time.monotonic() < fim and not any(p.stat().st_size > 0 for p in alvo.parent.iterdir()):
+            time.sleep(0.05)
+        assert any(alvo.parent.iterdir()), "a cópia nem começou"
+    finally:
+        processo.kill()
+        processo.wait()
+    assert not alvo.exists(), "ficou um arquivo pela metade com o nome certo"
