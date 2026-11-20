@@ -802,7 +802,8 @@ arquivo e nas seções "O que foi feito" e "Caminho e função".
   (`anexos/reversao-volta4-codigo-antigo.txt`, com a leitura de cada falha no fim); o do achado 10 passa lá (a proteção
   já existia) e é provado pela mutação V10. Mutações: 24 de 24 acusadas (`anexos/reversao-volta4-resultado.txt`).
 - **No GitHub, volta 4:** a rodada 44748279819 (sobre `2d866750`) foi cancelada por mim aos 6 minutos: depois dela
-  corrigi dois textos (docstrings) da peça e da vigia. Rodada que vale: NOVA (a preencher).
+  corrigi dois textos (docstrings) da peça e da vigia. Rodada que vale: 44748591841, sobre o ramo depois de `595cc293`
+  (depois dele, só este formulário). Resultado: (a preencher quando terminar).
 
 ## Caminho e função
 
