@@ -57,6 +57,10 @@ As da primeira entrega, de `03c91599`, estão no `git log` deste arquivo.)
   12 achados). Pedido da gerente: consertar 1 a 4, 6 a 11 (o 1 pela D-816), anotar o 5 como limite da peça e o 12 para a
   Lista de bugs. Leitura feita (implementador, CLAUDE.md, memória, catálogo, pacote da volta 4, este formulário, o
   relatório 3 e os anexos Q1 a Q3 e E2). Andamento em "Volta 4" de cada seção.
+- 20/11, volta 4 feita: os 12 achados com destino em "O que o agente que tentou quebrar achou" (código em `783b6814`,
+  `dfe5f70d`, `e0921ed8`, `9384f1a3`); reversão no código de `5f96975b` (26 de 27 casos novos falham) e 24 de 24
+  mutações acusadas. Rodada do GitHub 44748279819 (em "Testes"). `--is-shallow-repository` = false antes e depois;
+  nenhuma junção criada. **Próximo:** a gerente manda a um agente novo que tenta quebrar (D-815); depois a prova à vista.
 
 ## Decisões que esta tarefa precisa cumprir
 
@@ -785,6 +789,20 @@ arquivo e nas seções "O que foi feito" e "Caminho e função".
   proteções que já existiam e são provados pela mutação (B5, B6, B4b).
 - **No GitHub, volta 3:** rodada 44675872042, sobre o ramo em 2e906e94 (o código de e4263c0a e três docstrings de um
   teste). Resultado: **success** na segunda tentativa. PORTEIRO: success (o trabalho "Porteiro (juiz da versao de teste)", nas duas tentativas). Na primeira tentativa falhou só a parte 2: `tests/test_caixinha_do_dividir_nao_volta.py` saiu com o código 0xC0000409 e "sem saída", um travamento do Qt que não usa nada deste passo (instável novo, em "Ideias e bugs"); a parte 2 rodou de novo e passou. A rodada 44675045916, sobre 05f743ca, foi cancelada por mim aos 7 minutos (o porteiro já tinha dado success), porque depois dela mudaram um comentário da peça e as docstrings.
+
+- **Volta 4, no PC, um arquivo por vez** (20/11, `QT_QPA_PLATFORM=offscreen`): `tests/test_publicar_versao.py` 70
+  passaram; `tests/test_windows_peca.py` 67 passaram e 2 pulados (os que só rodam no GitHub); `tests/test_publicar_motor.py`
+  12; `tests/test_publicar_servidor.py` 14; `tests/test_empacotar.py` 41; `tests/test_decisoes_atualizacao.py` 38;
+  `tests/test_windows_janela_de_prova.py` 10; `tests/test_nome_do_pacote.py` 5; `tests/test_decisoes_brasao.py` 22;
+  `tests/test_decisoes_ajudante_da_atualizacao.py` 37; `tests/test_decisoes_testes_a_distancia.py` 13;
+  `tests/test_ocr_kraken.py` 27 e 6 pulados; `tests/test_conferencias_codigo.py` 77; `tests/test_conferencias_excecoes.py`
+  14; `tests/test_conferencias_pacote.py` 20. Porteiro no PC: "nada novo" (175 lugares). Os testes do desinstalar não
+  rodei (falham no PC por causa da pasta temporária no C:, achado 12; o GitHub os roda).
+- **Volta 4, reversão:** os testes novos no código de `5f96975b`: 26 de 27 casos falham
+  (`anexos/reversao-volta4-codigo-antigo.txt`, com a leitura de cada falha no fim); o do achado 10 passa lá (a proteção
+  já existia) e é provado pela mutação V10. Mutações: 24 de 24 acusadas (`anexos/reversao-volta4-resultado.txt`).
+- **No GitHub, volta 4:** rodada 44748279819, sobre o ramo em `2d866750` (o código de `9384f1a3`; depois, só este
+  formulário). Resultado: (a preencher quando terminar).
 
 ## Caminho e função
 
