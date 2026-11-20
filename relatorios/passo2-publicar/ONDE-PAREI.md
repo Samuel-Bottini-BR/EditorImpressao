@@ -1185,6 +1185,11 @@ arquivo e nas seções "O que foi feito" e "Caminho e função".
   passa lá (a proteção existia, sem teste) e é provado pela mutação Y7 (a X3 de quem quebrou).
 - **Volta 6, mutações** (`anexos/reversao-volta6-resultado.txt`, script em `anexos/reversao-volta6-mutacoes.py.txt`):
   10 de 10 acusadas, numa cópia de `3abf9acf`.
+- **No GitHub, volta 6:** rodada 44800950547, sobre o ramo em `d73e7fc8` (o código de `3abf9acf`; depois dele só a pasta
+  deste relatório): **success** na primeira tentativa, todas as partes (1 a 5), os botões e o resumo. PORTEIRO: success
+  (o trabalho "Porteiro (juiz da versao de teste)"). O registro diz "TESTADO_SHA: d73e7fc8..." nas 52 linhas. A rodada
+  44799633578 (sobre `3abf9acf`) foi cancelada por mim antes do fim: depois dela entraram os anexos `.txt` da reversão,
+  e a rodada que vale tem de ser a do último commit que não é só `.md`.
 
 ## Caminho e função
 
