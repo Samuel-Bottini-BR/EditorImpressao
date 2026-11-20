@@ -89,6 +89,10 @@ as da volta 4 (`anexos/pacote-volta4.md`, partida `5f96975b`) e as da primeira e
   `quem-quebrou/anexos-6/` (sondas S1 a S5, mutações Z1 a Z11), o pacote da volta 7 e a linha da D-818 no Livro. O
   plano (D-709) está em "A causa, a regra e todos os caminhos", "Volta 7", escrito antes de mexer. Pasta de rascunho
   nova: `v7\` (a `v6\` e a `quebra6\` não são tocadas).
+- 20/11, volta 7 feita: plano `0867fe57`; testes antes do código `8a02ecca`; código `4e8fdd98`; mais dois casos de prova
+  `25c514ad`. Reversão no código de `db4b377a`: 9 de 12 casos novos falham, e os 88 antigos (com a pasta de mentira
+  nova) passam lá; mutações: 11 de 12 acusadas (a R12 é dupla proteção). `--is-shallow-repository` = false antes e
+  depois; nenhuma junção criada. **Próximo:** a rodada do GitHub (em "Testes") e a entrega à gerente.
 
 ## Decisões que esta tarefa precisa cumprir
 
@@ -808,6 +812,14 @@ só lido) e na pasta que a prova deixou (`dist\EditorImpressao`, só lida: tem o
 | (volta 6) O gh nem abre no pedido de apagar (não achado, recusado pela peça) | "não apaguei" e o comando para conferir e apagar; nunca "pedi para apagar" (como hoje; agora com teste) |
 | (volta 6) Um caminho de rede (`\\computador\...`, `\\?\UNC\...`) ou um caminho que o Windows não completa com letra de disco pedido à peça | recusado como hoje, pelos três caminhos, com a frase própria (o motivo e o que fazer), sem mandar usar uma função que não existe |
 
+| (volta 7) A pasta já montada (ou a montada do zero) com um Visual C++ que não é o oficial | recusada antes da conta do espaço: "o Visual C++ da pasta ... não é o oficial da Microsoft: <o que a assinatura diz>"; nada é mudado nela |
+| (volta 7) Sem o arquivo da versão do Visual C++, ou com uma versão que não é a do arquivo | recusada: "não tem a versão do Visual C++ (...)" ou "diz que o Visual C++ é o X ..., e o arquivo dele é o Y (pela assinatura)" |
+| (volta 7) Sem o Tesseract, sem um idioma, ou com um arquivo dele vazio | recusada: "não tem o Tesseract inteiro: falta <os primeiros cinco> e mais N" |
+| (volta 7) O Windows não responde à leitura da assinatura (a peça falha) | a leitura vira "erro: <motivo>", que nunca confere: a pasta é recusada com esse motivo (nunca passa por "não deu para ler") |
+| (volta 7) O vpk deixa de fora do pacote o Visual C++, a versão dele ou um arquivo do Tesseract | "o pacote do Velopack saiu errado", com a peça; nada é publicado; o rascunho é apagado |
+| (volta 7) O empacotar chamado sozinho com uma pasta que não serve | recusada antes de qualquer mudança na pasta (antes, o motor-exigido.json era gravado e o zip do motor apagado) |
+| (volta 7) A pasta das provas com espaço no nome | os comandos das frases saem com o caminho entre aspas; seguidos, chegam a essa pasta |
+
 ## O que li da peça de fora e onde
 
 Código do Velopack na etiqueta 1.2.161 (commit `92d6a1c9`, MIT), cópia só para ler em
@@ -983,6 +995,15 @@ WiX por dentro; se sobrar um, o rascunho não apaga e a frase diz o que ficou).
   rede (`\\localhost\C$\...` e `\\?\UNC\...`) | sim [o Windows roda] | recusa | recusa (frase errada)";
   `relatorios/passo2-publicar/quem-quebrou/relatorio-5.md:171`); a regra não muda, só a frase.
 
+**Lido na volta 7 (20/11/2026):** nenhuma peça de fora nova. A leitura da assinatura continua a da peça do Windows
+(`core/windows.py`, `ler_assinatura_digital`; lida na volta 1, `windows.ler_assinatura_digital`), com o que o Windows
+responde pelo `vc_redist.x64.exe` oficial já conferido de verdade no PC (status "Valid", assinante "CN=Microsoft
+Corporation, ...", produto "Microsoft Visual C++ 2015-2022 Redistributable (x64) - 14.44.35211", versão
+"14.44.35211.0": `tests/test_empacotar.py:370`, o `_assinatura` dos testes, e o registro da prova de 20/11, "versão
+14.44.35211.0, assinatura da Microsoft conferida"). Para um arquivo sem assinatura, o Windows responde status
+"NotSigned" e assinante vazio (rodado de novo pelo teste novo da régua única, `tests/test_empacotar.py`, no PC). O que o
+programa instalado faz com a versão: `atualizacao.py:1230` (lê `vc_redist.versao.txt`; sem ele, "0.0.0").
+
 ## O que foi feito
 
 1. **A assinatura digital pela peça única** (`windows.ler_assinatura_digital`, nova): o empacotar deixou de abrir o
@@ -1048,6 +1069,14 @@ WiX por dentro; se sobrar um, o rascunho não apaga e a frase diz o que ficou).
    o apagar em que o gh nem abre ganhou o teste que faltava. Nada mudou no que a pasta pronta precisa trazer, nem na
    pasta portátil e no Inno.
 
+14. **Volta 7 (D-818 e os 4 baixos do relatório 6):** a pasta já montada é conferida igual à montada do zero, pela
+   mesma `conferir_pasta_pronta`, que agora cobra o Visual C++ pela assinatura da Microsoft (a régua única nova,
+   `conferir_o_visual_c`, que a montagem também passou a usar), o arquivo da versão dele igual à versão da assinatura e
+   o Tesseract inteiro (a lista única nova, `relativos_do_tesseract`, que a montagem e o Inno também usam); o pacote
+   depois do vpk cobra sempre o Tesseract e a versão do Visual C++; o empacotar chamado sozinho confere antes de mexer
+   na pasta; a pasta de mentira dos testes antigos ganhou as peças (D-818); testes novos para o pacote sem uma peça e
+   para a pasta das provas com espaço no nome; o roteiro da prova na ordem certa.
+
 ## Arquivos criados ou alterados
 
 Desde a partida desta volta (`5f96975b`, o pacote da volta 4); o que as voltas 1 a 3 mexeram está no `git log` deste
@@ -1074,6 +1103,13 @@ arquivo e nas seções "O que foi feito" e "Caminho e função".
   `tests/test_windows_peca.py` (1 teste novo; nenhum antigo mudou) e, em `relatorios/passo2-publicar/`, este formulário,
   o pacote da volta 6 e os anexos `relatorios/passo2-publicar/anexos/volta6-a-pasta-da-prova.txt` e `reversao-volta6-*`. `tests/test_empacotar.py` não
   mudou.
+
+- **Volta 7** (desde `db4b377a`): `empacotar.py` (`conferir_o_visual_c`, `relativos_do_tesseract`, a conferência da
+  pasta, os esperados do pacote, a ordem em `construir_pacote_do_velopack`, os textos), `publicar_versao_kaique.py` (só
+  o texto do cabeçalho), `tests/test_publicar_versao.py` (3 ajudantes antigos mudados pela D-818, listados em "O que já
+  está escolhido e testado aqui", Volta 7; 5 testes novos, 13 casos), `tests/test_empacotar.py` (1 teste novo; nenhum
+  antigo mudou) e, em `relatorios/passo2-publicar/`, este formulário, o pacote da volta 7 e os anexos `reversao-volta7-*`.
+  `core/windows.py` e `tests/test_windows_peca.py` não mudaram.
 
 ## Como cumpri cada uma
 
@@ -1204,6 +1240,26 @@ arquivo e nas seções "O que foi feito" e "Caminho e função".
   - D-817 "pode": nenhum teste antigo mudou nesta volta.
   - D-811 (cada proteção com o teste que falha sem ela): 10 de 10 acusadas (`anexos/reversao-volta6-resultado.txt`).
 
+- **Volta 7:**
+  - D-818 "vai ter que reprogramar?" · "A": a pasta já montada sem o Tesseract, sem um idioma, com um arquivo dele vazio,
+    com um Visual C++ falso (lido pela peça de verdade do Windows), sem a versão do Visual C++ ou com a versão errada →
+    o publicar recusa antes do vpk, nada é publicado, e a frase é a mesma que a pasta montada do zero recebe com o mesmo
+    defeito; a montada do zero inteira continua passando:
+    `tests/test_publicar_versao.py::test_d818_a_pasta_ja_montada_e_conferida_igual_a_montada_do_zero` (6 casos). A
+    mesma régua do Visual C++ na montagem e na pasta: `tests/test_empacotar.py::test_d818_a_montagem_e_a_pasta_usam_a_mesma_regua_do_visual_c`.
+    Os testes antigos mudados (só a pasta de mentira e o que ela precisa) estão listados em "O que já está escolhido e
+    testado aqui", Volta 7; todos continuam passando, no código novo e no de `db4b377a` (88 de 88 antigos, em
+    `anexos/reversao-volta7-codigo-antigo.txt`).
+  - D-727: o pacote cobra o Visual C++, a versão dele e o Tesseract
+    (`tests/test_publicar_versao.py::test_volta7_achado3_o_pacote_sem_uma_peca_e_recusado_depois_do_vpk`, 4 casos, e
+    `tests/test_publicar_versao.py::test_volta7_achado3_o_pacote_montado_do_zero_sem_o_tesseract_e_recusado`).
+  - D-767: a leitura da assinatura nos testes novos do Visual C++ falso é a de verdade; a de mentira só responde pelos
+    Visual C++ de prova (escrito na preparação `ambiente`).
+  - D-773: `tests/test_publicar_versao.py::test_volta7_achado5_a_pasta_das_provas_com_espaco_no_nome`.
+  - D-776, D-777, D-788, D-789, D-795, D-816, D-817: nada mudou neles; os testes deles passam sem mudar.
+  - D-785 (item 8): nada de verdade rodou; o roteiro da prova está em "A prova de verdade", Volta 7.
+  - D-815: segunda e última volta deste escritor.
+
 ## Testes
 
 - **No PC, um arquivo por vez** (19/11, com `QT_QPA_PLATFORM=offscreen`):
@@ -1316,6 +1372,27 @@ arquivo e nas seções "O que foi feito" e "Caminho e função".
   44799633578 (sobre `3abf9acf`) foi cancelada por mim antes do fim: depois dela entraram os anexos `.txt` da reversão,
   e a rodada que vale tem de ser a do último commit que não é só `.md`.
 
+- **Volta 7, no PC, um arquivo por vez** (20/11, `QT_QPA_PLATFORM=offscreen`): `tests/test_publicar_versao.py` 98
+  passaram; `tests/test_empacotar.py` 42; `tests/test_publicar_motor.py` 12; `tests/test_publicar_servidor.py` 14;
+  `tests/test_decisoes_atualizacao.py` 38; `tests/test_windows_peca.py` 69 e 2 pulados; `tests/test_windows_janela_de_prova.py`
+  10; `tests/test_nome_do_pacote.py` 5; `tests/test_decisoes_brasao.py` 22; `tests/test_decisoes_ajudante_da_atualizacao.py`
+  37; `tests/test_decisoes_testes_a_distancia.py` 13; `tests/test_conferencias_codigo.py` 77;
+  `tests/test_conferencias_excecoes.py` 14; `tests/test_conferencias_pacote.py` 20. Porteiro no PC: "nada novo" (175
+  lugares). `tests/test_decisoes_preparo_d749.py`: 3 falham no PC ("tudo na pasta de mentira": o comando tem "C:\"),
+  igual no código de `db4b377a` (rodado numa cópia): o mesmo caso dos testes do desinstalar (a pasta temporária do PC no
+  C:), em "Ideias e bugs"; não é deste trabalho.
+- **Volta 7, reversão** (`anexos/reversao-volta7-codigo-antigo.txt`; o código de `db4b377a` numa cópia à parte, com o
+  arquivo de teste de `4e8fdd98` por cima): 9 de 12 casos novos falham (os 5 da D-818 de então, "DID NOT RAISE Parou":
+  a pasta estragada era publicada; 3 do pacote sem uma peça: a versão do Visual C++ e o Tesseract da pasta já montada;
+  o do empacotar sozinho: "a pasta recusada foi mudada antes da recusa"). Passam lá: o pacote sem o Visual C++ (a
+  conferência do pacote já o pegava), o montado do zero sem o Tesseract (já pegava com as peças) e o da pasta com espaço
+  (as aspas já estavam lá); os três cobram proteções que existiam sem teste e são provados pelas mutações. Os 88 testes
+  antigos, com a pasta de mentira nova, passam no código antigo (a pasta nova não muda o que eles cobram). O caso do
+  arquivo do Tesseract vazio e o teste da régua única entraram depois (`25c514ad`) e são provados pelas mutações R5,
+  R9 e R10.
+- **Volta 7, mutações** (`anexos/reversao-volta7-resultado.txt`; script `anexos/reversao-volta7-mutacoes.py.txt`), numa
+  cópia de `25c514ad`: ver "Cada proteção", Volta 7.
+
 ## Caminho e função
 
 - O publicar da versão, com ou sem pasta pronta, com ou sem instalador → `empacotar.construir_pacote_do_velopack` →
@@ -1427,6 +1504,23 @@ arquivo e nas seções "O que foi feito" e "Caminho e função".
   - o caminho de rede pelo rodar, pelo lançar solto e pelo grupo → `windows._por_que_recusa` → `FRASE_CAMINHO_DE_REDE`
     (prova: `tests/test_windows_peca.py::test_volta6_achado3_o_caminho_de_rede_e_recusado_com_a_frase_propria`, os
     três caminhos).
+
+- **Volta 7** ("este arquivo é o Visual C++ oficial?" → `empacotar.conferir_o_visual_c`; "o que é o Tesseract na
+  pasta" → `empacotar.relativos_do_tesseract`; "a pasta está pronta para o vpk" → `empacotar.conferir_pasta_pronta`; "o
+  pacote saiu certo" → `empacotar.conferir_pacote_do_velopack` → `esperados_no_pacote_do_velopack`):
+  - a montagem, o Visual C++ baixado e o achado → `preparar_vc_redist` → `conferir_o_visual_c`;
+  - a montagem copia o Tesseract e confere a cópia; o Inno confere o registro → `_destinos_das_pecas` →
+    `relativos_do_tesseract`;
+  - o publicar montado do zero e o `--pasta-pronta` (cedo) → `conferir_pasta_pronta` → `conferir_o_visual_c` e
+    `relativos_do_tesseract`;
+  - `construir_pacote_do_velopack` (as duas passadas e o chamado sozinho) → `conferir_pasta_pronta` antes de
+    `preparar_saida`;
+  - o pacote depois do vpk, com ou sem as peças → `esperados_no_pacote_do_velopack` → `relativos_do_tesseract` e a
+    versão do Visual C++.
+  Prova, o mesmo resultado nos dois caminhos: `tests/test_publicar_versao.py::test_d818_a_pasta_ja_montada_e_conferida_igual_a_montada_do_zero`
+  (a mesma frase para a pasta já montada e a montada do zero, em cada um dos 6 defeitos) e
+  `tests/test_empacotar.py::test_d818_a_montagem_e_a_pasta_usam_a_mesma_regua_do_visual_c` (o mesmo motivo na montagem
+  e na régua).
 
 ## Cada proteção e o teste que falha sem ela
 
@@ -1589,6 +1683,24 @@ Cada uma foi desligada numa cópia à parte (git archive no rascunho da sessão,
   - o caminho de rede com a frase antiga (Y10) →
     `tests/test_windows_peca.py::test_volta6_achado3_o_caminho_de_rede_e_recusado_com_a_frase_propria`.
 
+- **Volta 7** (`anexos/reversao-volta7-resultado.txt`; script em `anexos/reversao-volta7-mutacoes.py.txt`; mutações
+  próprias, R1 a R12, diferentes das Y da volta 6 e das Z de quem quebrou), numa cópia de `25c514ad`, rodando o arquivo
+  de teste inteiro: **11 de 12 acusadas**.
+  - a conferência da pasta sem ler a assinatura (R1), sem cobrar o arquivo da versão (R2), sem comparar a versão (R3),
+    o Tesseract só pela pasta existir (R4), aceitando arquivo vazio (R5) →
+    `tests/test_publicar_versao.py::test_d818_a_pasta_ja_montada_e_conferida_igual_a_montada_do_zero`;
+  - o pacote sem cobrar o Tesseract (R6) ou a versão do Visual C++ (R7) →
+    `tests/test_publicar_versao.py::test_volta7_achado3_o_pacote_sem_uma_peca_e_recusado_depois_do_vpk` (e o montado do
+    zero, R6);
+  - a ordem antiga no empacotar chamado sozinho (R8) →
+    `tests/test_publicar_versao.py::test_volta7_achado4_o_empacotar_chamado_sozinho_recusa_antes_de_mexer_na_pasta`;
+  - a régua única ignorando `vc_redist_confere` (R9) e a montagem com outra régua (R10) →
+    `tests/test_empacotar.py::test_d818_a_montagem_e_a_pasta_usam_a_mesma_regua_do_visual_c`;
+  - o `--pasta` sem aspas (R11) → `tests/test_publicar_versao.py::test_volta7_achado5_a_pasta_das_provas_com_espaco_no_nome`.
+  - **Não acusada: R12** (a conferência deixa de cobrar o Visual C++ só na saída do instalador, a segunda passada).
+    É dupla proteção: a mesma pasta já passou pela conferência como atualização (cedo, no publicar, e antes do primeiro
+    vpk), e entre as duas passadas só o arquivo do motor muda. Nenhum teste a acusa sozinha; fica escrito aqui.
+
 ## De onde vem cada dado da conferência
 
 - **Se a versão ou o motor já existem no destino:** lido do destino (a pasta; ou o GitHub pelo gh), nunca de uma
@@ -1648,6 +1760,12 @@ Cada uma foi desligada numa cópia à parte (git archive no rascunho da sessão,
   que abre o pacote e procura o Visual C++, e a prova à vista). O comando da frase do motor vem do destino que o
   publicar recebeu.
 
+- **Volta 7:** "é o Visual C++ oficial" vem da assinatura lida pelo Windows no arquivo que está na pasta (não do nome,
+  não de uma anotação); a versão vem da mesma leitura e é comparada com o arquivo da versão da pasta (que quem monta
+  escreve: por isso a comparação); "tem o Tesseract" vem do disco (cada arquivo da lista existe e não está vazio). O
+  conteúdo do Tesseract não é comparado com o original na pasta já montada (não há original; a montagem compara na
+  hora de copiar): escrito nas Ressalvas.
+
 ## Máquina ou olho
 
 - Máquina: tudo o que está em "Testes" (a lógica, a pasta de verdade como destino, o servidor de verdade, a vigia com
@@ -1661,6 +1779,9 @@ Cada uma foi desligada numa cópia à parte (git archive no rascunho da sessão,
 
 - **Volta 6:** máquina, tudo (os testes, a reversão no código antigo, as mutações; a pasta que a prova montou de verdade,
   só lida). Olho: nada. O PyInstaller e o vpk de verdade por este caminho são da prova à vista (itens 13 a 15).
+
+- **Volta 7:** máquina, tudo (os testes; a leitura de verdade da assinatura de um arquivo sem assinatura). Olho: nada.
+  A prova à vista: itens 13 a 17 da Volta 7.
 
 ## Ressalvas
 
@@ -1815,6 +1936,34 @@ Cada uma foi desligada numa cópia à parte (git archive no rascunho da sessão,
   aberto parado tem uma linha só; medido por quem quebrou (gh e Python, 30 vezes cada, sempre uma linha); só um outro
   programa que ponha uma linha dentro do gh parado criaria o caso; fica escrito aqui. (5) e (6) vão para "Ideias e bugs".
 
+- **Volta 7, os testes do publicar dão o Visual C++ de prova como assinado pela Microsoft** (a preparação `ambiente`,
+  pela D-818: sem isso, nenhum arquivo de poucos bytes é da Microsoft, e todos os testes antigos parariam na conferência
+  nova). Só os dois conteúdos de prova são reconhecidos; qualquer outro arquivo vai à leitura de verdade do Windows (o
+  "Visual C++ falso" do teste novo passa por ela). A leitura de verdade do Visual C++ oficial só roda na prova à vista
+  (e no PC, que tem o arquivo; no GitHub ele não existe).
+- **Volta 7, a leitura da assinatura agora roda em cada conferência da pasta** (o publicar a faz cedo e de novo antes de
+  cada vpk: 2 vezes sem o instalador, 3 com ele). Cada uma abre o PowerShell do Windows pela peça (uns segundos, não
+  medido). Escrito também em "Velocidade".
+- **Volta 7, o Tesseract da pasta já montada é conferido arquivo por arquivo (existe e não está vazio), não comparado
+  com o original** (a pasta já montada não tem de onde comparar; a montagem compara o tamanho na hora de copiar). Uma
+  pasta arrumada à mão com um arquivo do Tesseract trocado por outro do mesmo nome passaria. A pasta montada do zero
+  passa pelas duas conferências.
+- **Volta 7, `pecas` deixou de mudar a conferência do pacote** (`esperados_no_pacote_do_velopack` cobra o Tesseract
+  pela lista única, com ou sem peças). O argumento fica (quem chama o passa pela posição; um teste antigo o usa), como o
+  de `preparar_saida` na volta 6; e o publicar continua passando `pecas` (sem efeito). Escrito no texto das funções.
+- **Volta 7, os testes antigos mudados** (a lista está em "O que já está escolhido e testado aqui", Volta 7): a pasta de
+  mentira (`_pasta_pronta`), a preparação (`ambiente`) e o vpk de mentira (uma opção nova, desligada de fábrica).
+  Nenhum mudou o que cobra; os 88 antigos passam também no código de `db4b377a` com a pasta nova (anexo da reversão).
+- **Volta 7, a prova da D-818 está em `tests/test_publicar_versao.py`**, não em `tests/test_decisoes*.py`: o arquivo das
+  decisões não está na lista do pacote. A gerente decide se a copia para lá.
+- **Volta 7, as observações do relatório 6 (não pedidas; não mexi):** (6) o "lugar único" de pôr o Visual C++ não é
+  cobrado por teste (se `preparar_saida` voltasse a pô-lo, nada acusa; hoje não faz mal, e o texto dela diz que é
+  arriscado); (7) a frase do caminho de rede tem "(que tem função própria na peça)" para os testes antigos (já nas
+  Ressalvas da volta 6); (8) a saída do teste da montagem mostra "assinatura da Microsoft conferida" para um arquivo de
+  prova (só a saída do teste; no uso de verdade, `juntar_pecas` confere antes); (10) a cópia do Visual C++ para a pasta
+  só confere o tamanho (agora a conferência da pasta lê a assinatura da cópia, o que também pega uma cópia corrompida do
+  mesmo tamanho). A (9) vai para "Ideias e bugs".
+
 ## Velocidade
 
 Não se aplica: nenhum arquivo do processamento das páginas do livro mudou; em `core/ocr_kraken.py` só
@@ -1829,6 +1978,9 @@ passos"). O tempo de publicar é medido na prova à vista.
 - Volta 6: não se aplica, pelo mesmo motivo (só o empacotar, o publicar e uma frase da peça do Windows; o caminho do
   livro não usa nenhum deles). O publicar montado do zero copia o Visual C++ (uns 25 MB) uma vez, onde antes copiava
   dentro do `preparar_saida`.
+
+- Volta 7: não se aplica ao caminho do livro (só o empacotar e o publicar). O publicar ganha 2 ou 3 leituras da
+  assinatura do Visual C++ pelo PowerShell (uns segundos cada, não medido; medido na prova à vista).
 
 ## Ideias e bugs
 
@@ -1902,6 +2054,19 @@ passos"). O tempo de publicar é medido na prova à vista.
 - Ideia (Lista de espera, observação 6 do relatório 5): o teste do fluxo escondido ganhar também o fluxo de uma pasta
   (`pastinha:programa.exe`, que o Windows roda e a regra já recusa).
 
+- **Volta 7.** Ideia (Lista de espera, observação 9 do relatório 6): a ficha da versão guarda o commit de que a pasta
+  saiu, e ninguém o lê; uma pasta feita com código antigo passa como desta versão. Comparar o commit com o atual
+  mudaria o uso normal (montar e depois fazer um commit só de documento); fica como ideia.
+- Ideia (Lista de espera, volta 7): tirar o `pecas` que não muda mais nada no caminho do Velopack (`preparar_saida`,
+  `esperados_no_pacote_do_velopack`, `conferir_pacote_do_velopack`, o publicar), mudando junto os dois testes antigos
+  que o passam pela posição (pede o "pode" do Samuel).
+- Ideia (Lista de espera, observação 6 do relatório 6): um teste que acuse se `preparar_saida` voltar a pôr o Visual
+  C++ (o lugar único de pô-lo é a montagem).
+- Bug (Lista de bugs, 20/11/2026, não impede; visto nesta volta): `tests/test_decisoes_preparo_d749.py`, 3 casos de
+  `test_d749_o_passo_anota_como_o_preparo_terminou`, falham no PC ("tudo na pasta de mentira": o comando tem "C:\"),
+  igual no código de `db4b377a`. Parece o mesmo caso dos testes do desinstalar (a pasta temporária do PC fica no C:; no
+  GitHub, no D:), não conferido a fundo. Não é deste trabalho.
+
 ## Perguntas para o Samuel
 
 Nenhuma nesta entrega. Procurei no Livro antes: a D-773, a D-776, a D-777, a D-788, a D-789, a D-790 e a D-795 respondem
@@ -1917,6 +2082,10 @@ o teste antigo do achado 5 da volta 3, que saiu porque cobrava o que a D-816 tir
 a D-727 diz onde o Visual C++ fica. O que fica para a gerente olhar está em "Ressalvas", Volta 6 (a frase do caminho de
 rede com as palavras que os testes antigos procuram; o argumento que `preparar_saida` não usa mais).
 
+**Volta 7:** nenhuma pergunta. A D-818 respondeu o achado 1 e autorizou mudar a pasta de mentira dos testes antigos.
+Nenhum teste antigo precisou mudar o que cobra (só a pasta de mentira, a preparação que a faz "assinada" e uma opção
+desligada do vpk de mentira; lista em "O que já está escolhido e testado aqui", Volta 7).
+
 ## Commit
 
 2e906e94 (o último commit de código e testes da volta 3, com três docstrings de um teste; depois dele só este formulário muda).
@@ -1926,6 +2095,8 @@ Volta 4: 595cc293 (o último commit de código e testes da volta 4: os textos da
 Volta 5: 35ec0c27 (o último commit de código e testes da volta 5; depois dele só a pasta deste relatório muda).
 
 Volta 6: 3abf9acf (o último commit de código e testes da volta 6; depois dele só a pasta deste relatório muda).
+
+Volta 7: 25c514ad (o último commit de código e testes da volta 7; depois dele só a pasta deste relatório muda).
 
 ## O que o agente que tentou quebrar achou
 
@@ -2085,6 +2256,24 @@ D-815). Destino de cada achado (código em `35ec0c27`; reversão em `anexos/reve
    `tests/test_windows_peca.py::test_volta6_achado3_o_caminho_de_rede_e_recusado_com_a_frase_propria`.
 4. **Observação 4:** em "Ressalvas", Volta 6. **Observações 5 e 6:** em "Ideias e bugs", Volta 6.
 
+**Volta 7** (`quem-quebrou/relatorio-6.md`, commit `db4b377a`; o mesmo escritor da volta 6, segunda e última volta,
+D-815). Destino de cada achado:
+1. **A pasta já montada conferida bem menos que a montada do zero (médio):** consertado pela D-818 (a mesma
+   conferência, a régua única do Visual C++, a versão dele e o Tesseract pela lista única). Teste:
+   `tests/test_publicar_versao.py::test_d818_a_pasta_ja_montada_e_conferida_igual_a_montada_do_zero` e
+   `tests/test_empacotar.py::test_d818_a_montagem_e_a_pasta_usam_a_mesma_regua_do_visual_c`. A pasta de mentira dos
+   testes antigos ganhou as peças (lista em "O que já está escolhido e testado aqui", Volta 7).
+2. **O item 14 do roteiro depois do 13:** o roteiro mudou ("A prova de verdade", Volta 7: o da pasta antiga primeiro).
+3. **Duas conferências do pacote sem teste:** testes novos com o vpk de mentira deixando uma peça de fora:
+   `tests/test_publicar_versao.py::test_volta7_achado3_o_pacote_sem_uma_peca_e_recusado_depois_do_vpk` (4 casos) e
+   `tests/test_publicar_versao.py::test_volta7_achado3_o_pacote_montado_do_zero_sem_o_tesseract_e_recusado`; e o
+   pacote passou a cobrar a versão do Visual C++ e, sempre, o Tesseract.
+4. **O empacotar sozinho mexia na pasta antes de recusá-la:** consertado (a conferência antes de `preparar_saida`).
+   Teste: `tests/test_publicar_versao.py::test_volta7_achado4_o_empacotar_chamado_sozinho_recusa_antes_de_mexer_na_pasta`.
+5. **As aspas sem teste:** teste novo, `tests/test_publicar_versao.py::test_volta7_achado5_a_pasta_das_provas_com_espaco_no_nome`
+   (a frase do motor e a do apagar, seguidas, numa pasta com espaço).
+6. a 10. **Observações:** em "Ressalvas", Volta 7 (6, 7, 8 e 10) e em "Ideias e bugs", Volta 7 (6 e 9).
+
 ## A prova de verdade
 
 Roteiro para a gerente (não rodado; D-785, item 8; o plano: "0 perguntas do Windows"; o Samuel olha a janela, não
@@ -2126,6 +2315,28 @@ clica nada):
 14. A pasta que a prova de 20/11 montou (código antigo) com `--pasta-pronta`: tem de ser recusada com "não tem o Visual
     C++ em instalar\" (a pasta de fora continua cobrada).
 15. Na pasta das provas, sem o motor publicado: a frase tem de dizer `publicar_versao_kaique.py --motor --pasta "..."`.
+(A ordem dos itens 13 a 15 acima não dá para seguir: o 14 tem de vir antes do 13. Vale a lista da Volta 7, abaixo.)
+
+**Volta 7, os itens 13 a 15 na ordem certa e o que o relatório 6 pede para a prova (achado 2 e "O que falta para a
+prova à vista", item 2). Substituem os itens 13 a 15 da Volta 6:**
+13. **Antes de montar qualquer coisa** (a pasta da prova de 20/11 ainda existe; o item 14 a apaga e monta de novo):
+    `publicar_versao_kaique.py --pasta C:\EditorImpressaoProva\versoes --pasta-pronta <a pasta dist\EditorImpressao da
+    cópia passo2>`. Tem de parar ANTES da conta do espaço com "não tem o Visual C++ em instalar\" (a pasta de fora
+    continua cobrada). E não usar `--pasta-pronta` numa pasta arrumada à mão: agora ela é recusada pela assinatura, pela
+    versão e pelo Tesseract, mas a prova não precisa disso.
+14. Ainda antes de montar, ler na linha "Visual C++: ..." de onde ele vem. Rodando da cópia `passo2`, vem de
+    `D:\programas\EditorImpressao\.claude\worktrees\EditorImpressao-arquivos\ferramentas\downloads\` (o bug de 20/11 em
+    "Ideias e bugs"); se o arquivo sumir de lá, a montagem baixa da internet.
+15. O publicar SEM `--pasta-pronta` (`publicar_versao_kaique.py --pasta C:\EditorImpressaoProva\versoes`): a montagem tem
+    de dizer "Visual C++ em instalar\, conferido" antes de "pronto: ...\dist\EditorImpressao", passar da conferência da
+    pasta (agora com a leitura da assinatura) e chegar ao vpk de verdade. Depois, abrir o pacote publicado (um zip) e
+    ver dentro: `lib/app/instalar/vc_redist.x64.exe` com o mesmo tamanho do baixado (uns 25 MB, 25.635.768 bytes),
+    `lib/app/instalar/vc_redist.versao.txt` com "14.44.35211.0" e a pasta `lib/app/tesseract/` com os idiomas.
+16. O item 6 (`--com-instalador`) **montado do zero**; depois dele, ver que `dist\EditorImpressao\instalar\` ficou só com
+    o Visual C++ e a versão dele (o zip do motor tem de sair).
+17. Na pasta das provas, sem o motor publicado (numa pasta de provas nova, vazia): a frase tem de dizer
+    `publicar_versao_kaique.py --motor --pasta "..."`; seguir a frase ao pé da letra e ver o motor chegar na janela do
+    servidor, e nada no GitHub.
 
 ## Perguntas do Windows que o Samuel vê
 
@@ -2135,6 +2346,8 @@ clica nada):
 - Volta 4: 0 (nada desta volta pede licença; o gh e o vpk no grupo não pedem).
 
 - Volta 6: 0 (nada desta volta pede licença; pôr o Visual C++ na pasta é uma cópia de arquivo no D:, sem instalar nada).
+
+- Volta 7: 0 (ler a assinatura de um arquivo não pede licença nem abre janela; a peça abre o PowerShell sem janela).
 
 ## Páginas em que foi conferido
 
