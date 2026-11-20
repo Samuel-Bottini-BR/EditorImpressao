@@ -214,3 +214,23 @@ def test_achado7_nome_repetido_em_duas_versoes_nao_e_entregue(tmp_path):
     assert versoes.achar("igual.msi") is None
     assert versoes.achar(empacotar.nome_do_msi_publicado("1.2.0")).read_bytes() == b"msi 1.2.0"
     assert empacotar.nome_do_msi_publicado("1.2.0") != empacotar.nome_do_msi_publicado("1.10.0")
+
+
+def test_achado8_o_nome_repetido_aparece_na_janela_como_repetido_e_nao_como_inexistente(tmp_path):
+    """Volta 3, achado 8 do relatório 2 de quem tentou quebrar (19/11/2026, família F7): um nome que está em duas
+    publicações aparecia na janela como "não existe aqui (404)", e ele existe duas vezes. Agora a linha diz que está em
+    duas publicações e não é entregue; o que não existe continua "não existe aqui"."""
+    pasta = tmp_path / "versoes"
+    _publicar_na_pasta(pasta, "v1.0.0", {"igual.txt": b"1"})
+    _publicar_na_pasta(pasta, "v1.1.0", {"igual.txt": b"2"})
+    linhas: list[str] = []
+    s = srv.Servidor(pasta, porta=0, dizer=linhas.append)
+    s.iniciar()
+    s.linhas = linhas
+    try:
+        assert _pedir(s, "igual.txt")[0] == 404
+        assert _tem_linha(s, "igual.txt: está em 2 publicações"), linhas
+        assert not any("igual.txt: não existe aqui" in linha for linha in linhas), linhas
+        assert _pedir(s, "nenhum.txt")[0] == 404 and _tem_linha(s, "nenhum.txt: não existe aqui (404)")
+    finally:
+        s.fechar()

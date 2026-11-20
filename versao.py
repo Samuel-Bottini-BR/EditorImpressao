@@ -75,15 +75,23 @@ def etiqueta_da_versao(versao_do_pacote: str) -> str:
     return f"v{versao_do_pacote}"
 
 
+# O comeco do nome da etiqueta e do arquivo do motor publicado: o LUGAR UNICO (volta 3 do passo 2, achado 7 do
+# relatorio 2 de quem tentou quebrar: estava escrito a mao em mais tres lugares). Quem precisa reconhecer um nome
+# do motor (a etiqueta aceita do publicar, os arquivos do motor em instalar\) le daqui ou das duas funcoes abaixo.
+# Arriscado mudar depois da primeira publicacao do motor (as etiquetas publicadas tem este nome).
+PREFIXO_DO_MOTOR = "motor-kraken-"
+
+
 def etiqueta_do_motor(versao_do_motor: int | str) -> str:
     """A etiqueta da publicacao do motor: 'motor-kraken-1' (plano-v3, peca 8)."""
-    return f"motor-kraken-{versao_do_motor}"
+    return f"{PREFIXO_DO_MOTOR}{versao_do_motor}"
 
 
 def arquivo_do_motor(versao_do_motor: int | str) -> str:
     """O nome do arquivo do motor publicado (um zip so): 'motor-kraken-1.zip'. E o mesmo
-    nome dentro de instalar\\ no instalador (D-788, D-727)."""
-    return f"motor-kraken-{versao_do_motor}.zip"
+    nome dentro de instalar\\ no instalador (D-788, D-727). Com "*", o molde de busca
+    (Path.glob) de todos os arquivos de motor."""
+    return f"{PREFIXO_DO_MOTOR}{versao_do_motor}.zip"
 
 
 def numeros(versao: str) -> tuple[int, int, int]:

@@ -904,3 +904,359 @@ def test_achado1_quem_decide_se_apagou_e_a_leitura_de_volta(ambiente, monkeypatc
     destino.liberar(ETIQUETA)
     aviso = pub.apagar_publicacao(destino, ETIQUETA)
     assert destino.situacao(ETIQUETA) is None and aviso and "HTTP 500" in aviso
+
+
+# ---------------------------------------------------------------------------------------------------------------------
+# Passo 2, volta 3 (relatório 2 de quem tentou quebrar, 19/11/2026)
+# ---------------------------------------------------------------------------------------------------------------------
+
+class _DestinoQueLiberaEPerdeAResposta(pub.DestinoPasta):
+    """Uma pasta de verdade em que o liberar MUDA a pasta e depois devolve erro (a resposta se perdeu na rede), e a
+    primeira leitura da situação depois disso ainda vê o estado antigo ("rascunho", uma leitura atrasada); as outras
+    veem o de verdade. É o caso 1 do anexo `liberada_apagada.py.txt` do relatório 2."""
+
+    def __init__(self, raiz):
+        """atrasadas: quantas leituras ainda vão mentir "rascunho" depois de liberar."""
+        super().__init__(raiz)
+        self.atrasadas = None
+
+    def liberar(self, etiqueta):
+        """Libera de verdade e diz que deu erro."""
+        super().liberar(etiqueta)
+        if etiqueta == ETIQUETA:
+            self.atrasadas = 1
+            raise pub.Parou("a resposta do liberar se perdeu (de mentira)")
+
+    def situacao(self, etiqueta):
+        """A leitura atrasada logo depois de liberar."""
+        if etiqueta == ETIQUETA and self.atrasadas:
+            self.atrasadas -= 1
+            return "rascunho"
+        return super().situacao(etiqueta)
+
+
+def test_volta3_achado1_uma_leitura_atrasada_depois_de_liberar_nunca_apaga_a_versao_liberada(ambiente):
+    """Achado 1 do relatório 2 de quem tentou quebrar (19/11/2026, família F5): a regra "só o rascunho é apagado" era
+    decidida numa leitura, e o apagar lia de novo por conta própria; com uma leitura atrasada ("rascunho") logo depois
+    de um liberar que chegou ao destino e devolveu erro, o publicar apagou a versão LIBERADA e disse "foi apagada
+    (conferido)". Agora o apagar do caminho de erro só apaga o rascunho, lido de novo ali dentro (apagar_publicacao com
+    so_rascunho, e o próprio destino só toca no rascunho): a versão liberada continua e a frase diz "NÃO apaguei"."""
+    a = ambiente
+    _publicar_o_motor(a)
+    destino = _DestinoQueLiberaEPerdeAResposta(a["servidor"])
+    with pytest.raises(pub.Parou) as erro:
+        _publicar(a, destino=destino)
+    assert (a["servidor"] / ETIQUETA).is_dir(), "a versão liberada foi apagada"
+    assert sorted(f.name for f in (a["servidor"] / ETIQUETA).iterdir()), "a versão liberada ficou vazia"
+    assert "NÃO apaguei" in str(erro.value) and "foi apagada" not in str(erro.value), erro.value
+
+
+class _GitHubQueLiberaEPerdeAResposta(_GitHubDeMentira):
+    """O gh de mentira em que o "edit --draft=false" libera e devolve erro, e o "view" seguinte ainda diz isDraft (uma
+    leitura atrasada do GitHub)."""
+
+    def __init__(self, tmp: Path):
+        """atrasadas: quantos "view" ainda vão mentir "rascunho" depois de liberar."""
+        super().__init__(tmp)
+        self.atrasadas = 0
+
+    def __call__(self, *argumentos, limite_s=600):
+        """Como o gh de mentira, com o liberar que perde a resposta e a leitura atrasada."""
+        a = list(argumentos)
+        if a[1] == "edit" and a[2] == ETIQUETA:
+            super().__call__(*argumentos, limite_s=limite_s)
+            self.atrasadas = 1
+            return subprocess.CompletedProcess(a, 1, "", "HTTP 502: a resposta se perdeu (de mentira)")
+        if a[1] == "view" and a[2] == ETIQUETA and self.atrasadas:
+            self.atrasadas -= 1
+            p = self.publicacoes[ETIQUETA]
+            return subprocess.CompletedProcess(a, 0, json.dumps({"isDraft": True, "tagName": ETIQUETA, "assets": [
+                {"name": n, "size": len(d)} for n, d in p["arquivos"].items()]}), "")
+        return super().__call__(*argumentos, limite_s=limite_s)
+
+
+def test_volta3_achado1_no_github_a_leitura_atrasada_tambem_nunca_apaga_a_liberada(ambiente, monkeypatch):
+    """Achado 1 do relatório 2, no GitHub (gh de mentira; o de verdade é da prova à vista): o liberar chega e a resposta
+    se perde; o primeiro "view" ainda diz rascunho. O apagar do caminho de erro lê de novo no próprio destino logo antes
+    de pedir (DestinoGitHub.apagar_rascunho), vê "liberada" e NÃO pede para apagar."""
+    a = ambiente
+    gh = _GitHubQueLiberaEPerdeAResposta(a["tmp"])
+    destino = pub.DestinoGitHub("dono/projeto")
+    monkeypatch.setattr(destino, "_gh", gh)
+    _publicar_o_motor(a, destino=destino)
+    with pytest.raises(pub.Parou) as erro:
+        _publicar(a, destino=destino)
+    assert gh.publicacoes[ETIQUETA]["rascunho"] is False, "a versão liberada foi apagada"
+    assert not any(p[1] == "delete" and p[2] == ETIQUETA for p in gh.pedidos), "pediu para apagar a liberada"
+    assert "NÃO apaguei" in str(erro.value), erro.value
+
+
+class _DestinoQueNaoLibera(pub.DestinoPasta):
+    """Uma pasta de verdade em que o liberar falha e não muda nada (continua rascunho)."""
+
+    def liberar(self, etiqueta):
+        """Não libera."""
+        raise pub.Parou("o destino não deixou liberar (de mentira)")
+
+
+def test_volta3_achado5_o_liberar_que_falha_e_continua_rascunho_apaga_o_rascunho(ambiente):
+    """Achado 5 do relatório 2 (família F3, proteção sem teste): a outra metade da decisão da gerente (D-014) — quando
+    o liberar falha e a publicação continua rascunho, o rascunho é apagado do destino (conferido) e a frase diz isso.
+    Sem este apagar, o rascunho ficava no destino e o próximo publicar parava em "sobrou um rascunho"."""
+    a = ambiente
+    _publicar_o_motor(a)
+    destino = _DestinoQueNaoLibera(a["servidor"])
+    with pytest.raises(pub.Parou, match="foi apagada"):
+        _publicar(a, destino=destino)
+    assert destino.situacao(ETIQUETA) is None
+    assert not (a["servidor"] / (pub.NOME_DO_RASCUNHO_NO_DESTINO + ETIQUETA)).exists()
+
+
+class _DestinoQueTrocaOMotor(pub.DestinoPasta):
+    """Uma pasta de verdade em que, durante a publicação da versão, o motor publicado é trocado por OUTRO com a mesma
+    etiqueta e uma assinatura válida da mesma chave (alguém publicou de novo no meio)."""
+
+    def enviar(self, etiqueta, arquivo):
+        """Depois do primeiro envio da versão, troca o motor publicado (o arquivo e a assinatura)."""
+        super().enviar(etiqueta, arquivo)
+        if etiqueta == ETIQUETA and not getattr(self, "trocado", False):
+            self.trocado = True
+            v = ocr_kraken.VERSAO_DO_MOTOR
+            zip_do_motor = self.raiz / versao.etiqueta_do_motor(v) / versao.arquivo_do_motor(v)
+            zip_do_motor.write_bytes(zip_do_motor.read_bytes() + b"outro conteudo")
+            pub.assinar_arquivo(CHAVE, zip_do_motor, versao.ID_DO_PACOTE_DO_MOTOR, str(v), PUBLICA)
+
+
+def test_volta3_achado6_o_motor_trocado_durante_a_publicacao_impede_liberar(ambiente):
+    """Achado 6 do relatório 2 (família F3): a comparação "o motor publicado mudou durante a publicação" não tinha
+    teste (o do N4 apaga o motor e a leitura para antes). Aqui o motor é trocado por outro, com a mesma etiqueta e
+    assinatura válida: a versão não é liberada (o motor-exigido.json dela aponta para o motor de antes)."""
+    a = ambiente
+    _publicar_o_motor(a)
+    destino = _DestinoQueTrocaOMotor(a["servidor"])
+    with pytest.raises(pub.Parou, match="o motor publicado mudou durante a publicação"):
+        _publicar(a, destino=destino)
+    assert destino.situacao(ETIQUETA) is None
+
+
+class _EscritaQueEnche:
+    """Um arquivo aberto para escrever que grava 10 bytes e depois dá "disco cheio" (como o D: enchendo no meio)."""
+
+    def __init__(self, real):
+        """real: o arquivo de verdade."""
+        self.real = real
+        self.escritos = 0
+
+    def write(self, dados):
+        """Grava até 10 bytes no total; depois, disco cheio."""
+        falta = 10 - self.escritos
+        if len(dados) > falta:
+            self.real.write(bytes(dados[:max(falta, 0)]))
+            self.real.flush()
+            self.escritos = 10
+            raise OSError(28, "Não há espaço suficiente no disco (de mentira)", self.real.name)
+        self.escritos += len(dados)
+        return self.real.write(dados)
+
+    def __enter__(self):
+        return self
+
+    def __exit__(self, *erro):
+        self.real.close()
+
+    def __getattr__(self, nome):
+        return getattr(self.real, nome)
+
+
+def test_volta3_achado2_o_msi_que_nao_termina_de_copiar_nao_fica_com_o_nome_certo(ambiente, monkeypatch, capsys):
+    """Achado 2 do relatório 2 de quem tentou quebrar (19/11/2026, família F5): depois de a versão estar liberada, a
+    cópia do .msi para a pasta de saída falhou no meio (disco cheio) e ficou um .msi de 10 bytes COM O NOME CERTO, e a
+    frase dizia "o que esta vez fez pela metade foi apagado". Agora a cópia vai para um nome provisório e só ganha o
+    nome certo depois de conferida (tamanho e soma lidos de volta); na falha o pedaço é apagado (conferido), a frase
+    diz que a versão FOI publicada e que o instalador está inteiro na publicação, e a conferência do fim diz que o
+    instalador NÃO está na pasta de saída. A falha do disco é provocada no arquivo que se abre para escrever na pasta de
+    saída (o mesmo ponto no código antigo e no novo)."""
+    import builtins
+
+    a = ambiente
+    _publicar_o_motor(a)
+    verdadeiro = builtins.open
+
+    def aberto(arquivo, modo="r", *x, **k):
+        """Escrever um .msi na pasta de saída enche o disco no meio."""
+        real = verdadeiro(arquivo, modo, *x, **k)
+        caminho = Path(str(arquivo))
+        if "w" in modo and a["saida"] in caminho.parents and ".msi" in caminho.name:
+            return _EscritaQueEnche(real)
+        return real
+
+    monkeypatch.setattr(builtins, "open", aberto)
+    with pytest.raises((pub.Parou, OSError)) as erro:
+        _publicar(a, com_instalador=True)
+    monkeypatch.undo()
+    saida = capsys.readouterr().out
+    assert _tudo_em(a["saida"] / ETIQUETA) == [], f"ficou na pasta de saída: {_tudo_em(a['saida'] / ETIQUETA)}"
+    assert pub.DestinoPasta(a["servidor"]).situacao(ETIQUETA) == "liberada"
+    assert "FOI publicada" in str(erro.value) and "está inteiro na publicação" in str(erro.value), erro.value
+    assert "NÃO está na pasta de saída" in saida, saida
+
+
+def test_volta3_achado2_o_msi_da_pasta_de_saida_e_comparado_com_o_do_rascunho(ambiente, capsys, tmp_path):
+    """Achado 2 do relatório 2: a conferência do fim compara o .msi da pasta de saída com o feito no rascunho (tamanho e
+    soma, lidos do arquivo de lá). Com o caminho inteiro: igual. Direto na conferência: um .msi diferente, um que não foi
+    feito agora e um pedaço de cópia (.copiando) são acusados."""
+    a = ambiente
+    _publicar_o_motor(a)
+    _publicar(a, com_instalador=True)
+    assert "igual ao feito agora (tamanho e soma conferidos)" in capsys.readouterr().out
+    saida = tmp_path / "saida-direta"
+    saida.mkdir()
+    nome = empacotar.nome_do_msi_publicado(VERSAO)
+    (saida / nome).write_bytes(b"outro msi")
+    (saida / "velho-win.msi").write_bytes(b"x")
+    (saida / (nome + ".copiando")).write_bytes(b"x")
+    feito = (nome, len(b"msi certo"), assinatura.soma_sha256(a["tmp"] / "chave.txt"))
+    linhas = pub.conferencia_do_fim(pub.DestinoPasta(a["servidor"]), ETIQUETA, saida, None, feito)
+    assert any("ATENÇÃO" in l and "diferente do feito agora" in l for l in linhas), linhas
+    assert any("ATENÇÃO" in l and "velho-win.msi" in l and "não foi feito agora" in l for l in linhas), linhas
+    assert any("ATENÇÃO" in l and ".copiando" in l for l in linhas), linhas
+    (saida / nome).unlink()
+    linhas = pub.conferencia_do_fim(pub.DestinoPasta(a["servidor"]), ETIQUETA, saida, None, feito)
+    assert any("NÃO está na pasta de saída" in l for l in linhas), linhas
+
+
+def test_volta3_achado2_a_frase_do_fim_nao_diz_apagado_sem_conferir(ambiente, monkeypatch, capsys):
+    """Achado 2 do relatório 2: a linha de comando dizia "O que esta vez fez pela metade foi apagado" depois de qualquer
+    erro do disco, sem conferir. Agora aponta para o que foi lido (a conferência do fim)."""
+    a = ambiente
+    ocupado = a["tmp"] / "rascunho-ocupado"
+    ocupado.write_text("sou um arquivo", encoding="utf-8")
+    monkeypatch.setattr(pub, "pasta_do_rascunho", lambda: ocupado)
+    monkeypatch.setattr(pub, "achar_chave", lambda *x, **k: CHAVE)
+    monkeypatch.setattr(empacotar, "achar_vpk", lambda: a["vpk"])
+    _publicar_o_motor(a)
+    assert pub.main(["--pasta", str(a["servidor"])]) == 1
+    saida = capsys.readouterr().out
+    assert "PAREI: o disco não deixou terminar" in saida and "conferência do fim" in saida
+    assert "foi apagado" not in saida.split("PAREI:")[-1], saida
+
+
+def test_volta3_achado7_o_motor_baixado_entra_na_conta_e_na_vigia(ambiente, monkeypatch):
+    """Achado 7 do relatório 2 (D-776): o arquivo do motor baixado para o rascunho (o instalador) ficava fora da conta
+    do espaço e da vigia. Agora: (1) a conta soma o baixado (espaco_que_vai_usar, baixado_para_o_rascunho), e o
+    publicar o passa; (2) o download é vigiado pela vigia única (vigia_do_espaco): com o disco abaixo da reserva no
+    começo do download, ele para, o segundo vpk nem roda, e nada fica pela metade."""
+    a = ambiente
+    um_gb = empacotar.GB
+    so_vpk = empacotar.espaco_que_vai_usar(um_gb, (empacotar.ATUALIZACAO, empacotar.INSTALADOR), um_gb // 2)
+    com_baixado = empacotar.espaco_que_vai_usar(um_gb, (empacotar.ATUALIZACAO, empacotar.INSTALADOR), um_gb // 2,
+                                                baixado_para_o_rascunho=um_gb // 2)
+    assert com_baixado == so_vpk + um_gb // 2
+    _publicar_o_motor(a)
+    pedidos = []
+    verdadeira = empacotar.conferir_espaco
+    monkeypatch.setattr(empacotar, "conferir_espaco", lambda pasta, precisa, *x: pedidos.append(precisa) or
+                        verdadeira(pasta, precisa, *x))
+    v = ocr_kraken.VERSAO_DO_MOTOR
+    tamanho = (a["servidor"] / versao.etiqueta_do_motor(v) / versao.arquivo_do_motor(v)).stat().st_size
+    pasta = empacotar.tamanho_da_pasta(a["pasta"])
+    _publicar(a, com_instalador=True)
+    assert pedidos[0] == empacotar.espaco_que_vai_usar(pasta, (empacotar.ATUALIZACAO, empacotar.INSTALADOR), tamanho,
+                                                       baixado_para_o_rascunho=tamanho)
+    # (2) a vigia no download: o disco cai abaixo da reserva assim que a pasta do motor baixado nasce
+    shutil.rmtree(a["servidor"] / ETIQUETA)
+    shutil.rmtree(a["saida"], ignore_errors=True)
+    a["diario"].unlink()
+
+    def livre(pasta_do_disco):
+        """Muito espaço, até o download do motor começar."""
+        baixando = any(p.name == "motor" for p in Path(a["rascunho"]).rglob("motor"))
+        return 5 * um_gb if baixando else 500 * um_gb
+
+    monkeypatch.setattr(empacotar, "espaco_livre", livre)
+    with pytest.raises(pub.Parou, match="reserva"):
+        _publicar(a, com_instalador=True)
+    assert len(_vezes_que_o_vpk_rodou(a)) == 1, "o segundo vpk rodou com o disco abaixo da reserva"
+    assert _rascunhos_que_sobraram(a) == []
+
+
+def test_volta3_achado7_o_gh_que_baixa_e_fechado_pela_vigia(tmp_path, monkeypatch):
+    """Achado 7 do relatório 2, no GitHub: o download pelo gh é vigiado enquanto o gh roda (DestinoGitHub._gh com a
+    vigia). De verdade: um "gh" de prova (um programa de verdade que demoraria 60 s) é fechado assim que a vigia manda
+    parar, e a frase diz o motivo."""
+    lento = _programa_de_prova(tmp_path / "gh.exe", "import time\ntime.sleep(60)\n")
+    monkeypatch.setattr(empacotar, "INTERVALO_DA_VIGIA_S", 0.2)
+    destino = pub.DestinoGitHub("dono/projeto", gh=str(lento))
+    inicio = time.perf_counter()
+    with pytest.raises(pub.Parou, match="abaixo da reserva"):
+        destino.baixar_vigiado(versao.etiqueta_do_motor(1), versao.arquivo_do_motor(1), tmp_path / "motor",
+                               lambda: "o disco ficou abaixo da reserva (de mentira)")
+    assert time.perf_counter() - inicio < 20, "a vigia não fechou o gh"
+
+
+def test_volta3_achado7_o_nome_do_motor_so_em_versao_py():
+    """Achado 7 do relatório 2 (§11.12, "uma lista é escrita uma vez"): o começo "motor-kraken-" dos nomes do motor
+    publicado estava escrito à mão no publicar (a etiqueta aceita) e em dois lugares do empacotar. Agora só em
+    versao.py (PREFIXO_DO_MOTOR, etiqueta_do_motor, arquivo_do_motor). Lido no código (os textos do programa, fora os
+    comentários e as explicações das funções)."""
+    import ast
+
+    for arquivo in ("publicar_versao_kaique.py", "empacotar.py", "servidor_das_versoes.py"):
+        arvore = ast.parse((RAIZ / arquivo).read_text(encoding="utf-8"))
+        explicacoes = {id(no.body[0].value) for no in ast.walk(arvore)
+                       if isinstance(no, (ast.Module, ast.FunctionDef, ast.ClassDef, ast.AsyncFunctionDef))
+                       and no.body and isinstance(no.body[0], ast.Expr) and isinstance(no.body[0].value, ast.Constant)}
+        textos = [no.value for no in ast.walk(arvore) if isinstance(no, ast.Constant) and isinstance(no.value, str)
+                  and id(no) not in explicacoes and "motor-kraken-" in no.value]
+        assert textos == [], f"{arquivo} escreve o nome do motor à mão: {textos}"
+    assert pub.e_etiqueta(versao.etiqueta_do_motor(3)) and not pub.e_etiqueta(versao.PREFIXO_DO_MOTOR + "x")
+
+
+class _EscritaQueTroca(_EscritaQueEnche):
+    """Um arquivo aberto para escrever que troca um byte do que grava, sem dar erro (o disco que grava errado)."""
+
+    def write(self, dados):
+        """Grava com o primeiro byte trocado."""
+        dados = bytes(dados)
+        return self.real.write(bytes([dados[0] ^ 0xFF]) + dados[1:] if dados else dados)
+
+
+def test_volta3_a_copia_conferida_le_de_volta_e_obedece_a_vigia(tmp_path, monkeypatch):
+    """Achado 2 do relatório 2 (a cópia conferida, empacotar.copiar_inteiro, o lugar único da cópia do publicar): cada
+    proteção dela tem o seu caso. (1) A cópia que sai diferente (um byte trocado ao gravar, sem erro) é recusada pela
+    leitura de volta e não fica nada com o nome certo nem o pedaço; (2) a vigia que manda parar no meio para a cópia e
+    apaga o pedaço; (3) a que manda parar antes nem começa ("nada foi copiado"); (4) a cópia certa chega inteira."""
+    import builtins
+
+    origem = tmp_path / "origem.bin"
+    origem.write_bytes(os.urandom(300_000))
+    alvo = tmp_path / "saida" / "copia.bin"
+    alvo.parent.mkdir()
+    verdadeiro = builtins.open
+
+    def aberto(arquivo, modo="r", *x, **k):
+        """Gravar na pasta de saída troca um byte."""
+        real = verdadeiro(arquivo, modo, *x, **k)
+        return _EscritaQueTroca(real) if "w" in modo and alvo.parent in Path(str(arquivo)).parents else real
+
+    monkeypatch.setattr(builtins, "open", aberto)
+    with pytest.raises(OSError, match="saiu diferente"):
+        empacotar.copiar_inteiro(origem, alvo)
+    monkeypatch.setattr(builtins, "open", verdadeiro)
+    assert list(alvo.parent.iterdir()) == []
+    monkeypatch.setattr(empacotar, "PEDACO_DA_COPIA", 50_000)
+    monkeypatch.setattr(empacotar, "VIGIA_A_CADA", 50_000)
+    olhadas = []
+
+    def vigia():
+        """Deixa começar; manda parar na segunda olhada (no meio da cópia)."""
+        olhadas.append(1)
+        return "o disco ficou abaixo da reserva (de mentira)" if len(olhadas) >= 2 else None
+
+    with pytest.raises(OSError, match="parei de copiar.*foi apagado"):
+        empacotar.copiar_inteiro(origem, alvo, vigia)
+    assert list(alvo.parent.iterdir()) == []
+    with pytest.raises(OSError, match="nada foi copiado"):
+        empacotar.copiar_inteiro(origem, alvo, lambda: "parar (de mentira)")
+    empacotar.copiar_inteiro(origem, alvo, lambda: None)
+    assert alvo.read_bytes() == origem.read_bytes() and [p.name for p in alvo.parent.iterdir()] == ["copia.bin"]

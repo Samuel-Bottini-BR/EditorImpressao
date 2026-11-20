@@ -1199,6 +1199,7 @@ def preparar_saida(pasta: Path, saida: Saida, pecas: PecasDosDetectores | None,
       serve as duas saidas, em sequencia: atualizacao e depois instalador).
     Devolve os problemas (vazio = pronta)."""
     import atualizacao
+    import versao
 
     pasta = Path(pasta)
     problemas = preparar_pasta_para_o_velopack(pasta, pecas) if pecas is not None else []
@@ -1207,7 +1208,7 @@ def preparar_saida(pasta: Path, saida: Saida, pecas: PecasDosDetectores | None,
             return problemas + ["falta saber qual motor publicado esta versão pede"]
         (pasta / NOME_DO_MOTOR_EXIGIDO).write_text(texto_do_motor_exigido(motor), encoding="utf-8")
     instalar = pasta / atualizacao.PASTA_DO_QUE_SE_INSTALA
-    for sobra in instalar.glob("motor-kraken-*.zip"):
+    for sobra in instalar.glob(versao.arquivo_do_motor("*")):
         if not (saida.motor_em_instalar and motor is not None and sobra.name == motor.arquivo):
             sobra.unlink()
     if saida.motor_em_instalar:
@@ -1286,7 +1287,7 @@ def tamanho_da_pasta(pasta: Path) -> int:
 
 
 def espaco_que_vai_usar(tamanho_da_pasta_do_programa: int, saidas: tuple[Saida, ...],
-                        tamanho_do_motor: int = 0) -> int:
+                        tamanho_do_motor: int = 0, baixado_para_o_rascunho: int = 0) -> int:
     """A conta do que o vpk vai usar no disco do rascunho (D-776: "o que vai usar de verdade").
 
     Conta refeita na volta 2 (achado 9 de quem tentou quebrar), pela leitura do vpk 1.2.161:
@@ -1305,8 +1306,11 @@ def espaco_que_vai_usar(tamanho_da_pasta_do_programa: int, saidas: tuple[Saida, 
       saidas rodam uma depois da outra e o vpk apaga a temporaria no fim de cada
       uma; entre elas fica o pacote da primeira (ate 1 vez a pasta).
     A saida INSTALADOR leva tambem o arquivo do motor (tamanho_do_motor).
+    baixado_para_o_rascunho: o que o publicar baixa para o rascunho antes do vpk e que fica la ate o fim (o arquivo do
+    motor publicado, para o instalador; volta 3, achado 7 do relatorio 2: ficava fora da conta). Zero de fabrica: a
+    conta so do vpk continua a mesma.
     Arriscado: diminuir os fatores sem medir (o C: enche); o .msi nunca foi medido."""
-    total = 0
+    total = baixado_para_o_rascunho
     for i, saida in enumerate(saidas):
         pasta = tamanho_da_pasta_do_programa + (tamanho_do_motor if saida.motor_em_instalar else 0)
         total += pasta * (7 if saida.com_msi else 4) if i == len(saidas) - 1 else pasta
@@ -1326,6 +1330,95 @@ def conferir_espaco(pasta: Path, precisa: int, reserva: int | None = None) -> st
                 f"{precisa / GB:.1f} GB e o disco tem de ficar com pelo menos {reserva / GB:.0f} GB livres. "
                 f"Libere uns {(reserva + precisa - livre) / GB:.1f} GB e rode de novo")
     return None
+
+
+def vigia_do_espaco(pasta: Path, reserva: int | None = None, livre=None):
+    """A vigia do espaco (D-776: "ele vigia o espaco durante o trabalho e para com aviso se cair perto da reserva"): o
+    LUGAR UNICO da regra. Devolve uma funcao que, a cada chamada, le o espaco livre do disco da pasta (do Windows, na
+    hora) e devolve None (pode continuar) ou o motivo de parar, em portugues: abaixo da reserva, ou nao deu para ler
+    (na duvida, para). Quem usa: rodar_vpk (durante o vpk), zipar_motor (durante a compressao do motor) e o publicar
+    (durante o download do motor para o rascunho, achado 7 do relatorio 2). 'livre' e trocavel so nos testes."""
+    livre = livre or espaco_livre
+    reserva = reserva or RESERVA_DO_DISCO
+
+    def olhar() -> str | None:
+        """None = pode continuar; senao o motivo de parar."""
+        try:
+            sobra = livre(pasta)
+        except OSError as erro:
+            return f"não consegui ler o espaço livre durante o trabalho ({erro})"
+        if sobra < reserva:
+            return (f"o disco do rascunho ficou com {sobra / GB:.1f} GB livres, abaixo da reserva de "
+                    f"{reserva / GB:.0f} GB (outro programa pode estar usando o disco)")
+        return None
+
+    return olhar
+
+
+# O pedaco da copia conferida (copiar_inteiro): a vigia olha a cada tantos bytes.
+PEDACO_DA_COPIA = 8 * 1024 * 1024
+VIGIA_A_CADA = 64 * 1024 * 1024
+
+
+def copiar_inteiro(origem: Path, alvo: Path, vigia=None) -> None:
+    """Copia um arquivo sem nunca deixar um pedaco com o nome certo (o LUGAR UNICO da copia conferida: o envio e a
+    leitura de volta do DestinoPasta, o motor baixado para o rascunho, o .msi para a pasta de saida).
+
+    Copia para <alvo>.copiando; CONFERE a copia lendo-a de volta do disco (o tamanho e a soma SHA-256 iguais aos da
+    origem); so entao da o nome certo, de uma vez (os.replace). 'vigia' (vigia_do_espaco): olhada no comeco e a
+    cada VIGIA_A_CADA bytes; se mandar parar, a copia para. Qualquer falha (disco cheio, a vigia, a copia diferente, Ctrl+C): apaga o
+    provisorio e CONFERE que sumiu; levanta OSError com o que houve e o que ficou (ou repassa o Ctrl+C). Volta 3 do
+    passo 2, achado 2 do relatorio 2: o shutil.copyfile nao apaga o destino quando falha no meio, e um .msi pela metade
+    ficava na pasta de saida com o nome certo.
+    Arriscado: copiar direto no nome certo; tirar a conferencia lida de volta."""
+    import hashlib
+    import os
+
+    origem, alvo = Path(origem), Path(alvo)
+    provisorio = alvo.with_name(alvo.name + ".copiando")
+    comecou = []                                      # vira [True] quando o provisorio e aberto (criado)
+
+    def limpar() -> str:
+        """Apaga o provisorio e diz o que ficou (conferido; "nada foi copiado" se ele nem chegou a nascer)."""
+        if not comecou:
+            return "nada foi copiado"
+        try:
+            provisorio.unlink(missing_ok=True)
+        except OSError:
+            pass
+        if provisorio.exists():
+            return f"ATENÇÃO: ficou o pedaço {provisorio}; apague à mão"
+        return f"o pedaço {provisorio.name} foi apagado (conferido)"
+
+    motivo = vigia() if vigia is not None else None
+    if motivo:
+        raise OSError(f"não comecei a copiar {origem.name}: {motivo}; nada foi copiado")
+    try:
+        soma, copiados, desde_a_vigia = hashlib.sha256(), 0, 0
+        with open(origem, "rb") as de, open(provisorio, "wb") as para:
+            comecou.append(True)
+            while pedaco := de.read(PEDACO_DA_COPIA):
+                para.write(pedaco)
+                soma.update(pedaco)
+                copiados += len(pedaco)
+                desde_a_vigia += len(pedaco)
+                if vigia is not None and desde_a_vigia >= VIGIA_A_CADA:
+                    desde_a_vigia = 0
+                    motivo = vigia()
+                    if motivo:
+                        raise OSError(f"parei de copiar {origem.name}: {motivo}")
+        lido = hashlib.sha256()
+        with open(provisorio, "rb") as copia:
+            while pedaco := copia.read(PEDACO_DA_COPIA):
+                lido.update(pedaco)
+        if provisorio.stat().st_size != copiados or lido.hexdigest() != soma.hexdigest():
+            raise OSError(f"a cópia de {origem.name} saiu diferente do original (tamanho ou soma)")
+        os.replace(provisorio, alvo)
+    except OSError as erro:
+        raise OSError(f"{erro}; {limpar()}") from erro
+    except BaseException:
+        limpar()
+        raise
 
 
 def rodar_vpk(comando: list, rascunho: Path, reserva: int | None = None,
@@ -1351,8 +1444,7 @@ def rodar_vpk(comando: list, rascunho: Path, reserva: int | None = None,
 
     from core import windows
 
-    livre = livre or espaco_livre
-    reserva = reserva or RESERVA_DO_DISCO
+    vigia = vigia_do_espaco(rascunho, reserva, livre)
     temp = Path(rascunho) / "temp"
     temp.mkdir(parents=True, exist_ok=True)
     ambiente = {**os.environ, "VELOPACK_TEMP": str(temp), "TEMP": str(temp), "TMP": str(temp)}
@@ -1373,13 +1465,9 @@ def rodar_vpk(comando: list, rascunho: Path, reserva: int | None = None,
                 codigo = programa.esperar(intervalo_s)
                 if codigo is not None:
                     break
-                try:
-                    sobra = livre(rascunho)
-                except OSError as erro:
-                    return fechar(f"parei: não consegui ler o espaço livre durante o trabalho ({erro})")
-                if sobra < reserva:
-                    return fechar(f"parei: o disco do rascunho ficou com {sobra / GB:.1f} GB livres, abaixo da "
-                                  f"reserva de {reserva / GB:.0f} GB (outro programa pode estar usando o disco)")
+                motivo = vigia()
+                if motivo:
+                    return fechar(f"parei: {motivo}")
         except BaseException:
             programa.fechar_tudo()
             raise
@@ -1429,10 +1517,11 @@ def proibidos_no_pacote_do_velopack(saida: Saida = ATUALIZACAO) -> list[str]:
     (D-768); o arquivo do motor em instalar\\, na saida que nao o leva (a
     atualizacao; achado 8 de quem tentou quebrar: so preparar_saida o tirava)."""
     import atualizacao
+    import versao
 
     proibidos = [] if saida.motor_solto else [f"{PASTA_DO_MOTOR}/"]
     if not saida.motor_em_instalar:
-        proibidos.append(f"{atualizacao.PASTA_DO_QUE_SE_INSTALA}/motor-kraken-")
+        proibidos.append(f"{atualizacao.PASTA_DO_QUE_SE_INSTALA}/{versao.PREFIXO_DO_MOTOR}")
     return proibidos
 
 
@@ -1577,21 +1666,21 @@ def zipar_motor(pasta_do_motor: Path, destino: Path, reserva: int | None = None,
 
     Grava num nome provisorio e so da o nome final depois de conferir que cada
     arquivo da ficha do motor esta no zip com o tamanho certo (problemas_do_zip_do_motor).
-    Vigia o espaco do disco do destino a cada 500 arquivos (D-776); para abaixo da
-    reserva e apaga o provisorio. 'livre' e trocavel so nos testes."""
+    Vigia o espaco do disco do destino a cada 500 arquivos (D-776, pela vigia unica,
+    vigia_do_espaco); para abaixo da reserva e apaga o provisorio. 'livre' e trocavel so nos testes."""
     import zipfile
 
     pasta_do_motor, destino = Path(pasta_do_motor), Path(destino)
-    livre = livre or espaco_livre
-    reserva = reserva or RESERVA_DO_DISCO
+    vigia = vigia_do_espaco(destino.parent, reserva, livre)
     provisorio = destino.with_name(destino.name + ".fazendo")
     provisorio.unlink(missing_ok=True)
     arquivos = sorted(f for f in pasta_do_motor.rglob("*") if f.is_file())
     try:
         with zipfile.ZipFile(provisorio, "w", zipfile.ZIP_DEFLATED, compresslevel=6) as z:
             for i, arquivo in enumerate(arquivos):
-                if i % 500 == 0 and livre(destino.parent) < reserva:
-                    raise OSError(f"o disco de {destino.parent} ficou abaixo da reserva de {reserva / GB:.0f} GB")
+                motivo = vigia() if i % 500 == 0 else None
+                if motivo:
+                    raise OSError(motivo)
                 z.write(arquivo, arquivo.relative_to(pasta_do_motor).as_posix())
     except (OSError, zipfile.BadZipFile) as erro:
         provisorio.unlink(missing_ok=True)

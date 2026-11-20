@@ -88,12 +88,23 @@ class Versoes:
         return pub.DestinoPasta(self.pasta).liberadas()
 
     def achar(self, nome: str) -> Path | None:
-        """O arquivo com este nome numa publicação liberada, ou None: nome com barra, "..", começo com ponto, ou o MESMO
-        nome em duas publicações (não se sabe qual entregar; achado 7: o .msi de outra versão saía)."""
+        """O arquivo com este nome numa publicação liberada, ou None (o motivo, em `procurar`)."""
+        return self.procurar(nome)[0]
+
+    def procurar(self, nome: str) -> tuple[Path | None, str]:
+        """(o arquivo, "") ou (None, o motivo de não entregar, para a linha da janela): nome com barra, "..", começo
+        com ponto ou dois-pontos (para quem pede, como o que não existe: "não existe aqui"); o MESMO nome em mais de uma publicação (não se sabe qual entregar;
+        achado 7 da volta 1: o .msi de outra versão saía); ou não existe. Volta 3, achado 8 do relatório 2: a janela
+        dizia "não existe aqui" também do nome repetido, que existe duas vezes."""
         if not nome or "/" in nome or "\\" in nome or ".." in nome or nome.startswith(".") or ":" in nome:
-            return None
+            return None, "não existe aqui (404)"
         achados = [publicacao / nome for publicacao in self.publicacoes() if (publicacao / nome).is_file()]
-        return achados[0] if len(achados) == 1 else None
+        if len(achados) > 1:
+            return None, (f"está em {len(achados)} publicações ({', '.join(a.parent.name for a in achados)}): não "
+                          "entrego, não se sabe qual (404)")
+        if not achados:
+            return None, "não existe aqui (404)"
+        return achados[0], ""
 
     def indice(self) -> bytes:
         """O índice de todas as publicações liberadas, juntos (sem repetir arquivo), a versão mais nova primeiro."""
@@ -190,9 +201,9 @@ class Servidor:
                     dados = servidor.versoes.indice()
                     self._enviar_dados(nome, dados, corpo, de_onde)
                     return
-                caminho = servidor.versoes.achar(nome)
+                caminho, motivo = servidor.versoes.procurar(nome)
                 if caminho is None:
-                    servidor.dizer(f"{_agora()}  {de_onde}  {nome or '/'}: não existe aqui (404)")
+                    servidor.dizer(f"{_agora()}  {de_onde}  {nome or '/'}: {motivo}")
                     self.send_error(404, "não existe")
                     return
                 self._enviar_arquivo(nome, caminho, corpo, de_onde)
