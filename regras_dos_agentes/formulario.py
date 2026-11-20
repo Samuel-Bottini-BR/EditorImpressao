@@ -315,6 +315,23 @@ def _conferir_citacoes(campos: dict[str, str], repo: _Repositorio, pasta: Path, 
                 r.problemas.append(f"o arquivo citado {p} não existe ({codigo})")
 
 
+def _conferir_protecoes(campos: dict[str, str], r: Resultado) -> None:
+    """F21 (D-811): uma lista, uma proteção (ou conferência do resultado) por item, cada uma com o teste
+    (`tests/x.py::test_y`) que falha quando ela é desligada. Que o teste existe, `_conferir_citacoes` confere; se a
+    lista está completa e se o teste falha mesmo, quem tenta quebrar."""
+    f21 = campos.get("F21")
+    if f21 is None or nao_se_aplica(f21):
+        return
+    itens = _itens(f21)
+    if not itens:
+        r.problemas.append("\"Cada proteção e o teste que falha sem ela\" tem de ser uma lista: uma proteção por item, "
+                           "com o teste (F21)")
+    for item in itens:
+        if not any("::" in t for t in _testes_citados(item)):
+            r.problemas.append(f"proteção sem o teste que falha quando ela é desligada (`tests/x.py::test_y`): "
+                               f"{item.strip()[:70]} (F21)")
+
+
 def _conferir_conteudo(campos: dict[str, str], tags: set, repo: _Repositorio, r: Resultado) -> None:
     """O que cada campo precisa ter dentro (F4, F5, F6, F7, F11, F12, F14, F15, E-WIN, E-TELA, E-IMG)."""
     f4 = campos.get("F4")
@@ -337,18 +354,7 @@ def _conferir_conteudo(campos: dict[str, str], tags: set, repo: _Repositorio, r:
             if not re.search(padrao, f6, re.I):
                 r.problemas.append(f"\"O que pode falhar\" não fala de: {nome} (ou escreva \"não se aplica: motivo\") "
                                    "(F6)")
-    f21 = campos.get("F21")
-    if f21 is not None and not nao_se_aplica(f21):
-        # D-811: cada proteção e cada conferência do resultado, com o teste (arquivo::função) que falha sem ela. Que o
-        # teste existe, `_conferir_citacoes` confere; se a lista está completa, quem tenta quebrar.
-        itens = _itens(f21)
-        if not itens:
-            r.problemas.append("\"Cada proteção e o teste que falha sem ela\" tem de ser uma lista: uma proteção por "
-                               "item, com o teste (F21)")
-        for item in itens:
-            if not any("::" in t for t in _testes_citados(item)):
-                r.problemas.append(f"proteção sem o teste que falha quando ela é desligada (`tests/x.py::test_y`): "
-                                   f"{item.strip()[:70]} (F21)")
+    _conferir_protecoes(campos, r)
     f7 = campos.get("F7")
     if f7 is not None and not nao_se_aplica(f7):
         for item in _itens(f7):

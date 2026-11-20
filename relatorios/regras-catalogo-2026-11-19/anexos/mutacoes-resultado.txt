@@ -1,0 +1,12 @@
+ACUSADA: M1 K25 sem a lista do git -> 5 failed, 3 passed, 77 deselected in 0.45s
+ACUSADA: M2 K25 sem conferir o atalho antes -> 1 failed, 7 passed, 77 deselected in 0.35s
+ACUSADA: M3 K25 sem a exceção das duas peças -> 1 failed, 7 passed, 77 deselected in 0.36s
+ACUSADA: M4 K25 lê texto solto como comando -> 4 failed, 4 passed, 77 deselected in 0.38s
+ACUSADA: M5 K25 sem tirar o comentário do terminal -> 2 failed, 6 passed, 77 deselected in 0.36s
+ACUSADA: M6 F21 sem conferir o teste de cada proteção -> 1 failed, 38 deselected in 2.47s
+ACUSADA: M7 F22 sem as etiquetas do trabalho que confere -> 2 failed, 37 deselected in 3.19s
+ACUSADA: M8 F23 sem conferir as decisões procuradas -> 1 failed, 38 deselected in 1.93s
+ACUSADA: M9 vale_para sempre sim -> 2 failed, 37 deselected in 3.01s
+ACUSADA: M10 F23 aceita decisão que não existe no Livro -> 1 failed, 38 deselected in 3.73s
+ACUSADA: M11 pacote escolhe os campos com conta própria -> 2 failed, 23 deselected in 0.36s
+ACUSADA: M12 D-813 sem o acréscimo no sempre -> 1 failed, 24 deselected in 0.35s

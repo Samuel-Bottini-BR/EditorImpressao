@@ -745,9 +745,12 @@ def test_k25_nao_acusa_o_git_que_so_le_nem_o_texto_solto():
 
 
 def test_k25_vale_nos_testes_e_nao_vale_nas_duas_pecas_do_git():
-    """K25 (D-809): "não roda na cópia, nem em script ou teste", "fora das peças de git que já existem"."""
+    """K25 (D-809): "não roda na cópia, nem em script ou teste", "fora das peças de git que já existem
+    (`conversa_com_o_git.py`, `repositorio_de_prova.py`)". As duas peças vêm escritas aqui, como na decisão (não lidas
+    do porteiro: tirar a exceção de lá tem de fazer este teste falhar)."""
     assert codigos(conferir({"tests/test_x.py": ERRADO_K25_GIT}), "K25")
-    for peca in porteiro.PECAS_DO_GIT:
+    assert codigos(conferir({"regras_dos_agentes/outro_arquivo.py": ERRADO_K25_GIT}), "K25")
+    for peca in ("regras_dos_agentes/conversa_com_o_git.py", "regras_dos_agentes/repositorio_de_prova.py"):
         assert codigos(conferir({peca: ERRADO_K25_GIT}), "K25") == [], peca
 
 
