@@ -89,6 +89,27 @@ item = {"PackageId": pacote, "Version": ver, "Type": "Full", "FileName": nupkg.n
 '''
 
 
+def _programa_de_prova(exe: Path, script: str) -> Path:
+    """Um programa de prova DE VERDADE (um .exe), que roda o Python deste computador com o script. Volta 3 do passo 2
+    (achado 3 do relatório 2 de quem tentou quebrar): o vpk de mentira era um vpk.cmd, que o Windows roda pelo cmd.exe,
+    e a peça passou a recusar o .bat e o .cmd. É o lançador que o pip usa nos programas que instala (o t64.exe da
+    distlib, que vem dentro do pip do .venv; distlib/scripts.py, ScriptMaker._write_script): o lançador, a linha
+    "#!<o python>" e um zip com o __main__.py, colados num arquivo só. O lançador roda "<o python> <o próprio .exe>
+    <os argumentos>", espera e devolve o código de saída do Python. O que ele e o Python abrem fica no grupo do Windows
+    do vpk (Microsoft Learn, AssignProcessToJobObject: o filho só sai de um grupo que deixa sair; o nosso não deixa)."""
+    import io
+
+    from pip._vendor.distlib import scripts as distlib_scripts
+
+    lancador = Path(distlib_scripts.__file__).with_name("t64.exe").read_bytes()
+    memoria = io.BytesIO()
+    with zipfile.ZipFile(memoria, "w") as z:
+        z.writestr("__main__.py", script)
+    python = sys.executable if " " not in sys.executable else f'"{sys.executable}"'
+    exe.write_bytes(lancador + b"#!" + python.encode("utf-8") + b"\n" + memoria.getvalue())
+    return exe
+
+
 @pytest.fixture
 def ambiente(tmp_path, monkeypatch):
     """Tudo o que um publicar de teste precisa: a chave fora do 'repositório', o vpk de mentira, o destino (uma pasta
@@ -98,10 +119,7 @@ def ambiente(tmp_path, monkeypatch):
     chave.write_text(assinatura.texto_da_chave_privada(CHAVE), encoding="utf-8")
     outra = tmp_path / "outra-chave.txt"
     outra.write_text(assinatura.texto_da_chave_privada(OUTRA_CHAVE), encoding="utf-8")
-    script = tmp_path / "vpk_falso.py"
-    script.write_text(VPK_FALSO, encoding="utf-8")
-    vpk = tmp_path / "vpk.cmd"
-    vpk.write_text(f'@"{sys.executable}" "{script}" %*\r\n', encoding="utf-8")
+    vpk = _programa_de_prova(tmp_path / "vpk.exe", VPK_FALSO)
     diario = tmp_path / "vpk-rodou.txt"
     monkeypatch.setenv("VPK_FALSO_DIARIO", str(diario))
     monkeypatch.delenv("VPK_FALSO_FALHA", raising=False)
