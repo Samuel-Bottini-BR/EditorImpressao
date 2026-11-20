@@ -39,7 +39,10 @@ teste com o passo 1 e o porteiro ligado). Este ONDE-PAREI é também o formulár
   passo): o lançar solto dá "saiu sem começar" para um script rápido (Lista de bugs, em "Ideias e bugs").
 - 19/11: pedido da gerente (D-809, D-811, D-812, D-814): consertado o apagar do lançar solto (`64ed0c01`) e o
   apagar do destino com atalho (`0ef0da17`), com testes que falham sem o conserto; as três seções novas do formulário.
-- **Próximo:** a gerente manda a quem tenta quebrar; depois a prova à vista (o roteiro está em "A prova de verdade").
+- 19/11 (noite): quem tentou quebrar devolveu (volta 1, `quem-quebrou/relatorio-1.md`, commit `a58f181b`): 11
+  achados. A gerente pediu o conserto de todos (o 4 por decisão técnica dela, D-014). **Em andamento:** a volta 2
+  (destinos em "O que o agente que tentou quebrar achou").
+- **Próximo (antes):** a gerente manda a quem tenta quebrar; depois a prova à vista (o roteiro está em "A prova de verdade").
 
 ## Decisões que esta tarefa precisa cumprir
 
