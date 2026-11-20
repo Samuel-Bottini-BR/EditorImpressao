@@ -9,10 +9,10 @@ Escrito em 24/09/2026. A ordem de autoridade é:
 O resto é histórico. O `PEDIDOS.md` virou histórico em 24/09: a lista que vale é o Plano Definitivo.
 
 > **Onde o projeto está em 20/11/2026, tarde (vale sobre tudo abaixo; detalhe na [PARTE -41](../../historico/Editor%20de%20Impressao%20-%20resumo%20para%20o%20Claude.md) do handoff):**
-> - **Passo 2 (publicar, o Kraken à parte, o servidor das versões de prova): voltas 4 e 5 feitas.** A conferência da volta 5, por um agente novo, **não achou nada médio nem grave** (3 problemas pequenos, para depois da prova). As duas rodadas do GitHub passaram.
+> - **Passo 2 (publicar, o Kraken à parte, o servidor das versões de prova): voltas 4 e 5 feitas.** A conferência da volta 5, por um agente novo, **não achou nada médio nem grave** (3 problemas pequenos; consertar depois da prova é sugestão da gerente, sem resposta dele). As duas rodadas do GitHub passaram.
 > - **D-817:** o teste antigo que cobrava "a liberação falha → apaga o rascunho" saiu; o mesmo caso é cobrado do jeito novo (D-816).
 > - **Esperando ele:** o "sim" para gravar a ficha do motor do Kraken na pasta de ferramentas dele e a prova à vista do passo 2 (ele só olha). Pergunta sem resposta: pôr na Lista de espera a escolha automática dos testes.
-> - Depois da prova: os 3 problemas pequenos com um escritor novo, outra conferência, e a junção do passo 2 e das regras do catálogo na versão de teste.
+> - Depois da prova: a junção do passo 2 e das regras do catálogo na versão de teste. **Sugestão da gerente, sem resposta dele:** antes da junção, os 3 problemas pequenos com um escritor novo e outra conferência ("Minha sugestão: consertar os 3 depois da prova, antes de juntar na versão de teste.").
 > - Nada do processamento das páginas mudou. O programa ainda não está pronto para o Kaique.
 >
 > **Antes (20/11, manhã), já superado:**
