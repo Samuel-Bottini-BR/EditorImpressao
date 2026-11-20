@@ -1,0 +1,356 @@
+<!doctype html>
+<html lang="pt-BR">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Regras novas do catálogo dos erros: quem tentou quebrar, volta 1</title>
+<style>
+:root { color-scheme: light dark; }
+* { box-sizing: border-box; }
+body {
+  font: 17px/1.65 "Segoe UI", system-ui, sans-serif;
+  max-width: 46rem; margin: 0 auto; padding: 2.5rem 1.5rem 6rem;
+  color: #1c1c1e; background: #fdfdfc;
+}
+h1 { font-size: 2rem; line-height: 1.2; margin: 0 0 .3em; letter-spacing: -.02em; }
+h2 { font-size: 1.35rem; margin: 2.4em 0 .6em; padding-top: .8em;
+     border-top: 1px solid #e6e4e0; letter-spacing: -.01em; }
+h3 { font-size: 1.1rem; margin: 1.8em 0 .4em; }
+h1 + p, h2 + p { margin-top: .4em; }
+p, li { margin: 0 0 .9em; }
+ul, ol { padding-left: 1.3em; }
+strong { font-weight: 640; }
+code {
+  font: .88em ui-monospace, "Cascadia Code", Consolas, monospace;
+  background: #f1efec; padding: .12em .35em; border-radius: 4px;
+}
+pre {
+  background: #f1efec; padding: 1em 1.1em; border-radius: 8px;
+  overflow-x: auto; line-height: 1.5;
+}
+pre code { background: none; padding: 0; }
+blockquote {
+  margin: 1.2em 0; padding: .1em 0 .1em 1.1em;
+  border-left: 3px solid #c9c5be; color: #55524d;
+}
+table {
+  border-collapse: collapse; width: 100%; margin: 1.2em 0;
+  font-size: .95rem; display: block; overflow-x: auto;
+}
+th, td { padding: .5em .8em; text-align: left; border-bottom: 1px solid #e6e4e0; }
+th { font-weight: 620; background: #f7f5f2; white-space: nowrap; }
+tr:last-child td { border-bottom: none; }
+img { max-width: 100%; height: auto; border-radius: 6px; margin: 1em 0;
+      border: 1px solid #e6e4e0; }
+hr { border: none; border-top: 1px solid #e6e4e0; margin: 2.5em 0; }
+.rodape { margin-top: 4em; padding-top: 1.2em; border-top: 1px solid #e6e4e0;
+          font-size: .85rem; color: #86827c; }
+@media (prefers-color-scheme: dark) {
+  body { color: #e8e6e3; background: #1a1917; }
+  h2 { border-top-color: #35332f; }
+  code, pre, th { background: #262421; }
+  th, td { border-bottom-color: #35332f; }
+  blockquote { border-left-color: #4a4741; color: #b0aca6; }
+  img { border-color: #35332f; }
+  .rodape { border-top-color: #35332f; color: #7d7973; }
+}
+@media print {
+  body { max-width: none; padding: 0; color: #000; background: #fff; }
+  h2 { page-break-after: avoid; }
+  table, img { page-break-inside: avoid; }
+}
+</style>
+</head>
+<body>
+<h1>Regras novas do catálogo dos erros: primeira conferência de quem tentou quebrar (20/11/2026)</h1>
+<p>Feita por um verificador que não escreveu este código. Conferi o código de <code>ce3fa9c4</code> (o último de código) e o
+formulário de <code>03446920</code>. Não mexi no código, não pedi licença ao Windows e não abri janela na tela do Samuel. O
+repositório do PC continuou inteiro: <code>--is-shallow-repository</code> deu false antes e depois.</p>
+<h2>Pedido</h2>
+<ul>
+<li>Papel: verificador</li>
+<li>Commit de partida: 047fd330</li>
+<li>Ramo: regras-catalogo-2026-11-19</li>
+</ul>
+<h2>Arquivos que vou mexer</h2>
+<ul>
+<li><code>regras_dos_agentes/catalogo.py</code></li>
+<li><code>regras_dos_agentes/porteiro.py</code></li>
+<li><code>regras_dos_agentes/formulario.py</code></li>
+<li><code>regras_dos_agentes/montar_pacote.py</code></li>
+<li><code>regras_dos_agentes/leitura_do_codigo.py</code></li>
+<li><code>regras_dos_agentes/protecao.py</code></li>
+<li><code>relatorios/passo0-2026-11-19/anexos/juiz-no-workflow/porteiro_juiz.sh</code></li>
+<li><code>tests/test_conferencias_codigo.py</code></li>
+<li><code>tests/test_conferencias_formulario.py</code></li>
+<li><code>tests/test_conferencias_pacote.py</code></li>
+<li><code>tests/test_conferencias_protecao.py</code></li>
+<li><code>relatorios/regras-catalogo-2026-11-19/</code></li>
+</ul>
+<p>(Copiado do pacote, sem mudar nada. Só escrevi em <code>relatorios/regras-catalogo-2026-11-19/quem-quebrou/</code>.)</p>
+<h2>Veredito</h2>
+<p><strong>Ainda não pode juntar.</strong></p>
+<ul>
+<li><strong>Grave (achado 1):</strong> a conferência nova do porteiro vai barrar todas as rodadas do GitHub, mesmo depois do
+  passo 2.</li>
+<li>A rodada 44650587272 não falhou só por causa do <code>core/windows.py:1211</code>. Ela acusou mais quatro lugares nos
+    scripts da própria rodada (<code>.github/scripts/trocar_codigo.sh</code> e <code>preparar_versao.sh</code>).</li>
+<li>No PC esses scripts não existem no ramo. Por isso a falha só aparece no GitHub. É a família "o teste supõe o
+    computador" do próprio catálogo.</li>
+<li>Um desses quatro é falso alarme (<code>git rm -r --cached</code> mexe só no índice do git, não apaga pasta).</li>
+<li>Quando a conferência estiver na versão de teste, o juiz também vai acusar esses quatro lugares e escrever
+    BARROU em toda rodada.</li>
+<li><strong>Médio:</strong> os comandos do PowerShell escritos dentro de um texto maior não são acusados (achado 2), e há o
+  mesmo erro hoje em <code>core/testes_a_distancia.py:601</code> e <code>:605</code>. A proteção contra afrouxar não vê três jeitos de
+  afrouxar a conferência (achado 4). As funções de escrever da peça do git aceitam o repositório de verdade
+  (achado 5).</li>
+<li>O resto é pequeno, ou vem de uma escolha já anotada pela gerente.</li>
+<li>O formulário do próprio trabalho é devolvido pelo programa (achado 13).</li>
+<li>Não escrevo o rótulo de pronto, pela D-798. Este trabalho não tem prova à vista, porque não mexe no Windows, e ainda
+  há achado grave.</li>
+</ul>
+<h2>O que li</h2>
+<ul>
+<li><code>.claude/agents/verificador.md</code>, o <code>CLAUDE.md</code> inteiro, <code>memoria/INDICE.md</code> e <code>memoria/catalogo-de-erros.md</code>
+  (família F9, linhas 277 a 410).</li>
+<li>O meu pacote (<code>anexos/pacote-quem-quebra.md</code>), o ONDE-PAREI do trabalho, <code>anexos/mutacoes.py</code> e
+  <code>anexos/mutacoes-resultado.txt</code>.</li>
+<li>No Livro, as linhas D-808 a D-814 inteiras, com as colunas "onde" e "prova".</li>
+<li>O código mudado: <code>git diff 0fe54cb3..ce3fa9c4</code> de <code>porteiro.py</code>, <code>leitura_do_codigo.py</code>, <code>formulario.py</code>,
+  <code>montar_pacote.py</code>, <code>catalogo.py</code> e <code>protecao.py</code>, e as provas novas em <code>tests/</code>. Li também, sem mudança no
+  trabalho:</li>
+<li><code>juiz.py</code>;</li>
+<li><code>porteiro_mudancas.py</code>, nos trechos de <code>PROTEGIDOS</code> e da K10;</li>
+<li><code>conversa_com_o_git.py</code>, nas funções de escrever.</li>
+<li>O registro da rodada 44650587272 do GitHub (só as partes que falharam) e o resumo dela. Foram duas consultas ao
+  GitHub.</li>
+<li>Os scripts da rodada no ramo <code>claude/list-server-files-gkos8v</code> (commit <code>781d64e6</code>): <code>porteiro_juiz.sh</code>,
+  <code>trocar_codigo.sh</code>, <code>preparar_versao.sh</code> e o <code>testes-windows.yml</code>.</li>
+<li>A peça de fora, lida de verdade:</li>
+<li><code>shutil.py</code> do Python 3.14, linhas 659 a 690, e <code>os.py</code>, linhas 378 a 383. As linhas que o ONDE-PAREI cita
+    batem;</li>
+<li>o <code>rm</code> do Git Bash 5.2.37 e o <code>Remove-Item</code> do PowerShell 5.1.26100, testados num atalho de pasta de verdade,
+    na minha pasta de rascunho (ver Q2).</li>
+</ul>
+<h2>O que conferi nas falhas, nas peças de fora e nos caminhos</h2>
+<p>Tudo por máquina, no PC.</p>
+<ul>
+<li><strong>Testes no PC, um arquivo por vez, no commit <code>ce3fa9c4</code>:</strong> <code>test_conferencias_codigo</code> 102 passaram;
+  <code>test_conferencias_pacote</code> 25; <code>test_conferencias_protecao</code> 15; <code>test_conferencias_formulario</code> 39.</li>
+<li><strong>A prova de reversão (as provas novas no código de antes, <code>0fe54cb3</code>, numa cópia à parte feita com <code>git archive</code>):</strong></li>
+<li>as provas da conferência nova (K25): 14 falham no código de antes; as 12 que passam lá são as de "não acusa o
+    que está certo" e a das 24 conferências (que é o esperado);</li>
+<li>as provas do formulário (D-811, D-812, D-814): 4 falham no código de antes; passa a de "não vale para o
+    trabalho só de testes", que é de não-regressão (esperado);</li>
+<li>as provas do pacote (D-809, D-813, campos em branco, perguntas novas): as 4 falham no código de antes.</li>
+<li><strong>As mutações dele (12 de 12 acusadas):</strong> conferi que cada uma desliga a coisa certa. Elas provam só que os testes
+  do próprio ramo reclamam; o que um ramo consegue afrouxar sem a proteção do GitHub ver está no achado 4.</li>
+<li><strong>A conferência nova contra 108 variações de comando</strong> (script e resultado: <code>anexos/sondar_k25.py.txt</code> e
+  <code>anexos/sondar_k25-resultado.txt</code>). Acusa certo: aspas, comando em lista, <code>subprocess</code> com lista, apelido do
+  módulo, <code>from subprocess import run</code>, <code>os.system</code>, <code>os.popen</code>, <code>shell=True</code>, <code>git -C</code>, <code>git --git-dir</code>,
+  <code>git config --global</code>, <code>rm -fr</code>, <code>rm -r -f</code>, <code>rm -f -r</code>, <code>rm --recursive</code>, <code>rm -Rf</code>, <code>/usr/bin/rm</code>, <code>bash -c "rm
+  -rf"</code>, <code>find -exec rm -rf</code>, <code>Remove-Item -Recurse:$true</code>, <code>-Rec</code>, <code>ri -r</code>, <code>rd</code>, <code>del</code>, <code>rmdir -r</code>, o
+  <code>Get-ChildItem | Remove-Item -Recurse</code> dentro de uma chamada, <code>.cmd</code> com <code>powershell -c "Remove-Item ..."</code>, e
+  <code>.psm1</code>. Não acusa o que está certo: <code>git config</code> que só lê, <code>git stash list</code>, <code>git fetch</code> normal, <code>git clone
+  --depth</code>, <code>git -c chave=valor</code>, <code>cmd /c rmdir</code>, <code>(Get-Item x).Delete()</code>, comentário. O que passa e o que é falso
+  alarme está nos achados 1, 2, 3 e 9.</li>
+<li><strong>O atalho de pasta de verdade (D-813: o que a peça de fora faz de verdade)</strong>, na minha pasta de rascunho, com
+  uma junção feita com <code>mklink /J</code> (<code>anexos/atalho-de-pasta-de-verdade.txt</code>):</li>
+<li>o trecho consertado do juiz, com a pasta do juiz sendo a junção, para e diz "é um atalho de pasta". A pasta de
+    verdade continua inteira. <strong>O conserto funciona</strong>;</li>
+<li><code>rm -rf junção</code> sem barra no fim tira só o atalho. <strong><code>rm -rf junção/</code> com barra no fim apaga o conteúdo da pasta
+    de verdade.</strong> <code>[ -L junção/ ]</code> com barra responde "não é atalho";</li>
+<li><code>Remove-Item -Recurse</code> na junção, e na pasta que tem a junção dentro, tirou só o atalho neste PowerShell 5.1.</li>
+<li>Todas as junções que sobraram foram tiradas com <code>cmd /c rmdir</code>.</li>
+<li><strong>O script do juiz:</strong> o texto do anexo deste ramo e o <code>.github/scripts/porteiro_juiz.sh</code> do commit <code>781d64e6</code> são
+  iguais letra por letra (a cópia de trabalho deste PC só troca o fim de linha). Na rodada 44650587272, o porteiro
+  não acusou o <code>rm -rf "$JUIZ"</code> desse script, e o job do juiz passou.</li>
+<li><strong>O "um lugar só":</strong> <code>formulario.vale_para</code> é a única conta que escolhe os campos. A busca no código não acha
+  outra cópia de <code>quem != "*"</code>. O formulário e o pacote chamam a mesma função (mutação M11).</li>
+<li><strong>O teste antigo mudado (o das 24 conferências):</strong> continua cobrando K01 a K24 iguais e na mesma ordem, e as
+  novas na sequência, cada uma citando a decisão. Ficou do mesmo tamanho de antes: o original também só olhava os
+  números. A gerente aceitou a mudança.</li>
+<li><strong>As regras novas nos pacotes</strong> (montei pacotes de prova para nove tipos de trabalho):</li>
+<li>a regra do <code>.git</code> dividido (R156) vai a todos;</li>
+<li>o acréscimo da D-813 vai a todos, letra por letra igual ao Livro;</li>
+<li>a dos três computadores (R157) e a de "de onde vem cada dado" (R158) vão a todo trabalho com teste, e não vão a
+    trabalho do Windows sem teste (achado 10).</li>
+<li><strong>O formulário do próprio trabalho</strong>, conferido pelo programa (<code>--etapa quebrar</code>, sem o GitHub): é <strong>devolvido</strong>
+  (achado 13).</li>
+</ul>
+<h2>Caminhos que o outro não listou</h2>
+<ul>
+<li><strong>A rodada do GitHub tem arquivos que o PC não tem.</strong> O workflow troca o código pelo do ramo e mantém a <code>.github/</code>
+  do ramo dos testes. O <code>achados_do_repositorio</code> (no teste e no juiz) lê o que o git conhece, e no GitHub isso inclui
+  a <code>.github/scripts/</code>. O ONDE-PAREI lista os caminhos "GitHub" e "antes do commit" como se lessem os mesmos
+  arquivos, e não leem (achado 1).</li>
+<li><strong>As funções de escrever da peça do git chamadas de fora</strong> (<code>configurar</code>, <code>criar_e_ir_para_o_ramo</code>, <code>enviar</code> com
+  <code>push -f</code>). A K25 não olha a peça do git, de propósito, mas nada na peça confere que o repositório é de prova
+  (achado 5).</li>
+<li><strong>O comando do PowerShell montado num texto que não começa com <code>Remove-Item</code></strong>, que é o jeito comum no projeto:
+  o comando vai inteiro para a peça do Windows (achado 2).</li>
+<li><strong>O comando dividido com <code>.split()</code> ou <code>shlex.split()</code></strong> (achado 3).</li>
+<li><strong>Os comandos dentro do <code>testes-windows.yml</code></strong>: <code>git fetch --depth=1</code>, <code>git worktree prune</code>, <code>rm -rf</code>,
+  <code>Remove-Item -Recurse</code>. A K25 não lê <code>.yml</code>. É razoável, porque só roda no GitHub, mas falta decidir junto com
+  o achado 1.</li>
+</ul>
+<h2>Falhas não pensadas e resultado não conferido</h2>
+<ul>
+<li><strong>"Falha só pelo <code>core/windows.py:1211</code>, o esperado"</strong> foi escrito sem ler a rodada. O próprio ONDE-PAREI diz "RODADA
+  A PREENCHER". O registro mostra cinco lugares (achado 1).</li>
+<li><strong>O comentário do juiz consertado</strong> diz que, sem a conferência, "o <code>rm -rf</code> apagaria o conteúdo da pasta de verdade".
+  No Git Bash deste PC, <code>rm -rf "$JUIZ"</code> sem barra no fim não entra na junção. O perigo é com barra no fim. A
+  conferência continua útil, mas a frase afirma o que não foi conferido (achado 11).</li>
+<li><strong>A conferência de atalho aceita qualquer caminho e qualquer menção</strong> (achado 9): um <code>[ -L "$OUTRA" ]</code> no começo do
+  script libera todo <code>rm -rf</code> depois dele; no Python, a palavra <code>islink</code> dentro de um texto qualquer antes da linha
+  também libera.</li>
+</ul>
+<h2>As regras que conferi</h2>
+<p>Para cada decisão tocada: cumprida, pela metade ou não cumprida. Não há tela nem print: as provas são de máquina.</p>
+<ul>
+<li><strong>D-809</strong> ("ok, mas essas coisas foram recuperadas? e porque ele fez essa confusão se era regra ele não mexer? e tinha
+  o porteiro para ele não fazer isso" · "ok"): <strong>pela metade.</strong></li>
+<li>A regra chega a todo pacote. O porteiro acusa os exemplos da prova do Livro ("barra um script com <code>git fetch
+    --depth</code> ou <code>rm -rf</code> num atalho").</li>
+<li>Mas falta resolver o falso alarme e os lugares da <code>.github/</code>, que barram toda rodada (achado 1).</li>
+<li>E o mesmo <code>Remove-Item -Recurse</code> é acusado num arquivo e passa no vizinho (achado 2).</li>
+<li><strong>D-810</strong> ("ok"): <strong>pela metade.</strong> A prova do Livro diz "O pacote dos agentes de Windows e de testes traz a lista".
+  O pacote de um trabalho do Windows sem arquivo de teste não traz (achado 10). O ONDE-PAREI anota isso em "Ideias".</li>
+<li><strong>D-811</strong> ("ok"): <strong>cumprida, com um furo pequeno.</strong> O formulário devolve a entrega do Windows sem a lista. Mas
+  aceita citar uma função de ajuda ou um <code>def</code> escrito dentro de um texto de exemplo como se fosse o teste (achado 6).</li>
+<li><strong>D-812</strong> ("ok"): <strong>pela metade.</strong></li>
+<li>A regra (R158) e a pergunta (F22) existem.</li>
+<li>Mas a pergunta só vale para o trabalho do Windows e o do porteiro. O trabalho que escreve um teste também confere
+    algo, e a decisão fala em "de um teste" (achado 12).</li>
+<li>A gerente deixou isso para depois em 20/11. Fica anotado, porque estreita a decisão do Samuel.</li>
+<li><strong>D-813</strong> ("ok"): <strong>cumprida no texto, pela metade no próprio trabalho.</strong></li>
+<li>O acréscimo está no "sempre" n.º 5 e na regra 6, letra por letra.</li>
+<li>Mas a K25 é uma busca, e o ONDE-PAREI diz que as opções do <code>git</code> e do <code>rm</code> são "conhecimento meu, não relido:
+    deduzido".</li>
+<li>Ninguém testou o que o <code>rm</code> e o <code>Remove-Item</code> fazem num atalho de verdade. Eu testei: o perigo é o <code>rm -rf x/</code>,
+    com barra no fim (Q2).</li>
+<li><strong>D-814</strong> ("ok"): <strong>cumprida, com um furo pequeno.</strong> Sem as decisões procuradas, a pergunta volta. Mas basta começar
+  "Perguntas para o Samuel" com "Nenhuma" para o programa não conferir nenhuma pergunta escrita embaixo (achado 7).</li>
+<li><strong>D-791</strong> ("b"): <strong>cumprida.</strong> A K25 barra desde já. Os lugares de hoje não foram para a lista de exceções.</li>
+<li><strong>D-792</strong> ("ok"): <strong>cumprida.</strong> Os campos novos vêm da mesma tabela (<code>vale_para</code>).</li>
+<li><strong>D-798</strong> ("fechou"): <strong>cumprida.</strong> Nem quem construiu nem eu escrevemos o rótulo de pronto.</li>
+<li><strong>D-803, D-804, D-808</strong> ("ok", "ok", "1- pode"): <strong>cumpridas.</strong> As seis propostas viraram regra, conferência ou
+  pergunta, feitas juntas.</li>
+<li><strong>Regra 8 do §11 (o novo não estraga o que já funciona):</strong> as provas antigas dos arquivos tocados passam no PC. O
+  achado 1 quebra uma prova antiga no GitHub, além do lugar esperado do passo 2.</li>
+<li><strong>Regra 12 do §11 (sem gambiarra):</strong></li>
+<li>não achei desvio para um caso nem conta copiada;</li>
+<li>mas há duas maneiras de ler o mesmo comando, e elas dão resultados diferentes: o <code>Remove-Item</code> acusado num
+    arquivo e não no vizinho (achado 2);</li>
+<li>e há o mesmo comando aceito no <code>.yml</code> e acusado no <code>.sh</code> (ver Q3).</li>
+</ul>
+<h2>Achados</h2>
+<ol>
+<li><strong>(grave) A K25 barra toda rodada do GitHub, mesmo depois do passo 2.</strong> <code>regras_dos_agentes/porteiro.py:396</code>
+   (<code>PALAVRAS_DE_APAGAR</code>) e <code>regras_dos_agentes/porteiro.py:364</code> (<code>PALAVRAS_DO_GIT</code>), lidas por
+   <code>achados_do_repositorio</code>. Na rodada 44650587272, <code>tests/test_conferencias_excecoes.py:146</code> acusou cinco lugares, não
+   um:
+   - <code>.github/scripts/preparar_versao.sh:24</code> e <code>:29</code>, e <code>.github/scripts/trocar_codigo.sh:30</code>: o <code>git fetch
+     --depth=1</code>. É o mesmo comando que deixou o PC raso em 19/11. Esses scripts, rodados à mão numa cópia, fariam o
+     mesmo (o <code>trocar_codigo.sh</code> ainda roda <code>git clean -fdq</code>). O porteiro acerta em acusar, e eles precisam do mesmo
+     conserto do juiz: buscar raso só se a cópia já é rasa;
+   - <code>.github/scripts/trocar_codigo.sh:32</code>: <code>git rm -rq --cached</code>. <strong>Falso alarme:</strong> é o <code>rm</code> do git, que tira só do
+     índice. Ele é lido como o <code>rm</code> do terminal porque a expressão aceita espaço antes de <code>rm</code>;
+   - <code>core/windows.py:1211</code>: o lugar esperado, consertado no passo 2. Conferi no ramo <code>passo2-publicar-2026-11-19</code>
+     que lá ele não é mais acusado.</li>
+</ol>
+<p>No PC aparece só o último, porque o ramo não tem a <code>.github/</code>. Quando a K25 estiver na versão de teste, o juiz
+   (<code>regras_dos_agentes/juiz.py:65</code>, a mesma leitura) também acusa os quatro. Com a lista valendo, a rodada sai
+   BARROU.</p>
+<p>O que precisa vir antes de juntar, para a gerente decidir:
+   - consertar os dois scripts no ramo dos testes;
+   - fazer a K25 não ler <code>git rm</code> como <code>rm</code>;
+   - e decidir se a <code>.github/</code> conta para a K25.
+2. <strong>(médio) O comando do PowerShell guardado num texto só é acusado se o texto começar com <code>Remove-Item</code>.</strong>
+   <code>regras_dos_agentes/leitura_do_codigo.py:305</code> (<code>comeca_com_comando</code>).
+   - Hoje no código: <code>core/testes_a_distancia.py:601</code> (<code>if (...) { Remove-Item -LiteralPath $p -Recurse -Force }</code>) e
+     <code>core/testes_a_distancia.py:605</code> (<code>| ForEach-Object { Remove-Item ... -Recurse -Force</code>). São o mesmo tipo de erro
+     do <code>core/windows.py:1211</code>, que só é acusado porque o texto dele começa com <code>Remove-Item</code>.
+   - Também passam, guardados num texto: <code>rd x -Recurse</code>, <code>ri x -r</code> e <code>del x -Recurse</code>.
+   - No projeto, o PowerShell vai quase sempre assim, como texto para a peça do Windows. O ONDE-PAREI anota isso em
+     "Ideias".
+   - Pela regra sem gambiarra, a mesma regra está dando resultados diferentes em dois arquivos vizinhos.
+3. <strong>(médio) O comando dividido com <code>.split()</code> ou <code>shlex.split()</code> passa.</strong> <code>regras_dos_agentes/leitura_do_codigo.py:287</code>:
+   o texto dentro da chamada é marcado como já lido, e a chamada vira <code>&lt;?&gt;</code>. <code>subprocess.run("git fetch --depth=1 origin
+   x".split())</code> não é acusado. Também passam o programa numa variável (<code>GIT = "git"; subprocess.run([GIT, "gc"])</code>), o
+   <code>"git" fetch</code> entre aspas no <code>.sh</code>, e o <code>&amp; "git.exe" gc</code> no <code>.ps1</code>. Razoável deixar o da variável; o do <code>.split()</code> é
+   comum e devia ser pego.
+4. <strong>(médio) A proteção do GitHub não vê três jeitos de afrouxar a K25.</strong> <code>regras_dos_agentes/protecao.py:99</code>
+   (<code>EXEMPLOS</code>) e <code>regras_dos_agentes/protecao.py:119</code>: todo exemplo da K25 vira uma linha de Python com
+   <code>subprocess.run(...)</code> ou <code>os.system(...)</code>, que é o jeito 1 da leitura. Desliguei na memória cada jeito e a proteção
+   não acusou nenhum (<code>anexos/afrouxar_k25.py.txt</code> e o resultado):
+   - a K25 nos arquivos do terminal (<code>k25_terminal</code> sem achado);
+   - a lista guardada (<code>PROGRAMAS_DA_LISTA</code> vazio);
+   - o texto guardado (o jeito 3).</p>
+<p>Tirar a K25 da lista de conferências é acusado. A defesa que sobra é a K17 (só a gerente muda o porteiro). Conserto
+   simples: um exemplo de cada jeito e um exemplo de terminal.
+5. <strong>(médio) As funções de escrever da peça do git aceitam o repositório de verdade.</strong> As funções são
+   <code>regras_dos_agentes/conversa_com_o_git.py:253</code> (<code>configurar</code>, que grava no <code>.git/config</code>), <code>:274</code>
+   (<code>criar_e_ir_para_o_ramo</code>, um <code>git switch -C</code> com qualquer nome de ramo) e <code>:279</code> (<code>enviar</code>, com <code>push -f</code>).
+   - O comentário diz "só para os repositórios de prova", mas nada confere isso.
+   - A K25 não olha a peça, então <code>git.configurar(RAIZ, "core.hooksPath", "x")</code> num teste passaria calado. Isso é
+     exatamente o que a D-809 proíbe.
+   - Hoje as 8 chamadas de fora usam repositório de prova.
+6. <strong>(pequeno) No formulário, "o teste existe" aceita o que não é teste.</strong> <code>regras_dos_agentes/formulario.py:231</code>
+   (<code>teste_existe</code>) procura <code>def &lt;nome&gt;</code> em qualquer lugar do arquivo. Por isso
+   <code>tests/test_conferencias_codigo.py::conferir</code> (uma função de ajuda) e <code>::lancar</code> (um <code>def</code> escrito dentro de um texto
+   de exemplo) contam como testes. Também passa: a mesma prova citada para cinco proteções, e as proteções escritas em
+   linhas sem "-" embaixo do primeiro item (viram continuação dele, <code>regras_dos_agentes/formulario.py:188</code>).
+7. <strong>(pequeno) Começar com "Nenhuma" desliga a conferência das perguntas.</strong> <code>regras_dos_agentes/formulario.py:572</code>:
+   "Nenhuma por enquanto, mas:" seguido de um <code>### pergunta</code> sem print, sem "O que você escolhe" e sem as decisões
+   procuradas passa. A conta já existia para a seção das perguntas. Agora ela desliga também a das decisões procuradas
+   (D-814).
+8. <strong>(pequeno) Falsos alarmes raros da K25.</strong> <code>regras_dos_agentes/porteiro.py:397</code>: <code>Remove-Item x -Recurse:$false</code> é
+   acusado, e o comentário de bloco <code>&lt;# ... #&gt;</code> do PowerShell também. O texto de aviso que começa com o comando
+   (<code>print("git gc é proibido")</code>) é acusado, e o ONDE-PAREI já avisa disso na ressalva 3.
+9. <strong>(pequeno) "Conferiu o atalho" vale para qualquer caminho e qualquer menção.</strong> No terminal,
+   <code>regras_dos_agentes/porteiro.py:834</code> olha o arquivo inteiro até a linha. No Python, <code>regras_dos_agentes/porteiro.py:802</code>
+   olha a função inteira, com os textos.
+   - <code>[ -L "$OUTRA" ]</code> no começo libera todo <code>rm -rf</code> depois.
+   - <code>print("não confiro islink")</code> libera também.
+   - <code>[ -L "$X/" ]</code>, com barra no fim, responde "não é atalho" justamente no caso perigoso (Q2).
+10. <strong>(pequeno) A regra dos três computadores não vai ao trabalho do Windows sem teste.</strong>
+    <code>regras_dos_agentes/catalogo.py:429</code> (R157 e, na linha 431, R158, só com a etiqueta de testes). A prova da D-810 no
+    Livro diz "O pacote dos agentes de Windows e de testes traz a lista". Está anotado em "Ideias", mas é diferente do
+    Livro.
+11. <strong>(pequeno) O comentário do juiz consertado afirma o que não foi conferido.</strong>
+    <code>relatorios/passo0-2026-11-19/anexos/juiz-no-workflow/porteiro_juiz.sh:52</code>. No Git Bash, <code>rm -rf "$JUIZ"</code> sem barra
+    não entra na junção (Q2). A conferência das linhas 55 a 58 continua certa e útil; só a frase precisa dizer o perigo
+    de verdade (a barra no fim).
+12. <strong>(pequeno; escolha da gerente) A pergunta "de onde vem cada dado" não vale para o trabalho que escreve teste.</strong>
+    <code>regras_dos_agentes/formulario.py:64</code> (<code>TRABALHO_QUE_CONFERE = ("WIN", "GER")</code>). A D-812 fala em "toda conferência
+    (do porteiro, de um teste ou do programa)". A gerente deixou para depois em 20/11. Como isso estreita a decisão do
+    Samuel, devia ir à Central em vez de ficar só em "Ideias".
+13. <strong>(pequeno) O formulário do próprio trabalho é devolvido pelo programa.</strong>
+    <code>relatorios/regras-catalogo-2026-11-19/ONDE-PAREI.md:130</code>: "A conferência do atalho no script do juiz: sem teste com
+    atalho de verdade" não cita um teste (F21). Ainda faltam a rodada do GitHub em "Testes" (linha 243, "RODADA A
+    PREENCHER") e a linha do porteiro (linha 247).
+14. <strong>(pequeno; do pacote, não do código) O meu pacote foi montado com o papel "verificador", não "quebrador".</strong>
+    <code>relatorios/regras-catalogo-2026-11-19/anexos/pacote-quem-quebra.md:3</code>.
+    - Por isso ele trouxe 43 regras em vez de todas (D-775).
+    - Trouxe também o formulário de quem constrói em vez dos seis campos de quem quebra, e a lista de arquivos de quem
+      construiu.
+    - Usei os seis campos que o programa confere (<code>CAMPOS_DE_QUEM_QUEBRA</code>).
+15. <strong>(pequeno; não pega, razoável deixar) Comandos que a K25 não olha.</strong> <code>regras_dos_agentes/porteiro.py:364</code>.
+    - Não são acusados: <code>git clean -fdx</code>, <code>git maintenance</code>, <code>git repack</code>, <code>git reflog expire</code>, <code>git remote set-url</code> e
+      <code>git branch -D</code> de outro ramo.
+    - Também não: o <code>rd /s</code> e o <code>rmdir /s</code> do cmd, <code>(Get-Item x).Delete($true)</code>, <code>find -delete</code> e o <code>.yml</code>.
+    - O <code>git clean</code> é o único que me preocupa: está no <code>trocar_codigo.sh</code> (achado 1).
+    - Os outros são raros, e alguns estão na lista de "não pega" da própria K25.</p>
+<h2>Para a gerente</h2>
+<ul>
+<li>Grave: achado 1. A conferência nova vai barrar toda rodada do GitHub, mesmo depois do passo 2. Ela acusa quatro
+  lugares nos scripts da rodada, e um deles é falso alarme. Precisa de decisão e conserto antes de juntar.</li>
+<li>Médios: achados 2, 3, 4 e 5. O mais importante é o 2: há o mesmo erro hoje em <code>core/testes_a_distancia.py</code>, e ele
+  passa calado.</li>
+<li>Pequenos: achados 6 a 15.</li>
+<li>Pode juntar? Ainda não, por causa do achado 1. O resto pode vir junto ou ir para depois, como a gerente escolher.</li>
+</ul>
+<p class="rodape">Editor de Impressão &middot; gerado em 19/11/2026 às 21:47</p>
+</body>
+</html>

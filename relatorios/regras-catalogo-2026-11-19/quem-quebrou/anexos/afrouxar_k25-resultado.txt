@@ -1,0 +1,4 @@
+desligar a K25 nos arquivos do terminal: o caso 'terminal' acusado antes=True depois=False; a proteção do GitHub acusa? NÃO (0 exemplo(s))
+desligar a lista guardada (jeito 2): o caso 'lista guardada' acusado antes=True depois=False; a proteção do GitHub acusa? NÃO (0 exemplo(s))
+desligar o texto guardado (jeito 3): o caso 'texto guardado' acusado antes=True depois=False; a proteção do GitHub acusa? NÃO (0 exemplo(s))
+tirar a K25 da lista de conferências do Python: o caso 'lista guardada' acusado antes=True depois=False; a proteção do GitHub acusa? SIM (8 exemplo(s))

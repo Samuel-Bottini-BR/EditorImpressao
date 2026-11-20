@@ -1,0 +1,15 @@
+O que os comandos de apagar fazem num atalho de pasta (junção) DE VERDADE, neste PC (20/11/2026, quem tenta quebrar).
+Tudo numa pasta de rascunho minha; a pasta "verdade" com a.txt e b.txt; junção feita com `cmd /c mklink /J`.
+
+Git Bash (GNU bash 5.2.37(1)-release, x86_64-pc-msys):
+- o trecho do juiz consertado, com $RUNNER_TEMP/juiz sendo a junção: "PORTEIRO: NAO CONFERIDO (... é um atalho de pasta ...)", saída 1; a.txt e b.txt continuam.
+- `rm -rf temp/juiz` (sem barra no fim): tirou só a junção; a.txt e b.txt continuam.
+- `rm -rf temp/j1/` (COM barra no fim): apagou a.txt e b.txt da pasta de verdade (a pasta "verdade" ficou vazia).
+- `rm -rf temp/pai` com a junção dentro: tirou tudo de "pai"; a.txt e b.txt continuam.
+- `[ -L temp/j3 ]` = sim; `[ -L temp/j3/ ]` (com barra) = não.
+
+Windows PowerShell 5.1.26100.9818:
+- `Remove-Item -LiteralPath <junção> -Recurse -Force`: tirou só a junção; a.txt e b.txt continuam.
+- `Remove-Item -LiteralPath <pasta com a junção dentro> -Recurse -Force`: tirou a pasta; a.txt e b.txt continuam.
+
+Depois, cada junção que sobrou foi tirada com `cmd /c rmdir` (só o atalho).
